@@ -30,12 +30,18 @@ namespace BansheeEngine
 		/**	Creates a new script code resource with the specified source code. */
 		static HScriptCode create(const WString& data, bool editorScript = false);
 
+		/** @name Internal 
+		 *  @{
+		 */
+
 		/**
 		 * Creates a new scriptcode resource with the specified source string.
 		 *
 		 * @note	Internal method. Use "create" for normal use.
 		 */
 		static ScriptCodePtr _createPtr(const WString& data, bool editorScript = false);
+
+		/** @} */
 	private:
 		ScriptCode(const WString& data, bool editorScript);
 

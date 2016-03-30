@@ -24,12 +24,18 @@ namespace BansheeEngine
 		/**	Creates a new text file resource with the specified string. */
 		static HPlainText create(const WString& data);
 
+		/** @name Internal 
+		 *  @{
+		 */
+
 		/**
 		 * Creates an include file resource with the specified include string.
 		 *
 		 * @note	Internal method. Use create() for normal use.
 		 */
 		static PlainTextPtr _createPtr(const WString& data);
+
+		/** @} */
 	private:
 		PlainText(const WString& data);
 

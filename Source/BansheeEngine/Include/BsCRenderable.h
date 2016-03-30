@@ -48,8 +48,14 @@ namespace BansheeEngine
 		/** @copydoc Component::calculateBounds */
 		bool calculateBounds(Bounds& bounds) override;
 
+		/** @name Internal 
+		 *  @{
+		 */
+
 		/** Returns the internal renderable that is used for majority of operations by this component. */
 		RenderablePtr _getRenderable() const { return mInternal; }
+
+		/** @} */
 
 	private:
 		/**	Updates the world transform if the SceneObject transform changed. */

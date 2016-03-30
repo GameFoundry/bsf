@@ -3,7 +3,7 @@ Run-time type information						{#rtti}
 [TOC]
 
 This manual describes how is run-time type information (RTTI) used to provide meta-information about C++ classes during program execution. In Banshee specifically it allows you to:
- - Ability to serialize/deserialize objects with no additional code 
+ - Serialize/deserialize objects with no additional code 
  - Get name of a class, and exact polymorphic type of an object (including safe casting)
  - Get the hierarchy of base/derived classes of a specific type
  - Iterate over all fields in an object, find their name and type, get/set their value
@@ -16,7 +16,7 @@ RTTI doesn't automatically work on all classes. You must manually specify the in
  - Making sure your class derives from `IReflectable` and implements the required methods
  - Implement a `RTTIType` class
  
-# Adding RTTI to your own objects
+# Adding RTTI to your own objects {#rtti_a}
 Assume you have a simple object you want to serialize:
 ~~~~~~~~~~~~~{.cpp}
 class Texture
@@ -82,16 +82,16 @@ This is the minimum you need to do to add a RTTI type. However there are some ad
 
 Important thing to note about RTTI type fields is that they all require a unique ID. This ID ensures that serialized data isn't broken if the layout of the object changes during development. This means you can add new fields, or remove old ones and expect data saved using an older version to "just work". You do need to ensure never to assign an ID of a previously removed field to a new field. You also need to change the ID if the field's type changes (i.e. it used to be `int` but now it's `long`).
 
-# Advanced field types
+# Advanced field types  {#rtti_b}
 
 When registering fields with the RTTI type, the systems supports a several sets of `add*Field` methods, each expecting a unique name/id, but different getter/setter methods and each field type has a special purpose.
 
-## Plain fields
+## Plain fields  {#rtti_b_a}
 In the example above we have shown how to provide getter/setter methods for fields of `int` type. These fields are considered "plain" fields by the engine, and fields for types like `float`, `bool` and any other built-in language type also falls into this category.
 
 You register plain fields by calling `addPlainField`. The getter/setter methods must return/accept a reference to the value of the field.
 
-## Reflectable fields
+## Reflectable fields  {#rtti_b_b}
 Reflectable fields contain types deriving from `IReflectable`, that is complex objects that contain their own RTTI types. For example if we were to add a `Material` class to our example, it might contain a texture. In such case we would provide getter/setter methods like so:
 ~~~~~~~~~~~~~{.cpp}
 class Material : public IReflectable
@@ -119,7 +119,7 @@ As you can see the reflectable field is similar to a plain field, only the `addR
 
 The problem with this approach is that during serialization whenever a material references a texture, that entire texture will end up being serialized with it. This is something you normally want to avoid since multiple materials will usually be referencing the same texture. For that purpose "Reflectable pointer" fields exist.
 
-## Reflectable pointer fields
+## Reflectable pointer fields  {#rtti_b_c}
 This fields are similar to reflectable fields, as they also contain types deriving from `IReflectable`. However they only return a pointer to the owned object, instead of copying the object by value. This is relevant for serialization as the system will be smart enough to detect multiple fields pointing to the same instance of an `IReflectable` object, and only serialize it once (instead of every time it is encountered). When deserializing the system will also properly restore the pointers, so that all fields keep pointing to the same instance.
 
 Reflectable pointer getter/setter methods must return shared pointers to the instance. For example if we modified our Material class like so:
@@ -145,7 +145,7 @@ class MaterialRTTI : public RTTIType<Material, IReflectable, MaterialRTTI>
 };
 ~~~~~~~~~~~~~
 
-## Array fields
+## Array fields  {#rtti_b_d}
 Each of the valid field types (plain/reflectable/reflectable pointer), also come in array form. The array form requires two additional getter/setter methods that return/set array size, and normal getter/setter require an extra index parameter. For example if we wanted to extend our material so it contains multiple textures:
 ~~~~~~~~~~~~~{.cpp}
 class Material : public IReflectable
@@ -180,7 +180,7 @@ Methods for registering array fields are:
 
 They all follow the same syntax as in the example above.
  
-## Advanced plain fields
+## Advanced plain fields  {#rtti_b_e}
 Although plain fields are primarily intended for simple built-in types, sometimes it also needs to be used on complex types. For example a `std::string` is often used as a field type, but it is not a simple built-in type, nor can we make it derive from `IReflectable`. For these purposes you can use `RTTIPlainType`. This is a templated class you can specialize for your specific type. 
 
 It provides methods for serializing/deserializing and retrieving object size. It has no advanced functionality like versioning (so if the structure of the type changes, it will break any previously serialized data), or keeping references to other objects.
@@ -232,15 +232,15 @@ If possible you should prefer implementing an `IReflectable` for complex objects
  - char* rttiWriteElem(Type&, char*); // Serializes the element into the provided buffer and returns offset into the buffer after the written data
  - UINT32 rttiGetElemSize(Type&); // Returns a size of a specific plain type
 
-# Advanced serialization
+# Advanced serialization  {#rtti_c}
 Implementations of `RTTIType` can optionally implement `onSerializationStarted´, `onSerializationEnded`, `onDeserializationStarted` and `onDeserializationEnded` methods. As their names imply they will get called during serialization/deserialization and allow you to do any pre- or post-processing of the data. Most other systems (other than serialization) that access field data will also call these functions before reading, and after writing field data.
 
 Each of those methods accepts an `IReflectable` pointer to the object currently being processed. Each type that implements `IReflectable` also comes with a `mRTTIData` field which is of `Any` type, and can be used for storing temporary data during serialization/deserialization (primarily along the methods above).
 
-# Using RTTI
+# Using RTTI  {#rtti_d}
 Once you have an object with a RTTI type fully implement it you can use it for various purposes:
 
-## Getting object information
+## Getting object information  {#rtti_d_a}
 ~~~~~~~~~~~~~{.cpp}
 IReflectable* myObject = ...;
 
@@ -268,7 +268,7 @@ rttiField->isArray(); // Does the field contain an array
 // Use that type to access the field values (not shown here, but has the same effect as get/set methods on RTTIType* shown above, only more efficient)
 ~~~~~~~~~~~~~
 
-## Serialization
+## Serialization  {#rtti_d_b}
 Serialization uses all the features shown in the chapter above in order to serialize an `IReflectable` object into a stream of bytes, and vice versa. By default binary serialization is used, but user can implement textual serialization (like XML or JSON) using the RTTI system, if needed.
 
 Binary serialized data can be output to memory, or to a file using: `MemorySerializer`, `FileEncoder`, `FileDecoder`. Their usage is simple:

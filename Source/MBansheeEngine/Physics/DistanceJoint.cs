@@ -176,10 +176,12 @@ namespace BansheeEngine
             else
                 newFlags &= ~flag;
 
+            Debug.Log("SET FLAG" + flag + " - " + enabled + " - " + newFlags + " - " + data.@internal.flags);
             if (newFlags == data.@internal.flags)
                 return false;
 
             data.@internal.flags = newFlags;
+            Debug.Log(data.@internal.flags);
             return true;
         }
 
@@ -194,6 +196,7 @@ namespace BansheeEngine
         /// <inheritdoc/>
         internal override NativeJoint CreateNative()
         {
+            Debug.Log("CREATE: " + data.@internal.flags);
             NativeDistanceJoint joint = new NativeDistanceJoint(commonData.@internal, data.@internal);
 
             return joint;

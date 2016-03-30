@@ -1,0 +1,177 @@
+/* Global */
+body, table, div, p, dl {
+	font: 14px/22px Lato,Roboto,sans-serif;
+}
+
+h1 {
+	margin-top: 0.47em;
+	margin-bottom: 0.07em;
+	padding: 0px 0px 5px 0px;
+	border-bottom: 2px solid #CD8512;
+}
+
+h2 {
+	margin-top: 0.37em;
+	margin-bottom: 0.07em;
+	padding: 0px 0px 5px 0px;
+	border-bottom: 1px solid #CD8512;
+}
+
+h3 {
+	margin-top: 0.27em;
+	margin-bottom: 0.07em;
+	padding: 0px 0px 5px 0px;
+	border-bottom: 1px dashed #CD8512;
+}
+
+/* Nav bar */
+.tabs, .tabs2, .tabs3 {
+	background-color: #ffb750;
+	background-image: none;
+    font-family: Lato,'Lucida Grande',Geneva,Helvetica,Arial,sans-serif;
+	border-bottom: 1px solid #CD8512;
+}
+
+.tablist li {
+    background-image: none;
+}
+
+.tablist a {
+	background-image: none;
+}
+
+.tablist a:hover {
+    background-image: none;
+}
+
+.tablist li.current a {
+    background-image: none;
+}
+
+/* Second nav bar */
+.navpath ul {	
+	background-color: #ffd599;
+	background-image: none;
+	border-bottom: 1px solid #CD8512;
+}
+
+.navpath li
+{
+	background-image: none;
+	border-right: 1px solid #CD8512;
+}
+
+.navpath li:last-child
+{
+	background-image: none;
+	border-right: 0px;
+}
+
+/* Page header */
+div.header {
+	background-image: none;
+}
+
+div.headertitle {
+	padding: 3px 5px 3px 10px;
+}
+
+/* Members */
+.memproto, dl.reflist dt {
+	background-image: none;
+	background-color: #ffd599;
+	/* opera specific markup */
+	box-shadow: none;
+	/* firefox specific markup */
+	-moz-box-shadow: none;
+	/* webkit specific markup */
+	-webkit-box-shadow: none;
+}
+
+.memdoc, dl.reflist dd {
+	padding: 1px 10px 2px 10px;
+	background-color: #FEFCF9;
+	border-top-width: 0;
+	background-image: none;
+	/* opera specific markup */
+	box-shadow: none;
+	/* firefox specific markup */
+	-moz-box-shadow: none;
+	/* webkit specific markup */
+	-webkit-box-shadow: none;
+}
+
+/* TOC */
+
+div.toc li {
+	font: 10px/1.2 Lato,Verdana,DejaVu Sans,Geneva,sans-serif;
+}
+
+div.toc h3 {
+	font: bold 12px/1.2 Lato,Arial,FreeSans,sans-serif;
+}
+
+div.toc {
+	margin: 0 10px 10px 10px;
+}
+
+/* Search */
+#MSearchField {
+    background-image: none;
+	background-color: white;
+	border-top: 1px solid black;
+	border-bottom: 1px solid black;
+	height: 17px;
+	top: -1px;
+    font: 9pt Lato, Arial, Verdana, sans-serif;
+}
+
+#MSearchBox .left {
+	background-color: white;
+    background-image: none;
+	border-top: 1px solid black;
+	border-bottom: 1px solid black;
+	border-left: 1px solid black;
+}
+
+#MSearchBox .right {
+	background-color: white;
+    background-image: none;
+	border-top: 1px solid black;
+	border-bottom: 1px solid black;
+	border-right: 1px solid black;
+}
+
+/* Other */
+
+.title {
+	font: bold 24px/28px Lato,Roboto,sans-serif;
+}
+
+table.directory {
+    font: 400 14px Lato,Roboto,sans-serif;
+}
+
+.navpath li.navelem a {
+	font-family: Lato, 'Lucida Grande',Geneva,Helvetica,Arial,sans-serif;   
+}
+
+.navpath li.navelem a:hover {
+	color:#ffffff;
+	text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.9);
+}
+
+table.doxtable th {
+	background-color: #ffb750;
+}
+
+dl.note {
+	border-color: #ffb750;
+}
+
+#projectname
+{
+	font: 300% Lato, Tahoma, Arial,sans-serif;
+	margin: 0px;
+	padding: 2px 0px;
+}

@@ -37,10 +37,17 @@ namespace BansheeEngine
 		/** @copydoc GUIElement::setTint */
 		virtual void setTint(const Color& color) override;
 
+		Event<void()> onClicked; /**< Triggered when the user clicks on the GUI element. */
+
+		/** @name Internal 
+		 *  @{
+		 */
+
 		/** @copydoc GUIElement::_getOptimalSize */
 		Vector2I _getOptimalSize() const override;
 
-		Event<void()> onClicked; /**< Triggered when the user clicks on the GUI element. */
+		/** @} */
+
 	protected:
 		virtual ~GUIColorField();
 

@@ -260,13 +260,13 @@ namespace BansheeEngine
 
 			rotation = worldRot * rotation;
 			position = worldRot.rotate(position) + rigidbody->SO()->getWorldPosition();
+
+			// Transform to space local to the joint
+			Quaternion invRotation = SO()->getWorldRotation().inverse();
+
+			position = invRotation.rotate(position - SO()->getWorldPosition());
+			rotation = invRotation * rotation;
 		}
-
-		// Transform to space local to the joint
-		Quaternion invRotation = SO()->getWorldRotation().inverse();
-
-		position = invRotation.rotate(position - SO()->getWorldPosition());
-		rotation = invRotation * rotation;
 	}
 	
 	void CJoint::triggerOnJointBroken()

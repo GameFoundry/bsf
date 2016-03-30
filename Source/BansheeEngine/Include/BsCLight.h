@@ -83,8 +83,14 @@ namespace BansheeEngine
 	    /** @copydoc Light::getBounds  */
 		Sphere getBounds() const;
 
+		/** @name Internal 
+		 *  @{
+		 */
+
 	    /**	Returns the light that this component wraps. */
 		SPtr<Light> _getLight() const { return mInternal; }
+
+		/** @} */
 
     protected:
 		mutable SPtr<Light> mInternal;

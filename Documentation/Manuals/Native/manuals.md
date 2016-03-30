@@ -2,7 +2,7 @@ Manuals									{#manuals}
 ===============
 [TOC]
 
-Here you will find a list of all manuals relating to Banshee's native code and their short descriptions. The manuals are for the most part unrelated so you can read them in the order needed.
+Here you will find a list of all manuals relating to Banshee's native code and their short descriptions. The manuals are for the most part unrelated so you can read them in the order that interests you.
 
 Name                                      | Description
 ------------------------------------------|-------------
@@ -19,8 +19,8 @@ Name                                      | Description
 [Scripting](@ref scripting)               | Shows you how to interact with the scripting system, and how to expose C++ objects to the scripting API.
 [Render API](@ref renderAPI)              | Explains how to use the render API to use the graphics pipeline and draw objects. 
 [Textures](@ref textures)                 | Shows you how to create, use and manipulate textures.
-[Meshes](@ref meshes)                     | Shows you how to create, use and manipulate textures.
+[Meshes](@ref meshes)                     | Shows you how to create, use and manipulate meshes.
 [Utilities](@ref utilities)               | Provides an overview of a variety of utility systems used throughout Banshee.
 [Quick reference](@ref quickref)          | Provides a few bits of commonly required information, that might be hard to remember otherwise.
-[Porting](@ref porting)                   | Information about how to go on about porting Banshee to a different system.
+[Porting](@ref porting)                   | Information about how to go on about porting Banshee to a different operating system.
 [Code style](@ref style)                  | Information about code style used when writing Banshee.

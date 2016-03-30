@@ -26,8 +26,12 @@ namespace BansheeEditor
             if (rigidbody != null)
             {
                 Quaternion worldRot = rigidbody.SceneObject.Rotation;
-
                 anchor = worldRot.Rotate(anchor) + rigidbody.SceneObject.Position;
+            }
+            else
+            {
+                Quaternion worldRot = joint.SceneObject.Rotation;
+                anchor = worldRot.Rotate(anchor) + joint.SceneObject.Position;
             }
 
             return anchor;

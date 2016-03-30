@@ -193,8 +193,14 @@ namespace BansheeEngine
 		/** @copydoc Camera::setMain */	
 		void setMain(bool main);
 
+		/** @name Internal 
+		 *  @{
+		 */
+
 		/** Returns the internal camera that is used for majority of operations by this component. */
 		CameraPtr _getCamera() const { updateView(); return mInternal; }
+
+		/** @} */
 
     protected:
 		/** Checks if the world transform of the camera changed, and if needed updates the view matrix. */

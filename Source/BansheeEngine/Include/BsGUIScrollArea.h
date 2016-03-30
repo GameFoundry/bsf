@@ -71,9 +71,6 @@ namespace BansheeEngine
 		static GUIScrollArea* create(const GUIOptions& options, const String& scrollBarStyle = StringUtil::BLANK, 
 			const String& scrollAreaStyle = StringUtil::BLANK);
 
-		/** @copydoc GUIElementContainer::_getElementType */
-		virtual ElementType _getElementType() const override { return ElementType::ScrollArea; }
-
 		/**	Returns the scroll area layout that you may use to add elements inside the scroll area. */
 		GUILayout& getLayout() const { return *mContentLayout; }
 
@@ -136,6 +133,15 @@ namespace BansheeEngine
 		 * horizontal scrollbar.
 		 */
 		static const UINT32 ScrollBarWidth;
+
+		/** @name Internal 
+		 *  @{
+		 */
+
+		/** @copydoc GUIElementContainer::_getElementType */
+		virtual ElementType _getElementType() const override { return ElementType::ScrollArea; }
+
+		/** @} */
 	protected:
 		~GUIScrollArea();
 

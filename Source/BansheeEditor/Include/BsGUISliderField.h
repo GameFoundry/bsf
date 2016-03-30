@@ -51,13 +51,19 @@ namespace BansheeEngine
 		/** @copydoc GUIElement::setTint */
 		void setTint(const Color& color) override;
 
+		Event<void(float)> onValueChanged; /**< Triggers when the field value changes. */
+
+		/** @name Internal 
+		 *  @{
+		 */
+
 		/**
 		 * Sets a new value in the input field, and also allows you to choose should the field trigger an onValueChanged
 		 * event.
 		 */
 		void _setValue(float value, bool triggerEvent);
 
-		Event<void(float)> onValueChanged; /**< Triggers when the field value changes. */
+		/** @} */
 	protected:
 		virtual ~GUISliderField();
 

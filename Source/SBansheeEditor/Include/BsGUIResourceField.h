@@ -174,17 +174,23 @@ namespace BansheeEngine
 		/** @copydoc GUIElement::setTint */
 		virtual void setTint(const Color& color) override;
 
+		/**
+		 * Triggered whenever the referenced resource changes. Provides	a weak handle of the resource, or empty handle if
+		 * no resource is referenced.
+		 */
+		Event<void(const WeakResourceHandle<Resource>&)> onValueChanged;
+
+		/** @name Internal 
+		 *  @{
+		 */
+
 		/** @copydoc GUIElement::_updateLayoutInternal */
 		void _updateLayoutInternal(const GUILayoutData& data) override;
 
 		/** @copydoc GUIElement::_getOptimalSize */
 		Vector2I _getOptimalSize() const override;
 
-		/**
-		 * Triggered whenever the referenced resource changes. Provides	a weak handle of the resource, or empty handle if
-		 * no resource is referenced.
-		 */
-		Event<void(const WeakResourceHandle<Resource>&)> onValueChanged;
+		/** @} */
 	private:
 		virtual ~GUIResourceField();
 

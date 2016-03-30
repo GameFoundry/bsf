@@ -162,6 +162,13 @@ namespace BansheeEngine
 		/**	Sets the game object referenced by the field. */
 		void setValue(const HGameObject& value);
 
+		/**	Triggered whenever the referenced game object changes. */
+		Event<void(const HGameObject&)> onValueChanged;
+
+		/** @name Internal 
+		 *  @{
+		 */
+
 		/** @copydoc GUIElement::setTint */
 		virtual void setTint(const Color& color) override;
 
@@ -171,8 +178,7 @@ namespace BansheeEngine
 		/** @copydoc GUIElement::_getOptimalSize */
 		Vector2I _getOptimalSize() const override;
 
-		/**	Triggered whenever the referenced game object changes. */
-		Event<void(const HGameObject&)> onValueChanged;
+		/** @} */
 	private:
 		virtual ~GUIGameObjectField();
 

@@ -224,9 +224,6 @@ namespace BansheeEngine
 		/** Returns the path to the project's resource folder where all the assets are stored. */
 		const Path& getResourcesFolder() const { return mResourcesFolder; }
 
-		/**	Returns the resource manifest managed by the project library. */
-		const ResourceManifestPtr& _getManifest() const { return mResourceManifest; }
-
 		/**
 		 * Saves all the project library data so it may be restored later, at the default save location in the project
 		 * folder. Project must be loaded when calling this.
@@ -250,6 +247,15 @@ namespace BansheeEngine
 
 		/** Triggered when a resource is being (re)imported. Path provided is absolute. */
 		Event<void(const Path&)> onEntryImported; 
+
+		/** @name Internal 
+		 *  @{
+		 */
+
+		/**	Returns the resource manifest managed by the project library. */
+		const ResourceManifestPtr& _getManifest() const { return mResourceManifest; }
+
+		/** @} */
 
 		static const Path RESOURCES_DIR;
 		static const Path INTERNAL_RESOURCES_DIR;

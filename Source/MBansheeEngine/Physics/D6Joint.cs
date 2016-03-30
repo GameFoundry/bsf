@@ -280,6 +280,10 @@ namespace BansheeEngine
                 @internal.swingLimit = new LimitConeRange();
                 @internal.motion = new D6JointMotion[(int)D6JointAxis.Count];
                 @internal.drives = new D6JointDrive[(int)D6JointDriveType.Count];
+                @internal.drivePosition = Vector3.Zero;
+                @internal.driveRotation = Quaternion.Identity;
+                @internal.driveLinearVelocity = Vector3.Zero;
+                @internal.driveAngularVelocity = Vector3.Zero;
             }
         }
     }

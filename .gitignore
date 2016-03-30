@@ -9,5 +9,6 @@ data
 Intermediate
 Dependencies
 Builds
+Documentation/html
 *.aps
 *.opendb

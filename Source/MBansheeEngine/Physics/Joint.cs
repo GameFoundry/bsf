@@ -335,13 +335,13 @@ namespace BansheeEngine
 
                 rotation = worldRot * rotation;
                 position = worldRot.Rotate(position) + rigidbody.SceneObject.Position;
+
+                // Transform to space local to the joint
+                Quaternion invRotation = SceneObject.Rotation.Inverse;
+
+                position = invRotation.Rotate(position - SceneObject.Position);
+                rotation = invRotation * rotation;
             }
-
-            // Transform to space local to the joint
-            Quaternion invRotation = SceneObject.Rotation.Inverse;
-
-            position = invRotation.Rotate(position - SceneObject.Position);
-            rotation = invRotation * rotation;
         }
 
         /// <summary>
@@ -354,7 +354,6 @@ namespace BansheeEngine
 		    Quaternion localRot;
 
             GetLocalTransform(body, out localPos, out localRot);
-
 
             native.SetPosition(body, localPos);
             native.SetRotation(body, localRot);
@@ -371,16 +370,16 @@ namespace BansheeEngine
             public SerializableData()
             {
                 @internal.bodies = new IntPtr[2];
-                @internal.positions = new Vector3[2];
-                @internal.rotations = new Quaternion[2];
+                @internal.positions = new Vector3[2] { Vector3.Zero, Vector3.Zero };
+                @internal.rotations = new Quaternion[2] { Quaternion.Identity, Quaternion.Identity };
                 @internal.breakForce = float.MaxValue;
                 @internal.breakTorque = float.MaxValue;
                 @internal.enableCollision = false;
             }
 
             public Rigidbody[] bodies = new Rigidbody[2];
-            public Vector3[] positions = new Vector3[2];
-            public Quaternion[] rotations = new Quaternion[2];
+            public Vector3[] positions = new Vector3[2] { Vector3.Zero, Vector3.Zero };
+            public Quaternion[] rotations = new Quaternion[2] { Quaternion.Identity, Quaternion.Identity };
         }
     }
 
