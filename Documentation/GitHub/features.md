@@ -55,7 +55,7 @@ Current version: **v0.3**
 	* Collision filtering
 	* Discrete or continuous collision detection
 * __Scripting__
-  * C# 5.0
+  * C# 6.0
   * Separate high level engine API
   * Integrated runtime for maximum performance
   * Full access to .NET framework

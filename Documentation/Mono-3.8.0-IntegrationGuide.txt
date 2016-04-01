@@ -49,8 +49,7 @@ In mini-amd64.h:
  - "./configure --host=i686-pc-mingw32"
  - "make"
  - "make install"
-- Your built mono should now be output to (OutputDir) folder. (If it's not in that folder
-  then check your Cygwin install folder under /usr/local)
+- Your built mono should now be output to (OutputDir) folder. (If it's not in that folder then check your Cygwin install folder under /usr/local)
 - Copy contents of (OutputDir)/include/mono/mono-2.0/mono to (BansheeRootDir)/Dependencies/Include/Mono
   - Make sure to modify "object.h" as you did above when building the binaries
 - Copy folder (OutputDir)/etc to (BansheeRootDir)/bin/Mono

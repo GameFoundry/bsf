@@ -4,13 +4,13 @@ Creating custom importers						{#customImporters}
 
 Importers process a raw resource in a third-party format (like FBX mesh or a PNG image) into an engine-ready format (e.g. a @ref BansheeEngine::Mesh "Mesh" or a @ref BansheeEngine::Texture "Texture"). Banshee has an extensible importer system so you may easily add your own, either for existing resource types, or for new ones. If you are also interested in creating new resource types check out [this manual](@ref customResources).
 
-On the user-facing level resource import works through the @ref BansheeEngine::Importer "Importer" module. You call its @ref BansheeEngine::Importer::import "Importer::import" method which takes a path to the resource you want to import, and the system automatically finds the necessary importer plugin (if one is available) and returns the resource in an engine ready format. Optionally you can also supply the importer with @ref BansheeEngine::ImportOptions "ImportOptions" to control resource import in more details.
+On the user-facing level resource import works through the @ref BansheeEngine::Importer "Importer" module. You call its @ref BansheeEngine::Importer::import "Importer::import" method which takes a path to the resource you want to import, and the system automatically finds the necessary importer plugin (if one is available) and returns the resource in an engine ready format. Optionally you can also supply the importer with @ref BansheeEngine::ImportOptions "ImportOptions" to control resource import in more detail.
 
 To implement your own importer you need to implement the @ref BansheeEngine::SpecificImporter "SpecificImporter" interface.
 
 # Implementing SpecificImporter # {#customImporters_a}
 Implementing this interface involves implementation of the following methods:
- * @ref BansheeEngine::SpecificImporter::isExtensionSupported "isExtensionSupported" - Receives an extension and return true or false depending if the importer can process that file. Used by the importer to find which importer plugin to use for import of a specific file.
+ * @ref BansheeEngine::SpecificImporter::isExtensionSupported "isExtensionSupported" - Receives an extension and returns true or false depending if the importer can process that file. Used by the importer to find which importer plugin to use for import of a specific file.
  * @ref BansheeEngine::SpecificImporter::isMagicNumberSupported "isMagicNumberSupported" - Similar to the method above, but receives a magic number (first few bytes of a file) instead of the extension, as this is the more common way of identifying files on non-Windows systems.
  * @ref BansheeEngine::SpecificImporter::import "import" - Receives a path to a file, as well as a set of import options. This is the meat of the importer where you will read the file and convert it into engine ready format. When done the method returns a @ref BansheeEngine::Resource "Resource" of a valid type, or null if it failed. The method should take into account the import options it was provided (if your importer supports any).
  

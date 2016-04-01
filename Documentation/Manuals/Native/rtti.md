@@ -238,9 +238,10 @@ Implementations of `RTTIType` can optionally implement `onSerializationStarted´
 Each of those methods accepts an `IReflectable` pointer to the object currently being processed. Each type that implements `IReflectable` also comes with a `mRTTIData` field which is of `Any` type, and can be used for storing temporary data during serialization/deserialization (primarily along the methods above).
 
 # Using RTTI  {#rtti_d}
-Once you have an object with a RTTI type fully implement it you can use it for various purposes:
+Once you have an object with a RTTI type fully implement it you can use it for various purposes.
 
 ## Getting object information  {#rtti_d_a}
+
 ~~~~~~~~~~~~~{.cpp}
 IReflectable* myObject = ...;
 

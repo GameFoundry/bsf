@@ -13,7 +13,7 @@ The default Banshee @ref BansheeEngine::CoreApplication "Application" supports p
  
 The supported plugins will be automatically loaded and unloaded by the application as needed, all you need to do is to provide names of their libraries to the @ref BansheeEngine::START_UP_DESC "START_UP_DESC" used to initialize the application. All plugins should be in the same folder as the main application executable. 
 
-Aside from the supported plugins you can also create a fully custom plugins that you load or unload manually.
+Aside from the supported plugins you can also create fully custom plugins that you load or unload manually.
 
 # Implementing supported plugins {#customPlugins_a}
 All supported plugins implement an informal interface through global "extern" methods. The interface supports three methods:
@@ -42,7 +42,7 @@ extern "C" BS_MYPLUGIN_EXPORT void unloadPlugin()
 
 ~~~~~~~~~~~~~
 
-It's important that all instances of types (classes/structs) from the plugin are deleted before plugin unload happens. If this doesn't happen, and an object instance is deleted after the plugin has been unloaded you will end up with a corrupt virtual function table and a crash. Normally this is handled for you, but is good to keep in mind depending on what your plugin is doing.
+It's important that all instances of types (classes/structs) from the plugin are deleted before plugin unload happens. If this doesn't happen, and an object instance is deleted after the plugin has been unloaded you will end up with a corrupt virtual function table and a crash. Normally this is handled for you, but it's good to keep in mind depending on what your plugin is doing.
 
 The exact implementations of these methods differ depending for which system are you implementing a plugin for, but we won't go into details for individual systems here. In most cases it just involves registering the plugin instance using some global manager. For example check "BsSLPlugin.cpp" in the @ref BansheeSL plugin, which registers a new importer that supports ".bsl" files.
 
@@ -50,8 +50,8 @@ The exact implementations of these methods differ depending for which system are
 Custom plugins can do whatever you wish, engine has no expectations from them so its up to your to load/unload them and to call their methods.
 
 To load a custom plugin you can use:
- - @ref BansheeEngine::CoreApplication::loadPlugin "loadPlugin" - Accepts the name of the plugin library and outputs the library. Optionally you may also pass a parameter to the `loadPlugin` method, if yours accepts one.
- - @ref BansheeEngine::CoreApplication::unloadPlugin "unloadPlugin" - To unload a previously loaded plugin. 
+ - @ref BansheeEngine::CoreApplication::loadPlugin "Application::loadPlugin" - Accepts the name of the plugin library and outputs the library object. Optionally you may also pass a parameter to the `loadPlugin` method, if yours accepts one.
+ - @ref BansheeEngine::CoreApplication::unloadPlugin "Application::unloadPlugin" - Unloads a previously loaded plugin. 
 
 Both of those methods internally call @ref BansheeEngine::DynLibManager "DynLibManager". You can use it directly if you do not need the plugin interface (`loadPlugin` and etc.), it has two methods:
  - @ref BansheeEngine::DynLibManager::load "DynLibManager::load" - Accepts a file name to the library, and returns the @ref BansheeEngine::DynLib "DynLib" object if the load is successful or null otherwise. 

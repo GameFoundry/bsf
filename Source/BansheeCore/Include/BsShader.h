@@ -223,7 +223,7 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * Shader represents a collection of techniques. They are used in Materials, which can be considered as instances of a 
+	 * Shader represents a collection of techniques. They are used in Material%s, which can be considered as instances of a 
 	 * Shader. Multiple materials may share the same shader but provide different parameters to it.
 	 *
 	 * Shader will always choose the first supported technique based on the current render system, render manager and other

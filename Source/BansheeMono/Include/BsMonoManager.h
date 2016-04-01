@@ -16,7 +16,6 @@ namespace BansheeEngine
 	/**	Available Mono versions. */
 	enum class MonoVersion
 	{
-		v4_0,
 		v4_5
 	};
 

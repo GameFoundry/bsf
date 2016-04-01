@@ -1,12 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Notes", "_Notes", "{1D081E5A-615A-4C06-B2DF-0D8D9390DE02}"
 	ProjectSection(SolutionItems) = preProject
 		..\..\Documentation\CompilingDependenciesManually.txt = ..\..\Documentation\CompilingDependenciesManually.txt
 		..\..\Documentation\Mono-3.8.0-IntegrationGuide.txt = ..\..\Documentation\Mono-3.8.0-IntegrationGuide.txt
+		Mono-4.4.0.40-IntegrationGuide.txt = Mono-4.4.0.40-IntegrationGuide.txt
 		..\..\Documentation\NVTTCompilationGuide.txt = ..\..\Documentation\NVTTCompilationGuide.txt
 	EndProjectSection
 EndProject

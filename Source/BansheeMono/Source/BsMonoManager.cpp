@@ -27,9 +27,8 @@ namespace BansheeEngine
 		String version;
 	};
 
-	static const MonoVersionData MONO_VERSION_DATA[2] =
+	static const MonoVersionData MONO_VERSION_DATA[1] =
 	{
-		{ MONO_LIB_DIR + "mono\\4.0", "v4.0.30128" },
 		{ MONO_LIB_DIR + "mono\\4.5", "v4.0.30319" }
 	};
 
