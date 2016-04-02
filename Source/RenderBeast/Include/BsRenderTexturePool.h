@@ -5,6 +5,7 @@
 #include "BsRenderBeastPrerequisites.h"
 #include "BsModule.h"
 #include "BsPixelUtil.h"
+#include "BsTexture.h"
 
 namespace BansheeEngine
 {
@@ -13,6 +14,7 @@ namespace BansheeEngine
 	 */
 
 	class RenderTexturePool;
+	struct POOLED_RENDER_TEXTURE_DESC;
 
 	/**	Contains data about a single render texture in the texture pool. */
 	struct PooledRenderTexture
@@ -39,14 +41,9 @@ namespace BansheeEngine
 		 * Attempts to find the unused render texture with the specified parameters in the pool, or creates a new texture
 		 * otherwise. When done with the texture make sure to call release().
 		 *
-		 * @param[in]	format		Pixel format used by the texture color surface.
-		 * @param[in]	width		Width of the render texture, in pixels.
-		 * @param[in]	height		Height of the render texture, in pixels.
-		 * @param[in]	hwGamma		Should the written pixels be gamma corrected.
-		 * @param[in]	samples		If higher than 1, texture containing multiple samples per pixel is created.
+		 * @param[in]	desc		Descriptor structure that describes what kind of texture to retrieve.
 		 */
-		SPtr<PooledRenderTexture> get(PixelFormat format, UINT32 width, UINT32 height, bool hwGamma = false, 
-			UINT32 samples = 0);
+		SPtr<PooledRenderTexture> get(const POOLED_RENDER_TEXTURE_DESC& desc);
 
 		/**
 		 * Releases a texture previously allocated with get(). The texture is returned to the pool so that it may be reused
@@ -70,17 +67,70 @@ namespace BansheeEngine
 		/**
 		 * Checks does the provided texture match the parameters.
 		 * 
-		 * @param[in]	texture		Texture to match against the parameters.
-		 * @param[in]	format		Pixel format used by the texture color surface.
-		 * @param[in]	width		Width of the render texture, in pixels.
-		 * @param[in]	height		Height of the render texture, in pixels.
-		 * @param[in]	hwGamma		Should the written pixels be gamma corrected.
-		 * @param[in]	samples		If higher than 1, texture containing multiple samples per pixel is created.
+		 * @param[in]	desc	Descriptor structure that describes what kind of texture to match.
+		 * @return				True if the texture matches the descriptor, false otherwise.
 		 */
-		bool matches(const SPtr<TextureCore>& texture, PixelFormat format, UINT32 width, UINT32 height, bool hwGamma,
-			UINT32 samples);
+		static bool matches(const SPtr<TextureCore>& texture, const POOLED_RENDER_TEXTURE_DESC& desc);
 
 		Map<PooledRenderTexture*, std::weak_ptr<PooledRenderTexture>> mTextures;
+	};
+
+	/** Structure used for creating a new pooled render texture. */
+	struct POOLED_RENDER_TEXTURE_DESC
+	{
+	public:
+		/**
+		 * Creates a descriptor for a two dimensional render texture.
+		 *
+		 * @param[in]	format		Pixel format used by the texture surface.
+		 * @param[in]	width		Width of the render texture, in pixels.
+		 * @param[in]	height		Height of the render texture, in pixels.
+		 * @param[in]	usage		Usage flags that control in which way is the texture going to be used.
+		 * @param[in]	samples		If higher than 1, texture containing multiple samples per pixel is created.
+		 * @param[in]	hwGamma		Should the written pixels be gamma corrected.
+		 * @return					Descriptor that is accepted by RenderTexturePool.
+		 */
+		static POOLED_RENDER_TEXTURE_DESC create2D(PixelFormat format, UINT32 width, UINT32 height, 
+			INT32 usage = TU_STATIC, UINT32 samples = 0, bool hwGamma = false);
+
+		/**
+		 * Creates a descriptor for a three dimensional render texture.
+		 *
+		 * @param[in]	format		Pixel format used by the texture surface.
+		 * @param[in]	width		Width of the render texture, in pixels.
+		 * @param[in]	height		Height of the render texture, in pixels.
+		 * @param[in]	depth		Depth of the render texture, in pixels.
+		 * @param[in]	usage		Usage flags that control in which way is the texture going to be used.
+		 * @return					Descriptor that is accepted by RenderTexturePool.
+		 */
+		static POOLED_RENDER_TEXTURE_DESC create3D(PixelFormat format, UINT32 width, UINT32 height, UINT32 depth,
+			INT32 usage = TU_STATIC);
+
+		/**
+		 * Creates a descriptor for a cube render texture.
+		 *
+		 * @param[in]	format		Pixel format used by the texture surface.
+		 * @param[in]	width		Width of the render texture, in pixels.
+		 * @param[in]	height		Height of the render texture, in pixels.
+		 * @param[in]	usage		Usage flags that control in which way is the texture going to be used.
+		 * @return					Descriptor that is accepted by RenderTexturePool.
+		 */
+		static POOLED_RENDER_TEXTURE_DESC createCube(PixelFormat format, UINT32 width, UINT32 height,
+			INT32 usage = TU_STATIC);
+
+	private:
+		friend class RenderTexturePool;
+
+		POOLED_RENDER_TEXTURE_DESC() { }
+
+		UINT32 width;
+		UINT32 height;
+		UINT32 depth;
+		UINT32 numSamples;
+		PixelFormat format;
+		TextureUsage flag;
+		TextureType type;
+		bool hwGamma;
 	};
 
 	/** @} */

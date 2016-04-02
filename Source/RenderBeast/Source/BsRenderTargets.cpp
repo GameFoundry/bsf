@@ -32,9 +32,12 @@ namespace BansheeEngine
 		UINT32 width = getWidth();
 		UINT32 height = getHeight();
 
-		SPtr<PooledRenderTexture> newAlbedoRT = texPool.get(mDiffuseFormat, width, height, false, mNumSamples);
-		SPtr<PooledRenderTexture> newNormalRT = texPool.get(mNormalFormat, width, height, false, mNumSamples);
-		SPtr<PooledRenderTexture> newDepthRT = texPool.get(PF_D24S8, width, height, false, mNumSamples);
+		SPtr<PooledRenderTexture> newAlbedoRT = texPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(mDiffuseFormat, width, 
+			height, TU_RENDERTARGET, mNumSamples, false));
+		SPtr<PooledRenderTexture> newNormalRT = texPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(mNormalFormat, width, 
+			height, TU_RENDERTARGET, mNumSamples, false));
+		SPtr<PooledRenderTexture> newDepthRT = texPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_D24S8, width, height, 
+			TU_DEPTHSTENCIL, mNumSamples, false));
 
 		SPtr<PooledRenderTexture> newColorRT = nullptr;
 
@@ -49,7 +52,8 @@ namespace BansheeEngine
 			resolvedRTProps.getMultisampleCount() == mNumSamples);
 
 		if (!useResolvedColor)
-			newColorRT = texPool.get(PF_B8G8R8X8, width, height, false, mNumSamples);
+			newColorRT = texPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_B8G8R8X8, width, height, TU_RENDERTARGET, 
+				mNumSamples, false));
 
 		bool rebuildTargets = newColorRT != mSceneColorTex || newAlbedoRT != mAlbedoTex || newNormalRT != mNormalTex || newDepthRT != mDepthTex;
 

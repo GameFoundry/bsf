@@ -2,6 +2,7 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsPostProcessing.h"
 #include "BsRenderTexture.h"
+#include "BsRenderTexturePool.h"
 
 namespace BansheeEngine
 {
@@ -20,14 +21,25 @@ namespace BansheeEngine
 
 	void DownsampleMat::setParameters(const SPtr<RenderTextureCore>& target)
 	{
-		mInputTexture.set(target->getBindableColorTexture());
+		SPtr<TextureCore> colorTexture = target->getBindableColorTexture();
+		mInputTexture.set(colorTexture);
 
-		const RenderTextureProperties& props = target->getProperties();
-		Vector2 invTextureSize(1.0f / props.getWidth(), 1.0f / props.getHeight());
+		const RenderTextureProperties& rtProps = target->getProperties();
+		Vector2 invTextureSize(1.0f / rtProps.getWidth(), 1.0f / rtProps.getHeight());
 
 		mParams.gInvTexSize.set(invTextureSize);
 
-		// TODO - Output
+		const TextureProperties& colorProps = colorTexture->getProperties();
+
+		UINT32 width = std::max(1, Math::ceilToInt(colorProps.getWidth() * 0.5f));
+		UINT32 height = std::max(1, Math::ceilToInt(colorProps.getHeight() * 0.5f));
+
+		POOLED_RENDER_TEXTURE_DESC outputDesc = POOLED_RENDER_TEXTURE_DESC::create2D(colorProps.getFormat(), width, height, 
+			TU_RENDERTARGET);
+
+		SPtr<PooledRenderTexture> outputRT = RenderTexturePool::instance().get(outputDesc);
+		// TODO - Actually send params to GPU.
+		// TODO - keep reference to output RT, Release output RT, actually render to it
 	}
 
 	EyeAdaptHistogramMat::EyeAdaptHistogramMat()
@@ -76,7 +88,7 @@ namespace BansheeEngine
 	{
 		RenderAPICore& rapi = RenderAPICore::instance();
 
-
+		// TODO - Use plain white for initial eye adaptation tex needed for histogram reduce
 
 		// TODO - Downsample
 	}

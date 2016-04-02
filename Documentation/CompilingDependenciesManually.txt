@@ -2,10 +2,8 @@ This document lists all Banshee 3rd party libraries and provides information on 
 as a guide if you wish to recompile all the dependencies manually. Normally dependencies will be pre-compiled for all
 supported platforms and environments.
 
-BansheeEngine relies on the following 3rd party libraries:
- - Mono 3.8.0
-    - http://www.mono-project.com
-	- See MonoIntegrationGuide.txt on how to compile & integrate Mono
+----------------------------------------------------------------------------------
+Core dependencies
 
 BansheeCore relies on the following 3rd party libraries:
  - NVIDIA Texture Tools 2.0.8
@@ -18,8 +16,7 @@ Place dependency files in:
  - Dynamic library files in (BansheeRootDir)/bin/(Platform)/(Configuration)
 
 ----------------------------------------------------------------------------------
-
-Banshee plug-in dependencies:
+Plug-in dependencies:
 
 Use the list below to find all dependencies used by specific projects in Banshee. Compilation of dependencies themselves are not explained unless there is something specific to take note of.
 All dependencies listed are shown with a specific version (the one Banshee was tested against), although many should work with newer versions as well, but that is up to you to test.
@@ -61,19 +58,14 @@ BansheeSL (optional) relies on:
   - http://sourceforge.net/projects/winflexbison/files/
 
 BansheeMono (optional if not using scripting or editor) relies on:
- - Mono 3.8.0
+ - Mono 4.4.0
   - http://www.mono-project.com/
-  - See Mono-3.8.0-IntegrationGuide.txt for instructions how to compile and set it up
+  - See Mono-4.4.0-IntegrationGuide.txt for instructions how to compile and set it up
 
 BansheePhysX (optional) relies on:
  - PhysX 3.3
   - https://github.com/NVIDIAGameWorks/PhysX-3.3
   - You will need PhysX3, PhysX3Common, PhysX3Cooking and PhysX3CharacterKinematic libraries
-
-BansheeCore relies on:
- - nVidia Texture Tools 2.0.8
-  - https://github.com/castano/nvidia-texture-tools
-  - See NVTTCompilationGuide.txt for instructions on how to compile
 
 Place plug-in specific dependency files in:
  - Library include files in (BansheeRootDir)/(PluginDir)/Dependencies/Include

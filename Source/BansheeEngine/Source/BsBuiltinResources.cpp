@@ -1141,7 +1141,8 @@ namespace BansheeEngine
 
 			{
 				Path relativePath = filePath.getRelative(inputFolder);
-				relativePath.setFilename(relativePath.getWFilename() + L".asset");
+				Path relativeAssetPath = relativePath;
+				relativeAssetPath.setFilename(relativeAssetPath.getWFilename() + L".asset");
 
 				ImportOptionsPtr importOptions = gImporter().createImportOptions(filePath);
 				if (importOptions != nullptr)
@@ -1151,7 +1152,7 @@ namespace BansheeEngine
 						SPtr<TextureImportOptions> texImportOptions = std::static_pointer_cast<TextureImportOptions>(importOptions);
 						texImportOptions->setGenerateMipmaps(false);
 
-						resourcesToSave.push_back(std::make_pair(relativePath, texImportOptions));
+						resourcesToSave.push_back(std::make_pair(relativeAssetPath, texImportOptions));
 					}
 					else if (rtti_is_of_type<ShaderImportOptions>(importOptions))
 					{
@@ -1161,7 +1162,7 @@ namespace BansheeEngine
 
 						if(variations.size() == 0) // Not a renderer material or no variations, save normally
 						{
-							resourcesToSave.push_back(std::make_pair(relativePath, nullptr));
+							resourcesToSave.push_back(std::make_pair(relativeAssetPath, nullptr));
 						}
 						else // Renderer material, save a copy for each variation
 						{
@@ -1177,19 +1178,19 @@ namespace BansheeEngine
 
 								shaderImportOptions->getDefines() = variation.getAll();
 
-								Path uniquePath = relativePath;
-								uniquePath.setFilename(relativePath.getFilename() + "_" + toString(variationIdx));
-								resourcesToSave.push_back(std::make_pair(relativePath, shaderImportOptions));
+								Path uniquePath = relativeAssetPath;
+								uniquePath.setFilename(relativeAssetPath.getFilename() + "_" + toString(variationIdx));
+								resourcesToSave.push_back(std::make_pair(relativeAssetPath, shaderImportOptions));
 							}
 
 							variationIdx++;
 						}
 					}
 					else
-						resourcesToSave.push_back(std::make_pair(relativePath, nullptr));
+						resourcesToSave.push_back(std::make_pair(relativeAssetPath, nullptr));
 				}
 				else
-					resourcesToSave.push_back(std::make_pair(relativePath, nullptr));
+					resourcesToSave.push_back(std::make_pair(relativeAssetPath, nullptr));
 			}
 
 			for(auto& entry : resourcesToSave)

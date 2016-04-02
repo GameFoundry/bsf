@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Notes", "_Notes", "{1D081E
 	ProjectSection(SolutionItems) = preProject
 		..\..\Documentation\CompilingDependenciesManually.txt = ..\..\Documentation\CompilingDependenciesManually.txt
 		..\..\Documentation\Mono-3.8.0-IntegrationGuide.txt = ..\..\Documentation\Mono-3.8.0-IntegrationGuide.txt
-		Mono-4.4.0.40-IntegrationGuide.txt = Mono-4.4.0.40-IntegrationGuide.txt
+		Mono-4.4.0-IntegrationGuide.txt = Mono-4.4.0-IntegrationGuide.txt
 		..\..\Documentation\NVTTCompilationGuide.txt = ..\..\Documentation\NVTTCompilationGuide.txt
 	EndProjectSection
 EndProject

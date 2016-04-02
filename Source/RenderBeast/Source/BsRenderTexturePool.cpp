@@ -23,10 +23,8 @@ namespace BansheeEngine
 			texture.second.lock()->mPool = nullptr;
 	}
 
-	SPtr<PooledRenderTexture> RenderTexturePool::get(PixelFormat format, UINT32 width, UINT32 height, bool hwGamma, UINT32 samples)
+	SPtr<PooledRenderTexture> RenderTexturePool::get(const POOLED_RENDER_TEXTURE_DESC& desc)
 	{
-		bool depth = PixelUtil::isDepth(format);
-
 		for (auto& texturePair : mTextures)
 		{
 			SPtr<PooledRenderTexture> textureData = texturePair.second.lock();
@@ -37,7 +35,7 @@ namespace BansheeEngine
 			if (textureData->texture == nullptr)
 				continue;
 
-			if (matches(textureData->texture, format, width, height, hwGamma, samples))
+			if (matches(textureData->texture, desc))
 			{
 				textureData->mIsFree = false;
 				return textureData;
@@ -47,8 +45,8 @@ namespace BansheeEngine
 		SPtr<PooledRenderTexture> newTextureData = bs_shared_ptr_new<PooledRenderTexture>(this);
 		_registerTexture(newTextureData);
 
-		newTextureData->texture = TextureCoreManager::instance().createTexture(TEX_TYPE_2D, width, height, 1, 0,
-			format, depth ? TU_DEPTHSTENCIL : TU_RENDERTARGET, hwGamma, samples);
+		newTextureData->texture = TextureCoreManager::instance().createTexture(desc.type, desc.width, desc.height, 
+			desc.depth, 0, desc.format, desc.flag, desc.hwGamma, desc.numSamples);
 		
 		return newTextureData;
 	}
@@ -59,11 +57,26 @@ namespace BansheeEngine
 		iterFind->second.lock()->mIsFree = true;
 	}
 
-	bool RenderTexturePool::matches(const SPtr<TextureCore>& texture, PixelFormat format, UINT32 width, UINT32 height, bool hwGamma, UINT32 samples)
+	bool RenderTexturePool::matches(const SPtr<TextureCore>& texture, const POOLED_RENDER_TEXTURE_DESC& desc)
 	{
 		const TextureProperties& texProps = texture->getProperties();
-		return texProps.getFormat() == format && texProps.getWidth() == width && texProps.getHeight() == height &&
-			texProps.isHardwareGammaEnabled() == hwGamma && texProps.getMultisampleCount() == samples;
+
+		bool match = texProps.getTextureType() == desc.type && texProps.getFormat() == desc.format && 
+			texProps.getWidth() == desc.width && texProps.getHeight() == desc.height && texProps.getUsage() == desc.flag;
+
+		if (!match)
+			return false;
+
+		if(desc.type == TEX_TYPE_2D)
+			return texProps.isHardwareGammaEnabled() == desc.hwGamma && texProps.getMultisampleCount() == desc.numSamples;
+
+		if(desc.type == TEX_TYPE_3D)
+			return texProps.getDepth() == desc.depth;
+
+		if (desc.type == TEX_TYPE_CUBE_MAP)
+			return true;
+
+		return false;
 	}
 
 	void RenderTexturePool::_registerTexture(const SPtr<PooledRenderTexture>& texture)
@@ -74,5 +87,53 @@ namespace BansheeEngine
 	void RenderTexturePool::_unregisterTexture(PooledRenderTexture* texture)
 	{
 		mTextures.erase(texture);
+	}
+
+	POOLED_RENDER_TEXTURE_DESC POOLED_RENDER_TEXTURE_DESC::create2D(PixelFormat format, UINT32 width, UINT32 height,
+		INT32 usage, UINT32 samples, bool hwGamma)
+	{
+		POOLED_RENDER_TEXTURE_DESC desc;
+		desc.width = width;
+		desc.height = height;
+		desc.depth = 1;
+		desc.format = format;
+		desc.numSamples = samples;
+		desc.flag = (TextureUsage)usage;
+		desc.hwGamma = hwGamma;
+		desc.type = TEX_TYPE_2D;
+
+		return desc;
+	}
+
+	POOLED_RENDER_TEXTURE_DESC POOLED_RENDER_TEXTURE_DESC::create3D(PixelFormat format, UINT32 width, UINT32 height, 
+		UINT32 depth, INT32 usage)
+	{
+		POOLED_RENDER_TEXTURE_DESC desc;
+		desc.width = width;
+		desc.height = height;
+		desc.depth = depth;
+		desc.format = format;
+		desc.numSamples = 1;
+		desc.flag = (TextureUsage)usage;
+		desc.hwGamma = false;
+		desc.type = TEX_TYPE_3D;
+
+		return desc;
+	}
+
+	POOLED_RENDER_TEXTURE_DESC POOLED_RENDER_TEXTURE_DESC::createCube(PixelFormat format, UINT32 width, UINT32 height,
+		INT32 usage)
+	{
+		POOLED_RENDER_TEXTURE_DESC desc;
+		desc.width = width;
+		desc.height = height;
+		desc.depth = 1;
+		desc.format = format;
+		desc.numSamples = 1;
+		desc.flag = (TextureUsage)usage;
+		desc.hwGamma = false;
+		desc.type = TEX_TYPE_CUBE_MAP;
+
+		return desc;
 	}
 }

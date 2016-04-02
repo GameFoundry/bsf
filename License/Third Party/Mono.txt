@@ -1,4 +1,5 @@
 Banshee uses Mono (www.mono-project.com) runtime and class libraries.
 
-Runtime libraries are under GNU Library GPL 2.0 license - http://www.gnu.org/copyleft/library.html#TOC1
-Class libraries are under MIT X11 license - http://opensource.org/licenses/mit-license.html
+Mono is licensed under the MIT license: 
+http://opensource.org/licenses/mit-license.html
+http://www.mono-project.com/docs/faq/licensing/
