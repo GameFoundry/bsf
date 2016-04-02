@@ -258,6 +258,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\RenderBeast\Include\BsLightRendering.h" />
+    <ClInclude Include="..\..\Source\RenderBeast\Include\BsPostProcessing.h" />
     <ClInclude Include="..\..\Source\RenderBeast\Include\BsStaticRenderableHandler.h" />
     <ClInclude Include="..\..\Source\RenderBeast\Include\BsRenderBeast.h" />
     <ClInclude Include="..\..\Source\RenderBeast\Include\BsRenderBeastFactory.h" />
@@ -269,6 +270,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\RenderBeast\Source\BsLightRendering.cpp" />
+    <ClCompile Include="..\..\Source\RenderBeast\Source\BsPostProcessing.cpp" />
     <ClCompile Include="..\..\Source\RenderBeast\Source\BsStaticRenderableHandler.cpp" />
     <ClCompile Include="..\..\Source\RenderBeast\Source\BsRenderBeast.cpp" />
     <ClCompile Include="..\..\Source\RenderBeast\Source\BsRenderBeastFactory.cpp" />
