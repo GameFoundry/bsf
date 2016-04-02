@@ -124,6 +124,7 @@ namespace BansheeEngine
 
 	protected:
 		friend class Texture;
+		friend class TextureCore;
 		friend class RenderTexture;
 		friend class MultiRenderTexture;
 

@@ -121,8 +121,6 @@ namespace BansheeEngine
 	private:
 		friend class RenderTexturePool;
 
-		POOLED_RENDER_TEXTURE_DESC() { }
-
 		UINT32 width;
 		UINT32 height;
 		UINT32 depth;

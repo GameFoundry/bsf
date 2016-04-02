@@ -53,6 +53,9 @@ namespace BansheeEngine
 		/**	Resolves the GBuffer scene color into the output scene color buffer. */
 		void resolve();
 
+		/** Returns the scene color render target. */
+		SPtr<RenderTextureCore> getSceneColorRT() const { return mSceneColorRT; }
+
 		/**	Returns the first color texture of the gbuffer as a bindable texture. */
 		SPtr<TextureCore> getTextureA() const;
 

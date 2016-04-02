@@ -11,8 +11,8 @@ Name                                      | Description
 [Custom GUI elements](@ref customGUI)     | Shows you how to create custom GUI elements, manually render text or modify GUI system in a general way.
 [Custom importers](@ref customImporters)  | Shows you how to create importers that handle conversion of third party resources into engine ready formats.
 [Custom plugins](@ref customPlugins)      | Shows you how to create custom plugins that can be loaded by Banshee.
-[Custom resources](@ref customResources)  | Shows you how to create brand new resource types.
 [Custom renderer](@ref customRenderer)    | Shows you how to create a custom renderer so you may fully customize the look of your application.
+[Resources](@ref resources)  			  | Explains how resources work, including saving, loading and creating brand new resource types.
 [Core thread](@ref coreThread)            | Explains how core (rendering) thread works, how it interacts with simulation thread, what are core objects and how to create your own.
 [Game objects](@ref gameObjects)          | Explains what are scene objects and components and how can you use them to create your scene.
 [RTTI](@ref rtti)                         | Shows you how to add run-time type information for your objects.
@@ -20,6 +20,9 @@ Name                                      | Description
 [Render API](@ref renderAPI)              | Explains how to use the render API to use the graphics pipeline and draw objects. 
 [Textures](@ref textures)                 | Shows you how to create, use and manipulate textures.
 [Meshes](@ref meshes)                     | Shows you how to create, use and manipulate meshes.
+[Render targets](@ref renderTargets)	  | Shows you how to create and use render textures and windows.
+[GPU programs](@ref gpuPrograms)		  | Shows you how to create and use GPU programs.
+[Materials](@ref materials)				  | Shows you how to create and use materials and shaders.
 [Utilities](@ref utilities)               | Provides an overview of a variety of utility systems used throughout Banshee.
 [Quick reference](@ref quickref)          | Provides a few bits of commonly required information, that might be hard to remember otherwise.
 [Porting](@ref porting)                   | Information about how to go on about porting Banshee to a different operating system.

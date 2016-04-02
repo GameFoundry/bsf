@@ -426,6 +426,23 @@ namespace BansheeEngine
 		const TextureProperties& getProperties() const { return mProperties; }
 
 		/************************************************************************/
+		/* 								STATICS		                     		*/
+		/************************************************************************/
+
+		/** @copydoc Texture::create(TextureType, UINT32, UINT32, UINT32, int, PixelFormat, int, bool, UINT32) */
+		static SPtr<TextureCore> create(TextureType texType, UINT32 width, UINT32 height, UINT32 depth,
+			int numMips, PixelFormat format, int usage = TU_DEFAULT,
+			bool hwGammaCorrection = false, UINT32 multisampleCount = 0);
+
+		/** @copydoc Texture::create(TextureType, UINT32, UINT32, int, PixelFormat, int, bool, UINT32) */
+		static SPtr<TextureCore> create(TextureType texType, UINT32 width, UINT32 height, int numMips,
+			PixelFormat format, int usage = TU_DEFAULT,
+			bool hwGammaCorrection = false, UINT32 multisampleCount = 0);
+
+		/** @copydoc Texture::create(const PixelDataPtr&, int, bool) */
+		static SPtr<TextureCore> create(const PixelDataPtr& pixelData, int usage = TU_DEFAULT, bool hwGammaCorrection = false);
+
+		/************************************************************************/
 		/* 								TEXTURE VIEW                      		*/
 		/************************************************************************/
 

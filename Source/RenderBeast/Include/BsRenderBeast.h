@@ -9,6 +9,7 @@
 #include "BsSamplerOverrides.h"
 #include "BsRendererMaterial.h"
 #include "BsLightRendering.h"
+#include "BsPostProcessing.h"
 
 namespace BansheeEngine
 {
@@ -99,6 +100,7 @@ namespace BansheeEngine
 			RenderQueuePtr transparentQueue;
 
 			SPtr<RenderTargets> target;
+			PostProcessInfo postProcessInfo;
 		};
 
 		/**	Data used by the renderer for lights. */

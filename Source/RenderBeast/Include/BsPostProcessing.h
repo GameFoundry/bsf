@@ -5,6 +5,7 @@
 #include "BsRenderBeastPrerequisites.h"
 #include "BsRendererMaterial.h"
 #include "BsParamBlocks.h"
+#include "BsRenderTexturePool.h"
 
 namespace BansheeEngine
 {
@@ -28,6 +29,16 @@ namespace BansheeEngine
 		float histogramLog2Max = 4.0f;
 	};
 
+	/** Contains per-camera data used by post process effects. */
+	struct PostProcessInfo
+	{
+		PostProcessSettings settings;
+
+		SPtr<PooledRenderTexture> downsampledSceneTex;
+		SPtr<PooledRenderTexture> histogramTex;
+		SPtr<PooledRenderTexture> eyeAdaptationTex;
+	};
+
 	BS_PARAM_BLOCK_BEGIN(DownsampleParams)
 		BS_PARAM_BLOCK_ENTRY(Vector2, gInvTexSize)
 	BS_PARAM_BLOCK_END
@@ -42,10 +53,15 @@ namespace BansheeEngine
 
 		/** Updates the parameter buffers used by the material. */
 		void setParameters(const SPtr<RenderTextureCore>& target);
+
+		/** Renders the post-process effect on the provided target. */
+		void render(const SPtr<RenderTextureCore>& target, PostProcessInfo& ppInfo);
 	private:
 		DownsampleParams mParams;
 		MaterialParamVec2Core mInvTexSize;
 		MaterialParamTextureCore mInputTexture;
+
+		POOLED_RENDER_TEXTURE_DESC mOutputDesc;
 	};
 
 	BS_PARAM_BLOCK_BEGIN(EyeAdaptHistogramParams)
@@ -63,7 +79,7 @@ namespace BansheeEngine
 		EyeAdaptHistogramMat();
 
 		/** Updates the parameter buffers used by the material. */
-		void setParameters(const SPtr<RenderTextureCore>& target, const PostProcessSettings& settings);
+		void setParameters(const SPtr<RenderTextureCore>& target, PostProcessInfo& ppInfo);
 	private:
 		EyeAdaptHistogramParams mParams;
 		MaterialParamTextureCore mSceneColor;
@@ -84,7 +100,7 @@ namespace BansheeEngine
 	{
 	public:
 		/** Renders post-processing effects for the provided render target. */
-		static void postProcess(const SPtr<RenderTextureCore>& target, const PostProcessSettings& settings);
+		static void postProcess(const SPtr<RenderTextureCore>& target, PostProcessInfo& ppInfo);
 		
 	private:
 	};

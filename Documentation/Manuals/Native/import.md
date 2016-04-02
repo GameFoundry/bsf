@@ -2,7 +2,7 @@ Creating custom importers						{#customImporters}
 ===============
 [TOC]
 
-Importers process a raw resource in a third-party format (like FBX mesh or a PNG image) into an engine-ready format (e.g. a @ref BansheeEngine::Mesh "Mesh" or a @ref BansheeEngine::Texture "Texture"). Banshee has an extensible importer system so you may easily add your own, either for existing resource types, or for new ones. If you are also interested in creating new resource types check out [this manual](@ref customResources).
+Importers process a raw resource in a third-party format (like FBX mesh or a PNG image) into an engine-ready format (e.g. a @ref BansheeEngine::Mesh "Mesh" or a @ref BansheeEngine::Texture "Texture"). Banshee has an extensible importer system so you may easily add your own, either for existing resource types, or for new ones. If you are also interested in creating new resource types check out [this manual](@ref resources).
 
 On the user-facing level resource import works through the @ref BansheeEngine::Importer "Importer" module. You call its @ref BansheeEngine::Importer::import "Importer::import" method which takes a path to the resource you want to import, and the system automatically finds the necessary importer plugin (if one is available) and returns the resource in an engine ready format. Optionally you can also supply the importer with @ref BansheeEngine::ImportOptions "ImportOptions" to control resource import in more detail.
 

@@ -725,9 +725,15 @@ namespace BansheeEngine
 
 		if (hasGBuffer)
 		{
+			PostProcessing::postProcess(camData.target->getSceneColorRT(), camData.postProcessInfo);
+
 			// TODO - Instead of doing a separate resolve here I could potentially perform a resolve directly in some
 			// post-processing pass (e.g. tone mapping). Right now it is just an unnecessary blit.
 			camData.target->resolve();
+		}
+		else
+		{
+			// TODO - Post process without gbuffer
 		}
 
 		// Render overlay post-scene callbacks

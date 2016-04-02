@@ -15,45 +15,45 @@ namespace BansheeEngine
 	/** Types of programs that may run on GPU. */
 	enum GpuProgramType
 	{
-		GPT_VERTEX_PROGRAM,
-		GPT_FRAGMENT_PROGRAM,
-		GPT_GEOMETRY_PROGRAM,
-		GPT_DOMAIN_PROGRAM,
-		GPT_HULL_PROGRAM,
-		GPT_COMPUTE_PROGRAM
+		GPT_VERTEX_PROGRAM, /**< Vertex program. */
+		GPT_FRAGMENT_PROGRAM, /**< Fragment(pixel) program. */
+		GPT_GEOMETRY_PROGRAM, /**< Geometry program. */
+		GPT_DOMAIN_PROGRAM, /**< Domain (tesselation evaluation) program. */
+		GPT_HULL_PROGRAM, /**< Hull (tesselation control) program. */
+		GPT_COMPUTE_PROGRAM /**< Compute program. */
 	};
 
 	/**	GPU program profiles representing supported feature sets. */
 	enum GpuProgramProfile
 	{
-		GPP_NONE,
-		GPP_FS_1_1,
-		GPP_FS_1_2,
-		GPP_FS_1_3,
-		GPP_FS_1_4,
-		GPP_FS_2_0,
-		GPP_FS_2_x,
-		GPP_FS_2_a,
-		GPP_FS_2_b,
-		GPP_FS_3_0,
-		GPP_FS_3_x,
-		GPP_FS_4_0,
-		GPP_FS_4_1,
-		GPP_FS_5_0,
-		GPP_VS_1_1,
-		GPP_VS_2_0,
-		GPP_VS_2_x,
-		GPP_VS_2_a,
-		GPP_VS_3_0,
-		GPP_VS_4_0,
-		GPP_VS_4_1,
-		GPP_VS_5_0,
-		GPP_GS_4_0,
-		GPP_GS_4_1,
-		GPP_GS_5_0,
-		GPP_HS_5_0,
-		GPP_DS_5_0,
-		GPP_CS_5_0
+		GPP_NONE, /**< No profile. */
+		GPP_FS_1_1, /**< Fragment program 1.1 profile. */
+		GPP_FS_1_2, /**< Fragment program 1.2 profile. */
+		GPP_FS_1_3, /**< Fragment program 1.3 profile. */
+		GPP_FS_1_4, /**< Fragment program 1.4 profile. */
+		GPP_FS_2_0, /**< Fragment program 2.0 profile. */
+		GPP_FS_2_x, /**< Fragment program 2.x profile. */
+		GPP_FS_2_a, /**< Fragment program 2.a profile. */
+		GPP_FS_2_b, /**< Fragment program 2.b profile. */
+		GPP_FS_3_0, /**< Fragment program 3.0 profile. */
+		GPP_FS_3_x, /**< Fragment program 3.x profile. */
+		GPP_FS_4_0, /**< Fragment program 4.0 profile. */
+		GPP_FS_4_1, /**< Fragment program 4.1 profile. */
+		GPP_FS_5_0, /**< Fragment program 5.0 profile. */
+		GPP_VS_1_1, /**< Vertex program 1.1 profile. */
+		GPP_VS_2_0, /**< Vertex program 2.0 profile. */
+		GPP_VS_2_x, /**< Vertex program 2.x profile. */
+		GPP_VS_2_a, /**< Vertex program 2.a profile. */
+		GPP_VS_3_0, /**< Vertex program 3.0 profile. */
+		GPP_VS_4_0, /**< Vertex program 4.0 profile. */
+		GPP_VS_4_1, /**< Vertex program 4.1 profile. */
+		GPP_VS_5_0, /**< Vertex program 5.0 profile. */
+		GPP_GS_4_0, /**< Geometry program 4.0 profile. */
+		GPP_GS_4_1, /**< Geometry program 4.1 profile. */
+		GPP_GS_5_0, /**< Geometry program 5.0 profile. */
+		GPP_HS_5_0, /**< Hull program 5.0 profile. */
+		GPP_DS_5_0, /**< Domain program 5.0 profile. */
+		GPP_CS_5_0 /**< Compute program 5.0 profile. */
 	};
 
 	/** Data describing a GpuProgram. */

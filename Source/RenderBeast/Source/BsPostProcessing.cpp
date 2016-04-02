@@ -34,12 +34,18 @@ namespace BansheeEngine
 		UINT32 width = std::max(1, Math::ceilToInt(colorProps.getWidth() * 0.5f));
 		UINT32 height = std::max(1, Math::ceilToInt(colorProps.getHeight() * 0.5f));
 
-		POOLED_RENDER_TEXTURE_DESC outputDesc = POOLED_RENDER_TEXTURE_DESC::create2D(colorProps.getFormat(), width, height, 
-			TU_RENDERTARGET);
-
-		SPtr<PooledRenderTexture> outputRT = RenderTexturePool::instance().get(outputDesc);
+		mOutputDesc = POOLED_RENDER_TEXTURE_DESC::create2D(colorProps.getFormat(), width, height, TU_RENDERTARGET);
+		
 		// TODO - Actually send params to GPU.
-		// TODO - keep reference to output RT, Release output RT, actually render to it
+	}
+
+	void DownsampleMat::render(const SPtr<RenderTextureCore>& target, PostProcessInfo& ppInfo)
+	{
+		ppInfo.downsampledSceneTex = RenderTexturePool::instance().get(mOutputDesc);
+
+		// TODO - Render
+
+		RenderTexturePool::instance().release(ppInfo.downsampledSceneTex);
 	}
 
 	EyeAdaptHistogramMat::EyeAdaptHistogramMat()
@@ -58,9 +64,11 @@ namespace BansheeEngine
 		defines.set("LOOP_COUNT_Y", LOOP_COUNT_Y);
 	}
 
-	void EyeAdaptHistogramMat::setParameters(const SPtr<RenderTextureCore>& target, const PostProcessSettings& settings)
+	void EyeAdaptHistogramMat::setParameters(const SPtr<RenderTextureCore>& target, PostProcessInfo& ppInfo)
 	{
 		mSceneColor.set(target->getBindableColorTexture());
+
+		const PostProcessSettings& settings = ppInfo.settings;
 
 		float diff = settings.histogramLog2Max - settings.histogramLog2Min;
 		float scale = 1.0f / diff;
@@ -84,7 +92,7 @@ namespace BansheeEngine
 		// TODO - Output
 	}
 
-	void PostProcessing::postProcess(const SPtr<RenderTextureCore>& target, const PostProcessSettings& settings)
+	void PostProcessing::postProcess(const SPtr<RenderTextureCore>& target, PostProcessInfo& ppInfo)
 	{
 		RenderAPICore& rapi = RenderAPICore::instance();
 

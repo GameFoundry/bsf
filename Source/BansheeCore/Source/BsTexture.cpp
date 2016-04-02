@@ -283,6 +283,30 @@ namespace BansheeEngine
 		}
 	}
 
+	/************************************************************************/
+	/* 								STATICS	                      			*/
+	/************************************************************************/
+	SPtr<TextureCore> TextureCore::create(TextureType texType, UINT32 width, UINT32 height, UINT32 depth,
+		int numMips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount)
+	{
+		return TextureCoreManager::instance().createTexture(texType,
+			width, height, depth, numMips, format, usage, hwGammaCorrection, multisampleCount);
+	}
+
+	SPtr<TextureCore> TextureCore::create(TextureType texType, UINT32 width, UINT32 height,
+		int numMips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount)
+	{
+		return TextureCoreManager::instance().createTexture(texType,
+			width, height, 1, numMips, format, usage, hwGammaCorrection, multisampleCount);
+	}
+
+	SPtr<TextureCore> TextureCore::create(const PixelDataPtr& pixelData, int usage, bool hwGammaCorrection)
+	{
+		return TextureCoreManager::instance().createTextureInternal(pixelData->getDepth() > 1 ? TEX_TYPE_3D : TEX_TYPE_2D, 
+			pixelData->getWidth(), pixelData->getHeight(),
+			pixelData->getDepth(), 0, pixelData->getFormat(), usage, hwGammaCorrection, 0, pixelData);
+	}
+
 	Texture::Texture()
 	{
 
