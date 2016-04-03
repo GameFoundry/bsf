@@ -3,6 +3,7 @@
 #include "BsPostProcessing.h"
 #include "BsRenderTexture.h"
 #include "BsRenderTexturePool.h"
+#include "BsRendererUtility.h"
 
 namespace BansheeEngine
 {
@@ -19,8 +20,9 @@ namespace BansheeEngine
 		// Do nothing
 	}
 
-	void DownsampleMat::setParameters(const SPtr<RenderTextureCore>& target)
+	void DownsampleMat::execute(const SPtr<RenderTextureCore>& target, PostProcessInfo& ppInfo)
 	{
+		// Set parameters
 		SPtr<TextureCore> colorTexture = target->getBindableColorTexture();
 		mInputTexture.set(colorTexture);
 
@@ -29,23 +31,30 @@ namespace BansheeEngine
 
 		mParams.gInvTexSize.set(invTextureSize);
 
+		// Set output
 		const TextureProperties& colorProps = colorTexture->getProperties();
 
 		UINT32 width = std::max(1, Math::ceilToInt(colorProps.getWidth() * 0.5f));
 		UINT32 height = std::max(1, Math::ceilToInt(colorProps.getHeight() * 0.5f));
 
 		mOutputDesc = POOLED_RENDER_TEXTURE_DESC::create2D(colorProps.getFormat(), width, height, TU_RENDERTARGET);
-		
-		// TODO - Actually send params to GPU.
-	}
 
-	void DownsampleMat::render(const SPtr<RenderTextureCore>& target, PostProcessInfo& ppInfo)
-	{
+		// Render
 		ppInfo.downsampledSceneTex = RenderTexturePool::instance().get(mOutputDesc);
 
-		// TODO - Render
+		RenderAPICore& rapi = RenderAPICore::instance();
+		rapi.setRenderTarget(ppInfo.downsampledSceneTex->renderTexture, true);
 
+		gRendererUtility().setPass(mMaterial, 0);
+		gRendererUtility().drawScreenQuad();
+
+		mOutput = ppInfo.downsampledSceneTex->renderTexture;
+	}
+
+	void DownsampleMat::release(PostProcessInfo& ppInfo)
+	{
 		RenderTexturePool::instance().release(ppInfo.downsampledSceneTex);
+		mOutput = nullptr;
 	}
 
 	EyeAdaptHistogramMat::EyeAdaptHistogramMat()
@@ -64,8 +73,9 @@ namespace BansheeEngine
 		defines.set("LOOP_COUNT_Y", LOOP_COUNT_Y);
 	}
 
-	void EyeAdaptHistogramMat::setParameters(const SPtr<RenderTextureCore>& target, PostProcessInfo& ppInfo)
+	void EyeAdaptHistogramMat::execute(const SPtr<RenderTextureCore>& target, PostProcessInfo& ppInfo)
 	{
+		// Set parameters
 		mSceneColor.set(target->getBindableColorTexture());
 
 		const PostProcessSettings& settings = ppInfo.settings;
@@ -89,15 +99,40 @@ namespace BansheeEngine
 
 		mParams.gThreadGroupCount.set(threadGroupCount);
 
-		// TODO - Output
+		// Set output
+		UINT32 histogramSize = THREAD_GROUP_SIZE_X * THREAD_GROUP_SIZE_Y;
+		UINT32 histogramTexelCount = histogramSize / 4; // 4 entries per texel
+		UINT32 numHistograms = threadGroupCount.x * threadGroupCount.y;
+
+		mOutputDesc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_FLOAT32_RGBA, histogramTexelCount, numHistograms, 
+			TU_LOADSTORE);
+
+		// Dispatch
+		ppInfo.histogramTex = RenderTexturePool::instance().get(mOutputDesc);
+
+		mOutputTex.set(ppInfo.histogramTex->texture);
+
+		// TODO - Clear downsampled scene texture as render target before dispatch?
+		RenderAPICore& rapi = RenderAPICore::instance();
+		rapi.dispatchCompute(threadGroupCount.x, threadGroupCount.y);
+
+		mOutput = ppInfo.histogramTex->renderTexture;
+	}
+
+	void EyeAdaptHistogramMat::release(PostProcessInfo& ppInfo)
+	{
+		RenderTexturePool::instance().release(ppInfo.histogramTex);
+		mOutput = nullptr;
 	}
 
 	void PostProcessing::postProcess(const SPtr<RenderTextureCore>& target, PostProcessInfo& ppInfo)
 	{
-		RenderAPICore& rapi = RenderAPICore::instance();
+		mDownsample.execute(target, ppInfo);
+		mEyeAdaptHistogram.execute(mDownsample.getOutput(), ppInfo);
+
+		mDownsample.release(ppInfo);
+		mEyeAdaptHistogram.release(ppInfo);
 
 		// TODO - Use plain white for initial eye adaptation tex needed for histogram reduce
-
-		// TODO - Downsample
 	}
 }

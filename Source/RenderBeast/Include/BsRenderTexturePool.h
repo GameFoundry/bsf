@@ -23,6 +23,7 @@ namespace BansheeEngine
 		~PooledRenderTexture();
 
 		SPtr<TextureCore> texture;
+		SPtr<RenderTextureCore> renderTexture;
 
 	private:
 		friend class RenderTexturePool;

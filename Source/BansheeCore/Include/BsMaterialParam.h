@@ -204,7 +204,7 @@ namespace BansheeEngine
 		TMaterialParamLoadStoreTexture() { }
 
 		/** @copydoc GpuParamLoadStoreTexture::set */
-		void set(const SPtr<TextureCore>& texture, const TextureSurface& surface);
+		void set(const SPtr<TextureCore>& texture, const TextureSurface& surface = TextureSurface());
 
 		/** @copydoc GpuParamLoadStoreTexture::get */
 		SPtr<TextureCore> get();

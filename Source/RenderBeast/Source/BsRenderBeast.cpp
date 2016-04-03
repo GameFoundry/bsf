@@ -76,6 +76,7 @@ namespace BansheeEngine
 		mDirLightMat = bs_new<DirectionalLightMat>();
 
 		RenderTexturePool::startUp();
+		PostProcessing::startUp();
 	}
 
 	void RenderBeast::destroyCore()
@@ -87,6 +88,7 @@ namespace BansheeEngine
 		mCameraData.clear();
 		mRenderables.clear();
 
+		PostProcessing::shutDown();
 		RenderTexturePool::shutDown();
 
 		bs_delete(mDefaultMaterial);
@@ -725,7 +727,7 @@ namespace BansheeEngine
 
 		if (hasGBuffer)
 		{
-			PostProcessing::postProcess(camData.target->getSceneColorRT(), camData.postProcessInfo);
+			//PostProcessing::instance().postProcess(camData.target->getSceneColorRT(), camData.postProcessInfo);
 
 			// TODO - Instead of doing a separate resolve here I could potentially perform a resolve directly in some
 			// post-processing pass (e.g. tone mapping). Right now it is just an unnecessary blit.

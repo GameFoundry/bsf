@@ -51,17 +51,21 @@ namespace BansheeEngine
 	public:
 		DownsampleMat();
 
-		/** Updates the parameter buffers used by the material. */
-		void setParameters(const SPtr<RenderTextureCore>& target);
+		/** Renders the post-process effect with the provided parameters. */
+		void execute(const SPtr<RenderTextureCore>& target, PostProcessInfo& ppInfo);
 
-		/** Renders the post-process effect on the provided target. */
-		void render(const SPtr<RenderTextureCore>& target, PostProcessInfo& ppInfo);
+		/** Releases the output render target. */
+		void release(PostProcessInfo& ppInfo);
+
+		/** Returns the render texture where the output will be written. */
+		SPtr<RenderTextureCore> getOutput() const { return mOutput; }
 	private:
 		DownsampleParams mParams;
 		MaterialParamVec2Core mInvTexSize;
 		MaterialParamTextureCore mInputTexture;
 
 		POOLED_RENDER_TEXTURE_DESC mOutputDesc;
+		SPtr<RenderTextureCore> mOutput;
 	};
 
 	BS_PARAM_BLOCK_BEGIN(EyeAdaptHistogramParams)
@@ -78,12 +82,21 @@ namespace BansheeEngine
 	public:
 		EyeAdaptHistogramMat();
 
-		/** Updates the parameter buffers used by the material. */
-		void setParameters(const SPtr<RenderTextureCore>& target, PostProcessInfo& ppInfo);
+		/** Executes the post-process effect with the provided parameters. */
+		void execute(const SPtr<RenderTextureCore>& target, PostProcessInfo& ppInfo);
+
+		/** Releases the output render target. */
+		void release(PostProcessInfo& ppInfo);
+
+		/** Returns the render texture where the output was written. */
+		SPtr<RenderTextureCore> getOutput() const { return mOutput; }
 	private:
 		EyeAdaptHistogramParams mParams;
 		MaterialParamTextureCore mSceneColor;
 		MaterialParamLoadStoreTextureCore mOutputTex;
+
+		POOLED_RENDER_TEXTURE_DESC mOutputDesc;
+		SPtr<RenderTextureCore> mOutput;
 
 		static const INT32 THREAD_GROUP_SIZE_X = 4;
 		static const INT32 THREAD_GROUP_SIZE_Y = 4;
@@ -96,13 +109,15 @@ namespace BansheeEngine
 	 *
 	 * @note	Core thread only.
 	 */
-	class BS_BSRND_EXPORT PostProcessing
+	class BS_BSRND_EXPORT PostProcessing : public Module<PostProcessing>
 	{
 	public:
 		/** Renders post-processing effects for the provided render target. */
-		static void postProcess(const SPtr<RenderTextureCore>& target, PostProcessInfo& ppInfo);
+		void postProcess(const SPtr<RenderTextureCore>& target, PostProcessInfo& ppInfo);
 		
 	private:
+		DownsampleMat mDownsample;
+		EyeAdaptHistogramMat mEyeAdaptHistogram;
 	};
 
 	/** @} */

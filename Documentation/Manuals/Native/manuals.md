@@ -2,28 +2,28 @@ Manuals									{#manuals}
 ===============
 [TOC]
 
-Here you will find a list of all manuals relating to Banshee's native code and their short descriptions. The manuals are for the most part unrelated so you can read them in the order that interests you.
+Here you will find a list of all manuals relating to Banshee's native code, primarily focusing on explaining the engine internals instead of the user-facing code. The manuals are roughly ordered in the way they should be read, although if you are interested in a specific topic feel free to skip ahead as manuals often contain cross references to prerequisite manuals.
 
 Name                                      | Description
 ------------------------------------------|-------------
 [Getting started](@ref gettingStarted)    | Shows how to perform some basic operations using Banshee's user-facing interface. Allows you to get a general idea of how Banshee works.
 [Architecture](@ref architecture)         | Gives you an overview of the entire architecture of Banshee. Useful starting point for those modifying engine internals as it provides a way to identify major systems.
-[Custom GUI elements](@ref customGUI)     | Shows you how to create custom GUI elements, manually render text or modify GUI system in a general way.
-[Custom importers](@ref customImporters)  | Shows you how to create importers that handle conversion of third party resources into engine ready formats.
-[Custom plugins](@ref customPlugins)      | Shows you how to create custom plugins that can be loaded by Banshee.
-[Custom renderer](@ref customRenderer)    | Shows you how to create a custom renderer so you may fully customize the look of your application.
-[Resources](@ref resources)  			  | Explains how resources work, including saving, loading and creating brand new resource types.
+[Utilities](@ref utilities)               | Provides an overview of a variety of utility systems used throughout Banshee.
 [Core thread](@ref coreThread)            | Explains how core (rendering) thread works, how it interacts with simulation thread, what are core objects and how to create your own.
-[Game objects](@ref gameObjects)          | Explains what are scene objects and components and how can you use them to create your scene.
+[Resources](@ref resources)  			  | Explains how resources work, including saving, loading and creating brand new resource types.
 [RTTI](@ref rtti)                         | Shows you how to add run-time type information for your objects.
-[Scripting](@ref scripting)               | Shows you how to interact with the scripting system, and how to expose C++ objects to the scripting API.
+[Game objects](@ref gameObjects)          | Explains what are scene objects and components and how can you use them to create your scene.
 [Render API](@ref renderAPI)              | Explains how to use the render API to use the graphics pipeline and draw objects. 
 [Textures](@ref textures)                 | Shows you how to create, use and manipulate textures.
 [Meshes](@ref meshes)                     | Shows you how to create, use and manipulate meshes.
 [Render targets](@ref renderTargets)	  | Shows you how to create and use render textures and windows.
 [GPU programs](@ref gpuPrograms)		  | Shows you how to create and use GPU programs.
 [Materials](@ref materials)				  | Shows you how to create and use materials and shaders.
-[Utilities](@ref utilities)               | Provides an overview of a variety of utility systems used throughout Banshee.
+[Scripting](@ref scripting)               | Shows you how to interact with the scripting system, and how to expose C++ objects to the scripting API.
+[Custom GUI elements](@ref customGUI)     | Shows you how to create custom GUI elements, manually render text or modify GUI system in a general way.
+[Custom importers](@ref customImporters)  | Shows you how to create importers that handle conversion of third party resources into engine ready formats.
+[Custom plugins](@ref customPlugins)      | Shows you how to create custom plugins that can be loaded by Banshee.
+[Custom renderer](@ref customRenderer)    | Shows you how to create a custom renderer so you may fully customize the look of your application.
 [Quick reference](@ref quickref)          | Provides a few bits of commonly required information, that might be hard to remember otherwise.
 [Porting](@ref porting)                   | Information about how to go on about porting Banshee to a different operating system.
 [Code style](@ref style)                  | Information about code style used when writing Banshee.

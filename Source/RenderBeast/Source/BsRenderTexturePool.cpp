@@ -48,6 +48,27 @@ namespace BansheeEngine
 		newTextureData->texture = TextureCoreManager::instance().createTexture(desc.type, desc.width, desc.height, 
 			desc.depth, 0, desc.format, desc.flag, desc.hwGamma, desc.numSamples);
 		
+		if ((desc.flag & (TU_RENDERTARGET | TU_DEPTHSTENCIL)) != 0)
+		{
+			RENDER_TEXTURE_CORE_DESC rtDesc;
+
+			if ((desc.flag & TU_RENDERTARGET) != 0)
+			{
+				rtDesc.colorSurface.texture = newTextureData->texture;
+				rtDesc.colorSurface.face = 0;
+				rtDesc.colorSurface.mipLevel = 0;
+			}
+
+			if ((desc.flag & TU_DEPTHSTENCIL) != 0)
+			{
+				rtDesc.depthStencilSurface.texture = newTextureData->texture;
+				rtDesc.depthStencilSurface.face = 0;
+				rtDesc.depthStencilSurface.mipLevel = 0;
+			}
+
+			newTextureData->renderTexture = TextureCoreManager::instance().createRenderTexture(rtDesc);
+		}
+
 		return newTextureData;
 	}
 
@@ -61,22 +82,22 @@ namespace BansheeEngine
 	{
 		const TextureProperties& texProps = texture->getProperties();
 
-		bool match = texProps.getTextureType() == desc.type && texProps.getFormat() == desc.format && 
-			texProps.getWidth() == desc.width && texProps.getHeight() == desc.height && texProps.getUsage() == desc.flag;
+		bool match = texProps.getTextureType() == desc.type 
+			&& texProps.getFormat() == desc.format 
+			&& texProps.getWidth() == desc.width 
+			&& texProps.getHeight() == desc.height
+			&& (texProps.getUsage() & desc.flag) == desc.flag
+			&& (
+				(desc.type == TEX_TYPE_2D 
+					&& texProps.isHardwareGammaEnabled() == desc.hwGamma 
+					&& texProps.getMultisampleCount() == desc.numSamples)
+				|| (desc.type == TEX_TYPE_3D 
+					&& texProps.getDepth() == desc.depth)
+				|| (desc.type == TEX_TYPE_CUBE_MAP)
+				)
+			;
 
-		if (!match)
-			return false;
-
-		if(desc.type == TEX_TYPE_2D)
-			return texProps.isHardwareGammaEnabled() == desc.hwGamma && texProps.getMultisampleCount() == desc.numSamples;
-
-		if(desc.type == TEX_TYPE_3D)
-			return texProps.getDepth() == desc.depth;
-
-		if (desc.type == TEX_TYPE_CUBE_MAP)
-			return true;
-
-		return false;
+		return match;
 	}
 
 	void RenderTexturePool::_registerTexture(const SPtr<PooledRenderTexture>& texture)

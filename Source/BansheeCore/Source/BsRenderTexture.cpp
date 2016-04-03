@@ -96,23 +96,25 @@ namespace BansheeEngine
 
 		throwIfBuffersDontMatch();
 
-		assert(mColorSurface != nullptr);
-		assert(mColorSurface->getTexture() != nullptr);
-
-		SPtr<TextureCore> colorTexture = mColorSurface->getTexture();
-		const TextureProperties& texProps = colorTexture->getProperties();
-
-		if ((mColorSurface->getFirstArraySlice() + mColorSurface->getNumArraySlices()) > texProps.getNumFaces())
+		if (mColorSurface != nullptr)
 		{
-			BS_EXCEPT(InvalidParametersException, "Provided number of faces is out of range. Face: " +
-				toString(mColorSurface->getFirstArraySlice() + mColorSurface->getNumArraySlices()) +
-				". Max num faces: " + toString(texProps.getNumFaces()));
-		}
+			assert(mColorSurface->getTexture() != nullptr);
 
-		if (mColorSurface->getMostDetailedMip() > texProps.getNumMipmaps())
-		{
-			BS_EXCEPT(InvalidParametersException, "Provided number of mip maps is out of range. Mip level: " +
-				toString(mColorSurface->getMostDetailedMip()) + ". Max num mipmaps: " + toString(texProps.getNumMipmaps()));
+			SPtr<TextureCore> colorTexture = mColorSurface->getTexture();
+			const TextureProperties& texProps = colorTexture->getProperties();
+
+			if ((mColorSurface->getFirstArraySlice() + mColorSurface->getNumArraySlices()) > texProps.getNumFaces())
+			{
+				BS_EXCEPT(InvalidParametersException, "Provided number of faces is out of range. Face: " +
+					toString(mColorSurface->getFirstArraySlice() + mColorSurface->getNumArraySlices()) +
+					". Max num faces: " + toString(texProps.getNumFaces()));
+			}
+
+			if (mColorSurface->getMostDetailedMip() > texProps.getNumMipmaps())
+			{
+				BS_EXCEPT(InvalidParametersException, "Provided number of mip maps is out of range. Mip level: " +
+					toString(mColorSurface->getMostDetailedMip()) + ". Max num mipmaps: " + toString(texProps.getNumMipmaps()));
+			}
 		}
 	}
 
