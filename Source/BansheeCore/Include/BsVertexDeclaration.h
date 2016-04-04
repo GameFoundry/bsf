@@ -15,35 +15,35 @@ namespace BansheeEngine
 	/** Semantics that are used for identifying the meaning of vertex buffer elements. */
 	enum VertexElementSemantic 
 	{
-		VES_POSITION = 1,
-		VES_BLEND_WEIGHTS = 2,
-        VES_BLEND_INDICES = 3,
-		VES_NORMAL = 4,
-		VES_COLOR = 5,
-		VES_TEXCOORD = 6,
-        VES_BITANGENT = 7,
-        VES_TANGENT = 8,
-		VES_POSITIONT = 9,
-		VES_PSIZE = 10
+		VES_POSITION = 1, /**< Position */
+		VES_BLEND_WEIGHTS = 2, /**< Blend weights */
+        VES_BLEND_INDICES = 3, /**< Blend indices */
+		VES_NORMAL = 4, /**< Normal */
+		VES_COLOR = 5, /**< Color */
+		VES_TEXCOORD = 6, /**< UV coordinate */
+        VES_BITANGENT = 7, /**< Bitangent */
+        VES_TANGENT = 8, /**< Tangent */
+		VES_POSITIONT = 9, /**< Transformed position */
+		VES_PSIZE = 10 /**< Point size */
 	};
 
 	/**	Types used to identify base types of vertex element contents. */
     enum VertexElementType
     {
-        VET_FLOAT1 = 0,
-        VET_FLOAT2 = 1,
-        VET_FLOAT3 = 2,
-        VET_FLOAT4 = 3,
-		VET_COLOR = 4,
-		VET_SHORT1 = 5,
-		VET_SHORT2 = 6,
-		VET_SHORT3 = 7,
-		VET_SHORT4 = 8,
-        VET_UBYTE4 = 9,
-        VET_COLOR_ARGB = 10,
-        VET_COLOR_ABGR = 11,
-		VET_UINT4 = 12,
-		VET_SINT4 = 13
+        VET_FLOAT1 = 0, /**< 1D floating point value */
+        VET_FLOAT2 = 1, /**< 2D floating point value */
+        VET_FLOAT3 = 2, /**< 3D floating point value */
+        VET_FLOAT4 = 3, /**< 4D floating point value */
+		VET_COLOR = 4, /**< 4D floating point value */
+		VET_SHORT1 = 5, /**< 1D 16-bit signed integer value */
+		VET_SHORT2 = 6, /**< 2D 16-bit signed integer value */
+		VET_SHORT3 = 7, /**< 3D 16-bit signed integer value */
+		VET_SHORT4 = 8, /**< 4D 16-bit signed integer value */
+        VET_UBYTE4 = 9, /**< 4D 8-bit unsigned integer value */
+        VET_COLOR_ARGB = 10, /**< Color encoded in 32-bits (8-bits per channel) in ARGB order) */
+        VET_COLOR_ABGR = 11, /**< Color encoded in 32-bits (8-bits per channel) in ABGR order) */
+		VET_UINT4 = 12, /**< 4D 32-bit unsigned integer value */
+		VET_SINT4 = 13  /**< 4D 32-bit signed integer value */
     };
 
 	/**	Describes a single vertex element in a vertex declaration. */
@@ -155,7 +155,7 @@ namespace BansheeEngine
 		SPtr<VertexDeclarationCore> getCore() const;
 
 		/** @copydoc HardwareBufferManager::createVertexDeclaration */
-		static VertexDeclarationPtr createVertexDeclaration(const List<VertexElement>& elements);
+		static VertexDeclarationPtr create(const List<VertexElement>& elements);
 
     protected:
 		friend class HardwareBufferManager;

@@ -6,7 +6,7 @@ Banshee is implemented throughout many separate libraries. Spreading the engine 
  - Portions of the engine can be easily modified or replaced
  - User can choose which portions of the engine are needed
  - Internals are easier to understand as libraries form a clear architecture between themselves, while ensuring source code isn't all bulked into one big package
- - It insures quality design by decoupling code and forcing an order of dependencies.
+ - It ensures quality design by decoupling code and forcing an order of dependencies.
  
 All the libraries can be separated into four main categories:
  - Layers - These are the core libraries of the engine. Each layer is built on top of the previous layer and provides higher level and more specific functionality than the other.

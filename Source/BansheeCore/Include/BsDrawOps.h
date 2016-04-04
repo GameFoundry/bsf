@@ -13,12 +13,12 @@ namespace BansheeEngine
 	/** Describes operation that will be used for rendering a certain set of vertices. */
 	enum DrawOperationType 
 	{
-		DOT_POINT_LIST = 1,
-		DOT_LINE_LIST = 2,
-		DOT_LINE_STRIP = 3,
-		DOT_TRIANGLE_LIST = 4,
-		DOT_TRIANGLE_STRIP = 5,
-		DOT_TRIANGLE_FAN = 6
+		DOT_POINT_LIST = 1, /**< Each vertex represents a point. */
+		DOT_LINE_LIST = 2, /**< Each sequential pair of vertices represent a line. */
+		DOT_LINE_STRIP = 3, /**< Each vertex (except the first) forms a line with the previous vertex. */
+		DOT_TRIANGLE_LIST = 4, /**< Each sequential 3-tuple of vertices represent a triangle. */
+		DOT_TRIANGLE_STRIP = 5, /**< Each vertex (except the first two) form a triangle with the previous two vertices. */
+		DOT_TRIANGLE_FAN = 6 /**< Each vertex (except the first two) form a triangle with the first vertex and previous vertex. */
 	};
 
 	/** Converts the number of vertices to number of primitives based on the specified draw operation. */

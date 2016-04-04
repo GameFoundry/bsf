@@ -15,8 +15,8 @@ namespace BansheeEngine
 	/**	Type of the indices used, used for determining size. */
 	enum IndexType 
 	{
-		IT_16BIT,
-		IT_32BIT
+		IT_16BIT, /**< 16-bit indices. */
+		IT_32BIT /**< 32-bit indices. */
 	};
 
 	/**	Contains information about an index buffer. */
