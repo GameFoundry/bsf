@@ -18,7 +18,10 @@ namespace BansheeEngine
 		void set(const String& name, float value);
 
 		/** Adds a new define with an integer value. */
-		void set(const String& name, int value);
+		void set(const String& name, INT32 value);
+
+		/** Adds a new define with an integer value. */
+		void set(const String& name, UINT32 value);
 
 		/** Adds a new define with a string point value. */
 		void set(const String& name, const String& value);

@@ -9,7 +9,12 @@ namespace BansheeEngine
 		mDefines[name] = toString(value);
 	}
 
-	void ShaderDefines::set(const String& name, int value)
+	void ShaderDefines::set(const String& name, INT32 value)
+	{
+		mDefines[name] = toString(value);
+	}
+
+	void ShaderDefines::set(const String& name, UINT32 value)
 	{
 		mDefines[name] = toString(value);
 	}

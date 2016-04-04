@@ -109,6 +109,9 @@ namespace BansheeEngine
     public:
 		virtual ~TextureCoreManager() { }
 
+		/** @copydoc Module::onStartUp */
+		void onStartUp() override;
+
 		/**
 		 * @copydoc	TextureManager::createTexture(TextureType, UINT32, UINT32, UINT32, int, PixelFormat, int, bool, UINT32)
 		 */

@@ -167,10 +167,11 @@ namespace BansheeEngine
 		 * Performs rendering over all camera proxies.
 		 *
 		 * @param[in]	time	Current frame time in milliseconds.
+		 * @param[in]	delta	Time elapsed since the last frame.
 		 *
 		 * @note	Core thread only.
 		 */
-		void renderAllCore(float time);
+		void renderAllCore(float time, float delta);
 
 		/**
 		 * Populates camera render queues by determining visible renderable object.
@@ -184,10 +185,11 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	rtData	Render target data containing the camera to render.
 		 * @param[in]	camIdx	Index of the camera to render.
+		 * @param[in]	delta	Time elapsed since the last frame.
 		 * 					
 		 * @note	Core thread only.
 		 */
-		void render(RenderTargetData& rtData, UINT32 camIdx);
+		void render(RenderTargetData& rtData, UINT32 camIdx, float delta);
 
 		/**	Creates data used by the renderer on the core thread. */
 		void initializeCore();

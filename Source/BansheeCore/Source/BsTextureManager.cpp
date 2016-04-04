@@ -84,6 +84,46 @@ namespace BansheeEngine
 		return newRT;
 	}
 
+	void TextureCoreManager::onStartUp()
+    {
+		// White built-in texture
+		SPtr<TextureCore> whiteTexture = createTexture(TEX_TYPE_2D, 2, 2, 1, 0, PF_R8G8B8A8, TU_STATIC);
+
+		PixelDataPtr whitePixelData = PixelData::create(2, 2, 1, PF_R8G8B8A8);
+		whitePixelData->setColorAt(Color::White, 0, 0);
+		whitePixelData->setColorAt(Color::White, 0, 1);
+		whitePixelData->setColorAt(Color::White, 1, 0);
+		whitePixelData->setColorAt(Color::White, 1, 1);
+
+		whiteTexture->writeData(*whitePixelData);
+		TextureCore::WHITE = whiteTexture;
+
+		// Black built-in texture
+		SPtr<TextureCore> blackTexture = createTexture(TEX_TYPE_2D, 2, 2, 1, 0, PF_R8G8B8A8, TU_STATIC);
+
+		PixelDataPtr blackPixelData = PixelData::create(2, 2, 1, PF_R8G8B8A8);
+		blackPixelData->setColorAt(Color::Black, 0, 0);
+		blackPixelData->setColorAt(Color::Black, 0, 1);
+		blackPixelData->setColorAt(Color::Black, 1, 0);
+		blackPixelData->setColorAt(Color::Black, 1, 1);
+
+		blackTexture->writeData(*blackPixelData);
+		TextureCore::BLACK = blackTexture;
+
+		// Normal (Y = Up) built-in texture
+		SPtr<TextureCore> normalTexture = createTexture(TEX_TYPE_2D, 2, 2, 1, 0, PF_R8G8B8A8, TU_STATIC);
+		PixelDataPtr normalPixelData = PixelData::create(2, 2, 1, PF_R8G8B8A8);
+
+		Color encodedNormal(0.5f, 0.5f, 1.0f);
+		normalPixelData->setColorAt(encodedNormal, 0, 0);
+		normalPixelData->setColorAt(encodedNormal, 0, 1);
+		normalPixelData->setColorAt(encodedNormal, 1, 0);
+		normalPixelData->setColorAt(encodedNormal, 1, 1);
+
+		normalTexture->writeData(*normalPixelData);
+		TextureCore::NORMAL = normalTexture;
+    }
+
 	SPtr<TextureCore> TextureCoreManager::createTexture(TextureType texType, UINT32 width, UINT32 height, UINT32 depth,
 		int numMips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount)
 	{

@@ -462,6 +462,14 @@ namespace BansheeEngine
 		 */
 		static void releaseView(const TextureViewPtr& view);
 
+		/** Returns a plain white texture. */
+		static SPtr<TextureCore> WHITE;
+
+		/** Returns a plain black texture. */
+		static SPtr<TextureCore> BLACK;
+
+		/** Returns a plain normal map texture with normal pointing up (in Y direction). */
+		static SPtr<TextureCore> NORMAL;
 	protected:
 		/** @copydoc lock */
 		virtual PixelData lockImpl(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0) = 0;

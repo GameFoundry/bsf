@@ -420,7 +420,7 @@ namespace BansheeEngine
 			mOptionsDirty = false;
 		}
 
-		gCoreAccessor().queueCommand(std::bind(&RenderBeast::renderAllCore, this, gTime().getTime()));
+		gCoreAccessor().queueCommand(std::bind(&RenderBeast::renderAllCore, this, gTime().getTime(), gTime().getFrameDelta()));
 	}
 
 	void RenderBeast::syncRenderOptions(const RenderBeastOptions& options)
@@ -446,7 +446,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void RenderBeast::renderAllCore(float time)
+	void RenderBeast::renderAllCore(float time, float delta)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -477,7 +477,7 @@ namespace BansheeEngine
 
 			UINT32 numCameras = (UINT32)cameras.size();
 			for (UINT32 i = 0; i < numCameras; i++)
-				render(renderTargetData, i);
+				render(renderTargetData, i, delta);
 
 			RenderAPICore::instance().endFrame();
 			RenderAPICore::instance().swapBuffers(target);
@@ -486,7 +486,7 @@ namespace BansheeEngine
 		gProfilerCPU().endSample("renderAllCore");
 	}
 
-	void RenderBeast::render(RenderTargetData& rtData, UINT32 camIdx)
+	void RenderBeast::render(RenderTargetData& rtData, UINT32 camIdx, float delta)
 	{
 		gProfilerCPU().beginSample("Render");
 
@@ -727,7 +727,7 @@ namespace BansheeEngine
 
 		if (hasGBuffer)
 		{
-			//PostProcessing::instance().postProcess(camData.target->getSceneColorRT(), camData.postProcessInfo);
+			//PostProcessing::instance().postProcess(camData.target->getSceneColorRT(), camData.postProcessInfo, delta);
 
 			// TODO - Instead of doing a separate resolve here I could potentially perform a resolve directly in some
 			// post-processing pass (e.g. tone mapping). Right now it is just an unnecessary blit.
