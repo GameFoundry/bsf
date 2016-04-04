@@ -28,10 +28,10 @@ namespace BansheeEngine
 		virtual bool isMagicNumberSupported(const UINT8* magicNumPtr, UINT32 numBytes) const override;
 
 		/** @copydoc SpecificImporter::import */
-		virtual ResourcePtr import(const Path& filePath, ConstImportOptionsPtr importOptions) override;
+		virtual SPtr<Resource> import(const Path& filePath, SPtr<const ImportOptions> importOptions) override;
 
 		/** @copydoc SpecificImporter::createImportOptions */
-		virtual ImportOptionsPtr createImportOptions() const override;
+		virtual SPtr<ImportOptions> createImportOptions() const override;
 	};
 
 	/** @} */

@@ -81,7 +81,7 @@ namespace BansheeEngine
 			{
 				restoredComponent->_setInstanceData(data.proxy.componentInstanceData[idx]);
 
-				GameObjectPtr restoredPtr = std::static_pointer_cast<GameObject>(restoredComponent.getInternalPtr());
+				SPtr<GameObject> restoredPtr = std::static_pointer_cast<GameObject>(restoredComponent.getInternalPtr());
 				HComponent restoredComponentCopy = restoredComponent; // To remove const
 				restoredComponentCopy._setHandleData(restoredPtr);
 

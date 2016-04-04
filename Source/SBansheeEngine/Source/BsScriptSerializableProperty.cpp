@@ -21,7 +21,7 @@
 
 namespace BansheeEngine
 {
-	ScriptSerializableProperty::ScriptSerializableProperty(MonoObject* instance, const ManagedSerializableTypeInfoPtr& typeInfo)
+	ScriptSerializableProperty::ScriptSerializableProperty(MonoObject* instance, const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 		:ScriptObject(instance), mTypeInfo(typeInfo)
 	{
 
@@ -40,7 +40,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateManagedDictionaryInstance", &ScriptSerializableProperty::internal_createManagedDictionaryInstance);
 	}
 
-	ScriptSerializableProperty* ScriptSerializableProperty::create(const ManagedSerializableTypeInfoPtr& typeInfo)
+	ScriptSerializableProperty* ScriptSerializableProperty::create(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		MonoObject* managedInstance = metaData.scriptClass->createInstance();
 
@@ -58,7 +58,7 @@ namespace BansheeEngine
 		::MonoClass* monoClass = mono_type_get_class(type);
 		MonoClass* engineClass = MonoManager::instance().findClass(monoClass);
 
-		ManagedSerializableTypeInfoPtr typeInfo = ScriptAssemblyManager::instance().getTypeInfo(engineClass);
+		SPtr<ManagedSerializableTypeInfo> typeInfo = ScriptAssemblyManager::instance().getTypeInfo(engineClass);
 		if (typeInfo == nullptr)
 		{
 			LOGWRN("Cannot create an instance of type \"" +
@@ -100,7 +100,7 @@ namespace BansheeEngine
 
 	MonoObject* ScriptSerializableProperty::internal_createManagedObjectInstance(ScriptSerializableProperty* nativeInstance)
 	{
-		ManagedSerializableTypeInfoObjectPtr objectTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoObject>(nativeInstance->mTypeInfo);
+		SPtr<ManagedSerializableTypeInfoObject> objectTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoObject>(nativeInstance->mTypeInfo);
 		return ManagedSerializableObject::createManagedInstance(objectTypeInfo);
 	}
 
@@ -111,19 +111,19 @@ namespace BansheeEngine
 		for (UINT32 i = 0; i < arrayLen; i++)
 			nativeSizes.push_back(mono_array_get(sizes, UINT32, i));
 
-		ManagedSerializableTypeInfoArrayPtr arrayTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoArray>(nativeInstance->mTypeInfo);
+		SPtr<ManagedSerializableTypeInfoArray> arrayTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoArray>(nativeInstance->mTypeInfo);
 		return ManagedSerializableArray::createManagedInstance(arrayTypeInfo, nativeSizes);
 	}
 
 	MonoObject* ScriptSerializableProperty::internal_createManagedListInstance(ScriptSerializableProperty* nativeInstance, int size)
 	{
-		ManagedSerializableTypeInfoListPtr listTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoList>(nativeInstance->mTypeInfo);
+		SPtr<ManagedSerializableTypeInfoList> listTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoList>(nativeInstance->mTypeInfo);
 		return ManagedSerializableList::createManagedInstance(listTypeInfo, size);
 	}
 
 	MonoObject* ScriptSerializableProperty::internal_createManagedDictionaryInstance(ScriptSerializableProperty* nativeInstance)
 	{
-		ManagedSerializableTypeInfoDictionaryPtr dictTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoDictionary>(nativeInstance->mTypeInfo);
+		SPtr<ManagedSerializableTypeInfoDictionary> dictTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoDictionary>(nativeInstance->mTypeInfo);
 		return ManagedSerializableDictionary::createManagedInstance(dictTypeInfo);
 	}
 }

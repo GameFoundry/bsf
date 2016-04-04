@@ -71,10 +71,10 @@ namespace BansheeEngine
 		Viewport* getTarget() const;
 
 		/**	Returns the camera this widget is being rendered to. */
-		CameraPtr getCamera() const { return mCamera; }
+		SPtr<Camera> getCamera() const { return mCamera; }
 
 		/** Changes to which camera does the widget output its contents. */
-		void setCamera(const CameraPtr& camera);
+		void setCamera(const SPtr<Camera>& camera);
 
 		/**	Returns a list of all elements parented to this widget. */
 		const Vector<GUIElement*>& getElements() const { return mElements; }
@@ -89,7 +89,7 @@ namespace BansheeEngine
 		void setIsActive(bool active);
 
 		/**	Creates a new GUI widget that will be rendered on the provided camera. */
-		static SPtr<GUIWidget> create(const CameraPtr& camera);
+		static SPtr<GUIWidget> create(const SPtr<Camera>& camera);
 
 		/**	Creates a new GUI widget that will be rendered on the provided camera. */
 		static SPtr<GUIWidget> create(const HCamera& camera);
@@ -157,13 +157,13 @@ namespace BansheeEngine
 		friend class CGUIWidget;
 
 		/**	Constructs a new GUI widget that will be rendered on the provided camera. */
-		GUIWidget(const CameraPtr& camera);
+		GUIWidget(const SPtr<Camera>& camera);
 
 		/**	Constructs a new GUI widget that will be rendered on the provided camera. */
 		GUIWidget(const HCamera& camera);
 
 		/**	Common code for constructors. */
-		void construct(const CameraPtr& camera);
+		void construct(const SPtr<Camera>& camera);
 
 		/**	Called when the viewport size changes and widget elements need to be updated. */
 		virtual void ownerTargetResized();
@@ -179,7 +179,7 @@ namespace BansheeEngine
 		/**	Updates the size of the primary GUI panel based on the viewport. */
 		void updateRootPanel();
 
-		CameraPtr mCamera;
+		SPtr<Camera> mCamera;
 		Vector<GUIElement*> mElements;
 		GUIPanel* mPanel;
 		UINT8 mDepth;

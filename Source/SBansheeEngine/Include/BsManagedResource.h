@@ -53,7 +53,7 @@ namespace BansheeEngine
 		 * Creates an empty managed resource wrapper pointing to no managed instance. You must call setHandle() before use
 		 * manually.
 		 */
-		static ManagedResourcePtr createEmpty();
+		static SPtr<ManagedResource> createEmpty();
 
 	private:
 		friend class ScriptManagedResource;

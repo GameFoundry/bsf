@@ -286,7 +286,7 @@ namespace BansheeEngine
 		return HardwareBufferCoreManager::instance().createVertexDeclarationInternal(mProperties.mElementList);
 	}
 
-	VertexDeclarationPtr VertexDeclaration::create(const List<VertexElement>& elements)
+	SPtr<VertexDeclaration> VertexDeclaration::create(const List<VertexElement>& elements)
 	{
 		return HardwareBufferManager::instance().createVertexDeclaration(elements);
 	}

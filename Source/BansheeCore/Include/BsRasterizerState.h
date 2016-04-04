@@ -136,10 +136,10 @@ namespace BansheeEngine
 		SPtr<RasterizerStateCore> getCore() const;
 
 		/** Creates a new rasterizer state using the specified rasterizer state descriptor structure. */
-		static RasterizerStatePtr create(const RASTERIZER_STATE_DESC& desc);
+		static SPtr<RasterizerState> create(const RASTERIZER_STATE_DESC& desc);
 
 		/**	Returns the default rasterizer state. */
-		static const RasterizerStatePtr& getDefault();
+		static const SPtr<RasterizerState>& getDefault();
 
 		/**	Generates a hash value from a rasterizer state descriptor. */
 		static UINT64 generateHash(const RASTERIZER_STATE_DESC& desc);

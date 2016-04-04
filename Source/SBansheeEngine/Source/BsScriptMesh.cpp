@@ -50,7 +50,7 @@ namespace BansheeEngine
 	void ScriptMesh::internal_CreateInstance(MonoObject* instance, int numVertices, int numIndices, 
 		MonoArray* subMeshes, MeshUsage usage, VertexLayout vertex, ScriptIndexType index)
 	{
-		VertexDataDescPtr vertexDesc = RendererMeshData::vertexLayoutVertexDesc(vertex);
+		SPtr<VertexDataDesc> vertexDesc = RendererMeshData::vertexLayoutVertexDesc(vertex);
 
 		IndexType indexType = IT_16BIT;
 		if (index == ScriptIndexType::Index32)
@@ -66,7 +66,7 @@ namespace BansheeEngine
 	void ScriptMesh::internal_CreateInstanceMeshData(MonoObject* instance, ScriptMeshData* data, MonoArray* subMeshes,
 		MeshUsage usage)
 	{
-		MeshDataPtr meshData;
+		SPtr<MeshData> meshData;
 		if (data != nullptr)
 			meshData = data->getInternalValue()->getData();
 
@@ -119,7 +119,7 @@ namespace BansheeEngine
 	{
 		HMesh mesh = thisPtr->getHandle();
 
-		MeshDataPtr meshData = mesh->allocateSubresourceBuffer(0);
+		SPtr<MeshData> meshData = mesh->allocateSubresourceBuffer(0);
 		mesh->readData(*meshData);
 
 		return ScriptMeshData::create(meshData);
@@ -130,7 +130,7 @@ namespace BansheeEngine
 		HMesh mesh = thisPtr->getHandle();
 		if (value != nullptr)
 		{
-			MeshDataPtr meshData = value->getInternalValue()->getData();
+			SPtr<MeshData> meshData = value->getInternalValue()->getData();
 			mesh->writeSubresource(gCoreAccessor(), 0, meshData, true);
 		}
 	}

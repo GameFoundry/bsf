@@ -33,7 +33,7 @@ namespace BansheeEngine
 		 * @param[in]	inputPos	Position of the pointer, relative to the provided camera viewport.
 		 * @param[in]	inputDelta	Determines pointer movement since last call to this method.
 		 */
-		void updateInput(const CameraPtr& camera, const Vector2I& inputPos, const Vector2I& inputDelta);
+		void updateInput(const SPtr<Camera>& camera, const Vector2I& inputPos, const Vector2I& inputDelta);
 
 		/** 
 		 * Triggers handle post-input callbacks. Must be called after all updateInput() calls and after beginInput().
@@ -46,7 +46,7 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	camera		Camera to draw the handles to.
 		 */
-		void draw(const CameraPtr& camera);
+		void draw(const SPtr<Camera>& camera);
 
 		/**
 		 * Select a handle slider at the specified location, if there is any under the pointer. Makes the selected slider 
@@ -55,13 +55,13 @@ namespace BansheeEngine
 		 * @param[in]	camera		Camera that the input positions are relative to, and destination to draw the handles to.
 		 * @param[in]	inputPos	Position of the pointer, relative to the provided camera viewport.
 		 */
-		void trySelect(const CameraPtr& camera, const Vector2I& inputPos);
+		void trySelect(const SPtr<Camera>& camera, const Vector2I& inputPos);
 
 		/**	Clears the currently selected/active handle slider for the specified camera. */
-		void clearSelection(const CameraPtr& camera);
+		void clearSelection(const SPtr<Camera>& camera);
 
 		/**	Is any handle slider selected/active on the specified camera. */
-		bool isHandleActive(const CameraPtr& camera) const;
+		bool isHandleActive(const SPtr<Camera>& camera) const;
 
 		/** Returns the manager that can be used for interacting with handle sliders. */
 		HandleSliderManager& getSliderManager() const { return *mSliderManager; }
@@ -73,13 +73,13 @@ namespace BansheeEngine
 		 * Returns the uniform size for a handle rendered in @p camera, at the world position @p handlePos. The handles 
 		 * will be scaled so that they appear the same size regardless of distance from camera.
 		 */
-		float getHandleSize(const CameraPtr& camera, const Vector3& handlePos) const;
+		float getHandleSize(const SPtr<Camera>& camera, const Vector3& handlePos) const;
 
 		/** Sets the default handle size. This controls the uniform scale returned from getHandleSize() method. */
 		void setDefaultHandleSize(float value) { mDefaultHandleSize = value; }
 
 		/** Sets editor settings that will be used for controlling various handle behaviour. */
-		void setSettings(const EditorSettingsPtr& settings);
+		void setSettings(const SPtr<EditorSettings>& settings);
 
 	protected:
 		/** Updates the internal properties from editor settings. */
@@ -103,7 +103,7 @@ namespace BansheeEngine
 		float mDefaultHandleSize = 20.0f;
 		bool mInputStarted;
 
-		EditorSettingsPtr mSettings;
+		SPtr<EditorSettings> mSettings;
 		UINT32 mSettingsHash;
 		UINT64 mLastDrawFrameIdx;
 	};

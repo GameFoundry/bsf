@@ -41,11 +41,11 @@ namespace BansheeEngine
 		 *
 		 * @see		createImportOptions
 		 */
-		HResource import(const Path& inputFilePath, ConstImportOptionsPtr importOptions = nullptr);
+		HResource import(const Path& inputFilePath, SPtr<const ImportOptions> importOptions = nullptr);
 
 		/** @copydoc import */
 		template <class T>
-		ResourceHandle<T> import(const Path& inputFilePath, ConstImportOptionsPtr importOptions = nullptr)
+		ResourceHandle<T> import(const Path& inputFilePath, SPtr<const ImportOptions> importOptions = nullptr)
 		{
 			return static_resource_cast<T>(import(inputFilePath, importOptions));
 		}
@@ -63,7 +63,7 @@ namespace BansheeEngine
 		 *
 		 * @see		createImportOptions
 		 */
-		Vector<SubResource> importAll(const Path& inputFilePath, ConstImportOptionsPtr importOptions = nullptr);
+		Vector<SubResource> importAll(const Path& inputFilePath, SPtr<const ImportOptions> importOptions = nullptr);
 
 		/**
 		 * Imports a resource and replaces the contents of the provided existing resource with new imported data.
@@ -75,7 +75,7 @@ namespace BansheeEngine
 		 *
 		 * @see		createImportOptions
 		 */
-		void reimport(HResource& existingResource, const Path& inputFilePath, ConstImportOptionsPtr importOptions = nullptr);
+		void reimport(HResource& existingResource, const Path& inputFilePath, SPtr<const ImportOptions> importOptions = nullptr);
 
 		/**
 		 * Automatically detects the importer needed for the provided file and returns valid type of import options for 
@@ -91,7 +91,7 @@ namespace BansheeEngine
 		 * expect to be used for this file type. If you don't use a proper import options type, an exception will be thrown 
 		 * during import.
 		 */
-		ImportOptionsPtr createImportOptions(const Path& inputFilePath);
+		SPtr<ImportOptions> createImportOptions(const Path& inputFilePath);
 
 		/** @copydoc createImportOptions */
 		template<class T>
@@ -147,7 +147,7 @@ namespace BansheeEngine
 		 *
 		 * @see		createImportOptions
 		 */
-		Vector<SubResourceRaw> _importAllRaw(const Path& inputFilePath, ConstImportOptionsPtr importOptions = nullptr);
+		Vector<SubResourceRaw> _importAllRaw(const Path& inputFilePath, SPtr<const ImportOptions> importOptions = nullptr);
 
 		/** @} */
 	private:

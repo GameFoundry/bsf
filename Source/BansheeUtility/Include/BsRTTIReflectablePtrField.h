@@ -33,31 +33,31 @@ namespace BansheeEngine
 		 * 			
 		 * @note	Field type must not be an array.
 		 */
-		virtual std::shared_ptr<IReflectable> getValue(void* object) = 0;
+		virtual SPtr<IReflectable> getValue(void* object) = 0;
 
 		/**
 		 * Retrieves the IReflectable value from an array on the provided instance and index.
 		 * 			
 		 * @note	Field type must be an array.
 		 */
-		virtual std::shared_ptr<IReflectable> getArrayValue(void* object, UINT32 index) = 0;
+		virtual SPtr<IReflectable> getArrayValue(void* object, UINT32 index) = 0;
 
 		/**
 		 * Sets the IReflectable value in the provided instance.
 		 * 			
 		 * @note	Field type must not be an array.
 		 */
-		virtual void setValue(void* object, std::shared_ptr<IReflectable> value) = 0;
+		virtual void setValue(void* object, SPtr<IReflectable> value) = 0;
 
 		/**
 		 * Sets the IReflectable value in an array on the provided instance and index.
 		 * 			
 		 * @note	Field type must be an array.
 		 */
-		virtual void setArrayValue(void* object, UINT32 index, std::shared_ptr<IReflectable> value) = 0;
+		virtual void setArrayValue(void* object, UINT32 index, SPtr<IReflectable> value) = 0;
 
 		/** Creates a new object of the field type. */
-		virtual std::shared_ptr<IReflectable> newObject() = 0;
+		virtual SPtr<IReflectable> newObject() = 0;
 
 		/** Returns the RTTI identifier of the class owning the field. */
 		virtual UINT32 getRTTIId() = 0;
@@ -118,31 +118,31 @@ namespace BansheeEngine
 		}
 
 		/** @copydoc RTTIReflectablePtrFieldBase::getValue */
-		std::shared_ptr<IReflectable> getValue(void* object) override
+		SPtr<IReflectable> getValue(void* object) override
 		{
 			checkIsArray(false);
 
 			ObjectType* castObjType = static_cast<ObjectType*>(object);
-			std::function<std::shared_ptr<DataType>(ObjectType*)> f = any_cast<std::function<std::shared_ptr<DataType>(ObjectType*)>>(valueGetter);
-			std::shared_ptr<IReflectable> castDataType = f(castObjType);
+			std::function<SPtr<DataType>(ObjectType*)> f = any_cast<std::function<SPtr<DataType>(ObjectType*)>>(valueGetter);
+			SPtr<IReflectable> castDataType = f(castObjType);
 
 			return castDataType;
 		}
 
 		/** @copydoc RTTIReflectablePtrFieldBase::getArrayValue */
-		std::shared_ptr<IReflectable> getArrayValue(void* object, UINT32 index) override
+		SPtr<IReflectable> getArrayValue(void* object, UINT32 index) override
 		{
 			checkIsArray(true);
 
 			ObjectType* castObjType = static_cast<ObjectType*>(object);
-			std::function<std::shared_ptr<DataType>(ObjectType*, UINT32)> f = any_cast<std::function<std::shared_ptr<DataType>(ObjectType*, UINT32)>>(valueGetter);
+			std::function<SPtr<DataType>(ObjectType*, UINT32)> f = any_cast<std::function<SPtr<DataType>(ObjectType*, UINT32)>>(valueGetter);
 
-			std::shared_ptr<IReflectable> castDataType = f(castObjType, index);
+			SPtr<IReflectable> castDataType = f(castObjType, index);
 			return castDataType;
 		}
 
 		/** @copydoc RTTIReflectablePtrFieldBase::setValue */
-		void setValue(void* object, std::shared_ptr<IReflectable> value) override
+		void setValue(void* object, SPtr<IReflectable> value) override
 		{
 			checkIsArray(false);
 
@@ -153,13 +153,13 @@ namespace BansheeEngine
 			}
 
 			ObjectType* castObjType = static_cast<ObjectType*>(object);
-			std::shared_ptr<DataType> castDataObj = std::static_pointer_cast<DataType>(value);
-			std::function<void(ObjectType*, std::shared_ptr<DataType>)> f = any_cast<std::function<void(ObjectType*, std::shared_ptr<DataType>)>>(valueSetter);
+			SPtr<DataType> castDataObj = std::static_pointer_cast<DataType>(value);
+			std::function<void(ObjectType*, SPtr<DataType>)> f = any_cast<std::function<void(ObjectType*, SPtr<DataType>)>>(valueSetter);
 			f(castObjType, castDataObj);
 		}
 
 		/** @copydoc RTTIReflectablePtrFieldBase::setArrayValue */
-		void setArrayValue(void* object, UINT32 index, std::shared_ptr<IReflectable> value) override
+		void setArrayValue(void* object, UINT32 index, SPtr<IReflectable> value) override
 		{
 			checkIsArray(true);
 
@@ -170,8 +170,8 @@ namespace BansheeEngine
 			}
 
 			ObjectType* castObjType = static_cast<ObjectType*>(object);
-			std::shared_ptr<DataType> castDataObj = std::static_pointer_cast<DataType>(value);
-			std::function<void(ObjectType*, UINT32, std::shared_ptr<DataType>)> f = any_cast<std::function<void(ObjectType*, UINT32, std::shared_ptr<DataType>)>>(valueSetter);
+			SPtr<DataType> castDataObj = std::static_pointer_cast<DataType>(value);
+			std::function<void(ObjectType*, UINT32, SPtr<DataType>)> f = any_cast<std::function<void(ObjectType*, UINT32, SPtr<DataType>)>>(valueSetter);
 			f(castObjType, index, castDataObj);
 		}
 
@@ -202,9 +202,9 @@ namespace BansheeEngine
 		}
 
 		/** @copydoc RTTIReflectablePtrFieldBase::newObject */
-		std::shared_ptr<IReflectable> newObject() override
+		SPtr<IReflectable> newObject() override
 		{
-			return std::shared_ptr<IReflectable>(DataType::getRTTIStatic()->newRTTIObject());
+			return SPtr<IReflectable>(DataType::getRTTIStatic()->newRTTIObject());
 		}
 
 		/** @copydoc RTTIReflectablePtrFieldBase::getRTTIId */

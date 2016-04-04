@@ -63,7 +63,7 @@ namespace BansheeEngine
 		if(curAssembly == nullptr)
 			return;
 
-		std::shared_ptr<ManagedSerializableAssemblyInfo> assemblyInfo = bs_shared_ptr_new<ManagedSerializableAssemblyInfo>();
+		SPtr<ManagedSerializableAssemblyInfo> assemblyInfo = bs_shared_ptr_new<ManagedSerializableAssemblyInfo>();
 		assemblyInfo->mName = assemblyName;
 
 		mAssemblyInfos[assemblyName] = assemblyInfo;
@@ -77,7 +77,7 @@ namespace BansheeEngine
 			if ((curClass->isSubClassOf(mComponentClass) || curClass->isSubClassOf(managedResourceClass) ||
 				curClass->hasAttribute(mSerializeObjectAttribute)) && curClass != mComponentClass && curClass != managedResourceClass)
 			{
-				std::shared_ptr<ManagedSerializableTypeInfoObject> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoObject>();
+				SPtr<ManagedSerializableTypeInfoObject> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoObject>();
 				typeInfo->mTypeNamespace = curClass->getNamespace();
 				typeInfo->mTypeName = curClass->getTypeName();
 				typeInfo->mTypeId = mUniqueTypeId++;
@@ -90,7 +90,7 @@ namespace BansheeEngine
 				else
 					typeInfo->mValueType = false;
 
-				std::shared_ptr<ManagedSerializableObjectInfo> objInfo = bs_shared_ptr_new<ManagedSerializableObjectInfo>();
+				SPtr<ManagedSerializableObjectInfo> objInfo = bs_shared_ptr_new<ManagedSerializableObjectInfo>();
 
 				objInfo->mTypeInfo = typeInfo;
 				objInfo->mMonoClass = curClass;
@@ -103,7 +103,7 @@ namespace BansheeEngine
 		// Populate field data
 		for(auto& curClassInfo : assemblyInfo->mObjectInfos)
 		{
-			std::shared_ptr<ManagedSerializableObjectInfo> objInfo = curClassInfo.second;
+			SPtr<ManagedSerializableObjectInfo> objInfo = curClassInfo.second;
 
 			UINT32 mUniqueFieldId = 1;
 			const Vector<MonoField*>& fields = objInfo->mMonoClass->getAllFields();
@@ -113,11 +113,11 @@ namespace BansheeEngine
 				if(field->isStatic())
 					continue;
 
-				ManagedSerializableTypeInfoPtr typeInfo = getTypeInfo(field->getType());
+				SPtr<ManagedSerializableTypeInfo> typeInfo = getTypeInfo(field->getType());
 				if (typeInfo == nullptr)
 					continue;
 
-				std::shared_ptr<ManagedSerializableFieldInfo> fieldInfo = bs_shared_ptr_new<ManagedSerializableFieldInfo>();
+				SPtr<ManagedSerializableFieldInfo> fieldInfo = bs_shared_ptr_new<ManagedSerializableFieldInfo>();
 				fieldInfo->mFieldId = mUniqueFieldId++;
 				fieldInfo->mName = field->getName();
 				fieldInfo->mMonoField = field;
@@ -150,7 +150,7 @@ namespace BansheeEngine
 			MonoClass* base = curClass.second->mMonoClass->getBaseClass();
 			while(base != nullptr)
 			{
-				std::shared_ptr<ManagedSerializableObjectInfo> baseObjInfo;
+				SPtr<ManagedSerializableObjectInfo> baseObjInfo;
 				if(getSerializableObjectInfo(base->getNamespace(), base->getTypeName(), baseObjInfo))
 				{
 					curClass.second->mBaseClass = baseObjInfo;
@@ -170,7 +170,7 @@ namespace BansheeEngine
 		mAssemblyInfos.clear();
 	}
 
-	ManagedSerializableTypeInfoPtr ScriptAssemblyManager::getTypeInfo(MonoClass* monoClass)
+	SPtr<ManagedSerializableTypeInfo> ScriptAssemblyManager::getTypeInfo(MonoClass* monoClass)
 	{
 		if(!mBaseTypesInitialized)
 			BS_EXCEPT(InvalidStateException, "Calling determineType without previously initializing base types.");
@@ -191,86 +191,86 @@ namespace BansheeEngine
 		{
 		case MONO_TYPE_BOOLEAN:
 			{
-				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
+				SPtr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::Bool;
 				return typeInfo;
 			}
 		case MONO_TYPE_CHAR:
 			{
-				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
+				SPtr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::Char;
 				return typeInfo;
 			}
 		case MONO_TYPE_I1:
 			{
-				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
+				SPtr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::I8;
 				return typeInfo;
 			}
 		case MONO_TYPE_U1:
 			{
-				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
+				SPtr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::U8;
 				return typeInfo;
 			}
 		case MONO_TYPE_I2:
 			{
-				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
+				SPtr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::I16;
 				return typeInfo;
 			}
 		case MONO_TYPE_U2:
 			{
-				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
+				SPtr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::U16;
 				return typeInfo;
 			}
 		case MONO_TYPE_I4:
 			{
-				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
+				SPtr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::I32;
 				return typeInfo;
 			}
 		case MONO_TYPE_U4:
 			{
-				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
+				SPtr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::U32;
 				return typeInfo;
 			}
 		case MONO_TYPE_I8:
 			{
-				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
+				SPtr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::I64;
 				return typeInfo;
 			}
 		case MONO_TYPE_U8:
 			{
-				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
+				SPtr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::U64;
 				return typeInfo;
 			}
 		case MONO_TYPE_STRING:
 			{
-				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
+				SPtr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::String;
 				return typeInfo;
 			}
 		case MONO_TYPE_R4:
 			{
-				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
+				SPtr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::Float;
 				return typeInfo;
 			}
 		case MONO_TYPE_R8:
 			{
-				std::shared_ptr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
+				SPtr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::Double;
 				return typeInfo;
 			}
 		case MONO_TYPE_CLASS:
 			if(monoClass->isSubClassOf(ScriptResource::getMetaData()->scriptClass)) // Resource
 			{
-				std::shared_ptr<ManagedSerializableTypeInfoRef> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoRef>();
+				SPtr<ManagedSerializableTypeInfoRef> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoRef>();
 				typeInfo->mTypeNamespace = monoClass->getNamespace();
 				typeInfo->mTypeName = monoClass->getTypeName();
 
@@ -319,7 +319,7 @@ namespace BansheeEngine
 			}
 			else if (monoClass->isSubClassOf(mSceneObjectClass) || monoClass->isSubClassOf(mComponentClass)) // Game object
 			{
-				std::shared_ptr<ManagedSerializableTypeInfoRef> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoRef>();
+				SPtr<ManagedSerializableTypeInfoRef> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoRef>();
 				typeInfo->mTypeNamespace = monoClass->getNamespace();
 				typeInfo->mTypeName = monoClass->getTypeName();
 
@@ -334,7 +334,7 @@ namespace BansheeEngine
 			}
 			else
 			{
-				std::shared_ptr<ManagedSerializableObjectInfo> objInfo;
+				SPtr<ManagedSerializableObjectInfo> objInfo;
 				if (getSerializableObjectInfo(monoClass->getNamespace(), monoClass->getTypeName(), objInfo))
 					return objInfo->mTypeInfo;
 			}
@@ -342,7 +342,7 @@ namespace BansheeEngine
 			break;
 		case MONO_TYPE_VALUETYPE:
 			{
-				std::shared_ptr<ManagedSerializableObjectInfo> objInfo;
+				SPtr<ManagedSerializableObjectInfo> objInfo;
 				if (getSerializableObjectInfo(monoClass->getNamespace(), monoClass->getTypeName(), objInfo))
 					return objInfo->mTypeInfo;
 			}
@@ -351,7 +351,7 @@ namespace BansheeEngine
 		case MONO_TYPE_GENERICINST:
 			if(monoClass->getFullName() == mSystemGenericListClass->getFullName()) // Full name is part of CIL spec, so it is just fine to compare like this
 			{
-				std::shared_ptr<ManagedSerializableTypeInfoList> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoList>();
+				SPtr<ManagedSerializableTypeInfoList> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoList>();
 
 				MonoProperty& itemProperty = monoClass->getProperty("Item");
 				MonoClass* itemClass = itemProperty.getReturnType();
@@ -366,7 +366,7 @@ namespace BansheeEngine
 			}
 			else if(monoClass->getFullName() == mSystemGenericDictionaryClass->getFullName())
 			{
-				std::shared_ptr<ManagedSerializableTypeInfoDictionary> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoDictionary>();
+				SPtr<ManagedSerializableTypeInfoDictionary> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoDictionary>();
 
 				MonoMethod* getEnumerator = monoClass->getMethod("GetEnumerator");
 				MonoClass* enumClass = getEnumerator->getReturnType();
@@ -394,7 +394,7 @@ namespace BansheeEngine
 		case MONO_TYPE_SZARRAY:
 		case MONO_TYPE_ARRAY:
 			{
-				std::shared_ptr<ManagedSerializableTypeInfoArray> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoArray>();
+				SPtr<ManagedSerializableTypeInfoArray> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoArray>();
 
 				::MonoClass* elementClass = mono_class_get_element_class(monoClass->_getInternalClass());
 				if(elementClass != nullptr)
@@ -494,7 +494,7 @@ namespace BansheeEngine
 		mBaseTypesInitialized = true;
 	}
 
-	bool ScriptAssemblyManager::getSerializableObjectInfo(const String& ns, const String& typeName, std::shared_ptr<ManagedSerializableObjectInfo>& outInfo)
+	bool ScriptAssemblyManager::getSerializableObjectInfo(const String& ns, const String& typeName, SPtr<ManagedSerializableObjectInfo>& outInfo)
 	{
 		String fullName = ns + "." + typeName;
 		for(auto& curAssembly : mAssemblyInfos)

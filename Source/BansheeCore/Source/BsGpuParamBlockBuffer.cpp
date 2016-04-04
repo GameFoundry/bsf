@@ -163,7 +163,7 @@ namespace BansheeEngine
 		return CoreSyncData(buffer, mSize);
 	}
 
-	GpuParamBlockBufferPtr GpuParamBlockBuffer::create(UINT32 size, GpuParamBlockUsage usage)
+	SPtr<GpuParamBlockBuffer> GpuParamBlockBuffer::create(UINT32 size, GpuParamBlockUsage usage)
 	{
 		return HardwareBufferManager::instance().createGpuParamBlockBuffer(size, usage);
 	}

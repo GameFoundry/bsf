@@ -49,7 +49,7 @@ namespace BansheeEngine
 		HTexture texture = thisPtr->getHandle();
 		UINT32 subresourceIdx = texture->getProperties().mapToSubresourceIdx(0, mipLevel);
 
-		PixelDataPtr pixelData = texture->getProperties().allocateSubresourceBuffer(subresourceIdx);
+		SPtr<PixelData> pixelData = texture->getProperties().allocateSubresourceBuffer(subresourceIdx);
 
 		texture->readData(*pixelData, mipLevel);
 
@@ -61,12 +61,12 @@ namespace BansheeEngine
 		HTexture texture = thisPtr->getHandle();
 		UINT32 subresourceIdx = texture->getProperties().mapToSubresourceIdx(0, mipLevel);
 
-		PixelDataPtr readData = texture->getProperties().allocateSubresourceBuffer(subresourceIdx);
+		SPtr<PixelData> readData = texture->getProperties().allocateSubresourceBuffer(subresourceIdx);
 
 		AsyncOp asyncOp = texture->readSubresource(gCoreAccessor(), subresourceIdx, readData);
 
-		std::function<MonoObject*(const AsyncOp&, const PixelDataPtr&)> asyncOpToMono =
-			[&](const AsyncOp& op, const PixelDataPtr& returnValue)
+		std::function<MonoObject*(const AsyncOp&, const SPtr<PixelData>&)> asyncOpToMono =
+			[&](const AsyncOp& op, const SPtr<PixelData>& returnValue)
 		{
 			return ScriptPixelData::create(returnValue);
 		};

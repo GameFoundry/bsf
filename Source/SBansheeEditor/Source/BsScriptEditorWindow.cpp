@@ -201,7 +201,7 @@ namespace BansheeEngine
 			if (window == nullptr)
 				return false;
 
-			RenderWindowPtr renderWindow = window->getRenderWindow();
+			SPtr<RenderWindow> renderWindow = window->getRenderWindow();
 
 			Vector2I pointerPos = gInput().getPointerPosition();
 			if(Platform::isPointOverWindow(*renderWindow, pointerPos))

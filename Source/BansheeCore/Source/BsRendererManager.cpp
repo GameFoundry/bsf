@@ -19,7 +19,7 @@ namespace BansheeEngine
 		{
 			if((*iter)->name() == name)
 			{
-				CoreRendererPtr newRenderer = (*iter)->create();
+				SPtr<CoreRenderer> newRenderer = (*iter)->create();
 				if(newRenderer != nullptr)
 				{
 					if (mActiveRenderer != nullptr)
@@ -43,7 +43,7 @@ namespace BansheeEngine
 			mActiveRenderer->initialize();
 	}
 
-	void RendererManager::_registerFactory(RendererFactoryPtr factory)
+	void RendererManager::_registerFactory(SPtr<RendererFactory> factory)
 	{
 		assert(factory != nullptr);
 

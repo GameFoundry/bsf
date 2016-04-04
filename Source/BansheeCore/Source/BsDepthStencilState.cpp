@@ -94,7 +94,7 @@ namespace BansheeEngine
 		return core;
 	}
 
-	const DepthStencilStatePtr& DepthStencilState::getDefault()
+	const SPtr<DepthStencilState>& DepthStencilState::getDefault()
 	{
 		return RenderStateManager::instance().getDefaultDepthStencilState();
 	}
@@ -104,7 +104,7 @@ namespace BansheeEngine
 		return mProperties;
 	}
 
-	DepthStencilStatePtr DepthStencilState::create(const DEPTH_STENCIL_STATE_DESC& desc)
+	SPtr<DepthStencilState> DepthStencilState::create(const DEPTH_STENCIL_STATE_DESC& desc)
 	{
 		return RenderStateManager::instance().createDepthStencilState(desc);
 	}

@@ -23,7 +23,7 @@ namespace BansheeEngine
 
 	HPrefab Prefab::create(const HSceneObject& sceneObject)
 	{
-		PrefabPtr newPrefab = createEmpty();
+		SPtr<Prefab> newPrefab = createEmpty();
 		newPrefab->initialize(sceneObject);
 
 		HPrefab handle = static_resource_cast<Prefab>(gResources()._createResourceHandle(newPrefab));
@@ -34,9 +34,9 @@ namespace BansheeEngine
 		return handle;
 	}
 
-	PrefabPtr Prefab::createEmpty()
+	SPtr<Prefab> Prefab::createEmpty()
 	{
-		PrefabPtr newPrefab = bs_core_ptr<Prefab>(new (bs_alloc<Prefab>()) Prefab());
+		SPtr<Prefab> newPrefab = bs_core_ptr<Prefab>(new (bs_alloc<Prefab>()) Prefab());
 		newPrefab->_setThisPtr(newPrefab);
 
 		return newPrefab;

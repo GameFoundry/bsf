@@ -53,7 +53,7 @@ namespace BansheeEngine
 		 */
 
 		/** Returns the internal renderable that is used for majority of operations by this component. */
-		RenderablePtr _getRenderable() const { return mInternal; }
+		SPtr<Renderable> _getRenderable() const { return mInternal; }
 
 		/** @} */
 
@@ -61,7 +61,7 @@ namespace BansheeEngine
 		/**	Updates the world transform if the SceneObject transform changed. */
 		void updateTransform() const;
 
-		mutable RenderablePtr mInternal;
+		mutable SPtr<Renderable> mInternal;
 
 		/************************************************************************/
 		/* 							COMPONENT OVERRIDES                    		*/

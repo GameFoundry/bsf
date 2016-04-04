@@ -31,7 +31,7 @@ namespace BansheeEngine
 			{
 				// Register the newly created SO with the GameObjectManager and provide it with the original ID so that
 				// deserialized handles pointing to this object can be resolved.
-				ComponentPtr compPtr = std::static_pointer_cast<Component>(deserializationData.ptr);
+				SPtr<Component> compPtr = std::static_pointer_cast<Component>(deserializationData.ptr);
 
 				GameObjectManager::instance().registerObject(compPtr, deserializationData.originalId);
 			}
@@ -50,7 +50,7 @@ namespace BansheeEngine
 			return TID_Component;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			BS_EXCEPT(InternalErrorException, "Cannot instantiate an abstract class.");
 			return nullptr;

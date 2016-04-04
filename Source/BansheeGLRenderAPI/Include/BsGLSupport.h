@@ -31,7 +31,7 @@ namespace BansheeEngine
 		 *								window cannot have a parent.
 		 * @return						Returns newly created window.
 		 */
-		virtual RenderWindowPtr newWindow(RENDER_WINDOW_DESC& desc, UINT32 windowId, RenderWindowPtr parentWindow) = 0;
+		virtual SPtr<RenderWindow> newWindow(RENDER_WINDOW_DESC& desc, UINT32 windowId, SPtr<RenderWindow> parentWindow) = 0;
 
 		/**
 		 * Creates a new render window using the specified descriptor.
@@ -70,7 +70,7 @@ namespace BansheeEngine
 		virtual void initializeExtensions();
 
 		/**	Gets a structure describing all available video modes. */
-		virtual VideoModeInfoPtr getVideoModeInfo() const = 0;
+		virtual SPtr<VideoModeInfo> getVideoModeInfo() const = 0;
 
 	protected:
 		Set<String> extensionList;

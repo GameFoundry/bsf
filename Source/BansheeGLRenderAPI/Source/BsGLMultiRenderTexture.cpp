@@ -29,7 +29,7 @@ namespace BansheeEngine
 			if (mColorSurfaces[i] != nullptr)
 			{
 				GLTextureCore* glColorSurface = static_cast<GLTextureCore*>(mColorSurfaces[i]->getTexture().get());
-				GLPixelBufferPtr colorBuffer = nullptr;
+				SPtr<GLPixelBuffer> colorBuffer = nullptr;
 				GLSurfaceDesc surfaceDesc;
 
 				if (glColorSurface->getProperties().getTextureType() != TEX_TYPE_3D)
@@ -58,7 +58,7 @@ namespace BansheeEngine
 		if (mDepthStencilSurface != nullptr)
 		{
 			GLTextureCore* glDepthStencilSurface = static_cast<GLTextureCore*>(mDepthStencilSurface->getTexture().get());
-			GLPixelBufferPtr depthStencilBuffer = nullptr;
+			SPtr<GLPixelBuffer> depthStencilBuffer = nullptr;
 
 			if (glDepthStencilSurface->getProperties().getTextureType() != TEX_TYPE_3D)
 			{

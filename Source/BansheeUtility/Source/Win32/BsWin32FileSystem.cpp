@@ -263,7 +263,7 @@ namespace BansheeEngine
 		return (std::time_t) ((ull.QuadPart / 10000000ULL) - 11644473600ULL);
 	}
 
-	DataStreamPtr FileSystem::openFile(const Path& fullPath, bool readOnly)
+	SPtr<DataStream> FileSystem::openFile(const Path& fullPath, bool readOnly)
 	{
 		WString pathWString = fullPath.toWString();
 		const wchar_t* pathString = pathWString.c_str();
@@ -279,9 +279,9 @@ namespace BansheeEngine
 		// Always open in binary mode
 		// Also, always include reading
 		std::ios::openmode mode = std::ios::in | std::ios::binary;
-		std::shared_ptr<std::istream> baseStream = 0;
-		std::shared_ptr<std::ifstream> roStream = 0;
-		std::shared_ptr<std::fstream> rwStream = 0;
+		SPtr<std::istream> baseStream = 0;
+		SPtr<std::ifstream> roStream = 0;
+		SPtr<std::fstream> rwStream = 0;
 
 		if (!readOnly)
 		{
@@ -320,12 +320,12 @@ namespace BansheeEngine
 		return bs_shared_ptr<FileDataStream>(stream);
 	}
 
-	DataStreamPtr FileSystem::createAndOpenFile(const Path& fullPath)
+	SPtr<DataStream> FileSystem::createAndOpenFile(const Path& fullPath)
 	{
 		// Always open in binary mode
 		// Also, always include reading
 		std::ios::openmode mode = std::ios::out | std::ios::binary;
-		std::shared_ptr<std::fstream> rwStream = bs_shared_ptr_new<std::fstream>();
+		SPtr<std::fstream> rwStream = bs_shared_ptr_new<std::fstream>();
 		rwStream->open(fullPath.toWString().c_str(), mode);
 
 		// Should check ensure open succeeded, in case fail for some reason.

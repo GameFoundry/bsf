@@ -45,7 +45,7 @@ namespace BansheeEngine
 
 		HSceneObject mPrefabRoot;
 		String mPrefabLinkUUID;
-		PrefabDiffPtr mPrefabDiff;
+		SPtr<PrefabDiff> mPrefabDiff;
 		UnorderedMap<UINT64, UINT32> mLinkIds;
 	};
 

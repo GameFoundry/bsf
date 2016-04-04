@@ -41,7 +41,7 @@ namespace BansheeEngine
 		void setActive(SceneObject* obj, bool& value) { obj->mActiveSelf = value; }
 
 		// NOTE - These can only be set sequentially, specific array index is ignored
-		std::shared_ptr<SceneObject> getChild(SceneObject* obj, UINT32 idx) { return obj->mChildren[idx].getInternalPtr(); }
+		SPtr<SceneObject> getChild(SceneObject* obj, UINT32 idx) { return obj->mChildren[idx].getInternalPtr(); }
 		void setChild(SceneObject* obj, UINT32 idx, SPtr<SceneObject> param)
 		{
 			SceneObject* so = static_cast<SceneObject*>(obj);
@@ -55,7 +55,7 @@ namespace BansheeEngine
 		void setNumChildren(SceneObject* obj, UINT32 size) { /* DO NOTHING */ }
 
 		// NOTE - These can only be set sequentially, specific array index is ignored
-		std::shared_ptr<Component> getComponent(SceneObject* obj, UINT32 idx) { return obj->mComponents[idx].getInternalPtr(); }
+		SPtr<Component> getComponent(SceneObject* obj, UINT32 idx) { return obj->mComponents[idx].getInternalPtr(); }
 		void setComponent(SceneObject* obj, UINT32 idx, SPtr<Component> param)
 		{
 			SceneObject* so = static_cast<SceneObject*>(obj);
@@ -70,8 +70,8 @@ namespace BansheeEngine
 		String& getPrefabLink(SceneObject* obj) { return obj->mPrefabLinkUUID; }
 		void setPrefabLink(SceneObject* obj, String& value) { obj->mPrefabLinkUUID = value; }
 
-		PrefabDiffPtr getPrefabDiff(SceneObject* obj) { return obj->mPrefabDiff; }
-		void setPrefabDiff(SceneObject* obj, PrefabDiffPtr value) { obj->mPrefabDiff = value; }
+		SPtr<PrefabDiff> getPrefabDiff(SceneObject* obj) { return obj->mPrefabDiff; }
+		void setPrefabDiff(SceneObject* obj, SPtr<PrefabDiff> value) { obj->mPrefabDiff = value; }
 
 		UINT32& getFlags(SceneObject* obj) { return obj->mFlags; }
 		void setFlags(SceneObject* obj, UINT32& value) { obj->mFlags = value; }
@@ -120,7 +120,7 @@ namespace BansheeEngine
 
 			// Register the newly created SO with the GameObjectManager and provide it with the original ID so that
 			// deserialized handles pointing to this object can be resolved.
-			SceneObjectPtr soPtr = std::static_pointer_cast<SceneObject>(goDeserializationData.ptr);
+			SPtr<SceneObject> soPtr = std::static_pointer_cast<SceneObject>(goDeserializationData.ptr);
 			SceneObject::createInternal(soPtr, goDeserializationData.originalId);
 
 			// We stored all components and children in a temporary structure because they rely on the SceneObject being
@@ -163,7 +163,7 @@ namespace BansheeEngine
 			return TID_SceneObject;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			SPtr<SceneObject> sceneObjectPtr = 
 				SPtr<SceneObject>(new (bs_alloc<SceneObject>()) SceneObject("", SOF_DontInstantiate),

@@ -61,14 +61,14 @@ namespace BansheeEngine
 
 	HGUISkin GUISkin::create()
 	{
-		GUISkinPtr newSkin = _createPtr();
+		SPtr<GUISkin> newSkin = _createPtr();
 
 		return static_resource_cast<GUISkin>(gResources()._createResourceHandle(newSkin));
 	}
 
-	GUISkinPtr GUISkin::_createPtr()
+	SPtr<GUISkin> GUISkin::_createPtr()
 	{
-		GUISkinPtr newSkin = bs_core_ptr<GUISkin>(new (bs_alloc<GUISkin>()) GUISkin());
+		SPtr<GUISkin> newSkin = bs_core_ptr<GUISkin>(new (bs_alloc<GUISkin>()) GUISkin());
 		newSkin->_setThisPtr(newSkin);
 		newSkin->initialize();
 

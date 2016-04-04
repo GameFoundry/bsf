@@ -16,7 +16,7 @@ namespace BansheeEngine
 	{
 	public:
 		/**	Returns the native render target this object wraps. */
-		virtual RenderTargetPtr getNativeValue() const = 0;
+		virtual SPtr<RenderTarget> getNativeValue() const = 0;
 
 	protected:
 		friend class ScriptResourceManager;

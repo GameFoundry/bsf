@@ -84,7 +84,7 @@ namespace BansheeEngine
 			return TID_BlendState;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return RenderStateManager::instance()._createBlendStatePtr(BLEND_STATE_DESC());
 		}

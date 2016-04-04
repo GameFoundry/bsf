@@ -20,56 +20,56 @@ namespace BansheeEngine
 	{
 	public:
 		/**	Creates and initializes a new SamplerState. */
-		SamplerStatePtr createSamplerState(const SAMPLER_STATE_DESC& desc) const;
+		SPtr<SamplerState> createSamplerState(const SAMPLER_STATE_DESC& desc) const;
 
 		/** Creates and initializes a new DepthStencilState. */
-		DepthStencilStatePtr createDepthStencilState(const DEPTH_STENCIL_STATE_DESC& desc) const;
+		SPtr<DepthStencilState> createDepthStencilState(const DEPTH_STENCIL_STATE_DESC& desc) const;
 
 		/**	Creates and initializes a new RasterizerState. */
-		RasterizerStatePtr createRasterizerState(const RASTERIZER_STATE_DESC& desc) const;
+		SPtr<RasterizerState> createRasterizerState(const RASTERIZER_STATE_DESC& desc) const;
 
 		/**	Creates and initializes a new BlendState. */
-		BlendStatePtr createBlendState(const BLEND_STATE_DESC& desc) const;
+		SPtr<BlendState> createBlendState(const BLEND_STATE_DESC& desc) const;
 
 		/**
 		 * Creates an uninitialized sampler state. Requires manual initialization after creation.
 		 *
 		 * @note	Internal method.
 		 */
-		SamplerStatePtr _createSamplerStatePtr(const SAMPLER_STATE_DESC& desc) const;
+		SPtr<SamplerState> _createSamplerStatePtr(const SAMPLER_STATE_DESC& desc) const;
 
 		/**
 		 * Creates an uninitialized depth-stencil state. Requires manual initialization after creation.
 		 *
 		 * @note	Internal method.
 		 */
-		DepthStencilStatePtr _createDepthStencilStatePtr(const DEPTH_STENCIL_STATE_DESC& desc) const;
+		SPtr<DepthStencilState> _createDepthStencilStatePtr(const DEPTH_STENCIL_STATE_DESC& desc) const;
 
 		/**
 		 * Creates an uninitialized rasterizer state. Requires manual initialization after creation.
 		 *
 		 * @note	Internal method.
 		 */
-		RasterizerStatePtr _createRasterizerStatePtr(const RASTERIZER_STATE_DESC& desc) const;
+		SPtr<RasterizerState> _createRasterizerStatePtr(const RASTERIZER_STATE_DESC& desc) const;
 
 		/**
 		 * Creates an uninitialized blend state. Requires manual initialization	after creation.
 		 *
 		 * @note	Internal method.
 		 */
-		BlendStatePtr _createBlendStatePtr(const BLEND_STATE_DESC& desc) const;
+		SPtr<BlendState> _createBlendStatePtr(const BLEND_STATE_DESC& desc) const;
 
 		/** Gets a sampler state initialized with default options. */
-		const SamplerStatePtr& getDefaultSamplerState() const;
+		const SPtr<SamplerState>& getDefaultSamplerState() const;
 
 		/**	Gets a blend state initialized with default options. */
-		const BlendStatePtr& getDefaultBlendState() const;
+		const SPtr<BlendState>& getDefaultBlendState() const;
 
 		/**	Gets a rasterizer state initialized with default options. */
-		const RasterizerStatePtr& getDefaultRasterizerState() const;
+		const SPtr<RasterizerState>& getDefaultRasterizerState() const;
 
 		/**	Gets a depth stencil state initialized with default options. */
-		const DepthStencilStatePtr& getDefaultDepthStencilState() const;
+		const SPtr<DepthStencilState>& getDefaultDepthStencilState() const;
 
 	private:
 		friend class SamplerState;
@@ -77,10 +77,10 @@ namespace BansheeEngine
 		friend class RasterizerState;
 		friend class DepthStencilState;
 
-		mutable SamplerStatePtr mDefaultSamplerState;
-		mutable BlendStatePtr mDefaultBlendState;
-		mutable RasterizerStatePtr mDefaultRasterizerState;
-		mutable DepthStencilStatePtr mDefaultDepthStencilState;
+		mutable SPtr<SamplerState> mDefaultSamplerState;
+		mutable SPtr<BlendState> mDefaultBlendState;
+		mutable SPtr<RasterizerState> mDefaultRasterizerState;
+		mutable SPtr<DepthStencilState> mDefaultDepthStencilState;
 	};
 
 	/**	Handles creation of various render states. */

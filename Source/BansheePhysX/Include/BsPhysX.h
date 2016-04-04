@@ -62,7 +62,7 @@ namespace BansheeEngine
 		SPtr<PhysicsMaterial> createMaterial(float staticFriction, float dynamicFriction, float restitution) override;
 
 		/** @copydoc Physics::createMesh */
-		SPtr<PhysicsMesh> createMesh(const MeshDataPtr& meshData, PhysicsMeshType type) override;
+		SPtr<PhysicsMesh> createMesh(const SPtr<MeshData>& meshData, PhysicsMeshType type) override;
 
 		/** @copydoc Physics::createRigidbody */
 		SPtr<Rigidbody> createRigidbody(const HSceneObject& linkedSO) override;

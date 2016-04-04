@@ -53,7 +53,7 @@ namespace BansheeEngine
 		const String& getTypeName() const;
 
 		/** Creates an empty instance of a class from a type identifier. */
-		static std::shared_ptr<IReflectable> createInstanceFromTypeId(UINT32 rttiTypeId);
+		static SPtr<IReflectable> createInstanceFromTypeId(UINT32 rttiTypeId);
 
 		/** @name Internal
 		 *  @{

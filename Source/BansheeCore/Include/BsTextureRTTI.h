@@ -64,13 +64,13 @@ namespace BansheeEngine
 #define BS_ADD_PLAINFIELD(name, id, parentType) \
 	addPlainField(#name, id##, &##parentType##::get##name, &##parentType##::Set##name);
 
-		PixelDataPtr getPixelData(Texture* obj, UINT32 idx)
+		SPtr<PixelData> getPixelData(Texture* obj, UINT32 idx)
 		{
 			UINT32 face = (size_t)Math::floor(idx / (float)(obj->mProperties.getNumMipmaps() + 1));
 			UINT32 mipmap = idx % (obj->mProperties.getNumMipmaps() + 1);
 
 			UINT32 subresourceIdx = obj->mProperties.mapToSubresourceIdx(face, mipmap);
-			PixelDataPtr pixelData = obj->mProperties.allocateSubresourceBuffer(subresourceIdx);
+			SPtr<PixelData> pixelData = obj->mProperties.allocateSubresourceBuffer(subresourceIdx);
 
 			obj->readSubresource(gCoreAccessor(), subresourceIdx, pixelData);
 			gCoreAccessor().submitToCoreThread(true);
@@ -78,9 +78,9 @@ namespace BansheeEngine
 			return pixelData;
 		}
 
-		void setPixelData(Texture* obj, UINT32 idx, PixelDataPtr data)
+		void setPixelData(Texture* obj, UINT32 idx, SPtr<PixelData> data)
 		{
-			Vector<PixelDataPtr>* pixelData = any_cast<Vector<PixelDataPtr>*>(obj->mRTTIData);
+			Vector<SPtr<PixelData>>* pixelData = any_cast<Vector<SPtr<PixelData>>*>(obj->mRTTIData);
 
 			(*pixelData)[idx] = data;
 		}
@@ -92,7 +92,7 @@ namespace BansheeEngine
 
 		void setPixelDataArraySize(Texture* obj, UINT32 size)
 		{
-			Vector<PixelDataPtr>* pixelData = any_cast<Vector<PixelDataPtr>*>(obj->mRTTIData);
+			Vector<SPtr<PixelData>>* pixelData = any_cast<Vector<SPtr<PixelData>>*>(obj->mRTTIData);
 
 			pixelData->resize(size);
 		}
@@ -119,7 +119,7 @@ namespace BansheeEngine
 		{
 			Texture* texture = static_cast<Texture*>(obj);
 
-			texture->mRTTIData = bs_new<Vector<PixelDataPtr>>();
+			texture->mRTTIData = bs_new<Vector<SPtr<PixelData>>>();
 		}
 
 		void onDeserializationEnded(IReflectable* obj) override
@@ -137,15 +137,15 @@ namespace BansheeEngine
 			PixelFormat validFormat = TextureManager::instance().getNativeFormat(
 				texProps.mTextureType, texProps.mFormat, texProps.mUsage, texProps.mHwGamma);
 
-			Vector<PixelDataPtr>* pixelData = any_cast<Vector<PixelDataPtr>*>(texture->mRTTIData);
+			Vector<SPtr<PixelData>>* pixelData = any_cast<Vector<SPtr<PixelData>>*>(texture->mRTTIData);
 			if (originalFormat != validFormat)
 			{
 				texProps.mFormat = validFormat;
 
 				for (size_t i = 0; i < pixelData->size(); i++)
 				{
-					PixelDataPtr origData = pixelData->at(i);
-					PixelDataPtr newData = PixelData::create(origData->getWidth(), origData->getHeight(), origData->getDepth(), validFormat);
+					SPtr<PixelData> origData = pixelData->at(i);
+					SPtr<PixelData> newData = PixelData::create(origData->getWidth(), origData->getHeight(), origData->getDepth(), validFormat);
 
 					PixelUtil::bulkPixelConversion(*origData, *newData);
 					(*pixelData)[i] = newData;
@@ -181,7 +181,7 @@ namespace BansheeEngine
 			return TID_Texture;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return TextureManager::instance()._createEmpty();
 		}

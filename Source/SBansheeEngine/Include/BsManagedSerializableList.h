@@ -31,14 +31,14 @@ namespace BansheeEngine
 		struct ConstructPrivately {};
 
 	public:
-		ManagedSerializableList(const ConstructPrivately& dummy, const ManagedSerializableTypeInfoListPtr& typeInfo, MonoObject* managedInstance);
+		ManagedSerializableList(const ConstructPrivately& dummy, const SPtr<ManagedSerializableTypeInfoList>& typeInfo, MonoObject* managedInstance);
 		ManagedSerializableList(const ConstructPrivately& dummy);
 
 		/** Returns the internal managed instance of the list. This will return null if the object is in serialized mode. */
 		MonoObject* getManagedInstance() const { return mManagedInstance; }
 
 		/**	Returns the type information for the internal list. */
-		ManagedSerializableTypeInfoListPtr getTypeInfo() const { return mListTypeInfo; }
+		SPtr<ManagedSerializableTypeInfoList> getTypeInfo() const { return mListTypeInfo; }
 
 		/** Changes the size of the list. Operates on managed object if in linked state, or on cached data otherwise. */
 		void resize(UINT32 newSize);
@@ -50,7 +50,7 @@ namespace BansheeEngine
 		 * @param[in]	arrayIdx	Index at which to set the value.
 		 * @param[in]	val			Wrapper around the value to store in the list. Must be of the list element type.
 		 */
-		void setFieldData(UINT32 arrayIdx, const ManagedSerializableFieldDataPtr& val);
+		void setFieldData(UINT32 arrayIdx, const SPtr<ManagedSerializableFieldData>& val);
 
 		/**
 		 * Returns the element value at the specified list index. Operates on managed object if in linked state, or on
@@ -59,7 +59,7 @@ namespace BansheeEngine
 		 * @param[in]	arrayIdx	Index at which to retrieve the value.
 		 * @return					A wrapper around the element value in the list.
 		 */
-		ManagedSerializableFieldDataPtr getFieldData(UINT32 arrayIdx);
+		SPtr<ManagedSerializableFieldData> getFieldData(UINT32 arrayIdx);
 
 		/** Returns the size of the list. Operates on managed object if in linked state, or on cached data otherwise. */
 		UINT32 getLength() const { return mNumElements; }
@@ -90,8 +90,8 @@ namespace BansheeEngine
 		 *								the provided type info.
 		 * @param[in]	typeInfo		Type information for the list and its elements.
 		 */
-		static ManagedSerializableListPtr createFromExisting(MonoObject* managedInstance, 
-			const ManagedSerializableTypeInfoListPtr& typeInfo);
+		static SPtr<ManagedSerializableList> createFromExisting(MonoObject* managedInstance, 
+			const SPtr<ManagedSerializableTypeInfoList>& typeInfo);
 
 		/**
 		 * Creates a managed serializable list that creates and references a brand new managed list instance.
@@ -99,7 +99,7 @@ namespace BansheeEngine
 		 * @param[in]	typeInfo	Type of the list to create.
 		 * @param[in]	size		Initial size of the list.
 		 */
-		static ManagedSerializableListPtr createNew(const ManagedSerializableTypeInfoListPtr& typeInfo, UINT32 size);
+		static SPtr<ManagedSerializableList> createNew(const SPtr<ManagedSerializableTypeInfoList>& typeInfo, UINT32 size);
 
 		/**
 		 * Creates a managed list instance.
@@ -107,7 +107,7 @@ namespace BansheeEngine
 		 * @param[in]	typeInfo	Type of the list to create.
 		 * @param[in]	size		Initial size of the list.
 		 */
-		static MonoObject* createManagedInstance(const ManagedSerializableTypeInfoListPtr& typeInfo, UINT32 size);
+		static MonoObject* createManagedInstance(const SPtr<ManagedSerializableTypeInfoList>& typeInfo, UINT32 size);
 
 	protected:
 		/**
@@ -120,7 +120,7 @@ namespace BansheeEngine
 		UINT32 getLengthInternal() const;
 
 		/** Appends data to the end of the list. Operates on the internal managed object. */
-		void addFieldDataInternal(const ManagedSerializableFieldDataPtr& val);
+		void addFieldDataInternal(const SPtr<ManagedSerializableFieldData>& val);
 
 		MonoObject* mManagedInstance;
 
@@ -131,8 +131,8 @@ namespace BansheeEngine
 		MonoProperty* mItemProp;
 		MonoProperty* mCountProp;
 
-		ManagedSerializableTypeInfoListPtr mListTypeInfo;
-		Vector<ManagedSerializableFieldDataPtr> mCachedEntries;
+		SPtr<ManagedSerializableTypeInfoList> mListTypeInfo;
+		Vector<SPtr<ManagedSerializableFieldData>> mCachedEntries;
 		UINT32 mNumElements;
 
 		/************************************************************************/
@@ -140,7 +140,7 @@ namespace BansheeEngine
 		/************************************************************************/
 		
 		/**	Creates an empty and uninitialized object used for serialization purposes. */
-		static ManagedSerializableListPtr createEmpty();
+		static SPtr<ManagedSerializableList> createEmpty();
 
 	public:
 		friend class ManagedSerializableListRTTI;

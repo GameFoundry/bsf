@@ -44,7 +44,7 @@ namespace BansheeEngine
 		~FileDecoder();
 
 		/**	Deserializes an IReflectable object by reading the binary data at the provided file location. */
-		std::shared_ptr<IReflectable> decode();
+		SPtr<IReflectable> decode();
 
 		/** Skips over than object in the file. Calling decode() will decode the next object. */
 		void skip();

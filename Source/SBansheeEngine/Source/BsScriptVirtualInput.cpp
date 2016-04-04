@@ -83,7 +83,7 @@ namespace BansheeEngine
 
 	MonoObject* ScriptVirtualInput::internal_getKeyConfig()
 	{
-		InputConfigurationPtr inputConfig = VirtualInput::instance().getConfiguration();
+		SPtr<InputConfiguration> inputConfig = VirtualInput::instance().getConfiguration();
 
 		ScriptInputConfiguration* scriptInputConfig = ScriptInputConfiguration::getScriptInputConfig(inputConfig);
 		if (scriptInputConfig == nullptr)

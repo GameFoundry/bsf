@@ -32,9 +32,9 @@ namespace BansheeEngine
 		return true; // Plain-text so we don't even check for magic number
 	}
 
-	ResourcePtr ScriptCodeImporter::import(const Path& filePath, ConstImportOptionsPtr importOptions)
+	SPtr<Resource> ScriptCodeImporter::import(const Path& filePath, SPtr<const ImportOptions> importOptions)
 	{
-		DataStreamPtr stream = FileSystem::openFile(filePath);
+		SPtr<DataStream> stream = FileSystem::openFile(filePath);
 		WString textData = stream->getAsWString();
 
 		bool editorScript = false;
@@ -44,7 +44,7 @@ namespace BansheeEngine
 			editorScript = scriptIO->isEditorScript();
 		}
 			
-		ScriptCodePtr scriptCode = ScriptCode::_createPtr(textData, editorScript);
+		SPtr<ScriptCode> scriptCode = ScriptCode::_createPtr(textData, editorScript);
 
 		WString fileName = filePath.getWFilename(false);
 		scriptCode->setName(fileName);
@@ -52,7 +52,7 @@ namespace BansheeEngine
 		return scriptCode;
 	}
 
-	ImportOptionsPtr ScriptCodeImporter::createImportOptions() const
+	SPtr<ImportOptions> ScriptCodeImporter::createImportOptions() const
 	{
 		return bs_shared_ptr_new<ScriptCodeImportOptions>();
 	}

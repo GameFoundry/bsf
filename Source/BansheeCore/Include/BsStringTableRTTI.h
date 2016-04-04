@@ -53,7 +53,7 @@ namespace BansheeEngine
 			return TID_StringTable;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return StringTable::_createPtr();
 		}

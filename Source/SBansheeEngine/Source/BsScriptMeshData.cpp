@@ -17,84 +17,84 @@ namespace BansheeEngine
 	template<int Semantic>
 	struct TVertexDataAccessor
 	{
-		static void get(const RendererMeshDataPtr& meshData, UINT8* buffer, UINT32 size) { }
-		static void set(const RendererMeshDataPtr& meshData, UINT8* buffer, UINT32 size) { }
+		static void get(const SPtr<RendererMeshData>& meshData, UINT8* buffer, UINT32 size) { }
+		static void set(const SPtr<RendererMeshData>& meshData, UINT8* buffer, UINT32 size) { }
 	};
 
 	template<>
 	struct TVertexDataAccessor < (int)VertexLayout::Position >
 	{
-		static void get(const RendererMeshDataPtr& meshData, UINT8* buffer, UINT32 size)
+		static void get(const SPtr<RendererMeshData>& meshData, UINT8* buffer, UINT32 size)
 		{ meshData->getPositions((Vector3*)buffer, size); }
 
-		static void set(const RendererMeshDataPtr& meshData, UINT8* buffer, UINT32 size)
+		static void set(const SPtr<RendererMeshData>& meshData, UINT8* buffer, UINT32 size)
 		{ meshData->setPositions((Vector3*)buffer, size); }
 	};
 
 	template<>
 	struct TVertexDataAccessor < (int)VertexLayout::Normal >
 	{
-		static void get(const RendererMeshDataPtr& meshData, UINT8* buffer, UINT32 size)
+		static void get(const SPtr<RendererMeshData>& meshData, UINT8* buffer, UINT32 size)
 		{ meshData->getNormals((Vector3*)buffer, size); }
 
-		static void set(const RendererMeshDataPtr& meshData, UINT8* buffer, UINT32 size)
+		static void set(const SPtr<RendererMeshData>& meshData, UINT8* buffer, UINT32 size)
 		{ meshData->setNormals((Vector3*)buffer, size); }
 	};
 
 	template<>
 	struct TVertexDataAccessor < (int)VertexLayout::Tangent >
 	{
-		static void get(const RendererMeshDataPtr& meshData, UINT8* buffer, UINT32 size)
+		static void get(const SPtr<RendererMeshData>& meshData, UINT8* buffer, UINT32 size)
 		{ meshData->getTangents((Vector4*)buffer, size); }
 
-		static void set(const RendererMeshDataPtr& meshData, UINT8* buffer, UINT32 size)
+		static void set(const SPtr<RendererMeshData>& meshData, UINT8* buffer, UINT32 size)
 		{ meshData->setTangents((Vector4*)buffer, size); }
 	};
 
 	template<>
 	struct TVertexDataAccessor < (int)VertexLayout::Color >
 	{
-		static void get(const RendererMeshDataPtr& meshData, UINT8* buffer, UINT32 size)
+		static void get(const SPtr<RendererMeshData>& meshData, UINT8* buffer, UINT32 size)
 		{ meshData->getColors((Color*)buffer, size); }
 
-		static void set(const RendererMeshDataPtr& meshData, UINT8* buffer, UINT32 size)
+		static void set(const SPtr<RendererMeshData>& meshData, UINT8* buffer, UINT32 size)
 		{ meshData->setColors((Color*)buffer, size); }
 	};
 
 	template<>
 	struct TVertexDataAccessor < (int)VertexLayout::UV0 >
 	{
-		static void get(const RendererMeshDataPtr& meshData, UINT8* buffer, UINT32 size)
+		static void get(const SPtr<RendererMeshData>& meshData, UINT8* buffer, UINT32 size)
 		{ meshData->getUV0((Vector2*)buffer, size); }
 
-		static void set(const RendererMeshDataPtr& meshData, UINT8* buffer, UINT32 size)
+		static void set(const SPtr<RendererMeshData>& meshData, UINT8* buffer, UINT32 size)
 		{ meshData->setUV0((Vector2*)buffer, size); }
 	};
 
 	template<>
 	struct TVertexDataAccessor < (int)VertexLayout::UV1 >
 	{
-		static void get(const RendererMeshDataPtr& meshData, UINT8* buffer, UINT32 size)
+		static void get(const SPtr<RendererMeshData>& meshData, UINT8* buffer, UINT32 size)
 		{ meshData->getUV1((Vector2*)buffer, size); }
 
-		static void set(const RendererMeshDataPtr& meshData, UINT8* buffer, UINT32 size)
+		static void set(const SPtr<RendererMeshData>& meshData, UINT8* buffer, UINT32 size)
 		{ meshData->setUV1((Vector2*)buffer, size); }
 	};
 
 	template<>
 	struct TVertexDataAccessor < (int)VertexLayout::BoneWeights >
 	{
-		static void get(const RendererMeshDataPtr& meshData, UINT8* buffer, UINT32 size)
+		static void get(const SPtr<RendererMeshData>& meshData, UINT8* buffer, UINT32 size)
 		{ meshData->getBoneWeights((BoneWeight*)buffer, size); }
 
-		static void set(const RendererMeshDataPtr& meshData, UINT8* buffer, UINT32 size)
+		static void set(const SPtr<RendererMeshData>& meshData, UINT8* buffer, UINT32 size)
 		{ meshData->setBoneWeights((BoneWeight*)buffer, size); }
 	};
 
 	template<int Semantic, class TNative, class TScript>
 	MonoArray* getVertexDataArray(ScriptMeshData* scriptMeshData)
 	{
-		RendererMeshDataPtr meshData = scriptMeshData->getInternalValue();
+		SPtr<RendererMeshData> meshData = scriptMeshData->getInternalValue();
 		UINT32 numElements = meshData->getData()->getNumVertices();
 
 		ScriptArray outArray = ScriptArray::create<TScript>(numElements);
@@ -109,7 +109,7 @@ namespace BansheeEngine
 		if (array == nullptr)
 			return;
 
-		RendererMeshDataPtr meshData = scriptMeshData->getInternalValue();
+		SPtr<RendererMeshData> meshData = scriptMeshData->getInternalValue();
 		UINT32 numElements = meshData->getData()->getNumVertices();
 
 		ScriptArray inArray(array);
@@ -150,12 +150,12 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetIndexCount", &ScriptMeshData::internal_GetIndexCount);
 	}
 
-	void ScriptMeshData::initialize(const RendererMeshDataPtr& meshData)
+	void ScriptMeshData::initialize(const SPtr<RendererMeshData>& meshData)
 	{
 		mMeshData = meshData;
 	}
 
-	MonoObject* ScriptMeshData::create(const RendererMeshDataPtr& meshData)
+	MonoObject* ScriptMeshData::create(const SPtr<RendererMeshData>& meshData)
 	{
 		MonoObject* meshDataObj = metaData.scriptClass->createInstance();
 
@@ -165,11 +165,11 @@ namespace BansheeEngine
 		return meshDataObj;
 	}
 
-	MonoObject* ScriptMeshData::create(const MeshDataPtr& meshData)
+	MonoObject* ScriptMeshData::create(const SPtr<MeshData>& meshData)
 	{
 		MonoObject* meshDataObj = metaData.scriptClass->createInstance();
 
-		RendererMeshDataPtr defaultMeshData = RendererMeshData::create(meshData);
+		SPtr<RendererMeshData> defaultMeshData = RendererMeshData::create(meshData);
 		ScriptMeshData* scriptMeshData = new (bs_alloc<ScriptMeshData>()) ScriptMeshData(meshDataObj);
 		scriptMeshData->initialize(defaultMeshData);
 
@@ -183,7 +183,7 @@ namespace BansheeEngine
 		if (index == ScriptIndexType::Index32)
 			indexType = IT_32BIT;
 
-		RendererMeshDataPtr meshData = RendererMeshData::create(numVertices, numIndices, vertex, indexType);
+		SPtr<RendererMeshData> meshData = RendererMeshData::create(numVertices, numIndices, vertex, indexType);
 
 		ScriptMeshData* scriptMeshData = new (bs_alloc<ScriptMeshData>()) ScriptMeshData(instance);
 		scriptMeshData->initialize(meshData);
@@ -261,7 +261,7 @@ namespace BansheeEngine
 
 	MonoArray* ScriptMeshData::internal_GetIndices(ScriptMeshData* thisPtr)
 	{
-		RendererMeshDataPtr meshData = thisPtr->getInternalValue();
+		SPtr<RendererMeshData> meshData = thisPtr->getInternalValue();
 		UINT32 numElements = meshData->getData()->getNumIndices();
 
 		ScriptArray outArray = ScriptArray::create<UINT32>(numElements);
@@ -275,7 +275,7 @@ namespace BansheeEngine
 		if (value == nullptr)
 			return;
 
-		RendererMeshDataPtr meshData = thisPtr->getInternalValue();
+		SPtr<RendererMeshData> meshData = thisPtr->getInternalValue();
 		UINT32 numElements = meshData->getData()->getNumIndices();
 
 		ScriptArray inArray(value);
@@ -284,14 +284,14 @@ namespace BansheeEngine
 
 	int ScriptMeshData::internal_GetVertexCount(ScriptMeshData* thisPtr)
 	{
-		RendererMeshDataPtr meshData = thisPtr->getInternalValue();
+		SPtr<RendererMeshData> meshData = thisPtr->getInternalValue();
 
 		return (int)meshData->getData()->getNumVertices();
 	}
 
 	int ScriptMeshData::internal_GetIndexCount(ScriptMeshData* thisPtr)
 	{
-		RendererMeshDataPtr meshData = thisPtr->getInternalValue();
+		SPtr<RendererMeshData> meshData = thisPtr->getInternalValue();
 
 		return (int)meshData->getData()->getNumIndices();
 	}

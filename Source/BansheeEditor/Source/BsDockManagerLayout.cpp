@@ -143,7 +143,7 @@ namespace BansheeEngine
 		}
 	}
 
-	DockManagerLayoutPtr DockManagerLayout::clone()
+	SPtr<DockManagerLayout> DockManagerLayout::clone()
 	{
 		std::function<void(Entry*, Entry*, Entry*)> cloneEntry = [&](Entry* toClone, Entry* parent, Entry* clone)
 		{
@@ -161,7 +161,7 @@ namespace BansheeEngine
 			}
 		};
 
-		DockManagerLayoutPtr copy = bs_shared_ptr_new<DockManagerLayout>();
+		SPtr<DockManagerLayout> copy = bs_shared_ptr_new<DockManagerLayout>();
 		cloneEntry(&mRootEntry, nullptr, &copy->mRootEntry);
 
 		return copy;

@@ -54,7 +54,7 @@ namespace BansheeEngine
 
 	
 
-	HResource Importer::import(const Path& inputFilePath, ConstImportOptionsPtr importOptions)
+	HResource Importer::import(const Path& inputFilePath, SPtr<const ImportOptions> importOptions)
 	{
 		if(!FileSystem::isFile(inputFilePath))
 		{
@@ -70,7 +70,7 @@ namespace BansheeEngine
 			importOptions = importer->getDefaultImportOptions();
 		else
 		{
-			ConstImportOptionsPtr defaultImportOptions = importer->getDefaultImportOptions();
+			SPtr<const ImportOptions> defaultImportOptions = importer->getDefaultImportOptions();
 			if(importOptions->getTypeId() != defaultImportOptions->getTypeId())
 			{
 				BS_EXCEPT(InvalidParametersException, "Provided import options is not of valid type. " \
@@ -78,11 +78,11 @@ namespace BansheeEngine
 			}
 		}
 
-		ResourcePtr importedResource = importer->import(inputFilePath, importOptions);
+		SPtr<Resource> importedResource = importer->import(inputFilePath, importOptions);
 		return gResources()._createResourceHandle(importedResource);
 	}
 
-	Vector<SubResource> Importer::importAll(const Path& inputFilePath, ConstImportOptionsPtr importOptions)
+	Vector<SubResource> Importer::importAll(const Path& inputFilePath, SPtr<const ImportOptions> importOptions)
 	{
 		Vector<SubResource> output;
 
@@ -97,7 +97,7 @@ namespace BansheeEngine
 		return output;
 	}
 
-	Vector<SubResourceRaw> Importer::_importAllRaw(const Path& inputFilePath, ConstImportOptionsPtr importOptions)
+	Vector<SubResourceRaw> Importer::_importAllRaw(const Path& inputFilePath, SPtr<const ImportOptions> importOptions)
 	{
 		if (!FileSystem::isFile(inputFilePath))
 		{
@@ -113,7 +113,7 @@ namespace BansheeEngine
 			importOptions = importer->getDefaultImportOptions();
 		else
 		{
-			ConstImportOptionsPtr defaultImportOptions = importer->getDefaultImportOptions();
+			SPtr<const ImportOptions> defaultImportOptions = importer->getDefaultImportOptions();
 			if (importOptions->getTypeId() != defaultImportOptions->getTypeId())
 			{
 				BS_EXCEPT(InvalidParametersException, "Provided import options is not of valid type. " \
@@ -124,7 +124,7 @@ namespace BansheeEngine
 		return importer->importAll(inputFilePath, importOptions);
 	}
 
-	void Importer::reimport(HResource& existingResource, const Path& inputFilePath, ConstImportOptionsPtr importOptions)
+	void Importer::reimport(HResource& existingResource, const Path& inputFilePath, SPtr<const ImportOptions> importOptions)
 	{
 		if(!FileSystem::isFile(inputFilePath))
 		{
@@ -140,7 +140,7 @@ namespace BansheeEngine
 			importOptions = importer->getDefaultImportOptions();
 		else
 		{
-			ConstImportOptionsPtr defaultImportOptions = importer->getDefaultImportOptions();
+			SPtr<const ImportOptions> defaultImportOptions = importer->getDefaultImportOptions();
 			if(importOptions->getTypeId() != defaultImportOptions->getTypeId())
 			{
 				BS_EXCEPT(InvalidParametersException, "Provided import options is not of valid type. " \
@@ -148,11 +148,11 @@ namespace BansheeEngine
 			}
 		}
 
-		ResourcePtr importedResource = importer->import(inputFilePath, importOptions);
+		SPtr<Resource> importedResource = importer->import(inputFilePath, importOptions);
 		gResources().update(existingResource, importedResource);
 	}
 
-	ImportOptionsPtr Importer::createImportOptions(const Path& inputFilePath)
+	SPtr<ImportOptions> Importer::createImportOptions(const Path& inputFilePath)
 	{
 		if(!FileSystem::isFile(inputFilePath))
 		{

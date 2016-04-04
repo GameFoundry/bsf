@@ -116,14 +116,14 @@ namespace BansheeEngine
 		 *
 		 * @note	Only valid after core thread has initialized the program.
 		 */
-		GpuParamsPtr createParameters();
+		SPtr<GpuParams> createParameters();
 
 		/**
 		 * Returns description of all parameters in this GPU program.
 		 *
 		 * @note	Only valid after core thread has initialized the program.
 		 */
-		GpuParamDescPtr getParamDesc() const;
+		SPtr<GpuParamDesc> getParamDesc() const;
 
 		/** Retrieves a core implementation of a gpu program usable only from the core thread. */
 		SPtr<GpuProgramCore> getCore() const;
@@ -143,7 +143,7 @@ namespace BansheeEngine
 		 * @param[in]	requiresAdjacency	If true then adjacency information will be provided when rendering using this 
 		 *									program.
 		 */
-		static GpuProgramPtr create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype,
+		static SPtr<GpuProgram> create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype,
 			GpuProgramProfile profile, bool requiresAdjacency = false);
 
 	protected:
@@ -212,7 +212,7 @@ namespace BansheeEngine
 		virtual SPtr<GpuParamsCore> createParameters();
 
 		/** @copydoc GpuProgram::getParamDesc */
-		GpuParamDescPtr getParamDesc() const { return mParametersDesc; }
+		SPtr<GpuParamDesc> getParamDesc() const { return mParametersDesc; }
 
 		/**	Returns GPU program input declaration. Only relevant for vertex programs. */
 		SPtr<VertexDeclarationCore> getInputDeclaration() const { return mInputDeclaration; }
@@ -236,7 +236,7 @@ namespace BansheeEngine
 		bool mIsCompiled;
 		String mCompileError;
 
-		GpuParamDescPtr mParametersDesc;
+		SPtr<GpuParamDesc> mParametersDesc;
 		SPtr<VertexDeclarationCore> mInputDeclaration;
 		GpuProgramProperties mProperties;
 	};

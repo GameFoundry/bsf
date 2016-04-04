@@ -69,7 +69,7 @@ namespace BansheeEngine
 		void initialize(const Vector<SPtr<FontBitmap>>& fontData);
 
 		/** Creates a new font as a pointer instead of a resource handle. */
-		static FontPtr _createPtr(const Vector<SPtr<FontBitmap>>& fontInitData);
+		static SPtr<Font> _createPtr(const Vector<SPtr<FontBitmap>>& fontInitData);
 
 		/** @} */
 

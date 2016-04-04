@@ -176,17 +176,17 @@ namespace BansheeEngine
 		setColorsInternal(colors, numElements);
 	}
 
-	PixelDataPtr PixelData::create(const PixelVolume &extents, PixelFormat pixelFormat)
+	SPtr<PixelData> PixelData::create(const PixelVolume &extents, PixelFormat pixelFormat)
 	{
-		PixelDataPtr pixelData = bs_shared_ptr_new<PixelData>(extents, pixelFormat);
+		SPtr<PixelData> pixelData = bs_shared_ptr_new<PixelData>(extents, pixelFormat);
 		pixelData->allocateInternalBuffer();
 
 		return pixelData;
 	}
 
-	PixelDataPtr PixelData::create(UINT32 width, UINT32 height, UINT32 depth, PixelFormat pixelFormat)
+	SPtr<PixelData> PixelData::create(UINT32 width, UINT32 height, UINT32 depth, PixelFormat pixelFormat)
 	{
-		PixelDataPtr pixelData = bs_shared_ptr_new<PixelData>(width, height, depth, pixelFormat);
+		SPtr<PixelData> pixelData = bs_shared_ptr_new<PixelData>(width, height, depth, pixelFormat);
 		pixelData->allocateInternalBuffer();
 
 		return pixelData;

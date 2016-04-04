@@ -39,7 +39,7 @@ namespace BansheeEngine
 			return TID_CCapsuleCollider;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return GameObjectRTTI::createGameObject<CCapsuleCollider>();
 		}

@@ -380,7 +380,7 @@ namespace BansheeEngine
 		gDynLibManager().unload(library);
 	}
 
-	ShaderIncludeHandlerPtr CoreApplication::getShaderIncludeHandler() const
+	SPtr<IShaderIncludeHandler> CoreApplication::getShaderIncludeHandler() const
 	{
 		return bs_shared_ptr_new<DefaultShaderIncludeHandler>();
 	}

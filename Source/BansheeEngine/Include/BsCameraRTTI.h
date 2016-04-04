@@ -16,8 +16,8 @@ namespace BansheeEngine
 	class BS_EXPORT CameraRTTI : public RTTIType <Camera, IReflectable, CameraRTTI>
 	{
 	private:
-		ViewportPtr getViewport(Camera* obj) { return obj->mViewport; }
-		void setViewport(Camera* obj, ViewportPtr val) { obj->mViewport = val; }
+		SPtr<Viewport> getViewport(Camera* obj) { return obj->mViewport; }
+		void setViewport(Camera* obj, SPtr<Viewport> val) { obj->mViewport = val; }
 
 		UINT64& getLayers(Camera* obj) { return obj->mLayers; }
 		void setLayers(Camera* obj, UINT64& val) { obj->mLayers = val; }
@@ -128,7 +128,7 @@ namespace BansheeEngine
 			return TID_Camera;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return Camera::createEmpty();
 		}

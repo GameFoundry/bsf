@@ -42,7 +42,7 @@ namespace BansheeEngine
 		Event<void()> onTriggered;
 
 		/**	Creates a new query, but does not schedule it on GPU. */
-		static EventQueryPtr create();
+		static SPtr<EventQuery> create();
 
 	protected:
 		friend class QueryManager;

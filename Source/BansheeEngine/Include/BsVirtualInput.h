@@ -123,7 +123,7 @@ namespace BansheeEngine
 		/** Performs all logic related to a button release. */
 		void buttonUp(const ButtonEvent& event);
 
-		std::shared_ptr<InputConfiguration> mInputConfiguration;
+		SPtr<InputConfiguration> mInputConfiguration;
 		Vector<DeviceData> mDevices;
 		Queue<VirtualButtonEvent> mEvents;
 		UINT32 mActiveModifiers;

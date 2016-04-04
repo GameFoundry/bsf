@@ -68,7 +68,7 @@ namespace BansheeEngine
 			mSceneObject->destroy(true);
 
 		MemorySerializer serializer;
-		std::shared_ptr<SceneObject> restored = std::static_pointer_cast<SceneObject>(serializer.decode(mSerializedObject, mSerializedObjectSize));
+		SPtr<SceneObject> restored = std::static_pointer_cast<SceneObject>(serializer.decode(mSerializedObject, mSerializedObjectSize));
 
 		CmdUtility::restoreIds(restored->getHandle(), mSceneObjectProxy);
 		restored->setParent(parent);

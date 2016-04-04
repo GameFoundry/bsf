@@ -17,9 +17,9 @@ namespace BansheeEngine
 		return static_resource_cast<PlainText>(gResources()._createResourceHandle(_createPtr(data)));
 	}
 
-	PlainTextPtr PlainText::_createPtr(const WString& data)
+	SPtr<PlainText> PlainText::_createPtr(const WString& data)
 	{
-		PlainTextPtr plainTextPtr = bs_core_ptr<PlainText>(
+		SPtr<PlainText> plainTextPtr = bs_core_ptr<PlainText>(
 			new (bs_alloc<PlainText>()) PlainText(data));
 		plainTextPtr->_setThisPtr(plainTextPtr);
 		plainTextPtr->initialize();

@@ -21,7 +21,7 @@ namespace BansheeEngine
 		static ScriptSerializableObject* create(const ScriptSerializableProperty* parentProperty);
 
 	private:
-		ScriptSerializableObject(MonoObject* instance, const ManagedSerializableTypeInfoPtr& typeInfo);
+		ScriptSerializableObject(MonoObject* instance, const SPtr<ManagedSerializableTypeInfo>& typeInfo);
 
 		/**
 		 * Creates a new interop object for a serializable object from an existing managed instance and an object info
@@ -30,9 +30,9 @@ namespace BansheeEngine
 		 * @param[in]	instance	Managed instance the interop object will reference.
 		 * @param[in]	objInfo		Data about the type of the provided managed instance.
 		 */
-		static ScriptSerializableObject* createInternal(MonoObject* instance, const ManagedSerializableObjectInfoPtr& objInfo);
+		static ScriptSerializableObject* createInternal(MonoObject* instance, const SPtr<ManagedSerializableObjectInfo>& objInfo);
 
-		ManagedSerializableTypeInfoPtr mTypeInfo;
+		SPtr<ManagedSerializableTypeInfo> mTypeInfo;
 		static MonoField* FieldsField;
 
 		/************************************************************************/

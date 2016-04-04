@@ -166,7 +166,7 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	sourceStream		Stream to read data from.
 		 */
-		MemoryDataStream(const DataStreamPtr& sourceStream);
+		MemoryDataStream(const SPtr<DataStream>& sourceStream);
 
 		~MemoryDataStream();
 
@@ -214,14 +214,14 @@ namespace BansheeEngine
 		 *
 		 * If @p freeOnClose is true, the STL stream will be freed once the data stream is closed.
 		 */
-		FileDataStream(std::shared_ptr<std::ifstream> s, bool freeOnClose = true);
+		FileDataStream(SPtr<std::ifstream> s, bool freeOnClose = true);
 
 		/**
 		 * Construct read-write stream from an standard stream.
 		 * 			
 		 * If @p freeOnClose is true, the STL stream will be freed once the data stream is closed.
 		 */
-		FileDataStream(std::shared_ptr<std::fstream> s, bool freeOnClose = true);
+		FileDataStream(SPtr<std::fstream> s, bool freeOnClose = true);
 
 		/**
 		 * Construct read-only stream from an standard stream, and tell it the size.
@@ -231,7 +231,7 @@ namespace BansheeEngine
 		 *			
 		 * If @p freeOnClose is true, the STL stream will be freed once the data stream is closed.
 		 */
-		FileDataStream(std::shared_ptr<std::ifstream> s, size_t size, bool freeOnClose = true);
+		FileDataStream(SPtr<std::ifstream> s, size_t size, bool freeOnClose = true);
 
 		/**
 		 * Construct read-write stream from an standard stream, and tell it the size.
@@ -241,7 +241,7 @@ namespace BansheeEngine
 		 *			
 		 * If @p freeOnClose is true, the STL stream will be freed once the data stream is closed.
 		 */
-		FileDataStream(std::shared_ptr<std::fstream> s, size_t size, bool freeOnClose = true);
+		FileDataStream(SPtr<std::fstream> s, size_t size, bool freeOnClose = true);
 
 		~FileDataStream();
 
@@ -267,9 +267,9 @@ namespace BansheeEngine
 		void close() override;
 
 	protected:
-		std::shared_ptr<std::istream> mpInStream;
-		std::shared_ptr<std::ifstream> mpFStreamRO;
-		std::shared_ptr<std::fstream> mpFStream;
+		SPtr<std::istream> mpInStream;
+		SPtr<std::ifstream> mpFStreamRO;
+		SPtr<std::fstream> mpFStream;
 		bool mFreeOnClose;	
 
 		void determineAccess();

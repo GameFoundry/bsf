@@ -11,7 +11,7 @@ namespace BansheeEngine
 {
 	Map<UINT64, ScriptInputConfiguration*> ScriptInputConfiguration::ScriptInputConfigurations;
 
-	ScriptInputConfiguration::ScriptInputConfiguration(MonoObject* instance, const InputConfigurationPtr& inputConfig)
+	ScriptInputConfiguration::ScriptInputConfiguration(MonoObject* instance, const SPtr<InputConfiguration>& inputConfig)
 		:ScriptObject(instance), mInputConfig(inputConfig)
 	{ 
 		UINT64 configId = (UINT64)inputConfig.get();
@@ -29,7 +29,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetRepeatInterval", &ScriptInputConfiguration::internal_GetRepeatInterval);
 	}
 
-	ScriptInputConfiguration* ScriptInputConfiguration::getScriptInputConfig(const InputConfigurationPtr& inputConfig)
+	ScriptInputConfiguration* ScriptInputConfiguration::getScriptInputConfig(const SPtr<InputConfiguration>& inputConfig)
 	{
 		UINT64 configId = (UINT64)inputConfig.get();
 
@@ -40,7 +40,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	ScriptInputConfiguration* ScriptInputConfiguration::createScriptInputConfig(const InputConfigurationPtr& inputConfig)
+	ScriptInputConfiguration* ScriptInputConfiguration::createScriptInputConfig(const SPtr<InputConfiguration>& inputConfig)
 	{
 		MonoObject* instance = metaData.scriptClass->createInstance(false);
 
@@ -50,7 +50,7 @@ namespace BansheeEngine
 
 	void ScriptInputConfiguration::internal_CreateInstance(MonoObject* object)
 	{
-		InputConfigurationPtr inputConfig = VirtualInput::createConfiguration();
+		SPtr<InputConfiguration> inputConfig = VirtualInput::createConfiguration();
 
 		ScriptInputConfiguration* nativeInstance = new (bs_alloc<ScriptInputConfiguration>()) ScriptInputConfiguration(object, inputConfig);
 	}

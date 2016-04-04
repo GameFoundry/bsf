@@ -63,7 +63,7 @@ namespace BansheeEngine
 		 * @param[in]	relativePath	If not empty, all pathnames in the manifest will be stored as if relative to this 
 		 *								path.
 		 */
-		static void save(const ResourceManifestPtr& manifest, const Path& path, const Path& relativePath);
+		static void save(const SPtr<ResourceManifest>& manifest, const Path& path, const Path& relativePath);
 
 		/**
 		 * Loads the resource manifest from the specified location.
@@ -71,10 +71,10 @@ namespace BansheeEngine
 		 * @param[in]	path			Full pathname of the file to load the manifest from.
 		 * @param[in]	relativePath	If not empty, all loaded pathnames will have this path prepended.
 		 */
-		static ResourceManifestPtr load(const Path& path, const Path& relativePath);
+		static SPtr<ResourceManifest> load(const Path& path, const Path& relativePath);
 
 		/** Creates a new empty resource manifest. Provided name should be unique among manifests. */
-		static ResourceManifestPtr create(const String& name);
+		static SPtr<ResourceManifest> create(const String& name);
 
 	private:
 		String mName;
@@ -86,7 +86,7 @@ namespace BansheeEngine
 		/************************************************************************/
 
 		/**	Creates a new empty resource manifest. */
-		static ResourceManifestPtr createEmpty();
+		static SPtr<ResourceManifest> createEmpty();
 
 	public:
 		friend class ResourceManifestRTTI;

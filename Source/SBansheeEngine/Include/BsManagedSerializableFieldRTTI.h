@@ -41,7 +41,7 @@ namespace BansheeEngine
 			return TID_SerializableFieldKey;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldKey>();
 		}
@@ -68,7 +68,7 @@ namespace BansheeEngine
 			return TID_SerializableFieldData;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			BS_EXCEPT(InvalidStateException, "Cannot instantiate an abstract class.");
 			return nullptr;
@@ -78,11 +78,11 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataEntryRTTI : public RTTIType<ManagedSerializableFieldDataEntry, IReflectable, ManagedSerializableFieldDataEntryRTTI>
 	{
 	private:
-		ManagedSerializableFieldKeyPtr getKey(ManagedSerializableFieldDataEntry* obj)	{ return obj->mKey; }
-		void setKey(ManagedSerializableFieldDataEntry* obj, ManagedSerializableFieldKeyPtr val) { obj->mKey = val; }
+		SPtr<ManagedSerializableFieldKey> getKey(ManagedSerializableFieldDataEntry* obj)	{ return obj->mKey; }
+		void setKey(ManagedSerializableFieldDataEntry* obj, SPtr<ManagedSerializableFieldKey> val) { obj->mKey = val; }
 
-		ManagedSerializableFieldDataPtr getValue(ManagedSerializableFieldDataEntry* obj) { return obj->mValue; }
-		void setValue(ManagedSerializableFieldDataEntry* obj, ManagedSerializableFieldDataPtr val) { obj->mValue = val; }
+		SPtr<ManagedSerializableFieldData> getValue(ManagedSerializableFieldDataEntry* obj) { return obj->mValue; }
+		void setValue(ManagedSerializableFieldDataEntry* obj, SPtr<ManagedSerializableFieldData> val) { obj->mValue = val; }
 
 	public:
 		ManagedSerializableFieldDataEntryRTTI()
@@ -102,7 +102,7 @@ namespace BansheeEngine
 			return TID_SerializableFieldDataEntry;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataEntry>();
 		}
@@ -131,7 +131,7 @@ namespace BansheeEngine
 			return TID_SerializableFieldDataBool;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataBool>();
 		}
@@ -160,7 +160,7 @@ namespace BansheeEngine
 			return TID_SerializableFieldDataChar;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataBool>();
 		}
@@ -189,7 +189,7 @@ namespace BansheeEngine
 			return TID_SerializableFieldDataI8;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataI8>();
 		}
@@ -218,7 +218,7 @@ namespace BansheeEngine
 			return TID_SerializableFieldDataU8;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataU8>();
 		}
@@ -247,7 +247,7 @@ namespace BansheeEngine
 			return TID_SerializableFieldDataI16;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataI16>();
 		}
@@ -276,7 +276,7 @@ namespace BansheeEngine
 			return TID_SerializableFieldDataU16;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataU16>();
 		}
@@ -305,7 +305,7 @@ namespace BansheeEngine
 			return TID_SerializableFieldDataI32;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataI32>();
 		}
@@ -334,7 +334,7 @@ namespace BansheeEngine
 			return TID_SerializableFieldDataU32;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataU32>();
 		}
@@ -363,7 +363,7 @@ namespace BansheeEngine
 			return TID_SerializableFieldDataI64;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataI64>();
 		}
@@ -392,7 +392,7 @@ namespace BansheeEngine
 			return TID_SerializableFieldDataU64;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataU64>();
 		}
@@ -421,7 +421,7 @@ namespace BansheeEngine
 			return TID_SerializableFieldDataFloat;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataFloat>();
 		}
@@ -450,7 +450,7 @@ namespace BansheeEngine
 			return TID_SerializableFieldDataDouble;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataDouble>();
 		}
@@ -479,7 +479,7 @@ namespace BansheeEngine
 			return TID_SerializableFieldDataString;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataString>();
 		}
@@ -508,7 +508,7 @@ namespace BansheeEngine
 			return TID_SerializableFieldDataResourceRef;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
 		}
@@ -537,7 +537,7 @@ namespace BansheeEngine
 			return TID_SerializableFieldDataGameObjectRef;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataGameObjectRef>();
 		}
@@ -546,8 +546,8 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataObjectRTTI : public RTTIType<ManagedSerializableFieldDataObject, ManagedSerializableFieldData, ManagedSerializableFieldDataObjectRTTI>
 	{
 	private:
-		ManagedSerializableObjectPtr getValue(ManagedSerializableFieldDataObject* obj) { return obj->value; }
-		void setValue(ManagedSerializableFieldDataObject* obj, ManagedSerializableObjectPtr val) { obj->value = val; }
+		SPtr<ManagedSerializableObject> getValue(ManagedSerializableFieldDataObject* obj) { return obj->value; }
+		void setValue(ManagedSerializableFieldDataObject* obj, SPtr<ManagedSerializableObject> val) { obj->value = val; }
 
 	public:
 		ManagedSerializableFieldDataObjectRTTI()
@@ -566,7 +566,7 @@ namespace BansheeEngine
 			return TID_SerializableFieldDataObject;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataObject>();
 		}
@@ -575,8 +575,8 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataArrayRTTI : public RTTIType<ManagedSerializableFieldDataArray, ManagedSerializableFieldData, ManagedSerializableFieldDataArrayRTTI>
 	{
 	private:
-		ManagedSerializableArrayPtr getValue(ManagedSerializableFieldDataArray* obj) { return obj->value; }
-		void setValue(ManagedSerializableFieldDataArray* obj, ManagedSerializableArrayPtr val) { obj->value = val; }
+		SPtr<ManagedSerializableArray> getValue(ManagedSerializableFieldDataArray* obj) { return obj->value; }
+		void setValue(ManagedSerializableFieldDataArray* obj, SPtr<ManagedSerializableArray> val) { obj->value = val; }
 
 	public:
 		ManagedSerializableFieldDataArrayRTTI()
@@ -595,7 +595,7 @@ namespace BansheeEngine
 			return TID_SerializableFieldDataArray;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataArray>();
 		}
@@ -604,8 +604,8 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataListRTTI : public RTTIType<ManagedSerializableFieldDataList, ManagedSerializableFieldData, ManagedSerializableFieldDataListRTTI>
 	{
 	private:
-		ManagedSerializableListPtr getValue(ManagedSerializableFieldDataList* obj) { return obj->value; }
-		void setValue(ManagedSerializableFieldDataList* obj, ManagedSerializableListPtr val) { obj->value = val; }
+		SPtr<ManagedSerializableList> getValue(ManagedSerializableFieldDataList* obj) { return obj->value; }
+		void setValue(ManagedSerializableFieldDataList* obj, SPtr<ManagedSerializableList> val) { obj->value = val; }
 
 	public:
 		ManagedSerializableFieldDataListRTTI()
@@ -624,7 +624,7 @@ namespace BansheeEngine
 			return TID_SerializableFieldDataList;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataList>();
 		}
@@ -633,8 +633,8 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataDictionaryRTTI : public RTTIType<ManagedSerializableFieldDataDictionary, ManagedSerializableFieldData, ManagedSerializableFieldDataDictionaryRTTI>
 	{
 	private:
-		ManagedSerializableDictionaryPtr getValue(ManagedSerializableFieldDataDictionary* obj) { return obj->value; }
-		void setValue(ManagedSerializableFieldDataDictionary* obj, ManagedSerializableDictionaryPtr val) { obj->value = val; }
+		SPtr<ManagedSerializableDictionary> getValue(ManagedSerializableFieldDataDictionary* obj) { return obj->value; }
+		void setValue(ManagedSerializableFieldDataDictionary* obj, SPtr<ManagedSerializableDictionary> val) { obj->value = val; }
 
 	public:
 		ManagedSerializableFieldDataDictionaryRTTI()
@@ -653,7 +653,7 @@ namespace BansheeEngine
 			return TID_SerializableFieldDataDictionary;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldDataDictionary>();
 		}

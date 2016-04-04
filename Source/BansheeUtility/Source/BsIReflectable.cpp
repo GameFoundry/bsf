@@ -17,7 +17,7 @@ namespace BansheeEngine
 		getDerivedClasses().push_back(derivedClass);
 	}
 
-	std::shared_ptr<IReflectable> IReflectable::createInstanceFromTypeId(UINT32 rttiTypeId)
+	SPtr<IReflectable> IReflectable::createInstanceFromTypeId(UINT32 rttiTypeId)
 	{
 		RTTITypeBase* type = _getRTTIfromTypeId(rttiTypeId);
 

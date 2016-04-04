@@ -88,7 +88,7 @@ namespace BansheeEngine
 		void pruneInvalidLeaves();
 
 		/**	Makes a deep copy of this object. */
-		DockManagerLayoutPtr clone();
+		SPtr<DockManagerLayout> clone();
 
 	private:
 		Entry mRootEntry;

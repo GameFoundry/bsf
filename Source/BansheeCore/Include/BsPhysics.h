@@ -463,7 +463,7 @@ namespace BansheeEngine
 		virtual SPtr<PhysicsMaterial> createMaterial(float staticFriction, float dynamicFriction, float restitution) = 0;
 
 		/** @copydoc PhysicsMesh::create */
-		virtual SPtr<PhysicsMesh> createMesh(const MeshDataPtr& meshData, PhysicsMeshType type) = 0;
+		virtual SPtr<PhysicsMesh> createMesh(const SPtr<MeshData>& meshData, PhysicsMeshType type) = 0;
 
 		/** @copydoc Rigidbody::create */
 		virtual SPtr<Rigidbody> createRigidbody(const HSceneObject& linkedSO) = 0;

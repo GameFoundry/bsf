@@ -266,7 +266,7 @@ namespace BansheeEngine
 		{
 			Path path = draggedResources->resourcePaths[i];
 
-			ProjectResourceMetaPtr meta = gProjectLibrary().findResourceMeta(draggedResources->resourcePaths[i]);
+			SPtr<ProjectResourceMeta> meta = gProjectLibrary().findResourceMeta(draggedResources->resourcePaths[i]);
 			if (meta == nullptr || meta->getTypeID() != TID_Texture)
 				continue;
 

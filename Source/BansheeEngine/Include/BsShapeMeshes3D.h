@@ -33,7 +33,7 @@ namespace BansheeEngine
 		 * @note
 		 * Primitives are output in the form of a line list.
 		 */
-		static void wireAABox(const AABox& box, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
+		static void wireAABox(const AABox& box, const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		/**
 		 * Fills the mesh data with vertices representing a solid axis aligned box.
@@ -52,7 +52,7 @@ namespace BansheeEngine
 		 * @note
 		 * Primitives are output in the form of a triangle list.
 		 */
-		static void solidAABox(const AABox& box, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
+		static void solidAABox(const AABox& box, const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		/**
 		 * Fills the mesh data with vertices representing an outline of a sphere.
@@ -73,7 +73,7 @@ namespace BansheeEngine
 		 * @note
 		 * Primitives are output in the form of a line list.
 		 */
-		static void wireSphere(const Sphere& sphere, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset, 
+		static void wireSphere(const Sphere& sphere, const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset, 
 			UINT32 quality = 10);
 
 		/**
@@ -96,7 +96,7 @@ namespace BansheeEngine
 		 * @note
 		 * Primitives are output in the form of a triangle list.
 		 */
-		static void solidSphere(const Sphere& sphere, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset, 
+		static void solidSphere(const Sphere& sphere, const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset, 
 			UINT32 quality = 1);
 
 		/**
@@ -124,7 +124,7 @@ namespace BansheeEngine
 		 * Primitives are output in the form of a line list.
 		 */
 		static void wireArc(const Vector3& center, float radius, const Vector3& normal, Degree startAngle, Degree amountAngle,
-			const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality = 10);
+			const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality = 10);
 
 		/**
 		 * Fills the mesh data with vertices representing a solid double-sided arc.
@@ -152,7 +152,7 @@ namespace BansheeEngine
 		 * Primitives are output in the form of a triangle list.
 		 */
 		static void solidArc(const Vector3& center, float radius, const Vector3& normal, Degree startAngle, Degree amountAngle,
-			const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality = 10);
+			const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality = 10);
 
 		/**
 		 * Fills the mesh data with vertices representing an outline of a disc.
@@ -176,7 +176,7 @@ namespace BansheeEngine
 		 * @note
 		 * Primitives are output in the form of a line list.
 		 */
-		static void wireDisc(const Vector3& center, float radius, const Vector3& normal, const MeshDataPtr& meshData,
+		static void wireDisc(const Vector3& center, float radius, const Vector3& normal, const SPtr<MeshData>& meshData,
 			UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality = 10);
 
 		/**
@@ -202,7 +202,7 @@ namespace BansheeEngine
 		 * @note
 		 * Primitives are output in the form of a triangle list.
 		 */
-		static void solidDisc(const Vector3& center, float radius, const Vector3& normal, const MeshDataPtr& meshData,
+		static void solidDisc(const Vector3& center, float radius, const Vector3& normal, const SPtr<MeshData>& meshData,
 			UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality = 10);
 
 		/**
@@ -227,7 +227,7 @@ namespace BansheeEngine
 		 * Primitives are output in the form of a line list.
 		 */
 		static void wireFrustum(const Vector3& position, float aspect, Degree FOV, float near, float far,
-			const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
+			const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		/**
 		 * Fills the mesh data with vertices representing a wireframe cone.
@@ -253,7 +253,7 @@ namespace BansheeEngine
 		 * Primitives are output in the form of a line list.
 		 */
 		static void wireCone(const Vector3& base, const Vector3& normal, float height, float radius, Vector2 scale,
-			const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality = 10);
+			const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality = 10);
 
 		/**
 		 * Fills the mesh data with vertices representing a solid cone.
@@ -280,7 +280,7 @@ namespace BansheeEngine
 		 * Primitives are output in the form of a triangle list.
 		 */
 		static void solidCone(const Vector3& base, const Vector3& normal, float height, float radius, Vector2 scale,
-			const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality = 10);
+			const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality = 10);
 
 		/**
 		 * Fills the mesh data with vertices representing a quad (4 triangles, two sided).
@@ -299,7 +299,7 @@ namespace BansheeEngine
 		 * @note
 		 * Primitives are output in the form of a triangle list.
 		 */
-		static void solidQuad(const Rect3& area, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
+		static void solidQuad(const Rect3& area, const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		/**
 		 * Fills the mesh data with vertices representing a per-pixel line.
@@ -318,7 +318,7 @@ namespace BansheeEngine
 		 * @note
 		 * Primitives are output in the form of a line list.
 		 */
-		static void pixelLine(const Vector3& a, const Vector3& b, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
+		static void pixelLine(const Vector3& a, const Vector3& b, const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		/**
 		 * Fills the mesh data with vertices representing an anti-aliased line of specific width. Antialiasing is done 
@@ -344,7 +344,7 @@ namespace BansheeEngine
 		 * Primitives are output in the form of a triangle list.
 		 */
 		static void antialiasedLine(const Vector3& a, const Vector3& b, const Vector3& up, float width, float borderWidth, const Color& color,
-			const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
+			const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		/**
 		 * Fills the mesh data with vertices representing per-pixel lines.
@@ -362,7 +362,7 @@ namespace BansheeEngine
 		 * @note
 		 * Primitives are output in the form of a line list.
 		 */
-		static void pixelLineList(const Vector<Vector3>& linePoints, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
+		static void pixelLineList(const Vector<Vector3>& linePoints, const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		/**
 		 * Fills the mesh data with vertices representing anti-aliased lines of specific width. Antialiasing is done using
@@ -387,7 +387,7 @@ namespace BansheeEngine
 		 * Primitives are output in the form of a triangle list.
 		 */
 		static void antialiasedLineList(const Vector<Vector3>& linePoints, const Vector3& up, float width, float borderWidth,
-			const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
+			const Color& color, const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		/**
 		 * Fills the provided buffers with position and index data representing an outline of an axis aligned box. Use 

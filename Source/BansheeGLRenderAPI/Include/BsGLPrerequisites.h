@@ -88,9 +88,6 @@ namespace BansheeEngine
 	struct GLSLProgramPipeline;
 	class GLSLProgramPipelineManager;
 
-	typedef std::shared_ptr<GLPixelBuffer> GLPixelBufferPtr;
-	typedef std::shared_ptr<GLGpuParamBlock> GLGpuParamBlockPtr;
-
 	/** @addtogroup GL
 	 *  @{
 	 */

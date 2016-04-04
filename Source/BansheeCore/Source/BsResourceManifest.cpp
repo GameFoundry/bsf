@@ -18,12 +18,12 @@ namespace BansheeEngine
 
 	}
 
-	ResourceManifestPtr ResourceManifest::create(const String& name)
+	SPtr<ResourceManifest> ResourceManifest::create(const String& name)
 	{
 		return bs_shared_ptr_new<ResourceManifest>(name);
 	}
 
-	ResourceManifestPtr ResourceManifest::createEmpty()
+	SPtr<ResourceManifest> ResourceManifest::createEmpty()
 	{
 		return bs_shared_ptr_new<ResourceManifest>(ConstructPrivately());
 	}
@@ -110,9 +110,9 @@ namespace BansheeEngine
 		return iterFind != mFilePathToUUID.end();
 	}
 
-	void ResourceManifest::save(const ResourceManifestPtr& manifest, const Path& path, const Path& relativePath)
+	void ResourceManifest::save(const SPtr<ResourceManifest>& manifest, const Path& path, const Path& relativePath)
 	{
-		ResourceManifestPtr copy = create(manifest->mName);
+		SPtr<ResourceManifest> copy = create(manifest->mName);
 
 		for(auto& elem : manifest->mFilePathToUUID)
 		{
@@ -144,12 +144,12 @@ namespace BansheeEngine
 		fs.encode(copy.get());
 	}
 
-	ResourceManifestPtr ResourceManifest::load(const Path& path, const Path& relativePath)
+	SPtr<ResourceManifest> ResourceManifest::load(const Path& path, const Path& relativePath)
 	{
 		FileDecoder fs(path);
-		ResourceManifestPtr manifest = std::static_pointer_cast<ResourceManifest>(fs.decode());
+		SPtr<ResourceManifest> manifest = std::static_pointer_cast<ResourceManifest>(fs.decode());
 
-		ResourceManifestPtr copy = create(manifest->mName);
+		SPtr<ResourceManifest> copy = create(manifest->mName);
 
 		for(auto& elem : manifest->mFilePathToUUID)
 		{

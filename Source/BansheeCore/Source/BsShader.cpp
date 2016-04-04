@@ -448,26 +448,26 @@ namespace BansheeEngine
 
 	HShader Shader::create(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques)
 	{
-		ShaderPtr newShader = _createPtr(name, desc, techniques);
+		SPtr<Shader> newShader = _createPtr(name, desc, techniques);
 
 		return static_resource_cast<Shader>(gResources()._createResourceHandle(newShader));
 	}
 
-	ShaderPtr Shader::_createPtr(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques)
+	SPtr<Shader> Shader::_createPtr(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques)
 	{
 		UINT32 id = ShaderCore::mNextShaderId.fetch_add(1, std::memory_order_relaxed);
 		assert(id < std::numeric_limits<UINT32>::max() && "Created too many shaders, reached maximum id.");
 
-		ShaderPtr newShader = bs_core_ptr<Shader>(new (bs_alloc<Shader>()) Shader(name, desc, techniques, id));
+		SPtr<Shader> newShader = bs_core_ptr<Shader>(new (bs_alloc<Shader>()) Shader(name, desc, techniques, id));
 		newShader->_setThisPtr(newShader);
 		newShader->initialize();
 
 		return newShader;
 	}
 
-	ShaderPtr Shader::createEmpty()
+	SPtr<Shader> Shader::createEmpty()
 	{
-		ShaderPtr newShader = bs_core_ptr<Shader>(new (bs_alloc<Shader>()) Shader());
+		SPtr<Shader> newShader = bs_core_ptr<Shader>(new (bs_alloc<Shader>()) Shader());
 		newShader->_setThisPtr(newShader);
 
 		return newShader;

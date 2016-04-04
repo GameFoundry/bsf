@@ -147,7 +147,7 @@ namespace BansheeEngine
 		SPtr<GpuParamBlockBufferCore> getCore() const;
 
 		/** @copydoc HardwareBufferManager::createGpuParamBlockBuffer */
-		static GpuParamBlockBufferPtr create(UINT32 size, GpuParamBlockUsage usage = GPBU_DYNAMIC);
+		static SPtr<GpuParamBlockBuffer> create(UINT32 size, GpuParamBlockUsage usage = GPBU_DYNAMIC);
 
 	protected:
 		/** @copydoc CoreObject::createCore */

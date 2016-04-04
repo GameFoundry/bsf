@@ -17,7 +17,7 @@ namespace BansheeEngine
 	ScriptGUIWidget::ScriptGUIWidget(MonoObject* managedInstance)
 		:ScriptObject(managedInstance), mGUIWidget(nullptr), mLastUpdateHash((UINT32)-1)
 	{
-		CameraPtr mainCamera = gSceneManager().getMainCamera().camera;
+		SPtr<Camera> mainCamera = gSceneManager().getMainCamera().camera;
 
 		mGUIWidget = GUIWidget::create(mainCamera);
 		mGUIWidget->setSkin(BuiltinResources::instance().getGUISkin());
@@ -71,7 +71,7 @@ namespace BansheeEngine
 
 		if (widget != nullptr)
 		{
-			CameraPtr nativeCamera;
+			SPtr<Camera> nativeCamera;
 			if (camera != nullptr)
 				nativeCamera = camera->getInternal();
 
@@ -95,7 +95,7 @@ namespace BansheeEngine
 
 	void ScriptGUIWidget::internal_SetCamera(ScriptGUIWidget* instance, ScriptCamera* camera)
 	{
-		CameraPtr nativeCamera;
+		SPtr<Camera> nativeCamera;
 		if (camera != nullptr)
 			nativeCamera = camera->getInternal();
 

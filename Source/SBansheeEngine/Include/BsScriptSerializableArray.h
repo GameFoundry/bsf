@@ -24,9 +24,9 @@ namespace BansheeEngine
 		static ScriptSerializableArray* create(const ScriptSerializableProperty* parentProperty);
 
 	private:
-		ScriptSerializableArray(MonoObject* instance, const ManagedSerializableTypeInfoArrayPtr& typeInfo);
+		ScriptSerializableArray(MonoObject* instance, const SPtr<ManagedSerializableTypeInfoArray>& typeInfo);
 
-		ManagedSerializableTypeInfoArrayPtr mTypeInfo;
+		SPtr<ManagedSerializableTypeInfoArray> mTypeInfo;
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/

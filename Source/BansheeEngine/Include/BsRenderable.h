@@ -198,7 +198,7 @@ namespace BansheeEngine
 		void _setLastModifiedHash(UINT32 hash) { mLastUpdateHash = hash; }
 
 		/**	Creates a new renderable handler instance. */
-		static RenderablePtr create();
+		static SPtr<Renderable> create();
 
 	protected:
 		Renderable();
@@ -231,7 +231,7 @@ namespace BansheeEngine
 		void notifyResourceChanged(const HResource& resource) override;
 
 		/**	Creates a new renderable handler instance without initializing it. */
-		static RenderablePtr createEmpty();
+		static SPtr<Renderable> createEmpty();
 
 		UINT32 mLastUpdateHash;
 

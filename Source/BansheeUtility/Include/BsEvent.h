@@ -302,7 +302,7 @@ namespace BansheeEngine
 		{
 			// Increase ref count to ensure this event data isn't destroyed if one of the callbacks
 			// deletes the event itself.
-			std::shared_ptr<EventInternalData> internalData = mInternalData;
+			SPtr<EventInternalData> internalData = mInternalData;
 
 			BS_LOCK_RECURSIVE_MUTEX(internalData->mMutex);
 

@@ -41,7 +41,7 @@ namespace BansheeEngine
 			bool shallow = false);
 
 		/** Deserializes an IReflectable object by reading the binary data from the provided memory location. */
-		std::shared_ptr<IReflectable> decode(UINT8* buffer, UINT32 bufferSize);
+		SPtr<IReflectable> decode(UINT8* buffer, UINT32 bufferSize);
 
 	private:
 		Vector<BufferPiece> mBufferPieces;

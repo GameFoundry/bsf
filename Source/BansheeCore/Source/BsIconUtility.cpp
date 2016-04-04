@@ -186,7 +186,7 @@ namespace BansheeEngine
 		UINT32 clrImportant;
 	};
 
-	void IconUtility::updateIconExe(const Path& path, const Map<UINT32, PixelDataPtr>& pixelsPerSize)
+	void IconUtility::updateIconExe(const Path& path, const Map<UINT32, SPtr<PixelData>>& pixelsPerSize)
 	{
 		// A PE file is structured as such:
 		//  - MSDOS Header
@@ -321,7 +321,7 @@ namespace BansheeEngine
 		stream.close();
 	}
 
-	void IconUtility::updateIconData(UINT8* iconData, const Map<UINT32, PixelDataPtr>& pixelsPerSize)
+	void IconUtility::updateIconData(UINT8* iconData, const Map<UINT32, SPtr<PixelData>>& pixelsPerSize)
 	{
 		IconHeader* iconHeader = (IconHeader*)iconData;
 
@@ -345,7 +345,7 @@ namespace BansheeEngine
 		}
 
 		// Write colors
-		PixelDataPtr srcPixels = iterFind->second;
+		SPtr<PixelData> srcPixels = iterFind->second;
 		UINT32* colorData = (UINT32*)iconPixels;
 
 		UINT32 idx = 0;

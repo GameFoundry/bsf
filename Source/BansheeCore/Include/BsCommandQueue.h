@@ -70,7 +70,7 @@ namespace BansheeEngine
 	struct QueuedCommand
 	{
 #if BS_DEBUG_MODE
-		QueuedCommand(std::function<void(AsyncOp&)> _callback, UINT32 _debugId, const AsyncOpSyncDataPtr& asyncOpSyncData,
+		QueuedCommand(std::function<void(AsyncOp&)> _callback, UINT32 _debugId, const SPtr<AsyncOpSyncData>& asyncOpSyncData,
 			bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
 			:callbackWithReturnValue(_callback), debugId(_debugId), returnsValue(true), 
 			notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId), asyncOp(asyncOpSyncData)
@@ -82,7 +82,7 @@ namespace BansheeEngine
 
 		UINT32 debugId;
 #else
-		QueuedCommand(std::function<void(AsyncOp&)> _callback, const AsyncOpSyncDataPtr& asyncOpSyncData, 
+		QueuedCommand(std::function<void(AsyncOp&)> _callback, const SPtr<AsyncOpSyncData>& asyncOpSyncData, 
 			bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
 			:callbackWithReturnValue(_callback), returnsValue(true), notifyWhenComplete(_notifyWhenComplete), 
 			callbackId(_callbackId), asyncOp(asyncOpSyncData)
@@ -237,7 +237,7 @@ namespace BansheeEngine
 		Queue<QueuedCommand>* mCommands;
 		Stack<Queue<QueuedCommand>*> mEmptyCommandQueues; /**< List of empty queues for reuse. */
 
-		AsyncOpSyncDataPtr mAsyncOpSyncData;
+		SPtr<AsyncOpSyncData> mAsyncOpSyncData;
 		BS_THREAD_ID_TYPE mMyThreadId;
 
 		// Various variables that allow for easier debugging by allowing us to trigger breakpoints

@@ -59,151 +59,151 @@ namespace BansheeEngine
 
 	bool ScriptEditorSettings::internal_GetMoveHandleSnapActive()
 	{
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		return settings->getMoveHandleSnapActive();
 	}
 
 	void ScriptEditorSettings::internal_SetMoveHandleSnapActive(bool value)
 	{
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		settings->setMoveHandleSnapActive(value);
 	}
 
 	bool ScriptEditorSettings::internal_GetRotateHandleSnapActive()
 	{
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		return settings->getRotateHandleSnapActive();
 	}
 
 	void ScriptEditorSettings::internal_SetRotateHandleSnapActive(bool value)
 	{
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		settings->setRotateHandleSnapActive(value);
 	}
 
 	float ScriptEditorSettings::internal_GetMoveHandleSnapAmount()
 	{
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		return settings->getMoveHandleSnap();
 	}
 
 	void ScriptEditorSettings::internal_SetMoveHandleSnapAmount(float value)
 	{
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		settings->setMoveHandleSnap(value);
 	}
 
 	float ScriptEditorSettings::internal_GetRotateHandleSnapAmount()
 	{
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		return settings->getRotationHandleSnap().valueDegrees();
 	}
 
 	void ScriptEditorSettings::internal_SetRotateHandleSnapAmount(float value)
 	{
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		settings->setRotationHandleSnap(Degree(value));
 	}
 
 	float ScriptEditorSettings::internal_GetDefaultHandleSize()
 	{
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		return settings->getHandleSize();
 	}
 
 	void ScriptEditorSettings::internal_SetDefaultHandleSize(float value)
 	{
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		settings->setHandleSize(value);
 	}
 
 	UINT32 ScriptEditorSettings::internal_GetActiveSceneTool()
 	{
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		return settings->getActiveSceneTool();
 	}
 
 	void ScriptEditorSettings::internal_SetActiveSceneTool(UINT32 value)
 	{
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		settings->setActiveSceneTool(value);
 	}
 
 	UINT32 ScriptEditorSettings::internal_GetActiveCoordinateMode()
 	{
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		return settings->getActiveCoordinateMode();
 	}
 
 	void ScriptEditorSettings::internal_SetActiveCoordinateMode(UINT32 value)
 	{
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		settings->setActiveCoordinateMode(value);
 	}
 
 	UINT32 ScriptEditorSettings::internal_GetActivePivotMode()
 	{
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		return settings->getActivePivotMode();
 	}
 
 	void ScriptEditorSettings::internal_SetActivePivotMode(UINT32 value)
 	{
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		settings->setActivePivotMode(value);
 	}
 
 	UINT32 ScriptEditorSettings::internal_GetFPSLimit()
 	{
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		return settings->getFPSLimit();
 	}
 
 	void ScriptEditorSettings::internal_SetFPSLimit(UINT32 value)
 	{
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		settings->setFPSLimit(value);
 	}
 
 	float ScriptEditorSettings::internal_GetMouseSensitivity()
 	{
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		return settings->getMouseSensitivity();
 	}
 
 	void ScriptEditorSettings::internal_SetMouseSensitivity(float value)
 	{
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		settings->setMouseSensitivity(value);
 	}
 
 	MonoString* ScriptEditorSettings::internal_GetLastOpenProject()
 	{
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		return MonoUtil::wstringToMono(settings->getLastOpenProject().toWString());
 	}
 
 	void ScriptEditorSettings::internal_SetLastOpenProject(MonoString* value)
 	{
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		settings->setLastOpenProject(MonoUtil::monoToWString(value));
 	}
 
 	bool ScriptEditorSettings::internal_GetAutoLoadLastProject()
 	{
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		return settings->getAutoLoadLastProject();
 	}
 
 	void ScriptEditorSettings::internal_SetAutoLoadLastProject(bool value)
 	{
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		settings->setAutoLoadLastProject(value);
 	}
 
 	void ScriptEditorSettings::internal_GetRecentProjects(MonoArray** paths, MonoArray** timeStamps)
 	{
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		const Vector<RecentProject>& recentProjects = settings->getRecentProjects();
 		UINT32 numEntries = (UINT32)recentProjects.size();
 
@@ -236,7 +236,7 @@ namespace BansheeEngine
 			recentProjects[i].accessTimestamp = timeStampsArray.get<UINT64>(i);
 		}
 
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		settings->setRecentProjects(recentProjects);
 	}
 
@@ -244,7 +244,7 @@ namespace BansheeEngine
 	{
 		String nativeName = MonoUtil::monoToString(name);
 
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		settings->setFloat(nativeName, value);
 	}
 
@@ -252,7 +252,7 @@ namespace BansheeEngine
 	{
 		String nativeName = MonoUtil::monoToString(name);
 
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		settings->setInt(nativeName, value);
 	}
 
@@ -260,7 +260,7 @@ namespace BansheeEngine
 	{
 		String nativeName = MonoUtil::monoToString(name);
 
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		settings->setBool(nativeName, value);
 	}
 
@@ -269,7 +269,7 @@ namespace BansheeEngine
 		String nativeName = MonoUtil::monoToString(name);
 		WString nativeValue = MonoUtil::monoToWString(value);
 
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		settings->setString(nativeName, nativeValue);
 	}
 
@@ -277,7 +277,7 @@ namespace BansheeEngine
 	{
 		String nativeName = MonoUtil::monoToString(name);
 
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		return settings->getFloat(nativeName, defaultValue);
 	}
 
@@ -285,7 +285,7 @@ namespace BansheeEngine
 	{
 		String nativeName = MonoUtil::monoToString(name);
 
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		return settings->getInt(nativeName, defaultValue);
 	}
 
@@ -293,7 +293,7 @@ namespace BansheeEngine
 	{
 		String nativeName = MonoUtil::monoToString(name);
 
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		return settings->getBool(nativeName, defaultValue);
 	}
 
@@ -302,7 +302,7 @@ namespace BansheeEngine
 		String nativeName = MonoUtil::monoToString(name);
 		WString nativeDefaultValue = MonoUtil::monoToWString(defaultValue);
 
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		WString nativeValue = settings->getString(nativeName, nativeDefaultValue);
 
 		return MonoUtil::wstringToMono(nativeValue);
@@ -312,7 +312,7 @@ namespace BansheeEngine
 	{
 		String nativeName = MonoUtil::monoToString(name);
 
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		return settings->hasKey(nativeName);
 	}
 
@@ -320,19 +320,19 @@ namespace BansheeEngine
 	{
 		String nativeName = MonoUtil::monoToString(name);
 
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		settings->deleteKey(nativeName);
 	}
 
 	void ScriptEditorSettings::internal_DeleteAllKeys()
 	{
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		settings->deleteAllKeys();
 	}
 
 	UINT32 ScriptEditorSettings::internal_GetHash()
 	{
-		EditorSettingsPtr settings = gEditorApplication().getEditorSettings();
+		SPtr<EditorSettings> settings = gEditorApplication().getEditorSettings();
 		return settings->getHash();
 	}
 

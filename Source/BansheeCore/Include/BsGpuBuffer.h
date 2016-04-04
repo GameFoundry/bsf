@@ -90,7 +90,7 @@ namespace BansheeEngine
 		SPtr<CoreObjectCore> createCore() const override;
 
 		/** @copydoc HardwareBufferManager::createGpuParamBlockBuffer */
-		static GpuParamBlockBufferPtr create(UINT32 size, GpuParamBlockUsage usage = GPBU_DYNAMIC);
+		static SPtr<GpuParamBlockBuffer> create(UINT32 size, GpuParamBlockUsage usage = GPBU_DYNAMIC);
 
 		GpuBufferProperties mProperties;
     };

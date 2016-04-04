@@ -62,7 +62,7 @@ namespace BansheeEngine
 				BS_EXCEPT(FileNotFoundException, "File already exists at specified location: " + filePath.toString());
 		}
 
-		DataStreamPtr ds = FileSystem::createAndOpenFile(filePath);
+		SPtr<DataStream> ds = FileSystem::createAndOpenFile(filePath);
 
 		UINT32 bmpDataSize = BitmapWriter::getBMPSize(width, height, bytesPerPixel);
 		UINT8* bmpBuffer = bs_newN<UINT8>(bmpDataSize);
@@ -255,7 +255,7 @@ table td
 
 		stream << htmlFooter;
 
-		DataStreamPtr fileStream = FileSystem::createAndOpenFile(path);
+		SPtr<DataStream> fileStream = FileSystem::createAndOpenFile(path);
 		fileStream->writeString(stream.str());
 	}
 

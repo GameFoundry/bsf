@@ -39,12 +39,12 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetIsConsecutive", &ScriptPixelData::internal_getIsConsecutive);
 	}
 
-	void ScriptPixelData::initialize(const PixelDataPtr& pixelData)
+	void ScriptPixelData::initialize(const SPtr<PixelData>& pixelData)
 	{
 		mPixelData = pixelData;
 	}
 
-	MonoObject* ScriptPixelData::create(const PixelDataPtr& pixelData)
+	MonoObject* ScriptPixelData::create(const SPtr<PixelData>& pixelData)
 	{
 		MonoObject* pixelDataObj = metaData.scriptClass->createInstance();
 
@@ -56,7 +56,7 @@ namespace BansheeEngine
 
 	void ScriptPixelData::internal_createInstance(MonoObject* instance, PixelVolume* volume, PixelFormat format)
 	{
-		PixelDataPtr pixelData = bs_shared_ptr_new<PixelData>(*volume, format);
+		SPtr<PixelData> pixelData = bs_shared_ptr_new<PixelData>(*volume, format);
 		pixelData->allocateInternalBuffer();
 
 		ScriptPixelData* scriptPixelData = new (bs_alloc<ScriptPixelData>()) ScriptPixelData(instance);
@@ -82,7 +82,7 @@ namespace BansheeEngine
 		if (!checkIsLocked(thisPtr))
 			return;
 
-		PixelDataPtr pixelData = thisPtr->mPixelData;
+		SPtr<PixelData> pixelData = thisPtr->mPixelData;
 		PixelVolume pixelVolume = pixelData->getExtents();
 		UINT32 depth = pixelVolume.getDepth();
 		UINT32 height = pixelVolume.getHeight();
@@ -131,7 +131,7 @@ namespace BansheeEngine
 		if (!checkIsLocked(thisPtr))
 			return;
 
-		PixelDataPtr pixelData = thisPtr->mPixelData;
+		SPtr<PixelData> pixelData = thisPtr->mPixelData;
 		PixelVolume pixelVolume = pixelData->getExtents();
 		UINT32 depth = pixelVolume.getDepth();
 		UINT32 height = pixelVolume.getHeight();
@@ -181,7 +181,7 @@ namespace BansheeEngine
 		if (!checkIsLocked(thisPtr))
 			return;
 
-		PixelDataPtr pixelData = thisPtr->mPixelData;
+		SPtr<PixelData> pixelData = thisPtr->mPixelData;
 		PixelVolume pixelVolume = pixelData->getExtents();
 		UINT32 depth = pixelVolume.getDepth();
 		UINT32 height = pixelVolume.getHeight();
@@ -227,7 +227,7 @@ namespace BansheeEngine
 		if (!checkIsLocked(thisPtr))
 			return;
 
-		PixelDataPtr pixelData = thisPtr->mPixelData;
+		SPtr<PixelData> pixelData = thisPtr->mPixelData;
 		PixelVolume pixelVolume = pixelData->getExtents();
 		UINT32 depth = pixelVolume.getDepth();
 		UINT32 height = pixelVolume.getHeight();

@@ -58,10 +58,10 @@ namespace BansheeEngine
 		return resultBuffer;
 	}
 
-	std::shared_ptr<IReflectable> MemorySerializer::decode(UINT8* buffer, UINT32 bufferSize)
+	SPtr<IReflectable> MemorySerializer::decode(UINT8* buffer, UINT32 bufferSize)
 	{
 		BinarySerializer bs;
-		std::shared_ptr<IReflectable> object = bs.decode(buffer, (UINT32)bufferSize);
+		SPtr<IReflectable> object = bs.decode(buffer, (UINT32)bufferSize);
 
 		return object;
 	}

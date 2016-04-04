@@ -9,11 +9,11 @@
 
 namespace BansheeEngine
 {
-	GameObjectHandleBase::GameObjectHandleBase(const std::shared_ptr<GameObjectHandleData>& data)
+	GameObjectHandleBase::GameObjectHandleBase(const SPtr<GameObjectHandleData>& data)
 		:mData(data)
 	{ }
 
-	GameObjectHandleBase::GameObjectHandleBase(const std::shared_ptr<GameObject> ptr)
+	GameObjectHandleBase::GameObjectHandleBase(const SPtr<GameObject> ptr)
 	{
 		mData = bs_shared_ptr_new<GameObjectHandleData>(ptr->mInstanceData);
 	}
@@ -39,7 +39,7 @@ namespace BansheeEngine
 		mData->mPtr = object.mData->mPtr;
 	}
 
-	void GameObjectHandleBase::_setHandleData(const GameObjectPtr& object)
+	void GameObjectHandleBase::_setHandleData(const SPtr<GameObject>& object)
 	{
 		mData->mPtr = object->mInstanceData;
 	}

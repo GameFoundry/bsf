@@ -135,13 +135,13 @@ namespace BansheeEngine
 		:ViewportBase()
 	{ }
 
-	Viewport::Viewport(const RenderTargetPtr& target, float x, float y, float width, float height)
+	Viewport::Viewport(const SPtr<RenderTarget>& target, float x, float y, float width, float height)
 		:ViewportBase(x, y, width, height), mTarget(target)
 	{
 
 	}
 
-	void Viewport::setTarget(const RenderTargetPtr& target)
+	void Viewport::setTarget(const SPtr<RenderTarget>& target)
 	{
 		mTarget = target; 
 		
@@ -228,20 +228,20 @@ namespace BansheeEngine
 			dependencies.push_back(mTarget.get());
 	}
 
-	ViewportPtr Viewport::create(const RenderTargetPtr& target, float x, float y, float width, float height)
+	SPtr<Viewport> Viewport::create(const SPtr<RenderTarget>& target, float x, float y, float width, float height)
 	{
 		Viewport* viewport = new (bs_alloc<Viewport>()) Viewport(target, x, y, width, height);
-		ViewportPtr viewportPtr = bs_core_ptr<Viewport>(viewport);
+		SPtr<Viewport> viewportPtr = bs_core_ptr<Viewport>(viewport);
 		viewportPtr->_setThisPtr(viewportPtr);
 		viewportPtr->initialize();
 
 		return viewportPtr;
 	}
 
-	ViewportPtr Viewport::createEmpty()
+	SPtr<Viewport> Viewport::createEmpty()
 	{
 		Viewport* viewport = new (bs_alloc<Viewport>()) Viewport();
-		ViewportPtr viewportPtr = bs_core_ptr<Viewport>(viewport);
+		SPtr<Viewport> viewportPtr = bs_core_ptr<Viewport>(viewport);
 		viewportPtr->_setThisPtr(viewportPtr);
 
 		return viewportPtr;

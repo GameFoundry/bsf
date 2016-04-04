@@ -13,7 +13,7 @@
 
 namespace BansheeEngine
 {
-	ScriptRenderTexture2D::ScriptRenderTexture2D(const RenderTargetPtr& target, bool isMulti, MonoObject* instance)
+	ScriptRenderTexture2D::ScriptRenderTexture2D(const SPtr<RenderTarget>& target, bool isMulti, MonoObject* instance)
 		:ScriptObject(instance), mRenderTarget(target), mIsMulti(isMulti)
 	{
 
@@ -27,7 +27,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetDepthStencilSurface", &ScriptRenderTexture2D::internal_getDepthStencilSurface);
 	}
 
-	RenderTexturePtr ScriptRenderTexture2D::getRenderTexture() const
+	SPtr<RenderTexture> ScriptRenderTexture2D::getRenderTexture() const
 	{
 		if (!mIsMulti)
 			return std::static_pointer_cast<RenderTexture>(mRenderTarget);
@@ -35,7 +35,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	MultiRenderTexturePtr ScriptRenderTexture2D::getMultiRenderTexture() const
+	SPtr<MultiRenderTexture> ScriptRenderTexture2D::getMultiRenderTexture() const
 	{
 		if (mIsMulti)
 			return std::static_pointer_cast<MultiRenderTexture>(mRenderTarget);
@@ -46,7 +46,7 @@ namespace BansheeEngine
 	void ScriptRenderTexture2D::internal_createDetailed(MonoObject* instance, PixelFormat format, UINT32 width, UINT32 height,
 		UINT32 numSamples, bool gammaCorrection, bool createDepth, PixelFormat depthStencilFormat)
 	{
-		RenderTexturePtr tex = RenderTexture::create(TEX_TYPE_2D, width, height, format, gammaCorrection, numSamples, createDepth, depthStencilFormat);
+		SPtr<RenderTexture> tex = RenderTexture::create(TEX_TYPE_2D, width, height, format, gammaCorrection, numSamples, createDepth, depthStencilFormat);
 
 		ScriptRenderTexture2D* scriptResource = new (bs_alloc<ScriptRenderTexture2D>()) ScriptRenderTexture2D(tex, false, instance);
 	}
@@ -71,7 +71,7 @@ namespace BansheeEngine
 				depthStencilSurfaceDesc.texture = textureHandle;
 		}
 
-		RenderTargetPtr tex;
+		SPtr<RenderTarget> tex;
 
 		UINT32 numSurfaces = colorSurfacesList.size();
 		bool isMulti = numSurfaces > 1;
@@ -142,7 +142,7 @@ namespace BansheeEngine
 	{
 		if (thisPtr->mIsMulti)
 		{
-			MultiRenderTexturePtr tex = thisPtr->getMultiRenderTexture();
+			SPtr<MultiRenderTexture> tex = thisPtr->getMultiRenderTexture();
 
 			UINT32 numColorSurfaces = tex->getColorSurfaceCount();
 			ScriptArray outArray = ScriptArray::create<ScriptTexture2D>(numColorSurfaces);
@@ -160,7 +160,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			RenderTexturePtr tex = thisPtr->getRenderTexture();
+			SPtr<RenderTexture> tex = thisPtr->getRenderTexture();
 			ScriptArray outArray = ScriptArray::create<ScriptTexture2D>(1);
 
 			HTexture colorTex = tex->getBindableColorTexture();
@@ -178,12 +178,12 @@ namespace BansheeEngine
 		HTexture colorTex;
 		if (thisPtr->mIsMulti)
 		{
-			MultiRenderTexturePtr tex = thisPtr->getMultiRenderTexture();
+			SPtr<MultiRenderTexture> tex = thisPtr->getMultiRenderTexture();
 			colorTex = tex->getBindableDepthStencilTexture();
 		}
 		else
 		{
-			RenderTexturePtr tex = thisPtr->getRenderTexture();
+			SPtr<RenderTexture> tex = thisPtr->getRenderTexture();
 			colorTex = tex->getBindableDepthStencilTexture();
 		}
 

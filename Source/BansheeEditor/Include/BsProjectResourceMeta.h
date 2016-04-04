@@ -29,8 +29,8 @@ namespace BansheeEngine
 		 * @param[in]	resourceMetaData	Non-project library specific meta-data.
 		 * @return							New project library resource meta data instance.
 		 */
-		static ProjectResourceMetaPtr create(const WString& name, const String& uuid, UINT32 typeId, 
-			const ResourceMetaDataPtr& resourceMetaData);
+		static SPtr<ProjectResourceMeta> create(const WString& name, const String& uuid, UINT32 typeId, 
+			const SPtr<ResourceMetaData>& resourceMetaData);
 
 		/** Returns the name of the resource, unique within the file containing the resource. */
 		const WString& getUniqueName() const { return mName; }
@@ -39,7 +39,7 @@ namespace BansheeEngine
 		const String& getUUID() const { return mUUID; }
 
 		/**	Returns the non-project library specific meta-data. */
-		ResourceMetaDataPtr getResourceMetaData() const { return mResourceMeta; }
+		SPtr<ResourceMetaData> getResourceMetaData() const { return mResourceMeta; }
 
 		/**	Returns the RTTI type ID of the resource this object is referencing. */
 		UINT32 getTypeID() const { return mTypeId; }
@@ -49,7 +49,7 @@ namespace BansheeEngine
 
 		WString mName;
 		String mUUID;
-		ResourceMetaDataPtr mResourceMeta;
+		SPtr<ResourceMetaData> mResourceMeta;
 		UINT32 mTypeId;
 
 		/************************************************************************/
@@ -57,7 +57,7 @@ namespace BansheeEngine
 		/************************************************************************/
 
 		/**	Creates a new empty meta-data instance. Used only for serialization purposes. */
-		static ProjectResourceMetaPtr createEmpty();
+		static SPtr<ProjectResourceMeta> createEmpty();
 
 	public:
 		friend class ProjectResourceMetaRTTI;
@@ -83,22 +83,22 @@ namespace BansheeEngine
 		 * @param[in]	importOptions		Import options used for importing the resource.
 		 * @return							New project library file meta data instance.
 		 */
-		static ProjectFileMetaPtr create(const ImportOptionsPtr& importOptions);
+		static SPtr<ProjectFileMeta> create(const SPtr<ImportOptions>& importOptions);
 
 		/** Registers a new resource in the file meta-data. */
-		void add(const ProjectResourceMetaPtr& resourceMeta);
+		void add(const SPtr<ProjectResourceMeta>& resourceMeta);
 
 		/** Removes a resource with the specified UUID from the file meta-data. */
 		void remove(const String& UUID);
 
 		/** Returns meta-data for all resources contained in the file represented by this meta-data object. */
-		const Vector<ProjectResourceMetaPtr>& getResourceMetaData() const { return mResourceMetaData; }
+		const Vector<SPtr<ProjectResourceMeta>>& getResourceMetaData() const { return mResourceMetaData; }
 
 		/** Removes all resource meta-data stored by this object. */
 		void clearResourceMetaData() { mResourceMetaData.clear(); }
 
 		/**	Returns the import options used for importing the resource this object is referencing. */
-		const ImportOptionsPtr& getImportOptions() const { return mImportOptions; }
+		const SPtr<ImportOptions>& getImportOptions() const { return mImportOptions; }
 
 		/** Checks should this resource always be included in the build, regardless if it's being referenced or not. */
 		bool getIncludeInBuild() const { return mIncludeInBuild; }
@@ -115,8 +115,8 @@ namespace BansheeEngine
 	private:
 		friend class ProjectLibrary;
 
-		Vector<ProjectResourceMetaPtr> mResourceMetaData;
-		ImportOptionsPtr mImportOptions;
+		Vector<SPtr<ProjectResourceMeta>> mResourceMetaData;
+		SPtr<ImportOptions> mImportOptions;
 		bool mIncludeInBuild;
 
 		/************************************************************************/
@@ -124,7 +124,7 @@ namespace BansheeEngine
 		/************************************************************************/
 
 		/**	Creates a new empty meta-data instance. Used only for serialization purposes. */
-		static ProjectFileMetaPtr createEmpty();
+		static SPtr<ProjectFileMeta> createEmpty();
 
 	public:
 		friend class ProjectFileMetaRTTI;

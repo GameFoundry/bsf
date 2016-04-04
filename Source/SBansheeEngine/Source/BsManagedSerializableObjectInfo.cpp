@@ -42,8 +42,8 @@ namespace BansheeEngine
 
 	}
 
-	ManagedSerializableFieldInfoPtr ManagedSerializableObjectInfo::findMatchingField(const ManagedSerializableFieldInfoPtr& fieldInfo,
-		const ManagedSerializableTypeInfoPtr& fieldTypeInfo) const
+	SPtr<ManagedSerializableFieldInfo> ManagedSerializableObjectInfo::findMatchingField(const SPtr<ManagedSerializableFieldInfo>& fieldInfo,
+		const SPtr<ManagedSerializableTypeInfo>& fieldTypeInfo) const
 	{
 		const ManagedSerializableObjectInfo* objInfo = this;
 		while (objInfo != nullptr)
@@ -56,7 +56,7 @@ namespace BansheeEngine
 					auto iterFind2 = objInfo->mFields.find(iterFind->second);
 					if (iterFind2 != objInfo->mFields.end())
 					{
-						ManagedSerializableFieldInfoPtr foundField = iterFind2->second;
+						SPtr<ManagedSerializableFieldInfo> foundField = iterFind2->second;
 						if (foundField->isSerializable())
 						{
 							if (fieldInfo->mTypeInfo->matches(foundField->mTypeInfo))
@@ -113,7 +113,7 @@ namespace BansheeEngine
 		return ManagedSerializableTypeInfo::getRTTIStatic();
 	}
 
-	bool ManagedSerializableTypeInfoPrimitive::matches(const ManagedSerializableTypeInfoPtr& typeInfo) const
+	bool ManagedSerializableTypeInfoPrimitive::matches(const SPtr<ManagedSerializableTypeInfo>& typeInfo) const
 	{
 		if(!rtti_is_of_type<ManagedSerializableTypeInfoPrimitive>(typeInfo))
 			return false;
@@ -173,7 +173,7 @@ namespace BansheeEngine
 		return ManagedSerializableTypeInfoPrimitive::getRTTIStatic();
 	}
 
-	bool ManagedSerializableTypeInfoRef::matches(const ManagedSerializableTypeInfoPtr& typeInfo) const
+	bool ManagedSerializableTypeInfoRef::matches(const SPtr<ManagedSerializableTypeInfo>& typeInfo) const
 	{
 		if (!rtti_is_of_type<ManagedSerializableTypeInfoRef>(typeInfo))
 			return false;
@@ -261,7 +261,7 @@ namespace BansheeEngine
 		}
 
 		// Custom component or resource
-		ManagedSerializableObjectInfoPtr objInfo;
+		SPtr<ManagedSerializableObjectInfo> objInfo;
 		if (!ScriptAssemblyManager::instance().getSerializableObjectInfo(mTypeNamespace, mTypeName, objInfo))
 			return nullptr;
 
@@ -278,7 +278,7 @@ namespace BansheeEngine
 		return ManagedSerializableTypeInfoRef::getRTTIStatic();
 	}
 
-	bool ManagedSerializableTypeInfoObject::matches(const ManagedSerializableTypeInfoPtr& typeInfo) const
+	bool ManagedSerializableTypeInfoObject::matches(const SPtr<ManagedSerializableTypeInfo>& typeInfo) const
 	{
 		if(!rtti_is_of_type<ManagedSerializableTypeInfoObject>(typeInfo))
 			return false;
@@ -295,7 +295,7 @@ namespace BansheeEngine
 
 	::MonoClass* ManagedSerializableTypeInfoObject::getMonoClass() const
 	{
-		ManagedSerializableObjectInfoPtr objInfo;
+		SPtr<ManagedSerializableObjectInfo> objInfo;
 		if(!ScriptAssemblyManager::instance().getSerializableObjectInfo(mTypeNamespace, mTypeName, objInfo))
 			return nullptr;
 
@@ -312,7 +312,7 @@ namespace BansheeEngine
 		return ManagedSerializableTypeInfoObject::getRTTIStatic();
 	}
 
-	bool ManagedSerializableTypeInfoArray::matches(const ManagedSerializableTypeInfoPtr& typeInfo) const
+	bool ManagedSerializableTypeInfoArray::matches(const SPtr<ManagedSerializableTypeInfo>& typeInfo) const
 	{
 		if(!rtti_is_of_type<ManagedSerializableTypeInfoArray>(typeInfo))
 			return false;
@@ -346,7 +346,7 @@ namespace BansheeEngine
 		return ManagedSerializableTypeInfoArray::getRTTIStatic();
 	}
 
-	bool ManagedSerializableTypeInfoList::matches(const ManagedSerializableTypeInfoPtr& typeInfo) const
+	bool ManagedSerializableTypeInfoList::matches(const SPtr<ManagedSerializableTypeInfo>& typeInfo) const
 	{
 		if(!rtti_is_of_type<ManagedSerializableTypeInfoList>(typeInfo))
 			return false;
@@ -383,7 +383,7 @@ namespace BansheeEngine
 		return ManagedSerializableTypeInfoList::getRTTIStatic();
 	}
 
-	bool ManagedSerializableTypeInfoDictionary::matches(const ManagedSerializableTypeInfoPtr& typeInfo) const
+	bool ManagedSerializableTypeInfoDictionary::matches(const SPtr<ManagedSerializableTypeInfo>& typeInfo) const
 	{
 		if(!rtti_is_of_type<ManagedSerializableTypeInfoDictionary>(typeInfo))
 			return false;

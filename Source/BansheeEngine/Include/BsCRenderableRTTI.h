@@ -17,8 +17,8 @@ namespace BansheeEngine
 	class BS_EXPORT CRenderableRTTI : public RTTIType<CRenderable, Component, CRenderableRTTI>
 	{
 	private:
-		RenderablePtr getInternal(CRenderable* obj) { return obj->mInternal; }
-		void setInternal(CRenderable* obj, RenderablePtr val) { obj->mInternal = val; }
+		SPtr<Renderable> getInternal(CRenderable* obj) { return obj->mInternal; }
+		void setInternal(CRenderable* obj, SPtr<Renderable> val) { obj->mInternal = val; }
 
 	public:
 		CRenderableRTTI()
@@ -37,7 +37,7 @@ namespace BansheeEngine
 			return TID_CRenderable;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return GameObjectRTTI::createGameObject<CRenderable>();
 		}

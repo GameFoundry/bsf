@@ -71,7 +71,7 @@ namespace BansheeEngine
 		virtual void startUpRenderer() override;
 
 		/** @copydoc CoreApplication::getShaderIncludeHandler */
-		ShaderIncludeHandlerPtr getShaderIncludeHandler() const override;
+		SPtr<IShaderIncludeHandler> getShaderIncludeHandler() const override;
 
 		/**	Loads the script system and all script libraries. */
 		virtual void loadScriptSystem();

@@ -219,7 +219,7 @@ namespace BansheeEngine
 		Path nativePath = MonoUtil::monoToWString(path);
 		HSceneObject sceneRoot = gSceneManager().getRootNode();
 		
-		ProjectResourceMetaPtr resMeta = gProjectLibrary().findResourceMeta(nativePath);
+		SPtr<ProjectResourceMeta> resMeta = gProjectLibrary().findResourceMeta(nativePath);
 		HPrefab scene;
 		if (resMeta != nullptr)
 		{
@@ -287,7 +287,7 @@ namespace BansheeEngine
 	void ScriptEditorApplication::internal_RunUnitTests()
 	{
 #if BS_DEBUG_MODE
-		TestSuitePtr testSuite = TestSuite::create<ScriptEditorTestSuite>();
+		SPtr<TestSuite> testSuite = TestSuite::create<ScriptEditorTestSuite>();
 		ExceptionTestOutput testOutput;
 		testSuite->run(testOutput);
 #endif

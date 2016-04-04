@@ -39,7 +39,7 @@ namespace BansheeEngine
 			return TID_ScriptCode;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return ScriptCode::_createPtr(L""); // Initial string doesn't matter, it'll get overwritten
 		}

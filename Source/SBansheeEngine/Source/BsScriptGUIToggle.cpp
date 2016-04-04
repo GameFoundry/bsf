@@ -59,7 +59,7 @@ namespace BansheeEngine
 			options.addOption(mono_array_get(guiOptions, GUIOption, i));
 
 		ScriptGUIToggleGroup* scriptToggleGroup = nullptr;
-		std::shared_ptr<GUIToggleGroup> toggleGroup;
+		SPtr<GUIToggleGroup> toggleGroup;
 		if (monoToggleGroup != nullptr)
 		{
 			scriptToggleGroup = ScriptGUIToggleGroup::toNative(monoToggleGroup);

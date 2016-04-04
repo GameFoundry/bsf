@@ -45,11 +45,11 @@ namespace BansheeEngine
 		struct BS_SCR_BE_EXPORT ModifiedField : public IReflectable
 		{
 			ModifiedField() { }
-			ModifiedField(const ManagedSerializableTypeInfoPtr& parentType,
-				const ManagedSerializableFieldInfoPtr& fieldType, const SPtr<Modification>& modification);
+			ModifiedField(const SPtr<ManagedSerializableTypeInfo>& parentType,
+				const SPtr<ManagedSerializableFieldInfo>& fieldType, const SPtr<Modification>& modification);
 
-			ManagedSerializableTypeInfoPtr parentType; /**< Type of the parent object the field belongs to. */
-			ManagedSerializableFieldInfoPtr fieldType; /**< Data type of the field. */
+			SPtr<ManagedSerializableTypeInfo> parentType; /**< Type of the parent object the field belongs to. */
+			SPtr<ManagedSerializableFieldInfo> fieldType; /**< Data type of the field. */
 			SPtr<Modification> modification; /**< Recorded modification(s) on the field. */
 
 			/************************************************************************/
@@ -83,9 +83,9 @@ namespace BansheeEngine
 		struct BS_SCR_BE_EXPORT ModifiedDictionaryEntry : public IReflectable
 		{
 			ModifiedDictionaryEntry() { }
-			ModifiedDictionaryEntry(const ManagedSerializableFieldDataPtr& key, const SPtr<Modification>& modification);
+			ModifiedDictionaryEntry(const SPtr<ManagedSerializableFieldData>& key, const SPtr<Modification>& modification);
 
-			ManagedSerializableFieldDataPtr key; /**< Serialized value of the key for the modified entry. */
+			SPtr<ManagedSerializableFieldData> key; /**< Serialized value of the key for the modified entry. */
 			SPtr<Modification> modification; /**< Recorded modification(s) on the dictionary entry value. */
 
 			/************************************************************************/
@@ -142,7 +142,7 @@ namespace BansheeEngine
 			/** A list of modified entries in the dictionary. */
 			Vector<ModifiedDictionaryEntry> entries; 
 			/** A list of keys for entries that were removed from the dictionary. */
-			Vector<ManagedSerializableFieldDataPtr> removed; 
+			Vector<SPtr<ManagedSerializableFieldData>> removed; 
 
 			/************************************************************************/
 			/* 								RTTI		                     		*/
@@ -157,11 +157,11 @@ namespace BansheeEngine
 		struct BS_SCR_BE_EXPORT ModifiedEntry : Modification
 		{
 			ModifiedEntry() { }
-			ModifiedEntry(const ManagedSerializableFieldDataPtr& value);
+			ModifiedEntry(const SPtr<ManagedSerializableFieldData>& value);
 
-			static SPtr<ModifiedEntry> create(const ManagedSerializableFieldDataPtr& value);
+			static SPtr<ModifiedEntry> create(const SPtr<ManagedSerializableFieldData>& value);
 
-			ManagedSerializableFieldDataPtr value;
+			SPtr<ManagedSerializableFieldData> value;
 
 			/************************************************************************/
 			/* 								RTTI		                     		*/
@@ -185,26 +185,26 @@ namespace BansheeEngine
 		 *						recorded in the diff.
 		 * @return				Returns null if objects are identical.
 		 */
-		static ManagedSerializableDiffPtr create(const ManagedSerializableObjectPtr& oldObj, const ManagedSerializableObjectPtr& newObj);
+		static SPtr<ManagedSerializableDiff> create(const SPtr<ManagedSerializableObject>& oldObj, const SPtr<ManagedSerializableObject>& newObj);
 
 		/**
 		 * Applies the diff data stored in this object to the specified object, modifying all fields in the object to
 		 * correspond to the stored diff data.
 		 */
-		void apply(const ManagedSerializableObjectPtr& obj);
+		void apply(const SPtr<ManagedSerializableObject>& obj);
 
 	private:
 		/**
 		 * Recursively generates a diff between all fields of the specified objects. Returns null if objects are identical.
 		 */
-		SPtr<ModifiedObject> generateDiff(const ManagedSerializableObjectPtr& oldObj, const ManagedSerializableObjectPtr& newObj);
+		SPtr<ModifiedObject> generateDiff(const SPtr<ManagedSerializableObject>& oldObj, const SPtr<ManagedSerializableObject>& newObj);
 
 		/**
 		 * Generates a diff between two fields. Fields can be of any type and the system will generate the diff 
 		 * appropriately. Diff is generated recursively on all complex objects as well. Returns null if fields contain
 		 * identical data.
 		 */
-		SPtr<Modification> generateDiff(const ManagedSerializableFieldDataPtr& oldData, const ManagedSerializableFieldDataPtr& newData,
+		SPtr<Modification> generateDiff(const SPtr<ManagedSerializableFieldData>& oldData, const SPtr<ManagedSerializableFieldData>& newData,
 			UINT32 fieldTypeId);
 
 		/**
@@ -214,7 +214,7 @@ namespace BansheeEngine
 		 * @param[in]	obj	Object to apply the modification to.
 		 * @return		New field data in the case modification needed the object to be re-created instead of just modified.
 		 */
-		ManagedSerializableFieldDataPtr applyDiff(const SPtr<ModifiedObject>& mod, const ManagedSerializableObjectPtr& obj);
+		SPtr<ManagedSerializableFieldData> applyDiff(const SPtr<ModifiedObject>& mod, const SPtr<ManagedSerializableObject>& obj);
 
 		/**
 		 * Applies an array modification to a managed array. Modifications are applied recursively.
@@ -223,7 +223,7 @@ namespace BansheeEngine
 		 * @param[in]	obj	Array to apply the modification to.
 		 * @return		New field data in the case modification needed the array to be re-created instead of just modified.
 		 */
-		ManagedSerializableFieldDataPtr applyDiff(const SPtr<ModifiedArray>& mod, const ManagedSerializableArrayPtr& obj);
+		SPtr<ManagedSerializableFieldData> applyDiff(const SPtr<ModifiedArray>& mod, const SPtr<ManagedSerializableArray>& obj);
 
 		/**
 		 * Applies an list modification to a managed list. Modifications are applied recursively.
@@ -232,7 +232,7 @@ namespace BansheeEngine
 		 * @param[in]	obj	List to apply the modification to.
 		 * @return		New field data in the case modification needed the list to be re-created instead of just modified.
 		 */
-		ManagedSerializableFieldDataPtr applyDiff(const SPtr<ModifiedArray>& mod, const ManagedSerializableListPtr& obj);
+		SPtr<ManagedSerializableFieldData> applyDiff(const SPtr<ModifiedArray>& mod, const SPtr<ManagedSerializableList>& obj);
 
 		/**
 		 * Applies an dictionary modification to a managed dictionary. Modifications are applied recursively.
@@ -241,7 +241,7 @@ namespace BansheeEngine
 		 * @param[in]	obj	Dictionary to apply the modification to.
 		 * @return	New field data in the case modification needed the dictionary to be re-created instead of just modified.
 		 */
-		ManagedSerializableFieldDataPtr applyDiff(const SPtr<ModifiedDictionary>& mod, const ManagedSerializableDictionaryPtr& obj);
+		SPtr<ManagedSerializableFieldData> applyDiff(const SPtr<ModifiedDictionary>& mod, const SPtr<ManagedSerializableDictionary>& obj);
 
 		/**
 		 * Applies a modification to a single field. Field type is determined and the modification is applied to the
@@ -253,8 +253,8 @@ namespace BansheeEngine
 		 * @return					New field data in the case modification needed the field data to be re-created instead
 		 *							of just modified.
 		 */
-		ManagedSerializableFieldDataPtr applyDiff(const SPtr<Modification>& mod, const ManagedSerializableTypeInfoPtr& fieldType,
-			const ManagedSerializableFieldDataPtr& origData);
+		SPtr<ManagedSerializableFieldData> applyDiff(const SPtr<Modification>& mod, const SPtr<ManagedSerializableTypeInfo>& fieldType,
+			const SPtr<ManagedSerializableFieldData>& origData);
 
 		SPtr<ModifiedObject> mModificationRoot;
 

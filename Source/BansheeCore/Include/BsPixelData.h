@@ -330,13 +330,13 @@ namespace BansheeEngine
 		 * Constructs a new object with an internal buffer capable of holding "extents" volume of pixels, where each pixel
 		 * is of the specified pixel format. Extent offsets are also stored, but are not used internally.
 		 */
-		static PixelDataPtr create(const PixelVolume &extents, PixelFormat pixelFormat);
+		static SPtr<PixelData> create(const PixelVolume &extents, PixelFormat pixelFormat);
 
 		/**
 		 * Constructs a new object with an internal buffer capable of holding volume of pixels described by provided width,
 		 * height and depth, where each pixel is of the specified pixel format.
 		 */
-		static PixelDataPtr create(UINT32 width, UINT32 height, UINT32 depth, PixelFormat pixelFormat);
+		static SPtr<PixelData> create(UINT32 width, UINT32 height, UINT32 depth, PixelFormat pixelFormat);
 
 	private:
 		/**

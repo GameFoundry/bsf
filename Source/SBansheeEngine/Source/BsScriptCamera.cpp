@@ -227,7 +227,7 @@ namespace BansheeEngine
 
 	void ScriptCamera::internal_SetClearColor(ScriptCamera* instance, Color* value)
 	{
-		ViewportPtr vp = instance->mCamera->getViewport();
+		SPtr<Viewport> vp = instance->mCamera->getViewport();
 		vp->setClearValues(*value, vp->getClearDepthValue(), vp->getClearStencilValue());
 	}
 
@@ -238,7 +238,7 @@ namespace BansheeEngine
 
 	void ScriptCamera::internal_SetDepthClearValue(ScriptCamera* instance, float value)
 	{
-		ViewportPtr vp = instance->mCamera->getViewport();
+		SPtr<Viewport> vp = instance->mCamera->getViewport();
 		vp->setClearValues(vp->getClearColor(), value, vp->getClearStencilValue());
 	}
 
@@ -249,13 +249,13 @@ namespace BansheeEngine
 
 	void ScriptCamera::internal_SetStencilClearValue(ScriptCamera* instance, UINT16 value)
 	{
-		ViewportPtr vp = instance->mCamera->getViewport();
+		SPtr<Viewport> vp = instance->mCamera->getViewport();
 		vp->setClearValues(vp->getClearColor(), vp->getClearDepthValue(), value);
 	}
 
 	UINT32 ScriptCamera::internal_GetClearFlags(ScriptCamera* instance)
 	{
-		ViewportPtr vp = instance->mCamera->getViewport();
+		SPtr<Viewport> vp = instance->mCamera->getViewport();
 		UINT32 clearFlags = 0;
 
 		clearFlags |= vp->getRequiresColorClear() ? 0x01 : 0;
@@ -267,7 +267,7 @@ namespace BansheeEngine
 
 	void ScriptCamera::internal_SetClearFlags(ScriptCamera* instance, UINT32 value)
 	{
-		ViewportPtr vp = instance->mCamera->getViewport();
+		SPtr<Viewport> vp = instance->mCamera->getViewport();
 
 		vp->setRequiresClear((value & 0x01) != 0,
 			(value & 0x02) != 0, (value & 0x04) != 0);
@@ -315,14 +315,14 @@ namespace BansheeEngine
 
 	int ScriptCamera::internal_GetWidthPixels(ScriptCamera* instance)
 	{
-		ViewportPtr vp = instance->mCamera->getViewport();
+		SPtr<Viewport> vp = instance->mCamera->getViewport();
 
 		return vp->getWidth();
 	}
 
 	int ScriptCamera::internal_GetHeightPixels(ScriptCamera* instance)
 	{
-		ViewportPtr vp = instance->mCamera->getViewport();
+		SPtr<Viewport> vp = instance->mCamera->getViewport();
 
 		return vp->getHeight();
 	}
@@ -350,20 +350,20 @@ namespace BansheeEngine
 
 		// The main camera could be rendering to a standalone window, or be a part of the editor GUI. Find out which
 		// and transform the pointer position appropriately.
-		RenderTargetPtr target = mainCamera.camera->getViewport()->getTarget();
+		SPtr<RenderTarget> target = mainCamera.camera->getViewport()->getTarget();
 		if (target == nullptr)
 			return;
 
 		if (target->getProperties().isWindow())
 		{
-			RenderWindowPtr window = std::static_pointer_cast<RenderWindow>(target);
+			SPtr<RenderWindow> window = std::static_pointer_cast<RenderWindow>(target);
 			*output = window->screenToWindowPos(*value);
 		}
 		else
 		{
-			RenderTexturePtr texture = std::static_pointer_cast<RenderTexture>(target);
+			SPtr<RenderTexture> texture = std::static_pointer_cast<RenderTexture>(target);
 
-			RenderWindowPtr window = GUIManager::instance().getBridgeWindow(texture);
+			SPtr<RenderWindow> window = GUIManager::instance().getBridgeWindow(texture);
 			if (window == nullptr)
 				return;
 

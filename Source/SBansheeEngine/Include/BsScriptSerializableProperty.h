@@ -26,17 +26,17 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	typeInfo	Data about the type the property references.
 		 */
-		static ScriptSerializableProperty* create(const ManagedSerializableTypeInfoPtr& typeInfo);
+		static ScriptSerializableProperty* create(const SPtr<ManagedSerializableTypeInfo>& typeInfo);
 
 		/**	Returns the data about the type the property is referencing. */
-		ManagedSerializableTypeInfoPtr getTypeInfo() const { return mTypeInfo; }
+		SPtr<ManagedSerializableTypeInfo> getTypeInfo() const { return mTypeInfo; }
 
 		~ScriptSerializableProperty() {}
 
 	private:
-		ScriptSerializableProperty(MonoObject* instance, const ManagedSerializableTypeInfoPtr& typeInfo);
+		ScriptSerializableProperty(MonoObject* instance, const SPtr<ManagedSerializableTypeInfo>& typeInfo);
 
-		ManagedSerializableTypeInfoPtr mTypeInfo;
+		SPtr<ManagedSerializableTypeInfo> mTypeInfo;
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/

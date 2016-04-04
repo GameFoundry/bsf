@@ -201,7 +201,7 @@ namespace BansheeEngine
 		return contentBounds.contains(position);
 	}
 
-	GUIContextMenuPtr GUIElement::_getContextMenu() const
+	SPtr<GUIContextMenu> GUIElement::_getContextMenu() const
 	{
 		if (!_isDisabled())
 			return mContextMenu;

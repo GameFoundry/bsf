@@ -89,9 +89,9 @@ namespace BansheeEngine
 			return TID_PixelData;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		virtual SPtr<IReflectable> newRTTIObject() override
 		{
-			PixelDataPtr newPixelData = bs_shared_ptr_new<PixelData>();
+			SPtr<PixelData> newPixelData = bs_shared_ptr_new<PixelData>();
 
 			return newPixelData;
 		}

@@ -16,7 +16,7 @@ namespace BansheeEngine
 	class PhysXMesh : public PhysicsMesh
 	{
 	public:
-		PhysXMesh(const MeshDataPtr& meshData, PhysicsMeshType type);
+		PhysXMesh(const SPtr<MeshData>& meshData, PhysicsMeshType type);
 
 	private:
 		/** @copydoc PhysicsMesh::initialize() */
@@ -33,11 +33,11 @@ namespace BansheeEngine
 	class FPhysXMesh : public FPhysicsMesh
 	{
 	public:
-		FPhysXMesh(const MeshDataPtr& meshData, PhysicsMeshType type);
+		FPhysXMesh(const SPtr<MeshData>& meshData, PhysicsMeshType type);
 		~FPhysXMesh();
 
 		/** @copydoc PhysicsMesh::getMeshData */
-		MeshDataPtr getMeshData() const override;
+		SPtr<MeshData> getMeshData() const override;
 
 		/** 
 		 * Returns the internal PhysX representation of a triangle mesh. Caller must ensure the physics mesh type is 

@@ -13,7 +13,7 @@ namespace BansheeEngine
 		assert(mRenderSystem != nullptr);
 	}
 
-	RenderWindowPtr D3D11RenderWindowManager::createImpl(RENDER_WINDOW_DESC& desc, UINT32 windowId, const RenderWindowPtr& parentWindow)
+	SPtr<RenderWindow> D3D11RenderWindowManager::createImpl(RENDER_WINDOW_DESC& desc, UINT32 windowId, const SPtr<RenderWindow>& parentWindow)
 	{
 		RenderAPICore* rs = RenderAPICore::instancePtr();
 		D3D11RenderAPI* d3d11rs = static_cast<D3D11RenderAPI*>(rs);

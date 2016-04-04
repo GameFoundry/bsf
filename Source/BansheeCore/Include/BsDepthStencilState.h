@@ -155,10 +155,10 @@ namespace BansheeEngine
 		SPtr<DepthStencilStateCore> getCore() const;
 
 		/**	Creates a new depth stencil state using the specified depth stencil state description structure. */
-		static DepthStencilStatePtr create(const DEPTH_STENCIL_STATE_DESC& desc);
+		static SPtr<DepthStencilState> create(const DEPTH_STENCIL_STATE_DESC& desc);
 
 		/**	Returns the default depth stencil state that you may use when no other is available. */
-		static const DepthStencilStatePtr& getDefault();
+		static const SPtr<DepthStencilState>& getDefault();
 
 		/**	Generates a hash value from a depth-stencil state descriptor. */
 		static UINT64 generateHash(const DEPTH_STENCIL_STATE_DESC& desc);

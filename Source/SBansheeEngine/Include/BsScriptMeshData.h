@@ -27,24 +27,24 @@ namespace BansheeEngine
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "MeshData")
 
 		/**	Returns the internal wrapped mesh data. */
-		RendererMeshDataPtr getInternalValue() const { return mMeshData; }
+		SPtr<RendererMeshData> getInternalValue() const { return mMeshData; }
 
 		/**	Creates a new managed MeshData object from the provided native render mesh data. */
-		static MonoObject* create(const RendererMeshDataPtr& meshData);
+		static MonoObject* create(const SPtr<RendererMeshData>& meshData);
 
 		/**	Creates a new managed MeshData object from the provided native mesh data. */
-		static MonoObject* create(const MeshDataPtr& meshData);
+		static MonoObject* create(const SPtr<MeshData>& meshData);
 	private:
 		ScriptMeshData(MonoObject* managedInstance);
 		~ScriptMeshData();
 
 		/**	Initializes the object. Must be called after construction and before use. */
-		void initialize(const RendererMeshDataPtr& meshData);
+		void initialize(const SPtr<RendererMeshData>& meshData);
 
 		/**	Checks is the underlying mesh data of the provided object locked. When locked mesh data cannot be accessed. */
 		static bool checkIsLocked(ScriptMeshData* thisPtr);
 
-		RendererMeshDataPtr mMeshData;
+		SPtr<RendererMeshData> mMeshData;
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/

@@ -16,35 +16,35 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT PassRTTI : public RTTIType<Pass, IReflectable, PassRTTI>
 	{
 	private:
-		BlendStatePtr getBlendState(Pass* obj) { return obj->mData.blendState; }
-		void setBlendState(Pass* obj, BlendStatePtr val) { obj->mData.blendState = val; }
+		SPtr<BlendState> getBlendState(Pass* obj) { return obj->mData.blendState; }
+		void setBlendState(Pass* obj, SPtr<BlendState> val) { obj->mData.blendState = val; }
 
-		RasterizerStatePtr getRasterizerState(Pass* obj) { return obj->mData.rasterizerState; }
-		void setRasterizerState(Pass* obj, RasterizerStatePtr val) { obj->mData.rasterizerState = val; }
+		SPtr<RasterizerState> getRasterizerState(Pass* obj) { return obj->mData.rasterizerState; }
+		void setRasterizerState(Pass* obj, SPtr<RasterizerState> val) { obj->mData.rasterizerState = val; }
 
-		DepthStencilStatePtr getDepthStencilState(Pass* obj) { return obj->mData.depthStencilState; }
-		void setDepthStencilState(Pass* obj, DepthStencilStatePtr val) { obj->mData.depthStencilState = val; }
+		SPtr<DepthStencilState> getDepthStencilState(Pass* obj) { return obj->mData.depthStencilState; }
+		void setDepthStencilState(Pass* obj, SPtr<DepthStencilState> val) { obj->mData.depthStencilState = val; }
 
 		UINT32& getStencilRefValue(Pass* obj) { return obj->mData.stencilRefValue; }
 		void setStencilRefValue(Pass* obj, UINT32& val) { obj->mData.stencilRefValue = val; }
 
-		GpuProgramPtr getVertexProgram(Pass* obj) { return obj->mData.vertexProgram; }
-		void setVertexProgram(Pass* obj, GpuProgramPtr val) { obj->mData.vertexProgram = val; }
+		SPtr<GpuProgram> getVertexProgram(Pass* obj) { return obj->mData.vertexProgram; }
+		void setVertexProgram(Pass* obj, SPtr<GpuProgram> val) { obj->mData.vertexProgram = val; }
 
-		GpuProgramPtr getFragmentProgram(Pass* obj) { return obj->mData.fragmentProgram; }
-		void setFragmentProgram(Pass* obj, GpuProgramPtr val) { obj->mData.fragmentProgram = val; }
+		SPtr<GpuProgram> getFragmentProgram(Pass* obj) { return obj->mData.fragmentProgram; }
+		void setFragmentProgram(Pass* obj, SPtr<GpuProgram> val) { obj->mData.fragmentProgram = val; }
 
-		GpuProgramPtr getGeometryProgram(Pass* obj) { return obj->mData.geometryProgram; }
-		void setGeometryProgram(Pass* obj, GpuProgramPtr val) { obj->mData.geometryProgram = val; }
+		SPtr<GpuProgram> getGeometryProgram(Pass* obj) { return obj->mData.geometryProgram; }
+		void setGeometryProgram(Pass* obj, SPtr<GpuProgram> val) { obj->mData.geometryProgram = val; }
 
-		GpuProgramPtr getHullProgram(Pass* obj) { return obj->mData.hullProgram; }
-		void setHullProgram(Pass* obj, GpuProgramPtr val) { obj->mData.hullProgram = val; }
+		SPtr<GpuProgram> getHullProgram(Pass* obj) { return obj->mData.hullProgram; }
+		void setHullProgram(Pass* obj, SPtr<GpuProgram> val) { obj->mData.hullProgram = val; }
 
-		GpuProgramPtr getDomainProgram(Pass* obj) { return obj->mData.domainProgram; }
-		void setDomainProgram(Pass* obj, GpuProgramPtr val) { obj->mData.domainProgram = val; }
+		SPtr<GpuProgram> getDomainProgram(Pass* obj) { return obj->mData.domainProgram; }
+		void setDomainProgram(Pass* obj, SPtr<GpuProgram> val) { obj->mData.domainProgram = val; }
 
-		GpuProgramPtr getComputeProgram(Pass* obj) { return obj->mData.computeProgram; }
-		void setComputeProgram(Pass* obj, GpuProgramPtr val) { obj->mData.computeProgram = val; }
+		SPtr<GpuProgram> getComputeProgram(Pass* obj) { return obj->mData.computeProgram; }
+		void setComputeProgram(Pass* obj, SPtr<GpuProgram> val) { obj->mData.computeProgram = val; }
 	public:
 		PassRTTI()
 		{
@@ -79,7 +79,7 @@ namespace BansheeEngine
 			return TID_Pass;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return Pass::createEmpty();
 		}

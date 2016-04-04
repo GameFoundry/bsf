@@ -184,7 +184,7 @@ namespace BansheeEngine
 		GUITexture* mBackgroundImage;
 		GUIButton* mMaxBtn;
 		GUIButton* mCloseBtn;
-		GUIToggleGroupPtr mTabToggleGroup;
+		SPtr<GUIToggleGroup> mTabToggleGroup;
 
 		EditorWidgetBase* mTempDraggedWidget;
 		UINT32 mTempDraggedTabIdx;

@@ -181,7 +181,7 @@ namespace BansheeEngine
 		return getBuiltinAssemblyFolder();
 	}
 
-	ShaderIncludeHandlerPtr Application::getShaderIncludeHandler() const
+	SPtr<IShaderIncludeHandler> Application::getShaderIncludeHandler() const
 	{
 		return bs_shared_ptr_new<EngineShaderIncludeHandler>();
 	}

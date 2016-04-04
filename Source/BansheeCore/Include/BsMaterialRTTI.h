@@ -19,8 +19,8 @@ namespace BansheeEngine
 		HShader& getShader(Material* obj) { return obj->mShader; }
 		void setShader(Material* obj, HShader& val) { obj->mShader = val; }
 
-		std::shared_ptr<MaterialParams> getMaterialParams(Material* obj) { return obj->mCachedParams; }
-		void setMaterialParams(Material* obj, std::shared_ptr<MaterialParams> value) { obj->mRTTIData = value; }
+		SPtr<MaterialParams> getMaterialParams(Material* obj) { return obj->mCachedParams; }
+		void setMaterialParams(Material* obj, SPtr<MaterialParams> value) { obj->mRTTIData = value; }
 
 	public:
 		MaterialRTTI()
@@ -42,7 +42,7 @@ namespace BansheeEngine
 			return TID_Material;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override;
+		SPtr<IReflectable> newRTTIObject() override;
 	};
 
 	/** @} */

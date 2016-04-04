@@ -25,7 +25,7 @@ namespace BansheeEngine
 	{
 		HPhysicsMesh mesh = thisPtr->getHandle();
 
-		MeshDataPtr meshData = mesh->getMeshData();
+		SPtr<MeshData> meshData = mesh->getMeshData();
 		return ScriptMeshData::create(meshData);
 	}
 

@@ -30,7 +30,7 @@ namespace BansheeEngine
 		 * @note	This method will automatically close any existing drop down windows before opening a new one.
 		 */
 		template<class T, class... Args>
-		T* open(const RenderWindowPtr& parent, const CameraPtr& camera,
+		T* open(const SPtr<RenderWindow>& parent, const SPtr<Camera>& camera,
 			const Vector2I& position, Args &&...args)
 		{
 			close();

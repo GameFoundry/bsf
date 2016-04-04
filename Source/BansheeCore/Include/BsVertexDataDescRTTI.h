@@ -29,7 +29,7 @@ namespace BansheeEngine
 				&VertexDataDescRTTI::getNumVertexElementData, &VertexDataDescRTTI::setVertexElementData, &VertexDataDescRTTI::setNumVertexElementData);
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr<VertexDataDesc>(new (bs_alloc<VertexDataDesc>()) VertexDataDesc());
 		}

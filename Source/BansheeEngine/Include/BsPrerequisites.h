@@ -193,19 +193,6 @@ namespace BansheeEngine
 	class CCamera;
 	class CLight;
 
-	typedef std::shared_ptr<TextSprite> TextSpritePtr;
-	typedef std::shared_ptr<SpriteTexture> SpriteTexturePtr;
-	typedef std::shared_ptr<CCamera> CCameraPtr;
-	typedef std::shared_ptr<CRenderable> CRenderablePtr;
-	typedef std::shared_ptr<GUIToggleGroup> GUIToggleGroupPtr;
-	typedef std::shared_ptr<Camera> CameraPtr;
-	typedef std::shared_ptr<Renderable> RenderablePtr;
-	typedef std::shared_ptr<InputConfiguration> InputConfigurationPtr;
-	typedef std::shared_ptr<PlainText> PlainTextPtr;
-	typedef std::shared_ptr<ScriptCode> ScriptCodePtr;
-	typedef std::shared_ptr<GUISkin> GUISkinPtr;
-	typedef std::shared_ptr<GUIContextMenu> GUIContextMenuPtr;
-
 	typedef GameObjectHandle<CGUIWidget> HGUIWidget;
 	typedef GameObjectHandle<CCamera> HCamera;
 	typedef GameObjectHandle<CRenderable> HRenderable;

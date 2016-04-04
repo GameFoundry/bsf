@@ -76,7 +76,7 @@ namespace BansheeEngine
 		void initialize(const HSceneObject& sceneObject);
 
 		/**	Creates an empty and uninitialized prefab. */
-		static PrefabPtr createEmpty();
+		static SPtr<Prefab> createEmpty();
 
 		HSceneObject mRoot;
 		UINT32 mHash;

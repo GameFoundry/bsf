@@ -389,7 +389,7 @@ namespace BansheeEngine
 
 		// Generate & save GUI skin
 		{
-			GUISkinPtr skin = generateGUISkin();
+			SPtr<GUISkin> skin = generateGUISkin();
 			Path outputPath = FileSystem::getWorkingDirectoryPath() + BuiltinDataFolder + (GUISkinFile + L".asset");
 
 			HResource skinResource;
@@ -408,7 +408,7 @@ namespace BansheeEngine
 		Resources::instance().unloadAllUnused();
 	}
 
-	void BuiltinEditorResources::generateResourceIcons(const Path& inputFolder, const ResourceManifestPtr& manifest)
+	void BuiltinEditorResources::generateResourceIcons(const Path& inputFolder, const SPtr<ResourceManifest>& manifest)
 	{
 		if (!FileSystem::exists(inputFolder))
 			return;
@@ -417,7 +417,7 @@ namespace BansheeEngine
 			ScriptCodeIconTex, ShaderIconTex, ShaderIncludeIconTex, MaterialIconTex, SpriteTextureIconTex, PrefabIconTex,
 			GUISkinIconTex, PhysicsMaterialIconTex, PhysicsMeshIconTex };
 
-		PixelDataPtr srcData[sizeof(iconsToProcess)/sizeof(iconsToProcess[0])];
+		SPtr<PixelData> srcData[sizeof(iconsToProcess)/sizeof(iconsToProcess[0])];
 
 		UINT32 idx = 0;
 		for (auto& iconName : iconsToProcess)
@@ -439,15 +439,15 @@ namespace BansheeEngine
 		idx = 0;
 		for (auto& iconName : iconsToProcess)
 		{
-			PixelDataPtr src = srcData[idx];
+			SPtr<PixelData> src = srcData[idx];
 
-			PixelDataPtr scaled48 = PixelData::create(48, 48, 1, src->getFormat());
+			SPtr<PixelData> scaled48 = PixelData::create(48, 48, 1, src->getFormat());
 			PixelUtil::scale(*src, *scaled48);
 
-			PixelDataPtr scaled32 = PixelData::create(32, 32, 1, src->getFormat());
+			SPtr<PixelData> scaled32 = PixelData::create(32, 32, 1, src->getFormat());
 			PixelUtil::scale(*scaled48, *scaled32);
 
-			PixelDataPtr scaled16 = PixelData::create(16, 16, 1, src->getFormat());
+			SPtr<PixelData> scaled16 = PixelData::create(16, 16, 1, src->getFormat());
 			PixelUtil::scale(*scaled32, *scaled16);
 
 			HTexture tex48 = Texture::create(scaled48);
@@ -470,9 +470,9 @@ namespace BansheeEngine
 		}
 	}
 
-	GUISkinPtr BuiltinEditorResources::generateGUISkin()
+	SPtr<GUISkin> BuiltinEditorResources::generateGUISkin()
 	{
-		GUISkinPtr skin = GUISkin::_createPtr();
+		SPtr<GUISkin> skin = GUISkin::_createPtr();
 
 		Path defaultFontPath = FileSystem::getWorkingDirectoryPath();
 		defaultFontPath.append(BuiltinDataFolder);
@@ -2347,7 +2347,7 @@ namespace BansheeEngine
 		filePath.append(BuiltinDataFolder);
 		filePath.append(EmptyShaderCodeFile);
 
-		DataStreamPtr fileStream = FileSystem::openFile(filePath);
+		SPtr<DataStream> fileStream = FileSystem::openFile(filePath);
 		if (fileStream != nullptr)
 			return fileStream->getAsWString();
 
@@ -2360,7 +2360,7 @@ namespace BansheeEngine
 		filePath.append(BuiltinDataFolder);
 		filePath.append(EmptyCSScriptCodeFile);
 
-		DataStreamPtr fileStream = FileSystem::openFile(filePath);
+		SPtr<DataStream> fileStream = FileSystem::openFile(filePath);
 		if (fileStream != nullptr)
 			return fileStream->getAsWString();
 

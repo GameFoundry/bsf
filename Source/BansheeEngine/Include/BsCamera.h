@@ -497,7 +497,7 @@ namespace BansheeEngine
     {
     public:
 		/**	Returns the viewport used by the camera. */	
-		ViewportPtr getViewport() const { return mViewport; }
+		SPtr<Viewport> getViewport() const { return mViewport; }
 
 		/**
 		 * Determines whether this is the main application camera. Main camera controls the final render surface that is
@@ -515,7 +515,7 @@ namespace BansheeEngine
 		SPtr<CameraCore> getCore() const;
 
 		/**	Creates a new camera that renders to the specified portion of the provided render target. */
-		static CameraPtr create(RenderTargetPtr target = nullptr,
+		static SPtr<Camera> create(SPtr<RenderTarget> target = nullptr,
 			float left = 0.0f, float top = 0.0f, float width = 1.0f, float height = 1.0f);
 
 		/** @name Internal
@@ -531,7 +531,7 @@ namespace BansheeEngine
 		/** @} */
 
 	protected:
-		Camera(RenderTargetPtr target = nullptr,
+		Camera(SPtr<RenderTarget> target = nullptr,
 			float left = 0.0f, float top = 0.0f, float width = 1.0f, float height = 1.0f);
 
 		/** @copydoc CameraBase */
@@ -550,9 +550,9 @@ namespace BansheeEngine
 		void getCoreDependencies(Vector<CoreObject*>& dependencies) override;
 
 		/**	Creates a new camera without initializing it. */
-		static CameraPtr createEmpty();
+		static SPtr<Camera> createEmpty();
 
-		ViewportPtr mViewport; /**< Viewport that describes 2D rendering surface. */
+		SPtr<Viewport> mViewport; /**< Viewport that describes 2D rendering surface. */
 		bool mMain;
 		UINT32 mLastUpdateHash;
 

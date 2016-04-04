@@ -60,7 +60,7 @@ namespace BansheeEngine
 			return TID_PlatformInfo;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<PlatformInfo>();
 		}
@@ -93,7 +93,7 @@ namespace BansheeEngine
 			return TID_WinPlatformInfo;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<WinPlatformInfo>();
 		}

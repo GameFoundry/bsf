@@ -195,7 +195,7 @@ namespace BansheeEngine
 	template<class Type, class MainAlloc = GenAlloc, class PtrDataAlloc = GenAlloc>
 	SPtr<Type> bs_shared_ptr(Type* data)
 	{
-		return std::shared_ptr<Type>(data, &bs_delete<Type, MainAlloc>, StdAlloc<Type, PtrDataAlloc>());
+		return SPtr<Type>(data, &bs_delete<Type, MainAlloc>, StdAlloc<Type, PtrDataAlloc>());
 	}
 
 	/** Create a new unique pointer using a custom allocator category. */

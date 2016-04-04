@@ -21,7 +21,7 @@ namespace BansheeEngine
 	{
 	public:
 		/** @copydoc RendererFactory::create */
-		virtual CoreRendererPtr create() override;
+		virtual SPtr<CoreRenderer> create() override;
 
 		/** @copydoc RendererFactory::name */
 		virtual const String& name() const override;

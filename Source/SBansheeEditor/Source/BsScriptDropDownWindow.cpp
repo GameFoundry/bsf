@@ -58,8 +58,8 @@ namespace BansheeEngine
 			EditorWidgetContainer* parentContainer = editorWidget->_getParent();
 			if (parentContainer != nullptr)
 			{
-				RenderWindowPtr parentRenderWindow = parentContainer->getParentWindow()->getRenderWindow();
-				CameraPtr parentCamera = parentContainer->getParentWidget().getCamera();
+				SPtr<RenderWindow> parentRenderWindow = parentContainer->getParentWindow()->getRenderWindow();
+				SPtr<Camera> parentCamera = parentContainer->getParentWidget().getCamera();
 
 				position->x += editorWidget->getX();
 				position->y += editorWidget->getY();
@@ -120,7 +120,7 @@ namespace BansheeEngine
 			*screenPos = *windowPos;
 	}
 
-	ManagedDropDownWindow::ManagedDropDownWindow(const RenderWindowPtr& parent, const CameraPtr& camera,
+	ManagedDropDownWindow::ManagedDropDownWindow(const SPtr<RenderWindow>& parent, const SPtr<Camera>& camera,
 		const Vector2I& position, MonoObject* managedInstance, UINT32 width, UINT32 height)
 		:DropDownWindow(parent, camera, position, width, height), mUpdateThunk(nullptr), mManagedInstance(managedInstance),
 		mOnInitializeThunk(nullptr), mOnDestroyThunk(nullptr), mGCHandle(0), mScriptParent(nullptr), 

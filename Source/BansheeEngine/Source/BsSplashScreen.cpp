@@ -47,7 +47,7 @@ namespace BansheeEngine
 		windowDesc.alphaBlending = true;
 		windowDesc.wndProc = Win32Platform::_win32WndProc;
 
-		PixelDataPtr splashPixelData = BuiltinResources::getSplashScreen();
+		SPtr<PixelData> splashPixelData = BuiltinResources::getSplashScreen();
 		if (splashPixelData == nullptr)
 			return;
 

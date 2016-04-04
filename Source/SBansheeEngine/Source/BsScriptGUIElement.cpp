@@ -306,7 +306,7 @@ namespace BansheeEngine
 		{
 			GUIElement* guiElem = static_cast<GUIElement*>(guiElemBase);
 
-			GUIContextMenuPtr nativeContextMenu;
+			SPtr<GUIContextMenu> nativeContextMenu;
 			if (contextMenu != nullptr)
 				nativeContextMenu = contextMenu->getInternal();
 

@@ -35,7 +35,7 @@ namespace BansheeEngine
 			return TID_ScriptCodeImportOptions;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ScriptCodeImportOptions>();
 		}

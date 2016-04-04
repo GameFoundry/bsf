@@ -44,11 +44,11 @@ namespace BansheeEngine
 		void run(TestOutput& output);
 
 		/** Adds a new child suite to this suite. This method allows you to group suites and execute them all at once. */
-		void add(const TestSuitePtr& suite);
+		void add(const SPtr<TestSuite>& suite);
 
 		/**	Creates a new suite of a particular type. */
 		template <class T>
-		static TestSuitePtr create()
+		static SPtr<TestSuite> create()
 		{
 			static_assert((std::is_base_of<TestSuite, T>::value), "Invalid test suite type. It needs to derive from BansheeEngine::TestSuite.");
 
@@ -83,7 +83,7 @@ namespace BansheeEngine
 		void assertment(bool success, const String& desc, const String& file, long line);
 
 		Vector<TestEntry> mTests;
-		Vector<TestSuitePtr> mSuites;
+		Vector<SPtr<TestSuite>> mSuites;
 
 		// Transient
 		TestOutput* mOutput;

@@ -299,7 +299,7 @@ namespace BansheeEngine
 		textData.size = size;
 	}
 
-	void DrawHelper::wireMesh(const MeshDataPtr& meshData)
+	void DrawHelper::wireMesh(const SPtr<MeshData>& meshData)
 	{
 		if (meshData == nullptr)
 			return;
@@ -831,7 +831,7 @@ namespace BansheeEngine
 		{
 			if (batch.type == MeshType::Solid)
 			{
-				MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(batch.numVertices, batch.numIndices, mSolidVertexDesc);
+				SPtr<MeshData> meshData = bs_shared_ptr_new<MeshData>(batch.numVertices, batch.numIndices, mSolidVertexDesc);
 
 				UINT32 curVertexOffset = 0;
 				UINT32 curIndexOffet = 0;
@@ -934,7 +934,7 @@ namespace BansheeEngine
 			}
 			else if (batch.type == MeshType::Wire)
 			{
-				MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(batch.numVertices, batch.numIndices, mWireVertexDesc);
+				SPtr<MeshData> meshData = bs_shared_ptr_new<MeshData>(batch.numVertices, batch.numIndices, mWireVertexDesc);
 
 				UINT32 curIndexOffset = 0;
 
@@ -987,7 +987,7 @@ namespace BansheeEngine
 			}
 			else if(batch.type == MeshType::Line)
 			{
-				MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(batch.numVertices,
+				SPtr<MeshData> meshData = bs_shared_ptr_new<MeshData>(batch.numVertices,
 					batch.numIndices, mLineVertexDesc);
 
 				UINT32 curVertexOffset = 0;
@@ -1113,7 +1113,7 @@ namespace BansheeEngine
 			}
 			else // Text
 			{
-				MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(batch.numVertices,
+				SPtr<MeshData> meshData = bs_shared_ptr_new<MeshData>(batch.numVertices,
 					batch.numIndices, mTextVertexDesc);
 
 				UINT32 curVertexOffset = 0;

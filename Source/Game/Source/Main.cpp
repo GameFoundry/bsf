@@ -91,7 +91,7 @@ void runApplication()
 			const VideoOutputInfo& primaryMonitorInfo = videoModeInfo.getOutputInfo(0);
 			const VideoMode& selectedVideoMode = primaryMonitorInfo.getDesktopVideoMode();
 
-			RenderWindowPtr window = gApplication().getPrimaryWindow();
+			SPtr<RenderWindow> window = gApplication().getPrimaryWindow();
 			window->setFullscreen(gCoreAccessor(), selectedVideoMode);
 
 			resolutionWidth = selectedVideoMode.getWidth();
@@ -104,7 +104,7 @@ void runApplication()
 
 			VideoMode videoMode(resolutionWidth, resolutionHeight);
 
-			RenderWindowPtr window = gApplication().getPrimaryWindow();
+			SPtr<RenderWindow> window = gApplication().getPrimaryWindow();
 			window->show(gCoreAccessor());
 			window->setFullscreen(gCoreAccessor(), videoMode);
 		}
@@ -121,7 +121,7 @@ void runApplication()
 
 	Path resourceManifestPath = resourcesPath + GAME_RESOURCE_MANIFEST_NAME;
 
-	ResourceManifestPtr manifest;
+	SPtr<ResourceManifest> manifest;
 	if (FileSystem::exists(resourceManifestPath))
 	{
 		Path resourceRoot = FileSystem::getWorkingDirectoryPath();

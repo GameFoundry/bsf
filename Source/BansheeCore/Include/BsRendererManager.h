@@ -33,17 +33,17 @@ namespace BansheeEngine
 		void initialize();
 
 		/**	Returns the currently active renderer. Null if no renderer is active. */
-		CoreRendererPtr getActive() { return mActiveRenderer; }
+		SPtr<CoreRenderer> getActive() { return mActiveRenderer; }
 
 		/**
 		 * Registers a new renderer factory. Any renderer you try to make active with setActive() you will need to have 
 		 * previously registered here.
 		 */
-		void _registerFactory(RendererFactoryPtr factory);
+		void _registerFactory(SPtr<RendererFactory> factory);
 	private:
-		Vector<RendererFactoryPtr> mAvailableFactories;
+		Vector<SPtr<RendererFactory>> mAvailableFactories;
 
-		CoreRendererPtr mActiveRenderer;
+		SPtr<CoreRenderer> mActiveRenderer;
 	};
 
 	/** @} */

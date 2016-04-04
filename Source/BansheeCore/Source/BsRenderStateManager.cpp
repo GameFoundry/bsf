@@ -8,7 +8,7 @@
 
 namespace BansheeEngine
 {
-	SamplerStatePtr RenderStateManager::createSamplerState(const SAMPLER_STATE_DESC& desc) const
+	SPtr<SamplerState> RenderStateManager::createSamplerState(const SAMPLER_STATE_DESC& desc) const
 	{
 		SPtr<SamplerState> state = _createSamplerStatePtr(desc);
 		state->initialize();
@@ -16,7 +16,7 @@ namespace BansheeEngine
 		return state;
 	}
 
-	DepthStencilStatePtr RenderStateManager::createDepthStencilState(const DEPTH_STENCIL_STATE_DESC& desc) const
+	SPtr<DepthStencilState> RenderStateManager::createDepthStencilState(const DEPTH_STENCIL_STATE_DESC& desc) const
 	{
 		SPtr<DepthStencilState> state = _createDepthStencilStatePtr(desc);
 		state->initialize();
@@ -24,7 +24,7 @@ namespace BansheeEngine
 		return state;
 	}
 
-	RasterizerStatePtr RenderStateManager::createRasterizerState(const RASTERIZER_STATE_DESC& desc) const
+	SPtr<RasterizerState> RenderStateManager::createRasterizerState(const RASTERIZER_STATE_DESC& desc) const
 	{
 		SPtr<RasterizerState> state = _createRasterizerStatePtr(desc);
 		state->initialize();
@@ -32,7 +32,7 @@ namespace BansheeEngine
 		return state;
 	}
 
-	BlendStatePtr RenderStateManager::createBlendState(const BLEND_STATE_DESC& desc) const
+	SPtr<BlendState> RenderStateManager::createBlendState(const BLEND_STATE_DESC& desc) const
 	{
 		SPtr<BlendState> state = _createBlendStatePtr(desc);
 		state->initialize();
@@ -40,39 +40,39 @@ namespace BansheeEngine
 		return state;
 	}
 
-	SamplerStatePtr RenderStateManager::_createSamplerStatePtr(const SAMPLER_STATE_DESC& desc) const
+	SPtr<SamplerState> RenderStateManager::_createSamplerStatePtr(const SAMPLER_STATE_DESC& desc) const
 	{
-		SamplerStatePtr samplerState = bs_core_ptr<SamplerState>(new (bs_alloc<SamplerState>()) SamplerState(desc));
+		SPtr<SamplerState> samplerState = bs_core_ptr<SamplerState>(new (bs_alloc<SamplerState>()) SamplerState(desc));
 		samplerState->_setThisPtr(samplerState);
 
 		return samplerState;
 	}
 
-	DepthStencilStatePtr RenderStateManager::_createDepthStencilStatePtr(const DEPTH_STENCIL_STATE_DESC& desc) const
+	SPtr<DepthStencilState> RenderStateManager::_createDepthStencilStatePtr(const DEPTH_STENCIL_STATE_DESC& desc) const
 	{
-		DepthStencilStatePtr depthStencilState = bs_core_ptr<DepthStencilState>(new (bs_alloc<DepthStencilState>()) DepthStencilState(desc));
+		SPtr<DepthStencilState> depthStencilState = bs_core_ptr<DepthStencilState>(new (bs_alloc<DepthStencilState>()) DepthStencilState(desc));
 		depthStencilState->_setThisPtr(depthStencilState);
 
 		return depthStencilState;
 	}
 
-	RasterizerStatePtr RenderStateManager::_createRasterizerStatePtr(const RASTERIZER_STATE_DESC& desc) const
+	SPtr<RasterizerState> RenderStateManager::_createRasterizerStatePtr(const RASTERIZER_STATE_DESC& desc) const
 	{
-		RasterizerStatePtr rasterizerState = bs_core_ptr<RasterizerState>(new (bs_alloc<RasterizerState>()) RasterizerState(desc));
+		SPtr<RasterizerState> rasterizerState = bs_core_ptr<RasterizerState>(new (bs_alloc<RasterizerState>()) RasterizerState(desc));
 		rasterizerState->_setThisPtr(rasterizerState);
 
 		return rasterizerState;
 	}
 
-	BlendStatePtr RenderStateManager::_createBlendStatePtr(const BLEND_STATE_DESC& desc) const
+	SPtr<BlendState> RenderStateManager::_createBlendStatePtr(const BLEND_STATE_DESC& desc) const
 	{
-		BlendStatePtr blendState = bs_core_ptr<BlendState>(new (bs_alloc<BlendState>()) BlendState(desc));
+		SPtr<BlendState> blendState = bs_core_ptr<BlendState>(new (bs_alloc<BlendState>()) BlendState(desc));
 		blendState->_setThisPtr(blendState);
 
 		return blendState;
 	}
 
-	const SamplerStatePtr& RenderStateManager::getDefaultSamplerState() const 
+	const SPtr<SamplerState>& RenderStateManager::getDefaultSamplerState() const 
 	{ 
 		if(mDefaultSamplerState == nullptr)
 			mDefaultSamplerState = createSamplerState(SAMPLER_STATE_DESC());
@@ -80,7 +80,7 @@ namespace BansheeEngine
 		return mDefaultSamplerState; 
 	}
 
-	const BlendStatePtr& RenderStateManager::getDefaultBlendState() const 
+	const SPtr<BlendState>& RenderStateManager::getDefaultBlendState() const 
 	{ 
 		if(mDefaultBlendState == nullptr)
 			mDefaultBlendState = createBlendState(BLEND_STATE_DESC());
@@ -88,7 +88,7 @@ namespace BansheeEngine
 		return mDefaultBlendState; 
 	}
 
-	const RasterizerStatePtr& RenderStateManager::getDefaultRasterizerState() const 
+	const SPtr<RasterizerState>& RenderStateManager::getDefaultRasterizerState() const 
 	{ 
 		if(mDefaultRasterizerState == nullptr)
 			mDefaultRasterizerState = createRasterizerState(RASTERIZER_STATE_DESC());
@@ -96,7 +96,7 @@ namespace BansheeEngine
 		return mDefaultRasterizerState; 
 	}
 
-	const DepthStencilStatePtr& RenderStateManager::getDefaultDepthStencilState() const 
+	const SPtr<DepthStencilState>& RenderStateManager::getDefaultDepthStencilState() const 
 	{ 
 		if(mDefaultDepthStencilState == nullptr)
 			mDefaultDepthStencilState = createDepthStencilState(DEPTH_STENCIL_STATE_DESC());

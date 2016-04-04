@@ -1188,9 +1188,9 @@ namespace BansheeEngine
 		return _getStyle()->normal.textColor;
 	}
 
-	GUIContextMenuPtr GUIInputBox::_getContextMenu() const
+	SPtr<GUIContextMenu> GUIInputBox::_getContextMenu() const
 	{
-		static GUIContextMenuPtr contextMenu;
+		static SPtr<GUIContextMenu> contextMenu;
 
 		if (contextMenu == nullptr)
 		{

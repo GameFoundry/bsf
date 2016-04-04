@@ -30,7 +30,7 @@ namespace BansheeEngine
 			return TID_GpuResourceData;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			BS_EXCEPT(InternalErrorException, "Cannot instantiate an abstract class.");
 			return nullptr;

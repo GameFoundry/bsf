@@ -389,69 +389,13 @@ namespace BansheeEngine
 }
 
 /************************************************************************/
-/* 						Shared pointer typedefs	                    	*/
+/* 						         Typedefs								*/
 /************************************************************************/
 
 namespace BansheeEngine
 {
-	typedef std::shared_ptr<RenderAPICore> RenderAPIPtr;
-	typedef std::shared_ptr<GpuProgram> GpuProgramPtr;
-	typedef std::shared_ptr<PixelBuffer> PixelBufferPtr;
-	typedef std::shared_ptr<VertexBuffer> VertexBufferPtr;
-	typedef std::shared_ptr<IndexBuffer> IndexBufferPtr;
-	typedef std::shared_ptr<GpuBuffer> GpuBufferPtr;
-	typedef std::shared_ptr<VertexDeclaration> VertexDeclarationPtr;
-	typedef std::shared_ptr<Mesh> MeshPtr;
-	typedef std::shared_ptr<MeshBase> MeshBasePtr;
-	typedef std::shared_ptr<MeshHeap> MeshHeapPtr;
-	typedef std::shared_ptr<TransientMesh> TransientMeshPtr;
-	typedef std::shared_ptr<Texture> TexturePtr;
-	typedef std::shared_ptr<Resource> ResourcePtr;
-	typedef std::shared_ptr<Technique> TechniquePtr;
-	typedef std::shared_ptr<Pass> PassPtr;
-	typedef std::shared_ptr<Shader> ShaderPtr;
-	typedef std::shared_ptr<Material> MaterialPtr;
-	typedef std::shared_ptr<CoreRenderer> CoreRendererPtr;
-	typedef std::shared_ptr<RendererFactory> RendererFactoryPtr;
-	typedef std::shared_ptr<Component> ComponentPtr;
-	typedef std::shared_ptr<GameObject> GameObjectPtr;
-	typedef std::shared_ptr<SceneObject> SceneObjectPtr;
-	typedef std::shared_ptr<SamplerState> SamplerStatePtr;
-	typedef std::shared_ptr<DepthStencilState> DepthStencilStatePtr;
-	typedef std::shared_ptr<RasterizerState> RasterizerStatePtr;
-	typedef std::shared_ptr<BlendState> BlendStatePtr;
-	typedef std::shared_ptr<RenderWindow> RenderWindowPtr;
-	typedef std::shared_ptr<RenderTarget> RenderTargetPtr;
-	typedef std::shared_ptr<RenderTexture> RenderTexturePtr;
-	typedef std::shared_ptr<MultiRenderTexture> MultiRenderTexturePtr;
-	typedef std::shared_ptr<GpuParamBlockBuffer> GpuParamBlockBufferPtr;
-	typedef std::shared_ptr<GpuParams> GpuParamsPtr;
-	typedef std::shared_ptr<TextureView> TextureViewPtr;
-	typedef std::shared_ptr<Viewport> ViewportPtr;
-	typedef std::shared_ptr<ShaderInclude> ShaderIncludePtr;
-	typedef std::shared_ptr<ImportOptions> ImportOptionsPtr;
-	typedef std::shared_ptr<const ImportOptions> ConstImportOptionsPtr;
-	typedef std::shared_ptr<Font> FontPtr;
-	typedef std::shared_ptr<VertexDataDesc> VertexDataDescPtr;
 	typedef CoreThreadAccessor<CommandQueueNoSync> CoreAccessor;
 	typedef CoreThreadAccessor<CommandQueueSync> SyncedCoreAccessor;
-	typedef std::shared_ptr<CoreThreadAccessor<CommandQueueNoSync>> CoreAccessorPtr;
-	typedef std::shared_ptr<CoreThreadAccessor<CommandQueueSync>> SyncedCoreAccessorPtr;
-	typedef std::shared_ptr<EventQuery> EventQueryPtr;
-	typedef std::shared_ptr<TimerQuery> TimerQueryPtr;
-	typedef std::shared_ptr<OcclusionQuery> OcclusionQueryPtr;
-	typedef std::shared_ptr<ResourceManifest> ResourceManifestPtr;
-	typedef std::shared_ptr<VideoModeInfo> VideoModeInfoPtr;
-	typedef std::shared_ptr<RenderQueue> RenderQueuePtr;
-	typedef std::shared_ptr<GpuParamDesc> GpuParamDescPtr;
-	typedef std::shared_ptr<ResourceMetaData> ResourceMetaDataPtr;
-	typedef std::shared_ptr<IShaderIncludeHandler> ShaderIncludeHandlerPtr;
-	typedef std::shared_ptr<Prefab> PrefabPtr;
-	typedef std::shared_ptr<PrefabDiff> PrefabDiffPtr;
-	typedef std::shared_ptr<RendererMeshData> RendererMeshDataPtr;
-	typedef std::shared_ptr<RenderAPIFactory> RenderAPIFactoryPtr;
-	typedef std::shared_ptr<PhysicsMaterial> PhysicsMaterialPtr;
-	typedef std::shared_ptr<PhysicsMesh> PhysicsMeshPtr;
 }
 
 /************************************************************************/

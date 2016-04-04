@@ -24,9 +24,9 @@ namespace BansheeEngine
 		static ScriptSerializableDictionary* create(const ScriptSerializableProperty* parentProperty);
 
 	private:
-		ScriptSerializableDictionary(MonoObject* instance, const ManagedSerializableTypeInfoDictionaryPtr& typeInfo);
+		ScriptSerializableDictionary(MonoObject* instance, const SPtr<ManagedSerializableTypeInfoDictionary>& typeInfo);
 
-		ManagedSerializableTypeInfoDictionaryPtr mTypeInfo;
+		SPtr<ManagedSerializableTypeInfoDictionary> mTypeInfo;
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/

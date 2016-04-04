@@ -13,7 +13,7 @@ namespace BansheeEngine
 		assert(mRenderSystem != nullptr);
 	}
 
-	RenderWindowPtr GLRenderWindowManager::createImpl(RENDER_WINDOW_DESC& desc, UINT32 windowId, const RenderWindowPtr& parentWindow)
+	SPtr<RenderWindow> GLRenderWindowManager::createImpl(RENDER_WINDOW_DESC& desc, UINT32 windowId, const SPtr<RenderWindow>& parentWindow)
 	{
 		GLSupport* glSupport = mRenderSystem->getGLSupport();
 

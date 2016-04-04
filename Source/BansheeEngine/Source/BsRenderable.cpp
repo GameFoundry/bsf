@@ -351,18 +351,18 @@ namespace BansheeEngine
 		markCoreDirty();
 	}
 
-	RenderablePtr Renderable::create()
+	SPtr<Renderable> Renderable::create()
 	{
-		RenderablePtr handlerPtr = createEmpty();
+		SPtr<Renderable> handlerPtr = createEmpty();
 		handlerPtr->initialize();
 
 		return handlerPtr;
 	}
 
-	RenderablePtr Renderable::createEmpty()
+	SPtr<Renderable> Renderable::createEmpty()
 	{
 		Renderable* handler = new (bs_alloc<Renderable>()) Renderable();
-		RenderablePtr handlerPtr = bs_core_ptr<Renderable>(handler);
+		SPtr<Renderable> handlerPtr = bs_core_ptr<Renderable>(handler);
 		handlerPtr->_setThisPtr(handlerPtr);
 
 		return handlerPtr;

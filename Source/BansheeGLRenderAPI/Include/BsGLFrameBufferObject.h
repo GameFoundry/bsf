@@ -21,7 +21,7 @@ namespace BansheeEngine
 			:zoffset(0), numSamples(0) 
 		{ }
 
-		GLPixelBufferPtr buffer;
+		SPtr<GLPixelBuffer> buffer;
 		UINT32 zoffset;
 		UINT32 numSamples;
     };
@@ -62,7 +62,7 @@ namespace BansheeEngine
 		 * Multisample counts of depth/stencil and color surfaces must match.
 		 * Binding a depth/stencil buffer is optional.
 		 */
-		void bindDepthStencil(GLPixelBufferPtr depthStencilBuffer);
+		void bindDepthStencil(SPtr<GLPixelBuffer> depthStencilBuffer);
 
 		/**	Unbinds a depth stencil buffer. */
 		void unbindDepthStencil();
@@ -84,7 +84,7 @@ namespace BansheeEngine
         GLuint mFB;
 
         GLSurfaceDesc mColor[BS_MAX_MULTIPLE_RENDER_TARGETS];
-		GLPixelBufferPtr mDepthStencilBuffer;
+		SPtr<GLPixelBuffer> mDepthStencilBuffer;
     };
 
 	/** @} */

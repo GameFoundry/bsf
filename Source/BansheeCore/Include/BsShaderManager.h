@@ -39,7 +39,7 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT ShaderManager : public Module <ShaderManager>
 	{
 	public:
-		ShaderManager(const ShaderIncludeHandlerPtr& handler) { mIncludeHandler = handler; }
+		ShaderManager(const SPtr<IShaderIncludeHandler>& handler) { mIncludeHandler = handler; }
 
 		/**
 		 * Attempts to find a shader include based on the include name.
@@ -51,10 +51,10 @@ namespace BansheeEngine
 		HShaderInclude findInclude(const String& name) const;
 
 		/** Changes the active include handler that determines how is a shader include name mapped to the actual resource. */
-		void setIncludeHandler(const ShaderIncludeHandlerPtr& handler) { mIncludeHandler = handler; }
+		void setIncludeHandler(const SPtr<IShaderIncludeHandler>& handler) { mIncludeHandler = handler; }
 
 	private:
-		ShaderIncludeHandlerPtr mIncludeHandler;
+		SPtr<IShaderIncludeHandler> mIncludeHandler;
 	};
 
 	/** @} */

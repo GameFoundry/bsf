@@ -49,7 +49,7 @@ namespace BansheeEngine
 			return TID_FontBitmap;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<FontBitmap>();
 		}
@@ -112,7 +112,7 @@ namespace BansheeEngine
 			return TID_Font;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return FontManager::instance()._createEmpty();
 		}

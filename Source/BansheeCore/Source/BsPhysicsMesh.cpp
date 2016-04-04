@@ -7,7 +7,7 @@
 
 namespace BansheeEngine
 {
-	PhysicsMesh::PhysicsMesh(const MeshDataPtr& meshData, PhysicsMeshType type)
+	PhysicsMesh::PhysicsMesh(const SPtr<MeshData>& meshData, PhysicsMeshType type)
 		:mInitMeshData(meshData), mType(type)
 	{
 		// Derived class is responsible for initializing mInternal
@@ -18,21 +18,21 @@ namespace BansheeEngine
 		return mInternal->mType;
 	}
 
-	MeshDataPtr PhysicsMesh::getMeshData() const
+	SPtr<MeshData> PhysicsMesh::getMeshData() const
 	{
 		return mInternal->getMeshData();
 	}
 
-	HPhysicsMesh PhysicsMesh::create(const MeshDataPtr& meshData, PhysicsMeshType type)
+	HPhysicsMesh PhysicsMesh::create(const SPtr<MeshData>& meshData, PhysicsMeshType type)
 	{
-		PhysicsMeshPtr newMesh = _createPtr(meshData, type);
+		SPtr<PhysicsMesh> newMesh = _createPtr(meshData, type);
 
 		return static_resource_cast<PhysicsMesh>(gResources()._createResourceHandle(newMesh));
 	}
 
-	PhysicsMeshPtr PhysicsMesh::_createPtr(const MeshDataPtr& meshData, PhysicsMeshType type)
+	SPtr<PhysicsMesh> PhysicsMesh::_createPtr(const SPtr<MeshData>& meshData, PhysicsMeshType type)
 	{
-		PhysicsMeshPtr newMesh = gPhysics().createMesh(meshData, type);
+		SPtr<PhysicsMesh> newMesh = gPhysics().createMesh(meshData, type);
 		newMesh->_setThisPtr(newMesh);
 		newMesh->initialize();
 
@@ -56,7 +56,7 @@ namespace BansheeEngine
 		return getRTTIStatic();
 	}
 
-	FPhysicsMesh::FPhysicsMesh(const MeshDataPtr& meshData, PhysicsMeshType type)
+	FPhysicsMesh::FPhysicsMesh(const SPtr<MeshData>& meshData, PhysicsMeshType type)
 		:mType(type)
 	{
 		

@@ -55,7 +55,7 @@ namespace BansheeEngine
 			unload();
 
 		// Load assembly from memory because mono_domain_assembly_open keeps a lock on the file
-		DataStreamPtr assemblyStream = FileSystem::openFile(mPath, true);
+		SPtr<DataStream> assemblyStream = FileSystem::openFile(mPath, true);
 		if (assemblyStream == nullptr)
 		{
 			LOGERR("Cannot load assembly at path \"" + mPath + "\" because the file doesn't exist");
@@ -80,7 +80,7 @@ namespace BansheeEngine
 		Path mdbPath = mPath + ".mdb";
 		if (FileSystem::exists(mdbPath))
 		{
-			DataStreamPtr mdbStream = FileSystem::openFile(mdbPath, true);
+			SPtr<DataStream> mdbStream = FileSystem::openFile(mdbPath, true);
 
 			if (mdbStream != nullptr)
 			{

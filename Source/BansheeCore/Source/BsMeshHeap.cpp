@@ -16,7 +16,7 @@ namespace BansheeEngine
 	const float MeshHeapCore::GrowPercent = 1.5f;
 
 	MeshHeapCore::MeshHeapCore(UINT32 numVertices, UINT32 numIndices,
-		const VertexDataDescPtr& vertexDesc, IndexType indexType)
+		const SPtr<VertexDataDesc>& vertexDesc, IndexType indexType)
 		:mNumVertices(numVertices), mNumIndices(numIndices), mIndexType(indexType), 
 		mVertexDesc(vertexDesc), mCPUIndexData(nullptr), mNextQueryId(0)
 	{
@@ -51,7 +51,7 @@ namespace BansheeEngine
 		CoreObjectCore::initialize();
 	}
 
-	void MeshHeapCore::alloc(SPtr<TransientMeshCore> mesh, const MeshDataPtr& meshData)
+	void MeshHeapCore::alloc(SPtr<TransientMeshCore> mesh, const SPtr<MeshData>& meshData)
 	{
 		// Find free vertex chunk and grow if needed
 		UINT32 smallestVertFit = 0;
@@ -293,7 +293,7 @@ namespace BansheeEngine
 	void MeshHeapCore::growVertexBuffer(UINT32 numVertices)
 	{
 		mNumVertices = numVertices;
-		mVertexData = std::shared_ptr<VertexData>(bs_new<VertexData>());
+		mVertexData = SPtr<VertexData>(bs_new<VertexData>());
 
 		mVertexData->vertexCount = mNumVertices;
 		List<VertexElement> elements = mVertexDesc->createElements();
@@ -637,17 +637,17 @@ namespace BansheeEngine
 	}
 
 	MeshHeap::MeshHeap(UINT32 numVertices, UINT32 numIndices, 
-		const VertexDataDescPtr& vertexDesc, IndexType indexType)
+		const SPtr<VertexDataDesc>& vertexDesc, IndexType indexType)
 		:mNumVertices(numVertices), mNumIndices(numIndices), mNextFreeId(0), 
 		mIndexType(indexType), mVertexDesc(vertexDesc)
 	{
 	}
 
-	MeshHeapPtr MeshHeap::create(UINT32 numVertices, UINT32 numIndices, 
-		const VertexDataDescPtr& vertexDesc, IndexType indexType)
+	SPtr<MeshHeap> MeshHeap::create(UINT32 numVertices, UINT32 numIndices, 
+		const SPtr<VertexDataDesc>& vertexDesc, IndexType indexType)
 	{
 		MeshHeap* meshHeap = new (bs_alloc<MeshHeap>()) MeshHeap(numVertices, numIndices, vertexDesc, indexType); 
-		MeshHeapPtr meshHeapPtr = bs_core_ptr<MeshHeap>(meshHeap);
+		SPtr<MeshHeap> meshHeapPtr = bs_core_ptr<MeshHeap>(meshHeap);
 
 		meshHeapPtr->_setThisPtr(meshHeapPtr);
 		meshHeapPtr->initialize();
@@ -655,13 +655,13 @@ namespace BansheeEngine
 		return meshHeapPtr;
 	}
 
-	TransientMeshPtr MeshHeap::alloc(const MeshDataPtr& meshData, DrawOperationType drawOp)
+	SPtr<TransientMesh> MeshHeap::alloc(const SPtr<MeshData>& meshData, DrawOperationType drawOp)
 	{
 		UINT32 meshIdx = mNextFreeId++;
 
-		MeshHeapPtr thisPtr = std::static_pointer_cast<MeshHeap>(getThisPtr());
+		SPtr<MeshHeap> thisPtr = std::static_pointer_cast<MeshHeap>(getThisPtr());
 		TransientMesh* transientMesh = new (bs_alloc<TransientMesh>()) TransientMesh(thisPtr, meshIdx, meshData->getNumVertices(), meshData->getNumIndices(), drawOp); 
-		TransientMeshPtr transientMeshPtr = bs_core_ptr<TransientMesh>(transientMesh);
+		SPtr<TransientMesh> transientMeshPtr = bs_core_ptr<TransientMesh>(transientMesh);
 
 		transientMeshPtr->_setThisPtr(transientMeshPtr);
 		transientMeshPtr->initialize();
@@ -673,7 +673,7 @@ namespace BansheeEngine
 		return transientMeshPtr;
 	}
 
-	void MeshHeap::dealloc(const TransientMeshPtr& mesh)
+	void MeshHeap::dealloc(const SPtr<TransientMesh>& mesh)
 	{
 		auto iterFind = mMeshes.find(mesh->mId);
 		if(iterFind == mMeshes.end())

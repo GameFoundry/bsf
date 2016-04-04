@@ -107,7 +107,7 @@ namespace BansheeEngine
 		static HTexture getTexture(BuiltinTexture type);
 
 		/**	Returns image data the Banshee Engine splash screen. */
-		static PixelDataPtr getSplashScreen();
+		static SPtr<PixelData> getSplashScreen();
 
 		/**	Returns path to the builtin shader include folder, relative to the working directory. */
 		static Path getShaderIncludeFolder();
@@ -128,7 +128,7 @@ namespace BansheeEngine
 		void preprocess();
 
 		/**	Generates the default engine skin and all GUI element styles. */
-		GUISkinPtr generateGUISkin();
+		SPtr<GUISkin> generateGUISkin();
 
 		/**	Generates the builtin meshes. */
 		void generateMeshes();
@@ -145,17 +145,17 @@ namespace BansheeEngine
 		HGUISkin mEmptySkin;
 		HGUISkin mSkin;
 
-		PixelDataPtr mCursorArrow;
-		PixelDataPtr mCursorArrowDrag;
-		PixelDataPtr mCursorArrowLeftRight;
-		PixelDataPtr mCursorIBeam;
-		PixelDataPtr mCursorDeny;
-		PixelDataPtr mCursorWait;
-		PixelDataPtr mCursorSizeNESW;
-		PixelDataPtr mCursorSizeNS;
-		PixelDataPtr mCursorSizeNWSE;
-		PixelDataPtr mCursorSizeWE;
-		PixelDataPtr mBansheeIcon;
+		SPtr<PixelData> mCursorArrow;
+		SPtr<PixelData> mCursorArrowDrag;
+		SPtr<PixelData> mCursorArrowLeftRight;
+		SPtr<PixelData> mCursorIBeam;
+		SPtr<PixelData> mCursorDeny;
+		SPtr<PixelData> mCursorWait;
+		SPtr<PixelData> mCursorSizeNESW;
+		SPtr<PixelData> mCursorSizeNS;
+		SPtr<PixelData> mCursorSizeNWSE;
+		SPtr<PixelData> mCursorSizeWE;
+		SPtr<PixelData> mBansheeIcon;
 
 		HSpriteTexture mWhiteSpriteTexture;
 		HSpriteTexture mDummySpriteTexture;
@@ -167,7 +167,7 @@ namespace BansheeEngine
 		HShader mShaderSpriteNonAlphaImage;
 		HShader mShaderDiffuse;
 
-		ResourceManifestPtr mResourceManifest;
+		SPtr<ResourceManifest> mResourceManifest;
 
 		Path mBuiltinRawDataFolder;
 		Path mEngineRawCursorFolder;
@@ -318,20 +318,20 @@ namespace BansheeEngine
 		 * Imports all recognized assets in the specified folder and saves them to the specified output folder. All saved
 		 * resources are registered in the provided resource manifest.
 		 */
-		static void importAssets(const Path& inputFolder, const Path& outputFolder, const ResourceManifestPtr& manifest);
+		static void importAssets(const Path& inputFolder, const Path& outputFolder, const SPtr<ResourceManifest>& manifest);
 
 		/**
 		 * Imports a font from the specified file. Imported font assets are saved in the output folder. All saved resources
 		 * are registered in the provided resource manifest.
 		 */
 		static void importFont(const Path& inputFile, const WString& outputName, const Path& outputFolder, 
-			const Vector<UINT32>& fontSizes, bool antialiasing, const ResourceManifestPtr& manifest);
+			const Vector<UINT32>& fontSizes, bool antialiasing, const SPtr<ResourceManifest>& manifest);
 
 		/**
 		 * Generates sprite textures for all texture assets in the specified folder. Results are written in the same folder
 		 * with a "sprite_" prefix. All saved resources are registered in the provided resource manifest.
 		 */
-		static void generateSpriteTextures(const Path& folder, const ResourceManifestPtr& manifest);
+		static void generateSpriteTextures(const Path& folder, const SPtr<ResourceManifest>& manifest);
 
 		/** Writes a timestamp with the current date and time in the specified file. */
 		static void writeTimestamp(const Path& file);

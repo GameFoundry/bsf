@@ -14,7 +14,7 @@ namespace BansheeEngine
 {
 	MonoField* ScriptSerializableObject::FieldsField = nullptr;
 
-	ScriptSerializableObject::ScriptSerializableObject(MonoObject* instance, const ManagedSerializableTypeInfoPtr& typeInfo)
+	ScriptSerializableObject::ScriptSerializableObject(MonoObject* instance, const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 		:ScriptObject(instance), mTypeInfo(typeInfo)
 	{
 
@@ -49,21 +49,21 @@ namespace BansheeEngine
 		String elementTypeName;
 		MonoUtil::getClassName(monoClass, elementNs, elementTypeName);
 
-		ManagedSerializableObjectInfoPtr objInfo;
+		SPtr<ManagedSerializableObjectInfo> objInfo;
 		ScriptAssemblyManager::instance().getSerializableObjectInfo(elementNs, elementTypeName, objInfo);
 
 		createInternal(instance, objInfo);
 	}
 
-	ScriptSerializableObject* ScriptSerializableObject::createInternal(MonoObject* instance, const ManagedSerializableObjectInfoPtr& objInfo)
+	ScriptSerializableObject* ScriptSerializableObject::createInternal(MonoObject* instance, const SPtr<ManagedSerializableObjectInfo>& objInfo)
 	{
-		ManagedSerializableTypeInfoPtr typeInfo;
+		SPtr<ManagedSerializableTypeInfo> typeInfo;
 		if(objInfo != nullptr)
 			typeInfo = objInfo->mTypeInfo;
 
 		ScriptSerializableObject* nativeInstance = new (bs_alloc<ScriptSerializableObject>()) ScriptSerializableObject(instance, typeInfo);
 
-		Vector<ManagedSerializableFieldInfoPtr> sortedFields;
+		Vector<SPtr<ManagedSerializableFieldInfo>> sortedFields;
 		
 		if(objInfo != nullptr)
 		{
@@ -77,7 +77,7 @@ namespace BansheeEngine
 		}
 
 		std::sort(sortedFields.begin(), sortedFields.end(),
-			[&](const ManagedSerializableFieldInfoPtr& x, const ManagedSerializableFieldInfoPtr& y)
+			[&](const SPtr<ManagedSerializableFieldInfo>& x, const SPtr<ManagedSerializableFieldInfo>& y)
 		{
 			return x->mFieldId < y->mFieldId;
 		});

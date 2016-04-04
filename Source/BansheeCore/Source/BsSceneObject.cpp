@@ -692,7 +692,7 @@ namespace BansheeEngine
 		UINT8* buffer = serializer.encode(this, bufferSize, (void*(*)(UINT32))&bs_alloc);
 
 		GameObjectManager::instance().setDeserializationMode(GODM_UseNewIds | GODM_RestoreExternal);
-		std::shared_ptr<SceneObject> cloneObj = std::static_pointer_cast<SceneObject>(serializer.decode(buffer, bufferSize));
+		SPtr<SceneObject> cloneObj = std::static_pointer_cast<SceneObject>(serializer.decode(buffer, bufferSize));
 		bs_free(buffer);
 
 		if (!instantiate)
@@ -758,7 +758,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void SceneObject::addComponentInternal(const std::shared_ptr<Component> component)
+	void SceneObject::addComponentInternal(const SPtr<Component> component)
 	{
 		GameObjectHandle<Component> newComponent = GameObjectManager::instance().getObject(component->getInstanceId());
 		newComponent->mParent = mThisHandle;

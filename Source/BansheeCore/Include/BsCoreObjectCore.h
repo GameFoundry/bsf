@@ -48,7 +48,7 @@ namespace BansheeEngine
 		 * @note	Internal method.
 		 * @note	Called automatically by the factory creation methods so user should not call this manually.
 		 */
-		void _setThisPtr(std::shared_ptr<CoreObjectCore> ptrThis);
+		void _setThisPtr(SPtr<CoreObjectCore> ptrThis);
 
 		/** @} */
 

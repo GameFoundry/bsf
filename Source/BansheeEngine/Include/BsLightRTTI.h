@@ -79,7 +79,7 @@ namespace BansheeEngine
 			return TID_Light;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return Light::createEmpty();
 		}

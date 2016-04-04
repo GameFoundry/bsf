@@ -57,7 +57,7 @@ namespace BansheeEngine
 	class BS_SCR_BED_EXPORT ManagedDropDownWindow : public DropDownWindow
 	{
 	public:
-		ManagedDropDownWindow(const RenderWindowPtr& parent, const CameraPtr& camera,
+		ManagedDropDownWindow(const SPtr<RenderWindow>& parent, const SPtr<Camera>& camera,
 			const Vector2I& position, MonoObject* managedInstance, UINT32 width, UINT32 height);
 		~ManagedDropDownWindow();
 

@@ -11,7 +11,7 @@
 
 namespace BansheeEngine
 {
-	ScriptSerializableDictionary::ScriptSerializableDictionary(MonoObject* instance, const ManagedSerializableTypeInfoDictionaryPtr& typeInfo)
+	ScriptSerializableDictionary::ScriptSerializableDictionary(MonoObject* instance, const SPtr<ManagedSerializableTypeInfoDictionary>& typeInfo)
 		:ScriptObject(instance), mTypeInfo(typeInfo)
 	{
 
@@ -25,7 +25,7 @@ namespace BansheeEngine
 
 	ScriptSerializableDictionary* ScriptSerializableDictionary::create(const ScriptSerializableProperty* parentProperty)
 	{
-		ManagedSerializableTypeInfoDictionaryPtr dictTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoDictionary>(parentProperty->getTypeInfo());
+		SPtr<ManagedSerializableTypeInfoDictionary> dictTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoDictionary>(parentProperty->getTypeInfo());
 
 		MonoType* monoInternalKeyType = mono_class_get_type(dictTypeInfo->mKeyType->getMonoClass());
 		MonoReflectionType* internalKeyType = mono_type_get_object(MonoManager::instance().getDomain(), monoInternalKeyType);

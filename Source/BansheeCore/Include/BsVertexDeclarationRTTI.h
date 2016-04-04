@@ -61,7 +61,7 @@ namespace BansheeEngine
 				&VertexDeclarationRTTI::setElement, &VertexDeclarationRTTI::setElementArraySize);
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return HardwareBufferManager::instance().createVertexDeclaration(List<VertexElement>());
 		}

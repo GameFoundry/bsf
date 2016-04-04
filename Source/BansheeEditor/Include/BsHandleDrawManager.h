@@ -157,7 +157,7 @@ namespace BansheeEngine
 		void drawText(const Vector3& position, const WString& text, const HFont& font, UINT32 fontSize = 16, float size = 1.0f);
 
 		/**	Queues all the handle draw commands queued since the last call to clear() for rendering. */
-		void draw(const CameraPtr& camera);
+		void draw(const SPtr<Camera>& camera);
 
 		/** Clears all handle draw commands. */
 		void clear();

@@ -20,22 +20,22 @@ namespace BansheeEngine
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "PixelData")
 
 		/**	Returns the internal wrapped pixel data. */
-		PixelDataPtr getInternalValue() const { return mPixelData; }
+		SPtr<PixelData> getInternalValue() const { return mPixelData; }
 
 		/** Creates a new managed pixel data instance that wraps the provided native pixel data instance. */
-		static MonoObject* create(const PixelDataPtr& pixelData);
+		static MonoObject* create(const SPtr<PixelData>& pixelData);
 
 	private:
 		ScriptPixelData(MonoObject* managedInstance);
 		~ScriptPixelData();
 
 		/**	Initializes the object. Must be called after construction and before use. */
-		void initialize(const PixelDataPtr& pixelData);
+		void initialize(const SPtr<PixelData>& pixelData);
 
 		/** Checks is the underlying pixel data of the provided object locked. When locked pixel data cannot be accessed. */
 		static bool checkIsLocked(ScriptPixelData* thisPtr);
 
-		PixelDataPtr mPixelData;
+		SPtr<PixelData> mPixelData;
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/

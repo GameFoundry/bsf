@@ -14,7 +14,7 @@
 
 namespace BansheeEngine
 {
-	MeshData::MeshData(UINT32 numVertices, UINT32 numIndexes, const VertexDataDescPtr& vertexData, IndexType indexType)
+	MeshData::MeshData(UINT32 numVertices, UINT32 numIndexes, const SPtr<VertexDataDesc>& vertexData, IndexType indexType)
 	   :mNumVertices(numVertices), mNumIndices(numIndexes), mVertexData(vertexData), mIndexType(indexType)
 	{
 		allocateInternalBuffer();
@@ -58,7 +58,7 @@ namespace BansheeEngine
 	}
 
 	// TODO - This doesn't handle the case where multiple elements in same slot have different data types
-	MeshDataPtr MeshData::combine(const Vector<MeshDataPtr>& meshes, const Vector<Vector<SubMesh>>& allSubMeshes, 
+	SPtr<MeshData> MeshData::combine(const Vector<SPtr<MeshData>>& meshes, const Vector<Vector<SubMesh>>& allSubMeshes, 
 		Vector<SubMesh>& subMeshes)
 	{
 		UINT32 totalVertexCount = 0;
@@ -69,7 +69,7 @@ namespace BansheeEngine
 			totalIndexCount += meshData->getNumIndices();
 		}
 
-		VertexDataDescPtr vertexData = bs_shared_ptr_new<VertexDataDesc>();
+		SPtr<VertexDataDesc> vertexData = bs_shared_ptr_new<VertexDataDesc>();
 		
 		Vector<VertexElement> combinedVertexElements;
 		for(auto& meshData : meshes)
@@ -106,7 +106,7 @@ namespace BansheeEngine
 			}
 		}
 
-		MeshDataPtr combinedMeshData = bs_shared_ptr_new<MeshData>(totalVertexCount, totalIndexCount, vertexData);
+		SPtr<MeshData> combinedMeshData = bs_shared_ptr_new<MeshData>(totalVertexCount, totalIndexCount, vertexData);
 
 		// Copy indices
 		UINT32 vertexOffset = 0;
@@ -354,7 +354,7 @@ namespace BansheeEngine
 	{
 		Bounds bounds;
 
-		VertexDataDescPtr vertexDesc = getVertexDesc();
+		SPtr<VertexDataDesc> vertexDesc = getVertexDesc();
 		for (UINT32 i = 0; i < vertexDesc->getNumElements(); i++)
 		{
 			const VertexElement& curElement = vertexDesc->getElement(i);

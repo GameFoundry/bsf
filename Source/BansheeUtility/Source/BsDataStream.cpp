@@ -268,7 +268,7 @@ namespace BansheeEngine
         assert(mEnd >= mPos);
     }
 
-    MemoryDataStream::MemoryDataStream(const DataStreamPtr& sourceStream)
+    MemoryDataStream::MemoryDataStream(const SPtr<DataStream>& sourceStream)
         :DataStream(READ | WRITE), mData(nullptr)
     {
         // Copy data from incoming stream
@@ -355,7 +355,7 @@ namespace BansheeEngine
         }
     }
 
-    FileDataStream::FileDataStream(std::shared_ptr<std::ifstream> s, bool freeOnClose)
+    FileDataStream::FileDataStream(SPtr<std::ifstream> s, bool freeOnClose)
         : DataStream(READ), mpInStream(s), mpFStreamRO(s), mpFStream(0), mFreeOnClose(freeOnClose)
     {
         mpInStream->seekg(0, std::ios_base::end);
@@ -365,7 +365,7 @@ namespace BansheeEngine
 		determineAccess();
     }
 
-    FileDataStream::FileDataStream(std::shared_ptr<std::ifstream> s, size_t inSize, bool freeOnClose)
+    FileDataStream::FileDataStream(SPtr<std::ifstream> s, size_t inSize, bool freeOnClose)
         : DataStream(READ), mpInStream(s), mpFStreamRO(s), mpFStream(0), mFreeOnClose(freeOnClose)
     {
         mSize = inSize;
@@ -373,7 +373,7 @@ namespace BansheeEngine
 		determineAccess();
     }
 
-	FileDataStream::FileDataStream(std::shared_ptr<std::fstream> s, bool freeOnClose)
+	FileDataStream::FileDataStream(SPtr<std::fstream> s, bool freeOnClose)
 		: DataStream(READ | WRITE), mpInStream(s), mpFStreamRO(0), mpFStream(s), mFreeOnClose(freeOnClose)
 	{
 		mpInStream->seekg(0, std::ios_base::end);
@@ -383,7 +383,7 @@ namespace BansheeEngine
 		determineAccess();
 	}
 
-	FileDataStream::FileDataStream(std::shared_ptr<std::fstream> s, size_t inSize, bool freeOnClose)
+	FileDataStream::FileDataStream(SPtr<std::fstream> s, size_t inSize, bool freeOnClose)
 		: DataStream(READ | WRITE), mpInStream(s), mpFStreamRO(0), mpFStream(s), mFreeOnClose(freeOnClose)
 	{
 		mSize = inSize;

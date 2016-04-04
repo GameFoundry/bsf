@@ -58,12 +58,12 @@ namespace BansheeEngine
 		 * @param[in]	createDepth			Should a depth/stencil surface be created along with the color surface.
 		 * @param[in]	depthStencilFormat	Format used by the depth stencil surface, if one is created.
 		 */
-		static RenderTexturePtr create(TextureType textureType, UINT32 width, UINT32 height, 
+		static SPtr<RenderTexture> create(TextureType textureType, UINT32 width, UINT32 height, 
 			PixelFormat format = PF_R8G8B8A8, bool hwGamma = false, UINT32 multisampleCount = 0, 
 			bool createDepth = true, PixelFormat depthStencilFormat = PF_D24S8);
 
 		/** @copydoc TextureManager::createRenderTexture(const RENDER_TEXTURE_DESC&) */
-		static RenderTexturePtr create(const RENDER_TEXTURE_DESC& desc);
+		static SPtr<RenderTexture> create(const RENDER_TEXTURE_DESC& desc);
 
 		/**
 		 * Returns a color surface texture you may bind as an input to an GPU program.
@@ -169,8 +169,8 @@ namespace BansheeEngine
 	protected:
 		friend class RenderTexture;
 
-		TextureViewPtr mColorSurface;
-		TextureViewPtr mDepthStencilSurface;
+		SPtr<TextureView> mColorSurface;
+		SPtr<TextureView> mDepthStencilSurface;
 
 		RENDER_TEXTURE_CORE_DESC mDesc;
 	};

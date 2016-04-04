@@ -293,7 +293,7 @@ namespace BansheeEngine
 			//   avoid allocating them constantly.
 
 			auto runTask = [&]() { physxTask.run(); physxTask.release(); };
-			TaskPtr task = Task::create("PhysX", runTask);
+			SPtr<Task> task = Task::create("PhysX", runTask);
 
 			TaskScheduler::instance().addTask(task);
 		}
@@ -725,7 +725,7 @@ namespace BansheeEngine
 		return bs_core_ptr_new<PhysXMaterial>(mPhysics, staticFriction, dynamicFriction, restitution);
 	}
 
-	SPtr<PhysicsMesh> PhysX::createMesh(const MeshDataPtr& meshData, PhysicsMeshType type)
+	SPtr<PhysicsMesh> PhysX::createMesh(const SPtr<MeshData>& meshData, PhysicsMeshType type)
 	{
 		return bs_core_ptr_new<PhysXMesh>(meshData, type);
 	}

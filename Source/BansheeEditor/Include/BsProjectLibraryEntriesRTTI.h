@@ -36,7 +36,7 @@ namespace BansheeEngine
 			return TID_ProjectLibraryEntries;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject()
+		virtual SPtr<IReflectable> newRTTIObject()
 		{
 			return ProjectLibraryEntries::createEmpty();
 		}

@@ -68,7 +68,7 @@ namespace BansheeEngine
 		mFields.push_back(field);
 	}
 
-	std::shared_ptr<IReflectable> rtti_create(UINT32 rttiId)
+	SPtr<IReflectable> rtti_create(UINT32 rttiId)
 	{
 		return IReflectable::createInstanceFromTypeId(rttiId);
 	}

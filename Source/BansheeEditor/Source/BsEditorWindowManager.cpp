@@ -26,7 +26,7 @@ namespace BansheeEngine
 			bs_delete(mMainWindow);
 	}
 
-	MainEditorWindow* EditorWindowManager::createMain(const RenderWindowPtr& parentRenderWindow)
+	MainEditorWindow* EditorWindowManager::createMain(const SPtr<RenderWindow>& parentRenderWindow)
 	{
 		if(mMainWindow == nullptr)
 			mMainWindow = new (bs_alloc<MainEditorWindow>()) MainEditorWindow(parentRenderWindow);

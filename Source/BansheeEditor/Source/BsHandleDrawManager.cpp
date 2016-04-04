@@ -182,7 +182,7 @@ namespace BansheeEngine
 		mDrawHelper->text(position, text, myFont, fontSize);
 	}
 
-	void HandleDrawManager::draw(const CameraPtr& camera)
+	void HandleDrawManager::draw(const SPtr<Camera>& camera)
 	{
 		HandleDrawManagerCore* core = mCore.load(std::memory_order_relaxed);
 
@@ -281,7 +281,7 @@ namespace BansheeEngine
 
 	void HandleDrawManagerCore::queueForDraw(const SPtr<CameraCore>& camera, const Vector<MeshData>& meshes)
 	{
-		CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
+		SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
 		if (camera != nullptr)
 		{
 			UINT32 idx = (UINT32)mQueuedData.size();
@@ -293,7 +293,7 @@ namespace BansheeEngine
 
 	void HandleDrawManagerCore::clearQueued()
 	{
-		CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
+		SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
 		for (auto& entry : mQueuedData)
 			activeRenderer->_unregisterRenderCallback(entry.camera.get(), 20);
 

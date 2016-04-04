@@ -18,12 +18,12 @@ namespace BansheeEngine
 		Input::instance().onButtonUp.connect(std::bind(&VirtualInput::buttonUp, this, _1));
 	}
 
-	std::shared_ptr<InputConfiguration> VirtualInput::createConfiguration()
+	SPtr<InputConfiguration> VirtualInput::createConfiguration()
 	{
 		return bs_shared_ptr_new<InputConfiguration>();
 	}
 
-	void VirtualInput::setConfiguration(const std::shared_ptr<InputConfiguration>& input)
+	void VirtualInput::setConfiguration(const SPtr<InputConfiguration>& input)
 	{
 		mInputConfiguration = input;
 

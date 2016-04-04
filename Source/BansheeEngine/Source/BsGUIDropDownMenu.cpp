@@ -101,7 +101,7 @@ namespace BansheeEngine
 		mBackHitBox->_changeParentWidget(_getInternal());
 		mBackHitBox->_markLayoutAsDirty();
 
-		ViewportPtr viewport = desc.camera->getViewport();
+		SPtr<Viewport> viewport = desc.camera->getViewport();
 
 		Rect2I targetBounds(0, 0, viewport->getWidth(), viewport->getHeight());
 		Vector<Rect2I> captureBounds;

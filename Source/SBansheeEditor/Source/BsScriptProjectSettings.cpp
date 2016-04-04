@@ -35,13 +35,13 @@ namespace BansheeEngine
 
 	MonoString* ScriptProjectSettings::internal_GetLastOpenScene()
 	{
-		ProjectSettingsPtr settings = gEditorApplication().getProjectSettings();
+		SPtr<ProjectSettings> settings = gEditorApplication().getProjectSettings();
 		return MonoUtil::stringToMono(settings->getLastOpenScene());
 	}
 
 	void ScriptProjectSettings::internal_SetLastOpenScene(MonoString* value)
 	{
-		ProjectSettingsPtr settings = gEditorApplication().getProjectSettings();
+		SPtr<ProjectSettings> settings = gEditorApplication().getProjectSettings();
 		settings->setLastOpenScene(MonoUtil::monoToString(value));
 	}
 
@@ -49,7 +49,7 @@ namespace BansheeEngine
 	{
 		String nativeName = MonoUtil::monoToString(name);
 
-		ProjectSettingsPtr settings = gEditorApplication().getProjectSettings();
+		SPtr<ProjectSettings> settings = gEditorApplication().getProjectSettings();
 		settings->setFloat(nativeName, value);
 	}
 
@@ -57,7 +57,7 @@ namespace BansheeEngine
 	{
 		String nativeName = MonoUtil::monoToString(name);
 
-		ProjectSettingsPtr settings = gEditorApplication().getProjectSettings();
+		SPtr<ProjectSettings> settings = gEditorApplication().getProjectSettings();
 		settings->setInt(nativeName, value);
 	}
 
@@ -65,7 +65,7 @@ namespace BansheeEngine
 	{
 		String nativeName = MonoUtil::monoToString(name);
 
-		ProjectSettingsPtr settings = gEditorApplication().getProjectSettings();
+		SPtr<ProjectSettings> settings = gEditorApplication().getProjectSettings();
 		settings->setBool(nativeName, value);
 	}
 
@@ -74,7 +74,7 @@ namespace BansheeEngine
 		String nativeName = MonoUtil::monoToString(name);
 		WString nativeValue = MonoUtil::monoToWString(value);
 
-		ProjectSettingsPtr settings = gEditorApplication().getProjectSettings();
+		SPtr<ProjectSettings> settings = gEditorApplication().getProjectSettings();
 		settings->setString(nativeName, nativeValue);
 	}
 
@@ -82,7 +82,7 @@ namespace BansheeEngine
 	{
 		String nativeName = MonoUtil::monoToString(name);
 
-		ProjectSettingsPtr settings = gEditorApplication().getProjectSettings();
+		SPtr<ProjectSettings> settings = gEditorApplication().getProjectSettings();
 		return settings->getFloat(nativeName, defaultValue);
 	}
 
@@ -90,7 +90,7 @@ namespace BansheeEngine
 	{
 		String nativeName = MonoUtil::monoToString(name);
 
-		ProjectSettingsPtr settings = gEditorApplication().getProjectSettings();
+		SPtr<ProjectSettings> settings = gEditorApplication().getProjectSettings();
 		return settings->getInt(nativeName, defaultValue);
 	}
 
@@ -98,7 +98,7 @@ namespace BansheeEngine
 	{
 		String nativeName = MonoUtil::monoToString(name);
 
-		ProjectSettingsPtr settings = gEditorApplication().getProjectSettings();
+		SPtr<ProjectSettings> settings = gEditorApplication().getProjectSettings();
 		return settings->getBool(nativeName, defaultValue);
 	}
 
@@ -107,7 +107,7 @@ namespace BansheeEngine
 		String nativeName = MonoUtil::monoToString(name);
 		WString nativeDefaultValue = MonoUtil::monoToWString(defaultValue);
 
-		ProjectSettingsPtr settings = gEditorApplication().getProjectSettings();
+		SPtr<ProjectSettings> settings = gEditorApplication().getProjectSettings();
 		WString nativeValue = settings->getString(nativeName, nativeDefaultValue);
 
 		return MonoUtil::wstringToMono(nativeValue);
@@ -117,7 +117,7 @@ namespace BansheeEngine
 	{
 		String nativeName = MonoUtil::monoToString(name);
 
-		ProjectSettingsPtr settings = gEditorApplication().getProjectSettings();
+		SPtr<ProjectSettings> settings = gEditorApplication().getProjectSettings();
 		return settings->hasKey(nativeName);
 	}
 
@@ -125,19 +125,19 @@ namespace BansheeEngine
 	{
 		String nativeName = MonoUtil::monoToString(name);
 
-		ProjectSettingsPtr settings = gEditorApplication().getProjectSettings();
+		SPtr<ProjectSettings> settings = gEditorApplication().getProjectSettings();
 		settings->deleteKey(nativeName);
 	}
 
 	void ScriptProjectSettings::internal_DeleteAllKeys()
 	{
-		ProjectSettingsPtr settings = gEditorApplication().getProjectSettings();
+		SPtr<ProjectSettings> settings = gEditorApplication().getProjectSettings();
 		settings->deleteAllKeys();
 	}
 
 	UINT32 ScriptProjectSettings::internal_GetHash()
 	{
-		ProjectSettingsPtr settings = gEditorApplication().getProjectSettings();
+		SPtr<ProjectSettings> settings = gEditorApplication().getProjectSettings();
 		return settings->getHash();
 	}
 

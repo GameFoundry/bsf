@@ -55,7 +55,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Cube face indices: +X (0), -X (1), +Y (2), -Y (3), +Z (4), -Z (5)
 		 */
-		PixelBufferPtr getBuffer(UINT32 face, UINT32 mipmap);
+		SPtr<PixelBuffer> getBuffer(UINT32 face, UINT32 mipmap);
 
 		/** @copydoc D3D9Resource::notifyOnDeviceCreate */
 		virtual void notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device) override;
@@ -74,7 +74,7 @@ namespace BansheeEngine
 		friend class D3D9PixelBuffer;
 
 		D3D9TextureCore(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps,
-			PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, const PixelDataPtr& initialData);
+			PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, const SPtr<PixelData>& initialData);
 
 		/** @copydoc TextureCore::initialize */
 		void initialize() override;
@@ -152,13 +152,13 @@ namespace BansheeEngine
 	protected:
 		Map<IDirect3DDevice9*, TextureResources*> mMapDeviceToTextureResources;
 
-		Vector<PixelBufferPtr> mSurfaceList;
+		Vector<SPtr<PixelBuffer>> mSurfaceList;
 
 		D3DPOOL	mD3DPool;
 		bool mDynamicTextures;
 		bool mIsBindableAsShaderResource;
 
-		PixelBufferPtr mLockedBuffer;
+		SPtr<PixelBuffer> mLockedBuffer;
 
 		bool mHwGammaReadSupported;
 		bool mHwGammaWriteSupported;

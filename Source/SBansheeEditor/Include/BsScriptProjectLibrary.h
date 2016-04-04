@@ -157,13 +157,13 @@ namespace BansheeEngine
 	public:
 		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "ResourceMeta")
 
-		ScriptResourceMeta(MonoObject* instance, const ProjectResourceMetaPtr& meta);
+		ScriptResourceMeta(MonoObject* instance, const SPtr<ProjectResourceMeta>& meta);
 
 		/** Creates a new interop object that wraps the native resource meta object. */
-		static MonoObject* create(const ProjectResourceMetaPtr& meta);
+		static MonoObject* create(const SPtr<ProjectResourceMeta>& meta);
 
 	private:
-		ProjectResourceMetaPtr mMeta;
+		SPtr<ProjectResourceMeta> mMeta;
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/

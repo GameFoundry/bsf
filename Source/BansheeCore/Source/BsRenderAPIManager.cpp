@@ -21,7 +21,7 @@ namespace BansheeEngine
 		}
 	}
 
-	RenderWindowPtr RenderAPIManager::initialize(const String& pluginFilename, RENDER_WINDOW_DESC& primaryWindowDesc)
+	SPtr<RenderWindow> RenderAPIManager::initialize(const String& pluginFilename, RENDER_WINDOW_DESC& primaryWindowDesc)
 	{
 		if(mRenderAPIInitialized)
 			return nullptr;
@@ -50,7 +50,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	void RenderAPIManager::registerFactory(RenderAPIFactoryPtr factory)
+	void RenderAPIManager::registerFactory(SPtr<RenderAPIFactory> factory)
 	{
 		assert(factory != nullptr);
 

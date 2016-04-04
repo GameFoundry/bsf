@@ -33,7 +33,7 @@ namespace BansheeEngine
 		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
-		static GUITabButton* create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, const HString& text, 
+		static GUITabButton* create(const SPtr<GUIToggleGroup>& toggleGroup, UINT32 index, const HString& text, 
 			const String& styleName = StringUtil::BLANK);
 
 		/**
@@ -47,7 +47,7 @@ namespace BansheeEngine
 		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
-		static GUITabButton* create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, const HString& text, 
+		static GUITabButton* create(const SPtr<GUIToggleGroup>& toggleGroup, UINT32 index, const HString& text, 
 			const GUIOptions& options, const String& styleName = StringUtil::BLANK);
 	
 		/**
@@ -59,7 +59,7 @@ namespace BansheeEngine
 		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
-		static GUITabButton* create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, const GUIContent& content, 
+		static GUITabButton* create(const SPtr<GUIToggleGroup>& toggleGroup, UINT32 index, const GUIContent& content, 
 			const String& styleName = StringUtil::BLANK);
 
 		/**
@@ -73,7 +73,7 @@ namespace BansheeEngine
 		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
-		static GUITabButton* create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, const GUIContent& content, 
+		static GUITabButton* create(const SPtr<GUIToggleGroup>& toggleGroup, UINT32 index, const GUIContent& content, 
 			const GUIOptions& options, const String& styleName = StringUtil::BLANK);
 
 		/**	Returns the unique index for this tab button. */
@@ -100,7 +100,7 @@ namespace BansheeEngine
 		 */
 		Event<void(UINT32, const Vector2I&)> onDragEnd;
 	protected:
-		GUITabButton(const String& styleName, const GUIToggleGroupPtr& toggleGroup, UINT32 index, const GUIContent& content, const GUIDimensions& dimensions);
+		GUITabButton(const String& styleName, const SPtr<GUIToggleGroup>& toggleGroup, UINT32 index, const GUIContent& content, const GUIDimensions& dimensions);
 
 		/** @copydoc GUIElement::_mouseEvent */
 		virtual bool _mouseEvent(const GUIMouseEvent& ev) override;

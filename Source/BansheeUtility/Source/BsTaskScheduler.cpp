@@ -6,14 +6,14 @@
 namespace BansheeEngine
 {
 	Task::Task(const PrivatelyConstruct& dummy, const String& name, std::function<void()> taskWorker, 
-		TaskPriority priority, TaskPtr dependency)
+		TaskPriority priority, SPtr<Task> dependency)
 		:mName(name), mPriority(priority), mTaskId(0), mTaskWorker(taskWorker), mTaskDependency(dependency),
 		mParent(nullptr)
 	{
 
 	}
 
-	TaskPtr Task::create(const String& name, std::function<void()> taskWorker, TaskPriority priority, TaskPtr dependency)
+	SPtr<Task> Task::create(const String& name, std::function<void()> taskWorker, TaskPriority priority, SPtr<Task> dependency)
 	{
 		return bs_shared_ptr_new<Task>(PrivatelyConstruct(), name, taskWorker, priority, dependency);
 	}
@@ -54,7 +54,7 @@ namespace BansheeEngine
 
 			while (mActiveTasks.size() > 0)
 			{
-				TaskPtr task = mActiveTasks[0];
+				SPtr<Task> task = mActiveTasks[0];
 				activeTaskLock.unlock();
 
 				task->wait();
@@ -74,7 +74,7 @@ namespace BansheeEngine
 		mTaskSchedulerThread.blockUntilComplete();
 	}
 
-	void TaskScheduler::addTask(const TaskPtr& task)
+	void TaskScheduler::addTask(const SPtr<Task>& task)
 	{
 		BS_LOCK_MUTEX(mReadyMutex);
 
@@ -119,7 +119,7 @@ namespace BansheeEngine
 
 			for(UINT32 i = 0; (i < mTaskQueue.size()) && ((UINT32)mActiveTasks.size() < mMaxActiveTasks); i++)
 			{
-				TaskPtr curTask = *mTaskQueue.begin();
+				SPtr<Task> curTask = *mTaskQueue.begin();
 				mTaskQueue.erase(mTaskQueue.begin());
 
 				if(curTask->isCanceled())
@@ -136,7 +136,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void TaskScheduler::runTask(TaskPtr task)
+	void TaskScheduler::runTask(SPtr<Task> task)
 	{
 		task->mTaskWorker();
 
@@ -176,7 +176,7 @@ namespace BansheeEngine
 		}
 	}
 
-	bool TaskScheduler::taskCompare(const TaskPtr& lhs, const TaskPtr& rhs)
+	bool TaskScheduler::taskCompare(const SPtr<Task>& lhs, const SPtr<Task>& rhs)
 	{
 		// If one tasks priority is higher, that one goes first
 		if(lhs->mPriority > rhs->mPriority)

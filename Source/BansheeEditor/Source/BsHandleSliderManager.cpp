@@ -9,7 +9,7 @@ using namespace std::placeholders;
 
 namespace BansheeEngine
 {
-	void HandleSliderManager::update(const CameraPtr& camera, const Vector2I& inputPos, const Vector2I& inputDelta)
+	void HandleSliderManager::update(const SPtr<Camera>& camera, const Vector2I& inputPos, const Vector2I& inputDelta)
 	{
 		for (auto& slider : mSliders)
 		{
@@ -48,7 +48,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void HandleSliderManager::trySelect(const CameraPtr& camera, const Vector2I& inputPos)
+	void HandleSliderManager::trySelect(const SPtr<Camera>& camera, const Vector2I& inputPos)
 	{
 		HandleSlider* newActiveSlider = findUnderCursor(camera, inputPos);
 
@@ -75,7 +75,7 @@ namespace BansheeEngine
 		}
 	}
 
-	bool HandleSliderManager::isSliderActive(const CameraPtr& camera) const
+	bool HandleSliderManager::isSliderActive(const SPtr<Camera>& camera) const
 	{
 		auto iterFind = mStates.find(camera->getInternalID());
 		if (iterFind == mStates.end())
@@ -84,7 +84,7 @@ namespace BansheeEngine
 		return iterFind->second.activeSlider != nullptr;
 	}
 
-	void HandleSliderManager::clearSelection(const CameraPtr& camera)
+	void HandleSliderManager::clearSelection(const SPtr<Camera>& camera)
 	{
 		StatePerCamera& state = mStates[camera->getInternalID()];
 		if (state.activeSlider != nullptr)
@@ -94,7 +94,7 @@ namespace BansheeEngine
 		}
 	}
 
-	HandleSlider* HandleSliderManager::findUnderCursor(const CameraPtr& camera, const Vector2I& inputPos) const
+	HandleSlider* HandleSliderManager::findUnderCursor(const SPtr<Camera>& camera, const Vector2I& inputPos) const
 	{
 		Ray inputRay = camera->screenPointToRay(inputPos);
 

@@ -163,7 +163,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method.
 		 */
-		void _registerRawInputHandler(std::shared_ptr<RawInputHandler> inputHandler);
+		void _registerRawInputHandler(SPtr<RawInputHandler> inputHandler);
 
 		/**
 		 * Called every frame. Detects button state changes and prepares callback events to trigger via a call to 
@@ -214,8 +214,8 @@ namespace BansheeEngine
 		void inputWindowChanged(RenderWindow& win);
 
 	private:
-		std::shared_ptr<RawInputHandler> mRawInputHandler;
-		std::shared_ptr<OSInputHandler> mOSInputHandler;
+		SPtr<RawInputHandler> mRawInputHandler;
+		SPtr<OSInputHandler> mOSInputHandler;
 
 		Vector<DeviceData> mDevices;
 		Vector2I mPointerPosition;

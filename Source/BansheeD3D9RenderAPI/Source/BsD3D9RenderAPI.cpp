@@ -1097,7 +1097,7 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		std::shared_ptr<D3D9VertexDeclarationCore> d3ddecl = std::static_pointer_cast<D3D9VertexDeclarationCore>(decl);
+		SPtr<D3D9VertexDeclarationCore> d3ddecl = std::static_pointer_cast<D3D9VertexDeclarationCore>(decl);
 
 		HRESULT hr;
 		if (FAILED(hr = getActiveD3D9Device()->SetVertexDeclaration(d3ddecl->getD3DVertexDeclaration())))

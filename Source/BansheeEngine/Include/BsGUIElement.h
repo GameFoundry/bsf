@@ -68,7 +68,7 @@ namespace BansheeEngine
 		 * Assigns a new context menu that will be opened when the element is right clicked. Null is allowed in case no
 		 * context menu is wanted.
 		 */
-		void setContextMenu(const GUIContextMenuPtr& menu) { mContextMenu = menu; }
+		void setContextMenu(const SPtr<GUIContextMenu>& menu) { mContextMenu = menu; }
 
 		/** @copydoc GUIElementBase::getVisibleBounds */
 		Rect2I getVisibleBounds() override;
@@ -240,7 +240,7 @@ namespace BansheeEngine
 		virtual bool _acceptDragAndDrop(const Vector2I position, UINT32 typeId) const { return false; }
 
 		/**	Returns a context menu if a GUI element has one. Otherwise returns nullptr. */
-		virtual GUIContextMenuPtr _getContextMenu() const;
+		virtual SPtr<GUIContextMenu> _getContextMenu() const;
 
 		/**	Returns text to display when hovering over the element. Returns empty string if no tooltip. */
 		virtual WString _getTooltip() const { return StringUtil::WBLANK; }
@@ -310,7 +310,7 @@ namespace BansheeEngine
 		const GUIElementStyle* mStyle;
 		String mStyleName;
 
-		GUIContextMenuPtr mContextMenu;
+		SPtr<GUIContextMenu> mContextMenu;
 		Color mColor;
 	};
 

@@ -17,12 +17,12 @@ namespace BansheeEngine
 	const UINT32 MainEditorWindow::MENU_BAR_HEIGHT = 50;
 	const UINT32 MainEditorWindow::STATUS_BAR_HEIGHT = 21;
 
-	MainEditorWindow* MainEditorWindow::create(const RenderWindowPtr& renderWindow)
+	MainEditorWindow* MainEditorWindow::create(const SPtr<RenderWindow>& renderWindow)
 	{
 		return EditorWindowManager::instance().createMain(renderWindow);
 	}
 
-	MainEditorWindow::MainEditorWindow(const RenderWindowPtr& renderWindow)
+	MainEditorWindow::MainEditorWindow(const SPtr<RenderWindow>& renderWindow)
 		:EditorWindowBase(renderWindow), mDockManager(nullptr), 
 		mMenuBar(bs_new<GUIMenuBar>(mGUI->_getInternal(), mRenderWindow.get()))
 	{
@@ -36,7 +36,7 @@ namespace BansheeEngine
 		mMenuBar->addMenuItemSeparator(L"File", 10000);
 		mMenuBar->addMenuItem(L"File/Exit", nullptr, 10000);
 
-		TestSuitePtr testSuite = TestSuite::create<EditorTestSuite>();
+		SPtr<TestSuite> testSuite = TestSuite::create<EditorTestSuite>();
 		testSuite->run(ExceptionTestOutput());
 
 		mRenderWindow->maximize(gCoreAccessor());

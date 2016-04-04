@@ -153,7 +153,7 @@ namespace BansheeEngine
 		virtual bool _hasCustomCursor(const Vector2I position, CursorType& type) const override;
 
 		/** @copydoc GUIElement::_getContextMenu */
-		virtual GUIContextMenuPtr _getContextMenu() const override;
+		virtual SPtr<GUIContextMenu> _getContextMenu() const override;
 	private:
 		/**
 		 * Retrieves a sprite from a render element index, and a local render element index that represents render element

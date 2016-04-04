@@ -17,22 +17,22 @@ namespace BansheeEngine
 		public RTTIType < ManagedSerializableDiff::ModifiedField, IReflectable, ModifiedFieldRTTI >
 	{
 	private:
-		ManagedSerializableTypeInfoPtr getParentType(ManagedSerializableDiff::ModifiedField* obj)
+		SPtr<ManagedSerializableTypeInfo> getParentType(ManagedSerializableDiff::ModifiedField* obj)
 		{
 			return obj->parentType;
 		}
 
-		void setParentType(ManagedSerializableDiff::ModifiedField* obj, ManagedSerializableTypeInfoPtr val)
+		void setParentType(ManagedSerializableDiff::ModifiedField* obj, SPtr<ManagedSerializableTypeInfo> val)
 		{
 			obj->parentType = val;
 		}
 
-		ManagedSerializableFieldInfoPtr getFieldType(ManagedSerializableDiff::ModifiedField* obj)
+		SPtr<ManagedSerializableFieldInfo> getFieldType(ManagedSerializableDiff::ModifiedField* obj)
 		{
 			return obj->fieldType;
 		}
 
-		void setFieldType(ManagedSerializableDiff::ModifiedField* obj, ManagedSerializableFieldInfoPtr val)
+		void setFieldType(ManagedSerializableDiff::ModifiedField* obj, SPtr<ManagedSerializableFieldInfo> val)
 		{
 			obj->fieldType = val;
 		}
@@ -65,7 +65,7 @@ namespace BansheeEngine
 			return TID_ScriptModifiedField;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableDiff::ModifiedField>();
 		}
@@ -112,7 +112,7 @@ namespace BansheeEngine
 			return TID_ScriptModifiedArrayEntry;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableDiff::ModifiedArrayEntry>();
 		}
@@ -122,12 +122,12 @@ namespace BansheeEngine
 		public RTTIType < ManagedSerializableDiff::ModifiedDictionaryEntry, IReflectable, ModifiedDictionaryEntryRTTI >
 	{
 	private:
-		ManagedSerializableFieldDataPtr getKey(ManagedSerializableDiff::ModifiedDictionaryEntry* obj)
+		SPtr<ManagedSerializableFieldData> getKey(ManagedSerializableDiff::ModifiedDictionaryEntry* obj)
 		{
 			return obj->key;
 		}
 
-		void setKey(ManagedSerializableDiff::ModifiedDictionaryEntry* obj, ManagedSerializableFieldDataPtr val)
+		void setKey(ManagedSerializableDiff::ModifiedDictionaryEntry* obj, SPtr<ManagedSerializableFieldData> val)
 		{
 			obj->key = val;
 		}
@@ -159,7 +159,7 @@ namespace BansheeEngine
 			return TID_ScriptModifiedDictionaryEntry;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableDiff::ModifiedDictionaryEntry>();
 		}
@@ -183,7 +183,7 @@ namespace BansheeEngine
 			return TID_ScriptModification;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return nullptr;
 		}
@@ -231,7 +231,7 @@ namespace BansheeEngine
 			return TID_ScriptModifiedObject;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return ManagedSerializableDiff::ModifiedObject::create();
 		}
@@ -301,7 +301,7 @@ namespace BansheeEngine
 			return TID_ScriptModifiedArray;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return ManagedSerializableDiff::ModifiedArray::create();
 		}
@@ -311,12 +311,12 @@ namespace BansheeEngine
 		public RTTIType < ManagedSerializableDiff::ModifiedDictionary, ManagedSerializableDiff::Modification, ModifiedDictionaryRTTI >
 	{
 	private:
-		ManagedSerializableFieldDataPtr getRemovedEntry(ManagedSerializableDiff::ModifiedDictionary* obj, UINT32 arrayIdx)
+		SPtr<ManagedSerializableFieldData> getRemovedEntry(ManagedSerializableDiff::ModifiedDictionary* obj, UINT32 arrayIdx)
 		{
 			return obj->removed[arrayIdx];
 		}
 
-		void setRemovedEntry(ManagedSerializableDiff::ModifiedDictionary* obj, UINT32 arrayIdx, ManagedSerializableFieldDataPtr val)
+		void setRemovedEntry(ManagedSerializableDiff::ModifiedDictionary* obj, UINT32 arrayIdx, SPtr<ManagedSerializableFieldData> val)
 		{
 			obj->removed[arrayIdx] = val;
 		}
@@ -328,7 +328,7 @@ namespace BansheeEngine
 
 		void setNumRemovedEntries(ManagedSerializableDiff::ModifiedDictionary* obj, UINT32 numEntries)
 		{
-			obj->removed = Vector<ManagedSerializableFieldDataPtr>(numEntries);
+			obj->removed = Vector<SPtr<ManagedSerializableFieldData>>(numEntries);
 		}
 
 		ManagedSerializableDiff::ModifiedDictionaryEntry& getFieldEntry(ManagedSerializableDiff::ModifiedDictionary* obj, UINT32 arrayIdx)
@@ -371,7 +371,7 @@ namespace BansheeEngine
 			return TID_ScriptModifiedDictionary;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return ManagedSerializableDiff::ModifiedDictionary::create();
 		}
@@ -381,12 +381,12 @@ namespace BansheeEngine
 		public RTTIType < ManagedSerializableDiff::ModifiedEntry, ManagedSerializableDiff::Modification, ModifiedEntryRTTI >
 	{
 	private:
-		ManagedSerializableFieldDataPtr getValue(ManagedSerializableDiff::ModifiedEntry* obj)
+		SPtr<ManagedSerializableFieldData> getValue(ManagedSerializableDiff::ModifiedEntry* obj)
 		{
 			return obj->value;
 		}
 
-		void setValue(ManagedSerializableDiff::ModifiedEntry* obj, ManagedSerializableFieldDataPtr val)
+		void setValue(ManagedSerializableDiff::ModifiedEntry* obj, SPtr<ManagedSerializableFieldData> val)
 		{
 			obj->value = val;
 		}
@@ -408,7 +408,7 @@ namespace BansheeEngine
 			return TID_ScriptModifiedEntry;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return ManagedSerializableDiff::ModifiedEntry::create(nullptr);
 		}
@@ -446,7 +446,7 @@ namespace BansheeEngine
 			return TID_ScriptSerializableDiff;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableDiff>();
 		}

@@ -53,7 +53,7 @@ namespace BansheeEngine
 
 	void Platform::captureMouse(const RenderWindow& window)
 	{
-		RenderWindowPtr primaryWindow = gCoreApplication().getPrimaryWindow();
+		SPtr<RenderWindow> primaryWindow = gCoreApplication().getPrimaryWindow();
 		UINT64 hwnd;
 		primaryWindow->getCustomAttribute("WINDOW", &hwnd);
 		
@@ -62,7 +62,7 @@ namespace BansheeEngine
 
 	void Platform::releaseMouseCapture()
 	{
-		RenderWindowPtr primaryWindow = gCoreApplication().getPrimaryWindow();
+		SPtr<RenderWindow> primaryWindow = gCoreApplication().getPrimaryWindow();
 		UINT64 hwnd;
 		primaryWindow->getCustomAttribute("WINDOW", &hwnd);
 
@@ -71,7 +71,7 @@ namespace BansheeEngine
 
 	bool Platform::isPointOverWindow(const RenderWindow& window, const Vector2I& screenPos)
 	{
-		RenderWindowPtr primaryWindow = gCoreApplication().getPrimaryWindow();
+		SPtr<RenderWindow> primaryWindow = gCoreApplication().getPrimaryWindow();
 
 		POINT point;
 		point.x = screenPos.x;
@@ -91,7 +91,7 @@ namespace BansheeEngine
 		// ShowCursor(FALSE) doesn't work. Presumably because we're in the wrong thread, and using
 		// WM_SETCURSOR in message loop to hide the cursor is smarter solution anyway.
 
-		RenderWindowPtr primaryWindow = gCoreApplication().getPrimaryWindow();
+		SPtr<RenderWindow> primaryWindow = gCoreApplication().getPrimaryWindow();
 		UINT64 hwnd;
 		primaryWindow->getCustomAttribute("WINDOW", &hwnd);
 
@@ -105,7 +105,7 @@ namespace BansheeEngine
 		// ShowCursor(FALSE) doesn't work. Presumably because we're in the wrong thread, and using
 		// WM_SETCURSOR in message loop to hide the cursor is smarter solution anyway.
 
-		RenderWindowPtr primaryWindow = gCoreApplication().getPrimaryWindow();
+		SPtr<RenderWindow> primaryWindow = gCoreApplication().getPrimaryWindow();
 		UINT64 hwnd;
 		primaryWindow->getCustomAttribute("WINDOW", &hwnd);
 
@@ -177,7 +177,7 @@ namespace BansheeEngine
 		DeleteObject(hMonoBitmap);
 
 		// Make sure we notify the message loop to perform the actual cursor update
-		RenderWindowPtr primaryWindow = gCoreApplication().getPrimaryWindow();
+		SPtr<RenderWindow> primaryWindow = gCoreApplication().getPrimaryWindow();
 		UINT64 hwnd;
 		primaryWindow->getCustomAttribute("WINDOW", &hwnd);
 
@@ -186,7 +186,7 @@ namespace BansheeEngine
 
 	void Platform::setIcon(const PixelData& pixelData)
 	{
-		PixelDataPtr resizedData = PixelData::create(32, 32, 1, PF_R8G8B8A8);
+		SPtr<PixelData> resizedData = PixelData::create(32, 32, 1, PF_R8G8B8A8);
 		PixelUtil::scale(pixelData, *resizedData);
 
 		Vector<Color> pixels = pixelData.getColors();
@@ -209,7 +209,7 @@ namespace BansheeEngine
 		DeleteObject(hMonoBitmap);
 
 		// Make sure we notify the message loop to perform the actual cursor update
-		RenderWindowPtr primaryWindow = gCoreApplication().getPrimaryWindow();
+		SPtr<RenderWindow> primaryWindow = gCoreApplication().getPrimaryWindow();
 		UINT64 hwnd;
 		primaryWindow->getCustomAttribute("WINDOW", &hwnd);
 		

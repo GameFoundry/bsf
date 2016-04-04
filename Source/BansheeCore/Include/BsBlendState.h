@@ -164,10 +164,10 @@ namespace BansheeEngine
 		SPtr<BlendStateCore> getCore() const;
 
 		/**	Creates a new blend state using the specified blend state description structure. */
-		static BlendStatePtr create(const BLEND_STATE_DESC& desc);
+		static SPtr<BlendState> create(const BLEND_STATE_DESC& desc);
 
 		/**	Returns the default blend state that you may use when no other is available. */
-		static const BlendStatePtr& getDefault();
+		static const SPtr<BlendState>& getDefault();
 
 		/**	Generates a hash value from a blend state descriptor. */
 		static UINT64 generateHash(const BLEND_STATE_DESC& desc);

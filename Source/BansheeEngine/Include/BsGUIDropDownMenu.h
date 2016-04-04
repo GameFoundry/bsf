@@ -24,7 +24,7 @@ namespace BansheeEngine
 	/**	A set of parameters used for initializing a drop down box. */
 	struct DROP_DOWN_BOX_DESC
 	{
-		CameraPtr camera; /**< Camera on which to open the drop down box. */
+		SPtr<Camera> camera; /**< Camera on which to open the drop down box. */
 		DropDownAreaPlacement placement; /**< Determines how is the drop down box positioned in the visible area. */
 		GUIDropDownData dropDownData; /**< Data to use for initializing menu items of the drop down box. */
 		HGUISkin skin; /**< Skin to use for drop down box GUI elements. */

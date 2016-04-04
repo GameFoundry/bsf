@@ -31,7 +31,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method. Use create() for normal use.
 		 */
-		static ShaderIncludePtr _createPtr(const String& includeString);
+		static SPtr<ShaderInclude> _createPtr(const String& includeString);
 
 		/** @} */
 	private:

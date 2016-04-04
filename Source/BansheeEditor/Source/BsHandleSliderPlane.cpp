@@ -50,13 +50,13 @@ namespace BansheeEngine
 		return false;
 	}
 
-	void HandleSliderPlane::activate(const CameraPtr& camera, const Vector2I& pointerPos)
+	void HandleSliderPlane::activate(const SPtr<Camera>& camera, const Vector2I& pointerPos)
 	{
 		mStartPlanePosition = getPosition();
 		mStartClickPosition = getPositionOnPlane(camera, pointerPos);
 	}
 
-	void HandleSliderPlane::handleInput(const CameraPtr& camera, const Vector2I& inputDelta)
+	void HandleSliderPlane::handleInput(const SPtr<Camera>& camera, const Vector2I& inputDelta)
 	{
 		assert(getState() == State::Active);
 
@@ -72,7 +72,7 @@ namespace BansheeEngine
 		mDelta.y = positionDelta.dot(worldDir2);
 	}
 
-	Vector3 HandleSliderPlane::getPositionOnPlane(const CameraPtr& camera, const Vector2I& pointerPos) const
+	Vector3 HandleSliderPlane::getPositionOnPlane(const SPtr<Camera>& camera, const Vector2I& pointerPos) const
 	{
 		Vector3 worldDir1 = getRotation().rotate(mDirection1);
 		Vector3 worldDir2 = getRotation().rotate(mDirection2);

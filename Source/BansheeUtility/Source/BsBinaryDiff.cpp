@@ -576,7 +576,7 @@ namespace BansheeEngine
 						SPtr<SerializedObject> fieldObjectData = std::static_pointer_cast<SerializedObject>(diffData);
 
 						IReflectable& childObj = field->getValue(object.get());
-						std::shared_ptr<IReflectable> clonedObj = BinaryCloner::clone(&childObj, true);
+						SPtr<IReflectable> clonedObj = BinaryCloner::clone(&childObj, true);
 
 						IDiff::applyDiff(clonedObj->getRTTI(), clonedObj, fieldObjectData, objectMap, diffCommands);
 

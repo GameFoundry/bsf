@@ -17,22 +17,22 @@ namespace BansheeEngine
 		public RTTIType <ManagedSerializableDictionaryKeyValue, IReflectable, ManagedSerializableDictionaryKeyValueRTTI>
 	{
 	private:
-		ManagedSerializableFieldDataPtr getKey(ManagedSerializableDictionaryKeyValue* obj)
+		SPtr<ManagedSerializableFieldData> getKey(ManagedSerializableDictionaryKeyValue* obj)
 		{
 			return obj->key;
 		}
 
-		void setKey(ManagedSerializableDictionaryKeyValue* obj, ManagedSerializableFieldDataPtr val)
+		void setKey(ManagedSerializableDictionaryKeyValue* obj, SPtr<ManagedSerializableFieldData> val)
 		{
 			obj->key = val;
 		}
 
-		ManagedSerializableFieldDataPtr getValue(ManagedSerializableDictionaryKeyValue* obj)
+		SPtr<ManagedSerializableFieldData> getValue(ManagedSerializableDictionaryKeyValue* obj)
 		{
 			return obj->value;
 		}
 
-		void setValue(ManagedSerializableDictionaryKeyValue* obj, ManagedSerializableFieldDataPtr val)
+		void setValue(ManagedSerializableDictionaryKeyValue* obj, SPtr<ManagedSerializableFieldData> val)
 		{
 			obj->value = val;
 		}
@@ -55,7 +55,7 @@ namespace BansheeEngine
 			return TID_ScriptSerializableDictionaryKeyValue;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableDictionaryKeyValue>();
 		}
@@ -64,8 +64,8 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableDictionaryRTTI : public RTTIType<ManagedSerializableDictionary, IReflectable, ManagedSerializableDictionaryRTTI>
 	{
 	private:
-		ManagedSerializableTypeInfoDictionaryPtr getTypeInfo(ManagedSerializableDictionary* obj) { return obj->mDictionaryTypeInfo; }
-		void setTypeInfo(ManagedSerializableDictionary* obj, ManagedSerializableTypeInfoDictionaryPtr val) { obj->mDictionaryTypeInfo = val; }
+		SPtr<ManagedSerializableTypeInfoDictionary> getTypeInfo(ManagedSerializableDictionary* obj) { return obj->mDictionaryTypeInfo; }
+		void setTypeInfo(ManagedSerializableDictionary* obj, SPtr<ManagedSerializableTypeInfoDictionary> val) { obj->mDictionaryTypeInfo = val; }
 
 		ManagedSerializableDictionaryKeyValue& getEntry(ManagedSerializableDictionary* obj, UINT32 arrayIdx)
 		{ 
@@ -129,7 +129,7 @@ namespace BansheeEngine
 			return TID_ScriptSerializableDictionary;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return ManagedSerializableDictionary::createEmpty();
 		}

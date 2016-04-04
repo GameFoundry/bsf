@@ -40,7 +40,7 @@ namespace BansheeEngine
 		for (UINT32 i = 0; i < arrayLen; i++)
 			options.addOption(mono_array_get(guiOptions, GUIOption, i));
 
-		RenderTexturePtr renderTexture;
+		SPtr<RenderTexture> renderTexture;
 		if (texture != nullptr)
 			renderTexture = texture->getRenderTexture();
 
@@ -51,7 +51,7 @@ namespace BansheeEngine
 
 	void ScriptGUIRenderTexture::internal_setTexture(ScriptGUIRenderTexture* nativeInstance, ScriptRenderTexture2D* texture)
 	{
-		RenderTexturePtr renderTexture;
+		SPtr<RenderTexture> renderTexture;
 		if (texture != nullptr)
 			renderTexture = texture->getRenderTexture();
 

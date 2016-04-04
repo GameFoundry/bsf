@@ -40,15 +40,15 @@ namespace BansheeEngine
 
 	void ScriptUnitTests::internal_UT3_GenerateDiff(MonoObject* oldObj, MonoObject* newObj)
 	{
-		ManagedSerializableObjectPtr serializableOldObj = ManagedSerializableObject::createFromExisting(oldObj);
-		ManagedSerializableObjectPtr serializableNewObj = ManagedSerializableObject::createFromExisting(newObj);
+		SPtr<ManagedSerializableObject> serializableOldObj = ManagedSerializableObject::createFromExisting(oldObj);
+		SPtr<ManagedSerializableObject> serializableNewObj = ManagedSerializableObject::createFromExisting(newObj);
 
 		tempDiff = ManagedSerializableDiff::create(serializableOldObj, serializableNewObj);
 	}
 
 	void ScriptUnitTests::internal_UT3_ApplyDiff(MonoObject* obj)
 	{
-		ManagedSerializableObjectPtr serializableObj = ManagedSerializableObject::createFromExisting(obj);
+		SPtr<ManagedSerializableObject> serializableObj = ManagedSerializableObject::createFromExisting(obj);
 		tempDiff->apply(serializableObj);
 
 		tempDiff = nullptr;

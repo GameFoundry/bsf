@@ -16,11 +16,11 @@ namespace BansheeEngine
 	{
 		SceneCameraData() { }
 
-		SceneCameraData(const CameraPtr& camera, const HSceneObject& sceneObject)
+		SceneCameraData(const SPtr<Camera>& camera, const HSceneObject& sceneObject)
 			:camera(camera), sceneObject(sceneObject)
 		{ }
 
-		CameraPtr camera;
+		SPtr<Camera> camera;
 		HSceneObject sceneObject;
 	};
 
@@ -29,11 +29,11 @@ namespace BansheeEngine
 	{
 		SceneRenderableData() { }
 
-		SceneRenderableData(const RenderablePtr& renderable, const HSceneObject& sceneObject)
+		SceneRenderableData(const SPtr<Renderable>& renderable, const HSceneObject& sceneObject)
 			:renderable(renderable), sceneObject(sceneObject)
 		{ }
 
-		RenderablePtr renderable;
+		SPtr<Renderable> renderable;
 		HSceneObject sceneObject;
 	};
 
@@ -87,7 +87,7 @@ namespace BansheeEngine
 		 * Sets the render target that the main camera in the scene (if any) will render its view to. This generally means
 		 * the main game window when running standalone, or the Game viewport when running in editor.
 		 */
-		void setMainRenderTarget(const RenderTargetPtr& rt);
+		void setMainRenderTarget(const SPtr<RenderTarget>& rt);
 
 		/** Notifies the scene manager that a new renderable was created. */
 		void _registerRenderable(const SPtr<Renderable>& renderable, const HSceneObject& so);
@@ -127,7 +127,7 @@ namespace BansheeEngine
 		Map<Renderable*, SceneRenderableData> mRenderables;
 		Map<Light*, SceneLightData> mLights;
 		Vector<SceneCameraData> mMainCameras;
-		RenderTargetPtr mMainRT;
+		SPtr<RenderTarget> mMainRT;
 
 		HEvent mMainRTResizedConn;
 

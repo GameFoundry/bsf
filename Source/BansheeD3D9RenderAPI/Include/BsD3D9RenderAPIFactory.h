@@ -32,7 +32,7 @@ namespace BansheeEngine
 			public:
 				InitOnStart() 
 				{ 
-					static RenderAPIFactoryPtr newFactory;
+					static SPtr<RenderAPIFactory> newFactory;
 					if(newFactory == nullptr)
 					{
 						newFactory = bs_shared_ptr_new<D3D9RenderAPIFactory>();

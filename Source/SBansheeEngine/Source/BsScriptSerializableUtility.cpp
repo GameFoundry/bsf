@@ -29,7 +29,7 @@ namespace BansheeEngine
 		::MonoClass* monoClass = mono_object_get_class(original);
 		MonoClass* engineClass = MonoManager::instance().findClass(monoClass);
 
-		ManagedSerializableTypeInfoPtr typeInfo = ScriptAssemblyManager::instance().getTypeInfo(engineClass);
+		SPtr<ManagedSerializableTypeInfo> typeInfo = ScriptAssemblyManager::instance().getTypeInfo(engineClass);
 		if (typeInfo == nullptr)
 		{
 			LOGWRN("Cannot clone an instance of type \"" +
@@ -37,14 +37,14 @@ namespace BansheeEngine
 			return nullptr;
 		}
 
-		ManagedSerializableFieldDataPtr data = ManagedSerializableFieldData::create(typeInfo, original);
+		SPtr<ManagedSerializableFieldData> data = ManagedSerializableFieldData::create(typeInfo, original);
 		MemorySerializer ms;
 
 		// Note: This code unnecessarily encodes to binary and decodes from it. I could have added a specialized clone method that does it directly,
 		// but didn't feel the extra code was justified.
 		UINT32 size = 0;
 		UINT8* encodedData = ms.encode(data.get(), size);
-		ManagedSerializableFieldDataPtr clonedData = std::static_pointer_cast<ManagedSerializableFieldData>(ms.decode(encodedData, size));
+		SPtr<ManagedSerializableFieldData> clonedData = std::static_pointer_cast<ManagedSerializableFieldData>(ms.decode(encodedData, size));
 		clonedData->deserialize();
 
 		return clonedData->getValueBoxed(typeInfo);
@@ -59,7 +59,7 @@ namespace BansheeEngine
 		::MonoClass* monoClass = mono_type_get_class(type);
 		MonoClass* engineClass = MonoManager::instance().findClass(monoClass);
 
-		ManagedSerializableTypeInfoPtr typeInfo = ScriptAssemblyManager::instance().getTypeInfo(engineClass);
+		SPtr<ManagedSerializableTypeInfo> typeInfo = ScriptAssemblyManager::instance().getTypeInfo(engineClass);
 		if (typeInfo == nullptr)
 		{
 			LOGWRN("Cannot create an instance of type \"" + 
@@ -67,14 +67,14 @@ namespace BansheeEngine
 			return nullptr;
 		}
 			
-		ManagedSerializableFieldDataPtr data = ManagedSerializableFieldData::createDefault(typeInfo);
+		SPtr<ManagedSerializableFieldData> data = ManagedSerializableFieldData::createDefault(typeInfo);
 		MemorySerializer ms;
 
 		// Note: This code unnecessarily encodes to binary and decodes from it. I could have added a specialized create method that does it directly,
 		// but didn't feel the extra code was justified.
 		UINT32 size = 0;
 		UINT8* encodedData = ms.encode(data.get(), size);
-		ManagedSerializableFieldDataPtr createdData = std::static_pointer_cast<ManagedSerializableFieldData>(ms.decode(encodedData, size));
+		SPtr<ManagedSerializableFieldData> createdData = std::static_pointer_cast<ManagedSerializableFieldData>(ms.decode(encodedData, size));
 		createdData->deserialize();
 
 		return createdData->getValueBoxed(typeInfo);

@@ -43,7 +43,7 @@ namespace BansheeEngine
 			return TID_DepthStencilState;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return RenderStateManager::instance()._createDepthStencilStatePtr(DEPTH_STENCIL_STATE_DESC());
 		}

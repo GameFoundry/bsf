@@ -18,7 +18,7 @@ namespace BansheeEngine
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "ContextMenu")
 
 		/**	Returns the internal native context menu object. */
-		GUIContextMenuPtr getInternal() const { return mContextMenu; }
+		SPtr<GUIContextMenu> getInternal() const { return mContextMenu; }
 
 	private:
 		ScriptContextMenu(MonoObject* instance);
@@ -30,7 +30,7 @@ namespace BansheeEngine
 		 */
 		void onContextMenuItemTriggered(UINT32 idx);
 
-		GUIContextMenuPtr mContextMenu;
+		SPtr<GUIContextMenu> mContextMenu;
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/

@@ -155,7 +155,7 @@ namespace BansheeEngine
 	{
 		Path assetPath = MonoUtil::monoToWString(path);
 
-		ProjectResourceMetaPtr meta = gProjectLibrary().findResourceMeta(assetPath);
+		SPtr<ProjectResourceMeta> meta = gProjectLibrary().findResourceMeta(assetPath);
 		if (meta == nullptr)
 			return nullptr;
 
@@ -478,11 +478,11 @@ namespace BansheeEngine
 		return false;
 	}
 
-	ScriptResourceMeta::ScriptResourceMeta(MonoObject* instance, const ProjectResourceMetaPtr& meta)
+	ScriptResourceMeta::ScriptResourceMeta(MonoObject* instance, const SPtr<ProjectResourceMeta>& meta)
 		:ScriptObject(instance), mMeta(meta)
 	{ }
 
-	MonoObject* ScriptResourceMeta::create(const ProjectResourceMetaPtr& meta)
+	MonoObject* ScriptResourceMeta::create(const SPtr<ProjectResourceMeta>& meta)
 	{
 		MonoObject* managedInstance = metaData.scriptClass->createInstance();
 		bs_new<ScriptResourceMeta>(managedInstance, meta);

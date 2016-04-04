@@ -59,7 +59,7 @@ namespace BansheeEngine
 		Vector<String> UUIDs;
 		for (auto& path : mSelectedResourcePaths)
 		{
-			ProjectResourceMetaPtr meta = gProjectLibrary().findResourceMeta(path);
+			SPtr<ProjectResourceMeta> meta = gProjectLibrary().findResourceMeta(path);
 			if (meta != nullptr)
 				UUIDs.push_back(meta->getUUID());
 		}

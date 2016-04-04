@@ -11,7 +11,7 @@
 
 namespace BansheeEngine
 {
-	ScriptSerializableList::ScriptSerializableList(MonoObject* instance, const ManagedSerializableTypeInfoListPtr& typeInfo)
+	ScriptSerializableList::ScriptSerializableList(MonoObject* instance, const SPtr<ManagedSerializableTypeInfoList>& typeInfo)
 		:ScriptObject(instance), mTypeInfo(typeInfo)
 	{
 
@@ -24,7 +24,7 @@ namespace BansheeEngine
 
 	ScriptSerializableList* ScriptSerializableList::create(const ScriptSerializableProperty* parentProperty)
 	{
-		ManagedSerializableTypeInfoListPtr listTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoList>(parentProperty->getTypeInfo());
+		SPtr<ManagedSerializableTypeInfoList> listTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoList>(parentProperty->getTypeInfo());
 
 		MonoType* monoInternalElementType = mono_class_get_type(listTypeInfo->mElementType->getMonoClass());
 		MonoReflectionType* internalElementType = mono_type_get_object(MonoManager::instance().getDomain(), monoInternalElementType);

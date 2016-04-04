@@ -100,7 +100,7 @@ namespace BansheeEngine
 		 * Constructs a new object that can hold number of vertices described by the provided vertex data description. As 
 		 * well as a number of indices of the provided type.
 		 */
-		MeshData(UINT32 numVertices, UINT32 numIndexes, const VertexDataDescPtr& vertexData, IndexType indexType = IT_32BIT);
+		MeshData(UINT32 numVertices, UINT32 numIndexes, const SPtr<VertexDataDesc>& vertexData, IndexType indexType = IT_32BIT);
 		~MeshData();
 
 		/**
@@ -207,7 +207,7 @@ namespace BansheeEngine
 		UINT32 getElementOffset(VertexElementSemantic semantic, UINT32 semanticIdx = 0, UINT32 streamIdx = 0) const;
 
 		/** Returns an object that describes data contained in a single vertex. */
-		const VertexDataDescPtr& getVertexDesc() const { return mVertexData; }
+		const SPtr<VertexDataDesc>& getVertexDesc() const { return mVertexData; }
 
 		/**	Return the size (in bytes) of the entire buffer. */
 		UINT32 getSize() const { return getInternalBufferSize(); }
@@ -227,14 +227,14 @@ namespace BansheeEngine
 		 * @return						Combined mesh data containing all vertices and indexes references by the provided 
 		 *								sub-meshes.
 		 */
-		static MeshDataPtr combine(const Vector<MeshDataPtr>& elements, const Vector<Vector<SubMesh>>& allSubMeshes,
+		static SPtr<MeshData> combine(const Vector<SPtr<MeshData>>& elements, const Vector<Vector<SubMesh>>& allSubMeshes,
 			Vector<SubMesh>& subMeshes);
 
 		/**
 		 * Constructs a new object that can hold number of vertices described by the provided vertex data description. As 
 		 * well as a number of indices of the provided type.
 		 */
-		static MeshDataPtr create(UINT32 numVertices, UINT32 numIndexes, const VertexDataDescPtr& vertexData, 
+		static SPtr<MeshData> create(UINT32 numVertices, UINT32 numIndexes, const SPtr<VertexDataDesc>& vertexData, 
 			IndexType indexType = IT_32BIT)
 		{
 			return bs_shared_ptr_new<MeshData>(numVertices, numIndexes, vertexData, indexType);
@@ -290,7 +290,7 @@ namespace BansheeEngine
 		UINT32 mNumIndices;
 		IndexType mIndexType;
 
-		VertexDataDescPtr mVertexData;
+		SPtr<VertexDataDesc> mVertexData;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

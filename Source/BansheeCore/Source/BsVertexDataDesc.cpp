@@ -176,7 +176,7 @@ namespace BansheeEngine
 		}
 	}
 
-	VertexDataDescPtr VertexDataDesc::create()
+	SPtr<VertexDataDesc> VertexDataDesc::create()
 	{
 		return bs_shared_ptr_new<VertexDataDesc>();
 	}

@@ -168,7 +168,7 @@ namespace BansheeEngine
 		 * @param[in]	meshData	Object containing mesh vertices and indices. Vertices must be Vertex3 and indices 
 		 *							32-bit.
 		 */
-		void drawWireMesh(const MeshDataPtr& meshData);
+		void drawWireMesh(const SPtr<MeshData>& meshData);
 
 		/**
 		 * Draws a wireframe frustum.
@@ -232,7 +232,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method.
 		 */
-		void update(const CameraPtr& camera);
+		void update(const SPtr<Camera>& camera);
 
 		/**
 		 * Queues all gizmos to be rendered for picking. Each gizmo is draw with a separate color so we can identify them
@@ -243,7 +243,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method.
 		 */
-		void renderForPicking(const CameraPtr& camera, std::function<Color(UINT32)> idxToColorCallback);
+		void renderForPicking(const SPtr<Camera>& camera, std::function<Color(UINT32)> idxToColorCallback);
 
 		/** @} */
 
@@ -324,7 +324,7 @@ namespace BansheeEngine
 		/**	Data required for rendering a wireframe mesh gizmo. */
 		struct WireMeshData : CommonData
 		{
-			MeshDataPtr meshData;
+			SPtr<MeshData> meshData;
 		};
 
 		/**	Data required for rendering a frustum gizmo. */
@@ -374,7 +374,7 @@ namespace BansheeEngine
 		};
 
 		typedef Vector<IconRenderData> IconRenderDataVec;
-		typedef std::shared_ptr<IconRenderDataVec> IconRenderDataVecPtr;
+		typedef SPtr<IconRenderDataVec> IconRenderDataVecPtr;
 
 		/**
 		 * Builds a brand new mesh that can be used for rendering all icon gizmos.
@@ -388,7 +388,7 @@ namespace BansheeEngine
 		 * @return					A mesh containing all of the visible icons. Mesh is allocated using the icon mesh heap
 		 *							and should be deallocated manually.
 		 */
-		TransientMeshPtr buildIconMesh(const CameraPtr& camera, const Vector<IconData>& iconData, bool forPicking, IconRenderDataVecPtr& renderData);
+		SPtr<TransientMesh> buildIconMesh(const SPtr<Camera>& camera, const Vector<IconData>& iconData, bool forPicking, IconRenderDataVecPtr& renderData);
 
 		/**	Resizes the icon width/height so it is always scaled to optimal size (with preserved aspect). */
 		void limitIconSize(UINT32& width, UINT32& height);
@@ -404,7 +404,7 @@ namespace BansheeEngine
 		 * @param[in]	normalColor	Normal color of the icon.
 		 * @param[in]	fadedColor	Faded color to be used when icon is occluded by geometry.
 		 */
-		void calculateIconColors(const Color& tint, const CameraPtr& camera, UINT32 iconHeight, bool fixedScale,
+		void calculateIconColors(const Color& tint, const SPtr<Camera>& camera, UINT32 iconHeight, bool fixedScale,
 			Color& normalColor, Color& fadedColor);
 
 		/**	Initializes the core thread version of the gizmo manager. */
@@ -452,13 +452,13 @@ namespace BansheeEngine
 
 		Vector<DrawHelper::ShapeMeshData> mActiveMeshes;
 
-		MeshHeapPtr mIconMeshHeap;
-		TransientMeshPtr mIconMesh;
+		SPtr<MeshHeap> mIconMeshHeap;
+		SPtr<TransientMesh> mIconMesh;
 
 		std::atomic<GizmoManagerCore*> mCore;
 
 		// Immutable
-		VertexDataDescPtr mIconVertexDesc;
+		SPtr<VertexDataDesc> mIconVertexDesc;
 
 		// Transient
 		struct SortedIconData

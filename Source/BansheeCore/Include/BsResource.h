@@ -26,7 +26,7 @@ namespace BansheeEngine
 		void setName(const WString& name);
 
 		/**	Retrieves meta-data containing various information describing a resource. */
-		ResourceMetaDataPtr getMetaData() const { return mMetaData; }
+		SPtr<ResourceMetaData> getMetaData() const { return mMetaData; }
 
 		/**	Returns whether or not this resource is allowed to be asynchronously loaded. */
 		virtual bool allowAsyncLoading() const { return true; }
@@ -42,7 +42,7 @@ namespace BansheeEngine
 		bool areDependenciesLoaded() const;
 
 		UINT32 mSize;
-		ResourceMetaDataPtr mMetaData;
+		SPtr<ResourceMetaData> mMetaData;
 
 	/************************************************************************/
 	/* 								SERIALIZATION                      		*/

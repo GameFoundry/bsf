@@ -19,14 +19,14 @@ namespace BansheeEngine
 
     }
 
-	RenderTexturePtr GLTextureManager::createRenderTextureImpl(const RENDER_TEXTURE_DESC& desc)
+	SPtr<RenderTexture> GLTextureManager::createRenderTextureImpl(const RENDER_TEXTURE_DESC& desc)
 	{
 		GLRenderTexture* tex = new (bs_alloc<GLRenderTexture>()) GLRenderTexture(desc);
 
 		return bs_core_ptr<GLRenderTexture>(tex);
 	}
 
-	MultiRenderTexturePtr GLTextureManager::createMultiRenderTextureImpl(const MULTI_RENDER_TEXTURE_DESC& desc)
+	SPtr<MultiRenderTexture> GLTextureManager::createMultiRenderTextureImpl(const MULTI_RENDER_TEXTURE_DESC& desc)
 	{
 		GLMultiRenderTexture* tex = new (bs_alloc<GLMultiRenderTexture>()) GLMultiRenderTexture(desc);
 
@@ -67,7 +67,7 @@ namespace BansheeEngine
 	{ }
 
 	SPtr<TextureCore> GLTextureCoreManager::createTextureInternal(TextureType texType, UINT32 width, UINT32 height, UINT32 depth,
-		int numMips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount, const PixelDataPtr& initialData)
+		int numMips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount, const SPtr<PixelData>& initialData)
 	{
 		GLTextureCore* tex = new (bs_alloc<GLTextureCore>()) GLTextureCore(mGLSupport, texType,
 			width, height, depth, numMips, format, usage, hwGammaCorrection, multisampleCount, initialData);

@@ -34,7 +34,7 @@ namespace BansheeEngine
 
 	public:
 		Task(const PrivatelyConstruct& dummy, const String& name, std::function<void()> taskWorker, 
-			TaskPriority priority, TaskPtr dependency);
+			TaskPriority priority, SPtr<Task> dependency);
 
 		/**
 		 * Creates a new task. Task should be provided to TaskScheduler in order for it to start.
@@ -45,8 +45,8 @@ namespace BansheeEngine
 		 * @param[in]	dependency	(optional) Task dependency if one exists. If provided the task will
 		 * 							not be executed until its dependency is complete.
 		 */
-		static TaskPtr create(const String& name, std::function<void()> taskWorker, TaskPriority priority = TaskPriority::Normal, 
-			TaskPtr dependency = nullptr);
+		static SPtr<Task> create(const String& name, std::function<void()> taskWorker, TaskPriority priority = TaskPriority::Normal, 
+			SPtr<Task> dependency = nullptr);
 
 		/** Returns true if the task has completed. */
 		bool isComplete() const;
@@ -71,7 +71,7 @@ namespace BansheeEngine
 		TaskPriority mPriority;
 		UINT32 mTaskId;
 		std::function<void()> mTaskWorker;
-		TaskPtr mTaskDependency;
+		SPtr<Task> mTaskDependency;
 		std::atomic<UINT32> mState; /**< 0 - Inactive, 1 - In progress, 2 - Completed, 3 - Canceled */
 
 		TaskScheduler* mParent;
@@ -98,7 +98,7 @@ namespace BansheeEngine
 		~TaskScheduler();
 
 		/** Queues a new task. */
-		void addTask(const TaskPtr& task);
+		void addTask(const SPtr<Task>& task);
 
 		/**	Adds a new worker thread which will be used for executing queued tasks. */
 		void addWorker();
@@ -115,17 +115,17 @@ namespace BansheeEngine
 		void runMain();
 
 		/**	Worker method that runs a single task. */
-		void runTask(TaskPtr task);
+		void runTask(SPtr<Task> task);
 
 		/**	Blocks the calling thread until the specified task has completed. */
 		void waitUntilComplete(const Task* task);
 
 		/**	Method used for sorting tasks. */
-		static bool taskCompare(const TaskPtr& lhs, const TaskPtr& rhs);
+		static bool taskCompare(const SPtr<Task>& lhs, const SPtr<Task>& rhs);
 
 		HThread mTaskSchedulerThread;
-		Set<TaskPtr, std::function<bool(const TaskPtr&, const TaskPtr&)>> mTaskQueue;
-		Vector<TaskPtr> mActiveTasks;
+		Set<SPtr<Task>, std::function<bool(const SPtr<Task>&, const SPtr<Task>&)>> mTaskQueue;
+		Vector<SPtr<Task>> mActiveTasks;
 		UINT32 mMaxActiveTasks;
 		UINT32 mNextTaskId;
 		bool mShutdown;

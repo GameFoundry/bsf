@@ -111,12 +111,12 @@ namespace BansheeEngine
 
 	HFont Font::create(const Vector<SPtr<FontBitmap>>& fontData)
 	{
-		FontPtr newFont = _createPtr(fontData);
+		SPtr<Font> newFont = _createPtr(fontData);
 
 		return static_resource_cast<Font>(gResources()._createResourceHandle(newFont));
 	}
 
-	FontPtr Font::_createPtr(const Vector<SPtr<FontBitmap>>& fontData)
+	SPtr<Font> Font::_createPtr(const Vector<SPtr<FontBitmap>>& fontData)
 	{
 		return FontManager::instance().create(fontData);
 	}

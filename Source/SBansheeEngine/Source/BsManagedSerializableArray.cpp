@@ -16,7 +16,7 @@ namespace BansheeEngine
 
 	}
 
-	ManagedSerializableArray::ManagedSerializableArray(const ConstructPrivately& dummy, const ManagedSerializableTypeInfoArrayPtr& typeInfo, MonoObject* managedInstance)
+	ManagedSerializableArray::ManagedSerializableArray(const ConstructPrivately& dummy, const SPtr<ManagedSerializableTypeInfoArray>& typeInfo, MonoObject* managedInstance)
 		: mArrayTypeInfo(typeInfo), mManagedInstance(managedInstance), mElemSize(0), 
 		mElementMonoClass(nullptr), mCopyMethod(nullptr)
 	{
@@ -30,7 +30,7 @@ namespace BansheeEngine
 			mNumElements[i] = getLengthInternal(i);
 	}
 
-	ManagedSerializableArrayPtr ManagedSerializableArray::createFromExisting(MonoObject* managedInstance, const ManagedSerializableTypeInfoArrayPtr& typeInfo)
+	SPtr<ManagedSerializableArray> ManagedSerializableArray::createFromExisting(MonoObject* managedInstance, const SPtr<ManagedSerializableTypeInfoArray>& typeInfo)
 	{
 		if(managedInstance == nullptr)
 			return nullptr;
@@ -41,17 +41,17 @@ namespace BansheeEngine
 		return bs_shared_ptr_new<ManagedSerializableArray>(ConstructPrivately(), typeInfo, managedInstance);
 	}
 
-	ManagedSerializableArrayPtr ManagedSerializableArray::createNew(const ManagedSerializableTypeInfoArrayPtr& typeInfo, const Vector<UINT32>& sizes)
+	SPtr<ManagedSerializableArray> ManagedSerializableArray::createNew(const SPtr<ManagedSerializableTypeInfoArray>& typeInfo, const Vector<UINT32>& sizes)
 	{
 		return bs_shared_ptr_new<ManagedSerializableArray>(ConstructPrivately(), typeInfo, createManagedInstance(typeInfo, sizes));
 	}
 
-	ManagedSerializableArrayPtr ManagedSerializableArray::createNew()
+	SPtr<ManagedSerializableArray> ManagedSerializableArray::createNew()
 	{
 		return bs_shared_ptr_new<ManagedSerializableArray>(ConstructPrivately());
 	}
 
-	MonoObject* ManagedSerializableArray::createManagedInstance(const ManagedSerializableTypeInfoArrayPtr& typeInfo, const Vector<UINT32>& sizes)
+	MonoObject* ManagedSerializableArray::createManagedInstance(const SPtr<ManagedSerializableTypeInfoArray>& typeInfo, const Vector<UINT32>& sizes)
 	{
 		if (!typeInfo->isTypeLoaded())
 			return nullptr;
@@ -73,7 +73,7 @@ namespace BansheeEngine
 		return createInstance->invoke(nullptr, params);
 	}
 
-	void ManagedSerializableArray::setFieldData(UINT32 arrayIdx, const ManagedSerializableFieldDataPtr& val)
+	void ManagedSerializableArray::setFieldData(UINT32 arrayIdx, const SPtr<ManagedSerializableFieldData>& val)
 	{
 		if (mManagedInstance != nullptr)
 		{
@@ -91,7 +91,7 @@ namespace BansheeEngine
 		}
 	}
 
-	ManagedSerializableFieldDataPtr ManagedSerializableArray::getFieldData(UINT32 arrayIdx)
+	SPtr<ManagedSerializableFieldData> ManagedSerializableArray::getFieldData(UINT32 arrayIdx)
 	{
 		if (mManagedInstance != nullptr)
 		{
@@ -128,7 +128,7 @@ namespace BansheeEngine
 			mNumElements[i] = getLengthInternal(i);
 
 		UINT32 numElements = getTotalLength();
-		mCachedEntries = Vector<ManagedSerializableFieldDataPtr>(numElements);
+		mCachedEntries = Vector<SPtr<ManagedSerializableFieldData>>(numElements);
 
 		for (UINT32 i = 0; i < numElements; i++)
 			mCachedEntries[i] = getFieldData(i);

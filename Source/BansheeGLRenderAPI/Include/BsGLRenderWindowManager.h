@@ -19,7 +19,7 @@ namespace BansheeEngine
 
 	protected:
 		/** @copydoc RenderWindowManager::createImpl() */
-		RenderWindowPtr createImpl(RENDER_WINDOW_DESC& desc, UINT32 windowId, const RenderWindowPtr& parentWindow) override;
+		SPtr<RenderWindow> createImpl(RENDER_WINDOW_DESC& desc, UINT32 windowId, const SPtr<RenderWindow>& parentWindow) override;
 
 	private:
 		GLRenderAPI* mRenderSystem;

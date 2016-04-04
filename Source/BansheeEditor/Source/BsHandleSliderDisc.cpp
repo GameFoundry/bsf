@@ -158,7 +158,7 @@ namespace BansheeEngine
 		return Radian(Math::atan2(-point.z, -point.x) + Math::PI);
 	}
 
-	void HandleSliderDisc::activate(const CameraPtr& camera, const Vector2I& pointerPos)
+	void HandleSliderDisc::activate(const SPtr<Camera>& camera, const Vector2I& pointerPos)
 	{
 		Ray localRay = camera->screenPointToRay(pointerPos);
 		localRay.transformAffine(getTransformInv());
@@ -175,7 +175,7 @@ namespace BansheeEngine
 		mDirection.normalize();
 	}
 
-	void HandleSliderDisc::handleInput(const CameraPtr& camera, const Vector2I& inputDelta)
+	void HandleSliderDisc::handleInput(const SPtr<Camera>& camera, const Vector2I& inputDelta)
 	{
 		assert(getState() == State::Active);
 

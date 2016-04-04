@@ -123,10 +123,10 @@ namespace BansheeEngine
 		 * Returns a prefab diff object containing instance specific modifications of this object compared to its prefab
 		 * reference, if any.
 		 */
-		const PrefabDiffPtr& _getPrefabDiff() const { return mPrefabDiff; }
+		const SPtr<PrefabDiff>& _getPrefabDiff() const { return mPrefabDiff; }
 
 		/** Assigns a new prefab diff object. Caller must ensure the prefab diff was generated for this object. */
-		void _setPrefabDiff(const PrefabDiffPtr& diff) { mPrefabDiff = diff; }
+		void _setPrefabDiff(const SPtr<PrefabDiff>& diff) { mPrefabDiff = diff; }
 
 		/** @} */
 
@@ -176,7 +176,7 @@ namespace BansheeEngine
 	private:
 		HSceneObject mThisHandle;
 		String mPrefabLinkUUID;
-		PrefabDiffPtr mPrefabDiff;
+		SPtr<PrefabDiff> mPrefabDiff;
 		UINT32 mPrefabHash;
 		UINT32 mFlags;
 
@@ -500,7 +500,7 @@ namespace BansheeEngine
 			static_assert((std::is_base_of<BansheeEngine::Component, T>::value),
 				"Specified type is not a valid Component.");
 
-			std::shared_ptr<T> gameObject(new (bs_alloc<T>()) T(mThisHandle,
+			SPtr<T> gameObject(new (bs_alloc<T>()) T(mThisHandle,
 				std::forward<Args>(args)...),
 				&bs_delete<T>, StdAlloc<T>());
 
@@ -629,18 +629,18 @@ namespace BansheeEngine
 	private:
 		/**	Creates an empty component with the default constructor. */
 		template <typename T>
-		static std::shared_ptr<T> createEmptyComponent()
+		static SPtr<T> createEmptyComponent()
 		{
 			static_assert((std::is_base_of<BansheeEngine::Component, T>::value), "Specified type is not a valid Component.");
 
 			T* rawPtr = new (bs_alloc<T>()) T();
-			std::shared_ptr<T> gameObject(rawPtr, &bs_delete<T>, StdAlloc<T>());
+			SPtr<T> gameObject(rawPtr, &bs_delete<T>, StdAlloc<T>());
 
 			return gameObject;
 		}
 
 		/**	Adds the component to the internal component array. */
-		void addComponentInternal(const std::shared_ptr<Component> component);
+		void addComponentInternal(const SPtr<Component> component);
 
 		Vector<HComponent> mComponents;
 

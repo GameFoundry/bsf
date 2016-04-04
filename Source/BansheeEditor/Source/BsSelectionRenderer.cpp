@@ -47,7 +47,7 @@ namespace BansheeEngine
 		bs_delete(core);
 	}
 
-	void SelectionRenderer::update(const CameraPtr& camera)
+	void SelectionRenderer::update(const SPtr<Camera>& camera)
 	{
 		Vector<ObjectData> objects;
 
@@ -87,7 +87,7 @@ namespace BansheeEngine
 
 	SelectionRendererCore::~SelectionRendererCore()
 	{
-		CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
+		SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
 		if (mCamera != nullptr)
 			activeRenderer->_unregisterRenderCallback(mCamera.get(), 10);
 	}
@@ -109,7 +109,7 @@ namespace BansheeEngine
 	{
 		if (mCamera != camera)
 		{
-			CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
+			SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
 			if (mCamera != nullptr)
 				activeRenderer->_unregisterRenderCallback(mCamera.get(), 10);
 

@@ -89,7 +89,7 @@ namespace BansheeEngine
 			return TID_PhysicsMaterial;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return PhysicsMaterial::_createPtr();
 		}

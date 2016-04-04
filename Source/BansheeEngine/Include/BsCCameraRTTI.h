@@ -17,8 +17,8 @@ namespace BansheeEngine
 	class BS_EXPORT CCameraRTTI : public RTTIType<CCamera, Component, CCameraRTTI>
 	{
 	private:
-		CameraPtr getInternal(CCamera* obj) { return obj->mInternal; }
-		void setInternal(CCamera* obj, CameraPtr val) { obj->mInternal = val; }
+		SPtr<Camera> getInternal(CCamera* obj) { return obj->mInternal; }
+		void setInternal(CCamera* obj, SPtr<Camera> val) { obj->mInternal = val; }
 
 	public:
 		CCameraRTTI()
@@ -37,7 +37,7 @@ namespace BansheeEngine
 			return TID_CCamera;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return GameObjectRTTI::createGameObject<CCamera>();
 		}

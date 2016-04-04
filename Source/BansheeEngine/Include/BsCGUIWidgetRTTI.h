@@ -33,7 +33,7 @@ namespace BansheeEngine
 			return TID_CGUIWidget;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return GameObjectRTTI::createGameObject<CGUIWidget>();
 		}

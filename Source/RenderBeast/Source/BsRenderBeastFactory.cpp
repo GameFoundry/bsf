@@ -6,7 +6,7 @@
 
 namespace BansheeEngine
 {
-	CoreRendererPtr RenderBeastFactory::create()
+	SPtr<CoreRenderer> RenderBeastFactory::create()
 	{
 		return bs_shared_ptr_new<RenderBeast>();
 	}

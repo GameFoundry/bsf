@@ -184,11 +184,11 @@ namespace BansheeEngine
 		sample.activeTimeQuery->end();
 	}
 
-	TimerQueryPtr ProfilerGPU::getTimerQuery() const
+	SPtr<TimerQuery> ProfilerGPU::getTimerQuery() const
 	{
 		if (!mFreeTimerQueries.empty())
 		{
-			TimerQueryPtr timerQuery = mFreeTimerQueries.top();
+			SPtr<TimerQuery> timerQuery = mFreeTimerQueries.top();
 			mFreeTimerQueries.pop();
 
 			return timerQuery;
@@ -197,11 +197,11 @@ namespace BansheeEngine
 		return TimerQuery::create();
 	}
 
-	OcclusionQueryPtr ProfilerGPU::getOcclusionQuery() const
+	SPtr<OcclusionQuery> ProfilerGPU::getOcclusionQuery() const
 	{
 		if (!mFreeOcclusionQueries.empty())
 		{
-			OcclusionQueryPtr occlusionQuery = mFreeOcclusionQueries.top();
+			SPtr<OcclusionQuery> occlusionQuery = mFreeOcclusionQueries.top();
 			mFreeOcclusionQueries.pop();
 
 			return occlusionQuery;

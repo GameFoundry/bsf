@@ -264,7 +264,7 @@ namespace BansheeEngine
 		// Do this before restoring windows to ensure types are loaded
 		ScriptManager::instance().reload();
 		
-		EditorWidgetLayoutPtr layout = loadWidgetLayout();
+		SPtr<EditorWidgetLayout> layout = loadWidgetLayout();
 		if (layout != nullptr)
 			EditorWidgetManager::instance().setLayout(layout);
 	}
@@ -301,7 +301,7 @@ namespace BansheeEngine
 		return true;
 	}
 
-	EditorWidgetLayoutPtr EditorApplication::loadWidgetLayout()
+	SPtr<EditorWidgetLayout> EditorApplication::loadWidgetLayout()
 	{
 		Path layoutPath = getProjectPath();
 		layoutPath.append(WIDGET_LAYOUT_PATH);
@@ -315,7 +315,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	void EditorApplication::saveWidgetLayout(const EditorWidgetLayoutPtr& layout)
+	void EditorApplication::saveWidgetLayout(const SPtr<EditorWidgetLayout>& layout)
 	{
 		Path layoutPath = getProjectPath();
 		layoutPath.append(WIDGET_LAYOUT_PATH);
@@ -381,7 +381,7 @@ namespace BansheeEngine
 		fs.encode(mProjectSettings.get());
 	}
 
-	ShaderIncludeHandlerPtr EditorApplication::getShaderIncludeHandler() const
+	SPtr<IShaderIncludeHandler> EditorApplication::getShaderIncludeHandler() const
 	{
 		return bs_shared_ptr_new<EditorShaderIncludeHandler>();
 	}

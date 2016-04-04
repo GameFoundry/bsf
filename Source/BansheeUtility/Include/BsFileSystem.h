@@ -20,7 +20,7 @@ namespace BansheeEngine
 		 * @param[in]	fullPath	Full path to a file.
 		 * @param[in]	readOnly	(optional) If true, returned stream will only be readable.
 		 */
-		static DataStreamPtr openFile(const Path& fullPath, bool readOnly = true);
+		static SPtr<DataStream> openFile(const Path& fullPath, bool readOnly = true);
 
 		/**
 		 * Opens a file and returns a data stream capable of reading and writing to that file. If file doesn't exist new 
@@ -28,7 +28,7 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	fullPath	Full path to a file.
 		 */
-		static DataStreamPtr createAndOpenFile(const Path& fullPath);
+		static SPtr<DataStream> createAndOpenFile(const Path& fullPath);
 
 		/**
 		 * Returns the size of a file in bytes.

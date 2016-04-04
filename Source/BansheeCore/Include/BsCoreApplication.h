@@ -60,7 +60,7 @@ namespace BansheeEngine
 			virtual void quitRequested();
 
 			/**	Returns the main window that was created on application start-up. */
-			RenderWindowPtr getPrimaryWindow() const { return mPrimaryWindow; }
+			SPtr<RenderWindow> getPrimaryWindow() const { return mPrimaryWindow; }
 
 			/**
 			 * Returns the id of the simulation thread.
@@ -99,7 +99,7 @@ namespace BansheeEngine
 		virtual void startUpRenderer();
 
 		/**	Returns a handler that is used for resolving shader include file paths. */
-		virtual ShaderIncludeHandlerPtr getShaderIncludeHandler() const;
+		virtual SPtr<IShaderIncludeHandler> getShaderIncludeHandler() const;
 
 	private:
 		/**	Called when the frame finishes rendering. */
@@ -114,7 +114,7 @@ namespace BansheeEngine
 	private:
 		typedef void(*UpdatePluginFunc)();
 
-		RenderWindowPtr mPrimaryWindow;
+		SPtr<RenderWindow> mPrimaryWindow;
 		START_UP_DESC mStartUpDesc;
 
 		UINT64 mFrameStep; // Microseconds

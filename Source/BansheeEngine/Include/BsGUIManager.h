@@ -55,7 +55,7 @@ namespace BansheeEngine
 				:isDirty(true)
 			{ }
 
-			Vector<TransientMeshPtr> cachedMeshes;
+			Vector<SPtr<TransientMesh>> cachedMeshes;
 			Vector<SpriteMaterialInfo> cachedMaterials;
 			Vector<GUIWidget*> cachedWidgetsPerMesh;
 			Vector<GUIWidget*> widgets;
@@ -200,7 +200,7 @@ namespace BansheeEngine
 		 *
 		 * @return	If provided widget has no bridge, coordinates are returned as is.
 		 */
-		Vector2I windowToBridgedCoords(const RenderTargetPtr& target, const Vector2I& windowPos) const;
+		Vector2I windowToBridgedCoords(const SPtr<RenderTarget>& target, const Vector2I& windowPos) const;
 
 		/** 
 		 * Returns the render window that holds the GUI element that displays the provided render texture. 
@@ -209,7 +209,7 @@ namespace BansheeEngine
 		 * @return				Window that displays the GUI element with the render texture, or null if the render texture
 		 *						is not bridged.
 		 */
-		RenderWindowPtr getBridgeWindow(const RenderTexturePtr& target) const;
+		SPtr<RenderWindow> getBridgeWindow(const SPtr<RenderTexture>& target) const;
 
 		/** Gets the core thread portion of the GUI manager, responsible for rendering of GUI elements. */
 		GUIManagerCore* getCore() const { return mCore.load(std::memory_order_relaxed); }
@@ -339,12 +339,12 @@ namespace BansheeEngine
 
 		Vector<WidgetInfo> mWidgets;
 		UnorderedMap<const Viewport*, GUIRenderData> mCachedGUIData;
-		MeshHeapPtr mMeshHeap;
+		SPtr<MeshHeap> mMeshHeap;
 
 		std::atomic<GUIManagerCore*> mCore;
 		bool mCoreDirty;
 
-		VertexDataDescPtr mVertexDesc;
+		SPtr<VertexDataDesc> mVertexDesc;
 
 		Stack<GUIElement*> mScheduledForDestruction;
 

@@ -40,7 +40,7 @@ namespace BansheeEngine
 		if (mParentWidget == nullptr)
 			return Vector2I();
 
-		RenderWindowPtr parentWindow = mParentWidget->getParentWindow()->getRenderWindow();
+		SPtr<RenderWindow> parentWindow = mParentWidget->getParentWindow()->getRenderWindow();
 
 		Vector2I windowPos = parentWindow->screenToWindowPos(Cursor::instance().getScreenPosition());
 		const RenderWindowProperties& rwProps = parentWindow->getProperties();

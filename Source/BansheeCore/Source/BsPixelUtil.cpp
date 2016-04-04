@@ -854,7 +854,7 @@ namespace BansheeEngine
 	/**	Handles output from NVTT library for a mip-map chain. */
 	struct NVTTMipmapOutputHandler : public nvtt::OutputHandler
 	{
-		NVTTMipmapOutputHandler(const Vector<PixelDataPtr>& buffers)
+		NVTTMipmapOutputHandler(const Vector<SPtr<PixelData>>& buffers)
 			:buffers(buffers), bufferWritePos(nullptr), bufferEnd(nullptr)
 		{ }
 
@@ -878,8 +878,8 @@ namespace BansheeEngine
 			return true;
 		}
 
-		Vector<PixelDataPtr> buffers;
-		PixelDataPtr activeBuffer;
+		Vector<SPtr<PixelData>> buffers;
+		SPtr<PixelData> activeBuffer;
 
 		UINT8* bufferWritePos;
 		UINT8* bufferEnd;
@@ -1695,7 +1695,7 @@ namespace BansheeEngine
 			BS_EXCEPT(InternalErrorException, "Compressing failed.");
 	}
 
-	Vector<PixelDataPtr> PixelUtil::genMipmaps(const PixelData& src, const MipMapGenOptions& options)
+	Vector<SPtr<PixelData>> PixelUtil::genMipmaps(const PixelData& src, const MipMapGenOptions& options)
 	{
 		if (src.getDepth() != 1)
 			BS_EXCEPT(InvalidParametersException, "3D textures are not supported.");
@@ -1725,7 +1725,7 @@ namespace BansheeEngine
 		
 		UINT32 numMips = getMaxMipmaps(src.getWidth(), src.getHeight(), 1, src.getFormat());
 
-		Vector<PixelDataPtr> argbMipBuffers;
+		Vector<SPtr<PixelData>> argbMipBuffers;
 
 		// Note: This can be done more effectively without creating so many temp buffers
 		// and working with the original formats directly, but it would complicate the code
@@ -1759,11 +1759,11 @@ namespace BansheeEngine
 
 		argbData.freeInternalBuffer();
 
-		Vector<PixelDataPtr> outputMipBuffers;
+		Vector<SPtr<PixelData>> outputMipBuffers;
 		for (UINT32 i = 0; i < (UINT32)argbMipBuffers.size(); i++)
 		{
-			PixelDataPtr argbBuffer = argbMipBuffers[i];
-			PixelDataPtr outputBuffer = bs_shared_ptr_new<PixelData>(argbBuffer->getWidth(), argbBuffer->getHeight(), 1, src.getFormat());
+			SPtr<PixelData> argbBuffer = argbMipBuffers[i];
+			SPtr<PixelData> outputBuffer = bs_shared_ptr_new<PixelData>(argbBuffer->getWidth(), argbBuffer->getHeight(), 1, src.getFormat());
 			outputBuffer->allocateInternalBuffer();
 
 			bulkPixelConversion(*argbBuffer, *outputBuffer);

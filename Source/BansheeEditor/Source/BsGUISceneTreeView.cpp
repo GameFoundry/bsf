@@ -38,7 +38,7 @@ namespace BansheeEngine
 	{
 		SceneTreeViewLocator::_provide(this);
 
-		GUIContextMenuPtr contextMenu = bs_shared_ptr_new<GUIContextMenu>();
+		SPtr<GUIContextMenu> contextMenu = bs_shared_ptr_new<GUIContextMenu>();
 
 		contextMenu->addMenuItem(L"New scene object", std::bind(&GUISceneTreeView::createNewSO, this), 50);
 		contextMenu->addMenuItem(L"Rename", std::bind(&GUISceneTreeView::renameSelected, this), 49, ShortcutKey(ButtonModifier::None, BC_F2));

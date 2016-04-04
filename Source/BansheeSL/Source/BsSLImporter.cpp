@@ -32,9 +32,9 @@ namespace BansheeEngine
 		return true; // Plain-text so I don't even check for magic number
 	}
 
-	ResourcePtr SLImporter::import(const Path& filePath, ConstImportOptionsPtr importOptions)
+	SPtr<Resource> SLImporter::import(const Path& filePath, SPtr<const ImportOptions> importOptions)
 	{
-		DataStreamPtr stream = FileSystem::openFile(filePath);
+		SPtr<DataStream> stream = FileSystem::openFile(filePath);
 		String source = stream->getAsString();
 
 		SPtr<const ShaderImportOptions> io = std::static_pointer_cast<const ShaderImportOptions>(importOptions);
@@ -57,7 +57,7 @@ namespace BansheeEngine
 		return result.shader;
 	}
 
-	ImportOptionsPtr SLImporter::createImportOptions() const
+	SPtr<ImportOptions> SLImporter::createImportOptions() const
 	{
 		return bs_shared_ptr_new<ShaderImportOptions>();
 	}

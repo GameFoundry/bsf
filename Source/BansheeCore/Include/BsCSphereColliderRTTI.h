@@ -36,7 +36,7 @@ namespace BansheeEngine
 			return TID_CSphereCollider;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return GameObjectRTTI::createGameObject<CSphereCollider>();
 		}

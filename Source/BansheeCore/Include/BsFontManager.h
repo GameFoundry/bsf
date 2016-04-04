@@ -16,14 +16,14 @@ namespace BansheeEngine
 	{
 	public:
 		/**	Creates a new font from the provided populated font data structure. */
-		FontPtr create(const Vector<SPtr<FontBitmap>>& fontData) const;
+		SPtr<Font> create(const Vector<SPtr<FontBitmap>>& fontData) const;
 
 		/**
 		 * Creates an empty font.
 		 *
 		 * @note	Internal method. Used by factory methods.
 		 */
-		FontPtr _createEmpty() const;
+		SPtr<Font> _createEmpty() const;
 	};
 
 	/** @} */

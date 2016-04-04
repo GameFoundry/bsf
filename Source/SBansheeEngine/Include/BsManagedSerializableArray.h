@@ -32,7 +32,7 @@ namespace BansheeEngine
 		struct ConstructPrivately {};
 
 	public:
-		ManagedSerializableArray(const ConstructPrivately& dummy, const ManagedSerializableTypeInfoArrayPtr& typeInfo, MonoObject* managedInstance);
+		ManagedSerializableArray(const ConstructPrivately& dummy, const SPtr<ManagedSerializableTypeInfoArray>& typeInfo, MonoObject* managedInstance);
 		ManagedSerializableArray(const ConstructPrivately& dummy);
 
 		/**
@@ -41,7 +41,7 @@ namespace BansheeEngine
 		MonoObject* getManagedInstance() const { return mManagedInstance; }
 
 		/**	Returns the type information for the internal array. */
-		ManagedSerializableTypeInfoArrayPtr getTypeInfo() const { return mArrayTypeInfo; }
+		SPtr<ManagedSerializableTypeInfoArray> getTypeInfo() const { return mArrayTypeInfo; }
 
 		/**
 		 * Changes the size of the array. Operates on managed object if in linked state, or on cached data otherwise.
@@ -76,7 +76,7 @@ namespace BansheeEngine
 		 * @param[in]	arrayIdx	Index at which to set the value.
 		 * @param[in]	val			Wrapper around the value to store in the array. Must be of the array element type.
 		 */
-		void setFieldData(UINT32 arrayIdx, const ManagedSerializableFieldDataPtr& val);
+		void setFieldData(UINT32 arrayIdx, const SPtr<ManagedSerializableFieldData>& val);
 
 		/**
 		 * Returns the element value at the specified array index. Operates on managed object if in linked state, or on
@@ -85,7 +85,7 @@ namespace BansheeEngine
 		 * @param[in]	arrayIdx	Index at which to retrieve the value.
 		 * @return					A wrapper around the element value in the array.
 		 */
-		ManagedSerializableFieldDataPtr getFieldData(UINT32 arrayIdx);
+		SPtr<ManagedSerializableFieldData> getFieldData(UINT32 arrayIdx);
 
 		/**
 		 * Serializes the internal managed object into a set of cached data that can be saved in memory/disk and can be
@@ -113,7 +113,7 @@ namespace BansheeEngine
 		 *									with the provided type info.
 		 * @param[in]	typeInfo			Type information for the array and its elements.
 		 */
-		static ManagedSerializableArrayPtr createFromExisting(MonoObject* managedInstance, const ManagedSerializableTypeInfoArrayPtr& typeInfo);
+		static SPtr<ManagedSerializableArray> createFromExisting(MonoObject* managedInstance, const SPtr<ManagedSerializableTypeInfoArray>& typeInfo);
 
 		/**
 		 * Creates a managed serializable array that creates and references a brand new managed array instance.
@@ -122,7 +122,7 @@ namespace BansheeEngine
 		 * @param[in]	sizes		Array of sizes, one per array dimension. Number of sizes must match number of array
 		 *							dimensions as specified by its type.
 		 */
-		static ManagedSerializableArrayPtr createNew(const ManagedSerializableTypeInfoArrayPtr& typeInfo, const Vector<UINT32>& sizes);
+		static SPtr<ManagedSerializableArray> createNew(const SPtr<ManagedSerializableTypeInfoArray>& typeInfo, const Vector<UINT32>& sizes);
 
 		/**
 		 * Creates a managed array instance.
@@ -131,7 +131,7 @@ namespace BansheeEngine
 		 * @param[in]	sizes		Array of sizes, one per array dimension. Number of sizes must match number of array
 		 *							dimensions as specified by its type.
 		 */
-		static MonoObject* createManagedInstance(const ManagedSerializableTypeInfoArrayPtr& typeInfo, const Vector<UINT32>& sizes);
+		static MonoObject* createManagedInstance(const SPtr<ManagedSerializableTypeInfoArray>& typeInfo, const Vector<UINT32>& sizes);
 
 	protected:
 		/**
@@ -153,8 +153,8 @@ namespace BansheeEngine
 		::MonoClass* mElementMonoClass;
 		MonoMethod* mCopyMethod;
 
-		ManagedSerializableTypeInfoArrayPtr mArrayTypeInfo;
-		Vector<ManagedSerializableFieldDataPtr> mCachedEntries;
+		SPtr<ManagedSerializableTypeInfoArray> mArrayTypeInfo;
+		Vector<SPtr<ManagedSerializableFieldData>> mCachedEntries;
 		Vector<UINT32> mNumElements;
 		UINT32 mElemSize;
 
@@ -163,7 +163,7 @@ namespace BansheeEngine
 		/************************************************************************/
 		
 		/**	Creates an empty and uninitialized object used for serialization purposes. */
-		static ManagedSerializableArrayPtr createNew();
+		static SPtr<ManagedSerializableArray> createNew();
 
 	public:
 		friend class ManagedSerializableArrayRTTI;

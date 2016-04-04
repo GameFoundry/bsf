@@ -33,7 +33,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method. Use create() for normal use.
 		 */
-		static PlainTextPtr _createPtr(const WString& data);
+		static SPtr<PlainText> _createPtr(const WString& data);
 
 		/** @} */
 	private:

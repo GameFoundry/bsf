@@ -11,10 +11,10 @@ namespace BansheeEngine
 
 	}
 
-	ProjectResourceMetaPtr ProjectResourceMeta::create(const WString& name, const String& uuid, UINT32 typeId,
-		const ResourceMetaDataPtr& resourceMetaData)
+	SPtr<ProjectResourceMeta> ProjectResourceMeta::create(const WString& name, const String& uuid, UINT32 typeId,
+		const SPtr<ResourceMetaData>& resourceMetaData)
 	{
-		ProjectResourceMetaPtr meta = bs_shared_ptr_new<ProjectResourceMeta>(ConstructPrivately());
+		SPtr<ProjectResourceMeta> meta = bs_shared_ptr_new<ProjectResourceMeta>(ConstructPrivately());
 		meta->mName = name;
 		meta->mUUID = uuid;
 		meta->mTypeId = typeId;
@@ -23,7 +23,7 @@ namespace BansheeEngine
 		return meta;
 	}
 
-	ProjectResourceMetaPtr ProjectResourceMeta::createEmpty()
+	SPtr<ProjectResourceMeta> ProjectResourceMeta::createEmpty()
 	{
 		return bs_shared_ptr_new<ProjectResourceMeta>(ConstructPrivately());
 	}
@@ -48,16 +48,16 @@ namespace BansheeEngine
 
 	}
 
-	ProjectFileMetaPtr ProjectFileMeta::create(const ImportOptionsPtr& importOptions)
+	SPtr<ProjectFileMeta> ProjectFileMeta::create(const SPtr<ImportOptions>& importOptions)
 	{
-		ProjectFileMetaPtr meta = bs_shared_ptr_new<ProjectFileMeta>(ConstructPrivately());
+		SPtr<ProjectFileMeta> meta = bs_shared_ptr_new<ProjectFileMeta>(ConstructPrivately());
 		meta->mImportOptions = importOptions;
 		meta->mIncludeInBuild = false;
 
 		return meta;
 	}
 
-	void ProjectFileMeta::add(const ProjectResourceMetaPtr& resourceMeta)
+	void ProjectFileMeta::add(const SPtr<ProjectResourceMeta>& resourceMeta)
 	{
 		mResourceMetaData.push_back(resourceMeta);
 	}
@@ -93,7 +93,7 @@ namespace BansheeEngine
 		return false;
 	}
 
-	ProjectFileMetaPtr ProjectFileMeta::createEmpty()
+	SPtr<ProjectFileMeta> ProjectFileMeta::createEmpty()
 	{
 		return bs_shared_ptr_new<ProjectFileMeta>(ConstructPrivately());
 	}

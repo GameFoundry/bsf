@@ -94,7 +94,7 @@ namespace BansheeEngine
 		/************************************************************************/
 
 		/**	Creates a new empty and uninitialized sprite texture. To be used by factory methods. */
-		static SpriteTexturePtr createEmpty();
+		static SPtr<SpriteTexture> createEmpty();
 	public:
 		friend class SpriteTextureRTTI;
 		static RTTITypeBase* getRTTIStatic();

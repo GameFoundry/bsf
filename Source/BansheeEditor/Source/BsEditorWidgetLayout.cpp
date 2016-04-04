@@ -12,7 +12,7 @@ namespace BansheeEngine
 	EditorWidgetLayout::Entry::~Entry()
 	{ }
 
-	EditorWidgetLayout::EditorWidgetLayout(const DockManagerLayoutPtr& dockLayout)
+	EditorWidgetLayout::EditorWidgetLayout(const SPtr<DockManagerLayout>& dockLayout)
 		:mDockLayout(dockLayout), mMaximized(false)
 	{ }
 

@@ -31,7 +31,7 @@ namespace BansheeEngine
 	class BS_ED_EXPORT SceneGrid
 	{
 	public:
-		SceneGrid(const CameraPtr& camera);
+		SceneGrid(const SPtr<Camera>& camera);
 		~SceneGrid();
 
 		/**	Sets the total width/height of the grid in XZ plane. */
@@ -44,7 +44,7 @@ namespace BansheeEngine
 		void setMode(GridMode mode);
 
 		/** Changes the active editor settings. Grid properties will be updated internally when editor settings change. */
-		void setSettings(const EditorSettingsPtr& settings);
+		void setSettings(const SPtr<EditorSettings>& settings);
 
 		/** Called once per frame. */
 		void _update();
@@ -71,11 +71,11 @@ namespace BansheeEngine
 		GridMode mMode = GridMode::Perspective;
 		bool mCoreDirty;
 
-		EditorSettingsPtr mSettings;
+		SPtr<EditorSettings> mSettings;
 		UINT32 mSettingsHash = 0;
 
 		HMesh mGridMesh;
-		VertexDataDescPtr mVertexDesc;
+		SPtr<VertexDataDesc> mVertexDesc;
 		std::atomic<SceneGridCore*> mCore;
 	};
 

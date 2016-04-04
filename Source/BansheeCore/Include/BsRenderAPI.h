@@ -47,7 +47,7 @@ namespace BansheeEngine
 		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
 		 */
 		static void setTexture(CoreAccessor& accessor, GpuProgramType gptype, UINT16 texUnit, bool enabled, 
-			const TexturePtr &texPtr);
+			const SPtr<Texture> &texPtr);
 
 		/**  
 		 * @copydoc RenderAPICore::setLoadStoreTexture()
@@ -55,7 +55,7 @@ namespace BansheeEngine
 		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
 		 */
 		static void setLoadStoreTexture(CoreAccessor& accessor, GpuProgramType gptype, UINT16 texUnit, bool enabled, 
-			const TexturePtr& texPtr, const TextureSurface& surface);
+			const SPtr<Texture>& texPtr, const TextureSurface& surface);
 
 		/** 
 		 * @copydoc RenderAPICore::setSamplerState()
@@ -63,28 +63,28 @@ namespace BansheeEngine
 		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
 		 */
 		static void setSamplerState(CoreAccessor& accessor, GpuProgramType gptype, UINT16 texUnit, 
-			const SamplerStatePtr& samplerState);
+			const SPtr<SamplerState>& samplerState);
 
 		/**  
 		 * @copydoc RenderAPICore::setBlendState()
 		 *
 		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
 		 */
-		static void setBlendState(CoreAccessor& accessor, const BlendStatePtr& blendState);
+		static void setBlendState(CoreAccessor& accessor, const SPtr<BlendState>& blendState);
 
 		/** 
 		 * @copydoc RenderAPICore::setRasterizerState()
 		 *
 		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
 		 */
-		static void setRasterizerState(CoreAccessor& accessor, const RasterizerStatePtr& rasterizerState);
+		static void setRasterizerState(CoreAccessor& accessor, const SPtr<RasterizerState>& rasterizerState);
 
 		/** 
 		 * @copydoc RenderAPICore::setDepthStencilState()
 		 *
 		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
 		 */
-		static void setDepthStencilState(CoreAccessor& accessor, const DepthStencilStatePtr& depthStencilState, 
+		static void setDepthStencilState(CoreAccessor& accessor, const SPtr<DepthStencilState>& depthStencilState, 
 			UINT32 stencilRefValue);
 
 		/** 
@@ -95,21 +95,21 @@ namespace BansheeEngine
 		 * @param[in]	index		Index at which to start binding the vertex buffers.
 		 * @param[in]	buffers		A list of buffers to bind to the pipeline.
 		 */
-		static void setVertexBuffers(CoreAccessor& accessor, UINT32 index, const Vector<VertexBufferPtr>& buffers);
+		static void setVertexBuffers(CoreAccessor& accessor, UINT32 index, const Vector<SPtr<VertexBuffer>>& buffers);
 
 		/** 
 		 * @copydoc RenderAPICore::setIndexBuffer()
 		 *
 		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
 		 */
-		static void setIndexBuffer(CoreAccessor& accessor, const IndexBufferPtr& buffer);
+		static void setIndexBuffer(CoreAccessor& accessor, const SPtr<IndexBuffer>& buffer);
 
 		/** 
 		 * @copydoc RenderAPICore::setVertexDeclaration()
 		 *
 		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
 		 */
-		static void setVertexDeclaration(CoreAccessor& accessor, const VertexDeclarationPtr& vertexDeclaration);
+		static void setVertexDeclaration(CoreAccessor& accessor, const SPtr<VertexDeclaration>& vertexDeclaration);
 
 		/** 
 		 * @copydoc RenderAPICore::setViewport()
@@ -158,14 +158,14 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
 		 */
-		static void setRenderTarget(CoreAccessor& accessor, const RenderTargetPtr& target, bool readOnlyDepthStencil = false);
+		static void setRenderTarget(CoreAccessor& accessor, const SPtr<RenderTarget>& target, bool readOnlyDepthStencil = false);
 
 		/** 
 		 * @copydoc RenderAPICore::bindGpuProgram()
 		 *
 		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
 		 */
-		static void bindGpuProgram(CoreAccessor& accessor, const GpuProgramPtr& prg);
+		static void bindGpuProgram(CoreAccessor& accessor, const SPtr<GpuProgram>& prg);
 
 		/** 
 		 * @copydoc RenderAPICore::unbindGpuProgram()
@@ -179,14 +179,14 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
 		 */
-		static void setConstantBuffers(CoreAccessor& accessor, GpuProgramType gptype, const GpuParamsPtr& params);
+		static void setConstantBuffers(CoreAccessor& accessor, GpuProgramType gptype, const SPtr<GpuParams>& params);
 
 		/** 
 		 * @copydoc RenderAPICore::setGpuParams()
 		 *
 		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
 		 */
-		static void setGpuParams(CoreAccessor& accessor, GpuProgramType gptype, const GpuParamsPtr& params);
+		static void setGpuParams(CoreAccessor& accessor, GpuProgramType gptype, const SPtr<GpuParams>& params);
 
 		/** 
 		 * @copydoc RenderAPICore::beginFrame()
@@ -223,7 +223,7 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
 		 */
-		static void swapBuffers(CoreAccessor& accessor, const RenderTargetPtr& target);
+		static void swapBuffers(CoreAccessor& accessor, const SPtr<RenderTarget>& target);
 
 		/** 
 		 * @copydoc RenderAPICore::draw()
@@ -656,7 +656,7 @@ namespace BansheeEngine
 		 * @note
 		 * Sim thread.
 		 */
-		RenderWindowPtr initialize(const RENDER_WINDOW_DESC& primaryWindowDesc);
+		SPtr<RenderWindow> initialize(const RENDER_WINDOW_DESC& primaryWindowDesc);
 
 		/**
 		 * Prepares the initialization of the render API system on the core thread. After the system is prepared a render 
@@ -706,7 +706,7 @@ namespace BansheeEngine
 		bool mClipPlanesDirty;
 
 		RenderAPICapabilities* mCurrentCapabilities;
-		VideoModeInfoPtr mVideoModeInfo;
+		SPtr<VideoModeInfo> mVideoModeInfo;
 	};
 
 	/** @} */

@@ -76,7 +76,7 @@ namespace BansheeEngine
 		}
 
 		/** @copydoc RTTIType::newRTTIObject */
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ShaderImportOptions>();
 		}

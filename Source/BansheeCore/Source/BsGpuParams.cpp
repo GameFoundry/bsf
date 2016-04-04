@@ -14,7 +14,7 @@
 
 namespace BansheeEngine
 {
-	GpuParamsBase::GpuParamsBase(const GpuParamDescPtr& paramDesc, bool transposeMatrices)
+	GpuParamsBase::GpuParamsBase(const SPtr<GpuParamDesc>& paramDesc, bool transposeMatrices)
 		:mParamDesc(paramDesc), mTransposeMatrices(transposeMatrices), mNumParamBlocks(0), mNumSamplerStates(0),
 		mNumTextures(0), mTextureInfo(nullptr)
 	{
@@ -139,7 +139,7 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 	}
 
 	template<bool Core>
-	TGpuParams<Core>::TGpuParams(const GpuParamDescPtr& paramDesc, bool transposeMatrices)
+	TGpuParams<Core>::TGpuParams(const SPtr<GpuParamDesc>& paramDesc, bool transposeMatrices)
 		:GpuParamsBase(paramDesc, transposeMatrices), mParamBlockBuffers(nullptr), mTextures(nullptr),
 		mSamplerStates(nullptr)
 	{
@@ -374,7 +374,7 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 	template BS_CORE_EXPORT void TGpuParams<true>::getParam<Matrix4x2>(const String&, TGpuDataParam<Matrix4x2, true>&) const;
 	template BS_CORE_EXPORT void TGpuParams<true>::getParam<Matrix4x3>(const String&, TGpuDataParam<Matrix4x3, true>&) const;
 
-	GpuParamsCore::GpuParamsCore(const GpuParamDescPtr& paramDesc, bool transposeMatrices)
+	GpuParamsCore::GpuParamsCore(const SPtr<GpuParamDesc>& paramDesc, bool transposeMatrices)
 		: TGpuParams(paramDesc, transposeMatrices)
 	{
 
@@ -442,7 +442,7 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 		}
 	}
 
-	SPtr<GpuParamsCore> GpuParamsCore::create(const GpuParamDescPtr& paramDesc, bool transposeMatrices)
+	SPtr<GpuParamsCore> GpuParamsCore::create(const SPtr<GpuParamDesc>& paramDesc, bool transposeMatrices)
 	{
 		GpuParamsCore* params = new (bs_alloc<GpuParamsCore>()) GpuParamsCore(paramDesc, transposeMatrices);
 		SPtr<GpuParamsCore> paramsPtr = bs_shared_ptr<GpuParamsCore>(params);
@@ -453,7 +453,7 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 
 	const GpuDataParamInfos GpuParams::PARAM_SIZES;
 
-	GpuParams::GpuParams(const GpuParamDescPtr& paramDesc, bool transposeMatrices)
+	GpuParams::GpuParams(const SPtr<GpuParamDesc>& paramDesc, bool transposeMatrices)
 		: TGpuParams(paramDesc, transposeMatrices)
 	{
 
@@ -489,7 +489,7 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 		markListenerResourcesDirty();
 	}
 
-	SPtr<GpuParams> GpuParams::create(const GpuParamDescPtr& paramDesc, bool transposeMatrices)
+	SPtr<GpuParams> GpuParams::create(const SPtr<GpuParamDesc>& paramDesc, bool transposeMatrices)
 	{
 		GpuParams* params = new (bs_alloc<GpuParams>()) GpuParams(paramDesc, transposeMatrices);
 		SPtr<GpuParams> paramsPtr = bs_core_ptr<GpuParams>(params);

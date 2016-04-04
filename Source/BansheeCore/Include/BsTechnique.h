@@ -103,7 +103,7 @@ namespace BansheeEngine
 		SPtr<TechniqueCore> getCore() const;
 
 		/** Creates a new technique. */
-		static TechniquePtr create(const StringID& renderAPI, const StringID& renderer, const Vector<SPtr<Pass>>& passes);
+		static SPtr<Technique> create(const StringID& renderAPI, const StringID& renderer, const Vector<SPtr<Pass>>& passes);
 
 	protected:
 		/** @copydoc CoreObject::createCore */
@@ -113,7 +113,7 @@ namespace BansheeEngine
 		void getCoreDependencies(Vector<CoreObject*>& dependencies) override;
 
 		/**	Creates a new technique but doesn't initialize it. */
-		static TechniquePtr createEmpty();
+		static SPtr<Technique> createEmpty();
 
 	private:
 		/************************************************************************/

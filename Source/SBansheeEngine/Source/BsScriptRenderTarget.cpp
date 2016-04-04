@@ -28,37 +28,37 @@ namespace BansheeEngine
 
 	void ScriptRenderTarget::internal_getWidth(ScriptRenderTarget* thisPtr, int* value)
 	{
-		RenderTargetPtr rt = thisPtr->getNativeValue();
+		SPtr<RenderTarget> rt = thisPtr->getNativeValue();
 		*value = rt->getProperties().getWidth();
 	}
 
 	void ScriptRenderTarget::internal_getHeight(ScriptRenderTarget* thisPtr, int* value)
 	{
-		RenderTargetPtr rt = thisPtr->getNativeValue();
+		SPtr<RenderTarget> rt = thisPtr->getNativeValue();
 		*value = rt->getProperties().getHeight();
 	}
 
 	void ScriptRenderTarget::internal_getGammaCorrection(ScriptRenderTarget* thisPtr, bool* value)
 	{
-		RenderTargetPtr rt = thisPtr->getNativeValue();
+		SPtr<RenderTarget> rt = thisPtr->getNativeValue();
 		*value = rt->getProperties().isHwGammaEnabled();
 	}
 
 	void ScriptRenderTarget::internal_getSampleCount(ScriptRenderTarget* thisPtr, int* value)
 	{
-		RenderTargetPtr rt = thisPtr->getNativeValue();
+		SPtr<RenderTarget> rt = thisPtr->getNativeValue();
 		*value = rt->getProperties().getMultisampleCount();
 	}
 
 	void ScriptRenderTarget::internal_getPriority(ScriptRenderTarget* thisPtr, int* value)
 	{
-		RenderTargetPtr rt = thisPtr->getNativeValue();
+		SPtr<RenderTarget> rt = thisPtr->getNativeValue();
 		*value = rt->getProperties().getPriority();
 	}
 
 	void ScriptRenderTarget::internal_setPriority(ScriptRenderTarget* thisPtr, int value)
 	{
-		RenderTargetPtr rt = thisPtr->getNativeValue();
+		SPtr<RenderTarget> rt = thisPtr->getNativeValue();
 		rt->setPriority(gCoreAccessor(), value);
 	}
 }

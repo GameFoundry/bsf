@@ -55,7 +55,7 @@ namespace BansheeEngine
 			return TID_Renderable;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return Renderable::createEmpty();
 		}

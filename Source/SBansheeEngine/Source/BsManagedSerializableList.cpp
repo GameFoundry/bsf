@@ -19,7 +19,7 @@ namespace BansheeEngine
 
 	}
 
-	ManagedSerializableList::ManagedSerializableList(const ConstructPrivately& dummy, const ManagedSerializableTypeInfoListPtr& typeInfo, MonoObject* managedInstance)
+	ManagedSerializableList::ManagedSerializableList(const ConstructPrivately& dummy, const SPtr<ManagedSerializableTypeInfoList>& typeInfo, MonoObject* managedInstance)
 		:mListTypeInfo(typeInfo), mManagedInstance(managedInstance), mNumElements(0), mItemProp(nullptr),
 		mCountProp(nullptr), mAddMethod(nullptr), mAddRangeMethod(nullptr), mCopyToMethod(nullptr), mClearMethod(nullptr)
 	{
@@ -32,7 +32,7 @@ namespace BansheeEngine
 		mNumElements = getLengthInternal();
 	}
 
-	ManagedSerializableListPtr ManagedSerializableList::createFromExisting(MonoObject* managedInstance, const ManagedSerializableTypeInfoListPtr& typeInfo)
+	SPtr<ManagedSerializableList> ManagedSerializableList::createFromExisting(MonoObject* managedInstance, const SPtr<ManagedSerializableTypeInfoList>& typeInfo)
 	{
 		if(managedInstance == nullptr)
 			return nullptr;
@@ -49,12 +49,12 @@ namespace BansheeEngine
 		return bs_shared_ptr_new<ManagedSerializableList>(ConstructPrivately(), typeInfo, managedInstance);
 	}
 
-	ManagedSerializableListPtr ManagedSerializableList::createNew(const ManagedSerializableTypeInfoListPtr& typeInfo, UINT32 size)
+	SPtr<ManagedSerializableList> ManagedSerializableList::createNew(const SPtr<ManagedSerializableTypeInfoList>& typeInfo, UINT32 size)
 	{
 		return bs_shared_ptr_new<ManagedSerializableList>(ConstructPrivately(), typeInfo, createManagedInstance(typeInfo, size));
 	}
 
-	MonoObject* ManagedSerializableList::createManagedInstance(const ManagedSerializableTypeInfoListPtr& typeInfo, UINT32 size)
+	MonoObject* ManagedSerializableList::createManagedInstance(const SPtr<ManagedSerializableTypeInfoList>& typeInfo, UINT32 size)
 	{
 		if (!typeInfo->isTypeLoaded())
 			return nullptr;
@@ -76,12 +76,12 @@ namespace BansheeEngine
 		return instance;
 	}
 
-	ManagedSerializableListPtr ManagedSerializableList::createEmpty()
+	SPtr<ManagedSerializableList> ManagedSerializableList::createEmpty()
 	{
 		return bs_shared_ptr_new<ManagedSerializableList>(ConstructPrivately());
 	}
 
-	void ManagedSerializableList::setFieldData(UINT32 arrayIdx, const ManagedSerializableFieldDataPtr& val)
+	void ManagedSerializableList::setFieldData(UINT32 arrayIdx, const SPtr<ManagedSerializableFieldData>& val)
 	{
 		if (mManagedInstance != nullptr)
 			mItemProp->setIndexed(mManagedInstance, arrayIdx, val->getValue(mListTypeInfo->mElementType));
@@ -89,14 +89,14 @@ namespace BansheeEngine
 			mCachedEntries[arrayIdx] = val;
 	}
 
-	void ManagedSerializableList::addFieldDataInternal(const ManagedSerializableFieldDataPtr& val)
+	void ManagedSerializableList::addFieldDataInternal(const SPtr<ManagedSerializableFieldData>& val)
 	{
 		void* params[1];
 		params[0] = val->getValue(mListTypeInfo->mElementType);
 		mAddMethod->invoke(mManagedInstance, params);
 	}
 
-	ManagedSerializableFieldDataPtr ManagedSerializableList::getFieldData(UINT32 arrayIdx)
+	SPtr<ManagedSerializableFieldData> ManagedSerializableList::getFieldData(UINT32 arrayIdx)
 	{
 		if (mManagedInstance != nullptr)
 		{
@@ -143,7 +143,7 @@ namespace BansheeEngine
 			return;
 
 		mNumElements = getLengthInternal();
-		mCachedEntries = Vector<ManagedSerializableFieldDataPtr>(mNumElements);
+		mCachedEntries = Vector<SPtr<ManagedSerializableFieldData>>(mNumElements);
 
 		for (UINT32 i = 0; i < mNumElements; i++)
 			mCachedEntries[i] = getFieldData(i);

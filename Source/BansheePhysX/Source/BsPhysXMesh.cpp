@@ -20,9 +20,9 @@ namespace BansheeEngine
 	 * data buffer, and its size in @p size. The data buffer will be allocated used the generic allocator and is up to the
 	 * caller to free it.
 	 */
-	bool cookConvex(PxCooking* cooking, const MeshDataPtr& meshData, UINT8** data, UINT32& size)
+	bool cookConvex(PxCooking* cooking, const SPtr<MeshData>& meshData, UINT8** data, UINT32& size)
 	{
-		VertexDataDescPtr vertexDesc = meshData->getVertexDesc();
+		SPtr<VertexDataDesc> vertexDesc = meshData->getVertexDesc();
 		
 		// Try to create hull from points
 		PxConvexMeshDesc convexDesc;
@@ -96,7 +96,7 @@ namespace BansheeEngine
 	 * and its size in @p size. The data buffer will be allocated used the generic allocator and is up to the caller to 
 	 * free it.
 	 */
-	bool cookMesh(const MeshDataPtr& meshData, PhysicsMeshType type, UINT8** data, UINT32& size)
+	bool cookMesh(const SPtr<MeshData>& meshData, PhysicsMeshType type, UINT8** data, UINT32& size)
 	{
 		if (meshData == nullptr)
 			return false;
@@ -108,7 +108,7 @@ namespace BansheeEngine
 			return false;
 		}
 
-		VertexDataDescPtr vertexDesc = meshData->getVertexDesc();
+		SPtr<VertexDataDesc> vertexDesc = meshData->getVertexDesc();
 		if (!vertexDesc->hasElement(VES_POSITION))
 		{
 			LOGWRN("Provided PhysicsMesh mesh data has no vertex positions.");
@@ -159,7 +159,7 @@ namespace BansheeEngine
 		return true;
 	}
 
-	PhysXMesh::PhysXMesh(const MeshDataPtr& meshData, PhysicsMeshType type)
+	PhysXMesh::PhysXMesh(const SPtr<MeshData>& meshData, PhysicsMeshType type)
 		:PhysicsMesh(meshData, type)
 	{ }
 
@@ -184,7 +184,7 @@ namespace BansheeEngine
 		
 	}
 
-	FPhysXMesh::FPhysXMesh(const MeshDataPtr& meshData, PhysicsMeshType type)
+	FPhysXMesh::FPhysXMesh(const SPtr<MeshData>& meshData, PhysicsMeshType type)
 		:FPhysicsMesh(meshData, type)
 	{
 		// Perform cooking if needed
@@ -231,9 +231,9 @@ namespace BansheeEngine
 		}
 	}
 
-	MeshDataPtr FPhysXMesh::getMeshData() const
+	SPtr<MeshData> FPhysXMesh::getMeshData() const
 	{
-		VertexDataDescPtr vertexDesc = VertexDataDesc::create();
+		SPtr<VertexDataDesc> vertexDesc = VertexDataDesc::create();
 		vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
 
 		if (mConvexMesh == nullptr && mTriangleMesh == nullptr)
@@ -262,7 +262,7 @@ namespace BansheeEngine
 			numIndices = mTriangleMesh->getNbTriangles() * 3;
 		}
 
-		MeshDataPtr meshData = MeshData::create(numVertices, numIndices, vertexDesc);
+		SPtr<MeshData> meshData = MeshData::create(numVertices, numIndices, vertexDesc);
 
 		auto posIter = meshData->getVec3DataIter(VES_POSITION);
 		UINT32* outIndices = meshData->getIndices32();

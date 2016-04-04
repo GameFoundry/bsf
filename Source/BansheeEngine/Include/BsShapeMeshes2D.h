@@ -32,7 +32,7 @@ namespace BansheeEngine
 		 * @note
 		 * Primitives are output in the form of a triangle list.
 		 */
-		static void solidQuad(const Rect2& area, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
+		static void solidQuad(const Rect2& area, const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		/**
 		 * Fills the mesh data with vertices representing a per-pixel line.
@@ -51,7 +51,7 @@ namespace BansheeEngine
 		 * @note
 		 * Primitives are output in the form of a line list.
 		 */
-		static void pixelLine(const Vector2& a, const Vector2& b, const MeshDataPtr& meshData, UINT32 vertexOffset, 
+		static void pixelLine(const Vector2& a, const Vector2& b, const SPtr<MeshData>& meshData, UINT32 vertexOffset, 
 			UINT32 indexOffset);
 
 		/**
@@ -77,7 +77,7 @@ namespace BansheeEngine
 		 * Primitives are output in the form of a triangle list.
 		 */
 		static void antialiasedLine(const Vector2& a, const Vector2& b, float width, float borderWidth, const Color& color,
-			const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
+			const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		/**
 		 * Fills the mesh data with vertices representing per-pixel lines.
@@ -95,7 +95,7 @@ namespace BansheeEngine
 		 * @note
 		 * Primitives are output in the form of a line list.
 		 */
-		static void pixelLineList(const Vector<Vector2>& linePoints, const MeshDataPtr& meshData, UINT32 vertexOffset, 
+		static void pixelLineList(const Vector<Vector2>& linePoints, const SPtr<MeshData>& meshData, UINT32 vertexOffset, 
 			UINT32 indexOffset);
 
 		/**
@@ -120,7 +120,7 @@ namespace BansheeEngine
 		 * Primitives are output in the form of a triangle list.
 		 */
 		static void antialiasedLineList(const Vector<Vector2>& linePoints, float width, float borderWidth, 
-			const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
+			const Color& color, const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		static const UINT32 NUM_VERTICES_AA_LINE;
 		static const UINT32 NUM_INDICES_AA_LINE;

@@ -37,7 +37,7 @@ namespace BansheeEngine
 		 * @param[in]	width			Width of the drop target in pixels.
 		 * @param[in]	height			Height of the drop target in pixels.
 		 */
-		void setDropTarget(const RenderWindowPtr& parentWindow, INT32 x, INT32 y, UINT32 width, UINT32 height);
+		void setDropTarget(const SPtr<RenderWindow>& parentWindow, INT32 x, INT32 y, UINT32 width, UINT32 height);
 
 		/**
 		 * Updates bounds of an existing drop target.

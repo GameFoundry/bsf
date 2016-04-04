@@ -42,7 +42,7 @@ namespace BansheeEngine
 	{
 		WString nativePath = MonoUtil::monoToWString(path);
 
-		GUIContextMenuPtr contextMenu = instance->getInternal();
+		SPtr<GUIContextMenu> contextMenu = instance->getInternal();
 		contextMenu->addMenuItem(nativePath, std::bind(&ScriptContextMenu::onContextMenuItemTriggered,
 			instance, callbackIdx), 0, *shortcut);
 	}
@@ -51,7 +51,7 @@ namespace BansheeEngine
 	{
 		WString nativePath = MonoUtil::monoToWString(path);
 
-		GUIContextMenuPtr contextMenu = instance->getInternal();
+		SPtr<GUIContextMenu> contextMenu = instance->getInternal();
 		contextMenu->addSeparator(nativePath, 0);
 	}
 
@@ -61,7 +61,7 @@ namespace BansheeEngine
 			return;
 
 		WString nativeLabel = MonoUtil::monoToWString(label);
-		GUIContextMenuPtr contextMenu = instance->getInternal();
+		SPtr<GUIContextMenu> contextMenu = instance->getInternal();
 		contextMenu->setLocalizedName(nativeLabel, name->getInternalValue());
 	}
 

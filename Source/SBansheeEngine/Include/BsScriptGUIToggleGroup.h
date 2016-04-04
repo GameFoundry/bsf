@@ -18,12 +18,12 @@ namespace BansheeEngine
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "GUIToggleGroup")
 
 		/**	Returns the native toggle group that this object wraps. */
-		std::shared_ptr<GUIToggleGroup> getInternalValue() const { return mToggleGroup; }
+		SPtr<GUIToggleGroup> getInternalValue() const { return mToggleGroup; }
 
 	private:
-		ScriptGUIToggleGroup(MonoObject* instance, const std::shared_ptr<GUIToggleGroup>& toggleGroup);
+		ScriptGUIToggleGroup(MonoObject* instance, const SPtr<GUIToggleGroup>& toggleGroup);
 
-		std::shared_ptr<GUIToggleGroup> mToggleGroup;
+		SPtr<GUIToggleGroup> mToggleGroup;
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/

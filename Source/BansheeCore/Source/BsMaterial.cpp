@@ -88,7 +88,7 @@ namespace BansheeEngine
 		return equal;
 	}
 
-	Map<String, const GpuParamDataDesc*> determineValidDataParameters(const Vector<GpuParamDescPtr>& paramDescs)
+	Map<String, const GpuParamDataDesc*> determineValidDataParameters(const Vector<SPtr<GpuParamDesc>>& paramDescs)
 	{
 		Map<String, const GpuParamDataDesc*> foundDataParams;
 		Map<String, bool> validParams;
@@ -129,7 +129,7 @@ namespace BansheeEngine
 		return foundDataParams;
 	}
 
-	Vector<const GpuParamObjectDesc*> determineValidObjectParameters(const Vector<GpuParamDescPtr>& paramDescs)
+	Vector<const GpuParamObjectDesc*> determineValidObjectParameters(const Vector<SPtr<GpuParamDesc>>& paramDescs)
 	{
 		Vector<const GpuParamObjectDesc*> validParams;
 
@@ -159,10 +159,10 @@ namespace BansheeEngine
 		return validParams;
 	}
 
-	Set<String> determineValidShareableParamBlocks(const Vector<GpuParamDescPtr>& paramDescs)
+	Set<String> determineValidShareableParamBlocks(const Vector<SPtr<GpuParamDesc>>& paramDescs)
 	{
 		// Make sure param blocks with the same name actually are the same
-		Map<String, std::pair<String, GpuParamDescPtr>> uniqueParamBlocks;
+		Map<String, std::pair<String, SPtr<GpuParamDesc>>> uniqueParamBlocks;
 		Map<String, bool> validParamBlocks;
 
 		for (auto iter = paramDescs.begin(); iter != paramDescs.end(); ++iter)
@@ -185,7 +185,7 @@ namespace BansheeEngine
 				}
 
 				String otherBlockName = iterFind->second.first;
-				GpuParamDescPtr otherDesc = iterFind->second.second;
+				SPtr<GpuParamDesc> otherDesc = iterFind->second.second;
 
 				for (auto myParamIter = curDesc.params.begin(); myParamIter != curDesc.params.end(); ++myParamIter)
 				{
@@ -233,7 +233,7 @@ namespace BansheeEngine
 		return validParamBlocksReturn;
 	}
 
-	Map<String, String> determineParameterToBlockMapping(const Vector<GpuParamDescPtr>& paramDescs)
+	Map<String, String> determineParameterToBlockMapping(const Vector<SPtr<GpuParamDesc>>& paramDescs)
 	{
 		Map<String, String> paramToParamBlock;
 
@@ -262,7 +262,7 @@ namespace BansheeEngine
 		return paramToParamBlock;
 	}
 
-	Map<String, String> determineParamMappings(const Vector<GpuParamDescPtr>& paramDescs, 
+	Map<String, String> determineParamMappings(const Vector<SPtr<GpuParamDesc>>& paramDescs, 
 		const Map<String, SHADER_DATA_PARAM_DESC>& dataParams,
 		const Map<String, SHADER_OBJECT_PARAM_DESC>& textureParams,
 		const Map<String, SHADER_OBJECT_PARAM_DESC>& bufferParams,
@@ -332,7 +332,7 @@ namespace BansheeEngine
 		return validParams;
 	}
 
-	Vector<ShaderBlockDesc> determineShaderBlockData(const Set<String>& paramBlocks, const Vector<GpuParamDescPtr>& paramDescs,
+	Vector<ShaderBlockDesc> determineShaderBlockData(const Set<String>& paramBlocks, const Vector<SPtr<GpuParamDesc>>& paramDescs,
 		const Map<String, SHADER_PARAM_BLOCK_DESC>& shaderDesc)
 	{
 		Vector<ShaderBlockDesc> output;
@@ -377,51 +377,51 @@ namespace BansheeEngine
 	template<>
 	bool isShaderValid(const SPtr<ShaderCore>& shader) { return shader != nullptr; }
 
-	Vector<GpuParamDescPtr> MaterialBase::getAllParamDescs(const SPtr<Technique>& technique)
+	Vector<SPtr<GpuParamDesc>> MaterialBase::getAllParamDescs(const SPtr<Technique>& technique)
 	{
-		Vector<GpuParamDescPtr> allParamDescs;
+		Vector<SPtr<GpuParamDesc>> allParamDescs;
 
 		// Make sure all gpu programs are fully loaded
 		for (UINT32 i = 0; i < technique->getNumPasses(); i++)
 		{
-			PassPtr curPass = technique->getPass(i);
+			SPtr<Pass> curPass = technique->getPass(i);
 
-			GpuProgramPtr vertProgram = curPass->getVertexProgram();
+			SPtr<GpuProgram> vertProgram = curPass->getVertexProgram();
 			if (vertProgram)
 			{
 				vertProgram->blockUntilCoreInitialized();
 				allParamDescs.push_back(vertProgram->getParamDesc());
 			}
 
-			GpuProgramPtr fragProgram = curPass->getFragmentProgram();
+			SPtr<GpuProgram> fragProgram = curPass->getFragmentProgram();
 			if (fragProgram)
 			{
 				fragProgram->blockUntilCoreInitialized();
 				allParamDescs.push_back(fragProgram->getParamDesc());
 			}
 
-			GpuProgramPtr geomProgram = curPass->getGeometryProgram();
+			SPtr<GpuProgram> geomProgram = curPass->getGeometryProgram();
 			if (geomProgram)
 			{
 				geomProgram->blockUntilCoreInitialized();
 				allParamDescs.push_back(geomProgram->getParamDesc());
 			}
 
-			GpuProgramPtr hullProgram = curPass->getHullProgram();
+			SPtr<GpuProgram> hullProgram = curPass->getHullProgram();
 			if (hullProgram)
 			{
 				hullProgram->blockUntilCoreInitialized();
 				allParamDescs.push_back(hullProgram->getParamDesc());
 			}
 
-			GpuProgramPtr domainProgram = curPass->getDomainProgram();
+			SPtr<GpuProgram> domainProgram = curPass->getDomainProgram();
 			if (domainProgram)
 			{
 				domainProgram->blockUntilCoreInitialized();
 				allParamDescs.push_back(domainProgram->getParamDesc());
 			}
 
-			GpuProgramPtr computeProgram = curPass->getComputeProgram();
+			SPtr<GpuProgram> computeProgram = curPass->getComputeProgram();
 			if (computeProgram)
 			{
 				computeProgram->blockUntilCoreInitialized();
@@ -432,9 +432,9 @@ namespace BansheeEngine
 		return allParamDescs;
 	}
 
-	Vector<GpuParamDescPtr> MaterialBase::getAllParamDescs(const SPtr<TechniqueCore>& technique)
+	Vector<SPtr<GpuParamDesc>> MaterialBase::getAllParamDescs(const SPtr<TechniqueCore>& technique)
 	{
-		Vector<GpuParamDescPtr> allParamDescs;
+		Vector<SPtr<GpuParamDesc>> allParamDescs;
 
 		// Make sure all gpu programs are fully loaded
 		for (UINT32 i = 0; i < technique->getNumPasses(); i++)
@@ -668,7 +668,7 @@ namespace BansheeEngine
 				return;
 
 			mValidShareableParamBlocks.clear();
-			Vector<GpuParamDescPtr> allParamDescs = getAllParamDescs(mBestTechnique);
+			Vector<SPtr<GpuParamDesc>> allParamDescs = getAllParamDescs(mBestTechnique);
 
 			mValidParams = determineParamMappings(allParamDescs, mShader->getDataParams(), mShader->getTextureParams(),
 				mShader->getBufferParams(), mShader->getSamplerParams());
@@ -1197,7 +1197,7 @@ namespace BansheeEngine
 		{
 			for (UINT32 i = 0; i < PassParameters::NUM_PARAMS; i++)
 			{
-				GpuParamsPtr gpuParams = params->getParamByIdx(i);
+				SPtr<GpuParams> gpuParams = params->getParamByIdx(i);
 				if (gpuParams != nullptr)
 					dependencies.push_back(gpuParams.get());
 			}
@@ -1269,7 +1269,7 @@ namespace BansheeEngine
 		MemorySerializer serializer;
 		UINT8* buffer = serializer.encode(this, bufferSize, (void*(*)(UINT32))&bs_alloc);
 
-		std::shared_ptr<Material> cloneObj = std::static_pointer_cast<Material>(serializer.decode(buffer, bufferSize));
+		SPtr<Material> cloneObj = std::static_pointer_cast<Material>(serializer.decode(buffer, bufferSize));
 		bs_free(buffer);
 
 		return static_resource_cast<Material>(gResources()._createResourceHandle(cloneObj));
@@ -1407,14 +1407,14 @@ namespace BansheeEngine
 
 	HMaterial Material::create()
 	{
-		MaterialPtr materialPtr = MaterialManager::instance().create();
+		SPtr<Material> materialPtr = MaterialManager::instance().create();
 
 		return static_resource_cast<Material>(gResources()._createResourceHandle(materialPtr));
 	}
 
 	HMaterial Material::create(const HShader& shader)
 	{
-		MaterialPtr materialPtr = MaterialManager::instance().create(shader);
+		SPtr<Material> materialPtr = MaterialManager::instance().create(shader);
 
 		return static_resource_cast<Material>(gResources()._createResourceHandle(materialPtr));
 	}

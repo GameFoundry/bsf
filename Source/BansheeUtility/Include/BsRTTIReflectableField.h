@@ -54,7 +54,7 @@ namespace BansheeEngine
 		virtual void setArrayValue(void* object, UINT32 index, IReflectable& value) = 0;
 
 		/** Creates a new object of the field type. */
-		virtual std::shared_ptr<IReflectable> newObject() = 0;
+		virtual SPtr<IReflectable> newObject() = 0;
 
 		/** @copydoc RTTIField::hasDynamicSize */
 		bool hasDynamicSize() override { return true; }
@@ -193,7 +193,7 @@ namespace BansheeEngine
 		}
 
 		/** @copydoc RTTIReflectableFieldBase::newObject */
-		std::shared_ptr<IReflectable> newObject() override
+		SPtr<IReflectable> newObject() override
 		{
 			return DataType::getRTTIStatic()->newRTTIObject();
 		}

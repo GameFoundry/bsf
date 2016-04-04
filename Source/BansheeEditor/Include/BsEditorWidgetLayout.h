@@ -32,7 +32,7 @@ namespace BansheeEngine
 		struct PrivatelyConstruct {};
 
 	public:
-		EditorWidgetLayout(const DockManagerLayoutPtr& dockLayout);
+		EditorWidgetLayout(const SPtr<DockManagerLayout>& dockLayout);
 		EditorWidgetLayout(const PrivatelyConstruct& dummy);
 
 		/**
@@ -42,7 +42,7 @@ namespace BansheeEngine
 		Vector<Entry>& getEntries() { return mEntries; }
 
 		/**	Returns dock layout that contains data about how were widget containers docked in the dock manager. */
-		const DockManagerLayoutPtr& getDockLayout() const { return mDockLayout; }
+		const SPtr<DockManagerLayout>& getDockLayout() const { return mDockLayout; }
 
 		/**	Sets whether the main editor window is maximized. */
 		void setIsMainWindowMaximized(bool maximized) { mMaximized = maximized; }
@@ -52,7 +52,7 @@ namespace BansheeEngine
 
 	private:
 		Vector<Entry> mEntries;
-		DockManagerLayoutPtr mDockLayout;
+		SPtr<DockManagerLayout> mDockLayout;
 		bool mMaximized;
 
 		/************************************************************************/

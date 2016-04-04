@@ -20,11 +20,11 @@ namespace BansheeEngine
 			:mInstanceId(0), object(nullptr)
 		{ }
 
-		std::shared_ptr<GameObject> object;
+		SPtr<GameObject> object;
 		UINT64 mInstanceId;
 	};
 
-	typedef std::shared_ptr<GameObjectInstanceData> GameObjectInstanceDataPtr;
+	typedef SPtr<GameObjectInstanceData> GameObjectInstanceDataPtr;
 
 	/**	Internal data shared between GameObject handles. */
 	struct BS_CORE_EXPORT GameObjectHandleData
@@ -33,12 +33,12 @@ namespace BansheeEngine
 			:mPtr(nullptr)
 		{ }
 
-		GameObjectHandleData(const std::shared_ptr<GameObjectInstanceData>& ptr)
+		GameObjectHandleData(const SPtr<GameObjectInstanceData>& ptr)
 		{
 			mPtr = ptr;
 		}
 
-		std::shared_ptr<GameObjectInstanceData> mPtr;
+		SPtr<GameObjectInstanceData> mPtr;
 	};
 
 	/**
@@ -85,7 +85,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Throws exception if the GameObject was destroyed.
 		 */
-		std::shared_ptr<GameObject> getInternalPtr() const
+		SPtr<GameObject> getInternalPtr() const
 		{
 			throwIfDestroyed();
 
@@ -112,13 +112,13 @@ namespace BansheeEngine
 		 */
 
 		/** Returns internal handle data. */
-		std::shared_ptr<GameObjectHandleData> _getHandleData() const { return mData; }
+		SPtr<GameObjectHandleData> _getHandleData() const { return mData; }
 
 		/** Resolves a handle to a proper GameObject in case it was created uninitialized. */
 		void _resolve(const GameObjectHandleBase& object);
 
 		/**	Changes the GameObject instance the handle is pointing to. */
-		void _setHandleData(const GameObjectPtr& object);
+		void _setHandleData(const SPtr<GameObject>& object);
 
 		/** @} */
 
@@ -128,8 +128,8 @@ namespace BansheeEngine
 		template<class _Ty1, class _Ty2>
 		friend bool operator==(const GameObjectHandle<_Ty1>& _Left, const GameObjectHandle<_Ty2>& _Right);
 
-		GameObjectHandleBase(const std::shared_ptr<GameObject> ptr);
-		GameObjectHandleBase(const std::shared_ptr<GameObjectHandleData>& data);
+		GameObjectHandleBase(const SPtr<GameObject> ptr);
+		GameObjectHandleBase(const SPtr<GameObjectHandleData>& data);
 		GameObjectHandleBase(std::nullptr_t ptr);
 
 		/**	Throws an exception if the referenced GameObject has been destroyed. */
@@ -145,7 +145,7 @@ namespace BansheeEngine
 				mData->mPtr->object = nullptr;
 		}
 
-		std::shared_ptr<GameObjectHandleData> mData;
+		SPtr<GameObjectHandleData> mData;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -226,7 +226,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Throws exception if the GameObject was destroyed.
 		 */
-		std::shared_ptr<T> getInternalPtr() const
+		SPtr<T> getInternalPtr() const
 		{
 			throwIfDestroyed();
 

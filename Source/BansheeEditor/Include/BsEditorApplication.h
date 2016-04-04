@@ -47,10 +47,10 @@ namespace BansheeEngine
 		Path getScriptAssemblyFolder() const override;
 
 		/** Returns a set of serializable editor settings that contain every globally customizable editor property. */
-		EditorSettingsPtr getEditorSettings() const { return mEditorSettings; }
+		SPtr<EditorSettings> getEditorSettings() const { return mEditorSettings; }
 
 		/** Returns a set of serializable project settings that contain every customizable property specific to a project. */
-		ProjectSettingsPtr getProjectSettings() const { return mProjectSettings; }
+		SPtr<ProjectSettings> getProjectSettings() const { return mProjectSettings; }
 
 		/**	Saves the current editor settings at the default location. */
 		void saveEditorSettings();
@@ -111,10 +111,10 @@ namespace BansheeEngine
 		 * Loads the previously saved editor widget layout from the default location. Can return null if no layout was 
 		 * previously saved.
 		 */
-		EditorWidgetLayoutPtr loadWidgetLayout();
+		SPtr<EditorWidgetLayout> loadWidgetLayout();
 
 		/**	Saves the provided widget layout at the default layout location. */
-		void saveWidgetLayout(const EditorWidgetLayoutPtr& layout);
+		void saveWidgetLayout(const SPtr<EditorWidgetLayout>& layout);
 
 		/** Loads the previously saved editor settings from the default location. Overwrites any current settings. */
 		void loadEditorSettings();
@@ -126,7 +126,7 @@ namespace BansheeEngine
 		void loadProjectSettings();
 
 		/** @copydoc Application::getShaderIncludeHandler */
-		virtual ShaderIncludeHandlerPtr getShaderIncludeHandler() const override;
+		virtual SPtr<IShaderIncludeHandler> getShaderIncludeHandler() const override;
 
 		/** Converts a render API type supported by the editor into a type recognized by the lower layers of the engine. */
 		static RenderAPIPlugin toEngineRenderAPI(EditorRenderAPI renderAPI);
@@ -137,8 +137,8 @@ namespace BansheeEngine
 		static const Path PROJECT_SETTINGS_PATH;
 
 		RenderAPIPlugin mActiveRAPIPlugin;
-		EditorSettingsPtr mEditorSettings;
-		ProjectSettingsPtr mProjectSettings;
+		SPtr<EditorSettings> mEditorSettings;
+		SPtr<ProjectSettings> mProjectSettings;
 
 		bool mIsProjectLoaded;
 		Path mProjectPath;

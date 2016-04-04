@@ -28,7 +28,7 @@ namespace BansheeEngine
 		initialiseWGL();
     } 
 
-	RenderWindowPtr Win32GLSupport::newWindow(RENDER_WINDOW_DESC& desc, UINT32 windowId, RenderWindowPtr parentWindow)
+	SPtr<RenderWindow> Win32GLSupport::newWindow(RENDER_WINDOW_DESC& desc, UINT32 windowId, SPtr<RenderWindow> parentWindow)
 	{		
 		if(parentWindow != nullptr)
 		{
@@ -38,7 +38,7 @@ namespace BansheeEngine
 		}
 
 		Win32RenderWindow* window = new (bs_alloc<Win32RenderWindow>()) Win32RenderWindow(desc, windowId, *this);
-		return RenderWindowPtr(window, &CoreObject::_delete<Win32RenderWindow, GenAlloc>);
+		return SPtr<RenderWindow>(window, &CoreObject::_delete<Win32RenderWindow, GenAlloc>);
 	}
 
 	SPtr<RenderWindowCore> Win32GLSupport::newWindowCore(RENDER_WINDOW_DESC& desc, UINT32 windowId)
@@ -325,7 +325,7 @@ namespace BansheeEngine
 		return (format && SetPixelFormat(hdc, format, &pfd));
 	}
 
-	VideoModeInfoPtr Win32GLSupport::getVideoModeInfo() const
+	SPtr<VideoModeInfo> Win32GLSupport::getVideoModeInfo() const
 	{
 		return bs_shared_ptr_new<Win32VideoModeInfo>();
 	}

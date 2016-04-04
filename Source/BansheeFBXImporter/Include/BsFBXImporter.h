@@ -29,13 +29,13 @@ namespace BansheeEngine
 		bool isMagicNumberSupported(const UINT8* magicNumPtr, UINT32 numBytes) const override;
 
 		/** @copydoc SpecificImporter::import */
-		ResourcePtr import(const Path& filePath, ConstImportOptionsPtr importOptions) override;
+		SPtr<Resource> import(const Path& filePath, SPtr<const ImportOptions> importOptions) override;
 
 		/** @copydoc SpecificImporter::importAll */
-		Vector<SubResourceRaw> importAll(const Path& filePath, ConstImportOptionsPtr importOptions) override;
+		Vector<SubResourceRaw> importAll(const Path& filePath, SPtr<const ImportOptions> importOptions) override;
 
 		/** @copydoc SpecificImporter::createImportOptions */
-		ImportOptionsPtr createImportOptions() const override;
+		SPtr<ImportOptions> createImportOptions() const override;
 	private:
 		/**
 		 * Starts up FBX SDK. Must be called before any other operations. Outputs an FBX manager and FBX scene instances
@@ -49,7 +49,7 @@ namespace BansheeEngine
 		/** 
 		 * Reads the FBX file and outputs mesh data from the read file. Sub-mesh information will be output in @p subMeshes.
 		 */
-		RendererMeshDataPtr importMeshData(const Path& filePath, ConstImportOptionsPtr importOptions, 
+		SPtr<RendererMeshData> importMeshData(const Path& filePath, SPtr<const ImportOptions> importOptions, 
 			Vector<SubMesh>& subMeshes);
 
 		/**
@@ -118,7 +118,7 @@ namespace BansheeEngine
 		void generateMissingTangentSpace(FBXImportScene& scene, const FBXImportOptions& options);
 
 		/**Converts the mesh data from the imported FBX scene into mesh data that can be used for initializing a mesh. */
-		RendererMeshDataPtr generateMeshData(const FBXImportScene& scene, const FBXImportOptions& options, Vector<SubMesh>& subMeshes);
+		SPtr<RendererMeshData> generateMeshData(const FBXImportScene& scene, const FBXImportOptions& options, Vector<SubMesh>& subMeshes);
 
 		/**	Creates an internal representation of an FBX node from an FbxNode object. */
 		FBXImportNode* createImportNode(FBXImportScene& scene, FbxNode* fbxNode, FBXImportNode* parent);

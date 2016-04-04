@@ -28,11 +28,11 @@ namespace BansheeEngine
 		D3D9Driver* item(const String &name);
 
 		/**	Returns available video modes for all drivers and output devices. */
-		VideoModeInfoPtr getVideoModeInfo() const { return mVideoModeInfo; }
+		SPtr<VideoModeInfo> getVideoModeInfo() const { return mVideoModeInfo; }
 
 	private:
 		Vector<D3D9Driver> mDriverList;
-		VideoModeInfoPtr mVideoModeInfo;
+		SPtr<VideoModeInfo> mVideoModeInfo;
 	};
 
 	/** @} */

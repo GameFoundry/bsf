@@ -8,7 +8,7 @@
 
 namespace BansheeEngine
 {
-	CGUIWidget::CGUIWidget(const HSceneObject& parent, const CameraPtr& camera)
+	CGUIWidget::CGUIWidget(const HSceneObject& parent, const SPtr<Camera>& camera)
 		:Component(parent), mCamera(camera), mParentHash((UINT32)-1)
 	{
 		mInternal = GUIWidget::create(camera);
@@ -75,7 +75,7 @@ namespace BansheeEngine
 		return mInternal->getTarget();
 	}
 
-	CameraPtr CGUIWidget::getCamera() const
+	SPtr<Camera> CGUIWidget::getCamera() const
 	{
 		return mInternal->getCamera();
 	}

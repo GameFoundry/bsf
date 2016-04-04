@@ -38,10 +38,10 @@ namespace BansheeEngine
 		 * @param[in]	renderWindow	Previously created render window to initialize the main editor window in.
 		 * @return						Instance of the main editor window.
 		 */
-		static MainEditorWindow* create(const RenderWindowPtr& renderWindow);
+		static MainEditorWindow* create(const SPtr<RenderWindow>& renderWindow);
 	protected:
 		friend class EditorWindowManager;
-		MainEditorWindow(const RenderWindowPtr& renderWindow);
+		MainEditorWindow(const SPtr<RenderWindow>& renderWindow);
 
 	protected:
 		/** @copydoc EditorWindowBase::resized */

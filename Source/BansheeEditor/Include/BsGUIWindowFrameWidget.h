@@ -28,7 +28,7 @@ namespace BansheeEngine
 		 * @param[in]	ownerWindow		Window that the frame widget will act on.
 		 * @param[in]	skin			GUI skin used for the GUI child elements.
 		 */
-		WindowFrameWidget(const HSceneObject& parent, bool allowResize, const CameraPtr& camera, RenderWindow* ownerWindow, 
+		WindowFrameWidget(const HSceneObject& parent, bool allowResize, const SPtr<Camera>& camera, RenderWindow* ownerWindow, 
 			const HGUISkin& skin);
 		virtual ~WindowFrameWidget();
 

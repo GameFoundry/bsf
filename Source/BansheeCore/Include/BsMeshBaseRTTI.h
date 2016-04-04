@@ -40,7 +40,7 @@ namespace BansheeEngine
 				&MeshBaseRTTI::getNumSubmeshes, &MeshBaseRTTI::setSubMesh, &MeshBaseRTTI::setNumSubmeshes);
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			BS_EXCEPT(InternalErrorException, "Cannot instantiate an abstract class.");
 			return nullptr;

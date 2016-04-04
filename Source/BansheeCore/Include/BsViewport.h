@@ -132,10 +132,10 @@ namespace BansheeEngine
     {
     public:       
         /**	Returns the render target the viewport is associated with. */
-        RenderTargetPtr getTarget() const { return mTarget; }
+        SPtr<RenderTarget> getTarget() const { return mTarget; }
 
 		/**	Sets the render target the viewport will be associated with. */
-		void setTarget(const RenderTargetPtr& target);
+		void setTarget(const SPtr<RenderTarget>& target);
 
 		/**	Retrieves a core implementation of a viewport usable only from the core thread. */
 		SPtr<ViewportCore> getCore() const;
@@ -145,11 +145,11 @@ namespace BansheeEngine
          *
          * @note	Viewport coordinates are normalized in [0, 1] range.
          */	
-		static ViewportPtr create(const RenderTargetPtr& target, float x = 0.0f, float y = 0.0f, 
+		static SPtr<Viewport> create(const SPtr<RenderTarget>& target, float x = 0.0f, float y = 0.0f, 
 			float width = 1.0f, float height = 1.0f);
 
     protected:
-        Viewport(const RenderTargetPtr& target, float x = 0.0f, float y = 0.0f, float width = 1.0f, float height = 1.0f);
+        Viewport(const SPtr<RenderTarget>& target, float x = 0.0f, float y = 0.0f, float width = 1.0f, float height = 1.0f);
 
 		/** @copydoc ViewportBase::_markCoreDirty */
 		void _markCoreDirty() override;
@@ -169,7 +169,7 @@ namespace BansheeEngine
 		/** @copydoc CoreObject::createCore */
 		SPtr<CoreObjectCore> createCore() const override;
 
-        RenderTargetPtr mTarget;
+        SPtr<RenderTarget> mTarget;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -177,7 +177,7 @@ namespace BansheeEngine
 		Viewport();
 
 		/** Creates an empty viewport for serialization purposes. */
-		static ViewportPtr createEmpty();
+		static SPtr<Viewport> createEmpty();
 	public:
 		friend class ViewportRTTI;
 		static RTTITypeBase* getRTTIStatic();

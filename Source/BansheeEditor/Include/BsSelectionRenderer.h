@@ -30,7 +30,7 @@ namespace BansheeEngine
 		~SelectionRenderer();
 
 		/** Called once per frame. Updates the overlay depending on current selection. */
-		void update(const CameraPtr& camera);
+		void update(const SPtr<Camera>& camera);
 
 	private:
 		friend class SelectionRendererCore;

@@ -36,13 +36,13 @@ namespace BansheeEngine
 		 *
 		 * @note	Cube face indices: +X (0), -X (1), +Y (2), -Y (3), +Z (4), -Z (5)
 		 */
-		std::shared_ptr<GLPixelBuffer> getBuffer(UINT32 face, UINT32 mipmap);
+		SPtr<GLPixelBuffer> getBuffer(UINT32 face, UINT32 mipmap);
 
     protected:
 		friend class GLTextureCoreManager;
 
 		GLTextureCore(GLSupport& support, TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps,
-			PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, const PixelDataPtr& initialData);
+			PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, const SPtr<PixelData>& initialData);
 
 		/** @copydoc TextureCore::initialize */
 		void initialize() override;
@@ -69,9 +69,9 @@ namespace BansheeEngine
         GLuint mTextureID;
 		GLenum mGLFormat;
         GLSupport& mGLSupport;
-		std::shared_ptr<GLPixelBuffer> mLockedBuffer;
+		SPtr<GLPixelBuffer> mLockedBuffer;
 		
-		Vector<std::shared_ptr<GLPixelBuffer>>mSurfaceList;
+		Vector<SPtr<GLPixelBuffer>>mSurfaceList;
     };
 
 	/** @} */

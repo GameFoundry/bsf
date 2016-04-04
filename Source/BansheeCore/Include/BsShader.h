@@ -67,7 +67,7 @@ namespace BansheeEngine
 		template<> struct TTextureType < true > { typedef SPtr<TextureCore> Type; };
 
 		template<bool Core> struct TSamplerStateType {};
-		template<> struct TSamplerStateType < false > { typedef SamplerStatePtr Type; };
+		template<> struct TSamplerStateType < false > { typedef SPtr<SamplerState> Type; };
 		template<> struct TSamplerStateType < true > { typedef SPtr<SamplerStateCore> Type; };
 
 		typedef typename TTextureType<Core>::Type TextureType;
@@ -430,7 +430,7 @@ namespace BansheeEngine
 		static HShader create(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques);
 
 		/**	Returns a shader object but doesn't initialize it. */
-		static ShaderPtr createEmpty();
+		static SPtr<Shader> createEmpty();
 
 	public: // ***** INTERNAL ******
 		/** @name Internal
@@ -442,7 +442,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method.
 		 */
-		static ShaderPtr _createPtr(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques);
+		static SPtr<Shader> _createPtr(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques);
 
 		/** @} */
 

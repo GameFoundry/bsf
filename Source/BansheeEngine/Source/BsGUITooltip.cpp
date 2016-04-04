@@ -31,8 +31,8 @@ namespace BansheeEngine
 		setDepth(0); // Needs to be in front of everything
 		setSkin(overlaidWidget.getSkinResource());
 		
-		CameraPtr camera = overlaidWidget.getCamera();
-		ViewportPtr viewport = camera->getViewport();
+		SPtr<Camera> camera = overlaidWidget.getCamera();
+		SPtr<Viewport> viewport = camera->getViewport();
 
 		Rect2I availableBounds(viewport->getX(), viewport->getY(), viewport->getWidth(), viewport->getHeight());
 		

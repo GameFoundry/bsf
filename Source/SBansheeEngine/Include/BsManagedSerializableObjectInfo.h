@@ -72,7 +72,7 @@ namespace BansheeEngine
 		virtual ~ManagedSerializableTypeInfo() {}
 
 		/**	Checks if the current type matches the provided type. */
-		virtual bool matches(const ManagedSerializableTypeInfoPtr& typeInfo) const = 0;
+		virtual bool matches(const SPtr<ManagedSerializableTypeInfo>& typeInfo) const = 0;
 
 		/**
 		 * Checks does the managed type this object represents still exists.
@@ -100,7 +100,7 @@ namespace BansheeEngine
 	{
 	public:
 		/** @copydoc ManagedSerializableTypeInfo::matches */
-		bool matches(const ManagedSerializableTypeInfoPtr& typeInfo) const override;
+		bool matches(const SPtr<ManagedSerializableTypeInfo>& typeInfo) const override;
 
 		/** @copydoc ManagedSerializableTypeInfo::isTypeLoaded */
 		bool isTypeLoaded() const override;
@@ -124,7 +124,7 @@ namespace BansheeEngine
 	{
 	public:
 		/** @copydoc ManagedSerializableTypeInfo::matches */
-		bool matches(const ManagedSerializableTypeInfoPtr& typeInfo) const override;
+		bool matches(const SPtr<ManagedSerializableTypeInfo>& typeInfo) const override;
 
 		/** @copydoc ManagedSerializableTypeInfo::isTypeLoaded */
 		bool isTypeLoaded() const override;
@@ -150,7 +150,7 @@ namespace BansheeEngine
 	{
 	public:
 		/** @copydoc ManagedSerializableTypeInfo::matches */
-		bool matches(const ManagedSerializableTypeInfoPtr& typeInfo) const override;
+		bool matches(const SPtr<ManagedSerializableTypeInfo>& typeInfo) const override;
 
 		/** @copydoc ManagedSerializableTypeInfo::isTypeLoaded */
 		bool isTypeLoaded() const override;
@@ -177,7 +177,7 @@ namespace BansheeEngine
 	{
 	public:
 		/** @copydoc ManagedSerializableTypeInfo::matches */
-		bool matches(const ManagedSerializableTypeInfoPtr& typeInfo) const override;
+		bool matches(const SPtr<ManagedSerializableTypeInfo>& typeInfo) const override;
 
 		/** @copydoc ManagedSerializableTypeInfo::isTypeLoaded */
 		bool isTypeLoaded() const override;
@@ -185,7 +185,7 @@ namespace BansheeEngine
 		/** @copydoc ManagedSerializableTypeInfo::getMonoClass */
 		::MonoClass* getMonoClass() const override;
 
-		ManagedSerializableTypeInfoPtr mElementType;
+		SPtr<ManagedSerializableTypeInfo> mElementType;
 		UINT32 mRank;
 
 		/************************************************************************/
@@ -202,7 +202,7 @@ namespace BansheeEngine
 	{
 	public:
 		/** @copydoc ManagedSerializableTypeInfo::matches */
-		bool matches(const ManagedSerializableTypeInfoPtr& typeInfo) const override;
+		bool matches(const SPtr<ManagedSerializableTypeInfo>& typeInfo) const override;
 
 		/** @copydoc ManagedSerializableTypeInfo::isTypeLoaded */
 		bool isTypeLoaded() const override;
@@ -210,7 +210,7 @@ namespace BansheeEngine
 		/** @copydoc ManagedSerializableTypeInfo::getMonoClass */
 		::MonoClass* getMonoClass() const override;
 
-		ManagedSerializableTypeInfoPtr mElementType;
+		SPtr<ManagedSerializableTypeInfo> mElementType;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -226,7 +226,7 @@ namespace BansheeEngine
 	{
 	public:
 		/** @copydoc ManagedSerializableTypeInfo::matches */
-		bool matches(const ManagedSerializableTypeInfoPtr& typeInfo) const override;
+		bool matches(const SPtr<ManagedSerializableTypeInfo>& typeInfo) const override;
 
 		/** @copydoc ManagedSerializableTypeInfo::isTypeLoaded */
 		bool isTypeLoaded() const override;
@@ -234,8 +234,8 @@ namespace BansheeEngine
 		/** @copydoc ManagedSerializableTypeInfo::getMonoClass */
 		::MonoClass* getMonoClass() const override;
 
-		ManagedSerializableTypeInfoPtr mKeyType;
-		ManagedSerializableTypeInfoPtr mValueType;
+		SPtr<ManagedSerializableTypeInfo> mKeyType;
+		SPtr<ManagedSerializableTypeInfo> mValueType;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -259,7 +259,7 @@ namespace BansheeEngine
 		UINT32 mFieldId;
 		UINT32 mParentTypeId;
 
-		ManagedSerializableTypeInfoPtr mTypeInfo;
+		SPtr<ManagedSerializableTypeInfo> mTypeInfo;
 		ScriptFieldFlags mFlags;
 
 		MonoField* mMonoField;
@@ -292,16 +292,16 @@ namespace BansheeEngine
 		 *								ensure the current object's type matches.
 		 * @return						Found field info within this object, or null if not found.
 		 */
-		ManagedSerializableFieldInfoPtr findMatchingField(const ManagedSerializableFieldInfoPtr& fieldInfo,
-			const ManagedSerializableTypeInfoPtr& fieldTypeInfo) const;
+		SPtr<ManagedSerializableFieldInfo> findMatchingField(const SPtr<ManagedSerializableFieldInfo>& fieldInfo,
+			const SPtr<ManagedSerializableTypeInfo>& fieldTypeInfo) const;
 
-		ManagedSerializableTypeInfoObjectPtr mTypeInfo;
+		SPtr<ManagedSerializableTypeInfoObject> mTypeInfo;
 		MonoClass* mMonoClass;
 
 		UnorderedMap<String, UINT32> mFieldNameToId;
-		UnorderedMap<UINT32, std::shared_ptr<ManagedSerializableFieldInfo>> mFields;
+		UnorderedMap<UINT32, SPtr<ManagedSerializableFieldInfo>> mFields;
 
-		std::shared_ptr<ManagedSerializableObjectInfo> mBaseClass;
+		SPtr<ManagedSerializableObjectInfo> mBaseClass;
 		Vector<std::weak_ptr<ManagedSerializableObjectInfo>> mDerivedClasses;
 
 		/************************************************************************/
@@ -320,7 +320,7 @@ namespace BansheeEngine
 		String mName;
 
 		UnorderedMap<String, UINT32> mTypeNameToId;
-		UnorderedMap<UINT32, std::shared_ptr<ManagedSerializableObjectInfo>> mObjectInfos;
+		UnorderedMap<UINT32, SPtr<ManagedSerializableObjectInfo>> mObjectInfos;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

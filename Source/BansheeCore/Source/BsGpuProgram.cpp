@@ -68,12 +68,12 @@ namespace BansheeEngine
 		return getCore()->getCompileErrorMessage();
 	}
 
-	GpuParamsPtr GpuProgram::createParameters()
+	SPtr<GpuParams> GpuProgram::createParameters()
 	{
 		return GpuParams::create(getCore()->getParamDesc(), RenderAPICore::instance().getAPIInfo().getGpuProgramHasColumnMajorMatrices());
 	}
 
-	GpuParamDescPtr GpuProgram::getParamDesc() const
+	SPtr<GpuParamDesc> GpuProgram::getParamDesc() const
 	{
 		return getCore()->getParamDesc();
 	}
@@ -89,7 +89,7 @@ namespace BansheeEngine
 			mLanguage, mProperties.getType(), mProperties.getProfile(), mNeedsAdjacencyInfo);
 	}
 
-	GpuProgramPtr GpuProgram::create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype,
+	SPtr<GpuProgram> GpuProgram::create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype,
 		GpuProgramProfile profile, bool requiresAdjacency)
 	{
 		return GpuProgramManager::instance().create(source, entryPoint, language, gptype, profile, requiresAdjacency);

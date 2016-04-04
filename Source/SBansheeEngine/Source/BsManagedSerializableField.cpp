@@ -34,7 +34,7 @@
 namespace BansheeEngine
 {
 	template<class T>
-	bool compareFieldData(const T* a, const ManagedSerializableFieldDataPtr& b)
+	bool compareFieldData(const T* a, const SPtr<ManagedSerializableFieldData>& b)
 	{
 		if (rtti_is_of_type<T>(b))
 		{
@@ -53,27 +53,27 @@ namespace BansheeEngine
 		:mTypeId(typeId), mFieldId(fieldId)
 	{ }
 
-	ManagedSerializableFieldKeyPtr ManagedSerializableFieldKey::create(UINT16 typeId, UINT16 fieldId)
+	SPtr<ManagedSerializableFieldKey> ManagedSerializableFieldKey::create(UINT16 typeId, UINT16 fieldId)
 	{
-		ManagedSerializableFieldKeyPtr fieldKey = bs_shared_ptr_new<ManagedSerializableFieldKey>(typeId, fieldId);
+		SPtr<ManagedSerializableFieldKey> fieldKey = bs_shared_ptr_new<ManagedSerializableFieldKey>(typeId, fieldId);
 		return fieldKey;
 	}
 
-	ManagedSerializableFieldDataEntryPtr ManagedSerializableFieldDataEntry::create(const ManagedSerializableFieldKeyPtr& key, const ManagedSerializableFieldDataPtr& value)
+	SPtr<ManagedSerializableFieldDataEntry> ManagedSerializableFieldDataEntry::create(const SPtr<ManagedSerializableFieldKey>& key, const SPtr<ManagedSerializableFieldData>& value)
 	{
-		ManagedSerializableFieldDataEntryPtr fieldDataEntry = bs_shared_ptr_new<ManagedSerializableFieldDataEntry>();
+		SPtr<ManagedSerializableFieldDataEntry> fieldDataEntry = bs_shared_ptr_new<ManagedSerializableFieldDataEntry>();
 		fieldDataEntry->mKey = key;
 		fieldDataEntry->mValue = value;
 
 		return fieldDataEntry;
 	}
 
-	ManagedSerializableFieldDataPtr ManagedSerializableFieldData::create(const ManagedSerializableTypeInfoPtr& typeInfo, MonoObject* value)
+	SPtr<ManagedSerializableFieldData> ManagedSerializableFieldData::create(const SPtr<ManagedSerializableTypeInfo>& typeInfo, MonoObject* value)
 	{
 		return create(typeInfo, value, true);
 	}
 
-	ManagedSerializableFieldDataPtr ManagedSerializableFieldData::createDefault(const ManagedSerializableTypeInfoPtr& typeInfo)
+	SPtr<ManagedSerializableFieldData> ManagedSerializableFieldData::createDefault(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		return create(typeInfo, nullptr, false);
 	}
@@ -94,7 +94,7 @@ namespace BansheeEngine
 	}
 
 	template<class ScriptType>
-	ManagedSerializableFieldDataPtr setScriptResource(MonoObject* value)
+	SPtr<ManagedSerializableFieldData> setScriptResource(MonoObject* value)
 	{
 		auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
 
@@ -108,7 +108,7 @@ namespace BansheeEngine
 	}
 
 	template<>
-	ManagedSerializableFieldDataPtr setScriptResource<ScriptResourceBase>(MonoObject* value)
+	SPtr<ManagedSerializableFieldData> setScriptResource<ScriptResourceBase>(MonoObject* value)
 	{
 		auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataResourceRef>();
 
@@ -124,7 +124,7 @@ namespace BansheeEngine
 	struct ResourceFieldDataAccessors
 	{
 		std::function<MonoObject*(const HResource&)> getter;
-		std::function<ManagedSerializableFieldDataPtr(MonoObject*)> setter;
+		std::function<SPtr<ManagedSerializableFieldData>(MonoObject*)> setter;
 	};
 
 	ResourceFieldDataAccessors* getResourceFieldLookup()
@@ -192,7 +192,7 @@ namespace BansheeEngine
 		return lookup;
 	}
 
-	ManagedSerializableFieldDataPtr ManagedSerializableFieldData::create(const ManagedSerializableTypeInfoPtr& typeInfo, MonoObject* value, bool allowNull)
+	SPtr<ManagedSerializableFieldData> ManagedSerializableFieldData::create(const SPtr<ManagedSerializableTypeInfo>& typeInfo, MonoObject* value, bool allowNull)
 	{
 		if(typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
 		{
@@ -356,7 +356,7 @@ namespace BansheeEngine
 		}
 		else if(typeInfo->getTypeId() == TID_SerializableTypeInfoArray)
 		{
-			ManagedSerializableTypeInfoArrayPtr arrayTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoArray>(typeInfo);
+			SPtr<ManagedSerializableTypeInfoArray> arrayTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoArray>(typeInfo);
 
 			auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataArray>();
 			if(value != nullptr)
@@ -371,7 +371,7 @@ namespace BansheeEngine
 		}
 		else if(typeInfo->getTypeId() == TID_SerializableTypeInfoList)
 		{
-			ManagedSerializableTypeInfoListPtr listTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoList>(typeInfo);
+			SPtr<ManagedSerializableTypeInfoList> listTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoList>(typeInfo);
 
 			auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataList>();
 			if(value != nullptr)
@@ -383,7 +383,7 @@ namespace BansheeEngine
 		}
 		else if(typeInfo->getTypeId() == TID_SerializableTypeInfoDictionary)
 		{
-			ManagedSerializableTypeInfoDictionaryPtr dictTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoDictionary>(typeInfo);
+			SPtr<ManagedSerializableTypeInfoDictionary> dictTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoDictionary>(typeInfo);
 
 			auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataDictionary>();
 			if(value != nullptr)
@@ -397,7 +397,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	void* ManagedSerializableFieldDataBool::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	void* ManagedSerializableFieldDataBool::getValue(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		if(typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
 		{
@@ -410,7 +410,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	void* ManagedSerializableFieldDataChar::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	void* ManagedSerializableFieldDataChar::getValue(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		if(typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
 		{
@@ -423,7 +423,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	void* ManagedSerializableFieldDataI8::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	void* ManagedSerializableFieldDataI8::getValue(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		if(typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
 		{
@@ -436,7 +436,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	void* ManagedSerializableFieldDataU8::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	void* ManagedSerializableFieldDataU8::getValue(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		if(typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
 		{
@@ -449,7 +449,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	void* ManagedSerializableFieldDataI16::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	void* ManagedSerializableFieldDataI16::getValue(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		if(typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
 		{
@@ -462,7 +462,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	void* ManagedSerializableFieldDataU16::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	void* ManagedSerializableFieldDataU16::getValue(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		if(typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
 		{
@@ -475,7 +475,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	void* ManagedSerializableFieldDataI32::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	void* ManagedSerializableFieldDataI32::getValue(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		if(typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
 		{
@@ -488,7 +488,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	void* ManagedSerializableFieldDataU32::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	void* ManagedSerializableFieldDataU32::getValue(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		if(typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
 		{
@@ -501,7 +501,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	void* ManagedSerializableFieldDataI64::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	void* ManagedSerializableFieldDataI64::getValue(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		if(typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
 		{
@@ -514,7 +514,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	void* ManagedSerializableFieldDataU64::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	void* ManagedSerializableFieldDataU64::getValue(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		if(typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
 		{
@@ -527,7 +527,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	void* ManagedSerializableFieldDataFloat::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	void* ManagedSerializableFieldDataFloat::getValue(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		if(typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
 		{
@@ -540,7 +540,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	void* ManagedSerializableFieldDataDouble::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	void* ManagedSerializableFieldDataDouble::getValue(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		if(typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
 		{
@@ -553,7 +553,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	void* ManagedSerializableFieldDataString::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	void* ManagedSerializableFieldDataString::getValue(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		if(typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
 		{
@@ -571,7 +571,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	void* ManagedSerializableFieldDataResourceRef::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	void* ManagedSerializableFieldDataResourceRef::getValue(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		static std::function<MonoObject*(const HResource&)> lookup[(int)ScriptReferenceType::Count];
 
@@ -586,7 +586,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	void* ManagedSerializableFieldDataGameObjectRef::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	void* ManagedSerializableFieldDataGameObjectRef::getValue(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		if(typeInfo->getTypeId() == TID_SerializableTypeInfoRef)
 		{
@@ -620,7 +620,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	void* ManagedSerializableFieldDataObject::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	void* ManagedSerializableFieldDataObject::getValue(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		if(typeInfo->getTypeId() == TID_SerializableTypeInfoObject)
 		{
@@ -646,7 +646,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	void* ManagedSerializableFieldDataArray::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	void* ManagedSerializableFieldDataArray::getValue(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		if(typeInfo->getTypeId() == TID_SerializableTypeInfoArray)
 		{
@@ -662,7 +662,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	void* ManagedSerializableFieldDataList::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	void* ManagedSerializableFieldDataList::getValue(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		if(typeInfo->getTypeId() == TID_SerializableTypeInfoList)
 		{
@@ -678,7 +678,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	void* ManagedSerializableFieldDataDictionary::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	void* ManagedSerializableFieldDataDictionary::getValue(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		if(typeInfo->getTypeId() == TID_SerializableTypeInfoDictionary)
 		{
@@ -694,7 +694,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	MonoObject* ManagedSerializableFieldDataBool::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	MonoObject* ManagedSerializableFieldDataBool::getValueBoxed(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		if (typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
 		{
@@ -707,7 +707,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	MonoObject* ManagedSerializableFieldDataChar::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	MonoObject* ManagedSerializableFieldDataChar::getValueBoxed(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		if (typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
 		{
@@ -720,7 +720,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	MonoObject* ManagedSerializableFieldDataI8::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	MonoObject* ManagedSerializableFieldDataI8::getValueBoxed(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		if (typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
 		{
@@ -733,7 +733,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	MonoObject* ManagedSerializableFieldDataU8::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	MonoObject* ManagedSerializableFieldDataU8::getValueBoxed(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		if (typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
 		{
@@ -746,7 +746,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	MonoObject* ManagedSerializableFieldDataI16::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	MonoObject* ManagedSerializableFieldDataI16::getValueBoxed(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		if (typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
 		{
@@ -759,7 +759,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	MonoObject* ManagedSerializableFieldDataU16::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	MonoObject* ManagedSerializableFieldDataU16::getValueBoxed(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		if (typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
 		{
@@ -772,7 +772,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	MonoObject* ManagedSerializableFieldDataI32::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	MonoObject* ManagedSerializableFieldDataI32::getValueBoxed(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		if (typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
 		{
@@ -785,7 +785,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	MonoObject* ManagedSerializableFieldDataU32::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	MonoObject* ManagedSerializableFieldDataU32::getValueBoxed(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		if (typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
 		{
@@ -798,7 +798,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	MonoObject* ManagedSerializableFieldDataI64::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	MonoObject* ManagedSerializableFieldDataI64::getValueBoxed(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		if (typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
 		{
@@ -811,7 +811,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	MonoObject* ManagedSerializableFieldDataU64::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	MonoObject* ManagedSerializableFieldDataU64::getValueBoxed(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		if (typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
 		{
@@ -824,7 +824,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	MonoObject* ManagedSerializableFieldDataFloat::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	MonoObject* ManagedSerializableFieldDataFloat::getValueBoxed(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		if (typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
 		{
@@ -837,7 +837,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	MonoObject* ManagedSerializableFieldDataDouble::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	MonoObject* ManagedSerializableFieldDataDouble::getValueBoxed(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		if (typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
 		{
@@ -850,22 +850,22 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	MonoObject* ManagedSerializableFieldDataString::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	MonoObject* ManagedSerializableFieldDataString::getValueBoxed(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		return (MonoObject*)getValue(typeInfo);
 	}
 
-	MonoObject* ManagedSerializableFieldDataResourceRef::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	MonoObject* ManagedSerializableFieldDataResourceRef::getValueBoxed(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		return (MonoObject*)getValue(typeInfo);
 	}
 
-	MonoObject* ManagedSerializableFieldDataGameObjectRef::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	MonoObject* ManagedSerializableFieldDataGameObjectRef::getValueBoxed(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		return (MonoObject*)getValue(typeInfo);
 	}
 
-	MonoObject* ManagedSerializableFieldDataObject::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	MonoObject* ManagedSerializableFieldDataObject::getValueBoxed(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		if (typeInfo->getTypeId() == TID_SerializableTypeInfoObject)
 		{
@@ -881,82 +881,82 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	MonoObject* ManagedSerializableFieldDataArray::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	MonoObject* ManagedSerializableFieldDataArray::getValueBoxed(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		return (MonoObject*)getValue(typeInfo);
 	}
 
-	MonoObject* ManagedSerializableFieldDataList::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	MonoObject* ManagedSerializableFieldDataList::getValueBoxed(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		return (MonoObject*)getValue(typeInfo);
 	}
 
-	MonoObject* ManagedSerializableFieldDataDictionary::getValueBoxed(const ManagedSerializableTypeInfoPtr& typeInfo)
+	MonoObject* ManagedSerializableFieldDataDictionary::getValueBoxed(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
 		return (MonoObject*)getValue(typeInfo);
 	}
 
-	bool ManagedSerializableFieldDataBool::equals(const ManagedSerializableFieldDataPtr& other)
+	bool ManagedSerializableFieldDataBool::equals(const SPtr<ManagedSerializableFieldData>& other)
 	{
 		return compareFieldData(this, other);
 	}
 
-	bool ManagedSerializableFieldDataChar::equals(const ManagedSerializableFieldDataPtr& other)
+	bool ManagedSerializableFieldDataChar::equals(const SPtr<ManagedSerializableFieldData>& other)
 	{
 		return compareFieldData(this, other);
 	}
 
-	bool ManagedSerializableFieldDataI8::equals(const ManagedSerializableFieldDataPtr& other)
+	bool ManagedSerializableFieldDataI8::equals(const SPtr<ManagedSerializableFieldData>& other)
 	{
 		return compareFieldData(this, other);
 	}
 
-	bool ManagedSerializableFieldDataU8::equals(const ManagedSerializableFieldDataPtr& other)
+	bool ManagedSerializableFieldDataU8::equals(const SPtr<ManagedSerializableFieldData>& other)
 	{
 		return compareFieldData(this, other);
 	}
 
-	bool ManagedSerializableFieldDataI16::equals(const ManagedSerializableFieldDataPtr& other)
+	bool ManagedSerializableFieldDataI16::equals(const SPtr<ManagedSerializableFieldData>& other)
 	{
 		return compareFieldData(this, other);
 	}
 
-	bool ManagedSerializableFieldDataU16::equals(const ManagedSerializableFieldDataPtr& other)
+	bool ManagedSerializableFieldDataU16::equals(const SPtr<ManagedSerializableFieldData>& other)
 	{
 		return compareFieldData(this, other);
 	}
 
-	bool ManagedSerializableFieldDataI32::equals(const ManagedSerializableFieldDataPtr& other)
+	bool ManagedSerializableFieldDataI32::equals(const SPtr<ManagedSerializableFieldData>& other)
 	{
 		return compareFieldData(this, other);
 	}
 
-	bool ManagedSerializableFieldDataU32::equals(const ManagedSerializableFieldDataPtr& other)
+	bool ManagedSerializableFieldDataU32::equals(const SPtr<ManagedSerializableFieldData>& other)
 	{
 		return compareFieldData(this, other);
 	}
 
-	bool ManagedSerializableFieldDataI64::equals(const ManagedSerializableFieldDataPtr& other)
+	bool ManagedSerializableFieldDataI64::equals(const SPtr<ManagedSerializableFieldData>& other)
 	{
 		return compareFieldData(this, other);
 	}
 
-	bool ManagedSerializableFieldDataU64::equals(const ManagedSerializableFieldDataPtr& other)
+	bool ManagedSerializableFieldDataU64::equals(const SPtr<ManagedSerializableFieldData>& other)
 	{
 		return compareFieldData(this, other);
 	}
 
-	bool ManagedSerializableFieldDataFloat::equals(const ManagedSerializableFieldDataPtr& other)
+	bool ManagedSerializableFieldDataFloat::equals(const SPtr<ManagedSerializableFieldData>& other)
 	{
 		return compareFieldData(this, other);
 	}
 
-	bool ManagedSerializableFieldDataDouble::equals(const ManagedSerializableFieldDataPtr& other)
+	bool ManagedSerializableFieldDataDouble::equals(const SPtr<ManagedSerializableFieldData>& other)
 	{
 		return compareFieldData(this, other);
 	}
 
-	bool ManagedSerializableFieldDataString::equals(const ManagedSerializableFieldDataPtr& other)
+	bool ManagedSerializableFieldDataString::equals(const SPtr<ManagedSerializableFieldData>& other)
 	{
 		if (rtti_is_of_type<ManagedSerializableFieldDataString>(other))
 		{
@@ -967,32 +967,32 @@ namespace BansheeEngine
 		return false;
 	}
 
-	bool ManagedSerializableFieldDataResourceRef::equals(const ManagedSerializableFieldDataPtr& other)
+	bool ManagedSerializableFieldDataResourceRef::equals(const SPtr<ManagedSerializableFieldData>& other)
 	{
 		return compareFieldData(this, other);
 	}
 
-	bool ManagedSerializableFieldDataGameObjectRef::equals(const ManagedSerializableFieldDataPtr& other)
+	bool ManagedSerializableFieldDataGameObjectRef::equals(const SPtr<ManagedSerializableFieldData>& other)
 	{
 		return compareFieldData(this, other);
 	}
 
-	bool ManagedSerializableFieldDataObject::equals(const ManagedSerializableFieldDataPtr& other)
+	bool ManagedSerializableFieldDataObject::equals(const SPtr<ManagedSerializableFieldData>& other)
 	{
 		return compareFieldData(this, other);
 	}
 
-	bool ManagedSerializableFieldDataArray::equals(const ManagedSerializableFieldDataPtr& other)
+	bool ManagedSerializableFieldDataArray::equals(const SPtr<ManagedSerializableFieldData>& other)
 	{
 		return compareFieldData(this, other);
 	}
 
-	bool ManagedSerializableFieldDataList::equals(const ManagedSerializableFieldDataPtr& other)
+	bool ManagedSerializableFieldDataList::equals(const SPtr<ManagedSerializableFieldData>& other)
 	{
 		return compareFieldData(this, other);
 	}
 
-	bool ManagedSerializableFieldDataDictionary::equals(const ManagedSerializableFieldDataPtr& other)
+	bool ManagedSerializableFieldDataDictionary::equals(const SPtr<ManagedSerializableFieldData>& other)
 	{
 		return compareFieldData(this, other);
 	}
@@ -1089,25 +1089,25 @@ namespace BansheeEngine
 
 	size_t ManagedSerializableFieldDataObject::getHash()
 	{
-		std::hash<std::shared_ptr<ManagedSerializableObject>> hasher;
+		std::hash<SPtr<ManagedSerializableObject>> hasher;
 		return hasher(value);
 	}
 
 	size_t ManagedSerializableFieldDataArray::getHash()
 	{
-		std::hash<std::shared_ptr<ManagedSerializableArray>> hasher;
+		std::hash<SPtr<ManagedSerializableArray>> hasher;
 		return hasher(value);
 	}
 
 	size_t ManagedSerializableFieldDataList::getHash()
 	{
-		std::hash<std::shared_ptr<ManagedSerializableList>> hasher;
+		std::hash<SPtr<ManagedSerializableList>> hasher;
 		return hasher(value);
 	}
 
 	size_t ManagedSerializableFieldDataDictionary::getHash()
 	{
-		std::hash<std::shared_ptr<ManagedSerializableDictionary>> hasher;
+		std::hash<SPtr<ManagedSerializableDictionary>> hasher;
 		return hasher(value);
 	}
 

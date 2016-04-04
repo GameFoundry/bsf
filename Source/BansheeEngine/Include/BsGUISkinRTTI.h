@@ -55,7 +55,7 @@ namespace BansheeEngine
 			return TID_GUISkinEntry;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<GUISkinEntry>();
 		}
@@ -113,7 +113,7 @@ namespace BansheeEngine
 			return TID_GUISkin;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return GUISkin::_createPtr();
 		}

@@ -98,20 +98,20 @@ namespace BansheeEngine
 			dependencies.push_back(pass.get());
 	}
 
-	TechniquePtr Technique::create(const StringID& renderAPI, const StringID& renderer, const Vector<SPtr<Pass>>& passes)
+	SPtr<Technique> Technique::create(const StringID& renderAPI, const StringID& renderer, const Vector<SPtr<Pass>>& passes)
 	{
 		Technique* technique = new (bs_alloc<Technique>()) Technique(renderAPI, renderer, passes);
-		TechniquePtr techniquePtr = bs_core_ptr<Technique>(technique);
+		SPtr<Technique> techniquePtr = bs_core_ptr<Technique>(technique);
 		techniquePtr->_setThisPtr(techniquePtr);
 		techniquePtr->initialize();
 
 		return techniquePtr;
 	}
 
-	TechniquePtr Technique::createEmpty()
+	SPtr<Technique> Technique::createEmpty()
 	{
 		Technique* technique = new (bs_alloc<Technique>()) Technique();
-		TechniquePtr techniquePtr = bs_core_ptr<Technique>(technique);
+		SPtr<Technique> techniquePtr = bs_core_ptr<Technique>(technique);
 		techniquePtr->_setThisPtr(techniquePtr);
 
 		return techniquePtr;

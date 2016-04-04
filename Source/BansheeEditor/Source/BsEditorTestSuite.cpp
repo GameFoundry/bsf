@@ -45,7 +45,7 @@ namespace BansheeEngine
 			return TID_TestComponentA;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		virtual SPtr<IReflectable> newRTTIObject() override
 		{
 			return GameObjectRTTI::createGameObject<TestComponentA>();
 		}
@@ -78,7 +78,7 @@ namespace BansheeEngine
 			return TID_TestComponentB;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		virtual SPtr<IReflectable> newRTTIObject() override
 		{
 			return GameObjectRTTI::createGameObject<TestComponentB>();
 		}
@@ -234,7 +234,7 @@ namespace BansheeEngine
 			return TID_TestObjectA;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		virtual SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<TestObjectA>();
 		}
@@ -264,7 +264,7 @@ namespace BansheeEngine
 			return TID_TestObjectB;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		virtual SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<TestObjectB>();
 		}
@@ -368,7 +368,7 @@ namespace BansheeEngine
 			return TID_TestComponentC;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		virtual SPtr<IReflectable> newRTTIObject() override
 		{
 			return GameObjectRTTI::createGameObject<TestComponentC>();
 		}
@@ -396,7 +396,7 @@ namespace BansheeEngine
 			return TID_TestComponentD;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		virtual SPtr<IReflectable> newRTTIObject() override
 		{
 			return GameObjectRTTI::createGameObject<TestComponentD>();
 		}

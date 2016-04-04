@@ -17,8 +17,8 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT PrefabRTTI : public RTTIType < Prefab, Resource, PrefabRTTI >
 	{
 	private:
-		SceneObjectPtr getSceneObject(Prefab* obj) { return obj->mRoot.getInternalPtr(); }
-		void setSceneObject(Prefab* obj, SceneObjectPtr value) { obj->mRoot = value->getHandle(); }
+		SPtr<SceneObject> getSceneObject(Prefab* obj) { return obj->mRoot.getInternalPtr(); }
+		void setSceneObject(Prefab* obj, SPtr<SceneObject> value) { obj->mRoot = value->getHandle(); }
 
 		UINT32& getHash(Prefab* obj) { return obj->mHash; }
 		void setHash(Prefab* obj, UINT32& val) { obj->mHash = val; }
@@ -56,7 +56,7 @@ namespace BansheeEngine
 			return TID_Prefab;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return Prefab::createEmpty();
 		}

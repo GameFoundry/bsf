@@ -129,7 +129,7 @@ namespace BansheeEngine
 
 	void MultiRenderTextureCore::throwIfBuffersDontMatch() const
 	{
-		TextureViewPtr firstSurfaceDesc = nullptr;
+		SPtr<TextureView> firstSurfaceDesc = nullptr;
 		for(size_t i = 0; i < mColorSurfaces.size(); i++)
 		{
 			if(mColorSurfaces[i] == nullptr)
@@ -240,7 +240,7 @@ namespace BansheeEngine
 		return std::static_pointer_cast<MultiRenderTextureCore>(mCoreSpecific);
 	}
 
-	MultiRenderTexturePtr MultiRenderTexture::create(const MULTI_RENDER_TEXTURE_DESC& desc)
+	SPtr<MultiRenderTexture> MultiRenderTexture::create(const MULTI_RENDER_TEXTURE_DESC& desc)
 	{
 		return TextureManager::instance().createMultiRenderTexture(desc);
 	}

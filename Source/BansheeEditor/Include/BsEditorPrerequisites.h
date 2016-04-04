@@ -170,13 +170,6 @@ namespace BansheeEngine
 	class DropDownWindow;
 	class ProjectSettings;
 
-	typedef std::shared_ptr<ProjectFileMeta> ProjectFileMetaPtr;
-	typedef std::shared_ptr<ProjectResourceMeta> ProjectResourceMetaPtr;
-	typedef std::shared_ptr<DockManagerLayout> DockManagerLayoutPtr;
-	typedef std::shared_ptr<EditorWidgetLayout> EditorWidgetLayoutPtr;
-	typedef std::shared_ptr<EditorSettings> EditorSettingsPtr;
-	typedef std::shared_ptr<ProjectSettings> ProjectSettingsPtr;
-
 	static const char* EDITOR_ASSEMBLY = "MBansheeEditor";
 	static const char* SCRIPT_EDITOR_ASSEMBLY = "MScriptEditor";
 	static const Path PROJECT_INTERNAL_DIR = L"Internal\\";

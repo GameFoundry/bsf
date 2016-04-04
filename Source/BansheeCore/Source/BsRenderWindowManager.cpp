@@ -18,11 +18,11 @@ namespace BansheeEngine
 
 	}
 
-	RenderWindowPtr RenderWindowManager::create(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow)
+	SPtr<RenderWindow> RenderWindowManager::create(RENDER_WINDOW_DESC& desc, SPtr<RenderWindow> parentWindow)
 	{
 		UINT32 id = RenderWindowCoreManager::instance().mNextWindowId.fetch_add(1, std::memory_order_relaxed);
 
-		RenderWindowPtr renderWindow = createImpl(desc, id, parentWindow);
+		SPtr<RenderWindow> renderWindow = createImpl(desc, id, parentWindow);
 		renderWindow->_setThisPtr(renderWindow);
 		
 		{

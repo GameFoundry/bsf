@@ -35,7 +35,7 @@ namespace BansheeEngine
 		bool intersects(const Ray& ray, float& t) const override;
 
 		/** @copydoc	HandleSlider::handleInput */
-		void handleInput(const CameraPtr& camera, const Vector2I& inputDelta) override;
+		void handleInput(const SPtr<Camera>& camera, const Vector2I& inputDelta) override;
 
 		/**
 		 * Enables or disables a cut-off plane that can allow the disc to be intersected with only in an 180 degree arc.
@@ -60,7 +60,7 @@ namespace BansheeEngine
 	protected:
 
 		/** @copydoc HandleSlider::activate */
-		void activate(const CameraPtr& camera, const Vector2I& pointerPos) override;
+		void activate(const SPtr<Camera>& camera, const Vector2I& pointerPos) override;
 
 		/** @copydoc HandleSlider::reset */
 		void reset() override { mDelta = 0.0f; }

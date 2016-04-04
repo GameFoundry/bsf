@@ -173,7 +173,7 @@ namespace BansheeEngine
 		D3D11HLSLProgramFactory* mHLSLFactory;
 		D3D11InputLayoutManager* mIAManager;
 
-		std::pair<SPtr<TextureCore>, TextureViewPtr> mBoundUAVs[D3D11_PS_CS_UAV_REGISTER_COUNT];
+		std::pair<SPtr<TextureCore>, SPtr<TextureView>> mBoundUAVs[D3D11_PS_CS_UAV_REGISTER_COUNT];
 
 		UINT32 mStencilRef;
 		Rect2 mViewportNorm;

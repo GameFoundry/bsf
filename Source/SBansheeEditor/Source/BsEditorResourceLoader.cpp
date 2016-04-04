@@ -24,7 +24,7 @@ namespace BansheeEngine
 
 		// Note: Calling both findEntry and findResourceMeta is a bit redundant since they do a lot of the same work, and 
 		// this could be optimized so only one of them is called.
-		ProjectResourceMetaPtr meta = gProjectLibrary().findResourceMeta(path);
+		SPtr<ProjectResourceMeta> meta = gProjectLibrary().findResourceMeta(path);
 		if (meta == nullptr)
 			LOGWRN("Unable to load resource at path: \"" + path.toString() + "\". File not found. ");
 

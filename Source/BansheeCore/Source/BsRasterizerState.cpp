@@ -91,12 +91,12 @@ namespace BansheeEngine
 		return mProperties;
 	}
 
-	const RasterizerStatePtr& RasterizerState::getDefault()
+	const SPtr<RasterizerState>& RasterizerState::getDefault()
 	{
 		return RenderStateManager::instance().getDefaultRasterizerState();
 	}
 
-	RasterizerStatePtr RasterizerState::create(const RASTERIZER_STATE_DESC& desc)
+	SPtr<RasterizerState> RasterizerState::create(const RASTERIZER_STATE_DESC& desc)
 	{
 		return RenderStateManager::instance().createRasterizerState(desc);
 	}

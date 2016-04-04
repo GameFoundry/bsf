@@ -31,12 +31,12 @@ namespace BansheeEngine
 		return true; // Plain-text so we don't even check for magic number
 	}
 
-	ResourcePtr PlainTextImporter::import(const Path& filePath, ConstImportOptionsPtr importOptions)
+	SPtr<Resource> PlainTextImporter::import(const Path& filePath, SPtr<const ImportOptions> importOptions)
 	{
-		DataStreamPtr stream = FileSystem::openFile(filePath);
+		SPtr<DataStream> stream = FileSystem::openFile(filePath);
 		WString textData = stream->getAsWString();
 
-		PlainTextPtr plainText = PlainText::_createPtr(textData);
+		SPtr<PlainText> plainText = PlainText::_createPtr(textData);
 
 		WString fileName = filePath.getWFilename(false);
 		plainText->setName(fileName);

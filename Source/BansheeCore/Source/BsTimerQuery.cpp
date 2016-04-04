@@ -5,7 +5,7 @@
 
 namespace BansheeEngine
 {
-	TimerQueryPtr TimerQuery::create()
+	SPtr<TimerQuery> TimerQuery::create()
 	{
 		return QueryManager::instance().createTimerQuery();
 	}

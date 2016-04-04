@@ -88,7 +88,7 @@ namespace BansheeEngine
 		 *			
 		 * @see		RendererMeshData
 		 */
-		virtual RendererMeshDataPtr _createMeshData(UINT32 numVertices, UINT32 numIndices, VertexLayout layout, IndexType indexType = IT_32BIT);
+		virtual SPtr<RendererMeshData> _createMeshData(UINT32 numVertices, UINT32 numIndices, VertexLayout layout, IndexType indexType = IT_32BIT);
 
 		/**
 		 * Creates a new renderer mesh data using an existing generic mesh data buffer.
@@ -97,7 +97,7 @@ namespace BansheeEngine
 		 *			
 		 * @see		RendererMeshData
 		 */
-		virtual RendererMeshDataPtr _createMeshData(const MeshDataPtr& meshData);
+		virtual SPtr<RendererMeshData> _createMeshData(const SPtr<MeshData>& meshData);
 
 		/**
 		 * Registers a new callback that will be executed when the the specify camera is being rendered.

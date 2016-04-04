@@ -28,16 +28,16 @@ namespace BansheeEngine
 		virtual bool isMagicNumberSupported(const UINT8* magicNumPtr, UINT32 numBytes) const override;
 
 		/** @copydoc SpecificImporter::import */
-		virtual ResourcePtr import(const Path& filePath, ConstImportOptionsPtr importOptions) override;
+		virtual SPtr<Resource> import(const Path& filePath, SPtr<const ImportOptions> importOptions) override;
 
 		/** @copydoc SpecificImporter::createImportOptions */
-		virtual ImportOptionsPtr createImportOptions() const override;
+		virtual SPtr<ImportOptions> createImportOptions() const override;
 	private:
 		/**	Converts a magic number into an extension name. */
 		WString magicNumToExtension(const UINT8* magic, UINT32 maxBytes) const;
 
 		/**	Imports an image from the provided data stream. */
-		PixelDataPtr importRawImage(DataStreamPtr fileData);
+		SPtr<PixelData> importRawImage(SPtr<DataStream> fileData);
 
 		Vector<WString> mExtensions;
 		UnorderedMap<WString, int> mExtensionToFID;

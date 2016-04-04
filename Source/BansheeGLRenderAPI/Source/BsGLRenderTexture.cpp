@@ -63,7 +63,7 @@ namespace BansheeEngine
 		mFB->bindSurface(0, surfaceDesc);
 
 		GLTextureCore* glDepthStencilTexture = static_cast<GLTextureCore*>(mDepthStencilSurface->getTexture().get());
-		GLPixelBufferPtr depthStencilBuffer = nullptr;
+		SPtr<GLPixelBuffer> depthStencilBuffer = nullptr;
 
 		if (glDepthStencilTexture->getProperties().getTextureType() != TEX_TYPE_3D)
 		{

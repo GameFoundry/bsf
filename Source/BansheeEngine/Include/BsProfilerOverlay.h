@@ -32,11 +32,11 @@ namespace BansheeEngine
 	{
 	public:
 		/**	Constructs a new overlay attached to the specified parent and displayed on the provided viewport. */
-		ProfilerOverlay(const HSceneObject& parent, const CameraPtr& target);
+		ProfilerOverlay(const HSceneObject& parent, const SPtr<Camera>& target);
 		~ProfilerOverlay();
 
 		/**	Changes the camera to display the overlay on. */
-		void setTarget(const CameraPtr& target);
+		void setTarget(const SPtr<Camera>& target);
 
 		/**	Shows the overlay of the specified type. */
 		void show(ProfilerOverlayType type);
@@ -141,11 +141,11 @@ namespace BansheeEngine
 
 	public:
 		/**	Constructs a new overlay attached to the specified parent and displayed on the provided camera. */
-		ProfilerOverlayInternal(const CameraPtr& target);
+		ProfilerOverlayInternal(const SPtr<Camera>& target);
 		~ProfilerOverlayInternal();
 
 		/**	Changes the camera to display the overlay on. */
-		void setTarget(const CameraPtr& target);
+		void setTarget(const SPtr<Camera>& target);
 
 		/**	Shows the overlay of the specified type. */
 		void show(ProfilerOverlayType type);
@@ -180,7 +180,7 @@ namespace BansheeEngine
 		static const UINT32 MAX_DEPTH;
 
 		ProfilerOverlayType mType;
-		ViewportPtr mTarget;
+		SPtr<Viewport> mTarget;
 
 		HSceneObject mWidgetSO;
 		HGUIWidget mWidget;

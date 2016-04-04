@@ -9,14 +9,14 @@ namespace BansheeEngine
 {
 	HPhysicsMaterial PhysicsMaterial::create(float staticFriction, float dynamicFriction, float restitution)
 	{
-		PhysicsMaterialPtr newMaterial = _createPtr(staticFriction, dynamicFriction, restitution);
+		SPtr<PhysicsMaterial> newMaterial = _createPtr(staticFriction, dynamicFriction, restitution);
 
 		return static_resource_cast<PhysicsMaterial>(gResources()._createResourceHandle(newMaterial));
 	}
 
-	PhysicsMaterialPtr PhysicsMaterial::_createPtr(float staticFriction, float dynamicFriction, float restitution)
+	SPtr<PhysicsMaterial> PhysicsMaterial::_createPtr(float staticFriction, float dynamicFriction, float restitution)
 	{
-		PhysicsMaterialPtr newMaterial = gPhysics().createMaterial(staticFriction, dynamicFriction, restitution);
+		SPtr<PhysicsMaterial> newMaterial = gPhysics().createMaterial(staticFriction, dynamicFriction, restitution);
 		newMaterial->_setThisPtr(newMaterial);
 		newMaterial->initialize();
 

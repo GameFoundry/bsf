@@ -154,20 +154,20 @@ namespace BansheeEngine
 			dependencies.push_back(mData.computeProgram.get());
 	}
 
-	PassPtr Pass::create(const PASS_DESC& desc)
+	SPtr<Pass> Pass::create(const PASS_DESC& desc)
 	{
 		Pass* newPass = new (bs_alloc<Pass>()) Pass(desc);
-		PassPtr newPassPtr = bs_core_ptr<Pass>(newPass);
+		SPtr<Pass> newPassPtr = bs_core_ptr<Pass>(newPass);
 		newPassPtr->_setThisPtr(newPassPtr);
 		newPassPtr->initialize();
 
 		return newPassPtr;
 	}
 
-	PassPtr Pass::createEmpty()
+	SPtr<Pass> Pass::createEmpty()
 	{
 		Pass* newPass = new (bs_alloc<Pass>()) Pass();
-		PassPtr newPassPtr = bs_core_ptr<Pass>(newPass);
+		SPtr<Pass> newPassPtr = bs_core_ptr<Pass>(newPass);
 		newPassPtr->_setThisPtr(newPassPtr);
 
 		return newPassPtr;

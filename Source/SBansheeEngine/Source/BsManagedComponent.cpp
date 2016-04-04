@@ -48,7 +48,7 @@ namespace BansheeEngine
 		// return the data we backed up before the type was lost
 		if (!mMissingType)
 		{
-			ManagedSerializableObjectPtr serializableObject = ManagedSerializableObject::createFromExisting(mManagedInstance);
+			SPtr<ManagedSerializableObject> serializableObject = ManagedSerializableObject::createFromExisting(mManagedInstance);
 
 			// Serialize the object information and its fields. We cannot just serialize the entire object because
 			// the managed instance had to be created in a previous step. So we handle creation of the top level object manually.
@@ -110,7 +110,7 @@ namespace BansheeEngine
 			MemorySerializer ms;
 
 			GameObjectManager::instance().startDeserialization();
-			ManagedSerializableObjectPtr serializableObject = std::static_pointer_cast<ManagedSerializableObject>(ms.decode(data.data, data.size));
+			SPtr<ManagedSerializableObject> serializableObject = std::static_pointer_cast<ManagedSerializableObject>(ms.decode(data.data, data.size));
 			GameObjectManager::instance().endDeserialization();
 
 			if (!missingType)

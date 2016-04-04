@@ -161,23 +161,4 @@ namespace BansheeEngine
 		TID_ScriptSerializableDictionaryKeyValue = 50049,
 		TID_SerializableTypeInfoRef = 50050
 	};
-
-	typedef std::shared_ptr<ManagedSerializableFieldData> ManagedSerializableFieldDataPtr;
-	typedef std::shared_ptr<ManagedSerializableFieldKey> ManagedSerializableFieldKeyPtr;
-	typedef std::shared_ptr<ManagedSerializableFieldDataEntry> ManagedSerializableFieldDataEntryPtr;
-	typedef std::shared_ptr<ManagedSerializableTypeInfo> ManagedSerializableTypeInfoPtr;
-	typedef std::shared_ptr<ManagedSerializableTypeInfoObject> ManagedSerializableTypeInfoObjectPtr;
-	typedef std::shared_ptr<ManagedSerializableObject> ManagedSerializableObjectPtr;
-	typedef std::shared_ptr<ManagedSerializableArray> ManagedSerializableArrayPtr;
-	typedef std::shared_ptr<ManagedSerializableList> ManagedSerializableListPtr;
-	typedef std::shared_ptr<ManagedSerializableDictionary> ManagedSerializableDictionaryPtr;
-	typedef std::shared_ptr<ManagedSerializableAssemblyInfo> ManagedSerializableAssemblyInfoPtr;
-	typedef std::shared_ptr<ManagedSerializableObjectInfo> ManagedSerializableObjectInfoPtr;
-	typedef std::shared_ptr<ManagedSerializableFieldInfo> ManagedSerializableFieldInfoPtr;
-	typedef std::shared_ptr<ManagedSerializableTypeInfoArray> ManagedSerializableTypeInfoArrayPtr;
-	typedef std::shared_ptr<ManagedSerializableTypeInfoList> ManagedSerializableTypeInfoListPtr;
-	typedef std::shared_ptr<ManagedSerializableTypeInfoDictionary> ManagedSerializableTypeInfoDictionaryPtr;
-	typedef std::shared_ptr<ManagedSerializableDiff> ManagedSerializableDiffPtr;
-	typedef std::shared_ptr<ManagedResource> ManagedResourcePtr;
-	typedef std::shared_ptr<ManagedResourceMetaData> ManagedResourceMetaDataPtr;
 }

@@ -50,7 +50,7 @@ namespace BansheeEngine
 		Viewport* getTarget() const;
 
 		/** @copydoc GUIWidget::getCamera */
-		CameraPtr getCamera() const;
+		SPtr<Camera> getCamera() const;
 
 		/** @copydoc GUIWidget::getElements */
 		const Vector<GUIElement*>& getElements() const;
@@ -74,7 +74,7 @@ namespace BansheeEngine
 		 * Constructs a new GUI widget attached to the specified parent scene object. Widget elements will be rendered on
 		 * the provided camera.
 		 */
-		CGUIWidget(const HSceneObject& parent, const CameraPtr& camera);
+		CGUIWidget(const HSceneObject& parent, const SPtr<Camera>& camera);
 
 		/**
 		 * Constructs a new GUI widget attached to the specified parent scene object. Widget elements will be rendered on
@@ -101,7 +101,7 @@ namespace BansheeEngine
 		HEvent mOwnerTargetResizedConn;
 		HEvent mOwnerWindowFocusChangedConn;
 
-		CameraPtr mCamera;
+		SPtr<Camera> mCamera;
 		UINT32 mParentHash;
 
 		/************************************************************************/

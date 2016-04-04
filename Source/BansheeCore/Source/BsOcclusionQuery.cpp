@@ -9,7 +9,7 @@ namespace BansheeEngine
 		:mActive(false), mBinary(binary)
 	{ }
 
-	OcclusionQueryPtr OcclusionQuery::create(bool binary)
+	SPtr<OcclusionQuery> OcclusionQuery::create(bool binary)
 	{
 		return QueryManager::instance().createOcclusionQuery(binary);
 	}

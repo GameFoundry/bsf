@@ -83,8 +83,8 @@ namespace BansheeEngine
 
 		mCamera->setHorzFOV(currentFOV);
 
-		ViewportPtr viewport = mCamera->getViewport();
-		RenderTargetPtr renderTarget = viewport->getTarget();
+		SPtr<Viewport> viewport = mCamera->getViewport();
+		SPtr<RenderTarget> renderTarget = viewport->getTarget();
 		const RenderTargetProperties& rtProps = renderTarget->getProperties();
 
 		float x = mLayoutData.area.x / (float)rtProps.getWidth();
@@ -101,8 +101,8 @@ namespace BansheeEngine
 
 		if(widget != nullptr)
 		{
-			RenderTargetPtr guiRenderTarget = widget->getTarget()->getTarget();
-			RenderTargetPtr cameraRenderTarget = mCamera->getViewport()->getTarget();
+			SPtr<RenderTarget> guiRenderTarget = widget->getTarget()->getTarget();
+			SPtr<RenderTarget> cameraRenderTarget = mCamera->getViewport()->getTarget();
 
 			if(guiRenderTarget != cameraRenderTarget)
 				BS_EXCEPT(InvalidParametersException, "Camera provided to GUIViewport must use the same render target as the GUIWidget this element is located on.")

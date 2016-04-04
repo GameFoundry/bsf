@@ -49,7 +49,7 @@ namespace BansheeEngine
 		/**	Data about a GPU query. */
 		struct QueryData
 		{
-			EventQueryPtr query;
+			SPtr<EventQuery> query;
 			UINT32 queryId;
 		};
 
@@ -62,7 +62,7 @@ namespace BansheeEngine
 		friend class TransientMeshCore;
 
 		MeshHeapCore(UINT32 numVertices, UINT32 numIndices, 
-			const VertexDataDescPtr& vertexDesc, IndexType indexType = IT_32BIT);
+			const SPtr<VertexDataDesc>& vertexDesc, IndexType indexType = IT_32BIT);
 
 		/** @copydoc CoreObjectCore::initialize() */
 		virtual void initialize() override;
@@ -73,7 +73,7 @@ namespace BansheeEngine
 		 * @param[in]	meshId		Mesh for which we are allocating the data.
 		 * @param[in]	meshData	Data to initialize the new mesh with.
 		 */
-		void alloc(SPtr<TransientMeshCore> mesh, const MeshDataPtr& meshData);
+		void alloc(SPtr<TransientMeshCore> mesh, const SPtr<MeshData>& meshData);
 
 		/** Deallocates the provided mesh. Freed memory will be re-used as soon as the GPU is done with the mesh. */
 		void dealloc(SPtr<TransientMeshCore> mesh);
@@ -141,7 +141,7 @@ namespace BansheeEngine
 
 		Map<UINT32, AllocatedData> mMeshAllocData;
 
-		VertexDataDescPtr mVertexDesc;
+		SPtr<VertexDataDesc> mVertexDesc;
 		IndexType mIndexType;
 
 		Vector<ChunkData> mVertChunks;
@@ -189,13 +189,13 @@ namespace BansheeEngine
 		 * @note	
 		 * Offsets provided by MeshData are ignored. MeshHeap will determine where the data will be written internally.
 		 */
-		TransientMeshPtr alloc(const MeshDataPtr& meshData, DrawOperationType drawOp = DOT_TRIANGLE_LIST);
+		SPtr<TransientMesh> alloc(const SPtr<MeshData>& meshData, DrawOperationType drawOp = DOT_TRIANGLE_LIST);
 
 		/**
 		 * Deallocates the provided mesh and makes that room on the heap re-usable as soon as the GPU is also done with the 
 		 * mesh.
 		 */
-		void dealloc(const TransientMeshPtr& mesh);
+		void dealloc(const SPtr<TransientMesh>& mesh);
 
 		/** Retrieves a core implementation of a mesh heap usable only from the core thread. */
 		SPtr<MeshHeapCore> getCore() const;
@@ -208,13 +208,13 @@ namespace BansheeEngine
 		 * @param[in]	vertexDesc	Description of the stored vertices.
 		 * @param[in]	indexType	Type of the stored indices.
 		 */
-		static MeshHeapPtr create(UINT32 numVertices, UINT32 numIndices, 
-			const VertexDataDescPtr& vertexDesc, IndexType indexType = IT_32BIT);
+		static SPtr<MeshHeap> create(UINT32 numVertices, UINT32 numIndices, 
+			const SPtr<VertexDataDesc>& vertexDesc, IndexType indexType = IT_32BIT);
 
 	private:
 		/** @copydoc create */
 		MeshHeap(UINT32 numVertices, UINT32 numIndices, 
-			const VertexDataDescPtr& vertexDesc, IndexType indexType = IT_32BIT);
+			const SPtr<VertexDataDesc>& vertexDesc, IndexType indexType = IT_32BIT);
 
 		/** @copydoc CoreObject::createCore */
 		SPtr<CoreObjectCore> createCore() const override;
@@ -223,10 +223,10 @@ namespace BansheeEngine
 		UINT32 mNumVertices;
 		UINT32 mNumIndices;
 
-		VertexDataDescPtr mVertexDesc;
+		SPtr<VertexDataDesc> mVertexDesc;
 		IndexType mIndexType;
 
-		Map<UINT32, TransientMeshPtr> mMeshes;
+		Map<UINT32, SPtr<TransientMesh>> mMeshes;
 		UINT32 mNextFreeId;
 	};
 

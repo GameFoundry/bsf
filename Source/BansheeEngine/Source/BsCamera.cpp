@@ -735,7 +735,7 @@ namespace BansheeEngine
 			RendererManager::instance().getActive()->_notifyCameraAdded(this);
 	}
 
-	Camera::Camera(RenderTargetPtr target, float left, float top, float width, float height)
+	Camera::Camera(SPtr<RenderTarget> target, float left, float top, float width, float height)
 		:mLastUpdateHash(0), mMain(false)
 	{
 		if (target != nullptr)
@@ -749,20 +749,20 @@ namespace BansheeEngine
 		return std::static_pointer_cast<CameraCore>(mCoreSpecific);
 	}
 
-	CameraPtr Camera::create(RenderTargetPtr target, float left, float top, float width, float height)
+	SPtr<Camera> Camera::create(SPtr<RenderTarget> target, float left, float top, float width, float height)
 	{
 		Camera* handler = new (bs_alloc<Camera>()) Camera(target, left, top, width, height);
-		CameraPtr handlerPtr = bs_core_ptr<Camera>(handler);
+		SPtr<Camera> handlerPtr = bs_core_ptr<Camera>(handler);
 		handlerPtr->_setThisPtr(handlerPtr);
 		handlerPtr->initialize();
 
 		return handlerPtr;
 	}
 
-	CameraPtr Camera::createEmpty()
+	SPtr<Camera> Camera::createEmpty()
 	{
 		Camera* handler = new (bs_alloc<Camera>()) Camera();
-		CameraPtr handlerPtr = bs_core_ptr<Camera>(handler);
+		SPtr<Camera> handlerPtr = bs_core_ptr<Camera>(handler);
 		handlerPtr->_setThisPtr(handlerPtr);
 
 		return handlerPtr;

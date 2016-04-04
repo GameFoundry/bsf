@@ -12,8 +12,8 @@
 
 namespace BansheeEngine
 {
-	ManagedSerializableDictionaryKeyValue::ManagedSerializableDictionaryKeyValue(const ManagedSerializableFieldDataPtr& key,
-		const ManagedSerializableFieldDataPtr& value)
+	ManagedSerializableDictionaryKeyValue::ManagedSerializableDictionaryKeyValue(const SPtr<ManagedSerializableFieldData>& key,
+		const SPtr<ManagedSerializableFieldData>& value)
 		:key(key), value(value)
 	{
 		
@@ -29,12 +29,12 @@ namespace BansheeEngine
 		return ManagedSerializableDictionaryKeyValue::getRTTIStatic();
 	}
 
-	inline size_t ManagedSerializableDictionary::Hash::operator()(const ManagedSerializableFieldDataPtr& x) const
+	inline size_t ManagedSerializableDictionary::Hash::operator()(const SPtr<ManagedSerializableFieldData>& x) const
 	{
 		return x->getHash();
 	}
 
-	inline bool ManagedSerializableDictionary::Equals::operator()(const ManagedSerializableFieldDataPtr& a, const ManagedSerializableFieldDataPtr& b) const
+	inline bool ManagedSerializableDictionary::Equals::operator()(const SPtr<ManagedSerializableFieldData>& a, const SPtr<ManagedSerializableFieldData>& b) const
 	{
 		return a->equals(b);
 	}
@@ -43,7 +43,7 @@ namespace BansheeEngine
 		:mInstance(instance), mParent(parent), mCurrent(nullptr), mIteratorInitialized(false)
 	{ }
 
-	ManagedSerializableFieldDataPtr ManagedSerializableDictionary::Enumerator::getKey() const
+	SPtr<ManagedSerializableFieldData> ManagedSerializableDictionary::Enumerator::getKey() const
 	{
 		if (mInstance != nullptr)
 		{
@@ -57,7 +57,7 @@ namespace BansheeEngine
 		}
 	}
 
-	ManagedSerializableFieldDataPtr ManagedSerializableDictionary::Enumerator::getValue() const
+	SPtr<ManagedSerializableFieldData> ManagedSerializableDictionary::Enumerator::getValue() const
 	{
 		if (mInstance != nullptr)
 		{
@@ -104,7 +104,7 @@ namespace BansheeEngine
 		mEnumCurrentProp(nullptr), mKeyProp(nullptr), mValueProp(nullptr), mContainsKeyMethod(nullptr), mTryGetValueMethod(nullptr)
 	{ }
 
-	ManagedSerializableDictionary::ManagedSerializableDictionary(const ConstructPrivately& dummy, const ManagedSerializableTypeInfoDictionaryPtr& typeInfo, MonoObject* managedInstance)
+	ManagedSerializableDictionary::ManagedSerializableDictionary(const ConstructPrivately& dummy, const SPtr<ManagedSerializableTypeInfoDictionary>& typeInfo, MonoObject* managedInstance)
 		:mDictionaryTypeInfo(typeInfo), mManagedInstance(managedInstance), mAddMethod(nullptr), mGetEnumerator(nullptr), mEnumMoveNext(nullptr),
 		mEnumCurrentProp(nullptr), mKeyProp(nullptr), mValueProp(nullptr), mContainsKeyMethod(nullptr), mTryGetValueMethod(nullptr), mRemoveMethod(nullptr)
 	{
@@ -115,7 +115,7 @@ namespace BansheeEngine
 		initMonoObjects(dictClass);
 	}
 
-	ManagedSerializableDictionaryPtr ManagedSerializableDictionary::createFromExisting(MonoObject* managedInstance, const ManagedSerializableTypeInfoDictionaryPtr& typeInfo)
+	SPtr<ManagedSerializableDictionary> ManagedSerializableDictionary::createFromExisting(MonoObject* managedInstance, const SPtr<ManagedSerializableTypeInfoDictionary>& typeInfo)
 	{
 		if(managedInstance == nullptr)
 			return nullptr;
@@ -132,12 +132,12 @@ namespace BansheeEngine
 		return bs_shared_ptr_new<ManagedSerializableDictionary>(ConstructPrivately(), typeInfo, managedInstance);
 	}
 
-	ManagedSerializableDictionaryPtr ManagedSerializableDictionary::createNew(const ManagedSerializableTypeInfoDictionaryPtr& typeInfo)
+	SPtr<ManagedSerializableDictionary> ManagedSerializableDictionary::createNew(const SPtr<ManagedSerializableTypeInfoDictionary>& typeInfo)
 	{
 		return bs_shared_ptr_new<ManagedSerializableDictionary>(ConstructPrivately(), typeInfo, createManagedInstance(typeInfo));
 	}
 
-	MonoObject* ManagedSerializableDictionary::createManagedInstance(const ManagedSerializableTypeInfoDictionaryPtr& typeInfo)
+	MonoObject* ManagedSerializableDictionary::createManagedInstance(const SPtr<ManagedSerializableTypeInfoDictionary>& typeInfo)
 	{
 		if (!typeInfo->isTypeLoaded())
 			return nullptr;
@@ -150,7 +150,7 @@ namespace BansheeEngine
 		return dictionaryClass->createInstance();
 	}
 
-	ManagedSerializableDictionaryPtr ManagedSerializableDictionary::createEmpty()
+	SPtr<ManagedSerializableDictionary> ManagedSerializableDictionary::createEmpty()
 	{
 		return bs_shared_ptr_new<ManagedSerializableDictionary>(ConstructPrivately());
 	}
@@ -171,7 +171,7 @@ namespace BansheeEngine
 
 		while (enumerator.moveNext())
 		{
-			ManagedSerializableFieldDataPtr key = enumerator.getKey();
+			SPtr<ManagedSerializableFieldData> key = enumerator.getKey();
 			mCachedEntries.insert(std::make_pair(key, enumerator.getValue()));
 		}
 
@@ -219,7 +219,7 @@ namespace BansheeEngine
 		mCachedEntries.clear();
 	}
 
-	ManagedSerializableFieldDataPtr ManagedSerializableDictionary::getFieldData(const ManagedSerializableFieldDataPtr& key)
+	SPtr<ManagedSerializableFieldData> ManagedSerializableDictionary::getFieldData(const SPtr<ManagedSerializableFieldData>& key)
 	{
 		if (mManagedInstance != nullptr)
 		{
@@ -247,7 +247,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void ManagedSerializableDictionary::setFieldData(const ManagedSerializableFieldDataPtr& key, const ManagedSerializableFieldDataPtr& val)
+	void ManagedSerializableDictionary::setFieldData(const SPtr<ManagedSerializableFieldData>& key, const SPtr<ManagedSerializableFieldData>& val)
 	{
 		if (mManagedInstance != nullptr)
 		{
@@ -263,7 +263,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void ManagedSerializableDictionary::removeFieldData(const ManagedSerializableFieldDataPtr& key)
+	void ManagedSerializableDictionary::removeFieldData(const SPtr<ManagedSerializableFieldData>& key)
 	{
 		if (mManagedInstance != nullptr)
 		{
@@ -280,7 +280,7 @@ namespace BansheeEngine
 		}
 	}
 
-	bool ManagedSerializableDictionary::contains(const ManagedSerializableFieldDataPtr& key) const
+	bool ManagedSerializableDictionary::contains(const SPtr<ManagedSerializableFieldData>& key) const
 	{
 		if (mManagedInstance != nullptr)
 		{

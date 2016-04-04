@@ -20,12 +20,12 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedResourceRTTI : public RTTIType<ManagedResource, Resource, ManagedResourceRTTI>
 	{
 	private:
-		ManagedSerializableObjectPtr getObjectData(ManagedResource* obj)
+		SPtr<ManagedSerializableObject> getObjectData(ManagedResource* obj)
 		{
-			return any_cast<ManagedSerializableObjectPtr>(obj->mRTTIData);
+			return any_cast<SPtr<ManagedSerializableObject>>(obj->mRTTIData);
 		}
 
-		void setObjectData(ManagedResource* obj, ManagedSerializableObjectPtr val)
+		void setObjectData(ManagedResource* obj, SPtr<ManagedSerializableObject> val)
 		{
 			obj->mRTTIData = val;
 		}
@@ -46,10 +46,10 @@ namespace BansheeEngine
 		void onDeserializationEnded(IReflectable* obj) override
 		{
 			ManagedResource* mr = static_cast<ManagedResource*>(obj);
-			ManagedSerializableObjectPtr serializableObject = any_cast<ManagedSerializableObjectPtr>(mr->mRTTIData);
+			SPtr<ManagedSerializableObject> serializableObject = any_cast<SPtr<ManagedSerializableObject>>(mr->mRTTIData);
 			serializableObject->deserialize();
 
-			ResourcePtr mrPtr = std::static_pointer_cast<Resource>(mr->getThisPtr());
+			SPtr<Resource> mrPtr = std::static_pointer_cast<Resource>(mr->getThisPtr());
 			HManagedResource handle = static_resource_cast<ManagedResource>(gResources()._createResourceHandle(mrPtr));
 			mr->setHandle(serializableObject->getManagedInstance(), handle);
 			mr->mRTTIData = nullptr;
@@ -66,7 +66,7 @@ namespace BansheeEngine
 			return TID_ManagedResource;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return ManagedResource::createEmpty();
 		}

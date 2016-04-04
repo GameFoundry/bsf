@@ -24,7 +24,7 @@ namespace BansheeEngine
 	ManagedResource::ManagedResource(MonoObject* managedInstance)
 		:Resource(false), mManagedInstance(nullptr)
 	{
-		ManagedResourceMetaDataPtr metaData = bs_shared_ptr_new<ManagedResourceMetaData>();
+		SPtr<ManagedResourceMetaData> metaData = bs_shared_ptr_new<ManagedResourceMetaData>();
 		mMetaData = metaData;
 
 		MonoUtil::getClassName(managedInstance, metaData->typeNamespace, metaData->typeName);
@@ -39,7 +39,7 @@ namespace BansheeEngine
 
 	ResourceBackupData ManagedResource::backup(bool clearExisting)
 	{
-		ManagedSerializableObjectPtr serializableObject = ManagedSerializableObject::createFromExisting(mManagedInstance);
+		SPtr<ManagedSerializableObject> serializableObject = ManagedSerializableObject::createFromExisting(mManagedInstance);
 
 		ResourceBackupData backupData;
 		if (serializableObject != nullptr)
@@ -79,10 +79,10 @@ namespace BansheeEngine
 			if (data.data != nullptr)
 			{
 				MemorySerializer ms;
-				ManagedSerializableObjectPtr serializableObject = std::static_pointer_cast<ManagedSerializableObject>(ms.decode(data.data, data.size));
+				SPtr<ManagedSerializableObject> serializableObject = std::static_pointer_cast<ManagedSerializableObject>(ms.decode(data.data, data.size));
 				
-				ManagedResourceMetaDataPtr managedResMetaData = std::static_pointer_cast<ManagedResourceMetaData>(mMetaData);
-				ManagedSerializableObjectInfoPtr currentObjInfo = nullptr;
+				SPtr<ManagedResourceMetaData> managedResMetaData = std::static_pointer_cast<ManagedResourceMetaData>(mMetaData);
+				SPtr<ManagedSerializableObjectInfo> currentObjInfo = nullptr;
 
 				if (ScriptAssemblyManager::instance().getSerializableObjectInfo(managedResMetaData->typeNamespace, managedResMetaData->typeName, currentObjInfo))
 					serializableObject->deserialize(mManagedInstance, currentObjInfo);
@@ -97,7 +97,7 @@ namespace BansheeEngine
 
 	HManagedResource ManagedResource::create(MonoObject* managedResource)
 	{
-		ManagedResourcePtr newRes = bs_core_ptr<ManagedResource>(new (bs_alloc<ManagedResource>()) ManagedResource(managedResource));
+		SPtr<ManagedResource> newRes = bs_core_ptr<ManagedResource>(new (bs_alloc<ManagedResource>()) ManagedResource(managedResource));
 		newRes->_setThisPtr(newRes);
 		newRes->initialize();
 
@@ -107,9 +107,9 @@ namespace BansheeEngine
 		return handle;
 	}
 
-	ManagedResourcePtr ManagedResource::createEmpty()
+	SPtr<ManagedResource> ManagedResource::createEmpty()
 	{
-		ManagedResourcePtr newRes = bs_core_ptr<ManagedResource>(new (bs_alloc<ManagedResource>()) ManagedResource());
+		SPtr<ManagedResource> newRes = bs_core_ptr<ManagedResource>(new (bs_alloc<ManagedResource>()) ManagedResource());
 		newRes->_setThisPtr(newRes);
 		newRes->initialize();
 

@@ -42,7 +42,7 @@ namespace BansheeEngine
 			return;
 
 		EditorWindowBase* parentWindow = parentContainer->getParentWindow();
-		RenderWindowPtr parentRenderWindow = parentWindow->getRenderWindow();
+		SPtr<RenderWindow> parentRenderWindow = parentWindow->getRenderWindow();
 		const RenderWindowProperties& props = parentRenderWindow->getProperties();
 
 		if (!props.hasFocus())
@@ -112,7 +112,7 @@ namespace BansheeEngine
 			return screenPos;
 
 		EditorWindowBase* parentEditorWindow = mParent->getParentWindow();
-		RenderWindowPtr parentRenderWindow = parentEditorWindow->getRenderWindow();
+		SPtr<RenderWindow> parentRenderWindow = parentEditorWindow->getRenderWindow();
 
 		Vector2I windowPos = parentRenderWindow->screenToWindowPos(screenPos);
 		windowPos.x -= mX;
@@ -127,7 +127,7 @@ namespace BansheeEngine
 			return widgetPos;
 
 		EditorWindowBase* parentEditorWindow = mParent->getParentWindow();
-		RenderWindowPtr parentRenderWindow = parentEditorWindow->getRenderWindow();
+		SPtr<RenderWindow> parentRenderWindow = parentEditorWindow->getRenderWindow();
 
 		Vector2I windowPos = widgetPos;
 		windowPos.x += mX;

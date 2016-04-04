@@ -20,8 +20,8 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT MeshDataRTTI : public RTTIType<MeshData, GpuResourceData, MeshDataRTTI>
 	{
 	private:
-		VertexDataDescPtr getVertexData(MeshData* obj) { return obj->mVertexData; }
-		void setVertexData(MeshData* obj, VertexDataDescPtr value) { obj->mVertexData = value; }
+		SPtr<VertexDataDesc> getVertexData(MeshData* obj) { return obj->mVertexData; }
+		void setVertexData(MeshData* obj, SPtr<VertexDataDesc> value) { obj->mVertexData = value; }
 
 		IndexType& getIndexType(MeshData* obj) { return obj->mIndexType; }
 		void setIndexType(MeshData* obj, IndexType& value) { obj->mIndexType = value; }
@@ -63,7 +63,7 @@ namespace BansheeEngine
 			addDataBlockField("data", 4, &MeshDataRTTI::getData, &MeshDataRTTI::setData, 0, &MeshDataRTTI::allocateData);
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr<MeshData>(new (bs_alloc<MeshData>()) MeshData());
 		}

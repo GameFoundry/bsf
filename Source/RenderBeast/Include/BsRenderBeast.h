@@ -96,8 +96,8 @@ namespace BansheeEngine
 		/**	Data used by the renderer for a camera. */
 		struct CameraData
 		{
-			RenderQueuePtr opaqueQueue;
-			RenderQueuePtr transparentQueue;
+			SPtr<RenderQueue> opaqueQueue;
+			SPtr<RenderQueue> transparentQueue;
 
 			SPtr<RenderTargets> target;
 			PostProcessInfo postProcessInfo;

@@ -27,7 +27,7 @@ namespace BansheeEngine
 			obj->mName = val;
 		}
 
-		ManagedSerializableObjectInfoPtr getSerializableObjectInfo(ManagedSerializableAssemblyInfo* obj, UINT32 idx) 
+		SPtr<ManagedSerializableObjectInfo> getSerializableObjectInfo(ManagedSerializableAssemblyInfo* obj, UINT32 idx) 
 		{ 
 			auto iter = obj->mObjectInfos.begin();
 			for(UINT32 i = 0; i < idx; i++)
@@ -36,7 +36,7 @@ namespace BansheeEngine
 			return iter->second;
 		}
 
-		void setSerializableObjectInfo(ManagedSerializableAssemblyInfo* obj, UINT32 idx, ManagedSerializableObjectInfoPtr val) 
+		void setSerializableObjectInfo(ManagedSerializableAssemblyInfo* obj, UINT32 idx, SPtr<ManagedSerializableObjectInfo> val) 
 		{ 
 			obj->mTypeNameToId[val->getFullTypeName()] = val->mTypeInfo->mTypeId;
 			obj->mObjectInfos[val->mTypeInfo->mTypeId] = val;
@@ -65,7 +65,7 @@ namespace BansheeEngine
 			return TID_SerializableAssemblyInfo;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableAssemblyInfo>();
 		}
@@ -74,27 +74,27 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableObjectInfoRTTI : public RTTIType<ManagedSerializableObjectInfo, IReflectable, ManagedSerializableObjectInfoRTTI>
 	{
 	private:
-		ManagedSerializableTypeInfoObjectPtr getTypeInfo(ManagedSerializableObjectInfo* obj)
+		SPtr<ManagedSerializableTypeInfoObject> getTypeInfo(ManagedSerializableObjectInfo* obj)
 		{
 			return obj->mTypeInfo;
 		}
 
-		void setTypeInfo(ManagedSerializableObjectInfo* obj, ManagedSerializableTypeInfoObjectPtr val)
+		void setTypeInfo(ManagedSerializableObjectInfo* obj, SPtr<ManagedSerializableTypeInfoObject> val)
 		{
 			obj->mTypeInfo = val;
 		}
 
-		ManagedSerializableObjectInfoPtr getBaseClass(ManagedSerializableObjectInfo* obj)
+		SPtr<ManagedSerializableObjectInfo> getBaseClass(ManagedSerializableObjectInfo* obj)
 		{
 			return obj->mBaseClass;
 		}
 
-		void setBaseClass(ManagedSerializableObjectInfo* obj, ManagedSerializableObjectInfoPtr val)
+		void setBaseClass(ManagedSerializableObjectInfo* obj, SPtr<ManagedSerializableObjectInfo> val)
 		{
 			obj->mBaseClass = val;
 		}
 
-		ManagedSerializableFieldInfoPtr getSerializableFieldInfo(ManagedSerializableObjectInfo* obj, UINT32 idx) 
+		SPtr<ManagedSerializableFieldInfo> getSerializableFieldInfo(ManagedSerializableObjectInfo* obj, UINT32 idx) 
 		{ 
 			auto iter = obj->mFields.begin();
 			for(UINT32 i = 0; i < idx; i++)
@@ -103,7 +103,7 @@ namespace BansheeEngine
 			return iter->second;
 		}
 
-		void setSerializableFieldInfo(ManagedSerializableObjectInfo* obj, UINT32 idx, ManagedSerializableFieldInfoPtr val) 
+		void setSerializableFieldInfo(ManagedSerializableObjectInfo* obj, UINT32 idx, SPtr<ManagedSerializableFieldInfo> val) 
 		{ 
 			obj->mFieldNameToId[val->mName] = val->mFieldId;
 			obj->mFields[val->mFieldId] = val;
@@ -134,7 +134,7 @@ namespace BansheeEngine
 			return TID_SerializableObjectInfo;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableObjectInfo>();
 		}
@@ -143,12 +143,12 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldInfoRTTI : public RTTIType<ManagedSerializableFieldInfo, IReflectable, ManagedSerializableFieldInfoRTTI>
 	{
 	private:
-		ManagedSerializableTypeInfoPtr getTypeInfo(ManagedSerializableFieldInfo* obj)
+		SPtr<ManagedSerializableTypeInfo> getTypeInfo(ManagedSerializableFieldInfo* obj)
 		{
 			return obj->mTypeInfo;
 		}
 
-		void setTypeInfo(ManagedSerializableFieldInfo* obj, ManagedSerializableTypeInfoPtr val)
+		void setTypeInfo(ManagedSerializableFieldInfo* obj, SPtr<ManagedSerializableTypeInfo> val)
 		{
 			obj->mTypeInfo = val;
 		}
@@ -214,7 +214,7 @@ namespace BansheeEngine
 			return TID_SerializableFieldInfo;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableFieldInfo>();
 		}
@@ -241,7 +241,7 @@ namespace BansheeEngine
 			return TID_SerializableTypeInfo;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			BS_EXCEPT(InvalidStateException, "Cannot instantiate an abstract class");
 			return nullptr;
@@ -278,7 +278,7 @@ namespace BansheeEngine
 			return TID_SerializableTypeInfoPrimitive;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
 		}
@@ -336,7 +336,7 @@ namespace BansheeEngine
 			return TID_SerializableTypeInfoRef;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableTypeInfoRef>();
 		}
@@ -405,7 +405,7 @@ namespace BansheeEngine
 			return TID_SerializableTypeInfoObject;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableTypeInfoObject>();
 		}
@@ -414,12 +414,12 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableTypeInfoArrayRTTI : public RTTIType<ManagedSerializableTypeInfoArray, ManagedSerializableTypeInfo, ManagedSerializableTypeInfoArrayRTTI>
 	{
 	private:
-		ManagedSerializableTypeInfoPtr getElementType(ManagedSerializableTypeInfoArray* obj)
+		SPtr<ManagedSerializableTypeInfo> getElementType(ManagedSerializableTypeInfoArray* obj)
 		{
 			return obj->mElementType;
 		}
 
-		void setElementType(ManagedSerializableTypeInfoArray* obj, ManagedSerializableTypeInfoPtr val)
+		void setElementType(ManagedSerializableTypeInfoArray* obj, SPtr<ManagedSerializableTypeInfo> val)
 		{
 			obj->mElementType = val;
 		}
@@ -452,7 +452,7 @@ namespace BansheeEngine
 			return TID_SerializableTypeInfoArray;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableTypeInfoArray>();
 		}
@@ -461,12 +461,12 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableTypeInfoListRTTI : public RTTIType<ManagedSerializableTypeInfoList, ManagedSerializableTypeInfo, ManagedSerializableTypeInfoListRTTI>
 	{
 	private:
-		ManagedSerializableTypeInfoPtr getElementType(ManagedSerializableTypeInfoList* obj)
+		SPtr<ManagedSerializableTypeInfo> getElementType(ManagedSerializableTypeInfoList* obj)
 		{
 			return obj->mElementType;
 		}
 
-		void setElementType(ManagedSerializableTypeInfoList* obj, ManagedSerializableTypeInfoPtr val)
+		void setElementType(ManagedSerializableTypeInfoList* obj, SPtr<ManagedSerializableTypeInfo> val)
 		{
 			obj->mElementType = val;
 		}
@@ -488,7 +488,7 @@ namespace BansheeEngine
 			return TID_SerializableTypeInfoList;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableTypeInfoList>();
 		}
@@ -497,22 +497,22 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableTypeInfoDictionaryRTTI : public RTTIType<ManagedSerializableTypeInfoDictionary, ManagedSerializableTypeInfo, ManagedSerializableTypeInfoDictionaryRTTI>
 	{
 	private:
-		ManagedSerializableTypeInfoPtr getKeyType(ManagedSerializableTypeInfoDictionary* obj)
+		SPtr<ManagedSerializableTypeInfo> getKeyType(ManagedSerializableTypeInfoDictionary* obj)
 		{
 			return obj->mKeyType;
 		}
 
-		void setKeyType(ManagedSerializableTypeInfoDictionary* obj, ManagedSerializableTypeInfoPtr val)
+		void setKeyType(ManagedSerializableTypeInfoDictionary* obj, SPtr<ManagedSerializableTypeInfo> val)
 		{
 			obj->mKeyType = val;
 		}
 
-		ManagedSerializableTypeInfoPtr getValueType(ManagedSerializableTypeInfoDictionary* obj)
+		SPtr<ManagedSerializableTypeInfo> getValueType(ManagedSerializableTypeInfoDictionary* obj)
 		{
 			return obj->mValueType;
 		}
 
-		void setValueType(ManagedSerializableTypeInfoDictionary* obj, ManagedSerializableTypeInfoPtr val)
+		void setValueType(ManagedSerializableTypeInfoDictionary* obj, SPtr<ManagedSerializableTypeInfo> val)
 		{
 			obj->mValueType = val;
 		}
@@ -535,7 +535,7 @@ namespace BansheeEngine
 			return TID_SerializableTypeInfoDictionary;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ManagedSerializableTypeInfoDictionary>();
 		}

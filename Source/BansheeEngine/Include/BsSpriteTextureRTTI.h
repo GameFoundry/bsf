@@ -44,7 +44,7 @@ namespace BansheeEngine
 			return TID_SpriteTexture;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return SpriteTexture::createEmpty();
 		}

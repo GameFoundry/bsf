@@ -5,27 +5,27 @@
 
 namespace BansheeEngine
 {
-	MaterialPtr MaterialManager::create() const
+	SPtr<Material> MaterialManager::create() const
 	{
-		MaterialPtr newMat = bs_core_ptr<Material>(new (bs_alloc<Material>()) Material());
+		SPtr<Material> newMat = bs_core_ptr<Material>(new (bs_alloc<Material>()) Material());
 		newMat->_setThisPtr(newMat);
 		newMat->initialize();
 
 		return newMat;
 	}
 
-	MaterialPtr MaterialManager::create(const HShader& shader) const
+	SPtr<Material> MaterialManager::create(const HShader& shader) const
 	{
-		MaterialPtr newMat = bs_core_ptr<Material>(new (bs_alloc<Material>()) Material(shader));
+		SPtr<Material> newMat = bs_core_ptr<Material>(new (bs_alloc<Material>()) Material(shader));
 		newMat->_setThisPtr(newMat);
 		newMat->initialize();
 
 		return newMat;
 	}
 
-	MaterialPtr MaterialManager::createEmpty() const
+	SPtr<Material> MaterialManager::createEmpty() const
 	{
-		MaterialPtr newMat = bs_core_ptr<Material>(new (bs_alloc<Material>()) Material());
+		SPtr<Material> newMat = bs_core_ptr<Material>(new (bs_alloc<Material>()) Material());
 		newMat->_setThisPtr(newMat);
 
 		return newMat;

@@ -64,8 +64,8 @@ namespace BansheeEngine
 		if (sourceScriptPixelData == nullptr)
 			return nullptr;
 
-		PixelDataPtr sourcePixelData = sourceScriptPixelData->getInternalValue();
-		PixelDataPtr outputData = bs_shared_ptr_new<PixelData>(sourcePixelData->getWidth(), sourcePixelData->getHeight(), 
+		SPtr<PixelData> sourcePixelData = sourceScriptPixelData->getInternalValue();
+		SPtr<PixelData> outputData = bs_shared_ptr_new<PixelData>(sourcePixelData->getWidth(), sourcePixelData->getHeight(), 
 			sourcePixelData->getDepth(), newFormat);
 		outputData->allocateInternalBuffer();
 
@@ -80,8 +80,8 @@ namespace BansheeEngine
 		if (sourceScriptPixelData == nullptr)
 			return nullptr;
 
-		PixelDataPtr sourcePixelData = sourceScriptPixelData->getInternalValue();
-		PixelDataPtr outputData = bs_shared_ptr_new<PixelData>(sourcePixelData->getWidth(), sourcePixelData->getHeight(), 
+		SPtr<PixelData> sourcePixelData = sourceScriptPixelData->getInternalValue();
+		SPtr<PixelData> outputData = bs_shared_ptr_new<PixelData>(sourcePixelData->getWidth(), sourcePixelData->getHeight(), 
 			sourcePixelData->getDepth(), options->format);
 		outputData->allocateInternalBuffer();
 
@@ -96,8 +96,8 @@ namespace BansheeEngine
 		if (sourceScriptPixelData == nullptr)
 			return nullptr;
 
-		PixelDataPtr sourcePixelData = sourceScriptPixelData->getInternalValue();
-		Vector<PixelDataPtr> mipmaps = PixelUtil::genMipmaps(*sourcePixelData, *options);
+		SPtr<PixelData> sourcePixelData = sourceScriptPixelData->getInternalValue();
+		Vector<SPtr<PixelData>> mipmaps = PixelUtil::genMipmaps(*sourcePixelData, *options);
 
 		UINT32 numElements = (UINT32)mipmaps.size();
 		MonoArray* outputArray = mono_array_new(MonoManager::instance().getDomain(),
@@ -119,8 +119,8 @@ namespace BansheeEngine
 		if (sourceScriptPixelData == nullptr)
 			return nullptr;
 
-		PixelDataPtr sourcePixelData = sourceScriptPixelData->getInternalValue();
-		PixelDataPtr outputData = bs_shared_ptr_new<PixelData>(newSize->getWidth(), newSize->getHeight(),
+		SPtr<PixelData> sourcePixelData = sourceScriptPixelData->getInternalValue();
+		SPtr<PixelData> outputData = bs_shared_ptr_new<PixelData>(newSize->getWidth(), newSize->getHeight(),
 			newSize->getDepth(), sourcePixelData->getFormat());
 		outputData->allocateInternalBuffer();
 
@@ -135,7 +135,7 @@ namespace BansheeEngine
 		if (sourceScriptPixelData == nullptr)
 			return;
 
-		PixelDataPtr pixelData = sourceScriptPixelData->getInternalValue();
+		SPtr<PixelData> pixelData = sourceScriptPixelData->getInternalValue();
 		PixelUtil::applyGamma(pixelData->getData(), gamma, pixelData->getSize(), PixelUtil::getNumElemBits(pixelData->getFormat()));
 	}
 }

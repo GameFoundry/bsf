@@ -98,7 +98,7 @@ namespace BansheeEngine
 		 * @note	Internal method.
 		 * @note	This should be called by the factory creation methods so user doesn't have to call it manually.
 		 */
-		void _setThisPtr(std::shared_ptr<CoreObject> ptrThis);
+		void _setThisPtr(SPtr<CoreObject> ptrThis);
 
 		/**
 		 * Schedules the object to be destroyed, and then deleted.
@@ -247,9 +247,9 @@ namespace BansheeEngine
 	 * them manually.
 	 */
 	template<class Type, class MainAlloc, class PtrDataAlloc, class... Args>
-	std::shared_ptr<Type> bs_core_ptr_new(Args &&...args)
+	SPtr<Type> bs_core_ptr_new(Args &&...args)
 	{
-		return std::shared_ptr<Type>(bs_new<Type, MainAlloc>(std::forward<Args>(args)...),
+		return SPtr<Type>(bs_new<Type, MainAlloc>(std::forward<Args>(args)...),
 			&CoreObject::_delete<Type, MainAlloc>, StdAlloc<Type, PtrDataAlloc>());
 	}
 
@@ -261,9 +261,9 @@ namespace BansheeEngine
 	 * them manually.
 	 */
 	template<class Type, class MainAlloc, class... Args>
-	std::shared_ptr<Type> bs_core_ptr_new(Args &&...args)
+	SPtr<Type> bs_core_ptr_new(Args &&...args)
 	{
-		return std::shared_ptr<Type>(bs_new<Type, MainAlloc>(std::forward<Args>(args)...),
+		return SPtr<Type>(bs_new<Type, MainAlloc>(std::forward<Args>(args)...),
 			&CoreObject::_delete<Type, MainAlloc>, StdAlloc<Type, GenAlloc>());
 	}
 
@@ -275,9 +275,9 @@ namespace BansheeEngine
 	 * them manually.
 	 */
 	template<class Type, class... Args>
-	std::shared_ptr<Type> bs_core_ptr_new(Args &&...args)
+	SPtr<Type> bs_core_ptr_new(Args &&...args)
 	{
-		return std::shared_ptr<Type>(bs_new<Type, GenAlloc>(std::forward<Args>(args)...),
+		return SPtr<Type>(bs_new<Type, GenAlloc>(std::forward<Args>(args)...),
 			&CoreObject::_delete<Type, GenAlloc>, StdAlloc<Type, GenAlloc>());
 	}
 
@@ -289,9 +289,9 @@ namespace BansheeEngine
 	 * them manually.
 	 */
 	template<class Type, class MainAlloc = GenAlloc, class PtrDataAlloc = GenAlloc>
-	std::shared_ptr<Type> bs_core_ptr(Type* data)
+	SPtr<Type> bs_core_ptr(Type* data)
 	{
-		return std::shared_ptr<Type>(data, &CoreObject::_delete<Type, MainAlloc>, StdAlloc<Type, PtrDataAlloc>());  
+		return SPtr<Type>(data, &CoreObject::_delete<Type, MainAlloc>, StdAlloc<Type, PtrDataAlloc>());  
 	}
 
 	/** @} */

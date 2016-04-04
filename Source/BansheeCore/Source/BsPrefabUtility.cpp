@@ -76,7 +76,7 @@ namespace BansheeEngine
 		{
 			HSceneObject newInstance;
 			HSceneObject originalParent;
-			PrefabDiffPtr diff;
+			SPtr<PrefabDiff> diff;
 			UINT32 originalLinkId;
 		};
 
@@ -103,7 +103,7 @@ namespace BansheeEngine
 				recordInstanceData(current, soProxy, linkedInstanceData);
 
 				HSceneObject parent = current->getParent();
-				PrefabDiffPtr prefabDiff = current->mPrefabDiff;
+				SPtr<PrefabDiff> prefabDiff = current->mPrefabDiff;
 
 				current->destroy(true);
 				HSceneObject newInstance = prefabLink->_clone();

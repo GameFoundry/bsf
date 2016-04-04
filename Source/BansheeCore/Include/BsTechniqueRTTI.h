@@ -22,8 +22,8 @@ namespace BansheeEngine
 		StringID& getRenderer(Technique* obj) { return obj->mRenderer; }
 		void setRenderer(Technique* obj, StringID& val) { obj->mRenderer = val; }
 
-		PassPtr getPass(Technique* obj, UINT32 idx) { return obj->mPasses[idx]; }
-		void setPass(Technique* obj, UINT32 idx, PassPtr val) { obj->mPasses[idx] = val; }
+		SPtr<Pass> getPass(Technique* obj, UINT32 idx) { return obj->mPasses[idx]; }
+		void setPass(Technique* obj, UINT32 idx, SPtr<Pass> val) { obj->mPasses[idx] = val; }
 
 		UINT32 getPassArraySize(Technique* obj) { return (UINT32)obj->mPasses.size(); }
 		void setPassArraySize(Technique* obj, UINT32 size) { obj->mPasses.resize(size); }
@@ -54,7 +54,7 @@ namespace BansheeEngine
 			return TID_Technique;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return Technique::createEmpty();
 		}

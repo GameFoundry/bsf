@@ -35,7 +35,7 @@ namespace BansheeEngine
 			return TID_ResourceMapping;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return ResourceMapping::create();
 		}

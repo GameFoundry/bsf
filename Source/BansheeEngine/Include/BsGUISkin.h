@@ -62,7 +62,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method. Use "create" returning handle for normal use.
 		 */
-		static GUISkinPtr _createPtr();
+		static SPtr<GUISkin> _createPtr();
 
 		/** @} */
 	private:

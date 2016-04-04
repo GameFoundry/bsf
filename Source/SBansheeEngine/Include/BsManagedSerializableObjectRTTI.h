@@ -19,38 +19,38 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableObjectRTTI : public RTTIType<ManagedSerializableObject, IReflectable, ManagedSerializableObjectRTTI>
 	{
 	private:
-		ManagedSerializableObjectInfoPtr getInfo(ManagedSerializableObject* obj)
+		SPtr<ManagedSerializableObjectInfo> getInfo(ManagedSerializableObject* obj)
 		{
 			return obj->mObjInfo;
 		}
 
-		void setInfo(ManagedSerializableObject* obj, ManagedSerializableObjectInfoPtr val)
+		void setInfo(ManagedSerializableObject* obj, SPtr<ManagedSerializableObjectInfo> val)
 		{
 			obj->mObjInfo = val;
 		}
 
-		ManagedSerializableFieldDataEntryPtr getFieldEntry(ManagedSerializableObject* obj, UINT32 arrayIdx)
+		SPtr<ManagedSerializableFieldDataEntry> getFieldEntry(ManagedSerializableObject* obj, UINT32 arrayIdx)
 		{
-			Vector<ManagedSerializableFieldInfoPtr>& sequentialFields =
-				any_cast_ref<Vector<ManagedSerializableFieldInfoPtr>>(obj->mRTTIData);
+			Vector<SPtr<ManagedSerializableFieldInfo>>& sequentialFields =
+				any_cast_ref<Vector<SPtr<ManagedSerializableFieldInfo>>>(obj->mRTTIData);
 
-			ManagedSerializableFieldInfoPtr field = sequentialFields[arrayIdx];
+			SPtr<ManagedSerializableFieldInfo> field = sequentialFields[arrayIdx];
 
-			ManagedSerializableFieldKeyPtr fieldKey = ManagedSerializableFieldKey::create(field->mParentTypeId, field->mFieldId);
-			ManagedSerializableFieldDataPtr fieldData = obj->getFieldData(field);
+			SPtr<ManagedSerializableFieldKey> fieldKey = ManagedSerializableFieldKey::create(field->mParentTypeId, field->mFieldId);
+			SPtr<ManagedSerializableFieldData> fieldData = obj->getFieldData(field);
 
 			return ManagedSerializableFieldDataEntry::create(fieldKey, fieldData);
 		}
 
-		void setFieldsEntry(ManagedSerializableObject* obj, UINT32 arrayIdx, ManagedSerializableFieldDataEntryPtr val)
+		void setFieldsEntry(ManagedSerializableObject* obj, UINT32 arrayIdx, SPtr<ManagedSerializableFieldDataEntry> val)
 		{
 			obj->mCachedData[*val->mKey] = val->mValue;
 		}
 
 		UINT32 getNumFieldEntries(ManagedSerializableObject* obj)
 		{
-			Vector<ManagedSerializableFieldInfoPtr>& sequentialFields =
-				any_cast_ref<Vector<ManagedSerializableFieldInfoPtr>>(obj->mRTTIData);
+			Vector<SPtr<ManagedSerializableFieldInfo>>& sequentialFields =
+				any_cast_ref<Vector<SPtr<ManagedSerializableFieldInfo>>>(obj->mRTTIData);
 
 			return (UINT32)sequentialFields.size();
 		}
@@ -72,8 +72,8 @@ namespace BansheeEngine
 		{
 			ManagedSerializableObject* castObj = static_cast<ManagedSerializableObject*>(obj);
 
-			Vector<ManagedSerializableFieldInfoPtr> sequentialFields;
-			ManagedSerializableObjectInfoPtr curType = castObj->mObjInfo;
+			Vector<SPtr<ManagedSerializableFieldInfo>> sequentialFields;
+			SPtr<ManagedSerializableObjectInfo> curType = castObj->mObjInfo;
 			while (curType != nullptr)
 			{
 				for (auto& field : curType->mFields)
@@ -111,7 +111,7 @@ namespace BansheeEngine
 			return TID_ScriptSerializableObject;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return ManagedSerializableObject::createEmpty();
 		}

@@ -42,7 +42,7 @@ namespace BansheeEngine
 			rebuild();
     }
 
-	void GLFrameBufferObject::bindDepthStencil(GLPixelBufferPtr depthStencilBuffer)
+	void GLFrameBufferObject::bindDepthStencil(SPtr<GLPixelBuffer> depthStencilBuffer)
 	{
 		mDepthStencilBuffer = depthStencilBuffer;
 

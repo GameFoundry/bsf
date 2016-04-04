@@ -32,9 +32,9 @@ namespace BansheeEngine
 
 		mStructParams = mAlloc.construct<StructParamData>(mNumStructParams);
 		mTextureParams = mAlloc.construct<TextureParamData>(mNumTextureParams);
-		mSamplerStateParams = mAlloc.construct<SamplerStatePtr>(mNumSamplerParams);
+		mSamplerStateParams = mAlloc.construct<SPtr<SamplerState>>(mNumSamplerParams);
 		mDefaultTextureParams = mAlloc.construct<HTexture>(mNumTextureParams);
-		mDefaultSamplerStateParams = mAlloc.construct<SamplerStatePtr>(mNumSamplerParams);
+		mDefaultSamplerStateParams = mAlloc.construct<SPtr<SamplerState>>(mNumSamplerParams);
 
 		UINT32 mDataBufferIdx = 0;
 		UINT32 mStructIdx = 0;
@@ -204,7 +204,7 @@ namespace BansheeEngine
 		setLoadStoreTexture(param->index, value, surface);
 	}
 
-	void MaterialParams::getSamplerState(const String& name, SamplerStatePtr& value) const
+	void MaterialParams::getSamplerState(const String& name, SPtr<SamplerState>& value) const
 	{
 		const ParamData* param = nullptr;
 		GetParamResult result = getParamData(name, ParamType::Sampler, GPDT_UNKNOWN, 0, &param);
@@ -217,7 +217,7 @@ namespace BansheeEngine
 		getSamplerState(param->index, value);
 	}
 
-	void MaterialParams::setSamplerState(const String& name, const SamplerStatePtr& value)
+	void MaterialParams::setSamplerState(const String& name, const SPtr<SamplerState>& value)
 	{
 		const ParamData* param = nullptr;
 		GetParamResult result = getParamData(name, ParamType::Sampler, GPDT_UNKNOWN, 0, &param);
@@ -330,12 +330,12 @@ namespace BansheeEngine
 		return mTextureParams[index].isLoadStore;
 	}
 
-	void MaterialParams::getSamplerState(UINT32 index, SamplerStatePtr& value) const
+	void MaterialParams::getSamplerState(UINT32 index, SPtr<SamplerState>& value) const
 	{
 		value = mSamplerStateParams[index];
 	}
 
-	void MaterialParams::setSamplerState(UINT32 index, const SamplerStatePtr& value)
+	void MaterialParams::setSamplerState(UINT32 index, const SPtr<SamplerState>& value)
 	{
 		mSamplerStateParams[index] = value;
 	}
@@ -345,7 +345,7 @@ namespace BansheeEngine
 		value = mDefaultTextureParams[index];
 	}
 
-	void MaterialParams::getDefaultSamplerState(UINT32 index, SamplerStatePtr& value) const
+	void MaterialParams::getDefaultSamplerState(UINT32 index, SPtr<SamplerState>& value) const
 	{
 		value = mDefaultSamplerStateParams[index];
 	}

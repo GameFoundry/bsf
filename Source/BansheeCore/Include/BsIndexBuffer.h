@@ -60,7 +60,7 @@ namespace BansheeEngine
 		SPtr<IndexBufferCore> getCore() const;
 
 		/** @copydoc HardwareBufferManager::createIndexBuffer */
-		static IndexBufferPtr create(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
+		static SPtr<IndexBuffer> create(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
 
 	protected:
 		friend class HardwareBufferManager;

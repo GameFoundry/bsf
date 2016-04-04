@@ -69,7 +69,7 @@ namespace BansheeEngine
 		 *
 		 * For internal use. Requires manual initialization after creation.
 		 */
-		static PhysicsMaterialPtr _createPtr(float staticFriction = 0.0f, float dynamicFriction = 0.0f, 
+		static SPtr<PhysicsMaterial> _createPtr(float staticFriction = 0.0f, float dynamicFriction = 0.0f, 
 			float restitution = 0.0f);
 
 		/** @} */

@@ -24,7 +24,7 @@ namespace BansheeEngine
 		bs_delete(mDrawManager);
 	}
 
-	bool HandleManager::isHandleActive(const CameraPtr& camera) const
+	bool HandleManager::isHandleActive(const SPtr<Camera>& camera) const
 	{
 		return mSliderManager->isSliderActive(camera);
 	}
@@ -35,7 +35,7 @@ namespace BansheeEngine
 		mInputStarted = true;
 	}
 
-	void HandleManager::updateInput(const CameraPtr& camera, const Vector2I& inputPos, const Vector2I& inputDelta)
+	void HandleManager::updateInput(const SPtr<Camera>& camera, const Vector2I& inputPos, const Vector2I& inputDelta)
 	{
 		if(!mInputStarted)
 		{
@@ -55,7 +55,7 @@ namespace BansheeEngine
 		mInputStarted = false;
 	}
 
-	void HandleManager::draw(const CameraPtr& camera)
+	void HandleManager::draw(const SPtr<Camera>& camera)
 	{
 		UINT64 frameIdx = gTime().getFrameIdx();
 		if (frameIdx != mLastDrawFrameIdx)
@@ -68,7 +68,7 @@ namespace BansheeEngine
 		mDrawManager->draw(camera);
 	}
 
-	void HandleManager::setSettings(const EditorSettingsPtr& settings)
+	void HandleManager::setSettings(const SPtr<EditorSettings>& settings)
 	{
 		mSettings = settings;
 
@@ -82,17 +82,17 @@ namespace BansheeEngine
 		mSettingsHash = mSettings->getHash();
 	}
 
-	void HandleManager::trySelect(const CameraPtr& camera, const Vector2I& inputPos)
+	void HandleManager::trySelect(const SPtr<Camera>& camera, const Vector2I& inputPos)
 	{
 		return mSliderManager->trySelect(camera, inputPos);
 	}
 
-	void HandleManager::clearSelection(const CameraPtr& camera)
+	void HandleManager::clearSelection(const SPtr<Camera>& camera)
 	{
 		return mSliderManager->clearSelection(camera);
 	}
 
-	float HandleManager::getHandleSize(const CameraPtr& camera, const Vector3& handlePos) const
+	float HandleManager::getHandleSize(const SPtr<Camera>& camera, const Vector3& handlePos) const
 	{
 		if (camera->getProjectionType() == PT_PERSPECTIVE)
 		{

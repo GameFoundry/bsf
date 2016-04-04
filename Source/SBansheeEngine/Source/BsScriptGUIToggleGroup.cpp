@@ -11,7 +11,7 @@
 
 namespace BansheeEngine
 {
-	ScriptGUIToggleGroup::ScriptGUIToggleGroup(MonoObject* instance, const std::shared_ptr<GUIToggleGroup>& toggleGroup)
+	ScriptGUIToggleGroup::ScriptGUIToggleGroup(MonoObject* instance, const SPtr<GUIToggleGroup>& toggleGroup)
 		:ScriptObject(instance), mToggleGroup(toggleGroup)
 	{
 
@@ -24,7 +24,7 @@ namespace BansheeEngine
 
 	void ScriptGUIToggleGroup::internal_createInstance(MonoObject* instance, bool allowAllOff)
 	{
-		std::shared_ptr<GUIToggleGroup> toggleGroup = GUIToggle::createToggleGroup(allowAllOff);
+		SPtr<GUIToggleGroup> toggleGroup = GUIToggle::createToggleGroup(allowAllOff);
 
 		ScriptGUIToggleGroup* nativeInstance = new (bs_alloc<ScriptGUIToggleGroup>()) ScriptGUIToggleGroup(instance, toggleGroup);
 	}

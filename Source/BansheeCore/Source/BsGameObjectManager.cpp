@@ -70,7 +70,7 @@ namespace BansheeEngine
 		mQueuedForDestroy.clear();
 	}
 
-	GameObjectHandleBase GameObjectManager::registerObject(const std::shared_ptr<GameObject>& object, UINT64 originalId)
+	GameObjectHandleBase GameObjectManager::registerObject(const SPtr<GameObject>& object, UINT64 originalId)
 	{
 		object->initialize(object, mNextAvailableID);
 

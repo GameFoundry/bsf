@@ -44,7 +44,7 @@ namespace BansheeEngine
 			return TID_TextureParamData;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<MaterialParams::TextureParamData>();
 		}
@@ -88,7 +88,7 @@ namespace BansheeEngine
 			return TID_StructParamData;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<MaterialParams::StructParamData>();
 		}
@@ -170,13 +170,13 @@ namespace BansheeEngine
 			obj->mTextureParams = obj->mAlloc.construct<MaterialParams::TextureParamData>(size);
 		}
 
-		SamplerStatePtr getSamplerStateParam(MaterialParams* obj, UINT32 idx) { return obj->mSamplerStateParams[idx]; }
-		void setSamplerStateParam(MaterialParams* obj, UINT32 idx, SamplerStatePtr param) { obj->mSamplerStateParams[idx] = param; }
+		SPtr<SamplerState> getSamplerStateParam(MaterialParams* obj, UINT32 idx) { return obj->mSamplerStateParams[idx]; }
+		void setSamplerStateParam(MaterialParams* obj, UINT32 idx, SPtr<SamplerState> param) { obj->mSamplerStateParams[idx] = param; }
 		UINT32 getSamplerStateArraySize(MaterialParams* obj) { return (UINT32)obj->mNumSamplerParams; }
 		void setSamplerStateArraySize(MaterialParams* obj, UINT32 size)
 		{
 			obj->mNumSamplerParams = size;
-			obj->mSamplerStateParams = obj->mAlloc.construct<SamplerStatePtr>(size);
+			obj->mSamplerStateParams = obj->mAlloc.construct<SPtr<SamplerState>>(size);
 		}
 
 		MaterialParamsRTTI()
@@ -225,7 +225,7 @@ namespace BansheeEngine
 			return TID_MaterialParams; 
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<MaterialParams>();
 		}

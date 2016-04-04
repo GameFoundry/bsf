@@ -87,7 +87,7 @@ namespace BansheeEngine
 		friend class PrefabUtility;
 
 		/**	Initializes the GameObject after construction. */
-		void initialize(const std::shared_ptr<GameObject>& object, UINT64 instanceId);
+		void initialize(const SPtr<GameObject>& object, UINT64 instanceId);
 
 		/**
 		 * Destroys this object.

@@ -271,7 +271,7 @@ namespace BansheeEngine
 	}
 
 	ProjectLibrary::FileEntry* ProjectLibrary::addResourceInternal(DirectoryEntry* parent, const Path& filePath, 
-		const ImportOptionsPtr& importOptions, bool forceReimport)
+		const SPtr<ImportOptions>& importOptions, bool forceReimport)
 	{
 		FileEntry* newResource = bs_new<FileEntry>(filePath, filePath.getWTail(), parent);
 		parent->mChildren.push_back(newResource);
@@ -359,7 +359,7 @@ namespace BansheeEngine
 		bs_delete(directory);
 	}
 
-	void ProjectLibrary::reimportResourceInternal(FileEntry* fileEntry, const ImportOptionsPtr& importOptions,
+	void ProjectLibrary::reimportResourceInternal(FileEntry* fileEntry, const SPtr<ImportOptions>& importOptions,
 		bool forceReimport, bool pruneResourceMetas)
 	{
 		Path metaPath = fileEntry->path;
@@ -370,11 +370,11 @@ namespace BansheeEngine
 			if(FileSystem::isFile(metaPath))
 			{
 				FileDecoder fs(metaPath);
-				std::shared_ptr<IReflectable> loadedMeta = fs.decode();
+				SPtr<IReflectable> loadedMeta = fs.decode();
 
 				if(loadedMeta != nullptr && loadedMeta->isDerivedFrom(ProjectFileMeta::getRTTIStatic()))
 				{
-					ProjectFileMetaPtr fileMeta = std::static_pointer_cast<ProjectFileMeta>(loadedMeta);
+					SPtr<ProjectFileMeta> fileMeta = std::static_pointer_cast<ProjectFileMeta>(loadedMeta);
 					fileEntry->meta = fileMeta;
 
 					auto& resourceMetas = fileEntry->meta->getResourceMetaData();
@@ -385,7 +385,7 @@ namespace BansheeEngine
 
 						for (UINT32 i = 1; i < (UINT32)resourceMetas.size(); i++)
 						{
-							ProjectResourceMetaPtr entry = resourceMetas[i];
+							SPtr<ProjectResourceMeta> entry = resourceMetas[i];
 							mUUIDToPath[entry->getUUID()] = fileEntry->path + entry->getUniqueName();
 						}
 					}
@@ -399,7 +399,7 @@ namespace BansheeEngine
 			// load the resource directly from the Resources folder but that requires complicating library code.
 			bool isNativeResource = isNative(fileEntry->path);
 
-			ImportOptionsPtr curImportOptions = nullptr;
+			SPtr<ImportOptions> curImportOptions = nullptr;
 			if (importOptions == nullptr && !isNativeResource)
 			{
 				if (fileEntry->meta != nullptr)
@@ -435,11 +435,11 @@ namespace BansheeEngine
 
 				for(auto& entry : importedResources)
 				{
-					ResourceMetaDataPtr subMeta = entry.value->getMetaData();
+					SPtr<ResourceMetaData> subMeta = entry.value->getMetaData();
 					UINT32 typeId = entry.value->getTypeId();
 					const String& UUID = entry.value.getUUID();
 
-					ProjectResourceMetaPtr resMeta = ProjectResourceMeta::create(entry.name, UUID, typeId, subMeta);
+					SPtr<ProjectResourceMeta> resMeta = ProjectResourceMeta::create(entry.name, UUID, typeId, subMeta);
 					fileEntry->meta->add(resMeta);
 				}
 
@@ -467,7 +467,7 @@ namespace BansheeEngine
 				if (!isNativeResource)
 				{
 					Vector<SubResourceRaw> importedResourcesRaw = gImporter()._importAllRaw(fileEntry->path, curImportOptions);
-					Vector<ProjectResourceMetaPtr> existingResourceMetas = fileEntry->meta->getResourceMetaData();
+					Vector<SPtr<ProjectResourceMeta>> existingResourceMetas = fileEntry->meta->getResourceMetaData();
 					fileEntry->meta->clearResourceMetaData();
 
 					for(auto& resEntry : importedResourcesRaw)
@@ -475,7 +475,7 @@ namespace BansheeEngine
 						bool foundMeta = false;
 						for (auto iter = existingResourceMetas.begin(); iter != existingResourceMetas.end(); ++iter)
 						{
-							ProjectResourceMetaPtr metaEntry = *iter;
+							SPtr<ProjectResourceMeta> metaEntry = *iter;
 
 							if(resEntry.name == metaEntry->getUniqueName())
 							{
@@ -496,11 +496,11 @@ namespace BansheeEngine
 							HResource importedResource = gResources()._createResourceHandle(resEntry.value);
 							importedResources.push_back({ resEntry.name, importedResource });
 
-							ResourceMetaDataPtr subMeta = resEntry.value->getMetaData();
+							SPtr<ResourceMetaData> subMeta = resEntry.value->getMetaData();
 							UINT32 typeId = resEntry.value->getTypeId();
 							const String& UUID = importedResource.getUUID();
 
-							ProjectResourceMetaPtr resMeta = ProjectResourceMeta::create(resEntry.name, UUID, typeId, subMeta);
+							SPtr<ProjectResourceMeta> resMeta = ProjectResourceMeta::create(resEntry.name, UUID, typeId, subMeta);
 							fileEntry->meta->add(resMeta);
 						}
 					}
@@ -716,7 +716,7 @@ namespace BansheeEngine
 		return false;
 	}
 
-	ProjectResourceMetaPtr ProjectLibrary::findResourceMeta(const Path& path) const
+	SPtr<ProjectResourceMeta> ProjectLibrary::findResourceMeta(const Path& path) const
 	{
 		UINT32 numElems = path.getNumDirectories() + (path.isFile() ? 1 : 0);
 
@@ -920,7 +920,7 @@ namespace BansheeEngine
 
 							for (UINT32 i = 1; i < (UINT32)resourceMetas.size(); i++)
 							{
-								ProjectResourceMetaPtr resMeta = resourceMetas[i];
+								SPtr<ProjectResourceMeta> resMeta = resourceMetas[i];
 
 								const String& UUID = resMeta->getUUID();
 								mUUIDToPath[UUID] = newFullPath + resMeta->getUniqueName();
@@ -1037,7 +1037,7 @@ namespace BansheeEngine
 			assert(oldEntry->type == LibraryEntryType::File);
 			FileEntry* oldResEntry = static_cast<FileEntry*>(oldEntry);
 
-			ImportOptionsPtr importOptions;
+			SPtr<ImportOptions> importOptions;
 			if (oldResEntry->meta != nullptr)
 				importOptions = oldResEntry->meta->getImportOptions();
 
@@ -1071,7 +1071,7 @@ namespace BansheeEngine
 					{
 						FileEntry* childResEntry = static_cast<FileEntry*>(child);
 
-						ImportOptionsPtr importOptions;
+						SPtr<ImportOptions> importOptions;
 						if (childResEntry->meta != nullptr)
 							importOptions = childResEntry->meta->getImportOptions();
 
@@ -1108,7 +1108,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void ProjectLibrary::reimport(const Path& path, const ImportOptionsPtr& importOptions, bool forceReimport)
+	void ProjectLibrary::reimport(const Path& path, const SPtr<ImportOptions>& importOptions, bool forceReimport)
 	{
 		LibraryEntry* entry = findEntry(path);
 		if (entry != nullptr)
@@ -1173,7 +1173,7 @@ namespace BansheeEngine
 
 	HResource ProjectLibrary::load(const Path& path)
 	{
-		ProjectResourceMetaPtr meta = findResourceMeta(path);
+		SPtr<ProjectResourceMeta> meta = findResourceMeta(path);
 		if (meta == nullptr)
 			return HResource();
 
@@ -1308,7 +1308,7 @@ namespace BansheeEngine
 
 		// Make all paths relative before saving
 		makeEntriesRelative();		
-		std::shared_ptr<ProjectLibraryEntries> libEntries = ProjectLibraryEntries::create(*mRootEntry);
+		SPtr<ProjectLibraryEntries> libEntries = ProjectLibraryEntries::create(*mRootEntry);
 
 		Path libraryEntriesPath = mProjectFolder;
 		libraryEntriesPath.append(PROJECT_INTERNAL_DIR);
@@ -1344,7 +1344,7 @@ namespace BansheeEngine
 		if(FileSystem::exists(libraryEntriesPath))
 		{
 			FileDecoder fs(libraryEntriesPath);
-			std::shared_ptr<ProjectLibraryEntries> libEntries = std::static_pointer_cast<ProjectLibraryEntries>(fs.decode());
+			SPtr<ProjectLibraryEntries> libEntries = std::static_pointer_cast<ProjectLibraryEntries>(fs.decode());
 
 			*mRootEntry = libEntries->getRootEntry();
 			for(auto& child : mRootEntry->mChildren)
@@ -1395,11 +1395,11 @@ namespace BansheeEngine
 							if (FileSystem::isFile(metaPath))
 							{
 								FileDecoder fs(metaPath);
-								std::shared_ptr<IReflectable> loadedMeta = fs.decode();
+								SPtr<IReflectable> loadedMeta = fs.decode();
 
 								if (loadedMeta != nullptr && loadedMeta->isDerivedFrom(ProjectFileMeta::getRTTIStatic()))
 								{
-									ProjectFileMetaPtr fileMeta = std::static_pointer_cast<ProjectFileMeta>(loadedMeta);
+									SPtr<ProjectFileMeta> fileMeta = std::static_pointer_cast<ProjectFileMeta>(loadedMeta);
 									resEntry->meta = fileMeta;
 								}
 							}
@@ -1415,7 +1415,7 @@ namespace BansheeEngine
 
 								for (UINT32 i = 1; i < (UINT32)resourceMetas.size(); i++)
 								{
-									ProjectResourceMetaPtr entry = resourceMetas[i];
+									SPtr<ProjectResourceMeta> entry = resourceMetas[i];
 									mUUIDToPath[entry->getUUID()] = resEntry->path + entry->getUniqueName();
 								}
 							}
@@ -1559,7 +1559,7 @@ namespace BansheeEngine
 			{
 				FileEntry* resEntry = static_cast<FileEntry*>(entry);
 
-				ImportOptionsPtr importOptions;
+				SPtr<ImportOptions> importOptions;
 				if (resEntry->meta != nullptr)
 					importOptions = resEntry->meta->getImportOptions();
 

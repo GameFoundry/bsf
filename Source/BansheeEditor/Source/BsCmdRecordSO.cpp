@@ -75,7 +75,7 @@ namespace BansheeEngine
 		GameObjectManager::instance().setDeserializationMode(GODM_RestoreExternal | GODM_UseNewIds);
 
 		MemorySerializer serializer;
-		std::shared_ptr<SceneObject> restored = std::static_pointer_cast<SceneObject>(serializer.decode(mSerializedObject, mSerializedObjectSize));
+		SPtr<SceneObject> restored = std::static_pointer_cast<SceneObject>(serializer.decode(mSerializedObject, mSerializedObjectSize));
 
 		CmdUtility::restoreIds(restored->getHandle(), mSceneObjectProxy);
 		restored->setParent(parent);

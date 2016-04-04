@@ -36,7 +36,7 @@ namespace BansheeEngine
 		bool intersects(const Ray& ray, float& t) const override;
 
 		/** @copydoc	HandleSlider::handleInput */
-		void handleInput(const CameraPtr& camera, const Vector2I& inputDelta) override;
+		void handleInput(const SPtr<Camera>& camera, const Vector2I& inputDelta) override;
 
 		/**
 		 * Returns a delta value that is the result of dragging/sliding the pointer along the line. This changes every
@@ -46,7 +46,7 @@ namespace BansheeEngine
 
 	protected:
 		/** @copydoc HandleSlider::activate */
-		void activate(const CameraPtr& camera, const Vector2I& pointerPos) override { mStartPosition = getPosition(); }
+		void activate(const SPtr<Camera>& camera, const Vector2I& pointerPos) override { mStartPosition = getPosition(); }
 
 		/** @copydoc HandleSlider::reset */
 		void reset() override { mDelta = 0.0f; }

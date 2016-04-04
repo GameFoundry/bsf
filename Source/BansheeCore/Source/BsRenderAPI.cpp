@@ -24,39 +24,39 @@ namespace BansheeEngine
 		accessor.queueCommand(std::bind(&RenderAPICore::disableTextureUnit, RenderAPICore::instancePtr(), gptype, texUnit));
 	}
 
-	void RenderAPI::setTexture(CoreAccessor& accessor, GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr &texPtr)
+	void RenderAPI::setTexture(CoreAccessor& accessor, GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<Texture> &texPtr)
 	{
 		accessor.queueCommand(std::bind(&RenderAPICore::setTexture, RenderAPICore::instancePtr(), gptype, unit, enabled, texPtr->getCore()));
 	}
 
-	void RenderAPI::setLoadStoreTexture(CoreAccessor& accessor, GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr& texPtr,
+	void RenderAPI::setLoadStoreTexture(CoreAccessor& accessor, GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<Texture>& texPtr,
 		const TextureSurface& surface)
 	{
 		accessor.queueCommand(std::bind(&RenderAPICore::setLoadStoreTexture, RenderAPICore::instancePtr(), gptype, unit, enabled, texPtr->getCore(),
 			surface));
 	}
 
-	void RenderAPI::setSamplerState(CoreAccessor& accessor, GpuProgramType gptype, UINT16 texUnit, const SamplerStatePtr& samplerState)
+	void RenderAPI::setSamplerState(CoreAccessor& accessor, GpuProgramType gptype, UINT16 texUnit, const SPtr<SamplerState>& samplerState)
 	{
 		accessor.queueCommand(std::bind(&RenderAPICore::setSamplerState, RenderAPICore::instancePtr(), gptype, texUnit, samplerState->getCore()));
 	}
 
-	void RenderAPI::setBlendState(CoreAccessor& accessor, const BlendStatePtr& blendState)
+	void RenderAPI::setBlendState(CoreAccessor& accessor, const SPtr<BlendState>& blendState)
 	{
 		accessor.queueCommand(std::bind(&RenderAPICore::setBlendState, RenderAPICore::instancePtr(), blendState->getCore()));
 	}
 
-	void RenderAPI::setRasterizerState(CoreAccessor& accessor, const RasterizerStatePtr& rasterizerState)
+	void RenderAPI::setRasterizerState(CoreAccessor& accessor, const SPtr<RasterizerState>& rasterizerState)
 	{
 		accessor.queueCommand(std::bind(&RenderAPICore::setRasterizerState, RenderAPICore::instancePtr(), rasterizerState->getCore()));
 	}
 
-	void RenderAPI::setDepthStencilState(CoreAccessor& accessor, const DepthStencilStatePtr& depthStencilState, UINT32 stencilRefValue)
+	void RenderAPI::setDepthStencilState(CoreAccessor& accessor, const SPtr<DepthStencilState>& depthStencilState, UINT32 stencilRefValue)
 	{
 		accessor.queueCommand(std::bind(&RenderAPICore::setDepthStencilState, RenderAPICore::instancePtr(), depthStencilState->getCore(), stencilRefValue));
 	}
 
-	void RenderAPI::setVertexBuffers(CoreAccessor& accessor, UINT32 index, const Vector<VertexBufferPtr>& buffers)
+	void RenderAPI::setVertexBuffers(CoreAccessor& accessor, UINT32 index, const Vector<SPtr<VertexBuffer>>& buffers)
 	{
 		Vector<SPtr<VertexBufferCore>> coreBuffers(buffers.size());
 		for (UINT32 i = 0; i < (UINT32)buffers.size(); i++)
@@ -71,12 +71,12 @@ namespace BansheeEngine
 		accessor.queueCommand(std::bind(resizeFunc, RenderAPICore::instancePtr(), index, coreBuffers));
 	}
 
-	void RenderAPI::setIndexBuffer(CoreAccessor& accessor, const IndexBufferPtr& buffer)
+	void RenderAPI::setIndexBuffer(CoreAccessor& accessor, const SPtr<IndexBuffer>& buffer)
 	{
 		accessor.queueCommand(std::bind(&RenderAPICore::setIndexBuffer, RenderAPICore::instancePtr(), buffer->getCore()));
 	}
 
-	void RenderAPI::setVertexDeclaration(CoreAccessor& accessor, const VertexDeclarationPtr& vertexDeclaration)
+	void RenderAPI::setVertexDeclaration(CoreAccessor& accessor, const SPtr<VertexDeclaration>& vertexDeclaration)
 	{
 		accessor.queueCommand(std::bind(&RenderAPICore::setVertexDeclaration, RenderAPICore::instancePtr(), vertexDeclaration->getCore()));
 	}
@@ -111,13 +111,13 @@ namespace BansheeEngine
 		accessor.queueCommand(std::bind(&RenderAPICore::setScissorRect, RenderAPICore::instancePtr(), left, top, right, bottom));
 	}
 
-	void RenderAPI::setRenderTarget(CoreAccessor& accessor, const RenderTargetPtr& target, bool readOnlyDepthStencil)
+	void RenderAPI::setRenderTarget(CoreAccessor& accessor, const SPtr<RenderTarget>& target, bool readOnlyDepthStencil)
 	{
 		accessor.queueCommand(std::bind(&RenderAPICore::setRenderTarget, 
 			RenderAPICore::instancePtr(), target->getCore(), readOnlyDepthStencil));
 	}
 
-	void RenderAPI::bindGpuProgram(CoreAccessor& accessor, const GpuProgramPtr& prg)
+	void RenderAPI::bindGpuProgram(CoreAccessor& accessor, const SPtr<GpuProgram>& prg)
 	{
 		prg->syncToCore(accessor);
 		accessor.queueCommand(std::bind(&RenderAPICore::bindGpuProgram, RenderAPICore::instancePtr(), prg->getCore()));
@@ -128,12 +128,12 @@ namespace BansheeEngine
 		accessor.queueCommand(std::bind(&RenderAPICore::unbindGpuProgram, RenderAPICore::instancePtr(), gptype));
 	}
 
-	void RenderAPI::setConstantBuffers(CoreAccessor& accessor, GpuProgramType gptype, const GpuParamsPtr& params)
+	void RenderAPI::setConstantBuffers(CoreAccessor& accessor, GpuProgramType gptype, const SPtr<GpuParams>& params)
 	{
 		accessor.queueCommand(std::bind(&RenderAPICore::setConstantBuffers, RenderAPICore::instancePtr(), gptype, params->getCore()));
 	}
 
-	void RenderAPI::setGpuParams(CoreAccessor& accessor, GpuProgramType gptype, const GpuParamsPtr& params)
+	void RenderAPI::setGpuParams(CoreAccessor& accessor, GpuProgramType gptype, const SPtr<GpuParams>& params)
 	{
 		accessor.queueCommand(std::bind(&RenderAPICore::setGpuParams, RenderAPICore::instancePtr(), gptype, params->getCore()));
 	}
@@ -160,7 +160,7 @@ namespace BansheeEngine
 			stencil, targetMask));
 	}
 
-	void RenderAPI::swapBuffers(CoreAccessor& accessor, const RenderTargetPtr& target)
+	void RenderAPI::swapBuffers(CoreAccessor& accessor, const SPtr<RenderTarget>& target)
 	{
 		accessor.queueCommand(std::bind(&RenderAPICore::swapBuffers, RenderAPICore::instancePtr(), target->getCore()));
 	}
@@ -219,12 +219,12 @@ namespace BansheeEngine
 		mCurrentCapabilities = nullptr;
     }
 
-	RenderWindowPtr RenderAPICore::initialize(const RENDER_WINDOW_DESC& primaryWindowDesc)
+	SPtr<RenderWindow> RenderAPICore::initialize(const RENDER_WINDOW_DESC& primaryWindowDesc)
 	{
 		gCoreThread().queueCommand(std::bind(&RenderAPICore::initializePrepare, this), true);
 
 		RENDER_WINDOW_DESC windowDesc = primaryWindowDesc;
-		RenderWindowPtr renderWindow = RenderWindow::create(windowDesc, nullptr);
+		SPtr<RenderWindow> renderWindow = RenderWindow::create(windowDesc, nullptr);
 
 		gCoreThread().queueCommand(std::bind(&RenderAPICore::initializeFinalize, this, renderWindow->getCore()), true);
 

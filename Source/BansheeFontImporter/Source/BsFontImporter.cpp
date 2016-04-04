@@ -45,12 +45,12 @@ namespace BansheeEngine
 		return false;
 	}
 
-	ImportOptionsPtr FontImporter::createImportOptions() const
+	SPtr<ImportOptions> FontImporter::createImportOptions() const
 	{
 		return bs_shared_ptr_new<FontImportOptions>();
 	}
 
-	ResourcePtr FontImporter::import(const Path& filePath, ConstImportOptionsPtr importOptions)
+	SPtr<Resource> FontImporter::import(const Path& filePath, SPtr<const ImportOptions> importOptions)
 	{
 		const FontImportOptions* fontImportOptions = static_cast<const FontImportOptions*>(importOptions.get());
 
@@ -187,7 +187,7 @@ namespace BansheeEngine
 				UINT32 bufferSize = pageIter->width * pageIter->height * 2;
 
 				// TODO - I don't actually need a 2 channel texture
-				PixelDataPtr pixelData = bs_shared_ptr_new<PixelData>(pageIter->width, pageIter->height, 1, PF_R8G8);
+				SPtr<PixelData> pixelData = bs_shared_ptr_new<PixelData>(pageIter->width, pageIter->height, 1, PF_R8G8);
 
 				pixelData->allocateInternalBuffer();
 				UINT8* pixelBuffer = pixelData->getData();
@@ -329,7 +329,7 @@ namespace BansheeEngine
 				// It's possible the formats no longer match
 				if (newTex->getProperties().getFormat() != pixelData->getFormat())
 				{
-					PixelDataPtr temp = newTex->getProperties().allocateSubresourceBuffer(subresourceIdx);
+					SPtr<PixelData> temp = newTex->getProperties().allocateSubresourceBuffer(subresourceIdx);
 					PixelUtil::bulkPixelConversion(*pixelData, *temp);
 
 					newTex->writeSubresource(gCoreAccessor(), subresourceIdx, temp, false);
@@ -360,7 +360,7 @@ namespace BansheeEngine
 			dataPerSize.push_back(fontData);
 		}
 
-		FontPtr newFont = Font::_createPtr(dataPerSize);
+		SPtr<Font> newFont = Font::_createPtr(dataPerSize);
 
 		FT_Done_FreeType(library);
 

@@ -318,7 +318,7 @@ namespace BansheeEngine
 				String fileName = filePath.getFilename();
 				String taskName = "Resource load: " + fileName;
 
-				TaskPtr task = Task::create(taskName, std::bind(&Resources::loadCallback, this, filePath, outputResource));
+				SPtr<Task> task = Task::create(taskName, std::bind(&Resources::loadCallback, this, filePath, outputResource));
 				TaskScheduler::instance().addTask(task);
 			}
 		}
@@ -343,11 +343,11 @@ namespace BansheeEngine
 		return outputResource;
 	}
 
-	ResourcePtr Resources::loadFromDiskAndDeserialize(const Path& filePath)
+	SPtr<Resource> Resources::loadFromDiskAndDeserialize(const Path& filePath)
 	{
 		FileDecoder fs(filePath);
 		fs.skip(); // Skipped over saved resource data
-		std::shared_ptr<IReflectable> loadedData = fs.decode();
+		SPtr<IReflectable> loadedData = fs.decode();
 
 		if (loadedData == nullptr)
 		{
@@ -359,7 +359,7 @@ namespace BansheeEngine
 				BS_EXCEPT(InternalErrorException, "Loaded class doesn't derive from Resource.");
 		}
 
-		ResourcePtr resource = std::static_pointer_cast<Resource>(loadedData);
+		SPtr<Resource> resource = std::static_pointer_cast<Resource>(loadedData);
 		return resource;
 	}
 
@@ -528,7 +528,7 @@ namespace BansheeEngine
 			save(resource, path, true);
 	}
 
-	void Resources::update(HResource& handle, const ResourcePtr& resource)
+	void Resources::update(HResource& handle, const SPtr<Resource>& resource)
 	{
 		const String& uuid = handle.getUUID();
 		handle.setHandleData(resource, uuid);
@@ -558,7 +558,7 @@ namespace BansheeEngine
 		return savedResourceData->getDependencies();
 	}
 
-	void Resources::registerResourceManifest(const ResourceManifestPtr& manifest)
+	void Resources::registerResourceManifest(const SPtr<ResourceManifest>& manifest)
 	{
 		if(manifest->getName() == "Default")
 			return;
@@ -570,7 +570,7 @@ namespace BansheeEngine
 			*findIter = manifest;
 	}
 
-	void Resources::unregisterResourceManifest(const ResourceManifestPtr& manifest)
+	void Resources::unregisterResourceManifest(const SPtr<ResourceManifest>& manifest)
 	{
 		if (manifest->getName() == "Default")
 			return;
@@ -580,7 +580,7 @@ namespace BansheeEngine
 			mResourceManifests.erase(findIter);
 	}
 
-	ResourceManifestPtr Resources::getResourceManifest(const String& name) const
+	SPtr<ResourceManifest> Resources::getResourceManifest(const String& name) const
 	{
 		for(auto iter = mResourceManifests.rbegin(); iter != mResourceManifests.rend(); ++iter) 
 		{
@@ -615,7 +615,7 @@ namespace BansheeEngine
 		return false;
 	}
 
-	HResource Resources::_createResourceHandle(const ResourcePtr& obj)
+	HResource Resources::_createResourceHandle(const SPtr<Resource>& obj)
 	{
 		String uuid = UUIDGenerator::generateRandom();
 		HResource newHandle(obj, uuid);
@@ -737,7 +737,7 @@ namespace BansheeEngine
 
 	void Resources::loadCallback(const Path& filePath, HResource& resource)
 	{
-		ResourcePtr rawResource = loadFromDiskAndDeserialize(filePath);
+		SPtr<Resource> rawResource = loadFromDiskAndDeserialize(filePath);
 
 		{
 			BS_LOCK_MUTEX(mInProgressResourcesMutex);

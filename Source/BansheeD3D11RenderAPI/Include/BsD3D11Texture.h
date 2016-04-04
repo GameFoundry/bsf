@@ -36,7 +36,7 @@ namespace BansheeEngine
 		friend class D3D11TextureCoreManager;
 
 		D3D11TextureCore(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps,
-			PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, const PixelDataPtr& initialData);
+			PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, const SPtr<PixelData>& initialData);
 
 		/** @copydoc CoreObjectCore::initialize() */
 		void initialize() override;
@@ -121,7 +121,7 @@ namespace BansheeEngine
 		void unmapstaticbuffer();
 
 		/**	Creates an empty and uninitialized texture view object. */
-		TextureViewPtr createView(const SPtr<TextureCore>& texture, const TEXTURE_VIEW_DESC& desc) override;
+		SPtr<TextureView> createView(const SPtr<TextureCore>& texture, const TEXTURE_VIEW_DESC& desc) override;
 
 	protected:
 		ID3D11Texture1D* m1DTex;

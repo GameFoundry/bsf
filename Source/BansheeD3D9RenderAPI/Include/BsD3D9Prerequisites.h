@@ -58,8 +58,6 @@ namespace BansheeEngine
     class D3D9VertexDeclarationCore;
 	class D3D9Resource;
 
-	typedef std::shared_ptr<D3D9RenderWindow> D3D9RenderWindowPtr;
-
 	/** @addtogroup D3D9
 	 *  @{
 	 */

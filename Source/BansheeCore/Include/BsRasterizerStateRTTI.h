@@ -45,7 +45,7 @@ namespace BansheeEngine
 			return TID_RasterizerState;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return RenderStateManager::instance()._createRasterizerStatePtr(RASTERIZER_STATE_DESC());
 		}

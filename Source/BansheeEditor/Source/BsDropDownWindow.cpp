@@ -14,7 +14,7 @@
 
 namespace BansheeEngine
 {
-	DropDownWindow::DropDownWindow(const RenderWindowPtr& parent, const CameraPtr& camera,
+	DropDownWindow::DropDownWindow(const SPtr<RenderWindow>& parent, const SPtr<Camera>& camera,
 		const Vector2I& position, UINT32 width, UINT32 height)
 		:mRootPanel(nullptr), mPosition(position), mWidth(width), mHeight(height), 
 		mRenderWindow(parent), mFrontHitBox(nullptr), mBackHitBox(nullptr)
@@ -38,7 +38,7 @@ namespace BansheeEngine
 		mBackHitBox = GUIDropDownHitBox::create(false, true);
 		backHitBoxPanel->addElement(mBackHitBox);
 		
-		ViewportPtr viewport = camera->getViewport();
+		SPtr<Viewport> viewport = camera->getViewport();
 		GUIPanel* captureHitBoxPanel = mGUI->getPanel()->addNewElement<GUIPanel>(std::numeric_limits<INT16>::max());
 		GUIDropDownHitBox* captureHitBox = GUIDropDownHitBox::create(true, false);
 		captureHitBox->setBounds(Rect2I(0, 0, viewport->getWidth(), viewport->getHeight()));

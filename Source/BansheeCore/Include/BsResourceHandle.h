@@ -297,7 +297,7 @@ namespace BansheeEngine
 			mData = bs_shared_ptr_new<ResourceHandleData>();
 			addRef();
 
-			setHandleData(std::shared_ptr<Resource>(ptr, uuid));
+			setHandleData(SPtr<Resource>(ptr, uuid));
 		}
 
 		/**

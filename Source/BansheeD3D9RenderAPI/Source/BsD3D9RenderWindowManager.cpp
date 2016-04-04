@@ -13,7 +13,7 @@ namespace BansheeEngine
 		assert(mRenderSystem != nullptr);
 	}
 
-	RenderWindowPtr D3D9RenderWindowManager::createImpl(RENDER_WINDOW_DESC& desc, UINT32 windowId, const RenderWindowPtr& parentWindow)
+	SPtr<RenderWindow> D3D9RenderWindowManager::createImpl(RENDER_WINDOW_DESC& desc, UINT32 windowId, const SPtr<RenderWindow>& parentWindow)
 	{
 		if(parentWindow != nullptr)
 		{
@@ -24,7 +24,7 @@ namespace BansheeEngine
 
 		D3D9RenderWindow* window = new (bs_alloc<D3D9RenderWindow>()) D3D9RenderWindow(desc, windowId, mRenderSystem->getInstanceHandle());
 
-		return RenderWindowPtr(window, &CoreObject::_delete<D3D9RenderWindow, GenAlloc>);
+		return SPtr<RenderWindow>(window, &CoreObject::_delete<D3D9RenderWindow, GenAlloc>);
 	}
 
 	D3D9RenderWindowCoreManager::D3D9RenderWindowCoreManager(D3D9RenderAPI* renderSystem)

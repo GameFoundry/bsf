@@ -55,7 +55,7 @@ namespace BansheeEngine
 		 *								object's ID so that deserialized handles can map to it properly.
 		 * @return						Handle to the GameObject.
 		 */
-		GameObjectHandleBase registerObject(const std::shared_ptr<GameObject>& object, UINT64 originalId = 0);
+		GameObjectHandleBase registerObject(const SPtr<GameObject>& object, UINT64 originalId = 0);
 
 		/**
 		 * Unregisters a GameObject. Handles to this object will no longer be valid after this call. This should be called

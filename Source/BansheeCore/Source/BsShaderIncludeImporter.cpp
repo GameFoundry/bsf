@@ -31,12 +31,12 @@ namespace BansheeEngine
 		return true; // Plain-text so I don't even check for magic number
 	}
 
-	ResourcePtr ShaderIncludeImporter::import(const Path& filePath, ConstImportOptionsPtr importOptions)
+	SPtr<Resource> ShaderIncludeImporter::import(const Path& filePath, SPtr<const ImportOptions> importOptions)
 	{
-		DataStreamPtr stream = FileSystem::openFile(filePath);
+		SPtr<DataStream> stream = FileSystem::openFile(filePath);
 		String includeString = stream->getAsString();
 
-		ShaderIncludePtr gpuInclude = ShaderInclude::_createPtr(includeString);
+		SPtr<ShaderInclude> gpuInclude = ShaderInclude::_createPtr(includeString);
 
 		WString fileName = filePath.getWFilename(false);
 		gpuInclude->setName(fileName);

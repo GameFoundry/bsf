@@ -171,7 +171,7 @@ namespace BansheeEngine
 
 		Path executablePath = MonoUtil::monoToWString(filePath);
 
-		Map<UINT32, PixelDataPtr> icons;
+		Map<UINT32, SPtr<PixelData>> icons;
 		SPtr<PlatformInfo> platformInfo = info->getPlatformInfo();
 		switch (platformInfo->type)
 		{
@@ -182,7 +182,7 @@ namespace BansheeEngine
 			struct IconData
 			{
 				UINT32 size;
-				PixelDataPtr pixels;
+				SPtr<PixelData> pixels;
 			};
 
 			IconData textures[] =
@@ -202,7 +202,7 @@ namespace BansheeEngine
 			{
 				auto& texProps = icon->getProperties();
 
-				PixelDataPtr pixels = texProps.allocateSubresourceBuffer(0);
+				SPtr<PixelData> pixels = texProps.allocateSubresourceBuffer(0);
 				icon->readSubresource(gCoreAccessor(), 0, pixels);
 				gCoreAccessor().submitToCoreThread(true);
 
@@ -309,7 +309,7 @@ namespace BansheeEngine
 			if (sourcePath.isEmpty()) // Resource not part of library, meaning its built-in and we don't need to copy those here
 				continue;
 
-			ProjectResourceMetaPtr resMeta = gProjectLibrary().findResourceMeta(sourcePath);
+			SPtr<ProjectResourceMeta> resMeta = gProjectLibrary().findResourceMeta(sourcePath);
 			assert(resMeta != nullptr);
 
 			Path destPath = outputPath;
@@ -396,7 +396,7 @@ namespace BansheeEngine
 		Path internalResourcesFolder = gEditorApplication().getProjectPath();
 		internalResourcesFolder.append(PROJECT_INTERNAL_DIR);
 
-		ResourceManifestPtr manifest = gProjectLibrary()._getManifest();
+		SPtr<ResourceManifest> manifest = gProjectLibrary()._getManifest();
 		ResourceManifest::save(manifest, manifestPath, internalResourcesFolder);
 
 		// Save resource map

@@ -160,12 +160,12 @@ namespace BansheeEngine
 		return mProperties;
 	}
 
-	const BlendStatePtr& BlendState::getDefault()
+	const SPtr<BlendState>& BlendState::getDefault()
 	{
 		return RenderStateManager::instance().getDefaultBlendState();
 	}
 
-	BlendStatePtr BlendState::create(const BLEND_STATE_DESC& desc)
+	SPtr<BlendState> BlendState::create(const BLEND_STATE_DESC& desc)
 	{
 		return RenderStateManager::instance().createBlendState(desc);
 	}

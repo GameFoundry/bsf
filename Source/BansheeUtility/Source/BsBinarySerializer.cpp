@@ -53,7 +53,7 @@ namespace BansheeEngine
 		*bytesWritten = 0;
 		mTotalBytesWritten = 0;
 		UINT8* bufferStart = buffer;
-		Vector<std::shared_ptr<IReflectable>> encodedObjects;
+		Vector<SPtr<IReflectable>> encodedObjects;
 
 		UINT32 objectId = findOrCreatePersistentId(object);
 		
@@ -77,7 +77,7 @@ namespace BansheeEngine
 				if(foundExisting != serializedObjects.end())
 					continue; // Already processed
 
-				std::shared_ptr<IReflectable> curObject = iter->object;
+				SPtr<IReflectable> curObject = iter->object;
 				UINT32 curObjectid = iter->objectId;
 				serializedObjects.insert(curObjectid);
 				mObjectsToEncode.erase(iter);
@@ -119,7 +119,7 @@ namespace BansheeEngine
 		mObjectAddrToId.clear();
 	}
 
-	std::shared_ptr<IReflectable> BinarySerializer::decode(UINT8* data, UINT32 dataLength)
+	SPtr<IReflectable> BinarySerializer::decode(UINT8* data, UINT32 dataLength)
 	{
 		if (dataLength == 0)
 			return nullptr;
@@ -206,7 +206,7 @@ namespace BansheeEngine
 
 							for(UINT32 arrIdx = 0; arrIdx < arrayNumElems; arrIdx++)
 							{
-								std::shared_ptr<IReflectable> childObject;
+								SPtr<IReflectable> childObject;
 								
 								if (!shallow)
 									childObject = curField->getArrayValue(object, arrIdx);
@@ -286,7 +286,7 @@ namespace BansheeEngine
 					case SerializableFT_ReflectablePtr:
 						{
 							RTTIReflectablePtrFieldBase* curField = static_cast<RTTIReflectablePtrFieldBase*>(curGenericField);
-							std::shared_ptr<IReflectable> childObject;
+							SPtr<IReflectable> childObject;
 							
 							if (!shallow)
 								childObject = curField->getValue(object);
@@ -1260,7 +1260,7 @@ namespace BansheeEngine
 		return objId;
 	}
 
-	UINT32 BinarySerializer::registerObjectPtr(std::shared_ptr<IReflectable> object)
+	UINT32 BinarySerializer::registerObjectPtr(SPtr<IReflectable> object)
 	{
 		if(object == nullptr)
 			return 0;

@@ -23,7 +23,7 @@ namespace BansheeEngine
 	const float SceneGridCore::FADE_OUT_START = 5.0f;
 	const float SceneGridCore::FADE_OUT_END = 40.0f;
 
-	SceneGrid::SceneGrid(const CameraPtr& camera)
+	SceneGrid::SceneGrid(const SPtr<Camera>& camera)
 		:mCoreDirty(true), mCore(nullptr)
 	{
 		mVertexDesc = bs_shared_ptr_new<VertexDataDesc>();
@@ -85,7 +85,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void SceneGrid::setSettings(const EditorSettingsPtr& settings)
+	void SceneGrid::setSettings(const SPtr<EditorSettings>& settings)
 	{
 		mSettings = settings;
 		updateFromEditorSettings();
@@ -178,7 +178,7 @@ namespace BansheeEngine
 		extents[1] = mSize * 0.5f;
 
 		Rect3 quad(origin, axes, extents);
-		MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(8, 12, mVertexDesc);
+		SPtr<MeshData> meshData = bs_shared_ptr_new<MeshData>(8, 12, mVertexDesc);
 
 		ShapeMeshes3D::solidQuad(quad, meshData, 0, 0);
 		mGridMesh = Mesh::create(meshData);
@@ -187,7 +187,7 @@ namespace BansheeEngine
 
 	SceneGridCore::~SceneGridCore()
 	{
-		CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
+		SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
 		activeRenderer->_unregisterRenderCallback(mCamera.get(), 5);
 	}
 
@@ -205,7 +205,7 @@ namespace BansheeEngine
 		mGridFadeOutEndParam = mGridMaterial->getParamFloat("gridFadeOutEnd");
 		mGridMaterial->getParam("gridPlaneNormal", mGridPlaneNormalParam);
 
-		CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
+		SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
 		activeRenderer->_registerRenderCallback(camera.get(), 5, std::bind(&SceneGridCore::render, this));			
 	}
 

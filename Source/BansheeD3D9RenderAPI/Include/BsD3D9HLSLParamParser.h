@@ -29,7 +29,7 @@ namespace BansheeEngine
 		{ }
 
 		/**	Builds parameter descriptions and returns an object containing all relevant information. */
-		GpuParamDescPtr buildParameterDescriptions();
+		SPtr<GpuParamDesc> buildParameterDescriptions();
 
 	private:
 		/**
@@ -55,7 +55,7 @@ namespace BansheeEngine
 	private:
 		LPD3DXCONSTANTTABLE mpConstTable;
 		Vector<D3D9EmulatedParamBlock> mBlocks;
-		GpuParamDescPtr mParamDesc;
+		SPtr<GpuParamDesc> mParamDesc;
 	};
 
 	String D3D9HLSLParamParser::getParamName(D3DXHANDLE constant)
@@ -80,7 +80,7 @@ namespace BansheeEngine
 		return paramName;
 	}
 
-	GpuParamDescPtr D3D9HLSLParamParser::buildParameterDescriptions()
+	SPtr<GpuParamDesc> D3D9HLSLParamParser::buildParameterDescriptions()
 	{
 		// Derive parameter names from const table
 		assert(mpConstTable && "Program not loaded!");

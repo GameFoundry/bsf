@@ -11,7 +11,7 @@
 
 namespace BansheeEngine
 {
-	ScriptSerializableField::ScriptSerializableField(MonoObject* instance, const ManagedSerializableFieldInfoPtr& fieldInfo)
+	ScriptSerializableField::ScriptSerializableField(MonoObject* instance, const SPtr<ManagedSerializableFieldInfo>& fieldInfo)
 		:ScriptObject(instance), mFieldInfo(fieldInfo)
 	{
 
@@ -24,7 +24,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptSerializableField::internal_setValue);
 	}
 
-	ScriptSerializableField* ScriptSerializableField::create(MonoObject* parentObject, const ManagedSerializableFieldInfoPtr& fieldInfo)
+	ScriptSerializableField* ScriptSerializableField::create(MonoObject* parentObject, const SPtr<ManagedSerializableFieldInfo>& fieldInfo)
 	{
 		MonoString* monoStrName = MonoUtil::wstringToMono(toWString(fieldInfo->mName));
 		MonoType* monoInternalType = mono_class_get_type(fieldInfo->mTypeInfo->getMonoClass());

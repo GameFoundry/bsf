@@ -14,12 +14,12 @@ namespace BansheeEngine
 {
 	RendererMeshData::RendererMeshData(UINT32 numVertices, UINT32 numIndices, VertexLayout layout, IndexType indexType)
 	{
-		VertexDataDescPtr vertexDesc = vertexLayoutVertexDesc(layout);
+		SPtr<VertexDataDesc> vertexDesc = vertexLayoutVertexDesc(layout);
 
 		mMeshData = bs_shared_ptr_new<MeshData>(numVertices, numIndices, vertexDesc, indexType);
 	}
 
-	RendererMeshData::RendererMeshData(const MeshDataPtr& meshData)
+	RendererMeshData::RendererMeshData(const SPtr<MeshData>& meshData)
 		:mMeshData(meshData)
 	{
 
@@ -191,7 +191,7 @@ namespace BansheeEngine
 
 	void RendererMeshData::getBoneWeights(BoneWeight* buffer, UINT32 size)
 	{
-		VertexDataDescPtr vertexDesc = mMeshData->getVertexDesc();
+		SPtr<VertexDataDesc> vertexDesc = mMeshData->getVertexDesc();
 
 		if (!vertexDesc->hasElement(VES_BLEND_WEIGHTS) ||
 			!vertexDesc->hasElement(VES_BLEND_INDICES))
@@ -229,7 +229,7 @@ namespace BansheeEngine
 
 	void RendererMeshData::setBoneWeights(BoneWeight* buffer, UINT32 size)
 	{
-		VertexDataDescPtr vertexDesc = mMeshData->getVertexDesc();
+		SPtr<VertexDataDesc> vertexDesc = mMeshData->getVertexDesc();
 
 		if (!vertexDesc->hasElement(VES_BLEND_WEIGHTS) ||
 			!vertexDesc->hasElement(VES_BLEND_INDICES))
@@ -317,19 +317,19 @@ namespace BansheeEngine
 		}
 	}
 
-	RendererMeshDataPtr RendererMeshData::create(UINT32 numVertices, UINT32 numIndices, VertexLayout layout, IndexType indexType)
+	SPtr<RendererMeshData> RendererMeshData::create(UINT32 numVertices, UINT32 numIndices, VertexLayout layout, IndexType indexType)
 	{
 		return RendererManager::instance().getActive()->_createMeshData(numVertices, numIndices, layout, indexType);
 	}
 
-	RendererMeshDataPtr RendererMeshData::create(const MeshDataPtr& meshData)
+	SPtr<RendererMeshData> RendererMeshData::create(const SPtr<MeshData>& meshData)
 	{
 		return RendererManager::instance().getActive()->_createMeshData(meshData);
 	}
 
-	VertexDataDescPtr RendererMeshData::vertexLayoutVertexDesc(VertexLayout type)
+	SPtr<VertexDataDesc> RendererMeshData::vertexLayoutVertexDesc(VertexLayout type)
 	{
-		VertexDataDescPtr vertexDesc = VertexDataDesc::create();
+		SPtr<VertexDataDesc> vertexDesc = VertexDataDesc::create();
 
 		INT32 intType = (INT32)type;
 

@@ -43,7 +43,7 @@ namespace BansheeEngine
 		DXGI_OUTPUT_DESC getOutputDesc(UINT32 adapterOutputIdx) const;
 
 		/**	Returns a list of all available video modes for all output devices. */
-		VideoModeInfoPtr getVideoModeInfo() const { return mVideoModeInfo; }
+		SPtr<VideoModeInfo> getVideoModeInfo() const { return mVideoModeInfo; }
 
 	private:
 		/**	Initializes the internal data. */
@@ -54,7 +54,7 @@ namespace BansheeEngine
 		UINT32 mNumOutputs;
 		DXGI_ADAPTER_DESC mAdapterIdentifier;
 		IDXGIAdapter* mDXGIAdapter;
-		VideoModeInfoPtr mVideoModeInfo;
+		SPtr<VideoModeInfo> mVideoModeInfo;
 	};
 
 	/** @} */

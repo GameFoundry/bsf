@@ -54,7 +54,7 @@ namespace BansheeEngine
 		gCoreAccessor().queueCommand(std::bind(&ScenePickingCore::destroy, mCore));
 	}
 
-	HSceneObject ScenePicking::pickClosestObject(const CameraPtr& cam, const Vector2I& position, const Vector2I& area)
+	HSceneObject ScenePicking::pickClosestObject(const SPtr<Camera>& cam, const Vector2I& position, const Vector2I& area)
 	{
 		Vector<HSceneObject> selectedObjects = pickObjects(cam, position, area);
 		if (selectedObjects.size() == 0)
@@ -63,7 +63,7 @@ namespace BansheeEngine
 		return selectedObjects[0];
 	}
 
-	Vector<HSceneObject> ScenePicking::pickObjects(const CameraPtr& cam, const Vector2I& position, const Vector2I& area)
+	Vector<HSceneObject> ScenePicking::pickObjects(const SPtr<Camera>& cam, const Vector2I& position, const Vector2I& area)
 	{
 		auto comparePickElement = [&] (const ScenePicking::RenderablePickData& a, const ScenePicking::RenderablePickData& b)
 		{
@@ -87,7 +87,7 @@ namespace BansheeEngine
 
 		for (auto& renderableData : renderables)
 		{
-			RenderablePtr renderable = renderableData.second.renderable;
+			SPtr<Renderable> renderable = renderableData.second.renderable;
 			HSceneObject so = renderableData.second.sceneObject;
 
 			if (!so->getActive())
@@ -114,12 +114,12 @@ namespace BansheeEngine
 						UINT32 idx = (UINT32)pickData.size();
 
 						bool useAlphaShader = false;
-						RasterizerStatePtr rasterizerState;
+						SPtr<RasterizerState> rasterizerState;
 
 						HMaterial originalMat = renderable->getMaterial(i);
 						if (originalMat != nullptr && originalMat->getNumPasses() > 0)
 						{
-							PassPtr firstPass = originalMat->getPass(0); // Note: We only ever check the first pass, problem?
+							SPtr<Pass> firstPass = originalMat->getPass(0); // Note: We only ever check the first pass, problem?
 							useAlphaShader = firstPass->hasBlending();
 
 							if (firstPass->getRasterizerState() == nullptr)
@@ -333,7 +333,7 @@ namespace BansheeEngine
 			return;
 		}
 
-		PixelDataPtr outputPixelData = outputTexture->getProperties().allocateSubresourceBuffer(0);
+		SPtr<PixelData> outputPixelData = outputTexture->getProperties().allocateSubresourceBuffer(0);
 		AsyncOp unused;
 
 		RenderAPICore& rs = RenderAPICore::instance();

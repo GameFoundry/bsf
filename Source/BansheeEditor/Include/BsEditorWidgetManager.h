@@ -61,12 +61,12 @@ namespace BansheeEngine
 		 * Retrieves the layout of all currently active widgets. You may later use this layout to restore exact position of
 		 * the widgets.
 		 */
-		EditorWidgetLayoutPtr getLayout() const;
+		SPtr<EditorWidgetLayout> getLayout() const;
 
 		/**
 		 * Positions all widgets according to the provided layout. It will open new widgets or close current ones if needed.
 		 */
-		void setLayout(const EditorWidgetLayoutPtr& layout);
+		void setLayout(const SPtr<EditorWidgetLayout>& layout);
 
 		/**
 		 * Allows you to queue up widgets that will be registered as soon as an instance of EditorWidgetManager is created.

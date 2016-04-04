@@ -30,7 +30,7 @@ namespace BansheeEngine
 			return TID_SerializedInstance;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		virtual SPtr<IReflectable> newRTTIObject() override
 		{
 			return nullptr;
 		}
@@ -76,7 +76,7 @@ namespace BansheeEngine
 			return TID_SerializedField;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		virtual SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<SerializedField>();
 		}
@@ -122,7 +122,7 @@ namespace BansheeEngine
 			return TID_SerializedObject;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		virtual SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<SerializedObject>();
 		}
@@ -198,7 +198,7 @@ namespace BansheeEngine
 			return TID_SerializedArray;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<SerializedArray>();
 		}
@@ -274,7 +274,7 @@ namespace BansheeEngine
 			return TID_SerializedSubObject;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<SerializedSubObject>();
 		}
@@ -321,7 +321,7 @@ namespace BansheeEngine
 			return TID_SerializedEntry;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<SerializedEntry>();
 		}
@@ -368,7 +368,7 @@ namespace BansheeEngine
 			return TID_SerializedArrayEntry;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<SerializedArrayEntry>();
 		}

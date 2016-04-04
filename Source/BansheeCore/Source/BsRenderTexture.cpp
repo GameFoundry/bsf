@@ -154,7 +154,7 @@ namespace BansheeEngine
 		}
 	}
 
-	RenderTexturePtr RenderTexture::create(TextureType textureType, UINT32 width, UINT32 height, 
+	SPtr<RenderTexture> RenderTexture::create(TextureType textureType, UINT32 width, UINT32 height, 
 		PixelFormat format, bool hwGamma, UINT32 multisampleCount, 
 		bool createDepth, PixelFormat depthStencilFormat)
 	{
@@ -162,7 +162,7 @@ namespace BansheeEngine
 			multisampleCount, createDepth, depthStencilFormat);
 	}
 
-	RenderTexturePtr RenderTexture::create(const RENDER_TEXTURE_DESC& desc)
+	SPtr<RenderTexture> RenderTexture::create(const RENDER_TEXTURE_DESC& desc)
 	{
 		return TextureManager::instance().createRenderTexture(desc);
 	}

@@ -16,13 +16,13 @@ namespace BansheeEngine
 
 		material->initBestTechnique();
 
-		std::shared_ptr<MaterialParams> params = any_cast<std::shared_ptr<MaterialParams>>(material->mRTTIData);
+		SPtr<MaterialParams> params = any_cast<SPtr<MaterialParams>>(material->mRTTIData);
 		material->setParams(params);
 
 		material->mRTTIData = nullptr; // Delete temporary data
 	}
 
-	std::shared_ptr<IReflectable> MaterialRTTI::newRTTIObject()
+	SPtr<IReflectable> MaterialRTTI::newRTTIObject()
 	{
 		return MaterialManager::instance().createEmpty();
 	}

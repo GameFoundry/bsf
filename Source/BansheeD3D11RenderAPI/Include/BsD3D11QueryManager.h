@@ -16,13 +16,13 @@ namespace BansheeEngine
 	{
 	public:
 		/** @copydoc QueryManager::createEventQuery */
-		EventQueryPtr createEventQuery() const override;
+		SPtr<EventQuery> createEventQuery() const override;
 
 		/** @copydoc QueryManager::createTimerQuery */
-		TimerQueryPtr createTimerQuery() const override;
+		SPtr<TimerQuery> createTimerQuery() const override;
 
 		/** @copydoc QueryManager::createOcclusionQuery */
-		OcclusionQueryPtr createOcclusionQuery(bool binary) const override;
+		SPtr<OcclusionQuery> createOcclusionQuery(bool binary) const override;
 	};
 
 	/** @} */

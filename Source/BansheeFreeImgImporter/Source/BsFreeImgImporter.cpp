@@ -121,18 +121,18 @@ namespace BansheeEngine
 		}
 	}
 
-	ImportOptionsPtr FreeImgImporter::createImportOptions() const
+	SPtr<ImportOptions> FreeImgImporter::createImportOptions() const
 	{
 		return bs_shared_ptr_new<TextureImportOptions>();
 	}
 
-	ResourcePtr FreeImgImporter::import(const Path& filePath, ConstImportOptionsPtr importOptions)
+	SPtr<Resource> FreeImgImporter::import(const Path& filePath, SPtr<const ImportOptions> importOptions)
 	{
 		const TextureImportOptions* textureImportOptions = static_cast<const TextureImportOptions*>(importOptions.get());
 
-		DataStreamPtr fileData = FileSystem::openFile(filePath, true);
+		SPtr<DataStream> fileData = FileSystem::openFile(filePath, true);
 
-		PixelDataPtr imgData = importRawImage(fileData);
+		SPtr<PixelData> imgData = importRawImage(fileData);
 		if(imgData == nullptr || imgData->getData() == nullptr)
 			return nullptr;
 
@@ -156,10 +156,10 @@ namespace BansheeEngine
 
 		bool sRGB = textureImportOptions->getSRGB();
 
-		TexturePtr newTexture = Texture::_createPtr(TEX_TYPE_2D, 
+		SPtr<Texture> newTexture = Texture::_createPtr(TEX_TYPE_2D, 
 			imgData->getWidth(), imgData->getHeight(), numMips, textureImportOptions->getFormat(), usage, sRGB);
 
-		Vector<PixelDataPtr> mipLevels;
+		Vector<SPtr<PixelData>> mipLevels;
 		if (numMips > 0)
 			mipLevels = PixelUtil::genMipmaps(*imgData, MipMapGenOptions());
 		else
@@ -168,7 +168,7 @@ namespace BansheeEngine
 		for (UINT32 mip = 0; mip < (UINT32)mipLevels.size(); ++mip)
 		{
 			UINT32 subresourceIdx = newTexture->getProperties().mapToSubresourceIdx(0, mip);
-			PixelDataPtr dst = newTexture->getProperties().allocateSubresourceBuffer(subresourceIdx);
+			SPtr<PixelData> dst = newTexture->getProperties().allocateSubresourceBuffer(subresourceIdx);
 
 			PixelUtil::bulkPixelConversion(*mipLevels[mip], *dst);
 
@@ -183,7 +183,7 @@ namespace BansheeEngine
 		return newTexture;
 	}
 
-	PixelDataPtr FreeImgImporter::importRawImage(DataStreamPtr fileData)
+	SPtr<PixelData> FreeImgImporter::importRawImage(SPtr<DataStream> fileData)
 	{
 		if(fileData->size() > std::numeric_limits<UINT32>::max())
 		{
@@ -340,7 +340,7 @@ namespace BansheeEngine
 		UINT32 size = dstPitch * height;
 
 		// Bind output buffer
-		PixelDataPtr texData = bs_shared_ptr_new<PixelData>(width, height, 1, format);
+		SPtr<PixelData> texData = bs_shared_ptr_new<PixelData>(width, height, 1, format);
 		texData->allocateInternalBuffer();
 		UINT8* output = texData->getData();
 

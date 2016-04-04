@@ -46,7 +46,7 @@ namespace BansheeEngine
 		virtual void update() { }
 
 	protected:
-		DropDownWindow(const RenderWindowPtr& parent, const CameraPtr& camera,
+		DropDownWindow(const SPtr<RenderWindow>& parent, const SPtr<Camera>& camera,
 			const Vector2I& position, UINT32 width = 200, UINT32 height = 200);
 
 		GUIPanel* mContents;
@@ -57,7 +57,7 @@ namespace BansheeEngine
 		/**	Triggered when the user clicks outside of the drop down area. */
 		void dropDownFocusLost();
 
-		RenderWindowPtr mRenderWindow;
+		SPtr<RenderWindow> mRenderWindow;
 		HSceneObject mSceneObject;
 		HGUIWidget mGUI;
 

@@ -20,17 +20,17 @@ namespace BansheeEngine
 		 *
 		 * @note	Make sure to call Material::setShader() before using it.
 		 */
-		MaterialPtr create() const;
+		SPtr<Material> create() const;
 
 		/** Creates a new material with the specified shader. */
-		MaterialPtr create(const HShader& shader) const;
+		SPtr<Material> create(const HShader& shader) const;
 
 		/**
 		 * Creates a new empty material without initializing it.
 		 *
 		 * @note	You must manually call Material::initialize() after creation.
 		 */
-		MaterialPtr createEmpty() const;
+		SPtr<Material> createEmpty() const;
 	};
 
 	/** @} */

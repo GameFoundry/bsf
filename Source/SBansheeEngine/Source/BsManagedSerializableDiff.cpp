@@ -11,8 +11,8 @@
 
 namespace BansheeEngine
 {
-	ManagedSerializableDiff::ModifiedField::ModifiedField(const ManagedSerializableTypeInfoPtr& parentType,
-		const ManagedSerializableFieldInfoPtr& fieldType, const SPtr<Modification>& modification)
+	ManagedSerializableDiff::ModifiedField::ModifiedField(const SPtr<ManagedSerializableTypeInfo>& parentType,
+		const SPtr<ManagedSerializableFieldInfo>& fieldType, const SPtr<Modification>& modification)
 		:parentType(parentType), fieldType(fieldType), modification(modification)
 	{
 
@@ -45,7 +45,7 @@ namespace BansheeEngine
 	}
 
 	ManagedSerializableDiff::ModifiedDictionaryEntry::ModifiedDictionaryEntry(
-		const ManagedSerializableFieldDataPtr& key, const SPtr<Modification>& modification)
+		const SPtr<ManagedSerializableFieldData>& key, const SPtr<Modification>& modification)
 		:key(key), modification(modification)
 	{
 
@@ -121,13 +121,13 @@ namespace BansheeEngine
 		return getRTTIStatic();
 	}
 
-	ManagedSerializableDiff::ModifiedEntry::ModifiedEntry(const ManagedSerializableFieldDataPtr& value)
+	ManagedSerializableDiff::ModifiedEntry::ModifiedEntry(const SPtr<ManagedSerializableFieldData>& value)
 		:value(value)
 	{
 		
 	}
 
-	SPtr<ManagedSerializableDiff::ModifiedEntry> ManagedSerializableDiff::ModifiedEntry::create(const ManagedSerializableFieldDataPtr& value)
+	SPtr<ManagedSerializableDiff::ModifiedEntry> ManagedSerializableDiff::ModifiedEntry::create(const SPtr<ManagedSerializableFieldData>& value)
 	{
 		return bs_shared_ptr_new<ModifiedEntry>(value);
 	}
@@ -152,17 +152,17 @@ namespace BansheeEngine
 	{
 	}
 
-	ManagedSerializableDiffPtr ManagedSerializableDiff::create(const ManagedSerializableObjectPtr& oldObj, const ManagedSerializableObjectPtr& newObj)
+	SPtr<ManagedSerializableDiff> ManagedSerializableDiff::create(const SPtr<ManagedSerializableObject>& oldObj, const SPtr<ManagedSerializableObject>& newObj)
 	{
 		assert(oldObj != nullptr && newObj != nullptr);
 
-		ManagedSerializableObjectInfoPtr oldObjInfo = oldObj->getObjectInfo();
-		ManagedSerializableObjectInfoPtr newObjInfo = newObj->getObjectInfo();
+		SPtr<ManagedSerializableObjectInfo> oldObjInfo = oldObj->getObjectInfo();
+		SPtr<ManagedSerializableObjectInfo> newObjInfo = newObj->getObjectInfo();
 
 		if (!oldObjInfo->mTypeInfo->matches(newObjInfo->mTypeInfo))
 			return nullptr;
 
-		ManagedSerializableDiffPtr output = bs_shared_ptr_new<ManagedSerializableDiff>();
+		SPtr<ManagedSerializableDiff> output = bs_shared_ptr_new<ManagedSerializableDiff>();
 		SPtr<ModifiedObject> modifications = output->generateDiff(oldObj, newObj);
 
 		if (modifications != nullptr)
@@ -175,19 +175,19 @@ namespace BansheeEngine
 	}
 
 	SPtr<ManagedSerializableDiff::ModifiedObject> ManagedSerializableDiff::generateDiff
-		(const ManagedSerializableObjectPtr& oldObj, const ManagedSerializableObjectPtr& newObj)
+		(const SPtr<ManagedSerializableObject>& oldObj, const SPtr<ManagedSerializableObject>& newObj)
 	{
 		SPtr<ModifiedObject> output = nullptr;
 
-		ManagedSerializableObjectInfoPtr curObjInfo = newObj->getObjectInfo();
+		SPtr<ManagedSerializableObjectInfo> curObjInfo = newObj->getObjectInfo();
 		while (curObjInfo != nullptr)
 		{
 			for (auto& field : curObjInfo->mFields)
 			{
 				UINT32 fieldTypeId = field.second->mTypeInfo->getTypeId();
 
-				ManagedSerializableFieldDataPtr oldData = oldObj->getFieldData(field.second);
-				ManagedSerializableFieldDataPtr newData = newObj->getFieldData(field.second);
+				SPtr<ManagedSerializableFieldData> oldData = oldObj->getFieldData(field.second);
+				SPtr<ManagedSerializableFieldData> newData = newObj->getFieldData(field.second);
 				SPtr<Modification> newMod = generateDiff(oldData, newData, fieldTypeId);
 				
 				if (newMod != nullptr)
@@ -206,7 +206,7 @@ namespace BansheeEngine
 	}
 
 	SPtr<ManagedSerializableDiff::Modification> ManagedSerializableDiff::generateDiff(
-		const ManagedSerializableFieldDataPtr& oldData, const ManagedSerializableFieldDataPtr& newData,
+		const SPtr<ManagedSerializableFieldData>& oldData, const SPtr<ManagedSerializableFieldData>& newData,
 		UINT32 entryTypeId)
 	{
 		bool isPrimitive = entryTypeId == TID_SerializableTypeInfoPrimitive;
@@ -259,10 +259,10 @@ namespace BansheeEngine
 					{
 						SPtr<Modification> arrayElemMod = nullptr;
 
-						ManagedSerializableFieldDataPtr newArrayElem = newArrayData->value->getFieldData(i);
+						SPtr<ManagedSerializableFieldData> newArrayElem = newArrayData->value->getFieldData(i);
 						if (i < oldLength)
 						{
-							ManagedSerializableFieldDataPtr oldArrayElem = oldArrayData->value->getFieldData(i);
+							SPtr<ManagedSerializableFieldData> oldArrayElem = oldArrayData->value->getFieldData(i);
 
 							UINT32 arrayElemTypeId = newArrayData->value->getTypeInfo()->mElementType->getTypeId();
 							arrayElemMod = generateDiff(oldArrayElem, newArrayElem, arrayElemTypeId);
@@ -322,10 +322,10 @@ namespace BansheeEngine
 					{
 						SPtr<Modification> listElemMod = nullptr;
 
-						ManagedSerializableFieldDataPtr newListElem = newListData->value->getFieldData(i);
+						SPtr<ManagedSerializableFieldData> newListElem = newListData->value->getFieldData(i);
 						if (i < oldLength)
 						{
-							ManagedSerializableFieldDataPtr oldListElem = oldListData->value->getFieldData(i);
+							SPtr<ManagedSerializableFieldData> oldListElem = oldListData->value->getFieldData(i);
 
 							UINT32 arrayElemTypeId = newListData->value->getTypeInfo()->mElementType->getTypeId();
 							listElemMod = generateDiff(oldListElem, newListElem, arrayElemTypeId);
@@ -384,7 +384,7 @@ namespace BansheeEngine
 					{
 						SPtr<Modification> dictElemMod = nullptr;
 
-						ManagedSerializableFieldDataPtr key = newEnumerator.getKey();
+						SPtr<ManagedSerializableFieldData> key = newEnumerator.getKey();
 						if (oldDictData->value->contains(key))
 						{
 							UINT32 dictElemTypeId = newDictData->value->getTypeInfo()->mValueType->getTypeId();
@@ -409,7 +409,7 @@ namespace BansheeEngine
 					auto oldEnumerator = oldDictData->value->getEnumerator();
 					while (oldEnumerator.moveNext())
 					{
-						ManagedSerializableFieldDataPtr key = oldEnumerator.getKey();
+						SPtr<ManagedSerializableFieldData> key = oldEnumerator.getKey();
 						if (!newDictData->value->contains(oldEnumerator.getKey()))
 						{
 							if (dictMods == nullptr)
@@ -437,26 +437,26 @@ namespace BansheeEngine
 		return newMod;
 	}
 
-	void ManagedSerializableDiff::apply(const ManagedSerializableObjectPtr& obj)
+	void ManagedSerializableDiff::apply(const SPtr<ManagedSerializableObject>& obj)
 	{
 		applyDiff(mModificationRoot, obj);
 	}
 
-	ManagedSerializableFieldDataPtr ManagedSerializableDiff::applyDiff(const SPtr<ModifiedObject>& mod, const ManagedSerializableObjectPtr& obj)
+	SPtr<ManagedSerializableFieldData> ManagedSerializableDiff::applyDiff(const SPtr<ModifiedObject>& mod, const SPtr<ManagedSerializableObject>& obj)
 	{
-		ManagedSerializableObjectInfoPtr objInfo = obj->getObjectInfo();
+		SPtr<ManagedSerializableObjectInfo> objInfo = obj->getObjectInfo();
 		for (auto& modEntry : mod->entries)
 		{
-			ManagedSerializableFieldInfoPtr fieldType = modEntry.fieldType;
-			ManagedSerializableTypeInfoPtr typeInfo = modEntry.parentType;
+			SPtr<ManagedSerializableFieldInfo> fieldType = modEntry.fieldType;
+			SPtr<ManagedSerializableTypeInfo> typeInfo = modEntry.parentType;
 
-			ManagedSerializableFieldInfoPtr matchingFieldInfo = objInfo->findMatchingField(fieldType, typeInfo);
+			SPtr<ManagedSerializableFieldInfo> matchingFieldInfo = objInfo->findMatchingField(fieldType, typeInfo);
 			if (matchingFieldInfo == nullptr)
 				continue; // Field no longer exists in the type
 
-			ManagedSerializableFieldDataPtr origData = obj->getFieldData(matchingFieldInfo);
+			SPtr<ManagedSerializableFieldData> origData = obj->getFieldData(matchingFieldInfo);
 
-			ManagedSerializableFieldDataPtr newData = applyDiff(modEntry.modification, matchingFieldInfo->mTypeInfo, origData);
+			SPtr<ManagedSerializableFieldData> newData = applyDiff(modEntry.modification, matchingFieldInfo->mTypeInfo, origData);
 			if (newData != nullptr)
 				obj->setFieldData(matchingFieldInfo, newData);
 		}
@@ -464,7 +464,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	ManagedSerializableFieldDataPtr ManagedSerializableDiff::applyDiff(const SPtr<ModifiedArray>& mod, const ManagedSerializableArrayPtr& obj)
+	SPtr<ManagedSerializableFieldData> ManagedSerializableDiff::applyDiff(const SPtr<ModifiedArray>& mod, const SPtr<ManagedSerializableArray>& obj)
 	{
 		bool needsResize = false;
 
@@ -477,7 +477,7 @@ namespace BansheeEngine
 			}
 		}
 
-		ManagedSerializableFieldDataPtr newArray;
+		SPtr<ManagedSerializableFieldData> newArray;
 		if (needsResize)
 		{
 			obj->resize(mod->newSizes);
@@ -488,8 +488,8 @@ namespace BansheeEngine
 		{
 			UINT32 arrayIdx = modEntry.idx;
 
-			ManagedSerializableFieldDataPtr origData = obj->getFieldData(arrayIdx);
-			ManagedSerializableFieldDataPtr newData = applyDiff(modEntry.modification, obj->getTypeInfo()->mElementType, origData);
+			SPtr<ManagedSerializableFieldData> origData = obj->getFieldData(arrayIdx);
+			SPtr<ManagedSerializableFieldData> newData = applyDiff(modEntry.modification, obj->getTypeInfo()->mElementType, origData);
 
 			if (newData != nullptr)
 				obj->setFieldData(arrayIdx, newData);
@@ -498,11 +498,11 @@ namespace BansheeEngine
 		return newArray;
 	}
 
-	ManagedSerializableFieldDataPtr ManagedSerializableDiff::applyDiff(const SPtr<ModifiedArray>& mod, const ManagedSerializableListPtr& obj)
+	SPtr<ManagedSerializableFieldData> ManagedSerializableDiff::applyDiff(const SPtr<ModifiedArray>& mod, const SPtr<ManagedSerializableList>& obj)
 	{
 		bool needsResize = mod->newSizes[0] != obj->getLength();
 
-		ManagedSerializableFieldDataPtr newList;
+		SPtr<ManagedSerializableFieldData> newList;
 		if (needsResize)
 		{
 			obj->resize(mod->newSizes[0]);
@@ -513,8 +513,8 @@ namespace BansheeEngine
 		{
 			UINT32 arrayIdx = modEntry.idx;
 
-			ManagedSerializableFieldDataPtr origData = obj->getFieldData(arrayIdx);
-			ManagedSerializableFieldDataPtr newData = applyDiff(modEntry.modification, obj->getTypeInfo()->mElementType, origData);
+			SPtr<ManagedSerializableFieldData> origData = obj->getFieldData(arrayIdx);
+			SPtr<ManagedSerializableFieldData> newData = applyDiff(modEntry.modification, obj->getTypeInfo()->mElementType, origData);
 
 			if (newData != nullptr)
 				obj->setFieldData(arrayIdx, newData);
@@ -523,14 +523,14 @@ namespace BansheeEngine
 		return newList;
 	}
 
-	ManagedSerializableFieldDataPtr ManagedSerializableDiff::applyDiff(const SPtr<ModifiedDictionary>& mod, const ManagedSerializableDictionaryPtr& obj)
+	SPtr<ManagedSerializableFieldData> ManagedSerializableDiff::applyDiff(const SPtr<ModifiedDictionary>& mod, const SPtr<ManagedSerializableDictionary>& obj)
 	{
 		for (auto& modEntry : mod->entries)
 		{
-			ManagedSerializableFieldDataPtr key = modEntry.key;
+			SPtr<ManagedSerializableFieldData> key = modEntry.key;
 
-			ManagedSerializableFieldDataPtr origData = obj->getFieldData(key);
-			ManagedSerializableFieldDataPtr newData = applyDiff(modEntry.modification, obj->getTypeInfo()->mValueType, origData);
+			SPtr<ManagedSerializableFieldData> origData = obj->getFieldData(key);
+			SPtr<ManagedSerializableFieldData> newData = applyDiff(modEntry.modification, obj->getTypeInfo()->mValueType, origData);
 
 			if (newData != nullptr)
 				obj->setFieldData(key, newData);
@@ -544,18 +544,18 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	ManagedSerializableFieldDataPtr ManagedSerializableDiff::applyDiff(const SPtr<Modification>& mod, const ManagedSerializableTypeInfoPtr& fieldType,
-		const ManagedSerializableFieldDataPtr& origData)
+	SPtr<ManagedSerializableFieldData> ManagedSerializableDiff::applyDiff(const SPtr<Modification>& mod, const SPtr<ManagedSerializableTypeInfo>& fieldType,
+		const SPtr<ManagedSerializableFieldData>& origData)
 	{
-		ManagedSerializableFieldDataPtr newData;
+		SPtr<ManagedSerializableFieldData> newData;
 		switch (mod->getTypeId())
 		{
 		case TID_ScriptModifiedObject:
 		{
 			SPtr<ManagedSerializableFieldDataObject> origObjData = std::static_pointer_cast<ManagedSerializableFieldDataObject>(origData);
-			ManagedSerializableObjectPtr childObj = origObjData->value;
+			SPtr<ManagedSerializableObject> childObj = origObjData->value;
 
-			ManagedSerializableTypeInfoObjectPtr objTypeInfo =
+			SPtr<ManagedSerializableTypeInfoObject> objTypeInfo =
 				std::static_pointer_cast<ManagedSerializableTypeInfoObject>(fieldType);
 
 			if (childObj == nullptr) // Object was deleted in original but we have modifications for it, so we create it
@@ -573,9 +573,9 @@ namespace BansheeEngine
 			if (fieldType->getTypeId() == TID_SerializableTypeInfoArray)
 			{
 				SPtr<ManagedSerializableFieldDataArray> origArrayData = std::static_pointer_cast<ManagedSerializableFieldDataArray>(origData);
-				ManagedSerializableArrayPtr childArray = origArrayData->value;
+				SPtr<ManagedSerializableArray> childArray = origArrayData->value;
 
-				ManagedSerializableTypeInfoArrayPtr arrayTypeInfo =
+				SPtr<ManagedSerializableTypeInfoArray> arrayTypeInfo =
 					std::static_pointer_cast<ManagedSerializableTypeInfoArray>(fieldType);
 
 				SPtr<ModifiedArray> childMod = std::static_pointer_cast<ModifiedArray>(mod);
@@ -587,9 +587,9 @@ namespace BansheeEngine
 			else if (fieldType->getTypeId() == TID_SerializableTypeInfoList)
 			{
 				SPtr<ManagedSerializableFieldDataList> origListData = std::static_pointer_cast<ManagedSerializableFieldDataList>(origData);
-				ManagedSerializableListPtr childList = origListData->value;
+				SPtr<ManagedSerializableList> childList = origListData->value;
 
-				ManagedSerializableTypeInfoListPtr listTypeInfo =
+				SPtr<ManagedSerializableTypeInfoList> listTypeInfo =
 					std::static_pointer_cast<ManagedSerializableTypeInfoList>(fieldType);
 
 				SPtr<ModifiedArray> childMod = std::static_pointer_cast<ModifiedArray>(mod);
@@ -603,9 +603,9 @@ namespace BansheeEngine
 		case TID_ScriptModifiedDictionary:
 		{
 			SPtr<ManagedSerializableFieldDataDictionary> origObjData = std::static_pointer_cast<ManagedSerializableFieldDataDictionary>(origData);
-			ManagedSerializableDictionaryPtr childDict = origObjData->value;
+			SPtr<ManagedSerializableDictionary> childDict = origObjData->value;
 
-			ManagedSerializableTypeInfoDictionaryPtr dictTypeInfo =
+			SPtr<ManagedSerializableTypeInfoDictionary> dictTypeInfo =
 				std::static_pointer_cast<ManagedSerializableTypeInfoDictionary>(fieldType);
 
 			if (childDict == nullptr) // Object was deleted in original but we have modifications for it, so we create it

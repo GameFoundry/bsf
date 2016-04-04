@@ -38,7 +38,7 @@ namespace BansheeEngine
 		return std::static_pointer_cast<VertexBufferCore>(mCoreSpecific);
 	}
 
-	VertexBufferPtr VertexBuffer::create(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
+	SPtr<VertexBuffer> VertexBuffer::create(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
 	{
 		return HardwareBufferManager::instance().createVertexBuffer(vertexSize, numVerts, usage, streamOut);
 	}

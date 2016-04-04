@@ -288,7 +288,7 @@ namespace BansheeEngine
 		{
 			Path path = draggedResources->resourcePaths[i];
 
-			ProjectResourceMetaPtr meta = gProjectLibrary().findResourceMeta(path);
+			SPtr<ProjectResourceMeta> meta = gProjectLibrary().findResourceMeta(path);
 			if (meta == nullptr)
 				continue;
 
@@ -307,7 +307,7 @@ namespace BansheeEngine
 			}
 			else if (typeId == TID_ManagedResource)
 			{
-				ManagedResourceMetaDataPtr managedResMetaData = std::static_pointer_cast<ManagedResourceMetaData>(meta->getResourceMetaData());
+				SPtr<ManagedResourceMetaData> managedResMetaData = std::static_pointer_cast<ManagedResourceMetaData>(meta->getResourceMetaData());
 				MonoClass* providedClass = MonoManager::instance().findClass(managedResMetaData->typeNamespace, managedResMetaData->typeName);
 
 				if (providedClass->isSubClassOf(acceptedClass))

@@ -27,12 +27,12 @@ namespace BansheeEngine
 		 * @param[in]	primaryWindowDesc	Contains options used for creating the primary window.
 		 * @return							Created render window if initialization is successful, null otherwise.
 		 */
-		RenderWindowPtr initialize(const String& name, RENDER_WINDOW_DESC& primaryWindowDesc);
+		SPtr<RenderWindow> initialize(const String& name, RENDER_WINDOW_DESC& primaryWindowDesc);
 
 		/**	Registers a new render API factory responsible for creating a specific render system type. */
-		void registerFactory(RenderAPIFactoryPtr factory);
+		void registerFactory(SPtr<RenderAPIFactory> factory);
 	private:
-		Vector<RenderAPIFactoryPtr> mAvailableFactories;
+		Vector<SPtr<RenderAPIFactory>> mAvailableFactories;
 		bool mRenderAPIInitialized;
 	};
 

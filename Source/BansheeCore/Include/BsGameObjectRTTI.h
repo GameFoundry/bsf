@@ -22,7 +22,7 @@ namespace BansheeEngine
 			:isDeserializationParent(false), originalId(0)
 		{ }
 
-		GameObjectPtr ptr;
+		SPtr<GameObject> ptr;
 		bool isDeserializationParent;
 		UINT64 originalId;
 		Any moreData;
@@ -52,7 +52,7 @@ namespace BansheeEngine
 	public:
 		/**	Helper method used for creating Component objects used during deserialization. */
 		template <typename T>
-		static std::shared_ptr<T> createGameObject()
+		static SPtr<T> createGameObject()
 		{
 			SPtr<T> component = SceneObject::createEmptyComponent<T>();
 
@@ -85,7 +85,7 @@ namespace BansheeEngine
 			return TID_GameObject;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			BS_EXCEPT(InternalErrorException, "Cannot instantiate an abstract class.");
 			return nullptr;

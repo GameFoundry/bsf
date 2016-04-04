@@ -49,7 +49,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void CoreObjectCore::_setThisPtr(std::shared_ptr<CoreObjectCore> ptrThis)
+	void CoreObjectCore::_setThisPtr(SPtr<CoreObjectCore> ptrThis)
 	{
 		mThis = ptrThis;
 	}

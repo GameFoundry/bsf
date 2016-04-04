@@ -86,7 +86,7 @@ namespace BansheeEngine
 		mInputStream.clear();
 	}
 
-	std::shared_ptr<IReflectable> FileDecoder::decode()
+	SPtr<IReflectable> FileDecoder::decode()
 	{
 		if (mInputStream.fail() || mInputStream.eof())
 			return nullptr;
@@ -98,7 +98,7 @@ namespace BansheeEngine
 		mInputStream.read((char*)readBuffer, objectSize);
 
 		BinarySerializer bs;
-		std::shared_ptr<IReflectable> object = bs.decode(readBuffer, objectSize);
+		SPtr<IReflectable> object = bs.decode(readBuffer, objectSize);
 
 		bs_free(readBuffer);
 

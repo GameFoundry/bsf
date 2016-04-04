@@ -56,22 +56,22 @@ namespace BansheeEngine
 		}
 	};
 
-	GpuProgramPtr GpuProgramManager::create(const String& source, const String& entryPoint, const String& language,
+	SPtr<GpuProgram> GpuProgramManager::create(const String& source, const String& entryPoint, const String& language,
 		GpuProgramType gptype, GpuProgramProfile profile,
 		bool requiresAdjacencyInformation)
 	{
 		GpuProgram* program = new (bs_alloc<GpuProgram>()) GpuProgram(source, entryPoint, language, gptype, profile, requiresAdjacencyInformation);
-		GpuProgramPtr ret = bs_core_ptr<GpuProgram>(program);
+		SPtr<GpuProgram> ret = bs_core_ptr<GpuProgram>(program);
 		ret->_setThisPtr(ret);
 		ret->initialize();
 
 		return ret;
 	}
 
-	GpuProgramPtr GpuProgramManager::createEmpty(const String& language, GpuProgramType type)
+	SPtr<GpuProgram> GpuProgramManager::createEmpty(const String& language, GpuProgramType type)
 	{
 		GpuProgram* program = new (bs_alloc<GpuProgram>()) GpuProgram("", "", language, GPT_VERTEX_PROGRAM, GPP_VS_1_1, false);
-		GpuProgramPtr ret = bs_core_ptr<GpuProgram>(program);
+		SPtr<GpuProgram> ret = bs_core_ptr<GpuProgram>(program);
 		ret->_setThisPtr(ret);
 
 		return ret;

@@ -325,7 +325,7 @@ namespace BansheeEngine
 		if (texPtr != nullptr && enabled)
 		{
 			D3D11TextureCore* d3d11Texture = static_cast<D3D11TextureCore*>(texPtr.get());
-			TextureViewPtr texView = TextureCore::requestView(texPtr, surface.mipLevel, 1, 
+			SPtr<TextureView> texView = TextureCore::requestView(texPtr, surface.mipLevel, 1, 
 				surface.arraySlice, surface.numArraySlices, GVU_RANDOMWRITE);
 
 			D3D11TextureView* d3d11texView = static_cast<D3D11TextureView*>(texView.get());
@@ -343,7 +343,7 @@ namespace BansheeEngine
 			if (mBoundUAVs[unit].second != nullptr)
 				mBoundUAVs[unit].first->releaseView(mBoundUAVs[unit].second);
 
-			mBoundUAVs[unit] = std::pair<SPtr<TextureCore>, TextureViewPtr>();
+			mBoundUAVs[unit] = std::pair<SPtr<TextureCore>, SPtr<TextureView>>();
 		}
 
 		if (gptype == GPT_FRAGMENT_PROGRAM)

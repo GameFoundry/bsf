@@ -34,7 +34,7 @@ namespace BansheeEngine
 		shutDown();
 	}
 
-	void TestSuite::add(const TestSuitePtr& suite)
+	void TestSuite::add(const SPtr<TestSuite>& suite)
 	{
 		mSuites.push_back(suite);
 	}

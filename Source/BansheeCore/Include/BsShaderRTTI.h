@@ -171,8 +171,8 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT ShaderRTTI : public RTTIType<Shader, Resource, ShaderRTTI>
 	{
 	private:
-		TechniquePtr getTechnique(Shader* obj, UINT32 idx) { return obj->mTechniques[idx]; }
-		void setTechnique(Shader* obj, UINT32 idx, TechniquePtr val) { obj->mTechniques[idx] = val; }
+		SPtr<Technique> getTechnique(Shader* obj, UINT32 idx) { return obj->mTechniques[idx]; }
+		void setTechnique(Shader* obj, UINT32 idx, SPtr<Technique> val) { obj->mTechniques[idx] = val; }
 		UINT32 getTechniqueArraySize(Shader* obj) { return (UINT32)obj->mTechniques.size(); }
 		void setTechniqueArraySize(Shader* obj, UINT32 size) { obj->mTechniques.resize(size); }
 
@@ -259,8 +259,8 @@ namespace BansheeEngine
 		UINT32 getDefaultTextureArraySize(Shader* obj) { return (UINT32)obj->mDesc.textureDefaultValues.size(); }
 		void setDefaultTextureArraySize(Shader* obj, UINT32 size) { obj->mDesc.textureDefaultValues.resize(size); }
 
-		SamplerStatePtr getDefaultSampler(Shader* obj, UINT32 idx) { return obj->mDesc.samplerDefaultValues[idx]; }
-		void setDefaultSampler(Shader* obj, UINT32 idx, SamplerStatePtr val) { obj->mDesc.samplerDefaultValues[idx] = val; }
+		SPtr<SamplerState> getDefaultSampler(Shader* obj, UINT32 idx) { return obj->mDesc.samplerDefaultValues[idx]; }
+		void setDefaultSampler(Shader* obj, UINT32 idx, SPtr<SamplerState> val) { obj->mDesc.samplerDefaultValues[idx] = val; }
 		UINT32 getDefaultSamplerArraySize(Shader* obj) { return (UINT32)obj->mDesc.samplerDefaultValues.size(); }
 		void setDefaultSamplerArraySize(Shader* obj, UINT32 size) { obj->mDesc.samplerDefaultValues.resize(size); }
 
@@ -312,7 +312,7 @@ namespace BansheeEngine
 			return TID_Shader;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject()
+		SPtr<IReflectable> newRTTIObject()
 		{
 			return Shader::createEmpty();
 		}
@@ -341,7 +341,7 @@ namespace BansheeEngine
 			return TID_ShaderMetaData;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<ShaderMetaData>();
 		}

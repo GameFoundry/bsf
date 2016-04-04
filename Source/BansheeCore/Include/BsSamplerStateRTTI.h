@@ -45,7 +45,7 @@ namespace BansheeEngine
 			return TID_SamplerState;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return RenderStateManager::instance()._createSamplerStatePtr(SAMPLER_STATE_DESC());
 		}

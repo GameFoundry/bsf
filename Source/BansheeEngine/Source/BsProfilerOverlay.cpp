@@ -291,7 +291,7 @@ namespace BansheeEngine
 
 	const UINT32 ProfilerOverlayInternal::MAX_DEPTH = 4;
 
-	ProfilerOverlay::ProfilerOverlay(const HSceneObject& parent, const CameraPtr& target)
+	ProfilerOverlay::ProfilerOverlay(const HSceneObject& parent, const SPtr<Camera>& target)
 		:Component(parent), mInternal(nullptr)
 	{
 		mInternal = bs_new<ProfilerOverlayInternal>(target);
@@ -302,7 +302,7 @@ namespace BansheeEngine
 		bs_delete(mInternal);
 	}
 
-	void ProfilerOverlay::setTarget(const CameraPtr& target)
+	void ProfilerOverlay::setTarget(const SPtr<Camera>& target)
 	{
 		mInternal->setTarget(target);
 	}
@@ -332,7 +332,7 @@ namespace BansheeEngine
 		return ProfilerOverlay::getRTTIStatic();
 	}
 
-	ProfilerOverlayInternal::ProfilerOverlayInternal(const CameraPtr& camera)
+	ProfilerOverlayInternal::ProfilerOverlayInternal(const SPtr<Camera>& camera)
 		:mIsShown(true), mType(ProfilerOverlayType::CPUSamples)
 	{
 		setTarget(camera);
@@ -347,7 +347,7 @@ namespace BansheeEngine
 			mWidgetSO->destroy();
 	}
 
-	void ProfilerOverlayInternal::setTarget(const CameraPtr& camera)
+	void ProfilerOverlayInternal::setTarget(const SPtr<Camera>& camera)
 	{
 		if(mTarget != nullptr)
 			mTargetResizedConn.disconnect();

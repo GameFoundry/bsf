@@ -58,7 +58,7 @@ namespace BansheeEngine
 		 *						queries can return sooner as they potentially do not need to wait until all of the geometry
 		 *						is rendered.
 		 */
-		static OcclusionQueryPtr create(bool binary);
+		static SPtr<OcclusionQuery> create(bool binary);
 
 	protected:
 		friend class QueryManager;

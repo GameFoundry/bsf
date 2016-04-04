@@ -563,12 +563,12 @@ EndProject)";
 			Path projectPath = outputPath;
 			projectPath.append(project.name + L".csproj");
 
-			DataStreamPtr projectStream = FileSystem::createAndOpenFile(projectPath);
+			SPtr<DataStream> projectStream = FileSystem::createAndOpenFile(projectPath);
 			projectStream->write(projectString.c_str(), projectString.size() * sizeof(String::value_type));
 			projectStream->close();
 		}
 
-		DataStreamPtr solutionStream = FileSystem::createAndOpenFile(solutionPath);
+		SPtr<DataStream> solutionStream = FileSystem::createAndOpenFile(solutionPath);
 		solutionStream->write(solutionString.c_str(), solutionString.size() * sizeof(String::value_type));
 		solutionStream->close();
 	}

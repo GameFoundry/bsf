@@ -119,7 +119,7 @@ namespace BansheeEngine
 			bool hasError = false;
 			if (output.shader != nullptr)
 			{
-				TechniquePtr bestTechnique = output.shader->getBestTechnique();
+				SPtr<Technique> bestTechnique = output.shader->getBestTechnique();
 
 				if (bestTechnique != nullptr)
 				{
@@ -127,9 +127,9 @@ namespace BansheeEngine
 
 					for (UINT32 i = 0; i < numPasses; i++)
 					{
-						PassPtr pass = bestTechnique->getPass(i);
+						SPtr<Pass> pass = bestTechnique->getPass(i);
 
-						auto checkCompileStatus = [&](const String& prefix, const GpuProgramPtr& prog)
+						auto checkCompileStatus = [&](const String& prefix, const SPtr<GpuProgram>& prog)
 						{
 							if (prog != nullptr)
 							{
@@ -790,7 +790,7 @@ namespace BansheeEngine
 		return !default;
 	}
 
-	SamplerStatePtr BSLFXCompiler::parseSamplerState(ASTFXNode* samplerStateNode)
+	SPtr<SamplerState> BSLFXCompiler::parseSamplerState(ASTFXNode* samplerStateNode)
 	{
 		if (samplerStateNode == nullptr || samplerStateNode->type != NT_SamplerState)
 			return nullptr;
@@ -1018,7 +1018,7 @@ namespace BansheeEngine
 			UINT32 typeId = 0;
 			bool isObjType = false;
 			StringID semantic;
-			SamplerStatePtr samplerState = nullptr;
+			SPtr<SamplerState> samplerState = nullptr;
 			float defaultValue[16];
 			HTexture defaultTexture;
 			bool hasDefaultValue = false;
@@ -1207,12 +1207,12 @@ namespace BansheeEngine
 			}
 		}
 
-		Vector<TechniquePtr> techniques;
+		Vector<SPtr<Technique>> techniques;
 		for(auto& entry : techniqueData)
 		{
 			const TechniqueData& techniqueData = entry.second;
 
-			Map<UINT32, PassPtr, std::greater<UINT32>> passes;
+			Map<UINT32, SPtr<Pass>, std::greater<UINT32>> passes;
 			for (auto& passData : entry.second.passes)
 			{
 				PASS_DESC passDesc;
@@ -1264,18 +1264,18 @@ namespace BansheeEngine
 
 				passDesc.stencilRefValue = passData.stencilRefValue;
 
-				PassPtr pass = Pass::create(passDesc);
+				SPtr<Pass> pass = Pass::create(passDesc);
 				if (pass != nullptr)
 					passes[passData.seqIdx] = pass;
 			}
 
-			Vector<PassPtr> orderedPasses;
+			Vector<SPtr<Pass>> orderedPasses;
 			for (auto& KVP : passes)
 				orderedPasses.push_back(KVP.second);
 
 			if (orderedPasses.size() > 0)
 			{
-				TechniquePtr technique = Technique::create(techniqueData.renderAPI, techniqueData.renderer, orderedPasses);
+				SPtr<Technique> technique = Technique::create(techniqueData.renderAPI, techniqueData.renderer, orderedPasses);
 				techniques.push_back(technique);
 			}
 		}

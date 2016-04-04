@@ -18,8 +18,8 @@ namespace BansheeEngine
 
 	class MeshRTTI : public RTTIType<Mesh, MeshBase, MeshRTTI>
 	{
-		VertexDataDescPtr getVertexDesc(Mesh* obj) { return obj->mVertexDesc; }
-		void setVertexDesc(Mesh* obj, VertexDataDescPtr value) { obj->mVertexDesc = value; }
+		SPtr<VertexDataDesc> getVertexDesc(Mesh* obj) { return obj->mVertexDesc; }
+		void setVertexDesc(Mesh* obj, SPtr<VertexDataDesc> value) { obj->mVertexDesc = value; }
 
 		IndexType& getIndexType(Mesh* obj) { return obj->mIndexType; }
 		void setIndexType(Mesh* obj, IndexType& value) { obj->mIndexType = value; }
@@ -27,9 +27,9 @@ namespace BansheeEngine
 		int& getBufferType(Mesh* obj) { return (int&)obj->mUsage; }
 		void setBufferType(Mesh* obj, int& value) { obj->mUsage = value; }
 
-		MeshDataPtr getMeshData(Mesh* obj) 
+		SPtr<MeshData> getMeshData(Mesh* obj) 
 		{ 
-			MeshDataPtr meshData = obj->allocateSubresourceBuffer(0);
+			SPtr<MeshData> meshData = obj->allocateSubresourceBuffer(0);
 
 			obj->readSubresource(gCoreAccessor(), 0, meshData);
 			gCoreAccessor().submitToCoreThread(true);
@@ -37,7 +37,7 @@ namespace BansheeEngine
 			return meshData;
 		}
 
-		void setMeshData(Mesh* obj, MeshDataPtr meshData) 
+		void setMeshData(Mesh* obj, SPtr<MeshData> meshData) 
 		{ 
 			obj->mCPUData = meshData;
 		}
@@ -59,7 +59,7 @@ namespace BansheeEngine
 			mesh->initialize();
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return MeshManager::instance().createEmpty();
 		}

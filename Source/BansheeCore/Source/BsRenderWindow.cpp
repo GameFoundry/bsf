@@ -358,7 +358,7 @@ namespace BansheeEngine
 		return RenderWindowCoreManager::instance().createInternal(desc, mWindowId);
 	}
 
-	RenderWindowPtr RenderWindow::create(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow)
+	SPtr<RenderWindow> RenderWindow::create(RENDER_WINDOW_DESC& desc, SPtr<RenderWindow> parentWindow)
 	{
 		return RenderWindowManager::instance().create(desc, parentWindow);
 	}

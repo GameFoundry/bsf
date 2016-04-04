@@ -19,27 +19,27 @@ namespace BansheeEngine
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "InputConfiguration")
 
 		/**	Returns the internal wrapped InputConfiguration object. */
-		InputConfigurationPtr getInternalValue() const { return mInputConfig; }
+		SPtr<InputConfiguration> getInternalValue() const { return mInputConfig; }
 
 		/**
 		 * Attempts to find a existing interop object for the provided input configuration. Returns null if one cannot be
 		 * found.
 		 */
-		static ScriptInputConfiguration* getScriptInputConfig(const InputConfigurationPtr& inputConfig);
+		static ScriptInputConfiguration* getScriptInputConfig(const SPtr<InputConfiguration>& inputConfig);
 
 		/**
 		 * Creates a new interop object for the provided input configuration. Caller should first call 
 		 * getScriptInputConfig() to ensure one doesn't already exist.
 		 */
-		static ScriptInputConfiguration* createScriptInputConfig(const InputConfigurationPtr& inputConfig);
+		static ScriptInputConfiguration* createScriptInputConfig(const SPtr<InputConfiguration>& inputConfig);
 
 	private:
-		ScriptInputConfiguration(MonoObject* instance, const InputConfigurationPtr& inputConfig);
+		ScriptInputConfiguration(MonoObject* instance, const SPtr<InputConfiguration>& inputConfig);
 
 		/** @copydoc ScriptObjectBase::_onManagedInstanceDeleted */
 		void _onManagedInstanceDeleted() override;
 
-		InputConfigurationPtr mInputConfig;
+		SPtr<InputConfiguration> mInputConfig;
 		static Map<UINT64, ScriptInputConfiguration*> ScriptInputConfigurations;
 
 		/************************************************************************/

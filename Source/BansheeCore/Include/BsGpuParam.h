@@ -27,7 +27,7 @@ namespace BansheeEngine
 	template<> struct TGpuParamTextureType < true > { typedef SPtr<TextureCore> Type; };
 
 	template<bool Core> struct TGpuParamSamplerStateType { };
-	template<> struct TGpuParamSamplerStateType < false > { typedef SamplerStatePtr Type; };
+	template<> struct TGpuParamSamplerStateType < false > { typedef SPtr<SamplerState> Type; };
 	template<> struct TGpuParamSamplerStateType < true > { typedef SPtr<SamplerStateCore> Type; };
 
 	/**

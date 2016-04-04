@@ -190,13 +190,13 @@ namespace BansheeEngine
 		void insert(EditorWidgetContainer* relativeTo, EditorWidgetBase* widgetToInsert, DockLocation location);
 
 		/** Returns a saved layout of all the currently docked widgets and their positions and areas. */
-		DockManagerLayoutPtr getLayout() const;
+		SPtr<DockManagerLayout> getLayout() const;
 
 		/**
 		 * Sets a previously saved layout of docked widgets. This will close all currently active widgets and open and
 		 * position new ones according to the layout.
 		 */
-		void setLayout(const DockManagerLayoutPtr& layout);
+		void setLayout(const SPtr<DockManagerLayout>& layout);
 
 		/**	Changes the position and size of the dock manager. */
 		void setArea(INT32 x, INT32 y, UINT32 width, UINT32 height);
@@ -250,7 +250,7 @@ namespace BansheeEngine
 
 		bool mIsMaximized;
 		DockContainer* mMaximizedContainer;
-		DockManagerLayoutPtr mRestoredLayout;
+		SPtr<DockManagerLayout> mRestoredLayout;
 
 		DockContainer* mMouseOverContainer;
 		DockLocation mHighlightedDropLoc;

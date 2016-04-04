@@ -14,7 +14,7 @@ namespace BansheeEngine
 
 	}
 
-	void HandleSlider::update(const CameraPtr& camera)
+	void HandleSlider::update(const SPtr<Camera>& camera)
 	{
 		if (mFixedScale)
 		{
@@ -84,7 +84,7 @@ namespace BansheeEngine
 		reset(); 
 	}
 
-	void HandleSlider::setActive(const CameraPtr& camera, const Vector2I& pointerPos)
+	void HandleSlider::setActive(const SPtr<Camera>& camera, const Vector2I& pointerPos)
 	{ 
 		mState = State::Active; 
 		mStartPointerPos = pointerPos; 
@@ -98,7 +98,7 @@ namespace BansheeEngine
 		reset(); 
 	}
 
-	float HandleSlider::calcDelta(const CameraPtr& camera, const Vector3& position, const Vector3& direction,
+	float HandleSlider::calcDelta(const SPtr<Camera>& camera, const Vector3& position, const Vector3& direction,
 		const Vector2I& pointerStart, const Vector2I& pointerEnd)
 	{
 		// position + direction can sometimes project behind the camera (if the camera is looking at position

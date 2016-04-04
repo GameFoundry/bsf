@@ -41,7 +41,7 @@ namespace BansheeEngine
 			return TID_Settings;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		virtual SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<Settings>();
 		}

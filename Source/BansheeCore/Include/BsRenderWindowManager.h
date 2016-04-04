@@ -32,7 +32,7 @@ namespace BansheeEngine
 		 * Creates a new render window using the specified options. Optionally makes the created window a child of another
 		 * window.
 		 */
-		RenderWindowPtr create(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow);
+		SPtr<RenderWindow> create(RENDER_WINDOW_DESC& desc, SPtr<RenderWindow> parentWindow);
 
 		/** Called once per frame. Dispatches events. */
 		void _update();
@@ -73,7 +73,7 @@ namespace BansheeEngine
 		RenderWindow* getNonCore(const RenderWindowCore* window) const;
 
 		/** @copydoc create */
-		virtual RenderWindowPtr createImpl(RENDER_WINDOW_DESC& desc, UINT32 windowId, const RenderWindowPtr& parentWindow) = 0;
+		virtual SPtr<RenderWindow> createImpl(RENDER_WINDOW_DESC& desc, UINT32 windowId, const SPtr<RenderWindow>& parentWindow) = 0;
 
 	protected:
 		BS_MUTEX(mWindowMutex);

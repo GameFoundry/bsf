@@ -30,7 +30,7 @@ namespace BansheeEngine
 		return buffer + stride;
 	}
 
-	void ShapeMeshes3D::wireAABox(const AABox& box, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+	void ShapeMeshes3D::wireAABox(const AABox& box, const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
 		UINT32* indexData = meshData->getIndices32();
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
@@ -41,7 +41,7 @@ namespace BansheeEngine
 		wireAABox(box, positionData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
 	}
 
-	void ShapeMeshes3D::solidAABox(const AABox& box, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+	void ShapeMeshes3D::solidAABox(const AABox& box, const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
 		UINT32* indexData = meshData->getIndices32();
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
@@ -53,7 +53,7 @@ namespace BansheeEngine
 		solidAABox(box, positionData, normalData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
 	}
 
-	void ShapeMeshes3D::wireSphere(const Sphere& sphere, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality)
+	void ShapeMeshes3D::wireSphere(const Sphere& sphere, const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality)
 	{
 		UINT32* indexData = meshData->getIndices32();
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
@@ -77,7 +77,7 @@ namespace BansheeEngine
 			vertexOffset + verticesPerArc * 2, indexOffset + indicesPerArc * 2, quality);
 	}
 
-	void ShapeMeshes3D::solidSphere(const Sphere& sphere, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality)
+	void ShapeMeshes3D::solidSphere(const Sphere& sphere, const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality)
 	{
 		UINT32* indexData = meshData->getIndices32();
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
@@ -93,20 +93,20 @@ namespace BansheeEngine
 			meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset, quality);
 	}
 
-	void ShapeMeshes3D::wireDisc(const Vector3& center, float radius, const Vector3& normal, const MeshDataPtr& meshData,
+	void ShapeMeshes3D::wireDisc(const Vector3& center, float radius, const Vector3& normal, const SPtr<MeshData>& meshData,
 		UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality)
 	{
 		wireArc(center, radius, normal, Degree(0), Degree(360), meshData, vertexOffset, indexOffset, quality);
 	}
 
-	void ShapeMeshes3D::solidDisc(const Vector3& center, float radius, const Vector3& normal, const MeshDataPtr& meshData,
+	void ShapeMeshes3D::solidDisc(const Vector3& center, float radius, const Vector3& normal, const SPtr<MeshData>& meshData,
 		UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality)
 	{
 		solidArc(center, radius, normal, Degree(0), Degree(360), meshData, vertexOffset, indexOffset, quality);
 	}
 
 	void ShapeMeshes3D::wireArc(const Vector3& center, float radius, const Vector3& normal, Degree startAngle, Degree amountAngle,
-		const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality)
+		const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality)
 	{
 		UINT32* indexData = meshData->getIndices32();
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
@@ -122,7 +122,7 @@ namespace BansheeEngine
 	}
 
 	void ShapeMeshes3D::solidArc(const Vector3& center, float radius, const Vector3& normal, Degree startAngle, Degree amountAngle,
-		const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality)
+		const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality)
 	{
 		UINT32* indexData = meshData->getIndices32();
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
@@ -139,7 +139,7 @@ namespace BansheeEngine
 	}
 
 	void ShapeMeshes3D::wireFrustum(const Vector3& position, float aspect, Degree FOV, float near, float far,
-		const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+		const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
 		UINT32* indexData = meshData->getIndices32();
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
@@ -151,7 +151,7 @@ namespace BansheeEngine
 	}
 
 	void ShapeMeshes3D::solidCone(const Vector3& base, const Vector3& normal, float height, float radius, Vector2 scale,
-		const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality)
+		const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality)
 	{
 		UINT32* indexData = meshData->getIndices32();
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
@@ -168,7 +168,7 @@ namespace BansheeEngine
 	}
 
 	void ShapeMeshes3D::wireCone(const Vector3& base, const Vector3& normal, float height, float radius, Vector2 scale,
-		const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality)
+		const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality)
 	{
 		UINT32* indexData = meshData->getIndices32();
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
@@ -183,7 +183,7 @@ namespace BansheeEngine
 			meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset, quality);
 	}
 
-	void ShapeMeshes3D::solidQuad(const Rect3& area, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+	void ShapeMeshes3D::solidQuad(const Rect3& area, const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
 		UINT32* indexData = meshData->getIndices32();
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
@@ -196,7 +196,7 @@ namespace BansheeEngine
 			meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
 	}
 
-	void ShapeMeshes3D::pixelLine(const Vector3& a, const Vector3& b, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+	void ShapeMeshes3D::pixelLine(const Vector3& a, const Vector3& b, const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
 		UINT32* indexData = meshData->getIndices32();
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
@@ -207,7 +207,7 @@ namespace BansheeEngine
 		pixelLine(a, b, positionData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
 	}
 
-	void ShapeMeshes3D::pixelLineList(const Vector<Vector3>& linePoints, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+	void ShapeMeshes3D::pixelLineList(const Vector<Vector3>& linePoints, const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
 		assert(linePoints.size() % 2 == 0);
 
@@ -231,7 +231,7 @@ namespace BansheeEngine
 	}
 
 	void ShapeMeshes3D::antialiasedLine(const Vector3& a, const Vector3& b, const Vector3& up, float width, float borderWidth, 
-		const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+		const Color& color, const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
 		UINT32* indexData = meshData->getIndices32();
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
@@ -244,7 +244,7 @@ namespace BansheeEngine
 	}
 
 	void ShapeMeshes3D::antialiasedLineList(const Vector<Vector3>& linePoints, const Vector3& up, float width, float borderWidth, 
-		const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+		const Color& color, const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
 		assert(linePoints.size() % 2 == 0);
 

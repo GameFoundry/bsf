@@ -52,7 +52,7 @@ namespace BansheeEngine
 		virtual void update() { }
 
 		/**	Returns the render window that this editor window is being rendered to. */
-		RenderWindowPtr getRenderWindow() const { return mRenderWindow; }
+		SPtr<RenderWindow> getRenderWindow() const { return mRenderWindow; }
 
 		/**	Returns the GUI widget used for displaying all GUI contents in the window. */
 		HGUIWidget getGUIWidget() const { return mGUI; }
@@ -65,10 +65,10 @@ namespace BansheeEngine
 
 	protected:
 		EditorWindowBase(bool isModal = false);
-		EditorWindowBase(const RenderWindowPtr& renderWindow);
+		EditorWindowBase(const SPtr<RenderWindow>& renderWindow);
 
 		/**	Common code for constructing the object to be called from all constructors. */
-		void construct(const RenderWindowPtr& renderWindow);
+		void construct(const SPtr<RenderWindow>& renderWindow);
 
 		/**	Initializes elements that cannot be initialized in the constructor. Must be called right after construction. */
 		virtual void initialize();
@@ -76,7 +76,7 @@ namespace BansheeEngine
 		/**	Callback that triggers whenever the underlying render window changes size. */
 		virtual void resized() { }
 
-		RenderWindowPtr mRenderWindow;
+		SPtr<RenderWindow> mRenderWindow;
 		HSceneObject mSceneObject;
 		HGUIWidget mGUI;
 		HCamera mCamera;

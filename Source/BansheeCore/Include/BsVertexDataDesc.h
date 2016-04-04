@@ -61,7 +61,7 @@ namespace BansheeEngine
 		List<VertexElement> createElements() const;
 
 		/**	Creates a new empty vertex data descriptor. */
-		static VertexDataDescPtr create();
+		static SPtr<VertexDataDesc> create();
 
 	private:
 		friend class Mesh;

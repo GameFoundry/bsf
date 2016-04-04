@@ -344,7 +344,7 @@ namespace BansheeEngine
 		mIdxToSceneObjectMap[wireArcData.idx] = mActiveSO;
 	}
 
-	void GizmoManager::drawWireMesh(const MeshDataPtr& meshData)
+	void GizmoManager::drawWireMesh(const SPtr<MeshData>& meshData)
 	{
 		mWireMeshData.push_back(WireMeshData());
 		WireMeshData& wireMeshData = mWireMeshData.back();
@@ -420,7 +420,7 @@ namespace BansheeEngine
 		mIdxToSceneObjectMap[textData.idx] = mActiveSO;
 	}
 
-	void GizmoManager::update(const CameraPtr& camera)
+	void GizmoManager::update(const SPtr<Camera>& camera)
 	{
 		mDrawHelper->clearMeshes(mActiveMeshes);
 		mActiveMeshes.clear();
@@ -471,7 +471,7 @@ namespace BansheeEngine
 			proxyData, iconMesh, iconRenderData));
 	}
 
-	void GizmoManager::renderForPicking(const CameraPtr& camera, std::function<Color(UINT32)> idxToColorCallback)
+	void GizmoManager::renderForPicking(const SPtr<Camera>& camera, std::function<Color(UINT32)> idxToColorCallback)
 	{
 		Vector<IconData> iconData;
 		IconRenderDataVecPtr iconRenderData;
@@ -638,12 +638,12 @@ namespace BansheeEngine
 		mPickingDrawHelper->buildMeshes(DrawHelper::SortType::BackToFront, camera->getPosition());
 		const Vector<DrawHelper::ShapeMeshData>& meshes = mPickingDrawHelper->getMeshes();
 
-		TransientMeshPtr iconMesh = buildIconMesh(camera, iconData, true, iconRenderData);
+		SPtr<TransientMesh> iconMesh = buildIconMesh(camera, iconData, true, iconRenderData);
 
 		// Note: This must be rendered while Scene view is being rendered
 		Matrix4 viewMat = camera->getViewMatrix();
 		Matrix4 projMat = camera->getProjectionMatrixRS();
-		ViewportPtr viewport = camera->getViewport();
+		SPtr<Viewport> viewport = camera->getViewport();
 
 		GizmoManagerCore* core = mCore.load(std::memory_order_relaxed);
 
@@ -714,7 +714,7 @@ namespace BansheeEngine
 			nullptr, Vector<GizmoManagerCore::MeshData>(), nullptr, iconRenderData));
 	}
 
-	TransientMeshPtr GizmoManager::buildIconMesh(const CameraPtr& camera, const Vector<IconData>& iconData,
+	SPtr<TransientMesh> GizmoManager::buildIconMesh(const SPtr<Camera>& camera, const Vector<IconData>& iconData,
 		bool forPicking, GizmoManager::IconRenderDataVecPtr& iconRenderData)
 	{
 		mSortedIconData.clear();
@@ -768,7 +768,7 @@ namespace BansheeEngine
 				return a.distance > b.distance;
 		});
 
-		MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(actualNumIcons * 4, actualNumIcons * 6, mIconVertexDesc);
+		SPtr<MeshData> meshData = bs_shared_ptr_new<MeshData>(actualNumIcons * 4, actualNumIcons * 6, mIconVertexDesc);
 
 		auto positionIter = meshData->getVec3DataIter(VES_POSITION);
 		auto texcoordIter = meshData->getVec2DataIter(VES_TEXCOORD);
@@ -896,7 +896,7 @@ namespace BansheeEngine
 		height = Math::roundToInt(height * scale);
 	}
 
-	void GizmoManager::calculateIconColors(const Color& tint, const CameraPtr& camera,
+	void GizmoManager::calculateIconColors(const Color& tint, const SPtr<Camera>& camera,
 		UINT32 iconHeight, bool fixedScale, Color& normalColor, Color& fadedColor)
 	{
 		normalColor = tint;
@@ -939,7 +939,7 @@ namespace BansheeEngine
 
 	GizmoManagerCore::~GizmoManagerCore()
 	{
-		CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
+		SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
 		if (mCamera != nullptr)
 			activeRenderer->_unregisterRenderCallback(mCamera.get(), 20);
 	}
@@ -1037,7 +1037,7 @@ namespace BansheeEngine
 	{
 		if (mCamera != camera)
 		{
-			CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
+			SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
 			if (mCamera != nullptr)
 				activeRenderer->_unregisterRenderCallback(mCamera.get(), 0);
 
@@ -1148,7 +1148,7 @@ namespace BansheeEngine
 		RenderAPICore& rapi = RenderAPICore::instance();
 		const MeshProperties& meshProps = mesh->getProperties();
 
-		std::shared_ptr<VertexData> vertexData = mesh->getVertexData();
+		SPtr<VertexData> vertexData = mesh->getVertexData();
 
 		rapi.setVertexDeclaration(vertexData->vertexDeclaration);
 		auto vertexBuffers = vertexData->getBuffers();

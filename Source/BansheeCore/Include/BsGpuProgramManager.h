@@ -64,14 +64,14 @@ namespace BansheeEngine
 		 * @param[in]	requiresAdjacency	If true then adjacency information will be provided when rendering using this 
 		 *									program.
 		 */
-		GpuProgramPtr create(const String& source, const String& entryPoint, const String& language, 
+		SPtr<GpuProgram> create(const String& source, const String& entryPoint, const String& language, 
 			GpuProgramType gptype, GpuProgramProfile profile, bool requiresAdjacency = false);
 
 		/**
 		 * Creates a completely empty and uninitialized GpuProgram. Should only be used for specific purposes, like 
 		 * deserialization, as it requires additional manual initialization that is not required normally.
 		 */
-		GpuProgramPtr createEmpty(const String& language, GpuProgramType type);
+		SPtr<GpuProgram> createEmpty(const String& language, GpuProgramType type);
 	};
 
 	/**

@@ -19,10 +19,10 @@ namespace BansheeEngine
 
 	}
 
-	MeshPtr MeshManager::create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
+	SPtr<Mesh> MeshManager::create(UINT32 numVertices, UINT32 numIndices, const SPtr<VertexDataDesc>& vertexDesc, 
 		int usage, DrawOperationType drawOp, IndexType indexType)
 	{
-		MeshPtr mesh = bs_core_ptr<Mesh>(new (bs_alloc<Mesh>()) 
+		SPtr<Mesh> mesh = bs_core_ptr<Mesh>(new (bs_alloc<Mesh>()) 
 			Mesh(numVertices, numIndices, vertexDesc, usage, drawOp, indexType));
 		mesh->_setThisPtr(mesh);
 		mesh->initialize();
@@ -30,10 +30,10 @@ namespace BansheeEngine
 		return mesh;
 	}
 
-	MeshPtr MeshManager::create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
+	SPtr<Mesh> MeshManager::create(UINT32 numVertices, UINT32 numIndices, const SPtr<VertexDataDesc>& vertexDesc, 
 		const Vector<SubMesh>& subMeshes, int usage, IndexType indexType)
 	{
-		MeshPtr mesh = bs_core_ptr<Mesh>(new (bs_alloc<Mesh>())
+		SPtr<Mesh> mesh = bs_core_ptr<Mesh>(new (bs_alloc<Mesh>())
 			Mesh(numVertices, numIndices, vertexDesc, subMeshes, usage, indexType));
 		mesh->_setThisPtr(mesh);
 		mesh->initialize();
@@ -41,27 +41,27 @@ namespace BansheeEngine
 		return mesh;
 	}
 
-	MeshPtr MeshManager::create(const MeshDataPtr& initialData, int usage, DrawOperationType drawOp)
+	SPtr<Mesh> MeshManager::create(const SPtr<MeshData>& initialData, int usage, DrawOperationType drawOp)
 	{
-		MeshPtr mesh = bs_core_ptr<Mesh>(new (bs_alloc<Mesh>()) Mesh(initialData, usage, drawOp));
+		SPtr<Mesh> mesh = bs_core_ptr<Mesh>(new (bs_alloc<Mesh>()) Mesh(initialData, usage, drawOp));
 		mesh->_setThisPtr(mesh);
 		mesh->initialize();
 
 		return mesh;
 	}
 
-	MeshPtr MeshManager::create(const MeshDataPtr& initialData, const Vector<SubMesh>& subMeshes, int usage)
+	SPtr<Mesh> MeshManager::create(const SPtr<MeshData>& initialData, const Vector<SubMesh>& subMeshes, int usage)
 	{
-		MeshPtr mesh = bs_core_ptr<Mesh>(new (bs_alloc<Mesh>()) Mesh(initialData, subMeshes, usage));
+		SPtr<Mesh> mesh = bs_core_ptr<Mesh>(new (bs_alloc<Mesh>()) Mesh(initialData, subMeshes, usage));
 		mesh->_setThisPtr(mesh);
 		mesh->initialize();
 
 		return mesh;
 	}
 
-	MeshPtr MeshManager::createEmpty()
+	SPtr<Mesh> MeshManager::createEmpty()
 	{
-		MeshPtr mesh = bs_core_ptr<Mesh>(new (bs_alloc<Mesh>()) Mesh());
+		SPtr<Mesh> mesh = bs_core_ptr<Mesh>(new (bs_alloc<Mesh>()) Mesh());
 		mesh->_setThisPtr(mesh);
 
 		return mesh;
@@ -69,7 +69,7 @@ namespace BansheeEngine
 
 	void MeshManager::onStartUp()
 	{
-		VertexDataDescPtr vertexDesc = bs_shared_ptr_new<VertexDataDesc>();
+		SPtr<VertexDataDesc> vertexDesc = bs_shared_ptr_new<VertexDataDesc>();
 		vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
 
 		mDummyMeshData = bs_shared_ptr_new<MeshData>(1, 3, vertexDesc);

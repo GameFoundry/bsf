@@ -19,21 +19,21 @@ namespace BansheeEngine
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "RenderTexture2D")
 
 		/** @copydoc ScriptRenderTargetBase::getNativeValue */
-		RenderTargetPtr getNativeValue() const override { return mRenderTarget; }
+		SPtr<RenderTarget> getNativeValue() const override { return mRenderTarget; }
 
 		/** Returns the internal wrapped render texture. Returns null if this object instead wraps a multi render target. */
-		RenderTexturePtr getRenderTexture() const;
+		SPtr<RenderTexture> getRenderTexture() const;
 
 		/** 
 		 * Returns the internal wrapped multi render texture. Returns null if this object instead wraps a single render
 		 * target.
 		 */
-		MultiRenderTexturePtr getMultiRenderTexture() const;
+		SPtr<MultiRenderTexture> getMultiRenderTexture() const;
 
 	private:
-		ScriptRenderTexture2D(const RenderTargetPtr& target, bool isMulti, MonoObject* instance);
+		ScriptRenderTexture2D(const SPtr<RenderTarget>& target, bool isMulti, MonoObject* instance);
 
-		RenderTargetPtr mRenderTarget;
+		SPtr<RenderTarget> mRenderTarget;
 		bool mIsMulti;
 
 		/************************************************************************/

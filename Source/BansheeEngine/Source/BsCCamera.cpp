@@ -7,7 +7,7 @@
 
 namespace BansheeEngine 
 {
-	CCamera::CCamera(const HSceneObject& parent, RenderTargetPtr target, float left, float top, float width, float height)
+	CCamera::CCamera(const HSceneObject& parent, SPtr<RenderTarget> target, float left, float top, float width, float height)
 		: Component(parent), mTarget(target), mLeft(left), mTop(top), mWidth(width), mHeight(height)
     {
 		setName("Camera");

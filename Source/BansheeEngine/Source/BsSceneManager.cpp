@@ -48,7 +48,7 @@ namespace BansheeEngine
 			return entry.camera == camera;
 		});
 
-		ViewportPtr viewport = camera->getViewport();
+		SPtr<Viewport> viewport = camera->getViewport();
 		if (camera->isMain())
 		{
 			if (iterFind == mMainCameras.end())
@@ -80,7 +80,7 @@ namespace BansheeEngine
 	{
 		for (auto& renderablePair : mRenderables)
 		{
-			RenderablePtr handler = renderablePair.second.renderable;
+			SPtr<Renderable> handler = renderablePair.second.renderable;
 			HSceneObject so = renderablePair.second.sceneObject;
 
 			UINT32 curHash = so->getTransformHash();
@@ -100,7 +100,7 @@ namespace BansheeEngine
 
 		for (auto& cameraPair : mCameras)
 		{
-			CameraPtr handler = cameraPair.second.camera;
+			SPtr<Camera> handler = cameraPair.second.camera;
 			HSceneObject so = cameraPair.second.sceneObject;
 
 			UINT32 curHash = so->getTransformHash();
@@ -147,7 +147,7 @@ namespace BansheeEngine
 		return SceneCameraData();
 	}
 
-	void SceneManager::setMainRenderTarget(const RenderTargetPtr& rt)
+	void SceneManager::setMainRenderTarget(const SPtr<RenderTarget>& rt)
 	{
 		if (mMainRT == rt)
 			return;

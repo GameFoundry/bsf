@@ -76,17 +76,6 @@ namespace BansheeEngine
 
 	typedef Vector<char*> HLSLMicroCode;
 
-	typedef std::shared_ptr<D3D11GpuVertexProgram> D3D11GpuVertexProgramPtr;
-	typedef std::shared_ptr<D3D11GpuFragmentProgram> D3D11GpuFragmentProgramPtr;
-	typedef std::shared_ptr<D3D11GpuGeometryProgram> D3D11GpuGeometryProgramPtr;
-	typedef std::shared_ptr<D3D11GpuHullProgram> D3D11GpuHullProgramPtr;
-	typedef std::shared_ptr<D3D11GpuDomainProgram> D3D11GpuDomainProgramPtr;
-	typedef std::shared_ptr<D3D11BlendState> D3D11BlendStatePtr;
-	typedef std::shared_ptr<D3D11RasterizerState> D3D11RasterizerStatePtr;
-	typedef std::shared_ptr<D3D11SamplerState> D3D11SamplerStatePtr;
-	typedef std::shared_ptr<D3D11DepthStencilState> D3D11DepthStencilStatePtr;
-	typedef std::shared_ptr<D3D11RenderWindow> D3D11RenderWindowPtr;
-
 #if (BS_PLATFORM == BS_PLATFORM_WIN32) && !defined(BS_STATIC_LIB)
 #	ifdef BS_RSD3D11_EXPORTS
 #		define BS_D3D11_EXPORT __declspec(dllexport)

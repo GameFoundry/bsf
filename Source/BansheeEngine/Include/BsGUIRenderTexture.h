@@ -29,7 +29,7 @@ namespace BansheeEngine
 		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the 
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
-		static GUIRenderTexture* create(const RenderTexturePtr& texture, bool transparent, 
+		static GUIRenderTexture* create(const SPtr<RenderTexture>& texture, bool transparent, 
 			const String& styleName = StringUtil::BLANK);
 
 		/**
@@ -42,7 +42,7 @@ namespace BansheeEngine
 		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the 
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
-		static GUIRenderTexture* create(const RenderTexturePtr& texture, bool transparent, const GUIOptions& options, 
+		static GUIRenderTexture* create(const SPtr<RenderTexture>& texture, bool transparent, const GUIOptions& options, 
 			const String& styleName = StringUtil::BLANK);
 
 		/**
@@ -52,7 +52,7 @@ namespace BansheeEngine
 		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the 
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
-		static GUIRenderTexture* create(const RenderTexturePtr& texture, const String& styleName = StringUtil::BLANK);
+		static GUIRenderTexture* create(const SPtr<RenderTexture>& texture, const String& styleName = StringUtil::BLANK);
 
 		/**
 		 * Creates a new element with the provided render texture.
@@ -63,21 +63,21 @@ namespace BansheeEngine
 		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the 
 		 *								GUIWidget the element is used on. If not specified default style is used.
 		 */
-		static GUIRenderTexture* create(const RenderTexturePtr& texture, const GUIOptions& options, 
+		static GUIRenderTexture* create(const SPtr<RenderTexture>& texture, const GUIOptions& options, 
 			const String& styleName = StringUtil::BLANK);
 
 		/** Changes the active render texture whose contents to display in the GUI element. */
-		void setRenderTexture(const RenderTexturePtr& texture);
+		void setRenderTexture(const SPtr<RenderTexture>& texture);
 
 	protected:
-		GUIRenderTexture(const String& styleName, const RenderTexturePtr& texture, bool transparent, 
+		GUIRenderTexture(const String& styleName, const SPtr<RenderTexture>& texture, bool transparent, 
 			const GUIDimensions& dimensions);
 		virtual ~GUIRenderTexture();
 
 		/** @copydoc GUIElement::updateRenderElementsInternal */
 		virtual void updateRenderElementsInternal() override;
 
-		RenderTexturePtr mSourceTexture;
+		SPtr<RenderTexture> mSourceTexture;
 		bool mTransparent;
 	};
 

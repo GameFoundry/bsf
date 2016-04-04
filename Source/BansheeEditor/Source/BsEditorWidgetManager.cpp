@@ -61,7 +61,7 @@ namespace BansheeEngine
 				}
 
 				EditorWindowBase* parentWindow = parentContainer->getParentWindow();
-				RenderWindowPtr parentRenderWindow = parentWindow->getRenderWindow();
+				SPtr<RenderWindow> parentRenderWindow = parentWindow->getRenderWindow();
 				const RenderWindowProperties& props = parentRenderWindow->getProperties();
 
 				if (!props.hasFocus())
@@ -187,7 +187,7 @@ namespace BansheeEngine
 		return iterFindCreate != mCreateCallbacks.end();
 	}
 
-	EditorWidgetLayoutPtr EditorWidgetManager::getLayout() const
+	SPtr<EditorWidgetLayout> EditorWidgetManager::getLayout() const
 	{
 		auto GetWidgetNamesInContainer = [&] (const EditorWidgetContainer* container)
 		{
@@ -208,7 +208,7 @@ namespace BansheeEngine
 
 		MainEditorWindow* mainWindow = EditorWindowManager::instance().getMainWindow();
 		DockManager& dockManager = mainWindow->getDockManager();
-		EditorWidgetLayoutPtr layout = bs_shared_ptr_new<EditorWidgetLayout>(dockManager.getLayout());
+		SPtr<EditorWidgetLayout> layout = bs_shared_ptr_new<EditorWidgetLayout>(dockManager.getLayout());
 
 		Vector<EditorWidgetLayout::Entry>& layoutEntries = layout->getEntries();
 		UnorderedSet<EditorWidgetContainer*> widgetContainers;
@@ -245,7 +245,7 @@ namespace BansheeEngine
 		return layout;
 	}
 
-	void EditorWidgetManager::setLayout(const EditorWidgetLayoutPtr& layout)
+	void EditorWidgetManager::setLayout(const SPtr<EditorWidgetLayout>& layout)
 	{
 		// Unparent all widgets
 		Vector<EditorWidgetBase*> unparentedWidgets;
@@ -308,7 +308,7 @@ namespace BansheeEngine
 				continue;
 
 			EditorWindowBase* parentWindow = parentContainer->getParentWindow();
-			RenderWindowPtr parentRenderWindow = parentWindow->getRenderWindow();
+			SPtr<RenderWindow> parentRenderWindow = parentWindow->getRenderWindow();
 
 			if (parentRenderWindow.get() != &window)
 				continue;

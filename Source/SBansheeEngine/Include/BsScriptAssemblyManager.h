@@ -44,7 +44,7 @@ namespace BansheeEngine
 			SPtr<ManagedSerializableObjectInfo>& outInfo);
 
 		/**	Generates or retrieves a type info object for the specified managed class, if the class is serializable. */
-		ManagedSerializableTypeInfoPtr getTypeInfo(MonoClass* monoClass);
+		SPtr<ManagedSerializableTypeInfo> getTypeInfo(MonoClass* monoClass);
 
 		/**
 		 * Checks if the managed serializable object info for the specified type exists.
@@ -88,7 +88,7 @@ namespace BansheeEngine
 		 */
 		void initializeBaseTypes();
 
-		UnorderedMap<String, std::shared_ptr<ManagedSerializableAssemblyInfo>> mAssemblyInfos;
+		UnorderedMap<String, SPtr<ManagedSerializableAssemblyInfo>> mAssemblyInfos;
 		bool mBaseTypesInitialized;
 
 		MonoClass* mSystemArrayClass;

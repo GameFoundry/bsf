@@ -39,7 +39,7 @@ namespace BansheeEngine
 			{ }
 
 			LoadedResourceData resData;
-			ResourcePtr loadedData;
+			SPtr<Resource> loadedData;
 			UINT32 remainingDependencies;
 			Vector<HResource> dependencies;
 			bool notifyImmediately;
@@ -194,7 +194,7 @@ namespace BansheeEngine
 		 * Updates an existing resource handle with a new resource. Caller must ensure that new resource type matches the 
 		 * original resource type.
 		 */
-		void update(HResource& handle, const ResourcePtr& resource);
+		void update(HResource& handle, const SPtr<Resource>& resource);
 
 		/**
 		 * Returns a list of dependencies from the resources at the specified path. Resource will not be loaded or parsed, 
@@ -224,10 +224,10 @@ namespace BansheeEngine
 		 * application restart, then you must save the resource manifest before closing the application and restore it 
 		 * upon startup. Otherwise resources will be assigned brand new UUIDs and references will be broken.
 		 */
-		void registerResourceManifest(const ResourceManifestPtr& manifest);
+		void registerResourceManifest(const SPtr<ResourceManifest>& manifest);
 
 		/**	Unregisters a resource manifest previously registered with registerResourceManifest(). */
-		void unregisterResourceManifest(const ResourceManifestPtr& manifest);
+		void unregisterResourceManifest(const SPtr<ResourceManifest>& manifest);
 
 		/**
 		 * Allows you to retrieve resource manifest containing UUID <-> file path mapping that is used when resolving 
@@ -238,7 +238,7 @@ namespace BansheeEngine
 		 *
 		 * @see		registerResourceManifest
 		 */
-		ResourceManifestPtr getResourceManifest(const String& name) const;
+		SPtr<ResourceManifest> getResourceManifest(const String& name) const;
 
 		/** Attempts to retrieve file path from the provided UUID. Returns true if successful, false otherwise. */
 		bool getFilePathFromUUID(const String& uuid, Path& filePath) const;
@@ -279,7 +279,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method used primarily be resource factory methods.
 		 */
-		HResource _createResourceHandle(const ResourcePtr& obj);
+		HResource _createResourceHandle(const SPtr<Resource>& obj);
 
 		/** Returns an existing handle for the specified UUID if one exists, or creates a new one. */
 		HResource _getResourceHandle(const String& uuid);
@@ -298,7 +298,7 @@ namespace BansheeEngine
 		HResource loadInternal(const String& UUID, const Path& filePath, bool synchronous, bool loadDependencies, bool incrementRef);
 
 		/** Performs actually reading and deserializing of the resource file. Called from various worker threads. */
-		ResourcePtr loadFromDiskAndDeserialize(const Path& filePath);
+		SPtr<Resource> loadFromDiskAndDeserialize(const Path& filePath);
 
 		/**	Triggered when individual resource has finished loading. */
 		void loadComplete(HResource& resource);
@@ -310,8 +310,8 @@ namespace BansheeEngine
 		void destroy(ResourceHandleBase& resource);
 
 	private:
-		Vector<ResourceManifestPtr> mResourceManifests;
-		ResourceManifestPtr mDefaultResourceManifest;
+		Vector<SPtr<ResourceManifest>> mResourceManifests;
+		SPtr<ResourceManifest> mDefaultResourceManifest;
 
 		BS_MUTEX(mInProgressResourcesMutex);
 		BS_MUTEX(mLoadedResourceMutex);

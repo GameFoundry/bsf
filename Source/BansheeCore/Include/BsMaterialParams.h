@@ -213,7 +213,7 @@ namespace BansheeEngine
 		 * @param[in]	name		Name of the shader parameter.
 		 * @param[out]	value		Output value of the parameter.
 		 */
-		void getSamplerState(const String& name, SamplerStatePtr& value) const;
+		void getSamplerState(const String& name, SPtr<SamplerState>& value) const;
 
 		/** 
 		 * Sets the value of a shader sampler state parameter with the specified name. If the parameter name or type is not 
@@ -222,7 +222,7 @@ namespace BansheeEngine
 		 * @param[in]	name		Name of the shader parameter.
 		 * @param[in]	value		New value of the parameter.
 		 */
-		void setSamplerState(const String& name, const SamplerStatePtr& value);
+		void setSamplerState(const String& name, const SPtr<SamplerState>& value);
 
 		/** 
 		 * Returns data about a parameter and reports an error if there is a type or size mismatch, or if the parameter
@@ -333,16 +333,16 @@ namespace BansheeEngine
 		bool getIsTextureLoadStore(UINT32 index) const;
 
 		/** 
-		 * Equivalent to getSamplerState(const String&, SamplerStatePtr&) except it uses the internal parameter index 
+		 * Equivalent to getSamplerState(const String&, SPtr<SamplerState>&) except it uses the internal parameter index 
 		 * directly, avoiding the name lookup. Caller must guarantee the index is valid.
 		 */
-		void getSamplerState(UINT32 index, SamplerStatePtr& value) const;
+		void getSamplerState(UINT32 index, SPtr<SamplerState>& value) const;
 
 		/** 
-		 * Equivalent to setSamplerState(const String&, SamplerStatePtr&) except it uses the internal parameter index 
+		 * Equivalent to setSamplerState(const String&, SPtr<SamplerState>&) except it uses the internal parameter index 
 		 * directly, avoiding the name lookup. Caller must guarantee the index is valid.
 		 */
-		void setSamplerState(UINT32 index, const SamplerStatePtr& value);
+		void setSamplerState(UINT32 index, const SPtr<SamplerState>& value);
 
 		/** 
 		 * Returns the default texture (one assigned when no other is provided), if available for the specified index. 
@@ -354,7 +354,7 @@ namespace BansheeEngine
 		 * Returns the default sampler state (one assigned when no other is provided), if available for the specified index.
 		 * Index is the internal parameter index and the caller must guarantee the index is valid.
 		 */
-		void getDefaultSamplerState(UINT32 index, SamplerStatePtr& value) const;
+		void getDefaultSamplerState(UINT32 index, SPtr<SamplerState>& value) const;
 
 	private:
 		const static UINT32 STATIC_BUFFER_SIZE = 256;
@@ -364,9 +364,9 @@ namespace BansheeEngine
 		UINT8* mDataParamsBuffer = nullptr;
 		StructParamData* mStructParams = nullptr;
 		TextureParamData* mTextureParams = nullptr;
-		SamplerStatePtr* mSamplerStateParams = nullptr;
+		SPtr<SamplerState>* mSamplerStateParams = nullptr;
 		HTexture* mDefaultTextureParams = nullptr;
-		SamplerStatePtr* mDefaultSamplerStateParams = nullptr;
+		SPtr<SamplerState>* mDefaultSamplerStateParams = nullptr;
 
 		UINT32 mDataSize = 0;
 		UINT32 mNumStructParams = 0;

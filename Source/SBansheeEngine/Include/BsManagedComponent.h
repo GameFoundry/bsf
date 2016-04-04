@@ -101,8 +101,8 @@ namespace BansheeEngine
 		bool mRequiresReset;
 
 		bool mMissingType;
-		ManagedSerializableObjectPtr mSerializedObjectData;
-		ManagedSerializableObjectInfoPtr mObjInfo; // Transient
+		SPtr<ManagedSerializableObject> mSerializedObjectData;
+		SPtr<ManagedSerializableObjectInfo> mObjInfo; // Transient
 
 		OnInitializedThunkDef mOnInitializedThunk;
 		OnUpdateThunkDef mOnUpdateThunk;

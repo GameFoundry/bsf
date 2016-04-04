@@ -235,7 +235,7 @@ namespace BansheeEngine
 
 	MonoObject* ScriptComponent::_createManagedInstance(bool construct)
 	{
-		ManagedSerializableObjectInfoPtr currentObjInfo = nullptr;
+		SPtr<ManagedSerializableObjectInfo> currentObjInfo = nullptr;
 
 		// See if this type even still exists
 		if (!ScriptAssemblyManager::instance().getSerializableObjectInfo(mNamespace, mType, currentObjInfo))

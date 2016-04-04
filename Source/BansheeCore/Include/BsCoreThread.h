@@ -37,7 +37,7 @@ namespace BansheeEngine
 		/** Contains data about an accessor for a specific thread. */
 		struct AccessorContainer
 		{
-			CoreAccessorPtr accessor;
+			SPtr<CoreThreadAccessor<CommandQueueNoSync>> accessor;
 			bool isMain;
 		};
 
@@ -64,7 +64,7 @@ public:
 	 * Accessors contain their own command queue and their commands will only start to get executed once that queue is 
 	 * submitted to the core thread via submitAccessors() method.
 	 */
-	CoreAccessorPtr getAccessor();
+	SPtr<CoreThreadAccessor<CommandQueueNoSync>> getAccessor();
 
 	/**
 	 * Retrieves an accessor that you can use for executing commands on the core thread from a non-core thread. There is 

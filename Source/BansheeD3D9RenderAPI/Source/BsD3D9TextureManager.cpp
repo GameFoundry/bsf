@@ -17,14 +17,14 @@ namespace BansheeEngine
 	D3D9TextureManager::~D3D9TextureManager()
 	{ }
 
-	RenderTexturePtr D3D9TextureManager::createRenderTextureImpl(const RENDER_TEXTURE_DESC& desc)
+	SPtr<RenderTexture> D3D9TextureManager::createRenderTextureImpl(const RENDER_TEXTURE_DESC& desc)
 	{
 		D3D9RenderTexture* tex = new (bs_alloc<D3D9RenderTexture>()) D3D9RenderTexture(desc);
 
 		return bs_core_ptr<D3D9RenderTexture>(tex);
 	}
 
-	MultiRenderTexturePtr D3D9TextureManager::createMultiRenderTextureImpl(const MULTI_RENDER_TEXTURE_DESC& desc)
+	SPtr<MultiRenderTexture> D3D9TextureManager::createMultiRenderTextureImpl(const MULTI_RENDER_TEXTURE_DESC& desc)
 	{
 		D3D9MultiRenderTexture* tex = new (bs_alloc<D3D9MultiRenderTexture>()) D3D9MultiRenderTexture(desc);
 
@@ -49,7 +49,7 @@ namespace BansheeEngine
 	}
 
 	SPtr<TextureCore> D3D9TextureCoreManager::createTextureInternal(TextureType texType, UINT32 width, UINT32 height, UINT32 depth,
-		int numMips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount, const PixelDataPtr& initialData)
+		int numMips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount, const SPtr<PixelData>& initialData)
 	{
 		D3D9TextureCore* tex = new (bs_alloc<D3D9TextureCore>()) D3D9TextureCore(texType,
 			width, height, depth, numMips, format, usage, hwGammaCorrection, multisampleCount, initialData);

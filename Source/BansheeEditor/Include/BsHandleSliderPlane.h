@@ -39,7 +39,7 @@ namespace BansheeEngine
 		bool intersects(const Ray& ray, float& t) const override;
 
 		/** @copydoc HandleSlider::handleInput */
-		void handleInput(const CameraPtr& camera, const Vector2I& inputDelta) override;
+		void handleInput(const SPtr<Camera>& camera, const Vector2I& inputDelta) override;
 
 		/**
 		 * Returns a delta value that is the result of dragging/sliding the pointer along the plane. Returned movement is
@@ -49,7 +49,7 @@ namespace BansheeEngine
 		Vector2 getDelta() const { return mDelta; }
 	protected:
 		/** @copydoc HandleSlider::activate */
-		void activate(const CameraPtr& camera, const Vector2I& pointerPos) override;
+		void activate(const SPtr<Camera>& camera, const Vector2I& pointerPos) override;
 
 		/** @copydoc HandleSlider::reset */
 		void reset() override { mDelta = Vector2::ZERO; }
@@ -60,7 +60,7 @@ namespace BansheeEngine
 		 * @param[in]	camera		Camera we're interacting through.
 		 * @param[in]	pointerPos	Position of the pointer in pixels relative to the provided camera's viewport.
 		 */
-		Vector3 getPositionOnPlane(const CameraPtr& camera, const Vector2I& pointerPos) const;
+		Vector3 getPositionOnPlane(const SPtr<Camera>& camera, const Vector2I& pointerPos) const;
 
 		Vector3 mDirection1;
 		Vector3 mDirection2;

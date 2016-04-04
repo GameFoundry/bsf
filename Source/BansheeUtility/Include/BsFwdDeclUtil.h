@@ -89,20 +89,8 @@ namespace BansheeEngine
 	class ISerializable;
 	class SerializableType;
 
-	typedef std::shared_ptr<DataStream> DataStreamPtr;
-	typedef std::shared_ptr<MemoryDataStream> MemoryDataStreamPtr;
-	typedef std::shared_ptr<FileDataStream> FileDataStreamPtr;
-	typedef std::shared_ptr<MeshData> MeshDataPtr;
-	typedef std::shared_ptr<PixelData> PixelDataPtr;
-	typedef std::shared_ptr<GpuResourceData> GpuResourceDataPtr;
-	typedef std::shared_ptr<DataStream> DataStreamPtr;
-	typedef std::shared_ptr<MemoryDataStream> MemoryDataStreamPtr;
-	typedef std::shared_ptr<Task> TaskPtr;
-	typedef std::shared_ptr<TestSuite> TestSuitePtr;
-	typedef std::shared_ptr<AsyncOpSyncData> AsyncOpSyncDataPtr;
-
-	typedef List<DataStreamPtr> DataStreamList;
-	typedef std::shared_ptr<DataStreamList> DataStreamListPtr;
+	typedef List<SPtr<DataStream>> DataStreamList;
+	typedef SPtr<DataStreamList> DataStreamListPtr;
 
 	enum TypeID_Utility
 	{

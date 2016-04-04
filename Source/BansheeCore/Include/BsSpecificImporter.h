@@ -51,7 +51,7 @@ namespace BansheeEngine
 		 * @param[in]	importOptions	Options that can control how is the resource imported.
 		 * @return						null if it fails, otherwise the loaded object.
 		 */
-		virtual ResourcePtr import(const Path& filePath, ConstImportOptionsPtr importOptions) = 0;
+		virtual SPtr<Resource> import(const Path& filePath, SPtr<const ImportOptions> importOptions) = 0;
 
 		/**
 		 * Imports the given file. This method returns all imported resources, which is relevant for files that can contain
@@ -62,23 +62,23 @@ namespace BansheeEngine
 		 * @return						Empty array if it fails, otherwise the loaded objects. First element is always the 
 		 *								primary resource.
 		 */
-		virtual Vector<SubResourceRaw> importAll(const Path& filePath, ConstImportOptionsPtr importOptions);
+		virtual Vector<SubResourceRaw> importAll(const Path& filePath, SPtr<const ImportOptions> importOptions);
 
 		/**
 		 * Creates import options specific for this importer. Import options are provided when calling import() in order 
 		 * to customize the import, and provide additional information.
 		 */
-		virtual ImportOptionsPtr createImportOptions() const;
+		virtual SPtr<ImportOptions> createImportOptions() const;
 
 		/**
 		 * Gets the default import options.
 		 *
 		 * @return	The default import options.
 		 */
-		ConstImportOptionsPtr getDefaultImportOptions() const;
+		SPtr<const ImportOptions> getDefaultImportOptions() const;
 
 	private:
-		mutable ConstImportOptionsPtr mDefaultImportOptions;
+		mutable SPtr<const ImportOptions> mDefaultImportOptions;
 	};
 
 	/** @} */

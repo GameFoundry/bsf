@@ -35,7 +35,7 @@ namespace BansheeEngine
 			return TID_ShaderInclude;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return ShaderInclude::_createPtr(""); // Initial string doesn't matter, it'll get overwritten
 		}

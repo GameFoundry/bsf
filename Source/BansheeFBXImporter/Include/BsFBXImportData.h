@@ -149,7 +149,7 @@ namespace BansheeEngine
 		Vector<FBXBoneInfluence> boneInfluences;
 		Vector<FBXBone> bones;
 
-		MeshDataPtr meshData;
+		SPtr<MeshData> meshData;
 		Vector<SubMesh> subMeshes;
 
 		Vector<FBXImportNode*> referencedBy;

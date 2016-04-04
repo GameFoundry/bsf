@@ -121,7 +121,7 @@ namespace BansheeEngine
 	{
 		if (meshData != nullptr)
 		{
-			MeshDataPtr nativeMeshData = meshData->getInternalValue()->getData();
+			SPtr<MeshData> nativeMeshData = meshData->getInternalValue()->getData();
 			GizmoManager::instance().drawWireMesh(nativeMeshData);
 		}
 	}

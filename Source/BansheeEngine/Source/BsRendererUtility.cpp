@@ -19,7 +19,7 @@ namespace BansheeEngine
 	RendererUtility::RendererUtility()
 	{
 		{
-			VertexDataDescPtr vertexDesc = bs_shared_ptr_new<VertexDataDesc>();
+			SPtr<VertexDataDesc> vertexDesc = bs_shared_ptr_new<VertexDataDesc>();
 			vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
 			vertexDesc->addVertElem(VET_FLOAT2, VES_TEXCOORD);
 
@@ -34,7 +34,7 @@ namespace BansheeEngine
 			UINT32 numIndices = 0;
 
 			ShapeMeshes3D::getNumElementsSphere(3, numVertices, numIndices);
-			MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(numVertices, numIndices, vertexDesc);
+			SPtr<MeshData> meshData = bs_shared_ptr_new<MeshData>(numVertices, numIndices, vertexDesc);
 
 			UINT32* indexData = meshData->getIndices32();
 			UINT8* positionData = meshData->getElementData(VES_POSITION);
@@ -56,7 +56,7 @@ namespace BansheeEngine
 			UINT32 numVertices = numSides * numSlices * 2;
 			UINT32 numIndices = ((numSides * 2) * (numSlices - 1) * 2) * 3;
 
-			MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(numVertices, numIndices, vertexDesc);
+			SPtr<MeshData> meshData = bs_shared_ptr_new<MeshData>(numVertices, numIndices, vertexDesc);
 
 			UINT32* indexData = meshData->getIndices32();
 			UINT8* positionData = meshData->getElementData(VES_POSITION);
@@ -262,7 +262,7 @@ namespace BansheeEngine
 	{
 		RenderAPICore& rs = RenderAPICore::instance();
 		const MeshProperties& meshProps = mesh->getProperties();
-		std::shared_ptr<VertexData> vertexData = mesh->getVertexData();
+		SPtr<VertexData> vertexData = mesh->getVertexData();
 
 		rs.setVertexDeclaration(vertexData->vertexDeclaration);
 		auto& vertexBuffers = vertexData->getBuffers();
@@ -366,7 +366,7 @@ namespace BansheeEngine
 		}
 
 		SPtr<VertexDataDesc> vertexDesc = mFullScreenQuadMesh->getVertexDesc();
-		MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(4, 6, vertexDesc);
+		SPtr<MeshData> meshData = bs_shared_ptr_new<MeshData>(4, 6, vertexDesc);
 
 		auto vecIter = meshData->getVec3DataIter(VES_POSITION);
 		for (UINT32 i = 0; i < 4; i++)

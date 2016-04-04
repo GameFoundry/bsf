@@ -207,24 +207,24 @@ namespace BansheeEngine
 		void setIndices(UINT32* buffer, UINT32 size);
 
 		/**	Returns the underlying MeshData structure. */
-		MeshDataPtr getData() const { return mMeshData; }
+		SPtr<MeshData> getData() const { return mMeshData; }
 
 		/**	Creates a new empty mesh data structure. */
-		static RendererMeshDataPtr create(UINT32 numVertices, UINT32 numIndices, VertexLayout layout, IndexType indexType = IT_32BIT);
+		static SPtr<RendererMeshData> create(UINT32 numVertices, UINT32 numIndices, VertexLayout layout, IndexType indexType = IT_32BIT);
 
 		/**	Creates a new mesh data structure using an existing mesh data buffer. */
-		static RendererMeshDataPtr create(const MeshDataPtr& meshData);
+		static SPtr<RendererMeshData> create(const SPtr<MeshData>& meshData);
 
 		/**	Creates a vertex descriptor from a vertex layout enum. */
-		static VertexDataDescPtr vertexLayoutVertexDesc(VertexLayout type);
+		static SPtr<VertexDataDesc> vertexLayoutVertexDesc(VertexLayout type);
 
 	private:
 		friend class CoreRenderer;
 
 		RendererMeshData(UINT32 numVertices, UINT32 numIndices, VertexLayout layout, IndexType indexType = IT_32BIT);
-		RendererMeshData(const MeshDataPtr& meshData);
+		RendererMeshData(const SPtr<MeshData>& meshData);
 
-		MeshDataPtr mMeshData;
+		SPtr<MeshData> mMeshData;
 	};
 
 	/** @} */

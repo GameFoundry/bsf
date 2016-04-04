@@ -250,7 +250,7 @@ namespace BansheeEngine
 		mShaderSpriteNonAlphaImage = getShader(ShaderSpriteImageNoAlphaFile);
 		mShaderDiffuse = getShader(ShaderDiffuseFile);
 
-		PixelDataPtr dummyPixelData = PixelData::create(2, 2, 1, PF_R8G8B8A8);
+		SPtr<PixelData> dummyPixelData = PixelData::create(2, 2, 1, PF_R8G8B8A8);
 
 		dummyPixelData->setColorAt(Color::Red, 0, 0);
 		dummyPixelData->setColorAt(Color::Red, 0, 1);
@@ -351,7 +351,7 @@ namespace BansheeEngine
 			textureIO->setGenerateMipmaps(false);
 			HTexture splashTexture = gImporter().import<Texture>(inputPath, textureIO);
 
-			PixelDataPtr splashPixelData = splashTexture->getProperties().allocateSubresourceBuffer(0);
+			SPtr<PixelData> splashPixelData = splashTexture->getProperties().allocateSubresourceBuffer(0);
 			splashTexture->readData(*splashPixelData);
 
 			FileEncoder fe(outputPath);
@@ -363,7 +363,7 @@ namespace BansheeEngine
 
 		// Generate & save GUI skin
 		{
-			GUISkinPtr skin = generateGUISkin();
+			SPtr<GUISkin> skin = generateGUISkin();
 			Path outputPath = FileSystem::getWorkingDirectoryPath() + mBuiltinDataFolder + (GUISkinFile + L".asset");
 
 			HResource skinResource;
@@ -385,14 +385,14 @@ namespace BansheeEngine
 		Resources::instance().unloadAllUnused();
 	}
 
-	GUISkinPtr BuiltinResources::generateGUISkin()
+	SPtr<GUISkin> BuiltinResources::generateGUISkin()
 	{
 		Path fontPath = FileSystem::getWorkingDirectoryPath();
 		fontPath.append(mBuiltinDataFolder);
 		fontPath.append(DefaultFontFilename + L".asset");
 
 		HFont font = gResources().load<Font>(fontPath);
-		GUISkinPtr skin = GUISkin::_createPtr();
+		SPtr<GUISkin> skin = GUISkin::_createPtr();
 
 		// Label
 		GUIElementStyle labelStyle;
@@ -816,23 +816,23 @@ namespace BansheeEngine
 
 	void BuiltinResources::generateTextures()
 	{
-		PixelDataPtr blackPixelData = PixelData::create(2, 2, 1, PF_R8G8B8A8);
+		SPtr<PixelData> blackPixelData = PixelData::create(2, 2, 1, PF_R8G8B8A8);
 		blackPixelData->setColorAt(Color::Black, 0, 0);
 		blackPixelData->setColorAt(Color::Black, 0, 1);
 		blackPixelData->setColorAt(Color::Black, 1, 0);
 		blackPixelData->setColorAt(Color::Black, 1, 1);
 
-		TexturePtr blackTexture = Texture::_createPtr(blackPixelData);
+		SPtr<Texture> blackTexture = Texture::_createPtr(blackPixelData);
 
-		PixelDataPtr whitePixelData = PixelData::create(2, 2, 1, PF_R8G8B8A8);
+		SPtr<PixelData> whitePixelData = PixelData::create(2, 2, 1, PF_R8G8B8A8);
 		whitePixelData->setColorAt(Color::White, 0, 0);
 		whitePixelData->setColorAt(Color::White, 0, 1);
 		whitePixelData->setColorAt(Color::White, 1, 0);
 		whitePixelData->setColorAt(Color::White, 1, 1);
 
-		TexturePtr whiteTexture = Texture::_createPtr(whitePixelData);
+		SPtr<Texture> whiteTexture = Texture::_createPtr(whitePixelData);
 
-		PixelDataPtr normalPixelData = PixelData::create(2, 2, 1, PF_R8G8B8A8);
+		SPtr<PixelData> normalPixelData = PixelData::create(2, 2, 1, PF_R8G8B8A8);
 
 		Color encodedNormal(0.5f, 0.5f, 1.0f);
 		normalPixelData->setColorAt(encodedNormal, 0, 0);
@@ -840,7 +840,7 @@ namespace BansheeEngine
 		normalPixelData->setColorAt(encodedNormal, 1, 0);
 		normalPixelData->setColorAt(encodedNormal, 1, 1);
 
-		TexturePtr normalTexture = Texture::_createPtr(normalPixelData);
+		SPtr<Texture> normalTexture = Texture::_createPtr(normalPixelData);
 
 		// Save all textures
 		Path outputDir = FileSystem::getWorkingDirectoryPath() + mEngineTextureFolder;
@@ -872,7 +872,7 @@ namespace BansheeEngine
 
 	void BuiltinResources::generateMeshes()
 	{
-		VertexDataDescPtr vertexDesc = bs_shared_ptr_new<VertexDataDesc>();
+		SPtr<VertexDataDesc> vertexDesc = bs_shared_ptr_new<VertexDataDesc>();
 		vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
 		vertexDesc->addVertElem(VET_FLOAT3, VES_NORMAL);
 		vertexDesc->addVertElem(VET_COLOR, VES_COLOR);
@@ -880,51 +880,51 @@ namespace BansheeEngine
 		UINT32 boxNumVertices = 0;
 		UINT32 boxNumIndices = 0;
 		ShapeMeshes3D::getNumElementsAABox(boxNumVertices, boxNumIndices);
-		MeshDataPtr boxMeshData = bs_shared_ptr_new<MeshData>(boxNumVertices, boxNumIndices, vertexDesc);
+		SPtr<MeshData> boxMeshData = bs_shared_ptr_new<MeshData>(boxNumVertices, boxNumIndices, vertexDesc);
 		AABox box(Vector3(-0.5f, -0.5f, -0.5f), Vector3(0.5f, 0.5f, 0.5f));
 
 		ShapeMeshes3D::solidAABox(box, boxMeshData, 0, 0);
-		MeshPtr boxMesh = Mesh::_createPtr(boxMeshData);
+		SPtr<Mesh> boxMesh = Mesh::_createPtr(boxMeshData);
 
 		UINT32 sphereNumVertices = 0;
 		UINT32 sphereNumIndices = 0;
 		ShapeMeshes3D::getNumElementsSphere(3, sphereNumVertices, sphereNumIndices);
-		MeshDataPtr sphereMeshData = bs_shared_ptr_new<MeshData>(sphereNumVertices, sphereNumIndices, vertexDesc);
+		SPtr<MeshData> sphereMeshData = bs_shared_ptr_new<MeshData>(sphereNumVertices, sphereNumIndices, vertexDesc);
 
 		ShapeMeshes3D::solidSphere(Sphere(Vector3::ZERO, 1.0f), sphereMeshData, 0, 0, 3);
-		MeshPtr sphereMesh = Mesh::_createPtr(sphereMeshData);
+		SPtr<Mesh> sphereMesh = Mesh::_createPtr(sphereMeshData);
 
 		UINT32 coneNumVertices = 0;
 		UINT32 coneNumIndices = 0;
 		ShapeMeshes3D::getNumElementsCone(10, coneNumVertices, coneNumIndices);
-		MeshDataPtr coneMeshData = bs_shared_ptr_new<MeshData>(coneNumVertices, coneNumIndices, vertexDesc);
+		SPtr<MeshData> coneMeshData = bs_shared_ptr_new<MeshData>(coneNumVertices, coneNumIndices, vertexDesc);
 
 		ShapeMeshes3D::solidCone(Vector3::ZERO, Vector3::UNIT_Y, 1.0f, 1.0f, Vector2::ONE, coneMeshData, 0, 0);
-		MeshPtr coneMesh = Mesh::_createPtr(coneMeshData);
+		SPtr<Mesh> coneMesh = Mesh::_createPtr(coneMeshData);
 
 		UINT32 quadNumVertices = 8;
 		UINT32 quadNumIndices = 12;
 		ShapeMeshes3D::getNumElementsQuad(quadNumVertices, quadNumIndices);
-		MeshDataPtr quadMeshData = bs_shared_ptr_new<MeshData>(quadNumVertices, quadNumIndices, vertexDesc);
+		SPtr<MeshData> quadMeshData = bs_shared_ptr_new<MeshData>(quadNumVertices, quadNumIndices, vertexDesc);
 
 		std::array<Vector3, 2> axes = { Vector3::UNIT_X, Vector3::UNIT_Y };
 		std::array<float, 2> sizes = { 1.0f, 1.0f };
 		Rect3 rect(Vector3::ZERO, axes, sizes);
 		ShapeMeshes3D::solidQuad(rect, quadMeshData, 0, 0);
-		MeshPtr quadMesh = Mesh::_createPtr(quadMeshData);
+		SPtr<Mesh> quadMesh = Mesh::_createPtr(quadMeshData);
 
 		UINT32 discNumVertices = 0;
 		UINT32 discNumIndices = 0;
 		ShapeMeshes3D::getNumElementsDisc(10, discNumVertices, discNumIndices);
-		MeshDataPtr discMeshData = bs_shared_ptr_new<MeshData>(discNumVertices, discNumIndices, vertexDesc);
+		SPtr<MeshData> discMeshData = bs_shared_ptr_new<MeshData>(discNumVertices, discNumIndices, vertexDesc);
 
 		ShapeMeshes3D::solidDisc(Vector3::ZERO, 1.0f, Vector3::UNIT_Y, discMeshData, 0, 0);
-		MeshPtr discMesh = Mesh::_createPtr(discMeshData);
+		SPtr<Mesh> discMesh = Mesh::_createPtr(discMeshData);
 
 		// Save all meshes
 		Path outputDir = FileSystem::getWorkingDirectoryPath() + mEngineMeshFolder;
 
-		auto saveMesh = [&](const Path& path, const MeshPtr& mesh)
+		auto saveMesh = [&](const Path& path, const SPtr<Mesh>& mesh)
 		{
 			HResource meshResource;
 			if (FileSystem::exists(path))
@@ -1047,7 +1047,7 @@ namespace BansheeEngine
 		return *mBansheeIcon.get();
 	}
 
-	PixelDataPtr BuiltinResources::getSplashScreen()
+	SPtr<PixelData> BuiltinResources::getSplashScreen()
 	{
 		Path splashScreenPath = Paths::getEngineDataPath() + (WString(SplashScreenName) + L".asset");
 		FileDecoder fd(splashScreenPath);
@@ -1129,7 +1129,7 @@ namespace BansheeEngine
 		return Material::create(mShaderSpriteNonAlphaImage);
 	}
 
-	void BuiltinResourcesHelper::importAssets(const Path& inputFolder, const Path& outputFolder, const ResourceManifestPtr& manifest)
+	void BuiltinResourcesHelper::importAssets(const Path& inputFolder, const Path& outputFolder, const SPtr<ResourceManifest>& manifest)
 	{
 		if (!FileSystem::exists(inputFolder))
 			return;
@@ -1137,14 +1137,14 @@ namespace BansheeEngine
 		UnorderedSet<Path> outputAssets;
 		auto importResource = [&](const Path& filePath)
 		{
-			Vector<std::pair<Path, ImportOptionsPtr>> resourcesToSave;
+			Vector<std::pair<Path, SPtr<ImportOptions>>> resourcesToSave;
 
 			{
 				Path relativePath = filePath.getRelative(inputFolder);
 				Path relativeAssetPath = relativePath;
 				relativeAssetPath.setFilename(relativeAssetPath.getWFilename() + L".asset");
 
-				ImportOptionsPtr importOptions = gImporter().createImportOptions(filePath);
+				SPtr<ImportOptions> importOptions = gImporter().createImportOptions(filePath);
 				if (importOptions != nullptr)
 				{
 					if (rtti_is_of_type<TextureImportOptions>(importOptions))
@@ -1237,9 +1237,9 @@ namespace BansheeEngine
 	}
 
 	void BuiltinResourcesHelper::importFont(const Path& inputFile, const WString& outputName, const Path& outputFolder,
-		const Vector<UINT32>& fontSizes, bool antialiasing, const ResourceManifestPtr& manifest)
+		const Vector<UINT32>& fontSizes, bool antialiasing, const SPtr<ResourceManifest>& manifest)
 	{
-		ImportOptionsPtr fontImportOptions = Importer::instance().createImportOptions(inputFile);
+		SPtr<ImportOptions> fontImportOptions = Importer::instance().createImportOptions(inputFile);
 		if (rtti_is_of_type<FontImportOptions>(fontImportOptions))
 		{
 			FontImportOptions* importOptions = static_cast<FontImportOptions*>(fontImportOptions.get());
@@ -1278,7 +1278,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void BuiltinResourcesHelper::generateSpriteTextures(const Path& folder, const ResourceManifestPtr& manifest)
+	void BuiltinResourcesHelper::generateSpriteTextures(const Path& folder, const SPtr<ResourceManifest>& manifest)
 	{
 		if (!FileSystem::exists(folder))
 			return;
@@ -1311,7 +1311,7 @@ namespace BansheeEngine
 
 	void BuiltinResourcesHelper::writeTimestamp(const Path& file)
 	{
-		DataStreamPtr fileStream = FileSystem::createAndOpenFile(file);
+		SPtr<DataStream> fileStream = FileSystem::createAndOpenFile(file);
 
 		time_t currentTime = std::time(nullptr);
 		fileStream->write(&currentTime, sizeof(currentTime));
@@ -1323,7 +1323,7 @@ namespace BansheeEngine
 		if (!FileSystem::exists(timeStampFile))
 			return true;
 
-		DataStreamPtr fileStream = FileSystem::openFile(timeStampFile);
+		SPtr<DataStream> fileStream = FileSystem::openFile(timeStampFile);
 		time_t lastUpdateTime = 0;
 		fileStream->read(&lastUpdateTime, sizeof(lastUpdateTime));
 		fileStream->close();

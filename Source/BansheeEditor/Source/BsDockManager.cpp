@@ -551,7 +551,7 @@ namespace BansheeEngine
 		mMouseOverContainer = nullptr;
 	}
 
-	DockManagerLayoutPtr DockManager::getLayout() const
+	SPtr<DockManagerLayout> DockManager::getLayout() const
 	{
 		struct StackElem
 		{
@@ -582,7 +582,7 @@ namespace BansheeEngine
 
 		if (mIsMaximized)
 		{
-			DockManagerLayoutPtr layout;
+			SPtr<DockManagerLayout> layout;
 
 			if (mRestoredLayout != nullptr)
 				layout = mRestoredLayout->clone();
@@ -594,7 +594,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			DockManagerLayoutPtr layout = bs_shared_ptr_new<DockManagerLayout>();
+			SPtr<DockManagerLayout> layout = bs_shared_ptr_new<DockManagerLayout>();
 			DockManagerLayout::Entry* rootEntry = &layout->getRootEntry();
 
 			if (mRootContainer.mIsLeaf)
@@ -648,7 +648,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void DockManager::setLayout(const DockManagerLayoutPtr& layout)
+	void DockManager::setLayout(const SPtr<DockManagerLayout>& layout)
 	{
 		// Undock all currently docked widgets
 		Vector<EditorWidgetBase*> undockedWidgets;
@@ -823,7 +823,7 @@ namespace BansheeEngine
 				}
 			}
 
-			DockManagerLayoutPtr maxLayout = bs_shared_ptr_new<DockManagerLayout>();
+			SPtr<DockManagerLayout> maxLayout = bs_shared_ptr_new<DockManagerLayout>();
 			DockManagerLayout::Entry& rootEntry = maxLayout->getRootEntry();
 
 			rootEntry.isLeaf = true;
@@ -863,12 +863,12 @@ namespace BansheeEngine
 		Vector2 inBotLeft((float)(x + inXOffset), (float)(y + inYOffset + inHeight));
 		Vector2 inBotRight((float)(x + inXOffset + inWidth), (float)(y + inYOffset + inHeight));
 
-		VertexDataDescPtr vertexDesc = bs_shared_ptr_new<VertexDataDesc>();
+		SPtr<VertexDataDesc> vertexDesc = bs_shared_ptr_new<VertexDataDesc>();
 		
 		vertexDesc->addVertElem(VET_FLOAT2, VES_POSITION);
 		vertexDesc->addVertElem(VET_COLOR, VES_COLOR);
 
-		MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(16, 24, vertexDesc);
+		SPtr<MeshData> meshData = bs_shared_ptr_new<MeshData>(16, 24, vertexDesc);
 
 		auto vertIter = meshData->getVec2DataIter(VES_POSITION);
 		auto colIter = meshData->getDWORDDataIter(VES_COLOR);
@@ -1134,7 +1134,7 @@ namespace BansheeEngine
 	{
 		if (mCamera != nullptr)
 		{
-			CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
+			SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
 			activeRenderer->_unregisterRenderCallback(mCamera.get(), 40);
 		}
 	}
@@ -1149,7 +1149,7 @@ namespace BansheeEngine
 	{
 		if (mCamera != camera)
 		{
-			CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
+			SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
 			if (mCamera != nullptr)
 				activeRenderer->_unregisterRenderCallback(mCamera.get(), 40);
 

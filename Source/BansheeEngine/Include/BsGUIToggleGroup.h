@@ -34,7 +34,7 @@ namespace BansheeEngine
 		GUIToggleGroup(bool allowAllOff);
 
 		/**	Initializes the toggle group. To be called right after construction. */
-		void initialize(const std::shared_ptr<GUIToggleGroup>& sharedPtr);
+		void initialize(const SPtr<GUIToggleGroup>& sharedPtr);
 
 		Vector<GUIToggle*> mButtons;
 		bool mAllowAllOff;

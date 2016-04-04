@@ -189,7 +189,7 @@ namespace BansheeEngine
 		 * Creates a new render window using the specified options. Optionally makes the created window a child of another 
 		 * window.
 		 */
-		static RenderWindowPtr create(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow = nullptr);
+		static SPtr<RenderWindow> create(RENDER_WINDOW_DESC& desc, SPtr<RenderWindow> parentWindow = nullptr);
 
     protected:
 		friend class RenderWindowManager;

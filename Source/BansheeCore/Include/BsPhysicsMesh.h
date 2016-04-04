@@ -20,14 +20,14 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT PhysicsMesh : public Resource
 	{
 	public:
-		PhysicsMesh(const MeshDataPtr& meshData, PhysicsMeshType type);
+		PhysicsMesh(const SPtr<MeshData>& meshData, PhysicsMeshType type);
 		virtual ~PhysicsMesh() { }
 
 		/** Returns the type of the physics mesh. */
 		PhysicsMeshType getType() const;
 
 		/** Returns the mesh's indices and vertices. */
-		MeshDataPtr getMeshData() const;
+		SPtr<MeshData> getMeshData() const;
 
 		/** 
 		 * Creates a new physics mesh. 
@@ -36,7 +36,7 @@ namespace BansheeEngine
 		 * @param[in]	type		Type of the mesh. If convex the provided mesh geometry will be converted into a convex
 		 *							mesh (that might not be the same as the provided mesh data).
 		 */
-		static HPhysicsMesh create(const MeshDataPtr& meshData, PhysicsMeshType type = PhysicsMeshType::Convex);
+		static HPhysicsMesh create(const SPtr<MeshData>& meshData, PhysicsMeshType type = PhysicsMeshType::Convex);
 
 		/** @name Internal
 		 *  @{
@@ -50,7 +50,7 @@ namespace BansheeEngine
 		 *
 		 * For internal use. Requires manual initialization after creation.
 		 */
-		static PhysicsMeshPtr _createPtr(const MeshDataPtr& meshData, PhysicsMeshType type);
+		static SPtr<PhysicsMesh> _createPtr(const SPtr<MeshData>& meshData, PhysicsMeshType type);
 
 		/** @} */
 
@@ -59,7 +59,7 @@ namespace BansheeEngine
 		void initialize() override;
 
 		SPtr<FPhysicsMesh> mInternal;
-		MeshDataPtr mInitMeshData; // Transient, only used during initalization
+		SPtr<MeshData> mInitMeshData; // Transient, only used during initalization
 		PhysicsMeshType mType; // Transient, only used during initalization
 
 		/************************************************************************/
@@ -80,11 +80,11 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT FPhysicsMesh : public IReflectable
 	{
 	public:
-		FPhysicsMesh(const MeshDataPtr& meshData, PhysicsMeshType type);
+		FPhysicsMesh(const SPtr<MeshData>& meshData, PhysicsMeshType type);
 		virtual ~FPhysicsMesh();
 
 		/** Returns the mesh's indices and vertices. */
-		virtual MeshDataPtr getMeshData() const = 0;
+		virtual SPtr<MeshData> getMeshData() const = 0;
 
 	protected:
 		friend class PhysicsMesh;

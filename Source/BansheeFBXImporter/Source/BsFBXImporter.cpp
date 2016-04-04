@@ -105,15 +105,15 @@ namespace BansheeEngine
 		return true; // FBX files can be plain-text so I don't even check for magic number
 	}
 
-	ImportOptionsPtr FBXImporter::createImportOptions() const
+	SPtr<ImportOptions> FBXImporter::createImportOptions() const
 	{
 		return bs_shared_ptr_new<MeshImportOptions>();
 	}
 
-	ResourcePtr FBXImporter::import(const Path& filePath, ConstImportOptionsPtr importOptions)
+	SPtr<Resource> FBXImporter::import(const Path& filePath, SPtr<const ImportOptions> importOptions)
 	{
 		Vector<SubMesh> subMeshes;
-		RendererMeshDataPtr rendererMeshData = importMeshData(filePath, importOptions, subMeshes);
+		SPtr<RendererMeshData> rendererMeshData = importMeshData(filePath, importOptions, subMeshes);
 
 		const MeshImportOptions* meshImportOptions = static_cast<const MeshImportOptions*>(importOptions.get());
 
@@ -121,7 +121,7 @@ namespace BansheeEngine
 		if (meshImportOptions->getCPUReadable())
 			usage |= MU_CPUCACHED;
 
-		MeshPtr mesh = Mesh::_createPtr(rendererMeshData->getData(), subMeshes, usage);
+		SPtr<Mesh> mesh = Mesh::_createPtr(rendererMeshData->getData(), subMeshes, usage);
 
 		WString fileName = filePath.getWFilename(false);
 		mesh->setName(fileName);
@@ -129,10 +129,10 @@ namespace BansheeEngine
 		return mesh;
 	}
 
-	Vector<SubResourceRaw> FBXImporter::importAll(const Path& filePath, ConstImportOptionsPtr importOptions)
+	Vector<SubResourceRaw> FBXImporter::importAll(const Path& filePath, SPtr<const ImportOptions> importOptions)
 	{
 		Vector<SubMesh> subMeshes;
-		RendererMeshDataPtr rendererMeshData = importMeshData(filePath, importOptions, subMeshes);
+		SPtr<RendererMeshData> rendererMeshData = importMeshData(filePath, importOptions, subMeshes);
 
 		const MeshImportOptions* meshImportOptions = static_cast<const MeshImportOptions*>(importOptions.get());
 
@@ -140,7 +140,7 @@ namespace BansheeEngine
 		if (meshImportOptions->getCPUReadable())
 			usage |= MU_CPUCACHED;
 
-		MeshPtr mesh = Mesh::_createPtr(rendererMeshData->getData(), subMeshes, usage);
+		SPtr<Mesh> mesh = Mesh::_createPtr(rendererMeshData->getData(), subMeshes, usage);
 
 		WString fileName = filePath.getWFilename(false);
 		mesh->setName(fileName);
@@ -173,7 +173,7 @@ namespace BansheeEngine
 		return output;
 	}
 
-	RendererMeshDataPtr FBXImporter::importMeshData(const Path& filePath, ConstImportOptionsPtr importOptions, 
+	SPtr<RendererMeshData> FBXImporter::importMeshData(const Path& filePath, SPtr<const ImportOptions> importOptions, 
 		Vector<SubMesh>& subMeshes)
 	{
 		FbxScene* fbxScene = nullptr;
@@ -208,7 +208,7 @@ namespace BansheeEngine
 		splitMeshVertices(importedScene);
 		generateMissingTangentSpace(importedScene, fbxImportOptions);
 
-		RendererMeshDataPtr rendererMeshData = generateMeshData(importedScene, fbxImportOptions, subMeshes);
+		SPtr<RendererMeshData> rendererMeshData = generateMeshData(importedScene, fbxImportOptions, subMeshes);
 
 		// TODO - Later: Optimize mesh: Remove bad and degenerate polygons, weld nearby vertices, optimize for vertex cache
 
@@ -401,11 +401,11 @@ namespace BansheeEngine
 		scene.meshes = splitMeshes;
 	}
 
-	RendererMeshDataPtr FBXImporter::generateMeshData(const FBXImportScene& scene, const FBXImportOptions& options, Vector<SubMesh>& outputSubMeshes)
+	SPtr<RendererMeshData> FBXImporter::generateMeshData(const FBXImportScene& scene, const FBXImportOptions& options, Vector<SubMesh>& outputSubMeshes)
 	{
 		Matrix4 importScale = Matrix4::scaling(options.importScale);
 
-		Vector<MeshDataPtr> allMeshData;
+		Vector<SPtr<MeshData>> allMeshData;
 		Vector<Vector<SubMesh>> allSubMeshes;
 
 		for (auto& mesh : scene.meshes)
@@ -475,7 +475,7 @@ namespace BansheeEngine
 				Matrix4 worldTransformIT = worldTransform.transpose();
 				worldTransformIT = worldTransformIT.inverse();
 
-				RendererMeshDataPtr meshData = RendererMeshData::create((UINT32)numVertices, numIndices, (VertexLayout)vertexLayout);
+				SPtr<RendererMeshData> meshData = RendererMeshData::create((UINT32)numVertices, numIndices, (VertexLayout)vertexLayout);
 
 				// Copy indices
 				meshData->setIndices((UINT32*)mesh->indices.data(), numIndices * sizeof(UINT32));

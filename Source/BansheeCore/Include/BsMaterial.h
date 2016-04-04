@@ -64,7 +64,7 @@ namespace BansheeEngine
 	template<> struct TGpuParamBlockBufferPtrType<true> { typedef SPtr<GpuParamBlockBufferCore> Type; };
 
 	template<bool Core> struct TGpuProgramType { };
-	template<> struct TGpuProgramType<false> { typedef GpuProgramPtr Type; };
+	template<> struct TGpuProgramType<false> { typedef SPtr<GpuProgram> Type; };
 	template<> struct TGpuProgramType<true> { typedef SPtr<GpuProgramCore> Type; };
 
 	/** Contains sim thread pass parameters for each shader stage. */
@@ -98,7 +98,7 @@ namespace BansheeEngine
 			StructData(UINT32 _size)
 				:size(_size)
 			{
-				data = std::shared_ptr<void>(bs_alloc(_size), &bs_free);
+				data = SPtr<void>(bs_alloc(_size), &bs_free);
 			}
 
 			/**
@@ -109,7 +109,7 @@ namespace BansheeEngine
 				memcpy(data.get(), _data, size);
 			}
 
-			std::shared_ptr<void> data;
+			SPtr<void> data;
 			UINT32 size;
 		};
 
@@ -129,10 +129,10 @@ namespace BansheeEngine
 		virtual void _markResourcesDirty() { }
 
 		/** Returns all GPU parameter descriptions in the specified technique. */
-		static Vector<GpuParamDescPtr> getAllParamDescs(const SPtr<Technique>& technique);
+		static Vector<SPtr<GpuParamDesc>> getAllParamDescs(const SPtr<Technique>& technique);
 
 		/** Returns all GPU parameter descriptions in the specified technique. */
-		static Vector<GpuParamDescPtr> getAllParamDescs(const SPtr<TechniqueCore>& technique);
+		static Vector<SPtr<GpuParamDesc>> getAllParamDescs(const SPtr<TechniqueCore>& technique);
 
 		Set<String> mValidShareableParamBlocks;
 		Map<String, String> mValidParams; // Also maps Shader param name -> gpu variable name

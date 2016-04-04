@@ -76,7 +76,7 @@ namespace BansheeEngine
 		SPtr<MultiRenderTextureCore> getCore() const;
 
 		/** @copydoc TextureManager::createMultiRenderTexture */
-		static MultiRenderTexturePtr create(const MULTI_RENDER_TEXTURE_DESC& desc);
+		static SPtr<MultiRenderTexture> create(const MULTI_RENDER_TEXTURE_DESC& desc);
 
 		/**	Returns properties that describe the render texture. */
 		const MultiRenderTextureProperties& getProperties() const;
@@ -135,8 +135,8 @@ namespace BansheeEngine
 		virtual void copyToMemory(PixelData &dst, FrameBuffer buffer = FB_AUTO);
 
 	protected:
-		Vector<TextureViewPtr> mColorSurfaces;
-		TextureViewPtr mDepthStencilSurface;
+		Vector<SPtr<TextureView>> mColorSurfaces;
+		SPtr<TextureView> mDepthStencilSurface;
 
 		MULTI_RENDER_TEXTURE_CORE_DESC mDesc;
 	};

@@ -155,7 +155,7 @@ namespace BansheeEngine
 		SPtr<VertexDeclarationCore> getCore() const;
 
 		/** @copydoc HardwareBufferManager::createVertexDeclaration */
-		static VertexDeclarationPtr create(const List<VertexElement>& elements);
+		static SPtr<VertexDeclaration> create(const List<VertexElement>& elements);
 
     protected:
 		friend class HardwareBufferManager;

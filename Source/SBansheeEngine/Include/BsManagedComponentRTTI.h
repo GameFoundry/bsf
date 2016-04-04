@@ -41,12 +41,12 @@ namespace BansheeEngine
 			obj->mTypeName = val;
 		}
 
-		ManagedSerializableObjectPtr getObjectData(ManagedComponent* obj)
+		SPtr<ManagedSerializableObject> getObjectData(ManagedComponent* obj)
 		{
-			return any_cast<ManagedSerializableObjectPtr>(obj->mRTTIData);
+			return any_cast<SPtr<ManagedSerializableObject>>(obj->mRTTIData);
 		}
 
-		void setObjectData(ManagedComponent* obj, ManagedSerializableObjectPtr val)
+		void setObjectData(ManagedComponent* obj, SPtr<ManagedSerializableObject> val)
 		{
 			obj->mSerializedObjectData = val;
 		}
@@ -98,7 +98,7 @@ namespace BansheeEngine
 			return TID_ManagedComponent;
 		}
 
-		virtual std::shared_ptr<IReflectable> newRTTIObject() override
+		virtual SPtr<IReflectable> newRTTIObject() override
 		{
 			return GameObjectRTTI::createGameObject<ManagedComponent>();
 		}

@@ -135,7 +135,7 @@ namespace BansheeEngine
 		return dropTargetArea;
 	}
 
-	void ScriptOSDropTarget::setDropTarget(const RenderWindowPtr& parentWindow, INT32 x, INT32 y, UINT32 width, UINT32 height)
+	void ScriptOSDropTarget::setDropTarget(const SPtr<RenderWindow>& parentWindow, INT32 x, INT32 y, UINT32 width, UINT32 height)
 	{
 		if (mDropTarget != nullptr)
 		{
@@ -206,7 +206,7 @@ namespace BansheeEngine
 
 	void ScriptOSDropTarget::widgetParentChanged(EditorWidgetContainer* parent)
 	{
-		RenderWindowPtr parentRenderWindow;
+		SPtr<RenderWindow> parentRenderWindow;
 		if (parent != nullptr)
 		{
 			EditorWindowBase* parentWindow = parent->getParentWindow();

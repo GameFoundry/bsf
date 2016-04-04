@@ -16,12 +16,12 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableListRTTI : public RTTIType<ManagedSerializableList, IReflectable, ManagedSerializableListRTTI>
 	{
 	private:
-		ManagedSerializableTypeInfoListPtr getTypeInfo(ManagedSerializableList* obj)
+		SPtr<ManagedSerializableTypeInfoList> getTypeInfo(ManagedSerializableList* obj)
 		{
 			return obj->mListTypeInfo;
 		}
 
-		void setTypeInfo(ManagedSerializableList* obj, ManagedSerializableTypeInfoListPtr val)
+		void setTypeInfo(ManagedSerializableList* obj, SPtr<ManagedSerializableTypeInfoList> val)
 		{
 			obj->mListTypeInfo = val;
 		}
@@ -36,12 +36,12 @@ namespace BansheeEngine
 			obj->mNumElements = numElements;
 		}
 
-		ManagedSerializableFieldDataPtr getListEntry(ManagedSerializableList* obj, UINT32 arrayIdx)
+		SPtr<ManagedSerializableFieldData> getListEntry(ManagedSerializableList* obj, UINT32 arrayIdx)
 		{
 			return obj->getFieldData(arrayIdx);
 		}
 
-		void setListEntry(ManagedSerializableList* obj, UINT32 arrayIdx, ManagedSerializableFieldDataPtr val)
+		void setListEntry(ManagedSerializableList* obj, UINT32 arrayIdx, SPtr<ManagedSerializableFieldData> val)
 		{
 			obj->setFieldData(arrayIdx, val);
 		}
@@ -53,7 +53,7 @@ namespace BansheeEngine
 
 		void setNumListEntries(ManagedSerializableList* obj, UINT32 numEntries)
 		{
-			obj->mCachedEntries = Vector<ManagedSerializableFieldDataPtr>(numEntries);
+			obj->mCachedEntries = Vector<SPtr<ManagedSerializableFieldData>>(numEntries);
 		}
 
 	public:
@@ -76,7 +76,7 @@ namespace BansheeEngine
 			return TID_ScriptSerializableList;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return ManagedSerializableList::createEmpty();
 		}

@@ -46,7 +46,7 @@ namespace BansheeEngine
 		};
 
 	public:
-		ManagedSerializableObject(const ConstructPrivately& dummy, ManagedSerializableObjectInfoPtr objInfo, MonoObject* managedInstance);
+		ManagedSerializableObject(const ConstructPrivately& dummy, SPtr<ManagedSerializableObjectInfo> objInfo, MonoObject* managedInstance);
 		ManagedSerializableObject(const ConstructPrivately& dummy);
 
 		/**
@@ -55,7 +55,7 @@ namespace BansheeEngine
 		MonoObject* getManagedInstance() const { return mManagedInstance; }
 
 		/**	Returns the type information for the internal object. */
-		ManagedSerializableObjectInfoPtr getObjectInfo() const { return mObjInfo; }
+		SPtr<ManagedSerializableObjectInfo> getObjectInfo() const { return mObjInfo; }
 
 		/**
 		 * Sets a new value of the specified field. Operates on managed object if in linked state, or on cached data
@@ -65,7 +65,7 @@ namespace BansheeEngine
 		 *							type this object is initialized with.
 		 * @param[in]	val			Wrapper around the value to store in the field.
 		 */
-		void setFieldData(const ManagedSerializableFieldInfoPtr& fieldInfo, const ManagedSerializableFieldDataPtr& val);
+		void setFieldData(const SPtr<ManagedSerializableFieldInfo>& fieldInfo, const SPtr<ManagedSerializableFieldData>& val);
 
 		/**
 		 * Returns the value of the specified field. Operates on managed object if in linked state, or on cached data
@@ -75,7 +75,7 @@ namespace BansheeEngine
 		 *							type this object is initialized with.
 		 * @return					A wrapper around the value of the field.
 		 */
-		ManagedSerializableFieldDataPtr getFieldData(const ManagedSerializableFieldInfoPtr& fieldInfo) const;
+		SPtr<ManagedSerializableFieldData> getFieldData(const SPtr<ManagedSerializableFieldInfo>& fieldInfo) const;
 
 		/**
 		 * Serializes the internal managed object into a set of cached data that can be saved in memory/disk and can be
@@ -106,7 +106,7 @@ namespace BansheeEngine
 		 * @param[in]	instance	Existing managed instance of the same type this serializable object represents.
 		 * @param[in]	objInfo		Serializable object info for the managed object type.
 		 */
-		void deserialize(MonoObject* instance, const ManagedSerializableObjectInfoPtr& objInfo);
+		void deserialize(MonoObject* instance, const SPtr<ManagedSerializableObjectInfo>& objInfo);
 
 		/**
 		 * Creates a managed serializable object that references an existing managed object. Created object will be in
@@ -114,33 +114,33 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	managedInstance		Constructed managed instance of the object to link with.
 		 */
-		static ManagedSerializableObjectPtr createFromExisting(MonoObject* managedInstance);
+		static SPtr<ManagedSerializableObject> createFromExisting(MonoObject* managedInstance);
 
 		/**
 		 * Creates a managed serializable object that creates and references a brand new managed object instance.
 		 *
 		 * @param[in]	type	Type of the object to create.
 		 */
-		static ManagedSerializableObjectPtr createNew(const ManagedSerializableTypeInfoObjectPtr& type);
+		static SPtr<ManagedSerializableObject> createNew(const SPtr<ManagedSerializableTypeInfoObject>& type);
 
 		/**
 		 * Creates a managed object instance.
 		 *
 		 * @param[in]	type	Type of the object to create.
 		 */
-		static MonoObject* createManagedInstance(const ManagedSerializableTypeInfoObjectPtr& type);
+		static MonoObject* createManagedInstance(const SPtr<ManagedSerializableTypeInfoObject>& type);
 	protected:
 		MonoObject* mManagedInstance;
 
-		ManagedSerializableObjectInfoPtr mObjInfo;
-		UnorderedMap<ManagedSerializableFieldKey, ManagedSerializableFieldDataPtr, Hash, Equals> mCachedData;
+		SPtr<ManagedSerializableObjectInfo> mObjInfo;
+		UnorderedMap<ManagedSerializableFieldKey, SPtr<ManagedSerializableFieldData>, Hash, Equals> mCachedData;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 		
 		/**	Creates an empty and uninitialized object used for serialization purposes. */
-		static ManagedSerializableObjectPtr createEmpty();
+		static SPtr<ManagedSerializableObject> createEmpty();
 
 	public:
 		friend class ManagedSerializableObjectRTTI;

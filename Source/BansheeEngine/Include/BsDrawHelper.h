@@ -36,7 +36,7 @@ namespace BansheeEngine
 		/**	Container for mesh of a specific type output by the DrawHelper. */
 		struct ShapeMeshData
 		{
-			TransientMeshPtr mesh;
+			SPtr<TransientMesh> mesh;
 			MeshType type;
 			HTexture texture;
 		};
@@ -100,7 +100,7 @@ namespace BansheeEngine
 			UINT32 quality = 10);
 
 		/** Records a 3D mesh to be drawn as wireframe in the internal draw queue. */
-		void wireMesh(const MeshDataPtr& meshData);
+		void wireMesh(const SPtr<MeshData>& meshData);
 
 		/**	Records a solid rectangle with the specified properties in the internal draw queue. */
 		void rectangle(const Rect3& area);
@@ -225,7 +225,7 @@ namespace BansheeEngine
 
 		struct WireMeshData : CommonData
 		{
-			MeshDataPtr meshData;
+			SPtr<MeshData> meshData;
 		};
 
 		static const UINT32 VERTEX_BUFFER_GROWTH;
@@ -255,15 +255,15 @@ namespace BansheeEngine
 		Vector<ShapeMeshData> mMeshes;
 		UINT32 mNumActiveMeshes;
 
-		MeshHeapPtr mSolidMeshHeap;
-		MeshHeapPtr mWireMeshHeap;
-		MeshHeapPtr mLineMeshHeap;
-		MeshHeapPtr mTextMeshHeap;
+		SPtr<MeshHeap> mSolidMeshHeap;
+		SPtr<MeshHeap> mWireMeshHeap;
+		SPtr<MeshHeap> mLineMeshHeap;
+		SPtr<MeshHeap> mTextMeshHeap;
 
-		VertexDataDescPtr mSolidVertexDesc;
-		VertexDataDescPtr mWireVertexDesc;
-		VertexDataDescPtr mLineVertexDesc;
-		VertexDataDescPtr mTextVertexDesc;
+		SPtr<VertexDataDesc> mSolidVertexDesc;
+		SPtr<VertexDataDesc> mWireVertexDesc;
+		SPtr<VertexDataDesc> mLineVertexDesc;
+		SPtr<VertexDataDesc> mTextVertexDesc;
 	};
 
 	/** @} */

@@ -151,7 +151,7 @@ namespace BansheeEngine
 		model = Importer::instance().import<Mesh>(exampleModelPath);
 
 		// When importing you may specify optional import options that control how is the asset imported.
-		ImportOptionsPtr textureImportOptions = Importer::instance().createImportOptions(exampleTexturePath);
+		SPtr<ImportOptions> textureImportOptions = Importer::instance().createImportOptions(exampleTexturePath);
 
 		// rtti_is_of_type checks if the import options are of valid type, in case the provided path is pointing to a non-texture resource.
 		// This is similar to dynamic_cast but uses Banshee internal RTTI system for type checking.
@@ -213,7 +213,7 @@ namespace BansheeEngine
 
 		// Get the primary render window we need for creating the camera. Additionally
 		// hook up a callback so we are notified when user resizes the window.
-		RenderWindowPtr window = gApplication().getPrimaryWindow();
+		SPtr<RenderWindow> window = gApplication().getPrimaryWindow();
 		window->onResized.connect(&renderWindowResized);
 
 		// Add a Camera component that will output whatever it sees into that window 
@@ -288,7 +288,7 @@ namespace BansheeEngine
 		HSceneObject guiSO = SceneObject::create("Example");
 
 		// Get the primary render window we need for creating the camera. 
-		RenderWindowPtr window = gApplication().getPrimaryWindow();
+		SPtr<RenderWindow> window = gApplication().getPrimaryWindow();
 
 		// First we want another camera that is responsible for rendering GUI
 		HCamera guiCamera = guiSO->addComponent<CCamera>(window);
@@ -395,7 +395,7 @@ namespace BansheeEngine
 
 	void toggleFullscreen()
 	{
-		RenderWindowPtr window = gApplication().getPrimaryWindow();
+		SPtr<RenderWindow> window = gApplication().getPrimaryWindow();
 
 		// In order to toggle between full-screen and windowed mode we need to use a CoreAccessor.
 		// Banshee is a multi-threaded engine and when you need to communicate between simulation and
@@ -421,7 +421,7 @@ namespace BansheeEngine
 
 	void renderWindowResized()
 	{
-		RenderWindowPtr window = gApplication().getPrimaryWindow();
+		SPtr<RenderWindow> window = gApplication().getPrimaryWindow();
 		const RenderWindowProperties& rwProps = window->getProperties();
 
 		if (!fullscreen)
@@ -442,7 +442,7 @@ namespace BansheeEngine
 
 		if (fullscreen)
 		{
-			RenderWindowPtr window = gApplication().getPrimaryWindow();
+			SPtr<RenderWindow> window = gApplication().getPrimaryWindow();
 			window->setFullscreen(gCoreAccessor(), *selectedVideoMode);
 		}
 	}

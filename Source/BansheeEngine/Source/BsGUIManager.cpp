@@ -631,7 +631,7 @@ namespace BansheeEngine
 						}
 					}
 
-					MeshDataPtr meshData = bs_shared_ptr_new<MeshData>(group->numQuads * 4, group->numQuads * 6, mVertexDesc);
+					SPtr<MeshData> meshData = bs_shared_ptr_new<MeshData>(group->numQuads * 4, group->numQuads * 6, mVertexDesc);
 
 					UINT8* vertices = meshData->getElementData(VES_POSITION);
 					UINT8* uvs = meshData->getElementData(VES_TEXCOORD);
@@ -683,7 +683,7 @@ namespace BansheeEngine
 
 		const HTexture& tex = mCaretTexture->getTexture();
 		UINT32 subresourceIdx = tex->getProperties().mapToSubresourceIdx(0, 0);
-		PixelDataPtr data = tex->getProperties().allocateSubresourceBuffer(subresourceIdx);
+		SPtr<PixelData> data = tex->getProperties().allocateSubresourceBuffer(subresourceIdx);
 
 		data->setColorAt(mCaretColor, 0, 0);
 		tex->writeSubresource(gCoreAccessor(), subresourceIdx, data, false);
@@ -699,7 +699,7 @@ namespace BansheeEngine
 
 		const HTexture& tex = mTextSelectionTexture->getTexture();
 		UINT32 subresourceIdx = tex->getProperties().mapToSubresourceIdx(0, 0);
-		PixelDataPtr data = tex->getProperties().allocateSubresourceBuffer(subresourceIdx);
+		SPtr<PixelData> data = tex->getProperties().allocateSubresourceBuffer(subresourceIdx);
 
 		data->setColorAt(mTextSelectionColor, 0, 0);
 
@@ -1076,7 +1076,7 @@ namespace BansheeEngine
 		{
 			for(auto& elementInfo : mElementsUnderPointer)
 			{
-				GUIContextMenuPtr menu = elementInfo.element->_getContextMenu();
+				SPtr<GUIContextMenu> menu = elementInfo.element->_getContextMenu();
 
 				if(menu != nullptr && elementInfo.widget != nullptr)
 				{
@@ -1575,7 +1575,7 @@ namespace BansheeEngine
 		return curLocalPos;
 	}
 
-	Vector2I GUIManager::windowToBridgedCoords(const RenderTargetPtr& target, const Vector2I& windowPos) const
+	Vector2I GUIManager::windowToBridgedCoords(const SPtr<RenderTarget>& target, const Vector2I& windowPos) const
 	{
 		// This cast might not be valid (the render target could be a window), but we only really need to cast
 		// so that mInputBridge map allows us to search through it - we don't access anything unless the target is bridged
@@ -1619,7 +1619,7 @@ namespace BansheeEngine
 		if (viewport == nullptr)
 			return nullptr;
 
-		RenderTargetPtr target = viewport->getTarget();
+		SPtr<RenderTarget> target = viewport->getTarget();
 		if (target == nullptr)
 			return nullptr;
 
@@ -1645,7 +1645,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	RenderWindowPtr GUIManager::getBridgeWindow(const RenderTexturePtr& target) const
+	SPtr<RenderWindow> GUIManager::getBridgeWindow(const SPtr<RenderTexture>& target) const
 	{
 		if (target == nullptr)
 			return nullptr;
@@ -1660,7 +1660,7 @@ namespace BansheeEngine
 			if (parentWidget == nullptr)
 				return nullptr;
 
-			RenderTargetPtr curTarget = parentWidget->getTarget()->getTarget();
+			SPtr<RenderTarget> curTarget = parentWidget->getTarget()->getTarget();
 			if (curTarget == nullptr)
 				return nullptr;
 
@@ -1713,7 +1713,7 @@ namespace BansheeEngine
 
 	GUIManagerCore::~GUIManagerCore()
 	{
-		CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
+		SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
 		for (auto& cameraData : mPerCameraData)
 			activeRenderer->_unregisterRenderCallback(cameraData.first.get(), 30);
 	}
@@ -1740,7 +1740,7 @@ namespace BansheeEngine
 		{
 			FrameSet<SPtr<CameraCore>> validCameras;
 
-			CoreRendererPtr activeRenderer = RendererManager::instance().getActive();
+			SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
 			for (auto& newCameraData : newPerCameraData)
 			{
 				UINT32 idx = 0;

@@ -31,13 +31,13 @@ namespace BansheeEngine
 
 	}
 
-	ManagedSerializableObject::ManagedSerializableObject(const ConstructPrivately& dummy, ManagedSerializableObjectInfoPtr objInfo, MonoObject* managedInstance)
+	ManagedSerializableObject::ManagedSerializableObject(const ConstructPrivately& dummy, SPtr<ManagedSerializableObjectInfo> objInfo, MonoObject* managedInstance)
 		:mObjInfo(objInfo), mManagedInstance(managedInstance)
 	{
 
 	}
 
-	ManagedSerializableObjectPtr ManagedSerializableObject::createFromExisting(MonoObject* managedInstance)
+	SPtr<ManagedSerializableObject> ManagedSerializableObject::createFromExisting(MonoObject* managedInstance)
 	{
 		if(managedInstance == nullptr)
 			return nullptr;
@@ -46,16 +46,16 @@ namespace BansheeEngine
 		String elementTypeName;
 		MonoUtil::getClassName(managedInstance, elementNs, elementTypeName);
 
-		ManagedSerializableObjectInfoPtr objInfo;
+		SPtr<ManagedSerializableObjectInfo> objInfo;
 		if(!ScriptAssemblyManager::instance().getSerializableObjectInfo(elementNs, elementTypeName, objInfo))
 			return nullptr;
 
 		return bs_shared_ptr_new<ManagedSerializableObject>(ConstructPrivately(), objInfo, managedInstance);
 	}
 
-	ManagedSerializableObjectPtr ManagedSerializableObject::createNew(const ManagedSerializableTypeInfoObjectPtr& type)
+	SPtr<ManagedSerializableObject> ManagedSerializableObject::createNew(const SPtr<ManagedSerializableTypeInfoObject>& type)
 	{
-		ManagedSerializableObjectInfoPtr currentObjInfo = nullptr;
+		SPtr<ManagedSerializableObjectInfo> currentObjInfo = nullptr;
 
 		// See if this type even still exists
 		if (!ScriptAssemblyManager::instance().getSerializableObjectInfo(type->mTypeNamespace, type->mTypeName, currentObjInfo))
@@ -64,9 +64,9 @@ namespace BansheeEngine
 		return bs_shared_ptr_new<ManagedSerializableObject>(ConstructPrivately(), currentObjInfo, createManagedInstance(type));
 	}
 
-	MonoObject* ManagedSerializableObject::createManagedInstance(const ManagedSerializableTypeInfoObjectPtr& type)
+	MonoObject* ManagedSerializableObject::createManagedInstance(const SPtr<ManagedSerializableTypeInfoObject>& type)
 	{
-		ManagedSerializableObjectInfoPtr currentObjInfo = nullptr;
+		SPtr<ManagedSerializableObjectInfo> currentObjInfo = nullptr;
 
 		// See if this type even still exists
 		if (!ScriptAssemblyManager::instance().getSerializableObjectInfo(type->mTypeNamespace, type->mTypeName, currentObjInfo))
@@ -78,7 +78,7 @@ namespace BansheeEngine
 			return currentObjInfo->mMonoClass->createInstance();
 	}
 
-	ManagedSerializableObjectPtr ManagedSerializableObject::createEmpty()
+	SPtr<ManagedSerializableObject> ManagedSerializableObject::createEmpty()
 	{
 		return bs_shared_ptr_new<ManagedSerializableObject>(ConstructPrivately());
 	}
@@ -90,7 +90,7 @@ namespace BansheeEngine
 
 		mCachedData.clear();
 
-		ManagedSerializableObjectInfoPtr curType = mObjInfo;
+		SPtr<ManagedSerializableObjectInfo> curType = mObjInfo;
 		while (curType != nullptr)
 		{
 			for (auto& field : curType->mFields)
@@ -115,7 +115,7 @@ namespace BansheeEngine
 	void ManagedSerializableObject::deserialize()
 	{
 		// See if this type even still exists
-		ManagedSerializableObjectInfoPtr currentObjInfo = nullptr;
+		SPtr<ManagedSerializableObjectInfo> currentObjInfo = nullptr;
 		if (!ScriptAssemblyManager::instance().getSerializableObjectInfo(mObjInfo->mTypeInfo->mTypeNamespace, mObjInfo->mTypeInfo->mTypeName, currentObjInfo))
 		{
 			mManagedInstance = nullptr;
@@ -126,7 +126,7 @@ namespace BansheeEngine
 		deserialize(createManagedInstance(currentObjInfo->mTypeInfo), currentObjInfo);
 	}
 
-	void ManagedSerializableObject::deserialize(MonoObject* instance, const ManagedSerializableObjectInfoPtr& objInfo)
+	void ManagedSerializableObject::deserialize(MonoObject* instance, const SPtr<ManagedSerializableObjectInfo>& objInfo)
 	{
 		mManagedInstance = instance;
 
@@ -142,7 +142,7 @@ namespace BansheeEngine
 
 		// Scan all fields and ensure the fields still exist
 		UINT32 i = 0;
-		ManagedSerializableObjectInfoPtr curType = mObjInfo;
+		SPtr<ManagedSerializableObjectInfo> curType = mObjInfo;
 		while (curType != nullptr)
 		{
 			for (auto& field : curType->mFields)
@@ -154,7 +154,7 @@ namespace BansheeEngine
 
 					ManagedSerializableFieldKey key(typeID, fieldId);
 
-					ManagedSerializableFieldInfoPtr matchingFieldInfo = objInfo->findMatchingField(field.second, curType->mTypeInfo);
+					SPtr<ManagedSerializableFieldInfo> matchingFieldInfo = objInfo->findMatchingField(field.second, curType->mTypeInfo);
 					if (matchingFieldInfo != nullptr)
 						setFieldData(matchingFieldInfo, mCachedData[key]);
 
@@ -169,7 +169,7 @@ namespace BansheeEngine
 		mCachedData.clear();
 	}
 
-	void ManagedSerializableObject::setFieldData(const ManagedSerializableFieldInfoPtr& fieldInfo, const ManagedSerializableFieldDataPtr& val)
+	void ManagedSerializableObject::setFieldData(const SPtr<ManagedSerializableFieldInfo>& fieldInfo, const SPtr<ManagedSerializableFieldData>& val)
 	{
 		if (mManagedInstance != nullptr)
 			fieldInfo->mMonoField->setValue(mManagedInstance, val->getValue(fieldInfo->mTypeInfo));
@@ -180,7 +180,7 @@ namespace BansheeEngine
 		}
 	}
 
-	ManagedSerializableFieldDataPtr ManagedSerializableObject::getFieldData(const ManagedSerializableFieldInfoPtr& fieldInfo) const
+	SPtr<ManagedSerializableFieldData> ManagedSerializableObject::getFieldData(const SPtr<ManagedSerializableFieldInfo>& fieldInfo) const
 	{
 		if (mManagedInstance != nullptr)
 		{

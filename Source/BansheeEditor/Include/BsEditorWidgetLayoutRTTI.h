@@ -22,8 +22,8 @@ namespace BansheeEngine
 		UINT32 getEntriesArraySize(EditorWidgetLayout* obj) { return (UINT32)obj->mEntries.size(); }
 		void setEntriesArraySize(EditorWidgetLayout* obj, UINT32 size) { obj->mEntries.resize(size); }
 
-		DockManagerLayoutPtr getDockLayout(EditorWidgetLayout* obj) { return obj->mDockLayout; }
-		void setDockLayout(EditorWidgetLayout* obj, DockManagerLayoutPtr val) { obj->mDockLayout = val; }
+		SPtr<DockManagerLayout> getDockLayout(EditorWidgetLayout* obj) { return obj->mDockLayout; }
+		void setDockLayout(EditorWidgetLayout* obj, SPtr<DockManagerLayout> val) { obj->mDockLayout = val; }
 
 		bool& getIsMainWindowMaximized(EditorWidgetLayout* obj) { return obj->mMaximized; }
 		void setIsMainWindowMaximized(EditorWidgetLayout* obj, bool& val) { obj->mMaximized = val; }
@@ -49,7 +49,7 @@ namespace BansheeEngine
 			return TID_EditorWidgetLayout;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<EditorWidgetLayout>(EditorWidgetLayout::PrivatelyConstruct());
 		}

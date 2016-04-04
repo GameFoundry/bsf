@@ -14,7 +14,7 @@
 
 namespace BansheeEngine
 {
-	GUIWidget::GUIWidget(const CameraPtr& camera)
+	GUIWidget::GUIWidget(const SPtr<Camera>& camera)
 		:mWidgetIsDirty(false), mCamera(camera), mDepth(0), mPanel(nullptr), mIsActive(true), 
 		mTransform(Matrix4::IDENTITY), mCachedRTId(0)
 	{
@@ -28,11 +28,11 @@ namespace BansheeEngine
 		construct(mCamera);
 	}
 
-	void GUIWidget::construct(const CameraPtr& camera)
+	void GUIWidget::construct(const SPtr<Camera>& camera)
 	{
 		if (mCamera != nullptr)
 		{
-			RenderTargetPtr target = mCamera->getViewport()->getTarget();
+			SPtr<RenderTarget> target = mCamera->getViewport()->getTarget();
 
 			if (target != nullptr)
 			{
@@ -53,7 +53,7 @@ namespace BansheeEngine
 		_destroy();
 	}
 
-	SPtr<GUIWidget> GUIWidget::create(const CameraPtr& camera)
+	SPtr<GUIWidget> GUIWidget::create(const SPtr<Camera>& camera)
 	{
 		return bs_shared_ptr(new (bs_alloc<GUIWidget>()) GUIWidget(camera));
 	}
@@ -142,7 +142,7 @@ namespace BansheeEngine
 
 	void GUIWidget::_updateRT()
 	{
-		RenderTargetPtr rt;
+		SPtr<RenderTarget> rt;
 		UINT64 newRTId = 0;
 		if(mCamera != nullptr)
 		{
@@ -311,9 +311,9 @@ namespace BansheeEngine
 			return *BuiltinResources::instance().getEmptyGUISkin();
 	}
 
-	void GUIWidget::setCamera(const CameraPtr& camera)
+	void GUIWidget::setCamera(const SPtr<Camera>& camera)
 	{
-		CameraPtr newCamera = camera;
+		SPtr<Camera> newCamera = camera;
 		if(newCamera != nullptr)
 		{
 			if (newCamera->getViewport()->getTarget() == nullptr)

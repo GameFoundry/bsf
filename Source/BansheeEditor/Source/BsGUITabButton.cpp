@@ -17,35 +17,35 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUITabButton::GUITabButton(const String& styleName, const GUIToggleGroupPtr& toggleGroup, 
+	GUITabButton::GUITabButton(const String& styleName, const SPtr<GUIToggleGroup>& toggleGroup, 
 		UINT32 index, const GUIContent& content, const GUIDimensions& dimensions)
 		:GUIToggle(styleName, content, toggleGroup, dimensions), mIndex(index), mDraggedState(false)
 	{
 
 	}
 
-	GUITabButton* GUITabButton::create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, 
+	GUITabButton* GUITabButton::create(const SPtr<GUIToggleGroup>& toggleGroup, UINT32 index, 
 		const HString& text, const String& styleName)
 	{
 		return new (bs_alloc<GUITabButton>()) GUITabButton(
 			getStyleName<GUITabButton>(styleName), toggleGroup, index, GUIContent(text), GUIDimensions::create());
 	}
 
-	GUITabButton* GUITabButton::create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, 
+	GUITabButton* GUITabButton::create(const SPtr<GUIToggleGroup>& toggleGroup, UINT32 index, 
 		const HString& text, const GUIOptions& options, const String& styleName)
 	{
 		return new (bs_alloc<GUITabButton>()) GUITabButton(
 			getStyleName<GUITabButton>(styleName), toggleGroup, index, GUIContent(text), GUIDimensions::create(options));
 	}
 
-	GUITabButton* GUITabButton::create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, 
+	GUITabButton* GUITabButton::create(const SPtr<GUIToggleGroup>& toggleGroup, UINT32 index, 
 		const GUIContent& content, const String& styleName)
 	{
 		return new (bs_alloc<GUITabButton>()) GUITabButton(
 			getStyleName<GUITabButton>(styleName), toggleGroup, index, content, GUIDimensions::create());
 	}
 
-	GUITabButton* GUITabButton::create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, 
+	GUITabButton* GUITabButton::create(const SPtr<GUIToggleGroup>& toggleGroup, UINT32 index, 
 		const GUIContent& content, const GUIOptions& options, const String& styleName)
 	{
 		return new (bs_alloc<GUITabButton>()) GUITabButton(

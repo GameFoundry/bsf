@@ -120,12 +120,12 @@ namespace BansheeEngine
 
 		struct ObjectToEncode
 		{
-			ObjectToEncode(UINT32 _objectId, std::shared_ptr<IReflectable> _object)
+			ObjectToEncode(UINT32 _objectId, SPtr<IReflectable> _object)
 				:objectId(_objectId), object(_object)
 			{ }
 
 			UINT32 objectId;
-			std::shared_ptr<IReflectable> object;
+			SPtr<IReflectable> object;
 		};
 
 		struct ObjectToDecode
@@ -165,7 +165,7 @@ namespace BansheeEngine
 		 * Finds or creates an id for the provided object and returns it. And it adds the object to a list of objects that 
 		 * need to be encoded, if it's not already there.
 		 */
-		UINT32 registerObjectPtr(std::shared_ptr<IReflectable> object);
+		UINT32 registerObjectPtr(SPtr<IReflectable> object);
 
 		/** Encodes data required for representing a serialized field, into 4 bytes. */
 		static UINT32 encodeFieldMetaData(UINT16 id, UINT8 size, bool array, 

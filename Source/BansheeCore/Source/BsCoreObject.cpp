@@ -106,7 +106,7 @@ namespace BansheeEngine
 		CoreObjectManager::instance().notifyDependenciesDirty(this);
 	}
 
-	void CoreObject::_setThisPtr(std::shared_ptr<CoreObject> ptrThis)
+	void CoreObject::_setThisPtr(SPtr<CoreObject> ptrThis)
 	{
 		mThis = ptrThis;
 	}
@@ -142,14 +142,14 @@ namespace BansheeEngine
 
 	void CoreObject::executeGpuCommand(const SPtr<CoreObjectCore>& obj, std::function<void()> func)
 	{
-		volatile std::shared_ptr<CoreObjectCore> objParam = obj; // Makes sure obj isn't optimized out?
+		volatile SPtr<CoreObjectCore> objParam = obj; // Makes sure obj isn't optimized out?
 
 		func();
 	}
 
 	void CoreObject::executeReturnGpuCommand(const SPtr<CoreObjectCore>& obj, std::function<void(AsyncOp&)> func, AsyncOp& op)
 	{
-		volatile std::shared_ptr<CoreObjectCore> objParam = obj; // Makes sure obj isn't optimized out?
+		volatile SPtr<CoreObjectCore> objParam = obj; // Makes sure obj isn't optimized out?
 
 		func(op);
 	}

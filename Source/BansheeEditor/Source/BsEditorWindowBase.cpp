@@ -47,7 +47,7 @@ namespace BansheeEngine
 		construct(mRenderWindow);
 	}
 
-	EditorWindowBase::EditorWindowBase(const RenderWindowPtr& renderWindow)
+	EditorWindowBase::EditorWindowBase(const SPtr<RenderWindow>& renderWindow)
 		:mOwnsRenderWindow(false), mIsModal(false)
 	{
 		construct(renderWindow);
@@ -78,7 +78,7 @@ namespace BansheeEngine
 		mRenderWindow->hide(gCoreAccessor());
 	}
 
-	void EditorWindowBase::construct(const RenderWindowPtr& renderWindow)
+	void EditorWindowBase::construct(const SPtr<RenderWindow>& renderWindow)
 	{
 		mRenderWindow = renderWindow;
 		mSceneObject = SceneObject::create("EditorWindow", SOF_Internal | SOF_Persistent | SOF_DontSave);

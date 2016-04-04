@@ -5,7 +5,7 @@
 
 namespace BansheeEngine
 {
-	EventQueryPtr EventQuery::create()
+	SPtr<EventQuery> EventQuery::create()
 	{
 		return QueryManager::instance().createEventQuery();
 	}

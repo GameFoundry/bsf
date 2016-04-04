@@ -49,7 +49,7 @@ namespace BansheeEngine
 			FileEntry();
 			FileEntry(const Path& path, const WString& name, DirectoryEntry* parent);
 
-			ProjectFileMetaPtr meta; /**< Meta file containing various information about the resource(s). */
+			SPtr<ProjectFileMeta> meta; /**< Meta file containing various information about the resource(s). */
 			std::time_t lastUpdateTime; /**< Timestamp of when we last imported the resource. */
 		};
 
@@ -112,7 +112,7 @@ namespace BansheeEngine
 		 *						(for example mymesh.fbx/my_animation).
 		 * @return				Found meta information for the resource, or null if not found. 
 		 */
-		ProjectResourceMetaPtr findResourceMeta(const Path& path) const;
+		SPtr<ProjectResourceMeta> findResourceMeta(const Path& path) const;
 
 		/**
 		 * Searches the library for a pattern and returns all entries matching it.
@@ -195,7 +195,7 @@ namespace BansheeEngine
 		 * @param[in]	forceReimport	Should the resource be reimported even if no changes are detected. This should be
 		 *								true if import options changed since last import.
 		 */
-		void reimport(const Path& path, const ImportOptionsPtr& importOptions = nullptr, bool forceReimport = false);
+		void reimport(const Path& path, const SPtr<ImportOptions>& importOptions = nullptr, bool forceReimport = false);
 
 		/**
 		 * Determines if this resource will always be included in the build, regardless if it's being referenced or not.
@@ -253,7 +253,7 @@ namespace BansheeEngine
 		 */
 
 		/**	Returns the resource manifest managed by the project library. */
-		const ResourceManifestPtr& _getManifest() const { return mResourceManifest; }
+		const SPtr<ResourceManifest>& _getManifest() const { return mResourceManifest; }
 
 		/** @} */
 
@@ -273,7 +273,7 @@ namespace BansheeEngine
 		 * @return						Newly added resource entry.
 		 */
 		FileEntry* addResourceInternal(DirectoryEntry* parent, const Path& filePath, 
-			const ImportOptionsPtr& importOptions = nullptr, bool forceReimport = false);
+			const SPtr<ImportOptions>& importOptions = nullptr, bool forceReimport = false);
 
 		/**
 		 * Common code for adding a new folder entry to the library.
@@ -315,7 +315,7 @@ namespace BansheeEngine
 		 *									feel that you need to clear this data, set this to true but be aware that you
 		 *									might need to re-apply those references.
 		 */
-		void reimportResourceInternal(FileEntry* file, const ImportOptionsPtr& importOptions = nullptr, 
+		void reimportResourceInternal(FileEntry* file, const SPtr<ImportOptions>& importOptions = nullptr, 
 			bool forceReimport = false, bool pruneResourceMetas = false);
 
 		/**
@@ -374,7 +374,7 @@ namespace BansheeEngine
 		static const WString LIBRARY_ENTRIES_FILENAME;
 		static const WString RESOURCE_MANIFEST_FILENAME;
 
-		ResourceManifestPtr mResourceManifest;
+		SPtr<ResourceManifest> mResourceManifest;
 		DirectoryEntry* mRootEntry;
 		Path mProjectFolder;
 		Path mResourcesFolder;

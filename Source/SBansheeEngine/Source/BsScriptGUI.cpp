@@ -26,7 +26,7 @@ namespace BansheeEngine
 
 	void ScriptGUI::startUp()
 	{
-		CameraPtr mainCamera = gSceneManager().getMainCamera().camera;
+		SPtr<Camera> mainCamera = gSceneManager().getMainCamera().camera;
 		sGUIWidget = GUIWidget::create(mainCamera);
 		sGUIWidget->setSkin(BuiltinResources::instance().getGUISkin());
 
@@ -59,7 +59,7 @@ namespace BansheeEngine
 		if (sGUIWidget == nullptr)
 			return;
 
-		CameraPtr mainCamera = gSceneManager().getMainCamera().camera;
+		SPtr<Camera> mainCamera = gSceneManager().getMainCamera().camera;
 		if (mainCamera != sGUIWidget->getCamera())
 			sGUIWidget->setCamera(mainCamera);
 

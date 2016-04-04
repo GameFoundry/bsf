@@ -14,7 +14,7 @@
 namespace BansheeEngine 
 {
 	GLTextureCore::GLTextureCore(GLSupport& support, TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, 
-		UINT32 numMipmaps, PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, const PixelDataPtr& initialData)
+		UINT32 numMipmaps, PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, const SPtr<PixelData>& initialData)
 		: TextureCore(textureType, width, height, depth, numMipmaps, format, usage, hwGamma, multisampleCount, initialData),
 		mTextureID(0), mGLSupport(support), mGLFormat(0)
     { }
@@ -258,7 +258,7 @@ namespace BansheeEngine
 		}
 	}
 	
-	std::shared_ptr<GLPixelBuffer> GLTextureCore::getBuffer(UINT32 face, UINT32 mipmap)
+	SPtr<GLPixelBuffer> GLTextureCore::getBuffer(UINT32 face, UINT32 mipmap)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 

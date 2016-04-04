@@ -113,7 +113,7 @@ namespace BansheeEngine
 		 * 			
 		 * @note	Thread safe.
 		 */
-		PixelDataPtr allocateSubresourceBuffer(UINT32 subresourceIdx) const;
+		SPtr<PixelData> allocateSubresourceBuffer(UINT32 subresourceIdx) const;
 
 	protected:
 		friend class TextureRTTI;
@@ -155,7 +155,7 @@ namespace BansheeEngine
 		 *									will fail.
 		 * @return							Async operation object you can use to track operation completion.
 		 */
-		AsyncOp writeSubresource(CoreAccessor& accessor, UINT32 subresourceIdx, const PixelDataPtr& data, 
+		AsyncOp writeSubresource(CoreAccessor& accessor, UINT32 subresourceIdx, const SPtr<PixelData>& data, 
 			bool discardEntireBuffer);
 
 		/**
@@ -172,7 +172,7 @@ namespace BansheeEngine
 		 *
 		 * @see		TextureCore::readSubresource
 		 */
-		AsyncOp readSubresource(CoreAccessor& accessor, UINT32 subresourceIdx, const PixelDataPtr& data);
+		AsyncOp readSubresource(CoreAccessor& accessor, UINT32 subresourceIdx, const SPtr<PixelData>& data);
 
 		/**
 		 * Reads data from the cached system memory texture buffer into the provided buffer. 
@@ -243,7 +243,7 @@ namespace BansheeEngine
 		 * @param[in]	hwGammaCorrection	If true the texture data is assumed to have been gamma corrected and will be
 		 *									converted back to linear space when sampled on GPU.
 		 */
-		static HTexture create(const PixelDataPtr& pixelData, int usage = TU_DEFAULT, bool hwGammaCorrection = false);
+		static HTexture create(const SPtr<PixelData>& pixelData, int usage = TU_DEFAULT, bool hwGammaCorrection = false);
 
 		/** @name Internal 
 		 *  @{
@@ -254,7 +254,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method. Creates a texture pointer without a handle. Use create() for normal usage.
 		 */
-		static TexturePtr _createPtr(TextureType texType, UINT32 width, UINT32 height, UINT32 depth,
+		static SPtr<Texture> _createPtr(TextureType texType, UINT32 width, UINT32 height, UINT32 depth,
 			int numMips, PixelFormat format, int usage = TU_DEFAULT,
 			bool hwGammaCorrection = false, UINT32 multisampleCount = 0);
 
@@ -263,15 +263,15 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method. Creates a texture pointer without a handle. Use create() for normal usage.
 		 */
-		static TexturePtr _createPtr(TextureType texType, UINT32 width, UINT32 height, int numMips,
+		static SPtr<Texture> _createPtr(TextureType texType, UINT32 width, UINT32 height, int numMips,
 			PixelFormat format, int usage = TU_DEFAULT, bool hwGammaCorrection = false, UINT32 multisampleCount = 0);
 
 		/**
-		 * @copydoc	create(const PixelDataPtr&, int, bool)
+		 * @copydoc	create(const SPtr<PixelData>&, int, bool)
 		 *
 		 * @note	Internal method. Creates a texture pointer without a handle. Use create() for normal usage.
 		 */
-		static TexturePtr _createPtr(const PixelDataPtr& pixelData, int usage = TU_DEFAULT, bool hwGammaCorrection = false);
+		static SPtr<Texture> _createPtr(const SPtr<PixelData>& pixelData, int usage = TU_DEFAULT, bool hwGammaCorrection = false);
 
 		/** @} */
 
@@ -281,7 +281,7 @@ namespace BansheeEngine
 		Texture(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps,
 			PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount);
 
-		Texture(const PixelDataPtr& pixelData, int usage, bool hwGamma);
+		Texture(const SPtr<PixelData>& pixelData, int usage, bool hwGamma);
 
 		/** @copydoc Resource::initialize */
 		void initialize() override;
@@ -303,9 +303,9 @@ namespace BansheeEngine
 		void updateCPUBuffers(UINT32 subresourceIdx, const PixelData& data);
 
 	protected:
-		Vector<PixelDataPtr> mCPUSubresourceData;
+		Vector<SPtr<PixelData>> mCPUSubresourceData;
 		TextureProperties mProperties;
-		mutable PixelDataPtr mInitData;
+		mutable SPtr<PixelData> mInitData;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/
@@ -333,7 +333,7 @@ namespace BansheeEngine
 	{
 	public:
 		TextureCore(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps,
-			PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, const PixelDataPtr& initData);
+			PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, const SPtr<PixelData>& initData);
 		virtual ~TextureCore() {}
 
 
@@ -439,8 +439,8 @@ namespace BansheeEngine
 			PixelFormat format, int usage = TU_DEFAULT,
 			bool hwGammaCorrection = false, UINT32 multisampleCount = 0);
 
-		/** @copydoc Texture::create(const PixelDataPtr&, int, bool) */
-		static SPtr<TextureCore> create(const PixelDataPtr& pixelData, int usage = TU_DEFAULT, bool hwGammaCorrection = false);
+		/** @copydoc Texture::create(const SPtr<PixelData>&, int, bool) */
+		static SPtr<TextureCore> create(const SPtr<PixelData>& pixelData, int usage = TU_DEFAULT, bool hwGammaCorrection = false);
 
 		/************************************************************************/
 		/* 								TEXTURE VIEW                      		*/
@@ -452,7 +452,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Core thread only.
 		 */
-		static TextureViewPtr requestView(const SPtr<TextureCore>& texture, UINT32 mostDetailMip, UINT32 numMips,
+		static SPtr<TextureView> requestView(const SPtr<TextureCore>& texture, UINT32 mostDetailMip, UINT32 numMips,
 			UINT32 firstArraySlice, UINT32 numArraySlices, GpuViewUsage usage);
 
 		/**
@@ -460,7 +460,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Core thread only.
 		 */
-		static void releaseView(const TextureViewPtr& view);
+		static void releaseView(const SPtr<TextureView>& view);
 
 		/** Returns a plain white texture. */
 		static SPtr<TextureCore> WHITE;
@@ -494,7 +494,7 @@ namespace BansheeEngine
 		/************************************************************************/
 
 		/**	Creates a new empty/undefined texture view. */
-		virtual TextureViewPtr createView(const SPtr<TextureCore>& texture, const TEXTURE_VIEW_DESC& desc);
+		virtual SPtr<TextureView> createView(const SPtr<TextureCore>& texture, const TEXTURE_VIEW_DESC& desc);
 
 		/**
 		 * Releases all internal texture view references. Views won't get destroyed if there are external references still 
@@ -505,17 +505,17 @@ namespace BansheeEngine
 		/** Holds a single texture view with a usage reference count. */
 		struct TextureViewReference
 		{
-			TextureViewReference(TextureViewPtr _view)
+			TextureViewReference(SPtr<TextureView> _view)
 				:view(_view), refCount(0)
 			{ }
 
-			TextureViewPtr view;
+			SPtr<TextureView> view;
 			UINT32 refCount;
 		};
 
 		UnorderedMap<TEXTURE_VIEW_DESC, TextureViewReference*, TextureView::HashFunction, TextureView::EqualFunction> mTextureViews;
 		TextureProperties mProperties;
-		PixelDataPtr mInitData;
+		SPtr<PixelData> mInitData;
 	};
 
 	/** @} */

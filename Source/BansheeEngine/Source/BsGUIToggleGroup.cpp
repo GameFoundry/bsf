@@ -17,7 +17,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUIToggleGroup::initialize(const std::shared_ptr<GUIToggleGroup>& sharedPtr)
+	void GUIToggleGroup::initialize(const SPtr<GUIToggleGroup>& sharedPtr)
 	{
 		mThis = sharedPtr;
 	}

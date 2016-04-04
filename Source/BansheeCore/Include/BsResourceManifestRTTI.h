@@ -50,7 +50,7 @@ namespace BansheeEngine
 			return TID_ResourceManifest;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return ResourceManifest::createEmpty();
 		}

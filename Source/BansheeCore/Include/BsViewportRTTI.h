@@ -67,7 +67,7 @@ namespace BansheeEngine
 			return TID_Viewport;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return Viewport::createEmpty();
 		}

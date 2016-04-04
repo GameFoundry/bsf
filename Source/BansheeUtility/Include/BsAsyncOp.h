@@ -69,11 +69,11 @@ namespace BansheeEngine
 		AsyncOp(AsyncOpEmpty empty)
 		{ }
 
-		AsyncOp(const AsyncOpSyncDataPtr& syncData)
+		AsyncOp(const SPtr<AsyncOpSyncData>& syncData)
 			:mData(bs_shared_ptr_new<AsyncOpData>()), mSyncData(syncData)
 		{ }
 
-		AsyncOp(AsyncOpEmpty empty, const AsyncOpSyncDataPtr& syncData)
+		AsyncOp(AsyncOpEmpty empty, const SPtr<AsyncOpSyncData>& syncData)
 			:mSyncData(syncData)
 		{ }
 
@@ -123,8 +123,8 @@ namespace BansheeEngine
 
 		/** @} */
 	private:
-		std::shared_ptr<AsyncOpData> mData;
-		AsyncOpSyncDataPtr mSyncData;
+		SPtr<AsyncOpData> mData;
+		SPtr<AsyncOpSyncData> mSyncData;
 	};
 
 	/** @} */

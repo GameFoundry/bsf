@@ -44,7 +44,7 @@ namespace BansheeEngine
 			return TID_ResourceDependencies;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return bs_shared_ptr_new<SavedResourceData>();
 		}

@@ -20,13 +20,13 @@ namespace BansheeEngine
     class BS_EXPORT CCamera : public Component
     {
     public:
-		CCamera(const HSceneObject& parent, RenderTargetPtr target = nullptr,
+		CCamera(const HSceneObject& parent, SPtr<RenderTarget> target = nullptr,
 			float left = 0.0f, float top = 0.0f, float width = 1.0f, float height = 1.0f);
 
         virtual ~CCamera();
 
 		/** @copydoc Camera::getViewport */
-		ViewportPtr getViewport() const { return mInternal->getViewport(); }
+		SPtr<Viewport> getViewport() const { return mInternal->getViewport(); }
 
 		/** @copydoc Camera::setHorzFOV */
 		virtual void setHorzFOV(const Radian& fovy) { mInternal->setHorzFOV(fovy); }
@@ -198,7 +198,7 @@ namespace BansheeEngine
 		 */
 
 		/** Returns the internal camera that is used for majority of operations by this component. */
-		CameraPtr _getCamera() const { updateView(); return mInternal; }
+		SPtr<Camera> _getCamera() const { updateView(); return mInternal; }
 
 		/** @} */
 
@@ -206,10 +206,10 @@ namespace BansheeEngine
 		/** Checks if the world transform of the camera changed, and if needed updates the view matrix. */
 		void updateView() const;
 
-		mutable CameraPtr mInternal;
+		mutable SPtr<Camera> mInternal;
 
 		// Only valid during construction
-		RenderTargetPtr mTarget;
+		SPtr<RenderTarget> mTarget;
 		float mLeft;
 		float mTop;
 		float mWidth;

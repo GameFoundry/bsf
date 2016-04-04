@@ -87,7 +87,7 @@ namespace BansheeEngine
 		Vector<MonoReflectionType*> validTypes;
 		for (auto& type : types)
 		{
-			ManagedSerializableObjectInfoPtr objInfo;
+			SPtr<ManagedSerializableObjectInfo> objInfo;
 			if (ScriptAssemblyManager::instance().getSerializableObjectInfo(toString(type.first), toString(type.second), objInfo))
 			{
 				MonoType* monoType = mono_class_get_type(objInfo->mTypeInfo->getMonoClass());

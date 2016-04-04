@@ -23,7 +23,7 @@ namespace BansheeEngine
 		 * Creates the main editor window using a previously created render window. If a main window already exists, this
 		 * will return the existing instance.
 		 */
-		MainEditorWindow* createMain(const RenderWindowPtr& parentRenderWindow);
+		MainEditorWindow* createMain(const SPtr<RenderWindow>& parentRenderWindow);
 
 		/**	Creates a new editor window. There is no limit on the number of editor windows. */
 		EditorWindow* create();

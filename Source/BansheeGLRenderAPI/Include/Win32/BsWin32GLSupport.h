@@ -19,7 +19,7 @@ namespace BansheeEngine
         Win32GLSupport();
 
 		/** @copydoc GLSupport::newWindow */
-		virtual RenderWindowPtr newWindow(RENDER_WINDOW_DESC& desc, UINT32 windowId, RenderWindowPtr parentWindow) override;
+		virtual SPtr<RenderWindow> newWindow(RENDER_WINDOW_DESC& desc, UINT32 windowId, SPtr<RenderWindow> parentWindow) override;
 
 		/** @copydoc GLSupport::newWindowCore */
 		virtual SPtr<RenderWindowCore> newWindowCore(RENDER_WINDOW_DESC& desc, UINT32 windowId) override;
@@ -59,7 +59,7 @@ namespace BansheeEngine
 		bool selectPixelFormat(HDC hdc, int colorDepth, int multisample, bool hwGamma, bool depth);
 
 		/** @copydoc GLSupport::getVideoModeInfo */
-		VideoModeInfoPtr getVideoModeInfo() const override;
+		SPtr<VideoModeInfo> getVideoModeInfo() const override;
 
 	private:
 		/**	Initializes windows specific OpenGL extensions needed for advanced context creation. */

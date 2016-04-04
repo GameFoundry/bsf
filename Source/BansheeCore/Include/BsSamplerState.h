@@ -119,10 +119,10 @@ namespace BansheeEngine
 		SPtr<SamplerStateCore> getCore() const;
 
 		/**	Creates a new sampler state using the provided descriptor structure. */
-		static SamplerStatePtr create(const SAMPLER_STATE_DESC& desc);
+		static SPtr<SamplerState> create(const SAMPLER_STATE_DESC& desc);
 
 		/**	Returns the default sampler state. */
-		static const SamplerStatePtr& getDefault();
+		static const SPtr<SamplerState>& getDefault();
 
 		/**	Generates a hash value from a sampler state descriptor. */
 		static UINT64 generateHash(const SAMPLER_STATE_DESC& desc);

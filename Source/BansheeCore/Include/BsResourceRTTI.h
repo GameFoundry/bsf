@@ -20,8 +20,8 @@ namespace BansheeEngine
 		UINT32& getSize(Resource* obj) { return obj->mSize; }
 		void setSize(Resource* obj, UINT32& size) { obj->mSize = size; } 
 
-		ResourceMetaDataPtr getMetaData(Resource* obj) { return obj->mMetaData; }
-		void setMetaData(Resource* obj, ResourceMetaDataPtr value) { obj->mMetaData = value; }
+		SPtr<ResourceMetaData> getMetaData(Resource* obj) { return obj->mMetaData; }
+		void setMetaData(Resource* obj, SPtr<ResourceMetaData> value) { obj->mMetaData = value; }
 
 	public:
 		ResourceRTTI()
@@ -41,7 +41,7 @@ namespace BansheeEngine
 			return 100;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			BS_EXCEPT(InternalErrorException, "Cannot instantiate an abstract class.");
 			return nullptr;

@@ -8,11 +8,11 @@
 
 namespace BansheeEngine 
 {
-    TexturePtr TextureManager::createTexture(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, int numMipmaps,
+    SPtr<Texture> TextureManager::createTexture(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, int numMipmaps,
         PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount)
     {
 		Texture* tex = new (bs_alloc<Texture>()) Texture(texType, width, height, depth, numMipmaps, format, usage, hwGamma, multisampleCount);
-		TexturePtr ret = bs_core_ptr<Texture>(tex);
+		SPtr<Texture> ret = bs_core_ptr<Texture>(tex);
 
 		ret->_setThisPtr(ret);
 		ret->initialize();
@@ -20,10 +20,10 @@ namespace BansheeEngine
 		return ret;
     }
 
-	TexturePtr TextureManager::createTexture(const PixelDataPtr& pixelData, int usage , bool hwGammaCorrection)
+	SPtr<Texture> TextureManager::createTexture(const SPtr<PixelData>& pixelData, int usage , bool hwGammaCorrection)
     {
 		Texture* tex = new (bs_alloc<Texture>()) Texture(pixelData, usage, hwGammaCorrection);
-		TexturePtr ret = bs_core_ptr<Texture>(tex);
+		SPtr<Texture> ret = bs_core_ptr<Texture>(tex);
 
 		ret->_setThisPtr(ret);
 		ret->initialize();
@@ -31,16 +31,16 @@ namespace BansheeEngine
 		return ret;
     }
 
-	TexturePtr TextureManager::_createEmpty()
+	SPtr<Texture> TextureManager::_createEmpty()
 	{
 		Texture* tex = new (bs_alloc<Texture>()) Texture();
-		TexturePtr texture = bs_core_ptr<Texture>(tex);
+		SPtr<Texture> texture = bs_core_ptr<Texture>(tex);
 		texture->_setThisPtr(texture);
 
 		return texture;
 	}
 
-	RenderTexturePtr TextureManager::createRenderTexture(TextureType textureType, UINT32 width, UINT32 height, 
+	SPtr<RenderTexture> TextureManager::createRenderTexture(TextureType textureType, UINT32 width, UINT32 height, 
 			PixelFormat format, bool hwGamma, UINT32 multisampleCount, 
 			bool createDepth, PixelFormat depthStencilFormat)
 	{
@@ -61,23 +61,23 @@ namespace BansheeEngine
 		desc.depthStencilSurface.face = 0;
 		desc.depthStencilSurface.mipLevel = 0;
 
-		RenderTexturePtr newRT = createRenderTexture(desc);
+		SPtr<RenderTexture> newRT = createRenderTexture(desc);
 
 		return newRT;
 	}
 
-	RenderTexturePtr TextureManager::createRenderTexture(const RENDER_TEXTURE_DESC& desc)
+	SPtr<RenderTexture> TextureManager::createRenderTexture(const RENDER_TEXTURE_DESC& desc)
 	{
-		RenderTexturePtr newRT = createRenderTextureImpl(desc);
+		SPtr<RenderTexture> newRT = createRenderTextureImpl(desc);
 		newRT->_setThisPtr(newRT);
 		newRT->initialize();
 
 		return newRT;
 	}
 
-	MultiRenderTexturePtr TextureManager::createMultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC& desc)
+	SPtr<MultiRenderTexture> TextureManager::createMultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC& desc)
 	{
-		MultiRenderTexturePtr newRT = createMultiRenderTextureImpl(desc);
+		SPtr<MultiRenderTexture> newRT = createMultiRenderTextureImpl(desc);
 		newRT->_setThisPtr(newRT);
 		newRT->initialize();
 
@@ -89,7 +89,7 @@ namespace BansheeEngine
 		// White built-in texture
 		SPtr<TextureCore> whiteTexture = createTexture(TEX_TYPE_2D, 2, 2, 1, 0, PF_R8G8B8A8, TU_STATIC);
 
-		PixelDataPtr whitePixelData = PixelData::create(2, 2, 1, PF_R8G8B8A8);
+		SPtr<PixelData> whitePixelData = PixelData::create(2, 2, 1, PF_R8G8B8A8);
 		whitePixelData->setColorAt(Color::White, 0, 0);
 		whitePixelData->setColorAt(Color::White, 0, 1);
 		whitePixelData->setColorAt(Color::White, 1, 0);
@@ -101,7 +101,7 @@ namespace BansheeEngine
 		// Black built-in texture
 		SPtr<TextureCore> blackTexture = createTexture(TEX_TYPE_2D, 2, 2, 1, 0, PF_R8G8B8A8, TU_STATIC);
 
-		PixelDataPtr blackPixelData = PixelData::create(2, 2, 1, PF_R8G8B8A8);
+		SPtr<PixelData> blackPixelData = PixelData::create(2, 2, 1, PF_R8G8B8A8);
 		blackPixelData->setColorAt(Color::Black, 0, 0);
 		blackPixelData->setColorAt(Color::Black, 0, 1);
 		blackPixelData->setColorAt(Color::Black, 1, 0);
@@ -112,7 +112,7 @@ namespace BansheeEngine
 
 		// Normal (Y = Up) built-in texture
 		SPtr<TextureCore> normalTexture = createTexture(TEX_TYPE_2D, 2, 2, 1, 0, PF_R8G8B8A8, TU_STATIC);
-		PixelDataPtr normalPixelData = PixelData::create(2, 2, 1, PF_R8G8B8A8);
+		SPtr<PixelData> normalPixelData = PixelData::create(2, 2, 1, PF_R8G8B8A8);
 
 		Color encodedNormal(0.5f, 0.5f, 1.0f);
 		normalPixelData->setColorAt(encodedNormal, 0, 0);

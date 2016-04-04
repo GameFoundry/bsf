@@ -16,17 +16,17 @@ namespace BansheeEngine
 	/** Descriptor structure used for initializing a shader pass. */
 	struct PASS_DESC
 	{
-		BlendStatePtr blendState;
-		RasterizerStatePtr rasterizerState;
-		DepthStencilStatePtr depthStencilState;
+		SPtr<BlendState> blendState;
+		SPtr<RasterizerState> rasterizerState;
+		SPtr<DepthStencilState> depthStencilState;
 		UINT32 stencilRefValue;
 
-		GpuProgramPtr vertexProgram;
-		GpuProgramPtr fragmentProgram;
-		GpuProgramPtr geometryProgram;
-		GpuProgramPtr hullProgram;
-		GpuProgramPtr domainProgram;
-		GpuProgramPtr computeProgram;
+		SPtr<GpuProgram> vertexProgram;
+		SPtr<GpuProgram> fragmentProgram;
+		SPtr<GpuProgram> geometryProgram;
+		SPtr<GpuProgram> hullProgram;
+		SPtr<GpuProgram> domainProgram;
+		SPtr<GpuProgram> computeProgram;
 	};
 
 	/** @} */
@@ -65,10 +65,10 @@ namespace BansheeEngine
 	template<>
 	struct TPassTypes < false >
 	{
-		typedef BlendStatePtr BlendStateType;
-		typedef RasterizerStatePtr RasterizerStateType;
-		typedef DepthStencilStatePtr DepthStencilStateType;
-		typedef GpuProgramPtr GpuProgramType;
+		typedef SPtr<BlendState> BlendStateType;
+		typedef SPtr<RasterizerState> RasterizerStateType;
+		typedef SPtr<DepthStencilState> DepthStencilStateType;
+		typedef SPtr<GpuProgram> GpuProgramType;
 		typedef PASS_DESC PassDescType;
 	};
 
@@ -182,7 +182,7 @@ namespace BansheeEngine
 		SPtr<PassCore> getCore() const;
 
 		/**	Creates a new empty pass. */
-		static PassPtr create(const PASS_DESC& desc);
+		static SPtr<Pass> create(const PASS_DESC& desc);
 
 	protected:
 		friend class Technique;
@@ -200,7 +200,7 @@ namespace BansheeEngine
 		void getCoreDependencies(Vector<CoreObject*>& dependencies) override;
 
 		/**	Creates a new empty pass but doesn't initialize it. */
-		static PassPtr createEmpty();
+		static SPtr<Pass> createEmpty();
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

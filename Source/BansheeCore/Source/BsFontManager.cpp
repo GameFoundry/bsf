@@ -5,18 +5,18 @@
 
 namespace BansheeEngine
 {
-	FontPtr FontManager::create(const Vector<SPtr<FontBitmap>>& fontData) const
+	SPtr<Font> FontManager::create(const Vector<SPtr<FontBitmap>>& fontData) const
 	{
-		FontPtr newFont = bs_core_ptr<Font>(new (bs_alloc<Font>()) Font());
+		SPtr<Font> newFont = bs_core_ptr<Font>(new (bs_alloc<Font>()) Font());
 		newFont->_setThisPtr(newFont);
 		newFont->initialize(fontData);
 
 		return newFont;
 	}
 
-	FontPtr FontManager::_createEmpty() const
+	SPtr<Font> FontManager::_createEmpty() const
 	{
-		FontPtr newFont = bs_core_ptr<Font>(new (bs_alloc<Font>()) Font());
+		SPtr<Font> newFont = bs_core_ptr<Font>(new (bs_alloc<Font>()) Font());
 		newFont->_setThisPtr(newFont);
 
 		return newFont;

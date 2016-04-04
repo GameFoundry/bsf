@@ -11,7 +11,7 @@
 
 namespace BansheeEngine
 {
-	ScriptSerializableArray::ScriptSerializableArray(MonoObject* instance, const ManagedSerializableTypeInfoArrayPtr& typeInfo)
+	ScriptSerializableArray::ScriptSerializableArray(MonoObject* instance, const SPtr<ManagedSerializableTypeInfoArray>& typeInfo)
 		:ScriptObject(instance), mTypeInfo(typeInfo)
 	{
 
@@ -24,7 +24,7 @@ namespace BansheeEngine
 
 	ScriptSerializableArray* ScriptSerializableArray::create(const ScriptSerializableProperty* parentProperty)
 	{
-		ManagedSerializableTypeInfoArrayPtr arrayTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoArray>(parentProperty->getTypeInfo());
+		SPtr<ManagedSerializableTypeInfoArray> arrayTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoArray>(parentProperty->getTypeInfo());
 
 		MonoType* monoInternalElementType = mono_class_get_type(arrayTypeInfo->mElementType->getMonoClass());
 		MonoReflectionType* internalElementType = mono_type_get_object(MonoManager::instance().getDomain(), monoInternalElementType);

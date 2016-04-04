@@ -24,12 +24,12 @@ namespace BansheeEngine
 		~QueryManager();
 
 		/** Creates a new event query that allows you to get notified when GPU starts executing the query. */
-		virtual EventQueryPtr createEventQuery() const = 0;
+		virtual SPtr<EventQuery> createEventQuery() const = 0;
 
 		/**
 		 * Creates a new timer query that allows you to get notified of how much time has passed between query start and end.
 		 */
-		virtual TimerQueryPtr createTimerQuery() const = 0;
+		virtual SPtr<TimerQuery> createTimerQuery() const = 0;
 
 		/**
 		 * Creates a new occlusion query that allows you to know how many fragments were rendered between query start and 
@@ -40,7 +40,7 @@ namespace BansheeEngine
 		 *						rendered). Binary queries can return sooner as they potentially do not need to wait until 
 		 *						all of the geometry is rendered.
 		 */
-		virtual OcclusionQueryPtr createOcclusionQuery(bool binary) const = 0;
+		virtual SPtr<OcclusionQuery> createOcclusionQuery(bool binary) const = 0;
 
 		/** Triggers completed queries. Should be called every frame. */
 		void _update();

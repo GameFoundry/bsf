@@ -139,7 +139,7 @@ namespace BansheeEngine
 		virtual bool isDerivedFrom(RTTITypeBase* base) = 0;
 
 		/** Creates a new instance of the class owning this RTTI type. */
-		virtual std::shared_ptr<IReflectable> newRTTIObject() = 0;
+		virtual SPtr<IReflectable> newRTTIObject() = 0;
 
 		/** Returns the name of the class owning this RTTI type. */
 		virtual const String& getRTTIName() = 0;
@@ -297,7 +297,7 @@ namespace BansheeEngine
 		 * @note	Caller must ensure instance and value types are valid for this field.
 		 */
 		template <class ObjectType, class DataType>
-		void setReflectablePtrValue(ObjectType* object, const String& name, std::shared_ptr<DataType> value)
+		void setReflectablePtrValue(ObjectType* object, const String& name, SPtr<DataType> value)
 		{
 			static_assert((std::is_base_of<BansheeEngine::IReflectable, DataType>::value), 
 				"Invalid data type for complex field. It needs to derive from BansheeEngine::IReflectable.");
@@ -316,7 +316,7 @@ namespace BansheeEngine
 		 * @note	Caller must ensure instance and value types are valid for this field.
 		 */
 		template <class ObjectType, class DataType>
-		void setReflectablePtrArrayValue(ObjectType* object, const String& name, UINT32 index, std::shared_ptr<DataType> value)
+		void setReflectablePtrArrayValue(ObjectType* object, const String& name, UINT32 index, SPtr<DataType> value)
 		{
 			static_assert((std::is_base_of<BansheeEngine::IReflectable, DataType>::value), 
 				"Invalid data type for complex field. It needs to derive from BansheeEngine::IReflectable.");
@@ -433,7 +433,7 @@ namespace BansheeEngine
 		 * @note	Caller must ensure instance and value types are valid for this field.
 		 */
 		template <class ObjectType>
-		std::shared_ptr<IReflectable> getReflectablePtrValue(ObjectType* object, const String& name)
+		SPtr<IReflectable> getReflectablePtrValue(ObjectType* object, const String& name)
 		{
 			RTTIField* genericField = findField(name);
 			genericField->checkIsComplexPtr(false);
@@ -448,7 +448,7 @@ namespace BansheeEngine
 		 * @note	Caller must ensure instance and value types are valid for this field.
 		 */
 		template <class ObjectType>
-		std::shared_ptr<IReflectable> getReflectablePtrArrayValue(ObjectType* object, const String& name, UINT32 index)
+		SPtr<IReflectable> getReflectablePtrArrayValue(ObjectType* object, const String& name, UINT32 index)
 		{
 			RTTIField* genericField = findField(name);
 			genericField->checkIsComplexPtr(true);
@@ -723,12 +723,12 @@ namespace BansheeEngine
 		 * @param[in]	flags		Various flags you can use to specialize how systems handle this field. See RTTIFieldFlag.
 		 */
 		template<class ObjectType, class DataType>
-		void addReflectablePtrField(const String& name, UINT32 uniqueId, std::shared_ptr<DataType> (ObjectType::*getter)(), 
-			void (ObjectType::*setter)(std::shared_ptr<DataType>) = nullptr, UINT64 flags = 0)
+		void addReflectablePtrField(const String& name, UINT32 uniqueId, SPtr<DataType> (ObjectType::*getter)(), 
+			void (ObjectType::*setter)(SPtr<DataType>) = nullptr, UINT64 flags = 0)
 		{
 			addReflectablePtrField<ObjectType, DataType>(name, uniqueId, 
-				std::function<std::shared_ptr<DataType>(ObjectType*)>(getter), 
-				std::function<void(ObjectType*, std::shared_ptr<DataType>)>(setter), flags);
+				std::function<SPtr<DataType>(ObjectType*)>(getter), 
+				std::function<void(ObjectType*, SPtr<DataType>)>(setter), flags);
 		}
 
 		/**
@@ -797,13 +797,13 @@ namespace BansheeEngine
 		 * @param[in]	flags		Various flags you can use to specialize how systems handle this field. See RTTIFieldFlag.
 		 */
 		template<class ObjectType, class DataType>
-		void addReflectablePtrArrayField(const String& name, UINT32 uniqueId, std::shared_ptr<DataType> (ObjectType::*getter)(UINT32), UINT32 (ObjectType::*getSize)(), 
-			void (ObjectType::*setter)(UINT32, std::shared_ptr<DataType>) = nullptr, void(ObjectType::*setSize)(UINT32) = nullptr, UINT64 flags = 0)
+		void addReflectablePtrArrayField(const String& name, UINT32 uniqueId, SPtr<DataType> (ObjectType::*getter)(UINT32), UINT32 (ObjectType::*getSize)(), 
+			void (ObjectType::*setter)(UINT32, SPtr<DataType>) = nullptr, void(ObjectType::*setSize)(UINT32) = nullptr, UINT64 flags = 0)
 		{
 			addReflectablePtrArrayField<ObjectType, DataType>(name, uniqueId, 
-				std::function<std::shared_ptr<DataType>(ObjectType*, UINT32)>(getter), 
+				std::function<SPtr<DataType>(ObjectType*, UINT32)>(getter), 
 				std::function<UINT32(ObjectType*)>(getSize), 
-				std::function<void(ObjectType*, UINT32, std::shared_ptr<DataType>)>(setter), 
+				std::function<void(ObjectType*, UINT32, SPtr<DataType>)>(setter), 
 				std::function<void(ObjectType*, UINT32)>(setSize), flags);
 		}
 
@@ -870,14 +870,14 @@ namespace BansheeEngine
 
 		template<class InterfaceType, class ObjectType, class DataType>
 		void addReflectablePtrField(const String& name, UINT32 uniqueId, 
-			std::shared_ptr<DataType> (InterfaceType::*getter)(ObjectType*), 
-			void (InterfaceType::*setter)(ObjectType*, std::shared_ptr<DataType>), UINT64 flags = 0)
+			SPtr<DataType> (InterfaceType::*getter)(ObjectType*), 
+			void (InterfaceType::*setter)(ObjectType*, SPtr<DataType>), UINT64 flags = 0)
 		{
 			using namespace std::placeholders;
 
 			addReflectablePtrField<ObjectType, DataType>(name, uniqueId, 
-				std::function<std::shared_ptr<DataType>(ObjectType*)>(std::bind(getter, static_cast<InterfaceType*>(this), _1)), 
-				std::function<void(ObjectType*, std::shared_ptr<DataType>)>(std::bind(setter, static_cast<InterfaceType*>(this), _1, _2)), flags);
+				std::function<SPtr<DataType>(ObjectType*)>(std::bind(getter, static_cast<InterfaceType*>(this), _1)), 
+				std::function<void(ObjectType*, SPtr<DataType>)>(std::bind(setter, static_cast<InterfaceType*>(this), _1, _2)), flags);
 		}
 
 		template<class InterfaceType, class ObjectType, class DataType>
@@ -920,17 +920,17 @@ namespace BansheeEngine
 
 		template<class InterfaceType, class ObjectType, class DataType>
 		void addReflectablePtrArrayField(const String& name, UINT32 uniqueId, 
-			std::shared_ptr<DataType> (InterfaceType::*getter)(ObjectType*, UINT32), 
+			SPtr<DataType> (InterfaceType::*getter)(ObjectType*, UINT32), 
 			UINT32 (InterfaceType::*getSize)(ObjectType*), 
-			void (InterfaceType::*setter)(ObjectType*, UINT32, std::shared_ptr<DataType>), 
+			void (InterfaceType::*setter)(ObjectType*, UINT32, SPtr<DataType>), 
 			void(InterfaceType::*setSize)(ObjectType*, UINT32), UINT64 flags = 0)
 		{
 			using namespace std::placeholders;
 
 			addReflectablePtrArrayField<ObjectType, DataType>(name, uniqueId, 
-				std::function<std::shared_ptr<DataType>(ObjectType*, UINT32)>(std::bind(getter, static_cast<InterfaceType*>(this), _1, _2)), 
+				std::function<SPtr<DataType>(ObjectType*, UINT32)>(std::bind(getter, static_cast<InterfaceType*>(this), _1, _2)), 
 				std::function<UINT32(ObjectType*)>(std::bind(getSize, static_cast<InterfaceType*>(this), _1)), 
-				std::function<void(ObjectType*, UINT32, std::shared_ptr<DataType>)>(std::bind(setter, static_cast<InterfaceType*>(this), _1, _2, _3)), 
+				std::function<void(ObjectType*, UINT32, SPtr<DataType>)>(std::bind(setter, static_cast<InterfaceType*>(this), _1, _2, _3)), 
 				std::function<void(ObjectType*, UINT32)>(std::bind(setSize, static_cast<InterfaceType*>(this), _1, _2)), flags);
 		}
 
@@ -1054,7 +1054,7 @@ namespace BansheeEngine
 
 	/** Returns true if the provided object can be safely cast into type T. */
 	template<class T>
-	bool rtti_is_of_type(std::shared_ptr<IReflectable> object)
+	bool rtti_is_of_type(SPtr<IReflectable> object)
 	{
 		static_assert((std::is_base_of<BansheeEngine::IReflectable, T>::value), 
 			"Invalid data type for type checking. It needs to derive from BansheeEngine::IReflectable.");
@@ -1063,7 +1063,7 @@ namespace BansheeEngine
 	}
 
 	/** Creates a new object just from its type ID. */
-	std::shared_ptr<IReflectable> rtti_create(UINT32 rttiId);
+	SPtr<IReflectable> rtti_create(UINT32 rttiId);
 
 	/** Checks is the current object a subclass of some type. */
 	template<class T>

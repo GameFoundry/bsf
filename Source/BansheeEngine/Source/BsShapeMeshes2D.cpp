@@ -19,7 +19,7 @@ namespace BansheeEngine
 	const UINT32 ShapeMeshes2D::NUM_VERTICES_AA_LINE = 8;
 	const UINT32 ShapeMeshes2D::NUM_INDICES_AA_LINE = 30;
 
-	void ShapeMeshes2D::solidQuad(const Rect2& area, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+	void ShapeMeshes2D::solidQuad(const Rect2& area, const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
 		UINT32* indexData = meshData->getIndices32();
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
@@ -36,7 +36,7 @@ namespace BansheeEngine
 		pixelSolidPolygon(points, positionData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
 	}
 
-	void ShapeMeshes2D::pixelLine(const Vector2& a, const Vector2& b, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+	void ShapeMeshes2D::pixelLine(const Vector2& a, const Vector2& b, const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
 		UINT32* indexData = meshData->getIndices32();
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
@@ -47,7 +47,7 @@ namespace BansheeEngine
 		pixelLine(a, b, positionData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
 	}
 
-	void ShapeMeshes2D::antialiasedLine(const Vector2& a, const Vector2& b, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+	void ShapeMeshes2D::antialiasedLine(const Vector2& a, const Vector2& b, float width, float borderWidth, const Color& color, const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
 		UINT32* indexData = meshData->getIndices32();
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
@@ -59,7 +59,7 @@ namespace BansheeEngine
 		antialiasedLine(a, b, width, borderWidth, color, positionData, colorData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
 	}
 
-	void ShapeMeshes2D::pixelLineList(const Vector<Vector2>& linePoints, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+	void ShapeMeshes2D::pixelLineList(const Vector<Vector2>& linePoints, const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
 		assert(linePoints.size() % 2 == 0);
 
@@ -83,7 +83,7 @@ namespace BansheeEngine
 	}
 
 	void ShapeMeshes2D::antialiasedLineList(const Vector<Vector2>& linePoints, float width, float borderWidth, const Color& color,
-		const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+		const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
 		assert(linePoints.size() % 2 == 0);
 

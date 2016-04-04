@@ -78,7 +78,7 @@ namespace BansheeEngine
 
 		if (scriptPixelData != nullptr)
 		{
-			PixelDataPtr pixelData = scriptPixelData->getInternalValue();
+			SPtr<PixelData> pixelData = scriptPixelData->getInternalValue();
 			Cursor::instance().setCursorIcon(nameStr, *pixelData, *hotspot);
 		}
 		else
@@ -91,7 +91,7 @@ namespace BansheeEngine
 
 		if (scriptPixelData != nullptr)
 		{
-			PixelDataPtr pixelData = scriptPixelData->getInternalValue();
+			SPtr<PixelData> pixelData = scriptPixelData->getInternalValue();
 			Cursor::instance().setCursorIcon(cursor, *pixelData, *hotspot);
 		}
 		else

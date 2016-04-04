@@ -16,50 +16,50 @@ namespace BansheeEngine
     {
     }
 
-	VertexDeclarationPtr HardwareBufferManager::createVertexDeclaration(const List<VertexElement>& elements)
+	SPtr<VertexDeclaration> HardwareBufferManager::createVertexDeclaration(const List<VertexElement>& elements)
     {
 		VertexDeclaration* decl = new (bs_alloc<VertexDeclaration>()) VertexDeclaration(elements);
 
-		VertexDeclarationPtr declPtr = bs_core_ptr<VertexDeclaration>(decl);
+		SPtr<VertexDeclaration> declPtr = bs_core_ptr<VertexDeclaration>(decl);
 		declPtr->_setThisPtr(declPtr);
 		declPtr->initialize();
 
 		return declPtr;
     }
 
-	VertexBufferPtr HardwareBufferManager::createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
+	SPtr<VertexBuffer> HardwareBufferManager::createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
 	{
 		assert (numVerts > 0);
 
-		VertexBufferPtr vbuf = bs_core_ptr<VertexBuffer>(new (bs_alloc<VertexBuffer>()) VertexBuffer(vertexSize, numVerts, usage, streamOut));
+		SPtr<VertexBuffer> vbuf = bs_core_ptr<VertexBuffer>(new (bs_alloc<VertexBuffer>()) VertexBuffer(vertexSize, numVerts, usage, streamOut));
 		vbuf->_setThisPtr(vbuf);
 		vbuf->initialize();
 		return vbuf;
 	}
 
-	IndexBufferPtr HardwareBufferManager::createIndexBuffer(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
+	SPtr<IndexBuffer> HardwareBufferManager::createIndexBuffer(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
 	{
 		assert (numIndexes > 0);
 
-		IndexBufferPtr ibuf = bs_core_ptr<IndexBuffer>(new (bs_alloc<IndexBuffer>()) IndexBuffer(itype, numIndexes, usage));
+		SPtr<IndexBuffer> ibuf = bs_core_ptr<IndexBuffer>(new (bs_alloc<IndexBuffer>()) IndexBuffer(itype, numIndexes, usage));
 		ibuf->_setThisPtr(ibuf);
 		ibuf->initialize();
 		return ibuf;
 
 	}
 
-	GpuParamBlockBufferPtr HardwareBufferManager::createGpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage)
+	SPtr<GpuParamBlockBuffer> HardwareBufferManager::createGpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage)
 	{
-		GpuParamBlockBufferPtr paramBlockPtr = bs_core_ptr<GpuParamBlockBuffer>(new (bs_alloc<GpuParamBlockBuffer>()) GpuParamBlockBuffer(size, usage));
+		SPtr<GpuParamBlockBuffer> paramBlockPtr = bs_core_ptr<GpuParamBlockBuffer>(new (bs_alloc<GpuParamBlockBuffer>()) GpuParamBlockBuffer(size, usage));
 		paramBlockPtr->_setThisPtr(paramBlockPtr);
 		paramBlockPtr->initialize();
 		return paramBlockPtr;
 	}
 
-	GpuBufferPtr HardwareBufferManager::createGpuBuffer(UINT32 elementCount, UINT32 elementSize, 
+	SPtr<GpuBuffer> HardwareBufferManager::createGpuBuffer(UINT32 elementCount, UINT32 elementSize, 
 		GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
 	{
-		GpuBufferPtr gbuf = bs_core_ptr<GpuBuffer>(new (bs_alloc<GpuBuffer>()) GpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter));
+		SPtr<GpuBuffer> gbuf = bs_core_ptr<GpuBuffer>(new (bs_alloc<GpuBuffer>()) GpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter));
 		gbuf->_setThisPtr(gbuf);
 		gbuf->initialize();
 

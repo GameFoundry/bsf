@@ -41,7 +41,7 @@ namespace BansheeEngine
 	Input::~Input()
 	{ }
 
-	void Input::_registerRawInputHandler(std::shared_ptr<RawInputHandler> inputHandler)
+	void Input::_registerRawInputHandler(SPtr<RawInputHandler> inputHandler)
 	{
 		if(mRawInputHandler != inputHandler)
 		{

@@ -65,8 +65,8 @@ namespace BansheeEngine
 			ProfilerString sampleName;
 			RenderStatsData startStats;
 			RenderStatsData endStats;
-			TimerQueryPtr activeTimeQuery;
-			OcclusionQueryPtr activeOcclusionQuery;
+			SPtr<TimerQuery> activeTimeQuery;
+			SPtr<OcclusionQuery> activeOcclusionQuery;
 		};
 
 		struct ActiveFrame
@@ -150,10 +150,10 @@ namespace BansheeEngine
 		void endSampleInternal(ActiveSample& sample);
 
 		/**	Creates a new timer query or returns an existing free query. */
-		TimerQueryPtr getTimerQuery() const;
+		SPtr<TimerQuery> getTimerQuery() const;
 
 		/**	Creates a new occlusion query or returns an existing free query. */
-		OcclusionQueryPtr getOcclusionQuery() const;
+		SPtr<OcclusionQuery> getOcclusionQuery() const;
 
 		/**
 		 * Interprets the active frame results and generates a profiler report for the frame. Provided frame queries must 
@@ -172,8 +172,8 @@ namespace BansheeEngine
 		Queue<ActiveFrame> mUnresolvedFrames;
 		Queue<GPUProfilerReport> mReadyReports;
 
-		mutable Stack<TimerQueryPtr> mFreeTimerQueries;
-		mutable Stack<OcclusionQueryPtr> mFreeOcclusionQueries;
+		mutable Stack<SPtr<TimerQuery>> mFreeTimerQueries;
+		mutable Stack<SPtr<OcclusionQuery>> mFreeOcclusionQueries;
 
 		BS_MUTEX(mMutex);
 	};

@@ -16,11 +16,11 @@ namespace BansheeEngine
 	struct BS_SCR_BE_EXPORT ManagedSerializableDictionaryKeyValue : public IReflectable
 	{
 		ManagedSerializableDictionaryKeyValue() {}
-		ManagedSerializableDictionaryKeyValue(const ManagedSerializableFieldDataPtr& key,
-			const ManagedSerializableFieldDataPtr& value);
+		ManagedSerializableDictionaryKeyValue(const SPtr<ManagedSerializableFieldData>& key,
+			const SPtr<ManagedSerializableFieldData>& value);
 
-		ManagedSerializableFieldDataPtr key;
-		ManagedSerializableFieldDataPtr value;
+		SPtr<ManagedSerializableFieldData> key;
+		SPtr<ManagedSerializableFieldData> value;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -53,17 +53,17 @@ namespace BansheeEngine
 		/**	Generates a hash value for field data. */
 		struct BS_SCR_BE_EXPORT Hash
 		{
-			inline size_t operator()(const ManagedSerializableFieldDataPtr& x) const;
+			inline size_t operator()(const SPtr<ManagedSerializableFieldData>& x) const;
 		};
 
 		/**	Compares two field data objects. */
 		struct BS_SCR_BE_EXPORT Equals
 		{
-			inline bool operator()(const ManagedSerializableFieldDataPtr& a, const ManagedSerializableFieldDataPtr& b) const;
+			inline bool operator()(const SPtr<ManagedSerializableFieldData>& a, const SPtr<ManagedSerializableFieldData>& b) const;
 		};
 
 	public:
-		typedef UnorderedMap<ManagedSerializableFieldDataPtr, ManagedSerializableFieldDataPtr> CachedEntriesMap;
+		typedef UnorderedMap<SPtr<ManagedSerializableFieldData>, SPtr<ManagedSerializableFieldData>> CachedEntriesMap;
 
 		/**
 		 * Helper class that enumerates over all entires in a managed dictionary. Operates on managed object if the parent
@@ -84,13 +84,13 @@ namespace BansheeEngine
 			 * Returns the wrapped key data at the current enumerator position. Only valid to call this if enumerator is
 			 * valid (meaning last call to moveNext() returned true).
 			 */
-			ManagedSerializableFieldDataPtr getKey() const;
+			SPtr<ManagedSerializableFieldData> getKey() const;
 
 			/**
 			 * Returns the wrapped value data at the current enumerator position. Only valid to call this if enumerator is
 			 * valid (meaning last call to moveNext() returned true).
 			 */
-			ManagedSerializableFieldDataPtr getValue() const;
+			SPtr<ManagedSerializableFieldData> getValue() const;
 
 			/**
 			 * Moves the enumerator to the next position. Initially enumerator is at an invalid position and must be called
@@ -111,7 +111,7 @@ namespace BansheeEngine
 		};
 
 	public:
-		ManagedSerializableDictionary(const ConstructPrivately& dummy, const ManagedSerializableTypeInfoDictionaryPtr& typeInfo, MonoObject* managedInstance);
+		ManagedSerializableDictionary(const ConstructPrivately& dummy, const SPtr<ManagedSerializableTypeInfoDictionary>& typeInfo, MonoObject* managedInstance);
 		ManagedSerializableDictionary(const ConstructPrivately& dummy);
 
 		/**
@@ -121,7 +121,7 @@ namespace BansheeEngine
 		MonoObject* getManagedInstance() const { return mManagedInstance; }
 
 		/**	Returns the type information for the internal dictionary. */
-		ManagedSerializableTypeInfoDictionaryPtr getTypeInfo() const { return mDictionaryTypeInfo; }
+		SPtr<ManagedSerializableTypeInfoDictionary> getTypeInfo() const { return mDictionaryTypeInfo; }
 
 		/**
 		 * Returns the dictionary value at the specified key. If the key doesn't exist the default value for the type is
@@ -130,7 +130,7 @@ namespace BansheeEngine
 		 * @param[in]	key		Wrapper around the key data at which to retrieve the value.
 		 * @return				A wrapper around the value in the dictionary at the specified key.
 		 */
-		ManagedSerializableFieldDataPtr getFieldData(const ManagedSerializableFieldDataPtr& key);
+		SPtr<ManagedSerializableFieldData> getFieldData(const SPtr<ManagedSerializableFieldData>& key);
 
 		/**
 		 * Sets the dictionary value at the specified key. Operates on managed object if in linked state, or on cached data
@@ -139,7 +139,7 @@ namespace BansheeEngine
 		 * @param[in]	key		Wrapper around the key data at which to set the value.
 		 * @param[in]	val		Wrapper around the value to set at the specified key.
 		 */
-		void setFieldData(const ManagedSerializableFieldDataPtr& key, const ManagedSerializableFieldDataPtr& val);
+		void setFieldData(const SPtr<ManagedSerializableFieldData>& key, const SPtr<ManagedSerializableFieldData>& val);
 
 		/**
 		 * Deletes the key/value pair at the specified key. If the key doesn't exist this operation does nothing. Operates
@@ -147,7 +147,7 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	key		Wrapper around the key data at which to delete the value.
 		 */
-		void removeFieldData(const ManagedSerializableFieldDataPtr& key);
+		void removeFieldData(const SPtr<ManagedSerializableFieldData>& key);
 
 		/**
 		 * Checks if the dictionary contains the specified key. Operates on managed object if in linked state, or on cached
@@ -155,7 +155,7 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	key		Wrapper around the key data which to check.
 		 */
-		bool contains(const ManagedSerializableFieldDataPtr& key) const;
+		bool contains(const SPtr<ManagedSerializableFieldData>& key) const;
 
 		/** Returns an enumerator object that allows you to iterate over all key/value pairs in the dictionary. */
 		Enumerator getEnumerator() const;
@@ -186,21 +186,21 @@ namespace BansheeEngine
 		 *									correspond with the provided type info.
 		 * @param[in]	typeInfo			Type information for the dictionary and its key/value pair.
 		 */
-		static ManagedSerializableDictionaryPtr createFromExisting(MonoObject* managedInstance, const ManagedSerializableTypeInfoDictionaryPtr& typeInfo);
+		static SPtr<ManagedSerializableDictionary> createFromExisting(MonoObject* managedInstance, const SPtr<ManagedSerializableTypeInfoDictionary>& typeInfo);
 
 		/**
 		 * Creates a managed serializable dictionary that creates and references a brand new managed dictionary instance.
 		 *
 		 * @param[in]	typeInfo	Type of the dictionary to create.
 		 */
-		static ManagedSerializableDictionaryPtr createNew(const ManagedSerializableTypeInfoDictionaryPtr& typeInfo);
+		static SPtr<ManagedSerializableDictionary> createNew(const SPtr<ManagedSerializableTypeInfoDictionary>& typeInfo);
 
 		/**
 		 * Creates a managed dictionary instance.
 		 *
 		 * @param[in]	typeInfo	Type of the dictionary to create.
 		 */
-		static MonoObject* createManagedInstance(const ManagedSerializableTypeInfoDictionaryPtr& typeInfo);
+		static MonoObject* createManagedInstance(const SPtr<ManagedSerializableTypeInfoDictionary>& typeInfo);
 
 	protected:
 		/**
@@ -221,7 +221,7 @@ namespace BansheeEngine
 		MonoProperty* mKeyProp;
 		MonoProperty* mValueProp;
 
-		ManagedSerializableTypeInfoDictionaryPtr mDictionaryTypeInfo;
+		SPtr<ManagedSerializableTypeInfoDictionary> mDictionaryTypeInfo;
 		CachedEntriesMap mCachedEntries;
 
 		/************************************************************************/
@@ -229,7 +229,7 @@ namespace BansheeEngine
 		/************************************************************************/
 		
 		/**	Creates an empty and uninitialized object used for serialization purposes. */
-		static ManagedSerializableDictionaryPtr createEmpty();
+		static SPtr<ManagedSerializableDictionary> createEmpty();
 
 	public:
 		friend class ManagedSerializableDictionaryRTTI;

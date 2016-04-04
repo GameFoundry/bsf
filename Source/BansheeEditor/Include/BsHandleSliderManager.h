@@ -29,7 +29,7 @@ namespace BansheeEngine
 		 * @param[in]	inputPos	Position of the pointer.
 		 * @param[in]	inputDelta	Movement of the pointer since last frame.
 		 */
-		void update(const CameraPtr& camera, const Vector2I& inputPos, const Vector2I& inputDelta);
+		void update(const SPtr<Camera>& camera, const Vector2I& inputPos, const Vector2I& inputDelta);
 
 		/**
 		 * Attempts to select (activate) a slider at the specified position.
@@ -37,13 +37,13 @@ namespace BansheeEngine
 		 * @param[in]	camera		Camera through which we're interacting with sliders.
 		 * @param[in]	inputPos	Position of the pointer.
 		 */
-		void trySelect(const CameraPtr& camera, const Vector2I& inputPos);
+		void trySelect(const SPtr<Camera>& camera, const Vector2I& inputPos);
 
 		/** Clears the active slider (deactivates it) for the specified camera. */
-		void clearSelection(const CameraPtr& camera);
+		void clearSelection(const SPtr<Camera>& camera);
 
 		/** Checks is any slider active for the specified camera. */
-		bool isSliderActive(const CameraPtr& camera) const;
+		bool isSliderActive(const SPtr<Camera>& camera) const;
 
 		/** Registers a new instantiated slider. */
 		void _registerSlider(HandleSlider* slider);
@@ -60,7 +60,7 @@ namespace BansheeEngine
 		 * @param[in]	inputPos	Position of the pointer.
 		 * @return					Slider if we're intersecting with one, or null otherwise.
 		 */
-		HandleSlider* findUnderCursor(const CameraPtr& camera, const Vector2I& inputPos) const;
+		HandleSlider* findUnderCursor(const SPtr<Camera>& camera, const Vector2I& inputPos) const;
 
 		UnorderedMap<UINT64, StatePerCamera> mStates;
 		UnorderedSet<HandleSlider*> mSliders;

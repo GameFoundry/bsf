@@ -56,7 +56,7 @@ namespace BansheeEngine
 			return TID_ResourceHandle;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			SPtr<TResourceHandleBase<false>> obj = bs_shared_ptr<TResourceHandleBase<false>>
 				(new (bs_alloc<TResourceHandleBase<false>>()) TResourceHandleBase<false>());
@@ -106,7 +106,7 @@ namespace BansheeEngine
 			return TID_WeakResourceHandle;
 		}
 
-		std::shared_ptr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			SPtr<TResourceHandleBase<true>> obj = bs_shared_ptr<TResourceHandleBase<true>>
 				(new (bs_alloc<TResourceHandleBase<true>>()) TResourceHandleBase<true>());

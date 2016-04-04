@@ -173,13 +173,13 @@ namespace BansheeEngine
 		void preprocess();
 
 		/**	Generates the default editor skin and all GUI element styles. */
-		GUISkinPtr generateGUISkin();
+		SPtr<GUISkin> generateGUISkin();
 
 		/**
 		 * Generates different sizes of resource icons. Expects maximum sizes of the icons to already be present. Resulting
 		 * textures will be saved to the same directory the maximum size textures are in.
 		 */
-		void generateResourceIcons(const Path& inputFolder, const ResourceManifestPtr& resourceManifest);
+		void generateResourceIcons(const Path& inputFolder, const SPtr<ResourceManifest>& resourceManifest);
 
 		/**	Loads a GUI skin texture with the specified filename. */
 		HSpriteTexture getGUITexture(const WString& name) const;
@@ -209,7 +209,7 @@ namespace BansheeEngine
 		HFont mDefaultFont;
 		HGUISkin mSkin;
 
-		ResourceManifestPtr mResourceManifest;
+		SPtr<ResourceManifest> mResourceManifest;
 
 		static const char* ShaderFolder;
 		static const char* SkinFolder;

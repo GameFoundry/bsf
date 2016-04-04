@@ -29,7 +29,7 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	rootEntry	Root directory entry in ProjectLibrary.
 		 */
-		static std::shared_ptr<ProjectLibraryEntries> create(const ProjectLibrary::DirectoryEntry& rootEntry);
+		static SPtr<ProjectLibraryEntries> create(const ProjectLibrary::DirectoryEntry& rootEntry);
 		
 		/**	Returns the root directory entry that references the entire entry hierarchy. */
 		const ProjectLibrary::DirectoryEntry& getRootEntry() const { return mRootEntry; }
@@ -42,7 +42,7 @@ namespace BansheeEngine
 		/************************************************************************/
 
 		/** Creates new empty project library entries object. Used for serialization purposes. */
-		static std::shared_ptr<ProjectLibraryEntries> createEmpty();
+		static SPtr<ProjectLibraryEntries> createEmpty();
 
 	public:
 		friend class ProjectLibraryEntriesRTTI;

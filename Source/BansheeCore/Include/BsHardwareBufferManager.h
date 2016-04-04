@@ -34,7 +34,7 @@ namespace BansheeEngine
 		 * @param[in]	usage		Usage that tells the hardware how will be buffer be used. 
 		 * @param[in]	streamOut	If true the buffer will be usable for streaming out data from the GPU.
 		 */
-		virtual VertexBufferPtr createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false);
+		virtual SPtr<VertexBuffer> createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false);
 
 		/**
 		 * Creates a new index buffer that holds indices referencing vertices in a vertex buffer. Indices are interpreted 
@@ -44,7 +44,7 @@ namespace BansheeEngine
 		 * @param[in]	numIndexes	Number of indexes can buffer can hold.
 		 * @param[in]	usage		Usage that tells the hardware how will be buffer be used. 
 		 */
-		virtual IndexBufferPtr createIndexBuffer(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
+		virtual SPtr<IndexBuffer> createIndexBuffer(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
 
 		/**
 		 * Creates an GPU parameter block that you can use for setting parameters for GPU programs. Parameter blocks may be
@@ -54,7 +54,7 @@ namespace BansheeEngine
 		 * @param[in]	size	Size of the parameter buffer in bytes.
 		 * @param[in]	usage	Usage that tells the hardware how will be buffer be used. 
 		 */
-		virtual GpuParamBlockBufferPtr createGpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage = GPBU_DYNAMIC);
+		virtual SPtr<GpuParamBlockBuffer> createGpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage = GPBU_DYNAMIC);
 
 		/**
 		 * Creates a generic buffer that can be passed as a parameter to a GPU program. This type of buffer can hold various 
@@ -71,11 +71,11 @@ namespace BansheeEngine
 		 * Be aware that due to some render API restrictions some of these settings cannot be used together, and if so you 
 		 * will receive an assert in debug mode.
 		 */
-		virtual GpuBufferPtr createGpuBuffer(UINT32 elementCount, UINT32 elementSize, 
+		virtual SPtr<GpuBuffer> createGpuBuffer(UINT32 elementCount, UINT32 elementSize, 
 			GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
 
 		/** Creates a new vertex declaration from a list of vertex elements. */
-		virtual VertexDeclarationPtr createVertexDeclaration(const List<VertexElement>& elements);
+		virtual SPtr<VertexDeclaration> createVertexDeclaration(const List<VertexElement>& elements);
 	};
 
 	/**

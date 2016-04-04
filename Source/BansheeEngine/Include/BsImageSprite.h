@@ -28,7 +28,7 @@ namespace BansheeEngine
 		Vector2 uvOffset; /**< Offset applied to UV coordinates when rendering the sprite. */
 		bool transparent; /**< Should the sprite be rendered with transparency. */
 
-		SpriteTexturePtr texture; /**< Texture to overlay on the sprite. */
+		SPtr<SpriteTexture> texture; /**< Texture to overlay on the sprite. */
 		Color color; /**< Color tint to apply to the sprite. */
 
 		/** 
