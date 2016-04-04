@@ -78,9 +78,9 @@ namespace BansheeEngine
 	/**	Types of frame buffers. */
 	enum FrameBufferType
 	{
-		FBT_COLOR = 0x1,
-		FBT_DEPTH = 0x2,
-		FBT_STENCIL = 0x4
+		FBT_COLOR = 0x1, /**< Clear the color surface. */
+		FBT_DEPTH = 0x2, /**< Clear the depth surface. */
+		FBT_STENCIL = 0x4 /**< Clear the stencil surface. */
 	};
 
 	/**

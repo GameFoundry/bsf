@@ -166,6 +166,9 @@ namespace BansheeEngine
 		/**	Returns information about the sampler state. */
 		const SamplerProperties& getProperties() const;
 
+		/**	Creates a new sampler state using the provided descriptor structure. */
+		static SPtr<SamplerStateCore> create(const SAMPLER_STATE_DESC& desc);
+
 		/**	Returns the default sampler state. */
 		static const SPtr<SamplerStateCore>& getDefault();
 

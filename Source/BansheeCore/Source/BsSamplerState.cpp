@@ -71,6 +71,11 @@ namespace BansheeEngine
 		return mProperties;
 	}
 
+	SPtr<SamplerStateCore> SamplerStateCore::create(const SAMPLER_STATE_DESC& desc)
+	{
+		return RenderStateCoreManager::instance()._createSamplerState(desc);
+	}
+
 	const SPtr<SamplerStateCore>& SamplerStateCore::getDefault()
 	{
 		return RenderStateCoreManager::instance().getDefaultSamplerState();

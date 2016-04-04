@@ -206,6 +206,9 @@ namespace BansheeEngine
 		/**	Returns a unique state ID. Only the lowest 10 bits are used. */
 		UINT32 getId() const { return mId; }
 
+		/**	Creates a new depth stencil state using the specified depth stencil state description structure. */
+		static SPtr<DepthStencilStateCore> create(const DEPTH_STENCIL_STATE_DESC& desc);
+
 		/**	Returns the default depth stencil state that you may use when no other is available. */
 		static const SPtr<DepthStencilStateCore>& getDefault();
 

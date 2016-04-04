@@ -187,6 +187,9 @@ namespace BansheeEngine
 		/**	Returns a unique state ID. Only the lowest 10 bits are used. */
 		UINT32 getId() const { return mId; }
 
+		/** Creates a new rasterizer state using the specified rasterizer state descriptor structure. */
+		static SPtr<RasterizerStateCore> create(const RASTERIZER_STATE_DESC& desc);
+
 		/** Returns the default rasterizer state. */
 		static const SPtr<RasterizerStateCore>& getDefault();
 

@@ -214,6 +214,9 @@ namespace BansheeEngine
 		/** Returns a unique state ID. Only the lowest 10 bits are used. */
 		UINT32 getId() const { return mId; }
 
+		/**	Creates a new blend state using the specified blend state description structure. */
+		static SPtr<BlendStateCore> create(const BLEND_STATE_DESC& desc);
+
 		/**	Returns the default blend state that you may use when no other is available. */
 		static const SPtr<BlendStateCore>& getDefault();
 

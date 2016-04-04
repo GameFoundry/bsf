@@ -52,6 +52,11 @@ namespace BansheeEngine
 		return mProperties;
 	}
 
+	SPtr<RasterizerStateCore> RasterizerStateCore::create(const RASTERIZER_STATE_DESC& desc)
+	{
+		return RenderStateCoreManager::instance()._createRasterizerState(desc);
+	}
+
 	const SPtr<RasterizerStateCore>& RasterizerStateCore::getDefault()
 	{
 		return RenderStateCoreManager::instance().getDefaultRasterizerState();
