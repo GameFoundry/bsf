@@ -280,14 +280,7 @@ namespace BansheeEngine
 		if (!FileSystem::exists(internalResourcesDir))
 			FileSystem::createDir(internalResourcesDir);
 
-		Path defaultLayoutPath = FileSystem::getWorkingDirectoryPath();
-		defaultLayoutPath.append(BuiltinEditorResources::getDefaultWidgetLayoutPath());
-
-		if (FileSystem::exists(defaultLayoutPath))
-		{
-			Path projectLayoutPath = Path::combine(path, WIDGET_LAYOUT_PATH);
-			FileSystem::copy(defaultLayoutPath, projectLayoutPath, false);
-		}
+		saveDefaultWidgetLayout();
 	}
 
 	bool EditorApplication::isValidProjectPath(const Path& path)
@@ -306,6 +299,9 @@ namespace BansheeEngine
 		Path layoutPath = getProjectPath();
 		layoutPath.append(WIDGET_LAYOUT_PATH);
 
+		if (!FileSystem::exists(layoutPath))
+			saveDefaultWidgetLayout();
+
 		if(FileSystem::exists(layoutPath))
 		{
 			FileDecoder fs(layoutPath);
@@ -322,6 +318,24 @@ namespace BansheeEngine
 
 		FileEncoder fs(layoutPath);
 		fs.encode(layout.get());
+	}
+
+	void EditorApplication::saveDefaultWidgetLayout()
+	{
+		Path resourceDir = Path::combine(mProjectPath, ProjectLibrary::RESOURCES_DIR);
+		Path internalResourcesDir = Path::combine(mProjectPath, ProjectLibrary::INTERNAL_RESOURCES_DIR);
+
+		if (!FileSystem::exists(internalResourcesDir))
+			FileSystem::createDir(internalResourcesDir);
+
+		Path defaultLayoutPath = FileSystem::getWorkingDirectoryPath();
+		defaultLayoutPath.append(BuiltinEditorResources::getDefaultWidgetLayoutPath());
+
+		if (FileSystem::exists(defaultLayoutPath))
+		{
+			Path projectLayoutPath = Path::combine(mProjectPath, WIDGET_LAYOUT_PATH);
+			FileSystem::copy(defaultLayoutPath, projectLayoutPath, false);
+		}
 	}
 
 	void EditorApplication::loadEditorSettings()

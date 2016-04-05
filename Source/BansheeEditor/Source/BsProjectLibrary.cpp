@@ -1455,23 +1455,26 @@ namespace BansheeEngine
 		Path internalResourcesFolder = mProjectFolder;
 		internalResourcesFolder.append(INTERNAL_RESOURCES_DIR);
 
-		Vector<Path> toDelete;
-		auto processFile = [&](const Path& file)
+		if (FileSystem::exists(internalResourcesFolder))
 		{
-			String uuid = file.getFilename(false);
-			if (mUUIDToPath.find(uuid) == mUUIDToPath.end())
+			Vector<Path> toDelete;
+			auto processFile = [&](const Path& file)
 			{
-				mResourceManifest->unregisterResource(uuid);
-				toDelete.push_back(file);
-			}
+				String uuid = file.getFilename(false);
+				if (mUUIDToPath.find(uuid) == mUUIDToPath.end())
+				{
+					mResourceManifest->unregisterResource(uuid);
+					toDelete.push_back(file);
+				}
 
-			return true;
-		};
+				return true;
+			};
 
-		FileSystem::iterate(internalResourcesFolder, processFile);
+			FileSystem::iterate(internalResourcesFolder, processFile);
 
-		for (auto& entry : toDelete)
-			FileSystem::remove(entry);
+			for (auto& entry : toDelete)
+				FileSystem::remove(entry);
+		}
 
 		mIsLoaded = true;
 	}
