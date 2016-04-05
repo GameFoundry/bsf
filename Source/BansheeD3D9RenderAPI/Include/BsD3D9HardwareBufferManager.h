@@ -19,7 +19,7 @@ namespace BansheeEngine
 		SPtr<VertexBufferCore> createVertexBufferInternal(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false) override;
 
 		/** @copydoc HardwareBufferCoreManager::createIndexBufferInternal */
-		SPtr<IndexBufferCore> createIndexBufferInternal(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage) override;
+		SPtr<IndexBufferCore> createIndexBufferInternal(IndexType itype, UINT32 numIndices, GpuBufferUsage usage) override;
 
 		/** @copydoc	HardwareBufferCoreManager::createVertexDeclarationInternal */
 		SPtr<VertexDeclarationCore> createVertexDeclarationInternal(const List<VertexElement>& elements) override;

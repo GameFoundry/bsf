@@ -10,12 +10,12 @@ Before we delve into the specifics of Banshee's scripting you should understand 
 
 Because using Mono directly is complex (mostly due to its lack of documentation), Banshee provides a set of easy to use wrappers for almost all of Mono related functionality. 
 
-@ref BansheeMono is a plugin that wraps the functionality of the Mono runtime. Here is where the Mono runtime is started and assemblies are loaded (and unloaded), while also giving you detailed information about all loaded classes and a way to communicate with managed code.
+BansheeMono is a plugin that wraps the functionality of the Mono runtime. Here is where the Mono runtime is started and assemblies are loaded (and unloaded), while also giving you detailed information about all loaded classes and a way to communicate with managed code.
 
 The main entry point is the @ref BansheeEngine::MonoManager "MonoManager" class which allows you to start the runtime and load assemblies. The most important method here is @ref BansheeEngine::MonoManager::loadAssembly "MonoManager::loadAssembly". It takes as assembly path to load and returns a @ref BansheeEngine::MonoAssembly "MonoAssembly" object. 
 
 ## MonoAssembly 	{#scripting_a_a}
-@ref BansheeEngine::MonoAssembly "MonoAssembly" gives you access to all classes in the assembly. You can retrieve all clases using @ref BansheeEngine::MonoAssembly::getAllClasses "MonoAssembly::getAllClasses", or retrieve a specific one by calling @ref BansheeEngine::MonoAssembly::getClass(const String&, const String&) "MonoAssembly::getClass(namespace, typename)". Both of these methods return a @ref BansheeEngine::MonoClass "MonoClass" object.
+@ref BansheeEngine::MonoAssembly "MonoAssembly" gives you access to all classes in the assembly. You can retrieve all clases using @ref BansheeEngine::MonoAssembly::getAllClasses "MonoAssembly::getAllClasses", or retrieve a specific one by calling @ref BansheeEngine::MonoAssembly::getClass(const String&, const String&) const "MonoAssembly::getClass(namespace, typename)". Both of these methods return a @ref BansheeEngine::MonoClass "MonoClass" object.
 
 ## MonoClass 	{#scripting_a_b}
 @ref BansheeEngine::MonoClass "MonoClass" gives you access to all methods, fields, properties and attributes of a specific class. It also allows you to register "internal" methods. These methods allow the managed code to call C++ code, and we'll go into them later.
@@ -32,7 +32,7 @@ This class provides information about about a managed method, as well as giving 
 To invoke a method you may use multiple approaches:
  - @ref BansheeEngine::MonoMethod::invoke "MonoMethod::invoke" - Calls the exact method on a specific managed object, with the provided parameters. We'll take about how managed objects are referenced in native code later, as well as how passing data between C++ and managed code works.
  - @ref BansheeEngine::MonoMethod::invokeVirtual "MonoMethod::invokeVirtual" - Calls the method polymorphically. Determines the actual type of the provided managed object instance and calls an overriden method if available.
- - @ref BansheeEngine::MonoMethod::getThunk "MonoMethod::getThunk" - Returns a C++ function pointer accepting a managed object, zero or more parameters and an exception object. You can then call the function pointer like you would a C++ function. This is equivalent to @ref BansheeEngine::MonoMethod::invoke "MonoMethod::invoke" but is significantly faster. A helper method @ref BansheeEngine::MonoUtil::invokeThunk "MonoUtil::invokeThunk" is provided - it is suggested you use it instead of calling thunks manually (it handles exceptions internally).
+ - @ref BansheeEngine::MonoMethod::getThunk const "MonoMethod::getThunk" - Returns a C++ function pointer accepting a managed object, zero or more parameters and an exception object. You can then call the function pointer like you would a C++ function. This is equivalent to @ref BansheeEngine::MonoMethod::invoke "MonoMethod::invoke" but is significantly faster. A helper method @ref BansheeEngine::MonoUtil::invokeThunk<T, Args> "MonoUtil::invokeThunk" is provided - it is suggested you use it instead of calling thunks manually (it handles exceptions internally).
 
 When calling static methods you should provide a null value for the managed object instance.
 
@@ -40,7 +40,7 @@ When calling static methods you should provide a null value for the managed obje
 Similar to methods, field information can be retrieved from @ref BansheeEngine::MonoClass "MonoClass" by calling @ref BansheeEngine::MonoClass::getField "MonoClass::getField" or @ref BansheeEngine::MonoClass::getAllFields "MonoClass::getAllFields". The returned value is a @ref BansheeEngine::MonoField "MonoField" which provides information about the field and allows you to retrieve and set values in the field using @ref BansheeEngine::MonoField::getValue "MonoField::getValue" / @ref BansheeEngine::MonoField::setValue "MonoField::setValue". This works similar to how methods are invoked and is explained in more detail later.
 
 ## MonoProperty {#scripting_a_e}
-Properties are very similar to fields, retrieved from @ref BansheeEngine::MonoClass "MonoClass" by calling @ref BansheeEngine::MonoClass::getProperty "MonoClass::getProperty" or @ref BansheeEngine::MonoClass::getAllProperties "MonoClass::getAllProperties". The returned value is a @ref BansheeEngine::MonoProperty "MonoProperty" which provides information about the property and allows you to retrieve and set values in it. The main difference is that properties in C# can be indexed (like arrays) and therefore a two set of set/get methods are provided, one accepting an index and other one not. It's up to the user to know which one to call. The methods are @ref BansheeEngine::MonoProperty::get "MonoProperty::get" / @ref BansheeEngine::MonoProperty::set "MonoProperty::set" and @ref BansheeEngine::MonoProperty::getIndexed "MonoProperty::getIndexed" / @ref BansheeEngine::MonoProperty::setIndexed "MonoProperty::setIndexed".
+Properties are very similar to fields, retrieved from @ref BansheeEngine::MonoClass "MonoClass" by calling @ref BansheeEngine::MonoClass::getProperty "MonoClass::getProperty". The returned value is a @ref BansheeEngine::MonoProperty "MonoProperty" which provides information about the property and allows you to retrieve and set values in it. The main difference is that properties in C# can be indexed (like arrays) and therefore a two set of set/get methods are provided, one accepting an index and other one not. It's up to the user to know which one to call. The methods are @ref BansheeEngine::MonoProperty::get "MonoProperty::get" / @ref BansheeEngine::MonoProperty::set "MonoProperty::set" and @ref BansheeEngine::MonoProperty::getIndexed "MonoProperty::getIndexed" / @ref BansheeEngine::MonoProperty::setIndexed "MonoProperty::setIndexed".
 
 ## Attributes {#scripting_a_f}
 Attributes provide data about a class, method or field provided at runtime, which usually allows such objects to be specialized in some regard. Attributes don't have their own wrapper, because they are esentially normal managed objects and you can work with them as such.
@@ -92,7 +92,7 @@ The first step is to define a stub method in managed code, like so:
 private static extern float Internal_GetSomeValue(MyObject obj);
 ~~~~~~~~~~~~~
 	
-You then hook up this method with managed code by calling @ref BansheeEngine::MonoClass::addInternalMethod "MonoClass::addInternalMethod". In this specific case it would be `myClass->addInternalMethod("Internal_GetSomeValue", &myNativeFunction)`, assuming `myClass` is a @ref BansheeEngine::MonoClass "MonoClass" of the type that contains the stub method. After this call any call to the managed stub method will call the provided native function `myNativeFunction`. You should take care to properly handle parameter passing as described above.
+You then hook up this method with managed code by calling @ref BansheeEngine::MonoClass::addInternalCall "MonoClass::addInternalCall". In this specific case it would be `myClass->addInternalCall("Internal_GetSomeValue", &myNativeFunction)`, assuming `myClass` is a @ref BansheeEngine::MonoClass "MonoClass" of the type that contains the stub method. After this call any call to the managed stub method will call the provided native function `myNativeFunction`. You should take care to properly handle parameter passing as described above.
 
 Take a look at @ref BansheeEngine::ScriptGUISkin "ScriptGUISkin" implementation for a simple example of how exactly does this work. 
 
@@ -134,7 +134,7 @@ The two last method definitions are called from C# (via an internal call, see th
 ### initRuntimeData ### {#scripting_b_a_a}
 `initRuntimeData` is a static method that every `ScriptObject` needs to implement. It takes care of hooking up managed internal methods to C++ functions. It gets called automatically whenever the assembly containing the related managed class is loaded. 
 
-Every `ScriptObject` provides a static @ref BansheeEngine::ScriptObject<Type, Base>::metaData "metaData" structure you can use for retrieving the @ref BansheeEngine::MonoClass "MonoClass" of the related managed class. You can use that @ref BansheeEngine::MonoClass "MonoClass" to register internal methods to it (as described earlier). For example a basic `initRuntimeData()` might look like so:
+Every `ScriptObject` provides a static @ref BansheeEngine::ScriptObject<Type, Base>::getMetaData "metaData" structure you can use for retrieving the @ref BansheeEngine::MonoClass "MonoClass" of the related managed class. You can use that @ref BansheeEngine::MonoClass "MonoClass" to register internal methods to it (as described earlier). For example a basic `initRuntimeData()` might look like so:
 ~~~~~~~~~~~~~{.cpp}
 void ScriptMyObject::initRuntimeData()
 {
@@ -171,10 +171,10 @@ MonoObject* ScriptMyObject::create()
 	
 In this case the method calls a parameterless constructor but you may specify parameters as needed.
 
-If you have a `MonoObject*` but need to retrieve its `ScriptObject` use @ref BansheeEngine::ScriptObject::toNative(MonoObject*) "toNative(MonoObject*)" static method. Within the interop object instance you can use @ref BansheeEngine::ScriptObject::getManagedInstance() "ScriptObject::getManagedInstance()" to retrieve the managed object.
+If you have a `MonoObject*` but need to retrieve its `ScriptObject` use @ref BansheeEngine::ScriptObject::toNative(MonoObject*) "toNative(MonoObject*)" static method. Within the interop object instance you can use @ref BansheeEngine::ScriptObjectBase::getManagedInstance() "ScriptObject::getManagedInstance()" to retrieve the managed object.
 
 ### Destroying script object instances ### {#scripting_b_a_c}
-When the managed object is destroyed (e.g. goes out of scope and gets garbage collected) the system will automatically take care of freeing the related ScriptObject. If you need to add onto or replace that functionality you can override @ref BansheeEngine::ScriptObject::_onManagedInstanceDeleted "ScriptObject::_onManagedInstanceDeleted" method.
+When the managed object is destroyed (e.g. goes out of scope and gets garbage collected) the system will automatically take care of freeing the related ScriptObject. If you need to add onto or replace that functionality you can override @ref BansheeEngine::ScriptObjectBase::_onManagedInstanceDeleted "ScriptObject::_onManagedInstanceDeleted" method.
 
 ## Managed wrapper object ## {#scripting_b_b}
 Creating the script interop object is one half of the job done. You also need to create the managed counterpart, however that is significantly simpler.
@@ -217,10 +217,10 @@ class MyScriptObject : public ScriptObject<MyScriptObject, PersistentScriptObjec
 ~~~~~~~~~~~~~	
 	
 This ensures that your object is treated properly during assembly refresh. Persistent object then needs to handle four different actions, represented by overrideable methods. These methods are called in order specified during assembly refresh.
- - @ref BansheeEngine::ScriptObject::beginRefresh() "ScriptObject::beginRefresh()" - Called just before the refresh starts. The object is still alive here and you can perform needed actions (e.g. saving managed object's contents).
- - @ref BansheeEngine::ScriptObject::_onManagedInstanceDeleted "ScriptObject::_onManagedInstanceDeleted()" - Called after assembly unload happened and the managed object was destroyed. You should override this to prevent the `ScriptObject` itself from being deleted if the assembly refresh is in progress (which is what the default implementation does). If assembly refresh is not in progress this method should delete the `ScriptObject` as normal because it likely got called due to standard reasons (managed object went out of scope).
- - @ref BansheeEngine::ScriptObject::createManagedInstance "ScriptObject::createManagedInstance()" - Creates the managed instance after new assemblies are loaded. You should override this if your managed class is constructed using a constructor with parameters. By default this will call @ref BansheeEngine::MonoClass::createInstance "MonoClass::createInstance()" using the parameterless constructor.
- - @ref BansheeEngine::ScriptObject::endRefresh() "ScriptObject::endRefresh()" - Called after all assemblies are loaded, and after all script interop objects were either destroyed (non-persistent) or had their managed instances created (persistent). Allows you to restore data stored in `beginRefresh()`, but that is optional.
+ - @ref BansheeEngine::ScriptObjectBase::beginRefresh() "ScriptObject::beginRefresh()" - Called just before the refresh starts. The object is still alive here and you can perform needed actions (e.g. saving managed object's contents).
+ - @ref BansheeEngine::ScriptObjectBase::_onManagedInstanceDeleted "ScriptObject::_onManagedInstanceDeleted()" - Called after assembly unload happened and the managed object was destroyed. You should override this to prevent the `ScriptObject` itself from being deleted if the assembly refresh is in progress (which is what the default implementation does). If assembly refresh is not in progress this method should delete the `ScriptObject` as normal because it likely got called due to standard reasons (managed object went out of scope).
+ - @ref BansheeEngine::ScriptObject::_createManagedInstance "ScriptObject::_createManagedInstance()" - Creates the managed instance after new assemblies are loaded. You should override this if your managed class is constructed using a constructor with parameters. By default this will call @ref BansheeEngine::MonoClass::createInstance "MonoClass::createInstance()" using the parameterless constructor.
+ - @ref BansheeEngine::ScriptObjectBase::endRefresh() "ScriptObject::endRefresh()" - Called after all assemblies are loaded, and after all script interop objects were either destroyed (non-persistent) or had their managed instances created (persistent). Allows you to restore data stored in `beginRefresh()`, but that is optional.
  
 See @ref BansheeEngine::ScriptSceneObject "ScriptSceneObject" and its base class @ref BansheeEngine::ScriptGameObjectBase "ScriptGameObjectBase" for example implementations of these methods.
 

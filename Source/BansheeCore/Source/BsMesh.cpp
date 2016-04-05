@@ -42,9 +42,7 @@ namespace BansheeEngine
 		mVertexData = SPtr<VertexData>(bs_new<VertexData>());
 
 		mVertexData->vertexCount = mProperties.mNumVertices;
-
-		List<VertexElement> elements = mVertexDesc->createElements();
-		mVertexData->vertexDeclaration = HardwareBufferCoreManager::instance().createVertexDeclaration(elements);
+		mVertexData->vertexDeclaration = HardwareBufferCoreManager::instance().createVertexDeclaration(mVertexDesc);
 
 		for (UINT32 i = 0; i <= mVertexDesc->getMaxStreamIdx(); i++)
 		{

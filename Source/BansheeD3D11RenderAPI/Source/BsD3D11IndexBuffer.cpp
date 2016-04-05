@@ -6,8 +6,8 @@
 
 namespace BansheeEngine
 {
-	D3D11IndexBufferCore::D3D11IndexBufferCore(D3D11Device& device, IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage)
-		:IndexBufferCore(idxType, numIndexes, usage), mDevice(device), mBuffer(nullptr)
+	D3D11IndexBufferCore::D3D11IndexBufferCore(D3D11Device& device, IndexType idxType, UINT32 numIndices, GpuBufferUsage usage)
+		:IndexBufferCore(idxType, numIndices, usage), mDevice(device), mBuffer(nullptr)
 	{
 
 	}

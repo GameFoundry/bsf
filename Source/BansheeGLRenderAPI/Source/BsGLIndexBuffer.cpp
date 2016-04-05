@@ -7,8 +7,8 @@
 
 namespace BansheeEngine 
 {
-	GLIndexBufferCore::GLIndexBufferCore(IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage)
-		:IndexBufferCore(idxType, numIndexes, usage), mZeroLocked(false)
+	GLIndexBufferCore::GLIndexBufferCore(IndexType idxType, UINT32 numIndices, GpuBufferUsage usage)
+		:IndexBufferCore(idxType, numIndices, usage), mZeroLocked(false)
 	{  }
 
 	GLIndexBufferCore::~GLIndexBufferCore()

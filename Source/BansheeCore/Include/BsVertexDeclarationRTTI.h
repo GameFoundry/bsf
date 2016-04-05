@@ -6,6 +6,7 @@
 #include "BsRTTIType.h"
 #include "BsVertexBuffer.h"
 #include "BsHardwareBufferManager.h"
+#include "BsVertexDataDesc.h"
 
 namespace BansheeEngine
 {
@@ -63,7 +64,7 @@ namespace BansheeEngine
 
 		SPtr<IReflectable> newRTTIObject() override
 		{
-			return HardwareBufferManager::instance().createVertexDeclaration(List<VertexElement>());
+			return HardwareBufferManager::instance().createVertexDeclaration(VertexDataDesc::create());
 		}
 
 		const String& getRTTIName() override

@@ -46,7 +46,8 @@ namespace BansheeEngine
 		SPtr<VertexBufferCore> getCore() const;
 
 		/** @copydoc HardwareBufferManager::createVertexBuffer */
-		static SPtr<VertexBuffer> create(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false);
+		static SPtr<VertexBuffer> create(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage = GBU_STATIC, 
+			bool streamOut = false);
 
 		static const int MAX_SEMANTIC_IDX = 8;
 	protected:
@@ -78,6 +79,10 @@ namespace BansheeEngine
 
 		/**	Returns information about the vertex buffer. */
 		const VertexBufferProperties& getProperties() const { return mProperties; }
+
+		/** @copydoc HardwareBufferManager::createVertexBuffer */
+		static SPtr<VertexBufferCore> create(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage = GBU_STATIC,
+			bool streamOut = false);
 
 	protected:
 		VertexBufferProperties mProperties;

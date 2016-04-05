@@ -23,7 +23,7 @@ namespace BansheeEngine
 			GpuBufferUsage usage, bool streamOut = false) override;
 
 		/** @copydoc HardwareBufferCoreManager::createIndexBufferInternal */
-		SPtr<IndexBufferCore> createIndexBufferInternal(IndexType itype, UINT32 numIndexes, 
+		SPtr<IndexBufferCore> createIndexBufferInternal(IndexType itype, UINT32 numIndices, 
 			GpuBufferUsage usage) override;
 
 		/** @copydoc HardwareBufferCoreManager::createGpuParamBlockBufferInternal  */

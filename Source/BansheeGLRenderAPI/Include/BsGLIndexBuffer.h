@@ -15,7 +15,7 @@ namespace BansheeEngine
     class BS_RSGL_EXPORT GLIndexBufferCore : public IndexBufferCore
     {
     public:
-		GLIndexBufferCore(IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage);
+		GLIndexBufferCore(IndexType idxType, UINT32 numIndices, GpuBufferUsage usage);
 		~GLIndexBufferCore();
 
 		/** @copydoc IndexBufferCore::readData */

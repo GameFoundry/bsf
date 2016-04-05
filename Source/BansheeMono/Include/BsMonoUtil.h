@@ -148,6 +148,7 @@ namespace BansheeEngine
 			}
 		}
 
+		/** Invokes a thunk retrieved from MonoMethod::getThunk const and automatically handles exceptions. */
 		template<class T, class... Args>
 		static void invokeThunk(T* thunk, Args... args)
 		{

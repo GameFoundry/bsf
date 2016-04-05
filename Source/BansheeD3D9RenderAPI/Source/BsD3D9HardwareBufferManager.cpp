@@ -20,11 +20,11 @@ namespace BansheeEngine
 		return ret;
 	}
 
-	SPtr<IndexBufferCore> D3D9HardwareBufferCoreManager::createIndexBufferInternal(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
+	SPtr<IndexBufferCore> D3D9HardwareBufferCoreManager::createIndexBufferInternal(IndexType itype, UINT32 numIndices, GpuBufferUsage usage)
 	{
-		assert(numIndexes > 0);
+		assert(numIndices > 0);
 
-		SPtr<D3D9IndexBufferCore> ret = bs_shared_ptr_new<D3D9IndexBufferCore>(itype, numIndexes, usage);
+		SPtr<D3D9IndexBufferCore> ret = bs_shared_ptr_new<D3D9IndexBufferCore>(itype, numIndices, usage);
 		ret->_setThisPtr(ret);
 
 		return ret;

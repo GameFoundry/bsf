@@ -155,7 +155,7 @@ namespace BansheeEngine
 		SPtr<VertexDeclarationCore> getCore() const;
 
 		/** @copydoc HardwareBufferManager::createVertexDeclaration */
-		static SPtr<VertexDeclaration> create(const List<VertexElement>& elements);
+		static SPtr<VertexDeclaration> create(const SPtr<VertexDataDesc>& desc);
 
     protected:
 		friend class HardwareBufferManager;
@@ -219,6 +219,9 @@ namespace BansheeEngine
 		 * this vertex declaration.
 		 */
 		Vector<VertexElement> getMissingElements(const SPtr<VertexDeclarationCore>& shaderDecl);
+
+		/** @copydoc HardwareBufferCoreManager::createVertexDeclaration */
+		static SPtr<VertexDeclarationCore> create(const SPtr<VertexDataDesc>& desc);
 
     protected:
 		friend class HardwareBufferCoreManager;

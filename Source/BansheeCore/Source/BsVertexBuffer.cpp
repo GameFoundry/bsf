@@ -1,11 +1,7 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsVertexBuffer.h"
-#include "BsColor.h"
-#include "BsException.h"
 #include "BsHardwareBufferManager.h"
-#include "BsRenderAPI.h"
-#include "BsVertexDeclarationRTTI.h"
 
 namespace BansheeEngine 
 {
@@ -19,6 +15,11 @@ namespace BansheeEngine
 		:HardwareBuffer(usage, false), mProperties(numVertices, vertexSize)
 	{
 		mSizeInBytes = mProperties.mVertexSize * mProperties.mNumVertices;
+	}
+
+	SPtr<VertexBufferCore> VertexBufferCore::create(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
+	{
+		return HardwareBufferCoreManager::instance().createVertexBufferInternal(vertexSize, numVerts, usage, streamOut);
 	}
 
 	VertexBuffer::VertexBuffer(UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage, bool streamOut)

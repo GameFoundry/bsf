@@ -19,9 +19,9 @@ namespace BansheeEngine
 		return ret;
 	}
 
-	SPtr<IndexBufferCore> GLHardwareBufferCoreManager::createIndexBufferInternal(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
+	SPtr<IndexBufferCore> GLHardwareBufferCoreManager::createIndexBufferInternal(IndexType itype, UINT32 numIndices, GpuBufferUsage usage)
 	{
-		SPtr<GLIndexBufferCore> ret = bs_shared_ptr_new<GLIndexBufferCore>(itype, numIndexes, usage);
+		SPtr<GLIndexBufferCore> ret = bs_shared_ptr_new<GLIndexBufferCore>(itype, numIndices, usage);
 		ret->_setThisPtr(ret);
 
 		return ret;

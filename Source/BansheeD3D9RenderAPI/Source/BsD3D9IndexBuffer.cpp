@@ -11,8 +11,8 @@
 
 namespace BansheeEngine 
 {
-	D3D9IndexBufferCore::D3D9IndexBufferCore(IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage)
-		: IndexBufferCore(idxType, numIndexes, usage), mSystemMemoryBuffer(nullptr)
+	D3D9IndexBufferCore::D3D9IndexBufferCore(IndexType idxType, UINT32 numIndices, GpuBufferUsage usage)
+		: IndexBufferCore(idxType, numIndices, usage), mSystemMemoryBuffer(nullptr)
 	{ }
 
 	D3D9IndexBufferCore::~D3D9IndexBufferCore()

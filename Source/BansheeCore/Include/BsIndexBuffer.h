@@ -29,7 +29,7 @@ namespace BansheeEngine
 		IndexType getType() const { return mIndexType; }
 
 		/**	Returns the number of indices this buffer can hold. */
-		UINT32 getNumIndices() const { return mNumIndexes; }
+		UINT32 getNumIndices() const { return mNumIndices; }
 
 		/**	Returns the size of a single index in bytes. */
 		UINT32 getIndexSize() const { return mIndexSize; }
@@ -39,7 +39,7 @@ namespace BansheeEngine
 		friend class IndexBufferCore;
 
 		IndexType mIndexType;
-		UINT32 mNumIndexes;
+		UINT32 mNumIndices;
 		UINT32 mIndexSize;
 	};
 
@@ -60,7 +60,7 @@ namespace BansheeEngine
 		SPtr<IndexBufferCore> getCore() const;
 
 		/** @copydoc HardwareBufferManager::createIndexBuffer */
-		static SPtr<IndexBuffer> create(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
+		static SPtr<IndexBuffer> create(IndexType itype, UINT32 numIndices, GpuBufferUsage usage = GBU_STATIC);
 
 	protected:
 		friend class HardwareBufferManager;
@@ -84,11 +84,14 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT IndexBufferCore : public CoreObjectCore, public HardwareBuffer
 	{
 	public:
-		IndexBufferCore(IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage);
+		IndexBufferCore(IndexType idxType, UINT32 numIndices, GpuBufferUsage usage);
 		virtual ~IndexBufferCore() { }
 
 		/**	Returns information about the index buffer. */
 		const IndexBufferProperties& getProperties() const { return mProperties; }
+
+		/** @copydoc HardwareBufferManager::createIndexBuffer */
+		static SPtr<IndexBufferCore> create(IndexType itype, UINT32 numIndices, GpuBufferUsage usage = GBU_STATIC);
 
 	protected:
 		IndexBufferProperties mProperties;

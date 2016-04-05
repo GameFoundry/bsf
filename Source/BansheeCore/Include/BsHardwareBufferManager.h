@@ -41,10 +41,10 @@ namespace BansheeEngine
 		 * by the pipeline and vertices are drawn in the order specified in the index buffer.
 		 *
 		 * @param[in]	itype		Index type, determines size of an index.
-		 * @param[in]	numIndexes	Number of indexes can buffer can hold.
+		 * @param[in]	numIndices	Number of indexes can buffer can hold.
 		 * @param[in]	usage		Usage that tells the hardware how will be buffer be used. 
 		 */
-		virtual SPtr<IndexBuffer> createIndexBuffer(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
+		virtual SPtr<IndexBuffer> createIndexBuffer(IndexType itype, UINT32 numIndices, GpuBufferUsage usage);
 
 		/**
 		 * Creates an GPU parameter block that you can use for setting parameters for GPU programs. Parameter blocks may be
@@ -75,7 +75,7 @@ namespace BansheeEngine
 			GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
 
 		/** Creates a new vertex declaration from a list of vertex elements. */
-		virtual SPtr<VertexDeclaration> createVertexDeclaration(const List<VertexElement>& elements);
+		virtual SPtr<VertexDeclaration> createVertexDeclaration(const SPtr<VertexDataDesc>& desc);
 	};
 
 	/**
@@ -92,7 +92,10 @@ namespace BansheeEngine
 		virtual SPtr<VertexBufferCore> createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false);
 
 		/** @copydoc HardwareBufferManager::createIndexBuffer */
-		virtual SPtr<IndexBufferCore> createIndexBuffer(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
+		virtual SPtr<IndexBufferCore> createIndexBuffer(IndexType itype, UINT32 numIndices, GpuBufferUsage usage);
+
+		/** @copydoc HardwareBufferManager::createVertexDeclaration */
+		virtual SPtr<VertexDeclarationCore> createVertexDeclaration(const SPtr<VertexDataDesc>& desc);
 
 		/** @copydoc HardwareBufferManager::createVertexDeclaration */
 		virtual SPtr<VertexDeclarationCore> createVertexDeclaration(const List<VertexElement>& elements);
@@ -106,7 +109,9 @@ namespace BansheeEngine
 
 	protected:
 		friend class IndexBuffer;
+		friend class IndexBufferCore;
 		friend class VertexBuffer;
+		friend class VertexBufferCore;
 		friend class VertexDeclaration;
 		friend class GpuParamBlockBuffer;
 		friend class GpuBuffer;
@@ -115,7 +120,7 @@ namespace BansheeEngine
 		virtual SPtr<VertexBufferCore> createVertexBufferInternal(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false) = 0;
 
 		/** @copydoc createIndexBuffer */
-		virtual SPtr<IndexBufferCore> createIndexBufferInternal(IndexType itype, UINT32 numIndexes, GpuBufferUsage usage) = 0;
+		virtual SPtr<IndexBufferCore> createIndexBufferInternal(IndexType itype, UINT32 numIndices, GpuBufferUsage usage) = 0;
 
 		/** @copydoc createGpuParamBlockBuffer */
 		virtual SPtr<GpuParamBlockBufferCore> createGpuParamBlockBufferInternal(UINT32 size, GpuParamBlockUsage usage = GPBU_DYNAMIC) = 0;

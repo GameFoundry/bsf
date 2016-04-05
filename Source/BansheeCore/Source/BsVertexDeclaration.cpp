@@ -220,6 +220,11 @@ namespace BansheeEngine
 		CoreObjectCore::initialize();
 	}
 
+	SPtr<VertexDeclarationCore> VertexDeclarationCore::create(const SPtr<VertexDataDesc>& desc)
+	{
+		return HardwareBufferCoreManager::instance().createVertexDeclaration(desc);
+	}
+
 	bool VertexDeclarationCore::isCompatible(const SPtr<VertexDeclarationCore>& shaderDecl)
 	{
 		const List<VertexElement>& shaderElems = shaderDecl->getProperties().getElements();
@@ -286,9 +291,9 @@ namespace BansheeEngine
 		return HardwareBufferCoreManager::instance().createVertexDeclarationInternal(mProperties.mElementList);
 	}
 
-	SPtr<VertexDeclaration> VertexDeclaration::create(const List<VertexElement>& elements)
+	SPtr<VertexDeclaration> VertexDeclaration::create(const SPtr<VertexDataDesc>& desc)
 	{
-		return HardwareBufferManager::instance().createVertexDeclaration(elements);
+		return HardwareBufferManager::instance().createVertexDeclaration(desc);
 	}
 
 	/************************************************************************/
