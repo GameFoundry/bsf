@@ -232,7 +232,7 @@ namespace BansheeEngine
 				current->mPrefabDiff = nullptr;
 
 				HPrefab prefabLink = static_resource_cast<Prefab>(gResources().loadFromUUID(current->mPrefabLinkUUID, false, false));
-				if (prefabLink != nullptr)
+				if (prefabLink.isLoaded(false))
 					current->mPrefabDiff = PrefabDiff::create(prefabLink->_getRoot(), current->getHandle());
 			}
 

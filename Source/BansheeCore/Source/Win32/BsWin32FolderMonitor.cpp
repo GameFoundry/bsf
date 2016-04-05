@@ -332,7 +332,8 @@ namespace BansheeEngine
 	{
 		if(!FileSystem::isDirectory(folderPath))
 		{
-			BS_EXCEPT(InvalidParametersException, "Provided path \"" + folderPath.toString() + "\" is not a directory");
+			LOGERR("Provided path \"" + folderPath.toString() + "\" is not a directory");
+			return;
 		}
 
 		WString extendedFolderPath = L"\\\\?\\" + folderPath.toWString(Path::PathType::Windows);

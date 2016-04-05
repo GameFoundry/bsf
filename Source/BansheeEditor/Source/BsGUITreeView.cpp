@@ -1071,6 +1071,8 @@ namespace BansheeEngine
 		for(auto selectedElem : mSelectedElements)
 		{
 			GUILabel* targetElement = selectedElem.element->mElement;
+			if (targetElement == nullptr)
+				continue;
 
 			GUILayoutData childData = data;
 			childData.area.y = targetElement->_getLayoutData().area.y;
@@ -1082,25 +1084,29 @@ namespace BansheeEngine
 		if (mIsElementHighlighted)
 		{
 			GUILabel* targetElement = mHighlightedElement.element->mElement;
+			if (targetElement != nullptr)
+			{
+				GUILayoutData childData = data;
+				childData.area.y = targetElement->_getLayoutData().area.y;
+				childData.area.height = targetElement->_getLayoutData().area.height;
 
-			GUILayoutData childData = data;
-			childData.area.y = targetElement->_getLayoutData().area.y;
-			childData.area.height = targetElement->_getLayoutData().area.height;
-
-			mHighlightedElement.background->_setLayoutData(childData);
+				mHighlightedElement.background->_setLayoutData(childData);
+			}
 		}
 
 		if(mEditElement != nullptr)
 		{
 			GUILabel* targetElement = mEditElement->mElement;
+			if (targetElement != nullptr)
+			{
+				UINT32 remainingWidth = (UINT32)std::max(0, (((INT32)data.area.width) - (offset.x - data.area.x)));
 
-			UINT32 remainingWidth = (UINT32)std::max(0, (((INT32)data.area.width) - (offset.x - data.area.x)));
+				GUILayoutData childData = data;
+				childData.area = targetElement->_getLayoutData().area;
+				childData.area.width = remainingWidth;
 
-			GUILayoutData childData = data;
-			childData.area = targetElement->_getLayoutData().area;
-			childData.area.width = remainingWidth;
-
-			mNameEditBox->_setLayoutData(childData);
+				mNameEditBox->_setLayoutData(childData);
+			}
 		}
 
 		if(mDragInProgress)

@@ -291,6 +291,10 @@ namespace BansheeEngine
 		if (!FileSystem::isDirectory(path))
 			return false;
 
+		Path resourceDir = Path::combine(path, ProjectLibrary::RESOURCES_DIR);
+		if (!FileSystem::exists(resourceDir))
+			return false;
+
 		return true;
 	}
 
@@ -322,7 +326,6 @@ namespace BansheeEngine
 
 	void EditorApplication::saveDefaultWidgetLayout()
 	{
-		Path resourceDir = Path::combine(mProjectPath, ProjectLibrary::RESOURCES_DIR);
 		Path internalResourcesDir = Path::combine(mProjectPath, ProjectLibrary::INTERNAL_RESOURCES_DIR);
 
 		if (!FileSystem::exists(internalResourcesDir))
