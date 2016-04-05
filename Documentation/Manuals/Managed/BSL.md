@@ -268,7 +268,7 @@ Any references to PI outside of code-blocks will not be replaced with 3.14 and w
 ### Global shader properties
 On the top-most level you may also specify additional parameters along with "Parameters", "Blocks" and "Technique":
  - Separable = [true/false]; - Specifies if passes within the shader need to be executed sequentially, or could some other shader be executed in-between them. This is an optimization as it can allow the system to render geometry sharing the same passes all at once. False by default.
- - Sort - [FRONTTOBACK/BACKTOFRONT/NONE]; - Specifies in what order are the objects using this shader sorted before rendering.
+ - Sort - [FRONTTOBACK/BACKTOFRONT/NOSORT]; - Specifies in what order are the objects using this shader sorted before rendering.
  - Priority - int; - Specifies when will objects with this shader be rendered compared to other objects. Higher value means the objects will be rendered sooner. Priority has higher importance than sorting.
  - Transparent - [true/false]; - Determines whether the shader renders transparent surfaces. Allows the renderer to better handle the shader.
  

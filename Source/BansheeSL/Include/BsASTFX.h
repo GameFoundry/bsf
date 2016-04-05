@@ -30,6 +30,7 @@ typedef enum tagBlendOpValue BlendOpValue;
 typedef enum tagAddrModeValue AddrModeValue;
 typedef enum tagFilterValue FilterValue;
 typedef enum tagBufferUsageValue BufferUsageValue;
+typedef enum tagQueueSortTypeValue QueueSortTypeValue;
 
 enum tagNodeType
 {
@@ -59,7 +60,7 @@ enum tagOptionType
 	OT_None = 0,
 	OT_Separable,
 	OT_Priority,
-	OT_Queue,
+	OT_Sort,
 	OT_Transparent,
 	OT_Technique,
 	OT_Renderer,
@@ -192,6 +193,11 @@ enum tagFilterValue
 enum tagBufferUsageValue 
 { 
 	BUV_Static, BUV_Dynamic 
+};
+
+enum tagQueueSortTypeValue
+{
+	QST_FrontToBack, QST_BackToFront, QST_None
 };
 
 struct tagNodeLink

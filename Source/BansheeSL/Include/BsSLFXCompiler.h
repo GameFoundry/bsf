@@ -103,6 +103,9 @@ namespace BansheeEngine
 		/**	Maps FX filter mode enum into in-engine filter mode. */
 		static UINT32 parseFilterMode(FilterValue filter);
 
+		/**	Maps FX queue sort type enum into in-engine queue sort type mode. */
+		static QueueSortType parseSortType(QueueSortTypeValue sortType);
+
 		/**	Maps FX comparison function enum into in-engine compare function. */
 		static CompareFunction parseCompFunc(CompFuncValue compFunc);
 

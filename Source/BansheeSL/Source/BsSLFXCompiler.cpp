@@ -286,6 +286,21 @@ namespace BansheeEngine
 		return FO_NONE;
 	}
 
+	QueueSortType BSLFXCompiler::parseSortType(QueueSortTypeValue sortType)
+	{
+		switch (sortType)
+		{
+		case QST_BackToFront:
+			return QueueSortType::BackToFront;
+		case QST_FrontToBack:
+			return QueueSortType::FrontToBack;
+		case QST_None:
+			return QueueSortType::None;
+		}
+
+		return QueueSortType::None;
+	}
+
 	CompareFunction BSLFXCompiler::parseCompFunc(CompFuncValue compFunc)
 	{
 		switch (compFunc)
@@ -1169,8 +1184,8 @@ namespace BansheeEngine
 			case OT_Separable:
 				shaderDesc.separablePasses = option->value.intValue > 1;
 				break;
-			case OT_Queue:
-				shaderDesc.queuePriority = option->value.intValue;
+			case OT_Sort:
+				shaderDesc.queueSortType = parseSortType((QueueSortTypeValue)option->value.intValue);
 				break;
 			case OT_Priority:
 				shaderDesc.queuePriority = option->value.intValue;

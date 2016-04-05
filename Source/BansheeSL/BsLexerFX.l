@@ -15,6 +15,7 @@ FLOAT			[0-9]+\.[0-9]+([eE][+-]?[0-9]+)?[fF]?
 STRING			\"[^"\n]*\"
 IDENTIFIER		[_a-zA-Z][_a-zA-Z0-9]*
 WS				[ \r\n\t]*
+SPACE			[ \t]
 SINGLEWS		[ \r\n\t]
 ENDLINE			[\r\n]
 COMMENT			\/\/[^\n]*
@@ -94,7 +95,7 @@ Block			{ return TOKEN_PARAMSBLOCK; }
 
 	/* Shader keywords */
 Separable		{ return TOKEN_SEPARABLE; }
-Queue			{ return TOKEN_QUEUE; }
+Sort			{ return TOKEN_SORT; }
 Priority		{ return TOKEN_PRIORITY; }
 Transparent		{ return TOKEN_TRANSPARENT; }
 Technique		{ return TOKEN_TECHNIQUE; }
@@ -238,6 +239,10 @@ ANISOC			{ yylval->intValue = FV_AnisotropicCmp; return TOKEN_FILTERVALUE; }
 STATIC			{ yylval->intValue = BUV_Static; return TOKEN_BUFFERUSAGE; }
 DYNAMIC			{ yylval->intValue = BUV_Dynamic; return TOKEN_BUFFERUSAGE; }
 
+FRONTTOBACK		{ yylval->intValue = QST_FrontToBack; return TOKEN_QUEUETYPE; }
+BACKTOFRONT		{ yylval->intValue = QST_BackToFront; return TOKEN_QUEUETYPE; }
+NOSORT			{ yylval->intValue = QST_None; return TOKEN_QUEUETYPE; }
+
 	/* Preprocessor */
 #include				{ BEGIN(INCLUDE); }
 
@@ -270,14 +275,13 @@ DYNAMIC			{ yylval->intValue = BUV_Dynamic; return TOKEN_BUFFERUSAGE; }
 }
 
 #define							{ BEGIN(DEFINE_COND); }
-<DEFINE_COND>{WS}				{ /* Skip blank */ }
+<DEFINE_COND>{SPACE}			{ /* Skip blank */ }
 <DEFINE_COND>{IDENTIFIER}		{ addDefine(yyextra, yytext); BEGIN(DEFINE_COND_EXPR); }
 <DEFINE_COND>{ENDLINE}			{ BEGIN(INITIAL); }
 <DEFINE_COND>.					{ return yytext[0]; }
 
 <DEFINE_COND_EXPR>{DEFINE_EXPR}		{ addDefineExpr(yyextra, yytext); BEGIN(INITIAL); }
 <DEFINE_COND_EXPR>{ENDLINE}			{ BEGIN(INITIAL); }
-<DEFINE_COND_EXPR>.					{ return yytext[0]; }
 
 #undef							{ BEGIN(UNDEF_COND); }
 <UNDEF_COND>{WS}				{ /* Skip blank */ }

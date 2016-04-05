@@ -96,6 +96,7 @@ typedef struct YYLTYPE {
 %token <intValue>	TOKEN_FILTERVALUE
 %token <intValue>	TOKEN_BLENDOPVALUE
 %token <intValue>	TOKEN_BUFFERUSAGE
+%token <intValue>	TOKEN_QUEUETYPE
 
 %token <intValue> TOKEN_FLOATTYPE 
 %token <intValue> TOKEN_FLOAT2TYPE 
@@ -145,7 +146,7 @@ typedef struct YYLTYPE {
 %token TOKEN_AUTO TOKEN_ALIAS TOKEN_SHARED TOKEN_USAGE
 
 	/* Shader keywords */
-%token TOKEN_SEPARABLE TOKEN_QUEUE TOKEN_PRIORITY TOKEN_TRANSPARENT
+%token TOKEN_SEPARABLE TOKEN_SORT TOKEN_PRIORITY TOKEN_TRANSPARENT
 %token TOKEN_PARAMETERS TOKEN_BLOCKS TOKEN_TECHNIQUE
 
 	/* Technique keywords */
@@ -287,7 +288,7 @@ shader_statement
 
 shader_option
 	: TOKEN_SEPARABLE '=' TOKEN_BOOLEAN ';'		{ $$.type = OT_Separable; $$.value.intValue = $3; }
-	| TOKEN_QUEUE '=' TOKEN_INTEGER ';'			{ $$.type = OT_Queue; $$.value.intValue = $3; }
+	| TOKEN_SORT '=' TOKEN_QUEUETYPE ';'		{ $$.type = OT_Sort; $$.value.intValue = $3; }
 	| TOKEN_PRIORITY '=' TOKEN_INTEGER ';'		{ $$.type = OT_Priority; $$.value.intValue = $3; }
 	| TOKEN_TRANSPARENT '=' TOKEN_BOOLEAN ';'	{ $$.type = OT_Transparent; $$.value.intValue = $3; }
 	;
