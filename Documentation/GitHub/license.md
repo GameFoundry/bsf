@@ -11,18 +11,15 @@ A commercial license is available for those that are not comfortable with LGPL t
 
 It is available under the "pay what you want" model, meaning you can purchase it for as little as $0 or as much as $1000. This is completely up to you and we won't judge if you just want a free license.
 
-However if you like Banshee consider giving us some money as this ensures we can pay the costs for developing it further. All the money will be invested into (in the order of importance):
- - My (the author) living costs, hardware, software and services used for and by Banshee
- - Hiring more developers to help with adding more features faster (see [Roadmap](roadmap.md))
- - Hiring people to help with testing, building demos/examples, managing website, improving documentation and tutorials
+However if you like Banshee consider spending some money as this ensures we can pay the costs for developing it further. The money will be invested into hiring more developers to help with adding more features faster (see [Roadmap](roadmap.md)), as well as help with testing, polish and documentation.
  
 ## Third party licenses
-Licenses for all third party libraries used by Banshee can be found in License\ThirdParty sub-directory.
+Licenses for all third party libraries used by Banshee can be found in License\ThirdParty sub-directory of the source code.
 
 ## License FAQ
 
 *Why have two separate licenses?*
-LGPL is offered because at its core Banshee is an open source project. Commercial license is offered because we wish to fund Banshee development so we can make it bigger and better than other open source engines and to be able to compete with the big proprietary engines.  
+LGPL is offered because at its core Banshee is an open source project. Commercial license is offered because we wish to fund Banshee development so we can make it bigger and better than other open source engines.
 
 *How do I get a commercial license?*
 Until a website is set up, you must contact me personally at marko.pintera@gmail.com

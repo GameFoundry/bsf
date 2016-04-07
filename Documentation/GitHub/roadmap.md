@@ -1,11 +1,10 @@
 # Roadmap
 
-Focus right now is to implement the most critical missing features:
- - Physics (colliders, triggers, rigidbodies, joints, character controller)
+The focus right now is to implement the most critical missing features:
  - Animation (skeletal, blend shapes, generic script variables)
  - Audio (popular file format support, music, 3D audio)
  
-The plan is to finish these roughly around mid-2016.
+These should be finished roughly around mid-2016.
 
 ---------------------------------------------------
 
@@ -28,6 +27,7 @@ There are many more features planned, but these are without a specific timeline 
  - Terrain
  - Effects/Particle editor
  - AI support
+ - VR support
  - Cinematics editor
  - Higher level resource streaming support (including level and texture streaming)
  - Unified shading language

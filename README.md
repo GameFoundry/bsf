@@ -7,20 +7,27 @@ The scripting system supports C# and comes with an extensive API ensuring you ca
 
 Aside from being a fully featured game engine and toolkit, Banshee also aims to provide a **high quality foundation**, so others may build and improve upon it. This is reflected in Banshee's architecture which is split into multiple layers allowing developers to use only the functionality they needed, as well as its plugin oriented nature which allows developers to fully remove or replace major engine systems. You will find that Banshee's code is modern, with clean interfaces that make it easy to learn and maintain. Platform specific functionality is kept at a minimum making porting as easy as possible. Additionally its codebase is fully documented with an extensive API reference, as well as a set of manuals introducing you to most major systems.
 
-# Learn more
-* [Features](Documentation/GitHub/features.md)
-* [Roadmap](Documentation/GitHub/roadmap.md)
-* [Download](Documentation/GitHub/install.md)
-* [Compiling](Documentation/GitHub/compiling.md)
-* [Documentation](Documentation/GitHub/documentation.md)
-* [License](Documentation/GitHub/license.md)
+# Features
+* [Features](Documentation/GitHub/features.md) - A list of all currently available features.
+* [Roadmap](Documentation/GitHub/roadmap.md) - A list of features to be implemented in both near and far future.
+
+# Download
+* [Binaries](Documentation/GitHub/install.md) - Download pre-built binaries for the most recent version.
+* [Compiling](Documentation/GitHub/compiling.md) - Learn how to compile the engine yourself.
+
+# Documentation
+* [Managed](Documentation/GitHub/documentation.md) - Documentation for the scripting (C#) API. This is what most users will be interested in.
+* [Native] (Documentation/GitHub/documentation.md) - Documentation for the native (C++) API. This is meant for advanced users meaning to extend/modify the engine.
+* [License](Documentation/GitHub/license.md) - Information about Banshee's license.
 
 # Media
+**Banshee Editor**
 ![Banshee Editor](http://bearishsun.thalassa.feralhosting.com/BansheeEditor.png "Banshee Editor")
 
-[Editor video overview] (https://youtu.be/WJsYOyCXGEU)
+**Video overview**
+[Link] (https://youtu.be/WJsYOyCXGEU)
 
-# About
+# Author
 Banshee was created and is developed by Marko Pintera. The goal of Banshee is to create a high quality open source game engine that is intuitive to use and easy to extend.
 
 I'm happy to connect with other developers, feel free to contact me at [e-mail] (http://scr.im/39d1) or add me on [LinkedIn] (https://goo.gl/t6pPPs). 
