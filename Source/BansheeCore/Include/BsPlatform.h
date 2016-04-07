@@ -350,11 +350,7 @@ namespace BansheeEngine
 		 */
 		static void _messagePump();
 
-		/**
-		 * Called during application start up from the sim thread. Must be called before any other operations are done.
-		 *
-		 * @note	Internal method.
-		 */
+		/** Called during application start up from the sim thread. Must be called before any other operations are done. */
 		static void _startUp();
 
 		/**

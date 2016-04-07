@@ -14,7 +14,7 @@ namespace BansheeEngine
 	class FrameAlloc;
 
 	/**
-	 * Returns a global, application wide frame allocator. Each thread gets its own frame allocator.
+	 * Returns a global, application wide FrameAlloc. Each thread gets its own frame allocator.
 	 *
 	 * @note	Thread safe.
 	 */

@@ -53,11 +53,7 @@ namespace BansheeEngine
 		/**	Stops monitoring all folders that are currently being monitored. */
 		void stopMonitorAll();
 
-		/**
-		 * Callbacks will only get fired after update is called().
-		 * 			
-		 * @note	Internal method.
-		 */
+		/** Callbacks will only get fired after update is called. */
 		void _update();
 
 		/** Triggers when a file in the monitored folder is modified. Provides absolute path to the file. */

@@ -138,8 +138,6 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	data	Layout data containing the necessary bounds and restrictions to use for calculating the 
 		 *						child element layout data.
-		 *
-		 * @note	Internal method.
 		 */
 		virtual void _updateLayout(const GUILayoutData& data);
 

@@ -31,32 +31,16 @@ namespace BansheeEngine
 		/**	Creates and initializes a new BlendState. */
 		SPtr<BlendState> createBlendState(const BLEND_STATE_DESC& desc) const;
 
-		/**
-		 * Creates an uninitialized sampler state. Requires manual initialization after creation.
-		 *
-		 * @note	Internal method.
-		 */
+		/** Creates an uninitialized sampler state. Requires manual initialization after creation. */
 		SPtr<SamplerState> _createSamplerStatePtr(const SAMPLER_STATE_DESC& desc) const;
 
-		/**
-		 * Creates an uninitialized depth-stencil state. Requires manual initialization after creation.
-		 *
-		 * @note	Internal method.
-		 */
+		/** Creates an uninitialized depth-stencil state. Requires manual initialization after creation. */
 		SPtr<DepthStencilState> _createDepthStencilStatePtr(const DEPTH_STENCIL_STATE_DESC& desc) const;
 
-		/**
-		 * Creates an uninitialized rasterizer state. Requires manual initialization after creation.
-		 *
-		 * @note	Internal method.
-		 */
+		/** Creates an uninitialized rasterizer state. Requires manual initialization after creation. */
 		SPtr<RasterizerState> _createRasterizerStatePtr(const RASTERIZER_STATE_DESC& desc) const;
 
-		/**
-		 * Creates an uninitialized blend state. Requires manual initialization	after creation.
-		 *
-		 * @note	Internal method.
-		 */
+		/** Creates an uninitialized blend state. Requires manual initialization	after creation. */
 		SPtr<BlendState> _createBlendStatePtr(const BLEND_STATE_DESC& desc) const;
 
 		/** Gets a sampler state initialized with default options. */

@@ -95,18 +95,12 @@ namespace BansheeEngine
 		 *							serialized object will be invalid as soon as the original data buffer is destroyed. 
 		 *							Referencing is faster than copying.
 		 *
-		 * @note	
-		 * Internal method.
 		 * @note
 		 * References to field data will point to the original buffer and will become invalid when it is destroyed.
 		 */
 		SPtr<SerializedObject> _decodeIntermediate(UINT8* data, UINT32 dataLength, bool copyData = false);
 
-		/**
-		 * Decodes an intermediate representation of a serialized object into the actual object.
-		 *			
-		 * @note	Internal method.
-		 */
+		/** Decodes an intermediate representation of a serialized object into the actual object. */
 		SPtr<IReflectable> _decodeIntermediate(const SPtr<SerializedObject>& serializedObject);
 
 		/** @} */

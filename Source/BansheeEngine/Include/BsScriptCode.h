@@ -37,7 +37,7 @@ namespace BansheeEngine
 		/**
 		 * Creates a new scriptcode resource with the specified source string.
 		 *
-		 * @note	Internal method. Use "create" for normal use.
+		 * @note	Internal method. Use create() for normal use.
 		 */
 		static SPtr<ScriptCode> _createPtr(const WString& data, bool editorScript = false);
 

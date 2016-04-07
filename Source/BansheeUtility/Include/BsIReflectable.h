@@ -59,25 +59,13 @@ namespace BansheeEngine
 		 *  @{
 		 */
 
-		/**
-		 * Called by each type deriving from IReflectable, on program load.
-		 *
-		 * @note	Internal method.
-		 */
+		/** Called by each type deriving from IReflectable, on program load. */
 		static void _registerDerivedClass(RTTITypeBase* derivedClass);
 
-		/**
-		 * Returns class' RTTI type from type id.
-		 *
-		 * @note	Internal method.
-		 */
+		/** Returns class' RTTI type from type id. */
 		static RTTITypeBase* _getRTTIfromTypeId(UINT32 rttiTypeId);
 
-		/**
-		 * Checks if the provided type id is unique.
-		 *
-		 * @note	Internal method.
-		 */
+		/** Checks if the provided type id is unique. */
 		static bool _isTypeIdDuplicate(UINT32 typeId);
 
 		/**

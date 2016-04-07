@@ -76,7 +76,7 @@ namespace BansheeEngine
 		/**
 		 * Triggers callbacks that notify external code that a log entry was added.
 		 * 			
-		 * @note	Internal method. Sim thread only.
+		 * @note	Sim thread only.
 		 */
 		void _triggerCallbacks();
 

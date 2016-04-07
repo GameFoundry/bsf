@@ -440,7 +440,7 @@ namespace BansheeEngine
 		/**
 		 * Creates a new shader object using the provided descriptor and techniques.
 		 *
-		 * @note	Internal method.
+		 * @note	Internal method. Use create() for normal use.
 		 */
 		static SPtr<Shader> _createPtr(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques);
 

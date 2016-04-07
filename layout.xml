@@ -39,7 +39,6 @@
     <memberdecl>
       <related title="Synopsis of methods" subtitle=" "/>
       <nestedclasses visible="no" title=""/>
-      <friends title=""/>
       <membergroups visible="yes"/>
       <publicmethods title="Methods"/>
       <publicstaticmethods title="Static methods"/>
@@ -69,7 +68,6 @@
       <privatestaticattributes title=""/>
     </memberdecl>
     <memberdef>
-      <related title="Methods"/>
       <functions title="Method documentation"/>
       <variables title=""/>
       <inlineclasses title=""/>

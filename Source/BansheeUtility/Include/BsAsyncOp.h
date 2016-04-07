@@ -85,7 +85,7 @@ namespace BansheeEngine
 		 *
 		 * @note
 		 * Do not call this on the thread that is completing the async op, as it will cause a deadlock. Make sure the 
-		 * command you are waiting for is actually queued for execution because a deadlock will occurr otherwise.
+		 * command you are waiting for is actually queued for execution because a deadlock will occur otherwise.
 		 */
 		void blockUntilComplete() const;
 
@@ -107,18 +107,10 @@ namespace BansheeEngine
 		 *  @{
 		 */
 
-		/**
-		 * Mark the async operation as completed.
-		 *
-		 * @note	Internal method.
-		 */
+		/** Mark the async operation as completed. */
 		void _completeOperation(Any returnValue);
 
-		/**
-		 * Mark the async operation as completed, without setting a return value.
-		 *
-		 * @note	Internal method.
-		 */
+		/** Mark the async operation as completed, without setting a return value. */
 		void _completeOperation();
 
 		/** @} */

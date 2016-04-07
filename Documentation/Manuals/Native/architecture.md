@@ -2,11 +2,13 @@ Architecture									{#architecture}
 ===============
 [TOC]
 
+This manual will show you the general architecture of Banshee, to give you a better idea of how everything is structured and where to locate particular systems.
+
 Banshee is implemented throughout many separate libraries. Spreading the engine implementation over different libraries ensures multiple things:
  - Portions of the engine can be easily modified or replaced
- - User can choose which portions of the engine are needed
+ - User can choose which portions of the engine he requires
  - Internals are easier to understand as libraries form a clear architecture between themselves, while ensuring source code isn't all bulked into one big package
- - It ensures quality design by decoupling code and forcing an order of dependencies.
+ - It ensures a higher quality design by decoupling code and forcing an order of dependencies
  
 All the libraries can be separated into four main categories:
  - Layers - These are the core libraries of the engine. Each layer is built on top of the previous layer and provides higher level and more specific functionality than the other.

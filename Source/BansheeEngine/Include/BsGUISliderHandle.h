@@ -82,7 +82,7 @@ namespace BansheeEngine
 		/**
 		 * Size of the handle in pixels, along the handle drag direction.
 		 *
-		 * @note	Internal method. Does not trigger layout update.
+		 * @note	 Does not trigger layout update.
 		 */
 		void _setHandleSize(UINT32 size);
 
@@ -91,7 +91,7 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	pct	Position to move the handle to, in percent ranging [0.0f, 1.0f]
 		 *
-		 * @note	Internal method. Does not trigger layout update.
+		 * @note	Does not trigger layout update.
 		 */
 		void _setHandlePos(float pct);
 

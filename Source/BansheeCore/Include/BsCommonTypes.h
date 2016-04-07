@@ -207,26 +207,26 @@ namespace BansheeEngine
 	/**	Type of GPU data parameters that can be used as inputs to a GPU program. */
 	enum GpuParamDataType
 	{
-		GPDT_FLOAT1 = 1,
-		GPDT_FLOAT2 = 2,
-		GPDT_FLOAT3 = 3,
-		GPDT_FLOAT4 = 4,
-		GPDT_MATRIX_2X2 = 11,
-		GPDT_MATRIX_2X3 = 12,
-		GPDT_MATRIX_2X4 = 13,
-		GPDT_MATRIX_3X2 = 14,
-		GPDT_MATRIX_3X3 = 15,
-		GPDT_MATRIX_3X4 = 16,
-		GPDT_MATRIX_4X2 = 17,
-		GPDT_MATRIX_4X3 = 18,
-		GPDT_MATRIX_4X4 = 19,
-		GPDT_INT1 = 20,
-		GPDT_INT2 = 21,
-		GPDT_INT3 = 22,
-		GPDT_INT4 = 23,
-		GPDT_BOOL = 24,
-		GPDT_STRUCT = 25,
-		GPDT_COLOR = 26, // Same as GPDT_FLOAT4, but can be used to better deduce usage
+		GPDT_FLOAT1 = 1, /**< 1D floating point value. */
+		GPDT_FLOAT2 = 2, /**< 2D floating point value. */
+		GPDT_FLOAT3 = 3, /**< 3D floating point value. */
+		GPDT_FLOAT4 = 4, /**< 4D floating point value. */
+		GPDT_MATRIX_2X2 = 11, /**< 2x2 matrix. */
+		GPDT_MATRIX_2X3 = 12, /**< 2x3 matrix. */
+		GPDT_MATRIX_2X4 = 13, /**< 2x4 matrix. */
+		GPDT_MATRIX_3X2 = 14, /**< 3x2 matrix. */
+		GPDT_MATRIX_3X3 = 15, /**< 3x3 matrix. */
+		GPDT_MATRIX_3X4 = 16, /**< 3x4 matrix. */
+		GPDT_MATRIX_4X2 = 17, /**< 4x2 matrix. */
+		GPDT_MATRIX_4X3 = 18, /**< 4x3 matrix. */
+		GPDT_MATRIX_4X4 = 19, /**< 4x4 matrix. */
+		GPDT_INT1 = 20, /**< 1D signed integer value. */
+		GPDT_INT2 = 21, /**< 2D signed integer value. */
+		GPDT_INT3 = 22, /**< 3D signed integer value. */
+		GPDT_INT4 = 23, /**< 4D signed integer value. */
+		GPDT_BOOL = 24, /**< Boolean value. */
+		GPDT_STRUCT = 25, /**< Variable size structure. */
+		GPDT_COLOR = 26, /**< Same as GPDT_FLOAT4, but can be used to better deduce usage. */
 		GPDT_COUNT = 27, // Keep at end before GPDT_UNKNOWN
 		GPDT_UNKNOWN = 0xffff
 	};
@@ -274,24 +274,24 @@ namespace BansheeEngine
 	/**	Type of GPU object parameters that can be used as inputs to a GPU program. */
 	enum GpuParamObjectType
 	{
-		GPOT_SAMPLER1D = 1,
-		GPOT_SAMPLER2D = 2,
-		GPOT_SAMPLER3D = 3,
-		GPOT_SAMPLERCUBE = 4,
-		GPOT_SAMPLER2DMS = 5,
-		GPOT_TEXTURE1D = 11,
-		GPOT_TEXTURE2D = 12,
-		GPOT_TEXTURE3D = 13,
-		GPOT_TEXTURECUBE = 14,
-		GPOT_TEXTURE2DMS = 15,
-		GPOT_BYTE_BUFFER = 32,
-		GPOT_STRUCTURED_BUFFER = 33,
-		GPOT_RWTYPED_BUFFER = 41,
-		GPOT_RWBYTE_BUFFER = 42,
-		GPOT_RWSTRUCTURED_BUFFER = 43,
-		GPOT_RWSTRUCTURED_BUFFER_WITH_COUNTER = 44,
-		GPOT_RWAPPEND_BUFFER = 45,
-		GPOT_RWCONSUME_BUFFER = 46,
+		GPOT_SAMPLER1D = 1, /**< Sampler state for a 1D texture. */
+		GPOT_SAMPLER2D = 2, /**< Sampler state for a 2D texture. */
+		GPOT_SAMPLER3D = 3, /**< Sampler state for a 3D texture. */
+		GPOT_SAMPLERCUBE = 4, /**< Sampler state for a cube texture. */
+		GPOT_SAMPLER2DMS = 5, /**< Sampler state for a 2D texture with multiple samples. */
+		GPOT_TEXTURE1D = 11, /**< 1D texture. */
+		GPOT_TEXTURE2D = 12, /**< 2D texture. */
+		GPOT_TEXTURE3D = 13, /**< 3D texture. */
+		GPOT_TEXTURECUBE = 14, /**< Cube texture. */
+		GPOT_TEXTURE2DMS = 15, /**< 2D texture with multiple samples. */
+		GPOT_BYTE_BUFFER = 32, /**< Buffer containing raw bytes (no interpretation). */
+		GPOT_STRUCTURED_BUFFER = 33, /**< Buffer containing a set of structures. */
+		GPOT_RWTYPED_BUFFER = 41, /**< Read-write buffer containing a set of primitives. */
+		GPOT_RWBYTE_BUFFER = 42, /**< Read-write buffer containing raw bytes (no interpretation). */
+		GPOT_RWSTRUCTURED_BUFFER = 43, /**< Read-write buffer containing a set of structures. */
+		GPOT_RWSTRUCTURED_BUFFER_WITH_COUNTER = 44, /**< Read-write buffer containing a set of structures, with a counter. */
+		GPOT_RWAPPEND_BUFFER = 45, /**< Buffer that can be used for appending data in a stack-like fashion. */
+		GPOT_RWCONSUME_BUFFER = 46, /**< Buffer that can be used for consuming data in a stack-like fashion. */
 		GPOT_UNKNOWN = 0xffff
 	};
 

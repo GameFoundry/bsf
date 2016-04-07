@@ -45,7 +45,6 @@ namespace BansheeEngine
 		/**
 		 * Sets a shared this pointer to this object. This MUST be called immediately after construction.
 		 *
-		 * @note	Internal method.
 		 * @note	Called automatically by the factory creation methods so user should not call this manually.
 		 */
 		void _setThisPtr(SPtr<CoreObjectCore> ptrThis);

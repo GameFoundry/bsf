@@ -58,19 +58,13 @@ namespace BansheeEngine
 		 */
 		Event<void(UINT32, const RawAxisState&, UINT32)> onAxisMoved;
 
-		/**
-		 * Called once per frame. Capture input here if needed.
-		 * 			
-		 * @note	Internal method.
-		 */
+		/** Called once per frame. Capture input here if needed. */
 		virtual void _update() {}
 
 		/**
 		 * Called whenever the active window changes.
 		 *
 		 * @param[in]	win	Newly active window.
-		 * 				
-		 * @note	Internal method.
 		 */
 		virtual void _inputWindowChanged(const RenderWindow& win) {}
 

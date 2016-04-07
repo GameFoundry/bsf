@@ -127,7 +127,6 @@ namespace BansheeEngine
 		 * @param[in]	importer	The importer that is able to handle files with the specified extension. nullptr if you
 		 * 							want to remove an asset importer for the extension.
 		 *
-		 * @note	Internal method. 
 		 * @note	This method should only be called by asset importers themselves on startup. Importer takes ownership
 		 *			of the provided pointer and will release it. Assumes it is allocated using the general allocator.
 		 */

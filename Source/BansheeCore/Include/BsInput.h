@@ -158,26 +158,16 @@ namespace BansheeEngine
 		 *  @{
 		 */
 
-		/**
-		 * Registers a new input handler. Replaces any previous input handler.
-		 *
-		 * @note	Internal method.
-		 */
+		/** Registers a new input handler. Replaces any previous input handler. */
 		void _registerRawInputHandler(SPtr<RawInputHandler> inputHandler);
 
 		/**
 		 * Called every frame. Detects button state changes and prepares callback events to trigger via a call to 
 		 * _triggerCallbacks().
-		 *
-		 * @note	Internal method.
 		 */
 		void _update();
 
-		/**
-		 * Triggers any queued input event callbacks.
-		 * 
-		 * @note	Internal method.
-		 */
+		/** Triggers any queued input event callbacks. */
 		void _triggerCallbacks();
 
 		/** @} */

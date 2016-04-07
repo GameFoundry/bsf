@@ -95,16 +95,11 @@ namespace BansheeEngine
 		 * Sets a shared this pointer to this object. This must be called immediately after construction, but before
 		 * initialize().
 		 *
-		 * @note	Internal method.
 		 * @note	This should be called by the factory creation methods so user doesn't have to call it manually.
 		 */
 		void _setThisPtr(SPtr<CoreObject> ptrThis);
 
-		/**
-		 * Schedules the object to be destroyed, and then deleted.
-		 *
-		 * @note	Internal method.
-		 */
+		/** Schedules the object to be destroyed, and then deleted. */
 		template<class T, class MemAlloc>
 		static void _delete(CoreObject* obj)
 		{
