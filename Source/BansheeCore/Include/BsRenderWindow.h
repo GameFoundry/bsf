@@ -40,7 +40,7 @@ namespace BansheeEngine
 		bool enableDoubleClick; /**< Does window accept double-clicks. */
 		bool toolWindow; /**< Tool windows have a different style than normal windows and can be created with no border or title bar. */
 		bool modal; /**< When a modal window is open all other windows will be locked until modal window is closed. */
-		bool hideUntilSwap; /** < Window will be created as hidden and only be shown when the first framebuffer swap happens. */
+		bool hideUntilSwap; /**< Window will be created as hidden and only be shown when the first framebuffer swap happens. */
 
 		NameValuePairList platformSpecific; /**< Platform-specific creation options. */
 	};
