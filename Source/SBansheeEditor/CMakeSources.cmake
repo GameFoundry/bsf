@@ -1,0 +1,157 @@
+set(BS_SBANSHEEEDITOR_INC_NOFILTER
+	"Include/BsScriptEditorPrerequisites.h"
+	"Include/BsGUIGameObjectField.h"
+	"Include/BsGUIResourceField.h"
+	"Include/BsEditorScriptManager.h"
+	"Include/BsScriptHandleManager.h"
+	"Include/BsScriptDragDropManager.h"
+	"Include/BsMenuItemManager.h"
+	"Include/BsGUITextureField.h"
+	"Include/BsEditorResourceLoader.h"
+	"Include/BsEditorScriptLibrary.h"
+	"Include/BsToolbarItemManager.h"
+	"Include/BsScriptGizmoManager.h"
+)
+
+set(BS_SBANSHEEEDITOR_SRC_WRAPPERS_GUI
+	"Source/BsScriptGUIColorField.cpp"
+	"Source/BsScriptGUIEnumField.cpp"
+	"Source/BsScriptGUIFloatField.cpp"
+	"Source/BsScriptGUIGameObjectField.cpp"
+	"Source/BsScriptGUIIntField.cpp"
+	"Source/BsScriptGUIListBoxField.cpp"
+	"Source/BsScriptGUIResourceField.cpp"
+	"Source/BsScriptGUISceneTreeView.cpp"
+	"Source/BsScriptGUISliderField.cpp"
+	"Source/BsScriptGUITextField.cpp"
+	"Source/BsScriptGUITextureField.cpp"
+	"Source/BsScriptGUIToggleField.cpp"
+	"Source/BsScriptGUIVector2Field.cpp"
+	"Source/BsScriptGUIVector3Field.cpp"
+	"Source/BsScriptGUIVector4Field.cpp"
+)
+
+set(BS_SBANSHEEEDITOR_SRC_WRAPPERS
+	"Source/BsScriptBrowseDialog.cpp"
+	"Source/BsScriptBuildManager.cpp"
+	"Source/BsScriptCodeEditor.cpp"
+	"Source/BsScriptDragDropManager.cpp"
+	"Source/BsScriptDropDownWindow.cpp"
+	"Source/BsScriptEditorApplication.cpp"
+	"Source/BsScriptEditorBuiltin.cpp"
+	"Source/BsScriptEditorInput.cpp"
+	"Source/BsScriptEditorSettings.cpp"
+	"Source/BsScriptEditorTestSuite.cpp"
+	"Source/BsScriptEditorUtility.cpp"
+	"Source/BsScriptEditorVirtualInput.cpp"
+	"Source/BsScriptEditorWindow.cpp"
+	"Source/BsScriptFolderMonitor.cpp"
+	"Source/BsScriptGizmos.cpp"
+	"Source/BsScriptHandleDrawing.cpp"
+	"Source/BsScriptHandleSlider.cpp"
+	"Source/BsScriptHandleSliderDisc.cpp"
+	"Source/BsScriptHandleSliderLine.cpp"
+	"Source/BsScriptHandleSliderManager.cpp"
+	"Source/BsScriptHandleSliderPlane.cpp"
+	"Source/BsScriptImportOptions.cpp"
+	"Source/BsScriptInspectorUtility.cpp"
+	"Source/BsScriptModalWindow.cpp"
+	"Source/BsScriptOSDropTarget.cpp"
+	"Source/BsScriptPlatformInfo.cpp"
+	"Source/BsScriptPrefabUtility.cpp"
+	"Source/BsScriptProjectLibrary.cpp"
+	"Source/BsScriptProjectSettings.cpp"
+	"Source/BsScriptSceneGizmos.cpp"
+	"Source/BsScriptSceneGrid.cpp"
+	"Source/BsScriptSceneHandles.cpp"
+	"Source/BsScriptSceneSelection.cpp"
+	"Source/BsScriptSelection.cpp"
+	"Source/BsScriptUndoRedo.cpp"
+	"Source/BsScriptUnitTests.cpp"
+)
+
+set(BS_SBANSHEEEDITOR_SRC_NOFILTER
+	"Source/BsScriptEditorPlugin.cpp"
+	"Source/BsGUIGameObjectField.cpp"
+	"Source/BsGUIResourceField.cpp"
+	"Source/BsEditorScriptManager.cpp"
+	"Source/BsScriptGizmoManager.cpp"
+	"Source/BsScriptHandleManager.cpp"
+	"Source/BsMenuItemManager.cpp"
+	"Source/BsGUITextureField.cpp"
+	"Source/BsEditorResourceLoader.cpp"
+	"Source/BsEditorScriptLibrary.cpp"
+	"Source/BsToolbarItemManager.cpp"
+)
+
+set(BS_SBANSHEEEDITOR_INC_WRAPPERS
+	"Include/BsScriptCodeEditor.h"
+	"Include/BsScriptBrowseDialog.h"
+	"Include/BsScriptBuildManager.h"
+	"Include/BsScriptDropDownWindow.h"
+	"Include/BsScriptEditorApplication.h"
+	"Include/BsScriptEditorBuiltin.h"
+	"Include/BsScriptEditorInput.h"
+	"Include/BsScriptEditorSettings.h"
+	"Include/BsScriptEditorTestSuite.h"
+	"Include/BsScriptEditorUtility.h"
+	"Include/BsScriptEditorVirtualInput.h"
+	"Include/BsScriptEditorWindow.h"
+	"Include/BsScriptFolderMonitor.h"
+	"Include/BsScriptGizmos.h"
+	"Include/BsScriptUnitTests.h"
+	"Include/BsScriptUndoRedo.h"
+	"Include/BsScriptSelection.h"
+	"Include/BsScriptSceneSelection.h"
+	"Include/BsScriptSceneHandles.h"
+	"Include/BsScriptSceneGrid.h"
+	"Include/BsScriptSceneGizmos.h"
+	"Include/BsScriptProjectSettings.h"
+	"Include/BsScriptProjectLibrary.h"
+	"Include/BsScriptPrefabUtility.h"
+	"Include/BsScriptPlatformInfo.h"
+	"Include/BsScriptOSDropTarget.h"
+	"Include/BsScriptModalWindow.h"
+	"Include/BsScriptInspectorUtility.h"
+	"Include/BsScriptImportOptions.h"
+	"Include/BsScriptHandleSliderPlane.h"
+	"Include/BsScriptHandleSliderManager.h"
+	"Include/BsScriptHandleSliderLine.h"
+	"Include/BsScriptHandleSliderDisc.h"
+	"Include/BsScriptHandleSlider.h"
+	"Include/BsScriptHandleDrawing.h"
+)
+
+set(BS_SBANSHEEEDITOR_INC_WRAPPERS_GUI
+	"Include/BsScriptGUIColorField.h"
+	"Include/BsScriptGUIEnumField.h"
+	"Include/BsScriptGUIFloatField.h"
+	"Include/BsScriptGUIGameObjectField.h"
+	"Include/BsScriptGUIIntField.h"
+	"Include/BsScriptGUIListBoxField.h"
+	"Include/BsScriptGUIResourceField.h"
+	"Include/BsScriptGUISceneTreeView.h"
+	"Include/BsScriptGUISliderField.h"
+	"Include/BsScriptGUITextField.h"
+	"Include/BsScriptGUITextureField.h"
+	"Include/BsScriptGUIToggleField.h"
+	"Include/BsScriptGUIVector2Field.h"
+	"Include/BsScriptGUIVector3Field.h"
+	"Include/BsScriptGUIVector4Field.h"
+)
+
+source_group("Header Files" FILES ${BS_SBANSHEEEDITOR_INC_NOFILTER})
+source_group("Source Files\\Wrappers\\GUI" FILES ${BS_SBANSHEEEDITOR_SRC_WRAPPERS_GUI})
+source_group("Source Files\\Wrappers" FILES ${BS_SBANSHEEEDITOR_SRC_WRAPPERS})
+source_group("Source Files" FILES ${BS_SBANSHEEEDITOR_SRC_NOFILTER})
+source_group("Header Files\\Wrappers" FILES ${BS_SBANSHEEEDITOR_INC_WRAPPERS})
+source_group("Header Files\\Wrappers\\GUI" FILES ${BS_SBANSHEEEDITOR_INC_WRAPPERS_GUI})
+
+set(BS_SBANSHEEEDITOR_SRC
+	${BS_SBANSHEEEDITOR_INC_NOFILTER}
+	${BS_SBANSHEEEDITOR_SRC_WRAPPERS_GUI}
+	${BS_SBANSHEEEDITOR_SRC_WRAPPERS}
+	${BS_SBANSHEEEDITOR_SRC_NOFILTER}
+	${BS_SBANSHEEEDITOR_INC_WRAPPERS}
+	${BS_SBANSHEEEDITOR_INC_WRAPPERS_GUI}
+)

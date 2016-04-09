@@ -18,6 +18,10 @@ else()
 	set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug;OptimizedDebug;Release")
 endif()
 
+if(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
+	set(BS_64BIT true)
+endif()
+
 # Global compile & linker flags
 if(MSVC)
 	# Linker
@@ -27,7 +31,7 @@ if(MSVC)
 	set(BS_LINKER_FLAGS_OPTIMIZEDDEBUG "${BS_LINKER_FLAGS_COMMON} /LTCG:incremental /OPT:REF /DEBUG")
 	set(BS_LINKER_FLAGS_RELEASE "${BS_LINKER_FLAGS_COMMON} /LTCG /INCREMENTAL:NO /OPT:REF")
 	
-	if(CMAKE_CL_64)
+	if(BS_64BIT)
 		set(BS_LINKER_FLAGS_OPTIMIZEDDEBUG "${BS_LINKER_FLAGS_OPTIMIZEDDEBUG} /OPT:ICF")
 		set(BS_LINKER_FLAGS_RELEASE "${BS_LINKER_FLAGS_RELEASE} /OPT:ICF")
 	endif()
@@ -43,11 +47,19 @@ if(MSVC)
 	
 	# Compiler
 	set(BS_COMPILER_FLAGS_COMMON "/GS- /W3 /GR- /WX- /nologo /bigobj /wd\"4530\" /wd\"4577\"")
+	set(CMAKE_CXX_FLAGS "/DWIN32 /D_WINDOWS")
 	
 	set(CMAKE_CXX_FLAGS_DEBUG "${BS_COMPILER_FLAGS_COMMON} /ZI /Gm /Od /RTC1 /MDd")
 	set(CMAKE_CXX_FLAGS_OPTIMIZEDDEBUG "${BS_COMPILER_FLAGS_COMMON} /GL /Gy /Zi /Gm /O2 /Oi /MD")
 	set(CMAKE_CXX_FLAGS_RELEASE "${BS_COMPILER_FLAGS_COMMON} /GL /Gy /O2 /Oi /MD /MP")
 	
+elseif(CLANG) # Note: CLANG not defined anywhere yet
+	# Note: Optionally add -ffunction-sections, -fdata-sections, but with linker option --gc-sections
+	set(BS_COMPILER_FLAGS_COMMON "-fpic -fno-exceptions -fno-strict-aliasing -fno-rtti -fno-ms-compatibility -fms-extensions")
+	
+	set(CMAKE_CXX_FLAGS_DEBUG "${BS_COMPILER_FLAGS_COMMON} -g -O0")
+	set(CMAKE_CXX_FLAGS_OPTIMIZEDDEBUG "${BS_COMPILER_FLAGS_COMMON} -gline-tables-only -O2")
+	set(CMAKE_CXX_FLAGS_RELEASE "${BS_COMPILER_FLAGS_COMMON} -g0 -O2")
 else()
 # TODO_OTHER_COMPILERS_GO_HERE
 endif()
@@ -55,16 +67,14 @@ endif()
 # Output
 set(CMAKE_BINARY_DIR "${PROJECT_SOURCE_DIR}/../Build/${CMAKE_GENERATOR}/")
 
-if(WIN32)
-if(CMAKE_CL_64)
-set(BS_OUTPUT_DIR_PREFIX x64)
+if(BS_64BIT)
+	set(BS_OUTPUT_DIR_PREFIX x64)
 else()
-set(BS_OUTPUT_DIR_PREFIX Win32)
-endif()
+	set(BS_OUTPUT_DIR_PREFIX x86)
 endif()
 
-set(BS_BINARY_OUTPUT_DIR ../../bin/${BS_OUTPUT_DIR_PREFIX})
-set(BS_LIBRARY_OUTPUT_DIR ../../lib/${BS_OUTPUT_DIR_PREFIX})
+set(BS_BINARY_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/../bin/${BS_OUTPUT_DIR_PREFIX})
+set(BS_LIBRARY_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/../lib/${BS_OUTPUT_DIR_PREFIX})
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${BS_BINARY_OUTPUT_DIR}/Debug)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_OPTIMIZEDDEBUG ${BS_BINARY_OUTPUT_DIR}/OptimizedDebug)
@@ -78,31 +88,46 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${BS_LIBRARY_OUTPUT_DIR}/Debug)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_OPTIMIZEDDEBUG ${BS_LIBRARY_OUTPUT_DIR}/OptimizedDebug)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${BS_LIBRARY_OUTPUT_DIR}/Release)
 
+set(BS_LIBRARY_DEPENDENCIES_DIR_DEBUG ${PROJECT_SOURCE_DIR}/../Dependencies/lib/${BS_OUTPUT_DIR_PREFIX}/Debug)
+set(BS_LIBRARY_DEPENDENCIES_DIR_OPTIMIZEDDEBUG ${PROJECT_SOURCE_DIR}/../Dependencies/lib/${BS_OUTPUT_DIR_PREFIX}/OptimizedDebug)
+set(BS_LIBRARY_DEPENDENCIES_DIR_RELEASE ${PROJECT_SOURCE_DIR}/../Dependencies/lib/${BS_OUTPUT_DIR_PREFIX}/Release)
+
+if(WIN32)
+	set(BS_LIBRARY_EXTENSION ".lib")
+else()
+	set(BS_LIBRARY_EXTENSION ".a")
+endif()
+
+set_property(GLOBAL PROPERTY USE_FOLDERS TRUE)
+
 # Sub-directories
 ## Layers
 add_subdirectory(BansheeUtility)
-#add_subdirectory(BansheeCore)
-#add_subdirectory(BansheeEngine)
-#add_subdirectory(BansheeEditor)
+add_subdirectory(BansheeCore)
+add_subdirectory(BansheeEngine)
+add_subdirectory(BansheeEditor)
 
 ## Plugins
-#add_subdirectory(BansheeD3D9RenderAPI)
-#add_subdirectory(BansheeD3D11RenderAPI)
-#add_subdirectory(BansheeGLRenderAPI)
-#add_subdirectory(BansheeFBXImporter)
-#add_subdirectory(BansheeFontImporter)
-#add_subdirectory(BansheeFreeImgImporter)
-#add_subdirectory(BansheeMono)
-#add_subdirectory(BansheeOISInput)
-#add_subdirectory(BansheePhysX)
-#add_subdirectory(BansheeSL)
-#add_subdirectory(RenderBeast)
+if(WIN32)
+	add_subdirectory(BansheeD3D9RenderAPI)
+	add_subdirectory(BansheeD3D11RenderAPI)
+endif()
+
+add_subdirectory(BansheeGLRenderAPI)
+add_subdirectory(BansheeFBXImporter)
+add_subdirectory(BansheeFontImporter)
+add_subdirectory(BansheeFreeImgImporter)
+add_subdirectory(BansheeMono)
+add_subdirectory(BansheeOISInput)
+add_subdirectory(BansheePhysX)
+add_subdirectory(BansheeSL)
+add_subdirectory(RenderBeast)
 
 ## Script interop
-#add_subdirectory(SBansheeEngine)
-#add_subdirectory(SBansheeEditor)
+add_subdirectory(SBansheeEngine)
+add_subdirectory(SBansheeEditor)
 
 ## Executables
-#add_subdirectory(BansheeEditorExec)
-#add_subdirectory(Game)
-#add_subdirectory(ExampleProject)
+add_subdirectory(BansheeEditorExec)
+add_subdirectory(Game)
+add_subdirectory(ExampleProject)

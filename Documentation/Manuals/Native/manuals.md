@@ -23,7 +23,7 @@ Name                                      | Description
 [Custom GUI elements](@ref customGUI)     | Shows you how to create custom GUI elements, manually render text or modify GUI system in a general way.
 [Custom importers](@ref customImporters)  | Shows you how to create importers that handle conversion of third party resources into engine ready formats.
 [Custom plugins](@ref customPlugins)      | Shows you how to create custom plugins that can be loaded by Banshee.
-[Custom renderer](@ref customRenderer)    | Shows you how to create a custom renderer so you may fully customize the look of your application.
+[Custom renderer](@ref renderer)    	  | Shows you how to create a custom renderer so you may fully customize the look of your application.
 [Quick reference](@ref quickref)          | Provides a few bits of commonly required information, that might be hard to remember otherwise.
 [Porting](@ref porting)                   | Information about how to go on about porting Banshee to a different operating system.
 [Code style](@ref style)                  | Information about code style used when writing Banshee.

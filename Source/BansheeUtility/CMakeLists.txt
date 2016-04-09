@@ -1,25 +1,20 @@
+# Source files and their filters
+include(CMakeSources.cmake)
+
 # Includes
-set(BansheeUtility_INC "Include" "Include/ThirdParty" "../../Dependencies/include")
+set(BansheeUtility_INC 
+	"Include" 
+	"Include/ThirdParty" 
+	"../../Dependencies/Include")
 
 if(WIN32)
 	set(BansheeUtility_INC ${BansheeUtility_INC} "Include/Win32")
+else()
+	# TODO_OTHER_PLATFORMS_GO_HERE
 endif()
 
 include_directories(${BansheeUtility_INC})	
 	
-# Sources
-set(BansheeUtility_SRC_FOLDERS "Source/*.cpp" "Source/ThirdParty/*.cpp")
-
-if(WIN32)
-	set(BansheeUtility_SRC_FOLDERS ${BansheeUtility_SRC_FOLDERS} "Source/Win32/*.cpp")
-endif()
-
-foreach(includeFolder ${BansheeUtility_INC})
-	set(BansheeUtility_SRC_FOLDERS ${BansheeUtility_SRC_FOLDERS} "${includeFolder}/*.h")
-endforeach()
-
-file(GLOB BansheeUtility_SRC ${BansheeUtility_SRC_FOLDERS})
-
 # Configure file
 #configure_file (
 #  "BsBuildConfig.h.in"
@@ -29,12 +24,13 @@ file(GLOB BansheeUtility_SRC ${BansheeUtility_SRC_FOLDERS})
 #include_directories ("${CMAKE_CURRENT_BINARY_DIR}/Generated")
 
 # Target
-add_library(BansheeUtility SHARED ${BansheeUtility_SRC})
+add_library(BansheeUtility SHARED ${BS_BANSHEEUTILITY_SRC})
 
 # Defines
-target_compile_definitions(BansheeUtility PUBLIC -DBS_UTILITY_EXPORTS)
+target_compile_definitions(BansheeUtility PRIVATE -DBS_UTILITY_EXPORTS)
 
 # Libraries
+## OS libs
 if(WIN32)
 target_link_libraries(BansheeUtility 
 	DbgHelp
@@ -44,3 +40,6 @@ target_link_libraries(BansheeUtility
 else()
 	# TODO_OTHER_PLATFORMS_GO_HERE
 endif()
+
+# IDE specific
+set_property(TARGET BansheeUtility PROPERTY FOLDER Layers)
