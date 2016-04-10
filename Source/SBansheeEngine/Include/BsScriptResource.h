@@ -126,7 +126,7 @@ namespace BansheeEngine
 		static UINT32 getTypeIdFromType(ScriptResourceType type);
 
 		/**	Converts a RTTI id belonging to a resource type into a managed class representing that type. */
-		static MonoClass* ScriptResource::getClassFromTypeId(UINT32 typeId);
+		static MonoClass* getClassFromTypeId(UINT32 typeId);
 	private:
 		ScriptResource(MonoObject* instance)
 			:ScriptObject(instance)

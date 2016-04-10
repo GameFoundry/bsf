@@ -137,11 +137,18 @@ Core objects might be dependant on other core objects. For example a @ref Banshe
 
 To add dependencies implement the @ref BansheeEngine::CoreObject::getCoreDependencies "CoreObject::getCoreDependencies" method, which returns all currently valid dependencies. Whenever the dependencies change call @ref BansheeEngine::CoreObject::markDependenciesDirty "CoreObject::markDependenciesDirty" so the system can refresh its dependency list.
 
-## Other features {#coreThread_b_b}
+## Deserialization {#coreThread_b_b}
+When creating RTTI for a @ref BansheeEngine::CoreObject "CoreObject", as described in the [RTTI](@ref rtti) manual, you must take care not to fully initialize the object until deserialization of the object's fields is done.
+
+Essentially this means that @ref BansheeEngine::RTTITypeBase::newRTTIObject "RTTIType::newRTTIObject" must return a pointer to the core object on which @ref BansheeEngine::CoreObject::initialize "CoreObject::initialize" hasn't called yet. You must then call @ref BansheeEngine::CoreObject::initialize "CoreObject::initialize" manually in @ref BansheeEngine::RTTITypeBase::onDeserializationEnded "RTTIType::onDeserializationEnded".
+
+This ensures that @ref BansheeEngine::CoreObject::initialize "CoreObject::initialize" has all the relevant information when it is ran.
+
+## Other features {#coreThread_b_c}
 Core objects also have some other potentially useful features:
  - @ref BansheeEngine::CoreObject::getInternalID "CoreObject::getInternalID" will return a globally unique ID for the core object
  - @ref BansheeEngine::CoreObject::destroy "CoreObject::destroy" will destroy the core object and its core thread counterpart. You do not need to call this manually as it will be automatically called when the object goes out of scope (is no longer referenced). The core thread counterpart (@ref BansheeEngine::CoreObjectCore "CoreObjectCore") will not be destroyed if something on the core thread is still holding a reference to it.
- - Override @ref BansheeEngine::CoreObject::initialize "CoreObject::initialize" or @ref BansheeEngine::CoreObject::destroy "CoreObject::destroy" methods if you need to perform some initialization/destruction operations not suitable for the constructor/destructor (e.g. calling virtual methods).
+ - Override @ref BansheeEngine::CoreObject::initialize "CoreObject::initialize" or @ref BansheeEngine::CoreObject::destroy "CoreObject::destroy" methods instead of using the constructor/destructor. This ensures that your initialization code runs after things like serialization, and also allows you to call virtual methods.
  - You can construct a core object without a core thread counterpart. Simply don't override @ref BansheeEngine::CoreObject::createCore "CoreObject::createCore".
  - You can construct a core object with a @ref BansheeEngine::CoreObjectCore "CoreObjectCore" that isn't initialized on the core thread by setting the @ref BansheeEngine::CoreObject "CoreObject" constructor parameter `requiresCoreInit` to false.
  - Core objects always hold a shared pointer to themselves. Use @ref BansheeEngine::CoreObject::getThisPtr "CoreObject::getThisPtr" to access it.

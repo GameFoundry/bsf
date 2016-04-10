@@ -84,6 +84,6 @@ If you ever require to render text completely manually (perhaps even outside of 
 
 Once you have a custom GUI element you might want to expose it to the scripting API. Take a look at the [scripting interop guide](@ref scripting) to learn how to create scripting API objects. 
 
-Every GUI scripting interop object must implement @ref BansheeEngine::TScriptGUIElement "TScriptGUIElement", but other than that creating GUI interop objects is the same as the general case described in the guide above. See @ref BansheeEngine::ScriptGUITexture "ScriptGUITexture" for an example.
+Every GUI scripting interop object must implement @ref BansheeEngine::TScriptGUIElement "TScriptGUIElement", but other than that creating GUI interop objects is the same as the general case described in the guide above. See @ref BansheeEngine::ScriptGUITexture "ScriptGUITexture" in `BsScriptGUITexture.cpp` for an example.
 
-Creating managed GUI objects is again the same as the general case. Take a look at the managed GUITexture implementation for an example.
+Creating managed GUI objects is again the same as the general case. Take a look at the managed GUITexture implementation in `GUITexture.cs` for an example.

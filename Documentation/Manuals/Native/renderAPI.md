@@ -244,3 +244,10 @@ rapi.dispatchCompute(512, 512);
 ~~~~~~~~~~~~~
 
 We won't go any deeper about the details of the compute pipeline as this information can be found by learning about the GPU pipeline in general from other sources.
+
+# API specifics {#renderAPI_h}
+@ref BansheeEngine::RenderAPI "RenderAPI" can be internally implemented by a variety of actual rendering API's like DirectX or OpenGL. Most of the functionality is shared, but there are always some differences between them to be noted (for example DirectX uses a depth range of [0, 1] while OpenGL uses [-1, 1]). Often those differences can be important for various rendering algorithms.
+
+Use @ref BansheeEngine::RenderAPI::getAPIInfo "RenderAPI::getAPIInfo" to receive the @ref BansheeEngine::RenderAPIInfo "RenderAPIInfo" containing such information, so you may modify your rendering accordingly. 
+
+For convenience a specialized @ref BansheeEngine::RenderAPI::convertProjectionMatrix "RenderAPI::convertProjectionMatrix" method is also provided, which converts a generic engine projection matrix, into a render API specific one.
