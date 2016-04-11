@@ -17,7 +17,7 @@ namespace BansheeEngine
 	struct BS_CORE_EXPORT RENDER_WINDOW_DESC
 	{
 		RENDER_WINDOW_DESC()
-		: vsync(false), vsyncInterval(1), fullscreen(false), hidden(false), depthBuffer(true)
+		: fullscreen(false), vsync(false), vsyncInterval(1), hidden(false), depthBuffer(true)
 			, multisampleCount(0), multisampleHint(""), gamma(false), left(-1), top(-1)
 			, title(""), border(WindowBorder::Normal), outerDimensions(false), enableDoubleClick(true)
 			, toolWindow(false), modal(false), hideUntilSwap(false)

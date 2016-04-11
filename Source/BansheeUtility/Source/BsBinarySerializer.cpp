@@ -25,17 +25,17 @@
  * @param	size   	Size of the data to copy
  */
 #define COPY_TO_BUFFER(dataIter, size)									\
-if((*bytesWritten + size##) > bufferLength)								\
+if((*bytesWritten + size) > bufferLength)								\
 {																		\
 	mTotalBytesWritten += *bytesWritten;								\
 	buffer = flushBufferCallback(buffer - *bytesWritten, *bytesWritten, bufferLength);	\
-	if(buffer == nullptr || bufferLength < size##) return nullptr;		\
+	if(buffer == nullptr || bufferLength < size) return nullptr;		\
 	*bytesWritten = 0;													\
 }																		\
 																		\
-memcpy(buffer, dataIter##, size##);										\
-buffer += size##;														\
-*bytesWritten += size##;
+memcpy(buffer, dataIter, size);											\
+buffer += size;															\
+*bytesWritten += size;
 
 namespace BansheeEngine
 {
@@ -52,9 +52,8 @@ namespace BansheeEngine
 		mLastUsedObjectId = 1;
 		*bytesWritten = 0;
 		mTotalBytesWritten = 0;
-		UINT8* bufferStart = buffer;
-		Vector<SPtr<IReflectable>> encodedObjects;
 
+		Vector<SPtr<IReflectable>> encodedObjects;
 		UINT32 objectId = findOrCreatePersistentId(object);
 		
 		// Encode primary object and its value types
@@ -71,7 +70,7 @@ namespace BansheeEngine
 		{
 			auto iter = mObjectsToEncode.begin();
 			bool foundObjectToProcess = false;
-			for(iter; iter != mObjectsToEncode.end(); ++iter)
+			for(; iter != mObjectsToEncode.end(); ++iter)
 			{
 				auto foundExisting = serializedObjects.find(iter->objectId);
 				if(foundExisting != serializedObjects.end())
@@ -997,6 +996,8 @@ namespace BansheeEngine
 							}
 						}
 					}
+						break;
+					default:
 						break;
 					}
 				}

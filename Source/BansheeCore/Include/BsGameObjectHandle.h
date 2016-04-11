@@ -17,7 +17,7 @@ namespace BansheeEngine
 	struct GameObjectInstanceData
 	{
 		GameObjectInstanceData()
-			:mInstanceId(0), object(nullptr)
+			:object(nullptr), mInstanceId(0)
 		{ }
 
 		SPtr<GameObject> object;
@@ -199,14 +199,6 @@ namespace BansheeEngine
 			mData = bs_shared_ptr_new<GameObjectHandleData>();
 
 			return *this;
-		}
-
-		/**	Casts a specific handle to the base handle. */
-		operator GameObjectHandleBase()
-		{
-			GameObjectHandleBase base(mData);
-
-			return base;
 		}
 
 		/**

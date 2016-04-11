@@ -13,11 +13,11 @@
 
 namespace BansheeEngine
 {
-	std::atomic<UINT32> ShaderCore::mNextShaderId = 0;
+	std::atomic<UINT32> ShaderCore::mNextShaderId;
 
 	template<bool Core>
 	TSHADER_DESC<Core>::TSHADER_DESC()
-		:queuePriority(0), queueSortType(QueueSortType::None), separablePasses(false), flags(0)
+		:queueSortType(QueueSortType::None), queuePriority(0), separablePasses(false), flags(0)
 	{
 
 	}
@@ -397,9 +397,9 @@ namespace BansheeEngine
 			case GPOT_SAMPLERCUBE:
 			case GPOT_SAMPLER2DMS:
 				return true;
+			default:
+				return false;
 		}
-
-		return false;
 	}
 
 	bool Shader::isTexture(GpuParamObjectType type)
@@ -412,9 +412,9 @@ namespace BansheeEngine
 		case GPOT_TEXTURECUBE:
 		case GPOT_TEXTURE2DMS:
 			return true;
+		default:
+			return false;
 		}
-
-		return false;
 	}
 
 	bool Shader::isBuffer(GpuParamObjectType type)
@@ -430,9 +430,9 @@ namespace BansheeEngine
 		case GPOT_RWSTRUCTURED_BUFFER_WITH_COUNTER:
 		case GPOT_RWTYPED_BUFFER:
 			return true;
+		default:
+			return false;
 		}
-
-		return false;
 	}
 
 	UINT32 Shader::getDataParamSize(GpuParamDataType type)

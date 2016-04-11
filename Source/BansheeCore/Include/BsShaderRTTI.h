@@ -312,7 +312,7 @@ namespace BansheeEngine
 			return TID_Shader;
 		}
 
-		SPtr<IReflectable> newRTTIObject()
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return Shader::createEmpty();
 		}

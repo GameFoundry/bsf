@@ -51,6 +51,8 @@ namespace BansheeEngine
 	 */
 	struct BS_CORE_EXPORT PrefabObjectDiff : public IReflectable
 	{
+		PrefabObjectDiff() { }
+
 		UINT32 id = 0;
 
 		String name;

@@ -194,7 +194,7 @@ namespace BansheeEngine
 
 	void MultiRenderTextureCore::copyToMemory(PixelData &dst, FrameBuffer buffer)
 	{
-		throw std::exception("The method or operation is not implemented.");
+		BS_EXCEPT(InternalErrorException,"The method or operation is not implemented.");
 	}
 
 	MultiRenderTexture::MultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC& desc)
@@ -252,7 +252,7 @@ namespace BansheeEngine
 
 		MultiRenderTextureProperties& props = const_cast<MultiRenderTextureProperties&>(getProperties());
 
-		memcpy(buffer, &props, size);
+		memcpy(buffer, (void*)&props, size);
 		return CoreSyncData(buffer, size);
 	}
 

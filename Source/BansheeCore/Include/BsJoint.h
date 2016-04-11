@@ -21,6 +21,7 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT Joint
 	{
 	public:
+		Joint() { }
 		virtual ~Joint() { }
 
 		/** @copydoc FJoint::getBody */
@@ -137,7 +138,7 @@ namespace BansheeEngine
 		{ }
 
 		LimitCommon(const Spring& spring, float restitution = 0.0f)
-			:spring(spring), restitution(restitution)
+			: restitution(restitution), spring(spring)
 		{ }
 
 		/** 

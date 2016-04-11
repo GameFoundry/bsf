@@ -33,11 +33,11 @@ namespace BansheeEngine
 		 * string. If a string with that identifier already exists default language string will be updated.
 		 *
 		 * @param[in]	identifier		String you can use for later referencing the localized string.
-		 * @param[in]	default			Default string to assign to the specified identifier. Language to which it will be 
+		 * @param[in]	defaultString	Default string to assign to the specified identifier. Language to which it will be 
 		 *								assigned depends on the StringTable::DEFAULT_LANGUAGE value.
 		 * @param[in]	stringTableId	Unique identifier of the string table to retrieve the string from.
 		 */
-		explicit HString(const WString& identifier, const WString& default, UINT32 stringTableId = 0);
+		explicit HString(const WString& identifier, const WString& defaultString, UINT32 stringTableId = 0);
 
 		/**
 		 * Creates a new empty localized string.

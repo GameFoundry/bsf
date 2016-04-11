@@ -23,7 +23,7 @@ namespace BansheeEngine
 	 * When storing these sequentially make sure to only reference the low order 2 bytes. Two high order bytes are used for 
 	 * various flags.
 	 */
-	enum ButtonCode
+	enum ButtonCode : UINT32
 	{
 		BC_UNASSIGNED  = 0x00,
 		BC_ESCAPE      = 0x01,
@@ -300,8 +300,8 @@ namespace BansheeEngine
 	{
 	public:
 		PointerEvent()
-			:mIsUsed(false), mouseWheelScrollAmount(0.0f), type(PointerEventType::CursorMoved),
-			shift(false), control(false), alt(false), button(PointerEventButton::Left)
+			: button(PointerEventButton::Left), type(PointerEventType::CursorMoved), shift(false)
+			, control(false), alt(false), mouseWheelScrollAmount(0.0f), mIsUsed(false)
 		{
 			buttonStates[0] = false;
 			buttonStates[1] = false;

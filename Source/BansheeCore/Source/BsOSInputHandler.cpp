@@ -10,7 +10,7 @@ using namespace std::placeholders;
 namespace BansheeEngine
 {
 	OSInputHandler::OSInputHandler()
-		:mMouseScroll(0.0f), mLastCursorPosSet(false)
+		:mLastCursorPosSet(false), mMouseScroll(0.0f)
 	{
 		mCharInputConn = Platform::onCharInput.connect(std::bind(&OSInputHandler::charInput, this, _1));
 		mCursorMovedConn = Platform::onCursorMoved.connect(std::bind(&OSInputHandler::cursorMoved, this, _1, _2));
@@ -113,6 +113,8 @@ namespace BansheeEngine
 			case OSMouseButton::Right:
 				event.button = PointerEventButton::Right;
 				break;
+			default:
+				break;
 			}
 			
 			event.screenPos = btnState.cursorPos;
@@ -182,7 +184,7 @@ namespace BansheeEngine
 		mInputString += character;
 	}
 
-	void OSInputHandler::cursorMoved(const Vector2I& cursorPos, OSPointerButtonStates& btnStates)
+	void OSInputHandler::cursorMoved(const Vector2I& cursorPos, const OSPointerButtonStates& btnStates)
 	{
 		BS_LOCK_MUTEX(mOSInputMutex);
 
@@ -191,7 +193,7 @@ namespace BansheeEngine
 	}
 
 	void OSInputHandler::cursorPressed(const Vector2I& cursorPos, 
-		OSMouseButton button, OSPointerButtonStates& btnStates)
+		OSMouseButton button, const OSPointerButtonStates& btnStates)
 	{
 		BS_LOCK_MUTEX(mOSInputMutex);
 
@@ -205,7 +207,7 @@ namespace BansheeEngine
 	}
 
 	void OSInputHandler::cursorReleased(const Vector2I& cursorPos, 
-		OSMouseButton button, OSPointerButtonStates& btnStates)
+		OSMouseButton button, const OSPointerButtonStates& btnStates)
 	{
 		BS_LOCK_MUTEX(mOSInputMutex);
 
@@ -218,7 +220,7 @@ namespace BansheeEngine
 		btnState.btnStates = btnStates;
 	}
 
-	void OSInputHandler::cursorDoubleClick(const Vector2I& cursorPos, OSPointerButtonStates& btnStates)
+	void OSInputHandler::cursorDoubleClick(const Vector2I& cursorPos, const OSPointerButtonStates& btnStates)
 	{
 		BS_LOCK_MUTEX(mOSInputMutex);
 

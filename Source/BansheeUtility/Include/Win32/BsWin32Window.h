@@ -20,10 +20,10 @@ namespace BansheeEngine
 	struct BS_UTILITY_EXPORT WINDOW_DESC
 	{
 		WINDOW_DESC()
-			: module(nullptr), monitor(nullptr), parent(nullptr), external(nullptr), width(0), height(0), fullscreen(false)
-			, hidden(false), left(-1), top(-1), title(""), border(WindowBorder::Normal), outerDimensions(false)
-			, enableDoubleClick(true), toolWindow(false), creationParams(nullptr), alphaBlending(false), modal(false)
-			, wndProc(nullptr), backgroundPixels(nullptr), backgroundWidth(0), backgroundHeight(0)
+			: module(nullptr), monitor(nullptr), parent(nullptr), external(nullptr), creationParams(nullptr), width(0)
+			, height(0), fullscreen(false), hidden(false), left(-1), top(-1), title(""), border(WindowBorder::Normal)
+			, outerDimensions(false), enableDoubleClick(true), toolWindow(false), backgroundPixels(nullptr)
+			, backgroundWidth(0), backgroundHeight(0), alphaBlending(false), modal(false), wndProc(nullptr)
 		{ }
 
 		HINSTANCE module; /**< Instance to the local module. */

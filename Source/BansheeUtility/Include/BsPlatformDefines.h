@@ -24,24 +24,24 @@
 #define BS_EDITOR_BUILD 1
 
 // Finds the compiler type and version.
-#if defined( _MSC_VER )
-#   define BS_COMPILER BS_COMPILER_MSVC
-#   define BS_COMP_VER _MSC_VER
-#	define BS_THREADLOCAL __declspec(thread)
-#elif defined( __GNUC__ )
+#if defined(__clang__)
+#   define BS_COMPILER BS_COMPILER_CLANG
+#	define BS_COMP_VER __clang_version__
+#   define BS_THREADLOCAL __thread
+#elif defined(__GNUC__) // Check after Clang, as Clang defines this too
 #   define BS_COMPILER BS_COMPILER_GNUC
 #   define BS_COMP_VER (((__GNUC__)*100) + \
         (__GNUC_MINOR__*10) + \
         __GNUC_PATCHLEVEL__)
 #   define BS_THREADLOCAL __thread
-#elif defined ( __INTEL_COMPILER )
+#elif defined (__INTEL_COMPILER)
 #   define BS_COMPILER BS_COMPILER_INTEL
 #	define BS_COMP_VER __INTEL_COMPILER
 	// BS_THREADLOCAL define is down below because Intel compiler defines it differently based on platform
-#elif defined ( __clang__ )
-#   define BS_COMPILER BS_COMPILER_CLANG
-#	define BS_COMP_VER __clang_major__
-#   define BS_THREADLOCAL __thread
+#elif defined(_MSC_VER) // Check after Clang and Intel, since we could be building with either within VS
+#   define BS_COMPILER BS_COMPILER_MSVC
+#   define BS_COMP_VER _MSC_VER
+#	define BS_THREADLOCAL __declspec(thread)
 #else
 #   pragma error "No known compiler. "
 

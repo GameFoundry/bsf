@@ -113,28 +113,28 @@ namespace BansheeEngine
 		 * 			
 		 * @see		onCursorMoved
 		 */
-		void cursorMoved(const Vector2I& cursorPos, OSPointerButtonStates& btnStates);
+		void cursorMoved(const Vector2I& cursorPos, const OSPointerButtonStates& btnStates);
 
 		/**
 		 * Called from the message loop to notify user has pressed a mouse button.
 		 * 			
 		 * @see		onCursorPressed
 		 */
-		void cursorPressed(const Vector2I& cursorPos, OSMouseButton button, OSPointerButtonStates& btnStates);
+		void cursorPressed(const Vector2I& cursorPos, OSMouseButton button, const OSPointerButtonStates& btnStates);
 
 		/**
 		 * Called from the message loop to notify user has released a mouse button.
 		 * 			
 		 * @see		onCursorReleased
 		 */
-		void cursorReleased(const Vector2I& cursorPos, OSMouseButton button, OSPointerButtonStates& btnStates);
+		void cursorReleased(const Vector2I& cursorPos, OSMouseButton button, const OSPointerButtonStates& btnStates);
 
 		/**
 		 * Called from the message loop to notify user has double-clicked a mouse button.
 		 * 
 		 * @see		onDoubleClick
 		 */
-		void cursorDoubleClick(const Vector2I& cursorPos, OSPointerButtonStates& btnStates);
+		void cursorDoubleClick(const Vector2I& cursorPos, const OSPointerButtonStates& btnStates);
 
 		/**
 		 * Called from the message loop to notify user has entered an input command.

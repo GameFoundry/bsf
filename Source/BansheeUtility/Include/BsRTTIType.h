@@ -23,81 +23,81 @@ namespace BansheeEngine
 	 */
 
 	/** Similar to BS_PLAIN_MEMBER but allows you to specify name of the field and the variable it's referencing separately. */
-#define BS_PLAIN_MEMBER_NAMED(name, field)								\
-	decltype(OwnerType::##field)& get##name(OwnerType* obj) { return obj->##field; }				\
-	void set##name(OwnerType* obj, decltype(OwnerType::##field)& val) { obj->##field = val; } 
+#define BS_PLAIN_MEMBER_NAMED(name, field)														\
+	decltype(OwnerType::field)& get##name(OwnerType* obj) { return obj->field; }				\
+	void set##name(OwnerType* obj, decltype(OwnerType::field)& val) { obj->field = val; } 
 
 	/** Similar to BS_REFL_MEMBER but allows you to specify name of the field and the variable it's referencing separately. */
-#define BS_REFL_MEMBER_NAMED(name, field)								\
-	decltype(OwnerType::##field)& get##name(OwnerType* obj) { return obj->##field; }				\
-	void set##name(OwnerType* obj, decltype(OwnerType::##field)& val) { obj->##field = val; } 
+#define BS_REFL_MEMBER_NAMED(name, field)														\
+	decltype(OwnerType::field)& get##name(OwnerType* obj) { return obj->field; }				\
+	void set##name(OwnerType* obj, decltype(OwnerType::field)& val) { obj->field = val; } 
 
 	/** Similar to BS_REFLPTR_MEMBER but allows you to specify name of the field and the variable it's referencing separately. */
-#define BS_REFLPTR_MEMBER_NAMED(name, field)								\
-	decltype(OwnerType::##field) get##name(OwnerType* obj) { return obj->##field; }				\
-	void set##name(OwnerType* obj, decltype(OwnerType::##field) val) { obj->##field = val; } 
+#define BS_REFLPTR_MEMBER_NAMED(name, field)													\
+	decltype(OwnerType::field) get##name(OwnerType* obj) { return obj->field; }					\
+	void set##name(OwnerType* obj, decltype(OwnerType::field) val) { obj->field = val; } 
 
 	/** Shortcut for defining getter/setter methods for a RTTI plain field. */
-#define BS_PLAIN_MEMBER(name)								\
-	decltype(OwnerType::##name)& get##name(OwnerType* obj) { return obj->##name; }				\
-	void set##name(OwnerType* obj, decltype(OwnerType::##name)& val) { obj->##name = val; } 
+#define BS_PLAIN_MEMBER(name)																	\
+	decltype(OwnerType::name)& get##name(OwnerType* obj) { return obj->name; }					\
+	void set##name(OwnerType* obj, decltype(OwnerType::name)& val) { obj->name = val; } 
 
 	/** Shortcut for defining getter/setter methods for a RTTI reflectable field. */
-#define BS_REFL_MEMBER(name)								\
-	decltype(OwnerType::##name)& get##name(OwnerType* obj) { return obj->##name; }				\
-	void set##name(OwnerType* obj, decltype(OwnerType::##name)& val) { obj->##name = val; } 
+#define BS_REFL_MEMBER(name)																	\
+	decltype(OwnerType::name)& get##name(OwnerType* obj) { return obj->name; }					\
+	void set##name(OwnerType* obj, decltype(OwnerType::name)& val) { obj->name = val; } 
 
 	/** Shortcut for defining getter/setter methods for a RTTI reflectable pointer field. */
 #define BS_REFLPTR_MEMBER(name)								\
-	decltype(OwnerType::##name) get##name(OwnerType* obj) { return obj->##name; }				\
-	void set##name(OwnerType* obj, decltype(OwnerType::##name) val) { obj->##name = val; } 
+	decltype(OwnerType::name) get##name(OwnerType* obj) { return obj->name; }				\
+	void set##name(OwnerType* obj, decltype(OwnerType::name) val) { obj->name = val; } 
 
 	/** Registers a plain field defined with BS_PLAIN_MEMBER or BS_PLAIN_MEMBER_NAMED with the RTTI object. */
 #define BS_ADD_PLAIN_FIELD(name, id) \
-	addPlainField(#name, id##, &MyType::get##name, &MyType::set##name);
+	addPlainField(#name, id, &MyType::get##name, &MyType::set##name);
 
 	/** Registers a plain field defined with BS_REFL_MEMBER or BS_REFL_MEMBER_NAMED with the RTTI object. */
 #define BS_ADD_REFL_FIELD(name, id) \
-	addReflectableField(#name, id##, &MyType::get##name, &MyType::set##name);
+	addReflectableField(#name, id, &MyType::get##name, &MyType::set##name);
 
 	/** Registers a plain field defined with BS_REFLPTR_MEMBER or BS_REFLPTR_MEMBER_NAMED with the RTTI object. */
 #define BS_ADD_REFLPTR_FIELD(name, id) \
-	addReflectablePtrField(#name, id##, &MyType::get##name, &MyType::set##name);
+	addReflectablePtrField(#name, id, &MyType::get##name, &MyType::set##name);
 
 	/** Shortcut for defining getter/setter methods for a RTTI plain Vector<T> field. */
 #define BS_PLAIN_MEMBER_VEC(name)								\
-	std::common_type<decltype(OwnerType::##name)>::type::value_type& get##name(OwnerType* obj, UINT32 idx) { return obj->##name[idx]; }				\
-	void set##name(OwnerType* obj, UINT32 idx, std::common_type<decltype(OwnerType::##name)>::type::value_type& val) { obj->##name[idx] = val; }		\
-	UINT32 getSize##name(OwnerType* obj) { return (UINT32)obj->##name.size(); }	\
-	void setSize##name(OwnerType* obj, UINT32 val) { obj->##name.resize(val); }
+	std::common_type<decltype(OwnerType::name)>::type::value_type& get##name(OwnerType* obj, UINT32 idx) { return obj->name[idx]; }				\
+	void set##name(OwnerType* obj, UINT32 idx, std::common_type<decltype(OwnerType::name)>::type::value_type& val) { obj->name[idx] = val; }		\
+	UINT32 getSize##name(OwnerType* obj) { return (UINT32)obj->name.size(); }	\
+	void setSize##name(OwnerType* obj, UINT32 val) { obj->name.resize(val); }
 
 	/** Shortcut for defining getter/setter methods for a RTTI reflectable Vector<T> field. */
 #define BS_REFL_MEMBER_VEC(name)								\
-	std::common_type<decltype(OwnerType::##name)>::type::value_type& get##name(OwnerType* obj, UINT32 idx) { return obj->##name[idx]; }				\
-	void set##name(OwnerType* obj, UINT32 idx, std::common_type<decltype(OwnerType::##name)>::type::value_type& val) { obj->##name[idx] = val; }		\
-	UINT32 getSize##name(OwnerType* obj) { return (UINT32)obj->##name.size(); }	\
-	void setSize##name(OwnerType* obj, UINT32 val) { obj->##name.resize(val); }
+	std::common_type<decltype(OwnerType::name)>::type::value_type& get##name(OwnerType* obj, UINT32 idx) { return obj->name[idx]; }				\
+	void set##name(OwnerType* obj, UINT32 idx, std::common_type<decltype(OwnerType::name)>::type::value_type& val) { obj->name[idx] = val; }		\
+	UINT32 getSize##name(OwnerType* obj) { return (UINT32)obj->name.size(); }	\
+	void setSize##name(OwnerType* obj, UINT32 val) { obj->name.resize(val); }
 
 	/** Shortcut for defining getter/setter methods for a RTTI reflectable pointer Vector<T> field. */
 #define BS_REFLPTR_MEMBER_VEC(name)								\
-	std::common_type<decltype(OwnerType::##name)>::type::value_type get##name(OwnerType* obj, UINT32 idx) { return obj->##name[idx]; }				\
-	void set##name(OwnerType* obj, UINT32 idx, std::common_type<decltype(OwnerType::##name)>::type::value_type val) { obj->##name[idx] = val; }		\
-	UINT32 getSize##name(OwnerType* obj) { return (UINT32)obj->##name.size(); }	\
-	void setSize##name(OwnerType* obj, UINT32 val) { obj->##name.resize(val); }
+	std::common_type<decltype(OwnerType::name)>::type::value_type get##name(OwnerType* obj, UINT32 idx) { return obj->name[idx]; }				\
+	void set##name(OwnerType* obj, UINT32 idx, std::common_type<decltype(OwnerType::name)>::type::value_type val) { obj->name[idx] = val; }		\
+	UINT32 getSize##name(OwnerType* obj) { return (UINT32)obj->name.size(); }	\
+	void setSize##name(OwnerType* obj, UINT32 val) { obj->name.resize(val); }
 
 	/** Registers a plain array field defined with BS_PLAIN_MEMBER_VEC with the RTTI object. */
 #define BS_ADD_PLAIN_FIELD_ARR(name, id) \
-	addPlainArrayField(#name, id##, &MyType::get##name, &MyType::getSize##name, \
+	addPlainArrayField(#name, id, &MyType::get##name, &MyType::getSize##name, \
 	&MyType::set##name, &MyType::setSize##name);
 
 	/** Registers a reflectable object array field defined with BS_PLAIN_MEMBER_VEC with the RTTI object. */
 #define BS_ADD_REFL_FIELD_ARR(name, id) \
-	addReflectableArrayField(#name, id##, &MyType::get##name, &MyType::getSize##name, \
+	addReflectableArrayField(#name, id, &MyType::get##name, &MyType::getSize##name, \
 	&MyType::set##name, &MyType::setSize##name);
 
 	/** Registers a reflectable pointer array field defined with BS_PLAIN_MEMBER_VEC with the RTTI object. */
 #define BS_ADD_REFLPTR_FIELD_ARR(name, id) \
-	addReflectablePtrArrayField(#name, id##, &MyType::get##name, &MyType::getSize##name, \
+	addReflectablePtrArrayField(#name, id, &MyType::get##name, &MyType::getSize##name, \
 	&MyType::set##name, &MyType::setSize##name);
 
 	/** @} */

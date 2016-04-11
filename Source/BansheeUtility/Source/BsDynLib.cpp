@@ -52,8 +52,6 @@ namespace BansheeEngine
 #endif
         m_hInst = (DYNLIB_HANDLE)DYNLIB_LOAD(name.c_str());
 
-		DWORD lastError = GetLastError();
-
         if(!m_hInst)
 		{
             BS_EXCEPT(InternalErrorException,  

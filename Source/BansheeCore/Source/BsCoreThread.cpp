@@ -14,12 +14,12 @@ namespace BansheeEngine
 	BS_THREADLOCAL CoreThread::AccessorContainer* CoreThread::AccessorData::current = nullptr;
 
 	CoreThread::CoreThread()
-		: mCoreThreadShutdown(false)
+		: mActiveFrameAlloc(0)
+		, mCoreThreadShutdown(false)
+		, mCoreThreadStarted(false)
 		, mCommandQueue(nullptr)
 		, mMaxCommandNotifyId(0)
 		, mSyncedCoreAccessor(nullptr)
-		, mActiveFrameAlloc(0)
-		, mCoreThreadStarted(false)
 	{
 		for (UINT32 i = 0; i < NUM_FRAME_ALLOCS; i++)
 		{

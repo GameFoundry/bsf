@@ -9,26 +9,26 @@
 namespace BansheeEngine
 {
 	MeshProperties::MeshProperties()
-		:mNumIndices(0), mNumVertices(0)
+		:mNumVertices(0), mNumIndices(0)
 	{
 		mSubMeshes.reserve(10);
 	}
 
 	MeshProperties::MeshProperties(UINT32 numVertices, UINT32 numIndices, DrawOperationType drawOp)
-		:mNumIndices(numIndices), mNumVertices(numVertices)
+		:mNumVertices(numVertices), mNumIndices(numIndices)
 	{
 		mSubMeshes.push_back(SubMesh(0, numIndices, drawOp));
 	}
 
 	MeshProperties::MeshProperties(UINT32 numVertices, UINT32 numIndices, const Vector<SubMesh>& subMeshes)
-		:mNumIndices(numIndices), mNumVertices(numVertices)
+		:mNumVertices(numVertices), mNumIndices(numIndices)
 	{
 		mSubMeshes = subMeshes;
 	}
 
 	const SubMesh& MeshProperties::getSubMesh(UINT32 subMeshIdx) const
 	{
-		if (subMeshIdx < 0 || subMeshIdx >= mSubMeshes.size())
+		if (subMeshIdx >= mSubMeshes.size())
 		{
 			BS_EXCEPT(InvalidParametersException, "Invalid sub-mesh index ("
 				+ toString(subMeshIdx) + "). Number of sub-meshes available: " + toString((int)mSubMeshes.size()));

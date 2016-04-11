@@ -17,6 +17,7 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT FCollider
 	{
 	public:
+		FCollider() { }
 		virtual ~FCollider();
 
 		/** Returns the position of the collider. */

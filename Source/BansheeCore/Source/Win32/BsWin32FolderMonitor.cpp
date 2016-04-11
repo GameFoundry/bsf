@@ -399,16 +399,7 @@ namespace BansheeEngine
 
 		if(mPimpl->mWorkerThread != nullptr)
 		{
-			try
-			{
-				watchInfo->startMonitor(mPimpl->mCompPortHandle);
-			}
-			catch (Exception* e)
-			{
-				mPimpl->mFoldersToWatch.erase(mPimpl->mFoldersToWatch.end() - 1);
-				bs_delete(watchInfo);
-				throw(e);
-			}
+			watchInfo->startMonitor(mPimpl->mCompPortHandle);
 		}
 		else
 		{
@@ -579,6 +570,8 @@ namespace BansheeEngine
 						}
 					}
 
+					break;
+				default:
 					break;
 				}
 			}

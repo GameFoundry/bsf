@@ -28,25 +28,8 @@
 #include <bitset>
 #include <array>
 
-// Note - not in the original STL, but exists in SGI STL and STLport
-// For gcc 4.3 see http://gcc.gnu.org/gcc-4.3/changes.html
-#if (BS_COMPILER == BS_COMPILER_GNUC)
-#   if BS_COMP_VER >= 430
-#       include <tr1/unordered_map>
-#       include <tr1/unordered_set> 
-#   else
-#       include <ext/hash_map>
-#       include <ext/hash_set>
-#   endif
-#else
-#   if (BS_COMPILER == BS_COMPILER_MSVC) && BS_COMP_VER >= 1600 // VC++ 10.0
-#    	include <unordered_map>
-#    	include <unordered_set>
-#	else
-#   	include <hash_set>
-#   	include <hash_map>
-#	endif
-#endif 
+#include <unordered_map>
+#include <unordered_set>
 
 // STL algorithms & functions
 #include <algorithm>
@@ -58,13 +41,6 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
-
-#ifdef __BORLANDC__
-namespace BansheeEngine
-{
-    using namespace std;
-}
-#endif
 
 extern "C" {
 

@@ -17,8 +17,8 @@ namespace BansheeEngine
 
 	MeshHeapCore::MeshHeapCore(UINT32 numVertices, UINT32 numIndices,
 		const SPtr<VertexDataDesc>& vertexDesc, IndexType indexType)
-		:mNumVertices(numVertices), mNumIndices(numIndices), mIndexType(indexType), 
-		mVertexDesc(vertexDesc), mCPUIndexData(nullptr), mNextQueryId(0)
+		: mNumVertices(numVertices), mNumIndices(numIndices), mCPUIndexData(nullptr), mVertexDesc(vertexDesc)
+		, mIndexType(indexType), mNextQueryId(0)
 	{
 		for (UINT32 i = 0; i <= mVertexDesc->getMaxStreamIdx(); i++)
 		{
@@ -224,7 +224,6 @@ namespace BansheeEngine
 			}
 
 			SPtr<VertexBufferCore> vertexBuffer = mVertexData->getBuffer(i);
-			const VertexBufferProperties& vbProps = vertexBuffer->getProperties();
 
 			UINT8* vertDest = mCPUVertexData[i] + vertChunkStart * vertSize;
 			memcpy(vertDest, meshData->getStreamData(i), meshData->getNumVertices() * vertSize);
@@ -636,8 +635,7 @@ namespace BansheeEngine
 
 	MeshHeap::MeshHeap(UINT32 numVertices, UINT32 numIndices, 
 		const SPtr<VertexDataDesc>& vertexDesc, IndexType indexType)
-		:mNumVertices(numVertices), mNumIndices(numIndices), mNextFreeId(0), 
-		mIndexType(indexType), mVertexDesc(vertexDesc)
+		:mNumVertices(numVertices), mNumIndices(numIndices), mVertexDesc(vertexDesc), mIndexType(indexType), mNextFreeId(0)
 	{
 	}
 

@@ -57,9 +57,9 @@ namespace BansheeEngine
 	UINT32 VertexDataDesc::getMaxStreamIdx() const
 	{
 		UINT32 maxStreamIdx = 0;
-		for(auto& vertElems : mVertexElements)
+		UINT32 numElems = (UINT32)mVertexElements.size();
+		for(UINT32 i = 0; i < numElems; i++)
 		{
-			UINT32 offset = 0;
 			for(auto& vertElem : mVertexElements)
 			{
 				maxStreamIdx = std::max((UINT32)maxStreamIdx, (UINT32)vertElem.getStreamIdx());
@@ -150,7 +150,6 @@ namespace BansheeEngine
 	UINT32 VertexDataDesc::getStreamOffset(UINT32 streamIdx) const
 	{
 		UINT32 streamOffset = 0;
-		bool found = false;
 		for(auto& element : mVertexElements)
 		{
 			if(element.getStreamIdx() == streamIdx)

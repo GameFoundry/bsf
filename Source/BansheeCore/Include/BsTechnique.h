@@ -35,6 +35,14 @@ namespace BansheeEngine
 		StringID mRenderer;
 	};
 
+	template<bool Core> struct TPassType { };
+	template<> struct TPassType < false > { typedef Pass Type; };
+	template<> struct TPassType < true > { typedef PassCore Type; };
+
+	template<bool Core> struct TTechniqueType {};
+	template<> struct TTechniqueType < false > { typedef Technique Type; };
+	template<> struct TTechniqueType < true > { typedef TechniqueCore Type; };
+
 	/**
 	 * @copydoc	TechniqueBase
 	 *
@@ -44,10 +52,6 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT TTechnique : public TechniqueBase
 	{
 	public:
-		template<bool Core> struct TPassType { };
-		template<> struct TPassType < false > { typedef Pass Type; };
-		template<> struct TPassType < true > { typedef PassCore Type; };
-
 		typedef typename TPassType<Core>::Type PassType;
 		
 		TTechnique();

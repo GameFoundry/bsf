@@ -901,10 +901,9 @@ namespace BansheeEngine
 			return nvtt::Format_BC4;
 		case PF_BC5:
 			return nvtt::Format_BC5;
+		default: // Unsupported format
+			return nvtt::Format_BC3;
 		}
-
-		// Unsupported format
-		return nvtt::Format_BC3;
 	}
 
 	nvtt::Quality toNVTTQuality(CompressionQuality quality)
@@ -1658,8 +1657,6 @@ namespace BansheeEngine
 
 		if (src.getDepth() != 1)
 			BS_EXCEPT(InvalidParametersException, "3D textures are not supported.");
-
-		PixelFormat pf = options.format;
 
 		if (isCompressed(src.getFormat()))
 			BS_EXCEPT(InvalidParametersException, "Source data cannot be compressed.");

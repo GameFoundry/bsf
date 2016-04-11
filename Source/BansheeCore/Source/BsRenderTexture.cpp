@@ -208,7 +208,7 @@ namespace BansheeEngine
 
 		RenderTextureProperties& props = const_cast<RenderTextureProperties&>(getProperties());
 
-		memcpy(buffer, &props, size);
+		memcpy(buffer, (void*)&props, size);
 		return CoreSyncData(buffer, size);
 	}
 

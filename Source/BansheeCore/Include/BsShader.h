@@ -6,6 +6,7 @@
 #include "BsResource.h"
 #include "BsStringID.h"
 #include "BsResourceMetaData.h"
+#include "BsTechnique.h"
 
 namespace BansheeEngine
 {
@@ -58,18 +59,18 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
+	template<bool Core> struct TTextureType {};
+	template<> struct TTextureType < false > { typedef HTexture Type; };
+	template<> struct TTextureType < true > { typedef SPtr<TextureCore> Type; };
+
+	template<bool Core> struct TSamplerStateType {};
+	template<> struct TSamplerStateType < false > { typedef SPtr<SamplerState> Type; };
+	template<> struct TSamplerStateType < true > { typedef SPtr<SamplerStateCore> Type; };
+
 	/** Structure used for initializing a shader. */
 	template<bool Core>
 	struct BS_CORE_EXPORT TSHADER_DESC
 	{
-		template<bool Core> struct TTextureType {};
-		template<> struct TTextureType < false > { typedef HTexture Type; };
-		template<> struct TTextureType < true > { typedef SPtr<TextureCore> Type; };
-
-		template<bool Core> struct TSamplerStateType {};
-		template<> struct TSamplerStateType < false > { typedef SPtr<SamplerState> Type; };
-		template<> struct TSamplerStateType < true > { typedef SPtr<SamplerStateCore> Type; };
-
 		typedef typename TTextureType<Core>::Type TextureType;
 		typedef typename TSamplerStateType<Core>::Type SamplerStateType;
 
@@ -235,10 +236,6 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT TShader
 	{
 	public:
-		template<bool Core> struct TTechniqueType {};
-		template<> struct TTechniqueType < false > { typedef Technique Type; };
-		template<> struct TTechniqueType < true > { typedef TechniqueCore Type; };
-
 		typedef typename TTechniqueType<Core>::Type TechniqueType;
 		typedef typename TSHADER_DESC<Core>::TextureType TextureType;
 		typedef typename TSHADER_DESC<Core>::SamplerStateType SamplerStateType;

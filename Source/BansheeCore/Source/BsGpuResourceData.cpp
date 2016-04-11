@@ -8,7 +8,7 @@
 namespace BansheeEngine
 {
 	GpuResourceData::GpuResourceData()
-		:mData(nullptr), mLocked(false), mOwnsData(false)
+		:mData(nullptr), mOwnsData(false), mLocked(false)
 	{
 
 	}

@@ -9,7 +9,8 @@ namespace BansheeEngine
 {
 	GpuBufferProperties::GpuBufferProperties(UINT32 elementCount, UINT32 elementSize, GpuBufferType type,
 		GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
-		:mElementCount(elementCount), mElementSize(elementSize), mType(type), mUsage(usage), mRandomGpuWrite(randomGpuWrite), mUseCounter(useCounter)
+		: mType(type), mUsage(usage), mRandomGpuWrite(randomGpuWrite), mUseCounter(useCounter), mElementCount(elementCount)
+		, mElementSize(elementSize)
 	{
 
 	}

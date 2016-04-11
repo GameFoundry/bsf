@@ -55,7 +55,7 @@ namespace BansheeEngine
 
 	public:
 		Win32DropTarget(HWND hWnd)
-			:mHWnd(hWnd), mRefCount(1), mAcceptDrag(false)
+			:mRefCount(1), mHWnd(hWnd), mAcceptDrag(false)
 		{ }
 
 		~Win32DropTarget()
@@ -75,7 +75,7 @@ namespace BansheeEngine
 		void registerWithOS()
 		{
 			CoLockObjectExternal(this, TRUE, FALSE);
-			HRESULT hr = RegisterDragDrop(mHWnd, this);
+			RegisterDragDrop(mHWnd, this);
 		}
 
 		/** Unregisters the drop target with the operating system. Monitoring for drag and drop operations stops. */

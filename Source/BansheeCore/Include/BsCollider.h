@@ -23,6 +23,7 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT Collider
 	{
 	public:
+		Collider() { }
 		virtual ~Collider() { }
 
 		/** @copydoc FCollider::getPosition */

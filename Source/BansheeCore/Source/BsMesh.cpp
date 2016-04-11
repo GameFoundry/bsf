@@ -146,7 +146,6 @@ namespace BansheeEngine
 			}
 
 			SPtr<VertexBufferCore> vertexBuffer = mVertexData->getBuffer(i);
-			const VertexBufferProperties& vbProps = vertexBuffer->getProperties();
 
 			UINT32 bufferSize = meshData.getStreamSize(i);
 			UINT8* srcVertBufferData = meshData.getStreamData(i);
@@ -352,16 +351,16 @@ namespace BansheeEngine
 
 	Mesh::Mesh(const SPtr<MeshData>& initialMeshData, int usage, DrawOperationType drawOp)
 		:MeshBase(initialMeshData->getNumVertices(), initialMeshData->getNumIndices(), drawOp), 
-		mIndexType(initialMeshData->getIndexType()), mVertexDesc(initialMeshData->getVertexDesc()), 
-		mCPUData(initialMeshData), mUsage(usage)
+		mCPUData(initialMeshData), mVertexDesc(initialMeshData->getVertexDesc()),
+		mUsage(usage), mIndexType(initialMeshData->getIndexType())
 	{
 
 	}
 
 	Mesh::Mesh(const SPtr<MeshData>& initialMeshData, const Vector<SubMesh>& subMeshes, int usage)
 		:MeshBase(initialMeshData->getNumVertices(), initialMeshData->getNumIndices(), subMeshes),
-		mIndexType(initialMeshData->getIndexType()), mVertexDesc(initialMeshData->getVertexDesc()), 
-		mCPUData(initialMeshData), mUsage(usage)
+		mCPUData(initialMeshData), mVertexDesc(initialMeshData->getVertexDesc()), 
+		mUsage(usage), mIndexType(initialMeshData->getIndexType())
 	{
 
 	}

@@ -15,8 +15,8 @@
 namespace BansheeEngine
 {
 	GpuParamsBase::GpuParamsBase(const SPtr<GpuParamDesc>& paramDesc, bool transposeMatrices)
-		:mParamDesc(paramDesc), mTransposeMatrices(transposeMatrices), mNumParamBlocks(0), mNumSamplerStates(0),
-		mNumTextures(0), mTextureInfo(nullptr)
+		: mParamDesc(paramDesc), mNumParamBlocks(0), mNumTextures(0), mNumSamplerStates(0), mTextureInfo(nullptr)
+		, mTransposeMatrices(transposeMatrices)
 	{
 		for (auto& paramBlock : mParamDesc->paramBlocks)
 		{
@@ -96,7 +96,7 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 
 	bool GpuParamsBase::isLoadStoreTexture(UINT32 slot) const
 	{
-		if (slot < 0 || slot >= mNumTextures)
+		if (slot >= mNumTextures)
 		{
 			BS_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " +
 				toString(mNumTextures - 1) + ". Requested: " + toString(slot));
@@ -107,7 +107,7 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 
 	void GpuParamsBase::setIsLoadStoreTexture(UINT32 slot, bool isLoadStore)
 	{
-		if (slot < 0 || slot >= mNumTextures)
+		if (slot >= mNumTextures)
 		{
 			BS_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " +
 				toString(mNumTextures - 1) + ". Requested: " + toString(slot));
@@ -118,7 +118,7 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 
 	const TextureSurface& GpuParamsBase::getLoadStoreSurface(UINT32 slot) const
 	{
-		if (slot < 0 || slot >= mNumTextures)
+		if (slot >= mNumTextures)
 		{
 			BS_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " +
 				toString(mNumTextures - 1) + ". Requested: " + toString(slot));
@@ -129,7 +129,7 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 
 	void GpuParamsBase::setLoadStoreSurface(UINT32 slot, const TextureSurface& surface) const
 	{
-		if (slot < 0 || slot >= mNumTextures)
+		if (slot >= mNumTextures)
 		{
 			BS_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " +
 				toString(mNumTextures - 1) + ". Requested: " + toString(slot));

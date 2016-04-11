@@ -131,3 +131,17 @@ add_subdirectory(SBansheeEditor)
 add_subdirectory(BansheeEditorExec)
 add_subdirectory(Game)
 add_subdirectory(ExampleProject)
+
+## Managed projects
+if(MSVC)
+	include_external_msproject(MBansheeEngine ${PROJECT_SOURCE_DIR}/MBansheeEngine/MBansheeEngine.csproj)
+	include_external_msproject(MBansheeEditor ${PROJECT_SOURCE_DIR}/MBansheeEditor/MBansheeEditor.csproj)
+	
+	add_dependencies(BansheeEditorExec MBansheeEngine MBansheeEditor)
+	add_dependencies(Game MBansheeEngine)
+	
+	set_property(TARGET MBansheeEngine PROPERTY FOLDER Script)
+	set_property(TARGET MBansheeEditor PROPERTY FOLDER Script)
+else()
+# TODO - Use Mono compiler to build the managed code as a pre-build step
+endif()

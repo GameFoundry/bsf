@@ -115,7 +115,8 @@ namespace BansheeEngine
 	 * Handles differences in reference counting depending if the handle is normal or weak.
 	 */
 	template <bool WeakHandle>
-	class BS_CORE_EXPORT TResourceHandleBase : public ResourceHandleBase { };
+	class BS_CORE_EXPORT TResourceHandleBase : public ResourceHandleBase
+	{ };
 
 	/**	Specialization of TResourceHandleBase for weak handles. Weak handles do no reference counting. */
 	template<>
@@ -173,28 +174,25 @@ namespace BansheeEngine
 	{
 	public:
 		TResourceHandle()
-			:TResourceHandleBase()
 		{ }
 
 		/**	Copy constructor. */
 		TResourceHandle(const TResourceHandle<T, WeakHandle>& ptr)
-			:TResourceHandleBase()
 		{
-			mData = ptr.getHandleData();
-
-			addRef();
+			this->mData = ptr.getHandleData();
+			this->addRef();
 		}
 
 		virtual ~TResourceHandle()
 		{
-			releaseRef();
+			this->releaseRef();
 		}
 
 		/**	Converts a specific handle to generic Resource handle. */
 		operator TResourceHandle<Resource, WeakHandle>() const
 		{
 			TResourceHandle<Resource, WeakHandle> handle;
-			handle.setHandleData(getHandleData());
+			handle.setHandleData(this->getHandleData());
 
 			return handle;
 		}
@@ -216,9 +214,9 @@ namespace BansheeEngine
 		/** Clears the handle making it invalid and releases any references held to the resource. */
 		TResourceHandle<T, WeakHandle>& operator=(std::nullptr_t ptr)
 		{ 	
-			releaseRef();
+			this->releaseRef();
+			this->mData = nullptr;
 
-			mData = nullptr;
 			return *this;
 		}
 
@@ -243,7 +241,7 @@ namespace BansheeEngine
 		 */
 		operator int Bool_struct<T>::*() const
 		{
-			return ((mData != nullptr && !mData->mUUID.empty()) ? &Bool_struct<T>::_Member : 0);
+			return ((this->mData != nullptr && !this->mData->mUUID.empty()) ? &Bool_struct<T>::_Member : 0);
 		}
 
 		/**
@@ -253,9 +251,9 @@ namespace BansheeEngine
 		 */
 		T* get() const 
 		{ 
-			throwIfNotLoaded();
+			this->throwIfNotLoaded();
 
-			return reinterpret_cast<T*>(mData->mPtr.get()); 
+			return reinterpret_cast<T*>(this->mData->mPtr.get());
 		}
 
 		/**
@@ -265,16 +263,16 @@ namespace BansheeEngine
 		 */
 		SPtr<T> getInternalPtr() const
 		{ 
-			throwIfNotLoaded();
+			this->throwIfNotLoaded();
 
-			return std::static_pointer_cast<T>(mData->mPtr); 
+			return std::static_pointer_cast<T>(this->mData->mPtr);
 		}
 
 		/** Converts a handle into a weak handle. */
 		TResourceHandle<T, true> getWeak() const
 		{
 			TResourceHandle<T, true> handle;
-			handle.setHandleData(getHandleData());
+			handle.setHandleData(this->getHandleData());
 
 			return handle;
 		}
@@ -294,10 +292,10 @@ namespace BansheeEngine
 		explicit TResourceHandle(T* ptr, const String& uuid)
 			:TResourceHandleBase()
 		{
-			mData = bs_shared_ptr_new<ResourceHandleData>();
-			addRef();
+			this->mData = bs_shared_ptr_new<ResourceHandleData>();
+			this->addRef();
 
-			setHandleData(SPtr<Resource>(ptr, uuid));
+			this->setHandleData(SPtr<Resource>(ptr), uuid);
 		}
 
 		/**
@@ -305,20 +303,18 @@ namespace BansheeEngine
 		 * pointer to make the handle valid.
 		 */
 		TResourceHandle(const String& uuid)
-			:TResourceHandleBase()
 		{
-			mData = bs_shared_ptr_new<ResourceHandleData>();
-			mData->mUUID = uuid;
+			this->mData = bs_shared_ptr_new<ResourceHandleData>();
+			this->mData->mUUID = uuid;
 
-			addRef();
+			this->addRef();
 		}
 
 		/**	Constructs a new valid handle for the provided resource with the provided UUID. */
 		TResourceHandle(const SPtr<T> ptr, const String& uuid)
-			:TResourceHandleBase()
 		{
-			mData = bs_shared_ptr_new<ResourceHandleData>();
-			addRef();
+			this->mData = bs_shared_ptr_new<ResourceHandleData>();
+			this->addRef();
 
 			setHandleData(ptr, uuid);
 		}
@@ -326,21 +322,21 @@ namespace BansheeEngine
 		/**	Replaces the internal handle data pointer, effectively transforming the handle into a different handle. */
 		void setHandleData(const SPtr<ResourceHandleData>& data)
 		{
-			releaseRef();
-			mData = data;
-			addRef();
+			this->releaseRef();
+			this->mData = data;
+			this->addRef();
 		}
 
 		/**	Converts a weak handle into a normal handle. */
 		TResourceHandle<T, false> lock() const
 		{
 			TResourceHandle<Resource, false> handle;
-			handle.setHandleData(getHandleData());
+			handle.setHandleData(this->getHandleData());
 
 			return handle;
 		}
 
-		using TResourceHandleBase::setHandleData;
+		using ResourceHandleBase::setHandleData;
 	};
 
 	/**	Checks if two handles point to the same resource. */

@@ -32,7 +32,7 @@ namespace BansheeEngine
 	}
 
     IndexBuffer::IndexBuffer(IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage) 
-		: mUsage(usage), mProperties(idxType, numIndexes)
+		:mProperties(idxType, numIndexes), mUsage(usage)
     {
 
 	}

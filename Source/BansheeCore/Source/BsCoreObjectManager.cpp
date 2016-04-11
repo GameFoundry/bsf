@@ -268,7 +268,7 @@ namespace BansheeEngine
 			[](const Vector<IndividualCoreSyncData>& data)
 		{
 			// Traverse in reverse to sync dependencies before dependants
-			for (auto& riter = data.rbegin(); riter != data.rend(); ++riter)
+			for (auto riter = data.rbegin(); riter != data.rend(); ++riter)
 			{
 				const IndividualCoreSyncData& entry = *riter;
 				entry.destination->syncToCore(entry.syncData);
@@ -385,10 +385,8 @@ namespace BansheeEngine
 
 		CoreStoredSyncData& syncData = mCoreSyncData.front();
 
-		for (auto& iter = syncData.entries.begin(); iter != syncData.entries.end(); ++iter)
+		for (auto& objSyncData : syncData.entries)
 		{
-			const CoreStoredSyncObjData& objSyncData = *iter;
-
 			SPtr<CoreObjectCore> destinationObj = objSyncData.destinationObj.lock();
 			if (destinationObj != nullptr)
 				destinationObj->syncToCore(objSyncData.syncData);

@@ -59,7 +59,6 @@ namespace BansheeEngine
 		UINT32 mip = 0;
 		mapFromSubresourceIdx(subresourceIdx, face, mip);
 
-		UINT32 numMips = getNumMipmaps();
 		UINT32 width = getWidth();
 		UINT32 height = getHeight();
 		UINT32 depth = getDepth();
@@ -157,10 +156,10 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		if (mipLevel < 0 || mipLevel > mProperties.getNumMipmaps())
+		if (mipLevel > mProperties.getNumMipmaps())
 			BS_EXCEPT(InvalidParametersException, "Invalid mip level: " + toString(mipLevel) + ". Min is 0, max is " + toString(mProperties.getNumMipmaps()));
 
-		if (face < 0 || face >= mProperties.getNumFaces())
+		if (face >= mProperties.getNumFaces())
 			BS_EXCEPT(InvalidParametersException, "Invalid face index: " + toString(face) + ". Min is 0, max is " + toString(mProperties.getNumFaces()));
 
 		return lockImpl(options, mipLevel, face);

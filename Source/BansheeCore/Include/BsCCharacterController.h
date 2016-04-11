@@ -111,6 +111,7 @@ namespace BansheeEngine
 		/************************************************************************/
 	protected:
 		friend class SceneObject;
+		using Component::destroyInternal;
 
 		/** @copydoc Component::onInitialized() */
 		void onInitialized() override;
@@ -127,7 +128,6 @@ namespace BansheeEngine
 		/** @copydoc Component::onTransformChanged() */
 		void onTransformChanged(TransformChangedFlags flags) override;
 
-    protected:
 		/** Updates the position by copying it from the controller to the component's scene object. */
 		void updatePositionFromController();
 

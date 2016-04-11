@@ -65,7 +65,7 @@ namespace BansheeEngine
 			ctrl = false;
 		}
 
-		bool mouseButtons[OSMouseButton::Count];
+		bool mouseButtons[(UINT32)OSMouseButton::Count];
 		bool shift, ctrl;
 	};
 
@@ -386,28 +386,28 @@ namespace BansheeEngine
 		 *
 		 * @note	Core thread only.
 		 */
-		static Event<void(const Vector2I&, OSPointerButtonStates)> onCursorMoved;
+		static Event<void(const Vector2I&, const OSPointerButtonStates&)> onCursorMoved;
 
 		/**
 		 * Triggered whenever a pointer button is pressed.
 		 *
 		 * @note	Core thread only.
 		 */
-		static Event<void(const Vector2I&, OSMouseButton button, OSPointerButtonStates)> onCursorButtonPressed;
+		static Event<void(const Vector2I&, OSMouseButton button, const OSPointerButtonStates&)> onCursorButtonPressed;
 
 		/**
 		 * Triggered whenever pointer button is released.
 		 *
 		 * @note	Core thread only.
 		 */
-		static Event<void(const Vector2I&, OSMouseButton button, OSPointerButtonStates)> onCursorButtonReleased;
+		static Event<void(const Vector2I&, OSMouseButton button, const OSPointerButtonStates&)> onCursorButtonReleased;
 
 		/**
 		 * Triggered whenever a pointer button is double clicked.
 		 *
 		 * @note	Core thread only.
 		 */
-		static Event<void(const Vector2I&, OSPointerButtonStates)> onCursorDoubleClick;
+		static Event<void(const Vector2I&, const OSPointerButtonStates&)> onCursorDoubleClick;
 
 		/**
 		 * Triggered whenever an input command is entered.

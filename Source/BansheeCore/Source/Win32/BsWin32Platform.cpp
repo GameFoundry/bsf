@@ -14,10 +14,10 @@
 
 namespace BansheeEngine
 {
-	Event<void(const Vector2I&, OSPointerButtonStates)> Platform::onCursorMoved;
-	Event<void(const Vector2I&, OSMouseButton button, OSPointerButtonStates)> Platform::onCursorButtonPressed;
-	Event<void(const Vector2I&, OSMouseButton button, OSPointerButtonStates)> Platform::onCursorButtonReleased;
-	Event<void(const Vector2I&, OSPointerButtonStates)> Platform::onCursorDoubleClick;
+	Event<void(const Vector2I&, const OSPointerButtonStates&)> Platform::onCursorMoved;
+	Event<void(const Vector2I&, OSMouseButton button, const OSPointerButtonStates&)> Platform::onCursorButtonPressed;
+	Event<void(const Vector2I&, OSMouseButton button, const OSPointerButtonStates&)> Platform::onCursorButtonReleased;
+	Event<void(const Vector2I&, const OSPointerButtonStates&)> Platform::onCursorDoubleClick;
 	Event<void(InputCommandType)> Platform::onInputCommand;
 	Event<void(float)> Platform::onMouseWheelScrolled;
 	Event<void(UINT32)> Platform::onCharInput;

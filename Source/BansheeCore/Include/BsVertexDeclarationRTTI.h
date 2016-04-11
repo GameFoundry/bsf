@@ -70,7 +70,7 @@ namespace BansheeEngine
 		const String& getRTTIName() override
 		{
 			static String name = "VertexDeclaration";
-			throw name;
+			return name;
 		}
 
 		UINT32 getRTTIId() override

@@ -44,6 +44,10 @@ namespace BansheeEngine
 			return sizeof(short)*4;
 		case VET_UBYTE4:
 			return sizeof(unsigned char)*4;
+		case VET_UINT4:
+			return sizeof(UINT32) * 4;
+		case VET_SINT4:
+			return sizeof(INT32) * 4;
 		}
 
 		return 0;
@@ -74,6 +78,10 @@ namespace BansheeEngine
 		case VET_SHORT4:
 			return 4;
 		case VET_UBYTE4:
+			return 4;
+		case VET_UINT4:
+			return 4;
+		case VET_SINT4:
 			return 4;
 		}
 

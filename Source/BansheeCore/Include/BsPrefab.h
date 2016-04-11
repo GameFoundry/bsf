@@ -72,6 +72,8 @@ namespace BansheeEngine
 		/** @} */
 
 	private:
+		using CoreObject::initialize;
+
 		/**	Initializes the internal prefab hierarchy. Must be called druing creation. */
 		void initialize(const HSceneObject& sceneObject);
 

@@ -21,7 +21,7 @@ namespace BansheeEngine
 	}
 
 	Input::Input()
-		:mLastPositionSet(false), mPointerDoubleClicked(false)
+		:mPointerDoubleClicked(false), mLastPositionSet(false)
 	{ 
 		mOSInputHandler = bs_shared_ptr_new<OSInputHandler>();
 

@@ -415,9 +415,9 @@ namespace BansheeEngine
 
 	/** Shortcut for profiling a single function call. */
 #define PROFILE_CALL(call, name)							\
-	BansheeEngine::gProfilerCPU().beginSample(##name##);	\
+	BansheeEngine::gProfilerCPU().beginSample(name);		\
 	call;													\
-	BansheeEngine::gProfilerCPU().endSample(##name##);
+	BansheeEngine::gProfilerCPU().endSample(name);
 
 	/** @} */
 }

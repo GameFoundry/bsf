@@ -4,6 +4,14 @@
 #include "BsDebug.h"
 #include "BsPlatform.h"
 
+#if BS_COMPILER == BS_COMPILER_GNUC || BS_COMPILER == BS_COMPILER_CLANG
+	#include "cpuid.h"
+#endif
+
+#if BS_COMPILER == BS_COMPILER_CLANG
+	#include "intrin.h"
+#endif
+
 namespace BansheeEngine
 {
 	ProfilerCPU::Timer::Timer()
@@ -54,15 +62,31 @@ namespace BansheeEngine
 	inline UINT64 ProfilerCPU::TimerPrecise::getNumCycles() 
 	{
 #if BS_COMPILER == BS_COMPILER_GNUC
-		asm volatile("cpuid" : : : "%eax", "%ebx", "%ecx", "%edx" );
-		UINT32 __a,__d;
-		asm volatile("rdtsc" : "=a" (__a), "=d" (__d));
-		return ( UINT64(__a) | UINT64(__d) << 32 );
+		int a = 0;
+		int b[4];
+		__get_cpuid(a, &b[0], &b[1], &b[2], &b[3]);
+
+#if BS_ARCH_TYPE == BS_ARCHITECTURE_x86_64
+		UINT32 __a, __d;
+		__asm__ __volatile__ ("rdtsc" : "=a" (__a), "=d" (__d));
+		return (UINT64(__a) | UINT64(__d) << 32);
 #else
+		UINT64 x;
+		__asm__ volatile (".byte 0x0f, 0x31" : "=A" (x));
+		return x;
+#endif
+#elif BS_COMPILER == BS_COMPILER_CLANG
+		UINT32 a = 0;
+		UINT32 b[4];
+		__get_cpuid(a, &b[0], &b[1], &b[2], &b[3]);
+		return __rdtsc();
+#elif BS_COMPILER == BS_COMPILER_MSVC
 		int a[4];
 		int b = 0;
 		__cpuid(a, b);
 		return __rdtsc();
+#else
+		static_assert("Unsupported compiler");
 #endif		
 	}
 
@@ -216,7 +240,7 @@ namespace BansheeEngine
 	}
 
 	ProfilerCPU::ProfiledBlock::ProfiledBlock(FrameAlloc* alloc)
-		:children(alloc), basic(alloc), precise(alloc)
+		:basic(alloc), precise(alloc), children(alloc)
 	{ }
 
 	ProfilerCPU::ProfiledBlock::~ProfiledBlock()
@@ -241,8 +265,8 @@ namespace BansheeEngine
 	}
 
 	ProfilerCPU::ProfilerCPU()
-		:mBasicTimerOverhead(0.0), mPreciseTimerOverhead(0), mBasicSamplingOverheadMs(0.0), mPreciseSamplingOverheadCycles(0),
-		mBasicSamplingOverheadCycles(0), mPreciseSamplingOverheadMs(0.0)
+		: mBasicTimerOverhead(0.0), mPreciseTimerOverhead(0), mBasicSamplingOverheadMs(0.0), mPreciseSamplingOverheadMs(0.0)
+		, mBasicSamplingOverheadCycles(0), mPreciseSamplingOverheadCycles(0)
 	{
 		// TODO - We only estimate overhead on program start. It might be better to estimate it each time beginThread is called,
 		// and keep separate values per thread.

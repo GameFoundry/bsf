@@ -7,7 +7,7 @@
 namespace BansheeEngine
 {
 	Component::Component(const HSceneObject& parent)
-		:mParent(parent), mNotifyFlags(TCF_None)
+		:mNotifyFlags(TCF_None), mParent(parent)
 	{
 		setName("Component");
 	}

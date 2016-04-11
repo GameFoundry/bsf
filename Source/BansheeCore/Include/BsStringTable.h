@@ -136,7 +136,7 @@ namespace BansheeEngine
 		Norwegian, 
 		Navaho, 
 		Nyanja, 
-		Provençal, 
+		Provencal, 
 		Ojibwa, 
 		Oromo, 
 		Oriya, 

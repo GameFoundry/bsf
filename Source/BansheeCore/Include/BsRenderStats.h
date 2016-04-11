@@ -180,9 +180,9 @@ namespace BansheeEngine
 	};
 
 #if BS_PROFILING_ENABLED
-	#define BS_INC_RENDER_STAT_CAT(Stat, Category) RenderStats::instance().inc##Stat##((UINT32)##Category##)
-	#define BS_INC_RENDER_STAT(Stat) RenderStats::instance().inc##Stat##()
-	#define BS_ADD_RENDER_STAT(Stat, Count) RenderStats::instance().add##Stat##(##Count##)
+	#define BS_INC_RENDER_STAT_CAT(Stat, Category) RenderStats::instance().inc##Stat((UINT32)Category)
+	#define BS_INC_RENDER_STAT(Stat) RenderStats::instance().inc##Stat()
+	#define BS_ADD_RENDER_STAT(Stat, Count) RenderStats::instance().add##Stat(Count)
 #else
 	#define BS_INC_RENDER_STAT_CAT(Stat, Category)
 	#define BS_INC_RENDER_STAT(Stat)

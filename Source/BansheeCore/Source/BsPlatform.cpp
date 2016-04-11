@@ -5,8 +5,8 @@
 namespace BansheeEngine
 {
 	OSDropTarget::OSDropTarget(const RenderWindow* ownerWindow, INT32 x, INT32 y, UINT32 width, UINT32 height)
-		:mOwnerWindow(ownerWindow), mX(x), mY(y), mWidth(width), mHeight(height), mDropType(OSDropType::None), 
-		mFileList(nullptr), mActive(false)
+		:mX(x), mY(y), mWidth(width), mHeight(height), mActive(false), mOwnerWindow(ownerWindow), 
+		mDropType(OSDropType::None), mFileList(nullptr)
 	{
 		
 	}

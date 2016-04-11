@@ -10,11 +10,11 @@
 
 namespace BansheeEngine 
 {
-	const Color Viewport::DEFAULT_CLEAR_COLOR = Color(83.0f / 255.0f, 83.0f / 255.0f, 83.0f / 255.0f);
+	const Color ViewportBase::DEFAULT_CLEAR_COLOR = Color(83.0f / 255.0f, 83.0f / 255.0f, 83.0f / 255.0f);
 
 	ViewportBase::ViewportBase(float x, float y, float width, float height)
-         :mNormArea(x, y, width, height), mClearColor(DEFAULT_CLEAR_COLOR), mRequiresColorClear(true), 
-		 mRequiresDepthClear(true), mRequiresStencilClear(false), mStencilClearValue(0), mDepthClearValue(1.0f)
+		: mNormArea(x, y, width, height), mRequiresColorClear(true), mRequiresDepthClear(true)
+		, mRequiresStencilClear(false), mClearColor(DEFAULT_CLEAR_COLOR), mDepthClearValue(1.0f), mStencilClearValue(0)
     {
 
     }

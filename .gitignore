@@ -13,3 +13,4 @@ Documentation/html
 *.aps
 *.opendb
 /Build/VS2015/BansheeEngine.VC.db
+/Build/Generated

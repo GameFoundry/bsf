@@ -35,7 +35,9 @@ documentation and/or software.
 #ifndef BZF_MD5_H
 #define BZF_MD5_H
 
+#if !defined(_CRT_SECURE_NO_WARNINGS)
 #define _CRT_SECURE_NO_WARNINGS
+#endif
 
 #include <cstring>
 #include <iostream>

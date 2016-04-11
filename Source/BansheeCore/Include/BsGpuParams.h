@@ -128,33 +128,32 @@ namespace BansheeEngine
 		bool mTransposeMatrices;
 	};
 
+	template<bool Core> struct TGpuParamsTypes { };
+	template<> struct TGpuParamsTypes < false >
+	{
+		typedef GpuParams GpuParamsType;
+		typedef HTexture TextureType;
+		typedef SPtr<SamplerState> SamplerType;
+		typedef SPtr<GpuParamBlockBuffer> ParamsBufferType;
+	};
+
+	template<> struct TGpuParamsTypes < true >
+	{
+		typedef GpuParamsCore GpuParamsType;
+		typedef SPtr<TextureCore> TextureType;
+		typedef SPtr<SamplerStateCore> SamplerType;
+		typedef SPtr<GpuParamBlockBufferCore> ParamsBufferType;
+	};
+
 	/** Templated version of GpuParams that contains functionality for both sim and core thread versions of stored data. */
 	template <bool Core>
 	class BS_CORE_EXPORT TGpuParams : public GpuParamsBase
 	{
 	public:
-		template<bool Core> struct TTypes { };
-
-		template<> struct TTypes < false > 
-		{ 
-			typedef GpuParams GpuParamsType; 
-			typedef HTexture TextureType;
-			typedef SPtr<SamplerState> SamplerType;
-			typedef SPtr<GpuParamBlockBuffer> ParamsBufferType;
-		};
-
-		template<> struct TTypes < true > 
-		{ 
-			typedef GpuParamsCore GpuParamsType;
-			typedef SPtr<TextureCore> TextureType;
-			typedef SPtr<SamplerStateCore> SamplerType;
-			typedef SPtr<GpuParamBlockBufferCore> ParamsBufferType;
-		};
-
-		typedef typename TTypes<Core>::GpuParamsType GpuParamsType;
-		typedef typename TTypes<Core>::TextureType TextureType;
-		typedef typename TTypes<Core>::SamplerType SamplerType;
-		typedef typename TTypes<Core>::ParamsBufferType ParamsBufferType;
+		typedef typename TGpuParamsTypes<Core>::GpuParamsType GpuParamsType;
+		typedef typename TGpuParamsTypes<Core>::TextureType TextureType;
+		typedef typename TGpuParamsTypes<Core>::SamplerType SamplerType;
+		typedef typename TGpuParamsTypes<Core>::ParamsBufferType ParamsBufferType;
 
 		TGpuParams(const SPtr<GpuParamDesc>& paramDesc, bool transposeMatrices);
 

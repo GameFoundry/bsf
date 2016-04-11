@@ -351,9 +351,9 @@ namespace BansheeEngine
 				StringUtil::toLowerCase(tmpPattern);
 			}
 
-			BasicString<T>::const_iterator strIt = tmpStr.begin();
-			BasicString<T>::const_iterator patIt = tmpPattern.begin();
-			BasicString<T>::const_iterator lastWildCardIt = tmpPattern.end();
+			typename BasicString<T>::const_iterator strIt = tmpStr.begin();
+			typename BasicString<T>::const_iterator patIt = tmpPattern.begin();
+			typename BasicString<T>::const_iterator lastWildCardIt = tmpPattern.end();
 			while (strIt != tmpStr.end() && patIt != tmpPattern.end())
 			{
 				if (*patIt == '*')
@@ -411,7 +411,7 @@ namespace BansheeEngine
 			const BasicString<T>& replaceWhat, const BasicString<T>& replaceWithWhat)
 		{
 			BasicString<T> result = source;
-			BasicString<T>::size_type pos = 0;
+			typename BasicString<T>::size_type pos = 0;
 			while(1)
 			{
 				pos = result.find(replaceWhat,pos);

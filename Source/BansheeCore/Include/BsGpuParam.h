@@ -30,6 +30,46 @@ namespace BansheeEngine
 	template<> struct TGpuParamSamplerStateType < false > { typedef SPtr<SamplerState> Type; };
 	template<> struct TGpuParamSamplerStateType < true > { typedef SPtr<SamplerStateCore> Type; };
 
+	template<bool Core> struct TGpuParamBufferType { };
+	template<> struct TGpuParamBufferType < false > { typedef SPtr<GpuParamBlockBuffer> Type; };
+	template<> struct TGpuParamBufferType < true > { typedef SPtr<GpuParamBlockBufferCore> Type; };
+
+	/**
+	 * Policy class that allows us to re-use this template class for matrices which might need transposing, and other 
+	 * types which do not. Matrix needs to be transposed for certain render systems depending on how they store them 
+	 * in memory.
+	 */
+	template<class Type>
+	struct TransposePolicy
+	{
+		static Type transpose(const Type& value) { return value; }
+		static bool transposeEnabled(bool enabled) { return false; }
+	};
+
+	/** Transpose policy for 3x3 matrix. */
+	template<>
+	struct TransposePolicy<Matrix3>
+	{
+		static Matrix3 transpose(const Matrix3& value) { return value.transpose(); }
+		static bool transposeEnabled(bool enabled) { return enabled; }
+	};
+
+	/**	Transpose policy for 4x4 matrix. */
+	template<>
+	struct TransposePolicy<Matrix4>
+	{
+		static Matrix4 transpose(const Matrix4& value) { return value.transpose(); }
+		static bool transposeEnabled(bool enabled) { return enabled; }
+	};
+
+	/**	Transpose policy for NxM matrix. */
+	template<int N, int M>
+	struct TransposePolicy<MatrixNxM<N, M>>
+	{
+		static MatrixNxM<N, M> transpose(const MatrixNxM<N, M>& value) { return value.transpose(); }
+		static bool transposeEnabled(bool enabled) { return enabled; }
+	};
+
 	/**
 	 * A handle that allows you to set a GpuProgram parameter. Internally keeps a reference to the GPU parameter buffer and
 	 * the necessary offsets. You should specialize this type for specific parameter types. 
@@ -50,48 +90,8 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT TGpuDataParam
 	{
 	private:
-		template<bool Core> struct TGpuParamBufferType { };
-		template<> struct TGpuParamBufferType < false > { typedef SPtr<GpuParamBlockBuffer> Type; };
-		template<> struct TGpuParamBufferType < true > { typedef SPtr<GpuParamBlockBufferCore> Type; };
-
 		typedef typename TGpuParamBufferType<Core>::Type GpuParamBufferType;
 		typedef typename TGpuParamsPtrType<Core>::Type GpuParamsType;
-
-		/**
-		 * Policy class that allows us to re-use this template class for matrices which might need transposing, and other 
-		 * types which do not. Matrix needs to be transposed for certain render systems depending on how they store them 
-		 * in memory.
-		 */
-		template<class Type>
-		struct TransposePolicy
-		{
-			static Type transpose(const Type& value) { return value; }
-			static bool transposeEnabled(bool enabled) { return false; }
-		};
-
-		/** Transpose policy for 3x3 matrix. */
-		template<>
-		struct TransposePolicy<Matrix3>
-		{
-			static Matrix3 transpose(const Matrix3& value) { return value.transpose(); }
-			static bool transposeEnabled(bool enabled) { return enabled; }
-		};
-
-		/**	Transpose policy for 4x4 matrix. */
-		template<>
-		struct TransposePolicy<Matrix4>
-		{
-			static Matrix4 transpose(const Matrix4& value) { return value.transpose(); }
-			static bool transposeEnabled(bool enabled) { return enabled; }
-		};
-
-		/**	Transpose policy for NxM matrix. */
-		template<int N, int M>
-		struct TransposePolicy<MatrixNxM<N, M>>
-		{
-			static MatrixNxM<N, M> transpose(const MatrixNxM<N, M>& value) { return value.transpose(); }
-			static bool transposeEnabled(bool enabled) { return enabled; }
-		};
 
 	public:
 		TGpuDataParam();
@@ -130,10 +130,6 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT TGpuParamStruct
 	{
 	public:
-		template<bool Core> struct TGpuParamBufferType { };
-		template<> struct TGpuParamBufferType < false > { typedef SPtr<GpuParamBlockBuffer> Type; };
-		template<> struct TGpuParamBufferType < true > { typedef SPtr<GpuParamBlockBufferCore> Type; };
-
 		typedef typename TGpuParamBufferType<Core>::Type GpuParamBufferType;
 		typedef typename TGpuParamsPtrType<Core>::Type GpuParamsType;
 

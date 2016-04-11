@@ -72,12 +72,13 @@ namespace BansheeEngine
 #if BS_DEBUG_MODE
 		QueuedCommand(std::function<void(AsyncOp&)> _callback, UINT32 _debugId, const SPtr<AsyncOpSyncData>& asyncOpSyncData,
 			bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
-			:callbackWithReturnValue(_callback), debugId(_debugId), returnsValue(true), 
-			notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId), asyncOp(asyncOpSyncData)
+			: debugId(_debugId), callbackWithReturnValue(_callback), asyncOp(asyncOpSyncData), returnsValue(true)
+			, callbackId(_callbackId), notifyWhenComplete(_notifyWhenComplete)
 		{ }
 
 		QueuedCommand(std::function<void()> _callback, UINT32 _debugId, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
-			:callback(_callback), debugId(_debugId), returnsValue(false), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId), asyncOp(AsyncOpEmpty())
+			:debugId(_debugId), callback(_callback), asyncOp(AsyncOpEmpty()), returnsValue(false), callbackId(_callbackId)
+			, notifyWhenComplete(_notifyWhenComplete)
 		{ }
 
 		UINT32 debugId;
@@ -302,14 +303,14 @@ namespace BansheeEngine
 		{
 #if BS_DEBUG_MODE
 #if BS_THREAD_SUPPORT != 0
-			if(!isValidThread(getThreadId()))
+			if(!this->isValidThread(getThreadId()))
 				throwInvalidThreadException("Command queue accessed outside of its creation thread.");
 #endif
 #endif
 
-			lock();
+			this->lock();
 			AsyncOp asyncOp = CommandQueueBase::queueReturn(commandCallback, _notifyWhenComplete, _callbackId);
-			unlock();
+			this->unlock();
 
 			return asyncOp;
 		}
@@ -319,14 +320,14 @@ namespace BansheeEngine
 		{
 #if BS_DEBUG_MODE
 #if BS_THREAD_SUPPORT != 0
-			if(!isValidThread(getThreadId()))
+			if(!this->isValidThread(getThreadId()))
 				throwInvalidThreadException("Command queue accessed outside of its creation thread.");
 #endif
 #endif
 
-			lock();
+			this->lock();
 			CommandQueueBase::queue(commandCallback, _notifyWhenComplete, _callbackId);
-			unlock();
+			this->unlock();
 		}
 
 		/** @copydoc CommandQueueBase::flush */
@@ -334,14 +335,14 @@ namespace BansheeEngine
 		{
 #if BS_DEBUG_MODE
 #if BS_THREAD_SUPPORT != 0
-			if(!isValidThread(getThreadId()))
+			if(!this->isValidThread(getThreadId()))
 				throwInvalidThreadException("Command queue accessed outside of its creation thread.");
 #endif
 #endif
 
-			lock();
+			this->lock();
 			BansheeEngine::Queue<QueuedCommand>* commands = CommandQueueBase::flush();
-			unlock();
+			this->unlock();
 
 			return commands;
 		}
@@ -351,14 +352,14 @@ namespace BansheeEngine
 		{
 #if BS_DEBUG_MODE
 #if BS_THREAD_SUPPORT != 0
-			if(!isValidThread(getThreadId()))
+			if(!this->isValidThread(getThreadId()))
 				throwInvalidThreadException("Command queue accessed outside of its creation thread.");
 #endif
 #endif
 
-			lock();
+			this->lock();
 			CommandQueueBase::cancelAll();
-			unlock();
+			this->unlock();
 		}
 
 		/** @copydoc CommandQueueBase::isEmpty */
@@ -366,14 +367,14 @@ namespace BansheeEngine
 		{
 #if BS_DEBUG_MODE
 #if BS_THREAD_SUPPORT != 0
-			if(!isValidThread(getThreadId()))
+			if(!this->isValidThread(getThreadId()))
 				throwInvalidThreadException("Command queue accessed outside of its creation thread.");
 #endif
 #endif
 
-			lock();
+			this->lock();
 			bool empty = CommandQueueBase::isEmpty();
-			unlock();
+			this->unlock();
 
 			return empty;
 		}

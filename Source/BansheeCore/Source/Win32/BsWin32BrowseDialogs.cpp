@@ -5,7 +5,6 @@
 #include "BsAsyncOp.h"
 #include "BsCoreThread.h"
 #include "Win32/BsWin32Window.h"
-#include <atlbase.h>
 #include <ShObjIdl.h>
 
 using namespace std::placeholders;
@@ -15,7 +14,6 @@ namespace BansheeEngine
 	void addFiltersToDialog(IFileDialog* fileDialog, const WString& filterList)
 	{
 		const wchar_t EMPTY_WSTR[] = L"";
-		const wchar_t WILDCARD[] = L"*.*";
 
 		if (filterList.empty())
 			return;

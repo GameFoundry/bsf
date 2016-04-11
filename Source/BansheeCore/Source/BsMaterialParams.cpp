@@ -262,6 +262,8 @@ namespace BansheeEngine
 		case GetParamResult::IndexOutOfBounds:
 			LOGWRN("Parameter \"" + name + "\" array index " + toString(arrayIdx) + " out of range.");
 			break;
+		default:
+			break;
 		}
 	}
 

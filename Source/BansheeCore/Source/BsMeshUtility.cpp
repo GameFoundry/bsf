@@ -15,7 +15,7 @@ namespace BansheeEngine
 	struct VertexConnectivity
 	{
 		VertexConnectivity(UINT8* indices, UINT32 numVertices, UINT32 numFaces, UINT32 indexSize)
-			:vertexFaces(nullptr), mMaxFacesPerVertex(0), mFaces(nullptr), mNumVertices(numVertices)
+			:vertexFaces(nullptr), mMaxFacesPerVertex(0), mNumVertices(numVertices), mFaces(nullptr)
 		{
 			vertexFaces = bs_newN<VertexFaces>(numVertices);
 

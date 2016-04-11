@@ -105,7 +105,7 @@ namespace BansheeEngine
 	}
 
 	RenderStateCoreManager::RenderStateCoreManager()
-		:mNextBlendStateId(0), mNextDepthStencilStateId(0), mNextRasterizerStateId(0)
+		:mNextBlendStateId(0), mNextRasterizerStateId(0), mNextDepthStencilStateId(0)
 	{
 		
 	}

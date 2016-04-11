@@ -222,8 +222,10 @@ namespace BansheeEngine
 		Storage mBits;
 	};
 
+/** Defines global operators for a Flags<Enum, Storage> implementation. */
 #define BS_FLAGS_OPERATORS(Enum) BS_FLAGS_OPERATORS_EXT(Enum, UINT32)
 
+/** Defines global operators for a Flags<Enum, Storage> implementation. */
 #define BS_FLAGS_OPERATORS_EXT(Enum, Storage)																   \
 		inline Flags<Enum, Storage> operator|(Enum a, Enum b) { Flags<Enum, Storage> r(a); r |= b; return r; } \
 		inline Flags<Enum, Storage> operator&(Enum a, Enum b) { Flags<Enum, Storage> r(a); r &= b; return r; } \

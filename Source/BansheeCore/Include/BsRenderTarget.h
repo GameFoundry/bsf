@@ -38,6 +38,7 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT RenderTargetProperties
 	{
 	public:
+		RenderTargetProperties() { }
 		virtual ~RenderTargetProperties() { }
 
 		/**

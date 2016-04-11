@@ -19,7 +19,7 @@
 #define BS_MUTEX(name) mutable std::mutex name;
 #define BS_STATIC_MUTEX(name) static std::mutex name;
 #define BS_STATIC_MUTEX_INSTANCE(name) std::mutex name;
-#define BS_STATIC_MUTEX_CLASS_INSTANCE(name, classTypeName) std::mutex classTypeName##::name;
+#define BS_STATIC_MUTEX_CLASS_INSTANCE(name, classTypeName) std::mutex classTypeName::name;
 #define BS_LOCK_MUTEX(name) std::unique_lock<std::mutex> bsnameLock(name);
 #define BS_LOCK_MUTEX_NAMED(mutexName, lockName) std::unique_lock<std::mutex> lockName(mutexName);
 #define BS_LOCK_TYPE std::unique_lock<std::mutex>
@@ -31,7 +31,7 @@
 #define BS_MUTEX_CONDITIONAL(mutex) if (mutex)
 #define BS_THREAD_SYNCHRONISER(sync) std::condition_variable sync;
 #define BS_STATIC_THREAD_SYNCHRONISER(sync) static std::condition_variable sync;
-#define BS_STATIC_THREAD_SYNCHRONISER_CLASS_INSTANCE(sync, classTypeName) std::condition_variable classTypeName##::sync;
+#define BS_STATIC_THREAD_SYNCHRONISER_CLASS_INSTANCE(sync, classTypeName) std::condition_variable classTypeName::sync;
 #define BS_THREAD_WAIT(sync, mutex, lock) sync.wait(lock);
 #define BS_THREAD_WAIT_FOR(sync, mutex, lock, ms) sync.wait_for(lock, std::chrono::milliseconds(ms));
 #define BS_THREAD_NOTIFY_ONE(sync) sync.notify_one(); 

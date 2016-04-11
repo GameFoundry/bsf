@@ -98,9 +98,6 @@ namespace BansheeEngine
 
 					RTTIReflectablePtrFieldBase* otherReflectablePtrField = static_cast<RTTIReflectablePtrFieldBase*>(otherField);
 
-					RTTITypeBase* a = myReflectablePtrField->getType();
-					RTTITypeBase* b = otherReflectablePtrField->getType();
-
 					if (myType->getRTTIId() == otherReflectablePtrField->getType()->getRTTIId() &&
 						(myReflectablePtrField->getFlags() & RTTI_Flag_WeakRef) == 0 &&
 						(otherReflectablePtrField->getFlags() & RTTI_Flag_WeakRef) == 0)

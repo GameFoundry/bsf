@@ -28,7 +28,7 @@ namespace BansheeEngine
 	{ }
 
 	TextureView::TextureView(const SPtr<TextureCore>& texture, const TEXTURE_VIEW_DESC& desc)
-		:mOwnerTexture(texture), mDesc(desc)
+		:mDesc(desc), mOwnerTexture(texture)
 	{
 
 	}

@@ -49,7 +49,7 @@ namespace BansheeEngine
 		const String& getRTTIName() override
 		{
 			static String name = "MeshBase";
-			throw name;
+			return name;
 		}
 
 		UINT32 getRTTIId() override

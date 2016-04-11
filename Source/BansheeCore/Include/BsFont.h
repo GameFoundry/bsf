@@ -57,6 +57,8 @@ namespace BansheeEngine
 		static HFont create(const Vector<SPtr<FontBitmap>>& fontInitData);
 
 	public: // ***** INTERNAL ******
+		using Resource::initialize;
+
 		/** @name Internal
 		 *  @{
 		 */

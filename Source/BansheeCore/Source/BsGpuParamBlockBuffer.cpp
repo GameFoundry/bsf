@@ -7,7 +7,7 @@
 namespace BansheeEngine
 {
 	GpuParamBlockBufferCore::GpuParamBlockBufferCore(UINT32 size, GpuParamBlockUsage usage)
-		:mSize(size), mUsage(usage), mCachedData(nullptr), mGPUBufferDirty(false)
+		:mUsage(usage), mSize(size), mCachedData(nullptr), mGPUBufferDirty(false)
 	{
 		if (mSize > 0)
 			mCachedData = (UINT8*)bs_alloc(mSize);
@@ -24,7 +24,7 @@ namespace BansheeEngine
 	void GpuParamBlockBufferCore::write(UINT32 offset, const void* data, UINT32 size)
 	{
 #if BS_DEBUG_MODE
-		if (offset < 0 || (offset + size) > mSize)
+		if ((offset + size) > mSize)
 		{
 			BS_EXCEPT(InvalidParametersException, "Wanted range is out of buffer bounds. " \
 				"Available range: 0 .. " + toString(mSize) + ". " \
@@ -39,7 +39,7 @@ namespace BansheeEngine
 	void GpuParamBlockBufferCore::read(UINT32 offset, void* data, UINT32 size)
 	{
 #if BS_DEBUG_MODE
-		if (offset < 0 || (offset + size) > mSize)
+		if ((offset + size) > mSize)
 		{
 			BS_EXCEPT(InvalidParametersException, "Wanted range is out of buffer bounds. " \
 				"Available range: 0 .. " + toString(mSize) + ". " \
@@ -53,7 +53,7 @@ namespace BansheeEngine
 	void GpuParamBlockBufferCore::zeroOut(UINT32 offset, UINT32 size)
 	{
 #if BS_DEBUG_MODE
-		if (offset < 0 || (offset + size) > mSize)
+		if ((offset + size) > mSize)
 		{
 			BS_EXCEPT(InvalidParametersException, "Wanted range is out of buffer bounds. " \
 				"Available range: 0 .. " + toString(mSize) + ". " \
@@ -87,7 +87,7 @@ namespace BansheeEngine
 	}
 
 	GpuParamBlockBuffer::GpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage)
-		:mSize(size), mUsage(usage), mCachedData(nullptr)
+		:mUsage(usage), mSize(size), mCachedData(nullptr)
 	{
 		if (mSize > 0)
 			mCachedData = (UINT8*)bs_alloc(mSize);
@@ -104,7 +104,7 @@ namespace BansheeEngine
 	void GpuParamBlockBuffer::write(UINT32 offset, const void* data, UINT32 size)
 	{
 #if BS_DEBUG_MODE
-		if (offset < 0 || (offset + size) > mSize)
+		if ((offset + size) > mSize)
 		{
 			BS_EXCEPT(InvalidParametersException, "Wanted range is out of buffer bounds. " \
 				"Available range: 0 .. " + toString(mSize) + ". " \
@@ -119,7 +119,7 @@ namespace BansheeEngine
 	void GpuParamBlockBuffer::read(UINT32 offset, void* data, UINT32 size)
 	{
 #if BS_DEBUG_MODE
-		if (offset < 0 || (offset + size) > mSize)
+		if ((offset + size) > mSize)
 		{
 			BS_EXCEPT(InvalidParametersException, "Wanted range is out of buffer bounds. " \
 				"Available range: 0 .. " + toString(mSize) + ". " \
@@ -133,7 +133,7 @@ namespace BansheeEngine
 	void GpuParamBlockBuffer::zeroOut(UINT32 offset, UINT32 size)
 	{
 #if BS_DEBUG_MODE
-		if (offset < 0 || (offset + size) > mSize)
+		if ((offset + size) > mSize)
 		{
 			BS_EXCEPT(InvalidParametersException, "Wanted range is out of buffer bounds. " \
 				"Available range: 0 .. " + toString(mSize) + ". " \

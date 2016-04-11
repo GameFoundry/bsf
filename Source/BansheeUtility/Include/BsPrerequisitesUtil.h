@@ -150,7 +150,9 @@
 //      - Right now I don't have an easier way to apply these warnings globally so I'm keeping it this way.
 
 // Secure versions aren't multiplatform, so we won't be using them
-#define _CRT_SECURE_NO_WARNINGS
+#if !defined(_CRT_SECURE_NO_WARNINGS)
+	#define _CRT_SECURE_NO_WARNINGS
+#endif
 
 // disable: "<type> needs to have dll-interface to be used by clients'
 // Happens on STL member variables which are not public therefore is ok

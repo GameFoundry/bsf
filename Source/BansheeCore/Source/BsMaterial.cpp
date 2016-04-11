@@ -100,7 +100,6 @@ namespace BansheeEngine
 			// Check regular data params
 			for (auto iter2 = curDesc.params.begin(); iter2 != curDesc.params.end(); ++iter2)
 			{
-				bool isParameterValid = true;
 				const GpuParamDataDesc& curParam = iter2->second;
 
 				auto dataFindIter = validParams.find(iter2->first);
@@ -479,7 +478,7 @@ namespace BansheeEngine
 	}
 
 	template<bool Core>
-	typename TMaterial<Core>::PassType TMaterial<Core>::getPass(UINT32 passIdx) const
+	SPtr<typename TMaterial<Core>::PassType> TMaterial<Core>::getPass(UINT32 passIdx) const
 	{
 		if (passIdx < 0 || passIdx >= mShader->getBestTechnique()->getNumPasses())
 			BS_EXCEPT(InvalidParametersException, "Invalid pass index.");
@@ -694,7 +693,7 @@ namespace BansheeEngine
 
 			for (UINT32 i = 0; i < mBestTechnique->getNumPasses(); i++)
 			{
-				PassType curPass = mBestTechnique->getPass(i);
+				SPtr<PassType> curPass = mBestTechnique->getPass(i);
 				SPtr<PassParamsType> params = SPtr<PassParamsType>(new PassParamsType());
 
 				GpuProgramType vertProgram = curPass->getVertexProgram();
@@ -869,6 +868,8 @@ namespace BansheeEngine
 				}
 			}
 			break;
+			default:
+				break;
 			}
 		}
 
@@ -927,7 +928,7 @@ namespace BansheeEngine
 						if (paramPtr->hasParam(gpuVarName))
 						{
 							gpuParams->push_back(TGpuDataParam<T, Core>());
-							paramPtr->getParam<T>(gpuVarName, gpuParams->back());
+							paramPtr->template getParam<T>(gpuVarName, gpuParams->back());
 						}
 					}
 				}

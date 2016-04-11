@@ -12,13 +12,12 @@ namespace BansheeEngine
 {
 	GpuProgramProperties::GpuProgramProperties(const String& source, const String& entryPoint,
 		GpuProgramType gptype, GpuProgramProfile profile)
-		:mSource(source), mEntryPoint(entryPoint), mType(gptype), mProfile(profile)
+		:mType(gptype), mEntryPoint(entryPoint), mProfile(profile), mSource(source)
 	{ }
 		
 	GpuProgramCore::GpuProgramCore(const String& source, const String& entryPoint,
 		GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired)
-		: mProperties(source, entryPoint, gptype, profile), mIsCompiled(false),
-		mNeedsAdjacencyInfo(isAdjacencyInfoRequired)
+		:mNeedsAdjacencyInfo(isAdjacencyInfoRequired), mIsCompiled(false), mProperties(source, entryPoint, gptype, profile)
 	{
 		mParametersDesc = bs_shared_ptr_new<GpuParamDesc>();
 	}
@@ -52,8 +51,8 @@ namespace BansheeEngine
 
 	GpuProgram::GpuProgram(const String& source, const String& entryPoint, const String& language,
 		GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired) 
-		: mProperties(source, entryPoint, gptype, profile), mLanguage(language),
-		 mNeedsAdjacencyInfo(isAdjacencyInfoRequired)
+		: mNeedsAdjacencyInfo(isAdjacencyInfoRequired), mLanguage(language)
+		, mProperties(source, entryPoint, gptype, profile)
     {
 
     }

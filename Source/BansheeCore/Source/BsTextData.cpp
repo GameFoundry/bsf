@@ -161,7 +161,6 @@ namespace BansheeEngine
 	{
 		UINT32 charWidth = 0;
 
-		UINT32 word = mWordsEnd;
 		if (!mIsEmpty)
 		{
 			TextWord& lastWord = MemBuffer->WordBuffer[mWordsEnd];
@@ -349,8 +348,8 @@ namespace BansheeEngine
 	}
 
 	TextDataBase::TextDataBase(const WString& text, const HFont& font, UINT32 fontSize, UINT32 width, UINT32 height, bool wordWrap, bool wordBreak)
-		:mFont(font), mChars(nullptr), mFontData(nullptr),
-		mNumChars(0), mWords(nullptr), mNumWords(0), mLines(nullptr), mNumLines(0), mPageInfos(nullptr), mNumPageInfos(0)
+		: mChars(nullptr), mNumChars(0), mWords(nullptr), mNumWords(0), mLines(nullptr), mNumLines(0), mPageInfos(nullptr)
+		, mNumPageInfos(0), mFont(font), mFontData(nullptr)
 	{
 		// In order to reduce number of memory allocations algorithm first calculates data into temporary buffers and then copies the results
 		initAlloc();
@@ -540,7 +539,7 @@ namespace BansheeEngine
 
 		dataPtr += lineArraySize;
 		mPageInfos = (PageInfo*)dataPtr;
-		memcpy(mPageInfos, &MemBuffer->PageBuffer[0], pageInfoArraySize);
+		memcpy((void*)mPageInfos, (void*)&MemBuffer->PageBuffer[0], pageInfoArraySize);
 
 		if (freeTemporary)
 			MemBuffer->deallocAll();
@@ -572,7 +571,7 @@ namespace BansheeEngine
 			MemBuffer = bs_new<BufferData>();
 	}
 
-	TextDataBase::BufferData* TextDataBase::MemBuffer = nullptr;
+	BS_THREADLOCAL TextDataBase::BufferData* TextDataBase::MemBuffer = nullptr;
 
 	TextDataBase::BufferData::BufferData()
 	{
@@ -645,7 +644,7 @@ namespace BansheeEngine
 		{
 			UINT32 newBufferSize = PageBufferSize * 2;
 			PageInfo* newBuffer = bs_newN<PageInfo>(newBufferSize);
-			memcpy(PageBuffer, newBuffer, PageBufferSize);
+			memcpy((void*)PageBuffer, (void*)newBuffer, PageBufferSize);
 
 			bs_deleteN(PageBuffer, PageBufferSize);
 			PageBuffer = newBuffer;

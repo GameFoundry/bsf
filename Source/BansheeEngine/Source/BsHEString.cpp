@@ -13,8 +13,8 @@ namespace BansheeEngine
 		
 	}
 
-	HEString::HEString(const WString& identifier, const WString& default)
-		: mInternal(identifier, default, ENGINE_STRING_TABLE_ID)
+	HEString::HEString(const WString& identifier, const WString& defaultString)
+		: mInternal(identifier, defaultString, ENGINE_STRING_TABLE_ID)
 	{
 		
 	}

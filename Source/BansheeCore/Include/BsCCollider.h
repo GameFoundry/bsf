@@ -116,6 +116,8 @@ namespace BansheeEngine
 		void onTransformChanged(TransformChangedFlags flags) override;
 
     protected:
+		using Component::destroyInternal;
+
 		/** Creates the internal representation of the Collider for use by the component. */
 		virtual SPtr<Collider> createInternal() = 0;
 

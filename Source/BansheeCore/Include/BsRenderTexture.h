@@ -136,7 +136,7 @@ namespace BansheeEngine
 		virtual ~RenderTextureCore();
 
 		/** @copydoc CoreObjectCore::initialize */
-		virtual void initialize();
+		virtual void initialize() override;
 
 		/** @copydoc TextureCoreManager::createRenderTexture(const RENDER_TEXTURE_CORE_DESC&) */
 		static SPtr<RenderTextureCore> create(const RENDER_TEXTURE_CORE_DESC& desc);

@@ -18,7 +18,7 @@ namespace BansheeEngine
 
 	template<class T, bool Core>
 	TGpuDataParam<T, Core>::TGpuDataParam(GpuParamDataDesc* paramDesc, const GpuParamsType& parent)
-		:mParamDesc(paramDesc), mParent(parent)
+		:mParent(parent), mParamDesc(paramDesc)
 	{ }
 
 	template<class T, bool Core>
@@ -97,7 +97,7 @@ namespace BansheeEngine
 
 	template<bool Core>
 	TGpuParamStruct<Core>::TGpuParamStruct(GpuParamDataDesc* paramDesc, const GpuParamsType& parent)
-		:mParamDesc(paramDesc), mParent(parent)
+		:mParent(parent), mParamDesc(paramDesc)
 	{ }
 
 	template<bool Core>
@@ -186,7 +186,7 @@ namespace BansheeEngine
 
 	template<bool Core>
 	TGpuParamTexture<Core>::TGpuParamTexture(GpuParamObjectDesc* paramDesc, const GpuParamsType& parent)
-		:mParamDesc(paramDesc), mParent(parent)
+		:mParent(parent), mParamDesc(paramDesc)
 	{ }
 
 	template<bool Core>
@@ -218,7 +218,7 @@ namespace BansheeEngine
 
 	template<bool Core>
 	TGpuParamLoadStoreTexture<Core>::TGpuParamLoadStoreTexture(GpuParamObjectDesc* paramDesc, const GpuParamsType& parent)
-		:mParamDesc(paramDesc), mParent(parent)
+		:mParent(parent), mParamDesc(paramDesc)
 	{ }
 
 	template<bool Core>
@@ -251,7 +251,7 @@ namespace BansheeEngine
 
 	template<bool Core>
 	TGpuParamSampState<Core>::TGpuParamSampState(GpuParamObjectDesc* paramDesc, const GpuParamsType& parent)
-		:mParamDesc(paramDesc), mParent(parent)
+		:mParent(parent), mParamDesc(paramDesc)
 	{ }
 
 	template<bool Core>

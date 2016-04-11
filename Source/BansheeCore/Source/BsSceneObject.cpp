@@ -15,10 +15,10 @@
 namespace BansheeEngine
 {
 	SceneObject::SceneObject(const String& name, UINT32 flags)
-		:GameObject(), mPosition(Vector3::ZERO), mRotation(Quaternion::IDENTITY), mScale(Vector3::ONE),
-		mWorldPosition(Vector3::ZERO), mWorldRotation(Quaternion::IDENTITY), mWorldScale(Vector3::ONE),
-		mCachedLocalTfrm(Matrix4::IDENTITY), mDirtyFlags(0xFFFFFFFF), mCachedWorldTfrm(Matrix4::IDENTITY), 
-		mActiveSelf(true), mActiveHierarchy(true), mDirtyHash(0), mFlags(flags), mPrefabHash(0)
+		: GameObject(), mPrefabHash(0), mFlags(flags), mPosition(Vector3::ZERO), mRotation(Quaternion::IDENTITY)
+		, mScale(Vector3::ONE), mWorldPosition(Vector3::ZERO), mWorldRotation(Quaternion::IDENTITY)
+		, mWorldScale(Vector3::ONE), mCachedLocalTfrm(Matrix4::IDENTITY), mCachedWorldTfrm(Matrix4::IDENTITY)
+		, mDirtyFlags(0xFFFFFFFF), mDirtyHash(0), mActiveSelf(true), mActiveHierarchy(true)
 	{
 		setName(name);
 	}
@@ -554,7 +554,7 @@ namespace BansheeEngine
 
 	HSceneObject SceneObject::getChild(UINT32 idx) const
 	{
-		if(idx < 0 || idx >= mChildren.size())
+		if(idx >= mChildren.size())
 		{
 			BS_EXCEPT(InternalErrorException, "Child index out of range.");
 		}

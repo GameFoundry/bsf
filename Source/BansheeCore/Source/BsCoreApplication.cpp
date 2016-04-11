@@ -49,8 +49,8 @@
 namespace BansheeEngine
 {
 	CoreApplication::CoreApplication(START_UP_DESC desc)
-		:mPrimaryWindow(nullptr), mIsFrameRenderingFinished(true), mRunMainLoop(false), mLastFrameTime(0),
-		mRendererPlugin(nullptr), mSimThreadId(BS_THREAD_CURRENT_ID), mStartUpDesc(desc), mFrameStep(16666)
+		: mPrimaryWindow(nullptr), mStartUpDesc(desc), mFrameStep(16666), mLastFrameTime(0), mRendererPlugin(nullptr)
+		, mIsFrameRenderingFinished(true), mSimThreadId(BS_THREAD_CURRENT_ID), mRunMainLoop(false)
 	{ }
 
 	CoreApplication::~CoreApplication()

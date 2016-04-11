@@ -10,7 +10,7 @@ namespace BansheeEngine
 	const Language StringTable::DEFAULT_LANGUAGE = Language::EnglishUS;
 
 	LocalizedStringData::LocalizedStringData()
-		:parameterOffsets(nullptr), numParameters(0)
+		:numParameters(0), parameterOffsets(nullptr)
 	{
 
 	}

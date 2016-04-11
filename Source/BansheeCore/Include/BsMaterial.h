@@ -6,6 +6,7 @@
 #include "BsResource.h"
 #include "BsIResourceListener.h"
 #include "BsMaterialParam.h"
+#include "BsTechnique.h"
 #include "BsVector2.h"
 #include "BsVector3.h"
 #include "BsVector4.h"
@@ -59,14 +60,6 @@ namespace BansheeEngine
 		GpuParamsType mComputeParams;
 	};
 
-	template<bool Core> struct TGpuParamBlockBufferPtrType { };
-	template<> struct TGpuParamBlockBufferPtrType<false> { typedef SPtr<GpuParamBlockBuffer> Type; };
-	template<> struct TGpuParamBlockBufferPtrType<true> { typedef SPtr<GpuParamBlockBufferCore> Type; };
-
-	template<bool Core> struct TGpuProgramType { };
-	template<> struct TGpuProgramType<false> { typedef SPtr<GpuProgram> Type; };
-	template<> struct TGpuProgramType<true> { typedef SPtr<GpuProgramCore> Type; };
-
 	/** Contains sim thread pass parameters for each shader stage. */
 	class BS_CORE_EXPORT PassParameters : public TPassParameters<false>
 	{
@@ -81,6 +74,26 @@ namespace BansheeEngine
 		static const UINT32 NUM_PARAMS;
 	};
 
+	template<bool Core> struct TGpuParamBlockBufferPtrType { };
+	template<> struct TGpuParamBlockBufferPtrType<false> { typedef SPtr<GpuParamBlockBuffer> Type; };
+	template<> struct TGpuParamBlockBufferPtrType<true> { typedef SPtr<GpuParamBlockBufferCore> Type; };
+
+	template<bool Core> struct TGpuProgramType { };
+	template<> struct TGpuProgramType<false> { typedef SPtr<GpuProgram> Type; };
+	template<> struct TGpuProgramType<true> { typedef SPtr<GpuProgramCore> Type; };
+
+	template<bool Core> struct TShaderType {};
+	template<> struct TShaderType < false > { typedef HShader Type; };
+	template<> struct TShaderType < true > { typedef SPtr<ShaderCore> Type; };
+
+	template<bool Core> struct TGpuParamBlockBufferType {};
+	template<> struct TGpuParamBlockBufferType < false > { typedef GpuParamBlockBuffer Type; };
+	template<> struct TGpuParamBlockBufferType < true > { typedef GpuParamBlockBufferCore Type; };
+
+	template<bool Core> struct TPassParamsType {};
+	template<> struct TPassParamsType < false > { typedef PassParameters Type; };
+	template<> struct TPassParamsType < true > { typedef PassParametersCore Type; };
+
 	/**
 	 * Material that controls how objects are rendered. It is represented by a shader and parameters used to set up that
 	 * shader. It provides a simple interface for manipulating the parameters.
@@ -92,13 +105,15 @@ namespace BansheeEngine
 		struct StructData
 		{
 			StructData()
-				:size(0), data(nullptr)
+				:data(nullptr), size(0)
 			{ }
+
+
 
 			StructData(UINT32 _size)
 				:size(_size)
 			{
-				data = SPtr<void>(bs_alloc(_size), &bs_free);
+				data = std::shared_ptr<void>(bs_alloc(_size), (void(*)(void*))&bs_free);
 			}
 
 			/**
@@ -113,6 +128,7 @@ namespace BansheeEngine
 			UINT32 size;
 		};
 
+		MaterialBase() { }
 		virtual ~MaterialBase() { }
 
 	protected:
@@ -143,26 +159,6 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT TMaterial : public MaterialBase
 	{
 	public:
-		template<bool Core> struct TPassType {};
-		template<> struct TPassType < false > { typedef SPtr<Pass> Type; };
-		template<> struct TPassType < true > { typedef SPtr<PassCore> Type; };
-
-		template<bool Core> struct TTechniqueType {};
-		template<> struct TTechniqueType < false > { typedef SPtr<Technique> Type; };
-		template<> struct TTechniqueType < true > { typedef SPtr<TechniqueCore> Type; };
-
-		template<bool Core> struct TShaderType {};
-		template<> struct TShaderType < false > { typedef HShader Type; };
-		template<> struct TShaderType < true > { typedef SPtr<ShaderCore> Type; };
-
-		template<bool Core> struct TGpuParamBlockBufferType {};
-		template<> struct TGpuParamBlockBufferType < false > { typedef GpuParamBlockBuffer Type; };
-		template<> struct TGpuParamBlockBufferType < true > { typedef GpuParamBlockBufferCore Type; };
-
-		template<bool Core> struct TPassParamsType {};
-		template<> struct TPassParamsType < false > { typedef PassParameters Type; };
-		template<> struct TPassParamsType < true > { typedef PassParametersCore Type; };
-
 		typedef typename TGpuParamsPtrType<Core>::Type GpuParamsType;
 		typedef typename TGpuParamTextureType<Core>::Type TextureType;
 		typedef typename TGpuParamSamplerStateType<Core>::Type SamplerStateType;
@@ -174,6 +170,7 @@ namespace BansheeEngine
 		typedef typename TShaderType<Core>::Type ShaderType;
 		typedef typename TPassParamsType<Core>::Type PassParamsType;
 
+		TMaterial() { }
 		virtual ~TMaterial() { }
 
 		/** Returns the currently active shader. */
@@ -183,7 +180,7 @@ namespace BansheeEngine
 		UINT32 getNumPasses() const;
 
 		/** Retrieves a specific shader pass. */
-		PassType getPass(UINT32 passIdx) const;
+		SPtr<PassType> getPass(UINT32 passIdx) const;
 
 		/**   
 		 * Assigns a float value to the shader parameter with the specified name. 
@@ -658,7 +655,7 @@ namespace BansheeEngine
 
 		Vector<SPtr<PassParamsType>> mParametersPerPass;
 		ShaderType mShader;
-		TechniqueType mBestTechnique;
+		SPtr<TechniqueType> mBestTechnique;
 	};
 
 	/** @} */
@@ -724,7 +721,7 @@ namespace BansheeEngine
 		void initialize() override;
 
 		/** Creates a deep copy of the material and returns the new object. */
-		HMaterial Material::clone();
+		HMaterial clone();
 
 		/**
 		 * Creates a new empty material.

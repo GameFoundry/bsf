@@ -12,7 +12,7 @@ namespace BansheeEngine
 	{
 	public:
 		NullProgramCore()
-			:GpuProgramCore("", "", GPT_VERTEX_PROGRAM, GPP_NONE, nullptr)
+			:GpuProgramCore("", "", GPT_VERTEX_PROGRAM, GPP_NONE, false)
 		{ }
 
 		~NullProgramCore() { }

@@ -91,6 +91,7 @@ namespace BansheeEngine
 
     protected:
 		friend class CRigidbody;
+		using Component::destroyInternal;
 
 		/** Creates the internal representation of the Joint for use by the component. */
 		virtual SPtr<Joint> createInternal() = 0;

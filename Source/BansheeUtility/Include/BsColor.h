@@ -228,10 +228,10 @@ namespace BansheeEngine
 
             float fInv = 1.0f / rhs;
 
-            r *= rhs;
-            g *= rhs;
-            b *= rhs;
-            a *= rhs;
+            r *= fInv;
+            g *= fInv;
+            b *= fInv;
+            a *= fInv;
 
             return *this;
         }

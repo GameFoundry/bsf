@@ -24,6 +24,13 @@ namespace BansheeEngine
 	{
 		assert(groupA < CollisionMapSize && groupB < CollisionMapSize);
 
+		enum class MyFlag
+		{
+			Flag1 = 1 << 0,
+			Flag2 = 1 << 1,
+			Flag3 = 1 << 2
+		};
+
 		BS_LOCK_MUTEX(mMutex);
 		return mCollisionMap[groupA][groupB];
 	}

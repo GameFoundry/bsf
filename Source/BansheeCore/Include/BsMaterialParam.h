@@ -35,7 +35,7 @@ namespace BansheeEngine
 
 	/** @copydoc TMaterialDataParam */
 	template<class T>
-	class BS_CORE_EXPORT TMaterialDataParam<T, false>
+	class TMaterialDataParam<T, false>
 	{
 	public:
 		TMaterialDataParam(const String& name, const SPtr<MaterialParams>& params, 
@@ -57,7 +57,7 @@ namespace BansheeEngine
 
 	/** @copydoc TMaterialDataParam */
 	template<class T>
-	class BS_CORE_EXPORT TMaterialDataParam<T, true>
+	class TMaterialDataParam<T, true>
 	{
 	public:
 		TMaterialDataParam(const SPtr<Vector<TGpuDataParam<T, true>>>& params);

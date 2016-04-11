@@ -153,7 +153,7 @@ namespace BansheeEngine
 			GpuProgramType gptype, GpuProgramProfile profile, bool isAdjacencyInfoRequired = false);
 
 		/** @copydoc CoreObject::createCore */
-		SPtr<CoreObjectCore> createCore() const;
+		SPtr<CoreObjectCore> createCore() const override;
 
 	protected:
 		bool mNeedsAdjacencyInfo;
