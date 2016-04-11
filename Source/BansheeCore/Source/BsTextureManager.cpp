@@ -124,6 +124,14 @@ namespace BansheeEngine
 		TextureCore::NORMAL = normalTexture;
     }
 
+	void TextureCoreManager::onShutDown()
+    {
+		// Need to make sure these are freed while still on the core thread
+		TextureCore::WHITE = nullptr;
+		TextureCore::BLACK = nullptr;
+		TextureCore::NORMAL = nullptr;
+    }
+
 	SPtr<TextureCore> TextureCoreManager::createTexture(TextureType texType, UINT32 width, UINT32 height, UINT32 depth,
 		int numMips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount)
 	{

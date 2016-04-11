@@ -112,6 +112,9 @@ namespace BansheeEngine
 		/** @copydoc Module::onStartUp */
 		void onStartUp() override;
 
+		/** @copydoc Module::onShutDown */
+		void onShutDown() override;
+
 		/**
 		 * @copydoc	TextureManager::createTexture(TextureType, UINT32, UINT32, UINT32, int, PixelFormat, int, bool, UINT32)
 		 */
