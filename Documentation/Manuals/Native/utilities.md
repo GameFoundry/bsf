@@ -171,7 +171,7 @@ Conversion between various types (like int, float, bool, etc.) and string is pro
 
 # Threading {#utilities_i}
 ## Primitives {#utilities_i_a}
-The primitives perform the most basic operations related to threading. All threading primitives use the standard C++ library constructs, so for more information you should read their documentation.
+This section describes the most basic primitives you can use to manipulate threads. All threading primitives use the standard C++ library constructs, so for more information you should read their documentation.
 
 ### Thread {#utilities_i_a_a}
 To create a new thread use @ref BansheeEngine::Thread "Thread", like so:
@@ -230,6 +230,9 @@ void workerFunc()
 	signal.notify_all();
 }
 
+// Start executing workerFunc
+Thread myThread(&workerFunc);
+
 // Wait until the signal is triggered, or until isReady is set to true, whichever comes first
 Lock lock(mutex);
 if(!isReady)
@@ -243,7 +246,7 @@ The previous sections covered all the primitives, but there is some more useful 
  - @ref BS_THREAD_SLEEP - Pauses the current thread for a set number of milliseconds.
 
 ## Thread pool {#utilities_i_b}
-Instead of using thread primitive described in the previous section, you should instead use @ref BansheeEngine::ThreadPool "ThreadPool" for running threads. @ref BansheeEngine::ThreadPool "ThreadPool" allows you to re-use threads and avoid paying the cost of thread creation and destruction. It keeps any thread that was retired in idle state, and will re-use it when user requests a new thread.
+Instead of using @ref BansheeEngine::Thread "Thread" as described in the previous section, you should instead use @ref BansheeEngine::ThreadPool "ThreadPool" for running threads. @ref BansheeEngine::ThreadPool "ThreadPool" allows you to re-use threads and avoid paying the cost of thread creation and destruction. It keeps any thread that was retired in idle state, and will re-use it when user requests a new thread.
 
 An example:
 ~~~~~~~~~~~~~{.cpp}
@@ -256,25 +259,219 @@ ThreadPool::instance().run("MyThread", &workerFunc);
 ~~~~~~~~~~~~~
 
 ## Task scheduler {#utilities_i_c}
+@ref BansheeEngine::TaskScheduler "TaskScheduler" allows even more fine grained control over threads. It ensures there are only as many threads as the number of logical CPU cores. This ensures good thread distribution accross the cores, so that multiple threads don't fight for resources on the same core.
+
+It accomplishes that by storing each worker function as a @ref BansheeEngine::Task "Task". It then dispatches tasks to threads that are free. In case tasks are dependant on one another you may also provide task dependencies, as well as task priorities.
+
+An example:
+~~~~~~~~~~~~~{.cpp}
+void workerFunc()
+{
+	// This runs on another thread
+}
+
+// Create a task with no dependency and normal priority
+SPtr<Task> task = Task::create("MyTask", &workerFunc);
+TaskScheduler::instance().addTask(task);
+~~~~~~~~~~~~~
 
 # Math {#utilities_j}
-// Math, Vector, Matrix
+Majority of the math related functionality is located in the @ref BansheeEngine::Math "Math" class. 
+
+Some other useful math classes are:
+ - @ref BansheeEngine::Vector2 "Vector2"
+ - @ref BansheeEngine::Vector3 "Vector3"
+ - @ref BansheeEngine::Vector4 "Vector4"
+ - @ref BansheeEngine::Matrix3 "Matrix3"
+ - @ref BansheeEngine::Matrix4 "Matrix4"
+ - @ref BansheeEngine::Quaternion "Quaternion"
+ - @ref BansheeEngine::Radian "Radian"
+ - @ref BansheeEngine::Degree "Degree"
+ - @ref BansheeEngine::Ray "Ray"
+ - @ref BansheeEngine::Plane "Plane"
+ - @ref BansheeEngine::Rect2 "Rect2"
+ - @ref BansheeEngine::Rect2I "Rect2I"
+ - @ref BansheeEngine::Vector2I "Vector2I"
 
 # Time {#utilities_k}
-
+To access timing information use the @ref BansheeEngine::Time "Time" module, more easily accessible via @ref BansheeEngine::gTime "gTime" method:
+ - @ref BansheeEngine::Time::getTime "Time::getTime" - Returns time since start-up in seconds, updated once per frame.
+ - @ref BansheeEngine::Time::getFrameDelta "Time::getFrameDelta" - Returns the time between execution of this and last frame.
+ - @ref BansheeEngine::Time::getFrameIdx "Time::getFrameIdx" - Returns a sequential index of the current frame.
+ - @ref BansheeEngine::Time::getTimePrecise "Time::getTimePrecise" - Returns time suitable for precision measurements. Returns time at the exact time it was called, instead of being updated once per frame.
+ 
 # Logging {#utilities_l}
+To report warnings and errors use the @ref BansheeEngine::Debug "Debug" module. Call @ref BansheeEngine::Debug::logDebug "Debug::logDebug", @ref BansheeEngine::Debug::logWarning "Debug::logWarning" and @ref BansheeEngine::Debug::logError "Debug::logError" to log messages. 
+
+Use @ref BansheeEngine::Debug::saveLog "Debug::saveLog" to save a log to the disk in HTML format. Use use @ref BansheeEngine::Debug::getLog "Debug::getLog" to get a @ref BansheeEngine::Log "Log" object you can manually parse.
+
+Macros for common log operations are also provided: @ref LOGDBG, @ref LOGWRN and @ref LOGERR. They're equivalent to the methods above.
 
 # Crash handling {#utilities_m}
+Use the @ref BansheeEngine::CrashHandler "CrashHandler" to report fatal errors. Call @ref BansheeEngine::CrashHandler::reportCrash "CrashHandler::reportCrash" to manually trigger such an error. An error will be logged, a message box with relevant information displayed and the application terminated.
+
+You can also use @ref BS_EXCEPT macro, which internally calls @ref BansheeEngine::CrashHandler::reportCrash "CrashHandler::reportCrash" but automatically adds file/line information.
+
+@ref BansheeEngine::CrashHandler "CrashHandler" also provides @ref BansheeEngine::CrashHandler::getStackTrace "CrashHandler::getStackTrace" that allows you to retrieve a stack trace to the current method.
 
 # Dynamic libraries {#utilities_n}
+Use @ref BansheeEngine::DynLibManager "DynLibManager" to load dynamic libraries (.dll, .so). It has two main methods:
+ - @ref BansheeEngine::DynLibManager::load "DynLibManager::load" - Accepts a file name to the library, and returns the @ref BansheeEngine::DynLib "DynLib" object if the load is successful or null otherwise. 
+ - @ref BansheeEngine::DynLibManager::unload "DynLibManager::unload" - Unloads a previously loaded library.
+ 
+Once the library is loaded you can use the @ref BansheeEngine::DynLib "DynLib" object, and its @ref BansheeEngine::DynLib::getSymbol "DynLib::getSymbol" method to retrieve a function pointer within the dynamic library, and call into it. For example if we wanted to retrieve a function pointer for the `loadPlugin` method:
+~~~~~~~~~~~~~{.cpp}
+// Load library
+DynLib* myLibrary = DynLibManager::instance().load("myPlugin");
+
+// Retrieve function pointer (symbol)
+typedef void* (*LoadPluginFunc)();
+LoadPluginFunc loadPluginFunc = (LoadPluginFunc)myLibrary->getSymbol("loadPlugin");
+
+// Call the function
+loadPluginFunc();
+
+// Assuming we're done, unload the plugin
+DynLibManager::instance().unload(myLibrary);
+~~~~~~~~~~~~~
 
 # Testing {#utilities_o}
+Implement @ref BansheeEngine::TestSuite "TestSuite" to set up unit tests for your application. To register new tests call @ref BS_ADD_TEST. Test is assumed to succeed unless either @ref BS_TEST_ASSERT or @ref BS_TEST_ASSERT_MSG are triggered.
+
+~~~~~~~~~~~~~{.cpp}
+class MyTestSuite : TestSuite
+{
+public:
+	EditorTestSuite()
+	{
+		BS_ADD_TEST(MyTestSuite::myTest);
+	}
+	
+private:
+	void myTest()
+	{
+		BS_TEST_ASSERT_MSG(2 + 2 == 4, "Something really bad is going on.");
+	}
+};
+~~~~~~~~~~~~~
+
+To run all tests create a instance of the @ref BansheeEngine::TestSuite "TestSuite" and run it, like so:
+~~~~~~~~~~~~~{.cpp}
+SPtr<TestSuite> tests = MyTestSuite::create<MyTestSuite>();
+tests->run(ExceptionTestOutput());
+~~~~~~~~~~~~~
+
+When running the test we provide @ref BansheeEngine::ExceptionTestOutput "ExceptionTestOutput" which tells the test runner to terminate the application when a test fails. You can implement your own @ref BansheeEngine::TestOutput "TestOutput" to handle test failure more gracefully.
 
 # Allocators {#utilities_p}
+Banshee allows you to allocate memory in various ways, so you can have fast memory allocations for many situations.
 ## General {#utilities_p_a}
+The most common memory allocation operations are `new`/`delete` or `malloc`/`free`. Banshee provides its own wrappers for these methods as @ref BansheeEngine::bs_new "bs_new"/@ref BansheeEngine::bs_delete "bs_delete" and @ref BansheeEngine::bs_alloc "bs_alloc"/@ref BansheeEngine::bs_free "bs_free". They provide the same functionality but make it possible for Banshee to track memory allocations which can be useful for profiling and debugging. You should always use them instead of the standard ones.
 
-## Frame {#utilities_p_b}
+Use @ref BansheeEngine::bs_newN "bs_newN"/@ref BansheeEngine::bs_deleteN "bs_deleteN" to create and delete arrays of objects.
 
-## Stack {#utilities_p_c}
+~~~~~~~~~~~~~{.cpp}
+UINT8* buffer = (UINT8*)bs_alloc(1024); // Allocate a raw buffer of 1024 bytes.
+Vector2* vector = bs_new<Vector2>(); // Allocate and construct a vector
+Vector2** vectors = bs_newN<Vector2>(5); // Allocate an array of five vectors
+
+// Free and destruct everything
+bs_free(buffer);
+bs_delete(vector);
+bs_deleteN(vectors, 5);
+~~~~~~~~~~~~~
+
+## Stack {#utilities_p_b}
+Stack allocator allows you to allocate memory quickly, usually without a call to the OS memory manager, usually making the allocation only little more expensive than using the internal OS stack. It also allocates memory with zero fragmentation, which can be very important for large applications such as games. Whenever possible you should use this allocator instead of the general purpose allocator.
+
+However it comes with a downside that it can only deallocate memory in the opposite order it was allocated. This usually only makes it suitable for temporary allocations within a single method, where you can guarantee the proper order.
+
+Use @ref BansheeEngine::bs_stack_alloc "bs_stack_alloc" / @ref BansheeEngine::bs_stack_free "bs_stack_free" and @ref BansheeEngine::bs_stack_new "bs_stack_new" / @ref BansheeEngine::bs_stack_delete "bs_stack_delete" to allocate/free memory using the stack allocator.
+
+For example:
+~~~~~~~~~~~~~{.cpp}
+UINT8* buffer = bs_stack_alloc(1024);
+... do something with buffer ...
+UINT8* buffer2 = bs_stack_alloc(512);
+... do something with buffer2 ...
+bs_stack_free(buffer2); // Must free buffer2 first!
+bs_stack_free(buffer);
+~~~~~~~~~~~~~
+
+## Frame {#utilities_p_c}
+Frame allocator is very similar to the stack allocator and it provides the same benefits (it's also very fast and causes no fragmentation). However it has different memory deallocation restrictions which make it usable in more situations than a stack allocator, at the cost of using up more memory.
+
+Frame allocator segments all allocated memory into "frames". These frames are stored in a stack-wise fashion, and must be deallocated in the opposite order they were allocated, similar to how the stack allocator works. The difference is that frame allocator is not able to free memory for individual objects, but only for entire frames.
+
+This releases the restriction that memory must be freed in the order it was allocated, which makes the allocator usable in more situations, but it also means that a lot of memory might be wasted as unused memory will be kept until the entire frame is freed.
+
+Use @ref BansheeEngine::bs_frame_alloc "bs_frame_alloc" / @ref BansheeEngine::bs_frame_free "bs_frame_free" or @ref BansheeEngine::bs_frame_new "bs_frame_new" / @ref BansheeEngine::bs_frame_delete "bs_frame_delete" to allocate/free memory using the frame allocator. Calls to @ref BansheeEngine::bs_frame_free "bs_frame_free" / @ref BansheeEngine::bs_frame_delete "bs_frame_delete" are required even through the frame allocator doesn't process individual deallocations, and this is used primarily for debug purposes.
+
+Use @ref BansheeEngine::bs_frame_mark "bs_frame_mark" to start a new frame. All frame allocations should happen after this call. If you don't call @ref BansheeEngine::bs_frame_mark "bs_frame_mark" a global frame will be used. Once done with your calculations use @ref BansheeEngine::bs_frame_clear "bs_frame_clear" to free all memory in the current frame. The frames have to be released in opposite order they were created.
+
+For example:
+~~~~~~~~~~~~~{.cpp}
+// Mark a new frame
+bs_frame_mark();
+UINT8* buffer = bs_frame_alloc(1024);
+... do something with buffer ...
+UINT8* buffer2 = bs_frame_alloc(512);
+... do something with buffer2 ...
+bs_frame_free(buffer); // Only does some checks in debug mode, doesn't actually free anything
+bs_frame_free(buffer2); // Only does some checks in debug mode, doesn't actually free anything
+bs_frame_clear(); // Frees memory for both buffers
+~~~~~~~~~~~~~
+
+You can also create your own frame allocators by constructing a @ref BansheeEngine::FrameAlloc "FrameAlloc" and calling memory management methods on it directly. This can allow you to use a frame allocator on a more global scope. For example if you are running some complex algorithm involving multiple classes you might create a frame allocator to be used throughout the algorithm, and then just free all the memory at once when the algorithm finishes.
+
+You may also use frame allocator to allocate containers like @ref BansheeEngine::String "String", @ref BansheeEngine::Vector "Vector" or @ref BansheeEngine::Map "Map". Simply mark the frame as in the above example, and then use the following container alternatives: @ref BansheeEngine::String "FrameString", @ref BansheeEngine::FrameVector "FrameVector" or @ref BansheeEngine::FrameMap "FrameMap" (other container types also available). For example:
+
+~~~~~~~~~~~~~{.cpp}
+// Mark a new frame
+bs_frame_mark();
+{
+	FrameVector<UINT8> vector;
+	... populate the vector ... // No dynamic memory allocation cost as with a normal Vector
+} // Block making sure the vector is deallocated before calling bs_frame_clear
+bs_frame_clear(); // Frees memory for the vector
+~~~~~~~~~~~~~
 
 ## Static {#utilities_p_d}
+@ref BansheeEngine::StaticAlloc<BlockSize, MaxDynamicMemory> "Static allocator" is the only specialized type of allocator that is used for permanent allocations. It allows you to pre-allocate a static buffer on the internal stack. It will then use internal stack memory until it runs out, after which it will use normal dynamic allocations. If you can predict a good static buffer size you can guarantee that most of your objects don't allocate any heap memory, while wasting minimum memory on the stack. This kind of allocator is mostly useful when you have many relatively small objects, each of which requires dynamic allocation of a different size.
+
+An example:
+~~~~~~~~~~~~~{.cpp}
+class MyObj
+{
+	StaticAlloc<512> mAlloc; // Ensures that every instance of this object has 512 bytes pre-allocated
+	UINT8* mData = nullptr;
+	
+	MyObj(int size)
+	{
+		// As long as size doesn't go over 512 bytes, no dynamic allocations will be made
+		mData = mAlloc.alloc(size);
+	}
+	
+	~MyObj()
+	{
+		mAlloc.free(mData);
+	}
+}
+
+~~~~~~~~~~~~~
+
+## Shared pointers {#utilities_p_e}
+Use @ref BansheeEngine::SPtr "SPtr" for shared pointers. Internally this is just a wrapper for the standard C++ library `std::shared_ptr`. Use @ref BansheeEngine::bs_shared_ptr_new "bs_shared_ptr_new" to create a new shared pointer, or @ref BansheeEngine::bs_shared_ptr "bs_shared_ptr" to create one from an existing instance.
+
+For example:
+~~~~~~~~~~~~~{.cpp}
+class MyClass() {};
+
+// Create a shared pointer with a new instance of MyClass
+SPtr<MyClass> myObj = bs_shared_ptr_new<MyClass>();
+
+MyClass* myRawObj = bs_new<MyClass>();
+
+// Create a shared pointer with an existing instance of MyClass
+SPtr<MyClass> myObj2 = bs_shared_ptr(myRawObj);
+~~~~~~~~~~~~~
