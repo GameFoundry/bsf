@@ -16,7 +16,7 @@ namespace BansheeEngine
 		mData->mIsCompleted.store(true, std::memory_order_release);
 
 		if (mSyncData != nullptr)
-			BS_THREAD_NOTIFY_ALL(mSyncData->mCondition);
+			mSyncData->mCondition.notify_all();
 	}
 
 	void AsyncOp::_completeOperation() 
@@ -24,7 +24,7 @@ namespace BansheeEngine
 		mData->mIsCompleted.store(true, std::memory_order_release);
 
 		if (mSyncData != nullptr)
-			BS_THREAD_NOTIFY_ALL(mSyncData->mCondition);
+			mSyncData->mCondition.notify_all();
 	}
 
 	void AsyncOp::blockUntilComplete() const
@@ -35,8 +35,8 @@ namespace BansheeEngine
 			return;
 		}
 
-		BS_LOCK_MUTEX_NAMED(mSyncData->mMutex, lock);
+		Lock lock(mSyncData->mMutex);
 		while (!hasCompleted())
-			BS_THREAD_WAIT(mSyncData->mCondition, mSyncData->mMutex, lock);
+			mSyncData->mCondition.wait(lock);
 	}
 }

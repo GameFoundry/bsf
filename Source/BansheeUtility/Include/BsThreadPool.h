@@ -100,11 +100,11 @@ namespace BansheeEngine
 
 		time_t mIdleTime;
 
-		BS_THREAD_TYPE* mThread;
-		BS_MUTEX(mMutex);
-		BS_THREAD_SYNCHRONISER(mStartedCond);
-		BS_THREAD_SYNCHRONISER(mReadyCond);
-		BS_THREAD_SYNCHRONISER(mWorkerEndedCond);
+		Thread* mThread;
+		mutable Mutex mMutex;
+		Signal mStartedCond;
+		Signal mReadyCond;
+		Signal mWorkerEndedCond;
 	};
 
 	/**
@@ -212,7 +212,7 @@ namespace BansheeEngine
 		UINT32 mAge;
 		
 		std::atomic_uint mUniqueId;
-		BS_MUTEX(mMutex);
+		mutable Mutex mMutex;
 	};
 
 	/** @} */

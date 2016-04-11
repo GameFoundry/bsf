@@ -456,7 +456,7 @@ namespace BansheeEngine
 		const String& file, UINT32 line) const
 	{
 		// Win32 debug methods are not thread safe
-		Lock<>(m->mutex);
+		Lock(m->mutex);
 
 		String stackTrace = getStackTrace();
 
@@ -490,7 +490,7 @@ namespace BansheeEngine
 		EXCEPTION_POINTERS* exceptionData = (EXCEPTION_POINTERS*)exceptionDataPtr;
 
 		// Win32 debug methods are not thread safe
-		Lock<>(m->mutex);
+		Lock(m->mutex);
 
 		win32_initPSAPI();
 		win32_loadSymbols();

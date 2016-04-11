@@ -218,21 +218,21 @@ namespace BansheeEngine
 
 	void Platform::setCaptionNonClientAreas(const RenderWindowCore& window, const Vector<Rect2I>& nonClientAreas)
 	{
-		BS_LOCK_MUTEX(mData->mSync);
+		Lock lock(mData->mSync);
 
 		mData->mNonClientAreas[&window].moveAreas = nonClientAreas;
 	}
 
 	void Platform::setResizeNonClientAreas(const RenderWindowCore& window, const Vector<NonClientResizeArea>& nonClientAreas)
 	{
-		BS_LOCK_MUTEX(mData->mSync);
+		Lock lock(mData->mSync);
 
 		mData->mNonClientAreas[&window].resizeAreas = nonClientAreas;
 	}
 
 	void Platform::resetNonClientAreas(const RenderWindowCore& window)
 	{
-		BS_LOCK_MUTEX(mData->mSync);
+		Lock lock(mData->mSync);
 
 		auto iterFind = mData->mNonClientAreas.find(&window);
 
@@ -258,7 +258,7 @@ namespace BansheeEngine
 			mData->mDropTargets.dropTargetsPerWindow[window] = win32DropTarget;
 
 			{
-				BS_LOCK_MUTEX(mData->mSync);
+				Lock lock(mData->mSync);
 				mData->mDropTargets.dropTargetsToInitialize.push_back(win32DropTarget);
 			}
 		}
@@ -288,7 +288,7 @@ namespace BansheeEngine
 				mData->mDropTargets.dropTargetsPerWindow.erase(iterFind);
 
 				{
-					BS_LOCK_MUTEX(mData->mSync);
+					Lock lock(mData->mSync);
 					mData->mDropTargets.dropTargetsToDestroy.push_back(win32DropTarget);
 				}
 			}
@@ -309,7 +309,7 @@ namespace BansheeEngine
 
 	void Platform::_startUp()
 	{
-		BS_LOCK_MUTEX(mData->mSync);
+		Lock lock(mData->mSync);
 
 		if (timeBeginPeriod(1) == TIMERR_NOCANDO)
 		{
@@ -332,7 +332,7 @@ namespace BansheeEngine
 	void Platform::_coreUpdate()
 	{
 		{
-			BS_LOCK_MUTEX(mData->mSync);
+			Lock lock(mData->mSync);
 			if (mData->mRequiresStartUp)
 			{
 				OleInitialize(nullptr);
@@ -342,7 +342,7 @@ namespace BansheeEngine
 		}
 
 		{
-			BS_LOCK_MUTEX(mData->mSync);
+			Lock lock(mData->mSync);
 			for (auto& dropTargetToDestroy : mData->mDropTargets.dropTargetsToDestroy)
 			{
 				dropTargetToDestroy->unregisterWithOS();
@@ -353,7 +353,7 @@ namespace BansheeEngine
 		}
 
 		{
-			BS_LOCK_MUTEX(mData->mSync);
+			Lock lock(mData->mSync);
 			for (auto& dropTargetToInit : mData->mDropTargets.dropTargetsToInitialize)
 			{
 				dropTargetToInit->registerWithOS();
@@ -365,7 +365,7 @@ namespace BansheeEngine
 		_messagePump();
 
 		{
-			BS_LOCK_MUTEX(mData->mSync);
+			Lock lock(mData->mSync);
 			if (mData->mRequiresShutDown)
 			{
 				OleUninitialize();
@@ -376,7 +376,7 @@ namespace BansheeEngine
 
 	void Platform::_shutDown()
 	{
-		BS_LOCK_MUTEX(mData->mSync);
+		Lock lock(mData->mSync);
 
 		timeEndPeriod(1);
 		mData->mRequiresShutDown = true;
@@ -660,7 +660,7 @@ namespace BansheeEngine
 				// to trigger, while the mouse is still in the non-client area of the window.
 				mData->mIsTrackingMouse = false; // TrackMouseEvent ends when this message is received and needs to be re-applied
 
-				BS_LOCK_MUTEX(mData->mSync);
+				Lock lock(mData->mSync);
 
 				if (!onMouseLeftWindow.empty())
 					onMouseLeftWindow(win);

@@ -40,7 +40,7 @@ namespace BansheeEngine
 		shutdownCoreThread();
 
 		{
-			BS_LOCK_MUTEX(mAccessorMutex);
+			Lock lock(mAccessorMutex);
 
 			for(auto& accessor : mAccessors)
 			{
@@ -70,10 +70,10 @@ namespace BansheeEngine
 		mCoreThread = ThreadPool::instance().run("Core", std::bind(&CoreThread::runCoreThread, this));
 		
 		// Need to wait to unsure thread ID is correctly set before continuing
-		BS_LOCK_MUTEX_NAMED(mThreadStartedMutex, lock)
+		Lock lock(mThreadStartedMutex);
 
-		while(!mCoreThreadStarted)
-			BS_THREAD_WAIT(mCoreThreadStartedCondition, mThreadStartedMutex, lock)
+		while (!mCoreThreadStarted)
+			mCoreThreadStartedCondition.wait(lock);
 #else
 		BS_EXCEPT(InternalErrorException, "Attempting to start a core thread but application isn't compiled with thread support.");
 #endif
@@ -86,21 +86,21 @@ namespace BansheeEngine
 		TaskScheduler::instance().removeWorker(); // One less worker because we are reserving one core for this thread
 
 		{
-			BS_LOCK_MUTEX(mThreadStartedMutex);
+			Lock lock(mThreadStartedMutex);
 
 			mCoreThreadStarted = true;
 			mCoreThreadId = BS_THREAD_CURRENT_ID;
 			mSyncedCoreAccessor = bs_new<CoreThreadAccessor<CommandQueueSync>>(BS_THREAD_CURRENT_ID);
 		}
 
-		BS_THREAD_NOTIFY_ONE(mCoreThreadStartedCondition);
+		mCoreThreadStartedCondition.notify_one();
 
 		while(true)
 		{
 			// Wait until we get some ready commands
 			Queue<QueuedCommand>* commands = nullptr;
 			{
-				BS_LOCK_MUTEX_NAMED(mCommandQueueMutex, lock)
+				Lock lock(mCommandQueueMutex);
 
 				while(mCommandQueue->isEmpty())
 				{
@@ -112,7 +112,7 @@ namespace BansheeEngine
 					}
 
 					TaskScheduler::instance().addWorker(); // Do something else while we wait, otherwise this core will be unused
-					BS_THREAD_WAIT(mCommandReadyCondition, mCommandQueueMutex, lock);
+					mCommandReadyCondition.wait(lock);
 					TaskScheduler::instance().removeWorker();
 				}
 
@@ -130,12 +130,12 @@ namespace BansheeEngine
 #if !BS_FORCE_SINGLETHREADED_RENDERING
 
 		{
-			BS_LOCK_MUTEX(mCommandQueueMutex);
+			Lock lock(mCommandQueueMutex);
 			mCoreThreadShutdown = true;
 		}
 
 		// Wake all threads. They will quit after they see the shutdown flag
-		BS_THREAD_NOTIFY_ALL(mCommandReadyCondition);
+		mCommandReadyCondition.notify_all();
 
 		mCoreThreadId = BS_THREAD_CURRENT_ID;
 
@@ -152,7 +152,7 @@ namespace BansheeEngine
 			mAccessor.current->accessor = newAccessor;
 			mAccessor.current->isMain = BS_THREAD_CURRENT_ID == mSimThreadId;
 
-			BS_LOCK_MUTEX(mAccessorMutex);
+			Lock lock(mAccessorMutex);
 			mAccessors.push_back(mAccessor.current);
 		}
 
@@ -169,7 +169,7 @@ namespace BansheeEngine
 		Vector<AccessorContainer*> accessorCopies;
 
 		{
-			BS_LOCK_MUTEX(mAccessorMutex);
+			Lock lock(mAccessorMutex);
 
 			accessorCopies = mAccessors;
 		}
@@ -199,7 +199,7 @@ namespace BansheeEngine
 		AsyncOp op;
 		UINT32 commandId = -1;
 		{
-			BS_LOCK_MUTEX(mCommandQueueMutex);
+			Lock lock(mCommandQueueMutex);
 
 			if(blockUntilComplete)
 			{
@@ -210,7 +210,7 @@ namespace BansheeEngine
 				op = mCommandQueue->queueReturn(commandCallback);
 		}
 
-		BS_THREAD_NOTIFY_ALL(mCommandReadyCondition);
+		mCommandReadyCondition.notify_all();
 
 		if(blockUntilComplete)
 			blockUntilCommandCompleted(commandId);
@@ -224,7 +224,7 @@ namespace BansheeEngine
 
 		UINT32 commandId = -1;
 		{
-			BS_LOCK_MUTEX(mCommandQueueMutex);
+			Lock lock(mCommandQueueMutex);
 
 			if(blockUntilComplete)
 			{
@@ -235,7 +235,7 @@ namespace BansheeEngine
 				mCommandQueue->queue(commandCallback);
 		}
 
-		BS_THREAD_NOTIFY_ALL(mCommandReadyCondition);
+		mCommandReadyCondition.notify_all();
 
 		if(blockUntilComplete)
 			blockUntilCommandCompleted(commandId);
@@ -259,7 +259,7 @@ namespace BansheeEngine
 	void CoreThread::blockUntilCommandCompleted(UINT32 commandId)
 	{
 #if !BS_FORCE_SINGLETHREADED_RENDERING
-		BS_LOCK_MUTEX_NAMED(mCommandNotifyMutex, lock);
+		Lock lock(mCommandNotifyMutex);
 
 		while(true)
 		{
@@ -279,7 +279,7 @@ namespace BansheeEngine
 				break;
 			}
 
-			BS_THREAD_WAIT(mCommandCompleteCondition, mCommandNotifyMutex, lock);
+			mCommandCompleteCondition.wait(lock);
 		}
 #endif
 	}
@@ -287,12 +287,12 @@ namespace BansheeEngine
 	void CoreThread::commandCompletedNotify(UINT32 commandId)
 	{
 		{
-			BS_LOCK_MUTEX(mCommandNotifyMutex);
+			Lock lock(mCommandNotifyMutex);
 
 			mCommandsCompleted.push_back(commandId);
 		}
 
-		BS_THREAD_NOTIFY_ALL(mCommandCompleteCondition);
+		mCommandCompleteCondition.notify_all();
 	}
 
 	CoreThread& gCoreThread()

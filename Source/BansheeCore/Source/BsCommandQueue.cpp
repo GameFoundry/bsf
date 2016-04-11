@@ -8,20 +8,20 @@
 namespace BansheeEngine
 {
 #if BS_DEBUG_MODE
-	CommandQueueBase::CommandQueueBase(BS_THREAD_ID_TYPE threadId)
+	CommandQueueBase::CommandQueueBase(ThreadId threadId)
 		:mMyThreadId(threadId), mMaxDebugIdx(0)
 	{
 		mAsyncOpSyncData = bs_shared_ptr_new<AsyncOpSyncData>();
 		mCommands = bs_new<BansheeEngine::Queue<QueuedCommand>>();
 
 		{
-			BS_LOCK_MUTEX(CommandQueueBreakpointMutex);
+			Lock lock(CommandQueueBreakpointMutex);
 
 			mCommandQueueIdx = MaxCommandQueueIdx++;
 		}
 	}
 #else
-	CommandQueueBase::CommandQueueBase(BS_THREAD_ID_TYPE threadId)
+	CommandQueueBase::CommandQueueBase(ThreadId threadId)
 		:mMyThreadId(threadId)
 	{
 		mAsyncOpSyncData = bs_shared_ptr_new<AsyncOpSyncData>();
@@ -164,7 +164,7 @@ namespace BansheeEngine
 	}
 
 #if BS_DEBUG_MODE
-	BS_STATIC_MUTEX_CLASS_INSTANCE(CommandQueueBreakpointMutex, CommandQueueBase);
+	Mutex CommandQueueBase::CommandQueueBreakpointMutex;
 
 	UINT32 CommandQueueBase::MaxCommandQueueIdx = 0;
 
@@ -186,7 +186,7 @@ namespace BansheeEngine
 
 	void CommandQueueBase::addBreakpoint(UINT32 queueIdx, UINT32 commandIdx)
 	{
-		BS_LOCK_MUTEX(CommandQueueBreakpointMutex);
+		Lock lock(CommandQueueBreakpointMutex);
 
 		SetBreakpoints.insert(QueueBreakpoint(queueIdx, commandIdx));
 	}

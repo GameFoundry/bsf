@@ -121,7 +121,7 @@ namespace BansheeEngine
 		 * Changes the frame allocator owner thread. After the owner thread has changed only allocations from that thread 
 		 * can be made.
 		 */
-		void setOwnerThread(BS_THREAD_ID_TYPE thread);
+		void setOwnerThread(ThreadId thread);
 
 	private:
 		UINT32 mBlockSize;
@@ -132,7 +132,7 @@ namespace BansheeEngine
 		void* mLastFrame;
 
 #if BS_DEBUG_MODE
-		BS_THREAD_ID_TYPE mOwnerThread;
+		ThreadId mOwnerThread;
 #endif
 
 		/**

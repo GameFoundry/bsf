@@ -175,7 +175,7 @@ namespace BansheeEngine
 		mutable Stack<SPtr<TimerQuery>> mFreeTimerQueries;
 		mutable Stack<SPtr<OcclusionQuery>> mFreeOcclusionQueries;
 
-		BS_MUTEX(mMutex);
+		Mutex mMutex;
 	};
 
 	/** @} */

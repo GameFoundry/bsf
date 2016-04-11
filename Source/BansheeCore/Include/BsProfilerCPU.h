@@ -321,7 +321,7 @@ namespace BansheeEngine
 		UINT64 mPreciseSamplingOverheadCycles;
 
 		ProfilerVector<ThreadInfo*> mActiveThreads;
-		BS_MUTEX(mThreadSync);
+		Mutex mThreadSync;
 	};
 
 	/** Profiling entry containing information about a single CPU profiling block containing timing information. */

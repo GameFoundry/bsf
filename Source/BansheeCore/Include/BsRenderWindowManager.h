@@ -76,7 +76,7 @@ namespace BansheeEngine
 		virtual SPtr<RenderWindow> createImpl(RENDER_WINDOW_DESC& desc, UINT32 windowId, const SPtr<RenderWindow>& parentWindow) = 0;
 
 	protected:
-		BS_MUTEX(mWindowMutex);
+		mutable Mutex mWindowMutex;
 		Map<UINT32, RenderWindow*> mWindows;
 
 		RenderWindow* mWindowInFocus;
@@ -122,7 +122,7 @@ namespace BansheeEngine
 		/**	Called by the core thread when window is destroyed. */
 		void windowDestroyed(RenderWindowCore* window);
 
-		BS_MUTEX(mWindowMutex);
+		mutable Mutex mWindowMutex;
 		Vector<RenderWindowCore*> mCreatedWindows;
 		UnorderedSet<RenderWindowCore*> mDirtyProperties;
 		std::atomic_uint mNextWindowId;

@@ -37,7 +37,7 @@ namespace BansheeEngine
 		bool mRequiresStartUp = false;
 		bool mRequiresShutDown = false;
 
-		BS_MUTEX(mSync);
+		Mutex mSync;
 	};
 
 	/** @} */

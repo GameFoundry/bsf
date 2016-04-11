@@ -284,7 +284,7 @@ namespace BansheeEngine
 		bs_free_aligned(block);
 	}
 
-	void FrameAlloc::setOwnerThread(BS_THREAD_ID_TYPE thread)
+	void FrameAlloc::setOwnerThread(ThreadId thread)
 	{
 #if BS_DEBUG_MODE
 		mOwnerThread = thread;

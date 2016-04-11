@@ -69,7 +69,7 @@ namespace BansheeEngine
 
 		Vector<ScriptObjectBase*> mFinalizedObjects[2];
 		UINT32 mFinalizedQueueIdx;
-		BS_MUTEX(mMutex);
+		Mutex mMutex;
 	};
 
 	/** @} */

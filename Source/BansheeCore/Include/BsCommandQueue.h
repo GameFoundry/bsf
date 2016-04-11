@@ -22,7 +22,7 @@ namespace BansheeEngine
 		CommandQueueNoSync() {}
 		virtual ~CommandQueueNoSync() {}
 
-		bool isValidThread(BS_THREAD_ID_TYPE ownerThread) const
+		bool isValidThread(ThreadId ownerThread) const
 		{
 			return BS_THREAD_CURRENT_ID == ownerThread;
 		}
@@ -39,11 +39,11 @@ namespace BansheeEngine
 	{
 	public:
 		CommandQueueSync()
-			:mLock(mCommandQueueMutex, BS_DEFER_LOCK)
+			:mLock(mCommandQueueMutex, std::defer_lock)
 		{ }
 		virtual ~CommandQueueSync() {}
 
-		bool isValidThread(BS_THREAD_ID_TYPE ownerThread) const
+		bool isValidThread(ThreadId ownerThread) const
 		{
 			return true;
 		}
@@ -59,8 +59,8 @@ namespace BansheeEngine
 		}
 
 	private:
-		BS_MUTEX(mCommandQueueMutex);
-		BS_LOCK_TYPE mLock;
+		Mutex mCommandQueueMutex;
+		Lock mLock;
 	};
 
 	/**
@@ -144,7 +144,7 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	threadId	   	Identifier for the thread the command queue will be getting commands from.					
 		 */
-		CommandQueueBase(BS_THREAD_ID_TYPE threadId);
+		CommandQueueBase(ThreadId threadId);
 		virtual ~CommandQueueBase();
 
 		/**
@@ -153,7 +153,7 @@ namespace BansheeEngine
 		 * @note	If the command queue is using a synchonized access policy generally this is not relevant as it may be 
 		 *			used on multiple threads.
 		 */
-		BS_THREAD_ID_TYPE getThreadId() const { return mMyThreadId; }
+		ThreadId getThreadId() const { return mMyThreadId; }
 
 		/**
 		 * Executes all provided commands one by one in order. To get the commands you should call flush().
@@ -239,7 +239,7 @@ namespace BansheeEngine
 		Stack<Queue<QueuedCommand>*> mEmptyCommandQueues; /**< List of empty queues for reuse. */
 
 		SPtr<AsyncOpSyncData> mAsyncOpSyncData;
-		BS_THREAD_ID_TYPE mMyThreadId;
+		ThreadId mMyThreadId;
 
 		// Various variables that allow for easier debugging by allowing us to trigger breakpoints
 		// when a certain command was queued.
@@ -273,7 +273,7 @@ namespace BansheeEngine
 		
 		static UINT32 MaxCommandQueueIdx;
 		static UnorderedSet<QueueBreakpoint, QueueBreakpoint::HashFunction, QueueBreakpoint::EqualFunction> SetBreakpoints;
-		BS_STATIC_MUTEX(CommandQueueBreakpointMutex);
+		static Mutex CommandQueueBreakpointMutex;
 
 		/** Checks if the specified command has a breakpoint and throw an assert if it does. */
 		static void breakIfNeeded(UINT32 queueIdx, UINT32 commandIdx);
@@ -291,7 +291,7 @@ namespace BansheeEngine
 	{
 	public:
 		/** @copydoc CommandQueueBase::CommandQueueBase */
-		CommandQueue(BS_THREAD_ID_TYPE threadId)
+		CommandQueue(ThreadId threadId)
 			:CommandQueueBase(threadId)
 		{ }
 

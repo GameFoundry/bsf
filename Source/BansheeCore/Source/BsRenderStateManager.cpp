@@ -284,42 +284,42 @@ namespace BansheeEngine
 
 	void RenderStateCoreManager::notifySamplerStateCreated(const SAMPLER_STATE_DESC& desc, const SPtr<SamplerStateCore>& state) const
 	{
-		BS_LOCK_MUTEX(mMutex);
+		Lock lock(mMutex);
 
 		mCachedSamplerStates[desc] = state;
 	}
 
 	void RenderStateCoreManager::notifyBlendStateCreated(const BLEND_STATE_DESC& desc, const CachedBlendState& state) const
 	{
-		BS_LOCK_MUTEX(mMutex);
+		Lock lock(mMutex);
 
 		mCachedBlendStates[desc] = state;
 	}
 
 	void RenderStateCoreManager::notifyRasterizerStateCreated(const RASTERIZER_STATE_DESC& desc, const CachedRasterizerState& state) const
 	{
-		BS_LOCK_MUTEX(mMutex);
+		Lock lock(mMutex);
 
 		mCachedRasterizerStates[desc] = state;
 	}
 
 	void RenderStateCoreManager::notifyDepthStencilStateCreated(const DEPTH_STENCIL_STATE_DESC& desc, const CachedDepthStencilState& state) const
 	{
-		BS_LOCK_MUTEX(mMutex);
+		Lock lock(mMutex);
 
 		mCachedDepthStencilStates[desc] = state;
 	}
 
 	void RenderStateCoreManager::notifySamplerStateDestroyed(const SAMPLER_STATE_DESC& desc) const
 	{
-		BS_LOCK_MUTEX(mMutex);
+		Lock lock(mMutex);
 
 		mCachedSamplerStates.erase(desc);
 	}
 
 	SPtr<SamplerStateCore> RenderStateCoreManager::findCachedState(const SAMPLER_STATE_DESC& desc) const
 	{
-		BS_LOCK_MUTEX(mMutex);
+		Lock lock(mMutex);
 
 		auto iterFind = mCachedSamplerStates.find(desc);
 		if (iterFind != mCachedSamplerStates.end())
@@ -330,7 +330,7 @@ namespace BansheeEngine
 
 	SPtr<BlendStateCore> RenderStateCoreManager::findCachedState(const BLEND_STATE_DESC& desc, UINT32& id) const
 	{
-		BS_LOCK_MUTEX(mMutex);
+		Lock lock(mMutex);
 
 		auto iterFind = mCachedBlendStates.find(desc);
 		if (iterFind != mCachedBlendStates.end())
@@ -351,7 +351,7 @@ namespace BansheeEngine
 
 	SPtr<RasterizerStateCore> RenderStateCoreManager::findCachedState(const RASTERIZER_STATE_DESC& desc, UINT32& id) const
 	{
-		BS_LOCK_MUTEX(mMutex);
+		Lock lock(mMutex);
 
 		auto iterFind = mCachedRasterizerStates.find(desc);
 		if (iterFind != mCachedRasterizerStates.end())
@@ -372,7 +372,7 @@ namespace BansheeEngine
 
 	SPtr<DepthStencilStateCore> RenderStateCoreManager::findCachedState(const DEPTH_STENCIL_STATE_DESC& desc, UINT32& id) const
 	{
-		BS_LOCK_MUTEX(mMutex);
+		Lock lock(mMutex);
 
 		auto iterFind = mCachedDepthStencilStates.find(desc);
 		if (iterFind != mCachedDepthStencilStates.end())

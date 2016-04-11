@@ -171,8 +171,89 @@ Conversion between various types (like int, float, bool, etc.) and string is pro
 
 # Threading {#utilities_i}
 ## Primitives {#utilities_i_a}
+The primitives perform the most basic operations related to threading. All threading primitives use the standard C++ library constructs, so for more information you should read their documentation.
+
+### Thread {#utilities_i_a_a}
+To create a new thread use @ref BansheeEngine::Thread "Thread", like so:
+~~~~~~~~~~~~~{.cpp}
+void workerFunc()
+{
+	// This runs on another thread
+}
+
+Thread myThread(&workerFunc);
+~~~~~~~~~~~~~
+
+### Mutex {#utilities_i_a_b}
+Use @ref BansheeEngine::Mutex "Mutex" and @ref BansheeEngine::Lock "Lock" to synchronize access between multiple threads, like so:
+~~~~~~~~~~~~~{.cpp}
+Vector<int> output;
+int startIdx = 0;
+Mutex mutex;
+
+void workerFunc()
+{
+	// Lock the mutex before modifying either "output" or "startIdx"
+	// This ensures only one thread every accesses it at once
+	Lock lock(mutex);
+	output.push_back(startIdx++);
+}
+
+// Start two threads that write to "output"
+Thread threadA(&workerFunc);
+Thread threadB(&workerFunc);
+~~~~~~~~~~~~~
+
+If a mutex can be locked recursively, use @ref BansheeEngine::RecursiveMutex "RecursiveMutex" and @ref BansheeEngine::RecursiveLock "RecursiveLock" instead.
+
+### Signal {#utilities_i_a_c}
+Use @ref BansheeEngine::Signal "Signal" to pause thread execution until another thread reaches a certain point. For example:
+~~~~~~~~~~~~~{.cpp}
+bool isReady = false;
+int result = 0;
+
+Signal signal;
+Mutex mutex;
+
+void workerFunc()
+{
+	for(int i = 0; i < 100000; i++)
+		result += i; // Or some more complex calculation
+	
+	// Lock the mutex so we can safely modify isReady
+	{
+		Lock lock(mutex);
+		isReady = true;		
+	} // Automatically unlocked when lock goes out of scope
+	
+	// Notify everyone waiting that the signal is ready
+	signal.notify_all();
+}
+
+// Wait until the signal is triggered, or until isReady is set to true, whichever comes first
+Lock lock(mutex);
+if(!isReady)
+	signal.wait_for(lock);
+~~~~~~~~~~~~~
+
+### Other {#utilities_i_a_d}
+The previous sections covered all the primitives, but there is some more useful functionality to be aware of:
+ - @ref BS_THREAD_HARDWARE_CONCURRENCY - Returns number of logical CPU cores.
+ - @ref BS_THREAD_CURRENT_ID - Returns @ref BansheeEngine::ThreadId "ThreadId" of the current thread.
+ - @ref BS_THREAD_SLEEP - Pauses the current thread for a set number of milliseconds.
 
 ## Thread pool {#utilities_i_b}
+Instead of using thread primitive described in the previous section, you should instead use @ref BansheeEngine::ThreadPool "ThreadPool" for running threads. @ref BansheeEngine::ThreadPool "ThreadPool" allows you to re-use threads and avoid paying the cost of thread creation and destruction. It keeps any thread that was retired in idle state, and will re-use it when user requests a new thread.
+
+An example:
+~~~~~~~~~~~~~{.cpp}
+void workerFunc()
+{
+	// This runs on another thread
+}
+
+ThreadPool::instance().run("MyThread", &workerFunc);
+~~~~~~~~~~~~~
 
 ## Task scheduler {#utilities_i_c}
 

@@ -81,7 +81,7 @@ namespace BansheeEngine
 		Event<void(InputCommandType)> onInputCommand;
 
 	private:
-		BS_MUTEX(mOSInputMutex);
+		Mutex mOSInputMutex;
 		Vector2I mLastCursorPos;
 		Vector2I mCursorPosition;
 		Vector2I mDelta;

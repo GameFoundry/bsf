@@ -60,7 +60,7 @@ namespace BansheeEngine
 
 		~Win32DropTarget()
 		{
-			BS_LOCK_MUTEX(mSync);
+			Lock lock(mSync);
 
 			for(auto& fileList : mFileLists)
 			{
@@ -137,7 +137,7 @@ namespace BansheeEngine
 				return S_OK;
 
 			{
-				BS_LOCK_MUTEX(mSync);
+				Lock lock(mSync);
 
 				mFileLists.push_back(getFileListFromData(pDataObj));
 
@@ -165,7 +165,7 @@ namespace BansheeEngine
 				return S_OK;
 
 			{
-				BS_LOCK_MUTEX(mSync);
+				Lock lock(mSync);
 
 				ScreenToClient(mHWnd, (POINT *)&pt);
 				mQueuedDropOps.push_back(DropTargetOp(DropOpType::DragOver, Vector2I((int)pt.x, (int)pt.y)));
@@ -186,7 +186,7 @@ namespace BansheeEngine
 		HRESULT __stdcall DragLeave() override
 		{
 			{
-				BS_LOCK_MUTEX(mSync);
+				Lock lock(mSync);
 
 				mQueuedDropOps.push_back(DropTargetOp(DropOpType::Leave, Vector2I()));
 
@@ -212,7 +212,7 @@ namespace BansheeEngine
 				return S_OK;
 
 			{
-				BS_LOCK_MUTEX(mSync);
+				Lock lock(mSync);
 
 				mFileLists.push_back(getFileListFromData(pDataObj));
 
@@ -262,7 +262,7 @@ namespace BansheeEngine
 		/** Called every frame by the sim thread. Internal method. */
 		void update()
 		{
-			BS_LOCK_MUTEX(mSync);
+			Lock lock(mSync);
 
 			for(auto& op: mQueuedDropOps)
 			{
@@ -379,7 +379,7 @@ namespace BansheeEngine
 		Vector<DropTargetOp> mQueuedDropOps;
 		Vector<Vector<WString>*> mFileLists; 
 
-		BS_MUTEX(mSync);
+		Mutex mSync;
 	};
 
 	/** @} */

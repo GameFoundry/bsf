@@ -9,8 +9,8 @@
 
 namespace BansheeEngine
 {
-	BS_STATIC_THREAD_SYNCHRONISER_CLASS_INSTANCE(mResourceCreatedCondition, ResourceHandleBase)
-	BS_STATIC_MUTEX_CLASS_INSTANCE(mResourceCreatedMutex, ResourceHandleBase)
+	Signal ResourceHandleBase::mResourceCreatedCondition;
+	Mutex ResourceHandleBase::mResourceCreatedMutex;
 
 	ResourceHandleBase::ResourceHandleBase()
 	{
@@ -39,10 +39,10 @@ namespace BansheeEngine
 
 		if (!mData->mIsCreated)
 		{
-			BS_LOCK_MUTEX_NAMED(mResourceCreatedMutex, lock);
+			Lock lock(mResourceCreatedMutex);
 			while (!mData->mIsCreated)
 			{
-				BS_THREAD_WAIT(mResourceCreatedCondition, mResourceCreatedMutex, lock);
+				mResourceCreatedCondition.wait(lock);
 			}
 
 			// Send out ResourceListener events right away, as whatever called this method
@@ -86,12 +86,12 @@ namespace BansheeEngine
 		
 			if(!mData->mIsCreated)
 			{
-				BS_LOCK_MUTEX(mResourceCreatedMutex);
+				Lock lock(mResourceCreatedMutex);
 				{
 					mData->mIsCreated = true; 
 				}
 				
-				BS_THREAD_NOTIFY_ALL(mResourceCreatedCondition);
+				mResourceCreatedCondition.notify_all();
 			}
 		}
 	}

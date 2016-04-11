@@ -238,12 +238,12 @@ namespace BansheeEngine
 			// thread, in which case sim thread needs to wait. Optimal solution would be to get an average 
 			// difference between sim/core thread and start the sim thread a bit later so they finish at nearly the same time.
 			{
-				BS_LOCK_MUTEX_NAMED(mFrameRenderingFinishedMutex, lock);
+				Lock lock(mFrameRenderingFinishedMutex);
 
 				while(!mIsFrameRenderingFinished)
 				{
 					TaskScheduler::instance().addWorker();
-					BS_THREAD_WAIT(mFrameRenderingFinishedCondition, mFrameRenderingFinishedMutex, lock);
+					mFrameRenderingFinishedCondition.wait(lock);
 					TaskScheduler::instance().removeWorker();
 				}
 
@@ -265,12 +265,12 @@ namespace BansheeEngine
 
 		// Wait until last core frame is finished before exiting
 		{
-			BS_LOCK_MUTEX_NAMED(mFrameRenderingFinishedMutex, lock);
+			Lock lock(mFrameRenderingFinishedMutex);
 
 			while (!mIsFrameRenderingFinished)
 			{
 				TaskScheduler::instance().addWorker();
-				BS_THREAD_WAIT(mFrameRenderingFinishedCondition, mFrameRenderingFinishedMutex, lock);
+				mFrameRenderingFinishedCondition.wait(lock);
 				TaskScheduler::instance().removeWorker();
 			}
 		}
@@ -304,10 +304,10 @@ namespace BansheeEngine
 
 	void CoreApplication::frameRenderingFinishedCallback()
 	{
-		BS_LOCK_MUTEX(mFrameRenderingFinishedMutex);
+		Lock lock(mFrameRenderingFinishedMutex);
 
 		mIsFrameRenderingFinished = true;
-		BS_THREAD_NOTIFY_ONE(mFrameRenderingFinishedCondition);
+		mFrameRenderingFinishedCondition.notify_one();
 	}
 
 	void CoreApplication::startUpRenderer()

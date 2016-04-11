@@ -81,7 +81,7 @@ namespace BansheeEngine
 	{
 		assert(instance != nullptr);
 
-		BS_LOCK_MUTEX(mMutex);
+		Lock lock(mMutex);
 		mFinalizedObjects[mFinalizedQueueIdx].push_back(instance);
 	}
 
@@ -94,7 +94,7 @@ namespace BansheeEngine
 	{
 		UINT32 readQueueIdx = 0;
 		{
-			BS_LOCK_MUTEX(mMutex);
+			Lock lock(mMutex);
 			readQueueIdx = mFinalizedQueueIdx;
 			mFinalizedQueueIdx = (mFinalizedQueueIdx + 1) % 2;
 		}

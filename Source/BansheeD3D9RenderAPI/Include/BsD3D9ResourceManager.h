@@ -65,7 +65,7 @@ namespace BansheeEngine
 	protected:
 		friend class D3D9Resource;
 		
-		BS_MUTEX(mResourcesMutex)
+		Mutex mResourcesMutex;
 		Vector<D3D9Resource*> mResources;
 		D3D9ResourceCreationPolicy mResourceCreationPolicy;
 		long mDeviceAccessLockCount;		

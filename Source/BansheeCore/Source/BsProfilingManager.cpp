@@ -38,7 +38,7 @@ namespace BansheeEngine
 	void ProfilingManager::_updateCore()
 	{
 #if BS_PROFILING_ENABLED
-		BS_LOCK_MUTEX(mSync);
+		Lock lock(mSync);
 		mSavedCoreReports[mNextCoreReportIdx].cpuReport = gProfilerCPU().generateReport();
 
 		gProfilerCPU().reset();
@@ -53,7 +53,7 @@ namespace BansheeEngine
 
 		if(thread == ProfiledThread::Core)
 		{
-			BS_LOCK_MUTEX(mSync);
+			Lock lock(mSync);
 
 			UINT32 reportIdx = mNextCoreReportIdx + (UINT32)((INT32)NUM_SAVED_FRAMES - ((INT32)idx + 1));
 			reportIdx = (reportIdx) % NUM_SAVED_FRAMES;

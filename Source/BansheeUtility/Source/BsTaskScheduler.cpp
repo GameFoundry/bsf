@@ -50,7 +50,7 @@ namespace BansheeEngine
 	{
 		// Wait until all tasks complete
 		{
-			BS_LOCK_MUTEX_NAMED(mReadyMutex, activeTaskLock);
+			Lock activeTaskLock(mReadyMutex);
 
 			while (mActiveTasks.size() > 0)
 			{
@@ -64,19 +64,19 @@ namespace BansheeEngine
 
 		// Start shutdown of the main queue worker and wait until it exits
 		{
-			BS_LOCK_MUTEX(mReadyMutex);
+			Lock lock(mReadyMutex);
 
 			mShutdown = true;
 		}
 
-		BS_THREAD_NOTIFY_ONE(mTaskReadyCond);
+		mTaskReadyCond.notify_one();
 
 		mTaskSchedulerThread.blockUntilComplete();
 	}
 
 	void TaskScheduler::addTask(const SPtr<Task>& task)
 	{
-		BS_LOCK_MUTEX(mReadyMutex);
+		Lock lock(mReadyMutex);
 
 		task->mParent = this;
 		task->mTaskId = mNextTaskId++;
@@ -84,22 +84,22 @@ namespace BansheeEngine
 		mTaskQueue.insert(task);
 
 		// Wake main scheduler thread
-		BS_THREAD_NOTIFY_ONE(mTaskReadyCond);
+		mTaskReadyCond.notify_one();
 	}
 
 	void TaskScheduler::addWorker()
 	{
-		BS_LOCK_MUTEX(mReadyMutex);
+		Lock lock(mReadyMutex);
 
 		mMaxActiveTasks++;
 
 		// A spot freed up, queue new tasks on main scheduler thread if they exist
-		BS_THREAD_NOTIFY_ONE(mTaskReadyCond);
+		mTaskReadyCond.notify_one();
 	}
 
 	void TaskScheduler::removeWorker()
 	{
-		BS_LOCK_MUTEX(mReadyMutex);
+		Lock lock(mReadyMutex);
 
 		if(mMaxActiveTasks > 0)
 			mMaxActiveTasks--;
@@ -109,10 +109,10 @@ namespace BansheeEngine
 	{
 		while(true)
 		{
-			BS_LOCK_MUTEX_NAMED(mReadyMutex, lock);
+			Lock lock(mReadyMutex);
 
 			while((mTaskQueue.size() == 0 || (UINT32)mActiveTasks.size() >= mMaxActiveTasks) && !mShutdown)
-				BS_THREAD_WAIT(mTaskReadyCond, mReadyMutex, lock);
+				mTaskReadyCond.wait(lock);
 
 			if(mShutdown)
 				break;
@@ -141,7 +141,7 @@ namespace BansheeEngine
 		task->mTaskWorker();
 
 		{
-			BS_LOCK_MUTEX(mReadyMutex);
+			Lock lock(mReadyMutex);
 
 			auto findIter = std::find(mActiveTasks.begin(), mActiveTasks.end(), task);
 			if (findIter != mActiveTasks.end())
@@ -149,14 +149,14 @@ namespace BansheeEngine
 		}
 
 		{
-			BS_LOCK_MUTEX(mCompleteMutex);
+			Lock lock(mCompleteMutex);
 			task->mState.store(2);
 
-			BS_THREAD_NOTIFY_ALL(mTaskCompleteCond);
+			mTaskCompleteCond.notify_all();
 		}
 
 		// Possibly this task was someones dependency, so wake the main scheduler thread
-		BS_THREAD_NOTIFY_ONE(mTaskReadyCond);
+		mTaskReadyCond.notify_one();
 	}
 
 	void TaskScheduler::waitUntilComplete(const Task* task)
@@ -165,12 +165,12 @@ namespace BansheeEngine
 			return;
 
 		{
-			BS_LOCK_MUTEX_NAMED(mCompleteMutex, lock);
+			Lock lock(mCompleteMutex);
 			
 			while(!task->isComplete())
 			{
 				addWorker();
-				BS_THREAD_WAIT(mTaskCompleteCond, mCompleteMutex, lock);
+				mTaskCompleteCond.wait(lock);
 				removeWorker();
 			}
 		}

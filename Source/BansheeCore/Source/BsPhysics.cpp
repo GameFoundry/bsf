@@ -16,7 +16,7 @@ namespace BansheeEngine
 	{
 		assert(groupA < CollisionMapSize && groupB < CollisionMapSize);
 
-		BS_LOCK_MUTEX(mMutex);
+		Lock lock(mMutex);
 		mCollisionMap[groupA][groupB] = enabled;
 	}
 
@@ -31,7 +31,7 @@ namespace BansheeEngine
 			Flag3 = 1 << 2
 		};
 
-		BS_LOCK_MUTEX(mMutex);
+		Lock lock(mMutex);
 		return mCollisionMap[groupA][groupB];
 	}
 

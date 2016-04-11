@@ -85,8 +85,8 @@ namespace BansheeEngine
 		volatile UINT8 mFlags;
 		std::weak_ptr<CoreObjectCore> mThis;
 
-		BS_STATIC_THREAD_SYNCHRONISER(mCoreGpuObjectLoadedCondition)
-		BS_STATIC_MUTEX(mCoreGpuObjectLoadedMutex)
+		static Signal mCoreGpuObjectLoadedCondition;
+		static Mutex mCoreGpuObjectLoadedMutex;
 	};
 
 	/** @} */

@@ -313,8 +313,8 @@ namespace BansheeEngine
 		Vector<SPtr<ResourceManifest>> mResourceManifests;
 		SPtr<ResourceManifest> mDefaultResourceManifest;
 
-		BS_MUTEX(mInProgressResourcesMutex);
-		BS_MUTEX(mLoadedResourceMutex);
+		Mutex mInProgressResourcesMutex;
+		Mutex mLoadedResourceMutex;
 
 		UnorderedMap<String, WeakResourceHandle<Resource>> mHandles;
 		UnorderedMap<String, LoadedResourceData> mLoadedResources;

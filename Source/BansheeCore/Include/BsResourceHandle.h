@@ -102,8 +102,8 @@ namespace BansheeEngine
 	private:
 		friend class Resources;
 
-		BS_STATIC_THREAD_SYNCHRONISER(mResourceCreatedCondition)
-		BS_STATIC_MUTEX(mResourceCreatedMutex)
+		static Signal mResourceCreatedCondition;
+		static Mutex mResourceCreatedMutex;
 
 	protected:
 		inline void throwIfNotLoaded() const;

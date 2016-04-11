@@ -68,7 +68,7 @@ namespace BansheeEngine
 		ProfilerReport* mSavedCoreReports;
 		UINT32 mNextCoreReportIdx;
 
-		BS_MUTEX(mSync);
+		mutable Mutex mSync;
 	};
 
 	/** Easy way to access ProfilingManager. */

@@ -29,7 +29,7 @@ namespace BansheeEngine
 
 	void D3D9ResourceManager::notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device)
 	{				
-		BS_LOCK_MUTEX(mResourcesMutex)
+		Lock lock(mResourcesMutex);
 
 		for (auto& resource : mResources)
 			resource->notifyOnDeviceCreate(d3d9Device);			
@@ -37,7 +37,7 @@ namespace BansheeEngine
 
 	void D3D9ResourceManager::notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device)
 	{
-		BS_LOCK_MUTEX(mResourcesMutex)
+		Lock lock(mResourcesMutex);
 
 		for (auto& resource : mResources)
 			resource->notifyOnDeviceDestroy(d3d9Device);
@@ -45,7 +45,7 @@ namespace BansheeEngine
 
 	void D3D9ResourceManager::notifyOnDeviceLost(IDirect3DDevice9* d3d9Device)
 	{
-		BS_LOCK_MUTEX(mResourcesMutex)
+		Lock lock(mResourcesMutex);
 
 		for (auto& resource : mResources)
 			resource->notifyOnDeviceLost(d3d9Device);
@@ -53,7 +53,7 @@ namespace BansheeEngine
 
 	void D3D9ResourceManager::notifyOnDeviceReset(IDirect3DDevice9* d3d9Device)
 	{		
-		BS_LOCK_MUTEX(mResourcesMutex)
+		Lock lock(mResourcesMutex);
 
 		for (auto& resource : mResources)
 			resource->notifyOnDeviceReset(d3d9Device);	
@@ -61,13 +61,13 @@ namespace BansheeEngine
 
 	void D3D9ResourceManager::_notifyResourceCreated(D3D9Resource* pResource)
 	{		
-		BS_LOCK_MUTEX(mResourcesMutex)		
+		Lock lock(mResourcesMutex);
 		mResources.push_back(pResource);
 	}
 	
 	void D3D9ResourceManager::_notifyResourceDestroyed(D3D9Resource* pResource)
 	{		
-		BS_LOCK_MUTEX(mResourcesMutex)
+		Lock lock(mResourcesMutex);
 
 		auto iter = mResources.begin();
 		while (iter != mResources.end())

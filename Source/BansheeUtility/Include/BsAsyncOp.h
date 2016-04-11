@@ -20,8 +20,8 @@ namespace BansheeEngine
 	class BS_UTILITY_EXPORT AsyncOpSyncData
 	{
 	public:
-		BS_MUTEX(mMutex)
-		BS_THREAD_SYNCHRONISER(mCondition)
+		Mutex mMutex;
+		Signal mCondition;
 	};
 
 	/**

@@ -19,7 +19,7 @@ namespace BansheeEngine
 	CoreObjectManager::~CoreObjectManager()
 	{
 #if BS_DEBUG_MODE
-		BS_LOCK_MUTEX(mObjectsMutex);
+		Lock lock(mObjectsMutex);
 
 		if(mObjects.size() > 0)
 		{
@@ -37,7 +37,7 @@ namespace BansheeEngine
 	{
 		assert(object != nullptr);
 
-		BS_LOCK_MUTEX(mObjectsMutex);
+		Lock lock(mObjectsMutex);
 
 		mObjects[mNextAvailableID] = object;
 		mDirtyObjects[mNextAvailableID] = { object, -1 };
@@ -53,7 +53,7 @@ namespace BansheeEngine
 
 		// If dirty, we generate sync data before it is destroyed
 		{
-			BS_LOCK_MUTEX(mObjectsMutex);
+			Lock lock(mObjectsMutex);
 			bool isDirty = object->isCoreDirty() || (mDirtyObjects.find(internalId) != mDirtyObjects.end());
 
 			if (isDirty)
@@ -84,7 +84,7 @@ namespace BansheeEngine
 
 		// Clear dependencies from dependants
 		{
-			BS_LOCK_MUTEX(mObjectsMutex);
+			Lock lock(mObjectsMutex);
 
 			auto iterFind = mDependants.find(internalId);
 			if (iterFind != mDependants.end())
@@ -115,7 +115,7 @@ namespace BansheeEngine
 	{
 		UINT64 id = object->getInternalID();
 
-		BS_LOCK_MUTEX(mObjectsMutex);
+		Lock lock(mObjectsMutex);
 
 		mDirtyObjects[id] = { object, -1 };
 	}
@@ -137,7 +137,7 @@ namespace BansheeEngine
 			FrameVector<CoreObject*> toRemove;
 			FrameVector<CoreObject*> toAdd;
 
-			BS_LOCK_MUTEX(mObjectsMutex);
+			Lock lock(mObjectsMutex);
 
 			// Add dependencies and clear old dependencies from dependants
 			{
@@ -220,7 +220,7 @@ namespace BansheeEngine
 			FrameAlloc* allocator;
 		};
 
-		BS_LOCK_MUTEX(mObjectsMutex);
+		Lock lock(mObjectsMutex);
 
 		FrameAlloc* allocator = gCoreThread().getFrameAlloc();
 		Vector<IndividualCoreSyncData> syncData;
@@ -286,7 +286,7 @@ namespace BansheeEngine
 
 	void CoreObjectManager::syncDownload(FrameAlloc* allocator)
 	{
-		BS_LOCK_MUTEX(mObjectsMutex);
+		Lock lock(mObjectsMutex);
 
 		mCoreSyncData.push_back(CoreStoredSyncData());
 		CoreStoredSyncData& syncData = mCoreSyncData.back();
@@ -378,7 +378,7 @@ namespace BansheeEngine
 
 	void CoreObjectManager::syncUpload()
 	{
-		BS_LOCK_MUTEX(mObjectsMutex);
+		Lock lock(mObjectsMutex);
 
 		if (mCoreSyncData.size() == 0)
 			return;
@@ -403,7 +403,7 @@ namespace BansheeEngine
 
 	void CoreObjectManager::clearDirty()
 	{
-		BS_LOCK_MUTEX(mObjectsMutex);
+		Lock lock(mObjectsMutex);
 
 		FrameAlloc* allocator = gCoreThread().getFrameAlloc();
 		for (auto& objectData : mDirtyObjects)

@@ -54,7 +54,7 @@ public:
 	~CoreThread();
 
 	/** Returns the id of the core thread.  */
-	BS_THREAD_ID_TYPE getCoreThreadId() { return mCoreThreadId; }
+	ThreadId getCoreThreadId() { return mCoreThreadId; }
 
 	/**
 	 * Creates or retrieves an accessor that you can use for executing commands on the core thread from a non-core thread. 
@@ -139,15 +139,15 @@ private:
 
 	HThread mCoreThread;
 	bool mCoreThreadStarted;
-	BS_THREAD_ID_TYPE mSimThreadId;
-	BS_THREAD_ID_TYPE mCoreThreadId;
-	BS_MUTEX(mCommandQueueMutex)
-	BS_MUTEX(mAccessorMutex)
-	BS_THREAD_SYNCHRONISER(mCommandReadyCondition)
-	BS_MUTEX(mCommandNotifyMutex)
-	BS_THREAD_SYNCHRONISER(mCommandCompleteCondition)
-	BS_MUTEX(mThreadStartedMutex)
-	BS_THREAD_SYNCHRONISER(mCoreThreadStartedCondition)
+	ThreadId mSimThreadId;
+	ThreadId mCoreThreadId;
+	Mutex mCommandQueueMutex;
+	Mutex mAccessorMutex;
+	Signal mCommandReadyCondition;
+	Mutex mCommandNotifyMutex;
+	Signal mCommandCompleteCondition;
+	Mutex mThreadStartedMutex;
+	Signal mCoreThreadStartedCondition;
 
 	CommandQueue<CommandQueueSync>* mCommandQueue;
 

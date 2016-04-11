@@ -25,7 +25,7 @@ namespace BansheeEngine
 	void ResourceListenerManager::registerListener(IResourceListener* listener)
 	{
 #if BS_DEBUG_MODE
-		BS_LOCK_RECURSIVE_MUTEX(mMutex);
+		RecursiveLock lock(mMutex);
 		mActiveListeners.insert(listener);
 #endif
 	}
@@ -34,7 +34,7 @@ namespace BansheeEngine
 	{
 #if BS_DEBUG_MODE
 		{
-			BS_LOCK_RECURSIVE_MUTEX(mMutex);
+			RecursiveLock lock(mMutex);
 			mActiveListeners.erase(listener);
 		}
 #endif
@@ -60,7 +60,7 @@ namespace BansheeEngine
 		mDirtyListeners.clear();
 
 		{
-			BS_LOCK_RECURSIVE_MUTEX(mMutex);
+			RecursiveLock lock(mMutex);
 
 			for (auto& entry : mLoadedResources)
 				sendResourceLoaded(entry.second);
@@ -75,7 +75,7 @@ namespace BansheeEngine
 
 	void ResourceListenerManager::notifyListeners(const String& resourceUUID)
 	{
-		BS_LOCK_RECURSIVE_MUTEX(mMutex);
+		RecursiveLock lock(mMutex);
 
 		auto iterFindLoaded = mLoadedResources.find(resourceUUID);
 		if (iterFindLoaded != mLoadedResources.end())
@@ -96,14 +96,14 @@ namespace BansheeEngine
 
 	void ResourceListenerManager::onResourceLoaded(const HResource& resource)
 	{
-		BS_LOCK_RECURSIVE_MUTEX(mMutex);
+		RecursiveLock lock(mMutex);
 
 		mLoadedResources[resource.getUUID()] = resource;
 	}
 
 	void ResourceListenerManager::onResourceModified(const HResource& resource)
 	{
-		BS_LOCK_RECURSIVE_MUTEX(mMutex);
+		RecursiveLock lock(mMutex);
 
 		mModifiedResources[resource.getUUID()] = resource;
 	}

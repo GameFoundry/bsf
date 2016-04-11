@@ -5,8 +5,8 @@
 
 namespace BansheeEngine
 {
-	BS_STATIC_THREAD_SYNCHRONISER_CLASS_INSTANCE(mCoreGpuObjectLoadedCondition, CoreObjectCore)
-	BS_STATIC_MUTEX_CLASS_INSTANCE(mCoreGpuObjectLoadedMutex, CoreObjectCore)
+	Signal CoreObjectCore::mCoreGpuObjectLoadedCondition;
+	Mutex CoreObjectCore::mCoreGpuObjectLoadedMutex;
 
 	CoreObjectCore::CoreObjectCore()
 		:mFlags(0)
@@ -20,13 +20,13 @@ namespace BansheeEngine
 	void CoreObjectCore::initialize()
 	{
 		{
-			BS_LOCK_MUTEX(mCoreGpuObjectLoadedMutex);
+			Lock lock(mCoreGpuObjectLoadedMutex);
 			setIsInitialized(true);
 		}
 
 		setScheduledToBeInitialized(false);
 
-		BS_THREAD_NOTIFY_ALL(mCoreGpuObjectLoadedCondition);
+		mCoreGpuObjectLoadedCondition.notify_all();
 	}
 
 	void CoreObjectCore::synchronize()
@@ -38,13 +38,13 @@ namespace BansheeEngine
 				BS_EXCEPT(InternalErrorException, "You cannot call this method on the core thread. It will cause a deadlock!");
 #endif
 
-			BS_LOCK_MUTEX_NAMED(mCoreGpuObjectLoadedMutex, lock);
+			Lock lock(mCoreGpuObjectLoadedMutex);
 			while (!isInitialized())
 			{
 				if (!isScheduledToBeInitialized())
 					BS_EXCEPT(InternalErrorException, "Attempting to wait until initialization finishes but object is not scheduled to be initialized.");
 
-				BS_THREAD_WAIT(mCoreGpuObjectLoadedCondition, mCoreGpuObjectLoadedMutex, lock);
+				mCoreGpuObjectLoadedCondition.wait(lock);
 			}
 		}
 	}

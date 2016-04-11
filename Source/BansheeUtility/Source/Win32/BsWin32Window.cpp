@@ -215,7 +215,7 @@ namespace BansheeEngine
 			FrameVector<HWND> windowsToDisable;
 			FrameVector<HWND> windowsToBringToFront;
 			{
-				BS_LOCK_MUTEX(sWindowsMutex);
+				Lock lock(sWindowsMutex);
 
 				if (m->isModal)
 				{
@@ -268,7 +268,7 @@ namespace BansheeEngine
 			{
 				FrameVector<HWND> windowsToEnable;
 				{
-					BS_LOCK_MUTEX(sWindowsMutex);
+					Lock lock(sWindowsMutex);
 
 					// Hidden dependency: All windows must be re-enabled before a window is destroyed, otherwise the incorrect
 					// window in the z order will be activated.
@@ -312,7 +312,7 @@ namespace BansheeEngine
 		}
 
 		{
-			BS_LOCK_MUTEX(sWindowsMutex);
+			Lock lock(sWindowsMutex);
 
 			auto iterFind = std::find(sAllWindows.begin(), sAllWindows.end(), this);
 			sAllWindows.erase(iterFind);
@@ -460,7 +460,7 @@ namespace BansheeEngine
 		Vector<HWND> windowsToEnable;
 
 		{
-			BS_LOCK_MUTEX(sWindowsMutex);
+			Lock lock(sWindowsMutex);
 			for (auto& window : sAllWindows)
 				windowsToEnable.push_back(window->m->hWnd);
 		}
@@ -475,7 +475,7 @@ namespace BansheeEngine
 		HWND bringToFrontHwnd = 0;
 
 		{
-			BS_LOCK_MUTEX(sWindowsMutex)
+			Lock lock(sWindowsMutex);
 
 			if (!sModalWindowStack.empty())
 			{

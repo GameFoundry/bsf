@@ -277,7 +277,7 @@ namespace BansheeEngine
 	{
 		reset();
 
-		BS_LOCK_MUTEX(mThreadSync);
+		Lock lock(mThreadSync);
 
 		for(auto& threadInfo : mActiveThreads)
 			bs_delete<ThreadInfo, ProfilerAlloc>(threadInfo);
@@ -292,7 +292,7 @@ namespace BansheeEngine
 			thread = ThreadInfo::activeThread;
 
 			{
-				BS_LOCK_MUTEX(mThreadSync);
+				Lock lock(mThreadSync);
 
 				mActiveThreads.push_back(thread);
 			}

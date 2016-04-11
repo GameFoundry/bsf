@@ -74,14 +74,14 @@ namespace BansheeEngine
 
 	UINT32 ProfilerGPU::getNumAvailableReports()
 	{
-		BS_LOCK_MUTEX(mMutex);
+		Lock lock(mMutex);
 
 		return (UINT32)mReadyReports.size();
 	}
 
 	GPUProfilerReport ProfilerGPU::getNextReport()
 	{
-		BS_LOCK_MUTEX(mMutex);
+		Lock lock(mMutex);
 
 		if (mReadyReports.empty())
 			BS_EXCEPT(InvalidStateException, "No reports are available.")
@@ -106,7 +106,7 @@ namespace BansheeEngine
 				mUnresolvedFrames.pop();
 
 				{
-					BS_LOCK_MUTEX(mMutex);
+					Lock lock(mMutex);
 					mReadyReports.push(report);
 				}
 			}

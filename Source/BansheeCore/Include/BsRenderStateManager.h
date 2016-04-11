@@ -236,7 +236,7 @@ namespace BansheeEngine
 		mutable UINT32 mNextRasterizerStateId;
 		mutable UINT32 mNextDepthStencilStateId;
 
-		BS_MUTEX(mMutex);
+		mutable Mutex mMutex;
 	};
 
 	/** @} */

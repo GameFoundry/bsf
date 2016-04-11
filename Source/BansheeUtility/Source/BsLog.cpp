@@ -21,14 +21,14 @@ namespace BansheeEngine
 
 	void Log::logMsg(const String& message, UINT32 channel)
 	{
-		BS_LOCK_RECURSIVE_MUTEX(mMutex);
+		RecursiveLock lock(mMutex);
 
 		mUnreadEntries.push(LogEntry(message, channel));
 	}
 
 	void Log::clear()
 	{
-		BS_LOCK_RECURSIVE_MUTEX(mMutex);
+		RecursiveLock lock(mMutex);
 
 		mEntries.clear();
 
@@ -40,7 +40,7 @@ namespace BansheeEngine
 
 	void Log::clear(UINT32 channel)
 	{
-		BS_LOCK_RECURSIVE_MUTEX(mMutex);
+		RecursiveLock lock(mMutex);
 
 		Vector<LogEntry> newEntries;
 		for(auto& entry : mEntries)
@@ -71,7 +71,7 @@ namespace BansheeEngine
 
 	bool Log::getUnreadEntry(LogEntry& entry)
 	{
-		BS_LOCK_RECURSIVE_MUTEX(mMutex);
+		RecursiveLock lock(mMutex);
 
 		if (mUnreadEntries.empty())
 			return false;
@@ -95,7 +95,7 @@ namespace BansheeEngine
 
 	Vector<LogEntry> Log::getEntries() const
 	{
-		BS_LOCK_RECURSIVE_MUTEX(mMutex);
+		RecursiveLock lock(mMutex);
 
 		return mEntries;
 	}
@@ -104,7 +104,7 @@ namespace BansheeEngine
 	{
 		Vector<LogEntry> entries;
 		{
-			BS_LOCK_RECURSIVE_MUTEX(mMutex);
+			RecursiveLock lock(mMutex);
 
 			for (auto& entry : mEntries)
 				entries.push_back(entry);

@@ -26,7 +26,7 @@ namespace BansheeEngine
 		renderWindow->_setThisPtr(renderWindow);
 		
 		{
-			BS_LOCK_MUTEX(mWindowMutex);
+			Lock lock(mWindowMutex);
 
 			mWindows[renderWindow->mWindowId] = renderWindow.get();
 		}
@@ -39,7 +39,7 @@ namespace BansheeEngine
 	void RenderWindowManager::notifyWindowDestroyed(RenderWindow* window)
 	{
 		{
-			BS_LOCK_MUTEX(mWindowMutex);
+			Lock lock(mWindowMutex);
 
 			auto iterFind = std::find_if(begin(mMovedOrResizedWindows), end(mMovedOrResizedWindows), 
 				[&](const MoveOrResizeData& x) { return x.window == window; });
@@ -57,7 +57,7 @@ namespace BansheeEngine
 
 	void RenderWindowManager::notifyFocusReceived(RenderWindowCore* coreWindow)
 	{
-		BS_LOCK_MUTEX(mWindowMutex);
+		Lock lock(mWindowMutex);
 
 		RenderWindow* window = getNonCore(coreWindow);
 		mNewWindowInFocus = window;
@@ -65,14 +65,14 @@ namespace BansheeEngine
 
 	void RenderWindowManager::notifyFocusLost(RenderWindowCore* coreWindow)
 	{
-		BS_LOCK_MUTEX(mWindowMutex);
+		Lock lock(mWindowMutex);
 
 		mNewWindowInFocus = nullptr;
 	}
 
 	void RenderWindowManager::notifyMovedOrResized(RenderWindowCore* coreWindow)
 	{
-		BS_LOCK_MUTEX(mWindowMutex);
+		Lock lock(mWindowMutex);
 
 		RenderWindow* window = getNonCore(coreWindow);
 		if (window == nullptr)
@@ -105,7 +105,7 @@ namespace BansheeEngine
 
 	void RenderWindowManager::notifySyncDataDirty(RenderWindowCore* coreWindow)
 	{
-		BS_LOCK_MUTEX(mWindowMutex);
+		Lock lock(mWindowMutex);
 
 		RenderWindow* window = getNonCore(coreWindow);
 
@@ -115,7 +115,7 @@ namespace BansheeEngine
 
 	void RenderWindowManager::windowMouseLeft(RenderWindowCore* coreWindow)
 	{
-		BS_LOCK_MUTEX(mWindowMutex);
+		Lock lock(mWindowMutex);
 
 		RenderWindow* window = getNonCore(coreWindow);
 		auto iterFind = std::find(begin(mMouseLeftWindows), end(mMouseLeftWindows), window);
@@ -131,7 +131,7 @@ namespace BansheeEngine
 		Vector<RenderWindow*> mouseLeftWindows;
 
 		{
-			BS_LOCK_MUTEX(mWindowMutex);
+			Lock lock(mWindowMutex);
 			newWinInFocus = mNewWindowInFocus;
 
 			for (auto& moveResizeData : mMovedOrResizedWindows)
@@ -185,7 +185,7 @@ namespace BansheeEngine
 
 	Vector<RenderWindow*> RenderWindowManager::getRenderWindows() const
 	{
-		BS_LOCK_MUTEX(mWindowMutex);
+		Lock lock(mWindowMutex);
 
 		Vector<RenderWindow*> windows;
 		for (auto& windowPair : mWindows)
@@ -221,7 +221,7 @@ namespace BansheeEngine
 
 	void RenderWindowCoreManager::_update()
 	{
-		BS_LOCK_MUTEX(mWindowMutex);
+		Lock lock(mWindowMutex);
 
 		for (auto& dirtyPropertyWindow : mDirtyProperties)
 			dirtyPropertyWindow->syncProperties();
@@ -231,7 +231,7 @@ namespace BansheeEngine
 
 	void RenderWindowCoreManager::windowCreated(RenderWindowCore* window)
 	{
-		BS_LOCK_MUTEX(mWindowMutex);
+		Lock lock(mWindowMutex);
 
 		mCreatedWindows.push_back(window);
 	}
@@ -239,7 +239,7 @@ namespace BansheeEngine
 	void RenderWindowCoreManager::windowDestroyed(RenderWindowCore* window)
 	{
 		{
-			BS_LOCK_MUTEX(mWindowMutex);
+			Lock lock(mWindowMutex);
 
 			auto iterFind = std::find(begin(mCreatedWindows), end(mCreatedWindows), window);
 
@@ -253,14 +253,14 @@ namespace BansheeEngine
 
 	Vector<RenderWindowCore*> RenderWindowCoreManager::getRenderWindows() const
 	{
-		BS_LOCK_MUTEX(mWindowMutex);
+		Lock lock(mWindowMutex);
 
 		return mCreatedWindows;
 	}
 
 	void RenderWindowCoreManager::notifySyncDataDirty(RenderWindowCore* window)
 	{
-		BS_LOCK_MUTEX(mWindowMutex);
+		Lock lock(mWindowMutex);
 
 		mDirtyProperties.insert(window);
 	}

@@ -76,7 +76,7 @@ namespace BansheeEngine
 		 */
 		void disconnect(BaseConnectionData* conn)
 		{
-			BS_LOCK_RECURSIVE_MUTEX(mMutex);
+			RecursiveLock lock(mMutex);
 
 			conn->deactivate();
 			conn->handleLinks--;
@@ -88,7 +88,7 @@ namespace BansheeEngine
 		/** Disconnects all connections in the event. */
 		void clear()
 		{
-			BS_LOCK_RECURSIVE_MUTEX(mMutex);
+			RecursiveLock lock(mMutex);
 
 			BaseConnectionData* conn = mConnections;
 			while (conn != nullptr)
@@ -109,7 +109,7 @@ namespace BansheeEngine
 		 */
 		void freeHandle(BaseConnectionData* conn)
 		{
-			BS_LOCK_RECURSIVE_MUTEX(mMutex);
+			RecursiveLock lock(mMutex);
 
 			conn->handleLinks--;
 
@@ -144,7 +144,7 @@ namespace BansheeEngine
 		BaseConnectionData* mConnections;
 		BaseConnectionData* mFreeConnections;
 
-		BS_RECURSIVE_MUTEX(mMutex);
+		RecursiveMutex mMutex;
 	};
 
 	/** @} */
@@ -268,7 +268,7 @@ namespace BansheeEngine
 		/** Register a new callback that will get notified once the event is triggered. */
 		HEvent connect(std::function<RetType(Args...)> func)
 		{
-			BS_LOCK_RECURSIVE_MUTEX(mInternalData->mMutex);
+			RecursiveLock lock(mInternalData->mMutex);
 
 			ConnectionData* connData = nullptr;
 			if (mInternalData->mFreeConnections != nullptr)
@@ -304,7 +304,7 @@ namespace BansheeEngine
 			// deletes the event itself.
 			SPtr<EventInternalData> internalData = mInternalData;
 
-			BS_LOCK_RECURSIVE_MUTEX(internalData->mMutex);
+			RecursiveLock lock(internalData->mMutex);
 
 			// Hidden dependency: If any new connections are made during these callbacks they must be
 			// inserted at the start of the linked list so that we don't trigger them here.
@@ -334,7 +334,7 @@ namespace BansheeEngine
 		 */
 		bool empty() const
 		{
-			BS_LOCK_RECURSIVE_MUTEX(mInternalData->mMutex);
+			RecursiveLock lock(mInternalData->mMutex);
 
 			return mInternalData->mConnections == nullptr;
 		}

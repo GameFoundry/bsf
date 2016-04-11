@@ -64,7 +64,7 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	threadId		Identifier for the thread that created the accessor.
 		 */
-		CoreThreadAccessor(BS_THREAD_ID_TYPE threadId)
+		CoreThreadAccessor(ThreadId threadId)
 			:CoreThreadAccessorBase(bs_new<CommandQueue<CommandQueueSyncPolicy>>(threadId))
 		{
 

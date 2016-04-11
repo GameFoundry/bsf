@@ -88,7 +88,7 @@ namespace BansheeEngine
 		Vector<LogEntry> mEntries;
 		Queue<LogEntry> mUnreadEntries;
 		UINT64 mHash;
-		BS_RECURSIVE_MUTEX(mMutex);
+		mutable RecursiveMutex mMutex;
 	};
 
 	/** @} */

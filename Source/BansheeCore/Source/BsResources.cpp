@@ -27,7 +27,7 @@ namespace BansheeEngine
 		UnorderedMap<String, LoadedResourceData> loadedResourcesCopy;
 		
 		{
-			BS_LOCK_MUTEX(mLoadedResourceMutex)
+			Lock lock(mLoadedResourceMutex);
 			loadedResourcesCopy = mLoadedResources;
 		}
 
@@ -103,7 +103,7 @@ namespace BansheeEngine
 		bool loadInProgress = false;
 		{
 			// Check if resource is already being loaded on a worker thread
-			BS_LOCK_MUTEX(mInProgressResourcesMutex);
+			Lock inProgressLock(mInProgressResourcesMutex);
 			auto iterFind2 = mInProgressResources.find(UUID);
 			if (iterFind2 != mInProgressResources.end())
 			{
@@ -126,7 +126,7 @@ namespace BansheeEngine
 
 			if (!alreadyLoading)
 			{
-				BS_LOCK_MUTEX(mLoadedResourceMutex);
+				Lock loadedLock(mLoadedResourceMutex);
 				auto iterFind = mLoadedResources.find(UUID);
 				if (iterFind != mLoadedResources.end()) // Resource is already loaded
 				{
@@ -149,7 +149,7 @@ namespace BansheeEngine
 		if (!alreadyLoading)
 		{
 			// Check if the handle already exists
-			BS_LOCK_MUTEX(mLoadedResourceMutex);
+			Lock lock(mLoadedResourceMutex);
 			auto iterFind = mHandles.find(UUID);
 			if (iterFind != mHandles.end())
 				outputResource = iterFind->second.lock();
@@ -198,7 +198,7 @@ namespace BansheeEngine
 		if (!alreadyLoading)
 		{
 			{
-				BS_LOCK_MUTEX(mInProgressResourcesMutex);
+				Lock lock(mInProgressResourcesMutex);
 
 				ResourceLoadData* loadData = bs_new<ResourceLoadData>(outputResource.getWeak(), 0);
 				mInProgressResources[UUID] = loadData;
@@ -238,7 +238,7 @@ namespace BansheeEngine
 
 				// Keep dependencies alive until the parent is done loading
 				{
-					BS_LOCK_MUTEX(mInProgressResourcesMutex);
+					Lock lock(mInProgressResourcesMutex);
 
 					// At this point the resource is guaranteed to still be in-progress, so it's safe to update its dependency list
 					mInProgressResources[UUID]->dependencies = dependencies;
@@ -251,7 +251,7 @@ namespace BansheeEngine
 			if (!dependencies.empty())
 			{
 				{
-					BS_LOCK_MUTEX(mInProgressResourcesMutex);
+					Lock lock(mInProgressResourcesMutex);
 
 					ResourceLoadData* loadData = nullptr;
 
@@ -333,7 +333,7 @@ namespace BansheeEngine
 				// In case loading finished in the meantime we cannot be sure at what point ::loadComplete was triggered,
 				// so trigger it manually so that the dependency count is properly decremented in case this resource
 				// is a dependency.
-				BS_LOCK_MUTEX(mLoadedResourceMutex);
+				Lock lock(mLoadedResourceMutex);
 				auto iterFind = mLoadedResources.find(UUID);
 				if (iterFind != mLoadedResources.end())
 					loadComplete(outputResource);
@@ -370,7 +370,7 @@ namespace BansheeEngine
 		{
 			bool loadInProgress = false;
 
-			BS_LOCK_MUTEX(mInProgressResourcesMutex);
+			Lock inProgressLock(mInProgressResourcesMutex);
 			auto iterFind2 = mInProgressResources.find(UUID);
 			if (iterFind2 != mInProgressResources.end())
 				loadInProgress = true;
@@ -383,7 +383,7 @@ namespace BansheeEngine
 				resource.blockUntilLoaded();
 
 			{
-				BS_LOCK_MUTEX(mLoadedResourceMutex);
+				Lock loadedLock(mLoadedResourceMutex);
 				auto iterFind = mLoadedResources.find(UUID);
 				if (iterFind != mLoadedResources.end()) // Resource is already loaded
 				{
@@ -404,7 +404,7 @@ namespace BansheeEngine
 		Vector<HResource> resourcesToUnload;
 
 		{
-			BS_LOCK_MUTEX(mLoadedResourceMutex);
+			Lock lock(mLoadedResourceMutex);
 			for(auto iter = mLoadedResources.begin(); iter != mLoadedResources.end(); ++iter)
 			{
 				const LoadedResourceData& resData = iter->second;
@@ -433,7 +433,7 @@ namespace BansheeEngine
 		{
 			bool loadInProgress = false;
 			{
-				BS_LOCK_MUTEX(mInProgressResourcesMutex);
+				Lock lock(mInProgressResourcesMutex);
 				auto iterFind2 = mInProgressResources.find(uuid);
 				if (iterFind2 != mInProgressResources.end())
 					loadInProgress = true;
@@ -450,7 +450,7 @@ namespace BansheeEngine
 		resource.mData->mPtr->destroy();
 
 		{
-			BS_LOCK_MUTEX(mLoadedResourceMutex);
+			Lock lock(mLoadedResourceMutex);
 
 			auto iterFind = mLoadedResources.find(uuid);
 			if (iterFind != mLoadedResources.end())
@@ -482,7 +482,7 @@ namespace BansheeEngine
 		{
 			bool loadInProgress = false;
 			{
-				BS_LOCK_MUTEX(mInProgressResourcesMutex);
+				Lock lock(mInProgressResourcesMutex);
 				auto iterFind2 = mInProgressResources.find(resource.getUUID());
 				if (iterFind2 != mInProgressResources.end())
 					loadInProgress = true;
@@ -534,7 +534,7 @@ namespace BansheeEngine
 		handle.setHandleData(resource, uuid);
 
 		{
-			BS_LOCK_MUTEX(mLoadedResourceMutex);
+			Lock lock(mLoadedResourceMutex);
 			auto iterFind = mLoadedResources.find(uuid);
 			if (iterFind == mLoadedResources.end())
 			{
@@ -595,7 +595,7 @@ namespace BansheeEngine
 	{
 		if (checkInProgress)
 		{
-			BS_LOCK_MUTEX(mInProgressResourcesMutex);
+			Lock inProgressLock(mInProgressResourcesMutex);
 			auto iterFind2 = mInProgressResources.find(uuid);
 			if (iterFind2 != mInProgressResources.end())
 			{
@@ -603,7 +603,7 @@ namespace BansheeEngine
 			}
 
 			{
-				BS_LOCK_MUTEX(mLoadedResourceMutex);
+				Lock loadedLock(mLoadedResourceMutex);
 				auto iterFind = mLoadedResources.find(uuid);
 				if (iterFind != mLoadedResources.end())
 				{
@@ -621,7 +621,7 @@ namespace BansheeEngine
 		HResource newHandle(obj, uuid);
 
 		{
-			BS_LOCK_MUTEX(mLoadedResourceMutex);
+			Lock lock(mLoadedResourceMutex);
 
 			LoadedResourceData& resData = mLoadedResources[uuid];
 			resData.resource = newHandle.getWeak();
@@ -633,7 +633,7 @@ namespace BansheeEngine
 
 	HResource Resources::_getResourceHandle(const String& uuid)
 	{
-		BS_LOCK_MUTEX(mLoadedResourceMutex);
+		Lock lock(mLoadedResourceMutex);
 		auto iterFind3 = mHandles.find(uuid);
 		if (iterFind3 != mHandles.end()) // Not loaded, but handle does exist
 		{
@@ -681,7 +681,7 @@ namespace BansheeEngine
 		bool finishLoad = true;
 		Vector<ResourceLoadData*> dependantLoads;
 		{
-			BS_LOCK_MUTEX(mInProgressResourcesMutex);
+			Lock inProgresslock(mInProgressResourcesMutex);
 
 			auto iterFind = mInProgressResources.find(uuid);
 			if (iterFind != mInProgressResources.end())
@@ -706,7 +706,7 @@ namespace BansheeEngine
 				// by its dependencies.
 				if (myLoadData != nullptr && myLoadData->loadedData != nullptr)
 				{
-					BS_LOCK_MUTEX(mLoadedResourceMutex);
+					Lock loadedLock(mLoadedResourceMutex);
 
 					mLoadedResources[uuid] = myLoadData->resData;
 					resource.setHandleData(myLoadData->loadedData, uuid);
@@ -740,7 +740,7 @@ namespace BansheeEngine
 		SPtr<Resource> rawResource = loadFromDiskAndDeserialize(filePath);
 
 		{
-			BS_LOCK_MUTEX(mInProgressResourcesMutex);
+			Lock lock(mInProgressResourcesMutex);
 
 			// Check if all my dependencies are loaded
 			ResourceLoadData* myLoadData = mInProgressResources[resource.getUUID()];

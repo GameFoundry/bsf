@@ -75,7 +75,7 @@ namespace BansheeEngine
 
 		Vector<HResource> mTempResourceBuffer;
 
-		BS_RECURSIVE_MUTEX(mMutex);
+		RecursiveMutex mMutex;
 
 #if BS_DEBUG_MODE
 		Set<IResourceListener*> mActiveListeners;

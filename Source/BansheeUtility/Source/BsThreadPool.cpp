@@ -28,7 +28,7 @@ namespace BansheeEngine
 		PooledThread* parentThread = nullptr;
 
 		{
-			BS_LOCK_MUTEX(mPool->mMutex);
+			Lock lock(mPool->mMutex);
 
 			for (auto& thread : mPool->mThreads)
 			{
@@ -42,12 +42,12 @@ namespace BansheeEngine
 
 		if (parentThread != nullptr)
 		{
-			BS_LOCK_MUTEX_NAMED(parentThread->mMutex, lock);
+			Lock lock(parentThread->mMutex);
 
 			if (parentThread->mId == mThreadId) // Check again in case it changed
 			{
 				while (!parentThread->mIdle)
-					BS_THREAD_WAIT(parentThread->mWorkerEndedCond, parentThread->mMutex, lock);
+					parentThread->mWorkerEndedCond.wait(lock);
 			}
 		}
 	}
@@ -62,19 +62,18 @@ namespace BansheeEngine
 
 	void PooledThread::initialize()
 	{
-		BS_THREAD_CREATE(t, std::bind(&PooledThread::run, this));
-		mThread = t;
+		mThread = bs_new<Thread>(std::bind(&PooledThread::run, this));
 
-		BS_LOCK_MUTEX_NAMED(mMutex, lock);
+		Lock lock(mMutex);
 
 		while(!mThreadStarted)
-			BS_THREAD_WAIT(mStartedCond, mMutex, lock);
+			mStartedCond.wait(lock);
 	}
 
 	void PooledThread::start(std::function<void()> workerMethod, UINT32 id)
 	{
 		{
-			BS_LOCK_MUTEX(mMutex);
+			Lock lock(mMutex);
 
 			mWorkerMethod = workerMethod;
 			mIdle = false;
@@ -83,7 +82,7 @@ namespace BansheeEngine
 			mId = id;
 		}
 
-		BS_THREAD_NOTIFY_ONE(mReadyCond);
+		mReadyCond.notify_one();
 	}
 
 	void PooledThread::run()
@@ -91,11 +90,11 @@ namespace BansheeEngine
 		onThreadStarted(mName);
 
 		{
-			BS_LOCK_MUTEX(mMutex);
+			Lock lock(mMutex);
 			mThreadStarted = true;
 		}
 
-		BS_THREAD_NOTIFY_ONE(mStartedCond);
+		mStartedCond.notify_one();
 
 		while(true)
 		{
@@ -103,10 +102,10 @@ namespace BansheeEngine
 
 			{
 				{
-					BS_LOCK_MUTEX_NAMED(mMutex, lock);
+					Lock lock(mMutex);
 
 					while (!mThreadReady)
-						BS_THREAD_WAIT(mReadyCond, mMutex, lock);
+						mReadyCond.wait(lock);
 
 					worker = mWorkerMethod;
 				}
@@ -133,14 +132,14 @@ namespace BansheeEngine
 #endif
 
 			{
-				BS_LOCK_MUTEX(mMutex);
+				Lock lock(mMutex);
 
 				mIdle = true;
 				mIdleTime = std::time(nullptr);
 				mThreadReady = false;
 				mWorkerMethod = nullptr; // Make sure to clear as it could have bound shared pointers and similar
 
-				BS_THREAD_NOTIFY_ONE(mWorkerEndedCond);
+				mWorkerEndedCond.notify_one();
 			}
 		}
 	}
@@ -150,34 +149,34 @@ namespace BansheeEngine
 		blockUntilComplete();
 
 		{
-			BS_LOCK_MUTEX(mMutex);
+			Lock lock(mMutex);
 			mWorkerMethod = nullptr;
 			mThreadReady = true;
 		}
 
-		BS_THREAD_NOTIFY_ONE(mReadyCond);
-		BS_THREAD_JOIN((*mThread));
-		BS_THREAD_DESTROY(mThread);
+		mReadyCond.notify_one();
+		mThread->join();
+		bs_delete(mThread);
 	}
 
 	void PooledThread::blockUntilComplete()
 	{
-		BS_LOCK_MUTEX_NAMED(mMutex, lock);
+		Lock lock(mMutex);
 
 		while (!mIdle)
-			BS_THREAD_WAIT(mWorkerEndedCond, mMutex, lock);
+			mWorkerEndedCond.wait(lock);
 	}
 
 	bool PooledThread::isIdle()
 	{
-		BS_LOCK_MUTEX(mMutex);
+		Lock lock(mMutex);
 
 		return mIdle;
 	}
 
 	time_t PooledThread::idleTime()
 	{
-		BS_LOCK_MUTEX(mMutex);
+		Lock lock(mMutex);
 
 		return (time(nullptr) - mIdleTime);
 	}
@@ -189,7 +188,7 @@ namespace BansheeEngine
 
 	UINT32 PooledThread::getId() const
 	{ 
-		BS_LOCK_MUTEX(mMutex);
+		Lock lock(mMutex);
 
 		return mId; 
 	}
@@ -215,7 +214,7 @@ namespace BansheeEngine
 
 	void ThreadPool::stopAll()
 	{
-		BS_LOCK_MUTEX(mMutex);
+		Lock lock(mMutex);
 		for(auto& thread : mThreads)
 		{
 			destroyThread(thread);
@@ -226,7 +225,7 @@ namespace BansheeEngine
 
 	void ThreadPool::clearUnused()
 	{
-		BS_LOCK_MUTEX(mMutex);
+		Lock lock(mMutex);
 		mAge = 0;
 
 		if(mThreads.size() <= mDefaultCapacity)
@@ -280,7 +279,7 @@ namespace BansheeEngine
 	{
 		UINT32 age = 0;
 		{
-			BS_LOCK_MUTEX(mMutex);
+			Lock lock(mMutex);
 			age = ++mAge;
 		}
 
@@ -288,7 +287,7 @@ namespace BansheeEngine
 			clearUnused();
 
 		PooledThread* newThread = nullptr;
-		BS_LOCK_MUTEX(mMutex);
+		Lock lock(mMutex);
 
 		for(auto& thread : mThreads)
 		{
@@ -315,7 +314,7 @@ namespace BansheeEngine
 	{
 		UINT32 numAvailable = 0;
 
-		BS_LOCK_MUTEX(mMutex);
+		Lock lock(mMutex);
 		for(auto& thread : mThreads)
 		{
 			if(thread->isIdle())
@@ -329,7 +328,7 @@ namespace BansheeEngine
 	{
 		UINT32 numActive = 0;
 
-		BS_LOCK_MUTEX(mMutex);
+		Lock lock(mMutex);
 		for(auto& thread : mThreads)
 		{
 			if(!thread->isIdle())
@@ -341,7 +340,7 @@ namespace BansheeEngine
 
 	UINT32 ThreadPool::getNumAllocated() const
 	{
-		BS_LOCK_MUTEX(mMutex);
+		Lock lock(mMutex);
 
 		return (UINT32)mThreads.size();
 	}

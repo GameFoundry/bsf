@@ -134,7 +134,7 @@ namespace BansheeEngine
 		Vector<CoreStoredSyncObjData> mDestroyedSyncData;
 		List<CoreStoredSyncData> mCoreSyncData;
 
-		BS_MUTEX(mObjectsMutex);
+		Mutex mObjectsMutex;
 	};
 
 	/** @} */
