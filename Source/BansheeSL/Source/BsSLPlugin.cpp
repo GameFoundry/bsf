@@ -7,7 +7,7 @@
 namespace BansheeEngine
 {
 	/**	Returns a name of the plugin. */
-	extern "C" BS_SL_EXPORT const String& getPluginName()
+	extern "C" BS_SL_EXPORT const char* getPluginName()
 	{
 		return SystemName;
 	}

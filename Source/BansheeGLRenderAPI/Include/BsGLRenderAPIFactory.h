@@ -13,7 +13,7 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
-	const String SystemName = "BansheeGLRenderSystem";
+	static const char* SystemName = "BansheeGLRenderSystem";
 
 	/** Handles creation of the OpenGL render system. */
 	class GLRenderAPIFactory : public RenderAPIFactory
@@ -23,7 +23,7 @@ namespace BansheeEngine
 		void create() override;
 
 		/** @copydoc RenderAPIFactory::name */
-		const String& name() const override { return SystemName; }
+		const char* name() const override { return SystemName; }
 
 	private:
 		/**	Registers the factory with the render system manager when constructed. */

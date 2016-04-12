@@ -67,7 +67,7 @@ namespace BansheeEngine
 
 	EditorApplication::EditorApplication(EditorRenderAPI renderAPIPlugin)
 		:Application(createRenderWindowDesc(), toEngineRenderAPI(renderAPIPlugin), RendererPlugin::Default, getImporters()),
-		mActiveRAPIPlugin(toEngineRenderAPI(renderAPIPlugin)), mSBansheeEditorPlugin(nullptr), mIsProjectLoaded(false)
+		mActiveRAPIPlugin(toEngineRenderAPI(renderAPIPlugin)), mIsProjectLoaded(false), mSBansheeEditorPlugin(nullptr)
 	{
 
 	}
@@ -115,7 +115,7 @@ namespace BansheeEngine
 		BuildManager::startUp();
 		CodeEditorManager::startUp();
 
-		MainEditorWindow* mainWindow = MainEditorWindow::create(getPrimaryWindow());
+		MainEditorWindow::create(getPrimaryWindow());
 		ScriptManager::instance().initialize();
 	}
 

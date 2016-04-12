@@ -5,9 +5,9 @@
 
 namespace BansheeEngine
 {
-	extern "C" BS_FREEIMG_EXPORT const String& getPluginName()
+	extern "C" BS_FREEIMG_EXPORT const char* getPluginName()
 	{
-		static String pluginName = "FreeImageImporter";
+		static const char* pluginName = "FreeImageImporter";
 		return pluginName;
 	}
 

@@ -175,18 +175,18 @@ namespace BansheeEngine
 		}
 
 		WString message = toWString(entry.getMessage());
-		WString::size_type lfPos = message.find_first_of('\n');
-		WString::size_type crPos = message.find_first_of('\r');
-		WString::size_type newlinePos;
+		size_t lfPos = message.find_first_of('\n');
+		size_t crPos = message.find_first_of('\r');
+		size_t newlinePos;
 
-		if (lfPos >= 0)
+		if (lfPos != WString::npos)
 		{
-			if (crPos >= 0)
+			if (crPos != WString::npos)
 				newlinePos = std::min(lfPos, crPos);
 			else
 				newlinePos = lfPos;
 		}
-		else if (crPos >= 0)
+		else if (crPos != WString::npos)
 			newlinePos = crPos;
 		else
 			newlinePos = -1;

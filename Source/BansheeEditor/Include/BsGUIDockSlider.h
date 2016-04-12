@@ -56,7 +56,6 @@ namespace BansheeEngine
 	private:
 		Vector2I mLastDragPosition;
 		bool mHorizontal;
-		bool mIsCursorSet;
 		bool mDragInProgress;
 
 		GUIDockSlider(bool horizontal, const String& styleName, const GUIDimensions& dimensions);

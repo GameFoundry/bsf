@@ -7,8 +7,7 @@
 namespace BansheeEngine
 {
 	GLOcclusionQuery::GLOcclusionQuery(bool binary)
-		:OcclusionQuery(binary), mQueryObj(0), 
-		mNumSamples(0), mFinalized(false), mEndIssued(false)
+		:OcclusionQuery(binary), mQueryObj(0), mFinalized(false), mEndIssued(false), mNumSamples(0)
 	{
 		glGenQueries(1, &mQueryObj);
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_Query);

@@ -4,9 +4,9 @@
 
 namespace BansheeEngine
 {
-	extern "C" BS_MONO_EXPORT const String& getPluginName()
+	extern "C" BS_MONO_EXPORT const char* getPluginName()
 	{
-		static String pluginName = "BansheeMono";
+		static const char* pluginName = "BansheeMono";
 		return pluginName;
 	}
 }

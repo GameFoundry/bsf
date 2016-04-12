@@ -9,7 +9,7 @@
 namespace BansheeEngine
 {
 	Cursor::Cursor()
-		:mActiveCursorId(-1), mNextUniqueId((UINT32)CursorType::Count)
+		:mNextUniqueId((UINT32)CursorType::Count), mActiveCursorId(-1)
 	{
 		for(UINT32 i = 0; i < (UINT32)CursorType::Count; i++)
 			restoreCursorIcon((CursorType)i);
@@ -162,6 +162,8 @@ namespace BansheeEngine
 		case CursorType::ArrowLeftRight:
 			mCustomIcons[id].pixelData = BuiltinResources::instance().getCursorMoveLeftRight(mCustomIcons[id].hotSpot);
 			return;
+		default:
+			break;
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Invalid cursor type: " + toString((UINT32)type));

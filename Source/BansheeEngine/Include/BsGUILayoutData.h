@@ -18,7 +18,7 @@ namespace BansheeEngine
 	struct BS_EXPORT GUILayoutData
 	{
 		GUILayoutData()
-			:depthRangeMin(-1), depthRangeMax(-1), depth(0)
+			:depth(0), depthRangeMin(-1), depthRangeMax(-1)
 		{ 
 			setPanelDepth(0);
 		}

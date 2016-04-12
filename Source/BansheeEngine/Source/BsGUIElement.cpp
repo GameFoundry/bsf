@@ -10,8 +10,8 @@ namespace BansheeEngine
 	const Color GUIElement::DISABLED_COLOR = Color(0.5f, 0.5f, 0.5f, 1.0f);
 
 	GUIElement::GUIElement(const String& styleName, const GUIDimensions& dimensions)
-		:GUIElementBase(dimensions), mStyle(&GUISkin::DefaultStyle),
-		mIsDestroyed(false), mStyleName(styleName), mBlockPointerEvents(true)
+		:GUIElementBase(dimensions), mIsDestroyed(false), mBlockPointerEvents(true), mStyle(&GUISkin::DefaultStyle)
+		, mStyleName(styleName)
 	{
 		// Style is set to default here, and the proper one is assigned once GUI element
 		// is assigned to a parent (that's when the active GUI skin becomes known)

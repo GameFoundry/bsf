@@ -53,7 +53,7 @@ namespace BansheeEngine
 		friend class UndoRedo;
 
 		CmdInputFieldValueChange(const WString& description, InputFieldType* inputField, const ValueType& value)
-			:EditorCommand(description), mInputField(inputField), mOldValue(inputField->getValue()), mNewValue(value)
+			:EditorCommand(description), mOldValue(inputField->getValue()), mNewValue(value), mInputField(inputField)
 		{ }
 
 		ValueType mOldValue;

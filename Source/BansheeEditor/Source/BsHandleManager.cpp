@@ -11,8 +11,8 @@
 namespace BansheeEngine
 {
 	HandleManager::HandleManager()
-		:mSliderManager(nullptr), mDrawManager(nullptr), mSettingsHash(0xFFFFFFFF),
-		mLastDrawFrameIdx((UINT64)-1), mInputStarted(false)
+		: mSliderManager(nullptr), mDrawManager(nullptr), mInputStarted(false), mSettingsHash(0xFFFFFFFF)
+		, mLastDrawFrameIdx((UINT64)-1)
 	{
 		mSliderManager = bs_new<HandleSliderManager>();
 		mDrawManager = bs_new<HandleDrawManager>();

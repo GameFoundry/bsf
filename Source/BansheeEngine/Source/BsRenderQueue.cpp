@@ -46,6 +46,8 @@ namespace BansheeEngine
 		case QueueSortType::BackToFront:
 			distFromCamera = -distFromCamera;
 			break;
+		case QueueSortType::FrontToBack:
+			break;
 		}
 
 		UINT32 numPasses = material->getNumPasses();

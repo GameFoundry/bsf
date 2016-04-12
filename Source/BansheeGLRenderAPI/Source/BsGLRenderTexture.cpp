@@ -18,11 +18,6 @@ namespace BansheeEngine
 		GL_DEPTH32F_STENCIL8
 	};
 
-	static const UINT32 depthBits[] =
-	{
-		0, 16, 32, 24, 32
-	};
-
 #define DEPTHFORMAT_COUNT (sizeof(depthFormats)/sizeof(GLenum))
 
 	GLRenderTextureCore::GLRenderTextureCore(const RENDER_TEXTURE_CORE_DESC& desc)
@@ -325,7 +320,7 @@ namespace BansheeEngine
         case PCT_BYTE: format = PF_A8R8G8B8; break;
         case PCT_FLOAT16: format = PF_FLOAT16_RGBA; break;
         case PCT_FLOAT32: format = PF_FLOAT32_RGBA; break;
-        case PCT_COUNT: break;
+        default: break;
         }
 
         if(checkFormat(format))

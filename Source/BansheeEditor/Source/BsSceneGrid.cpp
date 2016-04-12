@@ -110,6 +110,8 @@ namespace BansheeEngine
 			case GridMode::OrthoNegZ:
 				gridPlaneNormal = Vector3(0.0f, 0.0f, 1.0f);
 				break;
+			default:
+				break;
 			}
 
 			SceneGridCore* core = mCore.load(std::memory_order_relaxed);

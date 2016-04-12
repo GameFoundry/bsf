@@ -16,8 +16,8 @@ namespace BansheeEngine
 {
 	DropDownWindow::DropDownWindow(const SPtr<RenderWindow>& parent, const SPtr<Camera>& camera,
 		const Vector2I& position, UINT32 width, UINT32 height)
-		:mRootPanel(nullptr), mPosition(position), mWidth(width), mHeight(height), 
-		mRenderWindow(parent), mFrontHitBox(nullptr), mBackHitBox(nullptr)
+		: mRenderWindow(parent), mFrontHitBox(nullptr), mBackHitBox(nullptr), mRootPanel(nullptr), mPosition(position)
+		, mWidth(width), mHeight(height)
 	{
 		mSceneObject = SceneObject::create("EditorWindow", SOF_Internal | SOF_Persistent | SOF_DontSave);
 

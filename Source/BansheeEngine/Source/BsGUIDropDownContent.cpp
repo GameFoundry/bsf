@@ -21,9 +21,9 @@ namespace BansheeEngine
 
 	GUIDropDownContent::GUIDropDownContent(GUIDropDownMenu::DropDownSubMenu* parent, const GUIDropDownData& dropDownData, 
 		const String& style, const GUIDimensions& dimensions)
-		:GUIElementContainer(dimensions, style), mDropDownData(dropDownData), mKeyboardFocus(true), 
-		mStates(dropDownData.states), mSelectedIdx(UINT_MAX), mRangeStart(0), mRangeEnd(0), mParent(parent), 
-		mIsToggle(parent->getType() == GUIDropDownType::MultiListBox)
+		: GUIElementContainer(dimensions, style), mDropDownData(dropDownData), mStates(dropDownData.states)
+		, mSelectedIdx(UINT_MAX), mRangeStart(0), mRangeEnd(0), mParent(parent), mKeyboardFocus(true)
+		, mIsToggle(parent->getType() == GUIDropDownType::MultiListBox)
 	{
 
 	}
@@ -203,8 +203,6 @@ namespace BansheeEngine
 		if (!mKeyboardFocus)
 			return baseReturn;
 
-		UINT32 maxElemIdx = (UINT32)mDropDownData.entries.size();
-
 		switch (ev.getType())
 		{
 		case GUICommandEventType::MoveDown:
@@ -246,6 +244,8 @@ namespace BansheeEngine
 				mParent->elementActivated(mVisibleElements[mSelectedIdx].idx, mVisibleElements[mSelectedIdx].button->_getLayoutData().area);
 			}
 			return true;
+		default:
+			break;
 		}
 
 		return baseReturn;

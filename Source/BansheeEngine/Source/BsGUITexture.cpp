@@ -16,8 +16,7 @@ namespace BansheeEngine
 
 	GUITexture::GUITexture(const String& styleName, const HSpriteTexture& texture, 
 		GUIImageScaleMode scale, bool transparent, const GUIDimensions& dimensions)
-		:GUIElement(styleName, dimensions), mScaleMode(scale), mUsingStyleTexture(false),
-		mTransparent(transparent)
+		:GUIElement(styleName, dimensions), mScaleMode(scale), mTransparent(transparent), mUsingStyleTexture(false)
 	{
 		mImageSprite = bs_new<ImageSprite>();
 

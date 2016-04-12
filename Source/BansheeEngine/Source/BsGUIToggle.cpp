@@ -14,7 +14,7 @@ namespace BansheeEngine
 	}
 
 	GUIToggle::GUIToggle(const String& styleName, const GUIContent& content, SPtr<GUIToggleGroup> toggleGroup, const GUIDimensions& dimensions)
-		:GUIButtonBase(styleName, content, dimensions), mIsToggled(false), mToggleGroup(nullptr)
+		:GUIButtonBase(styleName, content, dimensions), mToggleGroup(nullptr), mIsToggled(false)
 	{
 		if(toggleGroup != nullptr)
 			toggleGroup->_add(this);

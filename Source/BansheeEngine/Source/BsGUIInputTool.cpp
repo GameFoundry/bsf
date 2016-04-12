@@ -9,7 +9,7 @@
 namespace BansheeEngine
 {
 	GUIInputTool::GUIInputTool()
-		:mQuads(nullptr), mNumQuads(0), mElement(nullptr)
+		:mElement(nullptr), mQuads(nullptr), mNumQuads(0)
 	{ }
 
 	GUIInputTool::~GUIInputTool()
@@ -41,8 +41,6 @@ namespace BansheeEngine
 
 			TextSprite::genTextQuads(textData, mTextDesc.width, mTextDesc.height, mTextDesc.horzAlign, mTextDesc.vertAlign, mTextDesc.anchor,
 				mQuads, nullptr, nullptr, mNumQuads);
-
-			UINT32 numVerts = mNumQuads * 4;
 
 			// Store cached line data
 			UINT32 curCharIdx = 0;
@@ -107,7 +105,7 @@ namespace BansheeEngine
 		for(UINT32 i = 0; i < lineIdx; i++)
 			numNewlineChars += (getLineDesc(i).hasNewlineChar() ? 1 : 0);
 
-		UINT32 quadIdx = charIdx - numNewlineChars;
+		INT32 quadIdx = (INT32)(charIdx - numNewlineChars);
 		if(quadIdx >= 0 && quadIdx < mNumQuads)
 		{
 			UINT32 vertIdx = quadIdx * 4;

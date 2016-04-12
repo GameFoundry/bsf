@@ -19,9 +19,9 @@ namespace BansheeEngine
 
 	GUIScrollArea::GUIScrollArea(ScrollBarType vertBarType, ScrollBarType horzBarType, 
 		const String& scrollBarStyle, const String& scrollAreaStyle, const GUIDimensions& dimensions)
-		:GUIElementContainer(dimensions), mVertScroll(nullptr), mHorzScroll(nullptr), mVertOffset(0), mHorzOffset(0),
-		mVertBarType(vertBarType), mHorzBarType(horzBarType), mScrollBarStyle(scrollBarStyle), mRecalculateVertOffset(false),
-		mRecalculateHorzOffset(false)
+		: GUIElementContainer(dimensions), mVertBarType(vertBarType), mHorzBarType(horzBarType)
+		, mScrollBarStyle(scrollBarStyle), mVertScroll(nullptr), mHorzScroll(nullptr), mVertOffset(0), mHorzOffset(0)
+		, mRecalculateVertOffset(false), mRecalculateHorzOffset(false)
 	{
 		mContentLayout = GUILayoutY::create();
 		_registerChildElement(mContentLayout);
@@ -147,7 +147,7 @@ namespace BansheeEngine
 		visibleSize = Vector2I(layoutArea.width, layoutArea.height);
 
 		bool addHorzScrollbar = (mHorzBarType == ScrollBarType::ShowIfDoesntFit && contentSize.x > visibleSize.x) ||
-			mHorzBarType == ScrollBarType::AlwaysShow && mHorzBarType != ScrollBarType::NeverShow;
+			mHorzBarType == ScrollBarType::AlwaysShow;
 
 		bool hasHorzScrollbar = false;
 		bool hasVertScrollbar = false;
@@ -167,7 +167,7 @@ namespace BansheeEngine
 		}
 
 		bool addVertScrollbar = (mVertBarType == ScrollBarType::ShowIfDoesntFit && contentSize.y > visibleSize.y) ||
-			mVertBarType == ScrollBarType::AlwaysShow && mVertBarType != ScrollBarType::NeverShow;
+			mVertBarType == ScrollBarType::AlwaysShow;
 
 		if (addVertScrollbar)
 		{

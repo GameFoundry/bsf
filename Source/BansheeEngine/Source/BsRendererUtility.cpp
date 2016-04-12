@@ -261,7 +261,6 @@ namespace BansheeEngine
 	void RendererUtility::draw(const SPtr<MeshCoreBase>& mesh, const SubMesh& subMesh)
 	{
 		RenderAPICore& rs = RenderAPICore::instance();
-		const MeshProperties& meshProps = mesh->getProperties();
 		SPtr<VertexData> vertexData = mesh->getVertexData();
 
 		rs.setVertexDeclaration(vertexData->vertexDeclaration);

@@ -26,7 +26,7 @@ namespace BansheeEngine
 	struct BS_EXPORT RenderQueueElement
 	{
 		RenderQueueElement()
-			:passIdx(0), renderElem(nullptr), applyPass(true)
+			:renderElem(nullptr), passIdx(0), applyPass(true)
 		{ }
 
 		RenderableElement* renderElem;

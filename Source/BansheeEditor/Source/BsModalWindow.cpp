@@ -16,8 +16,8 @@
 namespace BansheeEngine
 {
 	ModalWindow::ModalWindow(const HString& title, bool hasCloseButton)
-		:EditorWindowBase(true), mTitleBarPanel(nullptr), mTitleBarBgPanel(nullptr), 
-		mCloseButton(nullptr), mTitleBarBg(nullptr), mTitle(nullptr), mContents(nullptr)
+		: EditorWindowBase(true), mTitleBarPanel(nullptr), mTitleBarBgPanel(nullptr), mTitle(nullptr), mCloseButton(nullptr)
+		, mTitleBarBg(nullptr),mContents(nullptr)
 	{
 		EditorWindowManager::instance().registerWindow(this);
 

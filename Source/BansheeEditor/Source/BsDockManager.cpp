@@ -34,16 +34,16 @@ namespace BansheeEngine
 	const UINT32 DockManager::DockContainer::MIN_CHILD_SIZE = 20;
 
 	DockManager::DockContainer::DockContainer(DockManager* manager)
-		:mIsLeaf(true), mWidgets(nullptr), mSplitPosition(0.5f),
-		mIsHorizontal(false), mParent(nullptr), mSlider(nullptr), mManager(manager)
+		: mIsLeaf(true), mParent(nullptr), mManager(manager), mWidgets(nullptr), mSlider(nullptr), mSplitPosition(0.5f)
+		, mIsHorizontal(false)
 	{
 		mChildren[0] = nullptr;
 		mChildren[1] = nullptr;
 	}
 
 	DockManager::DockContainer::DockContainer(DockManager* manager, DockContainer* parent)
-		:mIsLeaf(false), mWidgets(nullptr), mSplitPosition(0.5f),
-		mIsHorizontal(false), mParent(parent), mSlider(nullptr), mManager(manager)
+		: mIsLeaf(false), mParent(parent), mManager(manager), mWidgets(nullptr), mSlider(nullptr), mSplitPosition(0.5f)
+		, mIsHorizontal(false)  
 	{
 		mChildren[0] = nullptr;
 		mChildren[1] = nullptr;
@@ -445,8 +445,9 @@ namespace BansheeEngine
 	}
 
 	DockManager::DockManager(EditorWindowBase* parentWindow, const GUIDimensions& dimensions)
-		:GUIElementContainer(dimensions), mMouseOverContainer(nullptr), mHighlightedDropLoc(DockLocation::None),
-		mShowOverlay(false), mRootContainer(this), mParentWindow(parentWindow), mIsMaximized(false), mMaximizedContainer(nullptr)
+		: GUIElementContainer(dimensions), mParentWindow(parentWindow), mRootContainer(this), mIsMaximized(false)
+		, mMaximizedContainer(nullptr), mMouseOverContainer(nullptr), mHighlightedDropLoc(DockLocation::None)
+		, mShowOverlay(false)
 	{
 		mTopDropPolygon = bs_newN<Vector2>(4);
 		mBotDropPolygon = bs_newN<Vector2>(4);
@@ -524,6 +525,8 @@ namespace BansheeEngine
 				break;
 			case DockLocation::Bottom:
 				container->addBottom(widgetToInsert);
+				break;
+			case DockLocation::None:
 				break;
 			}
 		}
@@ -1125,7 +1128,7 @@ namespace BansheeEngine
 	const Color DockOverlayRenderer::HIGHLIGHT_COLOR = Color(0.44f, 0.44f, 0.44f, 0.42f);
 
 	DockOverlayRenderer::DockOverlayRenderer()
-		:mShowOverlay(false), mHighlightedDropLoc(DockManager::DockLocation::None)
+		:mHighlightedDropLoc(DockManager::DockLocation::None), mShowOverlay(false)
 	{
 		
 	}

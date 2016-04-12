@@ -28,11 +28,11 @@ namespace BansheeEngine
 	const WString ProjectLibrary::RESOURCE_MANIFEST_FILENAME = L"ResourceManifest.asset";
 
 	ProjectLibrary::LibraryEntry::LibraryEntry()
-		:parent(nullptr), type(LibraryEntryType::Directory)
+		:type(LibraryEntryType::Directory), parent(nullptr)
 	{ }
 
 	ProjectLibrary::LibraryEntry::LibraryEntry(const Path& path, const WString& name, DirectoryEntry* parent, LibraryEntryType type)
-		:path(path), parent(parent), type(type), elementName(name)
+		:type(type), path(path), elementName(name), parent(parent)
 	{ }
 
 	ProjectLibrary::FileEntry::FileEntry()
@@ -1082,7 +1082,7 @@ namespace BansheeEngine
 						DirectoryEntry* childSourceDirEntry = static_cast<DirectoryEntry*>(child);
 						DirectoryEntry* childDestDirEntry = addDirectoryInternal(destDir, childDestPath);
 
-						todo.push(std::make_tuple(childSourceDirEntry, childSourceDirEntry));
+						todo.push(std::make_tuple(childSourceDirEntry, childDestDirEntry));
 					}
 				}
 			}

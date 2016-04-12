@@ -23,7 +23,7 @@ namespace BansheeEngine
 	const UINT32 HandleDrawManager::ARC_QUALITY = 10;
 
 	HandleDrawManager::HandleDrawManager()
-		:mCore(nullptr), mLastFrameIdx((UINT64)-1)
+		:mLastFrameIdx((UINT64)-1), mCore(nullptr)
 	{
 		mTransform = Matrix4::IDENTITY;
 		mDrawHelper = bs_new<DrawHelper>();

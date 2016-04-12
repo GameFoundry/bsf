@@ -32,8 +32,8 @@ namespace BansheeEngine
 	const Color GUITreeView::DISABLED_COLOR = Color(1.0f, 1.0f, 1.0f, 0.6f);
 
 	GUITreeView::TreeElement::TreeElement()
-		:mParent(nullptr), mFoldoutBtn(nullptr), mElement(nullptr), mIsSelected(false),
-		mIsExpanded(false), mSortedIdx(0), mIsVisible(true), mIsHighlighted(false), mIsCut(false), mIsDisabled(false)
+		: mParent(nullptr), mFoldoutBtn(nullptr), mElement(nullptr), mSortedIdx(0), mIsExpanded(false), mIsSelected(false)
+		, mIsHighlighted(false), mIsVisible(true), mIsCut(false), mIsDisabled(false)
 	{ }
 
 	GUITreeView::TreeElement::~TreeElement()
@@ -83,11 +83,13 @@ namespace BansheeEngine
 	GUITreeView::GUITreeView(const String& backgroundStyle, const String& elementBtnStyle, 
 		const String& foldoutBtnStyle, const String& selectionBackgroundStyle, const String& highlightBackgroundStyle, 
 		const String& editBoxStyle, const String& dragHighlightStyle, const String& dragSepHighlightStyle, const GUIDimensions& dimensions)
-		:GUIElementContainer(dimensions), mBackgroundStyle(backgroundStyle),
-		mElementBtnStyle(elementBtnStyle), mFoldoutBtnStyle(foldoutBtnStyle), mEditBoxStyle(editBoxStyle), mEditElement(nullptr), mIsElementSelected(false),
-		mNameEditBox(nullptr), mHighlightBackgroundStyle(highlightBackgroundStyle), mSelectionBackgroundStyle(selectionBackgroundStyle), mDragInProgress(false), 
-		mDragHighlightStyle(dragHighlightStyle), mDragSepHighlightStyle(dragSepHighlightStyle), mDragHighlight(nullptr), mDragSepHighlight(nullptr), mMouseOverDragElement(nullptr), 
-		mMouseOverDragElementTime(0.0f), mScrollState(ScrollState::None), mLastScrollTime(0.0f), mIsElementHighlighted(false)
+		: GUIElementContainer(dimensions), mBackgroundStyle(backgroundStyle), mElementBtnStyle(elementBtnStyle)
+		, mFoldoutBtnStyle(foldoutBtnStyle), mSelectionBackgroundStyle(selectionBackgroundStyle)
+		, mHighlightBackgroundStyle(highlightBackgroundStyle), mEditBoxStyle(editBoxStyle)
+		, mDragHighlightStyle(dragHighlightStyle), mDragSepHighlightStyle(dragSepHighlightStyle), mIsElementSelected(false)
+		, mIsElementHighlighted(false), mEditElement(nullptr), mNameEditBox(nullptr), mDragInProgress(false)
+		, mDragHighlight(nullptr), mDragSepHighlight(nullptr), mScrollState(ScrollState::None), mLastScrollTime(0.0f)
+		, mMouseOverDragElement(nullptr), mMouseOverDragElementTime(0.0f)
 	{
 		if(mBackgroundStyle == StringUtil::BLANK)
 			mBackgroundStyle = "TreeViewBackground";
@@ -191,6 +193,8 @@ namespace BansheeEngine
 
 						scrollArea->scrollDownPx(scrollAmount);
 					}
+					break;
+				case ScrollState::None:
 					break;
 				}
 			}
@@ -349,8 +353,6 @@ namespace BansheeEngine
 				if(dist > DRAG_MIN_DISTANCE && mEditElement == nullptr)
 				{
 					const GUITreeView::InteractableElement* element = findElementUnderCoord(mDragStartPosition);
-					TreeElement* treeElement = nullptr;
-
 					Vector<TreeElement*> draggedElements;
 
 					if(element != nullptr && element->isTreeElement())
@@ -1204,7 +1206,7 @@ namespace BansheeEngine
 
 	GUITreeView::TreeElement* GUITreeView::getBottomMostSelectedElement() const
 	{
-		auto& botMostElement = mVisibleElements.end();
+		auto botMostElement = mVisibleElements.end();
 
 		for(auto& selectedElement : mSelectedElements)
 		{
@@ -1317,7 +1319,6 @@ namespace BansheeEngine
 			INT32 top = myBounds.y;
 			INT32 bottom = myBounds.y + myBounds.height;
 
-			INT32 offset = 0;
 			if(elemVertTop < top)
 				scrollArea->scrollUpPx(top - elemVertTop);
 			else if(elemVertBottom > bottom)

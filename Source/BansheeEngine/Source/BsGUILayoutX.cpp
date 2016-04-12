@@ -196,7 +196,8 @@ namespace BansheeEngine
 		// Weight is to ensure all elements are scaled fairly, so elements that are large will get effected more than smaller elements.
 		childIdx = 0;
 		float invOptimalSize = 1.0f / totalNonClampedSize;
-		for (auto& child : mChildren)
+		UINT32 childCount = (UINT32)mChildren.size();
+		for (UINT32 i = 0; i < childCount; i++)
 		{
 			if (processedElements[childIdx])
 			{
@@ -267,6 +268,8 @@ namespace BansheeEngine
 						remainingSize = (UINT32)std::max(0, (INT32)remainingSize - (INT32)extraWidth);
 					}
 						break;
+					case GUIElementBase::Type::FixedSpace:
+						break;
 					}
 
 					childIdx++;
@@ -328,6 +331,8 @@ namespace BansheeEngine
 						remainingSize = (UINT32)std::max(0, (INT32)remainingSize - (INT32)extraWidth);
 					}
 						break;
+					case GUIElementBase::Type::FixedSpace:
+						break;
 					}
 
 					childIdx++;
@@ -371,8 +376,6 @@ namespace BansheeEngine
 			}
 			else if (child->_getType() == GUIElementBase::Type::Layout || child->_getType() == GUIElementBase::Type::Panel)
 			{
-				GUILayout* layout = static_cast<GUILayout*>(child);
-
 				elementAreas[childIdx].x = layoutArea.x + xOffset;
 				elementAreas[childIdx].y = layoutArea.y;
 			}

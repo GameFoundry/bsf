@@ -29,9 +29,8 @@ namespace BansheeEngine
 	}
 
 	GUIInputBox::GUIInputBox(const String& styleName, const GUIDimensions& dimensions, bool multiline)
-		:GUIElement(styleName, dimensions), mDragInProgress(false),
-		mCaretShown(false), mSelectionShown(false), mIsMultiline(multiline), mHasFocus(false), mIsMouseOver(false),
-		mState(State::Normal)
+		: GUIElement(styleName, dimensions), mIsMultiline(multiline), mHasFocus(false), mIsMouseOver(false)
+		, mState(State::Normal), mCaretShown(false), mSelectionShown(false), mDragInProgress(false)
 	{
 		mImageSprite = bs_new<ImageSprite>();
 		mTextSprite = bs_new<TextSprite>();
@@ -79,7 +78,6 @@ namespace BansheeEngine
 			if (mHasFocus)
 			{
 				TEXT_SPRITE_DESC textDesc = getTextDesc();
-				Vector2I offset = getTextOffset();
 
 				gGUIManager().getInputCaretTool()->updateText(this, textDesc);
 				gGUIManager().getInputSelectionTool()->updateText(this, textDesc);
@@ -949,7 +947,6 @@ namespace BansheeEngine
 		mCaretShown = true;
 
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
-		Vector2I offset = getTextOffset();
 		gGUIManager().getInputCaretTool()->updateText(this, textDesc);
 	}
 
@@ -961,7 +958,6 @@ namespace BansheeEngine
 	void GUIInputBox::showSelection(UINT32 anchorCaretPos)
 	{
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
-		Vector2I offset = getTextOffset();
 		gGUIManager().getInputSelectionTool()->updateText(this, textDesc);
 
 		gGUIManager().getInputSelectionTool()->showSelection(anchorCaretPos);
@@ -1022,7 +1018,6 @@ namespace BansheeEngine
 
 	void GUIInputBox::clampScrollToBounds(Rect2I unclippedTextBounds)
 	{
-		Vector2I origSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
 
 		Vector2I newTextOffset;
@@ -1045,7 +1040,6 @@ namespace BansheeEngine
 		mText.insert(mText.begin() + charIdx, string.begin(), string.end());
 
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
-		Vector2I offset = getTextOffset();
 
 		gGUIManager().getInputCaretTool()->updateText(this, textDesc);
 		gGUIManager().getInputSelectionTool()->updateText(this, textDesc);
@@ -1056,7 +1050,6 @@ namespace BansheeEngine
 		mText.insert(mText.begin() + charIdx, charCode);
 
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
-		Vector2I offset = getTextOffset();
 
 		gGUIManager().getInputCaretTool()->updateText(this, textDesc);
 		gGUIManager().getInputSelectionTool()->updateText(this, textDesc);
@@ -1067,7 +1060,6 @@ namespace BansheeEngine
 		mText.erase(charIdx, 1);
 
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
-		Vector2I offset = getTextOffset();
 
 		gGUIManager().getInputCaretTool()->updateText(this, textDesc);
 		gGUIManager().getInputSelectionTool()->updateText(this, textDesc);
@@ -1095,7 +1087,6 @@ namespace BansheeEngine
 			mText.erase(mText.begin() + selStart, mText.begin() + selEnd);
 
 			TEXT_SPRITE_DESC textDesc = getTextDesc();
-			Vector2I offset = getTextOffset();
 			gGUIManager().getInputCaretTool()->updateText(this, textDesc);
 			gGUIManager().getInputSelectionTool()->updateText(this, textDesc);
 
@@ -1124,8 +1115,6 @@ namespace BansheeEngine
 		UINT32 selEnd = gGUIManager().getInputSelectionTool()->getSelectionEnd();
 
 		return mText.substr(selStart, selEnd - selStart);
-
-		mText.erase(mText.begin() + selStart, mText.begin() + gGUIManager().getInputSelectionTool()->getSelectionEnd());
 	}
 
 	Vector2I GUIInputBox::getTextOffset() const

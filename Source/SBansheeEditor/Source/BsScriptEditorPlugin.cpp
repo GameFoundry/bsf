@@ -7,9 +7,9 @@
 
 namespace BansheeEngine
 {
-	extern "C" BS_SCR_BED_EXPORT const String& getPluginName()
+	extern "C" BS_SCR_BED_EXPORT const char* getPluginName()
 	{
-		static String pluginName = "SBansheeEditor";
+		static const char* pluginName = "SBansheeEditor";
 		return pluginName;
 	}
 

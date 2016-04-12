@@ -27,11 +27,11 @@ namespace BansheeEngine
 			return nullptr;
 
 		DynLib* loadedLibrary = gDynLibManager().load(pluginFilename);
-		String name = "";
+		const char* name = "";
 
 		if(loadedLibrary != nullptr)
 		{
-			typedef const String& (*GetPluginNameFunc)();
+			typedef const char* (*GetPluginNameFunc)();
 
 			GetPluginNameFunc getPluginNameFunc = (GetPluginNameFunc)loadedLibrary->getSymbol("getPluginName");
 			name = getPluginNameFunc();
@@ -39,7 +39,7 @@ namespace BansheeEngine
 
 		for(auto iter = mAvailableFactories.begin(); iter != mAvailableFactories.end(); ++iter)
 		{
-			if((*iter)->name() == name)
+			if(strcmp((*iter)->name(), name) == 0)
 			{
 				(*iter)->create();		
 				mRenderAPIInitialized = true;

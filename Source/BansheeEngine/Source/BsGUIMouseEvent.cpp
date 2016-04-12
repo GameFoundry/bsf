@@ -5,15 +5,14 @@
 namespace BansheeEngine
 {
 	GUIMouseEvent::GUIMouseEvent()
-		:mType(GUIMouseEventType::MouseMove), mButton(GUIMouseButton::Left), 
-		mShift(false), mCtrl(false), mAlt(false), mWheelScrollAmount(0.0f)
+		: mWheelScrollAmount(0.0f), mType(GUIMouseEventType::MouseMove), mButton(GUIMouseButton::Left)
+		, mShift(false), mCtrl(false), mAlt(false)
 	{
 
 	}
 
 	GUIMouseEvent::GUIMouseEvent(bool buttonStates[(int)GUIMouseButton::Count], bool shift, bool ctrl, bool alt)
-		:mType(GUIMouseEventType::MouseMove), mButton(GUIMouseButton::Left),
-		mShift(shift), mCtrl(ctrl), mAlt(alt)
+		:mType(GUIMouseEventType::MouseMove), mButton(GUIMouseButton::Left), mShift(shift), mCtrl(ctrl), mAlt(alt)
 	{
 		memcpy(mButtonStates, buttonStates, sizeof(mButtonStates));
 	}

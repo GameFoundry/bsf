@@ -7,8 +7,7 @@
 namespace BansheeEngine
 {
 	GLTimerQuery::GLTimerQuery()
-		:mQueryStartObj(0), mQueryEndObj(0), 
-		mTimeDelta(0.0f), mFinalized(false), mEndIssued(false)
+		:mQueryStartObj(0), mQueryEndObj(0), mFinalized(false), mEndIssued(false), mTimeDelta(0.0f)
 	{
 		GLuint queries[2];
 		glGenQueries(2, queries);

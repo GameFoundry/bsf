@@ -33,7 +33,7 @@ namespace BansheeEngine
 		Vector<ProfilerOverlayInternal::BasicRow>& rows;
 
 		BasicRowFiller(Vector<ProfilerOverlayInternal::BasicRow>& _rows, GUILayout& _labelLayout, GUILayout& _contentLayout, GUIWidget& _widget)
-			:rows(_rows), curIdx(0), labelLayout(_labelLayout), contentLayout(_contentLayout), widget(_widget)
+			:curIdx(0), labelLayout(_labelLayout), contentLayout(_contentLayout), widget(_widget), rows(_rows)
 		{ }
 
 		~BasicRowFiller()
@@ -134,7 +134,7 @@ namespace BansheeEngine
 		Vector<ProfilerOverlayInternal::PreciseRow>& rows;
 
 		PreciseRowFiller(Vector<ProfilerOverlayInternal::PreciseRow>& _rows, GUILayout& _labelLayout, GUILayout& _contentLayout, GUIWidget& _widget)
-			:rows(_rows), curIdx(0), labelLayout(_labelLayout), contentLayout(_contentLayout), widget(_widget)
+			:curIdx(0), labelLayout(_labelLayout), contentLayout(_contentLayout), widget(_widget), rows(_rows)
 		{ }
 
 		~PreciseRowFiller()
@@ -234,7 +234,7 @@ namespace BansheeEngine
 		Vector<ProfilerOverlayInternal::GPUSampleRow>& rows;
 
 		GPUSampleRowFiller(Vector<ProfilerOverlayInternal::GPUSampleRow>& _rows, GUILayout& _layout, GUIWidget& _widget)
-			:rows(_rows), curIdx(0), layout(_layout), widget(_widget)
+			:curIdx(0), layout(_layout), widget(_widget), rows(_rows)
 		{ }
 
 		~GPUSampleRowFiller()
@@ -333,7 +333,7 @@ namespace BansheeEngine
 	}
 
 	ProfilerOverlayInternal::ProfilerOverlayInternal(const SPtr<Camera>& camera)
-		:mIsShown(true), mType(ProfilerOverlayType::CPUSamples)
+		:mType(ProfilerOverlayType::CPUSamples), mIsShown(true)
 	{
 		setTarget(camera);
 	}

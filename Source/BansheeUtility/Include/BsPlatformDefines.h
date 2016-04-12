@@ -47,19 +47,6 @@
 
 #endif
 
-// See if we can use __forceinline or if we need to use __inline instead
-#if BS_COMPILER == BS_COMPILER_MSVC
-#   if BS_COMP_VER >= 1200
-#       define FORCEINLINE __forceinline
-#   endif
-#elif defined(__MINGW32__)
-#   if !defined(FORCEINLINE)
-#       define FORCEINLINE __inline
-#   endif
-#else
-#   define FORCEINLINE __inline
-#endif
-
 // Finds the current platform
 #if defined( __WIN32__ ) || defined( _WIN32 )
 #   define BS_PLATFORM BS_PLATFORM_WIN32

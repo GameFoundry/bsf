@@ -60,8 +60,8 @@ namespace BansheeEngine
 	}
 
 	GUIMenuBar::GUIMenuBar(GUIWidget* parent, RenderWindow* parentWindow)
-		:mParentWidget(parent), mParentWindow(parentWindow), mMainPanel(nullptr), mMenuItemLayout(nullptr),
-		mBgTexture(nullptr), mLogoTexture(nullptr), mSubMenuOpen(false), mSubMenuButton(nullptr), mBgPanel(nullptr)
+		: mParentWindow(parentWindow), mParentWidget(parent), mMainPanel(nullptr), mBgPanel(nullptr)
+		, mMenuItemLayout(nullptr), mBgTexture(nullptr), mLogoTexture(nullptr), mSubMenuButton(nullptr), mSubMenuOpen(false)
 	{
 		mMainPanel = parent->getPanel()->addNewElement<GUIPanel>(std::numeric_limits<INT16>::min() + 15);
 		mMainPanel->setWidth(1);

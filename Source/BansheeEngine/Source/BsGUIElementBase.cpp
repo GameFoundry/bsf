@@ -11,15 +11,15 @@
 namespace BansheeEngine
 {
 	GUIElementBase::GUIElementBase()
-		:mParentElement(nullptr), mParentWidget(nullptr), mAnchorParent(nullptr), mUpdateParent(nullptr), 
-		mFlags(GUIElem_Dirty)
+		: mParentWidget(nullptr), mAnchorParent(nullptr), mUpdateParent(nullptr), mParentElement(nullptr)
+		, mFlags(GUIElem_Dirty)
 	{
 
 	}
 
 	GUIElementBase::GUIElementBase(const GUIDimensions& dimensions)
-		:mParentElement(nullptr), mParentWidget(nullptr), mDimensions(dimensions), mAnchorParent(nullptr), 
-		mUpdateParent(nullptr), mFlags(GUIElem_Dirty)
+		: mParentWidget(nullptr), mAnchorParent(nullptr), mUpdateParent(nullptr), mParentElement(nullptr)
+		, mFlags(GUIElem_Dirty), mDimensions(dimensions)
 	{
 
 	}

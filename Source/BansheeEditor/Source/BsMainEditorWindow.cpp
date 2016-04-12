@@ -23,8 +23,8 @@ namespace BansheeEngine
 	}
 
 	MainEditorWindow::MainEditorWindow(const SPtr<RenderWindow>& renderWindow)
-		:EditorWindowBase(renderWindow), mDockManager(nullptr), 
-		mMenuBar(bs_new<GUIMenuBar>(mGUI->_getInternal(), mRenderWindow.get()))
+		: EditorWindowBase(renderWindow), mMenuBar(bs_new<GUIMenuBar>(mGUI->_getInternal(), mRenderWindow.get()))
+		, mDockManager(nullptr)
 	{
 		mDockManager = DockManager::create(this);
 		mGUI->getPanel()->addElement(mDockManager);
@@ -37,7 +37,8 @@ namespace BansheeEngine
 		mMenuBar->addMenuItem(L"File/Exit", nullptr, 10000);
 
 		SPtr<TestSuite> testSuite = TestSuite::create<EditorTestSuite>();
-		testSuite->run(ExceptionTestOutput());
+		ExceptionTestOutput testOutput;
+		testSuite->run(testOutput);
 
 		mRenderWindow->maximize(gCoreAccessor());
 	}

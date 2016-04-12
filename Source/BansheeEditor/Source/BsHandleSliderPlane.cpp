@@ -17,8 +17,8 @@ namespace BansheeEngine
 		mDirection2 = Vector3::normalize(dir2);
 
 		float halfLength = length * 0.5f;
-		std::array<Vector3, 2> axes = { mDirection1, mDirection2 };
-		std::array<float, 2> extents = { halfLength, halfLength };
+		std::array<Vector3, 2> axes = {{ mDirection1, mDirection2 }};
+		std::array<float, 2> extents = {{ halfLength, halfLength }};
 
 		Vector3 center = (dir1 * length + dir2 * length) * 0.5f;
 		mCollider = Rect3(center, axes, extents);

@@ -29,9 +29,9 @@ namespace BansheeEngine
 	{ }
 
 	Win32RenderWindowCore::Win32RenderWindowCore(const RENDER_WINDOW_DESC& desc, UINT32 windowId, Win32GLSupport& glsupport)
-		: RenderWindowCore(desc, windowId), mProperties(desc), mSyncedProperties(desc), mGLSupport(glsupport)
-		, mContext(nullptr), mWindow(nullptr), mDisplayFrequency(0), mDeviceName(nullptr)
-		, mShowOnSwap(false)
+		: RenderWindowCore(desc, windowId), mWindow(nullptr), mGLSupport(glsupport), mHDC(nullptr), mIsChild(false)
+		, mDeviceName(nullptr), mDisplayFrequency(0), mShowOnSwap(false), mContext(nullptr), mProperties(desc)
+		, mSyncedProperties(desc)
 	{ }
 
 	Win32RenderWindowCore::~Win32RenderWindowCore()
@@ -397,8 +397,8 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		if ((dst.getLeft() < 0) || (dst.getRight() > getProperties().getWidth()) ||
-			(dst.getTop() < 0) || (dst.getBottom() > getProperties().getHeight()) ||
+		if ((dst.getRight() > getProperties().getWidth()) ||
+			(dst.getBottom() > getProperties().getHeight()) ||
 			(dst.getFront() != 0) || (dst.getBack() != 1))
 		{
 			BS_EXCEPT(InvalidParametersException, "Invalid box.");

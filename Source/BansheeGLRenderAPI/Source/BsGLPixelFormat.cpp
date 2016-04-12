@@ -239,9 +239,11 @@ namespace BansheeEngine
 			return GL_FLOAT;
 		case PF_D16:
 			return GL_UNSIGNED_SHORT;
+		default:
+			break;
 		}
 
-		BS_EXCEPT(InvalidParametersException, "Invalid depth stencil format");
+		LOGERR("Invalid depth stencil format");
 		return PF_D24S8;
 	}
 		

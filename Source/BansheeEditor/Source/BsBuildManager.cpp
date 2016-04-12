@@ -86,6 +86,8 @@ namespace BansheeEngine
 			for (auto& lib : libs)
 				lib.setExtension(lib.getExtension() + ".dll");
 		}
+		default:
+			break;
 		}
 
 		return libs;
@@ -114,6 +116,8 @@ namespace BansheeEngine
 			{
 			case PlatformType::Windows:
 				return gEditorApplication().getProjectPath() + BUILD_FOLDER_NAME + L"Windows";
+			default:
+				break;
 			}
 
 			return gEditorApplication().getProjectPath() + BUILD_FOLDER_NAME;
@@ -146,6 +150,8 @@ namespace BansheeEngine
 
 			return output;
 		}
+		default:
+			break;
 		}
 
 		return Path::BLANK;

@@ -15,15 +15,15 @@
 namespace BansheeEngine
 {
 	GUIWidget::GUIWidget(const SPtr<Camera>& camera)
-		:mWidgetIsDirty(false), mCamera(camera), mDepth(0), mPanel(nullptr), mIsActive(true), 
-		mTransform(Matrix4::IDENTITY), mCachedRTId(0)
+		: mCamera(camera), mPanel(nullptr), mDepth(0), mIsActive(true), mTransform(Matrix4::IDENTITY), mCachedRTId(0)
+		, mWidgetIsDirty(false)
 	{
 		construct(camera);
 	}
 
 	GUIWidget::GUIWidget(const HCamera& camera)
-		:mWidgetIsDirty(false), mCamera(camera->_getCamera()), mDepth(0), mPanel(nullptr), 
-		mIsActive(true), mTransform(Matrix4::IDENTITY), mCachedRTId(0)
+		: mCamera(camera->_getCamera()), mPanel(nullptr), mDepth(0), mIsActive(true), mTransform(Matrix4::IDENTITY)
+		, mCachedRTId(0), mWidgetIsDirty(false)
 	{
 		construct(mCamera);
 	}
@@ -111,25 +111,16 @@ namespace BansheeEngine
 
 		if(!mWidgetIsDirty)
 		{
-			Vector3 posDiff = mPosition - position;
 			if(!Math::approxEquals(mPosition, position, diffEpsilon))
-			{
 				mWidgetIsDirty = true;
-			}
 			else
 			{
-				Quaternion rotDiff = mRotation - rotation;
 				if(!Math::approxEquals(mRotation, rotation, diffEpsilon))
-				{
 					mWidgetIsDirty = true;
-				}
 				else
 				{
-					Vector3 scaleDiff = mScale - scale;
 					if(Math::approxEquals(mScale, scale))
-					{
 						mWidgetIsDirty = true;
-					}
 				}
 			}
 		}

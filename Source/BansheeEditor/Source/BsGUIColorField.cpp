@@ -11,8 +11,8 @@ namespace BansheeEngine
 {
 	GUIColorField::GUIColorField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth,
 		const String& style, const GUIDimensions& dimensions, bool withLabel)
-		:TGUIField(dummy, labelContent, labelWidth, style, dimensions, withLabel),
-		mLabel(nullptr), mColor(nullptr), mLabelWidth(100)
+		: TGUIField(dummy, labelContent, labelWidth, style, dimensions, withLabel)
+		, mLabelWidth(100), mLabel(nullptr), mColor(nullptr)
 	{
 		mColor = GUIColor::create(getSubStyleName(getColorInputStyleType()));
 		mColor->onClicked.connect(std::bind(&GUIColorField::clicked, this));

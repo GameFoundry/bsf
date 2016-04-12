@@ -8,16 +8,12 @@
 #include "BsQuaternion.h"
 #include "BsCCamera.h"
 
-// DEBUG ONLY
-#include "BsDebug.h"
-#include "BsGizmoManager.h"
-
 namespace BansheeEngine
 {
 	const float HandleSliderDisc::TORUS_RADIUS = 0.1f;
 
 	HandleSliderDisc::HandleSliderDisc(const Vector3& normal, float radius, bool fixedScale, UINT64 layer)
-		:HandleSlider(fixedScale, layer), mRadius(radius), mNormal(normal), mDelta(0.0f), mHasCutoffPlane(false)
+		:HandleSlider(fixedScale, layer), mNormal(normal), mRadius(radius), mHasCutoffPlane(false), mDelta(0.0f)
 	{
 		mCollider = Torus(normal, radius, TORUS_RADIUS);
 
@@ -93,7 +89,6 @@ namespace BansheeEngine
 
 		auto intersectResult = plane.intersects(inputRay);
 
-		float t = 0.0f;
 		if (intersectResult.first)
 			pointOnPlane = inputRay.getPoint(intersectResult.second);
 		else
@@ -109,7 +104,8 @@ namespace BansheeEngine
 		else
 			closestPoint2D = Vector2(mRadius, 0);
 
-		Radian angle = Math::atan2(-closestPoint2D.y, -closestPoint2D.x) + Math::PI;
+		Vector2 negClosestPoint2D = -closestPoint2D;
+		Radian angle = Math::atan2(negClosestPoint2D.y, negClosestPoint2D.x) + Radian(Math::PI);
 
 		float angleRad = angle.valueRadians();
 		float angleAmountRad = Math::clamp(angleAmount.valueRadians(), 0.0f, Math::PI * 2);
@@ -155,7 +151,8 @@ namespace BansheeEngine
 		Matrix4 worldToPlane = Matrix4::TRS(Vector3::ZERO, rot, Vector3::ONE);
 		point = worldToPlane.multiplyAffine(point);
 
-		return Radian(Math::atan2(-point.z, -point.x) + Math::PI);
+		Vector3 negPoint = -point;
+		return Radian(Math::atan2(negPoint.z, negPoint.x) + Radian(Math::PI));
 	}
 
 	void HandleSliderDisc::activate(const SPtr<Camera>& camera, const Vector2I& pointerPos)

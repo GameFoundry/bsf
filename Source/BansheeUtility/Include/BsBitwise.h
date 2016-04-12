@@ -15,7 +15,7 @@ namespace BansheeEngine
 	{
     public:
 		/** Returns the most significant bit set in a value. */
-		static FORCEINLINE unsigned int mostSignificantBitSet(unsigned int value)
+		static unsigned int mostSignificantBitSet(unsigned int value)
         {
             unsigned int result = 0;
             while (value != 0) {
@@ -26,7 +26,7 @@ namespace BansheeEngine
         }
 
 		/** Returns the closest power-of-two number greater or equal to value. */
-        static FORCEINLINE UINT32 firstPO2From(UINT32 n)
+        static UINT32 firstPO2From(UINT32 n)
         {
             --n;            
             n |= n >> 16;
@@ -40,14 +40,14 @@ namespace BansheeEngine
 
 		/** Determines whether the number is power-of-two or not. */
         template<typename T>
-        static FORCEINLINE bool isPO2(T n)
+        static bool isPO2(T n)
         {
             return (n & (n-1)) == 0;
         }
 
 		/** Returns the number of bits a pattern must be shifted right by to remove right-hand zeros. */
 		template<typename T>
-        static FORCEINLINE unsigned int getBitShift(T mask)
+        static unsigned int getBitShift(T mask)
 		{
 			if (mask == 0)
 				return 0;

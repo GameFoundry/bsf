@@ -18,6 +18,8 @@ namespace BansheeEngine
 	class BS_EXPORT GameSettings : public IReflectable
 	{
 	public:
+		GameSettings() { }
+
 		String mainSceneUUID; /**< Resource UUID of the default scene that is loaded when the application is started. */
 		bool fullscreen = true; /**< If true the application will be started in fullscreen using user's desktop resolution. */
 		bool useDesktopResolution = true; /**< If running in fullscreen should the user's desktop resolution be used instead of the specified resolution. */

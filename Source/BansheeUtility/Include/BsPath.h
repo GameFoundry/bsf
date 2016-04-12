@@ -56,7 +56,7 @@ namespace BansheeEngine
 		 * @param[in]	type	If set to default path will be parsed according to the rules of the platform the application
 		 *						is being compiled to. Otherwise it will be parsed according to provided type.
 		 */
-		Path(wchar_t* pathStr, PathType type = PathType::Default);
+		Path(const wchar_t* pathStr, PathType type = PathType::Default);
 
 		/**
 		 * Constructs a path by parsing the provided path null terminated string. Throws exception if provided path is 

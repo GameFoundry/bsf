@@ -401,8 +401,6 @@ namespace BansheeEngine
 		// for better performance.
 		updateTreeElementHierarchy();
 
-		SceneTreeElement& root = mRootElement;
-
 		Stack<SceneTreeElement*> todo;
 		todo.push(&mRootElement);
 
@@ -428,8 +426,6 @@ namespace BansheeEngine
 
 	void GUISceneTreeView::ping(const HSceneObject& object)
 	{
-		SceneTreeElement& root = mRootElement;
-
 		Stack<SceneTreeElement*> todo;
 		todo.push(&mRootElement);
 
@@ -454,8 +450,6 @@ namespace BansheeEngine
 
 	GUISceneTreeView::SceneTreeElement* GUISceneTreeView::findTreeElement(const HSceneObject& so)
 	{
-		SceneTreeElement& root = mRootElement;
-
 		Stack<SceneTreeElement*> todo;
 		todo.push(&mRootElement);
 

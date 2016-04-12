@@ -140,7 +140,7 @@ To add dependencies implement the @ref BansheeEngine::CoreObject::getCoreDepende
 ## Deserialization {#coreThread_b_b}
 When creating RTTI for a @ref BansheeEngine::CoreObject "CoreObject", as described in the [RTTI](@ref rtti) manual, you must take care not to fully initialize the object until deserialization of the object's fields is done.
 
-Essentially this means that @ref BansheeEngine::RTTITypeBase::newRTTIObject "RTTIType::newRTTIObject" must return a pointer to the core object on which @ref BansheeEngine::CoreObject::initialize "CoreObject::initialize" hasn't called yet. You must then call @ref BansheeEngine::CoreObject::initialize "CoreObject::initialize" manually in @ref BansheeEngine::RTTITypeBase::onDeserializationEnded "RTTIType::onDeserializationEnded".
+Essentially this means that @ref BansheeEngine::RTTITypeBase::newRTTIObject "RTTIType::newRTTIObject" must return a pointer to the core object on which @ref BansheeEngine::CoreObject::initialize "CoreObject::initialize" hasn't been called yet. You must then call @ref BansheeEngine::CoreObject::initialize "CoreObject::initialize" manually in @ref BansheeEngine::RTTITypeBase::onDeserializationEnded "RTTIType::onDeserializationEnded".
 
 This ensures that @ref BansheeEngine::CoreObject::initialize "CoreObject::initialize" has all the relevant information when it is ran.
 

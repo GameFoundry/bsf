@@ -1146,8 +1146,6 @@ namespace BansheeEngine
 	void GizmoManagerCore::renderIconGizmos(Rect2I screenArea, SPtr<MeshCoreBase> mesh, GizmoManager::IconRenderDataVecPtr renderData, bool usePickingMaterial)
 	{
 		RenderAPICore& rapi = RenderAPICore::instance();
-		const MeshProperties& meshProps = mesh->getProperties();
-
 		SPtr<VertexData> vertexData = mesh->getVertexData();
 
 		rapi.setVertexDeclaration(vertexData->vertexDeclaration);

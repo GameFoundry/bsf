@@ -55,9 +55,6 @@ namespace BansheeEngine
 
 	void ShapeMeshes3D::wireSphere(const Sphere& sphere, const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality)
 	{
-		UINT32* indexData = meshData->getIndices32();
-		UINT8* positionData = meshData->getElementData(VES_POSITION);
-
 		UINT32 requiredNumVertices, requiredNumIndices;
 		getNumElementsWireSphere(quality, requiredNumVertices, requiredNumIndices);
 
@@ -403,7 +400,6 @@ namespace BansheeEngine
 		UINT32* outIndices, UINT32 indexOffset)
 	{
 		outVertices += (vertexOffset * vertexStride);
-		Vector3* corners = (Vector3*)outVertices;
 
 		// Front face
 		outVertices = writeVector3(outVertices, vertexStride, box.getCorner(AABox::NEAR_LEFT_BOTTOM));

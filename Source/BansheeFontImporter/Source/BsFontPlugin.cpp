@@ -7,9 +7,9 @@
 namespace BansheeEngine
 {
 	/**	Returns a name of the plugin. */
-	extern "C" BS_FONT_EXPORT const String& getPluginName()
+	extern "C" BS_FONT_EXPORT const char* getPluginName()
 	{
-		static String pluginName = "FontImporter";
+		static const char* pluginName = "FontImporter";
 		return pluginName;
 	}
 

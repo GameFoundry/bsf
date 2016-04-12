@@ -35,10 +35,9 @@ namespace BansheeEngine
 		};
 
 		GUIElementStyle()
-			:fontSize(8), width(0), height(0),
-			fixedWidth(false), fixedHeight(false), minWidth(0), maxWidth(0),
-			minHeight(0), maxHeight(0), textHorzAlign(THA_Left), textVertAlign(TVA_Top), 
-			wordWrap(false), imagePosition(GUIImagePosition::Left)
+			: fontSize(8), textHorzAlign(THA_Left), textVertAlign(TVA_Top), imagePosition(GUIImagePosition::Left)
+			, wordWrap(false), width(0), height(0), minWidth(0), maxWidth(0), minHeight(0), maxHeight(0)
+			, fixedWidth(false), fixedHeight(false)
 		{
 
 		}

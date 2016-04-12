@@ -30,10 +30,10 @@ namespace BansheeEngine
 		 * updated.
 		 *
 		 * @param[in]	identifier		String you can use for later referencing the localized string.
-		 * @param[in]	default			Default string to assign to the specified identifier. Language to which it
+		 * @param[in]	defaultString	Default string to assign to the specified identifier. Language to which it
 		 *								will be assigned depends on the StringTable::DEFAULT_LANGUAGE value.
 		 */
-		HEString(const WString& identifier, const WString& default);
+		HEString(const WString& identifier, const WString& defaultString);
 
 		/**	Creates a new empty localized string in the engine string table. */
 		HEString();

@@ -16,7 +16,7 @@ namespace BansheeEngine
 	GLTextureCore::GLTextureCore(GLSupport& support, TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, 
 		UINT32 numMipmaps, PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, const SPtr<PixelData>& initialData)
 		: TextureCore(textureType, width, height, depth, numMipmaps, format, usage, hwGamma, multisampleCount, initialData),
-		mTextureID(0), mGLSupport(support), mGLFormat(0)
+		mTextureID(0), mGLFormat(0), mGLSupport(support)
     { }
 
 	GLTextureCore::~GLTextureCore()
@@ -225,8 +225,6 @@ namespace BansheeEngine
 
 	void GLTextureCore::copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel, const SPtr<TextureCore>& target)
 	{
-		size_t numMips = std::min(mProperties.getNumMipmaps(), target->getProperties().getNumMipmaps());
-
 		GLTextureCore* destTex = static_cast<GLTextureCore*>(target.get());
 		GLTextureBuffer *src = static_cast<GLTextureBuffer*>(getBuffer(srcFace, srcMipLevel).get());
 

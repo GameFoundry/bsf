@@ -16,8 +16,9 @@ namespace BansheeEngine
 	}
 
 	GUISliderHandle::GUISliderHandle(bool horizontal, bool jumpOnClick, const String& styleName, const GUIDimensions& dimensions)
-		:GUIElement(styleName, dimensions), mHorizontal(horizontal), mHandleSize(0), mMouseOverHandle(false), mPctHandlePos(0.0f), mDragStartPos(0),
-		mHandleDragged(false), mState(State::Normal), mJumpOnClick(jumpOnClick), mStep(0.0f)
+		: GUIElement(styleName, dimensions), mHandleSize(0), mHorizontal(horizontal), mJumpOnClick(jumpOnClick)
+		, mPctHandlePos(0.0f), mStep(0.0f), mDragStartPos(0), mMouseOverHandle(false), mHandleDragged(false)
+		, mState(State::Normal)
 	{
 		mImageSprite = bs_new<ImageSprite>();
 	}

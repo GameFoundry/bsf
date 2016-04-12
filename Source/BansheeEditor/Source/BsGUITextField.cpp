@@ -15,7 +15,7 @@ namespace BansheeEngine
 	GUITextField::GUITextField(const PrivatelyConstruct& dummy, bool multiline, const GUIContent& labelContent, 
 		UINT32 labelWidth, const String& style, const GUIDimensions& dimensions, bool withLabel)
 		:GUIElementContainer(dimensions, style),
-		mInputBox(nullptr), mValue(L""), mHasInputFocus(false), mLayout(nullptr), mLabel(nullptr)
+		mInputBox(nullptr), mLayout(nullptr), mLabel(nullptr), mHasInputFocus(false), mValue(L"")
 	{
 		mLayout = GUILayoutX::create();
 		_registerChildElement(mLayout);

@@ -13,7 +13,7 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
-	const String SystemName = "BansheeD3D9RenderSystem";
+	const char* SystemName = "BansheeD3D9RenderSystem";
 
 	/**	Handles creation of the DX9 render system. */
 	class D3D9RenderAPIFactory : public RenderAPIFactory
@@ -23,7 +23,7 @@ namespace BansheeEngine
 		void create() override;
 
 		/** @copydoc RenderAPIFactory::name */
-		const String& name() const override { return SystemName; }
+		const char* name() const override { return SystemName; }
 
 	private:
 		/**	Registers the factory with the render system manager when constructed. */

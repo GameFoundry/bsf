@@ -8,8 +8,8 @@
 namespace BansheeEngine
 {
 	CmdDeleteSO::CmdDeleteSO(const WString& description, const HSceneObject& sceneObject)
-		:EditorCommand(description), mSceneObject(sceneObject), mSerializedObject(nullptr), 
-		mSerializedObjectParentId(0), mSerializedObjectSize(0)
+		: EditorCommand(description), mSceneObject(sceneObject), mSerializedObject(nullptr), mSerializedObjectSize(0)
+		, mSerializedObjectParentId(0)
 	{
 
 	}

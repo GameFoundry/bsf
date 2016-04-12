@@ -10,7 +10,8 @@ using namespace std::placeholders;
 namespace BansheeEngine
 {
 	DragAndDropManager::DragAndDropManager()
-		:mIsDragInProgress(false), mDragTypeId(0), mData(nullptr), mCaptureChanged(false), mCaptureActive(0), mNeedsValidDropTarget(false)
+		: mDragTypeId(0), mData(nullptr), mIsDragInProgress(false), mNeedsValidDropTarget(false), mCaptureChanged(false)
+		, mCaptureActive(0)
 	{
 		mMouseCaptureChangedConn = Platform::onMouseCaptureChanged.connect(std::bind(&DragAndDropManager::mouseCaptureChanged, this));
 		Input::instance().onPointerReleased.connect(std::bind(&DragAndDropManager::cursorReleased, this, _1));

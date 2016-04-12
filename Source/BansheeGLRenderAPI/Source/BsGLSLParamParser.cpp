@@ -125,8 +125,6 @@ namespace BansheeEngine
 		newGlobalBlockDesc.blockSize = 0;
 		newGlobalBlockDesc.isShareable = false;
 
-		UINT32 textureSlot = 0;
-
 		returnParamDesc.paramBlocks[newGlobalBlockDesc.name] = newGlobalBlockDesc;
 		GpuParamBlockDesc& globalBlockDesc = returnParamDesc.paramBlocks[newGlobalBlockDesc.name];
 

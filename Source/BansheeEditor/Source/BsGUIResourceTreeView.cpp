@@ -383,7 +383,8 @@ namespace BansheeEngine
 
 	bool GUIResourceTreeView::acceptDragAndDrop() const
 	{
-		return mDropTargetDragActive || DragAndDropManager::instance().isDragInProgress() && DragAndDropManager::instance().getDragTypeId() == (UINT32)DragAndDropType::Resources;
+		return mDropTargetDragActive || (DragAndDropManager::instance().isDragInProgress() &&
+			DragAndDropManager::instance().getDragTypeId() == (UINT32)DragAndDropType::Resources);
 	}
 
 	void GUIResourceTreeView::dragAndDropStart(const Vector<TreeElement*>& elements)
@@ -491,8 +492,6 @@ namespace BansheeEngine
 	void GUIResourceTreeView::setSelection(const Vector<Path>& paths)
 	{
 		unselectAll();
-
-		ResourceTreeElement& root = mRootElement;
 
 		Stack<ResourceTreeElement*> todo;
 		todo.push(&mRootElement);

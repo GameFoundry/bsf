@@ -64,8 +64,6 @@ namespace BansheeEngine
         // Store basic stats
         UINT32 width = mColor[0].buffer->getWidth();
         UINT32 height = mColor[0].buffer->getHeight();
-        GLuint glformat = mColor[0].buffer->getGLFormat();
-        PixelFormat format = mColor[0].buffer->getFormat();
         UINT16 maxSupportedMRTs = BansheeEngine::RenderAPICore::instancePtr()->getCapabilities()->getNumMultiRenderTargets();
 
 		// Bind simple buffer to add color attachments

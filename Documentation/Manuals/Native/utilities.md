@@ -461,7 +461,7 @@ class MyObj
 ~~~~~~~~~~~~~
 
 ## Shared pointers {#utilities_p_e}
-Use @ref BansheeEngine::SPtr "SPtr" for shared pointers. Internally this is just a wrapper for the standard C++ library `std::shared_ptr`. Use @ref BansheeEngine::bs_shared_ptr_new "bs_shared_ptr_new" to create a new shared pointer, or @ref BansheeEngine::bs_shared_ptr "bs_shared_ptr" to create one from an existing instance.
+Shared pointers are smart pointers that will automatically free memory when the last reference to the pointed memory goes out of scope. They're implemented as @ref BansheeEngine::SPtr "SPtr", which is just a wrapper for the standard C++ library `std::shared_ptr`. Use @ref BansheeEngine::bs_shared_ptr_new "bs_shared_ptr_new" to create a new shared pointer, or @ref BansheeEngine::bs_shared_ptr "bs_shared_ptr" to create one from an existing instance. The pointer memory is allocated and freed using the general allocator.
 
 For example:
 ~~~~~~~~~~~~~{.cpp}

@@ -17,8 +17,8 @@ namespace BansheeEngine
 	struct IMAGE_SPRITE_DESC
 	{
 		IMAGE_SPRITE_DESC()
-			:width(0), height(0), anchor(SA_TopLeft), borderLeft(0), borderRight(0), 
-			borderTop(0), borderBottom(0), uvScale(1.0f, 1.0f), uvOffset(0.0f, 0.0f), transparent(true)
+			: width(0), height(0), anchor(SA_TopLeft), uvScale(1.0f, 1.0f), uvOffset(0.0f, 0.0f), transparent(true)
+			, borderLeft(0), borderRight(0), borderTop(0), borderBottom(0)
 		{ }
 
 		UINT32 width; /**< Width of the image in pixels. */

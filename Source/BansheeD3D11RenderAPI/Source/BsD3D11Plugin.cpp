@@ -5,7 +5,7 @@
 
 namespace BansheeEngine
 {
-	extern "C" BS_D3D11_EXPORT const String& getPluginName()
+	extern "C" BS_D3D11_EXPORT const char* getPluginName()
 	{
 		return SystemName;
 	}

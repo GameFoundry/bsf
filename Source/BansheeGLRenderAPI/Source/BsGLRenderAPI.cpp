@@ -36,32 +36,32 @@ namespace BansheeEngine
 	/************************************************************************/
 
 	GLRenderAPI::GLRenderAPI()
-		: mDepthWrite(true),
-		mGLSLProgramFactory(nullptr),
-		mProgramPipelineManager(nullptr),
-		mActivePipeline(nullptr),
-		mActiveTextureUnit(0),
-		mScissorTop(0), mScissorBottom(720), mScissorLeft(0), mScissorRight(1280),
-		mViewportLeft(0), mViewportTop(0), mViewportWidth(0), mViewportHeight(0),
-		mStencilReadMask(0xFFFFFFFF),
-		mStencilWriteMask(0xFFFFFFFF),
-		mStencilCompareFront(CMPF_ALWAYS_PASS),
-		mStencilCompareBack(CMPF_ALWAYS_PASS),
-		mStencilRefValue(0),
-		mFragmentTexOffset(0),
-		mVertexTexOffset(0),
-		mGeometryTexOffset(0),
-		mTextureTypes(nullptr),
-		mNumTextureTypes(0),
-		mFragmentUBOffset(0),
-		mVertexUBOffset(0),
-		mGeometryUBOffset(0),
-		mHullUBOffset(0),
-		mDomainUBOffset(0),
-		mComputeUBOffset(0),
-		mDrawCallInProgress(false),
-		mCurrentDrawOperation(DOT_TRIANGLE_LIST),
-		mViewportNorm(0.0f, 0.0f, 1.0f, 1.0f)
+		: mViewportNorm(0.0f, 0.0f, 1.0f, 1.0f)
+		, mScissorTop(0), mScissorBottom(720), mScissorLeft(0), mScissorRight(1280)
+		, mViewportLeft(0), mViewportTop(0), mViewportWidth(0), mViewportHeight(0)
+		, mStencilReadMask(0xFFFFFFFF)
+		, mStencilWriteMask(0xFFFFFFFF)
+		, mStencilRefValue(0)
+		, mStencilCompareFront(CMPF_ALWAYS_PASS)
+		, mStencilCompareBack(CMPF_ALWAYS_PASS)
+		, mNumTextureTypes(0)
+		, mTextureTypes(nullptr)
+		, mDepthWrite(true)
+		, mGLSLProgramFactory(nullptr)
+		, mProgramPipelineManager(nullptr)
+		, mActivePipeline(nullptr)
+		, mFragmentTexOffset(0)
+		, mVertexTexOffset(0)
+		, mGeometryTexOffset(0)
+		, mFragmentUBOffset(0)
+		, mVertexUBOffset(0)
+		, mGeometryUBOffset(0)
+		, mHullUBOffset(0)
+		, mDomainUBOffset(0)
+		, mComputeUBOffset(0)
+		, mCurrentDrawOperation(DOT_TRIANGLE_LIST)
+		, mDrawCallInProgress(false)
+		, mActiveTextureUnit(0)
 	{
 		// Get our GLSupport
 		mGLSupport = BansheeEngine::getGLSupport();
@@ -366,6 +366,7 @@ namespace BansheeEngine
 			case GPDT_BOOL:
 				glProgramUniform1uiv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLuint*)ptrData);
 				break;
+			default:
 			case GPDT_UNKNOWN:
 				break;
 			}
@@ -385,14 +386,10 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 
 		unit = getGLTextureUnit(gptype, unit);
-
-		SPtr<GLTextureCore> tex = std::static_pointer_cast<GLTextureCore>(texPtr);
-
-		GLenum lastTextureType = mTextureTypes[unit];
-
 		if (!activateGLTextureUnit(unit))
 			return;
 
+		SPtr<GLTextureCore> tex = std::static_pointer_cast<GLTextureCore>(texPtr);
 		if (enabled && tex)
 		{
 			mTextureTypes[unit] = tex->getGLTextureTarget();
@@ -1309,6 +1306,8 @@ namespace BansheeEngine
 			case FO_NONE:
 				glTexParameteri(mTextureTypes[unit], GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 				break;
+			default:
+				break;
 			}
 			break;
 		case FT_MIP:
@@ -1524,6 +1523,8 @@ namespace BansheeEngine
 			case FO_NONE:
 				// Linear min, no mip
 				return GL_LINEAR;
+			default:
+				break;
 			}
 			break;
 		case FO_POINT:
@@ -1540,7 +1541,11 @@ namespace BansheeEngine
 			case FO_NONE:
 				// Nearest min, no mip
 				return GL_NEAREST;
+			default:
+				break;
 			}
+			break;
+		default:
 			break;
 		}
 
@@ -1633,7 +1638,7 @@ namespace BansheeEngine
 		}
 
 		UINT32 numSupportedUnits = mCurrentCapabilities->getNumTextureUnits(gptype);
-		if (unit < 0 || unit >= numSupportedUnits)
+		if (unit >= numSupportedUnits)
 		{
 			BS_EXCEPT(InvalidParametersException, "Invalid texture unit index for the provided stage. Unit index: " + toString(unit) + ". Stage: " +
 				toString(gptype) + ". Supported range is 0 .. " + toString(numSupportedUnits - 1));
@@ -1657,7 +1662,7 @@ namespace BansheeEngine
 	UINT32 GLRenderAPI::getGLUniformBlockBinding(GpuProgramType gptype, UINT32 binding)
 	{
 		UINT32 maxNumBindings = mCurrentCapabilities->getNumGpuParamBlockBuffers(gptype);
-		if (binding < 0 || binding >= maxNumBindings)
+		if (binding >= maxNumBindings)
 		{
 			BS_EXCEPT(InvalidParametersException, "Invalid buffer binding for the provided stage. Buffer binding: " + toString(binding) + ". Stage: " +
 				toString(gptype) + ". Supported range is 0 .. " + toString(maxNumBindings - 1));

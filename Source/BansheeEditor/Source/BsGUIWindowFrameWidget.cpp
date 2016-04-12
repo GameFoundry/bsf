@@ -15,7 +15,7 @@ namespace BansheeEngine
 	const UINT32 WindowFrameWidget::RESIZE_BORDER_WIDTH = 3;
 
 	WindowFrameWidget::WindowFrameWidget(const HSceneObject& parent, bool allowResize, const SPtr<Camera>& camera, RenderWindow* parentWindow, const HGUISkin& skin)
-		:CGUIWidget(parent, camera), mWindowFramePanel(nullptr), mParentWindow(parentWindow), mAllowResize(allowResize)
+		:CGUIWidget(parent, camera), mAllowResize(allowResize), mWindowFramePanel(nullptr), mParentWindow(parentWindow)
 	{
 		setSkin(skin);
 

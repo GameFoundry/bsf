@@ -70,8 +70,6 @@ namespace BansheeEngine
 				UINT8* uvStart = uvDst;
 				UINT32 vertIdx = i * 4;
 
-				Vector2 vecPlusOffset = renderElem.vertices[vertIdx + 0] + vecOffset;
-
 				memcpy(vertDst, &renderElem.vertices[vertIdx + 0], sizeof(Vector2));
 				memcpy(uvDst, &renderElem.uvs[vertIdx + 0], sizeof(Vector2));
 
@@ -251,8 +249,6 @@ namespace BansheeEngine
 
 		for(UINT32 i = 0; i < numQuads; i++)
 		{
-			UINT32 vertIdx = i * 4;
-
 			Vector2* vecA = (Vector2*)(vertices);
 			Vector2* vecB = (Vector2*)(vertices + vertStride);
 			Vector2* vecC = (Vector2*)(vertices + vertStride * 2);

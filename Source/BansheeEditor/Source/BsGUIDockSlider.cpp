@@ -13,8 +13,7 @@ namespace BansheeEngine
 	}
 
 	GUIDockSlider::GUIDockSlider(bool horizontal, const String& styleName, const GUIDimensions& dimensions)
-		:GUIButtonBase(styleName, GUIContent(HString(L"")), dimensions),
-		mDragInProgress(false), mHorizontal(horizontal), mIsCursorSet(false)
+		: GUIButtonBase(styleName, GUIContent(HString(L"")), dimensions), mHorizontal(horizontal), mDragInProgress(false)
 	{
 
 	}

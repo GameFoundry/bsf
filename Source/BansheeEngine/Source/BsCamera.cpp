@@ -20,10 +20,10 @@ namespace BansheeEngine
 	const float CameraBase::INFINITE_FAR_PLANE_ADJUST = 0.00001f;
 
 	CameraBase::CameraBase()
-		:mProjType(PT_PERSPECTIVE), mHorzFOV(Degree(90.0f)), mFarDist(1000.0f),
-		mNearDist(0.05f), mAspect(1.33333333333333f), mOrthoHeight(5), mRecalcFrustum(true), mRecalcFrustumPlanes(true),
-		mCustomViewMatrix(false), mCustomProjMatrix(false), mFrustumExtentsManuallySet(false), mPriority(0), 
-		mLayers(0xFFFFFFFFFFFFFFFF), mRecalcView(true), mCameraFlags(0), mIsActive(true)
+		: mLayers(0xFFFFFFFFFFFFFFFF), mCameraFlags(0), mIsActive(true), mProjType(PT_PERSPECTIVE), mHorzFOV(Degree(90.0f))
+		, mFarDist(1000.0f), mNearDist(0.05f), mAspect(1.33333333333333f), mOrthoHeight(5), mPriority(0)
+		, mCustomViewMatrix(false), mCustomProjMatrix(false), mFrustumExtentsManuallySet(false), mRecalcFrustum(true)
+		, mRecalcFrustumPlanes(true), mRecalcView(true)
 	{
 		mViewMatrix = Matrix4::ZERO;
 		mProjMatrixRS = Matrix4::ZERO;
@@ -736,7 +736,7 @@ namespace BansheeEngine
 	}
 
 	Camera::Camera(SPtr<RenderTarget> target, float left, float top, float width, float height)
-		:mLastUpdateHash(0), mMain(false)
+		:mMain(false), mLastUpdateHash(0)
 	{
 		if (target != nullptr)
 			target->blockUntilCoreInitialized();
@@ -770,8 +770,6 @@ namespace BansheeEngine
 
 	SPtr<CoreObjectCore> Camera::createCore() const
 	{
-		Rect2 normArea = mViewport->getNormArea();
-
 		CameraCore* handler = new (bs_alloc<CameraCore>()) CameraCore(mViewport->getCore());
 		SPtr<CameraCore> handlerPtr = bs_shared_ptr<CameraCore>(handler);
 		handlerPtr->_setThisPtr(handlerPtr);

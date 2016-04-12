@@ -12,14 +12,14 @@ namespace BansheeEngine
 
 	GUIMenuItem::GUIMenuItem(GUIMenuItem* parent, const WString& name, std::function<void()> callback, 
 		INT32 priority, UINT32 seqIdx, const ShortcutKey& key)
-		:mParent(parent), mName(name), mCallback(callback), mIsSeparator(false), mPriority(priority), 
+		:mParent(parent), mIsSeparator(false), mName(name), mCallback(callback), mPriority(priority),
 		mShortcut(key), mSeqIdx(seqIdx)
 	{
 
 	}
 
 	GUIMenuItem::GUIMenuItem(GUIMenuItem* parent, INT32 priority, UINT32 seqIdx)
-		: mParent(parent), mCallback(nullptr), mIsSeparator(true), mPriority(priority), mSeqIdx(seqIdx)
+		: mParent(parent), mIsSeparator(true), mCallback(nullptr), mPriority(priority), mSeqIdx(seqIdx)
 	{
 
 	}

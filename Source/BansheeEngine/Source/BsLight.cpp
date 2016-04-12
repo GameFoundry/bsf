@@ -11,17 +11,16 @@
 namespace BansheeEngine
 {
 	LightBase::LightBase()
-		:mType(LightType::Point), mCastsShadows(false), mRange(10.0f),
-		mIntensity(5.0f), mSpotAngle(45), mSpotFalloffAngle(35.0f), mColor(Color::White), 
-		mIsActive(true), mPhysCorrectAtten(true)
+		: mType(LightType::Point), mCastsShadows(false), mColor(Color::White), mRange(10.0f), mIntensity(5.0f)
+		, mSpotAngle(45), mSpotFalloffAngle(35.0f), mIsActive(true), mPhysCorrectAtten(true)
 	{
 		updatePhysicallyCorrectRange();
 	}
 
 	LightBase::LightBase(LightType type, Color color,
 		float intensity, float range, bool castsShadows, Degree spotAngle, Degree spotFalloffAngle)
-		:mType(type), mCastsShadows(castsShadows), mRange(range), mSpotFalloffAngle(spotFalloffAngle),
-		mIntensity(intensity), mSpotAngle(spotAngle), mColor(color), mIsActive(true), mPhysCorrectAtten(true)
+		: mType(type), mCastsShadows(castsShadows), mColor(color), mRange(range), mIntensity(intensity)
+		, mSpotAngle(spotAngle), mSpotFalloffAngle(spotFalloffAngle), mIsActive(true), mPhysCorrectAtten(true)
 	{
 		updatePhysicallyCorrectRange();
 	}
@@ -69,9 +68,9 @@ namespace BansheeEngine
 
 			return mIntensity / (Math::TWO_PI * (1.0f - (cosFalloffAngle + cosTotalAngle) * 0.5f));
 		}
+		case LightType::Directional:
+			return mIntensity;
 		}
-
-		return mIntensity;
 	}
 
 	void LightBase::updatePhysicallyCorrectRange()

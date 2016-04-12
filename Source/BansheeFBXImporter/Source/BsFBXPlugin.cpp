@@ -7,9 +7,9 @@
 namespace BansheeEngine
 {
 	/**	Returns a name of the plugin. */
-	extern "C" BS_FBX_EXPORT const String& getPluginName()
+	extern "C" BS_FBX_EXPORT const char* getPluginName()
 	{
-		static String pluginName = "FBXImporter";
+		static const char* pluginName = "FBXImporter";
 		return pluginName;
 	}
 

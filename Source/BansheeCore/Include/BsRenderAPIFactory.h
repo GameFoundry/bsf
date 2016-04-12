@@ -20,7 +20,7 @@ namespace BansheeEngine
 		virtual void create() = 0;
 
 		/**	Returns the name of the render system this factory creates. */
-		virtual const String& name() const = 0;
+		virtual const char* name() const = 0;
 	};
 
 	/** @} */

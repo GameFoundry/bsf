@@ -8,8 +8,8 @@
 namespace BansheeEngine
 {
 	CmdRecordSO::CmdRecordSO(const WString& description, const HSceneObject& sceneObject, bool recordHierarchy)
-		:EditorCommand(description), mSceneObject(sceneObject), mSerializedObject(nullptr), mSerializedObjectSize(0), 
-		mRecordHierarchy(recordHierarchy)
+		: EditorCommand(description), mSceneObject(sceneObject), mRecordHierarchy(recordHierarchy)
+		, mSerializedObject(nullptr), mSerializedObjectSize(0)
 	{
 
 	}

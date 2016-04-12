@@ -3,7 +3,7 @@
 
 namespace BansheeEngine
 {
-	extern "C" BS_RSGL_EXPORT const String& getPluginName()
+	extern "C" BS_RSGL_EXPORT const char* getPluginName()
 	{
 		return SystemName;
 	}

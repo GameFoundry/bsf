@@ -76,7 +76,7 @@ namespace BansheeEngine
 		backgroundLayout->addElement(backgroundFrame);
 
 		GUILayout* contentLayout = contentPanel->addNewElement<GUILayoutY>();
-		GUILabel* textLabel = contentLayout->addNewElement<GUILabel>(HString(text), 
+		contentLayout->addNewElement<GUILabel>(HString(text), 
 			GUIOptions(GUIOption::fixedWidth(TOOLTIP_WIDTH), GUIOption::flexibleHeight()), 
 			BuiltinResources::MultiLineLabelStyle);
 

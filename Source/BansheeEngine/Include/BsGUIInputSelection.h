@@ -23,7 +23,7 @@ namespace BansheeEngine
 		const Vector<ImageSprite*>& getSprites() const { return mSprites; }
 
 		/** Returns how much to offset the sprite with the specified index, relative to the parent widget. */
-		Vector2I GUIInputSelection::getSelectionSpriteOffset(UINT32 spriteIdx) const;
+		Vector2I getSelectionSpriteOffset(UINT32 spriteIdx) const;
 
 		/**
 		 * Returns clip rectangle relative to parent GUI element for the sprite with the specified index. 
@@ -32,7 +32,7 @@ namespace BansheeEngine
 		 * @param[in]	parentClipRect	Clip rectangle of the parent GUI element. Selection clip rectangle will 
 		 *								additionally be clipped by this area. Relative to parent element.
 		 */
-		Rect2I GUIInputSelection::getSelectionSpriteClipRect(UINT32 spriteIdx, const Rect2I& parentClipRect) const;
+		Rect2I getSelectionSpriteClipRect(UINT32 spriteIdx, const Rect2I& parentClipRect) const;
 
 		/**	Recreates the selection clip sprites. */
 		void updateSprite();

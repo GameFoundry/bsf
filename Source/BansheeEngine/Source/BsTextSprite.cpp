@@ -22,7 +22,6 @@ namespace BansheeEngine
 		{
 			TextData<FrameAlloc> textData(desc.text, desc.font, desc.fontSize, desc.width, desc.height, desc.wordWrap, desc.wordBreak);
 
-			UINT32 numLines = textData.getNumLines();
 			UINT32 numPages = textData.getNumPages();
 
 			// Free all previous memory

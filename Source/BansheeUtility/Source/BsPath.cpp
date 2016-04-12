@@ -21,7 +21,7 @@ namespace BansheeEngine
 		assign(pathStr, type);
 	}
 
-	Path::Path(wchar_t* pathStr, PathType type)
+	Path::Path(const wchar_t* pathStr, PathType type)
 	{
 		assign(pathStr);
 	}

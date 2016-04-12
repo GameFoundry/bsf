@@ -21,11 +21,10 @@ namespace BansheeEngine
 
 	GUITabbedTitleBar::GUITabbedTitleBar(const String& backgroundStyle, const String& tabBtnStyle, 
 		const String& maxBtnStyle, const String& closeBtnStyle, const GUIDimensions& dimensions)
-		:GUIElementContainer(dimensions), mMaxBtn(nullptr), 
-		mCloseBtn(nullptr), mBackgroundImage(nullptr), mUniqueTabIdx(0), mActiveTabIdx(0),
-		mDragInProgress(false), mDraggedBtn(nullptr), mDragBtnOffset(0), mInitialDragOffset(0), mBackgroundStyle(backgroundStyle),
-		mTabBtnStyle(tabBtnStyle), mMaximizeBtnStyle(maxBtnStyle), mCloseBtnStyle(closeBtnStyle), mTempDraggedWidget(nullptr),
-		mTempDraggedTabIdx(0)
+		: GUIElementContainer(dimensions), mUniqueTabIdx(0), mActiveTabIdx(0), mBackgroundImage(nullptr), mMaxBtn(nullptr)
+		, mCloseBtn(nullptr), mTempDraggedWidget(nullptr), mTempDraggedTabIdx(0), mDragInProgress(false)
+		, mDraggedBtn(nullptr), mDragBtnOffset(0), mInitialDragOffset(0), mBackgroundStyle(backgroundStyle)
+		, mCloseBtnStyle(closeBtnStyle), mMaximizeBtnStyle(maxBtnStyle), mTabBtnStyle(tabBtnStyle)
 	{
 		if(mBackgroundStyle == StringUtil::BLANK)
 			mBackgroundStyle = "TabBarBackground";
@@ -207,9 +206,6 @@ namespace BansheeEngine
 		{
 			if(DragAndDropManager::instance().getDragTypeId() != (UINT32)DragAndDropType::EditorWidget)
 				return false;
-
-			EditorWidgetBase* draggedWidget = reinterpret_cast<EditorWidgetBase*>(DragAndDropManager::instance().getDragData());
-			const Vector2I& widgetRelPos = event.getPosition();
 
 			if(mTempDraggedWidget != nullptr)
 			{

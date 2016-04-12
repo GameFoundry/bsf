@@ -9,7 +9,7 @@
 namespace BansheeEngine
 {
 	SpriteTexture::SpriteTexture(const Vector2& uvOffset, const Vector2& uvScale, const HTexture& texture)
-		:Resource(false), mUVOffset(uvOffset), mUVScale(uvScale), mAtlasTexture(texture)
+		:Resource(false), mAtlasTexture(texture), mUVOffset(uvOffset), mUVScale(uvScale)
 	{
 
 	}

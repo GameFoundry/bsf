@@ -169,7 +169,7 @@ namespace BansheeEngine
 
 		assert(op.hasCompleted());
 
-		Vector<UINT32>& selectedObjects = op.getReturnValue<Vector<UINT32>>();
+		Vector<UINT32> selectedObjects = op.getReturnValue<Vector<UINT32>>();
 		Vector<HSceneObject> results;
 
 		for (auto& selectedObjectIdx : selectedObjects)
@@ -342,8 +342,6 @@ namespace BansheeEngine
 		outputTexture->readSubresource(0, *outputPixelData);
 
 		Map<UINT32, UINT32> selectionScores;
-		UINT32 numPixels = outputPixelData->getWidth() * outputPixelData->getHeight();
-
 		UINT32 maxWidth = std::min((UINT32)(position.x + area.x), outputPixelData->getWidth());
 		UINT32 maxHeight = std::min((UINT32)(position.y + area.y), outputPixelData->getHeight());
 

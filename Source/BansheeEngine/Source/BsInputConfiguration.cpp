@@ -19,11 +19,11 @@ namespace BansheeEngine
 	{ }
 
 	VIRTUAL_AXIS_DESC::VIRTUAL_AXIS_DESC()
-		: type((UINT32)InputAxis::MouseX), deadZone(0.0001f), sensitivity(1.0f), invert(false)
+		:deadZone(0.0001f), sensitivity(1.0f), invert(false), type((UINT32)InputAxis::MouseX)
 	{ }
 
 	VIRTUAL_AXIS_DESC::VIRTUAL_AXIS_DESC(UINT32 type, float deadZone, float sensitivity, bool invert)
-		:type(type), deadZone(deadZone), sensitivity(sensitivity), invert(invert)
+		:deadZone(deadZone), sensitivity(sensitivity), invert(invert), type(type)
 	{ }
 
 	VirtualButton::VirtualButton()

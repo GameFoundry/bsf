@@ -508,7 +508,7 @@ EndProject)";
     <None Include="{0}"/>)";
 
 	VSCodeEditor::VSCodeEditor(VisualStudioVersion version, const Path& execPath, const WString& CLSID)
-		:mCLSID(CLSID), mExecPath(execPath), mVersion(version)
+		:mVersion(version), mExecPath(execPath), mCLSID(CLSID)
 	{
 		
 	}

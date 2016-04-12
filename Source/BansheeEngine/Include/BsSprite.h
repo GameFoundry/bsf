@@ -179,19 +179,5 @@ struct std::hash<std::reference_wrapper<const BansheeEngine::SpriteMaterialInfo>
 	}
 };
 
-/** Provides equals operator for STL reference wrapper for SpriteMaterialInfo. */
-static bool operator==(const std::reference_wrapper<const BansheeEngine::SpriteMaterialInfo>& lhs, 
-	const std::reference_wrapper<const BansheeEngine::SpriteMaterialInfo>& rhs)
-{
-	return lhs.get() == rhs.get();
-}
-
-/** Provides not equals operator for STL reference wrapper for SpriteMaterialInfo. */
-static bool operator!=(const std::reference_wrapper<const BansheeEngine::SpriteMaterialInfo>& lhs,
-	const std::reference_wrapper<const BansheeEngine::SpriteMaterialInfo>& rhs)
-{
-	return !(lhs == rhs);
-}
-
 /** @} */
 /** @endcond */

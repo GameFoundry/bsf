@@ -8,8 +8,8 @@ namespace BansheeEngine
 	const UINT32 UndoRedo::MAX_STACK_ELEMENTS = 1000;
 
 	UndoRedo::UndoRedo()
-		:mUndoStackPtr(0), mUndoNumElements(0), mRedoStackPtr(0), mRedoNumElements(0), mUndoStack(nullptr), 
-		mRedoStack(nullptr), mNextCommandId(0)
+		: mUndoStack(nullptr), mRedoStack(nullptr), mUndoStackPtr(0), mUndoNumElements(0), mRedoStackPtr(0)
+		, mRedoNumElements(0), mNextCommandId(0)
 	{
 		mUndoStack = bs_newN<EditorCommand*>(MAX_STACK_ELEMENTS);
 		mRedoStack = bs_newN<EditorCommand*>(MAX_STACK_ELEMENTS);

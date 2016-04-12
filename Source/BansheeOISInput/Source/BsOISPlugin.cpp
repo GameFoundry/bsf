@@ -8,9 +8,9 @@
 namespace BansheeEngine
 {
 	/**	Returns a name of the plugin. */
-	extern "C" BS_OIS_EXPORT const String& getPluginName()
+	extern "C" BS_OIS_EXPORT const char* getPluginName()
 	{
-		static String pluginName = "OISInput";
+		static const char* pluginName = "OISInput";
 		return pluginName;
 	}
 

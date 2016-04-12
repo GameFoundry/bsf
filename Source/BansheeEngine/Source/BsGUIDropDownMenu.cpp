@@ -56,7 +56,7 @@ namespace BansheeEngine
 	}
 
 	GUIDropDownMenu::GUIDropDownMenu(const HSceneObject& parent, const DROP_DOWN_BOX_DESC& desc, GUIDropDownType type)
-		:CGUIWidget(parent, desc.camera), mRootMenu(nullptr), mFrontHitBox(nullptr), mCaptureHitBox(nullptr), mBackHitBox(nullptr)
+		:CGUIWidget(parent, desc.camera), mRootMenu(nullptr), mFrontHitBox(nullptr), mBackHitBox(nullptr), mCaptureHitBox(nullptr)
 	{
 		String stylePrefix = "";
 		switch(type)
@@ -180,11 +180,13 @@ namespace BansheeEngine
 		mFrontHitBox->setBounds(bounds);
 	}
 
-	GUIDropDownMenu::DropDownSubMenu::DropDownSubMenu(GUIDropDownMenu* owner, DropDownSubMenu* parent, const DropDownAreaPlacement& placement,
-		const Rect2I& availableBounds, const GUIDropDownData& dropDownData, GUIDropDownType type, UINT32 depthOffset)
-		:mOwner(owner), mParent(parent), mPage(0), mBackgroundFrame(nullptr), mBackgroundPanel(nullptr), mContentPanel(nullptr),
-		mContentLayout(nullptr), x(0), y(0), width(0), height(0), mSidebarPanel(nullptr), mType(type), mSubMenu(nullptr), 
-		mData(dropDownData), mOpenedUpward(false), mDepthOffset(depthOffset), mContent(nullptr)
+	GUIDropDownMenu::DropDownSubMenu::DropDownSubMenu(GUIDropDownMenu* owner, DropDownSubMenu* parent, 
+		const DropDownAreaPlacement& placement, const Rect2I& availableBounds, const GUIDropDownData& dropDownData, 
+		GUIDropDownType type, UINT32 depthOffset)
+		: mOwner(owner), mType(type), mData(dropDownData), mPage(0), x(0), y(0), width(0), height(0)
+		, mDepthOffset(depthOffset), mOpenedUpward(false), mContent(nullptr), mBackgroundFrame(nullptr)
+		, mBackgroundPanel(nullptr), mContentPanel(nullptr), mContentLayout(nullptr), mSidebarPanel(nullptr)
+		, mParent(parent), mSubMenu(nullptr)
 	{
 		mAvailableBounds = availableBounds;
 
@@ -324,7 +326,6 @@ namespace BansheeEngine
 		const GUIElementStyle* sideBarStyle = mOwner->getSkin().getStyle(mOwner->mSideBackgroundStyle);
 		const GUIElementStyle* scrollUpStyle = mOwner->getSkin().getStyle(mOwner->mScrollUpStyle);
 		const GUIElementStyle* scrollDownStyle = mOwner->getSkin().getStyle(mOwner->mScrollDownStyle);
-		const GUIElementStyle* handleStyle = mOwner->getSkin().getStyle(mOwner->mHandleStyle);
 
 		Vector<PageInfo> pageInfos = getPageInfos();
 

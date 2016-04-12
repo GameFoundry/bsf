@@ -71,10 +71,10 @@ namespace BansheeEngine
 	const UINT32 GUIManager::MESH_HEAP_INITIAL_NUM_INDICES = 49152;
 
 	GUIManager::GUIManager()
-		:mSeparateMeshesByWidget(true), mActiveMouseButton(GUIMouseButton::Left),
-		mCaretBlinkInterval(0.5f), mCaretLastBlinkTime(0.0f), mCaretColor(1.0f, 0.6588f, 0.0f), mIsCaretOn(false),
-		mTextSelectionColor(0.0f, 114/255.0f, 188/255.0f), mInputCaret(nullptr), mInputSelection(nullptr), 
-		mDragState(DragState::NoDrag), mActiveCursor(CursorType::Arrow), mCoreDirty(false), mShowTooltip(false), mTooltipElementHoverStart(0.0f)
+		: mCoreDirty(false), mActiveMouseButton(GUIMouseButton::Left), mShowTooltip(false), mTooltipElementHoverStart(0.0f)
+		, mInputCaret(nullptr), mInputSelection(nullptr), mSeparateMeshesByWidget(true), mDragState(DragState::NoDrag)
+		, mCaretColor(1.0f, 0.6588f, 0.0f), mCaretBlinkInterval(0.5f), mCaretLastBlinkTime(0.0f), mIsCaretOn(false)
+		, mActiveCursor(CursorType::Arrow), mTextSelectionColor(0.0f, 114/255.0f, 188/255.0f)
 	{
 		mOnPointerMovedConn = gInput().onPointerMoved.connect(std::bind(&GUIManager::onPointerMoved, this, _1));
 		mOnPointerPressedConn = gInput().onPointerPressed.connect(std::bind(&GUIManager::onPointerPressed, this, _1));
