@@ -126,13 +126,13 @@ namespace BansheeEngine
 
 	LightCore::~LightCore()
 	{
-		gRenderer()->_notifyLightRemoved(this);
+		gRenderer()->notifyLightRemoved(this);
 	}
 
 	void LightCore::initialize()
 	{
 		updateBounds();
-		gRenderer()->_notifyLightAdded(this);
+		gRenderer()->notifyLightAdded(this);
 
 		CoreObjectCore::initialize();
 	}
@@ -164,19 +164,19 @@ namespace BansheeEngine
 		if (dirtyFlags == (UINT32)LightDirtyFlag::Transform)
 		{
 			if (mIsActive)
-				gRenderer()->_notifyLightUpdated(this);
+				gRenderer()->notifyLightUpdated(this);
 		}
 		else
 		{
 			if (oldIsActive != mIsActive)
 			{
 				if (mIsActive)
-					gRenderer()->_notifyLightAdded(this);
+					gRenderer()->notifyLightAdded(this);
 				else
 				{
 					LightType newType = mType;
 					mType = oldType;
-					gRenderer()->_notifyLightRemoved(this);
+					gRenderer()->notifyLightRemoved(this);
 					mType = newType;
 				}
 			}
@@ -184,10 +184,10 @@ namespace BansheeEngine
 			{
 				LightType newType = mType;
 				mType = oldType;
-				gRenderer()->_notifyLightRemoved(this);
+				gRenderer()->notifyLightRemoved(this);
 				mType = newType;
 
-				gRenderer()->_notifyLightAdded(this);
+				gRenderer()->notifyLightAdded(this);
 			}
 		}
 	}

@@ -89,7 +89,7 @@ namespace BansheeEngine
 	{
 		SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
 		if (mCamera != nullptr)
-			activeRenderer->_unregisterRenderCallback(mCamera.get(), 10);
+			activeRenderer->unregisterRenderCallback(mCamera.get(), 10);
 	}
 
 	void SelectionRendererCore::initialize(const SPtr<MaterialCore>& mat)
@@ -111,10 +111,10 @@ namespace BansheeEngine
 		{
 			SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
 			if (mCamera != nullptr)
-				activeRenderer->_unregisterRenderCallback(mCamera.get(), 10);
+				activeRenderer->unregisterRenderCallback(mCamera.get(), 10);
 
 			if (camera != nullptr)
-				activeRenderer->_registerRenderCallback(camera.get(), 10, std::bind(&SelectionRendererCore::render, this));
+				activeRenderer->registerRenderCallback(camera.get(), 10, std::bind(&SelectionRendererCore::render, this));
 		}
 
 		mCamera = camera;

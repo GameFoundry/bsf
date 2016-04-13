@@ -101,7 +101,7 @@ namespace BansheeEngine
 		assert(mSamplerOverrides.empty());
 	}
 
-	void RenderBeast::_notifyRenderableAdded(RenderableCore* renderable)
+	void RenderBeast::notifyRenderableAdded(RenderableCore* renderable)
 	{
 		UINT32 renderableId = (UINT32)mRenderables.size();
 
@@ -198,7 +198,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void RenderBeast::_notifyRenderableRemoved(RenderableCore* renderable)
+	void RenderBeast::notifyRenderableRemoved(RenderableCore* renderable)
 	{
 		UINT32 renderableId = renderable->getRendererId();
 		RenderableCore* lastRenerable = mRenderables.back().renderable;
@@ -241,7 +241,7 @@ namespace BansheeEngine
 		mRenderableShaderData.erase(mRenderableShaderData.end() - 1);
 	}
 
-	void RenderBeast::_notifyRenderableUpdated(RenderableCore* renderable)
+	void RenderBeast::notifyRenderableUpdated(RenderableCore* renderable)
 	{
 		UINT32 renderableId = renderable->getRendererId();
 
@@ -255,7 +255,7 @@ namespace BansheeEngine
 		mWorldBounds[renderableId] = renderable->getBounds();
 	}
 
-	void RenderBeast::_notifyLightAdded(LightCore* light)
+	void RenderBeast::notifyLightAdded(LightCore* light)
 	{
 		if (light->getType() == LightType::Directional)
 		{
@@ -281,7 +281,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void RenderBeast::_notifyLightUpdated(LightCore* light)
+	void RenderBeast::notifyLightUpdated(LightCore* light)
 	{
 		UINT32 lightId = light->getRendererId();
 
@@ -289,7 +289,7 @@ namespace BansheeEngine
 			mLightWorldBounds[lightId] = light->getBounds();
 	}
 
-	void RenderBeast::_notifyLightRemoved(LightCore* light)
+	void RenderBeast::notifyLightRemoved(LightCore* light)
 	{
 		UINT32 lightId = light->getRendererId();
 		if (light->getType() == LightType::Directional)
@@ -327,7 +327,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void RenderBeast::_notifyCameraAdded(const CameraCore* camera)
+	void RenderBeast::notifyCameraAdded(const CameraCore* camera)
 	{
 		SPtr<RenderTargetCore> renderTarget = camera->getViewport()->getTarget();
 		if (renderTarget == nullptr)
@@ -373,7 +373,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void RenderBeast::_notifyCameraRemoved(const CameraCore* camera)
+	void RenderBeast::notifyCameraRemoved(const CameraCore* camera)
 	{
 		mCameraData.erase(camera);
 

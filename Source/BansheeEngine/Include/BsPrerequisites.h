@@ -8,7 +8,7 @@
  *  @{
  */
 
-/** @defgroup Engine 3. Engine
+/** @defgroup Engine Engine
  *	Layer that builds upon Core, providing specific implementations of its interfaces as well as other high level systems.
  *  @{
  */

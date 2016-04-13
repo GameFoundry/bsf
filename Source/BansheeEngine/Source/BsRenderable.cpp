@@ -131,12 +131,12 @@ namespace BansheeEngine
 	RenderableCore::~RenderableCore()
 	{
 		if (mIsActive)
-			gRenderer()->_notifyRenderableRemoved(this);
+			gRenderer()->notifyRenderableRemoved(this);
 	}
 
 	void RenderableCore::initialize()
 	{
-		gRenderer()->_notifyRenderableAdded(this);
+		gRenderer()->notifyRenderableAdded(this);
 
 		CoreObjectCore::initialize();
 	}
@@ -197,21 +197,21 @@ namespace BansheeEngine
 		if (dirtyFlags == (UINT32)RenderableDirtyFlag::Transform)
 		{
 			if (mIsActive)
-				gRenderer()->_notifyRenderableUpdated(this);
+				gRenderer()->notifyRenderableUpdated(this);
 		}
 		else
 		{
 			if (oldIsActive != mIsActive)
 			{
 				if (mIsActive)
-					gRenderer()->_notifyRenderableAdded(this);
+					gRenderer()->notifyRenderableAdded(this);
 				else
-					gRenderer()->_notifyRenderableRemoved(this);
+					gRenderer()->notifyRenderableRemoved(this);
 			}
 			else
 			{
-				gRenderer()->_notifyRenderableRemoved(this);
-				gRenderer()->_notifyRenderableAdded(this);
+				gRenderer()->notifyRenderableRemoved(this);
+				gRenderer()->notifyRenderableAdded(this);
 			}
 		}
 	}

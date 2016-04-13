@@ -39,7 +39,7 @@ namespace BansheeEngine
 		/**	Material to render the mesh with. */
 		SPtr<MaterialCore> material;
 
-		/**	Custom data that may optionally be set by the RenderableHanbdler. */
+		/**	Custom data that may optionally be set by the RenderableHandler. */
 		Any rendererData;
 
 		Vector<BufferBindInfo> rendererBuffers;

@@ -4,7 +4,7 @@ Creating custom GUI elements						{#customGUI}
 
 Sometimes the built-in GUI elements are just not enough, for example when you need a very specific GUI element for your game (e.g. for displaying graphs, charts), want to use a special material or in general just need some more customization options. While in some cases you could construct such elements from the provided GUI elements, it is often more efficient to create a brand new customized type. New GUI elements can be created relatively easily and allow you to fully customize the look and interaction with your element.
 
-Before staring you should familiarize yourself how Banshee's GUI works from the users perspective. Make sure to read [GUI manual](@ref TODOLINK) to understand the basics (although the manual is for scripting, the C++ versions of these methods are essentially equivalent and the same concepts apply).
+Before staring you should familiarize yourself how Banshee's GUI works from the users perspective. Make sure to read the scripting GUI manual to understand the basics (although the manual is for scripting, the C++ versions of these methods are essentially equivalent and the same concepts apply).
 
 All GUI elements derive from the base @ref BansheeEngine::GUIElementBase "GUIElementBase" type. The elements can be categorized into two major groups:
  - GUILayout: They derive from @ref BansheeEngine::GUILayout "GUILayout" and do not have any graphics, but instead they control the placement of all elements attached to them.

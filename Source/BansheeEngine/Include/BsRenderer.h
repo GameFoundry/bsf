@@ -22,42 +22,42 @@ namespace BansheeEngine
 		 *
 		 * @note	Core thread.
 		 */
-		virtual void _notifyRenderableAdded(RenderableCore* renderable) { }
+		virtual void notifyRenderableAdded(RenderableCore* renderable) { }
 
 		/**
 		 * Called whenever a renderable is updated.
 		 *
 		 * @note	Core thread.
 		 */
-		virtual void _notifyRenderableUpdated(RenderableCore* renderable) { }
+		virtual void notifyRenderableUpdated(RenderableCore* renderable) { }
 
 		/**
 		 * Called whenever a renderable is destroyed.
 		 *
 		 * @note	Core thread.
 		 */
-		virtual void _notifyRenderableRemoved(RenderableCore* renderable) { }
+		virtual void notifyRenderableRemoved(RenderableCore* renderable) { }
 
 		/**
 		 * Called whenever a new light is created.
 		 *
 		 * @note	Core thread.
 		 */
-		virtual void _notifyLightAdded(LightCore* light) { }
+		virtual void notifyLightAdded(LightCore* light) { }
 
 		/**
 		 * Called whenever a light is updated.
 		 *
 		 * @note	Core thread.
 		 */
-		virtual void _notifyLightUpdated(LightCore* light) { }
+		virtual void notifyLightUpdated(LightCore* light) { }
 
 		/**
 		 * Called whenever a light is destroyed.
 		 *
 		 * @note	Core thread.
 		 */
-		virtual void _notifyLightRemoved(LightCore* light) { }
+		virtual void notifyLightRemoved(LightCore* light) { }
 	};
 
 	/**	Provides easy access to Renderer. */

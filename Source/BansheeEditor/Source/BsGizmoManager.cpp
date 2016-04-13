@@ -941,7 +941,7 @@ namespace BansheeEngine
 	{
 		SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
 		if (mCamera != nullptr)
-			activeRenderer->_unregisterRenderCallback(mCamera.get(), 20);
+			activeRenderer->unregisterRenderCallback(mCamera.get(), 20);
 	}
 
 	void GizmoManagerCore::initialize(const GizmoManager::CoreInitData& initData)
@@ -1039,10 +1039,10 @@ namespace BansheeEngine
 		{
 			SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
 			if (mCamera != nullptr)
-				activeRenderer->_unregisterRenderCallback(mCamera.get(), 0);
+				activeRenderer->unregisterRenderCallback(mCamera.get(), 0);
 
 			if (camera != nullptr)
-				activeRenderer->_registerRenderCallback(camera.get(), 0, std::bind(&GizmoManagerCore::render, this));
+				activeRenderer->registerRenderCallback(camera.get(), 0, std::bind(&GizmoManagerCore::render, this));
 		}
 
 		mCamera = camera;

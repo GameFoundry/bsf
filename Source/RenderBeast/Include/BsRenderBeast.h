@@ -133,28 +133,28 @@ namespace BansheeEngine
 
 	private:
 		/** @copydoc Renderer::_notifyCameraAdded */
-		void _notifyCameraAdded(const CameraCore* camera) override;
+		void notifyCameraAdded(const CameraCore* camera) override;
 
 		/** @copydocRenderer::_notifyCameraRemoved */
-		void _notifyCameraRemoved(const CameraCore* camera) override;
+		void notifyCameraRemoved(const CameraCore* camera) override;
 
 		/** @copydoc Renderer::_notifyLightAdded */
-		void _notifyLightAdded(LightCore* light) override;
+		void notifyLightAdded(LightCore* light) override;
 
 		/** @copydoc Renderer::_notifyLightUpdated */
-		void _notifyLightUpdated(LightCore* light) override;
+		void notifyLightUpdated(LightCore* light) override;
 
 		/** @copydoc Renderer::_notifyLightRemoved */
-		void _notifyLightRemoved(LightCore* light) override;
+		void notifyLightRemoved(LightCore* light) override;
 
 		/** @copydoc Renderer::_notifyRenderableAdded */
-		void _notifyRenderableAdded(RenderableCore* renderable) override;
+		void notifyRenderableAdded(RenderableCore* renderable) override;
 
 		/** @copydoc Renderer::_notifyRenderableUpdated */
-		void _notifyRenderableUpdated(RenderableCore* renderable) override;
+		void notifyRenderableUpdated(RenderableCore* renderable) override;
 
 		/** @copydoc Renderer::_notifyRenderableRemoved */
-		void _notifyRenderableRemoved(RenderableCore* renderable) override;
+		void notifyRenderableRemoved(RenderableCore* renderable) override;
 
 		/**
 		 * Updates the render options on the core thread.

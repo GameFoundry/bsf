@@ -72,14 +72,14 @@ namespace BansheeEngine
 		 *
 		 * @note	Core thread.
 		 */
-		virtual void _notifyCameraAdded(const CameraCore* camera) { }
+		virtual void notifyCameraAdded(const CameraCore* camera) { }
 
 		/**
 		 * Called whenever a camera is destroyed.
 		 *
 		 * @note	Core thread.
 		 */
-		virtual void _notifyCameraRemoved(const CameraCore* camera) { }
+		virtual void notifyCameraRemoved(const CameraCore* camera) { }
 
 		/**
 		 * Creates a new empty renderer mesh data.
@@ -114,10 +114,10 @@ namespace BansheeEngine
 		 *
 		 * @note	Core thread.
 		 */
-		void _registerRenderCallback(const CameraCore* camera, INT32 index, const std::function<void()>& callback, bool isOverlay = false);
+		void registerRenderCallback(const CameraCore* camera, INT32 index, const std::function<void()>& callback, bool isOverlay = false);
 
 		/** Removes a previously registered callback registered with _registerRenderCallback(). */
-		void _unregisterRenderCallback(const CameraCore* camera, INT32 index);
+		void unregisterRenderCallback(const CameraCore* camera, INT32 index);
 
 		/**	Sets options used for controlling the rendering. */
 		virtual void setOptions(const SPtr<CoreRendererOptions>& options) { }

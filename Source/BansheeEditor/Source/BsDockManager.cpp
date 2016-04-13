@@ -1138,7 +1138,7 @@ namespace BansheeEngine
 		if (mCamera != nullptr)
 		{
 			SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
-			activeRenderer->_unregisterRenderCallback(mCamera.get(), 40);
+			activeRenderer->unregisterRenderCallback(mCamera.get(), 40);
 		}
 	}
 
@@ -1154,10 +1154,10 @@ namespace BansheeEngine
 		{
 			SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
 			if (mCamera != nullptr)
-				activeRenderer->_unregisterRenderCallback(mCamera.get(), 40);
+				activeRenderer->unregisterRenderCallback(mCamera.get(), 40);
 
 			if (camera != nullptr)
-				activeRenderer->_registerRenderCallback(camera.get(), 40, std::bind(&DockOverlayRenderer::render, this), true);
+				activeRenderer->registerRenderCallback(camera.get(), 40, std::bind(&DockOverlayRenderer::render, this), true);
 		}
 
 		mCamera = camera;

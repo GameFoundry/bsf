@@ -287,7 +287,7 @@ namespace BansheeEngine
 			UINT32 idx = (UINT32)mQueuedData.size();
 			mQueuedData.push_back({ camera, meshes });
 
-			activeRenderer->_registerRenderCallback(camera.get(), 20, std::bind(&HandleDrawManagerCore::render, this, idx));
+			activeRenderer->registerRenderCallback(camera.get(), 20, std::bind(&HandleDrawManagerCore::render, this, idx));
 		}
 	}
 
@@ -295,7 +295,7 @@ namespace BansheeEngine
 	{
 		SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
 		for (auto& entry : mQueuedData)
-			activeRenderer->_unregisterRenderCallback(entry.camera.get(), 20);
+			activeRenderer->unregisterRenderCallback(entry.camera.get(), 20);
 
 		mQueuedData.clear();
 	}

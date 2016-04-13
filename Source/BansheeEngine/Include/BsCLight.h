@@ -26,18 +26,6 @@ namespace BansheeEngine
 
 		virtual ~CLight();
 
-	    /** @copydoc Light::getPosition */
-		Vector3 getPosition() const { return mInternal->getPosition(); }
-
-	    /** @copydoc Light::setPosition */
-		void setPosition(const Vector3& position) { mInternal->setPosition(position); }
-
-	    /** @copydoc Light::getRotation */
-		Quaternion getRotation() const { return mInternal->getRotation(); }
-
-	    /** @copydoc Light::setRotation */
-		void setRotation(const Quaternion& rotation) { mInternal->setRotation(rotation); }
-
 	    /** @copydoc Light::getType */
 		LightType getType() const { return mInternal->getType(); }
 

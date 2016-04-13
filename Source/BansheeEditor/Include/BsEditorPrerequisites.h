@@ -8,7 +8,7 @@
  *  @{
  */
 
-/** @defgroup Editor 4. Editor
+/** @defgroup Editor Editor
  *	Functionality specific to the Banshee Editor.
  *  @{
  */

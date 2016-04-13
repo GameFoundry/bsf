@@ -28,13 +28,13 @@ namespace BansheeEngine
 			RendererMeshData(meshData));
 	}
 
-	void CoreRenderer::_registerRenderCallback(const CameraCore* camera, INT32 index, 
+	void CoreRenderer::registerRenderCallback(const CameraCore* camera, INT32 index, 
 		const std::function<void()>& callback, bool isOverlay)
 	{
 		mRenderCallbacks[camera][index] = { isOverlay, callback };
 	}
 
-	void CoreRenderer::_unregisterRenderCallback(const CameraCore* camera, INT32 index)
+	void CoreRenderer::unregisterRenderCallback(const CameraCore* camera, INT32 index)
 	{
 		auto iterFind = mRenderCallbacks.find(camera);
 		if (iterFind != mRenderCallbacks.end())

@@ -680,7 +680,7 @@ namespace BansheeEngine
 
 	CameraCore::~CameraCore()
 	{
-		RendererManager::instance().getActive()->_notifyCameraRemoved(this);
+		RendererManager::instance().getActive()->notifyCameraRemoved(this);
 	}
 
 	CameraCore::CameraCore(SPtr<RenderTargetCore> target, float left, float top, float width, float height)
@@ -695,7 +695,7 @@ namespace BansheeEngine
 
 	void CameraCore::initialize()
 	{
-		RendererManager::instance().getActive()->_notifyCameraAdded(this);
+		RendererManager::instance().getActive()->notifyCameraAdded(this);
 
 		CoreObjectCore::initialize();
 	}
@@ -707,7 +707,7 @@ namespace BansheeEngine
 
 	void CameraCore::syncToCore(const CoreSyncData& data)
 	{
-		RendererManager::instance().getActive()->_notifyCameraRemoved(this);
+		RendererManager::instance().getActive()->notifyCameraRemoved(this);
 
 		char* dataPtr = (char*)data.getBuffer();
 
@@ -732,7 +732,7 @@ namespace BansheeEngine
 		mRecalcView = true;
 
 		if(mIsActive)
-			RendererManager::instance().getActive()->_notifyCameraAdded(this);
+			RendererManager::instance().getActive()->notifyCameraAdded(this);
 	}
 
 	Camera::Camera(SPtr<RenderTarget> target, float left, float top, float width, float height)

@@ -9,7 +9,7 @@
  *  @{
  */
 
-/** @defgroup Utility 1. Utility
+/** @defgroup Utility Utility
  *	Lowest layer of the engine containing a collection of very decoupled and separate systems that are 
  *  likely to be used throughout all of the higher layers.
  *  @{

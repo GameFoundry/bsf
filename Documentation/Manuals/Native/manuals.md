@@ -20,10 +20,11 @@ Name                                      | Description
 [GPU programs](@ref gpuPrograms)		  | Shows you how to create and use GPU programs.
 [Materials](@ref materials)				  | Shows you how to create and use materials and shaders.
 [Scripting](@ref scripting)               | Shows you how to interact with the scripting system, and how to expose C++ objects to the scripting API.
+[Renderer](@ref renderer)    	  		  | Explains how the renderer works on the low level, and how to create a custom renderer so you may fully customize the look of your application.
+[BSLFX](@ref bslfx)    	  		  		  | Provides a reference for the Banshee Shading Language FX syntax.
 [Custom GUI elements](@ref customGUI)     | Shows you how to create custom GUI elements, manually render text or modify GUI system in a general way.
 [Custom importers](@ref customImporters)  | Shows you how to create importers that handle conversion of third party resources into engine ready formats.
 [Custom plugins](@ref customPlugins)      | Shows you how to create custom plugins that can be loaded by Banshee.
-[Custom renderer](@ref renderer)    	  | Shows you how to create a custom renderer so you may fully customize the look of your application.
 [Quick reference](@ref quickref)          | Provides a few bits of commonly required information, that might be hard to remember otherwise.
 [Porting](@ref porting)                   | Information about how to go on about porting Banshee to a different operating system.
 [Code style](@ref style)                  | Information about code style used when writing Banshee.

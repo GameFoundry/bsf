@@ -190,7 +190,7 @@ namespace BansheeEngine
 	SceneGridCore::~SceneGridCore()
 	{
 		SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
-		activeRenderer->_unregisterRenderCallback(mCamera.get(), 5);
+		activeRenderer->unregisterRenderCallback(mCamera.get(), 5);
 	}
 
 	void SceneGridCore::initialize(const SPtr<CameraCore>& camera, const SPtr<MaterialCore>& material)
@@ -208,7 +208,7 @@ namespace BansheeEngine
 		mGridMaterial->getParam("gridPlaneNormal", mGridPlaneNormalParam);
 
 		SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
-		activeRenderer->_registerRenderCallback(camera.get(), 5, std::bind(&SceneGridCore::render, this));			
+		activeRenderer->registerRenderCallback(camera.get(), 5, std::bind(&SceneGridCore::render, this));			
 	}
 
 	void SceneGridCore::updateData(const SPtr<MeshCore>& mesh, float spacing, bool fadeGrid, const Vector3& gridPlaneNormal)

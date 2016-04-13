@@ -8,7 +8,7 @@
  *  @{
  */
 
-/** @defgroup Core 2. Core
+/** @defgroup Core Core
  *	Second lowest layer that provides core engine functionality and abstract interfaces for various systems.
  *  @{
  */

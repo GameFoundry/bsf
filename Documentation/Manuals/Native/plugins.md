@@ -6,7 +6,7 @@ Many systems in Banshee are implemented through plugins, libraries that are sepa
 
 The default Banshee @ref BansheeEngine::CoreApplication "Application" supports plugins for the following systems:
  - Rendering API - Wrappers for render APIs like DirectX or OpenGL. See the manual about working with [low level render API] (@ref renderAPI) for more information.
- - Renderer - Renderer that determines how is the scene displayed (lighting, shadows, post-processing, etc.). See the manual about implementing [custom renderers](@ref customRenderers).
+ - Renderer - Renderer that determines how is the scene displayed (lighting, shadows, post-processing, etc.). See the manual about implementing [custom renderers](@ref renderer).
  - Input - Reports input events (mouse, keyboard, gamepad, etc.)
  - Physics - Runs the physics simulation (like NVIDIA PhysX)
  - Importers - Importers that handle conversion of some third party resource format into an engine-ready format. See the manual about implementing [custom importers](@ref customImporters).

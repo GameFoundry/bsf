@@ -86,6 +86,9 @@ namespace BansheeEngine
 		/** Called when the component's parent scene object has changed. */
 		virtual void onTransformChanged(TransformChangedFlags flags) { }
 
+		/** Sets new flags that determine when is onTransformChanged called. */
+		void setNotifyFlags(TransformChangedFlags flags) { mNotifyFlags = flags; }
+
 		/** Checks whether the component wants to received the specified transform changed message. */
 		bool supportsNotify(TransformChangedFlags flags) const { return (mNotifyFlags & flags) != 0; }
 
