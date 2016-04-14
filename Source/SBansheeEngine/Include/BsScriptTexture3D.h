@@ -19,13 +19,13 @@ namespace BansheeEngine
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Texture3D")
 
+		/**	Creates an empty, uninitialized managed instance of the resource interop object. */
+		static MonoObject* createInstance();
+
 	private:
 		friend class ScriptResourceManager;
 
 		ScriptTexture3D(MonoObject* instance, const HTexture& texture);
-
-		/**	Creates an empty, uninitialized managed instance of the resource interop object. */
-		static MonoObject* createInstance();
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/

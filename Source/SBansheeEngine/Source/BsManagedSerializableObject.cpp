@@ -32,7 +32,7 @@ namespace BansheeEngine
 	}
 
 	ManagedSerializableObject::ManagedSerializableObject(const ConstructPrivately& dummy, SPtr<ManagedSerializableObjectInfo> objInfo, MonoObject* managedInstance)
-		:mObjInfo(objInfo), mManagedInstance(managedInstance)
+		:mManagedInstance(managedInstance), mObjInfo(objInfo)
 	{
 
 	}

@@ -39,7 +39,7 @@ namespace BansheeEngine
 
 	void ScriptAsyncOp::internal_createInstance(MonoObject* managedInstance)
 	{
-		ScriptAsyncOp* scriptAsyncOp = new (bs_alloc<ScriptAsyncOp>()) ScriptAsyncOp(managedInstance);
+		new (bs_alloc<ScriptAsyncOp>()) ScriptAsyncOp(managedInstance);
 	}
 
 	void ScriptAsyncOp::internal_isComplete(ScriptAsyncOp* thisPtr, bool* value)

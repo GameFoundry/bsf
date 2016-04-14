@@ -337,7 +337,6 @@ namespace BansheeEngine
 
 		// Final data - invert image and trim pitch at the same time
 		UINT32 dstPitch = width * PixelUtil::getNumElemBytes(format);
-		UINT32 size = dstPitch * height;
 
 		// Bind output buffer
 		SPtr<PixelData> texData = bs_shared_ptr_new<PixelData>(width, height, 1, format);

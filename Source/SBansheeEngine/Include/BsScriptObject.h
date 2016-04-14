@@ -16,7 +16,11 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
-	struct ScriptObjectBackup;
+	/**	Contains backed up interop object data. */
+	struct ScriptObjectBackup
+	{
+		Any data;
+	};
 
 	/** Helper class to initialize all script interop objects as soon as the library is loaded. */
 	template <class Type, class Base>
@@ -106,21 +110,21 @@ namespace BansheeEngine
 		 */
 		void _clearManagedInstance()
 		{
-			if (metaData.thisPtrField != nullptr && mManagedInstance != nullptr)
-				metaData.thisPtrField->setValue(mManagedInstance, nullptr);
+			if (metaData.thisPtrField != nullptr && this->mManagedInstance != nullptr)
+				metaData.thisPtrField->setValue(this->mManagedInstance, nullptr);
 
-			mManagedInstance = nullptr;
+			this->mManagedInstance = nullptr;
 		}
 
 		/**	Allows persistent objects to restore their managed instances after assembly reload. */
 		void _restoreManagedInstance()
 		{
-			mManagedInstance = _createManagedInstance(true);
+			this->mManagedInstance = _createManagedInstance(true);
 
 			Type* param = (Type*)(Base*)this; // Needed due to multiple inheritance. Safe since Type must point to an class derived from this one.
 
-			if (metaData.thisPtrField != nullptr && mManagedInstance != nullptr)
-				metaData.thisPtrField->setValue(mManagedInstance, &param);
+			if (metaData.thisPtrField != nullptr && this->mManagedInstance != nullptr)
+				metaData.thisPtrField->setValue(this->mManagedInstance, &param);
 		}
 
 		/**	Creates a new managed instance of the type wrapped by this interop object. */
@@ -169,12 +173,6 @@ namespace BansheeEngine
 
 	template <typename Type, typename Base>
 	ScriptMeta ScriptObject<Type, Base>::metaData;
-
-	/**	Contains backed up interop object data. */
-	struct ScriptObjectBackup
-	{
-		Any data;
-	};
 
 /** Helper macro to use with script interop objects that form a link between C++ and CLR. */
 #define SCRIPT_OBJ(assembly, namespace, name)		\

@@ -26,6 +26,6 @@ namespace BansheeEngine
 		SPtr<PlaneCollider> collider = PlaneCollider::create();
 		collider->_setOwner(PhysicsOwnerType::Script, instance);
 
-		ScriptPlaneCollider* scriptCollider = new (bs_alloc<ScriptPlaneCollider>()) ScriptPlaneCollider(instance, collider);
+		new (bs_alloc<ScriptPlaneCollider>()) ScriptPlaneCollider(instance, collider);
 	}
 }

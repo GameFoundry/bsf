@@ -75,7 +75,7 @@ namespace BansheeEngine
 		guiToggle->onToggled.connect(std::bind(&ScriptGUIToggle::onToggled, instance, std::placeholders::_1));
 		guiToggle->onDoubleClick.connect(std::bind(&ScriptGUIToggle::onDoubleClick, instance));
 
-		ScriptGUIToggle* nativeInstance = new (bs_alloc<ScriptGUIToggle>()) ScriptGUIToggle(instance, guiToggle);
+		new (bs_alloc<ScriptGUIToggle>()) ScriptGUIToggle(instance, guiToggle);
 	}
 
 	void ScriptGUIToggle::internal_setContent(ScriptGUIToggle* nativeInstance, MonoObject* content)

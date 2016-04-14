@@ -46,7 +46,7 @@ namespace BansheeEngine
 
 		GUITexture* guiTexture = GUITexture::create(nativeTexture, scale, transparent, options, toString(MonoUtil::monoToWString(style)));
 
-		ScriptGUITexture* nativeInstance = new (bs_alloc<ScriptGUITexture>()) ScriptGUITexture(instance, guiTexture);
+		new (bs_alloc<ScriptGUITexture>()) ScriptGUITexture(instance, guiTexture);
 	}
 
 	void ScriptGUITexture::internal_setTexture(ScriptGUITexture* nativeInstance, MonoObject* texture)

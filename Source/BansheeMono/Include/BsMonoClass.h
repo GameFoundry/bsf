@@ -21,12 +21,12 @@ namespace BansheeEngine
 		{
 			struct Hash
 			{
-				inline size_t operator()(const MethodId& v) const;
+				size_t operator()(const MethodId& v) const;
 			};
 			
 			struct Equals
 			{
-				inline bool operator()(const MethodId &a, const MethodId &b) const;
+				bool operator()(const MethodId& a, const MethodId& b) const;
 			};
 
 			MethodId(const String& name, UINT32 numParams);

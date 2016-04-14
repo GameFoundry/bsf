@@ -53,7 +53,7 @@ namespace BansheeEngine
 		GUISliderHorz* guiSlider = GUISliderHorz::create(options, toString(MonoUtil::monoToWString(style)));
 		guiSlider->onChanged.connect(std::bind(&ScriptGUISliderH::onChanged, instance, _1));
 
-		ScriptGUISliderH* nativeInstance = new (bs_alloc<ScriptGUISliderH>()) ScriptGUISliderH(instance, guiSlider);
+		new (bs_alloc<ScriptGUISliderH>()) ScriptGUISliderH(instance, guiSlider);
 	}
 
 	void ScriptGUISliderH::internal_setPercent(ScriptGUISliderH* nativeInstance, float percent)
@@ -136,7 +136,7 @@ namespace BansheeEngine
 		GUISliderVert* guiSlider = GUISliderVert::create(options, toString(MonoUtil::monoToWString(style)));
 		guiSlider->onChanged.connect(std::bind(&ScriptGUISliderV::onChanged, instance, _1));
 
-		ScriptGUISliderV* nativeInstance = new (bs_alloc<ScriptGUISliderV>()) ScriptGUISliderV(instance, guiSlider);
+		new (bs_alloc<ScriptGUISliderV>()) ScriptGUISliderV(instance, guiSlider);
 	}
 
 	void ScriptGUISliderV::internal_setPercent(ScriptGUISliderV* nativeInstance, float percent)

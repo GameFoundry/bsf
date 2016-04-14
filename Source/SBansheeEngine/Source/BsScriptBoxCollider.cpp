@@ -28,7 +28,7 @@ namespace BansheeEngine
 		SPtr<BoxCollider> collider = BoxCollider::create(Vector3::ONE);
 		collider->_setOwner(PhysicsOwnerType::Script, instance);
 
-		ScriptBoxCollider* scriptCollider = new (bs_alloc<ScriptBoxCollider>()) ScriptBoxCollider(instance, collider);
+		new (bs_alloc<ScriptBoxCollider>()) ScriptBoxCollider(instance, collider);
 	}
 
 	void ScriptBoxCollider::internal_SetExtents(ScriptBoxCollider* thisPtr, Vector3* extents)

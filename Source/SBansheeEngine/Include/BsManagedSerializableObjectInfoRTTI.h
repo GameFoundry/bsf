@@ -74,6 +74,8 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableObjectInfoRTTI : public RTTIType<ManagedSerializableObjectInfo, IReflectable, ManagedSerializableObjectInfoRTTI>
 	{
 	private:
+		using RTTIType<ManagedSerializableObjectInfo, IReflectable, ManagedSerializableObjectInfoRTTI>::getBaseClass;
+
 		SPtr<ManagedSerializableTypeInfoObject> getTypeInfo(ManagedSerializableObjectInfo* obj)
 		{
 			return obj->mTypeInfo;

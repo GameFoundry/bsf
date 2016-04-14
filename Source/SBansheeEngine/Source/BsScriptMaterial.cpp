@@ -18,7 +18,7 @@ namespace BansheeEngine
 	ScriptMaterial::ScriptMaterial(MonoObject* instance, const HMaterial& material)
 		:TScriptResource(instance, material)
 	{
-		int a = 5;
+
 	}
 
 	void ScriptMaterial::initRuntimeData()

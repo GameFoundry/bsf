@@ -57,7 +57,7 @@ namespace BansheeEngine
 		guiButton->onHover.connect(std::bind(&ScriptGUIButton::onHover, instance));
 		guiButton->onOut.connect(std::bind(&ScriptGUIButton::onOut, instance));
 
-		ScriptGUIButton* nativeInstance = new (bs_alloc<ScriptGUIButton>()) ScriptGUIButton(instance, guiButton);
+		new (bs_alloc<ScriptGUIButton>()) ScriptGUIButton(instance, guiButton);
 	}
 
 	void ScriptGUIButton::internal_setContent(ScriptGUIButton* nativeInstance, MonoObject* content)

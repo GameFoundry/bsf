@@ -10,7 +10,7 @@
 namespace BansheeEngine
 {
 	RenderTargets::RenderTargets(const SPtr<ViewportCore>& viewport, bool hdr, UINT32 numSamples)
-		:mNumSamples(numSamples), mHDR(hdr), mViewport(viewport)
+		:mViewport(viewport), mNumSamples(numSamples), mHDR(hdr)
 	{
 		if (hdr)
 			mDiffuseFormat = PF_FLOAT_R11G11B10;

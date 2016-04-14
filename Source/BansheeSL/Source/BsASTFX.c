@@ -117,8 +117,6 @@ void nodeOptionsResize(void* context, NodeOptions* options, int size)
 {
 	NodeOption* originalEntries = options->entries;
 	int originalSize = options->bufferSize;
-	int originalCount = options->count;
-	int i = 0;
 	int elementsToCopy = originalSize;
 	int sizeToCopy = 0;
 

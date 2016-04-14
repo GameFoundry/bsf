@@ -13,15 +13,15 @@
 namespace BansheeEngine
 {
 	ManagedSerializableList::ManagedSerializableList(const ConstructPrivately& dummy)
-		:mManagedInstance(nullptr), mNumElements(0), mItemProp(nullptr), mCountProp(nullptr), mAddMethod(nullptr),
-		mAddRangeMethod(nullptr), mCopyToMethod(nullptr), mClearMethod(nullptr)
+		: mManagedInstance(nullptr), mAddMethod(nullptr), mAddRangeMethod(nullptr), mClearMethod(nullptr)
+		, mCopyToMethod(nullptr), mItemProp(nullptr), mCountProp(nullptr), mNumElements(0)
 	{
 
 	}
 
 	ManagedSerializableList::ManagedSerializableList(const ConstructPrivately& dummy, const SPtr<ManagedSerializableTypeInfoList>& typeInfo, MonoObject* managedInstance)
-		:mListTypeInfo(typeInfo), mManagedInstance(managedInstance), mNumElements(0), mItemProp(nullptr),
-		mCountProp(nullptr), mAddMethod(nullptr), mAddRangeMethod(nullptr), mCopyToMethod(nullptr), mClearMethod(nullptr)
+		: mManagedInstance(managedInstance), mAddMethod(nullptr), mAddRangeMethod(nullptr), mClearMethod(nullptr)
+		, mCopyToMethod(nullptr), mItemProp(nullptr), mCountProp(nullptr), mListTypeInfo(typeInfo), mNumElements(0)
 	{
 		MonoClass* listClass = MonoManager::instance().findClass(mono_object_get_class(managedInstance));
 		if(listClass == nullptr)

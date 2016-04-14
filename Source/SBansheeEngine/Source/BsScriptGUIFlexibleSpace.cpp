@@ -41,6 +41,6 @@ namespace BansheeEngine
 	{
 		GUIFlexibleSpace* space = GUIFlexibleSpace::create();
 
-		ScriptGUIFlexibleSpace* nativeInstance = new (bs_alloc<ScriptGUIFlexibleSpace>()) ScriptGUIFlexibleSpace(instance, space);
+		new (bs_alloc<ScriptGUIFlexibleSpace>()) ScriptGUIFlexibleSpace(instance, space);
 	}
 }

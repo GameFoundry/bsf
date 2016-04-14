@@ -52,7 +52,7 @@ namespace BansheeEngine
 	MonoObject* ScriptFontBitmap::create(SPtr<const FontBitmap> bitmap)
 	{
 		MonoObject* managedInstance = metaData.scriptClass->createInstance();
-		ScriptFontBitmap* fontBitmap = new (bs_alloc<ScriptFontBitmap>()) ScriptFontBitmap(managedInstance, bitmap);
+		new (bs_alloc<ScriptFontBitmap>()) ScriptFontBitmap(managedInstance, bitmap);
 
 		return managedInstance;
 	}

@@ -40,7 +40,7 @@ namespace BansheeEngine
 	}
 
 	ManagedSerializableDictionary::Enumerator::Enumerator(MonoObject* instance, const ManagedSerializableDictionary* parent)
-		:mInstance(instance), mParent(parent), mCurrent(nullptr), mIteratorInitialized(false)
+		:mInstance(instance), mCurrent(nullptr), mIteratorInitialized(false), mParent(parent)
 	{ }
 
 	SPtr<ManagedSerializableFieldData> ManagedSerializableDictionary::Enumerator::getKey() const
@@ -100,13 +100,15 @@ namespace BansheeEngine
 	}
 
 	ManagedSerializableDictionary::ManagedSerializableDictionary(const ConstructPrivately& dummy)
-		:mManagedInstance(nullptr), mAddMethod(nullptr), mGetEnumerator(nullptr), mEnumMoveNext(nullptr), mRemoveMethod(nullptr),
-		mEnumCurrentProp(nullptr), mKeyProp(nullptr), mValueProp(nullptr), mContainsKeyMethod(nullptr), mTryGetValueMethod(nullptr)
+		: mManagedInstance(nullptr), mAddMethod(nullptr), mRemoveMethod(nullptr), mTryGetValueMethod(nullptr)
+		, mContainsKeyMethod(nullptr), mGetEnumerator(nullptr), mEnumMoveNext(nullptr), mEnumCurrentProp(nullptr)
+		, mKeyProp(nullptr), mValueProp(nullptr)
 	{ }
 
 	ManagedSerializableDictionary::ManagedSerializableDictionary(const ConstructPrivately& dummy, const SPtr<ManagedSerializableTypeInfoDictionary>& typeInfo, MonoObject* managedInstance)
-		:mDictionaryTypeInfo(typeInfo), mManagedInstance(managedInstance), mAddMethod(nullptr), mGetEnumerator(nullptr), mEnumMoveNext(nullptr),
-		mEnumCurrentProp(nullptr), mKeyProp(nullptr), mValueProp(nullptr), mContainsKeyMethod(nullptr), mTryGetValueMethod(nullptr), mRemoveMethod(nullptr)
+		: mManagedInstance(managedInstance), mAddMethod(nullptr), mRemoveMethod(nullptr), mTryGetValueMethod(nullptr)
+		, mContainsKeyMethod(nullptr), mGetEnumerator(nullptr), mEnumMoveNext(nullptr), mEnumCurrentProp(nullptr)
+		, mKeyProp(nullptr), mValueProp(nullptr), mDictionaryTypeInfo(typeInfo)
 	{
 		MonoClass* dictClass = MonoManager::instance().findClass(mono_object_get_class(managedInstance));
 		if (dictClass == nullptr)

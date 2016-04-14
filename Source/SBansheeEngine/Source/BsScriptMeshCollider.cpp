@@ -30,7 +30,7 @@ namespace BansheeEngine
 		SPtr<MeshCollider> collider = MeshCollider::create();
 		collider->_setOwner(PhysicsOwnerType::Script, instance);
 
-		ScriptMeshCollider* scriptCollider = new (bs_alloc<ScriptMeshCollider>()) ScriptMeshCollider(instance, collider);
+		new (bs_alloc<ScriptMeshCollider>()) ScriptMeshCollider(instance, collider);
 	}
 
 	void ScriptMeshCollider::internal_SetMesh(ScriptMeshCollider* thisPtr, ScriptPhysicsMesh* scriptMesh)

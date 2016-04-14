@@ -48,7 +48,7 @@ namespace BansheeEngine
 	{
 		SPtr<RenderTexture> tex = RenderTexture::create(TEX_TYPE_2D, width, height, format, gammaCorrection, numSamples, createDepth, depthStencilFormat);
 
-		ScriptRenderTexture2D* scriptResource = new (bs_alloc<ScriptRenderTexture2D>()) ScriptRenderTexture2D(tex, false, instance);
+		new (bs_alloc<ScriptRenderTexture2D>()) ScriptRenderTexture2D(tex, false, instance);
 	}
 
 	void ScriptRenderTexture2D::internal_create(MonoObject* instance, MonoArray* colorSurfaces, MonoObject* depthStencilSurface)
@@ -135,7 +135,7 @@ namespace BansheeEngine
 			tex = RenderTexture::create(desc);
 		}
 
-		ScriptRenderTexture2D* scriptResource = new (bs_alloc<ScriptRenderTexture2D>()) ScriptRenderTexture2D(tex, isMulti, instance);
+		new (bs_alloc<ScriptRenderTexture2D>()) ScriptRenderTexture2D(tex, isMulti, instance);
 	}
 
 	void ScriptRenderTexture2D::internal_getColorSurfaces(ScriptRenderTexture2D* thisPtr, MonoArray** value)

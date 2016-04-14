@@ -52,7 +52,7 @@ namespace BansheeEngine
 	{
 		SPtr<InputConfiguration> inputConfig = VirtualInput::createConfiguration();
 
-		ScriptInputConfiguration* nativeInstance = new (bs_alloc<ScriptInputConfiguration>()) ScriptInputConfiguration(object, inputConfig);
+		new (bs_alloc<ScriptInputConfiguration>()) ScriptInputConfiguration(object, inputConfig);
 	}
 
 	void ScriptInputConfiguration::internal_RegisterButton(ScriptInputConfiguration* thisPtr, MonoString* name, ButtonCode buttonCode,

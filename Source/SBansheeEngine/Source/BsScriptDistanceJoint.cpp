@@ -39,7 +39,7 @@ namespace BansheeEngine
 		SPtr<DistanceJoint> joint = DistanceJoint::create(desc);
 		joint->_setOwner(PhysicsOwnerType::Script, instance);
 
-		ScriptDistanceJoint* scriptJoint = new (bs_alloc<ScriptDistanceJoint>()) ScriptDistanceJoint(instance, joint);
+		new (bs_alloc<ScriptDistanceJoint>()) ScriptDistanceJoint(instance, joint);
 	}
 
 	float ScriptDistanceJoint::internal_GetDistance(ScriptDistanceJoint* thisPtr)

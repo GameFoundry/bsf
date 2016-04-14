@@ -5,6 +5,8 @@
 
 namespace BansheeEngine
 {
+	const char* SystemName = "BansheeD3D9RenderSystem";
+
 	void D3D9RenderAPIFactory::create()
 	{
 	#ifdef BS_STATIC_LIB

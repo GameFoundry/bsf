@@ -37,7 +37,7 @@ namespace BansheeEngine
 		SPtr<HingeJoint> joint = HingeJoint::create(desc);
 		joint->_setOwner(PhysicsOwnerType::Script, instance);
 
-		ScriptHingeJoint* scriptJoint = new (bs_alloc<ScriptHingeJoint>()) ScriptHingeJoint(instance, joint);
+		new (bs_alloc<ScriptHingeJoint>()) ScriptHingeJoint(instance, joint);
 	}
 
 	float ScriptHingeJoint::internal_GetAngle(ScriptHingeJoint* thisPtr)

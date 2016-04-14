@@ -28,6 +28,9 @@ namespace BansheeEngine
 
 		/**	Returns a handle to the internal wrapped resource. */
 		const HManagedResource& getHandle() const { return mResource; }
+
+		/**	Creates an empty, uninitialized managed instance of the resource interop object. */
+		static MonoObject* createInstance();
 	private:
 		friend class ScriptResourceManager;
 
@@ -42,9 +45,6 @@ namespace BansheeEngine
 
 		/** @copydoc ScriptObjectBase::_onManagedInstanceDeleted */
 		void _onManagedInstanceDeleted() override;
-
-		/**	Creates an empty, uninitialized managed instance of the resource interop object. */
-		static MonoObject* createInstance();
 
 		HManagedResource mResource;
 		String mNamespace;

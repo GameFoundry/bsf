@@ -29,10 +29,10 @@
 namespace BansheeEngine
 {
 	ScriptAssemblyManager::ScriptAssemblyManager()
-		:mBaseTypesInitialized(false), mSerializeObjectAttribute(nullptr), mDontSerializeFieldAttribute(nullptr), 
-		mComponentClass(nullptr), mSceneObjectClass(nullptr), mSerializeFieldAttribute(nullptr), mHideInInspectorAttribute(nullptr), 
-		mSystemArrayClass(nullptr), mSystemGenericListClass(nullptr), mSystemGenericDictionaryClass(nullptr), mMissingComponentClass(nullptr),
-		mSystemTypeClass(nullptr)
+		: mBaseTypesInitialized(false), mSystemArrayClass(nullptr), mSystemGenericListClass(nullptr)
+		, mSystemGenericDictionaryClass(nullptr), mSystemTypeClass(nullptr), mComponentClass(nullptr)
+		, mSceneObjectClass(nullptr), mMissingComponentClass(nullptr), mSerializeObjectAttribute(nullptr)
+		, mDontSerializeFieldAttribute(nullptr), mSerializeFieldAttribute(nullptr), mHideInInspectorAttribute(nullptr)
 	{
 
 	}

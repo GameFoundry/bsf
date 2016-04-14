@@ -371,7 +371,7 @@ namespace BansheeEngine
 	{
 		if (nativeInstance->mSceneObject.isDestroyed())
 		{
-			LOGWRN("Trying to access a destroyed SceneObject with instance ID: " + nativeInstance->mSceneObject.getInstanceId());
+			LOGWRN("Trying to access a destroyed SceneObject with instance ID: " + toString(nativeInstance->mSceneObject.getInstanceId()));
 			return true;
 		}
 

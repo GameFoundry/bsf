@@ -307,6 +307,8 @@ namespace BansheeEngine
 
 					return fieldData;
 				}
+			default:
+				break;
 			}
 		}
 		else if (typeInfo->getTypeId() == TID_SerializableTypeInfoRef)
@@ -573,8 +575,6 @@ namespace BansheeEngine
 
 	void* ManagedSerializableFieldDataResourceRef::getValue(const SPtr<ManagedSerializableTypeInfo>& typeInfo)
 	{
-		static std::function<MonoObject*(const HResource&)> lookup[(int)ScriptReferenceType::Count];
-
 		if(typeInfo->getTypeId() == TID_SerializableTypeInfoRef)
 		{
 			auto refTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoRef>(typeInfo);

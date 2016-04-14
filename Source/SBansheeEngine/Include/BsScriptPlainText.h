@@ -19,13 +19,13 @@ namespace BansheeEngine
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "PlainText")
 
+		/**	Creates an empty, uninitialized managed instance of the resource interop object. */
+		static MonoObject* createInstance();
+
 	private:
 		friend class ScriptResourceManager;
 
 		ScriptPlainText(MonoObject* instance, const HPlainText& plainText);
-
-		/**	Creates an empty, uninitialized managed instance of the resource interop object. */
-		static MonoObject* createInstance();
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/

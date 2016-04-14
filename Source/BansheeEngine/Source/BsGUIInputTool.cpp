@@ -106,7 +106,7 @@ namespace BansheeEngine
 			numNewlineChars += (getLineDesc(i).hasNewlineChar() ? 1 : 0);
 
 		INT32 quadIdx = (INT32)(charIdx - numNewlineChars);
-		if(quadIdx >= 0 && quadIdx < mNumQuads)
+		if(quadIdx >= 0 && quadIdx < (INT32)mNumQuads)
 		{
 			UINT32 vertIdx = quadIdx * 4;
 

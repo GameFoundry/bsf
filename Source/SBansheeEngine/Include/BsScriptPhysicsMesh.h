@@ -18,13 +18,13 @@ namespace BansheeEngine
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "PhysicsMesh")
 
+		/**	Creates an empty, uninitialized managed instance of the resource interop object. */
+		static MonoObject* createInstance();
+
 	private:
 		friend class ScriptResourceManager;
 
 		ScriptPhysicsMesh(MonoObject* instance, const HPhysicsMesh& mesh);
-
-		/**	Creates an empty, uninitialized managed instance of the resource interop object. */
-		static MonoObject* createInstance();
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/

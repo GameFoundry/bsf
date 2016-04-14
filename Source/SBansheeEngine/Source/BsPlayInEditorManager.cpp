@@ -83,6 +83,8 @@ namespace BansheeEngine
 		case PlayInEditorState::Paused:
 			setState(PlayInEditorState::Playing);
 			break;
+		default:
+			break;
 		}
 
 		mFrameStepActive = true;

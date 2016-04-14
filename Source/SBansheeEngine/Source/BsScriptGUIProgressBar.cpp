@@ -43,7 +43,7 @@ namespace BansheeEngine
 			options.addOption(mono_array_get(guiOptions, GUIOption, i));
 
 		GUIProgressBar* progressBar = GUIProgressBar::create(options, toString(MonoUtil::monoToWString(style)));
-		ScriptGUIProgressBar* nativeInstance = new (bs_alloc<ScriptGUIProgressBar>()) ScriptGUIProgressBar(instance, progressBar);
+		new (bs_alloc<ScriptGUIProgressBar>()) ScriptGUIProgressBar(instance, progressBar);
 	}
 
 	void ScriptGUIProgressBar::internal_setPercent(ScriptGUIProgressBar* nativeInstance, float percent)

@@ -8,7 +8,7 @@
 namespace BansheeEngine
 {
 	PooledRenderTexture::PooledRenderTexture(RenderTexturePool* pool)
-		:mIsFree(false), mPool(pool)
+		:mPool(pool), mIsFree(false)
 	{ }
 
 	PooledRenderTexture::~PooledRenderTexture()

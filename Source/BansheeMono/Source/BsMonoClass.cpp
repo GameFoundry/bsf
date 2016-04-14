@@ -13,7 +13,7 @@
 
 namespace BansheeEngine
 {
-	inline size_t MonoClass::MethodId::Hash::operator()(const MonoClass::MethodId& v) const
+	size_t MonoClass::MethodId::Hash::operator()(const MonoClass::MethodId& v) const
 	{
 		size_t seed = 0;
 		hash_combine(seed, v.name);
@@ -21,7 +21,7 @@ namespace BansheeEngine
 		return seed;
 	}
 
-	inline bool MonoClass::MethodId::Equals::operator()(const MonoClass::MethodId &a, const MonoClass::MethodId &b) const
+	bool MonoClass::MethodId::Equals::operator()(const MonoClass::MethodId& a, const MonoClass::MethodId& b) const
 	{
 		return a.name == b.name && a.numParams == b.numParams;
 	}
@@ -33,8 +33,8 @@ namespace BansheeEngine
 	}
 
 	MonoClass::MonoClass(const String& ns, const String& type, ::MonoClass* monoClass, const MonoAssembly* parentAssembly)
-		:mNamespace(ns), mTypeName(type), mClass(monoClass), mParentAssembly(parentAssembly), mHasCachedFields(false),
-		mHasCachedMethods(false)
+		: mParentAssembly(parentAssembly), mClass(monoClass), mNamespace(ns), mTypeName(type), mHasCachedFields(false)
+		, mHasCachedMethods(false)
 	{
 		mFullName = ns + "." + type;
 	}

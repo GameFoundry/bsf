@@ -102,13 +102,13 @@ namespace BansheeEngine
 
 		MonoObject* instance = metaData.scriptClass->createInstance(params, true);
 
-		ScriptGUIElementStyle* nativeInstance = new (bs_alloc<ScriptGUIElementStyle>()) ScriptGUIElementStyle(instance, style);
+		new (bs_alloc<ScriptGUIElementStyle>()) ScriptGUIElementStyle(instance, style);
 		return instance;
 	}
 
 	void ScriptGUIElementStyle::internal_createInstance(MonoObject* instance)
 	{
-		ScriptGUIElementStyle* nativeInstance = new (bs_alloc<ScriptGUIElementStyle>()) ScriptGUIElementStyle(instance);
+		new (bs_alloc<ScriptGUIElementStyle>()) ScriptGUIElementStyle(instance);
 	}
 
 	void ScriptGUIElementStyle::internal_addSubStyle(ScriptGUIElementStyle* nativeInstance, MonoString* guiType, MonoString* styleName)

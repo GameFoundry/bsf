@@ -18,13 +18,13 @@ namespace BansheeEngine
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "ShaderInclude")
 
+		/**	Creates an empty, uninitialized managed instance of the resource interop object. */
+		static MonoObject* createInstance();
+
 	private:
 		friend class ScriptResourceManager;
 
 		ScriptShaderInclude(MonoObject* instance, const HShaderInclude& shaderInclude);
-
-		/**	Creates an empty, uninitialized managed instance of the resource interop object. */
-		static MonoObject* createInstance();
 	};
 
 	/** @} */

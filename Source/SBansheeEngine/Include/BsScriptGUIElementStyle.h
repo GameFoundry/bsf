@@ -4,10 +4,7 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
-#include "BsGUIElementStyle.h"
-#include "BsMonoClass.h"
 #include "BsScriptGUIElementStateStyle.h"
-#include "BsScriptFont.h"
 
 namespace BansheeEngine
 {

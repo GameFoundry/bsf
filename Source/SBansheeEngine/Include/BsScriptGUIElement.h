@@ -65,9 +65,9 @@ namespace BansheeEngine
 
 	protected:
 		TScriptGUIElementBase(MonoObject* instance, GUIElementBase* element)
-			:ScriptObject(instance)
+			:ScriptObject<Type, ScriptGUIElementBaseTBase>(instance)
 		{ 
-			initialize(element);
+			this->initialize(element);
 		}
 	};
 
@@ -94,9 +94,9 @@ namespace BansheeEngine
 
 	protected:
 		TScriptGUIElement(MonoObject* instance, GUIElementBase* element)
-			:ScriptObject(instance)
+			:ScriptObject<Type, ScriptGUIElementTBase>(instance)
 		{
-			initialize(element);
+			this->initialize(element);
 		}
 	};
 

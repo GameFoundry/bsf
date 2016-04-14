@@ -163,6 +163,8 @@ namespace BansheeEngine
 			return TID_PhysicsMaterial;
 		case ScriptResourceType::PhysicsMesh:
 			return TID_PhysicsMesh;
+		default:
+			break;
 		}
 
 		return 0;

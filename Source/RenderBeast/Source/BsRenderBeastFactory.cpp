@@ -6,6 +6,8 @@
 
 namespace BansheeEngine
 {
+	const char* SystemName = "RenderBeast";
+
 	SPtr<CoreRenderer> RenderBeastFactory::create()
 	{
 		return bs_shared_ptr_new<RenderBeast>();
@@ -13,6 +15,7 @@ namespace BansheeEngine
 
 	const String& RenderBeastFactory::name() const
 	{
-		return SystemName;
+		static String StrSystemName = SystemName;
+		return StrSystemName;
 	}
 }

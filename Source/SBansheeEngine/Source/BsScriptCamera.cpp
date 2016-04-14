@@ -142,7 +142,7 @@ namespace BansheeEngine
 		if (parentSO != nullptr)
 			so = parentSO->getNativeHandle();
 
-		ScriptCamera* nativeInstance = new (bs_alloc<ScriptCamera>()) ScriptCamera(managedInstance, so);
+		new (bs_alloc<ScriptCamera>()) ScriptCamera(managedInstance, so);
 	}
 
 	float ScriptCamera::internal_GetAspect(ScriptCamera* instance)

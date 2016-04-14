@@ -18,6 +18,9 @@ namespace BansheeEngine
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "SpriteTexture")
 
+		/**	Creates an empty, uninitialized managed instance of the resource interop object. */
+		static MonoObject* createInstance();
+
 		/**	Returns the native internal sprite texture resource. */
 		static MonoObject* toManaged(const HSpriteTexture& texture);
 
@@ -25,9 +28,6 @@ namespace BansheeEngine
 		friend class ScriptResourceManager;
 
 		ScriptSpriteTexture(MonoObject* instance, const HSpriteTexture& texture);
-
-		/**	Creates an empty, uninitialized managed instance of the resource interop object. */
-		static MonoObject* createInstance();
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/

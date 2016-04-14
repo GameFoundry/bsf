@@ -226,7 +226,7 @@ namespace BansheeEngine
 	{
 		if (handle.isDestroyed())
 		{
-			LOGWRN("Trying to access a destroyed GameObject with instance ID: " + handle.getInstanceId());
+			LOGWRN("Trying to access a destroyed GameObject with instance ID: " + toString(handle.getInstanceId()));
 			return true;
 		}
 

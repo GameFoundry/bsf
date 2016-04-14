@@ -11,14 +11,15 @@
 namespace BansheeEngine
 {
 	ManagedSerializableArray::ManagedSerializableArray(const ConstructPrivately& dummy)
-		:mManagedInstance(nullptr), mElemSize(0), mElementMonoClass(nullptr), mCopyMethod(nullptr)
+		:mManagedInstance(nullptr), mElementMonoClass(nullptr), mCopyMethod(nullptr), mElemSize(0)
 	{
 
 	}
 
 	ManagedSerializableArray::ManagedSerializableArray(const ConstructPrivately& dummy, const SPtr<ManagedSerializableTypeInfoArray>& typeInfo, MonoObject* managedInstance)
-		: mArrayTypeInfo(typeInfo), mManagedInstance(managedInstance), mElemSize(0), 
-		mElementMonoClass(nullptr), mCopyMethod(nullptr)
+		: mManagedInstance(managedInstance), mElementMonoClass(nullptr), mCopyMethod(nullptr), mArrayTypeInfo(typeInfo)
+		, mElemSize(0)
+		
 	{
 		::MonoClass* monoClass = mono_object_get_class(mManagedInstance);
 		mElemSize = mono_array_element_size(monoClass);

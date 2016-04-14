@@ -4,7 +4,6 @@
 
 #include "BsScriptEditorPrerequisites.h"
 #include "BsScriptGUIElement.h"
-#include "BsColor.h"
 
 namespace BansheeEngine
 {

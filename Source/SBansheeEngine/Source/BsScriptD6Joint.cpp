@@ -43,7 +43,7 @@ namespace BansheeEngine
 		SPtr<D6Joint> joint = D6Joint::create(desc);
 		joint->_setOwner(PhysicsOwnerType::Script, instance);
 
-		ScriptD6Joint* scriptJoint = new (bs_alloc<ScriptD6Joint>()) ScriptD6Joint(instance, joint);
+		new (bs_alloc<ScriptD6Joint>()) ScriptD6Joint(instance, joint);
 	}
 
 	void ScriptD6Joint::internal_SetMotion(ScriptD6Joint* thisPtr, D6Joint::Axis axis, D6Joint::Motion motion)

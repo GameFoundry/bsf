@@ -30,7 +30,7 @@ namespace BansheeEngine
 		SPtr<CapsuleCollider> collider = CapsuleCollider::create(0.2f, 0.5f);
 		collider->_setOwner(PhysicsOwnerType::Script, instance);
 
-		ScriptCapsuleCollider* scriptCollider = new (bs_alloc<ScriptCapsuleCollider>()) ScriptCapsuleCollider(instance, collider);
+		new (bs_alloc<ScriptCapsuleCollider>()) ScriptCapsuleCollider(instance, collider);
 	}
 
 	void ScriptCapsuleCollider::internal_SetHalfHeight(ScriptCapsuleCollider* thisPtr, float halfHeight)

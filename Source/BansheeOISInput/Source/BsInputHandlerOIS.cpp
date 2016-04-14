@@ -11,7 +11,7 @@
 namespace BansheeEngine
 {
 	GamepadEventListener::GamepadEventListener(InputHandlerOIS* parentHandler, UINT32 joystickIdx)
-		:mParentHandler(parentHandler), mGamepadIdx(joystickIdx)
+		:mGamepadIdx(joystickIdx), mParentHandler(parentHandler)
 	{ }
 
 	bool GamepadEventListener::buttonPressed(const OIS::JoyStickEvent& arg, int button)
@@ -50,8 +50,7 @@ namespace BansheeEngine
 	}
 
 	InputHandlerOIS::InputHandlerOIS(unsigned int hWnd)
-		:mInputManager(nullptr), mKeyboard(nullptr), mMouse(nullptr), mTimestampClockOffset(0),
-		mLastMouseUpdateFrame(0)
+		:mInputManager(nullptr), mMouse(nullptr), mKeyboard(nullptr), mLastMouseUpdateFrame(0), mTimestampClockOffset(0)
 	{
 		mMouseSampleAccumulator[0] = 0;
 		mMouseSampleAccumulator[1] = 0;
@@ -80,14 +79,8 @@ namespace BansheeEngine
 		pl.insert(std::make_pair(std::string("x11_keyboard_grab"), std::string("false")));
 		pl.insert(std::make_pair(std::string("XAutoRepeatOn"), std::string("true")));
 #endif
-		try
-		{
-			mInputManager = OIS::InputManager::createInputSystem(pl);
-		}
-		catch(OIS::Exception &e)
-		{
-			std::cout << e.eText << std::endl;
-		}
+
+		mInputManager = OIS::InputManager::createInputSystem(pl);
 
 		if (mInputManager->getNumberOfDevices(OIS::OISKeyboard) > 0)
 		{

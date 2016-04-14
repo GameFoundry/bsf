@@ -29,6 +29,6 @@ namespace BansheeEngine
 		SPtr<FixedJoint> joint = FixedJoint::create(desc);
 		joint->_setOwner(PhysicsOwnerType::Script, instance);
 
-		ScriptFixedJoint* scriptJoint = new (bs_alloc<ScriptFixedJoint>()) ScriptFixedJoint(instance, joint);
+		new (bs_alloc<ScriptFixedJoint>()) ScriptFixedJoint(instance, joint);
 	}
 }

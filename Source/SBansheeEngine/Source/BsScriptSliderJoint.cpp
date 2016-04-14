@@ -35,7 +35,7 @@ namespace BansheeEngine
 		SPtr<SliderJoint> joint = SliderJoint::create(desc);
 		joint->_setOwner(PhysicsOwnerType::Script, instance);
 
-		ScriptSliderJoint* scriptJoint = new (bs_alloc<ScriptSliderJoint>()) ScriptSliderJoint(instance, joint);
+		new (bs_alloc<ScriptSliderJoint>()) ScriptSliderJoint(instance, joint);
 	}
 
 	float ScriptSliderJoint::internal_GetPosition(ScriptSliderJoint* thisPtr)

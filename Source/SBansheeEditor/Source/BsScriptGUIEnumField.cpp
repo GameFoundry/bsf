@@ -110,7 +110,7 @@ namespace BansheeEngine
 		}
 			
 
-		ScriptGUIEnumField* nativeInstance = new (bs_alloc<ScriptGUIEnumField>()) ScriptGUIEnumField(instance, guiField, nativeValues);
+		new (bs_alloc<ScriptGUIEnumField>()) ScriptGUIEnumField(instance, guiField, nativeValues);
 	}
 
 	UINT64 ScriptGUIEnumField::internal_getValue(ScriptGUIEnumField* nativeInstance)

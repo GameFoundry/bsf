@@ -58,6 +58,9 @@ namespace BansheeEngine
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Mesh")
 
+		/**	Creates an empty, uninitialized managed instance of the resource interop object. */
+		static MonoObject* createInstance();
+
 	private:
 		friend class ScriptResourceManager;
 
@@ -71,9 +74,6 @@ namespace BansheeEngine
 		
 		/** Converts a managed array of SubMeshData%es into an array of SubMesh%es used by engine internals. */
 		static Vector<SubMesh> monoToNativeSubMeshes(MonoArray* subMeshes);
-
-		/**	Creates an empty, uninitialized managed instance of the resource interop object. */
-		static MonoObject* createInstance();
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/

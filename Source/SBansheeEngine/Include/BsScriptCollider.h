@@ -44,9 +44,9 @@ namespace BansheeEngine
 
 	protected:
 		TScriptCollider(MonoObject* instance, const SPtr<Collider>& collider)
-			:ScriptObject(instance)
+			:ScriptObject<Type, ScriptColliderBase>(instance)
 		{
-			initialize(collider);
+			this->initialize(collider);
 		}
 	};
 

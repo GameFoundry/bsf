@@ -33,7 +33,7 @@ namespace BansheeEngine
 		SPtr<SphericalJoint> joint = SphericalJoint::create(desc);
 		joint->_setOwner(PhysicsOwnerType::Script, instance);
 
-		ScriptSphericalJoint* scriptJoint = new (bs_alloc<ScriptSphericalJoint>()) ScriptSphericalJoint(instance, joint);
+		new (bs_alloc<ScriptSphericalJoint>()) ScriptSphericalJoint(instance, joint);
 	}
 
 	void ScriptSphericalJoint::internal_SetLimit(ScriptSphericalJoint* thisPtr, MonoObject* limit)

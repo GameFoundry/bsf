@@ -95,6 +95,8 @@ namespace BansheeEngine
 				type = ShaderParameterType::Color;
 				isValidType = true;
 				break;
+			default:
+				break;
 			}
 
 			if (isValidType)
@@ -120,6 +122,8 @@ namespace BansheeEngine
 			case GPOT_TEXTURECUBE:
 				type = ShaderParameterType::TextureCube;
 				isValidType = true;
+				break;
+			default:
 				break;
 			}
 

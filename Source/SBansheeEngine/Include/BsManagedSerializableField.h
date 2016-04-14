@@ -167,6 +167,8 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataBool : public ManagedSerializableFieldData
 	{
 	public:
+		ManagedSerializableFieldDataBool() { }
+
 		/** @copydoc ManagedSerializableFieldData::getValue */
 		void* getValue(const SPtr<ManagedSerializableTypeInfo>& typeInfo) override;
 
@@ -199,6 +201,8 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataChar : public ManagedSerializableFieldData
 	{
 	public:
+		ManagedSerializableFieldDataChar() {}
+
 		/** @copydoc ManagedSerializableFieldData::getValue */
 		void* getValue(const SPtr<ManagedSerializableTypeInfo>& typeInfo) override;
 
@@ -231,6 +235,8 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataI8 : public ManagedSerializableFieldData
 	{
 	public:
+		ManagedSerializableFieldDataI8() {}
+
 		/** @copydoc ManagedSerializableFieldData::getValue */
 		void* getValue(const SPtr<ManagedSerializableTypeInfo>& typeInfo) override;
 
@@ -263,6 +269,8 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataU8 : public ManagedSerializableFieldData
 	{
 	public:
+		ManagedSerializableFieldDataU8() {}
+
 		/** @copydoc ManagedSerializableFieldData::getValue */
 		void* getValue(const SPtr<ManagedSerializableTypeInfo>& typeInfo) override;
 
@@ -295,6 +303,8 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataI16 : public ManagedSerializableFieldData
 	{
 	public:
+		ManagedSerializableFieldDataI16() {}
+
 		/** @copydoc ManagedSerializableFieldData::getValue */
 		void* getValue(const SPtr<ManagedSerializableTypeInfo>& typeInfo) override;
 
@@ -327,6 +337,8 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataU16 : public ManagedSerializableFieldData
 	{
 	public:
+		ManagedSerializableFieldDataU16() {}
+
 		/** @copydoc ManagedSerializableFieldData::getValue */
 		void* getValue(const SPtr<ManagedSerializableTypeInfo>& typeInfo) override;
 
@@ -359,6 +371,8 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataI32 : public ManagedSerializableFieldData
 	{
 	public:
+		ManagedSerializableFieldDataI32() {}
+
 		/** @copydoc ManagedSerializableFieldData::getValue */
 		void* getValue(const SPtr<ManagedSerializableTypeInfo>& typeInfo) override;
 
@@ -391,6 +405,8 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataU32 : public ManagedSerializableFieldData
 	{
 	public:
+		ManagedSerializableFieldDataU32() {}
+
 		/** @copydoc ManagedSerializableFieldData::getValue */
 		void* getValue(const SPtr<ManagedSerializableTypeInfo>& typeInfo) override;
 
@@ -423,6 +439,8 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataI64 : public ManagedSerializableFieldData
 	{
 	public:
+		ManagedSerializableFieldDataI64() {}
+
 		/** @copydoc ManagedSerializableFieldData::getValue */
 		void* getValue(const SPtr<ManagedSerializableTypeInfo>& typeInfo) override;
 
@@ -455,6 +473,8 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataU64 : public ManagedSerializableFieldData
 	{
 	public:
+		ManagedSerializableFieldDataU64() {}
+
 		/** @copydoc ManagedSerializableFieldData::getValue */
 		void* getValue(const SPtr<ManagedSerializableTypeInfo>& typeInfo) override;
 
@@ -487,6 +507,8 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataFloat : public ManagedSerializableFieldData
 	{
 	public:
+		ManagedSerializableFieldDataFloat() {}
+
 		/** @copydoc ManagedSerializableFieldData::getValue */
 		void* getValue(const SPtr<ManagedSerializableTypeInfo>& typeInfo) override;
 
@@ -519,6 +541,8 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataDouble : public ManagedSerializableFieldData
 	{
 	public:
+		ManagedSerializableFieldDataDouble() {}
+
 		/** @copydoc ManagedSerializableFieldData::getValue */
 		void* getValue(const SPtr<ManagedSerializableTypeInfo>& typeInfo) override;
 
@@ -551,6 +575,8 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ManagedSerializableFieldDataString : public ManagedSerializableFieldData
 	{
 	public:
+		ManagedSerializableFieldDataString() {}
+
 		/** @copydoc ManagedSerializableFieldData::getValue */
 		void* getValue(const SPtr<ManagedSerializableTypeInfo>& typeInfo) override;
 

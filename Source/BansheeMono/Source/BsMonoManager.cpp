@@ -33,7 +33,7 @@ namespace BansheeEngine
 	};
 
 	MonoManager::MonoManager()
-		:mRootDomain(nullptr), mScriptDomain(nullptr), mIsCoreLoaded(false)
+		:mScriptDomain(nullptr), mRootDomain(nullptr), mIsCoreLoaded(false)
 	{
 		Path libDir = Paths::findPath(MONO_LIB_DIR);
 		Path etcDir = getMonoEtcFolder();
@@ -231,7 +231,9 @@ namespace BansheeEngine
 
 		if (mScriptDomain == nullptr)
 		{
-			mScriptDomain = mono_domain_create_appdomain("ScriptDomain", nullptr);
+			char domainName[] = "ScriptDomain";
+
+			mScriptDomain = mono_domain_create_appdomain(domainName, nullptr);
 			mono_domain_set(mScriptDomain, false);
 
 			if (mScriptDomain == nullptr)

@@ -62,7 +62,7 @@ namespace BansheeEngine
 		if (parentSO != nullptr)
 			so = parentSO->getNativeHandle();
 
-		ScriptRenderable* nativeInstance = new (bs_alloc<ScriptRenderable>()) ScriptRenderable(instance, so);
+		new (bs_alloc<ScriptRenderable>()) ScriptRenderable(instance, so);
 	}
 
 	void ScriptRenderable::internal_UpdateTransform(ScriptRenderable* thisPtr, ScriptSceneObject* parent)

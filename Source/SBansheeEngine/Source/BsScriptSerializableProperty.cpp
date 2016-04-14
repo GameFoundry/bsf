@@ -66,8 +66,7 @@ namespace BansheeEngine
 			return;
 		}
 
-		ScriptSerializableProperty* nativeInstance = new (bs_alloc<ScriptSerializableProperty>()) 
-			ScriptSerializableProperty(instance, typeInfo);
+		new (bs_alloc<ScriptSerializableProperty>()) ScriptSerializableProperty(instance, typeInfo);
 	}
 
 	MonoObject* ScriptSerializableProperty::internal_createObject(ScriptSerializableProperty* nativeInstance)

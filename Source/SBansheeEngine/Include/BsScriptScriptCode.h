@@ -19,6 +19,9 @@ namespace BansheeEngine
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "ScriptCode")
 
+		/**	Creates an empty, uninitialized managed instance of the resource interop object. */
+		static MonoObject* createInstance();
+
 	private:
 		friend class ScriptResourceManager;
 		typedef std::pair<WString, WString> FullTypeName;
@@ -27,9 +30,6 @@ namespace BansheeEngine
 
 		/** Parses the provided C# code and finds a list of all classes and their namespaces. Nested classes are ignored. */
 		static Vector<FullTypeName> parseTypes(const WString& code);
-
-		/**	Creates an empty, uninitialized managed instance of the resource interop object. */
-		static MonoObject* createInstance();
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/

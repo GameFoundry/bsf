@@ -17,16 +17,17 @@
 namespace BansheeEngine
 {
 	ManagedComponent::ManagedComponent()
-		:mManagedInstance(nullptr), mOnUpdateThunk(nullptr), mOnDestroyThunk(nullptr), mOnInitializedThunk(nullptr), 
-		mOnResetThunk(nullptr), mMissingType(false), mRequiresReset(true), mOnEnabledThunk(nullptr), mOnDisabledThunk(nullptr),
-		mOnTransformChangedThunk(nullptr), mCalculateBoundsMethod(nullptr), mRunInEditor(false)
+		: mManagedInstance(nullptr), mRuntimeType(nullptr), mManagedHandle(0), mRunInEditor(false), mRequiresReset(true)
+		, mMissingType(false), mOnInitializedThunk(nullptr), mOnUpdateThunk(nullptr), mOnResetThunk(nullptr)
+		, mOnDestroyThunk(nullptr), mOnDisabledThunk(nullptr), mOnEnabledThunk(nullptr), mOnTransformChangedThunk(nullptr)
+		, mCalculateBoundsMethod(nullptr)
 	{ }
 
 	ManagedComponent::ManagedComponent(const HSceneObject& parent, MonoReflectionType* runtimeType)
-		: Component(parent), mManagedInstance(nullptr), mRuntimeType(runtimeType), mOnUpdateThunk(nullptr), 
-		mOnDestroyThunk(nullptr), mOnInitializedThunk(nullptr), mOnResetThunk(nullptr), mMissingType(false), 
-		mRequiresReset(true), mOnEnabledThunk(nullptr), mOnDisabledThunk(nullptr), mCalculateBoundsMethod(nullptr),
-		mOnTransformChangedThunk(nullptr), mRunInEditor(false)
+		: Component(parent), mManagedInstance(nullptr), mRuntimeType(runtimeType), mManagedHandle(0), mRunInEditor(false)
+		, mRequiresReset(true), mMissingType(false), mOnInitializedThunk(nullptr), mOnUpdateThunk(nullptr)
+		, mOnResetThunk(nullptr), mOnDestroyThunk(nullptr), mOnDisabledThunk(nullptr), mOnEnabledThunk(nullptr)
+		, mOnTransformChangedThunk(nullptr), mCalculateBoundsMethod(nullptr)
 	{
 		MonoType* monoType = mono_reflection_type_get_type(mRuntimeType);
 		::MonoClass* monoClass = mono_type_get_class(monoType);
@@ -361,7 +362,7 @@ namespace BansheeEngine
 		}
 
 		assert(componentHandle != nullptr);
-		ScriptComponent* nativeInstance = ScriptGameObjectManager::instance().createScriptComponent(mManagedInstance, componentHandle);
+		ScriptGameObjectManager::instance().createScriptComponent(mManagedInstance, componentHandle);
 	}
 
 	void ManagedComponent::onInitialized()

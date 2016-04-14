@@ -13,7 +13,7 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
-	const char* SystemName = "BansheeD3D9RenderSystem";
+	extern const char* SystemName;
 
 	/**	Handles creation of the DX9 render system. */
 	class D3D9RenderAPIFactory : public RenderAPIFactory

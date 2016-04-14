@@ -29,7 +29,7 @@ namespace BansheeEngine
 	MonoObject* ScriptResourceRef::createInternal(const WeakResourceHandle<Resource>& handle)
 	{
 		MonoObject* obj = metaData.scriptClass->createInstance();
-		ScriptResourceRef* scriptResourceRef = new (bs_alloc<ScriptResourceRef>()) ScriptResourceRef(obj, handle);
+		new (bs_alloc<ScriptResourceRef>()) ScriptResourceRef(obj, handle);
 
 		return obj;
 	}
@@ -44,6 +44,8 @@ namespace BansheeEngine
 			return createInternal(handle);
 		case TEX_TYPE_CUBE_MAP:
 			return createInternal(handle);
+		default:
+			break;
 		}
 
 		return nullptr;

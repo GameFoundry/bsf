@@ -32,5 +32,5 @@
 
 namespace BansheeEngine
 {
-	const char* SystemName = "BansheeSL";
+	extern const char* SystemName;
 }

@@ -5,6 +5,8 @@
 
 namespace BansheeEngine
 {
+	const char* SystemName = "BansheeD3D11RenderSystem";
+
 	void D3D11RenderAPIFactory::create()
 	{
 		RenderAPICore::startUp<D3D11RenderAPI>();

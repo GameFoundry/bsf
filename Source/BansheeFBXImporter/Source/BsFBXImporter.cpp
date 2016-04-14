@@ -299,8 +299,6 @@ namespace BansheeEngine
 			FBXImportNode* curImportNode = outputScene.nodeMap[curNode];
 			todo.pop();
 
-			const char* name = curNode->GetName();
-
 			FbxNodeAttribute* attrib = curNode->GetNodeAttribute();
 			if(attrib != nullptr)
 			{
@@ -339,6 +337,8 @@ namespace BansheeEngine
 
 						parseMesh(mesh, curImportNode, options, outputScene);
 					}
+					break;
+				default:
 					break;
 				}
 			}
@@ -456,7 +456,6 @@ namespace BansheeEngine
 				}
 			}
 
-			int UVIdx = 0;
 			for (UINT32 i = 0; i < FBX_IMPORT_MAX_UV_LAYERS; i++)
 			{
 				if (mesh->UV[i].size() == numVertices)

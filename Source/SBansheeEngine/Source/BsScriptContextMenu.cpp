@@ -34,7 +34,7 @@ namespace BansheeEngine
 
 	void ScriptContextMenu::internal_CreateInstance(MonoObject* instance)
 	{
-		ScriptContextMenu* nativeInstance = new (bs_alloc<ScriptContextMenu>()) ScriptContextMenu(instance);
+		new (bs_alloc<ScriptContextMenu>()) ScriptContextMenu(instance);
 	}
 
 	void ScriptContextMenu::internal_AddItem(ScriptContextMenu* instance, MonoString* path, UINT32 callbackIdx,

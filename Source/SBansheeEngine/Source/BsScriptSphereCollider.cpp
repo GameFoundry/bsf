@@ -28,7 +28,7 @@ namespace BansheeEngine
 		SPtr<SphereCollider> collider = SphereCollider::create(1.0f);
 		collider->_setOwner(PhysicsOwnerType::Script, instance);
 
-		ScriptSphereCollider* scriptCollider = new (bs_alloc<ScriptSphereCollider>()) ScriptSphereCollider(instance, collider);
+		new (bs_alloc<ScriptSphereCollider>()) ScriptSphereCollider(instance, collider);
 	}
 
 	void ScriptSphereCollider::internal_SetRadius(ScriptSphereCollider* thisPtr, float radius)

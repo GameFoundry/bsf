@@ -69,7 +69,7 @@ namespace BansheeEngine
 		friend class ScriptResourceManager;
 
 		TScriptResource(MonoObject* instance, const ResourceHandle<ResType>& resource)
-			:ScriptObject(instance), mResource(resource)
+			:ScriptObject<ScriptClass, ScriptResourceBase>(instance), mResource(resource)
 		{
 			mManagedHandle = mono_gchandle_new(instance, false);
 
@@ -85,9 +85,9 @@ namespace BansheeEngine
 		virtual void endRefresh(const ScriptObjectBackup& backupData) override
 		{
 			BS_ASSERT(!mHandleValid);
-			mManagedHandle = mono_gchandle_new(mManagedInstance, false);
+			mManagedHandle = mono_gchandle_new(this->mManagedInstance, false);
 
-			ScriptObject::endRefresh(backupData);
+			ScriptObject<ScriptClass, ScriptResourceBase>::endRefresh(backupData);
 		}
 
 		/**	
@@ -105,7 +105,7 @@ namespace BansheeEngine
 			mono_gchandle_free(mManagedHandle);
 			BS_DEBUG_ONLY(mHandleValid = false);
 
-			destroy();
+			this->destroy();
 		}
 
 		ResourceHandle<ResType> mResource;

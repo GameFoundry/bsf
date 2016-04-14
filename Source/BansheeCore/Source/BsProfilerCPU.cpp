@@ -4,13 +4,13 @@
 #include "BsDebug.h"
 #include "BsPlatform.h"
 
-//#if BS_COMPILER == BS_COMPILER_GNUC || BS_COMPILER == BS_COMPILER_CLANG
-//	#include "cpuid.h"
-//#endif
-//
-//#if BS_COMPILER == BS_COMPILER_CLANG
-//	#include "intrin.h"
-//#endif
+#if BS_COMPILER == BS_COMPILER_GNUC || BS_COMPILER == BS_COMPILER_CLANG
+	#include "cpuid.h"
+#endif
+
+#if BS_COMPILER == BS_COMPILER_CLANG
+	#include "intrin.h"
+#endif
 
 namespace BansheeEngine
 {
@@ -76,10 +76,10 @@ namespace BansheeEngine
 		return x;
 #endif
 #elif BS_COMPILER == BS_COMPILER_CLANG
-		//UINT32 a = 0;
-		//UINT32 b[4];
-		//__get_cpuid(a, &b[0], &b[1], &b[2], &b[3]);
-		return 0; // __rdtsc();
+		UINT32 a = 0;
+		UINT32 b[4];
+		__get_cpuid(a, &b[0], &b[1], &b[2], &b[3]);
+		return __rdtsc();
 #elif BS_COMPILER == BS_COMPILER_MSVC
 		int a[4];
 		int b = 0;

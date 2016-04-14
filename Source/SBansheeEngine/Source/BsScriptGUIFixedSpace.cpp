@@ -42,7 +42,7 @@ namespace BansheeEngine
 	{
 		GUIFixedSpace* space = GUIFixedSpace::create(size);
 
-		ScriptGUIFixedSpace* nativeInstance = new (bs_alloc<ScriptGUIFixedSpace>()) ScriptGUIFixedSpace(instance, space);
+		new (bs_alloc<ScriptGUIFixedSpace>()) ScriptGUIFixedSpace(instance, space);
 	}
 
 	void ScriptGUIFixedSpace::internal_setSize(ScriptGUIFixedSpace* nativeInstance, UINT32 size)

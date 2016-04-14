@@ -8,6 +8,8 @@
 
 namespace BansheeEngine
 {
+	namespace Detail { }
+
 	/** @addtogroup SBansheeEngine
 	 *  @{
 	 */
@@ -59,28 +61,6 @@ namespace BansheeEngine
 		void getScriptResource(const ResourceHandle<InType>& resourceHandle, RetType** out, bool create = false);
 
 		/**
-		 * Creates a new managed instance and interop object for the specified string table.
-		 *
-		 * @param[in]	resourceHandle	Native string table resource to wrap in a managed instance.
-		 * @param[out]	out				Output string table interop object corresponding to the new managed instance.
-		 *
-		 * @note	Throws an exception if a managed instance for the provided resource already exists.
-		 */
-		template<>
-		void createScriptResource(const ResourceHandle<StringTable>& resourceHandle, ScriptStringTable** out);
-
-		/**
-		 * Creates a new managed instance and interop object for the specified resource.
-		 *
-		 * @param[in]	resourceHandle	Native resource to wrap in a managed instance.
-		 * @param[out]	out				Output interop object corresponding to the new managed instance.
-		 *
-		 * @note	Throws an exception if a managed instance for the provided resource already exists.
-		 */
-		template<>
-		void createScriptResource(const HResource& resourceHandle, ScriptResourceBase** out);
-
-		/**
 		 * Attempts to find a resource interop object for a resource with the specified UUID. Returns null if the object
 		 * cannot be found.
 		 */
@@ -91,16 +71,49 @@ namespace BansheeEngine
 		 */
 		void destroyScriptResource(ScriptResourceBase* resource);
 
+		/**	Throws an exception if the provided UUID already exists in the interop object lookup table. */
+		void _throwExceptionIfInvalidOrDuplicate(const String& uuid) const;
+
 	private:
 		/**	Triggered when the native resource has been unloaded and therefore destroyed. */
 		void onResourceDestroyed(const String& UUID);
-
-		/**	Throws an exception if the provided UUID already exists in the interop object lookup table. */
-		void throwExceptionIfInvalidOrDuplicate(const String& uuid) const;
 
 		UnorderedMap<String, ScriptResourceBase*> mScriptResources;
 		HEvent mResourceDestroyedConn;
 	};
 
 	/** @} */
+
+	/** @addtogroup Implementation 
+	 *  @{
+	 */
+
+	namespace Detail
+	{
+		/** Another layer of indirection for specialized ScriptResourceManager methods. */
+
+		template<class RetType, class InType>
+		void BS_SCR_BE_EXPORT ScriptResourceManager_createScriptResource(ScriptResourceManager* thisPtr,
+			const ResourceHandle<InType>& resourceHandle, RetType** out);
+
+		template<>
+		void BS_SCR_BE_EXPORT ScriptResourceManager_createScriptResource(ScriptResourceManager* thisPtr,
+			const ResourceHandle<StringTable>& resourceHandle, ScriptStringTable** out);
+
+		template<>
+		void BS_SCR_BE_EXPORT ScriptResourceManager_createScriptResource(ScriptResourceManager* thisPtr,
+			const ResourceHandle<Texture>& resourceHandle, ScriptTextureBase** out);
+
+		template<>
+		void BS_SCR_BE_EXPORT ScriptResourceManager_createScriptResource(ScriptResourceManager* thisPtr,
+			const HResource& resourceHandle, ScriptResourceBase** out);
+	}
+
+	/** @} */
+
+	template<class RetType, class InType>
+	void ScriptResourceManager::createScriptResource(const ResourceHandle<InType>& resourceHandle, RetType** out)
+	{
+		Detail::ScriptResourceManager_createScriptResource<RetType, InType>(this, resourceHandle, out);
+	}
 }

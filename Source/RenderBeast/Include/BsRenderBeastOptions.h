@@ -23,6 +23,8 @@ namespace BansheeEngine
 	/** A set of options used for controlling the rendering of the RenderBeast renderer. */
 	struct BS_BSRND_EXPORT RenderBeastOptions : public CoreRendererOptions
 	{
+		RenderBeastOptions() { }
+
 		/**	Type of filtering to use for all textures on scene elements. */
 		RenderBeastFiltering filtering = RenderBeastFiltering::Anisotropic;
 

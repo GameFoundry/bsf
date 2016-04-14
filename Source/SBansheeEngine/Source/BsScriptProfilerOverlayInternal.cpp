@@ -39,7 +39,7 @@ namespace BansheeEngine
 		if (camera != nullptr)
 			nativeCamera = camera->getInternal();
 
-		ScriptProfilerOverlayInternal* nativeInstance = new (bs_alloc<ScriptProfilerOverlayInternal>()) ScriptProfilerOverlayInternal(instance, nativeCamera);
+		new (bs_alloc<ScriptProfilerOverlayInternal>()) ScriptProfilerOverlayInternal(instance, nativeCamera);
 	}
 
 	void ScriptProfilerOverlayInternal::internal_SetType(ScriptProfilerOverlayInternal* thisPtr, ProfilerOverlayType type)

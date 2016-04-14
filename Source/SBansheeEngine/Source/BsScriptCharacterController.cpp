@@ -64,8 +64,7 @@ namespace BansheeEngine
 		SPtr<CharacterController> charController = CharacterController::create(*initData);
 		charController->_setOwner(PhysicsOwnerType::Script, instance);
 
-		ScriptCharacterController* scriptCharacterController = 
-			new (bs_alloc<ScriptCharacterController>()) ScriptCharacterController(instance, charController);
+		new (bs_alloc<ScriptCharacterController>()) ScriptCharacterController(instance, charController);
 	}
 
 	void ScriptCharacterController::internal_Destroy(ScriptCharacterController* thisPtr)

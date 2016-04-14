@@ -70,6 +70,8 @@ namespace BansheeEngine
 		}
 		case LightType::Directional:
 			return mIntensity;
+		default:
+			return 0.0f;
 		}
 	}
 

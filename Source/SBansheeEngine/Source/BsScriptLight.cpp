@@ -50,7 +50,7 @@ namespace BansheeEngine
 		if (parentSO != nullptr)
 			so = parentSO->getNativeHandle();
 
-		ScriptLight* nativeInstance = new (bs_alloc<ScriptLight>()) ScriptLight(managedInstance, so);
+		new (bs_alloc<ScriptLight>()) ScriptLight(managedInstance, so);
 	}
 
 	LightType ScriptLight::internal_getType(ScriptLight* thisPtr)

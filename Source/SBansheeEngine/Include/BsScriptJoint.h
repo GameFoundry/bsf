@@ -44,9 +44,9 @@ namespace BansheeEngine
 
 	protected:
 		TScriptJoint(MonoObject* instance, const SPtr<Joint>& joint)
-			:ScriptObject(instance)
+			:ScriptObject<Type, ScriptJointBase>(instance)
 		{
-			initialize(joint);
+			this->initialize(joint);
 		}
 	};
 

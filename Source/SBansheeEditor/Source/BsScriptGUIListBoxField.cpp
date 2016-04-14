@@ -2,7 +2,6 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsScriptGUIListBoxField.h"
 #include "BsScriptMeta.h"
-#include "BsMonoField.h"
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
 #include "BsMonoMethod.h"
@@ -79,7 +78,7 @@ namespace BansheeEngine
 
 		guiField->onSelectionChanged.connect(std::bind(&ScriptGUIListBoxField::onSelectionChanged, instance, _1));
 
-		ScriptGUIListBoxField* nativeInstance = new (bs_alloc<ScriptGUIListBoxField>()) ScriptGUIListBoxField(instance, guiField);
+		new (bs_alloc<ScriptGUIListBoxField>()) ScriptGUIListBoxField(instance, guiField);
 	}
 
 	UINT32 ScriptGUIListBoxField::internal_getValue(ScriptGUIListBoxField* nativeInstance)

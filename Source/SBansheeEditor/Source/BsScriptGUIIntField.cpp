@@ -2,19 +2,13 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsScriptGUIIntField.h"
 #include "BsScriptMeta.h"
-#include "BsMonoField.h"
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
 #include "BsMonoMethod.h"
-#include "BsSpriteTexture.h"
 #include "BsMonoUtil.h"
-#include "BsGUILayout.h"
 #include "BsGUIIntField.h"
 #include "BsGUIOptions.h"
 #include "BsGUIContent.h"
-#include "BsScriptGUIElementStyle.h"
-#include "BsScriptGUILayout.h"
-#include "BsScriptHString.h"
 #include "BsScriptGUIContent.h"
 
 using namespace std::placeholders;
@@ -68,7 +62,7 @@ namespace BansheeEngine
 		guiIntField->onValueChanged.connect(std::bind(&ScriptGUIIntField::onChanged, instance, _1));
 		guiIntField->onConfirm.connect(std::bind(&ScriptGUIIntField::onConfirmed, instance));
 
-		ScriptGUIIntField* nativeInstance = new (bs_alloc<ScriptGUIIntField>()) ScriptGUIIntField(instance, guiIntField);
+		new (bs_alloc<ScriptGUIIntField>()) ScriptGUIIntField(instance, guiIntField);
 	}
 
 	void ScriptGUIIntField::internal_getValue(ScriptGUIIntField* nativeInstance, INT32* output)

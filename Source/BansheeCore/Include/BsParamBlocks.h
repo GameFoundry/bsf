@@ -60,7 +60,7 @@ namespace BansheeEngine
 		struct META_NextEntry_##Name {};																					\
 		static void META_GetPrevEntries(Vector<GpuParamDataDesc>& params, META_NextEntry_##Name id)							\
 		{																													\
-			META_GetPrevEntries(params, META_Entry_##Name##());																\
+			META_GetPrevEntries(params, META_Entry_##Name());																\
 																															\
 			params.push_back(GpuParamDataDesc());																			\
 			GpuParamDataDesc& newEntry = params.back();																		\
@@ -71,7 +71,7 @@ namespace BansheeEngine
 																															\
 		void META_InitPrevEntry(const SPtr<GpuParamsCore>& params, META_NextEntry_##Name id)								\
 		{																													\
-			META_InitPrevEntry(params, META_Entry_##Name##());																\
+			META_InitPrevEntry(params, META_Entry_##Name());																\
 			params->getParam(#Name, Name);																					\
 		}																													\
 																															\

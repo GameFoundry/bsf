@@ -24,7 +24,7 @@ namespace BansheeEngine
 	{
 		HString string(MonoUtil::monoToWString(identifier), tableId);
 		
-		ScriptHString* nativeInstance = new (bs_alloc<ScriptHString>()) ScriptHString(instance, string);
+		new (bs_alloc<ScriptHString>()) ScriptHString(instance, string);
 	}
 
 	void ScriptHString::internal_setParameter(ScriptHString* nativeInstance, UINT32 idx, MonoString* value)

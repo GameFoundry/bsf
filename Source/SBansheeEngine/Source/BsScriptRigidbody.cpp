@@ -132,7 +132,7 @@ namespace BansheeEngine
 		SPtr<Rigidbody> rigidbody = Rigidbody::create(so);
 		rigidbody->_setOwner(PhysicsOwnerType::Script, instance);
 
-		ScriptRigidbody* scriptRigidbody = new (bs_alloc<ScriptRigidbody>()) ScriptRigidbody(instance, rigidbody);
+		new (bs_alloc<ScriptRigidbody>()) ScriptRigidbody(instance, rigidbody);
 	}
 
 	void ScriptRigidbody::internal_Destroy(ScriptRigidbody* thisPtr)

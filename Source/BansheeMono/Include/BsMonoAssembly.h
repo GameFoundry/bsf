@@ -22,15 +22,14 @@ namespace BansheeEngine
 		{
 			struct Hash
 			{
-				inline size_t operator()(const ClassId& v) const;
+				size_t operator()(const ClassId& v) const;
 			};
 
 			struct Equals
 			{
-				inline bool operator()(const ClassId &a, const ClassId &b) const;
+				bool operator()(const ClassId &a, const ClassId &b) const;
 			};
 
-			ClassId();
 			ClassId(const String& namespaceName, String name, ::MonoClass* genericInstance = nullptr);
 
 			String namespaceName;

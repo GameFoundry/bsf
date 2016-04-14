@@ -88,7 +88,7 @@ namespace BansheeEngine
 	}
 
 	ManagedSerializableFieldInfo::ManagedSerializableFieldInfo()
-		:mMonoField(nullptr), mFlags((ScriptFieldFlags)0), mFieldId(0)
+		:mFieldId(0), mFlags((ScriptFieldFlags)0), mMonoField(nullptr)
 	{
 
 	}
@@ -158,6 +158,8 @@ namespace BansheeEngine
 			return mono_get_double_class();
 		case ScriptPrimitiveType::String:
 			return mono_get_string_class();
+		default:
+			break;
 		}
 
 		return nullptr;

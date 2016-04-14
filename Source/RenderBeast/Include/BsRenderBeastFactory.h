@@ -11,7 +11,7 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
-	const char* SystemName = "RenderBeast";
+	extern const char* SystemName;
 
 	/**
 	 * Renderer factory implementation that creates and initializes the default Banshee renderer. Used by the 

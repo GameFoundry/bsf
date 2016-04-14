@@ -47,7 +47,7 @@ namespace BansheeEngine
 
 	void ScriptGUIWidget::internal_Create(MonoObject* managedInstance)
 	{
-		ScriptGUIWidget* nativeInstance = new (bs_alloc<ScriptGUIWidget>()) ScriptGUIWidget(managedInstance);
+		new (bs_alloc<ScriptGUIWidget>()) ScriptGUIWidget(managedInstance);
 	}
 
 	void ScriptGUIWidget::internal_UpdateTransform(ScriptGUIWidget* thisPtr, ScriptSceneObject* parent)

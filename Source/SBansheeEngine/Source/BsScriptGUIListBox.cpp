@@ -67,7 +67,7 @@ namespace BansheeEngine
 		GUIListBox* guiListBox = GUIListBox::create(nativeElements, multiselect, options, toString(MonoUtil::monoToWString(style)));
 		guiListBox->onSelectionToggled.connect(std::bind(&ScriptGUIListBox::onSelectionChanged, instance, _1, _2));
 
-		ScriptGUIListBox* nativeInstance = new (bs_alloc<ScriptGUIListBox>()) ScriptGUIListBox(instance, guiListBox);
+		new (bs_alloc<ScriptGUIListBox>()) ScriptGUIListBox(instance, guiListBox);
 	}
 
 	void ScriptGUIListBox::internal_setElements(ScriptGUIListBox* nativeInstance, MonoArray* elements)

@@ -73,6 +73,7 @@ namespace BansheeEngine
 	class ScriptRenderTarget;
 	class ScriptRenderTexture2D;
 	class ScriptCamera;
+	class ScriptTextureBase;
 	class ScriptMeshData;
 	class ManagedComponent;
 	class ManagedSerializableFieldData;
@@ -104,6 +105,7 @@ namespace BansheeEngine
 	class ScriptPhysicsMaterial;
 	class ScriptPhysicsMesh;
 	class ScriptRigidbody;
+	class ScriptColliderBase;
 
 	typedef GameObjectHandle<ManagedComponent> HManagedComponent;
 	typedef ResourceHandle<ManagedResource> HManagedResource;

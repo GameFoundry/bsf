@@ -14,7 +14,7 @@
 
 namespace BansheeEngine
 {
-	inline size_t MonoAssembly::ClassId::Hash::operator()(const MonoAssembly::ClassId& v) const
+	size_t MonoAssembly::ClassId::Hash::operator()(const MonoAssembly::ClassId& v) const
 	{
 		size_t genInstanceAddr = (size_t)v.genericInstance;
 
@@ -26,7 +26,7 @@ namespace BansheeEngine
 		return seed;
 	}
 
-	inline bool MonoAssembly::ClassId::Equals::operator()(const MonoAssembly::ClassId& a, const MonoAssembly::ClassId& b) const
+	bool MonoAssembly::ClassId::Equals::operator()(const MonoAssembly::ClassId& a, const MonoAssembly::ClassId& b) const
 	{
 		return a.name == b.name && a.namespaceName == b.namespaceName && a.genericInstance == b.genericInstance;
 	}
@@ -38,8 +38,8 @@ namespace BansheeEngine
 	}
 
 	MonoAssembly::MonoAssembly(const String& path, const String& name)
-		:mIsLoaded(false), mMonoImage(nullptr), mMonoAssembly(nullptr), mIsDependency(false), mHaveCachedClassList(false),
-		mPath(path), mName(name)
+		: mName(name), mPath(path), mMonoImage(nullptr), mMonoAssembly(nullptr), mIsLoaded(false), mIsDependency(false)
+		, mHaveCachedClassList(false)
 	{
 
 	}

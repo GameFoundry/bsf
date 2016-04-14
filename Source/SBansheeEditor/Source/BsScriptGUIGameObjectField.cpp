@@ -1,24 +1,16 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsScriptGUIGameObjectField.h"
-#include "BsScriptMeta.h"
-#include "BsMonoField.h"
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
 #include "BsMonoMethod.h"
-#include "BsSpriteTexture.h"
 #include "BsMonoUtil.h"
-#include "BsGUILayout.h"
 #include "BsGUIGameObjectField.h"
 #include "BsGUIOptions.h"
 #include "BsGUIContent.h"
-#include "BsScriptGUIElementStyle.h"
-#include "BsScriptGUILayout.h"
-#include "BsScriptHString.h"
 #include "BsScriptGUIContent.h"
 #include "BsScriptGameObject.h"
 #include "BsScriptGameObjectManager.h"
-#include "BsMonoUtil.h"
 
 using namespace std::placeholders;
 
@@ -73,7 +65,7 @@ namespace BansheeEngine
 
 		guiGameObjectField->onValueChanged.connect(std::bind(&ScriptGUIGameObjectField::onChanged, instance, _1));
 
-		ScriptGUIGameObjectField* nativeInstance = new (bs_alloc<ScriptGUIGameObjectField>()) ScriptGUIGameObjectField(instance, guiGameObjectField);
+		new (bs_alloc<ScriptGUIGameObjectField>()) ScriptGUIGameObjectField(instance, guiGameObjectField);
 	}
 
 	void ScriptGUIGameObjectField::internal_getValue(ScriptGUIGameObjectField* nativeInstance, MonoObject** output)
@@ -92,7 +84,7 @@ namespace BansheeEngine
 			gameObjectField->setValue(HGameObject());
 		else
 		{
-			ScriptGameObjectBase* scriptGO = ScriptGameObject::toNative(value);
+			ScriptGameObject* scriptGO = ScriptGameObject::toNative(value);
 			gameObjectField->setValue(scriptGO->getNativeHandle());
 		}
 	}

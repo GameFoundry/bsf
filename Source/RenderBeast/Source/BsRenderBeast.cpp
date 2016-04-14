@@ -36,8 +36,8 @@ using namespace std::placeholders;
 namespace BansheeEngine
 {
 	RenderBeast::RenderBeast()
-		:mOptions(bs_shared_ptr_new<RenderBeastOptions>()), mOptionsDirty(true), mStaticHandler(nullptr),
-		mDefaultMaterial(nullptr), mPointLightInMat(nullptr), mPointLightOutMat(nullptr), mDirLightMat(nullptr)
+		: mDefaultMaterial(nullptr), mPointLightInMat(nullptr), mPointLightOutMat(nullptr), mDirLightMat(nullptr)
+		, mStaticHandler(nullptr), mOptions(bs_shared_ptr_new<RenderBeastOptions>()), mOptionsDirty(true)
 	{
 
 	}
@@ -230,7 +230,6 @@ namespace BansheeEngine
 
 			lastRenerable->setRendererId(renderableId);
 
-			Vector<BeastRenderableElement>& lastRenderableElements = mRenderables[renderableId].elements;
 			for (auto& element : elements)
 				element.renderableId = renderableId;
 		}
@@ -769,8 +768,6 @@ namespace BansheeEngine
 		for (auto& renderableData : mRenderables)
 		{
 			RenderableCore* renderable = renderableData.renderable;
-			RenderableHandler* controller = renderableData.controller;
-			UINT32 renderableType = renderable->getRenderableType();
 			UINT32 rendererId = renderable->getRendererId();
 
 			if ((renderable->getLayer() & cameraLayers) == 0)
