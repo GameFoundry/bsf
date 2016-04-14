@@ -6,32 +6,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef enum tagNodeType NodeType;
-typedef enum tagOptionType OptionType;
-typedef enum tagOptionDataType OptionDataType;
-typedef enum tagParamType ParamType;
-typedef struct tagParseState ParseState;
-typedef struct tagOptionInfo OptionInfo;
-typedef union tagOptionData OptionData;
-typedef struct tagNodeOptions NodeOptions;
-typedef struct tagNodeOption NodeOption;
-typedef struct tagASTFXNode ASTFXNode;
-typedef struct tagNodeLink NodeLink;
-typedef struct tagIncludeData IncludeData;
-typedef struct tagIncludeLink IncludeLink;
-typedef struct tagConditionalData ConditionalData;
-typedef struct tagCodeString CodeString;
-typedef struct tagDefineEntry DefineEntry;
-typedef enum tagFillModeValue FillModeValue;
-typedef enum tagCullModeValue CullModeValue;
-typedef enum tagCompFuncValue CompFuncValue;
-typedef enum tagOpValue OpValue;
-typedef enum tagBlendOpValue BlendOpValue;
-typedef enum tagAddrModeValue AddrModeValue;
-typedef enum tagFilterValue FilterValue;
-typedef enum tagBufferUsageValue BufferUsageValue;
-typedef enum tagQueueSortTypeValue QueueSortTypeValue;
-
 enum tagNodeType
 {
 	NT_Shader,
@@ -122,7 +96,8 @@ enum tagOptionType
 	OT_Block,
 	OT_SamplerState,
 	OT_Code,
-	OT_StencilRef
+	OT_StencilRef,
+	OT_Count
 };
 
 enum tagOptionDataType
@@ -199,6 +174,32 @@ enum tagQueueSortTypeValue
 {
 	QST_FrontToBack, QST_BackToFront, QST_None
 };
+
+typedef enum tagNodeType NodeType;
+typedef enum tagOptionType OptionType;
+typedef enum tagOptionDataType OptionDataType;
+typedef enum tagParamType ParamType;
+typedef struct tagParseState ParseState;
+typedef struct tagOptionInfo OptionInfo;
+typedef union tagOptionData OptionData;
+typedef struct tagNodeOptions NodeOptions;
+typedef struct tagNodeOption NodeOption;
+typedef struct tagASTFXNode ASTFXNode;
+typedef struct tagNodeLink NodeLink;
+typedef struct tagIncludeData IncludeData;
+typedef struct tagIncludeLink IncludeLink;
+typedef struct tagConditionalData ConditionalData;
+typedef struct tagCodeString CodeString;
+typedef struct tagDefineEntry DefineEntry;
+typedef enum tagFillModeValue FillModeValue;
+typedef enum tagCullModeValue CullModeValue;
+typedef enum tagCompFuncValue CompFuncValue;
+typedef enum tagOpValue OpValue;
+typedef enum tagBlendOpValue BlendOpValue;
+typedef enum tagAddrModeValue AddrModeValue;
+typedef enum tagFilterValue FilterValue;
+typedef enum tagBufferUsageValue BufferUsageValue;
+typedef enum tagQueueSortTypeValue QueueSortTypeValue;
 
 struct tagNodeLink
 {
@@ -303,7 +304,7 @@ struct tagASTFXNode
 	NodeOptions* options;
 };
 
-OptionInfo OPTION_LOOKUP[];
+extern OptionInfo OPTION_LOOKUP[OT_Count];
 
 NodeOptions* nodeOptionsCreate(void* context);
 void nodeOptionDelete(NodeOption* option);

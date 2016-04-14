@@ -60,6 +60,8 @@ namespace BansheeEngine
 				value = toString(mat4);
 			}
 				break;
+			default:
+				break;
 			}
 
 			LOGDBG(indent + toString(i) + ". " + toString(node->options->entries[i].type) + " = " + value);
@@ -205,6 +207,8 @@ namespace BansheeEngine
 			case OT_Language:
 				language = removeQuotes(option->value.strValue);
 				break;
+			default:
+				break;
 			}
 		}
 	}
@@ -281,6 +285,8 @@ namespace BansheeEngine
 			return FO_LINEAR | FO_USE_COMPARISON;
 		case FV_AnisotropicCmp:
 			return FO_ANISOTROPIC | FO_USE_COMPARISON;
+		default:
+			break;
 		}
 
 		return FO_NONE;
@@ -367,6 +373,8 @@ namespace BansheeEngine
 			return BF_INV_DEST_ALPHA;
 		case OV_InvSrcAlpha:
 			return BF_INV_SOURCE_ALPHA;
+		default:
+			break;
 		}
 
 		return BF_ONE;
@@ -404,47 +412,47 @@ namespace BansheeEngine
 
 		if (!initialized)
 		{
-			lookup[PT_Float] = { { GPDT_FLOAT1 }, false };
-			lookup[PT_Float2] = { { GPDT_FLOAT2 }, false };
-			lookup[PT_Float3] = { { GPDT_FLOAT3 }, false };
-			lookup[PT_Float4] = { { GPDT_FLOAT4 }, false };
+			lookup[PT_Float] = { GPDT_FLOAT1, false };
+			lookup[PT_Float2] = { GPDT_FLOAT2, false };
+			lookup[PT_Float3] = { GPDT_FLOAT3, false };
+			lookup[PT_Float4] = { GPDT_FLOAT4, false };
 
-			lookup[PT_Int] = { { GPDT_INT1 }, false };
-			lookup[PT_Int2] = { { GPDT_INT2 }, false };
-			lookup[PT_Int3] = { { GPDT_INT3 }, false };
-			lookup[PT_Int4] = { { GPDT_INT4 }, false };
+			lookup[PT_Int] = { GPDT_INT1, false };
+			lookup[PT_Int2] = { GPDT_INT2, false };
+			lookup[PT_Int3] = { GPDT_INT3, false };
+			lookup[PT_Int4] = { GPDT_INT4, false };
 
-			lookup[PT_Mat2x2] = { { GPDT_MATRIX_2X2 }, false };
-			lookup[PT_Mat2x3] = { { GPDT_MATRIX_2X3 }, false };
-			lookup[PT_Mat2x4] = { { GPDT_MATRIX_2X4 }, false };
+			lookup[PT_Mat2x2] = { GPDT_MATRIX_2X2, false };
+			lookup[PT_Mat2x3] = { GPDT_MATRIX_2X3, false };
+			lookup[PT_Mat2x4] = { GPDT_MATRIX_2X4, false };
 
-			lookup[PT_Mat3x2] = { { GPDT_MATRIX_3X2 }, false };
-			lookup[PT_Mat3x3] = { { GPDT_MATRIX_3X3 }, false };
-			lookup[PT_Mat3x4] = { { GPDT_MATRIX_3X4 }, false };
+			lookup[PT_Mat3x2] = { GPDT_MATRIX_3X2, false };
+			lookup[PT_Mat3x3] = { GPDT_MATRIX_3X3, false };
+			lookup[PT_Mat3x4] = { GPDT_MATRIX_3X4, false };
 
-			lookup[PT_Mat4x2] = { { GPDT_MATRIX_4X2 }, false };
-			lookup[PT_Mat4x3] = { { GPDT_MATRIX_4X3 }, false };
-			lookup[PT_Mat4x4] = { { GPDT_MATRIX_4X4 }, false };
+			lookup[PT_Mat4x2] = { GPDT_MATRIX_4X2, false };
+			lookup[PT_Mat4x3] = { GPDT_MATRIX_4X3, false };
+			lookup[PT_Mat4x4] = { GPDT_MATRIX_4X4, false };
 
-			lookup[PT_Sampler1D] = { { GPOT_SAMPLER1D }, true };
-			lookup[PT_Sampler2D] = { { GPOT_SAMPLER2D }, true };
-			lookup[PT_Sampler3D] = { { GPOT_SAMPLER3D }, true };
-			lookup[PT_SamplerCUBE] = { { GPOT_SAMPLERCUBE }, true };
-			lookup[PT_Sampler2DMS] = { { GPOT_SAMPLER2DMS }, true };
+			lookup[PT_Sampler1D] = { GPOT_SAMPLER1D, true };
+			lookup[PT_Sampler2D] = { GPOT_SAMPLER2D, true };
+			lookup[PT_Sampler3D] = { GPOT_SAMPLER3D, true };
+			lookup[PT_SamplerCUBE] = { GPOT_SAMPLERCUBE, true };
+			lookup[PT_Sampler2DMS] = { GPOT_SAMPLER2DMS, true };
 
-			lookup[PT_Texture1D] = { { GPOT_TEXTURE1D }, true };
-			lookup[PT_Texture2D] = { { GPOT_TEXTURE2D }, true };
-			lookup[PT_Texture3D] = { { GPOT_TEXTURE3D }, true };
-			lookup[PT_TextureCUBE] = { { GPOT_TEXTURECUBE }, true };
-			lookup[PT_Texture2DMS] = { { GPOT_TEXTURE2DMS }, true };
+			lookup[PT_Texture1D] = { GPOT_TEXTURE1D, true };
+			lookup[PT_Texture2D] = { GPOT_TEXTURE2D, true };
+			lookup[PT_Texture3D] = { GPOT_TEXTURE3D, true };
+			lookup[PT_TextureCUBE] = { GPOT_TEXTURECUBE, true };
+			lookup[PT_Texture2DMS] = { GPOT_TEXTURE2DMS, true };
 
-			lookup[PT_ByteBuffer] = { { GPOT_BYTE_BUFFER }, true };
-			lookup[PT_StructBuffer] = { { GPOT_STRUCTURED_BUFFER }, true };
-			lookup[PT_TypedBufferRW] = { { GPOT_RWTYPED_BUFFER }, true };
-			lookup[PT_ByteBufferRW] = { { GPOT_RWBYTE_BUFFER }, true };
-			lookup[PT_StructBufferRW] = { { GPOT_RWSTRUCTURED_BUFFER }, true };
-			lookup[PT_AppendBuffer] = { { GPOT_RWAPPEND_BUFFER }, true };
-			lookup[PT_ConsumeBuffer] = { { GPOT_RWCONSUME_BUFFER }, true };
+			lookup[PT_ByteBuffer] = { GPOT_BYTE_BUFFER, true };
+			lookup[PT_StructBuffer] = { GPOT_STRUCTURED_BUFFER, true };
+			lookup[PT_TypedBufferRW] = { GPOT_RWTYPED_BUFFER, true };
+			lookup[PT_ByteBufferRW] = { GPOT_RWBYTE_BUFFER, true };
+			lookup[PT_StructBufferRW] = { GPOT_RWSTRUCTURED_BUFFER, true };
+			lookup[PT_AppendBuffer] = { GPOT_RWAPPEND_BUFFER, true };
+			lookup[PT_ConsumeBuffer] = { GPOT_RWCONSUME_BUFFER, true };
 
 			initialized = true;
 		}
@@ -473,6 +481,8 @@ namespace BansheeEngine
 			return SOP_DECREMENT_WRAP;
 		case OV_Invert:
 			return SOP_INVERT;
+		default:
+			break;
 		}
 
 		return SOP_KEEP;
@@ -524,6 +534,8 @@ namespace BansheeEngine
 			case OT_CompareFunc:
 				desc.frontStencilComparisonFunc = parseCompFunc((CompFuncValue)option->value.intValue);
 				break;
+			default:
+				break;
 			}
 		}
 	}
@@ -551,6 +563,8 @@ namespace BansheeEngine
 			case OT_CompareFunc:
 				desc.backStencilComparisonFunc = parseCompFunc((CompFuncValue)option->value.intValue);
 				break;
+			default:
+				break;
 			}
 		}
 	}
@@ -574,6 +588,8 @@ namespace BansheeEngine
 				break;
 			case OT_W:
 				desc.addressMode.w = parseAddrMode((AddrModeValue)option->value.intValue);
+				break;
+			default:
 				break;
 			}
 		}
@@ -599,6 +615,8 @@ namespace BansheeEngine
 			case OT_Op:
 				desc.blendOp = parseBlendOp((BlendOpValue)option->value.intValue);
 				break;
+			default:
+				break;
 			}
 		}
 	}
@@ -623,6 +641,8 @@ namespace BansheeEngine
 			case OT_Op:
 				desc.blendOpAlpha = parseBlendOp((BlendOpValue)option->value.intValue);
 				break;
+			default:
+				break;
 			}
 		}
 	}
@@ -642,6 +662,8 @@ namespace BansheeEngine
 			{
 			case OT_Index:
 				index = option->value.intValue;
+				break;
+			default:
 				break;
 			}
 		}
@@ -668,6 +690,8 @@ namespace BansheeEngine
 			case OT_WriteMask:
 				rtDesc.renderTargetWriteMask = option->value.intValue;
 				break;
+			default:
+				break;
 			}
 		}
 	}
@@ -677,7 +701,7 @@ namespace BansheeEngine
 		if (passNode == nullptr || (passNode->type != NT_Pass && passNode->type != NT_Technique))
 			return false;
 
-		bool default = true;
+		bool isDefault = true;
 
 		for (int i = 0; i < passNode->options->count; i++)
 		{
@@ -687,20 +711,22 @@ namespace BansheeEngine
 			{
 			case OT_AlphaToCoverage:
 				desc.alphaToCoverageEnable = option->value.intValue > 0;
-				default = false;
+				isDefault = false;
 				break;
 			case OT_IndependantBlend:
 				desc.independantBlendEnable = option->value.intValue > 0;
-				default = false;
+				isDefault = false;
 				break;
 			case OT_Target:
 				parseRenderTargetBlendState(desc, option->value.nodePtr);
-				default = false;
+				isDefault = false;
+				break;
+			default:
 				break;
 			}
 		}
 
-		return !default;
+		return !isDefault;
 	}
 
 	bool BSLFXCompiler::parseRasterizerState(RASTERIZER_STATE_DESC& desc, ASTFXNode* passNode)
@@ -708,7 +734,7 @@ namespace BansheeEngine
 		if (passNode == nullptr || (passNode->type != NT_Pass && passNode->type != NT_Technique))
 			return false;
 
-		bool default = true;
+		bool isDefault = true;
 
 		for (int i = 0; i < passNode->options->count; i++)
 		{
@@ -718,40 +744,42 @@ namespace BansheeEngine
 			{
 			case OT_FillMode:
 				desc.polygonMode = parseFillMode((FillModeValue)option->value.intValue);
-				default = false;
+				isDefault = false;
 				break;
 			case OT_CullMode:
 				desc.cullMode = parseCullMode((CullModeValue)option->value.intValue);
-				default = false;
+				isDefault = false;
 				break;
 			case OT_DepthBias:
 				desc.depthBias = option->value.floatValue;
-				default = false;
+				isDefault = false;
 				break;
 			case OT_SDepthBias:
 				desc.slopeScaledDepthBias = option->value.floatValue;
-				default = false;
+				isDefault = false;
 				break;
 			case OT_DepthClip:
 				desc.depthClipEnable = option->value.intValue > 0;
-				default = false;
+				isDefault = false;
 				break;
 			case OT_Scissor:
 				desc.scissorEnable = option->value.intValue > 0;
-				default = false;
+				isDefault = false;
 				break;
 			case OT_Multisample:
 				desc.multisampleEnable = option->value.intValue > 0;
-				default = false;
+				isDefault = false;
 				break;
 			case OT_AALine:
 				desc.antialiasedLineEnable = option->value.intValue > 0;
-				default = false;
+				isDefault = false;
+				break;
+			default:
 				break;
 			}
 		}
 
-		return !default;
+		return !isDefault;
 	}
 
 	bool BSLFXCompiler::parseDepthStencilState(DEPTH_STENCIL_STATE_DESC& desc, ASTFXNode* passNode)
@@ -759,7 +787,7 @@ namespace BansheeEngine
 		if (passNode == nullptr || (passNode->type != NT_Pass && passNode->type != NT_Technique))
 			return false;
 
-		bool default = true;
+		bool isDefault = true;
 
 		for (int i = 0; i < passNode->options->count; i++)
 		{
@@ -769,40 +797,42 @@ namespace BansheeEngine
 			{
 			case OT_DepthRead:
 				desc.depthReadEnable = option->value.intValue > 0;
-				default = false;
+				isDefault = false;
 				break;
 			case OT_DepthWrite:
 				desc.depthWriteEnable = option->value.intValue > 0;
-				default = false;
+				isDefault = false;
 				break;
 			case OT_CompareFunc:
 				desc.depthComparisonFunc = parseCompFunc((CompFuncValue)option->value.intValue);
-				default = false;
+				isDefault = false;
 				break;
 			case OT_Stencil:
 				desc.stencilEnable = option->value.intValue > 0;
-				default = false;
+				isDefault = false;
 				break;
 			case OT_StencilReadMask:
 				desc.stencilReadMask = (UINT8)option->value.intValue;
-				default = false;
+				isDefault = false;
 				break;
 			case OT_StencilWriteMask:
 				desc.stencilWriteMask = (UINT8)option->value.intValue;
-				default = false;
+				isDefault = false;
 				break;
 			case OT_StencilOpFront:
 				parseStencilFront(desc, option->value.nodePtr);
-				default = false;
+				isDefault = false;
 				break;
 			case OT_StencilOpBack:
 				parseStencilBack(desc, option->value.nodePtr);
-				default = false;
+				isDefault = false;
+				break;
+			default:
 				break;
 			}
 		}
 
-		return !default;
+		return !isDefault;
 	}
 
 	SPtr<SamplerState> BSLFXCompiler::parseSamplerState(ASTFXNode* samplerStateNode)
@@ -811,7 +841,7 @@ namespace BansheeEngine
 			return nullptr;
 
 		SAMPLER_STATE_DESC desc;
-		bool default = true;
+		bool isDefault = true;
 
 		for (int i = 0; i < samplerStateNode->options->count; i++)
 		{
@@ -821,49 +851,51 @@ namespace BansheeEngine
 			{
 			case OT_AddrMode:
 				parseAddrMode(desc, option->value.nodePtr);
-				default = false;
+				isDefault = false;
 				break;
 			case OT_MinFilter:
 				desc.minFilter = (FilterOptions)parseFilterMode((FilterValue)option->value.intValue);
-				default = false;
+				isDefault = false;
 				break;
 			case OT_MagFilter:
 				desc.magFilter = (FilterOptions)parseFilterMode((FilterValue)option->value.intValue);
-				default = false;
+				isDefault = false;
 				break;
 			case OT_MipFilter:
 				desc.mipFilter = (FilterOptions)parseFilterMode((FilterValue)option->value.intValue);
-				default = false;
+				isDefault = false;
 				break;
 			case OT_MaxAniso:
 				desc.maxAniso = option->value.intValue;
-				default = false;
+				isDefault = false;
 				break;
 			case OT_MipBias:
 				desc.mipmapBias = option->value.floatValue;
-				default = false;
+				isDefault = false;
 				break;
 			case OT_MipMin:
 				desc.mipMin = option->value.floatValue;
-				default = false;
+				isDefault = false;
 				break;
 			case OT_MipMax:
 				desc.mipMax = option->value.floatValue;
-				default = false;
+				isDefault = false;
 				break;
 			case OT_BorderColor:
 				desc.borderColor = Color(option->value.matrixValue[0], option->value.matrixValue[1],
 					option->value.matrixValue[2], option->value.matrixValue[3]);
-				default = false;
+				isDefault = false;
 				break;
 			case OT_CompareFunc:
 				desc.comparisonFunc = parseCompFunc((CompFuncValue)option->value.intValue);
-				default = false;
+				isDefault = false;
+				break;
+			default:
 				break;
 			}
 		}
 
-		if (default)
+		if (isDefault)
 			return nullptr;
 
 		return SamplerState::create(desc);
@@ -910,6 +942,8 @@ namespace BansheeEngine
 			case NT_CodeCommon:
 				passData.commonCode += codeBlocks[index];
 				break;
+			default:
+				break;
 			}
 		}
 	}
@@ -934,6 +968,8 @@ namespace BansheeEngine
 				break;
 			case OT_Code:
 				parseCodeBlock(option->value.nodePtr, codeBlocks, passData);
+				break;
+			default:
 				break;
 			}
 		}
@@ -965,6 +1001,8 @@ namespace BansheeEngine
 					{
 					case OT_Index:
 						passIdx = passOption->value.intValue;
+						break;
+					default:
 						break;
 					}
 				}
@@ -1008,6 +1046,8 @@ namespace BansheeEngine
 				break;
 			case OT_Code:
 				parseCodeBlock(option->value.nodePtr, codeBlocks, techniqueData.commonPassData);
+				break;
+			default:
 				break;
 			}
 		}
@@ -1068,6 +1108,8 @@ namespace BansheeEngine
 					break;
 				case OT_SamplerState:
 					samplerState = parseSamplerState(paramOption->value.nodePtr);
+					break;
+				default:
 					break;
 				}
 			}
@@ -1151,6 +1193,8 @@ namespace BansheeEngine
 				case OT_Auto:
 					semantic = removeQuotes(paramOption->value.strValue);
 					break;
+				default:
+					break;
 				}
 			}
 
@@ -1218,6 +1262,8 @@ namespace BansheeEngine
 				break;
 			case OT_Blocks:
 				parseBlocks(shaderDesc, option->value.nodePtr);
+				break;
+			default:
 				break;
 			}
 		}
@@ -1359,6 +1405,8 @@ namespace BansheeEngine
 				return GPP_VS_3_0;
 			case GPT_FRAGMENT_PROGRAM:
 				return GPP_FS_3_0;
+			default:
+				break;
 			}
 		}
 
