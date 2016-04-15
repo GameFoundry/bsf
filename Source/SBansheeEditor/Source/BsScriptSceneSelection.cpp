@@ -9,7 +9,7 @@
 namespace BansheeEngine
 {
 	ScriptSceneSelection::ScriptSceneSelection(MonoObject* object, const SPtr<Camera>& camera)
-		:ScriptObject(object), mSelectionRenderer(nullptr), mCamera(camera)
+		:ScriptObject(object), mCamera(camera), mSelectionRenderer(nullptr)
 	{
 		mSelectionRenderer = bs_new<SelectionRenderer>();
 	}

@@ -81,7 +81,7 @@ namespace BansheeEngine
 		String styleName = toString(MonoUtil::monoToWString(style));
 
 		GUISceneTreeView* treeView = GUISceneTreeView::create(options);
-		ScriptGUISceneTreeView* nativeInstance = new (bs_alloc<ScriptGUISceneTreeView>()) ScriptGUISceneTreeView(instance, treeView);
+		new (bs_alloc<ScriptGUISceneTreeView>()) ScriptGUISceneTreeView(instance, treeView);
 	}
 
 	void ScriptGUISceneTreeView::internal_update(ScriptGUISceneTreeView* thisPtr)

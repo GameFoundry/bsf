@@ -127,7 +127,7 @@ namespace BansheeEngine
 				sceneObjects[i] = scriptSO->getNativeSceneObject();
 		}
 
-		ScriptSceneObjectDragDropData* nativeInstance = new (bs_alloc<ScriptSceneObjectDragDropData>()) ScriptSceneObjectDragDropData(managedInstance, sceneObjects);
+		new (bs_alloc<ScriptSceneObjectDragDropData>()) ScriptSceneObjectDragDropData(managedInstance, sceneObjects);
 	}
 
 	MonoArray* ScriptSceneObjectDragDropData::internal_GetObjects(ScriptSceneObjectDragDropData* instance)
@@ -185,7 +185,7 @@ namespace BansheeEngine
 			paths[i] = MonoUtil::monoToWString(monoPath);
 		}
 
-		ScriptResourceDragDropData* nativeInstance = new (bs_alloc<ScriptResourceDragDropData>()) ScriptResourceDragDropData(managedInstance, paths);
+		new (bs_alloc<ScriptResourceDragDropData>()) ScriptResourceDragDropData(managedInstance, paths);
 	}
 
 	MonoArray* ScriptResourceDragDropData::internal_GetPaths(ScriptResourceDragDropData* instance)
@@ -208,7 +208,7 @@ namespace BansheeEngine
 	}
 
 	ScriptDragDropManager::ScriptDragDropManager()
-		:mDroppedFrameIdx(0), mIsDropInProgress(false), mDropType(ScriptDragDropType::None)
+		:mIsDropInProgress(false), mDroppedFrameIdx(0), mDropType(ScriptDragDropType::None)
 	{
 		mDragEndedConn = DragAndDropManager::instance().onDragEnded.connect(std::bind(&ScriptDragDropManager::onMouseDragEnded, this, _1, _2));
 	}

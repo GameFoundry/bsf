@@ -45,6 +45,7 @@ namespace BansheeEngine
 		{
 		case PlatformType::Windows:
 			return ScriptWinPlatformInfo::create(std::static_pointer_cast<WinPlatformInfo>(platformInfo));
+		default:
 			break;
 		}
 

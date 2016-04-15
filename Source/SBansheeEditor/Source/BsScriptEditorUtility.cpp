@@ -62,7 +62,8 @@ namespace BansheeEngine
 			return emptyArray.getInternal();
 		}
 
-		Vector<ResourceDependency> dependencies = Utility::findResourceDependencies(srcResource->getGenericHandle(), recursive);
+		HResource srcHandle = srcResource->getGenericHandle();
+		Vector<ResourceDependency> dependencies = Utility::findResourceDependencies(srcHandle, recursive);
 
 		UINT32 numEntries = (UINT32)dependencies.size();
 		ScriptArray output = ScriptArray::create<ScriptResource>(numEntries);

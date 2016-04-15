@@ -51,7 +51,7 @@
 
 /* Copy the first part of user declarations.  */
 /* Line 207 of glr.c  */
-#line 1 "../../../Source/BansheeSL/BsParserFX.y"
+#line 1 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
 
 #include "BsParserFX.h"
 #include "BsLexerFX.h"
@@ -1608,67 +1608,67 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
     {
         case 2:
 /* Line 868 of glr.c  */
-#line 278 "../../../Source/BansheeSL/BsParserFX.y"
+#line 278 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { }
     break;
 
   case 3:
 /* Line 868 of glr.c  */
-#line 279 "../../../Source/BansheeSL/BsParserFX.y"
+#line 279 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.nodeOption)); }
     break;
 
   case 5:
 /* Line 868 of glr.c  */
-#line 284 "../../../Source/BansheeSL/BsParserFX.y"
+#line 284 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Technique; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 6:
 /* Line 868 of glr.c  */
-#line 285 "../../../Source/BansheeSL/BsParserFX.y"
+#line 285 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Parameters; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 7:
 /* Line 868 of glr.c  */
-#line 286 "../../../Source/BansheeSL/BsParserFX.y"
+#line 286 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Blocks; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 8:
 /* Line 868 of glr.c  */
-#line 290 "../../../Source/BansheeSL/BsParserFX.y"
+#line 290 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Separable; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 9:
 /* Line 868 of glr.c  */
-#line 291 "../../../Source/BansheeSL/BsParserFX.y"
+#line 291 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Sort; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 10:
 /* Line 868 of glr.c  */
-#line 292 "../../../Source/BansheeSL/BsParserFX.y"
+#line 292 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Priority; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 11:
 /* Line 868 of glr.c  */
-#line 293 "../../../Source/BansheeSL/BsParserFX.y"
+#line 293 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Transparent; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 12:
 /* Line 868 of glr.c  */
-#line 299 "../../../Source/BansheeSL/BsParserFX.y"
+#line 299 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodePop(parse_state); ((*yyvalp).nodePtr) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 13:
 /* Line 868 of glr.c  */
-#line 304 "../../../Source/BansheeSL/BsParserFX.y"
+#line 304 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { 
 			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Technique); 
 			nodePush(parse_state, ((*yyvalp).nodePtr));
@@ -1677,43 +1677,43 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 15:
 /* Line 868 of glr.c  */
-#line 312 "../../../Source/BansheeSL/BsParserFX.y"
+#line 312 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.nodeOption)); }
     break;
 
   case 17:
 /* Line 868 of glr.c  */
-#line 317 "../../../Source/BansheeSL/BsParserFX.y"
+#line 317 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Pass; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 19:
 /* Line 868 of glr.c  */
-#line 319 "../../../Source/BansheeSL/BsParserFX.y"
+#line 319 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Code; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 20:
 /* Line 868 of glr.c  */
-#line 323 "../../../Source/BansheeSL/BsParserFX.y"
+#line 323 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Renderer; ((*yyvalp).nodeOption).value.strValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.strValue); }
     break;
 
   case 21:
 /* Line 868 of glr.c  */
-#line 324 "../../../Source/BansheeSL/BsParserFX.y"
+#line 324 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Language; ((*yyvalp).nodeOption).value.strValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.strValue); }
     break;
 
   case 22:
 /* Line 868 of glr.c  */
-#line 330 "../../../Source/BansheeSL/BsParserFX.y"
+#line 330 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodePop(parse_state); ((*yyvalp).nodePtr) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 23:
 /* Line 868 of glr.c  */
-#line 335 "../../../Source/BansheeSL/BsParserFX.y"
+#line 335 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { 
 			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Pass); 
 			nodePush(parse_state, ((*yyvalp).nodePtr));
@@ -1722,157 +1722,157 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 25:
 /* Line 868 of glr.c  */
-#line 343 "../../../Source/BansheeSL/BsParserFX.y"
+#line 343 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.nodeOption)); }
     break;
 
   case 27:
 /* Line 868 of glr.c  */
-#line 348 "../../../Source/BansheeSL/BsParserFX.y"
+#line 348 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Code; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 28:
 /* Line 868 of glr.c  */
-#line 352 "../../../Source/BansheeSL/BsParserFX.y"
+#line 352 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Index; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 29:
 /* Line 868 of glr.c  */
-#line 353 "../../../Source/BansheeSL/BsParserFX.y"
+#line 353 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_FillMode; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 30:
 /* Line 868 of glr.c  */
-#line 354 "../../../Source/BansheeSL/BsParserFX.y"
+#line 354 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_CullMode; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 31:
 /* Line 868 of glr.c  */
-#line 355 "../../../Source/BansheeSL/BsParserFX.y"
+#line 355 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_DepthBias; ((*yyvalp).nodeOption).value.floatValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.floatValue); }
     break;
 
   case 32:
 /* Line 868 of glr.c  */
-#line 356 "../../../Source/BansheeSL/BsParserFX.y"
+#line 356 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_SDepthBias; ((*yyvalp).nodeOption).value.floatValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.floatValue); }
     break;
 
   case 33:
 /* Line 868 of glr.c  */
-#line 357 "../../../Source/BansheeSL/BsParserFX.y"
+#line 357 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_DepthClip; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 34:
 /* Line 868 of glr.c  */
-#line 358 "../../../Source/BansheeSL/BsParserFX.y"
+#line 358 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Scissor; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 35:
 /* Line 868 of glr.c  */
-#line 359 "../../../Source/BansheeSL/BsParserFX.y"
+#line 359 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Multisample; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 36:
 /* Line 868 of glr.c  */
-#line 360 "../../../Source/BansheeSL/BsParserFX.y"
+#line 360 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_AALine; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 37:
 /* Line 868 of glr.c  */
-#line 361 "../../../Source/BansheeSL/BsParserFX.y"
+#line 361 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_DepthRead; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 38:
 /* Line 868 of glr.c  */
-#line 362 "../../../Source/BansheeSL/BsParserFX.y"
+#line 362 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_DepthWrite; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 39:
 /* Line 868 of glr.c  */
-#line 363 "../../../Source/BansheeSL/BsParserFX.y"
+#line 363 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_CompareFunc; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 40:
 /* Line 868 of glr.c  */
-#line 364 "../../../Source/BansheeSL/BsParserFX.y"
+#line 364 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Stencil; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 41:
 /* Line 868 of glr.c  */
-#line 365 "../../../Source/BansheeSL/BsParserFX.y"
+#line 365 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_StencilReadMask; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 42:
 /* Line 868 of glr.c  */
-#line 366 "../../../Source/BansheeSL/BsParserFX.y"
+#line 366 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_StencilWriteMask; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 43:
 /* Line 868 of glr.c  */
-#line 367 "../../../Source/BansheeSL/BsParserFX.y"
+#line 367 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_StencilOpFront; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 44:
 /* Line 868 of glr.c  */
-#line 368 "../../../Source/BansheeSL/BsParserFX.y"
+#line 368 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_StencilOpBack; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 45:
 /* Line 868 of glr.c  */
-#line 369 "../../../Source/BansheeSL/BsParserFX.y"
+#line 369 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_StencilOpFront; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 46:
 /* Line 868 of glr.c  */
-#line 370 "../../../Source/BansheeSL/BsParserFX.y"
+#line 370 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_StencilOpBack; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 47:
 /* Line 868 of glr.c  */
-#line 371 "../../../Source/BansheeSL/BsParserFX.y"
+#line 371 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_AlphaToCoverage; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 48:
 /* Line 868 of glr.c  */
-#line 372 "../../../Source/BansheeSL/BsParserFX.y"
+#line 372 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_IndependantBlend; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 49:
 /* Line 868 of glr.c  */
-#line 373 "../../../Source/BansheeSL/BsParserFX.y"
+#line 373 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Target; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 50:
 /* Line 868 of glr.c  */
-#line 374 "../../../Source/BansheeSL/BsParserFX.y"
+#line 374 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_StencilRef; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 51:
 /* Line 868 of glr.c  */
-#line 381 "../../../Source/BansheeSL/BsParserFX.y"
+#line 381 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     {
 		NodeOption index;
 		index.type = OT_Index; 
@@ -1887,7 +1887,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 52:
 /* Line 868 of glr.c  */
-#line 395 "../../../Source/BansheeSL/BsParserFX.y"
+#line 395 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { 
 			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_CodeVertex); 
 			nodePush(parse_state, ((*yyvalp).nodePtr));
@@ -1896,7 +1896,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 53:
 /* Line 868 of glr.c  */
-#line 400 "../../../Source/BansheeSL/BsParserFX.y"
+#line 400 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { 
 			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_CodeFragment); 
 			nodePush(parse_state, ((*yyvalp).nodePtr));
@@ -1905,7 +1905,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 54:
 /* Line 868 of glr.c  */
-#line 405 "../../../Source/BansheeSL/BsParserFX.y"
+#line 405 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { 
 			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_CodeGeometry); 
 			nodePush(parse_state, ((*yyvalp).nodePtr));
@@ -1914,7 +1914,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 55:
 /* Line 868 of glr.c  */
-#line 410 "../../../Source/BansheeSL/BsParserFX.y"
+#line 410 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { 
 			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_CodeHull); 
 			nodePush(parse_state, ((*yyvalp).nodePtr));
@@ -1923,7 +1923,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 56:
 /* Line 868 of glr.c  */
-#line 415 "../../../Source/BansheeSL/BsParserFX.y"
+#line 415 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { 
 			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_CodeDomain); 
 			nodePush(parse_state, ((*yyvalp).nodePtr));
@@ -1932,7 +1932,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 57:
 /* Line 868 of glr.c  */
-#line 420 "../../../Source/BansheeSL/BsParserFX.y"
+#line 420 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { 
 			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_CodeCompute); 
 			nodePush(parse_state, ((*yyvalp).nodePtr));
@@ -1941,7 +1941,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 58:
 /* Line 868 of glr.c  */
-#line 425 "../../../Source/BansheeSL/BsParserFX.y"
+#line 425 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { 
 			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_CodeCommon); 
 			nodePush(parse_state, ((*yyvalp).nodePtr));
@@ -1950,7 +1950,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 59:
 /* Line 868 of glr.c  */
-#line 435 "../../../Source/BansheeSL/BsParserFX.y"
+#line 435 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { 
 			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_StencilOp); 
 			nodePush(parse_state, ((*yyvalp).nodePtr));
@@ -1959,7 +1959,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 60:
 /* Line 868 of glr.c  */
-#line 443 "../../../Source/BansheeSL/BsParserFX.y"
+#line 443 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { 
 			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_StencilOp); 
 			nodePush(parse_state, ((*yyvalp).nodePtr));
@@ -1968,7 +1968,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 61:
 /* Line 868 of glr.c  */
-#line 451 "../../../Source/BansheeSL/BsParserFX.y"
+#line 451 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     {
 			NodeOption fail; fail.type = OT_Fail; fail.value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (7))].yystate.yysemantics.yysval.intValue);
 			NodeOption zfail; zfail.type = OT_ZFail; zfail.value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (7))].yystate.yysemantics.yysval.intValue);
@@ -1984,43 +1984,43 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 63:
 /* Line 868 of glr.c  */
-#line 466 "../../../Source/BansheeSL/BsParserFX.y"
+#line 466 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.nodeOption)); }
     break;
 
   case 64:
 /* Line 868 of glr.c  */
-#line 470 "../../../Source/BansheeSL/BsParserFX.y"
+#line 470 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Fail; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 65:
 /* Line 868 of glr.c  */
-#line 471 "../../../Source/BansheeSL/BsParserFX.y"
+#line 471 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_ZFail; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 66:
 /* Line 868 of glr.c  */
-#line 472 "../../../Source/BansheeSL/BsParserFX.y"
+#line 472 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_PassOp; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 67:
 /* Line 868 of glr.c  */
-#line 473 "../../../Source/BansheeSL/BsParserFX.y"
+#line 473 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_CompareFunc; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 68:
 /* Line 868 of glr.c  */
-#line 478 "../../../Source/BansheeSL/BsParserFX.y"
+#line 478 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodePop(parse_state); ((*yyvalp).nodePtr) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 69:
 /* Line 868 of glr.c  */
-#line 483 "../../../Source/BansheeSL/BsParserFX.y"
+#line 483 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { 
 			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Target); 
 			nodePush(parse_state, ((*yyvalp).nodePtr));
@@ -2029,55 +2029,55 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 71:
 /* Line 868 of glr.c  */
-#line 491 "../../../Source/BansheeSL/BsParserFX.y"
+#line 491 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.nodeOption)); }
     break;
 
   case 73:
 /* Line 868 of glr.c  */
-#line 499 "../../../Source/BansheeSL/BsParserFX.y"
+#line 499 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Index; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 74:
 /* Line 868 of glr.c  */
-#line 500 "../../../Source/BansheeSL/BsParserFX.y"
+#line 500 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Blend; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 75:
 /* Line 868 of glr.c  */
-#line 501 "../../../Source/BansheeSL/BsParserFX.y"
+#line 501 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Color; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 76:
 /* Line 868 of glr.c  */
-#line 502 "../../../Source/BansheeSL/BsParserFX.y"
+#line 502 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Alpha; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 77:
 /* Line 868 of glr.c  */
-#line 503 "../../../Source/BansheeSL/BsParserFX.y"
+#line 503 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Color; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 78:
 /* Line 868 of glr.c  */
-#line 504 "../../../Source/BansheeSL/BsParserFX.y"
+#line 504 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Alpha; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 79:
 /* Line 868 of glr.c  */
-#line 505 "../../../Source/BansheeSL/BsParserFX.y"
+#line 505 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_WriteMask; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 80:
 /* Line 868 of glr.c  */
-#line 511 "../../../Source/BansheeSL/BsParserFX.y"
+#line 511 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { 
 			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_BlendDef); 
 			nodePush(parse_state, ((*yyvalp).nodePtr));
@@ -2086,7 +2086,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 81:
 /* Line 868 of glr.c  */
-#line 519 "../../../Source/BansheeSL/BsParserFX.y"
+#line 519 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { 
 			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_BlendDef); 
 			nodePush(parse_state, ((*yyvalp).nodePtr));
@@ -2095,13 +2095,13 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 83:
 /* Line 868 of glr.c  */
-#line 527 "../../../Source/BansheeSL/BsParserFX.y"
+#line 527 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.nodeOption)); }
     break;
 
   case 84:
 /* Line 868 of glr.c  */
-#line 532 "../../../Source/BansheeSL/BsParserFX.y"
+#line 532 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     {
 			NodeOption src; src.type = OT_Source; src.value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval.intValue);
 			NodeOption dst; dst.type = OT_Dest; dst.value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (5))].yystate.yysemantics.yysval.intValue);
@@ -2115,103 +2115,103 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 85:
 /* Line 868 of glr.c  */
-#line 544 "../../../Source/BansheeSL/BsParserFX.y"
+#line 544 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Source; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 86:
 /* Line 868 of glr.c  */
-#line 545 "../../../Source/BansheeSL/BsParserFX.y"
+#line 545 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Dest; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 87:
 /* Line 868 of glr.c  */
-#line 546 "../../../Source/BansheeSL/BsParserFX.y"
+#line 546 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Op; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 89:
 /* Line 868 of glr.c  */
-#line 553 "../../../Source/BansheeSL/BsParserFX.y"
+#line 553 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.nodeOption)); }
     break;
 
   case 90:
 /* Line 868 of glr.c  */
-#line 557 "../../../Source/BansheeSL/BsParserFX.y"
+#line 557 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_AddrMode; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 91:
 /* Line 868 of glr.c  */
-#line 558 "../../../Source/BansheeSL/BsParserFX.y"
+#line 558 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_MinFilter; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 92:
 /* Line 868 of glr.c  */
-#line 559 "../../../Source/BansheeSL/BsParserFX.y"
+#line 559 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_MagFilter; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 93:
 /* Line 868 of glr.c  */
-#line 560 "../../../Source/BansheeSL/BsParserFX.y"
+#line 560 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_MipFilter; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 94:
 /* Line 868 of glr.c  */
-#line 561 "../../../Source/BansheeSL/BsParserFX.y"
+#line 561 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_MaxAniso; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 95:
 /* Line 868 of glr.c  */
-#line 562 "../../../Source/BansheeSL/BsParserFX.y"
+#line 562 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_MipBias; ((*yyvalp).nodeOption).value.floatValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.floatValue); }
     break;
 
   case 96:
 /* Line 868 of glr.c  */
-#line 563 "../../../Source/BansheeSL/BsParserFX.y"
+#line 563 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_MipMin; ((*yyvalp).nodeOption).value.floatValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.floatValue); }
     break;
 
   case 97:
 /* Line 868 of glr.c  */
-#line 564 "../../../Source/BansheeSL/BsParserFX.y"
+#line 564 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_MipMax; ((*yyvalp).nodeOption).value.floatValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.floatValue); }
     break;
 
   case 98:
 /* Line 868 of glr.c  */
-#line 565 "../../../Source/BansheeSL/BsParserFX.y"
+#line 565 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_BorderColor; memcpy(((*yyvalp).nodeOption).value.matrixValue, (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.matrixValue), sizeof((((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.matrixValue))); }
     break;
 
   case 99:
 /* Line 868 of glr.c  */
-#line 566 "../../../Source/BansheeSL/BsParserFX.y"
+#line 566 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_CompareFunc; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 100:
 /* Line 868 of glr.c  */
-#line 571 "../../../Source/BansheeSL/BsParserFX.y"
+#line 571 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodePop(parse_state); ((*yyvalp).nodePtr) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 101:
 /* Line 868 of glr.c  */
-#line 572 "../../../Source/BansheeSL/BsParserFX.y"
+#line 572 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodePop(parse_state); ((*yyvalp).nodePtr) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 102:
 /* Line 868 of glr.c  */
-#line 577 "../../../Source/BansheeSL/BsParserFX.y"
+#line 577 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { 
 			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_AddrMode); 
 			nodePush(parse_state, ((*yyvalp).nodePtr));
@@ -2220,7 +2220,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 103:
 /* Line 868 of glr.c  */
-#line 585 "../../../Source/BansheeSL/BsParserFX.y"
+#line 585 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     {
 			NodeOption u; u.type = OT_U; u.value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval.intValue);
 			NodeOption v; v.type = OT_V; v.value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (5))].yystate.yysemantics.yysval.intValue);
@@ -2234,67 +2234,67 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 105:
 /* Line 868 of glr.c  */
-#line 598 "../../../Source/BansheeSL/BsParserFX.y"
+#line 598 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.nodeOption)); }
     break;
 
   case 106:
 /* Line 868 of glr.c  */
-#line 602 "../../../Source/BansheeSL/BsParserFX.y"
+#line 602 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_U; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 107:
 /* Line 868 of glr.c  */
-#line 603 "../../../Source/BansheeSL/BsParserFX.y"
+#line 603 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_V; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 108:
 /* Line 868 of glr.c  */
-#line 604 "../../../Source/BansheeSL/BsParserFX.y"
+#line 604 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_W; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 109:
 /* Line 868 of glr.c  */
-#line 609 "../../../Source/BansheeSL/BsParserFX.y"
+#line 609 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).matrixValue)[0] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (5))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[1] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (5))].yystate.yysemantics.yysval.floatValue); }
     break;
 
   case 110:
 /* Line 868 of glr.c  */
-#line 613 "../../../Source/BansheeSL/BsParserFX.y"
+#line 613 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).matrixValue)[0] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (7))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[1] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (7))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[2] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((6) - (7))].yystate.yysemantics.yysval.floatValue); }
     break;
 
   case 111:
 /* Line 868 of glr.c  */
-#line 617 "../../../Source/BansheeSL/BsParserFX.y"
+#line 617 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).matrixValue)[0] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (9))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[1] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (9))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[2] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((6) - (9))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[3] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((8) - (9))].yystate.yysemantics.yysval.floatValue);}
     break;
 
   case 112:
 /* Line 868 of glr.c  */
-#line 621 "../../../Source/BansheeSL/BsParserFX.y"
+#line 621 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).intVectorValue)[0] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (5))].yystate.yysemantics.yysval.intValue); ((*yyvalp).intVectorValue)[1] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (5))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 113:
 /* Line 868 of glr.c  */
-#line 625 "../../../Source/BansheeSL/BsParserFX.y"
+#line 625 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).intVectorValue)[0] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (7))].yystate.yysemantics.yysval.intValue); ((*yyvalp).intVectorValue)[1] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (7))].yystate.yysemantics.yysval.intValue); ((*yyvalp).intVectorValue)[2] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((6) - (7))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 114:
 /* Line 868 of glr.c  */
-#line 629 "../../../Source/BansheeSL/BsParserFX.y"
+#line 629 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).intVectorValue)[0] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (9))].yystate.yysemantics.yysval.intValue); ((*yyvalp).intVectorValue)[1] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (9))].yystate.yysemantics.yysval.intValue); ((*yyvalp).intVectorValue)[2] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((6) - (9))].yystate.yysemantics.yysval.intValue); ((*yyvalp).intVectorValue)[3] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((8) - (9))].yystate.yysemantics.yysval.intValue);}
     break;
 
   case 115:
 /* Line 868 of glr.c  */
-#line 635 "../../../Source/BansheeSL/BsParserFX.y"
+#line 635 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { 
 			((*yyvalp).matrixValue)[0] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (13))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[1] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (13))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[2] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((6) - (13))].yystate.yysemantics.yysval.floatValue); 
 			((*yyvalp).matrixValue)[3] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((8) - (13))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[4] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((10) - (13))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[5] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((12) - (13))].yystate.yysemantics.yysval.floatValue);
@@ -2303,7 +2303,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 116:
 /* Line 868 of glr.c  */
-#line 645 "../../../Source/BansheeSL/BsParserFX.y"
+#line 645 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { 
 			((*yyvalp).matrixValue)[0] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (17))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[1] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (17))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[2] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((6) - (17))].yystate.yysemantics.yysval.floatValue); 
 			((*yyvalp).matrixValue)[3] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((8) - (17))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[4] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((10) - (17))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[5] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((12) - (17))].yystate.yysemantics.yysval.floatValue);
@@ -2313,7 +2313,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 117:
 /* Line 868 of glr.c  */
-#line 656 "../../../Source/BansheeSL/BsParserFX.y"
+#line 656 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { 
 			((*yyvalp).matrixValue)[0] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (19))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[1] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (19))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[2] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((6) - (19))].yystate.yysemantics.yysval.floatValue); 
 			((*yyvalp).matrixValue)[3] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((8) - (19))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[4] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((10) - (19))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[5] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((12) - (19))].yystate.yysemantics.yysval.floatValue);
@@ -2323,7 +2323,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 118:
 /* Line 868 of glr.c  */
-#line 667 "../../../Source/BansheeSL/BsParserFX.y"
+#line 667 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { 
 			((*yyvalp).matrixValue)[0] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (25))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[1] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (25))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[2] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((6) - (25))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[3] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((8) - (25))].yystate.yysemantics.yysval.floatValue); 
 			((*yyvalp).matrixValue)[4] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((10) - (25))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[5] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((12) - (25))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[6] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((14) - (25))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[7] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((16) - (25))].yystate.yysemantics.yysval.floatValue); 
@@ -2333,7 +2333,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 119:
 /* Line 868 of glr.c  */
-#line 679 "../../../Source/BansheeSL/BsParserFX.y"
+#line 679 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { 
 			((*yyvalp).matrixValue)[0] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (33))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[1] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (33))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[2] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((6) - (33))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[3] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((8) - (33))].yystate.yysemantics.yysval.floatValue); 
 			((*yyvalp).matrixValue)[4] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((10) - (33))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[5] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((12) - (33))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[6] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((14) - (33))].yystate.yysemantics.yysval.floatValue); ((*yyvalp).matrixValue)[7] = (((yyGLRStackItem const *)yyvsp)[YYFILL ((16) - (33))].yystate.yysemantics.yysval.floatValue); 
@@ -2344,13 +2344,13 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 120:
 /* Line 868 of glr.c  */
-#line 689 "../../../Source/BansheeSL/BsParserFX.y"
+#line 689 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodePop(parse_state); ((*yyvalp).nodePtr) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 121:
 /* Line 868 of glr.c  */
-#line 694 "../../../Source/BansheeSL/BsParserFX.y"
+#line 694 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { 
 			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Parameters); 
 			nodePush(parse_state, ((*yyvalp).nodePtr));
@@ -2359,133 +2359,133 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 123:
 /* Line 868 of glr.c  */
-#line 702 "../../../Source/BansheeSL/BsParserFX.y"
+#line 702 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.nodeOption)); }
     break;
 
   case 124:
 /* Line 868 of glr.c  */
-#line 706 "../../../Source/BansheeSL/BsParserFX.y"
+#line 706 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.nodeOption)); nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Parameter; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 125:
 /* Line 868 of glr.c  */
-#line 707 "../../../Source/BansheeSL/BsParserFX.y"
+#line 707 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.nodeOption)); nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Parameter; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 126:
 /* Line 868 of glr.c  */
-#line 708 "../../../Source/BansheeSL/BsParserFX.y"
+#line 708 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.nodeOption)); nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Parameter; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 127:
 /* Line 868 of glr.c  */
-#line 709 "../../../Source/BansheeSL/BsParserFX.y"
+#line 709 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.nodeOption)); nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Parameter; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 128:
 /* Line 868 of glr.c  */
-#line 710 "../../../Source/BansheeSL/BsParserFX.y"
+#line 710 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.nodeOption)); nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Parameter; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 129:
 /* Line 868 of glr.c  */
-#line 711 "../../../Source/BansheeSL/BsParserFX.y"
+#line 711 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.nodeOption)); nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Parameter; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 130:
 /* Line 868 of glr.c  */
-#line 712 "../../../Source/BansheeSL/BsParserFX.y"
+#line 712 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.nodeOption)); nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Parameter; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 131:
 /* Line 868 of glr.c  */
-#line 713 "../../../Source/BansheeSL/BsParserFX.y"
+#line 713 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.nodeOption)); nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Parameter; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 132:
 /* Line 868 of glr.c  */
-#line 714 "../../../Source/BansheeSL/BsParserFX.y"
+#line 714 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.nodeOption)); nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Parameter; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 133:
 /* Line 868 of glr.c  */
-#line 715 "../../../Source/BansheeSL/BsParserFX.y"
+#line 715 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.nodeOption)); nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Parameter; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 134:
 /* Line 868 of glr.c  */
-#line 716 "../../../Source/BansheeSL/BsParserFX.y"
+#line 716 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.nodeOption)); nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Parameter; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 135:
 /* Line 868 of glr.c  */
-#line 717 "../../../Source/BansheeSL/BsParserFX.y"
+#line 717 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.nodeOption)); nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Parameter; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 136:
 /* Line 868 of glr.c  */
-#line 718 "../../../Source/BansheeSL/BsParserFX.y"
+#line 718 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.nodeOption)); nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Parameter; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 137:
 /* Line 868 of glr.c  */
-#line 719 "../../../Source/BansheeSL/BsParserFX.y"
+#line 719 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.nodeOption)); nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Parameter; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 138:
 /* Line 868 of glr.c  */
-#line 720 "../../../Source/BansheeSL/BsParserFX.y"
+#line 720 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.nodeOption)); nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Parameter; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 139:
 /* Line 868 of glr.c  */
-#line 721 "../../../Source/BansheeSL/BsParserFX.y"
+#line 721 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.nodeOption)); nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Parameter; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 140:
 /* Line 868 of glr.c  */
-#line 722 "../../../Source/BansheeSL/BsParserFX.y"
+#line 722 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.nodeOption)); nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Parameter; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 141:
 /* Line 868 of glr.c  */
-#line 723 "../../../Source/BansheeSL/BsParserFX.y"
+#line 723 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.nodeOption)); nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Parameter; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 142:
 /* Line 868 of glr.c  */
-#line 724 "../../../Source/BansheeSL/BsParserFX.y"
+#line 724 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.nodeOption)); nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Parameter; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (4))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 143:
 /* Line 868 of glr.c  */
-#line 725 "../../../Source/BansheeSL/BsParserFX.y"
+#line 725 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Parameter; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 144:
 /* Line 868 of glr.c  */
-#line 727 "../../../Source/BansheeSL/BsParserFX.y"
+#line 727 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { 
 			nodePop(parse_state);
 
@@ -2502,217 +2502,217 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 145:
 /* Line 868 of glr.c  */
-#line 742 "../../../Source/BansheeSL/BsParserFX.y"
+#line 742 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 146:
 /* Line 868 of glr.c  */
-#line 746 "../../../Source/BansheeSL/BsParserFX.y"
+#line 746 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 147:
 /* Line 868 of glr.c  */
-#line 750 "../../../Source/BansheeSL/BsParserFX.y"
+#line 750 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 148:
 /* Line 868 of glr.c  */
-#line 754 "../../../Source/BansheeSL/BsParserFX.y"
+#line 754 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 149:
 /* Line 868 of glr.c  */
-#line 758 "../../../Source/BansheeSL/BsParserFX.y"
+#line 758 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 150:
 /* Line 868 of glr.c  */
-#line 762 "../../../Source/BansheeSL/BsParserFX.y"
+#line 762 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 151:
 /* Line 868 of glr.c  */
-#line 766 "../../../Source/BansheeSL/BsParserFX.y"
+#line 766 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 152:
 /* Line 868 of glr.c  */
-#line 770 "../../../Source/BansheeSL/BsParserFX.y"
+#line 770 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 153:
 /* Line 868 of glr.c  */
-#line 774 "../../../Source/BansheeSL/BsParserFX.y"
+#line 774 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 154:
 /* Line 868 of glr.c  */
-#line 778 "../../../Source/BansheeSL/BsParserFX.y"
+#line 778 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 155:
 /* Line 868 of glr.c  */
-#line 782 "../../../Source/BansheeSL/BsParserFX.y"
+#line 782 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 156:
 /* Line 868 of glr.c  */
-#line 786 "../../../Source/BansheeSL/BsParserFX.y"
+#line 786 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 157:
 /* Line 868 of glr.c  */
-#line 790 "../../../Source/BansheeSL/BsParserFX.y"
+#line 790 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 158:
 /* Line 868 of glr.c  */
-#line 794 "../../../Source/BansheeSL/BsParserFX.y"
+#line 794 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 159:
 /* Line 868 of glr.c  */
-#line 798 "../../../Source/BansheeSL/BsParserFX.y"
+#line 798 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 160:
 /* Line 868 of glr.c  */
-#line 802 "../../../Source/BansheeSL/BsParserFX.y"
+#line 802 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 161:
 /* Line 868 of glr.c  */
-#line 806 "../../../Source/BansheeSL/BsParserFX.y"
+#line 806 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 162:
 /* Line 868 of glr.c  */
-#line 810 "../../../Source/BansheeSL/BsParserFX.y"
+#line 810 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 163:
 /* Line 868 of glr.c  */
-#line 814 "../../../Source/BansheeSL/BsParserFX.y"
+#line 814 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 164:
 /* Line 868 of glr.c  */
-#line 815 "../../../Source/BansheeSL/BsParserFX.y"
+#line 815 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 165:
 /* Line 868 of glr.c  */
-#line 816 "../../../Source/BansheeSL/BsParserFX.y"
+#line 816 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 166:
 /* Line 868 of glr.c  */
-#line 817 "../../../Source/BansheeSL/BsParserFX.y"
+#line 817 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 167:
 /* Line 868 of glr.c  */
-#line 818 "../../../Source/BansheeSL/BsParserFX.y"
+#line 818 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 168:
 /* Line 868 of glr.c  */
-#line 822 "../../../Source/BansheeSL/BsParserFX.y"
+#line 822 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 169:
 /* Line 868 of glr.c  */
-#line 823 "../../../Source/BansheeSL/BsParserFX.y"
+#line 823 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 170:
 /* Line 868 of glr.c  */
-#line 824 "../../../Source/BansheeSL/BsParserFX.y"
+#line 824 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 171:
 /* Line 868 of glr.c  */
-#line 825 "../../../Source/BansheeSL/BsParserFX.y"
+#line 825 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 172:
 /* Line 868 of glr.c  */
-#line 826 "../../../Source/BansheeSL/BsParserFX.y"
+#line 826 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 173:
 /* Line 868 of glr.c  */
-#line 830 "../../../Source/BansheeSL/BsParserFX.y"
+#line 830 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 174:
 /* Line 868 of glr.c  */
-#line 831 "../../../Source/BansheeSL/BsParserFX.y"
+#line 831 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 175:
 /* Line 868 of glr.c  */
-#line 832 "../../../Source/BansheeSL/BsParserFX.y"
+#line 832 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 176:
 /* Line 868 of glr.c  */
-#line 833 "../../../Source/BansheeSL/BsParserFX.y"
+#line 833 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 177:
 /* Line 868 of glr.c  */
-#line 834 "../../../Source/BansheeSL/BsParserFX.y"
+#line 834 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 178:
 /* Line 868 of glr.c  */
-#line 835 "../../../Source/BansheeSL/BsParserFX.y"
+#line 835 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 179:
 /* Line 868 of glr.c  */
-#line 836 "../../../Source/BansheeSL/BsParserFX.y"
+#line 836 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ADD_PARAMETER(((*yyvalp).nodePtr), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.intValue), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue)); }
     break;
 
   case 180:
 /* Line 868 of glr.c  */
-#line 841 "../../../Source/BansheeSL/BsParserFX.y"
+#line 841 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { 
 			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_SamplerState); 
 			nodePush(parse_state, ((*yyvalp).nodePtr));
@@ -2721,193 +2721,193 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 181:
 /* Line 868 of glr.c  */
-#line 848 "../../../Source/BansheeSL/BsParserFX.y"
+#line 848 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_None; }
     break;
 
   case 182:
 /* Line 868 of glr.c  */
-#line 849 "../../../Source/BansheeSL/BsParserFX.y"
+#line 849 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_ParamValue; ((*yyvalp).nodeOption).value.floatValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.floatValue); }
     break;
 
   case 183:
 /* Line 868 of glr.c  */
-#line 853 "../../../Source/BansheeSL/BsParserFX.y"
+#line 853 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_None; }
     break;
 
   case 184:
 /* Line 868 of glr.c  */
-#line 854 "../../../Source/BansheeSL/BsParserFX.y"
+#line 854 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_ParamValue; memcpy(((*yyvalp).nodeOption).value.matrixValue, (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.matrixValue), sizeof((((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.matrixValue))); }
     break;
 
   case 185:
 /* Line 868 of glr.c  */
-#line 858 "../../../Source/BansheeSL/BsParserFX.y"
+#line 858 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_None; }
     break;
 
   case 186:
 /* Line 868 of glr.c  */
-#line 859 "../../../Source/BansheeSL/BsParserFX.y"
+#line 859 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_ParamValue; memcpy(((*yyvalp).nodeOption).value.matrixValue, (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.matrixValue), sizeof((((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.matrixValue))); }
     break;
 
   case 187:
 /* Line 868 of glr.c  */
-#line 863 "../../../Source/BansheeSL/BsParserFX.y"
+#line 863 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_None; }
     break;
 
   case 188:
 /* Line 868 of glr.c  */
-#line 864 "../../../Source/BansheeSL/BsParserFX.y"
+#line 864 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_ParamValue; memcpy(((*yyvalp).nodeOption).value.matrixValue, (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.matrixValue), sizeof((((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.matrixValue))); }
     break;
 
   case 189:
 /* Line 868 of glr.c  */
-#line 868 "../../../Source/BansheeSL/BsParserFX.y"
+#line 868 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_None; }
     break;
 
   case 190:
 /* Line 868 of glr.c  */
-#line 869 "../../../Source/BansheeSL/BsParserFX.y"
+#line 869 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_ParamValue; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 191:
 /* Line 868 of glr.c  */
-#line 873 "../../../Source/BansheeSL/BsParserFX.y"
+#line 873 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_None; }
     break;
 
   case 192:
 /* Line 868 of glr.c  */
-#line 874 "../../../Source/BansheeSL/BsParserFX.y"
+#line 874 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_ParamValue; memcpy(((*yyvalp).nodeOption).value.intVectorValue, (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.intVectorValue), sizeof((((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.intVectorValue))); }
     break;
 
   case 193:
 /* Line 868 of glr.c  */
-#line 878 "../../../Source/BansheeSL/BsParserFX.y"
+#line 878 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_None; }
     break;
 
   case 194:
 /* Line 868 of glr.c  */
-#line 879 "../../../Source/BansheeSL/BsParserFX.y"
+#line 879 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_ParamValue; memcpy(((*yyvalp).nodeOption).value.intVectorValue, (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.intVectorValue), sizeof((((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.intVectorValue))); }
     break;
 
   case 195:
 /* Line 868 of glr.c  */
-#line 883 "../../../Source/BansheeSL/BsParserFX.y"
+#line 883 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_None; }
     break;
 
   case 196:
 /* Line 868 of glr.c  */
-#line 884 "../../../Source/BansheeSL/BsParserFX.y"
+#line 884 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_ParamValue; memcpy(((*yyvalp).nodeOption).value.intVectorValue, (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.intVectorValue), sizeof((((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.intVectorValue))); }
     break;
 
   case 197:
 /* Line 868 of glr.c  */
-#line 888 "../../../Source/BansheeSL/BsParserFX.y"
+#line 888 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_None; }
     break;
 
   case 198:
 /* Line 868 of glr.c  */
-#line 889 "../../../Source/BansheeSL/BsParserFX.y"
+#line 889 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_ParamValue; memcpy(((*yyvalp).nodeOption).value.matrixValue, (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.matrixValue), sizeof((((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.matrixValue))); }
     break;
 
   case 199:
 /* Line 868 of glr.c  */
-#line 893 "../../../Source/BansheeSL/BsParserFX.y"
+#line 893 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_None; }
     break;
 
   case 200:
 /* Line 868 of glr.c  */
-#line 894 "../../../Source/BansheeSL/BsParserFX.y"
+#line 894 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_ParamValue; memcpy(((*yyvalp).nodeOption).value.matrixValue, (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.matrixValue), sizeof((((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.matrixValue))); }
     break;
 
   case 201:
 /* Line 868 of glr.c  */
-#line 898 "../../../Source/BansheeSL/BsParserFX.y"
+#line 898 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_None; }
     break;
 
   case 202:
 /* Line 868 of glr.c  */
-#line 899 "../../../Source/BansheeSL/BsParserFX.y"
+#line 899 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_ParamValue; memcpy(((*yyvalp).nodeOption).value.matrixValue, (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.matrixValue), sizeof((((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.matrixValue))); }
     break;
 
   case 203:
 /* Line 868 of glr.c  */
-#line 903 "../../../Source/BansheeSL/BsParserFX.y"
+#line 903 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_None; }
     break;
 
   case 204:
 /* Line 868 of glr.c  */
-#line 904 "../../../Source/BansheeSL/BsParserFX.y"
+#line 904 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_ParamValue; memcpy(((*yyvalp).nodeOption).value.matrixValue, (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.matrixValue), sizeof((((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.matrixValue))); }
     break;
 
   case 205:
 /* Line 868 of glr.c  */
-#line 908 "../../../Source/BansheeSL/BsParserFX.y"
+#line 908 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_None; }
     break;
 
   case 206:
 /* Line 868 of glr.c  */
-#line 909 "../../../Source/BansheeSL/BsParserFX.y"
+#line 909 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_ParamValue; memcpy(((*yyvalp).nodeOption).value.matrixValue, (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.matrixValue), sizeof((((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.matrixValue))); }
     break;
 
   case 207:
 /* Line 868 of glr.c  */
-#line 913 "../../../Source/BansheeSL/BsParserFX.y"
+#line 913 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_None; }
     break;
 
   case 208:
 /* Line 868 of glr.c  */
-#line 914 "../../../Source/BansheeSL/BsParserFX.y"
+#line 914 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { }
     break;
 
   case 209:
 /* Line 868 of glr.c  */
-#line 918 "../../../Source/BansheeSL/BsParserFX.y"
+#line 918 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_None; }
     break;
 
   case 210:
 /* Line 868 of glr.c  */
-#line 919 "../../../Source/BansheeSL/BsParserFX.y"
+#line 919 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_ParamStrValue; ((*yyvalp).nodeOption).value.strValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.strValue); }
     break;
 
   case 211:
 /* Line 868 of glr.c  */
-#line 924 "../../../Source/BansheeSL/BsParserFX.y"
+#line 924 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodePop(parse_state); ((*yyvalp).nodePtr) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (5))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 212:
 /* Line 868 of glr.c  */
-#line 929 "../../../Source/BansheeSL/BsParserFX.y"
+#line 929 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { 
 			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Blocks); 
 			nodePush(parse_state, ((*yyvalp).nodePtr));
@@ -2916,19 +2916,19 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 214:
 /* Line 868 of glr.c  */
-#line 937 "../../../Source/BansheeSL/BsParserFX.y"
+#line 937 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.nodeOption)); }
     break;
 
   case 215:
 /* Line 868 of glr.c  */
-#line 941 "../../../Source/BansheeSL/BsParserFX.y"
+#line 941 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodePop(parse_state); ((*yyvalp).nodeOption).type = OT_Block; ((*yyvalp).nodeOption).value.nodePtr = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.nodePtr); }
     break;
 
   case 216:
 /* Line 868 of glr.c  */
-#line 946 "../../../Source/BansheeSL/BsParserFX.y"
+#line 946 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     {
 			((*yyvalp).nodePtr) = nodeCreate(parse_state->memContext, NT_Block);
 			nodePush(parse_state, ((*yyvalp).nodePtr));
@@ -2943,31 +2943,31 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 218:
 /* Line 868 of glr.c  */
-#line 961 "../../../Source/BansheeSL/BsParserFX.y"
+#line 961 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &(((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.nodeOption)); }
     break;
 
   case 219:
 /* Line 868 of glr.c  */
-#line 965 "../../../Source/BansheeSL/BsParserFX.y"
+#line 965 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Alias; ((*yyvalp).nodeOption).value.strValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (5))].yystate.yysemantics.yysval.strValue); }
     break;
 
   case 220:
 /* Line 868 of glr.c  */
-#line 966 "../../../Source/BansheeSL/BsParserFX.y"
+#line 966 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Auto; ((*yyvalp).nodeOption).value.strValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (5))].yystate.yysemantics.yysval.strValue); }
     break;
 
   case 221:
 /* Line 868 of glr.c  */
-#line 967 "../../../Source/BansheeSL/BsParserFX.y"
+#line 967 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Shared; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (5))].yystate.yysemantics.yysval.intValue); }
     break;
 
   case 222:
 /* Line 868 of glr.c  */
-#line 968 "../../../Source/BansheeSL/BsParserFX.y"
+#line 968 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
     { ((*yyvalp).nodeOption).type = OT_Usage; ((*yyvalp).nodeOption).value.intValue = (((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (5))].yystate.yysemantics.yysval.intValue); }
     break;
 
@@ -4700,7 +4700,7 @@ yypdumpstack (yyGLRStack* yystackp)
 }
 #endif
 /* Line 2575 of glr.c  */
-#line 970 "../../../Source/BansheeSL/BsParserFX.y"
+#line 970 "..\\..\\Source\\BansheeSL\\BsParserFX.y"
 
 
 void yyerror(YYLTYPE *locp, ParseState* parse_state, yyscan_t scanner, const char *msg) 

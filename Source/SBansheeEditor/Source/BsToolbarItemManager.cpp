@@ -21,9 +21,10 @@ using namespace std::placeholders;
 namespace BansheeEngine
 {
 	ToolbarItemManager::ToolbarItemManager(ScriptAssemblyManager& scriptObjectManager)
-		:mScriptObjectManager(scriptObjectManager), mToolbarItemAttribute(nullptr), mNameField(nullptr),
-		mIconField(nullptr), mPriorityField(nullptr), mTooltipField(nullptr), mSeparatorField(nullptr),
-		mBuiltinIconField(nullptr)
+		:mScriptObjectManager(scriptObjectManager), mToolbarItemAttribute(nullptr), mNameField(nullptr)
+		, mIconField(nullptr), mBuiltinIconField(nullptr), mTooltipField(nullptr), mPriorityField(nullptr)
+		, mSeparatorField(nullptr)
+		
 	{
 		mDomainLoadedConn = ScriptObjectManager::instance().onRefreshDomainLoaded.connect(std::bind(&ToolbarItemManager::reloadAssemblyData, this));
 		reloadAssemblyData();

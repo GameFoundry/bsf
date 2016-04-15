@@ -105,7 +105,7 @@ namespace BansheeEngine
 
 	void ScriptTextureImportOptions::internal_CreateInstance(MonoObject* instance)
 	{
-		ScriptTextureImportOptions* nativeInstance = new (bs_alloc<ScriptTextureImportOptions>()) ScriptTextureImportOptions(instance);
+		new (bs_alloc<ScriptTextureImportOptions>()) ScriptTextureImportOptions(instance);
 	}
 
 	PixelFormat ScriptTextureImportOptions::internal_GetPixelFormat(ScriptTextureImportOptions* thisPtr)
@@ -206,7 +206,7 @@ namespace BansheeEngine
 
 	void ScriptMeshImportOptions::internal_CreateInstance(MonoObject* instance)
 	{
-		ScriptMeshImportOptions* nativeInstance = new (bs_alloc<ScriptMeshImportOptions>()) ScriptMeshImportOptions(instance);
+		new (bs_alloc<ScriptMeshImportOptions>()) ScriptMeshImportOptions(instance);
 	}
 
 	bool ScriptMeshImportOptions::internal_GetCPUReadable(ScriptMeshImportOptions* thisPtr)
@@ -333,7 +333,7 @@ namespace BansheeEngine
 
 	void ScriptFontImportOptions::internal_CreateInstance(MonoObject* instance)
 	{
-		ScriptFontImportOptions* nativeInstance = new (bs_alloc<ScriptFontImportOptions>()) ScriptFontImportOptions(instance);
+		new (bs_alloc<ScriptFontImportOptions>()) ScriptFontImportOptions(instance);
 	}
 
 	MonoArray* ScriptFontImportOptions::internal_GetFontSizes(ScriptFontImportOptions* thisPtr)
@@ -460,7 +460,7 @@ namespace BansheeEngine
 
 	void ScriptScriptCodeImportOptions::internal_CreateInstance(MonoObject* instance)
 	{
-		ScriptScriptCodeImportOptions* nativeInstance = new (bs_alloc<ScriptScriptCodeImportOptions>()) ScriptScriptCodeImportOptions(instance);
+		new (bs_alloc<ScriptScriptCodeImportOptions>()) ScriptScriptCodeImportOptions(instance);
 	}
 
 	bool ScriptScriptCodeImportOptions::internal_IsEditorScript(ScriptScriptCodeImportOptions* thisPtr)

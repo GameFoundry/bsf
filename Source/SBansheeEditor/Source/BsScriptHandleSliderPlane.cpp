@@ -38,8 +38,7 @@ namespace BansheeEngine
 	void ScriptHandleSliderPlane::internal_CreateInstance(MonoObject* instance, Vector3* dir1, Vector3* dir2, 
 		float length, bool fixedScale, UINT64 layer)
 	{
-		ScriptHandleSliderPlane* nativeInstance = new (bs_alloc<ScriptHandleSliderPlane>())
-			ScriptHandleSliderPlane(instance, *dir1, *dir2, length, fixedScale, layer);
+		new (bs_alloc<ScriptHandleSliderPlane>()) ScriptHandleSliderPlane(instance, *dir1, *dir2, length, fixedScale, layer);
 	}
 
 	void ScriptHandleSliderPlane::internal_GetDelta(ScriptHandleSliderPlane* nativeInstance, Vector2* value)

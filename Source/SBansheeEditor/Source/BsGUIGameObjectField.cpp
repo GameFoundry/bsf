@@ -25,7 +25,8 @@ namespace BansheeEngine
 
 	GUIGameObjectField::GUIGameObjectField(const PrivatelyConstruct& dummy, const String& typeNamespace, const String& type, const GUIContent& labelContent, UINT32 labelWidth,
 		const String& style, const GUIDimensions& dimensions, bool withLabel)
-		:GUIElementContainer(dimensions, style), mLabel(nullptr), mClearButton(nullptr), mDropButton(nullptr), mInstanceId(0), mType(type), mNamespace(typeNamespace)
+		: GUIElementContainer(dimensions, style), mLabel(nullptr), mDropButton(nullptr), mClearButton(nullptr), mType(type)
+		, mNamespace(typeNamespace), mInstanceId(0)
 	{
 		mLayout = GUILayoutX::create();
 		_registerChildElement(mLayout);

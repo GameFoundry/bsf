@@ -2,24 +2,17 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsScriptGUITextureField.h"
 #include "BsScriptMeta.h"
-#include "BsMonoField.h"
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
 #include "BsMonoMethod.h"
-#include "BsSpriteTexture.h"
 #include "BsMonoUtil.h"
-#include "BsGUILayout.h"
 #include "BsGUITextureField.h"
 #include "BsGUIOptions.h"
 #include "BsGUIContent.h"
-#include "BsScriptGUIElementStyle.h"
-#include "BsScriptGUILayout.h"
-#include "BsScriptHString.h"
 #include "BsScriptGUIContent.h"
 #include "BsScriptTexture.h"
 #include "BsScriptResourceManager.h"
 #include "BsScriptResourceRef.h"
-#include "BsResources.h"
 
 using namespace std::placeholders;
 
@@ -69,7 +62,7 @@ namespace BansheeEngine
 
 		guiTextureField->onValueChanged.connect(std::bind(&ScriptGUITextureField::onChanged, instance, _1));
 
-		ScriptGUITextureField* nativeInstance = new (bs_alloc<ScriptGUITextureField>()) ScriptGUITextureField(instance, guiTextureField);
+		new (bs_alloc<ScriptGUITextureField>()) ScriptGUITextureField(instance, guiTextureField);
 	}
 
 	void ScriptGUITextureField::internal_getValue(ScriptGUITextureField* nativeInstance, MonoObject** output)

@@ -23,20 +23,24 @@ namespace BansheeEngine
 {
 	const UINT32 GUIResourceField::DEFAULT_LABEL_WIDTH = 100;
 
-	GUIResourceField::GUIResourceField(const PrivatelyConstruct& dummy, const String& typeNamespace, const String& type, const GUIContent& labelContent, UINT32 labelWidth,
-		const String& style, const GUIDimensions& dimensions, bool withLabel)
-		:GUIElementContainer(dimensions, style), mLabel(nullptr), mClearButton(nullptr), mDropButton(nullptr), mType(type), mNamespace(typeNamespace)
+	GUIResourceField::GUIResourceField(const PrivatelyConstruct& dummy, const String& typeNamespace, const String& type
+		, const GUIContent& labelContent, UINT32 labelWidth, const String& style, const GUIDimensions& dimensions
+		, bool withLabel)
+		: GUIElementContainer(dimensions, style), mLabel(nullptr), mDropButton(nullptr), mClearButton(nullptr)
+		, mNamespace(typeNamespace), mType(type)
 	{
 		mLayout = GUILayoutX::create();
 		_registerChildElement(mLayout);
 
 		if (withLabel)
 		{
-			mLabel = GUILabel::create(labelContent, GUIOptions(GUIOption::fixedWidth(labelWidth)), getSubStyleName(BuiltinEditorResources::ObjectFieldLabelStyleName));
+			mLabel = GUILabel::create(labelContent, GUIOptions(GUIOption::fixedWidth(labelWidth)), 
+				getSubStyleName(BuiltinEditorResources::ObjectFieldLabelStyleName));
 			mLayout->addElement(mLabel);
 		}
 
-		mDropButton = GUIDropButton::create((UINT32)DragAndDropType::Resources, GUIOptions(GUIOption::flexibleWidth()), getSubStyleName(BuiltinEditorResources::ObjectFieldDropBtnStyleName));
+		mDropButton = GUIDropButton::create((UINT32)DragAndDropType::Resources, GUIOptions(GUIOption::flexibleWidth()), 
+			getSubStyleName(BuiltinEditorResources::ObjectFieldDropBtnStyleName));
 		mClearButton = GUIButton::create(HString(L""), getSubStyleName(BuiltinEditorResources::ObjectFieldClearBtnStyleName));
 		mClearButton->onClick.connect(std::bind(&GUIResourceField::onClearButtonClicked, this));
 

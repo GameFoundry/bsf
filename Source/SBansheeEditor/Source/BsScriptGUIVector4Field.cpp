@@ -62,7 +62,7 @@ namespace BansheeEngine
 		field->onValueChanged.connect(std::bind(&ScriptGUIVector4Field::onChanged, instance, _1));
 		field->onConfirm.connect(std::bind(&ScriptGUIVector4Field::onConfirmed, instance));
 
-		ScriptGUIVector4Field* nativeInstance = new (bs_alloc<ScriptGUIVector4Field>()) ScriptGUIVector4Field(instance, field);
+		new (bs_alloc<ScriptGUIVector4Field>()) ScriptGUIVector4Field(instance, field);
 	}
 
 	void ScriptGUIVector4Field::internal_getValue(ScriptGUIVector4Field* nativeInstance, Vector4* output)

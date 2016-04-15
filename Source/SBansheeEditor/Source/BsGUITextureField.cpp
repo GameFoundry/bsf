@@ -24,7 +24,7 @@ namespace BansheeEngine
 
 	GUITextureField::GUITextureField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth,
 		const String& style, const GUIDimensions& dimensions, bool withLabel)
-		:GUIElementContainer(dimensions, style), mLabel(nullptr), mClearButton(nullptr), mDropButton(nullptr)
+		:GUIElementContainer(dimensions, style), mLabel(nullptr), mDropButton(nullptr), mClearButton(nullptr)
 	{
 		mLayout = GUILayoutX::create();
 		_registerChildElement(mLayout);

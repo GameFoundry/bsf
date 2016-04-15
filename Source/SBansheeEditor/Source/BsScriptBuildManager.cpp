@@ -156,6 +156,8 @@ namespace BansheeEngine
 			case ScriptBuildFolder::Data:
 				nativeFolderType = BuildFolder::Data;
 				break;
+			default:
+				break;
 			}
 
 			path = BuildManager::instance().getBuildFolder(nativeFolderType, platform);
@@ -215,6 +217,8 @@ namespace BansheeEngine
 				}
 			}
 		}
+			break;
+		default:
 			break;
 		}
 
@@ -387,6 +391,9 @@ namespace BansheeEngine
 			if (icon != nullptr)
 				gResources().save(icon, destIconFile, true);
 		}
+			break;
+		default:
+			break;
 		};
 
 		// Save manifest
@@ -430,6 +437,8 @@ namespace BansheeEngine
 				SPtr<WinPlatformInfo> winPlatformInfo = std::static_pointer_cast<WinPlatformInfo>(platformInfo);
 				gameSettings->titleBarText = winPlatformInfo->titlebarText;
 			}
+				break;
+			default:
 				break;
 			}
 		}

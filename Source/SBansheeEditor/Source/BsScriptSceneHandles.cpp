@@ -13,7 +13,7 @@
 namespace BansheeEngine
 {
 	ScriptSceneHandles::ScriptSceneHandles(MonoObject* object, EditorWidgetBase* parentWidget, const SPtr<Camera>& camera)
-		:ScriptObject(object), mCamera(camera), mParentWidget(parentWidget)
+		:ScriptObject(object), mParentWidget(parentWidget), mCamera(camera)
 	{
 		HandleManager::instance().setSettings(gEditorApplication().getEditorSettings());
 	}

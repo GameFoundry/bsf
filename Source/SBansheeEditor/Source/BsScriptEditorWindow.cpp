@@ -382,9 +382,10 @@ namespace BansheeEngine
 
 	ScriptEditorWidget::ScriptEditorWidget(const String& ns, const String& type, UINT32 defaultWidth, 
 		UINT32 defaultHeight, EditorWidgetContainer& parentContainer)
-		:EditorWidgetBase(HString(toWString(type)), ns + "." + type, defaultWidth, defaultHeight, parentContainer), 
-		mNamespace(ns), mTypename(type), mUpdateThunk(nullptr), mManagedInstance(nullptr), mOnInitializeThunk(nullptr), 
-		mOnDestroyThunk(nullptr), mContentsPanel(nullptr), mScriptOwner(nullptr), mGetDisplayName(nullptr), mIsInitialized(false)
+		: EditorWidgetBase(HString(toWString(type)), ns + "." + type, defaultWidth, defaultHeight, parentContainer)
+		, mNamespace(ns), mTypename(type), mOnInitializeThunk(nullptr), mOnDestroyThunk(nullptr), mUpdateThunk(nullptr)
+		, mManagedInstance(nullptr), mGetDisplayName(nullptr), mScriptOwner(nullptr), mContentsPanel(nullptr)
+		, mIsInitialized(false)
 	{
 		if(createManagedInstance())
 		{

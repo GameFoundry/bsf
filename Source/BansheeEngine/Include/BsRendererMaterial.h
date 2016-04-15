@@ -7,6 +7,11 @@
 #include "BsRendererMaterialManager.h"
 #include "BsShaderDefines.h"
 
+/** @addtogroup Renderer-Engine-Internal
+ *  @{
+ */
+
+/** References the shader path in RendererMaterial implementation */
 #define RMAT_DEF(path)														\
 	public:																	\
 	static void _initMetaData()												\
@@ -15,6 +20,8 @@
 		RendererMaterialManager::_registerMaterial(&mMetaData, path);		\
 	};																		\
 	static void _initDefines(ShaderDefines& defines);
+
+/** @} */
 
 namespace BansheeEngine
 {

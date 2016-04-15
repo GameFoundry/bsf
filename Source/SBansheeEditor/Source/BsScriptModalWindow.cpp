@@ -126,9 +126,9 @@ namespace BansheeEngine
 	}
 
 	ManagedModalWindow::ManagedModalWindow(bool allowCloseButton, MonoObject* managedInstance)
-		:ModalWindow(HString::dummy(), allowCloseButton), mUpdateThunk(nullptr), mManagedInstance(managedInstance),
-		mOnInitializeThunk(nullptr), mOnDestroyThunk(nullptr), mOnWindowResizedMethod(nullptr), mGCHandle(0),
-		mScriptParent(nullptr), mContentsPanel(nullptr), mIsInitialized(false)
+		: ModalWindow(HString::dummy(), allowCloseButton), mOnInitializeThunk(nullptr), mOnDestroyThunk(nullptr)
+		, mUpdateThunk(nullptr), mOnWindowResizedMethod(nullptr), mIsInitialized(false), mManagedInstance(managedInstance)
+		, mGCHandle(0), mScriptParent(nullptr), mContentsPanel(nullptr)
 	{
 		mGCHandle = mono_gchandle_new(mManagedInstance, false);
 

@@ -61,7 +61,7 @@ namespace BansheeEngine
 		guiSliderField->setRange(min, max);
 		guiSliderField->onValueChanged.connect(std::bind(&ScriptGUISliderField::onChanged, instance, _1));
 
-		ScriptGUISliderField* nativeInstance = new (bs_alloc<ScriptGUISliderField>()) ScriptGUISliderField(instance, guiSliderField);
+		new (bs_alloc<ScriptGUISliderField>()) ScriptGUISliderField(instance, guiSliderField);
 	}
 
 	float ScriptGUISliderField::internal_getValue(ScriptGUISliderField* nativeInstance)

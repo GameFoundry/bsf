@@ -25,7 +25,7 @@ namespace BansheeEngine
 	ScriptOSDropTarget::OnDropThunkDef ScriptOSDropTarget::onDropThunk;
 
 	ScriptOSDropTarget::ScriptOSDropTarget(MonoObject* instance, ScriptEditorWindow* parent)
-		:ScriptObject(instance), mDropTarget(nullptr), mIsDestroyed(false), mParent(parent)
+		:ScriptObject(instance), mParent(parent), mDropTarget(nullptr), mIsDestroyed(false)
 	{
 		EditorWidgetBase* parentWidget = getParentWidget();
 
@@ -65,7 +65,7 @@ namespace BansheeEngine
 
 	void ScriptOSDropTarget::internal_CreateInstance(MonoObject* instance, ScriptEditorWindow* editorWindow)
 	{
-		ScriptOSDropTarget* nativeInstance = new (bs_alloc<ScriptOSDropTarget>()) ScriptOSDropTarget(instance, editorWindow);
+		new (bs_alloc<ScriptOSDropTarget>()) ScriptOSDropTarget(instance, editorWindow);
 	}
 
 	void ScriptOSDropTarget::internal_Destroy(ScriptOSDropTarget* nativeInstance)

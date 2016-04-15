@@ -14,7 +14,7 @@
 #include "BsEditorWidgetContainer.h"
 #include "BsCGUIWidget.h"
 #include "BsDropDownWindowManager.h"
-#include <BsScriptObjectManager.h>
+#include "BsScriptObjectManager.h"
 
 using namespace std::placeholders;
 
@@ -122,9 +122,9 @@ namespace BansheeEngine
 
 	ManagedDropDownWindow::ManagedDropDownWindow(const SPtr<RenderWindow>& parent, const SPtr<Camera>& camera,
 		const Vector2I& position, MonoObject* managedInstance, UINT32 width, UINT32 height)
-		:DropDownWindow(parent, camera, position, width, height), mUpdateThunk(nullptr), mManagedInstance(managedInstance),
-		mOnInitializeThunk(nullptr), mOnDestroyThunk(nullptr), mGCHandle(0), mScriptParent(nullptr), 
-		mContentsPanel(nullptr), mIsInitialized(false)
+		: DropDownWindow(parent, camera, position, width, height), mOnInitializeThunk(nullptr), mOnDestroyThunk(nullptr)
+		, mUpdateThunk(nullptr), mIsInitialized(false), mManagedInstance(managedInstance), mGCHandle(0)
+		, mScriptParent(nullptr), mContentsPanel(nullptr)
 	{
 		mGCHandle = mono_gchandle_new(mManagedInstance, false);
 

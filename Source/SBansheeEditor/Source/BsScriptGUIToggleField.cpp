@@ -2,19 +2,13 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsScriptGUIToggleField.h"
 #include "BsScriptMeta.h"
-#include "BsMonoField.h"
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
 #include "BsMonoMethod.h"
-#include "BsSpriteTexture.h"
 #include "BsMonoUtil.h"
-#include "BsGUILayout.h"
 #include "BsGUIToggleField.h"
 #include "BsGUIOptions.h"
 #include "BsGUIContent.h"
-#include "BsScriptGUIElementStyle.h"
-#include "BsScriptGUILayout.h"
-#include "BsScriptHString.h"
 #include "BsScriptGUIContent.h"
 
 using namespace std::placeholders;
@@ -63,7 +57,7 @@ namespace BansheeEngine
 
 		guiField->onValueChanged.connect(std::bind(&ScriptGUIToggleField::onChanged, instance, _1));
 
-		ScriptGUIToggleField* nativeInstance = new (bs_alloc<ScriptGUIToggleField>()) ScriptGUIToggleField(instance, guiField);
+		new (bs_alloc<ScriptGUIToggleField>()) ScriptGUIToggleField(instance, guiField);
 	}
 
 	void ScriptGUIToggleField::internal_getValue(ScriptGUIToggleField* nativeInstance, bool* output)

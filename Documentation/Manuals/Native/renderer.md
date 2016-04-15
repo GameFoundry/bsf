@@ -139,11 +139,77 @@ const Vector<RenderQueueElement>& sortedElements = queue->getSortedElements();
 ~~~~~~~~~~~~~
 
 ### Renderer material {#renderer_b_a_b}
+Often the renderer needs to use special shaders for various effects (e.g. post-processing effects like FXAA). Unlike shaders and materials used by users, these shaders are built-in into the engine. Since we know they'll always be there we make make it easier for the renderer to load and use them by implementing the @ref BansheeEngine::RendererMaterial "RendererMaterial" interface:
+~~~~~~~~~~~~~{.cpp}
+// Set up a post-processing material
+class DownsampleMat : public RendererMaterial<DownsampleMat>
+{
+	// Required macro pointing to the shader file
+	RMAT_DEF("Downsample.bsl");
+
+public:
+	DownsampleMat()
+	{
+		// Retrieve material parameters, and perform other set-up
+		mInputTexture = mMaterial->getParamTexture("gInputTex");
+		mInvTexSize = mMaterial->getParamTexture("gInvTexSize");
+	}
+
+	// Set up parameters and render a full screen quad using the material
+	void execute(const SPtr<TextureCore>& input)
+	{
+		// Actually assign parameters before rendering
+		mInputTexture.set(input);
+		
+		const RenderTextureProperties& rtProps = target->getProperties();
+		Vector2 invTextureSize(1.0f / rtProps.getWidth(), 1.0f / rtProps.getHeight());
+
+		mParams.gInvTexSize.set(invTextureSize);
+		
+		... set up the render target ...
+		... render using the material ...
+	}
+private:
+	MaterialParamVec2Core mInvTexSize;
+	MaterialParamTextureCore mInputTexture;
+};
+
+// Method defined in RMAT_DEF
+void DirectionalLightMat::_initDefines(ShaderDefines& defines)
+{
+	// Set up optional defines to control shader compilation
+	defines.set("ENABLE_HIGH_QUALITY", 1);
+}
+
+~~~~~~~~~~~~~
+
+Renderer material implementation starts by deriving from @ref BansheeEngine::RendererMaterial<T> "RendererMaterial<T>". This is followed by a declaration of the @ref RMAT_DEF macro, which contains a path to the shader file. The shader file should be located in "Data/Raw/Engine/Shaders/" folder.
+
+You must also implement `_initDefines` method, which allows you to modify the compilation environment. It can be empty if not required, but it is useful if your shader has different settings in the form of \#ifdef blocks, in which case different renderer materials can reference the same file, but different options depending on what is set on this method. Be aware that all built-in shaders are pre-processed by the @ref BansheeEngine::BuiltinResources "BuiltinResources" manager. If you are changing define options you should delete the "Data/Engine/Timestamp.asset" file, which will force the manager to rebuild all shaders (and actually apply the new defines).
+
+Once these methods/macros are implemented, you can then instantiate your renderer material and access the @ref BansheeEngine::Material "Material" using the `mMaterial` field. Normally your material will have some parameters, which you'll want to retrieve in the constructor, and then set before rendering. 
+
+@see materials
+@see renderTargets
+@see renderAPI
 
 ### Parameter blocks {#renderer_b_a_c}
 
 ### Renderer semantics {#renderer_b_a_d}
 
+		auto& texParams = mMaterial->getShader()->getTextureParams();
+		for (auto& entry : texParams)
+		{
+			if (entry.second.rendererSemantic == RPS_GBufferA)
+				mGBufferA = mMaterial->getParamTexture(entry.second.name);
+			else if (entry.second.rendererSemantic == RPS_GBufferB)
+				mGBufferB = mMaterial->getParamTexture(entry.second.name);
+			else if (entry.second.rendererSemantic == RPS_GBufferDepth)
+				mGBufferDepth = mMaterial->getParamTexture(entry.second.name);
+		}
+
 ### RendererUtility {#renderer_b_a_e}
 
-### Renderer options {#renderer_b_a_f}
+### RenderTargetPool {#renderer_b_a_f}
+
+### Renderer options {#renderer_b_a_g}
