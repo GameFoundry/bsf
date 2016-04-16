@@ -4,8 +4,7 @@ include(CMakeSources.cmake)
 # Includes
 set(BansheeUtility_INC 
 	"Include" 
-	"Include/ThirdParty" 
-	"../../Dependencies/Include")
+	"Include/ThirdParty")
 
 if(WIN32)
 	set(BansheeUtility_INC ${BansheeUtility_INC} "Include/Win32")
@@ -15,14 +14,6 @@ endif()
 
 include_directories(${BansheeUtility_INC})	
 	
-# Configure file
-#configure_file (
-#  "BsBuildConfig.h.in"
-#  "Generated/BsBuildConfig.h"
-#)
-
-#include_directories ("${CMAKE_CURRENT_BINARY_DIR}/Generated")
-
 # Target
 add_library(BansheeUtility SHARED ${BS_BANSHEEUTILITY_SRC})
 

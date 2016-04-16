@@ -8,8 +8,7 @@ set(SBansheeEngine_INC
 	"../BansheeCore/Include"
 	"../BansheeEngine/Include"
 	"../BansheeEditor/Include"
-	"../BansheeMono/Include"
-	"../../Dependencies/Include")
+	"../BansheeMono/Include")
 
 include_directories(${SBansheeEngine_INC})	
 	

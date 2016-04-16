@@ -5,8 +5,7 @@ include(CMakeSources.cmake)
 set(BansheeEngine_INC 
 	"Include" 
 	"../BansheeUtility/Include" 
-	"../BansheeCore/Include"
-	"../../Dependencies/Include")
+	"../BansheeCore/Include")
 
 include_directories(${BansheeEngine_INC})	
 	

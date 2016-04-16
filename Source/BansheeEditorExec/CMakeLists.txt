@@ -7,8 +7,7 @@ set(BansheeEditorExec_INC
 	"../BansheeUtility/Include" 
 	"../BansheeCore/Include"
 	"../BansheeEngine/Include"
-	"../BansheeEditor/Include"
-	"../../Dependencies/Include")
+	"../BansheeEditor/Include")
 
 include_directories(${BansheeEditorExec_INC})	
 	

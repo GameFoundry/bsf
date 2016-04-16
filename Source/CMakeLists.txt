@@ -88,15 +88,29 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${BS_LIBRARY_OUTPUT_DIR}/Debug)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_OPTIMIZEDDEBUG ${BS_LIBRARY_OUTPUT_DIR}/OptimizedDebug)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${BS_LIBRARY_OUTPUT_DIR}/Release)
 
-set(BS_LIBRARY_DEPENDENCIES_DIR_DEBUG ${PROJECT_SOURCE_DIR}/../Dependencies/lib/${BS_OUTPUT_DIR_PREFIX}/Debug)
-set(BS_LIBRARY_DEPENDENCIES_DIR_OPTIMIZEDDEBUG ${PROJECT_SOURCE_DIR}/../Dependencies/lib/${BS_OUTPUT_DIR_PREFIX}/OptimizedDebug)
-set(BS_LIBRARY_DEPENDENCIES_DIR_RELEASE ${PROJECT_SOURCE_DIR}/../Dependencies/lib/${BS_OUTPUT_DIR_PREFIX}/Release)
-
 if(WIN32)
 	set(BS_LIBRARY_EXTENSION ".lib")
 else()
 	set(BS_LIBRARY_EXTENSION ".a")
 endif()
+
+function(add_library_per_config target_name lib_name)
+	add_library(${lib_name} STATIC IMPORTED)
+	set_target_properties(${lib_name} PROPERTIES IMPORTED_LOCATION_DEBUG ${PROJECT_SOURCE_DIR}/../Dependencies/${target_name}/lib/${BS_OUTPUT_DIR_PREFIX}/Debug/${lib_name}${BS_LIBRARY_EXTENSION})
+	set_target_properties(${lib_name} PROPERTIES IMPORTED_LOCATION_OPTIMIZEDDEBUG ${PROJECT_SOURCE_DIR}/../Dependencies/${target_name}/lib/${BS_OUTPUT_DIR_PREFIX}/OptimizedDebug/${lib_name}${BS_LIBRARY_EXTENSION})
+	set_target_properties(${lib_name} PROPERTIES IMPORTED_LOCATION_RELEASE ${PROJECT_SOURCE_DIR}/../Dependencies/${target_name}/lib/${BS_OUTPUT_DIR_PREFIX}/Release/${lib_name}${BS_LIBRARY_EXTENSION})	
+	
+	target_link_libraries(${target_name} PRIVATE ${lib_name})	
+endfunction()
+
+function(add_library_per_config_suffix target_name lib_name rls_suffix debug_suffix)
+	add_library(${lib_name} STATIC IMPORTED)
+	set_target_properties(${lib_name} PROPERTIES IMPORTED_LOCATION_DEBUG ${PROJECT_SOURCE_DIR}/../Dependencies/${target_name}/lib/${BS_OUTPUT_DIR_PREFIX}/Debug/${lib_name}${debug_suffix}${BS_LIBRARY_EXTENSION})
+	set_target_properties(${lib_name} PROPERTIES IMPORTED_LOCATION_OPTIMIZEDDEBUG ${PROJECT_SOURCE_DIR}/../Dependencies/${target_name}/lib/${BS_OUTPUT_DIR_PREFIX}/OptimizedDebug/${lib_name}${rls_suffix}${BS_LIBRARY_EXTENSION})
+	set_target_properties(${lib_name} PROPERTIES IMPORTED_LOCATION_RELEASE ${PROJECT_SOURCE_DIR}/../Dependencies/${target_name}/lib/${BS_OUTPUT_DIR_PREFIX}/Release/${lib_name}${rls_suffix}${BS_LIBRARY_EXTENSION})	
+	
+	target_link_libraries(${target_name} PRIVATE ${lib_name})	
+endfunction()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS TRUE)
 

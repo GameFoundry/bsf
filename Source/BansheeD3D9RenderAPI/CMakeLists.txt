@@ -6,7 +6,6 @@ set(BansheeD3D9RenderAPI_INC
 	"Include" 
 	"../BansheeUtility/Include" 
 	"../BansheeCore/Include"
-	"../../Dependencies/Include"
 	"$ENV{DXSDK_DIR}Include")
 
 include_directories(${BansheeD3D9RenderAPI_INC})	

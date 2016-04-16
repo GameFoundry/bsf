@@ -6,7 +6,6 @@ set(BansheeGLRenderAPI_INC
 	"Include" 
 	"../BansheeUtility/Include" 
 	"../BansheeCore/Include"
-	"../../Dependencies/Include"
 	"Source/GLSL/include")
 
 if(WIN32)

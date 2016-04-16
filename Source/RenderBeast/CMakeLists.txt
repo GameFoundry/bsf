@@ -6,8 +6,7 @@ set(RenderBeast_INC
 	"Include"
 	"../BansheeUtility/Include" 
 	"../BansheeCore/Include"
-	"../BansheeEngine/Include"
-	"../../Dependencies/Include")
+	"../BansheeEngine/Include")
 
 include_directories(${RenderBeast_INC})	
 	

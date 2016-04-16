@@ -134,8 +134,8 @@
       <ImportLibrary>..\..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
     <PreBuildEvent>
-      <Command>"..\..\Source\BansheeSL\Dependencies\tools\flex\flex.exe" --wincompat "..\..\Source\BansheeSL\BsLexerFX.l"
-"..\..\Source\BansheeSL\Dependencies\tools\bison\bison.exe" "..\..\Source\BansheeSL\BsParserFX.y"
+      <Command>"..\..\Dependencies\BansheeSL\tools\flex\flex.exe" --wincompat "..\..\Source\BansheeSL\BsLexerFX.l"
+"..\..\Dependencies\BansheeSL\tools\bison\bison.exe" "..\..\Source\BansheeSL\BsParserFX.y"
 xcopy /Y /I "BsLexerFX.h" "..\..\Source\BansheeSL\Include"
 xcopy /Y /I "BsLexerFX.c" "..\..\Source\BansheeSL\Source"
 xcopy /Y /I "BsParserFX.h" "..\..\Source\BansheeSL\Include"
@@ -164,8 +164,8 @@ del BsLexerFX.h BsLexerFX.c BsParserFX.h BsParserFX.c</Command>
       <ImportLibrary>..\..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
     <PreBuildEvent>
-      <Command>"..\..\Source\BansheeSL\Dependencies\tools\flex\flex.exe" --wincompat "..\..\Source\BansheeSL\BsLexerFX.l"
-"..\..\Source\BansheeSL\Dependencies\tools\bison\bison.exe" "..\..\Source\BansheeSL\BsParserFX.y"
+      <Command>"..\..\Dependencies\BansheeSL\tools\flex\flex.exe" --wincompat "..\..\Source\BansheeSL\BsLexerFX.l"
+"..\..\Dependencies\BansheeSL\tools\bison\bison.exe" "..\..\Source\BansheeSL\BsParserFX.y"
 xcopy /Y /I "BsLexerFX.h" "..\..\Source\BansheeSL\Include"
 xcopy /Y /I "BsLexerFX.c" "..\..\Source\BansheeSL\Source"
 xcopy /Y /I "BsParserFX.h" "..\..\Source\BansheeSL\Include"
@@ -199,8 +199,8 @@ del BsLexerFX.h BsLexerFX.c BsParserFX.h BsParserFX.c</Command>
       <ImportLibrary>..\..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
     <PreBuildEvent>
-      <Command>"..\..\Source\BansheeSL\Dependencies\tools\flex\flex.exe" --wincompat "..\..\Source\BansheeSL\BsLexerFX.l"
-"..\..\Source\BansheeSL\Dependencies\tools\bison\bison.exe" "..\..\Source\BansheeSL\BsParserFX.y"
+      <Command>"..\..\Dependencies\BansheeSL\tools\flex\flex.exe" --wincompat "..\..\Source\BansheeSL\BsLexerFX.l"
+"..\..\Dependencies\BansheeSL\tools\bison\bison.exe" "..\..\Source\BansheeSL\BsParserFX.y"
 xcopy /Y /I "BsLexerFX.h" "..\..\Source\BansheeSL\Include"
 xcopy /Y /I "BsLexerFX.c" "..\..\Source\BansheeSL\Source"
 xcopy /Y /I "BsParserFX.h" "..\..\Source\BansheeSL\Include"
@@ -234,8 +234,8 @@ del BsLexerFX.h BsLexerFX.c BsParserFX.h BsParserFX.c</Command>
       <ImportLibrary>..\..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
     <PreBuildEvent>
-      <Command>"..\..\Source\BansheeSL\Dependencies\tools\flex\flex.exe" --wincompat "..\..\Source\BansheeSL\BsLexerFX.l"
-"..\..\Source\BansheeSL\Dependencies\tools\bison\bison.exe" "..\..\Source\BansheeSL\BsParserFX.y"
+      <Command>"..\..\Dependencies\BansheeSL\tools\flex\flex.exe" --wincompat "..\..\Source\BansheeSL\BsLexerFX.l"
+"..\..\Dependencies\BansheeSL\tools\bison\bison.exe" "..\..\Source\BansheeSL\BsParserFX.y"
 xcopy /Y /I "BsLexerFX.h" "..\..\Source\BansheeSL\Include"
 xcopy /Y /I "BsLexerFX.c" "..\..\Source\BansheeSL\Source"
 xcopy /Y /I "BsParserFX.h" "..\..\Source\BansheeSL\Include"
@@ -268,8 +268,8 @@ del BsLexerFX.h BsLexerFX.c BsParserFX.h BsParserFX.c</Command>
       <ImportLibrary>..\..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
     <PreBuildEvent>
-      <Command>"..\..\Source\BansheeSL\Dependencies\tools\flex\flex.exe" --wincompat "..\..\Source\BansheeSL\BsLexerFX.l"
-"..\..\Source\BansheeSL\Dependencies\tools\bison\bison.exe" "..\..\Source\BansheeSL\BsParserFX.y"
+      <Command>"..\..\Dependencies\BansheeSL\tools\flex\flex.exe" --wincompat "..\..\Source\BansheeSL\BsLexerFX.l"
+"..\..\Dependencies\BansheeSL\tools\bison\bison.exe" "..\..\Source\BansheeSL\BsParserFX.y"
 xcopy /Y /I "BsLexerFX.h" "..\..\Source\BansheeSL\Include"
 xcopy /Y /I "BsLexerFX.c" "..\..\Source\BansheeSL\Source"
 xcopy /Y /I "BsParserFX.h" "..\..\Source\BansheeSL\Include"
@@ -302,8 +302,8 @@ del BsLexerFX.h BsLexerFX.c BsParserFX.h BsParserFX.c</Command>
       <ImportLibrary>..\..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
     <PreBuildEvent>
-      <Command>"..\..\Source\BansheeSL\Dependencies\tools\flex\flex.exe" --wincompat "..\..\Source\BansheeSL\BsLexerFX.l"
-"..\..\Source\BansheeSL\Dependencies\tools\bison\bison.exe" "..\..\Source\BansheeSL\BsParserFX.y"
+      <Command>"..\..\Dependencies\BansheeSL\tools\flex\flex.exe" --wincompat "..\..\Source\BansheeSL\BsLexerFX.l"
+"..\..\Dependencies\BansheeSL\tools\bison\bison.exe" "..\..\Source\BansheeSL\BsParserFX.y"
 xcopy /Y /I "BsLexerFX.h" "..\..\Source\BansheeSL\Include"
 xcopy /Y /I "BsLexerFX.c" "..\..\Source\BansheeSL\Source"
 xcopy /Y /I "BsParserFX.h" "..\..\Source\BansheeSL\Include"

@@ -6,8 +6,7 @@ set(BansheeSL_INC
 	"Include"
 	"../BansheeUtility/Include" 
 	"../BansheeCore/Include"
-	"../BansheeEngine/Include"
-	"../../Dependencies/Include")
+	"../BansheeEngine/Include")
 
 include_directories(${BansheeSL_INC})	
 	
@@ -17,11 +16,11 @@ add_library(BansheeSL SHARED ${BS_BANSHEESL_SRC})
 # Defines
 target_compile_definitions(BansheeSL PRIVATE -DBS_SL_EXPORTS)
 
-# Pre-built step
+# Pre-build step
 if(WIN32)
 add_custom_command(TARGET BansheeSL PRE_BUILD 
-	COMMAND ../../../Source/BansheeSL/Dependencies/tools/flex/flex.exe --wincompat ../../../Source/BansheeSL/BsLexerFX.l
-	COMMAND ../../../Source/BansheeSL/Dependencies/tools/bison/bison.exe ../../../Source/BansheeSL/BsParserFX.y
+	COMMAND ../../../Dependencies/BansheeSL/tools/flex/flex.exe --wincompat ../../../Source/BansheeSL/BsLexerFX.l
+	COMMAND ../../../Dependencies/BansheeSL/tools/bison/bison.exe ../../../Source/BansheeSL/BsParserFX.y
 	COMMAND xcopy /Y /I BsLexerFX.h \"../../../Source/BansheeSL/Include\"
 	COMMAND xcopy /Y /I BsLexerFX.c \"../../../Source/BansheeSL/Source\"
 	COMMAND xcopy /Y /I BsParserFX.h \"../../../Source/BansheeSL/Include\"
