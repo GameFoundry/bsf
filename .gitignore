@@ -14,5 +14,3 @@ Documentation/html
 *.opendb
 /Build/VS2015/BansheeEngine.VC.db
 /Build/Generated
-/Documentation/Generated/Managed/html
-/Documentation/Generated/Native/html
