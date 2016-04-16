@@ -3,6 +3,7 @@
 #include "BsMonoProperty.h"
 #include "BsMonoMethod.h"
 #include "BsMonoManager.h"
+#include <mono/jit/jit.h>
 
 namespace BansheeEngine
 {

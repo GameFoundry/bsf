@@ -5,6 +5,7 @@
 #include "BsMonoField.h"
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
+#include "BsMonoUtil.h"
 #include "BsScriptAssemblyManager.h"
 #include "BsManagedSerializableObjectInfo.h"
 #include "BsScriptSerializableProperty.h"
@@ -27,11 +28,8 @@ namespace BansheeEngine
 	{
 		SPtr<ManagedSerializableTypeInfoDictionary> dictTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoDictionary>(parentProperty->getTypeInfo());
 
-		MonoType* monoInternalKeyType = mono_class_get_type(dictTypeInfo->mKeyType->getMonoClass());
-		MonoReflectionType* internalKeyType = mono_type_get_object(MonoManager::instance().getDomain(), monoInternalKeyType);
-
-		MonoType* monoInternalValueType = mono_class_get_type(dictTypeInfo->mValueType->getMonoClass());
-		MonoReflectionType* internalValueType = mono_type_get_object(MonoManager::instance().getDomain(), monoInternalValueType);
+		MonoReflectionType* internalKeyType = MonoUtil::getType(dictTypeInfo->mKeyType->getMonoClass());
+		MonoReflectionType* internalValueType = MonoUtil::getType(dictTypeInfo->mValueType->getMonoClass());
 
 		void* params[3] = { internalKeyType, internalValueType, parentProperty->getManagedInstance() };
 		MonoObject* managedInstance = metaData.scriptClass->createInstance(params, 3);

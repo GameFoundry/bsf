@@ -4,6 +4,7 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
+#include "BsMonoUtil.h"
 
 namespace BansheeEngine
 {
@@ -71,7 +72,7 @@ namespace BansheeEngine
 		TScriptResource(MonoObject* instance, const ResourceHandle<ResType>& resource)
 			:ScriptObject<ScriptClass, ScriptResourceBase>(instance), mResource(resource)
 		{
-			mManagedHandle = mono_gchandle_new(instance, false);
+			mManagedHandle = MonoUtil::newGCHandle(instance);
 
 			BS_DEBUG_ONLY(mHandleValid = true);
 		}
@@ -85,7 +86,7 @@ namespace BansheeEngine
 		virtual void endRefresh(const ScriptObjectBackup& backupData) override
 		{
 			BS_ASSERT(!mHandleValid);
-			mManagedHandle = mono_gchandle_new(this->mManagedInstance, false);
+			mManagedHandle = MonoUtil::newGCHandle(this->mManagedInstance);
 
 			ScriptObject<ScriptClass, ScriptResourceBase>::endRefresh(backupData);
 		}
@@ -95,14 +96,14 @@ namespace BansheeEngine
 		 */
 		void notifyResourceDestroyed() override
 		{
-			mono_gchandle_free(mManagedHandle);
+			MonoUtil::freeGCHandle(mManagedHandle);
 			BS_DEBUG_ONLY(mHandleValid = false);
 		}
 
 		/**	Called when the managed instance gets finalized by the CLR. */
 		void _onManagedInstanceDeleted() override
 		{
-			mono_gchandle_free(mManagedHandle);
+			MonoUtil::freeGCHandle(mManagedHandle);
 			BS_DEBUG_ONLY(mHandleValid = false);
 
 			this->destroy();

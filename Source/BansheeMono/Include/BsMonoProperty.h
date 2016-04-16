@@ -3,7 +3,6 @@
 #pragma once
 
 #include "BsMonoPrerequisites.h"
-#include <mono/jit/jit.h>
 
 namespace BansheeEngine
 {

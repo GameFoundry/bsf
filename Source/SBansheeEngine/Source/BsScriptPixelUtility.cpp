@@ -100,17 +100,15 @@ namespace BansheeEngine
 		Vector<SPtr<PixelData>> mipmaps = PixelUtil::genMipmaps(*sourcePixelData, *options);
 
 		UINT32 numElements = (UINT32)mipmaps.size();
-		MonoArray* outputArray = mono_array_new(MonoManager::instance().getDomain(),
-			ScriptPixelData::getMetaData()->scriptClass->_getInternalClass(), numElements);
+		ScriptArray scriptArray(ScriptPixelData::getMetaData()->scriptClass->_getInternalClass(), numElements);
 
 		for (UINT32 i = 0; i < numElements; i++)
 		{
 			MonoObject* managedPixelData = ScriptPixelData::create(mipmaps[i]);
-
-			mono_array_set(outputArray, MonoObject*, i, managedPixelData);
+			scriptArray.set(i, managedPixelData);
 		}
 
-		return outputArray;
+		return scriptArray.getInternal();
 	}
 
 	MonoObject* ScriptPixelUtility::internal_scale(MonoObject* source, PixelVolume* newSize, PixelUtil::Filter filter)

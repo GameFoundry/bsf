@@ -76,10 +76,10 @@ namespace BansheeEngine
 		if (mInstance != nullptr)
 		{
 			MonoObject* returnVal = mParent->mEnumMoveNext->invoke(mInstance, nullptr);
-			bool isValid = *(bool*)mono_object_unbox(returnVal);
+			bool isValid = *(bool*)MonoUtil::unbox(returnVal);
 
 			if (isValid)
-				mCurrent = (MonoObject*)mono_object_unbox(mParent->mEnumCurrentProp->get(mInstance));
+				mCurrent = (MonoObject*)MonoUtil::unbox(mParent->mEnumCurrentProp->get(mInstance));
 			else
 				mCurrent = nullptr;
 
@@ -110,7 +110,7 @@ namespace BansheeEngine
 		, mContainsKeyMethod(nullptr), mGetEnumerator(nullptr), mEnumMoveNext(nullptr), mEnumCurrentProp(nullptr)
 		, mKeyProp(nullptr), mValueProp(nullptr), mDictionaryTypeInfo(typeInfo)
 	{
-		MonoClass* dictClass = MonoManager::instance().findClass(mono_object_get_class(managedInstance));
+		MonoClass* dictClass = MonoManager::instance().findClass(MonoUtil::getClass(managedInstance));
 		if (dictClass == nullptr)
 			return;
 
@@ -162,7 +162,7 @@ namespace BansheeEngine
 		if (mManagedInstance == nullptr)
 			return;
 
-		MonoClass* dictionaryClass = MonoManager::instance().findClass(mono_object_get_class(mManagedInstance));
+		MonoClass* dictionaryClass = MonoManager::instance().findClass(MonoUtil::getClass(mManagedInstance));
 		if (dictionaryClass == nullptr)
 			return;
 
@@ -235,10 +235,10 @@ namespace BansheeEngine
 
 			MonoObject* boxedValue = value;
 			::MonoClass* valueTypeClass = mDictionaryTypeInfo->mValueType->getMonoClass();
-			if (mono_class_is_valuetype(valueTypeClass))
+			if (MonoUtil::isValueType(valueTypeClass))
 			{
 				if (value != nullptr)
-					boxedValue = mono_value_box(MonoManager::instance().getDomain(), valueTypeClass, &value);
+					boxedValue = MonoUtil::box(valueTypeClass, &value);
 			}
 
 			return ManagedSerializableFieldData::create(mDictionaryTypeInfo->mValueType, boxedValue);
@@ -290,7 +290,7 @@ namespace BansheeEngine
 			params[0] = key->getValue(mDictionaryTypeInfo->mKeyType);
 
 			MonoObject* returnVal = mContainsKeyMethod->invoke(mManagedInstance, params);
-			return *(bool*)mono_object_unbox(returnVal);
+			return *(bool*)MonoUtil::unbox(returnVal);
 		}
 		else
 			return mCachedEntries.find(key) != mCachedEntries.end();
@@ -298,7 +298,7 @@ namespace BansheeEngine
 
 	ManagedSerializableDictionary::Enumerator ManagedSerializableDictionary::getEnumerator() const
 	{
-		return Enumerator((MonoObject*)mono_object_unbox(mGetEnumerator->invoke(mManagedInstance, nullptr)), this);
+		return Enumerator((MonoObject*)MonoUtil::unbox(mGetEnumerator->invoke(mManagedInstance, nullptr)), this);
 	}
 
 	void ManagedSerializableDictionary::initMonoObjects(MonoClass* dictionaryClass)

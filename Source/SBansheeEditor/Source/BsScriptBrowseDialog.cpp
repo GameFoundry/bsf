@@ -25,18 +25,15 @@ namespace BansheeEngine
 		Vector<Path> paths;
 		if (Platform::openBrowseDialog(type, defaultFolderNative, filterListNative, paths))
 		{
-			MonoArray* pathArray = mono_array_new(MonoManager::instance().getDomain(),
-				mono_get_string_class(), (UINT32)paths.size());
+			ScriptArray pathArray(MonoUtil::getStringClass(), (UINT32)paths.size());
 
 			for (UINT32 i = 0; i < (UINT32)paths.size(); i++)
 			{
 				MonoString* monoString = MonoUtil::wstringToMono(paths[i].toWString());
-
-				void* elemAddr = mono_array_addr_with_size(pathArray, sizeof(MonoString*), i);
-				memcpy(elemAddr, &monoString, sizeof(MonoString*));
+				pathArray.set(i, monoString);
 			}
 
-			*outPaths = pathArray;
+			*outPaths = pathArray.getInternal();
 			return true;
 		}
 		else

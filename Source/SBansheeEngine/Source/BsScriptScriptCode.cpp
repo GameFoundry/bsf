@@ -89,21 +89,17 @@ namespace BansheeEngine
 		{
 			SPtr<ManagedSerializableObjectInfo> objInfo;
 			if (ScriptAssemblyManager::instance().getSerializableObjectInfo(toString(type.first), toString(type.second), objInfo))
-			{
-				MonoType* monoType = mono_class_get_type(objInfo->mTypeInfo->getMonoClass());
-				validTypes.push_back(mono_type_get_object(MonoManager::instance().getDomain(), monoType));
-			}
+				validTypes.push_back(MonoUtil::getType(objInfo->mTypeInfo->getMonoClass()));
 		}
 
 		UINT32 numValidTypes = (UINT32)validTypes.size();
-
 		MonoClass* typeClass = ScriptAssemblyManager::instance().getSystemTypeClass();
-		MonoArray* output = mono_array_new(MonoManager::instance().getDomain(), typeClass->_getInternalClass(), numValidTypes);
 
+		ScriptArray scriptArray(typeClass->_getInternalClass(), numValidTypes);
 		for (UINT32 i = 0; i < numValidTypes; i++)
-			mono_array_set(output, MonoReflectionType*, i, validTypes[i]);
+			scriptArray.set(i, validTypes[i]);
 
-		return output;
+		return scriptArray.getInternal();
 	}
 
 	MonoObject* ScriptScriptCode::createInstance()

@@ -5,7 +5,6 @@
 #include "BsMonoPrerequisites.h"
 #include "BsScriptMeta.h"
 #include "BsModule.h"
-#include <mono/jit/jit.h>
 
 namespace BansheeEngine
 {

@@ -80,6 +80,8 @@ namespace BansheeEngine
 	struct POOLED_RENDER_TEXTURE_DESC
 	{
 	public:
+		POOLED_RENDER_TEXTURE_DESC() {}
+
 		/**
 		 * Creates a descriptor for a two dimensional render texture.
 		 *
@@ -120,8 +122,6 @@ namespace BansheeEngine
 			INT32 usage = TU_STATIC);
 
 	private:
-		POOLED_RENDER_TEXTURE_DESC() {}
-
 		friend class RenderTexturePool;
 
 		UINT32 width;

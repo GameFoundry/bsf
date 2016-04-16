@@ -23,7 +23,7 @@ namespace BansheeEngine
 		: mManagedInstance(managedInstance), mAddMethod(nullptr), mAddRangeMethod(nullptr), mClearMethod(nullptr)
 		, mCopyToMethod(nullptr), mItemProp(nullptr), mCountProp(nullptr), mListTypeInfo(typeInfo), mNumElements(0)
 	{
-		MonoClass* listClass = MonoManager::instance().findClass(mono_object_get_class(managedInstance));
+		MonoClass* listClass = MonoManager::instance().findClass(MonoUtil::getClass(managedInstance));
 		if(listClass == nullptr)
 			return;
 
@@ -189,7 +189,7 @@ namespace BansheeEngine
 		if(length == nullptr)
 			return 0;
 
-		return *(UINT32*)mono_object_unbox(length);
+		return *(UINT32*)MonoUtil::unbox(length);
 	}
 
 	void ManagedSerializableList::initMonoObjects(MonoClass* listClass)

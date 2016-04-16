@@ -156,8 +156,7 @@ namespace BansheeEngine
 
 	MonoObject* ScriptResourceDragDropData::create(const Vector<Path>& paths)
 	{
-		MonoArray* rawArray = mono_array_new(MonoManager::instance().getDomain(), mono_get_string_class(), (UINT32)paths.size());
-		ScriptArray arrStrings(rawArray);
+		ScriptArray arrStrings(MonoUtil::getStringClass(), (UINT32)paths.size());
 
 		UINT32 idx = 0;
 		for (auto& path : paths)
@@ -190,10 +189,7 @@ namespace BansheeEngine
 
 	MonoArray* ScriptResourceDragDropData::internal_GetPaths(ScriptResourceDragDropData* instance)
 	{
-		MonoArray* rawArray = mono_array_new(MonoManager::instance().getDomain(),
-			mono_get_string_class(), (UINT32)instance->mPaths.size());
-
-		ScriptArray arrStrings(rawArray);
+		ScriptArray arrStrings(MonoUtil::getStringClass(), (UINT32)instance->mPaths.size());
 
 		UINT32 idx = 0;
 		for (auto& path : instance->mPaths)

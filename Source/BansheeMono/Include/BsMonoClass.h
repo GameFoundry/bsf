@@ -3,7 +3,6 @@
 #pragma once
 
 #include "BsMonoPrerequisites.h"
-#include <mono/jit/jit.h>
 
 namespace BansheeEngine
 {
@@ -177,6 +176,9 @@ namespace BansheeEngine
 
 		/**	Returns the internal mono representation of the class. */
 		::MonoClass* _getInternalClass() const { return mClass; }
+
+		/** Invokes the parameterless constructor on the provided object. */
+		static void construct(MonoObject* object);
 	private:
 		friend class MonoAssembly;
 

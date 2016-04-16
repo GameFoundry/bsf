@@ -38,16 +38,12 @@ namespace BansheeEngine
 		{
 		case TID_TextureImportOptions:
 			return ScriptTextureImportOptions::create(std::static_pointer_cast<TextureImportOptions>(importOptions));
-			break;
 		case TID_MeshImportOptions:
 			return ScriptMeshImportOptions::create(std::static_pointer_cast<MeshImportOptions>(importOptions));
-			break;
 		case TID_FontImportOptions:
 			return ScriptFontImportOptions::create(std::static_pointer_cast<FontImportOptions>(importOptions));
-			break;
 		case TID_ScriptCodeImportOptions:
 			return ScriptScriptCodeImportOptions::create(std::static_pointer_cast<ScriptCodeImportOptions>(importOptions));
-			break;
 		}
 
 		MonoObject* managedInstance = metaData.scriptClass->createInstance();

@@ -8,8 +8,9 @@
 #include "BsMonoManager.h"
 #include "BsException.h"
 #include "BsMonoUtil.h"
+
+#include <mono/jit/jit.h>
 #include <mono/metadata/debug-helpers.h>
-#include "BsDebug.h"
 
 namespace BansheeEngine
 {
@@ -267,6 +268,11 @@ namespace BansheeEngine
 		getMethodExact(".ctor", ctorSignature)->invoke(obj, params);
 
 		return obj;
+	}
+
+	void MonoClass::construct(MonoObject* object)
+	{
+		mono_runtime_object_init(object);
 	}
 
 	bool MonoClass::hasAttribute(MonoClass* monoClass) const

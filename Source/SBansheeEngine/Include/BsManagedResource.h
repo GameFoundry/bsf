@@ -4,8 +4,6 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsResource.h"
-#include <mono/jit/jit.h>
-#include <mono/metadata/object.h>
 
 namespace BansheeEngine
 {

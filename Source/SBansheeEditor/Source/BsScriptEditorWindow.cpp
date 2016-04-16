@@ -121,7 +121,7 @@ namespace BansheeEngine
 		{
 			EditorWindowHandle handle = iterFind->second;
 
-			mono_gchandle_free(handle.gcHandle);
+			MonoUtil::freeGCHandle(handle.gcHandle);
 			iterFind->second.gcHandle = 0;
 		}
 
@@ -141,7 +141,7 @@ namespace BansheeEngine
 		{
 			auto iterFind = OpenScriptEditorWindows.find(mName);
 			if (iterFind != OpenScriptEditorWindows.end())
-				iterFind->second.gcHandle = mono_gchandle_new(mManagedInstance, false);
+				iterFind->second.gcHandle = MonoUtil::newGCHandle(mManagedInstance);
 		}
 		else
 		{
@@ -346,7 +346,7 @@ namespace BansheeEngine
 
 		ScriptEditorWindow::registerScriptEditorWindow(nativeInstance);
 
-		mono_runtime_object_init(editorWidget->getManagedInstance()); // Construct it
+		MonoClass::construct(editorWidget->getManagedInstance());
 		editorWidget->setScriptOwner(nativeInstance);
 
 		return editorWidget;
@@ -362,7 +362,7 @@ namespace BansheeEngine
 		{
 			EditorWindowHandle newHandle;
 			newHandle.nativeObj = editorWindow;
-			newHandle.gcHandle = mono_gchandle_new(editorWindow->mManagedInstance, false);
+			newHandle.gcHandle = MonoUtil::newGCHandle(editorWindow->mManagedInstance);
 
 			OpenScriptEditorWindows[editorWindow->mName] = newHandle;
 		}
@@ -374,7 +374,7 @@ namespace BansheeEngine
 		if(findIter != OpenScriptEditorWindows.end())
 		{
 			EditorWindowHandle& foundHandle = findIter->second;
-			mono_gchandle_free(foundHandle.gcHandle);
+			MonoUtil::freeGCHandle(foundHandle.gcHandle);
 
 			OpenScriptEditorWindows.erase(findIter);
 		}

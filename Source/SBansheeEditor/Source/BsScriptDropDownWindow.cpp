@@ -126,13 +126,13 @@ namespace BansheeEngine
 		, mUpdateThunk(nullptr), mIsInitialized(false), mManagedInstance(managedInstance), mGCHandle(0)
 		, mScriptParent(nullptr), mContentsPanel(nullptr)
 	{
-		mGCHandle = mono_gchandle_new(mManagedInstance, false);
+		mGCHandle = MonoUtil::newGCHandle(mManagedInstance);
 
 		MonoObject* guiPanel = ScriptGUIPanel::createFromExisting(mContents);
 		mContentsPanel = ScriptGUILayout::toNative(guiPanel);
 		ScriptDropDownWindow::guiPanelField->setValue(mManagedInstance, guiPanel);
 
-		::MonoClass* rawMonoClass = mono_object_get_class(mManagedInstance);
+		::MonoClass* rawMonoClass = MonoUtil::getClass(mManagedInstance);
 		MonoClass* monoClass = MonoManager::instance().findClass(rawMonoClass);
 
 		mNamespace = monoClass->getNamespace();
@@ -149,7 +149,7 @@ namespace BansheeEngine
 		triggerOnDestroy();
 		mScriptParent->notifyWindowClosed();
 
-		mono_gchandle_free(mGCHandle);
+		MonoUtil::freeGCHandle(mGCHandle);
 		mGCHandle = 0;
 	}
 

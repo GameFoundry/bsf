@@ -12,7 +12,7 @@ namespace BansheeEditor
     /// <summary>
     /// Contains various menu item callbacks for the main editor menu bar.
     /// </summary>
-    static private class MenuItems
+    static class MenuItems
     {
         /// <summary>
         /// Adds a camera component to the currently selected scene object.

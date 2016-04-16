@@ -90,8 +90,10 @@ namespace BansheeEngine
 
 	void ScriptTexture2D::internal_setPixelsArray(ScriptTexture2D* thisPtr, MonoArray* colors, UINT32 mipLevel)
 	{
-		Color* colorsRaw = (Color*)mono_array_addr_with_size(colors, sizeof(Color), 0);
-		UINT32 numElements = (UINT32)mono_array_length(colors);
+		ScriptArray scriptArray(colors);
+
+		Color* colorsRaw = (Color*)scriptArray.getRawPtr(sizeof(Color), 0);
+		UINT32 numElements = (UINT32)scriptArray.size();
 
 		HTexture texture = thisPtr->getHandle();
 		const TextureProperties& props = texture->getProperties();

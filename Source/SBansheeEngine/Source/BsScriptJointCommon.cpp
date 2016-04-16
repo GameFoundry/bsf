@@ -24,7 +24,7 @@ namespace BansheeEngine
 		MonoObject* boxedOutput = getNativeDataThunk(instance, &exception);
 
 		MonoUtil::throwIfException(exception);
-		return *(D6Joint::Drive*)mono_object_unbox(boxedOutput);
+		return *(D6Joint::Drive*)MonoUtil::unbox(boxedOutput);
 	}
 
 	ScriptHingeJointDrive::GetNativeDataThunkDef ScriptHingeJointDrive::getNativeDataThunk = nullptr;
@@ -44,7 +44,7 @@ namespace BansheeEngine
 		MonoObject* boxedOutput = getNativeDataThunk(instance, &exception);
 
 		MonoUtil::throwIfException(exception);
-		return *(HingeJoint::Drive*)mono_object_unbox(boxedOutput);
+		return *(HingeJoint::Drive*)MonoUtil::unbox(boxedOutput);
 	}
 
 	ScriptLimitLinearRange::GetNativeDataThunkDef ScriptLimitLinearRange::getNativeDataThunk = nullptr;
@@ -64,7 +64,7 @@ namespace BansheeEngine
 		MonoObject* boxedOutput = getNativeDataThunk(instance, &exception);
 
 		MonoUtil::throwIfException(exception);
-		return *(LimitLinearRange*)mono_object_unbox(boxedOutput);
+		return *(LimitLinearRange*)MonoUtil::unbox(boxedOutput);
 	}
 
 	ScriptLimitLinear::GetNativeDataThunkDef ScriptLimitLinear::getNativeDataThunk = nullptr;
@@ -84,7 +84,7 @@ namespace BansheeEngine
 		MonoObject* boxedOutput = getNativeDataThunk(instance, &exception);
 
 		MonoUtil::throwIfException(exception);
-		return *(LimitLinear*)mono_object_unbox(boxedOutput);
+		return *(LimitLinear*)MonoUtil::unbox(boxedOutput);
 	}
 
 	ScriptLimitAngularRange::GetNativeDataThunkDef ScriptLimitAngularRange::getNativeDataThunk = nullptr;
@@ -104,7 +104,7 @@ namespace BansheeEngine
 		MonoObject* boxedOutput = getNativeDataThunk(instance, &exception);
 
 		MonoUtil::throwIfException(exception);
-		return *(LimitAngularRange*)mono_object_unbox(boxedOutput);
+		return *(LimitAngularRange*)MonoUtil::unbox(boxedOutput);
 	}
 
 	ScriptLimitConeRange::GetNativeDataThunkDef ScriptLimitConeRange::getNativeDataThunk = nullptr;
@@ -124,6 +124,6 @@ namespace BansheeEngine
 		MonoObject* boxedOutput = getNativeDataThunk(instance, &exception);
 
 		MonoUtil::throwIfException(exception);
-		return *(LimitConeRange*)mono_object_unbox(boxedOutput);
+		return *(LimitConeRange*)MonoUtil::unbox(boxedOutput);
 	}
 }

@@ -46,9 +46,10 @@ namespace BansheeEngine
 	{
 		GUIOptions options;
 
-		UINT32 arrayLen = (UINT32)mono_array_length(guiOptions);
+		ScriptArray scriptArray(guiOptions);
+		UINT32 arrayLen = scriptArray.size();
 		for (UINT32 i = 0; i < arrayLen; i++)
-			options.addOption(mono_array_get(guiOptions, GUIOption, i));
+			options.addOption(scriptArray.get<GUIOption>(i));
 
 		GUISliderHorz* guiSlider = GUISliderHorz::create(options, toString(MonoUtil::monoToWString(style)));
 		guiSlider->onChanged.connect(std::bind(&ScriptGUISliderH::onChanged, instance, _1));
@@ -129,9 +130,10 @@ namespace BansheeEngine
 	{
 		GUIOptions options;
 
-		UINT32 arrayLen = (UINT32)mono_array_length(guiOptions);
+		ScriptArray scriptArray(guiOptions);
+		UINT32 arrayLen = scriptArray.size();
 		for (UINT32 i = 0; i < arrayLen; i++)
-			options.addOption(mono_array_get(guiOptions, GUIOption, i));
+			options.addOption(scriptArray.get<GUIOption>(i));
 
 		GUISliderVert* guiSlider = GUISliderVert::create(options, toString(MonoUtil::monoToWString(style)));
 		guiSlider->onChanged.connect(std::bind(&ScriptGUISliderV::onChanged, instance, _1));

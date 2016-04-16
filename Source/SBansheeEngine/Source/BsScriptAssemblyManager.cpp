@@ -82,10 +82,9 @@ namespace BansheeEngine
 				typeInfo->mTypeName = curClass->getTypeName();
 				typeInfo->mTypeId = mUniqueTypeId++;
 
-				MonoType* monoType = mono_class_get_type(curClass->_getInternalClass());
-				int monoPrimitiveType = mono_type_get_type(monoType);
+				MonoPrimitiveType monoPrimitiveType = MonoUtil::getPrimitiveType(curClass->_getInternalClass());
 
-				if(monoPrimitiveType == MONO_TYPE_VALUETYPE)
+				if(monoPrimitiveType == MonoPrimitiveType::ValueType)
 					typeInfo->mValueType = true;
 				else
 					typeInfo->mValueType = false;
@@ -175,99 +174,95 @@ namespace BansheeEngine
 		if(!mBaseTypesInitialized)
 			BS_EXCEPT(InvalidStateException, "Calling determineType without previously initializing base types.");
 
-		MonoType* monoType = mono_class_get_type(monoClass->_getInternalClass());
-		int monoPrimitiveType = mono_type_get_type(monoType);
+		MonoPrimitiveType monoPrimitiveType = MonoUtil::getPrimitiveType(monoClass->_getInternalClass());
 		
 		// If enum get the enum base data type
-		bool isEnum = mono_class_is_enum(monoClass->_getInternalClass()) == 1;
+		bool isEnum = MonoUtil::isEnum(monoClass->_getInternalClass());
 		if (isEnum)
-		{
-			MonoType* underlyingType = mono_type_get_underlying_type(monoType);
-			monoPrimitiveType = mono_type_get_type(underlyingType);
-		}
+			monoPrimitiveType = MonoUtil::getEnumPrimitiveType(monoClass->_getInternalClass());
 
 		//  Determine field type
 		switch(monoPrimitiveType)
 		{
-		case MONO_TYPE_BOOLEAN:
+		case MonoPrimitiveType::Boolean:
 			{
 				SPtr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::Bool;
 				return typeInfo;
 			}
-		case MONO_TYPE_CHAR:
+		case MonoPrimitiveType::Char:
 			{
 				SPtr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::Char;
 				return typeInfo;
 			}
-		case MONO_TYPE_I1:
+		case MonoPrimitiveType::I8:
 			{
 				SPtr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::I8;
 				return typeInfo;
 			}
-		case MONO_TYPE_U1:
+		case MonoPrimitiveType::U8:
 			{
 				SPtr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::U8;
 				return typeInfo;
 			}
-		case MONO_TYPE_I2:
+		case MonoPrimitiveType::I16:
 			{
 				SPtr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::I16;
 				return typeInfo;
 			}
-		case MONO_TYPE_U2:
+		case MonoPrimitiveType::U16:
 			{
 				SPtr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::U16;
 				return typeInfo;
 			}
-		case MONO_TYPE_I4:
+		case MonoPrimitiveType::I32:
 			{
 				SPtr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::I32;
 				return typeInfo;
 			}
-		case MONO_TYPE_U4:
+		case MonoPrimitiveType::U32:
 			{
 				SPtr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::U32;
 				return typeInfo;
 			}
-		case MONO_TYPE_I8:
+		case MonoPrimitiveType::I64:
 			{
 				SPtr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::I64;
 				return typeInfo;
 			}
-		case MONO_TYPE_U8:
+		case MonoPrimitiveType::U64:
 			{
 				SPtr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::U64;
 				return typeInfo;
 			}
-		case MONO_TYPE_STRING:
+		case MonoPrimitiveType::String:
 			{
 				SPtr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::String;
 				return typeInfo;
 			}
-		case MONO_TYPE_R4:
+		case MonoPrimitiveType::R32:
 			{
 				SPtr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::Float;
 				return typeInfo;
 			}
-		case MONO_TYPE_R8:
+		case MonoPrimitiveType::R64:
 			{
 				SPtr<ManagedSerializableTypeInfoPrimitive> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoPrimitive>();
 				typeInfo->mType = ScriptPrimitiveType::Double;
 				return typeInfo;
 			}
-		case MONO_TYPE_CLASS:
+		case MonoPrimitiveType::Class:
 			if(monoClass->isSubClassOf(ScriptResource::getMetaData()->scriptClass)) // Resource
 			{
 				SPtr<ManagedSerializableTypeInfoRef> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoRef>();
@@ -340,7 +335,7 @@ namespace BansheeEngine
 			}
 
 			break;
-		case MONO_TYPE_VALUETYPE:
+		case MonoPrimitiveType::ValueType:
 			{
 				SPtr<ManagedSerializableObjectInfo> objInfo;
 				if (getSerializableObjectInfo(monoClass->getNamespace(), monoClass->getTypeName(), objInfo))
@@ -348,7 +343,7 @@ namespace BansheeEngine
 			}
 
 			break;
-		case MONO_TYPE_GENERICINST:
+		case MonoPrimitiveType::Generic:
 			if(monoClass->getFullName() == mSystemGenericListClass->getFullName()) // Full name is part of CIL spec, so it is just fine to compare like this
 			{
 				SPtr<ManagedSerializableTypeInfoList> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoList>();
@@ -391,12 +386,11 @@ namespace BansheeEngine
 				return typeInfo;
 			}
 			break;
-		case MONO_TYPE_SZARRAY:
-		case MONO_TYPE_ARRAY:
+		case MonoPrimitiveType::Array:
 			{
 				SPtr<ManagedSerializableTypeInfoArray> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoArray>();
 
-				::MonoClass* elementClass = mono_class_get_element_class(monoClass->_getInternalClass());
+				::MonoClass* elementClass = ScriptArray::getElementClass(monoClass->_getInternalClass());
 				if(elementClass != nullptr)
 				{
 					MonoClass* monoElementClass = MonoManager::instance().findClass(elementClass);
@@ -407,10 +401,12 @@ namespace BansheeEngine
 				if (typeInfo->mElementType == nullptr)
 					return nullptr;
 
-				typeInfo->mRank = (UINT32)mono_class_get_rank(monoClass->_getInternalClass());
+				typeInfo->mRank = ScriptArray::getRank(monoClass->_getInternalClass());
 
 				return typeInfo;
 			}
+		default:
+			break;
 		}
 
 		return nullptr;

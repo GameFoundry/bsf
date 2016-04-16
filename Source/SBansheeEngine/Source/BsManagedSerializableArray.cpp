@@ -7,6 +7,7 @@
 #include "BsManagedSerializableField.h"
 #include "BsMonoClass.h"
 #include "BsMonoMethod.h"
+#include "BsMonoArray.h"
 
 namespace BansheeEngine
 {
@@ -21,8 +22,8 @@ namespace BansheeEngine
 		, mElemSize(0)
 		
 	{
-		::MonoClass* monoClass = mono_object_get_class(mManagedInstance);
-		mElemSize = mono_array_element_size(monoClass);
+		ScriptArray scriptArray((MonoArray*)mManagedInstance);
+		mElemSize = scriptArray.elementSize();
 
 		initMonoObjects();
 
@@ -60,17 +61,12 @@ namespace BansheeEngine
 		MonoClass* arrayClass = ScriptAssemblyManager::instance().getSystemArrayClass();
 
 		MonoMethod* createInstance = arrayClass->getMethodExact("CreateInstance", "Type,int[]");
-		MonoArray* lengthArray = mono_array_new(MonoManager::instance().getDomain(), mono_get_int32_class(), (UINT32)sizes.size());
 
+		ScriptArray lengthArray(MonoUtil::getINT32Class(), (UINT32)sizes.size());
 		for (UINT32 i = 0; i < (UINT32)sizes.size(); i++)
-		{
-			void* elemAddr = mono_array_addr_with_size(lengthArray, sizeof(int), i);
-			memcpy(elemAddr, &sizes[i], sizeof(int));
-		}
+			lengthArray.set(i, sizes[i]);
 
-		void* params[2] = {
-			mono_type_get_object(MonoManager::instance().getDomain(), mono_class_get_type(typeInfo->mElementType->getMonoClass())), lengthArray };
-
+		void* params[2] = { MonoUtil::getType(typeInfo->mElementType->getMonoClass()), lengthArray.getInternal() };
 		return createInstance->invoke(nullptr, params);
 	}
 
@@ -78,7 +74,7 @@ namespace BansheeEngine
 	{
 		if (mManagedInstance != nullptr)
 		{
-			if (mono_class_is_valuetype(mElementMonoClass))
+			if (MonoUtil::isValueType(mElementMonoClass))
 				setValueInternal(arrayIdx, val->getValue(mArrayTypeInfo->mElementType));
 			else
 			{
@@ -97,18 +93,19 @@ namespace BansheeEngine
 		if (mManagedInstance != nullptr)
 		{
 			MonoArray* array = (MonoArray*)mManagedInstance;
+			ScriptArray scriptArray(array);
 
-			UINT32 numElems = (UINT32)mono_array_length(array);
+			UINT32 numElems = scriptArray.size();
 			assert(arrayIdx < numElems);
 
-			void* arrayValue = mono_array_addr_with_size(array, mElemSize, arrayIdx);
+			void* arrayValue = scriptArray.getRawPtr(mElemSize, arrayIdx);
 
-			if (mono_class_is_valuetype(mElementMonoClass))
+			if (MonoUtil::isValueType(mElementMonoClass))
 			{
 				MonoObject* boxedObj = nullptr;
 
 				if (arrayValue != nullptr)
-					boxedObj = mono_value_box(MonoManager::instance().getDomain(), mElementMonoClass, arrayValue);
+					boxedObj = MonoUtil::box(mElementMonoClass, arrayValue);
 
 				return ManagedSerializableFieldData::create(mArrayTypeInfo->mElementType, boxedObj);
 			}
@@ -151,8 +148,8 @@ namespace BansheeEngine
 			return;
 		}
 
-		::MonoClass* monoClass = mono_object_get_class(mManagedInstance);
-		mElemSize = mono_array_element_size(monoClass);
+		ScriptArray scriptArray((MonoArray*)mManagedInstance);
+		mElemSize = scriptArray.elementSize();
 
 		initMonoObjects();
 
@@ -174,10 +171,11 @@ namespace BansheeEngine
 	{
 		MonoArray* array = (MonoArray*)mManagedInstance;
 
-		UINT32 numElems = (UINT32)mono_array_length(array);
+		ScriptArray scriptArray(array);
+		UINT32 numElems = (UINT32)scriptArray.size();
 		assert(arrayIdx < numElems);
 	
-		void* elemAddr = mono_array_addr_with_size(array, mElemSize, arrayIdx);
+		void* elemAddr = scriptArray.getRawPtr(mElemSize, arrayIdx);
 		memcpy(elemAddr, val, mElemSize);
 	}
 
@@ -255,7 +253,7 @@ namespace BansheeEngine
 		void* params[1] = { &dimension };
 		MonoObject* returnObj = getLength->invoke(mManagedInstance, params);
 
-		return *(UINT32*)mono_object_unbox(returnObj);
+		return *(UINT32*)MonoUtil::unbox(returnObj);
 	}
 
 	UINT32 ManagedSerializableArray::getTotalLength() const

@@ -46,19 +46,17 @@ namespace BansheeEngine
 		Vector<HSceneObject> sceneObjects = Selection::instance().getSceneObjects();
 
 		::MonoClass* sceneObjectMonoClass = ScriptSceneObject::getMetaData()->scriptClass->_getInternalClass();
-		MonoArray* sceneObjectArray = mono_array_new(MonoManager::instance().getDomain(),
-			sceneObjectMonoClass, (UINT32)sceneObjects.size());
+		ScriptArray sceneObjectArray(sceneObjectMonoClass, (UINT32)sceneObjects.size());
 
 		for (UINT32 i = 0; i < (UINT32)sceneObjects.size(); i++)
 		{
 			ScriptSceneObject* scriptSceneObject = ScriptGameObjectManager::instance().getOrCreateScriptSceneObject(sceneObjects[i]);
 			MonoObject* sceneMonoObject = scriptSceneObject->getManagedInstance();
 
-			void* elemAddr = mono_array_addr_with_size(sceneObjectArray, sizeof(MonoObject*), i);
-			memcpy(elemAddr, &sceneMonoObject, sizeof(MonoObject*));
+			sceneObjectArray.set(i, sceneMonoObject);
 		}
 
-		*selection = sceneObjectArray;
+		*selection = sceneObjectArray.getInternal();
 	}
 
 	void ScriptSelection::internal_SetSceneObjectSelection(MonoArray* selection)
@@ -67,10 +65,12 @@ namespace BansheeEngine
 
 		if (selection != nullptr)
 		{
-			UINT32 arrayLen = (UINT32)mono_array_length(selection);
+			ScriptArray scriptArray(selection);
+
+			UINT32 arrayLen = scriptArray.size();
 			for (UINT32 i = 0; i < arrayLen; i++)
 			{
-				MonoObject* monoSO = mono_array_get(selection, MonoObject*, i);
+				MonoObject* monoSO = scriptArray.get<MonoObject*>(i);
 				ScriptSceneObject* scriptSO = ScriptSceneObject::toNative(monoSO);
 
 				if (scriptSO == nullptr)
@@ -87,29 +87,26 @@ namespace BansheeEngine
 	void ScriptSelection::internal_GetResourceUUIDSelection(MonoArray** selection)
 	{
 		Vector<String> uuids = Selection::instance().getResourceUUIDs();
-
-		MonoArray* uuidArray = mono_array_new(MonoManager::instance().getDomain(),
-			mono_get_string_class(), (UINT32)uuids.size());
+		ScriptArray uuidArray(MonoUtil::getStringClass(), (UINT32)uuids.size());
 
 		for (UINT32 i = 0; i < (UINT32)uuids.size(); i++)
 		{
 			MonoString* monoString = MonoUtil::stringToMono(uuids[i]);
-
-			void* elemAddr = mono_array_addr_with_size(uuidArray, sizeof(MonoString*), i);
-			memcpy(elemAddr, &monoString, sizeof(MonoString*));
+			uuidArray.set(i, monoString);
 		}
 
-		*selection = uuidArray;
+		*selection = uuidArray.getInternal();
 	}
 
 	void ScriptSelection::internal_SetResourceUUIDSelection(MonoArray* selection)
 	{
 		Vector<String> uuids;
 
-		UINT32 arrayLen = (UINT32)mono_array_length(selection);
+		ScriptArray uuidArray(selection);
+		UINT32 arrayLen = uuidArray.size();
 		for (UINT32 i = 0; i < arrayLen; i++)
 		{
-			MonoString* monoString = mono_array_get(selection, MonoString*, i);
+			MonoString* monoString = uuidArray.get<MonoString*>(i);
 			String uuid = MonoUtil::monoToString(monoString);
 
 			uuids.push_back(uuid);
@@ -121,29 +118,26 @@ namespace BansheeEngine
 	void ScriptSelection::internal_GetResourcePathSelection(MonoArray** selection)
 	{
 		Vector<Path> paths = Selection::instance().getResourcePaths();
-
-		MonoArray* pathArray = mono_array_new(MonoManager::instance().getDomain(),
-			mono_get_string_class(), (UINT32)paths.size());
+		ScriptArray pathArray(MonoUtil::getStringClass(), (UINT32)paths.size());
 
 		for (UINT32 i = 0; i < (UINT32)paths.size(); i++)
 		{
 			MonoString* monoString = MonoUtil::stringToMono(paths[i].toString());
-
-			void* elemAddr = mono_array_addr_with_size(pathArray, sizeof(MonoString*), i);
-			memcpy(elemAddr, &monoString, sizeof(MonoString*));
+			pathArray.set(i, monoString);
 		}
 
-		*selection = pathArray;
+		*selection = pathArray.getInternal();
 	}
 
 	void ScriptSelection::internal_SetResourcePathSelection(MonoArray* selection)
 	{
 		Vector<Path> paths;
 
-		UINT32 arrayLen = (UINT32)mono_array_length(selection);
+		ScriptArray pathArray(selection);
+		UINT32 arrayLen = pathArray.size();
 		for (UINT32 i = 0; i < arrayLen; i++)
 		{
-			MonoString* monoString = mono_array_get(selection, MonoString*, i);
+			MonoString* monoString = pathArray.get<MonoString*>(i);
 			Path path  = MonoUtil::monoToString(monoString);
 
 			paths.push_back(path);

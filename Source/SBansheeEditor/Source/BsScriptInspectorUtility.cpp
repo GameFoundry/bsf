@@ -82,8 +82,7 @@ namespace BansheeEngine
 				MonoReflectionType* referencedReflType = nullptr;
 				mTypeField->getValue(attrib, &referencedReflType);
 
-				MonoType* referencedType = mono_reflection_type_get_type(referencedReflType);
-				::MonoClass* referencedMonoClass = mono_class_from_mono_type(referencedType);
+				::MonoClass* referencedMonoClass = MonoUtil::getClass(referencedReflType);
 
 				MonoClass* referencedClass = MonoManager::instance().findClass(referencedMonoClass);
 				if (referencedClass == nullptr)
@@ -112,8 +111,7 @@ namespace BansheeEngine
 		if (reflType == nullptr)
 			return nullptr;
 
-		MonoType* type = mono_reflection_type_get_type(reflType);
-		::MonoClass* monoClass = mono_class_from_mono_type(type);
+		::MonoClass* monoClass = MonoUtil::getClass(reflType);
 
 		MonoClass* klass = MonoManager::instance().findClass(monoClass);
 		if (klass == nullptr)
@@ -131,8 +129,7 @@ namespace BansheeEngine
 		if (reflType == nullptr)
 			return nullptr;
 
-		MonoType* type = mono_reflection_type_get_type(reflType);
-		::MonoClass* monoClass = mono_class_from_mono_type(type);
+		::MonoClass* monoClass = MonoUtil::getClass(reflType);
 
 		MonoClass* klass = MonoManager::instance().findClass(monoClass);
 		if (klass == nullptr)
@@ -141,12 +138,7 @@ namespace BansheeEngine
 		// Try to find an inspectable field implementation directly referencing the class
 		auto iterFind = mInspectableFieldTypes.find(klass);
 		if (iterFind != mInspectableFieldTypes.end())
-		{
-			::MonoClass* outMonoClass = iterFind->second->_getInternalClass();
-			MonoType* outMonoType = mono_class_get_type(outMonoClass);
-
-			return mono_type_get_object(MonoManager::instance().getDomain(), outMonoType);
-		}
+			return MonoUtil::getType(iterFind->second->_getInternalClass());
 
 		// Try to find an inspectable field implementation referencing any of the class' attributes
 		Vector<MonoClass*> attribs = klass->getAllAttributes();
@@ -154,12 +146,7 @@ namespace BansheeEngine
 		{
 			auto iterFind = mInspectableFieldTypes.find(attrib);
 			if (iterFind != mInspectableFieldTypes.end())
-			{
-				::MonoClass* outMonoClass = iterFind->second->_getInternalClass();
-				MonoType* outMonoType = mono_class_get_type(outMonoClass);
-
-				return mono_type_get_object(MonoManager::instance().getDomain(), outMonoType);
-			}
+				return MonoUtil::getType(iterFind->second->_getInternalClass());
 		}
 
 		return nullptr;

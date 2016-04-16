@@ -27,8 +27,7 @@ namespace BansheeEngine
 	ScriptSerializableField* ScriptSerializableField::create(MonoObject* parentObject, const SPtr<ManagedSerializableFieldInfo>& fieldInfo)
 	{
 		MonoString* monoStrName = MonoUtil::wstringToMono(toWString(fieldInfo->mName));
-		MonoType* monoInternalType = mono_class_get_type(fieldInfo->mTypeInfo->getMonoClass());
-		MonoReflectionType* internalType = mono_type_get_object(MonoManager::instance().getDomain(), monoInternalType);
+		MonoReflectionType* internalType = MonoUtil::getType(fieldInfo->mTypeInfo->getMonoClass());
 		UINT32 fieldFlags = (UINT32)fieldInfo->mFlags;
 
 		void* params[4] = { parentObject, monoStrName, &fieldFlags, internalType };
@@ -53,9 +52,9 @@ namespace BansheeEngine
 
 	void ScriptSerializableField::internal_setValue(ScriptSerializableField* nativeInstance, MonoObject* instance, MonoObject* value)
 	{
-		if (value != nullptr && mono_class_is_valuetype(mono_object_get_class(value)))
+		if (value != nullptr && MonoUtil::isValueType((MonoUtil::getClass(value))))
 		{
-			void* rawValue = mono_object_unbox(value);
+			void* rawValue = MonoUtil::unbox(value);
 			nativeInstance->mFieldInfo->mMonoField->setValue(instance, rawValue);
 		}
 		else

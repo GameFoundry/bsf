@@ -4,6 +4,8 @@
 #include "BsMonoManager.h"
 #include "BsMonoUtil.h"
 #include "BsMonoClass.h"
+#include "BsException.h"
+#include <mono/jit/jit.h>
 
 namespace BansheeEngine
 {

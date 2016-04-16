@@ -29,10 +29,7 @@ namespace BansheeEngine
 		, mOnResetThunk(nullptr), mOnDestroyThunk(nullptr), mOnDisabledThunk(nullptr), mOnEnabledThunk(nullptr)
 		, mOnTransformChangedThunk(nullptr), mCalculateBoundsMethod(nullptr)
 	{
-		MonoType* monoType = mono_reflection_type_get_type(mRuntimeType);
-		::MonoClass* monoClass = mono_type_get_class(monoType);
-
-		MonoUtil::getClassName(monoClass, mNamespace, mTypeName);
+		MonoUtil::getClassName(mRuntimeType, mNamespace, mTypeName);
 		setName(mTypeName);
 	}
 
@@ -84,7 +81,7 @@ namespace BansheeEngine
 			if (mManagedInstance != nullptr)
 			{
 				mManagedInstance = nullptr;
-				mono_gchandle_free(mManagedHandle);
+				MonoUtil::freeGCHandle(mManagedHandle);
 				mManagedHandle = 0;
 			}
 
@@ -139,11 +136,10 @@ namespace BansheeEngine
 		MonoClass* managedClass = nullptr;
 		if (mManagedInstance != nullptr)
 		{
-			mManagedHandle = mono_gchandle_new(mManagedInstance, false);
+			mManagedHandle = MonoUtil::newGCHandle(mManagedInstance);
 
-			::MonoClass* monoClass = mono_object_get_class(object);
-			MonoType* monoType = mono_class_get_type(monoClass);
-			mRuntimeType = mono_type_get_object(MonoManager::instance().getDomain(), monoType);
+			::MonoClass* monoClass = MonoUtil::getClass(object);
+			mRuntimeType = MonoUtil::getType(monoClass);
 
 			managedClass = MonoManager::instance().findClass(monoClass);
 		}
@@ -262,7 +258,7 @@ namespace BansheeEngine
 			MonoObject* areBoundsValidObj = mCalculateBoundsMethod->invokeVirtual(mManagedInstance, params);
 
 			bool areBoundsValid;
-			areBoundsValid = *(bool*)mono_object_unbox(areBoundsValidObj);
+			areBoundsValid = *(bool*)MonoUtil::unbox(areBoundsValidObj);
 
 			bounds = Bounds(box, sphere);
 			return areBoundsValid;
@@ -391,7 +387,7 @@ namespace BansheeEngine
 		}
 
 		mManagedInstance = nullptr;
-		mono_gchandle_free(mManagedHandle);
+		MonoUtil::freeGCHandle(mManagedHandle);
 	}
 
 	void ManagedComponent::onEnabled()

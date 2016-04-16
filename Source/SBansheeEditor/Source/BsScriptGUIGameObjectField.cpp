@@ -39,14 +39,14 @@ namespace BansheeEngine
 	{
 		GUIOptions options;
 
-		UINT32 arrayLen = (UINT32)mono_array_length(guiOptions);
+		ScriptArray scriptArray(guiOptions);
+		UINT32 arrayLen = scriptArray.size();
 		for (UINT32 i = 0; i < arrayLen; i++)
-			options.addOption(mono_array_get(guiOptions, GUIOption, i));
+			options.addOption(scriptArray.get<GUIOption>(i));
 
 		String styleName = toString(MonoUtil::monoToWString(style));
 
-		MonoType* monoType = mono_reflection_type_get_type(type);
-		::MonoClass* monoClass = mono_type_get_class(monoType);
+		::MonoClass* monoClass = MonoUtil::getClass(type);
 
 		String typeNamespace;
 		String typeName;

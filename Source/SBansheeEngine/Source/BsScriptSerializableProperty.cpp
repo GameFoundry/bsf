@@ -54,8 +54,7 @@ namespace BansheeEngine
 		if (reflType == nullptr)
 			return;
 
-		MonoType* type = mono_reflection_type_get_type(reflType);
-		::MonoClass* monoClass = mono_type_get_class(type);
+		::MonoClass* monoClass = MonoUtil::getClass(reflType);
 		MonoClass* engineClass = MonoManager::instance().findClass(monoClass);
 
 		SPtr<ManagedSerializableTypeInfo> typeInfo = ScriptAssemblyManager::instance().getTypeInfo(engineClass);
@@ -105,10 +104,12 @@ namespace BansheeEngine
 
 	MonoObject* ScriptSerializableProperty::internal_createManagedArrayInstance(ScriptSerializableProperty* nativeInstance, MonoArray* sizes)
 	{
+		ScriptArray scriptArray(sizes);
+
 		Vector<UINT32> nativeSizes;
-		UINT32 arrayLen = (UINT32)mono_array_length(sizes);
+		UINT32 arrayLen = scriptArray.size();
 		for (UINT32 i = 0; i < arrayLen; i++)
-			nativeSizes.push_back(mono_array_get(sizes, UINT32, i));
+			nativeSizes.push_back(scriptArray.get<UINT32>(i));
 
 		SPtr<ManagedSerializableTypeInfoArray> arrayTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoArray>(nativeInstance->mTypeInfo);
 		return ManagedSerializableArray::createManagedInstance(arrayTypeInfo, nativeSizes);

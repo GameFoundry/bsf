@@ -5,6 +5,8 @@
 #include "BsMonoManager.h"
 
 #include <mono/metadata/attrdefs.h>
+#include <mono/jit/jit.h>
+#include <mono/metadata/class.h>
 
 namespace BansheeEngine
 {

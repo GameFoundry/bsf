@@ -15,7 +15,7 @@ namespace BansheeEngine
 	ScriptSceneObject::ScriptSceneObject(MonoObject* instance, const HSceneObject& sceneObject)
 		:ScriptObject(instance), mSceneObject(sceneObject)
 	{
-		mManagedHandle = mono_gchandle_new(instance, false);
+		mManagedHandle = MonoUtil::newGCHandle(instance);
 	}
 
 	void ScriptSceneObject::initRuntimeData()
@@ -386,7 +386,7 @@ namespace BansheeEngine
 			ScriptGameObjectManager::instance().destroyScriptSceneObject(this);
 		else
 		{
-			mono_gchandle_free(mManagedHandle);
+			MonoUtil::freeGCHandle(mManagedHandle);
 			mManagedHandle = 0;
 		}
 	}
@@ -394,14 +394,14 @@ namespace BansheeEngine
 	MonoObject* ScriptSceneObject::_createManagedInstance(bool construct)
 	{
 		MonoObject* managedInstance = metaData.scriptClass->createInstance(construct);
-		mManagedHandle = mono_gchandle_new(managedInstance, false);
+		mManagedHandle = MonoUtil::newGCHandle(managedInstance);
 
 		return managedInstance;
 	}
 
 	void ScriptSceneObject::_notifyDestroyed()
 	{
-		mono_gchandle_free(mManagedHandle);
+		MonoUtil::freeGCHandle(mManagedHandle);
 		mManagedHandle = 0;
 	}
 

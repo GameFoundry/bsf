@@ -3,11 +3,6 @@
 #pragma once
 
 #include "BsMonoPrerequisites.h"
-#include "BsException.h"
-#include "BsDebug.h"
-#include "BsMonoArray.h"
-#include <mono/jit/jit.h>
-#include <codecvt>
 
 namespace BansheeEngine
 {
@@ -20,133 +15,112 @@ namespace BansheeEngine
 	{
 	public:
 		/**	Converts a Mono (managed) string to a native wide string. */
-		static WString monoToWString(MonoString* str)
-		{
-			if(str == nullptr)
-				return StringUtil::WBLANK;
-
-			int len = mono_string_length(str);
-			mono_unichar2* monoChars = mono_string_chars(str);
-
-			WString ret(len, '0');
-			for(int i = 0; i < len; i++)
-				ret[i] = monoChars[i];
-
-			return ret;
-		}
+		static WString monoToWString(MonoString* str);
 
 		/**	Converts a Mono (managed) string to a native narrow string. */
-		static String monoToString(MonoString* str)
-		{
-			if(str == nullptr)
-				return StringUtil::BLANK;
-
-			int len = mono_string_length(str);
-			mono_unichar2* monoChars = mono_string_chars(str);
-
-			String ret(len, '0');
-			for(int i = 0; i < len; i++)
-				ret[i] = (char)monoChars[i];
-
-			return ret;
-		}
+		static String monoToString(MonoString* str);
 
 		/**	Converts a native wide string to a Mono (managed) string. */
-		static MonoString* wstringToMono(const WString& str)
-		{
-			if (sizeof(wchar_t) == 2) // Assuming UTF-16
-				return mono_string_from_utf16((mono_unichar2*)str.c_str());
-			else // Assuming UTF-32
-			{
-				const std::codecvt_mode convMode = (std::codecvt_mode)(std::little_endian);
-				typedef std::codecvt_utf16<UINT32, 1114111, convMode> utf16utf32;
-
-				std::wstring_convert<utf16utf32, UINT32> conversion("?");
-				UINT32* start = (UINT32*)str.data();
-				UINT32* end = (start + (str.size() - 1) / 4);
-
-				mono_unichar2* convertedStr = (mono_unichar2*)conversion.to_bytes(start, end).c_str();
-				return mono_string_from_utf16(convertedStr);
-			}
-		}
+		static MonoString* wstringToMono(const WString& str);
 
 		/**	Converts a native narrow string to a Mono (managed) string. */
-		static MonoString* stringToMono(const String& str)
-		{
-			return wstringToMono(toWString(str));
-		}
+		static MonoString* stringToMono(const String& str);
 
 		/**	Outputs name and namespace for the type of the specified object. */
-		static void getClassName(MonoObject* obj, String& ns, String& typeName)
-		{
-			if (obj == nullptr)
-				return;
-
-			::MonoClass* monoClass = mono_object_get_class(obj);
-			getClassName(monoClass, ns, typeName);
-		}
+		static void getClassName(MonoObject* obj, String& ns, String& typeName);
 
 		/**	Outputs name and namespace for the specified type. */
-		static void getClassName(::MonoClass* monoClass, String& ns, String& typeName)
-		{
-			::MonoClass* nestingClass = mono_class_get_nesting_type(monoClass);
+		static void getClassName(::MonoClass* monoClass, String& ns, String& typeName);
 
-			if (nestingClass == nullptr)
-			{
-				ns = mono_class_get_namespace(monoClass);
-				typeName = mono_class_get_name(monoClass);
+		/**	Outputs name and namespace for the specified type. */
+		static void getClassName(MonoReflectionType* monoReflType, String& ns, String& typeName);
 
-				return;
-			}
-			else
-			{
-				typeName = String("+") + mono_class_get_name(monoClass);
+		/** Returns the class of the provided object. */
+		static ::MonoClass* getClass(MonoObject* object);
 
-				do 
-				{
-					::MonoClass* nextNestingClass = mono_class_get_nesting_type(nestingClass);
-					if (nextNestingClass != nullptr)
-					{
-						typeName = String("+") + mono_class_get_name(nestingClass) + typeName;
-						nestingClass = nextNestingClass;
-					}
-					else
-					{
-						ns = mono_class_get_namespace(nestingClass);
-						typeName = mono_class_get_name(nestingClass) + typeName;
+		/** Returns the class of the provided type. */
+		static ::MonoClass* getClass(MonoReflectionType* type);
 
-						break;
-					}
-				} while (true);
-			}
-		}
+		/** Returns the type of the provided object. */
+		static MonoReflectionType* getType(MonoObject* object);
+
+		/** Returns the type of the provided class. */
+		static MonoReflectionType* getType(::MonoClass* klass);
+
+		/** Creates a new GC handle for the provided managed object, ensuring it doesn't go out of scope. */
+		static UINT32 newGCHandle(MonoObject* object);
+
+		/** Frees a GC handle previously allocated with newGCHandle. */
+		static void freeGCHandle(UINT32 handle);
+
+		/** Converts a managed value type into a reference type by boxing it. */
+		static MonoObject* box(::MonoClass* klass, void* value);
+
+		/** Unboxes a managed object back to a raw value type. */
+		static void* unbox(MonoObject* object);
+
+		/**	Checks if this class is a sub class of the specified class. */
+		static bool isSubClassOf(::MonoClass* subClass, ::MonoClass* parentClass);
+
+		/** Checks is the specified class a value type. */
+		static bool isValueType(::MonoClass* object);
+
+		/** Checks is the specified class an enum. */
+		static bool isEnum(::MonoClass* object);
+
+		/** Returns the underlying primitive type for an enum. */
+		static MonoPrimitiveType getEnumPrimitiveType(::MonoClass* enumClass);
+
+		/** Returns the primitive type of the provided class. */
+		static MonoPrimitiveType getPrimitiveType(::MonoClass* monoClass);
+
+		/** Binds parameters to a generic class, and returns a new instantiable class with the bound parameters. */
+		static ::MonoClass* bindGenericParameters(::MonoClass* klass, ::MonoClass** params, UINT32 numParams);
+
+		/** Returns Mono class for a 16-bit unsigned integer. */
+		static ::MonoClass* getUINT16Class();
+
+		/** Returns Mono class for a 16-bit signed integer. */
+		static ::MonoClass* getINT16Class();
+
+		/** Returns Mono class for a 32-bit unsigned integer. */
+		static ::MonoClass* getUINT32Class();
+
+		/** Returns Mono class for a 32-bit signed integer. */
+		static ::MonoClass* getINT32Class();
+
+		/** Returns Mono class for a 64-bit unsigned integer. */
+		static ::MonoClass* getUINT64Class();
+
+		/** Returns Mono class for a 32-bit signed integer. */
+		static ::MonoClass* getINT64Class();
+
+		/** Returns Mono class for a string. */
+		static ::MonoClass* getStringClass();
+
+		/** Returns Mono class for a floating point number. */
+		static ::MonoClass* getFloatClass();
+
+		/** Returns Mono class for a double floating point number. */
+		static ::MonoClass* getDoubleClass();
+
+		/** Returns Mono class for a boolean. */
+		static ::MonoClass* getBoolClass();
+
+		/** Returns Mono class for an unsigned byte. */
+		static ::MonoClass* getByteClass();
+
+		/** Returns Mono class for a byte. */
+		static ::MonoClass* getSByteClass();
+
+		/** Returns Mono class for a char. */
+		static ::MonoClass* getCharClass();
 
 		/** @copydoc throwIfException(MonoObject*) */
-		static void throwIfException(MonoException* exception)
-		{
-			throwIfException(reinterpret_cast<MonoObject*>(exception));
-		}
+		static void throwIfException(MonoException* exception);
 
 		/**	Throws a native exception if the provided object is a valid managed exception. */
-		static void throwIfException(MonoObject* exception)
-		{
-			if(exception != nullptr)
-			{
-				::MonoClass* exceptionClass = mono_object_get_class(exception);
-				::MonoProperty* exceptionMsgProp = mono_class_get_property_from_name(exceptionClass, "Message");
-				::MonoMethod* exceptionMsgGetter = mono_property_get_get_method(exceptionMsgProp);
-				MonoString* exceptionMsg = (MonoString*)mono_runtime_invoke(exceptionMsgGetter, exception, nullptr, nullptr);
-
-				::MonoProperty* exceptionStackProp = mono_class_get_property_from_name(exceptionClass, "StackTrace");
-				::MonoMethod* exceptionStackGetter = mono_property_get_get_method(exceptionStackProp);
-				MonoString* exceptionStackTrace = (MonoString*)mono_runtime_invoke(exceptionStackGetter, exception, nullptr, nullptr);
-
-				// Note: If you modify this format make sure to also modify Debug.ParseExceptionMessage in managed code.
-				String msg =  "Managed exception: " + toString(monoToWString(exceptionMsg)) + "\n" + toString(monoToWString(exceptionStackTrace));
-
-				LOGERR(msg);
-			}
-		}
+		static void throwIfException(MonoObject* exception);
 
 		/** Invokes a thunk retrieved from MonoMethod::getThunk const and automatically handles exceptions. */
 		template<class T, class... Args>
@@ -161,3 +135,5 @@ namespace BansheeEngine
 
 	/** @} */
 }
+
+#include "BsMonoArray.h"

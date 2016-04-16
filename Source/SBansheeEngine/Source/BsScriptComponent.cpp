@@ -58,8 +58,7 @@ namespace BansheeEngine
 		if (checkIfDestroyed(so))
 			return nullptr;
 
-		MonoType* baseType = mono_reflection_type_get_type(type);
-		::MonoClass* baseClass = mono_type_get_class(baseType);
+		::MonoClass* baseClass = MonoUtil::getClass(type);
 
 		const Vector<HComponent>& mComponents = so->getComponents();
 		for(auto& component : mComponents)
@@ -69,10 +68,9 @@ namespace BansheeEngine
 				GameObjectHandle<ManagedComponent> managedComponent = static_object_cast<ManagedComponent>(component);
 
 				MonoReflectionType* componentReflType = managedComponent->getRuntimeType();
-				MonoType* componentType = mono_reflection_type_get_type(componentReflType);
-				::MonoClass* componentClass = mono_type_get_class(componentType);
+				::MonoClass* componentClass = MonoUtil::getClass(componentReflType);
 				
-				if(mono_class_is_subclass_of(componentClass, baseClass, true))
+				if(MonoUtil::isSubClassOf(componentClass, baseClass))
 				{
 					return managedComponent->getManagedInstance();
 				}
@@ -87,9 +85,7 @@ namespace BansheeEngine
 		ScriptSceneObject* scriptSO = ScriptSceneObject::toNative(parentSceneObject);
 		HSceneObject so = static_object_cast<SceneObject>(scriptSO->getNativeHandle());
 
-		MonoType* baseType = mono_reflection_type_get_type(type);
-		::MonoClass* baseClass = mono_type_get_class(baseType);
-
+		::MonoClass* baseClass = MonoUtil::getClass(type);
 		Vector<MonoObject*> managedComponents;
 
 		if (!checkIfDestroyed(so))
@@ -102,25 +98,19 @@ namespace BansheeEngine
 					GameObjectHandle<ManagedComponent> managedComponent = static_object_cast<ManagedComponent>(component);
 
 					MonoReflectionType* componentReflType = managedComponent->getRuntimeType();
-					MonoType* componentType = mono_reflection_type_get_type(componentReflType);
-					::MonoClass* componentClass = mono_type_get_class(componentType);
+					::MonoClass* componentClass = MonoUtil::getClass(componentReflType);
 
-					if (mono_class_is_subclass_of(componentClass, baseClass, true))
+					if (MonoUtil::isSubClassOf(componentClass, baseClass))
 						managedComponents.push_back(managedComponent->getManagedInstance());
 				}
 			}
 		}
 
-		MonoArray* componentArray = mono_array_new(MonoManager::instance().getDomain(),
-			metaData.scriptClass->_getInternalClass(), (UINT32)managedComponents.size());
-
+		ScriptArray scriptArray(metaData.scriptClass->_getInternalClass(), (UINT32)managedComponents.size());
 		for (UINT32 i = 0; i < (UINT32)managedComponents.size(); i++)
-		{
-			void* elemAddr = mono_array_addr_with_size(componentArray, sizeof(MonoObject*), i);
-			memcpy(elemAddr, &managedComponents[i], sizeof(MonoObject*));
-		}
+			scriptArray.set(i, managedComponents[i]);
 
-		return componentArray;
+		return scriptArray.getInternal();
 	}
 
 	MonoArray* ScriptComponent::internal_getComponents(MonoObject* parentSceneObject)
@@ -144,16 +134,11 @@ namespace BansheeEngine
 			}
 		}
 
-		MonoArray* componentArray = mono_array_new(MonoManager::instance().getDomain(), 
-			metaData.scriptClass->_getInternalClass(), (UINT32)managedComponents.size());
-
+		ScriptArray scriptArray(metaData.scriptClass->_getInternalClass(), (UINT32)managedComponents.size());
 		for(UINT32 i = 0; i < (UINT32)managedComponents.size(); i++)
-		{
-			void* elemAddr = mono_array_addr_with_size(componentArray, sizeof(MonoObject*), i);
-			memcpy(elemAddr, &managedComponents[i], sizeof(MonoObject*));
-		}
+			scriptArray.set(i, managedComponents[i]);
 
-		return componentArray;
+		return scriptArray.getInternal();
 	}
 
 	void ScriptComponent::internal_removeComponent(MonoObject* parentSceneObject, MonoReflectionType* type)
@@ -164,8 +149,7 @@ namespace BansheeEngine
 		if (checkIfDestroyed(so))
 			return;
 
-		MonoType* baseType = mono_reflection_type_get_type(type);
-		::MonoClass* baseClass = mono_type_get_class(baseType);
+		::MonoClass* baseClass = MonoUtil::getClass(type);
 
 		const Vector<HComponent>& mComponents = so->getComponents();
 		for(auto& component : mComponents)
@@ -175,10 +159,9 @@ namespace BansheeEngine
 				GameObjectHandle<ManagedComponent> managedComponent = static_object_cast<ManagedComponent>(component);
 
 				MonoReflectionType* componentReflType = managedComponent->getRuntimeType();
-				MonoType* componentType = mono_reflection_type_get_type(componentReflType);
-				::MonoClass* componentClass = mono_type_get_class(componentType);
+				::MonoClass* componentClass = MonoUtil::getClass(componentReflType);
 
-				if (mono_class_is_subclass_of(componentClass, baseClass, true))
+				if (MonoUtil::isSubClassOf(componentClass, baseClass))
 				{
 					managedComponent->destroy();
 					return;

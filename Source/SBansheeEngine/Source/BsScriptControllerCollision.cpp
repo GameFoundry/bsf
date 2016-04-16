@@ -4,6 +4,7 @@
 #include "BsMonoManager.h"
 #include "BsMonoClass.h"
 #include "BsCollider.h"
+#include "BsMonoUtil.h"
 
 namespace BansheeEngine
 {
@@ -49,12 +50,11 @@ namespace BansheeEngine
 	MonoObject* ScriptControllerCollisionHelper::box(const ScriptControllerCollision& value)
 	{
 		// We're casting away const but it's fine since structs are passed by value anyway
-		return mono_value_box(MonoManager::instance().getDomain(),
-			metaData.scriptClass->_getInternalClass(), (void*)&value);
+		return MonoUtil::box(metaData.scriptClass->_getInternalClass(), (void*)&value);
 	}
 
 	ScriptControllerCollision ScriptControllerCollisionHelper::unbox(MonoObject* obj)
 	{
-		return *(ScriptControllerCollision*)mono_object_unbox(obj);
+		return *(ScriptControllerCollision*)MonoUtil::unbox(obj);
 	}
 }

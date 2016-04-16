@@ -11,6 +11,7 @@
 #include "BsGUILayoutY.h"
 #include "BsGUIPanel.h"
 #include "BsGUIScrollArea.h"
+#include "BsMonoUtil.h"
 
 namespace BansheeEngine
 {
@@ -57,7 +58,7 @@ namespace BansheeEngine
 		ChildInfo childInfo;
 
 		childInfo.element = element;
-		childInfo.gcHandle = mono_gchandle_new(element->getManagedInstance(), false);
+		childInfo.gcHandle = MonoUtil::newGCHandle(element->getManagedInstance());
 
 		mChildren.push_back(childInfo);
 	}
@@ -67,7 +68,7 @@ namespace BansheeEngine
 		ChildInfo childInfo;
 
 		childInfo.element = element;
-		childInfo.gcHandle = mono_gchandle_new(element->getManagedInstance(), false);
+		childInfo.gcHandle = MonoUtil::newGCHandle(element->getManagedInstance());
 
 		mChildren.insert(mChildren.begin() + idx, childInfo);
 	}
@@ -82,7 +83,7 @@ namespace BansheeEngine
 
 		if (iterFind != mChildren.end())
 		{
-			mono_gchandle_free(iterFind->gcHandle);
+			MonoUtil::freeGCHandle(iterFind->gcHandle);
 			mChildren.erase(iterFind);
 		}
 	}
@@ -91,9 +92,10 @@ namespace BansheeEngine
 	{
 		GUIOptions options;
 
-		UINT32 arrayLen = (UINT32)mono_array_length(guiOptions);
+		ScriptArray scriptArray(guiOptions);
+		UINT32 arrayLen = scriptArray.size();
 		for (UINT32 i = 0; i < arrayLen; i++)
-			options.addOption(mono_array_get(guiOptions, GUIOption, i));
+			options.addOption(scriptArray.get<GUIOption>(i));
 
 		GUILayout* layout = GUILayoutX::create(options);
 
@@ -104,9 +106,10 @@ namespace BansheeEngine
 	{
 		GUIOptions options;
 
-		UINT32 arrayLen = (UINT32)mono_array_length(guiOptions);
+		ScriptArray scriptArray(guiOptions);
+		UINT32 arrayLen = scriptArray.size();
 		for (UINT32 i = 0; i < arrayLen; i++)
-			options.addOption(mono_array_get(guiOptions, GUIOption, i));
+			options.addOption(scriptArray.get<GUIOption>(i));
 
 		GUILayout* layout = GUILayoutY::create(options);
 
@@ -117,9 +120,10 @@ namespace BansheeEngine
 	{
 		GUIOptions options;
 
-		UINT32 arrayLen = (UINT32)mono_array_length(guiOptions);
+		ScriptArray scriptArray(guiOptions);
+		UINT32 arrayLen = scriptArray.size();
 		for (UINT32 i = 0; i < arrayLen; i++)
-			options.addOption(mono_array_get(guiOptions, GUIOption, i));
+			options.addOption(scriptArray.get<GUIOption>(i));
 
 		GUILayout* layout = GUIPanel::create(depth, depthRangeMin, depthRangeMax, options);
 
@@ -191,7 +195,7 @@ namespace BansheeEngine
 
 		for (auto& child : instance->mChildren)
 		{
-			mono_gchandle_free(child.gcHandle);
+			MonoUtil::freeGCHandle(child.gcHandle);
 
 			child.element->setParent(nullptr);
 			child.element->destroy();

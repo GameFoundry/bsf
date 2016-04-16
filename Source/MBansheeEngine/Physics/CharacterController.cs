@@ -338,7 +338,7 @@ namespace BansheeEngine
         /// Holds all data the character controller component needs to persist through serialization.
         /// </summary>
         [SerializeObject]
-        private class SerializableData
+        internal class SerializableData
         {
             public float contactOffset = 0.1f;
             public float stepOffset = 0.5f;

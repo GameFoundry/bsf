@@ -7,8 +7,10 @@
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
 #include "BsFileSystem.h"
+#include "BsException.h"
 #include "BsApplication.h"
 
+#include "mono/jit/jit.h"
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/mono-config.h>
 #include <mono/metadata/mono-gc.h>

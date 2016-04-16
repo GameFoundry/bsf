@@ -17,12 +17,11 @@ namespace BansheeEngine
 	MonoObject* ScriptVector2I::box(const Vector2I& value)
 	{
 		// We're casting away const but it's fine since structs are passed by value anyway
-		return mono_value_box(MonoManager::instance().getDomain(), 
-			metaData.scriptClass->_getInternalClass(), (void*)&value);
+		return MonoUtil::box(metaData.scriptClass->_getInternalClass(), (void*)&value);
 	}
 
 	Vector2I ScriptVector2I::unbox(MonoObject* obj)
 	{
-		return *(Vector2I*)mono_object_unbox(obj);
+		return *(Vector2I*)MonoUtil::unbox(obj);
 	}
 }

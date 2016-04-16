@@ -44,7 +44,7 @@ namespace BansheeEngine
 			ActiveCustomHandleData& newHandleData = mActiveGlobalHandles.back();
 
 			newHandleData.object = newHandleInstance;
-			newHandleData.gcHandle = mono_gchandle_new(newHandleInstance, false);
+			newHandleData.gcHandle = MonoUtil::newGCHandle(newHandleInstance);
 		}
 
 		mGlobalHandlesToCreate.clear();
@@ -64,7 +64,7 @@ namespace BansheeEngine
 			for (auto& handle : mActiveHandleData.handles)
 			{
 				callDestroy(handle.object);
-				mono_gchandle_free(handle.gcHandle);
+				MonoUtil::freeGCHandle(handle.gcHandle);
 			}
 
 			mActiveHandleData.selectedObject = newSelectedObject;
@@ -96,7 +96,7 @@ namespace BansheeEngine
 					ActiveCustomHandleData& newHandleData = mActiveHandleData.handles.back();
 
 					newHandleData.object = newHandleInstance;
-					newHandleData.gcHandle = mono_gchandle_new(newHandleInstance, false);
+					newHandleData.gcHandle = MonoUtil::newGCHandle(newHandleInstance);
 				}
 			}
 		}
@@ -104,7 +104,7 @@ namespace BansheeEngine
 		if (mDefaultHandleManager == nullptr)
 		{
 			mDefaultHandleManager = mDefaultHandleManagerClass->createInstance(true);
-			mDefaultHandleManagerGCHandle = mono_gchandle_new(mDefaultHandleManager, false);
+			mDefaultHandleManagerGCHandle = MonoUtil::newGCHandle(mDefaultHandleManager);
 		}
 
 		callPreInput(mDefaultHandleManager);
@@ -146,7 +146,7 @@ namespace BansheeEngine
 		for (auto& handle : mActiveGlobalHandles)
 		{
 			callDestroy(handle.object);
-			mono_gchandle_free(handle.gcHandle);
+			MonoUtil::freeGCHandle(handle.gcHandle);
 		}
 
 		mActiveGlobalHandles.clear();
@@ -154,7 +154,7 @@ namespace BansheeEngine
 		for (auto& handle : mActiveHandleData.handles)
 		{
 			callDestroy(handle.object);
-			mono_gchandle_free(handle.gcHandle);
+			MonoUtil::freeGCHandle(handle.gcHandle);
 		}
 
 		mActiveHandleData.selectedObject = HSceneObject();
@@ -163,7 +163,7 @@ namespace BansheeEngine
 		if (mDefaultHandleManager != nullptr)
 		{
 			callDestroy(mDefaultHandleManager);
-			mono_gchandle_free(mDefaultHandleManagerGCHandle);
+			MonoUtil::freeGCHandle(mDefaultHandleManagerGCHandle);
 		}
 
 		mDefaultHandleManager = nullptr;
@@ -243,8 +243,7 @@ namespace BansheeEngine
 		// Handle shown only when specific component type is selected
 		if (attribReflType != nullptr)
 		{
-			MonoType* attribType = mono_reflection_type_get_type(attribReflType);
-			::MonoClass* attribMonoClass = mono_class_from_mono_type(attribType);
+			::MonoClass* attribMonoClass = MonoUtil::getClass(attribReflType);
 
 			MonoClass* attribClass = MonoManager::instance().findClass(attribMonoClass);
 			if (attribClass != nullptr)

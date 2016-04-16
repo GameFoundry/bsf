@@ -27,12 +27,11 @@ namespace BansheeEngine
 	MonoObject* ScriptVirtualButton::box(const VirtualButton& value)
 	{
 		// We're casting away const but it's fine since structs are passed by value anyway
-		return mono_value_box(MonoManager::instance().getDomain(),
-			metaData.scriptClass->_getInternalClass(), (void*)&value);
+		return MonoUtil::box(metaData.scriptClass->_getInternalClass(), (void*)&value);
 	}
 
 	VirtualButton ScriptVirtualButton::unbox(MonoObject* obj)
 	{
-		return *(VirtualButton*)mono_object_unbox(obj);
+		return *(VirtualButton*)MonoUtil::unbox(obj);
 	}
 }

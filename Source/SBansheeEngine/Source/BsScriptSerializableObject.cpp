@@ -29,8 +29,7 @@ namespace BansheeEngine
 
 	ScriptSerializableObject* ScriptSerializableObject::create(const ScriptSerializableProperty* property)
 	{
-		MonoType* monoInternalElementType = mono_class_get_type(property->getTypeInfo()->getMonoClass());
-		MonoReflectionType* internalElementType = mono_type_get_object(MonoManager::instance().getDomain(), monoInternalElementType);
+		MonoReflectionType* internalElementType = MonoUtil::getType(property->getTypeInfo()->getMonoClass());
 
 		void* params[2] = { internalElementType, property->getManagedInstance() };
 		MonoObject* managedInstance = metaData.scriptClass->createInstance(params, 2);
@@ -42,8 +41,7 @@ namespace BansheeEngine
 
 	void ScriptSerializableObject::internal_createInstance(MonoObject* instance, MonoReflectionType* type)
 	{
-		MonoType* internalType = mono_reflection_type_get_type(type);
-		::MonoClass* monoClass = mono_type_get_class(internalType);
+		::MonoClass* monoClass = MonoUtil::getClass(type);
 
 		String elementNs;
 		String elementTypeName;
@@ -83,8 +81,7 @@ namespace BansheeEngine
 		});
 
 		::MonoClass* serializableFieldClass = ScriptSerializableField::getMetaData()->scriptClass->_getInternalClass();
-		MonoArray* serializableFieldArray = mono_array_new(MonoManager::instance().getDomain(),
-			serializableFieldClass, (UINT32)sortedFields.size());
+		ScriptArray scriptArray(serializableFieldClass, (UINT32)sortedFields.size());
 
 		UINT32 i = 0;
 		for (auto& field : sortedFields)
@@ -92,13 +89,11 @@ namespace BansheeEngine
 			ScriptSerializableField* serializableField = ScriptSerializableField::create(instance, field);
 			MonoObject* fieldManagedInstance = serializableField->getManagedInstance();
 
-			void* elemAddr = mono_array_addr_with_size(serializableFieldArray, sizeof(MonoObject*), i);
-			memcpy(elemAddr, &fieldManagedInstance, sizeof(MonoObject*));
-
+			scriptArray.set(i, fieldManagedInstance);
 			i++;
 		}
 
-		FieldsField->setValue(instance, serializableFieldArray);
+		FieldsField->setValue(instance, scriptArray.getInternal());
 
 		return nativeInstance;
 	}

@@ -133,31 +133,31 @@ namespace BansheeEngine
 		switch(mType)
 		{
 		case ScriptPrimitiveType::Bool:
-			return mono_get_boolean_class();
+			return MonoUtil::getBoolClass();
 		case ScriptPrimitiveType::Char:
-			return mono_get_char_class();
+			return MonoUtil::getCharClass();
 		case ScriptPrimitiveType::I8:
-			return mono_get_sbyte_class();
+			return MonoUtil::getSByteClass();
 		case ScriptPrimitiveType::U8:
-			return mono_get_byte_class();
+			return MonoUtil::getByteClass();
 		case ScriptPrimitiveType::I16:
-			return mono_get_int16_class();
+			return MonoUtil::getINT16Class();
 		case ScriptPrimitiveType::U16:
-			return mono_get_uint16_class();
+			return MonoUtil::getUINT16Class();
 		case ScriptPrimitiveType::I32:
-			return mono_get_int32_class();
+			return MonoUtil::getINT32Class();
 		case ScriptPrimitiveType::U32:
-			return mono_get_uint32_class();
+			return MonoUtil::getUINT32Class();
 		case ScriptPrimitiveType::I64:
-			return mono_get_int64_class();
+			return MonoUtil::getINT64Class();
 		case ScriptPrimitiveType::U64:
-			return mono_get_uint64_class();
+			return MonoUtil::getUINT64Class();
 		case ScriptPrimitiveType::Float:
-			return mono_get_single_class();
+			return MonoUtil::getFloatClass();
 		case ScriptPrimitiveType::Double:
-			return mono_get_double_class();
+			return MonoUtil::getDoubleClass();
 		case ScriptPrimitiveType::String:
-			return mono_get_string_class();
+			return MonoUtil::getStringClass();
 		default:
 			break;
 		}
@@ -335,7 +335,7 @@ namespace BansheeEngine
 		if(elementClass == nullptr)
 			return nullptr;
 
-		return mono_array_class_get(mElementType->getMonoClass(), mRank);
+		return ScriptArray::buildArrayClass(mElementType->getMonoClass(), mRank);
 	}
 
 	RTTITypeBase* ManagedSerializableTypeInfoArray::getRTTIStatic()
@@ -370,9 +370,9 @@ namespace BansheeEngine
 			return nullptr;
 
 		MonoClass* genericListClass = ScriptAssemblyManager::instance().getSystemGenericListClass();
-		MonoType* genParams[1] = { mono_class_get_type(elementClass) };
+		::MonoClass* genParams[1] = { elementClass };
 
-		return mono_class_bind_generic_parameters(genericListClass->_getInternalClass(), 1, genParams, false);
+		return MonoUtil::bindGenericParameters(genericListClass->_getInternalClass(), genParams, 1);
 	}
 
 	RTTITypeBase* ManagedSerializableTypeInfoList::getRTTIStatic()
@@ -408,9 +408,9 @@ namespace BansheeEngine
 			return nullptr;
 
 		MonoClass* genericDictionaryClass = ScriptAssemblyManager::instance().getSystemGenericDictionaryClass();
-		MonoType* genParams[2] = { mono_class_get_type(keyClass), mono_class_get_type(valueClass) };
 
-		return mono_class_bind_generic_parameters(genericDictionaryClass->_getInternalClass(), 2, genParams, false);
+		::MonoClass* params[2] = { keyClass, valueClass };
+		return MonoUtil::bindGenericParameters(genericDictionaryClass->_getInternalClass(), params, 2);
 	}
 
 	RTTITypeBase* ManagedSerializableTypeInfoDictionary::getRTTIStatic()

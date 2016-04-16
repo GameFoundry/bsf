@@ -8,6 +8,8 @@
 #include "BsDataStream.h"
 #include "BsException.h"
 
+#include <mono/jit/jit.h>
+#include <mono/metadata/assembly.h>
 #include <mono/metadata/debug-helpers.h>
 #include <mono/metadata/tokentype.h>
 #include <mono/metadata/mono-debug.h>

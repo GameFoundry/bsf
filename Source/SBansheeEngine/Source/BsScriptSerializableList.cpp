@@ -8,6 +8,7 @@
 #include "BsScriptAssemblyManager.h"
 #include "BsManagedSerializableObjectInfo.h"
 #include "BsScriptSerializableProperty.h"
+#include "BsMonoUtil.h"
 
 namespace BansheeEngine
 {
@@ -25,9 +26,7 @@ namespace BansheeEngine
 	ScriptSerializableList* ScriptSerializableList::create(const ScriptSerializableProperty* parentProperty)
 	{
 		SPtr<ManagedSerializableTypeInfoList> listTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoList>(parentProperty->getTypeInfo());
-
-		MonoType* monoInternalElementType = mono_class_get_type(listTypeInfo->mElementType->getMonoClass());
-		MonoReflectionType* internalElementType = mono_type_get_object(MonoManager::instance().getDomain(), monoInternalElementType);
+		MonoReflectionType* internalElementType = MonoUtil::getType(listTypeInfo->mElementType->getMonoClass());
 
 		void* params[2] = { internalElementType, parentProperty->getManagedInstance() };
 		MonoObject* managedInstance = metaData.scriptClass->createInstance(params, 2);

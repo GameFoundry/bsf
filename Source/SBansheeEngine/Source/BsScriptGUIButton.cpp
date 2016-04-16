@@ -45,9 +45,10 @@ namespace BansheeEngine
 	{
 		GUIOptions options;
 
-		UINT32 arrayLen = (UINT32)mono_array_length(guiOptions);
+		ScriptArray scriptArray(guiOptions);
+		UINT32 arrayLen = scriptArray.size();
 		for(UINT32 i = 0; i < arrayLen; i++)
-			options.addOption(mono_array_get(guiOptions, GUIOption, i));
+			options.addOption(scriptArray.get<GUIOption>(i));
 
 		GUIContent nativeContent(ScriptGUIContent::getText(content), ScriptGUIContent::getImage(content), ScriptGUIContent::getTooltip(content));
 		GUIButton* guiButton = GUIButton::create(nativeContent, options, toString(MonoUtil::monoToWString(style)));

@@ -44,17 +44,19 @@ namespace BansheeEngine
 	{
 		GUIOptions options;
 
-		UINT32 arrayLen = (UINT32)mono_array_length(guiOptions);
+		ScriptArray scriptArray(guiOptions);
+		UINT32 arrayLen = scriptArray.size();
 		for (UINT32 i = 0; i < arrayLen; i++)
-			options.addOption(mono_array_get(guiOptions, GUIOption, i));
+			options.addOption(scriptArray.get<GUIOption>(i));
 
 		String styleName = toString(MonoUtil::monoToWString(style));
 
-		UINT32 elementsArrayLen = (UINT32)mono_array_length(elements);
+		ScriptArray elementsArray(elements);
+		UINT32 elementsArrayLen = elementsArray.size();
 		Vector<HString> nativeElements;
 		for (UINT32 i = 0; i < elementsArrayLen; i++)
 		{
-			MonoObject* stringManaged = (MonoObject*)mono_array_get(elements, MonoObject*, i);
+			MonoObject* stringManaged = elementsArray.get<MonoObject*>(i);
 
 			if (stringManaged == nullptr)
 				nativeElements.push_back(HString::dummy());
@@ -117,11 +119,12 @@ namespace BansheeEngine
 
 	void ScriptGUIListBoxField::internal_setElements(ScriptGUIListBoxField* nativeInstance, MonoArray* elements)
 	{
-		UINT32 elementsArrayLen = (UINT32)mono_array_length(elements);
+		ScriptArray elementsArray(elements);
+		UINT32 elementsArrayLen = elementsArray.size();
 		Vector<HString> nativeElements;
 		for (UINT32 i = 0; i < elementsArrayLen; i++)
 		{
-			MonoObject* stringManaged = (MonoObject*)mono_array_get(elements, MonoObject*, i);
+			MonoObject* stringManaged = elementsArray.get<MonoObject*>(i);
 
 			if (stringManaged == nullptr)
 				nativeElements.push_back(HString::dummy());

@@ -21,13 +21,12 @@ namespace BansheeEngine
 	MonoObject* ScriptSubMesh::box(const SubMeshData& value)
 	{
 		// We're casting away const but it's fine since structs are passed by value anyway
-		return mono_value_box(MonoManager::instance().getDomain(),
-			metaData.scriptClass->_getInternalClass(), (void*)&value);
+		return MonoUtil::box(metaData.scriptClass->_getInternalClass(), (void*)&value);
 	}
 
 	SubMeshData ScriptSubMesh::unbox(MonoObject* obj)
 	{
-		return *(SubMeshData*)mono_object_unbox(obj);
+		return *(SubMeshData*)MonoUtil::unbox(obj);
 	}
 
 	ScriptMesh::ScriptMesh(MonoObject* instance, const HMesh& mesh)

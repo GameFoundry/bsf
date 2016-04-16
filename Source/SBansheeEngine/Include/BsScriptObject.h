@@ -8,7 +8,6 @@
 #include "BsMonoManager.h"
 #include "BsMonoField.h"
 #include "BsMonoClass.h"
-#include <mono/jit/jit.h>
 
 namespace BansheeEngine
 {

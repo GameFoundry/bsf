@@ -60,7 +60,7 @@ namespace BansheeEngine
 			if (mManagedInstance != nullptr)
 			{
 				mManagedInstance = nullptr;
-				mono_gchandle_free(mManagedHandle);
+				MonoUtil::freeGCHandle(mManagedHandle);
 				mManagedHandle = 0;
 			}
 		}
@@ -74,7 +74,7 @@ namespace BansheeEngine
 
 		if (mManagedInstance != nullptr)
 		{
-			mManagedHandle = mono_gchandle_new(mManagedInstance, false);
+			mManagedHandle = MonoUtil::newGCHandle(mManagedInstance);
 
 			if (data.data != nullptr)
 			{
@@ -119,7 +119,7 @@ namespace BansheeEngine
 	void ManagedResource::setHandle(MonoObject* object, const HManagedResource& myHandle)
 	{
 		mManagedInstance = object;
-		mManagedHandle = mono_gchandle_new(mManagedInstance, false);
+		mManagedHandle = MonoUtil::newGCHandle(mManagedInstance);
 		mMyHandle = myHandle.getWeak();
 
 		ScriptManagedResource* scriptInstance;
@@ -134,7 +134,7 @@ namespace BansheeEngine
 		if (mManagedInstance != nullptr)
 		{
 			mManagedInstance = nullptr;
-			mono_gchandle_free(mManagedHandle);
+			MonoUtil::freeGCHandle(mManagedHandle);
 		}
 
 		ManagedResourceManager::instance().unregisterManagedResource(mMyHandle);

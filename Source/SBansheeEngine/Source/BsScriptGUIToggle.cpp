@@ -54,9 +54,10 @@ namespace BansheeEngine
 	{
 		GUIOptions options;
 
-		UINT32 arrayLen = (UINT32)mono_array_length(guiOptions);
-		for(UINT32 i = 0; i < arrayLen; i++)
-			options.addOption(mono_array_get(guiOptions, GUIOption, i));
+		ScriptArray scriptArray(guiOptions);
+		UINT32 arrayLen = scriptArray.size();
+		for (UINT32 i = 0; i < arrayLen; i++)
+			options.addOption(scriptArray.get<GUIOption>(i));
 
 		ScriptGUIToggleGroup* scriptToggleGroup = nullptr;
 		SPtr<GUIToggleGroup> toggleGroup;

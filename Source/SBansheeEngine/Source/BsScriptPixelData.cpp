@@ -90,8 +90,8 @@ namespace BansheeEngine
 
 		::MonoClass* colorClass = ScriptColor::getMetaData()->scriptClass->_getInternalClass();
 		UINT32 totalNumElements = width * height * depth;
-		MonoArray* colorArray = mono_array_new(MonoManager::instance().getDomain(),
-			colorClass, totalNumElements);
+
+		ScriptArray scriptArray(colorClass, totalNumElements);
 
 		PixelFormat format = pixelData->getFormat();
 		UINT32 pixelSize = PixelUtil::getNumElemBytes(format);
@@ -117,12 +117,12 @@ namespace BansheeEngine
 					UINT32 dataIdx = x * pixelSize + yDataIdx + zDataIdx;
 
 					UINT8* dest = data + dataIdx;
-					mono_array_set(colorArray, Color, arrayIdx, *(Color*)dest);
+					scriptArray.set(arrayIdx, *(Color*)dest);
 				}
 			}
 		}
 
-		*value = colorArray;
+		*value = scriptArray.getInternal();
 
 	}
 
@@ -137,7 +137,9 @@ namespace BansheeEngine
 		UINT32 height = pixelVolume.getHeight();
 		UINT32 width = pixelVolume.getWidth();
 
-		UINT32 arrayLen = (UINT32)mono_array_length(value);
+		ScriptArray scriptArray(value);
+
+		UINT32 arrayLen = scriptArray.size();
 		UINT32 totalNumElements = width * height * depth;
 		if (arrayLen != totalNumElements)
 		{
@@ -169,7 +171,7 @@ namespace BansheeEngine
 
 					UINT8* dest = data + dataIdx;
 
-					Color color = mono_array_get(value, Color, arrayIdx);
+					Color color = scriptArray.get<Color>(arrayIdx);
 					PixelUtil::packColor(color, format, dest);
 				}
 			}
@@ -187,8 +189,7 @@ namespace BansheeEngine
 		UINT32 height = pixelVolume.getHeight();
 		UINT32 width = pixelVolume.getWidth();
 
-		MonoArray* byteArray = mono_array_new(MonoManager::instance().getDomain(),
-			mono_get_byte_class(), pixelData->getSize());
+		ScriptArray scriptArray(MonoUtil::getByteClass(), pixelData->getSize());
 
 		PixelFormat format = pixelData->getFormat();
 		UINT32 pixelSize = PixelUtil::getNumElemBytes(format);
@@ -214,12 +215,12 @@ namespace BansheeEngine
 					UINT32 dataIdx = x * pixelSize + yDataIdx + zDataIdx;
 
 					UINT8* dest = data + dataIdx;
-					mono_array_set(byteArray, char, arrayIdx, *dest);
+					scriptArray.set(arrayIdx, *dest);
 				}
 			}
 		}
 
-		*value = byteArray;
+		*value = scriptArray.getInternal();
 	}
 
 	void ScriptPixelData::internal_setRawPixels(ScriptPixelData* thisPtr, MonoArray* value)
@@ -233,7 +234,8 @@ namespace BansheeEngine
 		UINT32 height = pixelVolume.getHeight();
 		UINT32 width = pixelVolume.getWidth();
 
-		UINT32 arrayLen = (UINT32)mono_array_length(value);
+		ScriptArray scriptArray(value);
+		UINT32 arrayLen = scriptArray.size();
 		if (pixelData->getSize() != arrayLen)
 		{
 			LOGERR("Unable to set colors, invalid array size.")
@@ -264,7 +266,7 @@ namespace BansheeEngine
 					UINT32 dataIdx = x * pixelSize + yDataIdx + zDataIdx;
 
 					UINT8* dest = data + dataIdx;
-					*dest = mono_array_get(value, char, arrayIdx);
+					*dest = scriptArray.get<char>(arrayIdx);
 				}
 			}
 		}

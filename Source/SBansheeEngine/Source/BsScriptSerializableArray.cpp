@@ -5,6 +5,7 @@
 #include "BsMonoField.h"
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
+#include "BsMonoUtil.h"
 #include "BsScriptAssemblyManager.h"
 #include "BsManagedSerializableObjectInfo.h"
 #include "BsScriptSerializableProperty.h"
@@ -26,8 +27,7 @@ namespace BansheeEngine
 	{
 		SPtr<ManagedSerializableTypeInfoArray> arrayTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoArray>(parentProperty->getTypeInfo());
 
-		MonoType* monoInternalElementType = mono_class_get_type(arrayTypeInfo->mElementType->getMonoClass());
-		MonoReflectionType* internalElementType = mono_type_get_object(MonoManager::instance().getDomain(), monoInternalElementType);
+		MonoReflectionType* internalElementType = MonoUtil::getType(arrayTypeInfo->mElementType->getMonoClass());
 
 		void* params[2] = { internalElementType, parentProperty->getManagedInstance() };
 		MonoObject* managedInstance = metaData.scriptClass->createInstance(params, 2);

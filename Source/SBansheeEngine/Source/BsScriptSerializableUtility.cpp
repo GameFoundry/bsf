@@ -26,7 +26,7 @@ namespace BansheeEngine
 		if (original == nullptr)
 			return nullptr;
 
-		::MonoClass* monoClass = mono_object_get_class(original);
+		::MonoClass* monoClass = MonoUtil::getClass(original);
 		MonoClass* engineClass = MonoManager::instance().findClass(monoClass);
 
 		SPtr<ManagedSerializableTypeInfo> typeInfo = ScriptAssemblyManager::instance().getTypeInfo(engineClass);
@@ -55,8 +55,7 @@ namespace BansheeEngine
 		if (reflType == nullptr)
 			return nullptr;
 
-		MonoType* type = mono_reflection_type_get_type(reflType);
-		::MonoClass* monoClass = mono_type_get_class(type);
+		::MonoClass* monoClass = MonoUtil::getClass(reflType);
 		MonoClass* engineClass = MonoManager::instance().findClass(monoClass);
 
 		SPtr<ManagedSerializableTypeInfo> typeInfo = ScriptAssemblyManager::instance().getTypeInfo(engineClass);

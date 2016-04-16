@@ -41,13 +41,12 @@ namespace BansheeEngine
 	MonoObject* ScriptCollisionDataHelper::box(const ScriptCollisionData& value)
 	{
 		// We're casting away const but it's fine since structs are passed by value anyway
-		return mono_value_box(MonoManager::instance().getDomain(),
-			metaData.scriptClass->_getInternalClass(), (void*)&value);
+		return MonoUtil::box(metaData.scriptClass->_getInternalClass(), (void*)&value);
 	}
 
 	ScriptCollisionData ScriptCollisionDataHelper::unbox(MonoObject* obj)
 	{
-		return *(ScriptCollisionData*)mono_object_unbox(obj);
+		return *(ScriptCollisionData*)MonoUtil::unbox(obj);
 	}
 
 	ScriptContactPointHelper::ScriptContactPointHelper(MonoObject* instance)
@@ -60,12 +59,11 @@ namespace BansheeEngine
 	MonoObject* ScriptContactPointHelper::box(const ContactPoint& value)
 	{
 		// We're casting away const but it's fine since structs are passed by value anyway
-		return mono_value_box(MonoManager::instance().getDomain(),
-			metaData.scriptClass->_getInternalClass(), (void*)&value);
+		return MonoUtil::box(metaData.scriptClass->_getInternalClass(), (void*)&value);
 	}
 
 	ContactPoint ScriptContactPointHelper::unbox(MonoObject* obj)
 	{
-		return *(ContactPoint*)mono_object_unbox(obj);
+		return *(ContactPoint*)MonoUtil::unbox(obj);
 	}
 }

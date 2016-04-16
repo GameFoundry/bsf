@@ -4,8 +4,8 @@
 
 #include "BsMonoPrerequisites.h"
 #include "BsScriptMeta.h"
+#include "BsMonoUtil.h"
 #include "BsMonoManager.h"
-#include <mono/jit/jit.h>
 
 namespace BansheeEngine
 {
@@ -40,20 +40,20 @@ namespace BansheeEngine
 			assert(sizeof(T) == elementSize());
 #endif
 
-			return (T*)mono_array_addr(mInternal, T, idx);
+			return (T*)getArrayAddr(mInternal, sizeof(T), idx);
 		}
 
 		/** 
 		 * Returns the raw object from the array at the specified index. Provided size determines the size of each
 		 * element in the array. Caller must ensure it is correct for the specified array.
 		 */
-		UINT8* getRawPtr(UINT32 size, UINT32 idx = 0)
+		UINT8* getRawPtr(UINT32 size, UINT32 idx)
 		{
 #if BS_DEBUG_MODE
 			assert(size == elementSize());
 #endif
 
-			return (UINT8*)mono_array_addr_with_size(mInternal, size, idx);
+			return getArrayAddr(mInternal, size, idx);
 		}
 
 		/** 
@@ -73,6 +73,24 @@ namespace BansheeEngine
 		/** Returns the managed object representing this array. */
 		MonoArray* getInternal() const { return mInternal; }
 
+		/** 
+		 * Returns the address of an array item at the specified index. 
+		 *
+		 * @param[in]	array	Array from which to retrieve the item.
+		 * @param[in]	size	Size of a single item in the array.
+		 * @param[in]	idx		Index of the item to retrieve.
+		 * @return				Address of the array item at the requested index. 
+		 */
+		static UINT8* getArrayAddr(MonoArray* array, UINT32 size, UINT32 idx);
+
+		/** Returns the class of the elements within an array class. */
+		static ::MonoClass* getElementClass(::MonoClass* arrayClass);
+
+		/** Returns the rank of the provided array class. */
+		static UINT32 getRank(::MonoClass* arrayClass);
+
+		/** Builds an array class from the provided element class and a rank. */
+		static ::MonoClass* buildArrayClass(::MonoClass* elementClass, UINT32 rank);
 	private:
 		MonoArray* mInternal;
 	};
@@ -86,16 +104,19 @@ namespace BansheeEngine
 	{
 		// A layer of indirection for all methods specialized by ScriptArray. */
 
+
+
 		template<class T>
 		T ScriptArray_get(MonoArray* array, UINT32 idx)
 		{
-			return mono_array_get(array, T, idx);
+			return *(T*)ScriptArray::getArrayAddr(array, sizeof(T), idx);
 		}
 
 		template<class T>
 		void ScriptArray_set(MonoArray* array, UINT32 idx, const T& value)
 		{
-			mono_array_set(array, T, idx, value);
+			T* item = (T*)ScriptArray::getArrayAddr(array, sizeof(T), idx);
+			*item = value;
 		}
 
 		template<>
@@ -119,49 +140,49 @@ namespace BansheeEngine
 		template<>
 		inline ScriptArray ScriptArray_create<UINT32>(UINT32 size)
 		{
-			return ScriptArray(mono_get_uint32_class(), size);
+			return ScriptArray(MonoUtil::getUINT32Class(), size);
 		}
 
 		template<>
 		inline ScriptArray ScriptArray_create<INT32>(UINT32 size)
 		{
-			return ScriptArray(mono_get_int32_class(), size);
+			return ScriptArray(MonoUtil::getINT32Class(), size);
 		}
 
 		template<>
 		inline ScriptArray ScriptArray_create<UINT64>(UINT32 size)
 		{
-			return ScriptArray(mono_get_uint64_class(), size);
+			return ScriptArray(MonoUtil::getUINT64Class(), size);
 		}
 
 		template<>
 		inline ScriptArray ScriptArray_create<INT64>(UINT32 size)
 		{
-			return ScriptArray(mono_get_int64_class(), size);
+			return ScriptArray(MonoUtil::getINT64Class(), size);
 		}
 
 		template<>
 		inline ScriptArray ScriptArray_create<WString>(UINT32 size)
 		{
-			return ScriptArray(mono_get_string_class(), size);
+			return ScriptArray(MonoUtil::getStringClass(), size);
 		}
 
 		template<>
 		inline ScriptArray ScriptArray_create<String>(UINT32 size)
 		{
-			return ScriptArray(mono_get_string_class(), size);
+			return ScriptArray(MonoUtil::getStringClass(), size);
 		}
 
 		template<>
 		inline ScriptArray ScriptArray_create<float>(UINT32 size)
 		{
-			return ScriptArray(mono_get_single_class(), size);
+			return ScriptArray(MonoUtil::getFloatClass(), size);
 		}
 
 		template<>
 		inline ScriptArray ScriptArray_create<bool>(UINT32 size)
 		{
-			return ScriptArray(mono_get_boolean_class(), size);
+			return ScriptArray(MonoUtil::getBoolClass(), size);
 		}
 	}
 

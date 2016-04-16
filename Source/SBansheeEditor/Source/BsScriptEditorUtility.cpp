@@ -39,10 +39,11 @@ namespace BansheeEngine
 	{
 		Vector<HSceneObject> sceneObjects;
 
-		UINT32 arrayLen = (UINT32)mono_array_length(objects);
+		ScriptArray scriptArray(objects);
+		UINT32 arrayLen = scriptArray.size();
 		for (UINT32 i = 0; i < arrayLen; i++)
 		{
-			MonoObject* curObject = mono_array_get(objects, MonoObject*, i);
+			MonoObject* curObject = scriptArray.get<MonoObject*>(i);
 
 			ScriptSceneObject* scriptSO = ScriptSceneObject::toNative(curObject);
 

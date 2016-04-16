@@ -4,6 +4,7 @@
 #include "BsMonoManager.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
+#include <mono/jit/jit.h>
 
 namespace BansheeEngine
 {
@@ -71,5 +72,25 @@ namespace BansheeEngine
 		::MonoClass* elementClass = mono_class_get_element_class(arrayClass);
 
 		return (UINT32)mono_class_array_element_size(elementClass);
+	}
+
+	UINT8* ScriptArray::getArrayAddr(MonoArray* array, UINT32 size, UINT32 idx)
+	{
+		return (UINT8*)mono_array_addr_with_size(array, size, idx);
+	}
+
+	::MonoClass* ScriptArray::getElementClass(::MonoClass* arrayClass)
+	{
+		return mono_class_get_element_class(arrayClass);
+	}
+
+	UINT32 ScriptArray::getRank(::MonoClass* arrayClass)
+	{
+		return (UINT32)mono_class_get_rank(arrayClass);
+	}
+
+	::MonoClass* ScriptArray::buildArrayClass(::MonoClass* elementClass, UINT32 rank)
+	{
+		return mono_array_class_get(elementClass, rank);
 	}
 }

@@ -203,7 +203,7 @@ namespace BansheeEngine
 				{
 					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataBool>();
 					if(value != nullptr)
-						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
+						memcpy(&fieldData->value, MonoUtil::unbox(value), sizeof(fieldData->value));
 
 					return fieldData;
 				}
@@ -211,7 +211,7 @@ namespace BansheeEngine
 				{
 					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataChar>();
 					if(value != nullptr)
-						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
+						memcpy(&fieldData->value, MonoUtil::unbox(value), sizeof(fieldData->value));
 
 					return fieldData;
 				}
@@ -219,7 +219,7 @@ namespace BansheeEngine
 				{
 					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataI8>();
 					if(value != nullptr)
-						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
+						memcpy(&fieldData->value, MonoUtil::unbox(value), sizeof(fieldData->value));
 
 					return fieldData;
 				}
@@ -227,7 +227,7 @@ namespace BansheeEngine
 				{
 					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataU8>();
 					if(value != nullptr)
-						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
+						memcpy(&fieldData->value, MonoUtil::unbox(value), sizeof(fieldData->value));
 
 					return fieldData;
 				}
@@ -235,7 +235,7 @@ namespace BansheeEngine
 				{
 					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataI16>();
 					if(value != nullptr)
-						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
+						memcpy(&fieldData->value, MonoUtil::unbox(value), sizeof(fieldData->value));
 
 					return fieldData;
 				}
@@ -243,7 +243,7 @@ namespace BansheeEngine
 				{
 					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataU16>();
 					if(value != nullptr)
-						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
+						memcpy(&fieldData->value, MonoUtil::unbox(value), sizeof(fieldData->value));
 
 					return fieldData;
 				}
@@ -251,7 +251,7 @@ namespace BansheeEngine
 				{
 					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataI32>();
 					if(value != nullptr)
-						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
+						memcpy(&fieldData->value, MonoUtil::unbox(value), sizeof(fieldData->value));
 
 					return fieldData;
 				}
@@ -259,7 +259,7 @@ namespace BansheeEngine
 				{
 					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataU32>();
 					if(value != nullptr)
-						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
+						memcpy(&fieldData->value, MonoUtil::unbox(value), sizeof(fieldData->value));
 
 					return fieldData;
 				}
@@ -267,7 +267,7 @@ namespace BansheeEngine
 				{
 					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataI64>();
 					if(value != nullptr)
-						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
+						memcpy(&fieldData->value, MonoUtil::unbox(value), sizeof(fieldData->value));
 
 					return fieldData;
 				}
@@ -275,7 +275,7 @@ namespace BansheeEngine
 				{
 					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataU64>();
 					if(value != nullptr)
-						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
+						memcpy(&fieldData->value, MonoUtil::unbox(value), sizeof(fieldData->value));
 
 					return fieldData;
 				}
@@ -283,7 +283,7 @@ namespace BansheeEngine
 				{
 					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataFloat>();
 					if(value != nullptr)
-						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
+						memcpy(&fieldData->value, MonoUtil::unbox(value), sizeof(fieldData->value));
 
 					return fieldData;
 				}
@@ -291,7 +291,7 @@ namespace BansheeEngine
 				{
 					auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataDouble>();
 					if(value != nullptr)
-						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
+						memcpy(&fieldData->value, MonoUtil::unbox(value), sizeof(fieldData->value));
 
 					return fieldData;
 				}
@@ -633,7 +633,7 @@ namespace BansheeEngine
 					MonoObject* managedInstance = value->getManagedInstance();
 					
 					if(managedInstance != nullptr)
-						return mono_object_unbox(managedInstance); // Structs are passed as raw types because mono expects them as such
+						return MonoUtil::unbox(managedInstance); // Structs are passed as raw types because mono expects them as such
 				}
 				else
 					return value->getManagedInstance();
@@ -700,7 +700,7 @@ namespace BansheeEngine
 		{
 			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
 			if (primitiveTypeInfo->mType == ScriptPrimitiveType::Bool)
-				return mono_value_box(MonoManager::instance().getDomain(), mono_get_boolean_class(), &value);
+				return MonoUtil::box(MonoUtil::getBoolClass(), &value);
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
@@ -713,7 +713,7 @@ namespace BansheeEngine
 		{
 			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
 			if (primitiveTypeInfo->mType == ScriptPrimitiveType::Char)
-				return mono_value_box(MonoManager::instance().getDomain(), mono_get_char_class(), &value);
+				return MonoUtil::box(MonoUtil::getCharClass(), &value);
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
@@ -726,7 +726,7 @@ namespace BansheeEngine
 		{
 			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
 			if (primitiveTypeInfo->mType == ScriptPrimitiveType::I8)
-				return mono_value_box(MonoManager::instance().getDomain(), mono_get_sbyte_class(), &value);
+				return MonoUtil::box(MonoUtil::getSByteClass(), &value);
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
@@ -739,7 +739,7 @@ namespace BansheeEngine
 		{
 			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
 			if (primitiveTypeInfo->mType == ScriptPrimitiveType::U8)
-				return mono_value_box(MonoManager::instance().getDomain(), mono_get_byte_class(), &value);
+				return MonoUtil::box(MonoUtil::getByteClass(), &value);
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
@@ -752,7 +752,7 @@ namespace BansheeEngine
 		{
 			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
 			if (primitiveTypeInfo->mType == ScriptPrimitiveType::I16)
-				return mono_value_box(MonoManager::instance().getDomain(), mono_get_int16_class(), &value);
+				return MonoUtil::box(MonoUtil::getINT16Class(), &value);
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
@@ -765,7 +765,7 @@ namespace BansheeEngine
 		{
 			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
 			if (primitiveTypeInfo->mType == ScriptPrimitiveType::U16)
-				return mono_value_box(MonoManager::instance().getDomain(), mono_get_uint16_class(), &value);
+				return MonoUtil::box(MonoUtil::getUINT16Class(), &value);
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
@@ -778,7 +778,7 @@ namespace BansheeEngine
 		{
 			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
 			if (primitiveTypeInfo->mType == ScriptPrimitiveType::I32)
-				return mono_value_box(MonoManager::instance().getDomain(), mono_get_int32_class(), &value);
+				return MonoUtil::box(MonoUtil::getINT32Class(), &value);
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
@@ -791,7 +791,7 @@ namespace BansheeEngine
 		{
 			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
 			if (primitiveTypeInfo->mType == ScriptPrimitiveType::U32)
-				return mono_value_box(MonoManager::instance().getDomain(), mono_get_uint32_class(), &value);
+				return MonoUtil::box(MonoUtil::getUINT32Class(), &value);
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
@@ -804,7 +804,7 @@ namespace BansheeEngine
 		{
 			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
 			if (primitiveTypeInfo->mType == ScriptPrimitiveType::I64)
-				return mono_value_box(MonoManager::instance().getDomain(), mono_get_int64_class(), &value);
+				return MonoUtil::box(MonoUtil::getINT64Class(), &value);
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
@@ -817,7 +817,7 @@ namespace BansheeEngine
 		{
 			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
 			if (primitiveTypeInfo->mType == ScriptPrimitiveType::U64)
-				return mono_value_box(MonoManager::instance().getDomain(), mono_get_uint64_class(), &value);
+				return MonoUtil::box(MonoUtil::getUINT64Class(), &value);
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
@@ -830,7 +830,7 @@ namespace BansheeEngine
 		{
 			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
 			if (primitiveTypeInfo->mType == ScriptPrimitiveType::Float)
-				return mono_value_box(MonoManager::instance().getDomain(), mono_get_single_class(), &value);
+				return MonoUtil::box(MonoUtil::getFloatClass(), &value);
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
@@ -843,7 +843,7 @@ namespace BansheeEngine
 		{
 			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
 			if (primitiveTypeInfo->mType == ScriptPrimitiveType::Double)
-				return mono_value_box(MonoManager::instance().getDomain(), mono_get_double_class(), &value);
+				return MonoUtil::box(MonoUtil::getDoubleClass(), &value);
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
