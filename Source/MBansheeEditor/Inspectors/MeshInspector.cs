@@ -5,6 +5,10 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /** @addtogroup Inspectors
+     *  @{
+     */
+
     /// <summary>
     /// Renders an inspector for the <see cref="Mesh"/> resource.
     /// </summary>
@@ -118,4 +122,6 @@ namespace BansheeEditor
             ProjectLibrary.Reimport(resourcePath, importOptions, true);
         }
     }
+
+    /** @} */
 }

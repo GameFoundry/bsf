@@ -2,6 +2,10 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 namespace BansheeEngine
 {
+    /** @addtogroup Physics
+     *  @{
+     */
+
     /// <summary>
     /// Represents the most customizable type of joint. This joint type can be used to create all other built-in joint 
     /// types, and to design your own custom ones, but is less intuitive to use.Allows a specification of a linear
@@ -287,4 +291,6 @@ namespace BansheeEngine
             }
         }
     }
+
+    /** @} */
 }

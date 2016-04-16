@@ -6,6 +6,10 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /** @addtogroup Inspectors
+     *  @{
+     */
+
     /// <summary>
     /// Renders an inspector for the <see cref="Font"/> resource.
     /// </summary>
@@ -165,7 +169,7 @@ namespace BansheeEditor
         /// <summary>
         /// Row element used for displaying GUI for font size array elements.
         /// </summary>
-        public class FontSizeArrayRow : GUIListFieldRow
+        internal class FontSizeArrayRow : GUIListFieldRow
         {
             private GUIIntField sizeField;
 
@@ -195,7 +199,7 @@ namespace BansheeEditor
         /// <summary>
         /// Row element used for displaying GUI for character range array elements.
         /// </summary>
-        public class CharRangeArrayRow : GUIListFieldRow
+        internal class CharRangeArrayRow : GUIListFieldRow
         {
             private GUIIntField rangeStartField;
             private GUIIntField rangeEndField;
@@ -249,4 +253,6 @@ namespace BansheeEditor
             }
         }
     }
+
+    /** @} */
 }

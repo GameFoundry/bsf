@@ -4,10 +4,14 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /** @addtogroup Inspectors
+     *  @{
+     */
+
     /// <summary>
     /// Renders common inspector elements for all <see cref="Joint"/> components.
     /// </summary>
-    public abstract class JointInspector : Inspector
+    internal abstract class JointInspector : Inspector
     {
         private GUIGameObjectField bodyAField = new GUIGameObjectField(typeof(Rigidbody), new LocEdString("Body A"));
         private GUIVector3Field bodyAOffsetField = new GUIVector3Field(new LocEdString("Body A offset"));
@@ -89,4 +93,6 @@ namespace BansheeEditor
                 modifyState |= InspectableState.Modified;
         }
     }
+
+    /** @} */
 }

@@ -4,6 +4,10 @@ using System;
 
 namespace BansheeEngine
 {
+    /** @addtogroup Math
+     *  @{
+     */
+
     /// <summary>
     /// Values that represent in which order are euler angles applied when used in transformations.
     /// </summary>
@@ -638,4 +642,6 @@ namespace BansheeEngine
             return Abs(b - a) <= epsilon;
         }
     }
+
+    /** @} */
 }

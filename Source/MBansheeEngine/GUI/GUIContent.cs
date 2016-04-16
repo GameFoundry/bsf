@@ -4,6 +4,10 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
+    /** @addtogroup GUI-Engine
+     *  @{
+     */
+
     /// <summary>
     /// Type of GUI element states.
     /// </summary>
@@ -199,7 +203,7 @@ namespace BansheeEngine
         /// Creates a new object where content images for on and off states are different.
         /// </summary>
         /// <param name="imageOff">Image to assign to all off states.</param>
-        // <param name="imageOn">Image to assign to all on states.</param>
+        /// <param name="imageOn">Image to assign to all on states.</param>
         public GUIContentImages(SpriteTexture imageOff, SpriteTexture imageOn)
         {
             normal = imageOff;
@@ -231,4 +235,6 @@ namespace BansheeEngine
         public SpriteTexture activeOn;
         public SpriteTexture focusedOn;
     }
+
+    /** @} */
 }

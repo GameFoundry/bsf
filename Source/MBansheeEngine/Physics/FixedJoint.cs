@@ -2,6 +2,10 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 namespace BansheeEngine
 {
+    /** @addtogroup Physics
+     *  @{
+     */
+
     /// <summary>
     /// Physics joint that will maintain a fixed distance and orientation between its two attached bodies.
     /// </summary>
@@ -15,4 +19,6 @@ namespace BansheeEngine
             return joint;
         }
     }
+
+    /** @} */
 }

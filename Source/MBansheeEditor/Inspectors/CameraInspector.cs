@@ -5,11 +5,15 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /** @addtogroup Inspectors
+     *  @{
+     */
+
     /// <summary>
     /// Renders an inspector for the <see cref="Camera"/> component.
     /// </summary>
     [CustomInspector(typeof(Camera))]
-    public class CameraInspector : Inspector
+    internal class CameraInspector : Inspector
     {
         private GUIEnumField projectionTypeField = new GUIEnumField(typeof(ProjectionType), new LocEdString("Projection type"));
         private GUISliderField fieldOfView = new GUISliderField(1, 360, new LocEdString("Field of view"));
@@ -277,4 +281,6 @@ namespace BansheeEditor
                 modifyState |= InspectableState.Modified;
         }
     }
+
+    /** @} */
 }

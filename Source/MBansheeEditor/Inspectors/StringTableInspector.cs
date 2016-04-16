@@ -6,6 +6,10 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /** @addtogroup Inspectors
+     *  @{
+     */
+
     /// <summary>
     /// Renders an inspector for the <see cref="StringTable"/> resource.
     /// </summary>
@@ -123,7 +127,7 @@ namespace BansheeEditor
         /// <summary>
         /// Row element used for displaying GUI for string table dictionary elements.
         /// </summary>
-        public class StringTableEntry : GUIDictionaryFieldRow
+        internal class StringTableEntry : GUIDictionaryFieldRow
         {
             private GUITextField keyField;
             private GUITextField valueField;
@@ -169,4 +173,6 @@ namespace BansheeEditor
             }
         }
     }
+
+    /** @} */
 }

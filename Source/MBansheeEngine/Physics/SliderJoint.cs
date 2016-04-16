@@ -2,6 +2,10 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 namespace BansheeEngine
 {
+    /** @addtogroup Physics
+     *  @{
+     */
+
     /// <summary>
     /// Joint that removes all but a single translational degree of freedom. Bodies are allowed to move along a single axis.
     /// </summary>
@@ -78,4 +82,6 @@ namespace BansheeEngine
             }
         }
     }
+
+    /** @} */
 }

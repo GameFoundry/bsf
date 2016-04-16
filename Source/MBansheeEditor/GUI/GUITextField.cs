@@ -6,6 +6,10 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /** @addtogroup GUI-Editor 
+     *  @{
+     */
+
     /// <summary>
     /// Editor GUI element that displays a textual input field and an optional label.
     /// </summary>
@@ -124,4 +128,6 @@ namespace BansheeEditor
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetTint(IntPtr nativeInstance, ref Color color);
     }
+
+    /** @} */
 }

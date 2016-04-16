@@ -5,6 +5,10 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
+    /** @addtogroup GUI-Engine
+     *  @{
+     */
+
     /// <summary>
     /// Represents a GUI panel that you can use for free placement of GUI elements within its bounds.
     /// </summary>
@@ -39,4 +43,6 @@ namespace BansheeEngine
             Internal_CreateInstancePanel(this, 0, ushort.MaxValue, ushort.MaxValue, options);
         }
     }
+
+    /** @} */
 }

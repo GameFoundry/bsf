@@ -4,6 +4,10 @@ using System.Collections.Generic;
 
 namespace BansheeEngine
 {
+    /** @addtogroup GUI-Engine
+     *  @{
+     */
+
     /// <summary>
     /// GUI element that can efficiently display a list of entries that share the same height. This element is mostly an
     /// optimization as only visible entries have actual GUI elements, as opposed to just adding GUI elements directly
@@ -333,4 +337,6 @@ namespace BansheeEngine
         /// <param name="data">Data of the entry to display.</param>
         public abstract void UpdateContents(int index, TData data);
     }
+
+    /** @} */
 }

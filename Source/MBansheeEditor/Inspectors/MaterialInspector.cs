@@ -5,6 +5,10 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /** @addtogroup Inspectors
+     *  @{
+     */
+
     /// <summary>
     /// Renders an inspector for the <see cref="Material"/> resource.
     /// </summary>
@@ -606,4 +610,6 @@ namespace BansheeEditor
             guiElem.Destroy();
         }
     }
+
+    /** @} */
 }

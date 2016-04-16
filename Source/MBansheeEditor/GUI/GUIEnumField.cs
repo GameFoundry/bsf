@@ -6,6 +6,10 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /** @addtogroup GUI-Editor 
+     *  @{
+     */
+
     /// <summary>
     /// Editor GUI element that displays a list box with elements of an enumeration and an optional label.
     /// </summary>
@@ -196,4 +200,6 @@ namespace BansheeEditor
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetTint(IntPtr nativeInstance, ref Color color);
     }
+
+    /** @} */
 }

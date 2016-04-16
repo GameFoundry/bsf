@@ -2,6 +2,10 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 namespace BansheeEngine
 {
+    /** @addtogroup Physics
+     *  @{
+     */
+
     /// <summary>
     /// Collider with plane geometry.
     /// </summary>
@@ -77,4 +81,6 @@ namespace BansheeEngine
             return new NativePlaneCollider();
         }
     }
+
+    /** @} */
 }

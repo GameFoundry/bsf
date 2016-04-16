@@ -5,6 +5,10 @@ using System.Runtime.InteropServices;
 
 namespace BansheeEngine
 {
+    /** @addtogroup Physics
+     *  @{
+     */
+
     /// <summary>
     /// Special physics controller meant to be used for game characters. Uses the "slide-and-collide" physics instead of
     /// of the standard physics model to handle various issues with manually moving kinematic objects.Uses a capsule to
@@ -334,7 +338,7 @@ namespace BansheeEngine
         /// Holds all data the character controller component needs to persist through serialization.
         /// </summary>
         [SerializeObject]
-        internal class SerializableData
+        private class SerializableData
         {
             public float contactOffset = 0.1f;
             public float stepOffset = 0.5f;
@@ -484,4 +488,6 @@ namespace BansheeEngine
         /// </summary>
         public CharacterController controller;
     };
+
+    /** @} */
 }

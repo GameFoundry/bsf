@@ -5,6 +5,10 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
+    /** @addtogroup GUI-Engine
+     *  @{
+     */
+
     /// <summary>
     /// Object that allows you to group multiple GUI toggle buttons. Only one button among the grouped ones can be active.
     /// </summary>
@@ -23,4 +27,6 @@ namespace BansheeEngine
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateInstance(GUIToggleGroup instance, bool allowAllOff);
     }
+
+    /** @} */
 }

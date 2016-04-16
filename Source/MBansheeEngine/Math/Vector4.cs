@@ -5,6 +5,10 @@ using System.Runtime.InteropServices;
 
 namespace BansheeEngine
 {
+    /** @addtogroup Math
+     *  @{
+     */
+
     /// <summary>
     /// A four dimensional vector with a homogeneous w coordinate.
     /// </summary>
@@ -288,4 +292,6 @@ namespace BansheeEngine
             return "(" + x + ", " + y + ", " + z + ", " + w + ")";
         }
     }
+
+    /** @} */
 }

@@ -4,11 +4,15 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /** @addtogroup Inspectors
+     *  @{
+     */
+
     /// <summary>
     /// Renders an inspector for the <see cref="SphericalJoint"/> component.
     /// </summary>
     [CustomInspector(typeof(SphericalJoint))]
-    public class SphericalJointInspector : JointInspector
+    internal class SphericalJointInspector : JointInspector
     {
         private GUIToggleField enableLimitField = new GUIToggleField(new LocEdString("Enable limit"));
         private LimitConeRangeGUI limitGUI;
@@ -101,4 +105,6 @@ namespace BansheeEditor
             limitLayout.Active = enable;
         }
     }
+
+    /** @} */
 }

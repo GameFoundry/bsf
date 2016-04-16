@@ -6,6 +6,10 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /** @addtogroup GUI-Editor 
+     *  @{
+     */
+
     /// <summary>
     /// Editor GUI element that displays a reference to a <see cref="Resource"/> and an optional label. Resources can
     /// be dragged and dropped onto the field to update the reference.
@@ -118,4 +122,6 @@ namespace BansheeEditor
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetTint(IntPtr nativeInstance, ref Color color);
     }
+
+    /** @} */
 }

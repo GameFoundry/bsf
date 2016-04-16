@@ -4,6 +4,10 @@ using System.Runtime.InteropServices;
 
 namespace BansheeEngine
 {
+    /** @addtogroup Math
+     *  @{
+     */
+
     /// <summary>
     /// A sphere represented by a center point and a radius.
     /// </summary>
@@ -45,4 +49,6 @@ namespace BansheeEngine
             _radius = radius;
         }
     };
+
+    /** @} */
 }

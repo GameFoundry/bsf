@@ -4,11 +4,15 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /** @addtogroup Inspectors
+     *  @{
+     */
+
     /// <summary>
     /// Renders an inspector for the <see cref="SliderJoint"/> component.
     /// </summary>
     [CustomInspector(typeof(SliderJoint))]
-    public class SliderJointInspector : JointInspector
+    internal class SliderJointInspector : JointInspector
     {
         private GUIToggleField enableLimitField = new GUIToggleField(new LocEdString("Enable limit"));
         private LimitLinearRangeGUI limitGUI;
@@ -101,4 +105,6 @@ namespace BansheeEditor
             limitLayout.Active = enable;
         }
     }
+
+    /** @} */
 }

@@ -6,6 +6,10 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
+    /** @addtogroup GUI-Engine
+     *  @{
+     */
+
     /// <summary>
     /// Base class for all GUI elements. Every GUI element can at least be positioned in it's parent layout/panel and be 
     /// hidden/visible, focused/unfocused and assigned a context menu.
@@ -289,4 +293,6 @@ namespace BansheeEngine
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_Destroy(IntPtr nativeInstance);
     }
+
+    /** @} */
 }

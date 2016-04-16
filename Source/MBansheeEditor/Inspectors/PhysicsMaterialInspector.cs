@@ -5,6 +5,10 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /** @addtogroup Inspectors
+     *  @{
+     */
+
     /// <summary>
     /// Renders an inspector for the <see cref="PhysicsMaterial"/> resource.
     /// </summary>
@@ -73,4 +77,6 @@ namespace BansheeEditor
             Layout.AddElement(restitutionField);
         }
     }
+
+    /** @} */
 }

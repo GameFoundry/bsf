@@ -5,11 +5,15 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /** @addtogroup Inspectors
+     *  @{
+     */
+
     /// <summary>
     /// Renders an inspector for the <see cref="Light"/> component.
     /// </summary>
     [CustomInspector(typeof(Light))]
-    public class LightInspector : Inspector
+    internal class LightInspector : Inspector
     {
         private GUIEnumField lightTypeField = new GUIEnumField(typeof(LightType), new LocEdString("Light type"));
         private GUIColorField colorField = new GUIColorField(new LocEdString("Color"));
@@ -159,4 +163,6 @@ namespace BansheeEditor
                 modifyState |= InspectableState.Modified;
         }
     }
+
+    /** @} */
 }

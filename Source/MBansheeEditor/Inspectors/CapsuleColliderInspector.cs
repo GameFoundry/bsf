@@ -4,11 +4,15 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /** @addtogroup Inspectors
+     *  @{
+     */
+
     /// <summary>
     /// Renders an inspector for the <see cref="CapsuleCollider"/> component.
     /// </summary>
     [CustomInspector(typeof(CapsuleCollider))]
-    public class CapsuleColliderInspector : ColliderInspector
+    internal class CapsuleColliderInspector : ColliderInspector
     {
         private GUIVector3Field centerField = new GUIVector3Field(new LocEdString("Center"));
         private GUIVector3Field orientationField = new GUIVector3Field(new LocEdString("Orientation"));
@@ -101,4 +105,6 @@ namespace BansheeEditor
             base.Refresh(collider);
         }
     }
+
+    /** @} */
 }

@@ -5,6 +5,10 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
+    /** @addtogroup GUI-Engine
+     *  @{
+     */
+
     /// <summary>
     /// GUI element that may be inserted into layouts in order to make a space of a fixed size.
     /// </summary>
@@ -54,4 +58,6 @@ namespace BansheeEngine
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateInstance(GUIFlexibleSpace instance);
     }
+
+    /** @} */
 }

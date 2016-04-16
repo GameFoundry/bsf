@@ -5,6 +5,10 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
+    /** @addtogroup GUI-Engine
+     *  @{
+     */
+
     /// <summary>
     /// Holds a set of styles that control how are GUI element types positioned and displayed in the GUI. Each element type 
     /// can be assigned a specific style.
@@ -92,4 +96,6 @@ namespace BansheeEngine
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern string[] Internal_GetStyleNames(IntPtr thisPtr);
     }
+
+    /** @} */
 }

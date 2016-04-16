@@ -4,6 +4,10 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /** @addtogroup Inspectors
+     *  @{
+     */
+
     /// <summary>
     /// Renders an inspector for the <see cref="PhysicsMesh"/> resource.
     /// </summary>
@@ -22,4 +26,6 @@ namespace BansheeEditor
             return InspectableState.NotModified;
         }
     }
+
+    /** @} */
 }

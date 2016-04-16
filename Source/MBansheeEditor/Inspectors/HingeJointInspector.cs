@@ -4,11 +4,15 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /** @addtogroup Inspectors
+     *  @{
+     */
+
     /// <summary>
     /// Renders an inspector for the <see cref="HingeJoint"/> component.
     /// </summary>
     [CustomInspector(typeof(HingeJoint))]
-    public class HingeJointInspector : JointInspector
+    internal class HingeJointInspector : JointInspector
     {
         private GUIToggleField enableLimitField = new GUIToggleField(new LocEdString("Enable limit"));
         private LimitAngularRangeGUI limitGUI;
@@ -193,4 +197,6 @@ namespace BansheeEditor
             driveLayout.Active = enable;
         }
     }
+
+    /** @} */
 }

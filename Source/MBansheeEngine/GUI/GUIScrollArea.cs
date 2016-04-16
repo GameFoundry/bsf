@@ -5,6 +5,10 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
+    /** @addtogroup GUI-Engine
+     *  @{
+     */
+
     /// <summary>
     /// Scroll bar options for a GUI scroll area.
     /// </summary>
@@ -150,7 +154,9 @@ namespace BansheeEngine
         /// Creates a new scroll area.
         /// </summary>
         /// <param name="scrollBarStyle">Optional style that controls the look of the scroll bars. Style will be retrieved 
-        ///                              from the active GUISkin. If not specified default element style is used.</param>        
+        ///                              from the active GUISkin. If not specified default element style is used.</param> 
+        /// <param name="scrollAreaStyle">Optional style that controls the look of the scroll area. Style will be retrieved 
+        ///                              from the active GUISkin. If not specified default element style is used.</param>      
         /// <param name="options">Options that allow you to control how is the element positioned and sized. This will 
         ///                       override any similar options set by style.</param>
         public GUIScrollArea(string scrollBarStyle, string scrollAreaStyle, params GUIOption[] options)
@@ -189,4 +195,6 @@ namespace BansheeEngine
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern int Internal_GetScrollBarWidth(IntPtr nativeInstance);
     }
+
+    /** @} */
 }

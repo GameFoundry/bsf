@@ -5,6 +5,10 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /** @addtogroup Inspectors
+     *  @{
+     */
+
     /// <summary>
     /// Draws GUI elements for inspecting an <see cref="Spring"/> object.
     /// </summary>
@@ -489,4 +493,6 @@ namespace BansheeEditor
                 OnConfirmed();
         }
     }
+
+    /** @} */
 }

@@ -4,11 +4,15 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /** @addtogroup Inspectors
+     *  @{
+     */
+
     /// <summary>
     /// Renders an inspector for the <see cref="MeshCollider"/> component.
     /// </summary>
     [CustomInspector(typeof(MeshCollider))]
-    public class MeshColliderInspector : ColliderInspector
+    internal class MeshColliderInspector : ColliderInspector
     {
         private GUIResourceField meshField = new GUIResourceField(typeof(PhysicsMesh), new LocEdString("Mesh"));
 
@@ -67,4 +71,6 @@ namespace BansheeEditor
             base.Refresh(collider);
         }
     }
+
+    /** @} */
 }

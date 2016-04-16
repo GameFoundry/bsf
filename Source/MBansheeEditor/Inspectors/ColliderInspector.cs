@@ -4,10 +4,14 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /** @addtogroup Inspectors
+     *  @{
+     */
+
     /// <summary>
     /// Renders common inspector elements for all <see cref="Collider"/> components.
     /// </summary>
-    public abstract class ColliderInspector : Inspector
+    internal abstract class ColliderInspector : Inspector
     {
         private GUIToggleField isTriggerField = new GUIToggleField(new LocEdString("Is trigger"));
         private GUIFloatField massField = new GUIFloatField(new LocEdString("Mass"));
@@ -123,4 +127,6 @@ namespace BansheeEditor
                 modifyState |= InspectableState.Modified;
         }
     }
+
+    /** @} */
 }

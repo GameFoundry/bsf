@@ -7,6 +7,10 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /** @addtogroup GUI-Editor 
+     *  @{
+     */
+
     /// <summary>
     /// Base class for objects that display GUI for a modifyable dictionary of elements. Elements can be added, modified or
     /// removed.
@@ -1279,4 +1283,6 @@ namespace BansheeEditor
             localTitleLayout = false;
         }
     }
+
+    /** @} */
 }

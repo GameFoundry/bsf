@@ -5,6 +5,10 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
+    /** @addtogroup Physics
+     *  @{
+     */
+
     /// <summary>
     /// Material that controls how two physical objects interact with each other. Materials of both objects are used during
     /// their interaction and their combined values are used.
@@ -84,4 +88,6 @@ namespace BansheeEngine
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetRestitution(IntPtr thisPtr, float value);
     }
+
+    /** @} */
 }

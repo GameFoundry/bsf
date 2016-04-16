@@ -120,6 +120,8 @@ namespace BansheeEngine
 			INT32 usage = TU_STATIC);
 
 	private:
+		POOLED_RENDER_TEXTURE_DESC() {}
+
 		friend class RenderTexturePool;
 
 		UINT32 width;

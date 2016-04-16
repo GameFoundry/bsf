@@ -5,6 +5,10 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
+    /** @addtogroup GUI-Engine
+     *  @{
+     */
+
     /// <summary>
     /// Container for texture and text color used in a particular GUI element style.
     /// </summary>
@@ -20,4 +24,6 @@ namespace BansheeEngine
         /// </summary>
         public Color TextColor;
     };
+
+    /** @} */
 }

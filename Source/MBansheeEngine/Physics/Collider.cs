@@ -4,6 +4,10 @@ using System;
 
 namespace BansheeEngine
 {
+    /** @addtogroup Physics
+     *  @{
+     */
+
     /// <summary>
     /// Collider represents physics geometry that can be in multiple states:
     ///  - Default: Static geometry that physics objects can collide with.
@@ -476,4 +480,6 @@ namespace BansheeEngine
             public CollisionReportMode collisionReportMode = CollisionReportMode.None;
         }
     }
+
+    /** @} */
 }

@@ -5,6 +5,10 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /** @addtogroup Inspectors
+     *  @{
+     */
+
     /// <summary>
     /// Renders an inspector for the <see cref="Shader"/> resource.
     /// </summary>
@@ -23,4 +27,6 @@ namespace BansheeEditor
             return InspectableState.NotModified;
         }
     }
+
+    /** @} */
 }

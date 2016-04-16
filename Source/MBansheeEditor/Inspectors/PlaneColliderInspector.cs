@@ -4,11 +4,15 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /** @addtogroup Inspectors
+     *  @{
+     */
+
     /// <summary>
     /// Renders an inspector for the <see cref="PlaneCollider"/> component.
     /// </summary>
     [CustomInspector(typeof(PlaneCollider))]
-    public class PlaneColliderInspector : ColliderInspector
+    internal class PlaneColliderInspector : ColliderInspector
     {
         private GUIVector3Field normalField = new GUIVector3Field(new LocEdString("Normal"));
         private GUIFloatField distanceField = new GUIFloatField(new LocEdString("Distance"));
@@ -82,4 +86,6 @@ namespace BansheeEditor
             base.Refresh(collider);
         }
     }
+
+    /** @} */
 }

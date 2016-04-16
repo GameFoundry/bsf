@@ -6,6 +6,10 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /** @addtogroup GUI-Editor 
+     *  @{
+     */
+
     /// <summary>
     /// Editor GUI element that displays a reference to a <see cref="Texture"/> and an optional label. Textures can
     /// be dragged and dropped onto the field to update the reference. This is similar to <see cref="GUIResourceField"/>
@@ -117,4 +121,6 @@ namespace BansheeEditor
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetTint(IntPtr nativeInstance, ref Color color);
     }
+
+    /** @} */
 }

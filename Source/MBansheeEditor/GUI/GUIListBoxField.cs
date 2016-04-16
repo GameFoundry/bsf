@@ -6,6 +6,10 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /** @addtogroup GUI-Editor 
+     *  @{
+     */
+
     /// <summary>
     /// Editor GUI element that displays a list box with user-specified elements and an optional label. List box can be
     /// a standard list-box that allows a single element to be selected, or a multi-select list box where any number of
@@ -338,4 +342,6 @@ namespace BansheeEditor
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetTint(IntPtr nativeInstance, ref Color color);
     }
+
+    /** @} */
 }

@@ -1,11 +1,14 @@
 ﻿//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
-
 using System;
 using System.Runtime.InteropServices;
 
 namespace BansheeEngine
 {
+    /** @addtogroup Physics
+     *  @{
+     */
+
     /// <summary>
     /// Base class for all Joint types. Joints constrain how two rigidbodies move relative to one another (for example a
     /// door hinge). One of the bodies in the joint must always be movable (that is non-kinematic).
@@ -1461,4 +1464,6 @@ namespace BansheeEngine
         public Radian yLimitAngle;
         public Radian zLimitAngle;
     }
+
+    /** @} */
 }

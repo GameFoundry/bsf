@@ -8,6 +8,10 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /** @addtogroup GUI-Editor 
+     *  @{
+     */
+
     /// <summary>
     /// GUI element that displays all scene objects in the current scene as a tree view.
     /// </summary>
@@ -177,4 +181,6 @@ namespace BansheeEditor
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_RenameSelection(IntPtr thisPtr);
     }
+
+    /** @} */
 }

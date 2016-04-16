@@ -4,6 +4,10 @@ using System;
 
 namespace BansheeEngine
 {
+    /** @addtogroup Physics
+     *  @{
+     */
+
     /// <summary>
     /// A joint that maintains an upper or lower (or both) bound on the distance between two bodies.
     /// </summary>
@@ -216,4 +220,6 @@ namespace BansheeEngine
             }
         }
     }
+
+    /** @} */
 }

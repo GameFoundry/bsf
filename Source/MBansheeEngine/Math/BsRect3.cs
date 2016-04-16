@@ -4,6 +4,10 @@ using System.Runtime.InteropServices;
 
 namespace BansheeEngine
 {
+    /** @addtogroup Math
+     *  @{
+     */
+
     /// <summary>
     /// Represents a rectangle in three dimensional space. It is represented by two axes that extend from the specified 
     /// origin. Axes should be perpendicular to each other and they extend in both positive and negative directions from 
@@ -87,4 +91,6 @@ namespace BansheeEngine
         [SerializeField]
         private float _extentVert;
 	};
+
+    /** @} */
 }

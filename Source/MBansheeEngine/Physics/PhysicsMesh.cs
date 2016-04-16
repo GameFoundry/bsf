@@ -5,6 +5,10 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
+    /** @addtogroup Physics
+     *  @{
+     */
+
     /// <summary>
     /// Mesh that is used purely for collision purposes and not rendering. For example as a collider or a trigger.
     /// </summary>
@@ -54,6 +58,7 @@ namespace BansheeEngine
         /// performance impact than triangle meshes.
         /// </summary>
         Convex
-
     }
+
+    /** @} */
 }

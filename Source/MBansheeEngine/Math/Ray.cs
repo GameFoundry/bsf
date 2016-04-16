@@ -1,13 +1,14 @@
 ﻿//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace BansheeEngine
 {
+    /** @addtogroup Math
+     *  @{
+     */
+
     /// <summary>
     /// A ray in 3D space represented with an origin and direction.
     /// </summary>
@@ -74,4 +75,6 @@ namespace BansheeEngine
             return String.Format("(origin: {0} direction: {1})", origin, direction);
         }
     };
+
+    /** @} */
 }

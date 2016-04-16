@@ -5,6 +5,10 @@ using System.Runtime.InteropServices;
 
 namespace BansheeEngine
 {
+    /** @addtogroup Math
+     *  @{
+     */
+
     /// <summary>
     /// A 4x4 matrix. Can be used for homogenous transformations of three dimensional vectors and points.
     /// </summary>
@@ -618,4 +622,6 @@ namespace BansheeEngine
                 m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33);
         }
     }
+
+    /** @} */
 }

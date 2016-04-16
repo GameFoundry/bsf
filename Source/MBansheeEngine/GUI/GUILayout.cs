@@ -6,6 +6,10 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
+    /** @addtogroup GUI-Engine
+     *  @{
+     */
+
     /// <summary>
     /// Base class for GUI layout implementations. GUI layouts serve as containers
     /// for GUI elements that position and resize the elements automatically with
@@ -181,6 +185,7 @@ namespace BansheeEngine
         /// <summary>
         /// Adds a new GUI panel as a child of this layout. Panel is inserted before the element at the specified index.
         /// </summary>
+        /// <param name="idx">Index at which to insert the panel.</param>
         /// <param name="depth">Depth at which to position the panel. Panels with lower depth will be displayed in front of 
         ///                     panels with higher depth. Provided depth is relative to the depth of the parent GUI panel. 
         ///                     The depth value will be clamped if outside of the depth range of the parent GUI panel.</param>
@@ -214,6 +219,7 @@ namespace BansheeEngine
         /// Adds a new fixed space object. Fixed space inserts a blank space with specific width or height (depending on 
         /// layout type) in the layout. Space is inserted after all existing elements.
         /// </summary>
+        /// <param name="idx">Index at which to insert the space.</param>
         /// <param name="size">Size of the space in pixels. This will represent either width or height depending whether the 
         /// layout is vertical or horizontal.</param>
         /// <returns>Newly created fixed space.</returns>
@@ -260,4 +266,6 @@ namespace BansheeEngine
         [MethodImpl(MethodImplOptions.InternalCall)]
         protected static extern void Internal_Clear(IntPtr instance);
     }
+
+    /** @} */
 }

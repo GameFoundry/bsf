@@ -2,6 +2,10 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 namespace BansheeEngine
 {
+    /** @addtogroup Physics
+     *  @{
+     */
+
     /// <summary>
     /// A collider represented by an arbitrary mesh.
     /// </summary>
@@ -72,4 +76,6 @@ namespace BansheeEngine
             return meshCollider;
         }
     }
+
+    /** @} */
 }

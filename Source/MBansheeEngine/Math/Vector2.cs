@@ -5,6 +5,10 @@ using System.Runtime.InteropServices;
 
 namespace BansheeEngine
 {
+    /** @addtogroup Math
+     *  @{
+     */
+
     /// <summary>
     /// A two dimensional vector.
     /// </summary>
@@ -259,4 +263,6 @@ namespace BansheeEngine
             return "(" + x + ", " + y + ")";
         }
     }
+
+    /** @} */
 }

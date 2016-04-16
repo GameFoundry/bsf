@@ -6,11 +6,15 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /** @addtogroup Inspectors
+     *  @{
+     */
+
     /// <summary>
     /// Renders an inspector for the <see cref="GUISkin"/> resource.
     /// </summary>
     [CustomInspector(typeof(GUISkin))]
-    public class GUISkinInspector : Inspector
+    internal class GUISkinInspector : Inspector
     {
         private GUIDictionaryField<string, GUIElementStyle, GUIElementStyleEntry> valuesField;
 
@@ -105,7 +109,7 @@ namespace BansheeEditor
         /// <summary>
         /// Row element used for displaying GUI for GUI element style dictionary elements.
         /// </summary>
-        public class GUIElementStyleEntry : GUIDictionaryFieldRow
+        private class GUIElementStyleEntry : GUIDictionaryFieldRow
         {
             private GUITextField keyField;
             private GUIElementStyleGUI valueField;
@@ -627,4 +631,6 @@ namespace BansheeEditor
             }
         }
     }
+
+    /** @} */
 }

@@ -5,6 +5,10 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
+    /** @addtogroup Physics
+     *  @{
+     */
+
     /// <summary>
     /// Provides global access to the physics system, including scene queries and global options.
     /// </summary>
@@ -670,4 +674,6 @@ namespace BansheeEngine
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool Internal_ConvexOverlapAny(IntPtr mesh, ref Vector3 position, ref Quaternion rotation, ulong layer);
     }
+
+    /** @} */
 }

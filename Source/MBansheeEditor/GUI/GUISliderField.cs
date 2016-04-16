@@ -6,6 +6,10 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /** @addtogroup GUI-Editor 
+     *  @{
+     */
+
     /// <summary>
     /// Editor GUI element that displays a slider with floating point input field and an optional label.
     /// </summary>
@@ -118,4 +122,6 @@ namespace BansheeEditor
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetStep(IntPtr nativeInstance, float step);
     }
+
+    /** @} */
 }

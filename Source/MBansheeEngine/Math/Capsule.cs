@@ -4,6 +4,10 @@ using System.Runtime.InteropServices;
 
 namespace BansheeEngine
 {
+    /** @addtogroup Math
+     *  @{
+     */
+
     /// <summary>
     /// Represents a capsule with a line segment and a radius.
     /// </summary>
@@ -37,7 +41,7 @@ namespace BansheeEngine
         /// <summary>
         /// Creates a new capsule object.
         /// </summary>
-        /// <param name="center">Line segment along which the capsule lies.</param>
+        /// <param name="segment">Line segment along which the capsule lies.</param>
         /// <param name="radius">Radius that defines the distance of the capsule from its line segment.</param>
         public Capsule(LineSegment segment, float radius)
         {
@@ -45,4 +49,6 @@ namespace BansheeEngine
             this.radius = radius;
         }
     };
+
+    /** @} */
 }

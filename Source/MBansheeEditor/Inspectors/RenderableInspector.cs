@@ -6,6 +6,10 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /** @addtogroup Inspectors
+     *  @{
+     */
+
     /// <summary>
     /// Renders an inspector for the <see cref="Renderable"/> component.
     /// </summary>
@@ -200,7 +204,7 @@ namespace BansheeEditor
         /// <summary>
         /// Row element used for displaying GUI for material array elements.
         /// </summary>
-        public class MaterialArrayRow : GUIListFieldRow
+        private class MaterialArrayRow : GUIListFieldRow
         {
             private GUIResourceField materialField;
 
@@ -232,4 +236,6 @@ namespace BansheeEditor
             }
         }
     }
+
+    /** @} */
 }

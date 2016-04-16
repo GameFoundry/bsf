@@ -4,11 +4,15 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /** @addtogroup Inspectors
+     *  @{
+     */
+
     /// <summary>
     /// Renders an inspector for the <see cref="DistanceJoint"/> component.
     /// </summary>
     [CustomInspector(typeof(DistanceJoint))]
-    public class DistanceJointInspector : JointInspector
+    internal class DistanceJointInspector : JointInspector
     {
         private GUIToggleField enableMinLimitField = new GUIToggleField(new LocEdString("Enable minimum limit"));
         private GUIFloatField minLimitField = new GUIFloatField(new LocEdString("Minimum distance"));
@@ -154,4 +158,6 @@ namespace BansheeEditor
             base.Refresh(joint);
         }
     }
+
+    /** @} */
 }

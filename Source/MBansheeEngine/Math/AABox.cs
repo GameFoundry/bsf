@@ -4,6 +4,10 @@ using System.Runtime.InteropServices;
 
 namespace BansheeEngine
 {
+    /** @addtogroup Math
+     *  @{
+     */
+
     /// <summary>
     /// Axis aligned box represented by minimum and maximum point.
     /// </summary>
@@ -97,4 +101,6 @@ namespace BansheeEngine
             return "Min: " + minimum + ". Max: " + maximum;
         }
 	};
+
+    /** @} */
 }

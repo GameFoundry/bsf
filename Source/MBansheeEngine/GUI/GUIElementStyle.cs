@@ -6,6 +6,10 @@ using System.Runtime.InteropServices;
 
 namespace BansheeEngine
 {
+    /** @addtogroup GUI-Engine
+     *  @{
+     */
+
     /// <summary>
     /// Rectangle represented in the form of offsets from some parent rectangle.
     /// </summary>
@@ -436,4 +440,6 @@ namespace BansheeEngine
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_AddSubStyle(IntPtr nativeInstance, string guiType, string styleName);
     }
+
+    /** @} */
 }

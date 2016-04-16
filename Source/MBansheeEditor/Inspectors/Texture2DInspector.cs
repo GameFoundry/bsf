@@ -5,6 +5,10 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /** @addtogroup Inspectors
+     *  @{
+     */
+
     /// <summary>
     /// Renders an inspector for the <see cref="Texture2D"/> resource.
     /// </summary>
@@ -105,4 +109,6 @@ namespace BansheeEditor
             ProjectLibrary.Reimport(resourcePath, importOptions, true);
         }
     }
+
+    /** @} */
 }

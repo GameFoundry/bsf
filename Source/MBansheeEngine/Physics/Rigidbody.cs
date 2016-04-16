@@ -5,6 +5,10 @@ using System.Collections.Generic;
 
 namespace BansheeEngine
 {
+    /** @addtogroup Physics
+     *  @{
+     */
+
     /// <summary>
     /// Rigidbody is a dynamic physics object that can be moved using forces (or directly). It will interact with other
     /// static and dynamic physics objects in the scene accordingly (it will push other non-kinematic rigidbodies,
@@ -805,4 +809,6 @@ namespace BansheeEngine
         /// </summary>
         Extrapolate
     }
+
+    /** @} */
 }

@@ -139,7 +139,7 @@ const Vector<RenderQueueElement>& sortedElements = queue->getSortedElements();
 ~~~~~~~~~~~~~
 
 ### Renderer material {#renderer_b_a_b}
-Often the renderer needs to use special shaders for various effects (e.g. post-processing effects like FXAA). Unlike shaders and materials used by users, these shaders are built-in into the engine. Since we know they'll always be there we make make it easier for the renderer to load and use them by implementing the @ref BansheeEngine::RendererMaterial "RendererMaterial" interface:
+Often the renderer needs to use special shaders for various effects (e.g. post-processing effects like FXAA). Unlike shaders and materials used by users, these shaders are built-in into the engine. Since we know they'll always be there we can make it easier for the renderer to load and use them by implementing the @ref BansheeEngine::RendererMaterial "RendererMaterial" interface:
 ~~~~~~~~~~~~~{.cpp}
 // Set up a post-processing material
 class DownsampleMat : public RendererMaterial<DownsampleMat>
@@ -152,7 +152,7 @@ public:
 	{
 		// Retrieve material parameters, and perform other set-up
 		mInputTexture = mMaterial->getParamTexture("gInputTex");
-		mInvTexSize = mMaterial->getParamTexture("gInvTexSize");
+		mInvTexSize = mMaterial->getParamVec2("gInvTexSize");
 	}
 
 	// Set up parameters and render a full screen quad using the material
@@ -185,31 +185,137 @@ void DirectionalLightMat::_initDefines(ShaderDefines& defines)
 
 Renderer material implementation starts by deriving from @ref BansheeEngine::RendererMaterial<T> "RendererMaterial<T>". This is followed by a declaration of the @ref RMAT_DEF macro, which contains a path to the shader file. The shader file should be located in "Data/Raw/Engine/Shaders/" folder.
 
-You must also implement `_initDefines` method, which allows you to modify the compilation environment. It can be empty if not required, but it is useful if your shader has different settings in the form of \#ifdef blocks, in which case different renderer materials can reference the same file, but different options depending on what is set on this method. Be aware that all built-in shaders are pre-processed by the @ref BansheeEngine::BuiltinResources "BuiltinResources" manager. If you are changing define options you should delete the "Data/Engine/Timestamp.asset" file, which will force the manager to rebuild all shaders (and actually apply the new defines).
+You must also implement `_initDefines` method, which allows you to modify the compilation environment. It can be empty if not required, but it is useful if your shader has different settings in the form of \#ifdef blocks, in which case different renderer materials can reference the same file, but yield different results depending on what is set in this method. Be aware that all built-in shaders are pre-processed by the @ref BansheeEngine::BuiltinResources "BuiltinResources" manager. If you are changing define options you should delete the "Data/Engine/Timestamp.asset" file, which will force the manager to rebuild all shaders (and actually apply the new defines).
 
 Once these methods/macros are implemented, you can then instantiate your renderer material and access the @ref BansheeEngine::Material "Material" using the `mMaterial` field. Normally your material will have some parameters, which you'll want to retrieve in the constructor, and then set before rendering. 
 
-@see materials
-@see renderTargets
-@see renderAPI
+@see @ref materials to learn how to work with materials in general.
+@see @ref renderTargets to learn how to create and render to a render target.
 
 ### Parameter blocks {#renderer_b_a_c}
+If you shader has data parameters (like float, int, bool) it is efficient to group them into blocks of parameters. These blocks are better known as uniform buffers in OpenGL, or constant buffers in DX11. An example of such a buffer in HLSL looks like this:
+~~~~~~~~~~~~~{.cpp}
+// Contains various parameters specific to the current camera
+cbuffer PerCamera
+{
+	float3	 gViewDir;
+	float3 	 gViewOrigin;
+	float4x4 gMatViewProj;
+	float4x4 gMatView;
+	float4x4 gMatProj;
+	float4x4 gMatInvProj;
+	float4x4 gMatInvViewProj;			
+}
+~~~~~~~~~~~~~
+
+While you could assign these parameters using the standard way as described in the [material](@ref materials) manual:
+~~~~~~~~~~~~~{.cpp}
+MaterialParamVec3Core viewDirParam = mMaterial->getParamVec3("gViewDir");
+viewDirParam.set(Vector3(0.707.0, 0.707f, 0.0f));
+// Or just simply:
+// mMaterial->setVec3("gViewDir", Vector3(0.707.0, 0.707f, 0.0f));
+
+... repeat for all other parameters
+~~~~~~~~~~~~~
+
+It is more efficient to assign them as a parameter block. Primarily because parameter blocks can be set once, and then shared between multiple materials. To set up a parameter block use the @ref BS_PARAM_BLOCK_BEGIN, @ref BS_PARAM_BLOCK_ENTRY and @ref BS_PARAM_BLOCK_END macros, like so:
+
+~~~~~~~~~~~~~{.cpp}
+BS_PARAM_BLOCK_BEGIN(PerCameraParamBlock)
+	BS_PARAM_BLOCK_ENTRY(Vector3, gViewDir)
+	BS_PARAM_BLOCK_ENTRY(Vector3, gViewOrigin)
+	BS_PARAM_BLOCK_ENTRY(Matrix4, gMatViewProj)
+	BS_PARAM_BLOCK_ENTRY(Matrix4, gMatView)
+	BS_PARAM_BLOCK_ENTRY(Matrix4, gMatProj)
+	BS_PARAM_BLOCK_ENTRY(Matrix4, gMatInvProj)
+	BS_PARAM_BLOCK_ENTRY(Matrix4, gMatInvViewProj)
+BS_PARAM_BLOCK_END
+~~~~~~~~~~~~~
+
+By using this approach you lose all the error checking normally performed by @ref BansheeEngine::Material "Material". You must make sure that the layout in C++ matches the layout in the GPU program. In case of GLSL you must also specify `layout(std140)` keyword to ensure its layout is compatible with C++ struct layout. You must also make sure that variable names match the names in the GPU program.
+
+Once your parameter block is created, you can instantiate it, assign values to it, and assign the blocks to materials, like so:
+~~~~~~~~~~~~~{.cpp}
+PerCameraParamBlock block; // Instantiate block, normally you'd want to store this
+block.gViewDir.set(Vector3(0.707.0, 0.707f, 0.0f));
+... set other parameters in block ...
+
+SPtr<MaterialCore> material = ...;
+material->setParamBlockBuffer("PerCamera", block.getBuffer());
+
+... render using the material ...
+~~~~~~~~~~~~~
+
+Blocks are often used with renderer materials we described in the previous section, although we didn't use one in that example.
 
 ### Renderer semantics {#renderer_b_a_d}
+Renderer semantics allow user created shaders to request that certain parameters in a GPU program are populated by the renderer. See the [materials](@ref materials) and [BSLFX](@ref bslfx) manuals on how to specify such semantics. 
 
-		auto& texParams = mMaterial->getShader()->getTextureParams();
-		for (auto& entry : texParams)
-		{
-			if (entry.second.rendererSemantic == RPS_GBufferA)
-				mGBufferA = mMaterial->getParamTexture(entry.second.name);
-			else if (entry.second.rendererSemantic == RPS_GBufferB)
-				mGBufferB = mMaterial->getParamTexture(entry.second.name);
-			else if (entry.second.rendererSemantic == RPS_GBufferDepth)
-				mGBufferDepth = mMaterial->getParamTexture(entry.second.name);
-		}
+For example the user might request a "VP" semantic, which could be recognized by the renderer that the shader requests a view-projection matrix. Such a matrix is not something that the user should have to assign to the material himself. The renderer can choose to parse material parameters looking for supported semantics, and assign their values.
+
+For example:
+~~~~~~~~~~~~~{.cpp}
+StringID RPS_ViewProjTfrm = "VP"; // Define semantic identifier
+
+SPtr<MaterialCore> material = ...;
+SPtr<ShaderCore> shader = material->getShader();
+auto& dataParams = shader->getDataParams();
+for (auto& entry : texParams)
+{
+	if (entry.second.rendererSemantic == RPS_ViewProjTfrm)
+	{
+		// Found it, assign some value to the parameter
+		mMaterial->setMat4(entry.second.name, Matrix4::IDENTITY);
+		break;
+	}
+}
+~~~~~~~~~~~~~
+
+You can choose to implement semantics in your renderer, but they aren't required. You can just as easily require the user to use specific parameter names, and then use those names directly (like we used in previous examples in this manual).
 
 ### RendererUtility {#renderer_b_a_e}
 
-### RenderTargetPool {#renderer_b_a_f}
+@ref BansheeEngine::RendererUtility "RendererUtility" provides some commonly required functionality for rendering. For the most part these are just wrappers around @ref BansheeEngine::RenderAPI "RenderAPI" methods, so you don't have to set things like vertex/index buffers manually, as described in [render API](@ref renderAPI) manual.
+ - @ref BansheeEngine::RendererUtility::setPass "RendererUtility::setPass" - Binds a pass from a specific @ref BansheeEngine::Material "Material" for rendering. Any further draw calls will be rendered using this pass.
+ - @ref BansheeEngine::RendererUtility::setPassParams "RendererUtility::setPassParams" - Binds parameters (textures, samplers, etc.) from a @ref BansheeEngine::Material "Material". Any further draw calls will be rendered using these parameters.
+ - @ref BansheeEngine::RendererUtility::draw "RendererUtility::draw" - Draws a specific sub-mesh of the provided @ref BansheeEngine::MeshCore "Mesh", using the currently bound pass.
+ - @ref BansheeEngine::RendererUtility::blit "RendererUtility::blit" - Copies the contents of the provided texture into the currently bound render target.
+ - @ref BansheeEngine::RendererUtility::drawScreenQuad "RendererUtility::drawScreenQuad" - Draws a quad using the currently bound pass.
+ 
+Use @ref BansheeEngine::gRendererUtility "gRendererUtility" to access the @ref BansheeEngine::RendererUtility "RendererUtility" more easily.
+ 
+Binding a material and rendering using @ref BansheeEngine::RendererUtility "RendererUtility":
+~~~~~~~~~~~~~{.cpp}
+SPtr<MaterialCore> material = ...;
+SPtr<MeshCore> mesh = ...;
+
+gRendererUtility().setPass(material);
+... set material parameters ...
+gRendererUtility().setPassParams(material);
+gRendererUtility().draw(mesh, mesh->getProperties().getSubMesh(0));
+~~~~~~~~~~~~~
+ 
+### RenderTexturePool {#renderer_b_a_f}
+Although you can create render textures manually as described in the [render target](@ref renderTargets) manual, @ref BansheeEngine::RenderTexturePool "RenderTexturePool" provides a simpler and more efficient way of doing it. It will keep alive any referenced render textures, so that other systems may re-use them if their size/formats match. This can improve performance when using many temporary/intermediary render textures (like in post-processing).
+
+To request a render texture, first populate the @ref BansheeEngine::POOLED_RENDER_TEXTURE_DESC "POOLED_RENDER_TEXTURE_DESC" descriptor, by calling either @ref BansheeEngine::POOLED_RENDER_TEXTURE_DESC::create2D "POOLED_RENDER_TEXTURE_DESC::create2D", @ref BansheeEngine::POOLED_RENDER_TEXTURE_DESC::create3D "POOLED_RENDER_TEXTURE_DESC::create3D" or @ref BansheeEngine::POOLED_RENDER_TEXTURE_DESC::createCube "POOLED_RENDER_TEXTURE_DESC::createCube".
+
+Then call @ref BansheeEngine::RenderTexturePool::get "RenderTexturePool::get" which will either create a new render texture, or return one from the pool. The returned object is @ref BansheeEngine::PooledRenderTexture "PooledRenderTexture" from which you can access the actual render texture.
+
+Once you are done using the texture, call @ref BansheeEngine::RenderTexturePool::release "RenderTexturePool::release" to return the texture to the pool, and make it available for other systems. If you plan on using this texture again, make sure to keep a reference to the @ref BansheeEngine::PooledRenderTexture "PooledRenderTexture". This will prevent the pool from fully destroying the texture so it may be reused.
+
+For example:
+~~~~~~~~~~~~~{.cpp}
+POOLED_RENDER_TEXTURE_DESC desc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_R8G8B8A8, 1024, 1024);
+SPtr<PooledRenderTexture> pooledRT = RenderTexturePool::instance().get(desc);
+
+RenderAPICore::instance().setRenderTarget(pooledRT->renderTexture);
+... render to target ...
+RenderTexturePool::instance().release(pooledRT);
+// Keep a reference to pooledRT if we plan on re-using it, then next time just call get() using the same descriptor
+~~~~~~~~~~~~~
 
 ### Renderer options {#renderer_b_a_g}
+You can customize your rendering at runtime by implementing the @ref BansheeEngine::CoreRendererOptions "RendererOptions" class. Your @ref BansheeEngine::CoreRendererOptions "RendererOptions" implementation can then be assigned to the renderer by calling @ref BansheeEngine::CoreRenderer::setOptions "Renderer::setOptions", and accessed within the renderer via the `mOptions` field. No default options are provided and it's up to your renderer to decide what it requires.
+
+Be aware that options are set from the simulation thread, and if you want to use them on the core thread to either properly synchronize the access, or send a copy of the options to the core thread.

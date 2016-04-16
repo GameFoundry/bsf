@@ -5,6 +5,10 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
+    /** @addtogroup GUI-Engine
+     *  @{
+     */
+
     /// <summary>
     /// Vertical layout that will position its child elements top to bottom.
     /// </summary>
@@ -28,4 +32,6 @@ namespace BansheeEngine
             Internal_CreateInstanceY(this, options);
         }
     }
+
+    /** @} */
 }

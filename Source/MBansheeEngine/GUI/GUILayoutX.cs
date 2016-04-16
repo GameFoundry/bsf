@@ -5,6 +5,10 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
+    /** @addtogroup GUI-Engine
+     *  @{
+     */
+
     /// <summary>
     /// Horizontal layout that will position its child elements left to right.
     /// </summary>
@@ -19,4 +23,6 @@ namespace BansheeEngine
             Internal_CreateInstanceX(this, options);
         }
     }
+
+    /** @} */
 }

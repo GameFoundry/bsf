@@ -4,6 +4,10 @@ using System;
 
 namespace BansheeEngine
 {
+    /** @addtogroup Physics
+     *  @{
+     */
+
     /// <summary>
     /// A spherical joint removes all translational degrees of freedom but allows all rotational degrees of freedom. 
     /// Essentially this ensures that the anchor points of the two bodies are always coincident. Bodies are allowed to
@@ -82,4 +86,6 @@ namespace BansheeEngine
             }
         }
     }
+
+    /** @} */
 }

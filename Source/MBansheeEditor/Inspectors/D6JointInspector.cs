@@ -5,11 +5,15 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /** @addtogroup Inspectors
+     *  @{
+     */
+
     /// <summary>
     /// Renders an inspector for the <see cref="D6Joint"/> component.
     /// </summary>
     [CustomInspector(typeof(D6Joint))]
-    public class D6JointInspector : JointInspector
+    internal class D6JointInspector : JointInspector
     {
         private GUIEnumField[] motionFields = new GUIEnumField[(int) D6JointAxis.Count];
 
@@ -297,4 +301,6 @@ namespace BansheeEditor
                 OnConfirmed();
         }
     }
+
+    /** @} */
 }

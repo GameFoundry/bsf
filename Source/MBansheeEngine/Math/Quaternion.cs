@@ -5,6 +5,10 @@ using System.Runtime.InteropServices;
 
 namespace BansheeEngine
 {
+    /** @addtogroup Math
+     *  @{
+     */
+
     /// <summary>
     /// Quaternion used for representing rotations.
     /// </summary>
@@ -796,4 +800,6 @@ namespace BansheeEngine
             return String.Format("({0}, {1}, {2}, {3})", x, y, z, w);
         }
     }
+
+    /** @} */
 }

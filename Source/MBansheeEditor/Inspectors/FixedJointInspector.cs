@@ -4,11 +4,15 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    /** @addtogroup Inspectors
+     *  @{
+     */
+
     /// <summary>
     /// Renders an inspector for the <see cref="FixedJoint"/> component.
     /// </summary>
     [CustomInspector(typeof(FixedJoint))]
-    public class FixedJointInspector : JointInspector
+    internal class FixedJointInspector : JointInspector
     {
         /// <inheritdoc/>
         protected internal override void Initialize()
@@ -35,4 +39,6 @@ namespace BansheeEditor
             return oldState;
         }
     }
+
+    /** @} */
 }

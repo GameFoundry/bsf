@@ -5,6 +5,10 @@ using System.Runtime.InteropServices;
 
 namespace BansheeEngine
 {
+    /** @addtogroup GUI-Engine
+     *  @{
+     */
+
     /// <summary>
     /// Controls GUI element layout options, possibly by overriding the default options specified in GUI element style. 
     /// These options control GUI element placement and size in a GUI layout.
@@ -112,4 +116,6 @@ namespace BansheeEngine
             return option;
         }
     }
+
+    /** @} */
 }

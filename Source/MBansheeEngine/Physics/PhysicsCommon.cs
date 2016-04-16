@@ -4,6 +4,10 @@ using System.Runtime.InteropServices;
 
 namespace BansheeEngine
 {
+    /** @addtogroup Physics
+     *  @{
+     */
+
     /// <summary>
     /// Hit information from a physics query.
     /// </summary>
@@ -147,4 +151,6 @@ namespace BansheeEngine
         /// </summary>
 		ReportPersistent, 
 	}
+
+    /** @} */
 }

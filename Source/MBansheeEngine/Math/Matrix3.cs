@@ -5,6 +5,10 @@ using System.Runtime.InteropServices;
 
 namespace BansheeEngine
 {
+    /** @addtogroup Math
+     *  @{
+     */
+
     /// <summary>
     /// A 3x3 matrix. Can be used for non-homogenous transformations of three dimensional vectors and points.
     /// </summary>
@@ -678,4 +682,6 @@ namespace BansheeEngine
                 m00, m01, m02, m10, m11, m12, m20, m21, m22);
         }
     }
+
+    /** @} */
 }

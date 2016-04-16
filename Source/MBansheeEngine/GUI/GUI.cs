@@ -5,6 +5,10 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
+    /** @addtogroup GUI-Engine
+     *  @{
+     */
+
     /// <summary>
     /// Provides access to a global <see cref="GUIPanel"/> that renders GUI on the main viewport. Use 
     /// <see cref="GUIWidget"/> if you need more control over the placement of GUI, or require it to be rendered to a 
@@ -54,4 +58,6 @@ namespace BansheeEngine
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetSkin(IntPtr skin);
     }
+
+    /** @} */
 }
