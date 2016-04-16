@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="DebugRelease|Win32">
-      <Configuration>DebugRelease</Configuration>
+    <ProjectConfiguration Include="OptimizedDebug|Win32">
+      <Configuration>OptimizedDebug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="DebugRelease|x64">
-      <Configuration>DebugRelease</Configuration>
+    <ProjectConfiguration Include="OptimizedDebug|x64">
+      <Configuration>OptimizedDebug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|Win32">
@@ -51,7 +51,7 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='OptimizedDebug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
@@ -65,7 +65,7 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='OptimizedDebug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
@@ -84,13 +84,13 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'" Label="PropertySheets">
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='OptimizedDebug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'" Label="PropertySheets">
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='OptimizedDebug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -106,7 +106,7 @@
     <OutDir>..\..\bin\x86\$(Configuration)\</OutDir>
     <IntDir>.\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='OptimizedDebug|Win32'">
     <OutDir>..\..\bin\x86\$(Configuration)\</OutDir>
     <IntDir>.\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
@@ -114,7 +114,7 @@
     <OutDir>..\..\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>.\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='OptimizedDebug|x64'">
     <OutDir>..\..\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>.\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
@@ -122,7 +122,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeFBXImporter/Include;../../Source/BansheeFBXImporter/Dependencies\Include;../../Dependencies/Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeFBXImporter/Include;../../Dependencies/BansheeFBXImporter/Include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_FBX_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
@@ -132,7 +132,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>../../lib/x86/$(Configuration);../../Dependencies/lib/x86/Debug;../../Source/$(ProjectName)/Dependencies/lib/x86/Debug</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../lib/x86/$(Configuration);../../Dependencies/BansheeFBXImporter/lib/x86/Debug;</AdditionalLibraryDirectories>
       <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;libfbxsdk-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -141,7 +141,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeFBXImporter/Include;../../Source/BansheeFBXImporter/Dependencies\Include;../../Dependencies/Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeFBXImporter/Include;../../Dependencies/BansheeFBXImporter/Include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_FBX_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
@@ -151,7 +151,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>../../lib/$(Platform)/$(Configuration);../../Dependencies/lib/x64/Debug;../../Source/$(ProjectName)/Dependencies/lib/x64/Debug</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../lib/$(Platform)/$(Configuration);../../Dependencies/BansheeFBXImporter/lib/x64/Debug;</AdditionalLibraryDirectories>
       <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;libfbxsdk-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -162,7 +162,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeFBXImporter/Include;../../Source/BansheeFBXImporter/Dependencies\Include;../../Dependencies/Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeFBXImporter/Include;../../Dependencies/BansheeFBXImporter/Include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_FBX_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <BufferSecurityCheck>false</BufferSecurityCheck>
@@ -176,18 +176,18 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>../../lib/x86/$(Configuration);../../Dependencies/lib/x86/Release;../../Source/$(ProjectName)/Dependencies/lib/x86/Release</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../lib/x86/$(Configuration);../../Dependencies/BansheeFBXImporter/lib/x86/Release;</AdditionalLibraryDirectories>
       <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;libfbxsdk-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='OptimizedDebug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeFBXImporter/Include;../../Source/BansheeFBXImporter/Dependencies\Include;../../Dependencies/Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeFBXImporter/Include;../../Dependencies/BansheeFBXImporter/Include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_FBX_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <BufferSecurityCheck>false</BufferSecurityCheck>
@@ -201,7 +201,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>../../lib/x86/$(Configuration);../../Dependencies/lib/x86/DebugRelease;../../Source/$(ProjectName)/Dependencies/lib/x86/DebugRelease</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../lib/x86/$(Configuration);../../Dependencies/BansheeFBXImporter/lib/x86/OptimizedDebug;</AdditionalLibraryDirectories>
       <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;libfbxsdk-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -212,7 +212,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeFBXImporter/Include;../../Source/BansheeFBXImporter/Dependencies\Include;../../Dependencies/Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeFBXImporter/Include;../../Dependencies/BansheeFBXImporter/Include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_FBX_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <BufferSecurityCheck>false</BufferSecurityCheck>
@@ -226,18 +226,18 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>../../lib/$(Platform)/$(Configuration);../../Dependencies/lib/x64/Release;../../Source/$(ProjectName)/Dependencies/lib/x64/Release</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../lib/$(Platform)/$(Configuration);../../Dependencies/BansheeFBXImporter/lib/x64/Release;</AdditionalLibraryDirectories>
       <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;libfbxsdk-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='OptimizedDebug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeFBXImporter/Include;../../Source/BansheeFBXImporter/Dependencies\Include;../../Dependencies/Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeFBXImporter/Include;../../Dependencies/BansheeFBXImporter/Include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_FBX_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <BufferSecurityCheck>false</BufferSecurityCheck>
@@ -251,7 +251,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>../../lib/$(Platform)/$(Configuration);../../Dependencies/lib/x64/DebugRelease;../../Source/$(ProjectName)/Dependencies/lib/x64/DebugRelease</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../lib/$(Platform)/$(Configuration);../../Dependencies/BansheeFBXImporter/lib/x64/OptimizedDebug;</AdditionalLibraryDirectories>
       <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;libfbxsdk-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>

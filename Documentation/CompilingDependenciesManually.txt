@@ -5,14 +5,14 @@ supported platforms and environments.
 ----------------------------------------------------------------------------------
 Core dependencies
 
-BansheeCore relies on the following 3rd party libraries:
+BansheeCore relies on:
  - NVIDIA Texture Tools 2.0.8
     - https://code.google.com/p/nvidia-texture-tools/
 	- See NVTTCompilationGuide.txt on how to compile it for Banshee
 
 Place dependency files in:
- - Library include files in (BansheeRootDir)/Dependencies/Include
- - Static library files in (BansheeRootDir)/Dependencies/lib/(Platform)/(Configuration)
+ - Library include files in (BansheeRootDir)/Dependencies/(Project)/Include
+ - Static library files in (BansheeRootDir)/Dependencies/(Project)/lib/(Platform)/(Configuration)
  - Dynamic library files in (BansheeRootDir)/bin/(Platform)/(Configuration)
 
 ----------------------------------------------------------------------------------
@@ -68,9 +68,9 @@ BansheePhysX (optional) relies on:
   - You will need PhysX3, PhysX3Common, PhysX3Cooking and PhysX3CharacterKinematic libraries
 
 Place plug-in specific dependency files in:
- - Library include files in (BansheeRootDir)/(PluginDir)/Dependencies/Include
- - Static library files in (BansheeRootDir)/(PluginDir)/Dependencies/lib/(Platform)/(Configuration)
- - Tools (executables) in (BansheeRootDir)/(PluginDir)/Dependencies/tools
+ - Library include files in (BansheeRootDir)/Dependencies/(Project)/Include
+ - Static library files in (BansheeRootDir)/Dependencies/(Project)/lib/(Platform)/(Configuration)
+ - Tools (executables) in (BansheeRootDir)/Dependencies/(Project)/tools
  - Dynamic library files in (BansheeRootDir)/bin/(Platform)/(Configuration)
 
 ----------------------------------------------------------------------------------
@@ -83,11 +83,12 @@ Various scripts located in /Scripts directory require Python 3.5 installed:
 
  Legend:
   (BansheeRootDir) - Path to BansheeEngine folder
+  (Project) - Name of the project the dependency is for (e.g. BansheeCore, BansheeMono, etc.)
   (Platform) - Platform you're compiling for, e.g. x86, x64, etc.
-  (Configuration) - Debug, Release, DebugRelease
+  (Configuration) - Debug, OptimizedDebug, Release
 
 Other notes:
- - Some dependencies might not come with DebugRelease binaries, in which case use Release binaries (copy them to DebugRelease folder)
+ - Some dependencies might not come with OptimizedDebug binaries, in which case use Release binaries (copy them to OptimizedDebug folder)
  - If you wish to compile managed assemblies using Microsoft compiler (e.g. using Visual Studio) yet still be able to debug
-   the generated assemblies, you must install Mono 3.8.0., set up an environment variable MONO_INSTALL_DIR pointing to the Mono 
+   the generated assemblies, you must install Mono 4.2., set up an environment variable MONO_INSTALL_DIR pointing to the Mono 
    installation directory. When this is set up "pdb2mdb" script will trigger on next compile generating the needed debug symbols.

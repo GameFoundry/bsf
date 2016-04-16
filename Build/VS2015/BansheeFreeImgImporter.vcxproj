@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="DebugRelease|Win32">
-      <Configuration>DebugRelease</Configuration>
+    <ProjectConfiguration Include="OptimizedDebug|Win32">
+      <Configuration>OptimizedDebug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="DebugRelease|x64">
-      <Configuration>DebugRelease</Configuration>
+    <ProjectConfiguration Include="OptimizedDebug|x64">
+      <Configuration>OptimizedDebug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|Win32">
@@ -59,7 +59,7 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='OptimizedDebug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
@@ -73,7 +73,7 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='OptimizedDebug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
@@ -92,13 +92,13 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'" Label="PropertySheets">
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='OptimizedDebug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'" Label="PropertySheets">
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='OptimizedDebug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -106,7 +106,7 @@
     <OutDir>..\..\bin\x86\$(Configuration)\</OutDir>
     <IntDir>.\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='OptimizedDebug|Win32'">
     <OutDir>..\..\bin\x86\$(Configuration)\</OutDir>
     <IntDir>.\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
@@ -114,7 +114,7 @@
     <OutDir>..\..\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>.\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='OptimizedDebug|x64'">
     <OutDir>..\..\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>.\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
@@ -131,7 +131,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>BS_FREEIMG_EXPORTS;_MBCS;FREEIMAGE_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeFreeImgImporter/Include;../../Source/BansheeFreeImgImporter/Dependencies/Include;../../Dependencies\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeFreeImgImporter/Include;../../Dependencies\BansheeFreeImgImporter\Include</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -141,7 +141,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../lib/x86/$(Configuration);../../Source/$(ProjectName)/Dependencies/lib/x86/Debug;../../Dependencies/lib/x86/Debug</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../lib/x86/$(Configuration);../../Dependencies/BansheeFreeImgImporter/lib/x86/Debug</AdditionalLibraryDirectories>
       <ImportLibrary>..\..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -150,7 +150,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>BS_FREEIMG_EXPORTS;_MBCS;FREEIMAGE_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeFreeImgImporter/Include;../../Source/BansheeFreeImgImporter/Dependencies/Include;../../Dependencies/Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeFreeImgImporter/Include;../../Dependencies/BansheeFreeImgImporter/Include</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -160,7 +160,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../lib/$(Platform)/$(Configuration);../../Source/$(ProjectName)/Dependencies/lib/x64/Debug;../../Dependencies/lib/x64/Debug</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../lib/$(Platform)/$(Configuration);../../Dependencies/BansheeFreeImgImporter/lib/x64/Debug</AdditionalLibraryDirectories>
       <ImportLibrary>..\..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -171,7 +171,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>BS_FREEIMG_EXPORTS;_MBCS;FREEIMAGE_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeFreeImgImporter/Include;../../Source/BansheeFreeImgImporter/Dependencies/Include;../../Dependencies/Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeFreeImgImporter/Include;../../Dependencies/BansheeFreeImgImporter/Include</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <DebugInformationFormat>None</DebugInformationFormat>
@@ -185,18 +185,18 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../lib/x86/$(Configuration);../../Source/$(ProjectName)/Dependencies/lib/x86/Release;../../Dependencies/lib/x86/Release</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../lib/x86/$(Configuration);../../Dependencies/BansheeFreeImgImporter/lib/x86/Release</AdditionalLibraryDirectories>
       <ImportLibrary>..\..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='OptimizedDebug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>BS_FREEIMG_EXPORTS;_MBCS;FREEIMAGE_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeFreeImgImporter/Include;../../Source/BansheeFreeImgImporter/Dependencies/Include;../../Dependencies/Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeFreeImgImporter/Include;../../Dependencies/BansheeFreeImgImporter/Include</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <MinimalRebuild>true</MinimalRebuild>
@@ -210,7 +210,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../lib/x86/$(Configuration);../../Source/$(ProjectName)/Dependencies/lib/x86/DebugRelease;../../Dependencies/lib/x86/DebugRelease</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../lib/x86/$(Configuration);../../Dependencies/BansheeFreeImgImporter/lib/x86/OptimizedDebug</AdditionalLibraryDirectories>
       <ImportLibrary>..\..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -221,7 +221,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>BS_FREEIMG_EXPORTS;_MBCS;FREEIMAGE_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeFreeImgImporter/Include;../../Source/BansheeFreeImgImporter/Dependencies/Include;../../Dependencies/Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeFreeImgImporter/Include;../../Dependencies/BansheeFreeImgImporter/Include</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <DebugInformationFormat>None</DebugInformationFormat>
@@ -235,18 +235,18 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../lib/$(Platform)/$(Configuration);../../Source/$(ProjectName)/Dependencies/lib/x64/Release;../../Dependencies/lib/x64/Release</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../lib/$(Platform)/$(Configuration);../../Dependencies/BansheeFreeImgImporter/lib/x64/Release</AdditionalLibraryDirectories>
       <ImportLibrary>..\..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='OptimizedDebug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>BS_FREEIMG_EXPORTS;_MBCS;FREEIMAGE_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeFreeImgImporter/Include;../../Source/BansheeFreeImgImporter/Dependencies/Include;../../Dependencies/Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeFreeImgImporter/Include;../../Dependencies/BansheeFreeImgImporter/Include</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <MinimalRebuild>true</MinimalRebuild>
@@ -260,7 +260,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;FreeImage.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../lib/$(Platform)/$(Configuration);../../Source/$(ProjectName)/Dependencies/lib/x64/DebugRelease;../../Dependencies/lib/x64/DebugRelease</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../lib/$(Platform)/$(Configuration);../../Dependencies/BansheeFreeImgImporter/lib/x64/OptimizedDebug</AdditionalLibraryDirectories>
       <ImportLibrary>..\..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
