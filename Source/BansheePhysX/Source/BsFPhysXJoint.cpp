@@ -11,7 +11,7 @@ namespace BansheeEngine
 {
 	PxJointActorIndex::Enum toJointActor(JointBody body)
 	{
-		if (body == JointBody::A)
+		if (body == JointBody::Target)
 			return PxJointActorIndex::eACTOR0;
 
 		return PxJointActorIndex::eACTOR1;
@@ -37,7 +37,7 @@ namespace BansheeEngine
 
 		mJoint->getActors(actorA, actorB);
 
-		PxRigidActor* wantedActor = body == JointBody::A ? actorA : actorB;
+		PxRigidActor* wantedActor = body == JointBody::Target ? actorA : actorB;
 		if (wantedActor == nullptr)
 			return nullptr;
 
@@ -55,7 +55,7 @@ namespace BansheeEngine
 		if (value != nullptr)
 			actor = static_cast<PhysXRigidbody*>(value)->_getInternal();
 
-		if (body == JointBody::A)
+		if (body == JointBody::Target)
 			actorA = actor;
 		else
 			actorB = actor;

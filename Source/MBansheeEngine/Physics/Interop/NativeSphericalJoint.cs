@@ -45,7 +45,7 @@ namespace BansheeEngine
     /// <summary>
     /// Used for passing SphericalJoint initialization data between native and managed code.
     /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential), SerializeObject]
     internal struct ScriptSphericalJointData // Note: Must match C++ struct ScriptSphericalJointData
     {
         public LimitConeRange limit;

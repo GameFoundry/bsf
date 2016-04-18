@@ -24,6 +24,10 @@ h3 {
 	border-bottom: 1px dashed #CD8512;
 }
 
+.textblock {
+	padding-bottom: 25px;
+}
+
 /* Nav bar */
 .tabs, .tabs2, .tabs3 {
 	background-color: #ffb750;

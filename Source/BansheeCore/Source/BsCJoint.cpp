@@ -178,8 +178,8 @@ namespace BansheeEngine
 		if (gPhysics()._isUpdateInProgress())
 			return;
 
-		updateTransform(JointBody::A);
-		updateTransform(JointBody::B);
+		updateTransform(JointBody::Target);
+		updateTransform(JointBody::Anchor);
 	}
 
 	void CJoint::restoreInternal()
@@ -194,8 +194,8 @@ namespace BansheeEngine
 		else
 			mDesc.bodies[1].body = nullptr;
 
-		getLocalTransform(JointBody::A, mDesc.bodies[0].position, mDesc.bodies[0].rotation);
-		getLocalTransform(JointBody::B, mDesc.bodies[1].position, mDesc.bodies[1].rotation);
+		getLocalTransform(JointBody::Target, mDesc.bodies[0].position, mDesc.bodies[0].rotation);
+		getLocalTransform(JointBody::Anchor, mDesc.bodies[1].position, mDesc.bodies[1].rotation);
 
 		mInternal = createInternal();
 
@@ -219,9 +219,9 @@ namespace BansheeEngine
 			return;
 
 		if (mBodies[0] == body)
-			updateTransform(JointBody::A);
+			updateTransform(JointBody::Target);
 		else if (mBodies[1] == body)
-			updateTransform(JointBody::B);
+			updateTransform(JointBody::Anchor);
 		else
 			assert(false); // Not allowed to happen
 	}
@@ -252,20 +252,17 @@ namespace BansheeEngine
 		position = mPositions[(int)body];
 		rotation = mRotations[(int)body];
 
-		// Transform to world space of the related body
 		HRigidbody rigidbody = mBodies[(int)body];
-		if (rigidbody != nullptr)
+		if (rigidbody == nullptr) // Get world space transform if no relative to any body
 		{
-			Quaternion worldRot = rigidbody->SO()->getWorldRotation();
+			Quaternion worldRot = SO()->getWorldRotation();
 
-			rotation = worldRot * rotation;
-			position = worldRot.rotate(position) + rigidbody->SO()->getWorldPosition();
-
-			// Transform to space local to the joint
-			Quaternion invRotation = SO()->getWorldRotation().inverse();
-
-			position = invRotation.rotate(position - SO()->getWorldPosition());
-			rotation = invRotation * rotation;
+			rotation = worldRot*rotation;
+			position = worldRot.rotate(position) + SO()->getWorldPosition();
+		}
+		else
+		{
+			position = rotation.rotate(position);
 		}
 	}
 	

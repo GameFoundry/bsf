@@ -1044,8 +1044,8 @@ static yyconst flex_int32_t yy_rule_can_match_eol[229] =
 #define yymore() yymore_used_but_not_detected
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
-#line 1 "../../../Source/BansheeSL/BsLexerFX.l"
-#line 2 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 1 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
+#line 2 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 #include "BsParserFX.h"
 
 #define YY_USER_ACTION yylloc->first_column = yycolumn + 1; yylloc->first_line = yylineno + 1; yycolumn += (int)yyleng; yylloc->filename = getCurrentFilename(yyextra);
@@ -1316,7 +1316,7 @@ YY_DECL
 	register int yy_act;
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
 
-#line 38 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 38 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 
 
 #line 1323 "BsLexerFX.c"
@@ -1417,859 +1417,859 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 40 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 40 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { /* Skip blank */ }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 41 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 41 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = atoi(yytext); return TOKEN_INTEGER; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 42 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 42 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = (int)strtol(yytext, 0, 0); return TOKEN_INTEGER; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 43 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 43 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->floatValue = (float)atof(yytext); return TOKEN_FLOAT; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 44 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 44 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->strValue = mmalloc_strdup(yyextra->memContext, yytext); return TOKEN_STRING; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 45 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 45 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = 1; return TOKEN_BOOLEAN; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 46 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 46 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = 0; return TOKEN_BOOLEAN; }
 	YY_BREAK
 /* Value types */
 case 8:
 YY_RULE_SETUP
-#line 50 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 50 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = PT_Int; return TOKEN_INTTYPE; } 
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 51 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 51 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = PT_Int2; return TOKEN_INT2TYPE; } 
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 52 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 52 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = PT_Int3; return TOKEN_INT3TYPE; } 
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 53 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 53 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = PT_Int4; return TOKEN_INT4TYPE; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 55 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 55 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = PT_Float; return TOKEN_FLOATTYPE; } 
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 56 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 56 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = PT_Float2; return TOKEN_FLOAT2TYPE; } 
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 57 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 57 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = PT_Float3; return TOKEN_FLOAT3TYPE; } 
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 58 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 58 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = PT_Float4; return TOKEN_FLOAT4TYPE; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 59 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 59 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = PT_Color; return TOKEN_COLORTYPE; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 61 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 61 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = PT_Mat2x2; return TOKEN_MAT2x2TYPE; } 
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 62 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 62 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = PT_Mat2x3; return TOKEN_MAT2x3TYPE; } 
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 63 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 63 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = PT_Mat2x4; return TOKEN_MAT2x4TYPE; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 65 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 65 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = PT_Mat3x2; return TOKEN_MAT3x2TYPE; } 
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 66 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 66 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = PT_Mat3x3; return TOKEN_MAT3x3TYPE; } 
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 67 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 67 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = PT_Mat3x4; return TOKEN_MAT3x4TYPE; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 69 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 69 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = PT_Mat4x2; return TOKEN_MAT4x2TYPE; } 
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 70 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 70 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = PT_Mat4x3; return TOKEN_MAT4x3TYPE; } 
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 71 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 71 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = PT_Mat4x4; return TOKEN_MAT4x4TYPE; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 73 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 73 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = PT_Sampler1D; return TOKEN_SAMPLER1D; } 
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 74 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 74 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = PT_Sampler2D; return TOKEN_SAMPLER2D; } 
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 75 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 75 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = PT_Sampler3D; return TOKEN_SAMPLER3D; } 
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 76 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 76 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = PT_SamplerCUBE; return TOKEN_SAMPLERCUBE; } 
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 77 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 77 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = PT_Sampler2DMS; return TOKEN_SAMPLER2DMS; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 79 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 79 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = PT_Texture1D; return TOKEN_TEXTURE1D; } 
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 80 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 80 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = PT_Texture2D; return TOKEN_TEXTURE2D; } 
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 81 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 81 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = PT_Texture3D; return TOKEN_TEXTURE3D; } 
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 82 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 82 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = PT_TextureCUBE; return TOKEN_TEXTURECUBE; } 
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 83 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 83 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = PT_Texture2DMS; return TOKEN_TEXTURE2DMS; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 85 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 85 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = PT_ByteBuffer; return TOKEN_BYTEBUFFER; } 
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 86 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 86 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = PT_StructBuffer; return TOKEN_STRUCTBUFFER; } 
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 88 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 88 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = PT_TypedBufferRW; return TOKEN_RWTYPEDBUFFER; } 
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 89 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 89 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = PT_ByteBufferRW; return TOKEN_RWBYTEBUFFER; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 90 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 90 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = PT_StructBufferRW; return TOKEN_RWSTRUCTBUFFER; } 
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 91 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 91 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = PT_AppendBuffer; return TOKEN_RWAPPENDBUFFER; } 
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 92 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 92 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = PT_ConsumeBuffer; return TOKEN_RWCONSUMEBUFFER; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 94 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 94 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_PARAMSBLOCK; }
 	YY_BREAK
 /* Shader keywords */
 case 44:
 YY_RULE_SETUP
-#line 97 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 97 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_SEPARABLE; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 98 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 98 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_SORT; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 99 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 99 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_PRIORITY; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 100 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 100 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_TRANSPARENT; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 101 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 101 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_TECHNIQUE; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 102 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 102 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_PARAMETERS; }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 103 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 103 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_BLOCKS; }
 	YY_BREAK
 /* Technique keywords */
 case 51:
 YY_RULE_SETUP
-#line 106 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 106 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_RENDERER; }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 107 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 107 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_LANGUAGE; }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 108 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 108 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_PASS; }
 	YY_BREAK
 /* Pass keywords */
 case 54:
 YY_RULE_SETUP
-#line 111 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 111 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_STENCILREF; }
 	YY_BREAK
 /* Rasterizer state keywords */
 case 55:
 YY_RULE_SETUP
-#line 114 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 114 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_FILLMODE; }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 115 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 115 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_CULLMODE; }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 116 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 116 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_DEPTHBIAS; }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 117 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 117 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_SDEPTHBIAS; }
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 118 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 118 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_DEPTHCLIP; }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 119 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 119 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_SCISSOR; }
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 120 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 120 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_MULTISAMPLE; }
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 121 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 121 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_AALINE; }
 	YY_BREAK
 /* Depth-stencil state keywords */
 case 63:
 YY_RULE_SETUP
-#line 124 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 124 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_DEPTHREAD; }
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 125 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 125 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_DEPTHWRITE; }
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 126 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 126 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_COMPAREFUNC; }
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 127 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 127 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_STENCIL; }
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 128 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 128 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_STENCILREADMASK; }
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 129 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 129 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_STENCILWRITEMASK; }
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 130 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 130 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_STENCILOPFRONT; }
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 131 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 131 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_STENCILOPBACK; }
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 132 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 132 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_FAIL; }
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 133 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 133 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_ZFAIL; }
 	YY_BREAK
 /* Blend state keywords */
 case 73:
 YY_RULE_SETUP
-#line 136 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 136 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_ALPHATOCOVERAGE; }
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
-#line 137 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 137 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_INDEPENDANTBLEND; }
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 138 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 138 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_TARGET; }
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-#line 139 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 139 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_INDEX; }
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
-#line 140 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 140 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_BLEND; }
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
-#line 141 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 141 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_COLOR; }
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
-#line 142 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 142 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_ALPHA; }
 	YY_BREAK
 case 80:
 YY_RULE_SETUP
-#line 143 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 143 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_WRITEMASK; }
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
-#line 144 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 144 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_SOURCE; }
 	YY_BREAK
 case 82:
 YY_RULE_SETUP
-#line 145 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 145 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_DEST; }
 	YY_BREAK
 case 83:
 YY_RULE_SETUP
-#line 146 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 146 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_OP; }
 	YY_BREAK
 /* Sampler state keywords */
 case 84:
 YY_RULE_SETUP
-#line 149 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 149 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_ADDRMODE; }
 	YY_BREAK
 case 85:
 YY_RULE_SETUP
-#line 150 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 150 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_MINFILTER; }
 	YY_BREAK
 case 86:
 YY_RULE_SETUP
-#line 151 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 151 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_MAGFILTER; }
 	YY_BREAK
 case 87:
 YY_RULE_SETUP
-#line 152 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 152 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_MIPFILTER; }
 	YY_BREAK
 case 88:
 YY_RULE_SETUP
-#line 153 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 153 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_MAXANISO; }
 	YY_BREAK
 case 89:
 YY_RULE_SETUP
-#line 154 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 154 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_MIPBIAS; }
 	YY_BREAK
 case 90:
 YY_RULE_SETUP
-#line 155 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 155 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_MIPMIN; }
 	YY_BREAK
 case 91:
 YY_RULE_SETUP
-#line 156 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 156 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_MIPMAX; }
 	YY_BREAK
 case 92:
 YY_RULE_SETUP
-#line 157 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 157 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_BORDERCOLOR; }
 	YY_BREAK
 case 93:
 YY_RULE_SETUP
-#line 158 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 158 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_U; }
 	YY_BREAK
 case 94:
 YY_RULE_SETUP
-#line 159 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 159 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_V; }
 	YY_BREAK
 case 95:
 YY_RULE_SETUP
-#line 160 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 160 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_W; }
 	YY_BREAK
 /* Qualifiers */
 case 96:
 YY_RULE_SETUP
-#line 163 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 163 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_AUTO; }
 	YY_BREAK
 case 97:
 YY_RULE_SETUP
-#line 164 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 164 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_ALIAS; }
 	YY_BREAK
 case 98:
 YY_RULE_SETUP
-#line 165 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 165 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_SHARED; }
 	YY_BREAK
 case 99:
 YY_RULE_SETUP
-#line 166 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 166 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return TOKEN_USAGE; }
 	YY_BREAK
 /* State values */
 case 100:
 YY_RULE_SETUP
-#line 169 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 169 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = FMV_Wire; return TOKEN_FILLMODEVALUE; }
 	YY_BREAK
 case 101:
 YY_RULE_SETUP
-#line 170 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 170 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = FMV_Solid; return TOKEN_FILLMODEVALUE; }
 	YY_BREAK
 case 102:
 YY_RULE_SETUP
-#line 172 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 172 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = CMV_None; return TOKEN_CULLMODEVALUE; }
 	YY_BREAK
 case 103:
 YY_RULE_SETUP
-#line 173 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 173 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = CMV_CW; return TOKEN_CULLMODEVALUE; }
 	YY_BREAK
 case 104:
 YY_RULE_SETUP
-#line 174 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 174 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = CMV_CCW; return TOKEN_CULLMODEVALUE; }
 	YY_BREAK
 case 105:
 YY_RULE_SETUP
-#line 176 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 176 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = CFV_Fail; return TOKEN_COMPFUNCVALUE; }
 	YY_BREAK
 case 106:
 YY_RULE_SETUP
-#line 177 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 177 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = CFV_Pass; return TOKEN_COMPFUNCVALUE; }
 	YY_BREAK
 case 107:
 YY_RULE_SETUP
-#line 178 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 178 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = CFV_LT; return TOKEN_COMPFUNCVALUE; }
 	YY_BREAK
 case 108:
 YY_RULE_SETUP
-#line 179 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 179 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = CFV_LTE; return TOKEN_COMPFUNCVALUE; }
 	YY_BREAK
 case 109:
 YY_RULE_SETUP
-#line 180 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 180 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = CFV_EQ; return TOKEN_COMPFUNCVALUE; }
 	YY_BREAK
 case 110:
 YY_RULE_SETUP
-#line 181 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 181 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = CFV_NEQ; return TOKEN_COMPFUNCVALUE; }
 	YY_BREAK
 case 111:
 YY_RULE_SETUP
-#line 182 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 182 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = CFV_GTE; return TOKEN_COMPFUNCVALUE; }
 	YY_BREAK
 case 112:
 YY_RULE_SETUP
-#line 183 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 183 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = CFV_GT; return TOKEN_COMPFUNCVALUE; }
 	YY_BREAK
 case 113:
 YY_RULE_SETUP
-#line 185 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 185 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = OV_Keep; return TOKEN_OPVALUE; }
 	YY_BREAK
 case 114:
 YY_RULE_SETUP
-#line 186 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 186 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = OV_Zero; return TOKEN_OPVALUE; }
 	YY_BREAK
 case 115:
 YY_RULE_SETUP
-#line 187 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 187 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = OV_Replace; return TOKEN_OPVALUE; }
 	YY_BREAK
 case 116:
 YY_RULE_SETUP
-#line 188 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 188 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = OV_Incr; return TOKEN_OPVALUE; }
 	YY_BREAK
 case 117:
 YY_RULE_SETUP
-#line 189 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 189 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = OV_Decr; return TOKEN_OPVALUE; }
 	YY_BREAK
 case 118:
 YY_RULE_SETUP
-#line 190 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 190 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = OV_IncrWrap; return TOKEN_OPVALUE; }
 	YY_BREAK
 case 119:
 YY_RULE_SETUP
-#line 191 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 191 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = OV_DecrWrap; return TOKEN_OPVALUE; }
 	YY_BREAK
 case 120:
 YY_RULE_SETUP
-#line 192 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 192 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = OV_Invert; return TOKEN_OPVALUE; }
 	YY_BREAK
 case 121:
 YY_RULE_SETUP
-#line 193 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 193 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = OV_One; return TOKEN_OPVALUE; }
 	YY_BREAK
 case 122:
 YY_RULE_SETUP
-#line 194 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 194 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = OV_DestColor; return TOKEN_OPVALUE; }
 	YY_BREAK
 case 123:
 YY_RULE_SETUP
-#line 195 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 195 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = OV_SrcColor; return TOKEN_OPVALUE; }
 	YY_BREAK
 case 124:
 YY_RULE_SETUP
-#line 196 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 196 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = OV_InvDestColor; return TOKEN_OPVALUE; }
 	YY_BREAK
 case 125:
 YY_RULE_SETUP
-#line 197 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 197 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = OV_InvSrcColor; return TOKEN_OPVALUE; }
 	YY_BREAK
 case 126:
 YY_RULE_SETUP
-#line 198 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 198 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = OV_DestAlpha; return TOKEN_OPVALUE; }
 	YY_BREAK
 case 127:
 YY_RULE_SETUP
-#line 199 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 199 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = OV_SrcAlpha; return TOKEN_OPVALUE; }
 	YY_BREAK
 case 128:
 YY_RULE_SETUP
-#line 200 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 200 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = OV_InvDestAlpha; return TOKEN_OPVALUE; }
 	YY_BREAK
 case 129:
 YY_RULE_SETUP
-#line 201 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 201 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = OV_InvSrcAlpha; return TOKEN_OPVALUE; }
 	YY_BREAK
 case 130:
 YY_RULE_SETUP
-#line 203 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 203 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = BOV_Add; return TOKEN_BLENDOPVALUE; }
 	YY_BREAK
 case 131:
 YY_RULE_SETUP
-#line 204 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 204 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = BOV_Subtract; return TOKEN_BLENDOPVALUE; }
 	YY_BREAK
 case 132:
 YY_RULE_SETUP
-#line 205 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 205 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = BOV_RevSubtract; return TOKEN_BLENDOPVALUE; }
 	YY_BREAK
 case 133:
 YY_RULE_SETUP
-#line 206 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 206 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = BOV_Min; return TOKEN_BLENDOPVALUE; }
 	YY_BREAK
 case 134:
 YY_RULE_SETUP
-#line 207 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 207 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = BOV_Max; return TOKEN_BLENDOPVALUE; }
 	YY_BREAK
 case 135:
 YY_RULE_SETUP
-#line 209 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 209 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = 0x0; return TOKEN_COLORMASK; }
 	YY_BREAK
 case 136:
 YY_RULE_SETUP
-#line 210 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 210 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = 0x1; return TOKEN_COLORMASK; }
 	YY_BREAK
 case 137:
 YY_RULE_SETUP
-#line 211 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 211 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = 0x2; return TOKEN_COLORMASK; }
 	YY_BREAK
 case 138:
 YY_RULE_SETUP
-#line 212 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 212 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = 0x4; return TOKEN_COLORMASK; }
 	YY_BREAK
 case 139:
 YY_RULE_SETUP
-#line 213 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 213 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = 0x8; return TOKEN_COLORMASK; }
 	YY_BREAK
 case 140:
 YY_RULE_SETUP
-#line 214 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 214 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = 0x3; return TOKEN_COLORMASK; }
 	YY_BREAK
 case 141:
 YY_RULE_SETUP
-#line 215 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 215 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = 0x5; return TOKEN_COLORMASK; }
 	YY_BREAK
 case 142:
 YY_RULE_SETUP
-#line 216 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 216 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = 0x9; return TOKEN_COLORMASK; }
 	YY_BREAK
 case 143:
 YY_RULE_SETUP
-#line 217 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 217 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = 0x6; return TOKEN_COLORMASK; }
 	YY_BREAK
 case 144:
 YY_RULE_SETUP
-#line 218 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 218 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = 0xA; return TOKEN_COLORMASK; }
 	YY_BREAK
 case 145:
 YY_RULE_SETUP
-#line 219 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 219 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = 0xC; return TOKEN_COLORMASK; }
 	YY_BREAK
 case 146:
 YY_RULE_SETUP
-#line 220 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 220 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = 0x7; return TOKEN_COLORMASK; }
 	YY_BREAK
 case 147:
 YY_RULE_SETUP
-#line 221 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 221 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = 0xB; return TOKEN_COLORMASK; }
 	YY_BREAK
 case 148:
 YY_RULE_SETUP
-#line 222 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 222 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = 0xD; return TOKEN_COLORMASK; }
 	YY_BREAK
 case 149:
 YY_RULE_SETUP
-#line 223 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 223 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = 0xE; return TOKEN_COLORMASK; }
 	YY_BREAK
 case 150:
 YY_RULE_SETUP
-#line 224 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 224 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = 0xF; return TOKEN_COLORMASK; }
 	YY_BREAK
 case 151:
 YY_RULE_SETUP
-#line 226 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 226 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = AMV_Wrap; return TOKEN_ADDRMODEVALUE; }
 	YY_BREAK
 case 152:
 YY_RULE_SETUP
-#line 227 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 227 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = AMV_Mirror; return TOKEN_ADDRMODEVALUE; }
 	YY_BREAK
 case 153:
 YY_RULE_SETUP
-#line 228 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 228 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = AMV_Clamp; return TOKEN_ADDRMODEVALUE; }
 	YY_BREAK
 case 154:
 YY_RULE_SETUP
-#line 229 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 229 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = AMV_Border; return TOKEN_ADDRMODEVALUE; }
 	YY_BREAK
 case 155:
 YY_RULE_SETUP
-#line 231 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 231 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = FV_None; return TOKEN_FILTERVALUE; }
 	YY_BREAK
 case 156:
 YY_RULE_SETUP
-#line 232 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 232 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = FV_Point; return TOKEN_FILTERVALUE; }
 	YY_BREAK
 case 157:
 YY_RULE_SETUP
-#line 233 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 233 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = FV_Linear; return TOKEN_FILTERVALUE; }
 	YY_BREAK
 case 158:
 YY_RULE_SETUP
-#line 234 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 234 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = FV_Anisotropic; return TOKEN_FILTERVALUE; }
 	YY_BREAK
 case 159:
 YY_RULE_SETUP
-#line 235 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 235 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = FV_PointCmp; return TOKEN_FILTERVALUE; }
 	YY_BREAK
 case 160:
 YY_RULE_SETUP
-#line 236 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 236 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = FV_LinearCmp; return TOKEN_FILTERVALUE; }
 	YY_BREAK
 case 161:
 YY_RULE_SETUP
-#line 237 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 237 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = FV_AnisotropicCmp; return TOKEN_FILTERVALUE; }
 	YY_BREAK
 case 162:
 YY_RULE_SETUP
-#line 239 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 239 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = BUV_Static; return TOKEN_BUFFERUSAGE; }
 	YY_BREAK
 case 163:
 YY_RULE_SETUP
-#line 240 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 240 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = BUV_Dynamic; return TOKEN_BUFFERUSAGE; }
 	YY_BREAK
 case 164:
 YY_RULE_SETUP
-#line 242 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 242 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = QST_FrontToBack; return TOKEN_QUEUETYPE; }
 	YY_BREAK
 case 165:
 YY_RULE_SETUP
-#line 243 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 243 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = QST_BackToFront; return TOKEN_QUEUETYPE; }
 	YY_BREAK
 case 166:
 YY_RULE_SETUP
-#line 244 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 244 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = QST_None; return TOKEN_QUEUETYPE; }
 	YY_BREAK
 /* Preprocessor */
 case 167:
 YY_RULE_SETUP
-#line 247 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 247 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { BEGIN(INCLUDE); }
 	YY_BREAK
 case 168:
 /* rule 168 can match eol */
 YY_RULE_SETUP
-#line 249 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 249 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { /* Skip blank */ }
 	YY_BREAK
 case 169:
 YY_RULE_SETUP
-#line 250 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 250 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 {
 	int size = 0;
 	char* includeBuffer = includePush(yyextra, yytext, yylineno, yycolumn, &size);
@@ -2290,7 +2290,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 170:
 YY_RULE_SETUP
-#line 267 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 267 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return yytext[0]; }
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
@@ -2306,7 +2306,7 @@ case YY_STATE_EOF(CONDITIONAL_IF):
 case YY_STATE_EOF(CONDITIONAL_IFN):
 case YY_STATE_EOF(CONDITIONAL_ELIF):
 case YY_STATE_EOF(CONDITIONAL_IGNORE):
-#line 269 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 269 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 {
 	if(!yyextra->includeStack)
 		yyterminate();
@@ -2317,76 +2317,76 @@ case YY_STATE_EOF(CONDITIONAL_IGNORE):
 	YY_BREAK
 case 171:
 YY_RULE_SETUP
-#line 277 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 277 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { BEGIN(DEFINE_COND); }
 	YY_BREAK
 case 172:
 YY_RULE_SETUP
-#line 278 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 278 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { /* Skip blank */ }
 	YY_BREAK
 case 173:
 YY_RULE_SETUP
-#line 279 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 279 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { addDefine(yyextra, yytext); BEGIN(DEFINE_COND_EXPR); }
 	YY_BREAK
 case 174:
 /* rule 174 can match eol */
 YY_RULE_SETUP
-#line 280 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 280 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { BEGIN(INITIAL); }
 	YY_BREAK
 case 175:
 YY_RULE_SETUP
-#line 281 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 281 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return yytext[0]; }
 	YY_BREAK
 case 176:
 YY_RULE_SETUP
-#line 283 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 283 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { addDefineExpr(yyextra, yytext); BEGIN(INITIAL); }
 	YY_BREAK
 case 177:
 /* rule 177 can match eol */
 YY_RULE_SETUP
-#line 284 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 284 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { BEGIN(INITIAL); }
 	YY_BREAK
 case 178:
 YY_RULE_SETUP
-#line 286 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 286 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { BEGIN(UNDEF_COND); }
 	YY_BREAK
 case 179:
 /* rule 179 can match eol */
 YY_RULE_SETUP
-#line 287 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 287 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { /* Skip blank */ }
 	YY_BREAK
 case 180:
 YY_RULE_SETUP
-#line 288 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 288 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { removeDefine(yyextra, yytext); BEGIN(INITIAL); }
 	YY_BREAK
 case 181:
 YY_RULE_SETUP
-#line 289 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 289 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return yytext[0]; }
 	YY_BREAK
 case 182:
 YY_RULE_SETUP
-#line 291 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 291 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { BEGIN(CONDITIONAL_IF); }
 	YY_BREAK
 case 183:
 /* rule 183 can match eol */
 YY_RULE_SETUP
-#line 292 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 292 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { /* Skip blank */ }
 	YY_BREAK
 case 184:
 YY_RULE_SETUP
-#line 293 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 293 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { 
 	int isEnabled = pushConditional(yyextra, hasDefine(yyextra, yytext));
 	if(!isEnabled)
@@ -2397,23 +2397,23 @@ YY_RULE_SETUP
 	YY_BREAK
 case 185:
 YY_RULE_SETUP
-#line 300 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 300 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return yytext[0]; }
 	YY_BREAK
 case 186:
 YY_RULE_SETUP
-#line 302 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 302 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { BEGIN(CONDITIONAL_IFN); }
 	YY_BREAK
 case 187:
 /* rule 187 can match eol */
 YY_RULE_SETUP
-#line 303 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 303 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { /* Skip blank */ }
 	YY_BREAK
 case 188:
 YY_RULE_SETUP
-#line 304 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 304 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { 
 	int isEnabled = pushConditional(yyextra, !hasDefine(yyextra, yytext));
 	if(!isEnabled)
@@ -2424,43 +2424,43 @@ YY_RULE_SETUP
 	YY_BREAK
 case 189:
 YY_RULE_SETUP
-#line 311 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 311 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return yytext[0]; }
 	YY_BREAK
 case 190:
 YY_RULE_SETUP
-#line 313 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 313 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { BEGIN(CONDITIONAL_IGNORE); }
 	YY_BREAK
 case 191:
 YY_RULE_SETUP
-#line 314 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 314 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { BEGIN(CONDITIONAL_IGNORE); }
 	YY_BREAK
 case 192:
 YY_RULE_SETUP
-#line 316 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 316 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { popConditional(yyextra); }
 	YY_BREAK
 case 193:
 /* rule 193 can match eol */
 YY_RULE_SETUP
-#line 318 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 318 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { /* Skip */ }
 	YY_BREAK
 case 194:
 YY_RULE_SETUP
-#line 319 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 319 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { pushConditional(yyextra, 0); }
 	YY_BREAK
 case 195:
 YY_RULE_SETUP
-#line 320 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 320 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { pushConditional(yyextra, 0); }
 	YY_BREAK
 case 196:
 YY_RULE_SETUP
-#line 321 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 321 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { 
 	if(switchConditional(yyextra))
 		BEGIN(INITIAL);
@@ -2468,12 +2468,12 @@ YY_RULE_SETUP
 	YY_BREAK
 case 197:
 YY_RULE_SETUP
-#line 325 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 325 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { BEGIN(CONDITIONAL_ELIF); }
 	YY_BREAK
 case 198:
 YY_RULE_SETUP
-#line 326 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 326 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { 
 	if(popConditional(yyextra))
 		BEGIN(INITIAL);
@@ -2481,18 +2481,18 @@ YY_RULE_SETUP
 	YY_BREAK
 case 199:
 YY_RULE_SETUP
-#line 330 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 330 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { /* Skip */ }
 	YY_BREAK
 case 200:
 /* rule 200 can match eol */
 YY_RULE_SETUP
-#line 332 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 332 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { /* Skip blank */ }
 	YY_BREAK
 case 201:
 YY_RULE_SETUP
-#line 333 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 333 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { 
 	int isEnabled = setConditional(yyextra, hasDefine(yyextra, yytext));
 	if(!isEnabled)
@@ -2503,43 +2503,43 @@ YY_RULE_SETUP
 	YY_BREAK
 case 202:
 YY_RULE_SETUP
-#line 340 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 340 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return yytext[0]; }
 	YY_BREAK
 /* Code blocks */
 case 203:
 YY_RULE_SETUP
-#line 343 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 343 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { BEGIN(CODEBLOCK_HEADER); return TOKEN_VERTEX; }
 	YY_BREAK
 case 204:
 YY_RULE_SETUP
-#line 344 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 344 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { BEGIN(CODEBLOCK_HEADER); return TOKEN_FRAGMENT; }
 	YY_BREAK
 case 205:
 YY_RULE_SETUP
-#line 345 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 345 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { BEGIN(CODEBLOCK_HEADER); return TOKEN_GEOMETRY; }
 	YY_BREAK
 case 206:
 YY_RULE_SETUP
-#line 346 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 346 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { BEGIN(CODEBLOCK_HEADER); return TOKEN_HULL; }
 	YY_BREAK
 case 207:
 YY_RULE_SETUP
-#line 347 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 347 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { BEGIN(CODEBLOCK_HEADER); return TOKEN_DOMAIN; }
 	YY_BREAK
 case 208:
 YY_RULE_SETUP
-#line 348 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 348 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { BEGIN(CODEBLOCK_HEADER); return TOKEN_COMPUTE; }
 	YY_BREAK
 case 209:
 YY_RULE_SETUP
-#line 349 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 349 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { BEGIN(CODEBLOCK_HEADER); return TOKEN_COMMON; }
 	YY_BREAK
 /* Track when the code block begins, insert all code block characters into our own buffer, record a sequential index */
@@ -2547,44 +2547,44 @@ YY_RULE_SETUP
 /* And finally output a sequential code block index to the parser (it shouldn't be aware of anything else in the block). */
 case 210:
 YY_RULE_SETUP
-#line 354 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 354 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { BEGIN(CODEBLOCK_EQUALS); return yytext[0]; }
 	YY_BREAK
 case 211:
 /* rule 211 can match eol */
 YY_RULE_SETUP
-#line 355 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 355 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { /* Skip blank */ }
 	YY_BREAK
 case 212:
 YY_RULE_SETUP
-#line 356 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 356 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return yytext[0]; }
 	YY_BREAK
 case 213:
 YY_RULE_SETUP
-#line 358 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 358 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { BEGIN(CODEBLOCK); beginCodeBlock(yyextra); yyextra->numOpenBrackets = 1; return yytext[0]; }
 	YY_BREAK
 case 214:
 /* rule 214 can match eol */
 YY_RULE_SETUP
-#line 359 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 359 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { /* Skip blank */ }
 	YY_BREAK
 case 215:
 YY_RULE_SETUP
-#line 360 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 360 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return yytext[0]; }
 	YY_BREAK
 case 216:
 YY_RULE_SETUP
-#line 362 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 362 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yyextra->numOpenBrackets++; appendCodeBlock(yyextra, yytext, 1); }
 	YY_BREAK
 case 217:
 YY_RULE_SETUP
-#line 363 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 363 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { 
 	yyextra->numOpenBrackets--; 
 
@@ -2600,7 +2600,7 @@ YY_RULE_SETUP
 case 218:
 /* rule 218 can match eol */
 YY_RULE_SETUP
-#line 374 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 374 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { appendCodeBlock(yyextra, yytext, 1); }
 	YY_BREAK
 /* Logic for manually inserting "Index = codeBlockIndex;". We insert arbitrary numbers which allows us to sequentially */
@@ -2608,54 +2608,54 @@ YY_RULE_SETUP
 /* (since the starting value was also a single character "{"). */
 case 219:
 YY_RULE_SETUP
-#line 379 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 379 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { unput('1'); return TOKEN_INDEX; }
 	YY_BREAK
 case 220:
 YY_RULE_SETUP
-#line 380 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 380 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { unput('2'); return '='; }
 	YY_BREAK
 case 221:
 YY_RULE_SETUP
-#line 381 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 381 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->intValue = getCodeBlockIndex(yyextra); unput('3'); return TOKEN_INTEGER; }
 	YY_BREAK
 case 222:
 YY_RULE_SETUP
-#line 382 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 382 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { unput('4'); return ';'; }
 	YY_BREAK
 case 223:
 YY_RULE_SETUP
-#line 383 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 383 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { BEGIN(INITIAL); return '}'; }
 	YY_BREAK
 case 224:
 /* rule 224 can match eol */
 YY_RULE_SETUP
-#line 384 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 384 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { /* Never reached */ }
 	YY_BREAK
 /* Catch all rules */
 case 225:
 YY_RULE_SETUP
-#line 387 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 387 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { }
 	YY_BREAK
 case 226:
 YY_RULE_SETUP
-#line 388 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 388 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { yylval->strValue = mmalloc_strdup(yyextra->memContext, yytext); return TOKEN_IDENTIFIER; }
 	YY_BREAK
 case 227:
 YY_RULE_SETUP
-#line 389 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 389 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 { return yytext[0]; }
 	YY_BREAK
 case 228:
 YY_RULE_SETUP
-#line 391 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 391 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
 #line 2662 "BsLexerFX.c"
@@ -3844,6 +3844,6 @@ void yyfree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 390 "../../../Source/BansheeSL/BsLexerFX.l"
+#line 390 "..\\..\\Source\\BansheeSL\\BsLexerFX.l"
 
 

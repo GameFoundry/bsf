@@ -47,8 +47,8 @@ namespace BansheeEditor
         [DrawGizmo(DrawGizmoFlags.Selected | DrawGizmoFlags.ParentSelected)]
         private static void DrawFixedJoint(FixedJoint joint)
         {
-            Vector3 anchorA = GetAnchor(joint, JointBody.A);
-            Vector3 anchorB = GetAnchor(joint, JointBody.B);
+            Vector3 anchorA = GetAnchor(joint, JointBody.Target);
+            Vector3 anchorB = GetAnchor(joint, JointBody.Anchor);
 
             Gizmos.Color = Color.White;
             Gizmos.DrawSphere(anchorA, 0.05f);
@@ -65,8 +65,8 @@ namespace BansheeEditor
         [DrawGizmo(DrawGizmoFlags.Selected | DrawGizmoFlags.ParentSelected)]
         private static void DrawDistanceJoint(DistanceJoint joint)
         {
-            Vector3 anchorA = GetAnchor(joint, JointBody.A);
-            Vector3 anchorB = GetAnchor(joint, JointBody.B);
+            Vector3 anchorA = GetAnchor(joint, JointBody.Target);
+            Vector3 anchorB = GetAnchor(joint, JointBody.Anchor);
 
             Gizmos.Color = Color.White;
             Gizmos.DrawSphere(anchorA, 0.05f);
@@ -101,7 +101,7 @@ namespace BansheeEditor
             }
 
             Gizmos.Color = Color.Green;
-            Gizmos.DrawLine(anchorA + normal * min, anchorA + normal * max);
+            Gizmos.DrawLine(anchorA + normal * min, anchorA + normal * MathEx.Min(max, length));
         }
 
         /// <summary>
@@ -111,8 +111,8 @@ namespace BansheeEditor
         [DrawGizmo(DrawGizmoFlags.Selected | DrawGizmoFlags.ParentSelected)]
         private static void DrawSliderJoint(SliderJoint joint)
         {
-            Vector3 anchorA = GetAnchor(joint, JointBody.A);
-            Vector3 anchorB = GetAnchor(joint, JointBody.B);
+            Vector3 anchorA = GetAnchor(joint, JointBody.Target);
+            Vector3 anchorB = GetAnchor(joint, JointBody.Anchor);
 
             Gizmos.Color = Color.White;
             Gizmos.DrawSphere(anchorA, 0.05f);
@@ -142,7 +142,7 @@ namespace BansheeEditor
             }
 
             Gizmos.Color = Color.Green;
-            Gizmos.DrawLine(anchorA + normal * min, anchorA + normal * max);
+            Gizmos.DrawLine(anchorA + normal * min, anchorA + normal * MathEx.Min(max, length));
         }
 
         /// <summary>
@@ -152,8 +152,8 @@ namespace BansheeEditor
         [DrawGizmo(DrawGizmoFlags.Selected | DrawGizmoFlags.ParentSelected)]
         private static void DrawSphericalJoint(SphericalJoint joint)
         {
-            Vector3 anchorA = GetAnchor(joint, JointBody.A);
-            Vector3 anchorB = GetAnchor(joint, JointBody.B);
+            Vector3 anchorA = GetAnchor(joint, JointBody.Target);
+            Vector3 anchorB = GetAnchor(joint, JointBody.Anchor);
 
             Gizmos.Color = Color.White;
             Gizmos.DrawSphere(anchorA, 0.05f);
@@ -195,8 +195,8 @@ namespace BansheeEditor
         [DrawGizmo(DrawGizmoFlags.Selected | DrawGizmoFlags.ParentSelected)]
         private static void DrawHingeJoint(HingeJoint joint)
         {
-            Vector3 anchorA = GetAnchor(joint, JointBody.A);
-            Vector3 anchorB = GetAnchor(joint, JointBody.B);
+            Vector3 anchorA = GetAnchor(joint, JointBody.Target);
+            Vector3 anchorB = GetAnchor(joint, JointBody.Anchor);
 
             Gizmos.Color = Color.White;
             Gizmos.DrawSphere(anchorA, 0.05f);
@@ -272,8 +272,8 @@ namespace BansheeEditor
         [DrawGizmo(DrawGizmoFlags.Selected | DrawGizmoFlags.ParentSelected)]
         private static void DrawD6Joint(D6Joint joint)
         {
-            Vector3 anchorA = GetAnchor(joint, JointBody.A);
-            Vector3 anchorB = GetAnchor(joint, JointBody.B);
+            Vector3 anchorA = GetAnchor(joint, JointBody.Target);
+            Vector3 anchorB = GetAnchor(joint, JointBody.Anchor);
 
             Gizmos.Color = Color.White;
             Gizmos.DrawSphere(anchorA, 0.05f);

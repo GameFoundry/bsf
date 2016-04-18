@@ -206,9 +206,9 @@ namespace BansheeEngine
 			    return;
 
 		    if (commonData.bodies[0] == body)
-			    UpdateTransform(JointBody.A);
+			    UpdateTransform(JointBody.Target);
 		    else if (commonData.bodies[1] == body)
-			    UpdateTransform(JointBody.B);
+			    UpdateTransform(JointBody.Anchor);
 	    }
 
         /// <summary>
@@ -258,8 +258,8 @@ namespace BansheeEngine
             if (Physics.IsUpdateInProgress)
                 return;
 
-            UpdateTransform(JointBody.A);
-            UpdateTransform(JointBody.B);
+            UpdateTransform(JointBody.Target);
+            UpdateTransform(JointBody.Anchor);
         }
 
         /// <summary>
@@ -284,8 +284,8 @@ namespace BansheeEngine
                     commonData.@internal.bodies[1] = nativeBody.GetCachedPtr();
             }
 
-            GetLocalTransform(JointBody.A, out commonData.@internal.positions[0], out commonData.@internal.rotations[0]);
-            GetLocalTransform(JointBody.B, out commonData.@internal.positions[1], out commonData.@internal.rotations[1]);
+            GetLocalTransform(JointBody.Target, out commonData.@internal.positions[0], out commonData.@internal.rotations[0]);
+            GetLocalTransform(JointBody.Anchor, out commonData.@internal.positions[1], out commonData.@internal.rotations[1]);
 
             native = CreateNative();
             native.Component = this;
@@ -324,26 +324,23 @@ namespace BansheeEngine
         /// </summary>
         /// <param name="body">Body to calculate the transform for.</param>
         /// <param name="position">Output position for the body.</param>
-        /// <param name="rotation">Output rotation for the body</param>
+        /// <param name="rotation">Output rotation for the body.</param>
         private void GetLocalTransform(JointBody body, out Vector3 position, out Quaternion rotation)
         {
             position = commonData.positions[(int)body];
             rotation = commonData.rotations[(int)body];
 
-            // Transform to world space of the related body
             Rigidbody rigidbody = commonData.bodies[(int)body];
-            if (rigidbody != null)
+            if (rigidbody == null) // Get world space transform if no relative to any body
             {
-                Quaternion worldRot = rigidbody.SceneObject.Rotation;
+                Quaternion worldRot = SceneObject.Rotation;
 
-                rotation = worldRot * rotation;
-                position = worldRot.Rotate(position) + rigidbody.SceneObject.Position;
-
-                // Transform to space local to the joint
-                Quaternion invRotation = SceneObject.Rotation.Inverse;
-
-                position = invRotation.Rotate(position - SceneObject.Position);
-                rotation = invRotation * rotation;
+                rotation = worldRot*rotation;
+                position = worldRot.Rotate(position) + SceneObject.Position;
+            }
+            else
+            {
+                position = rotation.Rotate(position);
             }
         }
 
@@ -448,7 +445,14 @@ namespace BansheeEngine
     /// </summary>
     public enum JointBody
     {
-        A, B
+        /// <summary>
+        /// Body the joint is influencing.
+        /// </summary>
+        Target,
+        /// <summary>
+        /// Body to which the joint is attached to (if any).
+        /// </summary>
+        Anchor
     };
 
     /// <summary>

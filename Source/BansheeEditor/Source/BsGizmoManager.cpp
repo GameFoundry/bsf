@@ -103,6 +103,7 @@ namespace BansheeEngine
 		if(mTransformDirty)
 		{
 			mTransform = Matrix4::IDENTITY;
+			mDrawHelper->setTransform(Matrix4::IDENTITY);
 			mTransformDirty = false;
 		}
 

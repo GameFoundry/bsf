@@ -61,7 +61,7 @@ namespace BansheeEngine
     /// <summary>
     /// Used for passing SliderJoint initialization data between native and managed code.
     /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential), SerializeObject]
     internal struct ScriptSliderJointData // Note: Must match C++ struct ScriptSliderJointData
     {
         public LimitLinearRange limit;

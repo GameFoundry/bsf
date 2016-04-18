@@ -2,7 +2,7 @@ Architecture									{#architecture}
 ===============
 [TOC]
 
-This manual will show you the general architecture of Banshee, to give you a better idea of how everything is structured and where to locate particular systems.
+This manual will explain the architecture of Banshee, to give you a better idea of how everything is structured and where to locate particular systems.
 
 Banshee is implemented throughout many separate libraries. Spreading the engine implementation over different libraries ensures multiple things:
  - Portions of the engine can be easily modified or replaced
@@ -12,97 +12,89 @@ Banshee is implemented throughout many separate libraries. Spreading the engine 
  
 All the libraries can be separated into four main categories:
  - Layers - These are the core libraries of the engine. Each layer is built on top of the previous layer and provides higher level and more specific functionality than the other.
- - Plugins - These are separate, independant, and in most cases optional libraries containing various high level systems. They always depend on a specific layer, depending how high level the system they implement is. You will be able to design your own plugins that completely replace certain portion of the engine functionality without having to modify the engine itself (e.g. use OpenGL instead of DirectX)
+ - Plugins - These are separate, independant, and in most cases optional libraries containing various high level systems. They always depend on a specific layer, depending how high level the system they implement is. You are able to design your own plugins that completely replace certain portion of the engine functionality without having to modify the engine itself (e.g. use OpenGL instead of DirectX)
  - Scripting - These are libraries used for interop between the C++ core and the scripting language, as well as the managed scripting libraries themselves. Generally these can also be counted as plugins, but they are a bit more tightly coupled with the engine core.
  - Executable - These are small pieces of code meant to initialize and start up the engine/editor.
  
+To give you a better idea here is a diagram showing how all the libraries connect:
+![Banshee's libraries](ArchitectureSimple.png)  
+ 
 # Layers #										{#arch_layers}
 The layers contain the core of the engine. All the essentials and all the abstract interfaces for plugins belong here. The engine core was split into multiple layers for two reasons:
- - To give developers a chance to pick the level of functionality they need. Some people will want just core and utility and start working on their own engine while others might be just interested in game development and will stick with the editor layer.
- - To decouple code. Lower layers do not know about higher levels and low level code never caters to specialized high level code. This makes the design cleaner and forces a certain direction for dependencies.
+ - To give developers a chance to pick the level of functionality they need. Some people will want just core and utility and start working on their own engine or low level technologies, while others might be just interested in game development and will stick with the editor layer.
+ - To decouple code. Lower layers do not know about higher layers and low level code never caters to specialized high level code. This makes the design cleaner and forces a certain direction for dependencies.
 
-Lower levels were designed to be more general purpose than higher levels. They provide very general techniques usually usable in various situations, and they attempt to cater to everyone. On the other hand higher levels provide a lot more focused and specialized techniques. This might mean relying on very specific rendering APIs, platforms or plugins but it also means using newer, fancier and maybe not as widely accepted techniques (e.g. some new rendering algorithm or a shader).
+Lower layers were designed to be more general purpose than higher layers. They provide very general techniques usually usable in various situations, and they attempt to cater to everyone. On the other hand higher layers provide a lot more focused and specialized techniques. This might mean relying on very specific rendering APIs, platforms or plugins but it also means using newer, fancier and maybe not as widely accepted techniques (e.g. some new rendering algorithm or a shader).
 
 Going from the lowest to highest the layers are:
-## BansheeUtility ##							{#arch_utility}
-This is the lowest layer of the engine. It is a collection of very decoupled and separate systems that are likely to be used throughout all of the higher layers. Essentially a collection of tools that are in no way tied into a larger whole. Most of the functionality isn't even game engine specific, like providing file-system access, file path parsing or events. Other things that belong here are the math library, object serialization and RTTI system, threading primitives and managers, among various others.
+## BansheeUtility ##					
+This is the lowest layer of the engine. It is a collection of very decoupled and separate systems that are likely to be used throughout all of the higher layers. Essentially a collection of tools that are in no way tied into a larger whole. Most of the functionality isn't even game engine specific, like providing [file-system access](@ref BansheeEngine::FileSystem), [file path parsing](@ref BansheeEngine::Path), [events](@ref BansheeEngine::Event), [math library](@ref BansheeEngine::Math), [RTTI system](@ref BansheeEngine::RTTITypeBase), [threading primitives and managers](@ref BansheeEngine::ThreadPool), among various others.
 
-## BansheeCore ##								{#arch_core}
-It is the second lowest layer and the first layer that starts to take shape of an actual engine. This layer provides some very game-specific modules tied into a coherent whole, but it tries to be very generic and offer something that every engine might need instead of focusing on very specialized techniques. Render API wrappers exist here, but actual render APIs are implemented as plugins so you are not constrained by specific subset. Scene manager, renderer, resource management, audio, animation, physics, importers and others all belong here, and all are implemented in an abstract way that they can be implemented/extended by higher layers or plugins.
+See the [utilities](@ref utilities) manual for an overview of all the most important systems in this layer. 
 
-## BansheeEngine ##								{#arch_engine}
-Second highest layer and first layer with a more focused goal. It is built upon BansheeCore but relies on a specific sub-set of plugins and implements systems like scene manager and renderer in a specific way. For example DirectX 11 and OpenGL render systems are referenced by name, as well as Mono scripting system among others. Renderer that follows a specific set of techniques and algorithms that determines how are all objects rendered also belongs here.
+## BansheeCore ##		
+This layer builds upon the utility layer by providing abstract interfaces for most of the engine systems. The interfaces themselves are implemented in the form of plugins, and are not part of the layer itself (for the most part). This layer glues all the engine's systems together and provides a foundation that the engine is built on. The layer tries to be generic and include only functionality that is common, while leaving more specialized functionality for higher layers. Some systems provided by this layer are @ref BansheeEngine::RenderAPI "render API wrapper", @ref BansheeEngine::Resources "resource management", @ref BansheeEngine::Importer "asset import", @ref BansheeEngine::Input "input", @ref BansheeEngine::Physics "physics" and more.
 
-## BansheeEditor ##								{#arch_editor}
-And finally the top layer is the editor. It provides various editor specific features like the project library, built systems, editor window systems, scene view tools and similar. Large portions of the editor are implemented in the scripting code, and this layer provides more of a set of helper tools used by the scripting system. If you are going to work with this layer you will also be working closely with the scripting interop code and the scripting code.
+## %BansheeEngine ##				
+This layer builds upon the abstraction provided by the core layer and provides actual implementations of the core layer interfaces. Since most of the interfaces are implemented as plugins this layer doesn't contain too much of its own code, but is rather in charge of linking everything together. Aside from linking plugins together it also contains some specialized code, like the @ref BansheeEngine::GUIManager "GUI" and @ref BansheeEngine::ScriptManager "script" managers, as well as various other functionality that was not considered generic enough to be included in the core layer.
+
+## BansheeEditor ##					
+And finally the top layer is the editor. It builts upon everything else so far and provides various editor specific features like the project library, build system, editor window management, scene view tools and similar. Large portions of the editor are implemented in the scripting code, and this layer provides more of a set of helper tools used by the scripting system. If you are going to work with this layer you will also be working closely with the scripting interop code and the scripting code (see below).
 
 # Plugins #										{#arch_plugins}
-Banshee provides a wide variety of plugins out of the box. Some of these are fully optional, but all can be replaced with your own implementations. Each plugin is based on an abstract interface implemented in one of the layers (for the most part, BansheeCore and BansheeEngine layers).
+Banshee provides a wide variety of plugins out of the box. The plugins are loaded dynamically and allow you to change engine functionality completely transparently to other systems (e.g. you can choose to load an OpenGL renderer instead of a DirectX one). Some plugins are completely optional and you can choose to ignore them (e.g. importer plugins can usually be ignored for game builds). Most importantly the plugins segregate the code, ensuring the design of the engine is decoupled and clean. Each plugin is based on an abstract interface implemented in one of the layers (for the most part, BansheeCore and %BansheeEngine layers).
 
 ## Render API ##								{#arch_rapi}		
-Render API plugins allow you to use a different backend for performing hardware accelerated rendering. Render API handles low level rendering, including features like vertex/index buffers, creating rasterizer/depth/blend states, shader programs, render targets, textures, draw calls and similar. Render API interface is defined in the BansheeCore layer.
+Render API plugins allow you to use a different backend for performing hardware accelerated rendering. @ref BansheeEngine::RenderAPI "RenderAPI" handles low level rendering, including features like vertex/index buffers, creating rasterizer/depth/blend states, shader programs, render targets, textures, draw calls and similar. See the [render API](@ref renderAPI) manual to learn more about it.
 
-A few out of the box implementations are provided, the user can choose which one to use upon application startup. At least one must be present during start-up (can be a null renderer (i.e. one that does nothing, like for server purposes) if you choose to add one).
-
-### BansheeD3D11RenderAPI ###					{#arch_dx11rapi}
-Provides implementation of the Render API interface for DirectX 11. 
-
-### BansheeD3D9RenderAPI ###					{#arch_dx9rapi}
-Provides implementation of the RenderAPI interface for DirectX 9. 
-
-### BansheeGLRenderAPI ###						{#arch_GLrapi}
-Provides implementation of the RenderAPI interface for OpenGL 4.3.
+The following plugins all have their own implementations of the @ref BansheeEngine::RenderAPI "RenderAPI" interface, as well as any related types (e.g. @ref BansheeEngine::VertexBuffer "VertexBuffer", @ref BansheeEngine::IndexBuffer "IndexBuffer"):
+ - **BansheeD3D11RenderAPI** - Provides implementation of the @ref BansheeEngine::RenderAPI "RenderAPI" interface for DirectX 11. 
+ - **BansheeD3D9RenderAPI**	- Provides implementation of the @ref BansheeEngine::RenderAPI "RenderAPI" interface for DirectX 9. 
+ - **BansheeGLRenderAPI** - Provides implementation of the @ref BansheeEngine::RenderAPI "RenderAPI" interface for OpenGL 4.3.
 
 ## Importers ##									{#arch_importers}		
-Importers allow you to convert various types of files into formats easily readable by the engine. Normally importers are only used during development (e.g. in the editor), but the game itself will only use previously imported assets (although ultimately that's up to the user).
+Importers allow you to convert various types of files into formats easily readable by the engine. Normally importers are only used during development (e.g. in the editor), and the game itself will only use previously imported assets (although ultimately that's up to the user).
 
-All importers implement a relatively simple interface represented by a single SpecificImporter class. The engine can start with zero importers, or with as many as you need.
-
-See [this link](TODOLINK) on a guide how to add your own importer. Some important importers are provided out of the box:
-
-### BansheeFreeImgImporter ###					{#arch_freeimg}	
-Handles import of most popular image formats, like .png, .psd, .jpg, .bmp and similar. It uses the FreeImage library for reading the image files and converting them into engine Texture format.
-
-### BansheeFBXImporter ###						{#arch_fbx}
-Handles import of FBX mesh files. Uses Autodesk FBX SDK for reading the files and converting them into engine Mesh format.
-
-### BansheeFontImporter ###						{#arch_font}
-Handles import of TTF and OTF font files. Uses FreeType for reading the font files and converting them into engine Font format.
-
-### BansheeSL ###								{#arch_bsl}	
-Provides an implementation of the Banshee's shader language that allows you to easily define an entire pipeline state in a single file.
+All importers implement a relatively simple interface represented by the @ref BansheeEngine::SpecificImporter "SpecificImporter" class. The engine can start with zero importers, or with as many as you need. See the [importer](@ref customImporters) manual to learn more about importers and how to create your own. Some important importers are provided out of the box:
+ - **BansheeFreeImgImporter** - Handles import of most popular image formats, like .png, .psd, .jpg, .bmp and similar. It uses the FreeImage library for reading the image files and converting them into engine's @ref BansheeEngine::Texture "Texture" format.
+ - **BansheeFBXImporter** - Handles import of FBX mesh files. Uses Autodesk FBX SDK for reading the files and converting them into engine's @ref BansheeEngine::Mesh "Mesh" format.
+ - **BansheeFontImporter** - Handles import of TTF and OTF font files. Uses FreeType for reading the font files and converting them into engine's @ref BansheeEngine::Font "Font" format.
+ - **BansheeSL** - Provides an implementation of the Banshee's shader language that allows you to easily define an entire pipeline state in a single file. Imports .bsl files into engine's @ref BansheeEngine::Shader "Shader" format.
 
 ## Others ##									{#arch_others}
 
-### BansheeOISInput ###							{#arch_ois}		
-Handles raw mouse/keyboard/gamepad input for multiple platforms. Implements the RawInputHandler interface. Uses the OIS library specifically modified for Banshee (source code available with Banshee's dependencies). Be aware that there is also an OSInputHandler that is used for non-game specific purposes (e.g. tracking cursor, text input), but that is part of the engine core instead of a plugin.
+### BansheeOISInput ###							{#arch_ois}
+Handles raw mouse/keyboard/gamepad input for multiple platforms. All input plugins implement the @ref BansheeEngine::RawInputHandler "RawInputHandler" interface. Uses the OIS library specifically modified for Banshee (source code available with Banshee's dependencies). 
 
-### BansheePhysX ###							{#arch_physx}
-Handles physics: rigidbodies, colliders, triggers, joints, character controller and similar. Implements the Physics interface (and all related classes). Uses NVIDIA PhysX as the backend.
+Be aware that there is also an @ref BansheeEngine::OSInputHandler "OSInputHandler" that is used for non-game specific purposes (e.g. tracking cursor, text input), but that is part of the engine core instead of a plugin.
 
-### BansheeMono ###								{#arch_mono}
-Provides access to the C# scripting language using the Mono runtime. All the script interop libraries (listed below) depend on this plugin, as well as a specific engine layer.
+### BansheePhysX ###				
+Handles physics: rigidbodies, colliders, triggers, joints, character controller and similar. Implements the @ref BansheeEngine::Physics "Physics" interface and any related classes (e.g. @ref BansheeEngine::Rigidbody "Rigidbody", @ref BansheeEngine::Collider "Collider"). Uses NVIDIA PhysX as the backend.
 
-### RenderBeast ###								{#arch_rbeast}	
-Banshee's default renderer. Implements the Renderer interface. This plugin might seem similar to the Render API plugins mentioned above but it is a higher level system. While Render API plugins provide low level access to rendering functionality the renderer handles rendering of all scene objects in a specific manner without having to issue draw calls manually. A specific set of options can be configured, both globally and per object that control how an object is rendered, as well as specifying completely custom materials. e.g. the renderer will handle physically based rendering, HDR, shadows, global illumination and similar features.
+### BansheeMono ###					
+Provides access to the C# scripting language using the Mono runtime. This allows the C++ code to call into C# code, and vice versa, as well as providing various meta-data about the managed code, and other functionality. All the script interop libraries (listed below) depend on this plugin. See the [scripting](@ref scripting) manual to learn more about this layer.
 
-See [this link](TODOLINK) for more information on how the renderer works and how to potentially implement your own.
+### RenderBeast ###					
+Banshee's default renderer. Implements the @ref BansheeEngine::Renderer "Renderer" interface. This plugin might seem similar to the render API plugins mentioned above but it is a higher level system. While render API plugins provide low level access to rendering functionality the renderer handles rendering of all scene objects in a specific manner without requiring the developer to issue draw calls manually. A specific set of options can be configured, both globally and per object that control how an object is rendered, as well as specifying completely custom materials. e.g. the renderer will handle physically based rendering, HDR, shadows, global illumination and similar features.
+
+See the [renderer](@ref renderer) manual to learn more about how the renderer works and how to implement your own.
 
 # Scripting #									{#arch_scripting}
 Scripting libraries can be placed into two different categories: 
- - Interop libraries written in C++. These provide glue code between C++ and C# (e.g. converting types, managing objects and similar). These are prefixed with the letter S.
- - Managed libraries containing actual managed code. These are prefixed with the letter M.
+ - Interop libraries written in C++. These provide glue code between C++ and C# (e.g. converting types, managing objects and similar). These are prefixed with the letter *S*.
+ - Managed libraries containing actual managed code. These are prefixed with the letter *M*.
  
-Whenever adding a new type that exists in both script and managed code you will need to access both of these library categories. Read [this guide](TODOLINK) to learn more about adding your own scripting types.
+Whenever adding a new type that exists in both script and managed code you will need to access both of these library categories. Read the [scripting](@ref scripting) manual to learn about exposing C++ code to scripts.
+
+Interop libraries:
+ - **SBansheeEngine** - Provides glue code between %BansheeEngine layer and the scripting code in MBansheeEngine.
+ - **SBansheeEditor** - Provides glue code between BansheeEditor layer and the scripting code in MBansheeEditor.
+
+Managed assemblies:
+ - **MBansheeEngine**	- Provides most of the high-level C++ engine API available in %BansheeEngine layer (e.g. scene object model, resources, GUI, materials, etc.) as a high-level C# scripting API. Certain portions of the API are provided in pure C# (like the math library) while most just wrap their C++ counterparts.
+ - **MBansheeEditor** - Provides all editor specific functionality from the BansheeEditor layer as a C# scripting API (e.g. project library, building, scene view, etc.). Also implements a large number of editor features in pure C# on top of the provided engine and editor APIs (e.g. specific editor windows and tools).
  
-## SBansheeEngine ##							{#arch_sengine}
-Interop library that provides glue code between BansheeEngine layer and the scripting code in MBansheeEngine.
+# Complete architecture #			{#arch_complete}
+See the diagram below to give you a better idea of the full architecture of Banshee. The diagram is not complete, but rather meant as a way to qive you a rough idea of where everything is, to make it easier to navigate the engine.
 
-## SBansheeEditor ##							{#arch_seditor}	
-Interop library that provides glue code between BansheeEditor layer and the scripting code in MBansheeEditor.
-
-## MBansheeEngine ##							{#arch_mengine}
-Provides most of the high-level C++ engine API available in BansheeEngine layer (e.g. scene object model, resources, GUI, materials, etc.) as a high-level C# scripting API. Certain portions of the API are provided in pure C# (like the math library).
-
-## MBansheeEditor ##							{#arch_meditor}
-Provides all editor specific functionality from the BansheeEditor layer as a C# scripting API (e.g. project library, building, scene view, etc.). Also implements a large number of editor features in pure C# on top of the provided engine and editor APIs (e.g. specific editor windows and tools).
+![Architecture](@ref Architecture.png) 

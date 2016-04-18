@@ -77,7 +77,7 @@ namespace BansheeEngine
     /// <summary>
     /// Used for passing HingeJoint initialization data between native and managed code.
     /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential), SerializeObject]
     internal struct ScriptHingeJointData // Note: Must match C++ struct ScriptHingeJointData
     {
         public LimitAngularRange limit;

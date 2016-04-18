@@ -15,7 +15,8 @@ namespace BansheeEngine
 	/** Specifies first or second body referenced by a Joint. */
 	enum class JointBody
 	{
-		A, B
+		Target, /**< Body the joint is influencing. */
+		Anchor /**< Body the joint is attached to (if any). */
 	};
 
 	/** @} */

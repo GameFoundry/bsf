@@ -93,7 +93,7 @@ namespace BansheeEngine
     /// <summary>
     /// Used for passing DistanceJoint initialization data between native and managed code.
     /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential), SerializeObject]
     internal struct ScriptDistanceJointData // Note: Must match C++ struct ScriptDistanceJointData
     {
         public float minDistance;

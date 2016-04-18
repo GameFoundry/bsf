@@ -13,11 +13,11 @@ namespace BansheeEditor
     /// </summary>
     internal abstract class JointInspector : Inspector
     {
-        private GUIGameObjectField bodyAField = new GUIGameObjectField(typeof(Rigidbody), new LocEdString("Body A"));
-        private GUIVector3Field bodyAOffsetField = new GUIVector3Field(new LocEdString("Body A offset"));
+        private GUIGameObjectField targetField = new GUIGameObjectField(typeof(Rigidbody), new LocEdString("Target"));
+        private GUIVector3Field targetOffsetField = new GUIVector3Field(new LocEdString("Target offset"));
 
-        private GUIGameObjectField bodyBField = new GUIGameObjectField(typeof(Rigidbody), new LocEdString("Body B"));
-        private GUIVector3Field bodyBOffsetField = new GUIVector3Field(new LocEdString("Body B offset"));
+        private GUIGameObjectField anchorField = new GUIGameObjectField(typeof(Rigidbody), new LocEdString("Anchor"));
+        private GUIVector3Field anchorOffsetField = new GUIVector3Field(new LocEdString("Anchor offset"));
 
         private GUIFloatField breakForceField = new GUIFloatField(new LocEdString("Break force"));
         private GUIFloatField breakTorqueField = new GUIFloatField(new LocEdString("Break torque"));
@@ -31,11 +31,11 @@ namespace BansheeEditor
         /// <param name="joint">Joint to update the GUI from.</param>
         protected virtual void Refresh(Joint joint)
         {
-            bodyAField.Value = joint.GetRigidbody(JointBody.A);
-            bodyAOffsetField.Value = joint.GetPosition(JointBody.A);
+            targetField.Value = joint.GetRigidbody(JointBody.Target);
+            targetOffsetField.Value = joint.GetPosition(JointBody.Target);
 
-            bodyBField.Value = joint.GetRigidbody(JointBody.B);
-            bodyBOffsetField.Value = joint.GetPosition(JointBody.B);
+            anchorField.Value = joint.GetRigidbody(JointBody.Anchor);
+            anchorOffsetField.Value = joint.GetPosition(JointBody.Anchor);
 
             breakForceField.Value = joint.BreakForce;
             breakTorqueField.Value = joint.BreakTorque;
@@ -47,15 +47,15 @@ namespace BansheeEditor
         /// </summary>
         protected virtual void BuildGUI(Joint joint)
         {
-            bodyAField.OnChanged += x => { joint.SetRigidbody(JointBody.A, (Rigidbody)x); MarkAsModified(); ConfirmModify(); };
-            bodyAOffsetField.OnChanged += x => { joint.SetPosition(JointBody.A, x); MarkAsModified(); };
-            bodyAOffsetField.OnFocusLost += ConfirmModify;
-            bodyAOffsetField.OnConfirmed += ConfirmModify;
+            targetField.OnChanged += x => { joint.SetRigidbody(JointBody.Target, (Rigidbody)x); MarkAsModified(); ConfirmModify(); };
+            targetOffsetField.OnChanged += x => { joint.SetPosition(JointBody.Target, x); MarkAsModified(); };
+            targetOffsetField.OnFocusLost += ConfirmModify;
+            targetOffsetField.OnConfirmed += ConfirmModify;
 
-            bodyBField.OnChanged += x => { joint.SetRigidbody(JointBody.B, (Rigidbody)x); MarkAsModified(); ConfirmModify(); };
-            bodyBOffsetField.OnChanged += x => { joint.SetPosition(JointBody.B, x); MarkAsModified(); };
-            bodyBOffsetField.OnFocusLost += ConfirmModify;
-            bodyBOffsetField.OnConfirmed += ConfirmModify;
+            anchorField.OnChanged += x => { joint.SetRigidbody(JointBody.Anchor, (Rigidbody)x); MarkAsModified(); ConfirmModify(); };
+            anchorOffsetField.OnChanged += x => { joint.SetPosition(JointBody.Anchor, x); MarkAsModified(); };
+            anchorOffsetField.OnFocusLost += ConfirmModify;
+            anchorOffsetField.OnConfirmed += ConfirmModify;
 
             breakForceField.OnChanged += x => { joint.BreakForce = x; MarkAsModified(); };
             breakForceField.OnFocusLost += ConfirmModify;
@@ -67,10 +67,10 @@ namespace BansheeEditor
 
             collisionField.OnChanged += x => { joint.EnableCollision = x; MarkAsModified(); ConfirmModify(); };
             
-            Layout.AddElement(bodyAField);
-            Layout.AddElement(bodyAOffsetField);
-            Layout.AddElement(bodyBField);
-            Layout.AddElement(bodyBOffsetField);
+            Layout.AddElement(targetField);
+            Layout.AddElement(targetOffsetField);
+            Layout.AddElement(anchorField);
+            Layout.AddElement(anchorOffsetField);
             Layout.AddElement(breakForceField);
             Layout.AddElement(breakTorqueField);
             Layout.AddElement(collisionField);

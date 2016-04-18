@@ -17,7 +17,7 @@ namespace BansheeEditor
         private GUIToggleField enableMinLimitField = new GUIToggleField(new LocEdString("Enable minimum limit"));
         private GUIFloatField minLimitField = new GUIFloatField(new LocEdString("Minimum distance"));
         private GUIToggleField enableMaxLimitField = new GUIToggleField(new LocEdString("Enable maximum limit"));
-        private GUIFloatField maxLimitField = new GUIFloatField(new LocEdString("Maximum maximum"));
+        private GUIFloatField maxLimitField = new GUIFloatField(new LocEdString("Maximum distance"));
         private GUIFloatField toleranceField = new GUIFloatField(new LocEdString("Tolerance"));
         private GUIToggleField enableSpringField = new GUIToggleField(new LocEdString("Enable spring"));
         private SpringGUI springGUI;

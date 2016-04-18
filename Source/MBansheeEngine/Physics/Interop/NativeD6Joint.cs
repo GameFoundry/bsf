@@ -125,7 +125,7 @@ namespace BansheeEngine
     /// <summary>
     /// Used for passing D6Joint initialization data between native and managed code.
     /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential), SerializeObject]
     internal struct ScriptD6JointData // Note: Must match C++ struct ScriptD6JointData
     {
         public LimitLinear linearLimit;
