@@ -72,8 +72,10 @@ namespace BansheeEngine
 		if (!ScriptAssemblyManager::instance().getSerializableObjectInfo(type->mTypeNamespace, type->mTypeName, currentObjInfo))
 			return nullptr;
 
-		// Don't construct as we have no guarantees that objects will have parameterless constructors
-		return currentObjInfo->mMonoClass->createInstance(false);
+		if (type->mValueType)
+			return currentObjInfo->mMonoClass->createInstance(false);
+		else
+			return currentObjInfo->mMonoClass->createInstance();
 	}
 
 	SPtr<ManagedSerializableObject> ManagedSerializableObject::createEmpty()

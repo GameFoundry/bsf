@@ -156,12 +156,23 @@ namespace BansheeEditor
         [DrawGizmo(DrawGizmoFlags.Selected | DrawGizmoFlags.ParentSelected)]
         private static void DrawSphericalJoint(SphericalJoint joint)
         {
-            Vector3 anchorA = GetAnchor(joint, JointBody.Target);
-            Vector3 anchorB = GetAnchor(joint, JointBody.Anchor);
+            Vector3 target = GetAnchor(joint, JointBody.Target);
+            Vector3 anchor = GetAnchor(joint, JointBody.Anchor);
+            Vector3 center = target;
+
+            Rigidbody rigidbody = joint.GetRigidbody(JointBody.Target);
+            if (rigidbody != null)
+                center = rigidbody.SceneObject.Position;
 
             Gizmos.Color = Color.White;
-            Gizmos.DrawSphere(anchorA, 0.05f);
-            Gizmos.DrawSphere(anchorB, 0.05f);
+            Gizmos.DrawSphere(center, 0.05f);
+
+            Gizmos.Color = Color.Yellow;
+            Gizmos.DrawSphere(target, 0.05f);
+            Gizmos.DrawSphere(anchor, 0.05f);
+
+            Gizmos.Color = Color.Green;
+            Gizmos.DrawLine(target, center);
 
             Gizmos.Color = Color.Green;
             if (joint.EnableLimit)
@@ -172,15 +183,15 @@ namespace BansheeEditor
                 Radian yAngle = MathEx.Min(new Degree(360), limit.YLimitAngle*2.0f);
 
                 Gizmos.Transform = joint.SceneObject.WorldTransform;
-                Gizmos.DrawWireArc(Vector3.Zero, Vector3.ZAxis, 0.25f, zAngle * -0.5f, zAngle);
-                Gizmos.DrawWireArc(Vector3.Zero, Vector3.YAxis, 0.25f, yAngle * -0.5f, yAngle);
+                Gizmos.DrawWireArc(Vector3.Zero, Vector3.ZAxis, 0.25f, zAngle * -0.5f + new Degree(90), zAngle);
+                Gizmos.DrawWireArc(Vector3.Zero, Vector3.YAxis, 0.25f, yAngle * -0.5f + new Degree(90), yAngle);
 
                 Gizmos.Color = Color.Red;
                 Radian remainingZAngle = new Degree(360) - zAngle;
                 Radian remainingYAngle = new Degree(360) - yAngle;
 
-                Gizmos.DrawWireArc(Vector3.Zero, Vector3.ZAxis, 0.25f, zAngle * 0.5f, remainingZAngle);
-                Gizmos.DrawWireArc(Vector3.Zero, Vector3.YAxis, 0.25f, yAngle * 0.5f, remainingYAngle);
+                Gizmos.DrawWireArc(Vector3.Zero, Vector3.ZAxis, 0.25f, zAngle * 0.5f + new Degree(90), remainingZAngle);
+                Gizmos.DrawWireArc(Vector3.Zero, Vector3.YAxis, 0.25f, yAngle * 0.5f + new Degree(90), remainingYAngle);
             }
             else
             {
@@ -199,15 +210,26 @@ namespace BansheeEditor
         [DrawGizmo(DrawGizmoFlags.Selected | DrawGizmoFlags.ParentSelected)]
         private static void DrawHingeJoint(HingeJoint joint)
         {
-            Vector3 anchorA = GetAnchor(joint, JointBody.Target);
-            Vector3 anchorB = GetAnchor(joint, JointBody.Anchor);
+            Vector3 target = GetAnchor(joint, JointBody.Target);
+            Vector3 anchor = GetAnchor(joint, JointBody.Anchor);
+            Vector3 center = target;
+
+            Rigidbody rigidbody = joint.GetRigidbody(JointBody.Target);
+            if (rigidbody != null)
+                center = rigidbody.SceneObject.Position;
 
             Gizmos.Color = Color.White;
-            Gizmos.DrawSphere(anchorA, 0.05f);
-            Gizmos.DrawSphere(anchorB, 0.05f);
+            Gizmos.DrawSphere(center, 0.05f);
 
-            const float radius = 0.05f;
-            const float height = 0.25f;
+            Gizmos.Color = Color.Yellow;
+            Gizmos.DrawSphere(target, 0.05f);
+            Gizmos.DrawSphere(anchor, 0.05f);
+
+            Gizmos.Color = Color.Green;
+            Gizmos.DrawLine(target, center);
+
+            const float radius = 0.25f;
+            const float height = 0.5f;
 
             if (joint.EnableLimit)
             {

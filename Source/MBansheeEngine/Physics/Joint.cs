@@ -266,7 +266,7 @@ namespace BansheeEngine
         /// Creates the internal representation of the Joint and restores the values saved by the Component.
         /// </summary>
         private void RestoreNative()
-	    {
+        {
             commonData.@internal.bodies[0] = IntPtr.Zero;
             commonData.@internal.bodies[1] = IntPtr.Zero;
 
@@ -583,6 +583,12 @@ namespace BansheeEngine
         }
 
         /// <summary>
+        /// Constructor for deserialization only.
+        /// </summary>
+        private D6JointDrive()
+        { }
+
+        /// <summary>
         /// Constructs a new D6 joint drive.
         /// </summary>
         /// <param name="stiffness"><see cref="Stiffness"/></param>
@@ -683,6 +689,12 @@ namespace BansheeEngine
         {
             get { return data; }
         }
+
+        /// <summary>
+        /// Constructor for deserialization only.
+        /// </summary>
+        private HingeJointDrive()
+        { }
 
         /// <summary>
         /// Constructs a new hinge joint drive.

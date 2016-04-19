@@ -8,7 +8,7 @@ namespace BansheeEngine
 
     /// <summary>
     /// Represents the most customizable type of joint. This joint type can be used to create all other built-in joint 
-    /// types, and to design your own custom ones, but is less intuitive to use.Allows a specification of a linear
+    /// types, and to design your own custom ones, but is less intuitive to use. Allows a specification of a linear
     /// constraint (for example for slider), twist constraint(rotating around X) and swing constraint(rotating around Y and
     /// Z). It also allows you to constrain limits to only specific axes or completely lock specific axes.
     /// </summary>
@@ -288,6 +288,9 @@ namespace BansheeEngine
                 @internal.driveRotation = Quaternion.Identity;
                 @internal.driveLinearVelocity = Vector3.Zero;
                 @internal.driveAngularVelocity = Vector3.Zero;
+
+                for (int i = 0; i < (int) D6JointAxis.Count; i++)
+                    @internal.drives[i] = new D6JointDrive();
             }
         }
     }

@@ -5,6 +5,9 @@
 #include "BsMonoMethod.h"
 #include "BsMonoUtil.h"
 
+// DEBUG ONLY
+#include "BsMonoProperty.h"
+
 namespace BansheeEngine
 {
 	ScriptD6JointDrive::GetNativeDataThunkDef ScriptD6JointDrive::getNativeDataThunk = nullptr;

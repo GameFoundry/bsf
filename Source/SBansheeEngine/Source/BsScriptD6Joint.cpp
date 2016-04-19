@@ -117,12 +117,12 @@ namespace BansheeEngine
 	void ScriptD6JointData::toDesc(D6_JOINT_DESC& desc) const
 	{
 		ScriptArray motionArray(motion);
-
 		for (UINT32 i = 0; i < (UINT32)D6Joint::Axis::Count; i++)
 			desc.motion[i] = motionArray.get<D6Joint::Motion>(i);
 
+		ScriptArray driveArray(drives);
 		for (UINT32 i = 0; i < (UINT32)D6Joint::DriveType::Count; i++)
-			desc.drive[i] = ScriptD6JointDrive::convert(motionArray.get<MonoObject*>(i));
+			desc.drive[i] = ScriptD6JointDrive::convert(driveArray.get<MonoObject*>(i));
 
 		desc.limitLinear = ScriptLimitLinear::convert(linearLimit);
 		desc.limitTwist = ScriptLimitAngularRange::convert(twistLimit);
