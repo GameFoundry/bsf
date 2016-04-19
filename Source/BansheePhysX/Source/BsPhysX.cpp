@@ -501,6 +501,7 @@ namespace BansheeEngine
 		mCharManager = PxCreateControllerManager(*mScene);
 
 		mSimulationStep = input.timeStep;
+		mSimulationTime = -mSimulationStep * 1.01f; // Ensures simulation runs on the first frame
 		mDefaultMaterial = mPhysics->createMaterial(0.0f, 0.0f, 0.0f);
 	}
 
@@ -518,24 +519,21 @@ namespace BansheeEngine
 
 	void PhysX::update()
 	{
+		if (mPaused)
+			return;
+
 		mUpdateInProgress = true;
 
-		if(mFirstUpdate)
-		{
-			mLastSimulationTime = gTime().getTime() - mSimulationStep * 1.01f;
-			mFirstUpdate = false;
-		}
+		float nextFrameTime = mSimulationTime + mSimulationStep;
+		mFrameTime += gTime().getFrameDelta();
 
-		float nextFrameTime = mLastSimulationTime + mSimulationStep;
-		float curFrameTime = gTime().getTime();
-		if(curFrameTime < nextFrameTime)
+		if(mFrameTime < nextFrameTime)
 		{
-			// TODO - Interpolate rigidbodies but perform no actual simulation
-
+			// Note: Potentially interpolate (would mean a one frame delay needs to be introduced)
 			return;
 		}
 
-		float simulationAmount = std::max(curFrameTime - mLastSimulationTime, mSimulationStep); // At least one step
+		float simulationAmount = std::max(mFrameTime - mSimulationTime, mSimulationStep); // At least one step
 		INT32 numIterations = Math::floorToInt(simulationAmount / mSimulationStep);
 
 		// If too many iterations are required, increase time step. This should only happen in extreme situations (or when
@@ -555,7 +553,7 @@ namespace BansheeEngine
 
 			mScene->simulate(step, nullptr, scratchBuffer, SCRATCH_BUFFER_SIZE);
 			simulationAmount -= step;
-			mLastSimulationTime += step;
+			mSimulationTime += step;
 
 			UINT32 errorState;
 			if(!mScene->fetchResults(true, &errorState))
@@ -596,8 +594,7 @@ namespace BansheeEngine
 			rigidbody->_setTransform(fromPxVector(transform.p), fromPxQuaternion(transform.q));
 		}
 
-		// TODO - Consider extrapolating for the remaining "simulationAmount" value
-
+		// Note: Consider extrapolating for the remaining "simulationAmount" value
 		mUpdateInProgress = false;
 
 		triggerEvents();
@@ -1148,6 +1145,11 @@ namespace BansheeEngine
 		mCharManager->setOverlapRecoveryModule(mFlags.isSet(PhysicsFlag::CCT_OverlapRecovery));
 		mCharManager->setPreciseSweeps(mFlags.isSet(PhysicsFlag::CCT_PreciseSweeps));
 		mCharManager->setTessellation(mFlags.isSet(PhysicsFlag::CCT_Tesselation), mTesselationLength);
+	}
+
+	void PhysX::setPaused(bool paused)
+	{
+		mPaused = paused;
 	}
 
 	Vector3 PhysX::getGravity() const

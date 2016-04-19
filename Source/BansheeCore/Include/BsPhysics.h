@@ -409,6 +409,9 @@ namespace BansheeEngine
 		/** Enables or disabled a specific physics option. */
 		virtual void setFlag(PhysicsFlags flag, bool enabled) { if (enabled) mFlags |= flag; else mFlags &= ~flag; }
 
+		/** Pauses or resumes the physics simulation. */
+		virtual void setPaused(bool paused) = 0;
+
 		/** Gets the global gravity value for all objects in the scene. */
 		virtual Vector3 getGravity() const = 0;
 

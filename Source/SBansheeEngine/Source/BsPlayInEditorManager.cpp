@@ -6,6 +6,7 @@
 #include "BsSceneManager.h"
 #include "BsSceneObject.h"
 #include "BsApplication.h"
+#include "BsPhysics.h"
 
 namespace BansheeEngine
 {
@@ -43,6 +44,8 @@ namespace BansheeEngine
 			mFrameStepActive = false;
 			mPausableTime = 0.0f;
 
+			gPhysics().setPaused(true);
+
 			mSavedScene->_instantiate();
 			gSceneManager()._setRootNode(mSavedScene);
 			mSavedScene = nullptr;
@@ -55,11 +58,15 @@ namespace BansheeEngine
 				saveSceneInMemory();
 				ScriptGameObjectManager::instance().wakeRuntimeComponents();
 			}
+
+			gPhysics().setPaused(false);
 		}
 			break;
 		case PlayInEditorState::Paused:
 		{
 			mFrameStepActive = false;
+			gPhysics().setPaused(true);
+
 			if (oldState == PlayInEditorState::Stopped)
 			{
 				saveSceneInMemory();

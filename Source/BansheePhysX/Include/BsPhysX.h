@@ -183,6 +183,9 @@ namespace BansheeEngine
 		/** @copydoc Physics::setFlag */
 		void setFlag(PhysicsFlags flags, bool enabled) override;
 
+		/** @copydoc Physics::setPaused */
+		void setPaused(bool paused) override;
+
 		/** @copydoc Physics::getGravity */
 		Vector3 getGravity() const override;
 
@@ -283,10 +286,11 @@ namespace BansheeEngine
 		inline bool overlapAny(const physx::PxGeometry& geometry, const physx::PxTransform& tfrm, UINT64 layer) const;
 
 		float mSimulationStep = 1.0f/60.0f;
-		float mLastSimulationTime = 0.0f;
+		float mSimulationTime = 0.0f;
+		float mFrameTime = 0.0f;
 		float mTesselationLength = 3.0f;
 		UINT32 mNextRegionIdx = 1;
-		bool mFirstUpdate = true;
+		bool mPaused = false;
 
 		Vector<TriggerEvent> mTriggerEvents;
 		Vector<ContactEvent> mContactEvents;
