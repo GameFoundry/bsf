@@ -96,7 +96,7 @@ namespace BansheeEngine
     /// <summary>
     /// Used for passing common Joint initialization data between native and managed code.
     /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential), SerializeObject]
     internal struct ScriptCommonJointData // Note: Must match C++ struct ScriptCommonJointData
     {
         public IntPtr[] bodies;

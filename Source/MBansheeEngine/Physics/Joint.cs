@@ -267,8 +267,8 @@ namespace BansheeEngine
         /// </summary>
         private void RestoreNative()
         {
-            commonData.@internal.bodies[0] = IntPtr.Zero;
-            commonData.@internal.bodies[1] = IntPtr.Zero;
+            // Make sure to always create a new instance of this array, as IntPtrs don't get serialized
+            commonData.@internal.bodies = new []{ IntPtr.Zero, IntPtr.Zero };
 
             if (commonData.bodies[0] != null)
             {
@@ -369,7 +369,6 @@ namespace BansheeEngine
 
             public SerializableData()
             {
-                @internal.bodies = new IntPtr[2];
                 @internal.positions = new Vector3[2] { Vector3.Zero, Vector3.Zero };
                 @internal.rotations = new Quaternion[2] { Quaternion.Identity, Quaternion.Identity };
                 @internal.breakForce = float.MaxValue;
