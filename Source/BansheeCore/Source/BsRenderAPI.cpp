@@ -14,6 +14,7 @@
 #include "BsDepthStencilState.h"
 #include "BsRasterizerState.h"
 #include "BsGpuParamDesc.h"
+#include "BsShader.h"
 
 using namespace std::placeholders;
 
@@ -409,22 +410,21 @@ namespace BansheeEngine
 		{
 			SPtr<TextureCore> texture = params->getTexture(iter->second.slot);
 
-			if (!params->isLoadStoreTexture(iter->second.slot))
-			{
-				if (texture == nullptr)
-					setTexture(gptype, iter->second.slot, false, nullptr);
-				else
-					setTexture(gptype, iter->second.slot, true, texture);
-			}
+			if (texture == nullptr)
+				setTexture(gptype, iter->second.slot, false, nullptr);
 			else
-			{
-				const TextureSurface& surface = params->getLoadStoreSurface(iter->second.slot);
+				setTexture(gptype, iter->second.slot, true, texture);
+		}
 
-				if (texture == nullptr)
-					setLoadStoreTexture(gptype, iter->second.slot, false, nullptr, surface);
-				else
-					setLoadStoreTexture(gptype, iter->second.slot, true, texture, surface);
-			}
+		for (auto iter = paramDesc.loadStoreTextures.begin(); iter != paramDesc.loadStoreTextures.end(); ++iter)
+		{
+			SPtr<TextureCore> texture = params->getLoadStoreTexture(iter->second.slot);
+			const TextureSurface& surface = params->getLoadStoreSurface(iter->second.slot);
+
+			if (texture == nullptr)
+				setLoadStoreTexture(gptype, iter->second.slot, false, nullptr, surface);
+			else
+				setLoadStoreTexture(gptype, iter->second.slot, true, texture, surface);
 		}
 
 		setConstantBuffers(gptype, params);

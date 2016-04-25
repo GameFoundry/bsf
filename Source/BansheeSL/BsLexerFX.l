@@ -82,12 +82,17 @@ Texture3D		{ yylval->intValue = PT_Texture3D; return TOKEN_TEXTURE3D; }
 TextureCUBE		{ yylval->intValue = PT_TextureCUBE; return TOKEN_TEXTURECUBE; } 
 Texture2DMS		{ yylval->intValue = PT_Texture2DMS; return TOKEN_TEXTURE2DMS; }
 
+RWTexture1D		{ yylval->intValue = PT_RWTexture1D; return TOKEN_RWTEXTURE1D; } 
+RWTexture2D		{ yylval->intValue = PT_RWTexture2D; return TOKEN_RWTEXTURE2D; } 
+RWTexture3D		{ yylval->intValue = PT_RWTexture3D; return TOKEN_RWTEXTURE3D; } 
+RWTexture2DMS	{ yylval->intValue = PT_RWTexture2DMS; return TOKEN_RWTEXTURE2DMS; }
+
 ByteBuffer		{ yylval->intValue = PT_ByteBuffer; return TOKEN_BYTEBUFFER; } 
 StructBuffer	{ yylval->intValue = PT_StructBuffer; return TOKEN_STRUCTBUFFER; } 
 
-TypedBufferRW	{ yylval->intValue = PT_TypedBufferRW; return TOKEN_RWTYPEDBUFFER; } 
-ByteBufferRW	{ yylval->intValue = PT_ByteBufferRW; return TOKEN_RWBYTEBUFFER; }
-StructBufferRW	{ yylval->intValue = PT_StructBufferRW; return TOKEN_RWSTRUCTBUFFER; } 
+RWTypedBuffer	{ yylval->intValue = PT_TypedBufferRW; return TOKEN_RWTYPEDBUFFER; } 
+RWByteBuffer	{ yylval->intValue = PT_ByteBufferRW; return TOKEN_RWBYTEBUFFER; }
+RWStructBuffer	{ yylval->intValue = PT_StructBufferRW; return TOKEN_RWSTRUCTBUFFER; } 
 AppendBuffer	{ yylval->intValue = PT_AppendBuffer; return TOKEN_RWAPPENDBUFFER; } 
 ConsumeBuffer	{ yylval->intValue = PT_ConsumeBuffer; return TOKEN_RWCONSUMEBUFFER; }
 

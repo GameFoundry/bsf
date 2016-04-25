@@ -150,20 +150,20 @@ namespace BansheeEngine
 					switch (resourceDesc.Dimension)
 					{
 					case D3D_SRV_DIMENSION_TEXTURE1D:
-						memberDesc.type = GPOT_TEXTURE1D;
-						desc.textures.insert(std::make_pair(memberDesc.name, memberDesc));
+						memberDesc.type = GPOT_RWTEXTURE1D;
+						desc.loadStoreTextures.insert(std::make_pair(memberDesc.name, memberDesc));
 						break;
 					case D3D_SRV_DIMENSION_TEXTURE2D:
-						memberDesc.type = GPOT_TEXTURE2D;
-						desc.textures.insert(std::make_pair(memberDesc.name, memberDesc));
+						memberDesc.type = GPOT_RWTEXTURE2D;
+						desc.loadStoreTextures.insert(std::make_pair(memberDesc.name, memberDesc));
 						break;
 					case D3D_SRV_DIMENSION_TEXTURE3D:
-						memberDesc.type = GPOT_TEXTURE3D;
-						desc.textures.insert(std::make_pair(memberDesc.name, memberDesc));
+						memberDesc.type = GPOT_RWTEXTURE3D;
+						desc.loadStoreTextures.insert(std::make_pair(memberDesc.name, memberDesc));
 						break;
-					case D3D_SRV_DIMENSION_TEXTURECUBE:
-						memberDesc.type = GPOT_TEXTURECUBE;
-						desc.textures.insert(std::make_pair(memberDesc.name, memberDesc));
+					case D3D_SRV_DIMENSION_TEXTURE2DMS:
+						memberDesc.type = GPOT_RWTEXTURE2DMS;
+						desc.loadStoreTextures.insert(std::make_pair(memberDesc.name, memberDesc));
 						break;
 					case D3D_SRV_DIMENSION_BUFFER:
 						memberDesc.type = GPOT_RWTYPED_BUFFER;

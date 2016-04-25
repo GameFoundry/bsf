@@ -119,6 +119,7 @@ enum tagParamType
 	PT_Mat4x2, PT_Mat4x3, PT_Mat4x4,
 	PT_Sampler1D, PT_Sampler2D, PT_Sampler3D, PT_SamplerCUBE, PT_Sampler2DMS,
 	PT_Texture1D, PT_Texture2D, PT_Texture3D, PT_TextureCUBE, PT_Texture2DMS,
+	PT_RWTexture1D, PT_RWTexture2D, PT_RWTexture3D, PT_RWTexture2DMS,
 	PT_ByteBuffer, PT_StructBuffer, PT_ByteBufferRW, PT_StructBufferRW,
 	PT_TypedBufferRW, PT_AppendBuffer, PT_ConsumeBuffer,
 	PT_Count // Keep at end

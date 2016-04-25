@@ -50,6 +50,7 @@ namespace BansheeEngine
 
 		Map<String, GpuParamObjectDesc> samplers;
 		Map<String, GpuParamObjectDesc> textures;
+		Map<String, GpuParamObjectDesc> loadStoreTextures;
 		Map<String, GpuParamObjectDesc> buffers;
 	};
 

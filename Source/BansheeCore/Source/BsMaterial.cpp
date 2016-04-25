@@ -148,6 +148,12 @@ namespace BansheeEngine
 				validParams.push_back(&iter2->second);
 			}
 
+			// Check load-store texture params
+			for (auto iter2 = curDesc.loadStoreTextures.begin(); iter2 != curDesc.loadStoreTextures.end(); ++iter2)
+			{
+				validParams.push_back(&iter2->second);
+			}
+
 			// Check buffer params
 			for (auto iter2 = curDesc.buffers.begin(); iter2 != curDesc.buffers.end(); ++iter2)
 			{
@@ -578,7 +584,7 @@ namespace BansheeEngine
 					GpuParamsType& paramPtr = params->getParamByIdx(i);
 					if (paramPtr)
 					{
-						if (paramPtr->hasTexture(gpuVarName))
+						if (paramPtr->hasLoadStoreTexture(gpuVarName))
 						{
 							gpuParams->push_back(TGpuParamLoadStoreTexture<Core>());
 							paramPtr->getLoadStoreTextureParam(gpuVarName, gpuParams->back());

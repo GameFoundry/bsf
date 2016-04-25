@@ -292,6 +292,10 @@ namespace BansheeEngine
 		GPOT_RWSTRUCTURED_BUFFER_WITH_COUNTER = 44, /**< Read-write buffer containing a set of structures, with a counter. */
 		GPOT_RWAPPEND_BUFFER = 45, /**< Buffer that can be used for appending data in a stack-like fashion. */
 		GPOT_RWCONSUME_BUFFER = 46, /**< Buffer that can be used for consuming data in a stack-like fashion. */
+		GPOT_RWTEXTURE1D = 50, /**< 1D texture with unordered read/writes. */
+		GPOT_RWTEXTURE2D = 51, /**< 2D texture with unordered read/writes. */
+		GPOT_RWTEXTURE3D = 52, /**< 3D texture with unordered read/writes. */
+		GPOT_RWTEXTURE2DMS = 53, /**< 2D texture with multiple samples and unordered read/writes. */
 		GPOT_UNKNOWN = 0xffff
 	};
 

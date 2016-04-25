@@ -417,6 +417,20 @@ namespace BansheeEngine
 		}
 	}
 
+	bool Shader::isLoadStoreTexture(GpuParamObjectType type)
+	{
+		switch (type)
+		{
+		case GPOT_RWTEXTURE1D:
+		case GPOT_RWTEXTURE2D:
+		case GPOT_RWTEXTURE3D:
+		case GPOT_RWTEXTURE2DMS:
+			return true;
+		default:
+			return false;
+		}
+	}
+
 	bool Shader::isBuffer(GpuParamObjectType type)
 	{
 		switch(type)

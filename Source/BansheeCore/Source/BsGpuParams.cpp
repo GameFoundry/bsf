@@ -15,8 +15,8 @@
 namespace BansheeEngine
 {
 	GpuParamsBase::GpuParamsBase(const SPtr<GpuParamDesc>& paramDesc, bool transposeMatrices)
-		: mParamDesc(paramDesc), mNumParamBlocks(0), mNumTextures(0), mNumSamplerStates(0), mTextureInfo(nullptr)
-		, mTransposeMatrices(transposeMatrices)
+		: mParamDesc(paramDesc), mNumParamBlocks(0), mNumTextures(0), mNumLoadStoreTextures(0), mNumSamplerStates(0)
+		, mLoadStoreSurfaces(nullptr), mTransposeMatrices(transposeMatrices)
 	{
 		for (auto& paramBlock : mParamDesc->paramBlocks)
 		{
@@ -30,18 +30,24 @@ namespace BansheeEngine
 				mNumTextures = texture.second.slot + 1;
 		}
 
+		for (auto& texture : mParamDesc->loadStoreTextures)
+		{
+			if ((texture.second.slot + 1) > mNumLoadStoreTextures)
+				mNumLoadStoreTextures = texture.second.slot + 1;
+		}
+
 		for (auto& sampler : mParamDesc->samplers)
 		{
 			if ((sampler.second.slot + 1) > mNumSamplerStates)
 				mNumSamplerStates = sampler.second.slot + 1;
 		}
 
-		mTextureInfo = bs_newN<BoundTextureInfo>(mNumTextures);
+		mLoadStoreSurfaces = bs_newN<TextureSurface>(mNumLoadStoreTextures);
 	}
 
 	GpuParamsBase::~GpuParamsBase()
 	{
-		bs_deleteN(mTextureInfo, mNumTextures);
+		bs_deleteN(mLoadStoreSurfaces, mNumLoadStoreTextures);
 	}
 
 UINT32 GpuParamsBase::getDataParamSize(const String& name) const
@@ -62,6 +68,15 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 	{
 		auto paramIter = mParamDesc->textures.find(name);
 		if(paramIter != mParamDesc->textures.end())
+			return true;
+
+		return false;
+	}
+
+	bool GpuParamsBase::hasLoadStoreTexture(const String& name) const
+	{
+		auto paramIter = mParamDesc->loadStoreTextures.find(name);
+		if (paramIter != mParamDesc->loadStoreTextures.end())
 			return true;
 
 		return false;
@@ -94,60 +109,41 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 		return nullptr;
 	}
 
-	bool GpuParamsBase::isLoadStoreTexture(UINT32 slot) const
-	{
-		if (slot >= mNumTextures)
-		{
-			BS_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " +
-				toString(mNumTextures - 1) + ". Requested: " + toString(slot));
-		}
-
-		return mTextureInfo[slot].isLoadStore;
-	}
-
-	void GpuParamsBase::setIsLoadStoreTexture(UINT32 slot, bool isLoadStore)
-	{
-		if (slot >= mNumTextures)
-		{
-			BS_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " +
-				toString(mNumTextures - 1) + ". Requested: " + toString(slot));
-		}
-
-		mTextureInfo[slot].isLoadStore = isLoadStore;
-	}
-
 	const TextureSurface& GpuParamsBase::getLoadStoreSurface(UINT32 slot) const
 	{
-		if (slot >= mNumTextures)
+		if (slot >= mNumLoadStoreTextures)
 		{
 			BS_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " +
-				toString(mNumTextures - 1) + ". Requested: " + toString(slot));
+				toString(mNumLoadStoreTextures - 1) + ". Requested: " + toString(slot));
 		}
 
-		return mTextureInfo[slot].surface;
+		return mLoadStoreSurfaces[slot];
 	}
 
 	void GpuParamsBase::setLoadStoreSurface(UINT32 slot, const TextureSurface& surface) const
 	{
-		if (slot >= mNumTextures)
+		if (slot >= mNumLoadStoreTextures)
 		{
 			BS_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " +
-				toString(mNumTextures - 1) + ". Requested: " + toString(slot));
+				toString(mNumLoadStoreTextures - 1) + ". Requested: " + toString(slot));
 		}
 
-		mTextureInfo[slot].surface = surface;
+		mLoadStoreSurfaces[slot] = surface;
 	}
 
 	template<bool Core>
 	TGpuParams<Core>::TGpuParams(const SPtr<GpuParamDesc>& paramDesc, bool transposeMatrices)
-		:GpuParamsBase(paramDesc, transposeMatrices), mParamBlockBuffers(nullptr), mTextures(nullptr),
-		mSamplerStates(nullptr)
+		: GpuParamsBase(paramDesc, transposeMatrices), mParamBlockBuffers(nullptr), mTextures(nullptr)
+		, mLoadStoreTextures(nullptr), mSamplerStates(nullptr)
 	{
 		if (mNumParamBlocks > 0)
 			mParamBlockBuffers = bs_newN<ParamsBufferType>(mNumParamBlocks);
 
 		if (mNumTextures > 0)
 			mTextures = bs_newN<TextureType>(mNumTextures);
+
+		if (mNumLoadStoreTextures > 0)
+			mLoadStoreTextures = bs_newN<TextureType>(mNumLoadStoreTextures);
 
 		if (mNumSamplerStates > 0)
 			mSamplerStates = bs_newN<SamplerType>(mNumSamplerStates);
@@ -161,6 +157,9 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 
 		if (mTextures != nullptr)
 			bs_deleteN(mTextures, mNumTextures);
+
+		if (mLoadStoreTextures != nullptr)
+			bs_deleteN(mLoadStoreTextures, mNumLoadStoreTextures);
 
 		if (mSamplerStates != nullptr)
 			bs_deleteN(mSamplerStates, mNumSamplerStates);
@@ -242,9 +241,9 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 	template<bool Core>
 	void TGpuParams<Core>::getLoadStoreTextureParam(const String& name, TGpuParamLoadStoreTexture<Core>& output) const
 	{
-		auto iterFind = mParamDesc->textures.find(name);
+		auto iterFind = mParamDesc->loadStoreTextures.find(name);
 
-		if (iterFind == mParamDesc->textures.end())
+		if (iterFind == mParamDesc->loadStoreTextures.end())
 		{
 			output = TGpuParamLoadStoreTexture<Core>(nullptr, nullptr);
 			LOGWRN("Cannot find texture parameter with the name '" + name + "'");
@@ -292,6 +291,18 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 	}
 
 	template<bool Core>
+	typename TGpuParams<Core>::TextureType TGpuParams<Core>::getLoadStoreTexture(UINT32 slot)
+	{
+		if (slot < 0 || slot >= mNumLoadStoreTextures)
+		{
+			BS_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " +
+				toString(mNumLoadStoreTextures - 1) + ". Requested: " + toString(slot));
+		}
+
+		return mLoadStoreTextures[slot];
+	}
+
+	template<bool Core>
 	typename TGpuParams<Core>::SamplerType TGpuParams<Core>::getSamplerState(UINT32 slot)
 	{
 		if (slot < 0 || slot >= mNumSamplerStates)
@@ -313,6 +324,21 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 		}
 
 		mTextures[slot] = texture;
+
+		_markResourcesDirty();
+		_markCoreDirty();
+	}
+
+	template<bool Core>
+	void TGpuParams<Core>::setLoadStoreTexture(UINT32 slot, const TextureType& texture, const TextureSurface& surface)
+	{
+		if (slot < 0 || slot >= mNumLoadStoreTextures)
+		{
+			BS_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " +
+				toString(mNumLoadStoreTextures - 1) + ". Requested: " + toString(slot));
+		}
+
+		mLoadStoreTextures[slot] = texture;
 
 		_markResourcesDirty();
 		_markCoreDirty();
@@ -398,25 +424,29 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 
 	void GpuParamsCore::syncToCore(const CoreSyncData& data)
 	{
-		UINT32 textureInfoSize = mNumTextures * sizeof(BoundTextureInfo);
+		UINT32 loadStoreSurfacesSize = mNumLoadStoreTextures * sizeof(TextureSurface);
 		UINT32 paramBufferSize = mNumParamBlocks * sizeof(SPtr<GpuParamBlockBufferCore>);
 		UINT32 textureArraySize = mNumTextures * sizeof(SPtr<TextureCore>);
+		UINT32 loadStoreTextureArraySize = mNumLoadStoreTextures * sizeof(SPtr<TextureCore>);
 		UINT32 samplerArraySize = mNumSamplerStates * sizeof(SPtr<SamplerStateCore>);
 
-		UINT32 totalSize = textureInfoSize + paramBufferSize + textureArraySize + samplerArraySize;
+		UINT32 totalSize = loadStoreSurfacesSize + paramBufferSize + textureArraySize + loadStoreTextureArraySize
+			+ samplerArraySize;
 
 		UINT32 textureInfoOffset = 0;
-		UINT32 paramBufferOffset = textureInfoOffset + textureInfoSize;
+		UINT32 paramBufferOffset = textureInfoOffset + loadStoreSurfacesSize;
 		UINT32 textureArrayOffset = paramBufferOffset + paramBufferSize;
-		UINT32 samplerArrayOffset = textureArrayOffset + textureArraySize;
+		UINT32 loadStoreTextureArrayOffset = textureArrayOffset + textureArraySize;
+		UINT32 samplerArrayOffset = loadStoreTextureArrayOffset + loadStoreTextureArraySize;
 
 		assert(data.getBufferSize() == totalSize);
 
 		UINT8* dataPtr = data.getBuffer();
 
-		BoundTextureInfo* textureInfos = (BoundTextureInfo*)(dataPtr + textureInfoOffset);
+		TextureSurface* loadStoreSurfaces = (TextureSurface*)(dataPtr + textureInfoOffset);
 		SPtr<GpuParamBlockBufferCore>* paramBuffers = (SPtr<GpuParamBlockBufferCore>*)(dataPtr + paramBufferOffset);
 		SPtr<TextureCore>* textures = (SPtr<TextureCore>*)(dataPtr + textureArrayOffset);
+		SPtr<TextureCore>* loadStoreTextures = (SPtr<TextureCore>*)(dataPtr + loadStoreTextureArrayOffset);
 		SPtr<SamplerStateCore>* samplers = (SPtr<SamplerStateCore>*)(dataPtr + samplerArrayOffset);
 
 		// Copy & destruct
@@ -428,11 +458,17 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 
 		for (UINT32 i = 0; i < mNumTextures; i++)
 		{
-			mTextureInfo[i] = textureInfos[i];
-			textureInfos[i].~BoundTextureInfo();
-
 			mTextures[i] = textures[i];
 			textures[i].~SPtr<TextureCore>();
+		}
+
+		for (UINT32 i = 0; i < mNumLoadStoreTextures; i++)
+		{
+			mLoadStoreSurfaces[i] = loadStoreSurfaces[i];
+			loadStoreSurfaces[i].~TextureSurface();
+
+			mLoadStoreTextures[i] = loadStoreTextures[i];
+			loadStoreTextures[i].~SPtr<TextureCore>();
 		}
 
 		for (UINT32 i = 0; i < mNumSamplerStates; i++)
@@ -501,23 +537,27 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 
 	CoreSyncData GpuParams::syncToCore(FrameAlloc* allocator)
 	{
-		UINT32 textureInfoSize = mNumTextures * sizeof(BoundTextureInfo);
+		UINT32 loadStoreSurfacesSize = mNumLoadStoreTextures * sizeof(TextureSurface);
 		UINT32 paramBufferSize = mNumParamBlocks * sizeof(SPtr<GpuParamBlockBufferCore>);
 		UINT32 textureArraySize = mNumTextures * sizeof(SPtr<TextureCore>);
+		UINT32 loadStoreTextureArraySize = mNumLoadStoreTextures * sizeof(SPtr<TextureCore>);
 		UINT32 samplerArraySize = mNumSamplerStates * sizeof(SPtr<SamplerStateCore>);
 
-		UINT32 totalSize = textureInfoSize + paramBufferSize + textureArraySize + samplerArraySize;
+		UINT32 totalSize = loadStoreSurfacesSize + paramBufferSize + textureArraySize + loadStoreTextureArraySize 
+			+ samplerArraySize;
 
 		UINT32 textureInfoOffset = 0;
-		UINT32 paramBufferOffset = textureInfoOffset + textureInfoSize;
+		UINT32 paramBufferOffset = textureInfoOffset + loadStoreSurfacesSize;
 		UINT32 textureArrayOffset = paramBufferOffset + paramBufferSize;
-		UINT32 samplerArrayOffset = textureArrayOffset + textureArraySize;
+		UINT32 loadStoreTextureArrayOffset = textureArrayOffset + textureArraySize;
+		UINT32 samplerArrayOffset = loadStoreTextureArrayOffset + loadStoreTextureArraySize;
 
 		UINT8* data = allocator->alloc(totalSize);
 
-		BoundTextureInfo* textureInfos = (BoundTextureInfo*)(data + textureInfoOffset);
+		TextureSurface* loadStoreSurfaces = (TextureSurface*)(data + textureInfoOffset);
 		SPtr<GpuParamBlockBufferCore>* paramBuffers = (SPtr<GpuParamBlockBufferCore>*)(data + paramBufferOffset);
 		SPtr<TextureCore>* textures = (SPtr<TextureCore>*)(data + textureArrayOffset);
+		SPtr<TextureCore>* loadStoreTextures = (SPtr<TextureCore>*)(data + loadStoreTextureArrayOffset);
 		SPtr<SamplerStateCore>* samplers = (SPtr<SamplerStateCore>*)(data + samplerArrayOffset);
 
 		// Construct & copy
@@ -531,15 +571,25 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 
 		for (UINT32 i = 0; i < mNumTextures; i++)
 		{
-			new (&textureInfos[i]) BoundTextureInfo();
-			textureInfos[i] = mTextureInfo[i];
-
 			new (&textures[i]) SPtr<TextureCore>();
 
 			if (mTextures[i].isLoaded())
 				textures[i] = mTextures[i]->getCore();
 			else
 				textures[i] = nullptr;
+		}
+
+		for (UINT32 i = 0; i < mNumLoadStoreTextures; i++)
+		{
+			new (&loadStoreSurfaces[i]) TextureSurface();
+			loadStoreSurfaces[i] = mLoadStoreSurfaces[i];
+
+			new (&loadStoreTextures[i]) SPtr<TextureCore>();
+
+			if (mLoadStoreTextures[i].isLoaded())
+				loadStoreTextures[i] = mLoadStoreTextures[i]->getCore();
+			else
+				loadStoreTextures[i] = nullptr;
 		}
 
 		for (UINT32 i = 0; i < mNumSamplerStates; i++)
@@ -561,6 +611,12 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 		{
 			if (mTextures[i] != nullptr)
 				resources.push_back(mTextures[i]);
+		}
+
+		for (UINT32 i = 0; i < mNumLoadStoreTextures; i++)
+		{
+			if (mLoadStoreTextures[i] != nullptr)
+				resources.push_back(mLoadStoreTextures[i]);
 		}
 	}
 }

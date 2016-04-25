@@ -413,6 +413,9 @@ namespace BansheeEngine
 		/**	Checks is the provided object type a texture. */
 		static bool isTexture(GpuParamObjectType type);
 
+		/**	Checks is the provided object type a load/store (unordered read/write) texture. */
+		static bool isLoadStoreTexture(GpuParamObjectType type);
+
 		/** Checks is the provided object type a buffer. */
 		static bool isBuffer(GpuParamObjectType type);
 

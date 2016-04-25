@@ -116,10 +116,14 @@ Types supported in this block are:
  - Texture3D - 3D texture
  - TextureCUBE - Cube texture
  - Texture2DMS - Multi-sampled 2D texture
+ - RWTexture1D - 1D texture (UAV/load-store texture)
+ - RWTexture2D - 2D texture (UAV/load-store texture)
+ - RWTexture3D - 3D texture (UAV/load-store texture)
+ - RWTexture2DMS - Multi-sampled 2D texture (UAV/load-store texture)
  - ByteBuffer - Readable buffer of raw bytes
  - StructBuffer - Readable buffer of structs
- - ByteBufferRW - Read/Write buffer of raw bytes (UAV/load-store buffer)
- - StructBufferRW  - Read/Write buffer of structs (UAV/load-store buffer)
+ - RWByteBuffer - Read/write buffer of raw bytes (UAV/load-store buffer)
+ - RWStructBuffer  - Read/write buffer of structs (UAV/load-store buffer)
  - AppendBuffer - Buffer that is used for appending data in a stack-like fashion
  - ConsumeBuffer - Buffer that is used for consuming data in a stack-like fashion
  

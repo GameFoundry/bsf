@@ -196,7 +196,6 @@ namespace BansheeEngine
 			return;
 
 		mParent->setTexture(mParamDesc->slot, texture);
-		mParent->setIsLoadStoreTexture(mParamDesc->slot, false);
 
 		mParent->_markResourcesDirty();
 		mParent->_markCoreDirty();
@@ -227,9 +226,7 @@ namespace BansheeEngine
 		if (mParent == nullptr)
 			return;
 
-		mParent->setTexture(mParamDesc->slot, texture);
-		mParent->setIsLoadStoreTexture(mParamDesc->slot, true);
-		mParent->setLoadStoreSurface(mParamDesc->slot, surface);
+		mParent->setLoadStoreTexture(mParamDesc->slot, texture, surface);
 
 		mParent->_markResourcesDirty();
 		mParent->_markCoreDirty();

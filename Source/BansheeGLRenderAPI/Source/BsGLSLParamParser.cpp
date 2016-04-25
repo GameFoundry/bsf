@@ -330,17 +330,20 @@ namespace BansheeEngine
 				switch (uniformType)
 				{
 				case GL_IMAGE_1D:
-					textureParam.type = GPOT_TEXTURE1D;
+					textureParam.type = GPOT_RWTEXTURE1D;
 					break;
 				case GL_IMAGE_2D:
-					textureParam.type = GPOT_TEXTURE2D;
+					textureParam.type = GPOT_RWTEXTURE2D;
 					break;
 				case GL_IMAGE_3D:
-					textureParam.type = GPOT_TEXTURE3D;
+					textureParam.type = GPOT_RWTEXTURE3D;
+					break;
+				case GL_IMAGE_2D_MULTISAMPLE:
+					textureParam.type = GPOT_RWTEXTURE2DMS;
 					break;
 				}
 
-				returnParamDesc.textures.insert(std::make_pair(paramName, textureParam));
+				returnParamDesc.loadStoreTextures.insert(std::make_pair(paramName, textureParam));
 			}
 			else
 			{

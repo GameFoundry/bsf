@@ -446,6 +446,11 @@ namespace BansheeEngine
 			lookup[PT_TextureCUBE] = { GPOT_TEXTURECUBE, true };
 			lookup[PT_Texture2DMS] = { GPOT_TEXTURE2DMS, true };
 
+			lookup[PT_RWTexture1D] = { GPOT_RWTEXTURE1D, true };
+			lookup[PT_RWTexture2D] = { GPOT_RWTEXTURE2D, true };
+			lookup[PT_RWTexture3D] = { GPOT_RWTEXTURE3D, true };
+			lookup[PT_RWTexture2DMS] = { GPOT_RWTEXTURE2DMS, true };
+
 			lookup[PT_ByteBuffer] = { GPOT_BYTE_BUFFER, true };
 			lookup[PT_StructBuffer] = { GPOT_STRUCTURED_BUFFER, true };
 			lookup[PT_TypedBufferRW] = { GPOT_RWTYPED_BUFFER, true };

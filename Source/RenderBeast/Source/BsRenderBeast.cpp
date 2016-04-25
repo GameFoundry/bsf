@@ -1067,22 +1067,21 @@ namespace BansheeEngine
 			{
 				SPtr<TextureCore> texture = params->getTexture(iter->second.slot);
 
-				if (!params->isLoadStoreTexture(iter->second.slot))
-				{
-					if (texture == nullptr)
-						rs.setTexture(stage.type, iter->second.slot, false, nullptr);
-					else
-						rs.setTexture(stage.type, iter->second.slot, true, texture);
-				}
+				if (texture == nullptr)
+					rs.setTexture(stage.type, iter->second.slot, false, nullptr);
 				else
-				{
-					const TextureSurface& surface = params->getLoadStoreSurface(iter->second.slot);
+					rs.setTexture(stage.type, iter->second.slot, true, texture);
+			}
 
-					if (texture == nullptr)
-						rs.setLoadStoreTexture(stage.type, iter->second.slot, false, nullptr, surface);
-					else
-						rs.setLoadStoreTexture(stage.type, iter->second.slot, true, texture, surface);
-				}
+			for (auto iter = paramDesc.loadStoreTextures.begin(); iter != paramDesc.loadStoreTextures.end(); ++iter)
+			{
+				SPtr<TextureCore> texture = params->getLoadStoreTexture(iter->second.slot);
+				const TextureSurface& surface = params->getLoadStoreSurface(iter->second.slot);
+
+				if (texture == nullptr)
+					rs.setLoadStoreTexture(stage.type, iter->second.slot, false, nullptr, surface);
+				else
+					rs.setLoadStoreTexture(stage.type, iter->second.slot, true, texture, surface);
 			}
 
 			rs.setConstantBuffers(stage.type, params);

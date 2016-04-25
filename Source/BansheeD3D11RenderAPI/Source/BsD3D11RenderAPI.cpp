@@ -318,9 +318,6 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		// TODO - This hasn't bee tested and might be incorrect. I might need to set UAVs together with render targets,
-		// especially considering DX11 expects number of UAVs to match number of render targets.
-
 		ID3D11UnorderedAccessView* viewArray[1];
 		if (texPtr != nullptr && enabled)
 		{

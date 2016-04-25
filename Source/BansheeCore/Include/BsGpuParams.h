@@ -15,17 +15,6 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
-	/** Stores information needed for binding a texture to the pipeline. */
-	struct BoundTextureInfo
-	{
-		BoundTextureInfo()
-			:isLoadStore(false)
-		{ }
-
-		bool isLoadStore;
-		TextureSurface surface;
-	};
-
 	/**	Helper structure whose specializations convert an engine data type into a GPU program data parameter type.  */
 	template<class T> struct TGpuDataParamInfo { };
 	template<> struct TGpuDataParamInfo < float > { enum { TypeId = GPDT_FLOAT1 }; };
@@ -83,20 +72,14 @@ namespace BansheeEngine
 		/**	Checks if texture parameter with the specified name exists. */
 		bool hasTexture(const String& name) const;
 
+		/**	Checks if load/store texture parameter with the specified name exists. */
+		bool hasLoadStoreTexture(const String& name) const;
+
 		/**	Checks if sampler state parameter with the specified name exists. */
 		bool hasSamplerState(const String& name) const;
 
 		/** Checks if a parameter block with the specified name exists. */
 		bool hasParamBlock(const String& name) const;
-
-		/**
-		 * Checks is the texture at the specified slot to be bound as random load/store texture instead of a normal sampled
-		 * texture.
-		 */
-		bool isLoadStoreTexture(UINT32 slot) const;
-
-		/** Changes the type of the texture at the specified slot. */
-		void setIsLoadStoreTexture(UINT32 slot, bool isLoadStore);
 
 		/** Returns information that determines which texture surfaces to bind as load/store parameters. */
 		const TextureSurface& getLoadStoreSurface(UINT32 slot) const;
@@ -121,9 +104,10 @@ namespace BansheeEngine
 
 		UINT32 mNumParamBlocks;
 		UINT32 mNumTextures;
+		UINT32 mNumLoadStoreTextures;
 		UINT32 mNumSamplerStates;
 
-		BoundTextureInfo* mTextureInfo;
+		TextureSurface* mLoadStoreSurfaces;
 
 		bool mTransposeMatrices;
 	};
@@ -211,11 +195,17 @@ namespace BansheeEngine
 		/**	Gets a texture bound to the specified slot. */
 		TextureType getTexture(UINT32 slot);
 
+		/**	Gets a load/store texture bound to the specified slot. */
+		TextureType getLoadStoreTexture(UINT32 slot);
+
 		/**	Gets a sampler state bound to the specified slot. */
 		SamplerType getSamplerState(UINT32 slot);
 
 		/**	Sets a texture at the specified slot. */
 		void setTexture(UINT32 slot, const TextureType& texture);
+
+		/**	Sets a load/store texture at the specified slot. */
+		void setLoadStoreTexture(UINT32 slot, const TextureType& texture, const TextureSurface& surface);
 
 		/**	Sets a sampler state at the specified slot. */
 		void setSamplerState(UINT32 slot, const SamplerType& sampler);
@@ -226,6 +216,7 @@ namespace BansheeEngine
 
 		ParamsBufferType* mParamBlockBuffers;
 		TextureType* mTextures;
+		TextureType* mLoadStoreTextures;
 		SamplerType* mSamplerStates;
 	};
 
