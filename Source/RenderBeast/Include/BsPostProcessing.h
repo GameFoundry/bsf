@@ -126,8 +126,8 @@ namespace BansheeEngine
 		 */
 		static Vector2 getHistogramScaleOffset(const PostProcessInfo& ppInfo);
 
-		static const UINT32 THREAD_GROUP_SIZE_X = 4;
-		static const UINT32 THREAD_GROUP_SIZE_Y = 4;
+		static const UINT32 THREAD_GROUP_SIZE_X = 8;
+		static const UINT32 THREAD_GROUP_SIZE_Y = 8;
 		
 		static const UINT32 HISTOGRAM_NUM_TEXELS = (THREAD_GROUP_SIZE_X * THREAD_GROUP_SIZE_Y) / 4;
 	private:

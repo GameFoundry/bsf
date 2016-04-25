@@ -49,6 +49,8 @@ namespace BansheeEngine
 		gRendererUtility().setPass(mMaterial, 0);
 		gRendererUtility().drawScreenQuad();
 
+		rapi.setRenderTarget(nullptr);
+
 		mOutput = ppInfo.downsampledSceneTex->renderTexture;
 	}
 
@@ -100,11 +102,13 @@ namespace BansheeEngine
 
 		mOutputTex.set(ppInfo.histogramTex->texture);
 
-		// TODO - Clear downsampled scene texture as render target before dispatch?
 		RenderAPICore& rapi = RenderAPICore::instance();
-
 		gRendererUtility().setComputePass(mMaterial);
 		rapi.dispatchCompute(threadGroupCount.x, threadGroupCount.y);
+
+		// Note: This is ugly, add a better way to clear load/store textures?
+		TextureSurface blankSurface;
+		rapi.setLoadStoreTexture(GPT_COMPUTE_PROGRAM, 0, false, nullptr, blankSurface);
 
 		mOutput = ppInfo.histogramTex->renderTexture;
 	}
@@ -156,7 +160,7 @@ namespace BansheeEngine
 	void EyeAdaptHistogramReduceMat::execute(PostProcessInfo& ppInfo)
 	{
 		// Set parameters
-		mHistogramTex.set(ppInfo.histogramTex->texture); // TODO - Unbind this from render target slot first?
+		mHistogramTex.set(ppInfo.histogramTex->texture);
 
 		SPtr<PooledRenderTexture> eyeAdaptationRT = ppInfo.eyeAdaptationTex[ppInfo.lastEyeAdaptationTex];
 		SPtr<TextureCore> eyeAdaptationTex;
@@ -173,7 +177,7 @@ namespace BansheeEngine
 
 		// Set output
 		mOutputDesc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_FLOAT16_RGBA, EyeAdaptHistogramMat::HISTOGRAM_NUM_TEXELS, 2,
-			TU_LOADSTORE);
+			TU_RENDERTARGET);
 
 		// Render
 		ppInfo.histogramReduceTex = RenderTexturePool::instance().get(mOutputDesc);
@@ -182,7 +186,10 @@ namespace BansheeEngine
 		rapi.setRenderTarget(ppInfo.histogramReduceTex->renderTexture, true);
 
 		gRendererUtility().setPass(mMaterial, 0);
-		gRendererUtility().drawScreenQuad();
+		Rect2 drawUV(0.0f, 0.0f, EyeAdaptHistogramMat::HISTOGRAM_NUM_TEXELS, 2);
+		gRendererUtility().drawScreenQuad(drawUV);
+
+		rapi.setRenderTarget(nullptr);
 
 		mOutput = ppInfo.histogramReduceTex->renderTexture;
 	}
@@ -219,7 +226,7 @@ namespace BansheeEngine
 		ppInfo.lastEyeAdaptationTex = (ppInfo.lastEyeAdaptationTex + 1) % 2; // TODO - Do I really need two targets?
 
 		// Set parameters
-		mReducedHistogramTex.set(ppInfo.histogramReduceTex->texture); // TODO - Unbind this from render target slot first?
+		mReducedHistogramTex.set(ppInfo.histogramReduceTex->texture);
 
 		Vector2 histogramScaleAndOffset = EyeAdaptHistogramMat::getHistogramScaleOffset(ppInfo);
 
@@ -255,6 +262,8 @@ namespace BansheeEngine
 
 		gRendererUtility().setPass(mMaterial, 0);
 		gRendererUtility().drawScreenQuad();
+
+		rapi.setRenderTarget(nullptr);
 	}
 
 	TonemappingMat::TonemappingMat()
