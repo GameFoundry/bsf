@@ -605,13 +605,16 @@ namespace BansheeEngine
 			BS_EXCEPT(RenderingAPIException, "Failed to setConstantBuffers : " + mDevice->getErrorDescription());
 	}
 
-	void D3D11RenderAPI::draw(UINT32 vertexOffset, UINT32 vertexCount)
+	void D3D11RenderAPI::draw(UINT32 vertexOffset, UINT32 vertexCount, UINT32 instanceCount)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		applyInputLayout();
 
-		mDevice->getImmediateContext()->Draw(vertexCount, vertexOffset);
+		if(instanceCount <= 1)
+			mDevice->getImmediateContext()->Draw(vertexCount, vertexOffset);
+		else
+			mDevice->getImmediateContext()->DrawInstanced(vertexCount, instanceCount, vertexOffset, 0);
 
 #if BS_DEBUG_MODE
 		if(mDevice->hasError())
@@ -625,13 +628,17 @@ namespace BansheeEngine
 		BS_ADD_RENDER_STAT(NumPrimitives, primCount);
 	}
 
-	void D3D11RenderAPI::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount)
+	void D3D11RenderAPI::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount, 
+		UINT32 instanceCount)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		applyInputLayout();
 
-		mDevice->getImmediateContext()->DrawIndexed(indexCount, startIndex, vertexOffset);
+		if (instanceCount <= 1)
+			mDevice->getImmediateContext()->DrawIndexed(indexCount, startIndex, vertexOffset);
+		else
+			mDevice->getImmediateContext()->DrawIndexedInstanced(indexCount, instanceCount, startIndex, vertexOffset, 0);
 
 #if BS_DEBUG_MODE
 		if(mDevice->hasError())

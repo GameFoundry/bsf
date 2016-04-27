@@ -178,6 +178,7 @@ namespace BansheeEngine
 			GLsizei vertexSize = static_cast<GLsizei>(vbProps.getVertexSize());
 			glVertexAttribPointer(attribLocation, typeCount, glType, normalized,
 				vertexSize, bufferData);
+			glVertexAttribDivisor(attribLocation, elem.getInstanceStepRate());
 
 			glEnableVertexAttribArray(attribLocation);
 		}

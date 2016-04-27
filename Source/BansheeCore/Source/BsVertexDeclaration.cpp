@@ -8,8 +8,9 @@
 namespace BansheeEngine
 {
 	VertexElement::VertexElement(UINT16 source, UINT32 offset,
-		VertexElementType theType, VertexElementSemantic semantic, UINT16 index)
+		VertexElementType theType, VertexElementSemantic semantic, UINT16 index, UINT32 instanceStepRate)
 		: mSource(source), mOffset(offset), mType(theType), mSemantic(semantic), mIndex(index)
+		, mInstanceStepRate(instanceStepRate)
 	{
 	}
 
@@ -133,7 +134,8 @@ namespace BansheeEngine
 			if (elem.getType() == VET_COLOR)
 				type = VertexElement::getBestColorVertexElementType();
 
-			mElementList.push_back(VertexElement(elem.getStreamIdx(), elem.getOffset(), type, elem.getSemantic(), elem.getSemanticIdx()));
+			mElementList.push_back(VertexElement(elem.getStreamIdx(), elem.getOffset(), type, elem.getSemantic(), 
+				elem.getSemanticIdx(), elem.getInstanceStepRate()));
 		}
 	}
 

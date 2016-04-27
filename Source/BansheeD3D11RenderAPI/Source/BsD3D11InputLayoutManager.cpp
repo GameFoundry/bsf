@@ -101,8 +101,17 @@ namespace BansheeEngine
 			elementDesc.Format = D3D11Mappings::get(iter->getType());
 			elementDesc.InputSlot = iter->getStreamIdx();
 			elementDesc.AlignedByteOffset = static_cast<WORD>(iter->getOffset());
-			elementDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-			elementDesc.InstanceDataStepRate = 0;
+
+			if (iter->getInstanceStepRate() == 0)
+			{
+				elementDesc.InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+				elementDesc.InstanceDataStepRate = 0;
+			}
+			else
+			{
+				elementDesc.InputSlotClass = D3D11_INPUT_PER_INSTANCE_DATA;
+				elementDesc.InstanceDataStepRate = iter->getInstanceStepRate();
+			}
 
 			maxStreamIdx = std::max(maxStreamIdx, (INT32)iter->getStreamIdx());
 		}

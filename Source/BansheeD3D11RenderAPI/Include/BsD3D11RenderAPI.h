@@ -82,10 +82,11 @@ namespace BansheeEngine
 		void setDrawOperation(DrawOperationType op) override;
 
 		/** @copydoc RenderAPICore::draw */
-		void draw(UINT32 vertexOffset, UINT32 vertexCount) override;
+		void draw(UINT32 vertexOffset, UINT32 vertexCount, UINT32 instanceCount = 0) override;
 
 		/** @copydoc RenderAPICore::drawIndexed */
-		void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount) override;
+		void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount, 
+			UINT32 instanceCount = 0) override;
 
 		/** @copydoc RenderAPICore::dispatchCompute */
 		void dispatchCompute(UINT32 numGroupsX, UINT32 numGroupsY = 1, UINT32 numGroupsZ = 1) override;

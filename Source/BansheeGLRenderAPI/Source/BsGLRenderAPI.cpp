@@ -649,13 +649,16 @@ namespace BansheeEngine
 		mBoundIndexBuffer = buffer;
 	}
 
-	void GLRenderAPI::draw(UINT32 vertexOffset, UINT32 vertexCount)
+	void GLRenderAPI::draw(UINT32 vertexOffset, UINT32 vertexCount, UINT32 instanceCount)
 	{
 		// Find the correct type to render
 		GLint primType = getGLDrawMode();
 		beginDraw();
 
-		glDrawArrays(primType, vertexOffset, vertexCount);
+		if (instanceCount <= 1)
+			glDrawArrays(primType, vertexOffset, vertexCount);
+		else
+			glDrawArraysInstanced(primType, vertexOffset, vertexCount, instanceCount);
 
 		endDraw();
 
@@ -666,9 +669,10 @@ namespace BansheeEngine
 		BS_ADD_RENDER_STAT(NumPrimitives, primCount);
 	}
 
-	void GLRenderAPI::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount)
+	void GLRenderAPI::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount,
+		UINT32 instanceCount)
 	{
-		if(mBoundIndexBuffer == nullptr)
+		if (mBoundIndexBuffer == nullptr)
 		{
 			LOGWRN("Cannot draw indexed because index buffer is not set.");
 			return;
@@ -684,7 +688,17 @@ namespace BansheeEngine
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer->getGLBufferId());
 
 		GLenum indexType = (ibProps.getType() == IT_16BIT) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
-		glDrawElementsBaseVertex(primType, indexCount, indexType, (GLvoid*)(UINT64)(ibProps.getIndexSize() * startIndex), vertexOffset);
+
+		if (instanceCount <= 1)
+		{
+			glDrawElementsBaseVertex(primType, indexCount, indexType,
+				(GLvoid*)(UINT64)(ibProps.getIndexSize() * startIndex), vertexOffset);
+		}
+		else
+		{
+			glDrawElementsInstancedBaseVertex(primType, indexCount, indexType,
+				(GLvoid*)(UINT64)(ibProps.getIndexSize() * startIndex), instanceCount, vertexOffset);
+		}
 
 		endDraw();
 		UINT32 primCount = vertexCountToPrimCount(mCurrentDrawOperation, vertexCount);

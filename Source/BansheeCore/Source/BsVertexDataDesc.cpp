@@ -6,11 +6,12 @@
 
 namespace BansheeEngine
 {
-	void VertexDataDesc::addVertElem(VertexElementType type, VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx)
+	void VertexDataDesc::addVertElem(VertexElementType type, VertexElementSemantic semantic, UINT32 semanticIdx, 
+		UINT32 streamIdx, UINT32 instanceStepRate)
 	{
 		clearIfItExists(type, semantic, semanticIdx, streamIdx);
 
-		VertexElement newElement(streamIdx, 0, type, semantic, semanticIdx);
+		VertexElement newElement(streamIdx, 0, type, semantic, semanticIdx, instanceStepRate);
 
 		// Insert it so it is sorted by stream
 		UINT32 insertToIndex = (UINT32)mVertexElements.size();
@@ -44,7 +45,7 @@ namespace BansheeEngine
 			UINT32 streamIdx = vertElem.getStreamIdx();
 
 			declarationElements.push_back(VertexElement(streamIdx, streamOffsets[streamIdx], vertElem.getType(),
-				vertElem.getSemantic(), vertElem.getSemanticIdx()));
+				vertElem.getSemantic(), vertElem.getSemanticIdx(), vertElem.getInstanceStepRate()));
 
 			streamOffsets[streamIdx] += vertElem.getSize();
 		}

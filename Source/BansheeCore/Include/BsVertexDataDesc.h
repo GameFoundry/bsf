@@ -24,14 +24,21 @@ namespace BansheeEngine
 		 * Informs the internal buffer that it needs to make room for the specified vertex element. If a vertex with same 
 		 * stream and semantics already exists it will just be updated. 
 		 *
-		 * @param[in]	type	   	Type of the vertex element. Determines size.
-		 * @param[in]	semantic   	Semantic that allows the engine to connect the data to a shader input slot.
-		 * @param[in]	semanticIdx	(optional) If there are multiple semantics with the same name, use different index to
-		 *							differentiate between them.
-		 * @param[in]	streamIdx  	(optional) Zero-based index of the stream. Each stream will internally be represented 
-		 *							as a single vertex buffer.
+		 * @param[in]	type	   			Type of the vertex element. Determines size.
+		 * @param[in]	semantic			Semantic that allows the engine to connect the data to a shader input slot.
+		 * @param[in]	semanticIdx			(optional) If there are multiple semantics with the same name, use different
+		 *									index to differentiate between them.
+		 * @param[in]	streamIdx  			(optional) Zero-based index of the stream. Each stream will internally be
+		 *									represented as a single vertex buffer.
+		 * @param[in]	instanceStepRate	Determines at what rate does vertex element data advance. Zero means each vertex
+		 *									will advance the data pointer and receive new data (standard behaviour). Values
+		 *									larger than one are relevant for instanced rendering and determine how often do
+		 *									instances advance the vertex element (e.g. a value of 1 means each instance will
+		 *									retrieve a new value for this vertex element, a value of 2 means each second
+		 *									instance will, etc.).
 		 */
-		void addVertElem(VertexElementType type, VertexElementSemantic semantic, UINT32 semanticIdx = 0, UINT32 streamIdx = 0);
+		void addVertElem(VertexElementType type, VertexElementSemantic semantic, UINT32 semanticIdx = 0, 
+			UINT32 streamIdx = 0, UINT32 instanceStepRate = 0);
 
 		/**	Query if we have vertex data for the specified semantic. */
 		bool hasElement(VertexElementSemantic semantic, UINT32 semanticIdx = 0, UINT32 streamIdx = 0) const;

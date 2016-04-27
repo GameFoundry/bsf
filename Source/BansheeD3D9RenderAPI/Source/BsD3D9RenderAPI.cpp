@@ -1162,8 +1162,10 @@ namespace BansheeEngine
 		mCurrentDrawOperation = op;
 	}
 
-	void D3D9RenderAPI::draw(UINT32 vertexOffset, UINT32 vertexCount)
+	void D3D9RenderAPI::draw(UINT32 vertexOffset, UINT32 vertexCount, UINT32 instanceCount)
 	{
+		// Note: Not supporting instanced drawing
+
 		UINT32 primCount = vertexCountToPrimCount(mCurrentDrawOperation, vertexCount);
 
 		HRESULT hr = getActiveD3D9Device()->DrawPrimitive(getD3D9PrimitiveType(), static_cast<UINT>(vertexOffset), static_cast<UINT>(primCount)); 
@@ -1179,8 +1181,11 @@ namespace BansheeEngine
 		BS_ADD_RENDER_STAT(NumPrimitives, primCount);
 	}
 
-	void D3D9RenderAPI::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount)
+	void D3D9RenderAPI::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount, 
+		UINT32 instanceCount)
 	{
+		// Note: Not supporting instanced drawing
+
 		UINT32 primCount = vertexCountToPrimCount(mCurrentDrawOperation, indexCount);
 
 		// do indexed draw operation

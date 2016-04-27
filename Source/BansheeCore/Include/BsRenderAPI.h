@@ -230,14 +230,15 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
 		 */
-		static void draw(CoreAccessor& accessor, UINT32 vertexOffset, UINT32 vertexCount);
+		static void draw(CoreAccessor& accessor, UINT32 vertexOffset, UINT32 vertexCount, UINT32 instanceCount = 0);
 
 		/** 
 		 * @copydoc RenderAPICore::drawIndexed()
 		 *
 		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
 		 */
-		static void drawIndexed(CoreAccessor& accessor, UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount);
+		static void drawIndexed(CoreAccessor& accessor, UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, 
+			UINT32 vertexCount, UINT32 instanceCount = 0);
 
 		/** 
 		 * @copydoc RenderAPICore::dispatchCompute()
@@ -463,8 +464,10 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	vertexOffset	Offset into the currently bound vertex buffer to start drawing from.
 		 * @param[in]	vertexCount		Number of vertices to draw.
+		 * @param[in]	instanceCount	Number of times to draw the provided geometry, each time with an (optionally)
+		 *								separate per-instance data.
 		 */
-		virtual void draw(UINT32 vertexOffset, UINT32 vertexCount) = 0;
+		virtual void draw(UINT32 vertexOffset, UINT32 vertexCount, UINT32 instanceCount = 0) = 0;
 
 		/** 
 		 * Draw an object based on currently bound GPU programs, vertex declaration, vertex and index buffers. 
@@ -473,8 +476,11 @@ namespace BansheeEngine
 		 * @param[in]	indexCount		Number of indices to draw.
 		 * @param[in]	vertexOffset	Offset to apply to each vertex index.
 		 * @param[in]	vertexCount		Number of vertices to draw.
+		 * @param[in]	instanceCount	Number of times to draw the provided geometry, each time with an (optionally)
+		 *								separate per-instance data.
 		 */
-		virtual void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount) = 0;
+		virtual void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount, 
+			UINT32 instanceCount = 0) = 0;
 
 		/** 
 		 * Executes the currently bound compute shader. 

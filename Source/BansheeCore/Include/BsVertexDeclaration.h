@@ -52,7 +52,7 @@ namespace BansheeEngine
     public:
 		VertexElement() {}
         VertexElement(UINT16 source, UINT32 offset, VertexElementType theType,
-			VertexElementSemantic semantic, UINT16 index = 0);
+			VertexElementSemantic semantic, UINT16 index = 0, UINT32 instanceStepRate = 0);
 
 		bool operator== (const VertexElement& rhs) const;
 		bool operator!= (const VertexElement& rhs) const;
@@ -66,7 +66,7 @@ namespace BansheeEngine
 		 */
         UINT32 getOffset() const { return mOffset; }
 
-		/** Gets the base data type of tis element. */
+		/** Gets the base data type of this element. */
         VertexElementType getType() const { return mType; }
 
 		/**	Gets a semantic that describes what this element contains. */
@@ -80,6 +80,14 @@ namespace BansheeEngine
 
 		/** Returns the size of this element in bytes. */
 		UINT32 getSize() const;
+
+		/** 
+		 * Returns at what rate do the vertex elements advance during instanced rendering. Provide zero for default 
+		 * behaviour where each vertex receives the next value from the vertex buffer. Provide a value larger than zero
+		 * to ensure vertex data is advanced with every instance, instead of every vertex (e.g. a value of 1 means each
+		 * instance will retrieve a new value from the vertex buffer, a value of 2 means each second instance will, etc.).
+		 */
+		UINT32 getInstanceStepRate() const { return mInstanceStepRate; }
 
 		/**	Returns the size of a base element type. */
 		static UINT32 getTypeSize(VertexElementType etype);
@@ -96,6 +104,7 @@ namespace BansheeEngine
 		VertexElementType mType;
 		VertexElementSemantic mSemantic;
 		UINT16 mIndex;
+		UINT32 mInstanceStepRate;
     };
 
 	/** @cond SPECIALIZATIONS */
