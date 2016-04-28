@@ -61,6 +61,7 @@ namespace BansheeEngine
 	class D3D11GpuBufferCore;
 	class D3D11RenderUtility;
 	class D3D11GpuProgramCore;
+	class D3D11TextureView;
 
 	/**	DirectX 11 specific types to track resource statistics for. */
 	enum D3D11RenderStatResourceType

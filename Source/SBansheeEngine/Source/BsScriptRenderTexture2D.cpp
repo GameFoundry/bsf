@@ -61,6 +61,7 @@ namespace BansheeEngine
 		{
 			depthStencilSurfaceDesc.face = 0;
 			depthStencilSurfaceDesc.mipLevel = 0;
+			depthStencilSurfaceDesc.numFaces = 1;
 
 			HTexture textureHandle = scriptDepthStencilSurface->getHandle();
 			if (!textureHandle.isLoaded())
@@ -84,6 +85,7 @@ namespace BansheeEngine
 				RENDER_SURFACE_DESC surfaceDesc;
 				surfaceDesc.face = 0;
 				surfaceDesc.mipLevel = 0;
+				surfaceDesc.numFaces = 1;
 
 				MonoObject* surfaceObj = colorSurfacesList.get<MonoObject*>(i);
 				ScriptTexture2D* scriptSurface = ScriptTexture2D::toNative(surfaceObj);
@@ -111,6 +113,7 @@ namespace BansheeEngine
 			RENDER_SURFACE_DESC surfaceDesc;
 			surfaceDesc.face = 0;
 			surfaceDesc.mipLevel = 0;
+			surfaceDesc.numFaces = 1;
 
 			if (colorSurfacesList.size() > 0)
 			{

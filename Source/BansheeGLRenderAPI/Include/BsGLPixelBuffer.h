@@ -49,8 +49,9 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	attachment	Attachment point index in the range [0, BS_MAX_MULTIPLE_RENDER_TARGETS).
 		 * @param[in]	zoffset		Depth slice to bind, in the case of a 3D texture.
+		 * @param[in]	allLayers	Should all layers of the texture be bound, or just one (zoffset is ignored if true).
 		 */
-		virtual void bindToFramebuffer(GLenum attachment, UINT32 zoffset);
+		virtual void bindToFramebuffer(GLenum attachment, UINT32 zoffset, bool allLayers);
 
 		/**	Returns internal OpenGL pixel format used by the buffer. */
 		GLenum getGLFormat() const { return mGLInternalFormat; }
@@ -106,7 +107,7 @@ namespace BansheeEngine
         ~GLTextureBuffer();
         
 		/** @copydoc GLPixelBuffer::bindToFramebuffer */
-        void bindToFramebuffer(GLenum attachment, UINT32 zoffset) override;
+        void bindToFramebuffer(GLenum attachment, UINT32 zoffset, bool allLayers) override;
 
 		/** @copydoc GLPixelBuffer::upload */
 		void upload(const PixelData &data, const PixelVolume &dest) override;
@@ -149,7 +150,7 @@ namespace BansheeEngine
         ~GLRenderBuffer();
         
 		/** @copydoc	GLPixelBuffer::bindToFramebuffer */
-        void bindToFramebuffer(GLenum attachment, UINT32 zoffset) override;
+        void bindToFramebuffer(GLenum attachment, UINT32 zoffset, bool allLayers) override;
     protected:
         GLuint mRenderbufferID;
     };

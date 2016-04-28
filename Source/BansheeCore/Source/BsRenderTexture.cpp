@@ -79,7 +79,7 @@ namespace BansheeEngine
 				BS_EXCEPT(InvalidParametersException, "Provided texture is not created with render target usage.");
 
 			mColorSurface = TextureCore::requestView(texture, colorSurface.mipLevel, 1,
-				colorSurface.face, 1, GVU_RENDERTARGET);
+				colorSurface.face, colorSurface.numFaces, GVU_RENDERTARGET);
 		}
 
 		const RENDER_SURFACE_CORE_DESC& depthStencilSurface = mDesc.depthStencilSurface;
@@ -91,7 +91,7 @@ namespace BansheeEngine
 				BS_EXCEPT(InvalidParametersException, "Provided texture is not created with depth stencil usage.");
 
 			mDepthStencilSurface = TextureCore::requestView(texture, depthStencilSurface.mipLevel, 1,
-				depthStencilSurface.face, 1, GVU_DEPTHSTENCIL);
+				depthStencilSurface.face, 0, GVU_DEPTHSTENCIL);
 		}
 
 		throwIfBuffersDontMatch();
@@ -103,11 +103,17 @@ namespace BansheeEngine
 			SPtr<TextureCore> colorTexture = mColorSurface->getTexture();
 			const TextureProperties& texProps = colorTexture->getProperties();
 
-			if ((mColorSurface->getFirstArraySlice() + mColorSurface->getNumArraySlices()) > texProps.getNumFaces())
+			UINT32 numSlices;
+			if (texProps.getTextureType() == TEX_TYPE_3D)
+				numSlices = texProps.getDepth();
+			else
+				numSlices = texProps.getNumFaces();
+
+			if ((mColorSurface->getFirstArraySlice() + mColorSurface->getNumArraySlices()) > numSlices)
 			{
 				BS_EXCEPT(InvalidParametersException, "Provided number of faces is out of range. Face: " +
 					toString(mColorSurface->getFirstArraySlice() + mColorSurface->getNumArraySlices()) +
-					". Max num faces: " + toString(texProps.getNumFaces()));
+					". Max num faces: " + toString(numSlices));
 			}
 
 			if (mColorSurface->getMostDetailedMip() > texProps.getNumMipmaps())
@@ -194,8 +200,10 @@ namespace BansheeEngine
 			coreDesc.depthStencilSurface.texture = mDesc.depthStencilSurface.texture->getCore();
 
 		coreDesc.colorSurface.face = mDesc.colorSurface.face;
+		coreDesc.colorSurface.numFaces = mDesc.colorSurface.numFaces;
 		coreDesc.colorSurface.mipLevel = mDesc.colorSurface.mipLevel;
 		coreDesc.depthStencilSurface.face = mDesc.depthStencilSurface.face;
+		coreDesc.depthStencilSurface.numFaces = mDesc.depthStencilSurface.numFaces;
 		coreDesc.depthStencilSurface.mipLevel = mDesc.depthStencilSurface.mipLevel;
 
 		return TextureCoreManager::instance().createRenderTextureInternal(coreDesc);

@@ -98,7 +98,7 @@ namespace BansheeEngine
 					BS_EXCEPT(InvalidParametersException, "Provided texture is not created with render target usage.");
 
 				mColorSurfaces[i] = TextureCore::requestView(texture, mDesc.colorSurfaces[i].mipLevel, 1,
-					mDesc.colorSurfaces[i].face, 1, GVU_RENDERTARGET);
+					mDesc.colorSurfaces[i].face, mDesc.colorSurfaces[i].numFaces, GVU_RENDERTARGET);
 			}
 		}
 
@@ -110,7 +110,7 @@ namespace BansheeEngine
 				BS_EXCEPT(InvalidParametersException, "Provided texture is not created with depth stencil usage.");
 
 			mDepthStencilSurface = TextureCore::requestView(texture, mDesc.depthStencilSurface.mipLevel, 1,
-				mDesc.depthStencilSurface.face, 1, GVU_DEPTHSTENCIL);
+				mDesc.depthStencilSurface.face, 0, GVU_DEPTHSTENCIL);
 		}
 
 		throwIfBuffersDontMatch();
@@ -163,10 +163,16 @@ namespace BansheeEngine
 			if (firstTexProps.getTextureType() != TEX_TYPE_2D)
 				BS_EXCEPT(NotImplementedException, "Render textures are currently only implemented for 2D surfaces.");
 
-			if ((firstSurfaceDesc->getFirstArraySlice() + firstSurfaceDesc->getNumArraySlices()) > firstTexProps.getNumFaces())
+			UINT32 numSlices;
+			if (firstTexProps.getTextureType() == TEX_TYPE_3D)
+				numSlices = firstTexProps.getDepth();
+			else
+				numSlices = firstTexProps.getNumFaces();
+
+			if ((firstSurfaceDesc->getFirstArraySlice() + firstSurfaceDesc->getNumArraySlices()) > numSlices)
 			{
 				BS_EXCEPT(InvalidParametersException, "Provided number of faces is out of range. Face: " +
-					toString(firstSurfaceDesc->getFirstArraySlice() + firstSurfaceDesc->getNumArraySlices()) + ". Max num faces: " + toString(firstTexProps.getNumFaces()));
+					toString(firstSurfaceDesc->getFirstArraySlice() + firstSurfaceDesc->getNumArraySlices()) + ". Max num faces: " + toString(numSlices));
 			}
 
 			if (firstSurfaceDesc->getMostDetailedMip() > firstTexProps.getNumMipmaps())
@@ -221,6 +227,7 @@ namespace BansheeEngine
 				surfaceDesc.texture = colorSurface.texture->getCore();
 
 			surfaceDesc.face = colorSurface.face;
+			surfaceDesc.numFaces = colorSurface.numFaces;
 			surfaceDesc.mipLevel = colorSurface.mipLevel;
 
 			coreDesc.colorSurfaces.push_back(surfaceDesc);
@@ -230,6 +237,7 @@ namespace BansheeEngine
 			coreDesc.depthStencilSurface.texture = mDesc.depthStencilSurface.texture->getCore();
 
 		coreDesc.depthStencilSurface.face = mDesc.depthStencilSurface.face;
+		coreDesc.depthStencilSurface.numFaces = mDesc.depthStencilSurface.numFaces;
 		coreDesc.depthStencilSurface.mipLevel = mDesc.depthStencilSurface.mipLevel;
 
 		return TextureCoreManager::instance().createMultiRenderTextureInternal(coreDesc);

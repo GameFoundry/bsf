@@ -18,12 +18,13 @@ namespace BansheeEngine
     {
     public:
 		GLSurfaceDesc() 
-			:zoffset(0), numSamples(0) 
+			:zoffset(0), numSamples(0), allLayers(false)
 		{ }
 
 		SPtr<GLPixelBuffer> buffer;
 		UINT32 zoffset;
 		UINT32 numSamples;
+		bool allLayers;
     };
 
 	/**

@@ -53,14 +53,17 @@ namespace BansheeEngine
 
 			gbufferDesc.colorSurfaces[0].texture = mSceneColorTex->texture;
 			gbufferDesc.colorSurfaces[0].face = 0;
+			gbufferDesc.colorSurfaces[0].numFaces = 1;
 			gbufferDesc.colorSurfaces[0].mipLevel = 0;
 
 			gbufferDesc.colorSurfaces[1].texture = mAlbedoTex->texture;
 			gbufferDesc.colorSurfaces[1].face = 0;
+			gbufferDesc.colorSurfaces[1].numFaces = 1;
 			gbufferDesc.colorSurfaces[1].mipLevel = 0;
 
 			gbufferDesc.colorSurfaces[2].texture = mNormalTex->texture;
 			gbufferDesc.colorSurfaces[2].face = 0;
+			gbufferDesc.colorSurfaces[2].numFaces = 1;
 			gbufferDesc.colorSurfaces[2].mipLevel = 0;
 
 			gbufferDesc.depthStencilSurface.texture = mDepthTex->texture;
@@ -72,10 +75,12 @@ namespace BansheeEngine
 			RENDER_TEXTURE_CORE_DESC sceneColorDesc;
 			sceneColorDesc.colorSurface.texture = mSceneColorTex->texture;
 			sceneColorDesc.colorSurface.face = 0;
+			sceneColorDesc.colorSurface.numFaces = 1;
 			sceneColorDesc.colorSurface.mipLevel = 0;
 
 			sceneColorDesc.depthStencilSurface.texture = mDepthTex->texture;
 			sceneColorDesc.depthStencilSurface.face = 0;
+			sceneColorDesc.depthStencilSurface.numFaces = 1;
 			sceneColorDesc.depthStencilSurface.mipLevel = 0;
 
 			mSceneColorRT = TextureCoreManager::instance().createRenderTexture(sceneColorDesc);

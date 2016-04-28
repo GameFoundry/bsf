@@ -45,7 +45,7 @@ namespace BansheeEngine
 		/** @copydoc TextureCoreManager::createTextureInternal */
 		SPtr<TextureCore> createTextureInternal(TextureType texType, UINT32 width, UINT32 height, UINT32 depth,
 			int numMips, PixelFormat format, int usage = TU_DEFAULT, bool hwGammaCorrection = false,
-			UINT32 multisampleCount = 0, const SPtr<PixelData>& initialData = nullptr) override;
+			UINT32 multisampleCount = 0, UINT32 numArraySlices = 1, const SPtr<PixelData>& initialData = nullptr) override;
 
 		/** @copydoc TextureCoreManager::createRenderTextureInternal */
 		SPtr<RenderTextureCore> createRenderTextureInternal(const RENDER_TEXTURE_CORE_DESC& desc) override;

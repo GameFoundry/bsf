@@ -44,15 +44,41 @@ namespace BansheeEngine
 		GLSurfaceDesc surfaceDesc;
 		surfaceDesc.numSamples = getProperties().getMultisampleCount();
 
-		if (glTexture->getProperties().getTextureType() != TEX_TYPE_3D)
+		if(mColorSurface->getNumArraySlices() == 1) // Binding a single texture layer
 		{
-			surfaceDesc.zoffset = 0;
-			surfaceDesc.buffer = glTexture->getBuffer(mColorSurface->getFirstArraySlice(), mColorSurface->getMostDetailedMip());
+			surfaceDesc.allLayers = false;
+
+			if (glTexture->getProperties().getTextureType() != TEX_TYPE_3D)
+			{
+				surfaceDesc.zoffset = 0;
+				surfaceDesc.buffer = glTexture->getBuffer(mColorSurface->getFirstArraySlice(), mColorSurface->getMostDetailedMip());
+			}
+			else
+			{
+				surfaceDesc.zoffset = mColorSurface->getFirstArraySlice();
+				surfaceDesc.buffer = glTexture->getBuffer(0, mColorSurface->getMostDetailedMip());
+			}
 		}
-		else
+		else // Binding an array of textures or a range of 3D texture slices
 		{
-			surfaceDesc.zoffset = mColorSurface->getFirstArraySlice();
-			surfaceDesc.buffer = glTexture->getBuffer(0, mColorSurface->getMostDetailedMip());
+			surfaceDesc.allLayers = true;
+
+			if (glTexture->getProperties().getTextureType() != TEX_TYPE_3D)
+			{
+				if (mColorSurface->getNumArraySlices() != glTexture->getProperties().getNumFaces())
+					LOGWRN("OpenGL doesn't support binding of arbitrary ranges for array textures. The entire range will be bound instead.");
+
+				surfaceDesc.zoffset = 0;
+				surfaceDesc.buffer = glTexture->getBuffer(0, mColorSurface->getMostDetailedMip());
+			}
+			else
+			{
+				if (mColorSurface->getNumArraySlices() != glTexture->getProperties().getDepth())
+					LOGWRN("OpenGL doesn't support binding of arbitrary ranges for array textures. The entire range will be bound instead.");
+
+				surfaceDesc.zoffset = 0;
+				surfaceDesc.buffer = glTexture->getBuffer(0, mColorSurface->getMostDetailedMip());
+			}
 		}
 
 		mFB->bindSurface(0, surfaceDesc);

@@ -24,17 +24,18 @@ namespace BansheeEngine
     public:
 		virtual ~TextureManager() { }
 
-		/** @copydoc Texture::create(TextureType, UINT32, UINT32, UINT32, int, PixelFormat, int, bool, UINT32) */
+		/** @copydoc Texture::create(TextureType, UINT32, UINT32, UINT32, int, PixelFormat, int, bool, UINT32, UINT32) */
         SPtr<Texture> createTexture(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, 
 			int numMips, PixelFormat format, int usage = TU_DEFAULT, bool hwGammaCorrection = false, 
-			UINT32 multisampleCount = 0);
+			UINT32 multisampleCount = 0, UINT32 numArraySlices = 1);
 			
-		/** @copydoc Texture::create(TextureType, UINT32, UINT32, int, PixelFormat, int, bool, UINT32) */
+		/** @copydoc Texture::create(TextureType, UINT32, UINT32, int, PixelFormat, int, bool, UINT32, UINT32) */
 		SPtr<Texture> createTexture(TextureType texType, UINT32 width, UINT32 height, int numMips,
-			PixelFormat format, int usage = TU_DEFAULT, bool hwGammaCorrection = false, UINT32 multisampleCount = 0)
+			PixelFormat format, int usage = TU_DEFAULT, bool hwGammaCorrection = false, UINT32 multisampleCount = 0, 
+			UINT32 numArraySlices = 1)
 		{
 			return createTexture(texType, width, height, 1, 
-				numMips, format, usage, hwGammaCorrection, multisampleCount);
+				numMips, format, usage, hwGammaCorrection, multisampleCount, numArraySlices);
 		}
 
 		/** @copydoc Texture::create(const SPtr<PixelData>&, int, bool) */
@@ -116,11 +117,11 @@ namespace BansheeEngine
 		void onShutDown() override;
 
 		/**
-		 * @copydoc	TextureManager::createTexture(TextureType, UINT32, UINT32, UINT32, int, PixelFormat, int, bool, UINT32)
+		 * @copydoc	TextureManager::createTexture(TextureType, UINT32, UINT32, UINT32, int, PixelFormat, int, bool, UINT32, UINT32)
 		 */
 		SPtr<TextureCore> createTexture(TextureType texType, UINT32 width, UINT32 height, UINT32 depth,
 			int numMips, PixelFormat format, int usage = TU_DEFAULT, bool hwGammaCorrection = false, 
-			UINT32 multisampleCount = 0);
+			UINT32 multisampleCount = 0, UINT32 numArraySlices = 1);
 
 		/** @copydoc	TextureManager::createRenderTexture(const RENDER_TEXTURE_DESC&) */
 		SPtr<RenderTextureCore> createRenderTexture(const RENDER_TEXTURE_CORE_DESC& desc);
@@ -140,7 +141,7 @@ namespace BansheeEngine
 		 */
 		virtual SPtr<TextureCore> createTextureInternal(TextureType texType, UINT32 width, UINT32 height, UINT32 depth,
 			int numMips, PixelFormat format, int usage = TU_DEFAULT, bool hwGammaCorrection = false,
-			UINT32 multisampleCount = 0, const SPtr<PixelData>& initialData = nullptr) = 0;
+			UINT32 multisampleCount = 0, UINT32 numArraySlices = 1, const SPtr<PixelData>& initialData = nullptr) = 0;
 
 		/** @copydoc TextureManager::createRenderTextureImpl */
 		virtual SPtr<RenderTextureCore> createRenderTextureInternal(const RENDER_TEXTURE_CORE_DESC& desc) = 0;

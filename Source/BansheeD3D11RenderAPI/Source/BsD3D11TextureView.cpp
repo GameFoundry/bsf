@@ -44,34 +44,78 @@ namespace BansheeEngine
 		ZeroMemory(&desc, sizeof(desc));
 
 		const TextureProperties& texProps = texture->getProperties();
+		UINT32 numFaces = texProps.getNumFaces();
+
 		switch (texProps.getTextureType())
 		{
 		case TEX_TYPE_1D:
-			desc.Texture1D.MipLevels = numMips;
-			desc.Texture1D.MostDetailedMip = mostDetailMip;
-			desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE1D;
+			if (numFaces <= 1)
+			{
+				desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE1D;
+				desc.Texture1D.MipLevels = numMips;
+				desc.Texture1D.MostDetailedMip = mostDetailMip;
+			}
+			else
+			{
+				desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE1DARRAY;
+				desc.Texture1DArray.MipLevels = numMips;
+				desc.Texture1DArray.MostDetailedMip = mostDetailMip;
+				desc.Texture1DArray.FirstArraySlice = firstArraySlice;
+				desc.Texture1DArray.ArraySize = numArraySlices;
+			}
 			break;
 		case TEX_TYPE_2D:
 			if (texProps.getMultisampleCount() > 1)
 			{
-				desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DMS;
+				if (numFaces <= 1)
+				{
+					desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DMS;
+				}
+				else
+				{
+					desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DMSARRAY;
+					desc.Texture2DMSArray.FirstArraySlice = firstArraySlice;
+					desc.Texture2DMSArray.ArraySize = numArraySlices;
+				}
 			}
 			else
 			{
-				desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-				desc.Texture2D.MipLevels = numMips;
-				desc.Texture2D.MostDetailedMip = mostDetailMip;
+				if (numFaces <= 1)
+				{
+					desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+					desc.Texture2D.MipLevels = numMips;
+					desc.Texture2D.MostDetailedMip = mostDetailMip;
+				}
+				else
+				{
+					desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
+					desc.Texture2DArray.MipLevels = numMips;
+					desc.Texture2DArray.MostDetailedMip = mostDetailMip;
+					desc.Texture2DArray.FirstArraySlice = firstArraySlice;
+					desc.Texture2DArray.ArraySize = numArraySlices;
+				}
 			}
 			break;
 		case TEX_TYPE_3D:
+			desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE3D;
 			desc.Texture3D.MipLevels = numMips;
 			desc.Texture3D.MostDetailedMip = mostDetailMip;
-			desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE3D;
 			break;
 		case TEX_TYPE_CUBE_MAP:
-			desc.TextureCube.MipLevels = numMips;
-			desc.TextureCube.MostDetailedMip = mostDetailMip;
-			desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
+			if (numFaces <= 6)
+			{
+				desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
+				desc.TextureCube.MipLevels = numMips;
+				desc.TextureCube.MostDetailedMip = mostDetailMip;
+			}
+			else
+			{
+				desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBEARRAY;
+				desc.TextureCubeArray.MipLevels = numMips;
+				desc.TextureCubeArray.MostDetailedMip = mostDetailMip;
+				desc.TextureCubeArray.First2DArrayFace = firstArraySlice;
+				desc.TextureCubeArray.NumCubes = numArraySlices / 6;
+			}
 			break;
 		default:
 			BS_EXCEPT(InvalidParametersException, "Invalid texture type for this view type.");
@@ -100,34 +144,65 @@ namespace BansheeEngine
 		ZeroMemory(&desc, sizeof(desc));
 
 		const TextureProperties& texProps = texture->getProperties();
+		UINT32 numFaces = texProps.getNumFaces();
+
 		switch (texProps.getTextureType())
 		{
 		case TEX_TYPE_1D:
-			desc.Texture1D.MipSlice = mipSlice;
-			desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE1D;
+			if (numFaces <= 1)
+			{
+				desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE1D;
+				desc.Texture1D.MipSlice = mipSlice;
+			}
+			else
+			{
+				desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE1DARRAY;
+				desc.Texture1DArray.MipSlice = mipSlice;
+				desc.Texture1DArray.FirstArraySlice = firstArraySlice;
+				desc.Texture1DArray.ArraySize = numArraySlices;
+			}
 			break;
 		case TEX_TYPE_2D:
 			if (texProps.getMultisampleCount() > 1)
 			{
-				desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMS;
+				if (numFaces <= 1)
+				{
+					desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMS;
+				}
+				else
+				{
+					desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMSARRAY;
+					desc.Texture2DMSArray.FirstArraySlice = firstArraySlice;
+					desc.Texture2DMSArray.ArraySize = numArraySlices;
+				}
 			}
 			else
 			{
-				desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-				desc.Texture2D.MipSlice = mipSlice;
+				if (numFaces <= 1)
+				{
+					desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+					desc.Texture2D.MipSlice = mipSlice;
+				}
+				else
+				{
+					desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
+					desc.Texture2DArray.MipSlice = mipSlice;
+					desc.Texture2DArray.FirstArraySlice = firstArraySlice;
+					desc.Texture2DArray.ArraySize = numArraySlices;
+				}
 			}
 			break;
 		case TEX_TYPE_3D:
+			desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE3D;
 			desc.Texture3D.MipSlice = mipSlice;
 			desc.Texture3D.FirstWSlice = firstArraySlice;
 			desc.Texture3D.WSize = numArraySlices;
-			desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE3D;
 			break;
 		case TEX_TYPE_CUBE_MAP:
+			desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
 			desc.Texture2DArray.FirstArraySlice = firstArraySlice;
 			desc.Texture2DArray.ArraySize = numArraySlices;
 			desc.Texture2DArray.MipSlice = mipSlice;
-			desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
 			break;
 		default:
 			BS_EXCEPT(InvalidParametersException, "Invalid texture type for this view type.");
@@ -155,27 +230,50 @@ namespace BansheeEngine
 		D3D11_UNORDERED_ACCESS_VIEW_DESC desc;
 		ZeroMemory(&desc, sizeof(desc));
 
-		switch(texture->getProperties().getTextureType())
+		const TextureProperties& texProps = texture->getProperties();
+		UINT32 numFaces = texProps.getNumFaces();
+
+		switch (texProps.getTextureType())
 		{
 		case TEX_TYPE_1D:
-			desc.Texture1D.MipSlice = mipSlice;
-			desc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE1D;
+			if (numFaces <= 1)
+			{
+				desc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE1D;
+				desc.Texture1D.MipSlice = mipSlice;
+			}
+			else
+			{
+				desc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE1DARRAY;
+				desc.Texture1DArray.MipSlice = mipSlice;
+				desc.Texture1DArray.FirstArraySlice = firstArraySlice;
+				desc.Texture1DArray.ArraySize = numArraySlices;
+			}
 			break;
 		case TEX_TYPE_2D:
-			desc.Texture2D.MipSlice = mipSlice;
-			desc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
+			if (numFaces <= 1)
+			{
+				desc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
+				desc.Texture2D.MipSlice = mipSlice;
+			}
+			else
+			{
+				desc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2DARRAY;
+				desc.Texture2DArray.MipSlice = mipSlice;
+				desc.Texture2DArray.FirstArraySlice = firstArraySlice;
+				desc.Texture2DArray.ArraySize = numArraySlices;
+			}
 			break;
 		case TEX_TYPE_3D:
+			desc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE3D;
 			desc.Texture3D.MipSlice = mipSlice;
 			desc.Texture3D.FirstWSlice = firstArraySlice;
 			desc.Texture3D.WSize = numArraySlices;
-			desc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE3D;
 			break;
 		case TEX_TYPE_CUBE_MAP:
+			desc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2DARRAY;
 			desc.Texture2DArray.FirstArraySlice = firstArraySlice;
 			desc.Texture2DArray.ArraySize = numArraySlices;
 			desc.Texture2DArray.MipSlice = mipSlice;
-			desc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2DARRAY;
 			break;
 		default:
 			BS_EXCEPT(InvalidParametersException, "Invalid texture type for this view type.");
@@ -204,29 +302,60 @@ namespace BansheeEngine
 		ZeroMemory(&desc, sizeof(desc));
 
 		const TextureProperties& texProps = texture->getProperties();
+		UINT32 numFaces = texProps.getNumFaces();
+
 		switch (texProps.getTextureType())
 		{
 		case TEX_TYPE_1D:
-			desc.Texture1D.MipSlice = mipSlice;
-			desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE1D;
+			if (numFaces <= 1)
+			{
+				desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE1D;
+				desc.Texture1D.MipSlice = mipSlice;
+			}
+			else
+			{
+				desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE1DARRAY;
+				desc.Texture1DArray.MipSlice = mipSlice;
+				desc.Texture1DArray.FirstArraySlice = firstArraySlice;
+				desc.Texture1DArray.ArraySize = numArraySlices;
+			}
 			break;
 		case TEX_TYPE_2D:
 			if (texProps.getMultisampleCount() > 1)
 			{
-				desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
+				if (numFaces <= 1)
+				{
+					desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
+				}
+				else
+				{
+					desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMSARRAY;
+					desc.Texture2DMSArray.FirstArraySlice = firstArraySlice;
+					desc.Texture2DMSArray.ArraySize = numArraySlices;
+				}
 			}
 			else
 			{
-				desc.Texture2D.MipSlice = mipSlice;
-				desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+				if (numFaces <= 1)
+				{
+					desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+					desc.Texture2D.MipSlice = mipSlice;
+				}
+				else
+				{
+					desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
+					desc.Texture2DArray.MipSlice = mipSlice;
+					desc.Texture2DArray.FirstArraySlice = firstArraySlice;
+					desc.Texture2DArray.ArraySize = numArraySlices;
+				}
 			}
 			break;
 		case TEX_TYPE_3D:
 		case TEX_TYPE_CUBE_MAP:
+			desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
 			desc.Texture2DArray.FirstArraySlice = firstArraySlice;
 			desc.Texture2DArray.ArraySize = numArraySlices;
 			desc.Texture2DArray.MipSlice = mipSlice;
-			desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
 			break;
 		default:
 			BS_EXCEPT(InvalidParametersException, "Invalid texture type for this view type.");

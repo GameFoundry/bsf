@@ -14,7 +14,7 @@
 namespace BansheeEngine 
 {
 	TextureProperties::TextureProperties()
-		:mHeight(32), mWidth(32), mDepth(1), mNumMipmaps(0),
+		:mHeight(32), mWidth(32), mDepth(1), mNumArraySlices(1), mNumMipmaps(0),
 		mHwGamma(false), mMultisampleCount(0), mTextureType(TEX_TYPE_2D),
 		mFormat(PF_UNKNOWN), mUsage(TU_DEFAULT)
 	{
@@ -22,8 +22,8 @@ namespace BansheeEngine
 	}
 
 	TextureProperties::TextureProperties(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps,
-		PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount)
-		:mHeight(height), mWidth(width), mDepth(depth), mNumMipmaps(numMipmaps),
+		PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, UINT32 numArraySlices)
+		:mHeight(height), mWidth(width), mDepth(depth), mNumArraySlices(numArraySlices), mNumMipmaps(numMipmaps),
 		mHwGamma(hwGamma), mMultisampleCount(multisampleCount), mTextureType(textureType),
 		mFormat(format), mUsage(usage)
 	{
@@ -37,7 +37,9 @@ namespace BansheeEngine
 
 	UINT32 TextureProperties::getNumFaces() const
 	{
-		return getTextureType() == TEX_TYPE_CUBE_MAP ? 6 : 1;
+		UINT32 facesPerSlice = getTextureType() == TEX_TYPE_CUBE_MAP ? 6 : 1;
+
+		return facesPerSlice * mNumArraySlices;
 	}
 
 	void TextureProperties::mapFromSubresourceIdx(UINT32 subresourceIdx, UINT32& face, UINT32& mip) const
@@ -86,8 +88,9 @@ namespace BansheeEngine
 	SPtr<TextureCore> TextureCore::NORMAL;
 
 	TextureCore::TextureCore(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps,
-		PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, const SPtr<PixelData>& initData)
-		:mProperties(textureType, width, height, depth, numMipmaps, format, usage, hwGamma, multisampleCount), 
+		PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, UINT32 numArraySlices, 
+		const SPtr<PixelData>& initData)
+		:mProperties(textureType, width, height, depth, numMipmaps, format, usage, hwGamma, multisampleCount, numArraySlices), 
 		mInitData(initData)
 	{ }
 
@@ -244,8 +247,20 @@ namespace BansheeEngine
 		key.mostDetailMip = mostDetailMip;
 		key.numMips = numMips;
 		key.firstArraySlice = firstArraySlice;
-		key.numArraySlices = numArraySlices;
 		key.usage = usage;
+
+		const TextureProperties& texProps = texture->getProperties();
+		if(numArraySlices == 0) // Automatically determine slice count
+		{
+			if(texProps.getTextureType() == TEX_TYPE_3D)
+				key.numArraySlices = texProps.getDepth();
+			else
+				key.numArraySlices = texProps.getNumFaces();
+		}
+		else
+		{
+			key.numArraySlices = numArraySlices;
+		}
 
 		auto iterFind = texture->mTextureViews.find(key);
 		if (iterFind == texture->mTextureViews.end())
@@ -290,24 +305,24 @@ namespace BansheeEngine
 	/* 								STATICS	                      			*/
 	/************************************************************************/
 	SPtr<TextureCore> TextureCore::create(TextureType texType, UINT32 width, UINT32 height, UINT32 depth,
-		int numMips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount)
+		int numMips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount, UINT32 numArraySlices)
 	{
 		return TextureCoreManager::instance().createTexture(texType,
-			width, height, depth, numMips, format, usage, hwGammaCorrection, multisampleCount);
+			width, height, depth, numMips, format, usage, hwGammaCorrection, multisampleCount, numArraySlices);
 	}
 
 	SPtr<TextureCore> TextureCore::create(TextureType texType, UINT32 width, UINT32 height,
-		int numMips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount)
+		int numMips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount, UINT32 numArraySlices)
 	{
 		return TextureCoreManager::instance().createTexture(texType,
-			width, height, 1, numMips, format, usage, hwGammaCorrection, multisampleCount);
+			width, height, 1, numMips, format, usage, hwGammaCorrection, multisampleCount, numArraySlices);
 	}
 
 	SPtr<TextureCore> TextureCore::create(const SPtr<PixelData>& pixelData, int usage, bool hwGammaCorrection)
 	{
 		return TextureCoreManager::instance().createTextureInternal(pixelData->getDepth() > 1 ? TEX_TYPE_3D : TEX_TYPE_2D, 
 			pixelData->getWidth(), pixelData->getHeight(),
-			pixelData->getDepth(), 0, pixelData->getFormat(), usage, hwGammaCorrection, 0, pixelData);
+			pixelData->getDepth(), 0, pixelData->getFormat(), usage, hwGammaCorrection, 0, 1, pixelData);
 	}
 
 	Texture::Texture()
@@ -316,15 +331,15 @@ namespace BansheeEngine
 	}
 
 	Texture::Texture(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps,
-		PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount)
-		:mProperties(textureType, width, height, depth, numMipmaps, format, usage, hwGamma, multisampleCount)
+		PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, UINT32 numArraySlices)
+		:mProperties(textureType, width, height, depth, numMipmaps, format, usage, hwGamma, multisampleCount, numArraySlices)
     {
         
     }
 
 	Texture::Texture(const SPtr<PixelData>& pixelData, int usage, bool hwGamma)
 		: mProperties(pixelData->getDepth() > 1 ? TEX_TYPE_3D : TEX_TYPE_2D, pixelData->getWidth(), pixelData->getHeight(),
-		pixelData->getDepth(), 0, pixelData->getFormat(), usage, hwGamma, 0), mInitData(pixelData)
+		pixelData->getDepth(), 0, pixelData->getFormat(), usage, hwGamma, 0, 1), mInitData(pixelData)
 	{
 		if (mInitData != nullptr)
 			mInitData->_lock();
@@ -350,8 +365,10 @@ namespace BansheeEngine
 	{
 		const TextureProperties& props = getProperties();
 
-		SPtr<CoreObjectCore> coreObj = TextureCoreManager::instance().createTextureInternal(props.getTextureType(), props.getWidth(), props.getHeight(),
-			props.getDepth(), props.getNumMipmaps(), props.getFormat(), props.getUsage(), props.isHardwareGammaEnabled(), props.getMultisampleCount(), mInitData);
+		SPtr<CoreObjectCore> coreObj = TextureCoreManager::instance().createTextureInternal(props.getTextureType(), 
+			props.getWidth(), props.getHeight(), props.getDepth(), props.getNumMipmaps(), props.getFormat(), 
+			props.getUsage(), props.isHardwareGammaEnabled(), props.getMultisampleCount(), props.getNumArraySlices(), 
+			mInitData);
 
 		if ((mProperties.getUsage() & TU_CPUCACHED) == 0)
 			mInitData = nullptr;
@@ -527,19 +544,19 @@ namespace BansheeEngine
 	/* 								STATICS	                      			*/
 	/************************************************************************/
 	HTexture Texture::create(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, 
-		int numMips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount)
+		int numMips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount, UINT32 numArraySlices)
 	{
 		SPtr<Texture> texturePtr = _createPtr(texType, 
-			width, height, depth, numMips, format, usage, hwGammaCorrection, multisampleCount);
+			width, height, depth, numMips, format, usage, hwGammaCorrection, multisampleCount, numArraySlices);
 
 		return static_resource_cast<Texture>(gResources()._createResourceHandle(texturePtr));
 	}
 	
 	HTexture Texture::create(TextureType texType, UINT32 width, UINT32 height, 
-		int numMips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount)
+		int numMips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount, UINT32 numArraySlices)
 	{
 		SPtr<Texture> texturePtr = _createPtr(texType, 
-			width, height, numMips, format, usage, hwGammaCorrection, multisampleCount);
+			width, height, numMips, format, usage, hwGammaCorrection, multisampleCount, numArraySlices);
 
 		return static_resource_cast<Texture>(gResources()._createResourceHandle(texturePtr));
 	}
@@ -552,17 +569,17 @@ namespace BansheeEngine
 	}
 
 	SPtr<Texture> Texture::_createPtr(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, 
-		int num_mips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount)
+		int num_mips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount, UINT32 numArraySlices)
 	{
 		return TextureManager::instance().createTexture(texType, 
-			width, height, depth, num_mips, format, usage, hwGammaCorrection, multisampleCount);
+			width, height, depth, num_mips, format, usage, hwGammaCorrection, multisampleCount, numArraySlices);
 	}
 
 	SPtr<Texture> Texture::_createPtr(TextureType texType, UINT32 width, UINT32 height, 
-		int num_mips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount)
+		int num_mips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount, UINT32 numArraySlices)
 	{
 		return TextureManager::instance().createTexture(texType, 
-			width, height, num_mips, format, usage, hwGammaCorrection, multisampleCount);
+			width, height, num_mips, format, usage, hwGammaCorrection, multisampleCount, numArraySlices);
 	}
 
 	SPtr<Texture> Texture::_createPtr(const SPtr<PixelData>& pixelData, int usage, bool hwGammaCorrection)

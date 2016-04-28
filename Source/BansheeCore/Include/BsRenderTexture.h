@@ -95,10 +95,10 @@ namespace BansheeEngine
 		RenderTexture(const RENDER_TEXTURE_DESC& desc);
 
 		/** @copydoc CoreObject::createCore */
-		virtual SPtr<CoreObjectCore> createCore() const override;
+		SPtr<CoreObjectCore> createCore() const override;
 
 		/** @copydoc CoreObject::syncToCore */
-		virtual CoreSyncData syncToCore(FrameAlloc* allocator) override;
+		CoreSyncData syncToCore(FrameAlloc* allocator) override;
 
 	protected:
 		HTexture mBindableColorTex;
@@ -136,7 +136,7 @@ namespace BansheeEngine
 		virtual ~RenderTextureCore();
 
 		/** @copydoc CoreObjectCore::initialize */
-		virtual void initialize() override;
+		void initialize() override;
 
 		/** @copydoc TextureCoreManager::createRenderTexture(const RENDER_TEXTURE_CORE_DESC&) */
 		static SPtr<RenderTextureCore> create(const RENDER_TEXTURE_CORE_DESC& desc);
@@ -160,7 +160,7 @@ namespace BansheeEngine
 
 	protected:
 		/** @copydoc CoreObjectCore::syncToCore */
-		virtual void syncToCore(const CoreSyncData& data) override;
+		void syncToCore(const CoreSyncData& data) override;
 
 	private:
 		/**	Throws an exception of the color and depth/stencil buffers aren't compatible. */

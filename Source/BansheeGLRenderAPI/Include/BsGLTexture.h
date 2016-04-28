@@ -42,7 +42,7 @@ namespace BansheeEngine
 		friend class GLTextureCoreManager;
 
 		GLTextureCore(GLSupport& support, TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps,
-			PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, const SPtr<PixelData>& initialData);
+			PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, UINT32 numArraySlices, const SPtr<PixelData>& initialData);
 
 		/** @copydoc TextureCore::initialize */
 		void initialize() override;

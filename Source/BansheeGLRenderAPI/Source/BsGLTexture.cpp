@@ -14,8 +14,9 @@
 namespace BansheeEngine 
 {
 	GLTextureCore::GLTextureCore(GLSupport& support, TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, 
-		UINT32 numMipmaps, PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, const SPtr<PixelData>& initialData)
-		: TextureCore(textureType, width, height, depth, numMipmaps, format, usage, hwGamma, multisampleCount, initialData),
+		UINT32 numMipmaps, PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, UINT32 numArraySlices, 
+		const SPtr<PixelData>& initialData)
+		: TextureCore(textureType, width, height, depth, numMipmaps, format, usage, hwGamma, multisampleCount, numArraySlices, initialData),
 		mTextureID(0), mGLFormat(0), mGLSupport(support)
     { }
 
@@ -38,6 +39,7 @@ namespace BansheeEngine
 		PixelFormat pixFormat = mProperties.getFormat();
 		int usage = mProperties.getUsage();
 		UINT32 numMips = mProperties.getNumMipmaps();
+		UINT32 numFaces = mProperties.getNumFaces();
 
 		// Check requested number of mipmaps
 		UINT32 maxMips = PixelUtil::getMaxMipmaps(width, height, depth, mProperties.getFormat());
@@ -81,27 +83,29 @@ namespace BansheeEngine
 		}
 
 		UINT32 sampleCount = mProperties.getMultisampleCount();
-		if ((usage & TU_RENDERTARGET) != 0 && mProperties.getTextureType() == TEX_TYPE_2D && sampleCount > 1)
+		if((usage & (TU_RENDERTARGET | TU_DEPTHSTENCIL)) != 0 && mProperties.getTextureType() == TEX_TYPE_2D && sampleCount > 1)
 		{
-			glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, sampleCount, mGLFormat, width, height, GL_FALSE);
+			if (numFaces <= 1)
+				glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, sampleCount, mGLFormat, width, height, GL_FALSE);
+			else
+				glTexImage3DMultisample(GL_TEXTURE_2D_MULTISAMPLE_ARRAY, sampleCount, mGLFormat, width, height, numFaces, GL_FALSE);
 		}
-		else if ((usage & TU_DEPTHSTENCIL) != 0)
+		else if((usage & TU_DEPTHSTENCIL) != 0 && mProperties.getTextureType() == TEX_TYPE_2D)
 		{
-			if (sampleCount > 1)
+			GLenum depthStencilFormat = GLPixelUtil::getDepthStencilTypeFromFormat(pixFormat);
+
+			if (numFaces <= 1)
 			{
-				glTexImage2DMultisample(GL_TEXTURE_2D, sampleCount, mGLFormat,
-					width, height, GL_FALSE);
+				glTexImage2D(GL_TEXTURE_2D, 0, mGLFormat, width, height, 0,
+					GL_DEPTH_STENCIL, depthStencilFormat, nullptr);
 			}
 			else
 			{
-				GLenum depthStencilFormat = GLPixelUtil::getDepthStencilTypeFromFormat(pixFormat);
-
-				glTexImage2D(GL_TEXTURE_2D, 0, mGLFormat,
-					width, height, 0, 
+				glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, mGLFormat, width, height, numFaces, 0,
 					GL_DEPTH_STENCIL, depthStencilFormat, nullptr);
 			}
 		}
-		else
+		else // Non-render textures
 		{
 			GLenum baseFormat = GLPixelUtil::getGLOriginFormat(pixFormat);
 			GLenum baseDataType = GLPixelUtil::getGLOriginDataType(pixFormat);
@@ -112,26 +116,43 @@ namespace BansheeEngine
 				switch (texType)
 				{
 				case TEX_TYPE_1D:
-					glTexImage1D(GL_TEXTURE_1D, mip, mGLFormat, width, 0,
-						baseFormat, baseDataType, nullptr);
-
+				{
+					if (numFaces <= 1)
+						glTexImage1D(GL_TEXTURE_1D, mip, mGLFormat, width, 0, baseFormat, baseDataType, nullptr);
+					else
+						glTexImage2D(GL_TEXTURE_1D_ARRAY, mip, mGLFormat, width, numFaces, 0, baseFormat, baseDataType, nullptr);
+				}
 					break;
 				case TEX_TYPE_2D:
-					glTexImage2D(GL_TEXTURE_2D, mip, mGLFormat,
-						width, height, 0, baseFormat, baseDataType, nullptr);
+				{
+					if (numFaces <= 1)
+						glTexImage2D(GL_TEXTURE_2D, mip, mGLFormat, width, height, 0, baseFormat, baseDataType, nullptr);
+					else
+						glTexImage3D(GL_TEXTURE_2D_ARRAY, mip, mGLFormat, width, height, numFaces, 0, baseFormat, baseDataType, nullptr);
+				}
 					break;
 				case TEX_TYPE_3D:
 					glTexImage3D(GL_TEXTURE_3D, mip, mGLFormat, width, height,
 						depth, 0, baseFormat, baseDataType, nullptr);
 					break;
 				case TEX_TYPE_CUBE_MAP:
-					for(UINT32 face = 0; face < 6; face++) 
+				{
+					if (numFaces <= 6)
 					{
-						glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, mip, mGLFormat,
-							width, height, 0, baseFormat, baseDataType, nullptr);
+						for (UINT32 face = 0; face < 6; face++)
+						{
+							glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, mip, mGLFormat,
+								width, height, 0, baseFormat, baseDataType, nullptr);
+						}
 					}
+					else
+					{
+						glTexImage3D(GL_TEXTURE_CUBE_MAP_ARRAY, mip, mGLFormat,
+							width, height, numFaces, 0, baseFormat, baseDataType, nullptr);
+					}
+				}
 					break;
-				};
+				}
 
 				if(width > 1)
 					width = width/2;
@@ -155,16 +176,32 @@ namespace BansheeEngine
 		switch (mProperties.getTextureType())
         {
             case TEX_TYPE_1D:
-                return GL_TEXTURE_1D;
+				if(mProperties.getNumFaces() <= 1)
+					return GL_TEXTURE_1D;
+				else
+					return GL_TEXTURE_1D_ARRAY;
             case TEX_TYPE_2D:
 				if (mProperties.getMultisampleCount() > 1)
-					return GL_TEXTURE_2D_MULTISAMPLE;
+				{
+					if (mProperties.getNumFaces() <= 1)
+						return GL_TEXTURE_2D_MULTISAMPLE;
+					else
+						return GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
+				}
 				else
-					return GL_TEXTURE_2D;
+				{
+					if (mProperties.getNumFaces() <= 1)
+						return GL_TEXTURE_2D;
+					else
+						return GL_TEXTURE_2D_ARRAY;
+				}
             case TEX_TYPE_3D:
                 return GL_TEXTURE_3D;
             case TEX_TYPE_CUBE_MAP:
-                return GL_TEXTURE_CUBE_MAP;
+				if (mProperties.getNumFaces() <= 6)
+					return GL_TEXTURE_CUBE_MAP;
+				else
+					return GL_TEXTURE_CUBE_MAP_ARRAY;
             default:
                 return 0;
         };
@@ -205,7 +242,6 @@ namespace BansheeEngine
 		mLockedBuffer->unlock();
 		mLockedBuffer = nullptr;
 	}
-
 
 	void GLTextureCore::readData(PixelData& dest, UINT32 mipLevel, UINT32 face)
 	{

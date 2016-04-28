@@ -17,9 +17,21 @@ namespace BansheeEngine
 	/** Structure that contains information about what part of the texture represents the render surface. */
 	struct BS_CORE_EXPORT RENDER_SURFACE_DESC
 	{
+		RENDER_SURFACE_DESC() { }
+
 		HTexture texture;
-		UINT32 face;
-		UINT32 mipLevel;
+
+		/** First face of the texture to bind (array index in texture arrays, or Z slice in 3D textures). */
+		UINT32 face = 0; 
+
+		/**
+		 * Number of faces to bind (entries in a texture array, or Z slices in 3D textures). When zero the entire resource
+		 * will be bound. 
+		 */
+		UINT32 numFaces = 0;
+
+		/** If the texture has multiple mips, which one to bind (only one can be bound for rendering). */
+		UINT32 mipLevel = 0; 
 	};
 
 	/**
@@ -29,9 +41,21 @@ namespace BansheeEngine
 	 */
 	struct BS_CORE_EXPORT RENDER_SURFACE_CORE_DESC
 	{
+		RENDER_SURFACE_CORE_DESC() { }
+
 		SPtr<TextureCore> texture;
-		UINT32 face;
-		UINT32 mipLevel;
+
+		/** First face of the texture to bind (array index in texture arrays, or Z slice in 3D textures). */
+		UINT32 face = 0; 
+
+		/**
+		 * Number of faces to bind (entries in a texture array, or Z slices in 3D textures). When zero the entire resource
+		 * will be bound. 
+		 */
+		UINT32 numFaces = 0;
+
+		/** If the texture has multiple mips, which one to bind (only one can be bound for rendering). */
+		UINT32 mipLevel = 0; 
 	};
 
 	/** Contains various properties that describe a render target. */

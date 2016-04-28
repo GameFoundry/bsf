@@ -91,7 +91,7 @@ namespace BansheeEngine
 		BS_EXCEPT(RenderingAPIException, "BlitFromTexture not possible for this pixel buffer type");
 	}
 
-	void GLPixelBuffer::bindToFramebuffer(GLenum attachment, UINT32 zoffset)
+	void GLPixelBuffer::bindToFramebuffer(GLenum attachment, UINT32 zoffset, bool allLayers)
 	{
 		BS_EXCEPT(RenderingAPIException, "Framebuffer bind not possible for this pixel buffer type");
 	}
@@ -109,7 +109,7 @@ namespace BansheeEngine
 		// Get face identifier
 		mFaceTarget = mTarget;
 		if(mTarget == GL_TEXTURE_CUBE_MAP)
-			mFaceTarget = GL_TEXTURE_CUBE_MAP_POSITIVE_X + face;
+			mFaceTarget = GL_TEXTURE_CUBE_MAP_POSITIVE_X + (face % 6);
 	
 		// Get width
 		glGetTexLevelParameteriv(mFaceTarget, level, GL_TEXTURE_WIDTH, &value);
@@ -321,29 +321,42 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT_CAT(ResRead, RenderStatObject_Texture);
 	}
 
-	void GLTextureBuffer::bindToFramebuffer(GLenum attachment, UINT32 zoffset)
+	void GLTextureBuffer::bindToFramebuffer(GLenum attachment, UINT32 zoffset, bool allLayers)
 	{
-		assert(zoffset < mDepth);
-
-		switch(mTarget)
+		if(allLayers)
 		{
-		case GL_TEXTURE_1D:
-			glFramebufferTexture1D(GL_FRAMEBUFFER, attachment,
-				mFaceTarget, mTextureID, mLevel);
-			break;
-		case GL_TEXTURE_2D:
-		case GL_TEXTURE_CUBE_MAP:
-			glFramebufferTexture2D(GL_FRAMEBUFFER, attachment,
-				mFaceTarget, mTextureID, mLevel);
-			break;
-		case GL_TEXTURE_2D_MULTISAMPLE:
-			glFramebufferTexture2D(GL_FRAMEBUFFER, attachment,
-				mFaceTarget, mTextureID, 0);
-			break;
-		case GL_TEXTURE_3D:
-			glFramebufferTexture3D(GL_FRAMEBUFFER, attachment,
-				mFaceTarget, mTextureID, mLevel, zoffset);
-			break;
+			switch (mTarget)
+			{
+			case GL_TEXTURE_1D:
+				glFramebufferTexture1D(GL_FRAMEBUFFER, attachment,
+					mFaceTarget, mTextureID, mLevel);
+				break;
+			case GL_TEXTURE_2D:
+				glFramebufferTexture2D(GL_FRAMEBUFFER, attachment,
+					mFaceTarget, mTextureID, mLevel);
+				break;
+			case GL_TEXTURE_2D_MULTISAMPLE:
+				glFramebufferTexture2D(GL_FRAMEBUFFER, attachment,
+					mFaceTarget, mTextureID, 0);
+				break;
+			case GL_TEXTURE_CUBE_MAP:
+			case GL_TEXTURE_3D:
+			default: // Texture arrays (binding all layers)
+				glFramebufferTexture(GL_FRAMEBUFFER, attachment, mTextureID, mLevel);
+				break;
+			}
+		}
+		else
+		{
+			switch (mTarget)
+			{
+			case GL_TEXTURE_3D:
+				glFramebufferTexture3D(GL_FRAMEBUFFER, attachment, mFaceTarget, mTextureID, mLevel, zoffset);
+				break;
+			default: // Texture arrays and cube maps
+				glFramebufferTextureLayer(GL_FRAMEBUFFER, attachment, mTextureID, mLevel, mFace);
+				break;
+			}
 		}
 	}
 
@@ -380,11 +393,11 @@ namespace BansheeEngine
 
 			// Attach source texture
 			glBindFramebuffer(GL_FRAMEBUFFER, readFBO);
-			src->bindToFramebuffer(0, 0);
+			src->bindToFramebuffer(0, 0, true);
 
 			// Attach destination texture
 			glBindFramebuffer(GL_FRAMEBUFFER, drawFBO);
-			bindToFramebuffer(0, 0);
+			bindToFramebuffer(0, 0, true);
 
 			// Perform blit
 			glBindFramebuffer(GL_READ_FRAMEBUFFER, readFBO);
@@ -443,7 +456,7 @@ namespace BansheeEngine
 		glDeleteRenderbuffers(1, &mRenderbufferID);
 	}
 
-	void GLRenderBuffer::bindToFramebuffer(GLenum attachment, UINT32 zoffset)
+	void GLRenderBuffer::bindToFramebuffer(GLenum attachment, UINT32 zoffset, bool allLayers)
 	{
 		assert(zoffset < mDepth);
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment,

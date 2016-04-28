@@ -56,6 +56,7 @@ namespace BansheeEngine
 			{
 				rtDesc.colorSurface.texture = newTextureData->texture;
 				rtDesc.colorSurface.face = 0;
+				rtDesc.colorSurface.numFaces = desc.depth;
 				rtDesc.colorSurface.mipLevel = 0;
 			}
 
@@ -63,6 +64,7 @@ namespace BansheeEngine
 			{
 				rtDesc.depthStencilSurface.texture = newTextureData->texture;
 				rtDesc.depthStencilSurface.face = 0;
+				rtDesc.depthStencilSurface.numFaces = 1;
 				rtDesc.depthStencilSurface.mipLevel = 0;
 			}
 

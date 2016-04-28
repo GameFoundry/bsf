@@ -49,10 +49,11 @@ namespace BansheeEngine
 	}
 
 	SPtr<TextureCore> D3D9TextureCoreManager::createTextureInternal(TextureType texType, UINT32 width, UINT32 height, UINT32 depth,
-		int numMips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount, const SPtr<PixelData>& initialData)
+		int numMips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount, UINT32 numArraySlices,
+		const SPtr<PixelData>& initialData)
 	{
 		D3D9TextureCore* tex = new (bs_alloc<D3D9TextureCore>()) D3D9TextureCore(texType,
-			width, height, depth, numMips, format, usage, hwGammaCorrection, multisampleCount, initialData);
+			width, height, depth, numMips, format, usage, hwGammaCorrection, multisampleCount, numArraySlices, initialData);
 
 		SPtr<D3D9TextureCore> texPtr = bs_shared_ptr<D3D9TextureCore>(tex);
 		texPtr->_setThisPtr(texPtr);

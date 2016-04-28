@@ -21,7 +21,7 @@ namespace BansheeEngine
 		ID3D11Resource* getDX11Resource() const { return mTex; }
 
 		/**	Returns shader resource view associated with the texture. */
-		ID3D11ShaderResourceView* getSRV() const { return mShaderResourceView; }
+		ID3D11ShaderResourceView* getSRV() const;
 
 		/** Returns DXGI pixel format that was used to create the texture. */
 		DXGI_FORMAT getDXGIFormat() const { return mDXGIFormat; }
@@ -36,7 +36,8 @@ namespace BansheeEngine
 		friend class D3D11TextureCoreManager;
 
 		D3D11TextureCore(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps,
-			PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, const SPtr<PixelData>& initialData);
+			PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, UINT32 numArraySlices, 
+			const SPtr<PixelData>& initialData);
 
 		/** @copydoc CoreObjectCore::initialize() */
 		void initialize() override;
@@ -129,9 +130,8 @@ namespace BansheeEngine
 		ID3D11Texture3D* m3DTex;
 		ID3D11Resource* mTex;
 
-		ID3D11ShaderResourceView* mShaderResourceView;
-		D3D11_SHADER_RESOURCE_VIEW_DESC mSRVDesc;
-		D3D11_SRV_DIMENSION mDimension;
+		SPtr<D3D11TextureView> mShaderResourceView;
+		
 		DXGI_FORMAT mDXGIFormat;
 		DXGI_FORMAT mDXGIColorFormat;
 		DXGI_FORMAT mDXGIDepthStencilFormat;

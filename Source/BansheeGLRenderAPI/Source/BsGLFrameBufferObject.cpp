@@ -69,6 +69,8 @@ namespace BansheeEngine
 		// Bind simple buffer to add color attachments
 		glBindFramebuffer(GL_FRAMEBUFFER, mFB);
 
+		bool bindAllLayers = false;
+
         // Bind all attachment points to frame buffer
         for(UINT16 x = 0; x < maxSupportedMRTs; ++x)
         {
@@ -88,7 +90,8 @@ namespace BansheeEngine
 				// Note: I'm attaching textures to FBO while renderbuffers might yield better performance if I
 				// don't need to read from them
 
-	            mColor[x].buffer->bindToFramebuffer(GL_COLOR_ATTACHMENT0 + x, mColor[x].zoffset);
+	            mColor[x].buffer->bindToFramebuffer(GL_COLOR_ATTACHMENT0 + x, mColor[x].zoffset, mColor[x].allLayers);
+				bindAllLayers |= mColor[x].allLayers;
             }
             else
             {
@@ -98,7 +101,7 @@ namespace BansheeEngine
         }
 
 		if(mDepthStencilBuffer != nullptr)
-			mDepthStencilBuffer->bindToFramebuffer(GL_DEPTH_STENCIL_ATTACHMENT, 0);
+			mDepthStencilBuffer->bindToFramebuffer(GL_DEPTH_STENCIL_ATTACHMENT, 0, bindAllLayers);
 
 		// Do glDrawBuffer calls
 		GLenum bufs[BS_MAX_MULTIPLE_RENDER_TARGETS];
