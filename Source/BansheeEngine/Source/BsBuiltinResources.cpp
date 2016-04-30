@@ -1178,12 +1178,22 @@ namespace BansheeEngine
 
 								shaderImportOptions->getDefines() = variation.getAll();
 
-								Path uniquePath = relativeAssetPath;
-								uniquePath.setFilename(relativeAssetPath.getFilename() + "_" + toString(variationIdx));
-								resourcesToSave.push_back(std::make_pair(relativeAssetPath, shaderImportOptions));
-							}
+								Path uniquePath;
+								if(variationIdx == 0)
+								{
+									uniquePath = relativeAssetPath;
+								}
+								else
+								{
+									uniquePath = relativePath;
+									uniquePath.setFilename(relativePath.getWFilename(false) + L"_" + toWString(variationIdx) +
+										relativePath.getWExtension() + L".asset");
+								}
 
-							variationIdx++;
+								resourcesToSave.push_back(std::make_pair(uniquePath, shaderImportOptions));
+
+								variationIdx++;
+							}
 						}
 					}
 					else

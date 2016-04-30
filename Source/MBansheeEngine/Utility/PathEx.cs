@@ -22,6 +22,19 @@ namespace BansheeEngine
         /// <returns>True if both paths point to the same place.</returns>
         public static bool Compare(string a, string b)
         {
+            if (string.IsNullOrEmpty(a))
+            {
+                if (string.IsNullOrEmpty(b))
+                    return true;
+
+                return false;
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(b))
+                    return false;
+            }
+
             return Path.GetFullPath(a) == Path.GetFullPath(b);
         }
 

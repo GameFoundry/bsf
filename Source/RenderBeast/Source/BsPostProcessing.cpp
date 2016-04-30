@@ -10,7 +10,7 @@ namespace BansheeEngine
 {
 	PostProcessSettings::PostProcessSettings()
 		: histogramLog2Min(-8.0f), histogramLog2Max(4.0f), histogramPctLow(0.8f), histogramPctHigh(0.985f)
-		, minEyeAdaptation(0.5f), maxEyeAdaptation(2.0f), exposureScale(0.0f), eyeAdaptationSpeedUp(3.0f)
+		, minEyeAdaptation(0.3f), maxEyeAdaptation(2.0f), exposureScale(0.0f), eyeAdaptationSpeedUp(3.0f)
 		, eyeAdaptationSpeedDown(3.0f), filmicCurveShoulderStrength(0.22f), filmicCurveLinearStrength(0.3f)
 		, filmicCurveLinearAngle(0.1f), filmicCurveToeStrength(0.2f), filmicCurveToeNumerator(0.01f)
 		, filmicCurveToeDenominator(0.3f), filmicCurveLinearWhitePoint(11.2f), tonemapping(true), gamma(2.2f)

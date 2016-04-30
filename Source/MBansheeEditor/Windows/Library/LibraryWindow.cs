@@ -397,6 +397,14 @@ namespace BansheeEditor
         /// <param name="path">Project library path to the element.</param>
         public void Ping(string path)
         {
+            if (!string.IsNullOrEmpty(path))
+            {
+                string parentDir = PathEx.GetParent(path);
+
+                if(!PathEx.Compare(parentDir, CurrentFolder))
+                    EnterDirectory(parentDir);
+            }
+
             content.MarkAsPinged(pingPath, false);
             pingPath = path;
             content.MarkAsPinged(pingPath, true);

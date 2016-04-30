@@ -11,7 +11,7 @@
  *  @{
  */
 
-/** References the shader path in RendererMaterial implementation */
+/** References the shader path in RendererMaterial implementation. */
 #define RMAT_DEF(path)														\
 	public:																	\
 	static void _initMetaData()												\
