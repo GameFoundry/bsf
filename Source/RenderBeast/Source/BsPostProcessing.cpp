@@ -8,13 +8,27 @@
 
 namespace BansheeEngine
 {
-	PostProcessSettings::PostProcessSettings()
+	AutoExposureSettings::AutoExposureSettings()
 		: histogramLog2Min(-8.0f), histogramLog2Max(4.0f), histogramPctLow(0.8f), histogramPctHigh(0.985f)
-		, minEyeAdaptation(0.3f), maxEyeAdaptation(2.0f), exposureScale(0.0f), eyeAdaptationSpeedUp(3.0f)
-		, eyeAdaptationSpeedDown(3.0f), filmicCurveShoulderStrength(0.22f), filmicCurveLinearStrength(0.3f)
-		, filmicCurveLinearAngle(0.1f), filmicCurveToeStrength(0.2f), filmicCurveToeNumerator(0.01f)
-		, filmicCurveToeDenominator(0.3f), filmicCurveLinearWhitePoint(11.2f), tonemapping(true), autoExposure(true)
-		, gamma(2.2f)
+		, minEyeAdaptation(0.3f), maxEyeAdaptation(2.0f), eyeAdaptationSpeedUp(3.0f), eyeAdaptationSpeedDown(3.0f)
+	{ }
+
+	TonemappingSettings::TonemappingSettings()
+		: filmicCurveShoulderStrength(0.22f), filmicCurveLinearStrength(0.3f), filmicCurveLinearAngle(0.1f)
+		, filmicCurveToeStrength(0.2f), filmicCurveToeNumerator(0.01f), filmicCurveToeDenominator(0.3f)
+		, filmicCurveLinearWhitePoint(11.2f)
+	{ }
+
+	WhiteBalanceSettings::WhiteBalanceSettings()
+		: temperature(6500.0f), tint(0.0f)
+	{ }
+
+	ColorGradingSettings::ColorGradingSettings()
+		: saturation(Vector3::ONE), contrast(Vector3::ONE), gain(Vector3::ONE), offset(Vector3::ZERO)
+	{ }
+
+	PostProcessSettings::PostProcessSettings()
+		: enableAutoExposure(true), enableTonemapping(true), exposureScale(0.0f), gamma(2.2f)
 	{ }
 
 	DownsampleMat::DownsampleMat()
@@ -146,9 +160,9 @@ namespace BansheeEngine
 	{
 		const PostProcessSettings& settings = ppInfo.settings;
 
-		float diff = settings.histogramLog2Max - settings.histogramLog2Min;
+		float diff = settings.autoExposure.histogramLog2Max - settings.autoExposure.histogramLog2Min;
 		float scale = 1.0f / diff;
-		float offset = -settings.histogramLog2Min * scale;
+		float offset = -settings.autoExposure.histogramLog2Min * scale;
 
 		return Vector2(scale, offset);
 	}
@@ -247,16 +261,16 @@ namespace BansheeEngine
 		eyeAdaptationParams[0].x = histogramScaleAndOffset.x;
 		eyeAdaptationParams[0].y = histogramScaleAndOffset.y;
 
-		float histogramPctHigh = Math::clamp01(settings.histogramPctHigh);
+		float histogramPctHigh = Math::clamp01(settings.autoExposure.histogramPctHigh);
 
-		eyeAdaptationParams[0].z = std::min(Math::clamp01(settings.histogramPctLow), histogramPctHigh);
+		eyeAdaptationParams[0].z = std::min(Math::clamp01(settings.autoExposure.histogramPctLow), histogramPctHigh);
 		eyeAdaptationParams[0].w = histogramPctHigh;
 
-		eyeAdaptationParams[1].x = std::min(settings.minEyeAdaptation, settings.maxEyeAdaptation);
-		eyeAdaptationParams[1].y = settings.maxEyeAdaptation;
+		eyeAdaptationParams[1].x = std::min(settings.autoExposure.minEyeAdaptation, settings.autoExposure.maxEyeAdaptation);
+		eyeAdaptationParams[1].y = settings.autoExposure.maxEyeAdaptation;
 
-		eyeAdaptationParams[1].z = settings.eyeAdaptationSpeedUp;
-		eyeAdaptationParams[1].w = settings.eyeAdaptationSpeedDown;
+		eyeAdaptationParams[1].z = settings.autoExposure.eyeAdaptationSpeedUp;
+		eyeAdaptationParams[1].w = settings.autoExposure.eyeAdaptationSpeedDown;
 
 		eyeAdaptationParams[2].x = Math::pow(2.0f, settings.exposureScale);
 		eyeAdaptationParams[2].y = frameDelta;
@@ -280,6 +294,7 @@ namespace BansheeEngine
 	CreateTonemapLUTMat::CreateTonemapLUTMat()
 	{
 		mMaterial->setParamBlockBuffer("Input", mParams.getBuffer());
+		mMaterial->setParamBlockBuffer("WhiteBalanceInput", mWhiteBalanceParams.getBuffer());
 	}
 
 	void CreateTonemapLUTMat::_initDefines(ShaderDefines& defines)
@@ -297,18 +312,28 @@ namespace BansheeEngine
 		mParams.gGammaCorrectionType.set(0);
 
 		Vector4 tonemapParams[2];
-		tonemapParams[0].x = ppInfo.settings.filmicCurveShoulderStrength;
-		tonemapParams[0].y = ppInfo.settings.filmicCurveLinearStrength;
-		tonemapParams[0].z = ppInfo.settings.filmicCurveLinearAngle;
-		tonemapParams[0].w = ppInfo.settings.filmicCurveToeStrength;
+		tonemapParams[0].x = ppInfo.settings.tonemapping.filmicCurveShoulderStrength;
+		tonemapParams[0].y = ppInfo.settings.tonemapping.filmicCurveLinearStrength;
+		tonemapParams[0].z = ppInfo.settings.tonemapping.filmicCurveLinearAngle;
+		tonemapParams[0].w = ppInfo.settings.tonemapping.filmicCurveToeStrength;
 
-		tonemapParams[1].x = ppInfo.settings.filmicCurveToeNumerator;
-		tonemapParams[1].y = ppInfo.settings.filmicCurveToeDenominator;
-		tonemapParams[1].z = ppInfo.settings.filmicCurveLinearWhitePoint;
+		tonemapParams[1].x = ppInfo.settings.tonemapping.filmicCurveToeNumerator;
+		tonemapParams[1].y = ppInfo.settings.tonemapping.filmicCurveToeDenominator;
+		tonemapParams[1].z = ppInfo.settings.tonemapping.filmicCurveLinearWhitePoint;
 		tonemapParams[1].w = 0.0f; // Unused
 
 		mParams.gTonemapParams.set(tonemapParams[0], 0);
 		mParams.gTonemapParams.set(tonemapParams[1], 1);
+
+		// Set color grading params
+		mParams.gSaturation.set(ppInfo.settings.colorGrading.saturation);
+		mParams.gContrast.set(ppInfo.settings.colorGrading.contrast);
+		mParams.gGain.set(ppInfo.settings.colorGrading.gain);
+		mParams.gOffset.set(ppInfo.settings.colorGrading.offset);
+
+		// Set white balance params
+		mWhiteBalanceParams.gWhiteTemp.set(ppInfo.settings.whiteBalance.temperature);
+		mWhiteBalanceParams.gWhiteOffset.set(ppInfo.settings.whiteBalance.tint);
 
 		// Set output
 		POOLED_RENDER_TEXTURE_DESC outputDesc = POOLED_RENDER_TEXTURE_DESC::create3D(PF_B8G8R8X8, 
@@ -390,7 +415,7 @@ namespace BansheeEngine
 	void PostProcessing::postProcess(const SPtr<RenderTextureCore>& sceneColor, const SPtr<ViewportCore>& outputViewport, 
 		PostProcessInfo& ppInfo, float frameDelta)
 	{
-		if(ppInfo.settings.autoExposure)
+		if(ppInfo.settings.enableAutoExposure)
 		{
 			mDownsample.execute(sceneColor, ppInfo);
 			mEyeAdaptHistogram.execute(ppInfo);
@@ -403,12 +428,12 @@ namespace BansheeEngine
 			mEyeAdaptHistogramReduce.release(ppInfo);
 		}
 
-		if (ppInfo.settings.tonemapping)
+		if (ppInfo.settings.enableTonemapping)
 		{
 			// TODO - No need to generate LUT every frame, instead perhaps check for changes and only modify when needed?
 			mCreateLUT.execute(ppInfo);
 
-			if (ppInfo.settings.autoExposure)
+			if (ppInfo.settings.enableAutoExposure)
 				mTonemapping_AE.execute(sceneColor, outputViewport, ppInfo);
 			else
 				mTonemapping.execute(sceneColor, outputViewport, ppInfo);
@@ -417,7 +442,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			if (ppInfo.settings.autoExposure)
+			if (ppInfo.settings.enableAutoExposure)
 				mTonemapping_AE_GO.execute(sceneColor, outputViewport, ppInfo);
 			else
 				mTonemapping_GO.execute(sceneColor, outputViewport, ppInfo);
