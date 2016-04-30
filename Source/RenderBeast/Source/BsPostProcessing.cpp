@@ -11,7 +11,9 @@ namespace BansheeEngine
 	PostProcessSettings::PostProcessSettings()
 		: histogramLog2Min(-8.0f), histogramLog2Max(4.0f), histogramPctLow(0.8f), histogramPctHigh(0.985f)
 		, minEyeAdaptation(0.5f), maxEyeAdaptation(2.0f), exposureScale(0.0f), eyeAdaptationSpeedUp(3.0f)
-		, eyeAdaptationSpeedDown(3.0f)
+		, eyeAdaptationSpeedDown(3.0f), filmicCurveShoulderStrength(0.22f), filmicCurveLinearStrength(0.3f)
+		, filmicCurveLinearAngle(0.1f), filmicCurveToeStrength(0.2f), filmicCurveToeNumerator(0.01f)
+		, filmicCurveToeDenominator(0.3f), filmicCurveLinearWhitePoint(11.2f), tonemapping(true), gamma(2.2f)
 	{ }
 
 	DownsampleMat::DownsampleMat()
@@ -274,23 +276,93 @@ namespace BansheeEngine
 		rapi.setRenderTarget(nullptr);
 	}
 
-	TonemappingMat::TonemappingMat()
+	CreateTonemapLUTMat::CreateTonemapLUTMat()
 	{
+		mMaterial->setParamBlockBuffer("Input", mParams.getBuffer());
+	}
+
+	void CreateTonemapLUTMat::_initDefines(ShaderDefines& defines)
+	{
+		defines.set("LUT_SIZE", TonemappingMat<true>::LUT_SIZE);
+	}
+
+	void CreateTonemapLUTMat::execute(PostProcessInfo& ppInfo)
+	{
+		// Set parameters
+		mParams.gGammaAdjustment.set(2.2f / ppInfo.settings.gamma);
+
+		// Note: Assuming sRGB (PC monitor) for now, change to Rec.709 when running on console (value 1), or to raw 2.2
+		// gamma when running on Mac (value 2)
+		mParams.gGammaCorrectionType.set(0);
+
+		Vector4 tonemapParams[2];
+		tonemapParams[0].x = ppInfo.settings.filmicCurveShoulderStrength;
+		tonemapParams[0].y = ppInfo.settings.filmicCurveLinearStrength;
+		tonemapParams[0].z = ppInfo.settings.filmicCurveLinearAngle;
+		tonemapParams[0].w = ppInfo.settings.filmicCurveToeStrength;
+
+		tonemapParams[1].x = ppInfo.settings.filmicCurveToeNumerator;
+		tonemapParams[1].y = ppInfo.settings.filmicCurveToeDenominator;
+		tonemapParams[1].z = ppInfo.settings.filmicCurveLinearWhitePoint;
+		tonemapParams[1].w = 0.0f; // Unused
+
+		mParams.gTonemapParams.set(tonemapParams[0], 0);
+		mParams.gTonemapParams.set(tonemapParams[1], 1);
+
+		// Set output
+		UINT32 LUTSize = TonemappingMat<true>::LUT_SIZE;
+		POOLED_RENDER_TEXTURE_DESC outputDesc = POOLED_RENDER_TEXTURE_DESC::create3D(PF_B8G8R8X8, 
+			LUTSize, LUTSize, LUTSize, TU_RENDERTARGET);
+
+		// Render
+		ppInfo.colorLUT = RenderTexturePool::instance().get(outputDesc);
+
+		RenderAPICore& rapi = RenderAPICore::instance();
+		rapi.setRenderTarget(ppInfo.colorLUT->renderTexture);
+
+		gRendererUtility().setPass(mMaterial, 0);
+		gRendererUtility().drawScreenQuad(LUTSize);
+	}
+
+	void CreateTonemapLUTMat::release(PostProcessInfo& ppInfo)
+	{
+		RenderTexturePool::instance().release(ppInfo.colorLUT);
+	}
+
+	template<bool GammaOnly>
+	TonemappingMat<GammaOnly>::TonemappingMat()
+	{
+		mMaterial->setParamBlockBuffer("Input", mParams.getBuffer());
+
 		mInputTex = mMaterial->getParamTexture("gInputTex");
+		mColorLUT = mMaterial->getParamTexture("gColorLUT");
 		mEyeAdaptationTex = mMaterial->getParamTexture("gEyeAdaptationTex");
 	}
 
-	void TonemappingMat::_initDefines(ShaderDefines& defines)
+	template<bool GammaOnly>
+	void TonemappingMat<GammaOnly>::_initDefines(ShaderDefines& defines)
 	{
-		// Do nothing
+		if(GammaOnly)
+			defines.set("GAMMA_ONLY", 1);
+
+		defines.set("LUT_SIZE", LUT_SIZE);
 	}
 
-	void TonemappingMat::execute(const SPtr<RenderTextureCore>& sceneColor, const SPtr<ViewportCore>& outputViewport, 
+	template<bool GammaOnly>
+	void TonemappingMat<GammaOnly>::execute(const SPtr<RenderTextureCore>& sceneColor, const SPtr<ViewportCore>& outputViewport, 
 		PostProcessInfo& ppInfo)
 	{
+		mParams.gRawGamma.set(1.0f / ppInfo.settings.gamma);
+
 		// Set parameters
 		SPtr<TextureCore> colorTexture = sceneColor->getBindableColorTexture();
 		mInputTex.set(colorTexture);
+
+		SPtr<TextureCore> colorLUT;
+		if(ppInfo.colorLUT != nullptr)
+			colorLUT = ppInfo.colorLUT->texture;
+
+		mColorLUT.set(colorLUT);
 
 		SPtr<TextureCore> eyeAdaptationTexture = ppInfo.eyeAdaptationTex[ppInfo.lastEyeAdaptationTex]->texture;
 		mEyeAdaptationTex.set(eyeAdaptationTexture);
@@ -306,22 +378,33 @@ namespace BansheeEngine
 		gRendererUtility().drawScreenQuad();
 	}
 
+	template class TonemappingMat<true>;
+	template class TonemappingMat<false>;
+
 	void PostProcessing::postProcess(const SPtr<RenderTextureCore>& sceneColor, const SPtr<ViewportCore>& outputViewport, 
 		PostProcessInfo& ppInfo, float frameDelta)
 	{
-		mDownsample.execute(sceneColor, ppInfo);
-		mEyeAdaptHistogram.execute(ppInfo);
-		mDownsample.release(ppInfo);
+		if (ppInfo.settings.tonemapping)
+		{
+			mDownsample.execute(sceneColor, ppInfo);
+			mEyeAdaptHistogram.execute(ppInfo);
+			mDownsample.release(ppInfo);
 
-		mEyeAdaptHistogramReduce.execute(ppInfo);
-		mEyeAdaptHistogram.release(ppInfo);
+			mEyeAdaptHistogramReduce.execute(ppInfo);
+			mEyeAdaptHistogram.release(ppInfo);
 
-		mEyeAdaptation.execute(ppInfo, frameDelta);
-		mEyeAdaptHistogramReduce.release(ppInfo);
+			mEyeAdaptation.execute(ppInfo, frameDelta);
+			mEyeAdaptHistogramReduce.release(ppInfo);
 
-		// TODO - Generate LUT with white balancing, color grading, filmic tonemapping
-		// TODO - Apply LUT during tonemapping
+			// TODO - No need to generate LUT every frame, instead perhaps check for changes and only modify when needed?
+			mCreateLUT.execute(ppInfo);
 
-		mTonemapping.execute(sceneColor, outputViewport, ppInfo);
+			mTonemapping.execute(sceneColor, outputViewport, ppInfo);
+			mCreateLUT.release(ppInfo);
+		}
+		else
+		{
+			mTonemappingGammaOnly.execute(sceneColor, outputViewport, ppInfo);
+		}
 	}
 }

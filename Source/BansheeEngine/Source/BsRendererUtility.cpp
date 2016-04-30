@@ -270,7 +270,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void RendererUtility::draw(const SPtr<MeshCoreBase>& mesh, const SubMesh& subMesh)
+	void RendererUtility::draw(const SPtr<MeshCoreBase>& mesh, const SubMesh& subMesh, UINT32 numInstances)
 	{
 		RenderAPICore& rs = RenderAPICore::instance();
 		SPtr<VertexData> vertexData = mesh->getVertexData();
@@ -308,7 +308,8 @@ namespace BansheeEngine
 		UINT32 indexCount = subMesh.indexCount;
 
 		rs.setIndexBuffer(indexBuffer);
-		rs.drawIndexed(subMesh.indexOffset + mesh->getIndexOffset(), indexCount, mesh->getVertexOffset(), vertexData->vertexCount);
+		rs.drawIndexed(subMesh.indexOffset + mesh->getIndexOffset(), indexCount, mesh->getVertexOffset(), 
+			vertexData->vertexCount, numInstances);
 
 		mesh->_notifyUsedOnGPU();
 	}
@@ -343,7 +344,7 @@ namespace BansheeEngine
 		drawScreenQuad(fArea);
 	}
 
-	void RendererUtility::drawScreenQuad(const Rect2& uv, const Vector2I& textureSize)
+	void RendererUtility::drawScreenQuad(const Rect2& uv, const Vector2I& textureSize, UINT32 numInstances)
 	{
 		// Note: Consider drawing the quad using a single large triangle for possibly better performance
 
@@ -396,7 +397,7 @@ namespace BansheeEngine
 		indices[5] = 2;
 
 		mFullScreenQuadMesh->writeSubresource(0, *meshData, true, false);
-		draw(mFullScreenQuadMesh, mFullScreenQuadMesh->getProperties().getSubMesh());
+		draw(mFullScreenQuadMesh, mFullScreenQuadMesh->getProperties().getSubMesh(), numInstances);
 	}
 
 	RendererUtility& gRendererUtility()

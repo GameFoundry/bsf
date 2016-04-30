@@ -40,12 +40,6 @@ namespace BansheeEngine
 		 */
 		UINT32 msaa = 1;
 
-		/** 
-		 * All colors output from shaders will be automatically converted to gamma space when written to render target(s). 
-		 * Normally used when the renderer performs calculations in linear space.
-		 */
-		bool gammaCorrect = true; 
-
 		/**
 		 * High dynamic range allows light intensity to be more correctly recorded when rendering by allowing for a larger
 		 * range of values. The stored light is then converted into visible colors using a tone mapping operator depending

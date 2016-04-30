@@ -467,9 +467,8 @@ namespace BansheeEngine
 		case DXGI_FORMAT_R8G8B8A8_TYPELESS:
 			return PF_UNKNOWN;
 		case DXGI_FORMAT_R8G8B8A8_UNORM:
-			return PF_R8G8B8A8;
 		case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:
-			return PF_UNKNOWN;
+			return PF_R8G8B8A8;
 		case DXGI_FORMAT_R8G8B8A8_UINT:
 			return PF_UNKNOWN;
 		case DXGI_FORMAT_R8G8B8A8_SNORM:
@@ -553,19 +552,16 @@ namespace BansheeEngine
 		case DXGI_FORMAT_BC1_TYPELESS:
 			return PF_UNKNOWN;
 		case DXGI_FORMAT_BC1_UNORM:
-			return PF_BC1;
 		case DXGI_FORMAT_BC1_UNORM_SRGB:
 			return PF_BC1;
 		case DXGI_FORMAT_BC2_TYPELESS:
 			return PF_BC2;
 		case DXGI_FORMAT_BC2_UNORM:
-			return PF_BC2;
 		case DXGI_FORMAT_BC2_UNORM_SRGB:
 			return PF_BC2;
 		case DXGI_FORMAT_BC3_TYPELESS:
 			return PF_BC3;
 		case DXGI_FORMAT_BC3_UNORM:
-			return PF_BC3;
 		case DXGI_FORMAT_BC3_UNORM_SRGB:
 			return PF_BC3;
 		case DXGI_FORMAT_BC4_TYPELESS:
@@ -587,7 +583,6 @@ namespace BansheeEngine
 		case DXGI_FORMAT_BC6H_TYPELESS:
 			return PF_BC6H;
 		case DXGI_FORMAT_BC7_UNORM:
-			return PF_BC7;
 		case DXGI_FORMAT_BC7_UNORM_SRGB:
 			return PF_BC7;
 		case DXGI_FORMAT_BC7_TYPELESS:
@@ -596,8 +591,10 @@ namespace BansheeEngine
 			return PF_UNKNOWN;
 		case DXGI_FORMAT_B5G5R5A1_UNORM:
 			return PF_UNKNOWN;
+		case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:
 		case DXGI_FORMAT_B8G8R8A8_UNORM:
 			return PF_B8G8R8A8;
+		case DXGI_FORMAT_B8G8R8X8_UNORM_SRGB:
 		case DXGI_FORMAT_B8G8R8X8_UNORM:
 			return PF_B8G8R8X8;
 		default:
@@ -624,10 +621,16 @@ namespace BansheeEngine
 		case PF_X8B8G8R8:
 			return DXGI_FORMAT_UNKNOWN;
 		case PF_R8G8B8A8:
+			if (gamma)
+				return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 			return DXGI_FORMAT_R8G8B8A8_UNORM;
 		case PF_B8G8R8A8:
+			if (gamma)
+				return DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
 			return DXGI_FORMAT_B8G8R8A8_UNORM;
 		case PF_B8G8R8X8:
+			if (gamma)
+				return DXGI_FORMAT_B8G8R8X8_UNORM_SRGB;
 			return DXGI_FORMAT_B8G8R8X8_UNORM;
 		case PF_FLOAT16_R:
 			return DXGI_FORMAT_R16_FLOAT;
@@ -647,10 +650,16 @@ namespace BansheeEngine
 			return DXGI_FORMAT_R32G32B32A32_FLOAT;
 		case PF_BC1:
 		case PF_BC1a:
+			if(gamma)
+				return DXGI_FORMAT_BC1_UNORM_SRGB;
 			return DXGI_FORMAT_BC1_UNORM;
 		case PF_BC2:
+			if (gamma)
+				return DXGI_FORMAT_BC2_UNORM_SRGB;
 			return DXGI_FORMAT_BC2_UNORM;
 		case PF_BC3:
+			if (gamma)
+				return DXGI_FORMAT_BC3_UNORM_SRGB;
 			return DXGI_FORMAT_BC3_UNORM;
 		case PF_BC4:
 			return DXGI_FORMAT_BC4_UNORM;

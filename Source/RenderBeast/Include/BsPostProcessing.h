@@ -53,6 +53,33 @@ namespace BansheeEngine
 
 		/** Determines how quickly does the eye adaptation adjust to smaller values. In range [0.01f, 20.0f]. */
 		float eyeAdaptationSpeedDown;
+
+		/** Value that controls the shoulder (upper non-linear) section of the filmic curve. Affects high-range. */
+		float filmicCurveShoulderStrength;
+
+		/** Value that controls the linear (middle) section of the filmic curve. Affects mid-range. */
+		float filmicCurveLinearStrength;
+
+		/** Value that controls the linear (middle) section of the filmic curve. Affects mid-range. */
+		float filmicCurveLinearAngle;
+
+		/** Value that controls the toe (lower non-linear) section of the filmic curve. Affects low-range. */
+		float filmicCurveToeStrength;
+
+		/** Value that controls the toe (lower non-linear) section of the filmic curve. Affects low-range. */
+		float filmicCurveToeNumerator;
+
+		/** Value that controls the toe (lower non-linear) section of the filmic curve. Affects low-range. */
+		float filmicCurveToeDenominator;
+
+		/** Value that controls the white point of the filmic curve. Affects the entire curve. */
+		float filmicCurveLinearWhitePoint;
+
+		/** Determines should the final output be tonemapped. */
+		bool tonemapping;
+
+		/** Gamma value to adjust the image for. Larger values result in a brighter image. */
+		float gamma;
 	};
 
 	/** Contains per-camera data used by post process effects. */
@@ -64,6 +91,7 @@ namespace BansheeEngine
 		SPtr<PooledRenderTexture> histogramTex;
 		SPtr<PooledRenderTexture> histogramReduceTex;
 		SPtr<PooledRenderTexture> eyeAdaptationTex[2];
+		SPtr<PooledRenderTexture> colorLUT;
 		INT32 lastEyeAdaptationTex = 0;
 	};
 
@@ -193,8 +221,40 @@ namespace BansheeEngine
 		MaterialParamTextureCore mReducedHistogramTex;
 	};
 
+	BS_PARAM_BLOCK_BEGIN(CreateTonemapLUTParams)
+		BS_PARAM_BLOCK_ENTRY_ARRAY(Vector4, gTonemapParams, 2)
+		BS_PARAM_BLOCK_ENTRY(float, gGammaAdjustment)
+		BS_PARAM_BLOCK_ENTRY(int, gGammaCorrectionType)
+	BS_PARAM_BLOCK_END
+
+	/** 
+	 * Shader that creates a 3D lookup texture that is used to apply tonemapping, color grading, white balancing and gamma
+	 * correction.
+	 */
+	class CreateTonemapLUTMat : public RendererMaterial<CreateTonemapLUTMat>
+	{
+		RMAT_DEF("PPCreateTonemapLUT.bsl");
+
+	public:
+		CreateTonemapLUTMat();
+
+		/** Executes the post-process effect with the provided parameters. */
+		void execute(PostProcessInfo& ppInfo);
+
+		/** Releases the output render target. */
+		void release(PostProcessInfo& ppInfo);
+
+	private:
+		CreateTonemapLUTParams mParams;
+	};
+
+	BS_PARAM_BLOCK_BEGIN(TonemappingParams)
+		BS_PARAM_BLOCK_ENTRY(float, gRawGamma)
+	BS_PARAM_BLOCK_END
+
 	/** Shader that applies tonemapping and converts a HDR image into a LDR image. */
-	class TonemappingMat : public RendererMaterial<TonemappingMat>
+	template<bool GammaOnly>
+	class TonemappingMat : public RendererMaterial<TonemappingMat<GammaOnly>>
 	{
 		RMAT_DEF("PPTonemapping.bsl");
 
@@ -204,8 +264,14 @@ namespace BansheeEngine
 		/** Executes the post-process effect with the provided parameters. */
 		void execute(const SPtr<RenderTextureCore>& sceneColor, const SPtr<ViewportCore>& outputViewport,
 			PostProcessInfo& ppInfo);
+
+		/** Size of the 3D color lookup table. */
+		static const UINT32 LUT_SIZE = 32;
 	private:
+		TonemappingParams mParams;
+
 		MaterialParamTextureCore mInputTex;
+		MaterialParamTextureCore mColorLUT;
 		MaterialParamTextureCore mEyeAdaptationTex;
 	};
 
@@ -226,7 +292,10 @@ namespace BansheeEngine
 		EyeAdaptHistogramMat mEyeAdaptHistogram;
 		EyeAdaptHistogramReduceMat mEyeAdaptHistogramReduce;
 		EyeAdaptationMat mEyeAdaptation;
-		TonemappingMat mTonemapping;
+
+		CreateTonemapLUTMat mCreateLUT;
+		TonemappingMat<false> mTonemapping;
+		TonemappingMat<true> mTonemappingGammaOnly;
 	};
 
 	/** @} */

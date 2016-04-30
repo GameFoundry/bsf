@@ -62,9 +62,13 @@ namespace BansheeEngine
 		/**
 		 * Draws the specified mesh.
 		 *
+		 * @param[in]	mesh			Mesh to draw.
+		 * @param[in]	subMesh			Portion of the mesh to draw.
+		 * @param[in]	numInstances	Number of times to draw the mesh using instanced rendering.
+		 *
 		 * @note	Core thread.
 		 */
-		void draw(const SPtr<MeshCoreBase>& mesh, const SubMesh& subMesh);
+		void draw(const SPtr<MeshCoreBase>& mesh, const SubMesh& subMesh, UINT32 numInstances = 1);
 
 		/**
 		 * Blits contents of the provided texture into the currently bound render target. If the provided texture contains
@@ -79,15 +83,34 @@ namespace BansheeEngine
 		/**
 		 * Draws a quad over the entire viewport in normalized device coordinates.
 		 * 			
-		 * @param[in]	uv			UV coordinates to assign to the corners of the quad.
-		 * @param[in]	textureSize	Size of the texture the UV coordinates are specified for. If the UV coordinates are 
-		 *							already in normalized (0, 1) range then keep this value as is. If the UV coordinates 
-		 *							are in texels then set this value to the texture size so they can be normalized 
-		 *							internally.
+		 * @param[in]	uv				UV coordinates to assign to the corners of the quad.
+		 * @param[in]	textureSize		Size of the texture the UV coordinates are specified for. If the UV coordinates are 
+		 *								already in normalized (0, 1) range then keep this value as is. If the UV coordinates 
+		 *								are in texels then set this value to the texture size so they can be normalized 
+		 *								internally.
+		 * @param[in]	numInstances	How many instances of the quad to draw (using instanced rendering). Useful when
+		 *								drawing to 3D textures.
 		 * 			
 		 * @note	Core thread.
 		 */
-		void drawScreenQuad(const Rect2& uv = Rect2(0.0f, 0.0f, 1.0f, 1.0f), const Vector2I& textureSize = Vector2I(1, 1));
+		void drawScreenQuad(const Rect2& uv, const Vector2I& textureSize = Vector2I(1, 1), 
+			UINT32 numInstances = 1);
+
+		/**
+		 * Draws a quad over the entire viewport in normalized device coordinates.
+		 * 			
+		 * @param[in]	numInstances	How many instances of the quad to draw (using instanced rendering). Useful when
+		 *								drawing to 3D textures.
+		 * 			
+		 * @note	Core thread.
+		 */
+		void drawScreenQuad(UINT32 numInstances = 1)
+		{
+			Rect2 uv(0.0f, 0.0f, 1.0f, 1.0f);
+			Vector2I textureSize(1, 1);
+
+			drawScreenQuad(uv, textureSize, numInstances);
+		}
 
 		/** Returns a stencil mesh used for a point light (a unit sphere). */
 		SPtr<MeshCore> getPointLightStencil() const { return mPointLightStencilMesh; }
