@@ -41,6 +41,7 @@ namespace BansheeEngine
 		renderWindowDesc.hideUntilSwap = true;
 		renderWindowDesc.left = left;
 		renderWindowDesc.top = top;
+		renderWindowDesc.depthBuffer = false;
 
 		mRenderWindow = RenderWindow::create(renderWindowDesc, gCoreApplication().getPrimaryWindow());
 

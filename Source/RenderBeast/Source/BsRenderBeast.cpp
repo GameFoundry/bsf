@@ -572,82 +572,84 @@ namespace BansheeEngine
 		camData.target->bindSceneColor(true);
 
 		// Render light pass
-		SPtr<GpuParamBlockBufferCore> perCameraBuffer = mStaticHandler->getPerCameraParams().getBuffer();
-
-		SPtr<MaterialCore> dirMaterial = mDirLightMat->getMaterial();
-		SPtr<PassCore> dirPass = dirMaterial->getPass(0);
-
-		setPass(dirPass);
-		mDirLightMat->setStaticParameters(camData.target, perCameraBuffer);
-
-		for (auto& light : mDirectionalLights)
 		{
-			if (!light.internal->getIsActive())
-				continue;
+			SPtr<GpuParamBlockBufferCore> perCameraBuffer = mStaticHandler->getPerCameraParams().getBuffer();
 
-			mDirLightMat->setParameters(light.internal);
+			SPtr<MaterialCore> dirMaterial = mDirLightMat->getMaterial();
+			SPtr<PassCore> dirPass = dirMaterial->getPass(0);
 
-			// TODO - Bind parameters to the pipeline manually as I don't need to re-bind gbuffer textures for every light
-			//  - I can't think of a good way to do this automatically. Probably best to do it in setParameters()
-			setPassParams(dirMaterial->getPassParameters(0), nullptr);
-			gRendererUtility().drawScreenQuad();
-		}
+			setPass(dirPass);
+			mDirLightMat->setStaticParameters(camData.target, perCameraBuffer);
 
-		// Draw point lights which our camera is within
-		SPtr<MaterialCore> pointInsideMaterial = mPointLightInMat->getMaterial();
-		SPtr<PassCore> pointInsidePass = pointInsideMaterial->getPass(0);
+			for (auto& light : mDirectionalLights)
+			{
+				if (!light.internal->getIsActive())
+					continue;
 
-		// TODO - Possibly use instanced drawing here as only two meshes are drawn with various properties
-		setPass(pointInsidePass);
-		mPointLightInMat->setStaticParameters(camData.target, perCameraBuffer);
+				mDirLightMat->setParameters(light.internal);
 
-		// TODO - Cull lights based on visibility, right now I just iterate over all of them. 
-		for (auto& light : mPointLights)
-		{
-			if (!light.internal->getIsActive())
-				continue;
+				// TODO - Bind parameters to the pipeline manually as I don't need to re-bind gbuffer textures for every light
+				//  - I can't think of a good way to do this automatically. Probably best to do it in setParameters()
+				setPassParams(dirMaterial->getPassParameters(0), nullptr);
+				gRendererUtility().drawScreenQuad();
+			}
 
-			float distToLight = (light.internal->getBounds().getCenter() - camera->getPosition()).squaredLength();
-			float boundRadius = light.internal->getBounds().getRadius() * 1.05f + camera->getNearClipDistance() * 2.0f;
+			// Draw point lights which our camera is within
+			SPtr<MaterialCore> pointInsideMaterial = mPointLightInMat->getMaterial();
+			SPtr<PassCore> pointInsidePass = pointInsideMaterial->getPass(0);
 
-			bool cameraInLightGeometry = distToLight < boundRadius * boundRadius;
-			if (!cameraInLightGeometry)
-				continue;
+			// TODO - Possibly use instanced drawing here as only two meshes are drawn with various properties
+			setPass(pointInsidePass);
+			mPointLightInMat->setStaticParameters(camData.target, perCameraBuffer);
 
-			mPointLightInMat->setParameters(light.internal);
+			// TODO - Cull lights based on visibility, right now I just iterate over all of them. 
+			for (auto& light : mPointLights)
+			{
+				if (!light.internal->getIsActive())
+					continue;
 
-			// TODO - Bind parameters to the pipeline manually as I don't need to re-bind gbuffer textures for every light
-			//  - I can't think of a good way to do this automatically. Probably best to do it in setParameters()
-			setPassParams(pointInsideMaterial->getPassParameters(0), nullptr);
-			SPtr<MeshCore> mesh = light.internal->getMesh();
-			gRendererUtility().draw(mesh, mesh->getProperties().getSubMesh(0));
-		}
+				float distToLight = (light.internal->getBounds().getCenter() - camera->getPosition()).squaredLength();
+				float boundRadius = light.internal->getBounds().getRadius() * 1.05f + camera->getNearClipDistance() * 2.0f;
 
-		// Draw other point lights
-		SPtr<MaterialCore> pointOutsideMaterial = mPointLightOutMat->getMaterial();
-		SPtr<PassCore> pointOutsidePass = pointOutsideMaterial->getPass(0);
+				bool cameraInLightGeometry = distToLight < boundRadius * boundRadius;
+				if (!cameraInLightGeometry)
+					continue;
 
-		setPass(pointOutsidePass);
-		mPointLightOutMat->setStaticParameters(camData.target, perCameraBuffer);
+				mPointLightInMat->setParameters(light.internal);
 
-		for (auto& light : mPointLights)
-		{
-			if (!light.internal->getIsActive())
-				continue;
+				// TODO - Bind parameters to the pipeline manually as I don't need to re-bind gbuffer textures for every light
+				//  - I can't think of a good way to do this automatically. Probably best to do it in setParameters()
+				setPassParams(pointInsideMaterial->getPassParameters(0), nullptr);
+				SPtr<MeshCore> mesh = light.internal->getMesh();
+				gRendererUtility().draw(mesh, mesh->getProperties().getSubMesh(0));
+			}
 
-			float distToLight = (light.internal->getBounds().getCenter() - camera->getPosition()).squaredLength();
-			float boundRadius = light.internal->getBounds().getRadius() * 1.05f + camera->getNearClipDistance() * 2.0f;
+			// Draw other point lights
+			SPtr<MaterialCore> pointOutsideMaterial = mPointLightOutMat->getMaterial();
+			SPtr<PassCore> pointOutsidePass = pointOutsideMaterial->getPass(0);
 
-			bool cameraInLightGeometry = distToLight < boundRadius * boundRadius;
-			if (cameraInLightGeometry)
-				continue;
+			setPass(pointOutsidePass);
+			mPointLightOutMat->setStaticParameters(camData.target, perCameraBuffer);
 
-			mPointLightOutMat->setParameters(light.internal);
+			for (auto& light : mPointLights)
+			{
+				if (!light.internal->getIsActive())
+					continue;
 
-			// TODO - Bind parameters to the pipeline manually as I don't need to re-bind gbuffer textures for every light
-			setPassParams(pointOutsideMaterial->getPassParameters(0), nullptr);
-			SPtr<MeshCore> mesh = light.internal->getMesh();
-			gRendererUtility().draw(mesh, mesh->getProperties().getSubMesh(0));
+				float distToLight = (light.internal->getBounds().getCenter() - camera->getPosition()).squaredLength();
+				float boundRadius = light.internal->getBounds().getRadius() * 1.05f + camera->getNearClipDistance() * 2.0f;
+
+				bool cameraInLightGeometry = distToLight < boundRadius * boundRadius;
+				if (cameraInLightGeometry)
+					continue;
+
+				mPointLightOutMat->setParameters(light.internal);
+
+				// TODO - Bind parameters to the pipeline manually as I don't need to re-bind gbuffer textures for every light
+				setPassParams(pointOutsideMaterial->getPassParameters(0), nullptr);
+				SPtr<MeshCore> mesh = light.internal->getMesh();
+				gRendererUtility().draw(mesh, mesh->getProperties().getSubMesh(0));
+			}
 		}
 
 		camData.target->bindSceneColor(false);

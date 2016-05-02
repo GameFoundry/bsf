@@ -21,7 +21,7 @@ namespace BansheeEngine
 		void update() override;
 
 		/** @copydoc EditorWindowBase::isMain */
-		virtual bool isMain() const override { return true; }
+		bool isMain() const override { return true; }
 
 		/**	Gets the DockManager that is responsible for docking and placement of EditorWidget%s on the main window. */
 		DockManager& getDockManager() const { return *mDockManager; }
@@ -45,7 +45,7 @@ namespace BansheeEngine
 
 	protected:
 		/** @copydoc EditorWindowBase::resized */
-		virtual void resized() override;
+		void resized() override;
 
 		/**
 		 * Updates the placement of child GUI elements and their non-client areas (used for OS move/resize operations). 

@@ -424,5 +424,7 @@ namespace BansheeEngine
 			else
 				mTonemapping_GO.execute(sceneColor, outputViewport, ppInfo);
 		}
+
+		// TODO - External code depends on the main RT being bound when this exits, make this clearer
 	}
 }

@@ -44,6 +44,7 @@ namespace BansheeEngine
 		renderWindowDesc.fullscreen = false;
 		renderWindowDesc.border = WindowBorder::None;
 		renderWindowDesc.hideUntilSwap = true;
+		renderWindowDesc.depthBuffer = false;
 
 		return renderWindowDesc;
 	}

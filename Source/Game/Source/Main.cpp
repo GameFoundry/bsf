@@ -71,6 +71,7 @@ void runApplication()
 	renderWindowDesc.title = toString(gameSettings->titleBarText);
 	renderWindowDesc.fullscreen = false;
 	renderWindowDesc.hidden = gameSettings->fullscreen;
+	renderWindowDesc.depthBuffer = false;
 
 	Application::startUp(renderWindowDesc, RenderAPIPlugin::DX11);
 

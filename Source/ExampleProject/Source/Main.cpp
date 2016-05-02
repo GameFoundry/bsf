@@ -80,6 +80,7 @@ int CALLBACK WinMain(
 	renderWindowDesc.videoMode = VideoMode(windowResWidth, windowResHeight);
 	renderWindowDesc.title = "Banshee Example App";
 	renderWindowDesc.fullscreen = false;
+	renderWindowDesc.depthBuffer = false;
 
 	// List of importer plugins we plan on using for importing various resources
 	Vector<String> importers;
