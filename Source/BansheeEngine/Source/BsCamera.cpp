@@ -10,7 +10,6 @@
 #include "BsException.h"
 #include "BsRenderAPI.h"
 #include "BsSceneObject.h"
-#include "BsDebug.h"
 #include "BsRendererManager.h"
 #include "BsCoreRenderer.h"
 #include "BsFrameAlloc.h"
@@ -20,10 +19,10 @@ namespace BansheeEngine
 	const float CameraBase::INFINITE_FAR_PLANE_ADJUST = 0.00001f;
 
 	CameraBase::CameraBase()
-		: mLayers(0xFFFFFFFFFFFFFFFF), mCameraFlags(0), mIsActive(true), mProjType(PT_PERSPECTIVE), mHorzFOV(Degree(90.0f))
-		, mFarDist(1000.0f), mNearDist(0.05f), mAspect(1.33333333333333f), mOrthoHeight(5), mPriority(0)
-		, mCustomViewMatrix(false), mCustomProjMatrix(false), mFrustumExtentsManuallySet(false), mRecalcFrustum(true)
-		, mRecalcFrustumPlanes(true), mRecalcView(true)
+		: mLayers(0xFFFFFFFFFFFFFFFF), mCameraFlags(CameraFlag::HDR), mIsActive(true), mProjType(PT_PERSPECTIVE)
+		, mHorzFOV(Degree(90.0f)), mFarDist(1000.0f), mNearDist(0.05f), mAspect(1.33333333333333f), mOrthoHeight(5)
+		, mPriority(0), mCustomViewMatrix(false), mCustomProjMatrix(false), mMSAA(1), mFrustumExtentsManuallySet(false)
+		, mRecalcFrustum(true), mRecalcFrustumPlanes(true), mRecalcView(true)
 	{
 		mViewMatrix = Matrix4::ZERO;
 		mProjMatrixRS = Matrix4::ZERO;
@@ -502,6 +501,16 @@ namespace BansheeEngine
 		outbottom = mBottom;
 	}
 
+	void CameraBase::setFlag(const CameraFlag& flag, bool enable)
+	{
+		if (enable)
+			mCameraFlags.set(flag);
+		else
+			mCameraFlags.unset(flag);
+			
+		_markCoreDirty();
+	}
+
 	void CameraBase::setPosition(const Vector3& position)
 	{
 		mPosition = position;
@@ -718,9 +727,9 @@ namespace BansheeEngine
 		mRecalcFrustumPlanes = true;
 		mRecalcView = true;
 
-		if (dirtyFlag == CameraDirtyFlag::Transform)
+		if (dirtyFlag == CameraDirtyFlag::Transform || dirtyFlag == CameraDirtyFlag::PostProcess)
 		{
-			RendererManager::instance().getActive()->notifyCameraUpdated(this, mPosition, mRotation);
+			RendererManager::instance().getActive()->notifyCameraUpdated(this, (UINT32)dirtyFlag);
 		}
 		else 
 		{
@@ -737,6 +746,8 @@ namespace BansheeEngine
 			dataPtr = rttiReadElem(mFrustumExtentsManuallySet, dataPtr);
 			dataPtr = rttiReadElem(mCameraFlags, dataPtr);
 			dataPtr = rttiReadElem(mIsActive, dataPtr);
+			dataPtr = rttiReadElem(mMSAA, dataPtr);
+			dataPtr = rttiReadElem(mPPSettings, dataPtr);
 
 			RendererManager::instance().getActive()->notifyCameraRemoved(this);
 
@@ -816,6 +827,8 @@ namespace BansheeEngine
 			size += rttiGetElemSize(mFrustumExtentsManuallySet);
 			size += rttiGetElemSize(mCameraFlags);
 			size += rttiGetElemSize(mIsActive);
+			size += rttiGetElemSize(mMSAA);
+			size += rttiGetElemSize(mPPSettings);
 		}
 
 		UINT8* buffer = allocator->alloc(size);
@@ -840,6 +853,8 @@ namespace BansheeEngine
 			dataPtr = rttiWriteElem(mFrustumExtentsManuallySet, dataPtr);
 			dataPtr = rttiWriteElem(mCameraFlags, dataPtr);
 			dataPtr = rttiWriteElem(mIsActive, dataPtr);
+			dataPtr = rttiWriteElem(mMSAA, dataPtr);
+			dataPtr = rttiWriteElem(mPPSettings, dataPtr);
 		}
 
 		return CoreSyncData(buffer, size);

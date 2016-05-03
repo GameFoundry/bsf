@@ -320,7 +320,6 @@
     <ClInclude Include="..\..\Source\BansheeEngine\Include\BsPlainTextImporter.h" />
     <ClInclude Include="..\..\Source\BansheeEngine\Include\BsPlainTextRTTI.h" />
     <ClInclude Include="..\..\Source\BansheeEngine\Include\BsPostProcessSettings.h" />
-    <ClInclude Include="..\..\Source\BansheeEngine\Include\BsPostProcessSettingsRTTI.h" />
     <ClInclude Include="..\..\Source\BansheeEngine\Include\BsRenderableElement.h" />
     <ClInclude Include="..\..\Source\BansheeEngine\Include\BsRenderable.h" />
     <ClInclude Include="..\..\Source\BansheeEngine\Include\BsRenderableRTTI.h" />

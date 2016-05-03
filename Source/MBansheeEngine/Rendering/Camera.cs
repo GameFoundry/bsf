@@ -156,6 +156,28 @@ namespace BansheeEngine
         }
 
         /// <summary>
+        /// Determines should high dynamic range be enabled. High dynamic range allows light intensity to be more correctly
+        /// recorded when rendering by allowing for a larger range of values. The stored light is then converted into
+        /// visible color range using exposure and a tone mapping operator. Use <see cref="PostProcess"/> to customize
+        /// those operations.
+        /// </summary>
+        public bool HDR
+        {
+            get { return native.HDR; }
+            set { native.HDR = value; serializableData.HDR = value; }
+        }
+
+        /// <summary>
+        /// Allows you to customize various post process operations that will be executed on the image produced by this 
+        /// camera.
+        /// </summary>
+        public PostProcessSettings PostProcess
+        {
+            get { return native.PostProcess; }
+            set { native.PostProcess = value;  serializableData.postProcessSettings = value; }
+        }
+
+        /// <summary>
         /// Sets layer bitfield that is used when determining which object should the camera render. Renderable objects
         /// have their own layer flags that can be set depending on which camera you want to render them in.
         /// </summary>
@@ -424,6 +446,11 @@ namespace BansheeEngine
         [SerializeObject]
         internal class SerializableData
         {
+            internal SerializableData()
+            {
+                postProcessSettings = PostProcessSettings.CreateDefault();
+            }
+
             public float aspectRatio = 1.333f;
             public float nearClipPlane = 1.0f;
             public float farClipPlane = 1000.0f;
@@ -436,6 +463,8 @@ namespace BansheeEngine
             public ushort clearStencil;
             public ClearFlags clearFlags = ClearFlags.Color | ClearFlags.Depth | ClearFlags.Stencil;
             public int priority;
+            public bool HDR = true;
+            public PostProcessSettings postProcessSettings;
             public ulong layers = 0xFFFFFFFFFFFFFFFF;
             public bool main;
         }

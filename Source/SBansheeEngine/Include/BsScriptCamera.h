@@ -12,6 +12,7 @@
 #include "BsMatrix4.h"
 #include "BsRect2.h"
 #include "BsColor.h"
+#include "BsPostProcessSettings.h"
 
 namespace BansheeEngine
 {
@@ -85,6 +86,12 @@ namespace BansheeEngine
 
 		static int internal_GetPriority(ScriptCamera* instance);
 		static void internal_SetPriority(ScriptCamera* instance, int value);
+
+		static bool internal_GetHDR(ScriptCamera* instance);
+		static void internal_SetHDR(ScriptCamera* instance, bool value);
+
+		static void internal_GetPostProcessSettings(ScriptCamera* instance, PostProcessSettings* value);
+		static void internal_SetPostProcessSettings(ScriptCamera* instance, PostProcessSettings* value);
 
 		static UINT64 internal_GetLayers(ScriptCamera* instance);
 		static void internal_SetLayers(ScriptCamera* instance, UINT64 value);

@@ -77,9 +77,12 @@ namespace BansheeEngine
 		/**
 		 * Called whenever a camera's position or rotation is updated.
 		 *
+		 * @param[in]	camera		Camera that was updated.
+		 * @param[in]	updateFlag	Optional flag that allows the camera to signal to the renderer exactly what was updated.
+		 *
 		 * @note	Core thread.
 		 */
-		virtual void notifyCameraUpdated(const CameraCore* camera, const Vector3& position, const Quaternion& rotation) { }
+		virtual void notifyCameraUpdated(const CameraCore* camera, UINT32 updateFlag) { }
 
 		/**
 		 * Called whenever a camera is destroyed.

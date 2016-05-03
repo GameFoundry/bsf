@@ -71,6 +71,12 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetPriority", &ScriptCamera::internal_GetPriority);
 		metaData.scriptClass->addInternalCall("Internal_SetPriority", &ScriptCamera::internal_SetPriority);
 
+		metaData.scriptClass->addInternalCall("Internal_GetHDR", &ScriptCamera::internal_GetHDR);
+		metaData.scriptClass->addInternalCall("Internal_SetHDR", &ScriptCamera::internal_SetHDR);
+
+		metaData.scriptClass->addInternalCall("Internal_GetPostProcessSettings", &ScriptCamera::internal_GetPostProcessSettings);
+		metaData.scriptClass->addInternalCall("Internal_SetPostProcessSettings", &ScriptCamera::internal_SetPostProcessSettings);
+
 		metaData.scriptClass->addInternalCall("Internal_GetLayers", &ScriptCamera::internal_GetLayers);
 		metaData.scriptClass->addInternalCall("Internal_SetLayers", &ScriptCamera::internal_SetLayers);
 
@@ -281,6 +287,26 @@ namespace BansheeEngine
 	void ScriptCamera::internal_SetPriority(ScriptCamera* instance, int value)
 	{
 		instance->mCamera->setPriority(value);
+	}
+
+	bool ScriptCamera::internal_GetHDR(ScriptCamera* instance)
+	{
+		return instance->mCamera->getFlags().isSet(CameraFlag::HDR);
+	}
+
+	void ScriptCamera::internal_SetHDR(ScriptCamera* instance, bool value)
+	{
+		instance->mCamera->setFlag(CameraFlag::HDR, value);
+	}
+
+	void ScriptCamera::internal_GetPostProcessSettings(ScriptCamera* instance, PostProcessSettings* value)
+	{
+		*value = instance->mCamera->getPostProcessSettings();
+	}
+
+	void ScriptCamera::internal_SetPostProcessSettings(ScriptCamera* instance, PostProcessSettings* value)
+	{
+		instance->mCamera->setPostProcessSettings(*value);
 	}
 
 	UINT64 ScriptCamera::internal_GetLayers(ScriptCamera* instance)

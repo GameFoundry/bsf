@@ -141,7 +141,7 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Constructs a new set of GUI elements for inspecting the auto exposure settings object.
+        /// Constructs a new set of GUI elements for inspecting the tone mapping settings object.
         /// </summary>
         /// <param name="settings">Initial values to assign to the GUI elements.</param>
         /// <param name="layout">Layout to append the GUI elements to.</param>
@@ -208,7 +208,7 @@ namespace BansheeEditor
     /// <summary>
     /// Draws GUI elements for inspecting an <see cref="ColorGradingSettings"/> object.
     /// </summary>
-    internal class ColorGradingSettingssGUI
+    internal class ColorGradingSettingsGUI
     {
         private ColorGradingSettings settings;
 
@@ -238,11 +238,11 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Constructs a new set of GUI elements for inspecting the auto exposure settings object.
+        /// Constructs a new set of GUI elements for inspecting the color grading settings object.
         /// </summary>
         /// <param name="settings">Initial values to assign to the GUI elements.</param>
         /// <param name="layout">Layout to append the GUI elements to.</param>
-        public ColorGradingSettingssGUI(ColorGradingSettings settings, GUILayout layout)
+        public ColorGradingSettingsGUI(ColorGradingSettings settings, GUILayout layout)
         {
             this.settings = settings;
 
@@ -316,7 +316,7 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Constructs a new set of GUI elements for inspecting the auto exposure settings object.
+        /// Constructs a new set of GUI elements for inspecting the white balance settings object.
         /// </summary>
         /// <param name="settings">Initial values to assign to the GUI elements.</param>
         /// <param name="layout">Layout to append the GUI elements to.</param>
@@ -347,6 +347,188 @@ namespace BansheeEditor
         {
             if (OnConfirmed != null)
                 OnConfirmed();
+        }
+    }
+
+    /// <summary>
+    /// Draws GUI elements for inspecting an <see cref="PostProcessSettings"/> object.
+    /// </summary>
+    internal class PostProcessSettingsGUI
+    {
+        private PostProcessSettings settings;
+        private SerializableProperties properties;
+
+        private GUIToggleField enableAutoExposureField = new GUIToggleField(new LocEdString("Enable auto exposure"));
+        private GUIToggle autoExposureFoldout = new GUIToggle(new LocEdString("Auto exposure"), EditorStyles.Foldout);
+        private AutoExposureSettingsGUI autoExposureGUI;
+
+        private GUIToggleField enableToneMappingField = new GUIToggleField(new LocEdString("Enable tone mapping"));
+        private GUIToggle toneMappingFoldout = new GUIToggle(new LocEdString("Tone mapping"), EditorStyles.Foldout);
+        private TonemappingSettingsGUI toneMappingGUI;
+        private GUIToggle whiteBalanceFoldout = new GUIToggle(new LocEdString("White balance"), EditorStyles.Foldout);
+        private WhiteBalanceSettingsGUI whiteBalanceGUI;
+        private GUIToggle colorGradingFoldout = new GUIToggle(new LocEdString("Color grading"), EditorStyles.Foldout);
+        private ColorGradingSettingsGUI colorGradingGUI;
+
+        private GUISliderField gammaField = new GUISliderField(1.0f, 3.0f, new LocEdString("Gamma"));
+        private GUISliderField exposureScaleField = new GUISliderField(-8.0f, 8.0f, new LocEdString("Exposure scale"));
+
+        private GUILayout autoExposureLayout;
+        private GUILayout toneMappingLayout;
+        private GUILayout whiteBalanceLayout;
+        private GUILayout colorGradingLayout;
+
+        public Action<PostProcessSettings> OnChanged;
+        public Action OnConfirmed;
+
+        /// <summary>
+        /// Current value of the settings object.
+        /// </summary>
+        public PostProcessSettings Settings
+        {
+            get { return settings; }
+            set
+            {
+                settings = value;
+
+                enableAutoExposureField.Value = value.EnableAutoExposure;
+                autoExposureGUI.Settings = value.AutoExposure;
+                enableToneMappingField.Value = value.EnableTonemapping;
+                toneMappingGUI.Settings = value.Tonemapping;
+                whiteBalanceGUI.Settings = value.WhiteBalance;
+                colorGradingGUI.Settings = value.ColorGrading;
+                gammaField.Value = value.Gamma;
+                exposureScaleField.Value = value.ExposureScale;
+            }
+        }
+
+        /// <summary>
+        /// Constructs a new set of GUI elements for inspecting the post process settings object.
+        /// </summary>
+        /// <param name="settings">Initial values to assign to the GUI elements.</param>
+        /// <param name="layout">Layout to append the GUI elements to.</param>
+        /// <param name="properties">A set of properties that are persisted by the parent inspector. Used for saving state.
+        ///                          </param>
+        public PostProcessSettingsGUI(PostProcessSettings settings, GUILayout layout, SerializableProperties properties)
+        {
+            this.settings = settings;
+            this.properties = properties;
+
+            // Auto exposure
+            enableAutoExposureField.OnChanged += x => { settings.EnableAutoExposure = x; MarkAsModified(); ConfirmModify(); };
+            layout.AddElement(enableAutoExposureField);
+
+            autoExposureFoldout.OnToggled += x =>
+            {
+                properties.SetBool("autoExposure_Expanded", x);
+                ToggleFoldoutFields();
+            };
+            layout.AddElement(autoExposureFoldout);
+
+            autoExposureLayout = layout.AddLayoutX();
+            {
+                autoExposureLayout.AddSpace(10);
+
+                GUILayoutY contentsLayout = autoExposureLayout.AddLayoutY();
+                autoExposureGUI = new AutoExposureSettingsGUI(settings.AutoExposure, contentsLayout);
+                autoExposureGUI.OnChanged += x => { this.settings.AutoExposure = x; MarkAsModified(); };
+                autoExposureGUI.OnConfirmed += ConfirmModify;
+            }
+
+            // Tonemapping
+            enableToneMappingField.OnChanged += x => { settings.EnableTonemapping = x; MarkAsModified(); ConfirmModify(); };
+            layout.AddElement(enableToneMappingField);
+
+            //// Tonemapping settings
+            toneMappingFoldout.OnToggled += x =>
+            {
+                properties.SetBool("toneMapping_Expanded", x);
+                ToggleFoldoutFields();
+            };
+            layout.AddElement(toneMappingFoldout);
+
+            toneMappingLayout = layout.AddLayoutX();
+            {
+                toneMappingLayout.AddSpace(10);
+
+                GUILayoutY contentsLayout = toneMappingLayout.AddLayoutY();
+                toneMappingGUI = new TonemappingSettingsGUI(settings.Tonemapping, contentsLayout);
+                toneMappingGUI.OnChanged += x => { this.settings.Tonemapping = x; MarkAsModified(); };
+                toneMappingGUI.OnConfirmed += ConfirmModify;
+            }
+
+            //// White balance settings
+            whiteBalanceFoldout.OnToggled += x =>
+            {
+                properties.SetBool("whiteBalance_Expanded", x);
+                ToggleFoldoutFields();
+            };
+            layout.AddElement(whiteBalanceFoldout);
+
+            whiteBalanceLayout = layout.AddLayoutX();
+            {
+                whiteBalanceLayout.AddSpace(10);
+
+                GUILayoutY contentsLayout = whiteBalanceLayout.AddLayoutY();
+                whiteBalanceGUI = new WhiteBalanceSettingsGUI(settings.WhiteBalance, contentsLayout);
+                whiteBalanceGUI.OnChanged += x => { this.settings.WhiteBalance = x; MarkAsModified(); };
+                whiteBalanceGUI.OnConfirmed += ConfirmModify;
+            }
+
+            //// Color grading settings
+            colorGradingFoldout.OnToggled += x =>
+            {
+                properties.SetBool("colorGrading_Expanded", x);
+                ToggleFoldoutFields();
+            };
+            layout.AddElement(colorGradingFoldout);
+
+            colorGradingLayout = layout.AddLayoutX();
+            {
+                colorGradingLayout.AddSpace(10);
+
+                GUILayoutY contentsLayout = colorGradingLayout.AddLayoutY();
+                colorGradingGUI = new ColorGradingSettingsGUI(settings.ColorGrading, contentsLayout);
+                colorGradingGUI.OnChanged += x => { this.settings.ColorGrading = x; MarkAsModified(); };
+                colorGradingGUI.OnConfirmed += ConfirmModify;
+            }
+
+            // Gamma
+            gammaField.OnChanged += x => { settings.Gamma = x; MarkAsModified(); ConfirmModify(); };
+            layout.AddElement(gammaField);
+
+            // Exposure scale
+            exposureScaleField.OnChanged += x => { settings.ExposureScale = x; MarkAsModified(); ConfirmModify(); };
+            layout.AddElement(exposureScaleField);
+        }
+
+        /// <summary>
+        /// Marks the contents of the inspector as modified.
+        /// </summary>
+        private void MarkAsModified()
+        {
+            if (OnChanged != null)
+                OnChanged(settings);
+        }
+
+        /// <summary>
+        /// Confirms any queued modifications.
+        /// </summary>
+        private void ConfirmModify()
+        {
+            if (OnConfirmed != null)
+                OnConfirmed();
+        }
+
+        /// <summary>
+        /// Hides or shows settings property GUI elements depending on set values.
+        /// </summary>
+        private void ToggleFoldoutFields()
+        {
+            autoExposureLayout.Active = properties.GetBool("autoExposure_Expanded");
+            toneMappingLayout.Active = properties.GetBool("toneMapping_Expanded");
+            whiteBalanceLayout.Active = properties.GetBool("whiteBalance_Expanded");
+            colorGradingLayout.Active = properties.GetBool("colorGrading_Expanded");
         }
     }
 

@@ -33,9 +33,9 @@ namespace BansheeEngine
 		 * @param[in]	instanceStepRate	Determines at what rate does vertex element data advance. Zero means each vertex
 		 *									will advance the data pointer and receive new data (standard behaviour). Values
 		 *									larger than one are relevant for instanced rendering and determine how often do
-		 *									instances advance the vertex element (e.g. a value of 1 means each instance will
-		 *									retrieve a new value for this vertex element, a value of 2 means each second
-		 *									instance will, etc.).
+		 *									instances advance the vertex element (for example a value of 1 means each
+		 *									instance will retrieve a new value for this vertex element, a value of 2 means
+		 *									each second instance will, etc.).
 		 */
 		void addVertElem(VertexElementType type, VertexElementSemantic semantic, UINT32 semanticIdx = 0, 
 			UINT32 streamIdx = 0, UINT32 instanceStepRate = 0);

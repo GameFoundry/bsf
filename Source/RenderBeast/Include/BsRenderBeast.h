@@ -114,10 +114,10 @@ namespace BansheeEngine
 		~RenderBeast() { }
 
 		/** @copydoc Renderer::getName */
-		virtual const StringID& getName() const override;
+		const StringID& getName() const override;
 
 		/** @copydoc Renderer::renderAll */
-		virtual void renderAll() override;
+		void renderAll() override;
 
 		/**	Sets options used for controlling the rendering. */
 		void setOptions(const SPtr<CoreRendererOptions>& options) override;
@@ -126,17 +126,17 @@ namespace BansheeEngine
 		SPtr<CoreRendererOptions> getOptions() const override;
 
 		/** @copydoc Renderer::initialize */
-		virtual void initialize() override;
+		void initialize() override;
 
 		/** @copydoc Renderer::destroy */
-		virtual void destroy() override;
+		void destroy() override;
 
 	private:
 		/** @copydoc Renderer::notifyCameraAdded */
 		void notifyCameraAdded(const CameraCore* camera) override;
 
 		/** @copydoc Renderer::notifyCameraUpdated */
-		void notifyCameraUpdated(const CameraCore* camera, const Vector3& position, const Quaternion& rotation) override;
+		void notifyCameraUpdated(const CameraCore* camera, UINT32 updateFlag) override;
 
 		/** @copydocRenderer::notifyCameraRemoved */
 		void notifyCameraRemoved(const CameraCore* camera) override;

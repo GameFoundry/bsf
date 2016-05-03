@@ -35,19 +35,6 @@ namespace BansheeEngine
 		UINT32 anisotropyMax = 16;
 
 		/**
-		 * Number of samples per pixel. More samples means less aliasing but this may seriously increase fillrate and memory
-		 * consumption on the GPU.
-		 */
-		UINT32 msaa = 1;
-
-		/**
-		 * High dynamic range allows light intensity to be more correctly recorded when rendering by allowing for a larger
-		 * range of values. The stored light is then converted into visible colors using a tone mapping operator depending
-		 * on average scene brightness.
-		 */
-		bool hdr = true;
-
-		/**
 		 * Controls if and how a render queue groups renderable objects by material in order to reduce number of state
 		 * changes. Sorting by material can reduce CPU usage but could increase overdraw.
 		 */

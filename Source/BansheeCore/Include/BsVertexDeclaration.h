@@ -84,8 +84,9 @@ namespace BansheeEngine
 		/** 
 		 * Returns at what rate do the vertex elements advance during instanced rendering. Provide zero for default 
 		 * behaviour where each vertex receives the next value from the vertex buffer. Provide a value larger than zero
-		 * to ensure vertex data is advanced with every instance, instead of every vertex (e.g. a value of 1 means each
-		 * instance will retrieve a new value from the vertex buffer, a value of 2 means each second instance will, etc.).
+		 * to ensure vertex data is advanced with every instance, instead of every vertex (for example a value of 1 means
+		 * each instance will retrieve a new value from the vertex buffer, a value of 2 means each second instance will, 
+		 * etc.).
 		 */
 		UINT32 getInstanceStepRate() const { return mInstanceStepRate; }
 

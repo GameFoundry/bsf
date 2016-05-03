@@ -10,8 +10,6 @@
     <tab type="classlist" visible="true"
                             title="Class list"
                             intro="A complete list of all classes."/>
-    <tab type="pages" visible="yes" title="Manual" intro=""/>
-
 
     <!-- We don't use what's below -->
     <tab type="namespaces" visible="no" title="">

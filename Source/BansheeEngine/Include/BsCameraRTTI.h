@@ -22,8 +22,14 @@ namespace BansheeEngine
 		UINT64& getLayers(Camera* obj) { return obj->mLayers; }
 		void setLayers(Camera* obj, UINT64& val) { obj->mLayers = val; }
 
-		UINT32& getFlags(Camera* obj) { return obj->mCameraFlags; }
-		void setFlags(Camera* obj, UINT32& val) { obj->mCameraFlags = val; }
+		UINT8& getMSAACount(Camera* obj) { return obj->mMSAA; }
+		void setMSAACount(Camera* obj, UINT8& msaaCount) { obj->mMSAA = msaaCount; }
+
+		PostProcessSettings& getPostProcessSettings(Camera* obj) { return obj->mPPSettings; }
+		void setPostProcessSettings(Camera* obj, PostProcessSettings& settings) { obj->mPPSettings = settings; }
+
+		CameraFlags& getFlags(Camera* obj) { return obj->mCameraFlags; }
+		void setFlags(Camera* obj, CameraFlags& val) { obj->mCameraFlags = val; }
 
 		Vector3& getPosition(Camera* obj) { return obj->mPosition; }
 		void setPosition(Camera* obj, Vector3& val) { obj->mPosition = val; }
@@ -107,6 +113,8 @@ namespace BansheeEngine
 			addPlainField("mTop", 20, &CameraRTTI::getTop, &CameraRTTI::setTop);
 			addPlainField("mBottom", 21, &CameraRTTI::getBottom, &CameraRTTI::setBottom);
 			addPlainField("mFlags", 22, &CameraRTTI::getFlags, &CameraRTTI::setFlags);
+			addPlainField("mMSAA", 23, &CameraRTTI::getMSAACount, &CameraRTTI::setMSAACount);
+			addPlainField("mPPSettings", 24, &CameraRTTI::getPostProcessSettings, &CameraRTTI::setPostProcessSettings);
 		}
 
 		void onDeserializationEnded(IReflectable* obj) override
@@ -133,6 +141,8 @@ namespace BansheeEngine
 			return Camera::createEmpty();
 		}
 	};
+
+	BS_ALLOW_MEMCPY_SERIALIZATION(CameraFlags);
 
 	/** @} */
 	/** @endcond */

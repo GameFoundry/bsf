@@ -6,73 +6,76 @@ using BansheeEngine;
 namespace BansheeEditor
 {
     /** @addtogroup BansheeEditor
+     *  Scripting API available in editor only, mainly used for extending the editor in various ways.
      *  @{
      */
 
     /** @defgroup GUI-Editor GUI 
-     *
+     *  Editor specific GUI elements.
      */
 
     /** @defgroup Input-Editor Input 
-     *
+     *  %Input handling for editor only (not affected by game pauses).
      */
 
     /** @defgroup General General 
-     *
+     *  Various functionality that doesn't fit into any other category.
      */
 
     /** @defgroup Inspectors Inspectors 
-     *
+     *  Implementations of inspectors for various engine types.
      */
 
     /** @defgroup Script Script 
-     *
+     *  Script code management and compilation.
      */
 
     /** @defgroup Tests Tests 
-     *
+     *  Editor only unit tests
      */
 
     /** @defgroup Utility-Editor Utility 
-     *
+     *  Various utility functionality.
      */
 
     /** @defgroup Window Window 
-     *
+     *  Interface and tools for creating custom editor windows.
      */
 
     /** @defgroup Windows Windows 
+     *  Implementations of various editor windows (for example Scene, Game, Library).
      *  @{
      */
 
     /** @defgroup Build Build 
-     *
+     *  Build editor window and build manager.
      */
 
     /** @defgroup Inspector Inspector 
-     *
+     *  Interface and utilities needed for implementing custom inspectors.
      */
 
     /** @defgroup Library Library 
-     *
+     *  Managment of resources in the project (loading, saving, creating, querying, etc.).
      */
 
     /** @defgroup Scene-Editor Scene 
+     *  Scene editor window and related functionality.
      *  @{
      */
 
     /** @defgroup Gizmos Gizmos 
-     *
+     *  Interface for creating custom gizmos.
      */
 
     /** @defgroup Handles Handles 
-     *
+     *  Interface for creating custom handles (2D/3D tools).
      */
 
     /** @} */
 
     /** @defgroup Settings Settings 
-     *
+     *  Editor and project settings, and related window.
      */
 
     /** @} */

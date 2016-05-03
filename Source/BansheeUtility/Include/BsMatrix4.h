@@ -292,7 +292,7 @@ namespace BansheeEngine
         /**
 		 * Check whether or not the matrix is affine matrix.
 		 *
-		 * @note	An affine matrix is a 4x4 matrix with row 3 equal to (0, 0, 0, 1), i.e. no projective coefficients.
+		 * @note	An affine matrix is a 4x4 matrix with row 3 equal to (0, 0, 0, 1), meaning no projective coefficients.
          */
         bool isAffine() const
         {

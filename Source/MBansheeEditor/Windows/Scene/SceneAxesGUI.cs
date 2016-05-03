@@ -47,7 +47,7 @@ namespace BansheeEditor
             camera = cameraSO.AddComponent<Camera>();
             camera.Target = renderTexture;
             camera.ViewportRect = new Rect2(0.0f, 0.0f, 1.0f, 1.0f);
-
+            
             cameraSO.Position = new Vector3(0, 0, 5);
             cameraSO.LookAt(new Vector3(0, 0, 0));
 
@@ -59,6 +59,7 @@ namespace BansheeEditor
             camera.Layers = SceneAxesHandle.LAYER;
             camera.AspectRatio = 1.0f;
             camera.OrthoHeight = 2.0f;
+            camera.HDR = false;
 
             renderTextureGUI = new GUIRenderTexture(renderTexture, true);
 

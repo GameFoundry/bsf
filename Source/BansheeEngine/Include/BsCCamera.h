@@ -136,11 +136,26 @@ namespace BansheeEngine
 		/** @copydoc Camera::setLayers */
 		void setLayers(UINT64 layers) { mInternal->setLayers(layers); }
 
+		/** Returns number of samples if the camera uses multiple samples per pixel. */
+		UINT32 getMSAACount() const { return mInternal->getMSAACount(); }
+
+		/**
+		* Enables or disables multi-sampled anti-aliasing. Set to zero or one to disable, or to the required number of
+		* samples to enable.
+		*/
+		void setMSAACount(UINT32 count) { mInternal->setMSAACount(count); }
+
+		/** Returns settings that are used for controling post-process operations like tonemapping. */
+		const PostProcessSettings& getPostProcessSettings() const { return mInternal->getPostProcessSettings(); }
+
+		/** Sets settings that are used for controling post-process operations like tonemapping. */
+		void setPostProcessSettings(const PostProcessSettings& settings) { mInternal->setPostProcessSettings(settings); }
+
 		/** @copydoc Camera::getFlags */
 		CameraFlags getFlags() const { return mInternal->getFlags(); }
 
-		/** @copydoc Camera::setFlags */
-		void setFlags(const CameraFlags& flags) { mInternal->setFlags(flags); }
+		/** @copydoc Camera::setFlag */
+		void setFlag(const CameraFlag& flag, bool enable) { mInternal->setFlag(flag, enable); }
 
 		/** @copydoc Camera::worldToScreenPoint */
 		Vector2I worldToScreenPoint(const Vector3& worldPoint) const { updateView(); return mInternal->worldToScreenPoint(worldPoint); }

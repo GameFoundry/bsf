@@ -7,47 +7,50 @@ using System.Runtime.CompilerServices;
 namespace BansheeEngine
 {
     /** @addtogroup BansheeEngine
+     *  Primary scripting API.
      *  @{
      */
 
     /** @defgroup GUI-Engine GUI 
-     *
+     *  Graphical user interface, including elements, styles and localization.
      */
 
     /** @defgroup Input Input 
-     *
+     *  %Input (mouse, keyboard, gamepad, etc.).
      */
 
     /** @defgroup Math Math 
-     *
+     *  Variety of general purpose math functionality.
      */
 
     /** @defgroup Physics Physics 
-     *
+     *  %Physics system: colliders, triggers, rigidbodies, joints, scene queries, etc.
      */
 
+    /** @cond INTEROP */
     /** @defgroup Interop Interop 
-     *
+     *  Glue types that are used for C++/C# interop.
      */
+    /** @endcond */
 
     /** @defgroup Rendering Rendering 
-     *
+     *  Materials, shaders, textures, meshes and components relating to rendering.
      */
 
     /** @defgroup Resources Resources 
-     *
+     *  Resource types and resource management functionality.
      */
 
     /** @defgroup Scene Scene 
-     *
+     *  Scene objects and components.
      */
 
     /** @defgroup Serialization Serialization 
-     *
+     *  Serialization and deserialization of native objects.
      */
 
     /** @defgroup Utility Utility 
-     *
+     *  Various utility functionality.
      */
 
     /** @} */

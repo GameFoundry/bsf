@@ -54,7 +54,9 @@ namespace BansheeEditor
         public int someValue2;
         public string anotherValue2;
 
+#pragma warning disable 649
         public UT1_SerzCls child;
+#pragma warning restore 649
     }
 
     /// <summary>

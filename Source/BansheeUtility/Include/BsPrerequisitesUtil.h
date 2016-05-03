@@ -103,7 +103,7 @@
  */
 
 /** @defgroup Serialization-Internal Serialization
-*  Serialization and deserialization of native objects.
+ *  Serialization and deserialization of native objects.
  */
 
 /** @defgroup String-Internal String

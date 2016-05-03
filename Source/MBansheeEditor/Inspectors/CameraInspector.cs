@@ -31,7 +31,12 @@ namespace BansheeEditor
         private GUIColorField clearColorField = new GUIColorField(new LocEdString("Clear color"));
         private GUIIntField priorityField = new GUIIntField(new LocEdString("Render priority"));
         private GUIListBoxField layersField = new GUIListBoxField(Layers.Names, true, new LocEdString("Layers"));
+        private GUIToggleField hdrField = new GUIToggleField(new LocEdString("HDR"));
         private GUIToggleField mainField = new GUIToggleField(new LocEdString("Main"));
+
+        private GUIToggle postProcessFoldout = new GUIToggle(new LocEdString("Post processing"), EditorStyles.Foldout);
+        private PostProcessSettingsGUI postProcessGUI;
+        private GUILayout postProcessLayout;
 
         private ulong layersValue = 0;
         private InspectableState modifyState;
@@ -71,6 +76,8 @@ namespace BansheeEditor
             clearColorField.Value = camera.ClearColor;
             priorityField.Value = camera.Priority;
             mainField.Value = camera.Main;
+            hdrField.Value = camera.HDR;
+            postProcessGUI.Settings = camera.PostProcess;
 
             if (layersValue != camera.Layers)
             {
@@ -216,6 +223,13 @@ namespace BansheeEditor
                     ConfirmModify();
                 };
 
+                hdrField.OnChanged += x =>
+                {
+                    camera.HDR = x;
+                    MarkAsModified();
+                    ConfirmModify();
+                };
+
                 Layout.AddElement(projectionTypeField);
                 Layout.AddElement(fieldOfView);
                 Layout.AddElement(orthoHeight);
@@ -241,6 +255,24 @@ namespace BansheeEditor
                 Layout.AddElement(priorityField);
                 Layout.AddElement(layersField);
                 Layout.AddElement(mainField);
+                Layout.AddElement(hdrField);
+
+                postProcessFoldout.OnToggled += x =>
+                {
+                    Persistent.SetBool("postProcess_Expanded", x);
+                    postProcessLayout.Active = x;
+                };
+                Layout.AddElement(postProcessFoldout);
+
+                postProcessLayout = Layout.AddLayoutX();
+                {
+                    postProcessLayout.AddSpace(10);
+
+                    GUILayoutY contentsLayout = postProcessLayout.AddLayoutY();
+                    postProcessGUI = new PostProcessSettingsGUI(camera.PostProcess, contentsLayout, Persistent);
+                    postProcessGUI.OnChanged += x => { camera.PostProcess = x; MarkAsModified(); };
+                    postProcessGUI.OnConfirmed += ConfirmModify;
+                }
 
                 ToggleTypeSpecificFields(camera.ProjectionType);
             }

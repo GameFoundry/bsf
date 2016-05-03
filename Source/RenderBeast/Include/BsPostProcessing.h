@@ -18,6 +18,7 @@ namespace BansheeEngine
 	struct PostProcessInfo
 	{
 		PostProcessSettings settings;
+		bool settingDirty = true;
 
 		SPtr<PooledRenderTexture> downsampledSceneTex;
 		SPtr<PooledRenderTexture> histogramTex;
@@ -227,7 +228,7 @@ namespace BansheeEngine
 	{
 	public:
 		/** Renders post-processing effects for the provided render target. */
-		void postProcess(const SPtr<RenderTextureCore>& sceneColor, const SPtr<ViewportCore>& outputViewport,
+		void postProcess(const SPtr<RenderTextureCore>& sceneColor, const CameraCore* camera,
 			PostProcessInfo& ppInfo, float frameDelta);
 		
 	private:

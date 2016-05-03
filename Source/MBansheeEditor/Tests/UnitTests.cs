@@ -272,8 +272,7 @@ namespace BansheeEditor
             };
 
             // Disabled because it's a slow test, enable only when relevant (or when a build machine is set up)
-            return;
-
+            /*
             string oldScene = Scene.ActiveSceneUUID;
             Scene.Clear();
 
@@ -775,6 +774,8 @@ namespace BansheeEditor
                 ProjectLibrary.Delete("unitTest4Scene_1.prefab");
                 ProjectLibrary.Delete("unitTest4Scene_2.prefab");
             }
+
+            */
         }
 
         /// <summary>

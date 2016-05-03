@@ -13,6 +13,7 @@
 #include "BsRay.h"
 #include "BsCoreObject.h"
 #include "BsConvexVolume.h"
+#include "BsPostProcessSettings.h"
 
 namespace BansheeEngine 
 {
@@ -23,8 +24,9 @@ namespace BansheeEngine
 	/**	Signals which portion of a Camera is dirty. */
 	enum class CameraDirtyFlag
 	{
-		Transform = 0x01,
-		Everything = 0x02
+		Transform = 1<<0,
+		Everything = 1<<1,
+		PostProcess = 1<<2
 	};
 
 	/**	Projection type to use by the camera. */
@@ -46,14 +48,23 @@ namespace BansheeEngine
     };
 
 	/**	Flags that describe a camera. */
-	enum class CameraFlags
+	enum class CameraFlag
 	{
 		/** 
 		 * This flag is a signal to the renderer that his camera will only render overlays and doesn't require depth   
 		 * buffer or multi-sampled render targets. This can improve performance and memory usage. 
 		 */
-		Overlay = 1
+		Overlay = 1,
+		/** 
+		 * High dynamic range allows light intensity to be more correctly recorded when rendering by allowing for a larger
+		 * range of values. The stored light is then converted into visible color range using exposure and a tone mapping 
+		 * operator.
+		 */
+		HDR = 2
 	};
+
+	typedef Flags<CameraFlag> CameraFlags;
+	BS_FLAGS_OPERATORS(CameraFlag);
 
 	/** @} */
 	/** @addtogroup Implementation
@@ -297,11 +308,26 @@ namespace BansheeEngine
 		/**	Sets layer bitfield that is used when determining which object should the camera render. */
 		void setLayers(UINT64 layers) { mLayers = layers; _markCoreDirty(); }
 
-		/**	Retrieves flags that define the camera. */
-		CameraFlags getFlags() const { return (CameraFlags)mCameraFlags; }
+		/** Returns number of samples if the camera uses multiple samples per pixel. */
+		UINT32 getMSAACount() const { return mMSAA; }
 
-		/**	Sets flags that define the camera's behaviour. */
-		void setFlags(const CameraFlags& flags) { mCameraFlags = (UINT32)flags; _markCoreDirty(); }
+		/** 
+		 * Enables or disables multi-sampled anti-aliasing. Set to zero or one to disable, or to the required number of
+		 * samples to enable.
+		 */
+		void setMSAACount(UINT32 count) { mMSAA = count; _markCoreDirty(); }
+
+		/** Returns settings that are used for controling post-process operations like tonemapping. */
+		const PostProcessSettings& getPostProcessSettings() const { return mPPSettings; }
+
+		/** Sets settings that are used for controling post-process operations like tonemapping. */
+		void setPostProcessSettings(const PostProcessSettings& settings) { mPPSettings = settings; _markCoreDirty(CameraDirtyFlag::PostProcess); }
+
+		/**	Retrieves flags that define the camera. */
+		CameraFlags getFlags() const { return mCameraFlags; }
+
+		/**	Enables or disables flags that define the camera's behaviour. */
+		void setFlag(const CameraFlag& flag, bool enable);
 
 		/**
 		 * Converts a point in world space to screen coordinates (in pixels corresponding to the render target attached to
@@ -431,7 +457,7 @@ namespace BansheeEngine
 
     protected:
 		UINT64 mLayers; /**< Bitfield that can be used for filtering what objects the camera sees. */
-		UINT32 mCameraFlags; /**< Flags that further determine type of camera. */
+		CameraFlags mCameraFlags; /**< Flags that further determine type of camera. */
 
 		Vector3 mPosition; /**< World space position. */
 		Quaternion mRotation; /**< World space rotation. */
@@ -447,6 +473,9 @@ namespace BansheeEngine
 
 		bool mCustomViewMatrix; /**< Is custom view matrix set. */
 		bool mCustomProjMatrix; /**< Is custom projection matrix set. */
+		UINT8 mMSAA; /**< Number of samples to render the scene with. */
+
+		PostProcessSettings mPPSettings; /**< Settings used to control post-process operations. */
 
 		bool mFrustumExtentsManuallySet; /**< Are frustum extents manually set. */
 
@@ -458,9 +487,9 @@ namespace BansheeEngine
 		mutable Matrix4 mViewMatrixInv;
 
 		mutable ConvexVolume mFrustum; /**< Main clipping planes describing cameras visible area. */
-		mutable bool mRecalcFrustum; /**< Should frustum be recalculated. */
-		mutable bool mRecalcFrustumPlanes; /**< Should frustum planes be recalculated. */
-		mutable bool mRecalcView; /**< Should view matrix be recalculated. */
+		mutable bool mRecalcFrustum : 1; /**< Should frustum be recalculated. */
+		mutable bool mRecalcFrustumPlanes : 1; /**< Should frustum planes be recalculated. */
+		mutable bool mRecalcView : 1; /**< Should view matrix be recalculated. */
 		mutable float mLeft, mRight, mTop, mBottom; /**< Frustum extents. */
 		mutable AABox mBoundingBox; /**< Frustum bounding box. */
      };

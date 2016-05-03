@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 
 namespace BansheeEngine
 {
+    /** @cond INTEROP */
     /** @addtogroup Interop
      *  @{
      */
@@ -108,4 +109,5 @@ namespace BansheeEngine
     }
 
     /** @} */
+    /** @endcond */
 }

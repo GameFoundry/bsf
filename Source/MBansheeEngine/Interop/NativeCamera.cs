@@ -125,6 +125,23 @@ namespace BansheeEngine
             set { Internal_SetPriority(mCachedPtr, value); }
         }
 
+        internal bool HDR
+        {
+            get { return Internal_GetHDR(mCachedPtr); }
+            set { Internal_SetHDR(mCachedPtr, value); }
+        }
+
+        internal PostProcessSettings PostProcess
+        {
+            get
+            {
+                PostProcessSettings value;
+                Internal_GetPostProcessSettings(mCachedPtr, out value);
+                return value;
+            }
+            set { Internal_SetPostProcessSettings(mCachedPtr, ref value); }
+        }
+
         internal ulong layers
         {
             get { return Internal_GetLayers(mCachedPtr); }
@@ -410,6 +427,16 @@ namespace BansheeEngine
         private static extern int Internal_GetPriority(IntPtr instance);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetPriority(IntPtr instance, int value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_GetHDR(IntPtr instance);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetHDR(IntPtr instance, bool value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_GetPostProcessSettings(IntPtr instance, out PostProcessSettings value);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetPostProcessSettings(IntPtr instance, ref PostProcessSettings value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern ulong Internal_GetLayers(IntPtr instance);

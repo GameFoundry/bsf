@@ -13,7 +13,9 @@ namespace BansheeEngine
     /// </summary>
     internal class NativeGUIWidget : ScriptObject
     {
+#pragma warning disable 649
         private GUIPanel panel; // Populated by runtime
+#pragma warning restore 649
 
         /// <summary>
         /// Skin used for rendering all the GUI elements belonging to this widget.

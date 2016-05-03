@@ -65,20 +65,21 @@ namespace BansheeEngine
         /// </summary>
         BC7 = 20,
         /// <summary>
-        /// 16-bit pixel format, 16 bits (float) for red.
+        /// 16-bit 1-channel s10e5 floating point pixel format, 16 bits (float) for red.
         /// </summary>
         Float16_R = 21,
         /// <summary>
-        /// 32-bit, 2-channel s10e5 floating point pixel format, 16-bit red, 16-bit green.
+        /// 32-bit, 2-channel s10e5 floating point pixel format, 16-bits (float) for red, 16-bits (float) for green.
         /// </summary>
         Float16_RG = 22,
         /// <summary>
-        /// 48-bit pixel format, 16 bits (float) for red, 16 bits (float) for green, 16 bits (float) for blue.
+        /// 48-bit, 3-channel s10e5 floating point pixel format,, 16 bits (float) for red, 16 bits (float) for green, 
+        /// 16 bits (float) for blue.
         /// </summary>
         Float16_RGB = 23,
         /// <summary>
-        /// 64-bit pixel format, 16 bits (float) for red, 16 bits (float) for green, 16 bits (float) for blue, 16 bits 
-        /// (float) for alpha.
+        /// 64-bit, 4-channel s10e5 floating point pixel format, 16 bits (float) for red, 16 bits (float) for green, 
+        /// 16 bits (float) for blue, 16 bits (float) for alpha.
         /// </summary>
         Float16_RGBA = 24,
         /// <summary>
@@ -86,7 +87,7 @@ namespace BansheeEngine
         /// </summary>
         Float32_R = 25,
         /// <summary>
-        /// 64-bit, 2-channel floating point pixel format, 32-bit red, 32-bit green.
+        /// 64-bit, pixel format, 32-bits (float) for red, 32-bits (float) for green.
         /// </summary>
         Float32_RG = 26,
         /// <summary>
@@ -103,7 +104,7 @@ namespace BansheeEngine
         /// </summary>
         D32_S8X24 = 29,
         /// <summary>
-        /// Depth stencil fomrat, 24bit depth + 8bit stencil.
+        /// Depth stencil format, 24bit depth + 8bit stencil.
         /// </summary>
         D24S8 = 30,
         /// <summary>

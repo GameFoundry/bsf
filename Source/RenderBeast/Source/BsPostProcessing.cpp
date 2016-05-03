@@ -5,6 +5,7 @@
 #include "BsRenderTexturePool.h"
 #include "BsRendererUtility.h"
 #include "BsTextureManager.h"
+#include "BsCamera.h"
 
 namespace BansheeEngine
 {
@@ -389,10 +390,13 @@ namespace BansheeEngine
 	template class TonemappingMat<true, false>;
 	template class TonemappingMat<false, false>;
 
-	void PostProcessing::postProcess(const SPtr<RenderTextureCore>& sceneColor, const SPtr<ViewportCore>& outputViewport, 
+	void PostProcessing::postProcess(const SPtr<RenderTextureCore>& sceneColor, const CameraCore* camera, 
 		PostProcessInfo& ppInfo, float frameDelta)
 	{
-		if(ppInfo.settings.enableAutoExposure)
+		SPtr<ViewportCore> outputViewport = camera->getViewport();
+		bool hdr = camera->getFlags().isSet(CameraFlag::HDR);
+
+		if(hdr && ppInfo.settings.enableAutoExposure)
 		{
 			mDownsample.execute(sceneColor, ppInfo);
 			mEyeAdaptHistogram.execute(ppInfo);
@@ -405,25 +409,26 @@ namespace BansheeEngine
 			mEyeAdaptHistogramReduce.release(ppInfo);
 		}
 
-		if (ppInfo.settings.enableTonemapping)
+		if (hdr && ppInfo.settings.enableTonemapping)
 		{
-			// TODO - No need to generate LUT every frame, instead perhaps check for changes and only modify when needed?
-			mCreateLUT.execute(ppInfo);
+			if (ppInfo.settingDirty) // Rebuild LUT if PP settings changed
+				mCreateLUT.execute(ppInfo);
 
 			if (ppInfo.settings.enableAutoExposure)
 				mTonemapping_AE.execute(sceneColor, outputViewport, ppInfo);
 			else
 				mTonemapping.execute(sceneColor, outputViewport, ppInfo);
-
-			mCreateLUT.release(ppInfo);
 		}
 		else
 		{
-			if (ppInfo.settings.enableAutoExposure)
+			if (hdr && ppInfo.settings.enableAutoExposure)
 				mTonemapping_AE_GO.execute(sceneColor, outputViewport, ppInfo);
 			else
 				mTonemapping_GO.execute(sceneColor, outputViewport, ppInfo);
 		}
+
+		if (ppInfo.settingDirty)
+			ppInfo.settingDirty = false;
 
 		// TODO - External code depends on the main RT being bound when this exits, make this clearer
 	}

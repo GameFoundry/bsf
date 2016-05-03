@@ -1,6 +1,5 @@
 Banshee Engine Documentation (Managed)						{#mainpage}
 ===============
-
 [TOC]
 
 Welcome to the documentation for the managed (C#) API of the Banshee Engine.

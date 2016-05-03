@@ -24,6 +24,11 @@ h3 {
 	border-bottom: 1px dashed #CD8512;
 }
 
+div.contents {
+	margin: auto;
+	width: 960px;
+}
+
 .textblock {
 	padding-bottom: 25px;
 }

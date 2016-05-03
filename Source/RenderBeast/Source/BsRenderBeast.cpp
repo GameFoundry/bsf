@@ -340,6 +340,8 @@ namespace BansheeEngine
 			transparentStateReduction = StateReduction::Distance; // Transparent object MUST be sorted by distance
 
 		camData.transparentQueue = bs_shared_ptr_new<RenderQueue>(transparentStateReduction);
+		camData.postProcessInfo.settings = camera->getPostProcessSettings();
+		camData.postProcessInfo.settingDirty = true;
 
 		// Register in render target list
 		auto findIter = std::find_if(mRenderTargets.begin(), mRenderTargets.end(), 
@@ -372,9 +374,14 @@ namespace BansheeEngine
 		}
 	}
 
-	void RenderBeast::notifyCameraUpdated(const CameraCore* camera, const Vector3& position, const Quaternion& rotation)
+	void RenderBeast::notifyCameraUpdated(const CameraCore* camera, UINT32 updateFlag)
 	{
-		/* Do nothing, we poll position/rotation every frame anyway. */
+		CameraDirtyFlag dirtyFlag = (CameraDirtyFlag)updateFlag;
+		if(dirtyFlag == CameraDirtyFlag::PostProcess)
+		{
+			CameraData& camData = mCameraData[camera];
+			camData.postProcessInfo.settingDirty = true;
+		}
 	}
 
 	void RenderBeast::notifyCameraRemoved(const CameraCore* camera)
@@ -482,7 +489,7 @@ namespace BansheeEngine
 			UINT32 numCameras = (UINT32)cameras.size();
 			for (UINT32 i = 0; i < numCameras; i++)
 			{
-				bool isOverlayCamera = ((UINT32)cameras[i]->getFlags() & (UINT32)CameraFlags::Overlay) != 0;
+				bool isOverlayCamera = cameras[i]->getFlags().isSet(CameraFlag::Overlay);
 				if (!isOverlayCamera)
 					render(renderTargetData, i, delta);
 				else
@@ -506,17 +513,20 @@ namespace BansheeEngine
 		SPtr<ViewportCore> viewport = camera->getViewport();
 		CameraShaderData cameraShaderData = getCameraShaderData(*camera);
 
-		assert(((UINT32)camera->getFlags() & (UINT32)CameraFlags::Overlay) == 0);
+		assert(!camera->getFlags().isSet(CameraFlag::Overlay));
 
 		mStaticHandler->updatePerCameraBuffers(cameraShaderData);
 
+		bool useHDR = camera->getFlags().isSet(CameraFlag::HDR);
+		UINT32 msaaCount = camera->getMSAACount();
+
 		// Render scene objects to g-buffer
 		bool createGBuffer = camData.target == nullptr ||
-			camData.target->getHDR() != mCoreOptions->hdr ||
-			camData.target->getNumSamples() != mCoreOptions->msaa;
+			camData.target->getHDR() != useHDR ||
+			camData.target->getNumSamples() != msaaCount;
 
 		if (createGBuffer)
-			camData.target = RenderTargets::create(viewport, mCoreOptions->hdr, mCoreOptions->msaa);
+			camData.target = RenderTargets::create(viewport, useHDR, msaaCount);
 
 		camData.target->allocate();
 		camData.target->bindGBuffer();
@@ -703,7 +713,7 @@ namespace BansheeEngine
 
 		// TODO - If GBuffer has multiple samples, I should resolve them before post-processing
 		PostProcessing::instance().postProcess(camData.target->getSceneColorRT(), 
-			viewport, camData.postProcessInfo, delta);
+			camera, camData.postProcessInfo, delta);
 
 		// Render overlay post-scene callbacks
 		if (iterCameraCallbacks != mRenderCallbacks.end())
@@ -729,9 +739,7 @@ namespace BansheeEngine
 		gProfilerCPU().beginSample("RenderOverlay");
 
 		const CameraCore* camera = rtData.cameras[camIdx];
-		CameraData& camData = mCameraData[camera];
-
-		assert(((UINT32)camera->getFlags() & (UINT32)CameraFlags::Overlay) != 0);
+		assert(camera->getFlags().isSet(CameraFlag::Overlay));
 
 		SPtr<ViewportCore> viewport = camera->getViewport();
 		CameraShaderData cameraShaderData = getCameraShaderData(*camera);
@@ -783,7 +791,7 @@ namespace BansheeEngine
 	
 	void RenderBeast::determineVisible(const CameraCore& camera)
 	{
-		bool isOverlayCamera = ((UINT32)camera.getFlags() & (UINT32)CameraFlags::Overlay) != 0;
+		bool isOverlayCamera = camera.getFlags().isSet(CameraFlag::Overlay);
 		if (isOverlayCamera)
 			return;
 
