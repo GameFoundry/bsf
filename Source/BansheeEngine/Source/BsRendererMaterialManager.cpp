@@ -15,7 +15,7 @@ namespace BansheeEngine
 		Vector<SPtr<ShaderCore>> shaders;
 		for (auto& material : materials)
 		{
-			HShader shader = br.getShader(material.shaderPath);
+			HShader shader = br.getShader(material.resourcePath);
 			if (shader.isLoaded())
 				shaders.push_back(shader->getCore());
 			else
@@ -35,7 +35,15 @@ namespace BansheeEngine
 		Lock lock(getMutex());
 
 		Vector<RendererMaterialData>& materials = getMaterials();
-		materials.push_back({metaData, shaderPath});
+		UINT32 variationIdx = 0;
+		for (auto& entry : materials)
+		{
+			if (entry.shaderPath == shaderPath)
+				variationIdx++;
+		}
+
+		Path resourcePath = _getVariationPath(shaderPath, variationIdx);
+		materials.push_back({metaData, shaderPath, resourcePath });
 	}
 
 	Vector<ShaderDefines> RendererMaterialManager::_getVariations(const Path& shaderPath)
@@ -50,6 +58,22 @@ namespace BansheeEngine
 		}
 
 		return output;
+	}
+
+	Path RendererMaterialManager::_getVariationPath(const Path& shaderPath, UINT32 variationIdx)
+	{
+		if (variationIdx == 0)
+		{
+			return shaderPath;
+		}
+		else
+		{
+			Path uniquePath = shaderPath;
+			uniquePath.setFilename(shaderPath.getWFilename(false) + L"_" + toWString(variationIdx) +
+				shaderPath.getWExtension());
+
+			return uniquePath;
+		}
 	}
 
 	void RendererMaterialManager::initOnCore(const Vector<SPtr<ShaderCore>>& shaders)

@@ -275,6 +275,7 @@ namespace BansheeEditor
                 }
 
                 ToggleTypeSpecificFields(camera.ProjectionType);
+                postProcessLayout.Active = Persistent.GetBool("postProcess_Expanded");
             }
         }
 

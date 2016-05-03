@@ -23,6 +23,7 @@ namespace BansheeEngine
 		{
 			RendererMaterialMetaData* metaData;
 			Path shaderPath;
+			Path resourcePath;
 		};
 
 	public:
@@ -34,6 +35,9 @@ namespace BansheeEngine
 
 		/** Returns all available variations (specified by pre-processor defines) of a shader at the provided path. */
 		static Vector<ShaderDefines> _getVariations(const Path& shaderPath);
+
+		/** Generates a new unique shader path for a specific shader variation. */
+		static Path _getVariationPath(const Path& shaderPath, UINT32 variationIdx);
 
 	private:
 		template<class T>

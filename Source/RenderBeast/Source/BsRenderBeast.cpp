@@ -380,6 +380,7 @@ namespace BansheeEngine
 		if(dirtyFlag == CameraDirtyFlag::PostProcess)
 		{
 			CameraData& camData = mCameraData[camera];
+			camData.postProcessInfo.settings = camera->getPostProcessSettings();
 			camData.postProcessInfo.settingDirty = true;
 		}
 	}

@@ -371,7 +371,10 @@ namespace BansheeEngine
 
 		mColorLUT.set(colorLUT);
 
-		SPtr<TextureCore> eyeAdaptationTexture = ppInfo.eyeAdaptationTex[ppInfo.lastEyeAdaptationTex]->texture;
+		SPtr<TextureCore> eyeAdaptationTexture;
+		if(ppInfo.eyeAdaptationTex[ppInfo.lastEyeAdaptationTex] != nullptr)
+			eyeAdaptationTexture = ppInfo.eyeAdaptationTex[ppInfo.lastEyeAdaptationTex]->texture;
+
 		mEyeAdaptationTex.set(eyeAdaptationTexture);
 
 		// Render

@@ -61,14 +61,14 @@ namespace BansheeEditor
         {
             this.settings = settings;
 
-            histogramLog2MinField.OnChanged += x => { settings.HistogramLog2Min = x; MarkAsModified(); ConfirmModify(); };
-            histogramLog2MaxField.OnChanged += x => { settings.HistogramLog2Max = x; MarkAsModified(); ConfirmModify(); };
-            histogramPctLowField.OnChanged += x => { settings.HistogramPctLow = x; MarkAsModified(); ConfirmModify(); };
-            histogramPctHighField.OnChanged += x => { settings.HistogramPctHigh = x; MarkAsModified(); ConfirmModify(); };
-            minEyeAdaptationField.OnChanged += x => { settings.MinEyeAdaptation = x; MarkAsModified(); ConfirmModify(); };
-            maxEyeAdaptationField.OnChanged += x => { settings.MaxEyeAdaptation = x; MarkAsModified(); ConfirmModify(); };
-            eyeAdaptationSpeedUpField.OnChanged += x => { settings.EyeAdaptationSpeedUp = x; MarkAsModified(); ConfirmModify(); };
-            eyeAdaptationSpeedDownField.OnChanged += x => { settings.EyeAdaptationSpeedDown = x; MarkAsModified(); ConfirmModify(); };
+            histogramLog2MinField.OnChanged += x => { this.settings.HistogramLog2Min = x; MarkAsModified(); ConfirmModify(); };
+            histogramLog2MaxField.OnChanged += x => { this.settings.HistogramLog2Max = x; MarkAsModified(); ConfirmModify(); };
+            histogramPctLowField.OnChanged += x => { this.settings.HistogramPctLow = x; MarkAsModified(); ConfirmModify(); };
+            histogramPctHighField.OnChanged += x => { this.settings.HistogramPctHigh = x; MarkAsModified(); ConfirmModify(); };
+            minEyeAdaptationField.OnChanged += x => { this.settings.MinEyeAdaptation = x; MarkAsModified(); ConfirmModify(); };
+            maxEyeAdaptationField.OnChanged += x => { this.settings.MaxEyeAdaptation = x; MarkAsModified(); ConfirmModify(); };
+            eyeAdaptationSpeedUpField.OnChanged += x => { this.settings.EyeAdaptationSpeedUp = x; MarkAsModified(); ConfirmModify(); };
+            eyeAdaptationSpeedDownField.OnChanged += x => { this.settings.EyeAdaptationSpeedDown = x; MarkAsModified(); ConfirmModify(); };
 
             layout.AddElement(histogramLog2MinField);
             layout.AddElement(histogramLog2MaxField);
@@ -149,31 +149,31 @@ namespace BansheeEditor
         {
             this.settings = settings;
 
-            shoulderStrengthField.OnChanged += x => { settings.FilmicCurveShoulderStrength = x; MarkAsModified(); };
+            shoulderStrengthField.OnChanged += x => { this.settings.FilmicCurveShoulderStrength = x; MarkAsModified(); };
             shoulderStrengthField.OnFocusLost += ConfirmModify;
             shoulderStrengthField.OnConfirmed += ConfirmModify;
 
-            linearStrengthField.OnChanged += x => { settings.FilmicCurveLinearStrength = x; MarkAsModified(); };
+            linearStrengthField.OnChanged += x => { this.settings.FilmicCurveLinearStrength = x; MarkAsModified(); };
             linearStrengthField.OnFocusLost += ConfirmModify;
             linearStrengthField.OnConfirmed += ConfirmModify;
 
-            linearAngleField.OnChanged += x => { settings.FilmicCurveLinearAngle = x; MarkAsModified(); };
+            linearAngleField.OnChanged += x => { this.settings.FilmicCurveLinearAngle = x; MarkAsModified(); };
             linearAngleField.OnFocusLost += ConfirmModify;
             linearAngleField.OnConfirmed += ConfirmModify;
 
-            toeStrengthField.OnChanged += x => { settings.FilmicCurveToeStrength = x; MarkAsModified(); };
+            toeStrengthField.OnChanged += x => { this.settings.FilmicCurveToeStrength = x; MarkAsModified(); };
             toeStrengthField.OnFocusLost += ConfirmModify;
             toeStrengthField.OnConfirmed += ConfirmModify;
 
-            toeNumeratorField.OnChanged += x => { settings.FilmicCurveToeNumerator = x; MarkAsModified(); };
+            toeNumeratorField.OnChanged += x => { this.settings.FilmicCurveToeNumerator = x; MarkAsModified(); };
             toeNumeratorField.OnFocusLost += ConfirmModify;
             toeNumeratorField.OnConfirmed += ConfirmModify;
 
-            toeDenominatorField.OnChanged += x => { settings.FilmicCurveToeDenominator = x; MarkAsModified(); };
+            toeDenominatorField.OnChanged += x => { this.settings.FilmicCurveToeDenominator = x; MarkAsModified(); };
             toeDenominatorField.OnFocusLost += ConfirmModify;
             toeDenominatorField.OnConfirmed += ConfirmModify;
 
-            whitePointField.OnChanged += x => { settings.FilmicCurveLinearWhitePoint = x; MarkAsModified(); };
+            whitePointField.OnChanged += x => { this.settings.FilmicCurveLinearWhitePoint = x; MarkAsModified(); };
             whitePointField.OnFocusLost += ConfirmModify;
             whitePointField.OnConfirmed += ConfirmModify;
 
@@ -246,19 +246,19 @@ namespace BansheeEditor
         {
             this.settings = settings;
 
-            saturationField.OnChanged += x => { settings.Saturation = x; MarkAsModified(); };
+            saturationField.OnChanged += x => { this.settings.Saturation = x; MarkAsModified(); };
             saturationField.OnFocusLost += ConfirmModify;
             saturationField.OnConfirmed += ConfirmModify;
 
-            contrastField.OnChanged += x => { settings.Contrast = x; MarkAsModified(); };
+            contrastField.OnChanged += x => { this.settings.Contrast = x; MarkAsModified(); };
             contrastField.OnFocusLost += ConfirmModify;
             contrastField.OnConfirmed += ConfirmModify;
 
-            gainField.OnChanged += x => { settings.Gain = x; MarkAsModified(); };
+            gainField.OnChanged += x => { this.settings.Gain = x; MarkAsModified(); };
             gainField.OnFocusLost += ConfirmModify;
             gainField.OnConfirmed += ConfirmModify;
 
-            offsetField.OnChanged += x => { settings.Offset = x; MarkAsModified(); };
+            offsetField.OnChanged += x => { this.settings.Offset = x; MarkAsModified(); };
             offsetField.OnFocusLost += ConfirmModify;
             offsetField.OnConfirmed += ConfirmModify;
 
@@ -324,8 +324,8 @@ namespace BansheeEditor
         {
             this.settings = settings;
 
-            temperatureField.OnChanged += x => { settings.Temperature = x; MarkAsModified(); ConfirmModify(); };
-            tintField.OnChanged += x => { settings.Tint = x; MarkAsModified(); ConfirmModify(); };
+            temperatureField.OnChanged += x => { this.settings.Temperature = x; MarkAsModified(); ConfirmModify(); };
+            tintField.OnChanged += x => { this.settings.Tint = x; MarkAsModified(); ConfirmModify(); };
 
             layout.AddElement(temperatureField);
             layout.AddElement(tintField);
@@ -415,7 +415,7 @@ namespace BansheeEditor
             this.properties = properties;
 
             // Auto exposure
-            enableAutoExposureField.OnChanged += x => { settings.EnableAutoExposure = x; MarkAsModified(); ConfirmModify(); };
+            enableAutoExposureField.OnChanged += x => { this.settings.EnableAutoExposure = x; MarkAsModified(); ConfirmModify(); };
             layout.AddElement(enableAutoExposureField);
 
             autoExposureFoldout.OnToggled += x =>
@@ -436,7 +436,7 @@ namespace BansheeEditor
             }
 
             // Tonemapping
-            enableToneMappingField.OnChanged += x => { settings.EnableTonemapping = x; MarkAsModified(); ConfirmModify(); };
+            enableToneMappingField.OnChanged += x => { this.settings.EnableTonemapping = x; MarkAsModified(); ConfirmModify(); };
             layout.AddElement(enableToneMappingField);
 
             //// Tonemapping settings
@@ -494,12 +494,14 @@ namespace BansheeEditor
             }
 
             // Gamma
-            gammaField.OnChanged += x => { settings.Gamma = x; MarkAsModified(); ConfirmModify(); };
+            gammaField.OnChanged += x => { this.settings.Gamma = x; MarkAsModified(); ConfirmModify(); };
             layout.AddElement(gammaField);
 
             // Exposure scale
-            exposureScaleField.OnChanged += x => { settings.ExposureScale = x; MarkAsModified(); ConfirmModify(); };
+            exposureScaleField.OnChanged += x => { this.settings.ExposureScale = x; MarkAsModified(); ConfirmModify(); };
             layout.AddElement(exposureScaleField);
+
+            ToggleFoldoutFields();
         }
 
         /// <summary>
