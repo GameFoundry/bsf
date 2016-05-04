@@ -1,285 +1,33 @@
-# BansheeEngine
+# What is Banshee?
+A high quality modern game development toolkit. It provides a **high performance multi-threaded game engine** written in C++14 that runs 2D and 3D games. The engine offers a wide variety of high level systems needed for game development, ranging from math and utility libraries, to DirectX 11 and OpenGL support all the way to input, GUI, physics, scripting and support for many popular resource formats (e.g. FBX, PNG, PSD, TTF).
 
-A modern open-source game development toolkit. It aims to provide simple yet powerful environment for creating games and other graphical applications. A wide range of features are available, ranging from a math and utility library, to DirectX 11 and OpenGL render systems all the way to asset processing, fully featured editor and C# scripting.
+On top of the engine Banshee also provides a highly intuitive and customizable **editor** that is easy to use by artists, designers and programmers alike. The editor allows you to manage all your project's assets, build levels, compile scripts, test and publish your game. Editor is also fully extensible via scripting to ensure developers can easily customize for the exact needs of their projects.
 
-For game developers Banshee aims to provide a complete set of tools and APIs needed to make a game from start to finish. It provides a highly intuitive and customizable editor that is easy to use by artists, designers and programmers alike, supporting development stages from asset management, scene building, scripting to game publishing. C# scripting makes your development easier by giving you access to the entire .NET library, along with fast iterations times while being safe and easy to write. Editor is fully extensible with the help of specially developed scripting API so you may customize it for exact needs of your project.
+The scripting system supports C# and comes with an extensive API ensuring you can complete your game without ever touching the C++ engine core. **C# scripting** makes your development easier by giving you access to the entire .NET library and a wide variety of pre-existing managed libraries. Integration of the scripting system with the editor and external tools like Visual Studio, as well as fast compilation times ensures that iteration times between coding and testing are minimized.
 
-For engine developers it aims to provide a high quality foundation to build and improve upon. Banshee runs on a powerful multi-threaded C++14 core created to take advantage of all resources modern hardware can offer. Built from ground up using modern design principles, everything is modular, layered and decoupled as much as possible, making it easier to modify, replace or add functionality. Platform specific functionality is kept at a minimum making porting as easy as possible. Additionally every non-trivial method, class and field is documented. All this combined makes Banshee a great platform to build upon, for developing higher level systems like editor tools, core enhancements like new rendering techniques and platform ports, all the way to creating fully specialized toolsets that fit your team's needs exactly.
+Aside from being a fully featured game engine and toolkit, Banshee also aims to provide a **high quality foundation**, so others may build and improve upon it. This is reflected in Banshee's architecture which is split into multiple layers allowing developers to use only the functionality they need, as well as its plugin oriented nature which allows developers to fully remove or replace major engine systems. You will find that Banshee's code is modern, with clean interfaces that make it easy to learn and maintain. Platform specific functionality is kept at a minimum making porting as easy as possible. Additionally its codebase is fully documented with an extensive API reference, as well as a set of manuals introducing you to most major systems.
 
+# Features
+* [Features](Documentation/GitHub/features.md) - A list of all currently available features.
+* [Roadmap](Documentation/GitHub/roadmap.md) - A list of features to be implemented in both near and far future.
+
+# Download
+* [Binaries](Documentation/GitHub/install.md) - Download pre-built binaries for the most recent version.
+* [Compiling](Documentation/GitHub/compiling.md) - Learn how to compile the engine yourself.
+
+# Documentation
+* [Managed](http://docs.banshee3d.com/Managed/index.html) - Documentation for the scripting (C#) API. This is what most users will be interested in.
+* [Native] (http://docs.banshee3d.com/Native/index.html) - Documentation for the native (C++) API. This is meant for advanced users meaning to extend/modify the engine.
+* [License](Documentation/GitHub/license.md) - Information about Banshee's license.
+
+# Media
+**Banshee Editor**
 ![Banshee Editor](http://bearishsun.thalassa.feralhosting.com/BansheeEditor.png "Banshee Editor")
 
-## Development state
-
-Project is currently in active development. Current version is considered a preview version. Bugs are to be expected, optimization is not complete and some major features are yet to be added (see below for a list).
-
-## Download/Install
-
-Downloading pre-compiled binaries is the easiest way to check out Banshee if you don't want to go through the hassle of compiling it yourself. 
-
-[Download binaries (Windows x64)] (http://bearishsun.thalassa.feralhosting.com/Banshee_Win_x64_v0.2.0.zip)
-
-## Compiling from source
-
-Banshee compiles on VS2013 and VS2015. Other Windows compilers might work but have not been tested. Support for more platforms and compilers will become available with time.
-
-Aside from Banshee source code you will also need various third party dependencies. You may retrieve/compile those dependencies yourself by following a guide in "CompilingDependenciesManually.txt". If you are using VS2015 you can avoid compiling dependencies by downloading a set of pre-compiled dependencies below. These should be extracted in the root of the directory containing Banshee source code.
-
-[Download precompiled dependencies (VS2015)] (http://bearishsun.thalassa.feralhosting.com/BansheeDependencies_VS2015_v0.2.0.zip)
-
-## Features (currently available)
-
-* Editor
-  * Asset management
-    * Simple drag and drop import
-	* Automatic reimport of externally modified assets
-	* Asset modifications immediately reflected in-game
-    * Version control friendly format
-  * Powerful object inspector
-    * Automatic GUI for script objects
-    * Exposes properties for artists/designers
-    * Customizable per-type
-  * Level creation
-    * Simple drag and drop interface
-	* Traditional set of tools
-    * Custom 2D and 3D tool support
-  * Prefab system
-    * Pre-built templates for level design
-	* Easy to create and maintain complex levels
-	* Hierarchical prefabs and instance specialization
-  * Play in editor
-    * Compile in editor
-    * Immediately test changes
-	* Pause and frame-step
-	* Analyze and modify scene while playing
-  * Fully extensible for game-specific needs
-    * Easy to extend using scripting
-    * Comprehensive extension scripting API
-	* Extend almost anything
-	  * Editor windows
-	  * Object inspectors
-	  * 2D/3D tools
-	  * Automate common tasks
-  * Game publishing
-    * One click build process
-	* Automatically detect required resources
-	* Automatically package and output an executable
-  * Customizable frontend
-    * Dockable layout and floating windows
-	* Custom skin & localization support
-   
-* Core
-  * Design
-    * Built using C++14 and modern design principles
-    * Clean layered design
-    * Fully documented
-    * Modular & plugin based
-	* Minimal third-party dependencies
-    * Multiplatform ready
-  * Renderer
-    * DX9, DX11 and OpenGL 4.3 render systems
-    * Multi-threaded rendering
-    * Flexible material system
-      * Easy to control and set up
-	  * BansheeFX language for material definitions
-      * Shader parsing for HLSL9, HLSL11 and GLSL
-  * Asset pipeline
-    * Easy to use
-    * Asynchronous resource loading
-    * Extensible importer system
-    * Available importer plugins for:
-      * FBX, OBJ, DAE meshes
-      * PNG, PSD, BMP, JPG, ... images
-      * OTF, TTF fonts
-      * HLSL9, HLSL11, GLSL shaders
-  * GUI system
-    * Unicode text rendering and input
-    * Easy to use layout based system
-    * Many common GUI controls
-    * Fully skinnable
-    * Automatic batching
-    * Support for texture atlases
-    * Localization
-  * Scripting
-    * C# 5.0
-	* Separate high level engine API
-	* Integrated runtime for maximum performance
-    * Full access to .NET framework
-	* Integration with Visual Studio
-	* Automatic serialization
-	  * Custom components
-	  * Custom resources
-	  * No additional code
-	  * Handles complex types and references
-  * Other
-    * CPU & GPU profiler
-    * Virtual input
-    * Advanced RTTI system
-    * Native object serialization
-    * Debug drawing
-	* Crash reporting
-    * Utility library
-      * Math, file system, events, thread pool, task scheduler, logging, memory allocators and more
-    
-## Features (coming in near future)
- * DirectX 12/Vulkan support
- * Physically based renderer
- * Physics system integration
- * Audio system integration
- * Animation
- * Mac & Linux support
-
-## Getting started
-
-Banshee is a multi-layered engine that aims to be flexible enough to handle various needs. Therefore this section is split into two sub-sections, first one aimed for game developers (high-level C# programmers, artists, designers) and second one for engine developers (low level C++ programmers).
-
-### Getting started (Game developers)
-
-Easiest way to get started is to check out the [video guide] (http:://TODO). The guide shows you how to use the essential parts of the editor to create a simple working application. Also check out the code snippets with some basic code examples below.
-
-#### Component with simple input
-```
-    public class Player : Component
-    {
-        void OnUpdate()
-        {
-            Vector3 movement = Vector3.Zero;
-
-            if (Input.IsButtonHeld(ButtonCode.Left))
-                movement -= Vector3.XAxis*Time.FrameDelta;
-            else if (Input.IsButtonHeld(ButtonCode.Right))
-                movement += Vector3.XAxis*Time.FrameDelta;
-            else if (Input.IsButtonHeld(ButtonCode.Up))
-                movement -= Vector3.ZAxis * Time.FrameDelta;
-            else if (Input.IsButtonHeld(ButtonCode.Down))
-                movement += Vector3.ZAxis * Time.FrameDelta;
-            
-            SceneObject.MoveLocal(movement);
-        }
-    }
-```
-
-#### Creating GUI
-```
-    public class MyGUI : Component
-    {
-        void OnInitialize()
-        {
-            GUILabel label = new GUILabel("A couple GUI elements:");
-
-            GUIButton button = new GUIButton("Click me");
-            button.OnClick += () => Debug.Log("Clicked me!");
-
-            GUITextBox input = new GUITextBox();
-            input.OnChanged += (x) => Debug.Log("Text input: " + x);
-
-            GUILayoutY verticalLayout = GUI.Panel.AddLayoutY();
-            verticalLayout.AddElement(label);
-            verticalLayout.AddElement(button);
-            verticalLayout.AddElement(input);
-        }
-    }
-```
-
-#### Creating a camera
-```
-	SceneObject cameraSO = new SceneObject("MyCamera");
-	camera = cameraSO.AddComponent<Camera>();
-	camera.NearClipPlane = 0.05f;
-	camera.FarClipPlane = 2500.0f;
-	camera.ClearColor = Color.Black;
-
-	cameraSO.Position = new Vector3(0, 0, 5);
-	cameraSO.LookAt(new Vector3(0, 0, 0));
-```
-
-#### Creating a custom resource
-```
-    [SerializeObject]
-    public struct Item
-    {
-        public int id;
-        public string name;
-        public int count;
-    }
-
-    public class InventoryData : ManagedResource
-    {
-        public List<Item> items;
-    }
-
-    ...
-
-    InventoryData inventory = ManagedResource.Create<InventoryData>();
-    ... fill inventory with items ...
-    ProjectLibrary.Create(inventory, "SavedInventory.asset");
-```
-
-### Getting started (Engine developers)
-
-Easiest way to get started with low-level Banshee programming is to check out the `ExampleProject` included with the source code. However to give you a taste here are a few code snippets.
-
-#### Starting a minimal application
-```
-	RENDER_WINDOW_DESC renderWindowDesc;
-	renderWindowDesc.videoMode = VideoMode(1280, 720);
-	renderWindowDesc.title = "My App";
-	renderWindowDesc.fullscreen = false;
-	
-	Application::startUp(renderWindowDesc, RenderSystemPlugin::DX11);
-	Application::instance().runMainLoop();
-	Application::shutDown();
-```
-
-#### Importing resources
-```
-	HMesh dragonModel = gImporter().import<Mesh>("Dragon.fbx");
-	HTexture dragonTexture = gImporter().import<Texture>("Dragon.psd");
-```
-
-#### Adding and positioning a camera
-```
-	HSceneObject sceneCameraSO = SceneObject::create("SceneCamera");
-	HCamera sceneCamera = sceneCameraSO->addComponent<CCamera>(window);
-
-	sceneCameraSO->setPosition(Vector3(40.0f, 30.0f, 230.0f));
-	sceneCameraSO->lookAt(Vector3(0, 0, 0));
-```
-
-#### Setting up a material
-```
-	HShader diffuse = gImporter().import<Shader>("Diffuse.bsl");
-	HMaterial dragonMaterial = Material::create(diffuse);
-   
-	dragonMaterial->setTexture("albedo", dragonTexture);
-```
-
-#### Adding an object for rendering
-```
-	HSceneObject dragonSO = SceneObject::create("Dragon");
-  
-	HRenderable renderable = dragonSO->addComponent<CRenderable>();
-	renderable->setMesh(dragonModel);
-	renderable->setMaterial(dragonMaterial);
-```
-
-#### Adding GUI
-```
-	HSceneObject guiSO = SceneObject::create("GUI");
-	HCamera guiCamera = guiSO->addComponent<CCamera>(window);
-	HGUIWidget gui = guiSO->addComponent<CGUIWidget>(guiCamera);
-  
-	GUIPanel* guiPanel = gui->getPanel();
-	GUILayout* guiLayout = guiPanel->addNewElement<GUILayoutY>();
-	guiLayout->addNewElement<GUIButton>(HString(L"Click me!"));
-	guiLayout->addNewElement<GUIButton>(HString(L"Click me too!"));
-```
-
-# License
-
-Banshee is offered completely free for personal or commercial use under the GNU Lesser General Public License v3 (LGPL v3). A commercial license is also available for those that cannot comply with LGPL terms or just want more flexibility. 
+**Video overview**
+[Link] (https://youtu.be/WJsYOyCXGEU)
 
 # Author
+Banshee was created and is developed by Marko Pintera. The goal of Banshee is to create a high quality open source game engine that is intuitive to use and easy to extend.
 
-Banshee was created and is developed by Marko Pintera.
-
-Contact me at [e-mail] (http://scr.im/39d1) or add me on [LinkedIn] (https://goo.gl/t6pPPs). 
+I'm happy to connect with other developers, feel free to contact me at marko.pintera@gmail.com or add me on [LinkedIn] (https://goo.gl/t6pPPs). 

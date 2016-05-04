@@ -1,6 +1,5 @@
 # Ignored files
 *.suo
-*.user
 *.sdf
 *.opensdf
 bin
@@ -10,5 +9,8 @@ data
 Intermediate
 Dependencies
 Builds
+Documentation/html
 *.aps
 *.opendb
+/Build/VS2015/BansheeEngine.VC.db
+/Build/Generated
