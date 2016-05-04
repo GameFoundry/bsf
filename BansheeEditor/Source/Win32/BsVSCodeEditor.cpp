@@ -611,7 +611,7 @@ EndProject)";
 		bool is64bit = true;
 #else
 		bool is64bit = false;
-		IsWow64Process(GetCurrentProcess(), (PBOOL)&is64bit);
+		IsWow64Process(GetCurrentProcess(), &is64bit);
 #endif
 
 		WString registryKeyRoot;
