@@ -22,7 +22,7 @@ Use the list below to find all dependencies used by specific projects in Banshee
 All dependencies listed are shown with a specific version (the one Banshee was tested against), although many should work with newer versions as well, but that is up to you to test.
 
 BansheeFBXImporter (optional) relies on:
- - FBX SDK 2015.1 for VS2013, FBX SDK 2016.1 for VS2015
+ - FBX SDK 2016.1
    - http://usa.autodesk.com/fbx
 
 BansheeFreeImgImporter (optional) relies on:
@@ -66,6 +66,24 @@ BansheePhysX (optional) relies on:
  - PhysX 3.3
   - https://github.com/NVIDIAGameWorks/PhysX-3.3
   - You will need PhysX3, PhysX3Common, PhysX3Cooking and PhysX3CharacterKinematic libraries
+
+BansheeOpenAudio (optional) relies on:
+ - libogg v1.3.2
+  - https://xiph.org/downloads/
+  - Required in order to build libflac & libvorbis
+    - See readme files included with those libraries as to how to set up libogg library and includes
+  - Use non-debug build for all Banshee configurations for performance reasons
+ - libvorbis commit:5bbe49dc947ea9f1532273644348c53054ca214a
+  - https://git.xiph.org/?p=vorbis.git
+  - Before compiling follow steps for libogg above
+  - Use non-debug build for all Banshee configurations for performance reasons
+ - libflac commit:94a61241b02064c7d9fe508f72a742f2a90b8492
+  - https://git.xiph.org/?p=flac.git
+  - Before compiling follow steps for libogg above
+  - Use non-debug build for all Banshee configurations for performance reasons
+ - OpenAL Soft 1.17.2
+  - https://github.com/kcat/openal-soft
+  - Use non-debug build for all Banshee configurations for performance reasons
 
 Place plug-in specific dependency files in:
  - Library include files in (BansheeRootDir)/Dependencies/(Project)/Include
