@@ -296,6 +296,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\BansheeCore\Include\BsAudio.h" />
+    <ClInclude Include="..\..\Source\BansheeCore\Include\BsAudioClip.h" />
+    <ClInclude Include="..\..\Source\BansheeCore\Include\BsAudioClipImportOptionsRTTI.h" />
+    <ClInclude Include="..\..\Source\BansheeCore\Include\BsAudioClipRTTI.h" />
+    <ClInclude Include="..\..\Source\BansheeCore\Include\BsAudioClipImportOptions.h" />
     <ClInclude Include="..\..\Source\BansheeCore\Include\BsBoxCollider.h" />
     <ClInclude Include="..\..\Source\BansheeCore\Include\BsCBoxColliderRTTI.h" />
     <ClInclude Include="..\..\Source\BansheeCore\Include\BsCapsuleCollider.h" />
@@ -517,6 +522,9 @@
     <ClInclude Include="..\..\Source\BansheeCore\Include\BsPhysicsMeshRTTI.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\BansheeCore\Source\BsAudio.cpp" />
+    <ClCompile Include="..\..\Source\BansheeCore\Source\BsAudioClip.cpp" />
+    <ClCompile Include="..\..\Source\BansheeCore\Source\BsAudioClipImportOptions.cpp" />
     <ClCompile Include="..\..\Source\BansheeCore\Source\BsBoxCollider.cpp" />
     <ClCompile Include="..\..\Source\BansheeCore\Source\BsCapsuleCollider.cpp" />
     <ClCompile Include="..\..\Source\BansheeCore\Source\BsCBoxCollider.cpp" />

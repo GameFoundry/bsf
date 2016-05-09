@@ -105,6 +105,12 @@
     <Filter Include="Source Files\Components">
       <UniqueIdentifier>{a0113695-a6e4-42af-9c38-f6140bc45cc7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Audio">
+      <UniqueIdentifier>{4c7848df-0ad3-4bf7-aace-354af227d1bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Audio">
+      <UniqueIdentifier>{497aec69-f961-4703-a5a0-b483fba84508}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\BansheeCore\Include\BsCommonTypes.h">
@@ -764,6 +770,21 @@
     <ClInclude Include="..\..\Source\BansheeCore\Include\BsPhysicsMeshRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\BansheeCore\Include\BsAudioClip.h">
+      <Filter>Header Files\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\BansheeCore\Include\BsAudioClipRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\BansheeCore\Include\BsAudio.h">
+      <Filter>Header Files\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\BansheeCore\Include\BsAudioClipImportOptions.h">
+      <Filter>Header Files\Importer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\BansheeCore\Include\BsAudioClipImportOptionsRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\BansheeCore\Source\BsCoreApplication.cpp">
@@ -1208,6 +1229,15 @@
       <Filter>Source Files\Material</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\BansheeCore\Source\BsShaderImportOptions.cpp">
+      <Filter>Source Files\Importer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\BansheeCore\Source\BsAudioClip.cpp">
+      <Filter>Source Files\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\BansheeCore\Source\BsAudio.cpp">
+      <Filter>Source Files\Audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\BansheeCore\Source\BsAudioClipImportOptions.cpp">
       <Filter>Source Files\Importer</Filter>
     </ClCompile>
   </ItemGroup>

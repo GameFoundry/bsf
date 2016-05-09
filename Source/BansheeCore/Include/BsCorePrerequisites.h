@@ -13,6 +13,10 @@
  *  @{
  */
 
+/** @defgroup Audio Audio
+ *	Audio clips, 3D sound and music reproduction.
+ */
+
 /** @defgroup CoreThread Core thread
  *	Core objects and interaction with the core (rendering) thread.
  */
@@ -358,6 +362,7 @@ namespace BansheeEngine
 	class StringTable;
 	class PhysicsMaterial;
 	class PhysicsMesh;
+	class AudioClip;
 	struct CollisionData;
 	// Scene
 	class SceneObject;
@@ -382,6 +387,7 @@ namespace BansheeEngine
 	struct SLIDER_JOINT_DESC;
 	struct SPHERICAL_JOINT_DESC;
 	struct D6_JOINT_DESC;
+	struct AUDIO_CLIP_DESC;
 
 	template<class T>
 	class CoreThreadAccessor;
@@ -485,6 +491,8 @@ namespace BansheeEngine
 		TID_CCharacterController = 1108,
 		TID_FPhysicsMesh = 1109,
 		TID_ShaderImportOptions = 1110,
+		TID_AudioClip = 1111,
+		TID_AudioClipImportOptions = 1112
 	};
 }
 
@@ -511,10 +519,10 @@ namespace BansheeEngine
 	typedef ResourceHandle<StringTable> HStringTable;
 	typedef ResourceHandle<PhysicsMaterial> HPhysicsMaterial;
 	typedef ResourceHandle<PhysicsMesh> HPhysicsMesh;
+	typedef ResourceHandle<AudioClip> HAudioClip;
 
 	/** @} */
 }
-
 
 #include "BsGameObjectHandle.h"
 
