@@ -1,0 +1,254 @@
+//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
+//**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
+#include "BsOAFLACReader.h"
+#include "BsDataStream.h"
+
+namespace BansheeEngine
+{
+	FLAC__StreamDecoderReadStatus streamRead(const FLAC__StreamDecoder*, FLAC__byte buffer[], size_t* bytes, void* clientData)
+	{
+		FLACDecoderData* data = static_cast<FLACDecoderData*>(clientData);
+
+		INT64 count = (INT64)data->stream->read(buffer, *bytes);
+		if (count > 0)
+		{
+			*bytes = (size_t)count;
+			return FLAC__STREAM_DECODER_READ_STATUS_CONTINUE;
+		}
+		
+		if (count == 0)
+			return FLAC__STREAM_DECODER_READ_STATUS_END_OF_STREAM;
+		
+		return FLAC__STREAM_DECODER_READ_STATUS_ABORT;
+	}
+
+	FLAC__StreamDecoderSeekStatus streamSeek(const FLAC__StreamDecoder*, FLAC__uint64 absoluteByteOffset, void* clientData)
+	{
+		FLACDecoderData* data = static_cast<FLACDecoderData*>(clientData);
+
+		data->stream->seek(absoluteByteOffset);
+		INT64 position = (INT64)data->stream->tell();
+		if (position >= 0)
+			return FLAC__STREAM_DECODER_SEEK_STATUS_OK;
+		else
+			return FLAC__STREAM_DECODER_SEEK_STATUS_ERROR;
+	}
+
+	FLAC__StreamDecoderTellStatus streamTell(const FLAC__StreamDecoder*, FLAC__uint64* absoluteByteOffset, void* clientData)
+	{
+		FLACDecoderData* data = static_cast<FLACDecoderData*>(clientData);
+
+		INT64 position = (INT64)data->stream->tell();
+		if (position >= 0)
+		{
+			*absoluteByteOffset = position;
+			return FLAC__STREAM_DECODER_TELL_STATUS_OK;
+		}
+		else
+		{
+			return FLAC__STREAM_DECODER_TELL_STATUS_ERROR;
+		}
+	}
+
+	FLAC__StreamDecoderLengthStatus streamLength(const FLAC__StreamDecoder*, FLAC__uint64* streamLength, void* clientData)
+	{
+		FLACDecoderData* data = static_cast<FLACDecoderData*>(clientData);
+
+		*streamLength = data->stream->size();
+		return FLAC__STREAM_DECODER_LENGTH_STATUS_OK;
+	}
+
+	FLAC__bool streamEof(const FLAC__StreamDecoder*, void* clientData)
+	{
+		FLACDecoderData* data = static_cast<FLACDecoderData*>(clientData);
+
+		return data->stream->eof();
+	}
+
+	FLAC__StreamDecoderWriteStatus streamWrite(const FLAC__StreamDecoder*, const FLAC__Frame* frame, const FLAC__int32* const buffer[], void* clientData)
+	{
+		FLACDecoderData* data = static_cast<FLACDecoderData*>(clientData);
+
+		if (!data->output) // Seek
+			return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
+
+		UINT32 bytesPerSample = frame->header.bits_per_sample / 8;
+		
+		// If we received more data than we need, store it in the overflow buffer
+		UINT32 frameSamples = frame->header.blocksize * frame->header.channels;
+		if (data->samplesToRead < frameSamples)
+		{
+			UINT32 numExtraSamples = frameSamples - data->samplesToRead;
+			UINT32 extraBytes = numExtraSamples * bytesPerSample;
+			data->overflow.reserve(extraBytes);
+
+			if (data->overflowBytesPerSample != 0)
+			{
+				if (data->overflow.size() > 0) // Overflow already stores data but of a different size
+				{
+					assert(data->overflowBytesPerSample == bytesPerSample);
+				}
+			}
+			else
+				data->overflowBytesPerSample = bytesPerSample;
+		}
+
+		assert(bytesPerSample <= 4);
+		for (UINT32 i = 0; i < frame->header.blocksize; i++)
+		{
+			for (UINT32 j = 0; j < frame->header.channels; j++)
+			{
+				if (data->samplesToRead > 0)
+				{
+					memcpy(data->output, &buffer[j][i], bytesPerSample);
+					data->output += bytesPerSample;
+
+					data->samplesToRead--;
+				}
+				else
+				{
+					UINT8 sample[4];
+					memcpy(sample, &buffer[j][i], bytesPerSample);
+
+					for(UINT32 k = 0; k < bytesPerSample; k++)
+						data->overflow.push_back(sample[k]);
+				}
+			}
+		}
+
+		return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
+	}
+
+	void streamMetadata(const FLAC__StreamDecoder*, const FLAC__StreamMetadata* meta, void* clientData)
+	{
+		FLACDecoderData* data = static_cast<FLACDecoderData*>(clientData);
+
+		if (meta->type == FLAC__METADATA_TYPE_STREAMINFO)
+		{
+			data->info.numSamples = meta->data.stream_info.total_samples * meta->data.stream_info.channels;
+			data->info.sampleRate = meta->data.stream_info.sample_rate;
+			data->info.numChannels = meta->data.stream_info.channels;
+		}
+	}
+
+	void streamError(const FLAC__StreamDecoder*, FLAC__StreamDecoderErrorStatus, void* clientData)
+	{
+		FLACDecoderData* data = static_cast<FLACDecoderData*>(clientData);
+		data->error = true;
+	}
+
+	OAFLACReader::OAFLACReader()
+		:mDecoder(nullptr)
+	{ }
+
+	OAFLACReader::~OAFLACReader()
+	{
+		close();
+	}
+
+	bool OAFLACReader::isValid(const SPtr<DataStream>& stream)
+	{
+		stream->seek(0);
+
+		FLAC__StreamDecoder* decoder = FLAC__stream_decoder_new();
+		if (!decoder)
+			return false;
+
+		FLACDecoderData data;
+		data.stream = stream;
+		FLAC__stream_decoder_init_stream(decoder, &streamRead, &streamSeek, &streamTell, &streamLength, &streamEof, 
+			&streamWrite, NULL, &streamError, &data);
+
+		bool valid = FLAC__stream_decoder_process_until_end_of_metadata(decoder) != 0;
+
+		FLAC__stream_decoder_finish(decoder);
+		FLAC__stream_decoder_delete(decoder);
+
+		return valid && !data.error;
+	}
+
+	bool OAFLACReader::open(const SPtr<DataStream>& stream, AudioFileInfo& info)
+	{
+		if (stream == nullptr)
+			return false;
+
+		mDecoder = FLAC__stream_decoder_new();
+		if (mDecoder == nullptr)
+		{
+			LOGERR("Failed to open a FLAC file.");
+			return false;
+		}
+
+		mData.stream = stream;
+		FLAC__stream_decoder_init_stream(mDecoder, &streamRead, &streamSeek, &streamTell, &streamLength, &streamEof,
+			&streamWrite, &streamMetadata, &streamError, &mData);
+
+
+		if (!FLAC__stream_decoder_process_until_end_of_metadata(mDecoder))
+		{
+			close();
+			LOGERR("Failed to open a FLAC file.");
+			return false;
+		}
+
+		info = mData.info;
+
+		return true;
+	}
+
+	void OAFLACReader::seek(UINT32 offset)
+	{
+		mData.output = nullptr;
+		mData.samplesToRead = 0;
+		mData.overflow.clear();
+
+		FLAC__stream_decoder_seek_absolute(mDecoder, offset);
+	}
+
+	UINT32 OAFLACReader::read(UINT8* samples, UINT32 numSamples)
+	{
+		UINT64 overflowSize = mData.overflow.size();
+		UINT64 overflowNumSamples = 0;
+		
+		if (overflowSize > 0)
+		{
+			UINT32 sampleSize = numSamples * mData.overflowBytesPerSample;
+			if (overflowSize > sampleSize)
+			{
+				std::copy(mData.overflow.begin(), mData.overflow.begin() + sampleSize, samples);
+				mData.overflow.erase(mData.overflow.begin(), mData.overflow.begin() + sampleSize);
+
+				return numSamples;
+			}
+			else
+				std::copy(mData.overflow.begin(), mData.overflow.end(), samples);
+
+			overflowNumSamples = overflowSize / mData.overflowBytesPerSample;
+		}
+
+		mData.output = samples + overflowSize;
+		mData.samplesToRead = numSamples - overflowNumSamples;
+		mData.overflow.clear();
+
+		while (mData.samplesToRead > 0)
+		{
+			if (!FLAC__stream_decoder_process_single(mDecoder))
+				break;
+
+			if (FLAC__stream_decoder_get_state(mDecoder) == FLAC__STREAM_DECODER_END_OF_STREAM)
+				break;
+		}
+
+		return numSamples - mData.samplesToRead;
+	}
+
+	void OAFLACReader::close()
+	{
+		if (mDecoder != nullptr)
+		{
+			FLAC__stream_decoder_finish(mDecoder);
+			FLAC__stream_decoder_delete(mDecoder);
+			mDecoder = nullptr;
+		}
+	}
+}

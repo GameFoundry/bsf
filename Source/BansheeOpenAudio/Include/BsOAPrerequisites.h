@@ -20,12 +20,23 @@
 #    define BS_OA_EXPORT
 #endif
 
+namespace BansheeEngine
+{
+	/** Contains data describing an audio file. */
+	struct AudioFileInfo
+	{
+		UINT32 numSamples;
+		UINT32 sampleRate;
+		UINT32 numChannels;
+	};
+}
+
 /** @addtogroup Plugins
-*  @{
-*/
+ *  @{
+ */
 
 /** @defgroup OpenAudio BansheeOpenAudio
-*	Open source audio implementation using OpenAL, libFLAC and libvorbis.
-*/
+ *	Open source audio implementation using OpenAL, libFLAC and libvorbis.
+ */
 
 /** @} */

@@ -124,7 +124,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeOpenAudio/Include;../../Dependencies/BansheeOpenAudio/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeOpenAudio/Include;../../Dependencies/BansheeOpenAudio/Include;../../Dependencies/BansheeOpenAudio/Include/vorbis;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_OA_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -141,7 +141,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeOpenAudio/Include;../../Dependencies/BansheeOpenAudio/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeOpenAudio/Include;../../Dependencies/BansheeOpenAudio/Include;../../Dependencies/BansheeOpenAudio/Include/vorbis;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BS_OA_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -161,7 +161,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeOpenAudio/Include;../../Dependencies/BansheeOpenAudio/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeOpenAudio/Include;../../Dependencies/BansheeOpenAudio/Include;../../Dependencies/BansheeOpenAudio/Include/vorbis;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
       <PreprocessorDefinitions>BS_OA_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>false</ExceptionHandling>
@@ -184,7 +184,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeOpenAudio/Include;../../Dependencies/BansheeOpenAudio/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeOpenAudio/Include;../../Dependencies/BansheeOpenAudio/Include;../../Dependencies/BansheeOpenAudio/Include/vorbis;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <PreprocessorDefinitions>BS_OA_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>false</ExceptionHandling>
@@ -208,7 +208,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeOpenAudio/Include;../../Dependencies/BansheeOpenAudio/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeOpenAudio/Include;../../Dependencies/BansheeOpenAudio/Include;../../Dependencies/BansheeOpenAudio/Include/vorbis;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
       <PreprocessorDefinitions>BS_OA_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>false</ExceptionHandling>
@@ -231,7 +231,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeOpenAudio/Include;../../Dependencies/BansheeOpenAudio/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../Source/BansheeCore/Include;../../Source/BansheeUtility/Include;../../Source/BansheeOpenAudio/Include;../../Dependencies/BansheeOpenAudio/Include;../../Dependencies/BansheeOpenAudio/Include/vorbis;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <PreprocessorDefinitions>BS_OA_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>false</ExceptionHandling>
@@ -249,10 +249,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\BansheeOpenAudio\Include\BsOAFLACReader.h" />
+    <ClInclude Include="..\..\Source\BansheeOpenAudio\Include\BsOAImporter.h" />
+    <ClInclude Include="..\..\Source\BansheeOpenAudio\Include\BsOAOggVorbisReader.h" />
     <ClInclude Include="..\..\Source\BansheeOpenAudio\Include\BsOAPrerequisites.h" />
+    <ClInclude Include="..\..\Source\BansheeOpenAudio\Include\BsOAWaveReader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\BansheeOpenAudio\Source\BsOAFLACReader.cpp" />
+    <ClCompile Include="..\..\Source\BansheeOpenAudio\Source\BsOAImporter.cpp" />
+    <ClCompile Include="..\..\Source\BansheeOpenAudio\Source\BsOAOggVorbisReader.cpp" />
     <ClCompile Include="..\..\Source\BansheeOpenAudio\Source\BsOAPlugin.cpp" />
+    <ClCompile Include="..\..\Source\BansheeOpenAudio\Source\BsOAWaveReader.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

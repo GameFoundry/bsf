@@ -14,9 +14,33 @@
     <ClInclude Include="..\..\Source\BansheeOpenAudio\Include\BsOAPrerequisites.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\BansheeOpenAudio\Include\BsOAImporter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\BansheeOpenAudio\Include\BsOAWaveReader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\BansheeOpenAudio\Include\BsOAOggVorbisReader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\BansheeOpenAudio\Include\BsOAFLACReader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\BansheeOpenAudio\Source\BsOAPlugin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\BansheeOpenAudio\Source\BsOAImporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\BansheeOpenAudio\Source\BsOAWaveReader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\BansheeOpenAudio\Source\BsOAOggVorbisReader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\BansheeOpenAudio\Source\BsOAFLACReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
