@@ -3,6 +3,7 @@
 #include "BsProfilerCPU.h"
 #include "BsDebug.h"
 #include "BsPlatform.h"
+#include <chrono>
 
 #if BS_COMPILER == BS_COMPILER_GNUC || BS_COMPILER == BS_COMPILER_CLANG
 	#include "cpuid.h"
@@ -12,9 +13,12 @@
 	#include "intrin.h"
 #endif
 
+using namespace std::chrono;
+
 namespace BansheeEngine
 {
 	ProfilerCPU::Timer::Timer()
+		:startTime(0.0f)
 	{
 		time = 0.0f;
 	}
@@ -34,9 +38,12 @@ namespace BansheeEngine
 		time = 0.0f;
 	}
 
-	inline double ProfilerCPU::Timer::getCurrentTime() 
+	inline double ProfilerCPU::Timer::getCurrentTime() const
 	{
-		return PlatformUtility::queryPerformanceTimerMs();
+		steady_clock::time_point timeNow = mHRClock.now();
+		nanoseconds timeNowNs = timeNow.time_since_epoch();
+
+		return timeNowNs.count() * 0.000001;
 	}
 
 	ProfilerCPU::TimerPrecise::TimerPrecise()

@@ -12,7 +12,7 @@ namespace BansheeEngine
 		mCurrentFrame(0UL)
 	{
 		mTimer = bs_new<Timer>();
-		mAppStartTime = (UINT64)mTimer->getStartMs();
+		mAppStartTime = mTimer->getStartMs();
 		mLastFrameTime = mTimer->getMicroseconds();
 	}
 
@@ -23,7 +23,7 @@ namespace BansheeEngine
 
 	void Time::_update()
 	{
-		unsigned long currentFrameTime = mTimer->getMicroseconds();
+		UINT64 currentFrameTime = mTimer->getMicroseconds();
 
 		mFrameDelta = (float)((currentFrameTime - mLastFrameTime) * MICROSEC_TO_SEC);
 		mTimeSinceStart = (float)(currentFrameTime * MICROSEC_TO_SEC);

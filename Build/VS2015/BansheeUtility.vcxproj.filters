@@ -475,9 +475,6 @@
     <ClCompile Include="..\..\Source\BansheeUtility\Source\Win32\BsWin32CrashHandler.cpp">
       <Filter>Source Files\Win32</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\BansheeUtility\Source\Win32\BsWin32Timer.cpp">
-      <Filter>Source Files\Win32</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Source\BansheeUtility\Source\Win32\BsWin32PlatformUtility.cpp">
       <Filter>Source Files\Win32</Filter>
     </ClCompile>
@@ -552,6 +549,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\BansheeUtility\Source\Win32\BsWin32Window.cpp">
       <Filter>Source Files\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\BansheeUtility\Source\BsTimer.cpp">
+      <Filter>Source Files\General</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

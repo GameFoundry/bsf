@@ -65,7 +65,7 @@ namespace BansheeEngine
 		if (m->window == nullptr)
 			return;
 
-		UINT32 currentTime = m->timer.getMilliseconds();
+		UINT64 currentTime = m->timer.getMilliseconds();
 		if (currentTime < SPLASH_SCREEN_DURATION_MS)
 			BS_THREAD_SLEEP(SPLASH_SCREEN_DURATION_MS - currentTime);
 

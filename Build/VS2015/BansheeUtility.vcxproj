@@ -134,7 +134,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ImportLibrary>..\..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
       <AdditionalDependencies>DbgHelp.lib;IPHLPAPI.lib;Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories></AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
       <SubSystem>NotSet</SubSystem>
       <NoEntryPoint>false</NoEntryPoint>
       <EntryPointSymbol>
@@ -157,7 +158,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ImportLibrary>..\..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
       <AdditionalDependencies>DbgHelp.lib;IPHLPAPI.lib;Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories></AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
       <SubSystem>NotSet</SubSystem>
       <NoEntryPoint>false</NoEntryPoint>
       <EntryPointSymbol>
@@ -186,7 +188,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <ImportLibrary>..\..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
       <AdditionalDependencies>DbgHelp.lib;IPHLPAPI.lib;Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories></AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
       <NoEntryPoint>false</NoEntryPoint>
     </Link>
   </ItemDefinitionGroup>
@@ -212,7 +215,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <ImportLibrary>..\..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
       <AdditionalDependencies>DbgHelp.lib;IPHLPAPI.lib;Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories></AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
       <NoEntryPoint>false</NoEntryPoint>
     </Link>
   </ItemDefinitionGroup>
@@ -240,7 +244,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <ImportLibrary>..\..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
       <AdditionalDependencies>DbgHelp.lib;IPHLPAPI.lib;Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories></AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
       <NoEntryPoint>false</NoEntryPoint>
     </Link>
   </ItemDefinitionGroup>
@@ -266,7 +271,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <ImportLibrary>..\..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
       <AdditionalDependencies>DbgHelp.lib;IPHLPAPI.lib;Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories></AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
       <NoEntryPoint>false</NoEntryPoint>
     </Link>
   </ItemDefinitionGroup>
@@ -294,6 +300,7 @@
     <ClCompile Include="..\..\Source\BansheeUtility\Source\BsMemorySerializer.cpp" />
     <ClCompile Include="..\..\Source\BansheeUtility\Source\BsPath.cpp" />
     <ClCompile Include="..\..\Source\BansheeUtility\Source\BsRect2.cpp" />
+    <ClCompile Include="..\..\Source\BansheeUtility\Source\BsTimer.cpp" />
     <ClCompile Include="..\..\Source\BansheeUtility\Source\BsTorus.cpp" />
     <ClCompile Include="..\..\Source\BansheeUtility\Source\BsUtil.cpp" />
     <ClCompile Include="..\..\Source\BansheeUtility\Source\BsVector2I.cpp" />
@@ -309,7 +316,6 @@
     <ClCompile Include="..\..\Source\BansheeUtility\Source\Win32\BsWin32CrashHandler.cpp" />
     <ClCompile Include="..\..\Source\BansheeUtility\Source\Win32\BsWin32FileSystem.cpp" />
     <ClCompile Include="..\..\Source\BansheeUtility\Source\Win32\BsWin32PlatformUtility.cpp" />
-    <ClCompile Include="..\..\Source\BansheeUtility\Source\Win32\BsWin32Timer.cpp" />
     <ClCompile Include="..\..\Source\BansheeUtility\Source\Win32\BsWin32Window.cpp" />
     <ClInclude Include="..\..\Source\BansheeUtility\Include\BsAny.h" />
     <ClInclude Include="..\..\Source\BansheeUtility\Include\BsBinaryCloner.h" />
