@@ -46,8 +46,8 @@ set(BS_BANSHEEUTILITY_SRC_GENERAL
 	"Source/BsDynLib.cpp"
 	"Source/BsDynLibManager.cpp"
 	"Source/BsMessageHandler.cpp"
-           "Source/BsTimer.cpp"
-           "Source/BsTime.cpp"
+	"Source/BsTimer.cpp"
+	"Source/BsTime.cpp"
 	"Source/BsUtil.cpp"
 )
 
