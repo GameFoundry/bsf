@@ -134,7 +134,7 @@
       <ImportLibrary>..\..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
       <AdditionalLibraryDirectories>../../lib/x86/$(Configuration);../../Dependencies/BansheeOpenAudio/lib/x86/Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;libFLAC.lib;libvorbis.lib;libvorbisfile.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;libFLAC.lib;libvorbis.lib;libvorbisfile.lib;libogg.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -151,7 +151,7 @@
       <ImportLibrary>..\..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
       <AdditionalLibraryDirectories>../../lib/$(Platform)/$(Configuration);../../Dependencies/BansheeOpenAudio/lib/x64/Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;libFLAC.lib;libvorbis.lib;libvorbisfile.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;libFLAC.lib;libvorbis.lib;libvorbisfile.lib;libogg.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -175,7 +175,7 @@
       <ImportLibrary>..\..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
       <AdditionalLibraryDirectories>../../lib/x86/$(Configuration);../../Dependencies/BansheeOpenAudio/lib/x86/Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>No</GenerateDebugInformation>
-      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;libFLAC.lib;libvorbis.lib;libvorbisfile.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;libFLAC.lib;libvorbis.lib;libvorbisfile.lib;libogg.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='OptimizedDebug|Win32'">
@@ -198,7 +198,7 @@
       <ImportLibrary>..\..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
       <AdditionalLibraryDirectories>../../lib/x86/$(Configuration);../../Dependencies/BansheeOpenAudio/lib/x86/OptimizedDebug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;libFLAC.lib;libvorbis.lib;libvorbisfile.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;libFLAC.lib;libvorbis.lib;libvorbisfile.lib;libogg.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -222,7 +222,7 @@
       <ImportLibrary>..\..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
       <AdditionalLibraryDirectories>../../lib/$(Platform)/$(Configuration);../../Dependencies/BansheeOpenAudio/lib/x64/Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>No</GenerateDebugInformation>
-      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;libFLAC.lib;libvorbis.lib;libvorbisfile.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;libFLAC.lib;libvorbis.lib;libvorbisfile.lib;libogg.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='OptimizedDebug|x64'">
@@ -245,7 +245,7 @@
       <ImportLibrary>..\..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
       <AdditionalLibraryDirectories>../../lib/$(Platform)/$(Configuration);../../Dependencies/BansheeOpenAudio/lib/x64/OptimizedDebug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;libFLAC.lib;libvorbis.lib;libvorbisfile.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;libFLAC.lib;libvorbis.lib;libvorbisfile.lib;libogg.lib;OpenAL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -253,6 +253,7 @@
     <ClInclude Include="..\..\Source\BansheeOpenAudio\Include\BsOAFLACReader.h" />
     <ClInclude Include="..\..\Source\BansheeOpenAudio\Include\BsOAImporter.h" />
     <ClInclude Include="..\..\Source\BansheeOpenAudio\Include\BsOAOggVorbisReader.h" />
+    <ClInclude Include="..\..\Source\BansheeOpenAudio\Include\BsOAOggVorbisWriter.h" />
     <ClInclude Include="..\..\Source\BansheeOpenAudio\Include\BsOAPrerequisites.h" />
     <ClInclude Include="..\..\Source\BansheeOpenAudio\Include\BsOAWaveReader.h" />
   </ItemGroup>
@@ -260,6 +261,7 @@
     <ClCompile Include="..\..\Source\BansheeOpenAudio\Source\BsOAFLACReader.cpp" />
     <ClCompile Include="..\..\Source\BansheeOpenAudio\Source\BsOAImporter.cpp" />
     <ClCompile Include="..\..\Source\BansheeOpenAudio\Source\BsOAOggVorbisReader.cpp" />
+    <ClCompile Include="..\..\Source\BansheeOpenAudio\Source\BsOAOggVorbisWriter.cpp" />
     <ClCompile Include="..\..\Source\BansheeOpenAudio\Source\BsOAPlugin.cpp" />
     <ClCompile Include="..\..\Source\BansheeOpenAudio\Source\BsOAWaveReader.cpp" />
   </ItemGroup>

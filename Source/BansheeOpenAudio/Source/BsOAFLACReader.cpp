@@ -115,7 +115,7 @@ namespace BansheeEngine
 
 		if (meta->type == FLAC__METADATA_TYPE_STREAMINFO)
 		{
-			data->info.numSamples = meta->data.stream_info.total_samples * meta->data.stream_info.channels;
+			data->info.numSamples = (UINT32)meta->data.stream_info.total_samples * meta->data.stream_info.channels;
 			data->info.sampleRate = meta->data.stream_info.sample_rate;
 			data->info.numChannels = meta->data.stream_info.channels;
 			data->info.bitDepth = meta->data.stream_info.bits_per_sample;
@@ -197,8 +197,8 @@ namespace BansheeEngine
 
 	UINT32 OAFLACReader::read(UINT8* samples, UINT32 numSamples)
 	{
-		UINT64 overflowSize = mData.overflow.size();
-		UINT64 overflowNumSamples = 0;
+		UINT32 overflowSize = (UINT32)mData.overflow.size();
+		UINT32 overflowNumSamples = 0;
 		
 		UINT32 bytesPerSample = mData.info.bitDepth / 8;
 		if (overflowSize > 0)

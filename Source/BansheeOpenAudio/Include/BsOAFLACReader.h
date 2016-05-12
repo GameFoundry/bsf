@@ -23,7 +23,7 @@ namespace BansheeEngine
 		bool error = false;
 	};
 
-	/** Used for reading FLAC audio files. */
+	/** Used for reading FLAC audio data. */
 	class OAFLACReader : public OAFileReader
 	{
 	public:

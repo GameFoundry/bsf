@@ -29,6 +29,9 @@
     <ClInclude Include="..\..\Source\BansheeOpenAudio\Include\BsOAFileReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\BansheeOpenAudio\Include\BsOAOggVorbisWriter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\BansheeOpenAudio\Source\BsOAPlugin.cpp">
@@ -44,6 +47,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\BansheeOpenAudio\Source\BsOAFLACReader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\BansheeOpenAudio\Source\BsOAOggVorbisWriter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

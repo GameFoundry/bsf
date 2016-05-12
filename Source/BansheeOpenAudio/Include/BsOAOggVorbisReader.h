@@ -12,7 +12,7 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
-	/** Used for reading Ogg Vorbis audio files. */
+	/** Used for reading Ogg Vorbis audio data. */
 	class OAOggVorbisReader : public OAFileReader
 	{
 	public:
