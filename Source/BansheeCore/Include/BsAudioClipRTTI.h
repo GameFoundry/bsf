@@ -5,6 +5,7 @@
 #include "BsCorePrerequisites.h"
 #include "BsRTTIType.h"
 #include "BsAudioClip.h"
+#include "BsDataStream.h"
 
 namespace BansheeEngine
 {
@@ -25,30 +26,22 @@ namespace BansheeEngine
 			BS_RTTI_MEMBER_PLAIN(mNumSamples, 5)
 		BS_END_RTTI_MEMBERS
 
-		ManagedDataBlock getData(AudioClip* obj)
+		SPtr<DataStream> getData(AudioClip* obj, UINT32& size)
 		{
-			ManagedDataBlock dataBlock((UINT8*)obj->getData(), obj->getDataSize());
-			return dataBlock;
+			size = obj->getDataSize();
+			return bs_shared_ptr_new<MemoryDataStream>(obj->getData(), size, false);
 		}
 
-		void setData(AudioClip* obj, ManagedDataBlock val)
+		void setData(AudioClip* obj, const SPtr<DataStream>& val, UINT32 size)
 		{
-			// TODO: This method isn't needed as this data will be loaded from the data stream
-			obj->setData(val.getData(), obj->mNumSamples);
-		}
-
-		static UINT8* allocateData(AudioClip* obj, UINT32 numBytes)
-		{
-			// TODO: This method isn't needed as this data will be loaded from the data stream
-			return (UINT8*)bs_alloc(numBytes);
+			// TODO - Load from steam
 		}
 
 	public:
 		AudioClipRTTI()
 			:mInitMembers(this)
 		{
-			addDataBlockField("mData", 6, &AudioClipRTTI::getData, &AudioClipRTTI::setData, 
-				0, &AudioClipRTTI::allocateData);
+			addDataBlockField("mData", 6, &AudioClipRTTI::getData, &AudioClipRTTI::setData, 0);
 		}
 
 		const String& getRTTIName() override

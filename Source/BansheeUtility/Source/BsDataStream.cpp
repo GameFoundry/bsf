@@ -245,8 +245,8 @@ namespace BansheeEngine
 		}
 	}
 
-    MemoryDataStream::MemoryDataStream(void* memory, size_t inSize)
-		: DataStream(READ | WRITE), mData(nullptr)
+    MemoryDataStream::MemoryDataStream(void* memory, size_t inSize, bool freeOnClose)
+		: DataStream(READ | WRITE), mData(nullptr), mFreeOnClose(freeOnClose)
     {
         mData = mPos = static_cast<UINT8*>(memory);
         mSize = inSize;
@@ -264,6 +264,7 @@ namespace BansheeEngine
 		mData = (UINT8*)bs_alloc((UINT32)mSize);
 		mPos = mData;
 		mEnd = mData + sourceStream.read(mData, mSize);
+		mFreeOnClose = true;
 
         assert(mEnd >= mPos);
     }
@@ -277,6 +278,7 @@ namespace BansheeEngine
 		mData = (UINT8*)bs_alloc((UINT32)mSize);
 		mPos = mData;
 		mEnd = mData + sourceStream->read(mData, mSize);
+		mFreeOnClose = true;
 
         assert(mEnd >= mPos);
     }
@@ -350,7 +352,9 @@ namespace BansheeEngine
     {
         if (mData != nullptr)
         {
-            bs_free(mData);
+			if(mFreeOnClose)
+				bs_free(mData);
+
             mData = nullptr;
         }
     }

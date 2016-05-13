@@ -8,7 +8,6 @@
 
 #include "BsPrerequisitesUtil.h"
 #include "BsIReflectable.h"
-#include "BsManagedDataBlock.h"
 #include "BsException.h"
 #include "BsAny.h"
 

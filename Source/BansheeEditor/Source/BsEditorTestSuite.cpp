@@ -521,23 +521,13 @@ namespace BansheeEngine
 		newObj->arrObjB[1].strA = "strawberry";
 		newObj->arrObjPtrB[0]->intA = 99100;
 
-		MemorySerializer ms;
-		UINT32 orgDataLength = 0;
-		UINT8* orgData = ms.encode(orgObj.get(), orgDataLength);
-
-		UINT32 newDataLength = 0;
-		UINT8* newData = ms.encode(newObj.get(), newDataLength);
-
 		BinarySerializer bs;
-		SPtr<SerializedObject> orgSerialized = bs._decodeIntermediate(orgData, orgDataLength);
-		SPtr<SerializedObject> newSerialized = bs._decodeIntermediate(newData, newDataLength);
+		SPtr<SerializedObject> orgSerialized = bs._encodeToIntermediate(orgObj.get());
+		SPtr<SerializedObject> newSerialized = bs._encodeToIntermediate(newObj.get());
 
 		IDiff& diffHandler = orgObj->getRTTI()->getDiffHandler();
 		SPtr<SerializedObject> objDiff = diffHandler.generateDiff(orgSerialized, newSerialized);
 		diffHandler.applyDiff(orgObj, objDiff);
-
-		bs_free(orgData);
-		bs_free(newData);
 
 		BS_TEST_ASSERT(orgObj->intA == newObj->intA);
 		BS_TEST_ASSERT(orgObj->strA == newObj->strA);

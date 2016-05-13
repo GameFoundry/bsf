@@ -5,6 +5,7 @@
 #include "BsBinarySerializer.h"
 #include "BsBinaryCloner.h"
 #include "BsRTTIType.h"
+#include "BsDataStream.h"
 
 namespace BansheeEngine
 {
@@ -51,7 +52,6 @@ namespace BansheeEngine
 		}
 			break;
 		case SerializableFT_Plain:
-		case SerializableFT_DataBlock:
 		{
 			SPtr<SerializedField> orgFieldData = std::static_pointer_cast<SerializedField>(orgData);
 			SPtr<SerializedField> newFieldData = std::static_pointer_cast<SerializedField>(newData);
@@ -64,6 +64,53 @@ namespace BansheeEngine
 				modification = newFieldData->clone();
 		}
 			break;
+		case SerializableFT_DataBlock:
+		{
+			SPtr<SerializedDataBlock> orgFieldData = std::static_pointer_cast<SerializedDataBlock>(orgData);
+			SPtr<SerializedDataBlock> newFieldData = std::static_pointer_cast<SerializedDataBlock>(newData);
+
+			bool isModified = orgFieldData->size != newFieldData->size;
+			if (!isModified)
+			{
+				UINT8* orgStreamData = nullptr;
+				if(orgFieldData->stream->isFile())
+				{
+					orgStreamData = (UINT8*)bs_stack_alloc(orgFieldData->size);
+					orgFieldData->stream->seek(orgFieldData->offset);
+					orgFieldData->stream->read(orgStreamData, orgFieldData->size);
+				}
+				else
+				{
+					SPtr<MemoryDataStream> orgMemStream = std::static_pointer_cast<MemoryDataStream>(orgFieldData->stream);
+					orgStreamData = orgMemStream->getCurrentPtr();
+				}
+
+				UINT8* newStreamData = nullptr;
+				if (newFieldData->stream->isFile())
+				{
+					newStreamData = (UINT8*)bs_stack_alloc(newFieldData->size);
+					newFieldData->stream->seek(newFieldData->offset);
+					newFieldData->stream->read(newStreamData, newFieldData->size);
+				}
+				else
+				{
+					SPtr<MemoryDataStream> newMemStream = std::static_pointer_cast<MemoryDataStream>(newFieldData->stream);
+					newStreamData = newMemStream->getCurrentPtr();
+				}
+
+				isModified = memcmp(orgStreamData, newStreamData, newFieldData->size) != 0;
+
+				if (newFieldData->stream->isFile())
+					bs_stack_free(newStreamData);
+
+				if (orgFieldData->stream->isFile())
+					bs_stack_free(orgStreamData);
+			}
+
+			if (isModified)
+				modification = newFieldData->clone();
+		}
+		break;
 		}
 
 		return modification;
@@ -181,11 +228,7 @@ namespace BansheeEngine
 				case Diff_DataBlock:
 				{
 					RTTIManagedDataBlockFieldBase* field = static_cast<RTTIManagedDataBlockFieldBase*>(command.field);
-					UINT8* dataCopy = field->allocate(destObject, command.size);
-					memcpy(dataCopy, command.value, command.size);
-
-					ManagedDataBlock value(dataCopy, command.size); // Not managed because I assume the owner class will decide whether to delete the data or keep it
-					field->setValue(destObject, value);
+					field->setValue(destObject, command.streamValue, command.size);
 				}
 					break;
 				default:
@@ -302,8 +345,10 @@ namespace BansheeEngine
 						switch (genericField->mType)
 						{
 						case SerializableFT_Plain:
-						case SerializableFT_DataBlock:
 							modification = bs_shared_ptr_new<SerializedField>();
+							break;
+						case SerializableFT_DataBlock:
+							modification = bs_shared_ptr_new<SerializedDataBlock>();
 							break;
 						default:
 							break;
@@ -606,12 +651,13 @@ namespace BansheeEngine
 						break;
 					case SerializableFT_DataBlock:
 					{
-						SPtr<SerializedField> diffFieldData = std::static_pointer_cast<SerializedField>(diffData);
+						SPtr<SerializedDataBlock> diffFieldData = std::static_pointer_cast<SerializedDataBlock>(diffData);
 
 						DiffCommand command;
 						command.field = genericField;
 						command.type = Diff_DataBlock;
-						command.value = diffFieldData->value;
+						command.streamValue = diffFieldData->stream;
+						command.value = nullptr;
 						command.size = diffFieldData->size;
 
 						diffCommands.push_back(command);

@@ -41,7 +41,6 @@ namespace BansheeEngine
 	{
 	public:
 		FileDecoder(const Path& fileLocation);
-		~FileDecoder();
 
 		/**	Deserializes an IReflectable object by reading the binary data at the provided file location. */
 		SPtr<IReflectable> decode();
@@ -50,7 +49,7 @@ namespace BansheeEngine
 		void skip();
 
 	private:
-		std::ifstream mInputStream;
+		SPtr<DataStream> mInputStream;
 	};
 
 	/** @} */

@@ -5,6 +5,7 @@
 #include "BsException.h"
 #include "BsIReflectable.h"
 #include "BsBinarySerializer.h"
+#include "BsDataStream.h"
 
 using namespace std::placeholders;
 
@@ -60,8 +61,10 @@ namespace BansheeEngine
 
 	SPtr<IReflectable> MemorySerializer::decode(UINT8* buffer, UINT32 bufferSize)
 	{
+		SPtr<MemoryDataStream> stream = bs_shared_ptr_new<MemoryDataStream>(buffer, bufferSize, false);
+
 		BinarySerializer bs;
-		SPtr<IReflectable> object = bs.decode(buffer, (UINT32)bufferSize);
+		SPtr<IReflectable> object = bs.decode(stream, (UINT32)bufferSize);
 
 		return object;
 	}

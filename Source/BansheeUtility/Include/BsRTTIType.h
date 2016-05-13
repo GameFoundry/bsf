@@ -7,7 +7,6 @@
 #include <unordered_map>
 
 #include "BsPrerequisitesUtil.h"
-#include "BsManagedDataBlock.h"
 #include "BsRTTIField.h"
 #include "BsRTTIPlainField.h"
 #include "BsRTTIReflectableField.h"
@@ -397,13 +396,13 @@ namespace BansheeEngine
 		 * @note	Caller must ensure instance type is valid for this field.
 		 */
 		template <class ObjectType>
-		void setDataBlockValue(ObjectType* object, const String& name, ManagedDataBlock value)
+		void setDataBlockValue(ObjectType* object, const String& name, const SPtr<DataStream>& value, UINT32 size)
 		{
 			RTTIField* genericField = findField(name);
 			genericField->checkIsDataBlock();
 
 			RTTIManagedDataBlockFieldBase* field = static_cast<RTTIManagedDataBlockFieldBase*>(genericField);
-			field->setValue(object, value);
+			field->setValue(object, value, size);
 		}
 
 		/**
@@ -533,13 +532,13 @@ namespace BansheeEngine
 		 * @note	Caller must ensure instance type is valid for this field.
 		 */
 		template <class ObjectType>
-		ManagedDataBlock getDataBlockValue(ObjectType* object, const String& name)
+		SPtr<DataStream> getDataBlockValue(ObjectType* object, const String& name, UINT32& size)
 		{
 			RTTIField* genericField = findField(name);
 			genericField->checkIsDataBlock();
 
 			RTTIManagedDataBlockFieldBase* field = static_cast<RTTIManagedDataBlockFieldBase*>(genericField);
-			return field->getValue(object);
+			return field->getValue(object, size);
 		}
 
 		/**
@@ -935,12 +934,12 @@ namespace BansheeEngine
 		 * @param[in]	flags		Various flags you can use to specialize how systems handle this field. See RTTIFieldFlag.
 		 */
 		template<class ObjectType>
-		void addDataBlockField(const String& name, UINT32 uniqueId, ManagedDataBlock (ObjectType::*getter)(), 
-			void (ObjectType::*setter)(ManagedDataBlock) = nullptr, UINT64 flags = 0, UINT8* (customAllocator)(ObjectType*, UINT32) = 0)
+		void addDataBlockField(const String& name, UINT32 uniqueId, SPtr<DataStream> (ObjectType::*getter)(UINT32&), 
+			void (ObjectType::*setter)(const SPtr<DataStream>&, UINT32) = nullptr, UINT64 flags = 0)
 		{
 			addDataBlockField<ObjectType>(name, uniqueId, 
-				std::function<ManagedDataBlock(ObjectType*)>(getter),  
-				std::function<void(ObjectType*, ManagedDataBlock)>(setter), flags, customAllocator);
+				std::function<SPtr<DataStream>(ObjectType*, UINT32&)>(getter),
+				std::function<void(ObjectType*, const SPtr<DataStream>&, UINT32)>(setter), flags);
 		}	
 
 	protected:
@@ -1050,27 +1049,14 @@ namespace BansheeEngine
 		}
 
 		template<class InterfaceType, class ObjectType>
-		void addDataBlockField(const String& name, UINT32 uniqueId, ManagedDataBlock (InterfaceType::*getter)(ObjectType*), 
-			void (InterfaceType::*setter)(ObjectType*, ManagedDataBlock), UINT64 flags = 0, 
-			UINT8* (customAllocator)(ObjectType*, UINT32) = 0)
+		void addDataBlockField(const String& name, UINT32 uniqueId, SPtr<DataStream> (InterfaceType::*getter)(ObjectType*, UINT32&), 
+			void (InterfaceType::*setter)(ObjectType*, const SPtr<DataStream>&, UINT32), UINT64 flags = 0)
 		{
 			using namespace std::placeholders;
 
-			if(customAllocator != 0)
-			{
-				std::function<UINT8*(ObjectType*, UINT32)> customAllocFunc = std::bind(customAllocator, _1, _2);
-
-				addDataBlockField<ObjectType>(name, uniqueId, 
-					std::function<ManagedDataBlock(ObjectType*)>(std::bind(getter, static_cast<InterfaceType*>(this), _1)),  
-					std::function<void(ObjectType*, ManagedDataBlock)>(std::bind(setter, static_cast<InterfaceType*>(this), _1, _2)), flags, 
-					customAllocFunc);
-			}
-			else
-			{
-				addDataBlockField<ObjectType>(name, uniqueId, 
-					std::function<ManagedDataBlock(ObjectType*)>(std::bind(getter, static_cast<InterfaceType*>(this), _1)),  
-					std::function<void(ObjectType*, ManagedDataBlock)>(std::bind(setter, static_cast<InterfaceType*>(this), _1, _2)), flags);
-			}
+			addDataBlockField<ObjectType>(name, uniqueId, 
+				std::function<SPtr<DataStream>(ObjectType*, UINT32&)>(std::bind(getter, static_cast<InterfaceType*>(this), _1, _2)),
+				std::function<void(ObjectType*, const SPtr<DataStream>&, UINT32)>(std::bind(setter, static_cast<InterfaceType*>(this), _1, _2, _3)), flags);
 		}	
 
 	private:
@@ -1144,12 +1130,11 @@ namespace BansheeEngine
 		}
 
 		template<class ObjectType>
-		void addDataBlockField(const String& name, UINT32 uniqueId, Any getter, Any setter, UINT64 flags, 
-			Any customAllocator = Any())
+		void addDataBlockField(const String& name, UINT32 uniqueId, Any getter, Any setter, UINT64 flags)
 		{
-			RTTIManagedDataBlockField<ManagedDataBlock, ObjectType>* newField = 
-				bs_new<RTTIManagedDataBlockField<ManagedDataBlock, ObjectType>>();
-			newField->initSingle(name, uniqueId, getter,  setter, flags, customAllocator);
+			RTTIManagedDataBlockField<UINT8*, ObjectType>* newField = 
+				bs_new<RTTIManagedDataBlockField<UINT8*, ObjectType>>();
+			newField->initSingle(name, uniqueId, getter, setter, flags);
 			addNewField(newField);
 		}	
 	};

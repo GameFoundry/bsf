@@ -266,9 +266,6 @@
     <ClInclude Include="..\..\Source\BansheeUtility\Include\BsTaskScheduler.h">
       <Filter>Header Files\Threading</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\BansheeUtility\Include\BsManagedDataBlock.h">
-      <Filter>Header Files\Serialization</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Source\BansheeUtility\Include\BsTestSuite.h">
       <Filter>Header Files\Testing</Filter>
     </ClInclude>
@@ -483,9 +480,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\BansheeUtility\Source\BsGlobalFrameAlloc.cpp">
       <Filter>Source Files\Allocators</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\BansheeUtility\Source\BsManagedDataBlock.cpp">
-      <Filter>Source Files\Serialization</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\BansheeUtility\Source\BsLog.cpp">
       <Filter>Source Files\Debug</Filter>

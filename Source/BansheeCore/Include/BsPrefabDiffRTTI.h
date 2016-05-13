@@ -157,7 +157,7 @@ namespace BansheeEngine
 				SerializedHandle& handle = handleData[idx];
 
 				handle.object = handleObject;
-				handle.handle = std::static_pointer_cast<GameObjectHandleBase>(bs._decodeIntermediate(handleObject));
+				handle.handle = std::static_pointer_cast<GameObjectHandleBase>(bs._decodeFromIntermediate(handleObject));
 
 				idx++;
 			}
@@ -178,7 +178,7 @@ namespace BansheeEngine
 			for (auto& serializedHandle : handleData)
 			{
 				if (serializedHandle.handle != nullptr)
-					*serializedHandle.object = *bs._encodeIntermediate(serializedHandle.handle.get());
+					*serializedHandle.object = *bs._encodeToIntermediate(serializedHandle.handle.get());
 			}
 
 			prefabDiff->mRTTIData = nullptr;

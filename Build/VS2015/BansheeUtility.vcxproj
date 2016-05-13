@@ -304,7 +304,6 @@
     <ClCompile Include="..\..\Source\BansheeUtility\Source\BsTorus.cpp" />
     <ClCompile Include="..\..\Source\BansheeUtility\Source\BsUtil.cpp" />
     <ClCompile Include="..\..\Source\BansheeUtility\Source\BsVector2I.cpp" />
-    <ClCompile Include="..\..\Source\BansheeUtility\Source\BsManagedDataBlock.cpp" />
     <ClCompile Include="..\..\Source\BansheeUtility\Source\BsMemoryAllocator.cpp" />
     <ClCompile Include="..\..\Source\BansheeUtility\Source\BsMemStack.cpp" />
     <ClCompile Include="..\..\Source\BansheeUtility\Source\BsRadian.cpp" />
@@ -361,7 +360,6 @@
     <ClInclude Include="..\..\Source\BansheeUtility\Include\BsTorus.h" />
     <ClInclude Include="..\..\Source\BansheeUtility\Include\BsVector2I.h" />
     <ClInclude Include="..\..\Source\BansheeUtility\Include\BsIReflectable.h" />
-    <ClInclude Include="..\..\Source\BansheeUtility\Include\BsManagedDataBlock.h" />
     <ClInclude Include="..\..\Source\BansheeUtility\Include\BsMemoryAllocator.h" />
     <ClInclude Include="..\..\Source\BansheeUtility\Include\BsMemAllocProfiler.h" />
     <ClInclude Include="..\..\Source\BansheeUtility\Include\BsModule.h" />

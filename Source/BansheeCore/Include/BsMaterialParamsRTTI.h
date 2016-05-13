@@ -6,6 +6,7 @@
 #include "BsRTTIType.h"
 #include "BsMaterialParams.h"
 #include "BsSamplerState.h"
+#include "BsDataStream.h"
 
 namespace BansheeEngine
 {
@@ -53,28 +54,24 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT StructParamDataRTTI : public RTTIType<MaterialParams::StructParamData, IReflectable, StructParamDataRTTI>
 	{
 	public:
-		ManagedDataBlock getDataBuffer(MaterialParams::StructParamData* obj)
+		SPtr<DataStream> getDataBuffer(MaterialParams::StructParamData* obj, UINT32& size)
 		{
-			return ManagedDataBlock(obj->data, obj->dataSize);
+			size = obj->dataSize;
+
+			return bs_shared_ptr_new<MemoryDataStream>(obj->data, obj->dataSize, false);
 		}
 
-		void setDataBuffer(MaterialParams::StructParamData* obj, ManagedDataBlock value)
+		void setDataBuffer(MaterialParams::StructParamData* obj, const SPtr<DataStream>& value, UINT32 size)
 		{
-			// Do nothing as the buffer was already assigned when it was allocated
-		}
+			obj->data = (UINT8*)bs_alloc(size);
+			value->read(obj->data, size);
 
-		static UINT8* allocateDataBuffer(MaterialParams::StructParamData* obj, UINT32 numBytes)
-		{
-			obj->data = (UINT8*)bs_alloc(numBytes);
-			obj->dataSize = numBytes;
-
-			return obj->data;
+			obj->dataSize = size;
 		}
 
 		StructParamDataRTTI()
 		{
-			addDataBlockField("dataBuffer", 0, &StructParamDataRTTI::getDataBuffer,
-				&StructParamDataRTTI::setDataBuffer, 0, &StructParamDataRTTI::allocateDataBuffer);
+			addDataBlockField("dataBuffer", 0, &StructParamDataRTTI::getDataBuffer, &StructParamDataRTTI::setDataBuffer, 0);
 		}
 
 		const String& getRTTIName() override
@@ -125,22 +122,19 @@ namespace BansheeEngine
 			// Do nothing
 		}
 
-		ManagedDataBlock getDataBuffer(MaterialParams* obj)
+		SPtr<DataStream> getDataBuffer(MaterialParams* obj, UINT32& size)
 		{
-			return ManagedDataBlock(obj->mDataParamsBuffer, obj->mDataSize);
+			size = obj->mDataSize;
+
+			return bs_shared_ptr_new<MemoryDataStream>(obj->mDataParamsBuffer, obj->mDataSize, false);
 		}
 
-		void setDataBuffer(MaterialParams* obj, ManagedDataBlock value)
+		void setDataBuffer(MaterialParams* obj, const SPtr<DataStream>& value, UINT32 size)
 		{
-			// Do nothing as the buffer was already assigned when it was allocated
-		}
+			obj->mDataParamsBuffer = obj->mAlloc.alloc(size);
+			value->read(obj->mDataParamsBuffer, size);
 
-		static UINT8* allocateDataBuffer(MaterialParams* obj, UINT32 numBytes)
-		{
-			obj->mDataParamsBuffer = obj->mAlloc.alloc(numBytes);
-			obj->mDataSize = numBytes;
-
-			return obj->mDataParamsBuffer;
+			obj->mDataSize = size;
 		}
 
 		MaterialParams::StructParamData& getStructParam(MaterialParams* obj, UINT32 idx) { return obj->mStructParams[idx]; }
@@ -184,8 +178,7 @@ namespace BansheeEngine
 			addPlainArrayField("paramData", 0, &MaterialParamsRTTI::getParamData, &MaterialParamsRTTI::getParamDataArraySize, 
 				&MaterialParamsRTTI::setParamData, &MaterialParamsRTTI::setParamDataArraySize);
 
-			addDataBlockField("dataBuffer", 1, &MaterialParamsRTTI::getDataBuffer,
-				&MaterialParamsRTTI::setDataBuffer, 0, &MaterialParamsRTTI::allocateDataBuffer);
+			addDataBlockField("dataBuffer", 1, &MaterialParamsRTTI::getDataBuffer, &MaterialParamsRTTI::setDataBuffer, 0);
 
 			addReflectableArrayField("structParams", 2, &MaterialParamsRTTI::getStructParam,
 				&MaterialParamsRTTI::getStructArraySize, &MaterialParamsRTTI::setStructParam, &MaterialParamsRTTI::setStructArraySize);

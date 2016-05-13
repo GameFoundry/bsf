@@ -70,7 +70,7 @@ namespace BansheeEngine
 		 * @param[in]	data  		Binary data to decode.
 		 * @param[in]	dataLength	Length of the data in bytes.
 		 */
-		SPtr<IReflectable> decode(UINT8* data, UINT32 dataLength);
+		SPtr<IReflectable> decode(const SPtr<DataStream>& data, UINT32 dataLength);
 
 		/** @name Internal 
 		 *  @{
@@ -84,24 +84,25 @@ namespace BansheeEngine
 		 *							and will be set to null. If false then references will be encoded as well and restored
 		 *							upon decoding.
 		 */
-		SPtr<SerializedObject> _encodeIntermediate(IReflectable* object, bool shallow = false);
+		SPtr<SerializedObject> _encodeToIntermediate(IReflectable* object, bool shallow = false);
 
 		/**
-		 * Decodes an object in memory into an intermediate representation for easier parsing.
+		 * Decodes a serialized object into an intermediate representation for easier parsing.
 		 *			
 		 * @param[in] 	data  		Binary data to decode.
 		 * @param[in]	dataLength	Length of the data in bytes.
 		 * @param[in]	copyData	Determines should the data be copied or just referenced. If referenced then the returned
-		 *							serialized object will be invalid as soon as the original data buffer is destroyed. 
-		 *							Referencing is faster than copying.
+		 *							serialized object will be invalid as soon as the original data buffer is destroyed.
+		 *							Referencing is faster than copying. If the source data stream is a file stream the data
+		 *							will always be copied.
 		 *
 		 * @note
 		 * References to field data will point to the original buffer and will become invalid when it is destroyed.
 		 */
-		SPtr<SerializedObject> _decodeIntermediate(UINT8* data, UINT32 dataLength, bool copyData = false);
+		SPtr<SerializedObject> _decodeToIntermediate(const SPtr<DataStream>& data, UINT32 dataLength, bool copyData = false);
 
 		/** Decodes an intermediate representation of a serialized object into the actual object. */
-		SPtr<IReflectable> _decodeIntermediate(const SPtr<SerializedObject>& serializedObject);
+		SPtr<IReflectable> _decodeFromIntermediate(const SPtr<SerializedObject>& serializedObject);
 
 		/** @} */
 
@@ -135,14 +136,15 @@ namespace BansheeEngine
 		};
 
 		/** Encodes a single IReflectable object. */
-		UINT8* encodeInternal(IReflectable* object, UINT32 objectId, UINT8* buffer, UINT32& bufferLength, UINT32* bytesWritten,
+		UINT8* encodeEntry(IReflectable* object, UINT32 objectId, UINT8* buffer, UINT32& bufferLength, UINT32* bytesWritten,
 			std::function<UINT8*(UINT8* buffer, UINT32 bytesWritten, UINT32& newBufferSize)> flushBufferCallback, bool shallow);
 
 		/**	Decodes a single IReflectable object. */
-		void decodeInternal(const SPtr<IReflectable>& object, const SPtr<SerializedObject>& serializableObject);
+		void decodeEntry(const SPtr<IReflectable>& object, const SPtr<SerializedObject>& serializableObject);
 
 		/**	Decodes an object in memory into an intermediate representation for easier parsing. */
-		bool decodeIntermediateInternal(UINT8* data, UINT32 dataLength, UINT32& bytesRead, SPtr<SerializedObject>& output, bool copyData);
+		bool decodeEntry(const SPtr<DataStream>& data, UINT32 dataLength, UINT32& bytesRead, SPtr<SerializedObject>& output, 
+			bool copyData, bool streamDataBlock);
 
 		/**	Helper method for encoding a complex object and copying its data to a buffer. */
 		UINT8* complexTypeToBuffer(IReflectable* object, UINT8* buffer, UINT32& bufferLength, UINT32* bytesWritten,

@@ -48,7 +48,8 @@ namespace BansheeEngine
 
 		virtual bool isReadable() const { return (mAccess & READ) != 0; }
 		virtual bool isWriteable() const { return (mAccess & WRITE) != 0; }
-       
+		virtual bool isFile() const = 0;
+
         /** Reads data from the buffer and copies it to the specified value. */
         template<typename T> DataStream& operator>>(T& val);
 
@@ -149,8 +150,9 @@ namespace BansheeEngine
 		 *
 		 * @param[in] 	memory		Memory to wrap the data stream around.
 		 * @param[in]	size		Size of the memory chunk in bytes.
+		 * @param[in]	freeOnClose	Should the memory buffer be freed when the data stream goes out of scope.
 		 */
-		MemoryDataStream(void* memory, size_t size);
+		MemoryDataStream(void* memory, size_t size, bool freeOnClose = true);
 		
 		/**
 		 * Create a stream which pre-buffers the contents of another stream. Data from the other buffer will be entirely 
@@ -169,6 +171,8 @@ namespace BansheeEngine
 		MemoryDataStream(const SPtr<DataStream>& sourceStream);
 
 		~MemoryDataStream();
+
+		bool isFile() const override { return false; }
 
 		/** Get a pointer to the start of the memory block this stream holds. */
 		UINT8* getPtr() const { return mData; }
@@ -244,6 +248,8 @@ namespace BansheeEngine
 		FileDataStream(SPtr<std::fstream> s, size_t size, bool freeOnClose = true);
 
 		~FileDataStream();
+
+		bool isFile() const override { return true; }
 
         /** @copydoc DataStream::read */
 		size_t read(void* buf, size_t count) override;
