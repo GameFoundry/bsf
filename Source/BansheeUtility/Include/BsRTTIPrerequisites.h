@@ -13,6 +13,55 @@ namespace BansheeEngine
 	 */
 
 	/**
+	 * Template that you may specialize with a class if you want to provide simple serialization for it.
+	 *
+	 * Any type that uses the "plain" field in the RTTI system must specialize this class.
+	 *
+	 * @note
+	 * Normally you will want to implement IReflectable interface if you want to provide serialization
+	 * as that interface properly handles versioning, nested objects, pointer handling and more.
+	 *
+	 * @note
+	 * This class is useful for types you can easily serialize using a memcpy (built-in types like int/float/etc), or
+	 * types you cannot modify so they implement IReflectable interface (like std::string or std::vector).
+	 *
+	 * @see		RTTITypeBase
+	 * @see		RTTIField
+	 */
+	template<class T>
+	struct RTTIPlainType
+	{
+		static_assert(std::is_pod<T>::value,
+			"Provided type isn't plain-old-data. You need to specialize RTTIPlainType template in order to serialize this type. "\
+			" (Or call BS_ALLOW_MEMCPY_SERIALIZATION(type) macro if you are sure the type can be properly serialized using just memcpy.)");
+
+		enum { id = 0 /**< Unique id for the serializable type. */ };
+		enum { hasDynamicSize = 0 /**< 0 (Object has static size less than 255 bytes, for example int) or 1 (Dynamic size with no size restriction, for example string) */ };
+
+		/** Serializes the provided object into the provided pre-allocated memory buffer. */
+		static void toMemory(const T& data, char* memory)
+		{
+			memcpy(memory, &data, sizeof(T));
+		}
+
+		/**
+		 *  Deserializes a previously allocated object from the provided memory buffer. Return the number of bytes read
+		 *  from the memory buffer.
+		 */
+		static UINT32 fromMemory(T& data, char* memory)
+		{
+			memcpy(&data, memory, sizeof(T));
+			return sizeof(T);
+		}
+
+		/** Returns the size of the provided object. (Works for both static and dynamic size types) */
+		static UINT32 getDynamicSize(const T& data)
+		{
+			return sizeof(T);
+		}
+	};
+
+	/**
 	 * Helper method when serializing known data types that have valid
 	 * RTTIPlainType specialization.
 	 * 			
@@ -96,55 +145,6 @@ namespace BansheeEngine
 
 		return memory + elemSize;
 	}
-
-	/**
-	 * Template that you may specialize with a class if you want to provide simple serialization for it. 
-	 * 			
-	 * Any type that uses the "plain" field in the RTTI system must specialize this class.
-	 * 			
-	 * @note	
-	 * Normally you will want to implement IReflectable interface if you want to provide serialization
-	 * as that interface properly handles versioning, nested objects, pointer handling and more.
-	 *
-	 * @note			
-	 * This class is useful for types you can easily serialize using a memcpy (built-in types like int/float/etc), or
-	 * types you cannot modify so they implement IReflectable interface (like std::string or std::vector).
-	 *			
-	 * @see		RTTITypeBase
-	 * @see		RTTIField
-	 */
-	template<class T>
-	struct RTTIPlainType 
-	{ 
-		static_assert(std::is_pod<T>::value, 
-			"Provided type isn't plain-old-data. You need to specialize RTTIPlainType template in order to serialize this type. "\
-			" (Or call BS_ALLOW_MEMCPY_SERIALIZATION(type) macro if you are sure the type can be properly serialized using just memcpy.)");
-
-		enum { id = 0 /**< Unique id for the serializable type. */ }; 
-		enum { hasDynamicSize = 0 /**< 0 (Object has static size less than 255 bytes, for example int) or 1 (Dynamic size with no size restriction, for example string) */ };
-
-		/** Serializes the provided object into the provided pre-allocated memory buffer. */
-		static void toMemory(const T& data, char* memory)	
-		{ 
-			memcpy(memory, &data, sizeof(T)); 
-		}
-
-		/** 
-		 *  Deserializes a previously allocated object from the provided memory buffer. Return the number of bytes read 
-		 *  from the memory buffer.
-		 */
-		static UINT32 fromMemory(T& data, char* memory)
-		{
-			memcpy(&data, memory, sizeof(T)); 
-			return sizeof(T);
-		}
-
-		/** Returns the size of the provided object. (Works for both static and dynamic size types) */
-		static UINT32 getDynamicSize(const T& data)
-		{ 
-			return sizeof(T);
-		}
-	};
 
 	/**
 	 * Notify the RTTI system that the specified type may be serialized just by using a memcpy.
