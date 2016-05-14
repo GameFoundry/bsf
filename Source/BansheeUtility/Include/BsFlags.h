@@ -162,7 +162,7 @@ namespace BansheeEngine
 
 		Flags<Enum, Storage>& operator^= (const Flags<Enum, Storage>& rhs)
 		{
-			mBits ^= f.mBits;
+			mBits ^= rhs.mBits;
 
 			return *this;
 		}
