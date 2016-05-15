@@ -617,9 +617,11 @@ namespace BansheeEngine
 
 /** @cond STDLIB */
 
+namespace std
+{
 /** Hash value generator for Path. */
 template<>
-struct std::hash<BansheeEngine::Path>
+struct hash<BansheeEngine::Path>
 {
 	size_t operator()(const BansheeEngine::Path& path) const
 	{
@@ -634,5 +636,6 @@ struct std::hash<BansheeEngine::Path>
 		return hash;
 	}
 };
+}
 
 /** @endcond */

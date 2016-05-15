@@ -2,6 +2,8 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
+#include <cmath>
+
 #include "BsPrerequisitesUtil.h"
 #include "BsRadian.h"
 
@@ -240,7 +242,10 @@ namespace BansheeEngine
         }
 
         /** Returns the length (magnitude) of the vector. */
-		inline float length() const;
+		inline float length() const
+		{
+			return std::sqrt(x * x + y * y + z * z);
+		}
 
         /** Returns the square of the length(magnitude) of the vector. */
         float squaredLength() const
@@ -267,7 +272,21 @@ namespace BansheeEngine
         }
 
         /** Normalizes the vector. */
-		inline float normalize();
+		inline float normalize()
+		{
+			float len = length();
+
+			// Will also work for zero-sized vectors, but will change nothing
+			if (len > 1e-08)
+			{
+				float invLen = 1.0f / len;
+				x *= invLen;
+				y *= invLen;
+				z *= invLen;
+			}
+			return len;
+		}
+
 
         /** Calculates the cross-product of 2 vectors, that is, the vector that lies perpendicular to them both. */
         Vector3 cross(const Vector3& other) const

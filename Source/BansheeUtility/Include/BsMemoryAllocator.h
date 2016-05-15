@@ -6,6 +6,11 @@
 #undef max
 
 #include <atomic>
+#include <utility>
+
+#if BS_PLATFORM == BS_PLATFORM_LINUX
+#  include <malloc.h>
+#endif
 
 namespace BansheeEngine
 {

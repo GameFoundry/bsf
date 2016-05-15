@@ -88,7 +88,7 @@ namespace BansheeEngine
 		virtual const String& getDescription(void) const { return mDescription; }
 
 		/** Overriden std::exception::what. Returns the same value as getFullDescription(). */
-		const char* what() const override { return getFullDescription().c_str(); }
+		const char* what() const noexcept override { return getFullDescription().c_str(); }
 
 	protected:
 		long mLine;
