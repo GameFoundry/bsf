@@ -15,6 +15,7 @@ add_library(BansheePhysX SHARED ${BS_BANSHEEPHYSX_SRC})
 
 # Defines
 target_compile_definitions(BansheePhysX PRIVATE -DBS_PHYSX_EXPORTS)
+target_compile_definitions(BansheePhysX PRIVATE $<$<CONFIG:OptimizedDebug>:NDEBUG> $<$<CONFIG:Release>:NDEBUG>)
 
 # Libraries
 if(BS_64BIT)

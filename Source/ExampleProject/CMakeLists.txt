@@ -11,8 +11,12 @@ set(ExampleProject_INC
 include_directories(${ExampleProject_INC})	
 	
 # Target
-add_library(ExampleProject SHARED ${BS_EXAMPLEPROJECT_SRC})
-
+if(WIN32)
+	add_executable(ExampleProject WIN32 ${BS_EXAMPLEPROJECT_SRC})
+else()
+	add_executable(ExampleProject ${BS_EXAMPLEPROJECT_SRC})
+endif()
+	
 # Libraries
 ## Local libs
 target_link_libraries(ExampleProject BansheeEngine BansheeUtility BansheeCore)

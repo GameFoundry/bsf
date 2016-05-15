@@ -132,6 +132,7 @@ set(BS_SBANSHEEENGINE_INC_WRAPPERS
 	"Include/BsScriptScene.h"
 	"Include/BsScriptResources.h"
 	"Include/BsScriptResourceRef.h"
+	"Include/BsScriptPostProcessSettings.h"
 )
 
 set(BS_SBANSHEEENGINE_INC_WRAPPERS_GUI
@@ -254,6 +255,7 @@ set(BS_SBANSHEEENGINE_SRC_WRAPPERS
 	"Source/BsScriptRenderTexture.cpp"
 	"Source/BsScriptRenderTarget.cpp"
 	"Source/BsScriptRenderable.cpp"
+	"Source/BsScriptPostProcessSettings.cpp"
 )
 
 set(BS_SBANSHEEENGINE_INC_SERIALIZATION

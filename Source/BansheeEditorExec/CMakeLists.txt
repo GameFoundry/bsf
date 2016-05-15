@@ -12,7 +12,11 @@ set(BansheeEditorExec_INC
 include_directories(${BansheeEditorExec_INC})	
 	
 # Target
-add_library(BansheeEditorExec SHARED ${BS_BANSHEEEDITOREXEC_SRC})
+if(WIN32)
+	add_executable(BansheeEditorExec WIN32 ${BS_BANSHEEEDITOREXEC_SRC})
+else()
+	add_executable(BansheeEditorExec ${BS_BANSHEEEDITOREXEC_SRC})
+endif()
 
 # Libraries
 ## Local libs
@@ -22,7 +26,7 @@ target_link_libraries(BansheeEditorExec BansheeEditor BansheeEngine BansheeUtili
 set_property(TARGET BansheeEditorExec PROPERTY FOLDER Executable)
 
 # Plugin dependencies
-add_dependencies(BansheeEditorExec BansheeFBXImporter BansheeFontImporter BansheeFreeImgImporter BansheeGLRenderAPI BansheeMono BansheeOISInput BansheePhysX BansheeSL RenderBeast SBansheeEngine SBansheeEditor Game)
+add_dependencies(BansheeEditorExec BansheeFBXImporter BansheeFontImporter BansheeFreeImgImporter BansheeGLRenderAPI BansheeMono BansheeOISInput BansheePhysX BansheeSL BansheeOpenAudio RenderBeast SBansheeEngine SBansheeEditor)
 
 if(WIN32)
 	add_dependencies(BansheeEditorExec BansheeD3D11RenderAPI BansheeD3D9RenderAPI)

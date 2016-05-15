@@ -97,6 +97,7 @@ set(BS_BANSHEEENGINE_INC_RENDERER
 	"Include/BsRenderQueue.h"
 	"Include/BsSceneManager.h"
 	"Include/BsRendererUtility.h"
+	"Include/BsPostProcessSettings.h"	
 )
 
 set(BS_BANSHEEENGINE_SRC_RTTI
@@ -193,6 +194,7 @@ set(BS_BANSHEEENGINE_SRC_RENDERER
 	"Source/BsRenderQueue.cpp"
 	"Source/BsSceneManager.cpp"
 	"Source/BsRendererUtility.cpp"
+	"Source/BsPostProcessSettings.cpp"	
 )
 
 set(BS_BANSHEEENGINE_SRC_INPUT

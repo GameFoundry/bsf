@@ -174,7 +174,6 @@ set(BS_BANSHEEUTILITY_SRC_SERIALIZATION
 	"Source/BsBinaryDiff.cpp"
 	"Source/BsSerializedObject.cpp"
 	"Source/BsBinaryCloner.cpp"
-	"Source/BsManagedDataBlock.cpp"
 )
 
 set(BS_BANSHEEUTILITY_INC_MATH
@@ -215,7 +214,6 @@ set(BS_BANSHEEUTILITY_INC_SERIALIZATION
 	"Include/BsBinaryDiff.h"
 	"Include/BsSerializedObject.h"
 	"Include/BsBinaryCloner.h"
-	"Include/BsManagedDataBlock.h"
 )
 
 set(BS_BANSHEEUTILITY_SRC_STRING
