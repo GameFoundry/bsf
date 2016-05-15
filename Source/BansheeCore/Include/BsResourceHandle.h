@@ -106,7 +106,7 @@ namespace BansheeEngine
 		static Mutex mResourceCreatedMutex;
 
 	protected:
-		inline void throwIfNotLoaded() const;
+		void throwIfNotLoaded() const;
 	};
 
 	/**
