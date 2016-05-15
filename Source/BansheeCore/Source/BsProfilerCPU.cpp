@@ -69,8 +69,8 @@ namespace BansheeEngine
 	inline UINT64 ProfilerCPU::TimerPrecise::getNumCycles() 
 	{
 #if BS_COMPILER == BS_COMPILER_GNUC
-		int a = 0;
-		int b[4];
+		unsigned int a = 0;
+		unsigned int b[4];
 		__get_cpuid(a, &b[0], &b[1], &b[2], &b[3]);
 
 #if BS_ARCH_TYPE == BS_ARCHITECTURE_x86_64
