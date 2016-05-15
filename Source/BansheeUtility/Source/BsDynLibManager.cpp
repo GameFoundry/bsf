@@ -13,10 +13,10 @@ namespace BansheeEngine
     {
 		// Add the extension (.dll, .so, ...) if necessary.
 		String filename = name;
-		const int length = filename.length();
-		const String extension = "." + DynLib::extension;
-		const int ext_length = extension.length();
-		if (length <= ext_length || filename.substr(length - ext_length) != extension)
+		const UINT32 length = (UINT32)filename.length();
+		const String extension = String(".") + DynLib::extension;
+		const UINT32 extLength = (UINT32)extension.length();
+		if (length <= extLength || filename.substr(length - extLength) != extension)
 			filename += extension;
 
 		auto iterFind = mLoadedLibraries.find(filename);

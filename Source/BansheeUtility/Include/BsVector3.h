@@ -242,7 +242,7 @@ namespace BansheeEngine
         }
 
         /** Returns the length (magnitude) of the vector. */
-		inline float length() const
+		float length() const
 		{
 			return std::sqrt(x * x + y * y + z * z);
 		}
@@ -272,7 +272,7 @@ namespace BansheeEngine
         }
 
         /** Normalizes the vector. */
-		inline float normalize()
+		float normalize()
 		{
 			float len = length();
 
