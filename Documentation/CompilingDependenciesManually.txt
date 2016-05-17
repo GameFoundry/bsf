@@ -70,9 +70,10 @@ BansheePhysX (optional) relies on:
 BansheeOpenAudio (optional) relies on:
  - libogg v1.3.2
   - https://xiph.org/downloads/
-  - Required in order to build libflac & libvorbis
+  - Build as static library with separate debug & release files
+   - Switch runtime library to dynamic to avoid linker warnings when adding it to Banshee
+  - Also required in order to build libflac & libvorbis
     - See readme files included with those libraries as to how to set up libogg library and includes
-  - Use non-debug build for all Banshee configurations for performance reasons
  - libvorbis commit:5bbe49dc947ea9f1532273644348c53054ca214a
   - https://git.xiph.org/?p=vorbis.git
   - Before compiling follow steps for libogg above

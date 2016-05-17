@@ -274,66 +274,12 @@ namespace BansheeEngine
 			return nullptr;
 		}
 
-		UINT64 fileSize = getFileSize(fullPath);
-
-		// Always open in binary mode
-		// Also, always include reading
-		std::ios::openmode mode = std::ios::in | std::ios::binary;
-		SPtr<std::istream> baseStream = 0;
-		SPtr<std::ifstream> roStream = 0;
-		SPtr<std::fstream> rwStream = 0;
-
-		if (!readOnly)
-		{
-			mode |= std::ios::out;
-			rwStream = bs_shared_ptr_new<std::fstream>();
-			rwStream->open(pathString, mode);
-			baseStream = rwStream;
-		}
-		else
-		{
-			roStream = bs_shared_ptr_new<std::ifstream>();
-			roStream->open(pathString, mode);
-			baseStream = roStream;
-		}
-
-		// Should check ensure open succeeded, in case fail for some reason.
-		if (baseStream->fail())
-		{
-			LOGWRN("Cannot open file: " + fullPath.toString());
-			return nullptr;
-		}
-
-		/// Construct return stream, tell it to delete on destroy
-		FileDataStream* stream = 0;
-		if (rwStream)
-		{
-			// use the writeable stream 
-			stream = bs_new<FileDataStream>(rwStream, (size_t)fileSize, true);
-		}
-		else
-		{
-			// read-only stream
-			stream = bs_new<FileDataStream>(roStream, (size_t)fileSize, true);
-		}
-
-		return bs_shared_ptr<FileDataStream>(stream);
+		return bs_shared_ptr_new<FileDataStream>(fullPath, readOnly, true);
 	}
 
 	SPtr<DataStream> FileSystem::createAndOpenFile(const Path& fullPath)
 	{
-		// Always open in binary mode
-		// Also, always include reading
-		std::ios::openmode mode = std::ios::out | std::ios::binary;
-		SPtr<std::fstream> rwStream = bs_shared_ptr_new<std::fstream>();
-		rwStream->open(fullPath.toWString().c_str(), mode);
-
-		// Should check ensure open succeeded, in case fail for some reason.
-		if (rwStream->fail())
-			BS_EXCEPT(FileNotFoundException, "Cannot open file: " + fullPath.toString());
-
-		/// Construct return stream, tell it to delete on destroy
-		return bs_shared_ptr_new<FileDataStream>(rwStream, 0, true);
+		return bs_shared_ptr_new<FileDataStream>(fullPath, false, true);
 	}
 
 	UINT64 FileSystem::getFileSize(const Path& fullPath)

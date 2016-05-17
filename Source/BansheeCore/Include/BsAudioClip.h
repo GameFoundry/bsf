@@ -73,14 +73,25 @@ namespace BansheeEngine
 		UINT32 getNumSamples() const { return mNumSamples; }
 
 		/** 
-		 * Returns audio samples in PCM format, channel data inerleaved. 
+		 * Returns audio samples in PCM format, channel data interleaved. Sample read pointer is advanced by the read 
+		 * amount.
 		 *
 		 * @param[in]	samples		Previously allocated buffer to contain the samples.
 		 * @param[in]	count		Number of samples to read (should be a multiple of number of channels).
-		 * @param[in]	offset		Offset in number of samples at which to start reading (should be a multiple of number
-		 *							of channels).
+		 *
+		 * @note	Implementation must be thread safe as this will get called from audio streaming thread.
 		 */
-		virtual void getSamples(UINT8* samples, UINT32 count, UINT32 offset = 0) const = 0;
+		virtual void getSamples(UINT8* samples, UINT32 count) const = 0;
+
+		/**
+		 * Moves the read location from which the getSamples method retrieves samples.
+		 *
+		 * @param[in]	offset	Offset in number of samples at which to start reading (should be a multiple of number
+		 *						of channels).
+		 *
+		 * @note	Implementation must be thread safe as this will get called from audio streaming thread.
+		 */
+		virtual void seekSamples(UINT32 offset) = 0;
 
 		static HAudioClip create(UINT32 streamSize, UINT32 numSamples, const AUDIO_CLIP_DESC& desc);
 		static HAudioClip create(const SPtr<DataStream>& samples, UINT32 streamSize, UINT32 numSamples,
@@ -105,6 +116,7 @@ namespace BansheeEngine
 		AUDIO_CLIP_DESC mDesc;
 		UINT32 mNumSamples;
 		UINT32 mStreamSize;
+		UINT32 mStreamOffset;
 		SPtr<DataStream> mStreamData;
 
 		/************************************************************************/

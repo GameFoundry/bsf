@@ -25,13 +25,13 @@ namespace BansheeEngine
 			BS_RTTI_MEMBER_PLAIN_NAMED(numChannels, mDesc.numChannels, 4)
 			BS_RTTI_MEMBER_PLAIN(mNumSamples, 5)
 			BS_RTTI_MEMBER_PLAIN(mStreamSize, 7)
+			BS_RTTI_MEMBER_PLAIN(mStreamOffset, 8)
 		BS_END_RTTI_MEMBERS
 
 		SPtr<DataStream> getData(AudioClip* obj, UINT32& size)
 		{
 			SPtr<DataStream> stream = obj->getSourceFormatData(size);
-
-			if (stream->isFile())
+			if (stream != nullptr && stream->isFile())
 				LOGWRN("Saving an AudioClip which uses streaming data. Streaming data might not be available if saving to the same file.");
 
 			return stream;
@@ -39,8 +39,9 @@ namespace BansheeEngine
 
 		void setData(AudioClip* obj, const SPtr<DataStream>& val, UINT32 size)
 		{
-			obj->mStreamData = val;
+			obj->mStreamData = val->clone(); // Making sure that the AudioClip cannot modify the source stream, which is still used by the deserializer
 			obj->mStreamSize = size;
+			obj->mStreamOffset = (UINT32)val->tell();
 		}
 
 	public:
