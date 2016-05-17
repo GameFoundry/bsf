@@ -11,11 +11,35 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
+	struct AudioDevice
+	{
+		WString name;
+	};
+
 	/** Provides global functionality relating to sounds and music. */
 	class BS_CORE_EXPORT Audio : public Module<Audio>
 	{
+	public:
+		virtual ~Audio() { }
+
+		virtual void setVolume(float volume) = 0;
+		virtual float getVolume() const = 0;
+
+		virtual void setPaused(bool paused) = 0;
+		virtual bool isPaused() const = 0;
+
+		virtual void update() = 0;
+
+		virtual void setActiveDevice(const AudioDevice& device) = 0;
+		virtual AudioDevice getActiveDevice() const = 0;
+		
+		virtual AudioDevice getDefaultDevice() const = 0;
+		virtual Vector<AudioDevice> getAllDevices() const = 0;
+
 	protected:
 		friend class AudioClip;
+		friend class AudioListener;
+		friend class AudioSource;
 
 		/** 
 		 * Creates a new audio clip.
@@ -28,6 +52,10 @@ namespace BansheeEngine
 		 */
 		virtual SPtr<AudioClip> createClip(const SPtr<DataStream>& samples, UINT32 streamSize, UINT32 numSamples,
 			const AUDIO_CLIP_DESC& desc) = 0;
+
+		virtual SPtr<AudioListener> createListener() = 0;
+
+		virtual SPtr<AudioSource> createSource() = 0;
 	};
 
 	/** Provides easier access to Audio. */

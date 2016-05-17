@@ -344,6 +344,8 @@ namespace BansheeEngine
 	class CCharacterController;
 	class ShaderDefines;
 	class ShaderImportOptions;
+	class AudioListener;
+	class AudioSource;
 	// Asset import
 	class SpecificImporter;
 	class Importer;

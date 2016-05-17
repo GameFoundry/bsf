@@ -470,12 +470,16 @@ set(BS_BANSHEECORE_SRC_SCENE
 set(BS_BANSHEECORE_INC_AUDIO
 	"Include/BsAudio.h"
 	"Include/BsAudioClip.h"
+	"Include/BsAudioListener.h"
+	"Include/BsAudioSource.h"
 	"Include/BsAudioClipImportOptions.h"
 )
 
 set(BS_BANSHEECORE_SRC_AUDIO
 	"Source/BsAudio.cpp"
 	"Source/BsAudioClip.cpp"
+	"Source/BsAudioListener.cpp"
+	"Source/BsAudioSource.cpp"
 	"Source/BsAudioClipImportOptions.cpp"
 )
 
@@ -551,5 +555,6 @@ set(BS_BANSHEECORE_SRC
 	${BS_BANSHEECORE_SRC_NOFILTER}
 	${BS_BANSHEECORE_SRC_PHYSICS}
 	${BS_BANSHEECORE_SRC_SCENE}
+	${BS_BANSHEECORE_INC_AUDIO}
 	${BS_BANSHEECORE_SRC_AUDIO}
 )
