@@ -20,6 +20,7 @@ namespace BansheeEngine
 			BS_RTTI_MEMBER_PLAIN(mFormat, 0)
 			BS_RTTI_MEMBER_PLAIN(mReadMode, 1)
 			BS_RTTI_MEMBER_PLAIN(mIs3D, 2)
+			BS_RTTI_MEMBER_PLAIN(mBitDepth, 3)
 		BS_END_RTTI_MEMBERS
 	public:
 		AudioClipImportOptionsRTTI()
