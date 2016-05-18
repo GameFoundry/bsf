@@ -22,11 +22,15 @@ namespace BansheeEngine
 		AudioReadMode getReadMode() const { return mReadMode; }
 		void setReadMode(AudioReadMode readMode) { mReadMode = readMode; }
 
-		// Note: Add options to resample to a different frequency, reduce/increase bit depth, and stereo -> mono conversion
+		bool getIs3D() const { return mIs3D; }
+		void setIs3D(bool is3d) { mIs3D = is3d; }
+
+		// Note: Add options to resample to a different frequency, reduce/increase bit depth
 
 	private:
 		AudioFormat mFormat = AudioFormat::PCM;
 		AudioReadMode mReadMode = AudioReadMode::LoadDecompressed;
+		bool mIs3D = true;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

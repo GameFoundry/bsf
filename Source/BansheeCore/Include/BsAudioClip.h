@@ -53,6 +53,9 @@ namespace BansheeEngine
 		
 		/** Number of channels. Each channel has its own step of samples. */
 		UINT32 numChannels = 2;
+
+		/** Determines should the audio clip be played using 3D positioning. Only valid for mono audio. */
+		bool is3D = true;
 	};
 
 	/** 

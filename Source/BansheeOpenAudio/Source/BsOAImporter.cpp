@@ -11,6 +11,80 @@
 
 namespace BansheeEngine
 {
+	void convertToMono8(UINT8* input, UINT8* output, UINT32 numSamples, UINT32 numChannels)
+	{
+		for (UINT32 i = 0; i < numSamples; i++)
+		{
+			UINT16 sum = 0;
+			for (UINT32 j = 0; j < numChannels; j++)
+			{
+				sum += *input;
+				++input;
+			}
+
+			*output = sum / numChannels;
+			++output;
+		}
+	}
+
+	void convertToMono16(INT16* input, INT16* output, UINT32 numSamples, UINT32 numChannels)
+	{
+		for (UINT32 i = 0; i < numSamples; i++)
+		{
+			INT32 sum = 0;
+			for (UINT32 j = 0; j < numChannels; j++)
+			{
+				sum += *input;
+				++input;
+			}
+
+			*output = sum / numChannels;
+			++output;
+		}
+	}
+
+	void convertToMono24(UINT8* input, UINT8* output, UINT32 numSamples, UINT32 numChannels)
+	{
+		for (UINT32 i = 0; i < numSamples; i++)
+		{
+			INT32 sum = 0;
+			for (UINT32 j = 0; j < numChannels; j++)
+			{
+				INT32 value = 0;
+				bool isNegative = input[2] & 0x80;
+				if (isNegative) // Sign extend if negative
+					value = (0xFF << 24) | (input[2] << 16) | (input[1] << 8) | input[0];
+				else
+					value = (input[2] << 16) | (input[1] << 8) | input[0];
+
+				sum += value;
+				input += 3;
+			}
+
+			INT32 avg = sum / numChannels;
+			output[0] = avg & 0x000000FF;
+			output[1] = (avg >> 8) & 0x000000FF;
+			output[2] = (avg >> 16) & 0x000000FF;
+			output += 3;
+		}
+	}
+
+	void convertToMono32(INT32* input, INT32* output, UINT32 numSamples, UINT32 numChannels)
+	{
+		for (UINT32 i = 0; i < numSamples; i++)
+		{
+			INT64 sum = 0;
+			for (UINT32 j = 0; j < numChannels; j++)
+			{
+				sum += *input;
+				++input;
+			}
+
+			*output = sum / numChannels;
+			++output;
+		}
+	}
+
 	OAImporter::OAImporter()
 		:SpecificImporter()
 	{
@@ -67,6 +141,46 @@ namespace BansheeEngine
 
 		SPtr<const AudioClipImportOptions> clipIO = std::static_pointer_cast<const AudioClipImportOptions>(importOptions);
 
+		// If 3D, convert to mono
+		if(clipIO->getIs3D() && info.numChannels > 1)
+		{
+			UINT32 numSamplesPerChannel = info.numSamples / info.numChannels;
+
+			UINT32 monoBufferSize = numSamplesPerChannel * info.bitDepth;
+			UINT8* monoBuffer = (UINT8*)bs_alloc(monoBufferSize);
+
+			for(UINT32 i = 0; i < numSamplesPerChannel; i++)
+			{
+				switch(info.bitDepth)
+				{
+				case 8:
+					convertToMono8(sampleBuffer, monoBuffer, numSamplesPerChannel, info.numChannels);
+					break;
+				case 16:
+					convertToMono16((INT16*)sampleBuffer, (INT16*)monoBuffer, numSamplesPerChannel, info.numChannels);
+					break;
+				case 24:
+					convertToMono24(sampleBuffer, monoBuffer, numSamplesPerChannel, info.numChannels);
+					break;
+				case 32:
+					convertToMono32((INT32*)sampleBuffer, (INT32*)monoBuffer, numSamplesPerChannel, info.numChannels);
+					break;
+				default:
+					assert(false);
+					break;
+				}
+
+			}
+
+			info.numSamples = numSamplesPerChannel;
+			info.numChannels = 1;
+
+			bs_free(sampleBuffer);
+
+			sampleBuffer = monoBuffer;
+			bufferSize = monoBufferSize;
+		}
+
 		// Encode to Ogg Vorbis if needed
 		if(clipIO->getFormat() == AudioFormat::VORBIS)
 		{
@@ -87,6 +201,7 @@ namespace BansheeEngine
 		clipDesc.frequency = info.sampleRate;
 		clipDesc.numChannels = info.numChannels;
 		clipDesc.readMode = clipIO->getReadMode();
+		clipDesc.is3D = clipIO->getIs3D();
 
 		SPtr<AudioClip> clip = AudioClip::_createPtr(sampleStream, bufferSize, info.numSamples, clipDesc);
 
