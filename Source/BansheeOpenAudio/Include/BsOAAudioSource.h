@@ -52,6 +52,14 @@ namespace BansheeEngine
 
 		/** @copydoc AudioSource::stop */
 		void stop() override;
+
+	private:
+		friend class OAAudio;
+
+		void clear();
+		void rebuild();
+
+		Vector<UINT32> mSourceIDs;
 	};
 
 	/** @} */

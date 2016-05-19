@@ -79,7 +79,7 @@ namespace BansheeEngine
 		{
 			if (info.bitDepth > 16)
 			{
-				if (gOAAudio().isExtensionSupported("AL_EXT_float32"))
+				if (gOAAudio()._isExtensionSupported("AL_EXT_float32"))
 				{
 					UINT32 bufferSize = info.numSamples * sizeof(float);
 					float* sampleBufferFloat = (float*)bs_stack_alloc(bufferSize);

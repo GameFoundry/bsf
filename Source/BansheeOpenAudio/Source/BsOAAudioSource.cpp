@@ -1,17 +1,20 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsOAAudioSource.h"
+#include "BsOAAudio.h"
+#include "AL\al.h"
 
 namespace BansheeEngine
 {
 	OAAudioSource::OAAudioSource()
 	{
-		
+		gOAAudio()._registerSource(this);
+		rebuild();
 	}
 
 	OAAudioSource::~OAAudioSource()
 	{
-		
+		gOAAudio()._unregisterSource(this);
 	}
 
 	void OAAudioSource::setClip(const HAudioClip& clip)
@@ -96,5 +99,27 @@ namespace BansheeEngine
 		AudioSource::stop();
 
 		// TODO
+	}
+
+	void OAAudioSource::clear()
+	{
+		for (auto& source : mSourceIDs)
+			alSourcei(source, AL_BUFFER, 0);
+
+		alDeleteSources((UINT32)mSourceIDs.size(), mSourceIDs.data());
+		mSourceIDs.clear();
+	}
+
+	void OAAudioSource::rebuild()
+	{
+		auto& contexts = gOAAudio()._getContexts();
+
+		for (auto& context : contexts)
+		{
+			if (contexts.size() > 1) // If only one context is available it is guaranteed it is always active, so we can avoid setting it
+				alcMakeContextCurrent(context);
+
+			// TODO - (Re)apply source settings
+		}
 	}
 }

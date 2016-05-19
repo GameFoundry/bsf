@@ -28,6 +28,17 @@ namespace BansheeEngine
 
 		/** @copydoc AudioListener::setVelocity */
 		void setVelocity(const Vector3& velocity) override;
+
+	private:
+		friend class OAAudio;
+
+		void rebuild();
+
+		inline std::array<float, 6> getOrientation() const;
+		inline void updatePosition();
+		inline void updateOrientation(const std::array<float, 6>& orientation);
+		inline void updateVelocity();
+		inline void updateVolume(float volume);
 	};
 
 	/** @} */

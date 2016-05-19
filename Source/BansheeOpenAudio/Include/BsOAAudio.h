@@ -37,24 +37,45 @@ namespace BansheeEngine
 		void setActiveDevice(const AudioDevice& device) override;
 
 		/** @copydoc Audio::getActiveDevice */
-		AudioDevice getActiveDevice() const override;
+		AudioDevice getActiveDevice() const override { return mActiveDevice; }
 
 		/** @copydoc Audio::getDefaultDevice */
-		AudioDevice getDefaultDevice() const override;
+		AudioDevice getDefaultDevice() const override { return mDefaultDevice; }
 
 		/** @copydoc Audio::getAllDevices */
-		Vector<AudioDevice> getAllDevices() const override;
+		const Vector<AudioDevice>& getAllDevices() const override { return mAllDevices; };
 
 		/** @name Internal 
 		 *  @{
 		 */
 
-		bool isExtensionSupported(const String& extension) const;
+		bool _isExtensionSupported(const String& extension) const;
+
+		void _registerListener(OAAudioListener* listener);
+		void _unregisterListener(OAAudioListener* listener);
+
+		void _registerSource(OAAudioSource* source);
+		void _unregisterSource(OAAudioSource* source);
+
+		const Vector<ALCcontext*>& _getContexts() const { return mContexts; }
 
 		/** @} */
 
 	private:
+		void rebuildContexts();
+		void clearContexts();
+
+		float mVolume;
+
 		ALCdevice* mDevice;
+		Vector<AudioDevice> mAllDevices;
+		AudioDevice mDefaultDevice;
+		AudioDevice mActiveDevice;
+
+		Vector<OAAudioListener*> mListeners;
+		Vector<ALCcontext*> mContexts;
+		UnorderedSet<OAAudioSource*> mSources;
+
 	};
 
 	/** Provides easier access to OAAudio. */

@@ -34,7 +34,7 @@ namespace BansheeEngine
 		virtual AudioDevice getActiveDevice() const = 0;
 		
 		virtual AudioDevice getDefaultDevice() const = 0;
-		virtual Vector<AudioDevice> getAllDevices() const = 0;
+		virtual const Vector<AudioDevice>& getAllDevices() const = 0;
 
 	protected:
 		friend class AudioClip;

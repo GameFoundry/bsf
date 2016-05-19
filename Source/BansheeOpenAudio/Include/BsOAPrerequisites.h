@@ -30,6 +30,9 @@ namespace BansheeEngine
 		UINT32 numChannels; /**< Number of channels. Each channel has its own set of samples. */
 		UINT32 bitDepth; /**< Number of bits per sample. */
 	};
+
+	class OAAudioListener;
+	class OAAudioSource;
 }
 
 /** @addtogroup Plugins
