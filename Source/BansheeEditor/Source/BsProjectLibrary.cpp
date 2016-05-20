@@ -423,7 +423,7 @@ namespace BansheeEngine
 
 				// Don't load dependencies because we don't need them, but also because they might not be in the manifest
 				// which would screw up their UUIDs.
-				importedResources.push_back({ L"primary", gResources().load(fileEntry->path, false, false) });
+				importedResources.push_back({ L"primary", gResources().load(fileEntry->path, ResourceLoadFlag::KeepSourceData) });
 			}
 
 			if(fileEntry->meta == nullptr)
@@ -1177,8 +1177,10 @@ namespace BansheeEngine
 		if (meta == nullptr)
 			return HResource();
 
+		ResourceLoadFlags loadFlags = ResourceLoadFlag::Default | ResourceLoadFlag::KeepSourceData;
+
 		String resUUID = meta->getUUID();
-		return gResources().loadFromUUID(resUUID);
+		return gResources().loadFromUUID(resUUID, false, loadFlags);
 	}
 
 	void ProjectLibrary::createInternalParentHierarchy(const Path& fullPath, DirectoryEntry** newHierarchyRoot, DirectoryEntry** newHierarchyLeaf)

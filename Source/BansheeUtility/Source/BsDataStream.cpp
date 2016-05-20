@@ -368,17 +368,20 @@ namespace BansheeEngine
         }
     }
 
-    FileDataStream::FileDataStream(const Path& path, bool readOnly, bool freeOnClose)
-        : DataStream(READ), mPath(path), mFreeOnClose(freeOnClose)
+    FileDataStream::FileDataStream(const Path& path, AccessMode accessMode, bool freeOnClose)
+        : DataStream(accessMode), mPath(path), mFreeOnClose(freeOnClose)
     {
 		WString pathWString = path.toWString();
 		const wchar_t* pathString = pathWString.c_str();
 
 		// Always open in binary mode
 		// Also, always include reading
-		std::ios::openmode mode = std::ios::in | std::ios::binary;
+		std::ios::openmode mode = std::ios::binary;
 
-		if (!readOnly)
+		if ((accessMode & READ) != 0)
+			mode |= std::ios::in;
+
+		if (((accessMode & WRITE) != 0))
 		{
 			mode |= std::ios::out;
 			mFStream = bs_shared_ptr_new<std::fstream>();
@@ -402,20 +405,7 @@ namespace BansheeEngine
         mInStream->seekg(0, std::ios_base::end);
         mSize = (size_t)mInStream->tellg();
         mInStream->seekg(0, std::ios_base::beg);
-
-		determineAccess();
     }
-
-	void FileDataStream::determineAccess()
-	{
-		mAccess = 0;
-
-		if (mInStream)
-			mAccess |= READ;
-
-		if (mFStream)
-			mAccess |= WRITE;
-	}
 
     FileDataStream::~FileDataStream()
     {
@@ -466,9 +456,7 @@ namespace BansheeEngine
 
 	SPtr<DataStream> FileDataStream::clone(bool copyData) const
 	{
-		bool readOnly = (getAccessMode() & WRITE) == 0;
-
-		return bs_shared_ptr_new<FileDataStream>(mPath, readOnly, true);		
+		return bs_shared_ptr_new<FileDataStream>(mPath, (AccessMode)getAccessMode(), true);
 	}
 
     void FileDataStream::close()

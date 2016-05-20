@@ -56,6 +56,16 @@ namespace BansheeEngine
 
 		/** Determines should the audio clip be played using 3D positioning. Only valid for mono audio. */
 		bool is3D = true;
+
+		/** 
+		 * Determines should the audio clip keep the original data in memory after creation. For example if the audio data 
+		 * is normally compressed, but audio clip uncompresses it on load, the original compressed data will be lost unless
+		 * this is enabled. This will cause extra memory to be used, but can be useful in certain circumstances (for example
+		 * you might require that data to save the audio clip on disk).
+		 *
+		 * When loading audio clip directly from disk, this properly is controlled by the ResourceLoadFlag::KeepSourceData.
+		 */
+		bool keepSourceData = true;
 	};
 
 	/** 
@@ -128,7 +138,6 @@ namespace BansheeEngine
 		UINT32 mStreamSize;
 		UINT32 mStreamOffset;
 		float mLength;
-		bool mKeepSourceData;
 		SPtr<DataStream> mStreamData;
 
 		/************************************************************************/

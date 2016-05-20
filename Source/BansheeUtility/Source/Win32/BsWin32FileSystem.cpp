@@ -274,12 +274,16 @@ namespace BansheeEngine
 			return nullptr;
 		}
 
-		return bs_shared_ptr_new<FileDataStream>(fullPath, readOnly, true);
+		DataStream::AccessMode accessMode = DataStream::READ;
+		if (!readOnly)
+			accessMode = (DataStream::AccessMode)(accessMode | (UINT32)DataStream::WRITE);
+
+		return bs_shared_ptr_new<FileDataStream>(fullPath, accessMode, true);
 	}
 
 	SPtr<DataStream> FileSystem::createAndOpenFile(const Path& fullPath)
 	{
-		return bs_shared_ptr_new<FileDataStream>(fullPath, false, true);
+		return bs_shared_ptr_new<FileDataStream>(fullPath, DataStream::AccessMode::WRITE, true);
 	}
 
 	UINT64 FileSystem::getFileSize(const Path& fullPath)

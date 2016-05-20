@@ -229,12 +229,11 @@ namespace BansheeEngine
 		 * Construct a file stream.
 		 *
 		 * @param[in]	filePath	Path of the file to open.
-		 * @param[in]	readOnly	Determines should the file be opened in read-only mode, or should writing be supported 
-		 *							as well.
+		 * @param[in]	accessMode	Determines should the file be opened in read, write or read/write mode.
 		 * @param[in]	freeOnClose	Determines should the internal stream be freed once the data stream is closed or goes 
 		 *							out of scope.
 		 */
-		FileDataStream(const Path& filePath, bool readOnly = true, bool freeOnClose = true);
+		FileDataStream(const Path& filePath, AccessMode accessMode = READ, bool freeOnClose = true);
 
 		~FileDataStream();
 
@@ -270,8 +269,6 @@ namespace BansheeEngine
 		SPtr<std::ifstream> mFStreamRO;
 		SPtr<std::fstream> mFStream;
 		bool mFreeOnClose;	
-
-		void determineAccess();
 	};
 
 	/** @} */

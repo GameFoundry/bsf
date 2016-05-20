@@ -38,8 +38,10 @@ namespace BansheeEngine
 		if (ScriptSceneObject::checkIfDestroyed(nativeInstance))
 			return;
 
+		ResourceLoadFlags loadFlags = ResourceLoadFlag::KeepInternalRef | ResourceLoadFlag::KeepSourceData;
+
 		String prefabLinkUUID = nativeInstance->getNativeSceneObject()->getPrefabLink();
-		HPrefab prefab = static_resource_cast<Prefab>(gResources().loadFromUUID(prefabLinkUUID, false, false));
+		HPrefab prefab = static_resource_cast<Prefab>(gResources().loadFromUUID(prefabLinkUUID, false, loadFlags));
 
 		if (prefab != nullptr)
 			prefab->update(nativeInstance->getNativeSceneObject());

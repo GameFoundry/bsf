@@ -11,9 +11,9 @@ namespace BansheeEngine
 	void PrefabUtility::revertToPrefab(const HSceneObject& so)
 	{
 		String prefabLinkUUID = so->getPrefabLink();
-		HPrefab prefabLink = static_resource_cast<Prefab>(gResources().loadFromUUID(prefabLinkUUID, false, false));
+		HPrefab prefabLink = static_resource_cast<Prefab>(gResources().loadFromUUID(prefabLinkUUID, false, ResourceLoadFlag::None));
 
-		if (prefabLink == nullptr)
+		if (!prefabLink.isLoaded(false))
 			return;
 
 		// Save IDs, destroy original, create new, restore IDs
@@ -93,7 +93,7 @@ namespace BansheeEngine
 		for (auto iter = prefabInstanceRoots.rbegin(); iter != prefabInstanceRoots.rend(); ++iter)
 		{
 			HSceneObject current = *iter;
-			HPrefab prefabLink = static_resource_cast<Prefab>(gResources().loadFromUUID(current->mPrefabLinkUUID, false, false));
+			HPrefab prefabLink = static_resource_cast<Prefab>(gResources().loadFromUUID(current->mPrefabLinkUUID, false, ResourceLoadFlag::None));
 
 			if (prefabLink.isLoaded(false) && prefabLink->getHash() != current->mPrefabHash)
 			{
@@ -231,7 +231,7 @@ namespace BansheeEngine
 			{
 				current->mPrefabDiff = nullptr;
 
-				HPrefab prefabLink = static_resource_cast<Prefab>(gResources().loadFromUUID(current->mPrefabLinkUUID, false, false));
+				HPrefab prefabLink = static_resource_cast<Prefab>(gResources().loadFromUUID(current->mPrefabLinkUUID, false, ResourceLoadFlag::None));
 				if (prefabLink.isLoaded(false))
 					current->mPrefabDiff = PrefabDiff::create(prefabLink->_getRoot(), current->getHandle());
 			}

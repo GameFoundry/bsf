@@ -189,41 +189,19 @@ namespace BansheeEngine
 				OAOggVorbisReader reader;
 				if (reader.open(stream, info))
 				{
-					bs_frame_mark();
-
 					UINT32 bufferSize = info.numSamples * info.bitDepth;
-					UINT8* sampleBuffer = (UINT8*)bs_frame_alloc(bufferSize);
+					UINT8* sampleBuffer = (UINT8*)bs_stack_alloc(bufferSize);
 
 					reader.read(sampleBuffer, info.numSamples);
 
 					alGenBuffers(1, &mBufferId);
-
-
-
-					if(info.bitDepth > 16)
-					{
-						LOGWRN("OpenAL doesn't support bit depth larger than 16. Your audio data will be truncated. "
-							"Consider re-importing the audio clip as 16-bit. Audio clip: " + toString(getName()) + ".");
-
-						bufferSize = info.numSamples * 16;
-						UINT8* sampleBuffer16 = (UINT8*)bs_frame_alloc(bufferSize);
-
-						AudioUtility::convertBitDepth(sampleBuffer, info.bitDepth, sampleBuffer16, 16, info.numSamples);
-
-						info.bitDepth = 16;
-
-						bs_frame_free(sampleBuffer);
-						sampleBuffer = sampleBuffer16;
-					}
-
 					writeToSoundBuffer(mBufferId, sampleBuffer, info);
 
 					mStreamData = nullptr;
 					mStreamOffset = 0;
 					mStreamSize = 0;
 
-					bs_frame_free(sampleBuffer);
-					bs_frame_clear();
+					bs_stack_free(sampleBuffer);
 				}
 				else
 					LOGERR("Failed decompressing AudioClip stream.");
