@@ -6,7 +6,7 @@
 
 namespace BansheeEngine
 {
-	void MaterialRTTI::onDeserializationEnded(IReflectable* obj)
+	void MaterialRTTI::onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params)
 	{
 		Material* material = static_cast<Material*>(obj);
 		material->initialize();
@@ -16,8 +16,8 @@ namespace BansheeEngine
 
 		material->initBestTechnique();
 
-		SPtr<MaterialParams> params = any_cast<SPtr<MaterialParams>>(material->mRTTIData);
-		material->setParams(params);
+		SPtr<MaterialParams> matParams = any_cast<SPtr<MaterialParams>>(material->mRTTIData);
+		material->setParams(matParams);
 
 		material->mRTTIData = nullptr; // Delete temporary data
 	}

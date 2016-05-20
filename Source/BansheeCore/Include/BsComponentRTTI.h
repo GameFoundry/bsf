@@ -20,7 +20,7 @@ namespace BansheeEngine
 		ComponentRTTI()
 		{ }
 
-		void onDeserializationEnded(IReflectable* obj) override
+		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
 		{
 			Component* comp = static_cast<Component*>(obj);
 			GODeserializationData& deserializationData = any_cast_ref<GODeserializationData>(comp->mRTTIData);

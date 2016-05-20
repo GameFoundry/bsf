@@ -106,7 +106,7 @@ namespace BansheeEngine
 			:mInitMembers(this)
 		{ }
 
-		void onDeserializationStarted(IReflectable* obj) override
+		void onDeserializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
 		{
 			PrefabDiff* prefabDiff = static_cast<PrefabDiff*>(obj);
 
@@ -114,7 +114,7 @@ namespace BansheeEngine
 				GameObjectManager::instance().registerOnDeserializationEndCallback(std::bind(&PrefabDiffRTTI::delayedOnDeserializationEnded, prefabDiff));
 		}
 
-		void onDeserializationEnded(IReflectable* obj) override
+		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
 		{
 			assert(GameObjectManager::instance().isGameObjectDeserializationActive());
 

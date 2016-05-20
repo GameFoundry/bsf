@@ -37,7 +37,7 @@ namespace BansheeEngine
 			addPlainField("mUUID", 3, &PrefabRTTI::getUUID, &PrefabRTTI::setUUID);
 		}
 
-		void onDeserializationStarted(IReflectable* ptr) override
+		void onDeserializationStarted(IReflectable* ptr, const UnorderedMap<String, UINT64>& params) override
 		{
 			// Make sure external IDs are broken because we do some ID matching when dealing with prefabs and keeping
 			// the invalid external references could cause it to match invalid objects in case they end up having the

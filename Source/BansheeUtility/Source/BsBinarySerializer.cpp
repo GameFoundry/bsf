@@ -45,14 +45,16 @@ namespace BansheeEngine
 	{
 	}
 
-	void BinarySerializer::encode(IReflectable* object, UINT8* buffer, UINT32 bufferLength, 
-		UINT32* bytesWritten, std::function<UINT8*(UINT8*, UINT32, UINT32&)> flushBufferCallback, bool shallow)
+	void BinarySerializer::encode(IReflectable* object, UINT8* buffer, UINT32 bufferLength, UINT32* bytesWritten, 
+		std::function<UINT8*(UINT8*, UINT32, UINT32&)> flushBufferCallback, bool shallow, 
+		const UnorderedMap<String, UINT64>& params)
 	{
 		mObjectsToEncode.clear();
 		mObjectAddrToId.clear();
 		mLastUsedObjectId = 1;
 		*bytesWritten = 0;
 		mTotalBytesWritten = 0;
+		mParams = params;
 
 		Vector<SPtr<IReflectable>> encodedObjects;
 		UINT32 objectId = findOrCreatePersistentId(object);
@@ -119,8 +121,11 @@ namespace BansheeEngine
 		mObjectAddrToId.clear();
 	}
 
-	SPtr<IReflectable> BinarySerializer::decode(const SPtr<DataStream>& data, UINT32 dataLength)
+	SPtr<IReflectable> BinarySerializer::decode(const SPtr<DataStream>& data, UINT32 dataLength, 
+		const UnorderedMap<String, UINT64>& params)
 	{
+		mParams = params;
+
 		if (dataLength == 0)
 			return nullptr;
 
@@ -219,7 +224,7 @@ namespace BansheeEngine
 		// If an object has base classes, we need to iterate through all of them
 		do
 		{
-			si->onSerializationStarted(object);
+			si->onSerializationStarted(object, mParams);
 
 			// Encode object ID & type
 			ObjectMetaData objectMetaData = encodeObjectMetaData(objectId, si->getRTTIId(), isBaseClass);
@@ -273,7 +278,7 @@ namespace BansheeEngine
 									bytesWritten, flushBufferCallback, shallow);
 								if(buffer == nullptr)
 								{
-									si->onSerializationEnded(object);
+									si->onSerializationEnded(object, mParams);
 									return nullptr;
 								}
 							}
@@ -302,7 +307,7 @@ namespace BansheeEngine
 
 									if (buffer == nullptr || bufferLength == 0)
 									{
-										si->onSerializationEnded(object);
+										si->onSerializationEnded(object, mParams);
 										return nullptr;
 									}
 								}
@@ -348,7 +353,7 @@ namespace BansheeEngine
 								bytesWritten, flushBufferCallback, shallow);
 							if(buffer == nullptr)
 							{
-								si->onSerializationEnded(object);
+								si->onSerializationEnded(object, mParams);
 								return nullptr;
 							}
 
@@ -374,7 +379,7 @@ namespace BansheeEngine
 
 								if (buffer == nullptr || bufferLength == 0)
 								{
-									si->onSerializationEnded(object);
+									si->onSerializationEnded(object, mParams);
 									return nullptr;
 								}
 							}
@@ -406,7 +411,7 @@ namespace BansheeEngine
 
 							if (buffer == nullptr || bufferLength == 0)
 							{
-								si->onSerializationEnded(object);
+								si->onSerializationEnded(object, mParams);
 								return nullptr;
 							}
 
@@ -420,7 +425,7 @@ namespace BansheeEngine
 				}
 			}
 
-			si->onSerializationEnded(object);
+			si->onSerializationEnded(object, mParams);
 
 			si = si->getBaseClass();
 			isBaseClass = true;
@@ -889,7 +894,7 @@ namespace BansheeEngine
 			if (rtti == nullptr)
 				continue;
 
-			rtti->onDeserializationStarted(object.get());
+			rtti->onDeserializationStarted(object.get(), mParams);
 			rttiTypes.push_back(rtti);
 
 			UINT32 numFields = rtti->getNumFields();
@@ -1104,7 +1109,7 @@ namespace BansheeEngine
 
 		for (auto iterFind = rttiTypes.rbegin(); iterFind != rttiTypes.rend(); ++iterFind)
 		{
-			(*iterFind)->onDeserializationEnded(object.get());
+			(*iterFind)->onDeserializationEnded(object.get(), mParams);
 		}
 	}
 

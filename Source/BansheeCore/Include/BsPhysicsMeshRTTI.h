@@ -26,7 +26,7 @@ namespace BansheeEngine
 			:mInitMembers(this)
 		{ }
 
-		void onDeserializationEnded(IReflectable* obj) override
+		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
 		{
 			PhysicsMesh* mesh = static_cast<PhysicsMesh*>(obj);
 			mesh->initialize();

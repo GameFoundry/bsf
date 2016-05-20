@@ -23,8 +23,11 @@ namespace BansheeEngine
 		/**
 		 * Parses the provided object, serializes all of its data as specified by its RTTIType and saves the serialized 
 		 * data to the provided file location.
+		 *
+		 * @param[in]	params		Optional parameters to be passed to the serialization callbacks on the objects being
+		 *							serialized.
 		 */
-		void encode(IReflectable* object);
+		void encode(IReflectable* object, const UnorderedMap<String, UINT64>& params = UnorderedMap<String, UINT64>());
 
 	private:
 		/** Called by the binary serializer whenever the buffer gets full. */
@@ -42,8 +45,13 @@ namespace BansheeEngine
 	public:
 		FileDecoder(const Path& fileLocation);
 
-		/**	Deserializes an IReflectable object by reading the binary data at the provided file location. */
-		SPtr<IReflectable> decode();
+		/**	
+		 * Deserializes an IReflectable object by reading the binary data at the provided file location. 
+		 *
+		 * @param[in]	params		Optional parameters to be passed to the serialization callbacks on the objects being
+		 *							serialized.
+		 */
+		SPtr<IReflectable> decode(const UnorderedMap<String, UINT64>& params = UnorderedMap<String, UINT64>());
 
 		/** Skips over than object in the file. Calling decode() will decode the next object. */
 		void skip();

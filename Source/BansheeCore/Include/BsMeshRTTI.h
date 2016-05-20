@@ -53,7 +53,7 @@ namespace BansheeEngine
 			addReflectablePtrField("mMeshData", 3, &MeshRTTI::getMeshData, &MeshRTTI::setMeshData);
 		}
 
-		void onDeserializationEnded(IReflectable* obj) override
+		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
 		{
 			Mesh* mesh = static_cast<Mesh*>(obj);
 			mesh->initialize();

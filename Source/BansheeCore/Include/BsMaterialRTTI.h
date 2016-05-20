@@ -29,7 +29,7 @@ namespace BansheeEngine
 			addReflectablePtrField("mMaterialParams", 2, &MaterialRTTI::getMaterialParams, &MaterialRTTI::setMaterialParams);
 		}
 
-		void onDeserializationEnded(IReflectable* obj) override;
+		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override;
 
 		const String& getRTTIName() override
 		{

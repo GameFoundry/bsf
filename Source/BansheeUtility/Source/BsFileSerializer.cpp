@@ -38,7 +38,7 @@ namespace BansheeEngine
 		mOutputStream.clear();
 	}
 
-	void FileEncoder::encode(IReflectable* object)
+	void FileEncoder::encode(IReflectable* object, const UnorderedMap<String, UINT64>& params)
 	{
 		if (object == nullptr)
 			return;
@@ -48,7 +48,8 @@ namespace BansheeEngine
 
 		BinarySerializer bs;
 		UINT32 totalBytesWritten = 0;
-		bs.encode(object, mWriteBuffer, WRITE_BUFFER_SIZE, &totalBytesWritten, std::bind(&FileEncoder::flushBuffer, this, _1, _2, _3));
+		bs.encode(object, mWriteBuffer, WRITE_BUFFER_SIZE, &totalBytesWritten, 
+			std::bind(&FileEncoder::flushBuffer, this, _1, _2, _3), false, params);
 
 		mOutputStream.seekp(curPos);
 		mOutputStream.write((char*)&totalBytesWritten, sizeof(totalBytesWritten));
@@ -76,7 +77,7 @@ namespace BansheeEngine
 		}
 	}
 
-	SPtr<IReflectable> FileDecoder::decode()
+	SPtr<IReflectable> FileDecoder::decode(const UnorderedMap<String, UINT64>& params)
 	{
 		if (mInputStream->eof())
 			return nullptr;
@@ -85,7 +86,7 @@ namespace BansheeEngine
 		mInputStream->read(&objectSize, sizeof(objectSize));
 
 		BinarySerializer bs;
-		SPtr<IReflectable> object = bs.decode(mInputStream, objectSize);
+		SPtr<IReflectable> object = bs.decode(mInputStream, objectSize, params);
 
 		return object;
 	}

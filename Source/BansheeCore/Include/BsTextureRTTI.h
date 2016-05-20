@@ -113,14 +113,14 @@ namespace BansheeEngine
 				&TextureRTTI::setPixelData, &TextureRTTI::setPixelDataArraySize, RTTI_Flag_SkipInReferenceSearch);
 		}
 
-		void onDeserializationStarted(IReflectable* obj) override
+		void onDeserializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
 		{
 			Texture* texture = static_cast<Texture*>(obj);
 
 			texture->mRTTIData = bs_new<Vector<SPtr<PixelData>>>();
 		}
 
-		void onDeserializationEnded(IReflectable* obj) override
+		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
 		{
 			Texture* texture = static_cast<Texture*>(obj);
 

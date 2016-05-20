@@ -211,7 +211,7 @@ namespace BansheeEngine
 				&SerializedArrayRTTI::setEntry, &SerializedArrayRTTI::setNumEntries);
 		}
 
-		void onSerializationStarted(IReflectable* obj) override
+		void onSerializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
 		{
 			SerializedArray* serializedArray = static_cast<SerializedArray*>(obj);
 
@@ -222,7 +222,7 @@ namespace BansheeEngine
 			serializedArray->mRTTIData = sequentialData;
 		}
 
-		void onSerializationEnded(IReflectable* obj) override
+		void onSerializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
 		{
 			SerializedArray* serializedArray = static_cast<SerializedArray*>(obj);
 			serializedArray->mRTTIData = nullptr;
@@ -287,7 +287,7 @@ namespace BansheeEngine
 				&SerializedSubObjectRTTI::setEntry, &SerializedSubObjectRTTI::setNumEntries);
 		}
 
-		void onSerializationStarted(IReflectable* obj) override
+		void onSerializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
 		{
 			SerializedSubObject* serializableObject = static_cast<SerializedSubObject*>(obj);
 
@@ -298,7 +298,7 @@ namespace BansheeEngine
 			serializableObject->mRTTIData = sequentialData;
 		}
 
-		void onSerializationEnded(IReflectable* obj) override
+		void onSerializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
 		{
 			SerializedSubObject* serializableObject = static_cast<SerializedSubObject*>(obj);
 			serializableObject->mRTTIData = nullptr;

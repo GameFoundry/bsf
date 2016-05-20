@@ -39,7 +39,7 @@ namespace BansheeEngine
 		}
 
 		/** @copydoc IReflectable::onDeserializationEnded */
-		void onDeserializationEnded(IReflectable* obj) override
+		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
 		{
 			FPhysXMesh* mesh = static_cast<FPhysXMesh*>(obj);
 			mesh->initialize();

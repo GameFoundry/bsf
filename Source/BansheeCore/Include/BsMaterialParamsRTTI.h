@@ -190,18 +190,18 @@ namespace BansheeEngine
 				&MaterialParamsRTTI::getSamplerStateArraySize, &MaterialParamsRTTI::setSamplerStateParam, &MaterialParamsRTTI::setSamplerStateArraySize);
 		}
 
-		void onSerializationStarted(IReflectable* obj) override
+		void onSerializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
 		{
 			MaterialParams* paramsObj = static_cast<MaterialParams*>(obj);
-			Vector<MaterialParam> params;
+			Vector<MaterialParam> matParams;
 
 			for(auto& entry : paramsObj->mParams)
-				params.push_back({ entry.first, entry.second });
+				matParams.push_back({ entry.first, entry.second });
 
-			paramsObj->mRTTIData = params;
+			paramsObj->mRTTIData = matParams;
 		}
 
-		void onSerializationEnded(IReflectable* obj) override
+		void onSerializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
 		{
 			MaterialParams* paramsObj = static_cast<MaterialParams*>(obj);
 			paramsObj->mRTTIData = nullptr;

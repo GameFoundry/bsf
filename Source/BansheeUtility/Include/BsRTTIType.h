@@ -265,19 +265,19 @@ namespace BansheeEngine
 		 * Called by the serializers when serialization for this object has started. Use this to do any preprocessing on 
 		 * data you might need during serialization itself.
 		 */
-		virtual void onSerializationStarted(IReflectable* obj) {}
+		virtual void onSerializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) {}
 
 		/**
 		 * Called by the serializers when serialization for this object has ended. After serialization has ended you can 
 		 * be sure that the type has been fully serialized, and you may clean up any temporary data.
 		 */
-		virtual void onSerializationEnded(IReflectable* obj) {}
+		virtual void onSerializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) {}
 
 		/**
 		 * Called by the serializers when deserialization for this object has started. Use this to do any preprocessing 
 		 * on data you might need during deserialization itself.
 		 */
-		virtual void onDeserializationStarted(IReflectable* obj) {}
+		virtual void onDeserializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) {}
 
 		/**
 		 * Called by the serializers when deserialization for this object has ended. At this point you can be sure the 
@@ -286,7 +286,7 @@ namespace BansheeEngine
 		 * One exception being are fields you marked with RTTI_Flag_WeakRef, as they might be resolved only after 
 		 * deserialization has fully completed for all objects.
 		 */
-		virtual void onDeserializationEnded(IReflectable* obj) {}
+		virtual void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) {}
 
 		/**
 		 * Returns a handler that determines how are "diffs" generated and applied when it comes to objects of this RTTI 

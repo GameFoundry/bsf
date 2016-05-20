@@ -117,7 +117,7 @@ namespace BansheeEngine
 			addPlainField("mPPSettings", 24, &CameraRTTI::getPostProcessSettings, &CameraRTTI::setPostProcessSettings);
 		}
 
-		void onDeserializationEnded(IReflectable* obj) override
+		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
 		{
 			// Note: Since this is a CoreObject I should call initialize() right after deserialization,
 			// but since this specific type is used in Components we delay initialization until Component

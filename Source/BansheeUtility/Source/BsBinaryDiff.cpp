@@ -118,6 +118,8 @@ namespace BansheeEngine
 
 	void IDiff::applyDiff(const SPtr<IReflectable>& object, const SPtr<SerializedObject>& diff)
 	{
+		static const UnorderedMap<String, UINT64> dummyParams;
+
 		Vector<DiffCommand> commands;
 
 		DiffObjectMap objectMap;
@@ -144,7 +146,7 @@ namespace BansheeEngine
 				RTTITypeBase* curRtti = destObject->getRTTI();
 				while (curRtti != nullptr)
 				{
-					curRtti->onDeserializationStarted(destObject);
+					curRtti->onDeserializationStarted(destObject, dummyParams);
 					curRtti = curRtti->getBaseClass();
 				}
 			}
@@ -161,7 +163,7 @@ namespace BansheeEngine
 
 				while (!rttiTypes.empty())
 				{
-					rttiTypes.top()->onDeserializationEnded(destObject);
+					rttiTypes.top()->onDeserializationEnded(destObject, dummyParams);
 					rttiTypes.pop();
 				}
 
@@ -389,6 +391,8 @@ namespace BansheeEngine
 	void BinaryDiff::applyDiff(const SPtr<IReflectable>& object, const SPtr<SerializedObject>& diff,
 		DiffObjectMap& objectMap, Vector<DiffCommand>& diffCommands)
 	{
+		static const UnorderedMap<String, UINT64> dummyParams;
+
 		if (object == nullptr || diff == nullptr || object->getTypeId() != diff->getRootTypeId())
 			return;
 
@@ -411,7 +415,7 @@ namespace BansheeEngine
 				if (!object->isDerivedFrom(rtti))
 					continue;
 
-				rtti->onSerializationStarted(object.get());
+				rtti->onSerializationStarted(object.get(), dummyParams);
 				rttiTypes.push(rtti);
 
 				RTTIField* genericField = rtti->findField(diffEntry.first);
@@ -677,7 +681,7 @@ namespace BansheeEngine
 
 		while (!rttiTypes.empty())
 		{
-			rttiTypes.top()->onSerializationEnded(object.get());
+			rttiTypes.top()->onSerializationEnded(object.get(), dummyParams);
 			rttiTypes.pop();
 		}
 	}

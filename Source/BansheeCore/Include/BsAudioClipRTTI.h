@@ -53,7 +53,7 @@ namespace BansheeEngine
 			addDataBlockField("mData", 6, &AudioClipRTTI::getData, &AudioClipRTTI::setData, 0);
 		}
 
-		void onDeserializationEnded(IReflectable* obj) override
+		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
 		{
 			AudioClip* clip = static_cast<AudioClip*>(obj);
 			clip->initialize();
