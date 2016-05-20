@@ -11,6 +11,7 @@ namespace BansheeEngine
 	 *  @{
 	 */
 	
+	/** OpenAL implementation of an AudioListener. */
 	class BS_OA_EXPORT OAAudioListener : public AudioListener
 	{
 	public:
@@ -32,12 +33,22 @@ namespace BansheeEngine
 	private:
 		friend class OAAudio;
 
+		/** Re-applies stored properties to the listener. */
 		void rebuild();
 
+		/** Returns forward and up direction as a single vector. */
 		inline std::array<float, 6> getOrientation() const;
+
+		/** Updates internal position of the listener. */
 		inline void updatePosition();
+
+		/** Updates internal forward and up directions of the listener. */
 		inline void updateOrientation(const std::array<float, 6>& orientation);
+
+		/** Updates internal velocity of the listener. */
 		inline void updateVelocity();
+
+		/** Updates internal volume of the listener. */
 		inline void updateVolume(float volume);
 	};
 

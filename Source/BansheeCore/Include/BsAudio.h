@@ -11,6 +11,7 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
+	/** Identifier for a device that can be used for playing audio. */
 	struct AudioDevice
 	{
 		WString name;
@@ -22,20 +23,38 @@ namespace BansheeEngine
 	public:
 		virtual ~Audio() { }
 
+		/** Sets global audio volume. In range [0, 1]. */
 		virtual void setVolume(float volume) = 0;
+
+		/** Returns global audio volume. In range [0, 1]. */
 		virtual float getVolume() const = 0;
 
+		/** Pauses audio reproduction globally. */
 		virtual void setPaused(bool paused) = 0;
+
+		/** Checks is audio reproduction currently paused. */
 		virtual bool isPaused() const = 0;
 
-		virtual void update() = 0;
-
+		/** Changes the device on which is the audio played back on. */
 		virtual void setActiveDevice(const AudioDevice& device) = 0;
+
+		/** Retrieves the identifier of the device that the audio is currently being played back on. */
 		virtual AudioDevice getActiveDevice() const = 0;
 		
+		/** Returns the default audio device identifier. */
 		virtual AudioDevice getDefaultDevice() const = 0;
+
+		/** Returns a list of all available audio devices. */
 		virtual const Vector<AudioDevice>& getAllDevices() const = 0;
 
+		/** @name Internal
+		 *  @{
+		 */
+
+		/** Called once per frame. Queues streaming audio requests. */
+		virtual void _update() = 0;
+
+		/** @} */
 	protected:
 		friend class AudioClip;
 		friend class AudioListener;
@@ -53,8 +72,10 @@ namespace BansheeEngine
 		virtual SPtr<AudioClip> createClip(const SPtr<DataStream>& samples, UINT32 streamSize, UINT32 numSamples,
 			const AUDIO_CLIP_DESC& desc) = 0;
 
+		/** Creates a new AudioListener. */
 		virtual SPtr<AudioListener> createListener() = 0;
 
+		/** Creates a new AudioSource. */
 		virtual SPtr<AudioSource> createSource() = 0;
 	};
 

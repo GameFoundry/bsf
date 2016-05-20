@@ -25,11 +25,6 @@ namespace BansheeEngine
 		Resource::initialize();
 	}
 
-	HAudioClip AudioClip::create(UINT32 streamSize, UINT32 numSamples, const AUDIO_CLIP_DESC& desc)
-	{
-		return static_resource_cast<AudioClip>(gResources()._createResourceHandle(_createPtr(nullptr, streamSize, numSamples, desc)));
-	}
-
 	HAudioClip AudioClip::create(const SPtr<DataStream>& samples, UINT32 streamSize, UINT32 numSamples, const AUDIO_CLIP_DESC& desc)
 	{
 		return static_resource_cast<AudioClip>(gResources()._createResourceHandle(_createPtr(samples, streamSize, numSamples, desc)));

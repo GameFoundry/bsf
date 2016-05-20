@@ -218,7 +218,7 @@ namespace BansheeEngine
 			preUpdate();
 
 			PROFILE_CALL(gCoreSceneManager()._update(), "SceneManager");
-			gAudio().update();
+			gAudio()._update();
 			gPhysics().update();
 
 			// Update plugins

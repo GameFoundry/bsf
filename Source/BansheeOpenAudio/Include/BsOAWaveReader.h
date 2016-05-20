@@ -29,6 +29,7 @@ namespace BansheeEngine
 		/** @copydoc OAFileReader::isValid */
 		bool isValid(const SPtr<DataStream>& stream) override;
 	private:
+		/** Parses the WAVE header and output audio file meta-data. Returns false if the header is not valid. */
 		bool parseHeader(AudioFileInfo& info);
 
 		SPtr<DataStream> mStream;

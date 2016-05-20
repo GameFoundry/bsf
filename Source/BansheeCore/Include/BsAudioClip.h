@@ -77,13 +77,36 @@ namespace BansheeEngine
 	public:
 		virtual ~AudioClip() { }
 
+		/** Returns the size of a single sample, in bits. */
 		UINT32 getBitDepth() const { return mDesc.bitDepth; }
+		
+		/** Returns how many samples per second is the audio encoded in. */
 		UINT32 getFrequency() const { return mDesc.frequency; }
+
+		/** Returns the number of channels provided by the clip. */
 		UINT32 getNumChannels() const { return mDesc.numChannels; }
+
+		/** 
+		 * Returns in which format is audio data stored in. 
+		 *
+		 * @see	AudioFormat
+		 */
 		AudioFormat getFormat() const { return mDesc.format; }
+
+		/** 
+		 * Returns how is the audio data read/decoded. 
+		 *
+		 * @see	AudioReadMode
+		 */
 		AudioReadMode getReadMode() const { return mDesc.readMode; }
+
+		/** Returns the length of the audio clip, in seconds. */
 		float getLength() const { return mLength; }
+
+		/** Returns the total number of samples in the clip (includes all channels). */
 		UINT32 getNumSamples() const { return mNumSamples; }
+
+		/** Determines will the clip be played a spatial 3D sound, or as a normal sound (for example music). */
 		bool is3D() const { return mDesc.is3D; }
 
 		/** 
@@ -110,7 +133,19 @@ namespace BansheeEngine
 		 */
 		virtual void seekSamples(UINT32 offset) = 0;
 
-		static HAudioClip create(UINT32 streamSize, UINT32 numSamples, const AUDIO_CLIP_DESC& desc);
+		/**
+		 * Creates a new AudioClip and populates it with provided samples.
+		 *
+		 * @param[in]	samples		Data streams containing the samples to load. Data will be read starting from the current
+		 *							position in the stream. The samples should be in audio format as specified in the 
+		 *							@p desc parameter.
+		 * @param[in]	streamSize	Number of bytes to read from the @p samples stream.
+		 * @param[in]	numSamples	Total number of samples (including all channels).
+		 * @param[in]	desc		Descriptor containing meta-data for the provided samples.
+		 *
+		 * @note	If the provided samples are in PCM format, they should be unsigned for 8-bit data, and signed for
+		 *			higher bit depths.
+		 */
 		static HAudioClip create(const SPtr<DataStream>& samples, UINT32 streamSize, UINT32 numSamples,
 			const AUDIO_CLIP_DESC& desc); // Note that ownership of stream is taken by the AudioClip
 
@@ -119,6 +154,7 @@ namespace BansheeEngine
 		 *  @{
 		 */
 
+		/** Creates a new AudioClip without initializing it. Use create() for normal use. */
 		static SPtr<AudioClip> _createPtr(const SPtr<DataStream>& samples, UINT32 streamSize, UINT32 numSamples, 
 			const AUDIO_CLIP_DESC& desc);
 
@@ -148,6 +184,11 @@ namespace BansheeEngine
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
 
+		/** 
+		 * Creates an AudioClip with no samples. You must populate its data manually followed by a call to initialize().
+		 *
+		 * @note	For serialization use only.
+		 */
 		static SPtr<AudioClip> createEmpty();
 	};
 

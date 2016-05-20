@@ -95,7 +95,7 @@ namespace BansheeEngine
 		return false;
 	}
 
-	void OAAudio::update()
+	void OAAudio::_update()
 	{
 		// TODO
 	}
@@ -155,6 +155,26 @@ namespace BansheeEngine
 		mSources.erase(source);
 	}
 
+	ALCcontext* OAAudio::_getContext(const OAAudioListener* listener) const
+	{
+		if (mListeners.size() > 0)
+		{
+			assert(mListeners.size() == mContexts.size());
+
+			UINT32 numContexts = (UINT32)mContexts.size();
+			for(UINT32 i = 0; i < numContexts; i++)
+			{
+				if (mListeners[i] == listener)
+					return mContexts[i];
+			}
+		}
+		else
+			return mContexts[0];
+
+		LOGERR("Unable to find context for an audio listener.");
+		return nullptr;
+	}
+
 	SPtr<AudioClip> OAAudio::createClip(const SPtr<DataStream>& samples, UINT32 streamSize, UINT32 numSamples,
 		const AUDIO_CLIP_DESC& desc)
 	{
@@ -173,13 +193,13 @@ namespace BansheeEngine
 
 	void OAAudio::rebuildContexts()
 	{
+		for (auto& source : mSources)
+			source->clear();
+
 		clearContexts();
 
 		UINT32 numListeners = (UINT32)mListeners.size();
 		UINT32 numContexts = numListeners > 1 ? numListeners : 1;
-
-		for (auto& source : mSources)
-			source->clear();
 
 		for(UINT32 i = 0; i < numContexts; i++)
 		{

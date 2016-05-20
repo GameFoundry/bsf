@@ -77,21 +77,21 @@ namespace BansheeEngine
 
 	void OAAudioListener::rebuild()
 	{
-		auto& contexts = gOAAudio()._getContexts();
-
+		auto contexts = gOAAudio()._getContexts();
+		
 		float globalVolume = gAudio().getVolume();
 		std::array<float, 6> orientation = getOrientation();
 
-		for (auto& context : contexts)
+		if (contexts.size() > 1) // If only one context is available it is guaranteed it is always active, so we can avoid setting it
 		{
-			if (contexts.size() > 1) // If only one context is available it is guaranteed it is always active, so we can avoid setting it
-				alcMakeContextCurrent(context);
-
-			updatePosition();
-			updateOrientation(orientation);
-			updateVelocity();
-			updateVolume(globalVolume);
+			auto context = gOAAudio()._getContext(this);
+			alcMakeContextCurrent(context);
 		}
+
+		updatePosition();
+		updateOrientation(orientation);
+		updateVelocity();
+		updateVolume(globalVolume);
 	}
 
 	std::array<float, 6> OAAudioListener::getOrientation() const

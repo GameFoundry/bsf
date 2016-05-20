@@ -11,6 +11,7 @@ namespace BansheeEngine
 	 *  @{
 	 */
 	
+	/** OpenAL implementation of an AudioSource. */
 	class BS_OA_EXPORT OAAudioSource : public AudioSource
 	{
 	public:
@@ -56,7 +57,10 @@ namespace BansheeEngine
 	private:
 		friend class OAAudio;
 
+		/** Destroys the internal representation of the audio source. */
 		void clear();
+
+		/** Rebuilds the internal representation of an audio source. */
 		void rebuild();
 
 		Vector<UINT32> mSourceIDs;

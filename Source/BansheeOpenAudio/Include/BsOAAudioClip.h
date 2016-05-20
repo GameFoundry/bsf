@@ -12,6 +12,7 @@ namespace BansheeEngine
 	 *  @{
 	 */
 	
+	/** OpenAudio implementation of an AudioClip. */
 	class BS_OA_EXPORT OAAudioClip : public AudioClip
 	{
 	public:

@@ -42,6 +42,7 @@ namespace BansheeEngine
 		/** @copydoc OAFileReader::isValid */
 		bool isValid(const SPtr<DataStream>& stream) override;
 	private:
+		/** Cleans up the FLAC decoder. */
 		void close();
 
 		FLAC__StreamDecoder* mDecoder;
