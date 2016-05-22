@@ -106,6 +106,7 @@ namespace BansheeEngine
 	class ScriptPhysicsMesh;
 	class ScriptRigidbody;
 	class ScriptColliderBase;
+	class ScriptAudioClip;
 
 	typedef GameObjectHandle<ManagedComponent> HManagedComponent;
 	typedef ResourceHandle<ManagedResource> HManagedResource;

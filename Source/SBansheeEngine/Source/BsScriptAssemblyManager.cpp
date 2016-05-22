@@ -24,6 +24,7 @@
 #include "BsScriptGUISkin.h"
 #include "BsScriptPhysicsMaterial.h"
 #include "BsScriptPhysicsMesh.h"
+#include "BsScriptAudioClip.h"
 #include "BsScriptPrefab.h"
 
 namespace BansheeEngine
@@ -305,6 +306,8 @@ namespace BansheeEngine
 					typeInfo->mType = ScriptReferenceType::PhysicsMaterial;
 				else if (monoClass->isSubClassOf(ScriptPhysicsMesh::getMetaData()->scriptClass))
 					typeInfo->mType = ScriptReferenceType::PhysicsMesh;
+				else if (monoClass->isSubClassOf(ScriptAudioClip::getMetaData()->scriptClass))
+					typeInfo->mType = ScriptReferenceType::AudioClip;
 				else
 				{
 					assert(false && "Unrecognized resource type");

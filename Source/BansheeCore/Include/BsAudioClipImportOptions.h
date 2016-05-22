@@ -43,7 +43,7 @@ namespace BansheeEngine
 		/** Sets the size of a single sample in bits. The clip will be converted to this bit depth on import. */
 		void setBitDepth(UINT32 bitDepth) { mBitDepth = bitDepth; }
 
-		// Note: Add options to resample to a different frequency, reduce/increase bit depth
+		// Note: Add options to resample to a different frequency
 
 	private:
 		AudioFormat mFormat = AudioFormat::PCM;

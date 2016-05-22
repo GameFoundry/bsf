@@ -112,7 +112,7 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Reimports the texture resource according to the currently set import options.
+        /// Reimports the resource according to the currently set import options.
         /// </summary>
         private void TriggerReimport()
         {

@@ -420,7 +420,101 @@ namespace BansheeEditor
 		HintedSmooth,
         /// <summary>Render non-antialiased fonts with hinting.</summary>
 		HintedRaster
-	};
+	}
+
+    /// <summary>
+    /// Provides various options for controlling how is an audio clip file imported.
+    /// </summary>
+    public class AudioClipImportOptions : ImportOptions
+    {
+        /// <summary>
+        /// Creates new audio clip import options with default values.
+        /// </summary>
+        public AudioClipImportOptions()
+        {
+            Internal_CreateInstance(this);
+        }
+
+        /// <summary>
+        /// Format to import the audio clip as.
+        /// </summary>
+        public AudioFormat Format
+        {
+            get { return Internal_GetFormat(mCachedPtr); }
+            set { Internal_SetFormat(mCachedPtr, value); }
+        }
+
+        /// <summary>
+        /// Determines how is audio data loaded into memory.
+        /// </summary>
+        public AudioReadMode ReadMode
+        {
+            get { return Internal_GetReadMode(mCachedPtr); }
+            set { Internal_SetReadMode(mCachedPtr, value); }
+        }
+
+        /// <summary>
+        /// Determines will the clip be played as spatial (3D) audio or as normal audio.
+        /// </summary>
+        public bool Is3D
+        {
+            get { return Internal_GetIs3D(mCachedPtr); }
+            set { Internal_SetIs3D(mCachedPtr, value); }
+        }
+
+        /// <summary>
+        /// Size of a single sample in bits.
+        /// </summary>
+        public AudioBitDepth BitDepth
+        {
+            get
+            {
+                int bits = Internal_GetBitDepth(mCachedPtr);
+                switch (bits)
+                {
+                    case 8:
+                        return AudioBitDepth.Bits8;
+                    case 16:
+                        return AudioBitDepth.Bits16;
+                    case 24:
+                        return AudioBitDepth.Bits24;
+                    case 32:
+                        return AudioBitDepth.Bits32;
+                }
+
+                return AudioBitDepth.Bits16;
+            }
+
+            set { Internal_SetBitDepth(mCachedPtr, (int)value); }
+        }
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_CreateInstance(AudioClipImportOptions instance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern AudioFormat Internal_GetFormat(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetFormat(IntPtr thisPtr, AudioFormat format);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern AudioReadMode Internal_GetReadMode(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetReadMode(IntPtr thisPtr, AudioReadMode readMode);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_GetIs3D(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetIs3D(IntPtr thisPtr, bool is3d);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern int Internal_GetBitDepth(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetBitDepth(IntPtr thisPtr, int bitDepth);
+    }
 
     /** @} */
 }

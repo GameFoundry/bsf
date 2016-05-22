@@ -19,6 +19,10 @@ namespace BansheeEngine
      *  %Input (mouse, keyboard, gamepad, etc.).
      */
 
+    /** @defgroup Audio Audio
+     *  Audio clips, 3D sound and music reproduction.
+     */
+
     /** @defgroup Math Math 
      *  Variety of general purpose math functionality.
      */

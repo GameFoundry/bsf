@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Audio\AudioClip.cs" />
     <Compile Include="Rendering\PostProcessSettings.cs" />
     <Compile Include="Utility\AsyncOp.cs" />
     <Compile Include="Math\Bounds.cs" />

@@ -350,6 +350,7 @@ namespace BansheeEngine
 	class ShaderImportOptions;
 	class AudioListener;
 	class AudioSource;
+	class AudioClipImportOptions;
 	// Asset import
 	class SpecificImporter;
 	class Importer;

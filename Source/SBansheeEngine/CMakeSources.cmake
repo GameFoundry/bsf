@@ -133,6 +133,7 @@ set(BS_SBANSHEEENGINE_INC_WRAPPERS
 	"Include/BsScriptResources.h"
 	"Include/BsScriptResourceRef.h"
 	"Include/BsScriptPostProcessSettings.h"
+	"Include/BsScriptAudioClip.h"
 )
 
 set(BS_SBANSHEEENGINE_INC_WRAPPERS_GUI
@@ -256,6 +257,7 @@ set(BS_SBANSHEEENGINE_SRC_WRAPPERS
 	"Source/BsScriptRenderTarget.cpp"
 	"Source/BsScriptRenderable.cpp"
 	"Source/BsScriptPostProcessSettings.cpp"
+	"Source/BsScriptAudioClip.cpp"
 )
 
 set(BS_SBANSHEEENGINE_INC_SERIALIZATION
