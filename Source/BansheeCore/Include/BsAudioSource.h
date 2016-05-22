@@ -115,6 +115,13 @@ namespace BansheeEngine
 		/** Stops audio playback, rewinding it to the start. */
 		virtual void stop();
 
+		/**
+		 * Sets the time at which playback will begin.
+		 *
+		 * @param[in]	position	Time in seconds, in range [0, clipLength].
+		 */
+		virtual void seek(float position) = 0;
+
 		/** Returns the current state of the audio playback (playing/paused/stopped). */
 		AudioSourceState getState() const { return mState; }
 

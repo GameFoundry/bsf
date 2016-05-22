@@ -54,6 +54,9 @@ namespace BansheeEngine
 		/** @copydoc AudioSource::stop */
 		void stop() override;
 
+		/** @copydoc AudioSource::seek */
+		void seek(float position) override;
+
 	private:
 		friend class OAAudio;
 
@@ -63,7 +66,29 @@ namespace BansheeEngine
 		/** Rebuilds the internal representation of an audio source. */
 		void rebuild();
 
+		/** 
+		 * Returns true if the sound source is three dimensional (volume and pitch varies based on listener distance
+		 * and velocity). 
+		 */
+		bool is3D() const;
+
+		/** 
+		 * Returns true if the audio source is receiving audio data from a separate thread (as opposed to loading it all
+		 * at once. */
+		bool isStreaming() const;
+
+		/** Creates OpenAL buffers used for streaming. */
+		void createStreamBuffers();
+
+		/** Destroys OpenAL buffers used for streaming. */
+		void destroyStreamBuffers();
+
 		Vector<UINT32> mSourceIDs;
+		float mSeekPosition;
+
+		static const UINT32 StreamBufferCount = 3;
+		mutable Mutex mMutex;
+		UINT32 mStreamBuffers[StreamBufferCount];
 	};
 
 	/** @} */
