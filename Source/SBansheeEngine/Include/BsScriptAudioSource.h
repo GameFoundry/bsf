@@ -37,10 +37,11 @@ namespace BansheeEngine
 		static void internal_SetPriority(ScriptAudioSource* thisPtr, UINT32 priority);
 		static void internal_SetMinDistance(ScriptAudioSource* thisPtr, float distance);
 		static void internal_SetAttenuation(ScriptAudioSource* thisPtr, float attenuation);
+		static void internal_SetTime(ScriptAudioSource* thisPtr, float position);
+		static float internal_GetTime(ScriptAudioSource* thisPtr);
 		static void internal_Play(ScriptAudioSource* thisPtr);
 		static void internal_Pause(ScriptAudioSource* thisPtr);
 		static void internal_Stop(ScriptAudioSource* thisPtr);
-		static void internal_Seek(ScriptAudioSource* thisPtr, float position);
 		static UINT32 internal_GetState(ScriptAudioSource* thisPtr);
 	};
 

@@ -31,7 +31,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_Play", &ScriptAudioSource::internal_Play);
 		metaData.scriptClass->addInternalCall("Internal_Pause", &ScriptAudioSource::internal_Pause);
 		metaData.scriptClass->addInternalCall("Internal_Stop", &ScriptAudioSource::internal_Stop);
-		metaData.scriptClass->addInternalCall("Internal_Seek", &ScriptAudioSource::internal_Seek);
+		metaData.scriptClass->addInternalCall("Internal_SetTime", &ScriptAudioSource::internal_SetTime);
+		metaData.scriptClass->addInternalCall("Internal_GetTime", &ScriptAudioSource::internal_GetTime);
 		metaData.scriptClass->addInternalCall("Internal_GetState", &ScriptAudioSource::internal_GetState);
 	}
 
@@ -110,9 +111,14 @@ namespace BansheeEngine
 		thisPtr->mSource->stop();
 	}
 
-	void ScriptAudioSource::internal_Seek(ScriptAudioSource* thisPtr, float position)
+	void ScriptAudioSource::internal_SetTime(ScriptAudioSource* thisPtr, float position)
 	{
 		thisPtr->mSource->seek(position);
+	}
+
+	float ScriptAudioSource::internal_GetTime(ScriptAudioSource* thisPtr)
+	{
+		return thisPtr->mSource->tell();
 	}
 
 	UINT32 ScriptAudioSource::internal_GetState(ScriptAudioSource* thisPtr)

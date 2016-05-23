@@ -371,6 +371,46 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Adds an AudioListener component to the currently selected scene object.
+        /// </summary>
+        [MenuItem("Components/Audio/Listener", 7031)]
+        private static void AddAudioListener()
+        {
+            SceneObject so = Selection.SceneObject;
+            if (so == null)
+            {
+                so = UndoRedo.CreateSO("AudioListener", "New scene object");
+
+                Selection.SceneObject = so;
+                FocusOnHierarchyOrScene();
+            }
+
+            UndoRedo.RecordSO(so, false, "Added a AudioListener component");
+            so.AddComponent<AudioListener>();
+            EditorApplication.SetSceneDirty();
+        }
+
+        /// <summary>
+        /// Adds an AudioSource component to the currently selected scene object.
+        /// </summary>
+        [MenuItem("Components/Audio/Source", 7030)]
+        private static void AddAudioSource()
+        {
+            SceneObject so = Selection.SceneObject;
+            if (so == null)
+            {
+                so = UndoRedo.CreateSO("AudioSource", "New scene object");
+
+                Selection.SceneObject = so;
+                FocusOnHierarchyOrScene();
+            }
+
+            UndoRedo.RecordSO(so, false, "Added a AudioSource component");
+            so.AddComponent<AudioSource>();
+            EditorApplication.SetSceneDirty();
+        }
+
+        /// <summary>
         /// Creates a new empty scene object.
         /// </summary>
         [MenuItem("Scene Objects/Scene Object", 8051)]

@@ -11,7 +11,7 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
-	/** Valid states for AudioSource. */
+	/** Valid states in which AudioSource can be in. */
 	enum class AudioSourceState
 	{
 		Playing, /**< Source is currently playing. */
@@ -24,7 +24,7 @@ namespace BansheeEngine
 	 * source must have an AudioClip to play-back, and it can also have a position in the case of spatial (3D) audio. 
 	 *
 	 * Whether or not an audio source is spatial is controlled by the assigned AudioClip. The volume and the pitch of a
-	 * spatial audio source is controlled by its position and the AudioListener's position/direction/Velocity.
+	 * spatial audio source is controlled by its position and the AudioListener's position/direction/velocity.
 	 */
 	class BS_CORE_EXPORT AudioSource
 	{

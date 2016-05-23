@@ -41,6 +41,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Inspectors\AudioClipInspector.cs" />
+    <Compile Include="Inspectors\AudioListenerInspector.cs" />
+    <Compile Include="Inspectors\AudioSourceInspector.cs" />
     <Compile Include="Inspectors\PostProcessSettingsInspector.cs" />
     <Compile Include="Windows\AboutBox.cs" />
     <Compile Include="Windows\BrowseDialog.cs" />
