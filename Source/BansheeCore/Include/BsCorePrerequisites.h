@@ -499,7 +499,9 @@ namespace BansheeEngine
 		TID_FPhysicsMesh = 1109,
 		TID_ShaderImportOptions = 1110,
 		TID_AudioClip = 1111,
-		TID_AudioClipImportOptions = 1112
+		TID_AudioClipImportOptions = 1112,
+		TID_CAudioListener = 1113,
+		TID_CAudioSource = 1114
 	};
 }
 

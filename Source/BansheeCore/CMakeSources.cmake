@@ -14,6 +14,8 @@ set(BS_BANSHEECORE_INC_COMPONENTS
 	"Include/BsCSphericalJoint.h"
 	"Include/BsCD6Joint.h"
 	"Include/BsCCharacterController.h"
+	"Include/BsCAudioSource.h"
+	"Include/BsCAudioListener.h"
 )
 
 set(BS_BANSHEECORE_INC_PHYSICS
@@ -244,6 +246,8 @@ set(BS_BANSHEECORE_SRC_COMPONENTS
 	"Source/BsCSphericalJoint.cpp"
 	"Source/BsCD6Joint.cpp"
 	"Source/BsCCharacterController.cpp"
+	"Source/BsCAudioSource.cpp"
+	"Source/BsCAudioListener.cpp"	
 )
 
 set(BS_BANSHEECORE_SRC_PLATFORM
@@ -330,6 +334,9 @@ set(BS_BANSHEECORE_INC_RTTI
 	"Include/BsCCharacterControllerRTTI.h"
 	"Include/BsShaderImportOptionsRTTI.h"
 	"Include/BsPhysicsMeshRTTI.h"
+	"Include/BsAudioClipRTTI.h"
+	"Include/BsCAudioSourceRTTI.h"
+	"Include/BsCAudioListenerRTTI.h"
 )
 
 set(BS_BANSHEECORE_SRC_RENDERER
