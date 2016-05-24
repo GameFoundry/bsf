@@ -84,6 +84,7 @@ namespace BansheeEditor
         // Drag & drop
         private bool dragActive;
         private SceneObject draggedSO;
+        private Vector3 draggedSOOffset;
 
         /// <summary>
         /// Returns the scene camera.
@@ -539,6 +540,11 @@ namespace BansheeEditor
 
                                         Renderable renderable = draggedSO.AddComponent<Renderable>();
                                         renderable.Mesh = mesh;
+
+                                        if (mesh != null)
+                                            draggedSOOffset = mesh.Bounds.Box.Center;
+                                        else
+                                            draggedSOOffset = Vector3.Zero;
                                     }
 
                                     break;
@@ -549,6 +555,14 @@ namespace BansheeEditor
                                     {
                                         Prefab prefab = ProjectLibrary.Load<Prefab>(draggedPaths[i]);
                                         draggedSO = UndoRedo.Instantiate(prefab, "Instantiating " + prefab.Name);
+
+                                        if (draggedSO != null)
+                                        {
+                                            AABox draggedObjBounds = EditorUtility.CalculateBounds(draggedSO);
+                                            draggedSOOffset = draggedObjBounds.Center;
+                                        }
+                                        else
+                                            draggedSOOffset = Vector3.Zero;
                                     }
 
                                     break;
@@ -560,7 +574,7 @@ namespace BansheeEditor
                     if (draggedSO != null)
                     {
                         Ray worldRay = camera.ViewportToWorldRay(scenePos);
-                        draggedSO.Position = worldRay*DefaultPlacementDepth;
+                        draggedSO.Position = worldRay*DefaultPlacementDepth - draggedSOOffset;
                     }
                 }
 
