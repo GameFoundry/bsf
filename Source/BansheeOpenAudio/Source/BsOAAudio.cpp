@@ -6,12 +6,13 @@
 #include "BsOAAudioSource.h"
 #include "BsMath.h"
 #include "BsTaskScheduler.h"
+#include "BsAudioUtility.h"
 #include "AL\al.h"
 
 namespace BansheeEngine
 {
 	OAAudio::OAAudio()
-		:mVolume(1.0f)
+		:mVolume(1.0f), mIsPaused(false)
 	{
 		bool enumeratedDevices;
 		if(_isExtensionSupported("ALC_ENUMERATE_ALL_EXT"))
@@ -87,13 +88,13 @@ namespace BansheeEngine
 
 	void OAAudio::setPaused(bool paused)
 	{
-		// TODO
-	}
+		if (mIsPaused == paused)
+			return;
 
-	bool OAAudio::isPaused() const
-	{
-		// TODO
-		return false;
+		mIsPaused = paused;
+
+		for (auto& source : mSources)
+			source->setGlobalPause(paused);
 	}
 
 	void OAAudio::_update()
@@ -163,27 +164,19 @@ namespace BansheeEngine
 		mSources.erase(source);
 	}
 
-	void OAAudio::startStreaming(OAAudioSource* source, bool startPaused)
+	void OAAudio::startStreaming(OAAudioSource* source)
 	{
 		Lock(mMutex);
 
-		StreamingCommand command;
-		command.type = StreamingCommandType::Start;
-		command.source = source;
-		command.params[0] = startPaused;
-
-		mStreamingCommandQueue.push_back(command);
+		mStreamingCommandQueue.push_back({ StreamingCommandType::Start, source });
 	}
 
 	void OAAudio::stopStreaming(OAAudioSource* source)
 	{
 		Lock(mMutex);
 
-		StreamingCommand command;
-		command.type = StreamingCommandType::Stop;
-		command.source = source;
-
-		mStreamingCommandQueue.push_back(command);
+		mStreamingCommandQueue.push_back({ StreamingCommandType::Stop, source });
+		mDestroyedSources.insert(source);
 	}
 
 	ALCcontext* OAAudio::_getContext(const OAAudioListener* listener) const
@@ -269,37 +262,9 @@ namespace BansheeEngine
 				switch(command.type)
 				{
 				case StreamingCommandType::Start:
-				{
-					StreamingData data;
-					data.sourceIDs = command.source->mSourceIDs;
-					alGenBuffers(StreamingData::StreamBufferCount, data.streamBuffers);
-
-					mStreamingSources.insert(std::make_pair(command.source, data));
-
-					for(auto& )
-
-					// TODO - Store source IDs, start playback (possibly paused)
-				}
+					mStreamingSources.insert(command.source);
 					break;
 				case StreamingCommandType::Stop:
-					auto& contexts = gOAAudio()._getContexts(); // TODO - Don't use contexts here, use the source IDs directly
-					UINT32 numContexts = (UINT32)contexts.size();
-					for (UINT32 i = 0; i < numContexts; i++)
-					{
-						if (contexts.size() > 1) // If only one context is available it is guaranteed it is always active, so we can avoid setting it
-							alcMakeContextCurrent(contexts[i]);
-
-						INT32 numQueuedBuffers;
-						alGetSourcei(mSourceIDs[i], AL_BUFFERS_QUEUED, &numQueuedBuffers);
-
-						UINT32 buffer;
-						for (INT32 j = 0; j < numQueuedBuffers; j++)
-							alSourceUnqueueBuffers(mSourceIDs[i], 1, &buffer);
-					}
-
-					alDeleteBuffers(StreamBufferCount, mStreamBuffers);
-
-					command.source->destroyStreamBuffers();
 					mStreamingSources.erase(command.source);
 					break;
 				default:
@@ -308,10 +273,140 @@ namespace BansheeEngine
 			}
 
 			mStreamingCommandQueue.clear();
+			mDestroyedSources.clear();
 		}
 
 		for (auto& source : mStreamingSources)
+		{
+			// Check if the source got destroyed while streaming
+			{
+				Lock(mMutex);
+
+				auto iterFind = mDestroyedSources.find(source);
+				if (iterFind != mDestroyedSources.end())
+					continue;
+			}
+
 			source->stream();
+		}
+	}
+
+	ALenum OAAudio::_getOpenALBufferFormat(UINT32 numChannels, UINT32 bitDepth)
+	{
+		switch (bitDepth)
+		{
+		case 8:
+		{
+			switch (numChannels)
+			{
+			case 1:  return AL_FORMAT_MONO8;
+			case 2:  return AL_FORMAT_STEREO8;
+			case 4:  return alGetEnumValue("AL_FORMAT_QUAD8");
+			case 6:  return alGetEnumValue("AL_FORMAT_51CHN8");
+			case 7:  return alGetEnumValue("AL_FORMAT_61CHN8");
+			case 8:  return alGetEnumValue("AL_FORMAT_71CHN8");
+			default:
+				assert(false);
+				return 0;
+			}
+		}
+		case 16:
+		{
+			switch (numChannels)
+			{
+			case 1:  return AL_FORMAT_MONO16;
+			case 2:  return AL_FORMAT_STEREO16;
+			case 4:  return alGetEnumValue("AL_FORMAT_QUAD16");
+			case 6:  return alGetEnumValue("AL_FORMAT_51CHN16");
+			case 7:  return alGetEnumValue("AL_FORMAT_61CHN16");
+			case 8:  return alGetEnumValue("AL_FORMAT_71CHN16");
+			default:
+				assert(false);
+				return 0;
+			}
+		}
+		case 32:
+		{
+			switch (numChannels)
+			{
+			case 1:  return alGetEnumValue("AL_FORMAT_MONO_FLOAT32");
+			case 2:  return alGetEnumValue("AL_FORMAT_STEREO_FLOAT32");
+			case 4:  return alGetEnumValue("AL_FORMAT_QUAD32");
+			case 6:  return alGetEnumValue("AL_FORMAT_51CHN32");
+			case 7:  return alGetEnumValue("AL_FORMAT_61CHN32");
+			case 8:  return alGetEnumValue("AL_FORMAT_71CHN32");
+			default:
+				assert(false);
+				return 0;
+			}
+		}
+		default:
+			assert(false);
+			return 0;
+		}
+	}
+
+	void OAAudio::_writeToOpenALBuffer(UINT32 bufferId, UINT8* samples, const AudioFileInfo& info)
+	{
+		if (info.numChannels <= 2) // Mono or stereo
+		{
+			if (info.bitDepth > 16)
+			{
+				if (_isExtensionSupported("AL_EXT_float32"))
+				{
+					UINT32 bufferSize = info.numSamples * sizeof(float);
+					float* sampleBufferFloat = (float*)bs_stack_alloc(bufferSize);
+
+					AudioUtility::convertToFloat(samples, info.bitDepth, sampleBufferFloat, info.numSamples);
+
+					ALenum format = _getOpenALBufferFormat(info.numChannels, info.bitDepth);
+					alBufferData(bufferId, format, sampleBufferFloat, bufferSize, info.sampleRate);
+
+					bs_stack_free(sampleBufferFloat);
+				}
+				else
+				{
+					LOGWRN("OpenAL doesn't support bit depth larger than 16. Your audio data will be truncated.");
+
+					UINT32 bufferSize = info.numSamples * 2;
+					UINT8* sampleBuffer16 = (UINT8*)bs_stack_alloc(bufferSize);
+
+					AudioUtility::convertBitDepth(samples, info.bitDepth, sampleBuffer16, 16, info.numSamples);
+
+					ALenum format = _getOpenALBufferFormat(info.numChannels, 16);
+					alBufferData(bufferId, format, sampleBuffer16, bufferSize, info.sampleRate);
+
+					bs_stack_free(sampleBuffer16);
+				}
+			}
+			else
+			{
+				ALenum format = _getOpenALBufferFormat(info.numChannels, 16);
+				alBufferData(bufferId, format, samples, info.numSamples * (info.bitDepth / 8), info.sampleRate);
+			}
+		}
+		else // Multichannel
+		{
+			// Note: Assuming AL_EXT_MCFORMATS is supported. If it's not, channels should be reduced to mono or stereo.
+
+			if (info.bitDepth == 24) // 24-bit not supported, convert to 32-bit
+			{
+				UINT32 bufferSize = info.numSamples * sizeof(INT32);
+				UINT8* sampleBuffer32 = (UINT8*)bs_stack_alloc(bufferSize);
+
+				AudioUtility::convertBitDepth(samples, info.bitDepth, sampleBuffer32, 32, info.numSamples);
+
+				ALenum format = _getOpenALBufferFormat(info.numChannels, 32);
+				alBufferData(bufferId, format, sampleBuffer32, bufferSize, info.sampleRate);
+
+				bs_stack_free(sampleBuffer32);
+			}
+			else
+			{
+				ALenum format = _getOpenALBufferFormat(info.numChannels, info.bitDepth);
+				alBufferData(bufferId, format, samples, info.numSamples * (info.bitDepth / 8), info.sampleRate);
+			}
+		}
 	}
 
 	OAAudio& gOAAudio()

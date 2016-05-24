@@ -29,7 +29,7 @@ namespace BansheeEngine
 		void setPaused(bool paused) override;
 
 		/** @copydoc Audio::isPaused */
-		bool isPaused() const override;
+		bool isPaused() const override { return mIsPaused; }
 
 		/** @copydoc Audio::update */
 		void _update() override;
@@ -71,6 +71,18 @@ namespace BansheeEngine
 		/** Returns an OpenAL context assigned to the provided listener. */
 		ALCcontext* _getContext(const OAAudioListener* listener) const;
 
+		/** 
+		 * Returns optimal format for the provided number of channels and bit depth. It is assumed the user has checked if
+		 * extensions providing these formats are actually available.
+		 */
+		INT32 _getOpenALBufferFormat(UINT32 numChannels, UINT32 bitDepth);
+
+		/** 
+		 * Writes provided samples into the OpenAL buffer with the provided ID. If the provided format is not supported the
+		 * samples will first be converted into a valid format.
+		 */
+		void _writeToOpenALBuffer(UINT32 bufferId, UINT8* samples, const AudioFileInfo& info);
+
 		/** @} */
 
 	private:
@@ -86,25 +98,8 @@ namespace BansheeEngine
 		/** Command queued for a streaming audio source. */
 		struct StreamingCommand
 		{
-			StreamingCommand()
-				:type((StreamingCommandType)0), source(nullptr), params()
-			{ }
-
 			StreamingCommandType type;
 			OAAudioSource* source;
-			UINT32 params[2];
-		};
-
-		/** Data required for maintaining a streaming audio source. */
-		struct StreamingData
-		{
-			StreamingData()
-				:streamBuffers()
-			{ }
-
-			static const UINT32 StreamBufferCount = 3;
-			UINT32 streamBuffers[StreamBufferCount];
-			Vector<UINT32> sourceIDs;
 		};
 
 		/** @copydoc Audio::createClip */
@@ -132,12 +127,13 @@ namespace BansheeEngine
 		void updateStreaming();
 
 		/** Starts data streaming for the provided source. */
-		void startStreaming(OAAudioSource* source, bool startPaused);
+		void startStreaming(OAAudioSource* source);
 
 		/** Stops data streaming for the provided source. */
 		void stopStreaming(OAAudioSource* source);
 
 		float mVolume;
+		bool mIsPaused;
 
 		ALCdevice* mDevice;
 		Vector<AudioDevice> mAllDevices;
@@ -150,7 +146,8 @@ namespace BansheeEngine
 
 		// Streaming thread
 		Vector<StreamingCommand> mStreamingCommandQueue;
-		UnorderedMap<OAAudioSource*, StreamingData> mStreamingSources;
+		UnorderedSet<OAAudioSource*> mStreamingSources;
+		UnorderedSet<OAAudioSource*> mDestroyedSources;
 		SPtr<Task> mStreamingTask;
 		mutable Mutex mMutex;
 	};

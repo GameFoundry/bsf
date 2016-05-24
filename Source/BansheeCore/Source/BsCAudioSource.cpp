@@ -112,10 +112,26 @@ namespace BansheeEngine
 			mInternal->stop();
 	}
 
-	void CAudioSource::seek(float position)
+	void CAudioSource::setTime(float position)
 	{
 		if (mInternal != nullptr)
-			mInternal->seek(position);
+			mInternal->setTime(position);
+	}
+
+	float CAudioSource::getTime() const
+	{
+		if (mInternal != nullptr)
+			return mInternal->getTime();
+
+		return 0.0f;
+	}
+
+	AudioSourceState CAudioSource::getState() const
+	{
+		if (mInternal != nullptr)
+			return mInternal->getState();
+
+		return AudioSourceState::Stopped;
 	}
 
 	void CAudioSource::onInitialized()

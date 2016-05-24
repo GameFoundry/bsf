@@ -3,6 +3,8 @@
 #include "BsOAPrerequisites.h"
 #include "BsAudioManager.h"
 #include "BsOAAudio.h"
+#include "BsOAImporter.h"
+#include "BsImporter.h"
 
 namespace BansheeEngine
 {
@@ -30,6 +32,9 @@ namespace BansheeEngine
 	/**	Entry point to the plugin. Called by the engine when the plugin is loaded. */
 	extern "C" BS_OA_EXPORT void* loadPlugin()
 	{
+		OAImporter* importer = bs_new<OAImporter>();
+		Importer::instance()._registerAssetImporter(importer);
+
 		return bs_new<OAFactory>();
 	}
 

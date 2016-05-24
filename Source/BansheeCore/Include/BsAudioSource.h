@@ -118,9 +118,16 @@ namespace BansheeEngine
 		/**
 		 * Sets the time at which playback will begin.
 		 *
-		 * @param[in]	position	Time in seconds, in range [0, clipLength].
+		 * @param[in]	time	Time in seconds, in range [0, clipLength].
 		 */
-		virtual void seek(float position) = 0;
+		virtual void setTime(float time) = 0;
+
+		/**
+		 * Returns the current playback time.
+		 *
+		 * @return	time	Time in seconds, in range [0, clipLength].
+		 */
+		virtual float getTime() const = 0;
 
 		/** Returns the current state of the audio playback (playing/paused/stopped). */
 		AudioSourceState getState() const { return mState; }

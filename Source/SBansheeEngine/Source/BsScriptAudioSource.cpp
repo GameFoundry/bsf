@@ -113,12 +113,12 @@ namespace BansheeEngine
 
 	void ScriptAudioSource::internal_SetTime(ScriptAudioSource* thisPtr, float position)
 	{
-		thisPtr->mSource->seek(position);
+		thisPtr->mSource->setTime(position);
 	}
 
 	float ScriptAudioSource::internal_GetTime(ScriptAudioSource* thisPtr)
 	{
-		return thisPtr->mSource->tell();
+		return thisPtr->mSource->getTime();
 	}
 
 	UINT32 ScriptAudioSource::internal_GetState(ScriptAudioSource* thisPtr)

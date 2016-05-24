@@ -65,6 +65,12 @@ namespace BansheeEngine
 		/** @copydoc AudioSource::getAttenuation */
 		float getAttenuation() const { return mAttenuation; }
 
+		/** @copydoc AudioSource::setTime */
+		void setTime(float time);
+
+		/** @copydoc AudioSource::getTime */
+		float getTime() const;
+
 		/** @copydoc AudioSource::play */
 		void play();
 
@@ -73,9 +79,6 @@ namespace BansheeEngine
 
 		/** @copydoc AudioSource::stop */
 		void stop();
-
-		/** @copydoc AudioSource::seek */
-		void seek(float position);
 
 		/** @copydoc AudioSource::getState */
 		AudioSourceState getState() const;

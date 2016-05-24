@@ -20,10 +20,7 @@ namespace BansheeEngine
 		virtual ~OAAudioClip();
 
 		/** @copydoc AudioClip::getSamples */
-		void getSamples(UINT8* samples, UINT32 count) const override;
-
-		/** @copydoc AudioClip::seekSamples */
-		void seekSamples(UINT32 offset) override;
+		void getSamples(UINT8* samples, UINT32 offset, UINT32 count) const override;
 
 		/** @name Internal
 		 *  @{

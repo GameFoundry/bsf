@@ -45,6 +45,12 @@ namespace BansheeEngine
 		/** @copydoc AudioSource::setAttenuation */
 		void setAttenuation(float attenuation) override;
 
+		/** @copydoc AudioSource::setTime */
+		void setTime(float setTime) override;
+
+		/** @copydoc AudioSource::getTime */
+		float getTime() const override;
+
 		/** @copydoc AudioSource::play */
 		void play() override;
 
@@ -54,9 +60,6 @@ namespace BansheeEngine
 		/** @copydoc AudioSource::stop */
 		void stop() override;
 
-		/** @copydoc AudioSource::seek */
-		void seek(float position) override;
-
 	private:
 		friend class OAAudio;
 
@@ -65,6 +68,18 @@ namespace BansheeEngine
 
 		/** Rebuilds the internal representation of an audio source. */
 		void rebuild();
+
+		/** Streams new data into the source audio buffer, if needed. */
+		void stream();
+
+		/** Starts data streaming from the currently attached audio clip. */
+		void startStreaming();
+
+		/** Stops streaming data from the currently attached audio clip. */
+		void stopStreaming();
+
+		/** Pauses or resumes audio playback due to the global pause setting. */
+		void setGlobalPause(bool pause);
 
 		/** 
 		 * Returns true if the sound source is three dimensional (volume and pitch varies based on listener distance
@@ -76,11 +91,22 @@ namespace BansheeEngine
 		 * Returns true if the audio source is receiving audio data from a separate thread (as opposed to loading it all
 		 * at once. 
 		 */
-		bool isStreaming() const;
+		bool requiresStreaming() const;
+
+		/** Fills the provided buffer with streaming data. */
+		bool fillBuffer(UINT32 buffer, AudioFileInfo& info, UINT32 maxNumSamples);
 
 		Vector<UINT32> mSourceIDs;
-		UINT32 mSeekPosition;
-		bool mRequiresStreaming;
+		float mSavedTime;
+		bool mGloballyPaused;
+
+		static const UINT32 StreamBufferCount = 3;
+		UINT32 mStreamBuffers[StreamBufferCount];
+		bool mBusyBuffers[StreamBufferCount];
+		UINT32 mStreamProcessedPosition;
+		UINT32 mStreamQueuedPosition;
+		bool mIsStreaming;
+		mutable Mutex mMutex;
 	};
 
 	/** @} */
