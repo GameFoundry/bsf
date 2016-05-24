@@ -86,6 +86,9 @@ namespace BansheeEngine
 
 	void Platform::hideCursor()
 	{
+		if (mData->mIsCursorHidden)
+			return;
+
 		mData->mIsCursorHidden = true;
 
 		// ShowCursor(FALSE) doesn't work. Presumably because we're in the wrong thread, and using
@@ -100,6 +103,9 @@ namespace BansheeEngine
 
 	void Platform::showCursor()
 	{
+		if (!mData->mIsCursorHidden)
+			return;
+
 		mData->mIsCursorHidden = false;
 
 		// ShowCursor(FALSE) doesn't work. Presumably because we're in the wrong thread, and using
@@ -625,7 +631,7 @@ namespace BansheeEngine
 				Vector<NonClientResizeArea>& resizeAreasPerWindow = iterFind->second.resizeAreas;
 				for(auto area : resizeAreasPerWindow)
 				{
-					if(area.area.contains(mousePosInt))
+					if (area.area.contains(mousePosInt))
 						return translateNonClientAreaType(area.type);
 				}
 
