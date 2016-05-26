@@ -191,6 +191,15 @@ namespace BansheeEngine
         }
 
         /// <summary>
+        /// Determines if the playback of the audio clip should start as soon as the component is initialized.
+        /// </summary>
+        public bool PlayOnStart
+        {
+            get { return serializableData.playOnStart; }
+            set { serializableData.playOnStart = value; }
+        }
+
+        /// <summary>
         /// Returns the current state of the audio playback (playing/paused/stopped).
         /// </summary>
         public AudioSourceState State
@@ -256,6 +265,9 @@ namespace BansheeEngine
         private void OnEnable()
         {
             RestoreNative();
+
+            if (serializableData.playOnStart)
+                Play();
         }
 
         private void OnDisable()
@@ -320,6 +332,7 @@ namespace BansheeEngine
             public uint priority = 0;
             public float minDistance = 1.0f;
             public float attenuation = 1.0f;
+            public bool playOnStart = true;
         }
     }
 

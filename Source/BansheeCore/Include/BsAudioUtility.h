@@ -36,7 +36,7 @@ namespace BansheeEngine
 		 * @param[in]	inBitDepth	Size of a single sample in the @p input array, in bits.
 		 * @param[out]	output		Pre-allocated buffer to store the output samples in. Total size of the buffer should be
 		 *							@p numSamples * @p outBitDepth / 8.
-		 * @param[in]	inBitDepth	Size of a single sample in the @p output array, in bits.
+		 * @param[in]	outBitDepth	Size of a single sample in the @p output array, in bits.
 		 * @param[in]	numSamples	Total number of samples to process.
 		 */
 		static void convertBitDepth(const UINT8* input, UINT32 inBitDepth, UINT8* output, UINT32 outBitDepth, UINT32 numSamples);

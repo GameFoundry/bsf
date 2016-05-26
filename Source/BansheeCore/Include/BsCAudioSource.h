@@ -71,6 +71,12 @@ namespace BansheeEngine
 		/** @copydoc AudioSource::getTime */
 		float getTime() const;
 
+		/** Sets whether playback should start as soon as the component is enabled. */
+		void setPlayOnStart(bool enable) { mPlayOnStart = enable; }
+
+		/** Determines should playback start as soon as the component is enabled. */
+		bool getPlayOnStart() const { return mPlayOnStart; }
+
 		/** @copydoc AudioSource::play */
 		void play();
 
@@ -141,6 +147,7 @@ namespace BansheeEngine
 		UINT32 mPriority;
 		float mMinDistance;
 		float mAttenuation;
+		bool mPlayOnStart;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

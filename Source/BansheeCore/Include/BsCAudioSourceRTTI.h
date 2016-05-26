@@ -24,6 +24,7 @@ namespace BansheeEngine
 			BS_RTTI_MEMBER_PLAIN(mPriority, 4)
 			BS_RTTI_MEMBER_PLAIN(mMinDistance, 5)
 			BS_RTTI_MEMBER_PLAIN(mAttenuation, 6)
+			BS_RTTI_MEMBER_PLAIN(mPlayOnStart, 7)
 		BS_END_RTTI_MEMBERS
 	public:
 		CAudioSourceRTTI()

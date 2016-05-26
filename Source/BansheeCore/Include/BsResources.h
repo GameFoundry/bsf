@@ -88,7 +88,7 @@ namespace BansheeEngine
 		 *			
 		 * @param[in]	filePath	File path to the resource to load. This can be absolute or relative to the working 
 		 *							folder.
-		 * @param[in]	flags		Flags used to control the load process.
+		 * @param[in]	loadFlags	Flags used to control the load process.
 		 *			
 		 * @see		release(ResourceHandleBase&), unloadAllUnused()
 		 */
@@ -120,7 +120,7 @@ namespace BansheeEngine
 		 * done.
 		 *
 		 * @param[in]	filePath	Full pathname of the file.
-		 * @param[in]	flags		Flags used to control the load process.
+		 * @param[in]	loadFlags	Flags used to control the load process.
 		 *
 		 * @note	
 		 * You can use returned invalid handle in many engine systems as the engine will check for handle validity before 
@@ -140,10 +140,10 @@ namespace BansheeEngine
 		/**
 		 * Loads the resource with the given UUID. Returns an empty handle if resource can't be loaded.
 		 *
-		 * @param[in]	uuid	UUID of the resource to load.
-		 * @param[in]	async	If true resource will be loaded asynchronously. Handle to non-loaded resource will be
-		 *						returned immediately while loading will continue in the background.		
-		 * @param[in]	flags	Flags used to control the load process.
+		 * @param[in]	uuid		UUID of the resource to load.
+		 * @param[in]	async		If true resource will be loaded asynchronously. Handle to non-loaded resource will be
+		 *							returned immediately while loading will continue in the background.		
+		 * @param[in]	loadFlags	Flags used to control the load process.
 		 *													
 		 * @see		load(const Path&, bool)
 		 */

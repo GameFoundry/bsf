@@ -11,6 +11,7 @@ namespace BansheeEngine
 {
 	CAudioSource::CAudioSource(const HSceneObject& parent)
 		: Component(parent), mVolume(1.0f), mPitch(1.0f), mLoop(false), mPriority(0), mMinDistance(1.0f), mAttenuation(1.0f)
+		, mPlayOnStart(true)
 	{
 		setName("AudioSource");
 
@@ -152,6 +153,9 @@ namespace BansheeEngine
 	void CAudioSource::onEnabled()
 	{
 		restoreInternal();
+
+		if (mPlayOnStart)
+			play();
 	}
 
 	void CAudioSource::onTransformChanged(TransformChangedFlags flags)

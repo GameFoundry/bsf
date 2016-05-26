@@ -24,6 +24,7 @@ namespace BansheeEngine
 		 * Parses the provided object, serializes all of its data as specified by its RTTIType and saves the serialized 
 		 * data to the provided file location.
 		 *
+		 * @param[in]	object		Object to encode.
 		 * @param[in]	params		Optional parameters to be passed to the serialization callbacks on the objects being
 		 *							serialized.
 		 */

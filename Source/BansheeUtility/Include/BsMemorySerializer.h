@@ -45,6 +45,8 @@ namespace BansheeEngine
 		/** 
 		 * Deserializes an IReflectable object by reading the binary data from the provided memory location. 
 		 *
+		 * @param[in]	buffer		Previously allocated buffer to store the data in.
+		 * @param[in]	bufferSize	Size of the @p buffer in bytes.
 		 * @param[in]	params		Optional parameters to be passed to the serialization callbacks on the objects being
 		 *							serialized.
 		 */
