@@ -26,11 +26,8 @@ target_link_libraries(BansheeEditorExec BansheeEditor BansheeEngine BansheeUtili
 set_property(TARGET BansheeEditorExec PROPERTY FOLDER Executable)
 
 # Plugin dependencies
-add_dependencies(BansheeEditorExec BansheeFBXImporter BansheeFontImporter BansheeFreeImgImporter BansheeGLRenderAPI BansheeMono BansheeOISInput BansheePhysX BansheeSL BansheeOpenAudio RenderBeast SBansheeEngine SBansheeEditor)
-
-if(WIN32)
-	add_dependencies(BansheeEditorExec BansheeD3D11RenderAPI BansheeD3D9RenderAPI)
-endif()
+add_engine_dependencies(BansheeEditorExec)
+add_dependencies(BansheeEditorExec BansheeFBXImporter BansheeFontImporter BansheeFreeImgImporter SBansheeEditor)
 
 # Compiler flags
 target_compile_options(BansheeEditorExec PUBLIC /wd4509)

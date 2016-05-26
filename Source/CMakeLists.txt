@@ -7,20 +7,45 @@ set (Banshee_VERSION_MINOR 3)
 
 # Configuration types
 if(CMAKE_CONFIGURATION_TYPES) # Multiconfig generator?
-	set(CMAKE_CONFIGURATION_TYPES "Debug;OptimizedDebug;Release;" CACHE STRING "" FORCE) 
+	set(CMAKE_CONFIGURATION_TYPES "Debug;OptimizedDebug;Release;" CACHE INTERNAL "") 
 else()
 	if(NOT CMAKE_BUILD_TYPE)
 		message("Defaulting to release build.")
-		set(CMAKE_BUILD_TYPE Release CACHE STRING "" FORCE)
+		set(CMAKE_BUILD_TYPE Release CACHE INTERNAL "")
 	endif()
 	set_property(CACHE CMAKE_BUILD_TYPE PROPERTY HELPSTRING "Choose the type of build")
 	# Set the valid options for cmake-gui drop-down list
-	set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug;OptimizedDebug;Release")
+	set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS Debug OptimizedDebug Release)
 endif()
 
 if(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
 	set(BS_64BIT true)
 endif()
+
+# Options
+set(AUDIO_MODULE "OpenAudio" CACHE STRING "Audio backend to use.")
+set_property(CACHE AUDIO_MODULE PROPERTY STRINGS OpenAudio FMOD)
+
+set(PHYSICS_MODULE "PhysX" CACHE STRING "Physics backend to use.")
+set_property(CACHE PHYSICS_MODULE PROPERTY STRINGS PhysX)
+
+set(INPUT_MODULE "OIS" CACHE STRING "Input backend to use.")
+set_property(CACHE INPUT_MODULE PROPERTY STRINGS OIS)
+
+if(WIN32)
+set(RENDER_API_MODULE "DirectX 11" CACHE STRING "Render API to use.")
+set_property(CACHE RENDER_API_MODULE PROPERTY STRINGS "DirectX 11" "DirectX 9" "OpenGL")
+else()
+set(RENDER_API_MODULE "OpenGL" CACHE STRING "Render API to use.")
+set_property(CACHE RENDER_API_MODULE PROPERTY STRINGS "OpenGL")
+endif()
+
+set(RENDERER_MODULE "RenderBeast" CACHE STRING "Renderer backend to use.")
+set_property(CACHE RENDERER_MODULE PROPERTY STRINGS RenderBeast)
+
+set(BUILD_EDITOR ON CACHE BOOL "If true both the engine and the editor will be built.")
+
+mark_as_advanced(CMAKE_INSTALL_PREFIX)
 
 # Global compile & linker flags
 ## Compiler-agnostic settings
@@ -129,6 +154,24 @@ function(add_library_per_config_suffix target_name lib_name rls_suffix debug_suf
 	target_link_libraries(${target_name} PRIVATE ${lib_name})	
 endfunction()
 
+function(add_engine_dependencies target_name)
+	if(RENDER_API_MODULE MATCHES "DirectX 11")
+		add_dependencies(${target_name} BansheeD3D11RenderAPI)
+	elseif(RENDER_API_MODULE MATCHES "DirectX 9")
+		add_dependencies(${target_name} BansheeD3D9RenderAPI)
+	else()
+		add_dependencies(${target_name} BansheeGLRenderAPI)
+	endif()
+
+	if(AUDIO_MODULE MATCHES "FMOD")
+		add_dependencies(${target_name} BansheeFMOD)
+	else() # Default to OpenAudio
+		add_dependencies(${target_name} BansheeOpenAudio)
+	endif()
+	
+	add_dependencies(${target_name} BansheeMono BansheeOISInput BansheePhysX RenderBeast SBansheeEngine)
+endfunction()
+
 set_property(GLOBAL PROPERTY USE_FOLDERS TRUE)
 
 # Sub-directories
@@ -136,15 +179,21 @@ set_property(GLOBAL PROPERTY USE_FOLDERS TRUE)
 add_subdirectory(BansheeUtility)
 add_subdirectory(BansheeCore)
 add_subdirectory(BansheeEngine)
-add_subdirectory(BansheeEditor)
+
+#if(BUILD_EDITOR)
+	add_subdirectory(BansheeEditor)
+#endif()
 
 ## Plugins
-if(WIN32)
-	add_subdirectory(BansheeD3D9RenderAPI)
+
+if(RENDER_API_MODULE MATCHES "DirectX 11")
 	add_subdirectory(BansheeD3D11RenderAPI)
+elseif(RENDER_API_MODULE MATCHES "DirectX 9")
+	add_subdirectory(BansheeD3D9RenderAPI)
+else()
+	add_subdirectory(BansheeGLRenderAPI)
 endif()
 
-add_subdirectory(BansheeGLRenderAPI)
 add_subdirectory(BansheeFBXImporter)
 add_subdirectory(BansheeFontImporter)
 add_subdirectory(BansheeFreeImgImporter)
@@ -152,28 +201,41 @@ add_subdirectory(BansheeMono)
 add_subdirectory(BansheeOISInput)
 add_subdirectory(BansheePhysX)
 add_subdirectory(BansheeSL)
-add_subdirectory(BansheeOpenAudio)
 add_subdirectory(RenderBeast)
+
+if(AUDIO_MODULE MATCHES "FMOD")
+	add_subdirectory(BansheeFMOD)
+else() # Default to OpenAudio
+	add_subdirectory(BansheeOpenAudio)
+endif()
 
 ## Script interop
 add_subdirectory(SBansheeEngine)
-add_subdirectory(SBansheeEditor)
+
+if(BUILD_EDITOR)
+	add_subdirectory(SBansheeEditor)
+endif()
 
 ## Executables
-add_subdirectory(BansheeEditorExec)
 add_subdirectory(Game)
 add_subdirectory(ExampleProject)
+
+if(BUILD_EDITOR)
+	add_subdirectory(BansheeEditorExec)
+endif()
 
 ## Managed projects
 if(MSVC)
 	include_external_msproject(MBansheeEngine ${PROJECT_SOURCE_DIR}/MBansheeEngine/MBansheeEngine.csproj)
-	include_external_msproject(MBansheeEditor ${PROJECT_SOURCE_DIR}/MBansheeEditor/MBansheeEditor.csproj)
-	
-	add_dependencies(BansheeEditorExec MBansheeEngine MBansheeEditor)
 	add_dependencies(Game MBansheeEngine)
 	
 	set_property(TARGET MBansheeEngine PROPERTY FOLDER Script)
-	set_property(TARGET MBansheeEditor PROPERTY FOLDER Script)
+
+	if(BUILD_EDITOR)
+		include_external_msproject(MBansheeEditor ${PROJECT_SOURCE_DIR}/MBansheeEditor/MBansheeEditor.csproj)
+		add_dependencies(BansheeEditorExec MBansheeEngine MBansheeEditor)
+		set_property(TARGET MBansheeEditor PROPERTY FOLDER Script)
+	endif()
 else()
 # TODO - Use Mono compiler to build the managed code as a pre-build step
 endif()

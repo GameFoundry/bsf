@@ -25,8 +25,5 @@ target_link_libraries(ExampleProject BansheeEngine BansheeUtility BansheeCore)
 set_property(TARGET ExampleProject PROPERTY FOLDER Executable)
 
 # Plugin dependencies
-add_dependencies(Game BansheeFBXImporter BansheeFontImporter BansheeFreeImgImporter BansheeGLRenderAPI BansheeMono BansheeOISInput BansheePhysX BansheeSL RenderBeast SBansheeEngine)
-
-if(WIN32)
-	add_dependencies(Game BansheeD3D11RenderAPI BansheeD3D9RenderAPI)
-endif()
+add_engine_dependencies(ExampleProject)
+add_dependencies(ExampleProject BansheeFBXImporter BansheeFontImporter BansheeFreeImgImporter)
