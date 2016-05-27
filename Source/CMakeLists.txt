@@ -2,8 +2,8 @@ cmake_minimum_required (VERSION 3.5.1)
 project (Banshee)
 
 # Version
-set (Banshee_VERSION_MAJOR 0)
-set (Banshee_VERSION_MINOR 3)
+set (BS_VERSION_MAJOR 0)
+set (BS_VERSION_MINOR 3)
 
 # Configuration types
 if(CMAKE_CONFIGURATION_TYPES) # Multiconfig generator?
@@ -46,6 +46,9 @@ set_property(CACHE RENDERER_MODULE PROPERTY STRINGS RenderBeast)
 set(BUILD_EDITOR ON CACHE BOOL "If true both the engine and the editor will be built.")
 
 mark_as_advanced(CMAKE_INSTALL_PREFIX)
+
+# External code
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMake/Modules/")
 
 # Global compile & linker flags
 ## Compiler-agnostic settings
@@ -188,26 +191,37 @@ add_subdirectory(BansheeEngine)
 
 if(RENDER_API_MODULE MATCHES "DirectX 11")
 	add_subdirectory(BansheeD3D11RenderAPI)
+	set(RENDER_API_MODULE_LIB BansheeD3D11RenderAPI)
 elseif(RENDER_API_MODULE MATCHES "DirectX 9")
 	add_subdirectory(BansheeD3D9RenderAPI)
+	set(RENDER_API_MODULE_LIB BansheeD3D9RenderAPI)
 else()
 	add_subdirectory(BansheeGLRenderAPI)
+	set(RENDER_API_MODULE_LIB BansheeGLRenderAPI)
+endif()
+
+add_subdirectory(RenderBeast)
+set(RENDERER_MODULE_LIB RenderBeast)
+
+add_subdirectory(BansheeOISInput)
+set(INPUT_MODULE_LIB BansheeOISInput)
+
+add_subdirectory(BansheePhysX)
+set(PHYSICS_MODULE_LIB BansheePhysX)
+
+if(AUDIO_MODULE MATCHES "FMOD")
+	add_subdirectory(BansheeFMOD)
+	set(AUDIO_MODULE_LIB BansheeFMOD)
+else() # Default to OpenAudio
+	add_subdirectory(BansheeOpenAudio)
+	set(AUDIO_MODULE_LIB BansheeOpenAudio)
 endif()
 
 add_subdirectory(BansheeFBXImporter)
 add_subdirectory(BansheeFontImporter)
 add_subdirectory(BansheeFreeImgImporter)
 add_subdirectory(BansheeMono)
-add_subdirectory(BansheeOISInput)
-add_subdirectory(BansheePhysX)
 add_subdirectory(BansheeSL)
-add_subdirectory(RenderBeast)
-
-if(AUDIO_MODULE MATCHES "FMOD")
-	add_subdirectory(BansheeFMOD)
-else() # Default to OpenAudio
-	add_subdirectory(BansheeOpenAudio)
-endif()
 
 ## Script interop
 add_subdirectory(SBansheeEngine)
@@ -239,3 +253,6 @@ if(MSVC)
 else()
 # TODO - Use Mono compiler to build the managed code as a pre-build step
 endif()
+
+# Config file
+configure_file("${PROJECT_SOURCE_DIR}/CMake/BsEngineConfig.h.in" "${PROJECT_SOURCE_DIR}/BansheeEngine/Include/BsEngineConfig.h")

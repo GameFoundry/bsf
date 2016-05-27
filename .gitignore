@@ -12,3 +12,4 @@ Documentation/html
 Build
 *.aps
 *.opendb
+BsEngineConfig.h

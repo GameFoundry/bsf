@@ -22,27 +22,8 @@
 
 namespace BansheeEngine
 {
-	START_UP_DESC createStartUpDesc(RENDER_WINDOW_DESC& primaryWindowDesc, const String& renderAPI, const String& renderer, 
-		const String& audio, const Vector<String>& importers)
-	{
-		START_UP_DESC desc;
-		desc.renderAPI = renderAPI;
-		desc.renderer = renderer;
-		desc.audio = audio;
-		desc.physics = "BansheePhysX";
-		desc.input = "BansheeOISInput";
-
-		desc.primaryWindowDesc = primaryWindowDesc;
-		desc.importers = importers;
-
-		return desc;
-	}
-
-	Application::Application(RENDER_WINDOW_DESC primaryWindowDesc, RenderAPIPlugin renderAPI, RendererPlugin renderer, 
-		AudioPlugin audio, const Vector<String>& importers)
-		: CoreApplication(createStartUpDesc(primaryWindowDesc, getLibNameForRenderAPI(renderAPI)
-		, getLibNameForRenderer(renderer), getLibNameForAudio(audio), importers)), mMonoPlugin(nullptr)
-		, mSBansheeEnginePlugin(nullptr)
+	Application::Application(const START_UP_DESC& desc)
+		: CoreApplication(desc), mMonoPlugin(nullptr), mSBansheeEnginePlugin(nullptr)
 	{
 
 	}
@@ -99,10 +80,9 @@ namespace BansheeEngine
 		CoreApplication::onShutDown();
 	}
 
-	void Application::startUp(RENDER_WINDOW_DESC& primaryWindowDesc, RenderAPIPlugin renderAPI, 
-		RendererPlugin renderer, AudioPlugin audio, const Vector<String>& importers)
+	void Application::startUp(const START_UP_DESC& desc)
 	{
-		CoreApplication::startUp<Application>(primaryWindowDesc, renderAPI, renderer, audio, importers);
+		CoreApplication::startUp<Application>(desc);
 	}
 
 	void Application::preUpdate()
@@ -186,54 +166,6 @@ namespace BansheeEngine
 	SPtr<IShaderIncludeHandler> Application::getShaderIncludeHandler() const
 	{
 		return bs_shared_ptr_new<EngineShaderIncludeHandler>();
-	}
-
-	String Application::getLibNameForRenderAPI(RenderAPIPlugin plugin)
-	{
-		static String DX11Name = "BansheeD3D11RenderAPI";
-		static String DX9Name = "BansheeD3D9RenderAPI";
-		static String OpenGLName = "BansheeGLRenderAPI";
-
-		switch (plugin)
-		{
-		case RenderAPIPlugin::DX11:
-			return DX11Name;
-		case RenderAPIPlugin::DX9:
-			return DX9Name;
-		case RenderAPIPlugin::OpenGL:
-			return OpenGLName;
-		}
-
-		return StringUtil::BLANK;
-	}
-
-	String Application::getLibNameForRenderer(RendererPlugin plugin)
-	{
-		static String DefaultName = "RenderBeast";
-
-		switch (plugin)
-		{
-		case RendererPlugin::Default:
-			return DefaultName;
-		}
-	
-		return StringUtil::BLANK;
-	}
-
-	String Application::getLibNameForAudio(AudioPlugin plugin)
-	{
-		static String OpenAudioName = "BansheeOpenAudio";
-		static String FMODName = "BansheeFMOD";
-
-		switch (plugin)
-		{
-		case AudioPlugin::OpenAudio:
-			return OpenAudioName;
-		case AudioPlugin::FMOD:
-			return FMODName;
-		}
-
-		return StringUtil::BLANK;
 	}
 
 	Application& gApplication()
