@@ -18,7 +18,7 @@ namespace BansheeEngine
 	}
 
 	OAOggVorbisWriter::OAOggVorbisWriter()
-		:mBufferOffset(0), mNumChannels(0), mBitDepth(0)
+		:mBufferOffset(0), mNumChannels(0), mBitDepth(0), mClosed(true)
 	{ }
 
 	OAOggVorbisWriter::~OAOggVorbisWriter()
@@ -38,7 +38,7 @@ namespace BansheeEngine
 
 		// Automatic bitrate management with quality 0.4 (~128 kbps for 44 KHz stereo sound)
 		INT32 status = vorbis_encode_init_vbr(&mVorbisInfo, numChannels, sampleRate, 0.4f);
-		if (status < 0)
+		if (status != 0)
 		{
 			LOGERR("Failed to write Ogg Vorbis file.");
 			close();
@@ -46,6 +46,7 @@ namespace BansheeEngine
 		}
 
 		vorbis_analysis_init(&mVorbisState, &mVorbisInfo);
+		vorbis_block_init(&mVorbisState, &mVorbisBlock);
 
 		// Generate header
 		vorbis_comment comment;
@@ -55,7 +56,7 @@ namespace BansheeEngine
 		status = vorbis_analysis_headerout(&mVorbisState, &comment, &headerPacket, &commentPacket, &codePacket);
 		vorbis_comment_clear(&comment);
 
-		if (status < 0)
+		if (status != 0)
 		{
 			LOGERR("Failed to write Ogg Vorbis file.");
 			close();
@@ -79,84 +80,88 @@ namespace BansheeEngine
 
 	void OAOggVorbisWriter::write(UINT8* samples, UINT32 numSamples)
 	{
-		// Allocate new buffer and write PCM data to it
+		static const UINT32 WRITE_LENGTH = 1024;
+
 		UINT32 numFrames = numSamples / mNumChannels;
-		float** buffer = vorbis_analysis_buffer(&mVorbisState, numFrames);
-
-		if (mBitDepth == 8)
+		while (numFrames > 0)
 		{
-			for (UINT32 i = 0; i < numFrames; i++)
-			{
-				for (UINT32 j = 0; j < mNumChannels; j++)
-				{
-					UINT8 sample = *(UINT8*)samples;
-					float encodedSample = sample / 255.0f;
-					buffer[j][i] = encodedSample;
+			UINT32 numFramesToWrite = std::min(numFrames, WRITE_LENGTH);
+			float** buffer = vorbis_analysis_buffer(&mVorbisState, numFramesToWrite);
 
-					samples++;
+			if (mBitDepth == 8)
+			{
+				for (UINT32 i = 0; i < numFramesToWrite; i++)
+				{
+					for (UINT32 j = 0; j < mNumChannels; j++)
+					{
+						UINT8 sample = *(UINT8*)samples;
+						float encodedSample = sample / 255.0f;
+						buffer[j][i] = encodedSample;
+
+						samples++;
+					}
 				}
 			}
-		}
-		else if (mBitDepth == 16)
-		{
-			for (UINT32 i = 0; i < numFrames; i++)
+			else if (mBitDepth == 16)
 			{
-				for (UINT32 j = 0; j < mNumChannels; j++)
+				for (UINT32 i = 0; i < numFramesToWrite; i++)
 				{
-					INT16 sample = *(INT16*)samples;
-					float encodedSample = sample / 32767.0f;
-					buffer[j][i] = encodedSample;
+					for (UINT32 j = 0; j < mNumChannels; j++)
+					{
+						INT16 sample = *(INT16*)samples;
+						float encodedSample = sample / 32767.0f;
+						buffer[j][i] = encodedSample;
 
-					samples += 2;
+						samples += 2;
+					}
 				}
 			}
-		}
-		else if (mBitDepth == 24)
-		{
-			for (UINT32 i = 0; i < numFrames; i++)
+			else if (mBitDepth == 24)
 			{
-				for (UINT32 j = 0; j < mNumChannels; j++)
+				for (UINT32 i = 0; i < numFramesToWrite; i++)
 				{
-					INT32 sample = AudioUtility::convert24To32Bits(samples);
-					float encodedSample = sample / 2147483647.0f;
-					buffer[j][i] = encodedSample;
+					for (UINT32 j = 0; j < mNumChannels; j++)
+					{
+						INT32 sample = AudioUtility::convert24To32Bits(samples);
+						float encodedSample = sample / 2147483647.0f;
+						buffer[j][i] = encodedSample;
 
-					samples += 3;
+						samples += 3;
+					}
 				}
 			}
-		}
-		else if (mBitDepth == 32)
-		{
-			for (UINT32 i = 0; i < numFrames; i++)
+			else if (mBitDepth == 32)
 			{
-				for (UINT32 j = 0; j < mNumChannels; j++)
+				for (UINT32 i = 0; i < numFramesToWrite; i++)
 				{
-					INT32 sample = *(INT32*)samples;
-					float encodedSample = sample / 2147483647.0f;
-					buffer[j][i] = encodedSample;
+					for (UINT32 j = 0; j < mNumChannels; j++)
+					{
+						INT32 sample = *(INT32*)samples;
+						float encodedSample = sample / 2147483647.0f;
+						buffer[j][i] = encodedSample;
 
-					samples += 4;
+						samples += 4;
+					}
 				}
 			}
-		}
-		else
-			assert(false);
+			else
+				assert(false);
 
-		// Signal how many frames were written
-		vorbis_analysis_wrote(&mVorbisState, numFrames);
-		writeBlocks();
+			// Signal how many frames were written
+			vorbis_analysis_wrote(&mVorbisState, numFramesToWrite);
+			writeBlocks();
+
+			numFrames -= numFramesToWrite;
+		}
 	}
 
 	void OAOggVorbisWriter::writeBlocks()
 	{
-		// Create a new block
-		vorbis_block block;
-		vorbis_block_init(&mVorbisState, &block);
-		while (vorbis_analysis_blockout(&mVorbisState, &block) == 1)
+		while (vorbis_analysis_blockout(&mVorbisState, &mVorbisBlock) == 1)
 		{
 			// Analyze and determine optimal bitrate
-			vorbis_analysis(&block, nullptr);
-			vorbis_bitrate_addblock(&block);
+			vorbis_analysis(&mVorbisBlock, nullptr);
+			vorbis_bitrate_addblock(&mVorbisBlock);
 
 			// Write block into ogg packets
 			ogg_packet packet;
@@ -173,9 +178,6 @@ namespace BansheeEngine
 				}
 			}
 		}
-
-		// Clear the allocated block
-		vorbis_block_clear(&block);
 	}
 
 	void OAOggVorbisWriter::flush()
@@ -188,14 +190,20 @@ namespace BansheeEngine
 
 	void OAOggVorbisWriter::close()
 	{
+		if (mClosed)
+			return;
+
 		// Mark end of data and flush any remaining data in the buffers
 		vorbis_analysis_wrote(&mVorbisState, 0);
 		writeBlocks();
 		flush();
 
 		ogg_stream_clear(&mOggState);
+		vorbis_block_clear(&mVorbisBlock);
 		vorbis_dsp_clear(&mVorbisState);
 		vorbis_info_clear(&mVorbisInfo);
+
+		mClosed = true;
 	}
 
 	UINT8* OAOggVorbisWriter::PCMToOggVorbis(UINT8* samples, const AudioFileInfo& info, UINT32& size)

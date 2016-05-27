@@ -72,10 +72,12 @@ namespace BansheeEngine
 		UINT32 mBufferOffset;
 		UINT32 mNumChannels;
 		UINT32 mBitDepth;
+		bool mClosed;
 
 		ogg_stream_state mOggState;
 		vorbis_info mVorbisInfo;
 		vorbis_dsp_state mVorbisState;
+		vorbis_block mVorbisBlock;
 	};
 
 	/** @} */
