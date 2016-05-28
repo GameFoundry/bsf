@@ -49,6 +49,9 @@ namespace BansheeEngine
 				alSourcei(mSourceIDs[i], AL_BUFFER, oaBuffer);
 			}
 		}
+
+		// Looping is influenced by streaming mode, so re-apply it in case it changed
+		setIsLooping(mLoop);
 	}
 
 	void OAAudioSource::setPosition(const Vector3& position)
@@ -121,6 +124,10 @@ namespace BansheeEngine
 	{
 		AudioSource::setIsLooping(loop);
 
+		// When streaming we handle looping manually
+		if (requiresStreaming())
+			loop = false;
+
 		auto& contexts = gOAAudio()._getContexts();
 		UINT32 numContexts = (UINT32)contexts.size();
 		for (UINT32 i = 0; i < numContexts; i++)
@@ -181,7 +188,10 @@ namespace BansheeEngine
 			Lock(mMutex);
 			
 			if (!mIsStreaming)
+			{
 				startStreaming();
+				stream(); // Stream first block on this thread to ensure something can play right away
+			}
 		}
 		
 		auto& contexts = gOAAudio()._getContexts();
@@ -214,14 +224,6 @@ namespace BansheeEngine
 	{
 		AudioSource::stop();
 
-		{
-			Lock(mMutex);
-
-			mStreamProcessedPosition = 0;
-			if (mIsStreaming)
-				stopStreaming();
-		}
-
 		auto& contexts = gOAAudio()._getContexts();
 		UINT32 numContexts = (UINT32)contexts.size();
 		for (UINT32 i = 0; i < numContexts; i++)
@@ -231,6 +233,14 @@ namespace BansheeEngine
 
 			alSourceStop(mSourceIDs[i]);
 			alSourcef(mSourceIDs[i], AL_SEC_OFFSET, 0.0f);
+		}
+
+		{
+			Lock(mMutex);
+
+			mStreamProcessedPosition = 0;
+			if (mIsStreaming)
+				stopStreaming();
 		}
 	}
 
@@ -368,9 +378,13 @@ namespace BansheeEngine
 				alcMakeContextCurrent(contexts[i]);
 
 			alSourcef(mSourceIDs[i], AL_PITCH, mPitch);
-			alSourcef(mSourceIDs[i], AL_LOOPING, mLoop);
 			alSourcef(mSourceIDs[i], AL_REFERENCE_DISTANCE, mMinDistance);
 			alSourcef(mSourceIDs[i], AL_ROLLOFF_FACTOR, mAttenuation);
+
+			if(requiresStreaming())
+				alSourcef(mSourceIDs[i], AL_LOOPING, false);
+			else
+				alSourcef(mSourceIDs[i], AL_LOOPING, mLoop);
 
 			if (is3D())
 			{
@@ -475,7 +489,7 @@ namespace BansheeEngine
 			UINT32 buffer;
 			alSourceUnqueueBuffers(mSourceIDs[0], 1, &buffer);
 
-			UINT32 bufferIdx = 0;
+			INT32 bufferIdx = -1;
 			for (UINT32 j = 0; j < StreamBufferCount; j++)
 			{
 				if (buffer == mStreamBuffers[j])
@@ -484,6 +498,10 @@ namespace BansheeEngine
 					break;
 				}
 			}
+			
+			// Possibly some buffer from previous playback remained unqueued, in which case ignore it
+			if (bufferIdx == -1)
+				continue;
 
 			mBusyBuffers[bufferIdx] = false;
 
@@ -501,7 +519,7 @@ namespace BansheeEngine
 			else
 			{
 				UINT32 bytesPerSample = bufferBits / 8;
-				mStreamProcessedPosition = bufferSize / bytesPerSample;
+				mStreamProcessedPosition += bufferSize / bytesPerSample;
 			}
 
 			if (mStreamProcessedPosition == totalNumSamples) // Reached the end

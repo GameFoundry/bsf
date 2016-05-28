@@ -386,7 +386,7 @@ namespace BansheeEngine
 			}
 			else
 			{
-				ALenum format = _getOpenALBufferFormat(info.numChannels, 16);
+				ALenum format = _getOpenALBufferFormat(info.numChannels, info.bitDepth);
 				alBufferData(bufferId, format, samples, info.numSamples * (info.bitDepth / 8), info.sampleRate);
 			}
 		}
