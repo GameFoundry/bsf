@@ -6,8 +6,10 @@ set(BansheeOpenAudio_INC
 	"Include" 
 	"../BansheeUtility/Include" 
 	"../BansheeCore/Include"
-	"../../Dependencies/BansheeOpenAudio/Include"
-	"../../Dependencies/BansheeOpenAudio/Include/vorbis")
+	"../../Dependencies/libogg/include"
+	"../../Dependencies/libvorbis/include"
+	"../../Dependencies/libFLAC/include"
+	"../../Dependencies/OpenAL/include")
 
 include_directories(${BansheeOpenAudio_INC})	
 	
@@ -19,11 +21,11 @@ target_compile_definitions(BansheeOpenAudio PRIVATE -DBS_OA_EXPORTS)
 
 # Libraries
 ## External libs: FLAC, Vorbis, Ogg, OpenAL
-add_library_per_config(BansheeOpenAudio libFLAC)
-add_library_per_config(BansheeOpenAudio libvorbis)
-add_library_per_config(BansheeOpenAudio libvorbisfile)
-add_library_per_config(BansheeOpenAudio libogg)
-add_library_per_config(BansheeOpenAudio OpenAL32)
+add_library_per_config(BansheeOpenAudio libFLAC libFLAC libFLAC)
+add_library_per_config_multi(BansheeOpenAudio libvorbis libvorbis libvorbis libvorbis)
+add_library_per_config_multi(BansheeOpenAudio libvorbisfile libvorbis libvorbisfile libvorbisfile)
+add_library_per_config(BansheeOpenAudio libogg Release/libogg Debug/libogg)
+add_library_per_config(BansheeOpenAudio OpenAL OpenAL32 OpenAL32)
 
 ## Local libs
 target_link_libraries(BansheeOpenAudio PUBLIC BansheeUtility BansheeCore)
