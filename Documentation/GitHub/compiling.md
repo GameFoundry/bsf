@@ -33,6 +33,7 @@ Banshee relies on a variety of third party dependencies. We provide a set of pre
  
 For older versions of pre-compiled dependencies check the git release tag descriptions for links.
 
+## Other dependencies
 The following dependencies will need to be installed manually regardless if you used pre-compiled dependency package or have compiled them yourself.
 
 **DirectX SDK**
@@ -59,5 +60,5 @@ The following dependencies will need to be installed manually regardless if you 
   - Use logging libraries for the Debug builds, and non-logging for OptimizedDebug and Release builds
   
 **Mono 4.2**
- - If you wish to compile managed assemblies using Microsoft compiler (e.g. using Visual Studio) yet still be able to debug the generated assemblies, you must install Mono 4.2. and set up an environment variable MONO_INSTALL_DIR pointing to the Mono installation directory. When this is set up "pdb2mdb" script will trigger on next compile generating the needed debug symbols.
+ - If you wish to compile managed assemblies using a Microsoft compiler (e.g. using Visual Studio) yet still be able to debug the generated assemblies, you must install Mono 4.2. and set up an environment variable MONO_INSTALL_DIR pointing to the Mono installation directory. When this is set up "pdb2mdb" script will trigger on next compile generating the needed debug symbols.
  - http://www.mono-project.com/download/

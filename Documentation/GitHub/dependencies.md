@@ -3,13 +3,13 @@ To compile/retrieve dependencies manually follow the guides provided by each ind
 
 Rename and place the compiled/retrieved outputs into proper folders depending on their type:
   - Static libraries (.lib, .a): 
-   - Place outputs in (BansheeSource)\Dependencies\(LibName)\lib\(Platform)
+   - Place outputs in (BansheeSource)/Dependencies/(LibName)/lib/(Platform)
   - Dynamic libraries (.dll, .so, .dylib)
-   - Place outputs in (BansheeSource)\bin\(Platform)\(Configuration)
+   - Place outputs in (BansheeSource)/bin/(Platform)/(Configuration)
   - Includes
-   - Place outputs in (BansheeSource)\Dependencies\(LibName)\include
+   - Place outputs in (BansheeSource)/Dependencies/(LibName)/include
   - Tools (executables)
-   - Place outputs in (BansheeSource)\Dependencies\(tools)\(LibName)  
+   - Place outputs in (BansheeSource)/Dependencies/(tools)/(LibName)  
    
 Each library below lists a set of outputs required by Banshee. After you compile/retrieve the library rename the outputs to what Banshee expects and place them relative to the above paths, depending on their type. Depending on which platform you're compiling for you will need to compile 32-bit or 64-bit versions of the libraries (or both).
    
