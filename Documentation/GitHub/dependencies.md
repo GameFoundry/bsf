@@ -32,9 +32,9 @@ If the library structure still isn't clear, download one of the pre-compiled dep
  - Required by BansheeCore
  - Outputs: 
    - Windows (Dynamic library):
-    - /Debug/nvtt.lib (Debug configuration)
-	- /Release/nvtt.lib (Release configuration)
-	- nvtt.dll (All configurations)
+     - /Debug/nvtt.lib (Debug configuration)
+	 - /Release/nvtt.lib (Release configuration)
+	 - nvtt.dll (All configurations)
  
 **FBXSDK**
  - FBX SDK 2016.1
@@ -55,8 +55,8 @@ If the library structure still isn't clear, download one of the pre-compiled dep
  - Required by BansheeFontImporter
  - Outputs:
   - Windows (Static library):
-   - /Debug/freetype.lib (Debug configuration)
-   - /Release/freetype.lib (Release configuration)
+    - /Debug/freetype.lib (Debug configuration)
+    - /Release/freetype.lib (Release configuration)
    
 **freeimg**
  - FreeImage 3.13.1
@@ -64,8 +64,8 @@ If the library structure still isn't clear, download one of the pre-compiled dep
  - Required by BansheeFreeImgImporter
  - Outputs:
   - Windows (Static library):
-   - /Debug/FreeImage.lib (Debug configuration)
-   - /Release/FreeImage.lib (Release configuration)
+    - /Debug/FreeImage.lib (Debug configuration)
+    - /Release/FreeImage.lib (Release configuration)
    
 **OIS**
  - BansheeOIS - Slightly modified version of OIS 1.3
@@ -73,9 +73,9 @@ If the library structure still isn't clear, download one of the pre-compiled dep
  - Required by BansheeOISInput
  - Outputs:
   - Windows (Dynamic library):
-   - /Debug/BansheeOIS.lib (Debug configuration)
-   - /Release/BansheeOIS.lib (Release configuration)
-   - BansheeOIS.dll (All configurations)
+    - /Debug/BansheeOIS.lib (Debug configuration)
+    - /Release/BansheeOIS.lib (Release configuration)
+    - BansheeOIS.dll (All configurations)
    
 **mono**
  - Mono 4.4.0
@@ -85,9 +85,9 @@ If the library structure still isn't clear, download one of the pre-compiled dep
  - Required by BansheeMono
  - Outputs:
   - Windows (Dynamic library):
-   - /Debug/mono-2.0.lib (Debug configuration)
-   - /Release/mono-2.0.lib (Release configuration)
-   - mono-2.0.dll (All configurations)
+    - /Debug/mono-2.0.lib (Debug configuration)
+    - /Release/mono-2.0.lib (Release configuration)
+    - mono-2.0.dll (All configurations)
    
 **PhysX**
  - PhysX 3.3
@@ -95,44 +95,44 @@ If the library structure still isn't clear, download one of the pre-compiled dep
  - Required by BansheePhysX
  - Outputs:
   - Windows (Dynamic library):
-   - x64
-    - /Debug/PhysX3CharacterKinematicCHECKED_x64.lib (Compile using "checked" configuration)
-	- /Debug/PhysX3CHECKED_x64.lib (Compile using "checked" configuration)
-	- /Debug/PhysX3CommonCHECKED_x64.lib (Compile using "checked" configuration)
-	- /Debug/PhysX3CookingCHECKED_x64.lib (Compile using "checked" configuration)
-	- /Debug/PhysX3ExtensionsCHECKED.lib (Compile using "checked" configuration)
-    - /Release/PhysX3CharacterKinematic_x64.lib (Compile using "release" configuration)
-	- /Release/PhysX3_x64.lib (Compile using "release" configuration)
-	- /Release/PhysX3Common_x64.lib (Compile using "release" configuration)
-	- /Release/PhysX3Cooking_x64.lib (Compile using "release" configuration)
-	- /Release/PhysX3Extensions.lib (Compile using "release" configuration)
-    - PhysX3CharacterKinematicCHECKED_x64.dll (For Debug configuration)
-	- PhysX3CHECKED_x64.dll (For Debug configuration)
-	- PhysX3CommonCHECKED_x64.dll (For Debug configuration)
-	- PhysX3CookingCHECKED_x64.dll (For Debug configuration)
-    - PhysX3CharacterKinematic_x64.dll (For Release/OptimizedDebug configuration)
-	- PhysX3_x64.dll (For Release/OptimizedDebug configuration)
-	- PhysX3Common_x64.dll (For Release/OptimizedDebug configuration)
-	- PhysX3Cooking_x64.dll (For Release/OptimizedDebug configuration)
-   - x86
-    - /Debug/PhysX3CharacterKinematicCHECKED_x86.lib (Compile using "checked" configuration)
-	- /Debug/PhysX3CHECKED_x86.lib (Compile using "checked" configuration)
-	- /Debug/PhysX3CommonCHECKED_x86.lib (Compile using "checked" configuration)
-	- /Debug/PhysX3CookingCHECKED_x86.lib (Compile using "checked" configuration)
-	- /Debug/PhysX3ExtensionsCHECKED.lib (Compile using "checked" configuration)
-    - /Release/PhysX3CharacterKinematic_x86.lib (Compile using "release" configuration)
-	- /Release/PhysX3_x86.lib (Compile using "release" configuration)
-	- /Release/PhysX3Common_x86.lib (Compile using "release" configuration)
-	- /Release/PhysX3Cooking_x86.lib (Compile using "release" configuration)
-	- /Release/PhysX3Extensions.lib (Compile using "release" configuration)
-    - PhysX3CharacterKinematicCHECKED_x86.dll (For Debug configuration)
-	- PhysX3CHECKED_x86.dll (For Debug configuration)
-	- PhysX3CommonCHECKED_x86.dll (For Debug configuration)
-	- PhysX3CookingCHECKED_x86.dll (For Debug configuration)
-    - PhysX3CharacterKinematic_x86.dll (For Release/OptimizedDebug configuration)
-	- PhysX3_x86.dll (For Release/OptimizedDebug configuration)
-	- PhysX3Common_x86.dll (For Release/OptimizedDebug configuration)
-	- PhysX3Cooking_x86.dll (For Release/OptimizedDebug configuration)	
+    - x64
+      - /Debug/PhysX3CharacterKinematicCHECKED_x64.lib (Compile using "checked" configuration)
+	  - /Debug/PhysX3CHECKED_x64.lib (Compile using "checked" configuration)
+	  - /Debug/PhysX3CommonCHECKED_x64.lib (Compile using "checked" configuration)
+	  - /Debug/PhysX3CookingCHECKED_x64.lib (Compile using "checked" configuration)
+	  - /Debug/PhysX3ExtensionsCHECKED.lib (Compile using "checked" configuration)
+      - /Release/PhysX3CharacterKinematic_x64.lib (Compile using "release" configuration)
+	  - /Release/PhysX3_x64.lib (Compile using "release" configuration)
+	  - /Release/PhysX3Common_x64.lib (Compile using "release" configuration)
+	  - /Release/PhysX3Cooking_x64.lib (Compile using "release" configuration)
+	  - /Release/PhysX3Extensions.lib (Compile using "release" configuration)
+      - PhysX3CharacterKinematicCHECKED_x64.dll (For Debug configuration)
+	  - PhysX3CHECKED_x64.dll (For Debug configuration)
+	  - PhysX3CommonCHECKED_x64.dll (For Debug configuration)
+	  - PhysX3CookingCHECKED_x64.dll (For Debug configuration)
+      - PhysX3CharacterKinematic_x64.dll (For Release/OptimizedDebug configuration)
+	  - PhysX3_x64.dll (For Release/OptimizedDebug configuration)
+	  - PhysX3Common_x64.dll (For Release/OptimizedDebug configuration)
+	  - PhysX3Cooking_x64.dll (For Release/OptimizedDebug configuration)
+    - x86
+      - /Debug/PhysX3CharacterKinematicCHECKED_x86.lib (Compile using "checked" configuration)
+	  - /Debug/PhysX3CHECKED_x86.lib (Compile using "checked" configuration)
+	  - /Debug/PhysX3CommonCHECKED_x86.lib (Compile using "checked" configuration)
+	  - /Debug/PhysX3CookingCHECKED_x86.lib (Compile using "checked" configuration)
+	  - /Debug/PhysX3ExtensionsCHECKED.lib (Compile using "checked" configuration)
+      - /Release/PhysX3CharacterKinematic_x86.lib (Compile using "release" configuration)
+	  - /Release/PhysX3_x86.lib (Compile using "release" configuration)
+	  - /Release/PhysX3Common_x86.lib (Compile using "release" configuration)
+	  - /Release/PhysX3Cooking_x86.lib (Compile using "release" configuration)
+	  - /Release/PhysX3Extensions.lib (Compile using "release" configuration)
+      - PhysX3CharacterKinematicCHECKED_x86.dll (For Debug configuration)
+	  - PhysX3CHECKED_x86.dll (For Debug configuration)
+	  - PhysX3CommonCHECKED_x86.dll (For Debug configuration)
+	  - PhysX3CookingCHECKED_x86.dll (For Debug configuration)
+      - PhysX3CharacterKinematic_x86.dll (For Release/OptimizedDebug configuration)
+	  - PhysX3_x86.dll (For Release/OptimizedDebug configuration)
+	  - PhysX3Common_x86.dll (For Release/OptimizedDebug configuration)
+	  - PhysX3Cooking_x86.dll (For Release/OptimizedDebug configuration)	
 	
 **OpenAL**
  - OpenAL Soft 1.17.2
@@ -140,8 +140,8 @@ If the library structure still isn't clear, download one of the pre-compiled dep
  - Required by BansheeOpenAudio
  - Outputs:
   - Windows (Dynamic library):
-   - OpenAL32.lib (Compile using "release" configuration)
-   - OpenAL32.dll (All configurations)
+    - OpenAL32.lib (Compile using "release" configuration)
+    - OpenAL32.dll (All configurations)
    
 **libogg**
  - libogg v1.3.2
@@ -152,8 +152,8 @@ If the library structure still isn't clear, download one of the pre-compiled dep
  - Required by BansheeOpenAudio and BansheeFMOD
  - Outputs:
   - Windows (Static library):
-   - Debug/libogg.lib (Debug configuration)
-   - Release/libogg.lib (Release configuration)
+    - Debug/libogg.lib (Debug configuration)
+    - Release/libogg.lib (Release configuration)
    
 **libvorbis**
  - libvorbis commit:5bbe49dc947ea9f1532273644348c53054ca214a
@@ -163,10 +163,10 @@ If the library structure still isn't clear, download one of the pre-compiled dep
  - Required by BansheeOpenAudio and BansheeFMOD
  - Outputs:
   - Windows (Dynamic library):
-   - libvorbis.lib (Compile using "release" configuration)
-   - libvorbisfile.lib (Compile using "release" configuration)
-   - libvorbis.dll (All configurations)
-   - libvorbisfile.dll (All configurations)
+    - libvorbis.lib (Compile using "release" configuration)
+    - libvorbisfile.lib (Compile using "release" configuration)
+    - libvorbis.dll (All configurations)
+    - libvorbisfile.dll (All configurations)
    
 **libFLAC**
  - libflac commit:94a61241b02064c7d9fe508f72a742f2a90b8492
@@ -176,8 +176,8 @@ If the library structure still isn't clear, download one of the pre-compiled dep
  - Required by BansheeOpenAudio
  - Outputs:
   - Windows (Dynamic library):
-   - libFLAC.lib (Compile using "release" configuration)
-   - libFLAC_dynamic.dll (All configurations)
+    - libFLAC.lib (Compile using "release" configuration)
+    - libFLAC_dynamic.dll (All configurations)
    
 **bison**
  - Bison 2.7
@@ -185,7 +185,7 @@ If the library structure still isn't clear, download one of the pre-compiled dep
  - Required by BansheeSL
  - Outputs:
   - Windows (tool):
-   - bison/bison.exe (Including all other installation files)
+    - bison/bison.exe (Including all other installation files)
    
 **flex**
  - Flex 2.5.37
@@ -193,4 +193,4 @@ If the library structure still isn't clear, download one of the pre-compiled dep
  - Required by BansheeSL
   - Outputs:
    - Windows (tool):
-    - flex/flex.exe (Including all other installation files)
+     - flex/flex.exe (Including all other installation files)
