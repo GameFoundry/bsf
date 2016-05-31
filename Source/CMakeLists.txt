@@ -172,7 +172,7 @@ function(add_engine_dependencies target_name)
 		add_dependencies(${target_name} BansheeOpenAudio)
 	endif()
 	
-	add_dependencies(${target_name} BansheeMono BansheeOISInput BansheePhysX RenderBeast SBansheeEngine)
+	add_dependencies(${target_name} BansheeMono BansheeSL BansheeOISInput BansheePhysX RenderBeast SBansheeEngine)
 endfunction()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS TRUE)
