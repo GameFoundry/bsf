@@ -4,11 +4,11 @@
 
 namespace BansheeEngine
 {
-	void convertToMono8(const UINT8* input, UINT8* output, UINT32 numSamples, UINT32 numChannels)
+	void convertToMono8(const INT8* input, UINT8* output, UINT32 numSamples, UINT32 numChannels)
 	{
 		for (UINT32 i = 0; i < numSamples; i++)
 		{
-			UINT16 sum = 0;
+			INT16 sum = 0;
 			for (UINT32 j = 0; j < numChannels; j++)
 			{
 				sum += *input;
@@ -77,11 +77,11 @@ namespace BansheeEngine
 		}
 	}
 
-	void convert8To32Bits(const UINT8* input, INT32* output, UINT32 numSamples)
+	void convert8To32Bits(const INT8* input, INT32* output, UINT32 numSamples)
 	{
 		for (UINT32 i = 0; i < numSamples; i++)
 		{
-			INT8 val = (INT8)(input[i] - 128);
+			INT8 val = input[i];
 			output[i] = val << 24;
 		}
 	}
@@ -104,10 +104,7 @@ namespace BansheeEngine
 	void convert32To8Bits(const INT32* input, UINT8* output, UINT32 numSamples)
 	{
 		for (UINT32 i = 0; i < numSamples; i++)
-		{
-			INT8 val = (INT8)(input[i] >> 24);
-			output[i] = (UINT8)(val + 128);
-		}
+			output[i] = (INT8)(input[i] >> 24);
 	}
 
 	void convert32To16Bits(const INT32* input, INT16* output, UINT32 numSamples)
@@ -130,7 +127,7 @@ namespace BansheeEngine
 		switch (bitDepth)
 		{
 		case 8:
-			convertToMono8(input, output, numSamples, numChannels);
+			convertToMono8((INT8*)input, output, numSamples, numChannels);
 			break;
 		case 16:
 			convertToMono16((INT16*)input, (INT16*)output, numSamples, numChannels);
@@ -163,7 +160,7 @@ namespace BansheeEngine
 		switch (inBitDepth)
 		{
 		case 8:
-			convert8To32Bits(input, srcBuffer, numSamples);
+			convert8To32Bits((INT8*)input, srcBuffer, numSamples);
 			break;
 		case 16:
 			convert16To32Bits((INT16*)input, srcBuffer, numSamples);
@@ -211,8 +208,8 @@ namespace BansheeEngine
 		{
 			for (UINT32 i = 0; i < numSamples; i++)
 			{
-				UINT8 sample = *input;
-				output[i] = sample / 255.0f;
+				INT8 sample = *(INT8*)input;
+				output[i] = sample / 127.0f;
 
 				input++;
 			}

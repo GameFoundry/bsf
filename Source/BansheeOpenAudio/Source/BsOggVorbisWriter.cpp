@@ -94,8 +94,8 @@ namespace BansheeEngine
 				{
 					for (UINT32 j = 0; j < mNumChannels; j++)
 					{
-						UINT8 sample = *(UINT8*)samples;
-						float encodedSample = sample / 255.0f;
+						INT8 sample = *(INT8*)samples;
+						float encodedSample = sample / 127.0f;
 						buffer[j][i] = encodedSample;
 
 						samples++;

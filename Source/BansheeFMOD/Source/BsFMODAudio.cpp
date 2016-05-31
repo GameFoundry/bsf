@@ -104,7 +104,8 @@ namespace BansheeEngine
 
 		mIsPaused = paused;
 
-		// TODO - Iterate over all sound sources, pause them
+		for (auto& source : mSources)
+			source->setGlobalPause(paused);
 	}
 
 	void FMODAudio::_update()

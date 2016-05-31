@@ -384,6 +384,20 @@ namespace BansheeEngine
 					bs_stack_free(sampleBuffer16);
 				}
 			}
+			else if(info.bitDepth == 8) 
+			{
+				// OpenAL expects unsigned 8-bit data, but engine stores it as signed, so convert
+				UINT32 bufferSize = info.numSamples * (info.bitDepth / 8);
+				UINT8* sampleBuffer = (UINT8*)bs_stack_alloc(bufferSize);
+
+				for(UINT32 i = 0; i < info.numSamples; i++)
+					sampleBuffer[i] = ((INT8*)samples)[i] + 128;
+
+				ALenum format = _getOpenALBufferFormat(info.numChannels, 16);
+				alBufferData(bufferId, format, sampleBuffer, bufferSize, info.sampleRate);
+
+				bs_stack_free(sampleBuffer);
+			}
 			else
 			{
 				ALenum format = _getOpenALBufferFormat(info.numChannels, info.bitDepth);
@@ -405,6 +419,20 @@ namespace BansheeEngine
 				alBufferData(bufferId, format, sampleBuffer32, bufferSize, info.sampleRate);
 
 				bs_stack_free(sampleBuffer32);
+			}
+			else if (info.bitDepth == 8)
+			{
+				// OpenAL expects unsigned 8-bit data, but engine stores it as signed, so convert
+				UINT32 bufferSize = info.numSamples * (info.bitDepth / 8);
+				UINT8* sampleBuffer = (UINT8*)bs_stack_alloc(bufferSize);
+
+				for (UINT32 i = 0; i < info.numSamples; i++)
+					sampleBuffer[i] = ((INT8*)samples)[i] + 128;
+
+				ALenum format = _getOpenALBufferFormat(info.numChannels, 16);
+				alBufferData(bufferId, format, sampleBuffer, bufferSize, info.sampleRate);
+
+				bs_stack_free(sampleBuffer);
 			}
 			else
 			{

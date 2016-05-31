@@ -45,8 +45,7 @@ namespace BansheeEngine
 		 * Converts a set of audio samples of a certain bit depth to a set of floating point samples in range [-1, 1].
 		 *
 		 * @param[in]	input		A set of input samples. Total size of the buffer should be @p numSamples *
-		 *							@p inBitDepth / 8. 8-bit samples should be unsigned, while signed samples should be
-		 *							provided for higher bit depths.
+		 *							@p inBitDepth / 8. All input samples should be signed integers.
 		 * @param[in]	inBitDepth	Size of a single sample in the @p input array, in bits.
 		 * @param[out]	output		Pre-allocated buffer to store the output samples in. Total size of the buffer should be
 		 *							@p numSamples * sizeof(float).

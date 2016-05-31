@@ -48,7 +48,18 @@ namespace BansheeEngine
 
 	UINT32 OAWaveReader::read(UINT8* samples, UINT32 numSamples)
 	{
-		return (UINT32)mStream->read(samples, numSamples * mBytesPerSample);
+		UINT32 numRead = (UINT32)mStream->read(samples, numSamples * mBytesPerSample);
+
+		if(mBytesPerSample == 1) // 8-bit samples are stored as unsigned, but engine convention is to store all bit depths as signed
+		{
+			for(UINT32 i = 0; i < numRead; i++)
+			{
+				INT8 val = samples[i] - 128;
+				samples[i] = *((UINT8*)&val);
+			}
+		}
+
+		return numRead;
 	}
 
 	bool OAWaveReader::parseHeader(AudioDataInfo& info)

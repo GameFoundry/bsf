@@ -66,7 +66,7 @@ namespace BansheeEngine
 		AudioSource::setPitch(pitch);
 
 		if (mChannel != nullptr)
-			mChannel->setPitch(mVolume);
+			mChannel->setPitch(mPitch);
 	}
 
 	void FMODAudioSource::setIsLooping(bool loop)
@@ -177,10 +177,12 @@ namespace BansheeEngine
 		
 		if(doPause)
 		{
-			mGlobalUnpauseState = getState();
+			AudioSourceState currentState = getState();
 
 			if (getState() == AudioSourceState::Playing)
 				pause();
+
+			mGlobalUnpauseState = currentState;
 		}
 		else
 		{

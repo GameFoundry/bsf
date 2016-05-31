@@ -78,9 +78,36 @@ namespace BansheeEngine
 			else
 				flags |= FMOD_CREATESAMPLE;
 
+			if(mDesc.format == AudioFormat::PCM)
+			{
+				switch(mDesc.bitDepth)
+				{
+				case 8:
+					exInfo.format = FMOD_SOUND_FORMAT_PCM8;
+					break;
+				case 16:
+					exInfo.format = FMOD_SOUND_FORMAT_PCM16;
+					break;
+				case 24:
+					exInfo.format = FMOD_SOUND_FORMAT_PCM24;
+					break;
+				case 32:
+					exInfo.format = FMOD_SOUND_FORMAT_PCM32;
+					break;
+				default:
+					assert(false);
+					break;
+				}
+
+				exInfo.numchannels = mDesc.numChannels;
+				exInfo.defaultfrequency = mDesc.frequency;
+
+				flags |= FMOD_OPENRAW;
+			}
+
 			if(fmod->createSound((const char*)sampleBuffer, flags, &exInfo, &mSound) != FMOD_OK)
 			{
-				LOGERR("Failed playing sound.");
+				LOGERR("Failed creating sound.");
 			}
 			else
 			{
@@ -128,6 +155,33 @@ namespace BansheeEngine
 			flags |= FMOD_3D;
 		else
 			flags |= FMOD_2D;
+
+		if (mDesc.format == AudioFormat::PCM)
+		{
+			switch (mDesc.bitDepth)
+			{
+			case 8:
+				exInfo.format = FMOD_SOUND_FORMAT_PCM8;
+				break;
+			case 16:
+				exInfo.format = FMOD_SOUND_FORMAT_PCM16;
+				break;
+			case 24:
+				exInfo.format = FMOD_SOUND_FORMAT_PCM24;
+				break;
+			case 32:
+				exInfo.format = FMOD_SOUND_FORMAT_PCM32;
+				break;
+			default:
+				assert(false);
+				break;
+			}
+
+			exInfo.numchannels = mDesc.numChannels;
+			exInfo.defaultfrequency = mDesc.frequency;
+
+			flags |= FMOD_OPENRAW;
+		}
 
 		FMOD::Sound* sound = nullptr;
 		FMOD::System* fmod = gFMODAudio()._getFMOD();

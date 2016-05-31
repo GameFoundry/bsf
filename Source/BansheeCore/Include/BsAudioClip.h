@@ -119,8 +119,7 @@ namespace BansheeEngine
 		 * @param[in]	numSamples	Total number of samples (including all channels).
 		 * @param[in]	desc		Descriptor containing meta-data for the provided samples.
 		 *
-		 * @note	If the provided samples are in PCM format, they should be unsigned for 8-bit data, and signed for
-		 *			higher bit depths.
+		 * @note	If the provided samples are in PCM format, they should be signed integers of provided bit depth.
 		 */
 		static HAudioClip create(const SPtr<DataStream>& samples, UINT32 streamSize, UINT32 numSamples,
 			const AUDIO_CLIP_DESC& desc); // Note that ownership of stream is taken by the AudioClip
