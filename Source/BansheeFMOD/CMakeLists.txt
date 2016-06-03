@@ -2,7 +2,9 @@
 include(CMakeSources.cmake)
 
 # Packages
-find_package(FMOD)
+if(AUDIO_MODULE MATCHES "FMOD")
+	find_package(FMOD)
+endif()
 
 # Includes
 set(BansheeFMOD_INC 
