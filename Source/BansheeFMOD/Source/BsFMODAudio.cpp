@@ -112,7 +112,7 @@ namespace BansheeEngine
 	{
 		mFMOD->update();
 
-		// TODO - Update streaming?
+		Audio::_update();
 	}
 
 	void FMODAudio::setActiveDevice(const AudioDevice& device)

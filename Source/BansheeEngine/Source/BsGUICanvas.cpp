@@ -67,7 +67,7 @@ namespace BansheeEngine
 		element.color = color;
 
 		element.vertexStart = (UINT32)mVertexData.size();
-		element.numVertices = vertices.size();
+		element.numVertices = (UINT32)vertices.size();
 
 		mVertexData.insert(mVertexData.end(), vertices.begin(), vertices.end());
 		_markContentAsDirty();

@@ -112,6 +112,8 @@ namespace BansheeEngine
 
 		mStreamingTask = Task::create("AudioStream", worker, TaskPriority::VeryHigh);
 		TaskScheduler::instance().addTask(mStreamingTask);
+
+		Audio::_update();
 	}
 
 	void OAAudio::setActiveDevice(const AudioDevice& device)

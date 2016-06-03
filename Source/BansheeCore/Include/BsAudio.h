@@ -4,6 +4,7 @@
 
 #include "BsCorePrerequisites.h"
 #include "BsModule.h"
+#include "BsVector3.h"
 
 namespace BansheeEngine
 {
@@ -21,7 +22,17 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT Audio : public Module<Audio>
 	{
 	public:
-		virtual ~Audio() { }
+		virtual ~Audio() {}
+
+		/** 
+		 * Starts playback of the provided audio clip. This can be used for a quicker way of creating audio sources if you
+		 * don't need the full control provided by creating AudioSource manually.
+		 *
+		 * @param[in]	clip		Audio clip to play.
+		 * @param[in]	position	Position in world space to play the clip at. Only relevant if the clip is 3D.
+		 * @param[in]	volume		Volume to play the clip at.
+		 */
+		void play(const HAudioClip& clip, const Vector3& position = Vector3::ZERO, float volume = 1.0f);
 
 		/** Sets global audio volume. In range [0, 1]. */
 		virtual void setVolume(float volume) = 0;
@@ -52,7 +63,7 @@ namespace BansheeEngine
 		 */
 
 		/** Called once per frame. Queues streaming audio requests. */
-		virtual void _update() = 0;
+		virtual void _update();
 
 		/** @} */
 	protected:
@@ -77,6 +88,13 @@ namespace BansheeEngine
 
 		/** Creates a new AudioSource. */
 		virtual SPtr<AudioSource> createSource() = 0;
+
+		/** Stops playback of all sources started with Audio::play calls. */
+		void stopManualSources();
+
+	private:
+		Vector<SPtr<AudioSource>> mManualSources;
+		Vector<SPtr<AudioSource>> mTempSources;
 	};
 
 	/** Provides easier access to Audio. */
