@@ -66,9 +66,10 @@ All features listed here are the ones currently available (implemented). If you 
 	* Handles complex types (e.g. array, list, dictionary) and references
 	* Fast and small memory footprint
 * __Audio__
-  * 3D sounds
-  * Music
-  * Streaming
+  * 3D sounds (panning, attenuation, doppler effect) and 2D sounds (music, narration)
+  * On-the-fly streaming and decompression
+  * Multi-channel support up to 7.1 sound
+  * Multiple listener support for split-screen
   * Multiple backends
     * OpenAL
 	* FMOD

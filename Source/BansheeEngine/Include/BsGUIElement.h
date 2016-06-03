@@ -47,7 +47,7 @@ namespace BansheeEngine
 		virtual void setTint(const Color& color);
 
 		/** @copydoc GUIElementBase::resetDimensions */
-		virtual void resetDimensions() override;
+		void resetDimensions() override;
 
 		/**	Sets new style to be used by the element. */
 		void setStyle(const String& styleName);
@@ -181,10 +181,10 @@ namespace BansheeEngine
 		UINT8 _getElementDepth() const;
 
 		/** @copydoc GUIElementBase::_setLayoutData */
-		virtual void _setLayoutData(const GUILayoutData& data) override;
+		void _setLayoutData(const GUILayoutData& data) override;
 
 		/** @copydoc GUIElementBase::_changeParentWidget */
-		virtual void _changeParentWidget(GUIWidget* widget) override;
+		void _changeParentWidget(GUIWidget* widget) override;
 
 		/**
 		 * Returns depth for a specific render element. This contains a combination of widget depth (8 bit(, area depth

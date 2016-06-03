@@ -35,5 +35,14 @@ namespace BansheeEngine
 		RenType_LitTextured
 	};
 
+	/**	Type of scaling modes for GUI images. */
+	enum class TextureScaleMode
+	{
+		StretchToFit, /**< Image will stretch non-uniformly in all dimensions in order to cover the assigned area fully. */
+		ScaleToFit, /**< Image will scale uniformly until one dimension is aligned with the assigned area. Remaining dimension might have empty space. */
+		CropToFit, /**< Image will scale uniformly until both dimensions are larger or aligned with the assigned area. Remaining dimension might be cropped. */
+		RepeatToFit /**< Image will keep its original size, but will repeat in order to fill the assigned area. */
+	};
+
 	/** @} */
 }

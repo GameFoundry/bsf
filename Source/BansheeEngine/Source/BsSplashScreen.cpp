@@ -38,7 +38,7 @@ namespace BansheeEngine
 
 		WINDOW_DESC windowDesc;
 		windowDesc.border = WindowBorder::None;
-		windowDesc.width = 557;
+		windowDesc.width = 543;
 		windowDesc.height = 680;
 		windowDesc.left = -1;
 		windowDesc.top = -1;

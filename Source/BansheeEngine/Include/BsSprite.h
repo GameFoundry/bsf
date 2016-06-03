@@ -36,6 +36,10 @@ namespace BansheeEngine
 	/** Contains information for initializing a sprite material. */
 	struct SpriteMaterialInfo
 	{
+		SpriteMaterialInfo()
+			:type(SpriteMaterial::Image), groupId(0) 
+		{ }
+
 		/** Generates a hash value that describes the contents of this object. */
 		UINT64 generateHash() const;
 
@@ -126,7 +130,7 @@ namespace BansheeEngine
 		 * @param[in]	vertexStride		Number of bytes between of vertices in the provided vertex and uv data.
 		 * @param[in]	indexStride			Number of bytes between two indexes in the provided index data.
 		 * @param[in]	renderElementIdx	Zero-based index of the render element.
-		 * @param[in]	offset				Position offset to apply to all vertices.
+		 * @param[in]	offset				Position offset to apply to all vertices, after clipping.
 		 * @param[in]	clipRect			Rectangle to clip the vertices to. 
 		 * @param[in]	clip				Should the vertices be clipped to the provided @p clipRect.
 		 *

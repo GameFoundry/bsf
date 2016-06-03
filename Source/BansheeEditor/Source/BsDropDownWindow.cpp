@@ -47,7 +47,7 @@ namespace BansheeEngine
 		setSize(width, height);
 
 		GUIPanel* backgroundPanel = mRootPanel->addNewElement<GUIPanel>(500);
-		backgroundPanel->addElement(GUITexture::create(GUIImageScaleMode::RepeatToFit,
+		backgroundPanel->addElement(GUITexture::create(TextureScaleMode::RepeatToFit,
 			GUIOptions(GUIOption::flexibleWidth(), GUIOption::flexibleHeight()), "WindowBackground"));
 
 		GUIPanel* windowFramePanel = mRootPanel->addNewElement<GUIPanel>(499);

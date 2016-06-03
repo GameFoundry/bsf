@@ -2,7 +2,6 @@
 
 The focus right now is to implement the most critical missing features:
  - Animation (skeletal, blend shapes, generic script variables)
- - Audio (popular file format support, music, 3D audio)
 
 Planned for Q3 2016 release.
 

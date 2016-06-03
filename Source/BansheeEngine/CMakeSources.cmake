@@ -78,6 +78,7 @@ set(BS_BANSHEEENGINE_SRC_GUI
 	"Source/BsShortcutKey.cpp"
 	"Source/BsShortcutManager.cpp"
 	"Source/BsCGUIWidget.cpp"
+	"Source/BsGUICanvas.cpp"
 )
 
 set(BS_BANSHEEENGINE_INC_PLATFORM
@@ -259,6 +260,7 @@ set(BS_BANSHEEENGINE_INC_GUI
 	"Include/BsCGUIWidget.h"
 	"Include/BsShortcutManager.h"
 	"Include/BsShortcutKey.h"
+	"Include/BsGUICanvas.h"
 )
 
 set(BS_BANSHEEENGINE_SRC_NOFILTER
