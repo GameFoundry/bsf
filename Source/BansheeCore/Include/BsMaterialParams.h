@@ -113,7 +113,7 @@ namespace BansheeEngine
 			if (result != GetParamResult::Success)
 				return;
 
-			const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES[dataType];
+			const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES.lookup[dataType];
 			UINT32 paramTypeSize = typeInfo.numColumns * typeInfo.numRows * typeInfo.baseTypeSize;
 			output = *(T*)(mDataParamsBuffer[param->index + arrayIdx * paramTypeSize]);
 
@@ -140,7 +140,7 @@ namespace BansheeEngine
 			if (result != GetParamResult::Success)
 				return;
 
-			const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES[dataType];
+			const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES.lookup[dataType];
 			UINT32 paramTypeSize = typeInfo.numColumns * typeInfo.numRows * typeInfo.baseTypeSize;
 
 			memcpy(&mDataParamsBuffer[param->index + arrayIdx * paramTypeSize], input, sizeof(paramTypeSize));

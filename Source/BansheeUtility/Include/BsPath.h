@@ -172,6 +172,17 @@ namespace BansheeEngine
 		 */
 		String toString(PathType type = PathType::Default) const;
 
+		/**
+		 * Converts the path to either a string or a wstring, doing The Right Thing for the current platform.
+         *
+         * This method is equivalent to toWString() on Windows, and to toString() elsewhere.
+		 */
+#if BS_PLATFORM == BS_PLATFORM_WIN32
+		WString toPlatformString() const { return toWString(); }
+#else
+		String toPlatformString() const { return toString(); }
+#endif
+
 		/** Checks is the path a directory (contains no file-name). */
 		bool isDirectory() const { return mFilename.empty(); }
 
