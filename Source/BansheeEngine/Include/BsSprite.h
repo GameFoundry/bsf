@@ -141,9 +141,8 @@ namespace BansheeEngine
 			UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx, const Vector2I& offset, 
 			const Rect2I& clipRect, bool clip = true) const;
 
-	protected:
 		/**
-		 * Clips the provided vertices to the provided clip rectangle.
+		 * Clips the provided vertices to the provided clip rectangle. The vertices must for axis aligned quads.
 		 *
 		 * @param[in, out]	vertices	Pointer to the start of the buffer containing vertex positions.
 		 * @param[in, out]	uv			Pointer to the start of the buffer containing UV coordinates.
@@ -153,8 +152,21 @@ namespace BansheeEngine
 		 *								buffer).
 		 * @param[in]		clipRect	Rectangle to clip the geometry to.
 		 */
-		static void clipToRect(UINT8* vertices, UINT8* uv, UINT32 numQuads, UINT32 vertStride, const Rect2I& clipRect);
+		static void clipQuadsToRect(UINT8* vertices, UINT8* uv, UINT32 numQuads, UINT32 vertStride, const Rect2I& clipRect);
 
+		/**
+		 * Clips the provided triangles vertices to the provided clip rectangle.
+		 *
+		 * @param[in, out]	vertices	Pointer to the start of the buffer containing vertex positions.
+		 * @param[in, out]	uv			Pointer to the start of the buffer containing UV coordinates.
+		 * @param[in]		numTris		Number of triangles in the provided buffer pointers.
+		 * @param[in]		vertStride	Number of bytes to skip when going to the next vertex. This assumes both position
+		 *								and uv coordinates have the same stride (as they are likely pointing to the same 
+		 *								buffer).
+		 * @param[in]		clipRect	Rectangle to clip the geometry to.
+		 */
+		static void clipTrianglesToRect(UINT8* vertices, UINT8* uv, UINT32 numTris, UINT32 vertStride, const Rect2I& clipRect);
+	protected:
 		/**	Returns the offset needed to move the sprite in order for it to respect the provided anchor. */
 		static Vector2I getAnchorOffset(SpriteAnchor anchor, UINT32 width, UINT32 height);
 

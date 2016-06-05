@@ -2,13 +2,7 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
-#include <string>
-
-#include <type_traits>
-
 #include "BsPrerequisitesUtil.h"
-#include "BsIReflectable.h"
-#include "BsException.h"
 #include "BsAny.h"
 
 namespace BansheeEngine
