@@ -29,9 +29,12 @@ namespace BansheeEngine
 		return mTextSprite->getMaterialInfo(renderElementIdx);
 	}
 
-	UINT32 GUILabel::_getNumQuads(UINT32 renderElementIdx) const
+	void GUILabel::_getMeshSize(UINT32 renderElementIdx, UINT32& numVertices, UINT32& numIndices) const
 	{
-		return mTextSprite->getNumQuads(renderElementIdx);
+		UINT32 numQuads = mTextSprite->getNumQuads(renderElementIdx);
+
+		numVertices = numQuads * 4;
+		numIndices = numQuads * 6;
 	}
 
 	void GUILabel::updateRenderElementsInternal()
@@ -56,12 +59,12 @@ namespace BansheeEngine
 		return GUIHelper::calcOptimalContentsSize(mContent, *_getStyle(), _getDimensions());
 	}
 
-	void GUILabel::_fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
-		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
+	void GUILabel::_fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 vertexOffset, UINT32 indexOffset,
+		UINT32 maxNumVerts, UINT32 maxNumIndices, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
 		Vector2I offset(mLayoutData.area.x, mLayoutData.area.y);
 
-		mTextSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, 
+		mTextSprite->fillBuffer(vertices, uv, indices, vertexOffset, indexOffset, maxNumVerts, maxNumIndices, vertexStride,
 			indexStride, renderElementIdx, offset, mLayoutData.getLocalClipRect());
 	}
 

@@ -124,8 +124,11 @@ namespace BansheeEngine
 		 * @param[out]	vertices			Previously allocated buffer where to store the vertices.
 		 * @param[out]	uv					Previously allocated buffer where to store the uv coordinates.
 		 * @param[out]	indices				Previously allocated buffer where to store the indices.
-		 * @param[in]	startingQuad		At which quad should the method start filling the buffer.
-		 * @param[in]	maxNumQuads			Total number of quads the buffers were allocated for. Used only for memory 
+		 * @param[in]	vertexOffset		At which vertex should the method start filling the buffer.
+		 * @param[in]	indexOffset			At which index should the method start filling the buffer.
+		 * @param[in]	maxNumVerts			Total number of vertices the buffers were allocated for. Used only for memory 
+		 *									safety.
+		 * @param[in]	maxNumIndices		Total number of indices the buffers were allocated for. Used only for memory
 		 *									safety.
 		 * @param[in]	vertexStride		Number of bytes between of vertices in the provided vertex and uv data.
 		 * @param[in]	indexStride			Number of bytes between two indexes in the provided index data.
@@ -137,9 +140,9 @@ namespace BansheeEngine
 		 * @see		getNumRenderElements()
 		 * @see		getNumQuads()
 		 */
-		UINT32 fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
-			UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx, const Vector2I& offset, 
-			const Rect2I& clipRect, bool clip = true) const;
+		UINT32 fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 vertexOffset, UINT32 indexOffset,
+			UINT32 maxNumVerts, UINT32 maxNumIndices, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx, 
+			const Vector2I& offset, const Rect2I& clipRect, bool clip = true) const;
 
 		/**
 		 * Clips the provided 2D vertices to the provided clip rectangle. The vertices must form axis aligned quads.

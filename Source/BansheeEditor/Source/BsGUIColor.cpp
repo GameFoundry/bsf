@@ -72,7 +72,7 @@ namespace BansheeEngine
 			return mColorSprite->getMaterialInfo(renderElementIdx);
 	}
 
-	UINT32 GUIColor::_getNumQuads(UINT32 renderElementIdx) const
+	void GUIColor::_getMeshSize(UINT32 renderElementIdx, UINT32& numVertices, UINT32& numIndices) const
 	{
 		UINT32 alphaSpriteIdx = mColorSprite->getNumRenderElements();
 
@@ -82,7 +82,8 @@ namespace BansheeEngine
 		else
 			numQuads = mColorSprite->getNumQuads(renderElementIdx);
 
-		return numQuads;
+		numVertices = numQuads * 4;
+		numIndices = numQuads * 6;
 	}
 
 	void GUIColor::updateRenderElementsInternal()
@@ -112,18 +113,16 @@ namespace BansheeEngine
 		return GUIHelper::calcOptimalContentsSize(Vector2I(80, 10), *_getStyle(), _getDimensions()); // Arbitrary size
 	}
 
-	void GUIColor::_fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
-		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
+	void GUIColor::_fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 vertexOffset, UINT32 indexOffset,
+		UINT32 maxNumVerts, UINT32 maxNumIndices, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
 		UINT32 alphaSpriteIdx = mColorSprite->getNumRenderElements();
 
 		Vector2I offset(mLayoutData.area.x, mLayoutData.area.y);
 		if(renderElementIdx < alphaSpriteIdx)
 		{
-			mColorSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, 
+			mColorSprite->fillBuffer(vertices, uv, indices, vertexOffset, indexOffset, maxNumVerts, maxNumIndices,
 				vertexStride, indexStride, renderElementIdx, offset, mLayoutData.getLocalClipRect());
-
-			return;
 		}
 		else if(renderElementIdx >= alphaSpriteIdx)
 		{
@@ -134,7 +133,7 @@ namespace BansheeEngine
 			Rect2I alphaClipRect = mLayoutData.getLocalClipRect();
 			alphaClipRect.x -= xOffset;
 
-			mAlphaSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, 
+			mAlphaSprite->fillBuffer(vertices, uv, indices, vertexOffset, indexOffset, maxNumVerts, maxNumIndices,
 				vertexStride, indexStride, alphaSpriteIdx - renderElementIdx, alphaOffset, alphaClipRect);
 		}
 	}

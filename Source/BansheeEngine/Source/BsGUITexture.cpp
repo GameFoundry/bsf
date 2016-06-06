@@ -126,9 +126,11 @@ namespace BansheeEngine
 		return mImageSprite->getMaterialInfo(renderElementIdx);
 	}
 
-	UINT32 GUITexture::_getNumQuads(UINT32 renderElementIdx) const
+	void GUITexture::_getMeshSize(UINT32 renderElementIdx, UINT32& numVertices, UINT32& numIndices) const
 	{
-		return mImageSprite->getNumQuads(renderElementIdx);
+		UINT32 numQuads = mImageSprite->getNumQuads(renderElementIdx);
+		numVertices = numQuads * 4;
+		numIndices = numQuads * 6;
 	}
 
 	void GUITexture::updateRenderElementsInternal()
@@ -193,11 +195,11 @@ namespace BansheeEngine
 		return optimalSize;
 	}
 
-	void GUITexture::_fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
-		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
+	void GUITexture::_fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 vertexOffset, UINT32 indexOffset,
+		UINT32 maxNumVerts, UINT32 maxNumIndices, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
 		Vector2I offset(mLayoutData.area.x, mLayoutData.area.y);
-		mImageSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, 
+		mImageSprite->fillBuffer(vertices, uv, indices, vertexOffset, indexOffset, maxNumVerts, maxNumIndices,
 			vertexStride, indexStride, renderElementIdx, offset, mLayoutData.getLocalClipRect());
 	}
 }

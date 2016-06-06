@@ -199,25 +199,38 @@ namespace BansheeEngine
 		}
 	}
 
-	UINT32 GUICanvas::_getNumQuads(UINT32 renderElementIdx) const
+	void GUICanvas::_getMeshSize(UINT32 renderElementIdx, UINT32& numVertices, UINT32& numIndices) const
 	{
-		// TODO - This needs to be refactored to return triangle count instead
-
 		const CanvasElement& element = mElements[renderElementIdx];
 		switch (element.type)
 		{
 		case CanvasElementType::Line:
 			// TODO
-			return 0;
+			numVertices = 0;
+			numIndices = 0;
+			break;
 		case CanvasElementType::Image:
-			return element.imageSprite->getNumQuads(renderElementIdx);
+		{
+			UINT32 numQuads = element.imageSprite->getNumQuads(renderElementIdx);
+			numVertices = numQuads * 4;
+			numIndices = numQuads * 6;
+		}
 		case CanvasElementType::Text:
-			return element.textSprite->getNumQuads(renderElementIdx);
+		{
+			UINT32 numQuads = element.textSprite->getNumQuads(renderElementIdx);
+			numVertices = numQuads * 4;
+			numIndices = numQuads * 6;
+		}
 		case CanvasElementType::Triangle:
 			// TODO
-			return 0;
+			numVertices = 0;
+			numIndices = 0;
+			break;
 		default:
-			return 0;
+			// TODO
+			numVertices = 0;
+			numIndices = 0;
+			break;
 		}
 	}
 
@@ -295,8 +308,8 @@ namespace BansheeEngine
 		return Vector2I(10, 10);
 	}
 
-	void GUICanvas::_fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads,
-		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
+	void GUICanvas::_fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 vertexOffset, UINT32 indexOffset,
+		UINT32 maxNumVerts, UINT32 maxNumIndices, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
 		const CanvasElement& element = mElements[renderElementIdx];
 
@@ -316,7 +329,7 @@ namespace BansheeEngine
 			clipRect.x -= area.x;
 			clipRect.y -= area.y;
 
-			element.imageSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads,
+			element.imageSprite->fillBuffer(vertices, uv, indices, vertexOffset, indexOffset, maxNumVerts, maxNumIndices,
 				vertexStride, indexStride, renderElementIdx, offset, clipRect);
 		}
 			break;
@@ -327,7 +340,7 @@ namespace BansheeEngine
 			clipRect.x += position.x;
 			clipRect.y += position.y;
 
-			element.textSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads,
+			element.textSprite->fillBuffer(vertices, uv, indices, vertexOffset, indexOffset, maxNumVerts, maxNumIndices,
 				vertexStride, indexStride, renderElementIdx, offset, mLayoutData.getLocalClipRect());
 		}
 			break;

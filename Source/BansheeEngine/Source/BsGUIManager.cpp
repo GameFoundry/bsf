@@ -58,7 +58,8 @@ namespace BansheeEngine
 	struct GUIMaterialGroup
 	{
 		SpriteMaterialInfo matInfo;
-		UINT32 numQuads;
+		UINT32 numVertices;
+		UINT32 numIndices;
 		UINT32 depth;
 		UINT32 minDepth;
 		Rect2I bounds;
@@ -570,14 +571,19 @@ namespace BansheeEngine
 						foundGroup->bounds = tfrmedBounds;
 						foundGroup->elements.push_back(GUIGroupElement(guiElem, renderElemIdx));
 						foundGroup->matInfo = matInfo;
-						foundGroup->numQuads = guiElem->_getNumQuads(renderElemIdx);
+						guiElem->_getMeshSize(renderElemIdx, foundGroup->numVertices, foundGroup->numIndices);
 					}
 					else
 					{
 						foundGroup->bounds.encapsulate(tfrmedBounds);
 						foundGroup->elements.push_back(GUIGroupElement(guiElem, renderElemIdx));
 						foundGroup->minDepth = std::min(foundGroup->minDepth, elemDepth);
-						foundGroup->numQuads += guiElem->_getNumQuads(renderElemIdx);
+						
+						UINT32 numVertices;
+						UINT32 numIndices;
+						guiElem->_getMeshSize(renderElemIdx, numVertices, numIndices);
+						foundGroup->numVertices += numVertices;
+						foundGroup->numIndices += numIndices;
 					}
 				}
 
@@ -631,7 +637,7 @@ namespace BansheeEngine
 						}
 					}
 
-					SPtr<MeshData> meshData = bs_shared_ptr_new<MeshData>(group->numQuads * 4, group->numQuads * 6, mVertexDesc);
+					SPtr<MeshData> meshData = bs_shared_ptr_new<MeshData>(group->numVertices, group->numIndices, mVertexDesc);
 
 					UINT8* vertices = meshData->getElementData(VES_POSITION);
 					UINT8* uvs = meshData->getElementData(VES_TEXCOORD);
@@ -639,20 +645,25 @@ namespace BansheeEngine
 					UINT32 vertexStride = meshData->getVertexDesc()->getVertexStride();
 					UINT32 indexStride = meshData->getIndexElementSize();
 
-					UINT32 quadOffset = 0;
+					UINT32 indexOffset = 0;
+					UINT32 vertexOffset = 0;
 					for(auto& matElement : group->elements)
 					{
-						matElement.element->_fillBuffer(vertices, uvs, indices, quadOffset, group->numQuads, vertexStride, indexStride, matElement.renderElement);
+						matElement.element->_fillBuffer(vertices, uvs, indices, vertexOffset, indexOffset, group->numVertices,
+							group->numIndices, vertexStride, indexStride, matElement.renderElement);
 
-						UINT32 numQuads = matElement.element->_getNumQuads(matElement.renderElement);
-						UINT32 indexStart = quadOffset * 6;
-						UINT32 indexEnd = indexStart + numQuads * 6;
-						UINT32 vertOffset = quadOffset * 4;
+						UINT32 numVertices;
+						UINT32 numIndices;
+						matElement.element->_getMeshSize(matElement.renderElement, numVertices, numIndices);
+
+						UINT32 indexStart = indexOffset;
+						UINT32 indexEnd = indexStart + numIndices;
 
 						for(UINT32 i = indexStart; i < indexEnd; i++)
-							indices[i] += vertOffset;
+							indices[i] += vertexOffset;
 
-						quadOffset += numQuads;
+						indexOffset += numIndices;
+						vertexOffset += numVertices;
 					}
 
 					if(groupIdx < (UINT32)renderData.cachedMeshes.size())

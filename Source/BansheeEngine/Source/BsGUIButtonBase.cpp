@@ -82,7 +82,7 @@ namespace BansheeEngine
 			return mImageSprite->getMaterialInfo(renderElementIdx);
 	}
 
-	UINT32 GUIButtonBase::_getNumQuads(UINT32 renderElementIdx) const
+	void GUIButtonBase::_getMeshSize(UINT32 renderElementIdx, UINT32& numVertices, UINT32& numIndices) const
 	{
 		UINT32 textSpriteIdx = mImageSprite->getNumRenderElements();
 		UINT32 contentImgSpriteIdx = textSpriteIdx + mTextSprite->getNumRenderElements();
@@ -95,7 +95,8 @@ namespace BansheeEngine
 		else
 			numQuads = mImageSprite->getNumQuads(renderElementIdx);
 
-		return numQuads;
+		numVertices = numQuads * 4;
+		numIndices = numQuads * 6;
 	}
 
 	void GUIButtonBase::updateRenderElementsInternal()
@@ -193,8 +194,8 @@ namespace BansheeEngine
 		return 2;
 	}
 
-	void GUIButtonBase::_fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
-		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
+	void GUIButtonBase::_fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 vertexOffset, UINT32 indexOffset,
+		UINT32 maxNumVerts, UINT32 maxNumIndices, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
 		UINT32 textSpriteIdx = mImageSprite->getNumRenderElements();
 		UINT32 contentImgSpriteIdx = textSpriteIdx + mTextSprite->getNumRenderElements();
@@ -203,7 +204,7 @@ namespace BansheeEngine
 		{
 			Vector2I offset(mLayoutData.area.x, mLayoutData.area.y);
 
-			mImageSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, 
+			mImageSprite->fillBuffer(vertices, uv, indices, vertexOffset, indexOffset, maxNumVerts, maxNumIndices,
 				vertexStride, indexStride, renderElementIdx, offset, mLayoutData.getLocalClipRect());
 
 			return;
@@ -270,12 +271,12 @@ namespace BansheeEngine
 
 		if(renderElementIdx >= contentImgSpriteIdx)
 		{
-			mContentImageSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, 
+			mContentImageSprite->fillBuffer(vertices, uv, indices, vertexOffset, indexOffset, maxNumVerts, maxNumIndices,
 				vertexStride, indexStride, contentImgSpriteIdx - renderElementIdx, imageOffset, imageClipRect);
 		}
 		else
 		{
-			mTextSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, 
+			mTextSprite->fillBuffer(vertices, uv, indices, vertexOffset, indexOffset, maxNumVerts, maxNumIndices,
 				vertexStride, indexStride, textSpriteIdx - renderElementIdx, textOffset, textClipRect);
 		}
 	}

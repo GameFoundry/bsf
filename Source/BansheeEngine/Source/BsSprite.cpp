@@ -42,22 +42,23 @@ namespace BansheeEngine
 		return mCachedRenderElements.at(renderElementIdx).numQuads;
 	}
 
-	UINT32 Sprite::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
-		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx, const Vector2I& offset, const Rect2I& clipRect, bool clip) const
+	UINT32 Sprite::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 vertexOffset, UINT32 indexOffset,
+		UINT32 maxNumVerts, UINT32 maxNumIndices, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx, 
+		const Vector2I& offset, const Rect2I& clipRect, bool clip) const
 	{
 		const auto& renderElem = mCachedRenderElements.at(renderElementIdx);
 
-		UINT32 startVert = startingQuad * 4;
-		UINT32 startIndex = startingQuad * 6;
+		UINT32 startVert = vertexOffset;
+		UINT32 startIndex = indexOffset;
 
-		UINT32 maxVertIdx = maxNumQuads * 4;
-		UINT32 maxIndexIdx = maxNumQuads * 6;
+		UINT32 maxVertIdx = maxNumVerts;
+		UINT32 maxIndexIdx = maxNumIndices;
 
-		UINT32 mNumVertices = renderElem.numQuads * 4;
-		UINT32 mNumIndices = renderElem.numQuads * 6;
+		UINT32 numVertices = renderElem.numQuads * 4;
+		UINT32 numIndices = renderElem.numQuads * 6;
 
-		assert((startVert + mNumVertices) <= maxVertIdx);
-		assert((startIndex + mNumIndices) <= maxIndexIdx);
+		assert((startVert + numVertices) <= maxVertIdx);
+		assert((startIndex + numIndices) <= maxIndexIdx);
 
 		UINT8* vertDst = vertices + startVert * vertexStride;
 		UINT8* uvDst = uv + startVert * vertexStride;
@@ -165,7 +166,7 @@ namespace BansheeEngine
 		}
 
 		if(indices != nullptr)
-			memcpy(&indices[startIndex], renderElem.indexes, mNumIndices * sizeof(UINT32));
+			memcpy(&indices[startIndex], renderElem.indexes, numIndices * sizeof(UINT32));
 
 		return renderElem.numQuads;
 	}
