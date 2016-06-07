@@ -26,7 +26,7 @@ namespace BansheeEngine
 	{
 		FLACDecoderData* data = (FLACDecoderData*)(clientData);
 
-		data->stream->seek(data->streamOffset + absoluteByteOffset);
+		data->stream->seek(data->streamOffset + (UINT32)absoluteByteOffset);
 		INT64 position = (INT64)(data->stream->tell() - data->streamOffset);
 		if (position >= 0)
 			return FLAC__STREAM_DECODER_SEEK_STATUS_OK;

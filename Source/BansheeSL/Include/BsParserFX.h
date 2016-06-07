@@ -41,7 +41,7 @@ extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
 /* Line 2579 of glr.c  */
-#line 9 "../../../Source/BansheeSL/BsParserFX.y"
+#line 9 "C:/Projects/BansheeEngineDev/BansheeEngine/Source/BansheeSL/BsParserFX.y"
 
 #include "BsMMAlloc.h"
 #include "BsASTFX.h"
@@ -230,7 +230,7 @@ typedef struct YYLTYPE {
 typedef union YYSTYPE
 {
 /* Line 2579 of glr.c  */
-#line 73 "../../../Source/BansheeSL/BsParserFX.y"
+#line 73 "C:/Projects/BansheeEngineDev/BansheeEngine/Source/BansheeSL/BsParserFX.y"
 
 	int intValue;
 	float floatValue;

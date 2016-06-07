@@ -28,7 +28,7 @@ namespace BansheeEngine
 			break;
 		}
 
-		decoderData->stream->seek(offset);
+		decoderData->stream->seek((UINT32)offset);
 		return (int)(decoderData->stream->tell() - decoderData->offset);
 	}
 
