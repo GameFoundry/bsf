@@ -398,9 +398,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			// TODO - This doesn't actually disable all textures set on this image unit, only the 2D ones
-			//      - If a non-2D sampler is used, the texture will still be displayed
-
+			// Note: This should probably clear all targets instead of just 2D
 			glBindTexture(GL_TEXTURE_2D, 0); 
 		}
 
@@ -466,14 +464,36 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		if (buffer != nullptr)
+		SPtr<GLGpuBufferCore> glBuffer = std::static_pointer_cast<GLGpuBufferCore>(buffer);
+		if (loadStore)
 		{
-			SPtr<GLGpuBufferCore> glBuffer = std::static_pointer_cast<GLGpuBufferCore>(buffer);
-			glBindImageTexture(unit, glBuffer->getGLTextureId(), 0, false,
-				0, glBuffer->getGLFormat(), GL_READ_WRITE);
+			unit = getGLTextureUnit(gptype, unit);
+			if (!activateGLTextureUnit(unit))
+				return;
+
+			if (glBuffer != nullptr)
+			{
+				mTextureTypes[unit] = GL_TEXTURE_BUFFER;
+				glBindTexture(mTextureTypes[unit], glBuffer->getGLTextureId());
+			}
+			else
+			{
+				// Note: This should probably clear all targets instead of just 2D
+				glBindTexture(GL_TEXTURE_BUFFER, 0);
+			}
+
+			activateGLTextureUnit(0);
 		}
 		else
-			glBindImageTexture(unit, 0, 0, false, 0, 0, GL_READ_WRITE);
+		{
+			if (glBuffer != nullptr)
+			{
+				glBindImageTexture(unit, glBuffer->getGLTextureId(), 0, false,
+					0, glBuffer->getGLFormat(), GL_READ_WRITE);
+			}
+			else
+				glBindImageTexture(unit, 0, 0, false, 0, 0, GL_READ_WRITE);
+		}
 
 		BS_INC_RENDER_STAT(NumTextureBinds);
 	}
@@ -924,11 +944,11 @@ namespace BansheeEngine
 		if (!activateGLTextureUnit(stage))
 			return;
 
-		glTexParameteri( mTextureTypes[stage], GL_TEXTURE_WRAP_S, 
+		glTexParameteri(mTextureTypes[stage], GL_TEXTURE_WRAP_S, 
 			getTextureAddressingMode(uvw.u));
-		glTexParameteri( mTextureTypes[stage], GL_TEXTURE_WRAP_T, 
+		glTexParameteri(mTextureTypes[stage], GL_TEXTURE_WRAP_T, 
 			getTextureAddressingMode(uvw.v));
-		glTexParameteri( mTextureTypes[stage], GL_TEXTURE_WRAP_R, 
+		glTexParameteri(mTextureTypes[stage], GL_TEXTURE_WRAP_R, 
 			getTextureAddressingMode(uvw.w));
 		activateGLTextureUnit(0);
 	}
