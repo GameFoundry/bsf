@@ -14,7 +14,7 @@ namespace BansheeEngine
 		// Add the extension (.dll, .so, ...) if necessary.
 		String filename = name;
 		const UINT32 length = (UINT32)filename.length();
-		const String extension = String(".") + DynLib::extension;
+		const String extension = String(".") + DynLib::EXTENSION;
 		const UINT32 extLength = (UINT32)extension.length();
 		if (length <= extLength || filename.substr(length - extLength) != extension)
 			filename += extension;

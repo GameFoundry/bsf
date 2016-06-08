@@ -310,9 +310,6 @@ namespace BansheeEngine
 
 		ResourceManifestPath = BuiltinDataFolder + "ResourceManifest.asset";
 
-		Path absoluteDataPath = FileSystem::getWorkingDirectoryPath();
-		absoluteDataPath.append(BuiltinDataFolder);
-
 		// Update from raw assets if needed
 #if BS_DEBUG_MODE
 		if (BuiltinResourcesHelper::checkForModifications(BuiltinRawDataFolder, BuiltinDataFolder + L"Timestamp.asset"))
@@ -323,10 +320,7 @@ namespace BansheeEngine
 			preprocess();
 			BuiltinResourcesHelper::writeTimestamp(BuiltinDataFolder + L"Timestamp.asset");
 
-			Path absoluteDataPath = FileSystem::getWorkingDirectoryPath();
-			absoluteDataPath.append(BuiltinDataFolder);
-
-			ResourceManifest::save(mResourceManifest, ResourceManifestPath, absoluteDataPath);
+			ResourceManifest::save(mResourceManifest, ResourceManifestPath, BuiltinDataFolder);
 		}
 #endif
 
@@ -334,7 +328,7 @@ namespace BansheeEngine
 		if (mResourceManifest == nullptr)
 		{
 			if (FileSystem::exists(ResourceManifestPath))
-				mResourceManifest = ResourceManifest::load(ResourceManifestPath, absoluteDataPath);
+				mResourceManifest = ResourceManifest::load(ResourceManifestPath, BuiltinDataFolder);
 
 			if (mResourceManifest == nullptr)
 				mResourceManifest = ResourceManifest::create("BuiltinResources");
@@ -372,6 +366,8 @@ namespace BansheeEngine
 
 	void BuiltinEditorResources::preprocess()
 	{
+		Resources::instance().unloadAllUnused();
+
 		BuiltinResourcesHelper::importAssets(EditorRawShaderIncludeFolder, EditorShaderIncludeFolder, mResourceManifest); // Hidden dependency: Includes must be imported before shaders
 		BuiltinResourcesHelper::importAssets(EditorRawShaderFolder, EditorShaderFolder, mResourceManifest);
 		BuiltinResourcesHelper::importAssets(EditorRawSkinFolder, EditorSkinFolder, mResourceManifest);
@@ -392,7 +388,7 @@ namespace BansheeEngine
 		// Generate & save GUI skin
 		{
 			SPtr<GUISkin> skin = generateGUISkin();
-			Path outputPath = FileSystem::getWorkingDirectoryPath() + BuiltinDataFolder + (GUISkinFile + L".asset");
+			Path outputPath = BuiltinDataFolder + (GUISkinFile + L".asset");
 
 			HResource skinResource;
 			if (FileSystem::exists(outputPath))
@@ -456,15 +452,15 @@ namespace BansheeEngine
 			HTexture tex32 = Texture::create(scaled32);
 			HTexture tex16 = Texture::create(scaled16);
 
-			Path outputPath48 = FileSystem::getWorkingDirectoryPath() + inputFolder + (iconName + L"48.asset");
+			Path outputPath48 = inputFolder + (iconName + L"48.asset");
 			Resources::instance().save(tex48, outputPath48, true);
 			manifest->registerResource(tex48.getUUID(), outputPath48);
 
-			Path outputPath32 = FileSystem::getWorkingDirectoryPath() + inputFolder + (iconName + L"32.asset");
+			Path outputPath32 = inputFolder + (iconName + L"32.asset");
 			Resources::instance().save(tex32, outputPath32, true);
 			manifest->registerResource(tex32.getUUID(), outputPath32);
 
-			Path outputPath16 = FileSystem::getWorkingDirectoryPath() + inputFolder + (iconName + L"16.asset");
+			Path outputPath16 = inputFolder + (iconName + L"16.asset");
 			Resources::instance().save(tex16, outputPath16, true);
 			manifest->registerResource(tex16.getUUID(), outputPath16);
 
@@ -476,14 +472,12 @@ namespace BansheeEngine
 	{
 		SPtr<GUISkin> skin = GUISkin::_createPtr();
 
-		Path defaultFontPath = FileSystem::getWorkingDirectoryPath();
-		defaultFontPath.append(BuiltinDataFolder);
+		Path defaultFontPath = BuiltinDataFolder;
 		defaultFontPath.append(DefaultFontFilename + L".asset");
 
 		HFont defaultFont = gResources().load<Font>(defaultFontPath);
 
-		Path defaultAAFontPath = FileSystem::getWorkingDirectoryPath();
-		defaultAAFontPath.append(BuiltinDataFolder);
+		Path defaultAAFontPath = BuiltinDataFolder;
 		defaultAAFontPath.append(DefaultAAFontFilename + L".asset");
 
 		HFont defaultAAFont = gResources().load<Font>(defaultAAFontPath);
@@ -1958,8 +1952,7 @@ namespace BansheeEngine
 
 	HSpriteTexture BuiltinEditorResources::getGUITexture(const WString& name) const
 	{
-		Path texturePath = FileSystem::getWorkingDirectoryPath();
-		texturePath.append(EditorSkinFolder);
+		Path texturePath = EditorSkinFolder;
 		texturePath.append(L"sprite_" + name + L".asset");
 
 		return gResources().load<SpriteTexture>(texturePath);
@@ -1967,8 +1960,7 @@ namespace BansheeEngine
 
 	HSpriteTexture BuiltinEditorResources::getGUIIcon(const WString& name) const
 	{
-		Path texturePath = FileSystem::getWorkingDirectoryPath();
-		texturePath.append(EditorIconFolder);
+		Path texturePath = EditorIconFolder;
 		texturePath.append(L"sprite_" + name + L".asset");
 
 		return gResources().load<SpriteTexture>(texturePath);
@@ -2351,8 +2343,7 @@ namespace BansheeEngine
 
 	WString BuiltinEditorResources::getEmptyShaderCode() const
 	{
-		Path filePath = FileSystem::getWorkingDirectoryPath();
-		filePath.append(BuiltinDataFolder);
+		Path filePath = BuiltinDataFolder;
 		filePath.append(EmptyShaderCodeFile);
 
 		SPtr<DataStream> fileStream = FileSystem::openFile(filePath);
@@ -2364,8 +2355,7 @@ namespace BansheeEngine
 
 	WString BuiltinEditorResources::getEmptyCSScriptCode() const
 	{
-		Path filePath = FileSystem::getWorkingDirectoryPath();
-		filePath.append(BuiltinDataFolder);
+		Path filePath = BuiltinDataFolder;
 		filePath.append(EmptyCSScriptCodeFile);
 
 		SPtr<DataStream> fileStream = FileSystem::openFile(filePath);

@@ -139,11 +139,8 @@ namespace BansheeEngine
 
 	Path Application::getBuiltinAssemblyFolder() const
 	{
-		Path releaseAssemblyFolder = FileSystem::getWorkingDirectoryPath();
-		releaseAssemblyFolder.append(Paths::getReleaseAssemblyPath());
-
-		Path debugAssemblyFolder = FileSystem::getWorkingDirectoryPath();
-		debugAssemblyFolder.append(Paths::getDebugAssemblyPath());
+		Path releaseAssemblyFolder = Paths::getReleaseAssemblyPath();
+		Path debugAssemblyFolder = Paths::getDebugAssemblyPath();
 
 #if BS_DEBUG_MODE == 0
 		if (FileSystem::exists(releaseAssemblyFolder))

@@ -20,11 +20,11 @@ namespace BansheeEngine
 {
 
 #if BS_PLATFORM == BS_PLATFORM_LINUX
-	const char* DynLib::extension = "so";
+	const char* DynLib::EXTENSION = "so";
 #elif BS_PLATFORM == BS_PLATFORM_OSX
-	const char* DynLib::extension = "dylib";
+	const char* DynLib::EXTENSION = "dylib";
 #elif BS_PLATFORM == BS_PLATFORM_WIN32
-	const char* DynLib::extension = "dll";
+	const char* DynLib::EXTENSION = "dll";
 #else
 #  error Unhandled platform
 #endif

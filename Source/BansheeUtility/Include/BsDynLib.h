@@ -40,7 +40,7 @@ namespace BansheeEngine
     {
     public:
 		/** System-specific file extension for a dynamic library (e.g. "dll"). */
-		static const char* extension;
+		static const char* EXTENSION;
 
 		/** Constructs the dynamic library object and loads the library with the specified name. */
 		DynLib(const String& name);

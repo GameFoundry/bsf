@@ -147,10 +147,10 @@ namespace BansheeEngine
 		/**	Returns text contained in the default "empty" C# script. */
 		WString getEmptyCSScriptCode() const;
 
-		/**	Returns path to the builtin shader include folder, relative to the working directory. */
+		/**	Returns absolute path to the builtin shader include folder. */
 		static Path getShaderIncludeFolder();
 
-		/**	Returns path to the default widget layout file, relative to the working directory. */
+		/**	Returns absolute path to the default widget layout file. */
 		static Path getDefaultWidgetLayoutPath();
 
 		static const String ObjectFieldStyleName;

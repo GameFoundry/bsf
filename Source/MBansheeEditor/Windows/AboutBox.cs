@@ -98,12 +98,16 @@ namespace BansheeEditor
             GUILayoutY thirdPartyLayout = mainLayout.AddLayoutY();
 
             CreateThirdPartyGUI(thirdPartyLayout, "Autodesk FBX SDK",
-                "http://usa.autodesk.com/adsk/servlet/pc/item?siteID=123112&id=10775847", "FBX_SDK_License.rtf");
-            CreateThirdPartyGUI(thirdPartyLayout, "FreeImage", "http://freeimage.sourceforge.net/", "freeimage-license.txt");
-            CreateThirdPartyGUI(thirdPartyLayout, "FreeType", "http://www.freetype.org/", "FTL.TXT");
-            CreateThirdPartyGUI(thirdPartyLayout, "Mono", "http://www.mono-project.com/", "Mono.txt");
+                "http://usa.autodesk.com/adsk/servlet/pc/item?siteID=123112&id=10775847");
+            CreateThirdPartyGUI(thirdPartyLayout, "FreeImage", "http://freeimage.sourceforge.net/");
+            CreateThirdPartyGUI(thirdPartyLayout, "FreeType", "http://www.freetype.org/");
+            CreateThirdPartyGUI(thirdPartyLayout, "Mono", "http://www.mono-project.com/");
             CreateThirdPartyGUI(thirdPartyLayout, "NVIDIA Texture Tools",
-                "https://github.com/castano/nvidia-texture-tools", "NVIDIATextureTools.txt");
+                "https://github.com/castano/nvidia-texture-tools");
+            CreateThirdPartyGUI(thirdPartyLayout, "libFLAC", "https://xiph.org/flac/");
+            CreateThirdPartyGUI(thirdPartyLayout, "libOgg", "https://www.xiph.org/ogg/");
+            CreateThirdPartyGUI(thirdPartyLayout, "libVorbis", "http://www.vorbis.com/");
+            CreateThirdPartyGUI(thirdPartyLayout, "OpenAL Soft", "http://kcat.strangesoft.net/openal.html");
 
             mainLayout.AddSpace(5);
             mainLayout.AddElement(noticesFoldout);
@@ -138,25 +142,20 @@ namespace BansheeEditor
             linkedInBtn.OnClick += () => { System.Diagnostics.Process.Start("http://hr.linkedin.com/in/markopintera"); };
         }
 
-        private void CreateThirdPartyGUI(GUILayoutY layout, string name, string webURL, string licenseFile)
+        private void CreateThirdPartyGUI(GUILayoutY layout, string name, string webURL)
         {
             GUILabel label = new GUILabel(new LocEdString(name), GUIOption.FixedWidth(150));
             GUIButton linkBtn = new GUIButton(new LocEdString("Website"), GUIOption.FixedWidth(50));
             GUIButton licenseBtn = new GUIButton(new LocEdString("License"), GUIOption.FixedWidth(50));
-
-            string licensePath = "..\\..\\..\\License\\Third Party\\" + licenseFile;
 
             GUILayoutX horzLayout = layout.AddLayoutX();
             horzLayout.AddSpace(10);
             horzLayout.AddElement(label);
             horzLayout.AddSpace(10);
             horzLayout.AddElement(linkBtn);
-            horzLayout.AddSpace(5);
-            horzLayout.AddElement(licenseBtn);
             horzLayout.AddSpace(10);
 
             linkBtn.OnClick += () => { System.Diagnostics.Process.Start(webURL); };
-            licenseBtn.OnClick += () => { System.Diagnostics.Process.Start(licensePath); };
         }
 
         private void CreateCollaboratorGUI(GUILayoutY layout, string name, string area)

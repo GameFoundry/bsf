@@ -330,8 +330,7 @@ namespace BansheeEngine
 		if (!FileSystem::exists(internalResourcesDir))
 			FileSystem::createDir(internalResourcesDir);
 
-		Path defaultLayoutPath = FileSystem::getWorkingDirectoryPath();
-		defaultLayoutPath.append(BuiltinEditorResources::getDefaultWidgetLayoutPath());
+		Path defaultLayoutPath = BuiltinEditorResources::getDefaultWidgetLayoutPath();
 
 		if (FileSystem::exists(defaultLayoutPath))
 		{
@@ -342,12 +341,11 @@ namespace BansheeEngine
 
 	void EditorApplication::loadEditorSettings()
 	{
-		Path absoluteDataPath = FileSystem::getWorkingDirectoryPath();
-		absoluteDataPath.append(getEditorSettingsPath());
+		Path settingsPath = getEditorSettingsPath();
 
-		if (FileSystem::exists(absoluteDataPath))
+		if (FileSystem::exists(settingsPath))
 		{
-			FileDecoder fs(absoluteDataPath);
+			FileDecoder fs(settingsPath);
 			mEditorSettings = std::static_pointer_cast<EditorSettings>(fs.decode());
 		}
 		
@@ -360,10 +358,9 @@ namespace BansheeEngine
 		if (mEditorSettings == nullptr)
 			return;
 
-		Path absoluteDataPath = FileSystem::getWorkingDirectoryPath();
-		absoluteDataPath.append(getEditorSettingsPath());
+		Path settingsPath = getEditorSettingsPath();
 
-		FileEncoder fs(absoluteDataPath);
+		FileEncoder fs(settingsPath);
 		fs.encode(mEditorSettings.get());
 	}
 

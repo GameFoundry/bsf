@@ -109,10 +109,10 @@ namespace BansheeEngine
 		/**	Returns image data the Banshee Engine splash screen. */
 		static SPtr<PixelData> getSplashScreen();
 
-		/**	Returns path to the builtin shader include folder, relative to the working directory. */
+		/**	Returns absolute path to the builtin shader include folder. */
 		static Path getShaderIncludeFolder();
 
-		/**	Returns path to the builtin icons folder, relative to the working directory. */
+		/**	Returns absolute path to the builtin icons folder. */
 		static Path getIconFolder();
 
 		static const WString IconTextureName;

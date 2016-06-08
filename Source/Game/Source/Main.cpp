@@ -131,8 +131,7 @@ void runApplication()
 	SPtr<ResourceManifest> manifest;
 	if (FileSystem::exists(resourceManifestPath))
 	{
-		Path resourceRoot = FileSystem::getWorkingDirectoryPath();
-		resourceRoot.append(resourcesPath);
+		Path resourceRoot = resourcesPath;
 		resourceRoot.makeParent(); // Remove /Resources entry, as we expect all resources to be relative to that path
 
 		manifest = ResourceManifest::load(resourceManifestPath, resourceRoot);
