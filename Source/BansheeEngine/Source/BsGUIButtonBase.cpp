@@ -69,17 +69,26 @@ namespace BansheeEngine
 		return numElements;
 	}
 
-	const SpriteMaterialInfo& GUIButtonBase::_getMaterial(UINT32 renderElementIdx) const
+	const SpriteMaterialInfo& GUIButtonBase::_getMaterial(UINT32 renderElementIdx, SpriteMaterial** material) const
 	{
 		UINT32 textSpriteIdx = mImageSprite->getNumRenderElements();
 		UINT32 contentImgSpriteIdx = textSpriteIdx + mTextSprite->getNumRenderElements();
 
-		if(renderElementIdx >= contentImgSpriteIdx)
+		if (renderElementIdx >= contentImgSpriteIdx)
+		{
+			*material = mContentImageSprite->getMaterial(contentImgSpriteIdx - renderElementIdx);
 			return mContentImageSprite->getMaterialInfo(contentImgSpriteIdx - renderElementIdx);
-		else if(renderElementIdx >= textSpriteIdx)
+		}
+		else if (renderElementIdx >= textSpriteIdx)
+		{
+			*material = mTextSprite->getMaterial(textSpriteIdx - renderElementIdx);
 			return mTextSprite->getMaterialInfo(textSpriteIdx - renderElementIdx);
+		}
 		else
+		{
+			*material = mImageSprite->getMaterial(renderElementIdx);
 			return mImageSprite->getMaterialInfo(renderElementIdx);
+		}
 	}
 
 	void GUIButtonBase::_getMeshSize(UINT32 renderElementIdx, UINT32& numVertices, UINT32& numIndices) const

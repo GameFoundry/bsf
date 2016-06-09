@@ -186,6 +186,7 @@ namespace BansheeEngine
 	class TextSprite;
 	class ImageSprite;
 	class SpriteTexture;
+	class SpriteMaterial;
 	struct SpriteMaterialInfo;
 
 	// Components

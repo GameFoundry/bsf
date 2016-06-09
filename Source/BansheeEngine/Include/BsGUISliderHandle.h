@@ -106,7 +106,7 @@ namespace BansheeEngine
 		UINT32 _getNumRenderElements() const override;
 
 		/** @copydoc GUIElement::_getMaterial() */
-		const SpriteMaterialInfo& _getMaterial(UINT32 renderElementIdx) const override;
+		const SpriteMaterialInfo& _getMaterial(UINT32 renderElementIdx, SpriteMaterial** material) const override;
 
 		/** @copydoc GUIElement::_getMeshSize() */
 		void _getMeshSize(UINT32 renderElementIdx, UINT32& numVertices, UINT32& numIndices) const override;

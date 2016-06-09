@@ -105,7 +105,7 @@ namespace BansheeEngine
 		 *
 		 * @see		_getNumRenderElements()
 		 */
-		virtual const SpriteMaterialInfo& _getMaterial(UINT32 renderElementIdx) const = 0;
+		virtual const SpriteMaterialInfo& _getMaterial(UINT32 renderElementIdx, SpriteMaterial** material) const = 0;
 
 		/**
 		 * Returns the number of vertices and indices that the specified render element will use. You will need this value

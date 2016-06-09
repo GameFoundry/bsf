@@ -90,6 +90,9 @@ namespace BansheeEngine
 		 *									from each other.
 		 * @param[in]	uvs					A set of UV coordinates in Vector2 format. Each coordinate should be 
 		 *									@p vertexStride bytes from each other. Can be null if UV is not needed.
+		 * @param[in]	numTris				Number of triangles to clip (must be number of vertices/uvs / 3).
+		 * @param[in]	vertexStride		Distance in bytes between two separate vertex or UV values in the provided
+		 *									@p vertices and @p uvs buffers.
 		 * @param[in]	clipPlanes			A set of planes to clip the vertices against. Since the vertices are 
 		 *									two-dimensional the plane's Z coordinate should be zero.
 		 * @param[in]	writeCallback		Callback that will be triggered when clipped vertices and UV coordinates are
@@ -106,6 +109,9 @@ namespace BansheeEngine
 		 *									from each other.
 		 * @param[in]	uvs					A set of UV coordinates in Vector2 format. Each coordinate should be 
 		 *									@p vertexStride bytes from each other. Can be null if UV is not needed.
+		 * @param[in]	numTris				Number of triangles to clip (must be number of vertices/uvs / 3).
+		 * @param[in]	vertexStride		Distance in bytes between two separate vertex or UV values in the provided
+		 *									@p vertices and @p uvs buffers.
 		 * @param[in]	clipPlanes			A set of planes to clip the vertices against. 
 		 * @param[in]	writeCallback		Callback that will be triggered when clipped vertices and UV coordinates are
 		 *									generated and need to be stored. Vertices are always generate in tuples of

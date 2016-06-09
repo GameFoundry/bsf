@@ -2,6 +2,7 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsImageSprite.h"
 #include "BsSpriteTexture.h"
+#include "BsSpriteManager.h"
 #include "BsTexture.h"
 
 namespace BansheeEngine
@@ -60,7 +61,11 @@ namespace BansheeEngine
 			matInfo.groupId = groupId;
 			matInfo.texture = tex;
 			matInfo.tint = desc.color;
-			matInfo.type = desc.transparent ? SpriteMaterial::ImageAlpha : SpriteMaterial::Image;
+
+			if (desc.transparent)
+				renderElem.material = SpriteManager::instance().getImageTransparentMaterial();
+			else
+				renderElem.material = SpriteManager::instance().getImageOpaqueMaterial();
 
 			texPage++;
 		}

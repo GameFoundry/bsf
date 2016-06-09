@@ -6,6 +6,7 @@
 #include "BsGUIDimensions.h"
 #include "BsGUITexture.h"
 #include "BsShapeMeshes2D.h"
+#include "BsSpriteManager.h"
 #include "BsException.h"
 
 namespace BansheeEngine
@@ -56,7 +57,6 @@ namespace BansheeEngine
 		TriangleElementData& elemData = mTriangleElementData.back();
 		elemData.matInfo.groupId = 0;
 		elemData.matInfo.tint = color;
-		elemData.matInfo.type = SpriteMaterial::ImageAlpha; // TODO - Use line material here
 
 		mForceTriangleBuild = true;
 		_markContentAsDirty();
@@ -87,7 +87,6 @@ namespace BansheeEngine
 		TriangleElementData& elemData = mTriangleElementData.back();
 		elemData.matInfo.groupId = 0;
 		elemData.matInfo.tint = color;
-		elemData.matInfo.type = SpriteMaterial::ImageAlpha; // TODO - Use line material here
 
 		mForceTriangleBuild = true;
 		_markContentAsDirty();
@@ -138,7 +137,6 @@ namespace BansheeEngine
 		TriangleElementData& elemData = mTriangleElementData.back();
 		elemData.matInfo.groupId = 0;
 		elemData.matInfo.tint = color;
-		elemData.matInfo.type = SpriteMaterial::ImageAlpha;
 
 		mForceTriangleBuild = true;
 		_markContentAsDirty();
@@ -168,7 +166,6 @@ namespace BansheeEngine
 		TriangleElementData& elemData = mTriangleElementData.back();
 		elemData.matInfo.groupId = 0;
 		elemData.matInfo.tint = color;
-		elemData.matInfo.type = SpriteMaterial::ImageAlpha; // TODO - Use line material here
 
 		mForceTriangleBuild = true;
 		_markContentAsDirty();
@@ -214,7 +211,7 @@ namespace BansheeEngine
 		return mNumRenderElements;
 	}
 
-	const SpriteMaterialInfo& GUICanvas::_getMaterial(UINT32 renderElementIdx) const
+	const SpriteMaterialInfo& GUICanvas::_getMaterial(UINT32 renderElementIdx, SpriteMaterial** material) const
 	{
 		static const SpriteMaterialInfo defaultMatInfo;
 
@@ -222,14 +219,19 @@ namespace BansheeEngine
 		switch (element.type)
 		{
 		case CanvasElementType::Line:
+			*material = nullptr; // TODO - Assign line material and additionalData of .matInfo
 			return mTriangleElementData[element.dataId].matInfo;
 		case CanvasElementType::Image:
-			return element.imageSprite->getMaterialInfo(renderElementIdx);
+			*material = element.imageSprite->getMaterial(0);
+			return element.imageSprite->getMaterialInfo(0);
 		case CanvasElementType::Text:
-			return element.textSprite->getMaterialInfo(renderElementIdx);
+			*material = element.imageSprite->getMaterial(renderElementIdx - element.renderElemStart);
+			return element.textSprite->getMaterialInfo(renderElementIdx - element.renderElemStart);
 		case CanvasElementType::Triangle:
+			*material = SpriteManager::instance().getImageTransparentMaterial();
 			return mTriangleElementData[element.dataId].matInfo;
 		default:
+			*material = nullptr;
 			return defaultMatInfo;
 		}
 	}

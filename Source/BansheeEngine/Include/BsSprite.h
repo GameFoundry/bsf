@@ -3,6 +3,7 @@
 #pragma once
 
 #include "BsPrerequisites.h"
+#include "BsSpriteMaterial.h"
 #include "BsVector2I.h"
 #include "BsRect2I.h"
 #include "BsColor.h"
@@ -27,39 +28,11 @@ namespace BansheeEngine
 		SA_BottomRight
 	};
 
-	/** Types of materials available for rendering sprites. */
-	enum class SpriteMaterial
-	{
-		Text, Image, ImageAlpha
-	};
-
-	/** Contains information for initializing a sprite material. */
-	struct SpriteMaterialInfo
-	{
-		SpriteMaterialInfo()
-			:type(SpriteMaterial::Image), groupId(0) 
-		{ }
-
-		/** Generates a hash value that describes the contents of this object. */
-		UINT64 generateHash() const;
-
-		SpriteMaterial type;
-		UINT64 groupId;
-		HTexture texture;
-		Color tint;
-	};
-
-	/** Equals operator for SpriteMaterialInfo. */
-	bool operator==(const SpriteMaterialInfo& lhs, const SpriteMaterialInfo& rhs);
-
-	/** Not equals operator for SpriteMaterialInfo. */
-	bool operator!=(const SpriteMaterialInfo& lhs, const SpriteMaterialInfo& rhs);
-
 	/** Contains information about a single sprite render element, including its geometry and material. */
 	struct SpriteRenderElement
 	{
 		SpriteRenderElement()
-			:vertices(nullptr), uvs(nullptr), indexes(nullptr), numQuads(0)
+			:vertices(nullptr), uvs(nullptr), indexes(nullptr), numQuads(0), material(nullptr)
 		{ }
 
 		Vector2* vertices;
@@ -67,6 +40,7 @@ namespace BansheeEngine
 		UINT32* indexes;
 		UINT32 numQuads;
 		SpriteMaterialInfo matInfo;
+		SpriteMaterial* material;
 	};
 
 	/**	Generates geometry and contains information needed for rendering a two dimensional element. */
@@ -96,13 +70,18 @@ namespace BansheeEngine
 		UINT32 getNumRenderElements() const;
 
 		/**
-		 * Gets a material for the specified render element index.
-		 * 		
-		 * @return	Structure describing the material.
+		 * Gets material information required for rendering the element at the specified index.
 		 *
 		 * @see		getNumRenderElements()
 		 */
 		const SpriteMaterialInfo& getMaterialInfo(UINT32 renderElementIdx) const;
+
+		/**
+		 * Gets the material that will be used for rendering the element at the specified index.
+		 *
+		 * @see		getNumRenderElements()
+		 */
+		SpriteMaterial* getMaterial(UINT32 renderElementIdx) const;
 
 		/**
 		 * Returns the number of quads that the specified render element will use. You will need this value when creating
@@ -187,21 +166,3 @@ namespace BansheeEngine
 
 	/** @} */
 }
-
-/** @cond STDLIB */
-/** @addtogroup GUI
- *  @{
- */
-
-/**	Hash value generator for STL reference wrapper for SpriteMaterialInfo. */
-template<>
-struct std::hash<std::reference_wrapper<const BansheeEngine::SpriteMaterialInfo>>
-{
-	size_t operator()(const std::reference_wrapper<const BansheeEngine::SpriteMaterialInfo>& value) const
-	{
-		return (size_t)value.get().generateHash();
-	}
-};
-
-/** @} */
-/** @endcond */

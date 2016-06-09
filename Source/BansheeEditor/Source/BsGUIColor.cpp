@@ -62,14 +62,20 @@ namespace BansheeEngine
 		return numElements;
 	}
 
-	const SpriteMaterialInfo& GUIColor::_getMaterial(UINT32 renderElementIdx) const
+	const SpriteMaterialInfo& GUIColor::_getMaterial(UINT32 renderElementIdx, SpriteMaterial** material) const
 	{
 		UINT32 alphaSpriteIdx = mColorSprite->getNumRenderElements();
 
-		if(renderElementIdx >= alphaSpriteIdx)
+		if (renderElementIdx >= alphaSpriteIdx)
+		{
+			*material = mAlphaSprite->getMaterial(alphaSpriteIdx - renderElementIdx);
 			return mAlphaSprite->getMaterialInfo(alphaSpriteIdx - renderElementIdx);
+		}
 		else
+		{
+			*material = mColorSprite->getMaterial(renderElementIdx);
 			return mColorSprite->getMaterialInfo(renderElementIdx);
+		}
 	}
 
 	void GUIColor::_getMeshSize(UINT32 renderElementIdx, UINT32& numVertices, UINT32& numIndices) const

@@ -2,7 +2,6 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsTextSprite.h"
 #include "BsVector2.h"
-#include "BsTexture.h"
 #include "BsPlane.h"
 #include "BsMeshUtility.h"
 
@@ -35,6 +34,11 @@ namespace BansheeEngine
 	const SpriteMaterialInfo& Sprite::getMaterialInfo(UINT32 renderElementIdx) const
 	{
 		return mCachedRenderElements.at(renderElementIdx).matInfo;
+	}
+
+	SpriteMaterial* Sprite::getMaterial(UINT32 renderElementIdx) const
+	{
+		return mCachedRenderElements.at(renderElementIdx).material;
 	}
 
 	UINT32 Sprite::getNumQuads(UINT32 renderElementIdx) const
@@ -331,30 +335,5 @@ namespace BansheeEngine
 		};
 
 		MeshUtility::clip2D(vertices, uv, numTris, vertStride, clipPlanes, writeCallback);
-	}
-
-	UINT64 SpriteMaterialInfo::generateHash() const
-	{
-		UINT64 textureId = 0;
-		if (texture.isLoaded())
-			textureId = texture->getInternalID();
-
-		size_t hash = 0;
-		hash_combine(hash, groupId);
-		hash_combine(hash, type);
-		hash_combine(hash, textureId);
-		hash_combine(hash, tint);
-
-		return (UINT64)hash;
-	}
-
-	bool operator==(const SpriteMaterialInfo& lhs, const SpriteMaterialInfo& rhs)
-	{
-		return lhs.groupId == rhs.groupId && lhs.texture == rhs.texture && lhs.type == rhs.type && lhs.tint == rhs.tint;
-	}
-
-	bool operator!=(const SpriteMaterialInfo& lhs, const SpriteMaterialInfo& rhs)
-	{
-		return !(lhs == rhs);
 	}
 }

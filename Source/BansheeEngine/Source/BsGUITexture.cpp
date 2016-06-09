@@ -121,8 +121,9 @@ namespace BansheeEngine
 		return mImageSprite->getNumRenderElements();
 	}
 
-	const SpriteMaterialInfo& GUITexture::_getMaterial(UINT32 renderElementIdx) const
+	const SpriteMaterialInfo& GUITexture::_getMaterial(UINT32 renderElementIdx, SpriteMaterial** material) const
 	{
+		*material = mImageSprite->getMaterial(renderElementIdx);
 		return mImageSprite->getMaterialInfo(renderElementIdx);
 	}
 

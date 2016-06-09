@@ -99,6 +99,7 @@ namespace BansheeEngine
 		 * @param[in]	text		Text to draw.
 		 * @param[in]	position	Position of the text to draw. This represents the top-left corner of the text. It is
 		 *							relative to the canvas origin (top-left).
+		 * @param[in]	font		Font to draw the text with.
 		 * @param[in]	size		Size of the font.
 		 * @param[in]	color		Color of the text.
 		 */
@@ -185,7 +186,7 @@ namespace BansheeEngine
 		UINT32 _getNumRenderElements() const override;
 
 		/** @copydoc GUIElement::_getMaterial */
-		const SpriteMaterialInfo& _getMaterial(UINT32 renderElementIdx) const override;
+		const SpriteMaterialInfo& _getMaterial(UINT32 renderElementIdx, SpriteMaterial** material) const override;
 
 		/** @copydoc GUIElement::_getMeshSize() */
 		void _getMeshSize(UINT32 renderElementIdx, UINT32& numVertices, UINT32& numIndices) const override;

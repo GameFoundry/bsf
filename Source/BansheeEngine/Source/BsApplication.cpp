@@ -2,6 +2,7 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsApplication.h"
 #include "BsGUIManager.h"
+#include "BsSpriteManager.h"
 #include "BsBuiltinResources.h"
 #include "BsScriptManager.h"
 #include "BsProfilingManager.h"
@@ -39,6 +40,7 @@ namespace BansheeEngine
 
 		ShortcutManager::shutDown();
 		GUIManager::shutDown();
+		SpriteManager::shutDown();
 		BuiltinResources::shutDown();
 		RendererMaterialManager::shutDown();
 		VirtualInput::shutDown();
@@ -55,6 +57,7 @@ namespace BansheeEngine
 		BuiltinResources::startUp();
 		RendererMaterialManager::startUp();
 		RendererManager::instance().initialize();
+		SpriteManager::startUp();
 		GUIManager::startUp();
 		ShortcutManager::startUp();
 

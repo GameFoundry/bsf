@@ -57,6 +57,7 @@ namespace BansheeEngine
 
 	struct GUIMaterialGroup
 	{
+		SpriteMaterial* material;
 		SpriteMaterialInfo matInfo;
 		UINT32 numVertices;
 		UINT32 numIndices;
@@ -111,12 +112,7 @@ namespace BansheeEngine
 		GUIManagerCore* core = bs_new<GUIManagerCore>();
 		mCore.store(core, std::memory_order_release);
 
-		HMaterial textMaterial = BuiltinResources::instance().createSpriteTextMaterial();
-		HMaterial imageMaterial = BuiltinResources::instance().createSpriteNonAlphaImageMaterial();
-		HMaterial imageAlphaMaterial = BuiltinResources::instance().createSpriteImageMaterial();
-
-		gCoreAccessor().queueCommand(std::bind(&GUIManagerCore::initialize, core,
-			textMaterial->getCore(), imageMaterial->getCore(), imageAlphaMaterial->getCore()));
+		gCoreAccessor().queueCommand(std::bind(&GUIManagerCore::initialize, core));
 	}
 
 	GUIManager::~GUIManager()
@@ -392,10 +388,10 @@ namespace BansheeEngine
 				UINT32 meshIdx = 0;
 				for (auto& mesh : renderData.cachedMeshes)
 				{
-					SpriteMaterialInfo materialInfo = renderData.cachedMaterials[meshIdx];
+					const GUIMaterialData& guiMaterial = renderData.cachedMaterials[meshIdx];
 					GUIWidget* widget = renderData.cachedWidgetsPerMesh[meshIdx];
 
-					if (materialInfo.texture == nullptr || !materialInfo.texture.isLoaded())
+					if (guiMaterial.matInfo.texture == nullptr || !guiMaterial.matInfo.texture.isLoaded())
 					{
 						meshIdx++;
 						continue;
@@ -410,11 +406,12 @@ namespace BansheeEngine
 					cameraData.push_back(GUICoreRenderData());
 					GUICoreRenderData& newEntry = cameraData.back();
 
-					newEntry.materialType = materialInfo.type;
-					newEntry.texture = materialInfo.texture->getCore();
-					newEntry.tint = materialInfo.tint;
+					newEntry.material = guiMaterial.material;
+					newEntry.texture = guiMaterial.matInfo.texture->getCore();
+					newEntry.tint = guiMaterial.matInfo.tint;
 					newEntry.mesh = mesh->getCore();
 					newEntry.worldTransform = widget->getWorldTfrm();
+					newEntry.additionalData = guiMaterial.matInfo.additionalData;
 
 					meshIdx++;
 				}
@@ -486,7 +483,7 @@ namespace BansheeEngine
 
 				// Group the elements in such a way so that we end up with a smallest amount of
 				// meshes, without breaking back to front rendering order
-				FrameUnorderedMap<std::reference_wrapper<const SpriteMaterialInfo>, FrameVector<GUIMaterialGroup>> materialGroups;
+				FrameUnorderedMap<UINT64, FrameVector<GUIMaterialGroup>> materialGroups;
 				for (auto& elem : allElements)
 				{
 					GUIElement* guiElem = elem.element;
@@ -496,8 +493,12 @@ namespace BansheeEngine
 					Rect2I tfrmedBounds = guiElem->_getClippedBounds();
 					tfrmedBounds.transform(guiElem->_getParentWidget()->getWorldTfrm());
 
-					const SpriteMaterialInfo& matInfo = guiElem->_getMaterial(renderElemIdx);
-					FrameVector<GUIMaterialGroup>& groupsPerMaterial = materialGroups[std::cref(matInfo)];
+					SpriteMaterial* spriteMaterial = nullptr;
+					const SpriteMaterialInfo& matInfo = guiElem->_getMaterial(renderElemIdx, &spriteMaterial);
+					assert(spriteMaterial != nullptr);
+
+					UINT64 hash = spriteMaterial->getMergeHash(matInfo);
+					FrameVector<GUIMaterialGroup>& groupsPerMaterial = materialGroups[hash];
 					
 					// Try to find a group this material will fit in:
 					//  - Group that has a depth value same or one below elements depth will always be a match
@@ -571,6 +572,8 @@ namespace BansheeEngine
 						foundGroup->bounds = tfrmedBounds;
 						foundGroup->elements.push_back(GUIGroupElement(guiElem, renderElemIdx));
 						foundGroup->matInfo = matInfo;
+						foundGroup->material = spriteMaterial;
+
 						guiElem->_getMeshSize(renderElemIdx, foundGroup->numVertices, foundGroup->numIndices);
 					}
 					else
@@ -584,6 +587,8 @@ namespace BansheeEngine
 						guiElem->_getMeshSize(renderElemIdx, numVertices, numIndices);
 						foundGroup->numVertices += numVertices;
 						foundGroup->numIndices += numIndices;
+
+						spriteMaterial->merge(foundGroup->matInfo, matInfo);
 					}
 				}
 
@@ -624,7 +629,9 @@ namespace BansheeEngine
 				UINT32 groupIdx = 0;
 				for(auto& group : sortedGroups)
 				{
-					renderData.cachedMaterials[groupIdx] = group->matInfo;
+					GUIMaterialData& matData = renderData.cachedMaterials[groupIdx];
+					matData.matInfo = group->matInfo;
+					matData.material = group->material;
 
 					if(mSeparateMeshesByWidget)
 					{
@@ -1729,13 +1736,8 @@ namespace BansheeEngine
 			activeRenderer->unregisterRenderCallback(cameraData.first.get(), 30);
 	}
 
-	void GUIManagerCore::initialize(const SPtr<MaterialCore>& textMat, const SPtr<MaterialCore>& imageMat,
-		const SPtr<MaterialCore>& imageAlphaMat)
+	void GUIManagerCore::initialize()
 	{
-		mTextMaterialInfo = MaterialInfo(textMat);
-		mImageMaterialInfo = MaterialInfo(imageMat);
-		mImageAlphaMaterialInfo = MaterialInfo(imageAlphaMat);
-
 		SAMPLER_STATE_DESC ssDesc;
 		ssDesc.magFilter = FO_POINT;
 		ssDesc.minFilter = FO_POINT;
@@ -1806,34 +1808,15 @@ namespace BansheeEngine
 
 		float invViewportWidth = 1.0f / (camera->getViewport()->getWidth() * 0.5f);
 		float invViewportHeight = 1.0f / (camera->getViewport()->getHeight() * 0.5f);
+
+		Vector2 invViewportSize(invViewportWidth, invViewportHeight);
 		for (auto& entry : renderData)
 		{
-			MaterialInfo& matInfo = entry.materialType == SpriteMaterial::Text ? mTextMaterialInfo :
-				(entry.materialType == SpriteMaterial::Image ? mImageMaterialInfo : mImageAlphaMaterialInfo);
-
-			matInfo.textureParam.set(entry.texture);
-			matInfo.samplerParam.set(mSamplerState);
-			matInfo.tintParam.set(entry.tint);
-			matInfo.invViewportWidthParam.set(invViewportWidth);
-			matInfo.invViewportHeightParam.set(invViewportHeight);
-			matInfo.worldTransformParam.set(entry.worldTransform);
-
 			// TODO - I shouldn't be re-applying the entire material for each entry, instead just check which programs
 			// changed, and apply only those + the modified constant buffers and/or texture.
 
-			gRendererUtility().setPass(matInfo.material, 0);
-			gRendererUtility().draw(entry.mesh, entry.mesh->getProperties().getSubMesh(0));
+			entry.material->render(entry.mesh, entry.texture, mSamplerState, entry.tint, entry.worldTransform, 
+				invViewportSize, entry.additionalData);
 		}
-	}
-
-	GUIManagerCore::MaterialInfo::MaterialInfo(const SPtr<MaterialCore>& material)
-		:material(material)
-	{
-		textureParam = material->getParamTexture("mainTexture");
-		samplerParam = material->getParamSamplerState("mainTexSamp");
-		tintParam = material->getParamColor("tint");
-		invViewportWidthParam = material->getParamFloat("invViewportWidth");
-		invViewportHeightParam = material->getParamFloat("invViewportHeight");
-		worldTransformParam = material->getParamMat4("worldTransform");
 	}
 }

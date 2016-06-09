@@ -48,6 +48,13 @@ namespace BansheeEngine
 			Dragging
 		};
 
+		/** Material data required for rendering a single GUI mesh. */
+		struct GUIMaterialData
+		{
+			SpriteMaterial* material;
+			SpriteMaterialInfo matInfo;
+		};
+
 		/**	GUI render data for a single viewport. */
 		struct GUIRenderData
 		{
@@ -56,7 +63,7 @@ namespace BansheeEngine
 			{ }
 
 			Vector<SPtr<TransientMesh>> cachedMeshes;
-			Vector<SpriteMaterialInfo> cachedMaterials;
+			Vector<GUIMaterialData> cachedMaterials;
 			Vector<GUIWidget*> cachedWidgetsPerMesh;
 			Vector<GUIWidget*> widgets;
 			bool isDirty;
@@ -67,9 +74,10 @@ namespace BansheeEngine
 		{
 			SPtr<TransientMeshCore> mesh;
 			SPtr<TextureCore> texture;
-			SpriteMaterial materialType;
+			SpriteMaterial* material;
 			Color tint;
 			Matrix4 worldTransform;
+			SpriteMaterialExtraInfo* additionalData;
 		};
 
 		/**	Container for a GUI widget. */
@@ -415,34 +423,11 @@ namespace BansheeEngine
 	{
 		friend class GUIManager;
 
-		/** Material reference and parameter handles for a specific material type. */
-		struct MaterialInfo
-		{
-			MaterialInfo() { }
-			MaterialInfo(const SPtr<MaterialCore>& material);
-
-			SPtr<MaterialCore> material;
-
-			MaterialParamMat4Core worldTransformParam;
-			MaterialParamFloatCore invViewportWidthParam;
-			MaterialParamFloatCore invViewportHeightParam;
-			MaterialParamColorCore tintParam;
-			MaterialParamTextureCore textureParam;
-			MaterialParamSampStateCore samplerParam;
-		};
-
 	public:
 		~GUIManagerCore();
 
-		/**
-		 * Initializes the object. Must be called right after construction.
-		 *
-		 * @param[in]	textMat			Material used for drawing text sprites.
-		 * @param[in]	imageMat		Material used for drawing non-transparent image sprites.
-		 * @param[in]	imageAlphaMat	Material used for drawing transparent image sprites.
-		 */
-		void initialize(const SPtr<MaterialCore>& textMat, const SPtr<MaterialCore>& imageMat,
-			const SPtr<MaterialCore>& imageAlphaMat);
+		/** Initializes the object. Must be called right after construction. */
+		void initialize();
 
 	private:
 		/**
@@ -456,12 +441,6 @@ namespace BansheeEngine
 		void render(const SPtr<CameraCore>& camera);
 
 		UnorderedMap<SPtr<CameraCore>, Vector<GUIManager::GUICoreRenderData>> mPerCameraData;
-
-		// Immutable
-		MaterialInfo mTextMaterialInfo;
-		MaterialInfo mImageMaterialInfo;
-		MaterialInfo mImageAlphaMaterialInfo;
-
 		SPtr<SamplerStateCore> mSamplerState;
 	};
 

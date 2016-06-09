@@ -110,6 +110,9 @@ set(BS_BANSHEEENGINE_SRC_2D
 	"Source/BsSprite.cpp"
 	"Source/BsSpriteTexture.cpp"
 	"Source/BsTextSprite.cpp"
+	"Source/BsSpriteMaterial.cpp"
+	"Source/BsSpriteMaterials.cpp"
+	"Source/BsSpriteManager.cpp"
 )
 
 set(BS_BANSHEEENGINE_SRC_UTILITY
@@ -126,6 +129,9 @@ set(BS_BANSHEEENGINE_INC_2D
 	"Include/BsSprite.h"
 	"Include/BsSpriteTexture.h"
 	"Include/BsTextSprite.h"
+	"Include/BsSpriteMaterial.h"
+	"Include/BsSpriteMaterials.h"
+	"Include/BsSpriteManager.h"
 )
 
 set(BS_BANSHEEENGINE_INC_RTTI
