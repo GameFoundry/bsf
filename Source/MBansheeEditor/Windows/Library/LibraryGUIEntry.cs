@@ -85,7 +85,7 @@ namespace BansheeEditor
 
             SpriteTexture iconTexture = GetIcon(path, owner.TileSize);
 
-            icon = new GUITexture(iconTexture, GUIImageScaleMode.ScaleToFit,
+            icon = new GUITexture(iconTexture, GUITextureScaleMode.ScaleToFit,
                 true, GUIOption.FixedHeight(owner.TileSize), GUIOption.FixedWidth(owner.TileSize));
 
             label = null;

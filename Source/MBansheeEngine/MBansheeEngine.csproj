@@ -49,6 +49,7 @@
     <Compile Include="Audio\AudioSource.cs" />
     <Compile Include="Audio\Interop\NativeAudioListener.cs" />
     <Compile Include="Audio\Interop\NativeAudioSource.cs" />
+    <Compile Include="GUI\GUICanvas.cs" />
     <Compile Include="Rendering\PostProcessSettings.cs" />
     <Compile Include="Utility\AsyncOp.cs" />
     <Compile Include="Math\Bounds.cs" />

@@ -168,6 +168,7 @@ namespace BansheeEngine
 	class GUISliderVert;
 	class GUISliderHorz;
 	class GUIProgressBar;
+	class GUICanvas;
 
 	class RenderableHandler;
 	class ProfilerOverlay;
