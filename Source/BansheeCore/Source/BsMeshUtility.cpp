@@ -182,12 +182,12 @@ namespace BansheeEngine
 			clipEdge0.verts[1] = idx1;
 
 			ClipEdge& clipEdge1 = mesh.edges[idx1];
-			clipEdge0.verts[0] = idx1;
-			clipEdge0.verts[1] = idx2;
+			clipEdge1.verts[0] = idx1;
+			clipEdge1.verts[1] = idx2;
 
 			ClipEdge& clipEdge2 = mesh.edges[idx2];
-			clipEdge0.verts[0] = idx2;
-			clipEdge0.verts[1] = idx0;
+			clipEdge2.verts[0] = idx2;
+			clipEdge2.verts[1] = idx0;
 
 			ClipFace& clipFace = mesh.faces[i];
 
@@ -204,8 +204,6 @@ namespace BansheeEngine
 				clipFace.normal += Vector3::cross(mesh.verts[verts[j]].point, mesh.verts[verts[j + 1]].point);
 
 			clipFace.normal.normalize();
-
-			mesh.faces.push_back(clipFace);
 		}
 	}
 
@@ -499,13 +497,13 @@ namespace BansheeEngine
 		}
 
 		// Add the first two vertices
-		sortedVerts[0] = mesh.edges[sortedEdges[0]].verts[0];
-		sortedVerts[1] = mesh.edges[sortedEdges[0]].verts[1];
+		sortedVerts[0] = mesh.edges[face.edges[sortedEdges[0]]].verts[0];
+		sortedVerts[1] = mesh.edges[face.edges[sortedEdges[0]]].verts[1];
 
 		// Add the remaining vertices
 		for (UINT32 i = 1; i < numEdges; i++)
 		{
-			const ClipEdge& edge = mesh.edges[sortedEdges[i]];
+			const ClipEdge& edge = mesh.edges[face.edges[sortedEdges[i]]];
 
 			if (edge.verts[0] == sortedVerts[i])
 				sortedVerts[i + 1] = edge.verts[1];

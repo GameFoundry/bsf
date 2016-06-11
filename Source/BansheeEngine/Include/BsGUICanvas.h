@@ -141,23 +141,26 @@ namespace BansheeEngine
 
 			union
 			{
-				UINT32 vertexStart;
-				UINT32 numVertices;
-				mutable UINT32 clippedVertexStart;
-				mutable UINT32 clippedNumVertices;
-				float lineWidth;
-			};
+				struct
+				{
+					UINT32 vertexStart;
+					UINT32 numVertices;
+					mutable UINT32 clippedVertexStart;
+					mutable UINT32 clippedNumVertices;
+					float lineWidth;
+				};
 
-			union
-			{
-				ImageSprite* imageSprite;
-				TextureScaleMode scaleMode;
-			};
+				struct
+				{
+					ImageSprite* imageSprite;
+					TextureScaleMode scaleMode;
+				};
 
-			union
-			{
-				TextSprite* textSprite;
-				UINT32 size;
+				struct
+				{
+					TextSprite* textSprite;
+					UINT32 size;
+				};
 			};
 		};
 

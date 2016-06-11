@@ -7,7 +7,6 @@
 #include "BsGUILayout.h"
 #include "BsGUICanvas.h"
 #include "BsGUIOptions.h"
-#include "BsScriptVector2I.h"
 #include "BsScriptFont.h"
 
 namespace BansheeEngine
@@ -59,7 +58,7 @@ namespace BansheeEngine
 		UINT32 size = verticesArray.size();
 
 		Vector<Vector2I> nativeVertices(size);
-		memcpy(nativeVertices.data(), verticesArray.getRawPtr<ScriptVector2I>(), sizeof(Vector2));
+		memcpy(nativeVertices.data(), verticesArray.getRawPtr<Vector2I>(), sizeof(Vector2I) * size);
 
 		canvas->drawPolyLine(nativeVertices, width, *color);
 	}
@@ -84,7 +83,7 @@ namespace BansheeEngine
 		UINT32 size = verticesArray.size();
 
 		Vector<Vector2I> nativeVertices(size);
-		memcpy(nativeVertices.data(), verticesArray.getRawPtr<ScriptVector2I>(), sizeof(Vector2));
+		memcpy(nativeVertices.data(), verticesArray.getRawPtr<Vector2I>(), sizeof(Vector2I) * size);
 
 		canvas->drawTriangleStrip(nativeVertices, *color);
 	}
@@ -97,7 +96,7 @@ namespace BansheeEngine
 		UINT32 size = verticesArray.size();
 
 		Vector<Vector2I> nativeVertices(size);
-		memcpy(nativeVertices.data(), verticesArray.getRawPtr<ScriptVector2I>(), sizeof(Vector2));
+		memcpy(nativeVertices.data(), verticesArray.getRawPtr<Vector2I>(), sizeof(Vector2I) * size);
 
 		canvas->drawTriangleList(nativeVertices, *color);
 	}

@@ -406,12 +406,6 @@ namespace BansheeEngine
 					const Vector<GUIMeshData>& cachedMeshes = *meshSet;
 					for (auto& entry : cachedMeshes)
 					{
-						if (entry.matInfo.texture == nullptr || !entry.matInfo.texture.isLoaded())
-						{
-							meshIdx++;
-							continue;
-						}
-
 						if (entry.mesh == nullptr)
 						{
 							meshIdx++;
@@ -421,8 +415,14 @@ namespace BansheeEngine
 						cameraData.push_back(GUICoreRenderData());
 						GUICoreRenderData& newEntry = cameraData.back();
 
+						SPtr<TextureCore> textureCore;
+						if (entry.matInfo.texture.isLoaded())
+							textureCore = entry.matInfo.texture->getCore();
+						else
+							textureCore = nullptr;
+
 						newEntry.material = entry.material;
-						newEntry.texture = entry.matInfo.texture->getCore();
+						newEntry.texture = textureCore;
 						newEntry.tint = entry.matInfo.tint;
 						newEntry.mesh = entry.mesh->getCore();
 						newEntry.worldTransform = entry.widget->getWorldTfrm();

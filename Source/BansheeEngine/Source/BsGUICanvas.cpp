@@ -119,9 +119,18 @@ namespace BansheeEngine
 		// Convert strip to list
 		for(UINT32 i = 2; i < (UINT32)vertices.size(); i++)
 		{
-			mVertexData.push_back(Vector2((float)vertices[i - 2].x, (float)vertices[i - 2].y));
-			mVertexData.push_back(Vector2((float)vertices[i - 1].x, (float)vertices[i - 1].y));
-			mVertexData.push_back(Vector2((float)vertices[i - 0].x, (float)vertices[i - 0].y));
+			if (i % 2 == 0)
+			{
+				mVertexData.push_back(Vector2((float)vertices[i - 2].x, (float)vertices[i - 2].y));
+				mVertexData.push_back(Vector2((float)vertices[i - 1].x, (float)vertices[i - 1].y));
+				mVertexData.push_back(Vector2((float)vertices[i - 0].x, (float)vertices[i - 0].y));
+			}
+			else
+			{
+				mVertexData.push_back(Vector2((float)vertices[i - 0].x, (float)vertices[i - 0].y));
+				mVertexData.push_back(Vector2((float)vertices[i - 1].x, (float)vertices[i - 1].y));
+				mVertexData.push_back(Vector2((float)vertices[i - 2].x, (float)vertices[i - 2].y));
+			}
 		}
 
 		mTriangleElementData.push_back(TriangleElementData());
@@ -183,8 +192,11 @@ namespace BansheeEngine
 	{
 		for (auto& element : mElements)
 		{
-			if(element.imageSprite != nullptr)
+			if(element.type == CanvasElementType::Image && element.imageSprite != nullptr)
 				bs_delete(element.imageSprite);
+
+			if (element.type == CanvasElementType::Text && element.textSprite != nullptr)
+				bs_delete(element.textSprite);
 		}
 
 		mElements.clear();
@@ -526,14 +538,14 @@ namespace BansheeEngine
 	const GUICanvas::CanvasElement& GUICanvas::findElement(UINT32 renderElementIdx) const
 	{
 		INT32 start = 0;
-		INT32 end = (INT32)mElements.size();
+		INT32 end = (INT32)(mElements.size() - 1);
 
-		while (start < end)
+		while (start <= end)
 		{
 			INT32 middle = (start + end) / 2;
 			const CanvasElement& current = mElements[middle];
 
-			if (current.renderElemStart >= renderElementIdx && renderElementIdx < current.renderElemEnd)
+			if (renderElementIdx >= current.renderElemStart && renderElementIdx < current.renderElemEnd)
 				return current;
 
 			if (renderElementIdx < current.renderElemStart)
