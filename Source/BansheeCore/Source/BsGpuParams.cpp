@@ -501,8 +501,8 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 		UINT32 paramBufferOffset = textureInfoOffset + loadStoreSurfacesSize;
 		UINT32 textureArrayOffset = paramBufferOffset + paramBufferSize;
 		UINT32 loadStoreTextureArrayOffset = textureArrayOffset + textureArraySize;
-		UINT32 bufferArrayOffset = loadStoreTextureArrayOffset + bufferArraySize;
-		UINT32 samplerArrayOffset = bufferArrayOffset + loadStoreTextureArraySize;
+		UINT32 bufferArrayOffset = loadStoreTextureArrayOffset + loadStoreTextureArraySize;
+		UINT32 samplerArrayOffset = bufferArrayOffset + bufferArraySize;
 
 		assert(data.getBufferSize() == totalSize);
 
@@ -623,8 +623,8 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 		UINT32 paramBufferOffset = textureInfoOffset + loadStoreSurfacesSize;
 		UINT32 textureArrayOffset = paramBufferOffset + paramBufferSize;
 		UINT32 loadStoreTextureArrayOffset = textureArrayOffset + textureArraySize;
-		UINT32 bufferArrayOffset = loadStoreTextureArrayOffset + bufferArraySize;
-		UINT32 samplerArrayOffset = bufferArrayOffset + loadStoreTextureArraySize;
+		UINT32 bufferArrayOffset = loadStoreTextureArrayOffset + loadStoreTextureArraySize;
+		UINT32 samplerArrayOffset = bufferArrayOffset + bufferArraySize;
 
 		UINT8* data = allocator->alloc(totalSize);
 

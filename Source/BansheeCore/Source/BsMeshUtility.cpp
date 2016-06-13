@@ -344,7 +344,7 @@ namespace BansheeEngine
 				{
 					ClipEdge& edge = mesh.edges[face.edges[j]];
 					ClipVert& v0 = mesh.verts[edge.verts[0]];
-					ClipVert& v1 = mesh.verts[edge.verts[0]];
+					ClipVert& v1 = mesh.verts[edge.verts[1]];
 
 					v0.occurs = 0;
 					v1.occurs = 0;
@@ -379,7 +379,7 @@ namespace BansheeEngine
 			if (edge.visible)
 			{
 				ClipVert& v0 = mesh.verts[edge.verts[0]];
-				ClipVert& v1 = mesh.verts[edge.verts[0]];
+				ClipVert& v1 = mesh.verts[edge.verts[1]];
 
 				v0.occurs++;
 				v1.occurs++;
@@ -475,7 +475,7 @@ namespace BansheeEngine
 		UINT32 numEdges = (UINT32)face.edges.size();
 		UINT32* sortedEdges = (UINT32*)bs_stack_alloc(sizeof(UINT32) * numEdges);
 		for (UINT32 i = 0; i < numEdges; i++)
-			sortedEdges[i] = i;
+			sortedEdges[i] = face.edges[i];
 
 		// Bubble sort to arrange edges in contiguous order
 		for (UINT32 i0 = 0, i1 = 1, choice = 1; i1 < numEdges - 1; i0 = i1, i1++)
@@ -497,13 +497,13 @@ namespace BansheeEngine
 		}
 
 		// Add the first two vertices
-		sortedVerts[0] = mesh.edges[face.edges[sortedEdges[0]]].verts[0];
-		sortedVerts[1] = mesh.edges[face.edges[sortedEdges[0]]].verts[1];
+		sortedVerts[0] = mesh.edges[sortedEdges[0]].verts[0];
+		sortedVerts[1] = mesh.edges[sortedEdges[0]].verts[1];
 
 		// Add the remaining vertices
 		for (UINT32 i = 1; i < numEdges; i++)
 		{
-			const ClipEdge& edge = mesh.edges[face.edges[sortedEdges[i]]];
+			const ClipEdge& edge = mesh.edges[sortedEdges[i]];
 
 			if (edge.verts[0] == sortedVerts[i])
 				sortedVerts[i + 1] = edge.verts[1];

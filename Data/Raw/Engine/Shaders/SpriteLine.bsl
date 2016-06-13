@@ -1,3 +1,14 @@
+Parameters =
+{
+	mat4x4 	worldTransform;
+	float	invViewportWidth;
+	float	invViewportHeight;
+	
+	StructBuffer  	linePoints;
+	float 			lineWidth;
+	float4			tint;
+};
+
 Technique =
 {
 	Language = "HLSL11";
@@ -20,7 +31,7 @@ Technique =
 			{
 				float4 position : SV_POSITION;
 				float2 screenPos : TEXCOORD1;
-				uint lineIdx : BLENDINDICES0;
+				uint lineIdx : LINEIDX;
 			};
 		};
 		
@@ -33,19 +44,19 @@ Technique =
 			struct VertexInput
 			{
 				float2 position : POSITION;
-				uint lineIdx : LINEIDX;
+				uint lineIdx : BLENDINDICES0;
 			};			
 			
 			VStoFS main(VertexInput input)
 			{
 				float4 tfrmdPos = mul(worldTransform, float4(input.position, 0, 1));
-
+				
 				float tfrmdX = -1.0f + (tfrmdPos.x * invViewportWidth);
 				float tfrmdY = 1.0f - (tfrmdPos.y * invViewportHeight);
 
 				VStoFS output;
 				output.position = float4(tfrmdX, tfrmdY, 0, 1);
-				output.screenPos.xy = input.position;
+				output.screenPos = tfrmdPos.xy;
 				output.lineIdx = input.lineIdx;
 				
 				return output;
@@ -82,32 +93,36 @@ Technique =
 				uint dummy;
 				linePoints.GetDimensions(numPoints, dummy);
 				
-				uint numLines = numPoints / 2 - 1;
+				uint numLines = numPoints - 1;
 								
 				// Find nearest line
 				//// Distance to current line
 				int lineIdx = (int)input.lineIdx;
-				float2 a = linePoints.Load(lineIdx * 2 + 0);				
-				float2 b = linePoints.Load(lineIdx * 2 + 1);
+				float2 a = linePoints.Load(lineIdx + 0);				
+				float2 b = linePoints.Load(lineIdx + 1);
 				
-				float minSquaredDistance = getSquaredDistanceToLine(a, b, input.screenPos);
+				float sqrdDist = getSquaredDistanceToLine(a, b, input.screenPos);
 
 				//// Distance to previous line
 				int prevLineIdx = max(0, lineIdx - 1);
-				a = linePoints.Load(prevLineIdx * 2 + 0);				
-				b = linePoints.Load(prevLineIdx * 2 + 1);
+				a = linePoints.Load(prevLineIdx + 0);				
+				b = linePoints.Load(prevLineIdx + 1);
 				
-				minSquaredDistance = min(minSquaredDistance, getSquaredDistanceToLine(a, b, input.screenPos));
+				sqrdDist = min(sqrdDist, getSquaredDistanceToLine(a, b, input.screenPos));
 				
 				//// Distance to next line
-				int nextLineIdx = min((int)numPoints - 1, lineIdx + 1);
-				a = linePoints.Load(nextLineIdx * 2 + 0);				
-				b = linePoints.Load(nextLineIdx * 2 + 1);
+				int nextLineIdx = min((int)numLines - 1, lineIdx + 1);
+				a = linePoints.Load(nextLineIdx + 0);				
+				b = linePoints.Load(nextLineIdx + 1);
 				
-				minSquaredDistance = min(minSquaredDistance, getSquaredDistanceToLine(a, b, input.screenPos));
+				sqrdDist = min(sqrdDist, getSquaredDistanceToLine(a, b, input.screenPos));
 				
-				// TODO - Use a different filter like Gaussian
-				float weight = clamp(minSquaredDistance / (lineWidth * lineWidth), 0, 1);
+				float sqrdLineWidth = lineWidth * lineWidth;
+				sqrdDist = max(sqrdDist - sqrdLineWidth, 0.0f);
+				
+				float featherWidth = 1.0f; // When changing this change the width of the line quads as well
+				float filtered = sqrdDist / (featherWidth * featherWidth); // TODO - Use a different filter like Gaussian
+				float weight = 1.0f - clamp(filtered, 0, 1);
 				return float4(tint.rgb, tint.a * weight);
 			}
 		};

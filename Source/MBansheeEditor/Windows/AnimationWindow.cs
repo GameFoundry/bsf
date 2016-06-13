@@ -44,19 +44,21 @@ namespace BansheeEditor
             }
 
             {
-                Vector2I a = new Vector2I(150, 20);
-                Vector2I b = new Vector2I(230, 20);
-                Vector2I c = new Vector2I(150, 70);
+                Vector2I a = new Vector2I(50, 20);
+                Vector2I b = new Vector2I(100, 20);
+                Vector2I c = new Vector2I(240, 60);
 
-                canvas.DrawTriangleList(new Vector2I[] {a, b, c});
+                Vector2I[] vertices = {c, b};
+                canvas.DrawPolyLine(vertices, 1.0f);
             }
+
             GUI.AddElement(canvas);
         }
 
         private void OnEditorUpdate()
         {
-            int position = (int)(MathEx.Sin(Time.RealElapsed)*50.0f + 50.0f);
-            canvas.SetPosition(position, 0);
+            //int position = (int)(MathEx.Sin(Time.RealElapsed)*50.0f + 50.0f);
+            //canvas.SetPosition(position, 0);
         }
 
         private void OnDestroy()

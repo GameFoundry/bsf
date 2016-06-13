@@ -8,10 +8,13 @@
 #include "BsShapeMeshes2D.h"
 #include "BsSpriteManager.h"
 #include "BsSpriteMaterials.h"
+#include "BsMeshUtility.h"
 #include "BsException.h"
 
 namespace BansheeEngine
 {
+	const float GUICanvas::LINE_SMOOTH_BORDER_WIDTH = 3.0f;
+
 	const String& GUICanvas::getGUITypeName()
 	{
 		static String name = "Canvas";
@@ -60,22 +63,19 @@ namespace BansheeEngine
 		element.dataId = (UINT32)mTriangleElementData.size();
 		element.vertexStart = (UINT32)mVertexData.size();
 		element.numVertices = (UINT32)vertices.size();
-		element.lineWidth = width;
+		element.lineWidth = width * 0.5f;
 
 		mTriangleElementData.push_back(TriangleElementData());
 		TriangleElementData& elemData = mTriangleElementData.back();
 		elemData.matInfo.groupId = 0;
 		elemData.matInfo.tint = color;
 
-		SPtr<SpriteMaterialLineInfo> lineInfo = bs_shared_ptr_new<SpriteMaterialLineInfo>();
-		lineInfo->width = width;
-
 		for (auto& vertex : vertices)
 		{
 			Vector2 point = Vector2((float)vertex.x, (float)vertex.y);
+			point += Vector2(0.5f, 0.5f); // Offset to the middle of the pixel
 
 			mVertexData.push_back(point);
-			lineInfo->points.push_back(point);
 		}
 
 		mForceTriangleBuild = true;
@@ -207,6 +207,7 @@ namespace BansheeEngine
 		mTextData.clear();
 		mTriangleElementData.clear();
 		mClippedVertices.clear();
+		mClippedLineVertices.clear();
 		mForceTriangleBuild = false;
 	}
 
@@ -218,6 +219,10 @@ namespace BansheeEngine
 	const SpriteMaterialInfo& GUICanvas::_getMaterial(UINT32 renderElementIdx, SpriteMaterial** material) const
 	{
 		static const SpriteMaterialInfo defaultMatInfo;
+
+		Vector2 offset((float)mLayoutData.area.x, (float)mLayoutData.area.y);
+		Rect2I clipRect = mLayoutData.getLocalClipRect();
+		buildAllTriangleElementsIfDirty(offset, clipRect);
 
 		const CanvasElement& element = findElement(renderElementIdx);
 		switch (element.type)
@@ -410,14 +415,15 @@ namespace BansheeEngine
 			assert((startIndex + numIndices) <= maxIndexIdx);
 
 			UINT8* vertDst = vertices + startVert * vertexStride;
-			UINT8* lineIdxDst = vertDst + sizeof(UINT32);
+			UINT8* lineIdxDst = vertDst + sizeof(Vector2);
 			UINT32* indexDst = indices + startIndex;
 
 			for (UINT32 i = 0; i < element.clippedNumVertices; i++)
 			{
-				UINT32 lineIdx = i / 6;
+				const Vector3& point = mClippedLineVertices[element.clippedVertexStart + i];
+				UINT32 lineIdx = (UINT32)point.z;
 
-				memcpy(vertDst, &mClippedVertices[element.clippedVertexStart + i], sizeof(Vector2));
+				memcpy(vertDst, &point, sizeof(Vector2));
 				memcpy(lineIdxDst, &lineIdx, sizeof(UINT32));
 
 				vertDst += vertexStride;
@@ -475,43 +481,85 @@ namespace BansheeEngine
 	{
 		assert(element.type == CanvasElementType::Triangle || element.type == CanvasElementType::Line);
 
-		UINT8* verticesToClip;
-		UINT32 trianglesToClip;
-		bool freeVertices;
-
 		if (element.type == CanvasElementType::Triangle)
 		{
-			verticesToClip = (UINT8*)&mVertexData[element.vertexStart];
-			trianglesToClip = element.numVertices / 3;
-			freeVertices = false;
+			UINT8* verticesToClip = (UINT8*)&mVertexData[element.vertexStart];
+			UINT32 trianglesToClip = element.numVertices / 3;
+
+			auto writeCallback = [&](Vector2* vertices, Vector2* uvs, UINT32 count)
+			{
+				for (UINT32 i = 0; i < count; i++)
+					mClippedVertices.push_back(vertices[i] + offset);
+
+				element.clippedNumVertices += count;
+			};
+
+			element.clippedVertexStart = (UINT32)mClippedVertices.size();
+			element.clippedNumVertices = 0;
+
+			ImageSprite::clipTrianglesToRect(verticesToClip, nullptr, trianglesToClip, sizeof(Vector2), clipRect, 
+				writeCallback);
 		}
 		else
 		{
 			UINT32 numLines = element.numVertices - 1;
 
-			verticesToClip = (UINT8*)bs_stack_alloc(sizeof(Vector2) * (numLines * 6));
-			trianglesToClip = numLines * 2;
-			freeVertices = true;
+			UINT8* verticesToClip = (UINT8*)bs_stack_alloc(sizeof(Vector3) * (numLines * 6));
+			UINT32 trianglesToClip = numLines * 2;
 
 			const Vector2* linePoints = &mVertexData[element.vertexStart];
-			ShapeMeshes2D::quadLineList(linePoints, element.numVertices, element.lineWidth, verticesToClip,
-				sizeof(Vector2), false);
-		}
+			ShapeMeshes2D::quadLineList(linePoints, element.numVertices, element.lineWidth, LINE_SMOOTH_BORDER_WIDTH, 
+				verticesToClip, sizeof(Vector3), false);
 
-		element.clippedVertexStart = (UINT32)mClippedVertices.size();
-		element.clippedNumVertices = 0;
-		auto writeCallback = [&](Vector2* vertices, Vector2* uvs, UINT32 count)
-		{
-			for (UINT32 i = 0; i < count; i++)
-				mClippedVertices.push_back(vertices[i] + offset);
+			SPtr<SpriteMaterialLineInfo> lineInfo = bs_shared_ptr_new<SpriteMaterialLineInfo>();
+			lineInfo->width = element.lineWidth;
 
-			element.clippedNumVertices += count;
-		};
+			for (UINT32 i = 0; i < element.numVertices; i++)
+			{
+				Vector2 point = linePoints[i];
+				point += offset; // Move to screen space
 
-		ImageSprite::clipTrianglesToRect(verticesToClip, nullptr, trianglesToClip, sizeof(Vector2), clipRect, writeCallback);
+				lineInfo->points.push_back(point);
+			}
 
-		if(freeVertices)
+			TriangleElementData& elemData = mTriangleElementData[element.dataId];
+			elemData.matInfo.additionalData = lineInfo;
+
+			// Store line index with each vertex as Z coordinate, so we know which line newly added triangles belong to
+			Vector3* quadVertices = (Vector3*)verticesToClip;
+			for(UINT32 i = 0; i < numLines; i++)
+			{
+				for(UINT32 j = 0; j < 6; j++)
+				{
+					quadVertices->z = (float)i;
+					quadVertices++;
+				}
+			}
+
+			Vector<Plane> clipPlanes =
+			{
+				Plane(Vector3(1.0f, 0.0f, 0.0f), (float)clipRect.x),
+				Plane(Vector3(-1.0f, 0.0f, 0.0f), (float)-(clipRect.x + clipRect.width)),
+				Plane(Vector3(0, 1.0f, 0), (float)(clipRect.y + clipRect.height)),
+				Plane(Vector3(0.0f, -1.0f, 0.0f), (float)-clipRect.y)
+			};
+
+			Vector3 offset3D(offset.x, offset.y, 0.0f);
+			auto writeCallback = [&](Vector3* vertices, Vector2* uvs, UINT32 count)
+			{
+				for (UINT32 i = 0; i < count; i++)
+					mClippedLineVertices.push_back(vertices[i] + offset3D);
+
+				element.clippedNumVertices += count;
+			};
+
+			element.clippedVertexStart = (UINT32)mClippedLineVertices.size();
+			element.clippedNumVertices = 0;
+
+			MeshUtility::clip3D(verticesToClip, nullptr, trianglesToClip, sizeof(Vector3), clipPlanes, writeCallback);
+
 			bs_stack_free(verticesToClip);
+		}
 	}
 
 	void GUICanvas::buildAllTriangleElementsIfDirty(const Vector2& offset, const Rect2I& clipRect) const
@@ -522,6 +570,7 @@ namespace BansheeEngine
 			return;
 
 		mClippedVertices.clear();
+		mClippedLineVertices.clear();
 		for(auto& element : mElements)
 		{
 			if (element.type != CanvasElementType::Triangle && element.type != CanvasElementType::Line)

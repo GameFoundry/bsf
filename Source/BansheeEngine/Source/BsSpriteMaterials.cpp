@@ -51,9 +51,8 @@ namespace BansheeEngine
 		if(lineInfo->pointBuffer == nullptr)
 		{
 			UINT32 numPoints = (UINT32)lineInfo->points.size();
-			SPtr<GpuBufferCore> pointBuffer = GpuBufferCore::create(numPoints, 0, GBT_STANDARD, BF_32X2F, GBU_STATIC);
-
-			pointBuffer->writeData(0, numPoints * sizeof(Vector2), &lineInfo->points[0], BufferWriteType::Discard);
+			lineInfo->pointBuffer = GpuBufferCore::create(numPoints, 0, GBT_STANDARD, BF_32X2F, GBU_STATIC);
+			lineInfo->pointBuffer->writeData(0, numPoints * sizeof(Vector2), &lineInfo->points[0], BufferWriteType::Discard);
 		}
 		
 		mMaterial->setBuffer("linePoints", lineInfo->pointBuffer);

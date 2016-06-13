@@ -227,13 +227,16 @@ namespace BansheeEngine
 
 		Vector<ImageElementData> mImageData;
 		Vector<TextElementData> mTextData;
-		Vector<TriangleElementData> mTriangleElementData;
+		mutable Vector<TriangleElementData> mTriangleElementData;
 		Vector<Vector2> mVertexData;
 
 		mutable Vector<Vector2> mClippedVertices;
+		mutable Vector<Vector3> mClippedLineVertices; // z coordinate = line index
 		mutable Vector2 mLastOffset;
 		mutable Rect2I mLastClipRect;
 		mutable bool mForceTriangleBuild;
+
+		static const float LINE_SMOOTH_BORDER_WIDTH;
 	};
 
 	/** @} */
