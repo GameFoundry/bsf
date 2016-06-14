@@ -439,6 +439,7 @@ namespace BansheeEngine
 			size_t numVertices = mesh->positions.size();
 			bool hasColors = mesh->colors.size() == numVertices;
 			bool hasNormals = mesh->normals.size() == numVertices;
+			bool hasBoneInfluences = mesh->boneInfluences.size() == numVertices;
 
 			if (hasColors)
 				vertexLayout |= (UINT32)VertexLayout::Color;
@@ -455,6 +456,9 @@ namespace BansheeEngine
 					hasTangents = true;
 				}
 			}
+
+			if (hasBoneInfluences)
+				vertexLayout |= (UINT32)VertexLayout::BoneWeights;
 
 			for (UINT32 i = 0; i < FBX_IMPORT_MAX_UV_LAYERS; i++)
 			{
@@ -565,6 +569,28 @@ namespace BansheeEngine
 
 						writeUVIDx++;
 					}
+				}
+
+				// Copy bone influences
+				if(hasBoneInfluences)
+				{
+					UINT32 bufferSize = sizeof(BoneWeight) * (UINT32)numVertices;
+					BoneWeight* weights = (BoneWeight*)bs_stack_alloc(bufferSize);
+					for(UINT32 i = 0; i < (UINT32)numVertices; i++)
+					{
+						weights[i].index0 = mesh->boneInfluences[i].indices[0];
+						weights[i].index1 = mesh->boneInfluences[i].indices[1];
+						weights[i].index2 = mesh->boneInfluences[i].indices[2];
+						weights[i].index3 = mesh->boneInfluences[i].indices[3];
+
+						weights[i].weight0 = mesh->boneInfluences[i].weights[0];
+						weights[i].weight1 = mesh->boneInfluences[i].weights[1];
+						weights[i].weight2 = mesh->boneInfluences[i].weights[2];
+						weights[i].weight3 = mesh->boneInfluences[i].weights[3];
+					}
+
+					meshData->setBoneWeights(weights, bufferSize);
+					bs_stack_free(weights);
 				}
 
 				// TODO - Transform blend shapes?
@@ -1050,7 +1076,7 @@ namespace BansheeEngine
 			FbxAMatrix bindPose = linkTransform.Inverse() * clusterTransform;
 			bone.bindPose = FBXToNativeType(bindPose);
 
-			bool isDuplicate = existingBones.insert(link).second;
+			bool isDuplicate = !existingBones.insert(link).second;
 			bool isAdditive = cluster->GetLinkMode() == FbxCluster::eAdditive;
 
 			// We avoid importing weights twice for duplicate bones and we don't
@@ -1071,14 +1097,14 @@ namespace BansheeEngine
 				INT32 vertexIndex = indices[j];
 				float weight = (float)weights[j];
 
-				for (UINT32 k = 0; k < FBX_IMPORT_MAX_BONE_INFLUENCES; k++)
+				for (INT32 k = 0; k < FBX_IMPORT_MAX_BONE_INFLUENCES; k++)
 				{
 					if (vertexIndex < 0 || vertexIndex >= numVertices)
 						continue;
 
 					if (weight >= influences[vertexIndex].weights[k])
 					{
-						for (UINT32 l = FBX_IMPORT_MAX_BONE_INFLUENCES - 2; l >= k; l--)
+						for (INT32 l = FBX_IMPORT_MAX_BONE_INFLUENCES - 2; l >= k; l--)
 						{
 							influences[vertexIndex].weights[l + 1] = influences[vertexIndex].weights[l];
 							influences[vertexIndex].indices[l + 1] = influences[vertexIndex].indices[l];
@@ -1094,6 +1120,10 @@ namespace BansheeEngine
 
 		if (mesh.bones.empty())
 			mesh.boneInfluences.clear();
+
+		UINT32 numBones = (UINT32)mesh.bones.size();
+		if (numBones > 256)
+			LOGWRN("A maximum of 256 bones per skeleton are supported. Imported skeleton has " + toString(numBones) + " bones");
 
 		// Normalize weights
 		UINT32 numInfluences = (UINT32)mesh.boneInfluences.size();
