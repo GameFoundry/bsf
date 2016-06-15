@@ -131,20 +131,112 @@ Technique =
 
 Technique =
 {
-	Language = "HLSL9";
-	
-	Pass =
-	{
-		// TODO
-	};
-};
-
-Technique =
-{
 	Language = "GLSL";
 	
 	Pass =
 	{
-		// TODO
+		Target = 
+		{
+			Blend = true;
+			Color = { SRCA, SRCIA, ADD };
+			WriteMask = RGB;
+		};
+		
+		DepthRead = false;
+		DepthWrite = false;
+		
+		Vertex =
+		{
+			uniform float invViewportWidth;
+			uniform float invViewportHeight;
+			uniform mat4 worldTransform;
+
+			in vec2 bs_position;
+			in int bs_blendindices;
+			
+			out vec2 screenPos;
+			out flat int lineIdx;
+
+			out gl_PerVertex
+			{
+				vec4 gl_Position;
+			};			
+			
+			void main()
+			{
+				vec4 tfrmdPos = worldTransform * vec4(bs_position, 0, 1);
+				
+				float tfrmdX = -1.0f + (tfrmdPos.x * invViewportWidth);
+				float tfrmdY = 1.0f - (tfrmdPos.y * invViewportHeight);
+
+				gl_Position = vec4(tfrmdX, tfrmdY, 0, 1);
+				screenPos = tfrmdPos.xy;
+				lineIdx = bs_blendindices;
+			}
+		};
+		
+		Fragment =
+		{
+			uniform samplerBuffer linePoints;
+			uniform float lineWidth;
+			uniform vec4 tint;
+			
+			in vec2 screenPos;
+			in flat int lineIdx;
+			out vec4 fragColor;
+		
+			float getSquaredDistanceToLine(vec2 a, vec2 b, vec2 pt)
+			{
+				vec2 lineDiff = b - a;
+				float sqrdLineLength = dot(lineDiff, lineDiff);
+				
+				vec2 pointDiff = pt - a;
+				if(sqrdLineLength < 0.0001f) // a == b
+					return dot(pointDiff, pointDiff);
+				else
+				{
+					float t = clamp(dot(pointDiff, lineDiff / sqrdLineLength), 0, 1);
+					vec2 projPoint = a + lineDiff * t;
+					vec2 toLineDiff = projPoint - pt;
+					return dot(toLineDiff, toLineDiff);
+				} 
+			}
+
+			void main()
+			{
+				// Get number of lines
+				int numPoints = textureSize(linePoints);
+				int numLines = numPoints - 1;
+								
+				// Find nearest line
+				//// Distance to current line
+				vec2 a = texelFetch(linePoints, lineIdx + 0).xy;				
+				vec2 b = texelFetch(linePoints, lineIdx + 1).xy;
+				
+				float sqrdDist = getSquaredDistanceToLine(a, b, screenPos);
+
+				//// Distance to previous line
+				int prevLineIdx = max(0, lineIdx - 1);
+				a = texelFetch(linePoints, prevLineIdx + 0).xy;				
+				b = texelFetch(linePoints, prevLineIdx + 1).xy;
+				
+				sqrdDist = min(sqrdDist, getSquaredDistanceToLine(a, b, screenPos));
+				
+				//// Distance to next line
+				int nextLineIdx = min(numLines - 1, lineIdx + 1);
+				a = texelFetch(linePoints, nextLineIdx + 0).xy;				
+				b = texelFetch(linePoints, nextLineIdx + 1).xy;
+				
+				sqrdDist = min(sqrdDist, getSquaredDistanceToLine(a, b, screenPos));
+				
+				float sqrdLineWidth = lineWidth * lineWidth;
+				sqrdDist = max(sqrdDist - sqrdLineWidth, 0.0f);
+				
+				float featherWidth = 1.0f; // When changing this change the width of the line quads as well
+				float filtered = sqrdDist / (featherWidth * featherWidth); // TODO - Use a different filter like Gaussian
+				float weight = 1.0f - clamp(filtered, 0, 1);
+				fragColor = vec4(tint.rgb, tint.a * weight);
+			}
+		};
 	};
 };
