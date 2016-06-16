@@ -338,6 +338,7 @@ set(BS_BANSHEECORE_INC_RTTI
 	"Include/BsCAudioSourceRTTI.h"
 	"Include/BsCAudioListenerRTTI.h"
 	"Include/BsAnimationClipRTTI.h"
+	"Include/BsAnimationCurveRTTI.h"
 )
 
 set(BS_BANSHEECORE_SRC_RENDERER

@@ -25,7 +25,7 @@ namespace BansheeEngine
 
 		float time; /**< Time at which to evaluate the curve. */
 	private:
-		template <class U> friend class TAnimationCurve;
+		friend class TAnimationCurve<T>;
 
 		mutable UINT32 cachedKey; /**< Left-most key the curve was last evaluated at. -1 if no cached data. */
 		mutable float cachedCurveStart; /**< Time relative to the animation curve, at which the cached data starts. */

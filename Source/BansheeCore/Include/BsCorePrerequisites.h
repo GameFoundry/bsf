@@ -360,6 +360,7 @@ namespace BansheeEngine
 	class AudioSource;
 	class AudioClipImportOptions;
 	class AnimationClip;
+	template <class T> class TAnimationCurve;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -511,7 +512,9 @@ namespace BansheeEngine
 		TID_AudioClipImportOptions = 1112,
 		TID_CAudioListener = 1113,
 		TID_CAudioSource = 1114,
-		TID_AnimationClip = 1115
+		TID_AnimationClip = 1115,
+		TID_AnimationCurve = 1116,
+		TID_KeyFrame = 1117
 	};
 }
 

@@ -60,6 +60,8 @@ namespace BansheeEngine
 		T evaluate(float time, bool loop = true);
 
 	private:
+		friend struct RTTIPlainType<TAnimationCurve<T>>;
+
 		/** 
 		 * Returns a pair of keys that can be used for interpolating to field the value at the provided time. This attempts
 		 * to find keys using the cache first, and if not possible falls back to a full search.
