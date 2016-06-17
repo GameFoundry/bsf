@@ -1,11 +1,16 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsSkeleton.h"
+#include "BsSkeletonRTTI.h"
 
 namespace BansheeEngine
 {
+	Skeleton::Skeleton()
+		:mBindPoses(nullptr), mBoneInfo(nullptr), mNumBones(0)
+	{ }
+
 	Skeleton::Skeleton(BONE_DESC* bones, UINT32 numBones)
-		:mBindPoses(bs_newN<Matrix4>(numBones)), mBoneInfo(bs_newN<BoneInfo>(numBones)), mNumBones(numBones)
+		:mBindPoses(bs_newN<Matrix4>(numBones)), mBoneInfo(bs_newN<SkeletonBoneInfo>(numBones)), mNumBones(numBones)
 	{
 		for(UINT32 i = 0; i < numBones; i++)
 		{
@@ -17,8 +22,18 @@ namespace BansheeEngine
 
 	Skeleton::~Skeleton()
 	{
-		bs_deleteN(mBindPoses, mNumBones);
-		bs_deleteN(mBoneInfo, mNumBones);
+		if(mBindPoses != nullptr)
+			bs_deleteN(mBindPoses, mNumBones);
+
+		if (mBoneInfo != nullptr)
+			bs_deleteN(mBoneInfo, mNumBones);
+	}
+
+	SPtr<Skeleton> Skeleton::create(BONE_DESC* bones, UINT32 numBones)
+	{
+		Skeleton* rawPtr = new (bs_alloc<Skeleton>()) Skeleton(bones, numBones);
+
+		return bs_shared_ptr<Skeleton>(rawPtr);
 	}
 
 	void Skeleton::getPose(SkeletonPose& pose, const AnimationClip& clip, float time, bool loop)
@@ -38,5 +53,23 @@ namespace BansheeEngine
 		// TODO -Blend locally, normalize all weights to 1, layers for additive animations
 
 		// TODO
+	}
+
+	SPtr<Skeleton> Skeleton::createEmpty()
+	{
+		Skeleton* rawPtr = new (bs_alloc<Skeleton>()) Skeleton();
+
+		SPtr<Skeleton> newSkeleton = bs_shared_ptr<Skeleton>(rawPtr);
+		return newSkeleton;
+	}
+
+	RTTITypeBase* Skeleton::getRTTIStatic()
+	{
+		return SkeletonRTTI::instance();
+	}
+
+	RTTITypeBase* Skeleton::getRTTI() const
+	{
+		return getRTTIStatic();
 	}
 }

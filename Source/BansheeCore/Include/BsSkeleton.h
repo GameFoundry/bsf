@@ -3,6 +3,7 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
+#include "BsIReflectable.h"
 #include "BsMatrix4.h"
 
 namespace BansheeEngine
@@ -43,25 +44,44 @@ namespace BansheeEngine
 		UINT32 numBones;
 	};
 
-	class Skeleton // Note: Must be immutable in order to be usable on multiple threads
+	struct SkeletonBoneInfo
+	{
+		String name;
+		UINT32 parent;
+	};
+
+	class BS_CORE_EXPORT Skeleton : public IReflectable // Note: Must be immutable in order to be usable on multiple threads
 	{
 	public:
-		Skeleton(BONE_DESC* bones, UINT32 numBones);
 		~Skeleton();
 
 		void getPose(SkeletonPose& pose, const AnimationClip& clip, float time, bool loop = true);
 		void getPose(SkeletonPose& pose, const ANIMATION_STATE_DESC* states, UINT32 numStates, float time);
 
+		static SPtr<Skeleton> create(BONE_DESC* bones, UINT32 numBones);
+
 	private:
-		struct BoneInfo
-		{
-			String name;
-			UINT32 parent;
-		};
+		Skeleton();
+		Skeleton(BONE_DESC* bones, UINT32 numBones);
 
 		UINT32 mNumBones;
 		Matrix4* mBindPoses;
-		BoneInfo* mBoneInfo;
+		SkeletonBoneInfo* mBoneInfo;
+
+		/************************************************************************/
+		/* 								SERIALIZATION                      		*/
+		/************************************************************************/
+	public:
+		friend class SkeletonRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		RTTITypeBase* getRTTI() const override;
+
+		/** 
+		 * Creates a Skeleton with no data. You must populate its data manually.
+		 *
+		 * @note	For serialization use only.
+		 */
+		static SPtr<Skeleton> createEmpty();
 	};
 
 	/** @} */

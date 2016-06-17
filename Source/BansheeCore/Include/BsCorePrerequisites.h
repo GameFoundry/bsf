@@ -362,6 +362,7 @@ namespace BansheeEngine
 	class AnimationClip;
 	template <class T> class TAnimationCurve;
 	struct AnimationCurves;
+	class Skeleton;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -516,7 +517,9 @@ namespace BansheeEngine
 		TID_AnimationClip = 1115,
 		TID_AnimationCurve = 1116,
 		TID_KeyFrame = 1117,
-		TID_NamedAnimationCurve = 1118
+		TID_NamedAnimationCurve = 1118,
+		TID_Skeleton = 1119,
+		TID_SkeletonBoneInfo = 1120
 	};
 }
 
