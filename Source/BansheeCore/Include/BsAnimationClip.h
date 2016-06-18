@@ -23,6 +23,27 @@ namespace BansheeEngine
 		Vector<TNamedAnimationCurve<float>> generic;
 	};
 
+	/** Contains indices for position/rotation/scale animation curves. */
+	struct AnimationCurveMapping
+	{
+		UINT32 position;
+		UINT32 rotation;
+		UINT32 scale;
+	};
+
+	/** Types of curves in an AnimationClip. */
+	enum class CurveType
+	{
+		Position,
+		Rotation,
+		Scale,
+		Generic
+	};
+
+	/** 
+	 * Contains animation curves for translation/rotation/scale of scene objects/skeleton bones, as well as curves for
+	 * generic property animation. 
+	 */
 	class BS_CORE_EXPORT AnimationClip : public Resource
 	{
 	public:
@@ -109,6 +130,29 @@ namespace BansheeEngine
 		void removeGenericCurve(const String& name);
 
 		/** 
+		 * Returns all curves stored in the animation. Returned value will not be updated if the animation clip curves are
+		 * added or removed. Caller must monitor for changes and retrieve a new set of curves when that happens.
+		 */
+		SPtr<AnimationCurves> getCurves() const { return mCurves; }
+
+		/**
+		 * Maps skeleton bone names to animation clip names, and returns a set of indices that can be easily used for
+		 * locating an animation curve based on the bone index.
+		 *
+		 * @param[in]	skeleton	Skeleton to create the mapping for.
+		 * @param[out]	mapping		Pre-allocated array that will receive output animation clip indices. The array must
+		 *							be large enough to store an index for every bone in the @p skeleton. Bones that have
+		 *							no related animation curves will be assigned value -1.
+		 */
+		void getBoneMapping(const SPtr<Skeleton>& skeleton, AnimationCurveMapping* mapping);
+
+		/** 
+		 * Returns a version that can be used for detecting modifications on the clip by external systems. Whenever the clip
+		 * is modified the version is increased by one.
+		 */
+		UINT64 getVersion() const { return mVersion; }
+
+		/** 
 		 * Creates an animation clip with no curves. After creation make sure to register some animation curves before
 		 * using it. 
 		 */
@@ -135,12 +179,25 @@ namespace BansheeEngine
 		AnimationClip();
 		AnimationClip(const SPtr<AnimationCurves>& curves);
 
+		/** @copydoc Resource::initialize() */
+		void initialize() override;
+
+		/** Creates a name -> curve index mapping for quicker curve lookup by name. */
+		void buildNameMapping();
+
+		UINT64 mVersion;
+
 		/** 
 		 * Contains all the animation curves in the clip. It's important this field is immutable so it may be used on other
 		 * threads. This means any modifications to the field will require a brand new data structure to be generated and
 		 * all existing data copied (plus the modification).
 		 */
 		SPtr<AnimationCurves> mCurves;
+
+		/** 
+		 * Contains a map from curve name to curve index. Indices are stored as specified in CurveType enum. 
+		 */
+		UnorderedMap<String, UINT32[4]> mNameMapping;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

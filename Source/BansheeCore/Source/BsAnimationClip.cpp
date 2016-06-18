@@ -2,18 +2,19 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsAnimationClip.h"
 #include "BsResources.h"
+#include "BsSkeleton.h"
 #include "BsAnimationClipRTTI.h"
 
 namespace BansheeEngine
 {
 	AnimationClip::AnimationClip()
-		: Resource(false), mCurves(bs_shared_ptr_new<AnimationCurves>())
+		: Resource(false), mVersion(0), mCurves(bs_shared_ptr_new<AnimationCurves>())
 	{
-		
+
 	}
 
 	AnimationClip::AnimationClip(const SPtr<AnimationCurves>& curves)
-		: Resource(false), mCurves(curves)
+		: Resource(false), mVersion(0), mCurves(curves)
 	{
 
 	}
@@ -66,8 +67,10 @@ namespace BansheeEngine
 		}
 
 		newCurves->position.push_back({ name, curve });
-
 		mCurves = newCurves;
+
+		buildNameMapping();
+		mVersion++;
 	}
 
 	void AnimationClip::addRotationCurve(const String& name, const TAnimationCurve<Quaternion>& curve)
@@ -84,8 +87,10 @@ namespace BansheeEngine
 		}
 
 		newCurves->rotation.push_back({ name, curve });
-
 		mCurves = newCurves;
+
+		buildNameMapping();
+		mVersion++;
 	}
 
 	void AnimationClip::addScaleCurve(const String& name, const TAnimationCurve<Vector3>& curve)
@@ -102,8 +107,10 @@ namespace BansheeEngine
 		}
 
 		newCurves->scale.push_back({ name, curve });
-
 		mCurves = newCurves;
+
+		buildNameMapping();
+		mVersion++;
 	}
 
 	void AnimationClip::addGenericCurve(const String& name, const TAnimationCurve<float>& curve)
@@ -119,9 +126,10 @@ namespace BansheeEngine
 				newCurves->generic.push_back(entry);
 		}
 
-		newCurves->generic.push_back({ name, curve });
-
 		mCurves = newCurves;
+
+		buildNameMapping();
+		mVersion++;
 	}
 
 	void AnimationClip::removePositionCurve(const String& name)
@@ -138,6 +146,9 @@ namespace BansheeEngine
 		}
 
 		mCurves = newCurves;
+
+		buildNameMapping();
+		mVersion++;
 	}
 
 	void AnimationClip::removeRotationCurve(const String& name)
@@ -154,6 +165,9 @@ namespace BansheeEngine
 		}
 
 		mCurves = newCurves;
+
+		buildNameMapping();
+		mVersion++;
 	}
 
 	void AnimationClip::removeScaleCurve(const String& name)
@@ -170,6 +184,9 @@ namespace BansheeEngine
 		}
 
 		mCurves = newCurves;
+
+		buildNameMapping();
+		mVersion++;
 	}
 
 	void AnimationClip::removeGenericCurve(const String& name)
@@ -186,6 +203,68 @@ namespace BansheeEngine
 		}
 
 		mCurves = newCurves;
+
+		buildNameMapping();
+		mVersion++;
+	}
+
+	void AnimationClip::buildNameMapping()
+	{
+		mNameMapping.clear();
+
+		auto registerEntries = [&](auto& curve, CurveType type)
+		{
+			UINT32 typeIdx = (UINT32)type;
+
+			for (UINT32 i = 0; i < (UINT32)curve.size(); i++)
+			{
+				auto& entry = curve[i];
+
+				auto iterFind = mNameMapping.find(entry.name);
+				if (iterFind == mNameMapping.end())
+				{
+					UINT32* indices = mNameMapping[entry.name];
+					memset(indices, -1, sizeof(UINT32) * 4);
+
+					indices[typeIdx] = i;
+				}
+				else
+					mNameMapping[entry.name][typeIdx] = i;
+			}
+		};
+
+		registerEntries(mCurves->position, CurveType::Position);
+		registerEntries(mCurves->rotation, CurveType::Rotation);
+		registerEntries(mCurves->scale, CurveType::Scale);
+		registerEntries(mCurves->generic, CurveType::Generic);
+	}
+
+	void AnimationClip::initialize()
+	{
+		buildNameMapping();
+
+		Resource::initialize();
+	}
+
+	void AnimationClip::getBoneMapping(const SPtr<Skeleton>& skeleton, AnimationCurveMapping* mapping)
+	{
+		UINT32 numBones = skeleton->getNumBones();
+		for(UINT32 i = 0; i < numBones; i++)
+		{
+			const SkeletonBoneInfo& boneInfo = skeleton->getBoneInfo(i);
+
+			auto iterFind = mNameMapping.find(boneInfo.name);
+			if(iterFind != mNameMapping.end())
+			{
+				UINT32* indices = iterFind->second;
+
+				mapping[i].position = indices[(UINT32)CurveType::Position];
+				mapping[i].rotation = indices[(UINT32)CurveType::Rotation];
+				mapping[i].scale = indices[(UINT32)CurveType::Scale];
+			}
+			else
+				mapping[i] = { (UINT32)-1, (UINT32)-1, (UINT32)-1 };
+		}
 	}
 
 	RTTITypeBase* AnimationClip::getRTTIStatic()

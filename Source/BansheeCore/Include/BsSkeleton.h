@@ -20,11 +20,10 @@ namespace BansheeEngine
 		Matrix4 invBindPose;
 	};
 
-	struct ANIMATION_STATE_DESC
+	struct ANIM_BLEND_STATE_DESC
 	{
 		const AnimationClip* clip;
 		float weight;
-		float speed;
 		bool loop;
 		UINT8 layer;
 	};
@@ -56,7 +55,11 @@ namespace BansheeEngine
 		~Skeleton();
 
 		void getPose(SkeletonPose& pose, const AnimationClip& clip, float time, bool loop = true);
-		void getPose(SkeletonPose& pose, const ANIMATION_STATE_DESC* states, UINT32 numStates, float time);
+		void getPose(SkeletonPose& pose, const ANIM_BLEND_STATE_DESC* states, UINT32 numStates, float time);
+
+		UINT32 getNumBones() const { return mNumBones; }
+		const SkeletonBoneInfo& getBoneInfo(UINT32 idx) const { return mBoneInfo[idx]; }
+		const Matrix4& getBindPose(UINT32 idx) const { return mBindPoses[idx]; }
 
 		static SPtr<Skeleton> create(BONE_DESC* bones, UINT32 numBones);
 

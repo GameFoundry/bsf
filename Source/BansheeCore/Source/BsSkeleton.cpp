@@ -38,17 +38,16 @@ namespace BansheeEngine
 
 	void Skeleton::getPose(SkeletonPose& pose, const AnimationClip& clip, float time, bool loop)
 	{
-		ANIMATION_STATE_DESC state;
+		ANIM_BLEND_STATE_DESC state;
 		state.clip = &clip;
 		state.layer = 0;
 		state.loop = loop;
-		state.speed = 1.0f;
 		state.weight = 1.0f;
 
 		getPose(pose, &state, 1, time);
 	}
 
-	void Skeleton::getPose(SkeletonPose& pose, const ANIMATION_STATE_DESC* states, UINT32 numStates, float time)
+	void Skeleton::getPose(SkeletonPose& pose, const ANIM_BLEND_STATE_DESC* states, UINT32 numStates, float time)
 	{
 		// TODO -Blend locally, normalize all weights to 1, layers for additive animations
 
