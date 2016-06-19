@@ -50,7 +50,7 @@ namespace BansheeEngine
 	}
 
 	template <class T>
-	T TAnimationCurve<T>::evaluate(const TCurveEvaluator<T>& animInstance, bool loop) const
+	T TAnimationCurve<T>::evaluate(const TCurveEvaluatorData<T>& animInstance, bool loop) const
 	{
 		if (mKeyframes.size() == 0)
 			return T();
@@ -177,7 +177,7 @@ namespace BansheeEngine
 	}
 
 	template <class T>
-	T TAnimationCurve<T>::evaluateCache(const TCurveEvaluator<T>& animInstance) const
+	T TAnimationCurve<T>::evaluateCache(const TCurveEvaluatorData<T>& animInstance) const
 	{
 		float t = animInstance.time - animInstance.cachedCurveStart;
 
@@ -186,7 +186,7 @@ namespace BansheeEngine
 	}
 
 	template <class T>
-	void TAnimationCurve<T>::findKeys(float time, const TCurveEvaluator<T>& animInstance, UINT32& leftKey, UINT32& rightKey) const
+	void TAnimationCurve<T>::findKeys(float time, const TCurveEvaluatorData<T>& animInstance, UINT32& leftKey, UINT32& rightKey) const
 	{
 		// Check nearby keys first if there is cached data
 		if (animInstance.cachedKey != (UINT32)-1)
@@ -257,6 +257,78 @@ namespace BansheeEngine
 
 		leftKey = start - 1;
 		rightKey = std::min(start, (INT32)mKeyframes.size() - 1);
+	}
+
+	template <class T>
+	UINT32 TAnimationCurve<T>::findKey(float time)
+	{
+		UINT32 leftKeyIdx;
+		UINT32 rightKeyIdx;
+
+		findKeys(time, leftKeyIdx, rightKeyIdx);
+
+		const KeyFrame& leftKey = mKeyframes[leftKeyIdx];
+		const KeyFrame& rightKey = mKeyframes[rightKeyIdx];
+
+		if (Math::abs(leftKey.time - time) <= Math::abs(rightKey.time - time))
+			return leftKeyIdx;
+		
+		return rightKeyIdx;
+	}
+
+	template <class T>
+	TKeyframe<T> TAnimationCurve<T>::evaluateKey(const KeyFrame& lhs, const KeyFrame& rhs, float time)
+	{
+		float length = rhs.time - lhs.time;
+		float t = (time - lhs.time) / length;
+
+		TKeyframe<T> output;
+		// TODO
+
+		return output;
+	}
+
+	template <class T>
+	TAnimationCurve<T> TAnimationCurve<T>::split(float start, float end)
+	{
+		Vector<TKeyframe<T>> keyFrames;
+
+		start = Math::clamp(start, mStart, mEnd);
+		end = Math::clamp(end, mStart, mEnd);
+
+		if (Math::approxEquals(end - start, 0.0f))
+			return TAnimationCurve<T>();
+
+		UINT32 startKeyIdx = findKey(start);
+		UINT32 endKeyIdx = findKey(end);
+
+		keyFrames.reserve(endKeyIdx - startKeyIdx + 2);
+
+		const KeyFrame& startKey = mKeyframes[startKeyIdx];
+		const KeyFrame& endKey = mKeyframes[endKeyIdx];
+
+		if(!Math::approxEquals(startKey.time, start))
+		{
+			keyFrames.push_back(evaluateKey(startKey, mKeyframes[startKeyIdx + 1], start));
+
+			if(start > startKey.time)
+				startKeyIdx++;
+		}
+
+		if(!Math::approxEquals(endKey.time, end))
+		{
+			keyFrames.push_back(evaluateKey(endKey, mKeyframes[endKeyIdx + 1], end));
+
+			if (end < endKey.time)
+				endKeyIdx--;
+		}
+
+		keyFrames.insert(keyFrames.begin(), mKeyframes.begin() + startKeyIdx, mKeyframes.begin() + endKeyIdx + 1);
+
+		for (auto& entry : keyFrames)
+			entry.time -= start;
+
+		return TAnimationCurve<T>(keyFrames);
 	}
 
 	template class TAnimationCurve<Vector3>;

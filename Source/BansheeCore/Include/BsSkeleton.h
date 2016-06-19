@@ -31,18 +31,26 @@ namespace BansheeEngine
 		Matrix4 invBindPose;
 	};
 
-	struct ANIM_BLEND_STATE_DESC
+	struct AnimationState
 	{
 		SPtr<AnimationCurves> curves;
 		Vector<AnimationCurveMapping> boneToCurveMapping;
 
-		TCurveEvaluator<Vector3> positionEval;
-		TCurveEvaluator<Quaternion> rotationEval;
-		TCurveEvaluator<Vector3> scaleEval;
+		TCurveEvaluatorData<Vector3> positionEval;
+		TCurveEvaluatorData<Quaternion> rotationEval;
+		TCurveEvaluatorData<Vector3> scaleEval;
 
 		float weight;
 		bool loop;
-		UINT8 layer;
+	};
+
+	struct AnimationStateLayer
+	{
+		AnimationState* states;
+		UINT32 numStates;
+
+		UINT8 index;
+		bool normalizeWeights;
 	};
 
 	struct SkeletonPose
@@ -69,9 +77,7 @@ namespace BansheeEngine
 		~Skeleton();
 
 		void getPose(SkeletonPose& pose, const AnimationClip& clip, float time, bool loop = true);
-
-		// Animations in same layer must be consecutive. Layers must be arranged in ascending order.
-		void getPose(SkeletonPose& pose, const ANIM_BLEND_STATE_DESC* states, UINT32 numStates);
+		void getPose(SkeletonPose& pose, const AnimationStateLayer* layers, UINT32 numLayers);
 
 		UINT32 getNumBones() const { return mNumBones; }
 		const SkeletonBoneInfo& getBoneInfo(UINT32 idx) const { return mBoneInfo[idx]; }

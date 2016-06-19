@@ -70,22 +70,27 @@ namespace BansheeEngine
 
 	void Skeleton::getPose(SkeletonPose& pose, const AnimationClip& clip, float time, bool loop)
 	{
-		ANIM_BLEND_STATE_DESC state;
+		AnimationState state;
 		state.curves = clip.getCurves();
-		state.layer = 0;
 		state.loop = loop;
 		state.weight = 1.0f;
 		state.positionEval.time = time;
 		state.rotationEval.time = time;
 		state.scaleEval.time = time;
 
+		AnimationStateLayer layer;
+		layer.index = 0;
+		layer.normalizeWeights = false;
+		layer.states = &state;
+		layer.numStates = 1;
+
 		state.boneToCurveMapping.resize(mNumBones);
 		clip.getBoneMapping(*this, state.boneToCurveMapping.data());
 
-		getPose(pose, &state, 1);
+		getPose(pose, &layer, 1);
 	}
 
-	void Skeleton::getPose(SkeletonPose& pose, const ANIM_BLEND_STATE_DESC* states, UINT32 numStates)
+	void Skeleton::getPose(SkeletonPose& pose, const AnimationStateLayer* layers, UINT32 numLayers)
 	{
 		assert(pose.numBones == mNumBones);
 
@@ -96,64 +101,50 @@ namespace BansheeEngine
 			pose.scales[i] = Vector3::ONE;
 		}
 
-		UINT32 stateIdx = 0;
-		UINT32 currentLayer = 0;
-		UINT32 numStatesInLayer = 0;
-		float layerWeight = 0.0f;
-
-		while(true)
+		for(UINT32 i = 0; i < numLayers; i++)
 		{
-			bool lastEntry = stateIdx == numStates;
-			if (lastEntry || currentLayer != states[stateIdx].layer)
+			const AnimationStateLayer& layer = layers[i];
+
+			float invLayerWeight;
+			if (layer.normalizeWeights)
 			{
-				if (!Math::approxEquals(layerWeight, 0.0f))
+				float weightSum = 0.0f;
+				for (UINT32 j = 0; j < layer.numStates; j++)
+					weightSum += layer.normalizeWeights;
+
+				invLayerWeight = 1.0f / weightSum;
+			}
+			else
+				invLayerWeight = 1.0f;
+
+
+			for (UINT32 j = 0; j < layer.numStates; j++)
+			{
+				const AnimationState& state = layer.states[i];
+
+				float normWeight = state.weight * invLayerWeight;
+				for (UINT32 k = 0; k < mNumBones; k++)
 				{
-					float invLayerWeight = 1.0f / layerWeight;
-					UINT32 start = stateIdx - numStatesInLayer;
+					const AnimationCurveMapping& mapping = state.boneToCurveMapping[k];
 
-					for (UINT32 i = start; i < stateIdx; i++)
+					if (mapping.position != (UINT32)-1)
 					{
-						const ANIM_BLEND_STATE_DESC& state = states[i];
+						const TAnimationCurve<Vector3>& curve = state.curves->position[mapping.position].curve;
+						pose.positions[k] += curve.evaluate(state.positionEval, state.loop) * normWeight;
+					}
 
-						float normWeight = state.weight * invLayerWeight;
-						for (UINT32 j = 0; j < mNumBones; j++)
-						{
-							const AnimationCurveMapping& mapping = state.boneToCurveMapping[j];
+					if (mapping.rotation != (UINT32)-1)
+					{
+						const TAnimationCurve<Quaternion>& curve = state.curves->rotation[mapping.rotation].curve;
+						pose.rotations[k] += curve.evaluate(state.rotationEval, state.loop) * normWeight;
+					}
 
-							if (mapping.position != (UINT32)-1)
-							{
-								const TAnimationCurve<Vector3>& curve = state.curves->position[mapping.position].curve;
-								pose.positions[j] += curve.evaluate(state.positionEval, state.loop) * normWeight;
-							}
-
-							if (mapping.rotation != (UINT32)-1)
-							{
-								const TAnimationCurve<Quaternion>& curve = state.curves->rotation[mapping.rotation].curve;
-								pose.rotations[j] += curve.evaluate(state.rotationEval, state.loop) * normWeight;
-							}
-
-							if (mapping.scale != (UINT32)-1)
-							{
-								const TAnimationCurve<Vector3>& curve = state.curves->scale[mapping.scale].curve;
-								pose.scales[j] += curve.evaluate(state.scaleEval, state.loop) * normWeight;
-							}
-						}
+					if (mapping.scale != (UINT32)-1)
+					{
+						const TAnimationCurve<Vector3>& curve = state.curves->scale[mapping.scale].curve;
+						pose.scales[k] += curve.evaluate(state.scaleEval, state.loop) * normWeight;
 					}
 				}
-
-				numStatesInLayer = 0;
-				layerWeight = 0.0f;
-
-				if (lastEntry)
-					break;
-			}
-
-			{
-				const ANIM_BLEND_STATE_DESC& state = states[stateIdx];
-				currentLayer = state.layer;
-				layerWeight += state.weight;
-				numStatesInLayer++;
-				stateIdx++;
 			}
 		}
 

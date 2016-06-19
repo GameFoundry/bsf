@@ -519,7 +519,8 @@ namespace BansheeEngine
 		TID_KeyFrame = 1117,
 		TID_NamedAnimationCurve = 1118,
 		TID_Skeleton = 1119,
-		TID_SkeletonBoneInfo = 1120
+		TID_SkeletonBoneInfo = 1120,
+		TID_AnimationSplitInfo = 1121
 	};
 }
 

@@ -15,10 +15,10 @@ namespace BansheeEngine
 	 * You should not use the same instance of this object for evaluating multiple different animation curves.
 	 */
 	template <class T>
-	struct TCurveEvaluator
+	struct TCurveEvaluatorData
 	{
 	public:
-		TCurveEvaluator()
+		TCurveEvaluatorData()
 			: time(0.0f), cachedKey((UINT32)-1), cachedCurveStart(std::numeric_limits<float>::infinity())
 			, cachedCurveEnd(0.0f), cachedCubicCoefficients()
 		{ }

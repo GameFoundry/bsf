@@ -5,6 +5,19 @@
 
 namespace BansheeEngine
 {
+	/************************************************************************/
+	/* 								SERIALIZATION                      		*/
+	/************************************************************************/
+	RTTITypeBase* AnimationSplitInfo::getRTTIStatic()
+	{
+		return AnimationSplitInfoRTTI::instance();
+	}
+
+	RTTITypeBase* AnimationSplitInfo::getRTTI() const
+	{
+		return AnimationSplitInfo::getRTTIStatic();
+	}
+
 	MeshImportOptions::MeshImportOptions()
 		:mCPUReadable(false), mImportNormals(true), mImportTangents(true),
 		mImportBlendShapes(false), mImportSkin(false), mImportAnimation(false),
