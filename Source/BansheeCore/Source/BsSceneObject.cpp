@@ -683,6 +683,8 @@ namespace BansheeEngine
 
 	HSceneObject SceneObject::clone(bool instantiate)
 	{
+		UINT32 flags = mFlags;
+
 		if (!instantiate)
 			setFlags(SOF_DontInstantiate);
 		else
@@ -697,10 +699,7 @@ namespace BansheeEngine
 		SPtr<SceneObject> cloneObj = std::static_pointer_cast<SceneObject>(serializer.decode(buffer, bufferSize));
 		bs_free(buffer);
 
-		if (!instantiate)
-			unsetFlags(SOF_DontInstantiate);
-		else
-			setFlags(SOF_DontInstantiate);
+		mFlags = flags;
 
 		return cloneObj->mThisHandle;
 	}
