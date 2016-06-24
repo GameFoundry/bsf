@@ -15,7 +15,10 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
-	/** Contains indices for position/rotation/scale animation curves. */
+	/** 
+	 * Contains indices for position/rotation/scale animation curves. Used for quick mapping of bones in a skeleton to 
+	 * relevant animation curves. 
+	 */
 	struct AnimationCurveMapping
 	{
 		UINT32 position;
@@ -23,66 +26,119 @@ namespace BansheeEngine
 		UINT32 scale;
 	};
 
+	/** Information about a single bone used for constructing a skeleton. */
 	struct BONE_DESC
 	{
-		String name;
-		UINT32 parent;
+		String name; /**< Unique name of the bone. */
+		UINT32 parent; /**< Index of the parent bone, if any. -1 if root bone. */
 
-		Matrix4 invBindPose;
+		Matrix4 invBindPose; /**< Inverse bind pose which transforms vertices from their bind pose into local space. */
 	};
 
+	/** Contains information about a single playing animation clip. */
 	struct AnimationState
 	{
-		SPtr<AnimationCurves> curves;
-		Vector<AnimationCurveMapping> boneToCurveMapping;
+		SPtr<AnimationCurves> curves; /**< All curves in the animation clip. */
+		AnimationCurveMapping* boneToCurveMapping; /**< Mapping of bone indices to curve indices for quick lookup .*/
 
-		TCurveEvaluatorData<Vector3> positionEval;
-		TCurveEvaluatorData<Quaternion> rotationEval;
-		TCurveEvaluatorData<Vector3> scaleEval;
+		TCurveEvaluatorData<Vector3> positionEval; /**< Time value and cache used for evaluating position curves. */
+		TCurveEvaluatorData<Quaternion> rotationEval; /**< Time value and cache used for evaluating rotation curves. */
+		TCurveEvaluatorData<Vector3> scaleEval; /**< Time value and cache used for evaluating scale curves. */
 
-		float weight;
-		bool loop;
+		float weight; /**< Determines how much of an influence will this clip have in regard to others in the same layer. */
+		bool loop; /**< Determines should the animation loop (wrap) once ending or beginning frames are passed. */
 	};
 
+	/** Contains animation states for a single animation layer. */
 	struct AnimationStateLayer
 	{
-		AnimationState* states;
-		UINT32 numStates;
+		AnimationState* states; /**< Array of animation states in the layer. */
+		UINT32 numStates; /**< Number of states in @p states. */
 
-		UINT8 index;
-		bool normalizeWeights;
+		UINT8 index; /**< Unique index of the animation layer. */
+
+		/** 
+		 * Determines should weights of individual states be normalized or kept as is. Non-normalized weights allow the 
+		 * total contribution of all states to be less than one. 
+		 */
+		bool normalizeWeights; 
 	};
 
+	/** 
+	 * Contains information about translation, rotation and scale for every skeleton bone, after being evaluated at a
+	 * a specific time. All values are stored in the same order as the bones in the skeleton they were created by.
+	 */
 	struct SkeletonPose
 	{
+		SkeletonPose();
 		SkeletonPose(UINT32 numBones);
 		~SkeletonPose();
 
-		Matrix4* bonePoses; // Global bone poses
-		Vector3* positions; // Local positions
-		Quaternion* rotations; // Local rotations
-		Vector3* scales; // Local scales
-		UINT32 numBones;
+		/**< Global matrices transforming vectors from bind pose space to model space at specific animation time. */
+		Matrix4* bonePoses; 
+		Vector3* positions; /**< Local bone positions at specific animation time. */
+		Quaternion* rotations; /**< Local bone rotations at specific animation time. */
+		Vector3* scales; /**< Local bone scales at specific animation time. */
+		UINT32 numBones; /**< Number of bones in the pose. */
 	};
 
+	/** Contains internal information about a single bone in a Skeleton. */
 	struct SkeletonBoneInfo
 	{
-		String name;
-		UINT32 parent;
+		String name; /**< Unique name of the bone. */
+		UINT32 parent; /**< Index of the bone parent, or -1 if root (no parent). */
 	};
 
+	/** 
+	 * Contains information about bones required for skeletal animation. Allows caller to evaluate a set of animation
+	 * clips at a specific time and output the relevant skeleton pose.
+	 */
 	class BS_CORE_EXPORT Skeleton : public IReflectable // Note: Must be immutable in order to be usable on multiple threads
 	{
 	public:
 		~Skeleton();
 
+		/** 
+		 * Outputs a skeleton pose containing required transforms for transforming the skeleton to the values specified by
+		 * the provided animation clip evaluated at the specified time.
+		 *
+		 * @param[out]	pose	Output pose containing the requested transforms. Must be pre-allocated with enough space
+		 *						to hold all the bone data of this skeleton.
+		 * @param[in]	clip	Clip to evaluate.
+		 * @param[in]	time	Time to evaluate the clip with.
+		 * @param[in]	loop	Determines should the time be looped (wrapped) if it goes past the clip start/end.
+		 *
+		 * @note	It is more efficient to use the other getPose overload as sequential calls can benefit from animation
+		 *			evaluator cache.
+		 */
 		void getPose(SkeletonPose& pose, const AnimationClip& clip, float time, bool loop = true);
+
+		/** 
+		 * Outputs a skeleton pose containing required transforms for transforming the skeleton to the values specified by
+		 * the provided set of animation curves.
+		 *
+		 * @param[out]	pose		Output pose containing the requested transforms. Must be pre-allocated with enough space
+		 *							to hold all the bone data of this skeleton.
+		 * @param[in]	layers		One or multiple layers, containing one or multiple animation states to evaluate.
+		 * @param[in]	numLayers	Number of layers in the @p layers array.
+		 */
 		void getPose(SkeletonPose& pose, const AnimationStateLayer* layers, UINT32 numLayers);
 
+		/** Returns the total number of bones in the skeleton. */
 		UINT32 getNumBones() const { return mNumBones; }
-		const SkeletonBoneInfo& getBoneInfo(UINT32 idx) const { return mBoneInfo[idx]; }
-		const Matrix4& getBindPose(UINT32 idx) const { return mInvBindPoses[idx]; }
 
+		/** Returns information about a bone at the provided index. */
+		const SkeletonBoneInfo& getBoneInfo(UINT32 idx) const { return mBoneInfo[idx]; }
+
+		/** Returns the inverse bind pose for the bone at the provided index. */
+		const Matrix4& getInvBindPose(UINT32 idx) const { return mInvBindPoses[idx]; }
+
+		/** 
+		 * Creates a new Skeleton. 
+		 *
+		 * @param[in]	bones		An array of bones to initialize the skeleton with. Data will be copied.
+		 * @param[in]	numBones	Number of bones in the @p bones array.
+		 */
 		static SPtr<Skeleton> create(BONE_DESC* bones, UINT32 numBones);
 
 	private:

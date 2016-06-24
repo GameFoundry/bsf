@@ -6,6 +6,10 @@
 
 namespace BansheeEngine
 {
+	SkeletonPose::SkeletonPose()
+		: bonePoses(nullptr), positions(nullptr), rotations(nullptr), scales(nullptr), numBones(0)
+	{ }
+
 	SkeletonPose::SkeletonPose(UINT32 numBones)
 		: numBones(numBones)
 	{
@@ -34,7 +38,8 @@ namespace BansheeEngine
 
 	SkeletonPose::~SkeletonPose()
 	{
-		bs_free(bonePoses);
+		if(bonePoses != nullptr)
+			bs_free(bonePoses);
 	}
 
 	Skeleton::Skeleton()
@@ -70,8 +75,11 @@ namespace BansheeEngine
 
 	void Skeleton::getPose(SkeletonPose& pose, const AnimationClip& clip, float time, bool loop)
 	{
+		Vector<AnimationCurveMapping> boneToCurveMapping(mNumBones);
+
 		AnimationState state;
 		state.curves = clip.getCurves();
+		state.boneToCurveMapping = boneToCurveMapping.data();
 		state.loop = loop;
 		state.weight = 1.0f;
 		state.positionEval.time = time;
@@ -84,8 +92,7 @@ namespace BansheeEngine
 		layer.states = &state;
 		layer.numStates = 1;
 
-		state.boneToCurveMapping.resize(mNumBones);
-		clip.getBoneMapping(*this, state.boneToCurveMapping.data());
+		clip.getBoneMapping(*this, state.boneToCurveMapping);
 
 		getPose(pose, &layer, 1);
 	}
