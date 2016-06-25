@@ -15,6 +15,8 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
+	struct AnimationSplitInfo;
+
 	/** Importer implementation that handles FBX/OBJ/DAE/3DS file import by using the FBX SDK. */
 	class BS_FBX_EXPORT FBXImporter : public SpecificImporter
 	{
@@ -99,7 +101,8 @@ namespace BansheeEngine
 		void importCurve(FbxAnimCurve* fbxCurve, FBXImportOptions& importOptions, FBXAnimationCurve& curve, float start, float end);
 
 		/** Converts FBX animation clips into engine-ready animation curve format. */
-		void convertAnimations(const Vector<FBXAnimationClip>& clips, UnorderedMap<String, SPtr<AnimationCurves>>& output);
+		void convertAnimations(const Vector<FBXAnimationClip>& clips, const Vector<AnimationSplitInfo>& splits, 
+			UnorderedMap<String, SPtr<AnimationCurves>>& output);
 
 		/**	Converts a set of curves containing rotation in euler angles into a set of curves using	quaternion rotation. */
 		void eulerToQuaternionCurves(FBXAnimationCurve(&eulerCurves)[3], FBXAnimationCurve(&quatCurves)[4]);

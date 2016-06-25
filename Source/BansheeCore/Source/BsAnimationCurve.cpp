@@ -478,6 +478,12 @@ namespace BansheeEngine
 		return TAnimationCurve<T>(keyFrames);
 	}
 
+	template <class T>
+	void TAnimationCurve<T>::makeAdditive()
+	{
+		
+	}
+
 	template class TAnimationCurve<Vector3>;
 	template class TAnimationCurve<Quaternion>;
 	template class TAnimationCurve<float>;

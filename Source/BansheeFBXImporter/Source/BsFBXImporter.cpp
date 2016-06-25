@@ -225,7 +225,10 @@ namespace BansheeEngine
 
 		// Import animation clips
 		if (!importedScene.clips.empty())
-			convertAnimations(importedScene.clips, animation);
+		{
+			Vector<AnimationSplitInfo> splits = meshImportOptions->getAnimationClipSplits();
+			convertAnimations(importedScene.clips, splits, animation);
+		}
 
 		// TODO - Later: Optimize mesh: Remove bad and degenerate polygons, weld nearby vertices, optimize for vertex cache
 
@@ -419,14 +422,14 @@ namespace BansheeEngine
 		scene.meshes = splitMeshes;
 	}
 
-	void FBXImporter::convertAnimations(const Vector<FBXAnimationClip>& clips, 
+	void FBXImporter::convertAnimations(const Vector<FBXAnimationClip>& clips, const Vector<AnimationSplitInfo>& splits,
 		UnorderedMap<String, SPtr<AnimationCurves>>& output)
 	{
+		bool isFirstClip = true;
 		for (auto& clip : clips)
 		{
 			SPtr<AnimationCurves> curves = bs_shared_ptr_new<AnimationCurves>();
-			output.insert(std::make_pair(clip.name, curves));
-
+			
 			for (auto& bone : clip.boneAnimations)
 			{
 				// Translation curves
@@ -503,6 +506,72 @@ namespace BansheeEngine
 					curves->scale.push_back({ bone.node->name, keyFrames });
 				}
 			}
+
+			// See if any splits are required. We only split the first clip as it is assumed if FBX has multiple clips the
+			// user has the ability to split them externally.
+			if(isFirstClip && !splits.empty())
+			{
+				for(auto& split : splits)
+				{
+					SPtr<AnimationCurves> splitClipCurve = bs_shared_ptr_new<AnimationCurves>();
+
+					auto splitCurves = [&](auto& inCurves, auto& outCurves)
+					{
+						UINT32 numCurves = inCurves.size();
+						outCurves.resize(numCurves);
+
+						for (UINT32 i = 0; i < numCurves; i++)
+						{
+							TAnimationCurve<Vector3>& animCurve = inCurves[i].curve;
+							outCurves[i].name = inCurves[i].name;
+
+							UINT32 numFrames = animCurve.getNumKeyFrames();
+							if (numFrames == 0)
+								continue;
+
+							UINT32 lastFrame = numFrames - 1;
+							float startTime = animCurve.getKeyFrame(std::min(split.startFrame, lastFrame)).time;
+							float endTime = animCurve.getKeyFrame(std::min(split.endFrame, lastFrame)).time;
+
+							outCurves[i].curve = inCurves->position[i].curve.split(startTime, endTime);
+
+							if (split.isAdditive)
+								outCurves[i].curve->makeAdditive();
+						}
+					};
+
+					splitCurves(curves->position, splitClipCurve->position);
+					splitCurves(curves->rotation, splitClipCurve->rotation);
+					splitCurves(curves->scale, splitClipCurve->scale);
+					splitCurves(curves->generic, splitClipCurve->generic);
+
+					// Search for a unique name
+					String name = split.name;
+					UINT32 attemptIdx = 0;
+					while (output.find(name) != output.end())
+					{
+						name = clip.name + "_" + toString(attemptIdx);
+						attemptIdx++;
+					}
+
+					output.insert(std::make_pair(name, splitClipCurve));
+				}
+			}
+			else
+			{
+				// Search for a unique name
+				String name = clip.name;
+				UINT32 attemptIdx = 0;
+				while(output.find(name) != output.end())
+				{
+					name = clip.name + "_" + toString(attemptIdx);
+					attemptIdx++;
+				}
+
+				output.insert(std::make_pair(name, curves));
+			}
+
+			isFirstClip = false;
 		}
 	}
 

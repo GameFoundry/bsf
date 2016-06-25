@@ -69,6 +69,19 @@ namespace BansheeEngine
 		 */
 		TAnimationCurve<T> split(float start, float end);
 
+		/** 
+		 * Converts a normal curve into an additive curve. It is assumed the first keyframe in the curve is the reference
+		 * key from which to generate the additive curve. Such curves can then be added on top of a curve containing
+		 * reference keys.
+		 */
+		void makeAdditive();
+
+		/** Returns the total number of key-frames in the curve. */
+		UINT32 getNumKeyFrames() const { return (UINT32)mKeyframes.size(); }
+
+		/** Returns a keyframe at the specified index. */
+		const TKeyframe<T>& getKeyFrame(UINT32 idx) const { return mKeyframes[idx]; }
+
 	private:
 		friend struct RTTIPlainType<TAnimationCurve<T>>;
 

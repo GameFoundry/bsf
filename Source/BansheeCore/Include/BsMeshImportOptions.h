@@ -22,10 +22,12 @@ namespace BansheeEngine
 	/** Contains information about a piece of imported animation that will be used for generating its own AnimationClip. */
 	struct AnimationSplitInfo : IReflectable
 	{
+		AnimationSplitInfo() { }
+
 		String name;
-		UINT32 startFrame;
-		UINT32 endFrame;
-		bool isAdditive;
+		UINT32 startFrame = 0;
+		UINT32 endFrame = 0;
+		bool isAdditive = false;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/
@@ -113,6 +115,9 @@ namespace BansheeEngine
 
 		/** Removes an animation split info at the specified index. */
 		void removeAnimationClipSplit(UINT32 idx) { mAnimationSplits.erase(mAnimationSplits.begin() + idx); }
+
+		/** Returns a copy of the animation splits array. */
+		Vector<AnimationSplitInfo> getAnimationClipSplits() const { return mAnimationSplits; }
 
 	private:
 		bool mCPUReadable;
