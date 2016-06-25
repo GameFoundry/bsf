@@ -7,6 +7,8 @@
 
 namespace BansheeEngine
 {
+	struct AnimationProxy;
+
 	/** @addtogroup Animation-Internal
 	 *  @{
 	 */
@@ -20,6 +22,29 @@ namespace BansheeEngine
 	public:
 		AnimationManager();
 
+		/** Pauses or resumes the animation evaluation. */
+		void setPaused(bool paused);
+
+		/** 
+		 * Determines how often to evaluate animations. If rendering is not running at adequate framerate the animation
+		 * could end up being evaluated less times than specified here.
+		 *
+		 * @param[in]	fps		Number of frames per second to evaluate the animation. Default is 60.
+		 */
+		void setUpdateRate(UINT32 fps);
+
+		/** 
+		 * Synchronizes animation data from the animation thread with the scene objects. Should be called before component
+		 * updates are sent. 
+		 */
+		void preUpdate();
+
+		/**
+		 * Synchronizes animation data to the animation thread, advances animation time and queues new animation evaluation
+		 * task.
+		 */
+		void postUpdate();
+
 	private:
 		friend class Animation;
 
@@ -31,8 +56,22 @@ namespace BansheeEngine
 		/** Unregisters an animation with the specified ID. Must be called before an Animation is destroyed. */
 		void unregisterAnimation(UINT64 id);
 
+		/** Worker method ran on the animation thread that evaluates all animation at the provided time. */
+		void evaluateAnimation();
+
 		UINT64 mNextId;
 		UnorderedMap<UINT64, Animation*> mAnimations;
+		
+		float mUpdateRate;
+		float mAnimationTime;
+		float mLastAnimationUpdateTime;
+		float mNextAnimationUpdateTime;
+		bool mPaused;
+
+		bool mWorkerRunning;
+		SPtr<Task> mAnimationWorker;
+
+		Vector<SPtr<AnimationProxy>> mProxies;
 	};
 
 	/** @} */

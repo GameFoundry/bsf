@@ -31,8 +31,9 @@ namespace BansheeEngine
 	enum class AnimDirtyStateFlag
 	{
 		Clean = 0,
-		Value = 1,
-		Layout = 2
+		Value = 1 << 0,
+		Layout = 1 << 1,
+		Skeleton = 1 << 2
 	};
 
 	typedef Flags<AnimDirtyStateFlag> AnimDirtyState;
@@ -55,11 +56,19 @@ namespace BansheeEngine
 	/** Internal information about a single playing animation clip within Animation. */
 	struct PlayingClipInfo
 	{
-		PlayingClipInfo() { }
+		PlayingClipInfo();
 		PlayingClipInfo(const HAnimationClip& clip);
 
 		HAnimationClip clip;
 		AnimationClipState state;
+
+		/** 
+		 * Version of the animation curves used by the AnimationProxy. Used to detecting the internal animation curves
+		 * changed. 
+		 */
+		UINT64 curveVersion; 
+		UINT32 layerIdx; /**< Layer index this clip belongs to in AnimationProxy structure. */
+		UINT32 stateIdx; /**< State index this clip belongs to in AnimationProxy structure. */
 	};
 
 	/** Represents a copy of the Animation data for use specifically on the animation thread. */
@@ -69,30 +78,41 @@ namespace BansheeEngine
 		~AnimationProxy();
 
 		/** 
-		 * Updates the proxy data with a new skeleton and clips. Very expensive update operation.
+		 * Rebuilds the internal proxy data according to the newly assigned skeleton and clips. This should be called
+		 * whenever the animation skeleton changes.
+		 *
+		 * @param[in]		skeleton	New skeleton to assign to the proxy.
+		 * @param[in, out]	clipInfos	Potentially new clip infos that will be used for rebuilding the proxy. Once the
+		 *								method completes clip info layout and state indices will be populated for 
+		 *								further use in the update*() methods.
 		 *
 		 * @note	Should be called from the sim thread when the caller is sure the animation thread is not using it.
 		 */
-		void updateSkeleton(const SPtr<Skeleton>& skeleton, const Vector<PlayingClipInfo>& clipInfos);
+		void rebuild(const SPtr<Skeleton>& skeleton, Vector<PlayingClipInfo>& clipInfos);
 
 		/** 
-		 * Updates the proxy data with new clips. Very expensive update operation.
+		 * Rebuilds the internal proxy data according to the newly clips. This should be called whenever clips are added
+		 * or removed, or clip layout indices change.
+		 *
+		 * @param[in, out]	clipInfos	New clip infos that will be used for rebuilding the proxy. Once the method completes
+		 *								clip info layout and state indices will be populated for further use in the
+		 *								update*() methods.
 		 *
 		 * @note	Should be called from the sim thread when the caller is sure the animation thread is not using it.
 		 */
-		void updateLayout(const Vector<PlayingClipInfo>& clipInfos);
+		void rebuild(Vector<PlayingClipInfo>& clipInfos);
 
 		/** 
 		 * Updates the proxy data with new information about the clips. Caller must guarantee that clip layout didn't 
-		 * change. Fairly cheap update operation.
+		 * change since the last call to rebuild().
 		 *
 		 * @note	Should be called from the sim thread when the caller is sure the animation thread is not using it.
 		 */
 		void updateValues(const Vector<PlayingClipInfo>& clipInfos);
 
 		/** 
-		 * Updates the proxy data with new clip times. Caller must guarantee that clip layout didn't change. Very cheap
-		 * update operation.
+		 * Updates the proxy data with new clip times. Caller must guarantee that clip layout didn't change since the last
+		 * call to rebuild().
 		 *
 		 * @note	Should be called from the sim thread when the caller is sure the animation thread is not using it.
 		 */
@@ -217,7 +237,7 @@ namespace BansheeEngine
 		Vector<PlayingClipInfo> mPlayingClips;
 
 		// Animation thread only
-		AnimationProxy mAnimProxy;
+		SPtr<AnimationProxy> mAnimProxy;
 	};
 
 	/** @} */

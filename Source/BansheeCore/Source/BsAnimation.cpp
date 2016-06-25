@@ -6,8 +6,12 @@
 
 namespace BansheeEngine
 {
+	PlayingClipInfo::PlayingClipInfo()
+		:layerIdx(0), stateIdx(0)
+	{ }
+
 	PlayingClipInfo::PlayingClipInfo(const HAnimationClip& clip)
-		:clip(clip)
+		:clip(clip), layerIdx(0), stateIdx(0)
 	{ }
 
 	AnimationProxy::AnimationProxy()
@@ -20,15 +24,19 @@ namespace BansheeEngine
 			bs_free(layers);
 	}
 
-	void AnimationProxy::updateSkeleton(const SPtr<Skeleton>& skeleton, const Vector<PlayingClipInfo>& clipInfos)
+	void AnimationProxy::rebuild(const SPtr<Skeleton>& skeleton, Vector<PlayingClipInfo>& clipInfos)
 	{
 		this->skeleton = skeleton;
-		pose = SkeletonPose(skeleton->getNumBones());
 
-		updateLayout(clipInfos);
+		if (skeleton != nullptr)
+			pose = SkeletonPose(skeleton->getNumBones());
+		else
+			pose = SkeletonPose();
+
+		rebuild(clipInfos);
 	}
 
-	void AnimationProxy::updateLayout(const Vector<PlayingClipInfo>& clipInfos)
+	void AnimationProxy::rebuild(Vector<PlayingClipInfo>& clipInfos)
 	{
 		if (layers != nullptr)
 			bs_free(layers);
@@ -62,7 +70,12 @@ namespace BansheeEngine
 
 			UINT32 numLayers = (UINT32)tempLayers.size();
 			UINT32 numClips = (UINT32)clipInfos.size();
-			UINT32 numBones = skeleton->getNumBones();
+			UINT32 numBones;
+			
+			if (skeleton != nullptr)
+				numBones = skeleton->getNumBones();
+			else
+				numBones = 0;
 
 			UINT32 layersSize = sizeof(AnimationStateLayer) * numLayers;
 			UINT32 clipsSize = sizeof(AnimationState) * numClips;
@@ -77,6 +90,8 @@ namespace BansheeEngine
 			data += clipsSize;
 
 			AnimationCurveMapping* boneMappings = (AnimationCurveMapping*)data;
+			
+			UINT32 curLayerIdx = 0;
 			UINT32 curStateIdx = 0;
 
 			for(auto& layer : tempLayers)
@@ -84,6 +99,7 @@ namespace BansheeEngine
 				layer.states = &states[curStateIdx];
 				layer.numStates = 0;
 
+				UINT32 localStateIdx = 0;
 				for(auto& clipInfo : clipInfos)
 				{
 					if (clipInfo.state.layer != layer.index)
@@ -92,7 +108,6 @@ namespace BansheeEngine
 					new (&states[curStateIdx]) AnimationState();
 					AnimationState& state = states[curStateIdx];
 					state.curves = clipInfo.clip->getCurves();
-					state.boneToCurveMapping = &boneMappings[curStateIdx * numBones];
 					state.weight = clipInfo.state.weight;
 					state.loop = clipInfo.state.wrapMode == AnimWrapMode::Loop;
 
@@ -100,11 +115,24 @@ namespace BansheeEngine
 					state.rotationEval.time = clipInfo.state.time;
 					state.scaleEval.time = clipInfo.state.time;
 
-					clipInfo.clip->getBoneMapping(*skeleton, state.boneToCurveMapping);
+					clipInfo.layerIdx = curLayerIdx;
+					clipInfo.stateIdx = localStateIdx;
+					clipInfo.curveVersion = clipInfo.clip->getVersion();
+
+					if (skeleton != nullptr)
+					{
+						state.boneToCurveMapping = &boneMappings[curStateIdx * numBones];
+						clipInfo.clip->getBoneMapping(*skeleton, state.boneToCurveMapping);
+					}
+					else
+						state.boneToCurveMapping = nullptr;
 
 					layer.numStates++;
 					curStateIdx++;
+					localStateIdx++;
 				}
+
+				curLayerIdx++;
 
 				// Must be larger than zero otherwise the layer.states pointer will point to data held by some other layer
 				assert(layer.numStates > 0);
@@ -115,17 +143,35 @@ namespace BansheeEngine
 
 	void AnimationProxy::updateValues(const Vector<PlayingClipInfo>& clipInfos)
 	{
-		// TODO
+		for(auto& clipInfo : clipInfos)
+		{
+			AnimationState& state = layers[clipInfo.layerIdx].states[clipInfo.stateIdx];
+
+			state.loop = clipInfo.state.wrapMode == AnimWrapMode::Loop;
+			state.weight = clipInfo.state.weight;
+
+			state.positionEval.time = clipInfo.state.time;
+			state.rotationEval.time = clipInfo.state.time;
+			state.scaleEval.time = clipInfo.state.time;
+		}
 	}
 
 	void AnimationProxy::updateTime(const Vector<PlayingClipInfo>& clipInfos)
 	{
-		// TODO
+		for (auto& clipInfo : clipInfos)
+		{
+			AnimationState& state = layers[clipInfo.layerIdx].states[clipInfo.stateIdx];
+
+			state.positionEval.time = clipInfo.state.time;
+			state.rotationEval.time = clipInfo.state.time;
+			state.scaleEval.time = clipInfo.state.time;
+		}
 	}
 
 	Animation::Animation()
-		:mDefaultWrapMode(AnimWrapMode::Loop), mDefaultSpeed(1.0f), mDirty(AnimDirtyStateFlag::Clean)
+		:mDefaultWrapMode(AnimWrapMode::Loop), mDefaultSpeed(1.0f), mDirty(AnimDirtyStateFlag::Skeleton)
 	{
+		mAnimProxy = bs_shared_ptr_new<AnimationProxy>();
 		mId = AnimationManager::instance().registerAnimation(this);
 	}
 
@@ -137,7 +183,7 @@ namespace BansheeEngine
 	void Animation::setSkeleton(const SPtr<Skeleton>& skeleton)
 	{
 		mSkeleton = skeleton;
-		mDirty |= AnimDirtyStateFlag::Layout;
+		mDirty |= AnimDirtyStateFlag::Skeleton;
 	}
 
 	void Animation::setWrapMode(AnimWrapMode wrapMode)
@@ -273,20 +319,29 @@ namespace BansheeEngine
 
 	void Animation::updateAnimProxy(float timeDelta)
 	{
-		// TODO - Ensure that animation task is not running (also perhaps another memory barrier before start?)
-		
-		// TODO - Skeleton might not be available but I'm assuming it will be in the Proxy (and possibly at other places)
-		//   - In order to allow TRS animation without a skeleton, always provide a single-bone skeleton?
+		// Check if any of the clip curves are dirty and advance time
+		for (auto& clipInfo : mPlayingClips)
+		{
+			clipInfo.state.time += timeDelta * clipInfo.state.speed;
 
-		// TODO - Check if any of the clip curves are dirty
+			if (clipInfo.curveVersion != clipInfo.clip->getVersion())
+				mDirty |= AnimDirtyStateFlag::Layout;
+		}
 
-		// TODO - If layout dirty, do full rebuild
-		//      - If value dirty, update all values
-		//      - If nothing dirty, just advance the times
+		if((UINT32)mDirty == 0) // Clean
+		{
+			mAnimProxy->updateTime(mPlayingClips);
+		}
+		else
+		{
+			if (mDirty.isSet(AnimDirtyStateFlag::Skeleton))
+				mAnimProxy->rebuild(mSkeleton, mPlayingClips);
+			else if (mDirty.isSet(AnimDirtyStateFlag::Layout))
+				mAnimProxy->rebuild(mPlayingClips);
+			else if (mDirty.isSet(AnimDirtyStateFlag::Value))
+				mAnimProxy->updateValues(mPlayingClips);
+		}
 
-		// TODO - Make sure anim manager performs a memory barrier after these calls
+		mDirty = AnimDirtyState();
 	}
-
-	
-	// TODO - When non-looping clips reach the end make sure to remove them from the playing clips list
 }

@@ -99,6 +99,8 @@ namespace BansheeEngine
 
 	void Skeleton::getPose(SkeletonPose& pose, const AnimationStateLayer* layers, UINT32 numLayers)
 	{
+		// Note: If more performance is required this method could be optimized with vector instructions
+
 		assert(pose.numBones == mNumBones);
 
 		for(UINT32 i = 0; i < mNumBones; i++)
