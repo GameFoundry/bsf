@@ -8,6 +8,120 @@
 
 namespace BansheeEngine
 {
+	/** 
+	 * Checks if any components of the keyframes are constant (step) functions and updates the hermite curve coefficients
+	 * accordingly.
+	 */
+	void setStepCoefficients(const TKeyframe<float>& lhs, const TKeyframe<float>& rhs, float (&coefficients)[4])
+	{
+		if (lhs.outTangent != std::numeric_limits<float>::infinity() &&
+			rhs.inTangent != std::numeric_limits<float>::infinity())
+			return;
+
+		coefficients[0] = 0.0f;
+		coefficients[1] = 0.0f;
+		coefficients[2] = 0.0f;
+		coefficients[3] = lhs.value;
+	}
+
+	void setStepCoefficients(const TKeyframe<Vector3>& lhs, const TKeyframe<Vector3>& rhs, Vector3(&coefficients)[4])
+	{
+		for(UINT32 i = 0; i < 3; i++)
+		{
+			if (lhs.outTangent[i] != std::numeric_limits<float>::infinity() &&
+				rhs.inTangent[i] != std::numeric_limits<float>::infinity())
+				continue;
+
+			coefficients[0][i] = 0.0f;
+			coefficients[1][i] = 0.0f;
+			coefficients[2][i] = 0.0f;
+			coefficients[3][i] = lhs.value[i];
+		}
+	}
+
+	void setStepCoefficients(const TKeyframe<Quaternion>& lhs, const TKeyframe<Quaternion>& rhs, Quaternion(&coefficients)[4])
+	{
+		for (UINT32 i = 0; i < 4; i++)
+		{
+			if (lhs.outTangent[i] != std::numeric_limits<float>::infinity() &&
+				rhs.inTangent[i] != std::numeric_limits<float>::infinity())
+				continue;
+
+			coefficients[0][i] = 0.0f;
+			coefficients[1][i] = 0.0f;
+			coefficients[2][i] = 0.0f;
+			coefficients[3][i] = lhs.value[i];
+		}
+	}
+
+	/** Checks if any components of the keyframes are constant (step) functions and updates the key value. */
+	void setStepValue(const TKeyframe<float>& lhs, const TKeyframe<float>& rhs, float& value)
+	{
+		if (lhs.outTangent != std::numeric_limits<float>::infinity() &&
+			rhs.inTangent != std::numeric_limits<float>::infinity())
+			return;
+
+		value = lhs.value;
+	}
+
+	void setStepValue(const TKeyframe<Vector3>& lhs, const TKeyframe<Vector3>& rhs, Vector3& value)
+	{
+		for (UINT32 i = 0; i < 3; i++)
+		{
+			if (lhs.outTangent[i] != std::numeric_limits<float>::infinity() &&
+				rhs.inTangent[i] != std::numeric_limits<float>::infinity())
+				continue;
+
+			value[i] = lhs.value[i];
+		}
+	}
+
+	void setStepValue(const TKeyframe<Quaternion>& lhs, const TKeyframe<Quaternion>& rhs, Quaternion& value)
+	{
+		for (UINT32 i = 0; i < 4; i++)
+		{
+			if (lhs.outTangent[i] != std::numeric_limits<float>::infinity() &&
+				rhs.inTangent[i] != std::numeric_limits<float>::infinity())
+				continue;
+
+			value[i] = lhs.value[i];
+		}
+	}
+
+	/** Checks if any components of the keyframes are constant (step) functions and updates the key tangent. */
+	void setStepTangent(const TKeyframe<float>& lhs, const TKeyframe<float>& rhs, float& tangent)
+	{
+		if (lhs.outTangent != std::numeric_limits<float>::infinity() &&
+			rhs.inTangent != std::numeric_limits<float>::infinity())
+			return;
+
+		tangent = std::numeric_limits<float>::infinity();
+	}
+
+	void setStepTangent(const TKeyframe<Vector3>& lhs, const TKeyframe<Vector3>& rhs, Vector3& tangent)
+	{
+		for (UINT32 i = 0; i < 3; i++)
+		{
+			if (lhs.outTangent[i] != std::numeric_limits<float>::infinity() &&
+				rhs.inTangent[i] != std::numeric_limits<float>::infinity())
+				continue;
+
+			tangent[i] = std::numeric_limits<float>::infinity();
+		}
+	}
+
+	void setStepTangent(const TKeyframe<Quaternion>& lhs, const TKeyframe<Quaternion>& rhs, Quaternion& tangent)
+	{
+		for (UINT32 i = 0; i < 4; i++)
+		{
+			if (lhs.outTangent[i] != std::numeric_limits<float>::infinity() &&
+				rhs.inTangent[i] != std::numeric_limits<float>::infinity())
+				continue;
+
+			tangent[i] = std::numeric_limits<float>::infinity();
+		}
+	}
+
 	template <class T>
 	const UINT32 TAnimationCurve<T>::CACHE_LOOKAHEAD = 3;
 
@@ -76,9 +190,9 @@ namespace BansheeEngine
 			animInstance.cachedCurveStart = -std::numeric_limits<float>::infinity();
 			animInstance.cachedCurveEnd = mStart;
 			animInstance.cachedKey = 0;
-			animInstance.cachedCubicCoefficients[0] = 0.0f;
-			animInstance.cachedCubicCoefficients[1] = 0.0f;
-			animInstance.cachedCubicCoefficients[2] = 0.0f;
+			animInstance.cachedCubicCoefficients[0] = T();
+			animInstance.cachedCubicCoefficients[1] = T();
+			animInstance.cachedCubicCoefficients[2] = T();
 			animInstance.cachedCubicCoefficients[3] = mKeyframes[0].value;
 
 			return mKeyframes[0].value;
@@ -91,9 +205,9 @@ namespace BansheeEngine
 			animInstance.cachedCurveStart = mEnd;
 			animInstance.cachedCurveEnd = std::numeric_limits<float>::infinity();
 			animInstance.cachedKey = lastKey;
-			animInstance.cachedCubicCoefficients[0] = 0.0f;
-			animInstance.cachedCubicCoefficients[1] = 0.0f;
-			animInstance.cachedCubicCoefficients[2] = 0.0f;
+			animInstance.cachedCubicCoefficients[0] = T();
+			animInstance.cachedCubicCoefficients[1] = T();
+			animInstance.cachedCubicCoefficients[2] = T();
 			animInstance.cachedCubicCoefficients[3] = mKeyframes[lastKey].value;
 
 			return mKeyframes[lastKey].value;
@@ -109,16 +223,16 @@ namespace BansheeEngine
 		const KeyFrame& leftKey = mKeyframes[leftKeyIdx];
 		const KeyFrame& rightKey = mKeyframes[rightKeyIdx];
 
-		float length = rightKey.time - leftKey.time;
-		
 		animInstance.cachedCurveStart = leftKey.time;
 		animInstance.cachedCurveEnd = rightKey.time;
+
+		float length = rightKey.time - leftKey.time;
 		Math::cubicHermiteCoefficients(leftKey.value, rightKey.value, leftKey.outTangent, rightKey.inTangent, length,
 			animInstance.cachedCubicCoefficients);
-		// TODO - Handle stepped curve - If tangents are infinite assume constant value from left key is used
+
+		setStepCoefficients(leftKey, rightKey, animInstance.cachedCubicCoefficients);
 
 		T output = evaluateCache(animInstance);
-
 		return output;
 	}
 
@@ -156,11 +270,11 @@ namespace BansheeEngine
 		const KeyFrame& rightKey = mKeyframes[rightKeyIdx];
 
 		float length = rightKey.time - leftKey.time;
-		float t = (time - leftKey.time) / length;
+		float t;
 		T leftTangent;
 		T rightTangent; // TODO - Remove zero init for vectors/quaternions by default
 
-		if (Math::approxEquals(t, 0.0f))
+		if (Math::approxEquals(length, 0.0f))
 		{
 			t = 0.0f;
 			leftTangent = T();
@@ -169,11 +283,15 @@ namespace BansheeEngine
 		else
 		{
 			// Resize tangents since we're not evaluating the curve over unit range
+			t = (time - leftKey.time) / length;
 			leftTangent = leftKey.outTangent * length;
 			rightTangent = rightKey.inTangent * length;
 		}
 
-		return Math::cubicHermite(t, leftKey.value, rightKey.value, leftTangent, rightTangent);
+		T output = Math::cubicHermite(t, leftKey.value, rightKey.value, leftTangent, rightTangent);
+		setStepValue(leftKey, rightKey, output);
+
+		return output;
 	}
 
 	template <class T>
@@ -280,10 +398,34 @@ namespace BansheeEngine
 	TKeyframe<T> TAnimationCurve<T>::evaluateKey(const KeyFrame& lhs, const KeyFrame& rhs, float time)
 	{
 		float length = rhs.time - lhs.time;
-		float t = (time - lhs.time) / length;
+		float t;
+
+		T leftTangent;
+		T rightTangent; // TODO - Remove zero init for vectors/quaternions by default
+
+		if (Math::approxEquals(length, 0.0f))
+		{
+			t = 0.0f;
+			leftTangent = T();
+			rightTangent = T();
+		}
+		else
+		{
+			// Resize tangents since we're not evaluating the curve over unit range
+			t = (time - lhs.time) / length;
+			leftTangent = lhs.outTangent * length;
+			rightTangent = rhs.inTangent * length;
+		}
 
 		TKeyframe<T> output;
-		// TODO
+		output.time = time;
+		output.value = Math::cubicHermite(t, lhs.value, rhs.value, leftTangent, rightTangent);
+		output.inTangent = Math::cubicHermiteD1(t, lhs.value, rhs.value, leftTangent, rightTangent);
+		
+		setStepValue(lhs, rhs, output.value);
+		setStepTangent(lhs, rhs, output.inTangent);
+
+		output.outTangent = output.inTangent;
 
 		return output;
 	}
@@ -307,12 +449,17 @@ namespace BansheeEngine
 		const KeyFrame& startKey = mKeyframes[startKeyIdx];
 		const KeyFrame& endKey = mKeyframes[endKeyIdx];
 
-		if(!Math::approxEquals(startKey.time, start))
+		if (!Math::approxEquals(startKey.time, start))
 		{
 			keyFrames.push_back(evaluateKey(startKey, mKeyframes[startKeyIdx + 1], start));
 
-			if(start > startKey.time)
+			if (start > startKey.time)
 				startKeyIdx++;
+		}
+		else
+		{
+			keyFrames.push_back(startKey);
+			startKeyIdx++;
 		}
 
 		if(!Math::approxEquals(endKey.time, end))
@@ -323,7 +470,7 @@ namespace BansheeEngine
 				endKeyIdx--;
 		}
 
-		keyFrames.insert(keyFrames.begin(), mKeyframes.begin() + startKeyIdx, mKeyframes.begin() + endKeyIdx + 1);
+		keyFrames.insert(keyFrames.begin() + 1, mKeyframes.begin() + startKeyIdx, mKeyframes.begin() + endKeyIdx + 1);
 
 		for (auto& entry : keyFrames)
 			entry.time -= start;

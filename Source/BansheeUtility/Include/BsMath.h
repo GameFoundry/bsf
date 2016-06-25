@@ -614,7 +614,30 @@ namespace BansheeEngine
 			float c = -2 * t3 + 3 * t2;
 			float d = t3 - t2;
 
-			return a * pointA + b * tangentA + c * tangentB + d * pointB;
+			return a * pointA + b * tangentA + c * pointB + d * tangentB;
+		}
+
+		/**
+		 * Evaluates the first derivative of a cubic Hermite curve at a specific point.
+		 *
+		 * @param[in]	t			Parameter that at which to evaluate the curve, in range [0, 1].
+		 * @param[in]	pointA		Starting point (at t=0).
+		 * @param[in]	pointB		Ending point (at t=1).
+		 * @param[in]	tangentA	Starting tangent (at t=0).
+		 * @param[in]	tangentB	Ending tangent (at t = 1).
+		 * @return					Evaluated value at @p t.
+		 */
+		template<class T>
+		static T cubicHermiteD1(float t, const T& pointA, const T& pointB, const T& tangentA, const T& tangentB)
+		{
+			float t2 = t * t;
+
+			float a = 6 * t2 - 6 * t;
+			float b = 3 * t2 - 4 * t + 1;
+			float c = -6 * t2 + 6 * t;
+			float d = 3 * t2 - 2 * t;
+
+			return a * pointA + b * tangentA + c * pointB + d * tangentB;
 		}
 
 		/**
