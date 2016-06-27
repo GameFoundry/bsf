@@ -74,7 +74,7 @@ namespace BansheeEngine
 	/** Represents a copy of the Animation data for use specifically on the animation thread. */
 	struct AnimationProxy
 	{
-		AnimationProxy();
+		AnimationProxy(UINT64 id);
 		~AnimationProxy();
 
 		/** 
@@ -118,10 +118,14 @@ namespace BansheeEngine
 		 */
 		void updateTime(const Vector<PlayingClipInfo>& clipInfos);
 
+		UINT64 id;
 		AnimationStateLayer* layers;
 		UINT32 numLayers;
 		SPtr<Skeleton> skeleton;
-		SkeletonPose pose;
+
+		// Evaluation results
+		LocalSkeletonPose localPose;
+		float* genericCurveOutputs;
 	};
 
 	/**

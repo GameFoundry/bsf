@@ -7,7 +7,7 @@
 #include "BsMatrix4.h"
 #include "BsVector3.h"
 #include "BsQuaternion.h"
-#include "BsCurveEvaluator.h"
+#include "BsCurveCache.h"
 
 namespace BansheeEngine
 {
@@ -15,10 +15,10 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
-	/** 
-	 * Contains indices for position/rotation/scale animation curves. Used for quick mapping of bones in a skeleton to 
-	 * relevant animation curves. 
-	 */
+	 /**
+	  * Contains indices for position/rotation/scale animation curves. Used for quick mapping of bones in a skeleton to
+	  * relevant animation curves.
+	  */
 	struct AnimationCurveMapping
 	{
 		UINT32 position;
@@ -41,10 +41,12 @@ namespace BansheeEngine
 		SPtr<AnimationCurves> curves; /**< All curves in the animation clip. */
 		AnimationCurveMapping* boneToCurveMapping; /**< Mapping of bone indices to curve indices for quick lookup .*/
 
-		TCurveEvaluatorData<Vector3> positionEval; /**< Time value and cache used for evaluating position curves. */
-		TCurveEvaluatorData<Quaternion> rotationEval; /**< Time value and cache used for evaluating rotation curves. */
-		TCurveEvaluatorData<Vector3> scaleEval; /**< Time value and cache used for evaluating scale curves. */
+		TCurveCache<Vector3>* positionCaches; /**< Cache used for evaluating position curves. */
+		TCurveCache<Quaternion>* rotationCaches; /**< Cache used for evaluating rotation curves. */
+		TCurveCache<Vector3>* scaleCaches; /**< Cache used for evaluating scale curves. */
+		TCurveCache<float>* genericCaches; /**< Cache used for evaluating generic curves. */
 
+		float time; /**< Time to evaluate the curve at. */
 		float weight; /**< Determines how much of an influence will this clip have in regard to others in the same layer. */
 		bool loop; /**< Determines should the animation loop (wrap) once ending or beginning frames are passed. */
 	};
@@ -57,25 +59,25 @@ namespace BansheeEngine
 
 		UINT8 index; /**< Unique index of the animation layer. */
 
-		/** 
-		 * Determines should weights of individual states be normalized or kept as is. Non-normalized weights allow the 
-		 * total contribution of all states to be less than one. 
+		/**
+		 * Determines should weights of individual states be normalized or kept as is. Non-normalized weights allow the
+		 * total contribution of all states to be less than one.
 		 */
-		bool normalizeWeights; 
+		bool normalizeWeights;
 	};
 
 	/** 
-	 * Contains information about translation, rotation and scale for every skeleton bone, after being evaluated at a
-	 * a specific time. All values are stored in the same order as the bones in the skeleton they were created by.
+	 * Contains local translation, rotation and scale values for each bone in a skeleton, after being evaluated at a
+	 * specific time of an animation.  All values are stored in the same order as the bones in the skeleton they were
+	 * created by.
 	 */
-	struct SkeletonPose
+	struct LocalSkeletonPose
 	{
-		SkeletonPose();
-		SkeletonPose(UINT32 numBones);
-		~SkeletonPose();
+		LocalSkeletonPose();
+		LocalSkeletonPose(UINT32 numBones);
+		LocalSkeletonPose(UINT32 numPos, UINT32 numRot, UINT32 numScale);
+		~LocalSkeletonPose();
 
-		/**< Global matrices transforming vectors from bind pose space to model space at specific animation time. */
-		Matrix4* bonePoses; 
 		Vector3* positions; /**< Local bone positions at specific animation time. */
 		Quaternion* rotations; /**< Local bone rotations at specific animation time. */
 		Vector3* scales; /**< Local bone scales at specific animation time. */
@@ -102,27 +104,31 @@ namespace BansheeEngine
 		 * Outputs a skeleton pose containing required transforms for transforming the skeleton to the values specified by
 		 * the provided animation clip evaluated at the specified time.
 		 *
-		 * @param[out]	pose	Output pose containing the requested transforms. Must be pre-allocated with enough space
-		 *						to hold all the bone data of this skeleton.
-		 * @param[in]	clip	Clip to evaluate.
-		 * @param[in]	time	Time to evaluate the clip with.
-		 * @param[in]	loop	Determines should the time be looped (wrapped) if it goes past the clip start/end.
+		 * @param[out]	pose		Output pose containing the requested transforms. Must be pre-allocated with enough space
+		 *							to hold all the bone matrices of this skeleton.
+		 * @param[out]	localPose	Output pose containing the local transforms. Must be pre-allocated with enough space
+		 *							to hold all the bone data of this skeleton.
+		 * @param[in]	clip		Clip to evaluate.
+		 * @param[in]	time		Time to evaluate the clip with.
+		 * @param[in]	loop		Determines should the time be looped (wrapped) if it goes past the clip start/end.
 		 *
 		 * @note	It is more efficient to use the other getPose overload as sequential calls can benefit from animation
 		 *			evaluator cache.
 		 */
-		void getPose(SkeletonPose& pose, const AnimationClip& clip, float time, bool loop = true);
+		void getPose(Matrix4* pose, LocalSkeletonPose& localPose, const AnimationClip& clip, float time, bool loop = true);
 
 		/** 
 		 * Outputs a skeleton pose containing required transforms for transforming the skeleton to the values specified by
 		 * the provided set of animation curves.
 		 *
 		 * @param[out]	pose		Output pose containing the requested transforms. Must be pre-allocated with enough space
+		 *							to hold all the bone matrices of this skeleton.
+		 * @param[out]	localPose	Output pose containing the local transforms. Must be pre-allocated with enough space
 		 *							to hold all the bone data of this skeleton.
 		 * @param[in]	layers		One or multiple layers, containing one or multiple animation states to evaluate.
 		 * @param[in]	numLayers	Number of layers in the @p layers array.
 		 */
-		void getPose(SkeletonPose& pose, const AnimationStateLayer* layers, UINT32 numLayers);
+		void getPose(Matrix4* pose, LocalSkeletonPose& localPose, const AnimationStateLayer* layers, UINT32 numLayers);
 
 		/** Returns the total number of bones in the skeleton. */
 		UINT32 getNumBones() const { return mNumBones; }

@@ -4,6 +4,7 @@
 
 #include "BsCorePrerequisites.h"
 #include "BsModule.h"
+#include "BsCoreThread.h"
 
 namespace BansheeEngine
 {
@@ -13,6 +14,21 @@ namespace BansheeEngine
 	 *  @{
 	 */
 	
+	/** Contains skeleton poses for all animations evaluated on a single frame. */
+	struct RendererAnimationData
+	{
+		/** Contains data about a calculated skeleton pose. */
+		struct PoseInfo
+		{
+			UINT64 animId;
+			UINT32 startIdx;
+			UINT32 numBones;
+		};
+
+		UnorderedMap<UINT64, PoseInfo> poseInfos;
+		Vector<Matrix4> transforms;
+	};
+
 	/** 
 	 * Keeps track of all active animations, queues animation thread tasks and synchronizes data between simulation, core
 	 * and animation threads.
@@ -45,6 +61,15 @@ namespace BansheeEngine
 		 */
 		void postUpdate();
 
+		/** 
+		 * Gets skeleton poses required by the renderer to display all the animations. This will block the animation thread
+		 * if it has not yet finished, and it will also advance the read buffer index, meaning this shouldn't be called more
+		 * than once per frame.
+		 *
+		 * @note	Core thread only.
+		 */
+		const RendererAnimationData& getRendererData();
+
 	private:
 		friend class Animation;
 
@@ -71,7 +96,13 @@ namespace BansheeEngine
 		bool mWorkerRunning;
 		SPtr<Task> mAnimationWorker;
 
+		// Animation thread
 		Vector<SPtr<AnimationProxy>> mProxies;
+		RendererAnimationData mAnimData[CoreThread::NUM_SYNC_BUFFERS];
+
+		UINT32 mPoseReadBufferIdx;
+		UINT32 mPoseWriteBufferIdx;
+		std::atomic<INT32> mDataReadyCount;
 	};
 
 	/** @} */

@@ -11,19 +11,18 @@ namespace BansheeEngine
 	 */
 
 	/** 
-	 * Data used for evaluating an AnimationCurve. Holds cached information so that sequential evaluations can be sped up.
+	 * Holds cached information used for animation curve evaluation so that sequential evaluations can be sped up.
 	 * You should not use the same instance of this object for evaluating multiple different animation curves.
 	 */
 	template <class T>
-	struct TCurveEvaluatorData
+	struct TCurveCache
 	{
 	public:
-		TCurveEvaluatorData()
-			: time(0.0f), cachedKey((UINT32)-1), cachedCurveStart(std::numeric_limits<float>::infinity())
-			, cachedCurveEnd(0.0f), cachedCubicCoefficients()
+		TCurveCache()
+			: cachedKey((UINT32)-1), cachedCurveStart(std::numeric_limits<float>::infinity()), cachedCurveEnd(0.0f)
+			, cachedCubicCoefficients()
 		{ }
 
-		float time; /**< Time at which to evaluate the curve. */
 	private:
 		friend class TAnimationCurve<T>;
 

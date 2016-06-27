@@ -6,18 +6,15 @@
 
 namespace BansheeEngine
 {
-	SkeletonPose::SkeletonPose()
-		: bonePoses(nullptr), positions(nullptr), rotations(nullptr), scales(nullptr), numBones(0)
+	LocalSkeletonPose::LocalSkeletonPose()
+		: positions(nullptr), rotations(nullptr), scales(nullptr), numBones(0)
 	{ }
 
-	SkeletonPose::SkeletonPose(UINT32 numBones)
+	LocalSkeletonPose::LocalSkeletonPose(UINT32 numBones)
 		: numBones(numBones)
 	{
-		UINT32 elementSize = sizeof(Matrix4) + sizeof(Vector3) * 2 + sizeof(Quaternion);
+		UINT32 elementSize = sizeof(Vector3) * 2 + sizeof(Quaternion);
 		UINT8* buffer = (UINT8*)bs_alloc(elementSize * sizeof(numBones));
-
-		bonePoses = (Matrix4*)buffer;
-		buffer += sizeof(Matrix4) * numBones;
 
 		positions = (Vector3*)buffer;
 		buffer += sizeof(Vector3) * numBones;
@@ -26,20 +23,27 @@ namespace BansheeEngine
 		buffer += sizeof(Quaternion) * numBones;
 
 		scales = (Vector3*)buffer;
-
-		for (UINT32 i = 0; i < numBones; i++)
-		{
-			bonePoses[i] = Matrix4::IDENTITY;
-			positions[i] = Vector3::ZERO;
-			rotations[i] = Quaternion::IDENTITY;
-			scales[i] = Vector3::ONE;
-		}
 	}
 
-	SkeletonPose::~SkeletonPose()
+	LocalSkeletonPose::LocalSkeletonPose(UINT32 numPos, UINT32 numRot, UINT32 numScale)
+		: numBones(0)
 	{
-		if(bonePoses != nullptr)
-			bs_free(bonePoses);
+		UINT32 bufferSize = sizeof(Vector3) * numPos + sizeof(Quaternion) * numRot + sizeof(Vector3) * numScale;
+		UINT8* buffer = (UINT8*)bs_alloc(bufferSize);
+
+		positions = (Vector3*)buffer;
+		buffer += sizeof(Vector3) * numPos;
+
+		rotations = (Quaternion*)buffer;
+		buffer += sizeof(Quaternion) * numRot;
+
+		scales = (Vector3*)buffer;
+	}
+
+	LocalSkeletonPose::~LocalSkeletonPose()
+	{
+		if (positions != nullptr)
+			bs_free(positions);
 	}
 
 	Skeleton::Skeleton()
@@ -73,41 +77,54 @@ namespace BansheeEngine
 		return bs_shared_ptr<Skeleton>(rawPtr);
 	}
 
-	void Skeleton::getPose(SkeletonPose& pose, const AnimationClip& clip, float time, bool loop)
+	void Skeleton::getPose(Matrix4* pose, LocalSkeletonPose& localPose, const AnimationClip& clip, float time,
+		bool loop)
 	{
-		Vector<AnimationCurveMapping> boneToCurveMapping(mNumBones);
+		bs_frame_mark();
+		{
+			FrameVector<AnimationCurveMapping> boneToCurveMapping(mNumBones);
 
-		AnimationState state;
-		state.curves = clip.getCurves();
-		state.boneToCurveMapping = boneToCurveMapping.data();
-		state.loop = loop;
-		state.weight = 1.0f;
-		state.positionEval.time = time;
-		state.rotationEval.time = time;
-		state.scaleEval.time = time;
+			AnimationState state;
+			state.curves = clip.getCurves();
+			state.boneToCurveMapping = boneToCurveMapping.data();
+			state.loop = loop;
+			state.weight = 1.0f;
+			state.time = time;
 
-		AnimationStateLayer layer;
-		layer.index = 0;
-		layer.normalizeWeights = false;
-		layer.states = &state;
-		layer.numStates = 1;
+			FrameVector<TCurveCache<Vector3>> positionCache(state.curves->position.size());
+			FrameVector<TCurveCache<Quaternion>> rotationCache(state.curves->rotation.size());
+			FrameVector<TCurveCache<Vector3>> scaleCache(state.curves->scale.size());
 
-		clip.getBoneMapping(*this, state.boneToCurveMapping);
+			state.positionCaches = positionCache.data();
+			state.rotationCaches = rotationCache.data();
+			state.scaleCaches = scaleCache.data();
+			state.genericCaches = nullptr;
 
-		getPose(pose, &layer, 1);
+			AnimationStateLayer layer;
+			layer.index = 0;
+			layer.normalizeWeights = false;
+			layer.states = &state;
+			layer.numStates = 1;
+
+			clip.getBoneMapping(*this, state.boneToCurveMapping);
+
+			getPose(pose, localPose, &layer, 1);
+		}
+		bs_frame_clear();
 	}
 
-	void Skeleton::getPose(SkeletonPose& pose, const AnimationStateLayer* layers, UINT32 numLayers)
+	void Skeleton::getPose(Matrix4* pose, LocalSkeletonPose& localPose, const AnimationStateLayer* layers,
+		UINT32 numLayers)
 	{
 		// Note: If more performance is required this method could be optimized with vector instructions
 
-		assert(pose.numBones == mNumBones);
+		assert(localPose.numBones == mNumBones);
 
 		for(UINT32 i = 0; i < mNumBones; i++)
 		{
-			pose.positions[i] = Vector3::ZERO;
-			pose.rotations[i] = Quaternion::IDENTITY;
-			pose.scales[i] = Vector3::ONE;
+			localPose.positions[i] = Vector3::ZERO;
+			localPose.rotations[i] = Quaternion::IDENTITY;
+			localPose.scales[i] = Vector3::ONE;
 		}
 
 		for(UINT32 i = 0; i < numLayers; i++)
@@ -126,7 +143,6 @@ namespace BansheeEngine
 			else
 				invLayerWeight = 1.0f;
 
-
 			for (UINT32 j = 0; j < layer.numStates; j++)
 			{
 				const AnimationState& state = layer.states[i];
@@ -139,19 +155,19 @@ namespace BansheeEngine
 					if (mapping.position != (UINT32)-1)
 					{
 						const TAnimationCurve<Vector3>& curve = state.curves->position[mapping.position].curve;
-						pose.positions[k] += curve.evaluate(state.positionEval, state.loop) * normWeight;
+						localPose.positions[k] += curve.evaluate(state.time, state.positionCaches[k], state.loop) * normWeight;
 					}
 
 					if (mapping.rotation != (UINT32)-1)
 					{
 						const TAnimationCurve<Quaternion>& curve = state.curves->rotation[mapping.rotation].curve;
-						pose.rotations[k] += curve.evaluate(state.rotationEval, state.loop) * normWeight;
+						localPose.rotations[k] += curve.evaluate(state.time, state.rotationCaches[k], state.loop) * normWeight;
 					}
 
 					if (mapping.scale != (UINT32)-1)
 					{
 						const TAnimationCurve<Vector3>& curve = state.curves->scale[mapping.scale].curve;
-						pose.scales[k] += curve.evaluate(state.scaleEval, state.loop) * normWeight;
+						localPose.scales[k] += curve.evaluate(state.time, state.scaleCaches[k], state.loop) * normWeight;
 					}
 				}
 			}
@@ -160,10 +176,10 @@ namespace BansheeEngine
 		// Calculate local pose matrices
 		for(UINT32 i = 0; i < mNumBones; i++)
 		{
-			pose.rotations[i].normalize();
+			localPose.rotations[i].normalize();
 
-			pose.bonePoses[i] = Matrix4::TRS(pose.positions[i], pose.rotations[i], pose.scales[i]);
-			pose.bonePoses[i] = pose.bonePoses[i] * mInvBindPoses[i];
+			pose[i] = Matrix4::TRS(localPose.positions[i], localPose.rotations[i], localPose.scales[i]);
+			pose[i] = pose[i] * mInvBindPoses[i];
 		}
 
 		// Calculate global poses
@@ -183,7 +199,7 @@ namespace BansheeEngine
 			if (!isGlobal[parentBoneIdx])
 				calcGlobal(parentBoneIdx);
 
-			pose.bonePoses[boneIdx] = pose.bonePoses[parentBoneIdx] * pose.bonePoses[boneIdx];
+			pose[boneIdx] = pose[parentBoneIdx] * pose[boneIdx];
 			isGlobal[boneIdx] = true;
 		};
 

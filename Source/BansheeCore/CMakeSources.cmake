@@ -503,7 +503,7 @@ set(BS_BANSHEECORE_INC_ANIMATION
 	"Include/BsSkeleton.h"
 	"Include/BsAnimation.h"
 	"Include/BsAnimationManager.h"
-	"Include/BsCurveEvaluator.h"
+	"Include/BsCurveCache.h"
 )
 
 set(BS_BANSHEECORE_SRC_ANIMATION

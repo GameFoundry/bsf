@@ -7,19 +7,20 @@
 namespace BansheeEngine
 {
 	PlayingClipInfo::PlayingClipInfo()
-		:layerIdx(0), stateIdx(0)
+		:layerIdx(0), curveVersion(0), stateIdx(0)
 	{ }
 
 	PlayingClipInfo::PlayingClipInfo(const HAnimationClip& clip)
-		:clip(clip), layerIdx(0), stateIdx(0)
+		:clip(clip), curveVersion(0), layerIdx(0), stateIdx(0)
 	{ }
 
-	AnimationProxy::AnimationProxy()
-		:layers(nullptr), numLayers(0)
+	AnimationProxy::AnimationProxy(UINT64 id)
+		:id(id), layers(nullptr), numLayers(0), genericCurveOutputs(nullptr)
 	{ }
 
 	AnimationProxy::~AnimationProxy()
 	{
+		// All the memory is part of the same buffer, so we only need to free the first element
 		if (layers != nullptr)
 			bs_free(layers);
 	}
@@ -28,10 +29,27 @@ namespace BansheeEngine
 	{
 		this->skeleton = skeleton;
 
+		// Note: I could avoid having a separate allocation for LocalSkeletonPose and use the same buffer as the rest
+		// of AnimationProxy
 		if (skeleton != nullptr)
-			pose = SkeletonPose(skeleton->getNumBones());
+			localPose = LocalSkeletonPose(skeleton->getNumBones());
 		else
-			pose = SkeletonPose();
+		{
+			UINT32 numPosCurves = 0;
+			UINT32 numRotCurves = 0;
+			UINT32 numScaleCurves = 0;
+
+			// Note: I'm recalculating this both here and in follow-up rebuild() call, it could be avoided.
+			for (auto& clipInfo : clipInfos)
+			{
+				SPtr<AnimationCurves> curves = clipInfo.clip->getCurves();
+				numPosCurves += (UINT32)curves->position.size();
+				numRotCurves += (UINT32)curves->rotation.size();
+				numScaleCurves += (UINT32)curves->scale.size();
+			}
+
+			localPose = LocalSkeletonPose(numPosCurves, numRotCurves, numScaleCurves);
+		}
 
 		rebuild(clipInfos);
 	}
@@ -77,10 +95,31 @@ namespace BansheeEngine
 			else
 				numBones = 0;
 
+			UINT32 numPosCurves = 0;
+			UINT32 numRotCurves = 0;
+			UINT32 numScaleCurves = 0;
+			UINT32 numGenCurves = 0;
+
+			for (auto& clipInfo : clipInfos)
+			{
+				SPtr<AnimationCurves> curves = clipInfo.clip->getCurves();
+				numPosCurves += (UINT32)curves->position.size();
+				numRotCurves += (UINT32)curves->rotation.size();
+				numScaleCurves += (UINT32)curves->scale.size();
+				numGenCurves += (UINT32)curves->generic.size();
+			}
+
 			UINT32 layersSize = sizeof(AnimationStateLayer) * numLayers;
 			UINT32 clipsSize = sizeof(AnimationState) * numClips;
 			UINT32 boneMappingSize = numBones * numClips * sizeof(AnimationCurveMapping);
-			UINT8* data = (UINT8*)bs_alloc(layersSize + clipsSize + boneMappingSize);
+			UINT32 posCacheSize = numPosCurves * sizeof(TCurveCache<Vector3>);
+			UINT32 rotCacheSize = numRotCurves * sizeof(TCurveCache<Quaternion>);
+			UINT32 scaleCacheSize = numScaleCurves * sizeof(TCurveCache<Vector3>);
+			UINT32 genCacheSize = numGenCurves * sizeof(TCurveCache<float>);
+			UINT32 genericCurveOutputSize = numGenCurves * sizeof(float);
+
+			UINT8* data = (UINT8*)bs_alloc(layersSize + clipsSize + boneMappingSize + posCacheSize + rotCacheSize + 
+				scaleCacheSize + genCacheSize + genericCurveOutputSize);
 
 			layers = (AnimationStateLayer*)data;
 			memcpy(layers, tempLayers.data(), layersSize);
@@ -90,7 +129,22 @@ namespace BansheeEngine
 			data += clipsSize;
 
 			AnimationCurveMapping* boneMappings = (AnimationCurveMapping*)data;
-			
+			data += boneMappingSize;
+
+			TCurveCache<Vector3>* posCache = (TCurveCache<Vector3>*)data;
+			data += posCacheSize;
+
+			TCurveCache<Quaternion>* rotCache = (TCurveCache<Quaternion>*)data;
+			data += rotCacheSize;
+
+			TCurveCache<Vector3>* scaleCache = (TCurveCache<Vector3>*)data;
+			data += scaleCacheSize;
+
+			TCurveCache<float>* genCache = (TCurveCache<float>*)data;
+			data += genCacheSize;
+
+			genericCurveOutputs = (float*)data;
+
 			UINT32 curLayerIdx = 0;
 			UINT32 curStateIdx = 0;
 
@@ -110,10 +164,19 @@ namespace BansheeEngine
 					state.curves = clipInfo.clip->getCurves();
 					state.weight = clipInfo.state.weight;
 					state.loop = clipInfo.state.wrapMode == AnimWrapMode::Loop;
+					state.time = clipInfo.state.time;
 
-					state.positionEval.time = clipInfo.state.time;
-					state.rotationEval.time = clipInfo.state.time;
-					state.scaleEval.time = clipInfo.state.time;
+					state.positionCaches = posCache;
+					posCache += state.curves->position.size();
+
+					state.rotationCaches = rotCache;
+					rotCache += state.curves->rotation.size();
+
+					state.scaleCaches = scaleCache;
+					scaleCache += state.curves->scale.size();
+
+					state.genericCaches = genCache;
+					genCache += state.curves->generic.size();
 
 					clipInfo.layerIdx = curLayerIdx;
 					clipInfo.stateIdx = localStateIdx;
@@ -149,10 +212,7 @@ namespace BansheeEngine
 
 			state.loop = clipInfo.state.wrapMode == AnimWrapMode::Loop;
 			state.weight = clipInfo.state.weight;
-
-			state.positionEval.time = clipInfo.state.time;
-			state.rotationEval.time = clipInfo.state.time;
-			state.scaleEval.time = clipInfo.state.time;
+			state.time = clipInfo.state.time;
 		}
 	}
 
@@ -161,18 +221,15 @@ namespace BansheeEngine
 		for (auto& clipInfo : clipInfos)
 		{
 			AnimationState& state = layers[clipInfo.layerIdx].states[clipInfo.stateIdx];
-
-			state.positionEval.time = clipInfo.state.time;
-			state.rotationEval.time = clipInfo.state.time;
-			state.scaleEval.time = clipInfo.state.time;
+			state.time = clipInfo.state.time;
 		}
 	}
 
 	Animation::Animation()
 		:mDefaultWrapMode(AnimWrapMode::Loop), mDefaultSpeed(1.0f), mDirty(AnimDirtyStateFlag::Skeleton)
 	{
-		mAnimProxy = bs_shared_ptr_new<AnimationProxy>();
 		mId = AnimationManager::instance().registerAnimation(this);
+		mAnimProxy = bs_shared_ptr_new<AnimationProxy>(mId);
 	}
 
 	Animation::~Animation()

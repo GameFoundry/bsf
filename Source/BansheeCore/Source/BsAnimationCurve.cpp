@@ -164,12 +164,10 @@ namespace BansheeEngine
 	}
 
 	template <class T>
-	T TAnimationCurve<T>::evaluate(const TCurveEvaluatorData<T>& animInstance, bool loop) const
+	T TAnimationCurve<T>::evaluate(float time, const TCurveCache<T>& cache, bool loop) const
 	{
 		if (mKeyframes.size() == 0)
 			return T();
-
-		float time = animInstance.time;
 
 		// Wrap time if looping
 		if(loop)
@@ -181,19 +179,19 @@ namespace BansheeEngine
 		}
 
 		// If time is within cache, evaluate it directly
-		if (time >= animInstance.cachedCurveStart && time < animInstance.cachedCurveEnd)
-			return evaluateCache(animInstance);
+		if (time >= cache.cachedCurveStart && time < cache.cachedCurveEnd)
+			return evaluateCache(time, cache);
 
 		// Clamp to start, cache constant of the first key and return
 		if(time < mStart)
 		{
-			animInstance.cachedCurveStart = -std::numeric_limits<float>::infinity();
-			animInstance.cachedCurveEnd = mStart;
-			animInstance.cachedKey = 0;
-			animInstance.cachedCubicCoefficients[0] = T();
-			animInstance.cachedCubicCoefficients[1] = T();
-			animInstance.cachedCubicCoefficients[2] = T();
-			animInstance.cachedCubicCoefficients[3] = mKeyframes[0].value;
+			cache.cachedCurveStart = -std::numeric_limits<float>::infinity();
+			cache.cachedCurveEnd = mStart;
+			cache.cachedKey = 0;
+			cache.cachedCubicCoefficients[0] = T();
+			cache.cachedCubicCoefficients[1] = T();
+			cache.cachedCubicCoefficients[2] = T();
+			cache.cachedCubicCoefficients[3] = mKeyframes[0].value;
 
 			return mKeyframes[0].value;
 		}
@@ -202,13 +200,13 @@ namespace BansheeEngine
 		{
 			UINT32 lastKey = (UINT32)mKeyframes.size() - 1;
 
-			animInstance.cachedCurveStart = mEnd;
-			animInstance.cachedCurveEnd = std::numeric_limits<float>::infinity();
-			animInstance.cachedKey = lastKey;
-			animInstance.cachedCubicCoefficients[0] = T();
-			animInstance.cachedCubicCoefficients[1] = T();
-			animInstance.cachedCubicCoefficients[2] = T();
-			animInstance.cachedCubicCoefficients[3] = mKeyframes[lastKey].value;
+			cache.cachedCurveStart = mEnd;
+			cache.cachedCurveEnd = std::numeric_limits<float>::infinity();
+			cache.cachedKey = lastKey;
+			cache.cachedCubicCoefficients[0] = T();
+			cache.cachedCubicCoefficients[1] = T();
+			cache.cachedCubicCoefficients[2] = T();
+			cache.cachedCubicCoefficients[3] = mKeyframes[lastKey].value;
 
 			return mKeyframes[lastKey].value;
 		}
@@ -217,22 +215,22 @@ namespace BansheeEngine
 		UINT32 leftKeyIdx;
 		UINT32 rightKeyIdx;
 
-		findKeys(time, animInstance, leftKeyIdx, rightKeyIdx);
+		findKeys(time, cache, leftKeyIdx, rightKeyIdx);
 
 		// Calculate cubic hermite curve coefficients so we can store them in cache
 		const KeyFrame& leftKey = mKeyframes[leftKeyIdx];
 		const KeyFrame& rightKey = mKeyframes[rightKeyIdx];
 
-		animInstance.cachedCurveStart = leftKey.time;
-		animInstance.cachedCurveEnd = rightKey.time;
+		cache.cachedCurveStart = leftKey.time;
+		cache.cachedCurveEnd = rightKey.time;
 
 		float length = rightKey.time - leftKey.time;
 		Math::cubicHermiteCoefficients(leftKey.value, rightKey.value, leftKey.outTangent, rightKey.inTangent, length,
-			animInstance.cachedCubicCoefficients);
+			cache.cachedCubicCoefficients);
 
-		setStepCoefficients(leftKey, rightKey, animInstance.cachedCubicCoefficients);
+		setStepCoefficients(leftKey, rightKey, cache.cachedCubicCoefficients);
 
-		T output = evaluateCache(animInstance);
+		T output = evaluateCache(time, cache);
 		return output;
 	}
 
@@ -295,16 +293,16 @@ namespace BansheeEngine
 	}
 
 	template <class T>
-	T TAnimationCurve<T>::evaluateCache(const TCurveEvaluatorData<T>& animInstance) const
+	T TAnimationCurve<T>::evaluateCache(float time, const TCurveCache<T>& cache) const
 	{
-		float t = animInstance.time - animInstance.cachedCurveStart;
+		float t = time - cache.cachedCurveStart;
 
-		const T* coeffs = animInstance.cachedCubicCoefficients;
+		const T* coeffs = cache.cachedCubicCoefficients;
 		return t * (t * (t * coeffs[0] + coeffs[1]) + coeffs[2]) + coeffs[3];
 	}
 
 	template <class T>
-	void TAnimationCurve<T>::findKeys(float time, const TCurveEvaluatorData<T>& animInstance, UINT32& leftKey, UINT32& rightKey) const
+	void TAnimationCurve<T>::findKeys(float time, const TCurveCache<T>& animInstance, UINT32& leftKey, UINT32& rightKey) const
 	{
 		// Check nearby keys first if there is cached data
 		if (animInstance.cachedKey != (UINT32)-1)

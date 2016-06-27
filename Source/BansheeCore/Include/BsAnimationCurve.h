@@ -3,7 +3,7 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
-#include "BsCurveEvaluator.h"
+#include "BsCurveCache.h"
 
 namespace BansheeEngine
 {
@@ -39,21 +39,21 @@ namespace BansheeEngine
 		 * happens sequential order (which should be true for most curves). If evaluation is not happening in sequential
 		 * order using the non-caching version of evaluate() might yield better performance.
 		 *
-		 * @param[i]	animInstance	Animation instance data holding the time to evaluate the curve at, and any cached
-		 *								data from previous requests. Caller should ensure to maintain a persistent instance
-		 *								of this data for every animation using this curve in order to ensure cache is
-		 *								maintained.
+		 * @param[in]	time			Time to evaluate the curve at.
+		 * @param[i]	cache			Cached data from previous requests that can be used for speeding up sequential calls
+		 *								to this method. Caller should ensure to maintain a persistent instance of this data
+		 *								for every animation using this curve in order to ensure cache is maintained.
 		 * @param[in]	loop			If true the curve will loop when it goes past the end or beggining. Otherwise the
 		 *								curve value will be clamped.
 		 * @return						Interpolated value from the curve at provided time.
 		 */
-		T evaluate(const TCurveEvaluatorData<T>& animInstance, bool loop = true) const;
+		T evaluate(float time, const TCurveCache<T>& cache, bool loop = true) const;
 
 		/**
 		 * Evaluate the animation curve at the specified time. If evaluating multiple values in a sequential order consider
 		 * using the cached version of evaluate() for better performance.
 		 *
-		 * @param[i]	time	Time to evaluate the curve at.		
+		 * @param[in]	time	Time to evaluate the curve at.		
 		 * @param[in]	loop	If true the curve will loop when it goes past the end or beggining. Otherwise the curve 
 		 *						value will be clamped.
 		 * @return				Interpolated value from the curve at provided time.
@@ -91,13 +91,13 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	time			Time for which to find the relevant keys from. It is expected to be clamped to a
 		 *								valid range within the curve.
-		 * @param[in]	animInstance	Animation instance data holding the time to evaluate the curve at, and any cached
+		 * @param[in]	cache			Animation instance data holding the time to evaluate the curve at, and any cached
 		 *								data from previous requests. Time is expected to be clamped to a valid range
 		 *								within the curve.
 		 * @param[out]	leftKey			Index of the key to interpolate from.
 		 * @param[out]	rightKey		Index of the key to interpolate to.
 		 */
-		void findKeys(float time, const TCurveEvaluatorData<T>& animInstance, UINT32& leftKey, UINT32& rightKey) const;
+		void findKeys(float time, const TCurveCache<T>& cache, UINT32& leftKey, UINT32& rightKey) const;
 
 		/** 
 		 * Returns a pair of keys that can be used for interpolating to field the value at the provided time. 
@@ -125,11 +125,12 @@ namespace BansheeEngine
 		/** 
 		 * Evaluates a value at the cached curve. Caller must ensure the request time falls within the cached curve range.
 		 *
+		 * @param[in]	time			Time to evaluate the curve at.	
 		 * @param[in]	animInstance	Animation instance data holding the time to evaluate the curve at, and any cached
 		 *								data from previous requests.
 		 * @return						Interpolated value from the curve at provided time.
 		 */
-		T evaluateCache(const TCurveEvaluatorData<T>& animInstance) const;
+		T evaluateCache(float time, const TCurveCache<T>& animInstance) const;
 
 		static const UINT32 CACHE_LOOKAHEAD;
 
