@@ -54,10 +54,10 @@ Technique =
 			
 			float3x4 getBlendMatrix(VertexInput input)
 			{
-				float3x4 result = input.blendWeights.x * boneMatrices[input.blendIndices.x];
-				result += input.blendWeights.y * boneMatrices[input.blendIndices.y];
-				result += input.blendWeights.z * boneMatrices[input.blendIndices.z];
-				result += input.blendWeights.w * boneMatrices[input.blendIndices.w];
+				float3x4 result = input.blendWeights.x * getBoneMatrix(input.blendIndices.x);
+				result += input.blendWeights.y * getBoneMatrix(input.blendIndices.y);
+				result += input.blendWeights.z * getBoneMatrix(input.blendIndices.z);
+				result += input.blendWeights.w * getBoneMatrix(input.blendIndices.w);
 				
 				return result;
 			}
@@ -66,15 +66,12 @@ Technique =
 			{
 				tangentSign = input.tangent.w;
 			
+				float3 normal = input.normal;
+				float3 tangent = input.tangent.xyz;
+				
 				#if USE_BLEND_SHAPES
-					float3 normal = input.normal;
-					float3 tangent = input.tangent.xyz;
-					
 					normal = normalize(normal + input.deltaNormal * input.deltaNormal.w);
 					tangent = normalize(tangent - dot(tangent, normal) * normal);
-				#else
-					float3 normal = input.normal;
-					float3 tangent = input.tangent.xyz;
 				#endif
 				
 				normal = mul(blendMatrix, float4(normal, 0.0f)).xyz;
@@ -148,37 +145,103 @@ Technique =
 			in vec4 bs_tangent;
 			in vec2 bs_texcoord0;
 		
+			in uvec4 bs_blendindices;
+			in vec4 bs_blendweights;
+				
+			#if USE_BLEND_SHAPES
+				in vec3 bs_position1;
+				in vec4 bs_normal1;
+			#endif
+			
+			uniform samplerBuffer boneMatrices;
+		
 			struct VertexIntermediate
 			{
-				mat3 tangentToLocal;
-				mat3 tangentToWorld;
-				float tangentSign;
+				mat4x3 blendMatrix;
+			
+				vec3 worldNormal;
+				vec4 worldTangent;
 			};
 		
 			out gl_PerVertex
 			{
 				vec4 gl_Position;
 			};
-							
-			void getTangentToLocal(vec3 normal, vec4 tangent, out float tangentSign, out mat3 tangentToObject)
+			
+			void getBoneMatrix(uint idx, out mat4x3 result)
 			{
-				vec3 bitangent = cross(normal, tangent.xyz) * tangent.w;
-				tangentSign = tangent.w * gWorldDeterminantSign;
+				mat3x4 temp;
+			
+				temp[0] = texelFetch(boneMatrices, idx * 3 + 0);
+				temp[1] = texelFetch(boneMatrices, idx * 3 + 1);
+				temp[2] = texelFetch(boneMatrices, idx * 3 + 2);
 				
-				tangentToObject[0] = tangent.xyz;
-				tangentToObject[1] = bitangent;
-				tangentToObject[2] = normal;
-			}
-
-			void getVertexIntermediate(out VertexIntermediate result)
-			{
-				getTangentToLocal(bs_normal, bs_tangent, result.tangentSign, result.tangentToLocal);
-				result.tangentToWorld = mat3(gMatWorldNoScale) * result.tangentToLocal;
+				result = transpose(temp);				
 			}
 			
-			void getVertexWorldPosition(out vec4 result)
+			void getBlendMatrix(out mat4x3 result)
 			{
-				result = gMatWorld * vec4(bs_position, 1);
+				mat4x3 boneMatrix;
+				
+				getBoneMatrix(bs_blendindices.x, out boneMatrix);
+				result = bs_blendweights.x * boneMatrix;
+				
+				getBoneMatrix(bs_blendindices.y, out boneMatrix);
+				result += bs_blendweights.y * boneMatrix;
+				
+				getBoneMatrix(bs_blendindices.z, out boneMatrix);
+				result += bs_blendweights.z * boneMatrix;
+				
+				getBoneMatrix(bs_blendindices.w, out boneMatrix);
+				result += bs_blendweights.w * boneMatrix;
+			}
+			
+			void getSkinnedTangentToLocal(mat4x3 blendMatrix, out float tangentSign, out mat3x3 tangentToLocal)
+			{
+				tangentSign = bs_tangent.w;
+			
+				vec3 normal = bs_normal;
+				vec3 tangent = bs_tangent.xyz;
+				
+				#if USE_BLEND_SHAPES
+					normal = normalize(normal + bs_normal1 * bs_normal1.w);
+					tangent = normalize(tangent - dot(tangent, normal) * normal);
+				#endif
+				
+				normal = (blendMatrix * vec4(normal, 0.0f)).xyz;
+				tangent = (blendMatrix * vec4(tangent, 0.0f)).xyz;
+				
+				vec3 bitangent = cross(normal, tangent) * tangentSign;
+				tangentSign *= gWorldDeterminantSign;
+				
+				tangentToLocal[0] = tangent.xyz;
+				tangentToLocal[1] = bitangent;
+				tangentToLocal[2] = normal;
+			}			
+			
+			void getVertexIntermediate(out VertexIntermediate result)
+			{
+				getBlendMatrix(result.blendMatrix);
+				
+				float tangentSign;
+				mat3 tangentToLocal;
+				getSkinnedTangentToLocal(tangentSign, tangentToLocal);
+				
+				mat3 tangentToWorld = mat3(gMatWorldNoScale) * tangentToLocal;
+				result.worldNormal = tangentToWorld[2]; // Normal basis vector
+				result.worldTangent = vec4(tangentToWorld[0].xyz, tangentSign); // Tangent basis vector				
+			}
+			
+			void getVertexWorldPosition(VertexIntermediate intermediate, out vec4 result)
+			{
+				#if USE_BLEND_SHAPES
+					vec4 position = vec4(bs_position + bs_position1, 1.0f);
+				#else
+					vec4 position = vec4(bs_position, 1.0f);
+				#endif
+			
+				position = intermediate.blendMatrix * position;
+				result = gMatWorld * position;
 			}
 			
 			void populateVertexOutput(VertexIntermediate intermediate)

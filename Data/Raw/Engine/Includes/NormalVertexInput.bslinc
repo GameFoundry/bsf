@@ -119,15 +119,15 @@ Technique =
 				tangentToLocal[2] = normal;
 			}
 
-			void getVertexIntermediate(out VertexIntermediate result)
+			void getVertexWorldPosition(VertexIntermediate intermediate, out vec4 result)
 			{
 				float tangentSign;
 				mat3 tangentToLocal;
 				getTangentToLocal(bs_normal, bs_tangent, tangentSign, tangentToLocal);
 				
 				mat3 tangentToWorld = mat3(gMatWorldNoScale) * tangentToLocal;
-				result.worldNormal = intermediate.tangentToWorld[2]; // Normal basis vector
-				result.worldTangent = vec4(intermediate.tangentToWorld[0].xyz, intermediate.tangentSign); // Tangent basis vector
+				result.worldNormal = tangentToWorld[2]; // Normal basis vector
+				result.worldTangent = vec4(tangentToWorld[0].xyz, tangentSign); // Tangent basis vector
 			}
 			
 			void getVertexWorldPosition(out vec4 result)
