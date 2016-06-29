@@ -247,7 +247,7 @@ set(BS_BANSHEECORE_SRC_COMPONENTS
 	"Source/BsCD6Joint.cpp"
 	"Source/BsCCharacterController.cpp"
 	"Source/BsCAudioSource.cpp"
-	"Source/BsCAudioListener.cpp"	
+	"Source/BsCAudioListener.cpp"
 )
 
 set(BS_BANSHEECORE_SRC_PLATFORM

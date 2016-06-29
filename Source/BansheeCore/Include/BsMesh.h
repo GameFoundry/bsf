@@ -85,6 +85,9 @@ namespace BansheeEngine
 		 */
 		void readData(MeshData& dest);
 
+		/** Gets the skeleton required for animation of this mesh, if any is available. */
+		SPtr<Skeleton> getSkeleton() const { return mSkeleton; }
+
 		/** Retrieves a core implementation of a mesh usable only from the core thread. */
 		SPtr<MeshCore> getCore() const;
 

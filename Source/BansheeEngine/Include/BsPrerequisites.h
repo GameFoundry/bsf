@@ -194,10 +194,12 @@ namespace BansheeEngine
 	class CRenderable;
 	class CCamera;
 	class CLight;
+	class CAnimation;
 
 	typedef GameObjectHandle<CGUIWidget> HGUIWidget;
 	typedef GameObjectHandle<CCamera> HCamera;
 	typedef GameObjectHandle<CRenderable> HRenderable;
+	typedef GameObjectHandle<CAnimation> HAnimation;
 	typedef GameObjectHandle<ProfilerOverlay> HProfilerOverlay;
 
 	typedef ResourceHandle<SpriteTexture> HSpriteTexture;

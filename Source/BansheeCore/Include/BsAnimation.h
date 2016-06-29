@@ -220,6 +220,14 @@ namespace BansheeEngine
 		/** Creates a new empty Animation object. */
 		static SPtr<Animation> create();
 
+		/** @name Internal 
+		 *  @{
+		 */
+
+		/** Returns the unique ID for this animation object. */
+		UINT64 _getId() const { return mId; }
+
+		/** @} */
 	private:
 		friend class AnimationManager;
 
