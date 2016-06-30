@@ -54,14 +54,14 @@ namespace BansheeEngine
 	};
 
 	/** Internal information about a single playing animation clip within Animation. */
-	struct PlayingClipInfo
+	struct AnimationClipInfo
 	{
-		PlayingClipInfo();
-		PlayingClipInfo(const HAnimationClip& clip);
+		AnimationClipInfo();
+		AnimationClipInfo(const HAnimationClip& clip);
 
 		HAnimationClip clip;
 		AnimationClipState state;
-
+		
 		/** 
 		 * Version of the animation curves used by the AnimationProxy. Used to detecting the internal animation curves
 		 * changed. 
@@ -88,7 +88,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Should be called from the sim thread when the caller is sure the animation thread is not using it.
 		 */
-		void rebuild(const SPtr<Skeleton>& skeleton, Vector<PlayingClipInfo>& clipInfos);
+		void rebuild(const SPtr<Skeleton>& skeleton, Vector<AnimationClipInfo>& clipInfos);
 
 		/** 
 		 * Rebuilds the internal proxy data according to the newly clips. This should be called whenever clips are added
@@ -100,7 +100,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Should be called from the sim thread when the caller is sure the animation thread is not using it.
 		 */
-		void rebuild(Vector<PlayingClipInfo>& clipInfos);
+		void rebuild(Vector<AnimationClipInfo>& clipInfos);
 
 		/** 
 		 * Updates the proxy data with new information about the clips. Caller must guarantee that clip layout didn't 
@@ -108,7 +108,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Should be called from the sim thread when the caller is sure the animation thread is not using it.
 		 */
-		void updateValues(const Vector<PlayingClipInfo>& clipInfos);
+		void updateValues(const Vector<AnimationClipInfo>& clipInfos);
 
 		/** 
 		 * Updates the proxy data with new clip times. Caller must guarantee that clip layout didn't change since the last
@@ -116,7 +116,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Should be called from the sim thread when the caller is sure the animation thread is not using it.
 		 */
-		void updateTime(const Vector<PlayingClipInfo>& clipInfos);
+		void updateTime(const Vector<AnimationClipInfo>& clipInfos);
 
 		UINT64 id;
 		AnimationStateLayer* layers;
@@ -240,13 +240,16 @@ namespace BansheeEngine
 		 */
 		void updateAnimProxy(float timeDelta);
 
+		/** Checks if all the clips in the provided layer are additive. If not it prints out a warning. */
+		void checkAdditiveLayer(UINT32 layerIdx);
+
 		UINT64 mId;
 		AnimWrapMode mDefaultWrapMode;
 		float mDefaultSpeed;
 		AnimDirtyState mDirty;
 
 		SPtr<Skeleton> mSkeleton;
-		Vector<PlayingClipInfo> mPlayingClips;
+		Vector<AnimationClipInfo> mClipInfos;
 
 		// Animation thread only
 		SPtr<AnimationProxy> mAnimProxy;

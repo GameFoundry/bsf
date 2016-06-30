@@ -6,11 +6,11 @@
 
 namespace BansheeEngine
 {
-	PlayingClipInfo::PlayingClipInfo()
+	AnimationClipInfo::AnimationClipInfo()
 		:layerIdx(0), curveVersion(0), stateIdx(0)
 	{ }
 
-	PlayingClipInfo::PlayingClipInfo(const HAnimationClip& clip)
+	AnimationClipInfo::AnimationClipInfo(const HAnimationClip& clip)
 		:clip(clip), curveVersion(0), layerIdx(0), stateIdx(0)
 	{ }
 
@@ -25,7 +25,7 @@ namespace BansheeEngine
 			bs_free(layers);
 	}
 
-	void AnimationProxy::rebuild(const SPtr<Skeleton>& skeleton, Vector<PlayingClipInfo>& clipInfos)
+	void AnimationProxy::rebuild(const SPtr<Skeleton>& skeleton, Vector<AnimationClipInfo>& clipInfos)
 	{
 		this->skeleton = skeleton;
 
@@ -42,6 +42,9 @@ namespace BansheeEngine
 			// Note: I'm recalculating this both here and in follow-up rebuild() call, it could be avoided.
 			for (auto& clipInfo : clipInfos)
 			{
+				if (!clipInfo.clip.isLoaded())
+					continue;
+
 				SPtr<AnimationCurves> curves = clipInfo.clip->getCurves();
 				numPosCurves += (UINT32)curves->position.size();
 				numRotCurves += (UINT32)curves->rotation.size();
@@ -54,11 +57,11 @@ namespace BansheeEngine
 		rebuild(clipInfos);
 	}
 
-	void AnimationProxy::rebuild(Vector<PlayingClipInfo>& clipInfos)
+	void AnimationProxy::rebuild(Vector<AnimationClipInfo>& clipInfos)
 	{
 		if (layers != nullptr)
 			bs_free(layers);
-		
+
 		bs_frame_mark();
 		{
 			FrameVector<AnimationStateLayer> tempLayers;
@@ -76,7 +79,7 @@ namespace BansheeEngine
 					AnimationStateLayer& newLayer = tempLayers.back();
 
 					newLayer.index = clipInfo.state.layer;
-					newLayer.additive = !clipInfo.clip->isAdditive();
+					newLayer.additive = clipInfo.clip.isLoaded() && clipInfo.clip->isAdditive();
 				}
 			}
 
@@ -102,6 +105,9 @@ namespace BansheeEngine
 
 			for (auto& clipInfo : clipInfos)
 			{
+				if (!clipInfo.clip.isLoaded())
+					continue;
+
 				SPtr<AnimationCurves> curves = clipInfo.clip->getCurves();
 				numPosCurves += (UINT32)curves->position.size();
 				numRotCurves += (UINT32)curves->rotation.size();
@@ -161,10 +167,18 @@ namespace BansheeEngine
 
 					new (&states[curStateIdx]) AnimationState();
 					AnimationState& state = states[curStateIdx];
-					state.curves = clipInfo.clip->getCurves();
 					state.weight = clipInfo.state.weight;
 					state.loop = clipInfo.state.wrapMode == AnimWrapMode::Loop;
 					state.time = clipInfo.state.time;
+
+					bool isClipValid = clipInfo.clip.isLoaded();
+					if(isClipValid)
+						state.curves = clipInfo.clip->getCurves();
+					else
+					{
+						static SPtr<AnimationCurves> zeroCurves = bs_shared_ptr_new<AnimationCurves>();
+						state.curves = zeroCurves;
+					}
 
 					state.positionCaches = posCache;
 					posCache += state.curves->position.size();
@@ -180,12 +194,25 @@ namespace BansheeEngine
 
 					clipInfo.layerIdx = curLayerIdx;
 					clipInfo.stateIdx = localStateIdx;
-					clipInfo.curveVersion = clipInfo.clip->getVersion();
+
+					if(isClipValid)
+						clipInfo.curveVersion = clipInfo.clip->getVersion();
 
 					if (skeleton != nullptr)
 					{
 						state.boneToCurveMapping = &boneMappings[curStateIdx * numBones];
-						clipInfo.clip->getBoneMapping(*skeleton, state.boneToCurveMapping);
+
+						if (isClipValid)
+						{
+							clipInfo.clip->getBoneMapping(*skeleton, state.boneToCurveMapping);
+						}
+						else
+						{
+							AnimationCurveMapping emptyMapping = { (UINT32)-1, (UINT32)-1, (UINT32)-1 };
+
+							for (UINT32 i = 0; i < numBones; i++)
+								state.boneToCurveMapping[i] = emptyMapping;
+						}
 					}
 					else
 						state.boneToCurveMapping = nullptr;
@@ -204,7 +231,7 @@ namespace BansheeEngine
 		bs_frame_clear();
 	}
 
-	void AnimationProxy::updateValues(const Vector<PlayingClipInfo>& clipInfos)
+	void AnimationProxy::updateValues(const Vector<AnimationClipInfo>& clipInfos)
 	{
 		for(auto& clipInfo : clipInfos)
 		{
@@ -216,7 +243,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void AnimationProxy::updateTime(const Vector<PlayingClipInfo>& clipInfos)
+	void AnimationProxy::updateTime(const Vector<AnimationClipInfo>& clipInfos)
 	{
 		for (auto& clipInfo : clipInfos)
 		{
@@ -247,7 +274,7 @@ namespace BansheeEngine
 	{
 		mDefaultWrapMode = wrapMode;
 
-		for (auto& clipInfo : mPlayingClips)
+		for (auto& clipInfo : mClipInfos)
 			clipInfo.state.wrapMode = wrapMode;
 
 		mDirty |= AnimDirtyStateFlag::Value;
@@ -257,7 +284,7 @@ namespace BansheeEngine
 	{
 		mDefaultSpeed = speed;
 
-		for (auto& clipInfo : mPlayingClips)
+		for (auto& clipInfo : mClipInfos)
 			clipInfo.state.speed = speed;
 
 		mDirty |= AnimDirtyStateFlag::Value;
@@ -266,41 +293,68 @@ namespace BansheeEngine
 	void Animation::play(const HAnimationClip& clip, UINT32 layer, AnimPlayMode playMode)
 	{
 		if (playMode == AnimPlayMode::StopAll)
-			mPlayingClips.clear();
+			mClipInfos.clear();
 		else
 		{
 			bs_frame_mark();
 			{
-				FrameVector<PlayingClipInfo> newClips;
-				for (auto& clipInfo : mPlayingClips)
+				FrameVector<AnimationClipInfo> newClips;
+				for (auto& clipInfo : mClipInfos)
 				{
 					if (clipInfo.state.layer != layer && clipInfo.clip != clip)
 						newClips.push_back(clipInfo);
 				}
 
-				mPlayingClips.resize(newClips.size());
-				memcpy(mPlayingClips.data(), newClips.data(), sizeof(PlayingClipInfo) * newClips.size());
+				mClipInfos.resize(newClips.size());
+				memcpy(mClipInfos.data(), newClips.data(), sizeof(AnimationClipInfo) * newClips.size());
 			}
 			bs_frame_clear();
 		}
 
-		mPlayingClips.push_back(PlayingClipInfo(clip));
-		PlayingClipInfo& newClipInfo = mPlayingClips.back();
+		if (clip != nullptr)
+		{
+			checkAdditiveLayer(layer);
 
-		newClipInfo.state.layer = layer;
-		
+			mClipInfos.push_back(AnimationClipInfo(clip));
+			AnimationClipInfo& newClipInfo = mClipInfos.back();
+
+			newClipInfo.state.layer = layer;
+		}
+
 		mDirty |= AnimDirtyStateFlag::Layout;
 	}
 
 	void Animation::blend(const HAnimationClip& clip, float weight, float fadeLength, UINT32 layer)
 	{
+		if (clip != nullptr)
+		{
+			checkAdditiveLayer(layer);
+
+			mClipInfos.push_back(AnimationClipInfo(clip));
+			AnimationClipInfo& newClipInfo = mClipInfos.back();
+
+			newClipInfo.state.layer = layer;
+		}
+
 		// TODO
+
 		mDirty |= AnimDirtyStateFlag::Layout;
 	}
 
 	void Animation::crossFade(const HAnimationClip& clip, float fadeLength, UINT32 layer, AnimPlayMode playMode)
 	{
+		if (clip != nullptr)
+		{
+			checkAdditiveLayer(layer);
+
+			mClipInfos.push_back(AnimationClipInfo(clip));
+			AnimationClipInfo& newClipInfo = mClipInfos.back();
+
+			newClipInfo.state.layer = layer;
+		}
+
 		// TODO
+
 		mDirty |= AnimDirtyStateFlag::Layout;
 	}
 
@@ -308,15 +362,15 @@ namespace BansheeEngine
 	{
 		bs_frame_mark();
 		{
-			FrameVector<PlayingClipInfo> newClips;
-			for (auto& clipInfo : mPlayingClips)
+			FrameVector<AnimationClipInfo> newClips;
+			for (auto& clipInfo : mClipInfos)
 			{
 				if (clipInfo.state.layer != layer)
 					newClips.push_back(clipInfo);
 			}
 
-			mPlayingClips.resize(newClips.size());
-			memcpy(mPlayingClips.data(), newClips.data(), sizeof(PlayingClipInfo) * newClips.size());
+			mClipInfos.resize(newClips.size());
+			memcpy(mClipInfos.data(), newClips.data(), sizeof(AnimationClipInfo) * newClips.size());
 		}
 		bs_frame_clear();
 
@@ -325,18 +379,27 @@ namespace BansheeEngine
 
 	void Animation::stopAll()
 	{
-		mPlayingClips.clear();
+		mClipInfos.clear();
 		mDirty |= AnimDirtyStateFlag::Layout;
 	}
 
 	bool Animation::isPlaying() const
 	{
-		return !mPlayingClips.empty();
+		for(auto& clipInfo : mClipInfos)
+		{
+			if (clipInfo.clip.isLoaded())
+				return true;
+		}
+
+		return false;
 	}
 
 	bool Animation::getState(const HAnimationClip& clip, AnimationClipState& state)
 	{
-		for (auto& clipInfo : mPlayingClips)
+		if (clip == nullptr)
+			return false;
+
+		for (auto& clipInfo : mClipInfos)
 		{
 			if (clipInfo.clip == clip)
 			{
@@ -350,7 +413,12 @@ namespace BansheeEngine
 
 	void Animation::setState(const HAnimationClip& clip, AnimationClipState state)
 	{
-		for (auto& clipInfo : mPlayingClips)
+		if (clip == nullptr)
+			return;
+
+		checkAdditiveLayer(state.layer);
+
+		for (auto& clipInfo : mClipInfos)
 		{
 			if (clipInfo.clip == clip)
 			{
@@ -360,6 +428,33 @@ namespace BansheeEngine
 				clipInfo.state = state;
 				mDirty |= AnimDirtyStateFlag::Value;
 				return;
+			}
+		}
+
+		// No existing clip found, add new one
+		mClipInfos.push_back(AnimationClipInfo(clip));
+
+		AnimationClipInfo& newClipInfo = mClipInfos.back();
+		newClipInfo.state = state;
+
+		mDirty |= AnimDirtyStateFlag::Layout;
+	}
+
+	void Animation::checkAdditiveLayer(UINT32 layerIdx)
+	{
+		for (auto& clipInfo : mClipInfos)
+		{
+			if (!clipInfo.clip.isLoaded())
+				continue;
+
+			if (clipInfo.state.layer == layerIdx)
+			{
+				if(!clipInfo.clip->isAdditive())
+				{
+					LOGWRN("Adding an additive clip to a layer, but other clips in the same layer are not additive. " \
+						"This will most likely result in an incorrect animation.");
+					return;
+				}
 			}
 		}
 	}
@@ -378,26 +473,26 @@ namespace BansheeEngine
 	void Animation::updateAnimProxy(float timeDelta)
 	{
 		// Check if any of the clip curves are dirty and advance time
-		for (auto& clipInfo : mPlayingClips)
+		for (auto& clipInfo : mClipInfos)
 		{
 			clipInfo.state.time += timeDelta * clipInfo.state.speed;
 
-			if (clipInfo.curveVersion != clipInfo.clip->getVersion())
+			if (clipInfo.clip.isLoaded() && clipInfo.curveVersion != clipInfo.clip->getVersion())
 				mDirty |= AnimDirtyStateFlag::Layout;
 		}
 
 		if((UINT32)mDirty == 0) // Clean
 		{
-			mAnimProxy->updateTime(mPlayingClips);
+			mAnimProxy->updateTime(mClipInfos);
 		}
 		else
 		{
 			if (mDirty.isSet(AnimDirtyStateFlag::Skeleton))
-				mAnimProxy->rebuild(mSkeleton, mPlayingClips);
+				mAnimProxy->rebuild(mSkeleton, mClipInfos);
 			else if (mDirty.isSet(AnimDirtyStateFlag::Layout))
-				mAnimProxy->rebuild(mPlayingClips);
+				mAnimProxy->rebuild(mClipInfos);
 			else if (mDirty.isSet(AnimDirtyStateFlag::Value))
-				mAnimProxy->updateValues(mPlayingClips);
+				mAnimProxy->updateValues(mClipInfos);
 		}
 
 		mDirty = AnimDirtyState();
