@@ -52,7 +52,7 @@ namespace BansheeEngine
 		void setDrawOperation(DrawOperationType op) override;
 
 		/** @copydoc RenderAPICore::setTexture() */
-		void setTexture(GpuProgramType gptype, UINT16 texUnit, bool enabled, const SPtr<TextureCore>& texPtr) override;
+		void setTexture(GpuProgramType gptype, UINT16 texUnit, const SPtr<TextureCore>& texPtr) override;
 
 		/** @copydoc RenderAPICore::setBuffer */
 		void setBuffer(GpuProgramType gptype, UINT16 unit, const SPtr<GpuBufferCore>& buffer, bool loadStore = false) override;

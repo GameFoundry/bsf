@@ -21,14 +21,9 @@ using namespace std::placeholders;
 
 namespace BansheeEngine 
 {
-	void RenderAPI::disableTextureUnit(CoreAccessor& accessor, GpuProgramType gptype, UINT16 texUnit)
+	void RenderAPI::setTexture(CoreAccessor& accessor, GpuProgramType gptype, UINT16 unit, const SPtr<Texture> &texPtr)
 	{
-		accessor.queueCommand(std::bind(&RenderAPICore::disableTextureUnit, RenderAPICore::instancePtr(), gptype, texUnit));
-	}
-
-	void RenderAPI::setTexture(CoreAccessor& accessor, GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<Texture> &texPtr)
-	{
-		accessor.queueCommand(std::bind(&RenderAPICore::setTexture, RenderAPICore::instancePtr(), gptype, unit, enabled, texPtr->getCore()));
+		accessor.queueCommand(std::bind(&RenderAPICore::setTexture, RenderAPICore::instancePtr(), gptype, unit, texPtr->getCore()));
 	}
 
 	void RenderAPI::setLoadStoreTexture(CoreAccessor& accessor, GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<Texture>& texPtr,
@@ -282,13 +277,6 @@ namespace BansheeEngine
 		return mDriverVersion; 
 	}
 
-    void RenderAPICore::disableTextureUnit(GpuProgramType gptype, UINT16 texUnit)
-    {
-		THROW_IF_NOT_CORE_THREAD;
-
-		setTexture(gptype, texUnit, false, SPtr<TextureCore>());
-    }
-
 	void RenderAPICore::addClipPlane(const Plane &p)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -420,10 +408,7 @@ namespace BansheeEngine
 		{
 			SPtr<TextureCore> texture = params->getTexture(iter->second.slot);
 
-			if (texture == nullptr)
-				setTexture(gptype, iter->second.slot, false, nullptr);
-			else
-				setTexture(gptype, iter->second.slot, true, texture);
+			setTexture(gptype, iter->second.slot, texture);
 		}
 
 		for (auto iter = paramDesc.loadStoreTextures.begin(); iter != paramDesc.loadStoreTextures.end(); ++iter)

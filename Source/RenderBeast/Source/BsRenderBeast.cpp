@@ -557,7 +557,7 @@ namespace BansheeEngine
 		camData.target->allocate();
 		camData.target->bindGBuffer();
 
-		// Trigger pre-scene callbacks
+		//// Trigger pre-scene callbacks
 		auto iterCameraCallbacks = mRenderCallbacks.find(camera);
 		if (iterCameraCallbacks != mRenderCallbacks.end())
 		{
@@ -575,7 +575,7 @@ namespace BansheeEngine
 			}
 		}
 		
-		// Render base pass
+		//// Render base pass
 		const Vector<RenderQueueElement>& opaqueElements = camData.opaqueQueue->getSortedElements();
 		for (auto iter = opaqueElements.begin(); iter != opaqueElements.end(); ++iter)
 		{
@@ -607,7 +607,7 @@ namespace BansheeEngine
 
 		camData.target->bindSceneColor(true);
 
-		// Render light pass
+		//// Render light pass
 		{
 			SPtr<GpuParamBlockBufferCore> perCameraBuffer = mStaticHandler->getPerCameraParams().getBuffer();
 

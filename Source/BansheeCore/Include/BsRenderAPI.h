@@ -34,20 +34,12 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT RenderAPI
 	{
 	public:
-		/** 
-		 * @copydoc RenderAPICore::disableTextureUnit()
-		 *
-		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
-		 */
-		static void disableTextureUnit(CoreAccessor& accessor, GpuProgramType gptype, UINT16 texUnit);
-
 		/**  
 		 * @copydoc RenderAPICore::setTexture()
 		 *
 		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
 		 */
-		static void setTexture(CoreAccessor& accessor, GpuProgramType gptype, UINT16 texUnit, bool enabled, 
-			const SPtr<Texture> &texPtr);
+		static void setTexture(CoreAccessor& accessor, GpuProgramType gptype, UINT16 texUnit, const SPtr<Texture>& texture);
 
 		/**  
 		 * @copydoc RenderAPICore::setLoadStoreTexture()
@@ -392,18 +384,9 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	gptype			Determines to which GPU program slot to bind the texture.
 		 * @param[in]	texUnit			Texture unit index to bind the texture to.
-		 * @param[in]	enabled			True to bind the texture at the specified unit, false to unbind.
 		 * @param[in]	texPtr			Texture to bind.
 		 */
-		virtual void setTexture(GpuProgramType gptype, UINT16 texUnit, bool enabled, const SPtr<TextureCore>& texPtr) = 0;
-
-		/**	
-		 * Removes a texture at the specified texture unit.
-		 *
-		 * @param[in]	gptype			Determines at which GPU program slot to unbind the texture.
-		 * @param[in]	texUnit			Texture unit index to unbind the texture from.
-		 */
-		virtual void disableTextureUnit(GpuProgramType gptype, UINT16 texUnit);
+		virtual void setTexture(GpuProgramType gptype, UINT16 texUnit, const SPtr<TextureCore>& texPtr) = 0;
 
 		/**	
 		 * Binds a texture that can be used for random load/store operations from a GPU program. 

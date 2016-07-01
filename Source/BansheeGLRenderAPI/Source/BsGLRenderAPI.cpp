@@ -382,7 +382,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GLRenderAPI::setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& texPtr)
+	void GLRenderAPI::setTexture(GpuProgramType gptype, UINT16 unit, const SPtr<TextureCore>& texPtr)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -391,7 +391,7 @@ namespace BansheeEngine
 			return;
 
 		SPtr<GLTextureCore> tex = std::static_pointer_cast<GLTextureCore>(texPtr);
-		if (enabled && tex)
+		if (tex != nullptr)
 		{
 			mTextureTypes[unit] = tex->getGLTextureTarget();
 			glBindTexture(mTextureTypes[unit], tex->getGLID());
@@ -1380,11 +1380,11 @@ namespace BansheeEngine
 		if (!activateGLTextureUnit(unit))
 			return;
 
-		GLfloat largest_supported_anisotropy = 0;
-		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &largest_supported_anisotropy);
-		if (maxAnisotropy > largest_supported_anisotropy)
-			maxAnisotropy = largest_supported_anisotropy ? 
-			static_cast<UINT32>(largest_supported_anisotropy) : 1;
+		GLfloat maxSupportAnisotropy = 0;
+		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxSupportAnisotropy);
+		if (maxAnisotropy > maxSupportAnisotropy)
+			maxAnisotropy = maxSupportAnisotropy ? 
+			static_cast<UINT32>(maxSupportAnisotropy) : 1;
 
 		if(maxAnisotropy < 1)
 			maxAnisotropy = 1;

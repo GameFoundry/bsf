@@ -400,7 +400,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumGpuParamBufferBinds);
 	}
 
-	void D3D9RenderAPI::setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& tex)
+	void D3D9RenderAPI::setTexture(GpuProgramType gptype, UINT16 unit, const SPtr<TextureCore>& tex)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -420,7 +420,7 @@ namespace BansheeEngine
 
 		HRESULT hr;
 		SPtr<D3D9TextureCore> dt = std::static_pointer_cast<D3D9TextureCore>(tex);
-		if (enabled && (dt != nullptr))
+		if (dt != nullptr)
 		{
 			IDirect3DBaseTexture9 *pTex = dt->getTexture_internal();
 			if (mTexStageDesc[unit].pTex != pTex)

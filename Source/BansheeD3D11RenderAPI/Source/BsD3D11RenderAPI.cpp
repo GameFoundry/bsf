@@ -271,7 +271,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumDepthStencilStateChanges);
 	}
 
-	void D3D11RenderAPI::setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& texPtr)
+	void D3D11RenderAPI::setTexture(GpuProgramType gptype, UINT16 unit, const SPtr<TextureCore>& texPtr)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -279,7 +279,7 @@ namespace BansheeEngine
 		//  and then set them all up at once before rendering? Needs testing
 
 		ID3D11ShaderResourceView* viewArray[1];
-		if(texPtr != nullptr && enabled)
+		if(texPtr != nullptr)
 		{
 			D3D11TextureCore* d3d11Texture = static_cast<D3D11TextureCore*>(texPtr.get());
 			viewArray[0] = d3d11Texture->getSRV();
@@ -423,13 +423,6 @@ namespace BansheeEngine
 		}
 
 		BS_INC_RENDER_STAT(NumTextureBinds);
-	}
-
-	void D3D11RenderAPI::disableTextureUnit(GpuProgramType gptype, UINT16 texUnit)
-	{
-		THROW_IF_NOT_CORE_THREAD;
-
-		setTexture(gptype, texUnit, false, nullptr);
 	}
 
 	void D3D11RenderAPI::beginFrame()
