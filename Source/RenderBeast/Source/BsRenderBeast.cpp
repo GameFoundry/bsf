@@ -446,21 +446,7 @@ namespace BansheeEngine
 		return mOptions;
 	}
 
-	void RenderBeast::renderAll() 
-	{
-		// Sync all dirty sim thread CoreObject data to core thread
-		CoreObjectManager::instance().syncToCore(gCoreAccessor());
-
-		if (mOptionsDirty)
-		{
-			gCoreAccessor().queueCommand(std::bind(&RenderBeast::syncRenderOptions, this, *mOptions));
-			mOptionsDirty = false;
-		}
-
-		gCoreAccessor().queueCommand(std::bind(&RenderBeast::renderAllCore, this, gTime().getTime(), gTime().getFrameDelta()));
-	}
-
-	void RenderBeast::syncRenderOptions(const RenderBeastOptions& options)
+	void RenderBeast::syncOptions(const RenderBeastOptions& options)
 	{
 		bool filteringChanged = mCoreOptions->filtering != options.filtering;
 		if (options.filtering == RenderBeastFiltering::Anisotropic)
@@ -481,6 +467,20 @@ namespace BansheeEngine
 
 			cameraData.second.transparentQueue->setStateReduction(transparentStateReduction);
 		}
+	}
+
+	void RenderBeast::renderAll() 
+	{
+		// Sync all dirty sim thread CoreObject data to core thread
+		CoreObjectManager::instance().syncToCore(gCoreAccessor());
+
+		if (mOptionsDirty)
+		{
+			gCoreAccessor().queueCommand(std::bind(&RenderBeast::syncOptions, this, *mOptions));
+			mOptionsDirty = false;
+		}
+
+		gCoreAccessor().queueCommand(std::bind(&RenderBeast::renderAllCore, this, gTime().getTime(), gTime().getFrameDelta()));
 	}
 
 	void RenderBeast::renderAllCore(float time, float delta)
@@ -533,6 +533,7 @@ namespace BansheeEngine
 	{
 		gProfilerCPU().beginSample("Render");
 
+		RenderAPICore& rapi = RenderAPICore::instance();
 		const CameraCore* camera = rtData.cameras[camIdx];
 		CameraData& camData = mCameraData[camera];
 
@@ -615,7 +616,7 @@ namespace BansheeEngine
 			SPtr<PassCore> dirPass = dirMaterial->getPass(0);
 
 			setPass(dirPass);
-			mDirLightMat->setStaticParameters(camData.target, perCameraBuffer);
+			mDirLightMat->setStaticParameters(rapi, camData.target, perCameraBuffer);
 
 			for (auto& light : mDirectionalLights)
 			{
@@ -623,10 +624,6 @@ namespace BansheeEngine
 					continue;
 
 				mDirLightMat->setParameters(light.internal);
-
-				// TODO - Bind parameters to the pipeline manually as I don't need to re-bind gbuffer textures for every light
-				//  - I can't think of a good way to do this automatically. Probably best to do it in setParameters()
-				setPassParams(dirMaterial->getPassParameters(0), nullptr);
 				gRendererUtility().drawScreenQuad();
 			}
 
@@ -636,7 +633,7 @@ namespace BansheeEngine
 
 			// TODO - Possibly use instanced drawing here as only two meshes are drawn with various properties
 			setPass(pointInsidePass);
-			mPointLightInMat->setStaticParameters(camData.target, perCameraBuffer);
+			mPointLightInMat->setStaticParameters(rapi, camData.target, perCameraBuffer);
 
 			// TODO - Cull lights based on visibility, right now I just iterate over all of them. 
 			for (auto& light : mPointLights)
@@ -653,9 +650,6 @@ namespace BansheeEngine
 
 				mPointLightInMat->setParameters(light.internal);
 
-				// TODO - Bind parameters to the pipeline manually as I don't need to re-bind gbuffer textures for every light
-				//  - I can't think of a good way to do this automatically. Probably best to do it in setParameters()
-				setPassParams(pointInsideMaterial->getPassParameters(0), nullptr);
 				SPtr<MeshCore> mesh = light.internal->getMesh();
 				gRendererUtility().draw(mesh, mesh->getProperties().getSubMesh(0));
 			}
@@ -665,7 +659,7 @@ namespace BansheeEngine
 			SPtr<PassCore> pointOutsidePass = pointOutsideMaterial->getPass(0);
 
 			setPass(pointOutsidePass);
-			mPointLightOutMat->setStaticParameters(camData.target, perCameraBuffer);
+			mPointLightOutMat->setStaticParameters(rapi, camData.target, perCameraBuffer);
 
 			for (auto& light : mPointLights)
 			{
@@ -681,8 +675,6 @@ namespace BansheeEngine
 
 				mPointLightOutMat->setParameters(light.internal);
 
-				// TODO - Bind parameters to the pipeline manually as I don't need to re-bind gbuffer textures for every light
-				setPassParams(pointOutsideMaterial->getPassParameters(0), nullptr);
 				SPtr<MeshCore> mesh = light.internal->getMesh();
 				gRendererUtility().draw(mesh, mesh->getProperties().getSubMesh(0));
 			}
@@ -1107,11 +1099,7 @@ namespace BansheeEngine
 			for (auto iter = paramDesc.textures.begin(); iter != paramDesc.textures.end(); ++iter)
 			{
 				SPtr<TextureCore> texture = params->getTexture(iter->second.slot);
-
-				if (texture == nullptr)
-					rs.setTexture(stage.type, iter->second.slot, false, nullptr);
-				else
-					rs.setTexture(stage.type, iter->second.slot, true, texture);
+				rs.setTexture(stage.type, iter->second.slot, texture);
 			}
 
 			for (auto iter = paramDesc.loadStoreTextures.begin(); iter != paramDesc.loadStoreTextures.end(); ++iter)
@@ -1125,7 +1113,13 @@ namespace BansheeEngine
 					rs.setLoadStoreTexture(stage.type, iter->second.slot, true, texture, surface);
 			}
 
-			rs.setConstantBuffers(stage.type, params);
+			for (auto iter = paramDesc.paramBlocks.begin(); iter != paramDesc.paramBlocks.end(); ++iter)
+			{
+				SPtr<GpuParamBlockBufferCore> blockBuffer = params->getParamBlockBuffer(iter->second.slot);
+				blockBuffer->flushToGPU();
+
+				rs.setParamBuffer(stage.type, iter->second.slot, blockBuffer, paramDesc);
+			}
 		}
 	}
 

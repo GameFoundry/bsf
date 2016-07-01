@@ -60,6 +60,14 @@ namespace BansheeEngine
 		static void setPassParams(const SPtr<MaterialCore>& material, UINT32 passIdx = 0);
 
 		/**
+		 * Sets parameters (textures, samplers, buffers) for the provided GPU program type.
+		 *
+		 * @param[in]	type		Type of the GPU program to assign the parameters to.
+		 * @param[in]	params		Parameters to assign.
+		 */
+		static void setGpuParams(GpuProgramType type, const SPtr<GpuParamsCore>& params);
+
+		/**
 		 * Draws the specified mesh.
 		 *
 		 * @param[in]	mesh			Mesh to draw.

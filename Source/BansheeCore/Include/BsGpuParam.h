@@ -118,6 +118,9 @@ namespace BansheeEngine
 		 */
 		T get(UINT32 arrayIdx = 0);
 
+		/** Returns meta-data about the parameter. */
+		const GpuParamDataDesc& getDesc() const { return *mParamDesc; }
+
 		/** Checks if param is initialized. */
 		bool operator==(const nullptr_t &nullval) const
 		{
@@ -148,6 +151,9 @@ namespace BansheeEngine
 
 		/**	Returns the size of the struct in bytes. */
 		UINT32 getElementSize() const;
+
+		/** Returns meta-data about the parameter. */
+		const GpuParamDataDesc& getDesc() const { return *mParamDesc; }
 
 		/**	Checks if param is initialized. */
 		bool operator==(const nullptr_t &nullval) const
@@ -181,6 +187,9 @@ namespace BansheeEngine
 		/** @copydoc TGpuDataParam::get */
 		TextureType get();
 
+		/** @copydoc TGpuDataParam::getDesc */
+		const GpuParamObjectDesc& getDesc() const { return *mParamDesc; }
+
 		/** Checks if param is initialized. */
 		bool operator==(const nullptr_t &nullval) const
 		{
@@ -212,6 +221,9 @@ namespace BansheeEngine
 
 		/** @copydoc TGpuDataParam::get */
 		TextureType get();
+
+		/** @copydoc TGpuDataParam::getDesc */
+		const GpuParamObjectDesc& getDesc() const { return *mParamDesc; }
 
 		/**	Checks if param is initialized. */
 		bool operator==(const nullptr_t &nullval) const
@@ -245,6 +257,9 @@ namespace BansheeEngine
 		/** @copydoc TGpuDataParam::get */
 		BufferType get();
 
+		/** @copydoc TGpuDataParam::getDesc */
+		const GpuParamObjectDesc& getDesc() const { return *mParamDesc; }
+
 		/** Checks if param is initialized. */
 		bool operator==(const nullptr_t &nullval) const
 		{
@@ -276,6 +291,9 @@ namespace BansheeEngine
 
 		/** @copydoc TGpuDataParam::get */
 		SamplerStateType get();
+
+		/** @copydoc TGpuDataParam::getDesc */
+		const GpuParamObjectDesc& getDesc() const { return *mParamDesc; }
 
 		/**	Checks if param is initialized. */
 		bool operator==(const nullptr_t &nullval) const

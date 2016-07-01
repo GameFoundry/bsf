@@ -125,6 +125,15 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 		return nullptr;
 	}
 
+	GpuParamBlockDesc* GpuParamsBase::getParamBlockDesc(const String& name) const
+	{
+		auto paramBlockIter = mParamDesc->paramBlocks.find(name);
+		if (paramBlockIter != mParamDesc->paramBlocks.end())
+			return &paramBlockIter->second;
+
+		return nullptr;
+	}
+
 	const TextureSurface& GpuParamsBase::getLoadStoreSurface(UINT32 slot) const
 	{
 		if (slot >= mNumLoadStoreTextures)
@@ -472,17 +481,6 @@ UINT32 GpuParamsBase::getDataParamSize(const String& name) const
 	SPtr<GpuParamsCore> GpuParamsCore::_getThisPtr() const
 	{
 		return std::static_pointer_cast<GpuParamsCore>(getThisPtr());
-	}
-
-	void GpuParamsCore::updateHardwareBuffers()
-	{
-		for (UINT32 i = 0; i < mNumParamBlocks; i++)
-		{
-			if (mParamBlockBuffers[i] != nullptr)
-			{
-				mParamBlockBuffers[i]->flushToGPU();
-			}
-		}
 	}
 
 	void GpuParamsCore::syncToCore(const CoreSyncData& data)

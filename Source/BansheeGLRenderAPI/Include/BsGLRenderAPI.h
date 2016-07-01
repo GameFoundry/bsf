@@ -76,8 +76,9 @@ namespace BansheeEngine
 		/** @copydoc RenderAPICore::unbindGpuProgram() */
 		void unbindGpuProgram(GpuProgramType gptype) override;
 
-		/** @copydoc RenderAPICore::setConstantBuffers() */
-		void setConstantBuffers(GpuProgramType gptype, const SPtr<GpuParamsCore>& params) override;
+		/** @copydoc RenderAPICore::setParamBuffer */
+		void setParamBuffer(GpuProgramType gptype, UINT32 slot, const SPtr<GpuParamBlockBufferCore>& buffer, 
+			const GpuParamDesc& paramDesc) override;
 
 		/** @copydoc RenderAPICore::beginFrame() */
 		void beginFrame() override;

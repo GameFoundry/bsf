@@ -123,6 +123,8 @@ namespace BansheeEngine
 		mPerCameraParams.gMatScreenToWorld.set(cameraData.screenToWorld);
 		mPerCameraParams.gDeviceZToWorldZ.set(cameraData.deviceZToWorldZ);
 		mPerCameraParams.gClipToUVScaleOffset.set(cameraData.clipToUVScaleOffset);
+
+		mPerCameraParams.flushToGPU();
 	}
 
 	void StaticRenderableHandler::updatePerObjectBuffers(RenderableElement& element, const RenderableShaderData& data, const Matrix4& wvpMatrix)

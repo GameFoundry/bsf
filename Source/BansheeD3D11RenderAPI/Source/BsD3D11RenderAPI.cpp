@@ -614,55 +614,46 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumGpuProgramBinds);
 	}
 
-	void D3D11RenderAPI::setConstantBuffers(GpuProgramType gptype, const SPtr<GpuParamsCore>& bindableParams)
+	void D3D11RenderAPI::setParamBuffer(GpuProgramType gptype, UINT32 slot, const SPtr<GpuParamBlockBufferCore>& buffer, 
+		const GpuParamDesc& paramDesc)
 	{
-		THROW_IF_NOT_CORE_THREAD;
-
-		bindableParams->updateHardwareBuffers();
-		const GpuParamDesc& paramDesc = bindableParams->getParamDesc();
-
-		// TODO - I assign constant buffers one by one but it might be more efficient to do them all at once?
 		ID3D11Buffer* bufferArray[1];
-		for(auto iter = paramDesc.paramBlocks.begin(); iter != paramDesc.paramBlocks.end(); ++iter)
+
+		if (buffer != nullptr)
 		{
-			SPtr<GpuParamBlockBufferCore> currentBlockBuffer = bindableParams->getParamBlockBuffer(iter->second.slot);
-
-			if(currentBlockBuffer != nullptr)
-			{
-				const D3D11GpuParamBlockBufferCore* d3d11paramBlockBuffer = 
-					static_cast<const D3D11GpuParamBlockBufferCore*>(currentBlockBuffer.get());
-				bufferArray[0] = d3d11paramBlockBuffer->getD3D11Buffer();
-			}
-			else
-				bufferArray[0] = nullptr;
-
-			switch(gptype)
-			{
-			case GPT_VERTEX_PROGRAM:
-				mDevice->getImmediateContext()->VSSetConstantBuffers(iter->second.slot, 1, bufferArray);
-				break;
-			case GPT_FRAGMENT_PROGRAM:
-				mDevice->getImmediateContext()->PSSetConstantBuffers(iter->second.slot, 1, bufferArray);
-				break;
-			case GPT_GEOMETRY_PROGRAM:
-				mDevice->getImmediateContext()->GSSetConstantBuffers(iter->second.slot, 1, bufferArray);
-				break;
-			case GPT_HULL_PROGRAM:
-				mDevice->getImmediateContext()->HSSetConstantBuffers(iter->second.slot, 1, bufferArray);
-				break;
-			case GPT_DOMAIN_PROGRAM:
-				mDevice->getImmediateContext()->DSSetConstantBuffers(iter->second.slot, 1, bufferArray);
-				break;
-			case GPT_COMPUTE_PROGRAM:
-				mDevice->getImmediateContext()->CSSetConstantBuffers(iter->second.slot, 1, bufferArray);
-				break;
-			};
-
-			BS_INC_RENDER_STAT(NumGpuParamBufferBinds);
+			const D3D11GpuParamBlockBufferCore* d3d11paramBlockBuffer =
+				static_cast<const D3D11GpuParamBlockBufferCore*>(buffer.get());
+			bufferArray[0] = d3d11paramBlockBuffer->getD3D11Buffer();
 		}
+		else
+			bufferArray[0] = nullptr;
+
+		switch (gptype)
+		{
+		case GPT_VERTEX_PROGRAM:
+			mDevice->getImmediateContext()->VSSetConstantBuffers(slot, 1, bufferArray);
+			break;
+		case GPT_FRAGMENT_PROGRAM:
+			mDevice->getImmediateContext()->PSSetConstantBuffers(slot, 1, bufferArray);
+			break;
+		case GPT_GEOMETRY_PROGRAM:
+			mDevice->getImmediateContext()->GSSetConstantBuffers(slot, 1, bufferArray);
+			break;
+		case GPT_HULL_PROGRAM:
+			mDevice->getImmediateContext()->HSSetConstantBuffers(slot, 1, bufferArray);
+			break;
+		case GPT_DOMAIN_PROGRAM:
+			mDevice->getImmediateContext()->DSSetConstantBuffers(slot, 1, bufferArray);
+			break;
+		case GPT_COMPUTE_PROGRAM:
+			mDevice->getImmediateContext()->CSSetConstantBuffers(slot, 1, bufferArray);
+			break;
+		};
+
+		BS_INC_RENDER_STAT(NumGpuParamBufferBinds);
 
 		if (mDevice->hasError())
-			BS_EXCEPT(RenderingAPIException, "Failed to setConstantBuffers : " + mDevice->getErrorDescription());
+			BS_EXCEPT(RenderingAPIException, "Failed to setParamBuffer: " + mDevice->getErrorDescription());
 	}
 
 	void D3D11RenderAPI::draw(UINT32 vertexOffset, UINT32 vertexCount, UINT32 instanceCount)

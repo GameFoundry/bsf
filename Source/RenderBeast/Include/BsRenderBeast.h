@@ -173,7 +173,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Core thread only.
 		 */
-		void syncRenderOptions(const RenderBeastOptions& options);
+		void syncOptions(const RenderBeastOptions& options);
 
 		/**
 		 * Performs rendering over all camera proxies.

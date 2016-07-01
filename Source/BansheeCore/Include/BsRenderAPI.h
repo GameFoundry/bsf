@@ -175,20 +175,6 @@ namespace BansheeEngine
 		static void unbindGpuProgram(CoreAccessor& accessor, GpuProgramType gptype);
 
 		/** 
-		 * @copydoc RenderAPICore::setConstantBuffers()
-		 *
-		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
-		 */
-		static void setConstantBuffers(CoreAccessor& accessor, GpuProgramType gptype, const SPtr<GpuParams>& params);
-
-		/** 
-		 * @copydoc RenderAPICore::setGpuParams()
-		 *
-		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
-		 */
-		static void setGpuParams(CoreAccessor& accessor, GpuProgramType gptype, const SPtr<GpuParams>& params);
-
-		/** 
 		 * @copydoc RenderAPICore::beginFrame()
 		 *
 		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
@@ -521,21 +507,16 @@ namespace BansheeEngine
 		virtual void bindGpuProgram(const SPtr<GpuProgramCore>& prg);
 
 		/**
-		 * Binds constant(uniform) GPU program parameters. Caller must ensure these match the previously bound GPU program.
+		 * Assigns a parameter buffer containing constants (uniforms) for use in a GPU program.
 		 *
-		 * @param[in]	gptype	GPU program slot to bind the buffer to.
-		 * @param[in]	params	Object containing the required constant buffers.
+		 * @param[in]	gptype		Type of GPU program to bind the buffer to.
+		 * @param[in]	slot		Slot to bind the buffer to. The slot is dependant on the GPU program the buffer will be used
+		 *							with.
+		 * @param[in]	buffer		Buffer containing constants (uniforms) for use by the shader.
+		 * @param[in]	paramDesc	Description of all parameters in the buffer. Required mostly for backwards compatibility.
 		 */
-		virtual void setConstantBuffers(GpuProgramType gptype, const SPtr<GpuParamsCore>& params) = 0;
-
-		/** 
-		 * Binds all specified GPU program parameters (textures, buffers, samplers and constant buffers). Caller must
-		 * ensure these match the previously bound GPU program. 
-		 *
-		 * @param[in]	gptype	GPU program slot to bind the buffer to.
-		 * @param[in]	params	Object containing the required parameters.
-		 */
-		virtual void setGpuParams(GpuProgramType gptype, const SPtr<GpuParamsCore>& params);
+		virtual void setParamBuffer(GpuProgramType gptype, UINT32 slot, const SPtr<GpuParamBlockBufferCore>& buffer, 
+			const GpuParamDesc& paramDesc) = 0;
 
 		/**	
 		 * Unbinds a program of a given type. 
