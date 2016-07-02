@@ -143,6 +143,17 @@ namespace BansheeEngine
 		 */
 		void renderOverlay(RenderTargetData& rtData, UINT32 camIdx, float delta);
 
+		/** 
+		 * Renders a single element of a renderable object. 
+		 *
+		 * @param[in]	element		Element to render.
+		 * @param[in]	passIdx		Index of the material pass to render the element with.
+		 * @param[in]	bindPass	If true the material pass will be bound for rendering, if false it is assumed it is
+		 *							already bound.
+		 * @param[in]	viewProj	View projection matrix of the camera the element is being rendered with.
+		 */
+		void renderElement(const BeastRenderableElement& element, UINT32 passIdx, bool bindPass, const Matrix4& viewProj);
+
 		/**	Creates data used by the renderer on the core thread. */
 		void initializeCore();
 

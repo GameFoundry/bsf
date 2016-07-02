@@ -539,24 +539,7 @@ namespace BansheeEngine
 		for (auto iter = opaqueElements.begin(); iter != opaqueElements.end(); ++iter)
 		{
 			BeastRenderableElement* renderElem = static_cast<BeastRenderableElement*>(iter->renderElem);
-			SPtr<MaterialCore> material = renderElem->material;
-
-			UINT32 rendererId = renderElem->renderableId;
-			Matrix4 worldViewProjMatrix = cameraShaderData.viewProj * mRenderableShaderData[rendererId].worldTransform;
-
-			mObjectRenderer->updatePerObjectBuffers(*renderElem, mRenderableShaderData[rendererId], worldViewProjMatrix);
-
-			if (iter->applyPass)
-				RendererUtility::instance().setPass(material, iter->passIdx, false);
-
-			SPtr<PassParametersCore> passParams = material->getPassParameters(iter->passIdx);
-
-			if (renderElem->samplerOverrides != nullptr)
-				setPassParams(passParams, &renderElem->samplerOverrides->passes[iter->passIdx]);
-			else
-				setPassParams(passParams, nullptr);
-
-			gRendererUtility().draw(iter->renderElem->mesh, iter->renderElem->subMesh);
+			renderElement(*renderElem, iter->passIdx, iter->applyPass, cameraShaderData.viewProj);
 		}
 
 		renderTargets->bindSceneColor(true);
@@ -627,24 +610,7 @@ namespace BansheeEngine
 		for (auto iter = transparentElements.begin(); iter != transparentElements.end(); ++iter)
 		{
 			BeastRenderableElement* renderElem = static_cast<BeastRenderableElement*>(iter->renderElem);
-			SPtr<MaterialCore> material = renderElem->material;
-
-			UINT32 rendererId = renderElem->renderableId;
-			Matrix4 worldViewProjMatrix = cameraShaderData.viewProj * mRenderableShaderData[rendererId].worldTransform;
-
-			mObjectRenderer->updatePerObjectBuffers(*renderElem, mRenderableShaderData[rendererId], worldViewProjMatrix);
-
-			if (iter->applyPass)
-				RendererUtility::instance().setPass(material, iter->passIdx, false);
-
-			SPtr<PassParametersCore> passParams = material->getPassParameters(iter->passIdx);
-
-			if (renderElem->samplerOverrides != nullptr)
-				setPassParams(passParams, &renderElem->samplerOverrides->passes[iter->passIdx]);
-			else
-				setPassParams(passParams, nullptr);
-
-			gRendererUtility().draw(iter->renderElem->mesh, iter->renderElem->subMesh);
+			renderElement(*renderElem, iter->passIdx, iter->applyPass, cameraShaderData.viewProj);
 		}
 
 		// Render non-overlay post-scene callbacks
@@ -682,6 +648,29 @@ namespace BansheeEngine
 		rendererCam.endRendering();
 
 		gProfilerCPU().endSample("Render");
+	}
+
+	void RenderBeast::renderElement(const BeastRenderableElement& element, UINT32 passIdx, bool bindPass, 
+		const Matrix4& viewProj)
+	{
+		SPtr<MaterialCore> material = element.material;
+
+		UINT32 rendererId = element.renderableId;
+		Matrix4 worldViewProjMatrix = viewProj * mRenderableShaderData[rendererId].worldTransform;
+
+		mObjectRenderer->updatePerObjectBuffers(element, mRenderableShaderData[rendererId], worldViewProjMatrix);
+
+		if (bindPass)
+			RendererUtility::instance().setPass(material, passIdx, false);
+
+		SPtr<PassParametersCore> passParams = material->getPassParameters(passIdx);
+
+		if (element.samplerOverrides != nullptr)
+			setPassParams(passParams, &element.samplerOverrides->passes[passIdx]);
+		else
+			setPassParams(passParams, nullptr);
+
+		gRendererUtility().draw(element.mesh, element.subMesh);
 	}
 
 	void RenderBeast::renderOverlay(RenderTargetData& rtData, UINT32 camIdx, float delta)

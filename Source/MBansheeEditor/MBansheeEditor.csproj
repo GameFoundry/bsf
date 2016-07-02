@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Inspectors\AnimationClipInspector.cs" />
+    <Compile Include="Inspectors\AnimationInspector.cs" />
     <Compile Include="Inspectors\AudioClipInspector.cs" />
     <Compile Include="Inspectors\AudioListenerInspector.cs" />
     <Compile Include="Inspectors\AudioSourceInspector.cs" />

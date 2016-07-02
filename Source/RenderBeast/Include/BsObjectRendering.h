@@ -87,7 +87,7 @@ namespace BansheeEngine
 		/**
 		 * Updates object specific parameter buffers with new values. To be called whenever object specific values change.
 		 */
-		void updatePerObjectBuffers(RenderableElement& element, const RenderableShaderData& data, const Matrix4& wvpMatrix);
+		void updatePerObjectBuffers(const RenderableElement& element, const RenderableShaderData& data, const Matrix4& wvpMatrix);
 
 		/** Returns a buffer that stores per-camera parameters. */
 		const PerCameraParamBuffer& getPerCameraParams() const { return mPerCameraParams; }

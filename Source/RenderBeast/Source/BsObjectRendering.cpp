@@ -120,7 +120,7 @@ namespace BansheeEngine
 		mPerCameraParams.flushToGPU();
 	}
 
-	void ObjectRenderer::updatePerObjectBuffers(RenderableElement& element, const RenderableShaderData& data, 
+	void ObjectRenderer::updatePerObjectBuffers(const RenderableElement& element, const RenderableShaderData& data, 
 		const Matrix4& wvpMatrix)
 	{
 		// Note: If I kept all the values in the same structure maybe a simple memcpy directly into the constant buffer

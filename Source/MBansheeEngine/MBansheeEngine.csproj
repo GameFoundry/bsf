@@ -43,7 +43,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Animation\Animation.cs" />
     <Compile Include="Animation\AnimationClip.cs" />
+    <Compile Include="Animation\Interop\NativeAnimation.cs" />
     <Compile Include="Audio\Audio.cs" />
     <Compile Include="Audio\AudioClip.cs" />
     <Compile Include="Audio\AudioListener.cs" />
