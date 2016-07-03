@@ -112,6 +112,27 @@ namespace BansheeEditor
     }
 
     /// <summary>
+    /// Information about how to split an AnimationClip into multiple separate clips.
+    /// </summary>
+    public class AnimationSplitInfo
+    {
+        public AnimationSplitInfo() { }
+
+        public AnimationSplitInfo(string name, int startFrame, int endFrame, bool isAdditive)
+        {
+            this.name = name;
+            this.startFrame = startFrame;
+            this.endFrame = endFrame;
+            this.isAdditive = isAdditive;
+        }
+
+        public string name;
+        public int startFrame = 0;
+        public int endFrame = 0;
+        public bool isAdditive = false;
+    }
+    
+    /// <summary>
     /// Provides options for controlling how is a mesh resource imported.
     /// </summary>
     public class MeshImportOptions : ImportOptions
@@ -196,6 +217,17 @@ namespace BansheeEditor
             set { Internal_SetCollisionMeshType(mCachedPtr, (int)value); }
         }
 
+        /// <summary>
+        /// Split information that allows you to split the animation clip contained in the mesh file into multiple separate
+        /// clips. The split always applies to the first clip in the file (if the file contains multiple), other clips are
+        /// imported as is.
+        /// </summary>
+        public AnimationSplitInfo[] AnimationClipSplits
+        {
+            get { return Internal_GetAnimationClipSplits(mCachedPtr); }
+            set { Internal_SetAnimationClipSplits(mCachedPtr, value); }
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateInstance(MeshImportOptions instance);
 
@@ -234,6 +266,12 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetImportBlendShapes(IntPtr thisPtr, bool value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern AnimationSplitInfo[] Internal_GetAnimationClipSplits(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetAnimationClipSplits(IntPtr thisPtr, AnimationSplitInfo[] value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern float Internal_GetScale(IntPtr thisPtr);

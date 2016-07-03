@@ -19,8 +19,8 @@ namespace BansheeEngine
 		Convex /**< A convex hull will be generated from the source mesh. */
 	};
 
-	/** Contains information about a piece of imported animation that will be used for generating its own AnimationClip. */
-	struct AnimationSplitInfo : IReflectable
+	/** Information about how to split an AnimationClip into multiple separate clips. */
+	struct BS_CORE_EXPORT AnimationSplitInfo : IReflectable
 	{
 		AnimationSplitInfo() { }
 
@@ -101,20 +101,11 @@ namespace BansheeEngine
 		CollisionMeshType getCollisionMeshType() const { return mCollisionMeshType; }
 
 		/** 
-		 * Registers an animation split info that determines how will the source animation clip be split. If not splits
+		 * Registers animation split infos that determine how will the source animation clip be split. If no splits
 		 * are present the data will be imported as one clip, but if splits are present the data will be split according
-		 * to the split infos.
+		 * to the split infos. Split infos only affect the primary animation clip, other clips will not be split.
 		 */
-		void addAnimationClipSplit(const AnimationSplitInfo& splitInfo) { mAnimationSplits.push_back(splitInfo); }
-
-		/** Returns in how many pieces should the imported animation clip be split info. */
-		UINT32 getNumAnimationClipSplits() const { return (UINT32)mAnimationSplits.size(); }
-
-		/** Returns information about an animation split at the specified index. */
-		const AnimationSplitInfo& getAnimationClipSplit(UINT32 idx) const { return mAnimationSplits[idx]; }
-
-		/** Removes an animation split info at the specified index. */
-		void removeAnimationClipSplit(UINT32 idx) { mAnimationSplits.erase(mAnimationSplits.begin() + idx); }
+		void setAnimationClipSplits(const Vector<AnimationSplitInfo>& splitInfos) { mAnimationSplits = splitInfos; }
 
 		/** Returns a copy of the animation splits array. */
 		Vector<AnimationSplitInfo> getAnimationClipSplits() const { return mAnimationSplits; }
