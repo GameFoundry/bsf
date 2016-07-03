@@ -140,6 +140,7 @@ set(BS_SBANSHEEENGINE_INC_WRAPPERS
 	"Include/BsScriptAudioListener.h"
 	"Include/BsScriptAnimationClip.h"
 	"Include/BsScriptAnimation.h"
+	"Include/BsScriptAnimationCurve.h"
 )
 
 set(BS_SBANSHEEENGINE_INC_WRAPPERS_GUI
@@ -270,6 +271,7 @@ set(BS_SBANSHEEENGINE_SRC_WRAPPERS
 	"Source/BsScriptAudioListener.cpp"
 	"Source/BsScriptAnimationClip.cpp"
 	"Source/BsScriptAnimation.cpp"
+	"Source/BsScriptAnimationCurve.cpp"
 )
 
 set(BS_SBANSHEEENGINE_INC_SERIALIZATION

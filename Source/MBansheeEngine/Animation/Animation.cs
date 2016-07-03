@@ -42,7 +42,8 @@ namespace BansheeEngine
     /// <summary>
     /// Contains information about a currently playing animation clip.
     /// </summary>
-    public struct AnimationClipState
+    [StructLayout(LayoutKind.Sequential), SerializeObject]
+    public struct AnimationClipState // Note: Must match C++ struct AnimationClipState
     {
         /// <summary>
         /// Layer the clip is playing on. Multiple clips can be played simulatenously on different layers.

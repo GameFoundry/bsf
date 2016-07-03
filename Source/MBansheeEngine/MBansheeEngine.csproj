@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="Animation\Animation.cs" />
     <Compile Include="Animation\AnimationClip.cs" />
+    <Compile Include="Animation\AnimationCurve.cs" />
     <Compile Include="Animation\Interop\NativeAnimation.cs" />
     <Compile Include="Audio\Audio.cs" />
     <Compile Include="Audio\AudioClip.cs" />
