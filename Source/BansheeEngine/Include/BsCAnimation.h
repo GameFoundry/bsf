@@ -42,9 +42,6 @@ namespace BansheeEngine
 		/** @copydoc Animation::blendAdditive */
 		void blendAdditive(const HAnimationClip& clip, float weight, float fadeLength = 0.0f, UINT32 layer = 0);
 
-		/** @copydoc Animation::blendSequential */
-		void blendSequential(const BlendSequentialInfo& info);
-
 		/** @copydoc Animation::blend1D */
 		void blend1D(const Blend1DInfo& info, float t);
 

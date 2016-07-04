@@ -41,14 +41,6 @@ namespace BansheeEngine
             Internal_BlendAdditive(mCachedPtr, clipPtr, weight, fadeLength, layer);
         }
 
-        public void BlendSequential(BlendSequentialInfo info)
-        {
-            if (info == null)
-                return;
-
-            Internal_BlendSequential(mCachedPtr, info);
-        }
-
         public void Blend1D(Blend1DInfo info, float t)
         {
             if (info == null)
@@ -135,9 +127,6 @@ namespace BansheeEngine
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_BlendAdditive(IntPtr thisPtr, IntPtr clipPtr, float weight, float fadeLength,
             int layer);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_BlendSequential(IntPtr thisPtr, BlendSequentialInfo info);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_Blend1D(IntPtr thisPtr, Blend1DInfo info, float t);

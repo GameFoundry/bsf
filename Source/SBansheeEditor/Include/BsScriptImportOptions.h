@@ -218,10 +218,10 @@ namespace BansheeEngine
 	};
 
 	/** Helper class for dealing with AnimationSplitInfo structure. */
-	class ScriptAnimationSplitInfo : public ScriptObject<ScriptAnimationSplitInfo>
+	class BS_SCR_BED_EXPORT ScriptAnimationSplitInfo : public ScriptObject<ScriptAnimationSplitInfo>
 	{
 	public:
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "AnimationSplitInfo")
+		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "AnimationSplitInfo")
 
 		/** Converts managed split info to its native counterpart. */
 		static AnimationSplitInfo fromManaged(MonoObject* object);

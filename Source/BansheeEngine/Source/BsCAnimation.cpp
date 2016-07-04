@@ -53,12 +53,6 @@ namespace BansheeEngine
 			mInternal->play(clip);
 	}
 
-	void CAnimation::blendSequential(const BlendSequentialInfo& info)
-	{
-		if (mInternal != nullptr)
-			mInternal->blendSequential(info);
-	}
-
 	void CAnimation::blend1D(const Blend1DInfo& info, float t)
 	{
 		if (mInternal != nullptr)

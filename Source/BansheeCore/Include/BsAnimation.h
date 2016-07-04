@@ -69,32 +69,23 @@ namespace BansheeEngine
 		UINT32 stateIdx; /**< State index this clip belongs to in AnimationProxy structure. */
 	};
 
-	/** Defines a single animation clip in BlendSequentialInfo. */
-	struct BS_CORE_EXPORT BlendSequentialClipInfo
+	/** Represents an animation clip used in 1D blending. Each clip has a position on the number line. */
+	struct BS_CORE_EXPORT BlendClipInfo
 	{
-		BlendSequentialClipInfo() { }
+		BlendClipInfo() { }
 
 		HAnimationClip clip;
-		float fadeTime = 0.0f;
-		float startTime = 0.0f;
-		float endTime = 0.0f;
+		float position = 0.0f;
 	};
 
-	/** Defines a sequential blend where one animation clip is played after another, with an optional fade between them. */
-	struct BS_CORE_EXPORT BlendSequentialInfo
+	/** Defines a 1D blend where multiple animation clips are blended between each other using linear interpolation. */
+	struct BS_CORE_EXPORT Blend1DInfo
 	{
-		BlendSequentialInfo(UINT32 numClips);
-		~BlendSequentialInfo();
+		Blend1DInfo(UINT32 numClips);
+		~Blend1DInfo();
 
-		BlendSequentialClipInfo* clips;
 		UINT32 numClips;
-	};
-
-	/** Defines a 1D blend where two animation clips are blended between each other using linear interpolation. */
-	struct Blend1DInfo
-	{
-		HAnimationClip leftClip;
-		HAnimationClip rightClip;
+		BlendClipInfo* clips;
 	};
 
 	/** Defines a 2D blend where two animation clips are blended between each other using bilinear interpolation. */
@@ -214,20 +205,13 @@ namespace BansheeEngine
 		void blendAdditive(const HAnimationClip& clip, float weight, float fadeLength = 0.0f, UINT32 layer = 0);
 
 		/**
-		 * Plays a set of animation clips sequentially one after another, with an optional fade between them.
-		 *
-		 * @param[in]	info		Describes all animation clips to play.
-		 */
-		void blendSequential(const BlendSequentialInfo& info);
-
-		/**
-		 * Blend two animation clips between each other using linear interpolation. Unlike normal animations these
+		 * Blend multiple animation clips between each other using linear interpolation. Unlike normal animations these
 		 * animations are not advanced with the progress of time, and is instead expected the user manually changes the
 		 * @p t parameter.
 		 *
-		 * @param[in]	info	Information about the clips to blend.
-		 * @param[in]	t		Parameter that controls the blending, in range [0, 1]. t = 0 means left animation has full
-		 *						influence, t = 1 means right animation has full influence.
+		 * @param[in]	info	Information about the clips to blend. Clip positions must be sorted from lowest to highest.
+		 * @param[in]	t		Parameter that controls the blending. Range depends on the positions of the provided
+		 *						animation clips.
 		 */
 		void blend1D(const Blend1DInfo& info, float t);
 

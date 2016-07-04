@@ -25,22 +25,12 @@ namespace BansheeEngine
     }
 
     /// <summary>
-    /// Defines a single animation clip in <see cref="BlendSequentialInfo"/>.
+    /// Represents an animation clip used in 1D blending. Each clip has a position on the number line.
     /// </summary>
-    public class BlendSequentialClipInfo
+    public class BlendClipInfo
     {
         public AnimationClip clip;
-        public float fadeTime = 0.0f;
-        public float startTime = 0.0f;
-        public float endTime = 0.0f;
-    }
-
-    /// <summary>
-    /// Defines a sequential blend where one animation clip is played after another, with an optional fade between them.
-    /// </summary>
-    public class BlendSequentialInfo
-    {
-        public BlendSequentialClipInfo[] clips;
+        public float position;
     }
 
     /// <summary>
@@ -48,8 +38,7 @@ namespace BansheeEngine
     /// </summary>
     public class Blend1DInfo
     {
-        public AnimationClip leftClip;
-        public AnimationClip rightClip;
+        public BlendClipInfo[] clips;
     }
 
     /// <summary>
@@ -218,21 +207,12 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Plays a set of animation clips sequentially one after another, with an optional fade between them.
-        /// </summary>
-        /// <param name="info">Describes all animation clips to play.</param>
-        public void BlendSequential(BlendSequentialInfo info)
-        {
-            if (_native != null)
-                _native.BlendSequential(info);
-        }
-
-        /// <summary>
-        /// Blend two animation clips between each other using linear interpolation. Unlike normal animations these
+        /// Blends multiple animation clips between each other using linear interpolation. Unlike normal animations these
         /// animations are not advanced with the progress of time, and is instead expected the user manually changes the
         /// <see cref="t"/> parameter.
         /// </summary>
-        /// <param name="info">Information about the clips to blend.</param>
+        /// <param name="info">Information about the clips to blend. Clip positions must be sorted from lowest to highest.
+        ///                    </param>
         /// <param name="t">Parameter that controls the blending, in range [0, 1]. t = 0 means left animation has full
         ///                 influence, t = 1 means right animation has full influence.</param>
         public void Blend1D(Blend1DInfo info, float t)

@@ -40,7 +40,6 @@ namespace BansheeEngine
 
 		static void internal_Play(ScriptAnimation* thisPtr, ScriptAnimationClip* clip);
 		static void internal_BlendAdditive(ScriptAnimation* thisPtr, ScriptAnimationClip* clip, float weight, float fadeLength, UINT32 layer);
-		static void internal_BlendSequential(ScriptAnimation* thisPtr, MonoObject* info);
 		static void internal_Blend1D(ScriptAnimation* thisPtr, MonoObject* info, float t);
 		static void internal_Blend2D(ScriptAnimation* thisPtr, MonoObject* info, Vector2* t);
 		static void internal_CrossFade(ScriptAnimation* thisPtr, ScriptAnimationClip* clip, float fadeLength);
@@ -53,43 +52,23 @@ namespace BansheeEngine
 		static void internal_SetState(ScriptAnimation* thisPtr, ScriptAnimationClip* clip, AnimationClipState* state);
 	};
 
-	/** Helper class for dealing with BlendSequentialInfo structure. */
-	class ScriptBlendSequentialInfo : public ScriptObject<ScriptBlendSequentialInfo>
-	{
-	public:
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "BlendSequentialInfo")
-
-		/** Converts managed split info to its native counterpart. */
-		static BlendSequentialInfo fromManaged(MonoObject* object);
-
-	private:
-		ScriptBlendSequentialInfo(MonoObject* instance);
-
-		/************************************************************************/
-		/* 								CLR HOOKS						   		*/
-		/************************************************************************/
-		static MonoField* clipsField;
-	};
-
 	/** Helper class for dealing with BlendSequentialClipInfo structure. */
-	class ScriptBlendSequentialClipInfo : public ScriptObject<ScriptBlendSequentialClipInfo>
+	class ScriptBlendClipInfo : public ScriptObject<ScriptBlendClipInfo>
 	{
 	public:
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "BlendSequentialClipInfo")
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "BlendClipInfo")
 
 		/** Converts managed split info to its native counterpart. */
-		static BlendSequentialClipInfo fromManaged(MonoObject* object);
+		static BlendClipInfo fromManaged(MonoObject* object);
 
 	private:
-		ScriptBlendSequentialClipInfo(MonoObject* instance);
+		ScriptBlendClipInfo(MonoObject* instance);
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
 		static MonoField* clipField;
-		static MonoField* startTimeField;
-		static MonoField* endTimeField;
-		static MonoField* fadeTimeField;
+		static MonoField* positionField;
 	};
 
 	/** Helper class for dealing with Blend1DInfo structure. */
@@ -107,8 +86,7 @@ namespace BansheeEngine
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
-		static MonoField* leftClipField;
-		static MonoField* rightClipField;
+		static MonoField* clipsField;
 	};
 
 	/** Helper class for dealing with Blend2DInfo structure. */

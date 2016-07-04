@@ -29,7 +29,6 @@ namespace BansheeEngine
 
 		metaData.scriptClass->addInternalCall("Internal_Play", &ScriptAnimation::internal_Play);
 		metaData.scriptClass->addInternalCall("Internal_BlendAdditive", &ScriptAnimation::internal_BlendAdditive);
-		metaData.scriptClass->addInternalCall("Internal_BlendSequential", &ScriptAnimation::internal_BlendSequential);
 		metaData.scriptClass->addInternalCall("Internal_Blend1D", &ScriptAnimation::internal_Blend1D);
 		metaData.scriptClass->addInternalCall("Internal_Blend2D", &ScriptAnimation::internal_Blend2D);
 		metaData.scriptClass->addInternalCall("Internal_CrossFade", &ScriptAnimation::internal_CrossFade);
@@ -79,12 +78,6 @@ namespace BansheeEngine
 			nativeClip = clip->getHandle();
 
 		thisPtr->getInternal()->blendAdditive(nativeClip, weight, fadeLength, layer);
-	}
-
-	void ScriptAnimation::internal_BlendSequential(ScriptAnimation* thisPtr, MonoObject* info)
-	{
-		BlendSequentialInfo nativeInfo = ScriptBlendSequentialInfo::fromManaged(info);
-		thisPtr->getInternal()->blendSequential(nativeInfo);
 	}
 
 	void ScriptAnimation::internal_Blend1D(ScriptAnimation* thisPtr, MonoObject* info, float t)
@@ -141,54 +134,22 @@ namespace BansheeEngine
 		thisPtr->getInternal()->setState(nativeClip, *state);
 	}
 
-	MonoField* ScriptBlendSequentialInfo::clipsField = nullptr;
+	MonoField* ScriptBlendClipInfo::clipField = nullptr;
+	MonoField* ScriptBlendClipInfo::positionField = nullptr;
 
-	ScriptBlendSequentialInfo::ScriptBlendSequentialInfo(MonoObject* instance)
+	ScriptBlendClipInfo::ScriptBlendClipInfo(MonoObject* instance)
 		:ScriptObject(instance)
 	{ }
 
-	void ScriptBlendSequentialInfo::initRuntimeData()
-	{
-		clipsField = metaData.scriptClass->getField("clips");
-	}
-
-	BlendSequentialInfo ScriptBlendSequentialInfo::fromManaged(MonoObject* instance)
-	{
-		MonoArray* managedClipsArray = (MonoArray*)clipsField->getValueBoxed(instance);
-		if (managedClipsArray == nullptr)
-			return BlendSequentialInfo(0);
-
-		ScriptArray clipsArray(managedClipsArray);
-
-		UINT32 numClips = clipsArray.size();
-		BlendSequentialInfo output(numClips);
-		
-		for (UINT32 i = 0; i < numClips; i++)
-			output.clips[i] = ScriptBlendSequentialClipInfo::fromManaged(clipsArray.get<MonoObject*>(i));
-
-		return output;
-	}
-
-	MonoField* ScriptBlendSequentialClipInfo::clipField = nullptr;
-	MonoField* ScriptBlendSequentialClipInfo::startTimeField = nullptr;
-	MonoField* ScriptBlendSequentialClipInfo::endTimeField = nullptr;
-	MonoField* ScriptBlendSequentialClipInfo::fadeTimeField = nullptr;
-
-	ScriptBlendSequentialClipInfo::ScriptBlendSequentialClipInfo(MonoObject* instance)
-		:ScriptObject(instance)
-	{ }
-
-	void ScriptBlendSequentialClipInfo::initRuntimeData()
+	void ScriptBlendClipInfo::initRuntimeData()
 	{
 		clipField = metaData.scriptClass->getField("clip");
-		startTimeField = metaData.scriptClass->getField("startTime");
-		endTimeField = metaData.scriptClass->getField("endTime");
-		fadeTimeField = metaData.scriptClass->getField("fadeTime");
+		positionField = metaData.scriptClass->getField("position");
 	}
 
-	BlendSequentialClipInfo ScriptBlendSequentialClipInfo::fromManaged(MonoObject* instance)
+	BlendClipInfo ScriptBlendClipInfo::fromManaged(MonoObject* instance)
 	{
-		BlendSequentialClipInfo output;
+		BlendClipInfo output;
 
 		MonoObject* managedAnimClip = clipField->getValueBoxed(instance);
 		if(managedAnimClip)
@@ -197,15 +158,12 @@ namespace BansheeEngine
 			output.clip = clip->getHandle();
 		}
 		
-		startTimeField->getValue(instance, &output.startTime);
-		endTimeField->getValue(instance, &output.endTime);
-		fadeTimeField->getValue(instance, &output.fadeTime);
+		positionField->getValue(instance, &output.position);
 
 		return output;
 	}
 
-	MonoField* ScriptBlend1DInfo::leftClipField = nullptr;
-	MonoField* ScriptBlend1DInfo::rightClipField = nullptr;
+	MonoField* ScriptBlend1DInfo::clipsField = nullptr;
 
 	ScriptBlend1DInfo::ScriptBlend1DInfo(MonoObject* instance)
 		:ScriptObject(instance)
@@ -213,27 +171,22 @@ namespace BansheeEngine
 
 	void ScriptBlend1DInfo::initRuntimeData()
 	{
-		leftClipField = metaData.scriptClass->getField("leftClip");
-		rightClipField = metaData.scriptClass->getField("rightClip");
+		clipsField = metaData.scriptClass->getField("clips");
 	}
 
 	Blend1DInfo ScriptBlend1DInfo::fromManaged(MonoObject* instance)
 	{
-		Blend1DInfo output;
+		MonoArray* managedClipsArray = (MonoArray*)clipsField->getValueBoxed(instance);
+		if (managedClipsArray == nullptr)
+			return Blend1DInfo(0);
 
-		MonoObject* managedLeftClip = leftClipField->getValueBoxed(instance);
-		if (managedLeftClip != nullptr)
-		{
-			ScriptAnimationClip* clip = ScriptAnimationClip::toNative(managedLeftClip);
-			output.leftClip = clip->getHandle();
-		}
+		ScriptArray clipsArray(managedClipsArray);
 
-		MonoObject* managedRightClip = rightClipField->getValueBoxed(instance);
-		if (managedRightClip != nullptr)
-		{
-			ScriptAnimationClip* clip = ScriptAnimationClip::toNative(managedRightClip);
-			output.rightClip = clip->getHandle();
-		}
+		UINT32 numClips = clipsArray.size();
+		Blend1DInfo output(numClips);
+
+		for (UINT32 i = 0; i < numClips; i++)
+			output.clips[i] = ScriptBlendClipInfo::fromManaged(clipsArray.get<MonoObject*>(i));
 
 		return output;
 	}

@@ -14,14 +14,14 @@ namespace BansheeEngine
 		: fadeDirection(0.0f), fadeTime(0.0f), fadeLength(0.0f), clip(clip), curveVersion(0), layerIdx(0), stateIdx(0)
 	{ }
 
-	BlendSequentialInfo::BlendSequentialInfo(UINT32 numClips)
+	Blend1DInfo::Blend1DInfo(UINT32 numClips)
 		: clips(nullptr), numClips(numClips)
 	{
 		if (numClips > 0)
-			bs_newN<BlendSequentialClipInfo>(numClips);
+			clips = bs_newN<BlendClipInfo>(numClips);
 	}
 
-	BlendSequentialInfo::~BlendSequentialInfo()
+	Blend1DInfo::~Blend1DInfo()
 	{
 		if(clips != nullptr)
 			bs_deleteN(clips, numClips);
@@ -290,7 +290,7 @@ namespace BansheeEngine
 	}
 
 	Animation::Animation()
-		:mDefaultWrapMode(AnimWrapMode::Loop), mDefaultSpeed(1.0f), mDirty(AnimDirtyStateFlag::Skeleton)
+		: mDefaultWrapMode(AnimWrapMode::Loop), mDefaultSpeed(1.0f), mDirty(AnimDirtyStateFlag::Skeleton)
 	{
 		mId = AnimationManager::instance().registerAnimation(this);
 		mAnimProxy = bs_shared_ptr_new<AnimationProxy>(mId);
@@ -340,9 +340,9 @@ namespace BansheeEngine
 			clipInfo->state.speed = mDefaultSpeed;
 			clipInfo->state.weight = 1.0f;
 			clipInfo->state.wrapMode = mDefaultWrapMode;
-
-			mDirty |= AnimDirtyStateFlag::Value;
 		}
+
+		mDirty |= AnimDirtyStateFlag::Value;
 	}
 
 	void Animation::blendAdditive(const HAnimationClip& clip, float weight, float fadeLength, UINT32 layer)
@@ -379,22 +379,90 @@ namespace BansheeEngine
 
 	void Animation::blend1D(const Blend1DInfo& info, float t)
 	{
-		AnimationClipInfo* leftClipInfo = addClip(info.leftClip, (UINT32)-1, true);
-		if (leftClipInfo != nullptr)
+		if (info.numClips == 0)
+			return;
+
+		// Find valid range
+		float startPos = 0.0f;
+		float endPos = 0.0f;
+
+		for (UINT32 i = 0; i < info.numClips; i++)
 		{
-			leftClipInfo->state.time = 0.0f;
-			leftClipInfo->state.speed = 0.0f;
-			leftClipInfo->state.weight = 1.0f - t;
-			leftClipInfo->state.wrapMode = AnimWrapMode::Clamp;
+			startPos = std::min(startPos, info.clips[i].position);
+			endPos = std::min(endPos, info.clips[i].position);
 		}
 
-		AnimationClipInfo* rightClipInfo = addClip(info.rightClip, (UINT32)-1, false);
-		if(rightClipInfo != nullptr)
+		float length = endPos - startPos;
+		if(Math::approxEquals(length, 0.0f) || info.numClips < 2)
 		{
-			rightClipInfo->state.time = 0.0f;
-			rightClipInfo->state.speed = 0.0f;
-			rightClipInfo->state.weight = t;
-			rightClipInfo->state.wrapMode = AnimWrapMode::Clamp;
+			play(info.clips[0].clip);
+			return;
+		}
+
+		// Clamp or loop time
+		bool loop = mDefaultWrapMode == AnimWrapMode::Loop;
+		if (t < startPos)
+		{
+			if (loop)
+				t = t - std::floor(t / length) * length;
+			else // Clamping
+				t = startPos;
+		}
+
+		if (t > endPos)
+		{
+			if (loop)
+				t = t - std::floor(t / length) * length;
+			else // Clamping
+				t = endPos;
+		}
+
+		// Find keys to blend between
+		UINT32 leftKey = 0;
+		UINT32 rightKey = 0;
+
+		INT32 start = 0;
+		INT32 searchLength = (INT32)info.numClips;
+
+		while (searchLength > 0)
+		{
+			INT32 half = searchLength >> 1;
+			INT32 mid = start + half;
+
+			if (t < info.clips[mid].position)
+			{
+				searchLength = half;
+			}
+			else
+			{
+				start = mid + 1;
+				searchLength -= half - 1;
+			}
+		}
+
+		leftKey = start - 1;
+		rightKey = std::min(start, (INT32)info.numClips - 1);
+
+		float interpLength = info.clips[rightKey].position - info.clips[leftKey].position;
+		t = (t - info.clips[leftKey].position) / interpLength;
+
+		// Add clips and set weights
+		for(UINT32 i = 0; i < info.numClips; i++)
+		{
+			AnimationClipInfo* clipInfo = addClip(info.clips[i].clip, (UINT32)-1, i == 0);
+			if (clipInfo != nullptr)
+			{
+				clipInfo->state.time = 0.0f;
+				clipInfo->state.speed = 0.0f;
+				clipInfo->state.wrapMode = AnimWrapMode::Clamp;
+
+				if (i == leftKey)
+					clipInfo->state.weight = 1.0f - t;
+				else if (i == rightKey)
+					clipInfo->state.weight = t;
+				else
+					clipInfo->state.weight = 0.0f;
+			}
 		}
 
 		mDirty |= AnimDirtyStateFlag::Value;
@@ -483,14 +551,9 @@ namespace BansheeEngine
 					clipInfo->fadeLength = fadeLength;
 				}
 			}
-
-			mDirty |= AnimDirtyStateFlag::Value;
 		}
-	}
 
-	void Animation::blendSequential(const BlendSequentialInfo& info)
-	{
-		// TODO
+		mDirty |= AnimDirtyStateFlag::Value;
 	}
 
 	void Animation::stop(UINT32 layer)
