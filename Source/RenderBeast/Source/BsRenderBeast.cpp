@@ -25,17 +25,21 @@
 #include "BsRenderTexturePool.h"
 #include "BsRenderTargets.h"
 #include "BsRendererUtility.h"
+#include "BsAnimationManager.h"
+#include "BsGpuBuffer.h"
 
 using namespace std::placeholders;
 
 namespace BansheeEngine
 {
+	RenderBeast::RendererFrame::RendererFrame(float delta, const RendererAnimationData& animData)
+		:delta(delta), animData(animData)
+	{ }
+
 	RenderBeast::RenderBeast()
 		: mDefaultMaterial(nullptr), mPointLightInMat(nullptr), mPointLightOutMat(nullptr), mDirLightMat(nullptr)
 		, mObjectRenderer(nullptr), mOptions(bs_shared_ptr_new<RenderBeastOptions>()), mOptionsDirty(true)
-	{
-
-	}
+	{ }
 
 	const StringID& RenderBeast::getName() const
 	{
@@ -130,6 +134,7 @@ namespace BansheeEngine
 				renElement.mesh = mesh;
 				renElement.subMesh = meshProps.getSubMesh(i);
 				renElement.renderableId = renderableId;
+				renElement.animationId = renderable->getAnimationId();
 
 				renElement.material = renderable->getMaterial(i);
 				if (renElement.material == nullptr)
@@ -250,9 +255,9 @@ namespace BansheeEngine
 			UINT32 lightId = (UINT32)mDirectionalLights.size();
 			light->setRendererId(lightId);
 
-			mDirectionalLights.push_back(LightData());
+			mDirectionalLights.push_back(RendererLight());
 
-			LightData& lightData = mDirectionalLights.back();
+			RendererLight& lightData = mDirectionalLights.back();
 			lightData.internal = light;
 		}
 		else
@@ -261,10 +266,10 @@ namespace BansheeEngine
 
 			light->setRendererId(lightId);
 
-			mPointLights.push_back(LightData());
+			mPointLights.push_back(RendererLight());
 			mLightWorldBounds.push_back(light->getBounds());
 
-			LightData& lightData = mPointLights.back();
+			RendererLight& lightData = mPointLights.back();
 			lightData.internal = light;
 		}
 	}
@@ -355,7 +360,7 @@ namespace BansheeEngine
 		int rtChanged = 0; // 0 - No RT, 1 - RT found, 2 - RT changed
 		for (auto iterTarget = mRenderTargets.begin(); iterTarget != mRenderTargets.end(); ++iterTarget)
 		{
-			RenderTargetData& target = *iterTarget;
+			RendererRenderTarget& target = *iterTarget;
 			for (auto iterCam = target.cameras.begin(); iterCam != target.cameras.end(); ++iterCam)
 			{
 				if (camera == *iterCam)
@@ -384,7 +389,7 @@ namespace BansheeEngine
 		if (renderTarget != nullptr && (rtChanged == 0 || rtChanged == 2))
 		{
 			auto findIter = std::find_if(mRenderTargets.begin(), mRenderTargets.end(),
-				[&](const RenderTargetData& x) { return x.target == renderTarget; });
+				[&](const RendererRenderTarget& x) { return x.target == renderTarget; });
 
 			if (findIter != mRenderTargets.end())
 			{
@@ -392,8 +397,8 @@ namespace BansheeEngine
 			}
 			else
 			{
-				mRenderTargets.push_back(RenderTargetData());
-				RenderTargetData& renderTargetData = mRenderTargets.back();
+				mRenderTargets.push_back(RendererRenderTarget());
+				RendererRenderTarget& renderTargetData = mRenderTargets.back();
 
 				renderTargetData.target = renderTarget;
 				renderTargetData.cameras.push_back(camera);
@@ -401,7 +406,7 @@ namespace BansheeEngine
 
 			// Sort render targets based on priority
 			auto cameraComparer = [&](const CameraCore* a, const CameraCore* b) { return a->getPriority() > b->getPriority(); };
-			auto renderTargetInfoComparer = [&](const RenderTargetData& a, const RenderTargetData& b)
+			auto renderTargetInfoComparer = [&](const RendererRenderTarget& a, const RendererRenderTarget& b)
 			{ return a.target->getProperties().getPriority() > b.target->getProperties().getPriority(); };
 			std::sort(begin(mRenderTargets), end(mRenderTargets), renderTargetInfoComparer);
 
@@ -469,17 +474,20 @@ namespace BansheeEngine
 		refreshSamplerOverrides();
 
 		// Update global per-frame hardware buffers
-		mObjectRenderer->updatePerFrameBuffers(time);
+		mObjectRenderer->setParamFrameParams(time);
 
 		// Generate render queues per camera
 		for (auto& entry : mCameras)
 			entry.second.determineVisible(mRenderables, mWorldBounds);
 
+		const RendererAnimationData& animData = AnimationManager::instance().getRendererData();
+		RendererFrame frameInfo(delta, animData);
+
 		// Render everything, target by target
-		for (auto& renderTargetData : mRenderTargets)
+		for (auto& rtInfo : mRenderTargets)
 		{
-			SPtr<RenderTargetCore> target = renderTargetData.target;
-			Vector<const CameraCore*>& cameras = renderTargetData.cameras;
+			SPtr<RenderTargetCore> target = rtInfo.target;
+			Vector<const CameraCore*>& cameras = rtInfo.cameras;
 
 			RenderAPICore::instance().beginFrame();
 
@@ -488,9 +496,9 @@ namespace BansheeEngine
 			{
 				bool isOverlayCamera = cameras[i]->getFlags().isSet(CameraFlag::Overlay);
 				if (!isOverlayCamera)
-					render(renderTargetData, i, delta);
+					render(frameInfo, rtInfo, i);
 				else
-					renderOverlay(renderTargetData, i, delta);
+					renderOverlay(frameInfo, rtInfo, i);
 			}
 
 			RenderAPICore::instance().endFrame();
@@ -500,17 +508,17 @@ namespace BansheeEngine
 		gProfilerCPU().endSample("renderAllCore");
 	}
 
-	void RenderBeast::render(RenderTargetData& rtData, UINT32 camIdx, float delta)
+	void RenderBeast::render(const RendererFrame& frameInfo, RendererRenderTarget& rtInfo, UINT32 camIdx)
 	{
 		gProfilerCPU().beginSample("Render");
 
-		const CameraCore* camera = rtData.cameras[camIdx];
+		const CameraCore* camera = rtInfo.cameras[camIdx];
 		RendererCamera& rendererCam = mCameras[camera];
 		CameraShaderData cameraShaderData = rendererCam.getShaderData();
 
 		assert(!camera->getFlags().isSet(CameraFlag::Overlay));
 
-		mObjectRenderer->updatePerCameraBuffers(cameraShaderData);
+		mObjectRenderer->setPerCameraParams(cameraShaderData);
 		rendererCam.beginRendering(true);
 
 		SPtr<RenderTargets> renderTargets = rendererCam.getRenderTargets();
@@ -539,7 +547,7 @@ namespace BansheeEngine
 		for (auto iter = opaqueElements.begin(); iter != opaqueElements.end(); ++iter)
 		{
 			BeastRenderableElement* renderElem = static_cast<BeastRenderableElement*>(iter->renderElem);
-			renderElement(*renderElem, iter->passIdx, iter->applyPass, cameraShaderData.viewProj);
+			renderElement(*renderElem, iter->passIdx, iter->applyPass, frameInfo, cameraShaderData.viewProj);
 		}
 
 		renderTargets->bindSceneColor(true);
@@ -610,7 +618,7 @@ namespace BansheeEngine
 		for (auto iter = transparentElements.begin(); iter != transparentElements.end(); ++iter)
 		{
 			BeastRenderableElement* renderElem = static_cast<BeastRenderableElement*>(iter->renderElem);
-			renderElement(*renderElem, iter->passIdx, iter->applyPass, cameraShaderData.viewProj);
+			renderElement(*renderElem, iter->passIdx, iter->applyPass, frameInfo, cameraShaderData.viewProj);
 		}
 
 		// Render non-overlay post-scene callbacks
@@ -629,7 +637,7 @@ namespace BansheeEngine
 
 		// TODO - If GBuffer has multiple samples, I should resolve them before post-processing
 		PostProcessing::instance().postProcess(renderTargets->getSceneColorRT(),
-			camera, rendererCam.getPPInfo(), delta);
+			camera, rendererCam.getPPInfo(), frameInfo.delta);
 
 		// Render overlay post-scene callbacks
 		if (iterCameraCallbacks != mRenderCallbacks.end())
@@ -650,30 +658,7 @@ namespace BansheeEngine
 		gProfilerCPU().endSample("Render");
 	}
 
-	void RenderBeast::renderElement(const BeastRenderableElement& element, UINT32 passIdx, bool bindPass, 
-		const Matrix4& viewProj)
-	{
-		SPtr<MaterialCore> material = element.material;
-
-		UINT32 rendererId = element.renderableId;
-		Matrix4 worldViewProjMatrix = viewProj * mRenderableShaderData[rendererId].worldTransform;
-
-		mObjectRenderer->updatePerObjectBuffers(element, mRenderableShaderData[rendererId], worldViewProjMatrix);
-
-		if (bindPass)
-			RendererUtility::instance().setPass(material, passIdx, false);
-
-		SPtr<PassParametersCore> passParams = material->getPassParameters(passIdx);
-
-		if (element.samplerOverrides != nullptr)
-			setPassParams(passParams, &element.samplerOverrides->passes[passIdx]);
-		else
-			setPassParams(passParams, nullptr);
-
-		gRendererUtility().draw(element.mesh, element.subMesh);
-	}
-
-	void RenderBeast::renderOverlay(RenderTargetData& rtData, UINT32 camIdx, float delta)
+	void RenderBeast::renderOverlay(const RendererFrame& frameInfo, RendererRenderTarget& rtData, UINT32 camIdx)
 	{
 		gProfilerCPU().beginSample("RenderOverlay");
 
@@ -684,7 +669,7 @@ namespace BansheeEngine
 		RendererCamera& rendererCam = mCameras[camera];
 		CameraShaderData cameraShaderData = rendererCam.getShaderData();
 
-		mObjectRenderer->updatePerCameraBuffers(cameraShaderData);
+		mObjectRenderer->setPerCameraParams(cameraShaderData);
 		rendererCam.beginRendering(false);
 
 		SPtr<RenderTargetCore> target = rtData.target;
@@ -732,6 +717,57 @@ namespace BansheeEngine
 		gProfilerCPU().endSample("RenderOverlay");
 	}
 	
+	void RenderBeast::renderElement(const BeastRenderableElement& element, UINT32 passIdx, bool bindPass,
+		const RendererFrame& frameInfo, const Matrix4& viewProj)
+	{
+		SPtr<MaterialCore> material = element.material;
+
+		UINT32 rendererId = element.renderableId;
+		Matrix4 worldViewProjMatrix = viewProj * mRenderableShaderData[rendererId].worldTransform;
+
+		SPtr<GpuBufferCore> boneMatrices;
+		if(element.animationId != (UINT32)-1)
+		{
+			// Note: If multiple elements are using the same animation (not possible atm), this buffer should be created
+			// earlier and then shared by all elements
+
+			const RendererAnimationData& animData = frameInfo.animData;
+
+			auto iterFind = animData.poseInfos.find(element.animationId);
+			if(iterFind != animData.poseInfos.end())
+			{
+				const RendererAnimationData::PoseInfo& poseInfo = iterFind->second;
+
+				boneMatrices = GpuBufferCore::create(poseInfo.numBones * 3, 0, GBT_STANDARD, BF_32X4F, GBU_STATIC);
+				UINT8* dest = (UINT8*)boneMatrices->lock(0, poseInfo.numBones * 3 * sizeof(Vector4), GBL_WRITE_ONLY_DISCARD);
+
+				for(UINT32 i = 0; i < poseInfo.numBones; i++)
+				{
+					const Matrix4& transform = animData.transforms[poseInfo.startIdx + i];
+					memcpy(dest, &transform, 12 * sizeof(float)); // Assuming row-major format
+
+					dest += 12 * sizeof(float);
+				}
+
+				boneMatrices->unlock();
+			}
+		}
+
+		mObjectRenderer->setPerObjectParams(element, mRenderableShaderData[rendererId], worldViewProjMatrix, boneMatrices);
+
+		if (bindPass)
+			RendererUtility::instance().setPass(material, passIdx, false);
+
+		SPtr<PassParametersCore> passParams = material->getPassParameters(passIdx);
+
+		if (element.samplerOverrides != nullptr)
+			setPassParams(passParams, &element.samplerOverrides->passes[passIdx]);
+		else
+			setPassParams(passParams, nullptr);
+
+		gRendererUtility().draw(element.mesh, element.subMesh);
+	}
+
 	void RenderBeast::refreshSamplerOverrides(bool force)
 	{
 		for (auto& entry : mSamplerOverrides)

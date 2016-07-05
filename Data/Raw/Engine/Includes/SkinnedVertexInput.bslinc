@@ -1,3 +1,8 @@
+Parameters =
+{
+	StructBuffer boneMatrices : auto("BoneMatrices");;
+}
+
 Technique =
 {
 	Language = "HLSL11";

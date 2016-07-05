@@ -29,6 +29,14 @@ namespace BansheeEngine
 
 		/**	Identifier of the owner renderable. */
 		UINT32 renderableId;
+
+		/** Identifier of the animation running on the renderable's mesh. -1 if no animation. */
+		UINT64 animationId;
+
+		/** 
+		 * Parameter for setting global bone pose transforms used for an element with skeletal animation, null otherwise. 
+		 */
+		MaterialParamBufferCore boneMatricesParam;
 	};
 
 	 /** Contains information about a Renderable, used by the Renderer. */

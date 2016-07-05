@@ -25,7 +25,10 @@ namespace BansheeEngine
 			UINT32 numBones;
 		};
 
+		/** Maps animation ID to a pose information structure, containing its global joint transforms. */
 		UnorderedMap<UINT64, PoseInfo> poseInfos;
+
+		/** Global joint transforms for all skeletons in the scene. */
 		Vector<Matrix4> transforms;
 	};
 
@@ -33,7 +36,7 @@ namespace BansheeEngine
 	 * Keeps track of all active animations, queues animation thread tasks and synchronizes data between simulation, core
 	 * and animation threads.
 	 */
-	class AnimationManager : public Module<AnimationManager>
+	class BS_CORE_EXPORT AnimationManager : public Module<AnimationManager>
 	{
 	public:
 		AnimationManager();
@@ -64,7 +67,8 @@ namespace BansheeEngine
 		/** 
 		 * Gets skeleton poses required by the renderer to display all the animations. This will block the animation thread
 		 * if it has not yet finished, and it will also advance the read buffer index, meaning this shouldn't be called more
-		 * than once per frame.
+		 * than once per frame. The returned data can be referenced, and is guaranteed to be valid for a single core-thread
+		 * frame.
 		 *
 		 * @note	Core thread only.
 		 */

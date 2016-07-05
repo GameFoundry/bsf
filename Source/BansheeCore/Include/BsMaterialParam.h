@@ -43,10 +43,10 @@ namespace BansheeEngine
 		TMaterialDataParam() { }
 
 		/** @copydoc TGpuDataParam::set */
-		void set(const T& value, UINT32 arrayIdx = 0);
+		void set(const T& value, UINT32 arrayIdx = 0) const;
 
 		/** @copydoc TGpuDataParam::get */
-		T get(UINT32 arrayIdx = 0);
+		T get(UINT32 arrayIdx = 0) const;
 
 	protected:
 		UINT32 mParamIndex;
@@ -64,10 +64,10 @@ namespace BansheeEngine
 		TMaterialDataParam() { }
 
 		/** @copydoc TGpuDataParam::set */
-		void set(const T& value, UINT32 arrayIdx = 0);
+		void set(const T& value, UINT32 arrayIdx = 0) const;
 
 		/** @copydoc TGpuDataParam::get */
-		T get(UINT32 arrayIdx = 0);
+		T get(UINT32 arrayIdx = 0) const;
 
 	protected:
 		SPtr<Vector<TGpuDataParam<T, true>>> mParams;
@@ -88,10 +88,10 @@ namespace BansheeEngine
 		TMaterialParamStruct() { }
 
 		/** @copydoc TGpuParamStruct::set */
-		void set(const void* value, UINT32 sizeBytes, UINT32 arrayIdx = 0);
+		void set(const void* value, UINT32 sizeBytes, UINT32 arrayIdx = 0) const;
 
 		/** @copydoc TGpuParamStruct::get */
-		void get(void* value, UINT32 sizeBytes, UINT32 arrayIdx = 0);
+		void get(void* value, UINT32 sizeBytes, UINT32 arrayIdx = 0) const;
 
 		/** @copydoc TGpuParamStruct::getElementSize */
 		UINT32 getElementSize() const;
@@ -112,10 +112,10 @@ namespace BansheeEngine
 		TMaterialParamStruct() { }
 
 		/** @copydoc TGpuParamStruct::set */
-		void set(const void* value, UINT32 sizeBytes, UINT32 arrayIdx = 0);
+		void set(const void* value, UINT32 sizeBytes, UINT32 arrayIdx = 0) const;
 
 		/** @copydoc TGpuParamStruct::get */
-		void get(void* value, UINT32 sizeBytes, UINT32 arrayIdx = 0);
+		void get(void* value, UINT32 sizeBytes, UINT32 arrayIdx = 0) const;
 
 		/** @copydoc TGpuParamStruct::getElementSize */
 		UINT32 getElementSize() const;
@@ -139,10 +139,10 @@ namespace BansheeEngine
 		TMaterialParamTexture() { }
 
 		/** @copydoc GpuParamTexture::set */
-		void set(const HTexture& texture);
+		void set(const HTexture& texture) const;
 
 		/** @copydoc GpuParamTexture::get */
-		HTexture get();
+		HTexture get() const;
 
 	protected:
 		UINT32 mParamIndex;
@@ -159,10 +159,10 @@ namespace BansheeEngine
 		TMaterialParamTexture() { }
 
 		/** @copydoc GpuParamTexture::set */
-		void set(const SPtr<TextureCore>& texture);
+		void set(const SPtr<TextureCore>& texture) const;
 
 		/** @copydoc GpuParamTexture::get */
-		SPtr<TextureCore> get();
+		SPtr<TextureCore> get() const;
 
 	protected:
 		SPtr<Vector<TGpuParamTexture<true>>> mParams;
@@ -183,10 +183,10 @@ namespace BansheeEngine
 		TMaterialParamLoadStoreTexture() { }
 
 		/** @copydoc GpuParamLoadStoreTexture::set */
-		void set(const HTexture& texture, const TextureSurface& surface);
+		void set(const HTexture& texture, const TextureSurface& surface) const;
 
 		/** @copydoc GpuParamLoadStoreTexture::get */
-		HTexture get();
+		HTexture get() const;
 
 	protected:
 		UINT32 mParamIndex;
@@ -204,10 +204,10 @@ namespace BansheeEngine
 		TMaterialParamLoadStoreTexture() { }
 
 		/** @copydoc GpuParamLoadStoreTexture::set */
-		void set(const SPtr<TextureCore>& texture, const TextureSurface& surface = TextureSurface());
+		void set(const SPtr<TextureCore>& texture, const TextureSurface& surface = TextureSurface()) const;
 
 		/** @copydoc GpuParamLoadStoreTexture::get */
-		SPtr<TextureCore> get();
+		SPtr<TextureCore> get() const;
 
 	protected:
 		SPtr<Vector<TGpuParamLoadStoreTexture<true>>> mParams;
@@ -228,10 +228,10 @@ namespace BansheeEngine
 		TMaterialParamBuffer() { }
 
 		/** @copydoc GpuParamBuffer::set */
-		void set(const SPtr<GpuBuffer>& buffer);
+		void set(const SPtr<GpuBuffer>& buffer) const;
 
 		/** @copydoc GpuParamBuffer::get */
-		SPtr<GpuBuffer> get();
+		SPtr<GpuBuffer> get() const;
 
 	protected:
 		UINT32 mParamIndex;
@@ -248,10 +248,10 @@ namespace BansheeEngine
 		TMaterialParamBuffer() { }
 
 		/** @copydoc GpuParamBuffer::set */
-		void set(const SPtr<GpuBufferCore>& buffer);
+		void set(const SPtr<GpuBufferCore>& buffer) const;
 
 		/** @copydoc GpuParamBuffer::get */
-		SPtr<GpuBufferCore> get();
+		SPtr<GpuBufferCore> get() const;
 
 	protected:
 		SPtr<Vector<TGpuParamBuffer<true>>> mParams;
@@ -272,10 +272,10 @@ namespace BansheeEngine
 		TMaterialParamSampState() { }
 
 		/** @copydoc GpuParamSampState::set */
-		void set(const SPtr<SamplerState>& sampState);
+		void set(const SPtr<SamplerState>& sampState) const;
 
 		/** @copydoc GpuParamSampState::get */
-		SPtr<SamplerState> get();
+		SPtr<SamplerState> get() const;
 
 	protected:
 		UINT32 mParamIndex;
@@ -292,10 +292,10 @@ namespace BansheeEngine
 		TMaterialParamSampState() { }
 
 		/** @copydoc GpuParamSampState::set */
-		void set(const SPtr<SamplerStateCore>& sampState);
+		void set(const SPtr<SamplerStateCore>& sampState) const;
 
 		/** @copydoc GpuParamSampState::get */
-		SPtr<SamplerStateCore> get();
+		SPtr<SamplerStateCore> get() const;
 
 	protected:
 		SPtr<Vector<TGpuParamSampState<true>>> mParams;
@@ -339,6 +339,9 @@ namespace BansheeEngine
 
 	typedef TMaterialParamLoadStoreTexture<false> MaterialParamLoadStoreTexture;
 	typedef TMaterialParamLoadStoreTexture<true> MaterialParamLoadStoreTextureCore;
+
+	typedef TMaterialParamBuffer<false> MaterialParamBuffer;
+	typedef TMaterialParamBuffer<true> MaterialParamBufferCore;
 
 	typedef TMaterialParamSampState<false> MaterialParamSampState;
 	typedef TMaterialParamSampState<true> MaterialParamSampStateCore;

@@ -8,6 +8,7 @@
 #include "BsRenderableElement.h"
 #include "BsRendererMaterial.h"
 #include "BsParamBlocks.h"
+#include "BsRendererObject.h"
 
 namespace BansheeEngine
 {
@@ -73,21 +74,22 @@ namespace BansheeEngine
 		ObjectRenderer();
 
 		/** Initializes the specified renderable element, making it ready to be used. */
-		void initElement(RenderableElement& element);
+		void initElement(BeastRenderableElement& element);
 
 		/** Updates global per frame parameter buffers with new values. To be called at the start of every frame. */
-		void updatePerFrameBuffers(float time);
+		void setParamFrameParams(float time);
 
 		/**
 		 * Updates global per frame parameter buffers with new values. To be called at the start of rendering for every 
 		 * camera.
 		 */
-		void updatePerCameraBuffers(const CameraShaderData& cameraData);
+		void setPerCameraParams(const CameraShaderData& cameraData);
 
 		/**
 		 * Updates object specific parameter buffers with new values. To be called whenever object specific values change.
 		 */
-		void updatePerObjectBuffers(const RenderableElement& element, const RenderableShaderData& data, const Matrix4& wvpMatrix);
+		void setPerObjectParams(const BeastRenderableElement& element, const RenderableShaderData& data,
+			const Matrix4& wvpMatrix, const SPtr<GpuBufferCore>& boneMatrices = nullptr);
 
 		/** Returns a buffer that stores per-camera parameters. */
 		const PerCameraParamBuffer& getPerCameraParams() const { return mPerCameraParams; }

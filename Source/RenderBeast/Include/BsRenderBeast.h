@@ -19,10 +19,13 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
+	struct RendererAnimationData;
+
 	/** Semantics that may be used for signaling the renderer for what is a certain shader parameter used for. */
 	static StringID RPS_GBufferA = "GBufferA";
 	static StringID RPS_GBufferB = "GBufferB";
 	static StringID RPS_GBufferDepth = "GBufferDepth";
+	static StringID RPS_BoneMatrices = "BoneMatrices";
 
 	/**
 	 * Default renderer for Banshee. Performs frustum culling, sorting and renders objects in custom ways determine by
@@ -32,15 +35,24 @@ namespace BansheeEngine
 	 */
 	class RenderBeast : public Renderer
 	{
-		/**	Render data for a single render target. */
-		struct RenderTargetData
+		/** Renderer information specific to a single frame. */
+		struct RendererFrame
+		{
+			RendererFrame(float delta, const RendererAnimationData& animData);
+
+			float delta;
+			const RendererAnimationData& animData;
+		};
+
+		/**	Renderer information specific to a single render target. */
+		struct RendererRenderTarget
 		{
 			SPtr<RenderTargetCore> target;
 			Vector<const CameraCore*> cameras;
 		};
 
-		/**	Data used by the renderer for lights. */
-		struct LightData
+		/**	Renderer information specific to a single light. */
+		struct RendererLight
 		{
 			LightCore* internal;
 		};
@@ -124,24 +136,24 @@ namespace BansheeEngine
 		/**
 		 * Renders all objects visible by the provided camera.
 		 *
-		 * @param[in]	rtData	Render target data containing the camera to render.
-		 * @param[in]	camIdx	Index of the camera to render.
-		 * @param[in]	delta	Time elapsed since the last frame.
+		 * @param[in]	frameInfo	Renderer information specific to this frame.
+		 * @param[in]	rtInfo		Render target information containing the camera to render.
+		 * @param[in]	camIdx		Index of the camera to render.
 		 * 					
 		 * @note	Core thread only.
 		 */
-		void render(RenderTargetData& rtData, UINT32 camIdx, float delta);
+		void render(const RendererFrame& frameInfo, RendererRenderTarget& rtInfo, UINT32 camIdx);
 
 		/**
 		 * Renders all overlay callbacks attached to the provided camera.
 		 *
-		 * @param[in]	rtData	Render target data containing the camera to render.
-		 * @param[in]	camIdx	Index of the camera to render.
-		 * @param[in]	delta	Time elapsed since the last frame.
+		 * @param[in]	frameInfo	Renderer information specific to this frame.
+		 * @param[in]	rtInfo		Render target information containing the camera to render.
+		 * @param[in]	camIdx		Index of the camera to render.
 		 * 					
 		 * @note	Core thread only.
 		 */
-		void renderOverlay(RenderTargetData& rtData, UINT32 camIdx, float delta);
+		void renderOverlay(const RendererFrame& frameInfo, RendererRenderTarget& rtInfo, UINT32 camIdx);
 
 		/** 
 		 * Renders a single element of a renderable object. 
@@ -150,9 +162,11 @@ namespace BansheeEngine
 		 * @param[in]	passIdx		Index of the material pass to render the element with.
 		 * @param[in]	bindPass	If true the material pass will be bound for rendering, if false it is assumed it is
 		 *							already bound.
+		 * @param[in]	frameInfo	Renderer information specific to this frame.
 		 * @param[in]	viewProj	View projection matrix of the camera the element is being rendered with.
 		 */
-		void renderElement(const BeastRenderableElement& element, UINT32 passIdx, bool bindPass, const Matrix4& viewProj);
+		void renderElement(const BeastRenderableElement& element, UINT32 passIdx, bool bindPass, 
+			const RendererFrame& frameInfo, const Matrix4& viewProj);
 
 		/**	Creates data used by the renderer on the core thread. */
 		void initializeCore();
@@ -180,7 +194,7 @@ namespace BansheeEngine
 		static void setPassParams(const SPtr<PassParametersCore>& passParams, const PassSamplerOverrides* samplerOverrides);
 
 		// Core thread only fields
-		Vector<RenderTargetData> mRenderTargets;
+		Vector<RendererRenderTarget> mRenderTargets;
 		UnorderedMap<const CameraCore*, RendererCamera> mCameras;
 		UnorderedMap<SPtr<MaterialCore>, MaterialSamplerOverrides*> mSamplerOverrides;
 
@@ -188,8 +202,8 @@ namespace BansheeEngine
 		Vector<RenderableShaderData> mRenderableShaderData;
 		Vector<Bounds> mWorldBounds;
 
-		Vector<LightData> mDirectionalLights;
-		Vector<LightData> mPointLights;
+		Vector<RendererLight> mDirectionalLights;
+		Vector<RendererLight> mPointLights;
 		Vector<Sphere> mLightWorldBounds;
 
 		SPtr<RenderBeastOptions> mCoreOptions;

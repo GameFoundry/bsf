@@ -11,7 +11,7 @@ namespace BansheeEngine
 	ObjectRenderer::ObjectRenderer()
 	{ }
 
-	void ObjectRenderer::initElement(RenderableElement& element)
+	void ObjectRenderer::initElement(BeastRenderableElement& element)
 	{
 		SPtr<ShaderCore> shader = element.material->getShader();
 		if (shader == nullptr)
@@ -35,76 +35,31 @@ namespace BansheeEngine
 				perObjectBlockName = paramBlockDesc.second.name;
 		}
 
-		UINT32 numPasses = element.material->getNumPasses();
-		for (UINT32 i = 0; i < numPasses; i++)
+		const Map<String, SHADER_OBJECT_PARAM_DESC>& bufferDescs = shader->getBufferParams();
+		String boneMatricesParamName;
+
+		for(auto& entry : bufferDescs)
 		{
-			SPtr<PassParametersCore> passParams = element.material->getPassParameters(i);
-
-			for (UINT32 j = 0; j < PassParametersCore::NUM_PARAMS; j++)
-			{
-				SPtr<GpuParamsCore> gpuParams = passParams->getParamByIdx(j);
-				if (gpuParams == nullptr)
-					continue;
-
-				const GpuParamDesc& paramsDesc = gpuParams->getParamDesc();
-
-				// Note: We only validate buffer size and not buffer contents. We should check the contents as well, but
-				// likely on a higher level rather than here.
-				
-				if (perFrameBlockName != "")
-				{
-					auto findIter = paramsDesc.paramBlocks.find(perFrameBlockName);
-					if (findIter != paramsDesc.paramBlocks.end())
-					{
-						if (findIter->second.blockSize == mPerFrameParams.getDesc().blockSize)
-						{
-							SPtr<GpuParamsCore> params = element.material->getPassParameters(i)->getParamByIdx(j);
-
-							UINT32 slotIdx = findIter->second.slot;
-							params->setParamBlockBuffer(slotIdx, mPerFrameParams.getBuffer());
-						}
-					}
-				}
-
-				if (perCameraBlockName != "")
-				{
-					auto findIter = paramsDesc.paramBlocks.find(perCameraBlockName);
-					if (findIter != paramsDesc.paramBlocks.end())
-					{
-						if (findIter->second.blockSize == mPerCameraParams.getDesc().blockSize)
-						{
-							SPtr<GpuParamsCore> params = element.material->getPassParameters(i)->getParamByIdx(j);
-
-							UINT32 slotIdx = findIter->second.slot;
-							params->setParamBlockBuffer(slotIdx, mPerCameraParams.getBuffer());
-						}
-					}
-				}
-
-				if (perObjectBlockName != "")
-				{
-					auto findIter = paramsDesc.paramBlocks.find(perObjectBlockName);
-					if (findIter != paramsDesc.paramBlocks.end())
-					{
-						if (findIter->second.blockSize == mPerObjectParams.getDesc().blockSize)
-						{
-							SPtr<GpuParamsCore> params = element.material->getPassParameters(i)->getParamByIdx(j);
-
-							UINT32 slotIdx = findIter->second.slot;
-							params->setParamBlockBuffer(slotIdx, mPerObjectParams.getBuffer());
-						}
-					}
-				}
-			}
+			if (entry.second.rendererSemantic == RPS_BoneMatrices)
+				boneMatricesParamName = entry.second.name;
 		}
+		
+		// Note: Perhaps perform buffer validation to ensure expected buffer has the same size and layout as the provided
+		// buffer, and show a warning otherwise. But this is perhaps better handled on a higher level.
+		element.material->setParamBlockBuffer(perFrameBlockName, mPerFrameParams.getBuffer());
+		element.material->setParamBlockBuffer(perCameraBlockName, mPerCameraParams.getBuffer());
+		element.material->setParamBlockBuffer(perObjectBlockName, mPerObjectParams.getBuffer());
+
+		if(!boneMatricesParamName.empty())
+			element.boneMatricesParam = element.material->getParamBuffer(boneMatricesParamName);
 	}
 
-	void ObjectRenderer::updatePerFrameBuffers(float time)
+	void ObjectRenderer::setParamFrameParams(float time)
 	{
 		mPerFrameParams.gTime.set(time);
 	}
 
-	void ObjectRenderer::updatePerCameraBuffers(const CameraShaderData& cameraData)
+	void ObjectRenderer::setPerCameraParams(const CameraShaderData& cameraData)
 	{
 		mPerCameraParams.gViewDir.set(cameraData.viewDir);
 		mPerCameraParams.gViewOrigin.set(cameraData.viewOrigin);
@@ -120,8 +75,8 @@ namespace BansheeEngine
 		mPerCameraParams.flushToGPU();
 	}
 
-	void ObjectRenderer::updatePerObjectBuffers(const RenderableElement& element, const RenderableShaderData& data, 
-		const Matrix4& wvpMatrix)
+	void ObjectRenderer::setPerObjectParams(const BeastRenderableElement& element, const RenderableShaderData& data,
+		const Matrix4& wvpMatrix, const SPtr<GpuBufferCore>& boneMatrices)
 	{
 		// Note: If I kept all the values in the same structure maybe a simple memcpy directly into the constant buffer
 		// would be better (i.e. faster)?
@@ -131,6 +86,9 @@ namespace BansheeEngine
 		mPerObjectParams.gMatInvWorldNoScale.set(data.invWorldNoScaleTransform);
 		mPerObjectParams.gWorldDeterminantSign.set(data.worldDeterminantSign);
 		mPerObjectParams.gMatWorldViewProj.set(wvpMatrix);
+
+		if(element.animationId != (UINT32)-1)
+			element.boneMatricesParam.set(boneMatrices);
 	}
 
 	void DefaultMaterial::_initDefines(ShaderDefines& defines)
