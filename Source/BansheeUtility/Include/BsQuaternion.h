@@ -77,14 +77,14 @@ namespace BansheeEngine
 		{
 			assert(i < 4);
 
-			return *(&w+i);
+			return *(&x+i);
 		}
 
 		float& operator[] (const size_t i)
 		{
 			assert(i < 4);
 
-			return *(&w+i);
+			return *(&x+i);
 		}
 
 		/**
@@ -354,7 +354,7 @@ namespace BansheeEngine
         static const Quaternion ZERO;
         static const Quaternion IDENTITY;
 
-		float x, y, z, w;
+		float x, y, z, w; // Note: Order is relevant, don't break it
 
 		private:
 			static const EulerAngleOrderData EA_LOOKUP[6];

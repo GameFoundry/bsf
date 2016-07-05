@@ -1602,7 +1602,7 @@ namespace BansheeEngine
 			{
 				float dot = quat.dot(lastQuat);
 				if (dot < 0.0f)
-					quat = Quaternion(-quat.x, -quat.y, -quat.z, -quat.w);
+					quat = -quat;
 			}
 
 			return quat;
@@ -1784,6 +1784,22 @@ namespace BansheeEngine
 				keyFrame.value = fbxCurve->KeyGetValue(i);
 				keyFrame.inTangent = fbxCurve->KeyGetLeftDerivative(i);
 				keyFrame.outTangent = fbxCurve->KeyGetRightDerivative(i);
+
+				// DEBUG VALUES
+				float leftAuto = fbxCurve->KeyGetLeftAuto(i);
+				float rightAuto = fbxCurve->KeyGetRightAuto(i);
+
+				float leftWeight = fbxCurve->KeyGetLeftTangentWeight(i);
+				float rightWeight = fbxCurve->KeyGetRightTangentWeight(i);
+
+				FbxAnimCurveTangentInfo leftInfo = fbxCurve->KeyGetLeftDerivativeInfo(i);
+				FbxAnimCurveTangentInfo rightInfo = fbxCurve->KeyGetRightDerivativeInfo(i);
+
+				FbxAnimCurveDef::EInterpolationType interpMode = fbxCurve->KeyGetInterpolation(i);
+				FbxAnimCurveDef::ETangentMode tangentMode = fbxCurve->KeyGetTangentMode(i);
+				//float tangent = Math::cubicHermiteD1(keyFrame.time)
+
+				int a = 5;
 			}
 		}
 	}
