@@ -26,6 +26,7 @@ namespace BansheeEngine
 		float importScale = 0.01f;
 		float animSampleRate = 1.0f / 60.0f;
 		bool animResample = false;
+		bool reduceKeyframes = true;
 	};
 
 	/**	Represents a single node in the FBX transform hierarchy. */

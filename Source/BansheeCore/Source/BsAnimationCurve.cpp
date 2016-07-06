@@ -296,7 +296,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			// Resize tangents since we're not evaluating the curve over unit range
+			// Scale from arbitrary range to [0, 1]
 			t = (time - leftKey.time) / length;
 			leftTangent = leftKey.outTangent * length;
 			rightTangent = rightKey.inTangent * length;

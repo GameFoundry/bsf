@@ -1540,6 +1540,13 @@ namespace BansheeEngine
 			importCurve(rotation[1], importOptions, tempCurveRotation[1], clip.start, clip.end);
 			importCurve(rotation[2], importOptions, tempCurveRotation[2], clip.start, clip.end);
 
+			if(importOptions.reduceKeyframes)
+			{
+				reduceKeyframes(boneAnim.translation);
+				reduceKeyframes(boneAnim.scale);
+				reduceKeyframes(tempCurveRotation);
+			}
+
 			eulerToQuaternionCurves(tempCurveRotation, boneAnim.rotation);
 		}
 
@@ -1577,6 +1584,63 @@ namespace BansheeEngine
 		{
 			FbxNode* child = node->GetChild(i);
 			importAnimations(layer, child, importOptions, clip, importScene);
+		}
+	}
+
+	void FBXImporter::reduceKeyframes(FBXAnimationCurve(&curves)[3])
+	{
+		UINT32 keyCount = (UINT32)curves[0].keyframes.size();
+
+		assert((keyCount == (UINT32)curves[1].keyframes.size()) &&
+			(keyCount == (UINT32)curves[2].keyframes.size()));
+
+		Vector<FBXKeyFrame> newKeyframes[3];
+
+		bool lastWasEqual = false;
+		for (int i = 0; i < keyCount; i++)
+		{
+			bool isEqual = true;
+
+			if (i > 0)
+			{
+				for (int j = 0; j < 3; j++)
+				{
+					FBXKeyFrame& curKey = curves[j].keyframes[i];
+					FBXKeyFrame& prevKey = newKeyframes[j].back();
+
+					isEqual = Math::approxEquals(prevKey.value, curKey.value) &&
+						Math::approxEquals(prevKey.outTangent, curKey.inTangent) && isEqual;
+				}
+			}
+			else
+				isEqual = false;
+
+			for (int j = 0; j < 3; j++)
+			{
+				FBXKeyFrame& curKey = curves[j].keyframes[i];
+
+				// More than two keys in a row are equal, remove previous key by replacing it with this one
+				if (lastWasEqual && isEqual)
+				{
+					FBXKeyFrame& prevKey = newKeyframes[j].back();
+
+					// Other properties are guaranteed unchanged
+					prevKey.time = curKey.time;
+					prevKey.outTangent = curKey.outTangent;
+
+					continue;
+				}
+
+				newKeyframes[j].push_back(curKey);
+			}
+
+			lastWasEqual = isEqual;
+		}
+
+		for (int j = 0; j < 3; j++)
+		{
+			curves[j].keyframes.clear();
+			std::swap(curves[j].keyframes, newKeyframes[j]);
 		}
 	}
 
@@ -1784,22 +1848,6 @@ namespace BansheeEngine
 				keyFrame.value = fbxCurve->KeyGetValue(i);
 				keyFrame.inTangent = fbxCurve->KeyGetLeftDerivative(i);
 				keyFrame.outTangent = fbxCurve->KeyGetRightDerivative(i);
-
-				// DEBUG VALUES
-				float leftAuto = fbxCurve->KeyGetLeftAuto(i);
-				float rightAuto = fbxCurve->KeyGetRightAuto(i);
-
-				float leftWeight = fbxCurve->KeyGetLeftTangentWeight(i);
-				float rightWeight = fbxCurve->KeyGetRightTangentWeight(i);
-
-				FbxAnimCurveTangentInfo leftInfo = fbxCurve->KeyGetLeftDerivativeInfo(i);
-				FbxAnimCurveTangentInfo rightInfo = fbxCurve->KeyGetRightDerivativeInfo(i);
-
-				FbxAnimCurveDef::EInterpolationType interpMode = fbxCurve->KeyGetInterpolation(i);
-				FbxAnimCurveDef::ETangentMode tangentMode = fbxCurve->KeyGetTangentMode(i);
-				//float tangent = Math::cubicHermiteD1(keyFrame.time)
-
-				int a = 5;
 			}
 		}
 	}

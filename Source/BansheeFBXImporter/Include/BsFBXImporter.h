@@ -104,6 +104,12 @@ namespace BansheeEngine
 		void convertAnimations(const Vector<FBXAnimationClip>& clips, const Vector<AnimationSplitInfo>& splits, 
 			Vector<FBXAnimationClipData>& output);
 
+		/** 
+		 * Removes identical sequential keyframes for the provided set of curves. The keyframe must be identical over all
+		 * the curves in order for it to be removed.
+		 */
+		void reduceKeyframes(FBXAnimationCurve(&curves)[3]);
+
 		/**	Converts a set of curves containing rotation in euler angles into a set of curves using	quaternion rotation. */
 		void eulerToQuaternionCurves(FBXAnimationCurve(&eulerCurves)[3], FBXAnimationCurve(&quatCurves)[4]);
 
