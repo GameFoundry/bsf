@@ -147,6 +147,9 @@ namespace BansheeEngine
 		 */
 		void updateTime(const Vector<AnimationClipInfo>& clipInfos);
 
+		/** Destroys all dynamically allocated objects. */
+		void clear();
+
 		UINT64 id;
 		AnimationStateLayer* layers;
 		UINT32 numLayers;

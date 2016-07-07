@@ -33,9 +33,64 @@ namespace BansheeEngine
 
 	AnimationProxy::~AnimationProxy()
 	{
+		clear();
+	}
+
+	void AnimationProxy::clear()
+	{
+		if (layers == nullptr)
+			return;
+
+		for(UINT32 i = 0; i < numLayers; i++)
+		{
+			AnimationStateLayer& layer = layers[i];
+			for(UINT32 j = 0; j < layer.numStates; j++)
+			{
+				AnimationState& state = layer.states[j];
+
+				if(state.curves != nullptr)
+				{
+					{
+						UINT32 numCurves = (UINT32)state.curves->position.size();
+						for (UINT32 k = 0; k < numCurves; k++)
+							state.positionCaches[k].~TCurveCache();
+					}
+
+					{
+						UINT32 numCurves = (UINT32)state.curves->rotation.size();
+						for (UINT32 k = 0; k < numCurves; k++)
+							state.rotationCaches[k].~TCurveCache();
+					}
+
+					{
+						UINT32 numCurves = (UINT32)state.curves->scale.size();
+						for (UINT32 k = 0; k < numCurves; k++)
+							state.scaleCaches[k].~TCurveCache();
+					}
+
+					{
+						UINT32 numCurves = (UINT32)state.curves->generic.size();
+						for (UINT32 k = 0; k < numCurves; k++)
+							state.genericCaches[k].~TCurveCache();
+					}
+				}
+
+				if(skeleton != nullptr)
+				{
+					UINT32 numBones = skeleton->getNumBones();
+					for (UINT32 k = 0; k < numBones; k++)
+						state.boneToCurveMapping[k].~AnimationCurveMapping();
+				}
+
+				state.~AnimationState();
+			}
+
+			layer.~AnimationStateLayer();
+		}
+
 		// All the memory is part of the same buffer, so we only need to free the first element
-		if (layers != nullptr)
-			bs_free(layers);
+		bs_free(layers);
+		layers = nullptr;
 	}
 
 	void AnimationProxy::rebuild(const SPtr<Skeleton>& skeleton, Vector<AnimationClipInfo>& clipInfos)
@@ -72,8 +127,7 @@ namespace BansheeEngine
 
 	void AnimationProxy::rebuild(Vector<AnimationClipInfo>& clipInfos)
 	{
-		if (layers != nullptr)
-			bs_free(layers);
+		clear();
 
 		bs_frame_mark();
 		{
@@ -134,9 +188,10 @@ namespace BansheeEngine
 				numGenCurves += (UINT32)curves->generic.size();
 			}
 
+			UINT32 numBoneMappings = numBones * numClips;
 			UINT32 layersSize = sizeof(AnimationStateLayer) * numLayers;
 			UINT32 clipsSize = sizeof(AnimationState) * numClips;
-			UINT32 boneMappingSize = numBones * numClips * sizeof(AnimationCurveMapping);
+			UINT32 boneMappingSize = numBoneMappings * sizeof(AnimationCurveMapping);
 			UINT32 posCacheSize = numPosCurves * sizeof(TCurveCache<Vector3>);
 			UINT32 rotCacheSize = numRotCurves * sizeof(TCurveCache<Quaternion>);
 			UINT32 scaleCacheSize = numScaleCurves * sizeof(TCurveCache<Vector3>);
@@ -151,21 +206,39 @@ namespace BansheeEngine
 			data += layersSize;
 
 			AnimationState* states = (AnimationState*)data;
+			for(UINT32 i = 0; i < numClips; i++)
+				new (&states[i]) AnimationState();
+
 			data += clipsSize;
 
 			AnimationCurveMapping* boneMappings = (AnimationCurveMapping*)data;
+			for (UINT32 i = 0; i < numBoneMappings; i++)
+				new (&boneMappings[i]) AnimationCurveMapping();
+
 			data += boneMappingSize;
 
 			TCurveCache<Vector3>* posCache = (TCurveCache<Vector3>*)data;
+			for (UINT32 i = 0; i < numPosCurves; i++)
+				new (&posCache[i]) TCurveCache<Vector3>();
+
 			data += posCacheSize;
 
 			TCurveCache<Quaternion>* rotCache = (TCurveCache<Quaternion>*)data;
+			for (UINT32 i = 0; i < numRotCurves; i++)
+				new (&rotCache[i]) TCurveCache<Quaternion>();
+
 			data += rotCacheSize;
 
 			TCurveCache<Vector3>* scaleCache = (TCurveCache<Vector3>*)data;
+			for (UINT32 i = 0; i < numScaleCurves; i++)
+				new (&scaleCache[i]) TCurveCache<Vector3>();
+
 			data += scaleCacheSize;
 
 			TCurveCache<float>* genCache = (TCurveCache<float>*)data;
+			for (UINT32 i = 0; i < numGenCurves; i++)
+				new (&genCache[i]) TCurveCache<float>();
+
 			data += genCacheSize;
 
 			genericCurveOutputs = (float*)data;
@@ -184,7 +257,6 @@ namespace BansheeEngine
 					if (clipInfo.state.layer != layer.index)
 						continue;
 
-					new (&states[curStateIdx]) AnimationState();
 					AnimationState& state = states[curStateIdx];
 					state.loop = clipInfo.state.wrapMode == AnimWrapMode::Loop;
 					state.time = clipInfo.state.time;
