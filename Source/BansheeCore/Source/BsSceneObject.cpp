@@ -85,9 +85,11 @@ namespace BansheeEngine
 
 			mChildren.clear();
 
-			for (auto iter = mComponents.begin(); iter != mComponents.end(); ++iter)
+			// It's important to remove the elements from the array as soon as they're destroyed, as OnDestroy callbacks
+			// for components might query the SO's components, and we want to only return live ones 
+			while (!mComponents.empty())
 			{
-				HComponent component = *iter;
+				HComponent component = mComponents.back();
 				component->_setIsDestroyed();
 
 				if (isInstantiated())
@@ -98,10 +100,9 @@ namespace BansheeEngine
 					component->onDestroyed();
 				}
 
-				component->destroyInternal(*iter, true);
+				component->destroyInternal(component, true);
+				mComponents.erase(mComponents.end() - 1);
 			}
-
-			mComponents.clear();
 
 			GameObjectManager::instance().unregisterObject(handle);
 		}

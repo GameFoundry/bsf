@@ -726,7 +726,7 @@ namespace BansheeEngine
 		Matrix4 worldViewProjMatrix = viewProj * mRenderableShaderData[rendererId].worldTransform;
 
 		SPtr<GpuBufferCore> boneMatrices;
-		if(element.animationId != (UINT32)-1)
+		if(element.animationId != (UINT64)-1)
 		{
 			// Note: If multiple elements are using the same animation (not possible atm), this buffer should be created
 			// earlier and then shared by all elements

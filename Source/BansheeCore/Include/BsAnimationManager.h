@@ -109,5 +109,8 @@ namespace BansheeEngine
 		std::atomic<INT32> mDataReadyCount;
 	};
 
+	/** Provides easier access to AnimationManager. */
+	BS_CORE_EXPORT AnimationManager& gAnimation();
+
 	/** @} */
 }

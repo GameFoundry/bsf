@@ -296,12 +296,12 @@ namespace BansheeEngine
                 _native.SetState(clip, state);
         }
 
-        private void OnEnabled()
+        private void OnEnable()
         {
             RestoreNative();
         }
 
-        private void OnDisabled()
+        private void OnDisable()
         {
             DestroyNative();
         }

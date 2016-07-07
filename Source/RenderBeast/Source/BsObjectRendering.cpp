@@ -87,7 +87,7 @@ namespace BansheeEngine
 		mPerObjectParams.gWorldDeterminantSign.set(data.worldDeterminantSign);
 		mPerObjectParams.gMatWorldViewProj.set(wvpMatrix);
 
-		if(element.animationId != (UINT32)-1)
+		if(element.animationId != (UINT64)-1)
 			element.boneMatricesParam.set(boneMatrices);
 	}
 

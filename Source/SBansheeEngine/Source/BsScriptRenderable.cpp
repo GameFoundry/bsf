@@ -69,7 +69,11 @@ namespace BansheeEngine
 
 	void ScriptRenderable::internal_SetAnimation(ScriptRenderable* thisPtr, ScriptAnimation* animation)
 	{
-		thisPtr->getInternal()->setAnimation(animation->getInternal());
+		SPtr<Animation> anim;
+		if (animation != nullptr)
+			anim = animation->getInternal();
+
+		thisPtr->getInternal()->setAnimation(anim);
 	}
 
 	void ScriptRenderable::internal_UpdateTransform(ScriptRenderable* thisPtr, ScriptSceneObject* parent)

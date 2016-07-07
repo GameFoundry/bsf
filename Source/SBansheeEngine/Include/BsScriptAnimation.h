@@ -53,7 +53,7 @@ namespace BansheeEngine
 	};
 
 	/** Helper class for dealing with BlendSequentialClipInfo structure. */
-	class ScriptBlendClipInfo : public ScriptObject<ScriptBlendClipInfo>
+	class BS_SCR_BE_EXPORT ScriptBlendClipInfo : public ScriptObject<ScriptBlendClipInfo>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "BlendClipInfo")
@@ -72,7 +72,7 @@ namespace BansheeEngine
 	};
 
 	/** Helper class for dealing with Blend1DInfo structure. */
-	class ScriptBlend1DInfo : public ScriptObject<ScriptBlend1DInfo>
+	class BS_SCR_BE_EXPORT ScriptBlend1DInfo : public ScriptObject<ScriptBlend1DInfo>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Blend1DInfo")
@@ -90,7 +90,7 @@ namespace BansheeEngine
 	};
 
 	/** Helper class for dealing with Blend2DInfo structure. */
-	class ScriptBlend2DInfo : public ScriptObject<ScriptBlend2DInfo>
+	class BS_SCR_BE_EXPORT ScriptBlend2DInfo : public ScriptObject<ScriptBlend2DInfo>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Blend2DInfo")

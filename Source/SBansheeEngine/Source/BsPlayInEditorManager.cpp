@@ -8,6 +8,7 @@
 #include "BsApplication.h"
 #include "BsPhysics.h"
 #include "BsAudio.h"
+#include "BsAnimationManager.h"
 
 namespace BansheeEngine
 {
@@ -47,6 +48,7 @@ namespace BansheeEngine
 
 			gPhysics().setPaused(true);
 			gAudio().setPaused(true);
+			gAnimation().setPaused(true);
 
 			mSavedScene->_instantiate();
 			gSceneManager()._setRootNode(mSavedScene);
@@ -63,6 +65,7 @@ namespace BansheeEngine
 
 			gPhysics().setPaused(false);
 			gAudio().setPaused(false);
+			gAnimation().setPaused(false);
 		}
 			break;
 		case PlayInEditorState::Paused:
@@ -70,6 +73,7 @@ namespace BansheeEngine
 			mFrameStepActive = false;
 			gPhysics().setPaused(true);
 			gAudio().setPaused(true);
+			gAnimation().setPaused(true);
 
 			if (oldState == PlayInEditorState::Stopped)
 			{

@@ -168,7 +168,7 @@ namespace BansheeEngine
 		UINT32 getRendererId() const { return mRendererId; }
 
 		/** Checks is the mesh geometry rendered by this renderable animated using skeleton or blend shape animation. */
-		bool isAnimated() const { return mAnimationId != (UINT32)-1; }
+		bool isAnimated() const { return mAnimationId != (UINT64)-1; }
 
 		/** Returns the identifier of the animation, if this object is animated using skeleton or blend shape animation. */
 		UINT64 getAnimationId() const { return mAnimationId; }

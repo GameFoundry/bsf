@@ -66,7 +66,7 @@ namespace BansheeEngine
 		for (auto& anim : mAnimations)
 		{
 			anim.second->updateAnimProxy(timeDelta);
-			mProxies[anim.second->mId] = anim.second->mAnimProxy;
+			mProxies.push_back(anim.second->mAnimProxy);
 		}
 
 		// Make sure thread finishes writing all changes to the anim proxies as they will be read by the animation thread
@@ -116,6 +116,7 @@ namespace BansheeEngine
 				Matrix4* boneDst = renderData.transforms.data() + curBoneIdx;
 				anim->skeleton->getPose(boneDst, anim->localPose, anim->layers, anim->numLayers);
 
+				renderData.poseInfos[anim->id] = info;
 				curBoneIdx += numBones;
 			}
 			else
@@ -210,5 +211,10 @@ namespace BansheeEngine
 	void AnimationManager::unregisterAnimation(UINT64 animId)
 	{
 		mAnimations.erase(animId);
+	}
+
+	AnimationManager& gAnimation()
+	{
+		return AnimationManager::instance();
 	}
 }
