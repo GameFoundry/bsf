@@ -119,7 +119,7 @@ namespace BansheeEngine
 		mThisHandle._setHandleData(thisPtr);
 	}
 
-	String SceneObject::getPrefabLink() const
+	String SceneObject::getPrefabLink(bool onlyDirect) const
 	{
 		const SceneObject* curObj = this;
 
@@ -128,7 +128,7 @@ namespace BansheeEngine
 			if (!curObj->mPrefabLinkUUID.empty())
 				return curObj->mPrefabLinkUUID;
 
-			if (curObj->mParent != nullptr)
+			if (curObj->mParent != nullptr && !onlyDirect)
 				curObj = curObj->mParent.get();
 			else
 				curObj = nullptr;
@@ -213,7 +213,7 @@ namespace BansheeEngine
 
 			for (auto& child : obj->mChildren)
 			{
-				if(!prefabOnly || child->getPrefabLink().empty())
+				if(!prefabOnly || child->mPrefabLinkUUID.empty())
 					instantiateRecursive(child.get());
 			}
 		};
@@ -230,7 +230,7 @@ namespace BansheeEngine
 
 			for (auto& child : obj->mChildren)
 			{
-				if (!prefabOnly || child->getPrefabLink().empty())
+				if (!prefabOnly || child->mPrefabLinkUUID.empty())
 					triggerEventsRecursive(child.get());
 			}
 		};

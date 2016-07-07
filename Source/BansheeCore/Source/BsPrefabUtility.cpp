@@ -51,6 +51,9 @@ namespace BansheeEngine
 				topLevelObject = nullptr;
 		}
 
+		if (topLevelObject == nullptr)
+			topLevelObject = so;
+
 		Stack<HSceneObject> todo;
 		todo.push(topLevelObject);
 

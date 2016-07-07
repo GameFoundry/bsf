@@ -66,7 +66,7 @@ namespace BansheeEngine
 		if (ScriptSceneObject::checkIfDestroyed(nativeInstance))
 			return false;
 
-		return !nativeInstance->getNativeSceneObject()->getPrefabLink().empty();
+		return !nativeInstance->getNativeSceneObject()->getPrefabLink(true).empty();
 	}
 
 	MonoObject* ScriptPrefabUtility::internal_getPrefabParent(ScriptSceneObject* nativeInstance)
@@ -93,7 +93,7 @@ namespace BansheeEngine
 
 		HSceneObject so = nativeInstance->getNativeSceneObject();
 
-		String prefabUUID = nativeInstance->getNativeSceneObject()->getPrefabLink();
+		String prefabUUID = nativeInstance->getNativeSceneObject()->getPrefabLink(true);
 		if (prefabUUID.empty())
 			return nullptr;
 

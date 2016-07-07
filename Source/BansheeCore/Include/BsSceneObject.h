@@ -71,9 +71,10 @@ namespace BansheeEngine
 		/**
 		 * Returns the UUID of the prefab this object is linked to, if any. 
 		 *
-		 * @note	Requires a search of all parents potentially.
+		 * @param[in]	onlyDirect	If true, this method will return prefab link only for the root object of the prefab
+		 *							instance. If false the parent objects will be searched for the prefab ID.
 		 */
-		String getPrefabLink() const;
+		String getPrefabLink(bool onlyDirect = false) const;
 
 		/** 
 		 * Returns the root object of the prefab instance that this object belongs to, if any. Returns null if the object 
