@@ -18,6 +18,8 @@ namespace BansheeEngine
 	{
 		if (!gApplication().isEditor())
 			mState = PlayInEditorState::Playing;
+		else
+			setSystemsPauseState(true);
 	}
 
 	void PlayInEditorManager::setState(PlayInEditorState state)
@@ -46,9 +48,7 @@ namespace BansheeEngine
 			mFrameStepActive = false;
 			mPausableTime = 0.0f;
 
-			gPhysics().setPaused(true);
-			gAudio().setPaused(true);
-			gAnimation().setPaused(true);
+			setSystemsPauseState(true);
 
 			mSavedScene->_instantiate();
 			gSceneManager()._setRootNode(mSavedScene);
@@ -63,17 +63,13 @@ namespace BansheeEngine
 				ScriptGameObjectManager::instance().wakeRuntimeComponents();
 			}
 
-			gPhysics().setPaused(false);
-			gAudio().setPaused(false);
-			gAnimation().setPaused(false);
+			setSystemsPauseState(false);
 		}
 			break;
 		case PlayInEditorState::Paused:
 		{
 			mFrameStepActive = false;
-			gPhysics().setPaused(true);
-			gAudio().setPaused(true);
-			gAnimation().setPaused(true);
+			setSystemsPauseState(true);
 
 			if (oldState == PlayInEditorState::Stopped)
 			{
@@ -145,5 +141,12 @@ namespace BansheeEngine
 					todo.push(current->getChild(i));
 			}
 		}
+	}
+
+	void PlayInEditorManager::setSystemsPauseState(bool paused)
+	{
+		gPhysics().setPaused(paused);
+		gAudio().setPaused(paused);
+		gAnimation().setPaused(paused);
 	}
 }

@@ -77,7 +77,12 @@ namespace BansheeEngine
 		LocalSkeletonPose();
 		LocalSkeletonPose(UINT32 numBones);
 		LocalSkeletonPose(UINT32 numPos, UINT32 numRot, UINT32 numScale);
+		LocalSkeletonPose(const LocalSkeletonPose& other) = delete;
+		LocalSkeletonPose(LocalSkeletonPose&& other);
 		~LocalSkeletonPose();
+
+		LocalSkeletonPose& operator=(const LocalSkeletonPose& other) = delete;
+		LocalSkeletonPose& operator=(LocalSkeletonPose&& other);
 
 		Vector3* positions; /**< Local bone positions at specific animation time. */
 		Quaternion* rotations; /**< Local bone rotations at specific animation time. */

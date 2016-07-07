@@ -101,7 +101,10 @@ namespace BansheeEngine
 	struct AnimationProxy
 	{
 		AnimationProxy(UINT64 id);
+		AnimationProxy(const AnimationProxy&) = delete;
 		~AnimationProxy();
+
+		AnimationProxy& operator=(const AnimationProxy&) = delete;
 
 		/** 
 		 * Rebuilds the internal proxy data according to the newly assigned skeleton and clips. This should be called

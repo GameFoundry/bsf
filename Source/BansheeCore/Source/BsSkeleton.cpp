@@ -14,7 +14,7 @@ namespace BansheeEngine
 		: numBones(numBones)
 	{
 		UINT32 elementSize = sizeof(Vector3) * 2 + sizeof(Quaternion);
-		UINT8* buffer = (UINT8*)bs_alloc(elementSize * sizeof(numBones));
+		UINT8* buffer = (UINT8*)bs_alloc(elementSize * numBones);
 
 		positions = (Vector3*)buffer;
 		buffer += sizeof(Vector3) * numBones;
@@ -40,10 +40,40 @@ namespace BansheeEngine
 		scales = (Vector3*)buffer;
 	}
 
+	LocalSkeletonPose::LocalSkeletonPose(LocalSkeletonPose&& other)
+		: positions(other.positions), rotations(other.rotations), scales(other.scales), numBones(other.numBones)
+	{
+		other.positions = nullptr;
+		other.rotations = nullptr;
+		other.scales = nullptr;
+		other.numBones = 0;
+	}
+
 	LocalSkeletonPose::~LocalSkeletonPose()
 	{
 		if (positions != nullptr)
 			bs_free(positions);
+	}
+
+	LocalSkeletonPose& LocalSkeletonPose::operator=(LocalSkeletonPose&& other)
+	{
+		if (this != &other)
+		{
+			if (positions != nullptr)
+				bs_free(positions);
+
+			positions = other.positions;
+			rotations = other.rotations;
+			scales = other.scales;
+			numBones = other.numBones;
+
+			other.positions = nullptr;
+			other.rotations = nullptr;
+			other.scales = nullptr;
+			other.numBones = 0;
+		}
+
+		return *this;
 	}
 
 	Skeleton::Skeleton()
