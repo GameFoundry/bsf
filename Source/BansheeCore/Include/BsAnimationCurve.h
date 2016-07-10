@@ -40,7 +40,7 @@ namespace BansheeEngine
 		 * order using the non-caching version of evaluate() might yield better performance.
 		 *
 		 * @param[in]	time			Time to evaluate the curve at.
-		 * @param[i]	cache			Cached data from previous requests that can be used for speeding up sequential calls
+		 * @param[in]	cache			Cached data from previous requests that can be used for speeding up sequential calls
 		 *								to this method. Caller should ensure to maintain a persistent instance of this data
 		 *								for every animation using this curve in order to ensure cache is maintained.
 		 * @param[in]	loop			If true the curve will loop when it goes past the end or beggining. Otherwise the

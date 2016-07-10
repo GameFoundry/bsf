@@ -216,7 +216,7 @@ namespace BansheeEngine
 		 */
 
 		/**
-		 * @copydoc	create(UINT32, UINT32, const SPtr<VertexDataDesc>&, int, DrawOperationType, IndexType)
+		 * @copydoc	create(UINT32, UINT32, const SPtr<VertexDataDesc>&, int, DrawOperationType, IndexType, const SPtr<Skeleton>&)
 		 *
 		 * @note	Internal method. Use create() for normal use.
 		 */
@@ -225,7 +225,7 @@ namespace BansheeEngine
 			const SPtr<Skeleton>& skeleton = nullptr);
 
 		/**
-		 * @copydoc	create(UINT32, UINT32, const SPtr<VertexDataDesc>&, const Vector<SubMesh>&, int, IndexType)
+		 * @copydoc	create(UINT32, UINT32, const SPtr<VertexDataDesc>&, const Vector<SubMesh>&, int, IndexType, const SPtr<Skeleton>&)
 		 *
 		 * @note	Internal method. Use create() for normal use.
 		 */
@@ -234,7 +234,7 @@ namespace BansheeEngine
 			const SPtr<Skeleton>& skeleton = nullptr);
 
 		/**
-		 * @copydoc	create(const SPtr<MeshData>&, int, DrawOperationType)
+		 * @copydoc	create(const SPtr<MeshData>&, int, DrawOperationType, const SPtr<Skeleton>&)
 		 *
 		 * @note	Internal method. Use create() for normal use.
 		 */
@@ -242,7 +242,7 @@ namespace BansheeEngine
 			DrawOperationType drawOp = DOT_TRIANGLE_LIST, const SPtr<Skeleton>& skeleton = nullptr);
 
 		/**
-		 * @copydoc	create(const SPtr<MeshData>&, const Vector<SubMesh>&, int)
+		 * @copydoc	create(const SPtr<MeshData>&, const Vector<SubMesh>&, int, const SPtr<Skeleton>&)
 		 *
 		 * @note	Internal method. Use create() for normal use.
 		 */

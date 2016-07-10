@@ -131,7 +131,7 @@ namespace BansheeEngine
 		 * @param[in]	renderElementIdx	Zero-based index of the render element.
 		 *
 		 * @see		_getNumRenderElements()
-		 * @see		_getMeshSize()
+		 * @see		_getMeshInfo()
 		 */
 		virtual void _fillBuffer(UINT8* vertices, UINT32* indices, UINT32 vertexOffset, UINT32 indexOffset,
 			UINT32 maxNumVerts, UINT32 maxNumIndices, UINT32 renderElementIdx) const = 0;

@@ -46,10 +46,10 @@ namespace BansheeEngine
 		void setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom) override;
 
 		/** @copydoc RenderAPICore::setTexture() */
-		void setTexture(GpuProgramType gptype, UINT16 texUnit, const SPtr<TextureCore>& texPtr) override;
+		void setTexture(GpuProgramType gptype, UINT16 texUnit, const SPtr<TextureCore>& texture) override;
 
 		/** @copydoc RenderAPICore::setLoadStoreTexture */
-		void setLoadStoreTexture(GpuProgramType gptype, UINT16 texUnit, bool enabled, const SPtr<TextureCore>& texPtr,
+		void setLoadStoreTexture(GpuProgramType gptype, UINT16 texUnit, bool enabled, const SPtr<TextureCore>& texture,
 			const TextureSurface& surface) override;
         
 		/** @copydoc RenderAPICore::setBuffer */

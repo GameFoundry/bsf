@@ -37,10 +37,10 @@ namespace BansheeEngine
 		void setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SPtr<SamplerStateCore>& samplerState) override;
 
 		/** @copydoc RenderAPICore::setTexture */
-		void setTexture(GpuProgramType gptype, UINT16 texUnit, const SPtr<TextureCore>& texPtr) override;
+		void setTexture(GpuProgramType gptype, UINT16 texUnit, const SPtr<TextureCore>& texture) override;
 
 		/** @copydoc RenderAPICore::setLoadStoreTexture */
-		void setLoadStoreTexture(GpuProgramType gptype, UINT16 texUnit, bool enabled, const SPtr<TextureCore>& texPtr,
+		void setLoadStoreTexture(GpuProgramType gptype, UINT16 texUnit, bool enabled, const SPtr<TextureCore>& texture,
 			const TextureSurface& surface) override;
 
 		/** @copydoc RenderAPICore::setBuffer */
