@@ -51,7 +51,12 @@ namespace BansheeEditor
             buttonLayout.AddElement(endField);
             buttonLayout.AddElement(fpsField);
 
-            timeline = new GUITimeline(GUI, 300, 20);
+            timeline = new GUITimeline(GUI, Width, 20);
+        }
+
+        protected override void WindowResized(int width, int height)
+        {
+            timeline.SetSize(width, 20);
         }
 
         private void OnEditorUpdate()
