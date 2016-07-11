@@ -44,7 +44,7 @@ div.contents {
 
 /* Nav bar */
 .tabs, .tabs2, .tabs3 {
-	background-color: rgba(0, 0, 0, 0.7);
+	background-color: rgba(0, 0, 0, 0.12);
 	background-image: none;
     font-family: Lato,'Lucida Grande',Geneva,Helvetica,Arial,sans-serif;
 	border-bottom: none;
@@ -58,20 +58,22 @@ div.contents {
 
 .tablist a {
 	background-image: none;
-	color: rgba(255, 255, 255, 0.9);
+	color: rgba(0, 0, 0, 0.58);
 	background: transparent;
 	text-shadow: none;
-	font-weight: normal;
+	font-weight: bold;
 }
 
 .tablist a:hover {
     background-image: none;
-	color: rgba(255, 255, 255, 0.9);
+	color: rgba(0, 0, 0, 0.58);
+	text-shadow: none;
 }
 
 .tablist li.current a {
     background-image: none;
 	text-shadow: none;
+	color: rgba(0, 0, 0, 0.58);
 }
 
 .tablist li:hover {

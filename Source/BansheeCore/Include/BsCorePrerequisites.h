@@ -94,17 +94,17 @@
  *  @{
  */
 
+/** @defgroup Internal-Core Core
+ *	Second lowest layer that provides core engine functionality and abstract interfaces for various systems.
+ *  @{
+ */
+
 /** @defgroup Animation-Internal Animation
  *	Animation clips, skeletal and blend shape animation, animation playback, blending and other features.
  */
 
 /** @defgroup Audio-Internal Audio
  *	Audio clips, 3D sound and music reproduction.
- */
-
-/** @defgroup Internal-Core Core
- *	Second lowest layer that provides core engine functionality and abstract interfaces for various systems.
- *  @{
  */
 
 /** @defgroup CoreThread-Internal Core thread

@@ -8,6 +8,11 @@
  *  @{
  */
 
+/** @defgroup Editor Editor
+ *	Functionality specific to the Banshee Editor.
+ *  @{
+ */
+
 /** @defgroup Application-Editor Application
  *  Entry point into the editor application.
  */
@@ -19,11 +24,6 @@
 /** @defgroup CodeEditor CodeEditor
   *	Integration of the Banshee Editor with external code editors.
   */
-
-/** @defgroup Editor Editor
- *	Functionality specific to the Banshee Editor.
- *  @{
- */
 
 /** @defgroup EditorWindow EditorWindow
  *  Creating, managing and interacting with editor windows.
