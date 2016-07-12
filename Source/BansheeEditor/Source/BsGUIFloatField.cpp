@@ -219,6 +219,6 @@ namespace BansheeEngine
 
 	bool GUIFloatField::floatFilter(const WString& str)
 	{
-		return std::regex_match(str, std::wregex(L"-?(\\d+(\\.\\d*)?)?"));
+		return std::regex_match(str, std::wregex(L"-?(\\d*(\\.\\d*)?)?"));
 	}
 }

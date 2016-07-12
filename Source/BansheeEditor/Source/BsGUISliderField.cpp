@@ -166,8 +166,6 @@ namespace BansheeEngine
 
 	bool GUISliderField::floatFilter(const WString& str)
 	{
-		//-?(\\d+(\\.\\d*)?)?
-		//[-+]?[0-9]*\.?[0-9]*
 		bool result = std::regex_match(str, std::wregex(L"-?(\\d*(\\.\\d*)?)?"));
 		return result;
 	}
