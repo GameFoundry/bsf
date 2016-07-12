@@ -383,11 +383,11 @@ namespace BansheeEngine
 			else
 			{
 				start = mid + 1;
-				searchLength -= half - 1;
+				searchLength -= (half + 1);
 			}
 		}
 
-		leftKey = start - 1;
+		leftKey = std::max(0, start - 1);
 		rightKey = std::min(start, (INT32)mKeyframes.size() - 1);
 	}
 

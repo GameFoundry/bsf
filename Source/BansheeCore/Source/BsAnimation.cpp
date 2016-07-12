@@ -91,6 +91,9 @@ namespace BansheeEngine
 		// All the memory is part of the same buffer, so we only need to free the first element
 		bs_free(layers);
 		layers = nullptr;
+		genericCurveOutputs = nullptr;
+
+		numLayers = 0;
 	}
 
 	void AnimationProxy::rebuild(const SPtr<Skeleton>& skeleton, Vector<AnimationClipInfo>& clipInfos)
@@ -162,7 +165,7 @@ namespace BansheeEngine
 				return x.index < y.index;
 			});
 
-			UINT32 numLayers = (UINT32)tempLayers.size();
+			numLayers = (UINT32)tempLayers.size();
 			UINT32 numClips = (UINT32)clipInfos.size();
 			UINT32 numBones;
 			
@@ -246,8 +249,10 @@ namespace BansheeEngine
 			UINT32 curLayerIdx = 0;
 			UINT32 curStateIdx = 0;
 
-			for(auto& layer : tempLayers)
+			for(UINT32 i = 0; i < numLayers; i++)
 			{
+				AnimationStateLayer& layer = layers[i];
+
 				layer.states = &states[curStateIdx];
 				layer.numStates = 0;
 
@@ -514,11 +519,11 @@ namespace BansheeEngine
 			else
 			{
 				start = mid + 1;
-				searchLength -= half - 1;
+				searchLength -= (half + 1);
 			}
 		}
 
-		leftKey = start - 1;
+		leftKey = std::max(0, start - 1);
 		rightKey = std::min(start, (INT32)info.numClips - 1);
 
 		float interpLength = info.clips[rightKey].position - info.clips[leftKey].position;

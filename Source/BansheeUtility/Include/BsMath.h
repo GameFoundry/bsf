@@ -660,7 +660,7 @@ namespace BansheeEngine
 			coefficients[0] = 2 * diff + tangentA + tangentB;
 			coefficients[1] = -3 * diff - 2 * tangentA - tangentB;
 			coefficients[2] = tangentA;
-			coefficients[4] = pointA;
+			coefficients[3] = pointA;
 		}
 
 		/**
@@ -690,7 +690,7 @@ namespace BansheeEngine
 			coefficients[0] = (2 * diff + scaledTangentA + scaledTangentB) * invLength3;
 			coefficients[1] = (-3 * diff - 2 * scaledTangentA - scaledTangentB) * invLength2;
 			coefficients[2] = tangentA;
-			coefficients[4] = pointA;
+			coefficients[3] = pointA;
 		}
 
         static const float POS_INFINITY;
