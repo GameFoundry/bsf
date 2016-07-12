@@ -63,7 +63,8 @@ namespace BansheeEngine
 	{
 		Serializable = 0x01,
 		Inspectable = 0x02,
-		Range = 0x04
+		Range = 0x04,
+		Step = 0x08
 	};
 
 	/**	Contains information about a type of a managed serializable object. */
@@ -263,7 +264,7 @@ namespace BansheeEngine
 		float getRangeMaximum() const;
 
 		/** Returns the step value of a Range attribute */
-		float getRangeStep() const;
+		float getStep() const;
 
 		String mName;
 		UINT32 mFieldId;

@@ -79,9 +79,9 @@ namespace BansheeEngine
         /// <summary>
         /// Returns the step of the range
         /// </summary>
-        public float RangeStep
+        public float Step
         {
-            get { return Range ? Internal_GetRangeStep(mCachedPtr) : 0; }
+            get { return Range ? Internal_GetStep(mCachedPtr) : 0; }
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace BansheeEngine
         private static extern float Internal_GetRangeMinimum(IntPtr field);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern float Internal_GetRangeStep(IntPtr field);
+        private static extern float Internal_GetStep(IntPtr field);
     }
 
     /** @} */

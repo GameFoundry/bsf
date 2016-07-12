@@ -127,12 +127,12 @@ namespace BansheeEngine
 		return 0;
 	}
 
-	float ManagedSerializableFieldInfo::getRangeStep() const
+	float ManagedSerializableFieldInfo::getStep() const
 	{
-		if (((UINT32)mFlags & (UINT32)ScriptFieldFlags::Range) != 0)
+		if (((UINT32)mFlags & (UINT32)ScriptFieldFlags::Step) != 0)
 		{
 
-			MonoClass* range = ScriptAssemblyManager::instance().getRangeAttribute();
+			MonoClass* range = ScriptAssemblyManager::instance().getStepAttribute();
 			if (range != nullptr)
 			{
 				float step = 0;

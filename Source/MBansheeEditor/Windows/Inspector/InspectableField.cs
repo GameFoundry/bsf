@@ -146,6 +146,7 @@ namespace BansheeEditor
             else
             {
                 InspectableFieldRangeStyle rangeInfo = null;
+
                 if (style != null)
                     rangeInfo = InspectableFieldStyle.FindStyle<InspectableFieldRangeStyle>(style);
                 switch (property.Type)

@@ -19,18 +19,15 @@ namespace BansheeEngine
         /// </summary>
         /// <param name="min">Minimum boundary of the range to clamp the field value to.</param>
         /// <param name="max">Maximum boundary of the range to clamp the field value to.</param>
-        /// <param name="step">Minimum change of the field value every change should be multiple of.</param>
         /// 
-        public Range(float min, float max, float step=0f)
+        public Range(float min, float max)
         {
             this.min = min;
             this.max = max;
-            this.step = step;
         }
 
         private float min;
         private float max;
-        private float step;
     }
 
     /** @} */

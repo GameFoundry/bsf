@@ -80,6 +80,9 @@ namespace BansheeEngine
 
 		/** Gets the managed class for BansheeEngine.Range attribute */
 		MonoClass* getRangeAttribute() const { return mRangeAttribute; }
+
+		/** Gets the managed class for BansheeEngine.Step attribute */
+		MonoClass* getStepAttribute() const { return mStepAttribute; }
 	private:
 		/**	Deletes all stored managed serializable object infos for all assemblies. */
 		void clearScriptObjects();
@@ -107,6 +110,7 @@ namespace BansheeEngine
 		MonoClass* mSerializeFieldAttribute;
 		MonoClass* mHideInInspectorAttribute;
 		MonoClass* mRangeAttribute;
+		MonoClass* mStepAttribute;
 	};
 
 	/** @} */
