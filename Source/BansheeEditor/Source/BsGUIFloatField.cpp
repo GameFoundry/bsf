@@ -21,7 +21,7 @@ namespace BansheeEngine
 		const String& style, const GUIDimensions& dimensions, bool withLabel)
 		: TGUIField(dummy, labelContent, labelWidth, style, dimensions, withLabel), mInputBox(nullptr), mValue(0.0f)
 		, mLastDragPos(0), mMinValue(std::numeric_limits<float>::lowest()), mMaxValue(std::numeric_limits<float>::max())
-		, mIsDragging(false), mHasInputFocus(false)
+		, mIsDragging(false), mHasInputFocus(false), mStep(0.0f)
 	{
 		mInputBox = GUIInputBox::create(false, GUIOptions(GUIOption::flexibleWidth()), getSubStyleName(getInputStyleType()));
 		mInputBox->setFilter(&GUIFloatField::floatFilter);
@@ -134,22 +134,29 @@ namespace BansheeEngine
 		return false;
 	}
 
-	void GUIFloatField::setValue(float value)
+	float GUIFloatField::setValue(float value)
 	{
 		mValue = Math::clamp(value, mMinValue, mMaxValue);
-
+		if (mStep != 0.0f)
+			mValue = mValue - fmod(mValue, mStep);
 		// Only update with new value if it actually changed, otherwise
 		// problems can occur when user types in "0." and the field
 		// updates back to "0" effectively making "." unusable
 		float curValue = parseFloat(mInputBox->getText());
 		if (mValue != curValue)
 			mInputBox->setText(toWString(mValue));
+		return mValue;
 	}
 
 	void GUIFloatField::setRange(float min, float max)
 	{
 		mMinValue = min;
 		mMaxValue = max;
+	}
+
+	void GUIFloatField::setStep(float step) 
+	{
+		mStep = step;
 	}
 
 	void GUIFloatField::setTint(const Color& color)
@@ -165,7 +172,7 @@ namespace BansheeEngine
 		setValue(value);
 
 		if(triggerEvent)
-			onValueChanged(value);
+			onValueChanged(mValue);
 	}
 
 	const String& GUIFloatField::getGUITypeName()

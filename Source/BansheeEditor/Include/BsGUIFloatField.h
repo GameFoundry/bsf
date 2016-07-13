@@ -31,13 +31,19 @@ namespace BansheeEngine
 		float getValue() const { return mValue; }
 
 		/**	Sets a new value in the input field. */
-		void setValue(float value);
+		float setValue(float value);
 
 		/**
-		 * Sets a minimum and maximum allow values in the input field. Set to large negative/positive values if you don't
+		 * Sets a minimum and maximum allowed values in the input field. Set to large negative/positive values if you don't
 		 * require clamping.
 		 */
 		void setRange(float min, float max);
+
+		/**	Sets the minimum change allowed for the input field. */
+		void setStep(float step);
+
+		/** Returns the minimum change allowed for the input field. */
+		float getStep() const{ return mStep; }
 
 		/**	Checks is the input field currently active. */
 		bool hasInputFocus() const { return mHasInputFocus; }
@@ -96,6 +102,7 @@ namespace BansheeEngine
 		INT32 mLastDragPos;
 		float mMinValue;
 		float mMaxValue;
+		float mStep;
 		bool mIsDragging;
 		bool mHasInputFocus;
 	};
