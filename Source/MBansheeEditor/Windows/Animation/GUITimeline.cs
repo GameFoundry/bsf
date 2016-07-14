@@ -18,11 +18,16 @@ namespace BansheeEditor
         private const int TEXT_PADDING = 2;
         private const int MIN_TICK_DISTANCE = 25;
 
+        private int maxTextWidth;
+        private int largeTickHeight;
+        private int drawableWidth;
+        private float rangeLength;
+
         private GUICanvas canvas;
         private int width;
         private int height;
-        private float rangeStart = 0.0f;
-        private float rangeEnd = 60.0f;
+        private float rangeStart;
+        private float rangeEnd;
         private int fps = 1;
 
         public GUITimeline(GUILayout layout, int width, int height)
@@ -30,7 +35,11 @@ namespace BansheeEditor
             canvas = new GUICanvas();
             layout.AddElement(canvas);
 
+            maxTextWidth = GUIUtility.CalculateTextBounds("99:999", EditorBuiltin.DefaultFont,
+               EditorStyles.DefaultFontSize).x;
+
             SetSize(width, height);
+            SetRange(0, 60.0f);
         }
 
         public void SetSize(int width, int height)
@@ -41,6 +50,9 @@ namespace BansheeEditor
             canvas.SetWidth(width);
             canvas.SetHeight(height);
 
+            largeTickHeight = (int)(height * LARGE_TICK_HEIGHT_PCT);
+            drawableWidth = Math.Max(0, width - PADDING * 2);
+
             Rebuild();
         }
 
@@ -48,6 +60,8 @@ namespace BansheeEditor
         {
             rangeStart = start;
             rangeEnd = end;
+
+            rangeLength = rangeEnd - rangeStart;
 
             Rebuild();
         }
@@ -59,7 +73,7 @@ namespace BansheeEditor
             Rebuild();
         }
 
-        private float CalcTickInterval(float length)
+        private float CalcTickInterval()
         {
             const int OPTIMAL_TICK_COUNT = 10;
             float[] validIntervals =
@@ -79,7 +93,7 @@ namespace BansheeEditor
                 if (validIntervals[i] < timePerFrame)
                     continue;
 
-                float tickCount = length/validIntervals[i];
+                float tickCount = rangeLength/validIntervals[i];
                 float distance = Math.Abs(tickCount - OPTIMAL_TICK_COUNT);
                 if (distance < bestDistance)
                 {
@@ -89,9 +103,7 @@ namespace BansheeEditor
             }
 
             // If the draw area is too narrow, limit amount of ticks displayed so they aren't all clumped together
-            int numTicks = MathEx.FloorToInt(length / validIntervals[bestIntervalIdx]) + 1;
-
-            int drawableWidth = Math.Max(0, width - PADDING * 2);
+            int numTicks = MathEx.FloorToInt(rangeLength / validIntervals[bestIntervalIdx]) + 1;
             int spacePerTick = drawableWidth/numTicks;
 
             float bestInterval;
@@ -102,7 +114,7 @@ namespace BansheeEditor
                 bool foundInterval = false;
                 for (int i = bestIntervalIdx; i < validIntervals.Length; i++)
                 {
-                    float tickCount = length/validIntervals[i];
+                    float tickCount = rangeLength / validIntervals[i];
                     if (tickCount <= maxTickCount)
                     {
                         bestIntervalIdx = i;
@@ -117,7 +129,7 @@ namespace BansheeEditor
                     float currentInterval = validIntervals[validIntervals.Length - 1]*2;
                     while (true)
                     {
-                        float tickCount = length/ currentInterval;
+                        float tickCount = rangeLength / currentInterval;
                         if (tickCount <= maxTickCount)
                         {
                             bestInterval = currentInterval;
@@ -162,27 +174,41 @@ namespace BansheeEditor
                 EditorStyles.DefaultFontSize);
         }
 
+        private int DrawLargeTick(float t, int lastTextPosition, bool displayAsMinutes)
+        {
+            const int TEXT_SPACING = 10;
+
+            int xPos = (int)((t / rangeLength) * drawableWidth) + PADDING;
+
+            // Draw tick
+            Vector2I start = new Vector2I(xPos, height - largeTickHeight);
+            Vector2I end = new Vector2I(xPos, height);
+
+            canvas.DrawLine(start, end, Color.LightGray);
+
+            // Draw text if it fits
+            int diff = xPos - lastTextPosition;
+            if (diff >= (maxTextWidth + TEXT_SPACING))
+            {
+                DrawTime(xPos, rangeStart + t, displayAsMinutes);
+                lastTextPosition = xPos;
+            }
+            return lastTextPosition;
+        }
+
         private void Rebuild()
         {
             canvas.Clear();
 
-            // TODO - Text from invisible ticks should be displayed (otherwise it will just pop in was the tick is shown)
-
             // TODO - Draw small ticks (don't forget to handle offset properly)
             // TODO - Transition between interval sizes more lightly (dynamically change tick height?)
 
-            // Constants
-            const int TEXT_SPACING = 10;
-            int maxTextWidth = GUIUtility.CalculateTextBounds("99:999", EditorBuiltin.DefaultFont, 
-                EditorStyles.DefaultFontSize).x;
-            int largeTickHeight = (int)(height * LARGE_TICK_HEIGHT_PCT);
-            int drawableWidth = Math.Max(0, width - PADDING * 2);
-            float rangeLength = rangeEnd - rangeStart;
-
             // Draw ticks
-            float tickInterval = CalcTickInterval(rangeLength);
-            int numTicks = MathEx.FloorToInt(rangeLength / tickInterval) + 1;
+            float tickInterval = CalcTickInterval();
 
+            // Draw extra ticks outside the visible width so they don't just pop-in/out as range increases/decreases
+            float extraRange = PADDING + maxTextWidth / 2;
+            int numTicks = MathEx.FloorToInt((rangeLength + extraRange) / tickInterval) + 1;
             bool displayAsMinutes = TimeSpan.FromSeconds(tickInterval).Minutes > 0;
 
             float offset = rangeStart % tickInterval - rangeStart;
@@ -190,27 +216,14 @@ namespace BansheeEditor
             int lastTextPosition = -1000;
             for (int i = 0; i < numTicks; i++)
             {
-                int xPos = (int)((t / rangeLength) * drawableWidth) + PADDING;
+                lastTextPosition = DrawLargeTick(t, lastTextPosition, displayAsMinutes);
 
-                // Draw tick
-                Vector2I start = new Vector2I(xPos, height - largeTickHeight);
-                Vector2I end = new Vector2I(xPos, height);
-
-                canvas.DrawLine(start, end, Color.LightGray);
-
-                // Draw text if it fits
-                int diff = xPos - lastTextPosition;
-                if (diff >= (maxTextWidth + TEXT_SPACING))
-                {
-                    DrawTime(xPos, rangeStart + t, displayAsMinutes);
-                    lastTextPosition = xPos;
-                }
-                
                 // Move to next tick
                 t += tickInterval;
-                t = Math.Min(t, rangeLength);
             }
         }
+
+        
     }
 
     /** @} */
