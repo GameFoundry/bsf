@@ -16,17 +16,24 @@ namespace BansheeEditor
         private const float SMALL_TICK_HEIGHT_PCT = 0.2f;
         private const int PADDING = 30;
         private const int TEXT_PADDING = 2;
-        private const int MIN_TICK_DISTANCE = 25;
+        private const int OPTIMAL_TICK_WIDTH = 15;
 
         private int maxTextWidth;
         private int largeTickHeight;
+        private int smallTickHeight;
         private int drawableWidth;
         private float rangeLength = 60.0f;
+        private int minWidth = 0;
 
         private GUICanvas canvas;
         private int width;
         private int height;
         private int fps = 1;
+
+        public int MinWidth
+        {
+            get { return minWidth; }
+        }
 
         public GUITimeline(GUILayout layout, int width, int height)
         {
@@ -48,6 +55,7 @@ namespace BansheeEditor
             canvas.SetHeight(height);
 
             largeTickHeight = (int)(height * LARGE_TICK_HEIGHT_PCT);
+            smallTickHeight = (int)(height * SMALL_TICK_HEIGHT_PCT);
             drawableWidth = Math.Max(0, width - PADDING * 2);
 
             Rebuild();
@@ -66,96 +74,16 @@ namespace BansheeEditor
 
             Rebuild();
         }
-
-        private float CalcTickInterval()
-        {
-            const int OPTIMAL_TICK_COUNT = 10;
-            float[] validIntervals =
-            {
-                0.001f, 0.005f, 0.010f, 0.025f, 0.050f, 0.100f, 0.250f, 0.500f, // Hundreds of a second
-                1.0f, 5.0f, 10.0f, 30.0f, // Seconds
-                60.0f, 120.0f, 300.0f, 600.0f, 1800.0f, 3600.0f // Minutes
-            };
-
-            float timePerFrame = 1.0f/fps;
-            int bestIntervalIdx = 0;
-            float bestDistance = float.MaxValue;
-
-            for(int i = 0; i < validIntervals.Length; i++)
-            {
-                // Cannot choose an interval that would display ticks for below the frame-rate
-                if (validIntervals[i] < timePerFrame)
-                    continue;
-
-                float tickCount = rangeLength/validIntervals[i];
-                float distance = Math.Abs(tickCount - OPTIMAL_TICK_COUNT);
-                if (distance < bestDistance)
-                {
-                    bestDistance = distance;
-                    bestIntervalIdx = i;
-                }
-            }
-
-            // If the draw area is too narrow, limit amount of ticks displayed so they aren't all clumped together
-            int numTicks = MathEx.FloorToInt(rangeLength / validIntervals[bestIntervalIdx]) + 1;
-            int spacePerTick = drawableWidth/numTicks;
-
-            float bestInterval;
-            if (spacePerTick < MIN_TICK_DISTANCE)
-            {
-                int maxTickCount = drawableWidth/MIN_TICK_DISTANCE;
-
-                bool foundInterval = false;
-                for (int i = bestIntervalIdx; i < validIntervals.Length; i++)
-                {
-                    float tickCount = rangeLength / validIntervals[i];
-                    if (tickCount <= maxTickCount)
-                    {
-                        bestIntervalIdx = i;
-                        foundInterval = true;
-                        break;
-                    }
-                }
-
-                // Haven't found a valid round interval, try more intervals
-                if (!foundInterval)
-                {
-                    float currentInterval = validIntervals[validIntervals.Length - 1]*2;
-                    while (true)
-                    {
-                        float tickCount = rangeLength / currentInterval;
-                        if (tickCount <= maxTickCount)
-                        {
-                            bestInterval = currentInterval;
-                            break;
-                        }
-
-                        currentInterval *= 2;
-                    }
-                }
-                else
-                    bestInterval = validIntervals[bestIntervalIdx];
-            }
-            else
-                bestInterval = validIntervals[bestIntervalIdx];
-
-            return bestInterval;
-        }
-
+        
         private void DrawTime(int xPos, float seconds, bool minutes)
         {
             TimeSpan timeSpan = TimeSpan.FromSeconds(seconds);
 
             string timeString;
             if (minutes)
-            {
-                timeString = timeSpan.TotalMinutes + ":" + timeSpan.Seconds.ToString("D2");
-            }
+                timeString = timeSpan.TotalMinutes.ToString("#0") + ":" + timeSpan.Seconds.ToString("D2");
             else
-            {
-                int hundredths = timeSpan.Milliseconds / 10;
-                timeString = timeSpan.TotalSeconds + "." + hundredths.ToString("D3");
-            }
+                timeString = timeSpan.TotalSeconds.ToString("#0.00");
 
             Vector2I textBounds = GUIUtility.CalculateTextBounds(timeString, EditorBuiltin.DefaultFont,
                 EditorStyles.DefaultFontSize);
@@ -170,7 +98,7 @@ namespace BansheeEditor
 
         private void DrawLargeTick(float t, bool drawText, bool displayAsMinutes)
         {
-            int xPos = (int)((t / rangeLength) * drawableWidth) + PADDING;
+            int xPos = (int)((t / GetRange()) * drawableWidth) + PADDING;
 
             // Draw tick
             Vector2I start = new Vector2I(xPos, height - largeTickHeight);
@@ -183,34 +111,69 @@ namespace BansheeEditor
                 DrawTime(xPos, t, displayAsMinutes);
         }
 
+        private void DrawSmallTick(float t)
+        {
+            int xPos = (int)((t / GetRange()) * drawableWidth) + PADDING;
+
+            // Draw tick
+            Vector2I start = new Vector2I(xPos, height - smallTickHeight);
+            Vector2I end = new Vector2I(xPos, height);
+
+            canvas.DrawLine(start, end, Color.LightGray);
+        }
+
+        // Returns range rounded to the nearest multiple of FPS
+        private float GetRange()
+        {
+            float spf = 1.0f/fps;
+
+            return ((int)rangeLength/spf) * spf;
+        }
+
         private void Rebuild()
         {
             const int TEXT_SPACING = 10;
             canvas.Clear();
 
-            // TODO - Draw small ticks (don't forget to handle offset properly)
             // TODO - Transition between interval sizes more lightly (dynamically change tick height?)
+            // TODO - Calculate min width
+            // TODO - When at optimal width it should display the entire range
+            // TODO - Time values change as width changes, keep them constant?
 
-            // Draw ticks
-            float tickInterval = CalcTickInterval();
+            float range = GetRange();
 
-            // Draw extra ticks outside the visible width so they don't just pop-in/out as range increases/decreases
-            float extraRange = PADDING + maxTextWidth / 2;
-            int numTicks = MathEx.FloorToInt((rangeLength + extraRange) / tickInterval) + 1;
-            bool displayAsMinutes = TimeSpan.FromSeconds(tickInterval).Minutes > 0;
+            int numFrames = (int)range * fps;
+            float frameWidth = drawableWidth / (float)numFrames;
+            
+            int tickInterval = (int)Math.Max(1.0f, OPTIMAL_TICK_WIDTH / frameWidth);
+            int largeTickInterval = tickInterval * 5;
+            float largeTickWidth = frameWidth * largeTickInterval;
 
-            int tickWidth = (int) ((tickInterval/rangeLength)*drawableWidth);
-            int textInterval = MathEx.CeilToInt((maxTextWidth + TEXT_SPACING)/ (float)tickWidth);
+            float timePerFrame = range / numFrames;
+            float timePerTick = timePerFrame*tickInterval;
+            bool displayAsMinutes = TimeSpan.FromSeconds(timePerTick).Minutes > 0;
+
+            int textInterval = MathEx.CeilToInt((maxTextWidth + TEXT_SPACING) / largeTickWidth);
+
+            // Draw extra frames to prevent the out-of-frame ticks from popping in and out as range changes
+            float extraWidth = PADDING + maxTextWidth / 2;
+            numFrames += (int)(extraWidth / frameWidth);
 
             float t = 0.0f;
-            for (int i = 0; i < numTicks; i++)
+            for (int i = 0; i < numFrames; i++)
             {
-                bool drawText = i%textInterval == 0;
+                if (i%largeTickInterval == 0)
+                {
+                    int textIdx = i/largeTickInterval;
+                    bool drawText = textIdx % textInterval == 0;
 
-                DrawLargeTick(t, drawText, displayAsMinutes);
+                    DrawLargeTick(t, drawText, displayAsMinutes);
+                }
+                else if (i%tickInterval == 0)
+                    DrawSmallTick(t);
 
                 // Move to next tick
-                t += tickInterval;
+                t += timePerFrame;
             }
         }
     }
