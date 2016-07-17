@@ -17,7 +17,7 @@ namespace BansheeEditor
     /// </summary>
     public abstract class InspectableRangedField : InspectableField
     {
-        protected InspectableFieldRangeStyle rangeStyle;
+        protected InspectableFieldStyleInfo style;
         /// <summary>
         /// Creates a new inspectable field GUI for the specified property.
         /// </summary>
@@ -29,11 +29,11 @@ namespace BansheeEditor
         ///                     contain other fields, in which case you should increase this value by one.</param>
         /// <param name="layout">Parent layout that all the field elements will be added to.</param>
         /// <param name="property">Serializable property referencing the array whose contents to display.</param>
-        /// <param name="rangeStyle">Information about the range of the field</param>
+        /// <param name="style">Contains information about the field style</param>
         public InspectableRangedField(Inspector parent, string title, string path, SerializableProperty.FieldType type,
-            int depth, InspectableFieldLayout layout, SerializableProperty property, InspectableFieldRangeStyle rangeStyle) : base(parent, title, path, type, depth, layout, property)
+            int depth, InspectableFieldLayout layout, SerializableProperty property, InspectableFieldStyleInfo style) : base(parent, title, path, type, depth, layout, property)
         {
-            this.rangeStyle = rangeStyle;
+            this.style = style;
         }
     }
 
