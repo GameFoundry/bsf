@@ -14,7 +14,7 @@ namespace BansheeEditor
     internal class GUICurveDrawing
     {
         private const int PADDING = 30; // TODO - Shared with GUITimeline
-        private const int LINE_SPLIT_WIDTH = 2;
+        private const int LINE_SPLIT_WIDTH = 15;
         private static readonly Color COLOR_MID_GRAY = new Color(90.0f / 255.0f, 90.0f / 255.0f, 90.0f / 255.0f, 1.0f);
 
         private EdAnimationCurve[] curves;
@@ -189,37 +189,60 @@ namespace BansheeEditor
                 int startPixel = (int)(start / lengthPerPixel);
                 int endPixel = (int)(end / lengthPerPixel);
 
-                int numSplits;
-                float timeIncrement;
-                if (startPixel != endPixel)
+                bool isStep = keyframes[i].outTangent == float.PositiveInfinity ||
+                              keyframes[i + 1].inTangent == float.PositiveInfinity;
+
+                // If step tangent, draw the required lines without sampling, as the sampling will miss the step
+                if (isStep)
                 {
-                    float fNumSplits = (endPixel - startPixel)/(float) LINE_SPLIT_WIDTH;
+                    // Line from left to right frame
+                    int xPos = startPixel;
+                    int yPosStart = (int)(curve.Native.Evaluate(start, false) * pixelsPerHeight);
+                    yPosStart = heightOffset - yPosStart; // Offset and flip height (canvas Y goes down)
 
-                    numSplits = MathEx.FloorToInt(fNumSplits);
-                    float remainder = fNumSplits - numSplits;
+                    linePoints.Add(new Vector2I(PADDING + xPos, yPosStart));
 
-                    float lengthRounded = (end - start)*(numSplits/fNumSplits);
-                    timeIncrement = lengthRounded/numSplits;
+                    xPos = endPixel;
+                    linePoints.Add(new Vector2I(PADDING + xPos, yPosStart));
 
-                    numSplits += MathEx.CeilToInt(remainder) + 1;
+                    // Line representing the step
+                    int yPosEnd = (int)(curve.Native.Evaluate(end, false) * pixelsPerHeight);
+                    yPosEnd = heightOffset - yPosEnd; // Offset and flip height (canvas Y goes down)
+
+                    linePoints.Add(new Vector2I(PADDING + xPos, yPosEnd));
                 }
-                else
+                else // Draw normally
                 {
-                    numSplits = 1;
-                    timeIncrement = 0.0f;
-                }
+                    int numSplits;
+                    float timeIncrement;
+                    if (startPixel != endPixel)
+                    {
+                        float fNumSplits = (endPixel - startPixel)/(float) LINE_SPLIT_WIDTH;
 
-                // TODO - Make sure that step tangents work
+                        numSplits = MathEx.FloorToInt(fNumSplits);
+                        float remainder = fNumSplits - numSplits;
 
-                for (int j = 0; j < numSplits; j++)
-                {
-                    int xPos = Math.Min(startPixel + j * LINE_SPLIT_WIDTH, endPixel);
-                    float t = Math.Min(start + j * timeIncrement, end);
+                        float lengthRounded = (end - start)*(numSplits/fNumSplits);
+                        timeIncrement = lengthRounded/numSplits;
 
-                    int yPos = (int)(curve.Native.Evaluate(t, false) * pixelsPerHeight);
-                    yPos = heightOffset - yPos; // Offset and flip height (canvas Y goes down)
+                        numSplits += MathEx.CeilToInt(remainder) + 1;
+                    }
+                    else
+                    {
+                        numSplits = 1;
+                        timeIncrement = 0.0f;
+                    }
 
-                    linePoints.Add(new Vector2I(PADDING + xPos, yPos));
+                    for (int j = 0; j < numSplits; j++)
+                    {
+                        int xPos = Math.Min(startPixel + j * LINE_SPLIT_WIDTH, endPixel);
+                        float t = Math.Min(start + j * timeIncrement, end);
+
+                        int yPos = (int)(curve.Native.Evaluate(t, false) * pixelsPerHeight);
+                        yPos = heightOffset - yPos; // Offset and flip height (canvas Y goes down)
+
+                        linePoints.Add(new Vector2I(PADDING + xPos, yPos));
+                    }
                 }
             }
             
