@@ -49,7 +49,11 @@ namespace BansheeEditor
                 timeline.SetRange(lengthField.Value);
                 curveDrawing.SetRange(lengthField.Value, yRangeField.Value);
             };
-            fpsField.OnChanged += x => timeline.SetFPS(x);
+            fpsField.OnChanged += x =>
+            {
+                timeline.SetFPS(x);
+                curveDrawing.SetFPS(x);
+            };
             yRangeField.OnChanged += x =>
             {
                 curveDrawing.SetRange(lengthField.Value, x);
@@ -96,7 +100,7 @@ namespace BansheeEditor
 
         private void OnEditorUpdate()
         {
-            if (Input.IsPointerButtonDown(PointerButton.Left))
+            if (Input.IsPointerButtonHeld(PointerButton.Left))
             {
                 Vector2I windowPos = ScreenToWindowPos(Input.PointerPosition);
 
@@ -107,18 +111,11 @@ namespace BansheeEditor
                 }
                 else
                 {
-                    float time;
-                    if (timeline.GetTime(windowPos, out time))
-                    {
-                        Debug.Log("Click time: " + time);
-                    }
-                    else
-                        Debug.Log("Clicked outside!");
+                    int frameIdx = timeline.GetFrame(windowPos);
+                    timeline.SetFrameMarker(frameIdx);
+                    curveDrawing.SetFrameMarker(frameIdx);
                 }
             }
-
-            //int position = (int)(MathEx.Sin(Time.RealElapsed)*50.0f + 50.0f);
-            //canvas.SetPosition(position, 0);
         }
     }
 

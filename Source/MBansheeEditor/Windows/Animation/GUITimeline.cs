@@ -29,6 +29,7 @@ namespace BansheeEditor
         private int width;
         private int height;
         private int fps = 1;
+        private int frameMarkerIdx = -1;
 
         public int MinWidth
         {
@@ -46,23 +47,30 @@ namespace BansheeEditor
             SetSize(width, height);
         }
 
-        public bool GetTime(Vector2I windowCoords, out float time)
+        public int GetFrame(Vector2I windowCoords)
         {
             Rect2I bounds = canvas.Bounds;
 
             if (windowCoords.x < (bounds.x + PADDING) || windowCoords.x >= (bounds.x + bounds.width - PADDING) ||
                 windowCoords.y < bounds.y || windowCoords.y >= (bounds.y + bounds.height))
             {
-                time = 0.0f;
-                return false;
+                return -1;
             }
 
             Vector2I relativeCoords = windowCoords - new Vector2I(bounds.x + PADDING, bounds.y);
 
             float lengthPerPixel = rangeLength / drawableWidth;
-            time = relativeCoords.x * lengthPerPixel;
+            float time = relativeCoords.x * lengthPerPixel;
 
-            return true;
+            return (int)(time * fps);
+        }
+
+        // Set to -1 to clear it
+        public void SetFrameMarker(int frameIdx)
+        {
+            frameMarkerIdx = frameIdx;
+
+            Rebuild();
         }
 
         public void SetSize(int width, int height)
@@ -141,6 +149,16 @@ namespace BansheeEditor
             canvas.DrawLine(start, end, Color.LightGray);
         }
 
+        private void DrawFrameMarker(float t)
+        {
+            int xPos = (int)((t / GetRange()) * drawableWidth) + PADDING;
+
+            Vector2I start = new Vector2I(xPos, 0);
+            Vector2I end = new Vector2I(xPos, height);
+
+            canvas.DrawLine(start, end, Color.Red);
+        }
+
         // Returns range rounded to the nearest multiple of FPS
         private float GetRange()
         {
@@ -193,6 +211,9 @@ namespace BansheeEditor
                 // Move to next tick
                 t += timePerFrame;
             }
+
+            if (frameMarkerIdx != -1)
+                DrawFrameMarker(frameMarkerIdx * timePerFrame);
         }
     }
 

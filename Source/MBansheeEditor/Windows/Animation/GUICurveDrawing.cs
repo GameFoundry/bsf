@@ -22,6 +22,8 @@ namespace BansheeEditor
         private int height;
         private float xRange = 60.0f;
         private float yRange = 20.0f;
+        private int fps = 1;
+        private int frameMarkerIdx = -1;
 
         private int drawableWidth;
         private GUICanvas canvas;
@@ -34,31 +36,6 @@ namespace BansheeEditor
             this.curves = curves;
 
             SetSize(width, height);
-        }
-
-        public bool GetCurveCoordinates(Vector2I windowCoords, out Vector2 curveCoords)
-        {
-            Rect2I bounds = canvas.Bounds;
-
-            if (windowCoords.x < (bounds.x + PADDING) || windowCoords.x >= (bounds.x + bounds.width - PADDING) ||
-                windowCoords.y < bounds.y || windowCoords.y >= (bounds.y + bounds.height))
-            {
-                curveCoords = new Vector2();
-                return false;
-            }
-
-            Vector2I relativeCoords = windowCoords - new Vector2I(bounds.x + PADDING, bounds.y);
-
-            float lengthPerPixel = xRange / drawableWidth;
-            float heightPerPixel = yRange / height;
-
-            float yOffset = yRange/2.0f;
-
-            curveCoords = new Vector2();
-            curveCoords.x = relativeCoords.x * lengthPerPixel;
-            curveCoords.y = yOffset - relativeCoords.y * heightPerPixel;
-
-            return true;
         }
 
         public void SetCurves(EdAnimationCurve[] curves)
@@ -89,6 +66,64 @@ namespace BansheeEditor
             Rebuild();
         }
 
+        public void SetFPS(int fps)
+        {
+            this.fps = Math.Max(1, fps);
+
+            Rebuild();
+        }
+
+        // Set to -1 to clear it
+        public void SetFrameMarker(int frameIdx)
+        {
+            frameMarkerIdx = frameIdx;
+
+            Rebuild();
+        }
+
+        public bool GetCurveCoordinates(Vector2I windowCoords, out Vector2 curveCoords)
+        {
+            Rect2I bounds = canvas.Bounds;
+
+            if (windowCoords.x < (bounds.x + PADDING) || windowCoords.x >= (bounds.x + bounds.width - PADDING) ||
+                windowCoords.y < bounds.y || windowCoords.y >= (bounds.y + bounds.height))
+            {
+                curveCoords = new Vector2();
+                return false;
+            }
+
+            Vector2I relativeCoords = windowCoords - new Vector2I(bounds.x + PADDING, bounds.y);
+
+            float lengthPerPixel = xRange / drawableWidth;
+            float heightPerPixel = yRange / height;
+
+            float yOffset = yRange/2.0f;
+
+            curveCoords = new Vector2();
+            curveCoords.x = relativeCoords.x * lengthPerPixel;
+            curveCoords.y = yOffset - relativeCoords.y * heightPerPixel;
+
+            return true;
+        }
+
+        private void DrawFrameMarker(float t)
+        {
+            int xPos = (int)((t / GetRange()) * drawableWidth) + PADDING;
+
+            Vector2I start = new Vector2I(xPos, 0);
+            Vector2I end = new Vector2I(xPos, height);
+
+            canvas.DrawLine(start, end, Color.Red);
+        }
+
+        // Returns range rounded to the nearest multiple of FPS
+        private float GetRange()
+        {
+            float spf = 1.0f / fps;
+
+            return ((int)xRange / spf) * spf;
+        }
+
         private void Rebuild()
         {
             canvas.Clear();
@@ -104,6 +139,15 @@ namespace BansheeEditor
                 // TODO - Pick unique color for each curve
                 DrawCurve(curve, Color.Red);
             }
+
+            // Draw frame marker
+            float range = GetRange();
+
+            int numFrames = (int)range * fps;
+            float timePerFrame = range / numFrames;
+
+            if (frameMarkerIdx != -1)
+                DrawFrameMarker(frameMarkerIdx * timePerFrame);
         }
 
         private void DrawCurve(EdAnimationCurve curve, Color color)
