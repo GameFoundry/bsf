@@ -124,7 +124,7 @@ namespace BansheeEngine
 		inputBoxValueChanged(false);
 	}
 
-	void GUISliderField::inputBoxValueChanged(bool confirmed = true)
+	void GUISliderField::inputBoxValueChanged(bool confirmed)
 	{
 		float newFloatValue = parseFloat(mInputBox->getText());
 		if (mSlider->getValue() != newFloatValue) {

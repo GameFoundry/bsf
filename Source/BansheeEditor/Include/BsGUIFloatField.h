@@ -78,13 +78,12 @@ namespace BansheeEngine
 		void styleUpdated() override;
 
 		/**	Triggered when the input box value changes. */
-		void valueChanged(const WString& newValue);
+		void valueChanging(const WString& newValue);
 
 		/**
-		 * Triggered when the input box value changes, but unlike the previous overload the value is parsed into a floating
-		 * point value.
+		 * Triggered when the input box value changes and is confirmed.
 		 */
-		void valueChanged(float newValue);
+		void valueChanged(float newValue, bool confirmed = true);
 
 		/**	Triggers when the input box receives or loses keyboard focus. */
 		void focusChanged(bool focus);

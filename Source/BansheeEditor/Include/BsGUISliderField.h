@@ -77,7 +77,7 @@ namespace BansheeEngine
 		void styleUpdated() override;
 
 		/**	Triggered when the input box value changes definitively. */
-		void inputBoxValueChanged(bool confirmed);
+		void inputBoxValueChanged(bool confirmed = true);
 
 		/**	Triggered when the input box value is changing. */
 		void inputBoxValueChanging(const WString&);

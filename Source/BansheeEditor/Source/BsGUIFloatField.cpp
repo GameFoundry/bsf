@@ -26,7 +26,7 @@ namespace BansheeEngine
 		mInputBox = GUIInputBox::create(false, GUIOptions(GUIOption::flexibleWidth()), getSubStyleName(getInputStyleType()));
 		mInputBox->setFilter(&GUIFloatField::floatFilter);
 
-		mInputBox->onValueChanged.connect(std::bind((void(GUIFloatField::*)(const WString&))&GUIFloatField::valueChanged, this, _1));
+		mInputBox->onValueChanged.connect(std::bind((void(GUIFloatField::*)(const WString&))&GUIFloatField::valueChanging, this, _1));
 		mInputBox->onFocusChanged.connect(std::bind(&GUIFloatField::focusChanged, this, _1));
 		mInputBox->onConfirm.connect(std::bind(&GUIFloatField::inputConfirmed, this));
 
@@ -116,7 +116,7 @@ namespace BansheeEngine
 					if (oldValue != newValue)
 					{
 						setValue(newValue);
-						valueChanged(newValue);
+						valueChanged(newValue, true);
 					}
 				}
 			}
@@ -195,14 +195,20 @@ namespace BansheeEngine
 		mInputBox->setStyle(getSubStyleName(getInputStyleType()));
 	}
 
-	void GUIFloatField::valueChanged(const WString& newValue)
+	void GUIFloatField::valueChanging(const WString& newValue)
 	{
-		valueChanged(parseFloat(newValue));
+		valueChanged(parseFloat(newValue), false);
 	}
 
-	void GUIFloatField::valueChanged(float newValue)
+	void GUIFloatField::valueChanged(float newValue, bool confirmed)
 	{
-		CmdInputFieldValueChange<GUIFloatField, float>::execute(this, newValue);
+		if (confirmed) {
+			CmdInputFieldValueChange<GUIFloatField, float>::execute(this, newValue);
+		}
+		else
+		{
+			onValueChanged(newValue);
+		}
 	}
 
 	void GUIFloatField::focusChanged(bool focus)
@@ -215,12 +221,15 @@ namespace BansheeEngine
 		else
 		{
 			UndoRedo::instance().popGroup("InputBox");
+			valueChanged(parseFloat(mInputBox->getText()));
+			onConfirm();
 			mHasInputFocus = false;
 		}
 	}
 
 	void GUIFloatField::inputConfirmed()
 	{
+		valueChanged(parseFloat(mInputBox->getText()));
 		onConfirm();
 	}
 
