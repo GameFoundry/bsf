@@ -84,7 +84,9 @@ namespace BansheeEditor
             GUIPanel sidebarPanel = GUI.AddPanel(-10);
             sidebarPanel.SetPosition(0, 20 + buttonLayout.Bounds.height);
 
-            sidebar = new GUIGraphValues(sidebarPanel, 40, Height - 20 - buttonLayout.Bounds.height);
+            sidebar = new GUIGraphValues(sidebarPanel, 30, Height - 20 - buttonLayout.Bounds.height);
+
+            curveDrawing.SetSize(Width, Height - 20 - buttonLayout.Bounds.height);
 
             // TODO - Calculate min/max Y and range to set as default
             //  - Also recalculate whenever curves change and increase as needed
@@ -107,7 +109,7 @@ namespace BansheeEditor
         {
             timeline.SetSize(width, 20);
             curveDrawing.SetSize(width, height - 20 - buttonLayout.Bounds.height);
-            sidebar.SetSize(40, height - 20 - buttonLayout.Bounds.height);
+            sidebar.SetSize(30, height - 20 - buttonLayout.Bounds.height);
         }
 
         private void OnEditorUpdate()

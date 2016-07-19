@@ -75,6 +75,8 @@ namespace BansheeEditor
             float step = validSteps[maxLevel + level];
 
             // Round up and down so we get one extra tick on either side (outside of value range)
+            // (Useful when rendering text above the ticks, so the text doesn't just pop-in when the tick appears, instead
+            // it is slowly clipped-in.)
             int startTick = MathEx.FloorToInt(valueRangeStart / step);
             int endTick = MathEx.CeilToInt(valueRangeEnd / step);
 

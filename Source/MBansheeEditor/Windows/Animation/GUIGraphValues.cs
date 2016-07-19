@@ -9,9 +9,11 @@ namespace BansheeEditor
      *  @{
      */
 
+    // TODO DOC
     internal class GUIGraphValues
     {
-        private static readonly Color COLOR_DARK_GRAY = new Color(40.0f / 255.0f, 40.0f / 255.0f, 40.0f / 255.0f, 1.0f);
+        private static readonly Color COLOR_TRANSPARENT_LIGHT_GRAY = 
+            new Color(200.0f / 255.0f, 200.0f / 255.0f, 200.0f / 255.0f, 0.5f);
 
         private GUITicks tickHandler;
         private GUICanvas canvas;
@@ -21,17 +23,12 @@ namespace BansheeEditor
         private float rangeStart = -1.0f;
         private float rangeEnd = 1.0f;
 
-        private float maxTextHeight;
-
         public GUIGraphValues(GUILayout layout, int width, int height)
         {
             canvas = new GUICanvas();
             layout.AddElement(canvas);
 
             tickHandler = new GUITicks();
-
-            maxTextHeight = GUIUtility.CalculateTextBounds("99:999", EditorBuiltin.DefaultFont,
-               EditorStyles.DefaultFontSize).y;
 
             SetSize(width, height);
         }
@@ -66,7 +63,7 @@ namespace BansheeEditor
             Rebuild();
         }
 
-        private void DrawTime(int yPos, float seconds, bool minutes)
+        private void DrawTime(int yPos, float seconds, bool minutes, bool above)
         {
             TimeSpan timeSpan = TimeSpan.FromSeconds(seconds);
 
@@ -81,9 +78,15 @@ namespace BansheeEditor
 
             Vector2I textPosition = new Vector2I();
             textPosition.x = width - textBounds.x;
-            textPosition.y = yPos - textBounds.y;
 
-            canvas.DrawText(timeString, textPosition, EditorBuiltin.DefaultFont, Color.LightGray,
+            if (above)
+                textPosition.y = yPos - textBounds.y;
+            else // Below
+            {
+                const int PADDING = 3; // So the text doesn't touch the tick
+                textPosition.y = yPos + PADDING;
+            }
+            canvas.DrawText(timeString, textPosition, EditorBuiltin.DefaultFont, COLOR_TRANSPARENT_LIGHT_GRAY,
                 EditorStyles.DefaultFontSize);
         }
 
@@ -118,14 +121,14 @@ namespace BansheeEditor
                         Vector2I start = new Vector2I(0, yPos);
                         Vector2I end = new Vector2I((int) (width*strength), yPos);
 
-                        Color color = Color.LightGray;
-                        color.a *= strength;
+                        Color color = COLOR_TRANSPARENT_LIGHT_GRAY;
+                        color.a *= MathEx.Clamp01(strength);
 
                         canvas.DrawLine(start, end, color);
 
                         // Draw text for the highest level ticks
                         if (i == 0)
-                            DrawTime(yPos, ticks[j], displayAsMinutes);
+                            DrawTime(yPos, ticks[j], displayAsMinutes, ticks[j] <= 0.0f);
                     }
                 }
             }
