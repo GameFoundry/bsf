@@ -361,11 +361,11 @@ namespace BansheeEngine
 			UINT32 vertexStride = sizeof(Vector2) * 2;
 			const Vector2I& position = mTextData[element.dataId].position;
 			offset += position;
-			clipRect.x += position.x;
-			clipRect.y += position.y;
+			clipRect.x -= position.x;
+			clipRect.y -= position.y;
 
 			element.textSprite->fillBuffer(vertices, uvs, indices, vertexOffset, indexOffset, maxNumVerts, maxNumIndices,
-				vertexStride, indexStride, renderElementIdx, offset, mLayoutData.getLocalClipRect());
+				vertexStride, indexStride, renderElementIdx, offset, clipRect);
 		}
 			break;
 		case CanvasElementType::Triangle:
