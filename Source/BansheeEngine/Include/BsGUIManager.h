@@ -32,11 +32,9 @@ namespace BansheeEngine
 	 * @par
 	 * This ensures that GUIElements don't recursively modify GUIManager while GUIManager is still using that data.
 	 * @par
-	 * for example setFocus() usually gets called from within GUIElements, however we don't want elements in focus be 
+	 * For example setFocus() usually gets called from within GUIElements, however we don't want elements in focus be 
 	 * modified immediately since that setFocus() call could have originated in sendCommandEvent and elements in focus array
 	 * would be modified while still being iterated upon.
-	 * @note
-	 * Internal class. Unless modifying internal engine systems you should have no need to access this class.
 	 */
 	class BS_EXPORT GUIManager : public Module<GUIManager>
 	{
@@ -55,6 +53,7 @@ namespace BansheeEngine
 			SpriteMaterial* material;
 			SpriteMaterialInfo matInfo;
 			GUIWidget* widget;
+			bool isLine;
 		};
 
 		/**	GUI render data for a single viewport. */
@@ -64,8 +63,7 @@ namespace BansheeEngine
 				:isDirty(true)
 			{ }
 
-			Vector<GUIMeshData> cachedTriangleMeshes;
-			Vector<GUIMeshData> cachedLineMeshes;
+			Vector<GUIMeshData> cachedMeshes;
 			Vector<GUIWidget*> widgets;
 			bool isDirty;
 		};

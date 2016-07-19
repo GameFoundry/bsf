@@ -221,15 +221,14 @@ namespace BansheeEngine
 
 		if(renderData.widgets.size() == 0)
 		{
-			for (auto& entry : renderData.cachedTriangleMeshes)
+			for (auto& entry : renderData.cachedMeshes)
 			{
-				if (entry.mesh != nullptr)
-					mTriangleMeshHeap->dealloc(entry.mesh);
-			}
+				if (entry.mesh == nullptr)
+					continue;
 
-			for (auto& entry : renderData.cachedLineMeshes)
-			{
-				if (entry.mesh != nullptr)
+				if(!entry.isLine)
+					mTriangleMeshHeap->dealloc(entry.mesh);
+				else
 					mLineMeshHeap->dealloc(entry.mesh);
 			}
 
@@ -397,38 +396,26 @@ namespace BansheeEngine
 				auto insertedData = corePerCameraData.insert(std::make_pair(camera->getCore(), Vector<GUICoreRenderData>()));
 				Vector<GUICoreRenderData>& cameraData = insertedData.first->second;
 
-				const Vector<GUIMeshData>* cachedMeshSets[2] = { &renderData.cachedTriangleMeshes, &renderData.cachedLineMeshes };
-
-				UINT32 meshIdx = 0;
-				for (auto& meshSet : cachedMeshSets)
+				for (auto& entry : renderData.cachedMeshes)
 				{
-					const Vector<GUIMeshData>& cachedMeshes = *meshSet;
-					for (auto& entry : cachedMeshes)
-					{
-						if (entry.mesh == nullptr)
-						{
-							meshIdx++;
-							continue;
-						}
+					if (entry.mesh == nullptr)
+						continue;
 
-						cameraData.push_back(GUICoreRenderData());
-						GUICoreRenderData& newEntry = cameraData.back();
+					cameraData.push_back(GUICoreRenderData());
+					GUICoreRenderData& newEntry = cameraData.back();
 
-						SPtr<TextureCore> textureCore;
-						if (entry.matInfo.texture.isLoaded())
-							textureCore = entry.matInfo.texture->getCore();
-						else
-							textureCore = nullptr;
+					SPtr<TextureCore> textureCore;
+					if (entry.matInfo.texture.isLoaded())
+						textureCore = entry.matInfo.texture->getCore();
+					else
+						textureCore = nullptr;
 
-						newEntry.material = entry.material;
-						newEntry.texture = textureCore;
-						newEntry.tint = entry.matInfo.tint;
-						newEntry.mesh = entry.mesh->getCore();
-						newEntry.worldTransform = entry.widget->getWorldTfrm();
-						newEntry.additionalData = entry.matInfo.additionalData;
-
-						meshIdx++;
-					}
+					newEntry.material = entry.material;
+					newEntry.texture = textureCore;
+					newEntry.tint = entry.matInfo.tint;
+					newEntry.mesh = entry.mesh->getCore();
+					newEntry.worldTransform = entry.widget->getWorldTfrm();
+					newEntry.additionalData = entry.matInfo.additionalData;
 				}
 			}
 
@@ -618,37 +605,30 @@ namespace BansheeEngine
 					// requires all elements to be unique
 				};
 
-				UINT32 numTriangleMeshes = 0;
-				UINT32 numLineMeshes = 0;
+				UINT32 numMeshes = 0;
 				FrameSet<GUIMaterialGroup*, std::function<bool(GUIMaterialGroup*, GUIMaterialGroup*)>> sortedGroups(groupComp);
 				for(auto& material : materialGroups)
 				{
 					for(auto& group : material.second)
 					{
 						sortedGroups.insert(&group);
-
-						if (group.meshType == GUIMeshType::Triangle)
-							numTriangleMeshes++;
-						else // Line
-							numLineMeshes++;
+						numMeshes++;
 					}
 				}
 
-				UINT32 oldNumTriangleMeshes = (UINT32)renderData.cachedTriangleMeshes.size();
-				for (UINT32 i = numTriangleMeshes; i < oldNumTriangleMeshes; i++)
-					mTriangleMeshHeap->dealloc(renderData.cachedTriangleMeshes[i].mesh);
+				UINT32 oldNumMeshes = (UINT32)renderData.cachedMeshes.size();
+				for (UINT32 i = 0; i < oldNumMeshes; i++)
+				{
+					if(!renderData.cachedMeshes[i].isLine)
+						mTriangleMeshHeap->dealloc(renderData.cachedMeshes[i].mesh);
+					else
+						mLineMeshHeap->dealloc(renderData.cachedMeshes[i].mesh);
+				}
 
-				renderData.cachedTriangleMeshes.resize(numTriangleMeshes);
-
-				UINT32 oldNumLineMeshes = (UINT32)renderData.cachedLineMeshes.size();
-				for (UINT32 i = numLineMeshes; i < oldNumLineMeshes; i++)
-					mLineMeshHeap->dealloc(renderData.cachedLineMeshes[i].mesh);
-
-				renderData.cachedLineMeshes.resize(numLineMeshes);
-
+				renderData.cachedMeshes.resize(numMeshes);
+				
 				// Fill buffers for each group and update their meshes
-				UINT32 triangleMeshIdx = 0;
-				UINT32 lineMeshIdx = 0;
+				UINT32 meshIdx = 0;
 				for(auto& group : sortedGroups)
 				{
 					SPtr<MeshData> meshData;
@@ -662,23 +642,20 @@ namespace BansheeEngine
 						widget = elem->_getParentWidget();
 					}
 
+					GUIMeshData& guiMeshData = renderData.cachedMeshes[meshIdx];
+					guiMeshData.matInfo = group->matInfo;
+					guiMeshData.material = group->material;
+					guiMeshData.widget = widget;
+
 					if (group->meshType == GUIMeshType::Triangle)
 					{
 						meshData = bs_shared_ptr_new<MeshData>(group->numVertices, group->numIndices, mTriangleVertexDesc);
-
-						GUIMeshData& guiMeshData = renderData.cachedTriangleMeshes[triangleMeshIdx];
-						guiMeshData.matInfo = group->matInfo;
-						guiMeshData.material = group->material;
-						guiMeshData.widget = widget;
+						guiMeshData.isLine = false;
 					}
 					else // Line
 					{
 						meshData = bs_shared_ptr_new<MeshData>(group->numVertices, group->numIndices, mLineVertexDesc);
-
-						GUIMeshData& guiMeshData = renderData.cachedLineMeshes[lineMeshIdx];
-						guiMeshData.matInfo = group->matInfo;
-						guiMeshData.material = group->material;
-						guiMeshData.widget = widget;
+						guiMeshData.isLine = true;
 					}
 
 					UINT8* vertices = meshData->getElementData(VES_POSITION);
@@ -707,25 +684,11 @@ namespace BansheeEngine
 					}
 
 					if (group->meshType == GUIMeshType::Triangle)
-					{
-						GUIMeshData& guiMeshData = renderData.cachedTriangleMeshes[triangleMeshIdx];
-
-						if(guiMeshData.mesh != nullptr)
-							mTriangleMeshHeap->dealloc(guiMeshData.mesh);
-
 						guiMeshData.mesh = mTriangleMeshHeap->alloc(meshData);
-						triangleMeshIdx++;
-					}
 					else // Line
-					{
-						GUIMeshData& guiMeshData = renderData.cachedLineMeshes[lineMeshIdx];
-
-						if (guiMeshData.mesh != nullptr)
-							mLineMeshHeap->dealloc(guiMeshData.mesh);
-
 						guiMeshData.mesh = mLineMeshHeap->alloc(meshData, DOT_LINE_LIST);
-						lineMeshIdx++;
-					}
+
+					meshIdx++;
 				}
 			}
 
