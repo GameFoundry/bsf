@@ -21,6 +21,8 @@ namespace BansheeEditor
         private static readonly Color COLOR_DARK_GRAY = new Color(40.0f / 255.0f, 40.0f / 255.0f, 40.0f / 255.0f, 1.0f);
 
         private EdAnimationCurve[] curves;
+        private bool[][] selectedKeyframes;
+
         private int width;
         private int height;
         private float xRange = 60.0f;
@@ -47,8 +49,11 @@ namespace BansheeEditor
             tickHandler = new GUIGraphTicks(GUITickStepType.Time);
 
             this.curves = curves;
-
+            
             SetSize(width, height);
+            ClearSelectedKeyframes(); // Makes sure the array is initialized
+
+            Rebuild();
         }
 
         /// <summary>
@@ -58,8 +63,6 @@ namespace BansheeEditor
         public void SetCurves(EdAnimationCurve[] curves)
         {
             this.curves = curves;
-
-            Rebuild();
         }
 
         /// <summary>
@@ -76,10 +79,6 @@ namespace BansheeEditor
             canvas.SetHeight(height);
 
             drawableWidth = Math.Max(0, width - GUIGraphTime.PADDING * 2);
-
-            tickHandler.SetRange(0.0f, xRange, drawableWidth);
-
-            Rebuild();
         }
 
         /// <summary>
@@ -92,10 +91,6 @@ namespace BansheeEditor
         {
             this.xRange = xRange;
             this.yRange = yRange;
-
-            tickHandler.SetRange(0.0f, GetRange(true), drawableWidth + GUIGraphTime.PADDING);
-
-            Rebuild();
         }
 
         /// <summary>
@@ -105,10 +100,6 @@ namespace BansheeEditor
         public void SetFPS(int fps)
         {
             this.fps = Math.Max(1, fps);
-
-            tickHandler.SetRange(0.0f, GetRange(true), drawableWidth + GUIGraphTime.PADDING);
-
-            Rebuild();
         }
 
         /// <summary>
@@ -118,28 +109,70 @@ namespace BansheeEditor
         public void SetMarkedFrame(int frameIdx)
         {
             markedFrameIdx = frameIdx;
-
-            Rebuild();
         }
 
         /// <summary>
-        /// Calculates the curve coordinates that are under the provided window coordinates.
+        /// Marks the specified key-frame as selected, changing the way it is displayed.
+        /// </summary>
+        /// <param name="curveIdx">Index of the curve the keyframe is on.</param>
+        /// <param name="keyIdx">Index of the keyframe.</param>
+        /// <param name="selected">True to select it, false to deselect it.</param>
+        public void SelectKeyframe(int curveIdx, int keyIdx, bool selected)
+        {
+            if (selectedKeyframes == null)
+                return;
+
+            if (curveIdx < 0 || curveIdx >= selectedKeyframes.Length)
+                return;
+
+            if (keyIdx < 0 || keyIdx >= selectedKeyframes[curveIdx].Length)
+                return;
+
+            selectedKeyframes[curveIdx][keyIdx] = selected;
+        }
+
+        /// <summary>
+        /// Clears any key-frames that were marked as selected.
+        /// </summary>
+        public void ClearSelectedKeyframes()
+        {
+            selectedKeyframes = new bool[curves.Length][];
+
+            for (int i = 0; i < curves.Length; i++)
+            {
+                KeyFrame[] keyframes = curves[i].Native.KeyFrames;
+                selectedKeyframes[i] = new bool[keyframes.Length];
+            }
+        }
+
+        /// <summary>
+        /// Retrieves information under the provided window coordinates. This involves coordinates of the curve, as well
+        /// as curve and key-frame indices that were under the coordinates (if any).
         /// </summary>
         /// <param name="windowCoords">Coordinate relative to the window the GUI element is on.</param>
         /// <param name="curveCoords">Curve coordinates within the range as specified by <see cref="SetRange"/>. Only
         ///                           Valid when function returns true.</param>
+        /// <param name="curveIdx">Sequential index of the curve that's under the coordinates. -1 if no curve. Index
+        ///                        corresponds to the curve index as provided by the curve array in the constructor or
+        ///                        <see cref="SetCurves"/>.</param>
+        /// <param name="keyIdx">Index of a keyframe that that's under the coordinates, on the curve as referenced by
+        ///                      <paramref name="curveIdx"/>. -1 if no keyframe.</param>
         /// <returns>True if the window coordinates were within the curve area, false otherwise.</returns>
-        public bool GetCurveCoordinates(Vector2I windowCoords, out Vector2 curveCoords)
+        public bool GetCoordInfo(Vector2I windowCoords, out Vector2 curveCoords, out int curveIdx, out int keyIdx)
         {
             Rect2I bounds = canvas.Bounds;
 
+            // Check if outside of curve drawing bounds
             if (windowCoords.x < (bounds.x + GUIGraphTime.PADDING) || windowCoords.x >= (bounds.x + bounds.width - GUIGraphTime.PADDING) ||
                 windowCoords.y < bounds.y || windowCoords.y >= (bounds.y + bounds.height))
             {
                 curveCoords = new Vector2();
+                curveIdx = -1;
+                keyIdx = -1;
                 return false;
             }
 
+            // Find time and value of the place under the coordinates
             Vector2I relativeCoords = windowCoords - new Vector2I(bounds.x + GUIGraphTime.PADDING, bounds.y);
 
             float lengthPerPixel = xRange / drawableWidth;
@@ -147,9 +180,73 @@ namespace BansheeEditor
 
             float yOffset = yRange/2.0f;
 
+            float t = relativeCoords.x*lengthPerPixel;
+            float value = yOffset - relativeCoords.y*heightPerPixel;
+
             curveCoords = new Vector2();
-            curveCoords.x = relativeCoords.x * lengthPerPixel;
-            curveCoords.y = yOffset - relativeCoords.y * heightPerPixel;
+            curveCoords.x = t;
+            curveCoords.y = value;
+
+            // Find nearest keyframe, if any
+            keyIdx = -1;
+            curveIdx = -1;
+            float nearestDistance = float.MaxValue;
+            for (int i = 0; i < curves.Length; i++)
+            {
+                EdAnimationCurve curve = curves[i];
+                KeyFrame[] keyframes = curve.Native.KeyFrames;
+
+                for (int j = 0; j < keyframes.Length; j++)
+                {
+                    Vector2I keyframeCoords = new Vector2I((int)(keyframes[j].time / lengthPerPixel),
+                        (int)((yOffset - keyframes[j].value) / heightPerPixel));
+
+                    float distanceToKey = Vector2I.Distance(relativeCoords, keyframeCoords);
+                    if (distanceToKey < nearestDistance)
+                    {
+                        nearestDistance = distanceToKey;
+                        keyIdx = j;
+                        curveIdx = i;
+                    }
+                }
+
+                // We're not near any keyframe
+                if (nearestDistance > 5.0f)
+                    keyIdx = -1;
+            }
+
+            // Find nearest curve, if any
+            if (keyIdx == -1)
+            {
+                // Note: This will not detect a curve if coordinate is over a step, and in general this works poorly with large slopes
+                curveIdx = -1;
+                nearestDistance = float.MaxValue;
+                for (int i = 0; i < curves.Length; i++)
+                {
+                    EdAnimationCurve curve = curves[i];
+                    KeyFrame[] keyframes = curve.Native.KeyFrames;
+
+                    if (keyframes.Length == 0)
+                        continue;
+
+                    if (t < keyframes[0].time || t > keyframes[keyframes.Length - 1].time)
+                        continue;
+
+                    float curveValue = curves[i].Native.Evaluate(t);
+
+                    float distanceToCurve = Math.Abs(curveValue - value);
+                    if (distanceToCurve < nearestDistance)
+                    {
+                        nearestDistance = distanceToCurve;
+                        curveIdx = i;
+                    }
+                }
+
+                // We're not near any curve
+                float nearestDistancePx = nearestDistance/heightPerPixel;
+                if (nearestDistancePx > 15.0f)
+                    curveIdx = -1;
+            }
 
             return true;
         }
@@ -235,12 +332,14 @@ namespace BansheeEditor
         /// <summary>
         /// Rebuilds the internal GUI elements. Should be called whenever timeline properties change.
         /// </summary>
-        private void Rebuild()
+        public void Rebuild()
         {
             canvas.Clear();
 
             if (curves == null)
                 return;
+
+            tickHandler.SetRange(0.0f, GetRange(true), drawableWidth + GUIGraphTime.PADDING);
 
             // Draw vertical frame markers
             int numTickLevels = tickHandler.NumLevels;
@@ -262,19 +361,19 @@ namespace BansheeEditor
             DrawCenterLine();
 
             // Draw curves
-            int idx = 0;
+            int curveIdx = 0;
             foreach (var curve in curves)
             {
-                Color color = GetUniqueColor(idx);
+                Color color = GetUniqueColor(curveIdx);
                 DrawCurve(curve, color);
 
                 // Draw keyframes
                 KeyFrame[] keyframes = curve.Native.KeyFrames;
 
                 for (int i = 0; i < keyframes.Length; i++)
-                    DrawKeyframe(keyframes[i].time, keyframes[i].value, false);
+                    DrawKeyframe(keyframes[i].time, keyframes[i].value, IsSelected(curveIdx, i));
 
-                idx++;
+                curveIdx++;
             }
 
             // Draw selected frame marker
@@ -300,6 +399,26 @@ namespace BansheeEditor
 
             float hue = ((idx * COLOR_SPACING) % 359) / 359.0f;
             return Color.HSV2RGB(new Color(hue, 175.0f / 255.0f, 175.0f / 255.0f));
+        }
+
+        /// <summary>
+        /// Checks is the provided key-frame currently marked as selected.
+        /// </summary>
+        /// <param name="curveIdx">Index of the curve the keyframe is on.</param>
+        /// <param name="keyIdx">Index of the keyframe.</param>
+        /// <returns>True if selected, false otherwise.</returns>
+        private bool IsSelected(int curveIdx, int keyIdx)
+        {
+            if (selectedKeyframes == null)
+                return false;
+
+            if (curveIdx < 0 || curveIdx >= selectedKeyframes.Length)
+                return false;
+
+            if (keyIdx < 0 || keyIdx >= selectedKeyframes[curveIdx].Length)
+                return false;
+
+            return selectedKeyframes[curveIdx][keyIdx];
         }
 
         /// <summary>

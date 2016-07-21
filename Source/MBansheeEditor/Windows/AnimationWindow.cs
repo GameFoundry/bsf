@@ -85,8 +85,12 @@ namespace BansheeEditor
             sidebarPanel.SetPosition(0, 20 + buttonLayout.Bounds.height);
 
             sidebar = new GUIGraphValues(sidebarPanel, 30, Height - 20 - buttonLayout.Bounds.height);
+            sidebar.SetRange(-10.0f, 10.0f);
 
             curveDrawing.SetSize(Width, Height - 20 - buttonLayout.Bounds.height);
+            curveDrawing.Rebuild();
+
+            Debug.Log("CURVE DRAWING HEIGHT + " + (Height - 20 - buttonLayout.Bounds.height));
 
             // TODO - Calculate min/max Y and range to set as default
             //  - Also recalculate whenever curves change and increase as needed
@@ -110,6 +114,8 @@ namespace BansheeEditor
             timeline.SetSize(width, 20);
             curveDrawing.SetSize(width, height - 20 - buttonLayout.Bounds.height);
             sidebar.SetSize(30, height - 20 - buttonLayout.Bounds.height);
+
+            curveDrawing.Rebuild();
         }
 
         private void OnEditorUpdate()
@@ -119,15 +125,26 @@ namespace BansheeEditor
                 Vector2I windowPos = ScreenToWindowPos(Input.PointerPosition);
 
                 Vector2 curveCoord;
-                if (curveDrawing.GetCurveCoordinates(windowPos, out curveCoord))
+                int curveIdx;
+                int keyIdx;
+                if (curveDrawing.GetCoordInfo(windowPos, out curveCoord, out curveIdx, out keyIdx))
                 {
-                    Debug.Log("Click coord: " + curveCoord);
+                    if(keyIdx == -1)
+                        curveDrawing.ClearSelectedKeyframes();
+                    else
+                        curveDrawing.SelectKeyframe(curveIdx, keyIdx, true);
+
+                    curveDrawing.Rebuild();
+
+                    Debug.Log("Click coord: " + curveCoord + " - " + curveIdx + " - " + keyIdx);
                 }
                 else
                 {
                     int frameIdx = timeline.GetFrame(windowPos);
                     timeline.SetMarkedFrame(frameIdx);
                     curveDrawing.SetMarkedFrame(frameIdx);
+
+                    curveDrawing.Rebuild();
                 }
             }
         }
