@@ -42,6 +42,10 @@ namespace BansheeEditor
         private int markedFrameIdx;
         private List<KeyframeRef> selectedKeyframes = new List<KeyframeRef>();
 
+        private ContextMenu blankContextMenu;
+        private ContextMenu keyframeContextMenu;
+        private Vector2I contextClickPosition;
+
         // Keyframe drag
         private bool isMousePressedOverKey;
         private KeyFrame[] draggedKeyframes;
@@ -121,9 +125,40 @@ namespace BansheeEditor
             curveDrawing.SetSize(Width, Height - 20 - buttonLayout.Bounds.height);
             curveDrawing.Rebuild();
 
+            blankContextMenu = new ContextMenu();
+            blankContextMenu.AddItem("Add keyframe", AddKeyframeAtPosition);
+            blankContextMenu.AddItem("Add event", AddEventAtPosition);
+
+            keyframeContextMenu = new ContextMenu();
+            keyframeContextMenu.AddItem("Delete", DeleteSelectedKeyframes);
+            keyframeContextMenu.AddItem("Tangents/Auto", () => { ChangeSelectionTangentMode(TangentMode.Auto); });
+            keyframeContextMenu.AddItem("Tangents/Free", () => { ChangeSelectionTangentMode(TangentMode.Free); });
+            keyframeContextMenu.AddItem("Tangents/In/Auto", () => { ChangeSelectionTangentMode(TangentMode.InAuto); });
+            keyframeContextMenu.AddItem("Tangents/In/Free", () => { ChangeSelectionTangentMode(TangentMode.InFree); });
+            keyframeContextMenu.AddItem("Tangents/In/Linear", () => { ChangeSelectionTangentMode(TangentMode.InLinear); });
+            keyframeContextMenu.AddItem("Tangents/In/Step", () => { ChangeSelectionTangentMode(TangentMode.InStep); });
+            keyframeContextMenu.AddItem("Tangents/Out/Auto", () => { ChangeSelectionTangentMode(TangentMode.OutAuto); });
+            keyframeContextMenu.AddItem("Tangents/Out/Free", () => { ChangeSelectionTangentMode(TangentMode.OutFree); });
+            keyframeContextMenu.AddItem("Tangents/Out/Linear", () => { ChangeSelectionTangentMode(TangentMode.OutLinear); });
+            keyframeContextMenu.AddItem("Tangents/Out/Step", () => { ChangeSelectionTangentMode(TangentMode.OutStep); });
 
             // TODO - Calculate min/max Y and range to set as default
             //  - Also recalculate whenever curves change and increase as needed
+        }
+
+        private void ChangeSelectionTangentMode(TangentMode mode)
+        {
+            // TODO - When changing just left or right, make sure to persist opposite tangent mode (or switch to equivalent broken mode if it wasn't broken)
+        }
+
+        private void AddKeyframeAtPosition()
+        {
+            // TODO
+        }
+
+        private void AddEventAtPosition()
+        {
+            // TODO
         }
 
         private void AddKeyframeAtMarker()
@@ -137,6 +172,8 @@ namespace BansheeEditor
 
                 curve.AddKeyframe(t, value);
             }
+
+            // TODO - UNDOREDO
 
             curveDrawing.Rebuild();
         }
@@ -155,6 +192,8 @@ namespace BansheeEditor
 
             foreach (var keyframe in selectedKeyframes)
                 curves[keyframe.curveIdx].RemoveKeyframe(keyframe.keyIdx);
+
+            // TODO - UNDOREDO
 
             ClearSelection();
 
@@ -190,6 +229,24 @@ namespace BansheeEditor
             isMousePressedOverKey = false;
         }
 
+        private void SelectKeyframe(int curveIdx, int keyIdx)
+        {
+            curveDrawing.SelectKeyframe(curveIdx, keyIdx, true);
+
+            if (!IsSelected(curveIdx, keyIdx))
+                selectedKeyframes.Add(new KeyframeRef(curveIdx, keyIdx));
+        }
+
+        private bool IsSelected(int curveIdx, int keyIdx)
+        {
+            int existingIdx = selectedKeyframes.FindIndex(x =>
+            {
+                return x.curveIdx == curveIdx && x.keyIdx == keyIdx;
+            });
+
+            return (existingIdx != -1);
+        }
+
         private void OnEditorUpdate()
         {
             if (Input.IsPointerButtonDown(PointerButton.Left))
@@ -208,15 +265,7 @@ namespace BansheeEditor
                         if (!Input.IsButtonHeld(ButtonCode.LeftShift) && !Input.IsButtonHeld(ButtonCode.RightShift))
                             ClearSelection();
 
-                        curveDrawing.SelectKeyframe(curveIdx, keyIdx, true);
-
-                        int existingIdx = selectedKeyframes.FindIndex(x =>
-                        {
-                            return x.curveIdx == curveIdx && x.keyIdx == keyIdx;
-                        });
-
-                        if (existingIdx == -1)
-                            selectedKeyframes.Add(new KeyframeRef(curveIdx, keyIdx));
+                        SelectKeyframe(curveIdx, keyIdx);
 
                         isMousePressedOverKey = true;
                         dragStart = curveCoord;
@@ -252,6 +301,39 @@ namespace BansheeEditor
             else if (Input.IsPointerButtonUp(PointerButton.Left))
             {
                 isMousePressedOverKey = false;
+            }
+
+            if (Input.IsPointerButtonDown(PointerButton.Right))
+            {
+                Vector2I windowPos = ScreenToWindowPos(Input.PointerPosition);
+
+                Vector2 curveCoord;
+                int curveIdx;
+                int keyIdx;
+                if (curveDrawing.GetCoordInfo(windowPos, out curveCoord, out curveIdx, out keyIdx))
+                {
+                    contextClickPosition = windowPos;
+
+                    if (keyIdx == -1)
+                    {
+                        ClearSelection();
+
+                        blankContextMenu.Open(contextClickPosition, GUI);
+                    }
+                    else
+                    {
+                        // If clicked outside of current selection, just select the one keyframe
+                        if (!IsSelected(curveIdx, keyIdx))
+                        {
+                            ClearSelection();
+                            SelectKeyframe(curveIdx, keyIdx);
+
+                            curveDrawing.Rebuild();
+                        }
+
+                        keyframeContextMenu.Open(contextClickPosition, GUI);
+                    }
+                }
             }
 
             if(Input.IsButtonUp(ButtonCode.Delete))

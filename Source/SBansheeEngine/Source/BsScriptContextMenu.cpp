@@ -9,6 +9,7 @@
 #include "BsMonoUtil.h"
 #include "BsGUIContextMenu.h"
 #include "BsScriptHString.h"
+#include "BsScriptGUILayout.h"
 
 using namespace std::placeholders;
 
@@ -25,6 +26,7 @@ namespace BansheeEngine
 	void ScriptContextMenu::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptContextMenu::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_Open", &ScriptContextMenu::internal_Open);
 		metaData.scriptClass->addInternalCall("Internal_AddItem", &ScriptContextMenu::internal_AddItem);
 		metaData.scriptClass->addInternalCall("Internal_AddSeparator", &ScriptContextMenu::internal_AddSeparator);
 		metaData.scriptClass->addInternalCall("Internal_SetLocalizedName", &ScriptContextMenu::internal_SetLocalizedName);
@@ -35,6 +37,16 @@ namespace BansheeEngine
 	void ScriptContextMenu::internal_CreateInstance(MonoObject* instance)
 	{
 		new (bs_alloc<ScriptContextMenu>()) ScriptContextMenu(instance);
+	}
+
+	void ScriptContextMenu::internal_Open(ScriptContextMenu* instance, Vector2I* position, ScriptGUILayout* layoutPtr)
+	{
+		GUIWidget* widget = layoutPtr->getGUIElement()->_getParentWidget();
+		if (widget == nullptr)
+			return;
+
+		SPtr<GUIContextMenu> contextMenu = instance->getInternal();
+		contextMenu->open(*position, *widget);
 	}
 
 	void ScriptContextMenu::internal_AddItem(ScriptContextMenu* instance, MonoString* path, UINT32 callbackIdx,
