@@ -17,6 +17,7 @@ namespace BansheeEditor
     internal class GUICurveDrawing
     {
         private const int LINE_SPLIT_WIDTH = 2;
+        private const int TANGENT_LINE_DISTANCE = 30;
         private static readonly Color COLOR_MID_GRAY = new Color(90.0f / 255.0f, 90.0f / 255.0f, 90.0f / 255.0f, 1.0f);
         private static readonly Color COLOR_DARK_GRAY = new Color(40.0f / 255.0f, 40.0f / 255.0f, 40.0f / 255.0f, 1.0f);
 
@@ -266,6 +267,22 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Converts coordinate in curve space (time, value) into pixel coordinates relative to this element's origin.
+        /// </summary>
+        /// <param name="curveCoords">Time and value of the location to convert.</param>
+        /// <returns>Coordinates relative to this element's origin, in pixels.</returns>
+        private Vector2I CurveToPixelSpace(Vector2 curveCoords)
+        {
+            int heightOffset = height / 2; // So that y = 0 is at center of canvas
+
+            Vector2I pixelCoords = new Vector2I();
+            pixelCoords.x = (int)((curveCoords.x / GetRange()) * drawableWidth) + GUIGraphTime.PADDING;
+            pixelCoords.y = heightOffset - (int)((curveCoords.y / yRange) * height);
+
+            return pixelCoords;
+        }
+
+        /// <summary>
         /// Draws a vertical frame marker on the curve area.
         /// </summary>
         /// <param name="t">Time at which to draw the marker.</param>
@@ -294,6 +311,28 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Draws a diamond shape of the specified size at the coordinates.
+        /// </summary>
+        /// <param name="center">Position at which to place the diamond's center, in pixel coordinates.</param>
+        /// <param name="size">Determines number of pixels to extend the diamond in each direction.</param>
+        /// <param name="innerColor">Color of the diamond's background.</param>
+        /// <param name="outerColor">Color of the diamond's outline.</param>
+        private void DrawDiamond(Vector2I center, int size, Color innerColor, Color outerColor)
+        {
+            Vector2I a = new Vector2I(center.x - size, center.y);
+            Vector2I b = new Vector2I(center.x, center.y - size);
+            Vector2I c = new Vector2I(center.x + size, center.y);
+            Vector2I d = new Vector2I(center.x, center.y + size);
+
+            // Draw diamond shape
+            Vector2I[] linePoints = new Vector2I[] { a, b, c, d, a };
+            Vector2I[] trianglePoints = new Vector2I[] { b, c, a, d };
+
+            canvas.DrawTriangleStrip(trianglePoints, innerColor, 101);
+            canvas.DrawPolyLine(linePoints, outerColor, 100);
+    }
+
+        /// <summary>
         /// Draws a keyframe a the specified time and value.
         /// </summary>
         /// <param name="t">Time to draw the keyframe at.</param>
@@ -302,26 +341,86 @@ namespace BansheeEditor
         ///                        </param>
         private void DrawKeyframe(float t, float y, bool selected)
         {
-            int heightOffset = height / 2; // So that y = 0 is at center of canvas
-
-            int xPos = (int)((t / GetRange()) * drawableWidth) + GUIGraphTime.PADDING;
-            int yPos = heightOffset - (int)((y/yRange)*height);
-
-            Vector2I a = new Vector2I(xPos - 3, yPos);
-            Vector2I b = new Vector2I(xPos, yPos - 3);
-            Vector2I c = new Vector2I(xPos + 3, yPos);
-            Vector2I d = new Vector2I(xPos, yPos + 3);
-
-            // Draw diamond shape
-            Vector2I[] linePoints = new Vector2I[] { a, b, c, d, a };
-            Vector2I[] trianglePoints = new Vector2I[] { b, c, a, d };
-
-            canvas.DrawTriangleStrip(trianglePoints, Color.White, 101);
+            Vector2I pixelCoords = CurveToPixelSpace(new Vector2(t, y));
 
             if (selected)
-                canvas.DrawPolyLine(linePoints, Color.BansheeOrange, 100);
+                DrawDiamond(pixelCoords, 3, Color.White, Color.BansheeOrange);
             else
-                canvas.DrawPolyLine(linePoints, Color.Black, 100);
+                DrawDiamond(pixelCoords, 3, Color.White, Color.Black);
+        }
+
+        /// <summary>
+        /// Draws zero, one or two tangents for the specified keyframe. Whether tangents are drawn depends on the provided
+        /// mode.
+        /// </summary>
+        /// <param name="keyFrame">Keyframe to draw the tangents for.</param>
+        /// <param name="tangentMode">Type of tangents in the keyframe.</param>
+        private void DrawTangents(KeyFrame keyFrame, TangentMode tangentMode)
+        {
+            Vector2I keyframeCoords = CurveToPixelSpace(new Vector2(keyFrame.time, keyFrame.value));
+
+            if (IsTangentDisplayed(tangentMode, TangentType.In))
+            {
+                Vector2I tangentCoords = GetTangentPosition(keyFrame, TangentType.In);
+
+                canvas.DrawLine(keyframeCoords, tangentCoords, Color.LightGray);
+                DrawDiamond(tangentCoords, 2, Color.Green, Color.Black);
+            }
+
+            if (IsTangentDisplayed(tangentMode, TangentType.Out))
+            {
+                Vector2I tangentCoords = GetTangentPosition(keyFrame, TangentType.Out);
+
+                canvas.DrawLine(keyframeCoords, tangentCoords, Color.LightGray);
+                DrawDiamond(tangentCoords, 2, Color.Green, Color.Black);
+            }
+        }
+
+        /// <summary>
+        /// Returns the position of the tangent, in element's pixel space.
+        /// </summary>
+        /// <param name="keyFrame">Keyframe that the tangent belongs to.</param>
+        /// <param name="type">Which tangent to retrieve the position for.</param>
+        /// <returns>Position of the tangent, relative to the this GUI element's origin, in pixels.</returns>
+        private Vector2I GetTangentPosition(KeyFrame keyFrame, TangentType type)
+        {
+            Vector2I position = CurveToPixelSpace(new Vector2(keyFrame.time, keyFrame.value));
+
+            Vector2 normal;
+            if (type == TangentType.In)
+                normal = -EdAnimationCurve.TangentToNormal(keyFrame.inTangent);
+            else
+                normal = EdAnimationCurve.TangentToNormal(keyFrame.outTangent);
+
+            // X/Y ranges aren't scaled 1:1, adjust normal accordingly
+            normal.x /= GetRange();
+            normal.y /= yRange;
+            normal = Vector2.Normalize(normal);
+
+            // Convert normal (in percentage) to pixel values
+            Vector2I offset = new Vector2I((int)(normal.x * TANGENT_LINE_DISTANCE),
+                    (int)(-normal.y * TANGENT_LINE_DISTANCE));
+
+            return position + offset;
+        }
+
+        /// <summary>
+        /// Checks if the tangent should be displayed, depending on the active tangent mode.
+        /// </summary>
+        /// <param name="mode">Tangent mode for the keyframe.</param>
+        /// <param name="type">Which tangent to check for.</param>
+        /// <returns>True if the tangent should be displayed.</returns>
+        private bool IsTangentDisplayed(TangentMode mode, TangentType type)
+        {
+            if (mode == TangentMode.Auto)
+                return false;
+            else if (mode == TangentMode.Free)
+                return true;
+
+            if (type == TangentType.In)
+                return !mode.HasFlag(TangentMode.InAuto);
+            else
+                return !mode.HasFlag(TangentMode.OutAuto);
         }
 
         /// <summary>
@@ -385,7 +484,14 @@ namespace BansheeEditor
                 KeyFrame[] keyframes = curve.Native.KeyFrames;
 
                 for (int i = 0; i < keyframes.Length; i++)
-                    DrawKeyframe(keyframes[i].time, keyframes[i].value, IsSelected(curveIdx, i));
+                {
+                    bool isSelected = IsSelected(curveIdx, i);
+
+                    DrawKeyframe(keyframes[i].time, keyframes[i].value, isSelected);
+
+                    if (isSelected)
+                        DrawTangents(keyframes[i], curve.TangentModes[i]);
+                }
 
                 curveIdx++;
             }

@@ -312,7 +312,7 @@ namespace BansheeEditor
                 {
                     TangentMode newMode = curve.TangentModes[keyframe.keyIdx];
 
-                    if (mode.HasFlag(TangentTypes.In))
+                    if (mode.HasFlag((TangentMode)TangentType.In))
                     {
                         // Replace only the in tangent mode, keeping the out tangent as is
                         TangentMode inFlags = (TangentMode.InAuto | TangentMode.InFree | TangentMode.InLinear |
@@ -334,6 +334,10 @@ namespace BansheeEditor
                     curve.SetTangentMode(keyframe.keyIdx, newMode);
                 }
             }
+
+            // TODO - UNDOREDO
+
+            guiCurveDrawing.Rebuild();
         }
 
         private void AddKeyframeAtPosition()
