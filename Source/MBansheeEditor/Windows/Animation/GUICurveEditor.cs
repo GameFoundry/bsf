@@ -127,8 +127,6 @@ namespace BansheeEditor
                     KeyframeRef keyframeRef;
                     if (!guiCurveDrawing.FindKeyFrame(drawingPos, out keyframeRef))
                     {
-                        ClearSelection();
-
                         TangentRef tangentRef;
                         if (guiCurveDrawing.FindTangent(drawingPos, out tangentRef))
                         {
@@ -136,6 +134,8 @@ namespace BansheeEditor
                             dragStart = drawingPos;
                             draggedTangent = tangentRef;
                         }
+                        else
+                            ClearSelection();
                     }
                     else
                     {
@@ -287,9 +287,39 @@ namespace BansheeEditor
                         }
                         else if (isMousePressedOverTangent)
                         {
-                            // TODO - Update tangent
+                            EdAnimationCurve curve = curves[draggedTangent.keyframeRef.curveIdx];
+                            KeyFrame keyframe = curve.KeyFrames[draggedTangent.keyframeRef.keyIdx];
 
-                            guiCurveDrawing.Rebuild();
+                            Vector2 keyframeCurveCoords = new Vector2(keyframe.time, keyframe.value);
+
+                            Vector2 currentPosCurve;
+                            if (guiCurveDrawing.PixelToCurveSpace(drawingPos, out currentPosCurve))
+                            {
+                                Vector2 normal = currentPosCurve - keyframeCurveCoords;
+                                normal = normal.Normalized;
+
+                                float tangent = EdAnimationCurve.NormalToTangent(normal);
+
+                                if (draggedTangent.type == TangentType.In)
+                                {
+                                    if (normal.x > 0.0f)
+                                        tangent = float.PositiveInfinity;
+
+                                    keyframe.inTangent = tangent;
+                                }
+                                else
+                                {
+                                    if (normal.x < 0.0f)
+                                        tangent = float.PositiveInfinity;
+
+                                    keyframe.outTangent = tangent;
+                                }
+
+                                curve.KeyFrames[draggedTangent.keyframeRef.keyIdx] = keyframe;
+                                curve.Apply();
+
+                                guiCurveDrawing.Rebuild();
+                            }
                         }
                     }
                 }

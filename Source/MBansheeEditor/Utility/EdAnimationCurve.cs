@@ -221,7 +221,7 @@ namespace BansheeEditor
             float length = 1/normal.x;
 
             // Use length to deduce the tangent (y coordinate)
-            return MathEx.Sqrt(length*length - 1);
+            return MathEx.Sqrt(length*length - 1) * MathEx.Sign(normal.y);
         }
 
         internal void Apply()
