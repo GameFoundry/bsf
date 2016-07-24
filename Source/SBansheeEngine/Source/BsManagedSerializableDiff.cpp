@@ -12,7 +12,7 @@
 namespace BansheeEngine
 {
 	ManagedSerializableDiff::ModifiedField::ModifiedField(const SPtr<ManagedSerializableTypeInfo>& parentType,
-		const SPtr<ManagedSerializableFieldInfo>& fieldType, const SPtr<Modification>& modification)
+		const SPtr<ManagedSerializableMemberInfo>& fieldType, const SPtr<Modification>& modification)
 		:parentType(parentType), fieldType(fieldType), modification(modification)
 	{
 
@@ -468,10 +468,10 @@ namespace BansheeEngine
 		SPtr<ManagedSerializableObjectInfo> objInfo = obj->getObjectInfo();
 		for (auto& modEntry : mod->entries)
 		{
-			SPtr<ManagedSerializableFieldInfo> fieldType = modEntry.fieldType;
+			SPtr<ManagedSerializableMemberInfo> fieldType = modEntry.fieldType;
 			SPtr<ManagedSerializableTypeInfo> typeInfo = modEntry.parentType;
 
-			SPtr<ManagedSerializableFieldInfo> matchingFieldInfo = objInfo->findMatchingField(fieldType, typeInfo);
+			SPtr<ManagedSerializableMemberInfo> matchingFieldInfo = objInfo->findMatchingField(fieldType, typeInfo);
 			if (matchingFieldInfo == nullptr)
 				continue; // Field no longer exists in the type
 

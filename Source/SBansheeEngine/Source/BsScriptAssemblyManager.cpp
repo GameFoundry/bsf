@@ -140,8 +140,10 @@ namespace BansheeEngine
 					if (field->hasAttribute(mSerializeFieldAttribute))
 						fieldInfo->mFlags = (ScriptFieldFlags)((UINT32)fieldInfo->mFlags | (UINT32)ScriptFieldFlags::Serializable);
 				}
+
 				if (field->hasAttribute(mRangeAttribute))
 					fieldInfo->mFlags = (ScriptFieldFlags)((UINT32)fieldInfo->mFlags | (UINT32)ScriptFieldFlags::Range);
+
 				if (field->hasAttribute(mStepAttribute))
 					fieldInfo->mFlags = (ScriptFieldFlags)((UINT32)fieldInfo->mFlags | (UINT32)ScriptFieldFlags::Step);
 

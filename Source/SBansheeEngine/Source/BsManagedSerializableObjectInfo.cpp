@@ -47,7 +47,7 @@ namespace BansheeEngine
 
 	}
 
-	SPtr<ManagedSerializableFieldInfo> ManagedSerializableObjectInfo::findMatchingField(const SPtr<ManagedSerializableFieldInfo>& fieldInfo,
+	SPtr<ManagedSerializableMemberInfo> ManagedSerializableObjectInfo::findMatchingField(const SPtr<ManagedSerializableMemberInfo>& fieldInfo,
 		const SPtr<ManagedSerializableTypeInfo>& fieldTypeInfo) const
 	{
 		const ManagedSerializableObjectInfo* objInfo = this;
@@ -61,7 +61,7 @@ namespace BansheeEngine
 					auto iterFind2 = objInfo->mFields.find(iterFind->second);
 					if (iterFind2 != objInfo->mFields.end())
 					{
-						SPtr<ManagedSerializableFieldInfo> foundField = iterFind2->second;
+						SPtr<ManagedSerializableMemberInfo> foundField = iterFind2->second;
 						if (foundField->isSerializable())
 						{
 							if (fieldInfo->mTypeInfo->matches(foundField->mTypeInfo))
@@ -92,8 +92,24 @@ namespace BansheeEngine
 		return ManagedSerializableObjectInfo::getRTTIStatic();
 	}
 
+	ManagedSerializableMemberInfo::ManagedSerializableMemberInfo()
+		:mFieldId(0), mFlags((ScriptFieldFlags)0)
+	{
+
+	}
+
+	RTTITypeBase* ManagedSerializableMemberInfo::getRTTIStatic()
+	{
+		return ManagedSerializableMemberInfoRTTI::instance();
+	}
+
+	RTTITypeBase* ManagedSerializableMemberInfo::getRTTI() const
+	{
+		return ManagedSerializableMemberInfo::getRTTIStatic();
+	}
+
 	ManagedSerializableFieldInfo::ManagedSerializableFieldInfo()
-		:mFieldId(0), mFlags((ScriptFieldFlags)0), mMonoField(nullptr)
+		:mMonoField(nullptr)
 	{
 
 	}
@@ -160,6 +176,16 @@ namespace BansheeEngine
 			}
 		}
 		return 0;
+	}
+
+	MonoObject* ManagedSerializableFieldInfo::getValue(MonoObject* instance) const
+	{
+		return mMonoField->getValueBoxed(instance);
+	}
+
+	void ManagedSerializableFieldInfo::setValue(MonoObject* instance, void* value) const
+	{
+		mMonoField->setValue(instance, value);
 	}
 
 	RTTITypeBase* ManagedSerializableFieldInfo::getRTTIStatic()

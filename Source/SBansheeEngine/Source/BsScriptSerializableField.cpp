@@ -12,7 +12,7 @@
 namespace BansheeEngine
 {
 
-	ScriptSerializableField::ScriptSerializableField(MonoObject* instance, const SPtr<ManagedSerializableFieldInfo>& fieldInfo)
+	ScriptSerializableField::ScriptSerializableField(MonoObject* instance, const SPtr<ManagedSerializableMemberInfo>& fieldInfo)
 		:ScriptObject(instance), mFieldInfo(fieldInfo)
 	{
 
@@ -29,7 +29,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetStep", &ScriptSerializableField::internal_getStep);
 	}
 
-	ScriptSerializableField* ScriptSerializableField::create(MonoObject* parentObject, const SPtr<ManagedSerializableFieldInfo>& fieldInfo)
+	ScriptSerializableField* ScriptSerializableField::create(MonoObject* parentObject, const SPtr<ManagedSerializableMemberInfo>& fieldInfo)
 	{
 		MonoString* monoStrName = MonoUtil::wstringToMono(toWString(fieldInfo->mName));
 		MonoReflectionType* internalType = MonoUtil::getType(fieldInfo->mTypeInfo->getMonoClass());
@@ -52,7 +52,7 @@ namespace BansheeEngine
 
 	MonoObject* ScriptSerializableField::internal_getValue(ScriptSerializableField* nativeInstance, MonoObject* instance)
 	{
-		return nativeInstance->mFieldInfo->mMonoField->getValueBoxed(instance);
+		return nativeInstance->mFieldInfo->getValue(instance);
 	}
 
 	void ScriptSerializableField::internal_setValue(ScriptSerializableField* nativeInstance, MonoObject* instance, MonoObject* value)
@@ -60,10 +60,10 @@ namespace BansheeEngine
 		if (value != nullptr && MonoUtil::isValueType((MonoUtil::getClass(value))))
 		{
 			void* rawValue = MonoUtil::unbox(value);
-			nativeInstance->mFieldInfo->mMonoField->setValue(instance, rawValue);
+			nativeInstance->mFieldInfo->setValue(instance, rawValue);
 		}
 		else
-			nativeInstance->mFieldInfo->mMonoField->setValue(instance, value);
+			nativeInstance->mFieldInfo->setValue(instance, value);
 	}
 	float ScriptSerializableField::internal_getRangeMaximum(ScriptSerializableField* nativeInstance) { return nativeInstance->mFieldInfo->getRangeMaximum(); }
 	float ScriptSerializableField::internal_getRangeMinimum(ScriptSerializableField* nativeInstance) { return nativeInstance->mFieldInfo->getRangeMinimum(); }

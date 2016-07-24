@@ -8,7 +8,7 @@
 namespace BansheeEngine
 {
 	MonoProperty::MonoProperty(::MonoProperty* monoProp)
-		:mProperty(monoProp), mGetReturnType(nullptr)
+		:mProperty(monoProp), mGetReturnType(nullptr), mIsIndexed(false), mIsFullyInitialized(false)
 	{
 		mGetMethod = mono_property_get_get_method(mProperty);
 		mSetMethod = mono_property_get_set_method(mProperty);
@@ -16,11 +16,17 @@ namespace BansheeEngine
 
 	MonoObject* MonoProperty::get(MonoObject* instance) const
 	{
+		if (mGetMethod == nullptr)
+			return nullptr;
+
 		return mono_runtime_invoke(mGetMethod, instance, nullptr, nullptr);
 	}
 
 	void MonoProperty::set(MonoObject* instance, void* value) const
 	{
+		if (mSetMethod == nullptr)
+			return;
+
 		void* args[1];
 		args[0] = value;
 		mono_runtime_invoke(mSetMethod, instance, args, nullptr);
@@ -39,22 +45,49 @@ namespace BansheeEngine
 		args[0] = &index;
 		args[1] = value;
 		mono_runtime_invoke(mSetMethod, instance, args, nullptr);
-	}	
+	}
 
-	MonoClass* MonoProperty::getReturnType()
+	bool MonoProperty::isIndexed() const
 	{
-		if(mGetReturnType != nullptr)
-			return mGetReturnType;
+		if (!mIsFullyInitialized)
+			initializeDeferred();
 
-		MonoType* returnType = mono_signature_get_return_type(mono_method_signature(mGetMethod));
-		if(returnType == nullptr)
-			return nullptr;
+		return mIsIndexed;
+	}
 
-		::MonoClass* returnClass = mono_class_from_mono_type(returnType);
-		if(returnClass == nullptr)
-			return nullptr;	
+	MonoClass* MonoProperty::getReturnType() const
+	{
+		if (!mIsFullyInitialized)
+			initializeDeferred();
 
-		mGetReturnType = MonoManager::instance().findClass(returnClass);
 		return mGetReturnType;
+	}
+
+	void MonoProperty::initializeDeferred() const
+	{
+		if (mGetMethod != nullptr)
+		{
+			MonoMethodSignature* signature = mono_method_signature(mGetMethod);
+
+			MonoType* returnType = mono_signature_get_return_type(signature);
+			if (returnType != nullptr)
+			{
+				::MonoClass* returnClass = mono_class_from_mono_type(returnType);
+				if (returnClass != nullptr)
+					mGetReturnType = MonoManager::instance().findClass(returnClass);
+			}
+
+			UINT32 numParams = mono_signature_get_param_count(signature);
+			mIsIndexed = numParams == 1;
+		}
+		else if(mSetMethod != nullptr)
+		{
+			MonoMethodSignature* signature = mono_method_signature(mSetMethod);
+
+			UINT32 numParams = mono_signature_get_param_count(signature);
+			mIsIndexed = numParams == 2;
+		}
+
+		mIsFullyInitialized = true;
 	}
 }

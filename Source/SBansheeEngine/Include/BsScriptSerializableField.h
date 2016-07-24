@@ -24,11 +24,11 @@ namespace BansheeEngine
 		 * @param[in]	fieldInfo		Information about the field. Caller must ensure the type matches the type of the
 		 *								provided parent object.
 		 */
-		static ScriptSerializableField* create(MonoObject* parentObject, const SPtr<ManagedSerializableFieldInfo>& fieldInfo);
+		static ScriptSerializableField* create(MonoObject* parentObject, const SPtr<ManagedSerializableMemberInfo>& fieldInfo);
 	private:
-		ScriptSerializableField(MonoObject* instance, const SPtr<ManagedSerializableFieldInfo>& fieldInfo);
+		ScriptSerializableField(MonoObject* instance, const SPtr<ManagedSerializableMemberInfo>& fieldInfo);
 
-		SPtr<ManagedSerializableFieldInfo> mFieldInfo;
+		SPtr<ManagedSerializableMemberInfo> mFieldInfo;
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/

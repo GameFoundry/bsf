@@ -31,10 +31,10 @@ namespace BansheeEngine
 
 		SPtr<ManagedSerializableFieldDataEntry> getFieldEntry(ManagedSerializableObject* obj, UINT32 arrayIdx)
 		{
-			Vector<SPtr<ManagedSerializableFieldInfo>>& sequentialFields =
-				any_cast_ref<Vector<SPtr<ManagedSerializableFieldInfo>>>(obj->mRTTIData);
+			Vector<SPtr<ManagedSerializableMemberInfo>>& sequentialFields =
+				any_cast_ref<Vector<SPtr<ManagedSerializableMemberInfo>>>(obj->mRTTIData);
 
-			SPtr<ManagedSerializableFieldInfo> field = sequentialFields[arrayIdx];
+			SPtr<ManagedSerializableMemberInfo> field = sequentialFields[arrayIdx];
 
 			SPtr<ManagedSerializableFieldKey> fieldKey = ManagedSerializableFieldKey::create(field->mParentTypeId, field->mFieldId);
 			SPtr<ManagedSerializableFieldData> fieldData = obj->getFieldData(field);
@@ -49,8 +49,8 @@ namespace BansheeEngine
 
 		UINT32 getNumFieldEntries(ManagedSerializableObject* obj)
 		{
-			Vector<SPtr<ManagedSerializableFieldInfo>>& sequentialFields =
-				any_cast_ref<Vector<SPtr<ManagedSerializableFieldInfo>>>(obj->mRTTIData);
+			Vector<SPtr<ManagedSerializableMemberInfo>>& sequentialFields =
+				any_cast_ref<Vector<SPtr<ManagedSerializableMemberInfo>>>(obj->mRTTIData);
 
 			return (UINT32)sequentialFields.size();
 		}
@@ -72,7 +72,7 @@ namespace BansheeEngine
 		{
 			ManagedSerializableObject* castObj = static_cast<ManagedSerializableObject*>(obj);
 
-			Vector<SPtr<ManagedSerializableFieldInfo>> sequentialFields;
+			Vector<SPtr<ManagedSerializableMemberInfo>> sequentialFields;
 			SPtr<ManagedSerializableObjectInfo> curType = castObj->mObjInfo;
 			while (curType != nullptr)
 			{

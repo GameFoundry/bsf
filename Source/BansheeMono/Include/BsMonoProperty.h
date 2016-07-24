@@ -53,17 +53,29 @@ namespace BansheeEngine
 		 */
 		void setIndexed(MonoObject* instance, UINT32 index, void* value) const;
 
+		/** Checks does the property contains indexed data, or just a single value. */
+		bool isIndexed() const;
+
 		/**	Returns the data type the property holds. */
-		MonoClass* getReturnType();
+		MonoClass* getReturnType() const;
 	private:
 		friend class MonoClass;
 
 		MonoProperty(::MonoProperty* monoProp);
 
+		/** 
+		 * Some property data is not initialized by default on creation (with the assumption it will never be accessed). 
+		 * This method will initialize that data.
+		 */
+		void initializeDeferred() const;
+
 		::MonoProperty* mProperty;
 		::MonoMethod* mGetMethod;
 		::MonoMethod* mSetMethod;
-		MonoClass* mGetReturnType;
+
+		mutable MonoClass* mGetReturnType;
+		mutable bool mIsIndexed;
+		mutable bool mIsFullyInitialized;
 	};
 
 	/** @} */

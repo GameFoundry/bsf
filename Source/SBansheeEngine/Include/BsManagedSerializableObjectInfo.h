@@ -95,7 +95,7 @@ namespace BansheeEngine
 	public:
 		friend class ManagedSerializableTypeInfoRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const override;
+		RTTITypeBase* getRTTI() const override;
 	};
 
 	/**	Contains information about a type of a managed serializable primitive (for example int, float, etc.). */
@@ -119,7 +119,7 @@ namespace BansheeEngine
 	public:
 		friend class ManagedSerializableTypeInfoPrimitiveRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const override;
+		RTTITypeBase* getRTTI() const override;
 	};
 
 	/**	Contains information about a type of a managed serializable game object or resource reference. */
@@ -145,7 +145,7 @@ namespace BansheeEngine
 	public:
 		friend class ManagedSerializableTypeInfoRefRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const override;
+		RTTITypeBase* getRTTI() const override;
 	};
 
 	/**	Contains information about a type of a managed serializable complex object (for example struct or class). */
@@ -172,7 +172,7 @@ namespace BansheeEngine
 	public:
 		friend class ManagedSerializableTypeInfoObjectRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const override;
+		RTTITypeBase* getRTTI() const override;
 	};
 
 	/**	Contains information about a type of a managed serializable Array. */
@@ -197,7 +197,7 @@ namespace BansheeEngine
 	public:
 		friend class ManagedSerializableTypeInfoArrayRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const override;
+		RTTITypeBase* getRTTI() const override;
 	};
 
 	/**	Contains information about a type of a managed serializable List. */
@@ -221,7 +221,7 @@ namespace BansheeEngine
 	public:
 		friend class ManagedSerializableTypeInfoListRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const override;
+		RTTITypeBase* getRTTI() const override;
 	};
 
 	/**	Contains information about a type of a managed serializable Dictionary. */
@@ -246,29 +246,46 @@ namespace BansheeEngine
 	public:
 		friend class ManagedSerializableTypeInfoDictionaryRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const override;
+		RTTITypeBase* getRTTI() const override;
 	};
 
-	/**	Contains data about a single field in a managed complex object. */
-	class BS_SCR_BE_EXPORT ManagedSerializableFieldInfo : public IReflectable
+	/**	Contains data about a single member in a managed complex object. */
+	class BS_SCR_BE_EXPORT ManagedSerializableMemberInfo : public IReflectable
 	{
 	public:
-		ManagedSerializableFieldInfo();
+		ManagedSerializableMemberInfo();
 
-		/**	Determines should the field be serialized when serializing the parent object. */
+		/**	Determines should the member be serialized when serializing the parent object. */
 		bool isSerializable() const { return ((UINT32)mFlags & (UINT32)ScriptFieldFlags::Serializable) != 0; }
 
 		/** Returns the minimum value associated to a Range attribute. */
-		float getRangeMinimum() const;
+		virtual float getRangeMinimum() const = 0;
 
 		/** Returns the maximum value associated to a Range attribute. */
-		float getRangeMaximum() const;
+		virtual float getRangeMaximum() const = 0;
 
-		/** Whether the field should be rendered as a slider. */
-		bool renderAsSlider() const;
+		/** Checks whether the field should be rendered as a slider. */
+		virtual bool renderAsSlider() const = 0;
 
-		/** Returns the step value of the field. */
-		float getStep() const;
+		/** Returns the step value of the member. */
+		virtual float getStep() const = 0;
+
+		/**
+		 * Returns a boxed value contained in the member in the specified object instance.
+		 *
+		 * @param[in]	instance	Object instance to access the member on.
+		 * @return					A boxed value of the member.
+		 */
+		virtual MonoObject* getValue(MonoObject* instance) const = 0;
+
+		/**
+		 * Sets a value of the member in the specified object instance. 
+		 *
+		 * @param[in]	instance	Object instance to access the member on.
+		 * @param[in]	value		Value to set on the property. For value type it should be a pointer to the value and for
+		 *							reference type it should be a pointer to MonoObject.
+		 */
+		virtual void setValue(MonoObject* instance, void* value) const = 0;
 
 		String mName;
 		UINT32 mFieldId;
@@ -276,6 +293,39 @@ namespace BansheeEngine
 
 		SPtr<ManagedSerializableTypeInfo> mTypeInfo;
 		ScriptFieldFlags mFlags;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+	public:
+		friend class ManagedSerializableMemberInfoRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		RTTITypeBase* getRTTI() const override;
+	};
+
+	/**	Contains data about a single field in a managed complex object. */
+	class BS_SCR_BE_EXPORT ManagedSerializableFieldInfo : public ManagedSerializableMemberInfo
+	{
+	public:
+		ManagedSerializableFieldInfo();
+
+		/** @copydoc ManagedSerializableMemberInfo::getRangeMinimum */
+		float getRangeMinimum() const override;
+
+		/** @copydoc ManagedSerializableMemberInfo::getRangeMaximum */
+		float getRangeMaximum() const override;
+
+		/** @copydoc ManagedSerializableMemberInfo::renderAsSlider */
+		bool renderAsSlider() const override;
+
+		/** @copydoc ManagedSerializableMemberInfo::getStep */
+		float getStep() const override;
+
+		/** @copydoc ManagedSerializableMemberInfo::getValue */
+		MonoObject* getValue(MonoObject* instance) const override;
+
+		/** @copydoc ManagedSerializableMemberInfo::setValue */
+		void setValue(MonoObject* instance, void* value) const override;
 
 		MonoField* mMonoField;
 
@@ -285,7 +335,7 @@ namespace BansheeEngine
 	public:
 		friend class ManagedSerializableFieldInfoRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const override;
+		RTTITypeBase* getRTTI() const override;
 	};
 
 	/** Contains data about fields of a complex object, and the object's class hierarchy if it belongs to one. */
@@ -307,14 +357,14 @@ namespace BansheeEngine
 		 *								ensure the current object's type matches.
 		 * @return						Found field info within this object, or null if not found.
 		 */
-		SPtr<ManagedSerializableFieldInfo> findMatchingField(const SPtr<ManagedSerializableFieldInfo>& fieldInfo,
+		SPtr<ManagedSerializableMemberInfo> findMatchingField(const SPtr<ManagedSerializableMemberInfo>& fieldInfo,
 			const SPtr<ManagedSerializableTypeInfo>& fieldTypeInfo) const;
 
 		SPtr<ManagedSerializableTypeInfoObject> mTypeInfo;
 		MonoClass* mMonoClass;
 
 		UnorderedMap<String, UINT32> mFieldNameToId;
-		UnorderedMap<UINT32, SPtr<ManagedSerializableFieldInfo>> mFields;
+		UnorderedMap<UINT32, SPtr<ManagedSerializableMemberInfo>> mFields;
 
 		SPtr<ManagedSerializableObjectInfo> mBaseClass;
 		Vector<std::weak_ptr<ManagedSerializableObjectInfo>> mDerivedClasses;
@@ -325,7 +375,7 @@ namespace BansheeEngine
 	public:
 		friend class ManagedSerializableObjectInfoRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const override;
+		RTTITypeBase* getRTTI() const override;
 	};
 
 	/**	Contains information about all managed serializable objects in a specific managed assembly. */
@@ -343,7 +393,7 @@ namespace BansheeEngine
 	public:
 		friend class ManagedSerializableAssemblyInfoRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const override;
+		RTTITypeBase* getRTTI() const override;
 	};
 
 	/** @} */
