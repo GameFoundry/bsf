@@ -163,6 +163,7 @@ namespace BansheeEngine
 		TID_ScriptModifiedDictionaryEntry = 50048,
 		TID_ScriptSerializableDictionaryKeyValue = 50049,
 		TID_SerializableTypeInfoRef = 50050,
-		TID_SerializableFieldInfo = 50051
+		TID_SerializableFieldInfo = 50051,
+		TID_SerializablePropertyInfo = 50052
 	};
 }

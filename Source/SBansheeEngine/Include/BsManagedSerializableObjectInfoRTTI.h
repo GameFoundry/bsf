@@ -202,6 +202,31 @@ namespace BansheeEngine
 		}
 	};
 
+	class BS_SCR_BE_EXPORT ManagedSerializablePropertyInfoRTTI : public RTTIType<ManagedSerializablePropertyInfo, ManagedSerializableMemberInfo, ManagedSerializablePropertyInfoRTTI>
+	{
+	private:
+
+	public:
+		ManagedSerializablePropertyInfoRTTI()
+		{ }
+
+		const String& getRTTIName() override
+		{
+			static String name = "ScriptSerializablePropertyInfo";
+			return name;
+		}
+
+		UINT32 getRTTIId() override
+		{
+			return TID_SerializablePropertyInfo;
+		}
+
+		SPtr<IReflectable> newRTTIObject() override
+		{
+			return bs_shared_ptr_new<ManagedSerializablePropertyInfo>();
+		}
+	};
+
 	class BS_SCR_BE_EXPORT ManagedSerializableTypeInfoRTTI : public RTTIType<ManagedSerializableTypeInfo, IReflectable, ManagedSerializableTypeInfoRTTI>
 	{
 	private:

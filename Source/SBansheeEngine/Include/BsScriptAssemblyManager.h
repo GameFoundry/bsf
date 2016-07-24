@@ -109,6 +109,7 @@ namespace BansheeEngine
 		MonoClass* mDontSerializeFieldAttribute;
 		MonoClass* mSerializeFieldAttribute;
 		MonoClass* mHideInInspectorAttribute;
+		MonoClass* mShowInInspectorAttribute;
 		MonoClass* mRangeAttribute;
 		MonoClass* mStepAttribute;
 	};

@@ -338,6 +338,41 @@ namespace BansheeEngine
 		RTTITypeBase* getRTTI() const override;
 	};
 
+	/**	Contains data about a single property in a managed complex object. */
+	class BS_SCR_BE_EXPORT ManagedSerializablePropertyInfo : public ManagedSerializableMemberInfo
+	{
+	public:
+		ManagedSerializablePropertyInfo();
+
+		/** @copydoc ManagedSerializableMemberInfo::getRangeMinimum */
+		float getRangeMinimum() const override;
+
+		/** @copydoc ManagedSerializableMemberInfo::getRangeMaximum */
+		float getRangeMaximum() const override;
+
+		/** @copydoc ManagedSerializableMemberInfo::renderAsSlider */
+		bool renderAsSlider() const override;
+
+		/** @copydoc ManagedSerializableMemberInfo::getStep */
+		float getStep() const override;
+
+		/** @copydoc ManagedSerializableMemberInfo::getValue */
+		MonoObject* getValue(MonoObject* instance) const override;
+
+		/** @copydoc ManagedSerializableMemberInfo::setValue */
+		void setValue(MonoObject* instance, void* value) const override;
+
+		MonoProperty* mMonoProperty;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+	public:
+		friend class ManagedSerializablePropertyInfoRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		RTTITypeBase* getRTTI() const override;
+	};
+
 	/** Contains data about fields of a complex object, and the object's class hierarchy if it belongs to one. */
 	class BS_SCR_BE_EXPORT ManagedSerializableObjectInfo : public IReflectable
 	{

@@ -17,6 +17,9 @@ namespace BansheeEngine
 	class BS_MONO_EXPORT MonoProperty
 	{
 	public:
+		/**	Returns the name of the property. */
+		const String& getName() const { return mName; }
+
 		/**
 		 * Returns a boxed value contained in the property in the specified instance.
 		 *
@@ -58,6 +61,15 @@ namespace BansheeEngine
 
 		/**	Returns the data type the property holds. */
 		MonoClass* getReturnType() const;
+
+		/**	Checks if property has an attribute of the specified type. */
+		bool hasAttribute(MonoClass* monoClass);
+
+		/**
+		 * Returns an instance of an attribute of the specified type. Returns null if the property doesn't have such an
+		 * attribute.
+		 */
+		MonoObject* getAttribute(MonoClass* monoClass);
 	private:
 		friend class MonoClass;
 
@@ -69,6 +81,7 @@ namespace BansheeEngine
 		 */
 		void initializeDeferred() const;
 
+		String mName;
 		::MonoProperty* mProperty;
 		::MonoMethod* mGetMethod;
 		::MonoMethod* mSetMethod;

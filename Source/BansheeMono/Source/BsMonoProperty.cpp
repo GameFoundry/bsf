@@ -3,6 +3,7 @@
 #include "BsMonoProperty.h"
 #include "BsMonoMethod.h"
 #include "BsMonoManager.h"
+#include "BsMonoClass.h"
 #include <mono/jit/jit.h>
 
 namespace BansheeEngine
@@ -12,6 +13,8 @@ namespace BansheeEngine
 	{
 		mGetMethod = mono_property_get_get_method(mProperty);
 		mSetMethod = mono_property_get_set_method(mProperty);
+
+		mName = mono_property_get_name(mProperty);
 	}
 
 	MonoObject* MonoProperty::get(MonoObject* instance) const
@@ -61,6 +64,38 @@ namespace BansheeEngine
 			initializeDeferred();
 
 		return mGetReturnType;
+	}
+
+	bool MonoProperty::hasAttribute(MonoClass* monoClass)
+	{
+		// TODO - Consider caching custom attributes or just initializing them all at load
+
+		::MonoClass* parentClass = mono_property_get_parent(mProperty);
+		MonoCustomAttrInfo* attrInfo = mono_custom_attrs_from_property(parentClass, mProperty);
+		if (attrInfo == nullptr)
+			return false;
+
+		bool hasAttr = mono_custom_attrs_has_attr(attrInfo, monoClass->_getInternalClass()) != 0;
+
+		mono_custom_attrs_free(attrInfo);
+
+		return hasAttr;
+	}
+
+	MonoObject* MonoProperty::getAttribute(MonoClass* monoClass)
+	{
+		// TODO - Consider caching custom attributes or just initializing them all at load
+
+		::MonoClass* parentClass = mono_property_get_parent(mProperty);
+		MonoCustomAttrInfo* attrInfo = mono_custom_attrs_from_property(parentClass, mProperty);
+		if (attrInfo == nullptr)
+			return nullptr;
+
+		MonoObject* foundAttr = mono_custom_attrs_get_attr(attrInfo, monoClass->_getInternalClass());
+
+		mono_custom_attrs_free(attrInfo);
+
+		return foundAttr;
 	}
 
 	void MonoProperty::initializeDeferred() const

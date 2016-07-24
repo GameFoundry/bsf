@@ -7,6 +7,7 @@
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
 #include "BsMonoField.h"
+#include "BsMonoProperty.h"
 #include "BsScriptTexture2D.h"
 #include "BsScriptSpriteTexture.h"
 #include "BsScriptAssemblyManager.h"
@@ -196,6 +197,96 @@ namespace BansheeEngine
 	RTTITypeBase* ManagedSerializableFieldInfo::getRTTI() const
 	{
 		return ManagedSerializableFieldInfo::getRTTIStatic();
+	}
+
+	ManagedSerializablePropertyInfo::ManagedSerializablePropertyInfo()
+		:mMonoProperty(nullptr)
+	{
+
+	}
+
+	float ManagedSerializablePropertyInfo::getRangeMinimum() const
+	{
+		if (((UINT32)mFlags & (UINT32)ScriptFieldFlags::Range) != 0)
+		{
+
+			MonoClass* range = ScriptAssemblyManager::instance().getRangeAttribute();
+			if (range != nullptr)
+			{
+				float min = 0;
+				ScriptRange::getMinRangeField()->getValue(mMonoProperty->getAttribute(range), &min);
+				return min;
+			}
+		}
+		return 0;
+	}
+
+	float ManagedSerializablePropertyInfo::getRangeMaximum() const
+	{
+		if (((UINT32)mFlags & (UINT32)ScriptFieldFlags::Range) != 0)
+		{
+
+			MonoClass* range = ScriptAssemblyManager::instance().getRangeAttribute();
+			if (range != nullptr)
+			{
+				float max = 0;
+				ScriptRange::getMaxRangeField()->getValue(mMonoProperty->getAttribute(range), &max);
+				return max;
+			}
+		}
+		return 0;
+	}
+
+	bool ManagedSerializablePropertyInfo::renderAsSlider() const
+	{
+		if (((UINT32)mFlags & (UINT32)ScriptFieldFlags::Range) != 0)
+		{
+			MonoClass* range = ScriptAssemblyManager::instance().getRangeAttribute();
+			if (range != nullptr)
+			{
+				bool slider = false;
+				ScriptRange::getSliderField()->getValue(mMonoProperty->getAttribute(range), &slider);
+				return slider;
+			}
+		}
+		return false;
+	}
+
+
+	float ManagedSerializablePropertyInfo::getStep() const
+	{
+		if (((UINT32)mFlags & (UINT32)ScriptFieldFlags::Step) != 0)
+		{
+
+			MonoClass* step = ScriptAssemblyManager::instance().getStepAttribute();
+			if (step != nullptr)
+			{
+				float value = 0;
+				ScriptStep::getStepField()->getValue(mMonoProperty->getAttribute(step), &value);
+				return value;
+			}
+		}
+		return 0;
+	}
+
+	MonoObject* ManagedSerializablePropertyInfo::getValue(MonoObject* instance) const
+	{
+		return mMonoProperty->get(instance);
+	}
+
+	void ManagedSerializablePropertyInfo::setValue(MonoObject* instance, void* value) const
+	{
+		mMonoProperty->set(instance, value);
+	}
+
+	RTTITypeBase* ManagedSerializablePropertyInfo::getRTTIStatic()
+	{
+		return ManagedSerializablePropertyInfoRTTI::instance();
+	}
+
+	RTTITypeBase* ManagedSerializablePropertyInfo::getRTTI() const
+	{
+		return ManagedSerializablePropertyInfo::getRTTIStatic();
 	}
 
 	RTTITypeBase* ManagedSerializableTypeInfo::getRTTIStatic()
