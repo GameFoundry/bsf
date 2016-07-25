@@ -68,6 +68,8 @@ set(BS_SBANSHEEEDITOR_SRC_WRAPPERS
 	"Source/BsScriptSelection.cpp"
 	"Source/BsScriptUndoRedo.cpp"
 	"Source/BsScriptUnitTests.cpp"
+	"Source/BsScriptSerializedObject.cpp"
+	"Source/BsScriptSerializedDiff.cpp"
 )
 
 set(BS_SBANSHEEEDITOR_SRC_NOFILTER
@@ -120,6 +122,8 @@ set(BS_SBANSHEEEDITOR_INC_WRAPPERS
 	"Include/BsScriptHandleSliderDisc.h"
 	"Include/BsScriptHandleSlider.h"
 	"Include/BsScriptHandleDrawing.h"
+	"Include/BsScriptSerializedObject.h"
+	"Include/BsScriptSerializedDiff.h"	
 )
 
 set(BS_SBANSHEEEDITOR_INC_WRAPPERS_GUI

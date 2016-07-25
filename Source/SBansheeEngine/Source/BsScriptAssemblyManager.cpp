@@ -217,7 +217,7 @@ namespace BansheeEngine
 	SPtr<ManagedSerializableTypeInfo> ScriptAssemblyManager::getTypeInfo(MonoClass* monoClass)
 	{
 		if(!mBaseTypesInitialized)
-			BS_EXCEPT(InvalidStateException, "Calling determineType without previously initializing base types.");
+			BS_EXCEPT(InvalidStateException, "Calling getTypeInfo without previously initializing base types.");
 
 		MonoPrimitiveType monoPrimitiveType = MonoUtil::getPrimitiveType(monoClass->_getInternalClass());
 		
