@@ -50,6 +50,49 @@ namespace BansheeEngine
 		return AABox(Vector3::ZERO, Vector3::ZERO);
 	}
 
+	Vector3 EditorUtility::calculateCenter(const Vector<HSceneObject>& objects)
+	{
+		if (objects.size() == 0)
+			return Vector3::ZERO;
+
+		Vector3 center = Vector3::ZERO;
+		bool gotOneMesh = false;
+		UINT32 count = 0;
+
+		for (auto& object : objects)
+		{
+			AABox meshBounds;
+			if (calculateMeshBounds(object, meshBounds))
+			{
+				count++;
+				if (meshBounds.getSize() == Vector3::INF)
+					center += object->getWorldPosition();
+				else
+					center += meshBounds.getCenter();
+				gotOneMesh = true;
+			}
+		}
+
+		if (!gotOneMesh)
+		{
+			for (auto& object : objects)
+			{
+				if (object.isDestroyed())
+					continue;
+
+				center += object->getWorldPosition();
+				count++;
+				gotOneMesh = true;
+			}
+		}
+
+		if (gotOneMesh)
+			return center / count;
+
+		return Vector3::ZERO;
+	}
+
+
 	bool EditorUtility::calculateMeshBounds(const HSceneObject& object, AABox& bounds)
 	{
 		bounds = AABox(Vector3::ZERO, Vector3::ZERO);
