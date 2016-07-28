@@ -26,8 +26,11 @@ namespace BansheeEngine
 			AABox meshBounds;
 			if (calculateMeshBounds(object, meshBounds))
 			{
-				bounds.merge(meshBounds);
-
+				if (meshBounds.getSize() == Vector3::INF)
+					bounds.merge(object->getWorldPosition());
+				else
+					bounds.merge(meshBounds);
+				
 				gotOneMesh = true;
 			}
 		}
