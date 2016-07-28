@@ -7,7 +7,7 @@
 
 namespace BansheeEngine
 {
-	/**	Interop class between C++ & CLR for Range attribute. */
+	/**	Interop class between C++ & CLR for the Range attribute. */
 	class BS_SCR_BE_EXPORT ScriptRange : public ScriptObject <ScriptRange>
 	{
 	public:
