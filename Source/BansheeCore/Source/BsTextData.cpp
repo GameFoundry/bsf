@@ -242,10 +242,6 @@ namespace BansheeEngine
 			}
 			else
 			{
-				const CHAR_DESC& firstChar = mTextData->getChar(word.getCharsStart());
-				if (firstChar.xOffset < 0)
-					penX += -firstChar.xOffset; // Offset characters so that they start at 0
-
 				UINT32 kerning = 0;
 				for(UINT32 j = word.getCharsStart(); j <= word.getCharsEnd(); j++)
 				{
