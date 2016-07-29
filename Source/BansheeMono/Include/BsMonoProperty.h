@@ -70,6 +70,12 @@ namespace BansheeEngine
 		 * attribute.
 		 */
 		MonoObject* getAttribute(MonoClass* monoClass);
+
+		/**	
+		 * Returns property visibility in the class. If getter/setter methods have different visibility, the more 
+		 * restrictive one is returned.
+		 */
+		MonoMemberVisibility getVisibility();
 	private:
 		friend class MonoClass;
 

@@ -5,6 +5,7 @@
 #include "BsMonoManager.h"
 #include "BsMonoClass.h"
 #include <mono/jit/jit.h>
+#include <mono/metadata/class.h>
 
 namespace BansheeEngine
 {
@@ -96,6 +97,28 @@ namespace BansheeEngine
 		mono_custom_attrs_free(attrInfo);
 
 		return foundAttr;
+	}
+
+	MonoMemberVisibility MonoProperty::getVisibility()
+	{
+		MonoMemberVisibility getterVisibility = MonoMemberVisibility::Public;
+		if(mGetMethod)
+		{
+			MonoMethod getterWrapper(mGetMethod);
+			getterVisibility = getterWrapper.getVisibility();
+		}
+
+		MonoMemberVisibility setterVisibility = MonoMemberVisibility::Public;
+		if (mSetMethod)
+		{
+			MonoMethod setterWrapper(mSetMethod);
+			setterVisibility = setterWrapper.getVisibility();
+		}
+
+		if (getterVisibility < setterVisibility)
+			return getterVisibility;
+
+		return setterVisibility;
 	}
 
 	void MonoProperty::initializeDeferred() const

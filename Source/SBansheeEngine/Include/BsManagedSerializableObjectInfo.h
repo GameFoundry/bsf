@@ -60,13 +60,17 @@ namespace BansheeEngine
 	};
 
 	/**	Flags that are used to further define a field in a managed serializable object. */
-	enum class ScriptFieldFlags
+	enum class ScriptFieldFlag
 	{
 		Serializable = 0x01,
 		Inspectable = 0x02,
 		Range = 0x04,
-		Step = 0x08
+		Step = 0x08,
+		Animable = 0x10
 	};
+
+	typedef Flags<ScriptFieldFlag> ScriptFieldFlags;
+	BS_FLAGS_OPERATORS(ScriptFieldFlag);
 
 	/**	Contains information about a type of a managed serializable object. */
 	class BS_SCR_BE_EXPORT ManagedSerializableTypeInfo : public IReflectable
@@ -256,7 +260,7 @@ namespace BansheeEngine
 		ManagedSerializableMemberInfo();
 
 		/**	Determines should the member be serialized when serializing the parent object. */
-		bool isSerializable() const { return ((UINT32)mFlags & (UINT32)ScriptFieldFlags::Serializable) != 0; }
+		bool isSerializable() const { return mFlags.isSet(ScriptFieldFlag::Serializable); }
 
 		/** Returns the minimum value associated to a Range attribute. */
 		virtual float getRangeMinimum() const = 0;

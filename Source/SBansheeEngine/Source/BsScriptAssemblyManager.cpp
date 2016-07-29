@@ -126,29 +126,31 @@ namespace BansheeEngine
 				fieldInfo->mTypeInfo = typeInfo;
 				fieldInfo->mParentTypeId = objInfo->mTypeInfo->mTypeId;
 				
-				MonoFieldVisibility visibility = field->getVisibility();
-				if (visibility == MonoFieldVisibility::Public)
+				MonoMemberVisibility visibility = field->getVisibility();
+				if (visibility == MonoMemberVisibility::Public)
 				{
 					if (!field->hasAttribute(mDontSerializeFieldAttribute))
-						fieldInfo->mFlags = (ScriptFieldFlags)((UINT32)fieldInfo->mFlags | (UINT32)ScriptFieldFlags::Serializable);
+						fieldInfo->mFlags |= ScriptFieldFlag::Serializable;
 
 					if (!field->hasAttribute(mHideInInspectorAttribute))
-						fieldInfo->mFlags = (ScriptFieldFlags)((UINT32)fieldInfo->mFlags | (UINT32)ScriptFieldFlags::Inspectable);
+						fieldInfo->mFlags |= ScriptFieldFlag::Inspectable;
+
+					fieldInfo->mFlags |= ScriptFieldFlag::Animable;
 				}
 				else
 				{
 					if (field->hasAttribute(mSerializeFieldAttribute))
-						fieldInfo->mFlags = (ScriptFieldFlags)((UINT32)fieldInfo->mFlags | (UINT32)ScriptFieldFlags::Serializable);
+						fieldInfo->mFlags |= ScriptFieldFlag::Serializable;
 
 					if (field->hasAttribute(mShowInInspectorAttribute))
-						fieldInfo->mFlags = (ScriptFieldFlags)((UINT32)fieldInfo->mFlags | (UINT32)ScriptFieldFlags::Inspectable);
+						fieldInfo->mFlags |= ScriptFieldFlag::Inspectable;
 				}
 
 				if (field->hasAttribute(mRangeAttribute))
-					fieldInfo->mFlags = (ScriptFieldFlags)((UINT32)fieldInfo->mFlags | (UINT32)ScriptFieldFlags::Range);
+					fieldInfo->mFlags |= ScriptFieldFlag::Range;
 
 				if (field->hasAttribute(mStepAttribute))
-					fieldInfo->mFlags = (ScriptFieldFlags)((UINT32)fieldInfo->mFlags | (UINT32)ScriptFieldFlags::Step);
+					fieldInfo->mFlags |= ScriptFieldFlag::Step;
 
 				objInfo->mFieldNameToId[fieldInfo->mName] = fieldInfo->mFieldId;
 				objInfo->mFields[fieldInfo->mFieldId] = fieldInfo;
@@ -170,18 +172,22 @@ namespace BansheeEngine
 
 				if (!property->isIndexed())
 				{
+					MonoMemberVisibility visibility = property->getVisibility();
+					if (visibility == MonoMemberVisibility::Public)
+						propertyInfo->mFlags |= ScriptFieldFlag::Animable;
+
 					if (property->hasAttribute(mSerializeFieldAttribute))
-						propertyInfo->mFlags = (ScriptFieldFlags)((UINT32)propertyInfo->mFlags | (UINT32)ScriptFieldFlags::Serializable);
+						propertyInfo->mFlags |= ScriptFieldFlag::Serializable;
 
 					if (property->hasAttribute(mShowInInspectorAttribute))
-						propertyInfo->mFlags = (ScriptFieldFlags)((UINT32)propertyInfo->mFlags | (UINT32)ScriptFieldFlags::Inspectable);
+						propertyInfo->mFlags |= ScriptFieldFlag::Inspectable;
 				}
 
 				if (property->hasAttribute(mRangeAttribute))
-					propertyInfo->mFlags = (ScriptFieldFlags)((UINT32)propertyInfo->mFlags | (UINT32)ScriptFieldFlags::Range);
+					propertyInfo->mFlags |= ScriptFieldFlag::Range;
 
 				if (property->hasAttribute(mStepAttribute))
-					propertyInfo->mFlags = (ScriptFieldFlags)((UINT32)propertyInfo->mFlags | (UINT32)ScriptFieldFlags::Step);
+					propertyInfo->mFlags |= ScriptFieldFlag::Step;
 
 				objInfo->mFieldNameToId[propertyInfo->mName] = propertyInfo->mFieldId;
 				objInfo->mFields[propertyInfo->mFieldId] = propertyInfo;

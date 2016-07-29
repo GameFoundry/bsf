@@ -23,10 +23,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateProperty", &ScriptSerializableField::internal_createProperty);
 		metaData.scriptClass->addInternalCall("Internal_GetValue", &ScriptSerializableField::internal_getValue);
 		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptSerializableField::internal_setValue);
-		metaData.scriptClass->addInternalCall("Internal_GetRangeMaximum", &ScriptSerializableField::internal_getRangeMaximum);
-		metaData.scriptClass->addInternalCall("Internal_GetRangeMinimum", &ScriptSerializableField::internal_getRangeMinimum);
-		metaData.scriptClass->addInternalCall("Internal_RenderAsSlider", &ScriptSerializableField::internal_renderAsSlider);
-		metaData.scriptClass->addInternalCall("Internal_GetStep", &ScriptSerializableField::internal_getStep);
+		metaData.scriptClass->addInternalCall("Internal_GetStyle", &ScriptSerializableField::internal_getStyle);
 	}
 
 	ScriptSerializableField* ScriptSerializableField::create(MonoObject* parentObject, const SPtr<ManagedSerializableMemberInfo>& fieldInfo)
@@ -65,8 +62,17 @@ namespace BansheeEngine
 		else
 			nativeInstance->mFieldInfo->setValue(instance, value);
 	}
-	float ScriptSerializableField::internal_getRangeMaximum(ScriptSerializableField* nativeInstance) { return nativeInstance->mFieldInfo->getRangeMaximum(); }
-	float ScriptSerializableField::internal_getRangeMinimum(ScriptSerializableField* nativeInstance) { return nativeInstance->mFieldInfo->getRangeMinimum(); }
-	bool ScriptSerializableField::internal_renderAsSlider(ScriptSerializableField* nativeInstance) { return  nativeInstance->mFieldInfo->renderAsSlider(); }
-	float ScriptSerializableField::internal_getStep(ScriptSerializableField* nativeInstance) { return nativeInstance->mFieldInfo->getStep(); }
+	void ScriptSerializableField::internal_getStyle(ScriptSerializableField* nativeInstance, SerializableMemberStyle* style)
+	{
+		SPtr<ManagedSerializableMemberInfo> fieldInfo = nativeInstance->mFieldInfo;
+		*style = SerializableMemberStyle();
+
+		ScriptFieldFlags fieldFlags = fieldInfo->mFlags;
+		style->displayAsSlider = fieldInfo->renderAsSlider();
+		style->rangeMin = fieldInfo->getRangeMinimum();
+		style->rangeMax = fieldInfo->getRangeMaximum();
+		style->stepIncrement = fieldInfo->getStep();
+		style->hasStep = fieldFlags.isSet(ScriptFieldFlag::Step);
+		style->hasRange = fieldFlags.isSet(ScriptFieldFlag::Range);
+	}
 }

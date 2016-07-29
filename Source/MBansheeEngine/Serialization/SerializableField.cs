@@ -17,7 +17,8 @@ namespace BansheeEngine
         Serializable = 0x01,
         Inspectable = 0x02,
         Ranged = 0x04,
-        Stepped = 0x08
+        Stepped = 0x08,
+        Animable = 0x10
     }
 
     /// <summary>
@@ -72,54 +73,6 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Returns true if the field accepts a defined range.
-        /// </summary>
-        public bool IsRanged
-        {
-            get { return (flags & (byte)SerializableFieldAttributes.Ranged) != 0; }
-        }
-
-        /// <summary>
-        /// Returns the upper bound of the range.
-        /// </summary>
-        public float RangeMaximum
-        {
-            get { return IsRanged? Internal_GetRangeMaximum(mCachedPtr) : 0; }
-        }
-
-        /// <summary>
-        /// Returns the lower bound of the range.
-        /// </summary>
-        public float RangeMinimum
-        {
-            get { return IsRanged? Internal_GetRangeMinimum(mCachedPtr) : 0; }
-        }
-
-        /// <summary>
-        /// Whether the field is rendered as a slider.
-        /// </summary>
-        public bool IsSlider
-        {
-            get { return (IsRanged && Internal_RenderAsSlider(mCachedPtr)); }
-        }
-
-        /// <summary>
-        /// Whether the field has an associated step value.
-        /// </summary>
-        public bool IsStepped
-        {
-            get { return (flags & (byte)SerializableFieldAttributes.Stepped) != 0; }
-        }
-
-        /// <summary>
-        /// Returns the step of the range
-        /// </summary>
-        public float Step
-        {
-            get { return IsStepped? Internal_GetStep(mCachedPtr) : 0; }
-        }
-
-        /// <summary>
         /// Returns true if the field will be visible in the default inspector.
         /// </summary>
         public bool Inspectable
@@ -133,6 +86,28 @@ namespace BansheeEngine
         public bool Serializable
         {
             get { return (flags & (byte)SerializableFieldAttributes.Serializable) != 0; }
+        }
+
+        /// <summary>
+        /// Returns true if the field can be animated.
+        /// </summary>
+        public bool Animable
+        {
+            get { return (flags & (byte)SerializableFieldAttributes.Animable) != 0; }
+        }
+
+        /// <summary>
+        /// Returns the requested style of the field, that may be used for controlling how the field is displayed and how
+        /// is its input filtered.
+        /// </summary>
+        public SerializableFieldStyle Style
+        {
+            get
+            {
+                SerializableFieldStyle style;
+                Internal_GetStyle(mCachedPtr, out style);
+                return style;
+            }
         }
 
         /// <summary>
@@ -181,16 +156,38 @@ namespace BansheeEngine
         private static extern void Internal_SetValue(IntPtr nativeInstance, object instance, object value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern float Internal_GetRangeMaximum(IntPtr field);
+        private static extern void Internal_GetStyle(IntPtr nativeInstance, out SerializableFieldStyle style);
+    }
 
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern float Internal_GetRangeMinimum(IntPtr field);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern bool Internal_RenderAsSlider(IntPtr field);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern float Internal_GetStep(IntPtr field);
+    /// <summary>
+    /// Contains information about a style of a serializable field.
+    /// </summary>
+    public struct SerializableFieldStyle // Note: Must match C++ struct SerializableMemberStyle
+    {
+        /// <summary>
+        /// True if the range of the field is limited, false if unlimited.
+        /// </summary>
+        public bool HasRange;
+        /// <summary>
+        /// Returns the lower bound of the range. Only relevant if <see cref="HasRange"/> is true.
+        /// </summary>
+        public float RangeMin;
+        /// <summary>
+        /// Returns the upper bound of the range. Only relevant if <see cref="HasRange"/> is true.
+        /// </summary>
+        public float RangeMax;
+        /// <summary>
+        /// True if the field value can only be incremented in specific increments.
+        /// </summary>
+        public bool HasStep;
+        /// <summary>
+        /// Minimum increment the field value can be increment/decremented by. Only relevant if <see cref="HasStep"/> is true.
+        /// </summary>
+        public float StepIncrement;
+        /// <summary>
+        /// If true, number fields will be displayed as sliders instead of regular input boxes.
+        /// </summary>
+        public bool DisplayAsSlider;
     }
 
     /** @} */

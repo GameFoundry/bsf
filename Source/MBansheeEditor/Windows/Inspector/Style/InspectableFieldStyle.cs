@@ -1,6 +1,5 @@
 ﻿//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
-
 using BansheeEngine;
 
 namespace BansheeEditor
@@ -13,14 +12,16 @@ namespace BansheeEditor
         /// <summary>
         /// Creates all the relevant style information for a SerializableField.
         /// </summary>
-        /// <param name="field">A SerializableField.</param>
-        /// <returns>Style information.</returns>
+        /// <param name="field">Field to create the style info structure for.</param>
+        /// <returns>Style information retrieved from the field.</returns>
         public static InspectableFieldStyleInfo Create(SerializableField field)
         {
-            var styleInfo = new InspectableFieldStyleInfo();
+            SerializableFieldStyle style = field.Style;
 
-            styleInfo.RangeStyle = field.IsRanged? new InspectableFieldRangeStyle(field.RangeMinimum, field.RangeMaximum, field.IsSlider) : null;
-            styleInfo.StepStyle = field.IsStepped? new InspectableFieldStepStyle(field.Step) : null;
+            var styleInfo = new InspectableFieldStyleInfo();
+            styleInfo.RangeStyle = style.HasRange ? new InspectableFieldRangeStyle(style.RangeMin, style.RangeMax, style.DisplayAsSlider) : null;
+            styleInfo.StepStyle = style.HasStep ? new InspectableFieldStepStyle(style.StepIncrement) : null;
+
             return styleInfo;
         }
     }

@@ -149,7 +149,7 @@ namespace BansheeEditor
             List<Element> elements = new List<Element>(); 
             foreach (var field in serializableObject.Fields)
             {
-                if (!field.Inspectable)
+                if (!field.Animable)
                     continue;
 
                 string propertyPath = parent.path + "/" + field.Name;

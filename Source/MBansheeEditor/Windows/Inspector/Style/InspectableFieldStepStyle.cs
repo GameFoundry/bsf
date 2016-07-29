@@ -8,7 +8,6 @@ namespace BansheeEditor
     /// </summary>
     public sealed class InspectableFieldStepStyle : InspectableFieldStyle
     {
-
         public InspectableFieldStepStyle(float step)
         {
             this.Step = step;
