@@ -37,20 +37,22 @@ namespace BansheeEditor
 
         private void OnInitialize()
         {
-            GUILabel title = new GUILabel(new LocEdString("Banshee Engine v0.3"), EditorStyles.TitleLabel);
+            GUILabel title = new GUILabel(new LocEdString("Banshee Engine v0.4"), EditorStyles.TitleLabel);
             GUILabel subTitle = new GUILabel(new LocEdString("A modern open-source game development toolkit"), 
                 EditorStyles.LabelCentered);
             GUILabel license = new GUILabel(new LocEdString(
-                "This program is licensed under the GNU General Public License V3"), EditorStyles.LabelCentered);
+                "This program is licensed under the GNU Lesser General Public License V3"), EditorStyles.LabelCentered);
             GUILabel copyright = new GUILabel(new LocEdString("Copyright (C) 2015 Marko Pintera. All rights reserved."), 
                 EditorStyles.LabelCentered);
+
+            GUILabel authorLabel = new GUILabel(new LocEdString("Banshee was created, and is being actively developed by Marko Pintera."));
             GUILabel emailTitle = new GUILabel(new LocEdString("E-mail"), GUIOption.FixedWidth(150));
             emailLabel = new GUITextBox();
             GUILabel linkedInTitle = new GUILabel(new LocEdString("LinkedIn"), GUIOption.FixedWidth(150));
             GUIButton linkedInBtn = new GUIButton(new LocEdString("Profile"));
 
             GUIToggleGroup foldoutGroup = new GUIToggleGroup(true);
-            GUIToggle contactFoldout = new GUIToggle(new LocEdString("Author contact"), foldoutGroup, EditorStyles.Foldout);
+            GUIToggle contactFoldout = new GUIToggle(new LocEdString("Author"), foldoutGroup, EditorStyles.Foldout);
             GUIToggle thirdPartyFoldout = new GUIToggle(new LocEdString("Used third party libraries"), foldoutGroup, EditorStyles.Foldout);
             GUIToggle noticesFoldout = new GUIToggle(new LocEdString("Third party notices"), foldoutGroup, EditorStyles.Foldout);
             GUIToggle collaboratorsFoldout = new GUIToggle(new LocEdString("Collaborators"), foldoutGroup, EditorStyles.Foldout);
@@ -82,6 +84,12 @@ namespace BansheeEditor
             mainLayout.AddElement(contactFoldout);
 
             GUILayoutY contactLayout = mainLayout.AddLayoutY();
+            contactLayout.AddSpace(15);
+            GUILayout authorLayout = contactLayout.AddLayoutX();
+            authorLayout.AddFlexibleSpace();
+            authorLayout.AddElement(authorLabel);
+            authorLayout.AddFlexibleSpace();
+            contactLayout.AddSpace(15);
             GUILayout emailLayout = contactLayout.AddLayoutX();
             emailLayout.AddSpace(10);
             emailLayout.AddElement(emailTitle);
@@ -120,6 +128,7 @@ namespace BansheeEditor
             mainLayout.AddElement(collaboratorsFoldout);
             GUILayoutY collaboratorsLayout = mainLayout.AddLayoutY();
             CreateCollaboratorGUI(collaboratorsLayout, "Danijel Ribic", "Logo, UI icons, 3D models & textures");
+            CreateCollaboratorGUI(collaboratorsLayout, "Marco Bellan", "Bugfixes, editor enhancements");
 
             mainLayout.AddFlexibleSpace();
 
