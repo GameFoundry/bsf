@@ -246,7 +246,44 @@ namespace BansheeEditor
             }
 
             guiCurveEditor.SetCurves(curvesToDisplay.ToArray());
+
+            float xRange;
+            float yRange;
+            CalculateRange(curvesToDisplay, out xRange, out yRange);
+
+            // Don't allow zero range
+            if (xRange == 0.0f)
+                xRange = 60.0f;
+
+            if (yRange == 0.0f)
+                yRange = 10.0f;
+
+            // Add padding to y range
+            yRange *= 1.05f;
+
+            // Don't reduce visible range
+            xRange = Math.Max(xRange, guiCurveEditor.XRange);
+            yRange = Math.Max(yRange, guiCurveEditor.YRange);
+
+            guiCurveEditor.SetRange(xRange, yRange);
             guiCurveEditor.Redraw();
+        }
+
+        private static void CalculateRange(List<EdAnimationCurve> curves, out float xRange, out float yRange)
+        {
+            xRange = 0.0f;
+            yRange = 0.0f;
+
+            foreach (var curve in curves)
+            {
+                KeyFrame[] keyframes = curve.KeyFrames;
+
+                foreach (var key in keyframes)
+                {
+                    xRange = Math.Max(xRange, key.time);
+                    yRange = Math.Max(yRange, Math.Abs(key.value));
+                }
+            }
         }
 
         private void OnFieldAdded(string path, SerializableProperty.FieldType type)

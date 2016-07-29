@@ -52,6 +52,8 @@ namespace BansheeEditor
         private Vector2I contextClickPosition;
 
         private EdAnimationCurve[] curves = new EdAnimationCurve[0];
+        private float xRange;
+        private float yRange;
 
         private int markedFrameIdx;
         private List<SelectedKeyframes> selectedKeyframes = new List<SelectedKeyframes>();
@@ -63,6 +65,22 @@ namespace BansheeEditor
         private List<DraggedKeyframes> draggedKeyframes = new List<DraggedKeyframes>();
         private TangentRef draggedTangent;
         private Vector2I dragStart;
+
+        /// <summary>
+        /// Returns the displayed range of the curve on the x axis (time).
+        /// </summary>
+        public float XRange
+        {
+            get { return xRange; }
+        }
+
+        /// <summary>
+        /// Returns the displayed range of the curve on the y axis.
+        /// </summary>
+        public float YRange
+        {
+            get { return yRange; }
+        }
 
         public GUICurveEditor(EditorWindow window, GUILayout gui, int width, int height)
         {
@@ -376,12 +394,15 @@ namespace BansheeEditor
         /// </summary>
         /// <param name="xRange">Range of the horizontal area. Displayed area will range from [0, xRange].</param>
         /// <param name="yRange">Range of the vertical area. Displayed area will range from 
-        ///                      [-yRange * 0.5, yRange * 0.5]</param>
+        ///                      [-yRange, yRange]</param>
         public void SetRange(float xRange, float yRange)
         {
+            this.xRange = xRange;
+            this.yRange = yRange;
+
             guiTimeline.SetRange(xRange);
-            guiCurveDrawing.SetRange(xRange, yRange);
-            guiSidebar.SetRange(yRange * -0.5f, yRange * 0.5f);
+            guiCurveDrawing.SetRange(xRange, yRange * 2.0f);
+            guiSidebar.SetRange(yRange, yRange);
 
             Redraw();
         }
