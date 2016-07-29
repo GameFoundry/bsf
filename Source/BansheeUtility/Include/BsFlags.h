@@ -240,49 +240,30 @@ namespace BansheeEngine
 	 */
 	template<class Enum, class Storage> struct RTTIPlainType<Flags<Enum, Storage>>
 	{	
-		enum { id = TID_Pair }; enum { hasDynamicSize = 0 };
+		enum { id = TID_Flags }; enum { hasDynamicSize = 0 };
 
 		/** @copydoc RTTIPlainType::toMemory */
 		static void toMemory(const Flags<Enum, Storage>& data, char* memory)
 		{ 
-			UINT32 size = sizeof(UINT32);
-			char* memoryStart = memory;
-			memory += sizeof(UINT32);
-
 			Storage storageData = (Storage)data;
-
-			size += RTTIPlainType<Storage>::getDynamicSize(storageData);
 			RTTIPlainType<Storage>::toMemory(storageData, memory);
-
-			memcpy(memoryStart, &size, sizeof(UINT32));
 		}
 
 		/** @copydoc RTTIPlainType::fromMemory */
 		static UINT32 fromMemory(Flags<Enum, Storage>& data, char* memory)
 		{ 
-			UINT32 size = 0;
-			memcpy(&size, memory, sizeof(UINT32));
-			memory += sizeof(UINT32);
-
 			Storage storageData;
 			RTTIPlainType<Storage>::fromMemory(storageData, memory);
 
 			data = Flags<Enum, Storage>(storageData);
-
-			return size;
+			return sizeof(Flags<Enum, Storage>);
 		}
 
 		/** @copydoc RTTIPlainType::getDynamicSize */
 		static UINT32 getDynamicSize(const Flags<Enum, Storage>& data)
 		{ 
-			UINT64 dataSize = sizeof(UINT32);
-
-			Storage storageData = (Storage)data;
-			dataSize += RTTIPlainType<Storage>::getDynamicSize(storageData);
-
-			assert(dataSize <= std::numeric_limits<UINT32>::max());
-
-			return (UINT32)dataSize;
+			assert(false);
+			return sizeof(Flags<Enum, Storage>);
 		}	
 	}; 
 

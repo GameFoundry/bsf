@@ -258,6 +258,7 @@ namespace BansheeEngine
 	{
 	public:
 		ManagedSerializableMemberInfo();
+		virtual ~ManagedSerializableMemberInfo() {}
 
 		/**	Determines should the member be serialized when serializing the parent object. */
 		bool isSerializable() const { return mFlags.isSet(ScriptFieldFlag::Serializable); }
