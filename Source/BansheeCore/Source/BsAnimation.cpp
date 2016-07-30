@@ -3,6 +3,7 @@
 #include "BsAnimation.h"
 #include "BsAnimationManager.h"
 #include "BsAnimationClip.h"
+#include "BsAnimationUtility.h"
 
 namespace BansheeEngine
 {
@@ -759,6 +760,44 @@ namespace BansheeEngine
 
 		clipInfo->state = state;
 		mDirty |= AnimDirtyStateFlag::Value;
+	}
+
+	void Animation::triggerEvents(float lastFrameTime, float delta)
+	{
+		for (auto& clipInfo : mClipInfos)
+		{
+			if (!clipInfo.clip.isLoaded())
+				continue;
+
+			const Vector<AnimationEvent>& events = clipInfo.clip->getEvents();
+			bool loop = clipInfo.state.wrapMode == AnimWrapMode::Loop;
+
+			float start = lastFrameTime;
+			float end = start + delta;
+
+			float clipLength = clipInfo.clip->getLength();
+			AnimationUtility::wrapTime(start, 0.0f, clipLength, loop);
+			AnimationUtility::wrapTime(end, 0.0f, clipLength, false);
+
+			for (auto& event : events)
+			{
+				if (event.time > start && event.time <= end)
+					onEventTriggered(clipInfo.clip, event.name);
+			}
+
+			// Check the looped portion
+			if(loop && end >= clipLength)
+			{
+				start = 0.0f;
+				end = end - clipLength;
+
+				for (auto& event : events)
+				{
+					if (event.time > start && event.time <= end)
+						onEventTriggered(clipInfo.clip, event.name);
+				}
+			}
+		}
 	}
 
 	SPtr<Animation> Animation::create()

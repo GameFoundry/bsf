@@ -81,15 +81,16 @@ namespace BansheeEngine
 	}
 
 	AnimationClip::AnimationClip()
-		: Resource(false), mVersion(0), mCurves(bs_shared_ptr_new<AnimationCurves>()), mIsAdditive(false)
+		: Resource(false), mVersion(0), mCurves(bs_shared_ptr_new<AnimationCurves>()), mIsAdditive(false), mLength(0.0f)
 	{
 
 	}
 
 	AnimationClip::AnimationClip(const SPtr<AnimationCurves>& curves, bool isAdditive)
-		: Resource(false), mVersion(0), mCurves(curves), mIsAdditive(isAdditive)
+		: Resource(false), mVersion(0), mCurves(curves), mIsAdditive(isAdditive), mLength(0.0f)
 	{
-
+		buildNameMapping();
+		calculateLength();
 	}
 
 	HAnimationClip AnimationClip::create(bool isAdditive)
@@ -128,7 +129,25 @@ namespace BansheeEngine
 		*mCurves = curves;
 
 		buildNameMapping();
+		calculateLength();
 		mVersion++;
+	}
+
+	void AnimationClip::calculateLength()
+	{
+		mLength = 0.0f;
+
+		for (auto& entry : mCurves->position)
+			mLength = std::max(mLength, entry.curve.getLength());
+
+		for (auto& entry : mCurves->rotation)
+			mLength = std::max(mLength, entry.curve.getLength());
+
+		for (auto& entry : mCurves->scale)
+			mLength = std::max(mLength, entry.curve.getLength());
+
+		for (auto& entry : mCurves->generic)
+			mLength = std::max(mLength, entry.curve.getLength());
 	}
 
 	void AnimationClip::buildNameMapping()

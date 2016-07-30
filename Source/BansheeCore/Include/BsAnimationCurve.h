@@ -87,6 +87,9 @@ namespace BansheeEngine
 		 */
 		void makeAdditive();
 
+		/** Returns the length of the animation curve, from time zero to last keyframe. */
+		float getLength() const { return mEnd; }
+
 		/** Returns the total number of key-frames in the curve. */
 		UINT32 getNumKeyFrames() const { return (UINT32)mKeyframes.size(); }
 
@@ -142,9 +145,6 @@ namespace BansheeEngine
 		 * @return						Interpolated value from the curve at provided time.
 		 */
 		T evaluateCache(float time, const TCurveCache<T>& animInstance) const;
-
-		/** Clamps the time argument to valid range. */
-		void clampTime(float& time, bool loop) const;
 
 		static const UINT32 CACHE_LOOKAHEAD;
 

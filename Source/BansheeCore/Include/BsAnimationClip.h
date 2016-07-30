@@ -73,6 +73,21 @@ namespace BansheeEngine
 		Vector<TNamedAnimationCurve<float>> generic;
 	};
 
+	/** Event that is triggered when animation reaches a certain point. */
+	struct AnimationEvent
+	{
+		AnimationEvent()
+			:time(0.0f)
+		{ }
+
+		AnimationEvent(const String& name, float time)
+			:name(name), time(time)
+		{ }
+
+		String name;
+		float time;
+	};
+
 	/** Types of curves in an AnimationClip. */
 	enum class CurveType
 	{
@@ -100,6 +115,12 @@ namespace BansheeEngine
 		/** Assigns a new set of curves to be used by the animation. The clip will store a copy of this object.*/
 		void setCurves(const AnimationCurves& curves);
 
+		/** Returns all events that will be triggered by the animation. */
+		const Vector<AnimationEvent>& getEvents() const { return mEvents; }
+
+		/** Sets events that will be triggered as the animation is playing. */
+		void setEvents(const Vector<AnimationEvent>& events) { mEvents = events; }
+
 		/**
 		 * Maps skeleton bone names to animation clip names, and returns a set of indices that can be easily used for
 		 * locating an animation curve based on the bone index.
@@ -116,6 +137,9 @@ namespace BansheeEngine
 		 * other clips.
 		 */
 		bool isAdditive() const { return mIsAdditive; }
+
+		/** Returns the length of the animation clip, in seconds. */
+		float getLength() const { return mLength; }
 
 		/** 
 		 * Returns a version that can be used for detecting modifications on the clip by external systems. Whenever the clip
@@ -158,6 +182,9 @@ namespace BansheeEngine
 		/** Creates a name -> curve index mapping for quicker curve lookup by name. */
 		void buildNameMapping();
 
+		/** Calculate the length of the clip based on assigned curves. */
+		void calculateLength();
+
 		UINT64 mVersion;
 
 		/** 
@@ -172,7 +199,9 @@ namespace BansheeEngine
 		 */
 		UnorderedMap<String, UINT32[4]> mNameMapping;
 
+		Vector<AnimationEvent> mEvents;
 		bool mIsAdditive;
+		float mLength;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

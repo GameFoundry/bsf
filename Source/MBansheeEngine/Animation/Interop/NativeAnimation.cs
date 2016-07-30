@@ -23,6 +23,8 @@ namespace BansheeEngine
             set { Internal_SetSpeed(mCachedPtr, value); }
         }
 
+        public Action<AnimationClip, string> OnEventTriggered;
+
         public void Play(AnimationClip clip)
         {
             IntPtr clipPtr = IntPtr.Zero;
@@ -107,6 +109,11 @@ namespace BansheeEngine
         internal void Destroy()
         {
             Internal_Destroy(mCachedPtr);
+        }
+
+        private void Internal_OnEventTriggered(AnimationClip clip, string name)
+        {
+            OnEventTriggered?.Invoke(clip, name);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

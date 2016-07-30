@@ -5,6 +5,7 @@
 #include "BsVector3.h"
 #include "BsQuaternion.h"
 #include "BsMath.h"
+#include "BsAnimationUtility.h"
 
 namespace BansheeEngine
 {
@@ -256,7 +257,7 @@ namespace BansheeEngine
 		if (mKeyframes.size() == 0)
 			return T();
 
-		clampTime(time, loop);
+		AnimationUtility::wrapTime(time, mStart, mEnd, loop);
 
 		UINT32 leftKeyIdx;
 		UINT32 rightKeyIdx;
@@ -298,7 +299,7 @@ namespace BansheeEngine
 		if (mKeyframes.size() == 0)
 			return TKeyframe<T>();
 
-		clampTime(time, loop);
+		AnimationUtility::wrapTime(time, mStart, mEnd, loop);
 
 		UINT32 leftKeyIdx;
 		UINT32 rightKeyIdx;
@@ -506,28 +507,6 @@ namespace BansheeEngine
 
 		for(UINT32 i = 1; i < numKeys; i++)
 			mKeyframes[i].value = getDiff(mKeyframes[i].value, refKey.value);
-	}
-
-	template <class T>
-	void TAnimationCurve<T>::clampTime(float& time, bool loop) const
-	{
-		// Clamp to start or loop
-		if (time < mStart)
-		{
-			if (loop)
-				time = time - std::floor(time / mLength) * mLength;
-			else // Clamping
-				time = mStart;
-		}
-
-		// Clamp to end or loop
-		if (time > mEnd)
-		{
-			if (loop)
-				time = time - std::floor(time / mLength) * mLength;
-			else // Clamping
-				time = mEnd;
-		}
 	}
 
 	template class TAnimationCurve<Vector3>;

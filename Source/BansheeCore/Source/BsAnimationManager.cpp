@@ -39,6 +39,10 @@ namespace BansheeEngine
 		// Make sure we don't load obsolete skeletal pose and other evaluation ouputs written by the animation thread
 		std::atomic_thread_fence(std::memory_order_acquire);
 
+		// Trigger events
+		for (auto& anim : mAnimations)
+			anim.second->triggerEvents(mAnimationTime, gTime().getFrameDelta());
+
 		// TODO - Write TRS animation results to relevant SceneObjects
 		// TODO - Transfer generic curve evaluated data back to Animation
 
