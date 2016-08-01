@@ -23,6 +23,7 @@ namespace BansheeEngine
 			BS_RTTI_MEMBER_PLAIN(mUUID, 1)
 			BS_RTTI_MEMBER_PLAIN(mTypeId, 2)
 			BS_RTTI_MEMBER_REFLPTR(mResourceMeta, 3)
+			BS_RTTI_MEMBER_REFLPTR(mUserData, 4)
 		BS_END_RTTI_MEMBERS
 	public:
 		ProjectResourceMetaRTTI()

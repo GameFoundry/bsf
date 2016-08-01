@@ -44,6 +44,12 @@ namespace BansheeEngine
 		/**	Returns the RTTI type ID of the resource this object is referencing. */
 		UINT32 getTypeID() const { return mTypeId; }
 
+		/** 
+		 * Returns additional data attached to the resource meta by the user. This is non-specific data and can contain
+		 * anything the user requires. 
+		 */
+		SPtr<IReflectable> getUserData() const { return mUserData; }
+
 	private:
 		friend class ProjectLibrary;
 
@@ -51,6 +57,7 @@ namespace BansheeEngine
 		String mUUID;
 		SPtr<ResourceMetaData> mResourceMeta;
 		UINT32 mTypeId;
+		SPtr<IReflectable> mUserData;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -62,7 +69,7 @@ namespace BansheeEngine
 	public:
 		friend class ProjectResourceMetaRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const override;	
+		RTTITypeBase* getRTTI() const override;	
 	};
 
 	/**	
@@ -129,7 +136,7 @@ namespace BansheeEngine
 	public:
 		friend class ProjectFileMetaRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const override;	
+		RTTITypeBase* getRTTI() const override;	
 	};
 
 	/** @} */

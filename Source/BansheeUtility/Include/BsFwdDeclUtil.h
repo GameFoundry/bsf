@@ -112,6 +112,7 @@ namespace BansheeEngine
 		TID_SerializedSubObject = 65,
 		TID_UnorderedSet = 66,
 		TID_SerializedDataBlock = 67,
-		TID_Flags = 68
+		TID_Flags = 68,
+		TID_IReflectable = 69
 	};
 }
