@@ -128,7 +128,10 @@ namespace BansheeEngine
 	void CAnimation::restoreInternal()
 	{
 		if (mInternal == nullptr)
+		{
 			mInternal = Animation::create();
+			mInternal->onEventTriggered.connect(std::bind(&CAnimation::eventTriggered, this, _1, _2));
+		}
 
 		mInternal->setWrapMode(mWrapMode);
 		mInternal->setSpeed(mSpeed);
@@ -159,6 +162,11 @@ namespace BansheeEngine
 
 		// This should release the last reference and destroy the internal listener
 		mInternal = nullptr;
+	}
+
+	void CAnimation::eventTriggered(const HAnimationClip& clip, const String& name)
+	{
+		onEventTriggered(clip, name);
 	}
 
 	RTTITypeBase* CAnimation::getRTTIStatic()

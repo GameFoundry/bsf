@@ -20,43 +20,28 @@ namespace BansheeEngine
 		/** @copydoc RTTIPlainType::toMemory */
 		static void toMemory(const TKeyframe<T>& data, char* memory)
 		{
-			UINT32 size = sizeof(UINT32);
-			char* memoryStart = memory;
-			memory += sizeof(UINT32);
-
-			memory = rttiWriteElem(data.value, memory, size);
-			memory = rttiWriteElem(data.inTangent, memory, size);
-			memory = rttiWriteElem(data.outTangent, memory, size);
-			memory = rttiWriteElem(data.time, memory, size);
-
-			memcpy(memoryStart, &size, sizeof(UINT32));
+			memory = rttiWriteElem(data.value, memory);
+			memory = rttiWriteElem(data.inTangent, memory);
+			memory = rttiWriteElem(data.outTangent, memory);
+			memory = rttiWriteElem(data.time, memory);
 		}
 
 		/** @copydoc RTTIPlainType::fromMemory */
 		static UINT32 fromMemory(TKeyframe<T>& data, char* memory)
 		{
-			UINT32 size = 0;
-			memory = rttiReadElem(size, memory);
 			memory = rttiReadElem(data.value, memory);
 			memory = rttiReadElem(data.inTangent, memory);
 			memory = rttiReadElem(data.outTangent, memory);
 			memory = rttiReadElem(data.time, memory);
 			
-			return size;
+			return sizeof(TKeyframe<T>);
 		}
 
 		/** @copydoc RTTIPlainType::getDynamicSize */
 		static UINT32 getDynamicSize(const TKeyframe<T>& data)
 		{
-			UINT64 dataSize = sizeof(UINT32);
-			dataSize += rttiGetElemSize(data.value);
-			dataSize += rttiGetElemSize(data.inTangent);
-			dataSize += rttiGetElemSize(data.outTangent);
-			dataSize += rttiGetElemSize(data.time);
-
-			assert(dataSize <= std::numeric_limits<UINT32>::max());
-
-			return (UINT32)dataSize;
+			assert(false);
+			return sizeof(TKeyframe<T>);
 		}
 	};
 

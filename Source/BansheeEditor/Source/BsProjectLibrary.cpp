@@ -1141,6 +1141,37 @@ namespace BansheeEngine
 		fs.encode(resEntry->meta.get());
 	}
 
+	void ProjectLibrary::setUserData(const Path& path, const SPtr<IReflectable>& userData)
+	{
+		LibraryEntry* entry = findEntry(path);
+
+		if (entry == nullptr || entry->type == LibraryEntryType::Directory)
+			return;
+
+		FileEntry* fileEntry = static_cast<FileEntry*>(entry);
+		if (fileEntry->meta == nullptr)
+			return;
+
+		SPtr<ProjectResourceMeta> resMeta;
+		auto& resourceMetas = fileEntry->meta->getResourceMetaData();
+		for (auto& resMetaEntry : resourceMetas)
+		{
+			if (resMeta->getUniqueName() == path.getWTail())
+				resMeta = resMetaEntry;
+		}
+
+		if (resMeta == nullptr)
+			return;
+
+		resMeta->mUserData = userData;
+
+		Path metaPath = fileEntry->path;
+		metaPath.setFilename(metaPath.getWFilename() + L".meta");
+
+		FileEncoder fs(metaPath);
+		fs.encode(fileEntry->meta.get());
+	}
+
 	Vector<ProjectLibrary::FileEntry*> ProjectLibrary::getResourcesForBuild() const
 	{
 		Vector<FileEntry*> output;

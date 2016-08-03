@@ -52,6 +52,8 @@ namespace BansheeEditor
         private Vector2I contextClickPosition;
 
         private EdAnimationCurve[] curves = new EdAnimationCurve[0];
+        private float xRange;
+        private float yRange;
 
         private int markedFrameIdx;
         private List<SelectedKeyframes> selectedKeyframes = new List<SelectedKeyframes>();
@@ -64,6 +66,27 @@ namespace BansheeEditor
         private TangentRef draggedTangent;
         private Vector2I dragStart;
 
+        /// <summary>
+        /// Triggers whenever user selects a new frame.
+        /// </summary>
+        public Action<int> OnFrameSelected;
+
+        /// <summary>
+        /// Returns the displayed range of the curve on the x axis (time).
+        /// </summary>
+        public float XRange
+        {
+            get { return xRange; }
+        }
+
+        /// <summary>
+        /// Returns the displayed range of the curve on the y axis.
+        /// </summary>
+        public float YRange
+        {
+            get { return yRange; }
+        }
+
         public GUICurveEditor(EditorWindow window, GUILayout gui, int width, int height)
         {
             this.window = window;
@@ -71,7 +94,6 @@ namespace BansheeEditor
 
             blankContextMenu = new ContextMenu();
             blankContextMenu.AddItem("Add keyframe", AddKeyframeAtPosition);
-            blankContextMenu.AddItem("Add event", AddEventAtPosition);
 
             keyframeContextMenu = new ContextMenu();
             keyframeContextMenu.AddItem("Delete", DeleteSelectedKeyframes);
@@ -154,6 +176,8 @@ namespace BansheeEditor
 
                     if (frameIdx != -1)
                         SetMarkedFrame(frameIdx);
+
+                    OnFrameSelected?.Invoke(frameIdx);
                 }
 
                 isPointerHeld = true;
@@ -325,6 +349,8 @@ namespace BansheeEditor
 
                     if (frameIdx != -1)
                         SetMarkedFrame(frameIdx);
+
+                    OnFrameSelected?.Invoke(frameIdx);
                 }
             }
         }
@@ -352,8 +378,6 @@ namespace BansheeEditor
             this.curves = curves;
             guiCurveDrawing.SetCurves(curves);
 
-            // TODO - Recalculate valid size
-
             Redraw();
         }
 
@@ -376,12 +400,15 @@ namespace BansheeEditor
         /// </summary>
         /// <param name="xRange">Range of the horizontal area. Displayed area will range from [0, xRange].</param>
         /// <param name="yRange">Range of the vertical area. Displayed area will range from 
-        ///                      [-yRange * 0.5, yRange * 0.5]</param>
+        ///                      [-yRange, yRange]</param>
         public void SetRange(float xRange, float yRange)
         {
+            this.xRange = xRange;
+            this.yRange = yRange;
+
             guiTimeline.SetRange(xRange);
-            guiCurveDrawing.SetRange(xRange, yRange);
-            guiSidebar.SetRange(yRange * -0.5f, yRange * 0.5f);
+            guiCurveDrawing.SetRange(xRange, yRange * 2.0f);
+            guiSidebar.SetRange(yRange, yRange);
 
             Redraw();
         }
@@ -396,6 +423,16 @@ namespace BansheeEditor
             guiCurveDrawing.SetFPS(fps);
 
             Redraw();
+        }
+
+        /// <summary>
+        /// Returns time for a frame with the specified index. Depends on set range and FPS.
+        /// </summary>
+        /// <param name="frameIdx">Index of the frame (not a key-frame) to get the time for.</param>
+        /// <returns>Time of the frame with the provided index. </returns>
+        public float GetTimeForFrame(int frameIdx)
+        {
+            return guiCurveDrawing.GetTimeForFrame(markedFrameIdx);
         }
 
         /// <summary>
@@ -502,11 +539,6 @@ namespace BansheeEditor
 
                 guiCurveDrawing.Rebuild();
             }
-        }
-
-        private void AddEventAtPosition()
-        {
-            // TODO
         }
 
         private void DeleteSelectedKeyframes()

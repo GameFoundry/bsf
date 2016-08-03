@@ -29,6 +29,32 @@ namespace BansheeEngine
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
+		static MonoObject* internal_GetAnimationCurves(ScriptAnimationClip* thisPtr);
+		static void internal_SetAnimationCurves(ScriptAnimationClip* thisPtr, MonoObject* curves);
+		static MonoArray* internal_GetAnimationEvents(ScriptAnimationClip* thisPtr);
+		static void internal_SetAnimationEvents(ScriptAnimationClip* thisPtr, MonoArray* events);
+		static float internal_GetLength(ScriptAnimationClip* thisPtr);
+	};
+
+	/**	Interop class between C++ & CLR for AnimationEvent. */
+	class BS_SCR_BE_EXPORT ScriptAnimationEvent : public ScriptObject<ScriptAnimationEvent>
+	{
+	public:
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "AnimationEvent")
+
+		/** Converts managed animation event its native counterpart. */
+		static AnimationEvent toNative(MonoObject* object);
+
+		/** Converts native animation event to its managed counterpart. */
+		static MonoObject* toManaged(const AnimationEvent& event);
+	private:
+		ScriptAnimationEvent(MonoObject* instance);
+
+		/************************************************************************/
+		/* 								CLR HOOKS						   		*/
+		/************************************************************************/
+		static MonoField* sNameField;
+		static MonoField* sTimeField;
 	};
 
 	/** @} */

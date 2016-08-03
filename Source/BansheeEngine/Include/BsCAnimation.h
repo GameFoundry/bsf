@@ -66,6 +66,9 @@ namespace BansheeEngine
 		/** @copydoc Animation::setState */
 		void setState(const HAnimationClip& clip, AnimationClipState state);
 
+		/** Triggered whenever an animation event is reached. */
+		Event<void(const HAnimationClip&, const String&)> onEventTriggered;
+
 		/** @name Internal
 		 *  @{
 		 */
@@ -100,6 +103,9 @@ namespace BansheeEngine
 
 		/** Destroys the internal Animation representation. */
 		void destroyInternal();
+
+		/** Callback triggered whenever an animation event is triggered. */
+		void eventTriggered(const HAnimationClip& clip, const String& name);
 
 		SPtr<Animation> mInternal;
 

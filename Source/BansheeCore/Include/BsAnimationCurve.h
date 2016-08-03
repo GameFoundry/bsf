@@ -60,6 +60,17 @@ namespace BansheeEngine
 		 */
 		T evaluate(float time, bool loop = true) const;
 
+		/**
+		 * Evaluate the animation curve at the specified time and returns a new keyframe containing the evaluated value
+		 * and tangents.
+		 *
+		 * @param[in]	time	Time to evaluate the curve at.		
+		 * @param[in]	loop	If true the curve will loop when it goes past the end or beggining. Otherwise the curve 
+		 *						value will be clamped.
+		 * @return				Keyframe containing the interpolated value and tangents at provided time.
+		 */
+		KeyFrame evaluateKey(float time, bool loop = true) const;
+
 		/** 
 		 * Splits a piece of the animation curve into a separate animation curve. 
 		 *
@@ -75,6 +86,9 @@ namespace BansheeEngine
 		 * reference keys.
 		 */
 		void makeAdditive();
+
+		/** Returns the length of the animation curve, from time zero to last keyframe. */
+		float getLength() const { return mEnd; }
 
 		/** Returns the total number of key-frames in the curve. */
 		UINT32 getNumKeyFrames() const { return (UINT32)mKeyframes.size(); }
@@ -120,7 +134,7 @@ namespace BansheeEngine
 		 * @param[in]	t		Curve time to interpolate the keys at.
 		 * @return				Interpolated key value.
 		 */
-		KeyFrame evaluateKey(const KeyFrame& lhs, const KeyFrame& rhs, float time);
+		KeyFrame evaluateKey(const KeyFrame& lhs, const KeyFrame& rhs, float time) const;
 
 		/** 
 		 * Evaluates a value at the cached curve. Caller must ensure the request time falls within the cached curve range.

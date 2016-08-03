@@ -3,17 +3,24 @@
 #include "BsScriptAnimation.h"
 #include "BsScriptMeta.h"
 #include "BsMonoField.h"
+#include "BsMonoMethod.h"
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
 #include "BsMonoUtil.h"
+#include "BsScriptResourceManager.h"
 #include "BsScriptAnimationClip.h"
+
+using namespace std::placeholders;
 
 namespace BansheeEngine
 {
+	ScriptAnimation::OnEventTriggeredThunkDef ScriptAnimation::sOnEventTriggeredThunk = nullptr;
+
 	ScriptAnimation::ScriptAnimation(MonoObject* managedInstance)
 		:ScriptObject(managedInstance), mAnimation(nullptr)
 	{
 		mAnimation = Animation::create();
+		mAnimation->onEventTriggered.connect(std::bind(&ScriptAnimation::eventTriggered, this, _1, _2));
 	}
 
 	ScriptAnimation::~ScriptAnimation()
@@ -39,6 +46,18 @@ namespace BansheeEngine
 
 		metaData.scriptClass->addInternalCall("Internal_GetState", &ScriptAnimation::internal_GetState);
 		metaData.scriptClass->addInternalCall("Internal_SetState", &ScriptAnimation::internal_SetState);
+
+		sOnEventTriggeredThunk = (OnEventTriggeredThunkDef)metaData.scriptClass->getMethod("Internal_OnEventTriggered", 2)->getThunk();
+	}
+
+	void ScriptAnimation::eventTriggered(const HAnimationClip& clip, const String& name)
+	{
+		ScriptAnimationClip* scriptClip = nullptr;
+		ScriptResourceManager::instance().getScriptResource(clip, &scriptClip, true);
+
+		MonoString* monoName = MonoUtil::stringToMono(name);
+
+		MonoUtil::invokeThunk(sOnEventTriggeredThunk, mManagedInstance, scriptClip->getManagedInstance(), monoName);
 	}
 
 	void ScriptAnimation::internal_Create(MonoObject* instance)

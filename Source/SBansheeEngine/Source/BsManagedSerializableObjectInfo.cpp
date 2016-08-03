@@ -94,7 +94,7 @@ namespace BansheeEngine
 	}
 
 	ManagedSerializableMemberInfo::ManagedSerializableMemberInfo()
-		:mFieldId(0), mFlags((ScriptFieldFlags)0)
+		:mFieldId(0), mFlags(0)
 	{
 
 	}
@@ -117,9 +117,8 @@ namespace BansheeEngine
 
 	float ManagedSerializableFieldInfo::getRangeMinimum() const
 	{
-		if (((UINT32)mFlags & (UINT32)ScriptFieldFlags::Range) != 0)
+		if (mFlags.isSet(ScriptFieldFlag::Range))
 		{
-
 			MonoClass* range = ScriptAssemblyManager::instance().getRangeAttribute();
 			if (range != nullptr)
 			{
@@ -133,9 +132,8 @@ namespace BansheeEngine
 
 	float ManagedSerializableFieldInfo::getRangeMaximum() const
 	{
-		if (((UINT32)mFlags & (UINT32)ScriptFieldFlags::Range) != 0)
+		if (mFlags.isSet(ScriptFieldFlag::Range))
 		{
-
 			MonoClass* range = ScriptAssemblyManager::instance().getRangeAttribute();
 			if (range != nullptr)
 			{
@@ -149,7 +147,7 @@ namespace BansheeEngine
 
 	bool ManagedSerializableFieldInfo::renderAsSlider() const
 	{
-		if (((UINT32)mFlags & (UINT32)ScriptFieldFlags::Range) != 0)
+		if (mFlags.isSet(ScriptFieldFlag::Range))
 		{
 			MonoClass* range = ScriptAssemblyManager::instance().getRangeAttribute();
 			if (range != nullptr)
@@ -165,9 +163,8 @@ namespace BansheeEngine
 
 	float ManagedSerializableFieldInfo::getStep() const
 	{
-		if (((UINT32)mFlags & (UINT32)ScriptFieldFlags::Step) != 0)
+		if (mFlags.isSet(ScriptFieldFlag::Step))
 		{
-
 			MonoClass* step = ScriptAssemblyManager::instance().getStepAttribute();
 			if (step != nullptr)
 			{
@@ -207,9 +204,8 @@ namespace BansheeEngine
 
 	float ManagedSerializablePropertyInfo::getRangeMinimum() const
 	{
-		if (((UINT32)mFlags & (UINT32)ScriptFieldFlags::Range) != 0)
+		if (mFlags.isSet(ScriptFieldFlag::Range))
 		{
-
 			MonoClass* range = ScriptAssemblyManager::instance().getRangeAttribute();
 			if (range != nullptr)
 			{
@@ -218,14 +214,14 @@ namespace BansheeEngine
 				return min;
 			}
 		}
+
 		return 0;
 	}
 
 	float ManagedSerializablePropertyInfo::getRangeMaximum() const
 	{
-		if (((UINT32)mFlags & (UINT32)ScriptFieldFlags::Range) != 0)
+		if (mFlags.isSet(ScriptFieldFlag::Range))
 		{
-
 			MonoClass* range = ScriptAssemblyManager::instance().getRangeAttribute();
 			if (range != nullptr)
 			{
@@ -234,12 +230,13 @@ namespace BansheeEngine
 				return max;
 			}
 		}
+
 		return 0;
 	}
 
 	bool ManagedSerializablePropertyInfo::renderAsSlider() const
 	{
-		if (((UINT32)mFlags & (UINT32)ScriptFieldFlags::Range) != 0)
+		if (mFlags.isSet(ScriptFieldFlag::Range))
 		{
 			MonoClass* range = ScriptAssemblyManager::instance().getRangeAttribute();
 			if (range != nullptr)
@@ -249,15 +246,15 @@ namespace BansheeEngine
 				return slider;
 			}
 		}
+
 		return false;
 	}
 
 
 	float ManagedSerializablePropertyInfo::getStep() const
 	{
-		if (((UINT32)mFlags & (UINT32)ScriptFieldFlags::Step) != 0)
+		if (mFlags.isSet(ScriptFieldFlag::Step))
 		{
-
 			MonoClass* step = ScriptAssemblyManager::instance().getStepAttribute();
 			if (step != nullptr)
 			{
@@ -266,6 +263,7 @@ namespace BansheeEngine
 				return value;
 			}
 		}
+
 		return 0;
 	}
 

@@ -47,6 +47,7 @@ namespace BansheeEngine
 	const char* BuiltinResources::IconFolder = "Icons\\";
 	const char* BuiltinResources::ShaderFolder = "Shaders\\";
 	const char* BuiltinResources::SkinFolder = "Skin\\";
+	const char* BuiltinResources::SkinSpritesFolder = "SkinSprites\\";
 	const char* BuiltinResources::ShaderIncludeFolder = "Includes\\";
 	const char* BuiltinResources::MeshFolder = "Meshes\\";
 	const char* BuiltinResources::TextureFolder = "Textures\\";
@@ -207,6 +208,7 @@ namespace BansheeEngine
 
 		mBuiltinDataFolder = Paths::getEngineDataPath();
 		mEngineSkinFolder = mBuiltinDataFolder + SkinFolder;
+		mEngineSkinSpritesFolder = mBuiltinDataFolder + SkinSpritesFolder;
 		mEngineCursorFolder = mBuiltinDataFolder + CursorFolder;
 		mEngineIconFolder = mBuiltinDataFolder + IconFolder;
 		mEngineShaderFolder = mBuiltinDataFolder + ShaderFolder;
@@ -355,7 +357,7 @@ namespace BansheeEngine
 		}
 
 		// Generate & save GUI sprite textures
-		BuiltinResourcesHelper::generateSpriteTextures(mEngineSkinFolder, mResourceManifest);
+		BuiltinResourcesHelper::generateSpriteTextures(mEngineSkinFolder, mEngineSkinSpritesFolder, mResourceManifest);
 
 		// Generate & save GUI skin
 		{
@@ -952,7 +954,7 @@ namespace BansheeEngine
 
 	HSpriteTexture BuiltinResources::getSkinTexture(const WString& name)
 	{
-		Path texturePath = mEngineSkinFolder;
+		Path texturePath = mEngineSkinSpritesFolder;
 		texturePath.append(L"sprite_" + name + L".asset");
 
 		return gResources().load<SpriteTexture>(texturePath);
@@ -1224,8 +1226,8 @@ namespace BansheeEngine
 			return true;
 		};
 
-		FileSystem::iterate(inputFolder, importResource);
-		FileSystem::iterate(outputFolder, gatherObsolete);
+		FileSystem::iterate(inputFolder, importResource, nullptr, false);
+		FileSystem::iterate(outputFolder, gatherObsolete, nullptr, false);
 
 		for (auto& obsoleteAssetPath : obsoleteAssets)
 			FileSystem::remove(obsoleteAssetPath);
@@ -1273,9 +1275,10 @@ namespace BansheeEngine
 		}
 	}
 
-	void BuiltinResourcesHelper::generateSpriteTextures(const Path& folder, const SPtr<ResourceManifest>& manifest)
+	void BuiltinResourcesHelper::generateSpriteTextures(const Path& input, const Path& output, 
+		const SPtr<ResourceManifest>& manifest)
 	{
-		if (!FileSystem::exists(folder))
+		if (!FileSystem::exists(input))
 			return;
 
 		Vector<Path> filesToProcess;
@@ -1286,22 +1289,55 @@ namespace BansheeEngine
 			return true;
 		};
 
-		FileSystem::iterate(folder, gather);
+		FileSystem::iterate(input, gather);
 
+		UnorderedSet<Path> outputAssets;
 		for (auto& filePath : filesToProcess)
 		{
-			Path outputPath = filePath;
-			outputPath.setFilename(L"sprite_" + outputPath.getWFilename());
+			Path relativePath = filePath.getRelative(input);
+			Path outputPath = output + relativePath;
+
+			outputPath.setFilename(L"sprite_" + filePath.getWFilename());
 
 			HTexture source = gResources().load<Texture>(filePath);
 
 			if (source != nullptr)
 			{
-				HSpriteTexture spriteTex = SpriteTexture::create(source);
-				Resources::instance().save(spriteTex, outputPath, true);
-				manifest->registerResource(spriteTex.getUUID(), outputPath);
+				HResource resource;
+				if (FileSystem::exists(outputPath))
+				{
+					resource = gResources().load(outputPath);
+					SPtr<SpriteTexture> spriteTex = SpriteTexture::_createPtr(source);
+
+					gResources().update(resource, spriteTex);
+					Resources::instance().save(resource, outputPath, true);
+					manifest->registerResource(resource.getUUID(), outputPath);
+				}
+				else
+				{
+					HSpriteTexture spriteTex = SpriteTexture::create(source);
+					Resources::instance().save(spriteTex, outputPath, true);
+					manifest->registerResource(spriteTex.getUUID(), outputPath);
+				}
+
+				outputAssets.insert(outputPath);
 			}
 		}
+
+		Vector<Path> obsoleteAssets;
+		auto gatherObsolete = [&](const Path& filePath)
+		{
+			auto iterFind = outputAssets.find(filePath);
+			if (iterFind == outputAssets.end())
+				obsoleteAssets.push_back(filePath);
+
+			return true;
+		};
+
+		FileSystem::iterate(output, gatherObsolete);
+
+		for (auto& obsoleteAssetPath : obsoleteAssets)
+			FileSystem::remove(obsoleteAssetPath);
 	}
 
 	void BuiltinResourcesHelper::writeTimestamp(const Path& file)

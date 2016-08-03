@@ -279,8 +279,19 @@ namespace BansheeEngine
 		 */
 		void setState(const HAnimationClip& clip, AnimationClipState state);
 
+		/** 
+		 * Triggers any events between the last frame and current one. 
+		 *
+		 * @param[in]	lastFrameTime	Time of the last frame.
+		 * @param[in]	delta			Difference between the last and this frame.
+		 */
+		void triggerEvents(float lastFrameTime, float delta);
+
 		/** Creates a new empty Animation object. */
 		static SPtr<Animation> create();
+
+		/** Triggered whenever an animation event is reached. */
+		Event<void(const HAnimationClip&, const String&)> onEventTriggered;
 
 		/** @name Internal 
 		 *  @{

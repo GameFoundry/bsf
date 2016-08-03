@@ -27,6 +27,9 @@ namespace BansheeEngine
 		ScriptAnimation(MonoObject* managedInstance);
 		~ScriptAnimation();
 
+		/** Callback triggered when animation event triggers. */
+		void eventTriggered(const HAnimationClip& clip, const String& name);
+
 		SPtr<Animation> mAnimation;
 
 		/************************************************************************/
@@ -50,6 +53,9 @@ namespace BansheeEngine
 
 		static bool internal_GetState(ScriptAnimation* thisPtr, ScriptAnimationClip* clip, AnimationClipState* state);
 		static void internal_SetState(ScriptAnimation* thisPtr, ScriptAnimationClip* clip, AnimationClipState* state);
+
+		typedef void(__stdcall *OnEventTriggeredThunkDef) (MonoObject*, MonoObject*, MonoString*, MonoException**);
+		static OnEventTriggeredThunkDef sOnEventTriggeredThunk;
 	};
 
 	/** Helper class for dealing with BlendSequentialClipInfo structure. */

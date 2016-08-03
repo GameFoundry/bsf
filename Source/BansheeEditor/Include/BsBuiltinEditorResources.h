@@ -228,15 +228,19 @@ namespace BansheeEngine
 		static const char* SkinFolder;
 		static const char* IconFolder;
 		static const char* ShaderIncludeFolder;
+		static const char* SpriteSubFolder;
 
 		Path BuiltinDataFolder;
 		Path EditorSkinFolder;
+		Path EditorSkinSpritesFolder;
 		Path EditorIconFolder;
+		Path EditorIconSpritesFolder;
 		Path EditorShaderFolder;
 		Path EditorShaderIncludeFolder;
 
 		Path BuiltinRawDataFolder;
 		Path EditorRawSkinFolder;
+		Path EditorRawIconsFolder;
 		Path EditorRawShaderIncludeFolder;
 		Path EditorRawShaderFolder;
 
@@ -357,6 +361,14 @@ namespace BansheeEngine
 		static const WString ScrollBarHandleVertNormalTex;
 		static const WString ScrollBarHandleVertHoverTex;
 		static const WString ScrollBarHandleVertActiveTex;
+
+		static const WString ScrollBarResizeableHandleHorzNormalTex;
+		static const WString ScrollBarResizeableHandleHorzHoverTex;
+		static const WString ScrollBarResizeableHandleHorzActiveTex;
+
+		static const WString ScrollBarResizeableHandleVertNormalTex;
+		static const WString ScrollBarResizeableHandleVertHoverTex;
+		static const WString ScrollBarResizeableHandleVertActiveTex;
 
 		static const WString ScrollBarHBgTex;
 		static const WString ScrollBarVBgTex;

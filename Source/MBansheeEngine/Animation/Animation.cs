@@ -321,6 +321,7 @@ namespace BansheeEngine
                 _native.Destroy();
 
             _native = new NativeAnimation();
+            _native.OnEventTriggered += EventTriggered;
 
             // Restore saved values after reset
             _native.WrapMode = serializableData.wrapMode;
@@ -357,6 +358,16 @@ namespace BansheeEngine
                 _native.Destroy();
                 _native = null;
             }
+        }
+
+        /// <summary>
+        /// Called whenever an animation event triggers.
+        /// </summary>
+        /// <param name="clip">Clip that the event originated from.</param>
+        /// <param name="name">Name of the event.</param>
+        private void EventTriggered(AnimationClip clip, string name)
+        {
+            // TODO - Find a scene object, component and method based on the event name, and call it
         }
 
         /// <summary>

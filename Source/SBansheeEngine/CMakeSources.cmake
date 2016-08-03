@@ -40,6 +40,7 @@ set(BS_SBANSHEEENGINE_SRC_WRAPPERS_GUI
 	"Source/BsScriptGUIWidget.cpp"
 	"Source/BsScriptGUI.cpp"
 	"Source/BsScriptGUICanvas.cpp"
+	"Source/BsScriptGUIScrollBar.cpp"
 )
 
 set(BS_SBANSHEEENGINE_INC_SERIALIZATION_RTTI
@@ -143,6 +144,7 @@ set(BS_SBANSHEEENGINE_INC_WRAPPERS
 	"Include/BsScriptAnimationClip.h"
 	"Include/BsScriptAnimation.h"
 	"Include/BsScriptAnimationCurve.h"
+	"Include/BsScriptAnimationCurves.h"
 )
 
 set(BS_SBANSHEEENGINE_INC_WRAPPERS_GUI
@@ -171,6 +173,7 @@ set(BS_SBANSHEEENGINE_INC_WRAPPERS_GUI
 	"Include/BsScriptGUIWidget.h"
 	"Include/BsScriptGUI.h"
 	"Include/BsScriptGUICanvas.h"
+	"Include/BsScriptGUIScrollBar.h"
 )
 
 set(BS_SBANSHEEENGINE_INC_WRAPPERS_PHYSICS
@@ -276,6 +279,7 @@ set(BS_SBANSHEEENGINE_SRC_WRAPPERS
 	"Source/BsScriptAnimationClip.cpp"
 	"Source/BsScriptAnimation.cpp"
 	"Source/BsScriptAnimationCurve.cpp"
+	"Source/BsScriptAnimationCurves.cpp"
 )
 
 set(BS_SBANSHEEENGINE_INC_SERIALIZATION

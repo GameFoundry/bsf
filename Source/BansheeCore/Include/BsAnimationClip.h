@@ -19,10 +19,73 @@ namespace BansheeEngine
 	/** A set of animation curves representing translation/rotation/scale and generic animation. */
 	struct AnimationCurves
 	{
+		/** 
+		 * Registers a new curve used for animating position. 
+		 *
+		 * @param[in]	name		Unique name of the curve. This name will be used mapping the curve to the relevant bone
+		 *							in a skeleton, if any.
+		 * @param[in]	curve		Curve to add to the clip.
+		 */
+		void addPositionCurve(const String& name, const TAnimationCurve<Vector3>& curve);
+
+		/** 
+		 * Registers a new curve used for animating rotation. 
+		 *
+		 * @param[in]	name		Unique name of the curve. This name will be used mapping the curve to the relevant bone
+		 *							in a skeleton, if any.
+		 * @param[in]	curve		Curve to add to the clip.
+		 */
+		void addRotationCurve(const String& name, const TAnimationCurve<Quaternion>& curve);
+
+		/** 
+		 * Registers a new curve used for animating scale. 
+		 *
+		 * @param[in]	name		Unique name of the curve. This name will be used mapping the curve to the relevant bone
+		 *							in a skeleton, if any.
+		 * @param[in]	curve		Curve to add to the clip.
+		 */
+		void addScaleCurve(const String& name, const TAnimationCurve<Vector3>& curve);
+
+		/** 
+		 * Registers a new curve used for generic animation.
+		 *
+		 * @param[in]	name		Unique name of the curve. This can be used for retrieving the value of the curve
+		 *							from animation.
+		 * @param[in]	curve		Curve to add to the clip.
+		 */
+		void addGenericCurve(const String& name, const TAnimationCurve<float>& curve);
+
+		/** Removes an existing curve from the clip. */
+		void removePositionCurve(const String& name);
+
+		/** Removes an existing curve from the clip. */
+		void removeRotationCurve(const String& name);
+
+		/** Removes an existing curve from the clip. */
+		void removeScaleCurve(const String& name);
+
+		/** Removes an existing curve from the clip. */
+		void removeGenericCurve(const String& name);
+
 		Vector<TNamedAnimationCurve<Vector3>> position;
 		Vector<TNamedAnimationCurve<Quaternion>> rotation;
 		Vector<TNamedAnimationCurve<Vector3>> scale;
 		Vector<TNamedAnimationCurve<float>> generic;
+	};
+
+	/** Event that is triggered when animation reaches a certain point. */
+	struct AnimationEvent
+	{
+		AnimationEvent()
+			:time(0.0f)
+		{ }
+
+		AnimationEvent(const String& name, float time)
+			:name(name), time(time)
+		{ }
+
+		String name;
+		float time;
 	};
 
 	/** Types of curves in an AnimationClip. */
@@ -44,90 +107,19 @@ namespace BansheeEngine
 		virtual ~AnimationClip() { }
 
 		/** 
-		 * Registers a new curve used for animating position. 
-		 *
-		 * @param[in]	name		Unique name of the curve. This name will be used mapping the curve to the relevant bone
-		 *							in a skeleton, if any.
-		 * @param[in]	curve		Curve to add to the clip.
-		 *
-		 * @note Adding a new curve to a clip is a relatively slow operations and shouldn't be done at runtime.
-		 */
-		void addPositionCurve(const String& name, const TAnimationCurve<Vector3>& curve);
-
-		/** 
-		 * Registers a new curve used for animating rotation. 
-		 *
-		 * @param[in]	name		Unique name of the curve. This name will be used mapping the curve to the relevant bone
-		 *							in a skeleton, if any.
-		 * @param[in]	curve		Curve to add to the clip.
-		 *
-		 * @note Adding a new curve to a clip is a relatively slow operations and shouldn't be done at runtime.
-		 */
-		void addRotationCurve(const String& name, const TAnimationCurve<Quaternion>& curve);
-
-		/** 
-		 * Registers a new curve used for animating scale. 
-		 *
-		 * @param[in]	name		Unique name of the curve. This name will be used mapping the curve to the relevant bone
-		 *							in a skeleton, if any.
-		 * @param[in]	curve		Curve to add to the clip.
-		 *
-		 * @note Adding a new curve to a clip is a relatively slow operations and shouldn't be done at runtime.
-		 */
-		void addScaleCurve(const String& name, const TAnimationCurve<Vector3>& curve);
-
-		/** 
-		 * Registers a new curve used for generic animation.
-		 *
-		 * @param[in]	name		Unique name of the curve. This can be used for retrieving the value of the curve
-		 *							from animation.
-		 * @param[in]	curve		Curve to add to the clip.
-		 *
-		 * @note Adding a new curve to a clip is a relatively slow operations and shouldn't be done at runtime.
-		 */
-		void addGenericCurve(const String& name, const TAnimationCurve<float>& curve);
-
-		/**
-		 * Removes an existing curve from the clip.
-		 *
-		 * @param[in]	name	Name of the curve to remove.
-		 *
-		 * @note Removing curve from a clip is a relatively slow operations and shouldn't be done at runtime.
-		 */
-		void removePositionCurve(const String& name);
-
-		/**
-		 * Removes an existing curve from the clip.
-		 *
-		 * @param[in]	name	Name of the curve to remove.
-		 *
-		 * @note Removing curve from a clip is a relatively slow operations and shouldn't be done at runtime.
-		 */
-		void removeRotationCurve(const String& name);
-
-		/**
-		 * Removes an existing curve from the clip.
-		 *
-		 * @param[in]	name	Name of the curve to remove.
-		 *
-		 * @note Removing curve from a clip is a relatively slow operations and shouldn't be done at runtime.
-		 */
-		void removeScaleCurve(const String& name);
-
-		/**
-		 * Removes an existing curve from the clip.
-		 *
-		 * @param[in]	name	Name of the curve to remove.
-		 *
-		 * @note Removing curve from a clip is a relatively slow operations and shouldn't be done at runtime.
-		 */
-		void removeGenericCurve(const String& name);
-
-		/** 
 		 * Returns all curves stored in the animation. Returned value will not be updated if the animation clip curves are
 		 * added or removed. Caller must monitor for changes and retrieve a new set of curves when that happens.
 		 */
 		SPtr<AnimationCurves> getCurves() const { return mCurves; }
+
+		/** Assigns a new set of curves to be used by the animation. The clip will store a copy of this object.*/
+		void setCurves(const AnimationCurves& curves);
+
+		/** Returns all events that will be triggered by the animation. */
+		const Vector<AnimationEvent>& getEvents() const { return mEvents; }
+
+		/** Sets events that will be triggered as the animation is playing. */
+		void setEvents(const Vector<AnimationEvent>& events) { mEvents = events; }
 
 		/**
 		 * Maps skeleton bone names to animation clip names, and returns a set of indices that can be easily used for
@@ -145,6 +137,9 @@ namespace BansheeEngine
 		 * other clips.
 		 */
 		bool isAdditive() const { return mIsAdditive; }
+
+		/** Returns the length of the animation clip, in seconds. */
+		float getLength() const { return mLength; }
 
 		/** 
 		 * Returns a version that can be used for detecting modifications on the clip by external systems. Whenever the clip
@@ -187,6 +182,9 @@ namespace BansheeEngine
 		/** Creates a name -> curve index mapping for quicker curve lookup by name. */
 		void buildNameMapping();
 
+		/** Calculate the length of the clip based on assigned curves. */
+		void calculateLength();
+
 		UINT64 mVersion;
 
 		/** 
@@ -201,7 +199,9 @@ namespace BansheeEngine
 		 */
 		UnorderedMap<String, UINT32[4]> mNameMapping;
 
+		Vector<AnimationEvent> mEvents;
 		bool mIsAdditive;
+		float mLength;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

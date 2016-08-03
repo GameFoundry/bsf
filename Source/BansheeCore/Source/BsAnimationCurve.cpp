@@ -5,6 +5,7 @@
 #include "BsVector3.h"
 #include "BsQuaternion.h"
 #include "BsMath.h"
+#include "BsAnimationUtility.h"
 
 namespace BansheeEngine
 {
@@ -256,23 +257,7 @@ namespace BansheeEngine
 		if (mKeyframes.size() == 0)
 			return T();
 
-		// Clamp to start or loop
-		if (time < mStart)
-		{
-			if (loop)
-				time = time - std::floor(time / mLength) * mLength;
-			else // Clamping
-				time = mStart;
-		}
-
-		// Clamp to end or loop
-		if (time > mEnd)
-		{
-			if (loop)
-				time = time - std::floor(time / mLength) * mLength;
-			else // Clamping
-				time = mEnd;
-		}
+		AnimationUtility::wrapTime(time, mStart, mEnd, loop);
 
 		UINT32 leftKeyIdx;
 		UINT32 rightKeyIdx;
@@ -306,6 +291,25 @@ namespace BansheeEngine
 		setStepValue(leftKey, rightKey, output);
 
 		return output;
+	}
+
+	template <class T>
+	TKeyframe<T> TAnimationCurve<T>::evaluateKey(float time, bool loop) const
+	{
+		if (mKeyframes.size() == 0)
+			return TKeyframe<T>();
+
+		AnimationUtility::wrapTime(time, mStart, mEnd, loop);
+
+		UINT32 leftKeyIdx;
+		UINT32 rightKeyIdx;
+
+		findKeys(time, leftKeyIdx, rightKeyIdx);
+
+		const KeyFrame& leftKey = mKeyframes[leftKeyIdx];
+		const KeyFrame& rightKey = mKeyframes[rightKeyIdx];
+
+		return evaluateKey(leftKey, rightKey, time);
 	}
 
 	template <class T>
@@ -409,7 +413,7 @@ namespace BansheeEngine
 	}
 
 	template <class T>
-	TKeyframe<T> TAnimationCurve<T>::evaluateKey(const KeyFrame& lhs, const KeyFrame& rhs, float time)
+	TKeyframe<T> TAnimationCurve<T>::evaluateKey(const KeyFrame& lhs, const KeyFrame& rhs, float time) const
 	{
 		float length = rhs.time - lhs.time;
 		float t;
