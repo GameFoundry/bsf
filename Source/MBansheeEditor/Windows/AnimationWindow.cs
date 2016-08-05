@@ -16,52 +16,15 @@ namespace BansheeEditor
     [DefaultSize(900, 500)]
     internal class AnimationWindow : EditorWindow
     {
-        /// <summary>
-        /// A set of animation curves for a field of a certain type.
-        /// </summary>
-        private struct FieldCurves
-        {
-            public SerializableProperty.FieldType type;
-            public EdAnimationCurve[] curves;
-        }
-
         private const int FIELD_DISPLAY_WIDTH = 200;
+        private const int DRAG_START_DISTANCE = 3;
+        private const float DRAG_SCALE = 10.0f;
+        private const float ZOOM_SCALE = 15.0f;
 
         private bool isInitialized;
-        private GUIButton playButton;
-        private GUIButton recordButton;
-
-        private GUIButton prevFrameButton;
-        private GUIIntField frameInputField;
-        private GUIButton nextFrameButton;
-
-        private GUIButton addKeyframeButton;
-        private GUIButton addEventButton;
-
-        private GUIButton optionsButton;
-
-        private GUIButton addPropertyBtn;
-        private GUIButton delPropertyBtn;
-
-        private GUILayout buttonLayout;
-        private int buttonLayoutHeight;
-
-        private GUIPanel editorPanel;
-        private GUIAnimFieldDisplay guiFieldDisplay;
-        private GUICurveEditor guiCurveEditor;
-
         private SceneObject selectedSO;
-        private int currentFrameIdx;
-        private int fps = 1;
 
-        private Dictionary<string, FieldCurves> curves = new Dictionary<string, FieldCurves>();
-        private List<string> selectedFields = new List<string>();
-
-        internal int FPS
-        {
-            get { return fps; }
-            set { guiCurveEditor.SetFPS(value); fps = MathEx.Max(value, 1); }
-        }
+        #region Overrides
 
         /// <summary>
         /// Opens the animation window.
@@ -86,12 +49,15 @@ namespace BansheeEditor
             EditorInput.OnPointerReleased += OnPointerReleased;
             EditorInput.OnButtonUp += OnButtonUp;
 
-            Rebuild();
+            RebuildGUI();
         }
 
         private void OnEditorUpdate()
         {
+            if (!isInitialized)
+                return;
 
+            HandleDragAndZoomInput();
         }
 
         private void OnDestroy()
@@ -108,14 +74,40 @@ namespace BansheeEditor
             if (!isInitialized)
                 return;
 
-            guiFieldDisplay.SetSize(FIELD_DISPLAY_WIDTH, height - buttonLayoutHeight*2);
-
-            int curveEditorWidth = Math.Max(0, width - FIELD_DISPLAY_WIDTH);
-            guiCurveEditor.SetSize(curveEditorWidth, height - buttonLayoutHeight);
-            guiCurveEditor.Redraw();
+            ResizeGUI(width, height);
         }
+        #endregion
 
-        private void Rebuild()
+        #region GUI
+        private GUIButton playButton;
+        private GUIButton recordButton;
+
+        private GUIButton prevFrameButton;
+        private GUIIntField frameInputField;
+        private GUIButton nextFrameButton;
+
+        private GUIButton addKeyframeButton;
+        private GUIButton addEventButton;
+
+        private GUIButton optionsButton;
+
+        private GUIButton addPropertyBtn;
+        private GUIButton delPropertyBtn;
+
+        private GUILayout buttonLayout;
+
+        private int buttonLayoutHeight;
+        private int scrollBarWidth;
+        private int scrollBarHeight;
+
+        private GUIResizeableScrollBarH horzScrollBar;
+        private GUIResizeableScrollBarV vertScrollBar;
+
+        private GUIPanel editorPanel;
+        private GUIAnimFieldDisplay guiFieldDisplay;
+        private GUICurveEditor guiCurveEditor;
+
+        private void RebuildGUI()
         {
             GUI.Clear();
             selectedFields.Clear();
@@ -135,7 +127,7 @@ namespace BansheeEditor
                 horzLayout.AddFlexibleSpace();
                 horzLayout.AddElement(warningLbl);
                 horzLayout.AddFlexibleSpace();
-                
+
                 return;
             }
 
@@ -202,8 +194,6 @@ namespace BansheeEditor
             addKeyframeButton.OnClick += () =>
             {
                 guiCurveEditor.AddKeyFrameAtMarker();
-
-                // TODO - Update local curves?
             };
 
             addEventButton.OnClick += () =>
@@ -273,17 +263,218 @@ namespace BansheeEditor
             bottomButtonLayout.AddElement(addPropertyBtn);
             bottomButtonLayout.AddElement(delPropertyBtn);
 
+            horzScrollBar = new GUIResizeableScrollBarH();
+            horzScrollBar.OnScrollOrResize += OnHorzScrollOrResize;
+
+            vertScrollBar = new GUIResizeableScrollBarV();
+            vertScrollBar.OnScrollOrResize += OnVertScrollOrResize;
+
             GUILayout curveLayout = contentLayout.AddLayoutY();
+            GUILayout curveLayoutHorz = curveLayout.AddLayoutX();
+            GUILayout horzScrollBarLayout = curveLayout.AddLayoutX();
+            horzScrollBarLayout.AddElement(horzScrollBar);
+            horzScrollBarLayout.AddFlexibleSpace();
 
-            editorPanel = curveLayout.AddPanel();
+            editorPanel = curveLayoutHorz.AddPanel();
+            curveLayoutHorz.AddElement(vertScrollBar);
+            curveLayoutHorz.AddFlexibleSpace();
 
-            int curveEditorWidth = Math.Max(0, Width - FIELD_DISPLAY_WIDTH);
-            guiCurveEditor = new GUICurveEditor(this, editorPanel, curveEditorWidth, Height - buttonLayoutHeight);
+            scrollBarHeight = horzScrollBar.Bounds.height;
+            scrollBarWidth = vertScrollBar.Bounds.width;
+
+            Vector2I curveEditorSize = GetCurveEditorSize();
+            guiCurveEditor = new GUICurveEditor(this, editorPanel, curveEditorSize.x, curveEditorSize.y);
             guiCurveEditor.OnFrameSelected += OnFrameSelected;
             guiCurveEditor.Redraw();
 
+            horzScrollBar.SetWidth(curveEditorSize.x);
+            vertScrollBar.SetHeight(curveEditorSize.y);
+
             SetCurrentFrame(currentFrameIdx);
+            UpdateScrollBarSize();
+
             isInitialized = true;
+        }
+
+        private void ResizeGUI(int width, int height)
+        {
+            guiFieldDisplay.SetSize(FIELD_DISPLAY_WIDTH, height - buttonLayoutHeight * 2);
+
+            Vector2I curveEditorSize = GetCurveEditorSize();
+            guiCurveEditor.SetSize(curveEditorSize.x, curveEditorSize.y);
+            guiCurveEditor.Redraw();
+
+            horzScrollBar.SetWidth(curveEditorSize.x);
+            vertScrollBar.SetHeight(curveEditorSize.y);
+
+            UpdateScrollBarSize();
+            UpdateScrollBarPosition();
+        }
+        #endregion
+
+        #region Scroll, drag, zoom
+        private Vector2I dragStartPos;
+        private bool isButtonHeld;
+        private bool isDragInProgress;
+
+        private float zoomAmount;
+
+        private void HandleDragAndZoomInput()
+        {
+            // Handle middle mouse dragging
+            if (isDragInProgress)
+            {
+                float dragX = Input.GetAxisValue(InputAxis.MouseX) * DRAG_SCALE;
+                float dragY = Input.GetAxisValue(InputAxis.MouseY) * DRAG_SCALE;
+
+                Vector2 offset = guiCurveEditor.Offset;
+                offset.x = Math.Max(0.0f, offset.x + dragX);
+                offset.y += dragY;
+                
+                guiCurveEditor.Offset = offset;
+                UpdateScrollBarSize();
+                UpdateScrollBarPosition();
+            }
+
+            // Handle zoom in/out
+            float scroll = Input.GetAxisValue(InputAxis.MouseZ);
+            if (scroll != 0.0f)
+            {
+                Vector2I windowPos = ScreenToWindowPos(Input.PointerPosition);
+                Vector2 curvePos;
+                if (guiCurveEditor.WindowToCurveSpace(windowPos, out curvePos))
+                {
+                    float zoom = scroll * ZOOM_SCALE;
+                    Zoom(curvePos, zoom);
+                }
+            }
+        }
+
+        private void SetVertScrollbarProperties(float position, float size)
+        {
+            Vector2 visibleRange = guiCurveEditor.Range;
+            Vector2 totalRange = GetTotalRange();
+
+            visibleRange.y = totalRange.y*size;
+            guiCurveEditor.Range = visibleRange;
+
+            float scrollableRange = totalRange.y - visibleRange.y;
+
+            Vector2 offset = guiCurveEditor.Offset;
+            offset.y = scrollableRange * (position * 2.0f - 1.0f);
+
+            guiCurveEditor.Offset = offset;
+        }
+
+        private void SetHorzScrollbarProperties(float position, float size)
+        {
+            Vector2 visibleRange = guiCurveEditor.Range;
+            Vector2 totalRange = GetTotalRange();
+
+            visibleRange.x = totalRange.x * size;
+            guiCurveEditor.Range = visibleRange;
+
+            float scrollableRange = totalRange.x - visibleRange.x;
+
+            Vector2 offset = guiCurveEditor.Offset;
+            offset.x = scrollableRange * position;
+
+            guiCurveEditor.Offset = offset;
+        }
+
+        private void UpdateScrollBarSize()
+        {
+            Vector2 visibleRange = guiCurveEditor.Range;
+            Vector2 totalRange = GetTotalRange();
+
+            horzScrollBar.HandleSize = visibleRange.x / totalRange.x;
+            vertScrollBar.HandleSize = visibleRange.y / totalRange.y;
+        }
+
+        private void UpdateScrollBarPosition()
+        {
+            Vector2 visibleRange = guiCurveEditor.Range;
+            Vector2 totalRange = GetTotalRange();
+            Vector2 scrollableRange = totalRange - visibleRange;
+
+            Vector2 offset = guiCurveEditor.Offset;
+            // Transform Y from [-x, +x] range to [0, x]
+            offset.y += visibleRange.y;
+            offset.y /= 2.0f;
+
+            horzScrollBar.Position = offset.x / scrollableRange.x;
+            vertScrollBar.Position = offset.y / scrollableRange.y;
+        }
+
+        private Vector2 GetZoomedRange()
+        {
+            float zoomLevel = MathEx.Pow(2, zoomAmount);
+
+            Vector2 optimalRange = GetOptimalRange();
+            return optimalRange / zoomLevel;
+        }
+
+        private Vector2 GetTotalRange()
+        {
+            Vector2 visibleRange = guiCurveEditor.Range;
+            Vector2 totalRange = guiCurveEditor.Offset;
+            totalRange.x += visibleRange.x;
+            totalRange.y = Math.Abs(totalRange.y) + visibleRange.y;
+
+            Vector2 optimalRange = GetOptimalRange();
+            return Vector2.Max(totalRange, optimalRange);
+        }
+
+        private void Zoom(Vector2 curvePos, float amount)
+        {
+            Vector2 oldZoomedRange = GetZoomedRange();
+            zoomAmount += amount;
+            Vector2 zoomedRange = GetZoomedRange();
+
+            Vector2 zoomedDiff = zoomedRange - oldZoomedRange;
+            zoomedDiff.y *= 0.5f;
+
+            Vector2 currentRange = guiCurveEditor.Range;
+            Vector2 newRange = currentRange + zoomedDiff;
+
+            Vector2 offset = guiCurveEditor.Offset;
+            Vector2 relativePos = curvePos - offset;
+
+            relativePos.x /= currentRange.x;
+            relativePos.y /= currentRange.y;
+
+            relativePos.x = relativePos.x * 2.0f - 1.0f;
+            relativePos.y = relativePos.y * 2.0f - 1.0f;
+
+            offset.x += relativePos.x * zoomedDiff.x;
+            offset.y += relativePos.y * zoomedDiff.y * 2.0f;
+
+            guiCurveEditor.Offset = offset;
+            guiCurveEditor.Range = newRange;
+
+            UpdateScrollBarSize();
+            UpdateScrollBarPosition();
+        }
+        #endregion
+
+        #region Curve display
+        /// <summary>
+        /// A set of animation curves for a field of a certain type.
+        /// </summary>
+        private struct FieldCurves
+        {
+            public SerializableProperty.FieldType type;
+            public EdAnimationCurve[] curves;
+        }
+
+        private int currentFrameIdx;
+        private int fps = 1;
+        private Dictionary<string, FieldCurves> curves = new Dictionary<string, FieldCurves>();
+
+        internal int FPS
+        {
+            get { return fps; }
+            set { guiCurveEditor.SetFPS(value); fps = MathEx.Max(value, 1); }
         }
 
         private void SetCurrentFrame(int frameIdx)
@@ -307,14 +498,14 @@ namespace BansheeEditor
                     switch (kvp.Value.type)
                     {
                         case SerializableProperty.FieldType.Vector2:
-                        {
-                            Vector2 value = new Vector2();
+                            {
+                                Vector2 value = new Vector2();
 
-                            for(int i = 0; i < 2; i++)
-                                value[i] = kvp.Value.curves[i].Evaluate(time, false);
+                                for (int i = 0; i < 2; i++)
+                                    value[i] = kvp.Value.curves[i].Evaluate(time, false);
 
-                            fieldValue.value = value;
-                        }
+                                fieldValue.value = value;
+                            }
                             break;
                         case SerializableProperty.FieldType.Vector3:
                             {
@@ -360,53 +551,22 @@ namespace BansheeEditor
             guiFieldDisplay.SetDisplayValues(values.ToArray());
         }
 
-        private void OnPointerPressed(PointerEvent ev)
+        private Vector2 GetOptimalRange()
         {
-            if (!isInitialized)
-                return;
-
-            guiCurveEditor.OnPointerPressed(ev);
-        }
-
-        private void OnPointerMoved(PointerEvent ev)
-        {
-            if (!isInitialized)
-                return;
-
-            guiCurveEditor.OnPointerMoved(ev);
-        }
-
-        private void OnPointerReleased(PointerEvent ev)
-        {
-            if (!isInitialized)
-                return;
-
-            guiCurveEditor.OnPointerReleased(ev);
-        }
-
-        private void OnButtonUp(ButtonEvent ev)
-        {
-            if (!isInitialized)
-                return;
-
-            guiCurveEditor.OnButtonUp(ev);
-        }
-
-        private void UpdateDisplayedCurves()
-        {
-            List<EdAnimationCurve> curvesToDisplay = new List<EdAnimationCurve>();
+            List<EdAnimationCurve> displayedCurves = new List<EdAnimationCurve>();
             for (int i = 0; i < selectedFields.Count; i++)
             {
                 EdAnimationCurve curve;
-                if(TryGetCurve(selectedFields[i], out curve))
-                    curvesToDisplay.Add(curve);
+                if (TryGetCurve(selectedFields[i], out curve))
+                    displayedCurves.Add(curve);
             }
-
-            guiCurveEditor.SetCurves(curvesToDisplay.ToArray());
 
             float xRange;
             float yRange;
-            CalculateRange(curvesToDisplay, out xRange, out yRange);
+            CalculateRange(displayedCurves, out xRange, out yRange);
+
+            // Add padding to y range
+            yRange *= 1.05f;
 
             // Don't allow zero range
             if (xRange == 0.0f)
@@ -415,15 +575,169 @@ namespace BansheeEditor
             if (yRange == 0.0f)
                 yRange = 10.0f;
 
-            // Add padding to y range
-            yRange *= 1.05f;
+            return new Vector2(xRange, yRange);
+        }
+
+        private void UpdateDisplayedCurves()
+        {
+            List<EdAnimationCurve> curvesToDisplay = new List<EdAnimationCurve>();
+            for (int i = 0; i < selectedFields.Count; i++)
+            {
+                EdAnimationCurve curve;
+                if (TryGetCurve(selectedFields[i], out curve))
+                    curvesToDisplay.Add(curve);
+            }
+
+            guiCurveEditor.SetCurves(curvesToDisplay.ToArray());
+
+            Vector2 newRange = GetOptimalRange();
 
             // Don't reduce visible range
-            xRange = Math.Max(xRange, guiCurveEditor.XRange);
-            yRange = Math.Max(yRange, guiCurveEditor.YRange);
+            newRange.x = Math.Max(newRange.x, guiCurveEditor.Range.x);
+            newRange.y = Math.Max(newRange.y, guiCurveEditor.Range.y);
 
-            guiCurveEditor.SetRange(xRange, yRange);
-            guiCurveEditor.Redraw();
+            guiCurveEditor.Range = newRange;
+            UpdateScrollBarSize();
+        }
+        #endregion 
+
+        #region Field display
+        private List<string> selectedFields = new List<string>();
+
+        private void AddNewField(string path, SerializableProperty.FieldType type)
+        {
+            guiFieldDisplay.AddField(path);
+
+            switch (type)
+            {
+                case SerializableProperty.FieldType.Vector4:
+                    {
+                        FieldCurves fieldCurves = new FieldCurves();
+                        fieldCurves.type = type;
+                        fieldCurves.curves = new EdAnimationCurve[4];
+
+                        string[] subPaths = { ".x", ".y", ".z", ".w" };
+                        for (int i = 0; i < subPaths.Length; i++)
+                        {
+                            string subFieldPath = path + subPaths[i];
+                            fieldCurves.curves[i] = new EdAnimationCurve();
+                            selectedFields.Add(subFieldPath);
+                        }
+
+                        curves[path] = fieldCurves;
+                    }
+                    break;
+                case SerializableProperty.FieldType.Vector3:
+                    {
+                        FieldCurves fieldCurves = new FieldCurves();
+                        fieldCurves.type = type;
+                        fieldCurves.curves = new EdAnimationCurve[3];
+
+                        string[] subPaths = { ".x", ".y", ".z" };
+                        for (int i = 0; i < subPaths.Length; i++)
+                        {
+                            string subFieldPath = path + subPaths[i];
+                            fieldCurves.curves[i] = new EdAnimationCurve();
+                            selectedFields.Add(subFieldPath);
+                        }
+
+                        curves[path] = fieldCurves;
+                    }
+                    break;
+                case SerializableProperty.FieldType.Vector2:
+                    {
+                        FieldCurves fieldCurves = new FieldCurves();
+                        fieldCurves.type = type;
+                        fieldCurves.curves = new EdAnimationCurve[2];
+
+                        string[] subPaths = { ".x", ".y" };
+                        for (int i = 0; i < subPaths.Length; i++)
+                        {
+                            string subFieldPath = path + subPaths[i];
+                            fieldCurves.curves[i] = new EdAnimationCurve();
+                            selectedFields.Add(subFieldPath);
+                        }
+
+                        curves[path] = fieldCurves;
+                    }
+                    break;
+                case SerializableProperty.FieldType.Color:
+                    {
+                        FieldCurves fieldCurves = new FieldCurves();
+                        fieldCurves.type = type;
+                        fieldCurves.curves = new EdAnimationCurve[4];
+
+                        string[] subPaths = { ".r", ".g", ".b", ".a" };
+                        for (int i = 0; i < subPaths.Length; i++)
+                        {
+                            string subFieldPath = path + subPaths[i];
+                            fieldCurves.curves[i] = new EdAnimationCurve();
+                            selectedFields.Add(subFieldPath);
+                        }
+
+                        curves[path] = fieldCurves;
+                    }
+                    break;
+                default: // Primitive type
+                    {
+                        FieldCurves fieldCurves = new FieldCurves();
+                        fieldCurves.type = type;
+                        fieldCurves.curves = new EdAnimationCurve[1];
+
+                        fieldCurves.curves[0] = new EdAnimationCurve();
+                        selectedFields.Add(path);
+
+                        curves[path] = fieldCurves;
+                    }
+                    break;
+            }
+
+            UpdateDisplayedCurves();
+        }
+
+        private void SelectField(string path, bool additive)
+        {
+            if (!additive)
+                selectedFields.Clear();
+
+            if (!string.IsNullOrEmpty(path))
+            {
+                selectedFields.RemoveAll(x => { return x == path || IsPathParent(x, path); });
+                selectedFields.Add(path);
+            }
+
+            guiFieldDisplay.SetSelection(selectedFields.ToArray());
+
+            UpdateDisplayedCurves();
+        }
+
+        private void RemoveSelectedFields()
+        {
+            for (int i = 0; i < selectedFields.Count; i++)
+            {
+                selectedFields.Remove(selectedFields[i]);
+                curves.Remove(GetSubPathParent(selectedFields[i]));
+            }
+
+            List<string> existingFields = new List<string>();
+            foreach (var KVP in curves)
+                existingFields.Add(KVP.Key);
+
+            guiFieldDisplay.SetFields(existingFields.ToArray());
+
+            selectedFields.Clear();
+            UpdateDisplayedCurves();
+        }
+        #endregion
+
+        #region Helpers
+        private Vector2I GetCurveEditorSize()
+        {
+            Vector2I output = new Vector2I();
+            output.x = Math.Max(0, Width - FIELD_DISPLAY_WIDTH - scrollBarWidth);
+            output.y = Math.Max(0, Height - buttonLayoutHeight - scrollBarHeight);
+
+            return output;
         }
 
         private static void CalculateRange(List<EdAnimationCurve> curves, out float xRange, out float yRange)
@@ -495,97 +809,6 @@ namespace BansheeEditor
             return false;
         }
 
-        private void OnFieldAdded(string path, SerializableProperty.FieldType type)
-        {
-            guiFieldDisplay.AddField(path);
-
-            switch (type)
-            {
-                case SerializableProperty.FieldType.Vector4:
-                {
-                    FieldCurves fieldCurves = new FieldCurves();
-                    fieldCurves.type = type;
-                    fieldCurves.curves = new EdAnimationCurve[4];
-
-                    string[] subPaths = { ".x", ".y", ".z", ".w" };
-                    for (int i = 0; i < subPaths.Length; i++)
-                    {
-                        string subFieldPath = path + subPaths[i];
-                        fieldCurves.curves[i] = new EdAnimationCurve();
-                        selectedFields.Add(subFieldPath);
-                    }
-
-                    curves[path] = fieldCurves;
-                }
-                    break;
-                case SerializableProperty.FieldType.Vector3:
-                    {
-                        FieldCurves fieldCurves = new FieldCurves();
-                        fieldCurves.type = type;
-                        fieldCurves.curves = new EdAnimationCurve[3];
-
-                        string[] subPaths = { ".x", ".y", ".z" };
-                        for (int i = 0; i < subPaths.Length; i++)
-                        {
-                            string subFieldPath = path + subPaths[i];
-                            fieldCurves.curves[i] = new EdAnimationCurve();
-                            selectedFields.Add(subFieldPath);
-                        }
-
-                        curves[path] = fieldCurves;
-                    }
-                    break;
-                case SerializableProperty.FieldType.Vector2:
-                    {
-                        FieldCurves fieldCurves = new FieldCurves();
-                        fieldCurves.type = type;
-                        fieldCurves.curves = new EdAnimationCurve[2];
-
-                        string[] subPaths = { ".x", ".y" };
-                        for (int i = 0; i < subPaths.Length; i++)
-                        {
-                            string subFieldPath = path + subPaths[i];
-                            fieldCurves.curves[i] = new EdAnimationCurve();
-                            selectedFields.Add(subFieldPath);
-                        }
-
-                        curves[path] = fieldCurves;
-                    }
-                    break;
-                case SerializableProperty.FieldType.Color:
-                    {
-                        FieldCurves fieldCurves = new FieldCurves();
-                        fieldCurves.type = type;
-                        fieldCurves.curves = new EdAnimationCurve[4];
-
-                        string[] subPaths = { ".r", ".g", ".b", ".a" };
-                        for (int i = 0; i < subPaths.Length; i++)
-                        {
-                            string subFieldPath = path + subPaths[i];
-                            fieldCurves.curves[i] = new EdAnimationCurve();
-                            selectedFields.Add(subFieldPath);
-                        }
-
-                        curves[path] = fieldCurves;
-                    }
-                    break;
-                default: // Primitive type
-                    {
-                        FieldCurves fieldCurves = new FieldCurves();
-                        fieldCurves.type = type;
-                        fieldCurves.curves = new EdAnimationCurve[1];
-
-                        fieldCurves.curves[0] = new EdAnimationCurve();
-                        selectedFields.Add(path);
-
-                        curves[path] = fieldCurves;
-                    }
-                    break;
-            }
-
-            UpdateDisplayedCurves();
-        }
-
         private bool IsPathParent(string child, string parent)
         {
             string[] childEntries = child.Split('/', '.');
@@ -613,49 +836,115 @@ namespace BansheeEditor
             return path.Substring(0, index);
         }
 
-        private void OnFieldSelected(string path)
+        #endregion
+
+        #region Input callbacks
+        private void OnPointerPressed(PointerEvent ev)
         {
-            if (!Input.IsButtonHeld(ButtonCode.LeftShift) && !Input.IsButtonHeld(ButtonCode.RightShift))
-                selectedFields.Clear();
+            if (!isInitialized)
+                return;
 
-            if (!string.IsNullOrEmpty(path))
+            guiCurveEditor.OnPointerPressed(ev);
+
+            if (ev.button == PointerButton.Middle)
             {
-                selectedFields.RemoveAll(x => { return x == path || IsPathParent(x, path); });
-                selectedFields.Add(path);
+                Vector2I windowPos = ScreenToWindowPos(ev.ScreenPos);
+                Vector2 curvePos;
+                if (guiCurveEditor.WindowToCurveSpace(windowPos, out curvePos))
+                {
+                    dragStartPos = windowPos;
+                    isButtonHeld = true;
+                }
             }
-
-            guiFieldDisplay.SetSelection(selectedFields.ToArray());
-
-            UpdateDisplayedCurves();
         }
 
-        private void RemoveSelectedFields()
+        private void OnPointerMoved(PointerEvent ev)
         {
-            for (int i = 0; i < selectedFields.Count; i++)
+            if (!isInitialized)
+                return;
+
+            guiCurveEditor.OnPointerMoved(ev);
+
+            if (isButtonHeld)
             {
-                selectedFields.Remove(selectedFields[i]);
-                curves.Remove(GetSubPathParent(selectedFields[i]));
+                Vector2I windowPos = ScreenToWindowPos(ev.ScreenPos);
+
+                int distance = Vector2I.Distance(dragStartPos, windowPos);
+                if (distance >= DRAG_START_DISTANCE)
+                {
+                    isDragInProgress = true;
+
+                    Cursor.Hide();
+
+                    Rect2I clipRect;
+                    clipRect.x = ev.ScreenPos.x - 2;
+                    clipRect.y = ev.ScreenPos.y - 2;
+                    clipRect.width = 4;
+                    clipRect.height = 4;
+
+                    Cursor.ClipToRect(clipRect);
+                }
+            }
+        }
+
+        private void OnPointerReleased(PointerEvent ev)
+        {
+            if (isDragInProgress)
+            {
+                Cursor.Show();
+                Cursor.ClipDisable();
             }
 
-            List<string> existingFields = new List<string>();
-            foreach(var KVP in curves)
-                existingFields.Add(KVP.Key);
+            isButtonHeld = false;
+            isDragInProgress = false;
 
-            guiFieldDisplay.SetFields(existingFields.ToArray());
+            if (!isInitialized)
+                return;
 
-            selectedFields.Clear();
-            UpdateDisplayedCurves();
+            guiCurveEditor.OnPointerReleased(ev);
+        }
+
+        private void OnButtonUp(ButtonEvent ev)
+        {
+            if (!isInitialized)
+                return;
+
+            guiCurveEditor.OnButtonUp(ev);
+        }
+        #endregion
+
+        #region General callbacks
+        private void OnFieldAdded(string path, SerializableProperty.FieldType type)
+        {
+            AddNewField(path, type);
+        }
+
+        private void OnHorzScrollOrResize(float position, float size)
+        {
+            SetHorzScrollbarProperties(position, size);
+        }
+
+        private void OnVertScrollOrResize(float position, float size)
+        {
+            SetVertScrollbarProperties(position, size);
+        }
+
+        private void OnFieldSelected(string path)
+        {
+            bool additive = Input.IsButtonHeld(ButtonCode.LeftShift) || Input.IsButtonHeld(ButtonCode.RightShift);
+            SelectField(path, additive);
         }
 
         private void OnSelectionChanged(SceneObject[] sceneObjects, string[] resourcePaths)
         {
-            Rebuild();
+            RebuildGUI();
         }
 
         private void OnFrameSelected(int frameIdx)
         {
             SetCurrentFrame(frameIdx);
         }
+        #endregion
     }
 
     /// <summary>
@@ -664,8 +953,6 @@ namespace BansheeEditor
     [DefaultSize(100, 50)]
     internal class AnimationOptions : DropDownWindow
     {
-        private AnimationWindow parent;
-
         /// <summary>
         /// Initializes the drop down window by creating the necessary GUI. Must be called after construction and before
         /// use.
@@ -673,8 +960,6 @@ namespace BansheeEditor
         /// <param name="parent">Animation window that this drop down window is a part of.</param>
         internal void Initialize(AnimationWindow parent)
         {
-            this.parent = parent;
-
             GUIIntField fpsField = new GUIIntField(new LocEdString("FPS"), 40);
             fpsField.Value = parent.FPS;
             fpsField.OnChanged += x => { parent.FPS = x; };

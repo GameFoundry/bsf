@@ -650,41 +650,58 @@ namespace BansheeEngine
 
 	Vector3 CameraBase::unprojectPoint(const Vector3& point) const
 	{
-		Vector4 dir4(point.x, point.y, 0.95f, 1.0f); // 0.95f arbitrary
-		dir4 = getProjectionMatrixRS().inverse().multiply(dir4);
+		// Point.z is expected to be in view space, so we need to do some extra work to get the proper coordinates
+		// (as opposed to if point.z was in device coordinates, in which case we could just inverse project)
 
-		Vector3 dir;
-		dir.x = dir4.x;
-		dir.y = dir4.y;
-		dir.z = dir4.z;
+		// Get world position for a point near the far plane (0.95f)
+		Vector4 farAwayPoint(point.x, point.y, 0.95f, 1.0f);
+		farAwayPoint = getProjectionMatrixRS().inverse().multiply(farAwayPoint);
 
-		if (Math::abs(dir4.w) > 1e-7f)
+		// Can't proceed if w is too small
+		if (Math::abs(farAwayPoint.w) > 1e-7f)
 		{
-			float invW = 1.0f / dir4.w;
-			dir.x *= invW;
-			dir.y *= invW;
-			dir.z *= invW;
+			// Perspective divide, to get the values that make sense in 3D space
+			float invW = 1.0f / farAwayPoint.w;
+			
+			Vector3 farAwayPoint3D;
+			farAwayPoint3D.x = farAwayPoint.x * invW;
+			farAwayPoint3D.y = farAwayPoint.y * invW;
+			farAwayPoint3D.z = farAwayPoint.z * invW;
 
-			// Find a point along a ray from camera origin to point on near plane we just found, 
-			// at point.z distance from the origin
+			// Find the distance to the far point along the camera's viewing axis
+			float distAlongZ = farAwayPoint3D.dot(-Vector3::UNIT_Z);
 
-			float distToPlane = dir.dot(-Vector3::UNIT_Z);
-			if (distToPlane >= 0.0f)
+			// Do nothing if point is behind the camera
+			if (distAlongZ >= 0.0f)
 			{
 				if (mProjType == PT_PERSPECTIVE)
-					dir *= point.z / distToPlane;
-				else
-					dir += Vector3::UNIT_Z * (distToPlane - point.z);
+				{
+					// Direction from origin to our point
+					Vector3 dir = farAwayPoint3D; // Camera is at (0, 0, 0) so it's the same vector
+
+					// Our view space depth (point.z) is distance along the camera's viewing axis. Since our direction
+					// vector is not parallel to the viewing axis, instead of normalizing it with its own length, we
+					// "normalize" with the length projected along the camera's viewing axis.
+					dir /= distAlongZ;
+
+					// And now we just find the final position along the direction
+					return dir * point.z;
+				}
+				else // Ortographic
+				{
+					// Depth difference between our arbitrary point and actual depth
+					float depthDiff = distAlongZ - point.z;
+
+					// Depth difference along viewing direction
+					Vector3 depthDiffVec = depthDiff * -Vector3::UNIT_Z;
+
+					// Return point that is depthDiff closer than our arbitrary point
+					return farAwayPoint3D - depthDiffVec;
+				}
 			}
 		}
-		else
-		{
-			dir.x = 0.0f;
-			dir.y = 0.0f;
-			dir.z = 0.0f;
-		}
 
-		return Vector3(dir.x, dir.y, dir.z);
+		return Vector3(0.0f, 0.0f, 0.0f);
 	}
 
 	Vector2 CameraBase::getDeviceZTransform() const

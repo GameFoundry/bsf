@@ -157,17 +157,23 @@ namespace BansheeEngine
 		/**	Sets the position of the slider handle, in pixels. Relative to this object. */
 		void setHandlePosPx(INT32 pos);
 
+		/** Returns the size of the handle button, in pixels. */
+		UINT32 getHandleSize() const;
+
 		/**	Gets the currently active texture, depending on handle state. */
 		const HSpriteTexture& getActiveTexture() const;
 
-		static const UINT32 MIN_HANDLE_SIZE;
+		/** @copydoc GUIElement::styleUpdated */
+		void styleUpdated() override;
+
 		static const UINT32 RESIZE_HANDLE_SIZE;
 
 		ImageSprite* mImageSprite;
-		UINT32 mHandleSize;
 
 		GUISliderHandleFlags mFlags;
+		UINT32 mMinHandleSize;
 		float mPctHandlePos;
+		float mPctHandleSize;
 		float mStep;
 		INT32 mDragStartPos;
 		DragState mDragState;

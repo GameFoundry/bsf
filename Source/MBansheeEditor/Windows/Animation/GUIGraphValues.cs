@@ -127,6 +127,8 @@ namespace BansheeEditor
             else
                 pixelsPerHeight = 0;
 
+            float yOffset = rangeStart + (rangeEnd - rangeStart)*0.5f;
+
             int numTickLevels = tickHandler.NumLevels;
             for (int i = numTickLevels - 1; i >= 0; i--)
             {
@@ -140,7 +142,7 @@ namespace BansheeEditor
 
                     for (int j = 0; j < ticks.Length; j++)
                     {
-                        int yPos = (int) (ticks[j]*pixelsPerHeight);
+                        int yPos = (int) ((ticks[j] - yOffset) * pixelsPerHeight);
                         yPos = heightOffset - yPos; // Offset and flip height (canvas Y goes down)
 
                         Vector2I start = new Vector2I(0, yPos);

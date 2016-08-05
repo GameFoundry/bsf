@@ -28,6 +28,7 @@ namespace BansheeEditor
         private int height;
         private float xRange = 60.0f;
         private float yRange = 20.0f;
+        private Vector2 offset;
         private int fps = 1;
         private int markedFrameIdx = 0;
 
@@ -92,6 +93,15 @@ namespace BansheeEditor
         {
             this.xRange = xRange;
             this.yRange = yRange;
+        }
+
+        /// <summary>
+        /// Returns the offset at which the displayed timeline values start at.
+        /// </summary>
+        /// <param name="offset">Value to start the timeline values at.</param>
+        public void SetOffset(Vector2 offset)
+        {
+            this.offset = offset;
         }
 
         /// <summary>
@@ -286,8 +296,8 @@ namespace BansheeEditor
 
             float yOffset = yRange / 2.0f;
 
-            float t = relativeCoords.x * lengthPerPixel;
-            float value = yOffset - relativeCoords.y * heightPerPixel;
+            float t = offset.x + relativeCoords.x * lengthPerPixel;
+            float value = offset.y + yOffset - relativeCoords.y * heightPerPixel;
 
             curveCoords = new Vector2();
             curveCoords.x = t;
@@ -305,9 +315,11 @@ namespace BansheeEditor
         {
             int heightOffset = height / 2; // So that y = 0 is at center of canvas
 
+            Vector2 relativeCurveCoords = curveCoords - offset;
+
             Vector2I pixelCoords = new Vector2I();
-            pixelCoords.x = (int)((curveCoords.x / GetRange()) * drawableWidth) + GUIGraphTime.PADDING;
-            pixelCoords.y = heightOffset - (int)((curveCoords.y / yRange) * height);
+            pixelCoords.x = (int)((relativeCurveCoords.x / GetRange()) * drawableWidth) + GUIGraphTime.PADDING;
+            pixelCoords.y = heightOffset - (int)((relativeCurveCoords.y / yRange) * height);
 
             return pixelCoords;
         }
@@ -320,7 +332,7 @@ namespace BansheeEditor
         /// <param name="onTop">Determines should the marker be drawn above or below the curve.</param>
         private void DrawFrameMarker(float t, Color color, bool onTop)
         {
-            int xPos = (int)((t / GetRange()) * drawableWidth) + GUIGraphTime.PADDING;
+            int xPos = (int)(((t - offset.x) / GetRange()) * drawableWidth) + GUIGraphTime.PADDING;
 
             Vector2I start = new Vector2I(xPos, 0);
             Vector2I end = new Vector2I(xPos, height);
@@ -339,10 +351,10 @@ namespace BansheeEditor
         /// </summary>
         private void DrawCenterLine()
         {
-            int heightOffset = height / 2; // So that y = 0 is at center of canvas
+            Vector2I center = CurveToPixelSpace(new Vector2(0.0f, 0.0f));
 
-            Vector2I start = new Vector2I(0, heightOffset);
-            Vector2I end = new Vector2I(width, heightOffset);
+            Vector2I start = new Vector2I(0, center.y);
+            Vector2I end = new Vector2I(width, center.y);
 
             canvas.DrawLine(start, end, COLOR_DARK_GRAY);
         }
@@ -489,7 +501,7 @@ namespace BansheeEditor
             if (curves == null)
                 return;
 
-            tickHandler.SetRange(0.0f, GetRange(true), drawableWidth + GUIGraphTime.PADDING);
+            tickHandler.SetRange(offset.x, GetRange(true), drawableWidth + GUIGraphTime.PADDING);
 
             // Draw vertical frame markers
             int numTickLevels = tickHandler.NumLevels;
@@ -580,11 +592,7 @@ namespace BansheeEditor
         private void DrawCurve(EdAnimationCurve curve, Color color)
         {
             float range = GetRange();
-
             float lengthPerPixel = range / drawableWidth;
-            float pixelsPerHeight = height/yRange;
-
-            int heightOffset = height/2; // So that y = 0 is at center of canvas
 
             KeyFrame[] keyframes = curve.KeyFrames;
             if (keyframes.Length <= 0)
@@ -592,19 +600,15 @@ namespace BansheeEditor
 
             // Draw start line
             {
-                float start = MathEx.Clamp(keyframes[0].time, 0.0f, range);
-                int startPixel = (int)(start / lengthPerPixel);
+                float curveStart = MathEx.Clamp(keyframes[0].time, 0.0f, range);
+                float curveValue = curve.Evaluate(0.0f, false);
 
-                int xPosStart = 0;
-                int xPosEnd = GUIGraphTime.PADDING + startPixel;
+                Vector2I start = CurveToPixelSpace(new Vector2(0.0f, curveValue));
+                start.x -= GUIGraphTime.PADDING;
 
-                int yPos = (int)(curve.Evaluate(0.0f, false) * pixelsPerHeight);
-                yPos = heightOffset - yPos; // Offset and flip height (canvas Y goes down)
+                Vector2I end = CurveToPixelSpace(new Vector2(curveStart, curveValue));
 
-                Vector2I a = new Vector2I(xPosStart, yPos);
-                Vector2I b = new Vector2I(xPosEnd, yPos);
-
-                canvas.DrawLine(a, b, COLOR_MID_GRAY);
+                canvas.DrawLine(start, end, COLOR_MID_GRAY);
             }
 
             List<Vector2I> linePoints = new List<Vector2I>();
@@ -614,9 +618,6 @@ namespace BansheeEditor
             {
                 float start = MathEx.Clamp(keyframes[i].time, 0.0f, range);
                 float end = MathEx.Clamp(keyframes[i + 1].time, 0.0f, range);
-                
-                int startPixel = (int)(start / lengthPerPixel);
-                int endPixel = (int)(end / lengthPerPixel);
 
                 bool isStep = keyframes[i].outTangent == float.PositiveInfinity ||
                               keyframes[i + 1].inTangent == float.PositiveInfinity;
@@ -624,29 +625,24 @@ namespace BansheeEditor
                 // If step tangent, draw the required lines without sampling, as the sampling will miss the step
                 if (isStep)
                 {
-                    // Line from left to right frame
-                    int xPos = startPixel;
-                    int yPosStart = (int)(curve.Evaluate(start, false) * pixelsPerHeight);
-                    yPosStart = heightOffset - yPosStart; // Offset and flip height (canvas Y goes down)
+                    float startValue = curve.Evaluate(start, false);
+                    float endValue = curve.Evaluate(end, false);
 
-                    linePoints.Add(new Vector2I(GUIGraphTime.PADDING + xPos, yPosStart));
-
-                    xPos = endPixel;
-                    linePoints.Add(new Vector2I(GUIGraphTime.PADDING + xPos, yPosStart));
-
-                    // Line representing the step
-                    int yPosEnd = (int)(curve.Evaluate(end, false) * pixelsPerHeight);
-                    yPosEnd = heightOffset - yPosEnd; // Offset and flip height (canvas Y goes down)
-
-                    linePoints.Add(new Vector2I(GUIGraphTime.PADDING + xPos, yPosEnd));
+                    linePoints.Add(CurveToPixelSpace(new Vector2(start, startValue)));
+                    linePoints.Add(CurveToPixelSpace(new Vector2(end, startValue)));
+                    linePoints.Add(CurveToPixelSpace(new Vector2(end, endValue)));
                 }
                 else // Draw normally
                 {
+                    float timeIncrement = LINE_SPLIT_WIDTH*lengthPerPixel;
+
+                    int startPixel = (int)(start / lengthPerPixel);
+                    int endPixel = (int)(end / lengthPerPixel);
+
                     int numSplits;
-                    float timeIncrement;
                     if (startPixel != endPixel)
                     {
-                        float fNumSplits = (endPixel - startPixel)/(float) LINE_SPLIT_WIDTH;
+                        float fNumSplits = (end - start) / timeIncrement;
 
                         numSplits = MathEx.FloorToInt(fNumSplits);
                         float remainder = fNumSplits - numSplits;
@@ -664,13 +660,10 @@ namespace BansheeEditor
 
                     for (int j = 0; j < numSplits; j++)
                     {
-                        int xPos = Math.Min(startPixel + j * LINE_SPLIT_WIDTH, endPixel);
                         float t = Math.Min(start + j * timeIncrement, end);
+                        float value = curve.Evaluate(t, false);
 
-                        int yPos = (int)(curve.Evaluate(t, false) * pixelsPerHeight);
-                        yPos = heightOffset - yPos; // Offset and flip height (canvas Y goes down)
-
-                        linePoints.Add(new Vector2I(GUIGraphTime.PADDING + xPos, yPos));
+                        linePoints.Add(CurveToPixelSpace(new Vector2(t, value)));
                     }
                 }
             }
@@ -679,19 +672,13 @@ namespace BansheeEditor
 
             // Draw end line
             {
-                float end = MathEx.Clamp(keyframes[keyframes.Length - 1].time, 0.0f, range);
-                int endPixel = (int)(end / lengthPerPixel);
+                float curveEnd = MathEx.Clamp(keyframes[keyframes.Length - 1].time, 0.0f, range);
+                float curveValue = curve.Evaluate(range, false);
 
-                int xPosStart = GUIGraphTime.PADDING + endPixel;
-                int xPosEnd = width;
+                Vector2I start = CurveToPixelSpace(new Vector2(curveEnd, curveValue));
+                Vector2I end = new Vector2I(width, start.y);
 
-                int yPos = (int)(curve.Evaluate(range, false) * pixelsPerHeight);
-                yPos = heightOffset - yPos; // Offset and flip height (canvas Y goes down)
-
-                Vector2I a = new Vector2I(xPosStart, yPos);
-                Vector2I b = new Vector2I(xPosEnd, yPos);
-
-                canvas.DrawLine(a, b, COLOR_MID_GRAY);
+                canvas.DrawLine(start, end, COLOR_MID_GRAY);
             }
         }
     }
