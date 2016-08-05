@@ -849,7 +849,7 @@ namespace BansheeEngine
 		scrollBarHorzBtnStyle.active.texture = getGUITexture(ScrollBarHandleHorzActiveTex);
 		scrollBarHorzBtnStyle.fixedHeight = true;
 		scrollBarHorzBtnStyle.fixedWidth = false;
-		scrollBarHorzBtnStyle.width = 10;
+		scrollBarHorzBtnStyle.minWidth = 10;
 		scrollBarHorzBtnStyle.height = 13;
 		scrollBarHorzBtnStyle.border.left = 4;
 		scrollBarHorzBtnStyle.border.right = 4;
@@ -864,7 +864,7 @@ namespace BansheeEngine
 		scrollBarVertBtnStyle.fixedHeight = false;
 		scrollBarVertBtnStyle.fixedWidth = true;
 		scrollBarVertBtnStyle.width = 13;
-		scrollBarVertBtnStyle.height = 10;
+		scrollBarVertBtnStyle.minHeight = 10;
 		scrollBarVertBtnStyle.border.top = 4;
 		scrollBarVertBtnStyle.border.bottom = 4;
 
@@ -907,7 +907,7 @@ namespace BansheeEngine
 		scrollBarHorzResizeableBtnStyle.active.texture = getGUITexture(ScrollBarResizeableHandleHorzActiveTex);
 		scrollBarHorzResizeableBtnStyle.fixedHeight = true;
 		scrollBarHorzResizeableBtnStyle.fixedWidth = false;
-		scrollBarHorzResizeableBtnStyle.width = 15;
+		scrollBarHorzResizeableBtnStyle.minWidth = 15;
 		scrollBarHorzResizeableBtnStyle.height = 13;
 		scrollBarHorzResizeableBtnStyle.border.left = 7;
 		scrollBarHorzResizeableBtnStyle.border.right = 7;
@@ -922,7 +922,7 @@ namespace BansheeEngine
 		scrollBarVertResizeableBtnStyle.fixedHeight = false;
 		scrollBarVertResizeableBtnStyle.fixedWidth = true;
 		scrollBarVertResizeableBtnStyle.width = 13;
-		scrollBarVertResizeableBtnStyle.height = 15;
+		scrollBarVertResizeableBtnStyle.minHeight = 15;
 		scrollBarVertResizeableBtnStyle.border.top = 7;
 		scrollBarVertResizeableBtnStyle.border.bottom = 7;
 

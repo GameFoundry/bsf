@@ -115,7 +115,7 @@ namespace BansheeEngine
 		/** @copydoc	GUIElement::_getRenderElementDepthRange */
 		UINT32 _getRenderElementDepthRange() const override;
 
-		/** @copydoc GUIElementContainer::styleUpdated */
+		/** @copydoc GUIElement::styleUpdated */
 		void styleUpdated() override;
 
 		/**
