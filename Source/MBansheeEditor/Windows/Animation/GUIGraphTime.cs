@@ -23,6 +23,7 @@ namespace BansheeEditor
         private int tickHeight;
         private int drawableWidth;
         private float rangeLength = 60.0f;
+        private float rangeOffset = 0.0f;
 
         private GUICanvas canvas;
         private GUIGraphTicks tickHandler;
@@ -65,7 +66,7 @@ namespace BansheeEditor
             Vector2I relativeCoords = windowCoords - new Vector2I(bounds.x + PADDING, bounds.y);
 
             float lengthPerPixel = GetRange() / drawableWidth;
-            float time = relativeCoords.x * lengthPerPixel;
+            float time = rangeOffset + relativeCoords.x * lengthPerPixel;
 
             return MathEx.RoundToInt(time * fps);
         }
@@ -95,7 +96,7 @@ namespace BansheeEditor
             tickHeight = (int)(height * TICK_HEIGHT_PCT);
             drawableWidth = Math.Max(0, width - PADDING * 2);
 
-            tickHandler.SetRange(0.0f, GetRange(true), drawableWidth + PADDING);
+            tickHandler.SetRange(rangeOffset, GetRange(true), drawableWidth + PADDING);
         }
 
         /// <summary>
@@ -106,17 +107,18 @@ namespace BansheeEditor
         {
             rangeLength = Math.Max(0.0f, length);
 
-            tickHandler.SetRange(0.0f, GetRange(true), drawableWidth + PADDING);
+            tickHandler.SetRange(rangeOffset, GetRange(true), drawableWidth + PADDING);
         }
 
         /// <summary>
-        /// Sets the position of the GUI element relative to its parent.
+        /// Returns the offset at which the displayed timeline values start at.
         /// </summary>
-        /// <param name="x">Horizontal position in pixels.</param>
-        /// <param name="y">Vertical position in pixels.</param>
-        public void SetPosition(int x, int y)
+        /// <param name="offset">Value to start the timeline values at.</param>
+        public void SetOffset(float offset)
         {
-            canvas.SetPosition(x, y);
+            rangeOffset = offset;
+
+            tickHandler.SetRange(rangeOffset, GetRange(true), drawableWidth + PADDING);
         }
 
         /// <summary>
@@ -127,7 +129,7 @@ namespace BansheeEditor
         {
             this.fps = Math.Max(1, fps);
 
-            tickHandler.SetRange(0.0f, GetRange(true), drawableWidth + PADDING);
+            tickHandler.SetRange(rangeOffset, GetRange(true), drawableWidth + PADDING);
         }
         
         /// <summary>
@@ -167,7 +169,7 @@ namespace BansheeEditor
         ///                                Ignored if no text is drawn.</param>
         private void DrawTick(float t, float strength, bool drawText, bool displayAsMinutes)
         {
-            int xPos = (int)((t / GetRange()) * drawableWidth) + PADDING;
+            int xPos = (int)(((t - rangeOffset) / GetRange()) * drawableWidth) + PADDING;
 
             // Draw tick
             Vector2I start = new Vector2I(xPos, height - (int)(tickHeight * strength));
@@ -189,7 +191,7 @@ namespace BansheeEditor
         /// <param name="t">Time at which to draw the marker.</param>
         private void DrawFrameMarker(float t)
         {
-            int xPos = (int)((t / GetRange()) * drawableWidth) + PADDING;
+            int xPos = (int)(((t - rangeOffset) / GetRange()) * drawableWidth) + PADDING;
 
             Vector2I start = new Vector2I(xPos, 0);
             Vector2I end = new Vector2I(xPos, height);
