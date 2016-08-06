@@ -409,7 +409,14 @@ namespace BansheeEditor
                 horzScrollBar.Position = 0.0f;
 
             if (scrollableRange.y > 0.0f)
-                vertScrollBar.Position = offset.y / (scrollableRange.y * 0.5f);
+            {
+                float pos = offset.y/scrollableRange.y;
+                float sign = MathEx.Sign(pos);
+                pos = sign*MathEx.Clamp01(MathEx.Abs(pos));
+                pos = (1.0f - pos) /2.0f;
+
+                vertScrollBar.Position = pos;
+            }
             else
                 vertScrollBar.Position = 0.0f;
         }
