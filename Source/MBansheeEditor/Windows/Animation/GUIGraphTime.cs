@@ -96,7 +96,7 @@ namespace BansheeEditor
             tickHeight = (int)(height * TICK_HEIGHT_PCT);
             drawableWidth = Math.Max(0, width - PADDING * 2);
 
-            tickHandler.SetRange(rangeOffset, GetRange(true), drawableWidth + PADDING);
+            tickHandler.SetRange(rangeOffset, rangeOffset + GetRange(true), drawableWidth + PADDING);
         }
 
         /// <summary>
@@ -107,7 +107,7 @@ namespace BansheeEditor
         {
             rangeLength = Math.Max(0.0f, length);
 
-            tickHandler.SetRange(rangeOffset, GetRange(true), drawableWidth + PADDING);
+            tickHandler.SetRange(rangeOffset, rangeOffset + GetRange(true), drawableWidth + PADDING);
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace BansheeEditor
         {
             rangeOffset = offset;
 
-            tickHandler.SetRange(rangeOffset, GetRange(true), drawableWidth + PADDING);
+            tickHandler.SetRange(rangeOffset, rangeOffset + GetRange(true), drawableWidth + PADDING);
         }
 
         /// <summary>
@@ -129,7 +129,7 @@ namespace BansheeEditor
         {
             this.fps = Math.Max(1, fps);
 
-            tickHandler.SetRange(rangeOffset, GetRange(true), drawableWidth + PADDING);
+            tickHandler.SetRange(rangeOffset, rangeOffset + GetRange(true), drawableWidth + PADDING);
         }
         
         /// <summary>
@@ -206,12 +206,12 @@ namespace BansheeEditor
         /// <returns>Time range rounded to a multiple of FPS.</returns>
         private float GetRange(bool padding = false)
         {
-            float spf = 1.0f/fps;
+            float spf = 1.0f / fps;
 
             float range = rangeLength;
             if (padding)
             {
-                float lengthPerPixel = rangeLength/drawableWidth;
+                float lengthPerPixel = rangeLength / drawableWidth;
                 range += lengthPerPixel * PADDING;
             }
 

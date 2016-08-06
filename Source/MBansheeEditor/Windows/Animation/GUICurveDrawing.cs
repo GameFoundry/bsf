@@ -275,7 +275,7 @@ namespace BansheeEditor
         /// <param name="pixelCoords">Coordinates relative to this GUI element, in pixels.</param>
         /// <param name="curveCoords">Curve coordinates within the range as specified by <see cref="SetRange"/>. Only
         ///                           valid when function returns true.</param>
-        /// <returns>True if the window coordinates were within the curve area, false otherwise.</returns>
+        /// <returns>True if the coordinates are within the curve area, false otherwise.</returns>
         public bool PixelToCurveSpace(Vector2I pixelCoords, out Vector2 curveCoords)
         {
             Rect2I bounds = canvas.Bounds;
@@ -501,7 +501,7 @@ namespace BansheeEditor
             if (curves == null)
                 return;
 
-            tickHandler.SetRange(offset.x, GetRange(true), drawableWidth + GUIGraphTime.PADDING);
+            tickHandler.SetRange(offset.x, offset.x + GetRange(true), drawableWidth + GUIGraphTime.PADDING);
 
             // Draw vertical frame markers
             int numTickLevels = tickHandler.NumLevels;

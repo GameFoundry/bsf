@@ -110,6 +110,8 @@ namespace BansheeEditor
                 guiTimeline.SetOffset(offset.x);
                 guiCurveDrawing.SetOffset(offset);
                 guiSidebar.SetRange(offset.y - yRange, offset.y + yRange);
+
+                Redraw();
             }
         }
 
@@ -166,6 +168,29 @@ namespace BansheeEditor
 
             guiSidebar = new GUIGraphValues(sidebarPanel, SIDEBAR_WIDTH, height - TIMELINE_HEIGHT);
             guiSidebar.SetRange(-10.0f, 10.0f);
+        }
+
+        /// <summary>
+        /// Converts pixel coordinates relative to the curve drawing area into coordinates in curve space.
+        /// </summary>
+        /// <param name="pixelCoords">Coordinates relative to this GUI element, in pixels.</param>
+        /// <param name="curveCoords">Curve coordinates within the range as specified by <see cref="Range"/>. Only
+        ///                           valid when function returns true.</param>
+        /// <returns>True if the coordinates are within the curve area, false otherwise.</returns>
+        public bool PixelToCurveSpace(Vector2I pixelCoords, out Vector2 curveCoords)
+        {
+            return guiCurveDrawing.PixelToCurveSpace(pixelCoords, out curveCoords);
+        }
+
+        /// <summary>
+        /// Converts coordinate in curve space (time, value) into pixel coordinates relative to the curve drawing area
+        /// origin.
+        /// </summary>
+        /// <param name="curveCoords">Time and value of the location to convert.</param>
+        /// <returns>Coordinates relative to curve drawing area's origin, in pixels.</returns>
+        public Vector2I CurveToPixelSpace(Vector2 curveCoords)
+        {
+            return guiCurveDrawing.CurveToPixelSpace(curveCoords);
         }
 
         public bool WindowToCurveSpace(Vector2I windowPos, out Vector2 curveCoord)

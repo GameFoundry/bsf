@@ -19,7 +19,7 @@ namespace BansheeEditor
         private const int FIELD_DISPLAY_WIDTH = 200;
         private const int DRAG_START_DISTANCE = 3;
         private const float DRAG_SCALE = 10.0f;
-        private const float ZOOM_SCALE = 15.0f;
+        private const float ZOOM_SCALE = 0.1f/120.0f; // One scroll step is usually 120 units, we want 1/10 of that
 
         private bool isInitialized;
         private SceneObject selectedSO;
@@ -114,7 +114,12 @@ namespace BansheeEditor
             curves.Clear();
             isInitialized = false;
 
-            selectedSO = Selection.SceneObject;
+            if (selectedSO != Selection.SceneObject)
+            {
+                zoomAmount = 0.0f;
+                selectedSO = Selection.SceneObject;
+            }
+
             if (selectedSO == null)
             {
                 GUILabel warningLbl = new GUILabel(new LocEdString("Select an object to animate in the Hierarchy or Scene windows."));
@@ -361,7 +366,7 @@ namespace BansheeEditor
             float scrollableRange = totalRange.y - visibleRange.y;
 
             Vector2 offset = guiCurveEditor.Offset;
-            offset.y = scrollableRange * (position * 2.0f - 1.0f);
+            offset.y = -scrollableRange * (position * 2.0f - 1.0f);
 
             guiCurveEditor.Offset = offset;
         }
@@ -398,12 +403,15 @@ namespace BansheeEditor
             Vector2 scrollableRange = totalRange - visibleRange;
 
             Vector2 offset = guiCurveEditor.Offset;
-            // Transform Y from [-x, +x] range to [0, x]
-            offset.y += visibleRange.y;
-            offset.y /= 2.0f;
+            if (scrollableRange.x > 0.0f)
+                horzScrollBar.Position = offset.x / scrollableRange.x;
+            else
+                horzScrollBar.Position = 0.0f;
 
-            horzScrollBar.Position = offset.x / scrollableRange.x;
-            vertScrollBar.Position = offset.y / scrollableRange.y;
+            if (scrollableRange.y > 0.0f)
+                vertScrollBar.Position = offset.y / (scrollableRange.y * 0.5f);
+            else
+                vertScrollBar.Position = 0.0f;
         }
 
         private Vector2 GetZoomedRange()
@@ -416,19 +424,27 @@ namespace BansheeEditor
 
         private Vector2 GetTotalRange()
         {
-            Vector2 visibleRange = guiCurveEditor.Range;
-            Vector2 totalRange = guiCurveEditor.Offset;
-            totalRange.x += visibleRange.x;
-            totalRange.y = Math.Abs(totalRange.y) + visibleRange.y;
+            // Return optimal range (that covers the visible curve)
+            Vector2 totalRange = GetOptimalRange();
 
-            Vector2 optimalRange = GetOptimalRange();
-            return Vector2.Max(totalRange, optimalRange);
+            // Increase range in case user zoomed out
+            Vector2 zoomedRange = GetZoomedRange();
+            totalRange = Vector2.Max(totalRange, zoomedRange);
+
+            // Increase range in case user dragged outside of the optimal range
+            Vector2 visibleRange = guiCurveEditor.Range;
+            Vector2 draggedRange = guiCurveEditor.Offset;
+            draggedRange.x += visibleRange.x;
+            draggedRange.y = Math.Abs(draggedRange.y) + visibleRange.y;
+
+            return Vector2.Max(totalRange, draggedRange);
         }
 
         private void Zoom(Vector2 curvePos, float amount)
         {
+            // Increase or decrease the visible range depending on zoom level
             Vector2 oldZoomedRange = GetZoomedRange();
-            zoomAmount += amount;
+            zoomAmount = MathEx.Clamp(zoomAmount + amount, -10.0f, 10.0f);
             Vector2 zoomedRange = GetZoomedRange();
 
             Vector2 zoomedDiff = zoomedRange - oldZoomedRange;
@@ -436,21 +452,18 @@ namespace BansheeEditor
 
             Vector2 currentRange = guiCurveEditor.Range;
             Vector2 newRange = currentRange + zoomedDiff;
-
-            Vector2 offset = guiCurveEditor.Offset;
-            Vector2 relativePos = curvePos - offset;
-
-            relativePos.x /= currentRange.x;
-            relativePos.y /= currentRange.y;
-
-            relativePos.x = relativePos.x * 2.0f - 1.0f;
-            relativePos.y = relativePos.y * 2.0f - 1.0f;
-
-            offset.x += relativePos.x * zoomedDiff.x;
-            offset.y += relativePos.y * zoomedDiff.y * 2.0f;
-
-            guiCurveEditor.Offset = offset;
             guiCurveEditor.Range = newRange;
+
+            // When zooming, make sure to focus on the point provided, so adjust the offset
+            Vector2 rangeScale = newRange;
+            rangeScale.x /= currentRange.x;
+            rangeScale.y /= currentRange.y;
+
+            Vector2 relativeCurvePos = curvePos - guiCurveEditor.Offset;
+            Vector2 newCurvePos = relativeCurvePos * rangeScale;
+            Vector2 diff = newCurvePos - relativeCurvePos;
+
+            guiCurveEditor.Offset -= diff;
 
             UpdateScrollBarSize();
             UpdateScrollBarPosition();
