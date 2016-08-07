@@ -52,7 +52,7 @@ namespace BansheeEngine
 			:mData(bs_new<Data<ValueType>>(value))
 		{ }
 
-		Any(nullptr_t)
+		Any(std::nullptr_t)
 			:mData(nullptr)
 		{ }
 
