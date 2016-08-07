@@ -251,9 +251,9 @@ namespace BansheeEngine
 						INT32 right = left + handleSize;
 
 						INT32 clickPos = ev.getPosition().x;
-						if(clickPos >= left && clickPos < (left + (INT32)RESIZE_HANDLE_SIZE))
+						if (clickPos >= left && clickPos < (left + (INT32)RESIZE_HANDLE_SIZE))
 							mDragState = DragState::LeftResize;
-						else if(clickPos >= (right - (INT32)RESIZE_HANDLE_SIZE) && clickPos < right)
+						else if (clickPos >= (right - (INT32)RESIZE_HANDLE_SIZE) && clickPos < right)
 							mDragState = DragState::RightResize;
 						else
 							mDragState = DragState::Normal;
@@ -295,36 +295,52 @@ namespace BansheeEngine
 		{
 			if (!_isDisabled())
 			{
-				INT32 handlePosPx;
-				if (mFlags.isSet(GUISliderHandleFlag::Horizontal))
-					handlePosPx = ev.getPosition().x - mDragStartPos - mLayoutData.area.x;
-				else
-					handlePosPx = ev.getPosition().y - mDragStartPos - mLayoutData.area.y;
-
 				if (mDragState == DragState::Normal)
 				{
+					INT32 handlePosPx;
+					if (mFlags.isSet(GUISliderHandleFlag::Horizontal))
+						handlePosPx = ev.getPosition().x - mDragStartPos - mLayoutData.area.x;
+					else
+						handlePosPx = ev.getPosition().y - mDragStartPos - mLayoutData.area.y;
+
 					setHandlePosPx(handlePosPx);
 					onHandleMovedOrResized(mPctHandlePos, _getHandleSizePct());
 				}
 				else // Resizing
 				{
+					INT32 clickPosPx;
+					if (mFlags.isSet(GUISliderHandleFlag::Horizontal))
+						clickPosPx = ev.getPosition().x - mLayoutData.area.x;
+					else
+						clickPosPx = ev.getPosition().y - mLayoutData.area.y;
+
+					INT32 left = getHandlePosPx();
+					UINT32 maxSize = getMaxSize();
+
+					INT32 newHandleSize;
+					float newHandlePos;
 					if(mDragState == DragState::LeftResize)
 					{
-						INT32 right = getHandlePosPx() + handleSize;
-						INT32 newHandleSize = right - handlePosPx;
+						INT32 newLeft = clickPosPx - mDragStartPos;
+						INT32 right = left + handleSize;
+						newLeft = Math::clamp(newLeft, 0, right);
 
-						_setHandleSize(newHandleSize / (float)getMaxSize());
-						setHandlePosPx(handlePosPx);
-						onHandleMovedOrResized(mPctHandlePos, _getHandleSizePct());
+						newHandleSize = std::max((INT32)mMinHandleSize, right - newLeft);
+						newLeft = right - newHandleSize;
+						newHandlePos = newLeft / (float)(maxSize - newHandleSize);
 					}
-					else if(mDragState == DragState::RightResize)
+					else // Right resize
 					{
-						INT32 left = getHandlePosPx();
-						INT32 newHandleSize = handlePosPx - left;
+						INT32 newRight = clickPosPx;
+						newHandleSize = std::max((INT32)mMinHandleSize, std::min(newRight, (INT32)maxSize) - left);
 
-						_setHandleSize(newHandleSize / (float)getMaxSize());
-						onHandleMovedOrResized(mPctHandlePos, _getHandleSizePct());
+						newHandlePos = left / (float)(maxSize - newHandleSize);
 					}
+
+					_setHandleSize(newHandleSize / (float)maxSize);
+					_setHandlePos(newHandlePos);
+
+					onHandleMovedOrResized(mPctHandlePos, _getHandleSizePct());
 				}
 
 				_markLayoutAsDirty();

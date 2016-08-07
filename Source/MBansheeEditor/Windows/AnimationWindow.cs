@@ -394,6 +394,8 @@ namespace BansheeEditor
 
             horzScrollBar.HandleSize = visibleRange.x / totalRange.x;
             vertScrollBar.HandleSize = visibleRange.y / totalRange.y;
+
+            Debug.Log(visibleRange.y + " - " + totalRange.y + " - " + (visibleRange.y / totalRange.y));
         }
 
         private void UpdateScrollBarPosition()
@@ -432,19 +434,11 @@ namespace BansheeEditor
         private Vector2 GetTotalRange()
         {
             // Return optimal range (that covers the visible curve)
-            Vector2 totalRange = GetOptimalRange();
+            Vector2 optimalRange = GetOptimalRange();
 
             // Increase range in case user zoomed out
             Vector2 zoomedRange = GetZoomedRange();
-            totalRange = Vector2.Max(totalRange, zoomedRange);
-
-            // Increase range in case user dragged outside of the optimal range
-            Vector2 visibleRange = guiCurveEditor.Range;
-            Vector2 draggedRange = guiCurveEditor.Offset;
-            draggedRange.x += visibleRange.x;
-            draggedRange.y = Math.Abs(draggedRange.y) + visibleRange.y;
-
-            return Vector2.Max(totalRange, draggedRange);
+            return Vector2.Max(optimalRange, zoomedRange);
         }
 
         private void Zoom(Vector2 curvePos, float amount)
@@ -455,7 +449,6 @@ namespace BansheeEditor
             Vector2 zoomedRange = GetZoomedRange();
 
             Vector2 zoomedDiff = zoomedRange - oldZoomedRange;
-            zoomedDiff.y *= 0.5f;
 
             Vector2 currentRange = guiCurveEditor.Range;
             Vector2 newRange = currentRange + zoomedDiff;
