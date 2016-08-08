@@ -39,7 +39,8 @@ namespace BansheeEngine
 	void ScriptSceneSelection::internal_PickObject(ScriptSceneSelection* thisPtr, Vector2I* inputPos, bool additive)
 	{
 		// TODO - Handle multi-selection (i.e. selection rectangle when dragging)
-		HSceneObject pickedObject = ScenePicking::instance().pickClosestObject(thisPtr->mCamera, *inputPos, Vector2I(1, 1));
+		PickData data;
+		HSceneObject pickedObject = ScenePicking::instance().pickClosestObject(thisPtr->mCamera, *inputPos, Vector2I(1, 1), data);
 
 		if (pickedObject)
 		{

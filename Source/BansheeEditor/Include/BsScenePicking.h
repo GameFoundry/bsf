@@ -13,11 +13,18 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
-	 /** Contains the results of a scene picking. */
+	 /** Contains the data of a scene picking action. */
+	struct PickData
+	{
+		Vector3 normal;
+		Vector3 pickPosition;
+	};
+
+	/** Contains the results of a scene picking action. */
 	struct PickResults
 	{
-		Vector<UINT32> results;
-		Vector3 pickPosition;
+		Vector<UINT32> objects;
+		PickData data;
 	};
 
 	class ScenePickingCore;
@@ -47,9 +54,10 @@ namespace BansheeEngine
 		 * @param[in]	position	Pointer position relative to the camera viewport, in pixels.
 		 * @param[in]	area		Width/height of the checked area in pixels. Use (1, 1) if you want the exact position
 		 *							under the pointer.
+		 * @param[out]	data		Picking data regarding position and normal.
 		 * @return					Nearest SceneObject under the provided area, or an empty handle if no object is found.
 		 */
-		HSceneObject pickClosestObject(const SPtr<Camera>& cam, const Vector2I& position, const Vector2I& area);
+		HSceneObject pickClosestObject(const SPtr<Camera>& cam, const Vector2I& position, const Vector2I& area, PickData& data);
 
 		/**
 		 * Attempts to find all scene objects under the provided position and area. This does not mean objects occluded by
@@ -59,9 +67,10 @@ namespace BansheeEngine
 		 * @param[in]	position	Pointer position relative to the camera viewport, in pixels.
 		 * @param[in]	area		Width/height of the checked area in pixels. Use (1, 1) if you want the exact position
 		 *							under the pointer.
+		 * @param[out]	data		Picking data regarding position and normal.
 		 * @return					A list of SceneObject%s under the provided area.
 		 */
-		Vector<HSceneObject> pickObjects(const SPtr<Camera>& cam, const Vector2I& position, const Vector2I& area);
+		Vector<HSceneObject> pickObjects(const SPtr<Camera>& cam, const Vector2I& position, const Vector2I& area, PickData& data);
 
 	private:
 		friend class ScenePickingCore;

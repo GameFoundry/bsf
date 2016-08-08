@@ -54,16 +54,16 @@ namespace BansheeEngine
 		gCoreAccessor().queueCommand(std::bind(&ScenePickingCore::destroy, mCore));
 	}
 
-	HSceneObject ScenePicking::pickClosestObject(const SPtr<Camera>& cam, const Vector2I& position, const Vector2I& area)
+	HSceneObject ScenePicking::pickClosestObject(const SPtr<Camera>& cam, const Vector2I& position, const Vector2I& area, PickData& data)
 	{
-		Vector<HSceneObject> selectedObjects = pickObjects(cam, position, area);
+		Vector<HSceneObject> selectedObjects = pickObjects(cam, position, area, data);
 		if (selectedObjects.size() == 0)
 			return HSceneObject();
 
 		return selectedObjects[0];
 	}
 
-	Vector<HSceneObject> ScenePicking::pickObjects(const SPtr<Camera>& cam, const Vector2I& position, const Vector2I& area)
+	Vector<HSceneObject> ScenePicking::pickObjects(const SPtr<Camera>& cam, const Vector2I& position, const Vector2I& area, PickData& data)
 	{
 		auto comparePickElement = [&] (const ScenePicking::RenderablePickData& a, const ScenePicking::RenderablePickData& b)
 		{
@@ -170,10 +170,25 @@ namespace BansheeEngine
 		assert(op.hasCompleted());
 
 		PickResults returnValue = op.getReturnValue<PickResults>();
-		Vector3 pos = returnValue.pickPosition;
-		pos = cam->screenToWorldPoint(Vector2I(pos.x, pos.y), 
-			(1.0f / (pos.z + cam->getDeviceZTransform().y)) * cam->getDeviceZTransform().x);
-		Vector<UINT32> selectedObjects = returnValue.results;
+		Vector3 pos = returnValue.data.pickPosition;
+		Vector2 ndcPoint = cam->screenToNdcPoint(Vector2I(pos.x,pos.y));
+		Vector4 worldPoint(ndcPoint.x, ndcPoint.y, pos.z, 1.0f);
+		worldPoint = cam->getProjectionMatrixRS().inverse().multiply(worldPoint);
+		Vector3 worldPoint3D;
+
+		if (Math::abs(worldPoint.w) > 1e-7f)
+		{
+			float invW = 1.0f / worldPoint.w;
+
+			worldPoint3D.x = worldPoint.x * invW;
+			worldPoint3D.y = worldPoint.y * invW;
+			worldPoint3D.z = worldPoint.z * invW;
+		}
+		pos = cam->viewToWorldPoint(worldPoint3D);
+		data = returnValue.data;
+		data.pickPosition = pos;
+
+		Vector<UINT32> selectedObjects = returnValue.objects;
 		Vector<HSceneObject> results;
 
 		for (auto& selectedObjectIdx : selectedObjects)
@@ -423,8 +438,12 @@ namespace BansheeEngine
 			depth = depthPixelData->getDepthAt(position.x, position.y);
 
 		PickResults result;
-		result.results = objects;
-		result.pickPosition = Vector3(position.x, position.y, depth);
+		PickData data;
+		result.objects = objects;
+		const RenderAPIInfo& rapiInfo = rs.getAPIInfo();
+		depth = depth * Math::abs(rapiInfo.getMinimumDepthInputValue() - rapiInfo.getMinimumDepthInputValue()) + rapiInfo.getMinimumDepthInputValue();
+		data.pickPosition = Vector3(position.x, position.y, depth);
+		result.data = data;
 		asyncOp._completeOperation(result);
 	}
 }
