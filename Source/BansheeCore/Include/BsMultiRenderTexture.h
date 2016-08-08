@@ -121,6 +121,9 @@ namespace BansheeEngine
 		/** Returns properties that describe the render texture. */
 		const MultiRenderTextureProperties& getProperties() const;
 
+		/** @copydoc	TextureManager::createMultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC&) */
+		static SPtr<MultiRenderTextureCore> create(const MULTI_RENDER_TEXTURE_CORE_DESC& desc);
+
 	protected:
 		MultiRenderTextureCore(const MULTI_RENDER_TEXTURE_CORE_DESC& desc);
 
