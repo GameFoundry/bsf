@@ -4,6 +4,7 @@
 #include "BsAnimationManager.h"
 #include "BsAnimationClip.h"
 #include "BsAnimationUtility.h"
+#include "BsSceneObject.h"
 
 namespace BansheeEngine
 {
@@ -29,7 +30,7 @@ namespace BansheeEngine
 	}
 
 	AnimationProxy::AnimationProxy(UINT64 id)
-		:id(id), layers(nullptr), numLayers(0), genericCurveOutputs(nullptr)
+		:id(id), layers(nullptr), numLayers(0), numSceneObjects(0), sceneObjectInfos(nullptr), genericCurveOutputs(nullptr)
 	{ }
 
 	AnimationProxy::~AnimationProxy()
@@ -83,53 +84,48 @@ namespace BansheeEngine
 						state.boneToCurveMapping[k].~AnimationCurveMapping();
 				}
 
+				if(state.soToCurveMapping != nullptr)
+				{
+					for(UINT32 k = 0; k < numSceneObjects; k++)
+						state.soToCurveMapping[k].~AnimationCurveMapping();
+				}
+
 				state.~AnimationState();
 			}
 
 			layer.~AnimationStateLayer();
 		}
 
-		// All the memory is part of the same buffer, so we only need to free the first element
+		// All of the memory is part of the same buffer, so we only need to free the first element
 		bs_free(layers);
 		layers = nullptr;
 		genericCurveOutputs = nullptr;
+		sceneObjectInfos = nullptr;
 
 		numLayers = 0;
+		numSceneObjects = 0;
 	}
 
-	void AnimationProxy::rebuild(const SPtr<Skeleton>& skeleton, Vector<AnimationClipInfo>& clipInfos)
+	void AnimationProxy::rebuild(const SPtr<Skeleton>& skeleton, Vector<AnimationClipInfo>& clipInfos, 
+		const Vector<AnimatedSceneObject>& sceneObjects)
 	{
 		this->skeleton = skeleton;
 
-		// Note: I could avoid having a separate allocation for LocalSkeletonPose and use the same buffer as the rest
+		// Note: I could avoid having a separate allocation for LocalSkeletonPoses and use the same buffer as the rest
 		// of AnimationProxy
 		if (skeleton != nullptr)
-			localPose = LocalSkeletonPose(skeleton->getNumBones());
+			skeletonPose = LocalSkeletonPose(skeleton->getNumBones());
+
+		numSceneObjects = (UINT32)sceneObjects.size();
+		if (numSceneObjects > 0)
+			sceneObjectPose = LocalSkeletonPose(numSceneObjects);
 		else
-		{
-			UINT32 numPosCurves = 0;
-			UINT32 numRotCurves = 0;
-			UINT32 numScaleCurves = 0;
+			sceneObjectPose = LocalSkeletonPose();
 
-			// Note: I'm recalculating this both here and in follow-up rebuild() call, it could be avoided.
-			for (auto& clipInfo : clipInfos)
-			{
-				if (!clipInfo.clip.isLoaded())
-					continue;
-
-				SPtr<AnimationCurves> curves = clipInfo.clip->getCurves();
-				numPosCurves += (UINT32)curves->position.size();
-				numRotCurves += (UINT32)curves->rotation.size();
-				numScaleCurves += (UINT32)curves->scale.size();
-			}
-
-			localPose = LocalSkeletonPose(numPosCurves, numRotCurves, numScaleCurves);
-		}
-
-		rebuild(clipInfos);
+		rebuild(clipInfos, sceneObjects);
 	}
 
-	void AnimationProxy::rebuild(Vector<AnimationClipInfo>& clipInfos)
+	void AnimationProxy::rebuild(Vector<AnimationClipInfo>& clipInfos, const Vector<AnimatedSceneObject>& sceneObjects)
 	{
 		clear();
 
@@ -201,9 +197,10 @@ namespace BansheeEngine
 			UINT32 scaleCacheSize = numScaleCurves * sizeof(TCurveCache<Vector3>);
 			UINT32 genCacheSize = numGenCurves * sizeof(TCurveCache<float>);
 			UINT32 genericCurveOutputSize = numGenCurves * sizeof(float);
+			UINT32 sceneObjectIdsSize = numSceneObjects * sizeof(AnimatedSceneObjectInfo);
 
 			UINT8* data = (UINT8*)bs_alloc(layersSize + clipsSize + boneMappingSize + posCacheSize + rotCacheSize + 
-				scaleCacheSize + genCacheSize + genericCurveOutputSize);
+				scaleCacheSize + genCacheSize + genericCurveOutputSize + sceneObjectIdsSize);
 
 			layers = (AnimationStateLayer*)data;
 			memcpy(layers, tempLayers.data(), layersSize);
@@ -246,6 +243,10 @@ namespace BansheeEngine
 			data += genCacheSize;
 
 			genericCurveOutputs = (float*)data;
+			data += genericCurveOutputSize;
+
+			sceneObjectInfos = (AnimatedSceneObjectInfo*)data;
+			data += sceneObjectIdsSize;
 
 			UINT32 curLayerIdx = 0;
 			UINT32 curStateIdx = 0;
@@ -347,7 +348,48 @@ namespace BansheeEngine
 
 				// Must be larger than zero otherwise the layer.states pointer will point to data held by some other layer
 				assert(layer.numStates > 0);
-			}			
+			}
+
+			for(UINT32 i = 0; i < numSceneObjects; i++)
+			{
+				AnimatedSceneObjectInfo& soInfo = sceneObjectInfos[i];
+				soInfo.id = sceneObjects[i].so.getInstanceId();
+				soInfo.boneIdx = -1;
+
+				// Check if the scene object maps to a bone (in which case we the system can just re-use the skeleton pose)
+				if (skeleton != nullptr)
+				{
+					for(UINT32 j = 0; j < numBones; j++)
+					{
+						if(skeleton->getBoneInfo(j).name == sceneObjects[i].curveName)
+						{
+							soInfo.boneIdx = j;
+							break;
+						}
+					}
+				}
+
+				// If no bone mapping, find curves directly
+				if(soInfo.boneIdx == -1)
+				{
+					soInfo.curveIndices = { (UINT32)-1, (UINT32)-1, (UINT32)-1 };
+
+					for(auto& clipInfo : clipInfos)
+					{
+						soInfo.layerIdx = clipInfo.layerIdx;
+						soInfo.stateIdx = clipInfo.stateIdx;
+
+						bool isClipValid = clipInfo.clip.isLoaded();
+						if (isClipValid)
+						{
+							// Note: If there are multiple clips with the relevant curve name, we only use the first
+
+							clipInfo.clip->getCurveMapping(sceneObjects[i].curveName, soInfo.curveIndices);
+							break;
+						}
+					}
+				}
+			}
 		}
 		bs_frame_clear();
 	}
@@ -800,6 +842,21 @@ namespace BansheeEngine
 		}
 	}
 
+	void Animation::mapCurveToSceneObject(const String& curve, const HSceneObject& so)
+	{
+		AnimatedSceneObject animSo = { so, curve };
+		mSceneObjects[so.getInstanceId()] = animSo;
+
+		mDirty |= AnimDirtyStateFlag::Skeleton;
+	}
+
+	void Animation::unmapSceneObject(const HSceneObject& so)
+	{
+		mSceneObjects.erase(so.getInstanceId());
+
+		mDirty |= AnimDirtyStateFlag::Skeleton;
+	}
+
 	SPtr<Animation> Animation::create()
 	{
 		Animation* anim = new (bs_alloc<Animation>()) Animation();
@@ -833,13 +890,59 @@ namespace BansheeEngine
 		else
 		{
 			if (mDirty.isSet(AnimDirtyStateFlag::Skeleton))
-				mAnimProxy->rebuild(mSkeleton, mClipInfos);
+			{
+				Vector<AnimatedSceneObject> animatedSO(mSceneObjects.size());
+				UINT32 idx = 0;
+				for(auto& entry : mSceneObjects)
+					animatedSO[idx++] = entry.second;
+
+				mAnimProxy->rebuild(mSkeleton, mClipInfos, animatedSO);
+			}
 			else if (mDirty.isSet(AnimDirtyStateFlag::Layout))
-				mAnimProxy->rebuild(mClipInfos);
+			{
+				Vector<AnimatedSceneObject> animatedSO(mSceneObjects.size());
+				UINT32 idx = 0;
+				for (auto& entry : mSceneObjects)
+					animatedSO[idx++] = entry.second;
+
+				mAnimProxy->rebuild(mClipInfos, animatedSO);
+			}
 			else if (mDirty.isSet(AnimDirtyStateFlag::Value))
 				mAnimProxy->updateValues(mClipInfos);
 		}
 
 		mDirty = AnimDirtyState();
+	}
+
+	void Animation::updateFromProxy()
+	{
+		// Write TRS animation results to relevant SceneObjects
+		for(UINT32 i = 0; i < mAnimProxy->numSceneObjects; i++)
+		{
+			const AnimatedSceneObjectInfo& soInfo = mAnimProxy->sceneObjectInfos[i];
+
+			auto iterFind = mSceneObjects.find(soInfo.id);
+			if (iterFind == mSceneObjects.end())
+				continue;
+
+			HSceneObject so = iterFind->second.so;
+			if (so.isDestroyed())
+				continue;
+
+			if(soInfo.boneIdx != -1)
+			{
+				so->setPosition(mAnimProxy->skeletonPose.positions[soInfo.boneIdx]);
+				so->setRotation(mAnimProxy->skeletonPose.rotations[soInfo.boneIdx]);
+				so->setScale(mAnimProxy->skeletonPose.scales[soInfo.boneIdx]);
+			}
+			else
+			{
+				so->setPosition(mAnimProxy->sceneObjectPose.positions[i]);
+				so->setRotation(mAnimProxy->sceneObjectPose.rotations[i]);
+				so->setScale(mAnimProxy->sceneObjectPose.scales[i]);
+			}
+		}
+
+		// TODO - Copy generic animation data and add a method for retrieving it
 	}
 }

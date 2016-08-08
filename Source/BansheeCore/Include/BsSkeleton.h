@@ -40,6 +40,7 @@ namespace BansheeEngine
 	{
 		SPtr<AnimationCurves> curves; /**< All curves in the animation clip. */
 		AnimationCurveMapping* boneToCurveMapping; /**< Mapping of bone indices to curve indices for quick lookup .*/
+		AnimationCurveMapping* soToCurveMapping; /**< Mapping of scene object indices to curve indices for quick lookup. */
 
 		TCurveCache<Vector3>* positionCaches; /**< Cache used for evaluating position curves. */
 		TCurveCache<Quaternion>* rotationCaches; /**< Cache used for evaluating rotation curves. */

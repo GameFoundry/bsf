@@ -102,6 +102,23 @@ namespace BansheeEngine
 		HAnimationClip botRightClip;
 	};
 
+	/** Contains a mapping between a scene object and an animation curve it is animated with. */
+	struct AnimatedSceneObject
+	{
+		HSceneObject so;
+		String curveName;
+	};
+
+	/** Contains information about a scene object that is animated by a specific animation curve. */
+	struct AnimatedSceneObjectInfo
+	{
+		UINT64 id;
+		INT32 boneIdx; /**< Bone from which to access the transform. If -1 then no bone mapping is present. */
+		INT32 layerIdx; /**< If no bone mapping, layer on which the animation containing the referenced curve is in. */
+		INT32 stateIdx; /**< If no bone mapping, animation state containing the referenced curve. */
+		AnimationCurveMapping curveIndices; /**< Indices of the curves used for the transform. */
+	};
+
 	/** Represents a copy of the Animation data for use specifically on the animation thread. */
 	struct AnimationProxy
 	{
@@ -115,26 +132,29 @@ namespace BansheeEngine
 		 * Rebuilds the internal proxy data according to the newly assigned skeleton and clips. This should be called
 		 * whenever the animation skeleton changes.
 		 *
-		 * @param[in]		skeleton	New skeleton to assign to the proxy.
-		 * @param[in, out]	clipInfos	Potentially new clip infos that will be used for rebuilding the proxy. Once the
-		 *								method completes clip info layout and state indices will be populated for 
-		 *								further use in the update*() methods.
+		 * @param[in]		skeleton		New skeleton to assign to the proxy.
+		 * @param[in, out]	clipInfos		Potentially new clip infos that will be used for rebuilding the proxy. Once the
+		 *									method completes clip info layout and state indices will be populated for 
+		 *									further use in the update*() methods.
+		 * @param[in]		sceneObjects	A list of scene objects that are influenced by specific animation curves.
 		 *
 		 * @note	Should be called from the sim thread when the caller is sure the animation thread is not using it.
 		 */
-		void rebuild(const SPtr<Skeleton>& skeleton, Vector<AnimationClipInfo>& clipInfos);
+		void rebuild(const SPtr<Skeleton>& skeleton, Vector<AnimationClipInfo>& clipInfos, 
+			const Vector<AnimatedSceneObject>& sceneObjects);
 
 		/** 
 		 * Rebuilds the internal proxy data according to the newly clips. This should be called whenever clips are added
 		 * or removed, or clip layout indices change.
 		 *
-		 * @param[in, out]	clipInfos	New clip infos that will be used for rebuilding the proxy. Once the method completes
-		 *								clip info layout and state indices will be populated for further use in the
-		 *								update*() methods.
+		 * @param[in, out]	clipInfos		New clip infos that will be used for rebuilding the proxy. Once the method 
+		 *									completes clip info layout and state indices will be populated for further use 
+		 *									in the update*() methods.
+		 * @param[in]		sceneObjects	A list of scene objects that are influenced by specific animation curves.
 		 *
 		 * @note	Should be called from the sim thread when the caller is sure the animation thread is not using it.
 		 */
-		void rebuild(Vector<AnimationClipInfo>& clipInfos);
+		void rebuild(Vector<AnimationClipInfo>& clipInfos, const Vector<AnimatedSceneObject>& sceneObjects);
 
 		/** 
 		 * Updates the proxy data with new information about the clips. Caller must guarantee that clip layout didn't 
@@ -159,9 +179,12 @@ namespace BansheeEngine
 		AnimationStateLayer* layers;
 		UINT32 numLayers;
 		SPtr<Skeleton> skeleton;
+		UINT32 numSceneObjects;
+		AnimatedSceneObjectInfo* sceneObjectInfos;
 
 		// Evaluation results
-		LocalSkeletonPose localPose;
+		LocalSkeletonPose skeletonPose;
+		LocalSkeletonPose sceneObjectPose;
 		float* genericCurveOutputs;
 	};
 
@@ -280,12 +303,17 @@ namespace BansheeEngine
 		void setState(const HAnimationClip& clip, AnimationClipState state);
 
 		/** 
-		 * Triggers any events between the last frame and current one. 
+		 * Ensures that any position/rotation/scale animation of a specific animation curve is transfered to the
+		 * the provided scene object. Also allow the opposite operation which can allow scene object transform changes
+		 * to manipulate object bones.
 		 *
-		 * @param[in]	lastFrameTime	Time of the last frame.
-		 * @param[in]	delta			Difference between the last and this frame.
+		 * @param[in]	curve	Name of the curve (bone) to connect the scene object with.
+		 * @param[in]	so		Scene object to influence by the curve modifications, and vice versa.
 		 */
-		void triggerEvents(float lastFrameTime, float delta);
+		void mapCurveToSceneObject(const String& curve, const HSceneObject& so);
+
+		/** Removes the curve <-> scene object mapping that was set via mapCurveToSceneObject(). */
+		void unmapSceneObject(const HSceneObject& so);
 
 		/** Creates a new empty Animation object. */
 		static SPtr<Animation> create();
@@ -307,11 +335,26 @@ namespace BansheeEngine
 		Animation();
 
 		/** 
+		 * Triggers any events between the last frame and current one. 
+		 *
+		 * @param[in]	lastFrameTime	Time of the last frame.
+		 * @param[in]	delta			Difference between the last and this frame.
+		 */
+		void triggerEvents(float lastFrameTime, float delta);
+
+		/** 
 		 * Updates the animation proxy object based on the currently set skeleton, playing clips and dirty flags. 
 		 *
 		 * @param[in]	timeDelta	Seconds passed since the last call to this method.
 		 */
 		void updateAnimProxy(float timeDelta);
+
+		/**
+		 * Applies any outputs stored in the animation proxy (as written by the animation thread), and uses them to update
+		 * the animation state on the simulation thread. Caller must ensure that the animation thread has finished
+		 * with the animation proxy.
+		 */
+		void updateFromProxy();
 
 		/** 
 		 * Registers a new animation in the specified layer, or returns an existing animation clip info if the animation is
@@ -327,6 +370,7 @@ namespace BansheeEngine
 
 		SPtr<Skeleton> mSkeleton;
 		Vector<AnimationClipInfo> mClipInfos;
+		UnorderedMap<UINT64, AnimatedSceneObject> mSceneObjects;
 
 		// Animation thread only
 		SPtr<AnimationProxy> mAnimProxy;

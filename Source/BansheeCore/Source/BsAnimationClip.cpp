@@ -195,18 +195,23 @@ namespace BansheeEngine
 		{
 			const SkeletonBoneInfo& boneInfo = skeleton.getBoneInfo(i);
 
-			auto iterFind = mNameMapping.find(boneInfo.name);
-			if(iterFind != mNameMapping.end())
-			{
-				const UINT32* indices = iterFind->second;
-
-				mapping[i].position = indices[(UINT32)CurveType::Position];
-				mapping[i].rotation = indices[(UINT32)CurveType::Rotation];
-				mapping[i].scale = indices[(UINT32)CurveType::Scale];
-			}
-			else
-				mapping[i] = { (UINT32)-1, (UINT32)-1, (UINT32)-1 };
+			getCurveMapping(boneInfo.name, mapping[i]);
 		}
+	}
+
+	void AnimationClip::getCurveMapping(const String& name, AnimationCurveMapping& mapping) const
+	{
+		auto iterFind = mNameMapping.find(name);
+		if (iterFind != mNameMapping.end())
+		{
+			const UINT32* indices = iterFind->second;
+
+			mapping.position = indices[(UINT32)CurveType::Position];
+			mapping.rotation = indices[(UINT32)CurveType::Rotation];
+			mapping.scale = indices[(UINT32)CurveType::Scale];
+		}
+		else
+			mapping = { (UINT32)-1, (UINT32)-1, (UINT32)-1 };
 	}
 
 	RTTITypeBase* AnimationClip::getRTTIStatic()
