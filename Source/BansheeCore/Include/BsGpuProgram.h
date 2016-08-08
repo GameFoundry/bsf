@@ -232,3 +232,18 @@ namespace BansheeEngine
 
 	/** @} */
 }
+
+namespace std
+{
+/** Hash value generator for GpuProgramProfile. */
+template<>
+struct hash<BansheeEngine::GpuProgramProfile>
+{
+	size_t operator()(const BansheeEngine::GpuProgramProfile& profile) const
+	{
+		size_t hash = 0;
+		BansheeEngine::hash_combine(hash, (int)profile);
+		return hash;
+	}
+};
+}

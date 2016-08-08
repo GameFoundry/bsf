@@ -37,14 +37,16 @@ namespace BansheeEditor
         }
 
         private const int TIMELINE_HEIGHT = 20;
+        private const int EVENTS_HEIGHT = 10;
         private const int SIDEBAR_WIDTH = 30;
         private const int DRAG_START_DISTANCE = 3;
 
         private EditorWindow window;
         private GUILayout gui;
         private GUIPanel drawingPanel;
-        private GUIPanel sidebarPanel;
+
         private GUIGraphTime guiTimeline;
+        private GUIAnimEvents guiEvents;
         private GUICurveDrawing guiCurveDrawing;
         private GUIGraphValues guiSidebar;
 
@@ -90,6 +92,7 @@ namespace BansheeEditor
                 yRange = value.y;
 
                 guiTimeline.SetRange(xRange);
+                guiEvents.SetRange(xRange);
                 guiCurveDrawing.SetRange(xRange, yRange * 2.0f);
                 guiSidebar.SetRange(offset.y - yRange, offset.y + yRange);
 
@@ -108,8 +111,11 @@ namespace BansheeEditor
                 offset = value;
 
                 guiTimeline.SetOffset(offset.x);
+                guiEvents.SetOffset(offset.x);
                 guiCurveDrawing.SetOffset(offset);
                 guiSidebar.SetRange(offset.y - yRange, offset.y + yRange);
+
+                Redraw();
             }
         }
 
@@ -155,17 +161,44 @@ namespace BansheeEditor
 
             guiTimeline = new GUIGraphTime(gui, width, TIMELINE_HEIGHT);
 
+            GUIPanel eventsPanel = gui.AddPanel();
+            eventsPanel.SetPosition(0, TIMELINE_HEIGHT);
+            guiEvents = new GUIAnimEvents(eventsPanel, width, EVENTS_HEIGHT);
+            
             drawingPanel = gui.AddPanel();
-            drawingPanel.SetPosition(0, TIMELINE_HEIGHT);
+            drawingPanel.SetPosition(0, TIMELINE_HEIGHT + EVENTS_HEIGHT);
 
-            guiCurveDrawing = new GUICurveDrawing(drawingPanel, width, height - TIMELINE_HEIGHT, curves);
+            guiCurveDrawing = new GUICurveDrawing(drawingPanel, width, height - TIMELINE_HEIGHT - EVENTS_HEIGHT, curves);
             guiCurveDrawing.SetRange(60.0f, 20.0f);
 
-            sidebarPanel = gui.AddPanel(-10);
-            sidebarPanel.SetPosition(0, TIMELINE_HEIGHT);
+            GUIPanel sidebarPanel = gui.AddPanel(-10);
+            sidebarPanel.SetPosition(0, TIMELINE_HEIGHT + EVENTS_HEIGHT);
 
-            guiSidebar = new GUIGraphValues(sidebarPanel, SIDEBAR_WIDTH, height - TIMELINE_HEIGHT);
+            guiSidebar = new GUIGraphValues(sidebarPanel, SIDEBAR_WIDTH, height - TIMELINE_HEIGHT - EVENTS_HEIGHT);
             guiSidebar.SetRange(-10.0f, 10.0f);
+        }
+
+        /// <summary>
+        /// Converts pixel coordinates relative to the curve drawing area into coordinates in curve space.
+        /// </summary>
+        /// <param name="pixelCoords">Coordinates relative to this GUI element, in pixels.</param>
+        /// <param name="curveCoords">Curve coordinates within the range as specified by <see cref="Range"/>. Only
+        ///                           valid when function returns true.</param>
+        /// <returns>True if the coordinates are within the curve area, false otherwise.</returns>
+        public bool PixelToCurveSpace(Vector2I pixelCoords, out Vector2 curveCoords)
+        {
+            return guiCurveDrawing.PixelToCurveSpace(pixelCoords, out curveCoords);
+        }
+
+        /// <summary>
+        /// Converts coordinate in curve space (time, value) into pixel coordinates relative to the curve drawing area
+        /// origin.
+        /// </summary>
+        /// <param name="curveCoords">Time and value of the location to convert.</param>
+        /// <returns>Coordinates relative to curve drawing area's origin, in pixels.</returns>
+        public Vector2I CurveToPixelSpace(Vector2 curveCoords)
+        {
+            return guiCurveDrawing.CurveToPixelSpace(curveCoords);
         }
 
         public bool WindowToCurveSpace(Vector2I windowPos, out Vector2 curveCoord)
@@ -232,6 +265,14 @@ namespace BansheeEditor
 
                     if (frameIdx != -1)
                         SetMarkedFrame(frameIdx);
+                    else
+                    {
+                        int eventIdx;
+                        if (guiEvents.FindEvent(pointerPos, out eventIdx))
+                        {
+                            // TODO - Select event
+                        }
+                    }
 
                     OnFrameSelected?.Invoke(frameIdx);
                 }
@@ -448,8 +489,9 @@ namespace BansheeEditor
             this.height = height;
 
             guiTimeline.SetSize(width, TIMELINE_HEIGHT);
-            guiCurveDrawing.SetSize(width, height - TIMELINE_HEIGHT);
-            guiSidebar.SetSize(SIDEBAR_WIDTH, height - TIMELINE_HEIGHT);
+            guiEvents.SetSize(height, EVENTS_HEIGHT);
+            guiCurveDrawing.SetSize(width, height - TIMELINE_HEIGHT - EVENTS_HEIGHT);
+            guiSidebar.SetSize(SIDEBAR_WIDTH, height - TIMELINE_HEIGHT - EVENTS_HEIGHT);
 
             Redraw();
         }
@@ -461,6 +503,7 @@ namespace BansheeEditor
         public void SetFPS(int fps)
         {
             guiTimeline.SetFPS(fps);
+            guiEvents.SetFPS(fps);
             guiCurveDrawing.SetFPS(fps);
 
             Redraw();
@@ -512,6 +555,7 @@ namespace BansheeEditor
         {
             guiCurveDrawing.Rebuild();
             guiTimeline.Rebuild();
+            guiEvents.Rebuild();
             guiSidebar.Rebuild();
         }
         

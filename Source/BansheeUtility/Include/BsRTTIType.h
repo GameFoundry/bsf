@@ -546,7 +546,7 @@ namespace BansheeEngine
 
 			UINT32 typeSize = 0;
 			if(field->hasDynamicSize())
-				typeSize = field->getArrayElemDynamicSize(object, arrIdx);
+				typeSize = field->getArrayElemDynamicSize(object, index);
 			else
 				typeSize = field->getTypeSize();
 
