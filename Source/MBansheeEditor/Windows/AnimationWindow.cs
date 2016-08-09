@@ -2,6 +2,7 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 using System;
 using System.Collections.Generic;
+using System.Text;
 using BansheeEngine;
 
 namespace BansheeEditor
@@ -468,7 +469,7 @@ namespace BansheeEditor
         }
         #endregion
 
-        #region Curve display
+        #region Curve save/load
         /// <summary>
         /// A set of animation curves for a field of a certain type.
         /// </summary>
@@ -478,9 +479,221 @@ namespace BansheeEditor
             public EdAnimationCurve[] curves;
         }
 
+        [SerializeObject]
+        private class EditorVector3CurveTangents
+        {
+            public string name;
+            public TangentMode[] tangentsX;
+            public TangentMode[] tangentsY;
+            public TangentMode[] tangentsZ;
+        }
+
+        [SerializeObject]
+        private class EditorFloatCurveTangents
+        {
+            public string name;
+            public TangentMode[] tangents;
+        }
+
+        [SerializeObject]
+        private class EditorCurveData
+        {
+            public EditorVector3CurveTangents[] positionCurves;
+            public EditorVector3CurveTangents[] rotationCurves;
+            public EditorVector3CurveTangents[] scaleCurves;
+            public EditorFloatCurveTangents[] floatCurves;
+        }
+
+        private Dictionary<string, FieldCurves> curves = new Dictionary<string, FieldCurves>();
+        private List<AnimationEvent> events = new List<AnimationEvent>();
+        private bool clipIsImported;
+
+        private void LoadFromClip(AnimationClip clip)
+        {
+            curves.Clear();
+            selectedFields.Clear();
+
+            clipIsImported = IsClipImported(clip);
+
+            AnimationCurves clipCurves = clip.Curves;
+            foreach (var curve in clipCurves.PositionCurves)
+            {
+                // TODO (don't forget tangents)
+
+            // TODO - Trim last / if needed
+            }
+
+            events.AddRange(clip.Events);
+        }
+
+        private void SaveToClip(AnimationClip clip, string saveToPath)
+        {
+            if (!clipIsImported)
+            {
+                List<NamedVector3Curve> positionCurves = new List<NamedVector3Curve>();
+                List<NamedVector3Curve> rotationCurves = new List<NamedVector3Curve>();
+                List<NamedVector3Curve> scaleCurves = new List<NamedVector3Curve>();
+                List<NamedFloatCurve> floatCurves = new List<NamedFloatCurve>();
+
+                List<EditorVector3CurveTangents> positionTangents = new List<EditorVector3CurveTangents>();
+                List<EditorVector3CurveTangents> rotationTangents = new List<EditorVector3CurveTangents>();
+                List<EditorVector3CurveTangents> scaleTangents = new List<EditorVector3CurveTangents>();
+                List<EditorFloatCurveTangents> floatTangents = new List<EditorFloatCurveTangents>();
+
+                foreach (var kvp in curves)
+                {
+                    string[] pathEntries = kvp.Key.Split('/');
+                    if (pathEntries.Length == 0)
+                        continue;
+
+                    string lastEntry = pathEntries[pathEntries.Length - 1];
+
+                    if (lastEntry == "Position" || lastEntry == "Rotation" || lastEntry == "Scale")
+                    {
+                        StringBuilder sb = new StringBuilder();
+                        for (int i = 0; i < pathEntries.Length - 2; i++)
+                            sb.Append(pathEntries[i] + "/");
+
+                        if (pathEntries.Length > 1)
+                            sb.Append(pathEntries[pathEntries.Length - 2]);
+
+                        string curvePath = sb.ToString();
+
+                        NamedVector3Curve curve = new NamedVector3Curve(curvePath,
+                            new AnimationCurve(kvp.Value.curves[0].KeyFrames),
+                            new AnimationCurve(kvp.Value.curves[1].KeyFrames),
+                            new AnimationCurve(kvp.Value.curves[2].KeyFrames));
+
+                        EditorVector3CurveTangents tangents = new EditorVector3CurveTangents();
+                        tangents.name = curvePath;
+                        tangents.tangentsX = kvp.Value.curves[0].TangentModes;
+                        tangents.tangentsY = kvp.Value.curves[1].TangentModes;
+                        tangents.tangentsZ = kvp.Value.curves[2].TangentModes;
+
+                        if (lastEntry == "Position")
+                        {
+                            positionCurves.Add(curve);
+                            positionTangents.Add(tangents);
+                        }
+                        else if (lastEntry == "Rotation")
+                        {
+                            rotationCurves.Add(curve);
+                            rotationTangents.Add(tangents);
+                        }
+                        else if (lastEntry == "Scale")
+                        {
+                            scaleCurves.Add(curve);
+                            scaleTangents.Add(tangents);
+                        }
+                    }
+                    else
+                    {
+                        NamedFloatCurve curve = new NamedFloatCurve(kvp.Key,
+                            new AnimationCurve(kvp.Value.curves[0].KeyFrames));
+
+                        EditorFloatCurveTangents tangents = new EditorFloatCurveTangents();
+                        tangents.name = kvp.Key;
+                        tangents.tangents = kvp.Value.curves[0].TangentModes;
+
+                        floatCurves.Add(curve);
+                        floatTangents.Add(tangents);
+                    } 
+                }
+
+                AnimationCurves newClipCurves = new AnimationCurves();
+                newClipCurves.PositionCurves = positionCurves.ToArray();
+                newClipCurves.RotationCurves = rotationCurves.ToArray();
+                newClipCurves.ScaleCurves = scaleCurves.ToArray();
+                newClipCurves.FloatCurves = floatCurves.ToArray();
+
+                clip.Curves = newClipCurves;
+                clip.Events = events.ToArray();
+
+                string resourcePath = ProjectLibrary.GetPath(clip);
+                if (string.IsNullOrEmpty(resourcePath))
+                    ProjectLibrary.Create(clip, saveToPath);
+                else
+                    ProjectLibrary.Save(clip);
+
+                // Save tangents for editor only use
+                LibraryEntry entry = ProjectLibrary.GetEntry(resourcePath);
+                string clipName = PathEx.GetTail(resourcePath);
+
+                if (entry != null && entry.Type == LibraryEntryType.File)
+                {
+                    FileEntry fileEntry = (FileEntry)entry;
+                    ResourceMeta[] metas = fileEntry.ResourceMetas;
+
+                    for (int i = 0; i < metas.Length; i++)
+                    {
+                        if (clipName == metas[i].SubresourceName)
+                        {
+                            EditorCurveData newCurveData = new EditorCurveData();
+                            newCurveData.positionCurves = positionTangents.ToArray();
+                            newCurveData.rotationCurves = rotationTangents.ToArray();
+                            newCurveData.scaleCurves = scaleTangents.ToArray();
+                            newCurveData.floatCurves = floatTangents.ToArray();
+
+                            ProjectLibrary.SetEditorData(resourcePath, newCurveData);
+                            break;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                string resourcePath = ProjectLibrary.GetPath(clip);
+                LibraryEntry entry = ProjectLibrary.GetEntry(resourcePath);
+
+                if (entry != null && entry.Type == LibraryEntryType.File)
+                {
+                    FileEntry fileEntry = (FileEntry) entry;
+                    MeshImportOptions meshImportOptions = (MeshImportOptions)fileEntry.Options;
+
+                    string clipName = PathEx.GetTail(resourcePath);
+
+                    List<ImportedAnimationEvents> newEvents = new List<ImportedAnimationEvents>();
+                    newEvents.AddRange(meshImportOptions.AnimationEvents);
+
+                    bool isExisting = false;
+                    for (int i = 0; i < newEvents.Count; i++)
+                    {
+                        if (newEvents[i].name == clipName)
+                        {
+                            newEvents[i].events = events.ToArray();
+                            isExisting = true;
+                            break;
+                        }
+                    }
+
+                    if (!isExisting)
+                    {
+                        ImportedAnimationEvents newEntry = new ImportedAnimationEvents();
+                        newEntry.name = clipName;
+                        newEntry.events = events.ToArray();
+
+                        newEvents.Add(newEntry);
+                    }
+
+                    meshImportOptions.AnimationEvents = newEvents.ToArray();
+
+                    ProjectLibrary.Reimport(resourcePath, meshImportOptions, true);
+                }
+            }
+        }
+
+        private bool IsClipImported(AnimationClip clip)
+        {
+            string resourcePath = ProjectLibrary.GetPath(clip);
+            return ProjectLibrary.IsSubresource(resourcePath);
+        }
+
+        #endregion
+
+        #region Curve display
+
         private int currentFrameIdx;
         private int fps = 1;
-        private Dictionary<string, FieldCurves> curves = new Dictionary<string, FieldCurves>();
 
         internal int FPS
         {
