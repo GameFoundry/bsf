@@ -60,6 +60,7 @@
     <Compile Include="Windows\Animation\GUIGraphValues.cs" />
     <Compile Include="Windows\Animation\GUIGraphTicks.cs" />
     <Compile Include="Windows\Animation\GUIGraphTime.cs" />
+    <Compile Include="Windows\Animation\GUITimelineBase.cs" />
     <Compile Include="Windows\BrowseDialog.cs" />
     <Compile Include="Windows\Build\BuildManager.cs" />
     <Compile Include="Windows\Build\BuildWindow.cs" />

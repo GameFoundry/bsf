@@ -571,6 +571,7 @@ namespace BansheeEditor
             markedFrameIdx = frameIdx;
 
             guiTimeline.SetMarkedFrame(frameIdx);
+            guiEvents.SetMarkedFrame(frameIdx);
             guiCurveDrawing.SetMarkedFrame(frameIdx);
 
             Redraw();
