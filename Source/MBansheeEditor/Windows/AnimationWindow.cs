@@ -204,7 +204,7 @@ namespace BansheeEditor
 
             addEventButton.OnClick += () =>
             {
-                // TODO - Add event
+                guiCurveEditor.AddEventAtMarker();
             };
 
             optionsButton.OnClick += () =>
@@ -505,7 +505,6 @@ namespace BansheeEditor
         }
 
         private Dictionary<string, FieldCurves> curves = new Dictionary<string, FieldCurves>();
-        private List<AnimationEvent> events = new List<AnimationEvent>();
         private bool clipIsImported;
 
         private void LoadFromClip(AnimationClip clip)
@@ -697,7 +696,7 @@ namespace BansheeEditor
             }
 
             // Add events
-            events.AddRange(clip.Events);
+            guiCurveEditor.Events = clip.Events;
         }
 
         private void SaveToClip(AnimationClip clip, string saveToPath)
@@ -816,7 +815,7 @@ namespace BansheeEditor
                 newClipCurves.FloatCurves = floatCurves.ToArray();
 
                 clip.Curves = newClipCurves;
-                clip.Events = events.ToArray();
+                clip.Events = guiCurveEditor.Events;
 
                 string resourcePath = ProjectLibrary.GetPath(clip);
                 if (string.IsNullOrEmpty(resourcePath))
@@ -869,7 +868,7 @@ namespace BansheeEditor
                     {
                         if (newEvents[i].name == clipName)
                         {
-                            newEvents[i].events = events.ToArray();
+                            newEvents[i].events = guiCurveEditor.Events;
                             isExisting = true;
                             break;
                         }
@@ -879,7 +878,7 @@ namespace BansheeEditor
                     {
                         ImportedAnimationEvents newEntry = new ImportedAnimationEvents();
                         newEntry.name = clipName;
-                        newEntry.events = events.ToArray();
+                        newEntry.events = guiCurveEditor.Events;
 
                         newEvents.Add(newEntry);
                     }

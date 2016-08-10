@@ -110,20 +110,6 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Returns time for a frame with the specified index. Depends on set range and FPS.
-        /// </summary>
-        /// <param name="frameIdx">Index of the frame (not a key-frame) to get the time for.</param>
-        /// <returns>Time of the frame with the provided index. </returns>
-        public float GetTimeForFrame(int frameIdx)
-        {
-            float range = GetRange();
-            int numFrames = (int)range * fps;
-            float timePerFrame = range / numFrames;
-
-            return frameIdx* timePerFrame;
-        }
-
-        /// <summary>
         /// Attempts to find a keyframe under the provided coordinates.
         /// </summary>
         /// <param name="pixelCoords">Coordinates relative to this GUI element in pixels.</param>

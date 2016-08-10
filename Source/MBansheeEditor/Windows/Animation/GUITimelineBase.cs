@@ -64,6 +64,30 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Finds the pixel offset relative to the GUI element's origin, of the specified time.
+        /// </summary>
+        /// <param name="time">Time value to return the offset for.</param>
+        /// <returns>Offset in pixels relative to GUI element's origin.</returns>
+        public int GetOffset(float time)
+        {
+            return (int)(((time - rangeOffset) / GetRange()) * drawableWidth) + PADDING;
+        }
+
+        /// <summary>
+        /// Returns time for a frame with the specified index. Depends on set range and FPS.
+        /// </summary>
+        /// <param name="frameIdx">Index of the frame (not a key-frame) to get the time for.</param>
+        /// <returns>Time of the frame with the provided index. </returns>
+        public float GetTimeForFrame(int frameIdx)
+        {
+            float range = GetRange();
+            int numFrames = (int)range * fps;
+            float timePerFrame = range / numFrames;
+
+            return frameIdx * timePerFrame;
+        }
+
+        /// <summary>
         /// Sets the frame at which to display the frame marker.
         /// </summary>
         /// <param name="frameIdx">Index of the frame to display the marker on, or -1 to clear the marker.</param>

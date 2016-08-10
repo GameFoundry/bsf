@@ -49,6 +49,15 @@ namespace BansheeEditor
             public List<DraggedKeyframe> keys = new List<DraggedKeyframe>();
         }
 
+        /// <summary>
+        /// Data about an animation event.
+        /// </summary>
+        class EventInfo
+        {
+            public AnimationEvent animEvent;
+            public bool selected;
+        }
+
         private const int TIMELINE_HEIGHT = 20;
         private const int EVENTS_HEIGHT = 10;
         private const int SIDEBAR_WIDTH = 30;
@@ -57,6 +66,7 @@ namespace BansheeEditor
         private EditorWindow window;
         private GUILayout gui;
         private GUIPanel drawingPanel;
+        private GUIPanel eventsPanel;
 
         private GUIGraphTime guiTimeline;
         private GUIAnimEvents guiEvents;
@@ -65,6 +75,8 @@ namespace BansheeEditor
 
         private ContextMenu blankContextMenu;
         private ContextMenu keyframeContextMenu;
+        private ContextMenu blankEventContextMenu;
+        private ContextMenu eventContextMenu;
         private Vector2I contextClickPosition;
 
         private EdAnimationCurve[] curves = new EdAnimationCurve[0];
@@ -77,6 +89,8 @@ namespace BansheeEditor
 
         private int markedFrameIdx;
         private List<SelectedKeyframes> selectedKeyframes = new List<SelectedKeyframes>();
+
+        private List<EventInfo> events = new List<EventInfo>();
 
         private bool isPointerHeld;
         private bool isMousePressedOverKey;
@@ -149,6 +163,36 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Animation events displayed on the curve editor.
+        /// </summary>
+        public AnimationEvent[] Events
+        {
+            get
+            {
+                AnimationEvent[] animEvents = new AnimationEvent[events.Count];
+                for (int i = 0; i < events.Count; i++)
+                    animEvents[i] = events[i].animEvent;
+
+                return animEvents;
+            }
+
+            set
+            {
+                events.Clear();
+
+                for (int i = 0; i < value.Length; i++)
+                {
+                    EventInfo eventInfo = new EventInfo();
+                    eventInfo.animEvent = value[i];
+
+                    events.Add(eventInfo);
+                }
+
+                UpdateEventsGUI();
+            }
+        }
+
+        /// <summary>
         /// Creates a new curve editor GUI elements.
         /// </summary>
         /// <param name="window">Parent window of the GUI element.</param>
@@ -166,6 +210,9 @@ namespace BansheeEditor
             blankContextMenu = new ContextMenu();
             blankContextMenu.AddItem("Add keyframe", AddKeyframeAtPosition);
 
+            blankEventContextMenu = new ContextMenu();
+            blankEventContextMenu.AddItem("Add event", AddEventAtPosition);
+
             keyframeContextMenu = new ContextMenu();
             keyframeContextMenu.AddItem("Delete", DeleteSelectedKeyframes);
             keyframeContextMenu.AddItem("Tangents/Auto", () => { ChangeSelectionTangentMode(TangentMode.Auto); });
@@ -179,9 +226,13 @@ namespace BansheeEditor
             keyframeContextMenu.AddItem("Tangents/Out/Linear", () => { ChangeSelectionTangentMode(TangentMode.OutLinear); });
             keyframeContextMenu.AddItem("Tangents/Out/Step", () => { ChangeSelectionTangentMode(TangentMode.OutStep); });
 
+            eventContextMenu = new ContextMenu();
+            eventContextMenu.AddItem("Delete", DeleteSelectedEvents);
+            eventContextMenu.AddItem("Edit", EditSelectedEvent);
+
             guiTimeline = new GUIGraphTime(gui, width, TIMELINE_HEIGHT);
 
-            GUIPanel eventsPanel = gui.AddPanel();
+            eventsPanel = gui.AddPanel();
             eventsPanel.SetPosition(0, TIMELINE_HEIGHT);
             guiEvents = new GUIAnimEvents(eventsPanel, width, EVENTS_HEIGHT);
             
@@ -256,6 +307,9 @@ namespace BansheeEditor
             Rect2I drawingBounds = drawingPanel.Bounds;
             Vector2I drawingPos = pointerPos - new Vector2I(drawingBounds.x, drawingBounds.y);
 
+            Rect2I eventBounds = eventsPanel.Bounds;
+            Vector2I eventPos = pointerPos - new Vector2I(eventBounds.x, eventBounds.y);
+
             if (ev.Button == PointerButton.Left)
             {
                 Vector2 curveCoord;
@@ -289,6 +343,7 @@ namespace BansheeEditor
                     }
 
                     guiCurveDrawing.Rebuild();
+                    UpdateEventsGUI();
                 }
                 else
                 {
@@ -301,7 +356,11 @@ namespace BansheeEditor
                         int eventIdx;
                         if (guiEvents.FindEvent(pointerPos, out eventIdx))
                         {
-                            // TODO - Select event
+                            if (!Input.IsButtonHeld(ButtonCode.LeftShift) && !Input.IsButtonHeld(ButtonCode.RightShift))
+                                ClearSelection();
+
+                            events[eventIdx].selected = true;
+                            UpdateEventsGUI();
                         }
                     }
 
@@ -323,6 +382,9 @@ namespace BansheeEditor
                         ClearSelection();
 
                         blankContextMenu.Open(pointerPos, gui);
+
+                        guiCurveDrawing.Rebuild();
+                        UpdateEventsGUI();
                     }
                     else
                     {
@@ -333,9 +395,39 @@ namespace BansheeEditor
                             SelectKeyframe(keyframeRef);
 
                             guiCurveDrawing.Rebuild();
+                            UpdateEventsGUI();
                         }
 
                         keyframeContextMenu.Open(pointerPos, gui);
+                    }
+                }
+                else if (guiEvents.GetFrame(eventPos) != -1) // Clicked over events bar
+                {
+                    contextClickPosition = eventPos;
+
+                    int eventIdx;
+                    if (guiEvents.FindEvent(eventPos, out eventIdx))
+                    {
+                        ClearSelection();
+
+                        blankEventContextMenu.Open(pointerPos, gui);
+
+                        guiCurveDrawing.Rebuild();
+                        UpdateEventsGUI();
+                    }
+                    else
+                    {
+                        // If clicked outside of current selection, just select the one event
+                        if (!events[eventIdx].selected)
+                        {
+                            ClearSelection();
+                            events[eventIdx].selected = true;
+
+                            guiCurveDrawing.Rebuild();
+                            UpdateEventsGUI();
+                        }
+
+                        eventContextMenu.Open(pointerPos, gui);
                     }
                 }
             }
@@ -436,6 +528,7 @@ namespace BansheeEditor
                             }
 
                             guiCurveDrawing.Rebuild();
+                            UpdateEventsGUI();
                         }
                         else if (isMousePressedOverTangent)
                         {
@@ -596,6 +689,44 @@ namespace BansheeEditor
             // TODO - UNDOREDO
 
             guiCurveDrawing.Rebuild();
+            UpdateEventsGUI();
+        }
+
+        /// <summary>
+        /// Adds a new event at the currently selected event.
+        /// </summary>
+        public void AddEventAtMarker()
+        {
+            ClearSelection();
+
+            float eventTime = guiEvents.GetTimeForFrame(markedFrameIdx);
+            EventInfo eventInfo = new EventInfo();
+            eventInfo.animEvent = new AnimationEvent("", eventTime);
+            
+            events.Add(eventInfo); // TODO - UNDOREDO
+
+            UpdateEventsGUI();
+            guiCurveDrawing.Rebuild();
+
+            StartEventEdit(events.Count - 1);
+        }
+
+        /// <summary>
+        /// Rebuilds GUI displaying the animation events list.
+        /// </summary>
+        private void UpdateEventsGUI()
+        {
+            AnimationEvent[] animEvents = new AnimationEvent[events.Count];
+            bool[] selected = new bool[events.Count];
+
+            for (int i = 0; i < events.Count; i++)
+            {
+                animEvents[i] = events[i].animEvent;
+                selected[i] = events[i].selected;
+            }
+
+            guiEvents.SetEvents(animEvents, selected);
+            guiEvents.Rebuild();
         }
 
         /// <summary>
@@ -681,6 +812,31 @@ namespace BansheeEditor
                 // TODO - UNDOREDO
 
                 guiCurveDrawing.Rebuild();
+                UpdateEventsGUI();
+            }
+        }
+
+        /// <summary>
+        /// Adds a new event at the position the context menu was opened at.
+        /// </summary>
+        private void AddEventAtPosition()
+        {
+            int frame = guiEvents.GetFrame(contextClickPosition);
+            if (frame != -1)
+            {
+                ClearSelection();
+
+                float time = guiEvents.GetTimeForFrame(frame);
+
+                EventInfo eventInfo = new EventInfo();
+                eventInfo.animEvent = new AnimationEvent("", time);
+
+                events.Add(eventInfo); // TODO - UNDOREDO
+
+                UpdateEventsGUI();
+                guiCurveDrawing.Rebuild();
+
+                StartEventEdit(events.Count - 1);
             }
         }
 
@@ -710,15 +866,39 @@ namespace BansheeEditor
             ClearSelection();
 
             guiCurveDrawing.Rebuild();
+            UpdateEventsGUI();
         }
 
         /// <summary>
-        /// Unselects any selected keyframes.
+        /// Deletes all currently selected events.
+        /// </summary>
+        private void DeleteSelectedEvents()
+        {
+            List<EventInfo> newEvents = new List<EventInfo>();
+            foreach (var entry in events)
+            {
+                if(!entry.selected)
+                    newEvents.Add(entry);
+            }
+
+            events = newEvents; // TODO - UNDOREDO
+
+            ClearSelection();
+
+            guiCurveDrawing.Rebuild();
+            UpdateEventsGUI();
+        }
+
+        /// <summary>
+        /// Unselects any selected keyframes and events.
         /// </summary>
         private void ClearSelection()
         {
             guiCurveDrawing.ClearSelectedKeyframes();
             selectedKeyframes.Clear();
+
+            foreach (var entry in events)
+                entry.selected = false;
         }
 
         /// <summary>
@@ -771,6 +951,78 @@ namespace BansheeEditor
             });
 
             return keyIdx != -1;
+        }
+
+        /// <summary>
+        /// Opens the edit window for the currently selected event.
+        /// </summary>
+        private void EditSelectedEvent()
+        {
+            for (int i = 0; i < events.Count; i++)
+            {
+                if (events[i].selected)
+                {
+                    StartEventEdit(i);
+                    break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Opens the event edit window for the specified event.
+        /// </summary>
+        /// <param name="eventIdx">Event index to open the edit window for.</param>
+        private void StartEventEdit(int eventIdx)
+        {
+            AnimationEvent animEvent = events[eventIdx].animEvent;
+
+            Vector2I position = new Vector2I();
+            position.x = guiEvents.GetOffset(animEvent.Time);
+            position.y = height/2;
+
+            Rect2I eventBounds = eventsPanel.Bounds;
+            Vector2I windowPos = position + new Vector2I(eventBounds.x, eventBounds.y);
+
+            EventEditWindow editWindow = DropDownWindow.Open<EventEditWindow>(window, windowPos);
+            editWindow.Initialize(animEvent, () =>
+            {
+                UpdateEventsGUI();
+            });
+        }
+    }
+
+    /// <summary>
+    /// Drop down window that displays input boxes used for editing an event.
+    /// </summary>
+    [DefaultSize(70, 50)]
+    internal class EventEditWindow : DropDownWindow
+    {
+        /// <summary>
+        /// Initializes the drop down window by creating the necessary GUI. Must be called after construction and before
+        /// use.
+        /// </summary>
+        /// <param name="animEvent">Event whose properties to edit.</param>
+        /// <param name="updateCallback">Callback triggered when event values change.</param>
+        internal void Initialize(AnimationEvent animEvent, Action updateCallback)
+        {
+            GUIFloatField timeField = new GUIFloatField(new LocEdString("Time"), 40);
+            timeField.Value = animEvent.Time;
+            timeField.OnChanged += x => { animEvent.Time = x; }; // TODO UNDOREDO  
+
+            GUITextField methodField = new GUITextField(new LocEdString("Method"), 40);
+            methodField.Value = animEvent.Name;
+            methodField.OnChanged += x => { animEvent.Name = x; }; // TODO UNDOREDO 
+
+            GUILayoutY vertLayout = GUI.AddLayoutY();
+
+            vertLayout.AddFlexibleSpace();
+            GUILayoutX horzLayout = vertLayout.AddLayoutX();
+            horzLayout.AddFlexibleSpace();
+            GUILayout contentLayout = horzLayout.AddLayoutY();
+            contentLayout.AddElement(timeField);
+            contentLayout.AddElement(methodField);
+            horzLayout.AddFlexibleSpace();
+            vertLayout.AddFlexibleSpace();
         }
     }
 
