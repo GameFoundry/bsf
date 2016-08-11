@@ -7,6 +7,7 @@
 #include "BsMonoField.h"
 #include "BsAnimationCurve.h"
 #include "BsAnimationClip.h"
+#include "BsAnimationUtility.h"
 #include "BsMath.h"
 #include "BsVector3.h"
 
@@ -29,30 +30,6 @@ namespace BansheeEngine
 		sRotationCurvesField = metaData.scriptClass->getField("RotationCurves");
 		sScaleCurvesField = metaData.scriptClass->getField("ScaleCurves");
 		sFloatCurvesField = metaData.scriptClass->getField("FloatCurves");
-	}
-
-	TAnimationCurve<Quaternion> eulerAngleToQuaternionCurve(const TAnimationCurve<Vector3>& inCurve)
-	{
-		UINT32 numKeys = (UINT32)inCurve.getNumKeyFrames();
-		Vector<TKeyframe<Quaternion>> quatKeys(numKeys);
-		for (UINT32 j = 0; j < numKeys; j++)
-		{
-			// TODO - Not implemented. Convert euler angle rotation to quaternion.
-		}
-
-		return TAnimationCurve<Quaternion>(quatKeys);
-	}
-
-	TAnimationCurve<Vector3> quaternionToEulerAngleCurve(const TAnimationCurve<Quaternion>& inCurve)
-	{
-		UINT32 numKeys = (UINT32)inCurve.getNumKeyFrames();
-		Vector<TKeyframe<Vector3>> eulerKeys(numKeys);
-		for (UINT32 j = 0; j < numKeys; j++)
-		{
-			// TODO - Not implemented. Convert quaternion rotation to euler angles.
-		}
-
-		return TAnimationCurve<Vector3>(eulerKeys);
 	}
 
 	SPtr<AnimationCurves> ScriptAnimationCurves::toNative(MonoObject* instance)
@@ -85,7 +62,7 @@ namespace BansheeEngine
 
 				TNamedAnimationCurve<Quaternion> quatRotation;
 				quatRotation.name = eulerRotation.name;
-				quatRotation.curve = eulerAngleToQuaternionCurve(eulerRotation.curve);
+				quatRotation.curve = AnimationUtility::eulerToQuaternionCurve(eulerRotation.curve);
 
 				output->rotation.push_back(quatRotation);
 			}
@@ -138,7 +115,7 @@ namespace BansheeEngine
 		{
 			TNamedAnimationCurve<Vector3> eulerRotationCurve;
 			eulerRotationCurve.name = curves->rotation[i].name;
-			eulerRotationCurve.curve = quaternionToEulerAngleCurve(curves->rotation[i].curve);
+			eulerRotationCurve.curve = AnimationUtility::quaternionToEulerCurve(curves->rotation[i].curve);
 
 			MonoObject* monoCurve = ScriptNamedVector3Curve::toManaged(eulerRotationCurve);
 			scriptRotationCurves.set(i, monoCurve);
@@ -235,7 +212,6 @@ namespace BansheeEngine
 		}
 
 		// Populate keyframe values
-
 		Vector<TKeyframe<Vector3>> keyframeList(keyFrames.size());
 		for(auto& entry : keyFrames)
 		{
