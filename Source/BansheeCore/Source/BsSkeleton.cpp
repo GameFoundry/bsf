@@ -129,6 +129,7 @@ namespace BansheeEngine
 			state.rotationCaches = rotationCache.data();
 			state.scaleCaches = scaleCache.data();
 			state.genericCaches = nullptr;
+			state.disabled = false;
 
 			AnimationStateLayer layer;
 			layer.index = 0;
@@ -176,6 +177,8 @@ namespace BansheeEngine
 			for (UINT32 j = 0; j < layer.numStates; j++)
 			{
 				const AnimationState& state = layer.states[j];
+				if (state.disabled)
+					continue;
 
 				float normWeight = state.weight * invLayerWeight;
 

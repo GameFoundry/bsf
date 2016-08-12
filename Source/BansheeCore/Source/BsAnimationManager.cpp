@@ -149,6 +149,8 @@ namespace BansheeEngine
 					continue;
 
 				const AnimationState& state = anim->layers[soInfo.layerIdx].states[soInfo.stateIdx];
+				if (state.disabled)
+					continue;
 
 				{
 					UINT32 curveIdx = soInfo.curveIndices.position;
@@ -188,6 +190,8 @@ namespace BansheeEngine
 			if (anim->numLayers > 0 && anim->layers[0].numStates > 0)
 			{
 				const AnimationState& state = anim->layers[0].states[0];
+				if (state.disabled)
+					continue;
 
 				{
 					UINT32 numCurves = (UINT32)state.curves->generic.size();

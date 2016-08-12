@@ -47,6 +47,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetState", &ScriptAnimation::internal_GetState);
 		metaData.scriptClass->addInternalCall("Internal_SetState", &ScriptAnimation::internal_SetState);
 
+		metaData.scriptClass->addInternalCall("Internal_GetGenericCurveValue", &ScriptAnimation::internal_GetGenericCurveValue);
+
 		sOnEventTriggeredThunk = (OnEventTriggeredThunkDef)metaData.scriptClass->getMethod("Internal_OnEventTriggered", 2)->getThunk();
 	}
 
@@ -151,6 +153,11 @@ namespace BansheeEngine
 			nativeClip = clip->getHandle();
 
 		thisPtr->getInternal()->setState(nativeClip, *state);
+	}
+
+	bool ScriptAnimation::internal_GetGenericCurveValue(ScriptAnimation* thisPtr, UINT32 curveIdx, float* value)
+	{
+		return thisPtr->getInternal()->getGenericCurveValue(curveIdx, *value);
 	}
 
 	MonoField* ScriptBlendClipInfo::clipField = nullptr;

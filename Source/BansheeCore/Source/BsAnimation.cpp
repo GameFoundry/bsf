@@ -9,11 +9,11 @@
 namespace BansheeEngine
 {
 	AnimationClipInfo::AnimationClipInfo()
-		: fadeDirection(0.0f), fadeTime(0.0f), fadeLength(0.0f), layerIdx(0), curveVersion(0), stateIdx(0)
+		: fadeDirection(0.0f), fadeTime(0.0f), fadeLength(0.0f), curveVersion(0), layerIdx((UINT32)-1), stateIdx((UINT32)-1)
 	{ }
 
 	AnimationClipInfo::AnimationClipInfo(const HAnimationClip& clip)
-		: fadeDirection(0.0f), fadeTime(0.0f), fadeLength(0.0f), clip(clip), curveVersion(0), layerIdx(0), stateIdx(0)
+		: fadeDirection(0.0f), fadeTime(0.0f), fadeLength(0.0f), clip(clip), curveVersion(0), layerIdx((UINT32)-1), stateIdx((UINT32)-1)
 	{ }
 
 	Blend1DInfo::Blend1DInfo(UINT32 numClips)
@@ -106,6 +106,7 @@ namespace BansheeEngine
 
 		numLayers = 0;
 		numSceneObjects = 0;
+		numGenericCurves = 0;
 	}
 
 	void AnimationProxy::rebuild(const SPtr<Skeleton>& skeleton, Vector<AnimationClipInfo>& clipInfos, 
@@ -133,7 +134,9 @@ namespace BansheeEngine
 
 		bs_frame_mark();
 		{
+			FrameVector<bool> clipLoadState(clipInfos.size());
 			FrameVector<AnimationStateLayer> tempLayers;
+			UINT32 clipIdx = 0;
 			for (auto& clipInfo : clipInfos)
 			{
 				UINT32 layer = clipInfo.state.layer;
@@ -148,14 +151,19 @@ namespace BansheeEngine
 					return x.index == layer;
 				});
 
+				bool isLoaded = clipInfo.clip.isLoaded();
+				clipLoadState[clipIdx] = isLoaded;
+
 				if (iterFind == tempLayers.end())
 				{
 					tempLayers.push_back(AnimationStateLayer());
 					AnimationStateLayer& newLayer = tempLayers.back();
 
 					newLayer.index = layer;
-					newLayer.additive = clipInfo.clip.isLoaded() && clipInfo.clip->isAdditive();
+					newLayer.additive = isLoaded && clipInfo.clip->isAdditive();
 				}
+
+				clipIdx++;
 			}
 
 			std::sort(tempLayers.begin(), tempLayers.end(), 
@@ -176,18 +184,25 @@ namespace BansheeEngine
 			UINT32 numPosCurves = 0;
 			UINT32 numRotCurves = 0;
 			UINT32 numScaleCurves = 0;
-			UINT32 numGenCurves = 0;
 
+			clipIdx = 0;
 			for (auto& clipInfo : clipInfos)
 			{
-				if (!clipInfo.clip.isLoaded())
+				bool isLoaded = clipLoadState[clipIdx++];
+				if (!isLoaded)
 					continue;
 
 				SPtr<AnimationCurves> curves = clipInfo.clip->getCurves();
 				numPosCurves += (UINT32)curves->position.size();
 				numRotCurves += (UINT32)curves->rotation.size();
 				numScaleCurves += (UINT32)curves->scale.size();
-				numGenCurves += (UINT32)curves->generic.size();
+			}
+
+			numGenericCurves = 0;
+			if(clipInfos.size() > 0 && clipLoadState[0])
+			{
+				SPtr<AnimationCurves> curves = clipInfos[0].clip->getCurves();
+				numGenericCurves = (UINT32)curves->generic.size();
 			}
 
 			UINT32* mappedBoneIndices = (UINT32*)bs_frame_alloc(sizeof(UINT32) * numSceneObjects);
@@ -222,8 +237,8 @@ namespace BansheeEngine
 			UINT32 posCacheSize = numPosCurves * sizeof(TCurveCache<Vector3>);
 			UINT32 rotCacheSize = numRotCurves * sizeof(TCurveCache<Quaternion>);
 			UINT32 scaleCacheSize = numScaleCurves * sizeof(TCurveCache<Vector3>);
-			UINT32 genCacheSize = numGenCurves * sizeof(TCurveCache<float>);
-			UINT32 genericCurveOutputSize = numGenCurves * sizeof(float);
+			UINT32 genCacheSize = numGenericCurves * sizeof(TCurveCache<float>);
+			UINT32 genericCurveOutputSize = numGenericCurves * sizeof(float);
 			UINT32 sceneObjectIdsSize = numSceneObjects * sizeof(AnimatedSceneObjectInfo);
 			UINT32 sceneObjectTransformsSize = numBoneMappedSOs * sizeof(Matrix4);
 
@@ -265,7 +280,7 @@ namespace BansheeEngine
 			data += scaleCacheSize;
 
 			TCurveCache<float>* genCache = (TCurveCache<float>*)data;
-			for (UINT32 i = 0; i < numGenCurves; i++)
+			for (UINT32 i = 0; i < numGenericCurves; i++)
 				new (&genCache[i]) TCurveCache<float>();
 
 			data += genCacheSize;
@@ -285,6 +300,8 @@ namespace BansheeEngine
 			UINT32 curLayerIdx = 0;
 			UINT32 curStateIdx = 0;
 
+			// Note: Hidden dependency. First clip info must be in layers[0].states[0] (needed for generic curves which only
+			// use the primary clip).
 			for(UINT32 i = 0; i < numLayers; i++)
 			{
 				AnimationStateLayer& layer = layers[i];
@@ -293,8 +310,10 @@ namespace BansheeEngine
 				layer.numStates = 0;
 
 				UINT32 localStateIdx = 0;
-				for(auto& clipInfo : clipInfos)
+				for(UINT32 j = 0; j < (UINT32)clipInfos.size(); j++)
 				{
+					AnimationClipInfo& clipInfo = clipInfos[j];
+
 					UINT32 clipLayer = clipInfo.state.layer;
 					if (clipLayer == (UINT32)-1)
 						clipLayer = 0;
@@ -326,13 +345,17 @@ namespace BansheeEngine
 					state.weight = weight;
 
 					// Set up individual curves and their caches
-					bool isClipValid = clipInfo.clip.isLoaded();
-					if(isClipValid)
+					bool isClipValid = clipLoadState[j];
+					if (isClipValid)
+					{
 						state.curves = clipInfo.clip->getCurves();
+						state.disabled = false;
+					}
 					else
 					{
 						static SPtr<AnimationCurves> zeroCurves = bs_shared_ptr_new<AnimationCurves>();
 						state.curves = zeroCurves;
+						state.disabled = true;
 					}
 
 					state.positionCaches = posCache;
@@ -405,12 +428,14 @@ namespace BansheeEngine
 
 					if (isSOValid)
 					{
-						for (auto& clipInfo : clipInfos)
+						for (UINT32 j = 0; j < (UINT32)clipInfos.size(); j++)
 						{
+							AnimationClipInfo& clipInfo = clipInfos[j];
+
 							soInfo.layerIdx = clipInfo.layerIdx;
 							soInfo.stateIdx = clipInfo.stateIdx;
 
-							bool isClipValid = clipInfo.clip.isLoaded();
+							bool isClipValid = clipLoadState[j];
 							if (isClipValid)
 							{
 								// Note: If there are multiple clips with the relevant curve name, we only use the first
@@ -479,6 +504,7 @@ namespace BansheeEngine
 
 	Animation::Animation()
 		: mDefaultWrapMode(AnimWrapMode::Loop), mDefaultSpeed(1.0f), mDirty(AnimDirtyStateFlag::Skeleton)
+		, mGenericCurveValuesValid(false)
 	{
 		mId = AnimationManager::instance().registerAnimation(this);
 		mAnimProxy = bs_shared_ptr_new<AnimationProxy>(mId);
@@ -919,6 +945,15 @@ namespace BansheeEngine
 		mDirty |= AnimDirtyStateFlag::Skeleton;
 	}
 
+	bool Animation::getGenericCurveValue(UINT32 curveIdx, float& value)
+	{
+		if (!mGenericCurveValuesValid || curveIdx >= (UINT32)mGenericCurveOutputs.size())
+			return false;
+
+		value = mGenericCurveOutputs[curveIdx];
+		return true;
+	}
+
 	SPtr<Animation> Animation::create()
 	{
 		Animation* anim = new (bs_alloc<Animation>()) Animation();
@@ -1035,6 +1070,32 @@ namespace BansheeEngine
 			}
 		}
 
-		// TODO - Copy generic animation data and add a method for retrieving it
+		// Must ensure that clip in the proxy and current primary clip are the same
+		mGenericCurveValuesValid = false;
+		if(mAnimProxy->numLayers > 0 || mAnimProxy->layers[0].numStates > 0)
+		{
+			const AnimationState& state = mAnimProxy->layers[0].states[0];
+
+			if(!state.disabled && mClipInfos.size() > 0)
+			{
+				const AnimationClipInfo& clipInfo = mClipInfos[0];
+
+				if (clipInfo.stateIdx == 0 && clipInfo.layerIdx == 0)
+				{
+					if (clipInfo.clip.isLoaded() && clipInfo.curveVersion == clipInfo.clip->getVersion())
+					{
+						UINT32 numGenericCurves = (UINT32)clipInfo.clip->getCurves()->generic.size();
+						mGenericCurveValuesValid = numGenericCurves == mAnimProxy->numGenericCurves;
+					}
+				}
+			}
+		}
+
+		if(mGenericCurveValuesValid)
+		{
+			mGenericCurveOutputs.resize(mAnimProxy->numGenericCurves);
+
+			memcpy(mGenericCurveOutputs.data(), mAnimProxy->genericCurveOutputs, mAnimProxy->numGenericCurves * sizeof(float));
+		}
 	}
 }

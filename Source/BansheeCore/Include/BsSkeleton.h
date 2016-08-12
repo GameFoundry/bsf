@@ -50,6 +50,7 @@ namespace BansheeEngine
 		float time; /**< Time to evaluate the curve at. */
 		float weight; /**< Determines how much of an influence will this clip have in regard to others in the same layer. */
 		bool loop; /**< Determines should the animation loop (wrap) once ending or beginning frames are passed. */
+		bool disabled; /**< If true the clip state will not be evaluated. */
 	};
 
 	/** Contains animation states for a single animation layer. */

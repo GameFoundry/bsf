@@ -195,6 +195,7 @@ namespace BansheeEngine
 		// Evaluation results
 		LocalSkeletonPose skeletonPose;
 		LocalSkeletonPose sceneObjectPose;
+		UINT32 numGenericCurves;
 		float* genericCurveOutputs;
 	};
 
@@ -325,6 +326,19 @@ namespace BansheeEngine
 		/** Removes the curve <-> scene object mapping that was set via mapCurveToSceneObject(). */
 		void unmapSceneObject(const HSceneObject& so);
 
+		/** 
+		 * Retrieves an evaluated value for a generic curve with the specified index. 
+		 *
+		 * @param[in]	curveIdx	The curve index referencing a set of curves from the first playing animation clip. 
+		 *							Generic curves from all other clips are ignored.
+		 * @param[out]	value		Value of the generic curve. Only valid if the method return true.
+		 * @return					True if the value was retrieved successfully. The method might fail if animation update
+		 *							didn't yet have a chance to execute and values are not yet available, or if the
+		 *							animation clip changed since the last frame (the last problem can be avoided by ensuring
+		 *							to read the curve values before changing the clip).
+		 */
+		bool getGenericCurveValue(UINT32 curveIdx, float& value);
+
 		/** Creates a new empty Animation object. */
 		static SPtr<Animation> create();
 
@@ -381,6 +395,8 @@ namespace BansheeEngine
 		SPtr<Skeleton> mSkeleton;
 		Vector<AnimationClipInfo> mClipInfos;
 		UnorderedMap<UINT64, AnimatedSceneObject> mSceneObjects;
+		Vector<float> mGenericCurveOutputs;
+		bool mGenericCurveValuesValid;
 
 		// Animation thread only
 		SPtr<AnimationProxy> mAnimProxy;

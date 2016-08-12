@@ -581,16 +581,6 @@ namespace BansheeEditor
             loadVector3Curve(clipCurves.ScaleCurves, editorCurveData.scaleCurves, "/Scale");
 
             // Find which individual float curves belong to the same field
-            Dictionary<string, Tuple<int, bool>> suffixToIdxMapping = new Dictionary<string, Tuple<int, bool>>();
-            suffixToIdxMapping[".x"] = Tuple.Create(0, true);
-            suffixToIdxMapping[".y"] = Tuple.Create(1, true);
-            suffixToIdxMapping[".z"] = Tuple.Create(2, true);
-            suffixToIdxMapping[".w"] = Tuple.Create(3, true);
-            suffixToIdxMapping[".r"] = Tuple.Create(0, false);
-            suffixToIdxMapping[".g"] = Tuple.Create(1, false);
-            suffixToIdxMapping[".b"] = Tuple.Create(2, false);
-            suffixToIdxMapping[".a"] = Tuple.Create(3, false);
-
             Dictionary<string, Tuple<int, int, bool>[]> floatCurveMapping = new Dictionary<string, Tuple<int, int, bool>[]>();
             {
                 int curveIdx = 0;
@@ -621,20 +611,20 @@ namespace BansheeEditor
                         currentTangentIdx++;
                     }
 
-                    Tuple<int, bool> suffixInfo;
-                    if (suffixToIdxMapping.TryGetValue(pathSuffix, out suffixInfo))
+                    Animation.PropertySuffixInfo suffixInfo;
+                    if (Animation.PropertySuffixInfos.TryGetValue(pathSuffix, out suffixInfo))
                     {
                         Tuple<int, int, bool>[] curveInfo;
                         if (!floatCurveMapping.TryGetValue(pathNoSuffix, out curveInfo))
                             curveInfo = new Tuple<int, int, bool>[4];
 
-                        curveInfo[suffixInfo.Item1] = Tuple.Create(curveIdx, tangentIdx, suffixInfo.Item2);
+                        curveInfo[suffixInfo.elementIdx] = Tuple.Create(curveIdx, tangentIdx, suffixInfo.isVector);
                         floatCurveMapping[pathNoSuffix] = curveInfo;
                     }
                     else
                     {
                         Tuple<int, int, bool>[] curveInfo = new Tuple<int, int, bool>[4];
-                        curveInfo[0] = Tuple.Create(curveIdx, tangentIdx, suffixInfo.Item2);
+                        curveInfo[0] = Tuple.Create(curveIdx, tangentIdx, suffixInfo.isVector);
 
                         floatCurveMapping[path] = curveInfo;
                     }
@@ -921,7 +911,8 @@ namespace BansheeEditor
             List<GUIAnimFieldPathValue> values = new List<GUIAnimFieldPathValue>();
             foreach (var kvp in curves)
             {
-                SerializableProperty property = GUIAnimFieldDisplay.FindProperty(selectedSO, kvp.Key);
+                string suffix;
+                SerializableProperty property = Animation.FindProperty(selectedSO, kvp.Key, out suffix);
                 if (property != null)
                 {
                     GUIAnimFieldPathValue fieldValue = new GUIAnimFieldPathValue();
@@ -1348,7 +1339,15 @@ namespace BansheeEditor
         #region General callbacks
         private void OnFieldAdded(string path, SerializableProperty.FieldType type)
         {
-            AddNewField(path, type);
+            // Remove the root scene object from the path (we know which SO it is, no need to hardcode its name in the path)
+            string pathNoRoot = path.TrimStart('/');
+            int separatorIdx = pathNoRoot.IndexOf("/");
+            if (separatorIdx == -1 || (separatorIdx + 1) >= pathNoRoot.Length)
+                return;
+
+            pathNoRoot = pathNoRoot.Substring(separatorIdx + 1, pathNoRoot.Length - separatorIdx - 1);
+
+            AddNewField(pathNoRoot, type);
         }
 
         private void OnHorzScrollOrResize(float position, float size)

@@ -101,6 +101,11 @@ namespace BansheeEngine
             Internal_SetState(mCachedPtr, clipPtr, ref state);
         }
 
+        public bool GetGenericCurveValue(int curveIdx, out float value)
+        {
+            return Internal_GetGenericCurveValue(mCachedPtr, curveIdx, out value);
+        }
+
         internal NativeAnimation()
         {
             Internal_Create(this);
@@ -158,6 +163,9 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetState(IntPtr thisPtr, IntPtr clipPtr, ref AnimationClipState state);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_GetGenericCurveValue(IntPtr thisPtr, int curveIdx, out float value);
     }
 
     /** @endcond */
