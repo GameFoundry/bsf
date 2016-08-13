@@ -294,6 +294,17 @@ namespace BansheeEngine
 		/** Checks if any animation clips are currently playing. */
 		bool isPlaying() const;
 
+		/** Returns the total number of animation clips influencing this animation. */
+		UINT32 getNumClips() const;
+
+		/** 
+		 * Returns one of the animation clips influencing this animation. 
+		 *
+		 * @param[in]	idx		Sequential index of the animation clip to retrieve. In range [0, getNumClips()].
+		 * @return				Animation clip at the specified index, or null if the index is out of range.
+		 */
+		HAnimationClip getClip(UINT32 idx) const;
+
 		/** 
 		 * Retrieves detailed information about a currently playing animation clip. 
 		 *

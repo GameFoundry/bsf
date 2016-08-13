@@ -47,6 +47,9 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetState", &ScriptAnimation::internal_GetState);
 		metaData.scriptClass->addInternalCall("Internal_SetState", &ScriptAnimation::internal_SetState);
 
+		metaData.scriptClass->addInternalCall("Internal_GetNumClips", &ScriptAnimation::internal_GetNumClips);
+		metaData.scriptClass->addInternalCall("Internal_GetClip", &ScriptAnimation::internal_GetClip);
+
 		metaData.scriptClass->addInternalCall("Internal_GetGenericCurveValue", &ScriptAnimation::internal_GetGenericCurveValue);
 
 		sOnEventTriggeredThunk = (OnEventTriggeredThunkDef)metaData.scriptClass->getMethod("Internal_OnEventTriggered", 2)->getThunk();
@@ -135,6 +138,23 @@ namespace BansheeEngine
 	bool ScriptAnimation::internal_IsPlaying(ScriptAnimation* thisPtr)
 	{
 		return thisPtr->getInternal()->isPlaying();
+	}
+
+	UINT32 ScriptAnimation::internal_GetNumClips(ScriptAnimation* thisPtr)
+	{
+		return thisPtr->getInternal()->getNumClips();
+	}
+
+	MonoObject* ScriptAnimation::internal_GetClip(ScriptAnimation* thisPtr, UINT32 idx)
+	{
+		HAnimationClip clip = thisPtr->getInternal()->getClip(idx);
+		if (!clip.isLoaded())
+			return nullptr;
+
+		ScriptAnimationClip* scriptClip;
+		ScriptResourceManager::instance().getScriptResource(clip, &scriptClip, true);
+
+		return scriptClip->getManagedInstance();
 	}
 
 	bool ScriptAnimation::internal_GetState(ScriptAnimation* thisPtr, ScriptAnimationClip* clip, AnimationClipState* state)

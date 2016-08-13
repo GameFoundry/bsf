@@ -23,6 +23,11 @@ namespace BansheeEngine
             set { Internal_SetSpeed(mCachedPtr, value); }
         }
 
+        public int NumClips
+        {
+            get { return Internal_GetNumClips(mCachedPtr); }
+        }
+
         public Action<AnimationClip, string> OnEventTriggered;
 
         public void Play(AnimationClip clip)
@@ -81,6 +86,11 @@ namespace BansheeEngine
         public bool IsPlaying()
         {
             return Internal_IsPlaying(mCachedPtr);
+        }
+
+        public AnimationClip GetClip(int index)
+        {
+            return Internal_GetClip(mCachedPtr, index);
         }
 
         public bool GetState(AnimationClip clip, out AnimationClipState state)
@@ -163,6 +173,12 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetState(IntPtr thisPtr, IntPtr clipPtr, ref AnimationClipState state);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern int Internal_GetNumClips(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern AnimationClip Internal_GetClip(IntPtr thisPtr, int idx);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool Internal_GetGenericCurveValue(IntPtr thisPtr, int curveIdx, out float value);

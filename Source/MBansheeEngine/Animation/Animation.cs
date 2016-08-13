@@ -109,6 +109,7 @@ namespace BansheeEngine
         [SerializeField] private SerializableData serializableData = new SerializableData();
 
         private FloatCurvePropertyInfo[] floatProperties;
+        private AnimationClip floatPropertyClip;
 
         /// <summary>
         /// Contains mapping for a suffix used by property paths used for curve identifiers, to their index and type.
@@ -148,10 +149,7 @@ namespace BansheeEngine
                 serializableData.defaultClip = value;
 
                 if (value != null && _native != null)
-                {
-                    RebuildFloatProperties(value);
                     _native.Play(value);
-                }
             }
         }
 
@@ -208,10 +206,7 @@ namespace BansheeEngine
         public void Play(AnimationClip clip)
         {
             if (_native != null)
-            {
-                RebuildFloatProperties(clip);
                 _native.Play(clip);
-            }
         }
 
         /// <summary>
@@ -476,10 +471,15 @@ namespace BansheeEngine
 
         private void OnUpdate()
         {
-            // TODO: There could currently be a mismatch between the serialized properties and the active animation clip
-            //  - Add PrimaryClip field to NativeAnimation, then compare to the active clip and update if needed
-            // TODO: If primary animation clip isn't playing, don't update float properties
-            //  - Add dirty flags to each curve value and don't update unless they changed
+            if (_native == null)
+                return;
+
+            AnimationClip primaryClip = _native.GetClip(0);
+            if (primaryClip != floatPropertyClip)
+            {
+                RebuildFloatProperties(primaryClip);
+                floatPropertyClip = primaryClip;
+            }
 
             // Apply values from generic float curves 
             foreach (var entry in floatProperties)
@@ -522,8 +522,6 @@ namespace BansheeEngine
 
             if (serializableData.defaultClip != null)
                 _native.Play(serializableData.defaultClip);
-
-            RebuildFloatProperties(serializableData.defaultClip);
 
             Renderable renderable = SceneObject.GetComponent<Renderable>();
             if (renderable == null)

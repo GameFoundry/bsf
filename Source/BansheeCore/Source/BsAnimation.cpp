@@ -892,6 +892,19 @@ namespace BansheeEngine
 		mDirty |= AnimDirtyStateFlag::Value;
 	}
 
+	UINT32 Animation::getNumClips() const
+	{
+		return (UINT32)mClipInfos.size();
+	}
+
+	HAnimationClip Animation::getClip(UINT32 idx) const
+	{
+		if (idx >= (UINT32)mClipInfos.size())
+			return HAnimationClip();
+
+		return mClipInfos[idx].clip;
+	}
+
 	void Animation::triggerEvents(float lastFrameTime, float delta)
 	{
 		for (auto& clipInfo : mClipInfos)
