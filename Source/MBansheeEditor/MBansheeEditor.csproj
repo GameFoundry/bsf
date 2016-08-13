@@ -51,6 +51,7 @@
     <Compile Include="Utility\SerializedObject.cs" />
     <Compile Include="Windows\AboutBox.cs" />
     <Compile Include="Windows\AnimationWindow.cs" />
+    <Compile Include="Windows\Animation\EditorAnimInfo.cs" />
     <Compile Include="Windows\Animation\FieldSelectionWindow.cs" />
     <Compile Include="Windows\Animation\GUIAnimEvents.cs" />
     <Compile Include="Windows\Animation\GUIAnimFieldDisplay.cs" />
@@ -66,7 +67,7 @@
     <Compile Include="Windows\Build\BuildWindow.cs" />
     <Compile Include="Script\CodeEditor.cs" />
     <Compile Include="Windows\ColorPicker.cs" />
-    <Compile Include="Windows\Inspector\EditorPersistentData.cs" />
+    <Compile Include="General\EditorPersistentData.cs" />
     <Compile Include="General\IGlobalShortcuts.cs" />
     <Compile Include="Inspectors\BoxColliderInspector.cs" />
     <Compile Include="Inspectors\CapsuleColliderInspector.cs" />

@@ -22,7 +22,6 @@ namespace BansheeEditor
         private const float DRAG_SCALE = 10.0f;
         private const float ZOOM_SCALE = 0.1f/120.0f; // One scroll step is usually 120 units, we want 1/10 of that
 
-        private bool isInitialized;
         private SceneObject selectedSO;
 
         #region Overrides
@@ -45,17 +44,13 @@ namespace BansheeEditor
         private void OnInitialize()
         {
             Selection.OnSelectionChanged += OnSelectionChanged;
-            EditorInput.OnPointerPressed += OnPointerPressed;
-            EditorInput.OnPointerMoved += OnPointerMoved;
-            EditorInput.OnPointerReleased += OnPointerReleased;
-            EditorInput.OnButtonUp += OnButtonUp;
 
-            RebuildGUI();
+            UpdateSelectedSO();
         }
 
         private void OnEditorUpdate()
         {
-            if (!isInitialized)
+            if (selectedSO == null)
                 return;
 
             HandleDragAndZoomInput();
@@ -64,15 +59,19 @@ namespace BansheeEditor
         private void OnDestroy()
         {
             Selection.OnSelectionChanged -= OnSelectionChanged;
-            EditorInput.OnPointerPressed -= OnPointerPressed;
-            EditorInput.OnPointerMoved -= OnPointerMoved;
-            EditorInput.OnPointerReleased -= OnPointerReleased;
-            EditorInput.OnButtonUp -= OnButtonUp;
+
+            if (selectedSO != null)
+            {
+                EditorInput.OnPointerPressed -= OnPointerPressed;
+                EditorInput.OnPointerMoved -= OnPointerMoved;
+                EditorInput.OnPointerReleased -= OnPointerReleased;
+                EditorInput.OnButtonUp -= OnButtonUp;
+            }
         }
 
         protected override void WindowResized(int width, int height)
         {
-            if (!isInitialized)
+            if (selectedSO == null)
                 return;
 
             ResizeGUI(width, height);
@@ -111,15 +110,6 @@ namespace BansheeEditor
         private void RebuildGUI()
         {
             GUI.Clear();
-            selectedFields.Clear();
-            curves.Clear();
-            isInitialized = false;
-
-            if (selectedSO != Selection.SceneObject)
-            {
-                zoomAmount = 0.0f;
-                selectedSO = Selection.SceneObject;
-            }
 
             if (selectedSO == null)
             {
@@ -136,9 +126,6 @@ namespace BansheeEditor
 
                 return;
             }
-
-            // TODO - Retrieve Animation & AnimationClip from the selected object, fill curves dictionary
-            //  - If not available, show a button to create new animation clip
 
             // Top button row
             GUIContent playIcon = new GUIContent(EditorBuiltin.GetAnimationWindowIcon(AnimationWindowIcon.Play),
@@ -220,23 +207,90 @@ namespace BansheeEditor
 
             addPropertyBtn.OnClick += () =>
             {
-                Vector2I windowPos = ScreenToWindowPos(Input.PointerPosition);
-                FieldSelectionWindow fieldSelection = DropDownWindow.Open<FieldSelectionWindow>(this, windowPos);
-                fieldSelection.OnFieldSelected += OnFieldAdded;
+                Action openPropertyWindow = () =>
+                {
+                    Vector2I windowPos = ScreenToWindowPos(Input.PointerPosition);
+                    FieldSelectionWindow fieldSelection = DropDownWindow.Open<FieldSelectionWindow>(this, windowPos);
+                    fieldSelection.OnFieldSelected += OnFieldAdded;
+                };
+
+                if (clipInfo.clip == null)
+                {
+                    LocEdString title = new LocEdString("Warning");
+                    LocEdString message =
+                        new LocEdString("Selected object doesn't have an animation clip assigned. Would you like to create" +
+                                        " a new animation clip?");
+
+                    DialogBox.Open(title, message, DialogBox.Type.YesNoCancel, type =>
+                    {
+                        if (type == DialogBox.ResultType.Yes)
+                        {
+                            string[] clipSavePaths;
+                            if (BrowseDialog.OpenFile(ProjectLibrary.ResourceFolder, "", false, out clipSavePaths))
+                            {
+                                if (clipSavePaths.Length > 0)
+                                {
+                                    AnimationClip newClip = new AnimationClip();
+
+                                    ProjectLibrary.Create(newClip, clipSavePaths[0]);
+                                    LoadAnimClip(newClip);
+
+                                    Animation animation = selectedSO.GetComponent<Animation>();
+                                    if (animation == null)
+                                        animation = selectedSO.AddComponent<Animation>();
+
+                                    animation.DefaultClip = newClip;
+                                    EditorApplication.SetSceneDirty();
+
+                                    openPropertyWindow();
+                                }
+                            }
+                        }
+                    });
+                }
+                else
+                {
+                    if (IsClipImported(clipInfo.clip))
+                    {
+                        LocEdString title = new LocEdString("Warning");
+                        LocEdString message =
+                            new LocEdString("You cannot add/edit/remove curves from animation clips that" +
+                                            " are imported from an external file.");
+
+                        DialogBox.Open(title, message, DialogBox.Type.OK);
+                    }
+                    else
+                        openPropertyWindow();
+                }
             };
 
             delPropertyBtn.OnClick += () =>
             {
-                LocEdString title = new LocEdString("Warning");
-                LocEdString message = new LocEdString("Are you sure you want to remove all selected fields?");
+                if (clipInfo.clip == null)
+                    return;
 
-                DialogBox.Open(title, message, DialogBox.Type.YesNo, x =>
+                if (IsClipImported(clipInfo.clip))
                 {
-                    if (x == DialogBox.ResultType.Yes)
+                    LocEdString title = new LocEdString("Warning");
+                    LocEdString message =
+                        new LocEdString("You cannot add/edit/remove curves from animation clips that" +
+                                        " are imported from an external file.");
+
+                    DialogBox.Open(title, message, DialogBox.Type.OK);
+                }
+                else
+                {
+                    LocEdString title = new LocEdString("Warning");
+                    LocEdString message = new LocEdString("Are you sure you want to remove all selected fields?");
+
+                    DialogBox.Open(title, message, DialogBox.Type.YesNo, x =>
                     {
-                        RemoveSelectedFields();
-                    }
-                });
+                        if (x == DialogBox.ResultType.Yes)
+                        {
+                            RemoveSelectedFields();
+                        }
+                    });
+                }
             };
 
             GUILayout mainLayout = GUI.AddLayoutY();
@@ -291,6 +345,10 @@ namespace BansheeEditor
             Vector2I curveEditorSize = GetCurveEditorSize();
             guiCurveEditor = new GUICurveEditor(this, editorPanel, curveEditorSize.x, curveEditorSize.y);
             guiCurveEditor.OnFrameSelected += OnFrameSelected;
+            guiCurveEditor.OnEventAdded += OnEventsChanged;
+            guiCurveEditor.OnEventModified += EditorApplication.SetProjectDirty;
+            guiCurveEditor.OnEventDeleted += OnEventsChanged;
+            guiCurveEditor.OnCurveModified += EditorApplication.SetProjectDirty;
             guiCurveEditor.Redraw();
 
             horzScrollBar.SetWidth(curveEditorSize.x);
@@ -298,8 +356,6 @@ namespace BansheeEditor
 
             SetCurrentFrame(currentFrameIdx);
             UpdateScrollBarSize();
-
-            isInitialized = true;
         }
 
         private void ResizeGUI(int width, int height)
@@ -470,420 +526,85 @@ namespace BansheeEditor
         #endregion
 
         #region Curve save/load
-        /// <summary>
-        /// A set of animation curves for a field of a certain type.
-        /// </summary>
-        private struct FieldCurves
+        private EditorAnimClipInfo clipInfo;
+
+        private void LoadAnimClip(AnimationClip clip)
         {
-            public SerializableProperty.FieldType type;
-            public EdAnimationCurve[] curves;
-        }
+            EditorPersistentData persistentData = EditorApplication.PersistentData;
 
-        [SerializeObject]
-        private class EditorVector3CurveTangents
-        {
-            public string name;
-            public TangentMode[] tangentsX;
-            public TangentMode[] tangentsY;
-            public TangentMode[] tangentsZ;
-        }
-
-        [SerializeObject]
-        private class EditorFloatCurveTangents
-        {
-            public string name;
-            public TangentMode[] tangents;
-        }
-
-        [SerializeObject]
-        private class EditorCurveData
-        {
-            public EditorVector3CurveTangents[] positionCurves;
-            public EditorVector3CurveTangents[] rotationCurves;
-            public EditorVector3CurveTangents[] scaleCurves;
-            public EditorFloatCurveTangents[] floatCurves;
-        }
-
-        private Dictionary<string, FieldCurves> curves = new Dictionary<string, FieldCurves>();
-        private bool clipIsImported;
-
-        private void LoadFromClip(AnimationClip clip)
-        {
-            curves.Clear();
-            selectedFields.Clear();
-            guiFieldDisplay.SetFields(new string[0]);
-
-            clipIsImported = IsClipImported(clip);
-
-            AnimationCurves clipCurves = clip.Curves;
-            EditorCurveData editorCurveData = null;
-
-            string resourcePath = ProjectLibrary.GetPath(clip);
-            if (!string.IsNullOrEmpty(resourcePath))
+            bool clipIsImported = IsClipImported(clip);
+            if (persistentData.dirtyAnimClips.TryGetValue(clip.UUID, out clipInfo))
             {
-                LibraryEntry entry = ProjectLibrary.GetEntry(resourcePath);
-                string clipName = PathEx.GetTail(resourcePath);
-
-                if (entry != null && entry.Type == LibraryEntryType.File)
+                // If an animation clip is imported, we don't care about it's cached curve values as they could have changed
+                // since last modification, so we re-load the clip. But we persist the events as those can only be set
+                // within the editor.
+                if (clipIsImported)
                 {
-                    FileEntry fileEntry = (FileEntry)entry;
-                    ResourceMeta[] metas = fileEntry.ResourceMetas;
-
-                    for (int i = 0; i < metas.Length; i++)
-                    {
-                        if (clipName == metas[i].SubresourceName)
-                        {
-                            editorCurveData = metas[i].EditorData as EditorCurveData;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            if(editorCurveData == null)
-                editorCurveData = new EditorCurveData();
-
-            Action<NamedVector3Curve[], EditorVector3CurveTangents[], string> loadVector3Curve =
-                (curves, tangents, subPath) =>
-                {
-                    foreach (var curveEntry in curves)
-                    {
-                        TangentMode[] tangentsX = null;
-                        TangentMode[] tangentsY = null;
-                        TangentMode[] tangentsZ = null;
-                        foreach (var tangentEntry in tangents)
-                        {
-                            if (tangentEntry.name == curveEntry.Name)
-                            {
-                                tangentsX = tangentEntry.tangentsX;
-                                tangentsY = tangentEntry.tangentsY;
-                                tangentsZ = tangentEntry.tangentsZ;
-                                break;
-                            }
-                        }
-
-                        FieldCurves fieldCurves = new FieldCurves();
-                        fieldCurves.type = SerializableProperty.FieldType.Vector3;
-                        fieldCurves.curves = new EdAnimationCurve[3];
-
-                        fieldCurves.curves[0] = new EdAnimationCurve(curveEntry.X, tangentsX);
-                        fieldCurves.curves[1] = new EdAnimationCurve(curveEntry.Y, tangentsY);
-                        fieldCurves.curves[2] = new EdAnimationCurve(curveEntry.Z, tangentsZ);
-
-                        string curvePath = curveEntry.Name.TrimEnd('/') + subPath;
-                        guiFieldDisplay.AddField(curvePath);
-                        this.curves[curvePath] = fieldCurves;
-                    }
-                };
-
-            loadVector3Curve(clipCurves.PositionCurves, editorCurveData.positionCurves, "/Position");
-            loadVector3Curve(clipCurves.RotationCurves, editorCurveData.rotationCurves, "/Rotation");
-            loadVector3Curve(clipCurves.ScaleCurves, editorCurveData.scaleCurves, "/Scale");
-
-            // Find which individual float curves belong to the same field
-            Dictionary<string, Tuple<int, int, bool>[]> floatCurveMapping = new Dictionary<string, Tuple<int, int, bool>[]>();
-            {
-                int curveIdx = 0;
-                foreach (var curveEntry in clipCurves.FloatCurves)
-                {
-                    string path = curveEntry.Name;
-                    string pathNoSuffix = null;
-
-                    string pathSuffix;
-                    if (path.Length >= 2)
-                    {
-                        pathSuffix = path.Substring(path.Length - 2, 2);
-                        pathNoSuffix = path.Substring(0, path.Length - 2);
-                    }
-                    else
-                        pathSuffix = "";
-
-                    int tangentIdx = -1;
-                    int currentTangentIdx = 0;
-                    foreach (var tangentEntry in editorCurveData.floatCurves)
-                    {
-                        if (tangentEntry.name == curveEntry.Name)
-                        {
-                            tangentIdx = currentTangentIdx;
-                            break;
-                        }
-
-                        currentTangentIdx++;
-                    }
-
-                    Animation.PropertySuffixInfo suffixInfo;
-                    if (Animation.PropertySuffixInfos.TryGetValue(pathSuffix, out suffixInfo))
-                    {
-                        Tuple<int, int, bool>[] curveInfo;
-                        if (!floatCurveMapping.TryGetValue(pathNoSuffix, out curveInfo))
-                            curveInfo = new Tuple<int, int, bool>[4];
-
-                        curveInfo[suffixInfo.elementIdx] = Tuple.Create(curveIdx, tangentIdx, suffixInfo.isVector);
-                        floatCurveMapping[pathNoSuffix] = curveInfo;
-                    }
-                    else
-                    {
-                        Tuple<int, int, bool>[] curveInfo = new Tuple<int, int, bool>[4];
-                        curveInfo[0] = Tuple.Create(curveIdx, tangentIdx, suffixInfo.isVector);
-
-                        floatCurveMapping[path] = curveInfo;
-                    }
-
-                    curveIdx++;
-                }
-            }
-
-            foreach (var KVP in floatCurveMapping)
-            {
-                int numCurves = 0;
-                for (int i = 0; i < 4; i++)
-                {
-                    if (KVP.Value[i] == null)
-                        continue;
-
-                    numCurves++;
-                }
-
-                if (numCurves == 0)
-                    continue; // Invalid curve
-
-                FieldCurves fieldCurves = new FieldCurves();
-
-                // Deduce type (note that all single value types are assumed to be float even if their source type is int or bool)
-                if (numCurves == 1)
-                    fieldCurves.type = SerializableProperty.FieldType.Float;
-                else if (numCurves == 2)
-                    fieldCurves.type = SerializableProperty.FieldType.Vector2;
-                else if (numCurves == 3)
-                    fieldCurves.type = SerializableProperty.FieldType.Vector3;
-                else // 4 curves
-                {
-                    bool isVector = KVP.Value[0].Item3;
-                    if (isVector)
-                        fieldCurves.type = SerializableProperty.FieldType.Vector4;
-                    else
-                        fieldCurves.type = SerializableProperty.FieldType.Color;
-                }
-
-                fieldCurves.curves = new EdAnimationCurve[numCurves];
-
-                for (int i = 0; i < numCurves; i++)
-                {
-                    int curveIdx = KVP.Value[i].Item1;
-                    int tangentIdx = KVP.Value[i].Item2;
-
-                    TangentMode[] tangents = null;
-                    if (tangentIdx != -1)
-                        tangents = editorCurveData.floatCurves[tangentIdx].tangents;
-
-                    fieldCurves.curves[i] = new EdAnimationCurve(clipCurves.FloatCurves[curveIdx].Curve, tangents);
-                }
-
-                string curvePath = KVP.Key;
-
-                guiFieldDisplay.AddField(curvePath);
-                curves[curvePath] = fieldCurves;
-            }
-
-            // Add events
-            guiCurveEditor.Events = clip.Events;
-        }
-
-        private void SaveToClip(AnimationClip clip, string saveToPath)
-        {
-            if (!clipIsImported)
-            {
-                List<NamedVector3Curve> positionCurves = new List<NamedVector3Curve>();
-                List<NamedVector3Curve> rotationCurves = new List<NamedVector3Curve>();
-                List<NamedVector3Curve> scaleCurves = new List<NamedVector3Curve>();
-                List<NamedFloatCurve> floatCurves = new List<NamedFloatCurve>();
-
-                List<EditorVector3CurveTangents> positionTangents = new List<EditorVector3CurveTangents>();
-                List<EditorVector3CurveTangents> rotationTangents = new List<EditorVector3CurveTangents>();
-                List<EditorVector3CurveTangents> scaleTangents = new List<EditorVector3CurveTangents>();
-                List<EditorFloatCurveTangents> floatTangents = new List<EditorFloatCurveTangents>();
-
-                foreach (var kvp in curves)
-                {
-                    string[] pathEntries = kvp.Key.Split('/');
-                    if (pathEntries.Length == 0)
-                        continue;
-
-                    string lastEntry = pathEntries[pathEntries.Length - 1];
-
-                    if (lastEntry == "Position" || lastEntry == "Rotation" || lastEntry == "Scale")
-                    {
-                        StringBuilder sb = new StringBuilder();
-                        for (int i = 0; i < pathEntries.Length - 2; i++)
-                            sb.Append(pathEntries[i] + "/");
-
-                        if (pathEntries.Length > 1)
-                            sb.Append(pathEntries[pathEntries.Length - 2]);
-
-                        string curvePath = sb.ToString();
-
-                        NamedVector3Curve curve = new NamedVector3Curve(curvePath,
-                            new AnimationCurve(kvp.Value.curves[0].KeyFrames),
-                            new AnimationCurve(kvp.Value.curves[1].KeyFrames),
-                            new AnimationCurve(kvp.Value.curves[2].KeyFrames));
-
-                        EditorVector3CurveTangents tangents = new EditorVector3CurveTangents();
-                        tangents.name = curvePath;
-                        tangents.tangentsX = kvp.Value.curves[0].TangentModes;
-                        tangents.tangentsY = kvp.Value.curves[1].TangentModes;
-                        tangents.tangentsZ = kvp.Value.curves[2].TangentModes;
-
-                        if (lastEntry == "Position")
-                        {
-                            positionCurves.Add(curve);
-                            positionTangents.Add(tangents);
-                        }
-                        else if (lastEntry == "Rotation")
-                        {
-                            rotationCurves.Add(curve);
-                            rotationTangents.Add(tangents);
-                        }
-                        else if (lastEntry == "Scale")
-                        {
-                            scaleCurves.Add(curve);
-                            scaleTangents.Add(tangents);
-                        }
-                    }
-                    else
-                    {
-                        Action<int, string> addCurve = (idx, subPath) =>
-                        {
-                            string path = kvp.Key + subPath;
-
-                            NamedFloatCurve curve = new NamedFloatCurve(path,
-                            new AnimationCurve(kvp.Value.curves[idx].KeyFrames));
-
-                            EditorFloatCurveTangents tangents = new EditorFloatCurveTangents();
-                            tangents.name = path;
-                            tangents.tangents = kvp.Value.curves[idx].TangentModes;
-
-                            floatCurves.Add(curve);
-                            floatTangents.Add(tangents);
-                        };
-
-                        switch (kvp.Value.type)
-                        {
-                            case SerializableProperty.FieldType.Vector2:
-                                addCurve(0, ".x");
-                                addCurve(1, ".y");
-                                break;
-                            case SerializableProperty.FieldType.Vector3:
-                                addCurve(0, ".x");
-                                addCurve(1, ".y");
-                                addCurve(2, ".z");
-                                break;
-                            case SerializableProperty.FieldType.Vector4:
-                                addCurve(0, ".x");
-                                addCurve(1, ".y");
-                                addCurve(2, ".z");
-                                addCurve(3, ".w");
-                                break;
-                            case SerializableProperty.FieldType.Color:
-                                addCurve(0, ".r");
-                                addCurve(1, ".g");
-                                addCurve(2, ".b");
-                                addCurve(3, ".a");
-                                break;
-                            case SerializableProperty.FieldType.Bool:
-                            case SerializableProperty.FieldType.Int:
-                            case SerializableProperty.FieldType.Float:
-                                addCurve(0, "");
-                                break;
-                        }
-                    }
-                }
-
-                AnimationCurves newClipCurves = new AnimationCurves();
-                newClipCurves.PositionCurves = positionCurves.ToArray();
-                newClipCurves.RotationCurves = rotationCurves.ToArray();
-                newClipCurves.ScaleCurves = scaleCurves.ToArray();
-                newClipCurves.FloatCurves = floatCurves.ToArray();
-
-                clip.Curves = newClipCurves;
-                clip.Events = guiCurveEditor.Events;
-
-                string resourcePath = ProjectLibrary.GetPath(clip);
-                if (string.IsNullOrEmpty(resourcePath))
-                    ProjectLibrary.Create(clip, saveToPath);
-                else
-                    ProjectLibrary.Save(clip);
-
-                // Save tangents for editor only use
-                LibraryEntry entry = ProjectLibrary.GetEntry(resourcePath);
-                string clipName = PathEx.GetTail(resourcePath);
-
-                if (entry != null && entry.Type == LibraryEntryType.File)
-                {
-                    FileEntry fileEntry = (FileEntry)entry;
-                    ResourceMeta[] metas = fileEntry.ResourceMetas;
-
-                    for (int i = 0; i < metas.Length; i++)
-                    {
-                        if (clipName == metas[i].SubresourceName)
-                        {
-                            EditorCurveData newCurveData = new EditorCurveData();
-                            newCurveData.positionCurves = positionTangents.ToArray();
-                            newCurveData.rotationCurves = rotationTangents.ToArray();
-                            newCurveData.scaleCurves = scaleTangents.ToArray();
-                            newCurveData.floatCurves = floatTangents.ToArray();
-
-                            ProjectLibrary.SetEditorData(resourcePath, newCurveData);
-                            break;
-                        }
-                    }
+                    EditorAnimClipInfo newClipInfo = EditorAnimClipInfo.Create(clip);
+                    newClipInfo.events = clipInfo.events;
                 }
             }
             else
-            {
-                string resourcePath = ProjectLibrary.GetPath(clip);
-                LibraryEntry entry = ProjectLibrary.GetEntry(resourcePath);
+                clipInfo = EditorAnimClipInfo.Create(clip);
 
-                if (entry != null && entry.Type == LibraryEntryType.File)
-                {
-                    FileEntry fileEntry = (FileEntry) entry;
-                    MeshImportOptions meshImportOptions = (MeshImportOptions)fileEntry.Options;
+            persistentData.dirtyAnimClips[clip.UUID] = clipInfo;
 
-                    string clipName = PathEx.GetTail(resourcePath);
+            foreach (var curve in clipInfo.curves)
+                guiFieldDisplay.AddField(curve.Key);
 
-                    List<ImportedAnimationEvents> newEvents = new List<ImportedAnimationEvents>();
-                    newEvents.AddRange(meshImportOptions.AnimationEvents);
-
-                    bool isExisting = false;
-                    for (int i = 0; i < newEvents.Count; i++)
-                    {
-                        if (newEvents[i].name == clipName)
-                        {
-                            newEvents[i].events = guiCurveEditor.Events;
-                            isExisting = true;
-                            break;
-                        }
-                    }
-
-                    if (!isExisting)
-                    {
-                        ImportedAnimationEvents newEntry = new ImportedAnimationEvents();
-                        newEntry.name = clipName;
-                        newEntry.events = guiCurveEditor.Events;
-
-                        newEvents.Add(newEntry);
-                    }
-
-                    meshImportOptions.AnimationEvents = newEvents.ToArray();
-
-                    ProjectLibrary.Reimport(resourcePath, meshImportOptions, true);
-                }
-            }
+            guiCurveEditor.Events = clipInfo.events;
+            guiCurveEditor.DisableCurveEdit = clipIsImported;
         }
 
-        private bool IsClipImported(AnimationClip clip)
+        private static bool IsClipImported(AnimationClip clip)
         {
             string resourcePath = ProjectLibrary.GetPath(clip);
             return ProjectLibrary.IsSubresource(resourcePath);
+        }
+
+        private void UpdateSelectedSO()
+        {
+            SceneObject so = Selection.SceneObject;
+            if (selectedSO != so)
+            {
+                if (selectedSO != null && so == null)
+                {
+                    EditorInput.OnPointerPressed -= OnPointerPressed;
+                    EditorInput.OnPointerMoved -= OnPointerMoved;
+                    EditorInput.OnPointerReleased -= OnPointerReleased;
+                    EditorInput.OnButtonUp -= OnButtonUp;
+                }
+                else if (selectedSO == null && so != null)
+                {
+                    EditorInput.OnPointerPressed += OnPointerPressed;
+                    EditorInput.OnPointerMoved += OnPointerMoved;
+                    EditorInput.OnPointerReleased += OnPointerReleased;
+                    EditorInput.OnButtonUp += OnButtonUp;
+                }
+
+                zoomAmount = 0.0f;
+                selectedSO = so;
+                selectedFields.Clear();
+
+                RebuildGUI();
+
+                clipInfo = null;
+
+                // Load existing clip if one exists
+                if (selectedSO != null)
+                {
+                    Animation animation = selectedSO.GetComponent<Animation>();
+                    if (animation != null)
+                    {
+                        AnimationClip clip = animation.DefaultClip;
+                        if (clip != null)
+                            LoadAnimClip(clip);
+                    }
+                }
+
+                if(clipInfo == null)
+                    clipInfo = new EditorAnimClipInfo();
+            }
         }
 
         #endregion
@@ -909,7 +630,7 @@ namespace BansheeEditor
             float time = guiCurveEditor.GetTimeForFrame(currentFrameIdx);
 
             List<GUIAnimFieldPathValue> values = new List<GUIAnimFieldPathValue>();
-            foreach (var kvp in curves)
+            foreach (var kvp in clipInfo.curves)
             {
                 string suffix;
                 SerializableProperty property = Animation.FindProperty(selectedSO, kvp.Key, out suffix);
@@ -1035,7 +756,7 @@ namespace BansheeEditor
             {
                 case SerializableProperty.FieldType.Vector4:
                     {
-                        FieldCurves fieldCurves = new FieldCurves();
+                        FieldAnimCurves fieldCurves = new FieldAnimCurves();
                         fieldCurves.type = type;
                         fieldCurves.curves = new EdAnimationCurve[4];
 
@@ -1047,12 +768,12 @@ namespace BansheeEditor
                             selectedFields.Add(subFieldPath);
                         }
 
-                        curves[path] = fieldCurves;
+                        clipInfo.curves[path] = fieldCurves;
                     }
                     break;
                 case SerializableProperty.FieldType.Vector3:
                     {
-                        FieldCurves fieldCurves = new FieldCurves();
+                        FieldAnimCurves fieldCurves = new FieldAnimCurves();
                         fieldCurves.type = type;
                         fieldCurves.curves = new EdAnimationCurve[3];
 
@@ -1064,12 +785,12 @@ namespace BansheeEditor
                             selectedFields.Add(subFieldPath);
                         }
 
-                        curves[path] = fieldCurves;
+                        clipInfo.curves[path] = fieldCurves;
                     }
                     break;
                 case SerializableProperty.FieldType.Vector2:
                     {
-                        FieldCurves fieldCurves = new FieldCurves();
+                        FieldAnimCurves fieldCurves = new FieldAnimCurves();
                         fieldCurves.type = type;
                         fieldCurves.curves = new EdAnimationCurve[2];
 
@@ -1081,12 +802,12 @@ namespace BansheeEditor
                             selectedFields.Add(subFieldPath);
                         }
 
-                        curves[path] = fieldCurves;
+                        clipInfo.curves[path] = fieldCurves;
                     }
                     break;
                 case SerializableProperty.FieldType.Color:
                     {
-                        FieldCurves fieldCurves = new FieldCurves();
+                        FieldAnimCurves fieldCurves = new FieldAnimCurves();
                         fieldCurves.type = type;
                         fieldCurves.curves = new EdAnimationCurve[4];
 
@@ -1098,23 +819,24 @@ namespace BansheeEditor
                             selectedFields.Add(subFieldPath);
                         }
 
-                        curves[path] = fieldCurves;
+                        clipInfo.curves[path] = fieldCurves;
                     }
                     break;
                 default: // Primitive type
                     {
-                        FieldCurves fieldCurves = new FieldCurves();
+                        FieldAnimCurves fieldCurves = new FieldAnimCurves();
                         fieldCurves.type = type;
                         fieldCurves.curves = new EdAnimationCurve[1];
 
                         fieldCurves.curves[0] = new EdAnimationCurve();
                         selectedFields.Add(path);
 
-                        curves[path] = fieldCurves;
+                        clipInfo.curves[path] = fieldCurves;
                     }
                     break;
             }
 
+            EditorApplication.SetProjectDirty();
             UpdateDisplayedCurves();
         }
 
@@ -1139,16 +861,17 @@ namespace BansheeEditor
             for (int i = 0; i < selectedFields.Count; i++)
             {
                 selectedFields.Remove(selectedFields[i]);
-                curves.Remove(GetSubPathParent(selectedFields[i]));
+                clipInfo.curves.Remove(GetSubPathParent(selectedFields[i]));
             }
 
             List<string> existingFields = new List<string>();
-            foreach (var KVP in curves)
+            foreach (var KVP in clipInfo.curves)
                 existingFields.Add(KVP.Key);
 
             guiFieldDisplay.SetFields(existingFields.ToArray());
 
             selectedFields.Clear();
+            EditorApplication.SetProjectDirty();
             UpdateDisplayedCurves();
         }
         #endregion
@@ -1195,8 +918,8 @@ namespace BansheeEditor
                 subPathSuffix = path.Substring(index, path.Length - index);
             }
 
-            FieldCurves fieldCurves;
-            if (curves.TryGetValue(parentPath, out fieldCurves))
+            FieldAnimCurves fieldCurves;
+            if (clipInfo.curves.TryGetValue(parentPath, out fieldCurves))
             {
                 if (!string.IsNullOrEmpty(subPathSuffix))
                 {
@@ -1264,9 +987,6 @@ namespace BansheeEditor
         #region Input callbacks
         private void OnPointerPressed(PointerEvent ev)
         {
-            if (!isInitialized)
-                return;
-
             guiCurveEditor.OnPointerPressed(ev);
 
             if (ev.button == PointerButton.Middle)
@@ -1283,9 +1003,6 @@ namespace BansheeEditor
 
         private void OnPointerMoved(PointerEvent ev)
         {
-            if (!isInitialized)
-                return;
-
             guiCurveEditor.OnPointerMoved(ev);
 
             if (isButtonHeld)
@@ -1321,17 +1038,11 @@ namespace BansheeEditor
             isButtonHeld = false;
             isDragInProgress = false;
 
-            if (!isInitialized)
-                return;
-
             guiCurveEditor.OnPointerReleased(ev);
         }
 
         private void OnButtonUp(ButtonEvent ev)
         {
-            if (!isInitialized)
-                return;
-
             guiCurveEditor.OnButtonUp(ev);
         }
         #endregion
@@ -1368,12 +1079,18 @@ namespace BansheeEditor
 
         private void OnSelectionChanged(SceneObject[] sceneObjects, string[] resourcePaths)
         {
-            RebuildGUI();
+            UpdateSelectedSO();
         }
 
         private void OnFrameSelected(int frameIdx)
         {
             SetCurrentFrame(frameIdx);
+        }
+
+        private void OnEventsChanged()
+        {
+            clipInfo.events = guiCurveEditor.Events;
+            EditorApplication.SetProjectDirty();
         }
         #endregion
     }

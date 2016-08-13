@@ -80,6 +80,8 @@ namespace BansheeEditor
         private Vector2I contextClickPosition;
 
         private EdAnimationCurve[] curves = new EdAnimationCurve[0];
+        private bool disableCurveEdit = false;
+
         private float xRange = 60.0f;
         private float yRange = 10.0f;
         private Vector2 offset;
@@ -104,6 +106,26 @@ namespace BansheeEditor
         /// Triggers whenever user selects a new frame. Reports the index of the selected frame.
         /// </summary>
         public Action<int> OnFrameSelected;
+
+        /// <summary>
+        /// Triggered whenever a new animation event is added.
+        /// </summary>
+        public Action OnEventAdded;
+
+        /// <summary>
+        /// Triggered whenever values in an animation event change.
+        /// </summary>
+        public Action OnEventModified;
+
+        /// <summary>
+        /// Triggered whenever an animation event is deleted.
+        /// </summary>
+        public Action OnEventDeleted;
+
+        /// <summary>
+        /// Triggered whenever keyframe in a curve is modified (added, removed or edited).
+        /// </summary>
+        public Action OnCurveModified;
 
         /// <summary>
         /// The displayed range of the curve, where:
@@ -163,6 +185,14 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Set to true if curves are not allowed to be edited.
+        /// </summary>
+        public bool DisableCurveEdit
+        {
+            set { disableCurveEdit = value; }
+        }
+
+        /// <summary>
         /// Animation events displayed on the curve editor.
         /// </summary>
         public AnimationEvent[] Events
@@ -170,6 +200,9 @@ namespace BansheeEditor
             get
             {
                 AnimationEvent[] animEvents = new AnimationEvent[events.Count];
+
+                // Note: Hidden dependency. Returned events must point to the same event class this object is using, so
+                // that any modifications made in this class will be visible in the returned values.
                 for (int i = 0; i < events.Count; i++)
                     animEvents[i] = events[i].animEvent;
 
@@ -215,6 +248,7 @@ namespace BansheeEditor
 
             keyframeContextMenu = new ContextMenu();
             keyframeContextMenu.AddItem("Delete", DeleteSelectedKeyframes);
+            keyframeContextMenu.AddItem("Delete", EditSelectedKeyframe);
             keyframeContextMenu.AddItem("Tangents/Auto", () => { ChangeSelectionTangentMode(TangentMode.Auto); });
             keyframeContextMenu.AddItem("Tangents/Free", () => { ChangeSelectionTangentMode(TangentMode.Free); });
             keyframeContextMenu.AddItem("Tangents/In/Auto", () => { ChangeSelectionTangentMode(TangentMode.InAuto); });
@@ -466,7 +500,7 @@ namespace BansheeEditor
                         int distance = Vector2I.Distance(drawingPos, dragStart);
                         if (distance >= DRAG_START_DISTANCE)
                         {
-                            if (isMousePressedOverKey)
+                            if (isMousePressedOverKey && !disableCurveEdit)
                             {
                                 draggedKeyframes.Clear();
                                 foreach (var selectedEntry in selectedKeyframes)
@@ -491,7 +525,7 @@ namespace BansheeEditor
 
                     if (isDragInProgress)
                     {
-                        if (isMousePressedOverKey)
+                        if (isMousePressedOverKey && !disableCurveEdit)
                         {
                             Vector2 diff = Vector2.Zero;
 
@@ -534,10 +568,11 @@ namespace BansheeEditor
                                     SelectKeyframe(new KeyframeRef(draggedEntry.curveIdx, keyframe.index));
                             }
 
+                            OnCurveModified?.Invoke();
                             guiCurveDrawing.Rebuild();
                             UpdateEventsGUI();
                         }
-                        else if (isMousePressedOverTangent)
+                        else if (isMousePressedOverTangent && !disableCurveEdit)
                         {
                             EdAnimationCurve curve = curves[draggedTangent.keyframeRef.curveIdx];
                             KeyFrame keyframe = curve.KeyFrames[draggedTangent.keyframeRef.keyIdx];
@@ -570,6 +605,7 @@ namespace BansheeEditor
                                 curve.KeyFrames[draggedTangent.keyframeRef.keyIdx] = keyframe;
                                 curve.Apply();
 
+                                OnCurveModified?.Invoke();
                                 guiCurveDrawing.Rebuild();
                             }
                         }
@@ -684,17 +720,21 @@ namespace BansheeEditor
         {
             ClearSelection();
 
-            foreach (var curve in curves)
+            if (!disableCurveEdit)
             {
-                float t = guiCurveDrawing.GetTimeForFrame(markedFrameIdx);
-                float value = curve.Evaluate(t);
+                foreach (var curve in curves)
+                {
+                    float t = guiCurveDrawing.GetTimeForFrame(markedFrameIdx);
+                    float value = curve.Evaluate(t);
 
-                curve.AddKeyframe(t, value);
-                curve.Apply();
+                    curve.AddKeyframe(t, value);
+                    curve.Apply();
+                }
             }
 
             // TODO - UNDOREDO
 
+            OnCurveModified?.Invoke();
             guiCurveDrawing.Rebuild();
             UpdateEventsGUI();
         }
@@ -711,6 +751,7 @@ namespace BansheeEditor
             eventInfo.animEvent = new AnimationEvent("", eventTime);
             
             events.Add(eventInfo); // TODO - UNDOREDO
+            OnEventAdded?.Invoke();
 
             UpdateEventsGUI();
             guiCurveDrawing.Rebuild();
@@ -754,6 +795,9 @@ namespace BansheeEditor
         ///                    tangent will be kept as is.</param>
         private void ChangeSelectionTangentMode(TangentMode mode)
         {
+            if (disableCurveEdit)
+                return;
+
             foreach (var selectedEntry in selectedKeyframes)
             {
                 EdAnimationCurve curve = curves[selectedEntry.curveIdx];
@@ -794,6 +838,7 @@ namespace BansheeEditor
 
             // TODO - UNDOREDO
 
+            OnCurveModified?.Invoke();
             guiCurveDrawing.Rebuild();
         }
 
@@ -807,17 +852,21 @@ namespace BansheeEditor
             {
                 ClearSelection();
 
-                foreach (var curve in curves)
+                if (!disableCurveEdit)
                 {
-                    float t = curveCoord.x;
-                    float value = curveCoord.y;
+                    foreach (var curve in curves)
+                    {
+                        float t = curveCoord.x;
+                        float value = curveCoord.y;
 
-                    curve.AddKeyframe(t, value);
-                    curve.Apply();
+                        curve.AddKeyframe(t, value);
+                        curve.Apply();
+                    }
                 }
 
                 // TODO - UNDOREDO
 
+                OnCurveModified?.Invoke();
                 guiCurveDrawing.Rebuild();
                 UpdateEventsGUI();
             }
@@ -839,6 +888,7 @@ namespace BansheeEditor
                 eventInfo.animEvent = new AnimationEvent("", time);
 
                 events.Add(eventInfo); // TODO - UNDOREDO
+                OnEventAdded?.Invoke();
 
                 UpdateEventsGUI();
                 guiCurveDrawing.Rebuild();
@@ -852,26 +902,30 @@ namespace BansheeEditor
         /// </summary>
         private void DeleteSelectedKeyframes()
         {
-            foreach (var selectedEntry in selectedKeyframes)
+            if (!disableCurveEdit)
             {
-                EdAnimationCurve curve = curves[selectedEntry.curveIdx];
-
-                // Sort keys from highest to lowest so the indices don't change
-                selectedEntry.keyIndices.Sort((x, y) =>
+                foreach (var selectedEntry in selectedKeyframes)
                 {
-                    return y.CompareTo(x);
-                });
+                    EdAnimationCurve curve = curves[selectedEntry.curveIdx];
 
-                foreach (var keyframeIdx in selectedEntry.keyIndices)
-                    curve.RemoveKeyframe(keyframeIdx);
+                    // Sort keys from highest to lowest so the indices don't change
+                    selectedEntry.keyIndices.Sort((x, y) =>
+                    {
+                        return y.CompareTo(x);
+                    });
 
-                curve.Apply();
+                    foreach (var keyframeIdx in selectedEntry.keyIndices)
+                        curve.RemoveKeyframe(keyframeIdx);
+
+                    curve.Apply();
+                }
             }
 
             // TODO - UNDOREDO
 
             ClearSelection();
 
+            OnCurveModified?.Invoke();
             guiCurveDrawing.Rebuild();
             UpdateEventsGUI();
         }
@@ -889,6 +943,7 @@ namespace BansheeEditor
             }
 
             events = newEvents; // TODO - UNDOREDO
+            OnEventDeleted?.Invoke();
 
             ClearSelection();
 
@@ -961,6 +1016,17 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Opens the edit window for the currently selected keyframe.
+        /// </summary>
+        private void EditSelectedKeyframe()
+        {
+            if (disableCurveEdit)
+                return;
+
+            // TODO - Open keyframe edit window
+        }
+
+        /// <summary>
         /// Opens the edit window for the currently selected event.
         /// </summary>
         private void EditSelectedEvent()
@@ -994,6 +1060,7 @@ namespace BansheeEditor
             editWindow.Initialize(animEvent, () =>
             {
                 UpdateEventsGUI();
+                OnEventModified?.Invoke();
             });
         }
     }
