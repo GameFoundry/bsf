@@ -424,8 +424,13 @@ namespace BansheeEngine
 		size_t max_size() const { return std::numeric_limits<size_type>::max() / sizeof(T); }
 		void construct(pointer p, const_reference t) { new (p) T(t); }
 		void destroy(pointer p) { p->~T(); }
+		/* This version of construct() (with a varying number of parameters)
+		 * seems necessary in order to use some STL data structures from
+		 * libstdc++-4.8, but compilation fails on OS X, hence the #if. */
+#if BS_PLATFORM == BS_PLATFORM_LINUX
 		template<class U, class... Args>
 		void construct(U* p, Args&&... args) { new(p) U(std::forward<Args>(args)...); }
+#endif
 	};
 
 	/** @} */
