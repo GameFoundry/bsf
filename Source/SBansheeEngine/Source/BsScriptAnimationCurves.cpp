@@ -149,6 +149,7 @@ namespace BansheeEngine
 	}
 
 	MonoField* ScriptNamedVector3Curve::sNameField = nullptr;
+	MonoField* ScriptNamedVector3Curve::sFlagsField = nullptr;
 	MonoField* ScriptNamedVector3Curve::sXCurveField = nullptr;
 	MonoField* ScriptNamedVector3Curve::sYCurveField = nullptr;
 	MonoField* ScriptNamedVector3Curve::sZCurveField = nullptr;
@@ -160,6 +161,7 @@ namespace BansheeEngine
 	void ScriptNamedVector3Curve::initRuntimeData()
 	{
 		sNameField = metaData.scriptClass->getField("Name");
+		sFlagsField = metaData.scriptClass->getField("Flags");
 		sXCurveField = metaData.scriptClass->getField("X");
 		sYCurveField = metaData.scriptClass->getField("Y");
 		sZCurveField = metaData.scriptClass->getField("Z");
@@ -173,6 +175,10 @@ namespace BansheeEngine
 		sNameField->getValue(instance, &monoName);
 
 		output.name = MonoUtil::monoToString(monoName);
+
+		UINT32 flags;
+		sFlagsField->getValue(instance, &flags);
+		output.flags = (AnimationCurveFlags)flags;
 
 		// Convert from three separate floating point curves, to a Vector3 curve
 		MonoObject* monoCurves[3];
@@ -278,11 +284,14 @@ namespace BansheeEngine
 		MonoObject* monoYCurve = ScriptAnimationCurve::create(yCurve);
 		MonoObject* monoZCurve = ScriptAnimationCurve::create(zCurve);
 
-		void* params[4] = { monoString, monoXCurve, monoYCurve, monoZCurve };
-		return metaData.scriptClass->createInstance("string, AnimationCurve, AnimationCurve, AnimationCurve", params);
+		UINT32 flags = curve.flags;
+
+		void* params[5] = { monoString, &flags, monoXCurve, monoYCurve, monoZCurve };
+		return metaData.scriptClass->createInstance("string, int, AnimationCurve, AnimationCurve, AnimationCurve", params);
 	}
 
 	MonoField* ScriptNamedFloatCurve::sNameField = nullptr;
+	MonoField* ScriptNamedFloatCurve::sFlagsField = nullptr;
 	MonoField* ScriptNamedFloatCurve::sCurveField = nullptr;
 
 	ScriptNamedFloatCurve::ScriptNamedFloatCurve(MonoObject* instance)
@@ -292,6 +301,7 @@ namespace BansheeEngine
 	void ScriptNamedFloatCurve::initRuntimeData()
 	{
 		sNameField = metaData.scriptClass->getField("Name");
+		sFlagsField = metaData.scriptClass->getField("Flags");
 		sCurveField = metaData.scriptClass->getField("Curve");
 	}
 
@@ -303,6 +313,10 @@ namespace BansheeEngine
 		sNameField->getValue(instance, &monoName);
 
 		output.name = MonoUtil::monoToString(monoName);
+
+		UINT32 flags;
+		sFlagsField->getValue(instance, &flags);
+		output.flags = (AnimationCurveFlags)flags;
 
 		MonoObject* monoCurve = nullptr;
 		sCurveField->getValue(instance, &monoCurve);
@@ -321,7 +335,8 @@ namespace BansheeEngine
 		MonoString* monoString = MonoUtil::stringToMono(curve.name);
 		MonoObject* monoCurve = ScriptAnimationCurve::create(curve.curve);
 
-		void* params[2] = { monoString, monoCurve };
-		return metaData.scriptClass->createInstance("string, AnimationCurve", params);
+		UINT32 flags = curve.flags;
+		void* params[3] = { monoString, &flags, monoCurve };
+		return metaData.scriptClass->createInstance("string, int, AnimationCurve", params);
 	}
 }

@@ -444,9 +444,9 @@ namespace BansheeEngine
 			
 			for (auto& bone : clip.boneAnimations)
 			{
-				curves->position.push_back({ bone.node->name, bone.translation });
-				curves->rotation.push_back({ bone.node->name, bone.rotation });
-				curves->scale.push_back({ bone.node->name, bone.scale });
+				curves->position.push_back({ bone.node->name, AnimationCurveFlag::ImportedCurve, bone.translation });
+				curves->rotation.push_back({ bone.node->name, AnimationCurveFlag::ImportedCurve, bone.rotation });
+				curves->scale.push_back({ bone.node->name, AnimationCurveFlag::ImportedCurve, bone.scale });
 			}
 
 			// See if any splits are required. We only split the first clip as it is assumed if FBX has multiple clips the

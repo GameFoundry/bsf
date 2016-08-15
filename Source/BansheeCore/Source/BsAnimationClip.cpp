@@ -15,7 +15,7 @@ namespace BansheeEngine
 		if (iterFind != position.end())
 			iterFind->curve = curve;
 		else
-			position.push_back({ name, curve });
+			position.push_back({ name, AnimationCurveFlags(), curve });
 	}
 
 	void AnimationCurves::addRotationCurve(const String& name, const TAnimationCurve<Quaternion>& curve)
@@ -25,7 +25,7 @@ namespace BansheeEngine
 		if (iterFind != rotation.end())
 			iterFind->curve = curve;
 		else
-			rotation.push_back({ name, curve });
+			rotation.push_back({ name, AnimationCurveFlags(), curve });
 	}
 
 	void AnimationCurves::addScaleCurve(const String& name, const TAnimationCurve<Vector3>& curve)
@@ -35,7 +35,7 @@ namespace BansheeEngine
 		if (iterFind != scale.end())
 			iterFind->curve = curve;
 		else
-			scale.push_back({ name, curve });
+			scale.push_back({ name, AnimationCurveFlags(), curve });
 	}
 
 	void AnimationCurves::addGenericCurve(const String& name, const TAnimationCurve<float>& curve)
@@ -45,7 +45,7 @@ namespace BansheeEngine
 		if (iterFind != generic.end())
 			iterFind->curve = curve;
 		else
-			generic.push_back({ name, curve });
+			generic.push_back({ name, AnimationCurveFlags(), curve });
 	}
 
 	void AnimationCurves::removePositionCurve(const String& name)
