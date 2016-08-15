@@ -19,7 +19,7 @@ namespace BansheeEditor
     {
         private const int FIELD_DISPLAY_WIDTH = 200;
         private const int DRAG_START_DISTANCE = 3;
-        private const float DRAG_SCALE = 10.0f;
+        private const float DRAG_SCALE = 1.0f;
         private const float ZOOM_SCALE = 0.1f/120.0f; // One scroll step is usually 120 units, we want 1/10 of that
 
         private SceneObject selectedSO;
@@ -399,7 +399,7 @@ namespace BansheeEditor
 
                 Vector2 offset = guiCurveEditor.Offset;
                 offset.x = Math.Max(0.0f, offset.x + dragX);
-                offset.y += dragY;
+                offset.y -= dragY;
                 
                 guiCurveEditor.Offset = offset;
                 UpdateScrollBarSize();
