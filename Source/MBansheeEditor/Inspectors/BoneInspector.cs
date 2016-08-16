@@ -117,8 +117,12 @@ namespace BansheeEditor
             if (mesh == null)
                 return null;
 
-            //Skeleton skeleton = mesh.Skeleton;
-            return null;
+            Skeleton skeleton = mesh.Skeleton;
+            string[] boneNames = new string[skeleton.NumBones];
+            for (int i = 0; i < boneNames.Length; i++)
+                boneNames[i] = skeleton.GetBoneInfo(i).Name;
+
+            return boneNames;
         }
         
         /// <summary>

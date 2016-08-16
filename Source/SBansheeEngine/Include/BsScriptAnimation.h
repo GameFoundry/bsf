@@ -72,7 +72,7 @@ namespace BansheeEngine
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "BlendClipInfo")
 
-		/** Converts managed split info to its native counterpart. */
+		/** Converts managed object to its native counterpart. */
 		static BlendClipInfo fromManaged(MonoObject* object);
 
 	private:
@@ -91,7 +91,7 @@ namespace BansheeEngine
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Blend1DInfo")
 
-		/** Converts managed split info to its native counterpart. */
+		/** Converts managed object to its native counterpart. */
 		static Blend1DInfo fromManaged(MonoObject* object);
 
 	private:
@@ -109,7 +109,7 @@ namespace BansheeEngine
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Blend2DInfo")
 
-		/** Converts managed split info to its native counterpart. */
+		/** Converts managed object to its native counterpart. */
 		static Blend2DInfo fromManaged(MonoObject* object);
 
 	private:

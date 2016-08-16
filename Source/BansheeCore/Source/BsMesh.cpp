@@ -120,12 +120,17 @@ namespace BansheeEngine
 
 		if (meshData.getIndexElementSize() != ibProps.getIndexSize())
 		{
-			BS_EXCEPT(InvalidParametersException, "Provided index size doesn't match meshes index size. Needed: " +
+			LOGERR("Provided index size doesn't match meshes index size. Needed: " +
 				toString(ibProps.getIndexSize()) + ". Got: " + toString(meshData.getIndexElementSize()));
+
+			return;
 		}
 
 		if (indicesSize > mIndexBuffer->getSizeInBytes())
-			BS_EXCEPT(InvalidParametersException, "Index buffer values are being written out of valid range.");
+		{
+			indicesSize = mIndexBuffer->getSizeInBytes();
+			LOGERR("Index buffer values are being written out of valid range.");
+		}
 
 		mIndexBuffer->writeData(0, indicesSize, srcIdxData, discardEntireBuffer ? BufferWriteType::Discard : BufferWriteType::Normal);
 
@@ -143,8 +148,10 @@ namespace BansheeEngine
 			UINT32 otherVertSize = meshData.getVertexDesc()->getVertexStride(i);
 			if (myVertSize != otherVertSize)
 			{
-				BS_EXCEPT(InvalidParametersException, "Provided vertex size for stream " + toString(i) + " doesn't match meshes vertex size. Needed: " +
+				LOGERR("Provided vertex size for stream " + toString(i) + " doesn't match meshes vertex size. Needed: " +
 					toString(myVertSize) + ". Got: " + toString(otherVertSize));
+				
+				continue;
 			}
 
 			SPtr<VertexBufferCore> vertexBuffer = mVertexData->getBuffer(i);
@@ -153,7 +160,10 @@ namespace BansheeEngine
 			UINT8* srcVertBufferData = meshData.getStreamData(i);
 
 			if (bufferSize > vertexBuffer->getSizeInBytes())
-				BS_EXCEPT(InvalidParametersException, "Vertex buffer values for stream \"" + toString(i) + "\" are being written out of valid range.");
+			{
+				bufferSize = vertexBuffer->getSizeInBytes();
+				LOGERR("Vertex buffer values for stream \"" + toString(i) + "\" are being written out of valid range.");
+			}
 
 			if (RenderAPICore::instance().getAPIInfo().getVertexColorFlipRequired())
 			{
@@ -205,8 +215,9 @@ namespace BansheeEngine
 
 			if (meshData.getIndexElementSize() != ibProps.getIndexSize())
 			{
-				BS_EXCEPT(InvalidParametersException, "Provided index size doesn't match meshes index size. Needed: " +
+				LOGERR("Provided index size doesn't match meshes index size. Needed: " +
 					toString(ibProps.getIndexSize()) + ". Got: " + toString(meshData.getIndexElementSize()));
+				return;
 			}
 
 			UINT8* idxData = static_cast<UINT8*>(mIndexBuffer->lock(GBL_READ_ONLY));
@@ -223,7 +234,10 @@ namespace BansheeEngine
 
 			UINT32 indicesSize = numIndicesToCopy * idxElemSize;
 			if (indicesSize > meshData.getIndexBufferSize())
-				BS_EXCEPT(InvalidParametersException, "Provided buffer doesn't have enough space to store mesh indices.");
+			{
+				LOGERR("Provided buffer doesn't have enough space to store mesh indices.");
+				return;
+			}
 
 			memcpy(indices, idxData, numIndicesToCopy * idxElemSize);
 
@@ -248,15 +262,20 @@ namespace BansheeEngine
 				UINT32 otherVertSize = meshData.getVertexDesc()->getVertexStride(streamIdx);
 				if (myVertSize != otherVertSize)
 				{
-					BS_EXCEPT(InvalidParametersException, "Provided vertex size for stream " + toString(streamIdx) + " doesn't match meshes vertex size. Needed: " +
+					LOGERR("Provided vertex size for stream " + toString(streamIdx) + " doesn't match meshes vertex size. Needed: " +
 						toString(myVertSize) + ". Got: " + toString(otherVertSize));
+
+					continue;
 				}
 
 				UINT32 numVerticesToCopy = meshData.getNumVertices();
 				UINT32 bufferSize = vbProps.getVertexSize() * numVerticesToCopy;
 
 				if (bufferSize > vertexBuffer->getSizeInBytes())
-					BS_EXCEPT(InvalidParametersException, "Vertex buffer values for stream \"" + toString(streamIdx) + "\" are being read out of valid range.");
+				{
+					LOGERR("Vertex buffer values for stream \"" + toString(streamIdx) + "\" are being read out of valid range.");
+					continue;
+				}
 
 				UINT8* vertDataPtr = static_cast<UINT8*>(vertexBuffer->lock(GBL_READ_ONLY));
 
