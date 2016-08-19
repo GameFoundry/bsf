@@ -16,106 +16,37 @@ namespace BansheeEngine
 	class BS_EXPORT CameraRTTI : public RTTIType <Camera, IReflectable, CameraRTTI>
 	{
 	private:
-		SPtr<Viewport> getViewport(Camera* obj) { return obj->mViewport; }
-		void setViewport(Camera* obj, SPtr<Viewport> val) { obj->mViewport = val; }
-
-		UINT64& getLayers(Camera* obj) { return obj->mLayers; }
-		void setLayers(Camera* obj, UINT64& val) { obj->mLayers = val; }
-
-		UINT8& getMSAACount(Camera* obj) { return obj->mMSAA; }
-		void setMSAACount(Camera* obj, UINT8& msaaCount) { obj->mMSAA = msaaCount; }
-
-		PostProcessSettings& getPostProcessSettings(Camera* obj) { return obj->mPPSettings; }
-		void setPostProcessSettings(Camera* obj, PostProcessSettings& settings) { obj->mPPSettings = settings; }
-
-		CameraFlags& getFlags(Camera* obj) { return obj->mCameraFlags; }
-		void setFlags(Camera* obj, CameraFlags& val) { obj->mCameraFlags = val; }
-
-		Vector3& getPosition(Camera* obj) { return obj->mPosition; }
-		void setPosition(Camera* obj, Vector3& val) { obj->mPosition = val; }
-
-		Quaternion& getRotation(Camera* obj) { return obj->mRotation; }
-		void setRotation(Camera* obj, Quaternion& val) { obj->mRotation = val; }
-
-		ProjectionType& getProjType(Camera* obj) { return obj->mProjType; }
-		void setProjType(Camera* obj, ProjectionType& val) { obj->mProjType = val; }
-
-		Radian& getHorzFOV(Camera* obj) { return obj->mHorzFOV; }
-		void setHorzFOV(Camera* obj, Radian& val) { obj->mHorzFOV = val; }
-
-		float& getFarDist(Camera* obj) { return obj->mFarDist; }
-		void setFarDist(Camera* obj, float& val) { obj->mFarDist = val; }
-
-		float& getNearDist(Camera* obj) { return obj->mNearDist; }
-		void setNearDist(Camera* obj, float& val) { obj->mNearDist = val; }
-
-		float& getAspect(Camera* obj) { return obj->mAspect; }
-		void setAspect(Camera* obj, float& val) { obj->mAspect = val; }
-
-		float& getOrthoHeight(Camera* obj) { return obj->mOrthoHeight; }
-		void setOrthoHeight(Camera* obj, float& val) { obj->mOrthoHeight = val; }
-
-		INT32& getPriority(Camera* obj) { return obj->mPriority; }
-		void setPriority(Camera* obj, INT32& val) { obj->mPriority = val; }
-
-		bool& getCustomViewMatrix(Camera* obj) { return obj->mCustomViewMatrix; }
-		void setCustomViewMatrix(Camera* obj, bool& val) { obj->mCustomViewMatrix = val; }
-
-		bool& getCustomProjMatrix(Camera* obj) { return obj->mCustomProjMatrix; }
-		void setCustomProjMatrix(Camera* obj, bool& val) { obj->mCustomProjMatrix = val; }
-
-		bool& getFrustumManual(Camera* obj) { return obj->mFrustumExtentsManuallySet; }
-		void setFrustumManual(Camera* obj, bool& val) { obj->mFrustumExtentsManuallySet = val; }
-
-		Matrix4& getProjMatrix(Camera* obj) { return obj->mProjMatrix; }
-		void setProjMatrix(Camera* obj, Matrix4& val) { obj->mProjMatrix = val; }
-
-		Matrix4& getProjMatrixRS(Camera* obj) { return obj->mProjMatrixRS; }
-		void setProjMatrixRS(Camera* obj, Matrix4& val) { obj->mProjMatrixRS = val; }
-
-		Matrix4& getViewMatrix(Camera* obj) { return obj->mViewMatrix; }
-		void setViewMatrix(Camera* obj, Matrix4& val) { obj->mViewMatrix = val; }
-
-		float& getLeft(Camera* obj) { return obj->mLeft; }
-		void setLeft(Camera* obj, float& val) { obj->mLeft = val; }
-
-		float& getRight(Camera* obj) { return obj->mRight; }
-		void setRight(Camera* obj, float& val) { obj->mRight = val; }
-
-		float& getTop(Camera* obj) { return obj->mTop; }
-		void setTop(Camera* obj, float& val) { obj->mTop = val; }
-
-		float& getBottom(Camera* obj) { return obj->mBottom; }
-		void setBottom(Camera* obj, float& val) { obj->mBottom = val; }
-
+		BS_BEGIN_RTTI_MEMBERS
+			BS_RTTI_MEMBER_REFLPTR(mViewport, 0)
+			BS_RTTI_MEMBER_PLAIN(mLayers, 1)
+			BS_RTTI_MEMBER_PLAIN(mPosition, 2)
+			BS_RTTI_MEMBER_PLAIN(mRotation, 3)
+			BS_RTTI_MEMBER_PLAIN(mProjType, 4)
+			BS_RTTI_MEMBER_PLAIN(mHorzFOV, 5)
+			BS_RTTI_MEMBER_PLAIN(mFarDist, 6)
+			BS_RTTI_MEMBER_PLAIN(mNearDist, 7)
+			BS_RTTI_MEMBER_PLAIN(mAspect, 8)
+			BS_RTTI_MEMBER_PLAIN(mOrthoHeight, 9)
+			BS_RTTI_MEMBER_PLAIN(mPriority, 10)
+			BS_RTTI_MEMBER_PLAIN(mCustomViewMatrix, 11)
+			BS_RTTI_MEMBER_PLAIN(mCustomProjMatrix, 12)
+			BS_RTTI_MEMBER_PLAIN(mFrustumExtentsManuallySet, 13)
+			BS_RTTI_MEMBER_PLAIN(mProjMatrixRS, 15)
+			BS_RTTI_MEMBER_PLAIN(mProjMatrix, 16)
+			BS_RTTI_MEMBER_PLAIN(mViewMatrix, 17)
+			BS_RTTI_MEMBER_PLAIN(mLeft, 18)
+			BS_RTTI_MEMBER_PLAIN(mRight, 19)
+			BS_RTTI_MEMBER_PLAIN(mTop, 20)
+			BS_RTTI_MEMBER_PLAIN(mBottom, 21)
+			BS_RTTI_MEMBER_PLAIN(mCameraFlags, 22)
+			BS_RTTI_MEMBER_PLAIN(mMSAA, 23)
+			BS_RTTI_MEMBER_PLAIN(mPPSettings, 24)
+		BS_END_RTTI_MEMBERS
+			
 	public:
 		CameraRTTI()
-		{
-			addReflectablePtrField("mViewport", 0, &CameraRTTI::getViewport, &CameraRTTI::setViewport);
-			addPlainField("mLayers", 1, &CameraRTTI::getLayers, &CameraRTTI::setLayers);
-			addPlainField("mPosition", 2, &CameraRTTI::getPosition, &CameraRTTI::setPosition);
-			addPlainField("mRotation", 3, &CameraRTTI::getRotation, &CameraRTTI::setRotation);
-			addPlainField("mProjType", 4, &CameraRTTI::getProjType, &CameraRTTI::setProjType);
-			addPlainField("mHorzFOV", 5, &CameraRTTI::getHorzFOV, &CameraRTTI::setHorzFOV);
-			addPlainField("mFarDist", 6, &CameraRTTI::getFarDist, &CameraRTTI::setFarDist);
-			addPlainField("mNearDist", 7, &CameraRTTI::getNearDist, &CameraRTTI::setNearDist);
-			addPlainField("mAspect", 8, &CameraRTTI::getAspect, &CameraRTTI::setAspect);
-			addPlainField("mOrthoHeight", 9, &CameraRTTI::getOrthoHeight, &CameraRTTI::setOrthoHeight);
-			addPlainField("mPriority", 10, &CameraRTTI::getPriority, &CameraRTTI::setPriority);
-			addPlainField("mCustomViewMatrix", 11, &CameraRTTI::getCustomViewMatrix, &CameraRTTI::setCustomViewMatrix);
-			addPlainField("mCustomProjMatrix", 12, &CameraRTTI::getCustomProjMatrix, &CameraRTTI::setCustomProjMatrix);
-			addPlainField("mFrustumExtentsManuallySet", 13, &CameraRTTI::getFrustumManual, &CameraRTTI::setFrustumManual);
-			addPlainField("mProjMatrixRS", 15, &CameraRTTI::getProjMatrixRS, &CameraRTTI::setProjMatrixRS);
-			addPlainField("mProjMatrix", 16, &CameraRTTI::getProjMatrix, &CameraRTTI::setProjMatrix);
-			addPlainField("mViewMatrix", 17, &CameraRTTI::getViewMatrix, &CameraRTTI::setViewMatrix);
-			addPlainField("mLeft", 18, &CameraRTTI::getLeft, &CameraRTTI::setLeft);
-			addPlainField("mRight", 19, &CameraRTTI::getRight, &CameraRTTI::setRight);
-			addPlainField("mTop", 20, &CameraRTTI::getTop, &CameraRTTI::setTop);
-			addPlainField("mBottom", 21, &CameraRTTI::getBottom, &CameraRTTI::setBottom);
-			addPlainField("mFlags", 22, &CameraRTTI::getFlags, &CameraRTTI::setFlags);
-			addPlainField("mMSAA", 23, &CameraRTTI::getMSAACount, &CameraRTTI::setMSAACount);
-			addPlainField("mPPSettings", 24, &CameraRTTI::getPostProcessSettings, &CameraRTTI::setPostProcessSettings);
-		}
+			:mInitMembers(this)
+		{ }
 
 		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
 		{

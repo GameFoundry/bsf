@@ -142,6 +142,22 @@ namespace BansheeEngine
         public MeshData MeshData
         {
             get { return Internal_GetMeshData(mCachedPtr); }
+            set
+            {
+                IntPtr meshDataPtr = IntPtr.Zero;
+                if (value != null)
+                    meshDataPtr = value.GetCachedPtr();
+
+                Internal_SetMeshData(mCachedPtr, meshDataPtr);
+            }
+        }
+
+        /// <summary>
+        /// Gets the skeleton required for animation of this mesh, if any is available.
+        /// </summary>
+        public Skeleton Skeleton
+        {
+            get { return Internal_GetSkeleton(mCachedPtr); }
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -157,6 +173,9 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern int Internal_GetSubMeshCount(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern Skeleton Internal_GetSkeleton(IntPtr thisPtr);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetBounds(IntPtr thisPtr, out AABox box, out Sphere sphere);

@@ -8,6 +8,7 @@
 #include "BsMonoArray.h"
 #include "BsMonoManager.h"
 #include "BsCoreThread.h"
+#include "BsScriptSkeleton.h"
 
 namespace BansheeEngine
 {
@@ -41,6 +42,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateInstanceMeshData", &ScriptMesh::internal_CreateInstanceMeshData);
 		metaData.scriptClass->addInternalCall("Internal_GetSubMeshes", &ScriptMesh::internal_GetSubMeshes);
 		metaData.scriptClass->addInternalCall("Internal_GetSubMeshCount", &ScriptMesh::internal_GetSubMeshCount);
+		metaData.scriptClass->addInternalCall("Internal_GetSkeleton", &ScriptMesh::internal_GetSkeleton);
 		metaData.scriptClass->addInternalCall("Internal_GetBounds", &ScriptMesh::internal_GetBounds);
 		metaData.scriptClass->addInternalCall("Internal_GetMeshData", &ScriptMesh::internal_GetMeshData);
 		metaData.scriptClass->addInternalCall("Internal_SetMeshData", &ScriptMesh::internal_SetMeshData);
@@ -103,6 +105,17 @@ namespace BansheeEngine
 		HMesh mesh = thisPtr->getHandle();
 
 		return mesh->getProperties().getNumSubMeshes();
+	}
+
+	MonoObject* ScriptMesh::internal_GetSkeleton(ScriptMesh* thisPtr)
+	{
+		HMesh mesh = thisPtr->getHandle();
+
+		SPtr<Skeleton> skeleton = mesh->getSkeleton();
+		if (skeleton == nullptr)
+			return nullptr;
+
+		return ScriptSkeleton::create(skeleton);
 	}
 
 	void ScriptMesh::internal_GetBounds(ScriptMesh* thisPtr, AABox* box, Sphere* sphere)

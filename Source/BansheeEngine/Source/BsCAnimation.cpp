@@ -3,6 +3,7 @@
 #include "BsCAnimation.h"
 #include "BsSceneObject.h"
 #include "BsCRenderable.h"
+#include "BsCBone.h"
 #include "BsCAnimationRTTI.h"
 
 using namespace std::placeholders;
@@ -139,6 +140,8 @@ namespace BansheeEngine
 		if (mDefaultClip.isLoaded())
 			mInternal->play(mDefaultClip);
 
+		setBoneMappings();
+
 		HRenderable renderableComponent = SO()->getComponent<CRenderable>();
 		if (renderableComponent == nullptr)
 			return;
@@ -162,6 +165,103 @@ namespace BansheeEngine
 
 		// This should release the last reference and destroy the internal listener
 		mInternal = nullptr;
+	}
+
+	void CAnimation::_addBone(const HBone& bone)
+	{
+		if (mInternal == nullptr)
+			return;
+
+		HSceneObject currentSO = bone->SO();
+
+		SceneObjectMappingInfo newMapping;
+		newMapping.sceneObject = currentSO;
+		newMapping.isMappedToBone = true;
+		newMapping.bone = bone;
+
+		mMappingInfos.push_back(newMapping);
+		mInternal->mapCurveToSceneObject(bone->getName(), newMapping.sceneObject);
+	}
+
+	void CAnimation::_removeBone(const HBone& bone)
+	{
+		if (mInternal == nullptr)
+			return;
+
+		HSceneObject newSO;
+		for (UINT32 i = 0; i < (UINT32)mMappingInfos.size(); i++)
+		{
+			if (mMappingInfos[i].bone == bone)
+			{
+				mMappingInfos.erase(mMappingInfos.begin() + i);
+				mInternal->unmapSceneObject(mMappingInfos[i].sceneObject);
+				i--;
+			}
+		}
+	}
+
+	void CAnimation::_notifyBoneChanged(const HBone& bone)
+	{
+		if (mInternal == nullptr)
+			return;
+
+		for (UINT32 i = 0; i < (UINT32)mMappingInfos.size(); i++)
+		{
+			if (mMappingInfos[i].bone == bone)
+			{
+				mInternal->unmapSceneObject(mMappingInfos[i].sceneObject);
+				mInternal->mapCurveToSceneObject(bone->getName(), mMappingInfos[i].sceneObject);
+				break;
+			}
+		}
+	}
+
+	void CAnimation::setBoneMappings()
+	{
+		mMappingInfos.clear();
+
+		SceneObjectMappingInfo rootMapping;
+		rootMapping.sceneObject = SO();
+		rootMapping.isMappedToBone = true;
+
+		mMappingInfos.push_back(rootMapping);
+		mInternal->mapCurveToSceneObject("", rootMapping.sceneObject);
+
+		Vector<HBone> childBones = findChildBones();
+		for (auto& entry : childBones)
+			_addBone(entry);
+	}
+
+	Vector<HBone> CAnimation::findChildBones()
+	{
+		Stack<HSceneObject> todo;
+		todo.push(SO());
+
+		Vector<HBone> bones;
+		while (todo.size() > 0)
+		{
+			HSceneObject currentSO = todo.top();
+			todo.pop();
+
+			HBone bone = currentSO->getComponent<CBone>();
+			if (bone != nullptr)
+			{
+				bone->_setParent(getHandle(), true);
+				bones.push_back(bone);
+			}
+
+			int childCount = currentSO->getNumChildren();
+			for (int i = 0; i < childCount; i++)
+			{
+				HSceneObject child = currentSO->getChild(i);
+				if (child->getComponent<CAnimation>() != nullptr)
+					continue;
+
+				todo.push(child);
+			}
+		}
+
+		return bones;
 	}
 
 	void CAnimation::eventTriggered(const HAnimationClip& clip, const String& name)

@@ -39,7 +39,7 @@ namespace BansheeEngine
 
         private void OnInitialize()
         {
-            NotifyFlags = TransformChangedFlags.Transform | TransformChangedFlags.Parent;
+            NotifyFlags = TransformChangedFlags.Parent;
         }
 
         private void OnEnable()

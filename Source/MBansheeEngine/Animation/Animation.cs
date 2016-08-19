@@ -631,35 +631,43 @@ namespace BansheeEngine
             if (primaryClip != null)
             {
                 SceneObject root = SceneObject;
-                AnimationCurves curves = primaryClip.Curves;
-                foreach (var curve in curves.PositionCurves)
+
+                Action<NamedVector3Curve[]> findMappings = x =>
                 {
-                    if (curve.Flags.HasFlag(AnimationCurveFlags.ImportedCurve))
-                        continue;
-
-                    SceneObject currentSO = FindSceneObject(root, curve.Name);
-
-                    bool found = false;
-                    for (int i = 0; i < newMappingInfos.Count; i++)
+                    foreach (var curve in x)
                     {
-                        if (newMappingInfos[i].sceneObject == currentSO)
+                        if (curve.Flags.HasFlag(AnimationCurveFlags.ImportedCurve))
+                            continue;
+
+                        SceneObject currentSO = FindSceneObject(root, curve.Name);
+
+                        bool found = false;
+                        for (int i = 0; i < newMappingInfos.Count; i++)
                         {
-                            found = true;
-                            break;
+                            if (newMappingInfos[i].sceneObject == currentSO)
+                            {
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        if (!found)
+                        {
+                            SceneObjectMappingInfo newMappingInfo = new SceneObjectMappingInfo();
+                            newMappingInfo.isMappedToBone = false;
+                            newMappingInfo.sceneObject = currentSO;
+
+                            newMappingInfos.Add(newMappingInfo);
+
+                            _native.MapCurveToSceneObject(curve.Name, currentSO);
                         }
                     }
+                };
 
-                    if (!found)
-                    {
-                        SceneObjectMappingInfo newMappingInfo = new SceneObjectMappingInfo();
-                        newMappingInfo.isMappedToBone = false;
-                        newMappingInfo.sceneObject = currentSO;
-
-                        newMappingInfos.Add(newMappingInfo);
-
-                        _native.MapCurveToSceneObject(curve.Name, currentSO);
-                    }
-                }
+                AnimationCurves curves = primaryClip.Curves;
+                findMappings(curves.PositionCurves);
+                findMappings(curves.RotationCurves);
+                findMappings(curves.ScaleCurves);
             }
 
             mappingInfo = newMappingInfos;

@@ -6,6 +6,7 @@
 #include "BsResource.h"
 #include "BsIResourceListener.h"
 #include "BsMaterialParam.h"
+#include "BsMaterialParams.h"
 #include "BsTechnique.h"
 #include "BsVector2.h"
 #include "BsVector3.h"
@@ -18,8 +19,6 @@ namespace BansheeEngine
 	/** @addtogroup Implementation
 	 *  @{
 	 */
-
-	class MaterialParams;
 
 	/** Helper class containing parameters for all types of GPU programs used in a pass. */
 	template<bool Core>
@@ -100,6 +99,7 @@ namespace BansheeEngine
 	 */
 	class BS_CORE_EXPORT MaterialBase
 	{
+
 	public:
 		/** Data used to describe a structure defined within a shader. */
 		struct StructData
@@ -132,9 +132,6 @@ namespace BansheeEngine
 		virtual ~MaterialBase() { }
 
 	protected:
-		/** Retrieves a list of all shader GPU parameters, and the GPU program variable names they map to. */
-		const Map<String, String>& getValidParamNames() const { return mValidParams; }
-
 		/** Marks the contents of the sim thread object as dirty, causing it to sync with its core thread counterpart. */
 		virtual void _markCoreDirty() { }
 
@@ -149,9 +146,6 @@ namespace BansheeEngine
 
 		/** Returns all GPU parameter descriptions in the specified technique. */
 		static Vector<SPtr<GpuParamDesc>> getAllParamDescs(const SPtr<TechniqueCore>& technique);
-
-		Set<String> mValidShareableParamBlocks;
-		Map<String, String> mValidParams; // Also maps Shader param name -> gpu variable name
 	};
 
 	/** @copydoc MaterialBase */
@@ -170,6 +164,7 @@ namespace BansheeEngine
 		typedef typename TTechniqueType<Core>::Type TechniqueType;
 		typedef typename TShaderType<Core>::Type ShaderType;
 		typedef typename TPassParamsType<Core>::Type PassParamsType;
+		typedef typename TMaterialParamsType<Core>::Type MaterialParamsType;
 
 		TMaterial() { }
 		virtual ~TMaterial() { }
@@ -177,11 +172,30 @@ namespace BansheeEngine
 		/** Returns the currently active shader. */
 		ShaderType getShader() const { return mShader; }
 
-		/** Returns the number of passes that are used by the shader used in the material. */
-		UINT32 getNumPasses() const;
+		/** Returns the total number of techniques supported by this material. */
+		UINT32 getNumTechniques() const { return (UINT32)mTechniques.size(); }
 
-		/** Retrieves a specific shader pass. */
-		SPtr<PassType> getPass(UINT32 passIdx) const;
+		/** Attempts to find a technique with the supported tag. Returns an index of the technique, or -1 if not found. */
+		UINT32 findTechnique(const StringID& tag);
+
+		/** 
+		 * Returns the number of passes that are used by the technique at the specified index. 
+		 *
+		 * @param[in]	techniqueIdx	Index of the technique to retrieve the number of passes for. 0 is always guaranteed
+		 *								to be the default technique.
+		 * @return						Number of passes used by the technique.
+		 */
+		UINT32 getNumPasses(UINT32 techniqueIdx = 0) const;
+
+		/** 
+		 * Retrieves a specific shader pass from the provided technique. 
+		 *
+		 * @param[in]	passIdx			Sequential index of the pass to retrieve.
+		 * @param[in]	techniqueIdx	Index of the technique to retrieve the pass for. 0 is always guaranteed to be
+		 *								the default technique.
+		 * @return						Pass if found, null otherwise.
+		 */
+		SPtr<PassType> getPass(UINT32 passIdx, UINT32 techniqueIdx = 0) const;
 
 		/**   
 		 * Assigns a float value to the shader parameter with the specified name. 
@@ -515,16 +529,6 @@ namespace BansheeEngine
 		/** Returns a set of parameters for all GPU programs in the specified shader pass. */
 		SPtr<PassParamsType> getPassParameters(UINT32 passIdx) const { return mParametersPerPass[passIdx]; }
 
-		/** 
-		 * Returns a set of GPU parameters for an individual GPU program of the specified pass. 
-		 *
-		 * @param[in]	passIdx		Pass in which to look the GPU program for in.
-		 * @param[in]	type		Type of the program to retrieve parameters for.
-		 * @return					GPU parameters object that can be used for setting parameters of a GPU program 
-		 *							individually. Returns null if program or pass doesn't exist.
-		 */
-		GpuParamsType getGpuParams(UINT32 passIdx, BansheeEngine::GpuProgramType type);
-
 		/**
 		 * Assign a parameter block buffer with the specified name.
 		 *
@@ -547,128 +551,6 @@ namespace BansheeEngine
 		void getParam(const String& name, TMaterialDataParam<T, Core>& output) const;
 
 	protected:
-		/** 
-		 * Creates a material param out of multiple GPU params. Caller must ensure all GPU params reference the same 
-		 * parameter. 
-		 */
-		template <typename T>
-		TMaterialDataParam<T, false> createDataParam(const String& name, 
-			const SPtr<Vector<TGpuDataParam<T, false>>>& gpuParams) const
-		{
-			return TMaterialDataParam<T, false>(name, getCachedParams(), gpuParams);
-		}
-
-		/** 
-		 * Creates a material param out of multiple GPU params. Caller must ensure all GPU params reference the same 
-		 * parameter. 
-		 */
-		template <typename T>
-		TMaterialDataParam<T, true> createDataParam(const String& name, 
-			const SPtr<Vector<TGpuDataParam<T, true>>>& gpuParams) const
-		{
-			return TMaterialDataParam<T, true>(gpuParams);
-		}
-
-		/** 
-		 * Creates a material param out of multiple GPU params. Caller must ensure all GPU params reference the same 
-		 * parameter. 
-		 */
-		TMaterialParamStruct<false> createStructParam(const String& name, 
-			const SPtr<Vector<TGpuParamStruct<false>>>& gpuParams) const
-		{
-			return TMaterialParamStruct<false>(name, getCachedParams(), gpuParams);
-		}
-
-		/** 
-		 * Creates a material param out of multiple GPU params. Caller must ensure all GPU params reference the same 
-		 * parameter. 
-		 */
-		TMaterialParamStruct<true> createStructParam(const String& name, 
-			const SPtr<Vector<TGpuParamStruct<true>>>& gpuParams) const
-		{
-			return TMaterialParamStruct<true>(gpuParams);
-		}
-
-		/** 
-		 * Creates a material param out of multiple GPU params. Caller must ensure all GPU params reference the same 
-		 * parameter. 
-		 */
-		TMaterialParamTexture<false> createTextureParam(const String& name, 
-			const SPtr<Vector<TGpuParamTexture<false>>>& gpuParams) const
-		{
-			return TMaterialParamTexture<false>(name, getCachedParams(), gpuParams);
-		}
-
-		/** 
-		 * Creates a material param out of multiple GPU params. Caller must ensure all GPU params reference the same 
-		 * parameter. 
-		 */
-		TMaterialParamTexture<true> createTextureParam(const String& name,
-			const SPtr<Vector<TGpuParamTexture<true>>>& gpuParams) const
-		{
-			return TMaterialParamTexture<true>(gpuParams);
-		}
-
-		/** 
-		 * Creates a material param out of multiple GPU params. Caller must ensure all GPU params reference the same 
-		 * parameter. 
-		 */
-		TMaterialParamLoadStoreTexture<false> createLoadStoreTextureParam(const String& name, 
-			const SPtr<Vector<TGpuParamLoadStoreTexture<false>>>& gpuParams) const
-		{
-			return TMaterialParamLoadStoreTexture<false>(name, getCachedParams(), gpuParams);
-		}
-
-		/** 
-		 * Creates a material param out of multiple GPU params. Caller must ensure all GPU params reference the same 
-		 * parameter. 
-		 */
-		TMaterialParamLoadStoreTexture<true> createLoadStoreTextureParam(const String& name,
-			const SPtr<Vector<TGpuParamLoadStoreTexture<true>>>& gpuParams) const
-		{
-			return TMaterialParamLoadStoreTexture<true>(gpuParams);
-		}
-
-		/** 
-		 * Creates a material param out of multiple GPU params. Caller must ensure all GPU params reference the same 
-		 * parameter. 
-		 */
-		TMaterialParamBuffer<false> createBufferParam(const String& name, 
-			const SPtr<Vector<TGpuParamBuffer<false>>>& gpuParams) const
-		{
-			return TMaterialParamBuffer<false>(name, getCachedParams(), gpuParams);
-		}
-
-		/** 
-		 * Creates a material param out of multiple GPU params. Caller must ensure all GPU params reference the same 
-		 * parameter. 
-		 */
-		TMaterialParamBuffer<true> createBufferParam(const String& name,
-			const SPtr<Vector<TGpuParamBuffer<true>>>& gpuParams) const
-		{
-			return TMaterialParamBuffer<true>(gpuParams);
-		}
-
-		/** 
-		 * Creates a material param out of multiple GPU params. Caller must ensure all GPU params reference the same 
-		 * parameter. 
-		 */
-		TMaterialParamSampState<false> createSamplerStateParam(const String& name, 
-			const SPtr<Vector<TGpuParamSampState<false>>>& gpuParams) const
-		{
-			return TMaterialParamSampState<false>(name, getCachedParams(), gpuParams);
-		}
-
-		/** 
-		 * Creates a material param out of multiple GPU params. Caller must ensure all GPU params reference the same 
-		 * parameter. 
-		 */
-		TMaterialParamSampState<true> createSamplerStateParam(const String& name,
-			const SPtr<Vector<TGpuParamSampState<true>>>& gpuParams) const
-		{
-			return TMaterialParamSampState<true>(gpuParams);
-		}
-
 		/**
 		 * Assigns a value from a raw buffer to the parameter with the specified name. Buffer must be of sizeof(T) * 
 		 * numElements size and initialized.
@@ -678,20 +560,11 @@ namespace BansheeEngine
 		template <typename T>
 		void setParamValue(const String& name, UINT8* buffer, UINT32 numElements);
 
-		/** Called during initialization, creates enough space to cache all parameters (not used on core thread). */
-		void createCachedParams(const SPtr<ShaderCore>& shader) { /* Do nothing */}
-
-		/** Called during initialization, creates enough space to cache all parameters. */
-		virtual void createCachedParams(const HShader& shader) { }
-
-		/** Returns a list of all values assigned to material parameters. */
-		virtual SPtr<MaterialParams> getCachedParams() const { return nullptr; }
-
 		/**
-		 * Initializes the material by using the best technique from the currently set shader. Shader must contain the 
-		 * technique that matches the current renderer and render system.
+		 * Initializes the material by using the compatible techniques from the currently set shader. Shader must contain 
+		 * the techniques that matches the current renderer and render system.
 		 */
-		void initBestTechnique();
+		void initializeTechniques();
 
 		/** Assigns all the default parameters specified in the shader to the material. */
 		void initDefaultParameters();
@@ -699,9 +572,11 @@ namespace BansheeEngine
 		/** Throw an exception if no shader is set, or no acceptable technique was found. */
 		void throwIfNotInitialized() const;
 
-		Vector<SPtr<PassParamsType>> mParametersPerPass;
 		ShaderType mShader;
-		SPtr<TechniqueType> mBestTechnique;
+		SPtr<MaterialParamsType> mParams;
+		Vector<SPtr<TechniqueType>> mTechniques;
+
+		Vector<SPtr<PassParamsType>> mParametersPerPass;
 	};
 
 	/** @} */
@@ -727,9 +602,8 @@ namespace BansheeEngine
 
 		MaterialCore() { }
 		MaterialCore(const SPtr<ShaderCore>& shader);
-		MaterialCore(const SPtr<ShaderCore>& shader, const SPtr<TechniqueCore>& bestTechnique, 
-			const Set<String>& validShareableParamBlocks, const Map<String, String>& validParams, 
-			const Vector<SPtr<PassParametersCore>>& passParams);
+		MaterialCore(const SPtr<ShaderCore>& shader, const Vector<SPtr<TechniqueCore>>& techniques,
+			const SPtr<MaterialParamsCore>& materialParams, const Vector<SPtr<PassParametersCore>>& passParams);
 
 		/** @copydoc CoreObjectCore::syncToCore */
 		void syncToCore(const CoreSyncData& data) override;
@@ -818,12 +692,6 @@ namespace BansheeEngine
 		/**	Performs material initialization when all resources are ready. */
 		void initializeIfLoaded();
 
-		/** @copydoc Material::createCachedParams */
-		void createCachedParams(const HShader& shader) override;
-
-		/** @copydoc Material::getCachedParams */
-		SPtr<MaterialParams> getCachedParams() const override { return mCachedParams; }
-
 		/** 
 		 * Uses the provided list of parameters to try to set every parameter in this material. Parameter whose name, type
 		 * or size don't match are ignored and will not be set.
@@ -831,8 +699,7 @@ namespace BansheeEngine
 		void setParams(const SPtr<MaterialParams>& params);
 
 		UINT32 mLoadFlags;
-		SPtr<MaterialParams> mCachedParams;
-
+		
 		/************************************************************************/
 		/* 								RTTI		                     		*/
 		/************************************************************************/
@@ -840,7 +707,7 @@ namespace BansheeEngine
 	public:
 		friend class MaterialRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const override;
+		RTTITypeBase* getRTTI() const override;
 	};
 
 	/** @} */

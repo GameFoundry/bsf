@@ -529,7 +529,9 @@ namespace BansheeEngine
 		TID_AnimationSplitInfo = 1121,
 		TID_CAnimation = 1122,
 		TID_AnimationEvent = 1123,
-		TID_ImportedAnimationEvents = 1124
+		TID_ImportedAnimationEvents = 1124,
+		TID_CBone = 1125,
+		TID_MaterialParamData = 1126
 	};
 }
 

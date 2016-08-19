@@ -19,6 +19,14 @@ namespace BansheeEngine
 	 */
     class BS_EXPORT CAnimation : public Component
     {
+		/** Information about scene objects bound to a specific animation curve. */
+		struct SceneObjectMappingInfo
+		{
+			HSceneObject sceneObject;
+			bool isMappedToBone;
+			HBone bone;
+		};
+
     public:
 		CAnimation(const HSceneObject& parent);
 		virtual ~CAnimation() {}
@@ -76,6 +84,18 @@ namespace BansheeEngine
 		/** Returns the Animation implementation wrapped by this component. */
 		SPtr<Animation> _getInternal() const { return mInternal; }
 
+		/** 
+		 * Registers a new bone component, creating a new transform mapping from the bone name to the scene object the
+		 * component is attached to. 
+		 */
+		void _addBone(const HBone& bone);
+
+		/** Unregisters a bone component, removing the bone -> scene object mapping. */
+		void _removeBone(const HBone& bone);
+
+		/** Called whenever the bone name the Bone component points to changes. */
+		void _notifyBoneChanged(const HBone& bone);
+
 		/** @} */
 
 		/************************************************************************/
@@ -107,11 +127,22 @@ namespace BansheeEngine
 		/** Callback triggered whenever an animation event is triggered. */
 		void eventTriggered(const HAnimationClip& clip, const String& name);
 
+		/** 
+		 * Finds any scene objects that are mapped to bone transforms. Such object's transforms will be affected by 
+		 * skeleton bone animation.
+		 */
+		void setBoneMappings();
+
+		/** Searches child scene objects for Bone components and returns any found ones. */
+		Vector<HBone> findChildBones();
+
 		SPtr<Animation> mInternal;
 
 		HAnimationClip mDefaultClip;
 		AnimWrapMode mWrapMode;
 		float mSpeed;
+
+		Vector<SceneObjectMappingInfo> mMappingInfos;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
