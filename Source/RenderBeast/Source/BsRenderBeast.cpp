@@ -183,7 +183,7 @@ namespace BansheeEngine
 					matInfo.params[0] = renElement.material->createParamsSet(0);
 					matInfo.matVersion = renElement.material->getVersion();
 
-					renElement.material->updateParamsSet(matInfo.params[0], 0, true);
+					renElement.material->updateParamsSet(matInfo.params[0], true);
 					renElement.material->setRendererData(matInfo);
 					renElement.params = matInfo.params[0];
 				}
@@ -198,7 +198,7 @@ namespace BansheeEngine
 						matInfo.params[0] = renElement.material->createParamsSet(0);
 						matInfo.matVersion = renElement.material->getVersion();
 
-						renElement.material->updateParamsSet(matInfo.params[0], 0, true);
+						renElement.material->updateParamsSet(matInfo.params[0], true);
 					}
 
 					renElement.params = matInfo.params[0];
@@ -801,7 +801,7 @@ namespace BansheeEngine
 	{
 		for (auto& entry : mSamplerOverrides)
 		{
-			SPtr<GpuParamsSetCore> paramsSet = entry.first;
+			SPtr<GpuParamsSetCore> paramsSet = nullptr;// entry.first;
 
 			if (force)
 			{
@@ -818,7 +818,7 @@ namespace BansheeEngine
 				{
 					PassSamplerOverrides& passOverrides = materialOverrides->passes[i];
 
-					for (UINT32 j = 0; j < GpuParamsSetCore::NUM_PARAMS; j++)
+					for (UINT32 j = 0; j < GpuParamsSetCore::NUM_STAGES; j++)
 					{
 						StageSamplerOverrides& stageOverrides = passOverrides.stages[j];
 

@@ -118,14 +118,23 @@ namespace BansheeEngine
 		mAlloc.clear();
 	}
 
-	MaterialParamsBase::GetParamResult MaterialParamsBase::getParamData(const String& name, ParamType type, GpuParamDataType dataType,
-		UINT32 arrayIdx, const ParamData** output) const
+	UINT32 MaterialParamsBase::getParamIndex(const String& name) const
 	{
 		auto iterFind = mParamLookup.find(name);
 		if (iterFind == mParamLookup.end())
+			return (UINT32)-1;
+
+		return iterFind->second;
+	}
+
+	MaterialParamsBase::GetParamResult MaterialParamsBase::getParamData(const String& name, ParamType type, 
+		GpuParamDataType dataType, UINT32 arrayIdx, const ParamData** output) const
+	{
+		UINT32 index = getParamIndex(name);
+		if(index == -1)
 			return GetParamResult::NotFound;
 
-		const ParamData& param = mParams[iterFind->second];
+		const ParamData& param = mParams[index];
 		*output = &param;
 
 		if (param.type != type || (type == ParamType::Data && param.dataType != dataType))
@@ -135,6 +144,15 @@ namespace BansheeEngine
 			return GetParamResult::IndexOutOfBounds;
 
 		return GetParamResult::Success;
+	}
+
+	const MaterialParamsBase::ParamData* MaterialParamsBase::getParamData(UINT32 index) const
+	{
+		if (index == -1)
+			return nullptr;
+
+		const ParamData& param = mParams[index];
+		return &param;
 	}
 
 	void MaterialParamsBase::reportGetParamError(GetParamResult errorCode, const String& name, UINT32 arrayIdx) const

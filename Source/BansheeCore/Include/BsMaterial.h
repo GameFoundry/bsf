@@ -147,12 +147,10 @@ namespace BansheeEngine
 		 * will not be able to track which parameters were updated since the last call.
 		 *
 		 * @param[in]	paramsSet		Parameter set to update.
-		 * @param[in]	technique		Technique to update the parameters for. The parameter set provided must have been
-		 *								created using createParamsSet() using this same technique index.
 		 * @param[in]	forceRefresh	If true all material parameters will be assigned to the params set, regardless if
 		 *								they are marked dirty or not.
 		 */
-		void updateParamsSet(const SPtr<GpuParamsSetType>& paramsSet, UINT32 techniqueIdx = 0, bool forceRefresh = false);
+		void updateParamsSet(const SPtr<GpuParamsSetType>& paramsSet, bool forceRefresh = false);
 
 		/**   
 		 * Assigns a float value to the shader parameter with the specified name. 

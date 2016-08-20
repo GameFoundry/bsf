@@ -24,6 +24,9 @@ namespace BansheeEngine
 		typedef typename TPassType<Core>::Type PassType;
 		typedef typename TGpuProgramType<Core>::Type GpuProgramPtrType;
 		typedef typename TGpuParamBlockBufferType<Core>::Type ParamBlockType;
+		typedef typename TGpuParamTextureType<Core>::Type TextureType;
+		typedef typename TGpuBufferType<Core>::Type BufferType;
+		typedef typename TGpuParamSamplerStateType<Core>::Type SamplerStateType;
 
 		/** Contains all parameters for a single pass. */
 		struct PassParams
@@ -36,45 +39,94 @@ namespace BansheeEngine
 			GpuParamsType compute;
 		};
 
+		/** Information about a parameter block buffer. */
+		struct BlockInfo
+		{
+			BlockInfo(const String& name, const ParamBlockPtrType& buffer, bool shareable)
+				:name(name), buffer(buffer), shareable(shareable)
+			{ }
+
+			String name;
+			ParamBlockPtrType buffer;
+			bool shareable;
+		};
+
+		/** Information about how a data parameter maps from a material parameter into a parameter block buffer. */
+		struct DataParamInfo
+		{
+			UINT32 paramIdx;
+			UINT32 blockIdx;
+			UINT32 offset;
+			UINT32 size;
+		};
+
+		/** Information about how an object parameter maps from a material parameter to a GPU stage slot. */
+		struct ObjectParamInfo
+		{
+			UINT32 paramIdx;
+			UINT32 slotIdx;
+		};
+
+		/** Information about all object parameters for a specific GPU programmable stage. */
+		struct StageParamInfo
+		{
+			ObjectParamInfo* textures;
+			UINT32 numTextures;
+			ObjectParamInfo* loadStoreTextures;
+			UINT32 numLoadStoreTextures;
+			ObjectParamInfo* buffers;
+			UINT32 numBuffers;
+			ObjectParamInfo* samplerStates;
+			UINT32 numSamplerStates;
+		};
+
+		/** Information about all object parameters for a specific pass. */
+		struct PassParamInfo
+		{
+			StageParamInfo stages[6];
+		};
+
 	public:
 		TGpuParamsSet() {}
-		TGpuParamsSet(const SPtr<TechniqueType>& technique, const ShaderType& shader);
+		TGpuParamsSet(const SPtr<TechniqueType>& technique, const ShaderType& shader, UINT32 techniqueIdx, 
+			const SPtr<MaterialParamsType>& params);
+		~TGpuParamsSet();
 
 		/**
 		 * Returns a GPU parameters for a specific shader stage and pass.
 		 *
-		 * @param[in]	idx			Sequential index of the shader stage to retrieve the parameters for.
+		 * @param[in]	stageidx	Sequential index of the shader stage to retrieve the parameters for.
 		 * @param[in]	passIdx		Pass for which to retrieve the parameters for.
 		 * @return					GPU parameters object that can be used for setting parameters of a GPU program 
 		 *							individually.
 		 *
 		 * @note	Useful when needing to iterate over all sets of GPU parameters.
 		 */
-		GpuParamsType getParamByIdx(UINT32 idx, UINT32 passIdx = 0)
+		GpuParamsType getParamByIdx(UINT32 stageidx, UINT32 passIdx = 0)
 		{
 			GpuParamsType* paramArray[] = { &mPassParams[passIdx].vertex, &mPassParams[passIdx].fragment,
 				&mPassParams[passIdx].geometry, &mPassParams[passIdx].hull, &mPassParams[passIdx].domain, 
 				&mPassParams[passIdx].compute };
 
-			return *paramArray[idx];
+			return *paramArray[stageidx];
 		}
 
 		/**
 		 * Sets GPU parameters for a specific shader stage and pass.
 		 *
-		 * @param[in]	idx			Sequential index of the shader stage to set the parameters for.
+		 * @param[in]	stageidx	Sequential index of the shader stage to set the parameters for.
 		 * @param[in]	params		GPU parameters object to assign.
 		 * @param[in]	passIdx		Pass for which to set the parameters for.
 		 *
 		 * @note	Useful when needing to iterate over all sets of GPU parameters.
 		 */
-		void setParamByIdx(UINT32 idx, const GpuParamsType& params, UINT32 passIdx = 0)
+		void setParamByIdx(UINT32 stageidx, const GpuParamsType& params, UINT32 passIdx = 0)
 		{
 			GpuParamsType* paramArray[] = { &mPassParams[passIdx].vertex, &mPassParams[passIdx].fragment,
 				&mPassParams[passIdx].geometry, &mPassParams[passIdx].hull, &mPassParams[passIdx].domain,
 				&mPassParams[passIdx].compute };
 
-			(*paramArray[idx]) = params;
+			(*paramArray[stageidx]) = params;
 		}
 
 		/** 
@@ -101,11 +153,25 @@ namespace BansheeEngine
 		/** Returns the number of passes the set contains the parameters for. */
 		UINT32 getNumPasses() const { return (UINT32)mPassParams.size(); }
 
-		static const UINT32 NUM_PARAMS;
+		/**
+		 * Updates internal GPU params for all passes and stages from the provided material parameters object.
+		 *
+		 * @param[in]	params		Object containing the parameter data to update from. Layout of the object must match the
+		 *							object used for creating this object (be created for the same shader).
+		 * @param[in]	updateAll	By default the system will only update parameters marked as dirty in @p params. If this
+		 *							is set to true, all parameters will be updated instead.
+		 */
+		void update(const SPtr<MaterialParamsType>& params, bool updateAll = false);
+
+		static const UINT32 NUM_STAGES;
 	private:
 		template<bool Core2> friend class TMaterial;
 
+		UINT32 mTechniqueIdx;
 		Vector<PassParams> mPassParams;
+		Vector<BlockInfo> mBlocks;
+		Vector<DataParamInfo> mDataParamInfos;
+		PassParamInfo* mPassParamInfos;
 	};
 
 	/** Sim thread version of TGpuParamsSet<Core>. */
@@ -113,8 +179,9 @@ namespace BansheeEngine
 	{
 	public:
 		GpuParamsSet() { }
-		GpuParamsSet(const SPtr<Technique>& technique, const HShader& shader)
-			:TGpuParamsSet(technique, shader)
+		GpuParamsSet(const SPtr<Technique>& technique, const HShader& shader, UINT32 techniqueIdx, 
+			const SPtr<MaterialParams>& params)
+			:TGpuParamsSet(technique, shader, techniqueIdx, params)
 		{ }
 	};
 
@@ -123,8 +190,9 @@ namespace BansheeEngine
 	{
 	public:
 		GpuParamsSetCore() { }
-		GpuParamsSetCore(const SPtr<TechniqueCore>& technique, const SPtr<ShaderCore>& shader)
-			:TGpuParamsSet(technique, shader)
+		GpuParamsSetCore(const SPtr<TechniqueCore>& technique, const SPtr<ShaderCore>& shader, UINT32 techniqueIdx,
+			const SPtr<MaterialParamsCore>& params)
+			:TGpuParamsSet(technique, shader, techniqueIdx, params)
 		{ }
 	};
 

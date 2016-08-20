@@ -113,6 +113,9 @@ namespace BansheeEngine
 			memcpy(&mDataParamsBuffer[param->index + arrayIdx * paramTypeSize], input, sizeof(paramTypeSize));
 		}
 
+		/** Returns an index of the parameter with the specified name. Returns -1 if parameter cannot be found. */
+		UINT32 getParamIndex(const String& name) const;
+
 		/**
 		 * Returns data about a parameter and reports an error if there is a type or size mismatch, or if the parameter
 		 * does exist.
@@ -131,6 +134,12 @@ namespace BansheeEngine
 		 */
 		GetParamResult getParamData(const String& name, ParamType type, GpuParamDataType dataType, UINT32 arrayIdx,
 			const ParamData** output) const;
+
+		/**
+		 * Returns information about a parameter at the specified global index, as retrieved by getParamIndex(). Returns
+		 * null if the index is out of range.
+		 */
+		const ParamData* getParamData(UINT32 index) const;
 
 		/**
 		 * Logs an error that was reported by getParamData().
@@ -171,6 +180,12 @@ namespace BansheeEngine
 
 			assert(sizeof(input) == paramTypeSize);
 			memcpy(&mDataParamsBuffer[index + arrayIdx * paramTypeSize], &input, paramTypeSize);
+		}
+
+		/** Returns pointer to the internal data buffer for a data parameter at the specified index. */
+		UINT8* getData(UINT32 index) const
+		{
+			return &mDataParamsBuffer[index];
 		}
 
 	protected:

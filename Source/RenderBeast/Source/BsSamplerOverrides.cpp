@@ -21,7 +21,7 @@ namespace BansheeEngine
 		{
 			UINT32 maxSamplerSlot = 0;
 
-			for (UINT32 j = 0; j < GpuParamsSetCore::NUM_PARAMS; j++)
+			for (UINT32 j = 0; j < GpuParamsSetCore::NUM_STAGES; j++)
 			{
 				SPtr<GpuParamsCore> params = paramsSet->getParamByIdx(j, i);
 				if (params == nullptr)
@@ -40,7 +40,7 @@ namespace BansheeEngine
 		}
 
 		UINT32 outputSize = sizeof(MaterialSamplerOverrides) +
-			numPasses * (sizeof(PassSamplerOverrides) + GpuParamsSetCore::NUM_PARAMS * sizeof(StageSamplerOverrides)) +
+			numPasses * (sizeof(PassSamplerOverrides) + GpuParamsSetCore::NUM_STAGES * sizeof(StageSamplerOverrides)) +
 			totalNumSamplerStates * sizeof(SPtr<SamplerStateCore>);
 
 		UINT8* outputData = (UINT8*)bs_alloc(outputSize);
@@ -59,9 +59,9 @@ namespace BansheeEngine
 			for (UINT32 i = 0; i < numPasses; i++)
 			{
 				PassSamplerOverrides& passOverrides = output->passes[i];
-				passOverrides.numStages = GpuParamsSetCore::NUM_PARAMS;
+				passOverrides.numStages = GpuParamsSetCore::NUM_STAGES;
 				passOverrides.stages = (StageSamplerOverrides*)outputData;
-				outputData += sizeof(StageSamplerOverrides) * GpuParamsSetCore::NUM_PARAMS;
+				outputData += sizeof(StageSamplerOverrides) * GpuParamsSetCore::NUM_STAGES;
 
 				for (UINT32 j = 0; j < passOverrides.numStages; j++)
 				{
