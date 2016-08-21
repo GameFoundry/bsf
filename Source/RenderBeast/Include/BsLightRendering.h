@@ -40,9 +40,9 @@ namespace BansheeEngine
 		SPtr<MaterialCore> mMaterial;
 		SPtr<GpuParamsSetCore> mParamsSet;
 
-		MaterialParamTextureCore mGBufferA;
-		MaterialParamTextureCore mGBufferB;
-		MaterialParamTextureCore mGBufferDepth;
+		GpuParamTextureCore mGBufferA;
+		GpuParamTextureCore mGBufferB;
+		GpuParamTextureCore mGBufferDepth;
 		PerLightParamBuffer mBuffer;
 	};
 

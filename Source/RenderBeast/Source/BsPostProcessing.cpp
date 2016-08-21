@@ -13,9 +13,7 @@ namespace BansheeEngine
 	DownsampleMat::DownsampleMat()
 	{
 		mParamsSet->setParamBlockBuffer("Input", mParams.getBuffer());
-
-		mInputTexture = mMaterial->getParamTexture("gInputTex");
-		mInvTexSize = mMaterial->getParamVec2("gInvTexSize");
+		mParamsSet->getGpuParams(GPT_FRAGMENT_PROGRAM)->getTextureParam("gInputTex", mInputTexture);
 	}
 
 	void DownsampleMat::_initDefines(ShaderDefines& defines)
@@ -67,8 +65,10 @@ namespace BansheeEngine
 	{
 		mParamsSet->setParamBlockBuffer("Input", mParams.getBuffer());
 
-		mSceneColor = mMaterial->getParamTexture("gSceneColorTex");
-		mOutputTex = mMaterial->getParamLoadStoreTexture("gOutputTex");
+		SPtr<GpuParamsCore> computeParams = mParamsSet->getGpuParams(GPT_COMPUTE_PROGRAM);
+
+		computeParams->getTextureParam("gSceneColorTex", mSceneColor);
+		computeParams->getLoadStoreTextureParam("gOutputTex", mOutputTex);
 	}
 
 	void EyeAdaptHistogramMat::_initDefines(ShaderDefines& defines)
@@ -152,8 +152,10 @@ namespace BansheeEngine
 	{
 		mParamsSet->setParamBlockBuffer("Input", mParams.getBuffer());
 
-		mHistogramTex = mMaterial->getParamTexture("gHistogramTex");
-		mEyeAdaptationTex = mMaterial->getParamTexture("gEyeAdaptationTex");
+		SPtr<GpuParamsCore> fragmentParams = mParamsSet->getGpuParams(GPT_FRAGMENT_PROGRAM);
+
+		fragmentParams->getTextureParam("gHistogramTex", mHistogramTex);
+		fragmentParams->getTextureParam("gEyeAdaptationTex", mEyeAdaptationTex);
 	}
 
 	void EyeAdaptHistogramReduceMat::_initDefines(ShaderDefines& defines)
@@ -211,8 +213,7 @@ namespace BansheeEngine
 	EyeAdaptationMat::EyeAdaptationMat()
 	{
 		mParamsSet->setParamBlockBuffer("Input", mParams.getBuffer());
-
-		mReducedHistogramTex = mMaterial->getParamTexture("gHistogramTex");
+		mParamsSet->getGpuParams(GPT_FRAGMENT_PROGRAM)->getTextureParam("gHistogramTex", mReducedHistogramTex);
 	}
 
 	void EyeAdaptationMat::_initDefines(ShaderDefines& defines)
@@ -344,9 +345,11 @@ namespace BansheeEngine
 	{
 		mParamsSet->setParamBlockBuffer("Input", mParams.getBuffer());
 
-		mInputTex = mMaterial->getParamTexture("gInputTex");
-		mColorLUT = mMaterial->getParamTexture("gColorLUT");
-		mEyeAdaptationTex = mMaterial->getParamTexture("gEyeAdaptationTex");
+		mParamsSet->getGpuParams(GPT_VERTEX_PROGRAM)->getTextureParam("gEyeAdaptationTex", mEyeAdaptationTex);
+
+		SPtr<GpuParamsCore> fragmentParams = mParamsSet->getGpuParams(GPT_FRAGMENT_PROGRAM);
+		fragmentParams->getTextureParam("gInputTex", mInputTex);
+		fragmentParams->getTextureParam("gColorLUT", mColorLUT);
 	}
 
 	template<bool GammaOnly, bool AutoExposure>

@@ -135,10 +135,14 @@ namespace BansheeEngine
 				}
 			}
 
-			output->overrides = (SamplerOverride*)outputData;
-			memcpy(output->overrides, overrides.data(), overrides.size() * sizeof(SamplerOverride));
-
 			output->numOverrides = (UINT32)overrides.size();
+			output->overrides = (SamplerOverride*)outputData;
+
+			for(UINT32 i = 0; i < output->numOverrides; i++)
+			{
+				new (&output->overrides[i].state) SPtr<SamplerStateCore>();
+				output->overrides[i] = overrides[i];
+			}
 		}
 		bs_frame_clear();
 

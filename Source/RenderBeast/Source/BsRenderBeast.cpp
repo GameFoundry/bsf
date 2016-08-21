@@ -788,6 +788,7 @@ namespace BansheeEngine
 		}
 
 		mObjectRenderer->setPerObjectParams(element, mRenderableShaderData[rendererId], worldViewProjMatrix, boneMatrices);
+		material->updateParamsSet(element.params);
 
 		if (bindPass)
 			RendererUtility::instance().setPass(material, passIdx);

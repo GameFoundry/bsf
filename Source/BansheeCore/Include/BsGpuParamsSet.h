@@ -43,12 +43,13 @@ namespace BansheeEngine
 		struct BlockInfo
 		{
 			BlockInfo(const String& name, const ParamBlockPtrType& buffer, bool shareable)
-				:name(name), buffer(buffer), shareable(shareable)
+				:name(name), buffer(buffer), shareable(shareable), allowUpdate(true)
 			{ }
 
 			String name;
 			ParamBlockPtrType buffer;
 			bool shareable;
+			bool allowUpdate;
 		};
 
 		/** Information about how a data parameter maps from a material parameter into a parameter block buffer. */
@@ -142,12 +143,18 @@ namespace BansheeEngine
 		/**
 		 * Assign a parameter block buffer with the specified name to all the relevant child GpuParams.
 		 *
+		 * @param[in]	name			Name of the buffer to set.
+		 * @param[in]	paramBlock		Parameter block to assign.
+		 * @param[in]	ignoreInUpdate	If true the buffer will not be updated during the update() call. This is useful
+		 *								if the caller wishes to manually update the buffer contents externally, to prevent
+		 *								overwriting manually written data during update.
+		 *
 		 * @note	
 		 * Parameter block buffers can be used as quick way of setting multiple parameters on a material at once, or
 		 * potentially sharing parameters between multiple materials. This reduces driver overhead as the parameters
 		 * in the buffers need only be set once and then reused multiple times.
 		 */
-		void setParamBlockBuffer(const String& name, const ParamBlockPtrType& paramBlock);
+		void setParamBlockBuffer(const String& name, const ParamBlockPtrType& paramBlock, bool ignoreInUpdate = false);
 
 		/** Returns the number of passes the set contains the parameters for. */
 		UINT32 getNumPasses() const { return (UINT32)mPassParams.size(); }

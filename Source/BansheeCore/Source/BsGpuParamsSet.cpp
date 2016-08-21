@@ -713,7 +713,8 @@ namespace BansheeEngine
 	}
 
 	template<bool Core>
-	void TGpuParamsSet<Core>::setParamBlockBuffer(const String& name, const ParamBlockPtrType& paramBlock)
+	void TGpuParamsSet<Core>::setParamBlockBuffer(const String& name, const ParamBlockPtrType& paramBlock, 
+		bool ignoreInUpdate)
 	{
 		UINT32 foundIdx = (UINT32)-1;
 		for(UINT32 i = 0; i < (UINT32)mBlocks.size(); i++)
@@ -738,6 +739,7 @@ namespace BansheeEngine
 		}
 
 		mBlocks[foundIdx].buffer = paramBlock;
+		mBlocks[foundIdx].allowUpdate = !ignoreInUpdate;
 
 		UINT32 numPasses = (UINT32)mPassParams.size();
 		for (UINT32 j = 0; j < numPasses; j++)
@@ -769,7 +771,7 @@ namespace BansheeEngine
 		for(auto& paramInfo : mDataParamInfos)
 		{
 			ParamBlockPtrType paramBlock = mBlocks[paramInfo.blockIdx].buffer;
-			if (paramBlock == nullptr)
+			if (paramBlock == nullptr || !mBlocks[paramInfo.blockIdx].allowUpdate)
 				continue;
 
 			const MaterialParams::ParamData* materialParamInfo = params->getParamData(paramInfo.paramIdx);

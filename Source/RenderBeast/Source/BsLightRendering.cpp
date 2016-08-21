@@ -15,15 +15,17 @@ namespace BansheeEngine
 	LightRenderingParams::LightRenderingParams(const SPtr<MaterialCore>& material, const SPtr<GpuParamsSetCore>& paramsSet)
 		:mMaterial(material), mParamsSet(paramsSet)
 	{
+		SPtr<GpuParamsCore> fragmentParams = mParamsSet->getGpuParams(GPT_FRAGMENT_PROGRAM);
+
 		auto& texParams = material->getShader()->getTextureParams();
 		for (auto& entry : texParams)
 		{
 			if (entry.second.rendererSemantic == RPS_GBufferA)
-				mGBufferA = material->getParamTexture(entry.second.name);
+				fragmentParams->getTextureParam(entry.second.name, mGBufferA);
 			else if (entry.second.rendererSemantic == RPS_GBufferB)
-				mGBufferB = material->getParamTexture(entry.second.name);
+				fragmentParams->getTextureParam(entry.second.name, mGBufferB);
 			else if (entry.second.rendererSemantic == RPS_GBufferDepth)
-				mGBufferDepth = material->getParamTexture(entry.second.name);
+				fragmentParams->getTextureParam(entry.second.name, mGBufferDepth);
 		}
 	}
 
@@ -37,7 +39,6 @@ namespace BansheeEngine
 		mParamsSet->setParamBlockBuffer("PerLight", getBuffer());
 		mParamsSet->setParamBlockBuffer("PerCamera", perCamera);
 
-		mMaterial->updateParamsSet(mParamsSet);
 		gRendererUtility().setPassParams(mParamsSet);
 	}
 

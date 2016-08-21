@@ -50,9 +50,9 @@ namespace BansheeEngine
 		
 		// Note: Perhaps perform buffer validation to ensure expected buffer has the same size and layout as the provided
 		// buffer, and show a warning otherwise. But this is perhaps better handled on a higher level.
-		element.params->setParamBlockBuffer(perFrameBlockName, mPerFrameParams.getBuffer());
-		element.params->setParamBlockBuffer(perCameraBlockName, mPerCameraParams.getBuffer());
-		element.params->setParamBlockBuffer(perObjectBlockName, mPerObjectParams.getBuffer());
+		element.params->setParamBlockBuffer(perFrameBlockName, mPerFrameParams.getBuffer(), true);
+		element.params->setParamBlockBuffer(perCameraBlockName, mPerCameraParams.getBuffer(), true);
+		element.params->setParamBlockBuffer(perObjectBlockName, mPerObjectParams.getBuffer(), true);
 
 		if (!boneMatricesParamName.empty())
 		{
