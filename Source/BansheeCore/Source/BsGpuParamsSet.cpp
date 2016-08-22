@@ -543,7 +543,7 @@ namespace BansheeEngine
 							UINT32 paramIdx = params->getParamIndex(dataParam.first);
 
 							// Parameter shouldn't be in the valid parameter list if it cannot be found
-							assert(paramIdx != (UINT32)-1);
+							assert(paramIdx != -1);
 
 							mDataParamInfos.push_back(DataParamInfo());
 							DataParamInfo& paramInfo = mDataParamInfos.back();
@@ -587,10 +587,11 @@ namespace BansheeEngine
 							if (validParams.count(param.first) == 0)
 								continue;
 
-							UINT32 paramIdx = params->getParamIndex(param.first);
+							UINT32 paramIdx;
+							auto result = params->getParamIndex(param.first, paramType, GPDT_UNKNOWN, 0, paramIdx);
 
 							// Parameter shouldn't be in the valid parameter list if it cannot be found
-							assert(paramIdx != (UINT32)-1);
+							assert(result == MaterialParams::GetParamResult::Success);
 
 							objParamInfos.push_back(ObjectParamInfo());
 							ObjectParamInfo& paramInfo = objParamInfos.back();

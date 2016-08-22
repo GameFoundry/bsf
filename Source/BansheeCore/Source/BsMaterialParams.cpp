@@ -127,13 +127,34 @@ namespace BansheeEngine
 		return iterFind->second;
 	}
 
+	MaterialParamsBase::GetParamResult MaterialParamsBase::getParamIndex(const String& name, ParamType type,
+		GpuParamDataType dataType, UINT32 arrayIdx, UINT32& output) const
+	{
+		auto iterFind = mParamLookup.find(name);
+		if (iterFind == mParamLookup.end())
+			return GetParamResult::NotFound;
+
+		UINT32 index = iterFind->second;
+		const ParamData& param = mParams[index];
+		
+		if (param.type != type || (type == ParamType::Data && param.dataType != dataType))
+			return GetParamResult::InvalidType;
+
+		if (arrayIdx >= param.arraySize)
+			return GetParamResult::IndexOutOfBounds;
+
+		output = index;
+		return GetParamResult::Success;
+	}
+
 	MaterialParamsBase::GetParamResult MaterialParamsBase::getParamData(const String& name, ParamType type, 
 		GpuParamDataType dataType, UINT32 arrayIdx, const ParamData** output) const
 	{
-		UINT32 index = getParamIndex(name);
-		if(index == -1)
+		auto iterFind = mParamLookup.find(name);
+		if (iterFind == mParamLookup.end())
 			return GetParamResult::NotFound;
 
+		UINT32 index = iterFind->second;
 		const ParamData& param = mParams[index];
 		*output = &param;
 

@@ -33,6 +33,16 @@ namespace BansheeEngine
 	template<>
 	bool isShaderValid(const SPtr<ShaderCore>& shader) { return shader != nullptr; }
 
+	template<bool Core> struct TMatType { };
+	template<> struct TMatType<false> { typedef Material Type; };
+	template<> struct TMatType<true> { typedef MaterialCore Type; };
+
+	template<bool Core>
+	SPtr<typename TMatType<Core>::Type> getMaterialPtr(const TMaterial<Core>* material)
+	{
+		return std::static_pointer_cast<typename TMatType<Core>::Type>(static_cast<const typename TMatType<Core>::Type*>(material)->getThisPtr());
+	}
+
 	template<bool Core>
 	SPtr<typename TMaterial<Core>::GpuParamsSetType> TMaterial<Core>::createParamsSet(UINT32 techniqueIdx)
 	{
@@ -95,7 +105,7 @@ namespace BansheeEngine
 	{
 		throwIfNotInitialized();
 
-		return TMaterialParamStruct<Core>(name, mParams);
+		return TMaterialParamStruct<Core>(name, getMaterialPtr(this));
 	}
 
 	template<bool Core>
@@ -103,7 +113,7 @@ namespace BansheeEngine
 	{
 		throwIfNotInitialized();
 
-		return TMaterialParamTexture<Core>(name, mParams);
+		return TMaterialParamTexture<Core>(name, getMaterialPtr(this));
 	}
 
 	template<bool Core>
@@ -111,7 +121,7 @@ namespace BansheeEngine
 	{
 		throwIfNotInitialized();
 
-		return TMaterialParamLoadStoreTexture<Core>(name, mParams);
+		return TMaterialParamLoadStoreTexture<Core>(name, getMaterialPtr(this));
 	}
 
 	template<bool Core>
@@ -119,7 +129,7 @@ namespace BansheeEngine
 	{
 		throwIfNotInitialized();
 
-		return TMaterialParamBuffer<Core>(name, mParams);
+		return TMaterialParamBuffer<Core>(name, getMaterialPtr(this));
 	}
 
 	template<bool Core>
@@ -127,7 +137,7 @@ namespace BansheeEngine
 	{
 		throwIfNotInitialized();
 
-		return TMaterialParamSampState<Core>(name, mParams);
+		return TMaterialParamSampState<Core>(name, getMaterialPtr(this));
 	}
 
 	template<bool Core>
@@ -280,7 +290,7 @@ namespace BansheeEngine
 	{
 		throwIfNotInitialized();
 
-		output = TMaterialDataParam<T, Core>(name, mParams);
+		output = TMaterialDataParam<T, Core>(name, getMaterialPtr(this));
 	}
 
 	template<bool Core>

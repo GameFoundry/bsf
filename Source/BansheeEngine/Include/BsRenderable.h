@@ -22,14 +22,6 @@ namespace BansheeEngine
 		Everything = 0x02
 	};
 
-	template<bool Core> struct TMeshType {};
-	template<> struct TMeshType < false > { typedef HMesh Type; };
-	template<> struct TMeshType < true > { typedef SPtr<MeshCore> Type; };
-
-	template<bool Core> struct TMaterialType {};
-	template<> struct TMaterialType < false > { typedef HMaterial Type; };
-	template<> struct TMaterialType < true > { typedef SPtr<MaterialCore> Type; };
-
 	/**
 	 * Renderable represents any visible object in the scene. It has a mesh, bounds and a set of materials. Renderer will
 	 * render any Renderable objects visible by a camera.
@@ -38,7 +30,7 @@ namespace BansheeEngine
 	class BS_EXPORT TRenderable
 	{
 		typedef typename TMeshType<Core>::Type MeshType;
-		typedef typename TMaterialType<Core>::Type MaterialType;
+		typedef typename TMaterialPtrType<Core>::Type MaterialType;
 
 	public:
 		TRenderable();

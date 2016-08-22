@@ -30,7 +30,12 @@ namespace BansheeEngine
 			auto& samplerParams = shader->getSamplerParams();
 			for(auto& samplerParam : samplerParams)
 			{
-				UINT32 paramIdx = params->getParamIndex(samplerParam.first);
+				UINT32 paramIdx;
+				auto result = params->getParamIndex(samplerParam.first, MaterialParams::ParamType::Sampler, GPDT_UNKNOWN, 
+					0, paramIdx);
+
+				// Parameter shouldn't be in the valid parameter list if it cannot be found
+				assert(result == MaterialParams::GetParamResult::Success);
 				const MaterialParamsBase::ParamData* materialParamData = params->getParamData(paramIdx);
 
 				UINT32 overrideIdx = (UINT32)overrides.size();

@@ -75,10 +75,15 @@ namespace BansheeEngine
 		MaterialBase() { }
 		virtual ~MaterialBase() { }
 
-	protected:
+		/** @name Internal
+		 *  @{
+		 */
+
 		/** Marks the contents of the sim thread object as dirty, causing it to sync with its core thread counterpart. */
 		virtual void _markCoreDirty() { }
 
+		/** @} */
+	protected:
 		/** @copydoc CoreObject::markDependenciesDirty */
 		virtual void _markDependenciesDirty() { }
 
@@ -627,6 +632,14 @@ namespace BansheeEngine
 		/** Creates a new material with the specified shader. */
 		static HMaterial create(const HShader& shader);
 
+		/** @name Internal
+		 *  @{
+		 */
+
+		/** @copydoc CoreObject::markCoreDirty */
+		void _markCoreDirty() override;
+
+		/** @} */
 	private:
 		friend class MaterialManager;
 
@@ -641,9 +654,6 @@ namespace BansheeEngine
 
 		/** @copydoc CoreObject::getCoreDependencies */
 		void getCoreDependencies(Vector<CoreObject*>& dependencies) override;
-
-		/** @copydoc CoreObject::markCoreDirty */
-		void _markCoreDirty() override;
 
 		/** @copydoc CoreObject::markDependenciesDirty */
 		void _markDependenciesDirty() override;
