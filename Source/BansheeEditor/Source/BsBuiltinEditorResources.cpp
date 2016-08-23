@@ -461,6 +461,25 @@ namespace BansheeEngine
 
 		gCoreAccessor().submitToCoreThread(true);
 
+		auto saveTexture = [&](auto& pixelData, auto& path)
+		{
+			if (FileSystem::exists(path))
+			{
+				HResource resource = gResources().load(path);
+
+				SPtr<Texture> texture = Texture::_createPtr(pixelData);
+				gResources().update(resource, texture);
+				Resources::instance().save(resource, path, true);
+				manifest->registerResource(resource.getUUID(), path);
+			}
+			else
+			{
+				HTexture texture = Texture::create(pixelData);
+				Resources::instance().save(texture, path, true);
+				manifest->registerResource(texture.getUUID(), path);
+			}
+		};
+
 		idx = 0;
 		for (auto& iconName : iconsToProcess)
 		{
@@ -475,22 +494,14 @@ namespace BansheeEngine
 			SPtr<PixelData> scaled16 = PixelData::create(16, 16, 1, src->getFormat());
 			PixelUtil::scale(*scaled32, *scaled16);
 
-			HTexture tex48 = Texture::create(scaled48);
-			HTexture tex32 = Texture::create(scaled32);
-			HTexture tex16 = Texture::create(scaled16);
-
 			Path outputPath48 = inputFolder + (iconName + L"48.asset");
-			Resources::instance().save(tex48, outputPath48, true);
-			manifest->registerResource(tex48.getUUID(), outputPath48);
-
 			Path outputPath32 = inputFolder + (iconName + L"32.asset");
-			Resources::instance().save(tex32, outputPath32, true);
-			manifest->registerResource(tex32.getUUID(), outputPath32);
-
 			Path outputPath16 = inputFolder + (iconName + L"16.asset");
-			Resources::instance().save(tex16, outputPath16, true);
-			manifest->registerResource(tex16.getUUID(), outputPath16);
 
+			saveTexture(scaled48, outputPath48);
+			saveTexture(scaled32, outputPath32);
+			saveTexture(scaled16, outputPath16);
+					
 			idx++;
 		}
 	}

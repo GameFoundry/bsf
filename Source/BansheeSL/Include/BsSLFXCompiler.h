@@ -67,6 +67,7 @@ namespace BansheeEngine
 			StringID renderAPI = RenderAPIAny;
 			Vector<StringID> tags;
 			String language;
+			bool include = false;
 
 			PassData commonPassData;
 			Vector<PassData> passes;
@@ -87,8 +88,18 @@ namespace BansheeEngine
 		static void getTechniqueIdentifier(ASTFXNode* technique, StringID& renderer, String& language, 
 			Vector<StringID>& tags);
 
-		/** Checks if two techniques can be matched based on the options specified in their child nodes. */
-		static bool doTechniquesMatch(ASTFXNode* into, ASTFXNode* from);
+		/** 
+		 * Checks if two techniques can be matched based on the options specified in their child nodes. Used for deciding
+		 * if two techniques should be merged.
+		 * 
+		 * @param[in]	into			Parent technique the merge should be performed into.
+		 * @param[in]	from			Child technique the merge should be performed from.
+		 * @param[out]	isMoreSpecific	Returns true if the @p from technique is more specific than @p into technique.
+		 *								(e.g. @p into technique accepts any language, while @p from only accepts HLSL).
+		 *								Only relevant if techniques match.
+		 * @return						True if the techniques match.
+		 */
+		static bool doTechniquesMatch(ASTFXNode* into, ASTFXNode* from, bool& isMoreSpecific);
 
 		/**	Converts FX renderer name into an in-engine renderer identifier. */
 		static StringID parseRenderer(const String& name);

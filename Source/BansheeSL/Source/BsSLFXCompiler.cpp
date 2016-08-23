@@ -226,8 +226,10 @@ namespace BansheeEngine
 		}
 	}
 
-	bool BSLFXCompiler::doTechniquesMatch(ASTFXNode* into, ASTFXNode* from)
+	bool BSLFXCompiler::doTechniquesMatch(ASTFXNode* into, ASTFXNode* from, bool& isMoreSpecific)
 	{
+		isMoreSpecific = false;
+
 		StringID intoRenderer = RendererAny;
 		String intoLanguage = "Any";
 		Vector<StringID> intoTags;
@@ -239,30 +241,73 @@ namespace BansheeEngine
 		getTechniqueIdentifier(into, intoRenderer, intoLanguage, intoTags);
 		getTechniqueIdentifier(from, fromRenderer, fromLanguage, fromTags);
 
-		bool matches = (intoRenderer == fromRenderer || fromRenderer == RendererAny) && (intoLanguage == fromLanguage || fromLanguage == "Any");
-		if(matches)
+		bool matches = true;
+		if (intoRenderer != fromRenderer)
 		{
+			if (intoRenderer == RendererAny)
+				isMoreSpecific = true;
+			else if(fromRenderer != RendererAny)
+				matches = false;
+		}
+
+		if(intoLanguage != fromLanguage)
+		{
+			if(intoLanguage == "Any")
+				isMoreSpecific = true;
+			else if (intoLanguage != "Any")
+				matches = false;
+		}
+
+		static StringID AnyTag("Any");
+		if (matches)
+		{
+			bool tagsMatch = true;
 			for (auto& intoTag : intoTags)
 			{
 				auto iterFind = std::find(fromTags.begin(), fromTags.end(), intoTag);
-				if(iterFind == fromTags.end())
+				if (iterFind == fromTags.end())
 				{
-					matches = false;
+					tagsMatch = false;
 					break;
 				}
+			}
+
+			if (!tagsMatch)
+			{
+				bool fromMatchAnyTags = false;
+				auto iterFind = std::find(fromTags.begin(), fromTags.end(), AnyTag);
+				if (iterFind != fromTags.end())
+					fromMatchAnyTags = true;
+
+				if (!fromMatchAnyTags)
+					matches = false;
 			}
 		}
 
 		if (matches)
 		{
+			bool tagsMatch = true;
 			for (auto& fromTag : fromTags)
 			{
 				auto iterFind = std::find(intoTags.begin(), intoTags.end(), fromTag);
 				if (iterFind == intoTags.end())
 				{
-					matches = false;
+					tagsMatch = false;
 					break;
 				}
+			}
+
+			if(!tagsMatch)
+			{
+				bool intoMatchAnyTags = false;
+				auto iterFind = std::find(intoTags.begin(), intoTags.end(), AnyTag);
+				if (iterFind != intoTags.end())
+					intoMatchAnyTags = true;
+
+				if (intoMatchAnyTags)
+					isMoreSpecific = true;
+				else
+					matches = false;
 			}
 		}
 
@@ -1300,19 +1345,46 @@ namespace BansheeEngine
 				break;
 			case OT_Technique:
 			{
-				auto iterFind = std::find_if(techniqueData.begin(), techniqueData.end(), 
-					[&] (auto x)
-				{
-					return doTechniquesMatch(x.first, option->value.nodePtr);
-				});
-
 				TechniqueData* data = nullptr;
-				if (iterFind != techniqueData.end())
-					data = &iterFind->second;
-				else
+
+				// Look for matching techniques, prefer those that aren't includes (i.e. look for more specific ones first)
+				bool isInclude = true;
+				bool isMoreSpecific = false;
+				for(auto& entry : techniqueData)
+				{
+					if (!isInclude && entry.second.include)
+						continue;
+
+					bool moreSpecific;
+					if(doTechniquesMatch(entry.first, option->value.nodePtr, moreSpecific))
+					{
+						isInclude = entry.second.include;
+						data = &entry.second;
+						isMoreSpecific = moreSpecific;
+					}
+				}
+
+				// Technique to merge with not found, create new technique
+				if(data == nullptr)
 				{
 					techniqueData.push_back(std::make_pair(option->value.nodePtr, TechniqueData()));
 					data = &techniqueData.back().second;
+				}
+				else
+				{
+					// Found technique that's identical or more general to this one, so just append the data to the existing
+					// technique
+					if(!isMoreSpecific)
+					{
+						// Do nothing
+					}
+					else // Found technique that's more specific, clone the technique data and append to the clone
+					{
+						data->include = true;
+
+						techniqueData.push_back(std::make_pair(option->value.nodePtr, *data));
+						data = &techniqueData.back().second;
+					}
 				}
 
 				parseTechnique(option->value.nodePtr, codeBlocks, *data);
@@ -1333,6 +1405,8 @@ namespace BansheeEngine
 		for(auto& entry : techniqueData)
 		{
 			const TechniqueData& techniqueData = entry.second;
+			if (techniqueData.include)
+				continue;
 
 			Map<UINT32, SPtr<Pass>, std::greater<UINT32>> passes;
 			for (auto& passData : entry.second.passes)
