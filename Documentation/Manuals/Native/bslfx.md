@@ -360,12 +360,48 @@ Technique
 
 # Advanced {#bslfx_d}
 
-## Block merging {#bslfx_d_a}
-If multiple Techniques using the same "Language" and "Renderer" are found in the file, they will internally be merged into a single larger technique. You may also use value of "Any" for both "Language" or "Renderer" properties to allow the technique to be merged with techniques that don't match it exactly.
+## Technique inheritance {#bslfx_d_a}
+Techniques can inherit code and properties from one another. Simply define one technique as a base technique and give it a unique name:
+~~~~~~~~~~~~~~
+Technique : base("MyBaseTechnique") =
+{
+   ...
+};
+~~~~~~~~~~~~~~
+
+Then inherit the technique as such:
+~~~~~~~~~~~~~~
+Technique : inherits("MyBaseTechnique") =
+{
+   ...
+};
+~~~~~~~~~~~~~~
+
+You can also chain multiple inherited techniques:
+~~~~~~~~~~~~~~
+Technique : base("MyMoreSpecificBaseTechnique") : inherits("MyBaseTechnique") = 
+{
+   ...
+};
+~~~~~~~~~~~~~~
+
+Or inherit from multiple techniques at once:
+~~~~~~~~~~~~~~
+Technique 
+ : inherits("MyBaseTechnique")
+ : inherits("MyOtherBaseTechnique") = 
+{
+   ...
+};
+~~~~~~~~~~~~~~
+
+Properties of inherited techniques will be combined, with more specific technique overriding base technique's properties. Techniques defined as base will never be instantiated on their own, and will not be available in the shader unless inherited by another technique. Base techniques should always be defined earlier then more specialized techniques.
+
+Only techniques that share the same "Renderer" and "Language" properties can be inherited. This allows you to use the same technique names across multiple renderers and languages. Optionally you may define technique's "Renderer" or "Language" as "Any" in which case the technique will be inheritable from any language, but its name should then be globally unique.
 
 When merging passes within techniques, pass "Index" properties are compared and passes with the same index are merged. If no index is specified, passes are merged sequentially according to their order in the techniques.
 
-Code blocks are also merged, in the order they are defined.
+Code blocks are merged in the order they are defined.
 
 ## Pre-processor {#bslfx_d_b}
 Use \#include "Path/To/File.bslinc" to share code by including other BSLFX files. Included files must end with a .bslinc extension but otherwise their syntax is the same as a normal BSLFX file. The provided path is a path to the shader relative to the project library if running in editor, or relative to the working directory otherwise. You can also use built-in $ENGINE$ and $EDITOR$ folders to access builtin shaders. e.g.

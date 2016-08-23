@@ -60,14 +60,22 @@ namespace BansheeEngine
 			String computeCode;
 		};
 
-		/** Temporary data for describing a technique during parsing. */
-		struct TechniqueData
+		/** Information describing a technique, without the actual contents. */
+		struct TechniqueMetaData
 		{
 			StringID renderer = RendererAny;
 			StringID renderAPI = RenderAPIAny;
 			Vector<StringID> tags;
 			String language;
-			bool include = false;
+
+			String baseName;
+			Vector<String> inherits;
+		};
+
+		/** Temporary data for describing a technique during parsing. */
+		struct TechniqueData
+		{
+			TechniqueMetaData metaData;
 
 			PassData commonPassData;
 			Vector<PassData> passes;
@@ -81,25 +89,8 @@ namespace BansheeEngine
 		/** Converts the provided source into an abstract syntax tree using the lexer & parser for BSL FX syntax. */
 		static void parseFX(ParseState* parseState, const char* source);
 
-		/**
-		 * Retrieves the renderer and language specified for the technique. These two values are considered a unique 
-		 * identifier for a technique.
-		 */
-		static void getTechniqueIdentifier(ASTFXNode* technique, StringID& renderer, String& language, 
-			Vector<StringID>& tags);
-
-		/** 
-		 * Checks if two techniques can be matched based on the options specified in their child nodes. Used for deciding
-		 * if two techniques should be merged.
-		 * 
-		 * @param[in]	into			Parent technique the merge should be performed into.
-		 * @param[in]	from			Child technique the merge should be performed from.
-		 * @param[out]	isMoreSpecific	Returns true if the @p from technique is more specific than @p into technique.
-		 *								(e.g. @p into technique accepts any language, while @p from only accepts HLSL).
-		 *								Only relevant if techniques match.
-		 * @return						True if the techniques match.
-		 */
-		static bool doTechniquesMatch(ASTFXNode* into, ASTFXNode* from, bool& isMoreSpecific);
+		/** Parses the technique node and outputs the relevant meta-data. */
+		static TechniqueMetaData parseTechniqueMetaData(ASTFXNode* technique);
 
 		/**	Converts FX renderer name into an in-engine renderer identifier. */
 		static StringID parseRenderer(const String& name);

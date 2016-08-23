@@ -148,7 +148,7 @@ typedef struct YYLTYPE {
 %token TOKEN_PARAMSBLOCK
 
 	/* Qualifiers */
-%token TOKEN_AUTO TOKEN_ALIAS TOKEN_SHARED TOKEN_USAGE
+%token TOKEN_AUTO TOKEN_ALIAS TOKEN_SHARED TOKEN_USAGE TOKEN_BASE TOKEN_INHERITS
 
 	/* Shader keywords */
 %token TOKEN_SEPARABLE TOKEN_SORT TOKEN_PRIORITY TOKEN_TRANSPARENT
@@ -225,6 +225,7 @@ typedef struct YYLTYPE {
 %type <nodePtr> blocks
 
 %type <nodeOption> qualifier
+%type <nodeOption> technique_qualifier
 
 %type <matrixValue> float2;
 %type <matrixValue> float3;
@@ -303,11 +304,11 @@ shader_option
 	/* Technique */
 
 technique
-	: technique_header '{' technique_body '}' ';' { nodePop(parse_state); $$ = $1; }
+	: technique_header technique_qualifier_list '=' '{' technique_body '}' ';' { nodePop(parse_state); $$ = $1; }
 	;
 
 technique_header
-	: TOKEN_TECHNIQUE '=' 
+	: TOKEN_TECHNIQUE
 		{ 
 			$$ = nodeCreate(parse_state->memContext, NT_Technique); 
 			nodePush(parse_state, $$);
@@ -332,6 +333,7 @@ technique_option
 	| tags									{ $$.type = OT_Tags; $$.value.nodePtr = $1; }
 	;
 	
+	/* Technique tags */
 tags
 	: tags_header '{' tags_body '}' ';'	{ nodePop(parse_state); $$ = $1; }
 	;
@@ -358,6 +360,17 @@ tags_body
 		}	
 	;
 
+	/* Technique qualifiers */
+technique_qualifier_list
+	: /* empty */
+	| technique_qualifier technique_qualifier_list		{ nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$1); }
+	;
+
+technique_qualifier
+	: ':' TOKEN_BASE '(' TOKEN_STRING ')'		{ $$.type = OT_Base; $$.value.strValue = $4; }
+	| ':' TOKEN_INHERITS '(' TOKEN_STRING ')'	{ $$.type = OT_Inherits; $$.value.strValue = $4; }
+	;	
+	
 	/* Pass */
 
 pass

@@ -1,6 +1,7 @@
 #include "$ENGINE$\DeferredBasePass.bslinc"
 
-Technique =
+Technique 
+ : inherits("DeferredBasePass") =
 {
 	Language = "HLSL11";
 	
@@ -26,7 +27,8 @@ Technique =
 	};
 };
 
-Technique =
+Technique 
+ : inherits("DeferredBasePass") =
 {
 	Language = "GLSL";
 	

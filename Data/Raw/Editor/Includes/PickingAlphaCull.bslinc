@@ -9,7 +9,7 @@ Parameters =
 	Texture2D 	mainTexture;	
 };
 
-Technique =
+Technique : base("PickingAlphaCull") =
 {
 	Language = "HLSL11";
 	
@@ -54,7 +54,7 @@ Technique =
 	};
 };
 
-Technique =
+Technique : base("PickingAlphaCull") =
 {
 	Language = "HLSL9";
 	
@@ -98,7 +98,7 @@ Technique =
 	};
 };
 
-Technique =
+Technique : base("PickingAlphaCull") =
 {
 	Language = "GLSL";
 	

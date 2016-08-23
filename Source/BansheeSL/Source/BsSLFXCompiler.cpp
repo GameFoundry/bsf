@@ -190,11 +190,12 @@ namespace BansheeEngine
 		yylex_destroy(scanner);
 	}
 
-	void BSLFXCompiler::getTechniqueIdentifier(ASTFXNode* technique, StringID& renderer, String& language, 
-		Vector<StringID>& tags)
+	BSLFXCompiler::TechniqueMetaData BSLFXCompiler::parseTechniqueMetaData(ASTFXNode* technique)
 	{
-		renderer = RendererAny;
-		language = "Any";
+		TechniqueMetaData metaData;
+
+		metaData.renderer = RendererAny;
+		metaData.language = "Any";
 
 		for (int i = 0; i < technique->options->count; i++)
 		{
@@ -203,10 +204,10 @@ namespace BansheeEngine
 			switch (option->type)
 			{
 			case OT_Renderer:
-				renderer = parseRenderer(removeQuotes(option->value.strValue));
+				metaData.renderer = parseRenderer(removeQuotes(option->value.strValue));
 				break;
 			case OT_Language:
-				language = removeQuotes(option->value.strValue);
+				parseLanguage(removeQuotes(option->value.strValue), metaData.renderAPI, metaData.language);
 				break;
 			case OT_Tags:
 			{
@@ -216,102 +217,22 @@ namespace BansheeEngine
 					NodeOption* tagOption = &tagsNode->options->entries[j];
 
 					if (tagOption->type == OT_TagValue)
-						tags.push_back(removeQuotes(tagOption->value.strValue));
+						metaData.tags.push_back(removeQuotes(tagOption->value.strValue));
 				}
 			}
-			break;
+				break;
+			case OT_Base:
+				metaData.baseName = removeQuotes(option->value.strValue);
+				break;
+			case OT_Inherits:
+				metaData.inherits.push_back(removeQuotes(option->value.strValue));
+				break;
 			default:
 				break;
 			}
 		}
-	}
 
-	bool BSLFXCompiler::doTechniquesMatch(ASTFXNode* into, ASTFXNode* from, bool& isMoreSpecific)
-	{
-		isMoreSpecific = false;
-
-		StringID intoRenderer = RendererAny;
-		String intoLanguage = "Any";
-		Vector<StringID> intoTags;
-
-		StringID fromRenderer = RendererAny;
-		String fromLanguage = "Any";
-		Vector<StringID> fromTags;
-
-		getTechniqueIdentifier(into, intoRenderer, intoLanguage, intoTags);
-		getTechniqueIdentifier(from, fromRenderer, fromLanguage, fromTags);
-
-		bool matches = true;
-		if (intoRenderer != fromRenderer)
-		{
-			if (intoRenderer == RendererAny)
-				isMoreSpecific = true;
-			else if(fromRenderer != RendererAny)
-				matches = false;
-		}
-
-		if(intoLanguage != fromLanguage)
-		{
-			if(intoLanguage == "Any")
-				isMoreSpecific = true;
-			else if (intoLanguage != "Any")
-				matches = false;
-		}
-
-		static StringID AnyTag("Any");
-		if (matches)
-		{
-			bool tagsMatch = true;
-			for (auto& intoTag : intoTags)
-			{
-				auto iterFind = std::find(fromTags.begin(), fromTags.end(), intoTag);
-				if (iterFind == fromTags.end())
-				{
-					tagsMatch = false;
-					break;
-				}
-			}
-
-			if (!tagsMatch)
-			{
-				bool fromMatchAnyTags = false;
-				auto iterFind = std::find(fromTags.begin(), fromTags.end(), AnyTag);
-				if (iterFind != fromTags.end())
-					fromMatchAnyTags = true;
-
-				if (!fromMatchAnyTags)
-					matches = false;
-			}
-		}
-
-		if (matches)
-		{
-			bool tagsMatch = true;
-			for (auto& fromTag : fromTags)
-			{
-				auto iterFind = std::find(intoTags.begin(), intoTags.end(), fromTag);
-				if (iterFind == intoTags.end())
-				{
-					tagsMatch = false;
-					break;
-				}
-			}
-
-			if(!tagsMatch)
-			{
-				bool intoMatchAnyTags = false;
-				auto iterFind = std::find(intoTags.begin(), intoTags.end(), AnyTag);
-				if (iterFind != intoTags.end())
-					intoMatchAnyTags = true;
-
-				if (intoMatchAnyTags)
-					isMoreSpecific = true;
-				else
-					matches = false;
-			}
-		}
-
-		return matches;
+		return metaData;
 	}
 
 	StringID BSLFXCompiler::parseRenderer(const String& name)
@@ -1132,24 +1053,6 @@ namespace BansheeEngine
 				parsePass(passNode, codeBlocks, *passData);
 			}
 				break;
-			case OT_Renderer:
-				techniqueData.renderer = parseRenderer(removeQuotes(option->value.strValue));
-				break;
-			case OT_Language:
-				parseLanguage(removeQuotes(option->value.strValue), techniqueData.renderAPI, techniqueData.language);
-				break;
-			case OT_Tags:
-			{
-				ASTFXNode* tagsNode = option->value.nodePtr;
-				for (int j = 0; j < tagsNode->options->count; j++)
-				{
-					NodeOption* tagOption = &tagsNode->options->entries[j];
-
-					if(tagOption->type == OT_TagValue)
-						techniqueData.tags.push_back(removeQuotes(tagOption->value.strValue));
-				}
-			}
-			break;
 			case OT_Code:
 				parseCodeBlock(option->value.nodePtr, codeBlocks, techniqueData.commonPassData);
 				break;
@@ -1310,13 +1213,15 @@ namespace BansheeEngine
 			desc.setParamBlockAttribs(name, shared, usage, semantic);
 		}
 	}
-
+	
 	BSLFXCompileResult BSLFXCompiler::parseShader(const String& name, ParseState* parseState, Vector<String>& codeBlocks)
 	{
 		BSLFXCompileResult output;
 
 		if (parseState->rootNode == nullptr || parseState->rootNode->type != NT_Shader)
 		{
+			parseStateDelete(parseState);
+
 			output.errorMessage = "Root not is null or not a shader.";
 			return output;
 		}
@@ -1345,49 +1250,58 @@ namespace BansheeEngine
 				break;
 			case OT_Technique:
 			{
-				TechniqueData* data = nullptr;
+				TechniqueMetaData metaData = parseTechniqueMetaData(option->value.nodePtr);
 
-				// Look for matching techniques, prefer those that aren't includes (i.e. look for more specific ones first)
-				bool isInclude = true;
-				bool isMoreSpecific = false;
-				for(auto& entry : techniqueData)
+				techniqueData.push_back(std::make_pair(option->value.nodePtr, TechniqueData()));
+				TechniqueData& data = techniqueData.back().second;
+				data.metaData = metaData;
+
+				if (data.metaData.baseName.empty())
 				{
-					if (!isInclude && entry.second.include)
-						continue;
-
-					bool moreSpecific;
-					if(doTechniquesMatch(entry.first, option->value.nodePtr, moreSpecific))
+					std::function<bool(TechniqueMetaData&)> parseInherited = [&](TechniqueMetaData& metaData)
 					{
-						isInclude = entry.second.include;
-						data = &entry.second;
-						isMoreSpecific = moreSpecific;
-					}
-				}
+						for (auto riter = metaData.inherits.rbegin(); riter != metaData.inherits.rend(); ++riter)
+						{
+							const String& inherits = *riter;
 
-				// Technique to merge with not found, create new technique
-				if(data == nullptr)
-				{
-					techniqueData.push_back(std::make_pair(option->value.nodePtr, TechniqueData()));
-					data = &techniqueData.back().second;
-				}
-				else
-				{
-					// Found technique that's identical or more general to this one, so just append the data to the existing
-					// technique
-					if(!isMoreSpecific)
+							bool foundBase = false;
+							for (auto& entry : techniqueData)
+							{
+								if (entry.second.metaData.baseName == inherits)
+								{
+									bool matches = entry.second.metaData.language == metaData.language || entry.second.metaData.language == "Any";
+									matches &= entry.second.metaData.renderer == metaData.renderer || entry.second.metaData.renderer == RendererAny;
+
+									if (matches)
+									{
+										if (!parseInherited(entry.second.metaData))
+											return false;
+
+										parseTechnique(entry.first, codeBlocks, data);
+										foundBase = true;
+										break;
+									}
+								}
+							}
+
+							if (!foundBase)
+							{
+								output.errorMessage = "Base technique \"" + inherits + "\" cannot be found.";
+								return false;
+							}
+						}
+
+						return true;
+					};
+
+					if (!parseInherited(metaData))
 					{
-						// Do nothing
+						parseStateDelete(parseState);
+						return output;
 					}
-					else // Found technique that's more specific, clone the technique data and append to the clone
-					{
-						data->include = true;
 
-						techniqueData.push_back(std::make_pair(option->value.nodePtr, *data));
-						data = &techniqueData.back().second;
-					}
+					parseTechnique(option->value.nodePtr, codeBlocks, data);
 				}
-
-				parseTechnique(option->value.nodePtr, codeBlocks, *data);
 				break;
 			}
 			case OT_Parameters:
@@ -1404,8 +1318,8 @@ namespace BansheeEngine
 		Vector<SPtr<Technique>> techniques;
 		for(auto& entry : techniqueData)
 		{
-			const TechniqueData& techniqueData = entry.second;
-			if (techniqueData.include)
+			const TechniqueMetaData& metaData = entry.second.metaData;
+			if (!metaData.baseName.empty())
 				continue;
 
 			Map<UINT32, SPtr<Pass>, std::greater<UINT32>> passes;
@@ -1425,37 +1339,37 @@ namespace BansheeEngine
 				if (!passData.vertexCode.empty())
 				{
 					passDesc.vertexProgram = GpuProgram::create(passData.commonCode + passData.vertexCode, "main", 
-						techniqueData.language, GPT_VERTEX_PROGRAM, getProfile(techniqueData.renderAPI, GPT_VERTEX_PROGRAM));
+						metaData.language, GPT_VERTEX_PROGRAM, getProfile(metaData.renderAPI, GPT_VERTEX_PROGRAM));
 				}
 
 				if (!passData.fragmentCode.empty())
 				{
 					passDesc.fragmentProgram = GpuProgram::create(passData.commonCode + passData.fragmentCode, "main", 
-						techniqueData.language, GPT_FRAGMENT_PROGRAM, getProfile(techniqueData.renderAPI, GPT_FRAGMENT_PROGRAM));
+						metaData.language, GPT_FRAGMENT_PROGRAM, getProfile(metaData.renderAPI, GPT_FRAGMENT_PROGRAM));
 				}
 
 				if (!passData.geometryCode.empty())
 				{
 					passDesc.geometryProgram = GpuProgram::create(passData.commonCode + passData.geometryCode, "main", 
-						techniqueData.language, GPT_GEOMETRY_PROGRAM, getProfile(techniqueData.renderAPI, GPT_GEOMETRY_PROGRAM));
+						metaData.language, GPT_GEOMETRY_PROGRAM, getProfile(metaData.renderAPI, GPT_GEOMETRY_PROGRAM));
 				}
 
 				if (!passData.hullCode.empty())
 				{
 					passDesc.hullProgram = GpuProgram::create(passData.commonCode + passData.hullCode, "main", 
-						techniqueData.language, GPT_HULL_PROGRAM, getProfile(techniqueData.renderAPI, GPT_HULL_PROGRAM));
+						metaData.language, GPT_HULL_PROGRAM, getProfile(metaData.renderAPI, GPT_HULL_PROGRAM));
 				}
 
 				if (!passData.domainCode.empty())
 				{
 					passDesc.domainProgram = GpuProgram::create(passData.commonCode + passData.domainCode, "main", 
-						techniqueData.language, GPT_DOMAIN_PROGRAM, getProfile(techniqueData.renderAPI, GPT_DOMAIN_PROGRAM));
+						metaData.language, GPT_DOMAIN_PROGRAM, getProfile(metaData.renderAPI, GPT_DOMAIN_PROGRAM));
 				}
 
 				if (!passData.computeCode.empty())
 				{
 					passDesc.computeProgram = GpuProgram::create(passData.commonCode + passData.computeCode, "main", 
-						techniqueData.language, GPT_COMPUTE_PROGRAM, getProfile(techniqueData.renderAPI, GPT_COMPUTE_PROGRAM));
+						metaData.language, GPT_COMPUTE_PROGRAM, getProfile(metaData.renderAPI, GPT_COMPUTE_PROGRAM));
 				}
 
 				passDesc.stencilRefValue = passData.stencilRefValue;
@@ -1471,8 +1385,8 @@ namespace BansheeEngine
 
 			if (orderedPasses.size() > 0)
 			{
-				SPtr<Technique> technique = Technique::create(techniqueData.renderAPI, techniqueData.renderer, 
-					techniqueData.tags, orderedPasses);
+				SPtr<Technique> technique = Technique::create(metaData.renderAPI, metaData.renderer,
+					metaData.tags, orderedPasses);
 				techniques.push_back(technique);
 			}
 		}

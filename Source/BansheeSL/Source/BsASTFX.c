@@ -73,7 +73,9 @@ OptionInfo OPTION_LOOKUP[] =
 	{ OT_Code, ODT_Complex },
 	{ OT_StencilRef, ODT_Int },
 	{ OT_Tags, ODT_Complex },
-	{ OT_TagValue, ODT_String }
+	{ OT_TagValue, ODT_String },
+	{ OT_Base, ODT_String },
+	{ OT_Inherits, ODT_String }
 };
 
 NodeOptions* nodeOptionsCreate(void* context)

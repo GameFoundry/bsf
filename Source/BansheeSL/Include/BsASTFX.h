@@ -100,6 +100,8 @@ enum tagOptionType
 	OT_StencilRef,
 	OT_Tags,
 	OT_TagValue,
+	OT_Base,
+	OT_Inherits,
 	OT_Count
 };
 

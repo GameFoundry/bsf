@@ -510,7 +510,9 @@ namespace BansheeEngine
 		if (mParams != nullptr)
 			mParams->getSyncData(nullptr, paramsSize);
 
-		UINT32 size = sizeof(UINT32) * 2 + sizeof(SPtr<ShaderCore>) + sizeof(SPtr<TechniqueCore>) + paramsSize;
+		UINT32 numTechniques = (UINT32)mTechniques.size();
+		UINT32 size = sizeof(UINT32) * 2 + sizeof(SPtr<ShaderCore>) + 
+			sizeof(SPtr<TechniqueCore>) * numTechniques + paramsSize;
 
 		UINT8* buffer = allocator->alloc(size);
 		char* dataPtr = (char*)buffer;
@@ -522,8 +524,6 @@ namespace BansheeEngine
 			*shader = nullptr;
 
 		dataPtr += sizeof(SPtr<ShaderCore>);
-
-		UINT32 numTechniques = (UINT32)mTechniques.size();
 		dataPtr = rttiWriteElem(numTechniques, dataPtr);
 
 		for(UINT32 i = 0; i < numTechniques; i++)
