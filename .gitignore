@@ -1,4 +1,5 @@
 # Ignored files
+*~
 *.suo
 *.sdf
 *.opensdf
