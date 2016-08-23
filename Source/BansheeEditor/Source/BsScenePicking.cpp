@@ -65,8 +65,6 @@ namespace BansheeEngine
 			Matrix3 rotation;
 			selectedObjects[0]->getWorldRotation().toRotationMatrix(rotation);
 			data->normal = rotation.inverse().transpose().transform(data->normal);
-			LOGWRN("Pos: " + toString(data->pickPosition.x) + " & " + toString(data->pickPosition.y) + " & " + toString(data->pickPosition.z));
-			LOGWRN("Norm: " + toString(data->normal.x) + " & " + toString(data->normal.y) + " & " + toString(data->normal.z));
 		}
 		return selectedObjects[0];
 	}
