@@ -24,19 +24,18 @@ namespace BansheeEngine
 			return;
 		}
 
+		// Note: Perhaps perform buffer validation to ensure expected buffer has the same size and layout as the provided
+		// buffer, and show a warning otherwise. But this is perhaps better handled on a higher level.
 		const Map<String, SHADER_PARAM_BLOCK_DESC>& paramBlockDescs = shader->getParamBlocks();
-		String perFrameBlockName;
-		String perCameraBlockName;
-		String perObjectBlockName;
 
 		for (auto& paramBlockDesc : paramBlockDescs)
 		{
 			if (paramBlockDesc.second.rendererSemantic == RBS_PerFrame)
-				perFrameBlockName = paramBlockDesc.second.name;
+				element.params->setParamBlockBuffer(paramBlockDesc.second.name, mPerFrameParams.getBuffer(), true);
 			else if (paramBlockDesc.second.rendererSemantic == RBS_PerCamera)
-				perCameraBlockName = paramBlockDesc.second.name;
+				element.params->setParamBlockBuffer(paramBlockDesc.second.name, mPerCameraParams.getBuffer(), true);
 			else if (paramBlockDesc.second.rendererSemantic == RBS_PerObject)
-				perObjectBlockName = paramBlockDesc.second.name;
+				element.params->setParamBlockBuffer(paramBlockDesc.second.name, mPerObjectParams.getBuffer(), true);
 		}
 
 		const Map<String, SHADER_OBJECT_PARAM_DESC>& bufferDescs = shader->getBufferParams();
@@ -48,12 +47,6 @@ namespace BansheeEngine
 				boneMatricesParamName = entry.second.name;
 		}
 		
-		// Note: Perhaps perform buffer validation to ensure expected buffer has the same size and layout as the provided
-		// buffer, and show a warning otherwise. But this is perhaps better handled on a higher level.
-		element.params->setParamBlockBuffer(perFrameBlockName, mPerFrameParams.getBuffer(), true);
-		element.params->setParamBlockBuffer(perCameraBlockName, mPerCameraParams.getBuffer(), true);
-		element.params->setParamBlockBuffer(perObjectBlockName, mPerObjectParams.getBuffer(), true);
-
 		if (!boneMatricesParamName.empty())
 		{
 			// Note: Bone matrices should be shared between all sub-meshes, so maybe it's better to create this buffer

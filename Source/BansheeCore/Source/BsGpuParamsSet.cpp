@@ -556,6 +556,24 @@ namespace BansheeEngine
 			}
 		}
 
+		// Add buffers defined in shader but not actually used by GPU programs (so we can check if user is providing a
+		// valid buffer name)
+		auto& allParamBlocks = shader->getParamBlocks();
+		for (auto& entry : allParamBlocks)
+		{
+			auto iterFind = std::find_if(mBlocks.begin(), mBlocks.end(), 
+				[&](auto& x)
+			{
+				return x.name == entry.first;
+			});
+
+			if(iterFind == mBlocks.end())
+			{
+				mBlocks.push_back(BlockInfo(entry.first, nullptr, true));
+				mBlocks.back().isUsed = false;
+			}
+		}
+
 		// Generate information about object parameters
 		bs_frame_mark();
 		{
@@ -738,6 +756,9 @@ namespace BansheeEngine
 			LOGERR("Cannot set parameter block buffer with the name \"" + name + "\". Buffer name not found. ");
 			return;
 		}
+
+		if (!mBlocks[foundIdx].isUsed)
+			return;
 
 		mBlocks[foundIdx].buffer = paramBlock;
 		mBlocks[foundIdx].allowUpdate = !ignoreInUpdate;

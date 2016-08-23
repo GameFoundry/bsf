@@ -43,13 +43,14 @@ namespace BansheeEngine
 		struct BlockInfo
 		{
 			BlockInfo(const String& name, const ParamBlockPtrType& buffer, bool shareable)
-				:name(name), buffer(buffer), shareable(shareable), allowUpdate(true)
+				:name(name), buffer(buffer), shareable(shareable), allowUpdate(true), isUsed(true)
 			{ }
 
 			String name;
 			ParamBlockPtrType buffer;
 			bool shareable;
 			bool allowUpdate;
+			bool isUsed;
 		};
 
 		/** Information about how a data parameter maps from a material parameter into a parameter block buffer. */

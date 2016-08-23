@@ -349,7 +349,9 @@ namespace BansheeEngine
 
 		SPtr<GpuParamsCore> fragmentParams = mParamsSet->getGpuParams(GPT_FRAGMENT_PROGRAM);
 		fragmentParams->getTextureParam("gInputTex", mInputTex);
-		fragmentParams->getTextureParam("gColorLUT", mColorLUT);
+
+		if(!GammaOnly)
+			fragmentParams->getTextureParam("gColorLUT", mColorLUT);
 	}
 
 	template<bool GammaOnly, bool AutoExposure>
