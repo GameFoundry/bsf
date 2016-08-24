@@ -1105,7 +1105,7 @@ namespace BansheeEngine
 
 		// Must ensure that clip in the proxy and current primary clip are the same
 		mGenericCurveValuesValid = false;
-		if(mAnimProxy->numLayers > 0 || mAnimProxy->layers[0].numStates > 0)
+		if(mAnimProxy->numLayers > 0 && mAnimProxy->layers[0].numStates > 0)
 		{
 			const AnimationState& state = mAnimProxy->layers[0].states[0];
 

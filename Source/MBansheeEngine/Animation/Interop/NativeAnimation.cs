@@ -118,7 +118,7 @@ namespace BansheeEngine
 
         public void MapCurveToSceneObject(string curve, SceneObject sceneObject)
         {
-            if (string.IsNullOrEmpty(curve) || sceneObject == null)
+            if (curve == null || sceneObject == null)
                 return;
 
             Internal_MapCurveToSceneObject(mCachedPtr, curve, sceneObject.GetCachedPtr());

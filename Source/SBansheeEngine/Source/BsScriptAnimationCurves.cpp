@@ -287,7 +287,7 @@ namespace BansheeEngine
 		UINT32 flags = curve.flags;
 
 		void* params[5] = { monoString, &flags, monoXCurve, monoYCurve, monoZCurve };
-		return metaData.scriptClass->createInstance("string, int, AnimationCurve, AnimationCurve, AnimationCurve", params);
+		return metaData.scriptClass->createInstance("string,int,AnimationCurve,AnimationCurve,AnimationCurve", params);
 	}
 
 	MonoField* ScriptNamedFloatCurve::sNameField = nullptr;
@@ -337,6 +337,6 @@ namespace BansheeEngine
 
 		UINT32 flags = curve.flags;
 		void* params[3] = { monoString, &flags, monoCurve };
-		return metaData.scriptClass->createInstance("string, int, AnimationCurve", params);
+		return metaData.scriptClass->createInstance("string,int,AnimationCurve", params);
 	}
 }

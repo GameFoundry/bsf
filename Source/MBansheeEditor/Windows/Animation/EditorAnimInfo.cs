@@ -111,14 +111,18 @@ namespace BansheeEditor
                         TangentMode[] tangentsX = null;
                         TangentMode[] tangentsY = null;
                         TangentMode[] tangentsZ = null;
-                        foreach (var tangentEntry in tangents)
+
+                        if (tangents != null)
                         {
-                            if (tangentEntry.name == curveEntry.Name)
+                            foreach (var tangentEntry in tangents)
                             {
-                                tangentsX = tangentEntry.tangentsX;
-                                tangentsY = tangentEntry.tangentsY;
-                                tangentsZ = tangentEntry.tangentsZ;
-                                break;
+                                if (tangentEntry.name == curveEntry.Name)
+                                {
+                                    tangentsX = tangentEntry.tangentsX;
+                                    tangentsY = tangentEntry.tangentsY;
+                                    tangentsZ = tangentEntry.tangentsZ;
+                                    break;
+                                }
                             }
                         }
 

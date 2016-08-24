@@ -122,6 +122,6 @@ namespace BansheeEngine
 		float time = event.time;
 
 		void* params[2] = { monoString, &time };
-		return metaData.scriptClass->createInstance("string, float", params);
+		return metaData.scriptClass->createInstance("string,float", params);
 	}
 }

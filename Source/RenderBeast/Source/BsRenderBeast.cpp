@@ -200,11 +200,11 @@ namespace BansheeEngine
 				else
 				{
 					RendererMaterial& matInfo = any_cast_ref<RendererMaterial>(materialInfo);
-					if(matInfo.matVersion != renElement.material->getVersion())
-					{
-						if (matInfo.params.size() <= techniqueIdx)
-							matInfo.params.resize(techniqueIdx + 1);
+					if (matInfo.params.size() <= techniqueIdx)
+						matInfo.params.resize(techniqueIdx + 1);
 
+					if(matInfo.params[techniqueIdx] == nullptr || matInfo.matVersion != renElement.material->getVersion())
+					{
 						matInfo.params[techniqueIdx] = renElement.material->createParamsSet(techniqueIdx);
 						matInfo.matVersion = renElement.material->getVersion();
 

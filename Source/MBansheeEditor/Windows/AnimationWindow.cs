@@ -362,7 +362,6 @@ namespace BansheeEditor
             horzScrollBar.SetWidth(curveEditorSize.x);
             vertScrollBar.SetHeight(curveEditorSize.y);
 
-            SetCurrentFrame(currentFrameIdx);
             UpdateScrollBarSize();
         }
 
@@ -562,6 +561,8 @@ namespace BansheeEditor
 
             guiCurveEditor.Events = clipInfo.events;
             guiCurveEditor.DisableCurveEdit = clipIsImported;
+
+            SetCurrentFrame(0);
         }
 
         private static bool IsClipImported(AnimationClip clip)
@@ -594,9 +595,9 @@ namespace BansheeEditor
                 selectedSO = so;
                 selectedFields.Clear();
 
-                RebuildGUI();
-
                 clipInfo = null;
+
+                RebuildGUI();
 
                 // Load existing clip if one exists
                 if (selectedSO != null)
@@ -730,7 +731,7 @@ namespace BansheeEditor
             return new Vector2(xRange, yRange);
         }
 
-        private void UpdateDisplayedCurves()
+        private void UpdateDisplayedCurves(bool allowReduce = false)
         {
             List<EdAnimationCurve> curvesToDisplay = new List<EdAnimationCurve>();
             for (int i = 0; i < selectedFields.Count; i++)
@@ -743,10 +744,12 @@ namespace BansheeEditor
             guiCurveEditor.SetCurves(curvesToDisplay.ToArray());
 
             Vector2 newRange = GetOptimalRange();
-
-            // Don't reduce visible range
-            newRange.x = Math.Max(newRange.x, guiCurveEditor.Range.x);
-            newRange.y = Math.Max(newRange.y, guiCurveEditor.Range.y);
+            if (!allowReduce)
+            {
+                // Don't reduce visible range
+                newRange.x = Math.Max(newRange.x, guiCurveEditor.Range.x);
+                newRange.y = Math.Max(newRange.y, guiCurveEditor.Range.y);
+            }
 
             guiCurveEditor.Range = newRange;
             UpdateScrollBarSize();
@@ -758,6 +761,7 @@ namespace BansheeEditor
 
         private void AddNewField(string path, SerializableProperty.FieldType type)
         {
+            bool noSelection = selectedFields.Count == 0;
             guiFieldDisplay.AddField(path);
 
             switch (type)
@@ -845,7 +849,7 @@ namespace BansheeEditor
             }
 
             EditorApplication.SetProjectDirty();
-            UpdateDisplayedCurves();
+            UpdateDisplayedCurves(noSelection);
         }
 
         private void SelectField(string path, bool additive)
@@ -853,6 +857,7 @@ namespace BansheeEditor
             if (!additive)
                 selectedFields.Clear();
 
+            bool noSelection = selectedFields.Count == 0;
             if (!string.IsNullOrEmpty(path))
             {
                 selectedFields.RemoveAll(x => { return x == path || IsPathParent(x, path); });
@@ -861,7 +866,7 @@ namespace BansheeEditor
 
             guiFieldDisplay.SetSelection(selectedFields.ToArray());
 
-            UpdateDisplayedCurves();
+            UpdateDisplayedCurves(noSelection);
         }
 
         private void RemoveSelectedFields()

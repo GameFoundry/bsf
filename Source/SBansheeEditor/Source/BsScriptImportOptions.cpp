@@ -672,7 +672,7 @@ namespace BansheeEngine
 		bool isAdditive = splitInfo.isAdditive;
 
 		void* params[4] = { monoString, &startFrame, &endFrame, &isAdditive };
-		return metaData.scriptClass->createInstance("string, int, int, bool", params);
+		return metaData.scriptClass->createInstance("string,int,int,bool", params);
 	}
 
 	MonoField* ScriptImportedAnimationEvents::nameField = nullptr;
