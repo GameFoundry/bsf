@@ -29,7 +29,7 @@ target_link_libraries(BansheeUtility
 	Rpcrt4
 	)
 else()
-	# TODO_OTHER_PLATFORMS_GO_HERE
+	target_link_libraries(BansheeUtility dl)
 endif()
 
 # IDE specific
