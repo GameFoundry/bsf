@@ -7,6 +7,8 @@
 #include "BsIReflectable.h"
 #include "BsCoreObject.h"
 
+#include <cfloat>
+
 namespace BansheeEngine 
 {
 	/** @addtogroup RenderAPI

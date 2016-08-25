@@ -2,6 +2,10 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
+#include "BsPath.h"
+#include "BsPlatformDefines.h"
+#include "BsString.h"
+
 #define BS_MAX_STACKTRACE_DEPTH 200
 #define BS_MAX_STACKTRACE_NAME_BYTES 1024
 

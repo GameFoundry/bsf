@@ -2,11 +2,12 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
-#include "BsPrerequisitesUtil.h"
-#include "BsRadian.h"
+#include "BsPlatformDefines.h"
+#include "BsRTTIPrerequisites.h"
 
 namespace BansheeEngine
 {
+	class Radian;
 	/** @addtogroup Math
 	 *  @{
 	 */

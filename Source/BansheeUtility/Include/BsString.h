@@ -2,7 +2,10 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
+#include "BsMemoryAllocator.h"
+#include "BsRadian.h"
 
+#include <string>
 
 namespace BansheeEngine
 {

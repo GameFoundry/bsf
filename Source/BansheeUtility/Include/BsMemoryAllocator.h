@@ -4,6 +4,8 @@
 #undef min
 #undef max
 
+#include "BsTypes.h"	        // for UINT64
+
 #include <atomic>
 #include <limits>
 #include <new>                  /* For 'placement new' */
