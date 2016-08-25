@@ -121,7 +121,7 @@ namespace BansheeEngine
 	{
 		RenderAPICore& rapi = RenderAPICore::instance();
 
-		SPtr<PassCore> pass = material->getPass(passIdx);
+		SPtr<PassCore> pass = material->getPass(passIdx, techniqueIdx);
 
 		struct StageData
 		{

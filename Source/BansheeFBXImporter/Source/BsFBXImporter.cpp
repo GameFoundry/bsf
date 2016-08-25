@@ -217,6 +217,7 @@ namespace BansheeEngine
 		fbxImportOptions.importScale = meshImportOptions->getImportScale();
 
 		FBXImportScene importedScene;
+		bakeTransforms(fbxScene);
 		parseScene(fbxScene, fbxImportOptions, importedScene);
 
 		if (fbxImportOptions.importBlendShapes)
@@ -1250,7 +1251,6 @@ namespace BansheeEngine
 			Matrix4 bakedTransform = mesh.referencedBy[0]->worldTransform * importScale;
 
 			invBakedTransform = bakedTransform.inverseAffine();
-			invBakedTransform.inverseAffine();
 		}
 		else
 			invBakedTransform = Matrix4::IDENTITY;
@@ -1503,6 +1503,9 @@ namespace BansheeEngine
 				eulerAnimation = reduceKeyframes(eulerAnimation);
 			}
 
+			if (importOptions.importScale != 1.0f)
+				boneAnim.translation = scaleKeyframes(boneAnim.translation, importOptions.importScale);
+
 			boneAnim.rotation = AnimationUtility::eulerToQuaternionCurve(eulerAnimation);
 		}
 
@@ -1544,6 +1547,60 @@ namespace BansheeEngine
 		}
 	}
 
+	void FBXImporter::bakeTransforms(FbxScene* scene)
+	{
+		// FBX stores transforms in a more complex way than just translation-rotation-scale as used by Banshee.
+		// Instead they also support rotations offsets and pivots, scaling pivots and more. We wish to bake all this data
+		// into a standard transform so we can access it using node's local TRS properties (e.g. FbxNode::LclTranslation).
+
+		double frameRate = FbxTime::GetFrameRate(scene->GetGlobalSettings().GetTimeMode());
+
+		bs_frame_mark();
+		{
+			FrameStack<FbxNode*> todo;
+			todo.push(scene->GetRootNode());
+
+			while(todo.size() > 0)
+			{
+				FbxNode* node = todo.top();
+				todo.pop();
+
+				FbxVector4 zero(0, 0, 0);
+				FbxVector4 one(1, 1, 1);
+
+				// Activate pivot converting
+				node->SetPivotState(FbxNode::eSourcePivot, FbxNode::ePivotActive);
+				node->SetPivotState(FbxNode::eDestinationPivot, FbxNode::ePivotActive);
+
+				// We want to set all these to 0 (1 for scale) and bake them into the transforms
+				node->SetPostRotation(FbxNode::eDestinationPivot, zero);
+				node->SetPreRotation(FbxNode::eDestinationPivot, zero);
+				node->SetRotationOffset(FbxNode::eDestinationPivot, zero);
+				node->SetScalingOffset(FbxNode::eDestinationPivot, zero);
+				node->SetRotationPivot(FbxNode::eDestinationPivot, zero);
+				node->SetScalingPivot(FbxNode::eDestinationPivot, zero);
+				node->SetGeometricTranslation(FbxNode::eDestinationPivot, zero);
+				node->SetGeometricRotation(FbxNode::eDestinationPivot, zero);
+				node->SetGeometricScaling(FbxNode::eDestinationPivot, one);
+
+				// Banshee assumes euler angles are in YXZ order
+				node->SetRotationOrder(FbxNode::eDestinationPivot, FbxEuler::eOrderYXZ);
+
+				// Keep interpolation as is
+				node->SetQuaternionInterpolation(FbxNode::eDestinationPivot, node->GetQuaternionInterpolation(FbxNode::eSourcePivot));
+
+				for (int i = 0; i < node->GetChildCount(); i++)
+				{
+					FbxNode* childNode = node->GetChild(i);
+					todo.push(childNode);
+				}
+			}
+
+			scene->GetRootNode()->ConvertPivotAnimationRecursive(nullptr, FbxNode::eDestinationPivot, frameRate, false);
+		}
+		bs_frame_clear();
+	}
+
 	TAnimationCurve<Vector3> FBXImporter::reduceKeyframes(TAnimationCurve<Vector3>& curve)
 	{
 		UINT32 keyCount = curve.getNumKeyFrames();
@@ -1580,6 +1637,24 @@ namespace BansheeEngine
 
 			newKeyframes.push_back(curKey);
 			lastWasEqual = isEqual;
+		}
+
+		return TAnimationCurve<Vector3>(newKeyframes);
+	}
+
+	TAnimationCurve<Vector3> FBXImporter::scaleKeyframes(TAnimationCurve<Vector3>& curve, float scale)
+	{
+		UINT32 keyCount = curve.getNumKeyFrames();
+
+		Vector<TKeyframe<Vector3>> newKeyframes(keyCount);
+		for (UINT32 i = 0; i < keyCount; i++)
+		{
+			TKeyframe<Vector3> curKey = curve.getKeyFrame(i);
+			curKey.value *= scale;
+			curKey.inTangent *= scale;
+			curKey.outTangent *= scale;
+
+			newKeyframes[i] = curKey;
 		}
 
 		return TAnimationCurve<Vector3>(newKeyframes);
