@@ -17,7 +17,7 @@ namespace BansheeEditor
     [DefaultSize(900, 500)]
     internal class AnimationWindow : EditorWindow
     {
-        private const int FIELD_DISPLAY_WIDTH = 200;
+        private const int FIELD_DISPLAY_WIDTH = 300;
         private const int DRAG_START_DISTANCE = 3;
         private const float DRAG_SCALE = 1.0f;
         private const float ZOOM_SCALE = 0.1f/120.0f; // One scroll step is usually 120 units, we want 1/10 of that
@@ -258,7 +258,7 @@ namespace BansheeEditor
                 }
                 else
                 {
-                    if (IsClipImported(clipInfo.clip))
+                    if (clipInfo.isImported)
                     {
                         LocEdString title = new LocEdString("Warning");
                         LocEdString message =
@@ -277,7 +277,7 @@ namespace BansheeEditor
                 if (clipInfo.clip == null)
                     return;
 
-                if (IsClipImported(clipInfo.clip))
+                if (clipInfo.isImported)
                 {
                     LocEdString title = new LocEdString("Warning");
                     LocEdString message =
@@ -539,13 +539,12 @@ namespace BansheeEditor
         {
             EditorPersistentData persistentData = EditorApplication.PersistentData;
 
-            bool clipIsImported = IsClipImported(clip);
             if (persistentData.dirtyAnimClips.TryGetValue(clip.UUID, out clipInfo))
             {
                 // If an animation clip is imported, we don't care about it's cached curve values as they could have changed
                 // since last modification, so we re-load the clip. But we persist the events as those can only be set
                 // within the editor.
-                if (clipIsImported)
+                if (clipInfo.isImported)
                 {
                     EditorAnimClipInfo newClipInfo = EditorAnimClipInfo.Create(clip);
                     newClipInfo.events = clipInfo.events;
@@ -557,18 +556,12 @@ namespace BansheeEditor
             persistentData.dirtyAnimClips[clip.UUID] = clipInfo;
 
             foreach (var curve in clipInfo.curves)
-                guiFieldDisplay.AddField(curve.Key);
+                guiFieldDisplay.AddField(new AnimFieldInfo(curve.Key, curve.Value.type, !clipInfo.isImported));
 
             guiCurveEditor.Events = clipInfo.events;
-            guiCurveEditor.DisableCurveEdit = clipIsImported;
+            guiCurveEditor.DisableCurveEdit = clipInfo.isImported;
 
             SetCurrentFrame(0);
-        }
-
-        private static bool IsClipImported(AnimationClip clip)
-        {
-            string resourcePath = ProjectLibrary.GetPath(clip);
-            return ProjectLibrary.IsSubresource(resourcePath);
         }
 
         private void UpdateSelectedSO(bool force)
@@ -613,6 +606,8 @@ namespace BansheeEditor
 
                 if(clipInfo == null)
                     clipInfo = new EditorAnimClipInfo();
+
+                UpdateDisplayedCurves(true);
             }
         }
 
@@ -704,19 +699,41 @@ namespace BansheeEditor
             guiFieldDisplay.SetDisplayValues(values.ToArray());
         }
 
+        private EdAnimationCurve[] GetDisplayedCurves()
+        {
+            List<EdAnimationCurve> curvesToDisplay = new List<EdAnimationCurve>();
+
+            if (selectedFields.Count == 0) // Display all if nothing is selected
+            {
+                if (clipInfo == null)
+                    return curvesToDisplay.ToArray();
+
+                foreach (var curve in clipInfo.curves)
+                {
+                    for (int i = 0; i < curve.Value.curves.Length; i++)
+                        curvesToDisplay.Add(curve.Value.curves[i]);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < selectedFields.Count; i++)
+                {
+                    EdAnimationCurve curve;
+                    if (TryGetCurve(selectedFields[i], out curve))
+                        curvesToDisplay.Add(curve);
+                }
+            }
+
+            return curvesToDisplay.ToArray();
+        }
+
         private Vector2 GetOptimalRange()
         {
-            List<EdAnimationCurve> displayedCurves = new List<EdAnimationCurve>();
-            for (int i = 0; i < selectedFields.Count; i++)
-            {
-                EdAnimationCurve curve;
-                if (TryGetCurve(selectedFields[i], out curve))
-                    displayedCurves.Add(curve);
-            }
+            EdAnimationCurve[] curvesToDisplay = GetDisplayedCurves();
 
             float xRange;
             float yRange;
-            CalculateRange(displayedCurves, out xRange, out yRange);
+            CalculateRange(curvesToDisplay, out xRange, out yRange);
 
             // Add padding to y range
             yRange *= 1.05f;
@@ -733,15 +750,8 @@ namespace BansheeEditor
 
         private void UpdateDisplayedCurves(bool allowReduce = false)
         {
-            List<EdAnimationCurve> curvesToDisplay = new List<EdAnimationCurve>();
-            for (int i = 0; i < selectedFields.Count; i++)
-            {
-                EdAnimationCurve curve;
-                if (TryGetCurve(selectedFields[i], out curve))
-                    curvesToDisplay.Add(curve);
-            }
-
-            guiCurveEditor.SetCurves(curvesToDisplay.ToArray());
+            EdAnimationCurve[] curvesToDisplay = GetDisplayedCurves();
+            guiCurveEditor.SetCurves(curvesToDisplay);
 
             Vector2 newRange = GetOptimalRange();
             if (!allowReduce)
@@ -762,7 +772,7 @@ namespace BansheeEditor
         private void AddNewField(string path, SerializableProperty.FieldType type)
         {
             bool noSelection = selectedFields.Count == 0;
-            guiFieldDisplay.AddField(path);
+            guiFieldDisplay.AddField(new AnimFieldInfo(path, type, !clipInfo.isImported));
 
             switch (type)
             {
@@ -877,9 +887,9 @@ namespace BansheeEditor
                 clipInfo.curves.Remove(GetSubPathParent(selectedFields[i]));
             }
 
-            List<string> existingFields = new List<string>();
+            List<AnimFieldInfo> existingFields = new List<AnimFieldInfo>();
             foreach (var KVP in clipInfo.curves)
-                existingFields.Add(KVP.Key);
+                existingFields.Add(new AnimFieldInfo(KVP.Key, KVP.Value.type, !clipInfo.isImported));
 
             guiFieldDisplay.SetFields(existingFields.ToArray());
 
@@ -899,7 +909,7 @@ namespace BansheeEditor
             return output;
         }
 
-        private static void CalculateRange(List<EdAnimationCurve> curves, out float xRange, out float yRange)
+        private static void CalculateRange(EdAnimationCurve[] curves, out float xRange, out float yRange)
         {
             xRange = 0.0f;
             yRange = 0.0f;

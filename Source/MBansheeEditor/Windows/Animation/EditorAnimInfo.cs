@@ -61,6 +61,7 @@ namespace BansheeEditor
     internal class EditorAnimClipInfo
     {
         public AnimationClip clip;
+        public bool isImported;
         public Dictionary<string, FieldAnimCurves> curves = new Dictionary<string, FieldAnimCurves>();
         public AnimationEvent[] events = new AnimationEvent[0];
 
@@ -74,6 +75,7 @@ namespace BansheeEditor
         {
             EditorAnimClipInfo clipInfo = new EditorAnimClipInfo();
             clipInfo.clip = clip;
+            clipInfo.isImported = IsClipImported(clip);
 
             AnimationCurves clipCurves = clip.Curves;
             EditorAnimClipTangents editorCurveData = null;
@@ -269,9 +271,7 @@ namespace BansheeEditor
         /// </summary>
         public void SaveToClip()
         {
-            bool clipIsImported = IsClipImported(clip);
-
-            if (!clipIsImported)
+            if (!isImported)
             {
                 List<NamedVector3Curve> positionCurves = new List<NamedVector3Curve>();
                 List<NamedVector3Curve> rotationCurves = new List<NamedVector3Curve>();

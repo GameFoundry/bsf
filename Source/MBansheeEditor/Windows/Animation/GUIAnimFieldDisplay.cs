@@ -18,7 +18,7 @@ namespace BansheeEditor
         private int height;
 
         private GUIScrollArea scrollArea;
-        private List<string> paths = new List<string>();
+        private List<AnimFieldInfo> fieldInfos = new List<AnimFieldInfo>();
 
         private GUIAnimFieldEntry[] fields;
         private GUIAnimFieldLayouts layouts;
@@ -46,19 +46,24 @@ namespace BansheeEditor
             Rebuild();
         }
 
-        public void SetFields(string[] paths)
+        public void SetFields(AnimFieldInfo[] fields)
         {
-            this.paths.Clear();
-            this.paths.AddRange(paths);
+            this.fieldInfos.Clear();
+            this.fieldInfos.AddRange(fields);
 
             Rebuild();
         }
 
-        public void AddField(string path)
+        public void AddField(AnimFieldInfo field)
         {
-            if (!paths.Contains(path))
+            bool exists = fieldInfos.Exists(x =>
             {
-                paths.Add(path);
+                return x.path == field.path;
+            });
+
+            if (!exists)
+            {
+                fieldInfos.Add(field);
                 Rebuild();
             }
         }
@@ -115,7 +120,7 @@ namespace BansheeEditor
             scrollArea.Layout.Clear();
             fields = null;
 
-            if (paths == null || root == null)
+            if (fieldInfos == null || root == null)
                 return;
 
             layouts = new GUIAnimFieldLayouts();
@@ -141,41 +146,48 @@ namespace BansheeEditor
             layouts.overlay.AddSpace(5);
             layouts.background.AddSpace(5);
 
-            fields = new GUIAnimFieldEntry[paths.Count];
-            for (int i = 0; i < paths.Count; i++)
+            fields = new GUIAnimFieldEntry[fieldInfos.Count];
+            for (int i = 0; i < fieldInfos.Count; i++)
             {
-                if (string.IsNullOrEmpty(paths[i]))
+                if (string.IsNullOrEmpty(fieldInfos[i].path))
                     continue;
 
-                string pathSuffix;
-                SerializableProperty property = Animation.FindProperty(root, paths[i], out pathSuffix);
-
-                if (property != null)
+                bool entryIsMissing;
+                if (fieldInfos[i].isUserCurve)
                 {
-                    switch (property.Type)
+                    string pathSuffix;
+                    SerializableProperty property = Animation.FindProperty(root, fieldInfos[i].path, out pathSuffix);
+                    entryIsMissing = property == null;
+                }
+                else
+                    entryIsMissing = false;
+
+                if (!entryIsMissing)
+                {
+                    switch (fieldInfos[i].type)
                     {
                         case SerializableProperty.FieldType.Vector2:
-                            fields[i] = new GUIAnimVec2Entry(layouts, paths[i]);
+                            fields[i] = new GUIAnimVec2Entry(layouts, fieldInfos[i].path);
                             break;
                         case SerializableProperty.FieldType.Vector3:
-                            fields[i] = new GUIAnimVec3Entry(layouts, paths[i]);
+                            fields[i] = new GUIAnimVec3Entry(layouts, fieldInfos[i].path);
                             break;
                         case SerializableProperty.FieldType.Vector4:
-                            fields[i] = new GUIAnimVec4Entry(layouts, paths[i]);
+                            fields[i] = new GUIAnimVec4Entry(layouts, fieldInfos[i].path);
                             break;
                         case SerializableProperty.FieldType.Color:
-                            fields[i] = new GUIAnimColorEntry(layouts, paths[i]);
+                            fields[i] = new GUIAnimColorEntry(layouts, fieldInfos[i].path);
                             break;
                         case SerializableProperty.FieldType.Bool:
                         case SerializableProperty.FieldType.Int:
                         case SerializableProperty.FieldType.Float:
-                            fields[i] = new GUIAnimSimpleEntry(layouts, paths[i]);
+                            fields[i] = new GUIAnimSimpleEntry(layouts, fieldInfos[i].path);
                             break;
                     }
                 }
                 else
                 {
-                    fields[i] = new GUIAnimMissingEntry(layouts, paths[i]);
+                    fields[i] = new GUIAnimMissingEntry(layouts, fieldInfos[i].path);
                 }
 
                 if (fields[i] != null)
@@ -210,7 +222,7 @@ namespace BansheeEditor
 
     internal abstract class GUIAnimFieldEntry
     {
-        private const int MAX_PATH_LENGTH = 20;
+        private const int MAX_PATH_LENGTH = 30;
         protected const int INDENT_AMOUNT = 10;
 
         protected string path;
@@ -561,8 +573,6 @@ namespace BansheeEditor
 
             overlaySpacing = new GUILabel("", GUIOption.FixedHeight(GetEntryHeight()));
             layouts.overlay.AddElement(overlaySpacing);
-
-            // TODO - Alternating backgrounds
         }
 
         public override void Toggle(bool on)
@@ -572,6 +582,20 @@ namespace BansheeEditor
 
             base.Toggle(on);
         }
+    }
+
+    internal struct AnimFieldInfo
+    {
+        public AnimFieldInfo(string path, SerializableProperty.FieldType type, bool isUserCurve)
+        {
+            this.path = path;
+            this.type = type;
+            this.isUserCurve = isUserCurve;
+        }
+
+        public string path;
+        public SerializableProperty.FieldType type;
+        public bool isUserCurve;
     }
 
     /** @} */
