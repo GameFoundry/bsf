@@ -19,7 +19,7 @@ namespace BansheeEditor
     {
         private const int FIELD_DISPLAY_WIDTH = 300;
         private const int DRAG_START_DISTANCE = 3;
-        private const float DRAG_SCALE = 1.0f;
+        private const float DRAG_SCALE = 3.0f;
         private const float ZOOM_SCALE = 0.1f/120.0f; // One scroll step is usually 120 units, we want 1/10 of that
 
         private SceneObject selectedSO;
@@ -393,13 +393,16 @@ namespace BansheeEditor
             // Handle middle mouse dragging
             if (isDragInProgress)
             {
-                float dragX = Input.GetAxisValue(InputAxis.MouseX) * DRAG_SCALE;
-                float dragY = Input.GetAxisValue(InputAxis.MouseY) * DRAG_SCALE;
+                float lengthPerPixel = guiCurveEditor.Range.x / guiCurveEditor.Width;
+                float heightPerPixel = guiCurveEditor.Range.y / guiCurveEditor.Height;
+
+                float dragX = Input.GetAxisValue(InputAxis.MouseX) * DRAG_SCALE * lengthPerPixel;
+                float dragY = Input.GetAxisValue(InputAxis.MouseY) * DRAG_SCALE * heightPerPixel;
 
                 Vector2 offset = guiCurveEditor.Offset;
                 offset.x = Math.Max(0.0f, offset.x + dragX);
                 offset.y -= dragY;
-                
+
                 guiCurveEditor.Offset = offset;
                 UpdateScrollBarSize();
                 UpdateScrollBarPosition();
@@ -633,67 +636,64 @@ namespace BansheeEditor
 
             float time = guiCurveEditor.GetTimeForFrame(currentFrameIdx);
 
+            Debug.Log(currentFrameIdx + " - " + time);
+
             List<GUIAnimFieldPathValue> values = new List<GUIAnimFieldPathValue>();
             foreach (var kvp in clipInfo.curves)
             {
-                string suffix;
-                SerializableProperty property = Animation.FindProperty(selectedSO, kvp.Key, out suffix);
-                if (property != null)
+                GUIAnimFieldPathValue fieldValue = new GUIAnimFieldPathValue();
+                fieldValue.path = kvp.Key;
+
+                switch (kvp.Value.type)
                 {
-                    GUIAnimFieldPathValue fieldValue = new GUIAnimFieldPathValue();
-                    fieldValue.path = kvp.Key;
+                    case SerializableProperty.FieldType.Vector2:
+                        {
+                            Vector2 value = new Vector2();
 
-                    switch (kvp.Value.type)
-                    {
-                        case SerializableProperty.FieldType.Vector2:
-                            {
-                                Vector2 value = new Vector2();
+                            for (int i = 0; i < 2; i++)
+                                value[i] = kvp.Value.curves[i].Evaluate(time, false);
 
-                                for (int i = 0; i < 2; i++)
-                                    value[i] = kvp.Value.curves[i].Evaluate(time, false);
+                            fieldValue.value = value;
+                        }
+                        break;
+                    case SerializableProperty.FieldType.Vector3:
+                        {
+                            Vector3 value = new Vector3();
 
-                                fieldValue.value = value;
-                            }
-                            break;
-                        case SerializableProperty.FieldType.Vector3:
-                            {
-                                Vector3 value = new Vector3();
+                            for (int i = 0; i < 3; i++)
+                                value[i] = kvp.Value.curves[i].Evaluate(time, false);
 
-                                for (int i = 0; i < 3; i++)
-                                    value[i] = kvp.Value.curves[i].Evaluate(time, false);
+                            fieldValue.value = value;
+                        }
+                        break;
+                    case SerializableProperty.FieldType.Vector4:
+                        {
+                            Vector4 value = new Vector4();
 
-                                fieldValue.value = value;
-                            }
-                            break;
-                        case SerializableProperty.FieldType.Vector4:
-                            {
-                                Vector4 value = new Vector4();
+                            for (int i = 0; i < 4; i++)
+                                value[i] = kvp.Value.curves[i].Evaluate(time, false);
 
-                                for (int i = 0; i < 4; i++)
-                                    value[i] = kvp.Value.curves[i].Evaluate(time, false);
+                            fieldValue.value = value;
+                        }
+                        break;
+                    case SerializableProperty.FieldType.Color:
+                        {
+                            Color value = new Color();
 
-                                fieldValue.value = value;
-                            }
-                            break;
-                        case SerializableProperty.FieldType.Color:
-                            {
-                                Color value = new Color();
+                            for (int i = 0; i < 4; i++)
+                                value[i] = kvp.Value.curves[i].Evaluate(time, false);
 
-                                for (int i = 0; i < 4; i++)
-                                    value[i] = kvp.Value.curves[i].Evaluate(time, false);
-
-                                fieldValue.value = value;
-                            }
-                            break;
-                        case SerializableProperty.FieldType.Bool:
-                        case SerializableProperty.FieldType.Int:
-                        case SerializableProperty.FieldType.Float:
-                            fieldValue.value = kvp.Value.curves[0].Evaluate(time, false); ;
-                            break;
-                    }
-
-                    values.Add(fieldValue);
+                            fieldValue.value = value;
+                        }
+                        break;
+                    case SerializableProperty.FieldType.Bool:
+                    case SerializableProperty.FieldType.Int:
+                    case SerializableProperty.FieldType.Float:
+                        fieldValue.value = kvp.Value.curves[0].Evaluate(time, false); ;
+                        break;
                 }
+
+                values.Add(fieldValue);
             }
 
             guiFieldDisplay.SetDisplayValues(values.ToArray());

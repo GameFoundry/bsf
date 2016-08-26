@@ -248,7 +248,7 @@ namespace BansheeEditor
 
             keyframeContextMenu = new ContextMenu();
             keyframeContextMenu.AddItem("Delete", DeleteSelectedKeyframes);
-            keyframeContextMenu.AddItem("Delete", EditSelectedKeyframe);
+            keyframeContextMenu.AddItem("Edit", EditSelectedKeyframe);
             keyframeContextMenu.AddItem("Tangents/Auto", () => { ChangeSelectionTangentMode(TangentMode.Auto); });
             keyframeContextMenu.AddItem("Tangents/Free", () => { ChangeSelectionTangentMode(TangentMode.Free); });
             keyframeContextMenu.AddItem("Tangents/In/Auto", () => { ChangeSelectionTangentMode(TangentMode.InAuto); });
@@ -731,6 +731,8 @@ namespace BansheeEditor
                     curve.Apply();
                 }
             }
+            else
+                ShowReadOnlyMessage();
 
             // TODO - UNDOREDO
 
@@ -796,7 +798,10 @@ namespace BansheeEditor
         private void ChangeSelectionTangentMode(TangentMode mode)
         {
             if (disableCurveEdit)
+            {
+                ShowReadOnlyMessage();
                 return;
+            }
 
             foreach (var selectedEntry in selectedKeyframes)
             {
@@ -863,6 +868,8 @@ namespace BansheeEditor
                         curve.Apply();
                     }
                 }
+                else
+                    ShowReadOnlyMessage();
 
                 // TODO - UNDOREDO
 
@@ -920,6 +927,8 @@ namespace BansheeEditor
                     curve.Apply();
                 }
             }
+            else
+                ShowReadOnlyMessage();
 
             // TODO - UNDOREDO
 
@@ -1021,7 +1030,10 @@ namespace BansheeEditor
         private void EditSelectedKeyframe()
         {
             if (disableCurveEdit)
+            {
+                ShowReadOnlyMessage();
                 return;
+            }
 
             if (selectedKeyframes.Count == 0)
                 return;
@@ -1093,6 +1105,19 @@ namespace BansheeEditor
                 UpdateEventsGUI();
                 OnEventModified?.Invoke();
             });
+        }
+
+        /// <summary>
+        /// Shows a dialog box that notifies the user that the animation clip is read only.
+        /// </summary>
+        private void ShowReadOnlyMessage()
+        {
+            LocEdString title = new LocEdString("Warning");
+            LocEdString message =
+                new LocEdString("You cannot edit keyframes on animation clips that" +
+                                " are imported from an external file.");
+
+            DialogBox.Open(title, message, DialogBox.Type.OK);
         }
     }
 

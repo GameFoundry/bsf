@@ -81,7 +81,7 @@ namespace BansheeEditor
         public float GetTimeForFrame(int frameIdx)
         {
             float range = GetRange();
-            int numFrames = (int)range * fps;
+            int numFrames = (int)(range * fps);
             float timePerFrame = range / numFrames;
 
             return frameIdx * timePerFrame;
@@ -180,7 +180,7 @@ namespace BansheeEditor
             if (markedFrameIdx != -1)
             {
                 float range = GetRange();
-                int numFrames = (int)range * fps;
+                int numFrames = (int)(range * fps);
                 float timePerFrame = range / numFrames;
 
                 DrawFrameMarker(markedFrameIdx * timePerFrame);

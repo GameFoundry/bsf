@@ -70,6 +70,9 @@ namespace BansheeEditor
 
         public void SetDisplayValues(GUIAnimFieldPathValue[] values)
         {
+            for(int i = 0; i < values.Length; i++)
+                Debug.Log(i + ". " + values[i].value);
+
             for (int i = 0; i < fields.Length; i++)
             {
                 string path = fields[i].Path;
@@ -144,7 +147,7 @@ namespace BansheeEditor
             layouts.main.AddSpace(5);
             layouts.underlay.AddSpace(5);
             layouts.overlay.AddSpace(5);
-            layouts.background.AddSpace(5);
+            layouts.background.AddSpace(3); // Minor hack: Background starts heigher to get it to center better
 
             fields = new GUIAnimFieldEntry[fieldInfos.Count];
             for (int i = 0; i < fieldInfos.Count; i++)
@@ -235,14 +238,14 @@ namespace BansheeEditor
 
         public string Path { get { return path; } }
 
-        public GUIAnimFieldEntry(GUIAnimFieldLayouts layouts, string path, bool shortName)
+        public GUIAnimFieldEntry(GUIAnimFieldLayouts layouts, string path, bool child)
         {
             this.path = path;
 
             GUILayoutX toggleLayout = layouts.main.AddLayoutX();
-            toggleLayout.AddSpace(15);
+            toggleLayout.AddSpace(child ? 30 : 15);
 
-            selectionBtn = new GUIButton(GetDisplayName(path, shortName), EditorStyles.Label, GUIOption.FlexibleWidth());
+            selectionBtn = new GUIButton(GetDisplayName(path, child), EditorStyles.Label, GUIOption.FlexibleWidth());
             selectionBtn.OnClick += () =>
             {
                 OnEntrySelected?.Invoke(path);
@@ -453,9 +456,13 @@ namespace BansheeEditor
         {
             foldout = new GUIToggle("", EditorStyles.Expand);
             foldout.OnToggled += Toggle;
+
+            GUILabel spacer = new GUILabel("", GUIOption.FixedHeight(GetEntryHeight()));
+
             foldoutLayout = layouts.overlay.AddLayoutX();
 
             foldoutLayout.AddElement(foldout);
+            foldoutLayout.AddElement(spacer);
             foldoutLayout.AddFlexibleSpace();
 
             underlaySpacing = new GUILabel("", GUIOption.FixedHeight(GetEntryHeight()));
