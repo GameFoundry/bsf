@@ -573,13 +573,12 @@ namespace BansheeEditor
             ElementType[] newArray = new ElementType[size];
 
             int maxSize = MathEx.Min(size, array.GetLength(0));
-
             for (int i = 0; i < maxSize; i++)
                 newArray.SetValue(array.GetValue(i), i);
 
             array = newArray;
 
-            if(OnChanged != null)
+            if (OnChanged != null)
                 OnChanged(array);
         }
 

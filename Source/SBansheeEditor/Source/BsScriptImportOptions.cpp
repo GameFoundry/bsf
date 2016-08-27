@@ -326,7 +326,12 @@ namespace BansheeEngine
 		UINT32 numSplits = inputArray.size();
 		Vector<AnimationSplitInfo> splitInfos(numSplits);
 		for (UINT32 i = 0; i < numSplits; i++)
-			splitInfos[i] = ScriptAnimationSplitInfo::fromManaged(inputArray.get<MonoObject*>(i));
+		{
+			MonoObject* monoSplitInfo = inputArray.get<MonoObject*>(i);
+
+			if(monoSplitInfo != nullptr)
+				splitInfos[i] = ScriptAnimationSplitInfo::fromManaged(monoSplitInfo);
+		}
 
 		io->setAnimationClipSplits(splitInfos);
 	}

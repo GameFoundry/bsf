@@ -28,6 +28,7 @@ namespace BansheeEditor
         private GUIButton reimportButton;
 
         private MeshImportOptions importOptions;
+        private AnimationSplitInfo[] splitInfos;
 
         /// <inheritdoc/>
         protected internal override void Initialize()
@@ -60,7 +61,9 @@ namespace BansheeEditor
             if (rebuildGUI)
                 BuildGUI();
 
-            animSplitInfoField.Refresh();
+            InspectableState splitInfosModified = animSplitInfoField.Refresh();
+            if (splitInfosModified == InspectableState.Modified)
+                newImportOptions.AnimationClipSplits = splitInfos;
 
             normalsField.Value = newImportOptions.ImportNormals;
             tangentsField.Value = newImportOptions.ImportTangents;
@@ -117,9 +120,11 @@ namespace BansheeEditor
             Layout.AddElement(collisionMeshTypeField);
             Layout.AddElement(keyFrameReductionField);
 
+            splitInfos = importOptions.AnimationClipSplits;
+
             animSplitInfoField = GUIArrayField<AnimationSplitInfo, AnimSplitArrayRow>.Create(
-                new LocEdString("Animation splits"), importOptions.AnimationClipSplits, Layout);
-            animSplitInfoField.OnChanged += x => importOptions.AnimationClipSplits = x;
+                new LocEdString("Animation splits"), splitInfos, Layout);
+            animSplitInfoField.OnChanged += x => { splitInfos = x; importOptions.AnimationClipSplits = x; };
             animSplitInfoField.IsExpanded = Persistent.GetBool("animSplitInfos_Expanded");
             animSplitInfoField.OnExpand += x => Persistent.SetBool("animSplitInfos_Expanded", x);
 
@@ -247,10 +252,14 @@ namespace BansheeEditor
             protected internal override InspectableState Refresh()
             {
                 AnimationSplitInfo splitInfo = GetValue<AnimationSplitInfo>();
-                nameField.Value = splitInfo.name;
-                startFrameField.Value = splitInfo.startFrame;
-                endFrameField.Value = splitInfo.endFrame;
-                isAdditiveField.Value = splitInfo.isAdditive;
+
+                if (splitInfo != null)
+                {
+                    nameField.Value = splitInfo.name;
+                    startFrameField.Value = splitInfo.startFrame;
+                    endFrameField.Value = splitInfo.endFrame;
+                    isAdditiveField.Value = splitInfo.isAdditive;
+                }
 
                 return base.Refresh();
             }
