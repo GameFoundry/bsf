@@ -18,7 +18,7 @@ namespace BansheeEditor
     internal struct FieldAnimCurves
     {
         public SerializableProperty.FieldType type;
-        public EdAnimationCurve[] curves;
+        public CurveDrawInfo[] curveInfos;
     }
 
     /// <summary>
@@ -107,6 +107,7 @@ namespace BansheeEditor
             if (editorCurveData == null)
                 editorCurveData = new EditorAnimClipTangents();
 
+            int globalCurveIdx = 0;
             Action<NamedVector3Curve[], EditorVector3CurveTangents[], string> loadVector3Curve =
                 (curves, tangents, subPath) =>
                 {
@@ -132,11 +133,19 @@ namespace BansheeEditor
 
                         FieldAnimCurves fieldCurves = new FieldAnimCurves();
                         fieldCurves.type = SerializableProperty.FieldType.Vector3;
-                        fieldCurves.curves = new EdAnimationCurve[3];
+                        fieldCurves.curveInfos = new CurveDrawInfo[3];
 
-                        fieldCurves.curves[0] = new EdAnimationCurve(curveEntry.X, tangentsX);
-                        fieldCurves.curves[1] = new EdAnimationCurve(curveEntry.Y, tangentsY);
-                        fieldCurves.curves[2] = new EdAnimationCurve(curveEntry.Z, tangentsZ);
+                        fieldCurves.curveInfos[0] = new CurveDrawInfo();
+                        fieldCurves.curveInfos[0].curve = new EdAnimationCurve(curveEntry.X, tangentsX);
+                        fieldCurves.curveInfos[0].color = GUICurveDrawing.GetUniqueColor(globalCurveIdx++);
+
+                        fieldCurves.curveInfos[1] = new CurveDrawInfo();
+                        fieldCurves.curveInfos[1].curve = new EdAnimationCurve(curveEntry.Y, tangentsY);
+                        fieldCurves.curveInfos[1].color = GUICurveDrawing.GetUniqueColor(globalCurveIdx++);
+
+                        fieldCurves.curveInfos[2] = new CurveDrawInfo();
+                        fieldCurves.curveInfos[2].curve = new EdAnimationCurve(curveEntry.Z, tangentsZ);
+                        fieldCurves.curveInfos[2].color = GUICurveDrawing.GetUniqueColor(globalCurveIdx++);
 
                         string curvePath = curveEntry.Name.TrimEnd('/') + subPath;
                         clipInfo.curves[curvePath] = fieldCurves;
@@ -232,7 +241,7 @@ namespace BansheeEditor
                         fieldCurves.type = SerializableProperty.FieldType.Color;
                 }
 
-                fieldCurves.curves = new EdAnimationCurve[numCurves];
+                fieldCurves.curveInfos = new CurveDrawInfo[numCurves];
 
                 for (int i = 0; i < numCurves; i++)
                 {
@@ -243,7 +252,9 @@ namespace BansheeEditor
                     if (tangentIdx != -1)
                         tangents = editorCurveData.floatCurves[tangentIdx].tangents;
 
-                    fieldCurves.curves[i] = new EdAnimationCurve(clipCurves.FloatCurves[curveIdx].Curve, tangents);
+                    fieldCurves.curveInfos[i] = new CurveDrawInfo();
+                    fieldCurves.curveInfos[i].curve = new EdAnimationCurve(clipCurves.FloatCurves[curveIdx].Curve, tangents);
+                    fieldCurves.curveInfos[i].color = GUICurveDrawing.GetUniqueColor(globalCurveIdx++);
                 }
 
                 string curvePath = KVP.Key;
@@ -305,15 +316,15 @@ namespace BansheeEditor
                         string curvePath = sb.ToString();
 
                         NamedVector3Curve curve = new NamedVector3Curve(curvePath,
-                            new AnimationCurve(kvp.Value.curves[0].KeyFrames),
-                            new AnimationCurve(kvp.Value.curves[1].KeyFrames),
-                            new AnimationCurve(kvp.Value.curves[2].KeyFrames));
+                            new AnimationCurve(kvp.Value.curveInfos[0].curve.KeyFrames),
+                            new AnimationCurve(kvp.Value.curveInfos[1].curve.KeyFrames),
+                            new AnimationCurve(kvp.Value.curveInfos[2].curve.KeyFrames));
 
                         EditorVector3CurveTangents tangents = new EditorVector3CurveTangents();
                         tangents.name = curvePath;
-                        tangents.tangentsX = kvp.Value.curves[0].TangentModes;
-                        tangents.tangentsY = kvp.Value.curves[1].TangentModes;
-                        tangents.tangentsZ = kvp.Value.curves[2].TangentModes;
+                        tangents.tangentsX = kvp.Value.curveInfos[0].curve.TangentModes;
+                        tangents.tangentsY = kvp.Value.curveInfos[1].curve.TangentModes;
+                        tangents.tangentsZ = kvp.Value.curveInfos[2].curve.TangentModes;
 
                         if (lastEntry == "Position")
                         {
@@ -338,11 +349,11 @@ namespace BansheeEditor
                             string path = kvp.Key + subPath;
 
                             NamedFloatCurve curve = new NamedFloatCurve(path,
-                            new AnimationCurve(kvp.Value.curves[idx].KeyFrames));
+                            new AnimationCurve(kvp.Value.curveInfos[idx].curve.KeyFrames));
 
                             EditorFloatCurveTangents tangents = new EditorFloatCurveTangents();
                             tangents.name = path;
-                            tangents.tangents = kvp.Value.curves[idx].TangentModes;
+                            tangents.tangents = kvp.Value.curveInfos[idx].curve.TangentModes;
 
                             floatCurves.Add(curve);
                             floatTangents.Add(tangents);
