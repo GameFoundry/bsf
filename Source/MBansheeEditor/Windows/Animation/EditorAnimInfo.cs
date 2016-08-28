@@ -93,13 +93,21 @@ namespace BansheeEditor
                     FileEntry fileEntry = (FileEntry)entry;
                     ResourceMeta[] metas = fileEntry.ResourceMetas;
 
-                    for (int i = 0; i < metas.Length; i++)
+                    if (clipInfo.isImported)
                     {
-                        if (clipName == metas[i].SubresourceName)
+                        for (int i = 0; i < metas.Length; i++)
                         {
-                            editorCurveData = metas[i].EditorData as EditorAnimClipTangents;
-                            break;
+                            if (clipName == metas[i].SubresourceName)
+                            {
+                                editorCurveData = metas[i].EditorData as EditorAnimClipTangents;
+                                break;
+                            }
                         }
+                    }
+                    else
+                    {
+                        if(metas.Length > 0)
+                            editorCurveData = metas[0].EditorData as EditorAnimClipTangents;
                     }
                 }
             }
@@ -405,29 +413,13 @@ namespace BansheeEditor
                 ProjectLibrary.Save(clip);
 
                 // Save tangents for editor only use
-                LibraryEntry entry = ProjectLibrary.GetEntry(resourcePath);
-                string clipName = PathEx.GetTail(resourcePath);
+                EditorAnimClipTangents newCurveData = new EditorAnimClipTangents();
+                newCurveData.positionCurves = positionTangents.ToArray();
+                newCurveData.rotationCurves = rotationTangents.ToArray();
+                newCurveData.scaleCurves = scaleTangents.ToArray();
+                newCurveData.floatCurves = floatTangents.ToArray();
 
-                if (entry != null && entry.Type == LibraryEntryType.File)
-                {
-                    FileEntry fileEntry = (FileEntry)entry;
-                    ResourceMeta[] metas = fileEntry.ResourceMetas;
-
-                    for (int i = 0; i < metas.Length; i++)
-                    {
-                        if (clipName == metas[i].SubresourceName)
-                        {
-                            EditorAnimClipTangents newCurveData = new EditorAnimClipTangents();
-                            newCurveData.positionCurves = positionTangents.ToArray();
-                            newCurveData.rotationCurves = rotationTangents.ToArray();
-                            newCurveData.scaleCurves = scaleTangents.ToArray();
-                            newCurveData.floatCurves = floatTangents.ToArray();
-
-                            ProjectLibrary.SetEditorData(resourcePath, newCurveData);
-                            break;
-                        }
-                    }
-                }
+                ProjectLibrary.SetEditorData(resourcePath, newCurveData);
             }
             else
             {

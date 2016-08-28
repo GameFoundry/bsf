@@ -662,7 +662,7 @@ namespace BansheeEditor
         /// <summary>
         /// Change the set of curves to display.
         /// </summary>
-        /// <param name="curves">New set of curves to draw on the GUI element.</param>
+        /// <param name="curveInfos">New set of curves to draw on the GUI element.</param>
         public void SetCurves(CurveDrawInfo[] curveInfos)
         {
             this.curveInfos = curveInfos;

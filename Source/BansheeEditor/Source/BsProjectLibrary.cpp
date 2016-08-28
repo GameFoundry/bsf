@@ -1155,17 +1155,8 @@ namespace BansheeEngine
 			return;
 
 		FileEntry* fileEntry = static_cast<FileEntry*>(entry);
-		if (fileEntry->meta == nullptr)
-			return;
-
-		SPtr<ProjectResourceMeta> resMeta;
-		auto& resourceMetas = fileEntry->meta->getResourceMetaData();
-		for (auto& resMetaEntry : resourceMetas)
-		{
-			if (resMeta->getUniqueName() == path.getWTail())
-				resMeta = resMetaEntry;
-		}
-
+		SPtr<ProjectResourceMeta> resMeta = findResourceMeta(path);
+		
 		if (resMeta == nullptr)
 			return;
 
