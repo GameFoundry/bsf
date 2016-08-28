@@ -833,7 +833,7 @@ namespace BansheeEditor
                         {
                             // Replace only the in tangent mode, keeping the out tangent as is
                             TangentMode inFlags = (TangentMode.InAuto | TangentMode.InFree | TangentMode.InLinear |
-                                                   TangentMode.InAuto);
+                                                   TangentMode.InStep);
 
                             newMode &= ~inFlags;
                             newMode |= (mode & inFlags);
@@ -842,7 +842,7 @@ namespace BansheeEditor
                         {
                             // Replace only the out tangent mode, keeping the in tangent as is
                             TangentMode outFlags = (TangentMode.OutAuto | TangentMode.OutFree | TangentMode.OutLinear |
-                                                    TangentMode.OutAuto);
+                                                    TangentMode.OutStep);
 
                             newMode &= ~outFlags;
                             newMode |= (mode & outFlags);
