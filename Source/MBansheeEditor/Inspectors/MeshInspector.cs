@@ -190,18 +190,26 @@ namespace BansheeEditor
             protected override GUILayoutX CreateGUI(GUILayoutY layout)
             {
                 GUILayoutX titleLayout = layout.AddLayoutX();
-                nameField = new GUITextField(new LocEdString("Name"));
-                startFrameField = new GUIIntField(new LocEdString("Start"));
-                endFrameField = new GUIIntField(new LocEdString("End"));
-                isAdditiveField = new GUIToggleField(new LocEdString("Is additive"));
+                GUILayoutX contentLayout = layout.AddLayoutX();
+
+                GUILabel title = new GUILabel(new LocEdString(SeqIndex + ". "));
+                nameField = new GUITextField(new LocEdString("Name"), 40, false, "", GUIOption.FixedWidth(160));
+                startFrameField = new GUIIntField(new LocEdString("Start"), 40, "", GUIOption.FixedWidth(80));
+                endFrameField = new GUIIntField(new LocEdString("End"), 40, "", GUIOption.FixedWidth(80));
+                isAdditiveField = new GUIToggleField(new LocEdString("Is additive"), 50, "", GUIOption.FixedWidth(80));
 
                 startFrameField.SetRange(0, int.MaxValue);
                 endFrameField.SetRange(0, int.MaxValue);
 
+                titleLayout.AddElement(title);
                 titleLayout.AddElement(nameField);
-                titleLayout.AddElement(startFrameField);
-                titleLayout.AddElement(endFrameField);
-                titleLayout.AddElement(isAdditiveField);
+                titleLayout.AddFlexibleSpace();
+                contentLayout.AddSpace(10);
+                contentLayout.AddElement(startFrameField);
+                contentLayout.AddSpace(5);
+                contentLayout.AddElement(endFrameField);
+                contentLayout.AddSpace(5);
+                contentLayout.AddElement(isAdditiveField);
 
                 nameField.OnChanged += x =>
                 {

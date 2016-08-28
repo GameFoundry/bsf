@@ -319,9 +319,15 @@ namespace BansheeEngine
 
 	void ScriptMeshImportOptions::internal_SetAnimationClipSplits(ScriptMeshImportOptions* thisPtr, MonoArray* value)
 	{
-		ScriptArray inputArray(value);
-
 		SPtr<MeshImportOptions> io = thisPtr->getMeshImportOptions();
+
+		if(value == nullptr)
+		{
+			io->setAnimationClipSplits({});
+			return;
+		}
+
+		ScriptArray inputArray(value);
 
 		UINT32 numSplits = inputArray.size();
 		Vector<AnimationSplitInfo> splitInfos(numSplits);
