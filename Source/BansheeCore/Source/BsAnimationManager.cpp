@@ -139,6 +139,14 @@ namespace BansheeEngine
 				curBoneIdx += numBones;
 			}
 
+			// Reset mapped SO transform
+			for (UINT32 i = 0; i < anim->sceneObjectPose.numBones; i++)
+			{
+				anim->sceneObjectPose.positions[i] = Vector3::ZERO;
+				anim->sceneObjectPose.rotations[i] = Quaternion::IDENTITY;
+				anim->sceneObjectPose.scales[i] = Vector3::ONE;
+			}
+
 			// Update mapped scene objects
 			for(UINT32 i = 0; i < anim->numSceneObjects; i++)
 			{
@@ -159,8 +167,6 @@ namespace BansheeEngine
 						const TAnimationCurve<Vector3>& curve = state.curves->position[curveIdx].curve;
 						anim->sceneObjectPose.positions[curveIdx] = curve.evaluate(state.time, state.positionCaches[curveIdx], state.loop);
 					}
-					else
-						anim->sceneObjectPose.positions[curveIdx] = Vector3::ZERO;
 				}
 
 				{
@@ -171,8 +177,6 @@ namespace BansheeEngine
 						anim->sceneObjectPose.rotations[curveIdx] = curve.evaluate(state.time, state.rotationCaches[curveIdx], state.loop);
 						anim->sceneObjectPose.rotations[curveIdx].normalize();
 					}
-					else
-						anim->sceneObjectPose.rotations[curveIdx] = Quaternion::ZERO;
 				}
 
 				{
@@ -182,8 +186,6 @@ namespace BansheeEngine
 						const TAnimationCurve<Vector3>& curve = state.curves->scale[curveIdx].curve;
 						anim->sceneObjectPose.scales[curveIdx] = curve.evaluate(state.time, state.scaleCaches[curveIdx], state.loop);
 					}
-					else
-						anim->sceneObjectPose.scales[curveIdx] = Vector3::ONE;
 				}
 			}
 

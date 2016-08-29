@@ -940,23 +940,21 @@ namespace BansheeEngine
 
 			float clipLength = clipInfo.clip->getLength();
 			AnimationUtility::wrapTime(start, 0.0f, clipLength, loop);
-			AnimationUtility::wrapTime(end, 0.0f, clipLength, false);
+			AnimationUtility::wrapTime(end, 0.0f, clipLength, loop);
 
-			for (auto& event : events)
+			if (start < end)
 			{
-				if (event.time > start && event.time <= end)
-					onEventTriggered(clipInfo.clip, event.name);
-			}
-
-			// Check the looped portion
-			if(loop && end >= clipLength)
-			{
-				start = 0.0f;
-				end = end - clipLength;
-
 				for (auto& event : events)
 				{
 					if (event.time > start && event.time <= end)
+						onEventTriggered(clipInfo.clip, event.name);
+				}
+			}
+			else if(end < start) // End is looped, but start is not
+			{
+				for (auto& event : events)
+				{
+					if (event.time > start && event.time < clipLength && event.time > 0 && event.time <= end)
 						onEventTriggered(clipInfo.clip, event.name);
 				}
 			}
