@@ -169,6 +169,7 @@ namespace BansheeEngine
 					{
 						const TAnimationCurve<Quaternion>& curve = state.curves->rotation[curveIdx].curve;
 						anim->sceneObjectPose.rotations[curveIdx] = curve.evaluate(state.time, state.rotationCaches[curveIdx], state.loop);
+						anim->sceneObjectPose.rotations[curveIdx].normalize();
 					}
 					else
 						anim->sceneObjectPose.rotations[curveIdx] = Quaternion::ZERO;

@@ -907,10 +907,7 @@ namespace BansheeEditor
         private void RemoveSelectedFields()
         {
             for (int i = 0; i < selectedFields.Count; i++)
-            {
-                selectedFields.Remove(selectedFields[i]);
                 clipInfo.curves.Remove(GetSubPathParent(selectedFields[i]));
-            }
 
             UpdateCurveColors();
             UpdateDisplayedFields();
