@@ -81,6 +81,20 @@ namespace BansheeEngine
 		/**	Sets whether the object should be rendered or not. */
 		void setIsActive(bool active);
 
+		/** 
+		 * Sets bounds that will be used when determining if object is visible. Only relevant if setUseOverrideBounds() is
+		 * set to true.
+		 *
+		 * @param[in]	bounds	Bounds in local space.
+		 */
+		void setOverrideBounds(const AABox& bounds);
+
+		/**
+		 * Enables or disables override bounds. When enabled the bounds provided to setOverrideBounds() will be used for
+		 * determining object visibility, otherwise the bounds from the object's mesh will be used. Disabled by default.
+		 */
+		void setUseOverrideBounds(bool enable);
+
 		/**
 		 * Gets the layer bitfield that controls whether a renderable is considered visible in a specific camera. 
 		 * Renderable layer must match camera layer in order for the camera to render the component.
@@ -131,7 +145,8 @@ namespace BansheeEngine
 		MeshType mMesh;
 		Vector<MaterialType> mMaterials;
 		UINT64 mLayer;
-		Vector<AABox> mWorldBounds;
+		AABox mOverrideBounds;
+		bool mUseOverrideBounds;
 		Vector3 mPosition;
 		Matrix4 mTransform;
 		Matrix4 mTransformNoScale;

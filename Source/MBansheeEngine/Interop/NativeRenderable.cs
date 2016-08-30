@@ -42,6 +42,16 @@ namespace BansheeEngine
             return new Bounds(box, sphere);
         }
 
+        internal AABox OverrideBounds
+        {
+            set { Internal_SetOverrideBounds(mCachedPtr, ref value); }
+        }
+
+        internal bool UseOverrideBounds
+        {
+            set { Internal_SetUseOverrideBounds(mCachedPtr, value); }
+        }
+
         internal UInt64 Layers
         {
             get { return Internal_GetLayers(mCachedPtr); }
@@ -145,6 +155,12 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetMaterials(IntPtr thisPtr, Material[] materials);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetOverrideBounds(IntPtr thisPtr, ref AABox box);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetUseOverrideBounds(IntPtr thisPtr, bool enable);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_OnDestroy(IntPtr thisPtr);

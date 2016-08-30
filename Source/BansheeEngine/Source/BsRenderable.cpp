@@ -26,7 +26,8 @@ namespace BansheeEngine
 
 	template<bool Core>
 	TRenderable<Core>::TRenderable()
-		:mLayer(1), mTransform(Matrix4::IDENTITY), mTransformNoScale(Matrix4::IDENTITY), mIsActive(true)
+		: mLayer(1), mUseOverrideBounds(false), mTransform(Matrix4::IDENTITY), mTransformNoScale(Matrix4::IDENTITY)
+		, mIsActive(true)
 	{
 		mMaterials.resize(1);
 	}
@@ -123,6 +124,25 @@ namespace BansheeEngine
 		_markCoreDirty();
 	}
 
+	template<bool Core>
+	void TRenderable<Core>::setOverrideBounds(const AABox& bounds)
+	{
+		mOverrideBounds = bounds;
+
+		if(mUseOverrideBounds)
+			_markCoreDirty();
+	}
+
+	template<bool Core>
+	void TRenderable<Core>::setUseOverrideBounds(bool enable)
+	{
+		if (mUseOverrideBounds == enable)
+			return;
+
+		mUseOverrideBounds = enable;
+		_markCoreDirty();
+	}
+
 	template class TRenderable < false >;
 	template class TRenderable < true >;
 
@@ -146,6 +166,16 @@ namespace BansheeEngine
 
 	Bounds RenderableCore::getBounds() const
 	{
+		if (mUseOverrideBounds)
+		{
+			Sphere sphere(mOverrideBounds.getCenter(), mOverrideBounds.getRadius());
+
+			Bounds bounds(mOverrideBounds, sphere);
+			bounds.transformAffine(mTransform);
+
+			return bounds;
+		}
+
 		SPtr<MeshCore> mesh = getMesh();
 
 		if (mesh == nullptr)
@@ -168,7 +198,6 @@ namespace BansheeEngine
 	{
 		char* dataPtr = (char*)data.getBuffer();
 
-		mWorldBounds.clear();
 		mMaterials.clear();
 
 		UINT32 numMaterials = 0;
@@ -176,7 +205,8 @@ namespace BansheeEngine
 		bool oldIsActive = mIsActive;
 
 		dataPtr = rttiReadElem(mLayer, dataPtr);
-		dataPtr = rttiReadElem(mWorldBounds, dataPtr);
+		dataPtr = rttiReadElem(mOverrideBounds, dataPtr);
+		dataPtr = rttiReadElem(mUseOverrideBounds, dataPtr);
 		dataPtr = rttiReadElem(numMaterials, dataPtr);
 		dataPtr = rttiReadElem(mTransform, dataPtr);
 		dataPtr = rttiReadElem(mTransformNoScale, dataPtr);
@@ -238,6 +268,16 @@ namespace BansheeEngine
 
 	Bounds Renderable::getBounds() const
 	{
+		if(mUseOverrideBounds)
+		{
+			Sphere sphere(mOverrideBounds.getCenter(), mOverrideBounds.getRadius());
+
+			Bounds bounds(mOverrideBounds, sphere);
+			bounds.transformAffine(mTransform);
+
+			return bounds;
+		}
+
 		HMesh mesh = getMesh();
 
 		if (!mesh.isLoaded())
@@ -335,7 +375,8 @@ namespace BansheeEngine
 			animationId = (UINT64)-1;
 
 		UINT32 size = rttiGetElemSize(mLayer) + 
-			rttiGetElemSize(mWorldBounds) + 
+			rttiGetElemSize(mOverrideBounds) + 
+			rttiGetElemSize(mUseOverrideBounds) +
 			rttiGetElemSize(numMaterials) + 
 			rttiGetElemSize(mTransform) +
 			rttiGetElemSize(mTransformNoScale) +
@@ -349,7 +390,8 @@ namespace BansheeEngine
 		UINT8* data = allocator->alloc(size);
 		char* dataPtr = (char*)data;
 		dataPtr = rttiWriteElem(mLayer, dataPtr);
-		dataPtr = rttiWriteElem(mWorldBounds, dataPtr);
+		dataPtr = rttiWriteElem(mOverrideBounds, dataPtr);
+		dataPtr = rttiWriteElem(mUseOverrideBounds, dataPtr);
 		dataPtr = rttiWriteElem(numMaterials, dataPtr);
 		dataPtr = rttiWriteElem(mTransform, dataPtr);
 		dataPtr = rttiWriteElem(mTransformNoScale, dataPtr);

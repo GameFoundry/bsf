@@ -17,6 +17,14 @@ namespace BansheeEngine
 		setName("Renderable");
 	}
 
+	void CRenderable::setMesh(HMesh mesh)
+	{
+		mInternal->setMesh(mesh);
+
+		if (mAnimation != nullptr)
+			mAnimation->_updateBounds(false);
+	}
+
 	void CRenderable::onInitialized()
 	{
 		// If mInternal already exists this means this object was deserialized,
@@ -28,9 +36,12 @@ namespace BansheeEngine
 
 		gSceneManager()._registerRenderable(mInternal, sceneObject());
 
-		HAnimation animationComponent = SO()->getComponent<CAnimation>();
-		if (animationComponent != nullptr)
-			_setAnimation(animationComponent->_getInternal());
+		mAnimation = SO()->getComponent<CAnimation>();
+		if (mAnimation != nullptr)
+		{
+			_registerAnimation(mAnimation);
+			mAnimation->_registerRenderable(mThisHandle);
+		}
 	}
 
 	Bounds CRenderable::getBounds() const
@@ -46,15 +57,31 @@ namespace BansheeEngine
 		return true;
 	}
 
-	void CRenderable::_setAnimation(const SPtr<Animation>& animation)
+	void CRenderable::_registerAnimation(const HAnimation& animation)
 	{
+		mAnimation = animation;
+
 		if (mInternal != nullptr)
 		{
-			mInternal->setAnimation(animation);
+			mInternal->setAnimation(animation->_getInternal());
 
-			// Need to update transform because animated renderables handle local transforms through bones, so it shouldn't
-			// be included in the renderable's transform.
-			mInternal->_updateTransform(mThisHandle, true);
+			// Need to update transform because animated renderables handle local transforms through bones, so it
+			// shouldn't be included in the renderable's transform.
+			mInternal->_updateTransform(SO(), true);
+		}
+	}
+
+	void CRenderable::_unregisterAnimation()
+	{
+		mAnimation = nullptr;
+
+		if(mInternal != nullptr)
+		{
+			mInternal->setAnimation(nullptr);
+
+			// Need to update transform because animated renderables handle local transforms through bones, so it
+			// shouldn't be included in the renderable's transform.
+			mInternal->_updateTransform(SO(), true);
 		}
 	}
 
@@ -65,6 +92,9 @@ namespace BansheeEngine
 
 	void CRenderable::onDestroyed()
 	{
+		if (mAnimation != nullptr)
+			mAnimation->_unregisterRenderable();
+
 		gSceneManager()._unregisterRenderable(mInternal);
 	}
 

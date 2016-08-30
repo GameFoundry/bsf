@@ -31,7 +31,7 @@ namespace BansheeEngine
 
 	AnimationProxy::AnimationProxy(UINT64 id)
 		: id(id), layers(nullptr), numLayers(0), numSceneObjects(0), sceneObjectInfos(nullptr)
-		, sceneObjectTransforms(nullptr), genericCurveOutputs(nullptr)
+		, sceneObjectTransforms(nullptr), mCullEnabled(true), numGenericCurves(0), genericCurveOutputs(nullptr)
 	{ }
 
 	AnimationProxy::~AnimationProxy()
@@ -517,7 +517,7 @@ namespace BansheeEngine
 	}
 
 	Animation::Animation()
-		: mDefaultWrapMode(AnimWrapMode::Loop), mDefaultSpeed(1.0f), mDirty(AnimDirtyStateFlag::Skeleton)
+		: mDefaultWrapMode(AnimWrapMode::Loop), mDefaultSpeed(1.0f), mCull(true), mDirty(AnimDirtyStateFlag::Skeleton)
 		, mGenericCurveValuesValid(false)
 	{
 		mId = AnimationManager::instance().registerAnimation(this);
@@ -563,6 +563,20 @@ namespace BansheeEngine
 		}
 
 		mDirty |= AnimDirtyStateFlag::Value;
+	}
+
+	void Animation::setBounds(const AABox& bounds)
+	{
+		mBounds = bounds;
+
+		mDirty |= AnimDirtyStateFlag::Culling;
+	}
+
+	void Animation::setCulling(bool cull)
+	{
+		mCull = cull;
+
+		mDirty |= AnimDirtyStateFlag::Culling;
 	}
 
 	void Animation::play(const HAnimationClip& clip)
@@ -1044,6 +1058,12 @@ namespace BansheeEngine
 			}
 			else if (mDirty.isSet(AnimDirtyStateFlag::Value))
 				mAnimProxy->updateValues(mClipInfos);
+
+			if(mDirty.isSet(AnimDirtyStateFlag::Culling))
+			{
+				mAnimProxy->mCullEnabled = mCull;
+				mAnimProxy->mBounds = mBounds;
+			}
 
 			// Check if there are dirty transforms
 			if(!didFullRebuild)

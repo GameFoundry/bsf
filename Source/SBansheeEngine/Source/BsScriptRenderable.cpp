@@ -38,6 +38,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetLayers", &ScriptRenderable::internal_SetLayers);
 		metaData.scriptClass->addInternalCall("Internal_SetMaterial", &ScriptRenderable::internal_SetMaterial);
 		metaData.scriptClass->addInternalCall("Internal_SetMaterials", &ScriptRenderable::internal_SetMaterials);
+		metaData.scriptClass->addInternalCall("Internal_SetOverrideBounds", &ScriptRenderable::internal_SetOverrideBounds);
+		metaData.scriptClass->addInternalCall("Internal_SetUseOverrideBounds", &ScriptRenderable::internal_SetUseOverrideBounds);
 		metaData.scriptClass->addInternalCall("Internal_OnDestroy", &ScriptRenderable::internal_OnDestroy);
 	}
 
@@ -135,6 +137,16 @@ namespace BansheeEngine
 			nativeMaterial = material->getHandle();
 
 		thisPtr->getInternal()->setMaterial(index, nativeMaterial);
+	}
+
+	void ScriptRenderable::internal_SetOverrideBounds(ScriptRenderable* thisPtr, AABox* box)
+	{
+		thisPtr->getInternal()->setOverrideBounds(*box);
+	}
+
+	void ScriptRenderable::internal_SetUseOverrideBounds(ScriptRenderable* thisPtr, bool enable)
+	{
+		thisPtr->getInternal()->setUseOverrideBounds(enable);
 	}
 
 	void ScriptRenderable::internal_OnDestroy(ScriptRenderable* thisPtr)

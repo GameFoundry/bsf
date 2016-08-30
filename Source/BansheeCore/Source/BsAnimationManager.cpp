@@ -5,6 +5,7 @@
 #include "BsAnimationClip.h"
 #include "BsTaskScheduler.h"
 #include "BsTime.h"
+#include "BsCoreSceneManager.h"
 
 namespace BansheeEngine
 {
@@ -49,7 +50,7 @@ namespace BansheeEngine
 		mWorkerRunning = false;
 	}
 
-	void AnimationManager::postUpdate()
+	void AnimationManager::postUpdate(const Vector<ConvexVolume>& cullFrustums)
 	{
 		if (mPaused)
 			return;
@@ -72,6 +73,8 @@ namespace BansheeEngine
 			anim.second->updateAnimProxy(timeDelta);
 			mProxies.push_back(anim.second->mAnimProxy);
 		}
+
+		mCullFrustums = cullFrustums;
 
 		// Make sure thread finishes writing all changes to the anim proxies as they will be read by the animation thread
 		std::atomic_thread_fence(std::memory_order_release);
@@ -108,6 +111,22 @@ namespace BansheeEngine
 		UINT32 curBoneIdx = 0;
 		for(auto& anim : mProxies)
 		{
+			if(anim->mCullEnabled)
+			{
+				bool isVisible = false;
+				for(auto& frustum : mCullFrustums)
+				{
+					if(frustum.intersects(anim->mBounds))
+					{
+						isVisible = true;
+						break;
+					}
+				}
+
+				if (!isVisible)
+					continue;
+			}
+
 			if (anim->skeleton != nullptr)
 			{
 				UINT32 numBones = anim->skeleton->getNumBones();

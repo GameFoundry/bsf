@@ -28,6 +28,16 @@ namespace BansheeEngine
             get { return Internal_GetNumClips(mCachedPtr); }
         }
 
+        public AABox Bounds
+        {
+            set { Internal_SetBounds(mCachedPtr, ref value); }
+        }
+
+        public bool Cull
+        {
+            set { Internal_SetCull(mCachedPtr, value); }
+        }
+
         public Action<AnimationClip, string> OnEventTriggered;
 
         public void Play(AnimationClip clip)
@@ -204,6 +214,12 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_UnmapSceneObject(IntPtr thisPtr, IntPtr sceneObjectPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetBounds(IntPtr thisPtr, ref AABox bounds);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetCull(IntPtr thisPtr, bool cull);
     }
 
     /** @endcond */
