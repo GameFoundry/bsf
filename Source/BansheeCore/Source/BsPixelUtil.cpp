@@ -1370,30 +1370,31 @@ namespace BansheeEngine
 
 	}
 
-	void PixelUtil::unpackDepth(float& depth, PixelFormat format, void* src)
+	float PixelUtil::unpackDepth(PixelFormat format, void* src)
 	{
 		const PixelFormatDescription &des = getDescriptionFor(format);
 		if (!isDepth(format))
 		{
 			LOGERR("Cannot unpack from " + getFormatName(format) + ": it is not a depth format");
-			return;
+			return 0;
 		}
 		UINT32* color = (UINT32 *)src;
 		switch (format) {
 		case PF_D24S8:
-			depth = static_cast<float>(*color & 0x00FFFFFF) / (float)16777216;
+			return  static_cast<float>(*color & 0x00FFFFFF) / (float)16777216;
 			break;
 		case PF_D16:
-			depth = static_cast<float>(*color & 0xFFFF) / (float)65536;
+			return static_cast<float>(*color & 0xFFFF) / (float)65536;
 			break;
 		case PF_D32:
-			depth = static_cast<float>(*color & 0xFFFFFFFF) / (float)4294967296;
+			return static_cast<float>(*color & 0xFFFFFFFF) / (float)4294967296;
 			break;
 		case PF_D32_S8X24:
-			depth = static_cast<float>(*color & 0xFFFFFFFF) / (float)4294967296;
+			return static_cast<float>(*color & 0xFFFFFFFF) / (float)4294967296;
 			break;
 		default:
 			LOGERR("Cannot unpack from " + getFormatName(format));
+			return 0;
 			break;
 		}
 	}

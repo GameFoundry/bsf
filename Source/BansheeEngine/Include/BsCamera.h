@@ -354,6 +354,16 @@ namespace BansheeEngine
 		Vector3 screenToWorldPoint(const Vector2I& screenPoint, float depth = 0.5f) const;
 
 		/**
+		* Converts a point in screen space (pixels corresponding to render target attached to the camera) to a point in
+		* world space.
+		*
+		* @param[in]	screenPoint	Point to transform.
+		* @param[in]	deviceDepth	Device depth to place the world point at. The depth is applied to the vector going from camera
+		*							origin to the point on the near plane.
+		*/
+		Vector3 screenToWorldPointDeviceDepth(const Vector2I& screenPoint, float deviceDepth = 0.5f) const;
+
+		/**
 		 * Converts a point in screen space (pixels corresponding to render target attached to the camera) to a point
 		 * relative to camera's coordinate system (view space).
 		 *
@@ -414,15 +424,6 @@ namespace BansheeEngine
 		 * space originating at the selected point on the camera near plane.
 		 */
 		Ray screenPointToRay(const Vector2I& screenPoint) const;
-
-		/**
-		* Extracts the necessary values from the projection matrix that allow you to transform device Z value into
-		* world Z value.
-		*
-		* @return					Returns two values that can be used to transform device z to world z using this formula:
-		* 							z = (deviceZ + y) * x.
-		*/
-		Vector2 getDeviceZTransform() const;
 
 		/**	Projects a point from view to normalized device space. */
 		Vector3 projectPoint(const Vector3& point) const;

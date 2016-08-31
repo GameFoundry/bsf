@@ -326,11 +326,16 @@ namespace BansheeEngine
 		 */
 		void setColors(Color* colors, UINT32 numElements);
 
-		/** Returns depth at the specified coordinates. */
+		/** 
+		 * Decodes data stored in a depth texture at the specified pixel coordinates, and outputs a floating point depth
+		 * value in range [0, 1]. 
+		 */
 		float getDepthAt(UINT32 x, UINT32 y, UINT32 z = 0) const;
 
-		/** Sets the depth at the specified coordinates. */
-		void setDepthAt(float const &cv, UINT32 x, UINT32 y, UINT32 z = 0);
+		/** 
+		 * Sets a depth value in range [0, 1] at the specified pixel coordinates.
+		 */
+		void setDepthAt(const float& depth, UINT32 x, UINT32 y, UINT32 z = 0);
 
 		/**
 		* Converts all the internal data into an array of float. Array is mapped as such:

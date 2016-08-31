@@ -190,11 +190,11 @@ namespace BansheeEngine
 		 */
         static void unpackColor(float* r, float* g, float* b, float* a, PixelFormat format, const void* src); 
 
-		/** Writes depth to the provided memory location. */
+		/** Writes a depth value to the provided memory location. */
 		static void packDepth(float depth, const PixelFormat format, void* dest);
 
-		/** Reads the depth from the provided memory location. */
-		static void unpackDepth(float& depth, PixelFormat format, void* src);
+		/** Reads the depth from the provided memory location. Value ranges in [0, 1]. */
+		static float unpackDepth(PixelFormat format, void* src);
         
 		/**
 		 * Converts pixels from one format to another. Provided pixel data objects must have previously allocated buffers

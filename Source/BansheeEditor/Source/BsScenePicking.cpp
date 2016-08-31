@@ -191,23 +191,8 @@ namespace BansheeEngine
 		if (data != nullptr)
 		{
 			Vector3 pos = returnValue.data.pickPosition;
-			Vector2 ndcPoint = cam->screenToNdcPoint(Vector2I(pos.x, pos.y));
-			Vector4 worldPoint(ndcPoint.x, ndcPoint.y, pos.z, 1.0f);
-			worldPoint = cam->getProjectionMatrixRS().inverse().multiply(worldPoint);
-			Vector3 worldPoint3D;
-
-			if (Math::abs(worldPoint.w) > 1e-7f)
-			{
-				float invW = 1.0f / worldPoint.w;
-
-				worldPoint3D.x = worldPoint.x * invW;
-				worldPoint3D.y = worldPoint.y * invW;
-				worldPoint3D.z = worldPoint.z * invW;
-			}
-			pos = cam->viewToWorldPoint(worldPoint3D);
 			*data = returnValue.data;
-			data->pickPosition = pos;
-			//Todo: camera to world ray if object is too far
+			data->pickPosition = cam->screenToWorldPointDeviceDepth(Vector2I(pos.x, pos.y), pos.z);
 		}
 
 		Vector<UINT32> selectedObjects = returnValue.objects;

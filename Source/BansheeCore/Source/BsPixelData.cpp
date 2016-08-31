@@ -178,20 +178,16 @@ namespace BansheeEngine
 
 	float PixelData::getDepthAt(UINT32 x, UINT32 y, UINT32 z) const
 	{
-		float depth;
-
 		UINT32 pixelSize = PixelUtil::getNumElemBytes(mFormat);
 		UINT32 pixelOffset = pixelSize * (z * mSlicePitch + y * mRowPitch + x);
-		PixelUtil::unpackDepth(depth, mFormat, (unsigned char *)getData() + pixelOffset);
-
-		return depth;
+		return PixelUtil::unpackDepth(mFormat, (unsigned char *)getData() + pixelOffset);;
 	}
 
-	void PixelData::setDepthAt(float const& cv, UINT32 x, UINT32 y, UINT32 z)
+	void PixelData::setDepthAt(const float& depth, UINT32 x, UINT32 y, UINT32 z)
 	{
 		UINT32 pixelSize = PixelUtil::getNumElemBytes(mFormat);
 		UINT32 pixelOffset = pixelSize * (z * mSlicePitch + y * mRowPitch + x);
-		PixelUtil::packDepth(cv, mFormat, (unsigned char *)getData() + pixelOffset);
+		PixelUtil::packDepth(depth, mFormat, (unsigned char *)getData() + pixelOffset);
 	}
 
 	Vector<float> PixelData::getDepths() const
@@ -220,7 +216,7 @@ namespace BansheeEngine
 					UINT32 dataIdx = x * pixelSize + yDataIdx + zDataIdx;
 
 					UINT8* dest = data + dataIdx;
-					PixelUtil::unpackDepth(depths[arrayIdx], mFormat, dest);
+					depths[arrayIdx] = PixelUtil::unpackDepth(mFormat, dest);
 				}
 			}
 		}

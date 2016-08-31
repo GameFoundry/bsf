@@ -588,10 +588,19 @@ namespace BansheeEditor
                         if (Input.IsButtonHeld(ButtonCode.Space))
                         {
                             SnapData snapData;
-                            sceneSelection.Snap(scenePos, out snapData, new SceneObject[] {draggedSO});
-                            Quaternion q = Quaternion.FromToRotation(Vector3.YAxis, snapData.normal);
-                            draggedSO.Position = snapData.position;
-                            draggedSO.Rotation = q;
+                            var snappedTo = sceneSelection.Snap(scenePos, out snapData, new SceneObject[] {draggedSO});
+                            if (snappedTo != null)
+                            {
+                                Quaternion q = Quaternion.FromToRotation(Vector3.YAxis, snapData.normal);
+                                draggedSO.Position = snapData.position;
+                                draggedSO.Rotation = q;
+                            }
+                            else
+                            {
+                                Ray worldRay = camera.ViewportToWorldRay(scenePos);
+                                draggedSO.Position = worldRay * DefaultPlacementDepth - draggedSOOffset;
+                                draggedSO.Rotation = Quaternion.LookRotation(Vector3.YAxis);
+                            }
                         }
                         else
                         {
