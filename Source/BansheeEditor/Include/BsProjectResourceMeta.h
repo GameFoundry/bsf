@@ -92,16 +92,34 @@ namespace BansheeEngine
 		 */
 		static SPtr<ProjectFileMeta> create(const SPtr<ImportOptions>& importOptions);
 
-		/** Registers a new resource in the file meta-data. */
+		/** 
+		 * Registers a new resource in the file meta-data. 
+		 *
+		 * @param[in]	resourceMeta	Meta-data to register.
+		 * @param[in]	isOld			Set to true if the meta-data doesn't represent a currently active resource, but
+		 *								is instead stored in the case the resource gets restored later.
+		 */
 		void add(const SPtr<ProjectResourceMeta>& resourceMeta);
 
-		/** Removes a resource with the specified UUID from the file meta-data. */
-		void remove(const String& UUID);
+		/** 
+		 * Registers an inactive resource in the file meta-data. Inactive meta-data is stored for resources that used
+		 * to exist, but do not exist currently, in order to restore their handles if they get restored at a later date.
+		 */
+		void addInactive(const SPtr<ProjectResourceMeta>& resourceMeta);
 
-		/** Returns meta-data for all resources contained in the file represented by this meta-data object. */
+		/** Returns meta-data for all active resources contained in the file represented by this meta-data object.  */
 		const Vector<SPtr<ProjectResourceMeta>>& getResourceMetaData() const { return mResourceMetaData; }
 
-		/** Removes all resource meta-data stored by this object. */
+		/** 
+		 * Returns meta-data for all resources (both active and inactive) contained in the file represented by this
+		 * meta-data object.  
+		 */
+		Vector<SPtr<ProjectResourceMeta>> getAllResourceMetaData() const;
+
+		/** 
+		 * Removes all resource meta-data stored by this object. This includes meta-data for both active and inactive
+		 * resources. 
+		 */
 		void clearResourceMetaData() { mResourceMetaData.clear(); }
 
 		/**	Returns the import options used for importing the resource this object is referencing. */
@@ -123,6 +141,7 @@ namespace BansheeEngine
 		friend class ProjectLibrary;
 
 		Vector<SPtr<ProjectResourceMeta>> mResourceMetaData;
+		Vector<SPtr<ProjectResourceMeta>> mInactiveResourceMetaData;
 		SPtr<ImportOptions> mImportOptions;
 		bool mIncludeInBuild;
 

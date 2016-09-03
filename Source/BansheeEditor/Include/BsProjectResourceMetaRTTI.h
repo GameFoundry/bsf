@@ -54,6 +54,7 @@ namespace BansheeEngine
 			BS_RTTI_MEMBER_REFLPTR(mImportOptions, 1)
 			BS_RTTI_MEMBER_PLAIN(mIncludeInBuild, 4)
 			BS_RTTI_MEMBER_REFLPTR_ARRAY(mResourceMetaData, 5)
+			BS_RTTI_MEMBER_REFLPTR_ARRAY(mInactiveResourceMetaData, 6)
 		BS_END_RTTI_MEMBERS
 
 	public:

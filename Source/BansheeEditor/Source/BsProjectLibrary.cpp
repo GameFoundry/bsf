@@ -467,7 +467,7 @@ namespace BansheeEngine
 				if (!isNativeResource)
 				{
 					Vector<SubResourceRaw> importedResourcesRaw = gImporter()._importAllRaw(fileEntry->path, curImportOptions);
-					Vector<SPtr<ProjectResourceMeta>> existingResourceMetas = fileEntry->meta->getResourceMetaData();
+					Vector<SPtr<ProjectResourceMeta>> existingResourceMetas = fileEntry->meta->getAllResourceMetaData();
 					fileEntry->meta->clearResourceMetaData();
 
 					for(auto& resEntry : importedResourcesRaw)
@@ -510,7 +510,7 @@ namespace BansheeEngine
 					if(!pruneResourceMetas)
 					{
 						for (auto& entry : existingResourceMetas)
-							fileEntry->meta->add(entry);
+							fileEntry->meta->addInactive(entry);
 					}
 				}
 
