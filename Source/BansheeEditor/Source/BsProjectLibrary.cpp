@@ -512,6 +512,19 @@ namespace BansheeEngine
 						for (auto& entry : existingResourceMetas)
 							fileEntry->meta->addInactive(entry);
 					}
+
+					// Update UUID to path mapping
+					auto& resourceMetas = fileEntry->meta->getResourceMetaData();
+					if (resourceMetas.size() > 0)
+					{
+						mUUIDToPath[resourceMetas[0]->getUUID()] = fileEntry->path;
+
+						for (UINT32 i = 1; i < (UINT32)resourceMetas.size(); i++)
+						{
+							SPtr<ProjectResourceMeta> entry = resourceMetas[i];
+							mUUIDToPath[entry->getUUID()] = fileEntry->path + entry->getUniqueName();
+						}
+					}
 				}
 
 				fileEntry->meta->mImportOptions = curImportOptions;
