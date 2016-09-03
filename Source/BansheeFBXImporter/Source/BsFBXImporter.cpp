@@ -452,11 +452,42 @@ namespace BansheeEngine
 		{
 			SPtr<AnimationCurves> curves = bs_shared_ptr_new<AnimationCurves>();
 			
+			// Offset animations so they start at time 0
+			float animStart = std::numeric_limits<float>::infinity();
+
 			for (auto& bone : clip.boneAnimations)
 			{
-				curves->position.push_back({ bone.node->name, AnimationCurveFlag::ImportedCurve, bone.translation });
-				curves->rotation.push_back({ bone.node->name, AnimationCurveFlag::ImportedCurve, bone.rotation });
-				curves->scale.push_back({ bone.node->name, AnimationCurveFlag::ImportedCurve, bone.scale });
+				if(bone.translation.getNumKeyFrames() > 0)
+					animStart = std::min(bone.translation.getKeyFrame(0).time, animStart);
+
+				if (bone.rotation.getNumKeyFrames() > 0)
+					animStart = std::min(bone.rotation.getKeyFrame(0).time, animStart);
+
+				if (bone.scale.getNumKeyFrames() > 0)
+					animStart = std::min(bone.scale.getKeyFrame(0).time, animStart);
+			}
+
+			if (animStart != 0.0f && animStart != std::numeric_limits<float>::infinity())
+			{
+				for (auto& bone : clip.boneAnimations)
+				{
+					TAnimationCurve<Vector3> translation = AnimationUtility::offsetCurve(bone.translation, -animStart);
+					TAnimationCurve<Quaternion> rotation = AnimationUtility::offsetCurve(bone.rotation, -animStart);
+					TAnimationCurve<Vector3> scale = AnimationUtility::offsetCurve(bone.scale, -animStart);
+
+					curves->position.push_back({ bone.node->name, AnimationCurveFlag::ImportedCurve, translation });
+					curves->rotation.push_back({ bone.node->name, AnimationCurveFlag::ImportedCurve, rotation });
+					curves->scale.push_back({ bone.node->name, AnimationCurveFlag::ImportedCurve, scale });
+				}
+			}
+			else
+			{
+				for (auto& bone : clip.boneAnimations)
+				{
+					curves->position.push_back({ bone.node->name, AnimationCurveFlag::ImportedCurve, bone.translation });
+					curves->rotation.push_back({ bone.node->name, AnimationCurveFlag::ImportedCurve, bone.rotation });
+					curves->scale.push_back({ bone.node->name, AnimationCurveFlag::ImportedCurve, bone.scale });
+				}
 			}
 
 			// See if any splits are required. We only split the first clip as it is assumed if FBX has multiple clips the

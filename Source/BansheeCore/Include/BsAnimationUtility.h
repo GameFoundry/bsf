@@ -34,6 +34,10 @@ namespace BansheeEngine
 		/** Scales all curve values and tangents by the specified scale factor. */
 		template<class T> 
 		static TAnimationCurve<T> scaleCurve(const TAnimationCurve<T>& curve, float factor);
+
+		/** Adds a time offset to all keyframes in the provided curve. */
+		template<class T>
+		static TAnimationCurve<T> offsetCurve(const TAnimationCurve<T>& curve, float offset);
 	};
 
 	/** @} */

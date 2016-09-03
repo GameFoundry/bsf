@@ -235,7 +235,29 @@ namespace BansheeEngine
 		return TAnimationCurve<T>(newKeyframes);
 	}
 
+	template<class T>
+	TAnimationCurve<T> AnimationUtility::offsetCurve(const TAnimationCurve<T>& curve, float offset)
+	{
+		INT32 numKeys = (INT32)curve.getNumKeyFrames();
+
+		Vector<TKeyframe<T>> newKeyframes(numKeys);
+		for (INT32 i = 0; i < numKeys; i++)
+		{
+			const TKeyframe<T>& key = curve.getKeyFrame(i);
+			newKeyframes[i].time = key.time + offset;
+			newKeyframes[i].value = key.value;
+			newKeyframes[i].inTangent = key.inTangent;
+			newKeyframes[i].outTangent = key.outTangent;
+		}
+
+		return TAnimationCurve<T>(newKeyframes);
+	}
+
 	template BS_CORE_EXPORT TAnimationCurve<Vector3> AnimationUtility::scaleCurve(const TAnimationCurve<Vector3>& curve, float factor);
 	template BS_CORE_EXPORT TAnimationCurve<Quaternion> AnimationUtility::scaleCurve(const TAnimationCurve<Quaternion>& curve, float factor);
 	template BS_CORE_EXPORT TAnimationCurve<float> AnimationUtility::scaleCurve(const TAnimationCurve<float>& curve, float factor);
+
+	template BS_CORE_EXPORT TAnimationCurve<Vector3> AnimationUtility::offsetCurve(const TAnimationCurve<Vector3>& curve, float offset);
+	template BS_CORE_EXPORT TAnimationCurve<Quaternion> AnimationUtility::offsetCurve(const TAnimationCurve<Quaternion>& curve, float offset);
+	template BS_CORE_EXPORT TAnimationCurve<float> AnimationUtility::offsetCurve(const TAnimationCurve<float>& curve, float offset);
 }
