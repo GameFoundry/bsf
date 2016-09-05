@@ -1365,6 +1365,7 @@ namespace BansheeEngine
 			LOGERR("Cannot convert depth to " + getFormatName(format) + ": it is not a depth format");
 			return;
 		}
+		
 		LOGERR("Method is not implemented");	
 		//TODO implement depth packing
 
@@ -1378,8 +1379,10 @@ namespace BansheeEngine
 			LOGERR("Cannot unpack from " + getFormatName(format) + ": it is not a depth format");
 			return 0;
 		}
+		
 		UINT32* color = (UINT32 *)src;
-		switch (format) {
+		switch (format) 
+		{
 		case PF_D24S8:
 			return  static_cast<float>(*color & 0x00FFFFFF) / (float)16777216;
 			break;
