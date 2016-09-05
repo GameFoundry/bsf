@@ -14,6 +14,7 @@
 #include "BsGUIInputSelection.h"
 #include "BsGUIContextMenu.h"
 #include "BsGUIHelper.h"
+#include "BsTime.h"
 
 namespace BansheeEngine
 {
@@ -29,8 +30,8 @@ namespace BansheeEngine
 	}
 
 	GUIInputBox::GUIInputBox(const String& styleName, const GUIDimensions& dimensions, bool multiline)
-		: GUIElement(styleName, dimensions), mIsMultiline(multiline), mHasFocus(false), mIsMouseOver(false)
-		, mState(State::Normal), mCaretShown(false), mSelectionShown(false), mDragInProgress(false)
+		: GUIElement(styleName, dimensions), mIsMultiline(multiline), mHasFocus(false), mFocusGainedFrame((UINT64)-1)
+		, mIsMouseOver(false), mState(State::Normal), mCaretShown(false), mSelectionShown(false), mDragInProgress(false)
 	{
 		mImageSprite = bs_new<ImageSprite>();
 		mTextSprite = bs_new<TextSprite>();
@@ -470,7 +471,12 @@ namespace BansheeEngine
 				}
 				else
 				{
-					clearSelection();
+					bool focusGainedThisFrame = mHasFocus && mFocusGainedFrame == gTime().getFrameIdx();
+
+					// We want to select all on focus gain, so don't override that
+					if(!focusGainedThisFrame)
+						clearSelection();
+
 					showCaret();
 				}
 
@@ -605,6 +611,7 @@ namespace BansheeEngine
 			gGUIManager().getInputSelectionTool()->selectAll();
 
 			mHasFocus = true;
+			mFocusGainedFrame = gTime().getFrameIdx();
 
 			Vector2I newSize = mDimensions.calculateSizeRange(_getOptimalSize()).optimal;
 			if (origSize != newSize)

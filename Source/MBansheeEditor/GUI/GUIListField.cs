@@ -572,7 +572,8 @@ namespace BansheeEditor
 
             ElementType[] newArray = new ElementType[size];
 
-            int maxSize = MathEx.Min(size, array.GetLength(0));
+            int oldSize = array.GetLength(0);
+            int maxSize = MathEx.Min(size, oldSize);
             for (int i = 0; i < maxSize; i++)
                 newArray.SetValue(array.GetValue(i), i);
 
@@ -980,7 +981,7 @@ namespace BansheeEditor
         /// Refreshes the GUI for the list row and checks if anything was modified.
         /// </summary>
         /// <returns>State representing was anything modified between two last calls to <see cref="Refresh"/>.</returns>
-        internal protected virtual InspectableState Refresh()
+        protected internal virtual InspectableState Refresh()
         {
             InspectableState oldState = modifiedState;
             if (modifiedState.HasFlag(InspectableState.Modified))

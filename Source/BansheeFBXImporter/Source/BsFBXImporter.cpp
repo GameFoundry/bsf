@@ -494,6 +494,8 @@ namespace BansheeEngine
 			// user has the ability to split them externally.
 			if(isFirstClip && !splits.empty())
 			{
+				float secondsPerFrame = 1.0f / clip.sampleRate;
+
 				for(auto& split : splits)
 				{
 					SPtr<AnimationCurves> splitClipCurve = bs_shared_ptr_new<AnimationCurves>();
@@ -512,9 +514,8 @@ namespace BansheeEngine
 							if (numFrames == 0)
 								continue;
 
-							UINT32 lastFrame = numFrames - 1;
-							float startTime = animCurve.getKeyFrame(std::min(split.startFrame, lastFrame)).time;
-							float endTime = animCurve.getKeyFrame(std::min(split.endFrame, lastFrame)).time;
+							float startTime = split.startFrame * secondsPerFrame;
+							float endTime = split.endFrame * secondsPerFrame;
 
 							outCurves[i].curve = inCurves[i].curve.split(startTime, endTime);
 

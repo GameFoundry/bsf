@@ -45,25 +45,7 @@ namespace BansheeEditor
         {
             MeshImportOptions newImportOptions = GetImportOptions();
 
-            bool rebuildGUI = false;
-
-            AnimationSplitInfo[] splitInfos = newImportOptions.AnimationClipSplits;
-            if (splitInfos == null)
-                rebuildGUI |= animSplitInfoField.Array != null;
-            else
-            {
-                if (animSplitInfoField.Array == null)
-                    rebuildGUI = true;
-                else
-                    rebuildGUI |= splitInfos.Length != animSplitInfoField.Array.GetLength(0);
-            }
-
-            if (rebuildGUI)
-                BuildGUI();
-
-            InspectableState splitInfosModified = animSplitInfoField.Refresh();
-            if (splitInfosModified == InspectableState.Modified)
-                newImportOptions.AnimationClipSplits = splitInfos;
+            animSplitInfoField.Refresh();
 
             normalsField.Value = newImportOptions.ImportNormals;
             tangentsField.Value = newImportOptions.ImportTangents;
@@ -124,7 +106,7 @@ namespace BansheeEditor
 
             animSplitInfoField = GUIArrayField<AnimationSplitInfo, AnimSplitArrayRow>.Create(
                 new LocEdString("Animation splits"), splitInfos, Layout);
-            animSplitInfoField.OnChanged += x => { splitInfos = x; importOptions.AnimationClipSplits = x; };
+            animSplitInfoField.OnChanged += x => { splitInfos = x; };
             animSplitInfoField.IsExpanded = Persistent.GetBool("animSplitInfos_Expanded");
             animSplitInfoField.OnExpand += x => Persistent.SetBool("animSplitInfos_Expanded", x);
 
@@ -173,6 +155,8 @@ namespace BansheeEditor
             Mesh mesh = (Mesh)InspectedObject;
             string resourcePath = ProjectLibrary.GetPath(mesh);
 
+            importOptions.AnimationClipSplits = splitInfos;
+
             ProjectLibrary.Reimport(resourcePath, importOptions, true);
         }
 
@@ -189,6 +173,13 @@ namespace BansheeEditor
             /// <inheritdoc/>
             protected override GUILayoutX CreateGUI(GUILayoutY layout)
             {
+                AnimationSplitInfo rowSplitInfo = GetValue<AnimationSplitInfo>();
+                if (rowSplitInfo == null)
+                {
+                    rowSplitInfo = new AnimationSplitInfo();
+                    SetValue(rowSplitInfo);
+                }
+
                 GUILayoutX titleLayout = layout.AddLayoutX();
                 GUILayoutX contentLayout = layout.AddLayoutX();
 

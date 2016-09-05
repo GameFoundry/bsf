@@ -212,14 +212,18 @@ namespace BansheeEngine
 		if (focus)
 		{
 			UndoRedo::instance().pushGroup("InputBox");
+
 			mHasInputFocus = true;
+			onFocusChanged(true);
 		}
 		else
 		{
 			UndoRedo::instance().popGroup("InputBox");
 
 			setText(applyRangeAndStep(mValue));
+
 			mHasInputFocus = false;
+			onFocusChanged(false);
 		}
 	}
 

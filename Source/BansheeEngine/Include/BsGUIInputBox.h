@@ -251,6 +251,7 @@ namespace BansheeEngine
 		bool mIsMultiline;
 		Vector2I mTextOffset;
 		bool mHasFocus;
+		UINT64 mFocusGainedFrame;
 		bool mIsMouseOver;
 		State mState;
 

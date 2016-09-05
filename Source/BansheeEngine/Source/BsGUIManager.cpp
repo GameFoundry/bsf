@@ -1016,8 +1016,55 @@ namespace BansheeEngine
 		if(findElementUnderPointer(event.screenPos, buttonStates, event.shift, event.control, event.alt))
 			event.markAsUsed();
 
-		mMouseEvent = GUIMouseEvent(buttonStates, event.shift, event.control, event.alt);
+		// Determine elements that gained focus
+		mNewElementsInFocus.clear();
 
+		mCommandEvent = GUICommandEvent();
+		mCommandEvent.setType(GUICommandEventType::FocusGained);
+
+		for (auto& elementInfo : mElementsUnderPointer)
+		{
+			auto iterFind = std::find_if(begin(mElementsInFocus), end(mElementsInFocus),
+				[=](const ElementFocusInfo& x) { return x.element == elementInfo.element; });
+
+			if (iterFind == mElementsInFocus.end())
+			{
+				bool processed = sendCommandEvent(elementInfo.element, mCommandEvent);
+				mNewElementsInFocus.push_back(ElementFocusInfo(elementInfo.element, elementInfo.widget, processed));
+
+				if (processed)
+					break;
+			}
+			else
+			{
+				mNewElementsInFocus.push_back(*iterFind);
+
+				if (iterFind->usesFocus)
+					break;
+			}
+		}
+
+		// Determine elements that lost focus
+		// Note: Focus loss must trigger before mouse press because things like input boxes often only confirm changes
+		// made to them when focus is lost. So if the user is confirming some input via a press of the button focus loss
+		// must trigger on the input box first to make sure its contents get saved.
+		mCommandEvent.setType(GUICommandEventType::FocusLost);
+
+		for (auto& elementInfo : mElementsInFocus)
+		{
+			auto iterFind = std::find_if(begin(mNewElementsInFocus), end(mNewElementsInFocus),
+				[=](const ElementFocusInfo& x) { return x.element == elementInfo.element; });
+
+			if (iterFind == mNewElementsInFocus.end())
+			{
+				sendCommandEvent(elementInfo.element, mCommandEvent);
+			}
+		}
+
+		mElementsInFocus.swap(mNewElementsInFocus);
+
+		// Send mouse press event
+		mMouseEvent = GUIMouseEvent(buttonStates, event.shift, event.control, event.alt);
 		GUIMouseButton guiButton = buttonToGUIButton(event.button);
 
 		// We only check for mouse down if mouse isn't already being held down, and we are hovering over an element
@@ -1049,50 +1096,6 @@ namespace BansheeEngine
 
 			mActiveElements.swap(mNewActiveElements);
 		}
-
-		mNewElementsInFocus.clear();
-		mCommandEvent = GUICommandEvent();
-		
-		// Determine elements that gained focus
-		mCommandEvent.setType(GUICommandEventType::FocusGained);
-
-		for(auto& elementInfo : mElementsUnderPointer)
-		{
-			auto iterFind = std::find_if(begin(mElementsInFocus), end(mElementsInFocus), 
-				[=] (const ElementFocusInfo& x) { return x.element == elementInfo.element; });
-
-			if(iterFind == mElementsInFocus.end())
-			{
-				bool processed = sendCommandEvent(elementInfo.element, mCommandEvent);
-				mNewElementsInFocus.push_back(ElementFocusInfo(elementInfo.element, elementInfo.widget, processed));
-
-				if (processed)
-					break;
-			}
-			else
-			{
-				mNewElementsInFocus.push_back(*iterFind);
-
-				if (iterFind->usesFocus)
-					break;
-			}
-		}
-
-		// Determine elements that lost focus
-		mCommandEvent.setType(GUICommandEventType::FocusLost);
-
-		for(auto& elementInfo : mElementsInFocus)
-		{
-			auto iterFind = std::find_if(begin(mNewElementsInFocus), end(mNewElementsInFocus), 
-				[=] (const ElementFocusInfo& x) { return x.element == elementInfo.element; });
-
-			if(iterFind == mNewElementsInFocus.end())
-			{
-				sendCommandEvent(elementInfo.element, mCommandEvent);
-			}
-		}
-
-		mElementsInFocus.swap(mNewElementsInFocus);
 
 		// If right click try to open context menu
 		if(buttonStates[2] == true) 
