@@ -149,7 +149,7 @@ Technique : base("PickingAlphaCull") =
 				vec4 color = texture2D(mainTexture, texcoord0);
 				if(color.a < alphaCutoff)
 					discard;
-				normalsColor = (bs_outNorm + vec4(1,1,1,0)) / 2;;
+				normalsColor = (bs_outNorm + vec4(1,1,1,0)) / 2;
 				fragColor = colorIndex;
 			}
 		};
