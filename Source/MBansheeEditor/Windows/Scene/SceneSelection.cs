@@ -12,7 +12,7 @@ namespace BansheeEditor
      */
 
     /// <summary>
-    /// Contains information regarding object snapping.
+    /// Contains Object containing the world position and normal of the surface under the snapping point.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     struct SnapData
@@ -23,7 +23,7 @@ namespace BansheeEditor
         public Vector3 normal;
 
         /// <summary>
-        /// The 3D position on the surface of the object
+        /// The 3D position on the surface of the object.
         /// </summary>
         public Vector3 position;
     }
@@ -55,7 +55,7 @@ namespace BansheeEditor
         /// </summary>
         /// <param name="pointerPos">Position of the pointer relative to the scene camera viewport.</param>
         /// <param name="controlHeld">Should this selection add to the existing selection, or replace it.</param>
-        /// <param name="ignoreSceneObjects">An array of renderables that should not be rendered during scene picking.</param>
+        /// <param name="ignoreSceneObjects">Optional set of objects to ignore during scene picking.</param>
         internal void PickObject(Vector2I pointerPos, bool controlHeld, SceneObject[] ignoreSceneObjects = null)
         {
             Internal_PickObject(mCachedPtr, ref pointerPos, controlHeld, ignoreSceneObjects);
@@ -67,18 +67,18 @@ namespace BansheeEditor
         /// <param name="pointerPos">Position of the pointer relative to the scene camera viewport.</param>
         /// <param name="area">The screen area in which objects will be selected.</param>
         /// <param name="controlHeld">Should this selection add to the existing selection, or replace it.</param>
-        /// <param name="ignoreSceneObjects">An array of renderables that should not be rendered during scene picking.</param>
+        /// <param name="ignoreSceneObjects">Optional set of objects to ignore during scene picking.</param>
         internal void PickObjects(Vector2I pointerPos, Vector2I area, bool controlHeld, SceneObject[] ignoreSceneObjects = null)
         {
             Internal_PickObjects(mCachedPtr, ref pointerPos, ref area, controlHeld, ignoreSceneObjects);
         }
 
         /// <summary>
-        /// Returns the 3D position of an object under the cursor, along with the surface normal in that point.
+        /// Object containing the world position and normal of the surface under the provided screen point.
         /// </summary>
         /// <param name="pointerPos">Position of the pointer relative to the scene camera viewport.</param>
         /// <param name="data">A struct containing the position on the object surface and the normal in that point.</param>
-        /// <param name="ignoreSceneObjects">An array of renderables that should not be rendered during scene picking.</param>
+        /// <param name="ignoreSceneObjects">Optional set of objects to ignore during scene picking.</param>
         /// <returns>The object the pointer is snapping to.</returns>
         internal SceneObject Snap(Vector2I pointerPos, out SnapData data, SceneObject[] ignoreSceneObjects = null)
         {

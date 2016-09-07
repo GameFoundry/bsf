@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Remoting.Messaging;
 using BansheeEngine;
 
 namespace BansheeEditor
@@ -598,7 +597,14 @@ namespace BansheeEditor
                             else
                             {
                                 Ray worldRay = camera.ViewportToWorldRay(scenePos);
-                                draggedSO.Position = worldRay * DefaultPlacementDepth - draggedSOOffset;
+                                Vector3 pos = worldRay*DefaultPlacementDepth - draggedSOOffset;
+                                float interval = EditorSettings.MoveHandleSnapAmount;
+                                if (EditorSettings.MoveHandleSnapActive)
+                                    draggedSO.Position = new Vector3(pos.x - (pos.x % interval), pos.y - (pos.y % interval),
+                                        pos.z - (pos.z % interval));
+                                else
+                                    draggedSO.Position = new Vector3(pos.x, pos.y - (pos.y % interval), pos.z);
+
                                 draggedSO.Rotation = Quaternion.LookRotation(Vector3.YAxis);
                             }
                         }
@@ -632,10 +638,6 @@ namespace BansheeEditor
 
                 if (inBounds && HasContentFocus)
                 {
-                    bool newHandle = false;
-                    SceneHandles.BeginInput();
-                    newHandle = sceneHandles.IsActive();
-                    SceneHandles.EndInput();  
                     if (Input.IsPointerButtonDown(PointerButton.Left))
                     {
                         Rect2I sceneAxesGUIBounds = new Rect2I(Width - HandleAxesGUISize - HandleAxesGUIPaddingX, 
@@ -646,7 +648,7 @@ namespace BansheeEditor
                         else
                             sceneHandles.TrySelect(scenePos);
                     }
-                    else if (Input.IsPointerButtonHeld(PointerButton.Left) && !newHandle && !dragActive &&
+                    else if (Input.IsPointerButtonHeld(PointerButton.Left) && !handleActive && !dragActive &&
                              draggedSO == null && scenePos != mouseDownPosition)
                     {
                         if (isDraggingSelection)

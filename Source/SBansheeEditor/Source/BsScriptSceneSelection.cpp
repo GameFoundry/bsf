@@ -64,7 +64,7 @@ namespace BansheeEngine
 			}
 		}
 
-		HSceneObject pickedObject = ScenePicking::instance().pickClosestObject(thisPtr->mCamera, *inputPos, Vector2I(1, 1), ignoredSceneObjects); //TODO REMOVE DATA
+		HSceneObject pickedObject = ScenePicking::instance().pickClosestObject(thisPtr->mCamera, *inputPos, Vector2I(1, 1), ignoredSceneObjects);
 		if (pickedObject)
 		{
 			if (additive) // Append to existing selection
@@ -114,7 +114,8 @@ namespace BansheeEngine
 				ignoredSceneObjects.push_back(so);
 			}
 		}
-		Vector<HSceneObject> pickedObjects = ScenePicking::instance().pickObjects(thisPtr->mCamera, *inputPos, *area, ignoredSceneObjects); //TODO: REMOVE DATA
+
+		Vector<HSceneObject> pickedObjects = ScenePicking::instance().pickObjects(thisPtr->mCamera, *inputPos, *area, ignoredSceneObjects);
 
 		if (pickedObjects.size() != 0)
 		{
@@ -167,6 +168,7 @@ namespace BansheeEngine
 				ignoredSceneObjects.push_back(so);
 			}
 		}
+
 		HSceneObject instance = ScenePicking::instance().pickClosestObject(thisPtr->mCamera, *inputPos, Vector2I(1, 1), ignoredSceneObjects, data);
 		MonoObject* managedInstance = ScriptGameObjectManager::instance().getOrCreateScriptSceneObject(instance)->getManagedInstance();
 		if (instance == nullptr)
