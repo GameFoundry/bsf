@@ -13,7 +13,8 @@ namespace BansheeEditor
      */
 
     /// <summary>
-    /// Displays animation curve editor window.
+    /// Displays animation curve editor window. Allows the user to manipulate keyframes of animation curves, add/remove
+    /// curves from an animation clip, and manipulate animation events.
     /// </summary>
     [DefaultSize(900, 500)]
     internal class AnimationWindow : EditorWindow
@@ -116,6 +117,9 @@ namespace BansheeEditor
         private GUIAnimFieldDisplay guiFieldDisplay;
         private GUICurveEditor guiCurveEditor;
 
+        /// <summary>
+        /// Recreates the entire curve editor GUI depending on the currently selected scene object.
+        /// </summary>
         private void RebuildGUI()
         {
             GUI.Clear();
@@ -377,6 +381,11 @@ namespace BansheeEditor
             UpdateScrollBarSize();
         }
 
+        /// <summary>
+        /// Resizes GUI elements so they fit within the provided boundaries.
+        /// </summary>
+        /// <param name="width">Width of the GUI bounds, in pixels.</param>
+        /// <param name="height">Height of the GUI bounds, in pixels.</param>
         private void ResizeGUI(int width, int height)
         {
             guiFieldDisplay.SetSize(FIELD_DISPLAY_WIDTH, height - buttonLayoutHeight * 2);
@@ -400,6 +409,9 @@ namespace BansheeEditor
 
         private float zoomAmount;
 
+        /// <summary>
+        /// Handles mouse scroll wheel and dragging events in order to zoom or drag the displayed curve editor contents.
+        /// </summary>
         private void HandleDragAndZoomInput()
         {
             // Handle middle mouse dragging
@@ -434,6 +446,11 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Moves or resizes the vertical scroll bar under the curve editor.
+        /// </summary>
+        /// <param name="position">New position of the scrollbar, in range [0, 1].</param>
+        /// <param name="size">New size of the scrollbar handle, in range [0, 1].</param>
         private void SetVertScrollbarProperties(float position, float size)
         {
             Vector2 visibleRange = guiCurveEditor.Range;
@@ -450,6 +467,11 @@ namespace BansheeEditor
             guiCurveEditor.Offset = offset;
         }
 
+        /// <summary>
+        /// Moves or resizes the horizontal scroll bar under the curve editor.
+        /// </summary>
+        /// <param name="position">New position of the scrollbar, in range [0, 1].</param>
+        /// <param name="size">New size of the scrollbar handle, in range [0, 1].</param>
         private void SetHorzScrollbarProperties(float position, float size)
         {
             Vector2 visibleRange = guiCurveEditor.Range;
@@ -466,6 +488,9 @@ namespace BansheeEditor
             guiCurveEditor.Offset = offset;
         }
 
+        /// <summary>
+        /// Updates the size of both scrollbars depending on the currently visible curve area vs. the total curve area.
+        /// </summary>
         private void UpdateScrollBarSize()
         {
             Vector2 visibleRange = guiCurveEditor.Range;
@@ -475,6 +500,9 @@ namespace BansheeEditor
             vertScrollBar.HandleSize = visibleRange.y / totalRange.y;
         }
 
+        /// <summary>
+        /// Updates the position of both scrollbars depending on the offset currently applied to the visible curve area.
+        /// </summary>
         private void UpdateScrollBarPosition()
         {
             Vector2 visibleRange = guiCurveEditor.Range;
@@ -500,6 +528,10 @@ namespace BansheeEditor
                 vertScrollBar.Position = 0.0f;
         }
 
+        /// <summary>
+        /// Calculates the width/height of the curve area depending on the current zoom level.
+        /// </summary>
+        /// <returns>Width/height of the curve area, in curve space (value, time).</returns>
         private Vector2 GetZoomedRange()
         {
             float zoomLevel = MathEx.Pow(2, zoomAmount);
@@ -508,6 +540,10 @@ namespace BansheeEditor
             return optimalRange / zoomLevel;
         }
 
+        /// <summary>
+        /// Returns the total width/height of the contents of the curve area.
+        /// </summary>
+        /// <returns>Width/height of the curve area, in curve space (value, time).</returns>
         private Vector2 GetTotalRange()
         {
             // Return optimal range (that covers the visible curve)
@@ -518,6 +554,12 @@ namespace BansheeEditor
             return Vector2.Max(optimalRange, zoomedRange);
         }
 
+        /// <summary>
+        /// Zooms in or out at the provided position in the curve display.
+        /// </summary>
+        /// <param name="curvePos">Position to zoom towards, relative to the curve display area, in curve space 
+        ///                        (value, time)</param>
+        /// <param name="amount">Amount to zoom in (positive), or out (negative).</param>
         private void Zoom(Vector2 curvePos, float amount)
         {
             // Increase or decrease the visible range depending on zoom level
@@ -550,6 +592,11 @@ namespace BansheeEditor
         #region Curve save/load
         private EditorAnimClipInfo clipInfo;
 
+        /// <summary>
+        /// Refreshes the contents of the curve and property display by loading animation curves from the provided
+        /// animation clip.
+        /// </summary>
+        /// <param name="clip">Clip containing the animation to load.</param>
         private void LoadAnimClip(AnimationClip clip)
         {
             EditorPersistentData persistentData = EditorApplication.PersistentData;
@@ -580,6 +627,11 @@ namespace BansheeEditor
             FPS = clipInfo.sampleRate;
         }
 
+        /// <summary>
+        /// Checks if the currently selected object has changed, and rebuilds the GUI and loads the animation clip if needed.
+        /// </summary>
+        /// <param name="force">If true the GUI rebuild and animation clip load will be forced regardless if the active
+        ///                     scene object changed.</param>
         private void UpdateSelectedSO(bool force)
         {
             SceneObject so = Selection.SceneObject;
@@ -635,12 +687,20 @@ namespace BansheeEditor
         private int currentFrameIdx;
         private int fps = 1;
 
+        /// <summary>
+        /// Sampling rate of the animation in frames per second. Determines granularity at which positions keyframes can be
+        /// placed.
+        /// </summary>
         internal int FPS
         {
             get { return fps; }
             set { guiCurveEditor.SetFPS(value); fps = MathEx.Max(value, 1); }
         }
 
+        /// <summary>
+        /// Changes the currently selected frame in the curve display.
+        /// </summary>
+        /// <param name="frameIdx">Index of the frame to select.</param>
         private void SetCurrentFrame(int frameIdx)
         {
             currentFrameIdx = Math.Max(0, frameIdx);
@@ -711,6 +771,10 @@ namespace BansheeEditor
             guiFieldDisplay.SetDisplayValues(values.ToArray());
         }
 
+        /// <summary>
+        /// Returns a list of all animation curves that should be displayed in the curve display.
+        /// </summary>
+        /// <returns>Array of curves to display.</returns>
         private CurveDrawInfo[] GetDisplayedCurves()
         {
             List<CurveDrawInfo> curvesToDisplay = new List<CurveDrawInfo>();
@@ -739,6 +803,10 @@ namespace BansheeEditor
             return curvesToDisplay.ToArray();
         }
 
+        /// <summary>
+        /// Returns width/height required to show the entire contents of the currently displayed curves.
+        /// </summary>
+        /// <returns>Width/height of the curve area, in curve space (value, time).</returns>
         private Vector2 GetOptimalRange()
         {
             CurveDrawInfo[] curvesToDisplay = GetDisplayedCurves();
@@ -760,6 +828,9 @@ namespace BansheeEditor
             return new Vector2(xRange, yRange);
         }
 
+        /// <summary>
+        /// Calculates an unique color for each animation curve.
+        /// </summary>
         private void UpdateCurveColors()
         {
             int globalCurveIdx = 0;
@@ -770,6 +841,12 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Updates the curve display with currently selected curves.
+        /// </summary>
+        /// <param name="allowReduce">Normally the curve display will expand if newly selected curves cover a larger area
+        ///                           than currently available, but the area won't be reduced if the selected curves cover
+        ///                           a smaller area. Set this to true to allow the area to be reduced.</param>
         private void UpdateDisplayedCurves(bool allowReduce = false)
         {
             CurveDrawInfo[] curvesToDisplay = GetDisplayedCurves();
@@ -792,6 +869,11 @@ namespace BansheeEditor
         #region Field display
         private List<string> selectedFields = new List<string>();
 
+        /// <summary>
+        /// Registers a new animation curve field.
+        /// </summary>
+        /// <param name="path">Path of the field, see <see cref="GUIFieldSelector.OnElementSelected"/></param>
+        /// <param name="type">Type of the field (float, vector, etc.)</param>
         private void AddNewField(string path, SerializableProperty.FieldType type)
         {
             bool noSelection = selectedFields.Count == 0;
@@ -887,6 +969,12 @@ namespace BansheeEditor
             UpdateDisplayedCurves(noSelection);
         }
 
+        /// <summary>
+        /// Selects a new animation curve field, making the curve display in the curve display GUI element.
+        /// </summary>
+        /// <param name="path">Path of the field to display.</param>
+        /// <param name="additive">If true the field will be shown along with any already selected fields, or if false
+        ///                        only the provided field will be shown.</param>
         private void SelectField(string path, bool additive)
         {
             if (!additive)
@@ -904,6 +992,9 @@ namespace BansheeEditor
             UpdateDisplayedCurves(noSelection);
         }
 
+        /// <summary>
+        /// Deletes all currently selecting fields, removing them their curves permanently.
+        /// </summary>
         private void RemoveSelectedFields()
         {
             for (int i = 0; i < selectedFields.Count; i++)
@@ -917,6 +1008,9 @@ namespace BansheeEditor
             UpdateDisplayedCurves();
         }
 
+        /// <summary>
+        /// Updates the GUI element displaying the current animation curve fields.
+        /// </summary>
         private void UpdateDisplayedFields()
         {
             List<AnimFieldInfo> existingFields = new List<AnimFieldInfo>();
@@ -928,6 +1022,10 @@ namespace BansheeEditor
         #endregion
 
         #region Helpers
+        /// <summary>
+        /// Returns the size of the curve editor GUI element.
+        /// </summary>
+        /// <returns>Width/height of the curve editor, in pixels.</returns>
         private Vector2I GetCurveEditorSize()
         {
             Vector2I output = new Vector2I();
@@ -937,8 +1035,16 @@ namespace BansheeEditor
             return output;
         }
 
+        /// <summary>
+        /// Calculates the total range covered by a set of curves.
+        /// </summary>
+        /// <param name="curveInfos">Curves to calculate range for.</param>
+        /// <param name="xRange">Maximum time value present in the curves.</param>
+        /// <param name="yRange">Maximum absolute curve value present in the curves.</param>
         private static void CalculateRange(CurveDrawInfo[] curveInfos, out float xRange, out float yRange)
         {
+            // Note: This only evaluates at keyframes, we should also evaluate in-between in order to account for steep
+            // tangents
             xRange = 0.0f;
             yRange = 0.0f;
 
@@ -954,6 +1060,13 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Attempts to find a curve field at the specified path.
+        /// </summary>
+        /// <param name="path">Path of the curve field to look for.</param>
+        /// <param name="curveInfos">One or multiple curves found for the specific path (one field can have multiple curves
+        ///                          if it is a complex type, like a vector).</param>
+        /// <returns>True if the curve field was found, false otherwise.</returns>
         private bool TryGetCurve(string path, out CurveDrawInfo[] curveInfos)
         {
             int index = path.LastIndexOf(".");
@@ -1006,6 +1119,12 @@ namespace BansheeEditor
             return false;
         }
 
+        /// <summary>
+        /// Checks if one curve field path a parent of the other.
+        /// </summary>
+        /// <param name="child">Path to check if it is a child of <paramref name="parent"/>.</param>
+        /// <param name="parent">Path to check if it is a parent of <paramref name="child"/>.</param>
+        /// <returns>True if <paramref name="child"/> is a child of <paramref name="parent"/>.</returns>
         private bool IsPathParent(string child, string parent)
         {
             string[] childEntries = child.Split('/', '.');
@@ -1024,6 +1143,12 @@ namespace BansheeEditor
             return true;
         }
 
+        /// <summary>
+        /// If a path has sub-elements (e.g. .x, .r), returns a path without those elements. Otherwise returns the original
+        /// path.
+        /// </summary>
+        /// <param name="path">Path to check.</param>
+        /// <returns>Path without sub-elements.</returns>
         private string GetSubPathParent(string path)
         {
             int index = path.LastIndexOf(".");
@@ -1036,6 +1161,10 @@ namespace BansheeEditor
         #endregion
 
         #region Input callbacks
+        /// <summary>
+        /// Triggered when the user presses a mouse button.
+        /// </summary>
+        /// <param name="ev">Information about the mouse press event.</param>
         private void OnPointerPressed(PointerEvent ev)
         {
             guiCurveEditor.OnPointerPressed(ev);
@@ -1052,6 +1181,10 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Triggered when the user moves the mouse.
+        /// </summary>
+        /// <param name="ev">Information about the mouse move event.</param>
         private void OnPointerMoved(PointerEvent ev)
         {
             guiCurveEditor.OnPointerMoved(ev);
@@ -1078,6 +1211,10 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Triggered when the user releases a mouse button.
+        /// </summary>
+        /// <param name="ev">Information about the mouse release event.</param>
         private void OnPointerReleased(PointerEvent ev)
         {
             if (isDragInProgress)
@@ -1092,6 +1229,10 @@ namespace BansheeEditor
             guiCurveEditor.OnPointerReleased(ev);
         }
 
+        /// <summary>
+        /// Triggered when the user releases a keyboard button.
+        /// </summary>
+        /// <param name="ev">Information about the keyboard release event.</param>
         private void OnButtonUp(ButtonEvent ev)
         {
             guiCurveEditor.OnButtonUp(ev);
@@ -1099,6 +1240,11 @@ namespace BansheeEditor
         #endregion
 
         #region General callbacks
+        /// <summary>
+        /// Triggered by the field selector, when user selects a new curve field.
+        /// </summary>
+        /// <param name="path">Path of the selected curve field.</param>
+        /// <param name="type">Type of the selected curve field (float, vector, etc.).</param>
         private void OnFieldAdded(string path, SerializableProperty.FieldType type)
         {
             // Remove the root scene object from the path (we know which SO it is, no need to hardcode its name in the path)
@@ -1112,32 +1258,58 @@ namespace BansheeEditor
             AddNewField(pathNoRoot, type);
         }
 
+        /// <summary>
+        /// Triggered when the user moves or resizes the horizontal scrollbar.
+        /// </summary>
+        /// <param name="position">New position of the scrollbar, in range [0, 1].</param>
+        /// <param name="size">New size of the scrollbar, in range [0, 1].</param>
         private void OnHorzScrollOrResize(float position, float size)
         {
             SetHorzScrollbarProperties(position, size);
         }
 
+        /// <summary>
+        /// Triggered when the user moves or resizes the vertical scrollbar.
+        /// </summary>
+        /// <param name="position">New position of the scrollbar, in range [0, 1].</param>
+        /// <param name="size">New size of the scrollbar, in range [0, 1].</param>
         private void OnVertScrollOrResize(float position, float size)
         {
             SetVertScrollbarProperties(position, size);
         }
 
+        /// <summary>
+        /// Triggered when the user selects a new curve field.
+        /// </summary>
+        /// <param name="path">Path of the selected curve field.</param>
         private void OnFieldSelected(string path)
         {
             bool additive = Input.IsButtonHeld(ButtonCode.LeftShift) || Input.IsButtonHeld(ButtonCode.RightShift);
             SelectField(path, additive);
         }
 
+        /// <summary>
+        /// Triggered when the user selects a new scene object or a resource.
+        /// </summary>
+        /// <param name="sceneObjects">Newly selected scene objects.</param>
+        /// <param name="resourcePaths">Newly selected resources.</param>
         private void OnSelectionChanged(SceneObject[] sceneObjects, string[] resourcePaths)
         {
             UpdateSelectedSO(false);
         }
 
+        /// <summary>
+        /// Triggered when the user selects a new frame in the curve display.
+        /// </summary>
+        /// <param name="frameIdx">Index of the selected frame.</param>
         private void OnFrameSelected(int frameIdx)
         {
             SetCurrentFrame(frameIdx);
         }
 
+        /// <summary>
+        /// Triggered when the user changed (add, removed or modified) animation events in the curve display.
+        /// </summary>
         private void OnEventsChanged()
         {
             clipInfo.events = guiCurveEditor.Events;

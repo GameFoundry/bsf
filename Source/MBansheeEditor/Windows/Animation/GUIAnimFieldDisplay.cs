@@ -8,9 +8,13 @@ using BansheeEngine;
 namespace BansheeEditor
 {
     /** @addtogroup AnimationEditor
-     *  @{
-     */
+      *  @{
+      */
 
+    /// <summary>
+    /// Renders a hierarchical list of animation curve fields and displays information about them. Also allows field 
+    /// selection.
+    /// </summary>
     internal class GUIAnimFieldDisplay
     {
         private SceneObject root;
@@ -23,6 +27,19 @@ namespace BansheeEditor
         private GUIAnimFieldEntry[] fields;
         private GUIAnimFieldLayouts layouts;
 
+        /// <summary>
+        /// Triggered when the user clicks on an new entry in the field display. Curve field path of the selected entry
+        /// is provided.
+        /// </summary>
+        public Action<string> OnEntrySelected;
+
+        /// <summary>
+        /// Creates a new animation field display GUI element and adds it to the provided layout.
+        /// </summary>
+        /// <param name="layout">Layout to add the GUI element to.</param>
+        /// <param name="width">Width of the GUI element, in pixels.</param>
+        /// <param name="height">Height of the GUI element, in pixels.</param>
+        /// <param name="root">Scene object that the root curve field paths reference.</param>
         public GUIAnimFieldDisplay(GUILayout layout, int width, int height, SceneObject root)
         {
             this.root = root;
@@ -33,8 +50,11 @@ namespace BansheeEditor
             SetSize(width, height);
         }
 
-        public Action<string> OnEntrySelected;
-
+        /// <summary>
+        /// Changes the size of the GUI element.
+        /// </summary>
+        /// <param name="width">Width of the GUI element, in pixels.</param>
+        /// <param name="height">Height of the GUI element, in pixels.</param>
         public void SetSize(int width, int height)
         {
             this.width = width;
@@ -46,6 +66,10 @@ namespace BansheeEditor
             Rebuild();
         }
 
+        /// <summary>
+        /// Sets which fields to display.
+        /// </summary>
+        /// <param name="fields">A list of fields to display.</param>
         public void SetFields(AnimFieldInfo[] fields)
         {
             this.fieldInfos.Clear();
@@ -54,6 +78,10 @@ namespace BansheeEditor
             Rebuild();
         }
 
+        /// <summary>
+        /// Adds a new field to the existing field list, and displays it.
+        /// </summary>
+        /// <param name="field">Field to append to the field list, and display.</param>
         public void AddField(AnimFieldInfo field)
         {
             bool exists = fieldInfos.Exists(x =>
@@ -68,6 +96,10 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Changes the displayed values for each field.
+        /// </summary>
+        /// <param name="values">Values to assign to the fields. Must match the number of displayed fields. </param>
         public void SetDisplayValues(GUIAnimFieldPathValue[] values)
         {
             for (int i = 0; i < fields.Length; i++)
@@ -82,6 +114,10 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Sets which fields should be displayed as selected.
+        /// </summary>
+        /// <param name="paths">Curve field paths of fields to display as selected.</param>
         public void SetSelection(string[] paths)
         {
             Action<GUIAnimFieldEntry> updateSelection = field =>
@@ -115,6 +151,9 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Rebuilds the entire GUI based on the current field list and their properties.
+        /// </summary>
         private void Rebuild()
         {
             scrollArea.Layout.Clear();
@@ -235,6 +274,9 @@ namespace BansheeEditor
         }
     }
 
+    /// <summary>
+    /// All layouts used for placing field display GUI elements.
+    /// </summary>
     internal class GUIAnimFieldLayouts
     {
         public GUILayout main;
@@ -243,12 +285,18 @@ namespace BansheeEditor
         public GUILayout background;
     }
 
+    /// <summary>
+    /// Path/value combination used for representing the value of the currently selected frame for a specific curve path.
+    /// </summary>
     internal struct GUIAnimFieldPathValue
     {
         public string path;
         public object value;
     }
 
+    /// <summary>
+    /// Base class for individual entries in a GUI animation curve field display.
+    /// </summary>
     internal abstract class GUIAnimFieldEntry
     {
         private const int MAX_PATH_LENGTH = 30;
@@ -260,10 +308,23 @@ namespace BansheeEditor
 
         private int entryHeight;
 
+        /// <summary>
+        /// Triggered when the user selects this entry. Curve field path of the selected entry is provided.
+        /// </summary>
         public Action<string> OnEntrySelected;
 
+        /// <summary>
+        /// Path of the curve field path this entry represents.
+        /// </summary>
         public string Path { get { return path; } }
 
+        /// <summary>
+        /// Constructs a new animation field entry and appends the necessary GUI elements to the provided layouts.
+        /// </summary>
+        /// <param name="layouts">Layouts to append the GUI elements to.</param>
+        /// <param name="path">Path of the curve field.</param>
+        /// <param name="child">Determines if the element is a root path, or a child (sub) element.</param>
+        /// <param name="indentAmount">Determines how much to horizontally indent the element, in pixels.</param>
         public GUIAnimFieldEntry(GUIAnimFieldLayouts layouts, string path, bool child, int indentAmount)
         {
             this.path = path;
@@ -289,12 +350,20 @@ namespace BansheeEditor
             layouts.background.AddElement(backgroundTexture);
         }
 
+        /// <summary>
+        /// Hides or shows the element.
+        /// </summary>
+        /// <param name="on">True to show the element, false otherwise.</param>
         public virtual void Toggle(bool on)
         {
             selectionBtn.Active = on;
             backgroundTexture.Active = on;
         }
 
+        /// <summary>
+        /// Toggles whether the entry is displayed as selected, or not selected.
+        /// </summary>
+        /// <param name="selected">True to display as selected, false otherwise.</param>
         public void SetSelection(bool selected)
         {
             if(selected)
@@ -303,18 +372,36 @@ namespace BansheeEditor
                 backgroundTexture.SetTint(Color.Transparent);
         }
 
+        /// <summary>
+        /// Changes the displayed value next to the element's name.
+        /// </summary>
+        /// <param name="value"></param>
         public virtual void SetValue(object value) { }
 
+        /// <summary>
+        /// Returns all child elements, if this element is complex and has children (e.g. vector).
+        /// </summary>
+        /// <returns>List of child elements, or null if none.</returns>
         public virtual GUIAnimFieldEntry[] GetChildren()
         {
             return null;
         }
 
+        /// <summary>
+        /// Returns the height of this element.
+        /// </summary>
+        /// <returns>Height of this element, in pixels.</returns>
         protected int GetEntryHeight()
         {
             return entryHeight;
         }
 
+        /// <summary>
+        /// Generates a name to display on the element's GUI based on its path.
+        /// </summary>
+        /// <param name="path">Path of the curve field.</param>
+        /// <param name="shortName">True to generate a short path without scene object or component info.</param>
+        /// <returns>Text to display on the element's GUI.</returns>
         protected static string GetDisplayName(string path, bool shortName)
         {
             if (string.IsNullOrEmpty(path))
@@ -357,6 +444,17 @@ namespace BansheeEditor
             }
         }
 
+        /// <summary>
+        /// Parses a curve field path and breaks it down relevant components.
+        /// </summary>
+        /// <param name="path">Curve field path to parse.</param>
+        /// <param name="shortName">If true, only the last entry of the property portion of the path will be output in 
+        ///                         <paramref name="propertyPath"/>. Otherwise all properties will be output.</param>
+        /// <param name="soName">Name of the scene object the path field belongs to.</param>
+        /// <param name="compName">Name of the component the path field belongs to, if any.</param>
+        /// <param name="propertyPath">A list of properties relative to parent component or scene object, that determine
+        ///                            which field does the path reference. If <paramref name="shortName"/> is true, only
+        ///                            the last property will be output (if there are multiple).</param>
         protected static void GetNames(string path, bool shortName, out string soName, out string compName, out string propertyPath)
         {
             string[] entries = path.Split('/');
@@ -432,12 +530,22 @@ namespace BansheeEditor
         }
     }
 
+    /// <summary>
+    /// Creates GUI for an element in animation field display, that contains no child elements.
+    /// </summary>
     internal class GUIAnimSimpleEntry : GUIAnimFieldEntry
     {
         private GUILabel valueDisplay;
         private GUILayoutX underlayLayout;
         private GUILabel overlaySpacing;
 
+        /// <summary>
+        /// Constructs a new animation field entry and appends the necessary GUI elements to the provided layouts.
+        /// </summary>
+        /// <param name="layouts">Layouts to append the GUI elements to.</param>
+        /// <param name="path">Path of the curve field.</param>
+        /// <param name="color">Color of the path field curve, to display next to the element name.</param>
+        /// <param name="child">Determines if the element is a root path, or a child (sub) element.</param>
         public GUIAnimSimpleEntry(GUIAnimFieldLayouts layouts, string path, Color color, bool child = false)
             : base(layouts, path, child, child ? 45 : 30)
         {
@@ -458,6 +566,7 @@ namespace BansheeEditor
             layouts.overlay.AddElement(overlaySpacing);
         }
 
+        /// <inheritdoc/>
         public override void Toggle(bool on)
         {
             underlayLayout.Active = on;
@@ -466,6 +575,7 @@ namespace BansheeEditor
             base.Toggle(on);
         }
 
+        /// <inheritdoc/>
         public override void SetValue(object value)
         {
             if (value == null)
@@ -476,6 +586,9 @@ namespace BansheeEditor
         }
     }
 
+    /// <summary>
+    /// Base class for elements in animation field display, that contain other child elements.
+    /// </summary>
     internal class GUIAnimComplexEntry : GUIAnimFieldEntry
     {
         private GUILayout foldoutLayout;
@@ -484,6 +597,13 @@ namespace BansheeEditor
 
         protected GUIAnimSimpleEntry[] children;
 
+        /// <summary>
+        /// Constructs a new animation field entry and appends the necessary GUI elements to the provided layouts.
+        /// </summary>
+        /// <param name="layouts">Layouts to append the GUI elements to.</param>
+        /// <param name="path">Path of the curve field.</param>
+        /// <param name="childEntries">Sub-path names of the child entries to display.</param>
+        /// <param name="colors">Colors of the curves to display, for each child entry.</param>
         public GUIAnimComplexEntry(GUIAnimFieldLayouts layouts, string path, string[] childEntries, Color[] colors)
             : base(layouts, path, false, 20)
         {
@@ -518,24 +638,36 @@ namespace BansheeEditor
             Toggle(false);
         }
 
+        /// <inheritdoc/>
         public override void Toggle(bool on)
         {
             foreach(var child in children)
                 child.Toggle(on);
         }
 
+        /// <inheritdoc/>
         public override GUIAnimFieldEntry[] GetChildren()
         {
             return children;
         }
     }
 
+    /// <summary>
+    /// Creates a GUI for displaying a Vector2 curve field in the animation field display GUI element.
+    /// </summary>
     internal class GUIAnimVec2Entry : GUIAnimComplexEntry
     {
+        /// <summary>
+        /// Constructs a new animation field entry and appends the necessary GUI elements to the provided layouts.
+        /// </summary>
+        /// <param name="layouts">Layouts to append the GUI elements to.</param>
+        /// <param name="path">Path of the curve field.</param>
+        /// <param name="colors">Colors of the curves to display, for each child entry.</param>
         public GUIAnimVec2Entry(GUIAnimFieldLayouts layouts, string path, Color[] colors)
             : base(layouts, path,  new[] { ".x", ".y" }, colors)
         { }
 
+        /// <inheritdoc/>
         public override void SetValue(object value)
         {
             if (value == null)
@@ -547,12 +679,22 @@ namespace BansheeEditor
         }
     }
 
+    /// <summary>
+    /// Creates a GUI for displaying a Vector3 curve field in the animation field display GUI element.
+    /// </summary>
     internal class GUIAnimVec3Entry : GUIAnimComplexEntry
     {
+        /// <summary>
+        /// Constructs a new animation field entry and appends the necessary GUI elements to the provided layouts.
+        /// </summary>
+        /// <param name="layouts">Layouts to append the GUI elements to.</param>
+        /// <param name="path">Path of the curve field.</param>
+        /// <param name="colors">Colors of the curves to display, for each child entry.</param>
         public GUIAnimVec3Entry(GUIAnimFieldLayouts layouts, string path, Color[] colors)
             : base(layouts, path, new[] { ".x", ".y", ".z" }, colors)
         { }
 
+        /// <inheritdoc/>
         public override void SetValue(object value)
         {
             if (value == null)
@@ -565,12 +707,22 @@ namespace BansheeEditor
         }
     }
 
+    /// <summary>
+    /// Creates a GUI for displaying a Vector4 curve field in the animation field display GUI element.
+    /// </summary>
     internal class GUIAnimVec4Entry : GUIAnimComplexEntry
     {
+        /// <summary>
+        /// Constructs a new animation field entry and appends the necessary GUI elements to the provided layouts.
+        /// </summary>
+        /// <param name="layouts">Layouts to append the GUI elements to.</param>
+        /// <param name="path">Path of the curve field.</param>
+        /// <param name="colors">Colors of the curves to display, for each child entry.</param>
         public GUIAnimVec4Entry(GUIAnimFieldLayouts layouts, string path, Color[] colors)
             : base(layouts, path,  new[] { ".x", ".y", ".z", ".w" }, colors)
         { }
 
+        /// <inheritdoc/>
         public override void SetValue(object value)
         {
             if (value == null)
@@ -584,12 +736,22 @@ namespace BansheeEditor
         }
     }
 
+    /// <summary>
+    /// Creates a GUI for displaying a Color curve field in the animation field display GUI element.
+    /// </summary>
     internal class GUIAnimColorEntry : GUIAnimComplexEntry
     {
+        /// <summary>
+        /// Constructs a new animation field entry and appends the necessary GUI elements to the provided layouts.
+        /// </summary>
+        /// <param name="layouts">Layouts to append the GUI elements to.</param>
+        /// <param name="path">Path of the curve field.</param>
+        /// <param name="colors">Colors of the curves to display, for each child entry.</param>
         public GUIAnimColorEntry(GUIAnimFieldLayouts layouts, string path, Color[] colors)
             : base(layouts, path, new[] { ".r", ".g", ".b", ".a" }, colors)
         { }
 
+        /// <inheritdoc/>
         public override void SetValue(object value)
         {
             if (value == null)
@@ -603,6 +765,10 @@ namespace BansheeEditor
         }
     }
 
+    /// <summary>
+    /// Creates a GUI for displaying an entry in the animation field display GUI element that notifies the user that
+    /// a referenced curve field path cannot be found.
+    /// </summary>
     internal class GUIAnimMissingEntry : GUIAnimFieldEntry
     {
         private GUILabel missingLabel;
@@ -622,6 +788,7 @@ namespace BansheeEditor
             layouts.overlay.AddElement(overlaySpacing);
         }
 
+        /// <inheritdoc/>
         public override void Toggle(bool on)
         {
             underlayLayout.Active = on;
@@ -631,6 +798,9 @@ namespace BansheeEditor
         }
     }
 
+    /// <summary>
+    /// Contains information required to display a single curve field entry in the animation field display GUI.
+    /// </summary>
     internal struct AnimFieldInfo
     {
         public AnimFieldInfo(string path, FieldAnimCurves curveGroup, bool isUserCurve)

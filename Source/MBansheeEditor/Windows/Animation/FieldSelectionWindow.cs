@@ -10,6 +10,10 @@ namespace BansheeEditor
      *  @{
      */
 
+    /// <summary>
+    /// Opens up a window that allows the user to select a field to animate using the animation editor. 
+    /// See <see cref="GUIFieldSelector"/>.
+    /// </summary>
     [DefaultSize(250, 350)]
     internal class FieldSelectionWindow : DropDownWindow
     {
