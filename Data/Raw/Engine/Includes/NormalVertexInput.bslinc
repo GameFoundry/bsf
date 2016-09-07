@@ -36,8 +36,8 @@ Technique : base("NormalVertexInput") =
 			
 			float3x3 getTangentToLocal(VertexInput input, out float tangentSign)
 			{
-				float3 normal = input.normal;
-				float4 tangent = input.tangent;
+				float3 normal = input.normal * 2.0f - 1.0f;
+				float4 tangent = input.tangent * 2.0f - 1.0f;
 				float3 bitangent = cross(normal, tangent.xyz) * tangent.w;
 				tangentSign = tangent.w * gWorldDeterminantSign;
 				
@@ -121,9 +121,12 @@ Technique : base("NormalVertexInput") =
 
 			void getVertexWorldPosition(VertexIntermediate intermediate, out vec4 result)
 			{
+				vec3 normal = bs_normal * 2.0f - 1.0f;
+				vec4 tangent = bs_tangent * 2.0f - 1.0f;
+			
 				float tangentSign;
 				mat3 tangentToLocal;
-				getTangentToLocal(bs_normal, bs_tangent, tangentSign, tangentToLocal);
+				getTangentToLocal(normal, tangent, tangentSign, tangentToLocal);
 				
 				mat3 tangentToWorld = mat3(gMatWorldNoScale) * tangentToLocal;
 				result.worldNormal = tangentToWorld[2]; // Normal basis vector

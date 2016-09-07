@@ -278,6 +278,7 @@ namespace BansheeEngine
 		case VET_COLOR:
 		case VET_COLOR_ABGR:
 		case VET_COLOR_ARGB:
+		case VET_UBYTE4_NORM:
 			return DXGI_FORMAT_R8G8B8A8_UNORM;
 		case VET_FLOAT1:
 			return DXGI_FORMAT_R32_FLOAT;

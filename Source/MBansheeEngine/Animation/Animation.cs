@@ -1076,6 +1076,14 @@ namespace BansheeEngine
     /// </summary>
     public class Blend1DInfo
     {
+        public Blend1DInfo()
+        { }
+
+        public Blend1DInfo(int numClips)
+        {
+            clips = new BlendClipInfo[numClips];
+        }
+
         public BlendClipInfo[] clips;
     }
 

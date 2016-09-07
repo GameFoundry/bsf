@@ -27,6 +27,8 @@ namespace BansheeEngine
 		case VET_COLOR_ABGR:
 		case VET_COLOR_ARGB:
 			return sizeof(RGBA);
+		case VET_UBYTE4_NORM:
+			return sizeof(UINT32);
 		case VET_FLOAT1:
 			return sizeof(float);
 		case VET_FLOAT2:
@@ -100,6 +102,7 @@ namespace BansheeEngine
 		case VET_INT4:
 		case VET_UINT4:
 		case VET_UBYTE4:
+		case VET_UBYTE4_NORM:
 			return 4;
 		}
 

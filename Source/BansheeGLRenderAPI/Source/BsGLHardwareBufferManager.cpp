@@ -93,6 +93,7 @@ namespace BansheeEngine
 			case VET_COLOR_ABGR:
 			case VET_COLOR_ARGB:
             case VET_UBYTE4:
+			case VET_UBYTE4_NORM:
                 return GL_UNSIGNED_BYTE;
             default:
                 return 0;

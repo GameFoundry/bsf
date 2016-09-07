@@ -55,7 +55,10 @@ namespace BansheeEngine
 		UINT32 numElements = mMeshData->getNumVertices();
 		assert(numElements * sizeof(Vector3) == size);
 
-		mMeshData->getVertexData(VES_NORMAL, (UINT8*)buffer, size);
+		UINT8* normalSrc = mMeshData->getElementData(VES_NORMAL);
+		UINT32 stride = mMeshData->getVertexDesc()->getVertexStride(0);
+
+		unpackNormals(normalSrc, buffer, numElements, stride);
 	}
 
 	void RendererMeshData::setNormals(Vector3* buffer, UINT32 size)
@@ -66,7 +69,10 @@ namespace BansheeEngine
 		UINT32 numElements = mMeshData->getNumVertices();
 		assert(numElements * sizeof(Vector3) == size);
 
-		mMeshData->setVertexData(VES_NORMAL, (UINT8*)buffer, size);
+		UINT8* normalDst = mMeshData->getElementData(VES_NORMAL);
+		UINT32 stride = mMeshData->getVertexDesc()->getVertexStride(0);
+
+		packNormals(buffer, normalDst, numElements, stride);
 	}
 
 	void RendererMeshData::getTangents(Vector4* buffer, UINT32 size)
@@ -77,7 +83,10 @@ namespace BansheeEngine
 		UINT32 numElements = mMeshData->getNumVertices();
 		assert(numElements * sizeof(Vector4) == size);
 
-		mMeshData->getVertexData(VES_TANGENT, (UINT8*)buffer, size);
+		UINT8* tangentSrc = mMeshData->getElementData(VES_TANGENT);
+		UINT32 stride = mMeshData->getVertexDesc()->getVertexStride(0);
+
+		unpackNormals(tangentSrc, buffer, numElements, stride);
 	}
 
 	void RendererMeshData::setTangents(Vector4* buffer, UINT32 size)
@@ -88,7 +97,10 @@ namespace BansheeEngine
 		UINT32 numElements = mMeshData->getNumVertices();
 		assert(numElements * sizeof(Vector4) == size);
 
-		mMeshData->setVertexData(VES_TANGENT, (UINT8*)buffer, size);
+		UINT8* tangentDst = mMeshData->getElementData(VES_TANGENT);
+		UINT32 stride = mMeshData->getVertexDesc()->getVertexStride(0);
+
+		packNormals(buffer, tangentDst, numElements, stride);
 	}
 
 	void RendererMeshData::getColors(Color* buffer, UINT32 size)
@@ -340,10 +352,10 @@ namespace BansheeEngine
 			vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
 
 		if ((intType & (INT32)VertexLayout::Normal) != 0)
-			vertexDesc->addVertElem(VET_FLOAT3, VES_NORMAL);
+			vertexDesc->addVertElem(VET_UBYTE4_NORM, VES_NORMAL);
 
 		if ((intType & (INT32)VertexLayout::Tangent) != 0)
-			vertexDesc->addVertElem(VET_FLOAT4, VES_TANGENT);
+			vertexDesc->addVertElem(VET_UBYTE4_NORM, VES_TANGENT);
 
 		if ((intType & (INT32)VertexLayout::UV0) != 0)
 			vertexDesc->addVertElem(VET_FLOAT2, VES_TEXCOORD, 0);
@@ -361,5 +373,79 @@ namespace BansheeEngine
 		}
 
 		return vertexDesc;
+	}
+
+	union PackedNormal
+	{
+		struct
+		{
+			UINT8 x;
+			UINT8 y;
+			UINT8 z;
+			UINT8 w;
+		};
+
+		UINT32 packed;
+	};
+
+	void RendererMeshData::packNormals(Vector3* source, UINT8* destination, UINT32 count, UINT32 stride)
+	{
+		UINT8* ptr = destination;
+		for(UINT32 i = 0; i < count; i++)
+		{
+			PackedNormal& packed = *(PackedNormal*)ptr;
+			packed.x = Math::clamp((int)(source[i].x * 127.5f + 127.5f), 0, 255);
+			packed.y = Math::clamp((int)(source[i].y * 127.5f + 127.5f), 0, 255);
+			packed.z = Math::clamp((int)(source[i].z * 127.5f + 127.5f), 0, 255);
+			packed.w = 128;
+
+			ptr += stride;
+		}
+	}
+
+	void RendererMeshData::packNormals(Vector4* source, UINT8* destination, UINT32 count, UINT32 stride)
+	{
+		UINT8* ptr = destination;
+		for (UINT32 i = 0; i < count; i++)
+		{
+			PackedNormal& packed = *(PackedNormal*)ptr;
+			packed.x = Math::clamp((int)(source[i].x * 127.5f + 127.5f), 0, 255);
+			packed.y = Math::clamp((int)(source[i].y * 127.5f + 127.5f), 0, 255);
+			packed.z = Math::clamp((int)(source[i].z * 127.5f + 127.5f), 0, 255);
+			packed.w = Math::clamp((int)(source[i].w * 127.5f + 127.5f), 0, 255);
+
+			ptr += stride;
+		}
+	}
+
+	void RendererMeshData::unpackNormals(UINT8* source, Vector3* destination, UINT32 count, UINT32 stride)
+	{
+		UINT8* ptr = source;
+		for (UINT32 i = 0; i < count; i++)
+		{
+			PackedNormal& packed = *(PackedNormal*)ptr;
+
+			destination[i].x = (packed.x * 2.0f - 1.0f);
+			destination[i].y = (packed.y * 2.0f - 1.0f);
+			destination[i].z = (packed.z * 2.0f - 1.0f);
+
+			ptr += stride;
+		}
+	}
+
+	void RendererMeshData::unpackNormals(UINT8* source, Vector4* destination, UINT32 count, UINT32 stride)
+	{
+		UINT8* ptr = source;
+		for (UINT32 i = 0; i < count; i++)
+		{
+			PackedNormal& packed = *(PackedNormal*)ptr;
+
+			destination[i].x = (packed.x * 2.0f - 1.0f);
+			destination[i].y = (packed.y * 2.0f - 1.0f);
+			destination[i].z = (packed.z * 2.0f - 1.0f);
+			destination[i].w = (packed.w * 2.0f - 1.0f);
+
+			ptr += stride;
+		}
 	}
 }

@@ -336,6 +336,7 @@ namespace BansheeEngine
 		case VET_COLOR:
 		case VET_COLOR_ABGR:
 		case VET_COLOR_ARGB:
+		case VET_UBYTE4_NORM:
 			return D3DDECLTYPE_D3DCOLOR;
 		case VET_FLOAT1:
 			return D3DDECLTYPE_FLOAT1;

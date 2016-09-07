@@ -69,10 +69,10 @@ Technique : base("SkinnedVertexInput") =
 			
 			float3x3 getSkinnedTangentToLocal(VertexInput input, float3x4 blendMatrix, out float tangentSign)
 			{
-				tangentSign = input.tangent.w;
+				tangentSign = input.tangent.w * 2.0f - 1.0f;
 			
-				float3 normal = input.normal;
-				float3 tangent = input.tangent.xyz;
+				float3 normal = input.normal * 2.0f - 1.0f;
+				float3 tangent = input.tangent.xyz * 2.0f - 1.0f;
 				
 				#if USE_BLEND_SHAPES
 					normal = normalize(normal + input.deltaNormal * input.deltaNormal.w);
@@ -203,10 +203,10 @@ Technique : base("SkinnedVertexInput") =
 			
 			void getSkinnedTangentToLocal(mat4x3 blendMatrix, out float tangentSign, out mat3x3 tangentToLocal)
 			{
-				tangentSign = bs_tangent.w;
+				tangentSign = bs_tangent.w * 2.0f - 1.0f;
 			
-				vec3 normal = bs_normal;
-				vec3 tangent = bs_tangent.xyz;
+				vec3 normal = bs_normal * 2.0f - 1.0f;
+				vec3 tangent = bs_tangent.xyz * 2.0f - 1.0f;
 				
 				#if USE_BLEND_SHAPES
 					normal = normalize(normal + bs_normal1 * bs_normal1.w);

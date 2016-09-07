@@ -52,6 +52,7 @@ namespace BansheeEngine
 		VET_UINT1 = 21,  /**< 1D 32-bit signed integer value */
 		VET_UINT2 = 22,  /**< 2D 32-bit signed integer value */
 		VET_UINT3 = 23,  /**< 3D 32-bit signed integer value */
+		VET_UBYTE4_NORM = 24, /**< 4D 8-bit unsigned integer interpreted as a normalized value in [0, 1] range. */
     };
 
 	/**	Describes a single vertex element in a vertex declaration. */
