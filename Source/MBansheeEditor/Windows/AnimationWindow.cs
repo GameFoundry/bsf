@@ -79,6 +79,7 @@ namespace BansheeEditor
             }
         }
 
+        /// <inheritdoc/>
         protected override void WindowResized(int width, int height)
         {
             if (selectedSO == null)

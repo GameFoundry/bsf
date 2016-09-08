@@ -287,6 +287,141 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Applies any changes made to the animation curves or events to the actual animation clip. Only works for
+        /// non-imported animation clips.
+        /// </summary>
+        /// <param name="tangents">Tangent modes for all the saved animation curves.</param>
+        public void Apply(out EditorAnimClipTangents tangents)
+        {
+            if (isImported)
+            {
+                tangents = null;
+                return;
+            }
+
+            List<NamedVector3Curve> positionCurves = new List<NamedVector3Curve>();
+            List<NamedVector3Curve> rotationCurves = new List<NamedVector3Curve>();
+            List<NamedVector3Curve> scaleCurves = new List<NamedVector3Curve>();
+            List<NamedFloatCurve> floatCurves = new List<NamedFloatCurve>();
+
+            List<EditorVector3CurveTangents> positionTangents = new List<EditorVector3CurveTangents>();
+            List<EditorVector3CurveTangents> rotationTangents = new List<EditorVector3CurveTangents>();
+            List<EditorVector3CurveTangents> scaleTangents = new List<EditorVector3CurveTangents>();
+            List<EditorFloatCurveTangents> floatTangents = new List<EditorFloatCurveTangents>();
+
+            foreach (var kvp in curves)
+            {
+                string[] pathEntries = kvp.Key.Split('/');
+                if (pathEntries.Length == 0)
+                    continue;
+
+                string lastEntry = pathEntries[pathEntries.Length - 1];
+
+                if (lastEntry == "Position" || lastEntry == "Rotation" || lastEntry == "Scale")
+                {
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < pathEntries.Length - 2; i++)
+                        sb.Append(pathEntries[i] + "/");
+
+                    if (pathEntries.Length > 1)
+                        sb.Append(pathEntries[pathEntries.Length - 2]);
+
+                    string curvePath = sb.ToString();
+
+                    NamedVector3Curve curve = new NamedVector3Curve(curvePath,
+                        new AnimationCurve(kvp.Value.curveInfos[0].curve.KeyFrames),
+                        new AnimationCurve(kvp.Value.curveInfos[1].curve.KeyFrames),
+                        new AnimationCurve(kvp.Value.curveInfos[2].curve.KeyFrames));
+
+                    EditorVector3CurveTangents curveTangents = new EditorVector3CurveTangents();
+                    curveTangents.name = curvePath;
+                    curveTangents.tangentsX = kvp.Value.curveInfos[0].curve.TangentModes;
+                    curveTangents.tangentsY = kvp.Value.curveInfos[1].curve.TangentModes;
+                    curveTangents.tangentsZ = kvp.Value.curveInfos[2].curve.TangentModes;
+
+                    if (lastEntry == "Position")
+                    {
+                        positionCurves.Add(curve);
+                        positionTangents.Add(curveTangents);
+                    }
+                    else if (lastEntry == "Rotation")
+                    {
+                        rotationCurves.Add(curve);
+                        rotationTangents.Add(curveTangents);
+                    }
+                    else if (lastEntry == "Scale")
+                    {
+                        scaleCurves.Add(curve);
+                        scaleTangents.Add(curveTangents);
+                    }
+                }
+                else
+                {
+                    Action<int, string> addCurve = (idx, subPath) =>
+                    {
+                        string path = kvp.Key + subPath;
+
+                        NamedFloatCurve curve = new NamedFloatCurve(path,
+                        new AnimationCurve(kvp.Value.curveInfos[idx].curve.KeyFrames));
+
+                        EditorFloatCurveTangents curveTangents = new EditorFloatCurveTangents();
+                        curveTangents.name = path;
+                        curveTangents.tangents = kvp.Value.curveInfos[idx].curve.TangentModes;
+
+                        floatCurves.Add(curve);
+                        floatTangents.Add(curveTangents);
+                    };
+
+                    switch (kvp.Value.type)
+                    {
+                        case SerializableProperty.FieldType.Vector2:
+                            addCurve(0, ".x");
+                            addCurve(1, ".y");
+                            break;
+                        case SerializableProperty.FieldType.Vector3:
+                            addCurve(0, ".x");
+                            addCurve(1, ".y");
+                            addCurve(2, ".z");
+                            break;
+                        case SerializableProperty.FieldType.Vector4:
+                            addCurve(0, ".x");
+                            addCurve(1, ".y");
+                            addCurve(2, ".z");
+                            addCurve(3, ".w");
+                            break;
+                        case SerializableProperty.FieldType.Color:
+                            addCurve(0, ".r");
+                            addCurve(1, ".g");
+                            addCurve(2, ".b");
+                            addCurve(3, ".a");
+                            break;
+                        case SerializableProperty.FieldType.Bool:
+                        case SerializableProperty.FieldType.Int:
+                        case SerializableProperty.FieldType.Float:
+                            addCurve(0, "");
+                            break;
+                    }
+                }
+            }
+
+            AnimationCurves newClipCurves = new AnimationCurves();
+            newClipCurves.PositionCurves = positionCurves.ToArray();
+            newClipCurves.RotationCurves = rotationCurves.ToArray();
+            newClipCurves.ScaleCurves = scaleCurves.ToArray();
+            newClipCurves.FloatCurves = floatCurves.ToArray();
+
+            clip.Curves = newClipCurves;
+            clip.Events = events;
+            clip.SampleRate = sampleRate;
+
+            tangents = new EditorAnimClipTangents();
+            tangents.positionCurves = positionTangents.ToArray();
+            tangents.rotationCurves = rotationTangents.ToArray();
+            tangents.scaleCurves = scaleTangents.ToArray();
+            tangents.floatCurves = floatTangents.ToArray();
+        }
+
+        /// <summary>
         /// Saves the animation curves and events stored in this object, into the associated animation clip resource.
         /// Relevant animation clip resource must already be created and exist in the project library.
         /// </summary>
@@ -294,132 +429,13 @@ namespace BansheeEditor
         {
             if (!isImported)
             {
-                List<NamedVector3Curve> positionCurves = new List<NamedVector3Curve>();
-                List<NamedVector3Curve> rotationCurves = new List<NamedVector3Curve>();
-                List<NamedVector3Curve> scaleCurves = new List<NamedVector3Curve>();
-                List<NamedFloatCurve> floatCurves = new List<NamedFloatCurve>();
-
-                List<EditorVector3CurveTangents> positionTangents = new List<EditorVector3CurveTangents>();
-                List<EditorVector3CurveTangents> rotationTangents = new List<EditorVector3CurveTangents>();
-                List<EditorVector3CurveTangents> scaleTangents = new List<EditorVector3CurveTangents>();
-                List<EditorFloatCurveTangents> floatTangents = new List<EditorFloatCurveTangents>();
-
-                foreach (var kvp in curves)
-                {
-                    string[] pathEntries = kvp.Key.Split('/');
-                    if (pathEntries.Length == 0)
-                        continue;
-
-                    string lastEntry = pathEntries[pathEntries.Length - 1];
-
-                    if (lastEntry == "Position" || lastEntry == "Rotation" || lastEntry == "Scale")
-                    {
-                        StringBuilder sb = new StringBuilder();
-                        for (int i = 0; i < pathEntries.Length - 2; i++)
-                            sb.Append(pathEntries[i] + "/");
-
-                        if (pathEntries.Length > 1)
-                            sb.Append(pathEntries[pathEntries.Length - 2]);
-
-                        string curvePath = sb.ToString();
-
-                        NamedVector3Curve curve = new NamedVector3Curve(curvePath,
-                            new AnimationCurve(kvp.Value.curveInfos[0].curve.KeyFrames),
-                            new AnimationCurve(kvp.Value.curveInfos[1].curve.KeyFrames),
-                            new AnimationCurve(kvp.Value.curveInfos[2].curve.KeyFrames));
-
-                        EditorVector3CurveTangents tangents = new EditorVector3CurveTangents();
-                        tangents.name = curvePath;
-                        tangents.tangentsX = kvp.Value.curveInfos[0].curve.TangentModes;
-                        tangents.tangentsY = kvp.Value.curveInfos[1].curve.TangentModes;
-                        tangents.tangentsZ = kvp.Value.curveInfos[2].curve.TangentModes;
-
-                        if (lastEntry == "Position")
-                        {
-                            positionCurves.Add(curve);
-                            positionTangents.Add(tangents);
-                        }
-                        else if (lastEntry == "Rotation")
-                        {
-                            rotationCurves.Add(curve);
-                            rotationTangents.Add(tangents);
-                        }
-                        else if (lastEntry == "Scale")
-                        {
-                            scaleCurves.Add(curve);
-                            scaleTangents.Add(tangents);
-                        }
-                    }
-                    else
-                    {
-                        Action<int, string> addCurve = (idx, subPath) =>
-                        {
-                            string path = kvp.Key + subPath;
-
-                            NamedFloatCurve curve = new NamedFloatCurve(path,
-                            new AnimationCurve(kvp.Value.curveInfos[idx].curve.KeyFrames));
-
-                            EditorFloatCurveTangents tangents = new EditorFloatCurveTangents();
-                            tangents.name = path;
-                            tangents.tangents = kvp.Value.curveInfos[idx].curve.TangentModes;
-
-                            floatCurves.Add(curve);
-                            floatTangents.Add(tangents);
-                        };
-
-                        switch (kvp.Value.type)
-                        {
-                            case SerializableProperty.FieldType.Vector2:
-                                addCurve(0, ".x");
-                                addCurve(1, ".y");
-                                break;
-                            case SerializableProperty.FieldType.Vector3:
-                                addCurve(0, ".x");
-                                addCurve(1, ".y");
-                                addCurve(2, ".z");
-                                break;
-                            case SerializableProperty.FieldType.Vector4:
-                                addCurve(0, ".x");
-                                addCurve(1, ".y");
-                                addCurve(2, ".z");
-                                addCurve(3, ".w");
-                                break;
-                            case SerializableProperty.FieldType.Color:
-                                addCurve(0, ".r");
-                                addCurve(1, ".g");
-                                addCurve(2, ".b");
-                                addCurve(3, ".a");
-                                break;
-                            case SerializableProperty.FieldType.Bool:
-                            case SerializableProperty.FieldType.Int:
-                            case SerializableProperty.FieldType.Float:
-                                addCurve(0, "");
-                                break;
-                        }
-                    }
-                }
-
-                AnimationCurves newClipCurves = new AnimationCurves();
-                newClipCurves.PositionCurves = positionCurves.ToArray();
-                newClipCurves.RotationCurves = rotationCurves.ToArray();
-                newClipCurves.ScaleCurves = scaleCurves.ToArray();
-                newClipCurves.FloatCurves = floatCurves.ToArray();
-
-                clip.Curves = newClipCurves;
-                clip.Events = events;
-                clip.SampleRate = sampleRate;
+                EditorAnimClipTangents tangents;
+                Apply(out tangents);
 
                 string resourcePath = ProjectLibrary.GetPath(clip);
                 ProjectLibrary.Save(clip);
 
-                // Save tangents for editor only use
-                EditorAnimClipTangents newCurveData = new EditorAnimClipTangents();
-                newCurveData.positionCurves = positionTangents.ToArray();
-                newCurveData.rotationCurves = rotationTangents.ToArray();
-                newCurveData.scaleCurves = scaleTangents.ToArray();
-                newCurveData.floatCurves = floatTangents.ToArray();
-
-                ProjectLibrary.SetEditorData(resourcePath, newCurveData);
+                ProjectLibrary.SetEditorData(resourcePath, tangents);
             }
             else
             {
