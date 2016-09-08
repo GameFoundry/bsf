@@ -27,6 +27,7 @@ namespace BansheeEngine
         private List<SceneObjectMappingInfo> mappingInfo = new List<SceneObjectMappingInfo>();
         private AnimationClip primaryClip;
         private Renderable animatedRenderable;
+        private State state = State.Inactive;
 
         /// <summary>
         /// Contains mapping for a suffix used by property paths used for curve identifiers, to their index and type.
@@ -65,8 +66,15 @@ namespace BansheeEngine
             {
                 serializableData.defaultClip = value;
 
-                if (value != null && _native != null)
-                    _native.Play(value);
+                if (value != null)
+                {
+                    switch (state)
+                    {
+                        case State.Active:
+                            _native.Play(value);
+                            break;
+                    }
+                }
             }
         }
 
@@ -82,8 +90,12 @@ namespace BansheeEngine
             {
                 serializableData.wrapMode = value;
 
-                if (_native != null)
-                    _native.WrapMode = value;
+                switch (state)
+                {
+                    case State.Active:
+                        _native.WrapMode = value;
+                        break;
+                }
             }
         }
 
@@ -97,8 +109,12 @@ namespace BansheeEngine
             {
                 serializableData.speed = value;
 
-                if (_native != null)
-                    _native.Speed = value;
+                switch (state)
+                {
+                    case State.Active:
+                        _native.Speed = value;
+                        break;
+                }
             }
         }
 
@@ -109,10 +125,13 @@ namespace BansheeEngine
         {
             get
             {
-                if (_native != null)
-                    return _native.IsPlaying();
-
-                return false;
+                switch (state)
+                {
+                    case State.Active:
+                        return _native.IsPlaying();
+                    default:
+                        return false;
+                }
             }
         }
 
@@ -132,19 +151,21 @@ namespace BansheeEngine
                     if (animatedRenderable != null && animatedRenderable.Native != null)
                         animatedRenderable.Native.OverrideBounds = value;
 
-                    if (_native != null)
+                    AABox bounds = serializableData.bounds;
+
+                    Matrix4 parentTfrm;
+                    if (SceneObject.Parent != null)
+                        parentTfrm = SceneObject.Parent.WorldTransform;
+                    else
+                        parentTfrm = Matrix4.Identity;
+
+                    bounds.TransformAffine(parentTfrm);
+
+                    switch (state)
                     {
-                        AABox bounds = serializableData.bounds;
-
-                        Matrix4 parentTfrm;
-                        if (SceneObject.Parent != null)
-                            parentTfrm = SceneObject.Parent.WorldTransform;
-                        else
-                            parentTfrm = Matrix4.Identity;
-
-                        bounds.TransformAffine(parentTfrm);
-
-                        _native.Bounds = bounds;
+                        case State.Active:
+                            _native.Bounds = bounds;
+                            break;
                     }
                 }
             }
@@ -175,8 +196,12 @@ namespace BansheeEngine
             {
                 serializableData.cull = value;
 
-                if (_native != null)
-                    _native.Cull = value;
+                switch (state)
+                {
+                    case State.Active:
+                        _native.Cull = value;
+                        break;
+                }
             }
         }
 
@@ -186,8 +211,12 @@ namespace BansheeEngine
         /// <param name="clip">Clip to play.</param>
         public void Play(AnimationClip clip)
         {
-            if (_native != null)
-                _native.Play(clip);
+            switch (state)
+            {
+                case State.Active:
+                    _native.Play(clip);
+                    break;
+            }
         }
 
         /// <summary>
@@ -204,8 +233,12 @@ namespace BansheeEngine
         ///                     and each layer has its own weight.</param>
         public void BlendAdditive(AnimationClip clip, float weight, float fadeLength, int layer)
         {
-            if (_native != null)
-                _native.BlendAdditive(clip, weight, fadeLength, layer);
+            switch (state)
+            {
+                case State.Active:
+                    _native.BlendAdditive(clip, weight, fadeLength, layer);
+                    break;
+            }
         }
 
         /// <summary>
@@ -219,8 +252,12 @@ namespace BansheeEngine
         ///                 influence, t = 1 means right animation has full influence.</param>
         public void Blend1D(Blend1DInfo info, float t)
         {
-            if (_native != null)
-                _native.Blend1D(info, t);
+            switch (state)
+            {
+                case State.Active:
+                    _native.Blend1D(info, t);
+                    break;
+            }
         }
 
         /// <summary>
@@ -236,8 +273,12 @@ namespace BansheeEngine
         ///                 </param>
         public void Blend2D(Blend2DInfo info, Vector2 t)
         {
-            if (_native != null)
-                _native.Blend2D(info, t);
+            switch (state)
+            {
+                case State.Active:
+                    _native.Blend2D(info, t);
+                    break;
+            }
         }
 
         /// <summary>
@@ -247,8 +288,12 @@ namespace BansheeEngine
         /// <param name="fadeLength">Determines the time period over which the fade occurs. In seconds.</param>
         public void CrossFade(AnimationClip clip, float fadeLength)
         {
-            if (_native != null)
-                _native.CrossFade(clip, fadeLength);
+            switch (state)
+            {
+                case State.Active:
+                    _native.CrossFade(clip, fadeLength);
+                    break;
+            }
         }
 
         /// <summary>
@@ -257,8 +302,12 @@ namespace BansheeEngine
         /// <param name="layer">Layer on which to stop animations on.</param>
         public void Stop(int layer)
         {
-            if (_native != null)
-                _native.Stop(layer);
+            switch (state)
+            {
+                case State.Active:
+                    _native.Stop(layer);
+                    break;
+            }
         }
 
         /// <summary>
@@ -266,8 +315,12 @@ namespace BansheeEngine
         /// </summary>
         public void StopAll()
         {
-            if (_native != null)
-                _native.StopAll();
+            switch (state)
+            {
+                case State.Active:
+                    _native.StopAll();
+                    break;
+            }
         }
 
         /// <summary>
@@ -279,11 +332,135 @@ namespace BansheeEngine
         /// <returns>True if the state was found (animation clip is playing), false otherwise.</returns>
         public bool GetState(AnimationClip clip, out AnimationClipState state)
         {
-            if (_native != null)
-                return _native.GetState(clip, out state);
+            switch (this.state)
+            {
+                case State.Active:
+                case State.EditorActive:
+                    return _native.GetState(clip, out state);
+                default:
+                    state = new AnimationClipState();
+                    return false;
+            }
+        }
 
-            state = new AnimationClipState();
-            return false;
+        /// <summary>
+        /// Changes the state of a playing animation clip. If animation clip is not currently playing the state change is
+        /// ignored.
+        /// </summary>
+        /// <param name="clip">Clip to change the state for.</param>
+        /// <param name="state">New state of the animation (e.g. changing the time for seeking).</param>
+        public void SetState(AnimationClip clip, AnimationClipState state)
+        {
+            switch (this.state)
+            {
+                case State.Active:
+                case State.EditorActive:
+                    _native.SetState(clip, state);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Allows the caller to play an animation clip during edit mode. This form of animation playback is limited as
+        /// you have no control over clip properties, and features like blending, cross fade or animation events are not
+        /// supported.
+        /// 
+        /// Caller will need to manually call <see cref="UpdateFloatProperties"/> in order to apply evaluated animation data
+        /// to relevant float properties (if required).
+        /// 
+        /// Caller will also need to manually call <see cref="RefreshClipMappings"/> whenever the curves internal to the 
+        /// animation clip change. This should be called before the call to <see cref="UpdateFloatProperties"/>.
+        /// </summary>
+        /// <param name="clip">Animation clip to play.</param>
+        /// <param name="startTime">Time to start playing at, in seconds.</param>
+        /// <param name="freeze">If true, only the frame at the specified time will be shown, without advancing the 
+        ///                      animation.</param>
+        internal void EditorPlay(AnimationClip clip, float startTime, bool freeze = false)
+        {
+            switch (state)
+            {
+                case State.Inactive:
+                    SwitchState(State.EditorActive);
+                    break;
+            }
+
+            switch (state)
+            {
+                case State.EditorActive:
+                    AnimationClipState clipState = AnimationClipState.Create();
+                    clipState.time = startTime;
+                    clipState.speed = freeze ? 0.0f : 1.0f;
+
+                    SetState(clip, clipState);
+                    RefreshClipMappings();
+
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Stops playback of animation whose playback what started using <see cref="EditorPlay"/>.
+        /// </summary>
+        internal void EditorStop()
+        {
+            switch (state)
+            {
+                case State.EditorActive:
+                    SwitchState(State.Inactive);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Returns the current time of the currently playing editor animation clip.
+        /// </summary>
+        /// <returns>Time in seconds.</returns>
+        internal float EditorGetTime()
+        {
+            switch (state)
+            {
+                case State.EditorActive:
+                    AnimationClip clip = _native.GetClip(0);
+
+                    AnimationClipState clipState;
+                    if (clip != null && GetState(clip, out clipState))
+                        return clipState.time;
+
+                    return 0.0f;
+            }
+
+            return 0.0f;
+        }
+
+        /// <summary>
+        /// Rebuilds internal curve -> property mapping about the currently playing animation clip. This mapping allows the
+        /// animation component to know which property to assign which values from an animation curve. This Should be called
+        /// whenever playback for a new clip starts, or when clip curves change.
+        /// </summary>
+        internal void RefreshClipMappings()
+        {
+            primaryClip = _native.GetClip(0);
+
+            RebuildFloatProperties(primaryClip);
+            UpdateSceneObjectMapping();
+        }
+
+        /// <summary>
+        /// Updates generic float properties on relevant objects, based on the most recently evaluated animation curve 
+        /// values.
+        /// </summary>
+        internal void UpdateFloatProperties()
+        {
+            // Apply values from generic float curves
+            if (floatProperties != null)
+            {
+                foreach (var entry in floatProperties)
+                {
+                    float curveValue;
+                    if (_native.GetGenericCurveValue(entry.curveIdx, out curveValue))
+                        entry.setter(curveValue);
+                }
+            }
         }
 
         /// <summary>
@@ -409,7 +586,7 @@ namespace BansheeEngine
                         SerializableProperty.FieldType.Vector3,
                         typeof(Vector3),
                         () => so.LocalPosition,
-                        (x) => so.LocalPosition = (Vector3) x);
+                        (x) => so.LocalPosition = (Vector3)x);
 
                     return property;
                 }
@@ -419,7 +596,7 @@ namespace BansheeEngine
                         SerializableProperty.FieldType.Vector3,
                         typeof(Vector3),
                         () => so.LocalRotation.ToEuler(),
-                        (x) => so.LocalRotation = Quaternion.FromEuler((Vector3) x));
+                        (x) => so.LocalRotation = Quaternion.FromEuler((Vector3)x));
 
                     return property;
                 }
@@ -429,7 +606,7 @@ namespace BansheeEngine
                         SerializableProperty.FieldType.Vector3,
                         typeof(Vector3),
                         () => so.LocalScale,
-                        (x) => so.LocalScale = (Vector3) x);
+                        (x) => so.LocalScale = (Vector3)x);
 
                     return property;
                 }
@@ -481,44 +658,6 @@ namespace BansheeEngine
             return so;
         }
 
-        /// <summary>
-        /// Changes the state of a playing animation clip. If animation clip is not currently playing the state change is
-        /// ignored.
-        /// </summary>
-        /// <param name="clip">Clip to change the state for.</param>
-        /// <param name="state">New state of the animation (e.g. changing the time for seeking).</param>
-        public void SetState(AnimationClip clip, AnimationClipState state)
-        {
-            if (_native != null)
-                _native.SetState(clip, state);
-        }
-
-        private void OnUpdate()
-        {
-            if (_native == null)
-                return;
-
-            AnimationClip newPrimaryClip = _native.GetClip(0);
-            if (newPrimaryClip != primaryClip)
-            {
-                RebuildFloatProperties(newPrimaryClip);
-                primaryClip = newPrimaryClip;
-
-                UpdateSceneObjectMapping();
-            }
-
-            // Apply values from generic float curves
-            if (floatProperties != null)
-            {
-                foreach (var entry in floatProperties)
-                {
-                    float curveValue;
-                    if (_native.GetGenericCurveValue(entry.curveIdx, out curveValue))
-                        entry.setter(curveValue);
-                }
-            }
-        }
-
         private void OnInitialize()
         {
             NotifyFlags = TransformChangedFlags.Transform;
@@ -526,70 +665,52 @@ namespace BansheeEngine
 
         private void OnEnable()
         {
-            RestoreNative();
+            switch (state)
+            {
+                case State.Inactive:
+                    SwitchState(State.Active);
+                    break;
+                case State.EditorActive:
+                    SwitchState(State.Inactive);
+                    SwitchState(State.Active);
+                    break;
+            }
         }
 
         private void OnDisable()
         {
-            DestroyNative();
+            switch (state)
+            {
+                case State.Active:
+                case State.EditorActive:
+                    SwitchState(State.Inactive);
+                    break;
+            }
         }
 
         private void OnDestroy()
         {
-            DestroyNative();
-        }
-
-        /// <summary>
-        /// Creates the internal representation of the animation and restores the values saved by the component.
-        /// </summary>
-        private void RestoreNative()
-        {
-            if (_native != null)
-                _native.Destroy();
-
-            _native = new NativeAnimation();
-            _native.OnEventTriggered += EventTriggered;
-
-            animatedRenderable = SceneObject.GetComponent<Renderable>();
-
-            // Restore saved values after reset
-            _native.WrapMode = serializableData.wrapMode;
-            _native.Speed = serializableData.speed;
-            _native.Cull = serializableData.cull;
-
-            UpdateBounds();
-
-            if (serializableData.defaultClip != null)
-                _native.Play(serializableData.defaultClip);
-
-            primaryClip = _native.GetClip(0);
-            if (primaryClip != null)
-                RebuildFloatProperties(primaryClip);
-
-            SetBoneMappings();
-            UpdateSceneObjectMapping();
-
-            if(animatedRenderable != null)
-                animatedRenderable.RegisterAnimation(this);
-        }
-
-        /// <summary>
-        /// Destroys the internal animation representation.
-        /// </summary>
-        private void DestroyNative()
-        {
-            if (animatedRenderable != null)
-                animatedRenderable.UnregisterAnimation();
-
-            if (_native != null)
+            switch (state)
             {
-                _native.Destroy();
-                _native = null;
+                case State.Active:
+                case State.EditorActive:
+                    SwitchState(State.Inactive);
+                    break;
             }
+        }
 
-            primaryClip = null;
-            mappingInfo.Clear();
-            floatProperties = null;
+        private void OnUpdate()
+        {
+            switch (state)
+            {
+                case State.Active:
+                    AnimationClip newPrimaryClip = _native.GetClip(0);
+                    if (newPrimaryClip != primaryClip)
+                        RefreshClipMappings();
+
+                    UpdateFloatProperties();
+                    break;
+            }
         }
 
         private void OnTransformChanged(TransformChangedFlags flags)
@@ -599,6 +720,76 @@ namespace BansheeEngine
 
             if ((flags & (TransformChangedFlags.Transform)) != 0)
                 UpdateBounds(false);
+        }
+
+        /// <summary>
+        /// Changes the state of the animation state machine. Doesn't check for valid transitions.
+        /// </summary>
+        /// <param name="state">New state of the animation.</param>
+        private void SwitchState(State state)
+        {
+            this.state = state;
+
+            switch (state)
+            {
+                case State.Active:
+                    if (_native != null)
+                        _native.Destroy();
+
+                    _native = new NativeAnimation();
+                    _native.OnEventTriggered += EventTriggered;
+
+                    animatedRenderable = SceneObject.GetComponent<Renderable>();
+
+                    // Restore saved values after reset
+                    _native.WrapMode = serializableData.wrapMode;
+                    _native.Speed = serializableData.speed;
+                    _native.Cull = serializableData.cull;
+
+                    UpdateBounds();
+
+                    if (serializableData.defaultClip != null)
+                        _native.Play(serializableData.defaultClip);
+
+                    primaryClip = _native.GetClip(0);
+                    if (primaryClip != null)
+                        RebuildFloatProperties(primaryClip);
+
+                    SetBoneMappings();
+                    UpdateSceneObjectMapping();
+
+                    if (animatedRenderable != null)
+                        animatedRenderable.RegisterAnimation(this);
+                    break;
+                case State.EditorActive:
+                    if (_native != null)
+                        _native.Destroy();
+
+                    _native = new NativeAnimation();
+
+                    animatedRenderable = SceneObject.GetComponent<Renderable>();
+
+                    UpdateBounds();
+                    SetBoneMappings();
+
+                    if (animatedRenderable != null)
+                        animatedRenderable.RegisterAnimation(this);
+                    break;
+                case State.Inactive:
+                    if (animatedRenderable != null)
+                        animatedRenderable.UnregisterAnimation();
+
+                    if (_native != null)
+                    {
+                        _native.Destroy();
+                        _native = null;
+                    }
+
+                    primaryClip = null;
+                    mappingInfo.Clear();
+                    floatProperties = null;
+                    break;
+            }
         }
 
         /// <summary>
@@ -668,18 +859,20 @@ namespace BansheeEngine
         /// <param name="bone">Bone component to register.</param>
         internal void AddBone(Bone bone)
         {
-            if (_native == null)
-                return;
+            switch (state)
+            {
+                case State.Active:
+                    SceneObject currentSO = bone.SceneObject;
 
-            SceneObject currentSO = bone.SceneObject;
+                    SceneObjectMappingInfo newMapping = new SceneObjectMappingInfo();
+                    newMapping.sceneObject = currentSO;
+                    newMapping.isMappedToBone = true;
+                    newMapping.bone = bone;
 
-            SceneObjectMappingInfo newMapping = new SceneObjectMappingInfo();
-            newMapping.sceneObject = currentSO;
-            newMapping.isMappedToBone = true;
-            newMapping.bone = bone;
-
-            mappingInfo.Add(newMapping);
-            _native.MapCurveToSceneObject(bone.Name, newMapping.sceneObject);
+                    mappingInfo.Add(newMapping);
+                    _native.MapCurveToSceneObject(bone.Name, newMapping.sceneObject);
+                    break;
+            }
         }
 
         /// <summary>
@@ -688,17 +881,19 @@ namespace BansheeEngine
         /// <param name="bone">Bone to unregister.</param>
         internal void RemoveBone(Bone bone)
         {
-            if (_native == null)
-                return;
-
-            for (int i = 0; i < mappingInfo.Count; i++)
+            switch (state)
             {
-                if (mappingInfo[i].bone == bone)
-                {
-                    _native.UnmapSceneObject(mappingInfo[i].sceneObject);
-                    mappingInfo.RemoveAt(i);
-                    i--;
-                }
+                case State.Active:
+                    for (int i = 0; i < mappingInfo.Count; i++)
+                    {
+                        if (mappingInfo[i].bone == bone)
+                        {
+                            _native.UnmapSceneObject(mappingInfo[i].sceneObject);
+                            mappingInfo.RemoveAt(i);
+                            i--;
+                        }
+                    }
+                    break;
             }
         }
 
@@ -708,17 +903,19 @@ namespace BansheeEngine
         /// <param name="bone">Bone component to modify.</param>
         internal void NotifyBoneChanged(Bone bone)
         {
-            if (_native == null)
-                return;
-
-            for (int i = 0; i < mappingInfo.Count; i++)
+            switch (state)
             {
-                if (mappingInfo[i].bone == bone)
-                {
-                    _native.UnmapSceneObject(mappingInfo[i].sceneObject);
-                    _native.MapCurveToSceneObject(bone.Name, mappingInfo[i].sceneObject);
+                case State.Active:
+                    for (int i = 0; i < mappingInfo.Count; i++)
+                    {
+                        if (mappingInfo[i].bone == bone)
+                        {
+                            _native.UnmapSceneObject(mappingInfo[i].sceneObject);
+                            _native.MapCurveToSceneObject(bone.Name, mappingInfo[i].sceneObject);
+                            break;
+                        }
+                    }
                     break;
-                }
             }
         }
 
@@ -775,7 +972,6 @@ namespace BansheeEngine
 
             return bones.ToArray();
         }
-
 
         /// <summary>
         /// Re-applies the bounds to the internal animation object, and the relevant renderable object if one exists.
@@ -1044,6 +1240,25 @@ namespace BansheeEngine
             public bool isMappedToBone;
             public Bone bone;
         }
+
+        /// <summary>
+        /// Possible states the animation component can be in.
+        /// </summary>
+        private enum State
+        {
+            /// <summary>
+            /// Animation object isn't constructed.
+            /// </summary>
+            Inactive,
+            /// <summary>
+            /// Animation object is constructed and fully functional.
+            /// </summary>
+            Active,
+            /// <summary>
+            /// Animation object is constructed and functional with limited funcionality for editor purposes.
+            /// </summary>
+            EditorActive
+        }
     }
 
 
@@ -1130,13 +1345,17 @@ namespace BansheeEngine
         public AnimWrapMode wrapMode;
 
         /// <summary>
-        /// Initializes the state with default values.
+        /// Creates a new clip state, with default values initialized.
         /// </summary>
-        public void InitDefault()
+        /// <returns>New animation clip state.</returns>
+        public static AnimationClipState Create()
         {
-            speed = 1.0f;
-            weight = 1.0f;
-            wrapMode = AnimWrapMode.Loop;
+            AnimationClipState state = new AnimationClipState();
+            state.speed = 1.0f;
+            state.weight = 1.0f;
+            state.wrapMode = AnimWrapMode.Loop;
+
+            return state;
         }
     }
 
