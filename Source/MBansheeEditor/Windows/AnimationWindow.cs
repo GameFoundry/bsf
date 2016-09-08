@@ -683,6 +683,139 @@ namespace BansheeEditor
 
         #endregion
 
+        #region Record/Playback
+        /// <summary>
+        /// Iterates over all curve path fields and records their current state. If the state differs from the current
+        /// curve values, new keyframes are added.
+        /// </summary>
+        /// <param name="time">Time for which to record the state, in seconds.</param>
+        private void RecordState(float time)
+        {
+            Action<EdAnimationCurve, float, float> addOrUpdateKeyframe = (curve, keyTime, keyValue) =>
+            {
+                KeyFrame[] keyframes = curve.KeyFrames;
+                int keyframeIdx = -1;
+                for (int i = 0; i < keyframes.Length; i++)
+                {
+                    if (MathEx.ApproxEquals(keyframes[i].time, time))
+                    {
+                        keyframeIdx = i;
+                        break;
+                    }
+                }
+
+                if (keyframeIdx != -1)
+                    curve.UpdateKeyframe(keyframeIdx, keyTime, keyValue);
+                else
+                    curve.AddKeyframe(keyTime, keyValue);
+
+                curve.Apply();
+            };
+
+            foreach (var KVP in clipInfo.curves)
+            {
+                string suffix;
+                SerializableProperty property = Animation.FindProperty(selectedSO, KVP.Key, out suffix);
+
+                if (property == null)
+                    continue;
+
+                switch (KVP.Value.type)
+                {
+                    case SerializableProperty.FieldType.Vector2:
+                        {
+                            Vector2 value = property.GetValue<Vector2>();
+
+                            for (int i = 0; i < 2; i++)
+                            {
+                                float curveVal = KVP.Value.curveInfos[i].curve.Evaluate(time);
+                                if (!MathEx.ApproxEquals(value[i], curveVal))
+                                    addOrUpdateKeyframe(KVP.Value.curveInfos[i].curve, time, curveVal);
+                            }
+                        }
+                        break;
+                    case SerializableProperty.FieldType.Vector3:
+                        {
+                            Vector3 value = property.GetValue<Vector3>();
+
+                            for (int i = 0; i < 3; i++)
+                            {
+                                float curveVal = KVP.Value.curveInfos[i].curve.Evaluate(time);
+                                if (!MathEx.ApproxEquals(value[i], curveVal))
+                                    addOrUpdateKeyframe(KVP.Value.curveInfos[i].curve, time, curveVal);
+                            }
+                        }
+                        break;
+                    case SerializableProperty.FieldType.Vector4:
+                        {
+                            if (property.InternalType == typeof(Vector4))
+                            {
+                                Vector4 value = property.GetValue<Vector4>();
+
+                                for (int i = 0; i < 4; i++)
+                                {
+                                    float curveVal = KVP.Value.curveInfos[i].curve.Evaluate(time);
+                                    if (!MathEx.ApproxEquals(value[i], curveVal))
+                                        addOrUpdateKeyframe(KVP.Value.curveInfos[i].curve, time, curveVal);
+                                }
+                            }
+                            else if (property.InternalType == typeof(Quaternion))
+                            {
+                                Quaternion value = property.GetValue<Quaternion>();
+
+                                for (int i = 0; i < 4; i++)
+                                {
+                                    float curveVal = KVP.Value.curveInfos[i].curve.Evaluate(time);
+                                    if (!MathEx.ApproxEquals(value[i], curveVal))
+                                        addOrUpdateKeyframe(KVP.Value.curveInfos[i].curve, time, curveVal);
+                                }
+                            }
+                        }
+                        break;
+                    case SerializableProperty.FieldType.Color:
+                        {
+                            Color value = property.GetValue<Color>();
+
+                            for (int i = 0; i < 4; i++)
+                            {
+                                float curveVal = KVP.Value.curveInfos[i].curve.Evaluate(time);
+                                if (!MathEx.ApproxEquals(value[i], curveVal))
+                                    addOrUpdateKeyframe(KVP.Value.curveInfos[i].curve, time, curveVal);
+                            }
+                        }
+                        break;
+                    case SerializableProperty.FieldType.Bool:
+                        {
+                            bool value = property.GetValue<bool>();
+
+                            bool curveVal = KVP.Value.curveInfos[0].curve.Evaluate(time) > 0.0f;
+                            if (value != curveVal)
+                                addOrUpdateKeyframe(KVP.Value.curveInfos[0].curve, time, curveVal ? 1.0f : -1.0f);
+                        }
+                        break;
+                    case SerializableProperty.FieldType.Int:
+                        {
+                            int value = property.GetValue<int>();
+
+                            int curveVal = (int)KVP.Value.curveInfos[0].curve.Evaluate(time);
+                            if (value != curveVal)
+                                addOrUpdateKeyframe(KVP.Value.curveInfos[0].curve, time, curveVal);
+                        }
+                        break;
+                    case SerializableProperty.FieldType.Float:
+                        {
+                            float value = property.GetValue<float>();
+
+                            float curveVal = KVP.Value.curveInfos[0].curve.Evaluate(time);
+                            if (!MathEx.ApproxEquals(value, curveVal))
+                                addOrUpdateKeyframe(KVP.Value.curveInfos[0].curve, time, curveVal);
+                        }
+                        break;
+                }
+            }
+        }
+        #endregion
+
         #region Curve display
 
         private int currentFrameIdx;
