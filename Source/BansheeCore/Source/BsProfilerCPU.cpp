@@ -93,7 +93,7 @@ namespace BansheeEngine
 		__cpuid(a, b);
 		return __rdtsc();
 #else
-		static_assert("Unsupported compiler");
+		static_assert(false, "Unsupported compiler");
 #endif		
 	}
 

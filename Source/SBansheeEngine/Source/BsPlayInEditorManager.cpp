@@ -64,12 +64,14 @@ namespace BansheeEngine
 			}
 
 			setSystemsPauseState(false);
+			gAnimation().setPaused(false);
 		}
 			break;
 		case PlayInEditorState::Paused:
 		{
 			mFrameStepActive = false;
 			setSystemsPauseState(true);
+			gAnimation().setPaused(true);
 
 			if (oldState == PlayInEditorState::Stopped)
 			{
@@ -147,6 +149,5 @@ namespace BansheeEngine
 	{
 		gPhysics().setPaused(paused);
 		gAudio().setPaused(paused);
-		gAnimation().setPaused(paused);
 	}
 }

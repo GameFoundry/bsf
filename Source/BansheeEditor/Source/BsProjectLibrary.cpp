@@ -820,12 +820,7 @@ namespace BansheeEngine
 			assetPath = path.getRelative(getResourcesFolder());
 		}
 
-		LibraryEntry* existingEntry = findEntry(assetPath);
-		if (existingEntry != nullptr)
-		{
-			LOGWRN("Resource already exists at the specified path : " + assetPath.toString() + ". Unable to save.");
-			return;
-		}
+		deleteEntry(assetPath);
 
 		resource->setName(path.getWFilename(false));
 

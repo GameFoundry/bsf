@@ -64,10 +64,26 @@ namespace BansheeEditor
                 return;
 
             HandleDragAndZoomInput();
+
+            if (state == State.Playback)
+            {
+                Animation animation = selectedSO.GetComponent<Animation>();
+                if (animation != null)
+                {
+                    float time = animation.EditorGetTime();
+                    int frameIdx = (int)(time * fps);
+
+                    SetCurrentFrame(frameIdx);
+
+                    animation.UpdateFloatProperties();
+                }
+            }
         }
 
         private void OnDestroy()
         {
+            SwitchState(State.Normal);
+
             Selection.OnSelectionChanged -= OnSelectionChanged;
 
             if (selectedSO != null)
@@ -90,8 +106,8 @@ namespace BansheeEditor
         #endregion
 
         #region GUI
-        private GUIButton playButton;
-        private GUIButton recordButton;
+        private GUIToggle playButton;
+        private GUIToggle recordButton;
 
         private GUIButton prevFrameButton;
         private GUIIntField frameInputField;
@@ -162,8 +178,8 @@ namespace BansheeEditor
             GUIContent optionsIcon = new GUIContent(EditorBuiltin.GetLibraryWindowIcon(LibraryWindowIcon.Options),
                 new LocEdString("Options"));
 
-            playButton = new GUIButton(playIcon);
-            recordButton = new GUIButton(recordIcon);
+            playButton = new GUIToggle(playIcon, EditorStyles.Button);
+            recordButton = new GUIToggle(recordIcon, EditorStyles.Button);
 
             prevFrameButton = new GUIButton(prevFrameIcon);
             frameInputField = new GUIIntField();
@@ -174,39 +190,49 @@ namespace BansheeEditor
 
             optionsButton = new GUIButton(optionsIcon);
 
-            playButton.OnClick += () =>
+            playButton.OnToggled += x =>
             {
-                // TODO
-                // - Record current state of the scene object hierarchy
-                // - Evaluate all curves manually and update them
-                // - On end, restore original values of the scene object hierarchy
+                if(x)
+                    SwitchState(State.Playback);
+                else
+                    SwitchState(State.Normal);
             };
 
-            recordButton.OnClick += () =>
+            recordButton.OnToggled += x =>
             {
-                // TODO
-                // - Every frame read back current values of all the current curve's properties and assign it to the current frame
+                if (x)
+                    SwitchState(State.Recording);
+                else
+                    SwitchState(State.Normal);
             };
 
             prevFrameButton.OnClick += () =>
             {
+                SwitchState(State.Normal);
                 SetCurrentFrame(currentFrameIdx - 1);
             };
 
-            frameInputField.OnChanged += SetCurrentFrame;
+            frameInputField.OnChanged += x =>
+            {
+                SwitchState(State.Normal);
+                SetCurrentFrame(x);
+            };
 
             nextFrameButton.OnClick += () =>
             {
+                SwitchState(State.Normal);
                 SetCurrentFrame(currentFrameIdx + 1);
             };
 
             addKeyframeButton.OnClick += () =>
             {
+                SwitchState(State.Normal);
                 guiCurveEditor.AddKeyFrameAtMarker();
             };
 
             addEventButton.OnClick += () =>
             {
+                SwitchState(State.Normal);
                 guiCurveEditor.AddEventAtMarker();
             };
 
@@ -229,6 +255,8 @@ namespace BansheeEditor
                     FieldSelectionWindow fieldSelection = DropDownWindow.Open<FieldSelectionWindow>(this, windowPos);
                     fieldSelection.OnFieldSelected += OnFieldAdded;
                 };
+
+                SwitchState(State.Normal);
 
                 if (clipInfo.clip == null)
                 {
@@ -284,6 +312,8 @@ namespace BansheeEditor
                 if (clipInfo.clip == null)
                     return;
 
+                SwitchState(State.Normal);
+
                 if (clipInfo.isImported)
                 {
                     LocEdString title = new LocEdString("Warning");
@@ -303,6 +333,7 @@ namespace BansheeEditor
                         if (x == DialogBox.ResultType.Yes)
                         {
                             RemoveSelectedFields();
+                            ApplyClipChanges();
                         }
                     });
                 }
@@ -373,7 +404,12 @@ namespace BansheeEditor
             guiCurveEditor.OnEventAdded += OnEventsChanged;
             guiCurveEditor.OnEventModified += EditorApplication.SetProjectDirty;
             guiCurveEditor.OnEventDeleted += OnEventsChanged;
-            guiCurveEditor.OnCurveModified += EditorApplication.SetProjectDirty;
+            guiCurveEditor.OnCurveModified += () =>
+            {
+                ApplyClipChanges();
+                EditorApplication.SetProjectDirty();
+            };
+            guiCurveEditor.OnClicked += () => SwitchState(State.Normal);
             guiCurveEditor.Redraw();
 
             horzScrollBar.SetWidth(curveEditorSize.x);
@@ -629,6 +665,15 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Applies any changes made to the animation curves and events to the actual animation clip resource.
+        /// </summary>
+        private void ApplyClipChanges()
+        {
+            EditorAnimClipTangents unused;
+            clipInfo.Apply(out unused);
+        }
+
+        /// <summary>
         /// Checks if the currently selected object has changed, and rebuilds the GUI and loads the animation clip if needed.
         /// </summary>
         /// <param name="force">If true the GUI rebuild and animation clip load will be forced regardless if the active
@@ -684,6 +729,126 @@ namespace BansheeEditor
         #endregion
 
         #region Record/Playback
+
+        /// <summary>
+        /// Possible states the animation window can be in.
+        /// </summary>
+        private enum State
+        {
+            Normal,
+            Recording,
+            Playback
+        }
+
+        private State state = State.Normal;
+
+        /// <summary>
+        /// Transitions the window into a different state. Caller must validate state transitions.
+        /// </summary>
+        /// <param name="state">New state to transition to.</param>
+        private void SwitchState(State state)
+        {
+            switch (this.state)
+            {
+                case State.Normal:
+                {
+                    switch (state)
+                    {
+                        case State.Playback:
+                            StartPlayback();
+                        break;
+                        case State.Recording:
+                            StartRecord();
+                        break;
+                    }
+                }
+                    break;
+                case State.Playback:
+                {
+                    switch (state)
+                    {
+                        case State.Normal:
+                            EndPlayback();
+                        break;
+                        case State.Recording:
+                            EndPlayback();
+                            StartRecord();
+                        break;
+                    }
+                }
+                    break;
+                case State.Recording:
+                {
+                    switch (state)
+                    {
+                        case State.Normal:
+                            EndRecord();
+                        break;
+                        case State.Playback:
+                            EndRecord();
+                            StartPlayback();
+                        break;
+                    }
+                }
+                    break;
+            }
+
+            this.state = state;
+        }
+
+        /// <summary>
+        /// Plays back the animation on the currently selected object.
+        /// </summary>
+        private void StartPlayback()
+        {
+            EditorAnimClipTangents unused;
+            clipInfo.Apply(out unused);
+
+            Animation animation = selectedSO.GetComponent<Animation>();
+            if (animation != null)
+            {
+                float time = guiCurveEditor.GetTimeForFrame(currentFrameIdx);
+
+                animation.EditorPlay(clipInfo.clip, time);
+            }
+
+            playButton.Value = true;
+        }
+
+        /// <summary>
+        /// Ends playback started with <see cref="StartPlayback"/>
+        /// </summary>
+        private void EndPlayback()
+        {
+            Animation animation = selectedSO.GetComponent<Animation>();
+            if (animation != null)
+                animation.EditorStop();
+
+            playButton.Value = false;
+        }
+
+        /// <summary>
+        /// Start recording modifications made to the selected scene object.
+        /// </summary>
+        private void StartRecord()
+        {
+            // TODO
+
+            recordButton.Value = true;
+        }
+
+        /// <summary>
+        /// Stops recording modifications made to the selected scene object.
+        /// </summary>
+        private void EndRecord()
+        {
+            // TODO
+
+            // TODO - Lock selection while active? (Don't allow another object to become anim focus in order to allow modifications on anim children).
+
+            recordButton.Value = false;
+        }
+
         /// <summary>
         /// Iterates over all curve path fields and records their current state. If the state differs from the current
         /// curve values, new keyframes are added.
@@ -1390,6 +1555,7 @@ namespace BansheeEditor
             pathNoRoot = pathNoRoot.Substring(separatorIdx + 1, pathNoRoot.Length - separatorIdx - 1);
 
             AddNewField(pathNoRoot, type);
+            ApplyClipChanges();
         }
 
         /// <summary>

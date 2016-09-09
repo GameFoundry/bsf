@@ -99,6 +99,7 @@ namespace BansheeEditor
         private bool isMousePressedOverKey;
         private bool isMousePressedOverTangent;
         private bool isDragInProgress;
+        private bool isModifiedDuringDrag;
         private List<DraggedKeyframes> draggedKeyframes = new List<DraggedKeyframes>();
         private TangentRef draggedTangent;
         private Vector2I dragStart;
@@ -127,6 +128,11 @@ namespace BansheeEditor
         /// Triggered whenever keyframe in a curve is modified (added, removed or edited).
         /// </summary>
         public Action OnCurveModified;
+
+        /// <summary>
+        /// Triggered when the user clicks anywhere on the curve editor area.
+        /// </summary>
+        public Action OnClicked;
 
         /// <summary>
         /// The displayed range of the curve, where:
@@ -351,6 +357,12 @@ namespace BansheeEditor
 
             Rect2I elementBounds = GUIUtility.CalculateBounds(gui, window.GUI);
             Vector2I pointerPos = windowPos - new Vector2I(elementBounds.x, elementBounds.y);
+
+            bool isOverEditor = pointerPos.x >= 0 && pointerPos.x < width && pointerPos.y >= 0 && pointerPos.y < height;
+            if (!isOverEditor)
+                return;
+            else
+                OnClicked?.Invoke();
 
             Rect2I drawingBounds = drawingPanel.Bounds;
             Vector2I drawingPos = pointerPos - new Vector2I(drawingBounds.x, drawingBounds.y);
@@ -582,7 +594,7 @@ namespace BansheeEditor
                                     SelectKeyframe(new KeyframeRef(draggedEntry.curveIdx, keyframe.index));
                             }
 
-                            OnCurveModified?.Invoke();
+                            isModifiedDuringDrag = true;
                             guiCurveDrawing.Rebuild();
                             UpdateEventsGUI();
                         }
@@ -623,7 +635,7 @@ namespace BansheeEditor
                                 curve.KeyFrames[draggedTangent.keyframeRef.keyIdx] = keyframe;
                                 curve.Apply();
 
-                                OnCurveModified?.Invoke();
+                                isModifiedDuringDrag = true;
                                 guiCurveDrawing.Rebuild();
                             }
                         }
@@ -647,10 +659,14 @@ namespace BansheeEditor
         /// <param name="ev">Object containing pointer release event information.</param>
         internal void OnPointerReleased(PointerEvent ev)
         {
+            if (isModifiedDuringDrag)
+                OnCurveModified?.Invoke();
+
             isPointerHeld = false;
             isDragInProgress = false;
             isMousePressedOverKey = false;
             isMousePressedOverTangent = false;
+            isModifiedDuringDrag = false;
         }
 
         /// <summary>

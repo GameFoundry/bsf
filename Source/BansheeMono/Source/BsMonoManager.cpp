@@ -341,7 +341,7 @@ namespace BansheeEngine
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 		compilerPath.append("mcs.exe");
 #else
-		static_assert("Not implemented");
+		static_assert(false, "Not implemented");
 #endif
 
 		return compilerPath;
