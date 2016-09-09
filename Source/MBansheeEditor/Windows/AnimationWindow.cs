@@ -741,6 +741,7 @@ namespace BansheeEditor
         }
 
         private State state = State.Normal;
+        private SerializedSceneObject soState;
 
         /// <summary>
         /// Transitions the window into a different state. Caller must validate state transitions.
@@ -804,6 +805,8 @@ namespace BansheeEditor
             EditorAnimClipTangents unused;
             clipInfo.Apply(out unused);
 
+            soState = new SerializedSceneObject(selectedSO, true);
+
             Animation animation = selectedSO.GetComponent<Animation>();
             if (animation != null)
             {
@@ -823,6 +826,9 @@ namespace BansheeEditor
             Animation animation = selectedSO.GetComponent<Animation>();
             if (animation != null)
                 animation.EditorStop();
+
+            if(soState != null)
+                soState.Restore();
 
             playButton.Value = false;
         }

@@ -1022,7 +1022,8 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Registers an <see cref="Renderable"/> component with the animation. Rendering will be affected by the animation.
+        /// Registers an <see cref="Renderable"/> component with the animation. When registered the animation will use the
+        /// renderable's bounds for culling, and the animation override bounds will be applied to the renderable.
         /// </summary>
         /// <param name="renderable">Component that was added</param>
         internal void RegisterRenderable(Renderable renderable)
@@ -1033,7 +1034,7 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Removes renderable from the animation component. Rendering will no longer be affected by animation.
+        /// Removes renderable from the animation component. <see cref="RegisterRenderable"/>.
         /// </summary>
         internal void UnregisterRenderable()
         {
