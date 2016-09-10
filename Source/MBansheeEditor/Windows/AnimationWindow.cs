@@ -82,7 +82,7 @@ namespace BansheeEditor
 
         private void OnDestroy()
         {
-            SwitchState(State.Normal);
+            SwitchState(State.Empty);
 
             Selection.OnSelectionChanged -= OnSelectionChanged;
 
@@ -208,20 +208,20 @@ namespace BansheeEditor
 
             prevFrameButton.OnClick += () =>
             {
-                SwitchState(State.Normal);
                 SetCurrentFrame(currentFrameIdx - 1);
+                SwitchState(State.Normal);
             };
 
             frameInputField.OnChanged += x =>
             {
-                SwitchState(State.Normal);
                 SetCurrentFrame(x);
+                SwitchState(State.Normal);
             };
 
             nextFrameButton.OnClick += () =>
             {
-                SwitchState(State.Normal);
                 SetCurrentFrame(currentFrameIdx + 1);
+                SwitchState(State.Normal);
             };
 
             addKeyframeButton.OnClick += () =>
@@ -285,6 +285,8 @@ namespace BansheeEditor
 
                                 animation.DefaultClip = newClip;
                                 EditorApplication.SetSceneDirty();
+
+                                soState = new SerializedSceneObject(selectedSO, true);
 
                                 openPropertyWindow();
                             }
@@ -698,10 +700,11 @@ namespace BansheeEditor
                     EditorInput.OnButtonUp += OnButtonUp;
                 }
 
-                zoomAmount = 0.0f;
-                selectedSO = so;
-                selectedFields.Clear();
+                SwitchState(State.Empty);
 
+                selectedSO = so;
+                zoomAmount = 0.0f;
+                selectedFields.Clear();
                 clipInfo = null;
 
                 RebuildGUI();
@@ -721,8 +724,40 @@ namespace BansheeEditor
                 if(clipInfo == null)
                     clipInfo = new EditorAnimClipInfo();
 
-                if(selectedSO != null)
+                SwitchState(State.Normal);
+
+                if (selectedSO != null)
                     UpdateDisplayedCurves(true);
+            }
+        }
+
+        /// <summary>
+        /// Initializes the currently selected scene object. This should be called whenever the selected scene object 
+        /// changes.
+        /// </summary>
+        private void InitializeSO()
+        {
+            if (selectedSO != null)
+                soState = new SerializedSceneObject(selectedSO, true);
+        }
+
+        /// <summary>
+        /// Clears a selected scene object. This must be called on every scene object <see cref="InitializeSO"/> has been called
+        /// on, after operations on it are done.
+        /// </summary>
+        private void ClearSO()
+        {
+            if (selectedSO != null)
+            {
+                Animation animation = selectedSO.GetComponent<Animation>();
+                if (animation != null)
+                    animation.EditorStop();
+            }
+
+            if (soState != null)
+            {
+                soState.Restore();
+                soState = null;
             }
         }
 
@@ -735,12 +770,13 @@ namespace BansheeEditor
         /// </summary>
         private enum State
         {
+            Empty,
             Normal,
             Recording,
             Playback
         }
 
-        private State state = State.Normal;
+        private State state = State.Empty;
         private SerializedSceneObject soState;
 
         /// <summary>
@@ -761,6 +797,9 @@ namespace BansheeEditor
                         case State.Recording:
                             StartRecord();
                         break;
+                        case State.Empty:
+                            ClearSO();
+                        break;
                     }
                 }
                     break;
@@ -770,12 +809,17 @@ namespace BansheeEditor
                     {
                         case State.Normal:
                             EndPlayback();
+                            PreviewFrame(currentFrameIdx);
                         break;
                         case State.Recording:
                             EndPlayback();
                             StartRecord();
                         break;
-                    }
+                        case State.Empty:
+                            EndPlayback();
+                            ClearSO();
+                        break;
+                        }
                 }
                     break;
                 case State.Recording:
@@ -784,14 +828,38 @@ namespace BansheeEditor
                     {
                         case State.Normal:
                             EndRecord();
+                            PreviewFrame(currentFrameIdx);
                         break;
                         case State.Playback:
                             EndRecord();
                             StartPlayback();
                         break;
+                        case State.Empty:
+                            EndRecord();
+                            ClearSO();
+                        break;
                     }
                 }
                     break;
+                case State.Empty:
+                {
+                    switch (state)
+                    {
+                        case State.Normal:
+                            InitializeSO();
+                            PreviewFrame(currentFrameIdx);
+                            break;
+                        case State.Playback:
+                            InitializeSO();
+                            StartPlayback();
+                            break;
+                        case State.Recording:
+                            InitializeSO();
+                            StartRecord();
+                            break;
+                    }
+                }
+                break;
             }
 
             this.state = state;
@@ -805,10 +873,8 @@ namespace BansheeEditor
             EditorAnimClipTangents unused;
             clipInfo.Apply(out unused);
 
-            soState = new SerializedSceneObject(selectedSO, true);
-
             Animation animation = selectedSO.GetComponent<Animation>();
-            if (animation != null)
+            if (animation != null && clipInfo.clip != null)
             {
                 float time = guiCurveEditor.GetTimeForFrame(currentFrameIdx);
 
@@ -823,14 +889,26 @@ namespace BansheeEditor
         /// </summary>
         private void EndPlayback()
         {
-            Animation animation = selectedSO.GetComponent<Animation>();
-            if (animation != null)
-                animation.EditorStop();
-
-            if(soState != null)
-                soState.Restore();
-
+            PreviewFrame(currentFrameIdx);
             playButton.Value = false;
+        }
+
+        /// <summary>
+        /// Updates the visible animation to display the provided frame.
+        /// </summary>
+        /// <param name="frameIdx">Index of the animation frame to display.</param>
+        private void PreviewFrame(int frameIdx)
+        {
+            if (selectedSO == null)
+                return;
+
+            Animation animation = selectedSO.GetComponent<Animation>();
+            if (animation != null && clipInfo.clip != null)
+            {
+                float time = guiCurveEditor.GetTimeForFrame(frameIdx);
+
+                animation.EditorPlay(clipInfo.clip, time, true);
+            }
         }
 
         /// <summary>
@@ -1611,6 +1689,7 @@ namespace BansheeEditor
         private void OnFrameSelected(int frameIdx)
         {
             SetCurrentFrame(frameIdx);
+            PreviewFrame(currentFrameIdx);
         }
 
         /// <summary>

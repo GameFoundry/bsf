@@ -729,7 +729,7 @@ namespace BansheeEditor
         /// <returns>Time of the frame with the provided index. </returns>
         public float GetTimeForFrame(int frameIdx)
         {
-            return guiCurveDrawing.GetTimeForFrame(markedFrameIdx);
+            return guiCurveDrawing.GetTimeForFrame(frameIdx);
         }
 
         /// <summary>
