@@ -444,12 +444,18 @@ namespace BansheeEngine
 
 	void Renderable::notifyResourceLoaded(const HResource& resource)
 	{
+		if (resource == mMesh)
+			onMeshChanged();
+
 		markDependenciesDirty();
 		markCoreDirty();
 	}
 
 	void Renderable::notifyResourceChanged(const HResource& resource)
 	{
+		if(resource == mMesh)
+			onMeshChanged();
+
 		markDependenciesDirty();
 		markCoreDirty();
 	}

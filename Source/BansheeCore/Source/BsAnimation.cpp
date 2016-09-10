@@ -915,6 +915,25 @@ namespace BansheeEngine
 		return output;
 	}
 
+	void Animation::getListenerResources(Vector<HResource>& resources)
+	{
+		for (auto& entry : mClipInfos)
+		{
+			if(entry.clip != nullptr)
+				resources.push_back(entry.clip);
+		}
+	}
+
+	void Animation::notifyResourceLoaded(const HResource& resource)
+	{
+		mDirty |= AnimDirtyStateFlag::Layout;
+	}
+
+	void Animation::notifyResourceChanged(const HResource& resource)
+	{
+		mDirty |= AnimDirtyStateFlag::Layout;
+	}
+
 	bool Animation::isPlaying() const
 	{
 		for(auto& clipInfo : mClipInfos)

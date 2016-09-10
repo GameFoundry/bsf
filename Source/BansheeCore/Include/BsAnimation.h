@@ -4,6 +4,7 @@
 
 #include "BsCorePrerequisites.h"
 #include "BsCoreObject.h"
+#include "BsIResourceListener.h"
 #include "BsFlags.h"
 #include "BsSkeleton.h"
 #include "BsSkeletonMask.h"
@@ -214,7 +215,7 @@ namespace BansheeEngine
 	 * thread for updating attached scene objects and bones (if skeleton is attached), or the data is made available for
 	 * manual queries in the case of generic animation.
 	 */
-	class BS_CORE_EXPORT Animation : public CoreObject
+	class BS_CORE_EXPORT Animation : public CoreObject, public IResourceListener
 	{
 	public:
 		~Animation();
@@ -422,6 +423,15 @@ namespace BansheeEngine
 		 * will be marked as dirty if any changes were made.
 		 */
 		AnimationClipInfo* addClip(const HAnimationClip& clip, UINT32 layer, bool stopExisting = true);
+
+		/** @copydoc IResourceListener::getListenerResources */
+		void getListenerResources(Vector<HResource>& resources) override;
+
+		/** @copydoc IResourceListener::notifyResourceLoaded */
+		void notifyResourceLoaded(const HResource& resource) override;
+
+		/** @copydoc IResourceListener::notifyResourceChanged */
+		void notifyResourceChanged(const HResource& resource) override;
 
 		UINT64 mId;
 		AnimWrapMode mDefaultWrapMode;
