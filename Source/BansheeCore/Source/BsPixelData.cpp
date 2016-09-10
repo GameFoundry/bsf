@@ -83,11 +83,11 @@ namespace BansheeEngine
 		return cv;
 	}
 
-	void PixelData::setColorAt(Color const &cv, UINT32 x, UINT32 y, UINT32 z)
+	void PixelData::setColorAt(const Color& color, UINT32 x, UINT32 y, UINT32 z)
 	{
 		UINT32 pixelSize = PixelUtil::getNumElemBytes(mFormat);
 		UINT32 pixelOffset = pixelSize * (z * mSlicePitch + y * mRowPitch + x);
-		PixelUtil::packColor(cv, mFormat, (unsigned char *)getData() + pixelOffset);
+		PixelUtil::packColor(color, mFormat, (unsigned char *)getData() + pixelOffset);
 	}
 
 	Vector<Color> PixelData::getColors() const
@@ -183,7 +183,7 @@ namespace BansheeEngine
 		return PixelUtil::unpackDepth(mFormat, (unsigned char *)getData() + pixelOffset);;
 	}
 
-	void PixelData::setDepthAt(const float depth, UINT32 x, UINT32 y, UINT32 z)
+	void PixelData::setDepthAt(float depth, UINT32 x, UINT32 y, UINT32 z)
 	{
 		UINT32 pixelSize = PixelUtil::getNumElemBytes(mFormat);
 		UINT32 pixelOffset = pixelSize * (z * mSlicePitch + y * mRowPitch + x);

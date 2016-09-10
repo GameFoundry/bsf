@@ -130,7 +130,7 @@ namespace BansheeEngine
 		mTransparentQueue->sort();
 	}
 
-	Vector2 RendererCamera::getDeviceZTransform(const Matrix4& projMatrix)
+	Vector2 RendererCamera::getDeviceZTransform(const Matrix4& projMatrix) const
 	{
 		// Returns a set of values that will transform depth buffer values (e.g. [0, 1] in DX, [-1, 1] in GL) to a distance
 		// in world space. This involes applying the inverse projection transform to the depth value. When you multiply

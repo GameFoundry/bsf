@@ -54,7 +54,8 @@ namespace BansheeEngine
 		gCoreAccessor().queueCommand(std::bind(&ScenePickingCore::destroy, mCore));
 	}
 
-	HSceneObject ScenePicking::pickClosestObject(const SPtr<Camera>& cam, const Vector2I& position, const Vector2I& area, Vector<HSceneObject>& ignoreRenderables, SnapData* data)
+	HSceneObject ScenePicking::pickClosestObject(const SPtr<Camera>& cam, const Vector2I& position, const Vector2I& area, 
+		Vector<HSceneObject>& ignoreRenderables, SnapData* data)
 	{
 		Vector<HSceneObject> selectedObjects = pickObjects(cam, position, area, ignoreRenderables, data);
 		if (selectedObjects.size() == 0)
@@ -70,7 +71,8 @@ namespace BansheeEngine
 		return selectedObjects[0];
 	}
 
-	Vector<HSceneObject> ScenePicking::pickObjects(const SPtr<Camera>& cam, const Vector2I& position, const Vector2I& area, Vector<HSceneObject>& ignoreRenderables, SnapData* data)
+	Vector<HSceneObject> ScenePicking::pickObjects(const SPtr<Camera>& cam, const Vector2I& position, const Vector2I& area, 
+		Vector<HSceneObject>& ignoreRenderables, SnapData* data)
 	{
 		auto comparePickElement = [&] (const ScenePicking::RenderablePickData& a, const ScenePicking::RenderablePickData& b)
 		{
@@ -189,16 +191,14 @@ namespace BansheeEngine
 
 		assert(op.hasCompleted());
 
-		PickResults returnValue = op.getReturnValue<PickResults>();
-
+		PickResults pickResults = op.getReturnValue<PickResults>();
 		if (data != nullptr)
 		{
-			Vector3 pos = returnValue.data.pickPosition;
-			*data = returnValue.data;
-			data->pickPosition = cam->screenToWorldPointDeviceDepth(Vector2I(pos.x, pos.y), pos.z);
+			data->pickPosition = cam->screenToWorldPointDeviceDepth(position, pickResults.depth);
+			data->normal = pickResults.normal;
 		}
 
-		Vector<UINT32> selectedObjects = returnValue.objects;
+		Vector<UINT32> selectedObjects = pickResults.objects;
 		Vector<HSceneObject> results;
 
 		for (auto& selectedObjectIdx : selectedObjects)
@@ -288,24 +288,25 @@ namespace BansheeEngine
 		RenderAPICore& rs = RenderAPICore::instance();
 
 		SPtr<RenderTextureCore> rtt = std::static_pointer_cast<RenderTextureCore>(target);
+
 		SPtr<TextureCore> outputTexture = rtt->getBindableColorTexture();
 		TextureProperties outputTextureProperties = outputTexture->getProperties();
+
+		SPtr<TextureCore> normalsTexture = TextureCore::create(TEX_TYPE_2D, outputTextureProperties.getWidth(),
+			outputTextureProperties.getHeight(), 0, PF_R8G8B8A8, TU_RENDERTARGET, false, 1);
 		SPtr<TextureCore> depthTexture = rtt->getBindableDepthStencilTexture();
 
-		MULTI_RENDER_TEXTURE_CORE_DESC multiTextureDescription;
-		multiTextureDescription.colorSurfaces.resize(2);
-		multiTextureDescription.colorSurfaces[0].face = 0;
-		multiTextureDescription.colorSurfaces[0].texture = outputTexture;
-		multiTextureDescription.colorSurfaces[1].face = 0;
-		SPtr<TextureCore> core = TextureCore::create(TextureType::TEX_TYPE_2D, outputTextureProperties.getWidth(),
-			outputTextureProperties.getHeight(), 0, PixelFormat::PF_R8G8B8A8, TU_RENDERTARGET, false, 1);
-		multiTextureDescription.colorSurfaces[1].texture = core;
-		RENDER_SURFACE_CORE_DESC depthStencilDescription;
-		depthStencilDescription.face = 0;
-		depthStencilDescription.texture = depthTexture;
-		multiTextureDescription.depthStencilSurface = depthStencilDescription;
+		MULTI_RENDER_TEXTURE_CORE_DESC pickingMRT;
+		pickingMRT.colorSurfaces.resize(2);
+		pickingMRT.colorSurfaces[0].face = 0;
+		pickingMRT.colorSurfaces[0].texture = outputTexture;
+		pickingMRT.colorSurfaces[1].face = 0;
+		pickingMRT.colorSurfaces[1].texture = normalsTexture;
+
+		pickingMRT.depthStencilSurface.face = 0;
+		pickingMRT.depthStencilSurface.texture = depthTexture;
 		
-		mPickingTexture = MultiRenderTextureCore::create(multiTextureDescription);
+		mPickingTexture = MultiRenderTextureCore::create(pickingMRT);
 
 		rs.beginFrame();
 		rs.setRenderTarget(mPickingTexture);
@@ -380,6 +381,8 @@ namespace BansheeEngine
 		if (position.x < 0 || position.x >= (INT32)outputTexture->getProperties().getWidth() ||
 			position.y < 0 || position.y >= (INT32)outputTexture->getProperties().getHeight())
 		{
+			mPickingTexture = nullptr;
+
 			asyncOp._completeOperation(Vector<UINT32>());
 			return;
 		}
@@ -467,31 +470,26 @@ namespace BansheeEngine
 		{
 			depthTexture->readSubresource(0, *depthPixelData);
 			normalsTexture->readSubresource(0, *normalsPixelData);
-			float depth;
-			Color normal;
-			if (rtProps.requiresTextureFlipping())
-			{
-				depth = depthPixelData->getDepthAt(position.x, depthPixelData->getHeight() - position.y);
-				normal = normalsPixelData->getColorAt(position.x, depthPixelData->getHeight() - position.y);
-			}
-			else
-			{
-				depth = depthPixelData->getDepthAt(position.x, position.y);
-				normal = normalsPixelData->getColorAt(position.x, position.y);
-			}
 
-			SnapData data;
+			Vector2I samplePixel = position;
+			if (rtProps.requiresTextureFlipping())
+				samplePixel.y = depthPixelData->getHeight() - samplePixel.y;
+
+			float depth = depthPixelData->getDepthAt(samplePixel.x, samplePixel.y);
+			Color normal = normalsPixelData->getColorAt(samplePixel.x, samplePixel.y);
+
 			const RenderAPIInfo& rapiInfo = rs.getAPIInfo();
 			float max = rapiInfo.getMaximumDepthInputValue();
 			float min = rapiInfo.getMinimumDepthInputValue();
 			depth = depth * Math::abs(max - min) + min;
-			data.pickPosition = Vector3(position.x, position.y, depth);
-			data.normal = Vector3((normal.r * 2) - 1, (normal.g * 2) - 1, (normal.b * 2) - 1);
-			result.data = data;
+
+			result.depth = depth;
+			result.normal = Vector3((normal.r * 2) - 1, (normal.g * 2) - 1, (normal.b * 2) - 1);
 		}
+
+		mPickingTexture = nullptr;
 		
 		result.objects = objects;
 		asyncOp._completeOperation(result);
-		mNormalsTexture = nullptr;
 	}
 }

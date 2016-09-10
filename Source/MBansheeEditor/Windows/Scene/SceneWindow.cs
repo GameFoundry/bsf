@@ -23,8 +23,6 @@ namespace BansheeEditor
         internal const string ScaleToolBinding = "ScaleTool";
         internal const string FrameBinding = "SceneFrame";
 
-        public SceneSelection sceneSelection;
-
         private const int HeaderHeight = 20;
         private const float DefaultPlacementDepth = 5.0f;
         private static readonly Color ClearColor = new Color(83.0f/255.0f, 83.0f/255.0f, 83.0f/255.0f);
@@ -42,6 +40,7 @@ namespace BansheeEditor
 
         private GUIRenderTexture renderTextureGUI;
         private SceneGrid sceneGrid;
+        private SceneSelection sceneSelection;
         private SceneGizmos sceneGizmos;
         private SceneHandles sceneHandles;
 
@@ -436,7 +435,7 @@ namespace BansheeEditor
         /// <param name="screenPos">Coordinates relative to the screen.</param>
         /// <param name="scenePos">Output coordinates relative to the scene view texture.</param>
         /// <returns>True if the coordinates are within the scene view texture, false otherwise.</returns>
-        public bool ScreenToScenePos(Vector2I screenPos, out Vector2I scenePos)
+        private bool ScreenToScenePos(Vector2I screenPos, out Vector2I scenePos)
         {
             scenePos = screenPos;
             Vector2I windowPos = ScreenToWindowPos(screenPos);
@@ -587,26 +586,11 @@ namespace BansheeEditor
                         if (Input.IsButtonHeld(ButtonCode.Space))
                         {
                             SnapData snapData;
-                            var snappedTo = sceneSelection.Snap(scenePos, out snapData, new SceneObject[] {draggedSO});
-                            if (snappedTo != null)
-                            {
-                                Quaternion q = Quaternion.FromToRotation(Vector3.YAxis, snapData.normal);
-                                draggedSO.Position = snapData.position;
-                                draggedSO.Rotation = q;
-                            }
-                            else
-                            {
-                                Ray worldRay = camera.ViewportToWorldRay(scenePos);
-                                Vector3 pos = worldRay*DefaultPlacementDepth - draggedSOOffset;
-                                float interval = EditorSettings.MoveHandleSnapAmount;
-                                if (EditorSettings.MoveHandleSnapActive)
-                                    draggedSO.Position = new Vector3(pos.x - (pos.x % interval), pos.y - (pos.y % interval),
-                                        pos.z - (pos.z % interval));
-                                else
-                                    draggedSO.Position = new Vector3(pos.x, pos.y - (pos.y % interval), pos.z);
+                            sceneSelection.Snap(scenePos, out snapData, new SceneObject[] {draggedSO});
 
-                                draggedSO.Rotation = Quaternion.LookRotation(Vector3.YAxis);
-                            }
+                            Quaternion q = Quaternion.FromToRotation(Vector3.YAxis, snapData.normal);
+                            draggedSO.Position = snapData.position;
+                            draggedSO.Rotation = q;
                         }
                         else
                         {

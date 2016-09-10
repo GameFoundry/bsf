@@ -118,7 +118,7 @@ Technique : base("PickingAlphaCull") =
 			in vec3 bs_position;
 			in vec2 bs_texcoord0;
 			in vec3 bs_normal;
-			out vec4 bs_outNorm
+			out vec4 normal
 			out vec2 texcoord0;
 
 			out gl_PerVertex
@@ -130,7 +130,7 @@ Technique : base("PickingAlphaCull") =
 			{
 				gl_Position = matWorldViewProj * vec4(bs_position.xyz, 1);
 				texcoord0 = bs_texcoord0;
-				bs_outNorm = vec4(bs_normal, 0);
+				normal = vec4(bs_normal, 0);
 			}
 		};
 		
@@ -139,7 +139,7 @@ Technique : base("PickingAlphaCull") =
 			uniform sampler2D mainTexture;
 			uniform vec4 colorIndex;
 			uniform float alphaCutoff;
-			in vec4 bs_outNorm;
+			in vec4 normal;
 			in vec2 texcoord0;
 			out vec4 normalsColor;
 			out vec4 fragColor;
@@ -149,7 +149,8 @@ Technique : base("PickingAlphaCull") =
 				vec4 color = texture2D(mainTexture, texcoord0);
 				if(color.a < alphaCutoff)
 					discard;
-				normalsColor = (bs_outNorm + vec4(1,1,1,0)) / 2;
+					
+				normalsColor = (normal + vec4(1,1,1,0)) / 2;
 				fragColor = colorIndex;
 			}
 		};

@@ -12,7 +12,7 @@ namespace BansheeEditor
      */
 
     /// <summary>
-    /// Contains Object containing the world position and normal of the surface under the snapping point.
+    /// Contains world position and normal of the surface of the object in a snap operation.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     struct SnapData
@@ -23,7 +23,7 @@ namespace BansheeEditor
         public Vector3 normal;
 
         /// <summary>
-        /// The 3D position on the surface of the object.
+        /// The world position on the surface of the object.
         /// </summary>
         public Vector3 position;
     }
@@ -65,19 +65,22 @@ namespace BansheeEditor
         /// Attempts to select a scene object in the specified area.
         /// </summary>
         /// <param name="pointerPos">Position of the pointer relative to the scene camera viewport.</param>
-        /// <param name="area">The screen area in which objects will be selected.</param>
+        /// <param name="area">Size of the in which objects will be selected, in pixels and relative to 
+        ///                    <paramref name="pointerPos"/>.</param>
         /// <param name="controlHeld">Should this selection add to the existing selection, or replace it.</param>
         /// <param name="ignoreSceneObjects">Optional set of objects to ignore during scene picking.</param>
-        internal void PickObjects(Vector2I pointerPos, Vector2I area, bool controlHeld, SceneObject[] ignoreSceneObjects = null)
+        internal void PickObjects(Vector2I pointerPos, Vector2I area, bool controlHeld, 
+            SceneObject[] ignoreSceneObjects = null)
         {
             Internal_PickObjects(mCachedPtr, ref pointerPos, ref area, controlHeld, ignoreSceneObjects);
         }
 
         /// <summary>
-        /// Object containing the world position and normal of the surface under the provided screen point.
+        /// Attempts to find a scene object under the provided position, while also returning the world position and normal
+        /// of the point that was hit.
         /// </summary>
         /// <param name="pointerPos">Position of the pointer relative to the scene camera viewport.</param>
-        /// <param name="data">A struct containing the position on the object surface and the normal in that point.</param>
+        /// <param name="data">Position and normal on the object surface at the point that was hit.</param>
         /// <param name="ignoreSceneObjects">Optional set of objects to ignore during scene picking.</param>
         /// <returns>The object the pointer is snapping to.</returns>
         internal SceneObject Snap(Vector2I pointerPos, out SnapData data, SceneObject[] ignoreSceneObjects = null)

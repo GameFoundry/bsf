@@ -559,8 +559,8 @@ namespace BansheeEngine
 		Vector2 ndcPoint = screenToNdcPoint(screenPoint);
 		Vector4 worldPoint(ndcPoint.x, ndcPoint.y, deviceDepth, 1.0f);
 		worldPoint = getProjectionMatrixRS().inverse().multiply(worldPoint);
-		Vector3 worldPoint3D;
 
+		Vector3 worldPoint3D;
 		if (Math::abs(worldPoint.w) > 1e-7f)
 		{
 			float invW = 1.0f / worldPoint.w;
@@ -569,6 +569,7 @@ namespace BansheeEngine
 			worldPoint3D.y = worldPoint.y * invW;
 			worldPoint3D.z = worldPoint.z * invW;
 		}
+
 		return viewToWorldPoint(worldPoint3D);
 	}
 

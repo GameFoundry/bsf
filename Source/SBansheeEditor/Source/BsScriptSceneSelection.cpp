@@ -90,10 +90,10 @@ namespace BansheeEngine
 		{
 			Selection::instance().clearSceneSelection();
 		}
-			
 	}
 
-	void ScriptSceneSelection::internal_PickObjects(ScriptSceneSelection* thisPtr, Vector2I* inputPos, Vector2I* area, bool additive, MonoArray* ignoreRenderables)
+	void ScriptSceneSelection::internal_PickObjects(ScriptSceneSelection* thisPtr, Vector2I* inputPos, Vector2I* area, 
+		bool additive, MonoArray* ignoreRenderables)
 	{
 		Vector<HSceneObject> ignoredSceneObjects;
 
@@ -115,7 +115,8 @@ namespace BansheeEngine
 			}
 		}
 
-		Vector<HSceneObject> pickedObjects = ScenePicking::instance().pickObjects(thisPtr->mCamera, *inputPos, *area, ignoredSceneObjects);
+		Vector<HSceneObject> pickedObjects = ScenePicking::instance().pickObjects(thisPtr->mCamera, *inputPos, 
+			*area, ignoredSceneObjects);
 
 		if (pickedObjects.size() != 0)
 		{
@@ -123,7 +124,8 @@ namespace BansheeEngine
 			{
 				Vector<HSceneObject> selectedSOs = Selection::instance().getSceneObjects();
 
-				for (int i = 0; i < pickedObjects.size(); i++) {
+				for (int i = 0; i < pickedObjects.size(); i++) 
+				{
 					bool found = false;
 					for (int j = 0; j < selectedSOs.size(); j++)
 					{
@@ -133,9 +135,11 @@ namespace BansheeEngine
 							break;
 						}
 					}
+
 					if (!found)
 						selectedSOs.push_back(pickedObjects[i]);
 				}
+
 				Selection::instance().setSceneObjects(selectedSOs);
 			}
 			else
@@ -147,7 +151,8 @@ namespace BansheeEngine
 		}
 	}
 
-	MonoObject* ScriptSceneSelection::internal_Snap(ScriptSceneSelection* thisPtr, Vector2I* inputPos, SnapData* data, MonoArray* ignoreRenderables)
+	MonoObject* ScriptSceneSelection::internal_Snap(ScriptSceneSelection* thisPtr, Vector2I* inputPos, SnapData* data, 
+		MonoArray* ignoreRenderables)
 	{
 		Vector<HSceneObject> ignoredSceneObjects;
 
@@ -169,12 +174,13 @@ namespace BansheeEngine
 			}
 		}
 
-		HSceneObject instance = ScenePicking::instance().pickClosestObject(thisPtr->mCamera, *inputPos, Vector2I(1, 1), ignoredSceneObjects, data);
-		MonoObject* managedInstance = ScriptGameObjectManager::instance().getOrCreateScriptSceneObject(instance)->getManagedInstance();
+		HSceneObject instance = ScenePicking::instance().pickClosestObject(thisPtr->mCamera, *inputPos, Vector2I(1, 1), 
+			ignoredSceneObjects, data);
+
 		if (instance == nullptr)
 			return nullptr;
 
-		return  managedInstance;
+		ScriptSceneObject* scriptSO = ScriptGameObjectManager::instance().getOrCreateScriptSceneObject(instance);
+		return scriptSO->getManagedInstance();
 	}
-
 }
