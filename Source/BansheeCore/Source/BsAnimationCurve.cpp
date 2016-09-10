@@ -198,6 +198,9 @@ namespace BansheeEngine
 		if (mKeyframes.size() == 0)
 			return getZero<T>();
 
+		if (Math::approxEquals(mLength, 0.0f))
+			time = 0.0f;
+
 		// Wrap time if looping
 		if(loop)
 		{
@@ -212,7 +215,7 @@ namespace BansheeEngine
 			return evaluateCache(time, cache);
 
 		// Clamp to start, cache constant of the first key and return
-		if(time < mStart)
+		if(time < mStart || mKeyframes.size() == 1)
 		{
 			cache.cachedCurveStart = -std::numeric_limits<float>::infinity();
 			cache.cachedCurveEnd = mStart;
@@ -254,6 +257,8 @@ namespace BansheeEngine
 		cache.cachedCurveEnd = rightKey.time;
 
 		float length = rightKey.time - leftKey.time;
+		assert(length > 0.0f);
+
 		Math::cubicHermiteCoefficients(leftKey.value, rightKey.value, leftKey.outTangent, rightKey.inTangent, length,
 			cache.cachedCubicCoefficients);
 
@@ -280,7 +285,12 @@ namespace BansheeEngine
 		const KeyFrame& leftKey = mKeyframes[leftKeyIdx];
 		const KeyFrame& rightKey = mKeyframes[rightKeyIdx];
 
+		if (leftKeyIdx == rightKeyIdx)
+			return leftKey.value;
+
 		float length = rightKey.time - leftKey.time;
+		assert(length > 0.0f);
+
 		float t;
 		T leftTangent;
 		T rightTangent;
@@ -320,6 +330,9 @@ namespace BansheeEngine
 
 		const KeyFrame& leftKey = mKeyframes[leftKeyIdx];
 		const KeyFrame& rightKey = mKeyframes[rightKeyIdx];
+
+		if (leftKeyIdx == rightKeyIdx)
+			return leftKey;
 
 		return evaluateKey(leftKey, rightKey, time);
 	}
@@ -434,23 +447,19 @@ namespace BansheeEngine
 		T rightTangent;
 
 		if (Math::approxEquals(length, 0.0f))
-		{
-			t = 0.0f;
-			leftTangent = getZero<T>();
-			rightTangent = getZero<T>();
-		}
-		else
-		{
-			// Resize tangents since we're not evaluating the curve over unit range
-			t = (time - lhs.time) / length;
-			leftTangent = lhs.outTangent * length;
-			rightTangent = rhs.inTangent * length;
-		}
+			return lhs;
+
+
+		// Resize tangents since we're not evaluating the curve over unit range
+		float invLength = 1.0f / length;
+		t = (time - lhs.time) * invLength;
+		leftTangent = lhs.outTangent * length;
+		rightTangent = rhs.inTangent * length;
 
 		TKeyframe<T> output;
 		output.time = time;
 		output.value = Math::cubicHermite(t, lhs.value, rhs.value, leftTangent, rightTangent);
-		output.inTangent = Math::cubicHermiteD1(t, lhs.value, rhs.value, leftTangent, rightTangent);
+		output.inTangent = Math::cubicHermiteD1(t, lhs.value, rhs.value, leftTangent, rightTangent) * invLength;
 		
 		setStepValue(lhs, rhs, output.value);
 		setStepTangent(lhs, rhs, output.inTangent);
