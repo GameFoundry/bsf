@@ -55,7 +55,6 @@ namespace BansheeEngine
 			return Vector3::ZERO;
 
 		Vector3 center = Vector3::ZERO;
-		bool gotOneMesh = false;
 		UINT32 count = 0;
 
 		for (auto& object : objects)
@@ -63,17 +62,16 @@ namespace BansheeEngine
 			AABox meshBounds;
 			if (calculateMeshBounds(object, meshBounds))
 			{
-				count++;
 				if (meshBounds.getSize() == Vector3::INF)
 					center += object->getWorldPosition();
 				else
 					center += meshBounds.getCenter();
 
-				gotOneMesh = true;
+				count++;
 			}
 		}
 
-		if (!gotOneMesh)
+		if (count == 0)
 		{
 			for (auto& object : objects)
 			{
@@ -82,11 +80,10 @@ namespace BansheeEngine
 
 				center += object->getWorldPosition();
 				count++;
-				gotOneMesh = true;
 			}
 		}
 
-		if (gotOneMesh)
+		if (count > 0)
 			return center / (float)count;
 
 		return Vector3::ZERO;
