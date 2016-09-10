@@ -41,6 +41,12 @@ namespace BansheeEngine
 	{
 		float length = end - start;
 
+		if(Math::approxEquals(length, 0.0f))
+		{
+			time = 0.0f;
+			return;
+		}
+
 		// Clamp to start or loop
 		if (time < start)
 		{
