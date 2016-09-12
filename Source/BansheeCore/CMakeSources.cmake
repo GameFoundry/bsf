@@ -348,6 +348,7 @@ set(BS_BANSHEECORE_INC_RTTI
 	"Include/BsCCameraRTTI.h"
 	"Include/BsCameraRTTI.h"
 	"Include/BsPostProcessSettingsRTTI.h"
+	"Include/BsMorphShapesRTTI.h"
 )
 
 set(BS_BANSHEECORE_SRC_RENDERER
@@ -517,6 +518,7 @@ set(BS_BANSHEECORE_INC_ANIMATION
 	"Include/BsCurveCache.h"
 	"Include/BsAnimationUtility.h"
 	"Include/BsSkeletonMask.h"
+	"Include/BsMorphShapes.h"
 )
 
 set(BS_BANSHEECORE_SRC_ANIMATION
@@ -527,6 +529,7 @@ set(BS_BANSHEECORE_SRC_ANIMATION
 	"Source/BsAnimationManager.cpp"
 	"Source/BsAnimationUtility.cpp"
 	"Source/BsSkeletonMask.cpp"
+	"Source/BsMorphShapes.cpp"
 )
 
 source_group("Header Files\\Components" FILES ${BS_BANSHEECORE_INC_COMPONENTS})

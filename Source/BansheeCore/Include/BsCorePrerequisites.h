@@ -539,6 +539,8 @@ namespace BansheeEngine
 		TID_CBone = 1125,
 		TID_MaterialParamData = 1126,
 		TID_PostProcessSettings = 1127,
+		TID_MorphShape = 1128,
+		TID_MorphShapes = 1129,
 
 		// Moved from Engine layer
 		TID_CCamera = 30000,
