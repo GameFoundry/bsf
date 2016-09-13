@@ -78,6 +78,12 @@ namespace BansheeEditor
                     animation.UpdateFloatProperties();
                 }
             }
+            else if (state == State.Recording)
+            {
+                float time = guiCurveEditor.GetTimeForFrame(currentFrameIdx);
+                if(RecordState(time))
+                    guiCurveEditor.Redraw();
+            }
         }
 
         private void OnDestroy()
@@ -209,19 +215,49 @@ namespace BansheeEditor
             prevFrameButton.OnClick += () =>
             {
                 SetCurrentFrame(currentFrameIdx - 1);
-                SwitchState(State.Normal);
+
+                switch (state)
+                {
+                    case State.Recording:
+                    case State.Normal:
+                        PreviewFrame(currentFrameIdx);
+                        break;
+                    default:
+                        SwitchState(State.Normal);
+                        break;
+                }
             };
 
             frameInputField.OnChanged += x =>
             {
                 SetCurrentFrame(x);
-                SwitchState(State.Normal);
+
+                switch (state)
+                {
+                    case State.Recording:
+                    case State.Normal:
+                        PreviewFrame(currentFrameIdx);
+                        break;
+                    default:
+                        SwitchState(State.Normal);
+                        break;
+                }
             };
 
             nextFrameButton.OnClick += () =>
             {
                 SetCurrentFrame(currentFrameIdx + 1);
-                SwitchState(State.Normal);
+
+                switch (state)
+                {
+                    case State.Recording:
+                    case State.Normal:
+                        PreviewFrame(currentFrameIdx);
+                        break;
+                    default:
+                        SwitchState(State.Normal);
+                        break;
+                }
             };
 
             addKeyframeButton.OnClick += () =>
@@ -409,10 +445,16 @@ namespace BansheeEditor
             guiCurveEditor.OnEventDeleted += OnEventsChanged;
             guiCurveEditor.OnCurveModified += () =>
             {
+                SwitchState(State.Normal);
+
                 ApplyClipChanges();
                 EditorApplication.SetProjectDirty();
             };
-            guiCurveEditor.OnClicked += () => SwitchState(State.Normal);
+            guiCurveEditor.OnClicked += () =>
+            {
+                if(state != State.Recording)
+                    SwitchState(State.Normal);
+            };
             guiCurveEditor.Redraw();
 
             horzScrollBar.SetWidth(curveEditorSize.x);
@@ -672,6 +714,9 @@ namespace BansheeEditor
         /// </summary>
         private void ApplyClipChanges()
         {
+            if (clipInfo == null)
+                return;
+
             EditorAnimClipTangents unused;
             clipInfo.Apply(out unused);
         }
@@ -917,7 +962,9 @@ namespace BansheeEditor
         /// </summary>
         private void StartRecord()
         {
-            // TODO
+            float time = guiCurveEditor.GetTimeForFrame(currentFrameIdx);
+            if(RecordState(time))
+                guiCurveEditor.Redraw();
 
             recordButton.Value = true;
         }
@@ -927,10 +974,6 @@ namespace BansheeEditor
         /// </summary>
         private void EndRecord()
         {
-            // TODO
-
-            // TODO - Lock selection while active? (Don't allow another object to become anim focus in order to allow modifications on anim children).
-
             recordButton.Value = false;
         }
 
@@ -939,7 +982,8 @@ namespace BansheeEditor
         /// curve values, new keyframes are added.
         /// </summary>
         /// <param name="time">Time for which to record the state, in seconds.</param>
-        private void RecordState(float time)
+        /// <returns>True if any changes were recorded, false otherwise.</returns>
+        private bool RecordState(float time)
         {
             Action<EdAnimationCurve, float, float> addOrUpdateKeyframe = (curve, keyTime, keyValue) =>
             {
@@ -962,6 +1006,7 @@ namespace BansheeEditor
                 curve.Apply();
             };
 
+            bool changesMade = false;
             foreach (var KVP in clipInfo.curves)
             {
                 string suffix;
@@ -980,7 +1025,10 @@ namespace BansheeEditor
                             {
                                 float curveVal = KVP.Value.curveInfos[i].curve.Evaluate(time);
                                 if (!MathEx.ApproxEquals(value[i], curveVal))
-                                    addOrUpdateKeyframe(KVP.Value.curveInfos[i].curve, time, curveVal);
+                                {
+                                    addOrUpdateKeyframe(KVP.Value.curveInfos[i].curve, time, value[i]);
+                                    changesMade = true;
+                                }
                             }
                         }
                         break;
@@ -992,7 +1040,10 @@ namespace BansheeEditor
                             {
                                 float curveVal = KVP.Value.curveInfos[i].curve.Evaluate(time);
                                 if (!MathEx.ApproxEquals(value[i], curveVal))
-                                    addOrUpdateKeyframe(KVP.Value.curveInfos[i].curve, time, curveVal);
+                                { 
+                                    addOrUpdateKeyframe(KVP.Value.curveInfos[i].curve, time, value[i]);
+                                    changesMade = true;
+                                }
                             }
                         }
                         break;
@@ -1006,7 +1057,10 @@ namespace BansheeEditor
                                 {
                                     float curveVal = KVP.Value.curveInfos[i].curve.Evaluate(time);
                                     if (!MathEx.ApproxEquals(value[i], curveVal))
-                                        addOrUpdateKeyframe(KVP.Value.curveInfos[i].curve, time, curveVal);
+                                    { 
+                                        addOrUpdateKeyframe(KVP.Value.curveInfos[i].curve, time, value[i]);
+                                        changesMade = true;
+                                    }
                                 }
                             }
                             else if (property.InternalType == typeof(Quaternion))
@@ -1017,7 +1071,10 @@ namespace BansheeEditor
                                 {
                                     float curveVal = KVP.Value.curveInfos[i].curve.Evaluate(time);
                                     if (!MathEx.ApproxEquals(value[i], curveVal))
-                                        addOrUpdateKeyframe(KVP.Value.curveInfos[i].curve, time, curveVal);
+                                    { 
+                                        addOrUpdateKeyframe(KVP.Value.curveInfos[i].curve, time, value[i]);
+                                        changesMade = true;
+                                    }
                                 }
                             }
                         }
@@ -1030,7 +1087,10 @@ namespace BansheeEditor
                             {
                                 float curveVal = KVP.Value.curveInfos[i].curve.Evaluate(time);
                                 if (!MathEx.ApproxEquals(value[i], curveVal))
-                                    addOrUpdateKeyframe(KVP.Value.curveInfos[i].curve, time, curveVal);
+                                { 
+                                    addOrUpdateKeyframe(KVP.Value.curveInfos[i].curve, time, value[i]);
+                                    changesMade = true;
+                                }
                             }
                         }
                         break;
@@ -1040,7 +1100,10 @@ namespace BansheeEditor
 
                             bool curveVal = KVP.Value.curveInfos[0].curve.Evaluate(time) > 0.0f;
                             if (value != curveVal)
-                                addOrUpdateKeyframe(KVP.Value.curveInfos[0].curve, time, curveVal ? 1.0f : -1.0f);
+                            { 
+                                addOrUpdateKeyframe(KVP.Value.curveInfos[0].curve, time, value ? 1.0f : -1.0f);
+                                changesMade = true;
+                            }
                         }
                         break;
                     case SerializableProperty.FieldType.Int:
@@ -1049,7 +1112,10 @@ namespace BansheeEditor
 
                             int curveVal = (int)KVP.Value.curveInfos[0].curve.Evaluate(time);
                             if (value != curveVal)
-                                addOrUpdateKeyframe(KVP.Value.curveInfos[0].curve, time, curveVal);
+                            { 
+                                addOrUpdateKeyframe(KVP.Value.curveInfos[0].curve, time, value);
+                                changesMade = true;
+                            }
                         }
                         break;
                     case SerializableProperty.FieldType.Float:
@@ -1058,11 +1124,16 @@ namespace BansheeEditor
 
                             float curveVal = KVP.Value.curveInfos[0].curve.Evaluate(time);
                             if (!MathEx.ApproxEquals(value, curveVal))
-                                addOrUpdateKeyframe(KVP.Value.curveInfos[0].curve, time, curveVal);
+                            { 
+                                addOrUpdateKeyframe(KVP.Value.curveInfos[0].curve, time, value);
+                                changesMade = true;
+                            }
                         }
                         break;
                 }
             }
+
+            return changesMade;
         }
         #endregion
 
@@ -1680,6 +1751,10 @@ namespace BansheeEditor
         /// <param name="resourcePaths">Newly selected resources.</param>
         private void OnSelectionChanged(SceneObject[] sceneObjects, string[] resourcePaths)
         {
+            // While recording allow other objects to be selected so the user can modify them
+            if (state == State.Recording)
+                return;
+
             UpdateSelectedSO(false);
         }
 

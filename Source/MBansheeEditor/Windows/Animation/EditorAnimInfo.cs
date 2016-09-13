@@ -293,7 +293,7 @@ namespace BansheeEditor
         /// <param name="tangents">Tangent modes for all the saved animation curves.</param>
         public void Apply(out EditorAnimClipTangents tangents)
         {
-            if (isImported)
+            if (isImported || clip == null)
             {
                 tangents = null;
                 return;
