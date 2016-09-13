@@ -486,24 +486,18 @@ namespace BansheeEditor
             // Update scene view handles and selection
             sceneGizmos.Draw();
             sceneGrid.Draw();
-            bool dragResult = false;
-            bool handleActive = false;
+
             Vector2I scenePos;
             bool inBounds = ScreenToScenePos(Input.PointerPosition, out scenePos);
+            bool dragResult = false;
             if (Input.IsPointerButtonUp(PointerButton.Left))
             {
                 dragResult = EndDragSelection();
                 if (sceneHandles.IsActive())
-                {
                     sceneHandles.ClearSelection();
-                    handleActive = true;
-                }
 
                 if (sceneAxesGUI.IsActive())
-                {
                     sceneAxesGUI.ClearSelection();
-                    handleActive = true;
-                }
             } 
             else if (Input.IsPointerButtonDown(PointerButton.Left))
             {
@@ -622,6 +616,7 @@ namespace BansheeEditor
 
                 if (inBounds && HasContentFocus)
                 {
+                    bool handleActive = sceneHandles.IsActive();
                     if (Input.IsPointerButtonDown(PointerButton.Left))
                     {
                         Rect2I sceneAxesGUIBounds = new Rect2I(Width - HandleAxesGUISize - HandleAxesGUIPaddingX, 
