@@ -487,6 +487,8 @@ namespace BansheeEditor
             sceneGizmos.Draw();
             sceneGrid.Draw();
 
+            bool handleActive = sceneHandles.IsActive() || sceneAxesGUI.IsActive();
+
             Vector2I scenePos;
             bool inBounds = ScreenToScenePos(Input.PointerPosition, out scenePos);
             bool dragResult = false;
@@ -616,7 +618,6 @@ namespace BansheeEditor
 
                 if (inBounds && HasContentFocus)
                 {
-                    bool handleActive = sceneHandles.IsActive();
                     if (Input.IsPointerButtonDown(PointerButton.Left))
                     {
                         Rect2I sceneAxesGUIBounds = new Rect2I(Width - HandleAxesGUISize - HandleAxesGUIPaddingX, 
