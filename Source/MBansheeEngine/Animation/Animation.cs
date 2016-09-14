@@ -377,6 +377,41 @@ namespace BansheeEngine
         }
 
         /// <summary>
+        /// Changes a weight of a single morph shape, determining how much of it to apply on top of the base mesh.
+        /// </summary>
+        /// <param name="name">Name of the morph shape to modify the weight for. This depends on the mesh the animation
+        ///                    is currently animating.</param>
+        /// <param name="weight">Weight that determines how much of the shape to apply to the mesh, in range[0, 1].</param>
+        public void SetMorphShapeWeight(string name, float weight)
+        {
+            switch (state)
+            {
+                case State.Active:
+                    if (animatedRenderable == null)
+                        return;
+
+                    Mesh mesh = animatedRenderable.Mesh;
+                    if (mesh == null)
+                        return;
+
+                    MorphShapes morphShapes = mesh.MorphShapes;
+                    if (morphShapes == null)
+                        return;
+
+                    string[] shapeNames = morphShapes.Shapes;
+                    for (int i = 0; i < shapeNames.Length; i++)
+                    {
+                        if (shapeNames[i] == name)
+                        {
+                            _native.SetMorphShapeWeight(i, weight);
+                            break;
+                        }
+                    }
+                    break;
+            }
+        }
+
+        /// <summary>
         /// Allows the caller to play an animation clip during edit mode. This form of animation playback is limited as
         /// you have no control over clip properties, and features like blending, cross fade or animation events are not
         /// supported.

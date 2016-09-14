@@ -9,6 +9,7 @@
 #include "BsMonoManager.h"
 #include "BsCoreThread.h"
 #include "BsScriptSkeleton.h"
+#include "BsScriptMorphShapes.h"
 
 namespace BansheeEngine
 {
@@ -43,6 +44,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetSubMeshes", &ScriptMesh::internal_GetSubMeshes);
 		metaData.scriptClass->addInternalCall("Internal_GetSubMeshCount", &ScriptMesh::internal_GetSubMeshCount);
 		metaData.scriptClass->addInternalCall("Internal_GetSkeleton", &ScriptMesh::internal_GetSkeleton);
+		metaData.scriptClass->addInternalCall("Internal_GetMorphShapes", &ScriptMesh::internal_GetMorphShapes);
 		metaData.scriptClass->addInternalCall("Internal_GetBounds", &ScriptMesh::internal_GetBounds);
 		metaData.scriptClass->addInternalCall("Internal_GetMeshData", &ScriptMesh::internal_GetMeshData);
 		metaData.scriptClass->addInternalCall("Internal_SetMeshData", &ScriptMesh::internal_SetMeshData);
@@ -124,6 +126,17 @@ namespace BansheeEngine
 			return nullptr;
 
 		return ScriptSkeleton::create(skeleton);
+	}
+
+	MonoObject* ScriptMesh::internal_GetMorphShapes(ScriptMesh* thisPtr)
+	{
+		HMesh mesh = thisPtr->getHandle();
+
+		SPtr<MorphShapes> morphShapes = mesh->getMorphShapes();
+		if (morphShapes == nullptr)
+			return nullptr;
+
+		return ScriptMorphShapes::create(morphShapes);
 	}
 
 	void ScriptMesh::internal_GetBounds(ScriptMesh* thisPtr, AABox* box, Sphere* sphere)

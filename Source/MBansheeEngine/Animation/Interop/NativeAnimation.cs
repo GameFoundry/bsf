@@ -130,6 +130,11 @@ namespace BansheeEngine
             Internal_SetState(mCachedPtr, clipPtr, ref state);
         }
 
+        public void SetMorphShapeWeight(int idx, float weight)
+        {
+            Internal_SetMorphShapeWeight(mCachedPtr, idx, weight);
+        }
+
         public bool GetGenericCurveValue(int curveIdx, out float value)
         {
             return Internal_GetGenericCurveValue(mCachedPtr, curveIdx, out value);
@@ -211,6 +216,9 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetState(IntPtr thisPtr, IntPtr clipPtr, ref AnimationClipState state);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetMorphShapeWeight(IntPtr thisPtr, int idx, float weight);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern int Internal_GetNumClips(IntPtr thisPtr);

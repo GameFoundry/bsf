@@ -261,7 +261,10 @@ namespace BansheeEngine
 		mAnimation = animation;
 
 		if (mAnimation != nullptr && mMesh.isLoaded(false))
+		{
 			mAnimation->setSkeleton(mMesh->getSkeleton());
+			mAnimation->setMorphShapes(mMesh->getMorphShapes());
+		}
 
 		_markCoreDirty();
 	}
@@ -315,9 +318,15 @@ namespace BansheeEngine
 		if(mAnimation != nullptr)
 		{
 			if (mMesh.isLoaded(false))
+			{
 				mAnimation->setSkeleton(mMesh->getSkeleton());
+				mAnimation->setMorphShapes(mMesh->getMorphShapes());
+			}
 			else
+			{
 				mAnimation->setSkeleton(nullptr);
+				mAnimation->setMorphShapes(nullptr);
+			}
 		}
 	}
 

@@ -571,6 +571,18 @@ namespace BansheeEngine
 		mDirty |= AnimDirtyStateFlag::Skeleton;
 	}
 
+	void Animation::setMorphShapes(const SPtr<MorphShapes>& morphShapes)
+	{
+		BS_EXCEPT(NotImplementedException, "TODO");
+		// TODO
+	}
+
+	void Animation::setMorphShapeWeight(UINT32 idx, float weight)
+	{
+		BS_EXCEPT(NotImplementedException, "TODO");
+		// TODO
+	}
+
 	void Animation::setMask(const SkeletonMask& mask)
 	{
 		mSkeletonMask = mask;

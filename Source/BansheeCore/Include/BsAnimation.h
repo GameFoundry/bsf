@@ -239,6 +239,20 @@ namespace BansheeEngine
 		void setSkeleton(const SPtr<Skeleton>& skeleton);
 
 		/** 
+		 * Sets morph shapes that can be used for per-vertex blending animation. After they're set call 
+		 * setMorphShapeWeight() to apply morph shapes. 
+		 */
+		void setMorphShapes(const SPtr<MorphShapes>& morphShapes);
+
+		/**
+		 * Changes a weight of a single morph shape, determining how much of it to apply on top of the base mesh.
+		 *
+		 * @param idx		Index of the morph shape to modify. This must match the shapes provided to setMorphShapes().
+		 * @param weight	Weight that determines how much of the shape to apply to the mesh, in range [0, 1]. 	
+		 */
+		void setMorphShapeWeight(UINT32 idx, float weight);
+
+		/** 
 		 * Sets a mask that allows certain bones from the skeleton to be disabled. Caller must ensure that the mask matches
 		 * the skeleton assigned to the animation.
 		 */

@@ -160,6 +160,14 @@ namespace BansheeEngine
             get { return Internal_GetSkeleton(mCachedPtr); }
         }
 
+        /// <summary>
+        /// Returns an object containing all shapes used for morph animation, if any are available.
+        /// </summary>
+        public MorphShapes MorphShapes
+        {
+            get { return Internal_GetMorphShapes(mCachedPtr); }
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateInstance(Mesh instance, int numVertices,
             int numIndices, SubMesh[] subMeshes, MeshUsage usage, VertexType vertex, IndexType index);
@@ -176,6 +184,9 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern Skeleton Internal_GetSkeleton(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern MorphShapes Internal_GetMorphShapes(IntPtr thisPtr);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetBounds(IntPtr thisPtr, out AABox box, out Sphere sphere);

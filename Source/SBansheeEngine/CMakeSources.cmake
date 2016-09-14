@@ -146,6 +146,7 @@ set(BS_SBANSHEEENGINE_INC_WRAPPERS
 	"Include/BsScriptAnimationCurve.h"
 	"Include/BsScriptAnimationCurves.h"
 	"Include/BsScriptSkeleton.h"
+	"Include/BsScriptMorphShapes.h"
 )
 
 set(BS_SBANSHEEENGINE_INC_WRAPPERS_GUI
@@ -282,6 +283,7 @@ set(BS_SBANSHEEENGINE_SRC_WRAPPERS
 	"Source/BsScriptAnimationCurve.cpp"
 	"Source/BsScriptAnimationCurves.cpp"
 	"Source/BsScriptSkeleton.cpp"
+	"Source/BsScriptMorphShapes.cpp"
 )
 
 set(BS_SBANSHEEENGINE_INC_SERIALIZATION
