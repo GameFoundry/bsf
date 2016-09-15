@@ -5,6 +5,7 @@
 #include "BsAnimationClip.h"
 #include "BsAnimationUtility.h"
 #include "BsSceneObject.h"
+#include "BsMorphShapes.h"
 
 namespace BansheeEngine
 {
@@ -33,7 +34,8 @@ namespace BansheeEngine
 
 	AnimationProxy::AnimationProxy(UINT64 id)
 		: id(id), layers(nullptr), numLayers(0), numSceneObjects(0), sceneObjectInfos(nullptr)
-		, sceneObjectTransforms(nullptr), mCullEnabled(true), numGenericCurves(0), genericCurveOutputs(nullptr)
+		, sceneObjectTransforms(nullptr), morphShapeInfos(nullptr), numMorphShapes(0), numMorphVertices(0)
+		, morphShapeWeightsDirty(false), mCullEnabled(true), numGenericCurves(0), genericCurveOutputs(nullptr)
 	{ }
 
 	AnimationProxy::~AnimationProxy()
@@ -99,6 +101,11 @@ namespace BansheeEngine
 			layer.~AnimationStateLayer();
 		}
 
+		for(UINT32 i = 0; i < numMorphShapes; i++)
+		{
+			morphShapeInfos[i].shape.~SPtr<MorphShape>();
+		}
+
 		// All of the memory is part of the same buffer, so we only need to free the first element
 		bs_free(layers);
 		layers = nullptr;
@@ -111,7 +118,8 @@ namespace BansheeEngine
 	}
 
 	void AnimationProxy::rebuild(const SPtr<Skeleton>& skeleton, const SkeletonMask& mask, 
-		Vector<AnimationClipInfo>& clipInfos, const Vector<AnimatedSceneObject>& sceneObjects)
+		Vector<AnimationClipInfo>& clipInfos, const Vector<AnimatedSceneObject>& sceneObjects, 
+		const SPtr<MorphShapes>& morphShapes)
 	{
 		this->skeleton = skeleton;
 		this->skeletonMask = mask;
@@ -127,10 +135,11 @@ namespace BansheeEngine
 		else
 			sceneObjectPose = LocalSkeletonPose();
 
-		rebuild(clipInfos, sceneObjects);
+		rebuild(clipInfos, sceneObjects, morphShapes);
 	}
 
-	void AnimationProxy::rebuild(Vector<AnimationClipInfo>& clipInfos, const Vector<AnimatedSceneObject>& sceneObjects)
+	void AnimationProxy::rebuild(Vector<AnimationClipInfo>& clipInfos, const Vector<AnimatedSceneObject>& sceneObjects, 
+		const SPtr<MorphShapes>& morphShapes)
 	{
 		clear();
 
@@ -245,6 +254,17 @@ namespace BansheeEngine
 				}
 			}
 
+			if (morphShapes != nullptr)
+			{
+				numMorphShapes = morphShapes->getNumShapes();
+				numMorphVertices = morphShapes->getNumVertices();
+			}
+			else
+			{
+				numMorphShapes = 0;
+				numMorphVertices = 0;
+			}
+
 			UINT32 numBoneMappings = numBones * numClips;
 			UINT32 layersSize = sizeof(AnimationStateLayer) * numLayers;
 			UINT32 clipsSize = sizeof(AnimationState) * numClips;
@@ -256,9 +276,11 @@ namespace BansheeEngine
 			UINT32 genericCurveOutputSize = numGenericCurves * sizeof(float);
 			UINT32 sceneObjectIdsSize = numSceneObjects * sizeof(AnimatedSceneObjectInfo);
 			UINT32 sceneObjectTransformsSize = numBoneMappedSOs * sizeof(Matrix4);
+			UINT32 morphShapeSize = numMorphShapes * sizeof(MorphShapeInfo);
 
 			UINT8* data = (UINT8*)bs_alloc(layersSize + clipsSize + boneMappingSize + posCacheSize + rotCacheSize + 
-				scaleCacheSize + genCacheSize + genericCurveOutputSize + sceneObjectIdsSize + sceneObjectTransformsSize);
+				scaleCacheSize + genCacheSize + genericCurveOutputSize + sceneObjectIdsSize + sceneObjectTransformsSize +
+				morphShapeSize);
 
 			layers = (AnimationStateLayer*)data;
 			memcpy(layers, tempLayers.data(), layersSize);
@@ -311,6 +333,18 @@ namespace BansheeEngine
 				sceneObjectTransforms[i] = Matrix4::IDENTITY;
 
 			data += sceneObjectTransformsSize;
+
+			morphShapeInfos = (MorphShapeInfo*)data;
+			for (UINT32 i = 0; i < numMorphShapes; i++)
+			{
+				new (&morphShapeInfos[i].shape) SPtr<MorphShape>();
+
+				morphShapeInfos[i].shape = morphShapes->getShape(i);
+				morphShapeInfos[i].weight = 0.0f;
+			}
+
+			morphShapeWeightsDirty = true;
+			data += morphShapeSize;
 
 			UINT32 curLayerIdx = 0;
 			UINT32 curStateIdx = 0;
@@ -490,7 +524,7 @@ namespace BansheeEngine
 		bs_frame_clear();
 	}
 
-	void AnimationProxy::updateValues(const Vector<AnimationClipInfo>& clipInfos)
+	void AnimationProxy::updateClipInfos(const Vector<AnimationClipInfo>& clipInfos)
 	{
 		for(auto& clipInfo : clipInfos)
 		{
@@ -503,6 +537,20 @@ namespace BansheeEngine
 			bool isLoaded = clipInfo.clip.isLoaded();
 			state.disabled = !isLoaded || clipInfo.playbackType == AnimPlaybackType::None;
 		}
+	}
+
+	void AnimationProxy::updateMorphShapeWeights(const Vector<float>& weights)
+	{
+		UINT32 numWeights = (UINT32)weights.size();
+		for(UINT32 i = 0; i < numMorphShapes; i++)
+		{
+			if (i < numWeights)
+				morphShapeInfos[i].weight = weights[i];
+			else
+				morphShapeInfos[i].weight = 0.0f;
+		}
+
+		morphShapeWeightsDirty = true;
 	}
 
 	void AnimationProxy::updateTransforms(const Vector<AnimatedSceneObject>& sceneObjects)
@@ -553,7 +601,7 @@ namespace BansheeEngine
 	}
 
 	Animation::Animation()
-		: mDefaultWrapMode(AnimWrapMode::Loop), mDefaultSpeed(1.0f), mCull(true), mDirty(AnimDirtyStateFlag::Skeleton)
+		: mDefaultWrapMode(AnimWrapMode::Loop), mDefaultSpeed(1.0f), mCull(true), mDirty(AnimDirtyStateFlag::All)
 		, mGenericCurveValuesValid(false)
 	{
 		mId = AnimationManager::instance().registerAnimation(this);
@@ -568,25 +616,37 @@ namespace BansheeEngine
 	void Animation::setSkeleton(const SPtr<Skeleton>& skeleton)
 	{
 		mSkeleton = skeleton;
-		mDirty |= AnimDirtyStateFlag::Skeleton;
+		mDirty |= AnimDirtyStateFlag::All;
 	}
 
 	void Animation::setMorphShapes(const SPtr<MorphShapes>& morphShapes)
 	{
-		BS_EXCEPT(NotImplementedException, "TODO");
-		// TODO
+		mMorphShapes = morphShapes;
+
+		UINT32 numShapes;
+		if (mMorphShapes != nullptr)
+			numShapes = mMorphShapes->getNumShapes();
+		else
+			numShapes = 0;
+
+		mMorphShapeWeights.assign(numShapes, 0.0f);
+		mDirty |= AnimDirtyStateFlag::Layout;
 	}
 
 	void Animation::setMorphShapeWeight(UINT32 idx, float weight)
 	{
-		BS_EXCEPT(NotImplementedException, "TODO");
-		// TODO
+		UINT32 numShapes = (UINT32)mMorphShapeWeights.size();
+		if (idx >= numShapes)
+			return;
+
+		mMorphShapeWeights[idx] = weight;
+		mDirty |= AnimDirtyStateFlag::MorphWeights;
 	}
 
 	void Animation::setMask(const SkeletonMask& mask)
 	{
 		mSkeletonMask = mask;
-		mDirty |= AnimDirtyStateFlag::Skeleton;
+		mDirty |= AnimDirtyStateFlag::All;
 	}
 
 	void Animation::setWrapMode(AnimWrapMode wrapMode)
@@ -1091,14 +1151,14 @@ namespace BansheeEngine
 		AnimatedSceneObject animSo = { so, curve };
 		mSceneObjects[so.getInstanceId()] = animSo;
 
-		mDirty |= AnimDirtyStateFlag::Skeleton;
+		mDirty |= AnimDirtyStateFlag::All;
 	}
 
 	void Animation::unmapSceneObject(const HSceneObject& so)
 	{
 		mSceneObjects.erase(so.getInstanceId());
 
-		mDirty |= AnimDirtyStateFlag::Skeleton;
+		mDirty |= AnimDirtyStateFlag::All;
 	}
 
 	bool Animation::getGenericCurveValue(UINT32 curveIdx, float& value)
@@ -1168,22 +1228,24 @@ namespace BansheeEngine
 		}
 		else
 		{
-			if (mDirty.isSet(AnimDirtyStateFlag::Skeleton))
+			if (mDirty.isSet(AnimDirtyStateFlag::All))
 			{
 				Vector<AnimatedSceneObject> animatedSOs = getAnimatedSOList();
 
-				mAnimProxy->rebuild(mSkeleton, mSkeletonMask, mClipInfos, animatedSOs);
+				mAnimProxy->rebuild(mSkeleton, mSkeletonMask, mClipInfos, animatedSOs, mMorphShapes);
 				didFullRebuild = true;
 			}
 			else if (mDirty.isSet(AnimDirtyStateFlag::Layout))
 			{
 				Vector<AnimatedSceneObject> animatedSOs = getAnimatedSOList();
 
-				mAnimProxy->rebuild(mClipInfos, animatedSOs);
+				mAnimProxy->rebuild(mClipInfos, animatedSOs, mMorphShapes);
 				didFullRebuild = true;
 			}
-			else if (mDirty.isSet(AnimDirtyStateFlag::Value))
-				mAnimProxy->updateValues(mClipInfos);
+			else if(mDirty.isSet(AnimDirtyStateFlag::Value))
+
+			if (mDirty.isSet(AnimDirtyStateFlag::MorphWeights))
+				mAnimProxy->updateMorphShapeWeights(mMorphShapeWeights);
 		}
 
 		// Check if there are dirty transforms

@@ -71,14 +71,18 @@ namespace BansheeEngine
 		/** Returns the morph shape at the specified index. */
 		SPtr<MorphShape> getShape(UINT32 idx) const { return mShapes[idx]; }
 
+		/** Returns the number of vertices per morph shape. */
+		UINT32 getNumVertices() const { return mNumVertices; }
+
 		/** Creates a new set of morph shapes. */
-		static SPtr<MorphShapes> create(const Vector<SPtr<MorphShape>>& shapes);
+		static SPtr<MorphShapes> create(const Vector<SPtr<MorphShape>>& shapes, UINT32 numVertices);
 
 	private:
 		MorphShapes();
-		MorphShapes(const Vector<SPtr<MorphShape>>& shapes);
+		MorphShapes(const Vector<SPtr<MorphShape>>& shapes, UINT32 numVertices);
 
 		Vector<SPtr<MorphShape>> mShapes;
+		UINT32 mNumVertices;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

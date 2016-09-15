@@ -376,6 +376,7 @@ namespace BansheeEngine
 	class Camera;
 	class CameraCore;
 	class MorphShapes;
+	class MorphShape;
 	// Asset import
 	class SpecificImporter;
 	class Importer;

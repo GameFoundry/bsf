@@ -413,7 +413,7 @@ namespace BansheeEngine
 		}
 
 		if (!allMorphShapes.empty())
-			return MorphShapes::create(allMorphShapes);
+			return MorphShapes::create(allMorphShapes, totalNumVertices);
 
 		return morphShapes;
 	}

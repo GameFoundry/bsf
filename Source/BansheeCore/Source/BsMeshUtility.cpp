@@ -1,6 +1,7 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsMeshUtility.h"
+#include "BsVector4.h"
 #include "BsVector3.h"
 #include "BsVector2.h"
 #include "BsPlane.h"
@@ -863,5 +864,66 @@ namespace BansheeEngine
 	{
 		TriangleClipper3D clipper;
 		clipper.clip(vertices, uvs, numTris, vertexStride, clipPlanes, writeCallback);
+	}
+
+	void MeshUtility::packNormals(Vector3* source, UINT8* destination, UINT32 count, UINT32 stride)
+	{
+		UINT8* ptr = destination;
+		for (UINT32 i = 0; i < count; i++)
+		{
+			PackedNormal& packed = *(PackedNormal*)ptr;
+			packed.x = Math::clamp((int)(source[i].x * 127.5f + 127.5f), 0, 255);
+			packed.y = Math::clamp((int)(source[i].y * 127.5f + 127.5f), 0, 255);
+			packed.z = Math::clamp((int)(source[i].z * 127.5f + 127.5f), 0, 255);
+			packed.w = 128;
+
+			ptr += stride;
+		}
+	}
+
+	void MeshUtility::packNormals(Vector4* source, UINT8* destination, UINT32 count, UINT32 stride)
+	{
+		UINT8* ptr = destination;
+		for (UINT32 i = 0; i < count; i++)
+		{
+			PackedNormal& packed = *(PackedNormal*)ptr;
+			packed.x = Math::clamp((int)(source[i].x * 127.5f + 127.5f), 0, 255);
+			packed.y = Math::clamp((int)(source[i].y * 127.5f + 127.5f), 0, 255);
+			packed.z = Math::clamp((int)(source[i].z * 127.5f + 127.5f), 0, 255);
+			packed.w = Math::clamp((int)(source[i].w * 127.5f + 127.5f), 0, 255);
+
+			ptr += stride;
+		}
+	}
+
+	void MeshUtility::unpackNormals(UINT8* source, Vector3* destination, UINT32 count, UINT32 stride)
+	{
+		UINT8* ptr = source;
+		for (UINT32 i = 0; i < count; i++)
+		{
+			PackedNormal& packed = *(PackedNormal*)ptr;
+
+			destination[i].x = (packed.x * 2.0f - 1.0f);
+			destination[i].y = (packed.y * 2.0f - 1.0f);
+			destination[i].z = (packed.z * 2.0f - 1.0f);
+
+			ptr += stride;
+		}
+	}
+
+	void MeshUtility::unpackNormals(UINT8* source, Vector4* destination, UINT32 count, UINT32 stride)
+	{
+		UINT8* ptr = source;
+		for (UINT32 i = 0; i < count; i++)
+		{
+			PackedNormal& packed = *(PackedNormal*)ptr;
+
+			destination[i].x = (packed.x * 2.0f - 1.0f);
+			destination[i].y = (packed.y * 2.0f - 1.0f);
+			destination[i].z = (packed.z * 2.0f - 1.0f);
+			destination[i].w = (packed.w * 2.0f - 1.0f);
+
+			ptr += stride;
+		}
 	}
 }

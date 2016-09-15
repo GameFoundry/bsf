@@ -31,13 +31,15 @@ namespace BansheeEngine
 	MorphShapes::MorphShapes()
 	{ }
 
-	MorphShapes::MorphShapes(const Vector<SPtr<MorphShape>>& shapes)
-		:mShapes(shapes)
-	{ }
-
-	SPtr<MorphShapes> MorphShapes::create(const Vector<SPtr<MorphShape>>& shapes)
+	MorphShapes::MorphShapes(const Vector<SPtr<MorphShape>>& shapes, UINT32 numVertices)
+		:mShapes(shapes), mNumVertices(numVertices)
 	{
-		MorphShapes* raw = new (bs_alloc<MorphShapes>()) MorphShapes(shapes);
+
+	}
+
+	SPtr<MorphShapes> MorphShapes::create(const Vector<SPtr<MorphShape>>& shapes, UINT32 numVertices)
+	{
+		MorphShapes* raw = new (bs_alloc<MorphShapes>()) MorphShapes(shapes, numVertices);
 		return bs_shared_ptr(raw);
 	}
 

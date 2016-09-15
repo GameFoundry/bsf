@@ -165,10 +165,10 @@ namespace BansheeEngine
 					// new one every frame
 					SPtr<GpuBufferCore> buffer = GpuBufferCore::create(numBones * 3, 0, GBT_STANDARD, BF_32X4F, GBU_DYNAMIC);
 
-					auto iterFind = animData.poseInfos.find(renderable->getAnimationId());
-					if (iterFind != animData.poseInfos.end())
+					auto iterFind = animData.infos.find(renderable->getAnimationId());
+					if (iterFind != animData.infos.end())
 					{
-						const RendererAnimationData::PoseInfo& poseInfo = iterFind->second;
+						const RendererAnimationData::PoseInfo& poseInfo = iterFind->second.poseInfo;
 
 						UINT8* dest = (UINT8*)buffer->lock(0, poseInfo.numBones * 3 * sizeof(Vector4), GBL_WRITE_ONLY_DISCARD);
 						for (UINT32 j = 0; j < poseInfo.numBones; j++)

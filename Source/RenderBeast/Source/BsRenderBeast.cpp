@@ -559,10 +559,10 @@ namespace BansheeEngine
 				// all such elements
 				SPtr<GpuBufferCore> boneMatrices = element.boneMatrixBuffer;
 
-				auto iterFind = animData.poseInfos.find(element.animationId);
-				if (iterFind != animData.poseInfos.end())
+				auto iterFind = animData.infos.find(element.animationId);
+				if (iterFind != animData.infos.end())
 				{
-					const RendererAnimationData::PoseInfo& poseInfo = iterFind->second;
+					const RendererAnimationData::PoseInfo& poseInfo = iterFind->second.poseInfo;
 
 					UINT8* dest = (UINT8*)boneMatrices->lock(0, poseInfo.numBones * 3 * sizeof(Vector4), GBL_WRITE_ONLY_DISCARD);
 					for (UINT32 j = 0; j < poseInfo.numBones; j++)

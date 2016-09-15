@@ -48,7 +48,8 @@ namespace BansheeEngine
 	private:
 		BS_BEGIN_RTTI_MEMBERS
 			BS_RTTI_MEMBER_REFLPTR_ARRAY(mShapes, 0)
-			BS_END_RTTI_MEMBERS
+			BS_RTTI_MEMBER_PLAIN(mNumVertices, 1)
+		BS_END_RTTI_MEMBERS
 
 	public:
 		MorphShapesRTTI()

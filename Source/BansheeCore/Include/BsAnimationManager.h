@@ -6,6 +6,7 @@
 #include "BsModule.h"
 #include "BsCoreThread.h"
 #include "BsConvexVolume.h"
+#include "BsVertexDataDesc.h"
 
 namespace BansheeEngine
 {
@@ -18,7 +19,7 @@ namespace BansheeEngine
 	/** Contains skeleton poses for all animations evaluated on a single frame. */
 	struct RendererAnimationData
 	{
-		/** Contains data about a calculated skeleton pose. */
+		/** Contains meta-data about a calculated skeleton pose. Actual data maps to the @p transforms buffer. */
 		struct PoseInfo
 		{
 			UINT64 animId;
@@ -26,8 +27,24 @@ namespace BansheeEngine
 			UINT32 numBones;
 		};
 
-		/** Maps animation ID to a pose information structure, containing its global joint transforms. */
-		UnorderedMap<UINT64, PoseInfo> poseInfos;
+		/** Contains data about a calculated morph shape. */
+		struct MorphShapeInfo
+		{
+			SPtr<MeshData> meshData;
+			UINT32 version;
+		};
+
+		/** Contains meta-data about where calculated animation data is stored. */
+		struct AnimInfo
+		{
+			PoseInfo poseInfo;
+			MorphShapeInfo morphShapeInfo;
+		};
+
+		/**
+		 * Maps animation ID to a animation information structure, which points to relevant skeletal or morph shape data. 
+		 */
+		UnorderedMap<UINT64, AnimInfo> infos;
 
 		/** Global joint transforms for all skeletons in the scene. */
 		Vector<Matrix4> transforms;
@@ -107,6 +124,7 @@ namespace BansheeEngine
 
 		bool mWorkerRunning;
 		SPtr<Task> mAnimationWorker;
+		SPtr<VertexDataDesc> mBlendShapeVertexDesc;
 
 		// Animation thread
 		Vector<SPtr<AnimationProxy>> mProxies;

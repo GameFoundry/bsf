@@ -224,46 +224,6 @@ namespace BansheeEngine
 		RendererMeshData(UINT32 numVertices, UINT32 numIndices, VertexLayout layout, IndexType indexType = IT_32BIT);
 		RendererMeshData(const SPtr<MeshData>& meshData);
 
-		/** 
-		 * Encodes normals from 32-bit float format into 4D 8-bit packed format. 
-		 *
-		 * @param[in]	source			Buffer containing data to encode. Must have @p count entries.
-		 * @param[out]	destination		Buffer to output the data to. Must have @p count entries, each 32-bits.
-		 * @param[in]	count			Number of entries in the @p source and @p destination arrays.
-		 * @param[in]	stride			Distance between two entries in the @p destination buffer, in bytes.
-		 */
-		void packNormals(Vector3* source, UINT8* destination, UINT32 count, UINT32 stride);
-
-		/** 
-		 * Encodes normals from 32-bit float format into 4D 8-bit packed format. 
-		 *
-		 * @param[in]	source			Buffer containing data to encode. Must have @p count entries.
-		 * @param[out]	destination		Buffer to output the data to. Must have @p count entries, each 32-bits.
-		 * @param[in]	count			Number of entries in the @p source and @p destination arrays.
-		 * @param[in]	stride			Distance between two entries in the @p destination buffer, in bytes.
-		 */
-		void packNormals(Vector4* source, UINT8* destination, UINT32 count, UINT32 stride);
-
-		/** 
-		 * Decodes normals from 4D 8-bit packed format into a 32-bit float format. 
-		 *
-		 * @param[in]	source			Buffer containing data to encode. Must have @p count entries, each 32-bits.
-		 * @param[out]	destination		Buffer to output the data to. Must have @p count entries.
-		 * @param[in]	count			Number of entries in the @p source and @p destination arrays.
-		 * @param[in]	stride			Distance between two entries in the @p source buffer, in bytes.
-		 */
-		void unpackNormals(UINT8* source, Vector3* destination, UINT32 count, UINT32 stride);
-
-		/** 
-		 * Decodes normals from 4D 8-bit packed format into a 32-bit float format. 
-		 *
-		 * @param[in]	source			Buffer containing data to encode. Must have @p count entries, each 32-bits.
-		 * @param[out]	destination		Buffer to output the data to. Must have @p count entries.
-		 * @param[in]	count			Number of entries in the @p source and @p destination arrays.
-		 * @param[in]	stride			Distance between two entries in the @p source buffer, in bytes.
-		 */
-		void unpackNormals(UINT8* source, Vector4* destination, UINT32 count, UINT32 stride);
-
 		SPtr<MeshData> mMeshData;
 	};
 

@@ -30,8 +30,9 @@ namespace BansheeEngine
 		Clean = 0,
 		Value = 1 << 0,
 		Layout = 1 << 1,
-		Skeleton = 1 << 2,
-		Culling = 1 << 3
+		All = 1 << 2,
+		Culling = 1 << 3,
+		MorphWeights = 1 << 4
 	};
 
 	typedef Flags<AnimDirtyStateFlag> AnimDirtyState;
@@ -125,6 +126,13 @@ namespace BansheeEngine
 		String curveName;
 	};
 
+	/** Morph shape and its contribution to the final shape. */
+	struct MorphShapeInfo
+	{
+		SPtr<MorphShape> shape;
+		float weight;
+	};
+
 	/** Contains information about a scene object that is animated by a specific animation curve. */
 	struct AnimatedSceneObjectInfo
 	{
@@ -155,11 +163,12 @@ namespace BansheeEngine
 		 *									method completes clip info layout and state indices will be populated for 
 		 *									further use in the update*() methods.
 		 * @param[in]		sceneObjects	A list of scene objects that are influenced by specific animation curves.
+		 * @param[in]		morphShapes		Morph shapes used for per-vertex animation.
 		 *
 		 * @note	Should be called from the sim thread when the caller is sure the animation thread is not using it.
 		 */
 		void rebuild(const SPtr<Skeleton>& skeleton, const SkeletonMask& mask, Vector<AnimationClipInfo>& clipInfos, 
-			const Vector<AnimatedSceneObject>& sceneObjects);
+			const Vector<AnimatedSceneObject>& sceneObjects, const SPtr<MorphShapes>& morphShapes);
 
 		/** 
 		 * Rebuilds the internal proxy data according to the newly clips. This should be called whenever clips are added
@@ -169,10 +178,12 @@ namespace BansheeEngine
 		 *									completes clip info layout and state indices will be populated for further use 
 		 *									in the update*() methods.
 		 * @param[in]		sceneObjects	A list of scene objects that are influenced by specific animation curves.
+		 * * @param[in]		morphShapes		Morph shapes used for per-vertex animation.
 		 *
 		 * @note	Should be called from the sim thread when the caller is sure the animation thread is not using it.
 		 */
-		void rebuild(Vector<AnimationClipInfo>& clipInfos, const Vector<AnimatedSceneObject>& sceneObjects);
+		void rebuild(Vector<AnimationClipInfo>& clipInfos, const Vector<AnimatedSceneObject>& sceneObjects, 
+			const SPtr<MorphShapes>& morphShapes);
 
 		/** 
 		 * Updates the proxy data with new information about the clips. Caller must guarantee that clip layout didn't 
@@ -180,7 +191,13 @@ namespace BansheeEngine
 		 *
 		 * @note	Should be called from the sim thread when the caller is sure the animation thread is not using it.
 		 */
-		void updateValues(const Vector<AnimationClipInfo>& clipInfos);
+		void updateClipInfos(const Vector<AnimationClipInfo>& clipInfos);
+
+		/** 
+		 * Updates the proxy data with new weights used for morph shapes. Caller must ensure the weights are ordered so
+		 * they match with the morph shapes provided to the last rebuild() call.
+		 */
+		void updateMorphShapeWeights(const Vector<float>& weights);
 
 		/**
 		 * Updates the proxy data with new scene object transforms. Caller must guarantee that clip layout didn't 
@@ -202,6 +219,8 @@ namespace BansheeEngine
 		void clear();
 
 		UINT64 id;
+
+		// Skeletal animation
 		AnimationStateLayer* layers;
 		UINT32 numLayers;
 		SPtr<Skeleton> skeleton;
@@ -209,6 +228,12 @@ namespace BansheeEngine
 		UINT32 numSceneObjects;
 		AnimatedSceneObjectInfo* sceneObjectInfos;
 		Matrix4* sceneObjectTransforms;
+
+		// Morph shape animation
+		MorphShapeInfo* morphShapeInfos;
+		UINT32 numMorphShapes;
+		UINT32 numMorphVertices;
+		bool morphShapeWeightsDirty;
 
 		// Culling
 		AABox mBounds;
@@ -476,6 +501,8 @@ namespace BansheeEngine
 
 		SPtr<Skeleton> mSkeleton;
 		SkeletonMask mSkeletonMask;
+		SPtr<MorphShapes> mMorphShapes;
+		Vector<float> mMorphShapeWeights;
 		Vector<AnimationClipInfo> mClipInfos;
 		UnorderedMap<UINT64, AnimatedSceneObject> mSceneObjects;
 		Vector<float> mGenericCurveOutputs;
