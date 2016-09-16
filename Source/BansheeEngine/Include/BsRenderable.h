@@ -11,6 +11,8 @@
 
 namespace BansheeEngine
 {
+	struct RendererAnimationData;
+
 	/** @addtogroup Implementation
 	 *  @{
 	 */
@@ -191,6 +193,18 @@ namespace BansheeEngine
 		/** Returns the identifier of the animation, if this object is animated using skeleton or blend shape animation. */
 		UINT64 getAnimationId() const { return mAnimationId; }
 
+		/** 
+		 * Updates internal animation buffers from the contents of the provided animation data object. Does nothing if
+		 * renderable is not affected by animation.
+		 */
+		void updateAnimationBuffers(const RendererAnimationData& animData);
+
+		/** Returns the GPU buffer containing element's bone matrices, if it has any. */
+		const SPtr<GpuBufferCore>& getBoneMatrixBuffer() const { return mBoneMatrixBuffer; }
+
+		/** Returns the vertex buffer containing element's morph shape vertices, if it has any. */
+		const SPtr<VertexBufferCore>& getMorphShapeBuffer() const { return mMorphShapeBuffer; }
+
 	protected:
 		friend class Renderable;
 
@@ -202,8 +216,15 @@ namespace BansheeEngine
 		/** @copydoc CoreObject::syncToCore */
 		void syncToCore(const CoreSyncData& data) override;
 
+		/** Creates any buffers required for renderable animation. Should be called whenever animation properties change. */
+		void createAnimationBuffers();
+
 		UINT32 mRendererId;
 		UINT64 mAnimationId;
+		UINT32 mMorphShapeVersion;
+
+		SPtr<GpuBufferCore> mBoneMatrixBuffer;
+		SPtr<VertexBufferCore> mMorphShapeBuffer;
 	};
 
 	/** @copydoc TRenderable */

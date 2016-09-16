@@ -4,6 +4,9 @@
 
 #include "$ENGINE$\SkinnedVertexInput.bslinc"
 #include "$ENGINE$\NormalVertexInput.bslinc"
+#define USE_BLEND_SHAPES
+#include "$ENGINE$\SkinnedVertexInput.bslinc"
+#include "$ENGINE$\NormalVertexInput.bslinc"
 
 Technique : base("DeferredBasePassCommon") =
 {

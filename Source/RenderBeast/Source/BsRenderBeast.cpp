@@ -142,6 +142,8 @@ namespace BansheeEngine
 				renElement.animType = renderable->getAnimType();
 				renElement.animationId = renderable->getAnimationId();
 				renElement.morphShapeVersion = 0;
+				renElement.morphShapeBuffer = renderable->getMorphShapeBuffer();
+				renElement.boneMatrixBuffer = renderable->getBoneMatrixBuffer();
 
 				renElement.material = renderable->getMaterial(i);
 				if (renElement.material == nullptr)
@@ -415,17 +417,6 @@ namespace BansheeEngine
 		updateCameraData(camera, true);
 	}
 
-	const RenderableElement* RenderBeast::getRenderableElem(UINT32 id, UINT32 subMeshIdx)
-	{
-		if (id >= (UINT32)mRenderables.size())
-			return nullptr;
-
-		if (subMeshIdx >= (UINT32)mRenderables[id].elements.size())
-			return nullptr;
-
-		return &mRenderables[id].elements[subMeshIdx];
-	}
-
 	SPtr<PostProcessSettings> RenderBeast::createPostProcessSettings() const
 	{
 		return bs_shared_ptr_new<StandardPostProcessSettings>();
@@ -574,15 +565,14 @@ namespace BansheeEngine
 		const RendererAnimationData& animData = AnimationManager::instance().getRendererData();
 		RendererFrame frameInfo(delta, animData);
 
-		// Update bone matrix buffers
+		// Update bone matrix and morph shape GPU buffers
 		UINT32 numRenderables = (UINT32)mRenderables.size();
 		for (UINT32 i = 0; i < numRenderables; i++)
 		{
 			if (!mVisibility[i])
 				continue;
 
-			for (auto& element : mRenderables[i].elements)
-				mObjectRenderer->updateAnimationBuffers(element, animData);
+			mRenderables[i].renderable->updateAnimationBuffers(animData);
 
 			// TODO - Also move per-object buffer updates here (will require worldViewProj matrix to be moved to a separate buffer (or a push constant))
 			// TODO - Before uploading bone matrices and per-object data, check if it has actually been changed since last frame (most objects will be static)

@@ -117,9 +117,6 @@ namespace BansheeEngine
 		/** @copydoc Renderer::notifyRenderableRemoved */
 		void notifyRenderableRemoved(RenderableCore* renderable) override;
 
-		/** @copydoc Renderer::getRenderableElem */
-		const RenderableElement* getRenderableElem(UINT32 id, UINT32 subMeshIdx) override;
-
 		/** 
 		 * Updates (or adds) renderer specific data for the specified camera. Should be called whenever camera properties
 		 * change. 

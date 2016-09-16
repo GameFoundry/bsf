@@ -165,9 +165,6 @@ namespace BansheeEngine
 			rapi.setRasterizerState(pass->getRasterizerState());
 		else
 			rapi.setRasterizerState(RasterizerStateCore::getDefault());
-
-		SPtr<VertexDeclarationCore> shaderDecl = pass->getVertexProgram()->getInputDeclaration();
-		rapi.setVertexDeclaration(shaderDecl);
 	}
 
 	void RendererUtility::setComputePass(const SPtr<MaterialCore>& material, UINT32 passIdx)
@@ -258,8 +255,10 @@ namespace BansheeEngine
 
 	void RendererUtility::draw(const SPtr<MeshCoreBase>& mesh, const SubMesh& subMesh, UINT32 numInstances)
 	{
-		RenderAPICore& rs = RenderAPICore::instance();
+		RenderAPICore& rapi = RenderAPICore::instance();
 		SPtr<VertexData> vertexData = mesh->getVertexData();
+
+		rapi.setVertexDeclaration(mesh->getVertexData()->vertexDeclaration);
 
 		auto& vertexBuffers = vertexData->getBuffers();
 		if (vertexBuffers.size() > 0)
@@ -282,16 +281,16 @@ namespace BansheeEngine
 				buffers[iter->first - startSlot] = iter->second;
 			}
 
-			rs.setVertexBuffers(startSlot, buffers, endSlot - startSlot + 1);
+			rapi.setVertexBuffers(startSlot, buffers, endSlot - startSlot + 1);
 		}
 
 		SPtr<IndexBufferCore> indexBuffer = mesh->getIndexBuffer();
-		rs.setIndexBuffer(indexBuffer);
+		rapi.setIndexBuffer(indexBuffer);
 
-		rs.setDrawOperation(subMesh.drawOp);
+		rapi.setDrawOperation(subMesh.drawOp);
 
 		UINT32 indexCount = subMesh.indexCount;
-		rs.drawIndexed(subMesh.indexOffset + mesh->getIndexOffset(), indexCount, mesh->getVertexOffset(), 
+		rapi.drawIndexed(subMesh.indexOffset + mesh->getIndexOffset(), indexCount, mesh->getVertexOffset(), 
 			vertexData->vertexCount, numInstances);
 
 		mesh->_notifyUsedOnGPU();
@@ -304,6 +303,7 @@ namespace BansheeEngine
 		RenderAPICore& rapi = RenderAPICore::instance();
 
 		SPtr<VertexData> vertexData = mesh->getVertexData();
+		rapi.setVertexDeclaration(mesh->getVertexData()->vertexDeclaration); // TODO - Set valid declaration
 
 		auto& meshBuffers = vertexData->getBuffers();
 		SPtr<VertexBufferCore> allBuffers[MAX_BOUND_VERTEX_BUFFERS];

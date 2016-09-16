@@ -11,7 +11,9 @@
 #include "BsRenderer.h"
 #include "BsAnimation.h"
 #include "BsFrameAlloc.h"
-#include "BsDebug.h"
+#include "BsMorphShapes.h"
+#include "BsGpuBuffer.h"
+#include "BsAnimationManager.h"
 
 namespace BansheeEngine
 {
@@ -147,7 +149,7 @@ namespace BansheeEngine
 	template class TRenderable < true >;
 
 	RenderableCore::RenderableCore() 
-		:mRendererId(0), mAnimationId((UINT64)-1)
+		:mRendererId(0), mAnimationId((UINT64)-1), mMorphShapeVersion(0)
 	{
 	}
 
@@ -194,6 +196,105 @@ namespace BansheeEngine
 		}
 	}
 
+	void RenderableCore::createAnimationBuffers()
+	{
+		if (mAnimType == RenderableAnimType::Skinned || mAnimType == RenderableAnimType::SkinnedMorph)
+		{
+			SPtr<Skeleton> skeleton = mMesh->getSkeleton();
+			UINT32 numBones = skeleton != nullptr ? skeleton->getNumBones() : 0;
+
+			if (numBones > 0)
+			{
+				SPtr<GpuBufferCore> buffer = GpuBufferCore::create(numBones * 3, 0, GBT_STANDARD, BF_32X4F, GBU_DYNAMIC);
+				UINT8* dest = (UINT8*)buffer->lock(0, numBones * 3 * sizeof(Vector4), GBL_WRITE_ONLY_DISCARD);
+
+				// Initialize bone transforms to identity, so the object renders properly even if no animation is animating it
+				for (UINT32 i = 0; i < numBones; i++)
+				{
+					memcpy(dest, &Matrix4::IDENTITY, 12 * sizeof(float)); // Assuming row-major format
+
+					dest += 12 * sizeof(float);
+				}
+
+				buffer->unlock();
+
+				mBoneMatrixBuffer = buffer;
+			}
+			else
+				mBoneMatrixBuffer = nullptr;
+		}
+		else
+			mBoneMatrixBuffer = nullptr;
+
+		if (mAnimType == RenderableAnimType::Morph || mAnimType == RenderableAnimType::SkinnedMorph)
+		{
+			SPtr<MorphShapes> morphShapes = mMesh->getMorphShapes();
+
+			UINT32 vertexSize = sizeof(Vector3) + sizeof(Vector4);
+			UINT32 numVertices = morphShapes->getNumVertices();
+
+			SPtr<VertexBufferCore> vertexBuffer = VertexBufferCore::create(vertexSize, numVertices, GBU_DYNAMIC);
+
+			UINT32 totalSize = vertexSize * numVertices;
+			UINT8* dest = (UINT8*)vertexBuffer->lock(0, totalSize, GBL_WRITE_ONLY_DISCARD);
+			memset(dest, 0, totalSize);
+			vertexBuffer->unlock();
+
+			mMorphShapeBuffer = vertexBuffer;
+		}
+		else
+			mMorphShapeBuffer = nullptr;
+
+		mMorphShapeVersion = 0;
+	}
+
+	void RenderableCore::updateAnimationBuffers(const RendererAnimationData& animData)
+	{
+		if (mAnimationId == (UINT64)-1)
+			return;
+
+		const RendererAnimationData::AnimInfo* animInfo = nullptr;
+
+		auto iterFind = animData.infos.find(mAnimationId);
+		if (iterFind != animData.infos.end())
+			animInfo = &iterFind->second;
+
+		if (animInfo == nullptr)
+			return;
+
+		if (mAnimType == RenderableAnimType::Skinned || mAnimType == RenderableAnimType::SkinnedMorph)
+		{
+			const RendererAnimationData::PoseInfo& poseInfo = animInfo->poseInfo;
+
+			// Note: If multiple elements are using the same animation (not possible atm), this buffer should be shared by
+			// all such elements
+			UINT8* dest = (UINT8*)mBoneMatrixBuffer->lock(0, poseInfo.numBones * 3 * sizeof(Vector4), GBL_WRITE_ONLY_DISCARD);
+			for (UINT32 j = 0; j < poseInfo.numBones; j++)
+			{
+				const Matrix4& transform = animData.transforms[poseInfo.startIdx + j];
+				memcpy(dest, &transform, 12 * sizeof(float)); // Assuming row-major format
+
+				dest += 12 * sizeof(float);
+			}
+
+			mBoneMatrixBuffer->unlock();
+		}
+
+		if (mAnimType == RenderableAnimType::Morph || mAnimType == RenderableAnimType::SkinnedMorph)
+		{
+			if (mMorphShapeVersion < animInfo->morphShapeInfo.version)
+			{
+				SPtr<MeshData> meshData = animInfo->morphShapeInfo.meshData;
+
+				UINT32 bufferSize = meshData->getSize();
+				UINT8* data = meshData->getData();
+
+				mMorphShapeBuffer->writeData(0, bufferSize, data, BufferWriteType::Discard);
+				mMorphShapeVersion = animInfo->morphShapeInfo.version;
+			}
+		}
+	}
+
 	void RenderableCore::syncToCore(const CoreSyncData& data)
 	{
 		char* dataPtr = (char*)data.getBuffer();
@@ -212,8 +313,8 @@ namespace BansheeEngine
 		dataPtr = rttiReadElem(mTransformNoScale, dataPtr);
 		dataPtr = rttiReadElem(mPosition, dataPtr);
 		dataPtr = rttiReadElem(mIsActive, dataPtr);
-		dataPtr = rttiReadElem(mAnimType, dataPtr);
 		dataPtr = rttiReadElem(mAnimationId, dataPtr);
+		dataPtr = rttiReadElem(mAnimType, dataPtr);
 		dataPtr = rttiReadElem(dirtyFlags, dataPtr);
 
 		SPtr<MeshCore>* mesh = (SPtr<MeshCore>*)dataPtr;
@@ -236,6 +337,8 @@ namespace BansheeEngine
 		}
 		else
 		{
+			createAnimationBuffers();
+
 			if (oldIsActive != mIsActive)
 			{
 				if (mIsActive)
@@ -410,8 +513,8 @@ namespace BansheeEngine
 			rttiGetElemSize(mTransformNoScale) +
 			rttiGetElemSize(mPosition) +
 			rttiGetElemSize(mIsActive) +
+			rttiGetElemSize(animationId) +
 			rttiGetElemSize(mAnimType) + 
-			rttiGetElemSize(animationId) + 
 			rttiGetElemSize(getCoreDirtyFlags()) +
 			sizeof(SPtr<MeshCore>) + 
 			numMaterials * sizeof(SPtr<MaterialCore>);

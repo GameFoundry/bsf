@@ -48,6 +48,12 @@ namespace BansheeEngine
 		 */
 		MaterialParamBufferCore boneMatricesParam;
 
+		/** GPU buffer containing element's bone matrices, if it requires any. */
+		SPtr<GpuBufferCore> boneMatrixBuffer;
+
+		/** Vertex buffer containing element's morph shape vertices, if it has any. */
+		SPtr<VertexBufferCore> morphShapeBuffer;
+
 		/** Version of the morph shape vertices in the buffer. */
 		mutable UINT32 morphShapeVersion;
 	};

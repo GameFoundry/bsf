@@ -127,7 +127,10 @@ namespace BansheeEngine
 
 			SPtr<GpuParamsCore> vertParams = mParams[i]->getGpuParams(GPT_VERTEX_PROGRAM);
 			vertParams->getParam("matWorldViewProj", mMatWorldViewProj[i]);
-			vertParams->getBufferParam("boneMatrices", mBoneMatrices[i]);
+
+			RenderableAnimType animType = (RenderableAnimType)i;
+			if(animType == RenderableAnimType::Skinned || animType == RenderableAnimType::SkinnedMorph)
+				vertParams->getBufferParam("boneMatrices", mBoneMatrices[i]);
 
 			SPtr<GpuParamsCore> fragParams = mParams[i]->getGpuParams(GPT_FRAGMENT_PROGRAM);
 			fragParams->getParam("selColor", mColor[i]);
@@ -168,12 +171,16 @@ namespace BansheeEngine
 			if (mesh == nullptr)
 				continue;
 
+			SPtr<GpuBufferCore> boneMatrixBuffer = renderable->getBoneMatrixBuffer();
+			SPtr<VertexBufferCore> morphShapeBuffer = renderable->getMorphShapeBuffer();
+
 			Matrix4 worldViewProjMat = viewProjMat * renderable->getTransform();
 			UINT32 techniqueIdx = mTechniqueIndices[(int)renderable->getAnimType()];
 
 			mMatWorldViewProj[techniqueIdx].set(worldViewProjMat);
 			mColor[techniqueIdx].set(SELECTION_COLOR);
-			
+			mBoneMatrices[techniqueIdx].set(boneMatrixBuffer);
+
 			gRendererUtility().setPass(mMaterial, 0, techniqueIdx);
 			gRendererUtility().setPassParams(mParams[techniqueIdx], 0);
 
@@ -181,15 +188,7 @@ namespace BansheeEngine
 			UINT32 renderableId = renderable->getRendererId();
 
 			for(UINT32 i = 0; i < numSubmeshes; i++)
-			{
-				const RenderableElement* renderableElem = renderer->getRenderableElem(renderableId, i);
-				if (renderableElem == nullptr)
-					continue;
-
-				mBoneMatrices[techniqueIdx].set(renderableElem->boneMatrixBuffer);
-
-				gRendererUtility().drawMorph(mesh, mesh->getProperties().getSubMesh(i), renderableElem->morphShapeBuffer);
-			}
+				gRendererUtility().drawMorph(mesh, mesh->getProperties().getSubMesh(i), morphShapeBuffer);
 		}
 	}
 }
