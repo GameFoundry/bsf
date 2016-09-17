@@ -8,14 +8,14 @@ namespace BansheeEngine
 	MorphShape::MorphShape()
 	{ }
 
-	MorphShape::MorphShape(const String& name, const Vector<MorphVertex>& vertices)
-		:mName(name), mVertices(vertices)
+	MorphShape::MorphShape(const String& name, float weight, const Vector<MorphVertex>& vertices)
+		:mName(name), mWeight(weight), mVertices(vertices)
 	{ }
 
 	/** Creates a new morph shape from the provided set of vertices. */
-	SPtr<MorphShape> MorphShape::create(const String& name, const Vector<MorphVertex>& vertices)
+	SPtr<MorphShape> MorphShape::create(const String& name, float weight, const Vector<MorphVertex>& vertices)
 	{
-		return bs_shared_ptr_new<MorphShape>(name, vertices);
+		return bs_shared_ptr_new<MorphShape>(name, weight, vertices);
 	}
 
 	RTTITypeBase* MorphShape::getRTTIStatic()
@@ -28,18 +28,53 @@ namespace BansheeEngine
 		return getRTTIStatic();
 	}
 
+	MorphChannel::MorphChannel()
+	{ }
+
+	MorphChannel::MorphChannel(const String& name, const Vector<SPtr<MorphShape>>& shapes)
+		:mName(name), mShapes(shapes)
+	{
+		std::sort(mShapes.begin(), mShapes.end(), 
+			[](auto& x, auto& y)
+		{
+			return x->getWeight() < y->getWeight();
+		});
+	}
+
+	SPtr<MorphChannel> MorphChannel::create(const String& name, const Vector<SPtr<MorphShape>>& shapes)
+	{
+		MorphChannel* raw = new (bs_alloc<MorphChannel>()) MorphChannel(name, shapes);
+		return bs_shared_ptr(raw);
+	}
+
+	SPtr<MorphChannel> MorphChannel::createEmpty()
+	{
+		MorphChannel* raw = new (bs_alloc<MorphChannel>()) MorphChannel();
+		return bs_shared_ptr(raw);
+	}
+
+	RTTITypeBase* MorphChannel::getRTTIStatic()
+	{
+		return MorphChannelRTTI::instance();
+	}
+
+	RTTITypeBase* MorphChannel::getRTTI() const
+	{
+		return getRTTIStatic();
+	}
+
 	MorphShapes::MorphShapes()
 	{ }
 
-	MorphShapes::MorphShapes(const Vector<SPtr<MorphShape>>& shapes, UINT32 numVertices)
-		:mShapes(shapes), mNumVertices(numVertices)
+	MorphShapes::MorphShapes(const Vector<SPtr<MorphChannel>>& channels, UINT32 numVertices)
+		:mChannels(channels), mNumVertices(numVertices)
 	{
 
 	}
 
-	SPtr<MorphShapes> MorphShapes::create(const Vector<SPtr<MorphShape>>& shapes, UINT32 numVertices)
+	SPtr<MorphShapes> MorphShapes::create(const Vector<SPtr<MorphChannel>>& channels, UINT32 numVertices)
 	{
-		MorphShapes* raw = new (bs_alloc<MorphShapes>()) MorphShapes(shapes, numVertices);
+		MorphShapes* raw = new (bs_alloc<MorphShapes>()) MorphShapes(channels, numVertices);
 		return bs_shared_ptr(raw);
 	}
 

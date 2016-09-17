@@ -377,12 +377,13 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Changes a weight of a single morph shape, determining how much of it to apply on top of the base mesh.
+        /// Changes a weight of a single morph channel, determining how much of it to apply on top of the base mesh.
         /// </summary>
-        /// <param name="name">Name of the morph shape to modify the weight for. This depends on the mesh the animation
+        /// <param name="name">Name of the morph channel to modify the weight for. This depends on the mesh the animation
         ///                    is currently animating.</param>
-        /// <param name="weight">Weight that determines how much of the shape to apply to the mesh, in range[0, 1].</param>
-        public void SetMorphShapeWeight(string name, float weight)
+        /// <param name="weight">Weight that determines how much of the channel to apply to the mesh, in range[0, 1].
+        ///                     </param>
+        public void SetMorphChannelWeight(string name, float weight)
         {
             switch (state)
             {
@@ -398,12 +399,12 @@ namespace BansheeEngine
                     if (morphShapes == null)
                         return;
 
-                    string[] shapeNames = morphShapes.Shapes;
-                    for (int i = 0; i < shapeNames.Length; i++)
+                    MorphChannel[] channels = morphShapes.Channels;
+                    for (int i = 0; i < channels.Length; i++)
                     {
-                        if (shapeNames[i] == name)
+                        if (channels[i].Name == name)
                         {
-                            _native.SetMorphShapeWeight(i, weight);
+                            _native.SetMorphChannelWeight(i, weight);
                             break;
                         }
                     }
@@ -1114,6 +1115,12 @@ namespace BansheeEngine
             List<FloatCurvePropertyInfo> newFloatProperties = new List<FloatCurvePropertyInfo>();
             for (int i = 0; i < curves.FloatCurves.Length; i++)
             {
+                bool isMorphCurve = curves.FloatCurves[i].Flags.HasFlag(AnimationCurveFlags.MorphWeight) ||
+                                    curves.FloatCurves[i].Flags.HasFlag(AnimationCurveFlags.MorphFrame);
+
+                if (isMorphCurve)
+                    continue;
+
                 string suffix;
                 SerializableProperty property = FindProperty(SceneObject, curves.FloatCurves[i].Name, out suffix);
                 if (property == null)

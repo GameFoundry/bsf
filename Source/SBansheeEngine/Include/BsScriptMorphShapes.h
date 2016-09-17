@@ -34,7 +34,33 @@ namespace BansheeEngine
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
-		static MonoArray* internal_GetShapes(ScriptMorphShapes* thisPtr);
+		static MonoArray* internal_GetChannels(ScriptMorphShapes* thisPtr);
+	};
+
+	/**	Interop class between C++ & CLR for MorphChannel. */
+	class BS_SCR_BE_EXPORT ScriptMorphChannel : public ScriptObject<ScriptMorphChannel>
+	{
+	public:
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "MorphChannel")
+
+		/** Converts native object to its managed counterpart. */
+		static MonoObject* toManaged(const SPtr<MorphChannel>& value);
+
+	private:
+		ScriptMorphChannel(MonoObject* instance);
+	};
+
+	/**	Interop class between C++ & CLR for MorphShape. */
+	class BS_SCR_BE_EXPORT ScriptMorphShape : public ScriptObject<ScriptMorphShape>
+	{
+	public:
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "MorphShape")
+
+		/** Converts native object to its managed counterpart. */
+		static MonoObject* toManaged(const SPtr<MorphShape>& value);
+
+	private:
+		ScriptMorphShape(MonoObject* instance);
 	};
 
 	/** @} */

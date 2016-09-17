@@ -18,7 +18,8 @@ namespace BansheeEngine
 	private:
 		BS_BEGIN_RTTI_MEMBERS
 			BS_RTTI_MEMBER_PLAIN(mName, 0)
-			BS_RTTI_MEMBER_PLAIN_ARRAY(mVertices, 1)
+			BS_RTTI_MEMBER_PLAIN(mWeight, 1)
+			BS_RTTI_MEMBER_PLAIN_ARRAY(mVertices, 2)
 		BS_END_RTTI_MEMBERS
 		
 	public:
@@ -43,11 +44,41 @@ namespace BansheeEngine
 		}
 	};
 
+	class BS_CORE_EXPORT MorphChannelRTTI : public RTTIType <MorphChannel, IReflectable, MorphChannelRTTI>
+	{
+	private:
+		BS_BEGIN_RTTI_MEMBERS
+			BS_RTTI_MEMBER_PLAIN(mName, 0)
+			BS_RTTI_MEMBER_REFLPTR_ARRAY(mShapes, 1)
+		BS_END_RTTI_MEMBERS
+
+	public:
+		MorphChannelRTTI()
+			:mInitMembers(this)
+		{ }
+
+		const String& getRTTIName() override
+		{
+			static String name = "MorphChannel";
+			return name;
+		}
+
+		UINT32 getRTTIId() override
+		{
+			return TID_MorphChannel;
+		}
+
+		SPtr<IReflectable> newRTTIObject() override
+		{
+			return MorphChannel::createEmpty();
+		}
+	};
+
 	class BS_CORE_EXPORT MorphShapesRTTI : public RTTIType <MorphShapes, IReflectable, MorphShapesRTTI>
 	{
 	private:
 		BS_BEGIN_RTTI_MEMBERS
-			BS_RTTI_MEMBER_REFLPTR_ARRAY(mShapes, 0)
+			BS_RTTI_MEMBER_REFLPTR_ARRAY(mChannels, 0)
 			BS_RTTI_MEMBER_PLAIN(mNumVertices, 1)
 		BS_END_RTTI_MEMBERS
 

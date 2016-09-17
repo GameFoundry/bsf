@@ -278,7 +278,118 @@ namespace BansheeEngine
 				else
 					animInfo.morphShapeInfo.version = 1; // 0 is considered invalid version
 
-				if(anim->morphShapeWeightsDirty)
+				// Recalculate weights if curves are present
+				bool hasMorphCurves = false;
+				for(UINT32 i = 0; i < anim->numMorphChannels; i++)
+				{
+					MorphChannelInfo& channelInfo = anim->morphChannelInfos[i];
+					if(channelInfo.weightCurveIdx != (UINT32)-1)
+					{
+						channelInfo.weight = Math::clamp01(anim->genericCurveOutputs[channelInfo.weightCurveIdx]);
+						hasMorphCurves = true;
+					}
+
+					float frameWeight;
+					if (channelInfo.frameCurveIdx != (UINT32)-1)
+					{
+						frameWeight = Math::clamp01(anim->genericCurveOutputs[channelInfo.frameCurveIdx]);
+						hasMorphCurves = true;
+					}
+					else
+						frameWeight = 0.0f;
+
+					if(channelInfo.shapeCount == 1)
+					{
+						MorphShapeInfo& shapeInfo = anim->morphShapeInfos[channelInfo.shapeStart];
+						shapeInfo.finalWeight = 1.0f;
+					}
+					else if(channelInfo.shapeCount > 1)
+					{
+						// First frame
+						{
+							MorphShapeInfo& shapeInfo = anim->morphShapeInfos[channelInfo.shapeStart];
+							MorphShapeInfo& nextShapeInfo = anim->morphShapeInfos[channelInfo.shapeStart + 1];
+
+							float relative = frameWeight - shapeInfo.frameWeight;
+							if (relative <= 0.0f)
+								shapeInfo.finalWeight = 1.0f;
+							else
+							{
+								float diff = nextShapeInfo.frameWeight - shapeInfo.frameWeight;
+								if(diff > 0.0f)
+								{
+									float t = relative / diff;
+									shapeInfo.finalWeight = 1.0f - std::min(t, 1.0f);
+								}
+								else
+									shapeInfo.finalWeight = 0.0f;
+							}
+						}
+
+						// Middle frames
+						for(UINT32 j = 1; j < channelInfo.shapeCount - 1; j++)
+						{
+							MorphShapeInfo& prevShapeInfo = anim->morphShapeInfos[j - 1];
+							MorphShapeInfo& shapeInfo = anim->morphShapeInfos[j];
+							MorphShapeInfo& nextShapeInfo = anim->morphShapeInfos[j + 1];
+
+							float relative = frameWeight - shapeInfo.frameWeight;
+							if (relative <= 0.0f)
+							{
+								float diff = shapeInfo.frameWeight - prevShapeInfo.frameWeight;
+								if (diff > 0.0f)
+								{
+									float t = relative / diff;
+									shapeInfo.finalWeight = 1.0f - std::min(t, 1.0f);
+								}
+								else
+									shapeInfo.finalWeight = 0.0f;
+							}
+							else
+							{
+								float diff = nextShapeInfo.frameWeight - shapeInfo.frameWeight;
+								if (diff > 0.0f)
+								{
+									float t = relative / diff;
+									shapeInfo.finalWeight = 1.0f - std::min(t, 1.0f);
+								}
+								else
+									shapeInfo.finalWeight = 0.0f;
+							}
+						}
+
+						// Last frame
+						{
+							UINT32 lastFrame = channelInfo.shapeStart + channelInfo.shapeCount - 1;
+							MorphShapeInfo& prevShapeInfo = anim->morphShapeInfos[lastFrame - 1];
+							MorphShapeInfo& shapeInfo = anim->morphShapeInfos[lastFrame];
+
+							float relative = frameWeight - shapeInfo.frameWeight;
+							if (relative <= 0.0f)
+							{
+								float diff = shapeInfo.frameWeight - prevShapeInfo.frameWeight;
+								if (diff > 0.0f)
+								{
+									float t = relative / diff;
+									shapeInfo.finalWeight = 1.0f - std::min(t, 1.0f);
+								}
+								else
+									shapeInfo.finalWeight = 0.0f;
+							}
+							else
+								shapeInfo.finalWeight = 1.0f;
+						}
+					}
+
+					for(UINT32 j = 0; j < channelInfo.shapeCount; j++)
+					{
+						MorphShapeInfo& shapeInfo = anim->morphShapeInfos[channelInfo.shapeStart + j];
+						shapeInfo.finalWeight *= channelInfo.weight;
+					}
+				}
+
+				// Generate morph shape vertices
+				if(anim->morphChannelWeightsDirty || hasMorphCurves)
 				{
 					SPtr<MeshData> meshData = bs_shared_ptr_new<MeshData>(anim->numMorphVertices, 0, mBlendShapeVertexDesc);
 
@@ -300,7 +411,7 @@ namespace BansheeEngine
 					for(UINT32 i = 0; i < anim->numMorphShapes; i++)
 					{
 						const MorphShapeInfo& info = anim->morphShapeInfos[i];
-						float absWeight = Math::abs(info.weight);
+						float absWeight = Math::abs(info.finalWeight);
 
 						if (absWeight < 0.0001f)
 							continue;
@@ -312,9 +423,9 @@ namespace BansheeEngine
 							const MorphVertex& vertex = morphVertices[j];
 
 							Vector3* destPos = (Vector3*)(positions + vertex.sourceIdx * stride);
-							*destPos += vertex.deltaPosition * info.weight;
+							*destPos += vertex.deltaPosition * info.finalWeight;
 
-							tempNormals[vertex.sourceIdx] += vertex.deltaNormal * info.weight;
+							tempNormals[vertex.sourceIdx] += vertex.deltaNormal * info.finalWeight;
 							accumulatedWeight[vertex.sourceIdx] += absWeight;
 						}
 					}
@@ -342,7 +453,7 @@ namespace BansheeEngine
 					animInfo.morphShapeInfo.meshData = meshData;
 
 					animInfo.morphShapeInfo.version++;
-					anim->morphShapeWeightsDirty = false;
+					anim->morphChannelWeightsDirty = false;
 				}
 
 				hasAnimInfo = true;

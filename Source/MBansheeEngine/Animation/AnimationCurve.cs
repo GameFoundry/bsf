@@ -40,7 +40,15 @@ namespace BansheeEngine
         /// how are animation results applied to scene objects (with imported animations it is assumed the curve is
         /// animating bones and with in-engine curves it is assumed the curve is animating scene objects).
         /// </summary>
-        ImportedCurve
+        ImportedCurve = 1 << 0,
+        /// <summary>
+        /// Signifies the curve is used to animate between different frames within a morph channel. In range [0, 1].
+        /// </summary>
+        MorphFrame = 1 << 1,
+        /// <summary>
+        /// Signifies the curve is used to adjust the weight of a morph channel. In range [0, 1].
+        /// </summary>
+        MorphWeight = 1 << 2
     }
 
     /// <summary>

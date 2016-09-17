@@ -179,7 +179,34 @@ namespace BansheeEngine
 		registerEntries(mCurves->position, CurveType::Position);
 		registerEntries(mCurves->rotation, CurveType::Rotation);
 		registerEntries(mCurves->scale, CurveType::Scale);
-		registerEntries(mCurves->generic, CurveType::Generic);
+
+		// Generic and morph curves
+		{
+			Vector<TNamedAnimationCurve<float>>& curve = mCurves->generic;
+			for (UINT32 i = 0; i < (UINT32)curve.size(); i++)
+			{
+				auto& entry = curve[i];
+
+				UINT32 typeIdx;
+				if (entry.flags.isSet(AnimationCurveFlag::MorphFrame))
+					typeIdx = (UINT32)CurveType::MorphFrame;
+				else if (entry.flags.isSet(AnimationCurveFlag::MorphWeight))
+					typeIdx = (UINT32)CurveType::MorphWeight;
+				else
+					typeIdx = (UINT32)CurveType::Generic;
+
+				auto iterFind = mNameMapping.find(entry.name);
+				if (iterFind == mNameMapping.end())
+				{
+					UINT32* indices = mNameMapping[entry.name];
+					memset(indices, -1, sizeof(UINT32) * 4);
+
+					indices[typeIdx] = i;
+				}
+				else
+					mNameMapping[entry.name][typeIdx] = i;
+			}
+		}
 	}
 
 	void AnimationClip::initialize()
@@ -213,6 +240,23 @@ namespace BansheeEngine
 		}
 		else
 			mapping = { (UINT32)-1, (UINT32)-1, (UINT32)-1 };
+	}
+
+	void AnimationClip::getMorphMapping(const String& name, UINT32& frameIdx, UINT32& weightIdx) const
+	{
+		auto iterFind = mNameMapping.find(name);
+		if (iterFind != mNameMapping.end())
+		{
+			const UINT32* indices = iterFind->second;
+
+			frameIdx = indices[(UINT32)CurveType::MorphFrame];
+			weightIdx = indices[(UINT32)CurveType::MorphWeight];
+		}
+		else
+		{
+			frameIdx = (UINT32)-1;
+			weightIdx = (UINT32)-1;
+		}
 	}
 
 	RTTITypeBase* AnimationClip::getRTTIStatic()

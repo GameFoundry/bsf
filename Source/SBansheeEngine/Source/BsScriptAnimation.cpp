@@ -49,7 +49,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetState", &ScriptAnimation::internal_GetState);
 		metaData.scriptClass->addInternalCall("Internal_SetState", &ScriptAnimation::internal_SetState);
 
-		metaData.scriptClass->addInternalCall("Internal_SetMorphShapeWeight", &ScriptAnimation::internal_SetMorphShapeWeight);
+		metaData.scriptClass->addInternalCall("Internal_SetMorphChannelWeight", &ScriptAnimation::internal_SetMorphChannelWeight);
 
 		metaData.scriptClass->addInternalCall("Internal_GetNumClips", &ScriptAnimation::internal_GetNumClips);
 		metaData.scriptClass->addInternalCall("Internal_GetClip", &ScriptAnimation::internal_GetClip);
@@ -194,9 +194,9 @@ namespace BansheeEngine
 		thisPtr->getInternal()->setState(nativeClip, *state);
 	}
 
-	void ScriptAnimation::internal_SetMorphShapeWeight(ScriptAnimation* thisPtr, UINT32 idx, float weight)
+	void ScriptAnimation::internal_SetMorphChannelWeight(ScriptAnimation* thisPtr, UINT32 idx, float weight)
 	{
-		thisPtr->getInternal()->setMorphShapeWeight(idx, weight);
+		thisPtr->getInternal()->setMorphChannelWeight(idx, weight);
 	}
 
 	bool ScriptAnimation::internal_GetGenericCurveValue(ScriptAnimation* thisPtr, UINT32 curveIdx, float* value)

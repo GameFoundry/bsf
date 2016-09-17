@@ -34,8 +34,9 @@ namespace BansheeEngine
 
 	AnimationProxy::AnimationProxy(UINT64 id)
 		: id(id), layers(nullptr), numLayers(0), numSceneObjects(0), sceneObjectInfos(nullptr)
-		, sceneObjectTransforms(nullptr), morphShapeInfos(nullptr), numMorphShapes(0), numMorphVertices(0)
-		, morphShapeWeightsDirty(false), mCullEnabled(true), numGenericCurves(0), genericCurveOutputs(nullptr)
+		, sceneObjectTransforms(nullptr), morphChannelInfos(nullptr), morphShapeInfos(nullptr), numMorphShapes(0)
+		, numMorphChannels(0), numMorphVertices(0), morphChannelWeightsDirty(false), mCullEnabled(true), numGenericCurves(0)
+		, genericCurveOutputs(nullptr)
 	{ }
 
 	AnimationProxy::~AnimationProxy()
@@ -256,11 +257,16 @@ namespace BansheeEngine
 
 			if (morphShapes != nullptr)
 			{
-				numMorphShapes = morphShapes->getNumShapes();
+				numMorphChannels = morphShapes->getNumChannels();
 				numMorphVertices = morphShapes->getNumVertices();
+
+				numMorphShapes = 0; 
+				for (UINT32 i = 0; i < numMorphChannels; i++)
+					numMorphShapes += morphShapes->getChannel(i)->getNumShapes();
 			}
 			else
 			{
+				numMorphChannels = 0;
 				numMorphShapes = 0;
 				numMorphVertices = 0;
 			}
@@ -276,11 +282,12 @@ namespace BansheeEngine
 			UINT32 genericCurveOutputSize = numGenericCurves * sizeof(float);
 			UINT32 sceneObjectIdsSize = numSceneObjects * sizeof(AnimatedSceneObjectInfo);
 			UINT32 sceneObjectTransformsSize = numBoneMappedSOs * sizeof(Matrix4);
+			UINT32 morphChannelSize = numMorphChannels * sizeof(MorphChannelInfo);
 			UINT32 morphShapeSize = numMorphShapes * sizeof(MorphShapeInfo);
 
 			UINT8* data = (UINT8*)bs_alloc(layersSize + clipsSize + boneMappingSize + posCacheSize + rotCacheSize + 
 				scaleCacheSize + genCacheSize + genericCurveOutputSize + sceneObjectIdsSize + sceneObjectTransformsSize +
-				morphShapeSize);
+				morphChannelSize + morphShapeSize);
 
 			layers = (AnimationStateLayer*)data;
 			memcpy(layers, tempLayers.data(), layersSize);
@@ -334,18 +341,64 @@ namespace BansheeEngine
 
 			data += sceneObjectTransformsSize;
 
+			morphChannelInfos = (MorphChannelInfo*)data;
+			data += morphChannelSize;
+
 			morphShapeInfos = (MorphShapeInfo*)data;
-			for (UINT32 i = 0; i < numMorphShapes; i++)
-			{
-				new (&morphShapeInfos[i].shape) SPtr<MorphShape>();
-
-				morphShapeInfos[i].shape = morphShapes->getShape(i);
-				morphShapeInfos[i].weight = 0.0f;
-			}
-
-			morphShapeWeightsDirty = true;
 			data += morphShapeSize;
 
+			// Generate data required for morph shape animation
+			if (morphShapes != nullptr)
+			{
+				UINT32 currentShapeIdx = 0;
+				for (UINT32 i = 0; i < numMorphChannels; i++)
+				{
+					SPtr<MorphChannel> morphChannel = morphShapes->getChannel(i);
+					UINT32 numShapes = morphChannel->getNumShapes();
+
+					MorphChannelInfo& channelInfo = morphChannelInfos[i];
+					channelInfo.weight = 0.0f;
+					channelInfo.shapeStart = currentShapeIdx;
+					channelInfo.shapeCount = numShapes;
+					channelInfo.frameCurveIdx = (UINT32)-1;
+					channelInfo.weightCurveIdx = (UINT32)-1;
+
+					for (UINT32 j = 0; j < numShapes; j++)
+					{
+						MorphShapeInfo& shapeInfo = morphShapeInfos[currentShapeIdx];
+						new (&shapeInfo.shape) SPtr<MorphShape>();
+
+						SPtr<MorphShape> shape = morphChannel->getShape(currentShapeIdx);
+						shapeInfo.shape = shape;
+						shapeInfo.frameWeight = shape->getWeight();
+						shapeInfo.finalWeight = 0.0f;
+
+						currentShapeIdx++;
+					}
+				}
+
+				// Find any curves affecting morph shape animation
+				if (!clipInfos.empty())
+				{
+					bool isClipValid = clipLoadState[0];
+					if (isClipValid)
+					{
+						AnimationClipInfo& clipInfo = clipInfos[0];
+
+						for (UINT32 i = 0; i < numMorphChannels; i++)
+						{
+							SPtr<MorphChannel> morphChannel = morphShapes->getChannel(i);
+							MorphChannelInfo& channelInfo = morphChannelInfos[i];
+
+							clipInfo.clip->getMorphMapping(morphChannel->getName(), channelInfo.frameCurveIdx, 
+								channelInfo.weightCurveIdx);
+						}
+					}
+				}
+
+				morphChannelWeightsDirty = true;
+			}
+			
 			UINT32 curLayerIdx = 0;
 			UINT32 curStateIdx = 0;
 
@@ -539,18 +592,18 @@ namespace BansheeEngine
 		}
 	}
 
-	void AnimationProxy::updateMorphShapeWeights(const Vector<float>& weights)
+	void AnimationProxy::updateMorphChannelWeights(const Vector<float>& weights)
 	{
 		UINT32 numWeights = (UINT32)weights.size();
-		for(UINT32 i = 0; i < numMorphShapes; i++)
+		for(UINT32 i = 0; i < numMorphChannels; i++)
 		{
 			if (i < numWeights)
-				morphShapeInfos[i].weight = weights[i];
+				morphChannelInfos[i].weight = weights[i];
 			else
-				morphShapeInfos[i].weight = 0.0f;
+				morphChannelInfos[i].weight = 0.0f;
 		}
 
-		morphShapeWeightsDirty = true;
+		morphChannelWeightsDirty = true;
 	}
 
 	void AnimationProxy::updateTransforms(const Vector<AnimatedSceneObject>& sceneObjects)
@@ -623,23 +676,23 @@ namespace BansheeEngine
 	{
 		mMorphShapes = morphShapes;
 
-		UINT32 numShapes;
+		UINT32 numChannels;
 		if (mMorphShapes != nullptr)
-			numShapes = mMorphShapes->getNumShapes();
+			numChannels = mMorphShapes->getNumChannels();
 		else
-			numShapes = 0;
+			numChannels = 0;
 
-		mMorphShapeWeights.assign(numShapes, 0.0f);
+		mMorphChannelWeights.assign(numChannels, 0.0f);
 		mDirty |= AnimDirtyStateFlag::Layout;
 	}
 
-	void Animation::setMorphShapeWeight(UINT32 idx, float weight)
+	void Animation::setMorphChannelWeight(UINT32 idx, float weight)
 	{
-		UINT32 numShapes = (UINT32)mMorphShapeWeights.size();
+		UINT32 numShapes = (UINT32)mMorphChannelWeights.size();
 		if (idx >= numShapes)
 			return;
 
-		mMorphShapeWeights[idx] = weight;
+		mMorphChannelWeights[idx] = weight;
 		mDirty |= AnimDirtyStateFlag::MorphWeights;
 	}
 
@@ -1245,7 +1298,7 @@ namespace BansheeEngine
 			else if(mDirty.isSet(AnimDirtyStateFlag::Value))
 
 			if (mDirty.isSet(AnimDirtyStateFlag::MorphWeights))
-				mAnimProxy->updateMorphShapeWeights(mMorphShapeWeights);
+				mAnimProxy->updateMorphChannelWeights(mMorphChannelWeights);
 		}
 
 		// Check if there are dirty transforms

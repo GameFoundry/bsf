@@ -118,10 +118,10 @@ namespace BansheeEngine
 			return mInternal->setState(clip, state);
 	}
 
-	void CAnimation::setMorphShapeWeight(UINT32 idx, float weight)
+	void CAnimation::setMorphChannelWeight(UINT32 idx, float weight)
 	{
 		if (mInternal != nullptr)
-			return mInternal->setMorphShapeWeight(idx, weight);
+			return mInternal->setMorphChannelWeight(idx, weight);
 	}
 
 	void CAnimation::setBounds(const AABox& bounds)

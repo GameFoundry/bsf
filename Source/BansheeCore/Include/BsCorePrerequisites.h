@@ -377,6 +377,7 @@ namespace BansheeEngine
 	class CameraCore;
 	class MorphShapes;
 	class MorphShape;
+	class MorphChannel;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -543,6 +544,7 @@ namespace BansheeEngine
 		TID_PostProcessSettings = 1127,
 		TID_MorphShape = 1128,
 		TID_MorphShapes = 1129,
+		TID_MorphChannel = 1130,
 
 		// Moved from Engine layer
 		TID_CCamera = 30000,

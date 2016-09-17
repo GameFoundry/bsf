@@ -342,10 +342,11 @@ namespace BansheeEngine
 		struct RawMorphShape
 		{
 			String name;
+			float weight;
 			Vector<MorphVertex> vertices;
 		};
 
-		UnorderedMap<String, RawMorphShape> allRawMorphShapes;
+		UnorderedMap<String, UnorderedMap<String, RawMorphShape>> allRawMorphShapes;
 		UINT32 totalNumVertices = 0;
 
 		// Note: Order in which we combine meshes must match the order in MeshData::combine
@@ -364,10 +365,13 @@ namespace BansheeEngine
 				// Copy & transform positions
 				for(auto& blendShape : mesh->blendShapes)
 				{
+					UnorderedMap<String, RawMorphShape>& channelShapes = allRawMorphShapes[blendShape.name];
+
 					for(auto& blendFrame : blendShape.frames)
 					{
-						RawMorphShape& shape = allRawMorphShapes[blendFrame.name];
+						RawMorphShape& shape = channelShapes[blendFrame.name];
 						shape.name = blendFrame.name;
+						shape.weight = blendFrame.weight;
 
 						UINT32 frameNumVertices = (UINT32)blendFrame.positions.size();
 						if (frameNumVertices == numVertices)
@@ -403,17 +407,28 @@ namespace BansheeEngine
 
 		// Create morph shape object from combined shape data
 		SPtr<MorphShapes> morphShapes;
-		Vector<SPtr<MorphShape>> allMorphShapes;
-		for (auto& entry : allRawMorphShapes)
+		Vector<SPtr<MorphChannel>> allChannels;
+		for (auto& channel : allRawMorphShapes)
 		{
-			entry.second.vertices.shrink_to_fit();
+			Vector<SPtr<MorphShape>> channelShapes;
+			for (auto& entry : channel.second)
+			{
+				RawMorphShape& shape = entry.second;
+				shape.vertices.shrink_to_fit();
 
-			SPtr<MorphShape> shape = MorphShape::create(entry.second.name, entry.second.vertices);
-			allMorphShapes.push_back(shape);
+				SPtr<MorphShape> morphShape = MorphShape::create(shape.name, shape.weight, shape.vertices);
+				channelShapes.push_back(morphShape);
+			}
+
+			if(channelShapes.size() > 0)
+			{
+				SPtr<MorphChannel> morphChannel = MorphChannel::create(channel.first, channelShapes);
+				allChannels.push_back(morphChannel);
+			}
 		}
 
-		if (!allMorphShapes.empty())
-			return MorphShapes::create(allMorphShapes, totalNumVertices);
+		if (!allChannels.empty())
+			return MorphShapes::create(allChannels, totalNumVertices);
 
 		return morphShapes;
 	}
@@ -621,7 +636,11 @@ namespace BansheeEngine
 		for (auto& clip : clips)
 		{
 			SPtr<AnimationCurves> curves = bs_shared_ptr_new<AnimationCurves>();
-			
+
+			/************************************************************************/
+			/* 							BONE ANIMATIONS                      		*/
+			/************************************************************************/
+
 			// Offset animations so they start at time 0
 			float animStart = std::numeric_limits<float>::infinity();
 
@@ -637,6 +656,13 @@ namespace BansheeEngine
 					animStart = std::min(bone.scale.getKeyFrame(0).time, animStart);
 			}
 
+			for (auto& anim : clip.blendShapeAnimations)
+			{
+				if (anim.curve.getNumKeyFrames() > 0)
+					animStart = std::min(anim.curve.getKeyFrame(0).time, animStart);
+			}
+
+			AnimationCurveFlags blendShapeFlags = AnimationCurveFlag::ImportedCurve | AnimationCurveFlag::MorphFrame;
 			if (animStart != 0.0f && animStart != std::numeric_limits<float>::infinity())
 			{
 				for (auto& bone : clip.boneAnimations)
@@ -649,6 +675,12 @@ namespace BansheeEngine
 					curves->rotation.push_back({ bone.node->name, AnimationCurveFlag::ImportedCurve, rotation });
 					curves->scale.push_back({ bone.node->name, AnimationCurveFlag::ImportedCurve, scale });
 				}
+
+				for (auto& anim : clip.blendShapeAnimations)
+				{
+					TAnimationCurve<float> curve = AnimationUtility::offsetCurve(anim.curve, -animStart);
+					curves->generic.push_back({ anim.blendShape, blendShapeFlags, curve });
+				}
 			}
 			else
 			{
@@ -658,6 +690,9 @@ namespace BansheeEngine
 					curves->rotation.push_back({ bone.node->name, AnimationCurveFlag::ImportedCurve, bone.rotation });
 					curves->scale.push_back({ bone.node->name, AnimationCurveFlag::ImportedCurve, bone.scale });
 				}
+
+				for (auto& anim : clip.blendShapeAnimations)
+					curves->generic.push_back({ anim.blendShape, blendShapeFlags, anim.curve });
 			}
 
 			// See if any splits are required. We only split the first clip as it is assumed if FBX has multiple clips the
@@ -1681,6 +1716,9 @@ namespace BansheeEngine
 
 							FbxAnimCurve* curves[1] = { curve };
 							blendShapeAnim.curve = importCurve<float, 1>(curves, importOptions, clip.start, clip.end);
+
+							// FBX contains data in [0, 100] range, but we need it in [0, 1] range
+							blendShapeAnim.curve = AnimationUtility::scaleCurve(blendShapeAnim.curve, 0.01f);
 						}
 					}
 				}

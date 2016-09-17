@@ -131,7 +131,7 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	lhs		Key to interpolate from.
 		 * @param[in]	rhs		Key to interpolate to.
-		 * @param[in]	t		Curve time to interpolate the keys at.
+		 * @param[in]	time	Curve time to interpolate the keys at.
 		 * @return				Interpolated key value.
 		 */
 		KeyFrame evaluateKey(const KeyFrame& lhs, const KeyFrame& rhs, float time) const;
@@ -158,7 +158,11 @@ namespace BansheeEngine
 	enum class AnimationCurveFlag
 	{
 		/** Signifies that the curve was imported from an external file, and not created manually in-engine. */
-		ImportedCurve
+		ImportedCurve = 1 << 0,
+		/** Signifies the curve is used to animate between different frames within a morph channel. In range [0, 1]. */
+		MorphFrame = 1 << 1,
+		/** Signifies the curve is used to adjust the weight of a morph channel. In range [0, 1]. */
+		MorphWeight = 1 << 2
 	};
 
 	typedef Flags<AnimationCurveFlag> AnimationCurveFlags;

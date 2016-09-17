@@ -126,11 +126,23 @@ namespace BansheeEngine
 		String curveName;
 	};
 
+	/** Information about a set of morph shapes blended sequentially. */
+	struct MorphChannelInfo
+	{
+		float weight;
+		UINT32 shapeStart;
+		UINT32 shapeCount;
+
+		UINT32 frameCurveIdx;
+		UINT32 weightCurveIdx;
+	};
+
 	/** Morph shape and its contribution to the final shape. */
 	struct MorphShapeInfo
 	{
 		SPtr<MorphShape> shape;
-		float weight;
+		float frameWeight;
+		float finalWeight;
 	};
 
 	/** Contains information about a scene object that is animated by a specific animation curve. */
@@ -197,7 +209,7 @@ namespace BansheeEngine
 		 * Updates the proxy data with new weights used for morph shapes. Caller must ensure the weights are ordered so
 		 * they match with the morph shapes provided to the last rebuild() call.
 		 */
-		void updateMorphShapeWeights(const Vector<float>& weights);
+		void updateMorphChannelWeights(const Vector<float>& weights);
 
 		/**
 		 * Updates the proxy data with new scene object transforms. Caller must guarantee that clip layout didn't 
@@ -230,10 +242,12 @@ namespace BansheeEngine
 		Matrix4* sceneObjectTransforms;
 
 		// Morph shape animation
+		MorphChannelInfo* morphChannelInfos;
 		MorphShapeInfo* morphShapeInfos;
+		UINT32 numMorphChannels;
 		UINT32 numMorphShapes;
 		UINT32 numMorphVertices;
-		bool morphShapeWeightsDirty;
+		bool morphChannelWeightsDirty;
 
 		// Culling
 		AABox mBounds;
@@ -270,12 +284,13 @@ namespace BansheeEngine
 		void setMorphShapes(const SPtr<MorphShapes>& morphShapes);
 
 		/**
-		 * Changes a weight of a single morph shape, determining how much of it to apply on top of the base mesh.
+		 * Changes a weight of a single morph channel, determining how much of it to apply on top of the base mesh.
 		 *
-		 * @param idx		Index of the morph shape to modify. This must match the shapes provided to setMorphShapes().
-		 * @param weight	Weight that determines how much of the shape to apply to the mesh, in range [0, 1]. 	
+		 * @param idx		Index of the morph channel to modify. This must match the channels contained in the object
+		 *					provided to setMorphShapes().
+		 * @param weight	Weight that determines how much of the channel to apply to the mesh, in range [0, 1]. 	
 		 */
-		void setMorphShapeWeight(UINT32 idx, float weight);
+		void setMorphChannelWeight(UINT32 idx, float weight);
 
 		/** 
 		 * Sets a mask that allows certain bones from the skeleton to be disabled. Caller must ensure that the mask matches
@@ -502,7 +517,7 @@ namespace BansheeEngine
 		SPtr<Skeleton> mSkeleton;
 		SkeletonMask mSkeletonMask;
 		SPtr<MorphShapes> mMorphShapes;
-		Vector<float> mMorphShapeWeights;
+		Vector<float> mMorphChannelWeights;
 		Vector<AnimationClipInfo> mClipInfos;
 		UnorderedMap<UINT64, AnimatedSceneObject> mSceneObjects;
 		Vector<float> mGenericCurveOutputs;

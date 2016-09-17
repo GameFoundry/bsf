@@ -77,8 +77,8 @@ namespace BansheeEngine
 		/** @copydoc Animation::setState */
 		void setState(const HAnimationClip& clip, AnimationClipState state);
 
-		/** @copydoc Animation::setMorphShapeWeight */
-		void setMorphShapeWeight(UINT32 idx, float weight);
+		/** @copydoc Animation::setMorphChannelWeight */
+		void setMorphChannelWeight(UINT32 idx, float weight);
 
 		/** Sets bounds that will be used for animation and mesh culling. Only relevant if setUseBounds() is set to true. */
 		void setBounds(const AABox& bounds);

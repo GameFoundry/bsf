@@ -55,7 +55,7 @@ namespace BansheeEngine
 		static bool internal_GetState(ScriptAnimation* thisPtr, ScriptAnimationClip* clip, AnimationClipState* state);
 		static void internal_SetState(ScriptAnimation* thisPtr, ScriptAnimationClip* clip, AnimationClipState* state);
 
-		static void internal_SetMorphShapeWeight(ScriptAnimation* thisPtr, UINT32 idx, float weight);
+		static void internal_SetMorphChannelWeight(ScriptAnimation* thisPtr, UINT32 idx, float weight);
 
 		static UINT32 internal_GetNumClips(ScriptAnimation* thisPtr);
 		static MonoObject* internal_GetClip(ScriptAnimation* thisPtr, UINT32 idx);

@@ -94,7 +94,10 @@ namespace BansheeEngine
 		Position,
 		Rotation,
 		Scale,
-		Generic
+		Generic,
+		MorphFrame,
+		MorphWeight,
+		Count // Keep at end
 	};
 
 	/** 
@@ -141,6 +144,16 @@ namespace BansheeEngine
 		 *							will be -1 for curves that haven't been found.
 		 */
 		void getCurveMapping(const String& name, AnimationCurveMapping& mapping) const;
+
+		/** 
+		 * Attempts to find a generic curve with the specified name and fills output with found index, which can then be
+		 * used for quick lookup.
+		 *
+		 * @param[in]	name		Name of the curve to look up.
+		 * @param[out]	frameIdx	Index of the curve animating the morph shape frames, or -1 if not found.
+		 * @param[out]	weightIdx	Index of the curve animating the channel weight, or -1 if not found.
+		 */
+		void getMorphMapping(const String& name, UINT32& frameIdx, UINT32& weightIdx) const;
 
 		/** 
 		 * Checks are the curves contained within the clip additive. Additive clips are intended to be added on top of
@@ -225,7 +238,7 @@ namespace BansheeEngine
 		/** 
 		 * Contains a map from curve name to curve index. Indices are stored as specified in CurveType enum. 
 		 */
-		UnorderedMap<String, UINT32[4]> mNameMapping;
+		UnorderedMap<String, UINT32[(int)CurveType::Count]> mNameMapping;
 
 		Vector<AnimationEvent> mEvents;
 		bool mIsAdditive;
