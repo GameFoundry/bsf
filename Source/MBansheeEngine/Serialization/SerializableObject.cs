@@ -20,6 +20,17 @@ namespace BansheeEngine
         internal SerializableProperty parentProperty;
         internal object parentObject;
         private SerializableField[] _fields;
+        private Type type;
+
+        /// <summary>
+        /// Type of the underlying object.
+        /// </summary>
+        public Type Type { get { return type; } }
+
+        /// <summary>
+        /// Underlying object instance, if any.
+        /// </summary>
+        public object Object { get { return parentObject; } }
 
         /// <summary>
         /// Creates a new serializable object for the specified object type.
@@ -32,6 +43,7 @@ namespace BansheeEngine
 
             this.parentProperty = parentProperty;
             this.parentObject = null;
+            this.type = objectType;
         }
 
         /// <summary>
@@ -45,6 +57,7 @@ namespace BansheeEngine
 
             this.parentProperty = null;
             this.parentObject = parentObject;
+            this.type = objectType;
         }
 
         /// <summary>
@@ -57,6 +70,7 @@ namespace BansheeEngine
 
             this.parentProperty = null;
             this.parentObject = parentObject;
+            this.type = parentObject.GetType();
         }
 
         /// <summary>

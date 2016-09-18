@@ -196,6 +196,54 @@ namespace BansheeEditor
                 }
             }
 
+            // Handle special fields
+            if (serializableObject.Type == typeof(Animation))
+            {
+                Animation anim = serializableObject.Object as Animation;
+                MorphShapes morphShapes = anim?.SceneObject.GetComponent<Renderable>()?.Mesh?.MorphShapes;
+
+                if (morphShapes != null)
+                {
+                    string propertyPath = parent.path + "/MorphShapes";
+
+                    Action<Element, bool> toggleCallback =
+                        (toggleParent, expand) =>
+                        {
+                            toggleParent.childLayout.Clear();
+                            toggleParent.children = null;
+
+                            toggleParent.indentLayout.Active = expand;
+
+                            if (expand)
+                            {
+                                List<Element> childElements = new List<Element>();
+                                MorphChannel[] channels = morphShapes.Channels;
+                                for (int i = 0; i < channels.Length; i++)
+                                {
+                                    string channelName = channels[i].Name;
+
+                                    string framePropertyPath = parent.path + "/MorphShapes/Frames/" + channelName;
+                                    string weightPropertyPath = parent.path + "/MorphShapes/Weight/" + channelName;
+
+                                    elements.Add(AddFieldRow(toggleParent.childLayout, channelName + " (Frames)", 
+                                        toggleParent.so, toggleParent.comp, framePropertyPath, 
+                                        SerializableProperty.FieldType.Float));
+
+                                    elements.Add(AddFieldRow(toggleParent.childLayout, channelName + " (Weight)",
+                                        toggleParent.so, toggleParent.comp, weightPropertyPath,
+                                        SerializableProperty.FieldType.Float));
+                                }
+
+                                toggleParent.children = childElements.ToArray();
+                            }
+                        };
+
+                    
+                    elements.Add(AddFoldoutRow(parent.childLayout, null, "MorphShapes", parent.so, parent.comp,
+                        propertyPath, toggleCallback));
+                }
+            }
+
             parent.children = elements.ToArray();
         }
 
