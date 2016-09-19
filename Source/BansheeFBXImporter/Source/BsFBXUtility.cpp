@@ -188,6 +188,7 @@ namespace BansheeEngine
 				const FBXBlendShapeFrame& sourceFrame = sourceShape.frames[j];
 				FBXBlendShapeFrame& destFrame = destShape.frames[j];
 
+				destFrame.name = sourceFrame.name;
 				destFrame.weight = sourceFrame.weight;
 				destFrame.positions = sourceFrame.positions;
 
