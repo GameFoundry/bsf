@@ -139,7 +139,7 @@ namespace BansheeEditor
                 Action<Element, bool> toggleCallback = 
                     (toggleParent, expand) =>
                 {
-                    SerializableObject componentObject = new SerializableObject(childComponent.GetType(), null);
+                    SerializableObject componentObject = new SerializableObject(childComponent.GetType(), childComponent);
                     ToggleObjectFoldout(toggleParent, componentObject, expand);
                 };
                 
@@ -248,11 +248,14 @@ namespace BansheeEditor
             }
 
             // Handle special fields
+            Debug.Log("Type: " + serializableObject.Type);
             if (serializableObject.Type == typeof(Animation))
             {
                 Animation anim = serializableObject.Object as Animation;
+                Debug.Log("Anim: " + (anim != null));
                 MorphShapes morphShapes = anim?.SceneObject.GetComponent<Renderable>()?.Mesh?.MorphShapes;
 
+                Debug.Log("Shapes: " + (morphShapes != null));
                 if (morphShapes != null)
                 {
                     string propertyPath = parent.path + "/MorphShapes";
