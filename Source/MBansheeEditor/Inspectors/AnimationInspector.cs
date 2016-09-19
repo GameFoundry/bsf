@@ -147,10 +147,11 @@ namespace BansheeEditor
                     GUILayoutY channelLayout = channelsLayout.AddLayoutY();
 
                     GUILayoutX channelTitleLayout = channelLayout.AddLayoutX();
-                    GUILayoutX channelContentLayout = channelLayout.AddLayoutX();
+                    channelLayout.AddSpace(5);
+                    GUILayoutY channelContentLayout = channelLayout.AddLayoutY();
 
                     string channelName = channels[i].Name;
-                    GUIToggle channelNameField = new GUIToggle(channelName, EditorStyles.Foldout);
+                    GUIToggle channelNameField = new GUIToggle(channelName, EditorStyles.Expand, GUIOption.FlexibleWidth());
 
                     channelTitleLayout.AddSpace(15); // Indent
                     channelTitleLayout.AddElement(channelNameField);
@@ -169,7 +170,11 @@ namespace BansheeEditor
                     for (int j = 0; j < shapes.Length; j++)
                     {
                         GUILayoutX shapeLayout = channelContentLayout.AddLayoutX();
+                        channelContentLayout.AddSpace(5);
 
+                        LocString nameString = new LocString("[{0}]. {1}");
+                        nameString.SetParameter(0, j.ToString());
+                        nameString.SetParameter(1, shapes[j].Name);
                         GUILabel shapeNameField = new GUILabel(shapes[j].Name);
 
                         LocString weightString = new LocEdString("Weight: {0}");

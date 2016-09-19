@@ -1347,7 +1347,19 @@ namespace BansheeEngine
 		expandButtonStyle.fixedHeight = true;
 		expandButtonStyle.fixedWidth = true;
 		expandButtonStyle.height = 10;
-		expandButtonStyle.width = 10;
+		expandButtonStyle.width = 11;
+		expandButtonStyle.normal.textColor = TextNormalColor;
+		expandButtonStyle.hover.textColor = TextNormalColor;
+		expandButtonStyle.active.textColor = TextNormalColor;
+		expandButtonStyle.normalOn.textColor = TextNormalColor;
+		expandButtonStyle.hoverOn.textColor = TextNormalColor;
+		expandButtonStyle.activeOn.textColor = TextNormalColor;
+		expandButtonStyle.font = defaultFont;
+		expandButtonStyle.fontSize = DefaultFontSize;
+		expandButtonStyle.textHorzAlign = THA_Left;
+		expandButtonStyle.textVertAlign = TVA_Center;
+		expandButtonStyle.contentOffset = RectOffset(16, 0, 0, 0);
+		expandButtonStyle.border.left = 10;
 
 		skin->setStyle("Expand", expandButtonStyle);
 
