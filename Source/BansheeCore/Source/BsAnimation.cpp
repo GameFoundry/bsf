@@ -368,7 +368,7 @@ namespace BansheeEngine
 						MorphShapeInfo& shapeInfo = morphShapeInfos[currentShapeIdx];
 						new (&shapeInfo.shape) SPtr<MorphShape>();
 
-						SPtr<MorphShape> shape = morphChannel->getShape(currentShapeIdx);
+						SPtr<MorphShape> shape = morphChannel->getShape(j);
 						shapeInfo.shape = shape;
 						shapeInfo.frameWeight = shape->getWeight();
 						shapeInfo.finalWeight = 0.0f;
