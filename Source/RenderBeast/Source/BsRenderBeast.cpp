@@ -187,11 +187,13 @@ namespace BansheeEngine
 							// If using morph shapes ignore POSITION1 and NORMAL1 missing since we assign them from within the renderer
 							if(animType == RenderableAnimType::Morph || animType == RenderableAnimType::SkinnedMorph)
 							{
-								std::remove_if(missingElements.begin(), missingElements.end(), [](const VertexElement& x)
+								auto removeIter = std::remove_if(missingElements.begin(), missingElements.end(), [](const VertexElement& x)
 								{
 									return (x.getSemantic() == VES_POSITION && x.getSemanticIdx() == 1) ||
 										(x.getSemantic() == VES_NORMAL && x.getSemanticIdx() == 1);
 								});
+
+								missingElements.erase(removeIter, missingElements.end());
 							}
 
 							if (!missingElements.empty())
