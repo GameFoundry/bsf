@@ -19,6 +19,7 @@ namespace BansheeEditor
     {
         public SerializableProperty.FieldType type;
         public CurveDrawInfo[] curveInfos;
+        public bool isPropertyCurve;
     }
 
     /// <summary>
@@ -142,6 +143,7 @@ namespace BansheeEditor
                         FieldAnimCurves fieldCurves = new FieldAnimCurves();
                         fieldCurves.type = SerializableProperty.FieldType.Vector3;
                         fieldCurves.curveInfos = new CurveDrawInfo[3];
+                        fieldCurves.isPropertyCurve = !clipInfo.isImported;
 
                         fieldCurves.curveInfos[0] = new CurveDrawInfo();
                         fieldCurves.curveInfos[0].curve = new EdAnimationCurve(curveEntry.X, tangentsX);
@@ -249,8 +251,10 @@ namespace BansheeEditor
                         fieldCurves.type = SerializableProperty.FieldType.Color;
                 }
 
-                fieldCurves.curveInfos = new CurveDrawInfo[numCurves];
+                bool isMorphCurve = false;
+                string curvePath = KVP.Key;
 
+                fieldCurves.curveInfos = new CurveDrawInfo[numCurves];
                 for (int i = 0; i < numCurves; i++)
                 {
                     int curveIdx = KVP.Value[i].Item1;
@@ -263,9 +267,21 @@ namespace BansheeEditor
                     fieldCurves.curveInfos[i] = new CurveDrawInfo();
                     fieldCurves.curveInfos[i].curve = new EdAnimationCurve(clipCurves.FloatCurves[curveIdx].Curve, tangents);
                     fieldCurves.curveInfos[i].color = GUICurveDrawing.GetUniqueColor(globalCurveIdx++);
+
+                    if (clipCurves.FloatCurves[curveIdx].Flags.HasFlag(AnimationCurveFlags.MorphFrame))
+                    {
+                        curvePath = "MorphShapes/Frames/" + KVP.Key;
+                        isMorphCurve = true;
+                    }
+                    else if (clipCurves.FloatCurves[curveIdx].Flags.HasFlag(AnimationCurveFlags.MorphWeight))
+                    {
+                        curvePath = "MorphShapes/Weight/" + KVP.Key;
+                        isMorphCurve = true;
+                    }
                 }
 
-                string curvePath = KVP.Key;
+                fieldCurves.isPropertyCurve = !clipInfo.isImported && !isMorphCurve;
+
                 clipInfo.curves[curvePath] = fieldCurves;
             }
 
@@ -284,6 +300,28 @@ namespace BansheeEditor
         {
             string resourcePath = ProjectLibrary.GetPath(clip);
             return ProjectLibrary.IsSubresource(resourcePath);
+        }
+
+        /// <summary>
+        /// Checks does a curve with the specified path represent a curve affecting a morph shape.
+        /// </summary>
+        /// <param name="path">Path of the curve to check.</param>
+        /// <returns>True if morph shape frame or weight animation, false otherwise.</returns>
+        public static bool IsMorphShapeCurve(string path)
+        {
+            if (string.IsNullOrEmpty(path))
+                return false;
+
+            string trimmedPath = path.Trim('/');
+            string[] entries = trimmedPath.Split('/');
+
+            if (entries.Length < 3)
+                return false;
+
+            if (entries[entries.Length - 3] != "MorphShapes")
+                return false;
+
+            return entries[entries.Length - 2] == "Weight" || entries[entries.Length - 2] == "Frames";
         }
 
         /// <summary>
@@ -357,15 +395,16 @@ namespace BansheeEditor
                 }
                 else
                 {
-                    Action<int, string> addCurve = (idx, subPath) =>
+                    Action<int, string, string, AnimationCurveFlags> addCurve = (idx, path, subPath, flags) =>
                     {
-                        string path = kvp.Key + subPath;
+                        string fullPath = path + subPath;
 
-                        NamedFloatCurve curve = new NamedFloatCurve(path,
-                        new AnimationCurve(kvp.Value.curveInfos[idx].curve.KeyFrames));
+                        NamedFloatCurve curve = new NamedFloatCurve(fullPath,
+                            new AnimationCurve(kvp.Value.curveInfos[idx].curve.KeyFrames));
+                        curve.Flags = flags;
 
                         EditorFloatCurveTangents curveTangents = new EditorFloatCurveTangents();
-                        curveTangents.name = path;
+                        curveTangents.name = fullPath;
                         curveTangents.tangents = kvp.Value.curveInfos[idx].curve.TangentModes;
 
                         floatCurves.Add(curve);
@@ -375,30 +414,50 @@ namespace BansheeEditor
                     switch (kvp.Value.type)
                     {
                         case SerializableProperty.FieldType.Vector2:
-                            addCurve(0, ".x");
-                            addCurve(1, ".y");
+                            addCurve(0, kvp.Key, ".x", 0);
+                            addCurve(1, kvp.Key, ".y", 0);
                             break;
                         case SerializableProperty.FieldType.Vector3:
-                            addCurve(0, ".x");
-                            addCurve(1, ".y");
-                            addCurve(2, ".z");
+                            addCurve(0, kvp.Key, ".x", 0);
+                            addCurve(1, kvp.Key, ".y", 0);
+                            addCurve(2, kvp.Key, ".z", 0);
                             break;
                         case SerializableProperty.FieldType.Vector4:
-                            addCurve(0, ".x");
-                            addCurve(1, ".y");
-                            addCurve(2, ".z");
-                            addCurve(3, ".w");
+                            addCurve(0, kvp.Key, ".x", 0);
+                            addCurve(1, kvp.Key, ".y", 0);
+                            addCurve(2, kvp.Key, ".z", 0);
+                            addCurve(3, kvp.Key, ".w", 0);
                             break;
                         case SerializableProperty.FieldType.Color:
-                            addCurve(0, ".r");
-                            addCurve(1, ".g");
-                            addCurve(2, ".b");
-                            addCurve(3, ".a");
+                            addCurve(0, kvp.Key, ".r", 0);
+                            addCurve(1, kvp.Key, ".g", 0);
+                            addCurve(2, kvp.Key, ".b", 0);
+                            addCurve(3, kvp.Key, ".a", 0);
                             break;
                         case SerializableProperty.FieldType.Bool:
                         case SerializableProperty.FieldType.Int:
                         case SerializableProperty.FieldType.Float:
-                            addCurve(0, "");
+                        {
+                            AnimationCurveFlags flags = 0;
+                            string path = kvp.Key;
+
+                            if (IsMorphShapeCurve(kvp.Key))
+                            {
+                                string trimmedPath = path.Trim('/');
+                                string[] entries = trimmedPath.Split('/');
+
+                                bool isWeight = entries[entries.Length - 2] == "Weight";
+
+                                if (isWeight)
+                                    flags = AnimationCurveFlags.MorphWeight;
+                                else
+                                    flags = AnimationCurveFlags.MorphFrame;
+
+                                path = entries[entries.Length - 1];
+                            }
+
+                            addCurve(0, path, "", flags);
+                        }
                             break;
                     }
                 }

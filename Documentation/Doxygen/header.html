@@ -22,18 +22,17 @@ $extrastylesheet
 </head>
 <body>
 <div class="everything">
-	<div class="ui inverted vertical masthead center aligned segment">
-		<div class="ui container">
-			<div class="ui inverted mainmenu menu">
-				<div class="item"><img src="$relpath^SmallLogoRound.png"></div>
-				<a class="item" href="http://www.banshee3d.com"><i class="home icon"></i>Home</a>
-				<a class="item" href="http://www.banshee3d.com/news"><i class="newspaper icon"></i>News</a>
-				<a class="item" href="http://www.banshee3d.com/features"><i class="grid layout icon"></i>Features</a>
-				<a class="item" href="http://www.banshee3d.com/support"><i class="users icon"></i>Support Us</a>
-				<a class="active item" href="http://www.banshee3d.com/docs"><i class="idea icon"></i>Docs</a>
-				<a class="item" href="http://www.banshee3d.com/download"><i class="download icon"></i>Download</a>
-			</div>
+	<div class="ui inverted vertical center aligned segment" id="menuSegment">
+    <div class="ui container">
+        <div class="ui inverted mainmenu menu">
+            <a href="http://www.banshee3d.com"><div class="item" id="logoItem"><img class="ui mini image" id="logo" src="$relpath^SmallLogoRound.png"></div></a>
+			<a class="active item" href="http://www.banshee3d.com"><i class="home icon"></i>Home</a>
+			<a class="item" href="http://www.banshee3d.com/news"><i class="newspaper icon"></i>News</a>
+			<a class="item" href="http://www.banshee3d.com/features"><i class="grid layout icon"></i>Features</a>
+			<a class="item" href="http://www.banshee3d.com/download"><i class="download icon"></i>Download</a>
+			<a class="item" href="http://www.banshee3d.com/docs"><i class="idea icon"></i>Docs</a>
 		</div>
+	</div>
 	</div>
 
 	<div id="top"><!-- do not remove this div, it is closed by doxygen! -->

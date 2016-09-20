@@ -683,7 +683,11 @@ namespace BansheeEngine
 			numChannels = 0;
 
 		mMorphChannelWeights.assign(numChannels, 0.0f);
+		if (numChannels > 0)
+			mMorphChannelWeights[0] = 1.0f;
+
 		mDirty |= AnimDirtyStateFlag::Layout;
+		mDirty |= AnimDirtyStateFlag::MorphWeights;
 	}
 
 	void Animation::setMorphChannelWeight(UINT32 idx, float weight)
@@ -1296,8 +1300,9 @@ namespace BansheeEngine
 				didFullRebuild = true;
 			}
 			else if(mDirty.isSet(AnimDirtyStateFlag::Value))
+				mAnimProxy->updateClipInfos(mClipInfos);
 
-			if (mDirty.isSet(AnimDirtyStateFlag::MorphWeights))
+			if (mDirty.isSet(AnimDirtyStateFlag::MorphWeights) || didFullRebuild)
 				mAnimProxy->updateMorphChannelWeights(mMorphChannelWeights);
 		}
 

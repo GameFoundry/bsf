@@ -230,7 +230,7 @@ namespace BansheeEngine
 		{
 			SPtr<MorphShapes> morphShapes = mMesh->getMorphShapes();
 
-			UINT32 vertexSize = sizeof(Vector3) + sizeof(Vector4);
+			UINT32 vertexSize = sizeof(Vector3) + sizeof(UINT32);
 			UINT32 numVertices = morphShapes->getNumVertices();
 
 			SPtr<VertexBufferCore> vertexBuffer = VertexBufferCore::create(vertexSize, numVertices, GBU_DYNAMIC);
@@ -338,6 +338,20 @@ namespace BansheeEngine
 		else
 		{
 			createAnimationBuffers();
+
+			// Create special vertex declaration if using morph shapes
+			if (mAnimType == RenderableAnimType::Morph || mAnimType == RenderableAnimType::SkinnedMorph)
+			{
+				SPtr<VertexDataDesc> vertexDesc = VertexDataDesc::create();
+				*vertexDesc = * mMesh->getVertexDesc();
+
+				vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION, 1, 1);
+				vertexDesc->addVertElem(VET_UBYTE4_NORM, VES_NORMAL, 1, 1);
+
+				mMorphVertexDeclaration = VertexDeclarationCore::create(vertexDesc);
+			}
+			else
+				mMorphVertexDeclaration = nullptr;
 
 			if (oldIsActive != mIsActive)
 			{

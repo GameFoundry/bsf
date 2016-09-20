@@ -310,7 +310,7 @@ namespace BansheeEngine
 							if (diff > 0.0f)
 							{
 								float t = -relative / diff;
-								shapeInfo.finalWeight = std::min(t, 1.0f);
+								shapeInfo.finalWeight = 1.0f - std::min(t, 1.0f);
 							}
 							else
 								shapeInfo.finalWeight = 1.0f;
@@ -338,7 +338,7 @@ namespace BansheeEngine
 								if (diff > 0.0f)
 								{
 									float t = -relative / diff;
-									shapeInfo.finalWeight = std::min(t, 1.0f);
+									shapeInfo.finalWeight = 1.0f - std::min(t, 1.0f);
 								}
 								else
 									shapeInfo.finalWeight = 1.0f;
@@ -349,7 +349,7 @@ namespace BansheeEngine
 								if (diff > 0.0f)
 								{
 									float t = relative / diff;
-									shapeInfo.finalWeight = 1.0f - std::min(t, 1.0f);
+									shapeInfo.finalWeight = std::min(t, 1.0f);
 								}
 								else
 									shapeInfo.finalWeight = 0.0f;
@@ -369,7 +369,7 @@ namespace BansheeEngine
 								if (diff > 0.0f)
 								{
 									float t = -relative / diff;
-									shapeInfo.finalWeight = std::min(t, 1.0f);
+									shapeInfo.finalWeight = 1.0f - std::min(t, 1.0f);
 								}
 								else
 									shapeInfo.finalWeight = 1.0f;

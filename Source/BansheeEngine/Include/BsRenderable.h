@@ -205,6 +205,9 @@ namespace BansheeEngine
 		/** Returns the vertex buffer containing element's morph shape vertices, if it has any. */
 		const SPtr<VertexBufferCore>& getMorphShapeBuffer() const { return mMorphShapeBuffer; }
 
+		/** Returns vertex declaration used for rendering meshes containing morph shape information. */
+		const SPtr<VertexDeclarationCore>& getMorphVertexDeclaration() const { return mMorphVertexDeclaration; }
+
 	protected:
 		friend class Renderable;
 
@@ -225,6 +228,7 @@ namespace BansheeEngine
 
 		SPtr<GpuBufferCore> mBoneMatrixBuffer;
 		SPtr<VertexBufferCore> mMorphShapeBuffer;
+		SPtr<VertexDeclarationCore> mMorphVertexDeclaration;
 	};
 
 	/** @copydoc TRenderable */

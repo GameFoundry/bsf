@@ -556,7 +556,7 @@ namespace BansheeEngine
 		/** Initializes the core thread version of MaterialParams from its sim thread counterpart. */
 		MaterialParamsCore(const SPtr<ShaderCore>& shader, const SPtr<MaterialParams>& params);
 		
-		/** @copydoc TMaterialParams<Core>::TMaterialParams */
+		/** @copydoc TMaterialParams::TMaterialParams(const ShaderType&) */
 		MaterialParamsCore(const SPtr<ShaderCore>& shader);
 
 		/** 
@@ -587,7 +587,7 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT MaterialParams : public IReflectable, public TMaterialParams<false>
 	{
 	public:
-		/** @copydoc TMaterialParams<Core>::TMaterialParams */
+		/** @copydoc TMaterialParams::TMaterialParams(const ShaderType&) */
 		MaterialParams(const HShader& shader);
 
 		/** 

@@ -378,19 +378,25 @@ namespace BansheeEngine
 						{
 							for (UINT32 i = 0; i < numVertices; i++)
 							{
+								Vector3 meshPosition = worldTransform.multiplyAffine(mesh->positions[i]);
 								Vector3 blendPosition = worldTransform.multiplyAffine(blendFrame.positions[i]);
 
-								Vector3 positionDelta = blendPosition - mesh->positions[i];
+								Vector3 positionDelta = blendPosition - meshPosition;
 								Vector3 normalDelta;
 								if (hasNormals)
 								{
-									Vector3 blendNormal = worldTransformIT.multiplyAffine(blendFrame.normals[i]);
-									normalDelta = blendNormal - mesh->normals[i];
+									Vector3 blendNormal = worldTransformIT.multiplyDirection(blendFrame.normals[i]);
+									blendNormal = Vector3::normalize(blendNormal);
+
+									Vector3 meshNormal = worldTransformIT.multiplyDirection(mesh->normals[i]);
+									meshNormal = Vector3::normalize(meshNormal);
+
+									normalDelta = blendNormal - meshNormal;
 								}
 								else
 									normalDelta = Vector3::ZERO;
 
-								if (positionDelta.squaredLength() > 0.0001f || normalDelta.squaredLength() > 0.01f)
+								if (positionDelta.squaredLength() > 0.000001f || normalDelta.squaredLength() > 0.0001f)
 									shape.vertices.push_back(MorphVertex(positionDelta, normalDelta, totalNumVertices + i));
 							}
 						}
@@ -509,9 +515,9 @@ namespace BansheeEngine
 			importScale = options.importScale;
 
 		FbxSystemUnit units = scene->GetGlobalSettings().GetSystemUnit();
-		FbxSystemUnit bsScaledUnits(100.0f, importScale);
+		FbxSystemUnit bsScaledUnits(100.0f);
 
-		outputScene.scaleFactor = (float)units.GetConversionFactorTo(bsScaledUnits);
+		outputScene.scaleFactor = (float)units.GetConversionFactorTo(bsScaledUnits) * importScale;
 		outputScene.globalScale = Matrix4::scaling(outputScene.scaleFactor);
 		outputScene.rootNode = createImportNode(outputScene, scene->GetRootNode(), nullptr);
 
@@ -1337,6 +1343,10 @@ namespace BansheeEngine
 					blendShape.name = channel->GetName();
 					blendShape.frames.resize(frameCount);
 
+					// Get name without invalid characters
+					blendShape.name = StringUtil::replaceAll(blendShape.name, ".", "_");
+					blendShape.name = StringUtil::replaceAll(blendShape.name, "/", "_");
+
 					for (UINT32 k = 0; k < frameCount; k++)
 					{
 						FbxShape* fbxShape = channel->GetTargetShape(k);
@@ -1344,6 +1354,10 @@ namespace BansheeEngine
 						FBXBlendShapeFrame& frame = blendShape.frames[k];
 						frame.name = fbxShape->GetName();
 						frame.weight = (float)(weights[k] / 100.0);
+
+						// Get name without invalid characters
+						frame.name = StringUtil::replaceAll(frame.name, ".", "_");
+						frame.name = StringUtil::replaceAll(frame.name, "/", "_");
 						
 						importBlendShapeFrame(fbxShape, *mesh, options, frame);
 					}
@@ -1713,6 +1727,10 @@ namespace BansheeEngine
 							clip.blendShapeAnimations.push_back(FBXBlendShapeAnimation());
 							FBXBlendShapeAnimation& blendShapeAnim = clip.blendShapeAnimations.back();
 							blendShapeAnim.blendShape = channel->GetName();
+
+							// Get name without invalid characters
+							blendShapeAnim.blendShape = StringUtil::replaceAll(blendShapeAnim.blendShape, ".", "_");
+							blendShapeAnim.blendShape = StringUtil::replaceAll(blendShapeAnim.blendShape, "/", "_");
 
 							FbxAnimCurve* curves[1] = { curve };
 							blendShapeAnim.curve = importCurve<float, 1>(curves, importOptions, clip.start, clip.end);

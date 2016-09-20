@@ -44,7 +44,7 @@ div.contents {
 
 /* Nav bar */
 .tabs, .tabs2, .tabs3 {
-	background-color: rgba(0, 0, 0, 0.12);
+	background-color: rgba(0, 0, 0, 0.8);
 	background-image: none;
     font-family: Lato,'Lucida Grande',Geneva,Helvetica,Arial,sans-serif;
 	border-bottom: none;
@@ -58,7 +58,7 @@ div.contents {
 
 .tablist a {
 	background-image: none;
-	color: rgba(0, 0, 0, 0.58);
+	color: rgba(255, 255, 255, 1.0);
 	background: transparent;
 	text-shadow: none;
 	font-weight: bold;
@@ -66,14 +66,13 @@ div.contents {
 
 .tablist a:hover {
     background-image: none;
-	color: rgba(0, 0, 0, 0.58);
+	color: rgba(255, 255, 255, 1.0);
 	text-shadow: none;
 }
 
 .tablist li.current a {
     background-image: none;
 	text-shadow: none;
-	color: rgba(0, 0, 0, 0.58);
 }
 
 .tablist li:hover {
@@ -228,6 +227,7 @@ div.toc {
 
 .icon {
 	background-color: transparent;
+	color: inherit;
 }
 
 table.directory {
@@ -299,6 +299,24 @@ span.mlabel {
 
 dl.note {
 	border-color: rgba(89, 160, 195, 0.86);
+}
+
+#menuSegment {
+    padding: 0;
+    border-bottom: 5px solid #ffb028;
+}
+
+#footerSegment {
+    border-top: 5px solid #ffb028;
+}
+
+#logoItem {
+    padding-bottom: 0px;
+    padding-top: 3px;
+}
+
+#logo {
+    width: 55px;
 }
 
 #projectname

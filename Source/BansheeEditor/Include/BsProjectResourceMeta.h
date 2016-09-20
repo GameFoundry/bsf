@@ -92,13 +92,7 @@ namespace BansheeEngine
 		 */
 		static SPtr<ProjectFileMeta> create(const SPtr<ImportOptions>& importOptions);
 
-		/** 
-		 * Registers a new resource in the file meta-data. 
-		 *
-		 * @param[in]	resourceMeta	Meta-data to register.
-		 * @param[in]	isOld			Set to true if the meta-data doesn't represent a currently active resource, but
-		 *								is instead stored in the case the resource gets restored later.
-		 */
+		/** Registers a new resource in the file meta-data. */
 		void add(const SPtr<ProjectResourceMeta>& resourceMeta);
 
 		/** 

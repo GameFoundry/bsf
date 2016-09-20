@@ -167,7 +167,7 @@ namespace BansheeEngine
 				if (iterFind == mNameMapping.end())
 				{
 					UINT32* indices = mNameMapping[entry.name];
-					memset(indices, -1, sizeof(UINT32) * 4);
+					memset(indices, -1, sizeof(UINT32) * (int)CurveType::Count);
 
 					indices[typeIdx] = i;
 				}
@@ -199,7 +199,7 @@ namespace BansheeEngine
 				if (iterFind == mNameMapping.end())
 				{
 					UINT32* indices = mNameMapping[entry.name];
-					memset(indices, -1, sizeof(UINT32) * 4);
+					memset(indices, -1, sizeof(UINT32) * (int)CurveType::Count);
 
 					indices[typeIdx] = i;
 				}
