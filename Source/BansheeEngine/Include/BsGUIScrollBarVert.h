@@ -29,7 +29,7 @@ namespace BansheeEngine
 		/**
 		 * Creates a new vertical scroll bar.
 		 *
-		 * @param[in]	resizeable		If true the scrollbar will have additional handles that allow the scroll handle to
+		 * @param[in]	resizable		If true the scrollbar will have additional handles that allow the scroll handle to
 		 *								be resized. This allows you to adjust the size of the visible scroll area.
 		 * @param[in]	styleName		Optional style to use for the element. Style will be retrieved from GUISkin of the
 		 *								GUIWidget the element is used on. If not specified default style is used.
@@ -49,7 +49,7 @@ namespace BansheeEngine
 		/**
 		 * Creates a new vertical scroll bar.
 		 *
-		 * @param[in]	resizeable		If true the scrollbar will have additional handles that allow the scroll handle to
+		 * @param[in]	resizable		If true the scrollbar will have additional handles that allow the scroll handle to
 		 *								be resized. This allows you to adjust the size of the visible scroll area.
 		 * @param[in]	options			Options that allow you to control how is the element positioned and sized.
 		 *								This will override any similar options set by style.

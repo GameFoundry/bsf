@@ -39,7 +39,7 @@ namespace BansheeEngine
 		 * happens sequential order (which should be true for most curves). If evaluation is not happening in sequential
 		 * order using the non-caching version of evaluate() might yield better performance.
 		 *
-		 * @param[in]	time			Time to evaluate the curve at.
+		 * @param[in]	time			%Time to evaluate the curve at.
 		 * @param[in]	cache			Cached data from previous requests that can be used for speeding up sequential calls
 		 *								to this method. Caller should ensure to maintain a persistent instance of this data
 		 *								for every animation using this curve in order to ensure cache is maintained.
@@ -53,7 +53,7 @@ namespace BansheeEngine
 		 * Evaluate the animation curve at the specified time. If evaluating multiple values in a sequential order consider
 		 * using the cached version of evaluate() for better performance.
 		 *
-		 * @param[in]	time	Time to evaluate the curve at.		
+		 * @param[in]	time	%Time to evaluate the curve at.		
 		 * @param[in]	loop	If true the curve will loop when it goes past the end or beggining. Otherwise the curve 
 		 *						value will be clamped.
 		 * @return				Interpolated value from the curve at provided time.
@@ -64,7 +64,7 @@ namespace BansheeEngine
 		 * Evaluate the animation curve at the specified time and returns a new keyframe containing the evaluated value
 		 * and tangents.
 		 *
-		 * @param[in]	time	Time to evaluate the curve at.		
+		 * @param[in]	time	%Time to evaluate the curve at.		
 		 * @param[in]	loop	If true the curve will loop when it goes past the end or beggining. Otherwise the curve 
 		 *						value will be clamped.
 		 * @return				Keyframe containing the interpolated value and tangents at provided time.

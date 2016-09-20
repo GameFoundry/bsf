@@ -267,6 +267,6 @@ namespace BansheeEngine
 		}	
 	}; 
 
-	/** @encond */
+	/** @endcond */
 	/** @} */
 }
