@@ -68,10 +68,10 @@ namespace BansheeEngine
 		new (bs_alloc<ScriptGUIIntField>()) ScriptGUIIntField(instance, guiIntField);
 	}
 
-	void ScriptGUIIntField::internal_getValue(ScriptGUIIntField* nativeInstance, INT32* output)
+	INT32 ScriptGUIIntField::internal_getValue(ScriptGUIIntField* nativeInstance)
 	{
 		GUIIntField* intField = static_cast<GUIIntField*>(nativeInstance->getGUIElement());
-		*output = intField->getValue();
+		return intField->getValue();
 	}
 
 	INT32 ScriptGUIIntField::internal_setValue(ScriptGUIIntField* nativeInstance, INT32 value)
@@ -80,10 +80,10 @@ namespace BansheeEngine
 		return intField->setValue(value);
 	}
 
-	void ScriptGUIIntField::internal_hasInputFocus(ScriptGUIIntField* nativeInstance, bool* output)
+	bool ScriptGUIIntField::internal_hasInputFocus(ScriptGUIIntField* nativeInstance)
 	{
 		GUIIntField* intField = static_cast<GUIIntField*>(nativeInstance->getGUIElement());
-		*output = intField->hasInputFocus();
+		return intField->hasInputFocus();
 	}
 
 	void ScriptGUIIntField::internal_setRange(ScriptGUIIntField* nativeInstance, INT32 min, INT32 max)
