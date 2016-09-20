@@ -54,6 +54,9 @@ namespace BansheeEngine
 		/** Vertex buffer containing element's morph shape vertices, if it has any. */
 		SPtr<VertexBufferCore> morphShapeBuffer;
 
+		/** Vertex declaration used for rendering meshes containing morph shape information. */
+		SPtr<VertexDeclarationCore> morphVertexDeclaration;
+
 		/** Version of the morph shape vertices in the buffer. */
 		mutable UINT32 morphShapeVersion;
 	};

@@ -83,14 +83,17 @@ namespace BansheeEngine
 		/**
 		 * Draws the specified mesh with an additional vertex buffer containing morph shape vertices.
 		 *
-		 * @param[in]	mesh			Mesh to draw.
-		 * @param[in]	subMesh			Portion of the mesh to draw.
-		 * @param[in]	morphVertices	Buffer containing the morph shape vertices. Will be bound to stream 1. Expected
-		 *								to contain the same number of vertices as the source mesh.
+		 * @param[in]	mesh					Mesh to draw.
+		 * @param[in]	subMesh					Portion of the mesh to draw.
+		 * @param[in]	morphVertices			Buffer containing the morph shape vertices. Will be bound to stream 1. 
+		 *										Expected to contain the same number of vertices as the source mesh.
+		 * @param[in]	morphVertexDeclaration	Vertex declaration describing vertices of the provided mesh and the vertices
+		 *										provided in the morph vertex buffer.
 		 *
 		 * @note	Core thread.
 		 */
-		void drawMorph(const SPtr<MeshCoreBase>& mesh, const SubMesh& subMesh, const SPtr<VertexBufferCore>& morphVertices);
+		void drawMorph(const SPtr<MeshCoreBase>& mesh, const SubMesh& subMesh, const SPtr<VertexBufferCore>& morphVertices, 
+			const SPtr<VertexDeclarationCore>& morphVertexDeclaration);
 
 		/**
 		 * Blits contents of the provided texture into the currently bound render target. If the provided texture contains

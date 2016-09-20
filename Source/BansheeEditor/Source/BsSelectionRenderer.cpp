@@ -173,6 +173,7 @@ namespace BansheeEngine
 
 			SPtr<GpuBufferCore> boneMatrixBuffer = renderable->getBoneMatrixBuffer();
 			SPtr<VertexBufferCore> morphShapeBuffer = renderable->getMorphShapeBuffer();
+			SPtr<VertexDeclarationCore> morphVertexDeclaration = renderable->getMorphVertexDeclaration();
 
 			Matrix4 worldViewProjMat = viewProjMat * renderable->getTransform();
 			UINT32 techniqueIdx = mTechniqueIndices[(int)renderable->getAnimType()];
@@ -188,7 +189,8 @@ namespace BansheeEngine
 			UINT32 renderableId = renderable->getRendererId();
 
 			for(UINT32 i = 0; i < numSubmeshes; i++)
-				gRendererUtility().drawMorph(mesh, mesh->getProperties().getSubMesh(i), morphShapeBuffer);
+				gRendererUtility().drawMorph(mesh, mesh->getProperties().getSubMesh(i), morphShapeBuffer, 
+					morphVertexDeclaration);
 		}
 	}
 }

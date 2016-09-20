@@ -339,6 +339,20 @@ namespace BansheeEngine
 		{
 			createAnimationBuffers();
 
+			// Create special vertex declaration if using morph shapes
+			if (mAnimType == RenderableAnimType::Morph || mAnimType == RenderableAnimType::SkinnedMorph)
+			{
+				SPtr<VertexDataDesc> vertexDesc = VertexDataDesc::create();
+				*vertexDesc = * mMesh->getVertexDesc();
+
+				vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION, 1, 1);
+				vertexDesc->addVertElem(VET_UBYTE4_NORM, VES_NORMAL, 1, 1);
+
+				mMorphVertexDeclaration = VertexDeclarationCore::create(vertexDesc);
+			}
+			else
+				mMorphVertexDeclaration = nullptr;
+
 			if (oldIsActive != mIsActive)
 			{
 				if (mIsActive)

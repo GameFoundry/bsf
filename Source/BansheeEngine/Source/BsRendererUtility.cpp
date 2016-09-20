@@ -297,13 +297,13 @@ namespace BansheeEngine
 	}
 
 	void RendererUtility::drawMorph(const SPtr<MeshCoreBase>& mesh, const SubMesh& subMesh, 
-		const SPtr<VertexBufferCore>& morphVertices)
+		const SPtr<VertexBufferCore>& morphVertices, const SPtr<VertexDeclarationCore>& morphVertexDeclaration)
 	{
 		// Bind buffers and draw
 		RenderAPICore& rapi = RenderAPICore::instance();
 
 		SPtr<VertexData> vertexData = mesh->getVertexData();
-		rapi.setVertexDeclaration(mesh->getVertexData()->vertexDeclaration); // TODO - Set valid declaration
+		rapi.setVertexDeclaration(morphVertexDeclaration);
 
 		auto& meshBuffers = vertexData->getBuffers();
 		SPtr<VertexBufferCore> allBuffers[MAX_BOUND_VERTEX_BUFFERS];

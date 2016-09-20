@@ -144,6 +144,7 @@ namespace BansheeEngine
 				renElement.morphShapeVersion = 0;
 				renElement.morphShapeBuffer = renderable->getMorphShapeBuffer();
 				renElement.boneMatrixBuffer = renderable->getBoneMatrixBuffer();
+				renElement.morphVertexDeclaration = renderable->getMorphVertexDeclaration();
 
 				renElement.material = renderable->getMaterial(i);
 				if (renElement.material == nullptr)
@@ -835,7 +836,7 @@ namespace BansheeEngine
 		else
 			setPassParams(element.params, nullptr, passIdx);
 
-		gRendererUtility().drawMorph(element.mesh, element.subMesh, element.morphShapeBuffer);
+		gRendererUtility().drawMorph(element.mesh, element.subMesh, element.morphShapeBuffer, element.morphVertexDeclaration);
 	}
 
 	void RenderBeast::refreshSamplerOverrides(bool force)
