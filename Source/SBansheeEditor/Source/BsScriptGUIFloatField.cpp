@@ -68,10 +68,10 @@ namespace BansheeEngine
 		new (bs_alloc<ScriptGUIFloatField>()) ScriptGUIFloatField(instance, guiFloatField);
 	}
 
-	void ScriptGUIFloatField::internal_getValue(ScriptGUIFloatField* nativeInstance, float* output)
+	float ScriptGUIFloatField::internal_getValue(ScriptGUIFloatField* nativeInstance)
 	{
 		GUIFloatField* floatField = static_cast<GUIFloatField*>(nativeInstance->getGUIElement());
-		*output = floatField->getValue();
+		return floatField->getValue();
 	}
 
 	float ScriptGUIFloatField::internal_setValue(ScriptGUIFloatField* nativeInstance, float value)
@@ -80,10 +80,10 @@ namespace BansheeEngine
 		return floatField->setValue(value);
 	}
 
-	void ScriptGUIFloatField::internal_hasInputFocus(ScriptGUIFloatField* nativeInstance, bool* output)
+	bool ScriptGUIFloatField::internal_hasInputFocus(ScriptGUIFloatField* nativeInstance)
 	{
 		GUIFloatField* floatField = static_cast<GUIFloatField*>(nativeInstance->getGUIElement());
-		*output = floatField->hasInputFocus();
+		return floatField->hasInputFocus();
 	}
 
 	void ScriptGUIFloatField::internal_setRange(ScriptGUIFloatField* nativeInstance, float min, float max)

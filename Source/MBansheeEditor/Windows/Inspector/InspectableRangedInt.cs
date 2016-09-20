@@ -29,7 +29,7 @@ namespace BansheeEditor
         /// <param name="style">Information about the range of the field.</param>
         public InspectableRangedInt(Inspector parent, string title, string path, int depth, InspectableFieldLayout layout,
             SerializableProperty property, InspectableFieldStyleInfo style)
-            : base(parent, title, path, SerializableProperty.FieldType.Float, depth, layout, property, style)
+            : base(parent, title, path, SerializableProperty.FieldType.Int, depth, layout, property, style)
         {
 
         }
@@ -53,7 +53,7 @@ namespace BansheeEditor
         public override InspectableState Refresh(int layoutIndex)
         {
             if (guiIntField != null && !guiIntField.HasInputFocus)
-                guiIntField.Value = property.GetValue<float>();
+                guiIntField.Value = property.GetValue<int>();
 
             InspectableState oldState = state;
             if (state.HasFlag(InspectableState.Modified))
@@ -68,7 +68,7 @@ namespace BansheeEditor
         /// <param name="newValue">New value of the float field.</param>
         private void OnFieldValueChanged(float newValue)
         {
-            property.SetValue(newValue);
+            property.SetValue((int)newValue);
             state |= InspectableState.ModifyInProgress;
         }
 
