@@ -836,7 +836,11 @@ namespace BansheeEngine
 		else
 			setPassParams(element.params, nullptr, passIdx);
 
-		gRendererUtility().drawMorph(element.mesh, element.subMesh, element.morphShapeBuffer, element.morphVertexDeclaration);
+		if(element.morphVertexDeclaration == nullptr)
+			gRendererUtility().draw(element.mesh, element.subMesh);
+		else
+			gRendererUtility().drawMorph(element.mesh, element.subMesh, element.morphShapeBuffer, 
+				element.morphVertexDeclaration);
 	}
 
 	void RenderBeast::refreshSamplerOverrides(bool force)

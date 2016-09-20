@@ -186,11 +186,15 @@ namespace BansheeEngine
 			gRendererUtility().setPassParams(mParams[techniqueIdx], 0);
 
 			UINT32 numSubmeshes = mesh->getProperties().getNumSubMeshes();
-			UINT32 renderableId = renderable->getRendererId();
 
-			for(UINT32 i = 0; i < numSubmeshes; i++)
-				gRendererUtility().drawMorph(mesh, mesh->getProperties().getSubMesh(i), morphShapeBuffer, 
-					morphVertexDeclaration);
+			for (UINT32 i = 0; i < numSubmeshes; i++)
+			{
+				if (morphVertexDeclaration == nullptr)
+					gRendererUtility().draw(mesh, mesh->getProperties().getSubMesh(i));
+				else
+					gRendererUtility().drawMorph(mesh, mesh->getProperties().getSubMesh(i), morphShapeBuffer,
+						morphVertexDeclaration);
+			}
 		}
 	}
 }
