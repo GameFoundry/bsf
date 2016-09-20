@@ -1337,6 +1337,10 @@ namespace BansheeEngine
 					blendShape.name = channel->GetName();
 					blendShape.frames.resize(frameCount);
 
+					// Get name without invalid characters
+					blendShape.name = StringUtil::replaceAll(blendShape.name, ".", "_");
+					blendShape.name = StringUtil::replaceAll(blendShape.name, "/", "_");
+
 					for (UINT32 k = 0; k < frameCount; k++)
 					{
 						FbxShape* fbxShape = channel->GetTargetShape(k);
@@ -1344,6 +1348,10 @@ namespace BansheeEngine
 						FBXBlendShapeFrame& frame = blendShape.frames[k];
 						frame.name = fbxShape->GetName();
 						frame.weight = (float)(weights[k] / 100.0);
+
+						// Get name without invalid characters
+						frame.name = StringUtil::replaceAll(frame.name, ".", "_");
+						frame.name = StringUtil::replaceAll(frame.name, "/", "_");
 						
 						importBlendShapeFrame(fbxShape, *mesh, options, frame);
 					}
@@ -1713,6 +1721,10 @@ namespace BansheeEngine
 							clip.blendShapeAnimations.push_back(FBXBlendShapeAnimation());
 							FBXBlendShapeAnimation& blendShapeAnim = clip.blendShapeAnimations.back();
 							blendShapeAnim.blendShape = channel->GetName();
+
+							// Get name without invalid characters
+							blendShapeAnim.blendShape = StringUtil::replaceAll(blendShapeAnim.blendShape, ".", "_");
+							blendShapeAnim.blendShape = StringUtil::replaceAll(blendShapeAnim.blendShape, "/", "_");
 
 							FbxAnimCurve* curves[1] = { curve };
 							blendShapeAnim.curve = importCurve<float, 1>(curves, importOptions, clip.start, clip.end);
