@@ -230,7 +230,7 @@ namespace BansheeEngine
 		{
 			SPtr<MorphShapes> morphShapes = mMesh->getMorphShapes();
 
-			UINT32 vertexSize = sizeof(Vector3) + sizeof(Vector4);
+			UINT32 vertexSize = sizeof(Vector3) + sizeof(UINT32);
 			UINT32 numVertices = morphShapes->getNumVertices();
 
 			SPtr<VertexBufferCore> vertexBuffer = VertexBufferCore::create(vertexSize, numVertices, GBU_DYNAMIC);
