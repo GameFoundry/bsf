@@ -11,10 +11,10 @@
 namespace BansheeEngine
 {
 	SpriteMaterial::SpriteMaterial(UINT32 id, const HMaterial& material)
-		:mId(id)
+		:mId(id), mMaterialStored(false)
 	{
 		mMaterial = material->getCore();
-		std::atomic_thread_fence(std::memory_order_release);
+		mMaterialStored.store(true, std::memory_order_release);
 
 		gCoreAccessor().queueCommand(std::bind(&SpriteMaterial::initialize, this));
 	}
@@ -27,7 +27,8 @@ namespace BansheeEngine
 	void SpriteMaterial::initialize()
 	{
 		// Make sure that mMaterial assignment completes on the previous thread before continuing
-		std::atomic_thread_fence(std::memory_order_acquire);
+		bool materialStored = mMaterialStored.load(std::memory_order_acquire);
+		assert(materialStored == true);
 
 		mParams = mMaterial->createParamsSet();
 		SPtr<ShaderCore> shader = mMaterial->getShader();

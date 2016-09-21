@@ -102,6 +102,14 @@ namespace BansheeEngine
 	private:
 		friend class Animation;
 
+		/** Possible states the worker thread can be in, used for synchronization. */
+		enum class WorkerState
+		{
+			Inactive,
+			Started,
+			DataReady
+		};
+
 		/** 
 		 * Registers a new animation and returns a unique ID for it. Must be called whenever an Animation is constructed. 
 		 */
@@ -122,7 +130,7 @@ namespace BansheeEngine
 		float mNextAnimationUpdateTime;
 		bool mPaused;
 
-		bool mWorkerRunning;
+		bool mWorkerStarted;
 		SPtr<Task> mAnimationWorker;
 		SPtr<VertexDataDesc> mBlendShapeVertexDesc;
 
@@ -133,7 +141,8 @@ namespace BansheeEngine
 
 		UINT32 mPoseReadBufferIdx;
 		UINT32 mPoseWriteBufferIdx;
-		std::atomic<INT32> mDataReadyCount;
+		std::atomic<INT32> mDataReadyCount; // Anim <-> Core thread sync
+		std::atomic<WorkerState> mWorkerState; // Anim <-> Sim thread sync
 		bool mDataReady;
 	};
 

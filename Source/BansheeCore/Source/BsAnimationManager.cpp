@@ -15,8 +15,8 @@ namespace BansheeEngine
 {
 	AnimationManager::AnimationManager()
 		: mNextId(1), mUpdateRate(1.0f / 60.0f), mAnimationTime(0.0f), mLastAnimationUpdateTime(0.0f)
-		, mNextAnimationUpdateTime(0.0f), mPaused(false), mWorkerRunning(false), mPoseReadBufferIdx(1)
-		, mPoseWriteBufferIdx(0), mDataReadyCount(0), mDataReady(false)
+		, mNextAnimationUpdateTime(0.0f), mPaused(false), mWorkerStarted(false), mPoseReadBufferIdx(1)
+		, mPoseWriteBufferIdx(0), mDataReadyCount(0), mWorkerState(WorkerState::Inactive), mDataReady(false)
 	{
 		mAnimationWorker = Task::create("Animation", std::bind(&AnimationManager::evaluateAnimation, this));
 
@@ -40,13 +40,13 @@ namespace BansheeEngine
 
 	void AnimationManager::preUpdate()
 	{
-		if (mPaused || !mWorkerRunning)
+		if (mPaused || !mWorkerStarted)
 			return;
 
 		mAnimationWorker->wait();
-
-		// Make sure we don't load obsolete skeletal pose and other evaluation ouputs written by the animation thread
-		std::atomic_thread_fence(std::memory_order_acquire);
+		
+		WorkerState state = mWorkerState.load(std::memory_order_acquire);
+		assert(state == WorkerState::DataReady);
 
 		// Trigger events
 		for (auto& anim : mAnimations)
@@ -54,8 +54,6 @@ namespace BansheeEngine
 			anim.second->updateFromProxy();
 			anim.second->triggerEvents(mAnimationTime, gTime().getFrameDelta());
 		}
-
-		mWorkerRunning = false;
 	}
 
 	void AnimationManager::postUpdate()
@@ -97,20 +95,21 @@ namespace BansheeEngine
 		}
 
 		// Make sure thread finishes writing all changes to the anim proxies as they will be read by the animation thread
-		std::atomic_thread_fence(std::memory_order_release);
-		
+		mWorkerStarted = true;
+		mWorkerState.store(WorkerState::Started, std::memory_order_release);
+
 		// Note: Animation thread will trigger about the same time as the core thread. The core thread will need to wait
 		// until animation thread finishes, which might end up blocking it (and losing the multi-threading performance). 
 		// Consider delaying displayed animation for a single frame or pre-calculating animations (by advancing time the
 		// previous frame) for non-dirty animations.
 		TaskScheduler::instance().addTask(mAnimationWorker);
-		mWorkerRunning = true;
 	}
 
 	void AnimationManager::evaluateAnimation()
 	{
 		// Make sure we don't load obsolete anim proxy data written by the simulation thread
-		std::atomic_thread_fence(std::memory_order_acquire);
+		WorkerState state = mWorkerState.load(std::memory_order_acquire);
+		assert(state == WorkerState::Started);
 
 		// No need for locking, as we are sure that only postUpdate() writes to the proxy buffer, and increments the write
 		// buffer index. And it's called sequentially ensuring previous call to evaluate finishes.
@@ -465,21 +464,17 @@ namespace BansheeEngine
 
 		renderData.infos = newAnimInfos;
 
-		mDataReadyCount.fetch_add(1, std::memory_order_relaxed);
-
-		// Make sure the thread finishes writing skeletal pose and other evaluation outputs as they will be read by sim and
-		// core threads
-		std::atomic_thread_fence(std::memory_order_release);
+		// Increments counter and ensures all writes are recorded
+		mWorkerState.store(WorkerState::DataReady, std::memory_order_release);
+		mDataReadyCount.fetch_add(1, std::memory_order_release);
 	}
 
 	void AnimationManager::waitUntilComplete()
 	{
 		mAnimationWorker->wait();
 
-		// Make sure we don't load obsolete skeletal pose and other evaluation ouputs written by the animation thread
-		std::atomic_thread_fence(std::memory_order_acquire);
-
-		INT32 dataReadyCount = mDataReadyCount.load(std::memory_order_relaxed);
+		// Read counter, and ensure all reads are done after writes on anim thread complete
+		INT32 dataReadyCount = mDataReadyCount.load(std::memory_order_acquire);
 		assert(dataReadyCount <= CoreThread::NUM_SYNC_BUFFERS);
 
 		mDataReady = dataReadyCount > 0;

@@ -109,6 +109,8 @@ namespace BansheeEngine
 
 		// Core thread only (everything below)
 		SPtr<MaterialCore> mMaterial;
+		std::atomic<bool> mMaterialStored;
+
 		SPtr<GpuParamsSetCore> mParams;
 		mutable MaterialParamMat4Core mWorldTransformParam;
 		mutable MaterialParamFloatCore mInvViewportWidthParam;
