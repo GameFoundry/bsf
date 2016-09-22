@@ -122,11 +122,14 @@ namespace BansheeEngine
 		}
 
 		RendererAnimationData& renderData = mAnimData[mPoseWriteBufferIdx];
+		
+		UINT32 prevPoseBufferIdx = (mPoseWriteBufferIdx + CoreThread::NUM_SYNC_BUFFERS - 1) % CoreThread::NUM_SYNC_BUFFERS;
+		RendererAnimationData& prevRenderData = mAnimData[prevPoseBufferIdx];
+		
 		mPoseWriteBufferIdx = (mPoseWriteBufferIdx + 1) % CoreThread::NUM_SYNC_BUFFERS;
 
 		renderData.transforms.resize(totalNumBones);
-
-		UnorderedMap<UINT64, RendererAnimationData::AnimInfo> newAnimInfos;
+		renderData.infos.clear();
 
 		UINT32 curBoneIdx = 0;
 		for(auto& anim : mProxies)
@@ -255,9 +258,7 @@ namespace BansheeEngine
 			if (anim->numLayers > 0 && anim->layers[0].numStates > 0)
 			{
 				const AnimationState& state = anim->layers[0].states[0];
-				if (state.disabled)
-					continue;
-
+				if (!state.disabled)
 				{
 					UINT32 numCurves = (UINT32)state.curves->generic.size();
 					for (UINT32 i = 0; i < numCurves; i++)
@@ -271,8 +272,8 @@ namespace BansheeEngine
 			// Update morph shapes
 			if(anim->numMorphShapes > 0)
 			{
-				auto iterFind = renderData.infos.find(anim->id);
-				if (iterFind != renderData.infos.end())
+				auto iterFind = prevRenderData.infos.find(anim->id);
+				if (iterFind != prevRenderData.infos.end())
 					animInfo.morphShapeInfo = iterFind->second.morphShapeInfo;
 				else
 					animInfo.morphShapeInfo.version = 1; // 0 is considered invalid version
@@ -459,10 +460,8 @@ namespace BansheeEngine
 				animInfo.morphShapeInfo.version = 1;
 
 			if (hasAnimInfo)
-				newAnimInfos[anim->id] = animInfo;
+				renderData.infos[anim->id] = animInfo;
 		}
-
-		renderData.infos = newAnimInfos;
 
 		// Increments counter and ensures all writes are recorded
 		mWorkerState.store(WorkerState::DataReady, std::memory_order_release);
