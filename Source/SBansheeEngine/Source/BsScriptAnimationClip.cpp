@@ -21,6 +21,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetAnimationCurves", &ScriptAnimationClip::internal_SetAnimationCurves);
 		metaData.scriptClass->addInternalCall("Internal_GetAnimationEvents", &ScriptAnimationClip::internal_GetAnimationEvents);
 		metaData.scriptClass->addInternalCall("Internal_SetAnimationEvents", &ScriptAnimationClip::internal_SetAnimationEvents);
+		metaData.scriptClass->addInternalCall("Internal_GetRootMotion", &ScriptAnimationClip::internal_GetRootMotion);
 		metaData.scriptClass->addInternalCall("Internal_GetLength", &ScriptAnimationClip::internal_GetLength);
 		metaData.scriptClass->addInternalCall("Internal_GetSampleRate", &ScriptAnimationClip::internal_GetSampleRate);
 		metaData.scriptClass->addInternalCall("Internal_SetSampleRate", &ScriptAnimationClip::internal_SetSampleRate);
@@ -84,6 +85,12 @@ namespace BansheeEngine
 		}
 
 		thisPtr->getHandle()->setEvents(nativeEvents);
+	}
+
+	MonoObject* ScriptAnimationClip::internal_GetRootMotion(ScriptAnimationClip* thisPtr)
+	{
+		SPtr<RootMotion> rootMotion = thisPtr->getHandle()->getRootMotion();
+		return ScriptRootMotion::toManaged(rootMotion);
 	}
 
 	float ScriptAnimationClip::internal_GetLength(ScriptAnimationClip* thisPtr)

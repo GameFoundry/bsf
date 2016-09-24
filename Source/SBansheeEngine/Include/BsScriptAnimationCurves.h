@@ -81,5 +81,49 @@ namespace BansheeEngine
 		static MonoField* sCurveField;
 	};
 
+	/**	Interop class between C++ & CLR for Vector3Curve. */
+	class BS_SCR_BE_EXPORT ScriptVector3Curve : public ScriptObject<ScriptVector3Curve>
+	{
+	public:
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Vector3Curve")
+
+		/** Converts native 3D vector animation curve to its managed counterpart. */
+		static MonoObject* toManaged(const TAnimationCurve<Vector3>& curve);
+	private:
+		ScriptVector3Curve(MonoObject* instance);
+	};
+
+	/**	Interop class between C++ & CLR for QuaternionCurve. */
+	class BS_SCR_BE_EXPORT ScriptQuaternionCurve : public ScriptObject<ScriptQuaternionCurve>
+	{
+	public:
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "QuaternionCurve")
+
+		/** Converts native quaternion animation curve to its managed counterpart. */
+		static MonoObject* toManaged(const TAnimationCurve<Quaternion>& curve);
+	private:
+		ScriptQuaternionCurve(MonoObject* instance);
+	};
+
+	struct RootMotion;
+
+	/**	Interop class between C++ & CLR for RootMotion. */
+	class BS_SCR_BE_EXPORT ScriptRootMotion : public ScriptObject<ScriptRootMotion>
+	{
+	public:
+		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "RootMotion")
+
+		/** Converts native root motion object to its managed counterpart. */
+		static MonoObject* toManaged(const SPtr<RootMotion>& rootMotion);
+	private:
+		ScriptRootMotion(MonoObject* instance);
+
+		/************************************************************************/
+		/* 								CLR HOOKS						   		*/
+		/************************************************************************/
+		static MonoField* sPositionField;
+		static MonoField* sRotationField;
+	};
+
 	/** @} */
 }

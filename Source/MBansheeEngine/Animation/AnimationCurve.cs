@@ -213,4 +213,128 @@ namespace BansheeEngine
         /// </summary>
         public AnimationCurve Curve;
     }
+
+    /// <summary>
+    /// A set of animation curves for a 3D vector.
+    /// </summary>
+    public class Vector3Curve
+    {
+        /// <summary>
+        /// Constructs a new 3D vector animation curve.
+        /// </summary>
+        /// <param name="x">Curve representing the x axis of the vector.</param>
+        /// <param name="y">Curve representing the y axis of the vector.</param>
+        /// <param name="z">Curve representing the z axis of the vector.</param>
+        public Vector3Curve(AnimationCurve x, AnimationCurve y, AnimationCurve z)
+        {
+            X = x;
+            Y = y;
+            Z = z;
+        }
+
+        /// <summary>
+        /// Evaluate the animation curve at the specified time.
+        /// </summary>
+        /// <param name="time">Time to evaluate the curve at. </param>
+        /// <param name="loop">If true the curve will loop when it goes past the end or beggining. Otherwise the curve 
+        ///                    value will be clamped.</param>
+        /// <returns>Interpolated value from the curve at provided time.</returns>
+        public Vector3 Evaluate(float time, bool loop = true)
+        {
+            Vector3 output = new Vector3();
+
+            if (X != null)
+                output.x = X.Evaluate(time, loop);
+
+            if (Y != null)
+                output.y = Y.Evaluate(time, loop);
+
+            if (Z != null)
+                output.z = Z.Evaluate(time, loop);
+
+            return output;
+        }
+
+        /// <summary>
+        /// Animation curve for the x axis.
+        /// </summary>
+        public AnimationCurve X;
+
+        /// <summary>
+        /// Animation curve for the y axis.
+        /// </summary>
+        public AnimationCurve Y;
+
+        /// <summary>
+        /// Animation curve for the z axis.
+        /// </summary>
+        public AnimationCurve Z;
+    }
+
+    /// <summary>
+    /// A set of animation curves for a quaternion.
+    /// </summary>
+    public class QuaternionCurve
+    {
+        /// <summary>
+        /// Constructs a new quaternion animation curve.
+        /// </summary>
+        /// <param name="x">Curve representing the x component of the quaternion.</param>
+        /// <param name="y">Curve representing the y component of the quaternion.</param>
+        /// <param name="z">Curve representing the z component of the quaternion.</param>
+        /// <param name="w">Curve representing the w component of the quaternion.</param>
+        public QuaternionCurve(AnimationCurve x, AnimationCurve y, AnimationCurve z, AnimationCurve w)
+        {
+            X = x;
+            Y = y;
+            Z = z;
+            W = w;
+        }
+
+        /// <summary>
+        /// Evaluate the animation curve at the specified time.
+        /// </summary>
+        /// <param name="time">Time to evaluate the curve at. </param>
+        /// <param name="loop">If true the curve will loop when it goes past the end or beggining. Otherwise the curve 
+        ///                    value will be clamped.</param>
+        /// <returns>Interpolated value from the curve at provided time.</returns>
+        public Quaternion Evaluate(float time, bool loop = true)
+        {
+            Quaternion output = new Quaternion();
+
+            if (X != null)
+                output.x = X.Evaluate(time, loop);
+
+            if (Y != null)
+                output.y = Y.Evaluate(time, loop);
+
+            if (Z != null)
+                output.z = Z.Evaluate(time, loop);
+
+            if (W != null)
+                output.w = W.Evaluate(time, loop);
+
+            return output;
+        }
+
+        /// <summary>
+        /// Animation curve for the x component.
+        /// </summary>
+        public AnimationCurve X;
+
+        /// <summary>
+        /// Animation curve for the y component.
+        /// </summary>
+        public AnimationCurve Y;
+
+        /// <summary>
+        /// Animation curve for the z component.
+        /// </summary>
+        public AnimationCurve Z;
+
+        /// <summary>
+        /// Animation curve for the w component.
+        /// </summary>
+        public AnimationCurve W;
+    }
 }

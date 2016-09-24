@@ -151,6 +151,48 @@ namespace BansheeEngine
 		return instance;
 	}
 
+	/** Converts compound animation curves into multiple float (single value) curves. */
+	template<class T, int C>
+	void convertCurves(const TAnimationCurve<T>& curve, TAnimationCurve<float>(&output)[C])
+	{
+		UINT32 numKeyFrames = curve.getNumKeyFrames();
+		Vector<TKeyframe<float>> keyFrames[C];
+
+		for (UINT32 i = 0; i < numKeyFrames; i++)
+		{
+			const TKeyframe<T>& key = curve.getKeyFrame(i);
+
+			TKeyframe<float> newKey;
+			newKey.time = key.time;
+
+			for (UINT32 j = 0; j < C; j++)
+			{
+				bool addNew = true;
+				if (i > 0)
+				{
+					const TKeyframe<float>& prevKey = keyFrames[j].back();
+
+					bool isEqual = Math::approxEquals(prevKey.value, key.value[j]) &&
+						Math::approxEquals(prevKey.outTangent, key.inTangent[j]);
+
+					addNew = !isEqual;
+				}
+
+				if (addNew)
+				{
+					newKey.value = key.value[j];
+					newKey.inTangent = key.inTangent[j];
+					newKey.outTangent = key.outTangent[j];
+
+					keyFrames[j].push_back(newKey);
+				}
+			}
+		}
+
+		for (UINT32 i = 0; i < C; i++)
+			output[i] = TAnimationCurve<float>(keyFrames[i]);
+	}
+
 	MonoField* ScriptNamedVector3Curve::sNameField = nullptr;
 	MonoField* ScriptNamedVector3Curve::sFlagsField = nullptr;
 	MonoField* ScriptNamedVector3Curve::sXCurveField = nullptr;
@@ -247,47 +289,12 @@ namespace BansheeEngine
 	{
 		MonoString* monoString = MonoUtil::stringToMono(curve.name);
 
-		UINT32 numKeyFrames = curve.curve.getNumKeyFrames();
-		Vector<TKeyframe<float>> keyFrames[3];
+		TAnimationCurve<float> curves[3];
+		convertCurves(curve.curve, curves);
 
-		for (UINT32 i = 0; i < numKeyFrames; i++)
-		{
-			const TKeyframe<Vector3>& key = curve.curve.getKeyFrame(i);
-
-			TKeyframe<float> newKey;
-			newKey.time = key.time;
-
-			for(UINT32 j = 0; j < 3; j++)
-			{
-				bool addNew = true;
-				if (i > 0)
-				{
-					const TKeyframe<float>& prevKey = keyFrames[j].back();
-
-					bool isEqual = Math::approxEquals(prevKey.value, key.value[j]) &&
-						Math::approxEquals(prevKey.outTangent, key.inTangent[j]);
-
-					addNew = !isEqual;
-				}
-
-				if (addNew)
-				{
-					newKey.value = key.value[j];
-					newKey.inTangent = key.inTangent[j];
-					newKey.outTangent = key.outTangent[j];
-
-					keyFrames[j].push_back(newKey);
-				}
-			}
-		}
-
-		TAnimationCurve<float> xCurve(keyFrames[0]);
-		TAnimationCurve<float> yCurve(keyFrames[1]);
-		TAnimationCurve<float> zCurve(keyFrames[2]);
-
-		MonoObject* monoXCurve = ScriptAnimationCurve::create(xCurve);
-		MonoObject* monoYCurve = ScriptAnimationCurve::create(yCurve);
-		MonoObject* monoZCurve = ScriptAnimationCurve::create(zCurve);
+		MonoObject* monoXCurve = ScriptAnimationCurve::create(curves[0]);
+		MonoObject* monoYCurve = ScriptAnimationCurve::create(curves[1]);
+		MonoObject* monoZCurve = ScriptAnimationCurve::create(curves[2]);
 
 		UINT32 flags = curve.flags;
 
@@ -343,5 +350,71 @@ namespace BansheeEngine
 		UINT32 flags = curve.flags;
 		void* params[3] = { monoString, &flags, monoCurve };
 		return metaData.scriptClass->createInstance("string,int,AnimationCurve", params);
+	}
+
+	ScriptVector3Curve::ScriptVector3Curve(MonoObject* instance)
+		:ScriptObject(instance)
+	{ }
+
+	void ScriptVector3Curve::initRuntimeData()
+	{ }
+
+	MonoObject* ScriptVector3Curve::toManaged(const TAnimationCurve<Vector3>& curve)
+	{
+		TAnimationCurve<float> curves[3];
+		convertCurves(curve, curves);
+
+		MonoObject* monoXCurve = ScriptAnimationCurve::create(curves[0]);
+		MonoObject* monoYCurve = ScriptAnimationCurve::create(curves[1]);
+		MonoObject* monoZCurve = ScriptAnimationCurve::create(curves[2]);
+
+		void* params[3] = { monoXCurve, monoYCurve, monoZCurve };
+		return metaData.scriptClass->createInstance("AnimationCurve,AnimationCurve,AnimationCurve", params);
+	}
+
+	ScriptQuaternionCurve::ScriptQuaternionCurve(MonoObject* instance)
+		:ScriptObject(instance)
+	{ }
+
+	void ScriptQuaternionCurve::initRuntimeData()
+	{ }
+
+	MonoObject* ScriptQuaternionCurve::toManaged(const TAnimationCurve<Quaternion>& curve)
+	{
+		TAnimationCurve<float> curves[4];
+		convertCurves(curve, curves);
+
+		MonoObject* monoXCurve = ScriptAnimationCurve::create(curves[0]);
+		MonoObject* monoYCurve = ScriptAnimationCurve::create(curves[1]);
+		MonoObject* monoZCurve = ScriptAnimationCurve::create(curves[2]);
+		MonoObject* monoWCurve = ScriptAnimationCurve::create(curves[3]);
+
+		void* params[4] = { monoXCurve, monoYCurve, monoZCurve, monoWCurve };
+		return metaData.scriptClass->createInstance("AnimationCurve,AnimationCurve,AnimationCurve,AnimationCurve", params);
+	}
+
+	MonoField* ScriptRootMotion::sPositionField = nullptr;
+	MonoField* ScriptRootMotion::sRotationField = nullptr;
+
+	ScriptRootMotion::ScriptRootMotion(MonoObject* instance)
+		:ScriptObject(instance)
+	{ }
+
+	void ScriptRootMotion::initRuntimeData()
+	{
+		sPositionField = metaData.scriptClass->getField("Position");
+		sRotationField = metaData.scriptClass->getField("Rotation");
+	}
+
+	MonoObject* ScriptRootMotion::toManaged(const SPtr<RootMotion>& rootMotion)
+	{
+		MonoObject* monoPositionCurve = ScriptVector3Curve::toManaged(rootMotion->position);
+		MonoObject* monoRotationCurve = ScriptQuaternionCurve::toManaged(rootMotion->rotation);
+
+		MonoObject* instance = metaData.scriptClass->createInstance();
+		sPositionField->setValue(instance, monoPositionCurve);
+		sRotationField->setValue(instance, monoRotationCurve);
+
+		return instance;
 	}
 }

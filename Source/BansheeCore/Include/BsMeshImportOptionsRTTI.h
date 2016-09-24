@@ -29,6 +29,7 @@ namespace BansheeEngine
 			BS_RTTI_MEMBER_REFL_ARRAY(mAnimationSplits, 8)
 			BS_RTTI_MEMBER_PLAIN(mReduceKeyFrames, 9)
 			BS_RTTI_MEMBER_REFL_ARRAY(mAnimationEvents, 10)
+			BS_RTTI_MEMBER_PLAIN(mImportRootMotion, 11)
 		BS_END_RTTI_MEMBERS
 	public:
 		MeshImportOptionsRTTI()

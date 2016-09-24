@@ -64,6 +64,16 @@ namespace BansheeEngine
             set { Internal_SetAnimationEvents(mCachedPtr, value); }
         }
 
+        /// <summary>
+        /// Returns a set of curves containing motion of the root bone. This allows the user to evaluate the root bone
+        /// animation curves manually, instead of through the normal animation process. This property is only available
+        /// if animation clip was imported with root motion import enabled.
+        /// </summary>
+        public RootMotion RootMotion
+        {
+            get { return Internal_GetRootMotion(mCachedPtr); }
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateInstance(AnimationClip instance);
 
@@ -78,6 +88,9 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetAnimationEvents(IntPtr thisPtr, AnimationEvent[] events);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern RootMotion Internal_GetRootMotion(IntPtr thisPtr);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern float Internal_GetLength(IntPtr thisPtr);
@@ -114,6 +127,22 @@ namespace BansheeEngine
         /// Time at which to trigger the event, in seconds.
         /// </summary>
         public float Time;
+    }
+
+    /// <summary>
+    /// Contains a set of animation curves used for moving and rotating the root bone.
+    /// </summary>
+    public class RootMotion
+    {
+        /// <summary>
+        /// Animation curve representing the movement of the root bone.
+        /// </summary>
+        public Vector3Curve Position;
+
+        /// <summary>
+        /// Animation curve representing the rotation of the root bone.
+        /// </summary>
+        public QuaternionCurve Rotation;
     }
 
     /** @} */

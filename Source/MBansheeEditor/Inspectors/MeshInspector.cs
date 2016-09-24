@@ -24,6 +24,7 @@ namespace BansheeEditor
         private GUIToggleField cpuReadableField;
         private GUIEnumField collisionMeshTypeField;
         private GUIToggleField keyFrameReductionField;
+        private GUIToggleField rootMotionField;
         private GUIArrayField<AnimationSplitInfo, AnimSplitArrayRow> animSplitInfoField;
         private GUIButton reimportButton;
 
@@ -56,6 +57,7 @@ namespace BansheeEditor
             cpuReadableField.Value = newImportOptions.CPUReadable;
             collisionMeshTypeField.Value = (ulong)newImportOptions.CollisionMeshType;
             keyFrameReductionField.Value = newImportOptions.KeyframeReduction;
+            rootMotionField.Value = newImportOptions.ImportRootMotion;
 
             importOptions = newImportOptions;
 
@@ -78,6 +80,7 @@ namespace BansheeEditor
             cpuReadableField = new GUIToggleField(new LocEdString("CPU readable"));
             collisionMeshTypeField = new GUIEnumField(typeof(CollisionMeshType), new LocEdString("Collision mesh"));
             keyFrameReductionField = new GUIToggleField(new LocEdString("Keyframe Reduction"));
+            rootMotionField = new GUIToggleField(new LocEdString("Import root motion"));
             reimportButton = new GUIButton(new LocEdString("Reimport"));
 
             normalsField.OnChanged += x => importOptions.ImportNormals = x;
@@ -89,6 +92,7 @@ namespace BansheeEditor
             cpuReadableField.OnChanged += x => importOptions.CPUReadable = x;
             collisionMeshTypeField.OnSelectionChanged += x => importOptions.CollisionMeshType = (CollisionMeshType)x;
             keyFrameReductionField.OnChanged += x => importOptions.KeyframeReduction = x;
+            rootMotionField.OnChanged += x => importOptions.ImportRootMotion = x;
 
             reimportButton.OnClick += TriggerReimport;
 
@@ -101,6 +105,7 @@ namespace BansheeEditor
             Layout.AddElement(cpuReadableField);
             Layout.AddElement(collisionMeshTypeField);
             Layout.AddElement(keyFrameReductionField);
+            Layout.AddElement(rootMotionField);
 
             splitInfos = importOptions.AnimationClipSplits;
 

@@ -75,6 +75,8 @@ namespace BansheeEngine
 			BS_RTTI_MEMBER_PLAIN(mLength, 5)
 			BS_RTTI_MEMBER_PLAIN(mEvents, 6)
 			BS_RTTI_MEMBER_PLAIN(mSampleRate, 7)
+			BS_RTTI_MEMBER_PLAIN_NAMED(rootMotionPos, mRootMotion->position, 8)
+			BS_RTTI_MEMBER_PLAIN_NAMED(rootMotionRot, mRootMotion->rotation, 9)
 		BS_END_RTTI_MEMBERS
 	public:
 		AnimationClipRTTI()

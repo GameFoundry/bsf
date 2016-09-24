@@ -228,6 +228,18 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Determines if import of root motion curves is enabled. When enabled, any animation curves in imported animations 
+        /// affecting the root bone will be available through a set of separate curves in AnimationClip, and they won't be
+        /// evaluated through normal animation process. Instead it is expected that the user evaluates the curves manually
+        /// and applies them as required.
+        /// </summary>
+        public bool ImportRootMotion
+        {
+            get { return Internal_GetRootMotion(mCachedPtr); }
+            set { Internal_SetRootMotion(mCachedPtr, value); }
+        }
+
+        /// <summary>
         /// Controls what type (if any) of collision mesh should be imported.
         /// </summary>
         public CollisionMeshType CollisionMeshType
@@ -300,6 +312,12 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetKeyFrameReduction(IntPtr thisPtr, bool value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_GetRootMotion(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetRootMotion(IntPtr thisPtr, bool value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern AnimationSplitInfo[] Internal_GetAnimationClipSplits(IntPtr thisPtr);

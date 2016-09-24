@@ -180,6 +180,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetImportBlendShapes", &ScriptMeshImportOptions::internal_SetImportBlendShapes);
 		metaData.scriptClass->addInternalCall("Internal_GetKeyFrameReduction", &ScriptMeshImportOptions::internal_GetKeyFrameReduction);
 		metaData.scriptClass->addInternalCall("Internal_SetKeyFrameReduction", &ScriptMeshImportOptions::internal_SetKeyFrameReduction);
+		metaData.scriptClass->addInternalCall("Internal_GetRootMotion", &ScriptMeshImportOptions::internal_GetRootMotion);
+		metaData.scriptClass->addInternalCall("Internal_SetRootMotion", &ScriptMeshImportOptions::internal_SetRootMotion);
 		metaData.scriptClass->addInternalCall("Internal_GetScale", &ScriptMeshImportOptions::internal_GetScale);
 		metaData.scriptClass->addInternalCall("Internal_SetScale", &ScriptMeshImportOptions::internal_SetScale);
 		metaData.scriptClass->addInternalCall("Internal_GetCollisionMeshType", &ScriptMeshImportOptions::internal_GetCollisionMeshType);
@@ -282,6 +284,16 @@ namespace BansheeEngine
 	void ScriptMeshImportOptions::internal_SetKeyFrameReduction(ScriptMeshImportOptions* thisPtr, bool value)
 	{
 		thisPtr->getMeshImportOptions()->setKeyFrameReduction(value);
+	}
+
+	bool ScriptMeshImportOptions::internal_GetRootMotion(ScriptMeshImportOptions* thisPtr)
+	{
+		return thisPtr->getMeshImportOptions()->getImportRootMotion();
+	}
+
+	void ScriptMeshImportOptions::internal_SetRootMotion(ScriptMeshImportOptions* thisPtr, bool value)
+	{
+		thisPtr->getMeshImportOptions()->setImportRootMotion(value);
 	}
 
 	float ScriptMeshImportOptions::internal_GetScale(ScriptMeshImportOptions* thisPtr)

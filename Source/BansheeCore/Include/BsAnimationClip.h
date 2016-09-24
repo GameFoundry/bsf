@@ -73,6 +73,18 @@ namespace BansheeEngine
 		Vector<TNamedAnimationCurve<float>> generic;
 	};
 
+	/** Contains a set of animation curves used for moving and rotating the root bone. */
+	struct RootMotion
+	{
+		RootMotion() { }
+		RootMotion(const TAnimationCurve<Vector3>& position, const TAnimationCurve<Quaternion>& rotation)
+			:position(position), rotation(rotation)
+		{ }
+
+		TAnimationCurve<Vector3> position;
+		TAnimationCurve<Quaternion> rotation;
+	};
+
 	/** Event that is triggered when animation reaches a certain point. */
 	struct AnimationEvent
 	{
@@ -123,6 +135,13 @@ namespace BansheeEngine
 
 		/** Sets events that will be triggered as the animation is playing. */
 		void setEvents(const Vector<AnimationEvent>& events) { mEvents = events; }
+
+		/** 
+		 * Returns a set of curves containing motion of the root bone. This allows the user to evaluate the root bone
+		 * animation curves manually, instead of through the normal animation process. This property is only available
+		 * if animation clip was imported with root motion import enabled. 
+		 */
+		SPtr<RootMotion> getRootMotion() const { return mRootMotion; }
 
 		/**
 		 * Maps skeleton bone names to animation curve names, and returns a set of indices that can be easily used for
@@ -200,8 +219,11 @@ namespace BansheeEngine
 		 *							how is the clip blended with other animations.
 		 * @param[in]	sampleRate	If animation uses evenly spaced keyframes, number of samples per second. Not relevant
 		 *							if keyframes are unevenly spaced.
+		 * @param[in]	rootMotion	Optional set of curves that can be used for animating the root bone. Not used by the
+		 *							animation system directly but is instead provided to the user for manual evaluation.
 		 */
-		static HAnimationClip create(const SPtr<AnimationCurves>& curves, bool isAdditive = false, UINT32 sampleRate = 1);
+		static HAnimationClip create(const SPtr<AnimationCurves>& curves, bool isAdditive = false, UINT32 sampleRate = 1, 
+			const SPtr<RootMotion>& rootMotion = nullptr);
 
 	public: // ***** INTERNAL ******
 		/** @name Internal
@@ -209,13 +231,15 @@ namespace BansheeEngine
 		 */
 
 		/** Creates a new AnimationClip without initializing it. Use create() for normal use. */
-		static SPtr<AnimationClip> _createPtr(const SPtr<AnimationCurves>& curves, bool isAdditive = false, UINT32 sampleRate = 1);
+		static SPtr<AnimationClip> _createPtr(const SPtr<AnimationCurves>& curves, bool isAdditive = false, 
+			UINT32 sampleRate = 1, const SPtr<RootMotion>& rootMotion = nullptr);
 
 		/** @} */
 
 	protected:
 		AnimationClip();
-		AnimationClip(const SPtr<AnimationCurves>& curves, bool isAdditive, UINT32 sampleRate);
+		AnimationClip(const SPtr<AnimationCurves>& curves, bool isAdditive, UINT32 sampleRate, 
+			const SPtr<RootMotion>& rootMotion);
 
 		/** @copydoc Resource::initialize() */
 		void initialize() override;
@@ -234,6 +258,13 @@ namespace BansheeEngine
 		 * all existing data copied (plus the modification).
 		 */
 		SPtr<AnimationCurves> mCurves;
+
+		/**
+		 * A set of curves containing motion of the root bone. If this is non-empty it should be true that mCurves does not
+		 * contain animation curves for the root bone. Root motion will not be evaluated through normal animation process
+		 * but is instead provided for the user for manual evaluation. 
+		 */
+		SPtr<RootMotion> mRootMotion;
 
 		/** 
 		 * Contains a map from curve name to curve index. Indices are stored as specified in CurveType enum. 

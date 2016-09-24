@@ -27,7 +27,8 @@ namespace BansheeEngine
 
 	MeshImportOptions::MeshImportOptions()
 		: mCPUReadable(false), mImportNormals(true), mImportTangents(true), mImportBlendShapes(false), mImportSkin(false)
-		, mImportAnimation(false), mReduceKeyFrames(true), mImportScale(1.0f), mCollisionMeshType(CollisionMeshType::None)
+		, mImportAnimation(false), mReduceKeyFrames(true), mImportRootMotion(false), mImportScale(1.0f)
+		, mCollisionMeshType(CollisionMeshType::None)
 	{ }
 
 	RTTITypeBase* MeshImportOptions::getRTTIStatic()

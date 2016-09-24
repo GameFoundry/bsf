@@ -34,6 +34,7 @@ namespace BansheeEngine
 		static void internal_SetAnimationCurves(ScriptAnimationClip* thisPtr, MonoObject* curves);
 		static MonoArray* internal_GetAnimationEvents(ScriptAnimationClip* thisPtr);
 		static void internal_SetAnimationEvents(ScriptAnimationClip* thisPtr, MonoArray* events);
+		static MonoObject* internal_GetRootMotion(ScriptAnimationClip* thisPtr);
 		static float internal_GetLength(ScriptAnimationClip* thisPtr);
 		static UINT32 internal_GetSampleRate(ScriptAnimationClip* thisPtr);
 		static void internal_SetSampleRate(ScriptAnimationClip* thisPtr, UINT32 sampleRate);

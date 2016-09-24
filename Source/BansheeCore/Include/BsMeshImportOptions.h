@@ -135,7 +135,7 @@ namespace BansheeEngine
 		Vector<ImportedAnimationEvents> getAnimationEvents() const { return mAnimationEvents; }
 
 		/**	
-		 * Enables or disabled keyframe reduction. Keyframe reduction will reduce the number of key-frames in an animation
+		 * Enables or disables keyframe reduction. Keyframe reduction will reduce the number of key-frames in an animation
 		 * clip by removing identical keyframes, and therefore reducing the size of the clip.
 		 */
 		void setKeyFrameReduction(bool enabled) { mReduceKeyFrames = enabled; }
@@ -147,6 +147,21 @@ namespace BansheeEngine
 		 */
 		bool getKeyFrameReduction() const { return mReduceKeyFrames; }
 
+		/**	
+		 * Enables or disables import of root motion curves. When enabled, any animation curves in imported animations 
+		 * affecting the root bone will be available through a set of separate curves in AnimationClip, and they won't be
+		 * evaluated through normal animation process. Instead it is expected that the user evaluates the curves manually
+		 * and applies them as required.
+		 */
+		void setImportRootMotion(bool enabled) { mImportRootMotion = enabled; }
+
+		/**	
+		 * Checks is root motion import enabled.
+		 *
+		 * @see	setImportRootMotion
+		 */
+		bool getImportRootMotion() const { return mImportRootMotion; }
+
 	private:
 		bool mCPUReadable;
 		bool mImportNormals;
@@ -155,6 +170,7 @@ namespace BansheeEngine
 		bool mImportSkin;
 		bool mImportAnimation;
 		bool mReduceKeyFrames;
+		bool mImportRootMotion;
 		float mImportScale;
 		CollisionMeshType mCollisionMeshType;
 		Vector<AnimationSplitInfo> mAnimationSplits;
