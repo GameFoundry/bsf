@@ -709,8 +709,13 @@ namespace BansheeEditor
 
             persistentData.dirtyAnimClips[clip.UUID] = clipInfo;
 
+            AnimFieldInfo[] fieldInfos = new AnimFieldInfo[clipInfo.curves.Count];
+
+            int idx = 0;
             foreach (var curve in clipInfo.curves)
-                guiFieldDisplay.AddField(new AnimFieldInfo(curve.Key, curve.Value));
+                fieldInfos[idx++] = new AnimFieldInfo(curve.Key, curve.Value);
+
+            guiFieldDisplay.SetFields(fieldInfos);
 
             guiCurveEditor.Events = clipInfo.events;
             guiCurveEditor.DisableCurveEdit = clipInfo.isImported;
@@ -1253,11 +1258,11 @@ namespace BansheeEditor
                 if (clipInfo == null)
                     return curvesToDisplay.ToArray();
 
-                foreach (var curve in clipInfo.curves)
-                {
-                    for (int i = 0; i < curve.Value.curveInfos.Length; i++)
-                        curvesToDisplay.Add(curve.Value.curveInfos[i]);
-                }
+                //foreach (var curve in clipInfo.curves)
+                //{
+                //    for (int i = 0; i < curve.Value.curveInfos.Length; i++)
+                //        curvesToDisplay.Add(curve.Value.curveInfos[i]);
+                //}
             }
             else
             {

@@ -570,13 +570,8 @@ namespace BansheeEditor
                     {
                         float fNumSplits = (end - start) / timeIncrement;
 
-                        numSplits = MathEx.FloorToInt(fNumSplits);
-                        float remainder = fNumSplits - numSplits;
-
-                        float lengthRounded = (end - start)*(numSplits/fNumSplits);
-                        timeIncrement = lengthRounded/numSplits;
-
-                        numSplits += MathEx.CeilToInt(remainder) + 1;
+                        numSplits = MathEx.CeilToInt(fNumSplits);
+                        timeIncrement = (end - start)/numSplits;
                     }
                     else
                     {

@@ -340,7 +340,7 @@ namespace BansheeEditor
 
             toggleLayout.AddElement(selectionBtn);
 
-            entryHeight = selectionBtn.Bounds.height;
+            entryHeight = EditorBuiltin.GUISkin.GetStyle(EditorStyles.Label).Height;
 
             backgroundTexture = new GUITexture(Builtin.WhiteTexture, GUITextureScaleMode.StretchToFit, 
                 GUIOption.FlexibleWidth());
