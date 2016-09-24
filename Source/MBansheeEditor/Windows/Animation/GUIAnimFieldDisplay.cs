@@ -299,7 +299,7 @@ namespace BansheeEditor
     /// </summary>
     internal abstract class GUIAnimFieldEntry
     {
-        private const int MAX_PATH_LENGTH = 20;
+        private const int MAX_PATH_LENGTH = 30;
         protected const int INDENT_AMOUNT = 10;
 
         protected string path;
