@@ -51,6 +51,7 @@
     <Compile Include="Utility\SerializedSceneObject.cs" />
     <Compile Include="Utility\SerializedDiff.cs" />
     <Compile Include="Utility\SerializedObject.cs" />
+    <Compile Include="Utility\UndoableCommand.cs" />
     <Compile Include="Windows\AboutBox.cs" />
     <Compile Include="Windows\AnimationWindow.cs" />
     <Compile Include="Windows\Animation\AnimationGizmo.cs" />

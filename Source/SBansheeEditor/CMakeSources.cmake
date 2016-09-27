@@ -11,6 +11,7 @@ set(BS_SBANSHEEEDITOR_INC_NOFILTER
 	"Include/BsEditorScriptLibrary.h"
 	"Include/BsToolbarItemManager.h"
 	"Include/BsScriptGizmoManager.h"
+	"Include/BsManagedEditorCommand.h"
 )
 
 set(BS_SBANSHEEEDITOR_SRC_WRAPPERS_GUI
@@ -85,6 +86,7 @@ set(BS_SBANSHEEEDITOR_SRC_NOFILTER
 	"Source/BsEditorResourceLoader.cpp"
 	"Source/BsEditorScriptLibrary.cpp"
 	"Source/BsToolbarItemManager.cpp"
+	"Source/BsManagedEditorCommand.cpp"
 )
 
 set(BS_SBANSHEEEDITOR_INC_WRAPPERS
