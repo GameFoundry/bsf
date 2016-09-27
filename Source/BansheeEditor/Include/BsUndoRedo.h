@@ -12,7 +12,7 @@ namespace BansheeEngine
 	 */
 
 	/**	Provides functionality to undo or redo recently performed operations in the editor. */
-	class BS_ED_EXPORT UndoRedo
+	class BS_ED_EXPORT UndoRedo : public Module<UndoRedo>
 	{
 		/**
 		 * Contains data about a single undo/redo group. Groups allow you to create context sensitive undo/redo operations.
@@ -96,10 +96,6 @@ namespace BansheeEngine
 
 		Stack<GroupData> mGroups;
 	};
-
-	/**	Provides access to the global undo/redo stack. See UndoRedo. */
-	class BS_ED_EXPORT GlobalUndoRedo : public Module<UndoRedo>
-	{ };
 
 	/** @} */
 }

@@ -8,6 +8,7 @@
 namespace BansheeEngine
 {
 	class UndoRedo;
+	class ScriptCmdManaged;
 
 	/** @addtogroup ScriptInteropEditor
 	 *  @{
@@ -32,6 +33,7 @@ namespace BansheeEngine
 		static MonoObject* internal_GetGlobal();
 		static void internal_Undo(ScriptUndoRedo* thisPtr);
 		static void internal_Redo(ScriptUndoRedo* thisPtr);
+		static void internal_RegisterCommand(ScriptUndoRedo* thisPtr, ScriptCmdManaged* command);
 		static void internal_PushGroup(ScriptUndoRedo* thisPtr, MonoString* name);
 		static void internal_PopGroup(ScriptUndoRedo* thisPtr, MonoString* name);
 		static UINT32 internal_GetTopCommandId(ScriptUndoRedo* thisPtr);

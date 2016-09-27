@@ -68,6 +68,18 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Registers a new undo command.
+        /// </summary>
+        /// <param name="command">Command to register</param>
+        public void RegisterCommand(UndoableCommand command)
+        {
+            if (command == null)
+                return;
+
+            Internal_RegisterCommand(mCachedPtr, command.GetCachedPtr());
+        }
+
+        /// <summary>
         /// Creates a new undo/redo group. All new commands will be registered to this group. You may remove the group and 
         /// all of its commands by calling <see cref="PopGroup"/>.
         /// </summary>
@@ -251,6 +263,9 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Internal_Redo(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Internal_RegisterCommand(IntPtr thisPtr, IntPtr commandPtr);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Internal_PushGroup(IntPtr thisPtr, string name);

@@ -22,6 +22,9 @@ namespace BansheeEngine
 
 		~ScriptCmdManaged();
 
+		/** Returns the internal command wrapped by this object. */
+		SPtr<CmdManaged> getInternal() const { return mManagedCommand; }
+
 	private:
 		friend class CmdManaged;
 
@@ -36,7 +39,7 @@ namespace BansheeEngine
 		/** Notifies the script instance that the underlying managed command was destroyed. */
 		void notifyCommandDestroyed();
 
-		CmdManaged* mManagedCommand;
+		SPtr<CmdManaged> mManagedCommand;
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/

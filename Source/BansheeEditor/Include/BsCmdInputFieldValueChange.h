@@ -35,7 +35,7 @@ namespace BansheeEngine
 				new (bs_alloc<CmdInputFieldValueChange>()) CmdInputFieldValueChange(description, inputField, value);
 			SPtr<CmdInputFieldValueChange> commandPtr = bs_shared_ptr(command);
 
-			GlobalUndoRedo::instance().registerCommand(commandPtr);
+			UndoRedo::instance().registerCommand(commandPtr);
 			commandPtr->commit();
 		}
 

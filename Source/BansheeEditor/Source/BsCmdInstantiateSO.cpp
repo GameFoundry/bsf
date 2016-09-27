@@ -23,7 +23,7 @@ namespace BansheeEngine
 		CmdInstantiateSO* command = new (bs_alloc<CmdInstantiateSO>()) CmdInstantiateSO(description, prefab);
 		SPtr<CmdInstantiateSO> commandPtr = bs_shared_ptr(command);
 
-		GlobalUndoRedo::instance().registerCommand(commandPtr);
+		UndoRedo::instance().registerCommand(commandPtr);
 		commandPtr->commit();
 
 		return commandPtr->mSceneObject;

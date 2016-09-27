@@ -15,7 +15,7 @@ namespace BansheeEngine
 	ScriptCmdManaged::ScriptCmdManaged(MonoObject* managedInstance)
 		:ScriptObject(managedInstance), mManagedCommand(nullptr)
 	{
-		mManagedCommand = new (bs_alloc<CmdManaged>()) CmdManaged(this);
+		mManagedCommand = bs_shared_ptr(new (bs_alloc<CmdManaged>()) CmdManaged(this));
 	}
 
 	ScriptCmdManaged::~ScriptCmdManaged()
