@@ -796,13 +796,6 @@ namespace BansheeEngine
 			}
 		}
 
-		// Destroy any widgets that are no longer docked anywhere
-		for(auto& widget : undockedWidgets)
-		{
-			if(widget->_getParent() == nullptr)
-				widget->close();
-		}
-
 		setArea(mArea.x, mArea.y, mArea.width, mArea.height);
 	}
 
