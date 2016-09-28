@@ -20,7 +20,7 @@ To compile follow these steps:
 # <a name="dependencies"></a>Third party dependencies
 Banshee relies on a variety of third party dependencies. We provide a set of pre-compiled dependencies needed for the latest version of Banshee using Visual Studio 2015, to save you the hassle of compiling them yourself. If you are not using VS2015 or want to compile the dependencies yourself for some other reason, a guide is provided below.
 
- * [Download dependencies (VS2015)] (http://bearishsun.thalassa.feralhosting.com/BansheeDependencies_VS2015_0.4.0.zip)
+ * [Download dependencies (VS2015)] (http://bearishsun.thalassa.feralhosting.com/BansheeDependencies_VS2015_Master.zip)
  * [Compiling dependencies manually](dependencies.md)
  
 For older versions of pre-compiled dependencies check the git release tag descriptions for links.
