@@ -13,7 +13,7 @@ All features listed here are the ones currently available (implemented). If you 
   * Minimal third-party dependencies
   * Multiplatform ready
 * __Renderer__
-  * DX9, DX11 and OpenGL 4.3 render systems
+  * DX11 and OpenGL 4.5 render systems
   * Multi-threaded rendering
   * Powerful material system
     * BansheeFX language for material definitions

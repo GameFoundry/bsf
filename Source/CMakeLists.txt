@@ -3,7 +3,7 @@ project (Banshee)
 
 # Version
 set (BS_VERSION_MAJOR 0)
-set (BS_VERSION_MINOR 3)
+set (BS_VERSION_MINOR 4)
 
 # Configuration types
 if(CMAKE_CONFIGURATION_TYPES) # Multiconfig generator?
@@ -34,7 +34,7 @@ set_property(CACHE INPUT_MODULE PROPERTY STRINGS OIS)
 
 if(WIN32)
 set(RENDER_API_MODULE "DirectX 11" CACHE STRING "Render API to use.")
-set_property(CACHE RENDER_API_MODULE PROPERTY STRINGS "DirectX 11" "DirectX 9" "OpenGL")
+set_property(CACHE RENDER_API_MODULE PROPERTY STRINGS "DirectX 11" "OpenGL")
 else()
 set(RENDER_API_MODULE "OpenGL" CACHE STRING "Render API to use.")
 set_property(CACHE RENDER_API_MODULE PROPERTY STRINGS "OpenGL")
@@ -44,6 +44,7 @@ set(RENDERER_MODULE "RenderBeast" CACHE STRING "Renderer backend to use.")
 set_property(CACHE RENDERER_MODULE PROPERTY STRINGS RenderBeast)
 
 set(BUILD_EDITOR ON CACHE BOOL "If true both the engine and the editor will be built.")
+set(INCLUDE_ALL_IN_WORKFLOW OFF CACHE BOOL "If true, all libraries (even those not selected) will be included in the generated workflow. Only relevant for workflow generators like Visual Studio.")
 
 mark_as_advanced(CMAKE_INSTALL_PREFIX)
 
@@ -167,8 +168,6 @@ endfunction()
 function(add_engine_dependencies target_name)
 	if(RENDER_API_MODULE MATCHES "DirectX 11")
 		add_dependencies(${target_name} BansheeD3D11RenderAPI)
-	elseif(RENDER_API_MODULE MATCHES "DirectX 9")
-		add_dependencies(${target_name} BansheeD3D9RenderAPI)
 	else()
 		add_dependencies(${target_name} BansheeGLRenderAPI)
 	endif()
@@ -196,17 +195,14 @@ endif()
 
 ## Plugins
 ### If using MSVC include all plugins in the solution (which ones actually build is controlled by dependencies)
-if(MSVC)
+if(INCLUDE_ALL_IN_WORKFLOW AND MSVC)
 	add_subdirectory(BansheeD3D11RenderAPI)
-	add_subdirectory(BansheeD3D9RenderAPI)
 	add_subdirectory(BansheeGLRenderAPI)
 	add_subdirectory(BansheeFMOD)
 	add_subdirectory(BansheeOpenAudio)
 else() # Otherwise include only chosen ones
 	if(RENDER_API_MODULE MATCHES "DirectX 11")
 		add_subdirectory(BansheeD3D11RenderAPI)
-	elseif(RENDER_API_MODULE MATCHES "DirectX 9")
-		add_subdirectory(BansheeD3D9RenderAPI)
 	else()
 		add_subdirectory(BansheeGLRenderAPI)
 	endif()
@@ -263,8 +259,6 @@ endif()
 ## Set names of libraries used in the config file
 if(RENDER_API_MODULE MATCHES "DirectX 11")
 	set(RENDER_API_MODULE_LIB BansheeD3D11RenderAPI)
-elseif(RENDER_API_MODULE MATCHES "DirectX 9")
-	set(RENDER_API_MODULE_LIB BansheeD3D9RenderAPI)
 else()
 	set(RENDER_API_MODULE_LIB BansheeGLRenderAPI)
 endif()

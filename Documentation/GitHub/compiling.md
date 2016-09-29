@@ -28,29 +28,28 @@ For older versions of pre-compiled dependencies check the git release tag descri
 ## Other dependencies
 The following dependencies will need to be installed manually regardless if you used pre-compiled dependency package or have compiled them yourself.
 
-**DirectX SDK**
+**DirectX SDK** (Optional if not using DirectX)
  - Only needed if on Windows 7 or earlier and using DirectX 11 render API
- - Or for all Windows versions if using DirectX 9 render API
  - Set up DXSDK_DIR environment variable pointing to the DirectX instalation
  
-**Windows SDK**
+**Windows SDK** (Optional if not using DirectX)
  - Only needed if on Windows 8 or later and using DirectX 11 render API
  
-**DirectX Debug Layer**
+**DirectX Debug Layer** (Optional if not using DirectX)
  - Only needed if on Windows 10 and using DirectX 11 render API
  - Go to Settings panel (type "Settings" in Start)->System->Apps & features->Manage optional Features->Add a feature->Select "Graphics Tools"
  
-**Python 3.5**
+**Python 3.5** (Optional)
  - Only needed if you plan on running Python scripts in the /Scripts folder
  - https://www.python.org/downloads/
 
-**FMOD Low Level Programmer API**
+**FMOD Low Level Programmer API** (Optional)
  - Only needed if you selected the FMOD audio module during build configuration (not selected by default)
  - http://www.fmod.org/download/
  - If CMake complains it cannot find FMOD, manually set the FMOD_INSTALL_DIRS to your installation directory 
  - Copy the dynamic libraries from {INSTALLDIR}/api/lowlevel/lib into /bin folder in Banshee source code folder
   - Use logging libraries for the Debug builds, and non-logging for OptimizedDebug and Release builds
   
-**Mono 4.2**
+**Mono 4.2** (Optional)
  - If you wish to compile managed assemblies using a Microsoft compiler (e.g. using Visual Studio) yet still be able to debug the generated assemblies, you must install Mono 4.2. and set up an environment variable MONO_INSTALL_DIR pointing to the Mono installation directory. When this is set up "pdb2mdb" script will trigger on next compile generating the needed debug symbols.
  - http://www.mono-project.com/download/
