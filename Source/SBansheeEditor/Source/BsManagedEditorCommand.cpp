@@ -6,6 +6,7 @@
 #include "BsMonoClass.h"
 #include "BsMonoMethod.h"
 #include "BsMonoManager.h"
+#include "BsMonoUtil.h"
 
 namespace BansheeEngine
 {
@@ -62,7 +63,7 @@ namespace BansheeEngine
 	}
 
 	CmdManaged::CmdManaged(ScriptCmdManaged* scriptObj)
-		: EditorCommand(L""), mScriptObj(scriptObj)
+		: EditorCommand(L""), mScriptObj(scriptObj), mGCHandle(0), mRefCount(0)
 	{
 
 	}
@@ -101,6 +102,24 @@ namespace BansheeEngine
 		}
 
 		mScriptObj->triggerRevert();
+	}
+
+	void CmdManaged::onCommandAdded()
+	{
+		if (mGCHandle == 0 && mScriptObj != nullptr)
+			mGCHandle = MonoUtil::newGCHandle(mScriptObj->getManagedInstance());
+
+		mRefCount++;
+	}
+
+	void CmdManaged::onCommandRemoved()
+	{
+		assert(mRefCount > 0);
+
+		mRefCount--;
+
+		if (mRefCount == 0 && mGCHandle != 0)
+			MonoUtil::freeGCHandle(mGCHandle);
 	}
 
 	void CmdManaged::notifyScriptInstanceDestroyed()

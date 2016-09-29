@@ -20,6 +20,8 @@ namespace BansheeEditor
     /// </summary>
     public class UndoRedo : ScriptObject
     {
+        private static UndoRedo global;
+
         /// <summary>
         /// Constructor for internal runtime use.
         /// </summary>
@@ -40,7 +42,7 @@ namespace BansheeEditor
         /// </summary>
         public static UndoRedo Global
         {
-            get { return Internal_GetGlobal(); }
+            get { return global; }
         }
 
         /// <summary>
@@ -105,6 +107,14 @@ namespace BansheeEditor
         public void PopCommand(int id)
         {
             Internal_PopCommand(mCachedPtr, id);
+        }
+
+        /// <summary>
+        /// Clears all undo/redo commands from the stack.
+        /// </summary>
+        public void Clear()
+        {
+            Internal_Clear(mCachedPtr);
         }
 
         /// <summary>
@@ -252,11 +262,18 @@ namespace BansheeEditor
                 Internal_BreakPrefab(so.GetCachedPtr(), description);
         }
 
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern void Internal_CreateInstance(UndoRedo instance);
+        /// <summary>
+        /// Used by the runtime to set the global undo/redo stack.
+        /// </summary>
+        /// <param name="global">Instance of the global undo/redo stack.</param>
+        private static void Internal_SetGlobal(UndoRedo global)
+        {
+            // We can't set this directly through the field because there is an issue with Mono and static fields
+            UndoRedo.global = global;
+        }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern UndoRedo Internal_GetGlobal();
+        internal static extern void Internal_CreateInstance(UndoRedo instance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Internal_Undo(IntPtr thisPtr);
@@ -272,6 +289,9 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Internal_PopGroup(IntPtr thisPtr, string name);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern void Internal_Clear(IntPtr thisPtr);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern void Internal_PopCommand(IntPtr thisPtr, int id);

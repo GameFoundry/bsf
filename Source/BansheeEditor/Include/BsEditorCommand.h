@@ -29,6 +29,12 @@ namespace BansheeEngine
 	private:
 		friend class UndoRedo;
 
+		/** Triggers when a command is added to an undo/redo stack. */
+		virtual void onCommandAdded() { }
+
+		/** Triggers when a command is removed from an undo/redo stack. */
+		virtual void onCommandRemoved() {}
+
 		WString mDescription;
 		UINT32 mId;
 	};

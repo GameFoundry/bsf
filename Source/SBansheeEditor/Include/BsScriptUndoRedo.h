@@ -23,22 +23,30 @@ namespace BansheeEngine
 		/** Creates a new managed UndoRedo stack. */
 		static MonoObject* create();
 
+		/**	Creates the globally accessible undo/redo stack. */
+		static void startUp();
+
+		/** Cleans up any data related to the global undo/redo stack. */
+		static void shutDown();
+
 	private:
 		ScriptUndoRedo(MonoObject* instance, const SPtr<UndoRedo>& undoRedo);
 
 		SPtr<UndoRedo> mUndoRedo;
-		static ScriptUndoRedo* sGlobalUndoRedo;
 
+		static ScriptUndoRedo* sGlobalUndoRedo;
+		static HEvent sDomainLoadConn;
+		
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
 		static void internal_CreateInstance(MonoObject* instance);
-		static MonoObject* internal_GetGlobal();
 		static void internal_Undo(ScriptUndoRedo* thisPtr);
 		static void internal_Redo(ScriptUndoRedo* thisPtr);
 		static void internal_RegisterCommand(ScriptUndoRedo* thisPtr, ScriptCmdManaged* command);
 		static void internal_PushGroup(ScriptUndoRedo* thisPtr, MonoString* name);
 		static void internal_PopGroup(ScriptUndoRedo* thisPtr, MonoString* name);
+		static void internal_Clear(ScriptUndoRedo* thisPtr);
 		static UINT32 internal_GetTopCommandId(ScriptUndoRedo* thisPtr);
 		static void internal_PopCommand(ScriptUndoRedo* thisPtr, UINT32 id);
 		static void internal_RecordSO(ScriptSceneObject* soPtr, bool recordHierarchy, MonoString* description);

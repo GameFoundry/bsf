@@ -97,6 +97,14 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Returns the non-editor version of the curve.
+        /// </summary>
+        public AnimationCurve Normal
+        {
+            get { return native; }
+        }
+
+        /// <summary>
         /// Creates a new animation curve with zero keyframes.
         /// </summary>
         internal EdAnimationCurve()

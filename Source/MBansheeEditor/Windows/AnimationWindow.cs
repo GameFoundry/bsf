@@ -767,6 +767,7 @@ namespace BansheeEditor
                 zoomAmount = 0.0f;
                 selectedFields.Clear();
                 clipInfo = null;
+                UndoRedo.Clear();
 
                 RebuildGUI();
 
@@ -787,6 +788,7 @@ namespace BansheeEditor
 
                 SwitchState(State.Normal);
 
+                currentClipState = CreateClipState();
                 if (selectedSO != null)
                 {
                     // Select first curve by default
@@ -829,6 +831,129 @@ namespace BansheeEditor
                 soState.Restore();
                 soState = null;
             }
+        }
+
+        #endregion
+
+        #region Undo/Redo
+
+        private AnimationClipState currentClipState;
+
+        /// <summary>
+        /// Records current clip state for undo/redo purposes.
+        /// </summary>
+        internal void RecordClipState()
+        {
+            AnimationClipState clipState = CreateClipState();
+
+            AnimationUndo undoCommand = new AnimationUndo(currentClipState, clipState);
+            UndoRedo.RegisterCommand(undoCommand);
+
+            currentClipState = clipState;
+        }
+
+        /// <summary>
+        /// Records current clip state for undo/redo purposes.
+        /// </summary>
+        internal AnimationClipState CreateClipState()
+        {
+            AnimationClipState clipState = new AnimationClipState();
+
+            clipState.events = new AnimationEvent[clipInfo.events.Length];
+            for (int i = 0; i < clipState.events.Length; i++)
+                clipState.events[i] = new AnimationEvent(clipInfo.events[i].Name, clipInfo.events[i].Time);
+
+            foreach (var curveField in clipInfo.curves)
+            {
+                AnimationCurveState[] curveData = new AnimationCurveState[curveField.Value.curveInfos.Length];
+                for (int i = 0; i < curveData.Length; i++)
+                {
+                    curveData[i] = new AnimationCurveState();
+
+                    TangentMode[] tangentModes = curveField.Value.curveInfos[i].curve.TangentModes;
+                    int numTangentModes = tangentModes.Length;
+                    curveData[i].tangentModes = new TangentMode[numTangentModes];
+                    Array.Copy(tangentModes, curveData[i].tangentModes, numTangentModes);
+
+                    KeyFrame[] keyFrames = curveField.Value.curveInfos[i].curve.KeyFrames;
+                    int numKeyframes = keyFrames.Length;
+                    curveData[i].keyFrames = new KeyFrame[numKeyframes];
+                    Array.Copy(keyFrames, curveData[i].keyFrames, numKeyframes);
+                }
+
+                clipState.curves[curveField.Key] = curveData;
+            }
+
+            return clipState;
+        }
+
+        /// <summary>
+        /// Updates the current animation fields from the keyframes and events in the provided state.
+        /// </summary>
+        /// <param name="animationClipState">Saved state of an animation clip.</param>
+        internal void ApplyClipState(AnimationClipState animationClipState)
+        {
+            if (state == State.Empty)
+                return;
+
+            SwitchState(State.Normal);
+
+            AnimationEvent[] events = animationClipState.events;
+            clipInfo.events = new AnimationEvent[events.Length];
+            for(int i = 0; i < events.Length; i++)
+                clipInfo.events[i] = new AnimationEvent(events[i].Name, events[i].Time);
+
+            foreach (var KVP in animationClipState.curves)
+            {
+                FieldAnimCurves fieldCurves;
+                if (!clipInfo.curves.TryGetValue(KVP.Key, out fieldCurves))
+                    continue;
+
+                for (int i = 0; i < fieldCurves.curveInfos.Length; i++)
+                {
+                    AnimationCurve curve = fieldCurves.curveInfos[i].curve.Normal;
+                    curve.KeyFrames = KVP.Value[i].keyFrames;
+
+                    fieldCurves.curveInfos[i].curve = new EdAnimationCurve(curve, KVP.Value[i].tangentModes);
+                }
+
+                clipInfo.curves[KVP.Key] = fieldCurves;
+            }
+
+            // Clear all keyframes from curves not in the stored state
+            foreach (var currentKVP in clipInfo.curves)
+            {
+                bool found = false;
+                foreach (var stateKVP in animationClipState.curves)
+                {
+                    if (currentKVP.Key == stateKVP.Key)
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (found)
+                    continue;
+
+                FieldAnimCurves fieldCurves = currentKVP.Value;
+                for (int i = 0; i < fieldCurves.curveInfos.Length; i++)
+                {
+                    AnimationCurve curve = currentKVP.Value.curveInfos[i].curve.Normal;
+                    curve.KeyFrames = new KeyFrame[0];
+
+                    fieldCurves.curveInfos[i].curve = new EdAnimationCurve(curve, new TangentMode[0]);
+                }
+            }
+
+            currentClipState = animationClipState;
+
+            UpdateDisplayedCurves();
+
+            ApplyClipChanges();
+            PreviewFrame(currentFrameIdx);
+
+            EditorApplication.SetProjectDirty();
         }
 
         #endregion
@@ -1832,6 +1957,53 @@ namespace BansheeEditor
             contentLayout.AddElement(fpsField);
             contentLayout.AddFlexibleSpace();
             vertLayout.AddFlexibleSpace();
+        }
+    }
+
+    /// <summary>
+    /// Raw data representing a single animation curve.
+    /// </summary>
+    class AnimationCurveState
+    {
+        public KeyFrame[] keyFrames;
+        public TangentMode[] tangentModes;
+    }
+
+    /// <summary>
+    /// Raw data representing a single animation clip state.
+    /// </summary>
+    class AnimationClipState
+    {
+        public Dictionary<string, AnimationCurveState[]> curves = new Dictionary<string, AnimationCurveState[]>();
+        public AnimationEvent[] events;
+    }
+
+    /// <summary>
+    /// Undo command used in the AnimationWindow.
+    /// </summary>
+    internal class AnimationUndo : UndoableCommand
+    {
+        private AnimationClipState prevClipState;
+        private AnimationClipState clipState;
+
+        public AnimationUndo(AnimationClipState prevClipState, AnimationClipState clipState)
+        {
+            this.prevClipState = prevClipState;
+            this.clipState = clipState;
+        }
+
+        /// <inheritdoc/>
+        protected override void Commit()
+        {
+            AnimationWindow window = EditorWindow.GetWindow<AnimationWindow>();
+            window?.ApplyClipState(clipState);
+        }
+
+        /// <inheritdoc/>
+        protected override void Revert()
+        {
+            AnimationWindow window = EditorWindow.GetWindow<AnimationWindow>();
+            window?.ApplyClipState(prevClipState);
         }
     }
 

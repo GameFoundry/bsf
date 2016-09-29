@@ -531,8 +531,6 @@ namespace BansheeEditor
                                 }
                             }
 
-                            // TODO - UNDOREDO record keyframe or tangent
-
                             isDragInProgress = true;
                         }
                     }
@@ -583,6 +581,8 @@ namespace BansheeEditor
                             }
 
                             isModifiedDuringDrag = true;
+                            window.RecordClipState();
+
                             guiCurveDrawing.Rebuild();
                             UpdateEventsGUI();
                         }
@@ -624,6 +624,8 @@ namespace BansheeEditor
                                 curve.Apply();
 
                                 isModifiedDuringDrag = true;
+                                window.RecordClipState();
+
                                 guiCurveDrawing.Rebuild();
                             }
                         }
@@ -756,7 +758,7 @@ namespace BansheeEditor
             else
                 ShowReadOnlyMessage();
 
-            // TODO - UNDOREDO
+            window.RecordClipState();
 
             OnCurveModified?.Invoke();
             guiCurveDrawing.Rebuild();
@@ -774,7 +776,7 @@ namespace BansheeEditor
             EventInfo eventInfo = new EventInfo();
             eventInfo.animEvent = new AnimationEvent("", eventTime);
             
-            events.Add(eventInfo); // TODO - UNDOREDO
+            events.Add(eventInfo);
             OnEventAdded?.Invoke();
 
             UpdateEventsGUI();
@@ -863,7 +865,7 @@ namespace BansheeEditor
                 curve.Apply();
             }
 
-            // TODO - UNDOREDO
+            window.RecordClipState();
 
             OnCurveModified?.Invoke();
             guiCurveDrawing.Rebuild();
@@ -893,7 +895,7 @@ namespace BansheeEditor
                 else
                     ShowReadOnlyMessage();
 
-                // TODO - UNDOREDO
+                window.RecordClipState();
 
                 OnCurveModified?.Invoke();
                 guiCurveDrawing.Rebuild();
@@ -915,9 +917,9 @@ namespace BansheeEditor
                 EventInfo eventInfo = new EventInfo();
                 eventInfo.animEvent = new AnimationEvent("", time);
 
-                events.Add(eventInfo); // TODO - UNDOREDO
-                OnEventAdded?.Invoke();
+                events.Add(eventInfo);
 
+                OnEventAdded?.Invoke();
                 UpdateEventsGUI();
                 guiCurveDrawing.Rebuild();
 
@@ -951,8 +953,7 @@ namespace BansheeEditor
             else
                 ShowReadOnlyMessage();
 
-            // TODO - UNDOREDO
-
+            window.RecordClipState();
             ClearSelection();
 
             OnCurveModified?.Invoke();
@@ -972,9 +973,10 @@ namespace BansheeEditor
                     newEvents.Add(entry);
             }
 
-            events = newEvents; // TODO - UNDOREDO
-            OnEventDeleted?.Invoke();
+            events = newEvents;
+            window.RecordClipState();
 
+            OnEventDeleted?.Invoke();
             ClearSelection();
 
             guiCurveDrawing.Rebuild();
@@ -1077,10 +1079,14 @@ namespace BansheeEditor
             {
                 curve.UpdateKeyframe(keyIndex, x.time, x.value);
                 curve.Apply();
-                // TODO UNDOREDO
 
                 guiCurveDrawing.Rebuild();
                 OnCurveModified?.Invoke();
+            },
+            x =>
+            {
+                if (x)
+                    window.RecordClipState();
             });
         }
 
@@ -1125,6 +1131,11 @@ namespace BansheeEditor
             {
                 UpdateEventsGUI();
                 OnEventModified?.Invoke();
+            },
+            x =>
+            {
+                if(x)
+                    window.RecordClipState();
             });
         }
 
@@ -1148,21 +1159,25 @@ namespace BansheeEditor
     [DefaultSize(120, 80)]
     internal class KeyframeEditWindow : DropDownWindow
     {
+        private Action<bool> closeCallback;
+        private bool changesMade;
+
         /// <summary>
         /// Initializes the drop down window by creating the necessary GUI. Must be called after construction and before
         /// use.
         /// </summary>
         /// <param name="keyFrame">Keyframe whose properties to edit.</param>
         /// <param name="updateCallback">Callback triggered when event values change.</param>
-        internal void Initialize(KeyFrame keyFrame, Action<KeyFrame> updateCallback)
+        /// <param name="closeCallback">Callback triggered just before the window closes.</param>
+        internal void Initialize(KeyFrame keyFrame, Action<KeyFrame> updateCallback, Action<bool> closeCallback)
         {
             GUIFloatField timeField = new GUIFloatField(new LocEdString("Time"), 40, "");
             timeField.Value = keyFrame.time;
-            timeField.OnChanged += x => { keyFrame.time = x; updateCallback(keyFrame); };
+            timeField.OnChanged += x => { keyFrame.time = x; changesMade = true; updateCallback(keyFrame); };
 
             GUIFloatField valueField = new GUIFloatField(new LocEdString("Value"), 40, "");
             valueField.Value = keyFrame.value;
-            valueField.OnChanged += x => { keyFrame.value = x; updateCallback(keyFrame); };
+            valueField.OnChanged += x => { keyFrame.value = x; changesMade = true; updateCallback(keyFrame); };
 
             GUILayoutY vertLayout = GUI.AddLayoutY();
 
@@ -1180,6 +1195,13 @@ namespace BansheeEditor
             componentLayout.AddFlexibleSpace();
             horzLayout.AddFlexibleSpace();
             vertLayout.AddFlexibleSpace();
+
+            this.closeCallback = closeCallback;
+        }
+
+        private void OnDestroy()
+        {
+            closeCallback?.Invoke(changesMade);
         }
     }
 
@@ -1189,6 +1211,9 @@ namespace BansheeEditor
     [DefaultSize(200, 80)]
     internal class EventEditWindow : DropDownWindow
     {
+        private Action<bool> closeCallback;
+        private bool changesMade;
+
         /// <summary>
         /// Initializes the drop down window by creating the necessary GUI. Must be called after construction and before
         /// use.
@@ -1196,7 +1221,9 @@ namespace BansheeEditor
         /// <param name="animEvent">Event whose properties to edit.</param>
         /// <param name="componentNames">List of component names that the user can select from.</param>
         /// <param name="updateCallback">Callback triggered when event values change.</param>
-        internal void Initialize(AnimationEvent animEvent, string[] componentNames, Action updateCallback)
+        /// <param name="closeCallback">Callback triggered just before the window closes.</param>
+        internal void Initialize(AnimationEvent animEvent, string[] componentNames, Action updateCallback, 
+            Action<bool> closeCallback)
         {
             int selectedIndex = -1;
             string methodName = "";
@@ -1221,7 +1248,7 @@ namespace BansheeEditor
 
             GUIFloatField timeField = new GUIFloatField(new LocEdString("Time"), 40, "");
             timeField.Value = animEvent.Time;
-            timeField.OnChanged += x => { animEvent.Time = x; updateCallback(); }; // TODO UNDOREDO  
+            timeField.OnChanged += x => { animEvent.Time = x; changesMade = true; updateCallback(); };
 
             GUIListBoxField componentField = new GUIListBoxField(componentNames, new LocEdString("Component"), 40);
             if (selectedIndex != -1)
@@ -1234,8 +1261,10 @@ namespace BansheeEditor
                     compName = componentNames[x] + "/";
 
                 animEvent.Name = compName + x;
+
+                changesMade = true;
                 updateCallback();
-            };// TODO UNDOREDO 
+            };
 
             GUITextField methodField = new GUITextField(new LocEdString("Method"), 40, false, "", GUIOption.FixedWidth(190));
             methodField.Value = methodName;
@@ -1246,8 +1275,10 @@ namespace BansheeEditor
                     compName = componentNames[componentField.Index] + "/";
 
                 animEvent.Name = compName + x;
+
+                changesMade = true;
                 updateCallback();
-            }; // TODO UNDOREDO 
+            };
 
             GUILayoutY vertLayout = GUI.AddLayoutY();
 
@@ -1269,6 +1300,13 @@ namespace BansheeEditor
             methodLayout.AddFlexibleSpace();
             horzLayout.AddFlexibleSpace();
             vertLayout.AddFlexibleSpace();
+
+            this.closeCallback = closeCallback;
+        }
+
+        private void OnDestroy()
+        {
+            closeCallback?.Invoke(changesMade);
         }
     }
 

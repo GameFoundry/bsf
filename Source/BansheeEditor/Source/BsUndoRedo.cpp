@@ -43,6 +43,7 @@ namespace BansheeEngine
 			return;
 
 		SPtr<EditorCommand> command = mRedoStack[mRedoStackPtr];
+		mRedoStack[mRedoStackPtr] = SPtr<EditorCommand>();
 		mRedoStackPtr = (mRedoStackPtr - 1) % MAX_STACK_ELEMENTS;
 		mRedoNumElements--;
 
@@ -73,6 +74,9 @@ namespace BansheeEngine
 
 		for(UINT32 i = 0; i < topGroup.numEntries; i++)
 		{
+			if (mUndoStack[mUndoStackPtr] != nullptr)
+				mUndoStack[mUndoStackPtr]->onCommandRemoved();
+
 			mUndoStack[mUndoStackPtr] = SPtr<EditorCommand>();
 			mUndoStackPtr = (mUndoStackPtr - 1) % MAX_STACK_ELEMENTS;
 			mUndoNumElements--;
@@ -85,7 +89,11 @@ namespace BansheeEngine
 	void UndoRedo::registerCommand(const SPtr<EditorCommand>& command)
 	{
 		command->mId = mNextCommandId++;
-		addToUndoStack(command);
+		command->onCommandAdded();
+
+		SPtr<EditorCommand> existingCommand = addToUndoStack(command);
+		if (existingCommand != nullptr)
+			existingCommand->onCommandRemoved();
 
 		clearRedoStack();
 	}
@@ -105,6 +113,11 @@ namespace BansheeEngine
 		{
 			if (mUndoStack[undoPtr]->mId == id)
 			{
+				if (mUndoStack[undoPtr] != nullptr)
+					mUndoStack[undoPtr]->onCommandRemoved();
+
+				mUndoStack[undoPtr] = SPtr<EditorCommand>();
+
 				for (UINT32 j = mUndoNumElements - i; j < (mUndoNumElements - 1); j++)
 				{
 					UINT32 nextUndoPtr = (undoPtr + 1) % MAX_STACK_ELEMENTS;
@@ -126,6 +139,11 @@ namespace BansheeEngine
 		{
 			if (mRedoStack[redoPtr]->mId == id)
 			{
+				if (mRedoStack[redoPtr] != nullptr)
+					mRedoStack[redoPtr]->onCommandRemoved();
+
+				mRedoStack[redoPtr] = SPtr<EditorCommand>();
+
 				for (UINT32 j = mRedoNumElements - i; j < (mRedoNumElements - 1); j++)
 				{
 					UINT32 nextRedoPtr = (redoPtr + 1) % MAX_STACK_ELEMENTS;
@@ -173,9 +191,12 @@ namespace BansheeEngine
 		return command;
 	}
 
-	void UndoRedo::addToUndoStack(const SPtr<EditorCommand>& command)
+	SPtr<EditorCommand> UndoRedo::addToUndoStack(const SPtr<EditorCommand>& command)
 	{
 		mUndoStackPtr = (mUndoStackPtr + 1) % MAX_STACK_ELEMENTS;
+
+		SPtr<EditorCommand> existingCommand = mUndoStack[mUndoStackPtr];
+
 		mUndoStack[mUndoStackPtr] = command;
 		mUndoNumElements = std::min(mUndoNumElements + 1, MAX_STACK_ELEMENTS);
 
@@ -184,12 +205,17 @@ namespace BansheeEngine
 			GroupData& topGroup = mGroups.top();
 			topGroup.numEntries = std::min(topGroup.numEntries + 1, MAX_STACK_ELEMENTS);
 		}
+
+		return existingCommand;
 	}
 
 	void UndoRedo::clearUndoStack()
 	{
 		while(mUndoNumElements > 0)
 		{
+			if (mUndoStack[mUndoStackPtr] != nullptr)
+				mUndoStack[mUndoStackPtr]->onCommandRemoved();
+
 			mUndoStack[mUndoStackPtr] = SPtr<EditorCommand>();
 			mUndoStackPtr = (mUndoStackPtr - 1) % MAX_STACK_ELEMENTS;
 			mUndoNumElements--;
@@ -203,6 +229,9 @@ namespace BansheeEngine
 	{
 		while(mRedoNumElements > 0)
 		{
+			if (mRedoStack[mRedoStackPtr] != nullptr)
+				mRedoStack[mRedoStackPtr]->onCommandRemoved();
+
 			mRedoStack[mRedoStackPtr] = SPtr<EditorCommand>();
 			mRedoStackPtr = (mRedoStackPtr - 1) % MAX_STACK_ELEMENTS;
 			mRedoNumElements--;

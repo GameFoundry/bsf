@@ -25,6 +25,7 @@
 #include "BsScriptInspectorUtility.h"
 #include "BsScriptEditorInput.h"
 #include "BsScriptEditorVirtualInput.h"
+#include "BsScriptUndoRedo.h"
 
 namespace BansheeEngine
 {
@@ -39,6 +40,7 @@ namespace BansheeEngine
 		loadMonoTypes();
 		ScriptAssemblyManager::instance().loadAssemblyInfo(EDITOR_ASSEMBLY);
 
+		ScriptUndoRedo::startUp();
 		ScriptEditorInput::startUp();
 		ScriptEditorVirtualInput::startUp();
 		ScriptEditorApplication::startUp();
@@ -84,6 +86,7 @@ namespace BansheeEngine
 		ScriptEditorApplication::shutDown();
 		ScriptEditorVirtualInput::shutDown();
 		ScriptEditorInput::shutDown();
+		ScriptUndoRedo::shutDown();
 	}
 
 	void EditorScriptManager::update()

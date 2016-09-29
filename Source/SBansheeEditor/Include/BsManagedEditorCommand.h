@@ -77,6 +77,12 @@ namespace BansheeEngine
 
 		CmdManaged(ScriptCmdManaged* scriptObj);
 
+		/** @copydoc EditorCommand::commit */
+		void onCommandAdded() override;
+
+		/** @copydoc EditorCommand::commit */
+		void onCommandRemoved() override;
+
 		/** 
 		 * Notifies the command the managed script object instance it is referencing has been destroyed. Normally when this
 		 * happens the command should already be outside of the undo/redo stack, but we clear the instance just in case.
@@ -84,6 +90,9 @@ namespace BansheeEngine
 		void notifyScriptInstanceDestroyed();
 
 		ScriptCmdManaged* mScriptObj;
+		uint32_t mGCHandle;
+		UINT32 mRefCount;
+
 	};
 
 	/** @} */

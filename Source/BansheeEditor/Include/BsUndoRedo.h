@@ -72,8 +72,8 @@ namespace BansheeEngine
 		/**	Removes the last undo command from the undo stack, and returns it. */
 		SPtr<EditorCommand> removeLastFromUndoStack();
 
-		/**	Adds a new command to the undo stack. */
-		void addToUndoStack(const SPtr<EditorCommand>& command);
+		/**	Adds a new command to the undo stack. Returns the command that was replaced. */
+		SPtr<EditorCommand> addToUndoStack(const SPtr<EditorCommand>& command);
 
 		/**	Removes all entries from the undo stack. */
 		void clearUndoStack();

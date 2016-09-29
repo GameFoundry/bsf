@@ -18,10 +18,12 @@
 #include "BsScriptPrefab.h"
 #include "BsManagedEditorCommand.h"
 #include "BsPrefab.h"
+#include "BsScriptObjectManager.h"
 
 namespace BansheeEngine
 {
 	ScriptUndoRedo* ScriptUndoRedo::sGlobalUndoRedo = nullptr;
+	HEvent ScriptUndoRedo::sDomainLoadConn;
 
 	ScriptUndoRedo::ScriptUndoRedo(MonoObject* instance, const SPtr<UndoRedo>& undoRedo)
 		:ScriptObject(instance), mUndoRedo(undoRedo)
@@ -30,12 +32,12 @@ namespace BansheeEngine
 	void ScriptUndoRedo::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptUndoRedo::internal_CreateInstance);
-		metaData.scriptClass->addInternalCall("Internal_GetGlobal", &ScriptUndoRedo::internal_GetGlobal);
 		metaData.scriptClass->addInternalCall("Internal_Undo", &ScriptUndoRedo::internal_Undo);
 		metaData.scriptClass->addInternalCall("Internal_Redo", &ScriptUndoRedo::internal_Redo);
 		metaData.scriptClass->addInternalCall("Internal_RegisterCommand", &ScriptUndoRedo::internal_RegisterCommand);
 		metaData.scriptClass->addInternalCall("Internal_PushGroup", &ScriptUndoRedo::internal_PushGroup);
 		metaData.scriptClass->addInternalCall("Internal_PopGroup", &ScriptUndoRedo::internal_PopGroup);
+		metaData.scriptClass->addInternalCall("Internal_Clear", &ScriptUndoRedo::internal_Clear);
 		metaData.scriptClass->addInternalCall("Internal_GetTopCommandId", &ScriptUndoRedo::internal_GetTopCommandId);
 		metaData.scriptClass->addInternalCall("Internal_PopCommand", &ScriptUndoRedo::internal_PopCommand);
 		metaData.scriptClass->addInternalCall("Internal_RecordSO", &ScriptUndoRedo::internal_RecordSO);
@@ -47,6 +49,33 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_ReparentSO", &ScriptUndoRedo::internal_ReparentSO);
 		metaData.scriptClass->addInternalCall("Internal_ReparentSOMulti", &ScriptUndoRedo::internal_ReparentSOMulti);
 		metaData.scriptClass->addInternalCall("Internal_BreakPrefab", &ScriptUndoRedo::internal_BreakPrefab);
+	}
+
+	void ScriptUndoRedo::startUp()
+	{
+		auto createPanel = []()
+		{
+			assert(sGlobalUndoRedo == nullptr);
+
+			bool dummy = false;
+			void* ctorParams[1] = { &dummy };
+
+			MonoObject* instance = metaData.scriptClass->createInstance("bool", ctorParams);
+			new (bs_alloc<ScriptUndoRedo>()) ScriptUndoRedo(instance, nullptr);
+
+			MonoMethod* setGlobal = metaData.scriptClass->getMethod("Internal_SetGlobal", 1);
+			void* setGlobalParams[1] = { instance };
+			setGlobal->invoke(nullptr, setGlobalParams);
+		};
+
+		sDomainLoadConn = ScriptObjectManager::instance().onRefreshDomainLoaded.connect(createPanel);
+
+		createPanel();
+	}
+
+	void ScriptUndoRedo::shutDown()
+	{
+		sDomainLoadConn.disconnect();
 	}
 
 	MonoObject* ScriptUndoRedo::create()
@@ -66,20 +95,6 @@ namespace BansheeEngine
 	{
 		SPtr<UndoRedo> undoRedo = bs_shared_ptr_new<UndoRedo>();
 		new (bs_alloc<ScriptUndoRedo>()) ScriptUndoRedo(instance, undoRedo);
-	}
-
-	MonoObject* ScriptUndoRedo::internal_GetGlobal()
-	{
-		if(sGlobalUndoRedo == nullptr)
-		{
-			bool dummy = false;
-			void* params[1] = { &dummy };
-
-			MonoObject* instance = metaData.scriptClass->createInstance("bool", params);
-			sGlobalUndoRedo = new (bs_alloc<ScriptUndoRedo>()) ScriptUndoRedo(instance, nullptr);
-		}
-
-		return sGlobalUndoRedo->getManagedInstance();
 	}
 
 	void ScriptUndoRedo::internal_Undo(ScriptUndoRedo* thisPtr)
@@ -114,6 +129,12 @@ namespace BansheeEngine
 
 		UndoRedo* undoRedo = thisPtr->mUndoRedo != nullptr ? thisPtr->mUndoRedo.get() : UndoRedo::instancePtr();
 		undoRedo->popGroup(nativeName);
+	}
+
+	void ScriptUndoRedo::internal_Clear(ScriptUndoRedo* thisPtr)
+	{
+		UndoRedo* undoRedo = thisPtr->mUndoRedo != nullptr ? thisPtr->mUndoRedo.get() : UndoRedo::instancePtr();
+		return undoRedo->clear();
 	}
 
 	UINT32 ScriptUndoRedo::internal_GetTopCommandId(ScriptUndoRedo* thisPtr)
