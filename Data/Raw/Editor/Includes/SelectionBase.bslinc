@@ -163,7 +163,7 @@ Technique
 		in vec3 bs_position;
 	
 		#ifdef USE_SKELETON
-			in uvec4 bs_blendindices;
+			in ivec4 bs_blendindices;
 			in vec4 bs_blendweights;
 		#endif
 			
@@ -180,7 +180,7 @@ Technique
 #ifdef USE_SKELETON
 		uniform samplerBuffer boneMatrices;
 		
-		void getBoneMatrix(uint idx, out mat4x3 result)
+		void getBoneMatrix(int idx, out mat4x3 result)
 		{
 			mat3x4 temp;
 		
@@ -195,16 +195,16 @@ Technique
 		{
 			mat4x3 boneMatrix;
 			
-			getBoneMatrix(bs_blendindices.x, out boneMatrix);
+			getBoneMatrix(bs_blendindices.x, boneMatrix);
 			result = bs_blendweights.x * boneMatrix;
 			
-			getBoneMatrix(bs_blendindices.y, out boneMatrix);
+			getBoneMatrix(bs_blendindices.y, boneMatrix);
 			result += bs_blendweights.y * boneMatrix;
 			
-			getBoneMatrix(bs_blendindices.z, out boneMatrix);
+			getBoneMatrix(bs_blendindices.z, boneMatrix);
 			result += bs_blendweights.z * boneMatrix;
 			
-			getBoneMatrix(bs_blendindices.w, out boneMatrix);
+			getBoneMatrix(bs_blendindices.w, boneMatrix);
 			result += bs_blendweights.w * boneMatrix;
 		}
 #endif
@@ -218,7 +218,7 @@ Technique
 #endif		
 		
 #ifdef USE_SKELETON
-			mat3x4 blendMatrix;
+			mat4x3 blendMatrix;
 			getBlendMatrix(blendMatrix);
 			
 			position = vec4(blendMatrix * position, 1.0f);

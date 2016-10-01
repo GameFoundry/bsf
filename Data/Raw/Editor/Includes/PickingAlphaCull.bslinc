@@ -118,7 +118,7 @@ Technique : base("PickingAlphaCull") =
 			in vec3 bs_position;
 			in vec2 bs_texcoord0;
 			in vec3 bs_normal;
-			out vec4 normal
+			out vec4 normal;
 			out vec2 texcoord0;
 
 			out gl_PerVertex

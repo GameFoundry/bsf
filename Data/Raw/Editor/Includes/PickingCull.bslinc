@@ -91,6 +91,7 @@ Technique : base("PickingCull") =
 			in vec3 bs_position;
 			in vec3 bs_normal;
 			out vec4 normal;
+			
 			out gl_PerVertex
 			{
 				vec4 gl_Position;

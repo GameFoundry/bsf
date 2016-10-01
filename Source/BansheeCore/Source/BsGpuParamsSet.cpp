@@ -12,6 +12,51 @@
 
 namespace BansheeEngine
 {
+	/** Uniquely identifies a GPU parameter. */
+	struct ValidParamKey
+	{
+		ValidParamKey(const String& name, const MaterialParams::ParamType& type)
+			:name(name), type(type)
+		{ }
+
+		bool operator== (const ValidParamKey& rhs) const
+		{
+			return name == rhs.name && type == rhs.type;
+		}
+
+		bool operator!= (const ValidParamKey& rhs) const
+		{
+			return !(*this == rhs);
+		}
+
+		String name;
+		MaterialParams::ParamType type;
+	};
+}
+
+/** @cond STDLIB */
+
+namespace std
+{
+	/** Hash value generator for ValidParamKey. */
+	template<>
+	struct hash<BansheeEngine::ValidParamKey>
+	{
+		size_t operator()(const BansheeEngine::ValidParamKey& key) const
+		{
+			size_t hash = 0;
+			BansheeEngine::hash_combine(hash, key.name);
+			BansheeEngine::hash_combine(hash, key.type);
+
+			return hash;
+		}
+	};
+}
+
+/** @endcond */
+
+namespace BansheeEngine
+{
 	struct ShaderBlockDesc
 	{
 		String name;
@@ -341,13 +386,13 @@ namespace BansheeEngine
 		return paramToParamBlock;
 	}
 
-	UnorderedSet<String> determineValidParameters(const Vector<SPtr<GpuParamDesc>>& paramDescs,
+	UnorderedMap<ValidParamKey, String> determineValidParameters(const Vector<SPtr<GpuParamDesc>>& paramDescs,
 		const Map<String, SHADER_DATA_PARAM_DESC>& dataParams,
 		const Map<String, SHADER_OBJECT_PARAM_DESC>& textureParams,
 		const Map<String, SHADER_OBJECT_PARAM_DESC>& bufferParams,
 		const Map<String, SHADER_OBJECT_PARAM_DESC>& samplerParams)
 	{
-		UnorderedSet<String> validParams;
+		UnorderedMap<ValidParamKey, String> validParams;
 
 		Map<String, const GpuParamDataDesc*> validDataParameters = determineValidDataParameters(paramDescs);
 		Vector<const GpuParamObjectDesc*> validObjectParameters = determineValidObjectParameters(paramDescs);
@@ -381,11 +426,12 @@ namespace BansheeEngine
 			if (findBlockIter == paramToParamBlockMap.end())
 				BS_EXCEPT(InternalErrorException, "Parameter doesn't exist in param to param block map but exists in valid param map.");
 
-			validParams.insert(iter->first);
+			ValidParamKey key(iter->second.gpuVariableName, MaterialParams::ParamType::Data);
+			validParams.insert(std::make_pair(key, iter->first));
 		}
 
 		// Create object param mappings
-		auto determineObjectMappings = [&](const Map<String, SHADER_OBJECT_PARAM_DESC>& params)
+		auto determineObjectMappings = [&](const Map<String, SHADER_OBJECT_PARAM_DESC>& params, MaterialParams::ParamType paramType)
 		{
 			for (auto iter = params.begin(); iter != params.end(); ++iter)
 			{
@@ -396,7 +442,9 @@ namespace BansheeEngine
 					{
 						if ((*iter3)->name == (*iter2) && (*iter3)->type == iter->second.type)
 						{
-							validParams.insert(iter->first);
+							ValidParamKey key(*iter2, paramType);
+							validParams.insert(std::make_pair(key, iter->first));
+
 							break;
 						}
 					}
@@ -404,9 +452,9 @@ namespace BansheeEngine
 			}
 		};
 
-		determineObjectMappings(textureParams);
-		determineObjectMappings(samplerParams);
-		determineObjectMappings(bufferParams);
+		determineObjectMappings(textureParams, MaterialParams::ParamType::Texture);
+		determineObjectMappings(samplerParams, MaterialParams::ParamType::Sampler);
+		determineObjectMappings(bufferParams, MaterialParams::ParamType::Buffer);
 
 		return validParams;
 	}
@@ -456,7 +504,7 @@ namespace BansheeEngine
 
 		//// Fill out various helper structures
 		Vector<ShaderBlockDesc> paramBlockData = determineValidShareableParamBlocks(allParamDescs, shader->getParamBlocks());
-		UnorderedSet<String> validParams = determineValidParameters(
+		UnorderedMap<ValidParamKey, String> validParams = determineValidParameters(
 			allParamDescs, 
 			shader->getDataParams(), 
 			shader->getTextureParams(), 
@@ -537,10 +585,13 @@ namespace BansheeEngine
 							if (dataParam.second.paramBlockSlot != blockDesc.slot)
 								continue;
 
-							if (validParams.count(dataParam.first) == 0)
+							ValidParamKey key(dataParam.first, MaterialParams::ParamType::Data);
+
+							auto iterFind = validParams.find(key);
+							if (iterFind == validParams.end())
 								continue;
 
-							UINT32 paramIdx = params->getParamIndex(dataParam.first);
+							UINT32 paramIdx = params->getParamIndex(iterFind->second);
 
 							// Parameter shouldn't be in the valid parameter list if it cannot be found
 							assert(paramIdx != -1);
@@ -602,11 +653,14 @@ namespace BansheeEngine
 					{
 						for (auto& param : gpuParams)
 						{
-							if (validParams.count(param.first) == 0)
+							ValidParamKey key(param.first, paramType);
+
+							auto iterFind = validParams.find(key);
+							if (iterFind == validParams.end())
 								continue;
 
 							UINT32 paramIdx;
-							auto result = params->getParamIndex(param.first, paramType, GPDT_UNKNOWN, 0, paramIdx);
+							auto result = params->getParamIndex(iterFind->second, paramType, GPDT_UNKNOWN, 0, paramIdx);
 
 							// Parameter shouldn't be in the valid parameter list if it cannot be found
 							assert(result == MaterialParams::GetParamResult::Success);
