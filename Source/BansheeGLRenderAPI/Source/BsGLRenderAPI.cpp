@@ -55,7 +55,6 @@ namespace BansheeEngine
 		, mActivePipeline(nullptr)
 		, mTextureUnitOffsets {}
 		, mMaxBoundTexUnits {}
-		, mImageUnitOffsets {}
 		, mMaxBoundImageUnits {}
 		, mUBOffsets {}
 		, mCurrentDrawOperation(DOT_TRIANGLE_LIST)
@@ -420,6 +419,9 @@ namespace BansheeEngine
 
 		// Set border color
 		setTextureBorderColor(texUnit, stateProps.getBorderColor());
+
+		mTextureInfos[texUnit].samplerIdx = unit;
+		mMaxBoundTexUnits[gptype] = std::max(mMaxBoundTexUnits[gptype], (UINT32)texUnit + 1);
 
 		BS_INC_RENDER_STAT(NumSamplerBinds);
 	}
@@ -1735,8 +1737,7 @@ namespace BansheeEngine
 			return 0;
 		}
 
-		UINT32 offset = mImageUnitOffsets[gptype];
-		for (UINT32 i = offset; i < mMaxBoundImageUnits[gptype]; i++)
+		for (UINT32 i = 0; i < mMaxBoundImageUnits[gptype]; i++)
 		{
 			UINT32 imageUnit = i;
 
@@ -1744,8 +1745,8 @@ namespace BansheeEngine
 				return imageUnit;
 		}
 
-		INT32 numSupportedUnits = (INT32)mCurrentCapabilities->getNumLoadStoreTextureUnits(gptype);
-		INT32 numBoundImageUnits = (INT32)mMaxBoundImageUnits[gptype] - (INT32)offset;
+		UINT32 numSupportedUnits = mCurrentCapabilities->getNumLoadStoreTextureUnits(gptype);
+		UINT32 numBoundImageUnits = mMaxBoundImageUnits[gptype];
 		if (numBoundImageUnits < numSupportedUnits)
 			return mMaxBoundImageUnits[gptype];
 
@@ -1790,7 +1791,7 @@ namespace BansheeEngine
 			break;
 		}
 
-		mMaxBoundTexUnits[gptype] = 0;
+		mMaxBoundTexUnits[gptype] = mTextureUnitOffsets[gptype];
 		mMaxBoundImageUnits[gptype] = 0;
 	}
 
@@ -1858,16 +1859,14 @@ namespace BansheeEngine
 		}
 
 		UINT32 curTexUnitOffset = 0;
-		UINT32 curImageUnitOffset = 0;
 		UINT32 curUBOffset = 0;
 		for (UINT32 i = 0; i < 6; i++)
 		{
 			mTextureUnitOffsets[i] = curTexUnitOffset;
-			mImageUnitOffsets[i] = curImageUnitOffset;
+			mMaxBoundTexUnits[i] = curTexUnitOffset;
 			mUBOffsets[i] = curUBOffset;
 
 			curTexUnitOffset += caps->getNumTextureUnits((GpuProgramType)i);
-			curImageUnitOffset += caps->getNumLoadStoreTextureUnits((GpuProgramType)i);
 			curUBOffset += caps->getNumGpuParamBlockBuffers((GpuProgramType)i);
 		}
 
@@ -1891,13 +1890,7 @@ namespace BansheeEngine
 		if(totalNumUniformBlocks > numCombinedUniformBlocks)
 			BS_EXCEPT(InternalErrorException, "Number of combined uniform block buffers less than the number of individual per-stage buffers!?");
 
-		UINT32 totalNumImageUnits = curImageUnitOffset;
-		UINT16 numCombinedImageUnits = caps->getNumCombinedLoadStoreTextureUnits();
-
-		if (totalNumImageUnits > numCombinedImageUnits)
-			BS_EXCEPT(InternalErrorException, "Number of combined load-store texture units less than the number of individual per-stage units!?");
-
-		mNumImageUnits = numCombinedImageUnits;
+		mNumImageUnits = caps->getNumCombinedLoadStoreTextureUnits();
 		mImageInfos = bs_newN<ImageInfo>(mNumImageUnits);
 		for (UINT16 i = 0; i < mNumImageUnits; i++)
 			mImageInfos[i].uniformIdx = (UINT32)-1;
@@ -2172,7 +2165,7 @@ namespace BansheeEngine
 			rsc->setNumLoadStoreTextureUnits(GPT_COMPUTE_PROGRAM, static_cast<UINT16>(lscUnits));
 
 			GLint combinedLoadStoreTextureUnits;
-			glGetIntegerv(GL_MAX_COMBINED_IMAGE_UNIFORMS, &combinedLoadStoreTextureUnits);
+			glGetIntegerv(GL_MAX_IMAGE_UNITS, &combinedLoadStoreTextureUnits);
 			rsc->setNumCombinedLoadStoreTextureUnits(static_cast<UINT16>(combinedLoadStoreTextureUnits));
 		}
 

@@ -90,7 +90,7 @@ Technique : base("VolumeRenderBase") =
 			out VStoGS
 			{
 				vec2 uv0;
-				flat uint layerIdx;
+				flat int layerIdx;
 			} VSOutput;
 			
 			out gl_PerVertex
@@ -102,7 +102,7 @@ Technique : base("VolumeRenderBase") =
 			{
 				gl_Position = vec4(bs_position, 0, 1);
 				VSOutput.uv0 = bs_texcoord0;
-				VSOutput.layerIdx = gl_InstanceID;
+				VSOutput.layerIdx = int(gl_InstanceID);
 			}
 		};
 		
@@ -114,13 +114,12 @@ Technique : base("VolumeRenderBase") =
 			in VStoGS
 			{
 				vec2 uv0;
-				flat uint layerIdx;
+				flat int layerIdx;
 			} GSInput[3];
 		
 			out GStoFS
 			{
 				vec2 uv0;
-				flat uint layerIdx;
 			} GSOutput;
 		
 			in gl_PerVertex 
@@ -133,21 +132,22 @@ Technique : base("VolumeRenderBase") =
 				vec4 gl_Position;
 			};
 		
+			out int gl_Layer;
+		
 			void main()
 			{
+				gl_Layer = GSInput[0].layerIdx;
+			
 				gl_Position = gl_in[0].gl_Position;
 				GSOutput.uv0 = GSInput[0].uv0;
-				GSOutput.layerIdx = GSInput[0].layerIdx;
 				EmitVertex();
 				
 				gl_Position = gl_in[1].gl_Position;
 				GSOutput.uv0 = GSInput[1].uv0;
-				GSOutput.layerIdx = GSInput[1].layerIdx;
 				EmitVertex();
 				
 				gl_Position = gl_in[2].gl_Position;
 				GSOutput.uv0 = GSInput[2].uv0;
-				GSOutput.layerIdx = GSInput[2].layerIdx;
 				EmitVertex();
 			}
 		};

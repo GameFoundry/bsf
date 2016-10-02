@@ -211,10 +211,10 @@ Technique
 			in GStoFS
 			{
 				vec2 uv0;
-				flat uint layerIdx;
 			} input;
 			
 			out vec4 fragColor;
+			in int gl_Layer;
 			
 			void main()
 			{
@@ -226,7 +226,7 @@ Technique
 				// By default pixel centers will be sampled, but we want to encode the entire range, so
 				// offset the sampling by half a pixel, and extend the entire range by one pixel.
 				vec2 uv = input.uv0 - (0.5f / LUT_SIZE);
-				vec3 logColor = vec3(uv * LUT_SIZE / float(LUT_SIZE - 1), input.layerIdx / float(LUT_SIZE - 1));
+				vec3 logColor = vec3(uv * LUT_SIZE / float(LUT_SIZE - 1), gl_Layer / float(LUT_SIZE - 1));
 				
 				vec3 linearColor;
 				LogToLinearColor(logColor, linearColor);

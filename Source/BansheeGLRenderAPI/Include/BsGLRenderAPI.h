@@ -453,7 +453,6 @@ namespace BansheeEngine
 
 		UINT32 mTextureUnitOffsets[6];
 		UINT32 mMaxBoundTexUnits[6];
-		UINT32 mImageUnitOffsets[6];
 		UINT32 mMaxBoundImageUnits[6];
 		UINT32 mUBOffsets[6];
 
