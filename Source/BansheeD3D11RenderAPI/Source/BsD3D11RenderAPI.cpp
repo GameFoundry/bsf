@@ -328,13 +328,13 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumTextureBinds);
 	}
 
-	void D3D11RenderAPI::setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& texPtr,
+	void D3D11RenderAPI::setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, const SPtr<TextureCore>& texPtr,
 		const TextureSurface& surface)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		ID3D11UnorderedAccessView* viewArray[1];
-		if (texPtr != nullptr && enabled)
+		if (texPtr != nullptr)
 		{
 			D3D11TextureCore* d3d11Texture = static_cast<D3D11TextureCore*>(texPtr.get());
 			SPtr<TextureView> texView = TextureCore::requestView(texPtr, surface.mipLevel, 1, 
@@ -368,7 +368,7 @@ namespace BansheeEngine
 			mDevice->getImmediateContext()->CSSetUnorderedAccessViews(unit, 1, viewArray, nullptr);
 		}
 		else
-			BS_EXCEPT(InvalidParametersException, "Unsupported gpu program type: " + toString(gptype));
+			LOGERR("Unsupported gpu program type: " + toString(gptype));
 
 		BS_INC_RENDER_STAT(NumTextureBinds);
 	}
@@ -945,9 +945,9 @@ namespace BansheeEngine
 			rsc->addGpuProgramProfile(GPP_HS_5_0, "hs_5_0");
 			rsc->addGpuProgramProfile(GPP_DS_5_0, "ds_5_0");
 
-			rsc->setNumTextureUnits(GPT_HULL_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT);
-			rsc->setNumTextureUnits(GPT_DOMAIN_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT);
-			rsc->setNumTextureUnits(GPT_COMPUTE_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT);
+			rsc->setNumTextureUnits(GPT_HULL_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT);
+			rsc->setNumTextureUnits(GPT_DOMAIN_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT);
+			rsc->setNumTextureUnits(GPT_COMPUTE_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT);
 
 			rsc->setNumCombinedTextureUnits(rsc->getNumTextureUnits(GPT_FRAGMENT_PROGRAM)
 				+ rsc->getNumTextureUnits(GPT_VERTEX_PROGRAM) + rsc->getNumTextureUnits(GPT_VERTEX_PROGRAM)
@@ -962,6 +962,12 @@ namespace BansheeEngine
 				+ rsc->getNumGpuParamBlockBuffers(GPT_VERTEX_PROGRAM) + rsc->getNumGpuParamBlockBuffers(GPT_VERTEX_PROGRAM)
 				+ rsc->getNumGpuParamBlockBuffers(GPT_HULL_PROGRAM) + rsc->getNumGpuParamBlockBuffers(GPT_DOMAIN_PROGRAM)
 				+ rsc->getNumGpuParamBlockBuffers(GPT_COMPUTE_PROGRAM));
+
+			rsc->setNumLoadStoreTextureUnits(GPT_FRAGMENT_PROGRAM, D3D11_PS_CS_UAV_REGISTER_COUNT);
+			rsc->setNumLoadStoreTextureUnits(GPT_COMPUTE_PROGRAM, D3D11_PS_CS_UAV_REGISTER_COUNT);
+
+			rsc->setNumCombinedLoadStoreTextureUnits(rsc->getNumLoadStoreTextureUnits(GPT_FRAGMENT_PROGRAM)
+				+ rsc->getNumLoadStoreTextureUnits(GPT_COMPUTE_PROGRAM));
 
 			rsc->setCapability(RSC_SHADER_SUBROUTINE);
 		}

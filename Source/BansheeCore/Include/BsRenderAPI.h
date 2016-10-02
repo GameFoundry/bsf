@@ -46,7 +46,7 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
 		 */
-		static void setLoadStoreTexture(CoreAccessor& accessor, GpuProgramType gptype, UINT16 texUnit, bool enabled, 
+		static void setLoadStoreTexture(CoreAccessor& accessor, GpuProgramType gptype, UINT16 texUnit,
 			const SPtr<Texture>& texture, const TextureSurface& surface);
 
 		/**  
@@ -379,12 +379,11 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	gptype			Determines to which GPU program slot to bind the texture.
 		 * @param[in]	texUnit			Texture unit index to bind the texture to.
-		 * @param[in]	enabled			True to bind the texture at the specified unit, false to unbind.
 		 * @param[in]	texture			Texture to bind.
 		 * @param[in]	surface			Determines which surface of the texture to bind.
 		 */
-		virtual void setLoadStoreTexture(GpuProgramType gptype, UINT16 texUnit, bool enabled,
-			const SPtr<TextureCore>& texture, const TextureSurface& surface) = 0;
+		virtual void setLoadStoreTexture(GpuProgramType gptype, UINT16 texUnit, const SPtr<TextureCore>& texture, 
+			const TextureSurface& surface) = 0;
 
 		/**
 		 * Binds a buffer that can be used for read or write operations on the GPU.

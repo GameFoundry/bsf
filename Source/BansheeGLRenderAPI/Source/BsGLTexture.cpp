@@ -46,12 +46,6 @@ namespace BansheeEngine
 		if (numMips > maxMips)
 			BS_EXCEPT(InvalidParametersException, "Invalid number of mipmaps. Maximum allowed is: " + toString(maxMips));
 
-		if ((usage & TU_RENDERTARGET) != 0)
-		{
-			if (texType != TEX_TYPE_2D)
-				BS_EXCEPT(NotImplementedException, "Only 2D render targets are supported at the moment");
-		}
-
 		if ((usage & TU_DEPTHSTENCIL) != 0)
 		{
 			if (texType != TEX_TYPE_2D)
@@ -105,7 +99,7 @@ namespace BansheeEngine
 					GL_DEPTH_STENCIL, depthStencilFormat, nullptr);
 			}
 		}
-		else // Non-render textures
+		else
 		{
 			GLenum baseFormat = GLPixelUtil::getGLOriginFormat(pixFormat);
 			GLenum baseDataType = GLPixelUtil::getGLOriginDataType(pixFormat);

@@ -45,21 +45,19 @@ namespace BansheeEngine
 		, mStencilRefValue(0)
 		, mStencilCompareFront(CMPF_ALWAYS_PASS)
 		, mStencilCompareBack(CMPF_ALWAYS_PASS)
-		, mNumTextureTypes(0)
-		, mTextureTypes(nullptr)
+		, mNumTextureUnits(0)
+		, mTextureInfos(nullptr)
+		, mNumImageUnits(0)
+		, mImageInfos(nullptr)
 		, mDepthWrite(true)
 		, mGLSLProgramFactory(nullptr)
 		, mProgramPipelineManager(nullptr)
 		, mActivePipeline(nullptr)
-		, mFragmentTexOffset(0)
-		, mVertexTexOffset(0)
-		, mGeometryTexOffset(0)
-		, mFragmentUBOffset(0)
-		, mVertexUBOffset(0)
-		, mGeometryUBOffset(0)
-		, mHullUBOffset(0)
-		, mDomainUBOffset(0)
-		, mComputeUBOffset(0)
+		, mTextureUnitOffsets {}
+		, mMaxBoundTexUnits {}
+		, mImageUnitOffsets {}
+		, mMaxBoundImageUnits {}
+		, mUBOffsets {}
 		, mCurrentDrawOperation(DOT_TRIANGLE_LIST)
 		, mDrawCallInProgress(false)
 		, mActiveTextureUnit(0)
@@ -205,36 +203,21 @@ namespace BansheeEngine
 		if(mGLSupport)
 			bs_delete(mGLSupport);
 
-		if(mTextureTypes != nullptr)
-			bs_deleteN(mTextureTypes, mNumTextureTypes);
+		if(mTextureInfos != nullptr)
+			bs_deleteN(mTextureInfos, mNumTextureUnits);
+
+		if (mImageInfos != nullptr)
+			bs_deleteN(mImageInfos, mNumImageUnits);
 	}
 
 	void GLRenderAPI::bindGpuProgram(const SPtr<GpuProgramCore>& prg)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
+		GpuProgramType type = prg->getProperties().getType();
 		SPtr<GLSLGpuProgramCore> glprg = std::static_pointer_cast<GLSLGpuProgramCore>(prg);
 
-		switch (glprg->getProperties().getType())
-		{
-		case GPT_VERTEX_PROGRAM:
-			mCurrentVertexProgram = glprg;
-			break;
-		case GPT_FRAGMENT_PROGRAM:
-			mCurrentFragmentProgram = glprg;
-			break;
-		case GPT_GEOMETRY_PROGRAM:
-			mCurrentGeometryProgram = glprg;
-			break;
-		case GPT_DOMAIN_PROGRAM:
-			mCurrentDomainProgram = glprg;
-			break;
-		case GPT_HULL_PROGRAM:
-			mCurrentHullProgram = glprg;
-			break;
-		case GPT_COMPUTE_PROGRAM:
-			mCurrentComputeProgram = glprg;
-		}
+		setActiveProgram(type, glprg);
 
 		RenderAPICore::bindGpuProgram(prg);
 	}
@@ -374,20 +357,37 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		unit = getGLTextureUnit(gptype, unit);
-		if (!activateGLTextureUnit(unit))
+		UINT32 texUnit = getGLTextureUnit(gptype, unit);
+		if (!activateGLTextureUnit(texUnit))
 			return;
 
 		SPtr<GLTextureCore> tex = std::static_pointer_cast<GLTextureCore>(texPtr);
 		if (tex != nullptr)
 		{
-			mTextureTypes[unit] = tex->getGLTextureTarget();
-			glBindTexture(mTextureTypes[unit], tex->getGLID());
+			GLenum newTextureType = tex->getGLTextureTarget();
+
+			if(mTextureInfos[texUnit].type != newTextureType)
+				glBindTexture(mTextureInfos[texUnit].type, 0);
+
+			mTextureInfos[texUnit].type = newTextureType;
+			mTextureInfos[texUnit].samplerIdx = unit;
+
+			mMaxBoundTexUnits[gptype] = std::max(mMaxBoundTexUnits[gptype], texUnit + 1);
+
+			glBindTexture(newTextureType, tex->getGLID());
+
+			SPtr<GLSLGpuProgramCore> activeProgram = getActiveProgram(gptype);
+			if (activeProgram != nullptr)
+			{
+				GLuint glProgram = activeProgram->getGLHandle();
+
+				glProgramUniform1i(glProgram, unit, texUnit);
+			}
 		}
 		else
 		{
-			// Note: This should probably clear all targets instead of just 2D
-			glBindTexture(GL_TEXTURE_2D, 0); 
+			glBindTexture(mTextureInfos[texUnit].type, 0);
+			mTextureInfos[texUnit].samplerIdx = (UINT32)-1;
 		}
 
 		activateGLTextureUnit(0);
@@ -401,48 +401,59 @@ namespace BansheeEngine
 
 		const SamplerProperties& stateProps = state->getProperties();
 
-		unit = getGLTextureUnit(gptype, unit);
+		UINT16 texUnit = getGLTextureUnit(gptype, unit);
 
 		// Set texture layer filtering
-		setTextureFiltering(unit, FT_MIN, stateProps.getTextureFiltering(FT_MIN));
-		setTextureFiltering(unit, FT_MAG, stateProps.getTextureFiltering(FT_MAG));
-		setTextureFiltering(unit, FT_MIP, stateProps.getTextureFiltering(FT_MIP));
+		setTextureFiltering(texUnit, FT_MIN, stateProps.getTextureFiltering(FT_MIN));
+		setTextureFiltering(texUnit, FT_MAG, stateProps.getTextureFiltering(FT_MAG));
+		setTextureFiltering(texUnit, FT_MIP, stateProps.getTextureFiltering(FT_MIP));
 
 		// Set texture anisotropy
-		setTextureAnisotropy(unit, stateProps.getTextureAnisotropy());
+		setTextureAnisotropy(texUnit, stateProps.getTextureAnisotropy());
 
 		// Set mipmap biasing
-		setTextureMipmapBias(unit, stateProps.getTextureMipmapBias());
+		setTextureMipmapBias(texUnit, stateProps.getTextureMipmapBias());
 
 		// Texture addressing mode
 		const UVWAddressingMode& uvw = stateProps.getTextureAddressingMode();
-		setTextureAddressingMode(unit, uvw);
+		setTextureAddressingMode(texUnit, uvw);
 
 		// Set border color
-		setTextureBorderColor(unit, stateProps.getBorderColor());
-
-		SPtr<GLSLGpuProgramCore> activeProgram = getActiveProgram(gptype);
-		GLuint glProgram = activeProgram->getGLHandle();
-
-		glProgramUniform1i(glProgram, unit, getGLTextureUnit(gptype, unit));
+		setTextureBorderColor(texUnit, stateProps.getBorderColor());
 
 		BS_INC_RENDER_STAT(NumSamplerBinds);
 	}
 
-	void GLRenderAPI::setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<TextureCore>& texPtr,
+	void GLRenderAPI::setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, const SPtr<TextureCore>& texPtr,
 		const TextureSurface& surface)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		// TODO - OpenGL can't bind a certain subset of faces like DX11, only zero, one or all, so I'm ignoring numSlices parameter
+
+		UINT32 imageUnit = getGLImageUnit(gptype, unit);
 		if (texPtr != nullptr)
 		{
 			SPtr<GLTextureCore> tex = std::static_pointer_cast<GLTextureCore>(texPtr);
-			glBindImageTexture(unit, tex->getGLID(), surface.mipLevel, surface.numArraySlices > 1, 
-				surface.arraySlice, tex->getGLFormat(), GL_READ_WRITE);
+			glBindImageTexture(imageUnit, tex->getGLID(), surface.mipLevel, surface.numArraySlices > 1, 
+				surface.arraySlice, GL_READ_WRITE, tex->getGLFormat());
+
+			mImageInfos[imageUnit].uniformIdx = unit;
+			mMaxBoundImageUnits[gptype] = std::max(mMaxBoundImageUnits[gptype], imageUnit + 1);
+
+			SPtr<GLSLGpuProgramCore> activeProgram = getActiveProgram(gptype);
+			if (activeProgram != nullptr)
+			{
+				GLuint glProgram = activeProgram->getGLHandle();
+
+				glProgramUniform1i(glProgram, unit, imageUnit);
+			}
 		}
 		else
-			glBindImageTexture(unit, 0, 0, false, 0, 0, GL_READ_WRITE);
+		{
+			mImageInfos[imageUnit].uniformIdx = (UINT32)-1;
+			glBindImageTexture(imageUnit, 0, 0, false, 0, GL_READ_WRITE, GL_R32F);
+		}
 
 		BS_INC_RENDER_STAT(NumTextureBinds);
 	}
@@ -455,32 +466,62 @@ namespace BansheeEngine
 		SPtr<GLGpuBufferCore> glBuffer = std::static_pointer_cast<GLGpuBufferCore>(buffer);
 		if (!loadStore)
 		{
-			unit = getGLTextureUnit(gptype, unit);
-			if (!activateGLTextureUnit(unit))
+			UINT32 texUnit = getGLTextureUnit(gptype, unit);
+			if (!activateGLTextureUnit(texUnit))
 				return;
 
 			if (glBuffer != nullptr)
 			{
-				mTextureTypes[unit] = GL_TEXTURE_BUFFER;
-				glBindTexture(mTextureTypes[unit], glBuffer->getGLTextureId());
+				if (mTextureInfos[texUnit].type != GL_TEXTURE_BUFFER)
+					glBindTexture(mTextureInfos[texUnit].type, 0);
+
+				mTextureInfos[texUnit].type = GL_TEXTURE_BUFFER;
+				mTextureInfos[texUnit].samplerIdx = unit;
+
+				mMaxBoundTexUnits[gptype] = std::max(mMaxBoundTexUnits[gptype], texUnit + 1);
+
+				glBindTexture(GL_TEXTURE_BUFFER, glBuffer->getGLTextureId());
+
+				SPtr<GLSLGpuProgramCore> activeProgram = getActiveProgram(gptype);
+				if (activeProgram != nullptr)
+				{
+					GLuint glProgram = activeProgram->getGLHandle();
+
+					glProgramUniform1i(glProgram, unit, texUnit);
+				}
 			}
 			else
 			{
-				// Note: This should probably clear all targets instead of just 2D
-				glBindTexture(GL_TEXTURE_BUFFER, 0);
+				mTextureInfos[texUnit].samplerIdx = (UINT32)-1;
+				glBindTexture(mTextureInfos[texUnit].type, 0);
 			}
 
 			activateGLTextureUnit(0);
 		}
 		else
 		{
+			UINT32 imageUnit = getGLImageUnit(gptype, unit);
 			if (glBuffer != nullptr)
 			{
-				glBindImageTexture(unit, glBuffer->getGLTextureId(), 0, false,
-					0, glBuffer->getGLFormat(), GL_READ_WRITE);
+				glBindImageTexture(imageUnit, glBuffer->getGLTextureId(), 0, false,
+					0, GL_READ_WRITE, glBuffer->getGLFormat());
+
+				mImageInfos[imageUnit].uniformIdx = unit;
+				mMaxBoundImageUnits[gptype] = std::max(mMaxBoundImageUnits[gptype], imageUnit + 1);
+
+				SPtr<GLSLGpuProgramCore> activeProgram = getActiveProgram(gptype);
+				if (activeProgram != nullptr)
+				{
+					GLuint glProgram = activeProgram->getGLHandle();
+
+					glProgramUniform1i(glProgram, unit, imageUnit);
+				}
 			}
 			else
-				glBindImageTexture(unit, 0, 0, false, 0, 0, GL_READ_WRITE);
+			{
+				mImageInfos[imageUnit].uniformIdx = (UINT32)-1;
+				glBindImageTexture(imageUnit, 0, 0, false, 0, GL_READ_WRITE, GL_R32F);
+			}
 		}
 
 		BS_INC_RENDER_STAT(NumTextureBinds);
@@ -600,22 +641,11 @@ namespace BansheeEngine
 		{
 			fbo->bind();
 
-			if (GLEW_EXT_framebuffer_sRGB)
-			{
-				// Enable / disable sRGB states
-				if (target->getProperties().isHwGammaEnabled())
-				{
-					glEnable(GL_FRAMEBUFFER_SRGB_EXT);
-
-					// Note: could test GL_FRAMEBUFFER_SRGB_CAPABLE_EXT here before
-					// enabling, but GL spec says incapable surfaces ignore the setting
-					// anyway. We test the capability to enable isHardwareGammaEnabled.
-				}
-				else
-				{
-					glDisable(GL_FRAMEBUFFER_SRGB_EXT);
-				}
-			}
+			// Enable / disable sRGB states
+			if (target->getProperties().isHwGammaEnabled())
+				glEnable(GL_FRAMEBUFFER_SRGB);
+			else
+				glDisable(GL_FRAMEBUFFER_SRGB);
 		}
 		else
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -927,37 +957,37 @@ namespace BansheeEngine
 	/* 								PRIVATE		                     		*/
 	/************************************************************************/
 
-	void GLRenderAPI::setTextureAddressingMode(UINT16 stage, const UVWAddressingMode& uvw)
+	void GLRenderAPI::setTextureAddressingMode(UINT16 unit, const UVWAddressingMode& uvw)
 	{
-		if (!activateGLTextureUnit(stage))
+		if (!activateGLTextureUnit(unit))
 			return;
 
-		glTexParameteri(mTextureTypes[stage], GL_TEXTURE_WRAP_S, 
+		glTexParameteri(mTextureInfos[unit].type, GL_TEXTURE_WRAP_S,
 			getTextureAddressingMode(uvw.u));
-		glTexParameteri(mTextureTypes[stage], GL_TEXTURE_WRAP_T, 
+		glTexParameteri(mTextureInfos[unit].type, GL_TEXTURE_WRAP_T,
 			getTextureAddressingMode(uvw.v));
-		glTexParameteri(mTextureTypes[stage], GL_TEXTURE_WRAP_R, 
+		glTexParameteri(mTextureInfos[unit].type, GL_TEXTURE_WRAP_R,
 			getTextureAddressingMode(uvw.w));
 		activateGLTextureUnit(0);
 	}
 
-	void GLRenderAPI::setTextureBorderColor(UINT16 stage, const Color& colour)
+	void GLRenderAPI::setTextureBorderColor(UINT16 unit, const Color& colour)
 	{
 		GLfloat border[4] = { colour.r, colour.g, colour.b, colour.a };
-		if (activateGLTextureUnit(stage))
+		if (activateGLTextureUnit(unit))
 		{
-			glTexParameterfv(mTextureTypes[stage], GL_TEXTURE_BORDER_COLOR, border);
+			glTexParameterfv(mTextureInfos[unit].type, GL_TEXTURE_BORDER_COLOR, border);
 			activateGLTextureUnit(0);
 		}
 	}
 
-	void GLRenderAPI::setTextureMipmapBias(UINT16 stage, float bias)
+	void GLRenderAPI::setTextureMipmapBias(UINT16 unit, float bias)
 	{
 		if (mCurrentCapabilities->hasCapability(RSC_MIPMAP_LOD_BIAS))
 		{
-			if (activateGLTextureUnit(stage))
+			if (activateGLTextureUnit(unit))
 			{
-				glTexParameterf(mTextureTypes[stage], GL_TEXTURE_LOD_BIAS, bias);
+				glTexParameterf(mTextureInfos[unit].type, GL_TEXTURE_LOD_BIAS, bias);
 				activateGLTextureUnit(0);
 			}
 		}
@@ -1333,18 +1363,18 @@ namespace BansheeEngine
 		case FT_MIN:
 			mMinFilter = fo;
 			// Combine with existing mip filter
-			glTexParameteri(mTextureTypes[unit], GL_TEXTURE_MIN_FILTER, getCombinedMinMipFilter());
+			glTexParameteri(mTextureInfos[unit].type, GL_TEXTURE_MIN_FILTER, getCombinedMinMipFilter());
 			break;
 		case FT_MAG:
 			switch (fo)
 			{
 			case FO_ANISOTROPIC: // GL treats linear and aniso the same
 			case FO_LINEAR:
-				glTexParameteri(mTextureTypes[unit], GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				glTexParameteri(mTextureInfos[unit].type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 				break;
 			case FO_POINT:
 			case FO_NONE:
-				glTexParameteri(mTextureTypes[unit], GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+				glTexParameteri(mTextureInfos[unit].type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 				break;
 			default:
 				break;
@@ -1353,7 +1383,7 @@ namespace BansheeEngine
 		case FT_MIP:
 			mMipFilter = fo;
 			// Combine with existing min filter
-			glTexParameteri(mTextureTypes[unit], GL_TEXTURE_MIN_FILTER, getCombinedMinMipFilter());
+			glTexParameteri(mTextureInfos[unit].type, GL_TEXTURE_MIN_FILTER, getCombinedMinMipFilter());
 			break;
 		}
 
@@ -1378,7 +1408,7 @@ namespace BansheeEngine
 			maxAnisotropy = 1;
 
 		if (getCurrentAnisotropy(unit) != maxAnisotropy)
-			glTexParameterf(mTextureTypes[unit], GL_TEXTURE_MAX_ANISOTROPY_EXT, (float)maxAnisotropy);
+			glTexParameterf(mTextureInfos[unit].type, GL_TEXTURE_MAX_ANISOTROPY_EXT, (float)maxAnisotropy);
 
 		activateGLTextureUnit(0);
 	}
@@ -1466,6 +1496,7 @@ namespace BansheeEngine
 		const GLSLProgramPipeline* pipeline = mProgramPipelineManager->getPipeline(mCurrentVertexProgram.get(), 
 			mCurrentFragmentProgram.get(), mCurrentGeometryProgram.get(), mCurrentHullProgram.get(), mCurrentDomainProgram.get());
 
+		glUseProgram(0);
 		if(mActivePipeline != pipeline)
 		{
 			glBindProgramPipeline(pipeline->glHandle);
@@ -1490,7 +1521,7 @@ namespace BansheeEngine
 	GLfloat GLRenderAPI::getCurrentAnisotropy(UINT16 unit)
 	{
 		GLfloat curAniso = 0;
-		glGetTexParameterfv(mTextureTypes[unit], GL_TEXTURE_MAX_ANISOTROPY_EXT, &curAniso);
+		glGetTexParameterfv(mTextureInfos[unit].type, GL_TEXTURE_MAX_ANISOTROPY_EXT, &curAniso);
 
 		return curAniso ? curAniso : 1;
 	}
@@ -1670,32 +1701,55 @@ namespace BansheeEngine
 		return primType;
 	}
 
-	UINT32 GLRenderAPI::getGLTextureUnit(GpuProgramType gptype, UINT32 unit)
+	UINT32 GLRenderAPI::getGLTextureUnit(GpuProgramType gptype, UINT32 samplerIdx)
 	{
-		if (gptype != GPT_VERTEX_PROGRAM && gptype != GPT_FRAGMENT_PROGRAM && gptype != GPT_GEOMETRY_PROGRAM)
+		if (gptype == GPT_DOMAIN_PROGRAM || gptype == GPT_HULL_PROGRAM)
 		{
-			BS_EXCEPT(InvalidParametersException, "OpenGL cannot assign textures to this gpu program type: " + toString(gptype));
+			LOGERR("OpenGL cannot assign textures to this gpu program type: " + toString(gptype));
+			return 0;
 		}
 
-		UINT32 numSupportedUnits = mCurrentCapabilities->getNumTextureUnits(gptype);
-		if (unit >= numSupportedUnits)
+		UINT32 offset = mTextureUnitOffsets[gptype];
+		for(UINT32 i = offset; i < mMaxBoundTexUnits[gptype]; i++)
 		{
-			BS_EXCEPT(InvalidParametersException, "Invalid texture unit index for the provided stage. Unit index: " + toString(unit) + ". Stage: " +
-				toString(gptype) + ". Supported range is 0 .. " + toString(numSupportedUnits - 1));
+			UINT32 texUnit = i;
+
+			if (mTextureInfos[texUnit].samplerIdx == samplerIdx || mTextureInfos[texUnit].samplerIdx == (UINT32)-1)
+				return texUnit;
 		}
 
-		switch (gptype)
+		INT32 numSupportedUnits = (INT32)mCurrentCapabilities->getNumTextureUnits(gptype);
+		INT32 numBoundTexUnits = (INT32)mMaxBoundTexUnits[gptype] - (INT32)offset;
+		if (numBoundTexUnits < numSupportedUnits)
+			return mMaxBoundTexUnits[gptype];
+
+		LOGERR("Cannot find an empty slot to bind a texture to.");
+		return 0;
+	}
+
+	UINT32 GLRenderAPI::getGLImageUnit(GpuProgramType gptype, UINT32 uniformIdx)
+	{
+		if (gptype != GPT_FRAGMENT_PROGRAM && gptype != GPT_COMPUTE_PROGRAM)
 		{
-		case GPT_FRAGMENT_PROGRAM:
-			return mFragmentTexOffset + unit;
-		case GPT_VERTEX_PROGRAM:
-			return mVertexTexOffset + unit;
-		case GPT_GEOMETRY_PROGRAM:
-			return mGeometryTexOffset + unit;
-		default:
-			BS_EXCEPT(InternalErrorException, "Invalid program type: " + toString(gptype));
+			LOGERR("OpenGL cannot assign load-store textures to this gpu program type: " + toString(gptype));
+			return 0;
 		}
 
+		UINT32 offset = mImageUnitOffsets[gptype];
+		for (UINT32 i = offset; i < mMaxBoundImageUnits[gptype]; i++)
+		{
+			UINT32 imageUnit = i;
+
+			if (mImageInfos[imageUnit].uniformIdx == uniformIdx || mImageInfos[imageUnit].uniformIdx == (UINT32)-1)
+				return imageUnit;
+		}
+
+		INT32 numSupportedUnits = (INT32)mCurrentCapabilities->getNumLoadStoreTextureUnits(gptype);
+		INT32 numBoundImageUnits = (INT32)mMaxBoundImageUnits[gptype] - (INT32)offset;
+		if (numBoundImageUnits < numSupportedUnits)
+			return mMaxBoundImageUnits[gptype];
+
+		LOGERR("Cannot find an empty slot to bind a load-store texture to.");
 		return 0;
 	}
 
@@ -1704,29 +1758,12 @@ namespace BansheeEngine
 		UINT32 maxNumBindings = mCurrentCapabilities->getNumGpuParamBlockBuffers(gptype);
 		if (binding >= maxNumBindings)
 		{
-			BS_EXCEPT(InvalidParametersException, "Invalid buffer binding for the provided stage. Buffer binding: " + toString(binding) + ". Stage: " +
+			LOGERR("Invalid buffer binding for the provided stage. Buffer binding: " + toString(binding) + ". Stage: " +
 				toString(gptype) + ". Supported range is 0 .. " + toString(maxNumBindings - 1));
+			return 0;
 		}
 
-		switch (gptype)
-		{
-		case GPT_FRAGMENT_PROGRAM:
-			return mFragmentUBOffset + binding;
-		case GPT_VERTEX_PROGRAM:
-			return mVertexUBOffset + binding;
-		case GPT_GEOMETRY_PROGRAM:
-			return mGeometryUBOffset + binding;
-		case GPT_HULL_PROGRAM:
-			return mHullUBOffset + binding;
-		case GPT_DOMAIN_PROGRAM:
-			return mDomainUBOffset + binding;
-		case GPT_COMPUTE_PROGRAM:
-			return mComputeUBOffset + binding;
-		default:
-			BS_EXCEPT(InternalErrorException, "Invalid program type: " + toString(gptype));
-		}
-
-		return 0;
+		return mUBOffsets[gptype] + binding;
 	}
 
 	void GLRenderAPI::setActiveProgram(GpuProgramType gptype, const SPtr<GLSLGpuProgramCore>& program)
@@ -1752,6 +1789,9 @@ namespace BansheeEngine
 			mCurrentComputeProgram = program;
 			break;
 		}
+
+		mMaxBoundTexUnits[gptype] = 0;
+		mMaxBoundImageUnits[gptype] = 0;
 	}
 
 	SPtr<GLSLGpuProgramCore> GLRenderAPI::getActiveProgram(GpuProgramType gptype) const
@@ -1817,44 +1857,50 @@ namespace BansheeEngine
 			BS_EXCEPT(RenderingAPIException, "GPU doesn't support frame buffer objects. OpenGL versions lower than 3.0 are not supported.");
 		}
 
-		mFragmentTexOffset = 0;
-		mVertexTexOffset = caps->getNumTextureUnits(GPT_FRAGMENT_PROGRAM);
-		mGeometryTexOffset = mVertexTexOffset + caps->getNumTextureUnits(GPT_VERTEX_PROGRAM);
+		UINT32 curTexUnitOffset = 0;
+		UINT32 curImageUnitOffset = 0;
+		UINT32 curUBOffset = 0;
+		for (UINT32 i = 0; i < 6; i++)
+		{
+			mTextureUnitOffsets[i] = curTexUnitOffset;
+			mImageUnitOffsets[i] = curImageUnitOffset;
+			mUBOffsets[i] = curUBOffset;
 
+			curTexUnitOffset += caps->getNumTextureUnits((GpuProgramType)i);
+			curImageUnitOffset += caps->getNumLoadStoreTextureUnits((GpuProgramType)i);
+			curUBOffset += caps->getNumGpuParamBlockBuffers((GpuProgramType)i);
+		}
+
+		UINT32 totalNumTexUnits = curTexUnitOffset;
 		UINT16 numCombinedTexUnits = caps->getNumCombinedTextureUnits();
 
-		UINT32 totalNumTexUnits = caps->getNumTextureUnits(GPT_VERTEX_PROGRAM);
-		totalNumTexUnits += caps->getNumTextureUnits(GPT_FRAGMENT_PROGRAM);
-		totalNumTexUnits += caps->getNumTextureUnits(GPT_GEOMETRY_PROGRAM);
-		totalNumTexUnits += caps->getNumTextureUnits(GPT_HULL_PROGRAM);
-		totalNumTexUnits += caps->getNumTextureUnits(GPT_DOMAIN_PROGRAM);
-		totalNumTexUnits += caps->getNumTextureUnits(GPT_COMPUTE_PROGRAM);
-
-		if(totalNumTexUnits > numCombinedTexUnits)
+		if (totalNumTexUnits > numCombinedTexUnits)
 			BS_EXCEPT(InternalErrorException, "Number of combined texture units less than the number of individual units!?");
 
-		mNumTextureTypes = numCombinedTexUnits;
-		mTextureTypes = bs_newN<GLenum>(mNumTextureTypes);
-		for(UINT16 i = 0; i < numCombinedTexUnits; i++)
-			mTextureTypes[i] = GL_TEXTURE_2D;
+		mNumTextureUnits = numCombinedTexUnits;
+		mTextureInfos = bs_newN<TextureInfo>(mNumTextureUnits);
+		for (UINT16 i = 0; i < mNumTextureUnits; i++)
+		{
+			mTextureInfos[i].samplerIdx = (UINT32)-1;
+			mTextureInfos[i].type = GL_TEXTURE_2D;
+		}
 
-		mVertexUBOffset = 0;
-		UINT32 totalNumUniformBlocks = caps->getNumGpuParamBlockBuffers(GPT_VERTEX_PROGRAM);
-		mFragmentUBOffset = totalNumUniformBlocks;
-		totalNumUniformBlocks += caps->getNumGpuParamBlockBuffers(GPT_FRAGMENT_PROGRAM);
-		mGeometryUBOffset = totalNumUniformBlocks;
-		totalNumUniformBlocks += caps->getNumGpuParamBlockBuffers(GPT_GEOMETRY_PROGRAM);
-		mHullUBOffset = totalNumUniformBlocks;
-		totalNumUniformBlocks += caps->getNumGpuParamBlockBuffers(GPT_HULL_PROGRAM);
-		mDomainUBOffset = totalNumUniformBlocks;
-		totalNumUniformBlocks += caps->getNumGpuParamBlockBuffers(GPT_DOMAIN_PROGRAM);
-		mComputeUBOffset = totalNumUniformBlocks;
-		totalNumUniformBlocks += caps->getNumGpuParamBlockBuffers(GPT_COMPUTE_PROGRAM);
-
+		UINT32 totalNumUniformBlocks = curUBOffset;
 		UINT16 numCombinedUniformBlocks = caps->getNumCombinedGpuParamBlockBuffers();
 
 		if(totalNumUniformBlocks > numCombinedUniformBlocks)
 			BS_EXCEPT(InternalErrorException, "Number of combined uniform block buffers less than the number of individual per-stage buffers!?");
+
+		UINT32 totalNumImageUnits = curImageUnitOffset;
+		UINT16 numCombinedImageUnits = caps->getNumCombinedLoadStoreTextureUnits();
+
+		if (totalNumImageUnits > numCombinedImageUnits)
+			BS_EXCEPT(InternalErrorException, "Number of combined load-store texture units less than the number of individual per-stage units!?");
+
+		mNumImageUnits = numCombinedImageUnits;
+		mImageInfos = bs_newN<ImageInfo>(mNumImageUnits);
+		for (UINT16 i = 0; i < mNumImageUnits; i++)
+			mImageInfos[i].uniformIdx = (UINT32)-1;
 
 		TextureManager::startUp<GLTextureManager>(std::ref(*mGLSupport));
 		TextureCoreManager::startUp<GLTextureCoreManager>(std::ref(*mGLSupport));
@@ -2115,6 +2161,19 @@ namespace BansheeEngine
 
 			glGetIntegerv(GL_MAX_COMPUTE_UNIFORM_BLOCKS, &numUniformBlocks);
 			rsc->setNumGpuParamBlockBuffers(GPT_COMPUTE_PROGRAM, numUniformBlocks);
+
+			// Max number of load-store textures
+			GLint lsfUnits;
+			glGetIntegerv(GL_MAX_FRAGMENT_IMAGE_UNIFORMS, &lsfUnits);
+			rsc->setNumLoadStoreTextureUnits(GPT_FRAGMENT_PROGRAM, static_cast<UINT16>(lsfUnits));
+
+			GLint lscUnits;
+			glGetIntegerv(GL_MAX_COMPUTE_IMAGE_UNIFORMS, &lscUnits);
+			rsc->setNumLoadStoreTextureUnits(GPT_COMPUTE_PROGRAM, static_cast<UINT16>(lscUnits));
+
+			GLint combinedLoadStoreTextureUnits;
+			glGetIntegerv(GL_MAX_COMBINED_IMAGE_UNIFORMS, &combinedLoadStoreTextureUnits);
+			rsc->setNumCombinedLoadStoreTextureUnits(static_cast<UINT16>(combinedLoadStoreTextureUnits));
 		}
 
 		GLint combinedTexUnits;

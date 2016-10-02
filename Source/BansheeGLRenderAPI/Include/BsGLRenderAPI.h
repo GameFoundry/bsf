@@ -49,7 +49,7 @@ namespace BansheeEngine
 		void setTexture(GpuProgramType gptype, UINT16 texUnit, const SPtr<TextureCore>& texture) override;
 
 		/** @copydoc RenderAPICore::setLoadStoreTexture */
-		void setLoadStoreTexture(GpuProgramType gptype, UINT16 texUnit, bool enabled, const SPtr<TextureCore>& texture,
+		void setLoadStoreTexture(GpuProgramType gptype, UINT16 texUnit, const SPtr<TextureCore>& texture,
 			const TextureSurface& surface) override;
         
 		/** @copydoc RenderAPICore::setBuffer */
@@ -170,10 +170,24 @@ namespace BansheeEngine
 		GLuint getCombinedMinMipFilter() const;
 
 		/**
-		 * OpenGL shares all texture slots, but the engine prefers to keep textures separate per-stage. This will convert
-		 * texture unit that is set per stage into a global texture unit usable by OpenGL.
+		 * Calculates a global texture unit slot for a sampler specific to a GPU program. 
+		 * 
+		 * @param[in]	gptype		Type of the GPU program the sampler is a part of.
+		 * @param[in]	samplerIdx	Index of the sampler uniform.
+		 * @return					Unique global texture unit index that can be used for binding a texture to the specified
+		 *							sampler.
 		 */
-		UINT32 getGLTextureUnit(GpuProgramType gptype, UINT32 unit);
+		UINT32 getGLTextureUnit(GpuProgramType gptype, UINT32 samplerIdx);
+
+		/**
+		 * Calculates a global image unit slot based on a uniform index of the image in a GPU program. 
+		 * 
+		 * @param[in]	gptype		Type of the GPU program the uniform is a part of.
+		 * @param[in]	uniformIdx	Index of the image uniform.
+		 * @return					Unique global image unit index that can be used for binding a load-store texture to the
+		 *							specified uniform.
+		 */
+		UINT32 getGLImageUnit(GpuProgramType gptype, UINT32 uniformIdx);
 
 		/**
 		 * OpenGL shares all buffer bindings, but the engine prefers to keep buffers separate per-stage. This will convert
@@ -204,13 +218,13 @@ namespace BansheeEngine
 		 * Sets the texture addressing mode for a texture unit. This determines how are UV address values outside of [0, 1]
 		 * range handled when sampling from texture.
 		 */
-        void setTextureAddressingMode(UINT16 stage, const UVWAddressingMode& uvw);
+        void setTextureAddressingMode(UINT16 unit, const UVWAddressingMode& uvw);
 
 		/**
 		 * Sets the texture border color for a texture unit. Border color determines color returned by the texture sampler
 		 * when border addressing mode is used and texture address is outside of [0, 1] range.
 		 */
-        void setTextureBorderColor(UINT16 stage, const Color& color);
+        void setTextureBorderColor(UINT16 unit, const Color& color);
 
 		/**
 		 * Sets the mipmap bias value for a given texture unit. Bias allows	you to adjust the mipmap selection calculation.
@@ -383,6 +397,19 @@ namespace BansheeEngine
 		bool checkForErrors() const;
 
 	private:
+		/** Information about a currently bound texture. */
+		struct TextureInfo
+		{
+			UINT32 samplerIdx;
+			GLenum type;
+		};
+
+		/** Information about a currently bound load-store texture (image in OpenGL lingo). */
+		struct ImageInfo
+		{
+			UINT32 uniformIdx;
+		};
+
 		Rect2 mViewportNorm;
 		UINT32 mScissorTop, mScissorBottom, mScissorLeft, mScissorRight;
 		UINT32 mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight;
@@ -401,8 +428,10 @@ namespace BansheeEngine
 		FilterOptions mMipFilter;
 
 		// Holds texture type settings for every stage
-		UINT32	mNumTextureTypes;
-		GLenum* mTextureTypes;
+		UINT32 mNumTextureUnits;
+		TextureInfo* mTextureInfos;
+		UINT32 mNumImageUnits;
+		ImageInfo* mImageInfos;
 
 		bool mDepthWrite;
 		bool mColorWrite[4];
@@ -422,16 +451,11 @@ namespace BansheeEngine
 
 		const GLSLProgramPipeline* mActivePipeline;
 
-		UINT32 mFragmentTexOffset;
-		UINT32 mVertexTexOffset;
-		UINT32 mGeometryTexOffset;
-
-		UINT32 mFragmentUBOffset;
-		UINT32 mVertexUBOffset;
-		UINT32 mGeometryUBOffset;
-		UINT32 mHullUBOffset;
-		UINT32 mDomainUBOffset;
-		UINT32 mComputeUBOffset;
+		UINT32 mTextureUnitOffsets[6];
+		UINT32 mMaxBoundTexUnits[6];
+		UINT32 mImageUnitOffsets[6];
+		UINT32 mMaxBoundImageUnits[6];
+		UINT32 mUBOffsets[6];
 
 		Vector<SPtr<VertexBufferCore>> mBoundVertexBuffers;
 		SPtr<VertexDeclarationCore> mBoundVertexDeclaration;

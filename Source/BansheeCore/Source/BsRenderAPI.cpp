@@ -27,11 +27,11 @@ namespace BansheeEngine
 		accessor.queueCommand(std::bind(&RenderAPICore::setTexture, RenderAPICore::instancePtr(), gptype, unit, texPtr->getCore()));
 	}
 
-	void RenderAPI::setLoadStoreTexture(CoreAccessor& accessor, GpuProgramType gptype, UINT16 unit, bool enabled, const SPtr<Texture>& texPtr,
-		const TextureSurface& surface)
+	void RenderAPI::setLoadStoreTexture(CoreAccessor& accessor, GpuProgramType gptype, UINT16 unit, 
+		const SPtr<Texture>& texPtr, const TextureSurface& surface)
 	{
-		accessor.queueCommand(std::bind(&RenderAPICore::setLoadStoreTexture, RenderAPICore::instancePtr(), gptype, unit, enabled, texPtr->getCore(),
-			surface));
+		accessor.queueCommand(std::bind(&RenderAPICore::setLoadStoreTexture, RenderAPICore::instancePtr(), gptype, unit, 
+			texPtr->getCore(), surface));
 	}
 
 	void RenderAPI::setBuffer(CoreAccessor& accessor, GpuProgramType gptype, UINT16 unit, const SPtr<GpuBuffer>& buffer,

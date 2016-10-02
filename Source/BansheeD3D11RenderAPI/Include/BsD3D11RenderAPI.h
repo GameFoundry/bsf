@@ -40,7 +40,7 @@ namespace BansheeEngine
 		void setTexture(GpuProgramType gptype, UINT16 texUnit, const SPtr<TextureCore>& texture) override;
 
 		/** @copydoc RenderAPICore::setLoadStoreTexture */
-		void setLoadStoreTexture(GpuProgramType gptype, UINT16 texUnit, bool enabled, const SPtr<TextureCore>& texture,
+		void setLoadStoreTexture(GpuProgramType gptype, UINT16 texUnit, const SPtr<TextureCore>& texture,
 			const TextureSurface& surface) override;
 
 		/** @copydoc RenderAPICore::setBuffer */

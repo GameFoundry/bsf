@@ -27,6 +27,13 @@ namespace BansheeEngine
 		mNumGpuParamBlocksPerStage[GPT_HULL_PROGRAM] = 0;
 		mNumGpuParamBlocksPerStage[GPT_DOMAIN_PROGRAM] = 0;
 		mNumGpuParamBlocksPerStage[GPT_COMPUTE_PROGRAM] = 0;
+
+		mNumLoadStoreTextureUnitsPerStage[GPT_VERTEX_PROGRAM] = 0;
+		mNumLoadStoreTextureUnitsPerStage[GPT_FRAGMENT_PROGRAM] = 0;
+		mNumLoadStoreTextureUnitsPerStage[GPT_GEOMETRY_PROGRAM] = 0;
+		mNumLoadStoreTextureUnitsPerStage[GPT_HULL_PROGRAM] = 0;
+		mNumLoadStoreTextureUnitsPerStage[GPT_DOMAIN_PROGRAM] = 0;
+		mNumLoadStoreTextureUnitsPerStage[GPT_COMPUTE_PROGRAM] = 0;
 	}
 
 	RenderAPICapabilities::~RenderAPICapabilities()

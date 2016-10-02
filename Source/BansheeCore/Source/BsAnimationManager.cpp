@@ -16,9 +16,12 @@ namespace BansheeEngine
 	AnimationManager::AnimationManager()
 		: mNextId(1), mUpdateRate(1.0f / 60.0f), mAnimationTime(0.0f), mLastAnimationUpdateTime(0.0f)
 		, mNextAnimationUpdateTime(0.0f), mPaused(false), mWorkerStarted(false), mPoseReadBufferIdx(1)
-		, mPoseWriteBufferIdx(0), mDataReadyCount(0), mWorkerState(WorkerState::Inactive), mDataReady(false)
+		, mPoseWriteBufferIdx(0), mDataReady(false)
 	{
 		mAnimationWorker = Task::create("Animation", std::bind(&AnimationManager::evaluateAnimation, this));
+
+		mDataReadyCount.store(0, std::memory_order_release);
+		mWorkerState.store(WorkerState::Inactive, std::memory_order_release);
 
 		mBlendShapeVertexDesc = VertexDataDesc::create();
 		mBlendShapeVertexDesc->addVertElem(VET_FLOAT3, VES_POSITION, 1, 1);

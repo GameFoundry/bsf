@@ -55,8 +55,6 @@ Technique : base("Surface") =
 			uniform sampler2D gAlbedoTex;
 			uniform sampler2D gNormalTex;
 			
-			out vec4[3] fragColor;
-			
 			void main()
 			{
 				vec3 normal = normalize(texture2D(gNormalTex, uv0).xyz * 2.0f - vec3(1, 1, 1));
@@ -66,10 +64,10 @@ Technique : base("Surface") =
 				gbufferData.albedo = texture2D(gAlbedoTex, uv0);
 				gbufferData.worldNormal.xyz = worldNormal;
 				
-				encodeGBuffer(gbufferData, fragColor[1], fragColor[2]);
+				encodeGBuffer(gbufferData, gl_FragData[1], gl_FragData[2]);
 				
 				// TODO - Just returning a simple ambient term, use better environment lighting later
-				fragColor[0] = vec4(gbufferData.albedo.rgb, 1.0f) * 0.01f; 
+				gl_FragData[0] = vec4(gbufferData.albedo.rgb, 1.0f) * 0.01f; 
 			}	
 		};
 	};

@@ -174,6 +174,18 @@ namespace BansheeEngine
 			mNumCombinedTextureUnits = num;
 		}
 
+		/**	Sets the maximum number of load-store texture units per pipeline stage. */
+		void setNumLoadStoreTextureUnits(GpuProgramType type, UINT16 num)
+		{
+			mNumLoadStoreTextureUnitsPerStage[type] = num;
+		}
+
+		/** Sets the maximum number of load-store texture units in all pipeline stages. */
+		void setNumCombinedLoadStoreTextureUnits(UINT16 num)
+		{
+			mNumCombinedLoadStoreTextureUnits = num;
+		}
+
 		/**	Sets the maximum number of GPU param block buffers per pipeline stage. */
 		void setNumGpuParamBlockBuffers(GpuProgramType type, UINT16 num)
 		{
@@ -218,6 +230,22 @@ namespace BansheeEngine
 		UINT16 getNumCombinedTextureUnits() const
 		{
 			return mNumCombinedTextureUnits;
+		}
+
+		/**	Returns the number of load-store texture units supported per pipeline stage. */
+		UINT16 getNumLoadStoreTextureUnits(GpuProgramType type) const
+		{
+			auto iterFind = mNumLoadStoreTextureUnitsPerStage.find(type);
+			if (iterFind != mNumLoadStoreTextureUnitsPerStage.end())
+				return iterFind->second;
+			else
+				return 0;
+		}
+
+		/**	Returns the number of load-store texture units supported in all pipeline stages. */
+		UINT16 getNumCombinedLoadStoreTextureUnits() const
+		{
+			return mNumCombinedLoadStoreTextureUnits;
 		}
 
 		/**	Returns the maximum number of bound GPU program param block buffers per pipeline stage. */
@@ -489,6 +517,10 @@ namespace BansheeEngine
 		Map<GpuProgramType, UINT16> mNumGpuParamBlocksPerStage;
 		// Total number of uniform blocks available
 		UINT16 mNumCombinedUniformBlocks = 0;
+		// The number of load-store texture unitss available per stage
+		Map<GpuProgramType, UINT16> mNumLoadStoreTextureUnitsPerStage;
+		// Total number of load-store texture units available
+		UINT16 mNumCombinedLoadStoreTextureUnits = 0;
 		// The stencil buffer bit depth
 		UINT16 mStencilBufferBitDepth = 0;
 		// Maximum number of vertex buffers we can bind at once

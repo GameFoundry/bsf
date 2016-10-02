@@ -939,9 +939,9 @@ namespace BansheeEngine
 				const TextureSurface& surface = params->getLoadStoreSurface(iter->second.slot);
 
 				if (texture == nullptr)
-					rapi.setLoadStoreTexture(stages[i], iter->second.slot, false, nullptr, surface);
+					rapi.setLoadStoreTexture(stages[i], iter->second.slot, nullptr, surface);
 				else
-					rapi.setLoadStoreTexture(stages[i], iter->second.slot, true, texture, surface);
+					rapi.setLoadStoreTexture(stages[i], iter->second.slot, texture, surface);
 			}
 
 			for (auto iter = paramDesc.buffers.begin(); iter != paramDesc.buffers.end(); ++iter)

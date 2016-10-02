@@ -112,7 +112,7 @@ namespace BansheeEngine
 
 		// Note: This is ugly, add a better way to clear load/store textures?
 		TextureSurface blankSurface;
-		rapi.setLoadStoreTexture(GPT_COMPUTE_PROGRAM, 0, false, nullptr, blankSurface);
+		rapi.setLoadStoreTexture(GPT_COMPUTE_PROGRAM, 0, nullptr, blankSurface);
 
 		mOutput = ppInfo.histogramTex->renderTexture;
 	}
