@@ -21,7 +21,7 @@ namespace BansheeEngine
 
 	UINT64 Timer::getMilliseconds() const
 	{
-		steady_clock::time_point newTime = mHRClock.now();
+		auto newTime = mHRClock.now();
 		nanoseconds newTimeNs = newTime.time_since_epoch();
 
 		return duration_cast<milliseconds>(newTimeNs).count();
@@ -29,7 +29,7 @@ namespace BansheeEngine
 
 	UINT64 Timer::getMicroseconds() const
 	{
-		steady_clock::time_point newTime = mHRClock.now();
+		auto newTime = mHRClock.now();
 		nanoseconds newTimeNs = newTime.time_since_epoch();
 
 		return duration_cast<microseconds>(newTimeNs).count();
