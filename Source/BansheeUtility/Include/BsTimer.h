@@ -39,7 +39,7 @@ namespace BansheeEngine
 
 	private:
 		std::chrono::high_resolution_clock mHRClock;
-		std::chrono::steady_clock::time_point mStartTime;
+		std::chrono::time_point<std::chrono::high_resolution_clock> mStartTime;
     };
 
 	/** @} */
