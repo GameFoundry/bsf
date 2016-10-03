@@ -404,7 +404,7 @@ namespace BansheeEngine
 
 		if (rtProps.requiresTextureFlipping())
 		{
-			UINT32 vertOffset = outputPixelData->getHeight() - 1;
+			UINT32 vertOffset = outputPixelData->getHeight();
 
 			for (UINT32 y = maxHeight; y > (UINT32)position.y; y--)
 			{

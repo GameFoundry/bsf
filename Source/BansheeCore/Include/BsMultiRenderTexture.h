@@ -36,15 +36,15 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT MultiRenderTextureProperties : public RenderTargetProperties
 	{
 	public:
-		MultiRenderTextureProperties(const MULTI_RENDER_TEXTURE_DESC& desc);
-		MultiRenderTextureProperties(const MULTI_RENDER_TEXTURE_CORE_DESC& desc);
+		MultiRenderTextureProperties(const MULTI_RENDER_TEXTURE_DESC& desc, bool requiresFlipping);
+		MultiRenderTextureProperties(const MULTI_RENDER_TEXTURE_CORE_DESC& desc, bool requiresFlipping);
 		virtual ~MultiRenderTextureProperties() { }
 
 	protected:
 		friend class MultiRenderTextureCore;
 		friend class MultiRenderTexture;
 
-		void construct(const TextureProperties* props);
+		void construct(const TextureProperties* props, bool requiresFlipping);
 	};
 
 	/**

@@ -869,7 +869,7 @@ namespace BansheeEngine
 					{
 						UINT32 arrayOffset = i * paramSize;
 						memcpy(&temp, data + arrayOffset, paramSize);
-						temp.transpose();
+						temp = temp.transpose();
 
 						paramBlock->write((paramInfo.offset + arrayOffset) * sizeof(UINT32), &temp, paramSize);
 					}

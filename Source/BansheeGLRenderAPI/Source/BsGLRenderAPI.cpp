@@ -245,7 +245,7 @@ namespace BansheeEngine
 		if (slot == 0)
 		{
 			UINT8* uniformBufferData = (UINT8*)bs_stack_alloc(buffer->getSize());
-			buffer->readFromGPU(uniformBufferData); // TODO - Don't read from GPU!? Just read the cached version
+			buffer->read(0, uniformBufferData, buffer->getSize());
 
 			bool hasBoundAtLeastOne = false;
 			for (auto iter = paramDesc.params.begin(); iter != paramDesc.params.end(); ++iter)
@@ -1154,7 +1154,7 @@ namespace BansheeEngine
 			x = mScissorLeft;
 
 			if (flipping)
-				y = targetHeight - mScissorBottom - 1;
+				y = targetHeight - mScissorBottom;
 			else
 				y = mScissorTop;
 
@@ -2250,7 +2250,7 @@ namespace BansheeEngine
 		if (rtProps.requiresTextureFlipping())
 		{
 			// Convert "upper-left" corner to "lower-left"
-			mViewportTop = rtProps.getHeight() - (mViewportTop + mViewportHeight) - 1;
+			mViewportTop = rtProps.getHeight() - (mViewportTop + mViewportHeight);
 		}
 
 		glViewport(mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight);

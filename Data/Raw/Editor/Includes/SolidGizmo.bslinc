@@ -45,45 +45,6 @@ Technique : base("SolidGizmo") =
 
 Technique : base("SolidGizmo") =
 {
-	Language = "HLSL9";
-	
-	Pass =
-	{
-		Vertex =
-		{
-			float4x4 matViewProj;
-
-			void main(
-				in float3 inPos : POSITION,	
-				in float3 inNormal : NORMAL,
-				in float4 inColor : COLOR0,	
-				out float4 oPosition : POSITION,
-				out float3 oNormal : NORMAL,
-				out float4 oColor : COLOR0)
-			{
-				oPosition = mul(matViewProj, float4(inPos.xyz, 1));
-				oNormal = inNormal;
-				oColor = inColor;
-			}
-		};
-		
-		Fragment =
-		{
-			float4 viewDir;
-		
-			float4 main(float3 normal : NORMAL, float4 color : COLOR0) : COLOR0
-			{
-				float4 outColor = color * dot(normalize(normal), -viewDir);
-				outColor.a = color.a;
-				
-				return outColor;
-			}
-		};
-	};
-};
-
-Technique : base("SolidGizmo") =
-{
 	Language = "GLSL";
 	
 	Pass =

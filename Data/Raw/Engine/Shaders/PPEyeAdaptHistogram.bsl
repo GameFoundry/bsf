@@ -141,7 +141,7 @@ Technique =
 			};
 		
 			uniform sampler2D gSceneColorTex;
-			layout (rgba32f) uniform image2D gOutputTex;
+			layout (rgba16f) uniform image2D gOutputTex;
 			
 			// Keep elements in this order as it ensures coalesced memory operations for non-random ops
 			shared float sharedData[NUM_BUCKETS][THREADGROUP_SIZE_X][THREADGROUP_SIZE_Y];

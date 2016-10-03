@@ -136,13 +136,14 @@ Technique : base("PickingAlphaCull") =
 		
 		Fragment =
 		{
+			in vec4 normal;
+			in vec2 texcoord0;		
+		
 			uniform sampler2D mainTexture;
 			uniform vec4 colorIndex;
 			uniform float alphaCutoff;
-			in vec4 normal;
-			in vec2 texcoord0;
-			out vec4 normalsColor;
-			out vec4 fragColor;
+
+			out vec4[2] outColor;
 
 			void main()
 			{
@@ -150,8 +151,8 @@ Technique : base("PickingAlphaCull") =
 				if(color.a < alphaCutoff)
 					discard;
 					
-				normalsColor = (normal + vec4(1,1,1,0)) / 2;
-				fragColor = colorIndex;
+				outColor[0] = colorIndex;
+				outColor[1] = (normal + vec4(1,1,1,0)) / 2;	
 			}
 		};
 	};

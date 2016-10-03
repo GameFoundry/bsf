@@ -7,10 +7,5 @@ Technique : inherits("SolidGizmo") =
 
 Technique : inherits("SolidGizmo") =
 {
-	Language = "HLSL9";
-};
-
-Technique : inherits("SolidGizmo") =
-{
 	Language = "GLSL";
 };

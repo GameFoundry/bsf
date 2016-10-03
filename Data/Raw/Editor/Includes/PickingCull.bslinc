@@ -35,7 +35,7 @@ Technique : base("PickingCull") =
 			float4 main(
 				in float4 inPos : SV_Position,
 				in float4 inNorm : NORMAL,	
-				out float4 oNorm :SV_Target1
+				out float4 oNorm : SV_Target1
 			) : SV_Target0
 			{
 				oNorm = (inNorm + float4(1,1,1,0)) / 2;
@@ -107,14 +107,15 @@ Technique : base("PickingCull") =
 		Fragment =
 		{
 			in vec4 normal;
+
 			uniform vec4 colorIndex;
-			out vec4 normalsColor;
-			out vec4 fragColor;
+			
+			out vec4[2] outColor;
 
 			void main()
 			{
-				normalsColor = (normal + vec4(1,1,1,0)) / 2;
-				fragColor = colorIndex;
+				outColor[0] = colorIndex;
+				outColor[1] = (normal + vec4(1,1,1,0)) / 2;
 			}
 		};
 	};

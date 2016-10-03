@@ -6,7 +6,7 @@
 namespace BansheeEngine
 {
 	GLMultiRenderTextureCore::GLMultiRenderTextureCore(const MULTI_RENDER_TEXTURE_CORE_DESC& desc)
-		:MultiRenderTextureCore(desc), mFB(nullptr), mProperties(desc)
+		:MultiRenderTextureCore(desc), mFB(nullptr), mProperties(desc, true)
 	{ }
 
 	GLMultiRenderTextureCore::~GLMultiRenderTextureCore()
@@ -112,6 +112,6 @@ namespace BansheeEngine
 	}
 
 	GLMultiRenderTexture::GLMultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC& desc)
-		:MultiRenderTexture(desc), mProperties(desc)
+		:MultiRenderTexture(desc), mProperties(desc, true)
 	{ }
 }

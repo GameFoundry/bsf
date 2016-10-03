@@ -22,25 +22,6 @@ Technique : inherits("SolidGizmo") =
 
 Technique : inherits("SolidGizmo") =
 {
-	Language = "HLSL9";
-	
-	Pass =
-	{
-		DepthWrite = false;
-		DepthRead = false;
-		Stencil = true;
-		StencilOpFront = { KEEP, KEEP, INC, PASS };
-		
-		Target =
-		{
-			Blend = true;
-			Color = { SRCA, SRCIA, ADD };
-		};
-	};
-};
-
-Technique : inherits("SolidGizmo") =
-{
 	Language = "GLSL";
 	
 	Pass =

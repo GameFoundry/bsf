@@ -11,7 +11,7 @@
 
 namespace BansheeEngine
 {
-	MultiRenderTextureProperties::MultiRenderTextureProperties(const MULTI_RENDER_TEXTURE_DESC& desc)
+	MultiRenderTextureProperties::MultiRenderTextureProperties(const MULTI_RENDER_TEXTURE_DESC& desc, bool requiresFlipping)
 	{
 		for (size_t i = 0; i < desc.colorSurfaces.size(); i++)
 		{
@@ -20,14 +20,15 @@ namespace BansheeEngine
 			if (texture != nullptr)
 			{
 				const TextureProperties& texProps = texture->getProperties();
-				construct(&texProps);
+				construct(&texProps, requiresFlipping);
 
 				break;
 			}
 		}
 	}
 
-	MultiRenderTextureProperties::MultiRenderTextureProperties(const MULTI_RENDER_TEXTURE_CORE_DESC& desc)
+	MultiRenderTextureProperties::MultiRenderTextureProperties(const MULTI_RENDER_TEXTURE_CORE_DESC& desc, 
+		bool requiresFlipping)
 	{
 		for (size_t i = 0; i < desc.colorSurfaces.size(); i++)
 		{
@@ -36,14 +37,14 @@ namespace BansheeEngine
 			if (texture != nullptr)
 			{
 				const TextureProperties& texProps = texture->getProperties();
-				construct(&texProps);
+				construct(&texProps, requiresFlipping);
 
 				break;
 			}
 		}
 	}
 
-	void MultiRenderTextureProperties::construct(const TextureProperties* props)
+	void MultiRenderTextureProperties::construct(const TextureProperties* props, bool requiresFlipping)
 	{
 		if (props == nullptr)
 			return;
@@ -55,7 +56,7 @@ namespace BansheeEngine
 		mHwGamma = props->isHardwareGammaEnabled();
 		mMultisampleCount = props->getMultisampleCount();
 		mIsWindow = false;
-		mRequiresTextureFlipping = requiresTextureFlipping();
+		mRequiresTextureFlipping = requiresFlipping;
 	}
 
 	MultiRenderTextureCore::MultiRenderTextureCore(const MULTI_RENDER_TEXTURE_CORE_DESC& desc)
