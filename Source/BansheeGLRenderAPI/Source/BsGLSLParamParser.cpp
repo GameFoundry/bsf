@@ -40,8 +40,9 @@ namespace BansheeEngine
 			if (attribNameToElementSemantic(attributeName, semantic, index))
 			{
 				VertexElementType type = glTypeToAttributeType(attribType);
+				UINT32 slot = glGetAttribLocation(glProgram, attributeName);
 
-				elementList.push_back(VertexElement(0, i, type, semantic, index));
+				elementList.push_back(VertexElement(0, slot, type, semantic, index));
 			}
 			else
 			{
