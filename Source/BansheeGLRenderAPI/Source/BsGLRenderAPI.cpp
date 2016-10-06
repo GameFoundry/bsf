@@ -1125,7 +1125,7 @@ namespace BansheeEngine
 	{
 		static bool lasta2c = false;
 
-		if (enable != lasta2c && getCapabilities()->hasCapability(RSC_ALPHA_TO_COVERAGE))
+		if (enable != lasta2c && getCapabilities().hasCapability(RSC_ALPHA_TO_COVERAGE))
 		{
 			if (enable)
 				glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
@@ -1452,7 +1452,7 @@ namespace BansheeEngine
 	{
 		if (mActiveTextureUnit != unit)
 		{
-			if (unit < getCapabilities()->getNumCombinedTextureUnits())
+			if (unit < getCapabilities().getNumCombinedTextureUnits())
 			{
 				glActiveTexture(GL_TEXTURE0 + unit);
 				mActiveTextureUnit = unit;
@@ -1466,7 +1466,7 @@ namespace BansheeEngine
 			else
 			{
 				LOGWRN("Provided texture unit index is higher than OpenGL supports. Provided: " + toString(unit) + 
-					". Supported range: 0 .. " + toString(getCapabilities()->getNumCombinedTextureUnits() - 1));
+					". Supported range: 0 .. " + toString(getCapabilities().getNumCombinedTextureUnits() - 1));
 				return false;
 			}
 		}

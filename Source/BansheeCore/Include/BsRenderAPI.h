@@ -492,7 +492,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Thread safe.
 		 */
-		const RenderAPICapabilities* getCapabilities() const;
+		const RenderAPICapabilities& getCapabilities() const;
 
 		/** Returns information about the driver version. */
 		virtual const DriverVersion& getDriverVersion() const;

@@ -256,9 +256,9 @@ namespace BansheeEngine
 		mActiveRenderTarget = nullptr;
 	}
 
-	const RenderAPICapabilities* RenderAPICore::getCapabilities(void) const 
+	const RenderAPICapabilities& RenderAPICore::getCapabilities(void) const 
 	{ 
-		return mCurrentCapabilities; 
+		return *mCurrentCapabilities; 
 	}
 
 	const DriverVersion& RenderAPICore::getDriverVersion(void) const 

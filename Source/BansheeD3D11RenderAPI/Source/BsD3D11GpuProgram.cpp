@@ -43,8 +43,8 @@ namespace BansheeEngine
 			return;
 		}
 
-		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
-		String hlslProfile = rs->getCapabilities()->gpuProgProfileToRSSpecificProfile(mProperties.getProfile());
+		D3D11RenderAPI* rapi = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
+		String hlslProfile = rapi->getCapabilities().gpuProgProfileToRSSpecificProfile(mProperties.getProfile());
 
 		ID3DBlob* microcode = compileMicrocode(hlslProfile);
 
@@ -54,7 +54,7 @@ namespace BansheeEngine
 			memcpy(&mMicrocode[0], microcode->GetBufferPointer(), microcode->GetBufferSize());
 
 			populateParametersAndConstants(microcode);
-			loadFromMicrocode(rs->getPrimaryDevice(), microcode);
+			loadFromMicrocode(rapi->getPrimaryDevice(), microcode);
 
 			SAFE_RELEASE(microcode);
 		}

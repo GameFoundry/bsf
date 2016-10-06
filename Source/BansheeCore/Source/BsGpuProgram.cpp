@@ -27,10 +27,10 @@ namespace BansheeEngine
 		if (!isRequiredCapabilitiesSupported())
 			return false;
 
-		RenderAPICore* rs = BansheeEngine::RenderAPICore::instancePtr();
-		String profile = rs->getCapabilities()->gpuProgProfileToRSSpecificProfile(getProperties().getProfile());
+		RenderAPICore* rapi = RenderAPICore::instancePtr();
+		String profile = rapi->getCapabilities().gpuProgProfileToRSSpecificProfile(getProperties().getProfile());
 
-		return rs->getCapabilities()->isShaderProfileSupported(profile);
+		return rapi->getCapabilities().isShaderProfileSupported(profile);
     }
 
 	bool GpuProgramCore::isRequiredCapabilitiesSupported() const
