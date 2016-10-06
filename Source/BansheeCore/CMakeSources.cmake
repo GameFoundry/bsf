@@ -159,6 +159,8 @@ set(BS_BANSHEECORE_INC_RENDERAPI
 	"Include/BsRenderAPIFactory.h"
 	"Include/BsRenderAPICapabilities.h"
 	"Include/BsViewport.h"
+	"Include/BsCommandBufferManager.h"
+	"Include/BsCommandBuffer.h"
 )
 
 set(BS_BANSHEECORE_SRC_CORETHREAD
@@ -447,6 +449,7 @@ set(BS_BANSHEECORE_SRC_RENDERAPI
 	"Source/BsRenderAPIManager.cpp"
 	"Source/BsRenderAPICapabilities.cpp"
 	"Source/BsViewport.cpp"
+	"Source/BsCommandBuffer.cpp"
 )
 
 set(BS_BANSHEECORE_SRC_NOFILTER

@@ -353,6 +353,20 @@ namespace BansheeEngine
 		GPOT_UNKNOWN = 0xffff
 	};
 
+	/** Types of command buffers. */
+	enum CommandBufferType
+	{
+		/** 
+		 * Command buffer used for rendering. Allows the use of draw commands, but also all commands supported by compute
+		 * or upload buffers. 
+		 */
+		CBT_GRAPHICS,
+		/** Command buffer used for compute operations. Allows the use of dispatch and upload commands. */
+		CBT_COMPUTE,
+		/** Command buffer used for memory transfer operations only. No rendering or compute dispatch allowed. */
+		CBT_UPLOAD
+	};
+
 	/** These values represent a hint to the driver when writing to a GPU buffer. */
 	enum class BufferWriteType
 	{
