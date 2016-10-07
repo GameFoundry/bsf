@@ -34,182 +34,83 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT RenderAPI
 	{
 	public:
-		/**  
-		 * @copydoc RenderAPICore::setTexture()
-		 *
-		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
-		 */
+		/** @see RenderAPICore::setTexture() */
 		static void setTexture(CoreAccessor& accessor, GpuProgramType gptype, UINT16 texUnit, const SPtr<Texture>& texture);
 
-		/**  
-		 * @copydoc RenderAPICore::setLoadStoreTexture()
-		 *
-		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
-		 */
+		/** @see RenderAPICore::setLoadStoreTexture() */
 		static void setLoadStoreTexture(CoreAccessor& accessor, GpuProgramType gptype, UINT16 texUnit,
 			const SPtr<Texture>& texture, const TextureSurface& surface);
 
-		/**  
-		 * @copydoc RenderAPICore::setBuffer()
-		 *
-		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
-		 */
+		/** @see RenderAPICore::setBuffer() */
 		static void setBuffer(CoreAccessor& accessor, GpuProgramType gptype, UINT16 unit, const SPtr<GpuBuffer>& buffer,
 			bool loadStore = false);
 
-		/** 
-		 * @copydoc RenderAPICore::setSamplerState()
-		 *
-		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
-		 */
+		/** @see RenderAPICore::setSamplerState() */
 		static void setSamplerState(CoreAccessor& accessor, GpuProgramType gptype, UINT16 texUnit, 
 			const SPtr<SamplerState>& samplerState);
 
-		/**  
-		 * @copydoc RenderAPICore::setBlendState()
-		 *
-		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
-		 */
+		/** @see RenderAPICore::setBlendState() */
 		static void setBlendState(CoreAccessor& accessor, const SPtr<BlendState>& blendState);
 
-		/** 
-		 * @copydoc RenderAPICore::setRasterizerState()
-		 *
-		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
-		 */
+		/** @see RenderAPICore::setRasterizerState() */
 		static void setRasterizerState(CoreAccessor& accessor, const SPtr<RasterizerState>& rasterizerState);
 
-		/** 
-		 * @copydoc RenderAPICore::setDepthStencilState()
-		 *
-		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
-		 */
+		/** @see RenderAPICore::setDepthStencilState() */
 		static void setDepthStencilState(CoreAccessor& accessor, const SPtr<DepthStencilState>& depthStencilState, 
 			UINT32 stencilRefValue);
 
-		/** 
-		 * Sets the provided vertex buffers starting at the specified source index.	Set buffer to nullptr to clear the
-		 * buffer at the specified index.
-		 *
-		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
-		 * @param[in]	index		Index at which to start binding the vertex buffers.
-		 * @param[in]	buffers		A list of buffers to bind to the pipeline.
-		 */
+		/** @see RenderAPICore::setVertexBuffers() */
 		static void setVertexBuffers(CoreAccessor& accessor, UINT32 index, const Vector<SPtr<VertexBuffer>>& buffers);
 
-		/** 
-		 * @copydoc RenderAPICore::setIndexBuffer()
-		 *
-		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
-		 */
+		/** @see RenderAPICore::setIndexBuffer() */
 		static void setIndexBuffer(CoreAccessor& accessor, const SPtr<IndexBuffer>& buffer);
 
-		/** 
-		 * @copydoc RenderAPICore::setVertexDeclaration()
-		 *
-		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
-		 */
+		/** @see RenderAPICore::setVertexDeclaration() */
 		static void setVertexDeclaration(CoreAccessor& accessor, const SPtr<VertexDeclaration>& vertexDeclaration);
 
-		/** 
-		 * @copydoc RenderAPICore::setViewport()
-		 *
-		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
-		 */
+		/** @see RenderAPICore::setViewport() */
 		static void setViewport(CoreAccessor& accessor, const Rect2& area);
 
-		/** 
-		 * @copydoc RenderAPICore::setDrawOperation() 
-		 *
-		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
-		 */
+		/** @see RenderAPICore::setDrawOperation()  */
 		static void setDrawOperation(CoreAccessor& accessor, DrawOperationType op);
 
-		/** 
-		 * @copydoc RenderAPICore::setScissorRect() 
-		 *
-		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
-		 */
+		/** @see RenderAPICore::setScissorRect()  */
 		static void setScissorRect(CoreAccessor& accessor, UINT32 left = 0, UINT32 top = 0, UINT32 right = 800, UINT32 bottom = 600);
 
-		/** 
-		 * @copydoc RenderAPICore::setRenderTarget()
-		 *
-		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
-		 */
+		/** @see RenderAPICore::setRenderTarget() */
 		static void setRenderTarget(CoreAccessor& accessor, const SPtr<RenderTarget>& target, bool readOnlyDepthStencil = false);
 
-		/** 
-		 * @copydoc RenderAPICore::bindGpuProgram()
-		 *
-		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
-		 */
+		/** @see RenderAPICore::bindGpuProgram() */
 		static void bindGpuProgram(CoreAccessor& accessor, const SPtr<GpuProgram>& prg);
 
-		/** 
-		 * @copydoc RenderAPICore::unbindGpuProgram()
-		 *
-		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
-		 */
+		/** @see RenderAPICore::unbindGpuProgram() */
 		static void unbindGpuProgram(CoreAccessor& accessor, GpuProgramType gptype);
 
-		/** 
-		 * @copydoc RenderAPICore::beginFrame()
-		 *
-		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
-		 */
+		/** @see RenderAPICore::beginFrame() */
 		static void beginRender(CoreAccessor& accessor);
 
-		/** 
-		 * @copydoc RenderAPICore::endFrame()
-		 *
-		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
-		 */
+		/** @see RenderAPICore::endFrame() */
 		static void endRender(CoreAccessor& accessor);
 
-		/** 
-		 * @copydoc RenderAPICore::clearRenderTarget() 
-		 *
-		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
-		 */
+		/** @see RenderAPICore::clearRenderTarget()  */
 		static void clearRenderTarget(CoreAccessor& accessor, UINT32 buffers, 
 			const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0, UINT8 targetMask = 0xFF);
 
-		/** 
-		 * @copydoc RenderAPICore::clearViewport()
-		 *
-		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
-		 */
+		/** @see RenderAPICore::clearViewport() */
 		static void clearViewport(CoreAccessor& accessor, UINT32 buffers, const Color& color = Color::Black, 
 			float depth = 1.0f, UINT16 stencil = 0, UINT8 targetMask = 0xFF);
 
-		/** 
-		 * @copydoc RenderAPICore::swapBuffers()
-		 *
-		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
-		 */
+		/** @see RenderAPICore::swapBuffers() */
 		static void swapBuffers(CoreAccessor& accessor, const SPtr<RenderTarget>& target);
 
-		/** 
-		 * @copydoc RenderAPICore::draw()
-		 *
-		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
-		 */
+		/** @see RenderAPICore::draw() */
 		static void draw(CoreAccessor& accessor, UINT32 vertexOffset, UINT32 vertexCount, UINT32 instanceCount = 0);
 
-		/** 
-		 * @copydoc RenderAPICore::drawIndexed()
-		 *
-		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
-		 */
+		/** @see RenderAPICore::drawIndexed() */
 		static void drawIndexed(CoreAccessor& accessor, UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, 
 			UINT32 vertexCount, UINT32 instanceCount = 0);
 
-		/** 
-		 * @copydoc RenderAPICore::dispatchCompute()
-		 *
-		 * @param[in]	accessor	Accessor on which will this command be queued for execution.
-		 */
+		/** @see RenderAPICore::dispatchCompute() */
 		static void dispatchCompute(CoreAccessor& accessor, UINT32 numGroupsX, UINT32 numGroupsY = 1, UINT32 numGroupsZ = 1);
 
 		/** @copydoc RenderAPICore::getVideoModeInfo */

@@ -35,6 +35,8 @@ set(BS_BANSHEED3D11RENDERAPI_INC_NOFILTER
 	"Include/BsD3D11BlendState.h"
 	"Include/BsD3D11RenderAPI.h"
 	"Include/BsD3D11RenderAPIFactory.h"
+	"Include/BsD3D11CommandBuffer.h"
+	"Include/BsD3D11CommandBufferManager.h"
 )
 
 set(BS_BANSHEED3D11RENDERAPI_SRC_NOFILTER
@@ -74,6 +76,8 @@ set(BS_BANSHEED3D11RENDERAPI_SRC_NOFILTER
 	"Source/BsD3D11BlendState.cpp"
 	"Source/BsD3D11RenderAPI.cpp"
 	"Source/BsD3D11RenderAPIFactory.cpp"
+	"Source/BsD3D11CommandBuffer.cpp"
+	"Source/BsD3D11CommandBufferManager.cpp"
 )
 
 source_group("Header Files" FILES ${BS_BANSHEED3D11RENDERAPI_INC_NOFILTER})

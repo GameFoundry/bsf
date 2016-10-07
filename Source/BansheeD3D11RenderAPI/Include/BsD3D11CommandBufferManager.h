@@ -2,21 +2,21 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
-#include "BsGLPrerequisites.h"
+#include "BsD3D11Prerequisites.h"
 #include "BsCommandBufferManager.h"
 
 namespace BansheeEngine
 {
-	/** @addtogroup GL
+	/** @addtogroup D3D11
 	 *  @{
 	 */
 
 	/** 
-	 * Handles creation of OpenGL command buffers. See CommandBuffer. 
+	 * Handles creation of DirectX 11 command buffers. See CommandBuffer. 
 	 *
 	 * @note Core thread only.
 	 */
-	class GLCommandBufferManager : public CommandBufferManager
+	class D3D11CommandBufferManager : public CommandBufferManager
 	{
 	public:
 		/** @copydoc CommandBufferManager::create() */

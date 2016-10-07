@@ -25,81 +25,105 @@ namespace BansheeEngine
 		const String& getShadingLanguageName() const override;
 
 		/** @copydoc RenderAPICore::setBlendState */
-		void setBlendState(const SPtr<BlendStateCore>& blendState) override;
+		void setBlendState(const SPtr<BlendStateCore>& blendState, 
+			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPICore::setRasterizerState */
-		void setRasterizerState(const SPtr<RasterizerStateCore>& rasterizerState) override;
+		void setRasterizerState(const SPtr<RasterizerStateCore>& rasterizerState,
+			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPICore::setDepthStencilState */
-		void setDepthStencilState(const SPtr<DepthStencilStateCore>& depthStencilState, UINT32 stencilRefValue) override;
+		void setDepthStencilState(const SPtr<DepthStencilStateCore>& depthStencilState, UINT32 stencilRefValue,
+			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPICore::setSamplerState */
-		void setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SPtr<SamplerStateCore>& samplerState) override;
+		void setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SPtr<SamplerStateCore>& samplerState,
+			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPICore::setTexture */
-		void setTexture(GpuProgramType gptype, UINT16 texUnit, const SPtr<TextureCore>& texture) override;
+		void setTexture(GpuProgramType gptype, UINT16 texUnit, const SPtr<TextureCore>& texture,
+			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPICore::setLoadStoreTexture */
 		void setLoadStoreTexture(GpuProgramType gptype, UINT16 texUnit, const SPtr<TextureCore>& texture,
-			const TextureSurface& surface) override;
+			const TextureSurface& surface, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPICore::setBuffer */
-		void setBuffer(GpuProgramType gptype, UINT16 unit, const SPtr<GpuBufferCore>& buffer, bool loadStore = false) override;
+		void setBuffer(GpuProgramType gptype, UINT16 unit, const SPtr<GpuBufferCore>& buffer, bool loadStore = false,
+			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPICore::beginFrame */
-		void beginFrame() override;
+		void beginFrame(const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPICore::endFrame */
-		void endFrame() override;
+		void endFrame(const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPICore::clearRenderTarget */
 		void clearRenderTarget(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0, 
-			UINT8 targetMask = 0xFF) override;
+			UINT8 targetMask = 0xFF, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPICore::clearViewport */
 		void clearViewport(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0,
-			UINT8 targetMask = 0xFF) override;
+			UINT8 targetMask = 0xFF, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPICore::setRenderTarget */
-		void setRenderTarget(const SPtr<RenderTargetCore>& target, bool readOnlyDepthStencil = false) override;
+		void setRenderTarget(const SPtr<RenderTargetCore>& target, bool readOnlyDepthStencil = false, 
+			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPICore::setViewport */
-		void setViewport(const Rect2& area) override;
+		void setViewport(const Rect2& area, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPICore::setScissorRect */
-		void setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom) override;
+		void setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom, 
+			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPICore::setVertexBuffers */
-		void setVertexBuffers(UINT32 index, SPtr<VertexBufferCore>* buffers, UINT32 numBuffers) override;
+		void setVertexBuffers(UINT32 index, SPtr<VertexBufferCore>* buffers, UINT32 numBuffers,
+			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPICore::setIndexBuffer */
-		void setIndexBuffer(const SPtr<IndexBufferCore>& buffer) override;
+		void setIndexBuffer(const SPtr<IndexBufferCore>& buffer, 
+			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPICore::setVertexDeclaration */
-		void setVertexDeclaration(const SPtr<VertexDeclarationCore>& vertexDeclaration) override;
+		void setVertexDeclaration(const SPtr<VertexDeclarationCore>& vertexDeclaration,
+			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPICore::setDrawOperation */
-		void setDrawOperation(DrawOperationType op) override;
+		void setDrawOperation(DrawOperationType op,
+			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPICore::draw */
-		void draw(UINT32 vertexOffset, UINT32 vertexCount, UINT32 instanceCount = 0) override;
+		void draw(UINT32 vertexOffset, UINT32 vertexCount, UINT32 instanceCount = 0,
+			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPICore::drawIndexed */
 		void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount, 
-			UINT32 instanceCount = 0) override;
+			UINT32 instanceCount = 0, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPICore::dispatchCompute */
-		void dispatchCompute(UINT32 numGroupsX, UINT32 numGroupsY = 1, UINT32 numGroupsZ = 1) override;
+		void dispatchCompute(UINT32 numGroupsX, UINT32 numGroupsY = 1, UINT32 numGroupsZ = 1,
+			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
+
+		/** @copydoc RenderAPICore::swapBuffers() */
+		void swapBuffers(const SPtr<RenderTargetCore>& target,
+			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPICore::bindGpuProgram */
-		void bindGpuProgram(const SPtr<GpuProgramCore>& prg) override;
+		void bindGpuProgram(const SPtr<GpuProgramCore>& prg, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPICore::unbindGpuProgram */
-		void unbindGpuProgram(GpuProgramType gptype) override;
+		void unbindGpuProgram(GpuProgramType gptype, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPICore::setParamBuffer */
 		void setParamBuffer(GpuProgramType gptype, UINT32 slot, const SPtr<GpuParamBlockBufferCore>& buffer, 
-			const GpuParamDesc& paramDesc) override;
+			const SPtr<GpuParamDesc>& paramDesc, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
+
+		/** @copydoc RenderAPICore::addCommands() */
+		void addCommands(const SPtr<CommandBuffer>& commandBuffer, const SPtr<CommandBuffer>& secondary) override;
+
+		/** @copydoc RenderAPICore::executeCommands() */
+		void executeCommands(const SPtr<CommandBuffer>& commandBuffer) override;
 
 		/** @copydoc RenderAPICore::convertProjectionMatrix */
 		void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest) override;
