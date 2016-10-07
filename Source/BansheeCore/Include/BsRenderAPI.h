@@ -227,10 +227,12 @@ namespace BansheeEngine
 	{
 	public:
 		RenderAPIInfo(float horzTexelOffset, float vertTexelOffset, float minDepth, float maxDepth, 
-			VertexElementType vertexColorType, bool vertexColorFlip, bool ndcVerticalTopToBottom, bool columnMajorMatrices)
+			VertexElementType vertexColorType, bool vertexColorFlip, bool ndcVerticalTopToBottom, bool columnMajorMatrices, 
+				bool multiThreadedCB)
 			: mHorizontalTexelOffset(horzTexelOffset), mVerticalTexelOffset(vertTexelOffset), mMinDepth(minDepth)
 			, mMaxDepth(maxDepth), mVertexColorType(vertexColorType), mVertexColorFlip(vertexColorFlip)
 			, mNDCYAxisDown(ndcVerticalTopToBottom), mColumnMajorMatrices(columnMajorMatrices)
+			, mMultiThreadedCB(multiThreadedCB)
 		{
 			
 		}
@@ -262,6 +264,12 @@ namespace BansheeEngine
 		 */
 		bool getNDCYAxisDown() const { return mNDCYAxisDown; }
 
+		/**
+		 * Checks if the API supports native multi-threaded command buffer generation. On APIs that don't support it 
+		 * command buffers can still be used, but it will be more efficient to use the immediate rendering operations.
+		 */
+		bool getMultiThreadedCBGeneration() const { return mMultiThreadedCB; }
+
 	private:
 		float mHorizontalTexelOffset = 0.0f;
 		float mVerticalTexelOffset = 0.0f;
@@ -271,6 +279,7 @@ namespace BansheeEngine
 		bool mVertexColorFlip = false;
 		bool mNDCYAxisDown = true;
 		bool mColumnMajorMatrices = false;
+		bool mMultiThreadedCB = false;
 	};
 
 	/** @} */
@@ -278,19 +287,15 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
-	/** 
-	 * Primary command buffer. Always available as long as RenderAPI is initialized. 
-	 * 
-	 * @note	Accessible on core thread only, or rendering worker threads if externally synchronized.
-	 */
-	extern BS_CORE_EXPORT SPtr<CommandBuffer> gMainCommandBuffer;
-
 	/**
 	 * Provides low-level API access to rendering commands (internally wrapping DirectX/OpenGL/Vulkan or similar). 
 	 * 
 	 * Methods that accept a CommandBuffer parameter get queued in the provided command buffer, and don't get executed until
 	 * executeCommands() method is called. User is allowed to populate command buffers from non-core threads, but they all 
-	 * must get executed from the core thread.
+	 * must get executed from the core thread. 
+	 * 
+	 * If a command buffer is not provivided to such methods, they execute immediately. Without a command buffer the methods
+	 * are only allowed to be called from the core thread.
 	 *
 	 * @note	Accessible on any thread for methods accepting a CommandBuffer. Otherwise core thread unless specifically
 	 *			noted otherwise on per-method basis.
@@ -322,50 +327,54 @@ namespace BansheeEngine
 		 * @param[in]	gptype			Determines to which GPU program slot to bind the sampler state.
 		 * @param[in]	texUnit			Texture unit index to bind the state to.
 		 * @param[in]	samplerState	Sampler state to bind, or null to unbind.
-		 * @param[in]	commandBuffer	Buffer whose subsequent commands will be affected by the state change. Buffer
-		 *								must support graphics or compute operations.
+		 * @param[in]	commandBuffer	Optional command buffer to queue the operation on. If not provided operation
+		 *								is executed immediately. Otherwise it is executed when executeCommands() is called.
+		 *								Buffer must support graphics or compute operations.
 		 *
 		 * @see		SamplerState
 		 */
 		virtual void setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SPtr<SamplerStateCore>& samplerState, 
-			const SPtr<CommandBuffer>& commandBuffer = gMainCommandBuffer) = 0;
+			const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**
 		 * Sets a blend state used for all active render targets.
 		 *
 		 * @param[in]	blendState		Blend state to bind, or null to unbind.
-		 * @param[in]	commandBuffer	Buffer whose subsequent commands will be affected by the state change. Buffer
-		 *								must support graphics operations.
+		 * @param[in]	commandBuffer	Optional command buffer to queue the operation on. If not provided operation
+		 *								is executed immediately. Otherwise it is executed when executeCommands() is called.
+		 *								Buffer must support graphics operations.
 		 *
 		 * @see		BlendState
 		 */
 		virtual void setBlendState(const SPtr<BlendStateCore>& blendState, 
-			const SPtr<CommandBuffer>& commandBuffer = gMainCommandBuffer) = 0;
+			const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**
 		 * Sets a state that controls various rasterizer options. 
 		 *
 		 * @param[in]	rasterizerState		Rasterizer state to bind, or null to unbind.
-		 * @param[in]	commandBuffer		Buffer whose subsequent commands will be affected by the state change. Buffer
-		 *									must support graphics operations.
+		 * @param[in]	commandBuffer		Optional command buffer to queue the operation on. If not provided operation
+		 *									is executed immediately. Otherwise it is executed when executeCommands() is 
+		 *									called. Buffer must support graphics operations.
 		 *
 		 * @see		RasterizerState
 		 */
 		virtual void setRasterizerState(const SPtr<RasterizerStateCore>& rasterizerState, 
-			const SPtr<CommandBuffer>& commandBuffer = gMainCommandBuffer) = 0;
+			const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**
 		 * Sets a state that controls depth & stencil buffer options.
 		 *
 		 * @param[in]	depthStencilState	Depth-stencil state to bind, or null to unbind.
 		 * @param[in]	stencilRefValue		Stencil reference value to be used for stencil comparisons, if enabled.
-		 * @param[in]	commandBuffer		Buffer whose subsequent commands will be affected by the state change. Buffer
-		 *									must support graphics operations.
+		 * @param[in]	commandBuffer		Optional command buffer to queue the operation on. If not provided operation
+		 *									is executed immediately. Otherwise it is executed when executeCommands() is 
+		 *									called. Buffer must support graphics operations.
 		 *
 		 * @see		DepthStencilState
 		 */
 		virtual void setDepthStencilState(const SPtr<DepthStencilStateCore>& depthStencilState, UINT32 stencilRefValue,
-			const SPtr<CommandBuffer>& commandBuffer = gMainCommandBuffer) = 0;
+			const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**
 		 * Binds a texture to the pipeline for the specified GPU program type at the specified slot. If the slot matches 
@@ -374,11 +383,12 @@ namespace BansheeEngine
 		 * @param[in]	gptype			Determines to which GPU program slot to bind the texture.
 		 * @param[in]	texUnit			Texture unit index to bind the texture to.
 		 * @param[in]	texture			Texture to bind.
-		 * @param[in]	commandBuffer	Buffer whose subsequent commands will be affected by the state change. Buffer must
-		 *								support graphics or compute operations.
+		 * @param[in]	commandBuffer	Optional command buffer to queue the operation on. If not provided operation
+		 *								is executed immediately. Otherwise it is executed when executeCommands() is called.
+		 *								Buffer must support graphics or compute operations.
 		 */
 		virtual void setTexture(GpuProgramType gptype, UINT16 texUnit, const SPtr<TextureCore>& texture,
-			const SPtr<CommandBuffer>& commandBuffer = gMainCommandBuffer) = 0;
+			const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**	
 		 * Binds a texture that can be used for random load/store operations from a GPU program. 
@@ -387,11 +397,12 @@ namespace BansheeEngine
 		 * @param[in]	texUnit			Texture unit index to bind the texture to.
 		 * @param[in]	texture			Texture to bind.
 		 * @param[in]	surface			Determines which surface of the texture to bind.
-		 * @param[in]	commandBuffer	Buffer whose subsequent commands will be affected by the state change. Buffer must
-		 *								support graphics or compute operations.
+		 * @param[in]	commandBuffer	Optional command buffer to queue the operation on. If not provided operation
+		 *								is executed immediately. Otherwise it is executed when executeCommands() is called.
+		 *								Buffer must support graphics or compute operations.
 		 */
 		virtual void setLoadStoreTexture(GpuProgramType gptype, UINT16 texUnit, const SPtr<TextureCore>& texture, 
-			const TextureSurface& surface, const SPtr<CommandBuffer>& commandBuffer = gMainCommandBuffer) = 0;
+			const TextureSurface& surface, const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**
 		 * Binds a buffer that can be used for read or write operations on the GPU.
@@ -401,37 +412,41 @@ namespace BansheeEngine
 		 * @param[in]	buffer			Buffer to bind.
 		 * @param[in]	loadStore		If true the buffer will be bound with support for unordered reads and writes, 
 		 *								otherwise it will only be bound for reads.
-		 * @param[in]	commandBuffer	Buffer whose subsequent commands will be affected by the state change. Buffer must
-		 *								support graphics or compute operations.
+		 * @param[in]	commandBuffer	Optional command buffer to queue the operation on. If not provided operation
+		 *								is executed immediately. Otherwise it is executed when executeCommands() is called.
+		 *								Buffer must support graphics or compute operations.
 		 */
 		virtual void setBuffer(GpuProgramType gptype, UINT16 unit, const SPtr<GpuBufferCore>& buffer, 
-			bool loadStore = false, const SPtr<CommandBuffer>& commandBuffer = gMainCommandBuffer) = 0;
+			bool loadStore = false, const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**
 		 * Signals that rendering for a specific viewport has started. Any draw calls need to be called between beginFrame()
 		 * and endFrame(). 
 		 * 
-		 * @param[in]	commandBuffer	Command buffer in which to start rendering. Buffer must support graphics
-		 *								operations.
+		 * @param[in]	commandBuffer	Optional command buffer to queue the operation on. If not provided operation
+		 *								is executed immediately. Otherwise it is executed when executeCommands() is called.
+		 *								Buffer must support graphics operations.
 		 */
-		virtual void beginFrame(const SPtr<CommandBuffer>& commandBuffer = gMainCommandBuffer) = 0;
+		virtual void beginFrame(const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 		
 		/** 
 		 * Ends that rendering to a specific viewport has ended. 
 		 *
-		 * @param[in]	commandBuffer	Command buffer in which to start rendering. Buffer must support graphics
-		 *								operations.
+		 * @param[in]	commandBuffer	Optional command buffer to queue the operation on. If not provided operation
+		 *								is executed immediately. Otherwise it is executed when executeCommands() is called.
+		 *								Buffer must support graphics operations.
 		 */
-		virtual void endFrame(const SPtr<CommandBuffer>& commandBuffer = gMainCommandBuffer) = 0;
+		virtual void endFrame(const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**
 		 * Sets the active viewport that will be used for all render operations.
 		 *
 		 * @param[in]	area			Area of the viewport, in normalized ([0,1] range) coordinates.
-		 * @param[in]	commandBuffer	Buffer whose subsequent commands will be affected by the state change. Buffer must
-		 *								support graphics operations.
+		 * @param[in]	commandBuffer	Optional command buffer to queue the operation on. If not provided operation
+		 *								is executed immediately. Otherwise it is executed when executeCommands() is called.
+		 *								Buffer must support graphics operations.
 		 */
-		virtual void setViewport(const Rect2& area, const SPtr<CommandBuffer>& commandBuffer = gMainCommandBuffer) = 0;
+		virtual void setViewport(const Rect2& area, const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**
 		 * Allows you to set up a region in which rendering can take place. Coordinates are in pixels. No rendering will be
@@ -441,11 +456,12 @@ namespace BansheeEngine
 		 * @param[in]	top				Top border of the scissor rectangle, in pixels.
 		 * @param[in]	right			Right border of the scissor rectangle, in pixels.
 		 * @param[in]	bottom			Bottom border of the scissor rectangle, in pixels.
-		 * @param[in]	commandBuffer	Buffer whose subsequent commands will be affected by the state change. Buffer must
-		 *								support graphics operations.
+		 * @param[in]	commandBuffer	Optional command buffer to queue the operation on. If not provided operation
+		 *								is executed immediately. Otherwise it is executed when executeCommands() is called.
+		 *								Buffer must support graphics operations.
 		 */
 		virtual void setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom, 
-			const SPtr<CommandBuffer>& commandBuffer = gMainCommandBuffer) = 0;
+			const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**
 		 * Sets the provided vertex buffers starting at the specified source index.	Set buffer to nullptr to clear the 
@@ -454,22 +470,24 @@ namespace BansheeEngine
 		 * @param[in]	index			Index at which to start binding the vertex buffers.
 		 * @param[in]	buffers			A list of buffers to bind to the pipeline.
 		 * @param[in]	numBuffers		Number of buffers in the @p buffers list.
-		 * @param[in]	commandBuffer	Buffer whose subsequent commands will be affected by the state change. Buffer must
-		 *								support graphics operations.
+		 * @param[in]	commandBuffer	Optional command buffer to queue the operation on. If not provided operation
+		 *								is executed immediately. Otherwise it is executed when executeCommands() is called.
+		 *								Buffer must support graphics operations.
 		 */
 		virtual void setVertexBuffers(UINT32 index, SPtr<VertexBufferCore>* buffers, UINT32 numBuffers, 
-			const SPtr<CommandBuffer>& commandBuffer = gMainCommandBuffer) = 0;
+			const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**
 		 * Sets an index buffer to use when drawing. Indices in an index buffer reference vertices in the vertex buffer, 
 		 * which increases cache coherency and reduces the size of vertex buffers by eliminating duplicate data.
 		 *
 		 * @param[in]	buffer			Index buffer to bind, null to unbind.
-		 * @param[in]	commandBuffer	Buffer whose subsequent commands will be affected by the state change. Buffer must
-		 *								support graphics operations.
+		 * @param[in]	commandBuffer	Optional command buffer to queue the operation on. If not provided operation
+		 *								is executed immediately. Otherwise it is executed when executeCommands() is called.
+		 *								Buffer must support graphics operations.
 		 */
 		virtual void setIndexBuffer(const SPtr<IndexBufferCore>& buffer, 
-			const SPtr<CommandBuffer>& commandBuffer = gMainCommandBuffer) = 0;
+			const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**
 		 * Assigns a parameter buffer containing constants (uniforms) for use in a GPU program.
@@ -480,32 +498,35 @@ namespace BansheeEngine
 		 * @param[in]	buffer			Buffer containing constants (uniforms) for use by the shader.
 		 * @param[in]	paramDesc		Description of all parameters in the buffer. Required mostly for backwards 
 		 *								compatibility.
-		 * @param[in]	commandBuffer	Buffer whose subsequent commands will be affected by the state change. Buffer must
-		 *								support graphics or compute operations.
+		 * @param[in]	commandBuffer	Optional command buffer to queue the operation on. If not provided operation
+		 *								is executed immediately. Otherwise it is executed when executeCommands() is called.
+		 *								Buffer must support graphics or compute operations.
 		 */
 		virtual void setParamBuffer(GpuProgramType gptype, UINT32 slot, const SPtr<GpuParamBlockBufferCore>& buffer, 
-			const SPtr<GpuParamDesc>& paramDesc, const SPtr<CommandBuffer>& commandBuffer = gMainCommandBuffer) = 0;
+			const SPtr<GpuParamDesc>& paramDesc, const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**
 		 * Sets the vertex declaration to use when drawing. Vertex declaration is used to decode contents of a single 
 		 * vertex in a vertex buffer.
 		 *
 		 * @param[in]	vertexDeclaration	Vertex declaration to bind.
-		 * @param[in]	commandBuffer		Buffer whose subsequent commands will be affected by the state change. Buffer
-		 *									must support graphics operations.
+		 * @param[in]	commandBuffer		Optional command buffer to queue the operation on. If not provided operation
+		 *									is executed immediately. Otherwise it is executed when executeCommands() is 
+		 *									called. Buffer must support graphics operations.
 		 */
 		virtual void setVertexDeclaration(const SPtr<VertexDeclarationCore>& vertexDeclaration, 
-			const SPtr<CommandBuffer>& commandBuffer = gMainCommandBuffer) = 0;
+			const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/** 
 		 * Sets the draw operation that determines how to interpret the elements of the index or vertex buffers. 
 		 *
 		 * @param[in]	op				Draw operation to enable.
-		 * @param[in]	commandBuffer	Buffer whose subsequent commands will be affected by the state change. Buffer must 
-		 *								support graphics operations.
+		 * @param[in]	commandBuffer	Optional command buffer to queue the operation on. If not provided operation
+		 *								is executed immediately. Otherwise it is executed when executeCommands() is called.
+		 *								Buffer must support graphics operations.
 		 */
 		virtual void setDrawOperation(DrawOperationType op, 
-			const SPtr<CommandBuffer>& commandBuffer = gMainCommandBuffer) = 0;
+			const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**
 		 * Draw an object based on currently bound GPU programs, vertex declaration and vertex buffers. Draws directly from
@@ -515,11 +536,12 @@ namespace BansheeEngine
 		 * @param[in]	vertexCount		Number of vertices to draw.
 		 * @param[in]	instanceCount	Number of times to draw the provided geometry, each time with an (optionally)
 		 *								separate per-instance data.
-		 * @param[in]	commandBuffer	Command buffer in which to queue the draw operation on. Buffer must support graphics
-		 *								operations.
+		 * @param[in]	commandBuffer	Optional command buffer to queue the operation on. If not provided operation
+		 *								is executed immediately. Otherwise it is executed when executeCommands() is called.
+		 *								Buffer must support graphics operations.
 		 */
 		virtual void draw(UINT32 vertexOffset, UINT32 vertexCount, UINT32 instanceCount = 0, 
-			const SPtr<CommandBuffer>& commandBuffer = gMainCommandBuffer) = 0;
+			const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/** 
 		 * Draw an object based on currently bound GPU programs, vertex declaration, vertex and index buffers. 
@@ -530,11 +552,12 @@ namespace BansheeEngine
 		 * @param[in]	vertexCount		Number of vertices to draw.
 		 * @param[in]	instanceCount	Number of times to draw the provided geometry, each time with an (optionally)
 		 *								separate per-instance data.
-		 * @param[in]	commandBuffer	Command buffer in which to queue the draw operation on. Buffer must support graphics
-		 *								operations.
+		 * @param[in]	commandBuffer	Optional command buffer to queue the operation on. If not provided operation
+		 *								is executed immediately. Otherwise it is executed when executeCommands() is called.
+		 *								Buffer must support graphics operations.
 		 */
 		virtual void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount, 
-			UINT32 instanceCount = 0, const SPtr<CommandBuffer>& commandBuffer = gMainCommandBuffer) = 0;
+			UINT32 instanceCount = 0, const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/** 
 		 * Executes the currently bound compute shader. 
@@ -542,43 +565,47 @@ namespace BansheeEngine
 		 * @param[in]	numGroupsX		Number of groups to start in the X direction. Must be in range [1, 65535].
 		 * @param[in]	numGroupsY		Number of groups to start in the Y direction. Must be in range [1, 65535].
 		 * @param[in]	numGroupsZ		Number of groups to start in the Z direction. Must be in range [1, 64].
-		 * @param[in]	commandBuffer	Command buffer in which to queue the dispatch operation on. Buffer must support
-		 *								compute or graphics operations.
+		 * @param[in]	commandBuffer	Optional command buffer to queue the operation on. If not provided operation
+		 *								is executed immediately. Otherwise it is executed when executeCommands() is called.
+		 *								Buffer must support compute or graphics operations.
 		 */
 		virtual void dispatchCompute(UINT32 numGroupsX, UINT32 numGroupsY = 1, UINT32 numGroupsZ = 1, 
-			const SPtr<CommandBuffer>& commandBuffer = gMainCommandBuffer) = 0;
+			const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/** 
 		 * Swap the front and back buffer of the specified render target. 
 		 *
 		 * @param[in]	target			Render target to perform the buffer swap on.
-		 * @param[in]	commandBuffer	Command buffer in which to queue the swap buffer operation on. Buffer must support
-		 *								graphics operations.
+		 * @param[in]	commandBuffer	Optional command buffer to queue the operation on. If not provided operation
+		 *								is executed immediately. Otherwise it is executed when executeCommands() is called.
+		 *								Buffer must support graphics operations.
 		 */
 		virtual void swapBuffers(const SPtr<RenderTargetCore>& target, 
-			const SPtr<CommandBuffer>& commandBuffer = gMainCommandBuffer) = 0;
+			const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**
 		 * Binds the provided GPU program to the pipeline. Any following draw operations will use this program. 
 		 *
 		 * @param[in]	prg				GPU program to bind. Slot it is bound to is determined by the program type.
-		 * @param[in]	commandBuffer	Buffer whose subsequent commands will be affected by the state change. Buffer must 
-		 *								support graphics or compute operations (depending on program type).
+		 * @param[in]	commandBuffer	Optional command buffer to queue the operation on. If not provided operation
+		 *								is executed immediately. Otherwise it is executed when executeCommands() is called.
+		 *								Buffer must support graphics or compute operations (depending on program type).
 		 *
 		 * @note	You need to bind at least a vertex and a fragment program in order to draw something.
 		 */
 		virtual void bindGpuProgram(const SPtr<GpuProgramCore>& prg, 
-			const SPtr<CommandBuffer>& commandBuffer = gMainCommandBuffer) = 0;
+			const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**	
 		 * Unbinds a program of a given type. 
 		 *
 		 * @param[in]	gptype			GPU program slot to unbind the program from.
-		 * @param[in]	commandBuffer	Buffer whose subsequent commands will be affected by the state change. Buffer must 
-		 *								support graphics or compute operations (depending on program type).
+		 * @param[in]	commandBuffer	Optional command buffer to queue the operation on. If not provided operation
+		 *								is executed immediately. Otherwise it is executed when executeCommands() is called.
+		 *								Buffer must support graphics or compute operations (depending on program type).
 		 */
 		virtual void unbindGpuProgram(GpuProgramType gptype,
-			const SPtr<CommandBuffer>& commandBuffer = gMainCommandBuffer) = 0;
+			const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**
 		 * Change the render target into which we want to draw.
@@ -587,11 +614,12 @@ namespace BansheeEngine
 		 * @param[in]	readOnlyDepthStencil	If true the caller guarantees he won't write to the depth/stencil buffer 
 		 *										(if any was provided). This allows the depth buffer to be bound for depth 
 		 *										testing, as well as reading in a shader, at the same time.
-		 * @param[in]	commandBuffer			Buffer whose subsequent commands will be affected by the state change. 
-		 *										Buffer must support graphics operations.
+		 * @param[in]	commandBuffer			Optional command buffer to queue the operation on. If not provided operation
+		 *										is executed immediately. Otherwise it is executed when executeCommands() is
+		 *										called. Buffer must support graphics operations.
 		 */
         virtual void setRenderTarget(const SPtr<RenderTargetCore>& target, bool readOnlyDepthStencil = false,
-			const SPtr<CommandBuffer>& commandBuffer = gMainCommandBuffer) = 0;
+			const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**
 		 * Clears the currently active render target.
@@ -603,11 +631,12 @@ namespace BansheeEngine
 		 * @param[in]	stencil			The value to initialize the stencil buffer with, if enabled.
 		 * @param[in]	targetMask		In case multiple render targets are bound, this allows you to control which ones to
 		 *									clear (0x01 first, 0x02 second, 0x04 third, etc., and combinations).
-		 * @param[in]	commandBuffer	Command buffer in which to queue the clear operation on. Buffer must support
-		 *								graphics operations.
+		 * @param[in]	commandBuffer	Optional command buffer to queue the operation on. If not provided operation
+		 *								is executed immediately. Otherwise it is executed when executeCommands() is called.
+		 *								Buffer must support graphics operations.
 		 */
 		virtual void clearRenderTarget(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, 
-			UINT16 stencil = 0, UINT8 targetMask = 0xFF, const SPtr<CommandBuffer>& commandBuffer = gMainCommandBuffer) = 0;
+			UINT16 stencil = 0, UINT8 targetMask = 0xFF, const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**
 		 * Clears the currently active viewport (meaning it clears just a sub-area of a render-target that is covered by the 
@@ -620,11 +649,12 @@ namespace BansheeEngine
 		 * @param[in]	stencil			The value to initialize the stencil buffer with, if enabled.
 		 * @param[in]	targetMask		In case multiple render targets are bound, this allows you to control which ones to
 		 *								clear (0x01 first, 0x02 second, 0x04 third, etc., and combinations).
-		 * @param[in]	commandBuffer	Command buffer in which to queue the clear operation on. Buffer must support
-		 *								graphics operations.
+		 * @param[in]	commandBuffer	Optional command buffer to queue the operation on. If not provided operation
+		 *								is executed immediately. Otherwise it is executed when executeCommands() is called.
+		 *								Buffer must support graphics operations.
 		 */
 		virtual void clearViewport(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, 
-			UINT16 stencil = 0, UINT8 targetMask = 0xFF, const SPtr<CommandBuffer>& commandBuffer = gMainCommandBuffer) = 0;
+			UINT16 stencil = 0, UINT8 targetMask = 0xFF, const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/** Appends all commands from the provided secondary command buffer into the primary command buffer. */
 		virtual void addCommands(const SPtr<CommandBuffer>& commandBuffer, const SPtr<CommandBuffer>& secondary) = 0;

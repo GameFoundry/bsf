@@ -104,8 +104,6 @@ namespace BansheeEngine
 		mVideoModeInfo = mGLSupport->getVideoModeInfo();
 
 		CommandBufferManager::startUp<GLCommandBufferManager>();
-		gMainCommandBuffer = CommandBuffer::create(CBT_GRAPHICS);
-
 		RenderWindowManager::startUp<GLRenderWindowManager>(this);
 		RenderWindowCoreManager::startUp<GLRenderWindowCoreManager>(this);
 
@@ -217,7 +215,7 @@ namespace BansheeEngine
 
 	void GLRenderAPI::bindGpuProgram(const SPtr<GpuProgramCore>& prg, const SPtr<CommandBuffer>& commandBuffer)
 	{
-		auto execute = [=]()
+		auto executeRef = [&](const SPtr<GpuProgramCore>& prg)
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
@@ -227,8 +225,15 @@ namespace BansheeEngine
 			setActiveProgram(type, glprg);
 		};
 
-		SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-		cb->queueCommand(execute);
+		if (commandBuffer == nullptr)
+			executeRef(prg);
+		else
+		{
+			auto execute = [=]() { executeRef(prg); };
+
+			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
+			cb->queueCommand(execute);
+		}
 	}
 
 	void GLRenderAPI::unbindGpuProgram(GpuProgramType gptype, const SPtr<CommandBuffer>& commandBuffer)
@@ -240,14 +245,20 @@ namespace BansheeEngine
 			setActiveProgram(gptype, nullptr);
 		};
 
-		SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-		cb->queueCommand(execute);
+		if (commandBuffer == nullptr)
+			execute();
+		else
+		{
+			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
+			cb->queueCommand(execute);
+		}
 	}
 
 	void GLRenderAPI::setParamBuffer(GpuProgramType gptype, UINT32 slot, const SPtr<GpuParamBlockBufferCore>& buffer, 
 		const SPtr<GpuParamDesc>& paramDesc, const SPtr<CommandBuffer>& commandBuffer)
 	{
-		auto execute = [=]()
+		auto executeRef = [&](GpuProgramType gptype, UINT32 slot, const SPtr<GpuParamBlockBufferCore>& buffer,
+			const SPtr<GpuParamDesc>& paramDesc)
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
@@ -361,8 +372,15 @@ namespace BansheeEngine
 			}
 		};
 
-		SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-		cb->queueCommand(execute);
+		if (commandBuffer == nullptr)
+			executeRef(gptype, slot, buffer, paramDesc);
+		else
+		{
+			auto execute = [=]() { executeRef(gptype, slot, buffer, paramDesc); };
+
+			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
+			cb->queueCommand(execute);
+		}
 
 		BS_INC_RENDER_STAT(NumGpuParamBufferBinds);
 	}
@@ -370,7 +388,7 @@ namespace BansheeEngine
 	void GLRenderAPI::setTexture(GpuProgramType gptype, UINT16 unit, const SPtr<TextureCore>& texPtr,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
-		auto execute = [=]()
+		auto executeRef = [&](GpuProgramType gptype, UINT16 unit, const SPtr<TextureCore>& texPtr)
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
@@ -410,8 +428,15 @@ namespace BansheeEngine
 			activateGLTextureUnit(0);
 		};
 
-		SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-		cb->queueCommand(execute);
+		if (commandBuffer == nullptr)
+			executeRef(gptype, unit, texPtr);
+		else
+		{
+			auto execute = [=]() { executeRef(gptype, unit, texPtr); };
+
+			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
+			cb->queueCommand(execute);
+		}
 
 		BS_INC_RENDER_STAT(NumTextureBinds);
 	}
@@ -419,7 +444,7 @@ namespace BansheeEngine
 	void GLRenderAPI::setSamplerState(GpuProgramType gptype, UINT16 unit, const SPtr<SamplerStateCore>& state,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
-		auto execute = [=]()
+		auto executeRef = [&](GpuProgramType gptype, UINT16 unit, const SPtr<SamplerStateCore>& state)
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
@@ -449,8 +474,15 @@ namespace BansheeEngine
 			mMaxBoundTexUnits[gptype] = std::max(mMaxBoundTexUnits[gptype], (UINT32)texUnit + 1);
 		};
 
-		SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-		cb->queueCommand(execute);
+		if (commandBuffer == nullptr)
+			executeRef(gptype, unit, state);
+		else
+		{
+			auto execute = [=]() { executeRef(gptype, unit, state); };
+
+			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
+			cb->queueCommand(execute);
+		}
 
 		BS_INC_RENDER_STAT(NumSamplerBinds);
 	}
@@ -458,7 +490,8 @@ namespace BansheeEngine
 	void GLRenderAPI::setLoadStoreTexture(GpuProgramType gptype, UINT16 unit, const SPtr<TextureCore>& texPtr,
 		const TextureSurface& surface, const SPtr<CommandBuffer>& commandBuffer)
 	{
-		auto execute = [=]()
+		auto executeRef = [&](GpuProgramType gptype, UINT16 unit, const SPtr<TextureCore>& texPtr,
+			const TextureSurface& surface)
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
@@ -489,8 +522,15 @@ namespace BansheeEngine
 			}
 		};
 
-		SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-		cb->queueCommand(execute);
+		if (commandBuffer == nullptr)
+			executeRef(gptype, unit, texPtr, surface);
+		else
+		{
+			auto execute = [=]() { executeRef(gptype, unit, texPtr, surface); };
+
+			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
+			cb->queueCommand(execute);
+		}
 
 		BS_INC_RENDER_STAT(NumTextureBinds);
 	}
@@ -499,7 +539,7 @@ namespace BansheeEngine
 	void GLRenderAPI::setBuffer(GpuProgramType gptype, UINT16 unit, const SPtr<GpuBufferCore>& buffer, bool loadStore,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
-		auto execute = [=]()
+		auto executeRef = [&](GpuProgramType gptype, UINT16 unit, const SPtr<GpuBufferCore>& buffer, bool loadStore)
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
@@ -565,8 +605,15 @@ namespace BansheeEngine
 			}
 		};
 
-		SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-		cb->queueCommand(execute);
+		if (commandBuffer == nullptr)
+			executeRef(gptype, unit, buffer, loadStore);
+		else
+		{
+			auto execute = [=]() { executeRef(gptype, unit, buffer, loadStore); };
+
+			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
+			cb->queueCommand(execute);
+		}
 
 		BS_INC_RENDER_STAT(NumTextureBinds);
 	}
@@ -574,7 +621,7 @@ namespace BansheeEngine
 	void GLRenderAPI::setBlendState(const SPtr<BlendStateCore>& blendState,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
-		auto execute = [=]()
+		auto executeRef = [&](const SPtr<BlendStateCore>& blendState)
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
@@ -600,8 +647,15 @@ namespace BansheeEngine
 			setColorBufferWriteEnabled((writeMask & 0x1) != 0, (writeMask & 0x2) != 0, (writeMask & 0x4) != 0, (writeMask & 0x8) != 0);
 		};
 
-		SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-		cb->queueCommand(execute);
+		if (commandBuffer == nullptr)
+			executeRef(blendState);
+		else
+		{
+			auto execute = [=]() { executeRef(blendState); };
+
+			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
+			cb->queueCommand(execute);
+		}
 
 		BS_INC_RENDER_STAT(NumBlendStateChanges);
 	}
@@ -609,7 +663,7 @@ namespace BansheeEngine
 	void GLRenderAPI::setRasterizerState(const SPtr<RasterizerStateCore>& rasterizerState,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
-		auto execute = [=]()
+		auto executeRef = [&](const SPtr<RasterizerStateCore>& rasterizerState)
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
@@ -624,8 +678,15 @@ namespace BansheeEngine
 			setAntialiasedLineEnable(stateProps.getAntialiasedLineEnable());
 		};
 
-		SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-		cb->queueCommand(execute);
+		if (commandBuffer == nullptr)
+			executeRef(rasterizerState);
+		else
+		{
+			auto execute = [=]() { executeRef(rasterizerState); };
+
+			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
+			cb->queueCommand(execute);
+		}
 
 		BS_INC_RENDER_STAT(NumRasterizerStateChanges);
 	}
@@ -633,7 +694,7 @@ namespace BansheeEngine
 	void GLRenderAPI::setDepthStencilState(const SPtr<DepthStencilStateCore>& depthStencilState, UINT32 stencilRefValue,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
-		auto execute = [=]()
+		auto executeRef = [&](const SPtr<DepthStencilStateCore>& depthStencilState, UINT32 stencilRefValue)
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
@@ -659,8 +720,15 @@ namespace BansheeEngine
 			setStencilRefValue(stencilRefValue);
 		};
 
-		SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-		cb->queueCommand(execute);
+		if (commandBuffer == nullptr)
+			executeRef(depthStencilState, stencilRefValue);
+		else
+		{
+			auto execute = [=]() { executeRef(depthStencilState, stencilRefValue); };
+
+			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
+			cb->queueCommand(execute);
+		}
 
 		BS_INC_RENDER_STAT(NumDepthStencilStateChanges);
 	}
@@ -668,7 +736,7 @@ namespace BansheeEngine
 	void GLRenderAPI::setViewport(const Rect2& area,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
-		auto execute = [=]()
+		auto executeRef = [&](const Rect2& area)
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
@@ -676,14 +744,21 @@ namespace BansheeEngine
 			applyViewport();
 		};
 
-		SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-		cb->queueCommand(execute);
+		if (commandBuffer == nullptr)
+			executeRef(area);
+		else
+		{
+			auto execute = [=]() { executeRef(area); };
+
+			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
+			cb->queueCommand(execute);
+		}
 	}
 
 	void GLRenderAPI::setRenderTarget(const SPtr<RenderTargetCore>& target, bool readOnlyDepthStencil, 
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
-		auto execute = [=]()
+		auto executeRef = [&](const SPtr<RenderTargetCore>& target, bool readOnlyDepthStencil)
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
@@ -722,8 +797,15 @@ namespace BansheeEngine
 			applyViewport();
 		};
 
-		SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-		cb->queueCommand(execute);
+		if (commandBuffer == nullptr)
+			executeRef(target, readOnlyDepthStencil);
+		else
+		{
+			auto execute = [=]() { executeRef(target, readOnlyDepthStencil); };
+
+			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
+			cb->queueCommand(execute);
+		}
 
 		BS_INC_RENDER_STAT(NumRenderTargetChanges);
 	}
@@ -738,8 +820,13 @@ namespace BansheeEngine
 			glEnable(GL_SCISSOR_TEST);
 		};
 
-		SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-		cb->queueCommand(execute);
+		if (commandBuffer == nullptr)
+			execute();
+		else
+		{
+			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
+			cb->queueCommand(execute);
+		}
 	}
 
 	void GLRenderAPI::endFrame(const SPtr<CommandBuffer>& commandBuffer)
@@ -752,8 +839,13 @@ namespace BansheeEngine
 			glDisable(GL_SCISSOR_TEST);
 		};
 
-		SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-		cb->queueCommand(execute);
+		if (commandBuffer == nullptr)
+			execute();
+		else
+		{
+			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
+			cb->queueCommand(execute);
+		}
 	}
 
 	void GLRenderAPI::setVertexBuffers(UINT32 index, SPtr<VertexBufferCore>* buffers, UINT32 numBuffers, 
@@ -773,7 +865,7 @@ namespace BansheeEngine
 		for(UINT32 i = 0; i < numBuffers; i++)
 			boundBuffers[index + i] = buffers[i];
 
-		auto execute = [=]()
+		auto executeRef = [&](UINT32 index, SPtr<VertexBufferCore>* buffers, UINT32 numBuffers)
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
@@ -781,55 +873,84 @@ namespace BansheeEngine
 				mBoundVertexBuffers[index + i] = boundBuffers[index + i];
 		};
 
-		SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-		cb->queueCommand(execute);
+		if (commandBuffer == nullptr)
+			executeRef(index, buffers, numBuffers);
+		else
+		{
+			auto execute = [=]() { executeRef(index, buffers, numBuffers); };
+
+			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
+			cb->queueCommand(execute);
+		}
 	}
 
 	void GLRenderAPI::setVertexDeclaration(const SPtr<VertexDeclarationCore>& vertexDeclaration,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
-		auto execute = [=]()
+		auto executeRef = [&](const SPtr<VertexDeclarationCore>& vertexDeclaration)
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
 			mBoundVertexDeclaration = vertexDeclaration;
 		};
 
-		SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-		cb->queueCommand(execute);
+		if (commandBuffer == nullptr)
+			executeRef(vertexDeclaration);
+		else
+		{
+			auto execute = [=]() { executeRef(vertexDeclaration); };
+
+			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
+			cb->queueCommand(execute);
+		}
 	}
 
 	void GLRenderAPI::setDrawOperation(DrawOperationType op, const SPtr<CommandBuffer>& commandBuffer)
 	{
-		auto execute = [=]()
+		auto executeRef = [&](DrawOperationType op)
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
 			mCurrentDrawOperation = op;
 		};
 
-		SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-		cb->queueCommand(execute);
-		cb->mCurrentDrawOperation = op;
+		if (commandBuffer == nullptr)
+			executeRef(op);
+		else
+		{
+			auto execute = [=]() { executeRef(op); };
+
+			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
+			cb->queueCommand(execute);
+
+			cb->mCurrentDrawOperation = op;
+		}
 	}
 
 	void GLRenderAPI::setIndexBuffer(const SPtr<IndexBufferCore>& buffer, const SPtr<CommandBuffer>& commandBuffer)
 	{
-		auto execute = [=]()
+		auto executeRef = [&](const SPtr<IndexBufferCore>& buffer)
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
 			mBoundIndexBuffer = buffer;
 		};
 
-		SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-		cb->queueCommand(execute);
+		if (commandBuffer == nullptr)
+			executeRef(buffer);
+		else
+		{
+			auto execute = [=]() { executeRef(buffer); };
+
+			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
+			cb->queueCommand(execute);
+		}
 	}
 
 	void GLRenderAPI::draw(UINT32 vertexOffset, UINT32 vertexCount, UINT32 instanceCount, 
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
-		auto execute = [=]()
+		auto executeRef = [&](UINT32 vertexOffset, UINT32 vertexCount, UINT32 instanceCount)
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
@@ -845,10 +966,22 @@ namespace BansheeEngine
 			endDraw();
 		};
 
-		SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-		cb->queueCommand(execute);
+		UINT32 primCount;
+		if (commandBuffer == nullptr)
+		{
+			executeRef(vertexOffset, vertexCount, instanceCount);
 
-		UINT32 primCount = vertexCountToPrimCount(cb->mCurrentDrawOperation, vertexCount);
+			primCount = vertexCountToPrimCount(mCurrentDrawOperation, vertexCount);
+		}
+		else
+		{
+			auto execute = [=]() { executeRef(vertexOffset, vertexCount, instanceCount); };
+
+			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
+			cb->queueCommand(execute);
+
+			primCount = vertexCountToPrimCount(cb->mCurrentDrawOperation, vertexCount);
+		}
 
 		BS_INC_RENDER_STAT(NumDrawCalls);
 		BS_ADD_RENDER_STAT(NumVertices, vertexCount);
@@ -858,7 +991,8 @@ namespace BansheeEngine
 	void GLRenderAPI::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount,
 		UINT32 instanceCount, const SPtr<CommandBuffer>& commandBuffer)
 	{
-		auto execute = [=]()
+		auto executeRef = [&](UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount,
+			UINT32 instanceCount)
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
@@ -893,10 +1027,22 @@ namespace BansheeEngine
 			endDraw();
 		};
 
-		SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-		cb->queueCommand(execute);
+		UINT32 primCount;
+		if (commandBuffer == nullptr)
+		{
+			executeRef(startIndex, indexCount, vertexOffset, vertexCount, instanceCount);
 
-		UINT32 primCount = vertexCountToPrimCount(cb->mCurrentDrawOperation, vertexCount);
+			primCount = vertexCountToPrimCount(mCurrentDrawOperation, vertexCount);
+		}
+		else
+		{
+			auto execute = [=]() { executeRef(startIndex, indexCount, vertexOffset, vertexCount, instanceCount); };
+
+			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
+			cb->queueCommand(execute);
+
+			primCount = vertexCountToPrimCount(cb->mCurrentDrawOperation, vertexCount);
+		}
 
 		BS_INC_RENDER_STAT(NumDrawCalls);
 		BS_ADD_RENDER_STAT(NumVertices, vertexCount);
@@ -908,7 +1054,7 @@ namespace BansheeEngine
 	void GLRenderAPI::dispatchCompute(UINT32 numGroupsX, UINT32 numGroupsY, UINT32 numGroupsZ, 
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
-		auto execute = [=]()
+		auto executeRef = [&](UINT32 numGroupsX, UINT32 numGroupsY, UINT32 numGroupsZ)
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
@@ -922,8 +1068,15 @@ namespace BansheeEngine
 			glDispatchCompute(numGroupsX, numGroupsY, numGroupsZ);
 		};
 
-		SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-		cb->queueCommand(execute);
+		if (commandBuffer == nullptr)
+			executeRef(numGroupsX, numGroupsY, numGroupsZ);
+		else
+		{
+			auto execute = [=]() { executeRef(numGroupsX, numGroupsY, numGroupsZ); };
+
+			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
+			cb->queueCommand(execute);
+		}
 
 		BS_INC_RENDER_STAT(NumGpuProgramBinds);
 		BS_INC_RENDER_STAT(NumComputeCalls);
@@ -932,7 +1085,7 @@ namespace BansheeEngine
 	void GLRenderAPI::setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom, 
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
-		auto execute = [=]()
+		auto executeRef = [&](UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
@@ -942,14 +1095,21 @@ namespace BansheeEngine
 			mScissorRight = right;
 		};
 
-		SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-		cb->queueCommand(execute);
+		if (commandBuffer == nullptr)
+			executeRef(left, top, right, bottom);
+		else
+		{
+			auto execute = [=]() { executeRef(left, top, right, bottom); };
+
+			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
+			cb->queueCommand(execute);
+		}
 	}
 
 	void GLRenderAPI::clearRenderTarget(UINT32 buffers, const Color& color, float depth, UINT16 stencil, UINT8 targetMask,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
-		auto execute = [=]()
+		auto executeRef = [&](UINT32 buffers, const Color& color, float depth, UINT16 stencil, UINT8 targetMask)
 		{
 			if (mActiveRenderTarget == nullptr)
 				return;
@@ -960,34 +1120,55 @@ namespace BansheeEngine
 			clearArea(buffers, color, depth, stencil, clearRect, targetMask);
 		};
 
-		SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-		cb->queueCommand(execute);
+		if (commandBuffer == nullptr)
+			executeRef(buffers, color, depth, stencil, targetMask);
+		else
+		{
+			auto execute = [=]() { executeRef(buffers, color, depth, stencil, targetMask); };
+
+			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
+			cb->queueCommand(execute);
+		}
 	}
 
 	void GLRenderAPI::clearViewport(UINT32 buffers, const Color& color, float depth, UINT16 stencil, UINT8 targetMask,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
-		auto execute = [=]()
+		auto executeRef = [&](UINT32 buffers, const Color& color, float depth, UINT16 stencil, UINT8 targetMask)
 		{
 			Rect2I clearRect(mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight);
 
 			clearArea(buffers, color, depth, stencil, clearRect, targetMask);
 		};
 
-		SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-		cb->queueCommand(execute);
+		if (commandBuffer == nullptr)
+			executeRef(buffers, color, depth, stencil, targetMask);
+		else
+		{
+			auto execute = [=]() { executeRef(buffers, color, depth, stencil, targetMask); };
+
+			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
+			cb->queueCommand(execute);
+		}
 	}
 
 	void GLRenderAPI::swapBuffers(const SPtr<RenderTargetCore>& target, const SPtr<CommandBuffer>& commandBuffer)
 	{
-		auto execute = [=]()
+		auto executeRef = [&](const SPtr<RenderTargetCore>& target)
 		{
 			THROW_IF_NOT_CORE_THREAD;
 			target->swapBuffers();
 		};
 
-		SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-		cb->queueCommand(execute);
+		if (commandBuffer == nullptr)
+			executeRef(target);
+		else
+		{
+			auto execute = [=]() { executeRef(target); };
+
+			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
+			cb->queueCommand(execute);
+		}
 
 		BS_INC_RENDER_STAT(NumPresents);
 	}
@@ -2433,7 +2614,7 @@ namespace BansheeEngine
 
 	const RenderAPIInfo& GLRenderAPI::getAPIInfo() const
 	{
-		static RenderAPIInfo info(0.0f, 0.0f, -1.0f, 1.0f, VET_COLOR_ABGR, false, false, true);
+		static RenderAPIInfo info(0.0f, 0.0f, -1.0f, 1.0f, VET_COLOR_ABGR, false, false, true, false);
 
 		return info;
 	}

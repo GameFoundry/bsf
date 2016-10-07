@@ -603,7 +603,6 @@ namespace BansheeEngine
 			}
 
 			RenderAPICore::instance().endFrame();
-			RenderAPICore::instance().executeCommands(gMainCommandBuffer);
 			RenderAPICore::instance().swapBuffers(target);
 		}
 
