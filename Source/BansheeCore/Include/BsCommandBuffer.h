@@ -3,7 +3,6 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
-#include "BsModule.h"
 
 namespace BansheeEngine
 {

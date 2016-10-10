@@ -25,7 +25,6 @@ namespace BansheeEngine
 		output.geometryProgram = input.geometryProgram != nullptr ? input.geometryProgram->getCore() : nullptr;
 		output.hullProgram = input.hullProgram != nullptr ? input.hullProgram->getCore() : nullptr;
 		output.domainProgram = input.domainProgram != nullptr ? input.domainProgram->getCore() : nullptr;
-		output.hullProgram = input.hullProgram != nullptr ? input.hullProgram->getCore() : nullptr;
 		output.computeProgram = input.computeProgram != nullptr ? input.computeProgram->getCore() : nullptr;
 	}
 

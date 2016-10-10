@@ -140,7 +140,6 @@ namespace BansheeEngine
 		 */
 		GpuParamsType getGpuParams(GpuProgramType type, UINT32 passIdx = 0);
 
-
 		/**
 		 * Assign a parameter block buffer with the specified name to all the relevant child GpuParams.
 		 *

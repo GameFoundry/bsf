@@ -7,7 +7,8 @@ namespace BansheeEngine
 	GLCommandBuffer::GLCommandBuffer(CommandBufferType type, UINT32 deviceIdx, UINT32 syncMask, bool secondary)
 		: CommandBuffer(type, syncMask, secondary), mDeviceIdx(deviceIdx), mCurrentDrawOperation(DOT_TRIANGLE_LIST)
 	{
-
+		if (deviceIdx != 0)
+			BS_EXCEPT(InvalidParametersException, "Only a single device supported on DX11.");
 	}
 
 	void GLCommandBuffer::queueCommand(const std::function<void()> command)

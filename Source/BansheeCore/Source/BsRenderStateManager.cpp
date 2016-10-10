@@ -40,6 +40,14 @@ namespace BansheeEngine
 		return state;
 	}
 
+	SPtr<GpuPipelineState> RenderStateManager::createPipelineState(const PIPELINE_STATE_DESC& desc) const
+	{
+		SPtr<GpuPipelineState> state = _createPipelineState(desc);
+		state->initialize();
+
+		return state;
+	}
+
 	SPtr<SamplerState> RenderStateManager::_createSamplerStatePtr(const SAMPLER_STATE_DESC& desc) const
 	{
 		SPtr<SamplerState> samplerState = bs_core_ptr<SamplerState>(new (bs_alloc<SamplerState>()) SamplerState(desc));
@@ -70,6 +78,15 @@ namespace BansheeEngine
 		blendState->_setThisPtr(blendState);
 
 		return blendState;
+	}
+
+	SPtr<GpuPipelineState> RenderStateManager::_createPipelineState(const PIPELINE_STATE_DESC& desc) const
+	{
+		SPtr<GpuPipelineState> pipelineState = 
+			bs_core_ptr<GpuPipelineState>(new (bs_alloc<GpuPipelineState>()) GpuPipelineState(desc));
+		pipelineState->_setThisPtr(pipelineState);
+
+		return pipelineState;
 	}
 
 	const SPtr<SamplerState>& RenderStateManager::getDefaultSamplerState() const 
@@ -178,6 +195,14 @@ namespace BansheeEngine
 		return state;
 	}
 
+	SPtr<GpuPipelineStateCore> RenderStateCoreManager::createPipelineState(const PIPELINE_STATE_CORE_DESC& desc) const
+	{
+		SPtr<GpuPipelineStateCore> state = _createPipelineState(desc);
+		state->initialize();
+
+		return state;
+	}
+
 	SPtr<SamplerStateCore> RenderStateCoreManager::_createSamplerState(const SAMPLER_STATE_DESC& desc) const
 	{
 		SPtr<SamplerStateCore> state = findCachedState(desc);
@@ -240,6 +265,15 @@ namespace BansheeEngine
 		}
 
 		return state;
+	}
+
+	SPtr<GpuPipelineStateCore> RenderStateCoreManager::_createPipelineState(const PIPELINE_STATE_CORE_DESC& desc) const
+	{
+		SPtr<GpuPipelineStateCore> pipelineState =
+			bs_shared_ptr<GpuPipelineStateCore>(new (bs_alloc<GpuPipelineStateCore>()) GpuPipelineStateCore(desc));
+		pipelineState->_setThisPtr(pipelineState);
+
+		return pipelineState;
 	}
 
 	void RenderStateCoreManager::onShutDown()

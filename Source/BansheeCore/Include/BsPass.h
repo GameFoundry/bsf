@@ -122,9 +122,9 @@ namespace BansheeEngine
 		const GpuProgramType& getVertexProgram() const { return mData.vertexProgram; }
 		const GpuProgramType& getFragmentProgram() const { return mData.fragmentProgram; }
 		const GpuProgramType& getGeometryProgram() const { return mData.geometryProgram; }
-		const GpuProgramType& getHullProgram(void) const { return mData.hullProgram; }
-		const GpuProgramType& getDomainProgram(void) const { return mData.domainProgram; }
-		const GpuProgramType& getComputeProgram(void) const { return mData.computeProgram; }
+		const GpuProgramType& getHullProgram() const { return mData.hullProgram; }
+		const GpuProgramType& getDomainProgram() const { return mData.domainProgram; }
+		const GpuProgramType& getComputeProgram() const { return mData.computeProgram; }
 
 	protected:
 		TPass();
@@ -208,7 +208,7 @@ namespace BansheeEngine
 	public:
 		friend class PassRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const override;
+		RTTITypeBase* getRTTI() const override;
     };
 
 	/** @} */
