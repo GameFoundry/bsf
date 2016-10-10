@@ -213,45 +213,159 @@ namespace BansheeEngine
 			bs_deleteN(mImageInfos, mNumImageUnits);
 	}
 
-	void GLRenderAPI::bindGpuProgram(const SPtr<GpuProgramCore>& prg, const SPtr<CommandBuffer>& commandBuffer)
+	void GLRenderAPI::setGraphicsPipeline(const SPtr<GpuPipelineStateCore>& pipelineState,
+		const SPtr<CommandBuffer>& commandBuffer)
 	{
-		auto executeRef = [&](const SPtr<GpuProgramCore>& prg)
+		auto executeRef = [&](const SPtr<GpuPipelineStateCore>& pipelineState)
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
-			GpuProgramType type = prg->getProperties().getType();
-			SPtr<GLSLGpuProgramCore> glprg = std::static_pointer_cast<GLSLGpuProgramCore>(prg);
+			BlendStateCore* blendState;
+			RasterizerStateCore* rasterizerState;
+			DepthStencilStateCore* depthStencilState;
+			if (pipelineState != nullptr)
+			{
+				mCurrentVertexProgram = std::static_pointer_cast<GLSLGpuProgramCore>(pipelineState->getVertexProgram());
+				mCurrentFragmentProgram = std::static_pointer_cast<GLSLGpuProgramCore>(pipelineState->getFragmentProgram());
+				mCurrentGeometryProgram = std::static_pointer_cast<GLSLGpuProgramCore>(pipelineState->getGeometryProgram());
+				mCurrentDomainProgram = std::static_pointer_cast<GLSLGpuProgramCore>(pipelineState->getDomainProgram());
+				mCurrentHullProgram = std::static_pointer_cast<GLSLGpuProgramCore>(pipelineState->getHullProgram());
 
-			setActiveProgram(type, glprg);
+				blendState = pipelineState->getBlendState().get();
+				rasterizerState = pipelineState->getRasterizerState().get();
+				depthStencilState = pipelineState->getDepthStencilState().get();
+
+				if (blendState == nullptr)
+					blendState = BlendStateCore::getDefault().get();
+
+				if (rasterizerState == nullptr)
+					rasterizerState = RasterizerStateCore::getDefault().get();
+
+				if(depthStencilState == nullptr)
+					depthStencilState = DepthStencilStateCore::getDefault().get();
+			}
+			else
+			{
+				mCurrentVertexProgram = nullptr;
+				mCurrentFragmentProgram = nullptr;
+				mCurrentGeometryProgram = nullptr;
+				mCurrentDomainProgram = nullptr;
+				mCurrentHullProgram = nullptr;
+
+				blendState = BlendStateCore::getDefault().get();
+				rasterizerState = RasterizerStateCore::getDefault().get();
+				depthStencilState = DepthStencilStateCore::getDefault().get();
+			}
+
+			int types[] = { GPT_VERTEX_PROGRAM, GPT_FRAGMENT_PROGRAM, GPT_GEOMETRY_PROGRAM, 
+				GPT_HULL_PROGRAM, GPT_DOMAIN_PROGRAM };
+			
+			UINT32 numTypes = sizeof(types) / sizeof(types[0]);
+			for (UINT32 i = 0; i < numTypes; i++)
+			{
+				mMaxBoundTexUnits[types[i]] = mTextureUnitOffsets[types[i]];
+				mMaxBoundImageUnits[types[i]] = 0;
+			}
+
+			// Blend state
+			{
+				const BlendProperties& stateProps = blendState->getProperties();
+
+				// Alpha to coverage
+				setAlphaToCoverage(stateProps.getAlphaToCoverageEnabled());
+
+				// Blend states
+				// OpenGL doesn't allow us to specify blend state per render target, so we just use the first one.
+				if (stateProps.getBlendEnabled(0))
+				{
+					setSceneBlending(stateProps.getSrcBlend(0), stateProps.getDstBlend(0), stateProps.getAlphaSrcBlend(0),
+						stateProps.getAlphaDstBlend(0), stateProps.getBlendOperation(0), stateProps.getAlphaBlendOperation(0));
+				}
+				else
+				{
+					setSceneBlending(BF_ONE, BF_ZERO, BO_ADD);
+				}
+
+				// Color write mask
+				UINT8 writeMask = stateProps.getRenderTargetWriteMask(0);
+				setColorBufferWriteEnabled((writeMask & 0x1) != 0, (writeMask & 0x2) != 0, (writeMask & 0x4) != 0, (writeMask & 0x8) != 0);
+			}
+
+			// Rasterizer state
+			{
+				const RasterizerProperties& stateProps = rasterizerState->getProperties();
+
+				setDepthBias(stateProps.getDepthBias(), stateProps.getSlopeScaledDepthBias());
+				setCullingMode(stateProps.getCullMode());
+				setPolygonMode(stateProps.getPolygonMode());
+				setScissorTestEnable(stateProps.getScissorEnable());
+				setMultisamplingEnable(stateProps.getMultisampleEnable());
+				setDepthClipEnable(stateProps.getDepthClipEnable());
+				setAntialiasedLineEnable(stateProps.getAntialiasedLineEnable());
+			}
+
+			// Depth stencil state
+			{
+				const DepthStencilProperties& stateProps = depthStencilState->getProperties();
+
+				// Set stencil buffer options
+				setStencilCheckEnabled(stateProps.getStencilEnable());
+
+				setStencilBufferOperations(stateProps.getStencilFrontFailOp(), stateProps.getStencilFrontZFailOp(), stateProps.getStencilFrontPassOp(), true);
+				setStencilBufferFunc(stateProps.getStencilFrontCompFunc(), stateProps.getStencilReadMask(), true);
+
+				setStencilBufferOperations(stateProps.getStencilBackFailOp(), stateProps.getStencilBackZFailOp(), stateProps.getStencilBackPassOp(), false);
+				setStencilBufferFunc(stateProps.getStencilBackCompFunc(), stateProps.getStencilReadMask(), false);
+
+				setStencilBufferWriteMask(stateProps.getStencilWriteMask());
+
+				// Set depth buffer options
+				setDepthBufferCheckEnabled(stateProps.getDepthReadEnable());
+				setDepthBufferWriteEnabled(stateProps.getDepthWriteEnable());
+				setDepthBufferFunction(stateProps.getDepthComparisonFunc());
+			}
 		};
 
 		if (commandBuffer == nullptr)
-			executeRef(prg);
+			executeRef(pipelineState);
 		else
 		{
-			auto execute = [=]() { executeRef(prg); };
+			auto execute = [=]() { executeRef(pipelineState); };
 
 			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
 			cb->queueCommand(execute);
 		}
+
+		BS_INC_RENDER_STAT(NumPipelineStateChanges);
 	}
 
-	void GLRenderAPI::unbindGpuProgram(GpuProgramType gptype, const SPtr<CommandBuffer>& commandBuffer)
+	void GLRenderAPI::setComputePipeline(const SPtr<GpuProgramCore>& computeProgram,
+		const SPtr<CommandBuffer>& commandBuffer)
 	{
-		auto execute = [=]()
+		auto executeRef = [&](const SPtr<GpuProgramCore>& computeProgram)
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
-			setActiveProgram(gptype, nullptr);
+			if (computeProgram != nullptr && computeProgram->getProperties().getType() == GPT_COMPUTE_PROGRAM)
+				mCurrentComputeProgram = std::static_pointer_cast<GLSLGpuProgramCore>(computeProgram);
+			else
+				mCurrentComputeProgram = nullptr;
+
+			mMaxBoundTexUnits[GPT_COMPUTE_PROGRAM] = mTextureUnitOffsets[GPT_COMPUTE_PROGRAM];
+			mMaxBoundImageUnits[GPT_COMPUTE_PROGRAM] = 0;
 		};
 
 		if (commandBuffer == nullptr)
-			execute();
+			executeRef(computeProgram);
 		else
 		{
+			auto execute = [=]() { executeRef(computeProgram); };
+
 			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
 			cb->queueCommand(execute);
 		}
+
+		BS_INC_RENDER_STAT(NumPipelineStateChanges);
 	}
 
 	void GLRenderAPI::setParamBuffer(GpuProgramType gptype, UINT32 slot, const SPtr<GpuParamBlockBufferCore>& buffer, 
@@ -618,119 +732,24 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumTextureBinds);
 	}
 
-	void GLRenderAPI::setBlendState(const SPtr<BlendStateCore>& blendState,
-		const SPtr<CommandBuffer>& commandBuffer)
+	void GLRenderAPI::setStencilRef(UINT32 stencilRefValue, const SPtr<CommandBuffer>& commandBuffer)
 	{
-		auto executeRef = [&](const SPtr<BlendStateCore>& blendState)
+		auto executeRef = [&](UINT32 stencilRefValue)
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
-			const BlendProperties& stateProps = blendState->getProperties();
-
-			// Alpha to coverage
-			setAlphaToCoverage(stateProps.getAlphaToCoverageEnabled());
-
-			// Blend states
-			// OpenGL doesn't allow us to specify blend state per render target, so we just use the first one.
-			if (stateProps.getBlendEnabled(0))
-			{
-				setSceneBlending(stateProps.getSrcBlend(0), stateProps.getDstBlend(0), stateProps.getAlphaSrcBlend(0),
-					stateProps.getAlphaDstBlend(0), stateProps.getBlendOperation(0), stateProps.getAlphaBlendOperation(0));
-			}
-			else
-			{
-				setSceneBlending(BF_ONE, BF_ZERO, BO_ADD);
-			}
-
-			// Color write mask
-			UINT8 writeMask = stateProps.getRenderTargetWriteMask(0);
-			setColorBufferWriteEnabled((writeMask & 0x1) != 0, (writeMask & 0x2) != 0, (writeMask & 0x4) != 0, (writeMask & 0x8) != 0);
-		};
-
-		if (commandBuffer == nullptr)
-			executeRef(blendState);
-		else
-		{
-			auto execute = [=]() { executeRef(blendState); };
-
-			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
-		}
-
-		BS_INC_RENDER_STAT(NumBlendStateChanges);
-	}
-
-	void GLRenderAPI::setRasterizerState(const SPtr<RasterizerStateCore>& rasterizerState,
-		const SPtr<CommandBuffer>& commandBuffer)
-	{
-		auto executeRef = [&](const SPtr<RasterizerStateCore>& rasterizerState)
-		{
-			THROW_IF_NOT_CORE_THREAD;
-
-			const RasterizerProperties& stateProps = rasterizerState->getProperties();
-
-			setDepthBias(stateProps.getDepthBias(), stateProps.getSlopeScaledDepthBias());
-			setCullingMode(stateProps.getCullMode());
-			setPolygonMode(stateProps.getPolygonMode());
-			setScissorTestEnable(stateProps.getScissorEnable());
-			setMultisamplingEnable(stateProps.getMultisampleEnable());
-			setDepthClipEnable(stateProps.getDepthClipEnable());
-			setAntialiasedLineEnable(stateProps.getAntialiasedLineEnable());
-		};
-
-		if (commandBuffer == nullptr)
-			executeRef(rasterizerState);
-		else
-		{
-			auto execute = [=]() { executeRef(rasterizerState); };
-
-			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
-		}
-
-		BS_INC_RENDER_STAT(NumRasterizerStateChanges);
-	}
-
-	void GLRenderAPI::setDepthStencilState(const SPtr<DepthStencilStateCore>& depthStencilState, UINT32 stencilRefValue,
-		const SPtr<CommandBuffer>& commandBuffer)
-	{
-		auto executeRef = [&](const SPtr<DepthStencilStateCore>& depthStencilState, UINT32 stencilRefValue)
-		{
-			THROW_IF_NOT_CORE_THREAD;
-
-			const DepthStencilProperties& stateProps = depthStencilState->getProperties();
-
-			// Set stencil buffer options
-			setStencilCheckEnabled(stateProps.getStencilEnable());
-
-			setStencilBufferOperations(stateProps.getStencilFrontFailOp(), stateProps.getStencilFrontZFailOp(), stateProps.getStencilFrontPassOp(), true);
-			setStencilBufferFunc(stateProps.getStencilFrontCompFunc(), stateProps.getStencilReadMask(), true);
-
-			setStencilBufferOperations(stateProps.getStencilBackFailOp(), stateProps.getStencilBackZFailOp(), stateProps.getStencilBackPassOp(), false);
-			setStencilBufferFunc(stateProps.getStencilBackCompFunc(), stateProps.getStencilReadMask(), false);
-
-			setStencilBufferWriteMask(stateProps.getStencilWriteMask());
-
-			// Set depth buffer options
-			setDepthBufferCheckEnabled(stateProps.getDepthReadEnable());
-			setDepthBufferWriteEnabled(stateProps.getDepthWriteEnable());
-			setDepthBufferFunction(stateProps.getDepthComparisonFunc());
-
-			// Set stencil ref value
 			setStencilRefValue(stencilRefValue);
 		};
 
 		if (commandBuffer == nullptr)
-			executeRef(depthStencilState, stencilRefValue);
+			executeRef(stencilRefValue);
 		else
 		{
-			auto execute = [=]() { executeRef(depthStencilState, stencilRefValue); };
+			auto execute = [=]() { executeRef(stencilRefValue); };
 
 			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
 			cb->queueCommand(execute);
 		}
-
-		BS_INC_RENDER_STAT(NumDepthStencilStateChanges);
 	}
 
 	void GLRenderAPI::setViewport(const Rect2& area,
@@ -1078,7 +1097,6 @@ namespace BansheeEngine
 			cb->queueCommand(execute);
 		}
 
-		BS_INC_RENDER_STAT(NumGpuProgramBinds);
 		BS_INC_RENDER_STAT(NumComputeCalls);
 	}
 
@@ -1853,7 +1871,6 @@ namespace BansheeEngine
 		glBindVertexArray(vao.getGLHandle()); 
 
 		BS_INC_RENDER_STAT(NumVertexBufferBinds);
-		BS_INC_RENDER_STAT(NumGpuProgramBinds);
 	}
 
 	void GLRenderAPI::endDraw()
@@ -2111,34 +2128,6 @@ namespace BansheeEngine
 		return mUBOffsets[gptype] + binding;
 	}
 
-	void GLRenderAPI::setActiveProgram(GpuProgramType gptype, const SPtr<GLSLGpuProgramCore>& program)
-	{
-		switch (gptype)
-		{
-		case GPT_VERTEX_PROGRAM:
-			mCurrentVertexProgram = program;
-			break;
-		case GPT_FRAGMENT_PROGRAM:
-			mCurrentFragmentProgram = program;
-			break;
-		case GPT_GEOMETRY_PROGRAM:
-			mCurrentGeometryProgram = program;
-			break;
-		case GPT_DOMAIN_PROGRAM:
-			mCurrentDomainProgram = program;
-			break;
-		case GPT_HULL_PROGRAM:
-			mCurrentHullProgram = program;
-			break;
-		case GPT_COMPUTE_PROGRAM:
-			mCurrentComputeProgram = program;
-			break;
-		}
-
-		mMaxBoundTexUnits[gptype] = mTextureUnitOffsets[gptype];
-		mMaxBoundImageUnits[gptype] = 0;
-	}
-
 	SPtr<GLSLGpuProgramCore> GLRenderAPI::getActiveProgram(GpuProgramType gptype) const
 	{
 		switch (gptype)
@@ -2248,12 +2237,7 @@ namespace BansheeEngine
 		// Unbind GPU programs and rebind to new context later, because
 		// scene manager treat render system as ONE 'context' ONLY, and it
 		// cached the GPU programs using state.
-		unbindGpuProgram(GPT_VERTEX_PROGRAM);
-		unbindGpuProgram(GPT_FRAGMENT_PROGRAM);
-		unbindGpuProgram(GPT_GEOMETRY_PROGRAM);
-		unbindGpuProgram(GPT_HULL_PROGRAM);
-		unbindGpuProgram(GPT_DOMAIN_PROGRAM);
-		unbindGpuProgram(GPT_COMPUTE_PROGRAM);
+		setGraphicsPipeline(nullptr);
 
 		// It's ready for switching
 		if (mCurrentContext)

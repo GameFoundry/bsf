@@ -369,7 +369,7 @@ namespace BansheeEngine
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
-			if (computeProgram != nullptr)
+			if (computeProgram != nullptr && computeProgram->getProperties().getType() == GPT_COMPUTE_PROGRAM)
 			{
 				D3D11GpuComputeProgramCore *d3d11ComputeProgram = static_cast<D3D11GpuComputeProgramCore*>(computeProgram.get());
 				mDevice->getImmediateContext()->CSSetShader(d3d11ComputeProgram->getComputeShader(), nullptr, 0);

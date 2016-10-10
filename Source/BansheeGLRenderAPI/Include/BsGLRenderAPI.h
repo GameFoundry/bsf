@@ -27,20 +27,16 @@ namespace BansheeEngine
 		/** @copydoc RenderAPICore::getShadingLanguageName() */
 		const String& getShadingLanguageName() const override;
 
+		/** @copydoc RenderAPICore::setGraphicsPipeline */
+		void setGraphicsPipeline(const SPtr<GpuPipelineStateCore>& pipelineState,
+			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
+
+		/** @copydoc RenderAPICore::setComputePipeline */
+		void setComputePipeline(const SPtr<GpuProgramCore>& computeProgram,
+			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
+
 		/** @copydoc RenderAPICore::setSamplerState() */
 		void setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SPtr<SamplerStateCore>& samplerState, 
-			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
-
-		/** @copydoc RenderAPICore::setBlendState() */
-		void setBlendState(const SPtr<BlendStateCore>& blendState, 
-			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
-
-		/** @copydoc RenderAPICore::setRasterizerState() */
-		void setRasterizerState(const SPtr<RasterizerStateCore>& rasterizerState, 
-			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
-
-		/** @copydoc RenderAPICore::setDepthStencilState() */
-		void setDepthStencilState(const SPtr<DepthStencilStateCore>& depthStencilState, UINT32 stencilRefValue,
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPICore::setTexture() */
@@ -67,6 +63,9 @@ namespace BansheeEngine
 		/** @copydoc RenderAPICore::setScissorRect() */
 		void setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom,
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
+
+		/** @copydoc RenderAPICore::setStencilRef */
+		void setStencilRef(UINT32 value, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPICore::setVertexBuffers() */
 		void setVertexBuffers(UINT32 index, SPtr<VertexBufferCore>* buffers, UINT32 numBuffers,
@@ -102,13 +101,6 @@ namespace BansheeEngine
 		/** @copydoc RenderAPICore::swapBuffers() */
 		void swapBuffers(const SPtr<RenderTargetCore>& target,
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
-
-		/** @copydoc RenderAPICore::bindGpuProgram() */
-		void bindGpuProgram(const SPtr<GpuProgramCore>& prg, 
-			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
-
-		/** @copydoc RenderAPICore::unbindGpuProgram() */
-		void unbindGpuProgram(GpuProgramType gptype, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPICore::setRenderTarget() */
 		void setRenderTarget(const SPtr<RenderTargetCore>& target, bool readOnlyDepthStencil = false,
@@ -174,9 +166,6 @@ namespace BansheeEngine
 		 * Changes the currently active texture unit. Any texture related operations will then be performed on this unit. 
 		 */
 		bool activateGLTextureUnit(UINT16 unit);
-
-		/**	Changes the active GPU program. */
-		void setActiveProgram(GpuProgramType gptype, const SPtr<GLSLGpuProgramCore>& program);
 
 		/**	Retrieves the active GPU program of the specified type. */
 		SPtr<GLSLGpuProgramCore> getActiveProgram(GpuProgramType gptype) const;
