@@ -100,14 +100,6 @@ namespace BansheeEngine
 		String getCompileErrorMessage() const;
 
 		/**
-		 * Creates a new parameters object compatible with this program definition. You may populate the returned object 
-		 * with actual parameter values and bind it to the pipeline to render an object using those values and this program.
-		 *
-		 * @note	Only valid after core thread has initialized the program.
-		 */
-		SPtr<GpuParams> createParameters();
-
-		/**
 		 * Returns description of all parameters in this GPU program.
 		 *
 		 * @note	Only valid after core thread has initialized the program.
@@ -196,9 +188,6 @@ namespace BansheeEngine
 		 * @note	Only relevant for geometry programs.
 		 */
 		virtual bool isAdjacencyInfoRequired() const { return mNeedsAdjacencyInfo; }
-
-		/** @copydoc GpuProgram::createParameters */
-		virtual SPtr<GpuParamsCore> createParameters();
 
 		/** @copydoc GpuProgram::getParamDesc */
 		SPtr<GpuParamDesc> getParamDesc() const { return mParametersDesc; }

@@ -13,7 +13,7 @@ namespace BansheeEngine
 	DownsampleMat::DownsampleMat()
 	{
 		mParamsSet->setParamBlockBuffer("Input", mParams.getBuffer());
-		mParamsSet->getGpuParams(GPT_FRAGMENT_PROGRAM)->getTextureParam("gInputTex", mInputTexture);
+		mParamsSet->getGpuParams()->getTextureParam(GPT_FRAGMENT_PROGRAM, "gInputTex", mInputTexture);
 	}
 
 	void DownsampleMat::_initDefines(ShaderDefines& defines)
@@ -65,10 +65,9 @@ namespace BansheeEngine
 	{
 		mParamsSet->setParamBlockBuffer("Input", mParams.getBuffer());
 
-		SPtr<GpuParamsCore> computeParams = mParamsSet->getGpuParams(GPT_COMPUTE_PROGRAM);
-
-		computeParams->getTextureParam("gSceneColorTex", mSceneColor);
-		computeParams->getLoadStoreTextureParam("gOutputTex", mOutputTex);
+		SPtr<GpuParamsCore> params = mParamsSet->getGpuParams();
+		params->getTextureParam(GPT_COMPUTE_PROGRAM, "gSceneColorTex", mSceneColor);
+		params->getLoadStoreTextureParam(GPT_COMPUTE_PROGRAM, "gOutputTex", mOutputTex);
 	}
 
 	void EyeAdaptHistogramMat::_initDefines(ShaderDefines& defines)
@@ -152,10 +151,9 @@ namespace BansheeEngine
 	{
 		mParamsSet->setParamBlockBuffer("Input", mParams.getBuffer());
 
-		SPtr<GpuParamsCore> fragmentParams = mParamsSet->getGpuParams(GPT_FRAGMENT_PROGRAM);
-
-		fragmentParams->getTextureParam("gHistogramTex", mHistogramTex);
-		fragmentParams->getTextureParam("gEyeAdaptationTex", mEyeAdaptationTex);
+		SPtr<GpuParamsCore> params = mParamsSet->getGpuParams();
+		params->getTextureParam(GPT_FRAGMENT_PROGRAM, "gHistogramTex", mHistogramTex);
+		params->getTextureParam(GPT_FRAGMENT_PROGRAM, "gEyeAdaptationTex", mEyeAdaptationTex);
 	}
 
 	void EyeAdaptHistogramReduceMat::_initDefines(ShaderDefines& defines)
@@ -213,7 +211,7 @@ namespace BansheeEngine
 	EyeAdaptationMat::EyeAdaptationMat()
 	{
 		mParamsSet->setParamBlockBuffer("Input", mParams.getBuffer());
-		mParamsSet->getGpuParams(GPT_FRAGMENT_PROGRAM)->getTextureParam("gHistogramTex", mReducedHistogramTex);
+		mParamsSet->getGpuParams()->getTextureParam(GPT_FRAGMENT_PROGRAM, "gHistogramTex", mReducedHistogramTex);
 	}
 
 	void EyeAdaptationMat::_initDefines(ShaderDefines& defines)
@@ -350,13 +348,12 @@ namespace BansheeEngine
 	{
 		mParamsSet->setParamBlockBuffer("Input", mParams.getBuffer());
 
-		mParamsSet->getGpuParams(GPT_VERTEX_PROGRAM)->getTextureParam("gEyeAdaptationTex", mEyeAdaptationTex);
-
-		SPtr<GpuParamsCore> fragmentParams = mParamsSet->getGpuParams(GPT_FRAGMENT_PROGRAM);
-		fragmentParams->getTextureParam("gInputTex", mInputTex);
+		SPtr<GpuParamsCore> params = mParamsSet->getGpuParams();
+		params->getTextureParam(GPT_VERTEX_PROGRAM, "gEyeAdaptationTex", mEyeAdaptationTex);
+		params->getTextureParam(GPT_FRAGMENT_PROGRAM, "gInputTex", mInputTex);
 
 		if(!GammaOnly)
-			fragmentParams->getTextureParam("gColorLUT", mColorLUT);
+			params->getTextureParam(GPT_FRAGMENT_PROGRAM, "gColorLUT", mColorLUT);
 	}
 
 	template<bool GammaOnly, bool AutoExposure>

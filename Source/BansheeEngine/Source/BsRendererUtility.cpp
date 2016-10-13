@@ -136,43 +136,34 @@ namespace BansheeEngine
 
 	void RendererUtility::setPassParams(const SPtr<GpuParamsSetCore>& params, UINT32 passIdx)
 	{
+		SPtr<GpuParamsCore> gpuParams = params->getGpuParams(passIdx);
+		if (gpuParams == nullptr)
+			return;
+
 		const UINT32 numStages = 6;
-		GpuProgramType stages[numStages] =
-		{
-			{ GPT_VERTEX_PROGRAM },
-			{ GPT_FRAGMENT_PROGRAM },
-			{ GPT_GEOMETRY_PROGRAM },
-			{ GPT_HULL_PROGRAM },
-			{ GPT_DOMAIN_PROGRAM },
-			{ GPT_COMPUTE_PROGRAM }
-		};
 
 		for (UINT32 i = 0; i < numStages; i++)
-		{
-			SPtr<GpuParamsCore> gpuParams = params->getGpuParams(stages[i], passIdx);
-			if (gpuParams == nullptr)
-				continue;
-
-			setGpuParams(stages[i], gpuParams);
-		}
+			setGpuParams((GpuProgramType)i, gpuParams);
 	}
 
 	void RendererUtility::setGpuParams(GpuProgramType type, const SPtr<GpuParamsCore>& params)
 	{
-		RenderAPICore& rapi = RenderAPICore::instance();
-		SPtr<GpuParamDesc> paramDesc = params->getParamDesc();
+		SPtr<GpuParamDesc> paramDesc = params->getParamDesc(type);
+		if (paramDesc == nullptr)
+			return;
 
+		RenderAPICore& rapi = RenderAPICore::instance();
 		for (auto iter = paramDesc->textures.begin(); iter != paramDesc->textures.end(); ++iter)
 		{
-			SPtr<TextureCore> texture = params->getTexture(iter->second.slot);
+			SPtr<TextureCore> texture = params->getTexture(iter->second.set, iter->second.slot);
 
 			rapi.setTexture(type, iter->second.slot, texture);
 		}
 
 		for (auto iter = paramDesc->loadStoreTextures.begin(); iter != paramDesc->loadStoreTextures.end(); ++iter)
 		{
-			SPtr<TextureCore> texture = params->getLoadStoreTexture(iter->second.slot);
-			const TextureSurface& surface = params->getLoadStoreSurface(iter->second.slot);
+			SPtr<TextureCore> texture = params->getLoadStoreTexture(iter->second.set, iter->second.slot);
+			const TextureSurface& surface = params->getLoadStoreSurface(iter->second.set, iter->second.slot);
 
 			if (texture == nullptr)
 				rapi.setLoadStoreTexture(type, iter->second.slot, nullptr, surface);
@@ -182,7 +173,7 @@ namespace BansheeEngine
 
 		for (auto iter = paramDesc->buffers.begin(); iter != paramDesc->buffers.end(); ++iter)
 		{
-			SPtr<GpuBufferCore> buffer = params->getBuffer(iter->second.slot);
+			SPtr<GpuBufferCore> buffer = params->getBuffer(iter->second.set, iter->second.slot);
 
 			bool isLoadStore = iter->second.type != GPOT_BYTE_BUFFER &&
 				iter->second.type != GPOT_STRUCTURED_BUFFER;
@@ -192,7 +183,7 @@ namespace BansheeEngine
 
 		for (auto iter = paramDesc->samplers.begin(); iter != paramDesc->samplers.end(); ++iter)
 		{
-			SPtr<SamplerStateCore> samplerState = params->getSamplerState(iter->second.slot);
+			SPtr<SamplerStateCore> samplerState = params->getSamplerState(iter->second.set, iter->second.slot);
 
 			if (samplerState == nullptr)
 				rapi.setSamplerState(type, iter->second.slot, SamplerStateCore::getDefault());
@@ -202,7 +193,7 @@ namespace BansheeEngine
 
 		for (auto iter = paramDesc->paramBlocks.begin(); iter != paramDesc->paramBlocks.end(); ++iter)
 		{
-			SPtr<GpuParamBlockBufferCore> blockBuffer = params->getParamBlockBuffer(iter->second.slot);
+			SPtr<GpuParamBlockBufferCore> blockBuffer = params->getParamBlockBuffer(iter->second.set, iter->second.slot);
 			blockBuffer->flushToGPU();
 
 			rapi.setParamBuffer(type, iter->second.slot, blockBuffer, paramDesc);

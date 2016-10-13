@@ -254,24 +254,22 @@ namespace BansheeEngine
 
 			{
 				md.mPickingParams = md.mMatPickingCore->createParamsSet();
-				SPtr<GpuParamsCore> vertParams = md.mPickingParams->getGpuParams(GPT_VERTEX_PROGRAM);
-				SPtr<GpuParamsCore> fragParams = md.mPickingParams->getGpuParams(GPT_FRAGMENT_PROGRAM);
 
-				vertParams->getParam("matWorldViewProj", md.mParamPickingWVP);
-				fragParams->getParam("colorIndex", md.mParamPickingColor);
+				SPtr<GpuParamsCore> params = md.mPickingParams->getGpuParams();
+				params->getParam(GPT_VERTEX_PROGRAM, "matWorldViewProj", md.mParamPickingWVP);
+				params->getParam(GPT_FRAGMENT_PROGRAM, "colorIndex", md.mParamPickingColor);
 			}
 
 			{
 				md.mPickingAlphaParams = md.mMatPickingAlphaCore->createParamsSet();
-				SPtr<GpuParamsCore> vertParams = md.mPickingAlphaParams->getGpuParams(GPT_VERTEX_PROGRAM);
-				SPtr<GpuParamsCore> fragParams = md.mPickingAlphaParams->getGpuParams(GPT_FRAGMENT_PROGRAM);
 
-				vertParams->getParam("matWorldViewProj", md.mParamPickingAlphaWVP);
-				fragParams->getParam("colorIndex", md.mParamPickingAlphaColor);
-				fragParams->getTextureParam("mainTexture", md.mParamPickingAlphaTexture);
+				SPtr<GpuParamsCore> params = md.mPickingAlphaParams->getGpuParams();
+				params->getParam(GPT_VERTEX_PROGRAM, "matWorldViewProj", md.mParamPickingAlphaWVP);
+				params->getParam(GPT_FRAGMENT_PROGRAM, "colorIndex", md.mParamPickingAlphaColor);
+				params->getTextureParam(GPT_FRAGMENT_PROGRAM, "mainTexture", md.mParamPickingAlphaTexture);
 
 				GpuParamFloatCore alphaCutoffParam;
-				fragParams->getParam("alphaCutoff", alphaCutoffParam);
+				params->getParam(GPT_FRAGMENT_PROGRAM, "alphaCutoff", alphaCutoffParam);
 				alphaCutoffParam.set(ALPHA_CUTOFF);
 			}
 		}

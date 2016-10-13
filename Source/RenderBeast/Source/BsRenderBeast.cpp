@@ -889,57 +889,49 @@ namespace BansheeEngine
 		};
 
 		const UINT32 numStages = 6;
-		GpuProgramType stages[numStages] =
-		{
-			{ GPT_VERTEX_PROGRAM },
-			{ GPT_FRAGMENT_PROGRAM },
-			{ GPT_GEOMETRY_PROGRAM },
-			{ GPT_HULL_PROGRAM },
-			{ GPT_DOMAIN_PROGRAM },
-			{ GPT_COMPUTE_PROGRAM }
-		};
 
+		SPtr<GpuParamsCore> params = paramsSet->getGpuParams(passIdx);
 		for (UINT32 i = 0; i < numStages; i++)
 		{
-			SPtr<GpuParamsCore> params = paramsSet->getGpuParams(stages[i], passIdx);
-			if (params == nullptr)
-				continue;
+			GpuProgramType type = (GpuProgramType)i;
 
-			SPtr<GpuParamDesc> paramDesc = params->getParamDesc();
+			SPtr<GpuParamDesc> paramDesc = params->getParamDesc(type);
+			if (paramDesc == nullptr)
+				continue;
 
 			for (auto iter = paramDesc->textures.begin(); iter != paramDesc->textures.end(); ++iter)
 			{
-				SPtr<TextureCore> texture = params->getTexture(iter->second.slot);
-				rapi.setTexture(stages[i], iter->second.slot, texture);
+				SPtr<TextureCore> texture = params->getTexture(iter->second.set, iter->second.slot);
+				rapi.setTexture(type, iter->second.slot, texture);
 			}
 
 			for (auto iter = paramDesc->loadStoreTextures.begin(); iter != paramDesc->loadStoreTextures.end(); ++iter)
 			{
-				SPtr<TextureCore> texture = params->getLoadStoreTexture(iter->second.slot);
-				const TextureSurface& surface = params->getLoadStoreSurface(iter->second.slot);
+				SPtr<TextureCore> texture = params->getLoadStoreTexture(iter->second.set, iter->second.slot);
+				const TextureSurface& surface = params->getLoadStoreSurface(iter->second.set, iter->second.slot);
 
 				if (texture == nullptr)
-					rapi.setLoadStoreTexture(stages[i], iter->second.slot, nullptr, surface);
+					rapi.setLoadStoreTexture(type, iter->second.slot, nullptr, surface);
 				else
-					rapi.setLoadStoreTexture(stages[i], iter->second.slot, texture, surface);
+					rapi.setLoadStoreTexture(type, iter->second.slot, texture, surface);
 			}
 
 			for (auto iter = paramDesc->buffers.begin(); iter != paramDesc->buffers.end(); ++iter)
 			{
-				SPtr<GpuBufferCore> buffer = params->getBuffer(iter->second.slot);
+				SPtr<GpuBufferCore> buffer = params->getBuffer(iter->second.set, iter->second.slot);
 
 				bool isLoadStore = iter->second.type != GPOT_BYTE_BUFFER &&
 					iter->second.type != GPOT_STRUCTURED_BUFFER;
 
-				rapi.setBuffer(stages[i], iter->second.slot, buffer, isLoadStore);
+				rapi.setBuffer(type, iter->second.slot, buffer, isLoadStore);
 			}
 
 			for (auto iter = paramDesc->paramBlocks.begin(); iter != paramDesc->paramBlocks.end(); ++iter)
 			{
-				SPtr<GpuParamBlockBufferCore> blockBuffer = params->getParamBlockBuffer(iter->second.slot);
+				SPtr<GpuParamBlockBufferCore> blockBuffer = params->getParamBlockBuffer(iter->second.set, iter->second.slot);
 				blockBuffer->flushToGPU();
 
-				rapi.setParamBuffer(stages[i], iter->second.slot, blockBuffer, paramDesc);
+				rapi.setParamBuffer(type, iter->second.slot, blockBuffer, paramDesc);
 			}
 
 			for (auto iter = paramDesc->samplers.begin(); iter != paramDesc->samplers.end(); ++iter)
@@ -948,18 +940,18 @@ namespace BansheeEngine
 
 				if (samplerOverrides != nullptr)
 				{
-					UINT32 overrideIndex = samplerOverrides->passes[passIdx].stages[i].stateOverrides[iter->second.slot];
+					UINT32 overrideIndex = samplerOverrides->passes[passIdx].stateOverrides[iter->second.set][iter->second.slot];
 					if (overrideIndex != (UINT32)-1)
 						samplerState = samplerOverrides->overrides[overrideIndex].state;
 				}
 
 				if (samplerState == nullptr)
-					samplerState = params->getSamplerState(iter->second.slot);
+					samplerState = params->getSamplerState(iter->second.set, iter->second.slot);
 
 				if (samplerState == nullptr)
-					rapi.setSamplerState(stages[i], iter->second.slot, SamplerStateCore::getDefault());
+					rapi.setSamplerState(type, iter->second.slot, SamplerStateCore::getDefault());
 				else
-					rapi.setSamplerState(stages[i], iter->second.slot, samplerState);
+					rapi.setSamplerState(type, iter->second.slot, samplerState);
 			}
 		}
 	}

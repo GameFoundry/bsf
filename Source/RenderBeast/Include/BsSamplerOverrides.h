@@ -10,18 +10,11 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
-	/**	Contains data about an overridden sampler states for a single pass stage. */
-	struct StageSamplerOverrides
-	{
-		UINT32* stateOverrides;
-		UINT32 numStates;
-	};
-
 	/**	Contains data about an overridden sampler states for a single pass. */
 	struct PassSamplerOverrides
 	{
-		StageSamplerOverrides* stages;
-		UINT32 numStages;
+		UINT32** stateOverrides;
+		UINT32 numSets;
 	};
 
 	/** Contains data about a single overriden sampler state. */

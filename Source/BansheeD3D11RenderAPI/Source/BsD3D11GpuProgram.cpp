@@ -156,13 +156,13 @@ namespace BansheeEngine
 		if (mProperties.getType() == GPT_VERTEX_PROGRAM)
 		{
 			List<VertexElement> inputParams;
-			parser.parse(microcode, *mParametersDesc, &inputParams);
+			parser.parse(microcode, mProperties.getType(), *mParametersDesc, &inputParams);
 
 			mInputDeclaration = HardwareBufferCoreManager::instance().createVertexDeclaration(inputParams);
 		}
 		else
 		{
-			parser.parse(microcode, *mParametersDesc, nullptr);
+			parser.parse(microcode, mProperties.getType(), *mParametersDesc, nullptr);
 		}
 	}
 

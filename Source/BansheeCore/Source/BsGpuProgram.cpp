@@ -38,11 +38,6 @@ namespace BansheeEngine
 		return true;
 	}
 
-	SPtr<GpuParamsCore> GpuProgramCore::createParameters()
-	{
-		return GpuParamsCore::create(mParametersDesc);
-	}
-
 	SPtr<GpuProgramCore> GpuProgramCore::create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype,
 		GpuProgramProfile profile, bool requiresAdjacency)
 	{
@@ -65,11 +60,6 @@ namespace BansheeEngine
 	String GpuProgram::getCompileErrorMessage() const
 	{
 		return getCore()->getCompileErrorMessage();
-	}
-
-	SPtr<GpuParams> GpuProgram::createParameters()
-	{
-		return GpuParams::create(getCore()->getParamDesc());
 	}
 
 	SPtr<GpuParamDesc> GpuProgram::getParamDesc() const
