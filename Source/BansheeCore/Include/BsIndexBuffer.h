@@ -98,7 +98,7 @@ namespace BansheeEngine
 		/**	Returns information about the index buffer. */
 		const IndexBufferProperties& getProperties() const { return mProperties; }
 
-		/** @copydoc HardwareBufferManager::createIndexBuffer */
+		/** @copydoc HardwareBufferCoreManager::createIndexBuffer */
 		static SPtr<IndexBufferCore> create(const INDEX_BUFFER_DESC& desc, GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
 	protected:

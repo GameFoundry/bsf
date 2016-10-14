@@ -686,7 +686,7 @@ UINT32 GpuParamsBase::getDataParamSize(GpuProgramType type, const String& name) 
 	template BS_CORE_EXPORT void TGpuParams<true>::getParam<Matrix4x2>(GpuProgramType type, const String&, TGpuDataParam<Matrix4x2, true>&) const;
 	template BS_CORE_EXPORT void TGpuParams<true>::getParam<Matrix4x3>(GpuProgramType type, const String&, TGpuDataParam<Matrix4x3, true>&) const;
 
-	GpuParamsCore::GpuParamsCore(const GPU_PARAMS_DESC& desc)
+	GpuParamsCore::GpuParamsCore(const GPU_PARAMS_DESC& desc, GpuDeviceFlags deviceMask)
 		: TGpuParams(desc)
 	{
 
@@ -762,9 +762,9 @@ UINT32 GpuParamsBase::getDataParamSize(GpuProgramType type, const String& name) 
 		}
 	}
 
-	SPtr<GpuParamsCore> GpuParamsCore::create(const GPU_PARAMS_DESC& desc)
+	SPtr<GpuParamsCore> GpuParamsCore::create(const GPU_PARAMS_DESC& desc, GpuDeviceFlags deviceMask)
 	{
-		return HardwareBufferCoreManager::instance().createGpuParams(desc);
+		return HardwareBufferCoreManager::instance().createGpuParams(desc, deviceMask);
 	}
 
 	const GpuDataParamInfos GpuParams::PARAM_SIZES;
@@ -795,12 +795,7 @@ UINT32 GpuParamsBase::getDataParamSize(GpuProgramType type, const String& name) 
 		desc.domainParams = mParamDescs[GPT_DOMAIN_PROGRAM];
 		desc.computeParams = mParamDescs[GPT_COMPUTE_PROGRAM];
 
-		GpuParamsCore* obj = new (bs_alloc<GpuParamsCore>()) GpuParamsCore(desc);
-
-		SPtr<CoreObjectCore> coreObj = bs_shared_ptr<GpuParamsCore>(obj);
-		coreObj->_setThisPtr(coreObj);
-
-		return coreObj;
+		return HardwareBufferCoreManager::instance().createGpuParams(desc);
 	}
 
 	void GpuParams::_markCoreDirty()

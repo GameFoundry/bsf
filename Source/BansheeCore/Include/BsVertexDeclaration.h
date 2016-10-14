@@ -240,12 +240,12 @@ namespace BansheeEngine
 		Vector<VertexElement> getMissingElements(const SPtr<VertexDeclarationCore>& shaderDecl);
 
 		/** @copydoc HardwareBufferCoreManager::createVertexDeclaration */
-		static SPtr<VertexDeclarationCore> create(const SPtr<VertexDataDesc>& desc);
+		static SPtr<VertexDeclarationCore> create(const SPtr<VertexDataDesc>& desc, GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
     protected:
 		friend class HardwareBufferCoreManager;
 
-		VertexDeclarationCore(const List<VertexElement>& elements);
+		VertexDeclarationCore(const List<VertexElement>& elements, GpuDeviceFlags deviceMask);
 
 		VertexDeclarationProperties mProperties;
 		UINT32 mId;

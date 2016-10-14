@@ -31,9 +31,11 @@ namespace BansheeEngine
 		return ret;
 	}
 
-	SPtr<GpuParamBlockBufferCore> D3D11HardwareBufferCoreManager::createGpuParamBlockBufferInternal(UINT32 size, GpuParamBlockUsage usage)
+	SPtr<GpuParamBlockBufferCore> D3D11HardwareBufferCoreManager::createGpuParamBlockBufferInternal(UINT32 size, 
+		GpuParamBlockUsage usage, GpuDeviceFlags deviceMask)
 	{
-		D3D11GpuParamBlockBufferCore* paramBlockBuffer = new (bs_alloc<D3D11GpuParamBlockBufferCore>()) D3D11GpuParamBlockBufferCore(size, usage);
+		D3D11GpuParamBlockBufferCore* paramBlockBuffer = 
+			new (bs_alloc<D3D11GpuParamBlockBufferCore>()) D3D11GpuParamBlockBufferCore(size, usage, deviceMask);
 
 		SPtr<GpuParamBlockBufferCore> paramBlockBufferPtr = bs_shared_ptr<D3D11GpuParamBlockBufferCore>(paramBlockBuffer);
 		paramBlockBufferPtr->_setThisPtr(paramBlockBufferPtr);

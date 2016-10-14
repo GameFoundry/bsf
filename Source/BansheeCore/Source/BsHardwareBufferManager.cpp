@@ -90,33 +90,37 @@ namespace BansheeEngine
 		return vbuf;
 	}
 
-	SPtr<VertexDeclarationCore> HardwareBufferCoreManager::createVertexDeclaration(const SPtr<VertexDataDesc>& desc)
+	SPtr<VertexDeclarationCore> HardwareBufferCoreManager::createVertexDeclaration(const SPtr<VertexDataDesc>& desc, 
+		GpuDeviceFlags deviceMask)
 	{
-		SPtr<VertexDeclarationCore> declPtr = createVertexDeclarationInternal(desc->createElements());
+		SPtr<VertexDeclarationCore> declPtr = createVertexDeclarationInternal(desc->createElements(), deviceMask);
 		declPtr->initialize();
 
 		return declPtr;
 	}
 
-	SPtr<GpuParamsCore> HardwareBufferCoreManager::createGpuParams(const GPU_PARAMS_DESC& desc)
+	SPtr<GpuParamsCore> HardwareBufferCoreManager::createGpuParams(const GPU_PARAMS_DESC& desc, 
+		GpuDeviceFlags deviceMask)
     {
-		SPtr<GpuParamsCore> params = createGpuParamsInternal(desc);
+		SPtr<GpuParamsCore> params = createGpuParamsInternal(desc, deviceMask);
 		params->initialize();
 
 		return params;
     }
 
-	SPtr<VertexDeclarationCore> HardwareBufferCoreManager::createVertexDeclaration(const List<VertexElement>& elements)
+	SPtr<VertexDeclarationCore> HardwareBufferCoreManager::createVertexDeclaration(const List<VertexElement>& elements,
+		GpuDeviceFlags deviceMask)
 	{
-		SPtr<VertexDeclarationCore> declPtr = createVertexDeclarationInternal(elements);
+		SPtr<VertexDeclarationCore> declPtr = createVertexDeclarationInternal(elements, deviceMask);
 		declPtr->initialize();
 
 		return declPtr;
 	}
 
-	SPtr<GpuParamBlockBufferCore> HardwareBufferCoreManager::createGpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage)
+	SPtr<GpuParamBlockBufferCore> HardwareBufferCoreManager::createGpuParamBlockBuffer(UINT32 size, 
+		GpuParamBlockUsage usage, GpuDeviceFlags deviceMask)
 	{
-		SPtr<GpuParamBlockBufferCore> paramBlockPtr = createGpuParamBlockBufferInternal(size, usage);
+		SPtr<GpuParamBlockBufferCore> paramBlockPtr = createGpuParamBlockBufferInternal(size, usage, deviceMask);
 		paramBlockPtr->initialize();
 
 		return paramBlockPtr;
@@ -131,9 +135,10 @@ namespace BansheeEngine
 		return gbuf;
 	}
 
-	SPtr<VertexDeclarationCore> HardwareBufferCoreManager::createVertexDeclarationInternal(const List<VertexElement>& elements)
+	SPtr<VertexDeclarationCore> HardwareBufferCoreManager::createVertexDeclarationInternal(
+		const List<VertexElement>& elements, GpuDeviceFlags deviceMask)
 	{
-		VertexDeclarationCore* decl = new (bs_alloc<VertexDeclarationCore>()) VertexDeclarationCore(elements);
+		VertexDeclarationCore* decl = new (bs_alloc<VertexDeclarationCore>()) VertexDeclarationCore(elements, deviceMask);
 
 		SPtr<VertexDeclarationCore> ret = bs_shared_ptr<VertexDeclarationCore>(decl);
 		ret->_setThisPtr(ret);
@@ -141,9 +146,10 @@ namespace BansheeEngine
 		return ret;
 	}
 
-	SPtr<GpuParamsCore> HardwareBufferCoreManager::createGpuParamsInternal(const GPU_PARAMS_DESC& desc)
+	SPtr<GpuParamsCore> HardwareBufferCoreManager::createGpuParamsInternal(const GPU_PARAMS_DESC& desc, 
+		GpuDeviceFlags deviceMask)
     {
-		GpuParamsCore* params = new (bs_alloc<GpuParamsCore>()) GpuParamsCore(desc);
+		GpuParamsCore* params = new (bs_alloc<GpuParamsCore>()) GpuParamsCore(desc, deviceMask);
 		SPtr<GpuParamsCore> paramsPtr = bs_shared_ptr<GpuParamsCore>(params);
 		paramsPtr->_setThisPtr(paramsPtr);
 

@@ -262,15 +262,17 @@ namespace BansheeEngine
 	public:
 		~GpuParamsCore() { }
 
-		/** @copydoc GpuParams::create */
-		static SPtr<GpuParamsCore> create(const GPU_PARAMS_DESC& desc);
+		/** 
+		 * @copydoc GpuParams::create 
+		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the buffer be created on.
+		 */
+		static SPtr<GpuParamsCore> create(const GPU_PARAMS_DESC& desc, GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
 	protected:
 		friend class GpuParams;
 		friend class HardwareBufferCoreManager;
 
-		/** @copydoc GpuParams::create */
-		GpuParamsCore(const GPU_PARAMS_DESC& desc);
+		GpuParamsCore(const GPU_PARAMS_DESC& desc, GpuDeviceFlags deviceMask);
 
 		/** @copydoc CoreObject::getThisPtr */
 		SPtr<GpuParamsCore> _getThisPtr() const override;
@@ -323,7 +325,6 @@ namespace BansheeEngine
 	protected:
 		friend class HardwareBufferManager;
 
-		/** @copydoc GpuParams::create */
 		GpuParams(const GPU_PARAMS_DESC& desc);
 
 		/** @copydoc CoreObject::getThisPtr */
