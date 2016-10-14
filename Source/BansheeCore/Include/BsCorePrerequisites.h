@@ -237,8 +237,6 @@ namespace BansheeEngine
 	class RenderTargetCore;
     class RenderTexture;
 	class RenderTextureCore;
-	class MultiRenderTexture;
-	class MultiRenderTextureCore;
     class RenderWindow;
 	class RenderWindowCore;
 	class RenderTargetProperties;

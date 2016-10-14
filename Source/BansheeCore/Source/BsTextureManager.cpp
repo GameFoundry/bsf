@@ -3,7 +3,6 @@
 #include "BsTextureManager.h"
 #include "BsException.h"
 #include "BsPixelUtil.h"
-#include "BsMultiRenderTexture.h"
 #include "BsRenderAPI.h"
 
 namespace BansheeEngine 
@@ -53,10 +52,10 @@ namespace BansheeEngine
 		}
 
 		RENDER_TEXTURE_DESC desc;
-		desc.colorSurface.texture = texture;
-		desc.colorSurface.face = 0;
-		desc.colorSurface.numFaces = 1;
-		desc.colorSurface.mipLevel = 0;
+		desc.colorSurfaces[0].texture = texture;
+		desc.colorSurfaces[0].face = 0;
+		desc.colorSurfaces[0].numFaces = 1;
+		desc.colorSurfaces[0].mipLevel = 0;
 
 		desc.depthStencilSurface.texture = depthStencil;
 		desc.depthStencilSurface.face = 0;
@@ -71,15 +70,6 @@ namespace BansheeEngine
 	SPtr<RenderTexture> TextureManager::createRenderTexture(const RENDER_TEXTURE_DESC& desc)
 	{
 		SPtr<RenderTexture> newRT = createRenderTextureImpl(desc);
-		newRT->_setThisPtr(newRT);
-		newRT->initialize();
-
-		return newRT;
-	}
-
-	SPtr<MultiRenderTexture> TextureManager::createMultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC& desc)
-	{
-		SPtr<MultiRenderTexture> newRT = createMultiRenderTextureImpl(desc);
 		newRT->_setThisPtr(newRT);
 		newRT->initialize();
 
@@ -144,17 +134,9 @@ namespace BansheeEngine
 		return newRT;
 	}
 
-	SPtr<RenderTextureCore> TextureCoreManager::createRenderTexture(const RENDER_TEXTURE_CORE_DESC& desc)
+	SPtr<RenderTextureCore> TextureCoreManager::createRenderTexture(const RENDER_TEXTURE_DESC_CORE& desc)
 	{
 		SPtr<RenderTextureCore> newRT = createRenderTextureInternal(desc);
-		newRT->initialize();
-
-		return newRT;
-	}
-
-	SPtr<MultiRenderTextureCore> TextureCoreManager::createMultiRenderTexture(const MULTI_RENDER_TEXTURE_CORE_DESC& desc)
-	{
-		SPtr<MultiRenderTextureCore> newRT = createMultiRenderTextureInternal(desc);
 		newRT->initialize();
 
 		return newRT;

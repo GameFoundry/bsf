@@ -5,7 +5,6 @@
 #include "BsCorePrerequisites.h"
 #include "BsTexture.h"
 #include "BsRenderTexture.h"
-#include "BsMultiRenderTexture.h"
 #include "BsModule.h"
 
 namespace BansheeEngine 
@@ -51,7 +50,8 @@ namespace BansheeEngine
 		SPtr<Texture> _createEmpty();
 
 		/**
-		 * Creates a new RenderTexture and automatically generates a color surface and (optionally) a depth/stencil surface.
+		 * Creates a new RenderTexture and automatically generates a single color surface and (optionally) a depth/stencil 
+		 * surface.
 		 *
 		 * @param[in]	textureType			Type of the texture.
 		 * @param[in]	width				Width of the texture in pixels.
@@ -71,12 +71,6 @@ namespace BansheeEngine
 		/** Creates a RenderTexture using the description struct. */
 		virtual SPtr<RenderTexture> createRenderTexture(const RENDER_TEXTURE_DESC& desc);
 
-		/** 
-		 * Creates a new multi render texture. You may use this type of texture to render to multiple output textures at 
-		 * once.
-		 */
-		virtual SPtr<MultiRenderTexture> createMultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC& desc);
-
 		/**
 		 * Gets the format which will be natively used for a requested format given the constraints of the current device.
 		 *
@@ -90,12 +84,6 @@ namespace BansheeEngine
 		 * systems with their own implementations.
 		 */
 		virtual SPtr<RenderTexture> createRenderTextureImpl(const RENDER_TEXTURE_DESC& desc) = 0;
-
-		/**
-		 * Creates an empty and uninitialized multi render texture of a specific type. This is to be implemented by render
-		 * systems with their own implementations.
-		 */
-		virtual SPtr<MultiRenderTexture> createMultiRenderTextureImpl(const MULTI_RENDER_TEXTURE_DESC& desc) = 0;
 
 		mutable HTexture mDummyTexture;
     };
@@ -124,16 +112,12 @@ namespace BansheeEngine
 			UINT32 multisampleCount = 0, UINT32 numArraySlices = 1);
 
 		/** @copydoc	TextureManager::createRenderTexture(const RENDER_TEXTURE_DESC&) */
-		SPtr<RenderTextureCore> createRenderTexture(const RENDER_TEXTURE_CORE_DESC& desc);
-
-		/** @copydoc	TextureManager::createMultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC&) */
-		SPtr<MultiRenderTextureCore> createMultiRenderTexture(const MULTI_RENDER_TEXTURE_CORE_DESC& desc);
+		SPtr<RenderTextureCore> createRenderTexture(const RENDER_TEXTURE_DESC_CORE& desc);
 
 	protected:
 		friend class Texture;
 		friend class TextureCore;
 		friend class RenderTexture;
-		friend class MultiRenderTexture;
 
 		/**
 		 * Creates an empty and uninitialized texture of a specific type. This is to be implemented	by render systems with
@@ -144,10 +128,7 @@ namespace BansheeEngine
 			UINT32 multisampleCount = 0, UINT32 numArraySlices = 1, const SPtr<PixelData>& initialData = nullptr) = 0;
 
 		/** @copydoc TextureManager::createRenderTextureImpl */
-		virtual SPtr<RenderTextureCore> createRenderTextureInternal(const RENDER_TEXTURE_CORE_DESC& desc) = 0;
-
-		/** @copydoc TextureManager::createMultiRenderTextureImpl */
-		virtual SPtr<MultiRenderTextureCore> createMultiRenderTextureInternal(const MULTI_RENDER_TEXTURE_CORE_DESC& desc) = 0;
+		virtual SPtr<RenderTextureCore> createRenderTextureInternal(const RENDER_TEXTURE_DESC_CORE& desc) = 0;
     };
 
 	/** @} */

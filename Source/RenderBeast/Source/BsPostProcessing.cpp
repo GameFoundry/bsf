@@ -24,7 +24,7 @@ namespace BansheeEngine
 	void DownsampleMat::execute(const SPtr<RenderTextureCore>& target, PostProcessInfo& ppInfo)
 	{
 		// Set parameters
-		SPtr<TextureCore> colorTexture = target->getBindableColorTexture();
+		SPtr<TextureCore> colorTexture = target->getColorTexture(0);
 		mInputTexture.set(colorTexture);
 
 		const RenderTextureProperties& rtProps = target->getProperties();
@@ -372,7 +372,7 @@ namespace BansheeEngine
 		mParams.gManualExposureScale.set(Math::pow(2.0f, ppInfo.settings->exposureScale));
 
 		// Set parameters
-		SPtr<TextureCore> colorTexture = sceneColor->getBindableColorTexture();
+		SPtr<TextureCore> colorTexture = sceneColor->getColorTexture(0);
 		mInputTex.set(colorTexture);
 
 		SPtr<TextureCore> colorLUT;

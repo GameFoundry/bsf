@@ -29,9 +29,6 @@ namespace BansheeEngine
 		/** @copydoc TextureManager::createRenderTextureImpl */
 		SPtr<RenderTexture> createRenderTextureImpl(const RENDER_TEXTURE_DESC& desc) override;
 
-		/** @copydoc TextureManager::createMultiRenderTextureImpl */
-		SPtr<MultiRenderTexture> createMultiRenderTextureImpl(const MULTI_RENDER_TEXTURE_DESC& desc) override;
-
         GLSupport& mGLSupport;
     };
 
@@ -48,10 +45,7 @@ namespace BansheeEngine
 			UINT32 multisampleCount = 0, UINT32 numArraySlices = 1, const SPtr<PixelData>& initialData = nullptr) override;
 
 		/** @copydoc TextureCoreManager::createRenderTextureInternal */
-		SPtr<RenderTextureCore> createRenderTextureInternal(const RENDER_TEXTURE_CORE_DESC& desc) override;
-
-		/** @copydoc TextureCoreManager::createMultiRenderTextureInternal */
-		SPtr<MultiRenderTextureCore> createMultiRenderTextureInternal(const MULTI_RENDER_TEXTURE_CORE_DESC& desc) override;
+		SPtr<RenderTextureCore> createRenderTextureInternal(const RENDER_TEXTURE_DESC_CORE& desc) override;
 
 		GLSupport& mGLSupport;
 	};

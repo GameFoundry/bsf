@@ -16,8 +16,7 @@
 #include "BsMaterial.h"
 #include "BsPass.h"
 #include "BsRasterizerState.h"
-#include "BsRenderTarget.h"
-#include "BsMultiRenderTexture.h"
+#include "BsRenderTexture.h"
 #include "BsPixelData.h"
 #include "BsGpuParams.h"
 #include "BsGpuParamsSet.h"
@@ -287,15 +286,14 @@ namespace BansheeEngine
 
 		SPtr<RenderTextureCore> rtt = std::static_pointer_cast<RenderTextureCore>(target);
 
-		SPtr<TextureCore> outputTexture = rtt->getBindableColorTexture();
+		SPtr<TextureCore> outputTexture = rtt->getColorTexture(0);
 		TextureProperties outputTextureProperties = outputTexture->getProperties();
 
 		SPtr<TextureCore> normalsTexture = TextureCore::create(TEX_TYPE_2D, outputTextureProperties.getWidth(),
 			outputTextureProperties.getHeight(), 0, PF_R8G8B8A8, TU_RENDERTARGET, false, 1);
-		SPtr<TextureCore> depthTexture = rtt->getBindableDepthStencilTexture();
+		SPtr<TextureCore> depthTexture = rtt->getDepthStencilTexture();
 
-		MULTI_RENDER_TEXTURE_CORE_DESC pickingMRT;
-		pickingMRT.colorSurfaces.resize(2);
+		RENDER_TEXTURE_DESC_CORE pickingMRT;
 		pickingMRT.colorSurfaces[0].face = 0;
 		pickingMRT.colorSurfaces[0].texture = outputTexture;
 		pickingMRT.colorSurfaces[1].face = 0;
@@ -304,7 +302,7 @@ namespace BansheeEngine
 		pickingMRT.depthStencilSurface.face = 0;
 		pickingMRT.depthStencilSurface.texture = depthTexture;
 		
-		mPickingTexture = MultiRenderTextureCore::create(pickingMRT);
+		mPickingTexture = RenderTextureCore::create(pickingMRT);
 
 		rs.beginFrame();
 		rs.setRenderTarget(mPickingTexture);
@@ -372,9 +370,9 @@ namespace BansheeEngine
 			BS_EXCEPT(NotImplementedException, "Picking is not supported on render windows as framebuffer readback methods aren't implemented");
 		}
 
-		SPtr<TextureCore> outputTexture = mPickingTexture->getBindableColorTexture(0)->getTexture();
-		SPtr<TextureCore> normalsTexture = mPickingTexture->getBindableColorTexture(1)->getTexture();
-		SPtr<TextureCore> depthTexture = mPickingTexture->getBindableDepthStencilTexture()->getTexture();
+		SPtr<TextureCore> outputTexture = mPickingTexture->getColorTexture(0);
+		SPtr<TextureCore> normalsTexture = mPickingTexture->getColorTexture(1);
+		SPtr<TextureCore> depthTexture = mPickingTexture->getDepthStencilTexture();
 
 		if (position.x < 0 || position.x >= (INT32)outputTexture->getProperties().getWidth() ||
 			position.y < 0 || position.y >= (INT32)outputTexture->getProperties().getHeight())

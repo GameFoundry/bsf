@@ -5,7 +5,7 @@
 
 namespace BansheeEngine
 {
-	D3D11RenderTextureCore::D3D11RenderTextureCore(const RENDER_TEXTURE_CORE_DESC& desc)
+	D3D11RenderTextureCore::D3D11RenderTextureCore(const RENDER_TEXTURE_DESC_CORE& desc)
 		:RenderTextureCore(desc), mProperties(desc, false)
 	{ 
 
@@ -15,16 +15,22 @@ namespace BansheeEngine
 	{
 		if(name == "RTV")
 		{
-			ID3D11RenderTargetView** rtvs = (ID3D11RenderTargetView **)data;			
-			D3D11TextureView* textureView = static_cast<D3D11TextureView*>(mColorSurface.get());
-			*rtvs = textureView->getRTV();		
+			ID3D11RenderTargetView** rtvs = (ID3D11RenderTargetView**)data;
+			for (UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; ++i)
+			{
+				if (mColorSurfaces[i] == nullptr)
+					continue;
+
+				D3D11TextureView* textureView = static_cast<D3D11TextureView*>(mColorSurfaces[i].get());
+				rtvs[i] = textureView->getRTV();
+			}
 		}
 		else if(name == "DSV")
 		{
 			if (mDepthStencilSurface == nullptr)
 				return;
 
-			ID3D11DepthStencilView** dsv = (ID3D11DepthStencilView **)data;
+			ID3D11DepthStencilView** dsv = (ID3D11DepthStencilView**)data;
 			D3D11TextureView* depthStencilView = static_cast<D3D11TextureView*>(mDepthStencilSurface.get());
 
 			*dsv = depthStencilView->getDSV(false);
@@ -34,7 +40,7 @@ namespace BansheeEngine
 			if (mDepthStencilSurface == nullptr)
 				return;
 
-			ID3D11DepthStencilView** dsv = (ID3D11DepthStencilView **)data;
+			ID3D11DepthStencilView** dsv = (ID3D11DepthStencilView**)data;
 			D3D11TextureView* depthStencilView = static_cast<D3D11TextureView*>(mDepthStencilSurface.get());
 
 			*dsv = depthStencilView->getDSV(true);

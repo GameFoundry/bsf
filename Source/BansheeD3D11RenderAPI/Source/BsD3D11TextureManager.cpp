@@ -5,7 +5,6 @@
 #include "BsD3D11RenderTexture.h"
 #include "BsD3D11Mappings.h"
 #include "BsD3D11RenderAPI.h"
-#include "BsD3D11MultiRenderTexture.h"
 
 namespace BansheeEngine
 {
@@ -14,13 +13,6 @@ namespace BansheeEngine
 		D3D11RenderTexture* tex = new (bs_alloc<D3D11RenderTexture>()) D3D11RenderTexture(desc);
 
 		return bs_core_ptr<D3D11RenderTexture>(tex);
-	}
-
-	SPtr<MultiRenderTexture> D3D11TextureManager::createMultiRenderTextureImpl(const MULTI_RENDER_TEXTURE_DESC& desc)
-	{
-		D3D11MultiRenderTexture* tex = new (bs_alloc<D3D11MultiRenderTexture>()) D3D11MultiRenderTexture(desc);
-
-		return bs_core_ptr<D3D11MultiRenderTexture>(tex);
 	}
 
 	PixelFormat D3D11TextureManager::getNativeFormat(TextureType ttype, PixelFormat format, int usage, bool hwGamma)
@@ -43,17 +35,9 @@ namespace BansheeEngine
 		return texPtr;
 	}
 
-	SPtr<RenderTextureCore> D3D11TextureCoreManager::createRenderTextureInternal(const RENDER_TEXTURE_CORE_DESC& desc)
+	SPtr<RenderTextureCore> D3D11TextureCoreManager::createRenderTextureInternal(const RENDER_TEXTURE_DESC_CORE& desc)
 	{
 		SPtr<D3D11RenderTextureCore> texPtr = bs_shared_ptr_new<D3D11RenderTextureCore>(desc);
-		texPtr->_setThisPtr(texPtr);
-
-		return texPtr;
-	}
-
-	SPtr<MultiRenderTextureCore> D3D11TextureCoreManager::createMultiRenderTextureInternal(const MULTI_RENDER_TEXTURE_CORE_DESC& desc)
-	{
-		SPtr<D3D11MultiRenderTextureCore> texPtr = bs_shared_ptr_new<D3D11MultiRenderTextureCore>(desc);
 		texPtr->_setThisPtr(texPtr);
 
 		return texPtr;

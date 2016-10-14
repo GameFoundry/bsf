@@ -50,14 +50,14 @@ namespace BansheeEngine
 		
 		if ((desc.flag & (TU_RENDERTARGET | TU_DEPTHSTENCIL)) != 0)
 		{
-			RENDER_TEXTURE_CORE_DESC rtDesc;
+			RENDER_TEXTURE_DESC_CORE rtDesc;
 
 			if ((desc.flag & TU_RENDERTARGET) != 0)
 			{
-				rtDesc.colorSurface.texture = newTextureData->texture;
-				rtDesc.colorSurface.face = 0;
-				rtDesc.colorSurface.numFaces = desc.depth;
-				rtDesc.colorSurface.mipLevel = 0;
+				rtDesc.colorSurfaces[0].texture = newTextureData->texture;
+				rtDesc.colorSurfaces[0].face = 0;
+				rtDesc.colorSurfaces[0].numFaces = desc.depth;
+				rtDesc.colorSurfaces[0].mipLevel = 0;
 			}
 
 			if ((desc.flag & TU_DEPTHSTENCIL) != 0)

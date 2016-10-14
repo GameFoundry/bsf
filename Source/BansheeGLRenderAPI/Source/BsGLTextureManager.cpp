@@ -3,7 +3,6 @@
 #include "BsGLTextureManager.h"
 #include "BsRenderAPI.h"
 #include "BsGLRenderTexture.h"
-#include "BsGLMultiRenderTexture.h"
 #include "BsGLPixelFormat.h"
 
 namespace BansheeEngine
@@ -24,13 +23,6 @@ namespace BansheeEngine
 		GLRenderTexture* tex = new (bs_alloc<GLRenderTexture>()) GLRenderTexture(desc);
 
 		return bs_core_ptr<GLRenderTexture>(tex);
-	}
-
-	SPtr<MultiRenderTexture> GLTextureManager::createMultiRenderTextureImpl(const MULTI_RENDER_TEXTURE_DESC& desc)
-	{
-		GLMultiRenderTexture* tex = new (bs_alloc<GLMultiRenderTexture>()) GLMultiRenderTexture(desc);
-
-		return bs_core_ptr<GLMultiRenderTexture>(tex);
 	}
 
 	PixelFormat GLTextureManager::getNativeFormat(TextureType ttype, PixelFormat format, int usage, bool hwGamma)
@@ -78,17 +70,9 @@ namespace BansheeEngine
 		return texPtr;
 	}
 
-	SPtr<RenderTextureCore> GLTextureCoreManager::createRenderTextureInternal(const RENDER_TEXTURE_CORE_DESC& desc)
+	SPtr<RenderTextureCore> GLTextureCoreManager::createRenderTextureInternal(const RENDER_TEXTURE_DESC_CORE& desc)
 	{
 		SPtr<GLRenderTextureCore> texPtr = bs_shared_ptr_new<GLRenderTextureCore>(desc);
-		texPtr->_setThisPtr(texPtr);
-
-		return texPtr;
-	}
-
-	SPtr<MultiRenderTextureCore> GLTextureCoreManager::createMultiRenderTextureInternal(const MULTI_RENDER_TEXTURE_CORE_DESC& desc)
-	{
-		SPtr<GLMultiRenderTextureCore> texPtr = bs_shared_ptr_new<GLMultiRenderTextureCore>(desc);
 		texPtr->_setThisPtr(texPtr);
 
 		return texPtr;
