@@ -17,7 +17,7 @@ namespace BansheeEngine
     class BS_RSGL_EXPORT GLVertexBufferCore : public VertexBufferCore
     {
     public:
-		GLVertexBufferCore(UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage, bool streamOut);
+		GLVertexBufferCore(const VERTEX_BUFFER_DESC& desc, GpuDeviceFlags deviceMask);
 		~GLVertexBufferCore();
 
 		/** @copydoc VertexBufferCore::readData */

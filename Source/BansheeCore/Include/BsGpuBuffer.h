@@ -12,13 +12,7 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
-	/** 
-	 * Descriptor structure used for initialization of GpuBuffer. 
-	 * 
-	 * @note	
-	 * Be aware that due to some render API restrictions some of these settings cannot be used together, and if so you 
-	 * will receive an assert in debug mode.
-	 */
+	/** Descriptor structure used for initialization of a GpuBuffer. */
 	struct GPU_BUFFER_DESC
 	{
 		/** Number of elements in the buffer. */
@@ -37,7 +31,7 @@ namespace BansheeEngine
 		GpuBufferFormat format;
 
 		/** Usage that tells the hardware how will be buffer be used. */
-		GpuBufferUsage usage;
+		GpuBufferUsage usage = GBU_STATIC;
 
 		/** When true allows the GPU to write to the resource. Must be enabled if buffer type is GBT_APPENDCONSUME. */
 		bool randomGpuWrite = false;

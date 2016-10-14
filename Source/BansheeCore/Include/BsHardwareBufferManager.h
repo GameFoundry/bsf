@@ -32,13 +32,9 @@ namespace BansheeEngine
 		 * Creates a new vertex buffer used for holding number of vertices and other per-vertex data. Buffer can be bound 
 		 * to the pipeline and its data can be passed to the active vertex GPU program.
 		 *
-		 * @param[in]	vertexSize	Size of a single vertex in the buffer, in bytes.
-		 * @param[in]	numVerts	Number of vertices the buffer can hold.
-		 * @param[in]	usage		Usage that tells the hardware how will be buffer be used. 
-		 * @param[in]	streamOut	If true the buffer will be usable for streaming out data from the GPU.
+		 * @param[in]	desc	Description of the buffer to create.
 		 */
-		SPtr<VertexBuffer> createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, 
-			bool streamOut = false);
+		SPtr<VertexBuffer> createVertexBuffer(const VERTEX_BUFFER_DESC& desc);
 
 		/**
 		 * Creates a new index buffer that holds indices referencing vertices in a vertex buffer. Indices are interpreted 
@@ -86,8 +82,7 @@ namespace BansheeEngine
 		virtual ~HardwareBufferCoreManager() { }
 
 		/** @copydoc HardwareBufferManager::createVertexBuffer */
-		SPtr<VertexBufferCore> createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, 
-			bool streamOut = false);
+		SPtr<VertexBufferCore> createVertexBuffer(const VERTEX_BUFFER_DESC& desc, GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
 		/** @copydoc HardwareBufferManager::createIndexBuffer */
 		SPtr<IndexBufferCore> createIndexBuffer(IndexType itype, UINT32 numIndices, GpuBufferUsage usage);
@@ -119,8 +114,8 @@ namespace BansheeEngine
 		friend class GpuBufferCore;
 
 		/** @copydoc createVertexBuffer */
-		virtual SPtr<VertexBufferCore> createVertexBufferInternal(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, 
-			bool streamOut = false) = 0;
+		virtual SPtr<VertexBufferCore> createVertexBufferInternal(const VERTEX_BUFFER_DESC& desc, 
+			GpuDeviceFlags deviceMask = GDF_DEFAULT) = 0;
 
 		/** @copydoc createIndexBuffer */
 		virtual SPtr<IndexBufferCore> createIndexBufferInternal(IndexType itype, UINT32 numIndices, 

@@ -8,10 +8,10 @@
 
 namespace BansheeEngine 
 {
-	GLVertexBufferCore::GLVertexBufferCore(UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage, bool streamOut)
-		:VertexBufferCore(vertexSize, numVertices, usage, streamOut)
+	GLVertexBufferCore::GLVertexBufferCore(const VERTEX_BUFFER_DESC& desc, GpuDeviceFlags deviceMask)
+		:VertexBufferCore(desc, deviceMask)
     {
-
+		assert((deviceMask == GDF_DEFAULT || deviceMask == GDF_PRIMARY) && "Multiple GPUs not supported natively on OpenGL.");
     }
 
 	GLVertexBufferCore::~GLVertexBufferCore()

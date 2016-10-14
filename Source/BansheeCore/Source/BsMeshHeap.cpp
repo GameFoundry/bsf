@@ -304,9 +304,13 @@ namespace BansheeEngine
 				continue;
 
 			UINT32 vertSize = mVertexData->vertexDeclaration->getProperties().getVertexSize(i);
-			SPtr<VertexBufferCore> vertexBuffer = HardwareBufferCoreManager::instance().createVertexBuffer(
-				vertSize, mVertexData->vertexCount, GBU_DYNAMIC);
 
+			VERTEX_BUFFER_DESC desc;
+			desc.vertexSize = vertSize;
+			desc.numVerts = mVertexData->vertexCount;
+			desc.usage = GBU_DYNAMIC;
+
+			SPtr<VertexBufferCore> vertexBuffer = HardwareBufferCoreManager::instance().createVertexBuffer(desc);
 			mVertexData->setBuffer(i, vertexBuffer);
 
 			// Copy all data to the new buffer

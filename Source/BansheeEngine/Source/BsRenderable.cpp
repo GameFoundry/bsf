@@ -240,7 +240,12 @@ namespace BansheeEngine
 			UINT32 vertexSize = sizeof(Vector3) + sizeof(UINT32);
 			UINT32 numVertices = morphShapes->getNumVertices();
 
-			SPtr<VertexBufferCore> vertexBuffer = VertexBufferCore::create(vertexSize, numVertices, GBU_DYNAMIC);
+			VERTEX_BUFFER_DESC desc;
+			desc.vertexSize = vertexSize;
+			desc.numVerts = numVertices;
+			desc.usage = GBU_DYNAMIC;
+
+			SPtr<VertexBufferCore> vertexBuffer = VertexBufferCore::create(desc);
 
 			UINT32 totalSize = vertexSize * numVertices;
 			UINT8* dest = (UINT8*)vertexBuffer->lock(0, totalSize, GBL_WRITE_ONLY_DISCARD);

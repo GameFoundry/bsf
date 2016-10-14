@@ -52,11 +52,12 @@ namespace BansheeEngine
 			if (!mVertexDesc->hasStream(i))
 				continue;
 
-			SPtr<VertexBufferCore> vertexBuffer = HardwareBufferCoreManager::instance().createVertexBuffer(
-				mVertexData->vertexDeclaration->getProperties().getVertexSize(i),
-				mVertexData->vertexCount,
-				isDynamic ? GBU_DYNAMIC : GBU_STATIC);
+			VERTEX_BUFFER_DESC desc;
+			desc.vertexSize = mVertexData->vertexDeclaration->getProperties().getVertexSize(i);
+			desc.numVerts = mVertexData->vertexCount;
+			desc.usage = isDynamic ? GBU_DYNAMIC : GBU_STATIC;
 
+			SPtr<VertexBufferCore> vertexBuffer = VertexBufferCore::create(desc);
 			mVertexData->setBuffer(i, vertexBuffer);
 		}
 

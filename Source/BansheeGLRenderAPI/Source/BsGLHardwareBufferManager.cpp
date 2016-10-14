@@ -11,9 +11,10 @@
 
 namespace BansheeEngine 
 {
-	SPtr<VertexBufferCore> GLHardwareBufferCoreManager::createVertexBufferInternal(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
+	SPtr<VertexBufferCore> GLHardwareBufferCoreManager::createVertexBufferInternal(const VERTEX_BUFFER_DESC& desc, 
+		GpuDeviceFlags deviceMask)
 	{
-		SPtr<GLVertexBufferCore> ret = bs_shared_ptr_new<GLVertexBufferCore>(vertexSize, numVerts, usage, streamOut);
+		SPtr<GLVertexBufferCore> ret = bs_shared_ptr_new<GLVertexBufferCore>(desc, deviceMask);
 		ret->_setThisPtr(ret);
 
 		return ret;

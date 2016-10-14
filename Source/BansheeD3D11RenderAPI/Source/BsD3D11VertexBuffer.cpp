@@ -6,9 +6,12 @@
 
 namespace BansheeEngine
 {
-	D3D11VertexBufferCore::D3D11VertexBufferCore(D3D11Device& device, UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage, bool streamOut)
-		:VertexBufferCore(vertexSize, numVertices, usage, streamOut), mDevice(device), mStreamOut(streamOut), mBuffer(nullptr)
-	{ }
+	D3D11VertexBufferCore::D3D11VertexBufferCore(D3D11Device& device, const VERTEX_BUFFER_DESC& desc, 
+		GpuDeviceFlags deviceMask)
+		:VertexBufferCore(desc, deviceMask), mDevice(device), mStreamOut(desc.streamOut), mBuffer(nullptr)
+	{
+		assert((deviceMask == GDF_DEFAULT || deviceMask == GDF_PRIMARY) && "Multiple GPUs not supported natively on DirectX 11.");
+	}
 
 	D3D11VertexBufferCore::~D3D11VertexBufferCore()
 	{

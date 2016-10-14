@@ -23,8 +23,8 @@ namespace BansheeEngine
 
 	protected:
 		/** @copydoc HardwareBufferCoreManager::createVertexBufferInternal */
-        SPtr<VertexBufferCore> createVertexBufferInternal(UINT32 vertexSize, 
-			UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false) override;
+        SPtr<VertexBufferCore> createVertexBufferInternal(const VERTEX_BUFFER_DESC& desc, 
+        	GpuDeviceFlags deviceMask = GDF_DEFAULT) override;
 
 		/** @copydoc HardwareBufferCoreManager::createIndexBufferInternal */
 		SPtr<IndexBufferCore> createIndexBufferInternal(IndexType itype, UINT32 numIndices, GpuBufferUsage usage) override;
