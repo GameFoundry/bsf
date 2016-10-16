@@ -69,10 +69,8 @@ namespace BansheeEngine
 		return errorsFound || !linkCompileSuccess;
 	}
 	
-	GLSLGpuProgramCore::GLSLGpuProgramCore(const String& source, const String& entryPoint, GpuProgramType gptype,
-		GpuProgramProfile profile, bool isAdjacencyInfoRequired)
-		:GpuProgramCore(source, entryPoint, gptype, profile, isAdjacencyInfoRequired),
-		mProgramID(0), mGLHandle(0)
+	GLSLGpuProgramCore::GLSLGpuProgramCore(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
+		:GpuProgramCore(desc, deviceMask), mProgramID(0), mGLHandle(0)
     { }
 
 	GLSLGpuProgramCore::~GLSLGpuProgramCore()
