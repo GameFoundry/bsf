@@ -7,7 +7,7 @@ Textures in Banshee are represented with the @ref BansheeEngine::Texture "Textur
 We're going to focus on the simulation thread implementation in this manual, and then note the differences in the core thread version at the end.
 
 # Creating a texture {#textures_a}
-To create a texture call @ref BansheeEngine::Texture::create "Texture::create" or one if its overloads. At minimum you need to provide a @ref BansheeEngine::TextureType "texture type", dimensions and @ref BansheeEngine::PixelFormat "pixel format". The dimensions range from one to three dimensional depending on the texture type.
+To create a texture call @ref BansheeEngine::Texture::create "Texture::create" or one if its overloads. You'll need to populate the @ref BansheeEngine::TEXTURE_DESC "TEXTURE_DESC" structure and pass it as a parameter. At minimum you need to provide a @ref BansheeEngine::TextureType "texture type", dimensions and @ref BansheeEngine::PixelFormat "pixel format". The dimensions range from one to three dimensional depending on the texture type.
 
 Optionally you can also provide the number of mipmaps, number of samples, usage flags and a gamma correction flag:
  - A texture with mip-maps will contain a set of scaled down versions of itself that are used by the GPU for special filtering. 
@@ -18,7 +18,13 @@ Optionally you can also provide the number of mipmaps, number of samples, usage 
 For example:
 ~~~~~~~~~~~~~{.cpp}
 // Creates a 2D texture, 128x128 with an 8-bit RGBA format
-HTexture texture = Texture::create(TEX_TYPE_2D, 128, 128, 0, PF_R8G8B8A8);
+TEXTURE_DESC desc;
+desc.type = TEX_TYPE_2D;
+desc.width = 128;
+desc.heigth = 128;
+desc.format = PF_R8G8B8A8;
+
+HTexture texture = Texture::create(desc);
 ~~~~~~~~~~~~~ 
 
 You can also create a non-empty texture by creating it with a populated @ref BansheeEngine::PixelData "PixelData" object. More about @ref BansheeEngine::PixelData "PixelData" later.

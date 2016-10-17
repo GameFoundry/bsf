@@ -55,7 +55,11 @@ namespace BansheeEngine
 		virtual SPtr<RenderTexture> createRenderTexture(const TEXTURE_DESC& colorDesc,
 			bool createDepth = true, PixelFormat depthStencilFormat = PF_D24S8);
 
-		/** Creates a RenderTexture using the description struct. */
+		/** 
+		 * Creates a RenderTexture using the description struct. 
+		 * 
+		 * @param[in]	desc	Description of the render texture to create.
+		 */
 		virtual SPtr<RenderTexture> createRenderTexture(const RENDER_TEXTURE_DESC& desc);
 
 		/**

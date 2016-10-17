@@ -48,7 +48,7 @@ namespace BansheeEngine
 		virtual ~RenderTexture() { }
 
 		/** @copydoc TextureManager::createRenderTexture(const TEXTURE_DESC&, bool, PixelFormat) */
-		static SPtr<RenderTexture> create(const TEXTURE_DESC& desc, 
+		static SPtr<RenderTexture> create(const TEXTURE_DESC& colorDesc, 
 			bool createDepth = true, PixelFormat depthStencilFormat = PF_D24S8);
 
 		/** @copydoc TextureManager::createRenderTexture(const RENDER_TEXTURE_DESC&) */
@@ -127,7 +127,7 @@ namespace BansheeEngine
 		/** @copydoc CoreObjectCore::initialize */
 		void initialize() override;
 
-		/** @copydoc TextureCoreManager::createRenderTexture(const RENDER_TEXTURE_DESC_CORE&) */
+		/** @copydoc TextureCoreManager::createRenderTexture(const RENDER_TEXTURE_DESC_CORE&, GpuDeviceFlags) */
 		static SPtr<RenderTextureCore> create(const RENDER_TEXTURE_DESC_CORE& desc, GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
 		/**

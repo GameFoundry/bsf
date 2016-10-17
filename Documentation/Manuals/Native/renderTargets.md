@@ -69,10 +69,24 @@ To create a render texture call @ref BansheeEngine::RenderTexture::create(const 
 For example:
 ~~~~~~~~~~~~~{.cpp}
 // Create a 1280x720 texture with 32-bit RGBA format
-HTexture color = Texture::create(TEX_TYPE_2D, 1280, 720, 1, 0, PF_R8G8B8A8);
+TEXTURE_DESC colorDesc;
+colorDesc.type = TEX_TYPE_2D;
+colorDesc.width = 1280;
+colorDesc.heigth = 720;
+colorDesc.format = PF_R8G8B8A8;
+colorDesc.usage = TU_RENDERTARGET;
+
+HTexture color = Texture::create(colorDesc);
 
 // Create a 1280x720 texture with a 32-bit depth-stencil format
-HTexture depthStencil = Texture::create(TEX_TYPE_2D, 1280, 720, 1, 0, PF_D24S8);
+TEXTURE_DESC depthDesc;
+depthDesc.type = TEX_TYPE_2D;
+depthDesc.width = 1280;
+depthDesc.heigth = 720;
+depthDesc.format = PF_R8G8B8A8;
+depthDesc.usage = TU_DEPTHSTENCIL;
+
+HTexture depthStencil = Texture::create(depthDesc);
 
 RENDER_TEXTURE_DESC desc;
 desc.colorSurfaces[0].texture = color;
@@ -86,10 +100,16 @@ desc.depthStencilSurface.mipLevel = 0;
 SPtr<RenderTexture> renderTexture = RenderTexture::create(desc);
 ~~~~~~~~~~~~~
 
-Optionally you can also use the overloaded @ref BansheeEngine::RenderTexture::create(TextureType, UINT32, UINT32, PixelFormat, bool, UINT32, bool, PixelFormat) "RenderTexture::create" to create the texture surfaces and the render texture in one go:
+Optionally you can also use the overloaded @ref BansheeEngine::RenderTexture::create(const TEXTURE_DESC&, bool, PixelFormat) "RenderTexture::create" to create the texture surfaces and the render texture in one go:
 ~~~~~~~~~~~~~{.cpp}
 // Has the same result as above:
-SPtr<RenderTexture> renderTexture = RenderTexture::create(TEX_TYPE_2D, 1280, 720, PF_R8G8B8A8, false, 0, true, PF_D24S8);
+TEXTURE_DESC colorDesc;
+colorDesc.type = TEX_TYPE_2D;
+colorDesc.width = 1280;
+colorDesc.heigth = 720;
+colorDesc.format = PF_R8G8B8A8;
+
+SPtr<RenderTexture> renderTexture = RenderTexture::create(colorDesc, true, PF_D24S8);
 ~~~~~~~~~~~~~
 
 ## Multiple surfaces {#renderTargets_b_a}

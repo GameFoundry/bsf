@@ -24,7 +24,14 @@ For example if we wanted to create a HLSL fragment program (HLSL source not show
 ~~~~~~~~~~~~~{.cpp}
 String hlslSource = "...";
 
-SPtr<GpuProgram> myProgram = GpuProgram::create(hlslSource, "main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_FS_5_0);
+GPU_PROGRAM_DESC desc;
+desc.type = GPT_FRAGMENT_PROGRAM;
+desc.source = hlslSource;
+desc.entryPoint = "main";
+desc.language = "hlsl";
+desc.profile = GPP_FS_5_0;
+
+SPtr<GpuProgram> myProgram = GpuProgram::create(desc);
 ~~~~~~~~~~~~~ 
  
 Once the GPU program has been created it is not guaranteed to be usable. The compilation of the provided source code could have failed, which you can check by calling @ref BansheeEngine::GpuProgram::isCompiled() "GpuProgram::isCompiled", and retrieve the error message by calling @ref BansheeEngine::GpuProgram::getCompileErrorMessage() "GpuProgram::getCompileErrorMessage". Be aware that both of these methods are only valid after the core thread has initialized the object. You can ensure this by calling @ref BansheeEngine::CoreObject::blockUntilCoreInitialized "GpuProgram::blockUntilCoreInitialized" but be aware this will block the calling thread which can result in a significant performance impact.

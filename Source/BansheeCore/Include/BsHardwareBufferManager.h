@@ -62,10 +62,18 @@ namespace BansheeEngine
 		 */
 		SPtr<GpuBuffer> createGpuBuffer(const GPU_BUFFER_DESC& desc);
 
-		/** Creates a new vertex declaration from a list of vertex elements. */
+		/** 
+		 * Creates a new vertex declaration from a list of vertex elements. 
+		 * 
+		 * @param[in]	desc	Description of the object to create.
+		 */
 		SPtr<VertexDeclaration> createVertexDeclaration(const SPtr<VertexDataDesc>& desc);
 
-		/** Creates a new GpuParams object from the provided set of GPU parameter descriptors. */
+		/** 
+		 * Creates a new GpuParams object from the provided set of GPU parameter descriptors.
+		 *  
+		 * @param[in]	desc	Description of the object to create.
+		 */
 		SPtr<GpuParams> createGpuParams(const GPU_PARAMS_DESC& desc);
 	};
 
@@ -98,8 +106,10 @@ namespace BansheeEngine
 		SPtr<VertexDeclarationCore> createVertexDeclaration(const SPtr<VertexDataDesc>& desc,
 			GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
-		/** 
-		 * @copydoc HardwareBufferManager::createVertexDeclaration 
+		/**
+		 * Creates a new vertex declaration from a list of vertex elements.
+		 *
+		 * @param[in]	elements		List of elements to initialize the declaration with.
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the object be created on.
 		 */
 		SPtr<VertexDeclarationCore> createVertexDeclaration(const List<VertexElement>& elements, 
@@ -150,7 +160,7 @@ namespace BansheeEngine
 		virtual SPtr<GpuBufferCore> createGpuBufferInternal(const GPU_BUFFER_DESC& desc, 
 			GpuDeviceFlags deviceMask = GDF_DEFAULT) = 0;
 
-		/** @copydoc createVertexDeclaration */
+		/** @copydoc createVertexDeclaration(const List<VertexElement>&, GpuDeviceFlags) */
 		virtual SPtr<VertexDeclarationCore> createVertexDeclarationInternal(const List<VertexElement>& elements,
 			GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
