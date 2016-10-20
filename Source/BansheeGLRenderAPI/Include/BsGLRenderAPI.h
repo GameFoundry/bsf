@@ -128,10 +128,10 @@ namespace BansheeEngine
 
 	protected:
 		/** @copydoc RenderAPICore::initializePrepare */
-		void initializePrepare() override;
+		void initialize() override;
 
 		/** @copydoc RenderAPICore::initializeFinalize */
-		void initializeFinalize(const SPtr<RenderWindowCore>& primaryWindow) override;
+		void initializeWithWindow(const SPtr<RenderWindowCore>& primaryWindow) override;
 
 		/** @copydoc RenderAPICore::destroyCore */
 		void destroyCore() override;

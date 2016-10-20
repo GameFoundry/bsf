@@ -4,10 +4,56 @@
 #include "BsCoreThread.h"
 #include "BsRenderStats.h"
 #include "BsGpuParamDesc.h"
+#include "BsVulkanDevice.h"
+#include "BsVulkanTextureManager.h"
+#include "BsVulkanRenderWindowManager.h"
+#include "BsVulkanHardwareBufferManager.h"
+#include "BsVulkanRenderStateManager.h"
+#include "BsGpuProgramManager.h"
+#include "BsVulkanQueryManager.h"
+#include "BsVulkanGLSLProgramFactory.h"
 
 namespace BansheeEngine
 {
+	PFN_vkCreateDebugReportCallbackEXT vkCreateDebugReportCallbackEXT = nullptr;
+	PFN_vkDestroyDebugReportCallbackEXT vkDestroyDebugReportCallbackEXT = nullptr;
+
+	VkBool32 debugMsgCallback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objType, uint64_t srcObject,
+		size_t location, int32_t msgCode, const char* pLayerPrefix, const char* pMsg, void* pUserData)
+	{
+		StringStream message;
+
+		// Determine prefix
+		if (flags & VK_DEBUG_REPORT_ERROR_BIT_EXT)
+			message << "ERROR";
+
+		if (flags & VK_DEBUG_REPORT_WARNING_BIT_EXT)
+			message << "WARNING";
+
+		if (flags & VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT)
+			message << "PERFORMANCE";
+
+		if (flags & VK_DEBUG_REPORT_INFORMATION_BIT_EXT)
+			message << "INFO";
+
+		if (flags & VK_DEBUG_REPORT_DEBUG_BIT_EXT)
+			message << "DEBUG";
+
+		message << ": [" << pLayerPrefix << "] Code " << msgCode << ": " << pMsg << std::endl;
+
+		if (flags & VK_DEBUG_REPORT_ERROR_BIT_EXT)
+			BS_EXCEPT(RenderingAPIException, message.str())
+		else if (flags & VK_DEBUG_REPORT_WARNING_BIT_EXT || flags & VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT)
+			LOGWRN(message.str())
+		else
+			LOGDBG(message.str())
+
+		// Don't abort calls that caused a validation message
+		return VK_FALSE;
+	}
+
 	VulkanRenderAPI::VulkanRenderAPI()
+		:mInstance(nullptr), mDebugCallback(nullptr)
 	{ }
 
 	VulkanRenderAPI::~VulkanRenderAPI()
@@ -27,21 +73,173 @@ namespace BansheeEngine
 		return strName;
 	}
 
-	void VulkanRenderAPI::initializePrepare()
+	void VulkanRenderAPI::initialize()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		RenderAPICore::initializePrepare();
-	}
+		// Create instance
+		VkApplicationInfo appInfo;
+		appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+		appInfo.pNext = nullptr;
+		appInfo.pApplicationName = "Banshee3D App";
+		appInfo.applicationVersion = 1;
+		appInfo.pEngineName = "Banshee3D";
+		appInfo.engineVersion = (0 << 24) | (4 << 16) | 0;
+		appInfo.apiVersion = VK_API_VERSION_1_0;
 
-	void VulkanRenderAPI::initializeFinalize(const SPtr<RenderWindowCore>& primaryWindow)
-	{
-		RenderAPICore::initializeFinalize(primaryWindow);
+#if BS_DEBUG_MODE
+		const char* layers[] =
+		{
+			"VK_LAYER_LUNARG_standard_validation"
+		};
+
+		const char* extensions[] =
+		{
+			nullptr, /** Surface extension */
+			nullptr, /** OS specific surface extension */
+			VK_EXT_DEBUG_REPORT_EXTENSION_NAME
+		};
+#else
+		const char** layers = nullptr;
+		const char* extensions[] =
+		{
+			nullptr, /** Surface extension */
+			nullptr, /** OS specific surface extension */
+		};
+#endif
+
+		extensions[0] = VK_KHR_SURFACE_EXTENSION_NAME;
+
+#if BS_PLATFORM == BS_PLATFORM_WIN32
+		extensions[1] = VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
+#elif BS_PLATFORM == BS_PLATFORM_ANDROID
+		extensions[1] = VK_KHR_ANDROID_SURFACE_EXTENSION_NAME;
+#else
+		extensions[1] = VK_KHR_XCB_SURFACE_EXTENSION_NAME;
+#endif
+
+		uint32_t numLayers = sizeof(layers) / sizeof(layers[0]);
+		uint32_t numExtensions = sizeof(extensions) / sizeof(extensions[0]);
+
+		VkInstanceCreateInfo instanceInfo;
+		instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+		instanceInfo.pNext = nullptr;
+		instanceInfo.flags = 0;
+		instanceInfo.pApplicationInfo = &appInfo;
+		instanceInfo.enabledLayerCount = numLayers;
+		instanceInfo.ppEnabledLayerNames = layers;
+		instanceInfo.enabledExtensionCount = numExtensions;
+		instanceInfo.ppEnabledExtensionNames = extensions;
+
+		VkResult result = vkCreateInstance(&instanceInfo, gVulkanAllocator, &mInstance);
+		assert(result == VK_SUCCESS);
+
+		// Set up debugging
+#if BS_DEBUG_MODE
+		VkDebugReportFlagsEXT debugFlags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT | 
+			VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT;
+
+		vkCreateDebugReportCallbackEXT = 
+			(PFN_vkCreateDebugReportCallbackEXT)vkGetInstanceProcAddr(mInstance, "vkCreateDebugReportCallbackEXT");
+		vkDestroyDebugReportCallbackEXT = 
+			(PFN_vkDestroyDebugReportCallbackEXT)vkGetInstanceProcAddr(mInstance, "vkDestroyDebugReportCallbackEXT");
+
+		VkDebugReportCallbackCreateInfoEXT debugInfo;
+		debugInfo.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT;
+		debugInfo.pNext = nullptr;
+		debugInfo.flags = 0;
+		debugInfo.pfnCallback = (PFN_vkDebugReportCallbackEXT)debugMsgCallback;
+		debugInfo.flags = debugFlags;
+
+		result = vkCreateDebugReportCallbackEXT(mInstance, &debugInfo, nullptr, &mDebugCallback);
+		assert(result == VK_SUCCESS);
+#endif
+
+		// Enumerate all devices
+		uint32_t numDevices;
+
+		result = vkEnumeratePhysicalDevices(mInstance, &numDevices, nullptr);
+		assert(result == VK_SUCCESS);
+
+		Vector<VkPhysicalDevice> physicalDevices(numDevices);
+		result = vkEnumeratePhysicalDevices(mInstance, &numDevices, physicalDevices.data());
+		assert(result == VK_SUCCESS);
+
+		mDevices.resize(numDevices);
+		for(uint32_t i = 0; i < numDevices; i++)
+			mDevices[i] = bs_shared_ptr_new<VulkanDevice>(physicalDevices[i]);
+
+		// Find primary device
+		// TODO MULTIGPU - Detect multiple similar devices here if supporting multi-GPU
+		for (uint32_t i = 0; i < numDevices; i++)
+		{
+			if (mDevices[i]->getDeviceProperties().deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)
+			{
+				mPrimaryDevices.push_back(mDevices[i]);
+				break;
+			}
+		}
+
+		if (mPrimaryDevices.size() == 0)
+			mPrimaryDevices.push_back(mDevices[0]);
+
+		// Create the texture manager for use by others		
+		TextureManager::startUp<VulkanTextureManager>();
+		TextureCoreManager::startUp<VulkanTextureCoreManager>();
+
+		// Create hardware buffer manager		
+		HardwareBufferManager::startUp();
+		HardwareBufferCoreManager::startUp<VulkanHardwareBufferCoreManager>();
+
+		// Create render window manager
+		RenderWindowManager::startUp<VulkanRenderWindowManager>();
+		RenderWindowCoreManager::startUp<VulkanRenderWindowCoreManager>();
+
+		// Create query manager 
+		QueryManager::startUp<VulkanQueryManager>();
+
+		// Create & register HLSL factory		
+		mGLSLFactory = bs_new<VulkanGLSLProgramFactory>();
+
+		// Create render state manager
+		RenderStateCoreManager::startUp<VulkanRenderStateCoreManager>();
+		GpuProgramCoreManager::instance().addFactory(mGLSLFactory);
+
+		// TODO - Create and populate VideoModeInfo
+		// TODO - Create and populate capabilities, per device
+		mCurrentCapabilities->addShaderProfile("glsl");
+
+		RenderAPICore::initialize();
 	}
 
     void VulkanRenderAPI::destroyCore()
 	{
 		THROW_IF_NOT_CORE_THREAD;
+
+		if (mGLSLFactory != nullptr)
+		{
+			bs_delete(mGLSLFactory);
+			mGLSLFactory = nullptr;
+		}
+
+		QueryManager::shutDown();
+		RenderStateCoreManager::shutDown();
+		RenderWindowCoreManager::shutDown();
+		RenderWindowManager::shutDown();
+		HardwareBufferCoreManager::shutDown();
+		HardwareBufferManager::shutDown();
+		TextureCoreManager::shutDown();
+		TextureManager::shutDown();
+
+		mPrimaryDevices.clear();
+		mDevices.clear();
+
+#if BS_DEBUG_MODE
+		if (mDebugCallback != nullptr)
+			vkDestroyDebugReportCallbackEXT(mInstance, mDebugCallback, gVulkanAllocator);
+#endif
+
+		vkDestroyInstance(mInstance, gVulkanAllocator);
 
 		RenderAPICore::destroyCore();
 	}

@@ -169,22 +169,22 @@ namespace BansheeEngine
 
 	SPtr<RenderWindow> RenderAPICore::initialize(const RENDER_WINDOW_DESC& primaryWindowDesc)
 	{
-		gCoreThread().queueCommand(std::bind(&RenderAPICore::initializePrepare, this), true);
+		gCoreThread().queueCommand(std::bind((void(RenderAPICore::*)())&RenderAPICore::initialize, this), true);
 
 		RENDER_WINDOW_DESC windowDesc = primaryWindowDesc;
 		SPtr<RenderWindow> renderWindow = RenderWindow::create(windowDesc, nullptr);
 
-		gCoreThread().queueCommand(std::bind(&RenderAPICore::initializeFinalize, this, renderWindow->getCore()), true);
+		gCoreThread().queueCommand(std::bind(&RenderAPICore::initializeWithWindow, this, renderWindow->getCore()), true);
 
 		return renderWindow;
 	}
 
-	void RenderAPICore::initializePrepare()
+	void RenderAPICore::initialize()
 	{
 		// Do nothing
 	}
 
-	void RenderAPICore::initializeFinalize(const SPtr<RenderWindowCore>& primaryWindow)
+	void RenderAPICore::initializeWithWindow(const SPtr<RenderWindowCore>& primaryWindow)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 	}

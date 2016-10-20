@@ -90,7 +90,7 @@ namespace BansheeEngine
 		return strName;
 	}
 
-	void GLRenderAPI::initializePrepare()
+	void GLRenderAPI::initialize()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -105,10 +105,10 @@ namespace BansheeEngine
 
 		QueryManager::startUp<GLQueryManager>();
 
-		RenderAPICore::initializePrepare();
+		RenderAPICore::initialize();
 	}
 
-	void GLRenderAPI::initializeFinalize(const SPtr<RenderWindowCore>& primaryWindow)
+	void GLRenderAPI::initializeWithWindow(const SPtr<RenderWindowCore>& primaryWindow)
 	{
 		// Get the context from the window and finish initialization
 		SPtr<GLContext> context;
@@ -147,7 +147,7 @@ namespace BansheeEngine
 
 		mGLInitialised = true;
 
-		RenderAPICore::initializeFinalize(primaryWindow);
+		RenderAPICore::initializeWithWindow(primaryWindow);
 	}
 
 	void GLRenderAPI::destroyCore()

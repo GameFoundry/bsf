@@ -57,7 +57,7 @@ namespace BansheeEngine
 		return strName;
 	}
 
-	void D3D11RenderAPI::initializePrepare()
+	void D3D11RenderAPI::initialize()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -132,16 +132,16 @@ namespace BansheeEngine
 
 		mIAManager = bs_new<D3D11InputLayoutManager>();
 
-		RenderAPICore::initializePrepare();
+		RenderAPICore::initialize();
 	}
 
-	void D3D11RenderAPI::initializeFinalize(const SPtr<RenderWindowCore>& primaryWindow)
+	void D3D11RenderAPI::initializeWithWindow(const SPtr<RenderWindowCore>& primaryWindow)
 	{
 		D3D11RenderUtility::startUp(mDevice);
 
 		QueryManager::startUp<D3D11QueryManager>();
 
-		RenderAPICore::initializeFinalize(primaryWindow);
+		RenderAPICore::initializeWithWindow(primaryWindow);
 	}
 
     void D3D11RenderAPI::destroyCore()

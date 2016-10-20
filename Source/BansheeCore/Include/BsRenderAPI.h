@@ -506,25 +506,18 @@ namespace BansheeEngine
 		/**
 		 * Initializes the render API system and creates a primary render window.
 		 *
-		 * @note	
-		 * Although I'd like otherwise, due to the nature of some render API implementations, you cannot initialize the 
-		 * render system without a window.
-		 * @note
-		 * Sim thread.
+		 * @note Sim thread only.
 		 */
 		SPtr<RenderWindow> initialize(const RENDER_WINDOW_DESC& primaryWindowDesc);
 
-		/**
-		 * Prepares the initialization of the render API system on the core thread. After the system is prepared a render 
-		 * window can be created and initialization finalized.
-		 */
-		virtual void initializePrepare();
+		/** Initializes the render API system. Called before the primary render window is created. */
+		virtual void initialize();
 
 		/**
-		 * Finalizes the initialization of the render API system on the core thread. Should be called after the primary 
-		 * render window is created.
+		 * Performs (optional) secondary initialization of the render API system. Called after the render window is 
+		 * created.
 		 */
-		virtual void initializeFinalize(const SPtr<RenderWindowCore>& primaryWindow);
+		virtual void initializeWithWindow(const SPtr<RenderWindowCore>& primaryWindow);
 
 		/**
 		 * Shuts down the render API system and cleans up all resources.

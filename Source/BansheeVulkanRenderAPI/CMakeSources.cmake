@@ -16,6 +16,9 @@ set(BS_BANSHEEVULKANRENDERAPI_INC_NOFILTER
 	"Include/BsVulkanEventQuery.h"
 	"Include/BsVulkanRenderAPI.h"
 	"Include/BsVulkanCommandBuffer.h"
+	"Include/BsVulkanDevice.h"
+	"Include/BsVulkanRenderStateManager.h"
+	"Include/BsVulkanGpuPipelineState.h"
 )
 
 set(BS_BANSHEEVULKANRENDERAPI_INC_MANAGERS
@@ -46,6 +49,9 @@ set(BS_BANSHEEVULKANRENDERAPI_SRC_NOFILTER
 	"Source/BsVulkanEventQuery.cpp"
 	"Source/BsVulkanRenderAPI.cpp"
 	"Source/BsVulkanCommandBuffer.cpp"
+	"Source/BsVulkanDevice.cpp"
+	"Source/BsVulkanRenderStateManager.cpp"
+	"Source/BsVulkanGpuPipelineState.cpp"
 )
 
 set(BS_BANSHEEVULKANRENDERAPI_SRC_MANAGERS

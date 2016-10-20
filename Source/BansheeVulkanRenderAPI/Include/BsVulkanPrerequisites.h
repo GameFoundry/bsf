@@ -9,6 +9,10 @@
 #	define NOMINMAX // Required to stop windows.h messing up std::min
 #endif
 
+#if BS_PLATFORM == BS_PLATFORM_WIN32
+	#define VK_USE_PLATFORM_WIN32_KHR
+#endif
+
 #include "vulkan/vulkan.h"
 
 /** @addtogroup Plugins
@@ -30,4 +34,14 @@ namespace BansheeEngine
 	class VulkanIndexBuffer;
 	class VulkanVertexDeclaration;
 	class VulkanHardwareBuffer;
+	class VulkanDevice;
+	class VulkanGLSLProgramFactory;
+
+	VkAllocationCallbacks* gVulkanAllocator = nullptr;
+
+	/**	Vulkan specific types to track resource statistics for. */
+	enum VulkanRenderStatResourceType
+	{
+		RenderStatObject_PipelineState = 100,
+	};
 }

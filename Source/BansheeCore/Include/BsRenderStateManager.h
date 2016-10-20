@@ -155,7 +155,7 @@ namespace BansheeEngine
 		SPtr<BlendStateCore> _createBlendState(const BLEND_STATE_DESC& desc) const;
 
 		/**	Creates an uninitialized GpuPipelineState. Requires manual initialization after creation. */
-		SPtr<GpuPipelineStateCore> _createPipelineState(const PIPELINE_STATE_CORE_DESC& desc, 
+		virtual SPtr<GpuPipelineStateCore> _createPipelineState(const PIPELINE_STATE_CORE_DESC& desc, 
 			GpuDeviceFlags deviceMask = GDF_DEFAULT) const;
 
 		/** Gets a sampler state initialized with default options. */

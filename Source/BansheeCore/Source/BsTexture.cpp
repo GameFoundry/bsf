@@ -304,7 +304,7 @@ namespace BansheeEngine
 		desc.type = pixelData->getDepth() > 1 ? TEX_TYPE_3D : TEX_TYPE_2D;
 		desc.width = pixelData->getWidth();
 		desc.height = pixelData->getHeight();
-		desc.depth = pixelData->getHeight();
+		desc.depth = pixelData->getDepth();
 		desc.format = pixelData->getFormat();
 		desc.usage = usage;
 		desc.hwGamma = hwGammaCorrection;
@@ -550,7 +550,7 @@ namespace BansheeEngine
 		desc.type = pixelData->getDepth() > 1 ? TEX_TYPE_3D : TEX_TYPE_2D;
 		desc.width = pixelData->getWidth();
 		desc.height = pixelData->getHeight();
-		desc.depth = pixelData->getHeight();
+		desc.depth = pixelData->getDepth();
 		desc.format = pixelData->getFormat();
 		desc.usage = usage;
 		desc.hwGamma = hwGammaCorrection;
