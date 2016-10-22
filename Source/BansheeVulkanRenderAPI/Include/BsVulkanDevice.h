@@ -58,7 +58,23 @@ namespace BansheeEngine
 
 		/** Returns index of the queue family for the specified queue type. */
 		UINT32 getQueueFamily(VulkanQueueType type) const { return mQueueInfos[(int)type].familyIdx; }
+
+		/** Allocates memory for the provided image, and binds it to the image. */
+		VkDeviceMemory allocateMemory(VkImage image, VkMemoryPropertyFlags flags);
+
+		/** Allocates memory for the provided buffer, and binds it to the buffer. */
+		VkDeviceMemory allocateMemory(VkBuffer buffer, VkMemoryPropertyFlags flags);
+
+		/** Allocates a block of memory according to the provided memory requirements. */
+		VkDeviceMemory allocateMemory(const VkMemoryRequirements& reqs, VkMemoryPropertyFlags flags);
+
+		/** Frees a previously allocated block of memory. */
+		void freeMemory(VkDeviceMemory memory);
+
 	private:
+		/** Attempts to find a memory type that matches the requirements bits and the requested flags. */
+		uint32_t findMemoryType(uint32_t requirementBits, VkMemoryPropertyFlags wantedFlags);
+
 		VkPhysicalDevice mPhysicalDevice;
 		VkDevice mLogicalDevice;
 

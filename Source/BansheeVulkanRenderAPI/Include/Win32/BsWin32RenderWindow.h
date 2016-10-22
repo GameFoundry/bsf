@@ -4,7 +4,6 @@
 
 #include "BsVulkanPrerequisites.h"
 #include "BsRenderWindow.h"
-#include <windows.h>
 
 namespace BansheeEngine
 {
@@ -111,6 +110,7 @@ namespace BansheeEngine
 		VkSurfaceKHR mSurface;
 		VkColorSpaceKHR mColorSpace;
 		VkFormat mColorFormat;
+		SPtr<VulkanSwapChain> mSwapChain;
 
 		Win32RenderWindowProperties mProperties;
 		Win32RenderWindowProperties mSyncedProperties;

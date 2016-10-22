@@ -12,7 +12,10 @@ namespace BansheeEngine
 		{
 			VkDevice logicalDevice = mDevice->getLogical();
 			for (auto& surface : mSurfaces)
+			{
+				vkDestroySemaphore(logicalDevice, surface.sync, gVulkanAllocator);
 				vkDestroyImageView(logicalDevice, surface.view, gVulkanAllocator);
+			}
 
 			vkDestroySwapchainKHR(logicalDevice, mSwapChain, gVulkanAllocator);
 		}
@@ -83,7 +86,7 @@ namespace BansheeEngine
 
 		bs_stack_free(presentModes);
 
-		uint32_t numImages = std::min(surfaceCaps.minImageCount + 1, surfaceCaps.maxImageCount);
+		uint32_t numImages = std::min(surfaceCaps.minImageCount + BS_NUM_BACK_BUFFERS, surfaceCaps.maxImageCount);
 
 		VkSurfaceTransformFlagsKHR transform;
 		if (surfaceCaps.supportedTransforms & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR)
@@ -91,29 +94,29 @@ namespace BansheeEngine
 		else
 			transform = surfaceCaps.currentTransform;
 
-		VkSwapchainCreateInfoKHR swapChainCreateInfo;
-		swapChainCreateInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-		swapChainCreateInfo.pNext = nullptr;
-		swapChainCreateInfo.flags = 0;
-		swapChainCreateInfo.surface = surface;
-		swapChainCreateInfo.minImageCount = numImages;
-		swapChainCreateInfo.imageFormat = colorFormat;
-		swapChainCreateInfo.imageColorSpace = colorSpace;
-		swapChainCreateInfo.imageExtent = { swapchainExtent.width, swapchainExtent.height };
-		swapChainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-		swapChainCreateInfo.preTransform = (VkSurfaceTransformFlagBitsKHR)transform;
-		swapChainCreateInfo.imageArrayLayers = 1;
-		swapChainCreateInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-		swapChainCreateInfo.queueFamilyIndexCount = 0;
-		swapChainCreateInfo.pQueueFamilyIndices = NULL;
-		swapChainCreateInfo.presentMode = presentMode;
-		swapChainCreateInfo.oldSwapchain = mSwapChain;
-		swapChainCreateInfo.clipped = VK_TRUE;
-		swapChainCreateInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+		VkSwapchainCreateInfoKHR swapChainCI;
+		swapChainCI.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+		swapChainCI.pNext = nullptr;
+		swapChainCI.flags = 0;
+		swapChainCI.surface = surface;
+		swapChainCI.minImageCount = numImages;
+		swapChainCI.imageFormat = colorFormat;
+		swapChainCI.imageColorSpace = colorSpace;
+		swapChainCI.imageExtent = { swapchainExtent.width, swapchainExtent.height };
+		swapChainCI.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+		swapChainCI.preTransform = (VkSurfaceTransformFlagBitsKHR)transform;
+		swapChainCI.imageArrayLayers = 1;
+		swapChainCI.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+		swapChainCI.queueFamilyIndexCount = 0;
+		swapChainCI.pQueueFamilyIndices = NULL;
+		swapChainCI.presentMode = presentMode;
+		swapChainCI.oldSwapchain = mSwapChain;
+		swapChainCI.clipped = VK_TRUE;
+		swapChainCI.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 
 		VkSwapchainKHR oldSwapChain = mSwapChain;
 		VkDevice logicalDevice = device->getLogical();
-		result = vkCreateSwapchainKHR(logicalDevice, &swapChainCreateInfo, gVulkanAllocator, &mSwapChain);
+		result = vkCreateSwapchainKHR(logicalDevice, &swapChainCI, gVulkanAllocator, &mSwapChain);
 		assert(result == VK_SUCCESS);
 
 		if (oldSwapChain != VK_NULL_HANDLE)
@@ -135,30 +138,90 @@ namespace BansheeEngine
 		mSurfaces.resize(numImages);
 		for (UINT32 i = 0; i < numImages; i++)
 		{
-			VkImageViewCreateInfo colorAttachmentView;
-			colorAttachmentView.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-			colorAttachmentView.pNext = nullptr;
-			colorAttachmentView.flags = 0;
-			colorAttachmentView.format = colorFormat;
-			colorAttachmentView.components = {
+			VkImageViewCreateInfo colorViewCI;
+			colorViewCI.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+			colorViewCI.pNext = nullptr;
+			colorViewCI.flags = 0;
+			colorViewCI.format = colorFormat;
+			colorViewCI.components = {
 				VK_COMPONENT_SWIZZLE_R,
 				VK_COMPONENT_SWIZZLE_G,
 				VK_COMPONENT_SWIZZLE_B,
 				VK_COMPONENT_SWIZZLE_A
 			};
-			colorAttachmentView.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-			colorAttachmentView.subresourceRange.baseMipLevel = 0;
-			colorAttachmentView.subresourceRange.levelCount = 1;
-			colorAttachmentView.subresourceRange.baseArrayLayer = 0;
-			colorAttachmentView.subresourceRange.layerCount = 1;
-			colorAttachmentView.viewType = VK_IMAGE_VIEW_TYPE_2D;
-			colorAttachmentView.image = images[i];
+			colorViewCI.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			colorViewCI.subresourceRange.baseMipLevel = 0;
+			colorViewCI.subresourceRange.levelCount = 1;
+			colorViewCI.subresourceRange.baseArrayLayer = 0;
+			colorViewCI.subresourceRange.layerCount = 1;
+			colorViewCI.viewType = VK_IMAGE_VIEW_TYPE_2D;
+			colorViewCI.image = images[i];
 
+			mSurfaces[i].acquired = false;
 			mSurfaces[i].image = images[i];
-			result = vkCreateImageView(logicalDevice, &colorAttachmentView, gVulkanAllocator, &mSurfaces[i].view);
+			result = vkCreateImageView(logicalDevice, &colorViewCI, gVulkanAllocator, &mSurfaces[i].view);
+			assert(result == VK_SUCCESS);
+
+			VkSemaphoreCreateInfo semaphoreCI;
+			semaphoreCI.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+			semaphoreCI.pNext = nullptr;
+			semaphoreCI.flags = 0;
+
+			result = vkCreateSemaphore(logicalDevice, &semaphoreCI, gVulkanAllocator, &mSurfaces[i].sync);
 			assert(result == VK_SUCCESS);
 		}
 
 		bs_stack_free(images);
+	}
+
+	void VulkanSwapChain::present(VkQueue queue, VkSemaphore semaphore)
+	{
+		assert(mSurfaces[mCurrentBackBufferIdx].acquired && "Attempting to present an unacquired back buffer.");
+		mSurfaces[mCurrentBackBufferIdx].acquired = false;
+
+		VkPresentInfoKHR presentInfo;
+		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+		presentInfo.pNext = nullptr;
+		presentInfo.swapchainCount = 1;
+		presentInfo.pSwapchains = &mSwapChain;
+		presentInfo.pImageIndices = &mCurrentBackBufferIdx;
+		presentInfo.pResults = nullptr;
+
+		// Wait before presenting, if required
+		if (semaphore != VK_NULL_HANDLE)
+		{
+			presentInfo.pWaitSemaphores = &semaphore;
+			presentInfo.waitSemaphoreCount = 1;
+		}
+		else
+		{
+			presentInfo.pWaitSemaphores = nullptr;
+			presentInfo.waitSemaphoreCount = 0;
+		}
+
+		VkResult result = vkQueuePresentKHR(queue, &presentInfo);
+		assert(result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR);
+	}
+
+	SwapChainSurface VulkanSwapChain::acquireBackBuffer()
+	{
+		uint32_t imageIndex;
+
+		VkResult result = vkAcquireNextImageKHR(mDevice->getLogical(), mSwapChain, UINT64_MAX,
+			mSurfaces[mCurrentSemaphoreIdx].sync, VK_NULL_HANDLE, &imageIndex);
+		assert(result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR);
+
+		// In case surfaces aren't being distributed in round-robin fashion the image and semaphore indices might not match,
+		// in which case just move the semaphores
+		if(imageIndex != mCurrentSemaphoreIdx)
+			std::swap(mSurfaces[mCurrentSemaphoreIdx].sync, mSurfaces[imageIndex].sync);
+
+		mCurrentSemaphoreIdx = (mCurrentSemaphoreIdx + 1) % mSurfaces.size();
+
+		assert(!mSurfaces[imageIndex].acquired && "Same swap chain surface being acquired twice in a row without present().");
+		mSurfaces[imageIndex].acquired = true;
+
+		mCurrentBackBufferIdx = imageIndex;
+		return mSurfaces[imageIndex];
 	}
 }

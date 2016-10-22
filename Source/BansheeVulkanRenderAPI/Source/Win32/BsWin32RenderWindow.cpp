@@ -9,6 +9,7 @@
 #include "BsRenderWindowManager.h"
 #include "BsVulkanRenderAPI.h"
 #include "BsVulkanDevice.h"
+#include "BsVulkanSwapChain.h"
 #include "BsMath.h"
 
 namespace BansheeEngine
@@ -33,9 +34,8 @@ namespace BansheeEngine
 			mWindow = nullptr;
 		}
 
+		mSwapChain = nullptr;
 		vkDestroySurfaceKHR(mRenderAPI._getInstance(), mSurface, gVulkanAllocator);
-
-		// TODO - Destroy Vulkan resources
 	}
 
 	void Win32RenderWindowCore::initialize()
@@ -194,9 +194,10 @@ namespace BansheeEngine
 		bs_stack_free(formats);
 
 		// Create swap chain
-		// TODO - create it, then make sure to get actual width/height from it
+		mSwapChain = bs_shared_ptr_new<VulkanSwapChain>();
+		mSwapChain->rebuild(presentDevice, mSurface, props.mWidth, props.mHeight, props.mVSync, mColorFormat, mColorSpace);
 
-		
+		// TODO - Create a framebuffer for each swap chain buffer
 
 		// Make the window full screen if required
 		if (!windowDesc.external)
@@ -243,9 +244,12 @@ namespace BansheeEngine
 
 	void Win32RenderWindowCore::swapBuffers()
 	{
-		// TODO - Swap buffers
-
 		THROW_IF_NOT_CORE_THREAD;
+
+		if (mShowOnSwap)
+			setHidden(false);
+
+		// TODO - Swap buffers
 	}
 
 	void Win32RenderWindowCore::move(INT32 left, INT32 top)
@@ -481,7 +485,10 @@ namespace BansheeEngine
 			props.mHeight = mWindow->getHeight();
 		}
 
-		// TODO - Resize swap chain
+		SPtr<VulkanDevice> presentDevice = mRenderAPI._getPresentDevice();
+		mSwapChain->rebuild(presentDevice, mSurface, props.mWidth, props.mHeight, props.mVSync, mColorFormat, mColorSpace);
+
+		// TODO - Update framebuffer?
 
 		RenderWindowCore::_windowMovedOrResized();
 	}

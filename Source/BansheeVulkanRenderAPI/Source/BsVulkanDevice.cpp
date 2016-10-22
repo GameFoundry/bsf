@@ -102,4 +102,67 @@ namespace BansheeEngine
 		vkDeviceWaitIdle(mLogicalDevice);
 		vkDestroyDevice(mLogicalDevice, gVulkanAllocator);
 	}
+
+	VkDeviceMemory VulkanDevice::allocateMemory(VkImage image, VkMemoryPropertyFlags flags)
+	{
+		VkMemoryRequirements memReq;
+		vkGetImageMemoryRequirements(mLogicalDevice, image, &memReq);
+
+		VkDeviceMemory memory = allocateMemory(memReq, flags);
+
+		VkResult result = vkBindImageMemory(mLogicalDevice, image, memory, 0);
+		assert(result == VK_SUCCESS);
+
+		return memory;
+	}
+
+	VkDeviceMemory VulkanDevice::allocateMemory(VkBuffer buffer, VkMemoryPropertyFlags flags)
+	{
+		VkMemoryRequirements memReq;
+		vkGetBufferMemoryRequirements(mLogicalDevice, buffer, &memReq);
+
+		VkDeviceMemory memory = allocateMemory(memReq, flags);
+
+		VkResult result = vkBindBufferMemory(mLogicalDevice, buffer, memory, 0);
+		assert(result == VK_SUCCESS);
+
+		return memory;
+	}
+
+	VkDeviceMemory VulkanDevice::allocateMemory(const VkMemoryRequirements& reqs, VkMemoryPropertyFlags flags)
+	{
+		VkMemoryAllocateInfo allocateInfo;
+		allocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+		allocateInfo.pNext = nullptr;
+		allocateInfo.memoryTypeIndex = findMemoryType(reqs.memoryTypeBits, flags);
+		allocateInfo.allocationSize = reqs.size;
+
+		VkDeviceMemory memory;
+
+		VkResult result = vkAllocateMemory(mLogicalDevice, &allocateInfo, gVulkanAllocator, &memory);
+		assert(result == VK_SUCCESS);
+
+		return memory;
+	}
+
+	void VulkanDevice::freeMemory(VkDeviceMemory memory)
+	{
+		vkFreeMemory(mLogicalDevice, memory, gVulkanAllocator);
+	}
+
+	uint32_t VulkanDevice::findMemoryType(uint32_t requirementBits, VkMemoryPropertyFlags wantedFlags)
+	{
+		for (uint32_t i = 0; i < mMemoryProperties.memoryTypeCount; i++)
+		{
+			if (requirementBits & (1 << i))
+			{
+				if ((mMemoryProperties.memoryTypes[i].propertyFlags & wantedFlags) == wantedFlags)
+					return i;
+			}
+
+			requirementBits >>= 1;
+		}
+
+		return -1;
+	}
 }

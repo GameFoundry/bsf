@@ -36,6 +36,7 @@ namespace BansheeEngine
 	class VulkanHardwareBuffer;
 	class VulkanDevice;
 	class VulkanGLSLProgramFactory;
+	class VulkanSwapChain;
 
 	VkAllocationCallbacks* gVulkanAllocator = nullptr;
 

@@ -21,6 +21,7 @@ set(BS_BANSHEEVULKANRENDERAPI_INC_NOFILTER
 	"Include/BsVulkanGpuPipelineState.h"
 	"Include/BsVulkanSwapChain.h"
 	"Include/BsVulkanFramebuffer.h"
+	"Include/BsVulkanUtility.h"
 )
 
 set(BS_BANSHEEVULKANRENDERAPI_INC_MANAGERS
@@ -56,6 +57,7 @@ set(BS_BANSHEEVULKANRENDERAPI_SRC_NOFILTER
 	"Source/BsVulkanGpuPipelineState.cpp"
 	"Source/BsVulkanSwapChain.cpp"
 	"Source/BsVulkanFramebuffer.cpp"
+	"Source/BsVulkanUtility.cpp"
 )
 
 set(BS_BANSHEEVULKANRENDERAPI_SRC_MANAGERS
