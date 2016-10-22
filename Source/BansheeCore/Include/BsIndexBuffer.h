@@ -12,13 +12,6 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
-	/**	Type of the indices used, used for determining size. */
-	enum IndexType 
-	{
-		IT_16BIT, /**< 16-bit indices. */
-		IT_32BIT /**< 32-bit indices. */
-	};
-
 	/** Descriptor structure used for initialization of an IndexBuffer. */
 	struct INDEX_BUFFER_DESC
 	{

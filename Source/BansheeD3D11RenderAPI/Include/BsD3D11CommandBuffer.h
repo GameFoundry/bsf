@@ -4,7 +4,6 @@
 
 #include "BsD3D11Prerequisites.h"
 #include "BsCommandBuffer.h"
-#include "BsDrawOps.h"
 #include "BsD3D11RenderAPI.h"
 
 namespace BansheeEngine

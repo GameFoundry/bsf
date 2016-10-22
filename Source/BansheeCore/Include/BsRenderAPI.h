@@ -4,7 +4,6 @@
 #include "BsCorePrerequisites.h"
 #include "BsSamplerState.h"
 #include "BsCommandQueue.h"
-#include "BsDrawOps.h"
 #include "BsRenderAPICapabilities.h"
 #include "BsRenderTarget.h"
 #include "BsRenderTexture.h"
@@ -528,6 +527,9 @@ namespace BansheeEngine
 
 		/** Performs render API system shutdown on the core thread. */
 		virtual void destroyCore();
+
+		/** Converts the number of vertices to number of primitives based on the specified draw operation. */
+		UINT32 vertexCountToPrimCount(DrawOperationType type, UINT32 elementCount);
 
 		/************************************************************************/
 		/* 								INTERNAL DATA					       	*/

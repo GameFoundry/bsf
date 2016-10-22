@@ -4,7 +4,6 @@
 
 #include "BsCorePrerequisites.h"
 #include "BsCoreObject.h"
-#include "BsDrawOps.h"
 #include "BsIndexBuffer.h"
 
 namespace BansheeEngine

@@ -6,7 +6,6 @@
 #include "BsMeshBase.h"
 #include "BsMeshData.h"
 #include "BsVertexData.h"
-#include "BsDrawOps.h"
 #include "BsSubMesh.h"
 #include "BsBounds.h"
 
