@@ -128,19 +128,10 @@ namespace BansheeEngine
 		mGLSupport->initializeExtensions();
 		checkForErrors();
 
-		Vector<BansheeEngine::String> tokens = StringUtil::split(mGLSupport->getGLVersion(), ".");
+		mNumDevices = 1;
+		mCurrentCapabilities = bs_newN<RenderAPICapabilities>(mNumDevices);
+		initCapabilities(mCurrentCapabilities[0]);		
 
-		if (!tokens.empty())
-		{
-			mDriverVersion.major = parseINT32(tokens[0]);
-			if (tokens.size() > 1)
-				mDriverVersion.minor = parseINT32(tokens[1]);
-			if (tokens.size() > 2)
-				mDriverVersion.release = parseINT32(tokens[2]);
-		}
-		mDriverVersion.build = 0;
-
-		mCurrentCapabilities = createRenderSystemCapabilities();
 		initFromCaps(mCurrentCapabilities);
 		GLVertexArrayObjectManager::startUp();
 		glFrontFace(GL_CW);
@@ -1471,7 +1462,7 @@ namespace BansheeEngine
 	{
 		static bool lasta2c = false;
 
-		if (enable != lasta2c && getCapabilities().hasCapability(RSC_ALPHA_TO_COVERAGE))
+		if (enable != lasta2c)
 		{
 			if (enable)
 				glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
@@ -1751,7 +1742,7 @@ namespace BansheeEngine
 	{
 		if (mActiveTextureUnit != unit)
 		{
-			if (unit < getCapabilities().getNumCombinedTextureUnits())
+			if (unit < getCapabilities(0).getNumCombinedTextureUnits())
 			{
 				glActiveTexture(GL_TEXTURE0 + unit);
 				mActiveTextureUnit = unit;
@@ -1765,7 +1756,7 @@ namespace BansheeEngine
 			else
 			{
 				LOGWRN("Provided texture unit index is higher than OpenGL supports. Provided: " + toString(unit) + 
-					". Supported range: 0 .. " + toString(getCapabilities().getNumCombinedTextureUnits() - 1));
+					". Supported range: 0 .. " + toString(getCapabilities(0).getNumCombinedTextureUnits() - 1));
 				return false;
 			}
 		}
@@ -2051,19 +2042,7 @@ namespace BansheeEngine
 			GpuProgramCoreManager::instance().addFactory(mGLSLProgramFactory);
 		}
 
-		// Check for framebuffer object extension
-		if(caps->hasCapability(RSC_FBO))
-		{
-			if(caps->hasCapability(RSC_HWRENDER_TO_TEXTURE))
-			{
-				// Create FBO manager
-				GLRTTManager::startUp<GLRTTManager>();
-			}
-		}
-		else
-		{
-			BS_EXCEPT(RenderingAPIException, "GPU doesn't support frame buffer objects. OpenGL versions lower than 3.0 are not supported.");
-		}
+		GLRTTManager::startUp<GLRTTManager>();
 
 		UINT32 curTexUnitOffset = 0;
 		for (UINT32 i = 0; i < 6; i++)
@@ -2106,277 +2085,125 @@ namespace BansheeEngine
 		glStencilMask(mStencilWriteMask);
 	}
 
-	RenderAPICapabilities* GLRenderAPI::createRenderSystemCapabilities() const
+	void GLRenderAPI::initCapabilities(RenderAPICapabilities& caps) const
 	{
-		RenderAPICapabilities* rsc = bs_new<RenderAPICapabilities>();
+		Vector<String> tokens = StringUtil::split(mGLSupport->getGLVersion(), ".");
 
-		rsc->setDriverVersion(mDriverVersion);
+		DriverVersion driverVersion;
+		if (!tokens.empty())
+		{
+			driverVersion.major = parseINT32(tokens[0]);
+			if (tokens.size() > 1)
+				driverVersion.minor = parseINT32(tokens[1]);
+			if (tokens.size() > 2)
+				driverVersion.release = parseINT32(tokens[2]);
+		}
+		driverVersion.build = 0;
+
+		caps.setDriverVersion(driverVersion);
 		const char* deviceName = (const char*)glGetString(GL_RENDERER);
 		const char* vendorName = (const char*)glGetString(GL_VENDOR);
-		rsc->setDeviceName(deviceName);
-		rsc->setRenderAPIName(getName());
+		caps.setDeviceName(deviceName);
+		caps.setRenderAPIName(getName());
 
 		// determine vendor
 		if (strstr(vendorName, "NVIDIA"))
-			rsc->setVendor(GPU_NVIDIA);
+			caps.setVendor(GPU_NVIDIA);
 		else if (strstr(vendorName, "ATI"))
-			rsc->setVendor(GPU_AMD);
+			caps.setVendor(GPU_AMD);
 		else if (strstr(vendorName, "AMD"))
-			rsc->setVendor(GPU_AMD);
+			caps.setVendor(GPU_AMD);
 		else if (strstr(vendorName, "Intel"))
-			rsc->setVendor(GPU_INTEL);
+			caps.setVendor(GPU_INTEL);
 		else
-			rsc->setVendor(GPU_UNKNOWN);
+			caps.setVendor(GPU_UNKNOWN);
 
-		// Check for hardware mipmapping support.
-		if(GLEW_VERSION_1_4)
-		{
-			rsc->setCapability(RSC_AUTOMIPMAP);
-		}
-
-		// Check for Anisotropy support
-		if (getGLSupport()->checkExtension("GL_EXT_texture_filter_anisotropic"))
-		{
-			rsc->setCapability(RSC_ANISOTROPY);
-		}
-
-		// Check for cube mapping
-		if(GLEW_VERSION_1_3 || 
-			getGLSupport()->checkExtension("GL_ARB_texture_cube_map") ||
-			getGLSupport()->checkExtension("GL_EXT_texture_cube_map"))
-		{
-			rsc->setCapability(RSC_CUBEMAPPING);
-		}
-
-		// Point sprites
-		if (GLEW_VERSION_2_0 || getGLSupport()->checkExtension("GL_ARB_point_sprite"))
-		{
-			rsc->setCapability(RSC_POINT_SPRITES);
-		}
-
-		// Check for hardware stencil support and set bit depth
-		GLint stencil;
-		glGetIntegerv(GL_STENCIL_BITS, &stencil);
-
-		if(stencil)
-		{
-			rsc->setStencilBufferBitDepth(stencil);
-		}
-
-		if (GLEW_VERSION_2_0 || 
-			(getGLSupport()->checkExtension("GL_ARB_shading_language_100") &&
-			getGLSupport()->checkExtension("GL_ARB_shader_objects") &&
-			getGLSupport()->checkExtension("GL_ARB_fragment_shader") &&
-			getGLSupport()->checkExtension("GL_ARB_vertex_shader")))
-		{
-			rsc->addShaderProfile("glsl");
-		}
+		caps.addShaderProfile("glsl");
+		caps.setCapability(RSC_TEXTURE_COMPRESSION_BC);
 
 		// Check if geometry shaders are supported
 		if (GLEW_VERSION_2_0 &&
 			getGLSupport()->checkExtension("GL_EXT_geometry_shader4"))
 		{
-			rsc->setCapability(RSC_GEOMETRY_PROGRAM);
-
-			rsc->setGeometryProgramConstantBoolCount(0);
-			rsc->setGeometryProgramConstantIntCount(0);
-
-			GLint floatConstantCount = 0;
-			glGetIntegerv(GL_MAX_GEOMETRY_UNIFORM_COMPONENTS_EXT, &floatConstantCount);
-			rsc->setGeometryProgramConstantFloatCount(floatConstantCount);
+			caps.setCapability(RSC_GEOMETRY_PROGRAM);
 
 			GLint maxOutputVertices;
 			glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT,&maxOutputVertices);
-			rsc->setGeometryProgramNumOutputVertices(maxOutputVertices);
+			caps.setGeometryProgramNumOutputVertices(maxOutputVertices);
 		}
-
-		//Check if render to vertex buffer (transform feedback in OpenGL)
-		if (GLEW_VERSION_2_0 && getGLSupport()->checkExtension("GL_EXT_transform_feedback"))
-		{
-			rsc->setCapability(RSC_HWRENDER_TO_VERTEX_BUFFER);
-		}
-
-		// Check for texture compression
-		if (GLEW_VERSION_1_3 || getGLSupport()->checkExtension("GL_ARB_texture_compression"))
-		{   
-			rsc->setCapability(RSC_TEXTURE_COMPRESSION);
-
-			// Check for dxt compression
-			if (getGLSupport()->checkExtension("GL_EXT_texture_compression_s3tc"))
-			{
-				rsc->setCapability(RSC_TEXTURE_COMPRESSION_DXT);
-			}
-
-			// Check for vtc compression
-			if (getGLSupport()->checkExtension("GL_NV_texture_compression_vtc"))
-			{
-				rsc->setCapability(RSC_TEXTURE_COMPRESSION_VTC);
-			}
-		}
-
-		// As are user clipping planes
-		rsc->setCapability(RSC_USER_CLIP_PLANES);
-
-		// 2-sided stencil?
-		if (GLEW_VERSION_2_0 || getGLSupport()->checkExtension("GL_EXT_stencil_two_side"))
-		{
-			rsc->setCapability(RSC_TWO_SIDED_STENCIL);
-		}
-
-		// stencil wrapping?
-		if (GLEW_VERSION_1_4 || getGLSupport()->checkExtension("GL_EXT_stencil_wrap"))
-		{
-			rsc->setCapability(RSC_STENCIL_WRAP);
-		}
-
-		// Check for hardware occlusion support
-		if (GLEW_VERSION_1_5 || getGLSupport()->checkExtension("GL_ARB_occlusion_query"))
-		{
-			rsc->setCapability(RSC_HWOCCLUSION);
-		}
-
-		// UBYTE4 always supported
-		rsc->setCapability(RSC_VERTEX_FORMAT_UBYTE4);
-
-		// Infinite far plane always supported
-		rsc->setCapability(RSC_INFINITE_FAR_PLANE);
-
-		// Check for non-power-of-2 texture support
-		if (getGLSupport()->checkExtension("GL_ARB_texture_non_power_of_two"))
-		{
-			rsc->setCapability(RSC_NON_POWER_OF_2_TEXTURES);
-		}
-
-		// Check for Float textures
-		if (getGLSupport()->checkExtension("GL_ATI_texture_float") || getGLSupport()->checkExtension("GL_ARB_texture_float"))
-		{
-			rsc->setCapability(RSC_TEXTURE_FLOAT);
-		}
-
-		// 3D textures should always be supported
-		rsc->setCapability(RSC_TEXTURE_3D);
-
-		// Check for framebuffer object extension
-		if (getGLSupport()->checkExtension("GL_ARB_framebuffer_object"))
-		{
-			// Probe number of draw buffers
-			// Only makes sense with FBO support, so probe here
-			if (GLEW_VERSION_2_0 || getGLSupport()->checkExtension("GL_ARB_draw_buffers") || getGLSupport()->checkExtension("GL_ATI_draw_buffers"))
-			{
-				GLint buffers;
-				glGetIntegerv(GL_MAX_DRAW_BUFFERS_ARB, &buffers);
-				rsc->setNumMultiRenderTargets(std::min<int>(buffers, (GLint)BS_MAX_MULTIPLE_RENDER_TARGETS));
-				rsc->setCapability(RSC_MRT_DIFFERENT_BIT_DEPTHS);
-
-				rsc->setCapability(RSC_FBO);
-
-			}
-			rsc->setCapability(RSC_HWRENDER_TO_TEXTURE);
-		}
-
-		rsc->setCapability(RSC_HWRENDER_TO_TEXTURE);
-		rsc->setCapability(RSC_PBUFFER);
-
-		// Point size
-		float ps;
-		glGetFloatv(GL_POINT_SIZE_MAX, &ps);
-		rsc->setMaxPointSize(ps);
 
 		// Max number of fragment shader textures
 		GLint units;
 		glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &units);
-		rsc->setNumTextureUnits(GPT_FRAGMENT_PROGRAM, static_cast<UINT16>(units));
+		caps.setNumTextureUnits(GPT_FRAGMENT_PROGRAM, static_cast<UINT16>(units));
 
 		// Max number of vertex shader textures
 		GLint vUnits;
 		glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &vUnits);
-		rsc->setNumTextureUnits(GPT_VERTEX_PROGRAM, static_cast<UINT16>(vUnits));
-		if (vUnits > 0)
-		{
-			rsc->setCapability(RSC_VERTEX_TEXTURE_FETCH);
-		}
+		caps.setNumTextureUnits(GPT_VERTEX_PROGRAM, static_cast<UINT16>(vUnits));
 
 		GLint numUniformBlocks;
 		glGetIntegerv(GL_MAX_VERTEX_UNIFORM_BLOCKS, &numUniformBlocks);
-		rsc->setNumGpuParamBlockBuffers(GPT_VERTEX_PROGRAM, numUniformBlocks);
+		caps.setNumGpuParamBlockBuffers(GPT_VERTEX_PROGRAM, numUniformBlocks);
 
 		glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_BLOCKS, &numUniformBlocks);
-		rsc->setNumGpuParamBlockBuffers(GPT_FRAGMENT_PROGRAM, numUniformBlocks);
+		caps.setNumGpuParamBlockBuffers(GPT_FRAGMENT_PROGRAM, numUniformBlocks);
 
 		if (mGLSupport->checkExtension("GL_ARB_geometry_shader4"))
 		{
 			GLint geomUnits;
 			glGetIntegerv(GL_MAX_GEOMETRY_TEXTURE_IMAGE_UNITS, &geomUnits);
-			rsc->setNumTextureUnits(GPT_GEOMETRY_PROGRAM, static_cast<UINT16>(geomUnits));
+			caps.setNumTextureUnits(GPT_GEOMETRY_PROGRAM, static_cast<UINT16>(geomUnits));
 
 			glGetIntegerv(GL_MAX_GEOMETRY_UNIFORM_BLOCKS, &numUniformBlocks);
-			rsc->setNumGpuParamBlockBuffers(GPT_GEOMETRY_PROGRAM, numUniformBlocks);
+			caps.setNumGpuParamBlockBuffers(GPT_GEOMETRY_PROGRAM, numUniformBlocks);
 		}
 
 		if (mGLSupport->checkExtension("GL_ARB_tessellation_shader"))
 		{
-			rsc->setCapability(RSC_TESSELLATION_PROGRAM);
+			caps.setCapability(RSC_TESSELLATION_PROGRAM);
 
 			glGetIntegerv(GL_MAX_TESS_CONTROL_UNIFORM_BLOCKS, &numUniformBlocks);
-			rsc->setNumGpuParamBlockBuffers(GPT_HULL_PROGRAM, numUniformBlocks);
+			caps.setNumGpuParamBlockBuffers(GPT_HULL_PROGRAM, numUniformBlocks);
 
 			glGetIntegerv(GL_MAX_TESS_EVALUATION_UNIFORM_BLOCKS, &numUniformBlocks);
-			rsc->setNumGpuParamBlockBuffers(GPT_DOMAIN_PROGRAM, numUniformBlocks);
+			caps.setNumGpuParamBlockBuffers(GPT_DOMAIN_PROGRAM, numUniformBlocks);
 		}
 
 		if (mGLSupport->checkExtension("GL_ARB_compute_shader")) 
 		{
-			rsc->setCapability(RSC_COMPUTE_PROGRAM);
+			caps.setCapability(RSC_COMPUTE_PROGRAM);
 
 			GLint computeUnits;
 			glGetIntegerv(GL_MAX_COMPUTE_TEXTURE_IMAGE_UNITS, &computeUnits);
-			rsc->setNumTextureUnits(GPT_COMPUTE_PROGRAM, static_cast<UINT16>(computeUnits));
+			caps.setNumTextureUnits(GPT_COMPUTE_PROGRAM, static_cast<UINT16>(computeUnits));
 
 			glGetIntegerv(GL_MAX_COMPUTE_UNIFORM_BLOCKS, &numUniformBlocks);
-			rsc->setNumGpuParamBlockBuffers(GPT_COMPUTE_PROGRAM, numUniformBlocks);
+			caps.setNumGpuParamBlockBuffers(GPT_COMPUTE_PROGRAM, numUniformBlocks);
 
 			// Max number of load-store textures
 			GLint lsfUnits;
 			glGetIntegerv(GL_MAX_FRAGMENT_IMAGE_UNIFORMS, &lsfUnits);
-			rsc->setNumLoadStoreTextureUnits(GPT_FRAGMENT_PROGRAM, static_cast<UINT16>(lsfUnits));
+			caps.setNumLoadStoreTextureUnits(GPT_FRAGMENT_PROGRAM, static_cast<UINT16>(lsfUnits));
 
 			GLint lscUnits;
 			glGetIntegerv(GL_MAX_COMPUTE_IMAGE_UNIFORMS, &lscUnits);
-			rsc->setNumLoadStoreTextureUnits(GPT_COMPUTE_PROGRAM, static_cast<UINT16>(lscUnits));
+			caps.setNumLoadStoreTextureUnits(GPT_COMPUTE_PROGRAM, static_cast<UINT16>(lscUnits));
 
 			GLint combinedLoadStoreTextureUnits;
 			glGetIntegerv(GL_MAX_IMAGE_UNITS, &combinedLoadStoreTextureUnits);
-			rsc->setNumCombinedLoadStoreTextureUnits(static_cast<UINT16>(combinedLoadStoreTextureUnits));
+			caps.setNumCombinedLoadStoreTextureUnits(static_cast<UINT16>(combinedLoadStoreTextureUnits));
 		}
 
 		GLint combinedTexUnits;
 		glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &combinedTexUnits);
-		rsc->setNumCombinedTextureUnits(static_cast<UINT16>(combinedTexUnits));
+		caps.setNumCombinedTextureUnits(static_cast<UINT16>(combinedTexUnits));
 
 		GLint combinedUniformBlockUnits;
 		glGetIntegerv(GL_MAX_COMBINED_UNIFORM_BLOCKS, &combinedUniformBlockUnits);
-		rsc->setNumCombinedGpuParamBlockBuffers(static_cast<UINT16>(combinedUniformBlockUnits));
+		caps.setNumCombinedGpuParamBlockBuffers(static_cast<UINT16>(combinedUniformBlockUnits));
 
-		// Mipmap LOD biasing
-
-		if (mGLSupport->checkExtension("GL_EXT_texture_lod_bias"))
-			rsc->setCapability(RSC_MIPMAP_LOD_BIAS);
-
-		// Alpha to coverage?
-		if (mGLSupport->checkExtension("GL_ARB_multisample"))
-		{
-			// Alpha to coverage always 'supported' when MSAA is available
-			// although card may ignore it if it doesn't specifically support A2C
-			rsc->setCapability(RSC_ALPHA_TO_COVERAGE);
-		}
-
-		// Advanced blending operations
-		if(GLEW_VERSION_2_0)
-		{
-			rsc->setCapability(RSC_ADVANCED_BLEND_OPERATIONS);
-		}
-
-		return rsc;
+		caps.setNumMultiRenderTargets(8);
 	}
 
 	bool GLRenderAPI::checkForErrors() const

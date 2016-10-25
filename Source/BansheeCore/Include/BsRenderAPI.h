@@ -450,15 +450,17 @@ namespace BansheeEngine
 		 */
 		virtual void executeCommands(const SPtr<CommandBuffer>& commandBuffer) = 0;
 
-		/** Returns information about the driver version. */
-		virtual const DriverVersion& getDriverVersion() const;
-
 		/**
-		 * Gets the capabilities of the render system.
+		 * Gets the capabilities of a specific GPU.
+		 * 
+		 * @param[in]	deviceIdx	Index of the device to get the capabilities for.
 		 *
 		 * @note	Thread safe.
 		 */
-		const RenderAPICapabilities& getCapabilities() const { return *mCurrentCapabilities; }
+		const RenderAPICapabilities& getCapabilities(UINT32 deviceIdx) const;
+
+		/** Returns the number of devices supported by this render API. */
+		UINT32 getNumDevices() const { return mNumDevices; }
 
 		/**
 		 * Returns information about available output devices and their video modes.
@@ -539,9 +541,8 @@ namespace BansheeEngine
 
 		SPtr<RenderTargetCore> mActiveRenderTarget;
 
-		DriverVersion mDriverVersion;
-
 		RenderAPICapabilities* mCurrentCapabilities;
+		UINT32 mNumDevices;
 		SPtr<VideoModeInfo> mVideoModeInfo;
 	};
 

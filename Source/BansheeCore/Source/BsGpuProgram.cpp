@@ -28,9 +28,9 @@ namespace BansheeEngine
 			return false;
 
 		RenderAPICore* rapi = RenderAPICore::instancePtr();
-		String profile = rapi->getCapabilities().gpuProgProfileToRSSpecificProfile(getProperties().getProfile());
+		String profile = rapi->getCapabilities(0).gpuProgProfileToRSSpecificProfile(getProperties().getProfile());
 
-		return rapi->getCapabilities().isShaderProfileSupported(profile);
+		return rapi->getCapabilities(0).isShaderProfileSupported(profile);
     }
 
 	bool GpuProgramCore::isRequiredCapabilitiesSupported() const

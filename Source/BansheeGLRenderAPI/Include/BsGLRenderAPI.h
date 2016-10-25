@@ -167,7 +167,7 @@ namespace BansheeEngine
 		GLint getGLDrawMode() const;
 
 		/**	Creates render system capabilities that specify which features are or aren't supported. */
-		RenderAPICapabilities* createRenderSystemCapabilities() const;
+		void initCapabilities(RenderAPICapabilities& caps) const;
 
 		/**	Finish initialization by setting up any systems dependant on render systemcapabilities. */
 		void initFromCaps(RenderAPICapabilities* caps);

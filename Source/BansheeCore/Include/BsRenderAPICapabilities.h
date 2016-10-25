@@ -23,68 +23,27 @@ namespace BansheeEngine
 	enum CapabilitiesCategory : UINT64
 	{
 		CAPS_CATEGORY_COMMON = 0,
-		CAPS_CATEGORY_D3D9 = 1,
-		CAPS_CATEGORY_GL = 2,
-		CAPS_CATEGORY_D3D11 = 3,
+		CAPS_CATEGORY_GL = 1,
+		CAPS_CATEGORY_D3D11 = 2,
+		CAPS_CATEGORY_VULKAN = 3,
 		CAPS_CATEGORY_COUNT = 32 /**< Maximum number of categories. */
 	};
 
 	/** Enum describing the different hardware capabilities we can check for. */
 	enum Capabilities : UINT64
 	{
-		RSC_AUTOMIPMAP				= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 0), /**< Supports generating mipmaps in hardware. */
-		RSC_ANISOTROPY				= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 1), /**< Supports anisotropic texture filtering. */
-		RSC_CUBEMAPPING				= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 2), /**< Supports cube mapping. */
-		RSC_TWO_SIDED_STENCIL		= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 3), /**< Supports separate stencil updates for both front and back faces. */
-		RSC_STENCIL_WRAP			= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 4), /**< Supports wrapping the stencil value at the range extremes. */
-		RSC_HWOCCLUSION				= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 5), /**< Supports hardware occlusion queries. */
-		RSC_USER_CLIP_PLANES		= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 6), /**< Supports user clipping planes. */
-		RSC_VERTEX_FORMAT_UBYTE4	= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 7), /**< Supports the VET_UBYTE4 vertex element type. */
-		RSC_INFINITE_FAR_PLANE		= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 8), /**< Supports infinite far plane projection. */
-		RSC_HWRENDER_TO_TEXTURE		= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 9), /**< Supports hardware render-to-texture. */
-		RSC_TEXTURE_FLOAT			= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 10), /**< Supports float textures and render targets. */
-		RSC_NON_POWER_OF_2_TEXTURES = BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 11), /**< Supports non-power of two textures. */
-		RSC_TEXTURE_3D				= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 12), /**< Supports 3d (volume) textures. */
-		RSC_POINT_SPRITES			= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 13), /**< Supports basic point sprite rendering. */
-
-		RSC_POINT_EXTENDED_PARAMETERS	= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 14), /**< Supports extra point parameters (minsize, maxsize, attenuation). */
-		RSC_VERTEX_TEXTURE_FETCH		= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 15), /**< Supports vertex texture fetch. */
-		RSC_MIPMAP_LOD_BIAS				= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 16), /**< Supports mipmap LOD biasing. */
-		RSC_GEOMETRY_PROGRAM			= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 17), /**< Supports hardware geometry programs. */
-
-		RSC_TEXTURE_COMPRESSION			= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 18), /**< Supports compressed textures. */
-		RSC_TEXTURE_COMPRESSION_DXT		= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 19), /**< Supports compressed textures in the DXT/ST3C formats. */
-		RSC_TEXTURE_COMPRESSION_VTC		= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 20), /**< Supports compressed textures in the VTC format. */
-		RSC_TEXTURE_COMPRESSION_PVRTC	= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 21), /**< Supports compressed textures in the PVRTC format. */
-		RSC_MRT_DIFFERENT_BIT_DEPTHS	= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 22), /**< Supports multiple render targets with different bit depths. */
-		RSC_ALPHA_TO_COVERAGE			= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 23), /**< Supports Alpha to Coverage. */
-		RSC_ADVANCED_BLEND_OPERATIONS	= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 24), /**< Supports blend operations like subtract, min, max. */
-		RSC_SHADER_SUBROUTINE			= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 25), /**< Supports dynamic shader linking. */
-		RSC_HWOCCLUSION_ASYNCHRONOUS	= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 26), /**< Support for async occlusion queries. */
-		RSC_HWRENDER_TO_VERTEX_BUFFER	= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 27), /**< Supports rendering to vertex buffers. */
-		RSC_TESSELLATION_PROGRAM		= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 28), /**< Supports hardware tessellation programs. */
-		RSC_COMPUTE_PROGRAM				= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 29), /**< Supports hardware compute programs. */
-
-		// ***** DirectX 9 specific caps *****
-		RSC_PERSTAGECONSTANT = BS_CAPS_VALUE(CAPS_CATEGORY_D3D9, 0), /**< Are per stage constants supported. */
-
-		// ***** GL Specific caps *****
-		RSC_FBO              = BS_CAPS_VALUE(CAPS_CATEGORY_GL, 0), /**< Support for Frame Buffer Objects. */
-		RSC_PBUFFER			 = BS_CAPS_VALUE(CAPS_CATEGORY_GL, 1), /**< Support for PBuffers. */
+		RSC_TEXTURE_COMPRESSION_BC		= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 0), /**< Supports compressed textures in the BC formats. */
+		RSC_TEXTURE_COMPRESSION_ETC2	= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 1), /**< Supports compressed textures in the ETC2 and EAC format. */
+		RSC_TEXTURE_COMPRESSION_ASTC	= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 2), /**< Supports compressed textures in the ASTC format. */
+		RSC_GEOMETRY_PROGRAM			= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 3), /**< Supports hardware geometry programs. */
+		RSC_TESSELLATION_PROGRAM		= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 4), /**< Supports hardware tessellation programs. */
+		RSC_COMPUTE_PROGRAM				= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 5), /**< Supports hardware compute programs. */
 	};
 
 	/** Holds data about render system driver version. */
 	struct BS_CORE_EXPORT DriverVersion 
 	{
-		int major;
-		int minor;
-		int release;
-		int build;
-
-		DriverVersion() 
-		{
-			major = minor = release = build = 0;
-		}
+		DriverVersion() { }
 
 		/**	Returns the driver version as a single string. */
 		String toString() const 
@@ -110,6 +69,11 @@ namespace BansheeEngine
 			}
 
 		}
+
+		INT32 major = 0;
+		INT32 minor = 0;
+		INT32 release = 0;
+		INT32 build = 0;
 	};
 
 	/** Types of GPU vendors. */
@@ -198,12 +162,6 @@ namespace BansheeEngine
 			mNumCombinedUniformBlocks = num;
 		}
 
-		/**	Sets maximum stencil buffer depth in bits. */
-		void setStencilBufferBitDepth(UINT16 num)
-		{
-			mStencilBufferBitDepth = num;
-		}
-
 		/**	Sets maximum number of bound vertex buffers. */
 		void setMaxBoundVertexBuffers(UINT32 num)
 		{
@@ -262,12 +220,6 @@ namespace BansheeEngine
 		UINT16 getNumCombinedGpuParamBlockBuffers() const
 		{
 			return mNumCombinedUniformBlocks;
-		}
-
-		/** Returns the maximum number of bits available for the stencil buffer. */
-		UINT16 getStencilBufferBitDepth() const
-		{
-			return mStencilBufferBitDepth;
 		}
 
 		/** Returns the maximum number of vertex buffers that can be bound at once. */
@@ -343,60 +295,6 @@ namespace BansheeEngine
 			return "";
 		}
 
-		/** Gets the number of floating-point constants vertex programs support. */
-		UINT16 getVertexProgramConstantFloatCount() const
-		{
-			return mVertexProgramConstantFloatCount;           
-		}
-
-		/**	Gets the number of integer constants vertex programs support. */
-		UINT16 getVertexProgramConstantIntCount() const
-		{
-			return mVertexProgramConstantIntCount;           
-		}
-
-		/**	Gets the number of boolean constants vertex programs support. */
-		UINT16 getVertexProgramConstantBoolCount() const
-		{
-			return mVertexProgramConstantBoolCount;           
-		}
-
-		/**	Gets the number of floating-point constants geometry programs support. */
-		UINT16 getGeometryProgramConstantFloatCount() const
-		{
-			return mGeometryProgramConstantFloatCount;           
-		}
-
-		/**	 Gets the number of integer constants geometry programs support. */
-		UINT16 getGeometryProgramConstantIntCount() const
-		{
-			return mGeometryProgramConstantIntCount;           
-		}
-
-		/**	 Gets the number of boolean constants geometry programs support. */
-		UINT16 getGeometryProgramConstantBoolCount() const
-		{
-			return mGeometryProgramConstantBoolCount;           
-		}
-
-		/**	Gets the number of floating-point constants fragment programs support. */
-		UINT16 getFragmentProgramConstantFloatCount() const
-		{
-			return mFragmentProgramConstantFloatCount;           
-		}
-
-		/**	Gets the number of integer constants fragment programs support. */
-		UINT16 getFragmentProgramConstantIntCount() const
-		{
-			return mFragmentProgramConstantIntCount;           
-		}
-		
-		/** Gets the number of boolean constants fragment programs support. */
-		UINT16 getFragmentProgramConstantBoolCount() const
-		{
-			return mFragmentProgramConstantBoolCount;           
-		}
-
 		/**	Sets the current GPU device name. */
 		void setDeviceName(const String& name)
 		{
@@ -407,72 +305,6 @@ namespace BansheeEngine
 		String getDeviceName() const
 		{
 			return mDeviceName;
-		}
-
-		/**	Sets the number of floating-point constants vertex programs support. */
-		void setVertexProgramConstantFloatCount(UINT16 c)
-		{
-			mVertexProgramConstantFloatCount = c;           
-		}
-
-		/**	Sets the number of integer constants vertex programs support. */
-		void setVertexProgramConstantIntCount(UINT16 c)
-		{
-			mVertexProgramConstantIntCount = c;           
-		}
-
-		/**	Sets the number of boolean constants vertex programs support. */
-		void setVertexProgramConstantBoolCount(UINT16 c)
-		{
-			mVertexProgramConstantBoolCount = c;           
-		}
-
-		/**	Sets the number of floating-point constants geometry programs support. */
-		void setGeometryProgramConstantFloatCount(UINT16 c)
-		{
-			mGeometryProgramConstantFloatCount = c;           
-		}
-
-		/**	Sets the number of integer constants geometry programs support. */
-		void setGeometryProgramConstantIntCount(UINT16 c)
-		{
-			mGeometryProgramConstantIntCount = c;           
-		}
-
-		/**	Sets the number of boolean constants geometry programs support. */
-		void setGeometryProgramConstantBoolCount(UINT16 c)
-		{
-			mGeometryProgramConstantBoolCount = c;           
-		}
-
-		/**	Sets the number of floating-point constants fragment programs support. */
-		void setFragmentProgramConstantFloatCount(UINT16 c)
-		{
-			mFragmentProgramConstantFloatCount = c;           
-		}
-
-		/**	Sets the number of integer constants fragment programs support. */
-		void setFragmentProgramConstantIntCount(UINT16 c)
-		{
-			mFragmentProgramConstantIntCount = c;           
-		}
-
-		/**	Sets the number of boolean constants fragment programs support. */
-		void setFragmentProgramConstantBoolCount(UINT16 c)
-		{
-			mFragmentProgramConstantBoolCount = c;           
-		}
-
-		/**	Sets the maximum point screen size in pixels. */
-		void setMaxPointSize(float s)
-		{
-			mMaxPointSize = s;
-		}
-
-		/**	Gets the maximum point screen size in pixels. */
-		float getMaxPointSize(void) const
-		{
-			return mMaxPointSize;
 		}
 
 		/**	Sets the number of vertices a single geometry program run can emit. */
@@ -521,8 +353,6 @@ namespace BansheeEngine
 		Map<GpuProgramType, UINT16> mNumLoadStoreTextureUnitsPerStage;
 		// Total number of load-store texture units available
 		UINT16 mNumCombinedLoadStoreTextureUnits = 0;
-		// The stencil buffer bit depth
-		UINT16 mStencilBufferBitDepth = 0;
 		// Maximum number of vertex buffers we can bind at once
 		UINT32 mMaxBoundVertexBuffers = 0;
 		// Stores the capabilities flags.
@@ -532,28 +362,8 @@ namespace BansheeEngine
 		// The identifier associated with the render API for which these capabilities are valid
 		StringID mRenderAPIName;
 
-		// The number of floating-point constants vertex programs support
-		UINT16 mVertexProgramConstantFloatCount = 0;
-		// The number of integer constants vertex programs support
-		UINT16 mVertexProgramConstantIntCount = 0;
-		// The number of boolean constants vertex programs support
-		UINT16 mVertexProgramConstantBoolCount = 0;
-		// The number of floating-point constants geometry programs support
-		UINT16 mGeometryProgramConstantFloatCount = 0;
-		// The number of integer constants vertex geometry support
-		UINT16 mGeometryProgramConstantIntCount = 0;
-		// The number of boolean constants vertex geometry support
-		UINT16 mGeometryProgramConstantBoolCount = 0;
-		// The number of floating-point constants fragment programs support
-		UINT16 mFragmentProgramConstantFloatCount = 0;
-		// The number of integer constants fragment programs support
-		UINT16 mFragmentProgramConstantIntCount = 0;
-		// The number of boolean constants fragment programs support
-		UINT16 mFragmentProgramConstantBoolCount = 0;
 		// The number of simultaneous render targets supported
 		UINT16 mNumMultiRenderTargets = 0;
-		// The maximum point size in pixels
-		float mMaxPointSize = 0.0f;
 		// The number of vertices a geometry program can emit in a single run
 		UINT32 mGeometryProgramNumOutputVertices = 0;
 

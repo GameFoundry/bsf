@@ -241,9 +241,8 @@ namespace BansheeEngine
 		RenderStateCoreManager::startUp<VulkanRenderStateCoreManager>();
 		GpuProgramCoreManager::instance().addFactory(mGLSLFactory);
 
-		// TODO - Create and populate capabilities, per device
-		mCurrentCapabilities->addShaderProfile("glsl");
-
+		initCapabilites();
+		
 		RenderAPICore::initialize();
 	}
 
@@ -422,5 +421,127 @@ namespace BansheeEngine
 		GpuParamBlockDesc block;
 		
 		return block;
+	}
+
+	void VulkanRenderAPI::initCapabilites()
+	{
+		mNumDevices = (UINT32)mDevices.size();
+		mCurrentCapabilities = bs_newN<RenderAPICapabilities>(mNumDevices);
+
+		UINT32 deviceIdx = 0;
+		for (auto& device : mDevices)
+		{
+			RenderAPICapabilities& caps = mCurrentCapabilities[deviceIdx];
+
+			const VkPhysicalDeviceProperties& deviceProps = device->getDeviceProperties();
+			const VkPhysicalDeviceFeatures& deviceFeatures = device->getDeviceFeatures();
+			const VkPhysicalDeviceLimits& deviceLimits = deviceProps.limits;
+
+			DriverVersion driverVersion;
+			driverVersion.major = ((uint32_t)(deviceProps.apiVersion) >> 22);
+			driverVersion.minor = ((uint32_t)(deviceProps.apiVersion) >> 12) & 0x3ff;
+			driverVersion.release = (uint32_t)(deviceProps.apiVersion) & 0xfff;
+			driverVersion.build = 0;
+
+			caps.setDriverVersion(driverVersion);
+			caps.setDeviceName(deviceProps.deviceName);
+			
+			// Determine vendor
+			switch (deviceProps.vendorID)
+			{
+			case 0x10DE:
+				caps.setVendor(GPU_NVIDIA);
+				break;
+			case 0x1002:
+				caps.setVendor(GPU_AMD);
+				break;
+			case 0x163C:
+			case 0x8086:
+				caps.setVendor(GPU_INTEL);
+				break;
+			default:
+				caps.setVendor(GPU_UNKNOWN);
+				break;
+			};
+			
+			caps.setRenderAPIName(getName());
+
+			if(deviceFeatures.textureCompressionBC)
+				caps.setCapability(RSC_TEXTURE_COMPRESSION_BC);
+
+			if (deviceFeatures.textureCompressionETC2)
+				caps.setCapability(RSC_TEXTURE_COMPRESSION_ETC2);
+
+			if (deviceFeatures.textureCompressionASTC_LDR)
+				caps.setCapability(RSC_TEXTURE_COMPRESSION_ASTC);
+
+			caps.setMaxBoundVertexBuffers(deviceLimits.maxVertexInputBindings);
+			caps.setNumMultiRenderTargets(deviceLimits.maxColorAttachments);
+
+			caps.setCapability(RSC_COMPUTE_PROGRAM);
+
+			caps.addShaderProfile("ps_5_0");
+			caps.addShaderProfile("vs_5_0");
+			caps.addShaderProfile("cs_5_0");
+
+			caps.addGpuProgramProfile(GPP_FS_5_0, "ps_5_0");
+			caps.addGpuProgramProfile(GPP_VS_5_0, "vs_5_0");
+			caps.addGpuProgramProfile(GPP_CS_5_0, "cs_5_0");
+
+			caps.setNumTextureUnits(GPT_FRAGMENT_PROGRAM, deviceLimits.maxPerStageDescriptorSampledImages);
+			caps.setNumTextureUnits(GPT_VERTEX_PROGRAM, deviceLimits.maxPerStageDescriptorSampledImages);
+			caps.setNumTextureUnits(GPT_COMPUTE_PROGRAM, deviceLimits.maxPerStageDescriptorSampledImages);
+
+			caps.setNumGpuParamBlockBuffers(GPT_FRAGMENT_PROGRAM, deviceLimits.maxPerStageDescriptorUniformBuffers);
+			caps.setNumGpuParamBlockBuffers(GPT_VERTEX_PROGRAM, deviceLimits.maxPerStageDescriptorUniformBuffers);
+			caps.setNumGpuParamBlockBuffers(GPT_COMPUTE_PROGRAM, deviceLimits.maxPerStageDescriptorUniformBuffers);
+
+			caps.setNumLoadStoreTextureUnits(GPT_FRAGMENT_PROGRAM, deviceLimits.maxPerStageDescriptorStorageImages);
+			caps.setNumLoadStoreTextureUnits(GPT_COMPUTE_PROGRAM, deviceLimits.maxPerStageDescriptorStorageImages);
+
+			if(deviceFeatures.geometryShader)
+			{
+				caps.setCapability(RSC_GEOMETRY_PROGRAM);
+				caps.addShaderProfile("gs_5_0");
+				caps.addGpuProgramProfile(GPP_GS_5_0, "gs_5_0");
+				caps.setNumTextureUnits(GPT_GEOMETRY_PROGRAM, deviceLimits.maxPerStageDescriptorSampledImages);
+				caps.setNumGpuParamBlockBuffers(GPT_GEOMETRY_PROGRAM, deviceLimits.maxPerStageDescriptorUniformBuffers);
+				caps.setGeometryProgramNumOutputVertices(deviceLimits.maxGeometryOutputVertices);
+			}
+
+			if (deviceFeatures.tessellationShader)
+			{
+				caps.setCapability(RSC_TESSELLATION_PROGRAM);
+
+				caps.addShaderProfile("hs_5_0");
+				caps.addShaderProfile("ds_5_0");
+
+				caps.addGpuProgramProfile(GPP_HS_5_0, "hs_5_0");
+				caps.addGpuProgramProfile(GPP_DS_5_0, "ds_5_0");
+
+				caps.setNumTextureUnits(GPT_HULL_PROGRAM, deviceLimits.maxPerStageDescriptorSampledImages);
+				caps.setNumTextureUnits(GPT_DOMAIN_PROGRAM, deviceLimits.maxPerStageDescriptorSampledImages);
+				
+				caps.setNumGpuParamBlockBuffers(GPT_HULL_PROGRAM, deviceLimits.maxPerStageDescriptorUniformBuffers);
+				caps.setNumGpuParamBlockBuffers(GPT_DOMAIN_PROGRAM, deviceLimits.maxPerStageDescriptorUniformBuffers);
+			}
+
+			caps.setNumCombinedTextureUnits(caps.getNumTextureUnits(GPT_FRAGMENT_PROGRAM)
+				+ caps.getNumTextureUnits(GPT_VERTEX_PROGRAM) + caps.getNumTextureUnits(GPT_GEOMETRY_PROGRAM)
+				+ caps.getNumTextureUnits(GPT_HULL_PROGRAM) + caps.getNumTextureUnits(GPT_DOMAIN_PROGRAM)
+				+ caps.getNumTextureUnits(GPT_COMPUTE_PROGRAM));
+
+			caps.setNumCombinedGpuParamBlockBuffers(caps.getNumGpuParamBlockBuffers(GPT_FRAGMENT_PROGRAM)
+				+ caps.getNumGpuParamBlockBuffers(GPT_VERTEX_PROGRAM) + caps.getNumGpuParamBlockBuffers(GPT_GEOMETRY_PROGRAM)
+				+ caps.getNumGpuParamBlockBuffers(GPT_HULL_PROGRAM) + caps.getNumGpuParamBlockBuffers(GPT_DOMAIN_PROGRAM)
+				+ caps.getNumGpuParamBlockBuffers(GPT_COMPUTE_PROGRAM));
+
+			caps.setNumCombinedLoadStoreTextureUnits(caps.getNumLoadStoreTextureUnits(GPT_FRAGMENT_PROGRAM)
+				+ caps.getNumLoadStoreTextureUnits(GPT_COMPUTE_PROGRAM));
+
+			caps.addShaderProfile("glsl");
+
+			deviceIdx++;
+		}
 	}
 }

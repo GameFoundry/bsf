@@ -134,7 +134,7 @@ namespace BansheeEngine
 		 */
 		const Vector<SPtr<VulkanDevice>> _getPrimaryDevices() const { return mPrimaryDevices; }
 
-		/** @}/
+		/** @} */
 	protected:
 		friend class VulkanRenderAPIFactory;
 
@@ -143,6 +143,9 @@ namespace BansheeEngine
 
 		/** @copydoc RenderAPICore::destroyCore */
 		void destroyCore() override;
+
+		/** Creates and populates a set of render system capabilities describing which functionality is available. */
+		void initCapabilites();
 
 	private:
 		VkInstance mInstance;

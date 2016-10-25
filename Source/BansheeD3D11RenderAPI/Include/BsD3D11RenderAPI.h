@@ -203,7 +203,7 @@ namespace BansheeEngine
 		void applyViewport();
 
 		/** Creates and populates a set of render system capabilities describing which functionality is available. */
-		RenderAPICapabilities* createRenderSystemCapabilities() const;
+		void initCapabilites(IDXGIAdapter* adapter, RenderAPICapabilities& caps) const;
 
 	private:
 		IDXGIFactory* mDXGIFactory;
