@@ -39,7 +39,7 @@ For those that wish to customize their build, or compile using something other t
   7. Hit the Generate button
  4. Once CMake is done generating you can use the toolset you chose (e.g. Visual Studio) to open the generated files (e.g. open the .sln file provided in the Build folder in the case of Visual Studio)
 
-## <a name="dependencies"></a>Third party dependencies
+### <a name="dependencies"></a>Third party dependencies
 Banshee relies on a variety of third party dependencies. We provide a set of pre-compiled dependencies needed for the latest version of Banshee using Visual Studio 2015, to save you the hassle of compiling them yourself. If you are not using VS2015 or want to compile the dependencies yourself for some other reason, a guide is provided below.
 
  * [Download dependencies (VS2015)] (http://bearishsun.thalassa.feralhosting.com/BansheeDependencies_VS2015_Master.zip)
