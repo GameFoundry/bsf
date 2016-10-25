@@ -79,6 +79,7 @@ namespace BansheeEditor
         /// </summary>
         public bool Active
         {
+            set { Internal_SetActive(mCachedPtr, value); }
             get { return Internal_IsActive(mCachedPtr); }
         }
 
@@ -187,6 +188,9 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetFocus(IntPtr nativeInstance, bool focus);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_SetActive(IntPtr nativeInstance, bool active);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool Internal_IsActive(IntPtr nativeInstance);

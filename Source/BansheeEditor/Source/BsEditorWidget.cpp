@@ -54,6 +54,15 @@ namespace BansheeEngine
 		_setHasFocus(focus);
 	}
 
+	void EditorWidgetBase::setActive(bool active)
+	{
+		EditorWidgetContainer* parentContainer = _getParent();
+		if (parentContainer == nullptr)
+			return;
+
+		parentContainer->getParentWidget().setIsActive(active);
+	}
+
 	void EditorWidgetBase::close()
 	{
 		EditorWidgetManager::instance().close(this);

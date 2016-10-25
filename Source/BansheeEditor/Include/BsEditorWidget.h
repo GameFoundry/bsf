@@ -56,6 +56,9 @@ namespace BansheeEngine
 		/**	Checks if the widget has focus (usually means user clicked on it last). */
 		bool hasFocus() const { return mHasFocus; }
 
+		// sets the widget active or non active
+		void setActive(bool active);
+
 		/** 
 		 * Checks is the widget the currently active widget in its container. This means the widget's tab is active or
 		 * the widget is the only one in its container. 
