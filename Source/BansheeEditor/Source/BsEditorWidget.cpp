@@ -60,7 +60,7 @@ namespace BansheeEngine
 		if (parentContainer == nullptr)
 			return;
 
-		parentContainer->getParentWidget().setIsActive(active);
+		parentContainer->setActiveWidget();
 	}
 
 	void EditorWidgetBase::close()

@@ -55,15 +55,17 @@ namespace BansheeEditor
                 EditorApplication.IsPaused = false;
             }
             else
-                /*if(GetWindow<GameWindow>().HasFocus && GetWindow<GameWindow>().Active)
+                if(GetWindow<GameWindow>().HasFocus && GetWindow<GameWindow>().Active)
                 {
                     
                     GetWindow<GameWindow>().HasFocus = false;
                     GetWindow<GameWindow>().Active = false;
 
+                
+                    GetWindow<SceneWindow>().HasFocus = true;
+                    GetWindow<SceneWindow>().Active = true;
                     
-                    
-                }*/
+                }
                 EditorApplication.IsPlaying = !EditorApplication.IsPlaying;
         }
 

@@ -83,6 +83,11 @@ namespace BansheeEditor
             get { return Internal_IsActive(mCachedPtr); }
         }
 
+        public UInt32 WidgetIndx
+        {
+            get { return Internal_GetIndex(mCachedPtr); }
+        }
+
         /// <summary>
         /// GUI panel that you may use for adding GUI elements to the window.
         /// </summary>
