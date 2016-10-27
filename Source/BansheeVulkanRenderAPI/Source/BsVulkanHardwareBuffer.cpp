@@ -30,7 +30,7 @@ namespace BansheeEngine
 		}
 
 		VkMemoryPropertyFlags flags = useSystemMem ?
-			(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT) : // Note: Use cached uncoherent memory
+			(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT) : // Note: Try using cached uncoherent memory
 			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 
 		for (UINT32 i = 0; i < BS_MAX_VULKAN_DEVICES; i++)

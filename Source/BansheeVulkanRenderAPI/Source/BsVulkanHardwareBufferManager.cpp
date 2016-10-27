@@ -5,6 +5,7 @@
 #include "BsVulkanIndexBuffer.h"
 #include "BsVulkanGpuBuffer.h"
 #include "BsVulkanGpuParamBlockBuffer.h"
+#include "BsVulkanGpuParams.h"
 #include "BsGpuParamDesc.h"
 
 namespace BansheeEngine
@@ -51,5 +52,15 @@ namespace BansheeEngine
 		bufferPtr->_setThisPtr(bufferPtr);
 
 		return bufferPtr;
+	}
+
+	SPtr<GpuParamsCore> VulkanHardwareBufferCoreManager::createGpuParamsInternal(const GPU_PARAMS_DESC& desc,
+		GpuDeviceFlags deviceMask)
+	{
+		VulkanGpuParams* params = new (bs_alloc<VulkanGpuParams>()) VulkanGpuParams(desc, deviceMask);
+		SPtr<GpuParamsCore> paramsPtr = bs_shared_ptr<GpuParamsCore>(params);
+		paramsPtr->_setThisPtr(paramsPtr);
+
+		return paramsPtr;
 	}
 }

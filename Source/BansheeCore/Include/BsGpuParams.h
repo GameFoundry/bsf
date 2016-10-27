@@ -135,30 +135,6 @@ namespace BansheeEngine
 		virtual ~TGpuParams();
 
 		/**
-		 * Binds a new parameter buffer to the specified slot. Any following parameter reads or writes that are referencing
-		 * that buffer slot will use the new buffer.
-		 *
-		 * @note	
-		 * This is useful if you want to share a parameter buffer among multiple GPU programs. You would only set the 
-		 * values once and then share the buffer among all other GpuParams.
-		 * @note
-		 * It is up to the caller to guarantee the provided buffer matches parameter block descriptor for this slot.
-		 */
-		void setParamBlockBuffer(UINT32 set, UINT32 slot, const ParamsBufferType& paramBlockBuffer);
-
-		/**
-		 * Replaces the parameter buffer with the specified name. Any following parameter reads or writes that are 
-		 * referencing that buffer will use the new buffer.
-		 *
-		 * @note	
-		 * This is useful if you want to share a parameter buffer among multiple GPU programs. You would only set the 
-		 * values once and then share the buffer among all other GpuParams.
-		 * @note
-		 * It is up to the caller to guarantee the provided buffer matches parameter block descriptor for this slot.
-		 */
-		void setParamBlockBuffer(GpuProgramType type, const String& name, const ParamsBufferType& paramBlockBuffer);
-
-		/**
 		 * Returns a handle for the parameter with the specified name. Handle may then be stored and used for quickly 
 		 * setting or retrieving values to/from that parameter.
 		 *
@@ -201,20 +177,44 @@ namespace BansheeEngine
 		/** Gets information that determines which texture surfaces to bind as load/store parameters. */
 		const TextureSurface& getLoadStoreSurface(UINT32 set, UINT32 slot) const;
 
+		/**
+		 * Sets the parameter buffer with the specified name. Any following parameter reads or writes that are 
+		 * referencing that buffer will use the new buffer.
+		 *
+		 * @note	
+		 * This is useful if you want to share a parameter buffer among multiple GPU programs. You would only set the 
+		 * values once and then share the buffer among all other GpuParams.
+		 * @note
+		 * It is up to the caller to guarantee the provided buffer matches parameter block descriptor for this slot.
+		 */
+		void setParamBlockBuffer(GpuProgramType type, const String& name, const ParamsBufferType& paramBlockBuffer);
+
+		/**
+		 * Binds a new parameter buffer to the specified slot. Any following parameter reads or writes that are referencing
+		 * that buffer slot will use the new buffer.
+		 *
+		 * @note	
+		 * This is useful if you want to share a parameter buffer among multiple GPU programs. You would only set the 
+		 * values once and then share the buffer among all other GpuParams.
+		 * @note
+		 * It is up to the caller to guarantee the provided buffer matches parameter block descriptor for this slot.
+		 */
+		virtual void setParamBlockBuffer(UINT32 set, UINT32 slot, const ParamsBufferType& paramBlockBuffer);
+
 		/**	Sets a texture at the specified set/slot combination. */
-		void setTexture(UINT32 set, UINT32 slot, const TextureType& texture);
+		virtual void setTexture(UINT32 set, UINT32 slot, const TextureType& texture);
 
 		/**	Sets a load/store texture at the specified set/slot combination. */
-		void setLoadStoreTexture(UINT32 set, UINT32 slot, const TextureType& texture, const TextureSurface& surface);
+		virtual void setLoadStoreTexture(UINT32 set, UINT32 slot, const TextureType& texture, const TextureSurface& surface);
 
 		/**	Sets a buffer at the specified set/slot combination. */
-		void setBuffer(UINT32 set, UINT32 slot, const BufferType& buffer);
+		virtual void setBuffer(UINT32 set, UINT32 slot, const BufferType& buffer);
 
 		/**	Sets a sampler state at the specified set/slot combination. */
-		void setSamplerState(UINT32 set, UINT32 slot, const SamplerType& sampler);
+		virtual void setSamplerState(UINT32 set, UINT32 slot, const SamplerType& sampler);
 
 		/**	Sets information that determines which texture surfaces to bind	as load/store parameters. */
-		void setLoadStoreSurface(UINT32 set, UINT32 slot, const TextureSurface& surface);
+		virtual void setLoadStoreSurface(UINT32 set, UINT32 slot, const TextureSurface& surface);
 
 	protected:
 		/** Type of elements stored in this object. */
@@ -260,7 +260,7 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT GpuParamsCore : public CoreObjectCore, public TGpuParams<true>
 	{
 	public:
-		~GpuParamsCore() { }
+		virtual ~GpuParamsCore() { }
 
 		/** 
 		 * @copydoc GpuParams::create 
