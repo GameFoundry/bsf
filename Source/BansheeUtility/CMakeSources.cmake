@@ -28,6 +28,7 @@ set(BS_BANSHEEUTILITY_SRC_WIN32
 
 set(BS_BANSHEEUTILITY_SRC_UNIX
 	"Source/Unix/BsUnixCrashHandler.cpp"
+	"Source/Unix/BsUnixFileSystem.cpp"
 	"Source/Unix/BsUnixPlatformUtility.cpp"
 )
 
@@ -70,6 +71,7 @@ set(BS_BANSHEEUTILITY_INC_FILESYSTEM
 
 set(BS_BANSHEEUTILITY_SRC_FILESYSTEM
 	"Source/BsDataStream.cpp"
+	"Source/BsFileSystem.cpp"
 	"Source/BsPath.cpp"
 )
 
