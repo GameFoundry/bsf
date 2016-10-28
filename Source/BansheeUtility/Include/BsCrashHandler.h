@@ -42,7 +42,7 @@ namespace BansheeEngine
 
 		/**
 		 * Records a crash with a custom error message.
-		 * 			
+		 *
 		 * @param[in]	type		Type of the crash that occurred. For example "InvalidParameter".
 		 * @param[in]	description	More detailed description of the issue that caused the crash.
 		 * @param[in]	function	Optional name of the function where the error occurred.
@@ -54,8 +54,8 @@ namespace BansheeEngine
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 		/**
-		 * Records a crash resulting from a Windows-specific SEH exception. 
-		 * 			
+		 * Records a crash resulting from a Windows-specific SEH exception.
+		 *
 		 * @param[in]	exceptionData	Exception data returned from GetExceptionInformation()
 		 * @return						Code that signals the __except exception handler on how to proceed.
 		 *
@@ -65,24 +65,42 @@ namespace BansheeEngine
 #endif
 
 		/**
-		 * Returns a string containing a current stack trace. If function can be found in the symbol table its readable 
+		 * Returns a string containing a current stack trace. If function can be found in the symbol table its readable
 		 * name will be present in the stack trace, otherwise just its address.
-		 * 						
+		 *
 		 * @return	String containing the call stack with each function on its own line.
 		 */
 		static String getStackTrace();
 	private:
-		/** Returns path to the folder into which to store the crash reports. */
-		Path getCrashFolder() const;
+		/** Does what it says. Internal utility function used by reportCrash(). */
+		void logErrorAndStackTrace(const String& message, const String& stackTrace) const;
+		/** Does what it says. Internal utility function used by reportCrash(). */
+		void logErrorAndStackTrace(const String& type,
+		                           const String& description,
+		                           const String& function,
+		                           const String& file,
+		                           UINT32 line) const;
+		/** Does what it says. Internal utility function used by reportCrash(). */
+		void saveCrashLog() const;
+		/** Creates the crash report directory and returns its path. */
+		static const Path& getCrashFolder();
+		/** Returns the current time as a string timestamp.  This is used
+		 * to name the crash report directory.. */
+		static String getCrashTimestamp();
 
 		/** Returns a singleton instance of this module. */
 		static CrashHandler*& _instance() { static CrashHandler* inst = nullptr; return inst; }
 
-		static const wchar_t* CrashReportFolder;
-		static const wchar_t* CrashLogName;
+		/** The name of the crash reports directory. */
+		static const String sCrashReportFolder;
+		/** The name of the HTML crash log file. */
+		static const String sCrashLogName;
 
+		static const String sFatalErrorMsg;
+#if BS_PLATFORM == BS_PLATFORM_WIN32
 		struct Data;
 		Data* m;
+#endif
 	};
 
 	/** Easier way of accessing the CrashHandler. */

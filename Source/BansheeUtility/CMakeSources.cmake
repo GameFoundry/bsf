@@ -27,6 +27,7 @@ set(BS_BANSHEEUTILITY_SRC_WIN32
 )
 
 set(BS_BANSHEEUTILITY_SRC_UNIX
+	"Source/Unix/BsUnixCrashHandler.cpp"
 	"Source/Unix/BsUnixPlatformUtility.cpp"
 )
 
@@ -215,6 +216,7 @@ set(BS_BANSHEEUTILITY_INC_MATH
 
 set(BS_BANSHEEUTILITY_SRC_ERROR
 	"Source/BsException.cpp"
+	"Source/BsCrashHandler.cpp"
 )
 
 set(BS_BANSHEEUTILITY_INC_SERIALIZATION
