@@ -4,7 +4,6 @@
 
 #include "BsGLPrerequisites.h"
 #include "BsCommandBuffer.h"
-#include "BsDrawOps.h"
 #include "BsGLRenderAPI.h"
 
 namespace BansheeEngine
@@ -36,9 +35,8 @@ namespace BansheeEngine
 		friend class GLCommandBufferManager;
 		friend class GLRenderAPI;
 
-		GLCommandBuffer(CommandBufferType type, UINT32 deviceIdx, UINT32 syncMask, bool secondary);
+		GLCommandBuffer(UINT32 id, CommandBufferType type, UINT32 deviceIdx, UINT32 queueIdx, bool secondary);
 
-		UINT32 mDeviceIdx;
 		Vector<std::function<void()>> mCommands;
 
 		DrawOperationType mCurrentDrawOperation;

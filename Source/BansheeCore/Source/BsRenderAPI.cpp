@@ -155,7 +155,7 @@ namespace BansheeEngine
 	}
 
     RenderAPICore::RenderAPICore()
-        : mCurrentCapabilities(nullptr)
+        : mCurrentCapabilities(nullptr), mNumDevices(0)
     {
     }
 
@@ -163,7 +163,7 @@ namespace BansheeEngine
     {
 		// Base classes need to call virtual destroy_internal method instead of a destructor
 
-		bs_delete(mCurrentCapabilities);
+		bs_deleteN(mCurrentCapabilities, mNumDevices);
 		mCurrentCapabilities = nullptr;
     }
 
@@ -200,11 +200,15 @@ namespace BansheeEngine
 		mActiveRenderTarget = nullptr;
 	}
 
-	const DriverVersion& RenderAPICore::getDriverVersion() const 
-	{ 
-		THROW_IF_NOT_CORE_THREAD;
+	const RenderAPICapabilities& RenderAPICore::getCapabilities(UINT32 deviceIdx) const
+	{
+		if(deviceIdx >= mNumDevices)
+		{
+			LOGWRN("Invalid device index provided: " + toString(deviceIdx) + ". Valid range is: [0, " + toString(mNumDevices) + ").");
+			return mCurrentCapabilities[0];
+		}
 
-		return mDriverVersion; 
+		return mCurrentCapabilities[deviceIdx];
 	}
 
 	UINT32 RenderAPICore::vertexCountToPrimCount(DrawOperationType type, UINT32 elementCount)

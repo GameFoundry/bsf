@@ -4,29 +4,13 @@
 
 #include "BsVulkanPrerequisites.h"
 #include "BsRenderAPI.h"
+#include "BsVulkanDescriptorManager.h"
 
 namespace BansheeEngine
 {
 	/** @addtogroup Vulkan
 	 *  @{
 	 */
-
-#define BS_MAX_VULKAN_QUEUES_PER_TYPE 4
-
-	 /** Types of GPU queues. */
-	enum VulkanQueueType
-	{
-		/**
-		 * Queue used for rendering. Allows the use of draw commands, but also all commands supported by compute
-		 * or upload buffers.
-		 */
-		VQT_GRAPHICS,
-		/** Discrete queue used for compute operations. Allows the use of dispatch and upload commands. */
-		VQT_COMPUTE,
-		/** Queue used for memory transfer operations only. No rendering or compute dispatch allowed. */
-		VQT_UPLOAD,
-		VQT_COUNT // Keep at end
-	};
 
 	/** Represents a single GPU device usable by Vulkan. */
 	class VulkanDevice
@@ -53,19 +37,37 @@ namespace BansheeEngine
 		/** Returns the number of queue supported on the device, per type. */
 		UINT32 getNumQueues(VulkanQueueType type) const { return (UINT32)mQueueInfos[(int)type].queues.size(); }
 
-		/** Returns queue of the specified type at the specified index. Index must be in range [0, getNumQueues()) */
-		VkQueue getQueue(VulkanQueueType type, UINT32 idx) const { return mQueueInfos[(int)type].queues[idx]; }
+		/** Returns queue of the specified type at the specified index. Index must be in range [0, getNumQueues()). */
+		VulkanQueue* getQueue(VulkanQueueType type, UINT32 idx) const { return mQueueInfos[(int)type].queues[idx]; }
 
-		/** Returns index of the queue family for the specified queue type. */
+		/** 
+		 * Returns index of the queue family for the specified queue type. Returns -1 if no queues for the specified type 
+		 * exist. There will always be a queue family for the graphics type.
+		 */
 		UINT32 getQueueFamily(VulkanQueueType type) const { return mQueueInfos[(int)type].familyIdx; }
 
-		/** Allocates memory for the provided image, and binds it to the image. */
+		/** Returns a pool that can be used for allocating command buffers for all queues on this device. */
+		VulkanCmdBufferPool& getCmdBufferPool() const { return *mCommandBufferPool; }
+
+		/** Returns a manager that can be used for allocating descriptor layouts and sets. */
+		VulkanDescriptorManager& getDescriptorManager() const { return *mDescriptorManager; }
+
+		/** 
+		 * Allocates memory for the provided image, and binds it to the image. Returns null if it cannot find memory
+		 * with the specified flags.
+		 */
 		VkDeviceMemory allocateMemory(VkImage image, VkMemoryPropertyFlags flags);
 
-		/** Allocates memory for the provided buffer, and binds it to the buffer. */
+		/** 
+		 * Allocates memory for the provided buffer, and binds it to the buffer. Returns null if it cannot find memory
+		 * with the specified flags.
+		 */
 		VkDeviceMemory allocateMemory(VkBuffer buffer, VkMemoryPropertyFlags flags);
 
-		/** Allocates a block of memory according to the provided memory requirements. */
+		/** 
+		 * Allocates a block of memory according to the provided memory requirements. Returns null if it cannot find memory
+		 * with the specified flags. 
+		 */
 		VkDeviceMemory allocateMemory(const VkMemoryRequirements& reqs, VkMemoryPropertyFlags flags);
 
 		/** Frees a previously allocated block of memory. */
@@ -78,6 +80,9 @@ namespace BansheeEngine
 		VkPhysicalDevice mPhysicalDevice;
 		VkDevice mLogicalDevice;
 
+		VulkanCmdBufferPool* mCommandBufferPool;
+		VulkanDescriptorManager* mDescriptorManager;
+
 		VkPhysicalDeviceProperties mDeviceProperties;
 		VkPhysicalDeviceFeatures mDeviceFeatures;
 		VkPhysicalDeviceMemoryProperties mMemoryProperties;
@@ -86,10 +91,11 @@ namespace BansheeEngine
 		struct QueueInfo
 		{
 			UINT32 familyIdx;
-			Vector<VkQueue> queues;
+			Vector<VulkanQueue*> queues;
 		};
 
 		QueueInfo mQueueInfos[VQT_COUNT];
+
 	};
 
 	/** @} */

@@ -102,7 +102,7 @@ namespace BansheeEngine
 		void addCommands(const SPtr<CommandBuffer>& commandBuffer, const SPtr<CommandBuffer>& secondary) override;
 
 		/** @copydoc RenderAPICore::executeCommands() */
-		void executeCommands(const SPtr<CommandBuffer>& commandBuffer) override;
+		void executeCommands(const SPtr<CommandBuffer>& commandBuffer, UINT32 syncMask = 0xFFFFFFFF) override;
 
 		/** @copydoc RenderAPICore::convertProjectionMatrix() */
 		void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest) override;
@@ -167,7 +167,7 @@ namespace BansheeEngine
 		GLint getGLDrawMode() const;
 
 		/**	Creates render system capabilities that specify which features are or aren't supported. */
-		RenderAPICapabilities* createRenderSystemCapabilities() const;
+		void initCapabilities(RenderAPICapabilities& caps) const;
 
 		/**	Finish initialization by setting up any systems dependant on render systemcapabilities. */
 		void initFromCaps(RenderAPICapabilities* caps);

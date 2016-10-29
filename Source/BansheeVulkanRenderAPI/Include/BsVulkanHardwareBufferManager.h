@@ -33,6 +33,10 @@ namespace BansheeEngine
 		/** @copydoc HardwareBufferCoreManager::createGpuBufferInternal */
 		SPtr<GpuBufferCore> createGpuBufferInternal(const GPU_BUFFER_DESC& desc,
 			GpuDeviceFlags deviceMask = GDF_DEFAULT) override;
+
+		/** @copydoc HardwareBufferCoreManager::createGpuParamsInternal */
+		SPtr<GpuParamsCore> createGpuParamsInternal(const GPU_PARAMS_DESC& desc, 
+			GpuDeviceFlags deviceMask = GDF_DEFAULT) override;
 	};
 
 	/** @} */

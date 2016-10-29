@@ -100,7 +100,7 @@ namespace BansheeEngine
 		void addCommands(const SPtr<CommandBuffer>& commandBuffer, const SPtr<CommandBuffer>& secondary) override;
 
 		/** @copydoc RenderAPICore::executeCommands() */
-		void executeCommands(const SPtr<CommandBuffer>& commandBuffer) override;
+		void executeCommands(const SPtr<CommandBuffer>& commandBuffer, UINT32 syncMask = 0xFFFFFFFF) override;
 
 		/** @copydoc RenderAPICore::convertProjectionMatrix */
 		void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest) override;
@@ -134,7 +134,7 @@ namespace BansheeEngine
 		 */
 		const Vector<SPtr<VulkanDevice>> _getPrimaryDevices() const { return mPrimaryDevices; }
 
-		/** @}/
+		/** @} */
 	protected:
 		friend class VulkanRenderAPIFactory;
 
@@ -143,6 +143,9 @@ namespace BansheeEngine
 
 		/** @copydoc RenderAPICore::destroyCore */
 		void destroyCore() override;
+
+		/** Creates and populates a set of render system capabilities describing which functionality is available. */
+		void initCapabilites();
 
 	private:
 		VkInstance mInstance;

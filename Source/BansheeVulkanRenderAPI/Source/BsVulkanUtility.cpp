@@ -1,6 +1,7 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsVulkanUtility.h"
+#include "BsVulkanRenderAPI.h"
 #include "BsException.h"
 
 namespace BansheeEngine
@@ -400,5 +401,53 @@ namespace BansheeEngine
 
 		// Unsupported type
 		return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+	}
+
+	VulkanQueueType VulkanUtility::getQueueType(CommandBufferType type)
+	{
+		switch(type)
+		{
+		case CBT_GRAPHICS:
+			return VQT_GRAPHICS;
+		case CBT_COMPUTE:
+			return VQT_COMPUTE;
+		case CBT_UPLOAD:
+			return VQT_UPLOAD;
+		}
+
+		// Unsupported type
+		return VQT_GRAPHICS;
+	}
+
+	void VulkanUtility::getDevices(const VulkanRenderAPI& rapi, GpuDeviceFlags flags, VulkanDevice*(&devices)[BS_MAX_LINKED_DEVICES])
+	{
+		if(flags == GDF_DEFAULT)
+		{
+			const Vector<SPtr<VulkanDevice>>& primaryDevices = rapi._getPrimaryDevices();
+			UINT32 count = std::min(BS_MAX_LINKED_DEVICES, (UINT32)primaryDevices.size());
+
+			for (UINT32 i = 0; i < count; i++)
+				devices[i] = primaryDevices[i].get();
+
+			for (UINT32 i = count; i < BS_MAX_LINKED_DEVICES; i++)
+				devices[i] = nullptr;
+		}
+		else
+		{
+			UINT32 numDevices = rapi._getNumDevices();
+
+			UINT32 deviceIdx = 0;
+			for(UINT32 i = 0; i < numDevices; i++)
+			{
+				if (flags & (1 << i))
+					devices[deviceIdx++] = rapi._getDevice(i).get();
+
+				if (deviceIdx >= BS_MAX_LINKED_DEVICES)
+					break;
+			}
+
+			for (UINT32 i = deviceIdx; i < BS_MAX_LINKED_DEVICES; i++)
+				devices[i] = nullptr;
+		}
 	}
 }

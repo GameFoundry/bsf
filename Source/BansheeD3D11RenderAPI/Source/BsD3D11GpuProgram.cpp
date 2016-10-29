@@ -43,7 +43,7 @@ namespace BansheeEngine
 		}
 
 		D3D11RenderAPI* rapi = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
-		String hlslProfile = rapi->getCapabilities().gpuProgProfileToRSSpecificProfile(mProperties.getProfile());
+		String hlslProfile = rapi->getCapabilities(0).gpuProgProfileToRSSpecificProfile(mProperties.getProfile());
 
 		ID3DBlob* microcode = compileMicrocode(hlslProfile);
 

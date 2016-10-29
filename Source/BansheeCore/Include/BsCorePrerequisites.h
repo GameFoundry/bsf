@@ -170,6 +170,18 @@
 #define BS_MAX_MULTIPLE_RENDER_TARGETS 8
 #define BS_FORCE_SINGLETHREADED_RENDERING 0
 
+/** Maximum number of CommandBuffer%s that may exist at once. */
+#define BS_MAX_COMMAND_BUFFERS 32
+
+/** Maximum number of individual GPU queues, per type. */
+#define BS_MAX_QUEUES_PER_TYPE 8
+
+/** Maximum number of hardware devices usable at once. */
+#define BS_MAX_DEVICES 5U
+
+/** Maximum number of devices one resource can exist at the same time. */
+#define BS_MAX_LINKED_DEVICES 4U
+
 // Windows Settings
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 

@@ -37,6 +37,12 @@ namespace BansheeEngine
 	class VulkanDevice;
 	class VulkanGLSLProgramFactory;
 	class VulkanSwapChain;
+	class VulkanDescriptorLayout;
+	class VulkanDescriptorManager;
+	class VulkanCmdBufferPool;
+	class VulkanCmdBuffer;
+	class VulkanCommandBuffer;
+	class VulkanQueue;
 
 	VkAllocationCallbacks* gVulkanAllocator = nullptr;
 
@@ -45,12 +51,27 @@ namespace BansheeEngine
 	{
 		RenderStatObject_PipelineState = 100
 	};
+
+	/** Types of GPU queues. */
+	enum VulkanQueueType
+	{
+		/**
+		 * Queue used for rendering. Allows the use of draw commands, but also all commands supported by compute
+		 * or upload buffers.
+		 */
+		VQT_GRAPHICS,
+		/** Discrete queue used for compute operations. Allows the use of dispatch and upload commands. */
+		VQT_COMPUTE,
+		/** Queue used for memory transfer operations only. No rendering or compute dispatch allowed. */
+		VQT_UPLOAD,
+		VQT_COUNT // Keep at end
+	};
 }
 
-// Macro to get a procedure address based on a Vulkan instance.
+/** Macro to get a procedure address based on a Vulkan instance. */
 #define GET_INSTANCE_PROC_ADDR(instance, name) \
 	vk##name = reinterpret_cast<PFN_vk##name>(vkGetInstanceProcAddr(instance, "vk"#name));
 
-// Macro to get a procedure address based on a Vulkan device.
+/** Macro to get a procedure address based on a Vulkan device. */
 #define GET_DEVICE_PROC_ADDR(device, name) \
 	vk##name = reinterpret_cast<PFN_vk##name>(vkGetDeviceProcAddr(device, "vk"#name));

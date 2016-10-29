@@ -97,16 +97,6 @@ namespace BansheeEngine
 
 		mDevice = bs_new<D3D11Device>(device);
 		
-		// This must query for DirectX 10 interface as this is unsupported for DX11
-		LARGE_INTEGER driverVersion; 
-		if(SUCCEEDED(selectedAdapter->CheckInterfaceSupport(IID_ID3D10Device, &driverVersion)))
-		{
-			mDriverVersion.major =  HIWORD(driverVersion.HighPart);
-			mDriverVersion.minor = LOWORD(driverVersion.HighPart);
-			mDriverVersion.release = HIWORD(driverVersion.LowPart);
-			mDriverVersion.build = LOWORD(driverVersion.LowPart);
-		}
-
 		// Create the texture manager for use by others		
 		TextureManager::startUp<D3D11TextureManager>();
 		TextureCoreManager::startUp<D3D11TextureCoreManager>();
@@ -125,9 +115,10 @@ namespace BansheeEngine
 		// Create render state manager
 		RenderStateCoreManager::startUp<D3D11RenderStateCoreManager>();
 
-		mCurrentCapabilities = createRenderSystemCapabilities();
-
-		mCurrentCapabilities->addShaderProfile("hlsl");
+		mNumDevices = 1;
+		mCurrentCapabilities = bs_newN<RenderAPICapabilities>(mNumDevices);
+		initCapabilites(selectedAdapter, mCurrentCapabilities[0]);
+				
 		GpuProgramCoreManager::instance().addFactory(mHLSLFactory);
 
 		mIAManager = bs_new<D3D11InputLayoutManager>();
@@ -640,7 +631,7 @@ namespace BansheeEngine
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
-			UINT32 maxBoundVertexBuffers = mCurrentCapabilities->getMaxBoundVertexBuffers();
+			UINT32 maxBoundVertexBuffers = mCurrentCapabilities[0].getMaxBoundVertexBuffers();
 			if (index < 0 || (index + numBuffers) >= maxBoundVertexBuffers)
 			{
 				BS_EXCEPT(InvalidParametersException, "Invalid vertex index: " + toString(index) +
@@ -968,7 +959,7 @@ namespace BansheeEngine
 			// Clear render surfaces
 			if (buffers & FBT_COLOR)
 			{
-				UINT32 maxRenderTargets = mCurrentCapabilities->getNumMultiRenderTargets();
+				UINT32 maxRenderTargets = mCurrentCapabilities[0].getNumMultiRenderTargets();
 
 				ID3D11RenderTargetView** views = bs_newN<ID3D11RenderTargetView*>(maxRenderTargets);
 				memset(views, 0, sizeof(ID3D11RenderTargetView*) * maxRenderTargets);
@@ -1037,7 +1028,7 @@ namespace BansheeEngine
 
 			mActiveRenderTarget = target;
 
-			UINT32 maxRenderTargets = mCurrentCapabilities->getNumMultiRenderTargets();
+			UINT32 maxRenderTargets = mCurrentCapabilities[0].getNumMultiRenderTargets();
 			ID3D11RenderTargetView** views = bs_newN<ID3D11RenderTargetView*>(maxRenderTargets);
 			memset(views, 0, sizeof(ID3D11RenderTargetView*) * maxRenderTargets);
 
@@ -1104,7 +1095,7 @@ namespace BansheeEngine
 		cb->appendSecondary(secondaryCb);
 	}
 
-	void D3D11RenderAPI::executeCommands(const SPtr<CommandBuffer>& commandBuffer)
+	void D3D11RenderAPI::executeCommands(const SPtr<CommandBuffer>& commandBuffer, UINT32 syncMask)
 	{
 		SPtr<D3D11CommandBuffer> cb = std::static_pointer_cast<D3D11CommandBuffer>(commandBuffer);
 		cb->executeCommands();
@@ -1136,118 +1127,114 @@ namespace BansheeEngine
 		mDevice->getImmediateContext()->RSSetViewports(1, &mViewport);
 	}
 
-	RenderAPICapabilities* D3D11RenderAPI::createRenderSystemCapabilities() const
+	void D3D11RenderAPI::initCapabilites(IDXGIAdapter* adapter, RenderAPICapabilities& caps) const
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		RenderAPICapabilities* rsc = bs_new<RenderAPICapabilities>();
+		// This must query for DirectX 10 interface as this is unsupported for DX11
+		LARGE_INTEGER driverVersionNum;
+		DriverVersion driverVersion;
+		if (SUCCEEDED(adapter->CheckInterfaceSupport(IID_ID3D10Device, &driverVersionNum)))
+		{
+			driverVersion.major = HIWORD(driverVersionNum.HighPart);
+			driverVersion.minor = LOWORD(driverVersionNum.HighPart);
+			driverVersion.release = HIWORD(driverVersionNum.LowPart);
+			driverVersion.build = LOWORD(driverVersionNum.LowPart);
+		}
 
-		rsc->setDriverVersion(mDriverVersion);
-		rsc->setDeviceName(mActiveD3DDriver->getDriverDescription());
-		rsc->setRenderAPIName(getName());
+		caps.setDriverVersion(driverVersion);
+		caps.setDeviceName(mActiveD3DDriver->getDriverDescription());
+		caps.setRenderAPIName(getName());
 
-		rsc->setStencilBufferBitDepth(8);
-
-		rsc->setCapability(RSC_ANISOTROPY);
-		rsc->setCapability(RSC_AUTOMIPMAP);
-
-		// Cube map
-		rsc->setCapability(RSC_CUBEMAPPING);
-
-		// We always support compression, D3DX will decompress if device does not support
-		rsc->setCapability(RSC_TEXTURE_COMPRESSION);
-		rsc->setCapability(RSC_TEXTURE_COMPRESSION_DXT);
-		rsc->setCapability(RSC_TWO_SIDED_STENCIL);
-		rsc->setCapability(RSC_STENCIL_WRAP);
-		rsc->setCapability(RSC_HWOCCLUSION);
-		rsc->setCapability(RSC_HWOCCLUSION_ASYNCHRONOUS);
+		caps.setCapability(RSC_TEXTURE_COMPRESSION_BC);
+		caps.addShaderProfile("hlsl");
 
 		if(mFeatureLevel >= D3D_FEATURE_LEVEL_10_1)
-			rsc->setMaxBoundVertexBuffers(32);
+			caps.setMaxBoundVertexBuffers(32);
 		else
-			rsc->setMaxBoundVertexBuffers(16);
+			caps.setMaxBoundVertexBuffers(16);
 
 		if(mFeatureLevel >= D3D_FEATURE_LEVEL_10_0)
 		{
-			rsc->addShaderProfile("ps_4_0");
-			rsc->addShaderProfile("vs_4_0");
-			rsc->addShaderProfile("gs_4_0");
+			caps.setCapability(RSC_GEOMETRY_PROGRAM);
 
-			rsc->addGpuProgramProfile(GPP_FS_4_0, "ps_4_0");
-			rsc->addGpuProgramProfile(GPP_VS_4_0, "vs_4_0");
-			rsc->addGpuProgramProfile(GPP_GS_4_0, "gs_4_0");
+			caps.addShaderProfile("ps_4_0");
+			caps.addShaderProfile("vs_4_0");
+			caps.addShaderProfile("gs_4_0");
 
-			rsc->setNumTextureUnits(GPT_FRAGMENT_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT);
-			rsc->setNumTextureUnits(GPT_VERTEX_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT);
-			rsc->setNumTextureUnits(GPT_GEOMETRY_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT);
+			caps.addGpuProgramProfile(GPP_FS_4_0, "ps_4_0");
+			caps.addGpuProgramProfile(GPP_VS_4_0, "vs_4_0");
+			caps.addGpuProgramProfile(GPP_GS_4_0, "gs_4_0");
 
-			rsc->setNumCombinedTextureUnits(rsc->getNumTextureUnits(GPT_FRAGMENT_PROGRAM)
-				+ rsc->getNumTextureUnits(GPT_VERTEX_PROGRAM) + rsc->getNumTextureUnits(GPT_VERTEX_PROGRAM));
+			caps.setNumTextureUnits(GPT_FRAGMENT_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT);
+			caps.setNumTextureUnits(GPT_VERTEX_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT);
+			caps.setNumTextureUnits(GPT_GEOMETRY_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT);
 
-			rsc->setNumGpuParamBlockBuffers(GPT_FRAGMENT_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
-			rsc->setNumGpuParamBlockBuffers(GPT_VERTEX_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
-			rsc->setNumGpuParamBlockBuffers(GPT_GEOMETRY_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
+			caps.setNumCombinedTextureUnits(caps.getNumTextureUnits(GPT_FRAGMENT_PROGRAM)
+				+ caps.getNumTextureUnits(GPT_VERTEX_PROGRAM) + caps.getNumTextureUnits(GPT_GEOMETRY_PROGRAM));
 
-			rsc->setNumCombinedGpuParamBlockBuffers(rsc->getNumGpuParamBlockBuffers(GPT_FRAGMENT_PROGRAM)
-				+ rsc->getNumGpuParamBlockBuffers(GPT_VERTEX_PROGRAM) + rsc->getNumGpuParamBlockBuffers(GPT_VERTEX_PROGRAM));
+			caps.setNumGpuParamBlockBuffers(GPT_FRAGMENT_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
+			caps.setNumGpuParamBlockBuffers(GPT_VERTEX_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
+			caps.setNumGpuParamBlockBuffers(GPT_GEOMETRY_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
+
+			caps.setNumCombinedGpuParamBlockBuffers(caps.getNumGpuParamBlockBuffers(GPT_FRAGMENT_PROGRAM)
+				+ caps.getNumGpuParamBlockBuffers(GPT_VERTEX_PROGRAM) + caps.getNumGpuParamBlockBuffers(GPT_GEOMETRY_PROGRAM));
 		}
 
 		if(mFeatureLevel >= D3D_FEATURE_LEVEL_10_1)
 		{
-			rsc->addShaderProfile("ps_4_1");
-			rsc->addShaderProfile("vs_4_1");
-			rsc->addShaderProfile("gs_4_1");
+			caps.addShaderProfile("ps_4_1");
+			caps.addShaderProfile("vs_4_1");
+			caps.addShaderProfile("gs_4_1");
 
-			rsc->addGpuProgramProfile(GPP_FS_4_1, "ps_4_1");
-			rsc->addGpuProgramProfile(GPP_VS_4_1, "vs_4_1");
-			rsc->addGpuProgramProfile(GPP_GS_4_1, "gs_4_1");
+			caps.addGpuProgramProfile(GPP_FS_4_1, "ps_4_1");
+			caps.addGpuProgramProfile(GPP_VS_4_1, "vs_4_1");
+			caps.addGpuProgramProfile(GPP_GS_4_1, "gs_4_1");
 		}
 
 		if(mFeatureLevel >= D3D_FEATURE_LEVEL_11_0)
 		{
-			rsc->addShaderProfile("ps_5_0");
-			rsc->addShaderProfile("vs_5_0");
-			rsc->addShaderProfile("gs_5_0");
-			rsc->addShaderProfile("cs_5_0");
-			rsc->addShaderProfile("hs_5_0");
-			rsc->addShaderProfile("ds_5_0");
+			caps.setCapability(RSC_TESSELLATION_PROGRAM);
+			caps.setCapability(RSC_COMPUTE_PROGRAM);
 
-			rsc->addGpuProgramProfile(GPP_FS_5_0, "ps_5_0");
-			rsc->addGpuProgramProfile(GPP_VS_5_0, "vs_5_0");
-			rsc->addGpuProgramProfile(GPP_GS_5_0, "gs_5_0");
-			rsc->addGpuProgramProfile(GPP_CS_5_0, "cs_5_0");
-			rsc->addGpuProgramProfile(GPP_HS_5_0, "hs_5_0");
-			rsc->addGpuProgramProfile(GPP_DS_5_0, "ds_5_0");
+			caps.addShaderProfile("ps_5_0");
+			caps.addShaderProfile("vs_5_0");
+			caps.addShaderProfile("gs_5_0");
+			caps.addShaderProfile("cs_5_0");
+			caps.addShaderProfile("hs_5_0");
+			caps.addShaderProfile("ds_5_0");
 
-			rsc->setNumTextureUnits(GPT_HULL_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT);
-			rsc->setNumTextureUnits(GPT_DOMAIN_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT);
-			rsc->setNumTextureUnits(GPT_COMPUTE_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT);
+			caps.addGpuProgramProfile(GPP_FS_5_0, "ps_5_0");
+			caps.addGpuProgramProfile(GPP_VS_5_0, "vs_5_0");
+			caps.addGpuProgramProfile(GPP_GS_5_0, "gs_5_0");
+			caps.addGpuProgramProfile(GPP_CS_5_0, "cs_5_0");
+			caps.addGpuProgramProfile(GPP_HS_5_0, "hs_5_0");
+			caps.addGpuProgramProfile(GPP_DS_5_0, "ds_5_0");
 
-			rsc->setNumCombinedTextureUnits(rsc->getNumTextureUnits(GPT_FRAGMENT_PROGRAM)
-				+ rsc->getNumTextureUnits(GPT_VERTEX_PROGRAM) + rsc->getNumTextureUnits(GPT_VERTEX_PROGRAM)
-				+ rsc->getNumTextureUnits(GPT_HULL_PROGRAM) + rsc->getNumTextureUnits(GPT_DOMAIN_PROGRAM)
-				+ rsc->getNumTextureUnits(GPT_COMPUTE_PROGRAM));
+			caps.setNumTextureUnits(GPT_HULL_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT);
+			caps.setNumTextureUnits(GPT_DOMAIN_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT);
+			caps.setNumTextureUnits(GPT_COMPUTE_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT);
 
-			rsc->setNumGpuParamBlockBuffers(GPT_HULL_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
-			rsc->setNumGpuParamBlockBuffers(GPT_DOMAIN_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
-			rsc->setNumGpuParamBlockBuffers(GPT_COMPUTE_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
+			caps.setNumCombinedTextureUnits(caps.getNumTextureUnits(GPT_FRAGMENT_PROGRAM)
+				+ caps.getNumTextureUnits(GPT_VERTEX_PROGRAM) + caps.getNumTextureUnits(GPT_GEOMETRY_PROGRAM)
+				+ caps.getNumTextureUnits(GPT_HULL_PROGRAM) + caps.getNumTextureUnits(GPT_DOMAIN_PROGRAM)
+				+ caps.getNumTextureUnits(GPT_COMPUTE_PROGRAM));
 
-			rsc->setNumCombinedGpuParamBlockBuffers(rsc->getNumGpuParamBlockBuffers(GPT_FRAGMENT_PROGRAM)
-				+ rsc->getNumGpuParamBlockBuffers(GPT_VERTEX_PROGRAM) + rsc->getNumGpuParamBlockBuffers(GPT_VERTEX_PROGRAM)
-				+ rsc->getNumGpuParamBlockBuffers(GPT_HULL_PROGRAM) + rsc->getNumGpuParamBlockBuffers(GPT_DOMAIN_PROGRAM)
-				+ rsc->getNumGpuParamBlockBuffers(GPT_COMPUTE_PROGRAM));
+			caps.setNumGpuParamBlockBuffers(GPT_HULL_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
+			caps.setNumGpuParamBlockBuffers(GPT_DOMAIN_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
+			caps.setNumGpuParamBlockBuffers(GPT_COMPUTE_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
 
-			rsc->setNumLoadStoreTextureUnits(GPT_FRAGMENT_PROGRAM, D3D11_PS_CS_UAV_REGISTER_COUNT);
-			rsc->setNumLoadStoreTextureUnits(GPT_COMPUTE_PROGRAM, D3D11_PS_CS_UAV_REGISTER_COUNT);
+			caps.setNumCombinedGpuParamBlockBuffers(caps.getNumGpuParamBlockBuffers(GPT_FRAGMENT_PROGRAM)
+				+ caps.getNumGpuParamBlockBuffers(GPT_VERTEX_PROGRAM) + caps.getNumGpuParamBlockBuffers(GPT_GEOMETRY_PROGRAM)
+				+ caps.getNumGpuParamBlockBuffers(GPT_HULL_PROGRAM) + caps.getNumGpuParamBlockBuffers(GPT_DOMAIN_PROGRAM)
+				+ caps.getNumGpuParamBlockBuffers(GPT_COMPUTE_PROGRAM));
 
-			rsc->setNumCombinedLoadStoreTextureUnits(rsc->getNumLoadStoreTextureUnits(GPT_FRAGMENT_PROGRAM)
-				+ rsc->getNumLoadStoreTextureUnits(GPT_COMPUTE_PROGRAM));
+			caps.setNumLoadStoreTextureUnits(GPT_FRAGMENT_PROGRAM, D3D11_PS_CS_UAV_REGISTER_COUNT);
+			caps.setNumLoadStoreTextureUnits(GPT_COMPUTE_PROGRAM, D3D11_PS_CS_UAV_REGISTER_COUNT);
 
-			rsc->setCapability(RSC_SHADER_SUBROUTINE);
+			caps.setNumCombinedLoadStoreTextureUnits(caps.getNumLoadStoreTextureUnits(GPT_FRAGMENT_PROGRAM)
+				+ caps.getNumLoadStoreTextureUnits(GPT_COMPUTE_PROGRAM));
 		}
-
-		rsc->setCapability(RSC_USER_CLIP_PLANES);
-		rsc->setCapability(RSC_VERTEX_FORMAT_UBYTE4);
 
 		// Adapter details
 		const DXGI_ADAPTER_DESC& adapterID = mActiveD3DDriver->getAdapterIdentifier();
@@ -1256,41 +1243,21 @@ namespace BansheeEngine
 		switch(adapterID.VendorId)
 		{
 		case 0x10DE:
-			rsc->setVendor(GPU_NVIDIA);
+			caps.setVendor(GPU_NVIDIA);
 			break;
 		case 0x1002:
-			rsc->setVendor(GPU_AMD);
+			caps.setVendor(GPU_AMD);
 			break;
 		case 0x163C:
 		case 0x8086:
-			rsc->setVendor(GPU_INTEL);
+			caps.setVendor(GPU_INTEL);
 			break;
 		default:
-			rsc->setVendor(GPU_UNKNOWN);
+			caps.setVendor(GPU_UNKNOWN);
 			break;
 		};
 
-		rsc->setCapability(RSC_INFINITE_FAR_PLANE);
-
-		rsc->setCapability(RSC_TEXTURE_3D);
-		rsc->setCapability(RSC_NON_POWER_OF_2_TEXTURES);
-		rsc->setCapability(RSC_HWRENDER_TO_TEXTURE);
-		rsc->setCapability(RSC_TEXTURE_FLOAT);
-
-		rsc->setNumMultiRenderTargets(D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT);
-		rsc->setCapability(RSC_MRT_DIFFERENT_BIT_DEPTHS);
-
-		rsc->setCapability(RSC_POINT_SPRITES);
-		rsc->setCapability(RSC_POINT_EXTENDED_PARAMETERS);
-		rsc->setMaxPointSize(256);
-
-		rsc->setCapability(RSC_VERTEX_TEXTURE_FETCH);
-
-		rsc->setCapability(RSC_MIPMAP_LOD_BIAS);
-
-		rsc->setCapability(RSC_PERSTAGECONSTANT);
-
-		return rsc;
+		caps.setNumMultiRenderTargets(D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT);
 	}
 
 	void D3D11RenderAPI::determineMultisampleSettings(UINT32 multisampleCount, DXGI_FORMAT format, DXGI_SAMPLE_DESC* outputSampleDesc)

@@ -17,11 +17,15 @@ set(BS_BANSHEEVULKANRENDERAPI_INC_NOFILTER
 	"Include/BsVulkanRenderAPI.h"
 	"Include/BsVulkanCommandBuffer.h"
 	"Include/BsVulkanDevice.h"
-	"Include/BsVulkanRenderStateManager.h"
 	"Include/BsVulkanGpuPipelineState.h"
 	"Include/BsVulkanSwapChain.h"
 	"Include/BsVulkanFramebuffer.h"
 	"Include/BsVulkanUtility.h"
+	"Include/BsVulkanGpuParams.h"
+	"Include/BsVulkanDescriptorPool.h"
+	"Include/BsVulkanDescriptorLayout.h"
+	"Include/BsVulkanResource.h"
+	"Include/BsVulkanQueue.h"
 )
 
 set(BS_BANSHEEVULKANRENDERAPI_INC_MANAGERS
@@ -32,6 +36,9 @@ set(BS_BANSHEEVULKANRENDERAPI_INC_MANAGERS
 	"Include/BsVulkanHardwareBufferManager.h"
 	"Include/BsVulkanRenderAPIFactory.h"
 	"Include/BsVulkanCommandBufferManager.h"
+	"Include/BsVulkanRenderStateManager.h"
+	"Include/BsVulkanVertexInputManager.h"
+	"Include/BsVulkanDescriptorManager.h"
 )
 
 set(BS_BANSHEEVULKANRENDERAPI_SRC_NOFILTER
@@ -53,11 +60,15 @@ set(BS_BANSHEEVULKANRENDERAPI_SRC_NOFILTER
 	"Source/BsVulkanRenderAPI.cpp"
 	"Source/BsVulkanCommandBuffer.cpp"
 	"Source/BsVulkanDevice.cpp"
-	"Source/BsVulkanRenderStateManager.cpp"
 	"Source/BsVulkanGpuPipelineState.cpp"
 	"Source/BsVulkanSwapChain.cpp"
 	"Source/BsVulkanFramebuffer.cpp"
 	"Source/BsVulkanUtility.cpp"
+	"Source/BsVulkanGpuParams.cpp"
+	"Source/BsVulkanDescriptorPool.cpp"
+	"Source/BsVulkanDescriptorLayout.cpp"
+	"Source/BsVulkanResource.cpp"
+	"Source/BsVulkanQueue.cpp"
 )
 
 set(BS_BANSHEEVULKANRENDERAPI_SRC_MANAGERS
@@ -68,6 +79,9 @@ set(BS_BANSHEEVULKANRENDERAPI_SRC_MANAGERS
 	"Source/BsVulkanHardwareBufferManager.cpp"
 	"Source/BsVulkanRenderAPIFactory.cpp"
 	"Source/BsVulkanCommandBufferManager.cpp"
+	"Source/BsVulkanRenderStateManager.cpp"
+	"Source/BsVulkanVertexInputManager.cpp"
+	"Source/BsVulkanDescriptorManager.cpp"
 )
 
 source_group("Header Files" FILES ${BS_BANSHEEVULKANRENDERAPI_INC_NOFILTER})

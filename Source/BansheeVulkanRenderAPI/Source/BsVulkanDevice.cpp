@@ -1,12 +1,19 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsVulkanDevice.h"
+#include "BsVulkanQueue.h"
+#include "BsVulkanCommandBuffer.h"
+#include "BsVulkanDescriptorManager.h"
 
 namespace BansheeEngine
 {
 	VulkanDevice::VulkanDevice(VkPhysicalDevice device)
 		:mPhysicalDevice(device), mLogicalDevice(nullptr), mQueueInfos{}
 	{
+		// Set to default
+		for (UINT32 i = 0; i < VQT_COUNT; i++)
+			mQueueInfos[i].familyIdx = (UINT32)-1;
+
 		vkGetPhysicalDeviceProperties(device, &mDeviceProperties);
 		vkGetPhysicalDeviceFeatures(device, &mDeviceFeatures);
 		vkGetPhysicalDeviceMemoryProperties(device, &mMemoryProperties);
@@ -18,7 +25,7 @@ namespace BansheeEngine
 		vkGetPhysicalDeviceQueueFamilyProperties(device, &numQueueFamilies, queueFamilyProperties.data());
 
 		// Create queues
-		const float defaultQueuePriorities[BS_MAX_VULKAN_QUEUES_PER_TYPE] = { 0.0f };
+		const float defaultQueuePriorities[BS_MAX_QUEUES_PER_TYPE] = { 0.0f };
 		Vector<VkDeviceQueueCreateInfo> queueCreateInfos;
 
 		auto populateQueueInfo = [&](VulkanQueueType type, uint32_t familyIdx)
@@ -30,11 +37,11 @@ namespace BansheeEngine
 			createInfo.pNext = nullptr;
 			createInfo.flags = 0;
 			createInfo.queueFamilyIndex = familyIdx;
-			createInfo.queueCount = std::min(queueFamilyProperties[familyIdx].queueCount, (uint32_t)BS_MAX_VULKAN_QUEUES_PER_TYPE);
+			createInfo.queueCount = std::min(queueFamilyProperties[familyIdx].queueCount, (uint32_t)BS_MAX_QUEUES_PER_TYPE);
 			createInfo.pQueuePriorities = defaultQueuePriorities;
 
 			mQueueInfos[type].familyIdx = familyIdx;
-			mQueueInfos[type].queues.resize(createInfo.queueCount);
+			mQueueInfos[type].queues.resize(createInfo.queueCount, nullptr);
 		};
 
 		// Look for dedicated compute queues
@@ -92,14 +99,33 @@ namespace BansheeEngine
 		for(UINT32 i = 0; i < VQT_COUNT; i++)
 		{
 			UINT32 numQueues = (UINT32)mQueueInfos[i].queues.size();
-			for(UINT32 j = 0; j < numQueues; j++)
-				vkGetDeviceQueue(mLogicalDevice, mQueueInfos[i].familyIdx, j, &mQueueInfos[i].queues[j]);
+			for (UINT32 j = 0; j < numQueues; j++)
+			{
+				VkQueue queue;
+				vkGetDeviceQueue(mLogicalDevice, mQueueInfos[i].familyIdx, j, &queue);
+
+				mQueueInfos[i].queues[j] = bs_new<VulkanQueue>(queue);
+			}
 		}
+
+		// Create pools/managers
+		mCommandBufferPool = bs_new<VulkanCmdBufferPool>(*this);
+		mDescriptorManager = bs_new<VulkanDescriptorManager>(*this);
 	}
 
 	VulkanDevice::~VulkanDevice()
 	{
 		vkDeviceWaitIdle(mLogicalDevice);
+
+		for (UINT32 i = 0; i < VQT_COUNT; i++)
+		{
+			UINT32 numQueues = (UINT32)mQueueInfos[i].queues.size();
+			for (UINT32 j = 0; j < numQueues; j++)
+				bs_delete(mQueueInfos[i].queues[j]);
+		}
+
+		bs_delete(mDescriptorManager);
+		bs_delete(mCommandBufferPool);
 		vkDestroyDevice(mLogicalDevice, gVulkanAllocator);
 	}
 
@@ -136,6 +162,9 @@ namespace BansheeEngine
 		allocateInfo.pNext = nullptr;
 		allocateInfo.memoryTypeIndex = findMemoryType(reqs.memoryTypeBits, flags);
 		allocateInfo.allocationSize = reqs.size;
+
+		if (allocateInfo.memoryTypeIndex == -1)
+			return VK_NULL_HANDLE;
 
 		VkDeviceMemory memory;
 
