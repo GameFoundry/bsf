@@ -1,5 +1,5 @@
 # Ignored files
-Include/BsLexerFX.h
-Include/BsParserFX.h
-Source/BsLexerFX.c
-Source/BsParserFX.c
+/Include/BsLexerFX.h
+/Include/BsParserFX.h
+/Source/BsLexerFX.c
+/Source/BsParserFX.c
