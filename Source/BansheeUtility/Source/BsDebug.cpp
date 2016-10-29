@@ -22,7 +22,7 @@ void logToIDEConsole(const BansheeEngine::String& message)
 #else
 void logToIDEConsole(const BansheeEngine::String& message)
 {
-	// Do nothing
+	std::cout << message << std::endl;
 }
 #endif
 
