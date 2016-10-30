@@ -65,9 +65,6 @@ namespace BansheeEngine
 		 */
 		bool isActive() const { return mIsActive; }
 
-
-		UINT32 getIndex();
-
 		/**
 		 * Gets the parent editor window this widget is docked in. Can be null (for example when widget is in the process of
 		 * dragging and not visible).

@@ -35,12 +35,6 @@ namespace BansheeEngine
 			return nullptr;
 	}
 
-
-	UINT32 EditorWidgetBase::getIndex()
-	{
-		return mIndex;
-	}
-
 	void EditorWidgetBase::setHasFocus(bool focus)
 	{
 		EditorWidgetContainer* parentContainer = _getParent();
