@@ -28,7 +28,6 @@
 #include "BsSceneObject.h"
 #include "BsCoreThread.h"
 #include "BsProfilerOverlay.h"
-#include "BsSpriteTexture.h"
 
 // Example includes
 #include "CameraFlyer.h"

@@ -56,8 +56,8 @@ namespace BansheeEngine
 		/**	Checks if the widget has focus (usually means user clicked on it last). */
 		bool hasFocus() const { return mHasFocus; }
 
-		// sets the widget active or non active
-		void setActive(UINT32 widgetIndx);
+		/** Makes the widget active in its container. This means the widgets tab is active and the widget is visible. */
+		void setActive();
 
 		/** 
 		 * Checks is the widget the currently active widget in its container. This means the widget's tab is active or
@@ -65,7 +65,6 @@ namespace BansheeEngine
 		 */
 		bool isActive() const { return mIsActive; }
 
-		void setIndex(UINT32 index);
 
 		UINT32 getIndex();
 

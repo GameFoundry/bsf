@@ -209,19 +209,9 @@ namespace BansheeEngine
 		{
 			if (active)
 			{
-				thisPtr->getEditorWidget()->setActive(thisPtr->getEditorWidget()->getIndex()); 
-				return;
-			}
-			else
-			{
-				return;
-			}
-				
+				thisPtr->getEditorWidget()->setActive(); 
+			}	
 		}
-			
-
-		//return if the given widget is destroyed
-		return;
 	}
 
 	bool ScriptEditorWindow::internal_isActive(ScriptEditorWindow* thisPtr)

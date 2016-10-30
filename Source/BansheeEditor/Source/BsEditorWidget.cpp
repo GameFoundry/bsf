@@ -35,10 +35,6 @@ namespace BansheeEngine
 			return nullptr;
 	}
 
-	void EditorWidgetBase::setIndex(UINT32 index)
-	{
-		mIndex = index;
-	}
 
 	UINT32 EditorWidgetBase::getIndex()
 	{
@@ -64,13 +60,13 @@ namespace BansheeEngine
 		_setHasFocus(focus);
 	}
 
-	void EditorWidgetBase::setActive(UINT32 widgetIndx)
+	void EditorWidgetBase::setActive()
 	{
 		EditorWidgetContainer* parentContainer = _getParent();
 		if (parentContainer == nullptr)
 			return;
 
-		parentContainer->setActiveWidget(widgetIndx);
+		parentContainer->setActiveWidget(mIndex);
 	}
 
 	void EditorWidgetBase::close()
