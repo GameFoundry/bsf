@@ -7,8 +7,6 @@
 #include "BsIReflectable.h"
 #include "BsCoreObject.h"
 
-#include <cfloat>
-
 namespace BansheeEngine 
 {
 	/** @addtogroup RenderAPI
@@ -146,7 +144,7 @@ namespace BansheeEngine
 	public:
 		friend class SamplerStateRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const override;
+		RTTITypeBase* getRTTI() const override;
     };
 
 	/** @} */

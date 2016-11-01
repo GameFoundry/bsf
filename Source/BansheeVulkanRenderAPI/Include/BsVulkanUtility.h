@@ -52,6 +52,12 @@ namespace BansheeEngine
 		/**	Converts between Banshee and Vulkan draw operation (i.e. primitive topology). */
 		static VkPrimitiveTopology getDrawOp(DrawOperationType op);
 
+		/**	Converts between Banshee and Vulkan texture filtering modes. */
+		static VkFilter getFilter(FilterOptions filter);
+
+		/**	Converts between Banshee and Vulkan texture filtering modes. */
+		static VkSamplerMipmapMode getMipFilter(FilterOptions filter);
+
 		/** Gets Vulkan flags representing the number of samples in an image. Sample count must be a power of 2. */
 		static VkSampleCountFlagBits getSampleFlags(UINT32 numSamples);
 

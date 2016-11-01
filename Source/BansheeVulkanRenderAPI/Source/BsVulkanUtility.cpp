@@ -403,6 +403,38 @@ namespace BansheeEngine
 		return VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 	}
 
+	VkFilter VulkanUtility::getFilter(FilterOptions filter)
+	{
+		switch(filter)
+		{
+		case FO_LINEAR:
+		case FO_ANISOTROPIC:
+			return VK_FILTER_LINEAR;
+		case FO_POINT:
+		case FO_NONE:
+			return VK_FILTER_NEAREST;
+		}
+
+		// Unsupported type
+		return VK_FILTER_LINEAR;
+	}
+
+	VkSamplerMipmapMode VulkanUtility::getMipFilter(FilterOptions filter)
+	{
+		switch (filter)
+		{
+		case FO_LINEAR:
+		case FO_ANISOTROPIC:
+			return VK_SAMPLER_MIPMAP_MODE_LINEAR;
+		case FO_POINT:
+		case FO_NONE:
+			return VK_SAMPLER_MIPMAP_MODE_NEAREST;
+		}
+
+		// Unsupported type
+		return VK_SAMPLER_MIPMAP_MODE_LINEAR;
+	}
+
 	void VulkanUtility::getDevices(const VulkanRenderAPI& rapi, GpuDeviceFlags flags, VulkanDevice*(&devices)[BS_MAX_LINKED_DEVICES])
 	{
 		if(flags == GDF_DEFAULT)
