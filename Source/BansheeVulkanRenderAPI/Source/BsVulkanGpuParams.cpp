@@ -263,11 +263,7 @@ namespace BansheeEngine
 			if (mPerDeviceData[i].perSetData == nullptr)
 				continue;
 
-			VulkanImage* imageRes = vulkanTexture->getResource(i);
-			if (imageRes != nullptr)
-				mPerDeviceData[i].perSetData[set].writeInfos[slot].image.imageView = imageRes->getView();
-			else
-				mPerDeviceData[i].perSetData[set].writeInfos[slot].image.imageView = VK_NULL_HANDLE;
+			mPerDeviceData[i].perSetData[set].writeInfos[slot].image.imageView = vulkanTexture->getView(i);
 		}
 
 		mSetsDirty[set] = true;
@@ -284,11 +280,7 @@ namespace BansheeEngine
 			if (mPerDeviceData[i].perSetData == nullptr)
 				continue;
 
-			VulkanImage* imageRes = vulkanTexture->getResource(i);
-			if (imageRes != nullptr)
-				mPerDeviceData[i].perSetData[set].writeInfos[slot].image.imageView = imageRes->getView(surface);
-			else
-				mPerDeviceData[i].perSetData[set].writeInfos[slot].image.imageView = VK_NULL_HANDLE;
+			mPerDeviceData[i].perSetData[set].writeInfos[slot].image.imageView = vulkanTexture->getView(i, surface);
 		}
 
 		mSetsDirty[set] = true;
@@ -348,11 +340,7 @@ namespace BansheeEngine
 			if (mPerDeviceData[i].perSetData == nullptr)
 				continue;
 
-			VulkanImage* imageRes = vulkanTexture->getResource(i);
-			if (imageRes != nullptr)
-				mPerDeviceData[i].perSetData[set].writeInfos[slot].image.imageView = imageRes->getView(surface);
-			else
-				mPerDeviceData[i].perSetData[set].writeInfos[slot].image.imageView = VK_NULL_HANDLE;
+			mPerDeviceData[i].perSetData[set].writeInfos[slot].image.imageView = vulkanTexture->getView(i, surface);
 		}
 
 		mSetsDirty[set] = true;

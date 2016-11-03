@@ -9,7 +9,7 @@
 namespace BansheeEngine
 {
 	VulkanCmdBufferPool::VulkanCmdBufferPool(VulkanDevice& device)
-		:mDevice(device), mPools{}, mBuffers {}, mNextId(1)
+		:mDevice(device), mPools{}, mBuffers{}, mNextId(1)
 	{
 		for (UINT32 i = 0; i < GQT_COUNT; i++)
 		{

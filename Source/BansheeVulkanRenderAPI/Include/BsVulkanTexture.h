@@ -3,6 +3,7 @@
 #pragma once
 
 #include "BsVulkanPrerequisites.h"
+#include "BsVulkanResource.h"
 #include "BsTexture.h"
 
 namespace BansheeEngine
@@ -11,11 +12,50 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
+	/** Wrapper around a Vulkan image object that manages its usage and lifetime. */
+	class VulkanImage : public VulkanResource
+	{
+	public:
+		VulkanImage(VulkanResourceManager* owner, VkImage image, VkImageLayout layout);
+		~VulkanImage();
+
+		/** Returns the internal handle to the Vulkan object. */
+		VkImage getHandle() const { return mImage; }
+
+		/** Returns the layout the image is currently in. */
+		VkImageLayout getLayout() const { return mLayout; }
+
+		/** Notifies the resource that the current image layout has changed. */
+		void setLayout(VkImageLayout layout) { mLayout = layout; }
+
+	private:
+		VkImage mImage;
+		VkImageLayout mLayout;
+	};
+
 	/**	Vulkan implementation of a texture. */
 	class VulkanTextureCore : public TextureCore
 	{
 	public:
 		~VulkanTextureCore();
+
+		/** 
+		 * Gets the resource wrapping the Vulkan image object, on the specified device. If texture device mask doesn't 
+		 * include the provided device, null is returned. 
+		 */
+		VulkanImage* getResource(UINT32 deviceIdx) const { return mImages[deviceIdx]; }
+
+		/** 
+		 * Returns an image view that covers all faces and mip maps of the texture. Usable only on the specified device. 
+		 * If texture device mask doesn't include the provided device, null is returned. 
+		 */
+		VkImageView getView(UINT32 deviceIdx);
+
+		/** 
+		 * Returns an image view that covers the specified faces and mip maps of the texture. Usable only on the specified 
+		 * device. If texture device mask doesn't include the provided device, null is returned. 
+		 */
+		VkImageView getView(UINT32 deviceIdx, const TextureSurface& surface);
 
 	protected:
 		friend class VulkanTextureCoreManager;
@@ -40,7 +80,8 @@ namespace BansheeEngine
 		/** @copydoc TextureCore::writeData */
 		void writeData(const PixelData& src, UINT32 mipLevel = 0, UINT32 face = 0, bool discardWholeBuffer = false) override;
 
-	protected:
+	private:
+		VulkanImage* mImages[BS_MAX_DEVICES];
 	};
 
 	/** @} */

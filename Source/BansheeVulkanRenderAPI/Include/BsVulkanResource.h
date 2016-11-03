@@ -24,6 +24,14 @@ namespace BansheeEngine
 	typedef Flags<VulkanUseFlag> VulkanUseFlags;
 	BS_FLAGS_OPERATORS(VulkanUseFlag);
 
+	/** Types of VulkanResource. */
+	enum class VulkanResourceType
+	{
+		Generic,
+		Image,
+		Buffer
+	};
+
 	/** 
 	 * Wraps one or multiple native Vulkan objects. Allows the object usage to be tracked in command buffers, handles
 	 * ownership transitions between different queues, and handles delayed object destruction.
@@ -31,7 +39,7 @@ namespace BansheeEngine
 	class VulkanResource
 	{
 	public:
-		VulkanResource(VulkanResourceManager* owner, bool concurrency);
+		VulkanResource(VulkanResourceManager* owner, bool concurrency, VulkanResourceType type = VulkanResourceType::Generic);
 		virtual ~VulkanResource();
 
 		/** 
@@ -56,6 +64,17 @@ namespace BansheeEngine
 		 *			call VulkanCommandBufferManager::refreshStates() before checking for usage.
 		 */
 		bool isUsed() const { return mNumHandles > 0; }
+
+		/** Returns the type of the object wrapped by the resource. */
+		VulkanResourceType getType() const { return mType; }
+
+		/** 
+		 * Returns the queue family the resource is currently owned by. Returns -1 if owned by no queue.
+		 * 
+		 * @note	If resource concurrency is enabled, then this value has no meaning as the resource can be used on
+		 *			multiple queue families at once.
+		 */
+		UINT32 getQueueFamily() const { return mQueueFamily; }
 
 		/** 
 		 * Destroys the resource and frees its memory. If the resource is currently being used on a device, the
@@ -82,6 +101,7 @@ namespace BansheeEngine
 		VulkanResourceManager* mOwner;
 		UINT32 mQueueFamily;
 		State mState;
+		VulkanResourceType mType;
 		
 		UseHandle* mHandles;
 		UINT32 mNumHandles;

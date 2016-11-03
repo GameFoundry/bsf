@@ -5,8 +5,8 @@
 
 namespace BansheeEngine
 {
-	VulkanResource::VulkanResource(VulkanResourceManager* owner, bool concurrency)
-		: mOwner(owner), mState(concurrency ? State::Shared : State::Normal), mNumHandles(0)
+	VulkanResource::VulkanResource(VulkanResourceManager* owner, bool concurrency, VulkanResourceType type)
+		: mOwner(owner), mQueueFamily(-1), mState(concurrency ? State::Shared : State::Normal), mType(type), mNumHandles(0)
 		, mHandleCapacity(INITIAL_HANDLE_CAPACITY)
 	{
 		UINT32 bytesCapacity = sizeof(UseHandle) * mHandleCapacity;
