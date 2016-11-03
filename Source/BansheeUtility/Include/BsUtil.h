@@ -2,6 +2,8 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
+#include <BsEnumClassHash.h>
+
 namespace BansheeEngine
 {
 	/** @addtogroup General
@@ -12,7 +14,9 @@ namespace BansheeEngine
 	template <class T>
 	inline void hash_combine(std::size_t& seed, const T& v)
 	{
-		std::hash<T> hasher;
+		using HashType = typename std::conditional<std::is_enum<T>::value, EnumClassHash, std::hash<T>>::type;
+
+		HashType hasher;
 		seed ^= hasher(v) + 0x9e3779b9 + (seed<<6) + (seed>>2);
 	}
 

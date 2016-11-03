@@ -26,6 +26,12 @@ set(BS_BANSHEEUTILITY_SRC_WIN32
 	"Source/Win32/BsWin32Window.cpp"
 )
 
+set(BS_BANSHEEUTILITY_SRC_UNIX
+	"Source/Unix/BsUnixCrashHandler.cpp"
+	"Source/Unix/BsUnixFileSystem.cpp"
+	"Source/Unix/BsUnixPlatformUtility.cpp"
+)
+
 set(BS_BANSHEEUTILITY_INC_IMAGE
 	"Include/BsColor.h"
 	"Include/BsTexAtlasGenerator.h"
@@ -65,6 +71,7 @@ set(BS_BANSHEEUTILITY_INC_FILESYSTEM
 
 set(BS_BANSHEEUTILITY_SRC_FILESYSTEM
 	"Source/BsDataStream.cpp"
+	"Source/BsFileSystem.cpp"
 	"Source/BsPath.cpp"
 )
 
@@ -161,13 +168,17 @@ set(BS_BANSHEEUTILITY_SRC_MATH
 )
 
 set(BS_BANSHEEUTILITY_INC_TESTING
+	"Include/BsFileSystemTestSuite.h"
 	"Include/BsTestSuite.h"
 	"Include/BsTestOutput.h"
+	"Include/BsConsoleTestOutput.h"
 )
 
 set(BS_BANSHEEUTILITY_SRC_TESTING
+	"Source/BsFileSystemTestSuite.cpp"
 	"Source/BsTestSuite.cpp"
 	"Source/BsTestOutput.cpp"
+	"Source/BsConsoleTestOutput.cpp"
 )
 
 set(BS_BANSHEEUTILITY_SRC_SERIALIZATION
@@ -209,6 +220,7 @@ set(BS_BANSHEEUTILITY_INC_MATH
 
 set(BS_BANSHEEUTILITY_SRC_ERROR
 	"Source/BsException.cpp"
+	"Source/BsCrashHandler.cpp"
 )
 
 set(BS_BANSHEEUTILITY_INC_SERIALIZATION
@@ -305,4 +317,6 @@ set(BS_BANSHEEUTILITY_SRC
 if(WIN32)
 	list(APPEND BS_BANSHEEUTILITY_SRC ${BS_BANSHEEUTILITY_SRC_WIN32})
 	list(APPEND BS_BANSHEEUTILITY_SRC ${BS_BANSHEEUTILITY_INC_WIN32})
+else()
+	list(APPEND BS_BANSHEEUTILITY_SRC ${BS_BANSHEEUTILITY_SRC_UNIX})
 endif()

@@ -371,9 +371,6 @@ namespace BansheeEngine
     FileDataStream::FileDataStream(const Path& path, AccessMode accessMode, bool freeOnClose)
         : DataStream(accessMode), mPath(path), mFreeOnClose(freeOnClose)
     {
-		WString pathWString = path.toWString();
-		const wchar_t* pathString = pathWString.c_str();
-
 		// Always open in binary mode
 		// Also, always include reading
 		std::ios::openmode mode = std::ios::binary;
@@ -385,13 +382,13 @@ namespace BansheeEngine
 		{
 			mode |= std::ios::out;
 			mFStream = bs_shared_ptr_new<std::fstream>();
-			mFStream->open(pathString, mode);
+			mFStream->open(path.toPlatformString().c_str(), mode);
 			mInStream = mFStream;
 		}
 		else
 		{
 			mFStreamRO = bs_shared_ptr_new<std::ifstream>();
-			mFStreamRO->open(pathString, mode);
+			mFStreamRO->open(path.toPlatformString().c_str(), mode);
 			mInStream = mFStreamRO;
 		}
 

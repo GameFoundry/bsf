@@ -46,7 +46,7 @@ namespace BansheeEngine
 		return *this;
 	}
 
-	inline float Radian::valueDegrees() const
+	float Radian::valueDegrees() const
 	{
 		return mRad * Math::RAD2DEG;
 	}

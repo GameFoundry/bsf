@@ -77,11 +77,16 @@ extern "C" {
 }
 #endif
 
+#include <BsEnumClassHash.h>
+
 namespace BansheeEngine
 {
 	/** @addtogroup Containers
 	 *  @{
 	 */
+
+	template <typename Key>
+	using HashType = typename std::conditional<std::is_enum<Key>::value, EnumClassHash, std::hash<Key>>::type;
 
 	/** Double ended queue. Allows for fast insertion and removal at both its beggining and end. */
 	template <typename T, typename A = StdAlloc<T>> 
@@ -116,18 +121,18 @@ namespace BansheeEngine
 	using MultiMap = std::multimap<K, V, P, A>;
 
 	/** An associative container containing an unordered set of elements. Usually faster than Set for larger data sets. */
-	template <typename T, typename H = std::hash<T>, typename C = std::equal_to<T>, typename A = StdAlloc<T>> 
+	template <typename T, typename H = HashType<T>, typename C = std::equal_to<T>, typename A = StdAlloc<T>> 
 	using UnorderedSet = std::unordered_set<T, H, C, A>;
 
 	/** An associative container containing an ordered set of key-value pairs. Usually faster than Map for larger data sets. */
-	template <typename K, typename V, typename H = std::hash<K>, typename C = std::equal_to<K>, typename A = StdAlloc<std::pair<const K, V>>> 
+	template <typename K, typename V, typename H = HashType<K>, typename C = std::equal_to<K>, typename A = StdAlloc<std::pair<const K, V>>> 
 	using UnorderedMap = std::unordered_map<K, V, H, C, A>;
 
 	/** 
 	 * An associative container containing an ordered set of key-value pairs where multiple elements can have the same key.
 	 * Usually faster than MultiMap for larger data sets.
 	 */
-	template <typename K, typename V, typename H = std::hash<K>, typename C = std::equal_to<K>, typename A = StdAlloc<std::pair<const K, V>>> 
+	template <typename K, typename V, typename H = HashType<K>, typename C = std::equal_to<K>, typename A = StdAlloc<std::pair<const K, V>>> 
 	using UnorderedMultimap = std::unordered_multimap<K, V, H, C, A>;
 
 	/** @} */
