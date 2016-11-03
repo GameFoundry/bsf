@@ -293,24 +293,6 @@ namespace BansheeEngine
 		return win32_getFileSize(fullPath.toWString());
 	}
 
-	void FileSystem::move(const Path& oldPath, const Path& newPath, bool overwriteExisting)
-	{
-		WString newPathStr = newPath.toWString();
-
-		if (win32_pathExists(newPathStr))
-		{
-			if (overwriteExisting)
-				FileSystem::removeFile(newPath);
-			else
-			{
-				LOGWRN("Move operation failed because another file already exists at the new path: \"" + toString(newPathStr) + "\"");
-				return;
-			}
-		}
-
-		moveFile(oldPath, newPath);
-	}
-
 	bool FileSystem::exists(const Path& fullPath)
 	{
 		return win32_pathExists(fullPath.toWString());

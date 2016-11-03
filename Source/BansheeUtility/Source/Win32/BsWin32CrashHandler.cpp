@@ -12,8 +12,7 @@
 #include "DbgHelp.h"
 #pragma warning(default : 4091)
 
-static const String sMiniDumpName = "minidump.dmp";
-static const WString sMoreInfoMsg = ;
+static const char* sMiniDumpName = "minidump.dmp";
 
 namespace BansheeEngine
 {
@@ -449,11 +448,11 @@ namespace BansheeEngine
 		Mutex mutex;
 	};
 
-	void win32_popupErrorMessageBox()
+	void win32_popupErrorMessageBox(const WString& msg, const Path& folder)
 	{
-		WString simpleErrorMessage = toWString(sFatalErrorMsg)
+		WString simpleErrorMessage = msg
 			+ L"\n\nFor more information check the crash report located at:\n "
-			+ getCrashFolder().toWString();
+			+ folder.toWString();
 		MessageBoxW(nullptr, simpleErrorMessage.c_str(), L"Banshee fatal error!", MB_OK);
 
 	}
@@ -469,8 +468,8 @@ namespace BansheeEngine
 		logErrorAndStackTrace(type, description, function, file, line);
 		saveCrashLog();
 
-		win32_writeMiniDump(getCrashFolder() + WString(sMiniDumpName), nullptr);
-		win32_popupErrorMessageBox();
+		win32_writeMiniDump(getCrashFolder() + String(sMiniDumpName), nullptr);
+		win32_popupErrorMessageBox(toWString(sFatalErrorMsg), getCrashFolder());
 
 		// Note: Potentially also log Windows Error Report and/or send crash data to server
 	}
@@ -489,8 +488,8 @@ namespace BansheeEngine
 		                      win32_getStackTrace(*exceptionData->ContextRecord, 0));
 		saveCrashLog();
 
-		win32_writeMiniDump(getCrashFolder() + WString(MiniDumpName), exceptionData);
-		win32_popupErrorMessageBox();
+		win32_writeMiniDump(getCrashFolder() + String(sMiniDumpName), exceptionData);
+		win32_popupErrorMessageBox(toWString(sFatalErrorMsg), getCrashFolder());
 
 		// Note: Potentially also log Windows Error Report and/or send crash data to server
 
@@ -502,7 +501,7 @@ namespace BansheeEngine
 		SYSTEMTIME systemTime;
 		GetLocalTime(&systemTime);
 
-		String timeStamp = L"{0}{1}{2}_{3}{4}";
+		String timeStamp = "{0}{1}{2}_{3}{4}";
 		String strYear = toString(systemTime.wYear, 4, '0');
 		String strMonth = toString(systemTime.wMonth, 2, '0');
 		String strDay = toString(systemTime.wDay, 2, '0');
