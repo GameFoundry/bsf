@@ -1,5 +1,16 @@
-
-if(NOT WIN32)
+if(WIN32)
+	execute_process(
+		COMMAND ${PROJECT_SOURCE_DIR}/../Dependencies/tools/flex/flex.exe --wincompat ${PROJECT_SOURCE_DIR}/BansheeSL/BsLexerFX.l 
+		COMMAND ${PROJECT_SOURCE_DIR}/../Dependencies/tools/bison/bison.exe ${PROJECT_SOURCE_DIR}/BansheeSL/BsParserFX.y
+		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/BansheeSL
+		RESULT_VARIABLE rv
+	 )
+	 
+	file(RENAME "${PROJECT_SOURCE_DIR}/BansheeSL/BsLexerFX.h" "${PROJECT_SOURCE_DIR}/BansheeSL/Include/BsLexerFX.h")
+	file(RENAME "${PROJECT_SOURCE_DIR}/BansheeSL/BsLexerFX.c" "${PROJECT_SOURCE_DIR}/BansheeSL/Source/BsLexerFX.c")
+	file(RENAME "${PROJECT_SOURCE_DIR}/BansheeSL/BsParserFX.h" "${PROJECT_SOURCE_DIR}/BansheeSL/Include/BsParserFX.h")
+	file(RENAME "${PROJECT_SOURCE_DIR}/BansheeSL/BsParserFX.c" "${PROJECT_SOURCE_DIR}/BansheeSL/Source/BsParserFX.c")
+else()
 	find_package(BISON REQUIRED)
 	find_package(FLEX REQUIRED)
 	message("Building lexer/parser...")
