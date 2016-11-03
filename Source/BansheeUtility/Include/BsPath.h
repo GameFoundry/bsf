@@ -2,6 +2,10 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
+#include "BsPlatformDefines.h"
+#include "BsString.h"
+#include "BsUtil.h"                // For hash_combine()
+
 namespace BansheeEngine
 {
 	/** @addtogroup Filesystem

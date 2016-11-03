@@ -10,6 +10,8 @@
 #include "BsGUIMouseEvent.h"
 #include "BsGUICommandEvent.h"
 
+#include <climits>
+
 using namespace std::placeholders;
 
 namespace BansheeEngine

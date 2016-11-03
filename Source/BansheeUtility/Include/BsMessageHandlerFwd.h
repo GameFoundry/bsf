@@ -2,6 +2,9 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
+#include "BsTypes.h"
+#include "BsString.h"
+
 namespace BansheeEngine
 {
 	/** @addtogroup General

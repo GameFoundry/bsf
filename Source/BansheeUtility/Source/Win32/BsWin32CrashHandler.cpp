@@ -1,5 +1,7 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
+#include "BsCrashHandler.h"
+
 #include "BsPrerequisitesUtil.h"
 #include "BsDebug.h"
 #include "BsDynLib.h"
@@ -12,8 +14,21 @@
 #include "DbgHelp.h"
 #pragma warning(default : 4091)
 
+static const String sMiniDumpName = "minidump.dmp";
+static const WString sMoreInfoMsg = ;
+
 namespace BansheeEngine
 {
+	CrashHandler::CrashHandler()
+	{
+		m = bs_new<Data>();
+	}
+
+	CrashHandler::~CrashHandler()
+	{
+		bs_delete(m);
+	}
+
 	/**
 	 * Returns the raw stack trace using the provided context. Raw stack trace contains only function addresses.
 	 * 			
@@ -431,56 +446,33 @@ namespace BansheeEngine
 		CloseHandle(hThread);
 	}
 
-	static const wchar_t* gMiniDumpName = L"minidump.dmp";
-	const wchar_t* CrashHandler::CrashReportFolder = L"CrashReports/{0}/";
-	const wchar_t* CrashHandler::CrashLogName = L"log.html";
-
 	struct CrashHandler::Data
 	{
 		Mutex mutex;
 	};
 
-	CrashHandler::CrashHandler()
+	void win32_popupErrorMessageBox()
 	{
-		m = bs_new<Data>();
+		WString simpleErrorMessage = toWString(sFatalErrorMsg)
+			+ L"\n\nFor more information check the crash report located at:\n "
+			+ getCrashFolder().toWString();
+		MessageBoxW(nullptr, simpleErrorMessage.c_str(), L"Banshee fatal error!", MB_OK);
+
 	}
-
-	CrashHandler::~CrashHandler()
-	{
-		win32_unloadPSAPI();
-
-		bs_delete(m);
-	}
-
-	void CrashHandler::reportCrash(const String& type, const String& description, const String& function,
-		const String& file, UINT32 line) const
+	void CrashHandler::reportCrash(const String& type,
+	                               const String& description,
+	                               const String& function,
+	                               const String& file,
+	                               UINT32 line) const
 	{
 		// Win32 debug methods are not thread safe
 		Lock(m->mutex);
 
-		String stackTrace = getStackTrace();
+		logErrorAndStackTrace(type, description, function, file, line);
+		saveCrashLog();
 
-		StringStream errorMessageStream;
-		errorMessageStream << "Fatal error occurred and the program has to terminate!" << std::endl;
-		errorMessageStream << "\t\t" << type << " - " << description << std::endl;
-		errorMessageStream << "\t\t in " << function << " [" << file << ":" << line << "]" << std::endl;
-		errorMessageStream << std::endl;
-		errorMessageStream << "Stack trace: " << std::endl;
-		errorMessageStream << stackTrace;
-
-		String errorMessage = errorMessageStream.str();
-		gDebug().logError(errorMessage);
-
-		Path crashFolder = getCrashFolder();
-		FileSystem::createDir(crashFolder);
-
-		gDebug().saveLog(crashFolder + WString(CrashLogName));
-		win32_writeMiniDump(crashFolder + WString(gMiniDumpName), nullptr);
-
-		WString simpleErrorMessage = L"Fatal error occurred and the program has to terminate! " \
-			L"\n\nFor more information check the crash report located at:\n " + crashFolder.toWString();
-
-		MessageBoxW(nullptr, simpleErrorMessage.c_str(), L"Banshee fatal error!", MB_OK);
+		win32_writeMiniDump(getCrashFolder() + WString(sMiniDumpName), nullptr);
+		win32_popupErrorMessageBox();
 
 		// Note: Potentially also log Windows Error Report and/or send crash data to server
 	}
@@ -494,51 +486,31 @@ namespace BansheeEngine
 
 		win32_initPSAPI();
 		win32_loadSymbols();
-		String stackTrace = win32_getStackTrace(*exceptionData->ContextRecord, 0);
 
-		StringStream errorMessageStream;
-		errorMessageStream << "Fatal error occurred and the program has to terminate!" << std::endl;
-		errorMessageStream << "\t\t" << win32_getExceptionMessage(exceptionData->ExceptionRecord) << std::endl;;
-		errorMessageStream << std::endl;
-		errorMessageStream << "Stack trace: " << std::endl;
-		errorMessageStream << stackTrace;
+		logErrorAndStackTrace(win32_getExceptionMessage(exceptionData->ExceptionRecord),
+		                      win32_getStackTrace(*exceptionData->ContextRecord, 0));
+		saveCrashLog();
 
-		String errorMessage = errorMessageStream.str();
-		gDebug().logError(errorMessage);
-
-		Path crashFolder = getCrashFolder();
-		FileSystem::createDir(crashFolder);
-
-		gDebug().saveLog(crashFolder + WString(CrashLogName));
-		win32_writeMiniDump(crashFolder + WString(gMiniDumpName), exceptionData);
-
-		WString simpleErrorMessage = L"Fatal error occurred and the program has to terminate! " \
-			L"\n\nFor more information check the crash report located at:\n" + crashFolder.toWString();
-
-		MessageBoxW(nullptr, simpleErrorMessage.c_str(), L"Banshee fatal error!", MB_OK);
+		win32_writeMiniDump(getCrashFolder() + WString(MiniDumpName), exceptionData);
+		win32_popupErrorMessageBox();
 
 		// Note: Potentially also log Windows Error Report and/or send crash data to server
 
 		return EXCEPTION_EXECUTE_HANDLER;
 	}
 
-	Path CrashHandler::getCrashFolder() const
+	String CrashHandler::getCrashTimestamp()
 	{
 		SYSTEMTIME systemTime;
 		GetLocalTime(&systemTime);
 
-		WString timeStamp = L"{0}{1}{2}_{3}{4}";
-		WString strYear = toWString(systemTime.wYear, 4, '0');
-		WString strMonth = toWString(systemTime.wMonth, 2, '0');
-		WString strDay = toWString(systemTime.wDay, 2, '0');
-		WString strHour = toWString(systemTime.wHour, 2, '0');
-		WString strMinute = toWString(systemTime.wMinute, 2, '0');
-
-		timeStamp = StringUtil::format(timeStamp, strYear, strMonth, strDay, strHour, strMinute);
-
-		WString folderName = StringUtil::format(CrashReportFolder, timeStamp);
-
-		return FileSystem::getWorkingDirectoryPath() + folderName;
+		String timeStamp = L"{0}{1}{2}_{3}{4}";
+		String strYear = toString(systemTime.wYear, 4, '0');
+		String strMonth = toString(systemTime.wMonth, 2, '0');
+		String strDay = toString(systemTime.wDay, 2, '0');
+		String strHour = toString(systemTime.wHour, 2, '0');
+		String strMinute = toString(systemTime.wMinute, 2, '0');
+		return StringUtil::format(timeStamp, strYear, strMonth, strDay, strHour, strMinute);
 	}
 
 	String CrashHandler::getStackTrace()
@@ -549,10 +521,5 @@ namespace BansheeEngine
 		win32_initPSAPI();
 		win32_loadSymbols();
 		return win32_getStackTrace(context, 2);
-	}
-
-	CrashHandler& gCrashHandler()
-	{
-		return CrashHandler::instance();
 	}
 }

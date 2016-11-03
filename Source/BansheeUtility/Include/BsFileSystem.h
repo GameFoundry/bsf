@@ -23,7 +23,7 @@ namespace BansheeEngine
 		static SPtr<DataStream> openFile(const Path& fullPath, bool readOnly = true);
 
 		/**
-		 * Opens a file and returns a data stream capable of reading and writing to that file. If file doesn't exist new 
+		 * Opens a file and returns a data stream capable of reading and writing to that file. If file doesn't exist new
 		 * one will be created.
 		 *
 		 * @param[in]	fullPath	Full path to a file.
@@ -41,7 +41,7 @@ namespace BansheeEngine
 		 * Deletes a file or a folder at the specified path.
 		 *
 		 * @param[in]	fullPath   	Full path to a file or a folder..
-		 * @param[in]	recursively	(optional) If true, folders will have their contents deleted as well. Otherwise an 
+		 * @param[in]	recursively	(optional) If true, folders will have their contents deleted as well. Otherwise an
 		 *							exception will be thrown for non-empty folders.
 		 */
 		static void remove(const Path& fullPath, bool recursively = true);
@@ -51,17 +51,17 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	oldPath			 	Full path to the old file/folder.
 		 * @param[in]	newPath			 	Full path to the new file/folder.
-		 * @param[in]	overwriteExisting	(optional) If true, any existing file/folder at the new location will be 
+		 * @param[in]	overwriteExisting	(optional) If true, any existing file/folder at the new location will be
 		 *									overwritten, otherwise an exception will be thrown if a file/folder already exists.
 		 */
 		static void move(const Path& oldPath, const Path& newPath, bool overwriteExisting = true);
 
 		/**
-		 * Makes a copy of a file or a folder in the specified path. 
+		 * Makes a copy of a file or a folder in the specified path.
 		 *
 		 * @param[in]	oldPath			 	Full path to the old file/folder.
 		 * @param[in]	newPath			 	Full path to the new file/folder.
-		 * @param[in]	overwriteExisting	(optional) If true, any existing file/folder at the new location will be 
+		 * @param[in]	overwriteExisting	(optional) If true, any existing file/folder at the new location will be
 		 *									overwritten, otherwise an exception will be thrown if a file/folder already exists.
 		 */
 		static void copy(const Path& oldPath, const Path& newPath, bool overwriteExisting = true);
@@ -104,15 +104,15 @@ namespace BansheeEngine
 		static void getChildren(const Path& dirPath, Vector<Path>& files, Vector<Path>& directories);
 
 		/**
-		 * Iterates over all files and directories in the specified folder and calls the provided callback when a 
+		 * Iterates over all files and directories in the specified folder and calls the provided callback when a
 		 * file/folder is iterated over.
 		 *
 		 * @param[in]	dirPath			Directory over which to iterate
 		 * @param[in]	fileCallback	Callback to call whenever a file is found. If callback returns false iteration stops. Can be null.
 		 * @param[in]	dirCallback		Callback to call whenever a directory is found. If callback returns false iteration stops. Can be null.
-		 * @param[in]	recursive		If false then only the direct children of the provided folder will be iterated over, 
+		 * @param[in]	recursive		If false then only the direct children of the provided folder will be iterated over,
 		 *								and if true then child directories will be recursively visited as well.
-		 * @return						True if iteration finished iterating over all files/folders, or false if it was 
+		 * @return						True if iteration finished iterating over all files/folders, or false if it was
 		 *								interrupted by a callback returning false.
 		 */
 		static bool iterate(const Path& dirPath, std::function<bool(const Path&)> fileCallback,
@@ -130,6 +130,15 @@ namespace BansheeEngine
 
 		/** Returns the path to a directory where temporary files may be stored. */
 		static Path getTempDirectoryPath();
+
+	private:
+		/** Copy a single file. Internal function used by copy(). */
+		static void copyFile(const Path& oldPath, const Path& newPath);
+		/** Remove a single file. Internal function used by remove(). */
+		static void removeFile(const Path& path);
+		/** Move a single file. Internal function used by move(). */
+		static void moveFile(const Path& oldPath, const Path& newPath);
+
 	};
 
 	/** @} */

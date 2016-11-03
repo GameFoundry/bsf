@@ -17,6 +17,9 @@ include_directories(${BansheeUtility_INC})
 # Target
 add_library(BansheeUtility SHARED ${BS_BANSHEEUTILITY_SRC})
 
+add_executable(BansheeUtilityTest Source/BansheeUtilityTest.cpp)
+target_link_libraries(BansheeUtilityTest BansheeUtility)
+
 # Defines
 target_compile_definitions(BansheeUtility PRIVATE -DBS_UTILITY_EXPORTS)
 
@@ -29,7 +32,7 @@ target_link_libraries(BansheeUtility
 	Rpcrt4
 	)
 else()
-	# TODO_OTHER_PLATFORMS_GO_HERE
+	target_link_libraries(BansheeUtility dl)
 endif()
 
 # IDE specific

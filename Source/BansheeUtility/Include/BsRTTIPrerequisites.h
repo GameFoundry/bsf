@@ -2,6 +2,15 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
+#include "BsMemoryAllocator.h"
+#include "BsFwdDeclUtil.h"      // For TIDs
+#include "BsTypes.h"            // For UINT32
+
+#include <limits>
+#include <type_traits>          // For std::is_pod
+#include <utility>              // For std::pair
+#include <vector>
+
 namespace BansheeEngine
 {
 	/** @addtogroup Utility 
