@@ -200,7 +200,6 @@ namespace BansheeEngine
 		return false;
 	}
 
-
 	bool win32_createDirectory(const WString& path)
 	{
 		if (win32_pathExists(path) && win32_isDirectory(path))
@@ -210,35 +209,6 @@ namespace BansheeEngine
 			win32_handleError(GetLastError(), path);
 
 		return true;
-	}
-
-	void FileSystem::removeFile(const Path& path)
-	{
-		WString pathStr = path.toWString();
-		if (win32_isDirectory(pathStr))
-		{
-			if (RemoveDirectoryW(pathStr.c_str()) == 0)
-				win32_handleError(GetLastError(), pathStr);
-		}
-		else
-		{
-			if (DeleteFileW(pathStr.c_str()) == 0)
-				win32_handleError(GetLastError(), pathStr);
-		}
-	}
-
-	void FileSystem::copyFile(const Path& from, const Path& to)
-	{
-		if (CopyFileW(from.toWString().c_str(), to.toWString().c_str(), FALSE) == FALSE)
-			win32_handleError(GetLastError(), from);
-	}
-
-	void FileSystem::moveFile(const Path& oldPath, const Path& newPath)
-	{
-		WString oldPathStr = oldPath.toWString();
-		WString newPathStr = newPath.toWString();
-		if (MoveFileW(oldPath.c_str(), newPath.c_str()) == 0)
-			win32_handleError(GetLastError(), oldPath);
 	}
 
 	UINT64 win32_getFileSize(const WString& path)
@@ -264,6 +234,35 @@ namespace BansheeEngine
 		ull.HighPart = fad.ftLastWriteTime.dwHighDateTime;
 
 		return (std::time_t) ((ull.QuadPart / 10000000ULL) - 11644473600ULL);
+	}
+
+	void FileSystem::removeFile(const Path& path)
+	{
+		WString pathStr = path.toWString();
+		if (win32_isDirectory(pathStr))
+		{
+			if (RemoveDirectoryW(pathStr.c_str()) == 0)
+				win32_handleError(GetLastError(), pathStr);
+		}
+		else
+		{
+			if (DeleteFileW(pathStr.c_str()) == 0)
+				win32_handleError(GetLastError(), pathStr);
+		}
+	}
+
+	void FileSystem::copyFile(const Path& from, const Path& to)
+	{
+		if (CopyFileW(from.toWString().c_str(), to.toWString().c_str(), FALSE) == FALSE)
+			win32_handleError(GetLastError(), from.toWString());
+	}
+
+	void FileSystem::moveFile(const Path& oldPath, const Path& newPath)
+	{
+		WString oldPathStr = oldPath.toWString();
+		WString newPathStr = newPath.toWString();
+		if (MoveFileW(oldPathStr.c_str(), newPathStr.c_str()) == 0)
+			win32_handleError(GetLastError(), oldPathStr);
 	}
 
 	SPtr<DataStream> FileSystem::openFile(const Path& fullPath, bool readOnly)
@@ -296,7 +295,6 @@ namespace BansheeEngine
 
 	void FileSystem::move(const Path& oldPath, const Path& newPath, bool overwriteExisting)
 	{
-		WString oldPathStr = oldPath.toWString();
 		WString newPathStr = newPath.toWString();
 
 		if (win32_pathExists(newPathStr))
@@ -310,7 +308,7 @@ namespace BansheeEngine
 			}
 		}
 
-		win32_rename(oldPathStr, newPathStr);
+		moveFile(oldPath, newPath);
 	}
 
 	bool FileSystem::exists(const Path& fullPath)
