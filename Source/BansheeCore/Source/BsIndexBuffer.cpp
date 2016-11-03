@@ -21,7 +21,7 @@ namespace BansheeEngine
 	}
 
 	IndexBufferCore::IndexBufferCore(const INDEX_BUFFER_DESC& desc, GpuDeviceFlags deviceMask)
-		:HardwareBuffer(desc.usage, false), mProperties(desc.indexType, desc.numIndices)
+		:HardwareBuffer(desc.usage), mProperties(desc.indexType, desc.numIndices)
 	{ 
 		mSizeInBytes = mProperties.mIndexSize * mProperties.mNumIndices;
 	}

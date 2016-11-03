@@ -8,7 +8,7 @@ namespace BansheeEngine
 	VulkanDescriptorPool::VulkanDescriptorPool(VulkanDevice& device)
 		:mDevice(device)
 	{
-		VkDescriptorPoolSize poolSizes[4];
+		VkDescriptorPoolSize poolSizes[5];
 		poolSizes[0].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		poolSizes[0].descriptorCount = sMaxSampledImages;
 
@@ -18,8 +18,11 @@ namespace BansheeEngine
 		poolSizes[2].type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
 		poolSizes[2].descriptorCount = sMaxImages;
 
-		poolSizes[3].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-		poolSizes[3].descriptorCount = sMaxBuffers;
+		poolSizes[3].type = VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
+		poolSizes[3].descriptorCount = sMaxSampledBuffers;
+
+		poolSizes[4].type = VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER;
+		poolSizes[4].descriptorCount = sMaxBuffers;
 
 		VkDescriptorPoolCreateInfo poolCI;
 		poolCI.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;

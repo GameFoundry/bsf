@@ -24,6 +24,7 @@ namespace BansheeEngine
 		static const UINT32 sMaxSets = 8192;
 		static const UINT32 sMaxSampledImages = 4096;
 		static const UINT32 sMaxImages = 2048;
+		static const UINT32 sMaxSampledBuffers = 2048;
 		static const UINT32 sMaxBuffers = 2048;
 		static const UINT32 sMaxUniformBuffers = 2048;
 

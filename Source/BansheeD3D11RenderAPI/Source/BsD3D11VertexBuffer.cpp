@@ -65,7 +65,7 @@ namespace BansheeEngine
 	void D3D11VertexBufferCore::initialize()
 	{
 		mBuffer = bs_new<D3D11HardwareBuffer>(D3D11HardwareBuffer::BT_VERTEX, 
-			mUsage, 1, mSizeInBytes, std::ref(mDevice), mSystemMemory, mStreamOut);
+			mUsage, 1, mSizeInBytes, std::ref(mDevice), false, mStreamOut);
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_VertexBuffer);
 		VertexBufferCore::initialize();

@@ -16,7 +16,7 @@ namespace BansheeEngine
 	class VulkanImage : public VulkanResource
 	{
 	public:
-		VulkanImage(VulkanResourceManager* owner, VkImage image, VkImageLayout layout);
+		VulkanImage(VulkanResourceManager* owner, VkImage image, VkDeviceMemory memory, VkImageLayout layout);
 		~VulkanImage();
 
 		/** Returns the internal handle to the Vulkan object. */
@@ -30,6 +30,7 @@ namespace BansheeEngine
 
 	private:
 		VkImage mImage;
+		VkDeviceMemory mMemory;
 		VkImageLayout mLayout;
 	};
 

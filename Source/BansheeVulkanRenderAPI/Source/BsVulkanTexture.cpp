@@ -8,15 +8,18 @@
 
 namespace BansheeEngine
 {
-	VulkanImage::VulkanImage(VulkanResourceManager* owner, VkImage image, VkImageLayout layout)
-		:VulkanResource(owner, false, VulkanResourceType::Image), mImage(image), mLayout(layout)
+	VulkanImage::VulkanImage(VulkanResourceManager* owner, VkImage image, VkDeviceMemory memory, VkImageLayout layout)
+		:VulkanResource(owner, false, VulkanResourceType::Image), mImage(image), mMemory(memory), mLayout(layout)
 	{
 		
 	}
 
 	VulkanImage::~VulkanImage()
 	{
-		vkDestroyImage(mOwner->getDevice().getLogical(), mImage, gVulkanAllocator);
+		VkDevice device = mOwner->getDevice().getLogical();
+
+		vkDestroyImage(device, mImage, gVulkanAllocator);
+		vkFreeMemory(device, mMemory, gVulkanAllocator);
 	}
 
 	VulkanTextureCore::VulkanTextureCore(const TEXTURE_DESC& desc, const SPtr<PixelData>& initialData,
@@ -28,6 +31,14 @@ namespace BansheeEngine
 
 	VulkanTextureCore::~VulkanTextureCore()
 	{ 
+		for (UINT32 i = 0; i < BS_MAX_DEVICES; i++)
+		{
+			if (mImages[i] == nullptr)
+				return;
+
+			mImages[i]->destroy();
+		}
+
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Texture);
 	}
 
@@ -45,6 +56,8 @@ namespace BansheeEngine
 		// - If device idx doesn't match the mask, return VK_NULL_HANDLE
 		// - Otherwise return the default image view (created by default in initialize())
 		// - Free the view in destructor
+
+		return VK_NULL_HANDLE;
 	}
 
 	VkImageView VulkanTextureCore::getView(UINT32 deviceIdx, const TextureSurface& surface)
@@ -57,6 +70,8 @@ namespace BansheeEngine
 		//   - Resize the mTextureViews array as needed
 		//   - By default mTextureViews is nullptr, so allocate it during first call
 		// - Free the views in destructor (if any were allocated)
+
+		return VK_NULL_HANDLE;
 	}
 
 	void VulkanTextureCore::copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel, const SPtr<TextureCore>& target)

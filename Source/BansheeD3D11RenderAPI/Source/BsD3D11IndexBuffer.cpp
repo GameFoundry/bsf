@@ -23,7 +23,7 @@ namespace BansheeEngine
 
 	void D3D11IndexBufferCore::initialize()
 	{
-		mBuffer = bs_new<D3D11HardwareBuffer>(D3D11HardwareBuffer::BT_INDEX, mUsage, 1, mSizeInBytes, std::ref(mDevice), mSystemMemory);
+		mBuffer = bs_new<D3D11HardwareBuffer>(D3D11HardwareBuffer::BT_INDEX, mUsage, 1, mSizeInBytes, std::ref(mDevice), false);
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_IndexBuffer);
 		IndexBufferCore::initialize();

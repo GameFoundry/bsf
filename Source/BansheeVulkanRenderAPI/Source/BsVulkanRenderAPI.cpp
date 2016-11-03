@@ -185,8 +185,11 @@ namespace BansheeEngine
 		// Note: MULTIGPU - Detect multiple similar devices here if supporting multi-GPU
 		for (uint32_t i = 0; i < numDevices; i++)
 		{
-			if (mDevices[i]->isPrimary())
+			bool isPrimary = mDevices[i]->getDeviceProperties().deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
+
+			if (isPrimary)
 			{
+				mDevices[i]->setIsPrimary();
 				mPrimaryDevices.push_back(mDevices[i]);
 				break;
 			}
@@ -266,6 +269,15 @@ namespace BansheeEngine
 		HardwareBufferManager::shutDown();
 		TextureCoreManager::shutDown();
 		TextureManager::shutDown();
+
+		// Make sure everything finishes and all resources get freed
+		VulkanCommandBufferManager& cmdBufManager = static_cast<VulkanCommandBufferManager&>(CommandBufferManager::instance());
+		for (UINT32 i = 0; i < (UINT32)mDevices.size(); i++)
+		{
+			mDevices[i]->waitIdle();
+			cmdBufManager.refreshStates(i);
+		}
+
 		CommandBufferManager::shutDown();
 
 		mPrimaryDevices.clear();

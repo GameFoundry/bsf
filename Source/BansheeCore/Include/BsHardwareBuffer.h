@@ -169,9 +169,6 @@ namespace BansheeEngine
 		/**	Returns the Usage flags with which this buffer was created. */
         GpuBufferUsage getUsage() const { return mUsage; }
 
-		/**	Returns whether this buffer is held in system memory. */
-		bool isSystemMemory() const { return mSystemMemory; }
-
 		/**	Returns whether or not this buffer is currently locked. */
         bool isLocked() const { return mIsLocked; }	
 
@@ -184,12 +181,9 @@ namespace BansheeEngine
 		 * @param[in]	usage			Determines most common usage of the buffer. Usually has effect on what type of 
 		 *								memory will be buffer allocated in but that depends on render API. Specify dynamic 
 		 *								if you plan on modifying it often, static otherwise.
-		 * @param[in]	systemMemory	If enabled the the buffer will be kept in the system memory. System memory buffers 
-		 *								are often used as a source or destination for copies from/to other buffers. Some 
-		 *								APIs don't allow reading from non-system memory buffers.
 		 */
-		HardwareBuffer(GpuBufferUsage usage, bool systemMemory)
-			: mUsage(usage), mIsLocked(false), mSystemMemory(systemMemory)
+		HardwareBuffer(GpuBufferUsage usage)
+			: mUsage(usage), mIsLocked(false)
 		{  }
 
 		/** @copydoc lock */
@@ -204,7 +198,6 @@ namespace BansheeEngine
 		bool mIsLocked;
 		UINT32 mLockStart;
 		UINT32 mLockSize;
-		bool mSystemMemory;
     };
 
 	/** @} */

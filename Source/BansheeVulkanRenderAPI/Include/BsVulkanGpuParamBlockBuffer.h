@@ -23,11 +23,19 @@ namespace BansheeEngine
 
 		/** @copydoc GpuParamBlockBufferCore::readFromGPU */
 		void readFromGPU(UINT8* data) const override;
+
+		/** 
+		 * Gets the resource wrapping the buffer object, on the specified device. If GPU param block buffer's device mask
+		 * doesn't include the provided device, null is returned. 
+		 */
+		VulkanBuffer* getResource(UINT32 deviceIdx) const;
 	protected:
 		/** @copydoc GpuParamBlockBufferCore::initialize */
 		void initialize() override;
 
 	private:
+		VulkanHardwareBuffer* mBuffer;
+		GpuDeviceFlags mDeviceMask;
 	};
 
 	/** @} */

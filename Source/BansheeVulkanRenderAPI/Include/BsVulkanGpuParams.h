@@ -42,6 +42,7 @@ namespace BansheeEngine
 		{
 			VkDescriptorImageInfo image;
 			VkDescriptorBufferInfo buffer;
+			VkBufferView bufferView;
 		};
 
 		/** All GPU param data related to a single descriptor set. */

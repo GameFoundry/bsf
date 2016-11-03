@@ -2,6 +2,7 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsVulkanDescriptorManager.h"
 #include "BsVulkanDescriptorLayout.h"
+#include "BsVulkanDescriptorSet.h"
 #include "BsVulkanDescriptorPool.h"
 #include "BsVulkanDevice.h"
 #include "BsVulkanResource.h"

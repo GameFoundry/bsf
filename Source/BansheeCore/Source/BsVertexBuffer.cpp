@@ -12,7 +12,7 @@ namespace BansheeEngine
 	}
 
 	VertexBufferCore::VertexBufferCore(const VERTEX_BUFFER_DESC& desc, GpuDeviceFlags deviceMask)
-		:HardwareBuffer(desc.usage, false), mProperties(desc.numVerts, desc.vertexSize)
+		:HardwareBuffer(desc.usage), mProperties(desc.numVerts, desc.vertexSize)
 	{
 		mSizeInBytes = mProperties.mVertexSize * mProperties.mNumVertices;
 	}

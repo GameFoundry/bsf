@@ -50,7 +50,7 @@ namespace BansheeEngine
 		void getHandles(GpuDeviceFlags mask, VkSampler(&handles)[BS_MAX_LINKED_DEVICES], UINT32& numHandles);
 
 	protected:
-		friend class D3D11RenderStateCoreManager;
+		friend class VulkanRenderStateCoreManager;
 
 		VulkanSamplerStateCore(const SAMPLER_STATE_DESC& desc, GpuDeviceFlags deviceMask);
 

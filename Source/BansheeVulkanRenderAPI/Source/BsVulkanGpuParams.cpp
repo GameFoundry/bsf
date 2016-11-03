@@ -7,6 +7,7 @@
 #include "BsVulkanGpuParamBlockBuffer.h"
 #include "BsVulkanGpuBuffer.h"
 #include "BsVulkanTexture.h"
+#include "BsVulkanHardwareBuffer.h"
 #include "BsVulkanDescriptorSet.h"
 #include "BsVulkanSamplerState.h"
 #include "BsGpuParamDesc.h"
@@ -104,8 +105,21 @@ namespace BansheeEngine
 			setUpBindings(paramDesc->paramBlocks, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
 			setUpBindings(paramDesc->textures, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
 			setUpBindings(paramDesc->loadStoreTextures, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE);
-			setUpBindings(paramDesc->buffers, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER);
 			setUpBindings(paramDesc->samplers, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
+
+			// Set up buffer bindings
+			for (auto& entry : paramDesc->buffers)
+			{
+				bool isLoadStore = entry.second.type != GPOT_BYTE_BUFFER &&
+					entry.second.type != GPOT_STRUCTURED_BUFFER;
+
+				UINT32 bindingIdx = bindingOffsets[entry.second.set] + entry.second.slot;
+
+				VkDescriptorSetLayoutBinding& binding = bindings[bindingIdx];
+				binding.descriptorCount = 1;
+				binding.stageFlags |= stageFlagsLookup[i];
+				binding.descriptorType = isLoadStore ? VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER : VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
+			}
 		}
 
 		VulkanRenderAPI& rapi = static_cast<VulkanRenderAPI&>(RenderAPICore::instance());
@@ -181,8 +195,7 @@ namespace BansheeEngine
 					writeSetInfo.dstArrayElement = 0;
 					writeSetInfo.descriptorCount = perSetBindings[k].descriptorCount;
 					writeSetInfo.descriptorType = perSetBindings[k].descriptorType;
-					writeSetInfo.pTexelBufferView = nullptr;
-					
+
 					bool isImage = writeSetInfo.descriptorType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER ||
 						writeSetInfo.descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_IMAGE ||
 						writeSetInfo.descriptorType == VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
@@ -198,15 +211,25 @@ namespace BansheeEngine
 
 						writeSetInfo.pImageInfo = &imageInfo;
 						writeSetInfo.pBufferInfo = nullptr;
+						writeSetInfo.pTexelBufferView = nullptr;
 					}
 					else
 					{
-						VkDescriptorBufferInfo& bufferInfo = perSetData.writeInfos[k].buffer;
-						bufferInfo.buffer = VK_NULL_HANDLE;
-						bufferInfo.offset = 0;
-						bufferInfo.range = VK_WHOLE_SIZE;
+						bool isLoadStore = writeSetInfo.descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER;
 
-						writeSetInfo.pBufferInfo = &bufferInfo;
+						if (!isLoadStore)
+						{
+							VkDescriptorBufferInfo& bufferInfo = perSetData.writeInfos[k].buffer;
+							bufferInfo.buffer = VK_NULL_HANDLE;
+							bufferInfo.offset = 0;
+							bufferInfo.range = VK_WHOLE_SIZE;
+
+							writeSetInfo.pBufferInfo = &bufferInfo;
+						}
+						else
+							writeSetInfo.pBufferInfo = nullptr;
+
+						writeSetInfo.pTexelBufferView = nullptr;
 						writeSetInfo.pImageInfo = nullptr;
 					}
 				}
@@ -298,9 +321,9 @@ namespace BansheeEngine
 
 			VulkanBuffer* bufferRes = vulkanBuffer->getResource(i);
 			if (bufferRes != nullptr)
-				mPerDeviceData[i].perSetData[set].writeInfos[slot].buffer.buffer = bufferRes->getHandle();
+				mPerDeviceData[i].perSetData[set].writeInfos[slot].bufferView = bufferRes->getView();
 			else
-				mPerDeviceData[i].perSetData[set].writeInfos[slot].buffer.buffer = VK_NULL_HANDLE;
+				mPerDeviceData[i].perSetData[set].writeInfos[slot].bufferView = VK_NULL_HANDLE;
 		}
 
 		mSetsDirty[set] = true;
