@@ -2,12 +2,10 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 
 #include "BsFileSystem.h"
-
 #include "BsDebug.h"
 
 namespace BansheeEngine
 {
-
 	void FileSystem::copy(const Path& oldPath, const Path& newPath, bool overwriteExisting)
 	{
 		Stack<std::tuple<Path, Path>> todo;
@@ -40,25 +38,11 @@ namespace BansheeEngine
 				}
 			}
 
-			// bool destIsFile = !destinationPath.getWExtension().empty();
-
-			// if (!srcIsFile && destIsFile)
-			// {
-			// 	LOGWRN("Cannot copy a source folder to a destination file.");
-			// 	return;
-			// }
-			// else if (srcIsFile && !destIsFile)
-			// {
-			// 	Path destinationFilePath = destinationPath;
-			// 	destinationFilePath.append(sourcePath.getWTail());
-
-			// 	FileSystem::copyFile(sourcePath, destinationFilePath);
-			// }
-			if (srcIsFile)// && destIsFile)
+			if (srcIsFile)
 			{
 				FileSystem::copyFile(sourcePath, destinationPath);
 			}
-			else // if (!srcIsFile)// && !destIsFile)
+			else
 			{
 				if (!destExists)
 					FileSystem::createDir(destinationPath);

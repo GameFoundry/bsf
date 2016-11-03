@@ -15,8 +15,8 @@ namespace BansheeEngine
 	inline void hash_combine(std::size_t& seed, const T& v)
 	{
 		using HashType = typename std::conditional<std::is_enum<T>::value, EnumClassHash, std::hash<T>>::type;
+
 		HashType hasher;
-		// std::hash<T> hasher;
 		seed ^= hasher(v) + 0x9e3779b9 + (seed<<6) + (seed>>2);
 	}
 

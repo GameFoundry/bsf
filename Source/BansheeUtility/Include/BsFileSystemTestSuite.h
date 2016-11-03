@@ -10,11 +10,10 @@ namespace BansheeEngine
 	{
 	public:
 		FileSystemTestSuite();
-		virtual void startUp();
-		virtual void shutDown();
+		void startUp() override;
+		void shutDown() override;
 
 	private:
-		Path testDirectory;
 		void testExists_yes_file();
 		void testExists_yes_dir();
 		void testExists_no();
@@ -36,5 +35,7 @@ namespace BansheeEngine
 		void testGetChildren();
 		void testGetLastModifiedTime();
 		void testGetTempDirectoryPath();
+
+		Path mTestDirectory;
 	};
 }

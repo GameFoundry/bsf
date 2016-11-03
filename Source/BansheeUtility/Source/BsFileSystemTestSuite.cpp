@@ -38,8 +38,8 @@ namespace BansheeEngine
 
 	void FileSystemTestSuite::startUp()
 	{
-		testDirectory = FileSystem::getWorkingDirectoryPath() + testDirectoryName;
-		if (FileSystem::exists(testDirectory))
+		mTestDirectory = FileSystem::getWorkingDirectoryPath() + testDirectoryName;
+		if (FileSystem::exists(mTestDirectory))
 		{
 			BS_EXCEPT(InternalErrorException,
 			          String("Directory '") + testDirectoryName
@@ -47,17 +47,17 @@ namespace BansheeEngine
 		}
 		else
 		{
-			FileSystem::createDir(testDirectory);
-			BS_TEST_ASSERT_MSG(FileSystem::exists(testDirectory), "FileSystemTestSuite::startUp(): test directory creation failed");
+			FileSystem::createDir(mTestDirectory);
+			BS_TEST_ASSERT_MSG(FileSystem::exists(mTestDirectory), "FileSystemTestSuite::startUp(): test directory creation failed");
 		}
 	}
 
 	void FileSystemTestSuite::shutDown()
 	{
-		FileSystem::remove(testDirectory, true);
-		if (FileSystem::exists(testDirectory))
+		FileSystem::remove(mTestDirectory, true);
+		if (FileSystem::exists(mTestDirectory))
 		{
-			LOGERR("FileSystemTestSuite failed to delete '" + testDirectory.toString()
+			LOGERR("FileSystemTestSuite failed to delete '" + mTestDirectory.toString()
 				   + "', you should remove it manually.");
 		}
 	}
@@ -88,7 +88,7 @@ namespace BansheeEngine
 
 	void FileSystemTestSuite::testExists_yes_file()
 	{
-		Path path = testDirectory + "plop";
+		Path path = mTestDirectory + "plop";
 		createEmptyFile(path);
 		BS_TEST_ASSERT(FileSystem::exists(path));
 		FileSystem::remove(path);
@@ -96,7 +96,7 @@ namespace BansheeEngine
 
 	void FileSystemTestSuite::testExists_yes_dir()
 	{
-		Path path = testDirectory + "plop/";
+		Path path = mTestDirectory + "plop/";
 		FileSystem::createDir(path);
 		BS_TEST_ASSERT(FileSystem::exists(path));
 		FileSystem::remove(path);
@@ -109,7 +109,7 @@ namespace BansheeEngine
 
 	void FileSystemTestSuite::testGetFileSize_zero()
 	{
-		Path path = testDirectory + "file-size-test-1";
+		Path path = mTestDirectory + "file-size-test-1";
 		createEmptyFile(path);
 		BS_TEST_ASSERT(FileSystem::getFileSize(path) == 0);
 		FileSystem::remove(path);
@@ -117,7 +117,7 @@ namespace BansheeEngine
 
 	void FileSystemTestSuite::testGetFileSize_not_zero()
 	{
-		Path path = testDirectory + "file-size-test-2";
+		Path path = mTestDirectory + "file-size-test-2";
 		createFile(path, "0123456789");
 		BS_TEST_ASSERT(FileSystem::getFileSize(path) == 10);
 		FileSystem::remove(path);
@@ -125,35 +125,35 @@ namespace BansheeEngine
 
 	void FileSystemTestSuite::testIsFile_yes()
 	{
-		Path path = testDirectory + "some-file-1";
+		Path path = mTestDirectory + "some-file-1";
 		createEmptyFile(path);
 		BS_TEST_ASSERT(FileSystem::isFile(path));
 	}
 
 	void FileSystemTestSuite::testIsFile_no()
 	{
-		Path path = testDirectory + "some-directory-1/";
+		Path path = mTestDirectory + "some-directory-1/";
 		FileSystem::createDir(path);
 		BS_TEST_ASSERT(!FileSystem::isFile(path));
 	}
 
 	void FileSystemTestSuite::testIsDirectory_yes()
 	{
-		Path path = testDirectory + "some-directory-2/";
+		Path path = mTestDirectory + "some-directory-2/";
 		FileSystem::createDir(path);
 		BS_TEST_ASSERT(FileSystem::isDirectory(path));
 	}
 
 	void FileSystemTestSuite::testIsDirectory_no()
 	{
-		Path path = testDirectory + "some-file-2";
+		Path path = mTestDirectory + "some-file-2";
 		createEmptyFile(path);
 		BS_TEST_ASSERT(!FileSystem::isDirectory(path));
 	}
 
 	void FileSystemTestSuite::testRemove_file()
 	{
-		Path path = testDirectory + "file-to-remove";
+		Path path = mTestDirectory + "file-to-remove";
 		createEmptyFile(path);
 		BS_TEST_ASSERT(FileSystem::exists(path));
 		FileSystem::remove(path);
@@ -162,7 +162,7 @@ namespace BansheeEngine
 
 	void FileSystemTestSuite::testRemove_directory()
 	{
-		Path path = testDirectory + "directory-to-remove/";
+		Path path = mTestDirectory + "directory-to-remove/";
 		FileSystem::createDir(path);
 		BS_TEST_ASSERT(FileSystem::exists(path));
 		FileSystem::remove(path, true);
@@ -171,8 +171,8 @@ namespace BansheeEngine
 
 	void FileSystemTestSuite::testMove()
 	{
-		Path source = testDirectory + "move-source-1";
-		Path destination = testDirectory + "move-destination-1";
+		Path source = mTestDirectory + "move-source-1";
+		Path destination = mTestDirectory + "move-destination-1";
 		createFile(source, "move-data-source-1");
 		BS_TEST_ASSERT(FileSystem::exists(source));
 		BS_TEST_ASSERT(!FileSystem::exists(destination));
@@ -184,8 +184,8 @@ namespace BansheeEngine
 
 	void FileSystemTestSuite::testMove_overwrite_existing()
 	{
-		Path source = testDirectory + "move-source-2";
-		Path destination = testDirectory + "move-destination-2";
+		Path source = mTestDirectory + "move-source-2";
+		Path destination = mTestDirectory + "move-destination-2";
 		createFile(source, "move-data-source-2");
 		createFile(destination, "move-data-destination-2");
 		BS_TEST_ASSERT(FileSystem::exists(source));
@@ -198,8 +198,8 @@ namespace BansheeEngine
 
 	void FileSystemTestSuite::testMove_no_overwrite_existing()
 	{
-		Path source = testDirectory + "move-source-3";
-		Path destination = testDirectory + "move-destination-3";
+		Path source = mTestDirectory + "move-source-3";
+		Path destination = mTestDirectory + "move-destination-3";
 		createFile(source, "move-data-source-3");
 		createFile(destination, "move-data-destination-3");
 		BS_TEST_ASSERT(FileSystem::exists(source));
@@ -212,8 +212,8 @@ namespace BansheeEngine
 
 	void FileSystemTestSuite::testCopy()
 	{
-		Path source = testDirectory + "copy-source-1";
-		Path destination = testDirectory + "copy-destination-1";
+		Path source = mTestDirectory + "copy-source-1";
+		Path destination = mTestDirectory + "copy-destination-1";
 		createFile(source, "copy-data-source-1");
 		BS_TEST_ASSERT(FileSystem::exists(source));
 		BS_TEST_ASSERT(!FileSystem::exists(destination));
@@ -226,8 +226,8 @@ namespace BansheeEngine
 
 	void FileSystemTestSuite::testCopy_overwrite_existing()
 	{
-		Path source = testDirectory + "copy-source-2";
-		Path destination = testDirectory + "copy-destination-2";
+		Path source = mTestDirectory + "copy-source-2";
+		Path destination = mTestDirectory + "copy-destination-2";
 		createFile(source, "copy-data-source-2");
 		createFile(destination, "copy-data-destination-2");
 		BS_TEST_ASSERT(FileSystem::exists(source));
@@ -241,8 +241,8 @@ namespace BansheeEngine
 
 	void FileSystemTestSuite::testCopy_no_overwrite_existing()
 	{
-		Path source = testDirectory + "copy-source-3";
-		Path destination = testDirectory + "copy-destination-3";
+		Path source = mTestDirectory + "copy-source-3";
+		Path destination = mTestDirectory + "copy-destination-3";
 		createFile(source, "copy-data-source-3");
 		createFile(destination, "copy-data-destination-3");
 		BS_TEST_ASSERT(FileSystem::exists(source));
@@ -259,7 +259,7 @@ namespace BansheeEngine
 
 	void FileSystemTestSuite::testGetChildren()
 	{
-		Path path = testDirectory + "get-children-test/";
+		Path path = mTestDirectory + "get-children-test/";
 		FileSystem::createDir(path);
 		FileSystem::createDir(path + "foo/");
 		FileSystem::createDir(path + "bar/");
@@ -286,7 +286,7 @@ namespace BansheeEngine
 		std::time_t beforeTime;
 		time(&beforeTime);
 
-		Path path = testDirectory + "blah1234";
+		Path path = mTestDirectory + "blah1234";
 		createFile(path, "blah");
 		std::time_t mtime = FileSystem::getLastModifiedTime(path);
 		BS_TEST_ASSERT(mtime >= beforeTime);

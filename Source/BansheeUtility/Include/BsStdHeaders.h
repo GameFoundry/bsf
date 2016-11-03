@@ -85,6 +85,9 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
+	template <typename Key>
+	using HashType = typename std::conditional<std::is_enum<Key>::value, EnumClassHash, std::hash<Key>>::type;
+
 	/** Double ended queue. Allows for fast insertion and removal at both its beggining and end. */
 	template <typename T, typename A = StdAlloc<T>> 
 	using Deque = std::deque<T, A>;
@@ -116,9 +119,6 @@ namespace BansheeEngine
 	/** An associative container containing an ordered set of key-value pairs where multiple elements can have the same key. */
 	template <typename K, typename V, typename P = std::less<K>, typename A = StdAlloc<std::pair<const K, V>>> 
 	using MultiMap = std::multimap<K, V, P, A>;
-
-	template <typename Key>
-	using HashType = typename std::conditional<std::is_enum<Key>::value, EnumClassHash, std::hash<Key>>::type;
 
 	/** An associative container containing an unordered set of elements. Usually faster than Set for larger data sets. */
 	template <typename T, typename H = HashType<T>, typename C = std::equal_to<T>, typename A = StdAlloc<T>> 

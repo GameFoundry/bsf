@@ -17,7 +17,7 @@ include_directories(${BansheeUtility_INC})
 # Target
 add_library(BansheeUtility SHARED ${BS_BANSHEEUTILITY_SRC})
 
-add_executable(BansheeUtilityTest Source/BansheeUtilityTest.cpp)
+add_executable(BansheeUtilityTest Source/BsUtilityTest.cpp)
 target_link_libraries(BansheeUtilityTest BansheeUtility)
 
 # Defines

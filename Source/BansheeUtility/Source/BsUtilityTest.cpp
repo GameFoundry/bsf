@@ -7,7 +7,6 @@ using namespace BansheeEngine;
 
 int main()
 {
-
 	SPtr<TestSuite> tests = FileSystemTestSuite::create<FileSystemTestSuite>();
 	ConsoleTestOutput testOutput;
 	tests->run(testOutput);

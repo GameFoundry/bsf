@@ -67,16 +67,6 @@ namespace BansheeEngine
 		return false;
 	}
 
-	// bool unix_createFile(const String& path)
-	// {
-	// 	int fd = open(path.c_str(), O_RDWR|O_CREAT, 0755);
-
-	// 	if (fd != -1)
-	// 		close(fd2);
-
-	// 	return ???;
-	// }
-
 	bool unix_createDirectory(const String& path)
 	{
 		if (unix_pathExists(path) && unix_isDirectory(path))
@@ -112,7 +102,6 @@ namespace BansheeEngine
 		std::ofstream destinationStream(destination.toString().c_str(), std::ios::binary);
 
 		destinationStream << sourceStream.rdbuf();
-		// std::cout << "copy: " << source.toString() << " to " << destination.toString() << std::endl;
 		sourceStream.close();
 		destinationStream.close();
 	}
@@ -131,13 +120,6 @@ namespace BansheeEngine
 	SPtr<DataStream> FileSystem::openFile(const Path& path, bool readOnly)
 	{
 		String pathString = path.toString();
-		// const char_t* pathString = pathString.c_str();
-
-		// if (!pathExists(pathString) || !isFile(pathString))
-		// {
-		// 	LOGWRN("Attempting to open a file that doesn't exist: " + path.toString());
-		// 	return nullptr;
-		// }
 
 		DataStream::AccessMode accessMode = DataStream::READ;
 		if (!readOnly)
