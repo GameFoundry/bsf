@@ -20,6 +20,21 @@ namespace BansheeEngine
 
 		VulkanDescriptorLayout* layout;
 	};
+
+	/** Used as a key in a hash map containing pipeline layouts. */
+	struct VulkanPipelineLayoutKey
+	{
+		VulkanPipelineLayoutKey(VulkanDescriptorLayout** layouts, UINT32 numLayouts);
+
+		/** Compares two pipeline layouts. */
+		bool operator==(const VulkanPipelineLayoutKey& rhs) const;
+
+		/** Calculates a has value for the provided descriptor layouts. */
+		size_t calculateHash() const;
+
+		UINT32 numLayouts;
+		VulkanDescriptorLayout** layouts;
+	};
 }
 
 /** @cond STDLIB */
@@ -29,7 +44,7 @@ namespace BansheeEngine
 
 namespace std
 {
-	/**	Hash value generator for VulkanDescriptorLayout. */
+	/**	Hash value generator for VulkanLayoutKey. */
 	template<>
 	struct hash<BansheeEngine::VulkanLayoutKey>
 	{
@@ -39,6 +54,16 @@ namespace std
 				return value.layout->getHash();
 
 			return BansheeEngine::VulkanDescriptorLayout::calculateHash(value.bindings, value.numBindings);
+		}
+	};
+
+	/**	Hash value generator for VulkanPipelineLayoutKey. */
+	template<>
+	struct hash<BansheeEngine::VulkanPipelineLayoutKey>
+	{
+		size_t operator()(const BansheeEngine::VulkanPipelineLayoutKey& value) const
+		{
+			return value.calculateHash();
 		}
 	};
 }
@@ -65,10 +90,14 @@ namespace BansheeEngine
 		/** Allocates a new empty descriptor set matching the provided layout. */
 		VulkanDescriptorSet* createSet(VulkanDescriptorLayout* layout);
 
+		/** Attempts to find an existing one, or allocates a new pipeline layout based on the provided descriptor layouts. */
+		VkPipelineLayout getPipelineLayout(VulkanDescriptorLayout** layouts, UINT32 numLayouts);
+
 	protected:
 		VulkanDevice& mDevice;
 
 		UnorderedSet<VulkanLayoutKey> mLayouts; 
+		UnorderedMap<VulkanPipelineLayoutKey, VkPipelineLayout> mPipelineLayouts;
 		Vector<VulkanDescriptorPool*> mPools;
 	};
 

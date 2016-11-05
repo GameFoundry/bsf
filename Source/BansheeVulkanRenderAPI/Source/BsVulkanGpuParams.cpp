@@ -9,6 +9,7 @@
 #include "BsVulkanTexture.h"
 #include "BsVulkanHardwareBuffer.h"
 #include "BsVulkanDescriptorSet.h"
+#include "BsVulkanDescriptorLayout.h"
 #include "BsVulkanSamplerState.h"
 #include "BsVulkanGpuBuffer.h"
 #include "BsVulkanCommandBuffer.h"
@@ -167,6 +168,7 @@ namespace BansheeEngine
 			dataIter += sizeof(perSetBytes);
 
 			VulkanDescriptorManager& descManager = devices[i]->getDescriptorManager();
+			VulkanDescriptorLayout** layouts = (VulkanDescriptorLayout**)bs_stack_alloc(numSets * sizeof(VulkanDescriptorLayout*));
 
 			UINT32 bindingOffset = 0;
 			for (UINT32 j = 0; j < numSets; j++)
@@ -184,6 +186,8 @@ namespace BansheeEngine
 				perSetData.layout = descManager.getLayout(perSetBindings, numBindingsPerSet);
 				perSetData.set = descManager.createSet(perSetData.layout);
 				perSetData.numElements = numBindingsPerSet;
+
+				layouts[j] = perSetData.layout;
 
 				for(UINT32 k = 0; k < numBindingsPerSet; k++)
 				{
@@ -238,6 +242,10 @@ namespace BansheeEngine
 
 				bindingOffset += numBindingsPerSet;
 			}
+
+			mPerDeviceData[i].pipelineLayout = descManager.getPipelineLayout(layouts, numSets);
+
+			bs_stack_free(layouts);
 		}
 
 		bs_stack_free(bindingOffsets);

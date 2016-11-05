@@ -73,6 +73,7 @@ namespace BansheeEngine
 		{
 			PerSetData* perSetData;
 			UINT32 numSets;
+			VkPipelineLayout pipelineLayout;
 		};
 
 		friend class VulkanHardwareBufferCoreManager;
