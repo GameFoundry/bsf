@@ -2,28 +2,41 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsVulkanResource.h"
 #include "BsVulkanCommandBuffer.h"
+#include "BsCoreThread.h"
 
 namespace BansheeEngine
 {
 	VulkanResource::VulkanResource(VulkanResourceManager* owner, bool concurrency, VulkanResourceType type)
-		: mOwner(owner), mQueueFamily(-1), mState(concurrency ? State::Shared : State::Normal), mType(type), mNumHandles(0)
-		, mHandleCapacity(INITIAL_HANDLE_CAPACITY)
 	{
-		UINT32 bytesCapacity = sizeof(UseHandle) * mHandleCapacity;
-		mHandles = (UseHandle*)mAlloc.alloc(sizeof(UseHandle) * INITIAL_HANDLE_CAPACITY);
-		memset(mHandles, 0, bytesCapacity);
+		Lock lock(mMutex);
+
+		mOwner = owner;
+		mQueueFamily = -1;
+		mState = concurrency ? State::Shared : State::Normal;
+		mType = type;
+		mNumUsedHandles = 0;
+		mNumBoundHandles = 0;
 	}
 
 	VulkanResource::~VulkanResource()
 	{
-		assert(mState == State::Destroyed && "Vulkan resource getting destructed without destroy() called first.");
+		THROW_IF_NOT_CORE_THREAD
 
-		mAlloc.free(mHandles);
-		mAlloc.clear();
+		Lock lock(mMutex);
+		assert(mState == State::Destroyed && "Vulkan resource getting destructed without destroy() called first.");
 	}
 
-	void VulkanResource::notifyUsed(VulkanCmdBuffer* buffer, VulkanUseFlags flags)
+	void VulkanResource::notifyBound()
 	{
+		Lock lock(mMutex);
+		assert(mState != State::Destroyed);
+
+		mNumBoundHandles++;
+	}
+
+	void VulkanResource::notifyUsed(VulkanCmdBuffer* buffer, VulkanUseFlags useFlags)
+	{
+		Lock lock(mMutex);
 		assert(mState != State::Destroyed);
 
 		if(isUsed() && mState == State::Normal) // Used without support for concurrency
@@ -32,69 +45,36 @@ namespace BansheeEngine
 				"Vulkan resource without concurrency support can only be used by one queue family at once.");
 		}
 
-		mNumHandles++;
-
-		if(mNumHandles > mHandleCapacity)
-		{
-			UINT32 bytesCapacity = sizeof(UseHandle) * mHandleCapacity;
-			void* tempData = bs_stack_alloc(bytesCapacity);
-			memcpy(tempData, mHandles, bytesCapacity);
-
-			mAlloc.free(mHandles);
-			mHandles = (UseHandle*)mAlloc.alloc(bytesCapacity * 2);
-			memcpy(mHandles, tempData, bytesCapacity);
-
-			bs_stack_free(tempData);
-
-			memset(mHandles + mHandleCapacity, 0, bytesCapacity);
-			mHandleCapacity *= 2;
-		}
-
-		for(UINT32 i = 0; i < mHandleCapacity; i++)
-		{
-			if (mHandles[i].buffer == nullptr)
-				continue;
-
-			mHandles[i].buffer = buffer;
-			mHandles[i].flags |= flags;
-
-			break;
-		}
-
+		mNumUsedHandles++;
 		mQueueFamily = buffer->getQueueFamily();
+		mUseFlags |= useFlags;
 	}
 
-	void VulkanResource::notifyDone(VulkanCmdBuffer* buffer)
+	void VulkanResource::notifyDone()
 	{
-		bool foundBuffer = false;
-		for(UINT32 i = 0; i < mNumHandles; i++)
-		{
-			if(mHandles[i].buffer == buffer)
-			{
-				mHandles[i].buffer = nullptr;
-				mHandles[i].flags = VulkanUseFlag::None;
+		Lock lock(mMutex);
+		mNumUsedHandles--;
+		mNumBoundHandles--;
 
-				foundBuffer = true;
-				break;
-			}
-		}
+		// Note: If resource is used on different command buffers with different use flags, we should clear individual flags
+		// depending on which command buffer finished. But this requires extra per-command buffer state tracking, so we
+		// instead just clear all flags at once when all command buffers finish.
+		if (!isUsed())
+			mUseFlags = VulkanUseFlag::None;
 
-		assert(foundBuffer);
-
-		mNumHandles--;
-
-		if (!isUsed() && mState == State::Destroyed) // Queued for destruction
+		if (!isBound() && mState == State::Destroyed) // Queued for destruction
 			mOwner->destroy(this);
 	}
 
 	void VulkanResource::destroy()
 	{
+		Lock lock(mMutex);
 		assert(mState != State::Destroyed && "Vulkan resource destroy() called more than once.");
 
 		mState = State::Destroyed;
 
-		// If not used, destroy right away, otherwise check when it is reported as finished on the device
-		if (!isUsed())
+		// If not bound anyhwere, destroy right away, otherwise check when it is reported as finished on the device
+		if (!isBound())
 			mOwner->destroy(this);
 	}
 
@@ -105,6 +85,7 @@ namespace BansheeEngine
 	VulkanResourceManager::~VulkanResourceManager()
 	{
 #if BS_DEBUG_MODE
+		Lock lock(mMutex);
 		assert(mResources.empty() && "Resource manager shutting down but not all resources were released.");
 #endif
 	}
@@ -112,6 +93,7 @@ namespace BansheeEngine
 	void VulkanResourceManager::destroy(VulkanResource* resource)
 	{
 #if BS_DEBUG_MODE
+		Lock lock(mMutex);
 		mResources.erase(resource);
 #endif
 

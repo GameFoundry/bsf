@@ -145,9 +145,10 @@ namespace BansheeEngine
 		friend class VulkanCmdBufferPool;
 		friend class VulkanCommandBuffer;
 
-		/** Information about a resource currently queued for use on the command buffer. */
-		struct ResourceInfo
+		/** Contains information about a single Vulkan resource bound/used on this command buffer. */
+		struct ResourceUseHandle
 		{
+			bool used;
 			VulkanUseFlags flags;
 		};
 
@@ -161,7 +162,7 @@ namespace BansheeEngine
 		VkSemaphore mSemaphore;
 		UINT32 mFenceCounter;
 
-		UnorderedMap<VulkanResource*, ResourceInfo> mResources;
+		UnorderedMap<VulkanResource*, ResourceUseHandle> mResources;
 		UnorderedSet<SPtr<VulkanGpuParams>> mBoundParams;
 
 		VkSemaphore mSemaphoresTemp[BS_MAX_COMMAND_BUFFERS];

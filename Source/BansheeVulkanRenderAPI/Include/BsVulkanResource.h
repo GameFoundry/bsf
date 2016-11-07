@@ -35,6 +35,8 @@ namespace BansheeEngine
 	/** 
 	 * Wraps one or multiple native Vulkan objects. Allows the object usage to be tracked in command buffers, handles
 	 * ownership transitions between different queues, and handles delayed object destruction.
+	 * 
+	 * @note Thread safe
 	 */
 	class VulkanResource
 	{
@@ -43,18 +45,24 @@ namespace BansheeEngine
 		virtual ~VulkanResource();
 
 		/** 
+		 * Notifies the resource that it is currently bound to a command buffer. Buffer hasn't yet been submitted so the
+		 * resource isn't being used on the GPU yet.
+		 */
+		void notifyBound();
+
+		/** 
 		 * Notifies the resource that it is currently being used on the provided command buffer. This means the command
 		 * buffer has actually been submitted to the queue and the resource is used by the GPU.
 		 * 
-		 * A resource can only be used by a single command buffer at a time.
+		 * A resource can only be used by a single command buffer at a time unless resource concurrency is enabled.
 		 */
-		virtual void notifyUsed(VulkanCmdBuffer* buffer, VulkanUseFlags flags);
+		void notifyUsed(VulkanCmdBuffer* buffer, VulkanUseFlags useFlags);
 
 		/** 
 		 * Notifies the resource that it is no longer used by on the GPU. This makes the resource usable on other command
 		 * buffers again.
 		 */
-		virtual void notifyDone(VulkanCmdBuffer* buffer);
+		void notifyDone();
 
 		/** 
 		 * Checks is the resource currently used on a device. 
@@ -63,10 +71,19 @@ namespace BansheeEngine
 		 *			done on the device but this method may still report true. If you need to know the latest state
 		 *			call VulkanCommandBufferManager::refreshStates() before checking for usage.
 		 */
-		bool isUsed() const { return mNumHandles > 0; }
+		bool isUsed() const { Lock(mMutex); return mNumUsedHandles > 0; }
+
+		/** 
+		 * Checks is the resource currently bound to any command buffer.
+		 *
+		 * @note	Resource usage is only checked at certain points of the program. This means the resource could be
+		 *			done on the device but this method may still report true. If you need to know the latest state
+		 *			call VulkanCommandBufferManager::refreshStates() before checking for usage.
+		 */
+		bool isBound() const { Lock(mMutex); return mNumBoundHandles > 0; }
 
 		/** Returns the type of the object wrapped by the resource. */
-		VulkanResourceType getType() const { return mType; }
+		VulkanResourceType getType() const { Lock(mMutex); return mType; }
 
 		/** 
 		 * Returns the queue family the resource is currently owned by. Returns -1 if owned by no queue.
@@ -74,10 +91,10 @@ namespace BansheeEngine
 		 * @note	If resource concurrency is enabled, then this value has no meaning as the resource can be used on
 		 *			multiple queue families at once.
 		 */
-		UINT32 getQueueFamily() const { return mQueueFamily; }
+		UINT32 getQueueFamily() const { Lock(mMutex); return mQueueFamily; }
 
 		/** Returns true if the resource is only allowed to be used by a single queue family at once. */
-		bool isExclusive() const { return mState != State::Shared; }
+		bool isExclusive() const { Lock(mMutex); return mState != State::Shared; }
 
 		/** 
 		 * Destroys the resource and frees its memory. If the resource is currently being used on a device, the
@@ -94,27 +111,23 @@ namespace BansheeEngine
 			Destroyed
 		};
 
-		/** Information about use of this resource on a specific command buffer. */
-		struct UseHandle
-		{
-			VulkanCmdBuffer* buffer;
-			VulkanUseFlags flags;
-		};
-
 		VulkanResourceManager* mOwner;
 		UINT32 mQueueFamily;
 		State mState;
 		VulkanResourceType mType;
+		VulkanUseFlags mUseFlags;
 		
-		UseHandle* mHandles;
-		UINT32 mNumHandles;
-		UINT32 mHandleCapacity;
-		
-		static const UINT32 INITIAL_HANDLE_CAPACITY = 2;
-		StaticAlloc<sizeof(UseHandle) * INITIAL_HANDLE_CAPACITY> mAlloc;
+		UINT32 mNumUsedHandles;
+		UINT32 mNumBoundHandles;
+
+		Mutex mMutex;
 	};
 
-	/** Creates and destroys annd VulkanResource%s on a single device. */
+	/** 
+	 * Creates and destroys annd VulkanResource%s on a single device. 
+	 * 
+	 * @note Thread safe
+	 */
 	class VulkanResourceManager
 	{
 	public:
@@ -131,6 +144,7 @@ namespace BansheeEngine
 			Type* resource = new (bs_alloc(sizeof(Type))) Type(this, std::forward<Args>(args)...);
 
 #if BS_DEBUG_MODE
+			Lock lock(mMutex);
 			mResources.insert(resource);
 #endif
 
@@ -153,6 +167,7 @@ namespace BansheeEngine
 
 #if BS_DEBUG_MODE
 		UnorderedSet<VulkanResource*> mResources;
+		Mutex mMutex;
 #endif
 	};
 

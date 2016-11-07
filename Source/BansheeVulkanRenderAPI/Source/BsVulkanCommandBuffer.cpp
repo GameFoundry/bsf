@@ -215,7 +215,12 @@ namespace BansheeEngine
 				mFenceCounter++;
 
 				for (auto& entry : mResources)
-					entry.first->notifyDone(this);
+				{
+					ResourceUseHandle& useHandle = entry.second;
+					assert(useHandle.used);
+
+					entry.first->notifyDone();
+				}
 
 				mResources.clear();
 				mBoundParams.clear();
@@ -227,7 +232,22 @@ namespace BansheeEngine
 
 	void VulkanCmdBuffer::registerResource(VulkanResource* res, VulkanUseFlags flags)
 	{
-		mResources[res].flags |= flags;
+		auto insertResult = mResources.insert(std::make_pair(res, ResourceUseHandle()));
+		if(insertResult.second) // New element
+		{
+			ResourceUseHandle& useHandle = insertResult.first->second;
+			useHandle.used = false;
+			useHandle.flags = flags;
+
+			res->notifyBound();
+		}
+		else // Existing element
+		{
+			ResourceUseHandle& useHandle = insertResult.first->second;
+
+			assert(!useHandle.used);
+			useHandle.flags |= flags;
+		}
 	}
 
 	void VulkanCmdBuffer::registerGpuParams(const SPtr<VulkanGpuParams>& params)
@@ -341,7 +361,13 @@ namespace BansheeEngine
 		queue->submit(this, mSemaphoresTemp, numSemaphores);
 
 		for (auto& entry : mResources)
-			entry.first->notifyUsed(this, entry.second.flags);
+		{
+			ResourceUseHandle& useHandle = entry.second;
+			assert(!useHandle.used);
+
+			useHandle.used = true;
+			entry.first->notifyUsed();
+		}
 
 		cbm.refreshStates(deviceIdx);
 
