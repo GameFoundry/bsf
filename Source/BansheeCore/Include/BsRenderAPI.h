@@ -383,13 +383,14 @@ namespace BansheeEngine
 		/** 
 		 * Swap the front and back buffer of the specified render target. 
 		 *
-		 * @param[in]	target			Render target to perform the buffer swap on.
-		 * @param[in]	commandBuffer	Optional command buffer to queue the operation on. If not provided operation
-		 *								is executed immediately. Otherwise it is executed when executeCommands() is called.
-		 *								Buffer must support graphics operations.
+		 * @param[in]	target		Render target to perform the buffer swap on.
+		 * @param[in]	syncMask	Optional synchronization mask that determines for which queues should the system wait
+		 *							before performing the swap buffer operation. By default the system waits for all queues.
+		 *							However if certain queues are performing non-rendering operations, or operations not
+		 *							related to the provided render target, you can exclude them from the sync mask for
+		 *							potentially better performance. You can use CommandSyncMask to generate a valid sync mask.
 		 */
-		virtual void swapBuffers(const SPtr<RenderTargetCore>& target, 
-			const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
+		virtual void swapBuffers(const SPtr<RenderTargetCore>& target, UINT32 syncMask = 0xFFFFFFFF) = 0;
 
 		/**
 		 * Change the render target into which we want to draw.

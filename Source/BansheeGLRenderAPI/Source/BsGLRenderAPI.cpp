@@ -1131,24 +1131,11 @@ namespace BansheeEngine
 		}
 	}
 
-	void GLRenderAPI::swapBuffers(const SPtr<RenderTargetCore>& target, const SPtr<CommandBuffer>& commandBuffer)
+	void GLRenderAPI::swapBuffers(const SPtr<RenderTargetCore>& target, UINT32 syncMask)
 	{
-		auto executeRef = [&](const SPtr<RenderTargetCore>& target)
-		{
-			THROW_IF_NOT_CORE_THREAD;
-			target->swapBuffers();
-		};
-
-		if (commandBuffer == nullptr)
-			executeRef(target);
-		else
-		{
-			auto execute = [=]() { executeRef(target); };
-
-			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
-		}
-
+		THROW_IF_NOT_CORE_THREAD;
+		target->swapBuffers();
+	
 		BS_INC_RENDER_STAT(NumPresents);
 	}
 

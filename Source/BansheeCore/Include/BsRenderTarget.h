@@ -223,7 +223,7 @@ namespace BansheeEngine
 		 *
 		 * @param[in]	syncMask	Optional synchronization mask that determines for which queues should the system wait
 		 *							before performing the swap buffer operation. By default the system waits for all queues.
-		 *							Howvever if certain queues are performing non-rendering operations, or operations not 
+		 *							However if certain queues are performing non-rendering operations, or operations not 
 		 *							related to this render target, you can exclude them from the sync mask for potentially 
 		 *							better performance. You can use CommandSyncMask to generate a valid sync mask.
 		 */

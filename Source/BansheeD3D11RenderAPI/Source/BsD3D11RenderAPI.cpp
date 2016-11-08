@@ -1066,24 +1066,11 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumRenderTargetChanges);
 	}
 
-	void D3D11RenderAPI::swapBuffers(const SPtr<RenderTargetCore>& target, const SPtr<CommandBuffer>& commandBuffer)
+	void D3D11RenderAPI::swapBuffers(const SPtr<RenderTargetCore>& target, UINT32 syncMask)
 	{
-		auto executeRef = [&](const SPtr<RenderTargetCore>& target)
-		{
-			THROW_IF_NOT_CORE_THREAD;
-			target->swapBuffers();
-		};
-
-		if (commandBuffer == nullptr)
-			executeRef(target);
-		else
-		{
-			auto execute = [=]() { executeRef(target); };
-
-			SPtr<D3D11CommandBuffer> cb = std::static_pointer_cast<D3D11CommandBuffer>(commandBuffer);
-			cb->queueCommand(execute);
-		}
-
+		THROW_IF_NOT_CORE_THREAD;
+		target->swapBuffers();
+		
 		BS_INC_RENDER_STAT(NumPresents);
 	}
 

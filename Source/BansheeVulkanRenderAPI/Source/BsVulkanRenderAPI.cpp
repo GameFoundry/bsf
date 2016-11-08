@@ -302,12 +302,16 @@ namespace BansheeEngine
 	void VulkanRenderAPI::setGraphicsPipeline(const SPtr<GpuPipelineStateCore>& pipelineState,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
+		// TODO
+
 		BS_INC_RENDER_STAT(NumPipelineStateChanges);
 	}
 
 	void VulkanRenderAPI::setComputePipeline(const SPtr<GpuProgramCore>& computeProgram,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
+		// TODO
+
 		BS_INC_RENDER_STAT(NumPipelineStateChanges);
 	}
 
@@ -333,35 +337,41 @@ namespace BansheeEngine
 
 	void VulkanRenderAPI::setViewport(const Rect2& vp, const SPtr<CommandBuffer>& commandBuffer)
 	{
-		
+		// TODO
 	}
 
 	void VulkanRenderAPI::setVertexBuffers(UINT32 index, SPtr<VertexBufferCore>* buffers, UINT32 numBuffers,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
+		// TODO
+
 		BS_INC_RENDER_STAT(NumVertexBufferBinds);
 	}
 
 	void VulkanRenderAPI::setIndexBuffer(const SPtr<IndexBufferCore>& buffer, const SPtr<CommandBuffer>& commandBuffer)
 	{
+		// TODO
+
 		BS_INC_RENDER_STAT(NumIndexBufferBinds);
 	}
 
 	void VulkanRenderAPI::setVertexDeclaration(const SPtr<VertexDeclarationCore>& vertexDeclaration,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
-		
+		// TODO
 	}
 
 	void VulkanRenderAPI::setDrawOperation(DrawOperationType op, const SPtr<CommandBuffer>& commandBuffer)
 	{
-		
+		// TODO
 	}
 
 	void VulkanRenderAPI::draw(UINT32 vertexOffset, UINT32 vertexCount, UINT32 instanceCount,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
 		UINT32 primCount = 0;
+
+		// TODO
 
 		BS_INC_RENDER_STAT(NumDrawCalls);
 		BS_ADD_RENDER_STAT(NumVertices, vertexCount);
@@ -373,6 +383,8 @@ namespace BansheeEngine
 	{
 		UINT32 primCount = 0;
 
+		// TODO
+
 		BS_INC_RENDER_STAT(NumDrawCalls);
 		BS_ADD_RENDER_STAT(NumVertices, vertexCount);
 		BS_ADD_RENDER_STAT(NumPrimitives, primCount);
@@ -381,56 +393,64 @@ namespace BansheeEngine
 	void VulkanRenderAPI::dispatchCompute(UINT32 numGroupsX, UINT32 numGroupsY, UINT32 numGroupsZ,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
+		// TODO
+
 		BS_INC_RENDER_STAT(NumComputeCalls);
 	}
 
 	void VulkanRenderAPI::setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
-		
+		// TODO
 	}
 
 	void VulkanRenderAPI::setStencilRef(UINT32 value, const SPtr<CommandBuffer>& commandBuffer)
 	{
-		
+		// TODO
 	}
 
 	void VulkanRenderAPI::clearViewport(UINT32 buffers, const Color& color, float depth, UINT16 stencil, UINT8 targetMask,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
+		// TODO
+
 		BS_INC_RENDER_STAT(NumClears);
 	}
 
 	void VulkanRenderAPI::clearRenderTarget(UINT32 buffers, const Color& color, float depth, UINT16 stencil,
 		UINT8 targetMask, const SPtr<CommandBuffer>& commandBuffer)
 	{
+		// TODO
+
 		BS_INC_RENDER_STAT(NumClears);
 	}
 
 	void VulkanRenderAPI::setRenderTarget(const SPtr<RenderTargetCore>& target, bool readOnlyDepthStencil,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
+		// TODO
+		
 		BS_INC_RENDER_STAT(NumRenderTargetChanges);
 	}
 
-	void VulkanRenderAPI::swapBuffers(const SPtr<RenderTargetCore>& target, const SPtr<CommandBuffer>& commandBuffer)
+	void VulkanRenderAPI::swapBuffers(const SPtr<RenderTargetCore>& target, UINT32 syncMask)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		VulkanCommandBuffer* cb = getCB(commandBuffer);
-
-		// TODO - Actually swap buffers
+		target->swapBuffers(syncMask);
 
 		// See if any command buffers finished executing
 		VulkanCommandBufferManager& cbm = static_cast<VulkanCommandBufferManager&>(CommandBufferManager::instance());
-		cbm.refreshStates(cb->getDeviceIdx());
+		
+		for (UINT32 i = 0; i < (UINT32)mDevices.size(); i++)
+			cbm.refreshStates(i);
 
 		BS_INC_RENDER_STAT(NumPresents);
 	}
 
 	void VulkanRenderAPI::addCommands(const SPtr<CommandBuffer>& commandBuffer, const SPtr<CommandBuffer>& secondary)
 	{
-
+		BS_EXCEPT(NotImplementedException, "Secondary command buffers not implemented");
 	}
 
 	void VulkanRenderAPI::executeCommands(const SPtr<CommandBuffer>& commandBuffer, UINT32 syncMask)
@@ -446,12 +466,18 @@ namespace BansheeEngine
 	
 	void VulkanRenderAPI::convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest)
 	{
+		dest = matrix;
 
+		// Convert depth range from [-1,1] to [0,1]
+		dest[2][0] = (dest[2][0] + dest[3][0]) / 2;
+		dest[2][1] = (dest[2][1] + dest[3][1]) / 2;
+		dest[2][2] = (dest[2][2] + dest[3][2]) / 2;
+		dest[2][3] = (dest[2][3] + dest[3][3]) / 2;
 	}
 
 	const RenderAPIInfo& VulkanRenderAPI::getAPIInfo() const
 	{
-		static RenderAPIInfo info(0.0f, 0.0f, 0.0f, 1.0f, VET_COLOR_ABGR, false, true, false, false);
+		static RenderAPIInfo info(0.0f, 0.0f, 0.0f, 1.0f, VET_COLOR_ABGR, false, true, true, true);
 
 		return info;
 	}
@@ -459,7 +485,68 @@ namespace BansheeEngine
 	GpuParamBlockDesc VulkanRenderAPI::generateParamBlockDesc(const String& name, Vector<GpuParamDataDesc>& params)
 	{
 		GpuParamBlockDesc block;
-		
+		block.blockSize = 0;
+		block.isShareable = true;
+		block.name = name;
+		block.slot = 0;
+		block.set = 0;
+
+		for (auto& param : params)
+		{
+			const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES.lookup[param.type];
+			UINT32 size = typeInfo.size / 4;
+			UINT32 alignment = typeInfo.alignment / 4;
+
+			// Fix alignment if needed
+			UINT32 alignOffset = block.blockSize % alignment;
+			if (alignOffset != 0)
+			{
+				UINT32 padding = (alignment - alignOffset);
+				block.blockSize += padding;
+			}
+
+			if (param.arraySize > 1)
+			{
+				// Array elements are always padded and aligned to vec4
+				alignOffset = size % typeInfo.baseTypeSize;
+				if (alignOffset != 0)
+				{
+					UINT32 padding = (typeInfo.baseTypeSize - alignOffset);
+					size += padding;
+				}
+
+				alignOffset = block.blockSize % typeInfo.baseTypeSize;
+				if (alignOffset != 0)
+				{
+					UINT32 padding = (typeInfo.baseTypeSize - alignOffset);
+					block.blockSize += padding;
+				}
+
+				param.elementSize = size;
+				param.arrayElementStride = size;
+				param.cpuMemOffset = block.blockSize;
+				param.gpuMemOffset = 0;
+
+				block.blockSize += size * param.arraySize;
+			}
+			else
+			{
+				param.elementSize = size;
+				param.arrayElementStride = size;
+				param.cpuMemOffset = block.blockSize;
+				param.gpuMemOffset = 0;
+
+				block.blockSize += size;
+			}
+
+			param.paramBlockSlot = 0;
+			param.paramBlockSet = 0;
+		}
+
+		// Constant buffer size must always be a multiple of 16
+		if (block.blockSize % 4 != 0)
+			block.blockSize += (4 - (block.blockSize % 4));
+
 		return block;
 	}
 

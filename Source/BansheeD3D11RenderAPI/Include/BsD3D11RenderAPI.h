@@ -93,8 +93,7 @@ namespace BansheeEngine
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPICore::swapBuffers() */
-		void swapBuffers(const SPtr<RenderTargetCore>& target,
-			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
+		void swapBuffers(const SPtr<RenderTargetCore>& target, UINT32 syncMask = 0xFFFFFFFF) override;
 
 		/** @copydoc RenderAPICore::addCommands() */
 		void addCommands(const SPtr<CommandBuffer>& commandBuffer, const SPtr<CommandBuffer>& secondary) override;

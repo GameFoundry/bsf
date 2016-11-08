@@ -83,8 +83,7 @@ namespace BansheeEngine
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPICore::swapBuffers() */
-		void swapBuffers(const SPtr<RenderTargetCore>& target,
-			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
+		void swapBuffers(const SPtr<RenderTargetCore>& target, UINT32 syncMask = 0xFFFFFFFF) override;
 
 		/** @copydoc RenderAPICore::setRenderTarget() */
 		void setRenderTarget(const SPtr<RenderTargetCore>& target, bool readOnlyDepthStencil = false,
