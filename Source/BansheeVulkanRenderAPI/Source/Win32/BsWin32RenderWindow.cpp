@@ -24,7 +24,7 @@ namespace BansheeEngine
 
 	Win32RenderWindowCore::Win32RenderWindowCore(const RENDER_WINDOW_DESC& desc, UINT32 windowId, VulkanRenderAPI& renderAPI)
 		: RenderWindowCore(desc, windowId), mProperties(desc), mSyncedProperties(desc), mWindow(nullptr), mIsChild(false)
-		, mShowOnSwap(false), mDisplayFrequency(0), mRenderAPI(renderAPI)
+		, mShowOnSwap(false), mDisplayFrequency(0), mRenderAPI(renderAPI), mRequiresNewBackBuffer(true)
 	{ }
 
 	Win32RenderWindowCore::~Win32RenderWindowCore()
@@ -37,10 +37,6 @@ namespace BansheeEngine
 			bs_delete(mWindow);
 			mWindow = nullptr;
 		}
-
-		UINT32 numFramebuffers = sizeof(mFramebufferInfos) / sizeof(mFramebufferInfos[0]);
-		for (UINT32 i = 0; i < numFramebuffers; i++)
-			mFramebufferInfos[i].framebuffer = nullptr;
 
 		mSwapChain = nullptr;
 		vkDestroySurfaceKHR(mRenderAPI._getInstance(), mSurface, gVulkanAllocator);
@@ -210,25 +206,6 @@ namespace BansheeEngine
 		mSwapChain->rebuild(presentDevice, mSurface, props.mWidth, props.mHeight, props.mVSync, mColorFormat, mColorSpace, 
 			mDesc.depthBuffer, mDepthFormat);
 
-		// Create a framebuffer for each swap chain buffer
-		UINT32 numFramebuffers = sizeof(mFramebufferInfos) / sizeof(mFramebufferInfos[0]);
-		assert(numFramebuffers == mSwapChain->getNumColorSurfaces());
-		for(UINT32 i = 0; i < numFramebuffers; i++)
-		{
-			FrameBufferInfo& framebufferInfo = mFramebufferInfos[i];
-			framebufferInfo.desc.width = mSwapChain->getWidth();
-			framebufferInfo.desc.height = mSwapChain->getHeight();
-			framebufferInfo.desc.layers = 1;
-			framebufferInfo.desc.numSamples = 1;
-			framebufferInfo.desc.offscreen = false;
-			framebufferInfo.desc.color[0].format = mColorFormat;
-			framebufferInfo.desc.color[0].view = mSwapChain->getColorView(i);
-			framebufferInfo.desc.depth.format = mDepthFormat;
-			framebufferInfo.desc.depth.view = mSwapChain->getDepthStencilView();
-
-			framebufferInfo.framebuffer = bs_unique_ptr_new<VulkanFramebuffer>(presentDevice, framebufferInfo.desc);
-		}
-
 		// Make the window full screen if required
 		if (!windowDesc.external)
 		{
@@ -270,6 +247,16 @@ namespace BansheeEngine
 		RenderWindowCore::initialize();
 	}
 
+	void Win32RenderWindowCore::acquireBackBuffer()
+	{
+		// We haven't presented the current back buffer yet, so just use that one
+		if (!mRequiresNewBackBuffer)
+			return;
+
+		mSwapChain->acquireBackBuffer();
+		mRequiresNewBackBuffer = false;
+	}
+
 	void Win32RenderWindowCore::swapBuffers(UINT32 syncMask)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -297,6 +284,7 @@ namespace BansheeEngine
 		cbm.getSyncSemaphores(deviceIdx, syncMask, mSemaphoresTemp, numSemaphores);
 
 		mSwapChain->present(queue->getHandle(), mSemaphoresTemp, numSemaphores);
+		mRequiresNewBackBuffer = true;
 	}
 
 	void Win32RenderWindowCore::move(INT32 left, INT32 top)
@@ -500,18 +488,37 @@ namespace BansheeEngine
 		return mWindow->getHWnd();
 	}
 
-	void Win32RenderWindowCore::getCustomAttribute(const String& name, void* pData) const
+	void Win32RenderWindowCore::getCustomAttribute(const String& name, void* data) const
 	{
+		if (name == "FB")
+		{
+			VkFramebuffer* fb = (VkFramebuffer*)data;
+			*fb = mSwapChain->getBackBuffer().framebuffer->getFramebuffer();
+			return;
+		}
+
+		if (name == "RP")
+		{
+			VkRenderPass* renderPass = (VkRenderPass*)data;
+			*renderPass = mSwapChain->getBackBuffer().framebuffer->getRenderPass();
+			return;
+		}
+
+		if(name == "PS")
+		{
+			VkSemaphore* presentSemaphore = (VkSemaphore*)data;
+			*presentSemaphore = mSwapChain->getBackBuffer().sync;
+			return;
+		}
+
 		if(name == "WINDOW")
 		{
-			UINT64 *pWnd = (UINT64*)pData;
+			UINT64 *pWnd = (UINT64*)data;
 			*pWnd = (UINT64)mWindow->getHWnd();
 			return;
 		}
 
-		// TODO - Retrieve renderpass/framebuffer
-
-		RenderWindowCore::getCustomAttribute(name, pData);
+		RenderWindowCore::getCustomAttribute(name, data);
 	}
 
 	void Win32RenderWindowCore::_windowMovedOrResized()
@@ -532,7 +539,7 @@ namespace BansheeEngine
 			props.mHeight = mWindow->getHeight();
 		}
 
-		// Resize swap chain and update framebuffers
+		// Resize swap chain
 		
 		//// Need to make sure nothing is using the swap buffer before we re-create it
 		// Note: Optionally I can detect exactly on which queues (if any) are the swap chain images used on, and only wait
@@ -540,28 +547,8 @@ namespace BansheeEngine
 		SPtr<VulkanDevice> presentDevice = mRenderAPI._getPresentDevice();
 		presentDevice->waitIdle();
 
-		UINT32 numFramebuffers = sizeof(mFramebufferInfos) / sizeof(mFramebufferInfos[0]);
-
-		//// First destroy existing frame buffers
-		for (UINT32 i = 0; i < numFramebuffers; i++)
-			mFramebufferInfos[i].framebuffer = nullptr;
-
-		//// Rebuild swap chain
 		mSwapChain->rebuild(presentDevice, mSurface, props.mWidth, props.mHeight, props.mVSync, mColorFormat, mColorSpace, 
 			mDesc.depthBuffer, mDepthFormat);
-
-		//// Rebuild framebuffers
-		assert(numFramebuffers == mSwapChain->getNumColorSurfaces());
-		for (UINT32 i = 0; i < numFramebuffers; i++)
-		{
-			FrameBufferInfo& framebufferInfo = mFramebufferInfos[i];
-			framebufferInfo.desc.width = mSwapChain->getWidth();
-			framebufferInfo.desc.height = mSwapChain->getHeight();
-			framebufferInfo.desc.color[0].view = mSwapChain->getColorView(i);
-			framebufferInfo.desc.depth.view = mSwapChain->getDepthStencilView();
-
-			framebufferInfo.framebuffer = bs_unique_ptr_new<VulkanFramebuffer>(presentDevice, framebufferInfo.desc);
-		}
 
 		RenderWindowCore::_windowMovedOrResized();
 	}

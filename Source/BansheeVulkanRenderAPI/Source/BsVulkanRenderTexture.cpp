@@ -12,7 +12,19 @@ namespace BansheeEngine
 
 	void VulkanRenderTextureCore::getCustomAttribute(const String& name, void* data) const
 	{
-		
+		if (name == "FB")
+		{
+			VkFramebuffer* fb = (VkFramebuffer*)data;
+			// TODO - Assign framebuffer
+			return;
+		}
+
+		if (name == "RP")
+		{
+			VkRenderPass* renderPass = (VkRenderPass*)data;
+			// TODO - Assign render pass
+			return;
+		}
 	}
 
 	VulkanRenderTexture::VulkanRenderTexture(const RENDER_TEXTURE_DESC& desc)

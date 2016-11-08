@@ -50,8 +50,8 @@ namespace BansheeEngine
 		mDeviceData[deviceIdx].buffers[idx] = buffer;
 	}
 
-	void VulkanCommandBufferManager::getSyncSemaphores(UINT32 deviceIdx, UINT32 syncMask, 
-		VkSemaphore(&semaphores)[BS_MAX_COMMAND_BUFFERS], UINT32& count)
+	void VulkanCommandBufferManager::getSyncSemaphores(UINT32 deviceIdx, UINT32 syncMask, VkSemaphore* semaphores, 
+		UINT32& count)
 	{
 		assert(deviceIdx < mNumDevices);
 		const PerDeviceData& deviceData = mDeviceData[deviceIdx];

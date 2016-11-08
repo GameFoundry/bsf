@@ -16,7 +16,12 @@
 #include "BsVulkanCommandBuffer.h"
 #include "BsVulkanGpuParams.h"
 #include "BsVulkanVertexInputManager.h"
-#include "Win32/BsWin32VideoModeInfo.h"
+
+#if BS_PLATFORM == BS_PLATFORM_WIN32
+	#include "Win32/BsWin32VideoModeInfo.h"
+#else
+	static_assert(false, "Other platform includes go here.");
+#endif
 
 namespace BansheeEngine
 {
@@ -412,7 +417,8 @@ namespace BansheeEngine
 	void VulkanRenderAPI::clearViewport(UINT32 buffers, const Color& color, float depth, UINT16 stencil, UINT8 targetMask,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
-		// TODO
+		// TODO - If clearing the whole viewport, call clearRenderTarget, otherwise begin render pass (if needed), and
+		// execute vkCmdClearAttachments with a valid rect. If no RT is bound, this is a no-op (log warning)
 
 		BS_INC_RENDER_STAT(NumClears);
 	}
@@ -420,7 +426,8 @@ namespace BansheeEngine
 	void VulkanRenderAPI::clearRenderTarget(UINT32 buffers, const Color& color, float depth, UINT16 stencil,
 		UINT8 targetMask, const SPtr<CommandBuffer>& commandBuffer)
 	{
-		// TODO
+		// TODO - If currently within render pass, call vkCmdClearAttachments. Otherwise call cb->setClearValues
+		// which should then queue CB clear on render pass begin.
 
 		BS_INC_RENDER_STAT(NumClears);
 	}
@@ -428,7 +435,14 @@ namespace BansheeEngine
 	void VulkanRenderAPI::setRenderTarget(const SPtr<RenderTargetCore>& target, bool readOnlyDepthStencil,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
-		// TODO
+		VulkanCommandBuffer* cb = getCB(commandBuffer);
+		VulkanCmdBuffer* vkCB = cb->getInternal();
+
+		if(vkCB->isInRenderPass())
+			vkCB->endRenderPass();
+
+		// We don't actually begin a new render pass until the next render-pass specific command gets queued on the CB
+		vkCB->setRenderTarget(target);
 		
 		BS_INC_RENDER_STAT(NumRenderTargetChanges);
 	}

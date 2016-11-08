@@ -3,6 +3,7 @@
 #pragma once
 
 #include "BsVulkanPrerequisites.h"
+#include "BsVulkanFramebuffer.h"
 
 namespace BansheeEngine
 {
@@ -17,6 +18,9 @@ namespace BansheeEngine
 		VkImageView view;
 		VkSemaphore sync;
 		bool acquired;
+
+		VulkanFramebuffer* framebuffer;
+		VULKAN_FRAMEBUFFER_DESC framebufferDesc;
 	};
 
 	/** Vulkan swap chain containing two or more buffers for rendering and presenting onto the screen. */
@@ -54,11 +58,15 @@ namespace BansheeEngine
 		void present(VkQueue queue, VkSemaphore* semaphores, UINT32 numSemaphores);
 
 		/**
-		 * Returns the current back buffer image. 
+		 * Acquires a new back buffer image. Caller can retrieve the surface by calling getBackBuffer(). Caller must wait
+		 * on the semaphore provided by the surface before rendering to it.
 		 * 
 		 * @note Must only be called once in-between present() calls, or before the first present() call.
 		 */
-		SwapChainSurface acquireBackBuffer();
+		void acquireBackBuffer();
+
+		/** Returns information describing the current back buffer. */
+		const SwapChainSurface& getBackBuffer() { return mSurfaces[mCurrentBackBufferIdx]; }
 
 		/** Returns the number of available color surfaces. */
 		UINT32 getNumColorSurfaces() const { return (UINT32)mSurfaces.size(); }

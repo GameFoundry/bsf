@@ -204,6 +204,31 @@ namespace BansheeEngine
 			result = vkCreateImageView(logicalDevice, &depthStencilViewCI, gVulkanAllocator, &mDepthStencilView);
 			assert(result == VK_SUCCESS);
 		}
+		else
+		{
+			mDepthStencilImage = VK_NULL_HANDLE;
+			mDepthStencilView = VK_NULL_HANDLE;
+			mDepthStencilMemory = VK_NULL_HANDLE;
+		}
+
+		// Create a framebuffer for each swap chain buffer
+		UINT32 numFramebuffers = (UINT32)mSurfaces.size();
+		for (UINT32 i = 0; i < numFramebuffers; i++)
+		{
+			VULKAN_FRAMEBUFFER_DESC& desc = mSurfaces[i].framebufferDesc;
+
+			desc.width = getWidth();
+			desc.height = getHeight();
+			desc.layers = 1;
+			desc.numSamples = 1;
+			desc.offscreen = false;
+			desc.color[0].format = colorFormat;
+			desc.color[0].view = mSurfaces[i].view;
+			desc.depth.format = depthFormat;
+			desc.depth.view = mDepthStencilView;
+
+			mSurfaces[i].framebuffer = bs_new<VulkanFramebuffer>(device, desc);
+		}
 	}
 
 	void VulkanSwapChain::present(VkQueue queue, VkSemaphore* semaphores, UINT32 numSemaphores)
@@ -235,7 +260,7 @@ namespace BansheeEngine
 		assert(result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR);
 	}
 
-	SwapChainSurface VulkanSwapChain::acquireBackBuffer()
+	void VulkanSwapChain::acquireBackBuffer()
 	{
 		uint32_t imageIndex;
 
@@ -254,7 +279,6 @@ namespace BansheeEngine
 		mSurfaces[imageIndex].acquired = true;
 
 		mCurrentBackBufferIdx = imageIndex;
-		return mSurfaces[imageIndex];
 	}
 
 	void VulkanSwapChain::clear(VkSwapchainKHR swapChain)
@@ -264,6 +288,8 @@ namespace BansheeEngine
 		{
 			for (auto& surface : mSurfaces)
 			{
+				bs_delete(surface.framebuffer);
+
 				vkDestroySemaphore(logicalDevice, surface.sync, gVulkanAllocator);
 				vkDestroyImageView(logicalDevice, surface.view, gVulkanAllocator);
 			}

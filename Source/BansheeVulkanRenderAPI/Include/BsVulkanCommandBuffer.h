@@ -124,11 +124,20 @@ namespace BansheeEngine
 		/** Returns true if the command buffer is ready to be submitted to a queue. */
 		bool isReadyForSubmit() const { return mState == State::RecordingDone; }
 
+		/** Returns true if the command buffer is currently recording a render pass. */
+		bool isInRenderPass() const { return mState == State::RecordingRenderPass; }
+
 		/** Returns a counter that gets incremented whenever the command buffer is done executing. */
 		UINT32 getFenceCounter() const { return mFenceCounter; }
 
 		/** Checks the internal fence and changes command buffer state if done executing. */
 		void refreshFenceStatus();
+
+		/** 
+		 * Assigns a render target the the command buffer. This render target's framebuffer and render pass will be used
+		 * when beginRenderPass() is called. Command buffer must not be currently recording a render pass.
+		 */
+		void setRenderTarget(const SPtr<RenderTargetCore>& rt);
 
 		/** 
 		 * Lets the command buffer know that the provided resource has been queued on it, and will be used by the
@@ -189,11 +198,17 @@ namespace BansheeEngine
 		VkSemaphore mSemaphore;
 		UINT32 mFenceCounter;
 
+		VkFramebuffer mFramebuffer;
+		VkRenderPass mRenderPass;
+		VkSemaphore mPresentSemaphore;
+		UINT32 mRenderTargetWidth;
+		UINT32 mRenderTargetHeight;
+
 		UnorderedMap<VulkanResource*, ResourceUseHandle> mResources;
 		UnorderedMap<VulkanResource*, ImageInfo> mImages;
 		UnorderedMap<VulkanResource*, BufferInfo> mBuffers;
 
-		VkSemaphore mSemaphoresTemp[BS_MAX_COMMAND_BUFFERS];
+		VkSemaphore mSemaphoresTemp[BS_MAX_COMMAND_BUFFERS + 1]; // +1 for present semaphore
 		UnorderedMap<UINT32, TransitionInfo> mTransitionInfoTemp;
 	};
 

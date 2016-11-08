@@ -37,11 +37,10 @@ namespace BansheeEngine
 		 * @param[in]	syncMask	Mask that has a bit enabled for each command buffer to retrieve the semaphore for.
 		 *							If the command buffer is not currently executing, semaphore won't be returned.
 		 * @param[out]	semaphores	List containing all the required semaphores. Semaphores are tightly packed at the
-		 *							beginning of the array.
+		 *							beginning of the array. Must be able to hold at least BS_MAX_COMMAND_BUFFERS entries.
 		 * @param[out]	count		Number of semaphores provided in the @p semaphores array.
 		 */
-		void getSyncSemaphores(UINT32 deviceIdx, UINT32 syncMask, VkSemaphore(&semaphores)[BS_MAX_COMMAND_BUFFERS], 
-			UINT32& count);
+		void getSyncSemaphores(UINT32 deviceIdx, UINT32 syncMask, VkSemaphore* semaphores, UINT32& count);
 
 		/** 
 		 * Checks if any of the active command buffers finished executing on the device and updates their states 

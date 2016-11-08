@@ -99,6 +99,8 @@ namespace BansheeEngine
 
 	VulkanCmdBuffer::VulkanCmdBuffer(VulkanDevice& device, UINT32 id, VkCommandPool pool, UINT32 queueFamily, bool secondary)
 		: mId(id), mQueueFamily(queueFamily), mState(State::Ready), mDevice(device), mPool(pool), mFenceCounter(0)
+		, mFramebuffer(VK_NULL_HANDLE), mRenderPass(VK_NULL_HANDLE), mPresentSemaphore(VK_NULL_HANDLE)
+		, mRenderTargetWidth(0), mRenderTargetHeight(0)
 	{
 		VkCommandBufferAllocateInfo cmdBufferAllocInfo;
 		cmdBufferAllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -212,8 +214,29 @@ namespace BansheeEngine
 	{
 		assert(mState == State::Recording);
 
-		// TODO
-		BS_EXCEPT(NotImplementedException, "Not implemented");
+		if (mFramebuffer == VK_NULL_HANDLE || mRenderPass == VK_NULL_HANDLE)
+		{
+			LOGWRN("Attempting to begin a render pass but no render target is bound to the command buffer.");
+			return;
+		}
+
+		VkRenderPassBeginInfo renderPassBeginInfo;
+		renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+		renderPassBeginInfo.pNext = nullptr;
+		renderPassBeginInfo.framebuffer = mFramebuffer;
+		renderPassBeginInfo.renderPass = mRenderPass;
+		renderPassBeginInfo.renderArea.offset.x = 0;
+		renderPassBeginInfo.renderArea.offset.y = 0;
+		renderPassBeginInfo.renderArea.extent.width = mRenderTargetWidth;
+		renderPassBeginInfo.renderArea.extent.height = mRenderTargetHeight;
+
+		// TODO: Handle clears (if provided) here. See VulkanRenderAPI::clearRenderTarget.
+		//  - Potential problem is that we might need different framebuffers depending on whether we use load or clear
+		//    ops during render pass start.
+		renderPassBeginInfo.clearValueCount = 0; // TODO
+		renderPassBeginInfo.pClearValues = nullptr; // TODO
+
+		vkCmdBeginRenderPass(mCmdBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 		mState = State::RecordingRenderPass;
 	}
@@ -277,6 +300,37 @@ namespace BansheeEngine
 		}
 		else
 			assert(!signaled); // We reset the fence along with mState so this shouldn't be possible
+	}
+
+	void VulkanCmdBuffer::setRenderTarget(const SPtr<RenderTargetCore>& rt)
+	{
+		assert(mState != State::RecordingRenderPass && mState != State::Submitted);
+
+		if(rt == nullptr)
+		{
+			mFramebuffer = VK_NULL_HANDLE;
+			mRenderPass = VK_NULL_HANDLE;
+			mPresentSemaphore = VK_NULL_HANDLE;
+			mRenderTargetWidth = 0;
+			mRenderTargetHeight = 0;
+		}
+		else
+		{
+			rt->getCustomAttribute("FB", &mFramebuffer);
+			rt->getCustomAttribute("RP", &mRenderPass);
+			
+			if (rt->getProperties().isWindow())
+				rt->getCustomAttribute("PS", &mPresentSemaphore);
+			else
+				mPresentSemaphore = VK_NULL_HANDLE;
+
+			mRenderTargetWidth = rt->getProperties().getWidth();
+			mRenderTargetHeight = rt->getProperties().getHeight();
+		}
+
+
+
+		// TODO
 	}
 
 	void VulkanCmdBuffer::registerResource(VulkanResource* res, VulkanUseFlags flags)
@@ -485,6 +539,13 @@ namespace BansheeEngine
 
 		UINT32 numSemaphores;
 		cbm.getSyncSemaphores(deviceIdx, syncMask, mSemaphoresTemp, numSemaphores);
+
+		// Wait on present (i.e. until the back buffer becomes available), if we're rendering to a window
+		if (mPresentSemaphore != VK_NULL_HANDLE)
+		{
+			mSemaphoresTemp[numSemaphores] = mPresentSemaphore;
+			numSemaphores++;
+		}
 
 		// Issue second part of transition pipeline barriers (on this queue)
 		for (auto& entry : mTransitionInfoTemp)

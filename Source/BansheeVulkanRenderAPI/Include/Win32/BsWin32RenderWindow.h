@@ -4,7 +4,6 @@
 
 #include "BsVulkanPrerequisites.h"
 #include "BsRenderWindow.h"
-#include "BsVulkanFramebuffer.h"
 
 namespace BansheeEngine
 {
@@ -75,11 +74,14 @@ namespace BansheeEngine
 		 */
 		void copyToMemory(PixelData &dst, FrameBuffer buffer);
 
+		/** Prepares the back buffer for rendering. Should be called before it is bound to the GPU. */
+		void acquireBackBuffer();
+
 		/** @copydoc RenderWindowCore::swapBuffers */
 		void swapBuffers(UINT32 syncMask = 0xFFFFFFFF) override;
 
 		/** @copydoc RenderWindowCore::getCustomAttribute */
-		void getCustomAttribute(const String& name, void* pData) const override;
+		void getCustomAttribute(const String& name, void* data) const override;
 
 		/** @copydoc RenderWindowCore::_windowMovedOrResized */
 		void _windowMovedOrResized() override;
@@ -102,13 +104,6 @@ namespace BansheeEngine
 		void syncProperties() override;
 
 	protected:
-		/** Contains an information regarding a framebuffer representing a single swap chain surface. */
-		struct FrameBufferInfo
-		{
-			UPtr<VulkanFramebuffer> framebuffer;
-			VULKAN_FRAMEBUFFER_DESC desc;
-		};
-
 		Win32Window* mWindow;
 		bool mIsChild;
 		bool mShowOnSwap;
@@ -121,8 +116,8 @@ namespace BansheeEngine
 		VkFormat mDepthFormat;
 		UINT32 mPresentQueueFamily;
 		SPtr<VulkanSwapChain> mSwapChain;
-		FrameBufferInfo mFramebufferInfos[BS_NUM_BACK_BUFFERS + 1];
 		VkSemaphore mSemaphoresTemp[BS_MAX_COMMAND_BUFFERS];
+		bool mRequiresNewBackBuffer;
 
 		Win32RenderWindowProperties mProperties;
 		Win32RenderWindowProperties mSyncedProperties;
