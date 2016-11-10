@@ -207,6 +207,7 @@ namespace BansheeEngine
 		UnorderedMap<VulkanResource*, ResourceUseHandle> mResources;
 		UnorderedMap<VulkanResource*, ImageInfo> mImages;
 		UnorderedMap<VulkanResource*, BufferInfo> mBuffers;
+		UINT32 mGlobalQueueIdx;
 
 		VkSemaphore mSemaphoresTemp[BS_MAX_COMMAND_BUFFERS + 1]; // +1 for present semaphore
 		UnorderedMap<UINT32, TransitionInfo> mTransitionInfoTemp;

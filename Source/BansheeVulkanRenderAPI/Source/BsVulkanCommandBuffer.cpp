@@ -100,7 +100,7 @@ namespace BansheeEngine
 	VulkanCmdBuffer::VulkanCmdBuffer(VulkanDevice& device, UINT32 id, VkCommandPool pool, UINT32 queueFamily, bool secondary)
 		: mId(id), mQueueFamily(queueFamily), mState(State::Ready), mDevice(device), mPool(pool), mFenceCounter(0)
 		, mFramebuffer(VK_NULL_HANDLE), mRenderPass(VK_NULL_HANDLE), mPresentSemaphore(VK_NULL_HANDLE)
-		, mRenderTargetWidth(0), mRenderTargetHeight(0)
+		, mRenderTargetWidth(0), mRenderTargetHeight(0), mGlobalQueueIdx(-1)
 	{
 		VkCommandBufferAllocateInfo cmdBufferAllocInfo;
 		cmdBufferAllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -250,6 +250,222 @@ namespace BansheeEngine
 		mState = State::Recording;
 	}
 
+	void VulkanCmdBuffer::submit(VulkanQueue* queue, UINT32 queueIdx, UINT32 syncMask)
+	{
+		assert(isReadyForSubmit());
+
+		// Issue pipeline barriers for queue transitions (need to happen on original queue first, then on new queue)
+		for (auto& entry : mBuffers)
+		{
+			VulkanBuffer* resource = static_cast<VulkanBuffer*>(entry.first);
+
+			if (!resource->isExclusive())
+				continue;
+
+			UINT32 currentQueueFamily = resource->getQueueFamily();
+			if (currentQueueFamily != mQueueFamily)
+			{
+				Vector<VkBufferMemoryBarrier>& barriers = mTransitionInfoTemp[currentQueueFamily].bufferBarriers;
+
+				barriers.push_back(VkBufferMemoryBarrier());
+				VkBufferMemoryBarrier& barrier = barriers.back();
+				barrier.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
+				barrier.pNext = nullptr;
+				barrier.srcAccessMask = entry.second.accessFlags;
+				barrier.dstAccessMask = entry.second.accessFlags;
+				barrier.srcQueueFamilyIndex = currentQueueFamily;
+				barrier.dstQueueFamilyIndex = mQueueFamily;
+				barrier.buffer = resource->getHandle();
+				barrier.offset = 0;
+				barrier.size = VK_WHOLE_SIZE;
+			}
+		}
+
+		for (auto& entry : mImages)
+		{
+			VulkanImage* resource = static_cast<VulkanImage*>(entry.first);
+
+			UINT32 currentQueueFamily = resource->getQueueFamily();
+			bool queueMismatch = resource->isExclusive() && currentQueueFamily != mQueueFamily;
+
+			if (queueMismatch || resource->getLayout() != entry.second.layout)
+			{
+				Vector<VkImageMemoryBarrier>& barriers = mTransitionInfoTemp[currentQueueFamily].imageBarriers;
+
+				barriers.push_back(VkImageMemoryBarrier());
+				VkImageMemoryBarrier& barrier = barriers.back();
+				barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+				barrier.pNext = nullptr;
+				barrier.srcAccessMask = entry.second.accessFlags;
+				barrier.dstAccessMask = entry.second.accessFlags;
+				barrier.srcQueueFamilyIndex = currentQueueFamily;
+				barrier.dstQueueFamilyIndex = mQueueFamily;
+				barrier.oldLayout = resource->getLayout();
+				barrier.newLayout = entry.second.layout;
+				barrier.image = resource->getHandle();
+				barrier.subresourceRange = entry.second.range;
+
+				resource->setLayout(entry.second.layout);
+			}
+		}
+
+		VulkanDevice& device = queue->getDevice();
+		for (auto& entry : mTransitionInfoTemp)
+		{
+			bool empty = entry.second.imageBarriers.size() == 0 && entry.second.bufferBarriers.size() == 0;
+			if (empty)
+				continue;
+
+			UINT32 entryQueueFamily = entry.first;
+
+			// No queue transition needed for entries on this queue (this entry is most likely an in image layout transition)
+			if (entryQueueFamily == mQueueFamily)
+				continue;
+
+			VulkanCmdBuffer* cmdBuffer = device.getCmdBufferPool().getBuffer(entryQueueFamily, false);
+			VkCommandBuffer vkCmdBuffer = cmdBuffer->getHandle();
+
+			TransitionInfo& barriers = entry.second;
+			UINT32 numImgBarriers = (UINT32)barriers.imageBarriers.size();
+			UINT32 numBufferBarriers = (UINT32)barriers.bufferBarriers.size();
+
+			vkCmdPipelineBarrier(vkCmdBuffer,
+								 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+								 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+								 0, 0, nullptr,
+								 numBufferBarriers, barriers.bufferBarriers.data(),
+								 numImgBarriers, barriers.imageBarriers.data());
+
+			// Find an appropriate queue to execute on
+			UINT32 otherQueueIdx = 0;
+			VulkanQueue* otherQueue = nullptr;
+			GpuQueueType otherQueueType = GQT_GRAPHICS;
+			for (UINT32 i = 0; i < GQT_COUNT; i++)
+			{
+				if (device.getQueueFamily((GpuQueueType)i) != entryQueueFamily)
+					continue;
+
+				UINT32 numQueues = device.getNumQueues(otherQueueType);
+				for (UINT32 j = 0; j < numQueues; j++)
+				{
+					// Try to find a queue not currently executing
+					VulkanQueue* curQueue = device.getQueue(otherQueueType, j);
+					if (!curQueue->isExecuting())
+					{
+						otherQueue = curQueue;
+						otherQueueIdx = j;
+					}
+				}
+
+				// Can't find empty one, use the first one then
+				if (otherQueue == nullptr)
+				{
+					otherQueue = device.getQueue(otherQueueType, 0);
+					otherQueueIdx = 0;
+				}
+
+				otherQueueType = (GpuQueueType)i;
+				break;
+			}
+
+			UINT32 otherGlobalQueueIdx = CommandSyncMask::getGlobalQueueIdx(otherQueueType, otherQueueIdx);
+			syncMask |= otherGlobalQueueIdx;
+
+			cmdBuffer->end();
+			cmdBuffer->submit(otherQueue, otherQueueIdx, 0);
+
+			// If there are any layout transitions, reset them as we don't need them for the second pipeline barrier
+			for (auto& barrierEntry : barriers.imageBarriers)
+				barrierEntry.oldLayout = barrierEntry.newLayout;
+		}
+
+		UINT32 deviceIdx = device.getIndex();
+		VulkanCommandBufferManager& cbm = static_cast<VulkanCommandBufferManager&>(CommandBufferManager::instance());
+
+		UINT32 numSemaphores;
+		cbm.getSyncSemaphores(deviceIdx, syncMask, mSemaphoresTemp, numSemaphores);
+
+		// Wait on present (i.e. until the back buffer becomes available), if we're rendering to a window
+		if (mPresentSemaphore != VK_NULL_HANDLE)
+		{
+			mSemaphoresTemp[numSemaphores] = mPresentSemaphore;
+			numSemaphores++;
+		}
+
+		// Issue second part of transition pipeline barriers (on this queue)
+		for (auto& entry : mTransitionInfoTemp)
+		{
+			bool empty = entry.second.imageBarriers.size() == 0 && entry.second.bufferBarriers.size() == 0;
+			if (empty)
+				continue;
+
+			VulkanCmdBuffer* cmdBuffer = device.getCmdBufferPool().getBuffer(mQueueFamily, false);
+			VkCommandBuffer vkCmdBuffer = cmdBuffer->getHandle();
+
+			TransitionInfo& barriers = entry.second;
+			UINT32 numImgBarriers = (UINT32)barriers.imageBarriers.size();
+			UINT32 numBufferBarriers = (UINT32)barriers.bufferBarriers.size();
+
+			vkCmdPipelineBarrier(vkCmdBuffer,
+								 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+								 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+								 0, 0, nullptr,
+								 numBufferBarriers, barriers.bufferBarriers.data(),
+								 numImgBarriers, barriers.imageBarriers.data());
+
+			cmdBuffer->end();
+
+			queue->submit(cmdBuffer, mSemaphoresTemp, numSemaphores);
+			numSemaphores = 0; // Semaphores are only needed the first time, since we're adding the buffers on the same queue
+		}
+
+		queue->submit(this, mSemaphoresTemp, numSemaphores);
+
+		mGlobalQueueIdx = CommandSyncMask::getGlobalQueueIdx(queue->getType(), queueIdx);
+		for (auto& entry : mResources)
+		{
+			ResourceUseHandle& useHandle = entry.second;
+			assert(!useHandle.used);
+
+			useHandle.used = true;
+			entry.first->notifyUsed(mGlobalQueueIdx, mQueueFamily, useHandle.flags);
+		}
+
+		for (auto& entry : mImages)
+		{
+			ResourceUseHandle& useHandle = entry.second.useHandle;
+			assert(!useHandle.used);
+
+			useHandle.used = true;
+			entry.first->notifyUsed(mGlobalQueueIdx, mQueueFamily, useHandle.flags);
+		}
+
+		for (auto& entry : mBuffers)
+		{
+			ResourceUseHandle& useHandle = entry.second.useHandle;
+			assert(!useHandle.used);
+
+			useHandle.used = true;
+			entry.first->notifyUsed(mGlobalQueueIdx, mQueueFamily, useHandle.flags);
+		}
+
+		cbm.refreshStates(deviceIdx);
+
+		// Note: Uncommented for debugging only, prevents any device concurrency issues.
+		// vkQueueWaitIdle(queue->getHandle());
+
+		mState = State::Submitted;
+		cbm.setActiveBuffer(queue->getType(), deviceIdx, queueIdx, this);
+
+		// Clear vectors but don't clear the actual map, as we want to re-use the memory since we expect queue family
+		// indices to be the same
+		for (auto& entry : mTransitionInfoTemp)
+		{
+			entry.second.imageBarriers.clear();
+			entry.second.bufferBarriers.clear();
+		}
+	}
+
 	void VulkanCmdBuffer::refreshFenceStatus()
 	{
 		VkResult result = vkGetFenceStatus(mDevice.getLogical(), mFence);
@@ -274,7 +490,7 @@ namespace BansheeEngine
 					ResourceUseHandle& useHandle = entry.second;
 					assert(useHandle.used);
 
-					entry.first->notifyDone();
+					entry.first->notifyDone(mGlobalQueueIdx, useHandle.flags);
 				}
 
 				for (auto& entry : mImages)
@@ -282,7 +498,7 @@ namespace BansheeEngine
 					ResourceUseHandle& useHandle = entry.second.useHandle;
 					assert(useHandle.used);
 
-					entry.first->notifyDone();
+					entry.first->notifyDone(mGlobalQueueIdx, useHandle.flags);
 				}
 
 				for (auto& entry : mBuffers)
@@ -290,7 +506,7 @@ namespace BansheeEngine
 					ResourceUseHandle& useHandle = entry.second.useHandle;
 					assert(useHandle.used);
 
-					entry.first->notifyDone();
+					entry.first->notifyDone(mGlobalQueueIdx, useHandle.flags);
 				}
 
 				mResources.clear();
@@ -402,221 +618,6 @@ namespace BansheeEngine
 			assert(!bufferInfo.useHandle.used);
 			bufferInfo.useHandle.flags |= flags;
 			bufferInfo.accessFlags |= accessFlags;
-		}
-	}
-
-	void VulkanCmdBuffer::submit(VulkanQueue* queue, UINT32 queueIdx, UINT32 syncMask)
-	{
-		assert(isReadyForSubmit());
-
-		// Issue pipeline barriers for queue transitions (need to happen on original queue first, then on new queue)
-		for(auto& entry : mBuffers)
-		{
-			VulkanBuffer* resource = static_cast<VulkanBuffer*>(entry.first);
-
-			if (!resource->isExclusive())
-				continue;
-
-			UINT32 currentQueueFamily = resource->getQueueFamily();
-			if (currentQueueFamily != mQueueFamily)
-			{
-				Vector<VkBufferMemoryBarrier>& barriers = mTransitionInfoTemp[currentQueueFamily].bufferBarriers;
-
-				barriers.push_back(VkBufferMemoryBarrier());
-				VkBufferMemoryBarrier& barrier = barriers.back();
-				barrier.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
-				barrier.pNext = nullptr;
-				barrier.srcAccessMask = entry.second.accessFlags;
-				barrier.dstAccessMask = entry.second.accessFlags;
-				barrier.srcQueueFamilyIndex = currentQueueFamily;
-				barrier.dstQueueFamilyIndex = mQueueFamily;
-				barrier.buffer = resource->getHandle();
-				barrier.offset = 0;
-				barrier.size = VK_WHOLE_SIZE;
-			}
-		}
-
-		for(auto& entry : mImages)
-		{
-			VulkanImage* resource = static_cast<VulkanImage*>(entry.first);
-
-			UINT32 currentQueueFamily = resource->getQueueFamily();
-			bool queueMismatch = resource->isExclusive() && currentQueueFamily != mQueueFamily;
-
-			if (queueMismatch || resource->getLayout() != entry.second.layout)
-			{
-				Vector<VkImageMemoryBarrier>& barriers = mTransitionInfoTemp[currentQueueFamily].imageBarriers;
-
-				barriers.push_back(VkImageMemoryBarrier());
-				VkImageMemoryBarrier& barrier = barriers.back();
-				barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-				barrier.pNext = nullptr;
-				barrier.srcAccessMask = entry.second.accessFlags;
-				barrier.dstAccessMask = entry.second.accessFlags;
-				barrier.srcQueueFamilyIndex = currentQueueFamily;
-				barrier.dstQueueFamilyIndex = mQueueFamily;
-				barrier.oldLayout = resource->getLayout();
-				barrier.newLayout = entry.second.layout;
-				barrier.image = resource->getHandle();
-				barrier.subresourceRange = entry.second.range;
-
-				resource->setLayout(entry.second.layout);
-			}
-		}
-
-		VulkanDevice& device = queue->getDevice();
-		for (auto& entry : mTransitionInfoTemp)
-		{
-			bool empty = entry.second.imageBarriers.size() == 0 && entry.second.bufferBarriers.size() == 0;
-			if (empty)
-				continue;
-
-			UINT32 entryQueueFamily = entry.first;
-
-			// No queue transition needed for entries on this queue (this entry is most likely an in image layout transition)
-			if (entryQueueFamily == mQueueFamily)
-				continue;
-
-			VulkanCmdBuffer* cmdBuffer = device.getCmdBufferPool().getBuffer(entryQueueFamily, false);
-			VkCommandBuffer vkCmdBuffer = cmdBuffer->getHandle();
-
-			TransitionInfo& barriers = entry.second;
-			UINT32 numImgBarriers = (UINT32)barriers.imageBarriers.size();
-			UINT32 numBufferBarriers = (UINT32)barriers.bufferBarriers.size();
-
-			vkCmdPipelineBarrier(vkCmdBuffer,
-								 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-								 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-								 0, 0, nullptr,
-								 numBufferBarriers, barriers.bufferBarriers.data(),
-								 numImgBarriers, barriers.imageBarriers.data());
-
-			// Find an appropriate queue to execute on
-			UINT32 otherQueueIdx = 0;
-			VulkanQueue* otherQueue = nullptr;
-			GpuQueueType otherQueueType = GQT_GRAPHICS;
-			for (UINT32 i = 0; i < GQT_COUNT; i++)
-			{
-				if (device.getQueueFamily((GpuQueueType)i) != entryQueueFamily)
-					continue;
-
-				UINT32 numQueues = device.getNumQueues(otherQueueType);
-				for(UINT32 j = 0; j < numQueues; j++)
-				{
-					// Try to find a queue not currently executing
-					VulkanQueue* curQueue = device.getQueue(otherQueueType, j);
-					if(!curQueue->isExecuting())
-					{
-						otherQueue = curQueue;
-						otherQueueIdx = j;
-					}
-				}
-
-				// Can't find empty one, use the first one then
-				if(otherQueue == nullptr)
-				{
-					otherQueue = device.getQueue(otherQueueType, 0);
-					otherQueueIdx = 0;
-				}
-
-				otherQueueType = (GpuQueueType)i;
-				break;
-			}
-
-			UINT32 otherGlobalQueueIdx = CommandSyncMask::getGlobalQueueIdx(otherQueueType, otherQueueIdx);
-			syncMask |= otherGlobalQueueIdx;
-
-			cmdBuffer->end();
-			cmdBuffer->submit(otherQueue, otherQueueIdx, 0);
-
-			// If there are any layout transitions, reset them as we don't need them for the second pipeline barrier
-			for (auto& barrierEntry : barriers.imageBarriers)
-				barrierEntry.oldLayout = barrierEntry.newLayout;
-		}
-
-		UINT32 deviceIdx = device.getIndex();
-		VulkanCommandBufferManager& cbm = static_cast<VulkanCommandBufferManager&>(CommandBufferManager::instance());
-
-		UINT32 numSemaphores;
-		cbm.getSyncSemaphores(deviceIdx, syncMask, mSemaphoresTemp, numSemaphores);
-
-		// Wait on present (i.e. until the back buffer becomes available), if we're rendering to a window
-		if (mPresentSemaphore != VK_NULL_HANDLE)
-		{
-			mSemaphoresTemp[numSemaphores] = mPresentSemaphore;
-			numSemaphores++;
-		}
-
-		// Issue second part of transition pipeline barriers (on this queue)
-		for (auto& entry : mTransitionInfoTemp)
-		{
-			bool empty = entry.second.imageBarriers.size() == 0 && entry.second.bufferBarriers.size() == 0;
-			if (empty)
-				continue;
-
-			VulkanCmdBuffer* cmdBuffer = device.getCmdBufferPool().getBuffer(mQueueFamily, false);
-			VkCommandBuffer vkCmdBuffer = cmdBuffer->getHandle();
-
-			TransitionInfo& barriers = entry.second;
-			UINT32 numImgBarriers = (UINT32)barriers.imageBarriers.size();
-			UINT32 numBufferBarriers = (UINT32)barriers.bufferBarriers.size();
-
-			vkCmdPipelineBarrier(vkCmdBuffer,
-								 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-								 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-								 0, 0, nullptr,
-								 numBufferBarriers, barriers.bufferBarriers.data(),
-								 numImgBarriers, barriers.imageBarriers.data());
-
-			cmdBuffer->end();
-
-			queue->submit(cmdBuffer, mSemaphoresTemp, numSemaphores);
-			numSemaphores = 0; // Semaphores are only needed the first time, since we're adding the buffers on the same queue
-		}
-
-		queue->submit(this, mSemaphoresTemp, numSemaphores);
-
-		for (auto& entry : mResources)
-		{
-			ResourceUseHandle& useHandle = entry.second;
-			assert(!useHandle.used);
-
-			useHandle.used = true;
-			entry.first->notifyUsed(this, useHandle.flags);
-		}
-
-		for (auto& entry : mImages)
-		{
-			ResourceUseHandle& useHandle = entry.second.useHandle;
-			assert(!useHandle.used);
-
-			useHandle.used = true;
-			entry.first->notifyUsed(this, useHandle.flags);
-		}
-
-		for (auto& entry : mBuffers)
-		{
-			ResourceUseHandle& useHandle = entry.second.useHandle;
-			assert(!useHandle.used);
-
-			useHandle.used = true;
-			entry.first->notifyUsed(this, useHandle.flags);
-		}
-
-		cbm.refreshStates(deviceIdx);
-
-		// Note: Uncommented for debugging only, prevents any device concurrency issues.
-		// vkQueueWaitIdle(queue->getHandle());
-
-		mState = State::Submitted;
-		cbm.setActiveBuffer(queue->getType(), deviceIdx, queueIdx, this);
-
-		// Clear vectors but don't clear the actual map, as we want to re-use the memory since we expect queue family
-		// indices to be the same
-		for (auto& entry : mTransitionInfoTemp)
-		{
-			entry.second.imageBarriers.clear();
-			entry.second.bufferBarriers.clear();
 		}
 	}
 

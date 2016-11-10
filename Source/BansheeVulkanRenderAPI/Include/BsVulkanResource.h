@@ -51,16 +51,23 @@ namespace BansheeEngine
 		 * A resource can only be used by a single command buffer at a time unless resource concurrency is enabled.
 		 * 
 		 * Must follow a notifyBound(). Must eventually be followed by a notifyDone().
+		 * 
+		 * @param[in]	globalQueueIdx	Global index of the queue the resource is being used in.
+		 * @param[in]	queueFamily		Family of the queue the resource is being used in.
+		 * @param[in]	useFlags		Flags that determine in what way is the resource being used.
 		 */
-		void notifyUsed(VulkanCmdBuffer* buffer, VulkanUseFlags useFlags);
+		void notifyUsed(UINT32 globalQueueIdx, UINT32 queueFamily, VulkanUseFlags useFlags);
 
 		/** 
 		 * Notifies the resource that it is no longer used by on the GPU. This makes the resource usable on other command
 		 * buffers again.
 		 * 
 		 * Must follow a notifyUsed().
+		 * 
+		 * @param[in]	globalQueueIdx	Global index of the queue that finished using the resource.
+		 * @param[in]	useFlags		Use flags that specify how was the resource being used.
 		 */
-		void notifyDone();
+		void notifyDone(UINT32 globalQueueIdx, VulkanUseFlags useFlags);
 
 		/** 
 		 * Notifies the resource that it is no longer queued on the command buffer. This is similar to notifyDone(), but
@@ -97,6 +104,15 @@ namespace BansheeEngine
 		 */
 		UINT32 getQueueFamily() const { Lock(mMutex); return mQueueFamily; }
 
+		/** 
+		 * Returns a mask that has bits set for every queue that the resource is currently used by.
+		 *
+		 * @param[out]	useFlags	Output parameter that notifies the caller in what way is the resource being used.
+		 * @return					Bitmask of which queues is the resource used on. This has the same format as sync mask
+		 *							created by CommandSyncMask.
+		 */
+		UINT32 getUseInfo(VulkanUseFlags& useFlags) const;
+
 		/** Returns true if the resource is only allowed to be used by a single queue family at once. */
 		bool isExclusive() const { Lock(mMutex); return mState != State::Shared; }
 
@@ -115,10 +131,14 @@ namespace BansheeEngine
 			Destroyed
 		};
 
+		static const UINT32 MAX_UNIQUE_QUEUES = BS_MAX_QUEUES_PER_TYPE * GQT_COUNT;
+
 		VulkanResourceManager* mOwner;
 		UINT32 mQueueFamily;
 		State mState;
-		VulkanUseFlags mUseFlags;
+
+		UINT8 mReadUses[MAX_UNIQUE_QUEUES];
+		UINT8 mWriteUses[MAX_UNIQUE_QUEUES];
 		
 		UINT32 mNumUsedHandles;
 		UINT32 mNumBoundHandles;

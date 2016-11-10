@@ -26,5 +26,28 @@ namespace BansheeEngine
 	/**	Generates an MD5 hash string for the provided source string. */
 	String BS_UTILITY_EXPORT md5(const String& source);
 
+	/** Sets contents of a struct to zero. */
+	template<class T>
+	void bs_zero_out(T& s)
+	{
+		std::memset(&s, 0, sizeof(T));
+	}
+
+	/** Sets contents of a static array to zero. */
+	template<class T, size_t N>
+	void bs_zero_out(T(&arr)[N])
+	{
+		std::memset(arr, 0, sizeof(T) * N);
+	}
+
+	/** Sets contents of a block of memory to zero. */
+	template<class T>
+	void bs_zero_out(T * arr, size_t count)
+	{
+		assert(arr != nullptr);
+		assert(count != 0);
+		std::memset(arr, 0, sizeof(T) * count);
+	}
+
 	/** @} */
 }

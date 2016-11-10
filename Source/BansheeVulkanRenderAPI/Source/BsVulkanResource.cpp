@@ -15,6 +15,9 @@ namespace BansheeEngine
 		mState = concurrency ? State::Shared : State::Normal;
 		mNumUsedHandles = 0;
 		mNumBoundHandles = 0;
+
+		bs_zero_out(mReadUses);
+		bs_zero_out(mWriteUses);
 	}
 
 	VulkanResource::~VulkanResource()
@@ -33,33 +36,53 @@ namespace BansheeEngine
 		mNumBoundHandles++;
 	}
 
-	void VulkanResource::notifyUsed(VulkanCmdBuffer* buffer, VulkanUseFlags useFlags)
+	void VulkanResource::notifyUsed(UINT32 globalQueueIdx, UINT32 queueFamily, VulkanUseFlags useFlags)
 	{
 		Lock lock(mMutex);
 		assert(mState != State::Destroyed);
+		assert(useFlags != VulkanUseFlag::None);
 
 		if(isUsed() && mState == State::Normal) // Used without support for concurrency
 		{
-			assert(mQueueFamily == buffer->getQueueFamily() && 
+			assert(mQueueFamily == queueFamily &&
 				"Vulkan resource without concurrency support can only be used by one queue family at once.");
 		}
 
 		mNumUsedHandles++;
-		mQueueFamily = buffer->getQueueFamily();
-		mUseFlags |= useFlags;
+		mQueueFamily = queueFamily;
+
+		assert(globalQueueIdx < MAX_UNIQUE_QUEUES);
+		
+		if (useFlags.isSet(VulkanUseFlag::Read))
+		{
+			assert(mReadUses[globalQueueIdx] < 255 && "Resource used in too many command buffers at once.");
+			mReadUses[globalQueueIdx]++;
+		}
+		
+		if(useFlags.isSet(VulkanUseFlag::Write))
+		{
+			assert(mWriteUses[globalQueueIdx] < 255 && "Resource used in too many command buffers at once.");
+			mWriteUses[globalQueueIdx]++;
+		}
 	}
 
-	void VulkanResource::notifyDone()
+	void VulkanResource::notifyDone(UINT32 globalQueueIdx, VulkanUseFlags useFlags)
 	{
 		Lock lock(mMutex);
 		mNumUsedHandles--;
 		mNumBoundHandles--;
 
-		// Note: If resource is used on different command buffers with different use flags, we should clear individual flags
-		// depending on which command buffer finished. But this requires extra per-command buffer state tracking, so we
-		// instead just clear all flags at once when all command buffers finish.
-		if (!isUsed())
-			mUseFlags = VulkanUseFlag::None;
+		if (useFlags.isSet(VulkanUseFlag::Read))
+		{
+			assert(mReadUses[globalQueueIdx] > 0);
+			mReadUses[globalQueueIdx]--;
+		}
+
+		if (useFlags.isSet(VulkanUseFlag::Write))
+		{
+			assert(mWriteUses[globalQueueIdx] > 0);
+			mWriteUses[globalQueueIdx]--;
+		}
 
 		if (!isBound() && mState == State::Destroyed) // Queued for destruction
 			mOwner->destroy(this);
@@ -72,6 +95,29 @@ namespace BansheeEngine
 
 		if (!isBound() && mState == State::Destroyed) // Queued for destruction
 			mOwner->destroy(this);
+	}
+
+	UINT32 VulkanResource::getUseInfo(VulkanUseFlags& useFlags) const
+	{
+		useFlags = VulkanUseFlag::None;
+
+		UINT32 mask = 0;
+		for(UINT32 i = 0; i < MAX_UNIQUE_QUEUES; i++)
+		{
+			if (mReadUses[i] > 0)
+			{
+				mask |= 1 << i;
+				useFlags |= VulkanUseFlag::Read;
+			}
+
+			if (mWriteUses[i] > 0)
+			{
+				mask |= 1 << i;
+				useFlags |= VulkanUseFlag::Write;
+			}
+		}
+
+		return mask;
 	}
 
 	void VulkanResource::destroy()
