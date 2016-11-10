@@ -21,11 +21,11 @@ namespace BansheeEngine
 		~GLVertexBufferCore();
 
 		/** @copydoc VertexBufferCore::readData */
-        void readData(UINT32 offset, UINT32 length, void* dest, UINT32 queueIdx = 1) override;
+        void readData(UINT32 offset, UINT32 length, void* dest, UINT32 queueIdx = 0) override;
 
 		/** @copydoc VertexBufferCore::writeData */
         void writeData(UINT32 offset, UINT32 length, const void* source, 
-			BufferWriteType writeFlags = BWT_NORMAL, UINT32 queueIdx = 1) override;
+			BufferWriteType writeFlags = BWT_NORMAL, UINT32 queueIdx = 0) override;
 
 		/**	Returns internal OpenGL buffer ID. */
         GLuint getGLBufferId() const { return mBuffer.getGLBufferId(); }

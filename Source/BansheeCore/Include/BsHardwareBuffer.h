@@ -43,7 +43,7 @@ namespace BansheeEngine
 		 *							This value is a global queue index which encodes both the queue type and queue index.
 		 *							Retrieve it from CommandSyncMask::getGlobalQueueIdx().
 		 */
-		virtual void* lock(UINT32 offset, UINT32 length, GpuLockOptions options, UINT32 deviceIdx = 0, UINT32 queueIdx = 1)
+		virtual void* lock(UINT32 offset, UINT32 length, GpuLockOptions options, UINT32 deviceIdx = 0, UINT32 queueIdx = 0)
         {
             assert(!isLocked() && "Cannot lock this buffer, it is already locked!");
             void* ret = map(offset, length, options, deviceIdx, queueIdx);
@@ -73,7 +73,7 @@ namespace BansheeEngine
 		 *							This value is a global queue index which encodes both the queue type and queue index.
 		 *							Retrieve it from CommandSyncMask::getGlobalQueueIdx().
 		 */
-        void* lock(GpuLockOptions options, UINT32 deviceIdx = 0, UINT32 queueIdx = 1)
+        void* lock(GpuLockOptions options, UINT32 deviceIdx = 0, UINT32 queueIdx = 0)
         {
             return this->lock(0, mSize, options, deviceIdx, queueIdx);
         }
@@ -105,7 +105,7 @@ namespace BansheeEngine
 		 *							This value is a global queue index which encodes both the queue type and queue index.
 		 *							Retrieve it from CommandSyncMask::getGlobalQueueIdx().
 		 */
-        virtual void readData(UINT32 offset, UINT32 length, void* dest, UINT32 queueIdx = 1) = 0;
+        virtual void readData(UINT32 offset, UINT32 length, void* dest, UINT32 queueIdx = 0) = 0;
 
 		/**
 		 * Writes data into a portion of the buffer from the source memory. 
@@ -126,7 +126,7 @@ namespace BansheeEngine
 		 *							Retrieve it from CommandSyncMask::getGlobalQueueIdx().
 		 */
         virtual void writeData(UINT32 offset, UINT32 length, const void* source,
-				BufferWriteType writeFlags = BWT_NORMAL, UINT32 queueIdx = 1) = 0;
+				BufferWriteType writeFlags = BWT_NORMAL, UINT32 queueIdx = 0) = 0;
 
 		/**
 		 * Copies data from a specific portion of the source buffer into a specific portion of this buffer.
@@ -149,7 +149,7 @@ namespace BansheeEngine
 		 *									index. Retrieve it from CommandSyncMask::getGlobalQueueIdx().
 		 */
 		virtual void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, 
-			UINT32 dstOffset, UINT32 length, bool discardWholeBuffer = false, UINT32 queueIdx = 1)
+			UINT32 dstOffset, UINT32 length, bool discardWholeBuffer = false, UINT32 queueIdx = 0)
 		{
 			const void *srcData = srcBuffer.lock(
 				srcOffset, length, GBL_READ_ONLY, queueIdx);
@@ -171,7 +171,7 @@ namespace BansheeEngine
 		 *							This value is a global queue index which encodes both the queue type and queue index.
 		 *							Retrieve it from CommandSyncMask::getGlobalQueueIdx().
 		 */
-		virtual void copyData(HardwareBuffer& srcBuffer, UINT32 queueIdx = 1)
+		virtual void copyData(HardwareBuffer& srcBuffer, UINT32 queueIdx = 0)
 		{
 			UINT32 sz = std::min(getSize(), srcBuffer.getSize());
 			copyData(srcBuffer, 0, 0, sz, true, queueIdx);

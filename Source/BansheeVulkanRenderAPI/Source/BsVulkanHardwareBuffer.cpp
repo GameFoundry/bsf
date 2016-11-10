@@ -166,6 +166,7 @@ namespace BansheeEngine
 
 		// TODO - Special
 		//      - Keep a list of upload command buffers per queue to avoid allocating them
+		//        - Submit and clear all upload command buffers whenever new command buffer is submitted
 		//      - Can I easily determine sync mask of which buffers a resource is used on from VulkanResource?
 
 		switch (options)

@@ -42,15 +42,15 @@ namespace BansheeEngine
 		~D3D11HardwareBuffer();
 
 		/** @copydoc HardwareBuffer::readData */
-		void readData(UINT32 offset, UINT32 length, void* dest, UINT32 queueIdx = 1) override;
+		void readData(UINT32 offset, UINT32 length, void* dest, UINT32 queueIdx = 0) override;
 
 		/** @copydoc HardwareBuffer::writeData */
 		void writeData(UINT32 offset, UINT32 length, const void* source, 
-			BufferWriteType writeFlags = BWT_NORMAL, UINT32 queueIdx = 1) override;
+			BufferWriteType writeFlags = BWT_NORMAL, UINT32 queueIdx = 0) override;
 
 		/** @copydoc HardwareBuffer::copyData */
 		void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, 
-			UINT32 length, bool discardWholeBuffer = false, UINT32 queueIdx = 1) override;
+			UINT32 length, bool discardWholeBuffer = false, UINT32 queueIdx = 0) override;
 
 		/**	Returns the internal DX11 buffer object. */
 		ID3D11Buffer* getD3DBuffer() const { return mD3DBuffer; }
