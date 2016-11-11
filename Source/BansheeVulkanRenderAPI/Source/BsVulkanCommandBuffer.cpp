@@ -330,8 +330,8 @@ namespace BansheeEngine
 			UINT32 numBufferBarriers = (UINT32)barriers.bufferBarriers.size();
 
 			vkCmdPipelineBarrier(vkCmdBuffer,
-								 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-								 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+								 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, // Note: VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT might be more correct here, according to the spec
+								 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, //       The main idea is that the barrier executes before the semaphore triggers, no actual stage dependencies are needed.
 								 0, 0, nullptr,
 								 numBufferBarriers, barriers.bufferBarriers.data(),
 								 numImgBarriers, barriers.imageBarriers.data());
@@ -406,8 +406,8 @@ namespace BansheeEngine
 			UINT32 numBufferBarriers = (UINT32)barriers.bufferBarriers.size();
 
 			vkCmdPipelineBarrier(vkCmdBuffer,
-								 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-								 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+								 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, // Note: VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT might be more correct here, according to the spec
+								 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 
 								 0, 0, nullptr,
 								 numBufferBarriers, barriers.bufferBarriers.data(),
 								 numImgBarriers, barriers.imageBarriers.data());
@@ -447,8 +447,6 @@ namespace BansheeEngine
 			useHandle.used = true;
 			entry.first->notifyUsed(mGlobalQueueIdx, mQueueFamily, useHandle.flags);
 		}
-
-		cbm.refreshStates(deviceIdx);
 
 		// Note: Uncommented for debugging only, prevents any device concurrency issues.
 		// vkQueueWaitIdle(queue->getHandle());
@@ -655,6 +653,8 @@ namespace BansheeEngine
 		syncMask &= ~mIdMask;
 
 		mBuffer->submit(mQueue, mQueueIdx, syncMask);
+
+		gVulkanCBManager().refreshStates(mDeviceIdx);
 		acquireNewBuffer();
 	}
 }

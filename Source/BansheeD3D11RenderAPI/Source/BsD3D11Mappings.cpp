@@ -812,13 +812,7 @@ namespace BansheeEngine
 
 	bool D3D11Mappings::isDynamic(GpuBufferUsage usage)
 	{
-		switch (usage)
-		{
-		case GBU_DYNAMIC:
-			return true;
-		}
-
-		return false;
+		return (usage & GBU_DYNAMIC) != 0;
 	}
 
 	bool D3D11Mappings::isMappingWrite(D3D11_MAP map)

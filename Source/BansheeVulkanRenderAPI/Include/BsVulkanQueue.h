@@ -38,6 +38,9 @@ namespace BansheeEngine
 		/** Submits the provided command buffer on the queue. */
 		void submit(VulkanCmdBuffer* cmdBuffer, VkSemaphore* waitSemaphores, UINT32 semaphoresCount);
 
+		/** Blocks the calling thread until all operations on the queue finish. */
+		void waitIdle() const;
+
 	protected:
 		VulkanDevice& mDevice;
 		VkQueue mQueue;

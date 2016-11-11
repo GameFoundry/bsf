@@ -4,12 +4,81 @@
 #include "BsVulkanCommandBuffer.h"
 #include "BsVulkanRenderAPI.h"
 #include "BsVulkanDevice.h"
+#include "BsVulkanQueue.h"
 
 namespace BansheeEngine
 {
-	VulkanTransferBufferInfo::VulkanTransferBufferInfo(UINT32 queueIdx)
-		:mCB(nullptr), mSyncMask(0), mQueueIdx(queueIdx)
+	VulkanTransferBuffer::VulkanTransferBuffer()
+		:mDevice(nullptr), mType(GQT_GRAPHICS), mQueueIdx(0), mQueue(nullptr), mCB(nullptr), mSyncMask(0), mQueueMask(0)
 	{ }
+
+	VulkanTransferBuffer::VulkanTransferBuffer(VulkanDevice* device, GpuQueueType type, UINT32 queueIdx)
+		:mDevice(device), mType(type), mQueueIdx(queueIdx), mQueue(nullptr), mCB(nullptr), mSyncMask(0), mQueueMask(0)
+	{
+		UINT32 numQueues = device->getNumQueues(mType);
+		if (numQueues == 0)
+		{
+			mType = GQT_GRAPHICS;
+			numQueues = device->getNumQueues(GQT_GRAPHICS);
+		}
+
+		UINT32 physicalQueueIdx = queueIdx % numQueues;
+		mQueue = device->getQueue(mType, physicalQueueIdx);
+		mQueueMask = device->getQueueMask(mType, queueIdx);
+	}
+
+	VulkanTransferBuffer::~VulkanTransferBuffer()
+	{
+		if (mCB != nullptr)
+			mCB->end();
+	}
+
+	void VulkanTransferBuffer::allocate()
+	{
+		if (mCB != nullptr)
+			return;
+
+		UINT32 queueFamily = mDevice->getQueueFamily(mType);
+		mCB = mDevice->getCmdBufferPool().getBuffer(queueFamily, false);
+	}
+
+	void VulkanTransferBuffer::memoryBarrier(VkBuffer buffer, VkAccessFlags srcAccessFlags, VkAccessFlags dstAccessFlags,
+					   VkPipelineStageFlags srcStage, VkPipelineStageFlags dstStage)
+	{
+		VkBufferMemoryBarrier barrier;
+		barrier.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
+		barrier.pNext = nullptr;
+		barrier.srcAccessMask = srcAccessFlags;
+		barrier.dstAccessMask = dstAccessFlags;
+		barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+		barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+		barrier.buffer = buffer;
+		barrier.offset = 0;
+		barrier.size = VK_WHOLE_SIZE;
+
+		vkCmdPipelineBarrier(mCB->getHandle(),
+							 srcStage,
+							 dstStage,
+							 0, 0, nullptr,
+							 1, &barrier,
+							 0, nullptr);
+	}
+
+	void VulkanTransferBuffer::flush(bool wait)
+	{
+		UINT32 syncMask = mSyncMask & ~mQueueMask; // Don't sync with itself
+
+		mCB->end();
+		mCB->submit(mQueue, mQueueIdx, syncMask);
+
+		if (wait)
+		{
+			mQueue->waitIdle();
+			gVulkanCBManager().refreshStates(mDevice->getIndex());
+		}
+
+		mCB = nullptr;
+	}
 
 	VulkanCommandBufferManager::VulkanCommandBufferManager(const VulkanRenderAPI& rapi)
 		:mRapi(rapi), mDeviceData(nullptr), mNumDevices(rapi.getNumDevices())
@@ -17,8 +86,17 @@ namespace BansheeEngine
 		mDeviceData = bs_newN<PerDeviceData>(mNumDevices);
 		for (UINT32 i = 0; i < mNumDevices; i++)
 		{
+			SPtr<VulkanDevice> device = rapi._getDevice(i);
+
 			bs_zero_out(mDeviceData[i].activeBuffers);
-			bs_zero_out(mDeviceData[i].transferBuffers);
+
+			for (UINT32 j = 0; j < GQT_COUNT; j++)
+			{
+				GpuQueueType queueType = (GpuQueueType)j;
+
+				for (UINT32 k = 0; k < BS_MAX_QUEUES_PER_TYPE; k++)
+					mDeviceData[i].transferBuffers[j][k] = VulkanTransferBuffer(device.get(), queueType, k);
+			}
 		}
 	}
 
@@ -97,58 +175,32 @@ namespace BansheeEngine
 		}
 	}
 
-	VulkanTransferBufferInfo* VulkanCommandBufferManager::getTransferBuffer(UINT32 deviceIdx, GpuQueueType type, 
+	VulkanTransferBuffer* VulkanCommandBufferManager::getTransferBuffer(UINT32 deviceIdx, GpuQueueType type,
 		UINT32 queueIdx)
 	{
 		assert(deviceIdx < mNumDevices);
 
-		UINT32 globalQueueIdx = CommandSyncMask::getGlobalQueueIdx(type, queueIdx);
-		assert(globalQueueIdx < BS_MAX_UNIQUE_QUEUES);
-
 		PerDeviceData& deviceData = mDeviceData[deviceIdx];
-		if (deviceData.transferBuffers[globalQueueIdx].mCB == nullptr)
-		{
-			SPtr<VulkanDevice> device = mRapi._getDevice(deviceIdx);
 
-			UINT32 queueFamily = device->getQueueFamily(type);
-			deviceData.transferBuffers[globalQueueIdx].mCB = device->getCmdBufferPool().getBuffer(queueFamily, false);
-		}
-
-		return &deviceData.transferBuffers[globalQueueIdx];
+		VulkanTransferBuffer* transferBuffer = &deviceData.transferBuffers[type][queueIdx];
+		transferBuffer->allocate();
+		return transferBuffer;
 	}
 
 	void VulkanCommandBufferManager::flushTransferBuffers(UINT32 deviceIdx)
 	{
 		assert(deviceIdx < mNumDevices);
 
-		SPtr<VulkanDevice> device = mRapi._getDevice(deviceIdx);
 		PerDeviceData& deviceData = mDeviceData[deviceIdx];
-
-		UINT32 transferBufferIdx = 0;
-		for(UINT32 i = 0; i < GQT_COUNT; i++)
+		for (UINT32 i = 0; i < GQT_COUNT; i++)
 		{
-			GpuQueueType queueType = (GpuQueueType)i;
-			UINT32 numQueues = device->getNumQueues(queueType);
-			if (numQueues == 0)
-			{
-				queueType = GQT_GRAPHICS;
-				numQueues = device->getNumQueues(GQT_GRAPHICS);
-			}
-
-			for(UINT32 j = 0; j < BS_MAX_QUEUES_PER_TYPE; j++)
-			{
-				VulkanTransferBufferInfo& bufferInfo = deviceData.transferBuffers[transferBufferIdx];
-				if (bufferInfo.mCB == nullptr)
-					continue;
-
-				UINT32 physicalQueueIdx = j % numQueues;
-				VulkanQueue* queue = device->getQueue(queueType, physicalQueueIdx);
-
-				bufferInfo.mCB->submit(queue, bufferInfo.mQueueIdx, bufferInfo.mSyncMask);
-				bufferInfo.mCB = nullptr;
-
-				transferBufferIdx++;
-			}
+			for (UINT32 j = 0; j < BS_MAX_QUEUES_PER_TYPE; j++)
+				deviceData.transferBuffers[i][j].flush(false);
 		}
+	}
+
+	VulkanCommandBufferManager& gVulkanCBManager()
+	{
+		return static_cast<VulkanCommandBufferManager&>(CommandBufferManager::instance());
 	}
 }

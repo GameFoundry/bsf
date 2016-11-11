@@ -178,11 +178,15 @@ namespace BansheeEngine
 	{
 		/** 
 		 * Signifies that you don't plan on modifying the buffer often (or at all) after creation. Modifying such buffer 
-		 * will involve a larger performance hit.
+		 * will involve a larger performance hit. Mutually exclusive with GBU_DYNAMIC.
 		 */
-        GBU_STATIC = 1,
-		/** Signifies that you will modify this buffer fairly often (e.g. every frame). */
-		GBU_DYNAMIC = 2
+        GBU_STATIC = 0x01,
+		/** 
+		 * Signifies that you will modify this buffer fairly often (e.g. every frame). Mutually exclusive with GBU_STATIC. 
+		 */
+		GBU_DYNAMIC = 0x02,
+		/** Signifies that the buffer's data on the GPU can be read by the CPU. */
+		GBU_READABLE = 0x04
 	};
 
 	/** Types of generic GPU buffers that may be attached to GPU programs. */

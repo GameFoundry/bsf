@@ -56,6 +56,7 @@ namespace BansheeEngine
 	class VulkanImage;
 	class VulkanDescriptorPool;
 	class VulkanGpuParams;
+	class VulkanTransferBuffer;
 
 	VkAllocationCallbacks* gVulkanAllocator = nullptr;
 

@@ -4,7 +4,7 @@
 #include "BsVulkanRenderAPI.h"
 #include "BsVulkanDevice.h"
 #include "BsVulkanUtility.h"
-#include "BsException.h"
+#include "BsVulkanCommandBufferManager.h"
 
 namespace BansheeEngine
 {
@@ -25,16 +25,42 @@ namespace BansheeEngine
 		device.freeMemory(mMemory);
 	}
 
+	UINT8* VulkanBuffer::map(VkDeviceSize offset, VkDeviceSize length) const
+	{
+		VulkanDevice& device = mOwner->getDevice();
+
+		UINT8* data;
+		VkResult result = vkMapMemory(device.getLogical(), mMemory, offset, length, 0, (void**)&data);
+		assert(result == VK_SUCCESS);
+
+		return data;
+	}
+
+	void VulkanBuffer::unmap()
+	{
+		VulkanDevice& device = mOwner->getDevice();
+
+		vkUnmapMemory(device.getLogical(), mMemory);
+	}
+
+	void VulkanBuffer::copy(VulkanTransferBuffer* cb, VulkanBuffer* destination, VkDeviceSize offset, VkDeviceSize length)
+	{
+		VkBufferCopy region;
+		region.size = length;
+		region.srcOffset = offset;
+		region.dstOffset = offset;
+
+		vkCmdCopyBuffer(cb->getCB()->getHandle(), mBuffer, destination->getHandle(), 1, &region);
+	}
+
 	VulkanHardwareBuffer::VulkanHardwareBuffer(BufferType type, GpuBufferFormat format, GpuBufferUsage usage, 
 		UINT32 size, GpuDeviceFlags deviceMask)
-		: HardwareBuffer(size), mBuffers(), mStaging(type == BT_STAGING)
+		: HardwareBuffer(size), mBuffers(), mStagingBuffer(nullptr), mMappedDeviceIdx(-1), mMappedGlobalQueueIdx(-1)
+		, mMappedOffset(0), mMappedSize(0), mMappedLockOptions(GBL_WRITE_ONLY)
+		, mDirectlyMappable((usage & GBU_DYNAMIC) != 0)
+		, mSupportsGPUWrites(type == BT_STORAGE), mRequiresView(false), mReadable((usage & GBU_READABLE) != 0)
+		, mIsMapped(false)
 	{
-		bool needsView = false;
-
-		VkMemoryPropertyFlags flags = mStaging ?
-			(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT) : // Note: Try using cached uncoherent memory
-			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
-
 		VkBufferUsageFlags usageFlags = 0;
 		switch(type)
 		{
@@ -49,16 +75,29 @@ namespace BansheeEngine
 			break;
 		case BT_GENERIC:
 			usageFlags = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT;
-			needsView = true;
+			mRequiresView = true;
 			break;
 		case BT_STORAGE:
 			usageFlags = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT;
-			needsView = true;
-			break;
-		case BT_STAGING:
-			usageFlags = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+			mRequiresView = true;
 			break;
 		}
+
+		mBufferCI.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+		mBufferCI.pNext = nullptr;
+		mBufferCI.flags = 0;
+		mBufferCI.size = size;
+		mBufferCI.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+		mBufferCI.usage = usageFlags;
+		mBufferCI.queueFamilyIndexCount = 0;
+		mBufferCI.pQueueFamilyIndices = nullptr;
+
+		mViewCI.sType = VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO;
+		mViewCI.pNext = nullptr;
+		mViewCI.flags = 0;
+		mViewCI.format = VulkanUtility::getBufferFormat(format);
+		mViewCI.offset = 0;
+		mViewCI.range = VK_WHOLE_SIZE;
 
 		VulkanRenderAPI& rapi = static_cast<VulkanRenderAPI&>(RenderAPICore::instance());
 		VulkanDevice* devices[BS_MAX_DEVICES];
@@ -70,48 +109,7 @@ namespace BansheeEngine
 			if (devices[i] == nullptr)
 				continue;
 
-			VkBufferCreateInfo bufferCI;
-			bufferCI.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-			bufferCI.pNext = nullptr;
-			bufferCI.flags = 0; 
-			bufferCI.size = size;
-			bufferCI.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-			bufferCI.usage = usageFlags;
-			bufferCI.queueFamilyIndexCount = 0;
-			bufferCI.pQueueFamilyIndices = nullptr;
-
-			VkDevice device = devices[i]->getLogical();
-
-			VkBuffer buffer;
-			VkResult result = vkCreateBuffer(device, &bufferCI, gVulkanAllocator, &buffer);
-			assert(result == VK_SUCCESS);
-
-			VkMemoryRequirements memReqs;
-			vkGetBufferMemoryRequirements(device, buffer, &memReqs);
-
-			VkDeviceMemory memory = devices[i]->allocateMemory(memReqs, flags);
-			result = vkBindBufferMemory(device, buffer, memory, 0);
-			assert(result == VK_SUCCESS);
-
-			VkBufferView view;
-			if (needsView)
-			{
-				VkBufferViewCreateInfo bufferViewCI;
-				bufferViewCI.sType = VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO;
-				bufferViewCI.pNext = nullptr;
-				bufferViewCI.flags = 0;
-				bufferViewCI.buffer = buffer;
-				bufferViewCI.format = VulkanUtility::getBufferFormat(format);
-				bufferViewCI.offset = 0;
-				bufferViewCI.range = VK_WHOLE_SIZE;
-
-				result = vkCreateBufferView(device, &bufferViewCI, gVulkanAllocator, &view);
-				assert(result == VK_SUCCESS);
-			}
-			else
-				view = VK_NULL_HANDLE;
-
-			mBuffers[i] = devices[i]->getResourceManager().create<VulkanBuffer>(buffer, view, memory);
+			mBuffers[i] = createBuffer(*devices[i], false, mReadable);
 		}
 	}
 
@@ -124,6 +122,54 @@ namespace BansheeEngine
 
 			mBuffers[i]->destroy();
 		}
+
+		assert(mStagingBuffer == nullptr);
+	}
+
+	VulkanBuffer* VulkanHardwareBuffer::createBuffer(VulkanDevice& device, bool staging, bool readable)
+	{
+		VkBufferUsageFlags usage = mBufferCI.usage;
+		if (staging)
+		{
+			mBufferCI.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+
+			// Staging buffers are used as a destination for reads
+			if (readable)
+				mBufferCI.usage |= VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+		}
+		else if(readable) // Non-staging readable
+			mBufferCI.usage |= VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+
+		VkMemoryPropertyFlags flags = (mDirectlyMappable || staging) ?
+			(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT) : // Note: Try using cached memory
+			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+
+		VkDevice vkDevice = device.getLogical();
+
+		VkBuffer buffer;
+		VkResult result = vkCreateBuffer(vkDevice, &mBufferCI, gVulkanAllocator, &buffer);
+		assert(result == VK_SUCCESS);
+
+		VkMemoryRequirements memReqs;
+		vkGetBufferMemoryRequirements(vkDevice, buffer, &memReqs);
+
+		VkDeviceMemory memory = device.allocateMemory(memReqs, flags);
+		result = vkBindBufferMemory(vkDevice, buffer, memory, 0);
+		assert(result == VK_SUCCESS);
+
+		VkBufferView view;
+		if (mRequiresView && !staging)
+		{
+			mViewCI.buffer = buffer;
+
+			result = vkCreateBufferView(vkDevice, &mViewCI, gVulkanAllocator, &view);
+			assert(result == VK_SUCCESS);
+		}
+		else
+			view = VK_NULL_HANDLE;
+
+		mBufferCI.usage = usage; // Restore original usage
+		return device.getResourceManager().create<VulkanBuffer>(buffer, view, memory);
 	}
 
 	void* VulkanHardwareBuffer::map(UINT32 offset, UINT32 length, GpuLockOptions options, UINT32 deviceIdx, UINT32 queueIdx)
@@ -139,68 +185,177 @@ namespace BansheeEngine
 		VulkanBuffer* buffer = mBuffers[deviceIdx];
 
 		if (buffer == nullptr)
-			return;
+			return nullptr;
 
-		bool directMap = mStaging && !buffer->isUsed();
+		mIsMapped = true;
+		mMappedDeviceIdx = deviceIdx;
+		mMappedGlobalQueueIdx = queueIdx;
+		mMappedOffset = offset;
+		mMappedSize = length;
+		mMappedLockOptions = options;
 
-		// If memory is host visible and buffer isn't used on the GPU, map directly (no need for pipeline barriers
-		// with access modifiers since we're sure the buffer isn't used on the GPU)
-		if (directMap)
-			return buffer->map();
+		VulkanRenderAPI& rapi = static_cast<VulkanRenderAPI&>(RenderAPICore::instance());
+		VulkanDevice& device = *rapi._getDevice(deviceIdx);
 
-		// TODO - Allocate staging buffer
+		VulkanCommandBufferManager& cbManager = gVulkanCBManager();
+		GpuQueueType queueType;
+		UINT32 localQueueIdx = CommandSyncMask::getQueueIdxAndType(queueIdx, queueType);
 
-		bool needRead = options == GBL_READ_WRITE || options == GBL_READ_ONLY;
-		if(needRead)
+		VkAccessFlags accessFlags;
+		if (options == GBL_READ_ONLY)
+			accessFlags = VK_ACCESS_HOST_READ_BIT;
+		else if (options == GBL_READ_WRITE)
+			accessFlags = VK_ACCESS_HOST_READ_BIT | VK_ACCESS_HOST_WRITE_BIT;
+		else
+			accessFlags = VK_ACCESS_HOST_WRITE_BIT;
+
+		// If memory is host visible try mapping it directly
+		if(mDirectlyMappable)
 		{
-			// TODO - Get command buffer on wanted queue (getTransferBuffer(deviceIdx, queueIdx))
-			//      - Generate sync mask depending on where the resource is used on (VulkanResource::getUseInfo())
-			//      - Register this buffer and staging buffer with the transfer buffer, updating the transfer buffer's sync mask
-			//      - Flush the transfer buffer, wait for it to complete, and refresh CB states
-			//      - Proceed below
+			// If GPU has the ability to write to the buffer we must issue a pipeline barrier to prevent any memory hazards
+			//  - Additionally it might be possible the GPU is /currently/ writing to the buffer, in which case we need to
+			//    wait for those writes to finish before continuing
+			if(mSupportsGPUWrites) // Note: It might be tempting to only do this step only if buffer is currently being 
+								   // written to, but that doesn't guarantee memory visibility if it was written to recently
+			{
+				// First try to avoid the expensive wait operation and barrier
+				if(options == GBL_WRITE_ONLY_NO_OVERWRITE) // Caller guarantees he won't touch the same data as the GPU, so just map
+					return buffer->map(offset, length);
+
+				if(options == GBL_WRITE_ONLY_DISCARD) // Caller doesn't care about buffer contents, so just discard the 
+				{									  // existing buffer and create a new one
+					buffer->destroy();
+
+					buffer = createBuffer(device, false, mReadable);
+					mBuffers[deviceIdx] = buffer;
+
+					return buffer->map(offset, length);
+				}
+
+				// Otherwise we need to wait until (potential) GPU write completes, and issue a barrier so:
+				//  - If reading: the device makes the written memory available for read (read-after-write hazard)
+				//  - If writing: ensures our writes properly overlap with GPU writes (write-after-write hazard)
+				VulkanTransferBuffer* transferCB = cbManager.getTransferBuffer(deviceIdx, queueType, localQueueIdx);
+
+				// Ensure flush() will wait for all queues currently writing to the buffer (if any) to finish
+				UINT32 writeUseMask = buffer->getUseInfo(VulkanUseFlag::Write);
+				transferCB->appendMask(writeUseMask); 
+
+				// Issue barrier to avoid memory hazards
+				transferCB->memoryBarrier(buffer->getHandle(),
+										  VK_ACCESS_SHADER_WRITE_BIT,
+										  accessFlags,
+										  // Last stages that could have written to the buffer:
+										  VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT | VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, 
+										  VK_PIPELINE_STAGE_HOST_BIT
+				);
+
+				// Submit the command buffer and wait until it finishes
+				transferCB->flush(true);
+				assert(!buffer->isUsed());
+			}
+
+			return buffer->map(offset, length);
 		}
-
-		// TODO - Return staging buffer->map()
-		//      - Set mRequiresUpload field to true
-		//      - Remember lock mode
-		//      - Remember staging buffer
-		//      - Remember lock queue and device
-
-		switch (options)
+		else // Otherwise we use a staging buffer
 		{
-		case GBL_WRITE_ONLY_DISCARD:
+			bool needRead = options == GBL_READ_WRITE || options == GBL_READ_ONLY;
 
-			break;
-		case GBL_WRITE_ONLY_NO_OVERWRITE:
+			// Allocate a staging buffer
+			mStagingBuffer = createBuffer(device, true, needRead);
 
-			break;
-		case GBL_WRITE_ONLY:
+			if (needRead) // If reading, we need to copy the current contents of the buffer to the staging buffer
+			{
+				VulkanTransferBuffer* transferCB = cbManager.getTransferBuffer(deviceIdx, queueType, localQueueIdx);
+				
+				// Similar to above, if buffer supports GPU writes, we need to wait on any potential writes to complete
+				if(mSupportsGPUWrites)
+				{
+					// Ensure flush() will wait for all queues currently writing to the buffer (if any) to finish
+					UINT32 writeUseMask = buffer->getUseInfo(VulkanUseFlag::Write);
+					transferCB->appendMask(writeUseMask);
+				}
 
-			break;
-		case GBL_READ_WRITE:
+				// Queue copy command
+				buffer->copy(transferCB, mStagingBuffer, offset, length);
 
-			break;
-		case GBL_READ_ONLY:
+				// Ensure data written to the staging buffer is visible
+				transferCB->memoryBarrier(buffer->getHandle(),
+										  VK_ACCESS_TRANSFER_WRITE_BIT,
+										  accessFlags,
+										  VK_PIPELINE_STAGE_TRANSFER_BIT,
+										  VK_PIPELINE_STAGE_HOST_BIT
+				);
 
-			break;
+				// Submit the command buffer and wait until it finishes
+				transferCB->flush(true);
+				assert(!buffer->isUsed());
+			}
+
+			return mStagingBuffer->map(offset, length);
 		}
-
-		return nullptr;
 	}
 
 	void VulkanHardwareBuffer::unmap()
 	{
-		// TODO - If direct map (mRequiresUpload == false), simply unmap
-		// TODO - If mRequiresUpload is true
-		//      - Get command buffer on locked queue and device
-		//      - If lock was discard
-		//        - Create a brand new internal buffer
-		//        - Call destroy on the old one
-		//        - Issue copy on the CB without a sync mask (register both resources on CB)
-		//      - If lock was no overwrite
-		//        - Issue copy on the CB without a sync mask (register both resources on CB)
-		//      - Otherwise issue copy with a sync mask depending on current use flags
-		//      - Destroy staging buffer
+		// Possibly map() failed with some error
+		if (!mIsMapped)
+			return;
+
+		// Note: If we did any writes they need to be made visible to the GPU. However there is no need to execute 
+		// a pipeline barrier because (as per spec) host writes are implicitly visible to the device.
+
+		if(mDirectlyMappable)
+			mBuffers[mMappedDeviceIdx]->unmap();
+		else
+		{
+			bool isWrite = mMappedLockOptions != GBL_READ_ONLY;
+
+			// We the caller wrote anything to the staging buffer, we need to upload it back to the main buffer
+			if(isWrite)
+			{
+				VulkanRenderAPI& rapi = static_cast<VulkanRenderAPI&>(RenderAPICore::instance());
+				VulkanDevice& device = *rapi._getDevice(mMappedDeviceIdx);
+
+				VulkanCommandBufferManager& cbManager = gVulkanCBManager();
+				GpuQueueType queueType;
+				UINT32 localQueueIdx = CommandSyncMask::getQueueIdxAndType(mMappedGlobalQueueIdx, queueType);
+
+				VulkanBuffer* buffer = mBuffers[mMappedDeviceIdx];
+				VulkanTransferBuffer* transferCB = cbManager.getTransferBuffer(mMappedDeviceIdx, queueType, localQueueIdx);
+
+				// If the buffer is used in any way on the GPU, we need to wait for that use to finish before
+				// we issue our copy
+				UINT32 useMask = buffer->getUseInfo(VulkanUseFlag::Read | VulkanUseFlag::Write);
+				if(useMask != 0) // Buffer is currently used on the GPU
+				{
+					// Try to avoid the wait
+					if (mMappedLockOptions == GBL_WRITE_ONLY_NO_OVERWRITE) // Caller guarantees he won't touch the same data as the GPU, so just copy
+					{
+						// Fall through to copy()
+					}
+					else if (mMappedLockOptions == GBL_WRITE_ONLY_DISCARD) // Caller doesn't care about buffer contents, so just discard the 
+					{													   // existing buffer and create a new one
+						buffer->destroy();
+
+						buffer = createBuffer(device, false, mReadable);
+						mBuffers[mMappedDeviceIdx] = buffer;
+					} 
+					else // Otherwise we have no choice but to issue a dependency between the queues
+						transferCB->appendMask(useMask);
+				}
+				
+				// Queue copy command
+				mStagingBuffer->copy(transferCB, buffer, mMappedOffset, mMappedSize);
+			}
+
+			mStagingBuffer->unmap();
+
+			mStagingBuffer->destroy();
+			mStagingBuffer = nullptr;
+		}
+
+		mIsMapped = false;
 	}
 
 	void VulkanHardwareBuffer::copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset,

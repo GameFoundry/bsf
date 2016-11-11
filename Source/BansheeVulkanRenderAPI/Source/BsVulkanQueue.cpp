@@ -36,8 +36,15 @@ namespace BansheeEngine
 		else
 			submitInfo.pWaitSemaphores = nullptr;
 
-		vkQueueSubmit(mQueue, 1, &submitInfo, cmdBuffer->getFence());
+		VkResult result = vkQueueSubmit(mQueue, 1, &submitInfo, cmdBuffer->getFence());
+		assert(result == VK_SUCCESS);
 
 		mLastCommandBuffer = cmdBuffer;
+	}
+
+	void VulkanQueue::waitIdle() const
+	{
+		VkResult result = vkQueueWaitIdle(mQueue);
+		assert(result == VK_SUCCESS);
 	}
 }

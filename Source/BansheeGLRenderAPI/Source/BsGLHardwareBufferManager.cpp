@@ -54,15 +54,13 @@ namespace BansheeEngine
 
     GLenum GLHardwareBufferCoreManager::getGLUsage(GpuBufferUsage usage)
     {
-        switch(usage)
-        {
-        case GBU_STATIC:
-            return GL_STATIC_DRAW;
-        case GBU_DYNAMIC:
-            return GL_DYNAMIC_DRAW;
-        default:
-            return GL_DYNAMIC_DRAW;
-        };
+		if(usage & GBU_STATIC)
+			return GL_STATIC_DRAW;
+
+		if(usage & GBU_DYNAMIC)
+			return GL_DYNAMIC_DRAW;
+
+        return GL_DYNAMIC_DRAW;
     }
 
     GLenum GLHardwareBufferCoreManager::getGLType(VertexElementType type)

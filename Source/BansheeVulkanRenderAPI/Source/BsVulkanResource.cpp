@@ -97,23 +97,25 @@ namespace BansheeEngine
 			mOwner->destroy(this);
 	}
 
-	UINT32 VulkanResource::getUseInfo(VulkanUseFlags& useFlags) const
+	UINT32 VulkanResource::getUseInfo(VulkanUseFlags useFlags) const
 	{
-		useFlags = VulkanUseFlag::None;
-
 		UINT32 mask = 0;
-		for(UINT32 i = 0; i < MAX_UNIQUE_QUEUES; i++)
-		{
-			if (mReadUses[i] > 0)
-			{
-				mask |= 1 << i;
-				useFlags |= VulkanUseFlag::Read;
-			}
 
-			if (mWriteUses[i] > 0)
+		if(useFlags.isSet(VulkanUseFlag::Read))
+		{
+			for (UINT32 i = 0; i < MAX_UNIQUE_QUEUES; i++)
 			{
-				mask |= 1 << i;
-				useFlags |= VulkanUseFlag::Write;
+				if (mReadUses[i] > 0)
+					mask |= 1 << i;
+			}
+		}
+
+		if (useFlags.isSet(VulkanUseFlag::Write))
+		{
+			for (UINT32 i = 0; i < MAX_UNIQUE_QUEUES; i++)
+			{
+				if (mWriteUses[i] > 0)
+					mask |= 1 << i;
 			}
 		}
 

@@ -25,6 +25,22 @@ namespace BansheeEngine
 		/** Returns a buffer view that covers the entire buffer. */
 		VkBufferView getView() const { return mView; }
 
+		/** 
+		 * Returns a pointer to internal buffer memory. Must be followed by unmap(). Caller must ensure the buffer was
+		 * created in CPU readable memory, and that buffer isn't currently being written to by the GPU.
+		 */
+		UINT8* map(VkDeviceSize offset, VkDeviceSize length) const;
+
+		/** Unmaps a buffer previously mapped with map(). */
+		void unmap();
+
+		/** 
+		 * Queues a command on the provided command buffer. The command copies the contents of the current buffer to
+		 * the destination buffer. Caller must ensure the provided offsets and lengths are within valid bounds of
+		 * both buffers.
+		 */
+		void copy(VulkanTransferBuffer* cb, VulkanBuffer* destination, VkDeviceSize offset, VkDeviceSize length);
+
 	private:
 		VkBuffer mBuffer;
 		VkBufferView mView;
@@ -48,8 +64,6 @@ namespace BansheeEngine
 			BT_GENERIC = 0x8,
 			/** Generic read/write GPU buffer containing formatted data. */
 			BT_STORAGE = 0x10,
-			/** Helper buffer that can be written to on the CPU. Used for copy operations. */
-			BT_STAGING = 0x20,
 		};
 
 		VulkanHardwareBuffer(BufferType type, GpuBufferFormat format, GpuBufferUsage usage, UINT32 size,
@@ -80,8 +94,26 @@ namespace BansheeEngine
 		/** @copydoc HardwareBuffer::unmap */
 		void unmap() override;
 
+		/** Creates a new buffer for the specified device, matching the current buffer properties. */
+		VulkanBuffer* createBuffer(VulkanDevice& device, bool staging, bool readable);
+
 		VulkanBuffer* mBuffers[BS_MAX_DEVICES];
-		bool mStaging;
+
+		VulkanBuffer* mStagingBuffer;
+		UINT32 mMappedDeviceIdx;
+		UINT32 mMappedGlobalQueueIdx;
+		UINT32 mMappedOffset;
+		UINT32 mMappedSize;
+		GpuLockOptions mMappedLockOptions;
+
+		VkBufferCreateInfo mBufferCI;
+		VkBufferViewCreateInfo mViewCI;
+		VkBufferUsageFlags mUsageFlags;
+		bool mDirectlyMappable : 1;
+		bool mSupportsGPUWrites : 1;
+		bool mRequiresView : 1;
+		bool mReadable : 1;
+		bool mIsMapped : 1;
 	};
 
 	/** @} */

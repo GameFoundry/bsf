@@ -10,7 +10,7 @@ namespace BansheeEngine
 	{ }
 
 	VertexBufferCore::VertexBufferCore(const VERTEX_BUFFER_DESC& desc, GpuDeviceFlags deviceMask)
-		:HardwareBuffer(mProperties.mVertexSize * mProperties.mNumVertices), mProperties(desc.numVerts, desc.vertexSize)
+		:HardwareBuffer(desc.vertexSize * desc.numVerts), mProperties(desc.numVerts, desc.vertexSize)
 	{ }
 
 	SPtr<VertexBufferCore> VertexBufferCore::create(const VERTEX_BUFFER_DESC& desc, GpuDeviceFlags deviceMask)

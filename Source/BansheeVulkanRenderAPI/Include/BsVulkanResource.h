@@ -105,13 +105,13 @@ namespace BansheeEngine
 		UINT32 getQueueFamily() const { Lock(mMutex); return mQueueFamily; }
 
 		/** 
-		 * Returns a mask that has bits set for every queue that the resource is currently used by.
+		 * Returns a mask that has bits set for every queue that the resource is currently used (read or written) by.
 		 *
-		 * @param[out]	useFlags	Output parameter that notifies the caller in what way is the resource being used.
+		 * @param[in]	useFlags	Flags for which to check use information (e.g. read only, write only, or both).
 		 * @return					Bitmask of which queues is the resource used on. This has the same format as sync mask
 		 *							created by CommandSyncMask.
 		 */
-		UINT32 getUseInfo(VulkanUseFlags& useFlags) const;
+		UINT32 getUseInfo(VulkanUseFlags useFlags) const;
 
 		/** Returns true if the resource is only allowed to be used by a single queue family at once. */
 		bool isExclusive() const { Lock(mMutex); return mState != State::Shared; }
