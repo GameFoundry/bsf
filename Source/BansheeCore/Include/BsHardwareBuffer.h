@@ -97,13 +97,9 @@ namespace BansheeEngine
 		 *							of the buffer (@p offset is only applied to the source).
 		 * @param[in]	deviceIdx	Index of the device whose memory to read. If the buffer doesn't exist on this device,
 		 *							no data will be read.		
-		 * @param[in]	queueIdx	Device queue to perform any read/write operations on. Using a non-default queue index
-		 *							allows the GPU to perform write or read operations while executing rendering or compute
+		 * @param[in]	queueIdx	Device queue to perform the read operation on. Using a non-default queue index
+		 *							allows the GPU to perform read operations while executing rendering or compute
 		 *							operations on the same time.
-		 *
-		 *							Note that when writing to a buffer that is being used on a command buffer with a
-		 *							different queue you must ensure to provide the command buffer with a valid sync mask
-		 *							so it knows to wait before the write operation completes.
 		 *
 		 *							This value is a global queue index which encodes both the queue type and queue index.
 		 *							Retrieve it from CommandSyncMask::getGlobalQueueIdx().
@@ -118,8 +114,8 @@ namespace BansheeEngine
 		 * @param[in]	source		Source buffer containing the data to write. Data is read from the start of the buffer
 		 *							(@p offset is only applied to the destination).
 		 * @param[in]	writeFlags	Optional write flags that may affect performance.
-		 * @param[in]	queueIdx	Device queue to perform any read/write operations on. Using a non-default queue index
-		 *							allows the GPU to perform write or read operations while executing rendering or compute
+		 * @param[in]	queueIdx	Device queue to perform any write operations on. Using a non-default queue index
+		 *							allows the GPU to perform write operations while executing rendering or compute
 		 *							operations on the same time.
 		 *
 		 *							Note that when writing to a buffer that is being used on a command buffer with a

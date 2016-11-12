@@ -7,6 +7,7 @@
 #include "BsImporter.h"
 #include "BsResources.h"
 #include "BsTextureImportOptions.h"
+#include "BsMeshImportOptions.h"
 #include "BsMaterial.h"
 #include "BsShader.h"
 #include "BsVirtualInput.h"
@@ -170,6 +171,19 @@ namespace BansheeEngine
 		model = gResources().load<Mesh>(exampleModelAssetPath);
 		if(model == nullptr) // Mesh file doesn't exist, import from the source file.
 		{
+			// When importing you may specify optional import options that control how is the asset imported.
+			SPtr<ImportOptions> meshImportOptions = Importer::instance().createImportOptions(exampleModelPath);
+
+			// rtti_is_of_type checks if the import options are of valid type, in case the provided path is pointing to a
+			// non-mesh resource. This is similar to dynamic_cast but uses Banshee internal RTTI system for type checking.
+			if (rtti_is_of_type<MeshImportOptions>(meshImportOptions))
+			{
+				MeshImportOptions* importOptions = static_cast<MeshImportOptions*>(meshImportOptions.get());
+
+				// Ensures we can save the mesh contents
+				importOptions->setCPUCached(true);
+			}
+
 			model = gImporter().import<Mesh>(exampleModelPath);
 
 			// Save for later use, so we don't have to import on the next run.
@@ -183,8 +197,8 @@ namespace BansheeEngine
 			// When importing you may specify optional import options that control how is the asset imported.
 			SPtr<ImportOptions> textureImportOptions = Importer::instance().createImportOptions(exampleTexturePath);
 
-			// rtti_is_of_type checks if the import options are of valid type, in case the provided path is pointing to a non-texture resource.
-			// This is similar to dynamic_cast but uses Banshee internal RTTI system for type checking.
+			// rtti_is_of_type checks if the import options are of valid type, in case the provided path is pointing to a 
+			// non-texture resource. This is similar to dynamic_cast but uses Banshee internal RTTI system for type checking.
 			if (rtti_is_of_type<TextureImportOptions>(textureImportOptions))
 			{
 				TextureImportOptions* importOptions = static_cast<TextureImportOptions*>(textureImportOptions.get());
@@ -194,6 +208,9 @@ namespace BansheeEngine
 
 				// The texture is in sRGB space
 				importOptions->setSRGB(true);
+
+				// Ensures we can save the texture contents
+				importOptions->setCPUCached(true);
 			}
 
 			// Import texture with specified import options

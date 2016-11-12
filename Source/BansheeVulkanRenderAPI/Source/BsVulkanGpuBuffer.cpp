@@ -56,29 +56,33 @@ namespace BansheeEngine
 		}
 #endif
 
-		return nullptr;;
+		return mBuffer->lock(offset, length, options, deviceIdx, queueIdx);
 	}
 
 	void VulkanGpuBufferCore::unlock()
 	{
-		
+		mBuffer->unlock();
 	}
 
 	void VulkanGpuBufferCore::readData(UINT32 offset, UINT32 length, void* dest, UINT32 deviceIdx, UINT32 queueIdx)
 	{
+		mBuffer->readData(offset, length, dest, deviceIdx, queueIdx);
+
 		BS_INC_RENDER_STAT_CAT(ResRead, RenderStatObject_GpuBuffer);
 	}
 
 	void VulkanGpuBufferCore::writeData(UINT32 offset, UINT32 length, const void* source, BufferWriteType writeFlags,
 										UINT32 queueIdx)
 	{
+		mBuffer->writeData(offset, length, source, writeFlags, queueIdx);
+
 		BS_INC_RENDER_STAT_CAT(ResWrite, RenderStatObject_GpuBuffer);
 	}
 
 	void VulkanGpuBufferCore::copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset,
 		UINT32 dstOffset, UINT32 length, bool discardWholeBuffer, UINT32 queueIdx)
 	{
-
+		mBuffer->copyData(srcBuffer, srcOffset, dstOffset, length, discardWholeBuffer, queueIdx);
 	}
 
 	VulkanBuffer* VulkanGpuBufferCore::getResource(UINT32 deviceIdx) const

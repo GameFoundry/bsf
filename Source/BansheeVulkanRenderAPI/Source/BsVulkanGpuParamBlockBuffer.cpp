@@ -25,13 +25,15 @@ namespace BansheeEngine
 
 		GpuBufferUsage usage = mUsage == GPBU_STATIC ? GBU_STATIC : GBU_DYNAMIC;
 
-		mBuffer = bs_new<VulkanHardwareBuffer>(VulkanHardwareBuffer::BT_UNIFORM, BF_32X1F, usage, mSize, mDeviceMask);
+		mBuffer = bs_new<VulkanHardwareBuffer>(VulkanHardwareBuffer::BT_UNIFORM, BF_UNKNOWN, usage, mSize, mDeviceMask);
 
 		GpuParamBlockBufferCore::initialize();
 	}
 
 	void VulkanGpuParamBlockBufferCore::writeToGPU(const UINT8* data)
 	{
+		mBuffer->writeData(0, mSize, data, BWT_DISCARD);
+
 		BS_INC_RENDER_STAT_CAT(ResWrite, RenderStatObject_GpuParamBuffer);
 	}
 

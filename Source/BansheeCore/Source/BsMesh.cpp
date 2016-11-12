@@ -101,7 +101,8 @@ namespace BansheeEngine
 		return mVertexDesc;
 	}
 
-	void MeshCore::writeSubresource(UINT32 subresourceIdx, const MeshData& meshData, bool discardEntireBuffer, bool performUpdateBounds)
+	void MeshCore::writeSubresource(UINT32 subresourceIdx, const MeshData& meshData, bool discardEntireBuffer, 
+		bool performUpdateBounds, UINT32 queueIdx)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -142,7 +143,7 @@ namespace BansheeEngine
 			LOGERR("Index buffer values are being written out of valid range.");
 		}
 
-		mIndexBuffer->writeData(0, indicesSize, srcIdxData, discardEntireBuffer ? BWT_DISCARD : BWT_NORMAL);
+		mIndexBuffer->writeData(0, indicesSize, srcIdxData, discardEntireBuffer ? BWT_DISCARD : BWT_NORMAL, queueIdx);
 
 		// Vertices
 		for (UINT32 i = 0; i <= mVertexDesc->getMaxStreamIdx(); i++)
@@ -197,13 +198,14 @@ namespace BansheeEngine
 					}
 				}
 
-				vertexBuffer->writeData(0, bufferSize, bufferCopy, discardEntireBuffer ? BWT_DISCARD : BWT_NORMAL);
+				vertexBuffer->writeData(0, bufferSize, bufferCopy, discardEntireBuffer ? BWT_DISCARD : BWT_NORMAL, queueIdx);
 
 				bs_free(bufferCopy);
 			}
 			else
 			{
-				vertexBuffer->writeData(0, bufferSize, srcVertBufferData, discardEntireBuffer ? BWT_DISCARD : BWT_NORMAL);
+				vertexBuffer->writeData(0, bufferSize, srcVertBufferData, discardEntireBuffer ? BWT_DISCARD : BWT_NORMAL, 
+					queueIdx);
 			}
 		}
 
@@ -211,7 +213,7 @@ namespace BansheeEngine
 			updateBounds(meshData);
 	}
 
-	void MeshCore::readSubresource(UINT32 subresourceIdx, MeshData& meshData)
+	void MeshCore::readSubresource(UINT32 subresourceIdx, MeshData& meshData, UINT32 deviceIdx, UINT32 queueIdx)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -236,7 +238,7 @@ namespace BansheeEngine
 				return;
 			}
 
-			UINT8* idxData = static_cast<UINT8*>(mIndexBuffer->lock(GBL_READ_ONLY));
+			UINT8* idxData = static_cast<UINT8*>(mIndexBuffer->lock(GBL_READ_ONLY, deviceIdx, queueIdx));
 			UINT32 idxElemSize = ibProps.getIndexSize();
 
 			UINT8* indices = nullptr;
@@ -293,7 +295,7 @@ namespace BansheeEngine
 					continue;
 				}
 
-				UINT8* vertDataPtr = static_cast<UINT8*>(vertexBuffer->lock(GBL_READ_ONLY));
+				UINT8* vertDataPtr = static_cast<UINT8*>(vertexBuffer->lock(GBL_READ_ONLY, deviceIdx, queueIdx));
 
 				UINT8* dest = meshData.getStreamData(streamIdx);
 				memcpy(dest, vertDataPtr, bufferSize);

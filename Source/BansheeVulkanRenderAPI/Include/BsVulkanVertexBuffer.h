@@ -29,6 +29,12 @@ namespace BansheeEngine
 		void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length, 
 			bool discardWholeBuffer = false, UINT32 queueIdx = 0) override;
 
+		/** 
+		 * Gets the resource wrapping the buffer object, on the specified device. If GPU param block buffer's device mask
+		 * doesn't include the provided device, null is returned. 
+		 */
+		VulkanBuffer* getResource(UINT32 deviceIdx) const;
+
 	protected: 
 		/** @copydoc VertexBufferCore::map */
 		void* map(UINT32 offset, UINT32 length, GpuLockOptions options, UINT32 deviceIdx, UINT32 queueIdx) override;
@@ -38,6 +44,11 @@ namespace BansheeEngine
 
 		/** @copydoc VertexBufferCore::initialize */
 		void initialize() override;
+
+	private:
+		VulkanHardwareBuffer* mBuffer;
+		GpuBufferUsage mUsage;
+		GpuDeviceFlags mDeviceMask;
 	};
 
 	/** @} */

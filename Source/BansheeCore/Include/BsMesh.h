@@ -315,8 +315,15 @@ namespace BansheeEngine
 		 *									will fail.
 		 * @param[in]	updateBounds		If true the internal bounds of the mesh will be recalculated based on the 
 		 *									provided data.
+		 * @param[in]	queueIdx			Device queue to perform the write operation on. Using a non-default queue index
+		 *									allows the GPU to perform writeoperations while executing rendering or compute
+		 *									operations on the same time.
+		 *									
+		 *									This value is a global queue index which encodes both the queue type and queue
+		 *									index. Retrieve it from CommandSyncMask::getGlobalQueueIdx().
 		 */
-		virtual void writeSubresource(UINT32 subresourceIdx, const MeshData& data, bool discardEntireBuffer, bool updateBounds = true);
+		virtual void writeSubresource(UINT32 subresourceIdx, const MeshData& data, bool discardEntireBuffer, 
+			bool updateBounds = true, UINT32 queueIdx = 0);
 
 		/**
 		 * Reads a part of the current resource into the provided @p data parameter. Data buffer needs to be pre-allocated.
@@ -324,8 +331,16 @@ namespace BansheeEngine
 		 * @param[in]	subresourceIdx		Index of the subresource to update, if the mesh has more than one.
 		 * @param[out]	data				Buffer that will receive the data. Should be allocated with 
 		 *									allocateSubresourceBuffer() to ensure it is of valid type and size.
+		 * @param[in]	deviceIdx			Index of the device whose memory to read. If the buffer doesn't exist on this
+		 *									device, no data will be read.
+		 * @param[in]	queueIdx			Device queue to perform the read operation on. Using a non-default queue index
+		 *									allows the GPU to perform read operations while executing rendering or compute
+		 *									operations on the same time.
+		 *
+		 *									This value is a global queue index which encodes both the queue type and queue
+		 *									index. Retrieve it from CommandSyncMask::getGlobalQueueIdx().
 		 */
-		virtual void readSubresource(UINT32 subresourceIdx, MeshData& data);
+		virtual void readSubresource(UINT32 subresourceIdx, MeshData& data, UINT32 deviceIdx = 0, UINT32 queueIdx = 0);
 
 		/**
 		 * Creates a new empty mesh. Created mesh will have no sub-meshes.

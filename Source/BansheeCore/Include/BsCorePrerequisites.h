@@ -230,7 +230,6 @@ namespace BansheeEngine
     class OcclusionQuery;
     class VertexBuffer;
 	class VertexBufferCore;
-	class PixelBuffer;
 	class GpuBuffer;
 	class HighLevelGpuProgram;
 	class GpuProgramManager;
