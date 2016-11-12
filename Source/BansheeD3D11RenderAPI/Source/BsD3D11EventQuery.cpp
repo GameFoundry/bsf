@@ -3,6 +3,7 @@
 #include "BsD3D11EventQuery.h"
 #include "BsD3D11RenderAPI.h"
 #include "BsD3D11Device.h"
+#include "BsD3D11CommandBuffer.h"
 #include "BsRenderStats.h"
 #include "BsException.h"
 
@@ -41,10 +42,21 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Query);
 	}
 
-	void D3D11EventQuery::begin()
+	void D3D11EventQuery::begin(const SPtr<CommandBuffer>& cb)
 	{
-		mContext->End(mQuery);
-		setActive(true);
+		auto execute = [&]()
+		{
+			mContext->End(mQuery);
+			setActive(true);
+		};
+
+		if (cb == nullptr)
+			execute();
+		else
+		{
+			SPtr<D3D11CommandBuffer> d3d11cb = std::static_pointer_cast<D3D11CommandBuffer>(cb);
+			d3d11cb->queueCommand(execute);
+		}
 	}
 
 	bool D3D11EventQuery::isReady() const

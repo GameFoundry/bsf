@@ -5,7 +5,7 @@
 
 namespace BansheeEngine
 {
-	VulkanTimerQuery::VulkanTimerQuery(UINT32 deviceIdx)
+	VulkanTimerQuery::VulkanTimerQuery(VulkanDevice& device)
 	{
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_Query);
 	}
@@ -15,12 +15,12 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Query);
 	}
 
-	void VulkanTimerQuery::begin()
+	void VulkanTimerQuery::begin(const SPtr<CommandBuffer>& cb)
 	{
 		setActive(true);
 	}
 
-	void VulkanTimerQuery::end()
+	void VulkanTimerQuery::end(const SPtr<CommandBuffer>& cb)
 	{
 
 	}

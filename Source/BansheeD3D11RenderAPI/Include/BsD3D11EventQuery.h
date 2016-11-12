@@ -19,7 +19,7 @@ namespace BansheeEngine
 		~D3D11EventQuery();
 
 		/** @copydoc EventQuery::begin */
-		void begin() override;
+		void begin(const SPtr<CommandBuffer>& cb = nullptr) override;
 
 		/** @copydoc EventQuery::isReady */
 		bool isReady() const override;

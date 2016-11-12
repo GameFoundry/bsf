@@ -23,13 +23,21 @@ namespace BansheeEngine
 
 		/**
 		 * Starts the counter. 
-		 * 			
+		 * 
+		 * @param[in]	cb		Optional command buffer to queue the operation on. If not provided operation
+		 *						is executed on the main command buffer. Otherwise it is executed when 
+		 *						RenderAPI::executeCommands() is called. Buffer must support graphics or compute operations.
+		 *									
 		 * @note	Place any commands you want to measure after this call. Call "end" when done.
 		 */
-		virtual void begin() = 0;
+		virtual void begin(const SPtr<CommandBuffer>& cb = nullptr) = 0;
 
-		/**	Stops the counter. */
-		virtual void end() = 0;
+		/**	
+		 * Stops the counter. 
+		 *
+		 * @param[in]	cb		Command buffer that was provided to the last begin() operation (if any).
+		 */
+		virtual void end(const SPtr<CommandBuffer>& cb = nullptr) = 0;
 
 		/**	Check if GPU has processed the query. */
 		virtual bool isReady() const = 0;

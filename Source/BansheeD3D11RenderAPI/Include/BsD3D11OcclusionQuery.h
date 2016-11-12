@@ -19,10 +19,10 @@ namespace BansheeEngine
 		~D3D11OcclusionQuery();
 
 		/** @copydoc OcclusionQuery::begin */
-		void begin() override;
+		void begin(const SPtr<CommandBuffer>& cb = nullptr) override;
 
 		/** @copydoc OcclusionQuery::end */
-		void end() override;
+		void end(const SPtr<CommandBuffer>& cb = nullptr) override;
 
 		/** @copydoc OcclusionQuery::isReady */
 		bool isReady() const override;

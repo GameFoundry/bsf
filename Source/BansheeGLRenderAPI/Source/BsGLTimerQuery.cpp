@@ -1,6 +1,7 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsGLTimerQuery.h"
+#include "BsGLCommandBuffer.h"
 #include "BsMath.h"
 #include "BsRenderStats.h"
 
@@ -31,20 +32,42 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Query);
 	}
 
-	void GLTimerQuery::begin()
+	void GLTimerQuery::begin(const SPtr<CommandBuffer>& cb)
 	{
-		glQueryCounter(mQueryStartObj, GL_TIMESTAMP);
+		auto execute = [&]()
+		{
+			glQueryCounter(mQueryStartObj, GL_TIMESTAMP);
 
-		setActive(true);
-		mEndIssued = false;
+			setActive(true);
+			mEndIssued = false;
+		};
+
+		if (cb == nullptr)
+			execute();
+		else
+		{
+			SPtr<GLCommandBuffer> glCB = std::static_pointer_cast<GLCommandBuffer>(cb);
+			glCB->queueCommand(execute);
+		}
 	}
 
-	void GLTimerQuery::end()
+	void GLTimerQuery::end(const SPtr<CommandBuffer>& cb)
 	{
-		glQueryCounter(mQueryEndObj, GL_TIMESTAMP);
+		auto execute = [&]()
+		{
+			glQueryCounter(mQueryEndObj, GL_TIMESTAMP);
 
-		mEndIssued = true;
-		mFinalized = false;
+			mEndIssued = true;
+			mFinalized = false;
+		};
+
+		if (cb == nullptr)
+			execute();
+		else
+		{
+			SPtr<GLCommandBuffer> glCB = std::static_pointer_cast<GLCommandBuffer>(cb);
+			glCB->queueCommand(execute);
+		}
 	}
 
 	bool GLTimerQuery::isReady() const

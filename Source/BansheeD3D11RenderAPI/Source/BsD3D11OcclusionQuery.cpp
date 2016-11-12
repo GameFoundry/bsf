@@ -3,6 +3,7 @@
 #include "BsD3D11OcclusionQuery.h"
 #include "BsD3D11RenderAPI.h"
 #include "BsD3D11Device.h"
+#include "BsD3D11CommandBuffer.h"
 #include "BsRenderStats.h"
 #include "BsMath.h"
 
@@ -37,22 +38,44 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Query);
 	}
 
-	void D3D11OcclusionQuery::begin()
+	void D3D11OcclusionQuery::begin(const SPtr<CommandBuffer>& cb)
 	{
-		mContext->Begin(mQuery);
+		auto execute = [&]()
+		{
+			mContext->Begin(mQuery);
 
-		mNumSamples = 0;
-		mQueryEndCalled = false;
-		
-		setActive(true);
+			mNumSamples = 0;
+			mQueryEndCalled = false;
+
+			setActive(true);
+		};
+
+		if (cb == nullptr)
+			execute();
+		else
+		{
+			SPtr<D3D11CommandBuffer> d3d11CB = std::static_pointer_cast<D3D11CommandBuffer>(cb);
+			d3d11CB->queueCommand(execute);
+		}
 	}
 
-	void D3D11OcclusionQuery::end()
+	void D3D11OcclusionQuery::end(const SPtr<CommandBuffer>& cb)
 	{
-		mContext->End(mQuery);
+		auto execute = [&]()
+		{
+			mContext->End(mQuery);
 
-		mQueryEndCalled = true;
-		mFinalized = false;
+			mQueryEndCalled = true;
+			mFinalized = false;
+		};
+
+		if (cb == nullptr)
+			execute();
+		else
+		{
+			SPtr<D3D11CommandBuffer> d3d11CB = std::static_pointer_cast<D3D11CommandBuffer>(cb);
+			d3d11CB->queueCommand(execute);
+		}
 	}
 
 	bool D3D11OcclusionQuery::isReady() const

@@ -5,7 +5,7 @@
 
 namespace BansheeEngine
 {
-	VulkanOcclusionQuery::VulkanOcclusionQuery(bool binary, UINT32 deviceIdx)
+	VulkanOcclusionQuery::VulkanOcclusionQuery(VulkanDevice& device, bool binary)
 		:OcclusionQuery(binary)
 	{
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_Query);
@@ -16,12 +16,12 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Query);
 	}
 
-	void VulkanOcclusionQuery::begin()
+	void VulkanOcclusionQuery::begin(const SPtr<CommandBuffer>& cb)
 	{
 		setActive(true);
 	}
 
-	void VulkanOcclusionQuery::end()
+	void VulkanOcclusionQuery::end(const SPtr<CommandBuffer>& cb)
 	{
 
 	}

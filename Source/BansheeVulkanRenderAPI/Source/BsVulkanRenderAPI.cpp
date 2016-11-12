@@ -242,7 +242,7 @@ namespace BansheeEngine
 		RenderWindowCoreManager::startUp<VulkanRenderWindowCoreManager>(*this);
 
 		// Create query manager 
-		QueryManager::startUp<VulkanQueryManager>();
+		QueryManager::startUp<VulkanQueryManager>(*this);
 
 		// Create vertex input manager
 		VulkanVertexInputManager::startUp();
@@ -697,5 +697,10 @@ namespace BansheeEngine
 			return static_cast<VulkanCommandBuffer*>(buffer.get());
 
 		return static_cast<VulkanCommandBuffer*>(mMainCommandBuffer.get());
+	}
+
+	VulkanRenderAPI& gVulkanRenderAPI()
+	{
+		return static_cast<VulkanRenderAPI&>(RenderAPICore::instance());
 	}
 }

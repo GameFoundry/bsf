@@ -26,14 +26,14 @@ namespace BansheeEngine
 		 *
 		 * @note	Place any commands you want to measure after this call. Call end() when done.
 		 */
-		virtual void begin() = 0;
+		virtual void begin(const SPtr<CommandBuffer>& cb = nullptr) = 0;
 
 		/**
 		 * Stops the query. 
 		 *
 		 * @note	Be aware that queries are executed on the GPU and the results will not be immediately available.
 		 */
-		virtual void end() = 0;
+		virtual void end(const SPtr<CommandBuffer>& cb = nullptr) = 0;
 
 		/** Check if GPU has processed the query. */
 		virtual bool isReady() const = 0;

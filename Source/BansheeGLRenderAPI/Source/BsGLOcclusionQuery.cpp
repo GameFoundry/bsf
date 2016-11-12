@@ -1,6 +1,7 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsGLOcclusionQuery.h"
+#include "BsGLCommandBuffer.h"
 #include "BsMath.h"
 #include "BsRenderStats.h"
 
@@ -21,21 +22,43 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Query);
 	}
 
-	void GLOcclusionQuery::begin()
+	void GLOcclusionQuery::begin(const SPtr<CommandBuffer>& cb)
 	{
-		glBeginQuery(mBinary ? GL_ANY_SAMPLES_PASSED : GL_SAMPLES_PASSED, mQueryObj);
+		auto execute = [&]()
+		{
+			glBeginQuery(mBinary ? GL_ANY_SAMPLES_PASSED : GL_SAMPLES_PASSED, mQueryObj);
 
-		mNumSamples = 0;
-		mEndIssued = false;
-		setActive(true);
+			mNumSamples = 0;
+			mEndIssued = false;
+			setActive(true);
+		};
+
+		if (cb == nullptr)
+			execute();
+		else
+		{
+			SPtr<GLCommandBuffer> glCB = std::static_pointer_cast<GLCommandBuffer>(cb);
+			glCB->queueCommand(execute);
+		}
 	}
 
-	void GLOcclusionQuery::end()
+	void GLOcclusionQuery::end(const SPtr<CommandBuffer>& cb)
 	{
-		glEndQuery(mBinary ? GL_ANY_SAMPLES_PASSED : GL_SAMPLES_PASSED);
+		auto execute = [&]()
+		{
+			glEndQuery(mBinary ? GL_ANY_SAMPLES_PASSED : GL_SAMPLES_PASSED);
 
-		mEndIssued = true;
-		mFinalized = false;
+			mEndIssued = true;
+			mFinalized = false;
+		};
+
+		if (cb == nullptr)
+			execute();
+		else
+		{
+			SPtr<GLCommandBuffer> glCB = std::static_pointer_cast<GLCommandBuffer>(cb);
+			glCB->queueCommand(execute);
+		}
 	}
 
 	bool GLOcclusionQuery::isReady() const

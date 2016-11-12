@@ -169,6 +169,9 @@ namespace BansheeEngine
 #endif
 	};
 
+	/**	Provides easy access to the VulkanRenderAPI. */
+	VulkanRenderAPI& gVulkanRenderAPI();
+
 	extern PFN_vkGetPhysicalDeviceSurfaceSupportKHR vkGetPhysicalDeviceSurfaceSupportKHR;
 	extern PFN_vkGetPhysicalDeviceSurfaceFormatsKHR vkGetPhysicalDeviceSurfaceFormatsKHR;
 	extern PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR vkGetPhysicalDeviceSurfaceCapabilitiesKHR;

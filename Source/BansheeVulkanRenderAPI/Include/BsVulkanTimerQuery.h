@@ -15,14 +15,14 @@ namespace BansheeEngine
 	class VulkanTimerQuery : public TimerQuery
 	{
 	public:
-		VulkanTimerQuery(UINT32 deviceIdx);
+		VulkanTimerQuery(VulkanDevice& device);
 		~VulkanTimerQuery();
 
 		/** @copydoc TimerQuery::begin */
-		void begin() override;
+		void begin(const SPtr<CommandBuffer>& cb = nullptr) override;
 
 		/** @copydoc TimerQuery::end */
-		void end() override;
+		void end(const SPtr<CommandBuffer>& cb = nullptr) override;
 
 		/** @copydoc TimerQuery::isReady */
 		bool isReady() const override;

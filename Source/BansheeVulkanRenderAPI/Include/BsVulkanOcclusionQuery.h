@@ -15,14 +15,14 @@ namespace BansheeEngine
 	class VulkanOcclusionQuery : public OcclusionQuery
 	{
 	public:
-		VulkanOcclusionQuery(bool binary, UINT32 deviceIdx);
+		VulkanOcclusionQuery(VulkanDevice& device, bool binary);
 		~VulkanOcclusionQuery();
 
 		/** @copydoc OcclusionQuery::begin */
-		void begin() override;
+		void begin(const SPtr<CommandBuffer>& cb = nullptr) override;
 
 		/** @copydoc OcclusionQuery::end */
-		void end() override;
+		void end(const SPtr<CommandBuffer>& cb = nullptr) override;
 
 		/** @copydoc OcclusionQuery::isReady */
 		bool isReady() const override;

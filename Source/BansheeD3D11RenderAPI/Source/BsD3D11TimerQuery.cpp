@@ -3,6 +3,7 @@
 #include "BsD3D11TimerQuery.h"
 #include "BsD3D11RenderAPI.h"
 #include "BsD3D11Device.h"
+#include "BsD3D11CommandBuffer.h"
 #include "BsRenderStats.h"
 #include "BsDebug.h"
 
@@ -59,23 +60,45 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Query);
 	}
 
-	void D3D11TimerQuery::begin()
+	void D3D11TimerQuery::begin(const SPtr<CommandBuffer>& cb)
 	{
-		mContext->Begin(mDisjointQuery);
-		mContext->End(mBeginQuery);
+		auto execute = [&]()
+		{
+			mContext->Begin(mDisjointQuery);
+			mContext->End(mBeginQuery);
 
-		mQueryEndCalled = false;
-		
-		setActive(true);
+			mQueryEndCalled = false;
+
+			setActive(true);
+		};
+
+		if (cb == nullptr)
+			execute();
+		else
+		{
+			SPtr<D3D11CommandBuffer> d3d11cb = std::static_pointer_cast<D3D11CommandBuffer>(cb);
+			d3d11cb->queueCommand(execute);
+		}
 	}
 
-	void D3D11TimerQuery::end()
+	void D3D11TimerQuery::end(const SPtr<CommandBuffer>& cb)
 	{
-		mContext->End(mEndQuery);
-		mContext->End(mDisjointQuery);
+		auto execute = [&]()
+		{
+			mContext->End(mEndQuery);
+			mContext->End(mDisjointQuery);
 
-		mQueryEndCalled = true;
-		mFinalized = false;
+			mQueryEndCalled = true;
+			mFinalized = false;
+		};
+
+		if (cb == nullptr)
+			execute();
+		else
+		{
+			SPtr<D3D11CommandBuffer> d3d11cb = std::static_pointer_cast<D3D11CommandBuffer>(cb);
+			d3d11cb->queueCommand(execute);
+		}
 	}
 
 	bool D3D11TimerQuery::isReady() const

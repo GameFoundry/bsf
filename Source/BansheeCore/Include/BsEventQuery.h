@@ -28,12 +28,16 @@ namespace BansheeEngine
 
 		/**
 		 * Starts the query. 
-		 * 			
+		 * 
+		 * @param[in]	cb		Optional command buffer to queue the operation on. If not provided operation
+		 *						is executed on the main command buffer. Otherwise it is executed when 
+		 *						RenderAPI::executeCommands() is called. Buffer must support graphics or compute operations.
+		 * 
 		 * @note	
 		 * Once the query is started you may poll isReady() method to check when query has finished, or you may hook up 
 		 * an #onTriggered callback and be notified that way.
 		 */
-		virtual void begin() = 0;
+		virtual void begin(const SPtr<CommandBuffer>& cb = nullptr) = 0;
 
 		/** Check if GPU has processed the query. */
 		virtual bool isReady() const = 0;

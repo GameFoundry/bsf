@@ -1,6 +1,7 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsGLEventQuery.h"
+#include "BsGLCommandBuffer.h"
 #include "BsRenderStats.h"
 
 namespace BansheeEngine
@@ -20,10 +21,21 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Query);
 	}
 
-	void GLEventQuery::begin()
+	void GLEventQuery::begin(const SPtr<CommandBuffer>& cb)
 	{
-		glQueryCounter(mQueryObj, GL_TIMESTAMP);
-		setActive(true);
+		auto execute = [&]()
+		{
+			glQueryCounter(mQueryObj, GL_TIMESTAMP);
+			setActive(true);
+		};
+
+		if (cb == nullptr)
+			execute();
+		else
+		{
+			SPtr<GLCommandBuffer> glCB = std::static_pointer_cast<GLCommandBuffer>(cb);
+			glCB->queueCommand(execute);
+		}
 	}
 
 	bool GLEventQuery::isReady() const
