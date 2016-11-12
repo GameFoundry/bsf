@@ -98,18 +98,10 @@ namespace BansheeEngine
 
 		if(discardEntireBuffer)
 		{
-			if(mProperties.getUsage() != TU_DYNAMIC)
+			if((mProperties.getUsage() & TU_DYNAMIC) == 0)
 			{
 				// Buffer discard is enabled but buffer was not created as dynamic. Disabling discard.
 				discardEntireBuffer = false;
-			}
-		}
-		else
-		{
-			if (mProperties.getUsage() == TU_DYNAMIC)
-			{
-				LOGWRN("Buffer discard is not enabled but buffer was not created as dynamic. Enabling discard.");
-				discardEntireBuffer = true;
 			}
 		}
 
@@ -123,6 +115,12 @@ namespace BansheeEngine
 	void TextureCore::readSubresource(UINT32 subresourceIdx, PixelData& data)
 	{
 		THROW_IF_NOT_CORE_THREAD;
+
+		if ((mProperties.getUsage() & TU_CPUREADABLE) == 0 && !BS_EDITOR_BUILD)
+		{
+			LOGERR("Attempting to read GPU data from a texture that is created without a CPU readable flag.");
+			return;
+		}
 
 		UINT32 face = 0;
 		UINT32 mip = 0;

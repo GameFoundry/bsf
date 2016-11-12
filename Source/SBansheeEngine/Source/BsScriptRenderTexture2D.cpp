@@ -46,19 +46,18 @@ namespace BansheeEngine
 		new (bs_alloc<ScriptRenderTexture2D>()) ScriptRenderTexture2D(tex, instance);
 	}
 
-	void ScriptRenderTexture2D::internal_create(MonoObject* instance, MonoArray* colorSurfaces, MonoObject* depthStencilSurface)
+	void ScriptRenderTexture2D::internal_create(MonoObject* instance, MonoArray* colorSurfaces, ScriptTexture2D* depthStencilSurface)
 	{
 		ScriptArray colorSurfacesList(colorSurfaces);
 
 		RENDER_SURFACE_DESC depthStencilSurfaceDesc;
-		ScriptTexture2D* scriptDepthStencilSurface = ScriptTexture2D::toNative(depthStencilSurface);
-		if (scriptDepthStencilSurface != nullptr)
+		if (depthStencilSurface != nullptr)
 		{
 			depthStencilSurfaceDesc.face = 0;
 			depthStencilSurfaceDesc.mipLevel = 0;
 			depthStencilSurfaceDesc.numFaces = 1;
 
-			HTexture textureHandle = scriptDepthStencilSurface->getHandle();
+			HTexture textureHandle = depthStencilSurface->getHandle();
 			if (!textureHandle.isLoaded())
 			{
 				LOGERR("Render texture must be created using a fully loaded texture.");
@@ -77,9 +76,7 @@ namespace BansheeEngine
 			surfaceDesc.mipLevel = 0;
 			surfaceDesc.numFaces = 1;
 
-			MonoObject* surfaceObj = colorSurfacesList.get<MonoObject*>(i);
-			ScriptTexture2D* scriptSurface = ScriptTexture2D::toNative(surfaceObj);
-
+			ScriptTexture2D* scriptSurface = colorSurfacesList.get<ScriptTexture2D*>(i);
 			if (scriptSurface != nullptr)
 			{
 				HTexture textureHandle = scriptSurface->getHandle();

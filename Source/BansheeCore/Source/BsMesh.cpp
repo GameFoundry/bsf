@@ -38,11 +38,15 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 
 		bool isDynamic = (mUsage & MU_DYNAMIC) != 0;
+		bool isGpuReadable = (mUsage & MU_CPUREADABLE) != 0 || BS_EDITOR_BUILD;
+
+		int usage = isDynamic ? GBU_DYNAMIC : GBU_STATIC;
+		usage |= isGpuReadable ? GBU_READABLE : 0;
 
 		INDEX_BUFFER_DESC ibDesc;
 		ibDesc.indexType = mIndexType;
 		ibDesc.numIndices = mProperties.mNumIndices;
-		ibDesc.usage = isDynamic ? GBU_DYNAMIC : GBU_STATIC;
+		ibDesc.usage = (GpuBufferUsage)usage;
 
 		mIndexBuffer = IndexBufferCore::create(ibDesc, mDeviceMask);
 
@@ -59,7 +63,7 @@ namespace BansheeEngine
 			VERTEX_BUFFER_DESC vbDesc;
 			vbDesc.vertexSize = mVertexData->vertexDeclaration->getProperties().getVertexSize(i);
 			vbDesc.numVerts = mVertexData->vertexCount;
-			vbDesc.usage = isDynamic ? GBU_DYNAMIC : GBU_STATIC;
+			vbDesc.usage = (GpuBufferUsage)usage;
 
 			SPtr<VertexBufferCore> vertexBuffer = VertexBufferCore::create(vbDesc, mDeviceMask);
 			mVertexData->setBuffer(i, vertexBuffer);
@@ -210,6 +214,12 @@ namespace BansheeEngine
 	void MeshCore::readSubresource(UINT32 subresourceIdx, MeshData& meshData)
 	{
 		THROW_IF_NOT_CORE_THREAD;
+
+		if ((mUsage & MU_CPUREADABLE) == 0 && !BS_EDITOR_BUILD)
+		{
+			LOGERR("Attempting to read GPU data from a mesh that is created without a CPU readable flag.");
+			return;
+		}
 
 		IndexType indexType = IT_32BIT;
 		if (mIndexBuffer)

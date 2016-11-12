@@ -79,6 +79,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetMaxMipmapLevel", &ScriptTextureImportOptions::internal_SetMaxMipmapLevel);
 		metaData.scriptClass->addInternalCall("Internal_GetCPUReadable", &ScriptTextureImportOptions::internal_GetCPUReadable);
 		metaData.scriptClass->addInternalCall("Internal_SetCPUReadable", &ScriptTextureImportOptions::internal_SetCPUReadable);
+		metaData.scriptClass->addInternalCall("Internal_GetCPUCached", &ScriptTextureImportOptions::internal_GetCPUCached);
+		metaData.scriptClass->addInternalCall("Internal_SetCPUCached", &ScriptTextureImportOptions::internal_SetCPUCached);
 		metaData.scriptClass->addInternalCall("Internal_GetIsSRGB", &ScriptTextureImportOptions::internal_GetIsSRGB);
 		metaData.scriptClass->addInternalCall("Internal_SetIsSRGB", &ScriptTextureImportOptions::internal_SetIsSRGB);
 	}
@@ -147,6 +149,16 @@ namespace BansheeEngine
 		thisPtr->getTexImportOptions()->setCPUReadable(value);
 	}
 
+	bool ScriptTextureImportOptions::internal_GetCPUCached(ScriptTextureImportOptions* thisPtr)
+	{
+		return thisPtr->getTexImportOptions()->getCPUCached();
+	}
+
+	void ScriptTextureImportOptions::internal_SetCPUCached(ScriptTextureImportOptions* thisPtr, bool value)
+	{
+		thisPtr->getTexImportOptions()->setCPUCached(value);
+	}
+
 	bool ScriptTextureImportOptions::internal_GetIsSRGB(ScriptTextureImportOptions* thisPtr)
 	{
 		return thisPtr->getTexImportOptions()->getSRGB();
@@ -168,6 +180,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptMeshImportOptions::internal_CreateInstance);
 		metaData.scriptClass->addInternalCall("Internal_GetCPUReadable", &ScriptMeshImportOptions::internal_GetCPUReadable);
 		metaData.scriptClass->addInternalCall("Internal_SetCPUReadable", &ScriptMeshImportOptions::internal_SetCPUReadable);
+		metaData.scriptClass->addInternalCall("Internal_GetCPUCached", &ScriptMeshImportOptions::internal_GetCPUCached);
+		metaData.scriptClass->addInternalCall("Internal_SetCPUCached", &ScriptMeshImportOptions::internal_SetCPUCached);
 		metaData.scriptClass->addInternalCall("Internal_GetImportNormals", &ScriptMeshImportOptions::internal_GetImportNormals);
 		metaData.scriptClass->addInternalCall("Internal_SetImportNormals", &ScriptMeshImportOptions::internal_SetImportNormals);
 		metaData.scriptClass->addInternalCall("Internal_GetImportTangents", &ScriptMeshImportOptions::internal_GetImportTangents);
@@ -224,6 +238,16 @@ namespace BansheeEngine
 	void ScriptMeshImportOptions::internal_SetCPUReadable(ScriptMeshImportOptions* thisPtr, bool value)
 	{
 		thisPtr->getMeshImportOptions()->setCPUReadable(value);
+	}
+
+	bool ScriptMeshImportOptions::internal_GetCPUCached(ScriptMeshImportOptions* thisPtr)
+	{
+		return thisPtr->getMeshImportOptions()->getCPUCached();
+	}
+
+	void ScriptMeshImportOptions::internal_SetCPUCached(ScriptMeshImportOptions* thisPtr, bool value)
+	{
+		thisPtr->getMeshImportOptions()->setCPUCached(value);
 	}
 
 	bool ScriptMeshImportOptions::internal_GetImportNormals(ScriptMeshImportOptions* thisPtr)

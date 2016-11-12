@@ -127,8 +127,11 @@ namespace BansheeEngine
 		const MeshImportOptions* meshImportOptions = static_cast<const MeshImportOptions*>(importOptions.get());
 
 		desc.usage = MU_STATIC;
-		if (meshImportOptions->getCPUReadable())
+		if (meshImportOptions->getCPUCached())
 			desc.usage |= MU_CPUCACHED;
+
+		if (meshImportOptions->getCPUReadable())
+			desc.usage |= MU_CPUREADABLE;
 
 		SPtr<Mesh> mesh = Mesh::_createPtr(rendererMeshData->getData(), desc);
 
@@ -149,8 +152,11 @@ namespace BansheeEngine
 		const MeshImportOptions* meshImportOptions = static_cast<const MeshImportOptions*>(importOptions.get());
 
 		desc.usage = MU_STATIC;
-		if (meshImportOptions->getCPUReadable())
+		if (meshImportOptions->getCPUCached())
 			desc.usage |= MU_CPUCACHED;
+
+		if (meshImportOptions->getCPUReadable())
+			desc.usage |= MU_CPUREADABLE;
 
 		SPtr<Mesh> mesh = Mesh::_createPtr(rendererMeshData->getData(), desc);
 

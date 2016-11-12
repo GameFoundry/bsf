@@ -18,7 +18,7 @@ namespace BansheeEngine
 	{
 	private:
 		BS_BEGIN_RTTI_MEMBERS
-			BS_RTTI_MEMBER_PLAIN(mCPUReadable, 0)
+			BS_RTTI_MEMBER_PLAIN(mCPUCached, 0)
 			BS_RTTI_MEMBER_PLAIN(mImportNormals, 1)
 			BS_RTTI_MEMBER_PLAIN(mImportTangents, 2)
 			BS_RTTI_MEMBER_PLAIN(mImportBlendShapes, 3)
@@ -30,6 +30,7 @@ namespace BansheeEngine
 			BS_RTTI_MEMBER_PLAIN(mReduceKeyFrames, 9)
 			BS_RTTI_MEMBER_REFL_ARRAY(mAnimationEvents, 10)
 			BS_RTTI_MEMBER_PLAIN(mImportRootMotion, 11)
+			BS_RTTI_MEMBER_PLAIN(mCPUReadable, 12)
 		BS_END_RTTI_MEMBERS
 	public:
 		MeshImportOptionsRTTI()

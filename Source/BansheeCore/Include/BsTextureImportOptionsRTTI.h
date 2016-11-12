@@ -25,6 +25,9 @@ namespace BansheeEngine
 		UINT32& getMaxMip(TextureImportOptions* obj) { return obj->mMaxMip; }
 		void setMaxMip(TextureImportOptions* obj, UINT32& value) { obj->mMaxMip = value; }
 
+		bool& getCPUCached(TextureImportOptions* obj) { return obj->mCPUCached; }
+		void setCPUCached(TextureImportOptions* obj, bool& value) { obj->mCPUCached = value; }
+
 		bool& getCPUReadable(TextureImportOptions* obj) { return obj->mCPUReadable; }
 		void setCPUReadable(TextureImportOptions* obj, bool& value) { obj->mCPUReadable = value; }
 
@@ -37,8 +40,9 @@ namespace BansheeEngine
 			addPlainField("mPixelFormat", 0, &TextureImportOptionsRTTI::getPixelFormat, &TextureImportOptionsRTTI::setPixelFormat);
 			addPlainField("mGenerateMips", 1, &TextureImportOptionsRTTI::getGenerateMips, &TextureImportOptionsRTTI::setGenerateMips);
 			addPlainField("mMaxMip", 2, &TextureImportOptionsRTTI::getMaxMip, &TextureImportOptionsRTTI::setMaxMip);
-			addPlainField("mCPUReadable", 3, &TextureImportOptionsRTTI::getCPUReadable, &TextureImportOptionsRTTI::setCPUReadable);
+			addPlainField("mCPUCached", 3, &TextureImportOptionsRTTI::getCPUCached, &TextureImportOptionsRTTI::setCPUCached);
 			addPlainField("mSRGB", 4, &TextureImportOptionsRTTI::getSRGB, &TextureImportOptionsRTTI::setSRGB);
+			addPlainField("mCPUReadable", 5, &TextureImportOptionsRTTI::getCPUReadable, &TextureImportOptionsRTTI::setCPUReadable);
 		}
 
 		const String& getRTTIName() override

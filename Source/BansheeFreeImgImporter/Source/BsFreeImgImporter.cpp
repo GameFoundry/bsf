@@ -151,8 +151,11 @@ namespace BansheeEngine
 		}
 
 		int usage = TU_DEFAULT;
-		if (textureImportOptions->getCPUReadable())
+		if (textureImportOptions->getCPUCached())
 			usage |= TU_CPUCACHED;
+
+		if (textureImportOptions->getCPUReadable())
+			usage |= TU_CPUREADABLE;
 
 		bool sRGB = textureImportOptions->getSRGB();
 

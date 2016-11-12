@@ -38,8 +38,11 @@ namespace BansheeEngine
 		{ 
 			// Render target and depth stencil texture formats are for in-memory use only
 			// and don't make sense when serialized
-			if (val == TU_DEPTHSTENCIL || val == TU_RENDERTARGET)
-				obj->mProperties.mDesc.usage = TU_STATIC;
+			if ((val & (TU_DEPTHSTENCIL | TU_RENDERTARGET)) != 0)
+			{
+				obj->mProperties.mDesc.usage &= ~(TU_DEPTHSTENCIL | TU_RENDERTARGET);
+				obj->mProperties.mDesc.usage |= TU_STATIC;
+			}
 			else
 				obj->mProperties.mDesc.usage = val;
 		}
@@ -55,9 +58,23 @@ namespace BansheeEngine
 			UINT32 subresourceIdx = obj->mProperties.mapToSubresourceIdx(face, mipmap);
 			SPtr<PixelData> pixelData = obj->mProperties.allocateSubresourceBuffer(subresourceIdx);
 
-			obj->readSubresource(gCoreAccessor(), subresourceIdx, pixelData);
-			gCoreAccessor().submitToCoreThread(true);
+			int usage = obj->getProperties().getUsage();
 
+			if (usage & TU_CPUREADABLE || BS_EDITOR_BUILD)
+			{
+				obj->readSubresource(gCoreAccessor(), subresourceIdx, pixelData);
+				gCoreAccessor().submitToCoreThread(true);
+
+				return pixelData;
+			}
+
+			if(usage & TU_CPUCACHED)
+			{
+				obj->readData(*pixelData, mipmap, face);
+				return pixelData;
+			}
+
+			LOGERR("Attempting to save a texture that isn't flagged with either TU_CPUCACHED OR TU_GPUREADABLE flags.");
 			return pixelData;
 		}
 

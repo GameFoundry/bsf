@@ -294,7 +294,7 @@ namespace BansheeEngine
 		normalTexDesc.width = outputTextureProperties.getWidth();
 		normalTexDesc.height = outputTextureProperties.getHeight();
 		normalTexDesc.format = PF_R8G8B8A8;
-		normalTexDesc.usage = TU_RENDERTARGET;
+		normalTexDesc.usage = TU_RENDERTARGET | TU_CPUREADABLE;
 
 		SPtr<TextureCore> normalsTexture = TextureCore::create(normalTexDesc);
 		SPtr<TextureCore> depthTexture = rtt->getDepthStencilTexture();
@@ -372,7 +372,6 @@ namespace BansheeEngine
 
 		if (rtProps.isWindow())
 		{
-			// TODO: When I do implement this then I will likely want a method in RenderTarget that unifies both render window and render texture readback
 			BS_EXCEPT(NotImplementedException, "Picking is not supported on render windows as framebuffer readback methods aren't implemented");
 		}
 

@@ -292,5 +292,12 @@ set(RENDERER_MODULE_LIB RenderBeast)
 set(INPUT_MODULE_LIB BansheeOISInput)
 set(PHYSICS_MODULE_LIB BansheePhysX)
 
-## Generate config file
+if(BUILD_EDITOR)
+	set(BS_EDITOR_BUILD 1)
+else()
+	set(BS_EDITOR_BUILD 0)
+endif()
+
+## Generate config files
 configure_file("${PROJECT_SOURCE_DIR}/CMake/BsEngineConfig.h.in" "${PROJECT_SOURCE_DIR}/BansheeEngine/Include/BsEngineConfig.h")
+configure_file("${PROJECT_SOURCE_DIR}/CMake/BsFrameworkConfig.h.in" "${PROJECT_SOURCE_DIR}/BansheeUtility/Include/BsFrameworkConfig.h")

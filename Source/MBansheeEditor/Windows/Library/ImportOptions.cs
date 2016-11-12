@@ -61,6 +61,15 @@ namespace BansheeEditor
         /// <summary>
         /// Determines whether the texture data is also stored in main memory, available for fast CPU access.
         /// </summary>
+        public bool CPUCached
+        {
+            get { return Internal_GetCPUCached(mCachedPtr); }
+            set { Internal_SetCPUCached(mCachedPtr, value); }
+        }
+
+        /// <summary>
+        /// Determines whether the texture data can be read directly from the GPU.
+        /// </summary>
         public bool CPUReadable
         {
             get { return Internal_GetCPUReadable(mCachedPtr); }
@@ -97,6 +106,12 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetMaxMipmapLevel(IntPtr thisPtr, int value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_GetCPUCached(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetCPUCached(IntPtr thisPtr, bool value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool Internal_GetCPUReadable(IntPtr thisPtr);
@@ -156,6 +171,15 @@ namespace BansheeEditor
 
         /// <summary>
         /// Determines whether the mesh data is also stored in main memory, available for fast CPU access. 
+        /// </summary>
+        public bool CPUCached
+        {
+            get { return Internal_GetCPUCached(mCachedPtr); }
+            set { Internal_SetCPUCached(mCachedPtr, value); }
+        }
+
+        /// <summary>
+        /// Determines whether the mesh data can be read directly from the GPU.
         /// </summary>
         public bool CPUReadable
         {
@@ -270,6 +294,12 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateInstance(MeshImportOptions instance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_GetCPUCached(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetCPUCached(IntPtr thisPtr, bool value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern bool Internal_GetCPUReadable(IntPtr thisPtr);

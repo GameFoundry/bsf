@@ -22,7 +22,9 @@ namespace BansheeEngine
 		TU_RENDERTARGET = 0x200, /**< Texture that can be rendered to by the GPU. */
 		TU_DEPTHSTENCIL = 0x400, /**< Texture used as a depth/stencil buffer by the GPU. */
 		TU_LOADSTORE = 0x800, /**< Texture that allows load/store operations from the GPU program. */
-		TU_CPUCACHED = 0x1000, /**< Ensures all texture data will also be cached in system memory. */
+		/** All mesh data will also be cached in CPU memory, making it available for fast read access from the CPU. */
+		TU_CPUCACHED = 0x1000, 
+		TU_CPUREADABLE = 0x2000, /**< Allows the CPU to directly read the texture data buffers from the GPU. */
 		TU_DEFAULT = TU_STATIC
     };
 

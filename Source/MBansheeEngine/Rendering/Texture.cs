@@ -161,9 +161,14 @@ namespace BansheeEngine
         LoadStore = 0x800,
 
         /// <summary>
-        /// Ensures all texture data will also be cached in system memory so it can be read by the CPU.
+        /// All mesh data will also be cached in CPU memory, making it available for fast read access from the CPU.
         /// </summary>
-        CPUCached = 0x1000
+        CPUCached = 0x1000,
+
+        /// <summary>
+        /// Allows the CPU to directly read the texture data buffers from the GPU.
+        /// </summary>
+        CPUReadable = 0x2000,
     }
 
     /** @} */

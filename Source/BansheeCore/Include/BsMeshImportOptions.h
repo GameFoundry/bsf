@@ -65,9 +65,15 @@ namespace BansheeEngine
 		MeshImportOptions();
 
 		/**	Sets whether the texture data is also stored in CPU memory. */
-		void setCPUReadable(bool readable) { mCPUReadable = readable; }
+		void setCPUCached(bool cached) { mCPUCached = cached; }
 		
 		/**	Retrieves whether the texture data is also stored in CPU memory. */
+		bool getCPUCached() const { return mCPUCached; }
+
+		/**	Sets whether the texture data can be read directly from the GPU. */
+		void setCPUReadable(bool readable) { mCPUReadable = readable; }
+
+		/**	Retrieves whether the texture data can be read directly from the GPU. */
 		bool getCPUReadable() const { return mCPUReadable; }
 
 		/**	Sets a value that controls should mesh normals be imported if available. */
@@ -163,7 +169,7 @@ namespace BansheeEngine
 		bool getImportRootMotion() const { return mImportRootMotion; }
 
 	private:
-		bool mCPUReadable;
+		bool mCPUCached;
 		bool mImportNormals;
 		bool mImportTangents;
 		bool mImportBlendShapes;
@@ -172,6 +178,7 @@ namespace BansheeEngine
 		bool mReduceKeyFrames;
 		bool mImportRootMotion;
 		float mImportScale;
+		bool mCPUReadable;
 		CollisionMeshType mCollisionMeshType;
 		Vector<AnimationSplitInfo> mAnimationSplits;
 		Vector<ImportedAnimationEvents> mAnimationEvents;

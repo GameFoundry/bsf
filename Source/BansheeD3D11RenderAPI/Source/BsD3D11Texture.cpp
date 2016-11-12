@@ -124,7 +124,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			if (mProperties.getUsage() == TU_DYNAMIC)
+			if ((mProperties.getUsage() & TU_DYNAMIC) != 0)
 			{
 				UINT8* data = (UINT8*)map(mTex, flags, face, mipLevel, rowPitch, slicePitch);
 				lockedArea.setExternalBuffer(data);
@@ -146,7 +146,7 @@ namespace BansheeEngine
 			unmapstagingbuffer();
 		else
 		{
-			if (mProperties.getUsage() == TU_DYNAMIC)
+			if ((mProperties.getUsage() & TU_DYNAMIC) != 0)
 				unmap(mTex);
 			else
 				unmapstaticbuffer();

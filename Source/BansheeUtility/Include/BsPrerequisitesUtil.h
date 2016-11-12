@@ -139,12 +139,8 @@
 
 #define BS_PROFILING_ENABLED 1
 
-// Versions
-
-#define BS_VER_DEV 1
-#define BS_VER_PREVIEW 2
-
-#define BS_VER BS_VER_DEV
+// Config from the build system
+#include "BsFrameworkConfig.h"
 
 // Platform-specific stuff
 #include "BsPlatformDefines.h"

@@ -245,9 +245,14 @@ namespace BansheeEngine
         Dynamic = 0x2,
 
         /// <summary>
-        /// All mesh data will also be cached in CPU memory allowing the mesh data to be read.
+        /// All mesh data will also be cached in CPU memory, making it available for fast read access from the CPU.
         /// </summary>
-        CPUCached = 0x1000
+        CPUCached = 0x1000,
+
+        /// <summary>
+        /// Allows the CPU to directly read the mesh data buffers from the GPU.
+        /// </summary>
+        CPUReadable = 0x2000 
     }
 
     /** @} */

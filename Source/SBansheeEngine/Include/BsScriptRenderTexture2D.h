@@ -34,7 +34,7 @@ namespace BansheeEngine
 		/************************************************************************/
 		static void internal_createDetailed(MonoObject* instance, PixelFormat format, UINT32 width, UINT32 height,
 			UINT32 numSamples, bool gammaCorrection, bool createDepth, PixelFormat depthStencilFormat);
-		static void internal_create(MonoObject* instance, MonoArray* colorSurfaces, MonoObject* depthStencilSurface);
+		static void internal_create(MonoObject* instance, MonoArray* colorSurfaces, ScriptTexture2D* depthStencilSurface);
 
 		static void internal_getColorSurfaces(ScriptRenderTexture2D* thisPtr, MonoArray** value);
 		static void internal_getDepthStencilSurface(ScriptRenderTexture2D* thisPtr, MonoObject** value);

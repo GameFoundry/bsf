@@ -30,10 +30,23 @@ namespace BansheeEngine
 		SPtr<MeshData> getMeshData(Mesh* obj) 
 		{ 
 			SPtr<MeshData> meshData = obj->allocateSubresourceBuffer(0);
+			int usage = obj->mUsage;
 
-			obj->readSubresource(gCoreAccessor(), 0, meshData);
-			gCoreAccessor().submitToCoreThread(true);
+			if((usage & MU_CPUREADABLE) || BS_EDITOR_BUILD)
+			{
+				obj->readSubresource(gCoreAccessor(), 0, meshData);
+				gCoreAccessor().submitToCoreThread(true);
 
+				return meshData;
+			}
+
+			if(usage & MU_CPUCACHED)
+			{
+				obj->readData(*meshData);
+				return meshData;
+			}
+
+			LOGERR("Attempting to save a mesh that isn't flagged with either MU_CPUCACHED OR MU_GPUREADABLE flags.");
 			return meshData;
 		}
 

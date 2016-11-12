@@ -74,6 +74,8 @@ namespace BansheeEngine
 		static void internal_SetMaxMipmapLevel(ScriptTextureImportOptions* thisPtr, UINT32 value);
 		static bool internal_GetCPUReadable(ScriptTextureImportOptions* thisPtr);
 		static void internal_SetCPUReadable(ScriptTextureImportOptions* thisPtr, bool value);
+		static bool internal_GetCPUCached(ScriptTextureImportOptions* thisPtr);
+		static void internal_SetCPUCached(ScriptTextureImportOptions* thisPtr, bool value);
 		static bool internal_GetIsSRGB(ScriptTextureImportOptions* thisPtr);
 		static void internal_SetIsSRGB(ScriptTextureImportOptions* thisPtr, bool value);
 	};
@@ -102,6 +104,8 @@ namespace BansheeEngine
 		static void internal_CreateInstance(MonoObject* instance);
 		static bool internal_GetCPUReadable(ScriptMeshImportOptions* thisPtr);
 		static void internal_SetCPUReadable(ScriptMeshImportOptions* thisPtr, bool value);
+		static bool internal_GetCPUCached(ScriptMeshImportOptions* thisPtr);
+		static void internal_SetCPUCached(ScriptMeshImportOptions* thisPtr, bool value);
 		static bool internal_GetImportNormals(ScriptMeshImportOptions* thisPtr);
 		static void internal_SetImportNormals(ScriptMeshImportOptions* thisPtr, bool value);
 		static bool internal_GetImportTangents(ScriptMeshImportOptions* thisPtr);

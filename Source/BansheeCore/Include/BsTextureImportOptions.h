@@ -31,6 +31,9 @@ namespace BansheeEngine
 		void setMaxMip(UINT32 maxMip) { mMaxMip = maxMip; }
 
 		/** Sets whether the texture data is also stored in main memory, available for fast CPU access. */
+		void setCPUCached(bool cached) { mCPUCached = cached; }
+
+		/** Sets whether the texture data can be read directly from the GPU. */
 		void setCPUReadable(bool readable) { mCPUReadable = readable; }
 
 		/** 
@@ -52,6 +55,9 @@ namespace BansheeEngine
 		UINT32 getMaxMip() const { return mMaxMip; }
 
 		/** Retrieves whether the texture data is also stored in main memory, available for fast CPU access. */
+		bool getCPUCached() const { return mCPUCached; }
+
+		/** Retrieves whether the texture data can be read directly from the GPU. */
 		bool getCPUReadable() const { return mCPUReadable; }
 
 		/**
@@ -66,13 +72,14 @@ namespace BansheeEngine
 	public:
 		friend class TextureImportOptionsRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const override;
+		RTTITypeBase* getRTTI() const override;
 
 	private:
 		PixelFormat mFormat;
 		bool mGenerateMips;
 		UINT32 mMaxMip;
 		bool mCPUReadable;
+		bool mCPUCached;
 		bool mSRGB;
 	};
 

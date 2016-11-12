@@ -84,7 +84,7 @@ namespace BansheeEngine
 			{
 				SPtr<TextureCore> texture = mDesc.colorSurfaces[i].texture;
 
-				if (texture->getProperties().getUsage() != TU_RENDERTARGET)
+				if ((texture->getProperties().getUsage() & TU_RENDERTARGET) == 0)
 					BS_EXCEPT(InvalidParametersException, "Provided texture is not created with render target usage.");
 
 				mColorSurfaces[i] = TextureCore::requestView(texture, mDesc.colorSurfaces[i].mipLevel, 1,
@@ -96,7 +96,7 @@ namespace BansheeEngine
 		{
 			SPtr<TextureCore> texture = mDesc.depthStencilSurface.texture;
 
-			if (texture->getProperties().getUsage() != TU_DEPTHSTENCIL)
+			if ((texture->getProperties().getUsage() & TU_DEPTHSTENCIL) == 0)
 				BS_EXCEPT(InvalidParametersException, "Provided texture is not created with depth stencil usage.");
 
 			mDepthStencilSurface = TextureCore::requestView(texture, mDesc.depthStencilSurface.mipLevel, 1,

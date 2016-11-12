@@ -376,7 +376,7 @@ namespace BansheeEngine
 			Path outputPath = mBuiltinDataFolder + (WString(SplashScreenName) + L".asset");
 
 			auto textureIO = gImporter().createImportOptions<TextureImportOptions>(inputPath);
-			textureIO->setCPUReadable(true);
+			textureIO->setCPUCached(true);
 			textureIO->setGenerateMipmaps(false);
 			HTexture splashTexture = gImporter().import<Texture>(inputPath, textureIO);
 
