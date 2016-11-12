@@ -5,6 +5,7 @@
 #include "BsVulkanDevice.h"
 #include "BsVulkanUtility.h"
 #include "BsVulkanCommandBufferManager.h"
+#include "BsVulkanCommandBuffer.h"
 
 namespace BansheeEngine
 {
@@ -349,6 +350,10 @@ namespace BansheeEngine
 				// Queue copy command
 				mStagingBuffer->copy(transferCB, buffer, mMappedOffset, mMappedOffset, mMappedSize);
 
+				// Notify the command buffer that these resources are being used on it
+				transferCB->getCB()->registerResource(mStagingBuffer, VK_ACCESS_TRANSFER_READ_BIT, VulkanUseFlag::Read);
+				transferCB->getCB()->registerResource(buffer, VK_ACCESS_TRANSFER_WRITE_BIT, VulkanUseFlag::Write);
+
 				// We don't actually flush the transfer buffer here since it's an expensive operation, but it's instead
 				// done automatically before next "normal" command buffer submission.
 			}
@@ -426,6 +431,10 @@ namespace BansheeEngine
 				transferCB->appendMask(dstUseMask | srcUseMask);
 
 			src->copy(transferCB, dst, srcOffset, dstOffset, length);
+
+			// Notify the command buffer that these resources are being used on it
+			transferCB->getCB()->registerResource(src, VK_ACCESS_TRANSFER_READ_BIT, VulkanUseFlag::Read);
+			transferCB->getCB()->registerResource(dst, VK_ACCESS_TRANSFER_WRITE_BIT, VulkanUseFlag::Write);
 
 			// We don't actually flush the transfer buffer here since it's an expensive operation, but it's instead
 			// done automatically before next "normal" command buffer submission.
