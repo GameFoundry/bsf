@@ -39,9 +39,6 @@ namespace BansheeEngine
 		VulkanQuery(VulkanResourceManager* owner);
 		~VulkanQuery();
 
-		/** Returns the internal handle to the Vulkan object. */
-		bool setUsed(bool used) const { return mEvent; }
-
 	private:
 		VkEvent mEvent;
 	};
