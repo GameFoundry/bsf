@@ -6,6 +6,7 @@
 #include "BsVulkanUtility.h"
 #include "BsCoreThread.h"
 #include "BsRenderStats.h"
+#include "BsMath.h"
 
 namespace BansheeEngine
 {
@@ -288,12 +289,61 @@ namespace BansheeEngine
 
 	void VulkanTextureCore::readData(PixelData& dest, UINT32 mipLevel, UINT32 face, UINT32 deviceIdx, UINT32 queueIdx)
 	{
+		if (mProperties.getNumSamples() > 1)
+		{
+			LOGERR("Multisampled textures cannot be accessed from the CPU directly.");
+			return;
+		}
+
+		PixelData myData = lock(GBL_READ_ONLY, mipLevel, face, deviceIdx, queueIdx);
+
+#if BS_DEBUG_MODE
+		if (dest.getConsecutiveSize() != myData.getConsecutiveSize())
+		{
+			unlock();
+			BS_EXCEPT(InternalErrorException, "Buffer sizes don't match");
+		}
+#endif
+
+		PixelUtil::bulkPixelConversion(myData, dest);
+
+		unlock();
+
 		BS_INC_RENDER_STAT_CAT(ResRead, RenderStatObject_Texture);
 	}
 
 	void VulkanTextureCore::writeData(const PixelData& src, UINT32 mipLevel, UINT32 face, bool discardWholeBuffer,
 									  UINT32 queueIdx)
 	{
+		if (mProperties.getNumSamples() > 1)
+		{
+			LOGERR("Multisampled textures cannot be accessed from the CPU directly.");
+			return;
+		}
+
+		PixelFormat format = mProperties.getFormat();
+
+		mipLevel = Math::clamp(mipLevel, (UINT32)mipLevel, mProperties.getNumMipmaps());
+		face = Math::clamp(face, (UINT32)0, mProperties.getNumFaces() - 1);
+
+		if (face > 0 && mProperties.getTextureType() == TEX_TYPE_3D)
+		{
+			LOGERR("3D texture arrays are not supported.");
+			return;
+		}
+
+		// Write to every device
+		for (UINT32 i = 0; i < BS_MAX_DEVICES; i++)
+		{
+			if (mImages[i] == nullptr)
+				continue;
+
+			PixelData myData = lock(discardWholeBuffer ? GBL_WRITE_ONLY_DISCARD : GBL_WRITE_ONLY, mipLevel, face, i,
+									queueIdx);
+			PixelUtil::bulkPixelConversion(src, myData);
+			unlock();
+		}
+
 		BS_INC_RENDER_STAT_CAT(ResWrite, RenderStatObject_Texture);
 	}
 }

@@ -158,9 +158,12 @@ namespace BansheeEngine
 	void D3D11TextureCore::readData(PixelData& dest, UINT32 mipLevel, UINT32 face, UINT32 deviceIdx, UINT32 queueIdx)
 	{
 		if (mProperties.getNumSamples() > 1)
-			BS_EXCEPT(InvalidStateException, "Multisampled textures cannot be accessed from the CPU directly.");
+		{
+			LOGERR("Multisampled textures cannot be accessed from the CPU directly.");
+			return;
+		}
 
-		PixelData myData = lock(GBL_READ_ONLY, mipLevel, face);
+		PixelData myData = lock(GBL_READ_ONLY, mipLevel, face, deviceIdx, queueIdx);
 
 #if BS_DEBUG_MODE
 		if(dest.getConsecutiveSize() != myData.getConsecutiveSize())
@@ -181,17 +184,23 @@ namespace BansheeEngine
 		PixelFormat format = mProperties.getFormat();
 
 		if (mProperties.getNumSamples() > 1)
-			BS_EXCEPT(InvalidStateException, "Multisampled textures cannot be accessed from the CPU directly.");
+		{
+			LOGERR("Multisampled textures cannot be accessed from the CPU directly.");
+			return;
+		}
 
 		mipLevel = Math::clamp(mipLevel, (UINT32)mipLevel, mProperties.getNumMipmaps());
 		face = Math::clamp(face, (UINT32)0, mProperties.getNumFaces() - 1);
 
 		if (face > 0 && mProperties.getTextureType() == TEX_TYPE_3D)
-			BS_EXCEPT(InvalidStateException, "3D texture arrays are not supported.");
+		{
+			LOGERR("3D texture arrays are not supported.");
+			return;
+		}
 
 		if ((mProperties.getUsage() & TU_DYNAMIC) != 0)
 		{
-			PixelData myData = lock(discardWholeBuffer ? GBL_WRITE_ONLY_DISCARD : GBL_WRITE_ONLY, mipLevel, face);
+			PixelData myData = lock(discardWholeBuffer ? GBL_WRITE_ONLY_DISCARD : GBL_WRITE_ONLY, mipLevel, face, 0, queueIdx);
 			PixelUtil::bulkPixelConversion(src, myData);
 			unlock();
 		}

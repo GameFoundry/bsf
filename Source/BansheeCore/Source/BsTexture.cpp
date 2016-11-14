@@ -136,7 +136,8 @@ namespace BansheeEngine
 		if (pixelData.getWidth() != mipWidth || pixelData.getHeight() != mipHeight ||
 			pixelData.getDepth() != mipDepth || pixelData.getFormat() != mProperties.getFormat())
 		{
-			BS_EXCEPT(RenderingAPIException, "Provided buffer is not of valid dimensions or format in order to read from this texture.");
+			LOGERR("Provided buffer is not of valid dimensions or format in order to read from this texture.");
+			return;
 		}
 
 		readData(pixelData, mip, face, deviceIdx, queueIdx);
@@ -147,10 +148,16 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 
 		if (mipLevel > mProperties.getNumMipmaps())
-			BS_EXCEPT(InvalidParametersException, "Invalid mip level: " + toString(mipLevel) + ". Min is 0, max is " + toString(mProperties.getNumMipmaps()));
+		{
+			LOGERR("Invalid mip level: " + toString(mipLevel) + ". Min is 0, max is " + toString(mProperties.getNumMipmaps()));
+			return PixelData(0, 0, 0, PF_UNKNOWN);
+		}
 
 		if (face >= mProperties.getNumFaces())
-			BS_EXCEPT(InvalidParametersException, "Invalid face index: " + toString(face) + ". Min is 0, max is " + toString(mProperties.getNumFaces()));
+		{
+			LOGERR("Invalid face index: " + toString(face) + ". Min is 0, max is " + toString(mProperties.getNumFaces()));
+			return PixelData(0, 0, 0, PF_UNKNOWN);
+		}
 
 		return lockImpl(options, mipLevel, face, deviceIdx, queueIdx);
 	}
@@ -168,13 +175,22 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 
 		if (target->mProperties.getTextureType() != mProperties.getTextureType())
-			BS_EXCEPT(InvalidParametersException, "Source and destination textures must be of same type and must have the same usage and type.");
+		{
+			LOGERR("Source and destination textures must be of same type and must have the same usage and type.");
+			return;
+		}
 
 		if (mProperties.getFormat() != target->mProperties.getFormat()) // Note: It might be okay to use different formats of the same size
-			BS_EXCEPT(InvalidParametersException, "Source and destination texture formats must match.");
+		{
+			LOGERR("Source and destination texture formats must match.");
+			return;
+		}
 
 		if (target->mProperties.getNumSamples() > 0 && mProperties.getNumSamples() != target->mProperties.getNumSamples())
-			BS_EXCEPT(InvalidParametersException, "When copying to a multisampled texture, source texture must have the same number of samples.");
+		{
+			LOGERR("When copying to a multisampled texture, source texture must have the same number of samples.");
+			return;
+		}
 
 		UINT32 srcFace = 0;
 		UINT32 srcMipLevel = 0;
@@ -186,16 +202,28 @@ namespace BansheeEngine
 		target->mProperties.mapFromSubresourceIdx(destSubresourceIdx, destFace, destMipLevel);
 
 		if (destFace >= mProperties.getNumFaces())
-			BS_EXCEPT(InvalidParametersException, "Invalid destination face index");
+		{
+			LOGERR("Invalid destination face index");
+			return;
+		}
 
 		if (srcFace >= target->mProperties.getNumFaces())
-			BS_EXCEPT(InvalidParametersException, "Invalid destination face index");
+		{
+			LOGERR("Invalid destination face index");
+			return;
+		}
 
 		if (srcMipLevel > mProperties.getNumMipmaps())
-			BS_EXCEPT(InvalidParametersException, "Source mip level out of range. Valid range is [0, " + toString(mProperties.getNumMipmaps()) + "]");
+		{
+			LOGERR("Source mip level out of range. Valid range is [0, " + toString(mProperties.getNumMipmaps()) + "]");
+			return;
+		}
 
 		if (destMipLevel > target->mProperties.getNumMipmaps())
-			BS_EXCEPT(InvalidParametersException, "Destination mip level out of range. Valid range is [0, " + toString(target->mProperties.getNumMipmaps()) + "]");
+		{
+			LOGERR("Destination mip level out of range. Valid range is [0, " + toString(target->mProperties.getNumMipmaps()) + "]");
+			return;
+		}
 
 		UINT32 srcMipWidth = mProperties.getWidth() >> srcMipLevel;
 		UINT32 srcMipHeight = mProperties.getHeight() >> srcMipLevel;
@@ -206,7 +234,10 @@ namespace BansheeEngine
 		UINT32 dstMipDepth = target->mProperties.getDepth() >> destMipLevel;
 
 		if (srcMipWidth != dstMipWidth || srcMipHeight != dstMipHeight || srcMipDepth != dstMipDepth)
-			BS_EXCEPT(InvalidParametersException, "Source and destination sizes must match");
+		{
+			LOGERR("Source and destination sizes must match");
+			return;
+		}
 
 		copyImpl(srcFace, srcMipLevel, destFace, destMipLevel, target, queueIdx);
 	}
