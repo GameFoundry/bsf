@@ -265,12 +265,14 @@ namespace BansheeEngine
 		return mImages[deviceIdx]->getView(surface);
 	}
 
-	void VulkanTextureCore::copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel, const SPtr<TextureCore>& target)
+	void VulkanTextureCore::copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel,
+									 const SPtr<TextureCore>& target, UINT32 queueIdx)
 	{
 		// TODO - Handle resolve here as well
 	}
 
-	PixelData VulkanTextureCore::lockImpl(GpuLockOptions options, UINT32 mipLevel, UINT32 face)
+	PixelData VulkanTextureCore::lockImpl(GpuLockOptions options, UINT32 mipLevel, UINT32 face, UINT32 deviceIdx,
+										  UINT32 queueIdx)
 	{
 		PixelData lockedArea(1, 1, 1, mProperties.getFormat());
 	
@@ -284,12 +286,13 @@ namespace BansheeEngine
 		
 	}
 
-	void VulkanTextureCore::readData(PixelData& dest, UINT32 mipLevel, UINT32 face)
+	void VulkanTextureCore::readData(PixelData& dest, UINT32 mipLevel, UINT32 face, UINT32 deviceIdx, UINT32 queueIdx)
 	{
 		BS_INC_RENDER_STAT_CAT(ResRead, RenderStatObject_Texture);
 	}
 
-	void VulkanTextureCore::writeData(const PixelData& src, UINT32 mipLevel, UINT32 face, bool discardWholeBuffer)
+	void VulkanTextureCore::writeData(const PixelData& src, UINT32 mipLevel, UINT32 face, bool discardWholeBuffer,
+									  UINT32 queueIdx)
 	{
 		BS_INC_RENDER_STAT_CAT(ResWrite, RenderStatObject_Texture);
 	}

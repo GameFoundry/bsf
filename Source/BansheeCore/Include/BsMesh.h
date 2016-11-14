@@ -316,7 +316,7 @@ namespace BansheeEngine
 		 * @param[in]	updateBounds		If true the internal bounds of the mesh will be recalculated based on the 
 		 *									provided data.
 		 * @param[in]	queueIdx			Device queue to perform the write operation on. Using a non-default queue index
-		 *									allows the GPU to perform writeoperations while executing rendering or compute
+		 *									allows the GPU to perform write operations while executing rendering or compute
 		 *									operations on the same time.
 		 *									
 		 *									This value is a global queue index which encodes both the queue type and queue

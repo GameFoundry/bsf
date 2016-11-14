@@ -343,8 +343,15 @@ namespace BansheeEngine
 		 *									discarded. This can make the operation faster. Resources with certain buffer 
 		 *									types might require this flag to be in a specific state otherwise the operation 
 		 *									will fail.
+		 * @param[in]	queueIdx			Device queue to perform the write operation on. Using a non-default queue index
+		 *									allows the GPU to perform write operations while executing rendering or compute
+		 *									operations on the same time.
+		 *									
+		 *									This value is a global queue index which encodes both the queue type and queue
+		 *									index. Retrieve it from CommandSyncMask::getGlobalQueueIdx().									
 		 */
-		virtual void writeSubresource(UINT32 subresourceIdx, const PixelData& data, bool discardEntireBuffer);
+		virtual void writeSubresource(UINT32 subresourceIdx, const PixelData& data, bool discardEntireBuffer,
+									  UINT32 queueIdx = 0);
 
 		/**
 		 * Reads a part of the current resource into the provided @p data parameter. Data buffer needs to be pre-allocated.
@@ -352,22 +359,43 @@ namespace BansheeEngine
 		 * @param[in]	subresourceIdx		Index of the subresource to update, if the texture has more than one.
 		 * @param[out]	data				Buffer that will receive the data. Should be allocated with 
 		 *									allocateSubresourceBuffer() to ensure it is of valid type and size.
+		 * @param[in]	deviceIdx			Index of the device whose memory to read. If the buffer doesn't exist on this
+		 *									device, no data will be read.
+		 * @param[in]	queueIdx			Device queue to perform the read operation on. Using a non-default queue index
+		 *									allows the GPU to perform read operations while executing rendering or compute
+		 *									operations on the same time.
+		 *
+		 *									This value is a global queue index which encodes both the queue type and queue
+		 *									index. Retrieve it from CommandSyncMask::getGlobalQueueIdx().
 		 */
-		virtual void readSubresource(UINT32 subresourceIdx, PixelData& data);
+		virtual void readSubresource(UINT32 subresourceIdx, PixelData& data, UINT32 deviceIdx = 0, UINT32 queueIdx = 0);
 
 		/**
 		 * Locks the buffer for reading or writing.
 		 *
 		 * @param[in]	options 	Options for controlling what you may do with the locked data.
 		 * @param[in]	mipLevel	(optional) Mipmap level to lock.
-		 * @param[in]	face		(optional) Texture face to lock.					
+		 * @param[in]	face		(optional) Texture face to lock.
+		 * @param[in]	deviceIdx	Index of the device whose memory to map. If the buffer doesn't exist on this device,
+		 *							the method returns null.
+		 * @param[in]	queueIdx	Device queue to perform any read/write operations on. Using a non-default queue index
+		 *							allows the GPU to perform write or read operations while executing rendering or compute
+		 *							operations on the same time.
+		 *
+		 *							Note that when writing to a texture that is being used on a command buffer with a
+		 *							different queue you must ensure to provide the command buffer with a valid sync mask
+		 *							so it knows to wait before the write operation completes.
+		 *
+		 *							This value is a global queue index which encodes both the queue type and queue index.
+		 *							Retrieve it from CommandSyncMask::getGlobalQueueIdx().
 		 * @return					Pointer to the buffer data. Only valid until you call unlock().
 		 * 			
 		 * @note	
 		 * If you are just reading or writing one block of data use readData()/writeData() methods as they can be much faster
 		 * in certain situations.
 		 */
-		PixelData lock(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0);
+		PixelData lock(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0, UINT32 deviceIdx = 0,
+					   UINT32 queueIdx = 0);
 
 		/** 
 		 * Unlocks a previously locked buffer. After the buffer is unlocked, any data returned by lock becomes invalid. 
@@ -386,8 +414,18 @@ namespace BansheeEngine
 		 * @param[in]	srcSubresourceIdx	Index of the subresource to copy from.
 		 * @param[in]	destSubresourceIdx	Index of the subresource to copy to.
 		 * @param[in]	target				Texture that contains the destination subresource.
+		 * @param[in]	queueIdx			Device queue to perform any read/write operations on. Using a non-default queue
+		 *									index allows the GPU to perform write or read operations while executing
+		 *									rendering or compute operations on the same time.
+		 *
+		 *									Note that when writing to a texture that is being used on a command buffer with
+		 *									a different queue you must ensure to provide the command buffer with a valid
+		 *									sync mask so it knows to wait before the write operation completes.
+		 *
+		 *									This value is a global queue index which encodes both the queue type and queue
+		 *									index. Retrieve it from CommandSyncMask::getGlobalQueueIdx().
 		 */
-		void copy(UINT32 srcSubresourceIdx, UINT32 destSubresourceIdx, const SPtr<TextureCore>& target);
+		void copy(UINT32 srcSubresourceIdx, UINT32 destSubresourceIdx, const SPtr<TextureCore>& target, UINT32 queueIdx = 0);
 
 		/**
 		 * Reads data from the texture buffer into the provided buffer.
@@ -395,8 +433,17 @@ namespace BansheeEngine
 		 * @param[out]	dest		Previously allocated buffer to read data into.
 		 * @param[in]	mipLevel	(optional) Mipmap level to read from.
 		 * @param[in]	face		(optional) Texture face to read from.
+		 * @param[in]	deviceIdx	Index of the device whose memory to read. If the buffer doesn't exist on this device,
+		 *							no data will be read.
+		 * @param[in]	queueIdx	Device queue to perform the read operation on. Using a non-default queue index
+		 *							allows the GPU to perform read operations while executing rendering or compute
+		 *							operations on the same time.
+		 *
+		 *							This value is a global queue index which encodes both the queue type and queue index.
+		 *							Retrieve it from CommandSyncMask::getGlobalQueueIdx().
 		 */
-		virtual void readData(PixelData& dest, UINT32 mipLevel = 0, UINT32 face = 0) = 0;
+		virtual void readData(PixelData& dest, UINT32 mipLevel = 0, UINT32 face = 0, UINT32 deviceIdx = 0,
+							  UINT32 queueIdx = 0) = 0;
 
 		/**
 		 * Writes data from the provided buffer into the texture buffer.
@@ -406,8 +453,19 @@ namespace BansheeEngine
 		 * @param[in]	face				(optional) Texture face to write into.
 		 * @param[in]	discardWholeBuffer	(optional) If true any existing texture data will be discard. This can improve 
 		 *									performance of the write operation.
+		 * @param[in]	queueIdx			Device queue to perform any write operations on. Using a non-default queue index
+		 *									allows the GPU to perform write operations while executing rendering or compute
+		 *									operations on the same time.
+		 *
+		 *									Note that when writing to a texture that is being used on a command buffer with
+		 *									a different queue you must ensure to provide the command buffer with a valid
+		 *									sync mask so it knows to wait before the write operation completes.
+		 *
+		 *									This value is a global queue index which encodes both the queue type and queue
+		 *									index. Retrieve it from CommandSyncMask::getGlobalQueueIdx().
 		 */
-		virtual void writeData(const PixelData& src, UINT32 mipLevel = 0, UINT32 face = 0, bool discardWholeBuffer = false) = 0;
+		virtual void writeData(const PixelData& src, UINT32 mipLevel = 0, UINT32 face = 0, bool discardWholeBuffer = false,
+							   UINT32 queueIdx = 0) = 0;
 
 		/**	Returns properties that contain information about the texture. */
 		const TextureProperties& getProperties() const { return mProperties; }
@@ -459,7 +517,8 @@ namespace BansheeEngine
 		static SPtr<TextureCore> NORMAL;
 	protected:
 		/** @copydoc lock */
-		virtual PixelData lockImpl(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0) = 0;
+		virtual PixelData lockImpl(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0, UINT32 deviceIdx = 0,
+								   UINT32 queueIdx = 0) = 0;
 
 		/** @copydoc unlock */
 		virtual void unlockImpl() = 0;
@@ -472,9 +531,10 @@ namespace BansheeEngine
 		 * @param[in]	destFace		Face index to copy to.
 		 * @param[in]	destMipLevel	Mip level to copy to.
 		 * @param[in]	target			Texture to copy to.
+		 * @param[in]	queueIdx		Global queue index to perform the copy on.
 		 */
 		virtual void copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel, 
-			const SPtr<TextureCore>& target) = 0;
+			const SPtr<TextureCore>& target, UINT32 queueIdx = 0) = 0;
 
 		/************************************************************************/
 		/* 								TEXTURE VIEW                      		*/

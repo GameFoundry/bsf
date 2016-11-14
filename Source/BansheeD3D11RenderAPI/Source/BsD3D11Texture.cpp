@@ -58,7 +58,8 @@ namespace BansheeEngine
 		TextureCore::initialize();
 	}
 
-	void D3D11TextureCore::copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel, const SPtr<TextureCore>& target)
+	void D3D11TextureCore::copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel,
+									const SPtr<TextureCore>& target, UINT32 queueIdx)
 	{
 		D3D11TextureCore* other = static_cast<D3D11TextureCore*>(target.get());
 
@@ -87,7 +88,8 @@ namespace BansheeEngine
 		}
 	}
 
-	PixelData D3D11TextureCore::lockImpl(GpuLockOptions options, UINT32 mipLevel, UINT32 face)
+	PixelData D3D11TextureCore::lockImpl(GpuLockOptions options, UINT32 mipLevel, UINT32 face, UINT32 deviceIdx,
+										 UINT32 queueIdx)
 	{
 		if (mProperties.getNumSamples() > 1)
 			BS_EXCEPT(InvalidStateException, "Multisampled textures cannot be accessed from the CPU directly.");
@@ -153,7 +155,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D11TextureCore::readData(PixelData& dest, UINT32 mipLevel, UINT32 face)
+	void D3D11TextureCore::readData(PixelData& dest, UINT32 mipLevel, UINT32 face, UINT32 deviceIdx, UINT32 queueIdx)
 	{
 		if (mProperties.getNumSamples() > 1)
 			BS_EXCEPT(InvalidStateException, "Multisampled textures cannot be accessed from the CPU directly.");
@@ -173,7 +175,8 @@ namespace BansheeEngine
 		unlock();
 	}
 
-	void D3D11TextureCore::writeData(const PixelData& src, UINT32 mipLevel, UINT32 face, bool discardWholeBuffer)
+	void D3D11TextureCore::writeData(const PixelData& src, UINT32 mipLevel, UINT32 face, bool discardWholeBuffer,
+									 UINT32 queueIdx)
 	{
 		PixelFormat format = mProperties.getFormat();
 

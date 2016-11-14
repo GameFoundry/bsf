@@ -92,7 +92,8 @@ namespace BansheeEngine
 		}
 	}
 
-	void TextureCore::writeSubresource(UINT32 subresourceIdx, const PixelData& pixelData, bool discardEntireBuffer)
+	void TextureCore::writeSubresource(UINT32 subresourceIdx, const PixelData& pixelData, bool discardEntireBuffer, 
+		UINT32 queueIdx)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -109,10 +110,10 @@ namespace BansheeEngine
 		UINT32 mip = 0;
 		mProperties.mapFromSubresourceIdx(subresourceIdx, face, mip);
 
-		writeData(pixelData, mip, face, discardEntireBuffer);
+		writeData(pixelData, mip, face, discardEntireBuffer, queueIdx);
 	}
 
-	void TextureCore::readSubresource(UINT32 subresourceIdx, PixelData& data)
+	void TextureCore::readSubresource(UINT32 subresourceIdx, PixelData& data, UINT32 deviceIdx, UINT32 queueIdx)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -138,10 +139,10 @@ namespace BansheeEngine
 			BS_EXCEPT(RenderingAPIException, "Provided buffer is not of valid dimensions or format in order to read from this texture.");
 		}
 
-		readData(pixelData, mip, face);
+		readData(pixelData, mip, face, deviceIdx, queueIdx);
 	}
 
-	PixelData TextureCore::lock(GpuLockOptions options, UINT32 mipLevel, UINT32 face)
+	PixelData TextureCore::lock(GpuLockOptions options, UINT32 mipLevel, UINT32 face, UINT32 deviceIdx, UINT32 queueIdx)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -151,7 +152,7 @@ namespace BansheeEngine
 		if (face >= mProperties.getNumFaces())
 			BS_EXCEPT(InvalidParametersException, "Invalid face index: " + toString(face) + ". Min is 0, max is " + toString(mProperties.getNumFaces()));
 
-		return lockImpl(options, mipLevel, face);
+		return lockImpl(options, mipLevel, face, deviceIdx, queueIdx);
 	}
 
 	void TextureCore::unlock()
@@ -161,7 +162,8 @@ namespace BansheeEngine
 		unlockImpl();
 	}
 
-	void TextureCore::copy(UINT32 srcSubresourceIdx, UINT32 destSubresourceIdx, const SPtr<TextureCore>& target)
+	void TextureCore::copy(UINT32 srcSubresourceIdx, UINT32 destSubresourceIdx, const SPtr<TextureCore>& target,
+						   UINT32 queueIdx)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -206,7 +208,7 @@ namespace BansheeEngine
 		if (srcMipWidth != dstMipWidth || srcMipHeight != dstMipHeight || srcMipDepth != dstMipDepth)
 			BS_EXCEPT(InvalidParametersException, "Source and destination sizes must match");
 
-		copyImpl(srcFace, srcMipLevel, destFace, destMipLevel, target);
+		copyImpl(srcFace, srcMipLevel, destFace, destMipLevel, target, queueIdx);
 	}
 
 	/************************************************************************/
@@ -223,7 +225,8 @@ namespace BansheeEngine
 		mTextureViews.clear();
 	}
 
-	SPtr<TextureView> TextureCore::requestView(const SPtr<TextureCore>& texture, UINT32 mostDetailMip, UINT32 numMips, UINT32 firstArraySlice, UINT32 numArraySlices, GpuViewUsage usage)
+	SPtr<TextureView> TextureCore::requestView(const SPtr<TextureCore>& texture, UINT32 mostDetailMip, UINT32 numMips,
+											   UINT32 firstArraySlice, UINT32 numArraySlices, GpuViewUsage usage)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
