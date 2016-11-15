@@ -4,6 +4,7 @@
 #include "BsVulkanQueue.h"
 #include "BsVulkanCommandBuffer.h"
 #include "BsVulkanDescriptorManager.h"
+#include "BsVulkanQueryManager.h"
 
 namespace BansheeEngine
 {
@@ -110,6 +111,7 @@ namespace BansheeEngine
 
 		// Create pools/managers
 		mCommandBufferPool = bs_new<VulkanCmdBufferPool>(*this);
+		mQueryPool = bs_new<VulkanQueryPool>(*this);
 		mDescriptorManager = bs_new<VulkanDescriptorManager>(*this);
 		mResourceManager = bs_new<VulkanResourceManager>(*this);
 	}
@@ -127,6 +129,7 @@ namespace BansheeEngine
 
 		bs_delete(mResourceManager);
 		bs_delete(mDescriptorManager);
+		bs_delete(mQueryPool);
 		bs_delete(mCommandBufferPool);
 		
 		vkDestroyDevice(mLogicalDevice, gVulkanAllocator);

@@ -64,6 +64,9 @@ namespace BansheeEngine
 		/** Returns a pool that can be used for allocating command buffers for all queues on this device. */
 		VulkanCmdBufferPool& getCmdBufferPool() const { return *mCommandBufferPool; }
 
+		/** Returns a pool that can be used for allocating queries on this device. */
+		VulkanQueryPool& getQueryPool() const { return *mQueryPool; }
+
 		/** Returns a manager that can be used for allocating descriptor layouts and sets. */
 		VulkanDescriptorManager& getDescriptorManager() const { return *mDescriptorManager; }
 
@@ -106,6 +109,7 @@ namespace BansheeEngine
 		UINT32 mDeviceIdx;
 
 		VulkanCmdBufferPool* mCommandBufferPool;
+		VulkanQueryPool* mQueryPool;
 		VulkanDescriptorManager* mDescriptorManager;
 		VulkanResourceManager* mResourceManager;
 

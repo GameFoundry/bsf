@@ -31,6 +31,13 @@ namespace BansheeEngine
 		float getTimeMs() override;
 
 	private:
+		VulkanDevice& mDevice;
+		VulkanQuery* mBeginQuery;
+		VulkanQuery* mEndQuery;
+
+		float mTimeDelta;
+		bool mQueryEndCalled : 1;
+		bool mQueryFinalized : 1;
 	};
 
 	/** @} */

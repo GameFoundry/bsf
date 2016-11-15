@@ -7,6 +7,40 @@
 
 namespace BansheeEngine
 {
+	VulkanEvent::VulkanEvent(VulkanResourceManager* owner)
+		:VulkanResource(owner, false)
+	{
+		VkDevice vkDevice = owner->getDevice().getLogical();
+
+		VkEventCreateInfo eventCI;
+		eventCI.sType = VK_STRUCTURE_TYPE_EVENT_CREATE_INFO;
+		eventCI.pNext = nullptr;
+		eventCI.flags = 0;
+
+		VkResult result = vkCreateEvent(vkDevice, &eventCI, gVulkanAllocator, &mEvent);
+		assert(result == VK_SUCCESS);
+	}
+
+	VulkanEvent::~VulkanEvent()
+	{
+		VkDevice vkDevice = mOwner->getDevice().getLogical();
+		vkDestroyEvent(vkDevice, mEvent, gVulkanAllocator);
+	}
+
+	bool VulkanEvent::isSignaled() const
+	{
+		VkDevice vkDevice = mOwner->getDevice().getLogical();
+		return vkGetEventStatus(vkDevice, mEvent) == VK_EVENT_SET;
+	}
+
+	void VulkanEvent::reset()
+	{
+		VkDevice vkDevice = mOwner->getDevice().getLogical();
+
+		VkResult result = vkResetEvent(vkDevice, mEvent);
+		assert(result == VK_SUCCESS);
+	}
+
 	VulkanEventQuery::VulkanEventQuery(VulkanDevice& device)
 		:mDevice(device), mEvent(nullptr)
 	{

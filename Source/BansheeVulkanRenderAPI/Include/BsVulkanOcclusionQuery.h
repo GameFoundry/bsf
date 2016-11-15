@@ -32,6 +32,13 @@ namespace BansheeEngine
 
 	private:
 		friend class QueryManager;
+
+		VulkanDevice& mDevice;
+		VulkanQuery* mQuery;
+
+		UINT64 mNumSamples;
+		bool mQueryEndCalled : 1;
+		bool mQueryFinalized : 1;
 	};
 
 	/** @} */

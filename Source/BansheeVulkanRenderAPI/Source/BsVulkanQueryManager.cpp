@@ -6,9 +6,143 @@
 #include "BsVulkanOcclusionQuery.h"
 #include "BsVulkanRenderAPI.h"
 #include "BsVulkanDevice.h"
+#include "BsVulkanCommandBuffer.h"
 
 namespace BansheeEngine
 {
+	VulkanQueryPool::VulkanQueryPool(VulkanDevice& device)
+		:mDevice(device)
+	{
+		Lock(mMutex);
+
+		allocatePool(VK_QUERY_TYPE_TIMESTAMP);
+		allocatePool(VK_QUERY_TYPE_OCCLUSION);
+	}
+
+	VulkanQueryPool::~VulkanQueryPool()
+	{
+		Lock(mMutex);
+
+		for (auto& entry : mTimerQueries)
+			entry->destroy();
+
+		for (auto& entry : mOcclusionQueries)
+			entry->destroy();
+
+		for (auto& entry : mTimerPools)
+			vkDestroyQueryPool(mDevice.getLogical(), entry.pool, gVulkanAllocator);
+
+		for (auto& entry : mOcclusionPools)
+			vkDestroyQueryPool(mDevice.getLogical(), entry.pool, gVulkanAllocator);
+	}
+
+	VulkanQueryPool::PoolInfo& VulkanQueryPool::allocatePool(VkQueryType type)
+	{
+		VkQueryPoolCreateInfo queryPoolCI;
+		queryPoolCI.sType = VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO;
+		queryPoolCI.pNext = nullptr;
+		queryPoolCI.flags = 0;
+		queryPoolCI.pipelineStatistics = 0;
+		queryPoolCI.queryCount = NUM_QUERIES_PER_POOL;
+		queryPoolCI.queryType = type;
+
+		PoolInfo poolInfo;
+		VkResult result = vkCreateQueryPool(mDevice.getLogical(), &queryPoolCI, gVulkanAllocator, &poolInfo.pool);
+		assert(result == VK_SUCCESS);
+
+		Vector<PoolInfo>& poolInfos = type == VK_QUERY_TYPE_TIMESTAMP ? mTimerPools : mOcclusionPools;
+		poolInfo.startIdx = (UINT32)poolInfos.size() * NUM_QUERIES_PER_POOL;
+
+		poolInfos.push_back(poolInfo);
+
+		Vector<VulkanQuery*>& queries = type == VK_QUERY_TYPE_TIMESTAMP ? mTimerQueries : mOcclusionQueries;
+		for (UINT32 i = 0; i < NUM_QUERIES_PER_POOL; i++)
+			queries.push_back(nullptr);
+
+		return poolInfos.back();
+	}
+
+	VulkanQuery* VulkanQueryPool::getQuery(VkQueryType type)
+	{
+		Vector<VulkanQuery*>& queries = type == VK_QUERY_TYPE_TIMESTAMP ? mTimerQueries : mOcclusionQueries;
+		Vector<PoolInfo>& poolInfos = type == VK_QUERY_TYPE_TIMESTAMP ? mTimerPools : mOcclusionPools;
+
+		for (UINT32 i = 0; i < (UINT32)queries.size(); i++)
+		{
+			VulkanQuery* curQuery = queries[i];
+			if (curQuery == nullptr)
+			{
+				div_t divResult = std::div(i, (INT32)NUM_QUERIES_PER_POOL);
+				UINT32 poolIdx = (UINT32)divResult.quot;
+				UINT32 queryIdx = (UINT32)divResult.rem;
+
+				curQuery = mDevice.getResourceManager().create<VulkanQuery>(poolInfos[poolIdx].pool, queryIdx);
+				queries[i] = curQuery;
+
+				return curQuery;
+			}
+			else if (!curQuery->isBound() && curQuery->mFree)
+				return curQuery;
+		}
+
+		PoolInfo& poolInfo = allocatePool(type);
+		UINT32 queryIdx = poolInfo.startIdx % NUM_QUERIES_PER_POOL;
+
+		VulkanQuery* query = mDevice.getResourceManager().create<VulkanQuery>(poolInfo.pool, queryIdx);
+		queries[poolInfo.startIdx] = query;
+
+		return query;
+	}
+
+	VulkanQuery* VulkanQueryPool::beginTimerQuery(VulkanCmdBuffer* cb)
+	{
+		Lock(mMutex);
+
+		VulkanQuery* query = getQuery(VK_QUERY_TYPE_TIMESTAMP);
+		query->mFree = false;
+
+		VkCommandBuffer vkCmdBuf = cb->getHandle();
+		vkCmdResetQueryPool(vkCmdBuf, query->mPool, query->mQueryIdx, 1);
+		vkCmdWriteTimestamp(vkCmdBuf, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, query->mPool, query->mQueryIdx);
+
+		// Note: Must happen only here because we need to check VulkanResource::isBound under the same mutex
+		cb->registerResource(query, VulkanUseFlag::Write);
+
+		return query;
+	}
+
+	VulkanQuery* VulkanQueryPool::beginOcclusionQuery(VulkanCmdBuffer* cb, bool precise)
+	{
+		Lock(mMutex);
+
+		VulkanQuery* query = getQuery(VK_QUERY_TYPE_TIMESTAMP);
+		query->mFree = false;
+
+		VkCommandBuffer vkCmdBuf = cb->getHandle();
+		vkCmdResetQueryPool(vkCmdBuf, query->mPool, query->mQueryIdx, 1);
+		vkCmdBeginQuery(vkCmdBuf, query->mPool, query->mQueryIdx, precise ? VK_QUERY_CONTROL_PRECISE_BIT : 0);
+
+		// Note: Must happen only here because we need to check VulkanResource::isBound under the same mutex
+		cb->registerResource(query, VulkanUseFlag::Write);
+
+		return query;
+	}
+
+	void VulkanQueryPool::endOcclusionQuery(VulkanQuery* query, VulkanCmdBuffer* cb)
+	{
+		Lock(mMutex);
+
+		VkCommandBuffer vkCmdBuf = cb->getHandle();
+		vkCmdEndQuery(vkCmdBuf, query->mPool, query->mQueryIdx);
+	}
+
+	void VulkanQueryPool::releaseQuery(VulkanQuery* query)
+	{
+		Lock(mMutex);
+
+		query->mFree = true;
+	}
+
 	VulkanQueryManager::VulkanQueryManager(VulkanRenderAPI& rapi)
 		:mRenderAPI(rapi)
 	{ }
@@ -33,7 +167,7 @@ namespace BansheeEngine
 	{
 		SPtr<VulkanDevice> device = mRenderAPI._getDevice(deviceIdx);
 
-		SPtr<TimerQuery> query = SPtr<VulkanTimerQuery>(bs_new<VulkanTimerQuery>(device),
+		SPtr<TimerQuery> query = SPtr<VulkanTimerQuery>(bs_new<VulkanTimerQuery>(*device),
 			&QueryManager::deleteTimerQuery, StdAlloc<VulkanTimerQuery>());
 		mTimerQueries.push_back(query.get());
 
@@ -51,37 +185,22 @@ namespace BansheeEngine
 		return query;
 	}
 
-	VulkanEvent::VulkanEvent(VulkanResourceManager* owner)
-		:VulkanResource(owner, false)
+	VulkanQuery::VulkanQuery(VulkanResourceManager* owner, VkQueryPool pool, UINT32 queryIdx)
+		:VulkanResource(owner, false), mPool(pool), mQueryIdx(queryIdx), mFree(true)
 	{
-		VkDevice vkDevice = owner->getDevice().getLogical();
-
-		VkEventCreateInfo eventCI;
-		eventCI.sType = VK_STRUCTURE_TYPE_EVENT_CREATE_INFO;
-		eventCI.pNext = nullptr;
-		eventCI.flags = 0;
-
-		VkResult result = vkCreateEvent(vkDevice, &eventCI, gVulkanAllocator, &mEvent);
-		assert(result == VK_SUCCESS);
 	}
 
-	VulkanEvent::~VulkanEvent()
+	bool VulkanQuery::getResult(UINT64& result) const
 	{
-		VkDevice vkDevice = mOwner->getDevice().getLogical();
-		vkDestroyEvent(vkDevice, mEvent, gVulkanAllocator);
-	}
+		// Note: A potentially better approach to get results is to make the query pool a VulkanResource, which we attach
+		// to a command buffer upon use. Then when CB finishes executing we perform vkGetQueryPoolResults on all queries
+		// in the pool at once.
 
-	bool VulkanEvent::isSignaled() const
-	{
 		VkDevice vkDevice = mOwner->getDevice().getLogical();
-		return vkGetEventStatus(vkDevice, mEvent) == VK_EVENT_SET;
-	}
+		VkResult vkResult = vkGetQueryPoolResults(vkDevice, mPool, 0, 1, sizeof(result), &result, sizeof(result),
+												  VK_QUERY_RESULT_64_BIT);
+		assert(vkResult == VK_SUCCESS || vkResult == VK_NOT_READY);
 
-	void VulkanEvent::reset()
-	{
-		VkDevice vkDevice = mOwner->getDevice().getLogical();
-
-		VkResult result = vkResetEvent(vkDevice, mEvent);
-		assert(result == VK_SUCCESS);
+		return vkResult == VK_SUCCESS;
 	}
 }
