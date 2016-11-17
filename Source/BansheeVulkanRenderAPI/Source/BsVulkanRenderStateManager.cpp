@@ -2,6 +2,7 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsVulkanRenderStateManager.h"
 #include "BsVulkanGpuPipelineState.h"
+#include "BsVulkanGpuPipelineParamInfo.h"
 #include "BsVulkanSamplerState.h"
 
 namespace BansheeEngine
@@ -25,5 +26,27 @@ namespace BansheeEngine
 		pipelineState->_setThisPtr(pipelineState);
 
 		return pipelineState;
+	}
+
+	SPtr<ComputePipelineStateCore> VulkanRenderStateCoreManager::_createComputePipelineState(
+		const SPtr<GpuProgramCore>& program, GpuDeviceFlags deviceMask) const
+	{
+		SPtr<VulkanComputePipelineStateCore> pipelineState =
+			bs_shared_ptr<VulkanComputePipelineStateCore>(new (bs_alloc<VulkanComputePipelineStateCore>())
+														  VulkanComputePipelineStateCore(program, deviceMask));
+		pipelineState->_setThisPtr(pipelineState);
+
+		return pipelineState;
+	}
+
+	SPtr<GpuPipelineParamInfoCore> VulkanRenderStateCoreManager::_createPipelineParamInfo(
+		const GPU_PIPELINE_PARAMS_DESC& desc) const
+	{
+		SPtr<VulkanGpuPipelineParamInfo> paramInfo =
+			bs_shared_ptr<VulkanGpuPipelineParamInfo>(new (bs_alloc<VulkanGpuPipelineParamInfo>())
+													  VulkanGpuPipelineParamInfo(desc));
+		paramInfo->_setThisPtr(paramInfo);
+
+		return paramInfo;
 	}
 }

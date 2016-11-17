@@ -36,6 +36,8 @@ namespace BansheeEngine
 	template<> struct TGpuDataParamInfo < Matrix4x3 > { enum { TypeId = GPDT_MATRIX_4X3 }; };
 	template<> struct TGpuDataParamInfo < Color > { enum { TypeId = GPDT_COLOR }; };
 
+	class GpuPipelineParamInfoBase;
+
 	/** Contains functionality common for both sim and core thread version of GpuParams. */
 	class BS_CORE_EXPORT GpuParamsBase
 	{
@@ -83,12 +85,12 @@ namespace BansheeEngine
 		virtual void _markResourcesDirty() { }
 
 	protected:
-		GpuParamsBase(const SPtr<GpuPipelineParamInfo>& paramInfo);
+		GpuParamsBase(const SPtr<GpuPipelineParamInfoBase>& paramInfo);
 
 		/**	Gets a descriptor for a data parameter with the specified name. */
 		GpuParamDataDesc* getParamDesc(GpuProgramType type, const String& name) const;
 
-		SPtr<GpuPipelineParamInfo> mParamInfo;
+		SPtr<GpuPipelineParamInfoBase> mParamInfo;
 	};
 
 	template<bool Core> struct TGpuParamsTypes { };
@@ -206,7 +208,7 @@ namespace BansheeEngine
 		virtual void setLoadStoreSurface(UINT32 set, UINT32 slot, const TextureSurface& surface);
 
 	protected:
-		TGpuParams(const SPtr<GpuPipelineParamInfo>& paramInfo);
+		TGpuParams(const SPtr<GpuPipelineParamInfoBase>& paramInfo);
 
 		/** @copydoc CoreObject::getThisPtr */
 		virtual SPtr<GpuParamsType> _getThisPtr() const = 0;
@@ -239,14 +241,14 @@ namespace BansheeEngine
 		 * @copydoc GpuParams::create 
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the buffer be created on.
 		 */
-		static SPtr<GpuParamsCore> create(const SPtr<GpuPipelineParamInfo>& paramInfo,
+		static SPtr<GpuParamsCore> create(const SPtr<GpuPipelineParamInfoCore>& paramInfo,
 										  GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
 	protected:
 		friend class GpuParams;
 		friend class HardwareBufferCoreManager;
 
-		GpuParamsCore(const SPtr<GpuPipelineParamInfo>& paramInfo, GpuDeviceFlags deviceMask);
+		GpuParamsCore(const SPtr<GpuPipelineParamInfoCore>& paramInfo, GpuDeviceFlags deviceMask);
 
 		/** @copydoc CoreObject::getThisPtr */
 		SPtr<GpuParamsCore> _getThisPtr() const override;

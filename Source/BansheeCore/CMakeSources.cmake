@@ -139,6 +139,7 @@ set(BS_BANSHEECORE_INC_RENDERAPI
 	"Include/BsViewport.h"
 	"Include/BsCommandBuffer.h"
 	"Include/BsGpuPipelineState.h"
+	"Include/BsGpuPipelineParamInfo.h"
 )
 
 set(BS_BANSHEECORE_INC_RENDERAPI_MANAGERS
@@ -423,6 +424,7 @@ set(BS_BANSHEECORE_SRC_RENDERAPI
 	"Source/BsViewport.cpp"
 	"Source/BsCommandBuffer.cpp"
 	"Source/BsGpuPipelineState.cpp"
+	"Source/BsGpuPipelineParamInfo.cpp"
 )
 
 set(BS_BANSHEECORE_SRC_RENDERAPI_MANAGERS

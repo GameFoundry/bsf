@@ -231,6 +231,15 @@ namespace BansheeEngine
 		return state;
 	}
 
+	SPtr<GpuPipelineParamInfoCore> RenderStateCoreManager::createPipelineParamInfo(
+		const GPU_PIPELINE_PARAMS_DESC& desc) const
+	{
+		SPtr<GpuPipelineParamInfoCore> paramInfo = _createPipelineParamInfo(desc);
+		paramInfo->initialize();
+
+		return paramInfo;
+	}
+
 	SPtr<SamplerStateCore> RenderStateCoreManager::_createSamplerState(const SAMPLER_STATE_DESC& desc, 
 		GpuDeviceFlags deviceMask) const
 	{
@@ -318,6 +327,18 @@ namespace BansheeEngine
 		pipelineState->_setThisPtr(pipelineState);
 
 		return pipelineState;
+	}
+
+	SPtr<GpuPipelineParamInfoCore> RenderStateCoreManager::_createPipelineParamInfo(
+		const GPU_PIPELINE_PARAMS_DESC& desc) const
+	{
+		SPtr<GpuPipelineParamInfoCore> paramInfo =
+			bs_shared_ptr<GpuPipelineParamInfoCore>(new (bs_alloc<GpuPipelineParamInfoCore>())
+													GpuPipelineParamInfoCore(desc));
+
+		paramInfo->_setThisPtr(paramInfo);
+
+		return paramInfo;
 	}
 
 	void RenderStateCoreManager::onShutDown()

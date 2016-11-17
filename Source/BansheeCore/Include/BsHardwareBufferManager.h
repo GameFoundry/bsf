@@ -132,7 +132,7 @@ namespace BansheeEngine
 		 * @copydoc HardwareBufferManager::createGpuParams 
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the object be created on.
 		 */
-		SPtr<GpuParamsCore> createGpuParams(const SPtr<GpuPipelineParamInfo>& paramInfo,
+		SPtr<GpuParamsCore> createGpuParams(const SPtr<GpuPipelineParamInfoCore>& paramInfo,
 											GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
 	protected:
@@ -166,7 +166,7 @@ namespace BansheeEngine
 			GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
 		/** @copydoc createGpuParams */
-		virtual SPtr<GpuParamsCore> createGpuParamsInternal(const SPtr<GpuPipelineParamInfo>& paramInfo,
+		virtual SPtr<GpuParamsCore> createGpuParamsInternal(const SPtr<GpuPipelineParamInfoCore>& paramInfo,
 			GpuDeviceFlags deviceMask = GDF_DEFAULT);
 	};
 

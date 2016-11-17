@@ -5,7 +5,7 @@
 #include "BsCorePrerequisites.h"
 #include "BsGpuParamDesc.h"
 #include "BsGpuParams.h"
-#include "BsGpuPipelineState.h"
+#include "BsGpuPipelineParamInfo.h"
 #include "BsRenderAPI.h"
 #include "BsGpuParamBlockBuffer.h"
 
@@ -37,7 +37,7 @@ namespace BansheeEngine
 																															\
 			GPU_PIPELINE_PARAMS_DESC pipelineParamDesc;																		\
 			pipelineParamDesc.vertexParams = paramsDesc;																	\
-			SPtr<GpuPipelineParamInfo> paramInfo = GpuPipelineParamInfo::create(pipelineParamDesc);							\
+			SPtr<GpuPipelineParamInfoCore> paramInfo = GpuPipelineParamInfoCore::create(pipelineParamDesc);					\
 			mParams = GpuParamsCore::create(paramInfo);																		\
 																															\
 			mBuffer = GpuParamBlockBufferCore::create(mBlockDesc.blockSize * sizeof(UINT32));								\

@@ -99,7 +99,7 @@ namespace BansheeEngine
 		return declPtr;
 	}
 
-	SPtr<GpuParamsCore> HardwareBufferCoreManager::createGpuParams(const SPtr<GpuPipelineParamInfo>& paramInfo,
+	SPtr<GpuParamsCore> HardwareBufferCoreManager::createGpuParams(const SPtr<GpuPipelineParamInfoCore>& paramInfo,
 		GpuDeviceFlags deviceMask)
     {
 		SPtr<GpuParamsCore> params = createGpuParamsInternal(paramInfo, deviceMask);
@@ -146,7 +146,7 @@ namespace BansheeEngine
 		return ret;
 	}
 
-	SPtr<GpuParamsCore> HardwareBufferCoreManager::createGpuParamsInternal(const SPtr<GpuPipelineParamInfo>& paramInfo,
+	SPtr<GpuParamsCore> HardwareBufferCoreManager::createGpuParamsInternal(const SPtr<GpuPipelineParamInfoCore>& paramInfo,
 		GpuDeviceFlags deviceMask)
     {
 		GpuParamsCore* params = new (bs_alloc<GpuParamsCore>()) GpuParamsCore(paramInfo, deviceMask);

@@ -22,6 +22,13 @@ namespace BansheeEngine
 		/** @copydoc RenderStateCoreManager::_createGraphicsPipelineState */
 		SPtr<GraphicsPipelineStateCore> _createGraphicsPipelineState(const PIPELINE_STATE_CORE_DESC& desc,
 			GpuDeviceFlags deviceMask = GDF_DEFAULT) const override;
+
+		/** @copydoc RenderStateCoreManager::_createComputePipelineState */
+		SPtr<ComputePipelineStateCore> _createComputePipelineState(const SPtr<GpuProgramCore>& program,
+			GpuDeviceFlags deviceMask = GDF_DEFAULT) const override;
+
+		/** @copydoc RenderStateCoreManager::_createPipelineParamInfo */
+		SPtr<GpuPipelineParamInfoCore> _createPipelineParamInfo(const GPU_PIPELINE_PARAMS_DESC& desc) const override;
 	};
 
 	/** @} */

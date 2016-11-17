@@ -3,7 +3,7 @@
 #include "BsGpuParams.h"
 #include "BsGpuParamDesc.h"
 #include "BsGpuParamBlockBuffer.h"
-#include "BsGpuPipelineState.h"
+#include "BsGpuPipelineParamInfo.h"
 #include "BsVector2.h"
 #include "BsTexture.h"
 #include "BsGpuBuffer.h"
@@ -17,7 +17,7 @@
 
 namespace BansheeEngine
 {
-	GpuParamsBase::GpuParamsBase(const SPtr<GpuPipelineParamInfo>& paramInfo)
+	GpuParamsBase::GpuParamsBase(const SPtr<GpuPipelineParamInfoBase>& paramInfo)
 		:mParamInfo(paramInfo)
 	{ }
 
@@ -135,7 +135,7 @@ namespace BansheeEngine
 	}
 
 	template<bool Core>
-	TGpuParams<Core>::TGpuParams(const SPtr<GpuPipelineParamInfo>& paramInfo)
+	TGpuParams<Core>::TGpuParams(const SPtr<GpuPipelineParamInfoBase>& paramInfo)
 		: GpuParamsBase(paramInfo)
 	{
 		UINT32 numParamBlocks = mParamInfo->getNumElements(GpuPipelineParamInfo::ParamType::ParamBlock);
@@ -543,7 +543,7 @@ namespace BansheeEngine
 	template BS_CORE_EXPORT void TGpuParams<true>::getParam<Matrix4x2>(GpuProgramType type, const String&, TGpuDataParam<Matrix4x2, true>&) const;
 	template BS_CORE_EXPORT void TGpuParams<true>::getParam<Matrix4x3>(GpuProgramType type, const String&, TGpuDataParam<Matrix4x3, true>&) const;
 
-	GpuParamsCore::GpuParamsCore(const SPtr<GpuPipelineParamInfo>& paramInfo, GpuDeviceFlags deviceMask)
+	GpuParamsCore::GpuParamsCore(const SPtr<GpuPipelineParamInfoCore>& paramInfo, GpuDeviceFlags deviceMask)
 		: TGpuParams(paramInfo)
 	{
 
@@ -625,7 +625,7 @@ namespace BansheeEngine
 		}
 	}
 
-	SPtr<GpuParamsCore> GpuParamsCore::create(const SPtr<GpuPipelineParamInfo>& paramInfo, GpuDeviceFlags deviceMask)
+	SPtr<GpuParamsCore> GpuParamsCore::create(const SPtr<GpuPipelineParamInfoCore>& paramInfo, GpuDeviceFlags deviceMask)
 	{
 		return HardwareBufferCoreManager::instance().createGpuParams(paramInfo, deviceMask);
 	}
@@ -650,7 +650,9 @@ namespace BansheeEngine
 
 	SPtr<CoreObjectCore> GpuParams::createCore() const
 	{
-		return HardwareBufferCoreManager::instance().createGpuParams(mParamInfo);
+		SPtr<GpuPipelineParamInfo> paramInfo = std::static_pointer_cast<GpuPipelineParamInfo>(mParamInfo);
+
+		return HardwareBufferCoreManager::instance().createGpuParams(paramInfo->getCore());
 	}
 
 	void GpuParams::_markCoreDirty()

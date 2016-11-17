@@ -35,7 +35,7 @@ namespace BansheeEngine
 			GpuDeviceFlags deviceMask = GDF_DEFAULT) override;
 
 		/** @copydoc HardwareBufferCoreManager::createGpuParamsInternal */
-		SPtr<GpuParamsCore> createGpuParamsInternal(const SPtr<GpuPipelineParamInfo>& paramInfo,
+		SPtr<GpuParamsCore> createGpuParamsInternal(const SPtr<GpuPipelineParamInfoCore>& paramInfo,
 			GpuDeviceFlags deviceMask = GDF_DEFAULT) override;
 	};
 

@@ -26,7 +26,7 @@ namespace BansheeEngine
 		VkPipeline mPipeline;
 	};
 
-	/**	Vulkan implementation of a GPU pipeline state. */
+	/**	Vulkan implementation of a graphics pipeline state. */
 	class VulkanGraphicsPipelineStateCore : public GraphicsPipelineStateCore
 	{
 	public:
@@ -67,6 +67,21 @@ namespace BansheeEngine
 		VkPipelineDynamicStateCreateInfo mDynamicStateInfo;
 		VkDynamicState mDynamicStates[3];
 		VkGraphicsPipelineCreateInfo mPipelineInfo;
+	};
+
+	/**	Vulkan implementation of a compute pipeline state. */
+	class VulkanComputePipelineStateCore : public ComputePipelineStateCore
+	{
+	public:
+		~VulkanComputePipelineStateCore();
+
+	protected:
+		friend class VulkanRenderStateCoreManager;
+
+		VulkanComputePipelineStateCore(const SPtr<GpuProgramCore>& program, GpuDeviceFlags deviceMask);
+
+		/**	@copydoc ComputePipelineStateCore::initialize */
+		void initialize() override;
 	};
 
 	/** @} */

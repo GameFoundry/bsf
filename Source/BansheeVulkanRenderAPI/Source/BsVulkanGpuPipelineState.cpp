@@ -274,4 +274,19 @@ namespace BansheeEngine
 
 		return pipeline;
 	}
+
+	VulkanComputePipelineStateCore::VulkanComputePipelineStateCore(const SPtr<GpuProgramCore>& program, 
+		GpuDeviceFlags deviceMask)
+		:ComputePipelineStateCore(program, deviceMask)
+	{ }
+
+	VulkanComputePipelineStateCore::~VulkanComputePipelineStateCore()
+	{
+
+	}
+
+	void VulkanComputePipelineStateCore::initialize()
+	{
+		// TODO
+	}
 }

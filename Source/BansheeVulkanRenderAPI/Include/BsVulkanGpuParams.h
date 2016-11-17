@@ -76,7 +76,7 @@ namespace BansheeEngine
 
 		friend class VulkanHardwareBufferCoreManager;
 
-		VulkanGpuParams(const SPtr<GpuPipelineParamInfo>& paramInfo, GpuDeviceFlags deviceMask);
+		VulkanGpuParams(const SPtr<GpuPipelineParamInfoCore>& paramInfo, GpuDeviceFlags deviceMask);
 
 		PerDeviceData mPerDeviceData[BS_MAX_DEVICES];
 		GpuDeviceFlags mDeviceMask;
