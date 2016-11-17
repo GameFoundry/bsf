@@ -32,7 +32,7 @@ namespace BansheeEngine
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPICore::setComputePipeline */
-		void setComputePipeline(const SPtr<GpuProgramCore>& computeProgram,
+		void setComputePipeline(const SPtr<ComputePipelineStateCore>& pipelineState,
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPICore::setGpuParams() */

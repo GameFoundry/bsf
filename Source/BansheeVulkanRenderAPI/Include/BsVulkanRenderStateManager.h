@@ -19,8 +19,8 @@ namespace BansheeEngine
 		SPtr<SamplerStateCore> createSamplerStateInternal(const SAMPLER_STATE_DESC& desc,
 			GpuDeviceFlags deviceMask) const override;
 
-		/** @copydoc RenderStateCoreManager::_createPipelineState */
-		SPtr<GraphicsPipelineStateCore> _createPipelineState(const PIPELINE_STATE_CORE_DESC& desc,
+		/** @copydoc RenderStateCoreManager::_createGraphicsPipelineState */
+		SPtr<GraphicsPipelineStateCore> _createGraphicsPipelineState(const PIPELINE_STATE_CORE_DESC& desc,
 			GpuDeviceFlags deviceMask = GDF_DEFAULT) const override;
 	};
 

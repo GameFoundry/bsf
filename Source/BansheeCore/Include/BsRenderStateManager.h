@@ -35,6 +35,9 @@ namespace BansheeEngine
 		/**	Creates and initializes a new GraphicsPipelineState. */
 		SPtr<GraphicsPipelineState> createGraphicsPipelineState(const PIPELINE_STATE_DESC& desc) const;
 
+		/**	Creates and initializes a new ComputePipelineState. */
+		SPtr<ComputePipelineState> createComputePipelineState(const SPtr<GpuProgram>& program) const;
+
 		/** Creates an uninitialized sampler state. Requires manual initialization after creation. */
 		SPtr<SamplerState> _createSamplerStatePtr(const SAMPLER_STATE_DESC& desc) const;
 
@@ -49,6 +52,9 @@ namespace BansheeEngine
 
 		/**	Creates an uninitialized GraphicsPipelineState. Requires manual initialization after creation. */
 		virtual SPtr<GraphicsPipelineState> _createGraphicsPipelineState(const PIPELINE_STATE_DESC& desc) const;
+
+		/**	Creates an uninitialized ComputePipelineState. Requires manual initialization after creation. */
+		virtual SPtr<ComputePipelineState> _createComputePipelineState(const SPtr<GpuProgram>& program) const;
 
 		/** Gets a sampler state initialized with default options. */
 		const SPtr<SamplerState>& getDefaultSamplerState() const;
@@ -143,10 +149,17 @@ namespace BansheeEngine
 		SPtr<BlendStateCore> createBlendState(const BLEND_STATE_DESC& desc) const;
 
 		/** 
-		 * @copydoc RenderStateManager::createPipelineState 
+		 * @copydoc RenderStateManager::createGraphicsPipelineState 
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the object be created on.
 		 */
-		SPtr<GraphicsPipelineStateCore> createPipelineState(const PIPELINE_STATE_CORE_DESC& desc, 
+		SPtr<GraphicsPipelineStateCore> createGraphicsPipelineState(const PIPELINE_STATE_CORE_DESC& desc, 
+			GpuDeviceFlags deviceMask = GDF_DEFAULT) const;
+
+		/** 
+		 * @copydoc RenderStateManager::createComputePipelineState 
+		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the object be created on.
+		 */
+		SPtr<ComputePipelineStateCore> createComputePipelineState(const SPtr<GpuProgramCore>& program,
 			GpuDeviceFlags deviceMask = GDF_DEFAULT) const;
 
 		/** Creates an uninitialized sampler state. Requires manual initialization after creation. */
@@ -163,8 +176,12 @@ namespace BansheeEngine
 		SPtr<BlendStateCore> _createBlendState(const BLEND_STATE_DESC& desc) const;
 
 		/**	Creates an uninitialized GraphicsPipelineState. Requires manual initialization after creation. */
-		virtual SPtr<GraphicsPipelineStateCore> _createPipelineState(const PIPELINE_STATE_CORE_DESC& desc, 
+		virtual SPtr<GraphicsPipelineStateCore> _createGraphicsPipelineState(const PIPELINE_STATE_CORE_DESC& desc, 
 			GpuDeviceFlags deviceMask = GDF_DEFAULT) const;
+
+		/**	Creates an uninitialized ComputePipelineState. Requires manual initialization after creation. */
+		virtual SPtr<ComputePipelineStateCore> _createComputePipelineState(const SPtr<GpuProgramCore>& program,
+																		   GpuDeviceFlags deviceMask = GDF_DEFAULT) const;
 
 		/** Gets a sampler state initialized with default options. */
 		const SPtr<SamplerStateCore>& getDefaultSamplerState() const;

@@ -388,6 +388,8 @@ namespace BansheeEngine
 	class CommandBuffer;
 	class GraphicsPipelineState;
 	class GraphicsPipelineStateCore;
+	class ComputePipelineState;
+	class ComputePipelineStateCore;
 	// Asset import
 	class SpecificImporter;
 	class Importer;

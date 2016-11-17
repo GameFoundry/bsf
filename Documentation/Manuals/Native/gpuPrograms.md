@@ -68,7 +68,11 @@ As you can see we must first retrieve a handle to the parameter, and then we can
 See the [render API manual](@ref renderAPI) for more information about how to set and bind GPU program parameters.
 
 # Using GPU programs for rendering {#gpuPrograms_c}
-You can bind a GPU program to the pipeline by assigning it to a @ref BansheeEngine::GpuPipelineState "GpuPipelineState" and calling @ref BansheeEngine::RenderAPI::setGraphicsPipeline "RenderAPI::setGraphicsPipeline". Or alternatively if using compute programs you can bind by calling @ref BansheeEngine::RenderAPI::setComputePipeline "RenderAPI::setComputePipeline". Any subsequent draw/dispatch calls will then use the bound GPU programs. 
+You can bind a GPU program to the pipeline by assigning it to a @ref BansheeEngine::GraphicsPipelineState "GraphicsPipelineState" and calling @ref BansheeEngine::RenderAPI::setGraphicsPipeline "RenderAPI::setGraphicsPipeline". 
+
+Or alternatively if using a compute program you can bind it by assigning it to a @ref BansheeEngine::ComputePipelineState "ComputePipelineState" and calling @ref BansheeEngine::RenderAPI::setComputePipeline "RenderAPI::setComputePipeline". 
+
+Once pipeline state is bound, any subsequent draw/dispatch calls will then use the GPU programs attached to that state. 
 
 You can bind parameters for use in the GPU program by calling @ref BansheeEngine::RenderAPICore::setGpuParams "RenderAPICore::setGpuParams" which accepts the @ref BansheeEngine::GpuParamsCore "GpuParamsCore" object we described above.
 

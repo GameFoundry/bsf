@@ -51,7 +51,7 @@ rapi.swapBuffers();
 ~~~~~~~~~~~~~
  
 # Pipeline state {#renderAPI_b}
-Before executing the drawing operation you must set up an @ref BansheeEngine::GpuPipelineStateCore "GpuPipelineStateCore" object, which contains a set of fixed and programmable states that control primitive rendering. This includes GPU programs (e.g. vertex/fragment) and fixed states (depth-stencil, blend, rasterizer).
+Before executing the drawing operation you must set up an @ref BansheeEngine::GraphicsPipelineStateCore "GraphicsPipelineStateCore" object, which contains a set of fixed and programmable states that control primitive rendering. This includes GPU programs (e.g. vertex/fragment) and fixed states (depth-stencil, blend, rasterizer).
 
 To create a pipeline state you must fill out @ref BansheeEngine::PIPELINE_STATE_CORE_DESC "PIPELINE_STATE_CORE_DESC" descriptor, and use it to construct the state, like so:
 ~~~~~~~~~~~~~{.cpp}
@@ -68,7 +68,7 @@ desc.geometryProgram = ...;
 desc.hullProgram = ...;
 desc.domainProgram = ...;
 
-SPtr<GpuPipelineStateCore> state = GpuPipelineStateCore::create(desc);
+SPtr<GraphicsPipelineStateCore> state = GraphicsPipelineStateCore::create(desc);
 ~~~~~~~~~~~~~
 
 Once created the pipeline can be bound for rendering by calling @ref BansheeEngine::RenderAPICore::setGraphicsPipeline "RenderAPICore::setGraphicsPipeline".
@@ -80,7 +80,7 @@ RenderAPICore& rapi = RenderAPICore::instance();
 rapi.setGraphicsPipeline(state);
 ~~~~~~~~~~~~~
 
-We continue below with explanation on how to create fixed and programmable states required to initialize GpuPipelineStateCore.
+We continue below with explanation on how to create fixed and programmable states required to initialize GraphicsPipelineStateCore.
 
 ## Fixed pipeline states {#renderAPI_b_a}
 Fixed pipeline states allow you to control (to some extent) non-programmable parts of the pipeline. This includes anything from blend operations, rasterization mode to depth testing. Setting these states is optional and if not set, default values will be used.
@@ -240,15 +240,19 @@ And this wraps up the rendering pipeline. After this step your object should be 
 # Compute {#renderAPI_g}
 The compute pipeline is a very simple pipeline that can be used for general purpose calculations. It is separate from the graphics pipeline we have been describing so far, but uses the same functionality, just in a more limited way. You don't have to set fixed states, render targets, vertex/index buffers and only one GPU program type is supported (compute GPU program).
 
-Use @ref BansheeEngine::RenderAPICore::setComputePipeline "RenderAPICore::setComputePipeline" to initialize the pipeline. When the pipeline is set up you can execute it by calling @ref BansheeEngine::RenderAPICore::dispatchCompute "RenderAPICore::dispatchCompute". You should provide it a three dimensional number that determines how many instances of the currently bound GPU program to execute. The total number of executions will be X * Y * Z.
+The pipeline is represented with the @ref BansheeEngine::ComputePipelineStateCore "ComputePipelineStateCore" object, which must be initialized with the compute GPU program to use.
+
+After creation use @ref BansheeEngine::RenderAPICore::setComputePipeline "RenderAPICore::setComputePipeline" to bind the pipeline for further operations. When the pipeline is set up you can execute it by calling @ref BansheeEngine::RenderAPICore::dispatchCompute "RenderAPICore::dispatchCompute". You should provide it a three dimensional number that determines how many instances of the currently bound GPU program to execute. The total number of executions will be X * Y * Z.
 
 Since compute pipeline doesn't support render targets, you will want to use load-store textures for output. An example of a simple compute pipeline:
 ~~~~~~~~~~~~~{.cpp}
 SPtr<GpuProgramCore> computeProgram = ...;
 SPtr<GpuParamsCore> computeGpuParams = ...;
 
+SPtr<ComputePipelineStateCore> state = ComputePipelineStateCore::create(computeProgram);
+
 RenderAPICore& rapi = RenderAPICore::instance();
-rapi.setComputePipeline(computeProgram);
+rapi.setComputePipeline(state);
 rapi.setGpuParams(computeGpuParams);
 rapi.dispatchCompute(512, 512);
 
@@ -277,12 +281,13 @@ Command buffer example:
 SPtr<CommandBuffer> cmdBuffer = CommandBuffer::create(CBT_COMPUTE);
 SPtr<GpuProgramCore> computeProgram = ...;
 SPtr<GpuParamsCore> computeGpuParams = ...;
+SPtr<ComputePipelineStateCore> state = ComputePipelineStateCore::create(computeProgram);
 
 ... queue up worker thread(s) ...
 
 // Worker thread
 RenderAPICore& rapi = RenderAPICore::instance();
-rapi.setComputePipeline(computeProgram, cmdBuffer);
+rapi.setComputePipeline(state, cmdBuffer);
 rapi.setGpuParams(computeGpuParams, cmdBuffer);
 rapi.dispatchCompute(512, 512, cmdBuffer);
 

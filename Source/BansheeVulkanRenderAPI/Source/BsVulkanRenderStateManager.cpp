@@ -16,11 +16,12 @@ namespace BansheeEngine
 		return samplerState;
 	}
 
-	SPtr<GraphicsPipelineStateCore> VulkanRenderStateCoreManager::_createPipelineState(const PIPELINE_STATE_CORE_DESC& desc,
-		GpuDeviceFlags deviceMask) const
+	SPtr<GraphicsPipelineStateCore> VulkanRenderStateCoreManager::_createGraphicsPipelineState(
+		const PIPELINE_STATE_CORE_DESC& desc, GpuDeviceFlags deviceMask) const
 	{
 		SPtr<VulkanGraphicsPipelineStateCore> pipelineState =
-			bs_shared_ptr<VulkanGraphicsPipelineStateCore>(new (bs_alloc<VulkanGraphicsPipelineStateCore>()) VulkanGraphicsPipelineStateCore(desc, deviceMask));
+			bs_shared_ptr<VulkanGraphicsPipelineStateCore>(new (bs_alloc<VulkanGraphicsPipelineStateCore>()) 
+			VulkanGraphicsPipelineStateCore(desc, deviceMask));
 		pipelineState->_setThisPtr(pipelineState);
 
 		return pipelineState;

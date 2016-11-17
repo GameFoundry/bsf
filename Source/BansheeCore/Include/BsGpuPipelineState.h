@@ -119,6 +119,31 @@ namespace BansheeEngine
 		SPtr<GpuPipelineParamInfo> mParamInfo;
     };
 
+	/** 
+	 * Templated version of ComputePipelineState so it can be used for both core and non-core versions of the pipeline
+	 * state. 
+	 */
+	template<bool Core>
+	class BS_CORE_EXPORT TComputePipelineState
+    {
+    public:
+		typedef typename TGpuPipelineStateTypes<Core>::GpuProgramType GpuProgramType;
+
+		virtual ~TComputePipelineState() { }
+
+		const GpuProgramType& getProgram() const { return mProgram; }
+
+		/** Returns an object containing meta-data for parameters of the GPU program used in this pipeline state. */
+		const SPtr<GpuPipelineParamInfo>& getParamInfo() const { return mParamInfo; }
+
+	protected:
+		TComputePipelineState();
+		TComputePipelineState(const GpuProgramType& program);
+
+		GpuProgramType mProgram;
+		SPtr<GpuPipelineParamInfo> mParamInfo;
+    };
+
 	/** @} */
 
 	/** @addtogroup RenderAPI
@@ -144,12 +169,42 @@ namespace BansheeEngine
 		 */
 		SPtr<GraphicsPipelineStateCore> getCore() const;
 
-		/** @copydoc RenderStateManager::createPipelineState */
+		/** @copydoc RenderStateManager::createGraphicsPipelineState */
 		static SPtr<GraphicsPipelineState> create(const PIPELINE_STATE_DESC& desc);
 	protected:
 		friend class RenderStateManager;
 
 		GraphicsPipelineState(const PIPELINE_STATE_DESC& desc);
+
+		/** @copydoc CoreObject::createCore */
+		virtual SPtr<CoreObjectCore> createCore() const;
+    };
+
+	class ComputePipelineStateCore;
+
+	/**
+	 * Describes the state of the GPU pipeline that determines how are compute programs executed. It consists of 
+	 * of a single programmable state (GPU program). Once created the state is immutable, and can be bound to RenderAPI for
+	 * use.
+	 */
+    class BS_CORE_EXPORT ComputePipelineState : public CoreObject, public TComputePipelineState<false>
+    {
+	public:
+		virtual ~ComputePipelineState() { }
+
+		/**
+		 * Retrieves a core implementation of the pipeline object usable only from the core thread.
+		 *
+		 * @note	Core thread only.
+		 */
+		SPtr<ComputePipelineStateCore> getCore() const;
+
+		/** @copydoc RenderStateManager::createComputePipelineState */
+		static SPtr<ComputePipelineState> create(const SPtr<GpuProgram>& program);
+	protected:
+		friend class RenderStateManager;
+
+		ComputePipelineState(const SPtr<GpuProgram>& program);
 
 		/** @copydoc CoreObject::createCore */
 		virtual SPtr<CoreObjectCore> createCore() const;
@@ -168,8 +223,20 @@ namespace BansheeEngine
 		GraphicsPipelineStateCore(const PIPELINE_STATE_CORE_DESC& desc, GpuDeviceFlags deviceMask);
 		virtual ~GraphicsPipelineStateCore() { }
 
-		/** @copydoc RenderStateManager::createPipelineState */
+		/** @copydoc RenderStateManager::createGraphicsPipelineState */
 		static SPtr<GraphicsPipelineStateCore> create(const PIPELINE_STATE_CORE_DESC& desc, 
+			GpuDeviceFlags deviceMask = GDF_DEFAULT);
+	};
+
+	/** Core thread version of a ComputePipelineState. */
+	class BS_CORE_EXPORT ComputePipelineStateCore : public CoreObjectCore, public TComputePipelineState<true>
+	{
+	public:
+		ComputePipelineStateCore(const SPtr<GpuProgramCore>& program, GpuDeviceFlags deviceMask);
+		virtual ~ComputePipelineStateCore() { }
+
+		/** @copydoc RenderStateManager::createComputePipelineState */
+		static SPtr<ComputePipelineStateCore> create(const SPtr<GpuProgramCore>& program,
 			GpuDeviceFlags deviceMask = GDF_DEFAULT);
 	};
 

@@ -88,7 +88,7 @@ namespace BansheeEngine
 		/**	Gets a descriptor for a data parameter with the specified name. */
 		GpuParamDataDesc* getParamDesc(GpuProgramType type, const String& name) const;
 
-		const SPtr<GpuPipelineParamInfo>& mParamInfo;
+		SPtr<GpuPipelineParamInfo> mParamInfo;
 	};
 
 	template<bool Core> struct TGpuParamsTypes { };

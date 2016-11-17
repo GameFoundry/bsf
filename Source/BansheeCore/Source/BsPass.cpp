@@ -102,18 +102,32 @@ namespace BansheeEngine
 	PassCore::PassCore(const PASS_DESC_CORE& desc, const SPtr<GraphicsPipelineStateCore>& pipelineState)
 		:TPass(desc)
 	{
-		mPipelineState = pipelineState;
+		mGraphicsPipelineState = pipelineState;
+	}
+
+
+	PassCore::PassCore(const PASS_DESC_CORE& desc, const SPtr<ComputePipelineStateCore>& pipelineState)
+		:TPass(desc)
+	{
+		mComputePipelineState = pipelineState;
 	}
 
 	void PassCore::initialize()
 	{
-		// Create pipeline state unless it's already provided, or unless it's a compute pass
-		if (mPipelineState == nullptr && !hasComputeProgram())
+		if(hasComputeProgram())
 		{
-			PIPELINE_STATE_CORE_DESC desc;
-			convertPassDesc(mData, desc);
+			if(mComputePipelineState == nullptr)
+				mComputePipelineState = ComputePipelineStateCore::create(getComputeProgram());
+		}
+		else
+		{
+			if (mGraphicsPipelineState == nullptr)
+			{
+				PIPELINE_STATE_CORE_DESC desc;
+				convertPassDesc(mData, desc);
 
-			mPipelineState = GraphicsPipelineStateCore::create(desc);
+				mGraphicsPipelineState = GraphicsPipelineStateCore::create(desc);
+			}
 		}
 
 		CoreObjectCore::initialize();
@@ -152,11 +166,21 @@ namespace BansheeEngine
 		PASS_DESC_CORE desc;
 		convertPassDesc(mData, desc);
 
-		SPtr<GraphicsPipelineStateCore> corePipeline;
-		if (mPipelineState != nullptr)
-			corePipeline = mPipelineState->getCore();
+		PassCore* pass;
+		if(mComputePipelineState != nullptr)
+		{
+			SPtr<ComputePipelineStateCore> corePipeline = mComputePipelineState->getCore();
+			pass = new (bs_alloc<PassCore>()) PassCore(desc, corePipeline);
+		}
+		else
+		{
+			SPtr<GraphicsPipelineStateCore> corePipeline;
+			if (mGraphicsPipelineState != nullptr)
+				corePipeline = mGraphicsPipelineState->getCore();
 
-		PassCore* pass = new (bs_alloc<PassCore>()) PassCore(desc, corePipeline);
+			pass = new (bs_alloc<PassCore>()) PassCore(desc, corePipeline);
+		}
+
 		SPtr<PassCore> passPtr = bs_shared_ptr<PassCore>(pass);
 		passPtr->_setThisPtr(passPtr);
 
@@ -165,13 +189,17 @@ namespace BansheeEngine
 
 	void Pass::initialize()
 	{
-		// Create pipeline state unless it's a compute pass
-		if (!hasComputeProgram())
+		// Create pipeline state
+		if (hasComputeProgram())
+		{
+			mComputePipelineState = ComputePipelineState::create(getComputeProgram());
+		}
+		else
 		{
 			PIPELINE_STATE_DESC desc;
 			convertPassDesc(mData, desc);
 
-			mPipelineState = GraphicsPipelineState::create(desc);
+			mGraphicsPipelineState = GraphicsPipelineState::create(desc);
 		}
 
 		CoreObject::initialize();

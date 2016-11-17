@@ -70,6 +70,7 @@ namespace BansheeEngine
 		typedef SPtr<DepthStencilState> DepthStencilStateType;
 		typedef SPtr<GpuProgram> GpuProgramType;
 		typedef SPtr<GraphicsPipelineState> GraphicsPipelineStateType;
+		typedef SPtr<ComputePipelineState> ComputePipelineStateType;
 		typedef PASS_DESC PassDescType;
 	};
 
@@ -81,6 +82,7 @@ namespace BansheeEngine
 		typedef SPtr<DepthStencilStateCore> DepthStencilStateType;
 		typedef SPtr<GpuProgramCore> GpuProgramType;
 		typedef SPtr<GraphicsPipelineStateCore> GraphicsPipelineStateType;
+		typedef SPtr<ComputePipelineStateCore> ComputePipelineStateType;
 		typedef PASS_DESC_CORE PassDescType;
 	};
 
@@ -102,6 +104,7 @@ namespace BansheeEngine
 		typedef typename TPassTypes<Core>::GpuProgramType GpuProgramType;
 		typedef typename TPassTypes<Core>::PassDescType PassDescType;
 		typedef typename TPassTypes<Core>::GraphicsPipelineStateType GraphicsPipelineStateType;
+		typedef typename TPassTypes<Core>::ComputePipelineStateType ComputePipelineStateType;
 
 		virtual ~TPass() { }
 
@@ -129,14 +132,15 @@ namespace BansheeEngine
 		const GpuProgramType& getDomainProgram() const { return mData.domainProgram; }
 		const GpuProgramType& getComputeProgram() const { return mData.computeProgram; }
 
-		const GraphicsPipelineStateType& getPipelineState() const { return mPipelineState; }
-
+		const GraphicsPipelineStateType& getGraphicsPipelineState() const { return mGraphicsPipelineState; }
+		const ComputePipelineStateType& getComputePipelineState() const { return mComputePipelineState; }
 	protected:
 		TPass();
 		TPass(const PassDescType& desc);
 
 		PassDescType mData;
-		GraphicsPipelineStateType mPipelineState;
+		GraphicsPipelineStateType mGraphicsPipelineState;
+		ComputePipelineStateType mComputePipelineState;
     };
 
 	/** @} */
@@ -168,6 +172,7 @@ namespace BansheeEngine
 		PassCore() { }
 		PassCore(const PASS_DESC_CORE& desc);
 		PassCore(const PASS_DESC_CORE& desc, const SPtr<GraphicsPipelineStateCore>& pipelineState);
+		PassCore(const PASS_DESC_CORE& desc, const SPtr<ComputePipelineStateCore>& pipelineState);
 
 		/** @copydoc CoreObjectCore::syncToCore */
 		void syncToCore(const CoreSyncData& data) override;

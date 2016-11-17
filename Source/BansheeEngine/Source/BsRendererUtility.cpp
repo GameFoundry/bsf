@@ -122,7 +122,7 @@ namespace BansheeEngine
 		RenderAPICore& rapi = RenderAPICore::instance();
 
 		SPtr<PassCore> pass = material->getPass(passIdx, techniqueIdx);
-		rapi.setGraphicsPipeline(pass->getPipelineState());
+		rapi.setGraphicsPipeline(pass->getGraphicsPipelineState());
 		rapi.setStencilRef(pass->getStencilRefValue());
 	}
 
@@ -131,7 +131,7 @@ namespace BansheeEngine
 		RenderAPICore& rapi = RenderAPICore::instance();
 
 		SPtr<PassCore> pass = material->getPass(passIdx);
-		rapi.setComputePipeline(pass->getComputeProgram());
+		rapi.setComputePipeline(pass->getComputePipelineState());
 	}
 
 	void RendererUtility::setPassParams(const SPtr<GpuParamsSetCore>& params, UINT32 passIdx)

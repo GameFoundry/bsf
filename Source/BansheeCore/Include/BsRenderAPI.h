@@ -40,7 +40,7 @@ namespace BansheeEngine
 		static void setGraphicsPipeline(CoreAccessor& accessor, const SPtr<GraphicsPipelineState>& pipelineState);
 
 		/** @see RenderAPICore::setComputePipeline() */
-		static void setComputePipeline(CoreAccessor& accessor, const SPtr<GpuProgram>& computeProgram);
+		static void setComputePipeline(CoreAccessor& accessor, const SPtr<ComputePipelineState>& pipelineState);
 
 		/** @see RenderAPICore::setVertexBuffers() */
 		static void setVertexBuffers(CoreAccessor& accessor, UINT32 index, const Vector<SPtr<VertexBuffer>>& buffers);
@@ -225,12 +225,12 @@ namespace BansheeEngine
 		/**
 		 * Sets a pipeline state that controls how will subsequent dispatch commands execute.
 		 *
-		 * @param[in]	computeProgram		Compute program to bind to the pipeline.
+		 * @param[in]	pipelineState		Pipeline state to bind, or null to unbind.
 		 * @param[in]	commandBuffer		Optional command buffer to queue the operation on. If not provided operation
 		 *									is executed immediately. Otherwise it is executed when executeCommands() is 
 		 *									called. Buffer must support graphics operations.
 		 */
-		virtual void setComputePipeline(const SPtr<GpuProgramCore>& computeProgram,
+		virtual void setComputePipeline(const SPtr<ComputePipelineStateCore>& pipelineState,
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**

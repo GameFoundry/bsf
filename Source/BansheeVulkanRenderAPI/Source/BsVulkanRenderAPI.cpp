@@ -312,7 +312,7 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumPipelineStateChanges);
 	}
 
-	void VulkanRenderAPI::setComputePipeline(const SPtr<GpuProgramCore>& computeProgram,
+	void VulkanRenderAPI::setComputePipeline(const SPtr<ComputePipelineStateCore>& pipelineState,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
 		// TODO

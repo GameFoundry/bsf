@@ -303,16 +303,20 @@ namespace BansheeEngine
 		BS_INC_RENDER_STAT(NumPipelineStateChanges);
 	}
 
-	void D3D11RenderAPI::setComputePipeline(const SPtr<GpuProgramCore>& computeProgram,
+	void D3D11RenderAPI::setComputePipeline(const SPtr<ComputePipelineStateCore>& pipelineState,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
-		auto executeRef = [&](const SPtr<GpuProgramCore>& computeProgram)
+		auto executeRef = [&](const SPtr<ComputePipelineStateCore>& pipelineState)
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
-			if (computeProgram != nullptr && computeProgram->getProperties().getType() == GPT_COMPUTE_PROGRAM)
+			SPtr<GpuProgramCore> program;
+			if (pipelineState != nullptr)
+				program = pipelineState->getProgram();
+
+			if (program != nullptr && program->getProperties().getType() == GPT_COMPUTE_PROGRAM)
 			{
-				D3D11GpuComputeProgramCore *d3d11ComputeProgram = static_cast<D3D11GpuComputeProgramCore*>(computeProgram.get());
+				D3D11GpuComputeProgramCore *d3d11ComputeProgram = static_cast<D3D11GpuComputeProgramCore*>(program.get());
 				mDevice->getImmediateContext()->CSSetShader(d3d11ComputeProgram->getComputeShader(), nullptr, 0);
 			}
 			else
@@ -320,10 +324,10 @@ namespace BansheeEngine
 		};
 
 		if (commandBuffer == nullptr)
-			executeRef(computeProgram);
+			executeRef(pipelineState);
 		else
 		{
-			auto execute = [=]() { executeRef(computeProgram); };
+			auto execute = [=]() { executeRef(pipelineState); };
 
 			SPtr<D3D11CommandBuffer> cb = std::static_pointer_cast<D3D11CommandBuffer>(commandBuffer);
 			cb->queueCommand(execute);

@@ -29,10 +29,10 @@ namespace BansheeEngine
 			pipelineState->getCore(), nullptr));
 	}
 
-	void RenderAPI::setComputePipeline(CoreAccessor& accessor, const SPtr<GpuProgram>& computeProgram)
+	void RenderAPI::setComputePipeline(CoreAccessor& accessor, const SPtr<ComputePipelineState>& pipelineState)
 	{
 		accessor.queueCommand(std::bind(&RenderAPICore::setComputePipeline, RenderAPICore::instancePtr(),
-			computeProgram->getCore(), nullptr));
+							  pipelineState->getCore(), nullptr));
 	}
 
 	void RenderAPI::setVertexBuffers(CoreAccessor& accessor, UINT32 index, const Vector<SPtr<VertexBuffer>>& buffers)

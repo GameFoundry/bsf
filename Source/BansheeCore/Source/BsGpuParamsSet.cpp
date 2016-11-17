@@ -474,9 +474,15 @@ namespace BansheeEngine
 		for (UINT32 i = 0; i < numPasses; i++)
 		{
 			SPtr<PassType> curPass = technique->getPass(i);
-			GraphicsPipelineStateType pipeline = curPass->getPipelineState();
 
-			mPassParams[i] = GpuParamsType::create(pipeline->getParamInfo());
+			GraphicsPipelineStateType gfxPipeline = curPass->getGraphicsPipelineState();
+			if(gfxPipeline != nullptr)
+				mPassParams[i] = GpuParamsType::create(gfxPipeline->getParamInfo());
+			else
+			{
+				ComputePipelineStateType computePipeline = curPass->getComputePipelineState();
+				mPassParams[i] = GpuParamsType::create(computePipeline->getParamInfo());
+			}
 		}
 
 		// Create and assign parameter block buffers
