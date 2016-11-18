@@ -42,6 +42,9 @@ namespace BansheeEngine
 		/** Returns the number of sets for the specified parameter type. */
 		UINT32 getNumSets(ParamType type) { return mNumSets[(int)type]; }
 
+		/** Returns the total number of elements across all sets. */
+		UINT32 getNumElements() const { return mTotalNumElements; }
+
 		/** Returns the number of elements in all sets for the specified parameter type. */
 		UINT32 getNumElements(ParamType type) { return mNumElements[(int)type]; }
 
@@ -67,6 +70,7 @@ namespace BansheeEngine
 		std::array<SPtr<GpuParamDesc>, 6> mParamDescs;
 
 		UINT32 mTotalNumSets;
+		UINT32 mTotalNumElements;
 		UINT32 mNumSets[(int)ParamType::Count];
 		UINT32 mNumElements[(int)ParamType::Count];
 		UINT32* mOffsets[(int)ParamType::Count];
@@ -80,13 +84,17 @@ namespace BansheeEngine
 	public:
 		virtual ~GpuPipelineParamInfoCore() { }
 
-		/** @copydoc GpuPipelineParamInfo::create */
-		static SPtr<GpuPipelineParamInfoCore> create(const GPU_PIPELINE_PARAMS_DESC& desc);
+		/** 
+		 * @copydoc GpuPipelineParamInfo::create 
+		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the buffer be created on.
+		 */
+		static SPtr<GpuPipelineParamInfoCore> create(const GPU_PIPELINE_PARAMS_DESC& desc,
+													 GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
 	protected:
 		friend class RenderStateCoreManager;
 
-		GpuPipelineParamInfoCore(const GPU_PIPELINE_PARAMS_DESC& desc);
+		GpuPipelineParamInfoCore(const GPU_PIPELINE_PARAMS_DESC& desc, GpuDeviceFlags deviceMask);
 	};
 
 	/** Holds meta-data about a set of GPU parameters used by a single pipeline state. */

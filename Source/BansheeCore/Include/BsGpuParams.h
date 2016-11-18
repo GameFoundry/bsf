@@ -238,7 +238,18 @@ namespace BansheeEngine
 		virtual ~GpuParamsCore() { }
 
 		/** 
-		 * @copydoc GpuParams::create 
+		 * @copydoc GpuParams::create(const SPtr<GraphicsPipelineState>&)
+		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the buffer be created on.
+		 */
+		static SPtr<GpuParamsCore> create(const SPtr<GraphicsPipelineStateCore>& pipelineState,
+										  GpuDeviceFlags deviceMask = GDF_DEFAULT);
+
+		/** @copydoc GpuParams::create(const SPtr<ComputePipelineStateCore>&) */
+		static SPtr<GpuParamsCore> create(const SPtr<ComputePipelineStateCore>& pipelineState,
+										  GpuDeviceFlags deviceMask = GDF_DEFAULT);
+
+		/** 
+		 * @copydoc GpuParams::create(const SPtr<ComputePipelineStateCore>&)
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the buffer be created on.
 		 */
 		static SPtr<GpuParamsCore> create(const SPtr<GpuPipelineParamInfoCore>& paramInfo,
@@ -278,9 +289,20 @@ namespace BansheeEngine
 		SPtr<GpuParamsCore> getCore() const;
 
 		/**
-		 * Creates new GpuParams object using the specified parameter description.
+		 * Creates new GpuParams object that can serve for changing the GPU program parameters on the specified pipeline.
 		 *
-		 * @param[in]	paramInfo	Object containing parameter descriptions for all relevant GPU program stages.
+		 * @param[in]	pipelineState	Pipeline state for which this object can set parameters for.
+		 * @return						New GpuParams object.
+		 */
+		static SPtr<GpuParams> create(const SPtr<GraphicsPipelineState>& pipelineState);
+
+		/** @copydoc GpuParams::create(const SPtr<GraphicsPipelineState>&) */
+		static SPtr<GpuParams> create(const SPtr<ComputePipelineState>& pipelineState);
+
+		/** 
+		 * Creates a new set of GPU parameters using an object describing the parameters for a pipeline.
+		 * 
+		 * @param[in]	paramInfo	Description of GPU parameters for a specific GPU pipeline state.
 		 */
 		static SPtr<GpuParams> create(const SPtr<GpuPipelineParamInfo>& paramInfo);
 

@@ -163,8 +163,9 @@ namespace BansheeEngine
 		SPtr<ComputePipelineStateCore> createComputePipelineState(const SPtr<GpuProgramCore>& program,
 			GpuDeviceFlags deviceMask = GDF_DEFAULT) const;
 
-		/**	Creates and initializes a new GpuPipelineParamInfoCore. */
-		SPtr<GpuPipelineParamInfoCore> createPipelineParamInfo(const GPU_PIPELINE_PARAMS_DESC& desc) const;
+		/** @copydoc GpuPipelineParamInfoCore::create */
+		SPtr<GpuPipelineParamInfoCore> createPipelineParamInfo(const GPU_PIPELINE_PARAMS_DESC& desc,
+															   GpuDeviceFlags deviceMask = GDF_DEFAULT) const;
 
 		/** Creates an uninitialized sampler state. Requires manual initialization after creation. */
 		SPtr<SamplerStateCore> _createSamplerState(const SAMPLER_STATE_DESC& desc, 
@@ -188,7 +189,8 @@ namespace BansheeEngine
 																		   GpuDeviceFlags deviceMask = GDF_DEFAULT) const;
 
 		/**	Creates an uninitialized GpuPipelineParamInfoCore. Requires manual initialization after creation. */
-		virtual SPtr<GpuPipelineParamInfoCore> _createPipelineParamInfo(const GPU_PIPELINE_PARAMS_DESC& desc) const;
+		virtual SPtr<GpuPipelineParamInfoCore> _createPipelineParamInfo(const GPU_PIPELINE_PARAMS_DESC& desc,
+																		GpuDeviceFlags deviceMask = GDF_DEFAULT) const;
 
 		/** Gets a sampler state initialized with default options. */
 		const SPtr<SamplerStateCore>& getDefaultSamplerState() const;

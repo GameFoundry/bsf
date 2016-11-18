@@ -28,7 +28,8 @@ namespace BansheeEngine
 			GpuDeviceFlags deviceMask = GDF_DEFAULT) const override;
 
 		/** @copydoc RenderStateCoreManager::_createPipelineParamInfo */
-		SPtr<GpuPipelineParamInfoCore> _createPipelineParamInfo(const GPU_PIPELINE_PARAMS_DESC& desc) const override;
+		SPtr<GpuPipelineParamInfoCore> _createPipelineParamInfo(const GPU_PIPELINE_PARAMS_DESC& desc,
+			 GpuDeviceFlags deviceMask = GDF_DEFAULT) const override;
 	};
 
 	/** @} */

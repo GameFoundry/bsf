@@ -35,7 +35,7 @@ namespace BansheeEngine
 		GpuProgramCore::initialize();
 	}
 
-	VkShaderModule VulkanGpuProgramCore::getHandle() const
+	VkShaderModule VulkanGpuProgramCore::getHandle(UINT32 deviceIdx) const
 	{
 		// TODO
 		return VK_NULL_HANDLE;

@@ -232,9 +232,9 @@ namespace BansheeEngine
 	}
 
 	SPtr<GpuPipelineParamInfoCore> RenderStateCoreManager::createPipelineParamInfo(
-		const GPU_PIPELINE_PARAMS_DESC& desc) const
+		const GPU_PIPELINE_PARAMS_DESC& desc, GpuDeviceFlags deviceMask) const
 	{
-		SPtr<GpuPipelineParamInfoCore> paramInfo = _createPipelineParamInfo(desc);
+		SPtr<GpuPipelineParamInfoCore> paramInfo = _createPipelineParamInfo(desc, deviceMask);
 		paramInfo->initialize();
 
 		return paramInfo;
@@ -330,11 +330,11 @@ namespace BansheeEngine
 	}
 
 	SPtr<GpuPipelineParamInfoCore> RenderStateCoreManager::_createPipelineParamInfo(
-		const GPU_PIPELINE_PARAMS_DESC& desc) const
+		const GPU_PIPELINE_PARAMS_DESC& desc, GpuDeviceFlags deviceMask) const
 	{
 		SPtr<GpuPipelineParamInfoCore> paramInfo =
 			bs_shared_ptr<GpuPipelineParamInfoCore>(new (bs_alloc<GpuPipelineParamInfoCore>())
-													GpuPipelineParamInfoCore(desc));
+													GpuPipelineParamInfoCore(desc, deviceMask));
 
 		paramInfo->_setThisPtr(paramInfo);
 

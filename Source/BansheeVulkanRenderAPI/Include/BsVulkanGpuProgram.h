@@ -12,13 +12,17 @@ namespace BansheeEngine
 	 */
 
 	/**	Abstraction of a Vulkan shader object. */
-	class VulkanGpuProgramCore : public GpuProgramCore
+	class 
+	VulkanGpuProgramCore : public GpuProgramCore
 	{
 	public:
 		virtual ~VulkanGpuProgramCore();
 
-		/** Returns a handle to the Vulkan shader module. */
-		VkShaderModule getHandle() const;
+		/** 
+		 * Returns a handle to the Vulkan shader module, on the specified device. If program device mask doesn't 
+		 * include the provided device, null is returned.  
+		 */
+		VkShaderModule getHandle(UINT32 deviceIdx) const;
 
 	protected:
 		friend class VulkanGLSLProgramFactory;

@@ -43,17 +43,22 @@ namespace BansheeEngine
 		/** 
 		 * Create a new Vulkan graphics pipeline. 
 		 * 
-		 * @param[in]	device				Device to create the pipeline for.
+		 * @param[in]	deviceIdx			Index of the device to create the pipeline for.
 		 * @param[in]	framebuffer			Framebuffer object that defines the surfaces this pipeline will render to.
 		 * @param[in]	readOnlyDepth		True if the pipeline is only allowed to read the depth buffer, without writes.
 		 * @param[in]	drawOp				Type of geometry that will be drawn using the pipeline.
-		 * @param[in]	pipelineLayout		Layout describing the resources used by the pipeline.
 		 * @param[in]	vertexInputState	State describing inputs to the vertex program.
 		 * @return							Vulkan graphics pipeline object.
 		 */
-		VkPipeline createPipeline(VkDevice device, VulkanFramebuffer* framebuffer, bool readOnlyDepth,
-								  DrawOperationType drawOp, VkPipelineLayout pipelineLayout,
-								  VkPipelineVertexInputStateCreateInfo* vertexInputState);
+		VkPipeline createPipeline(UINT32 deviceIdx, VulkanFramebuffer* framebuffer, bool readOnlyDepth,
+								  DrawOperationType drawOp, VkPipelineVertexInputStateCreateInfo* vertexInputState);
+
+		/** Contains pipeline data specific to a single Vulkan device. */
+		struct PerDeviceData
+		{
+			VulkanDevice* device;
+			VkPipelineLayout pipelineLayout;
+		};
 
 		VkPipelineShaderStageCreateInfo mShaderStageInfos[5];
 		VkPipelineInputAssemblyStateCreateInfo mInputAssemblyInfo;
@@ -67,6 +72,9 @@ namespace BansheeEngine
 		VkPipelineDynamicStateCreateInfo mDynamicStateInfo;
 		VkDynamicState mDynamicStates[3];
 		VkGraphicsPipelineCreateInfo mPipelineInfo;
+
+		GpuDeviceFlags mDeviceMask;
+		PerDeviceData mPerDeviceData[BS_MAX_DEVICES];
 	};
 
 	/**	Vulkan implementation of a compute pipeline state. */
@@ -82,6 +90,16 @@ namespace BansheeEngine
 
 		/**	@copydoc ComputePipelineStateCore::initialize */
 		void initialize() override;
+
+		/** Contains pipeline data specific to a single Vulkan device. */
+		struct PerDeviceData
+		{
+			VulkanDevice* device;
+			VulkanPipeline* pipeline;
+		};
+
+		GpuDeviceFlags mDeviceMask;
+		PerDeviceData mPerDeviceData[BS_MAX_DEVICES];
 	};
 
 	/** @} */

@@ -36,21 +36,57 @@ SPtr<GpuProgram> myProgram = GpuProgram::create(desc);
  
 Once the GPU program has been created it is not guaranteed to be usable. The compilation of the provided source code could have failed, which you can check by calling @ref BansheeEngine::GpuProgram::isCompiled() "GpuProgram::isCompiled", and retrieve the error message by calling @ref BansheeEngine::GpuProgram::getCompileErrorMessage() "GpuProgram::getCompileErrorMessage". Be aware that both of these methods are only valid after the core thread has initialized the object. You can ensure this by calling @ref BansheeEngine::CoreObject::blockUntilCoreInitialized "GpuProgram::blockUntilCoreInitialized" but be aware this will block the calling thread which can result in a significant performance impact.
 
-# GPU program parameters {#gpuPrograms_b}
-Once the GPU program has been compiled you can access information about its parameters (constant variables, or uniforms in DirectX/OpenGL lingo). Use @ref BansheeEngine::GpuProgram::getParamDesc "GpuProgram::getParamDesc" to retrieve a structure containing all GPU parameters, including primitive parameters, textures, samplers, buffers and parameter buffers (constant/uniform buffers in DirectX/OpenGL lingo). 
+# Using GPU programs for rendering {#gpuPrograms_b}
+To use a GPU program in a draw or dispatch call, you must first create a GPU pipeline object using the relevant GPU programs.
 
-You generally don't need to use this information directly, but you provide it when creating a @ref BansheeEngine::GpuParams "GpuParams" object.
+There are two types of pipeline objects: @ref BansheeEngine::GraphicsPipelineState "GraphicsPipelineState" and @ref BansheeEngine::ComputePipelineState "ComputePipelineState".
+
+Example to create a graphics pipeline:
+~~~~~~~~~~~~~{.cpp}
+PIPELINE_STATE_CORE_DESC desc;
+desc.vertexProgram = ...
+desc.fragmentProgram = ...;
+desc.geometryProgram = ...;
+desc.hullProgram = ...;
+desc.domainProgram = ...;
+
+SPtr<GraphicsPipelineStateCore> graphicsPipeline = GraphicsPipelineStateCore::create(desc);
+~~~~~~~~~~~~~
+
+Example to create a compute pipeline:
+~~~~~~~~~~~~~{.cpp}
+SPtr<GpuProgramCore> computeProgram = ...;
+SPtr<ComputePipelineStateCore> computePipeline = ComputePipelineStateCore::create(computeProgram);
+~~~~~~~~~~~~~
+
+Once created the pipeline can be bound for rendering by calling @ref BansheeEngine::RenderAPICore::setGraphicsPipeline "RenderAPICore::setGraphicsPipeline" or @ref BansheeEngine::RenderAPI::setComputePipeline "RenderAPI::setComputePipeline".
+
+~~~~~~~~~~~~~{.cpp}
+// Bind pipeline for use (continued from above)
+
+RenderAPICore& rapi = RenderAPICore::instance();
+rapi.setGraphicsPipeline(graphicsPipeline);
+// Or: rapi.setComputePipeline(computePipeline);
+~~~~~~~~~~~~~
+
+Once pipeline state is bound, any subsequent draw/dispatch calls will then use the GPU programs attached to that state. 
+
+Much more detailed information about pipelines and rendering is provided in the [render API manual](@ref renderAPI).
+
+# GPU program parameters {#gpuPrograms_c}
+Although you can use a GPU program without any parameters, most will require some additional data in order to perform their operations. Program parameters represent data that is static throughout a single GPU program execution (e.g. a draw call). For example, when drawing a 3D object you will usually want to provide a projection matrix that transforms the object from 3D to 2D, according to the camera the user is viewing the object through.
+
+You can access information about GPU program parameters by calling @ref BansheeEngine::GpuProgram::getParamDesc "GpuProgram::getParamDesc". This will return a structure containing information about all GPU parameters used by that GPU program. This includes primitives (int, float, etc.), textures, samplers, buffers and parameter buffers (constant/uniform buffers in DirectX/OpenGL lingo). 
+
+You generally don't need to use this information directly. It is instead automatically parsed when you create a GPU pipeline. Once you have a pipeline you can use it to create a *GpuParams* object that allows you to assign values to all parameters of a specific pipeline.
 
 ## GpuParams {#gpuPrograms_b_a}
-@ref BansheeEngine::GpuParams "GpuParams" is a container for all parameters required by a set of GPU programs (one per stage). It allows you to set primitive/texture/sampler/buffer parameters used by the GPU programs, which it stores in an internal buffer. You can then bind it to the pipeline and it will be used by the bound GPU programs.
+@ref BansheeEngine::GpuParams "GpuParams" is a container for all parameters required by a single GPU pipeline (graphics or compute). It allows you to set primitive/texture/sampler/buffer parameters used by the GPU programs, which it stores in an internal buffer. You can then bind it before executing at draw/dispatch call, and the assigned parameters will be used by GPU programs in the current pipeline.
 
 For example to assign a texture and a 2D vector as input to the program we created earlier:
 ~~~~~~~~~~~~~{.cpp}
-GPU_PARAMS_DESC desc;
-desc.fragmentParams = myProgram->getParamDesc();
-... usually you want to set other stages as well ...
-
-SPtr<GpuParams> params = GpuParams::create(desc);
+SPtr<GraphicsPipelineState> graphicsPipeline = ...;
+SPtr<GpuParams> params = GpuParams::create(graphicsPipeline);
 
 // Retrieve GPU param handles we can then read/write to
 GpuParamVec2 myVectorParam;
@@ -66,17 +102,6 @@ myTextureParam.set(myTexture); // Assuming we created "myTexture" earlier.
 As you can see we must first retrieve a handle to the parameter, and then we can use that handle for reading/writing to the parameter. You can store those handles for easier access to the parameters, as looking them up by using the parameter name can be relatively slow.
 
 See the [render API manual](@ref renderAPI) for more information about how to set and bind GPU program parameters.
-
-# Using GPU programs for rendering {#gpuPrograms_c}
-You can bind a GPU program to the pipeline by assigning it to a @ref BansheeEngine::GraphicsPipelineState "GraphicsPipelineState" and calling @ref BansheeEngine::RenderAPI::setGraphicsPipeline "RenderAPI::setGraphicsPipeline". 
-
-Or alternatively if using a compute program you can bind it by assigning it to a @ref BansheeEngine::ComputePipelineState "ComputePipelineState" and calling @ref BansheeEngine::RenderAPI::setComputePipeline "RenderAPI::setComputePipeline". 
-
-Once pipeline state is bound, any subsequent draw/dispatch calls will then use the GPU programs attached to that state. 
-
-You can bind parameters for use in the GPU program by calling @ref BansheeEngine::RenderAPICore::setGpuParams "RenderAPICore::setGpuParams" which accepts the @ref BansheeEngine::GpuParamsCore "GpuParamsCore" object we described above.
-
-Much more detailed information about rendering is provided in the [render API manual](@ref renderAPI).
 
 # Core thread GPU programs {#gpuPrograms_e}
 So far we have only talked about the simulation thread @ref BansheeEngine::GpuProgram "GpuProgram" but have ignored the core thread @ref BansheeEngine::GpuProgramCore "GpuProgramCore". The functionality between the two is mostly the same, with the major difference being that operations performed on the core thread version are immediate. So calls to @ref BansheeEngine::GpuProgramCore::isCompiled() "GpuProgramCore::isCompiled" and @ref BansheeEngine::GpuProgramCore::getCompileErrorMessage() "GpuProgramCore::getCompileErrorMessage" don't require any waiting.

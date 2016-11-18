@@ -98,13 +98,9 @@ The pipeline state also requires you to bind at least one GPU program (programma
 Most GPU programs also accept a number of parameters, whether textures, buffers, sampler states or primitive values like floats or integers. These parameters are accessed through @ref BansheeEngine::GpuParamsCore "GpuParamsCore" object. You can use this object to assign individual parameters and then bind the object to the render API using @ref BansheeEngine::RenderAPICore::setGpuParams "RenderAPICore::setGpuParams". See below for an example.
 
 ~~~~~~~~~~~~~{.cpp}
-... assuming vertex/fragment programs are created ...
-
-GPU_PARAMS_DESC desc;
-desc.vertexParams = vertProgram->getParamDesc();
-desc.fragmentParams = fragProgram->getParamDesc();
-
-SPtr<GpuParamsCore> params = GpuParamsCore::create(desc);
+... assuming graphics pipeline state and relevant GPU programs are created ...
+SPtr<GraphicsPipelineStateCore> state = ...;
+SPtr<GpuParamsCore> params = GpuParamsCore::create(state);
 
 // Retrieve GPU param handles we can then read/write to
 GpuParamVec2Core myVectorParam;
@@ -247,9 +243,11 @@ After creation use @ref BansheeEngine::RenderAPICore::setComputePipeline "Render
 Since compute pipeline doesn't support render targets, you will want to use load-store textures for output. An example of a simple compute pipeline:
 ~~~~~~~~~~~~~{.cpp}
 SPtr<GpuProgramCore> computeProgram = ...;
-SPtr<GpuParamsCore> computeGpuParams = ...;
 
 SPtr<ComputePipelineStateCore> state = ComputePipelineStateCore::create(computeProgram);
+SPtr<GpuParamsCore> computeGpuParams = GpuParamsCore::create(state);
+
+... optionally set some parameters ...
 
 RenderAPICore& rapi = RenderAPICore::instance();
 rapi.setComputePipeline(state);

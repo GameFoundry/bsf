@@ -24,17 +24,6 @@ namespace BansheeEngine
 		output.domainProgram = input.domainProgram != nullptr ? input.domainProgram->getCore() : nullptr;
 	}
 
-	SPtr<GpuParamDesc> getParamDesc(const SPtr<GpuProgram>& program)
-	{
-		program->blockUntilCoreInitialized();
-		return program->getParamDesc();
-	}
-
-	SPtr<GpuParamDesc> getParamDesc(const SPtr<GpuProgramCore>& program)
-	{
-		return program->getParamDesc();
-	}
-
 	template<bool Core>
 	TGraphicsPipelineState<Core>::TGraphicsPipelineState()
 	{ }
@@ -42,32 +31,32 @@ namespace BansheeEngine
 	template<bool Core>
 	TGraphicsPipelineState<Core>::TGraphicsPipelineState(const StateDescType& data)
 		:mData(data)
-	{
-		GPU_PIPELINE_PARAMS_DESC paramsDesc;
-		if (data.vertexProgram != nullptr)
-			paramsDesc.vertexParams = getParamDesc(data.vertexProgram);
-
-		if (data.fragmentProgram != nullptr)
-			paramsDesc.fragmentParams = getParamDesc(data.fragmentProgram);
-
-		if (data.geometryProgram != nullptr)
-			paramsDesc.geometryParams = getParamDesc(data.geometryProgram);
-
-		if (data.hullProgram != nullptr)
-			paramsDesc.hullParams = getParamDesc(data.hullProgram);
-
-		if (data.domainProgram != nullptr)
-			paramsDesc.domainParams = getParamDesc(data.domainProgram);
-
-		mParamInfo = GpuPipelineParamInfoType::create(paramsDesc);
-	}
+	{ }
 
 	template class TGraphicsPipelineState < false > ;
 	template class TGraphicsPipelineState < true >;
 
 	GraphicsPipelineStateCore::GraphicsPipelineStateCore(const PIPELINE_STATE_CORE_DESC& desc, GpuDeviceFlags deviceMask)
 		:TGraphicsPipelineState(desc)
-	{ }
+	{
+		GPU_PIPELINE_PARAMS_DESC paramsDesc;
+		if (desc.vertexProgram != nullptr)
+			paramsDesc.vertexParams = desc.vertexProgram->getParamDesc();
+
+		if (desc.fragmentProgram != nullptr)
+			paramsDesc.fragmentParams = desc.fragmentProgram->getParamDesc();
+
+		if (desc.geometryProgram != nullptr)
+			paramsDesc.geometryParams = desc.geometryProgram->getParamDesc();
+
+		if (desc.hullProgram != nullptr)
+			paramsDesc.hullParams = desc.hullProgram->getParamDesc();
+
+		if (desc.domainProgram != nullptr)
+			paramsDesc.domainParams = desc.domainProgram->getParamDesc();
+
+		mParamInfo = GpuPipelineParamInfoCore::create(paramsDesc, deviceMask);
+	}
 
 	SPtr<GraphicsPipelineStateCore> GraphicsPipelineStateCore::create(const PIPELINE_STATE_CORE_DESC& desc, GpuDeviceFlags deviceMask)
 	{
@@ -76,7 +65,40 @@ namespace BansheeEngine
 
 	GraphicsPipelineState::GraphicsPipelineState(const PIPELINE_STATE_DESC& desc)
 		:TGraphicsPipelineState(desc)
-	{ }
+	{
+		GPU_PIPELINE_PARAMS_DESC paramsDesc;
+		if (desc.vertexProgram != nullptr)
+		{
+			desc.vertexProgram->blockUntilCoreInitialized();
+			paramsDesc.vertexParams = desc.vertexProgram->getParamDesc();
+		}
+
+		if (desc.fragmentProgram != nullptr)
+		{
+			desc.fragmentProgram->blockUntilCoreInitialized();
+			paramsDesc.fragmentParams = desc.fragmentProgram->getParamDesc();
+		}
+
+		if (desc.geometryProgram != nullptr)
+		{
+			desc.geometryProgram->blockUntilCoreInitialized();
+			paramsDesc.geometryParams = desc.geometryProgram->getParamDesc();
+		}
+
+		if (desc.hullProgram != nullptr)
+		{
+			desc.hullProgram->blockUntilCoreInitialized();
+			paramsDesc.hullParams = desc.hullProgram->getParamDesc();
+		}
+		
+		if (desc.domainProgram != nullptr)
+		{
+			desc.domainProgram->blockUntilCoreInitialized();
+			paramsDesc.domainParams = desc.domainProgram->getParamDesc();
+		}
+
+		mParamInfo = GpuPipelineParamInfo::create(paramsDesc);
+	}
 
 	SPtr<GraphicsPipelineStateCore> GraphicsPipelineState::getCore() const
 	{
@@ -103,19 +125,19 @@ namespace BansheeEngine
 	template<bool Core>
 	TComputePipelineState<Core>::TComputePipelineState(const GpuProgramType& program)
 		:mProgram(program)
-	{
-		GPU_PIPELINE_PARAMS_DESC paramsDesc;
-		paramsDesc.computeParams = getParamDesc(program);
-
-		mParamInfo = GpuPipelineParamInfoType::create(paramsDesc);
-	}
+	{ }
 
 	template class TComputePipelineState < false >;
 	template class TComputePipelineState < true >;
 
 	ComputePipelineStateCore::ComputePipelineStateCore(const SPtr<GpuProgramCore>& program, GpuDeviceFlags deviceMask)
 		:TComputePipelineState(program)
-	{ }
+	{
+		GPU_PIPELINE_PARAMS_DESC paramsDesc;
+		paramsDesc.computeParams = program->getParamDesc();
+
+		mParamInfo = GpuPipelineParamInfoCore::create(paramsDesc, deviceMask);
+	}
 
 	SPtr<ComputePipelineStateCore> ComputePipelineStateCore::create(const SPtr<GpuProgramCore>& program, 
 		GpuDeviceFlags deviceMask)
@@ -125,7 +147,13 @@ namespace BansheeEngine
 
 	ComputePipelineState::ComputePipelineState(const SPtr<GpuProgram>& program)
 		:TComputePipelineState(program)
-	{ }
+	{
+		GPU_PIPELINE_PARAMS_DESC paramsDesc;
+		program->blockUntilCoreInitialized();
+		paramsDesc.computeParams = program->getParamDesc();
+
+		mParamInfo = GpuPipelineParamInfo::create(paramsDesc);
+	}
 
 	SPtr<ComputePipelineStateCore> ComputePipelineState::getCore() const
 	{

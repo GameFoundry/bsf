@@ -7,7 +7,7 @@
 namespace BansheeEngine
 {
 	GpuPipelineParamInfoBase::GpuPipelineParamInfoBase(const GPU_PIPELINE_PARAMS_DESC& desc)
-		:mTotalNumSets(0)
+		:mTotalNumSets(0), mTotalNumElements(0)
 	{
 		mParamDescs[GPT_FRAGMENT_PROGRAM] = desc.fragmentParams;
 		mParamDescs[GPT_VERTEX_PROGRAM] = desc.vertexParams;
@@ -121,6 +121,8 @@ namespace BansheeEngine
 		{
 			for (UINT32 j = 0; j < mNumSets[i]; j++)
 				mNumElements[i] += slotsPerSet[i][j];
+
+			mTotalNumElements += mNumElements[i];
 		}
 
 		UINT32 setOffsetsSize = sizeof(UINT32) * totalNumSets;
@@ -182,13 +184,14 @@ namespace BansheeEngine
 		return globalSlot;
 	}
 
-	GpuPipelineParamInfoCore::GpuPipelineParamInfoCore(const GPU_PIPELINE_PARAMS_DESC& desc)
+	GpuPipelineParamInfoCore::GpuPipelineParamInfoCore(const GPU_PIPELINE_PARAMS_DESC& desc, GpuDeviceFlags deviceMask)
 		:GpuPipelineParamInfoBase(desc)
 	{ }
 
-	SPtr<GpuPipelineParamInfoCore> GpuPipelineParamInfoCore::create(const GPU_PIPELINE_PARAMS_DESC& desc)
+	SPtr<GpuPipelineParamInfoCore> GpuPipelineParamInfoCore::create(const GPU_PIPELINE_PARAMS_DESC& desc, 
+		GpuDeviceFlags deviceMask)
 	{
-		return RenderStateCoreManager::instance().createPipelineParamInfo(desc);
+		return RenderStateCoreManager::instance().createPipelineParamInfo(desc, deviceMask);
 	}
 
 	GpuPipelineParamInfo::GpuPipelineParamInfo(const GPU_PIPELINE_PARAMS_DESC& desc)

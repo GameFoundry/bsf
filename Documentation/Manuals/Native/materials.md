@@ -187,7 +187,7 @@ From the simulation thread you cannot use material to render manually (you must 
 
 Core thread gives you more flexibility and you can use @ref BansheeEngine::RendererUtility::setPass "RendererUtility::setPass" to bind a specific pass from a material to the pipeline, and @ref BansheeEngine::RendererUtility::setPassParams "RendererUtility::setPassParams" to bind material parameters for a specific pass. 
 
-In order to retrieve a set of per-program @ref BansheeEngine::GpuParams "GpuParams" that can be used for binding directly to the pipeline, call @ref BansheeEngine::Material::createParamsSet "Material::createParamsSet", followed by @ref BansheeEngine::Material::updateParamsSet "Material::updateParamsSet". You are required to call @ref BansheeEngine::Material::updateParamsSet "Material::updateParamsSet" whenever material parameters change, in order to transfer the new data to @ref BansheeEngine::GpuParams "GpuParams".
+In order to retrieve a set of per-pass @ref BansheeEngine::GpuParams "GpuParams" that can be used for binding directly to the pipeline, call @ref BansheeEngine::Material::createParamsSet "Material::createParamsSet", followed by @ref BansheeEngine::Material::updateParamsSet "Material::updateParamsSet". You are required to call @ref BansheeEngine::Material::updateParamsSet "Material::updateParamsSet" whenever material parameters change, in order to transfer the new data to @ref BansheeEngine::GpuParams "GpuParams".
 
 After pass and pass parameters are bound you can follow them with draw calls as described in the [render API](@ref renderAPI) manual to render objects manually. 
 

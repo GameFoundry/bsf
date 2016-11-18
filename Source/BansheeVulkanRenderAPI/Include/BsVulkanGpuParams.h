@@ -57,7 +57,6 @@ namespace BansheeEngine
 		/** All GPU param data related to a single descriptor set. */
 		struct PerSetData
 		{
-			VulkanDescriptorLayout* layout;
 			VulkanDescriptorSet* latestSet;
 			Vector<VulkanDescriptorSet*> sets;
 
@@ -70,13 +69,14 @@ namespace BansheeEngine
 		struct PerDeviceData
 		{
 			PerSetData* perSetData;
-			UINT32 numSets;
-			VkPipelineLayout pipelineLayout;
 		};
 
 		friend class VulkanHardwareBufferCoreManager;
 
 		VulkanGpuParams(const SPtr<GpuPipelineParamInfoCore>& paramInfo, GpuDeviceFlags deviceMask);
+
+		/** @copydoc GpuParamsCore::initialize */
+		void initialize() override;
 
 		PerDeviceData mPerDeviceData[BS_MAX_DEVICES];
 		GpuDeviceFlags mDeviceMask;

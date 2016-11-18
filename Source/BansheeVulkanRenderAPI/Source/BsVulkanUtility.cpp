@@ -438,10 +438,16 @@ namespace BansheeEngine
 
 	void VulkanUtility::getDevices(const VulkanRenderAPI& rapi, GpuDeviceFlags flags, VulkanDevice*(&devices)[BS_MAX_DEVICES])
 	{
-		UINT32 numDevices = std::min(BS_MAX_DEVICES, rapi._getNumDevices());
+		UINT32 numDevices = rapi._getNumDevices();
 
-		for (UINT32 i = 0; i < numDevices; i++)
+		for (UINT32 i = 0; i < BS_MAX_DEVICES; i++)
 		{
+			if(i >= numDevices)
+			{
+				devices[i] = nullptr;
+				continue;
+			}
+
 			VulkanDevice* device = rapi._getDevice(i).get();
 
 			if (isDeviceIdxSet(rapi, i, flags))

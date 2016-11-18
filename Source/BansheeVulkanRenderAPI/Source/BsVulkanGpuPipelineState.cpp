@@ -5,6 +5,8 @@
 #include "BsVulkanGpuProgram.h"
 #include "BsVulkanFramebuffer.h"
 #include "BsVulkanUtility.h"
+#include "BsVulkanRenderAPI.h"
+#include "BsVulkanGpuPipelineParamInfo.h"
 #include "BsRasterizerState.h"
 #include "BsDepthStencilState.h"
 #include "BsBlendState.h"
@@ -21,8 +23,9 @@ namespace BansheeEngine
 		vkDestroyPipeline(mOwner->getDevice().getLogical(), mPipeline, gVulkanAllocator);
 	}
 
-	VulkanGraphicsPipelineStateCore::VulkanGraphicsPipelineStateCore(const PIPELINE_STATE_CORE_DESC& desc, GpuDeviceFlags deviceMask)
-		:GraphicsPipelineStateCore(desc, deviceMask)
+	VulkanGraphicsPipelineStateCore::VulkanGraphicsPipelineStateCore(const PIPELINE_STATE_CORE_DESC& desc,
+																	 GpuDeviceFlags deviceMask)
+		:GraphicsPipelineStateCore(desc, deviceMask), mDeviceMask(deviceMask)
 	{
 		
 	}
@@ -30,6 +33,8 @@ namespace BansheeEngine
 	VulkanGraphicsPipelineStateCore::~VulkanGraphicsPipelineStateCore()
 	{
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_PipelineState);
+
+		// TODO - Destroy pipeline
 	}
 
 	void VulkanGraphicsPipelineStateCore::initialize()
@@ -56,7 +61,7 @@ namespace BansheeEngine
 			stageCI.pNext = nullptr;
 			stageCI.flags = 0;
 			stageCI.stage = stages[i].first;
-			stageCI.module = program->getHandle();
+			stageCI.module = VK_NULL_HANDLE;
 			stageCI.pName = program->getProperties().getEntryPoint().c_str();
 			stageCI.pSpecializationInfo = nullptr;
 
@@ -205,13 +210,42 @@ namespace BansheeEngine
 		mPipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 		mPipelineInfo.basePipelineIndex = -1;
 
+		VulkanRenderAPI& rapi = static_cast<VulkanRenderAPI&>(RenderAPICore::instance());
+
+		VulkanDevice* devices[BS_MAX_DEVICES];
+		VulkanUtility::getDevices(rapi, mDeviceMask, devices);
+
+		for (UINT32 i = 0; i < BS_MAX_DEVICES; i++)
+		{
+			mPerDeviceData[i].device = devices[i];
+
+			if (devices[i] != nullptr)
+			{
+				VulkanDescriptorManager& descManager = mPerDeviceData[i].device->getDescriptorManager();
+				VulkanGpuPipelineParamInfo& vkParamInfo = static_cast<VulkanGpuPipelineParamInfo&>(*mParamInfo);
+
+				UINT32 numLayouts = vkParamInfo.getNumSets();
+				VulkanDescriptorLayout** layouts = (VulkanDescriptorLayout**)bs_stack_alloc(sizeof(VulkanDescriptorLayout*) * numLayouts);
+
+				for (UINT32 j = 0; j < numLayouts; j++)
+					layouts[j] = vkParamInfo.getLayout(i, j);
+
+				mPerDeviceData[i].pipelineLayout = descManager.getPipelineLayout(layouts, numLayouts);
+
+				bs_stack_free(layouts);
+			}
+			else
+			{
+				mPerDeviceData[i].pipelineLayout = VK_NULL_HANDLE;
+			}
+		}
+
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_PipelineState);
 		GraphicsPipelineStateCore::initialize();
 	}
 
-	VkPipeline VulkanGraphicsPipelineStateCore::createPipeline(VkDevice device, VulkanFramebuffer* framebuffer,
+	VkPipeline VulkanGraphicsPipelineStateCore::createPipeline(UINT32 deviceIdx, VulkanFramebuffer* framebuffer,
 														  bool readOnlyDepth, DrawOperationType drawOp,
-														  VkPipelineLayout pipelineLayout,
 														  VkPipelineVertexInputStateCreateInfo* vertexInputState)
 	{
 		mInputAssemblyInfo.topology = VulkanUtility::getDrawOp(drawOp);
@@ -246,7 +280,7 @@ namespace BansheeEngine
 		}
 
 		mPipelineInfo.renderPass = framebuffer->getRenderPass();
-		mPipelineInfo.layout = pipelineLayout;
+		mPipelineInfo.layout = mPerDeviceData[deviceIdx].pipelineLayout;
 		mPipelineInfo.pVertexInputState = vertexInputState;
 
 		if (framebuffer->hasDepthAttachment())
@@ -258,6 +292,31 @@ namespace BansheeEngine
 			mPipelineInfo.pColorBlendState = &mColorBlendStateInfo;
 		else
 			mPipelineInfo.pColorBlendState = nullptr;
+
+		std::pair<VkShaderStageFlagBits, GpuProgramCore*> stages[] =
+		{
+			{ VK_SHADER_STAGE_VERTEX_BIT, mData.vertexProgram.get() },
+			{ VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT, mData.hullProgram.get() },
+			{ VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT, mData.domainProgram.get() },
+			{ VK_SHADER_STAGE_GEOMETRY_BIT, mData.geometryProgram.get() },
+			{ VK_SHADER_STAGE_FRAGMENT_BIT, mData.fragmentProgram.get() }
+		};
+
+		UINT32 stageOutputIdx = 0;
+		UINT32 numStages = sizeof(stages) / sizeof(stages[0]);
+		for (UINT32 i = 0; i < numStages; i++)
+		{
+			VulkanGpuProgramCore* program = static_cast<VulkanGpuProgramCore*>(stages[i].second);
+			if (program == nullptr)
+				continue;
+
+			VkPipelineShaderStageCreateInfo& stageCI = mShaderStageInfos[stageOutputIdx];
+			stageCI.module = program->getHandle(deviceIdx);
+
+			stageOutputIdx++;
+		}
+
+		VkDevice device = mPerDeviceData[deviceIdx].device->getLogical();
 
 		VkPipeline pipeline;
 		VkResult result = vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &mPipelineInfo, gVulkanAllocator, &pipeline);
@@ -277,16 +336,81 @@ namespace BansheeEngine
 
 	VulkanComputePipelineStateCore::VulkanComputePipelineStateCore(const SPtr<GpuProgramCore>& program, 
 		GpuDeviceFlags deviceMask)
-		:ComputePipelineStateCore(program, deviceMask)
+		:ComputePipelineStateCore(program, deviceMask), mDeviceMask(deviceMask)
 	{ }
 
 	VulkanComputePipelineStateCore::~VulkanComputePipelineStateCore()
 	{
+		for (UINT32 i = 0; i < BS_MAX_DEVICES; i++)
+		{
+			if (mPerDeviceData[i].device == nullptr)
+				continue;
 
+			mPerDeviceData[i].pipeline->destroy();
+		}
 	}
 
 	void VulkanComputePipelineStateCore::initialize()
 	{
-		// TODO
+		VulkanGpuProgramCore* vkProgram = static_cast<VulkanGpuProgramCore*>(mProgram.get());
+
+		VkPipelineShaderStageCreateInfo stageCI;
+		stageCI.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		stageCI.pNext = nullptr;
+		stageCI.flags = 0;
+		stageCI.stage = VK_SHADER_STAGE_COMPUTE_BIT;
+		stageCI.module = VK_NULL_HANDLE;
+		stageCI.pName = vkProgram->getProperties().getEntryPoint().c_str();
+		stageCI.pSpecializationInfo = nullptr;
+
+		VkComputePipelineCreateInfo pipelineCI;
+		pipelineCI.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
+		pipelineCI.pNext = nullptr;
+		pipelineCI.flags = 0;
+		pipelineCI.stage = stageCI;
+		pipelineCI.basePipelineHandle = VK_NULL_HANDLE;
+		pipelineCI.basePipelineIndex = -1;
+
+		VulkanRenderAPI& rapi = static_cast<VulkanRenderAPI&>(RenderAPICore::instance());
+
+		VulkanDevice* devices[BS_MAX_DEVICES];
+		VulkanUtility::getDevices(rapi, mDeviceMask, devices);
+
+		for (UINT32 i = 0; i < BS_MAX_DEVICES; i++)
+		{
+			mPerDeviceData[i].device = devices[i];
+
+			if (devices[i] != nullptr)
+			{
+				VulkanDescriptorManager& descManager = devices[i]->getDescriptorManager();
+				VulkanResourceManager& rescManager = devices[i]->getResourceManager();
+				VulkanGpuPipelineParamInfo& vkParamInfo = static_cast<VulkanGpuPipelineParamInfo&>(*mParamInfo);
+
+				UINT32 numLayouts = vkParamInfo.getNumSets();
+				VulkanDescriptorLayout** layouts = (VulkanDescriptorLayout**)bs_stack_alloc(sizeof(VulkanDescriptorLayout*) * numLayouts);
+
+				for (UINT32 j = 0; j < numLayouts; j++)
+					layouts[j] = vkParamInfo.getLayout(i, j);
+
+				stageCI.module = vkProgram->getHandle(i);
+				pipelineCI.layout = descManager.getPipelineLayout(layouts, numLayouts);
+
+				VkPipeline pipeline;
+				VkResult result = vkCreateComputePipelines(devices[i]->getLogical(), VK_NULL_HANDLE, 1, &pipelineCI,
+														   gVulkanAllocator, &pipeline);
+				assert(result != VK_SUCCESS);
+
+
+				mPerDeviceData[i].pipeline = rescManager.create<VulkanPipeline>(pipeline);
+				bs_stack_free(layouts);
+			}
+			else
+			{
+				mPerDeviceData[i].pipeline = nullptr;
+			}
+		}
+
+		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_PipelineState);
+		ComputePipelineStateCore::initialize();
 	}
 }

@@ -4,6 +4,7 @@
 #include "BsGpuParamDesc.h"
 #include "BsGpuParamBlockBuffer.h"
 #include "BsGpuPipelineParamInfo.h"
+#include "BsGpuPipelineState.h"
 #include "BsVector2.h"
 #include "BsTexture.h"
 #include "BsGpuBuffer.h"
@@ -625,6 +626,16 @@ namespace BansheeEngine
 		}
 	}
 
+	SPtr<GpuParamsCore> GpuParamsCore::create(const SPtr<GraphicsPipelineStateCore>& pipelineState, GpuDeviceFlags deviceMask)
+	{
+		return HardwareBufferCoreManager::instance().createGpuParams(pipelineState->getParamInfo(), deviceMask);
+	}
+
+	SPtr<GpuParamsCore> GpuParamsCore::create(const SPtr<ComputePipelineStateCore>& pipelineState, GpuDeviceFlags deviceMask)
+	{
+		return HardwareBufferCoreManager::instance().createGpuParams(pipelineState->getParamInfo(), deviceMask);
+	}
+
 	SPtr<GpuParamsCore> GpuParamsCore::create(const SPtr<GpuPipelineParamInfoCore>& paramInfo, GpuDeviceFlags deviceMask)
 	{
 		return HardwareBufferCoreManager::instance().createGpuParams(paramInfo, deviceMask);
@@ -663,6 +674,16 @@ namespace BansheeEngine
 	void GpuParams::_markResourcesDirty()
 	{
 		markListenerResourcesDirty();
+	}
+
+	SPtr<GpuParams> GpuParams::create(const SPtr<GraphicsPipelineState>& pipelineState)
+	{
+		return HardwareBufferManager::instance().createGpuParams(pipelineState->getParamInfo());
+	}
+
+	SPtr<GpuParams> GpuParams::create(const SPtr<ComputePipelineState>& pipelineState)
+	{
+		return HardwareBufferManager::instance().createGpuParams(pipelineState->getParamInfo());
 	}
 
 	SPtr<GpuParams> GpuParams::create(const SPtr<GpuPipelineParamInfo>& paramInfo)

@@ -40,11 +40,11 @@ namespace BansheeEngine
 	}
 
 	SPtr<GpuPipelineParamInfoCore> VulkanRenderStateCoreManager::_createPipelineParamInfo(
-		const GPU_PIPELINE_PARAMS_DESC& desc) const
+		const GPU_PIPELINE_PARAMS_DESC& desc, GpuDeviceFlags deviceMask) const
 	{
 		SPtr<VulkanGpuPipelineParamInfo> paramInfo =
 			bs_shared_ptr<VulkanGpuPipelineParamInfo>(new (bs_alloc<VulkanGpuPipelineParamInfo>())
-													  VulkanGpuPipelineParamInfo(desc));
+													  VulkanGpuPipelineParamInfo(desc, deviceMask));
 		paramInfo->_setThisPtr(paramInfo);
 
 		return paramInfo;

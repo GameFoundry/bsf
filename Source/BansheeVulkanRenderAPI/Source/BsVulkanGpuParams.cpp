@@ -11,7 +11,7 @@
 #include "BsVulkanDescriptorSet.h"
 #include "BsVulkanDescriptorLayout.h"
 #include "BsVulkanSamplerState.h"
-#include "BsVulkanGpuBuffer.h"
+#include "BsVulkanGpuPipelineParamInfo.h"
 #include "BsVulkanCommandBuffer.h"
 #include "BsGpuParamDesc.h"
 
@@ -20,125 +20,46 @@ namespace BansheeEngine
 	VulkanGpuParams::VulkanGpuParams(const SPtr<GpuPipelineParamInfoCore>& paramInfo, GpuDeviceFlags deviceMask)
 		: GpuParamsCore(paramInfo, deviceMask), mPerDeviceData(), mDeviceMask(deviceMask), mData(nullptr), mSetsDirty(nullptr)
 	{
-		// Generate all required bindings
-		UINT32 numBindings = 0;
-		UINT32 numSets = 0;
+		
+	}
 
-		UINT32 numElementTypes = (UINT32)ElementType::Count;
-		for (UINT32 i = 0; i < numElementTypes; i++)
+	VulkanGpuParams::~VulkanGpuParams()
+	{
 		{
-			numBindings += mNumElements[i];
-			numSets = std::max(numSets, mNumSets[i]);
-		}
+			Lock lock(mMutex);
 
-		UINT32 bindingsPerSetBytes = sizeof(UINT32) * numSets;
-		UINT32* bindingsPerSet = (UINT32*)bs_stack_alloc(bindingsPerSetBytes);
-
-		UINT32 bindingsSize = sizeof(VkDescriptorSetLayoutBinding) * numBindings;
-		VkDescriptorSetLayoutBinding* bindings = (VkDescriptorSetLayoutBinding*)bs_stack_alloc(bindingsSize);
-		memset(bindings, 0, bindingsSize);
-
-		UINT32 globalBindingIdx = 0;
-		for (UINT32 i = 0; i < numSets; i++)
-		{
-			bindingsPerSet[i] = 0;
-			for (UINT32 j = 0; j < numElementTypes; j++)
+			UINT32 numSets = mParamInfo->getNumSets();
+			for (UINT32 i = 0; i < BS_MAX_DEVICES; i++)
 			{
-				if (i >= mNumSets[j])
-					continue;
-
-				UINT32 start = mOffsets[j][i];
-
-				UINT32 end;
-				if (i < (mNumSets[j] - 1))
-					end = mOffsets[j][i + 1];
-				else
-					end = mNumElements[j];
-
-				UINT32 elementsInSet = end - start;
-				for (UINT32 k = 0; k < elementsInSet; k++)
+				for (UINT32 j = 0; j < numSets; j++)
 				{
-					VkDescriptorSetLayoutBinding& binding = bindings[globalBindingIdx + k];
-					binding.binding = bindingsPerSet[i] + k;
+					for (auto& entry : mPerDeviceData[i].perSetData[j].sets)
+						entry->destroy();
 				}
-
-				globalBindingIdx += elementsInSet;
-				bindingsPerSet[i] += elementsInSet;
 			}
 		}
 
-		UINT32* bindingOffsets = (UINT32*)bs_stack_alloc(sizeof(UINT32) * numSets);
-		if (numSets > 0)
-		{
-			bindingOffsets[0] = 0;
+		bs_free(mData); // Everything allocated under a single buffer to a single free is enough
+	}
 
-			for (UINT32 i = 1; i < numSets; i++)
-				bindingOffsets[i] = bindingsPerSet[i - 1];
-		}
-
-		VkShaderStageFlags stageFlagsLookup[6];
-		stageFlagsLookup[GPT_VERTEX_PROGRAM] = VK_SHADER_STAGE_VERTEX_BIT;
-		stageFlagsLookup[GPT_HULL_PROGRAM] = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
-		stageFlagsLookup[GPT_DOMAIN_PROGRAM] = VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
-		stageFlagsLookup[GPT_GEOMETRY_PROGRAM] = VK_SHADER_STAGE_GEOMETRY_BIT;
-		stageFlagsLookup[GPT_FRAGMENT_PROGRAM] = VK_SHADER_STAGE_FRAGMENT_BIT;
-		stageFlagsLookup[GPT_COMPUTE_PROGRAM] = VK_SHADER_STAGE_COMPUTE_BIT;
-
-		UINT32 numParamDescs = sizeof(mParamDescs) / sizeof(mParamDescs[0]);
-		for (UINT32 i = 0; i < numParamDescs; i++)
-		{
-			const SPtr<GpuParamDesc>& paramDesc = mParamDescs[i];
-			if (paramDesc == nullptr)
-				continue;
-
-			auto setUpBindings = [&](auto& params, VkDescriptorType descType)
-			{
-				for (auto& entry : params)
-				{
-					UINT32 bindingIdx = bindingOffsets[entry.second.set] + entry.second.slot;
-
-					VkDescriptorSetLayoutBinding& binding = bindings[bindingIdx];
-					binding.descriptorCount = 1;
-					binding.stageFlags |= stageFlagsLookup[i];
-					binding.descriptorType = descType;
-				}
-			};
-
-			// Note: Assuming all textures and samplers use the same set/slot combination, and that they're combined
-			setUpBindings(paramDesc->paramBlocks, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
-			setUpBindings(paramDesc->textures, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
-			setUpBindings(paramDesc->loadStoreTextures, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE);
-			setUpBindings(paramDesc->samplers, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
-
-			// Set up buffer bindings
-			for (auto& entry : paramDesc->buffers)
-			{
-				bool isLoadStore = entry.second.type != GPOT_BYTE_BUFFER &&
-					entry.second.type != GPOT_STRUCTURED_BUFFER;
-
-				UINT32 bindingIdx = bindingOffsets[entry.second.set] + entry.second.slot;
-
-				VkDescriptorSetLayoutBinding& binding = bindings[bindingIdx];
-				binding.descriptorCount = 1;
-				binding.stageFlags |= stageFlagsLookup[i];
-				binding.descriptorType = isLoadStore ? VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER : VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
-			}
-		}
+	void VulkanGpuParams::initialize()
+	{
+		VulkanGpuPipelineParamInfo& vkParamInfo = static_cast<VulkanGpuPipelineParamInfo&>(*mParamInfo);
 
 		VulkanRenderAPI& rapi = static_cast<VulkanRenderAPI&>(RenderAPICore::instance());
 		VulkanDevice* devices[BS_MAX_DEVICES];
 
-		// Allocate layouts per-device
+		VulkanUtility::getDevices(rapi, mDeviceMask, devices);
+
 		UINT32 numDevices = 0;
 		for (UINT32 i = 0; i < BS_MAX_DEVICES; i++)
 		{
-			if (VulkanUtility::isDeviceIdxSet(rapi, i, deviceMask))
-				devices[i] = rapi._getDevice(i).get();
-			else
-				devices[i] = nullptr;
-
-			numDevices++;
+			if (devices != nullptr)
+				numDevices++;
 		}
+
+		UINT32 numSets = vkParamInfo.getNumSets();
+		UINT32 numBindings = vkParamInfo.getNumElements();
 
 		// Note: I'm assuming a single WriteInfo per binding, but if arrays sizes larger than 1 are eventually supported
 		// I'll need to adjust the code.
@@ -155,27 +76,22 @@ namespace BansheeEngine
 		memset(mSetsDirty, 1, setsDirtyBytes);
 		dataIter += setsDirtyBytes;
 
-		for(UINT32 i = 0; i < BS_MAX_DEVICES; i++)
+		for (UINT32 i = 0; i < BS_MAX_DEVICES; i++)
 		{
-			if(devices[i] == nullptr)
+			if (devices[i] == nullptr)
 			{
-				mPerDeviceData[i].numSets = 0;
 				mPerDeviceData[i].perSetData = nullptr;
 
 				continue;
 			}
 
-			mPerDeviceData[i].numSets = numSets;
 			mPerDeviceData[i].perSetData = (PerSetData*)dataIter;
 			dataIter += sizeof(perSetBytes);
 
 			VulkanDescriptorManager& descManager = devices[i]->getDescriptorManager();
-			VulkanDescriptorLayout** layouts = (VulkanDescriptorLayout**)bs_stack_alloc(numSets * sizeof(VulkanDescriptorLayout*));
-
-			UINT32 bindingOffset = 0;
 			for (UINT32 j = 0; j < numSets; j++)
 			{
-				UINT32 numBindingsPerSet = bindingsPerSet[j];
+				UINT32 numBindingsPerSet = vkParamInfo.getNumBindings(j);
 
 				PerSetData& perSetData = mPerDeviceData[i].perSetData[j];
 				perSetData.writeSetInfos = (VkWriteDescriptorSet*)dataIter;
@@ -184,22 +100,20 @@ namespace BansheeEngine
 				perSetData.writeInfos = (WriteInfo*)dataIter;
 				dataIter += sizeof(WriteInfo) * numBindingsPerSet;
 
-				VkDescriptorSetLayoutBinding* perSetBindings = &bindings[bindingOffset];
-				perSetData.layout = descManager.getLayout(perSetBindings, numBindingsPerSet);
+				VulkanDescriptorLayout* layout = vkParamInfo.getLayout(i, j);
 				perSetData.numElements = numBindingsPerSet;
-				perSetData.latestSet = descManager.createSet(perSetData.layout);
+				perSetData.latestSet = descManager.createSet(layout);
 				perSetData.sets.push_back(perSetData.latestSet);
 
-				layouts[j] = perSetData.layout;
-
-				for(UINT32 k = 0; k < numBindingsPerSet; k++)
+				VkDescriptorSetLayoutBinding* perSetBindings = vkParamInfo.getBindings(j);
+				for (UINT32 k = 0; k < numBindingsPerSet; k++)
 				{
 					// Note: Instead of using one structure per binding, it's possible to update multiple at once
 					// by specifying larger descriptorCount, if they all share type and shader stages.
 					VkWriteDescriptorSet& writeSetInfo = perSetData.writeSetInfos[k];
 					writeSetInfo.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 					writeSetInfo.pNext = nullptr;
-					writeSetInfo.dstSet = VK_NULL_HANDLE; // TODO
+					writeSetInfo.dstSet = VK_NULL_HANDLE;
 					writeSetInfo.dstBinding = perSetBindings[k].binding;
 					writeSetInfo.dstArrayElement = 0;
 					writeSetInfo.descriptorCount = perSetBindings[k].descriptorCount;
@@ -209,7 +123,7 @@ namespace BansheeEngine
 						writeSetInfo.descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_IMAGE ||
 						writeSetInfo.descriptorType == VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
 
-					if(isImage)
+					if (isImage)
 					{
 						bool isLoadStore = writeSetInfo.descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
 
@@ -242,36 +156,10 @@ namespace BansheeEngine
 						writeSetInfo.pImageInfo = nullptr;
 					}
 				}
-
-				bindingOffset += numBindingsPerSet;
-			}
-
-			mPerDeviceData[i].pipelineLayout = descManager.getPipelineLayout(layouts, numSets);
-
-			bs_stack_free(layouts);
-		}
-
-		bs_stack_free(bindingOffsets);
-		bs_stack_free(bindings);
-		bs_stack_free(bindingsPerSet);
-	}
-
-	VulkanGpuParams::~VulkanGpuParams()
-	{
-		{
-			Lock lock(mMutex);
-
-			for (UINT32 i = 0; i < BS_MAX_DEVICES; i++)
-			{
-				for (UINT32 j = 0; j < mPerDeviceData[i].numSets; j++)
-				{
-					for (auto& entry : mPerDeviceData[i].perSetData[j].sets)
-						entry->destroy();
-				}
 			}
 		}
 
-		bs_free(mData); // Everything allocated under a single buffer to a single free is enough
+		GpuParamsCore::initialize();
 	}
 
 	void VulkanGpuParams::setParamBlockBuffer(UINT32 set, UINT32 slot, const SPtr<GpuParamBlockBufferCore>& paramBlockBuffer)
@@ -409,11 +297,18 @@ namespace BansheeEngine
 		if (perDeviceData.perSetData == nullptr)
 			return;
 
+		UINT32 numParamBlocks = mParamInfo->getNumElements(GpuPipelineParamInfo::ParamType::ParamBlock);
+		UINT32 numTextures = mParamInfo->getNumElements(GpuPipelineParamInfo::ParamType::Texture);
+		UINT32 numStorageTextures = mParamInfo->getNumElements(GpuPipelineParamInfo::ParamType::LoadStoreTexture);
+		UINT32 numBuffers = mParamInfo->getNumElements(GpuPipelineParamInfo::ParamType::Buffer);
+		UINT32 numSamplers = mParamInfo->getNumElements(GpuPipelineParamInfo::ParamType::SamplerState);
+		UINT32 numSets = mParamInfo->getNumSets();
+
 		// Registers resources with the command buffer
 		// Note: Makes the assumption that this object (and all of the resources it holds) are externally locked, and will
 		// not be modified on another thread while being bound.
 		VulkanCmdBuffer* internalCB = buffer.getInternal();
-		for (UINT32 i = 0; i < mNumElements[(UINT32)ElementType::ParamBlock]; i++)
+		for (UINT32 i = 0; i < numParamBlocks; i++)
 		{
 			if (mParamBlockBuffers[i] == nullptr)
 				continue;
@@ -424,7 +319,7 @@ namespace BansheeEngine
 			internalCB->registerResource(resource, VK_ACCESS_UNIFORM_READ_BIT, VulkanUseFlag::Read);
 		}
 
-		for (UINT32 i = 0; i < mNumElements[(UINT32)ElementType::Buffer]; i++)
+		for (UINT32 i = 0; i < numBuffers; i++)
 		{
 			if (mBuffers[i] == nullptr)
 				continue;
@@ -444,7 +339,7 @@ namespace BansheeEngine
 			internalCB->registerResource(resource, accessFlags, useFlags);
 		}
 
-		for (UINT32 i = 0; i < mNumElements[(UINT32)ElementType::SamplerState]; i++)
+		for (UINT32 i = 0; i < numSamplers; i++)
 		{
 			if (mSamplerStates[i] == nullptr)
 				continue;
@@ -458,7 +353,7 @@ namespace BansheeEngine
 			internalCB->registerResource(resource, VulkanUseFlag::Read);
 		}
 
-		for (UINT32 i = 0; i < mNumElements[(UINT32)ElementType::LoadStoreTexture]; i++)
+		for (UINT32 i = 0; i < numStorageTextures; i++)
 		{
 			if (mLoadStoreTextures[i] == nullptr)
 				continue;
@@ -483,7 +378,7 @@ namespace BansheeEngine
 			internalCB->registerResource(resource, accessFlags, VK_IMAGE_LAYOUT_GENERAL, range, useFlags);
 		}
 
-		for (UINT32 i = 0; i < mNumElements[(UINT32)ElementType::Texture]; i++)
+		for (UINT32 i = 0; i < numTextures; i++)
 		{
 			if (mTextures[i] == nullptr)
 				continue;
@@ -515,9 +410,10 @@ namespace BansheeEngine
 		VulkanRenderAPI& rapi = static_cast<VulkanRenderAPI&>(RenderAPICore::instance());
 		VulkanDevice& device = *rapi._getDevice(deviceIdx);
 		VulkanDescriptorManager& descManager = device.getDescriptorManager();
+		VulkanGpuPipelineParamInfo& vkParamInfo = static_cast<VulkanGpuPipelineParamInfo&>(*mParamInfo);
 
 		Lock(mMutex);
-		for (UINT32 i = 0; i < perDeviceData.numSets; i++)
+		for (UINT32 i = 0; i < numSets; i++)
 		{
 			PerSetData& perSetData = perDeviceData.perSetData[i];
 
@@ -540,7 +436,8 @@ namespace BansheeEngine
 				}
 
 				// Cannot find an empty set, allocate a new one
-				perSetData.latestSet = descManager.createSet(perSetData.layout);
+				VulkanDescriptorLayout* layout = vkParamInfo.getLayout(deviceIdx, i);
+				perSetData.latestSet = descManager.createSet(layout);
 				perSetData.sets.push_back(perSetData.latestSet);
 			}
 
@@ -570,8 +467,8 @@ namespace BansheeEngine
 			return;
 		}
 
-		VkDescriptorSet* sets = bs_stack_alloc<VkDescriptorSet>(perDeviceData.numSets);
-		for (UINT32 i = 0; i < perDeviceData.numSets; i++)
+		VkDescriptorSet* sets = bs_stack_alloc<VkDescriptorSet>(numSets);
+		for (UINT32 i = 0; i < numSets; i++)
 		{
 			VulkanDescriptorSet* set = perDeviceData.perSetData[i].latestSet;
 
@@ -580,7 +477,7 @@ namespace BansheeEngine
 		}
 
 		vkCmdBindDescriptorSets(vkCB, bindPoint, perDeviceData.pipelineLayout, 0, 
-			perDeviceData.numSets, sets, 0, nullptr);
+			numSets, sets, 0, nullptr);
 
 		bs_stack_free(sets);
 	}

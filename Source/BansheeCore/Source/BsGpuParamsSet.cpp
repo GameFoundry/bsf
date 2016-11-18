@@ -477,11 +477,11 @@ namespace BansheeEngine
 
 			GraphicsPipelineStateType gfxPipeline = curPass->getGraphicsPipelineState();
 			if(gfxPipeline != nullptr)
-				mPassParams[i] = GpuParamsType::create(gfxPipeline->getParamInfo());
+				mPassParams[i] = GpuParamsType::create(gfxPipeline);
 			else
 			{
 				ComputePipelineStateType computePipeline = curPass->getComputePipelineState();
-				mPassParams[i] = GpuParamsType::create(computePipeline->getParamInfo());
+				mPassParams[i] = GpuParamsType::create(computePipeline);
 			}
 		}
 
