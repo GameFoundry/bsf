@@ -65,58 +65,6 @@ Technique =
 
 Technique =
 {
-	Language = "HLSL9";
-	
-	Pass =
-	{
-		Target = 
-		{
-			Blend = true;
-			Color = { SRCA, SRCIA, ADD };
-			WriteMask = RGB;
-		};
-		
-		DepthRead = false;
-		DepthWrite = false;
-		
-		Vertex =
-		{
-			float invViewportWidth;
-			float invViewportHeight;
-			float4x4 worldTransform;
-
-			void main(
-			in float3 inPos : POSITION,
-			in float2 uv : TEXCOORD0,
-			out float4 oPosition : POSITION,
-			out float2 oUv : TEXCOORD0)
-			{
-				float4 tfrmdPos = mul(worldTransform, float4(inPos.xy, 0, 1));
-
-				float tfrmdX = -1.0f + ((tfrmdPos.x - 0.5f) * invViewportWidth);
-				float tfrmdY = 1.0f - ((tfrmdPos.y - 0.5f) * invViewportHeight);
-
-				oPosition = float4(tfrmdX, tfrmdY, 0, 1);
-				oUv = uv;
-			}		
-		};
-		
-		Fragment =
-		{
-			sampler2D mainTexture;
-			float4 tint;
-
-			float4 main(float2 uv : TEXCOORD0) : COLOR0
-			{
-				float4 color = float4(tint.rgb, tex2D(mainTexture, uv).r * tint.a);
-				return color;
-			}
-		};
-	};
-};
-
-Technique =
-{
 	Language = "GLSL";
 	
 	Pass =
@@ -133,13 +81,17 @@ Technique =
 		
 		Vertex =
 		{
-			uniform float invViewportWidth;
-			uniform float invViewportHeight;
-			uniform mat4 worldTransform;
+			layout (binding = 0) uniform VertUBO
+			{
+				float invViewportWidth;
+				float invViewportHeight;
+				mat4 worldTransform;
+			};
 
-			in vec3 bs_position;
-			in vec2 bs_texcoord0;
-			out vec2 texcoord0;
+			layout (location = 0) in vec3 bs_position;
+			layout (location = 1) in vec2 bs_texcoord0;
+			
+			layout (location = 0) out vec2 texcoord0;
 
 			out gl_PerVertex
 			{
@@ -160,11 +112,15 @@ Technique =
 		
 		Fragment =
 		{
-			uniform sampler2D mainTexture;
-			uniform vec4 tint;
-
-			in vec2 texcoord0;
-			out vec4 fragColor;
+			layout (binding = 1) uniform FragUBO
+			{
+				vec4 tint;
+			};		
+		
+			layout (binding = 2) uniform sampler2D mainTexture;
+			
+			layout (location = 0) in vec2 texcoord0;
+			layout (location = 0) out vec4 fragColor;
 
 			void main()
 			{

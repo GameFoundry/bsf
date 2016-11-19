@@ -7,10 +7,5 @@ Technique : inherits("SpriteImage") =
 
 Technique : inherits("SpriteImage") =
 {
-	Language = "HLSL9";
-};
-
-Technique : inherits("SpriteImage") =
-{
 	Language = "GLSL";
 };
