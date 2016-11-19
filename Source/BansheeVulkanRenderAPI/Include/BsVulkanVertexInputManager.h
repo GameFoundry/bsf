@@ -11,6 +11,25 @@ namespace BansheeEngine
 	 *  @{
 	 */
 
+	/** Contains data describing vertex inputs for a graphics pipeline. */
+	class VulkanVertexInput
+	{
+	public:
+		/** Returns an object contining the necessary information to initialize the vertex input on a pipeline. */
+		const VkPipelineVertexInputStateCreateInfo& getCreateInfo() const { return mCreateInfo; }
+
+		/** Returns an identifier which uniquely represents this vertex input configuration. */
+		UINT32 getId() const { return mId; }
+
+	private:
+		friend class VulkanVertexInputManager;
+
+		VulkanVertexInput(UINT32 id, const VkPipelineVertexInputStateCreateInfo& createInfo);
+
+		UINT32 mId;
+		VkPipelineVertexInputStateCreateInfo mCreateInfo;
+	};
+
 	/** 
 	 * Maps vertex buffer structure and vertex shader inputs in order to create vertex input description usable by Vulkan.  
 	 */
@@ -45,7 +64,7 @@ namespace BansheeEngine
 
 			VkVertexInputAttributeDescription* attributes;
 			VkVertexInputBindingDescription* bindings;
-			VkPipelineVertexInputStateCreateInfo vertexInputCI;
+			SPtr<VulkanVertexInput> vertexInput;
 			UINT32 lastUsedIdx;
 		};
 
@@ -60,8 +79,8 @@ namespace BansheeEngine
 		 * @param[in]	shaderDecl	Describes the vertex element inputs expected by a vertex shader.
 		 * @return					Vertex input state description, usable by Vulkan.
 		 */
-		const VkPipelineVertexInputStateCreateInfo& getVertexInfo(const SPtr<VertexDeclarationCore>& vbDecl, 
-			const SPtr<VertexDeclarationCore>& shaderDecl);
+		SPtr<VulkanVertexInput> getVertexInfo(const SPtr<VertexDeclarationCore>& vbDecl,
+											  const SPtr<VertexDeclarationCore>& shaderDecl);
 
 	private:
 		/**	Creates a vertex input using the specified parameters and stores it in the input layout map. */
@@ -76,8 +95,11 @@ namespace BansheeEngine
 
 		UnorderedMap<VertexDeclarationKey, VertexInputEntry*, HashFunc, EqualFunc> mVertexInputMap;
 
+		UINT32 mNextId;
 		bool mWarningShown;
 		UINT32 mLastUsedCounter;
+
+		Mutex mMutex;
     };
 
 	/** @} */

@@ -7,6 +7,10 @@
 
 namespace BansheeEngine
 {
+	VulkanVertexInput::VulkanVertexInput(UINT32 id, const VkPipelineVertexInputStateCreateInfo& createInfo)
+		:mId(id), mCreateInfo(createInfo)
+	{ }
+
 	size_t VulkanVertexInputManager::HashFunc::operator()(const VertexDeclarationKey& key) const
 	{
 		size_t hash = 0;
@@ -28,11 +32,18 @@ namespace BansheeEngine
 	}
 
 	VulkanVertexInputManager::VulkanVertexInputManager()
-		:mLastUsedCounter(0), mWarningShown(false)
-	{ }
+	{
+		Lock(mMutex);
+
+		mNextId = 1;
+		mWarningShown = false;
+		mLastUsedCounter = 0;
+	}
 
 	VulkanVertexInputManager::~VulkanVertexInputManager()
 	{
+		Lock(mMutex);
+
 		while (mVertexInputMap.begin() != mVertexInputMap.end())
 		{
 			auto firstElem = mVertexInputMap.begin();
@@ -42,9 +53,11 @@ namespace BansheeEngine
 		}
 	}
 
-	const VkPipelineVertexInputStateCreateInfo& VulkanVertexInputManager::getVertexInfo(
+	SPtr<VulkanVertexInput> VulkanVertexInputManager::getVertexInfo(
 		const SPtr<VertexDeclarationCore>& vbDecl, const SPtr<VertexDeclarationCore>& shaderDecl)
 	{
+		Lock(mMutex);
+
 		VertexDeclarationKey pair;
 		pair.bufferDeclId = vbDecl->getId();
 		pair.shaderDeclId = shaderDecl->getId();
@@ -61,7 +74,7 @@ namespace BansheeEngine
 		}
 
 		iterFind->second->lastUsedIdx = ++mLastUsedCounter;
-		return iterFind->second->vertexInputCI;
+		return iterFind->second->vertexInput;
 	}
 
 	void VulkanVertexInputManager::addNew(const SPtr<VertexDeclarationCore>& vbDecl, 
@@ -105,8 +118,6 @@ namespace BansheeEngine
 
 		newEntry->bindings = (VkVertexInputBindingDescription*)data;
 		data += bindingBytes;
-
-		newEntry->lastUsedIdx = ++mLastUsedCounter;
 
 		for (UINT32 i = 0; i < numBindings; i++)
 		{
@@ -162,24 +173,31 @@ namespace BansheeEngine
 
 		numAttributes = attribIdx; // It's possible some attributes were invalid, in which case we keep the memory allocated but ignore them otherwise
 
-		newEntry->vertexInputCI.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-		newEntry->vertexInputCI.pNext = nullptr;
-		newEntry->vertexInputCI.flags = 0;
-		newEntry->vertexInputCI.pVertexBindingDescriptions = newEntry->bindings;
-		newEntry->vertexInputCI.vertexBindingDescriptionCount = numBindings;
-		newEntry->vertexInputCI.pVertexAttributeDescriptions = newEntry->attributes;
-		newEntry->vertexInputCI.vertexAttributeDescriptionCount = numAttributes;
+		VkPipelineVertexInputStateCreateInfo vertexInputCI;
+		vertexInputCI.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+		vertexInputCI.pNext = nullptr;
+		vertexInputCI.flags = 0;
+		vertexInputCI.pVertexBindingDescriptions = newEntry->bindings;
+		vertexInputCI.vertexBindingDescriptionCount = numBindings;
+		vertexInputCI.pVertexAttributeDescriptions = newEntry->attributes;
+		vertexInputCI.vertexAttributeDescriptionCount = numAttributes;
 
 		// Create key and add to the layout map
 		VertexDeclarationKey pair;
 		pair.bufferDeclId = vbDecl->getId();
 		pair.shaderDeclId = shaderInputDecl->getId();
 
+		Lock(mMutex);
+		newEntry->vertexInput = bs_shared_ptr_new<VulkanVertexInput>(mNextId++, vertexInputCI);
+		newEntry->lastUsedIdx = ++mLastUsedCounter;
+
 		mVertexInputMap[pair] = newEntry;
 	}
 
 	void VulkanVertexInputManager::removeLeastUsed()
 	{
+		Lock(mMutex);
+
 		if (!mWarningShown)
 		{
 			LOGWRN("Vertex input buffer is full, pruning last " + toString(NUM_ELEMENTS_TO_PRUNE) + " elements. This is "
