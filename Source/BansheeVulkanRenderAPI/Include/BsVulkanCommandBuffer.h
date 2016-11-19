@@ -49,6 +49,17 @@ namespace BansheeEngine
 		UINT32 mNextId;
 	};
 
+	/** Determines where are the current descriptor sets bound to. */
+	enum class DescriptorSetBindFlag
+	{
+		None = 0,
+		Graphics = 1 << 0,
+		Compute = 1 << 1
+	};
+
+	typedef Flags<DescriptorSetBindFlag> DescriptorSetBindFlags;
+	BS_FLAGS_OPERATORS(DescriptorSetBindFlag)
+
 	/** 
 	 * Represents a direct wrapper over an internal Vulkan command buffer. This is unlike VulkanCommandBuffer which is a
 	 * higher level class, and it allows for re-use by internally using multiple low-level command buffers.
@@ -172,6 +183,9 @@ namespace BansheeEngine
 		/** Assigns a pipeline state to use for subsequent dispatch commands. */
 		void setPipelineState(const SPtr<ComputePipelineStateCore>& state);
 
+		/** Assign GPU params to the GPU programs bound by the pipeline state. */
+		void setGpuParams(const SPtr<GpuParamsCore>& gpuParams);
+
 		/** Sets the current viewport which determine to which portion of the render target to render to. */
 		void setViewport(const Rect2& area);
 
@@ -235,8 +249,8 @@ namespace BansheeEngine
 		/** Checks if all the prerequisites for rendering have been made (e.g. render target and pipeline state are set. */
 		bool isReadyForRender();
 
-		/** Binds the current graphics pipeline to the command buffer. */
-		void bindGraphicsPipeline();
+		/** Binds the current graphics pipeline to the command buffer. Returns true if bind was successful. */
+		bool bindGraphicsPipeline();
 
 		/** Binds any dynamic states to the pipeline, as required. 
 		 *
@@ -272,15 +286,18 @@ namespace BansheeEngine
 		Rect2I mScissor;
 		UINT32 mStencilRef;
 		DrawOperationType mDrawOp;
+		UINT32 mNumBoundDescriptorSets;
 		bool mGfxPipelineRequiresBind : 1;
 		bool mCmpPipelineRequiresBind : 1;
 		bool mViewportRequiresBind : 1;
 		bool mStencilRefRequiresBind : 1;
 		bool mScissorRequiresBind : 1;
+		DescriptorSetBindFlags mDescriptorSetsBindState;
 
 		VkSemaphore mSemaphoresTemp[BS_MAX_UNIQUE_QUEUES + 1]; // +1 for present semaphore
 		VkBuffer mVertexBuffersTemp[BS_MAX_BOUND_VERTEX_BUFFERS];
 		VkDeviceSize mVertexBufferOffsetsTemp[BS_MAX_BOUND_VERTEX_BUFFERS];
+		VkDescriptorSet* mDescriptorSetsTemp;
 		UnorderedMap<UINT32, TransitionInfo> mTransitionInfoTemp;
 	};
 

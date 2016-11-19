@@ -289,7 +289,12 @@ namespace BansheeEngine
 		mSetsDirty[set] = true;
 	}
 
-	void VulkanGpuParams::bind(VulkanCommandBuffer& buffer)
+	UINT32 VulkanGpuParams::getNumSets() const
+	{
+		return mParamInfo->getNumSets();
+	}
+
+	void VulkanGpuParams::prepareForBind(VulkanCmdBuffer& buffer, VkDescriptorSet* sets)
 	{
 		UINT32 deviceIdx = buffer.getDeviceIdx();
 
@@ -307,7 +312,6 @@ namespace BansheeEngine
 		// Registers resources with the command buffer
 		// Note: Makes the assumption that this object (and all of the resources it holds) are externally locked, and will
 		// not be modified on another thread while being bound.
-		VulkanCmdBuffer* internalCB = buffer.getInternal();
 		for (UINT32 i = 0; i < numParamBlocks; i++)
 		{
 			if (mParamBlockBuffers[i] == nullptr)
@@ -316,7 +320,7 @@ namespace BansheeEngine
 			VulkanGpuParamBlockBufferCore* element = static_cast<VulkanGpuParamBlockBufferCore*>(mParamBlockBuffers[i].get());
 
 			VulkanBuffer* resource = element->getResource(deviceIdx);
-			internalCB->registerResource(resource, VK_ACCESS_UNIFORM_READ_BIT, VulkanUseFlag::Read);
+			buffer.registerResource(resource, VK_ACCESS_UNIFORM_READ_BIT, VulkanUseFlag::Read);
 		}
 
 		for (UINT32 i = 0; i < numBuffers; i++)
@@ -336,7 +340,7 @@ namespace BansheeEngine
 			}
 
 			VulkanBuffer* resource = element->getResource(deviceIdx);
-			internalCB->registerResource(resource, accessFlags, useFlags);
+			buffer.registerResource(resource, accessFlags, useFlags);
 		}
 
 		for (UINT32 i = 0; i < numSamplers; i++)
@@ -350,7 +354,7 @@ namespace BansheeEngine
 			if (resource == nullptr)
 				continue;
 
-			internalCB->registerResource(resource, VulkanUseFlag::Read);
+			buffer.registerResource(resource, VulkanUseFlag::Read);
 		}
 
 		for (UINT32 i = 0; i < numStorageTextures; i++)
@@ -375,7 +379,7 @@ namespace BansheeEngine
 			range.baseMipLevel = surface.mipLevel;
 			range.levelCount = surface.numMipLevels;
 
-			internalCB->registerResource(resource, accessFlags, VK_IMAGE_LAYOUT_GENERAL, range, useFlags);
+			buffer.registerResource(resource, accessFlags, VK_IMAGE_LAYOUT_GENERAL, range, useFlags);
 		}
 
 		for (UINT32 i = 0; i < numTextures; i++)
@@ -402,7 +406,7 @@ namespace BansheeEngine
 			range.baseMipLevel = 0;
 			range.levelCount = props.getNumMipmaps();
 
-			internalCB->registerResource(resource, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 
+			buffer.registerResource(resource, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
 				range, VulkanUseFlag::Read);
 		}
 
@@ -448,37 +452,12 @@ namespace BansheeEngine
 			mSetsDirty[i] = false;
 		}
 
-		// Actually bind the sets to the command buffer
-		VkCommandBuffer vkCB = internalCB->getHandle();
-
-		VkPipelineBindPoint bindPoint;
-		GpuQueueType queueType = buffer.getType();
-		switch(queueType)
-		{
-		case GQT_GRAPHICS:
-			bindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-			break;
-		case GQT_COMPUTE:
-			bindPoint = VK_PIPELINE_BIND_POINT_COMPUTE;
-			break;
-		case GQT_UPLOAD:
-		default:
-			LOGERR("Cannot bind GpuParams on the upload queue. Ignoring.");
-			return;
-		}
-
-		VkDescriptorSet* sets = bs_stack_alloc<VkDescriptorSet>(numSets);
 		for (UINT32 i = 0; i < numSets; i++)
 		{
 			VulkanDescriptorSet* set = perDeviceData.perSetData[i].latestSet;
 
-			internalCB->registerResource(set, VulkanUseFlag::Read);
+			buffer.registerResource(set, VulkanUseFlag::Read);
 			sets[i] = set->getHandle();
 		}
-
-		vkCmdBindDescriptorSets(vkCB, bindPoint, perDeviceData.pipelineLayout, 0, 
-			numSets, sets, 0, nullptr);
-
-		bs_stack_free(sets);
 	}
 }

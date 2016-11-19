@@ -260,6 +260,11 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
+	VkPipelineLayout VulkanGraphicsPipelineStateCore::getPipelineLayout(UINT32 deviceIdx) const
+	{
+		return mPerDeviceData[deviceIdx].pipelineLayout;
+	}
+
 	VulkanPipeline* VulkanGraphicsPipelineStateCore::createPipeline(UINT32 deviceIdx, VulkanFramebuffer* framebuffer,
 														  bool readOnlyDepth, DrawOperationType drawOp,
 														  VkPipelineVertexInputStateCreateInfo* vertexInputState)
@@ -419,11 +424,13 @@ namespace BansheeEngine
 
 
 				mPerDeviceData[i].pipeline = rescManager.create<VulkanPipeline>(pipeline);
+				mPerDeviceData[i].pipelineLayout = pipelineCI.layout;
 				bs_stack_free(layouts);
 			}
 			else
 			{
 				mPerDeviceData[i].pipeline = nullptr;
+				mPerDeviceData[i].pipelineLayout = VK_NULL_HANDLE;
 			}
 		}
 
@@ -434,5 +441,10 @@ namespace BansheeEngine
 	VulkanPipeline* VulkanComputePipelineStateCore::getPipeline(UINT32 deviceIdx) const
 	{
 		return mPerDeviceData[deviceIdx].pipeline;
+	}
+
+	VkPipelineLayout VulkanComputePipelineStateCore::getPipelineLayout(UINT32 deviceIdx) const
+	{
+		return mPerDeviceData[deviceIdx].pipelineLayout;
 	}
 }

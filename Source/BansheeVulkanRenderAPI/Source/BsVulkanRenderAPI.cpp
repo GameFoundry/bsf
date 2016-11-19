@@ -329,21 +329,21 @@ namespace BansheeEngine
 	void VulkanRenderAPI::setGpuParams(const SPtr<GpuParamsCore>& gpuParams, const SPtr<CommandBuffer>& commandBuffer)
 	{
 		VulkanCommandBuffer* cb = getCB(commandBuffer);
-		SPtr<VulkanGpuParams> vulkanGpuParams = std::static_pointer_cast<VulkanGpuParams>(gpuParams);
+		VulkanCmdBuffer* vkCB = cb->getInternal();
 
-		vulkanGpuParams->bind(*cb);
+		vkCB->setGpuParams(gpuParams);
 
 		BS_INC_RENDER_STAT(NumGpuParamBinds);
 	}
 
 	void VulkanRenderAPI::beginFrame(const SPtr<CommandBuffer>& commandBuffer)
 	{
-
+		// Do nothing
 	}
 
 	void VulkanRenderAPI::endFrame(const SPtr<CommandBuffer>& commandBuffer)
 	{
-
+		// Do nothing
 	}
 
 	void VulkanRenderAPI::setViewport(const Rect2& vp, const SPtr<CommandBuffer>& commandBuffer)

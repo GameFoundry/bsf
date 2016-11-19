@@ -54,6 +54,12 @@ namespace BansheeEngine
 		VulkanPipeline* getPipeline(UINT32 deviceIdx, VulkanFramebuffer* framebuffer, bool readOnlyDepth, 
 			DrawOperationType drawOp, VkPipelineVertexInputStateCreateInfo* vertexInputState);
 
+		/** 
+		 * Returns a pipeline layout object for the specified device index. If the device index doesn't match a bit in the
+		 * device mask provided on pipeline creation, null is returned.
+		 */
+		VkPipelineLayout getPipelineLayout(UINT32 deviceIdx) const;
+
 	protected:
 		friend class VulkanRenderStateCoreManager;
 
@@ -117,6 +123,12 @@ namespace BansheeEngine
 		 */
 		VulkanPipeline* getPipeline(UINT32 deviceIdx) const;
 
+		/** 
+		 * Returns a pipeline layout object for the specified device index. If the device index doesn't match a bit in the
+		 * device mask provided on pipeline creation, null is returned.
+		 */
+		VkPipelineLayout getPipelineLayout(UINT32 deviceIdx) const;
+
 	protected:
 		friend class VulkanRenderStateCoreManager;
 
@@ -130,6 +142,7 @@ namespace BansheeEngine
 		{
 			VulkanDevice* device;
 			VulkanPipeline* pipeline;
+			VkPipelineLayout pipelineLayout;
 		};
 
 		GpuDeviceFlags mDeviceMask;

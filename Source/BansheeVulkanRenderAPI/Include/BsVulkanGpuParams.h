@@ -36,14 +36,23 @@ namespace BansheeEngine
 		/** @copydoc GpuParamsCore::setLoadStoreSurface */
 		void setLoadStoreSurface(UINT32 set, UINT32 slot, const TextureSurface& surface) override;
 
+		/** Returns the total number of descriptor sets used by this object. */
+		UINT32 getNumSets() const;
+
 		/** 
-		 * Binds the internal descriptor sets to the provided command buffer. Caller must perform external locking if
-		 * some other thread could write to this object while it is being bound. The same applies to any resources
-		 * held by this object.
+		 * Prepares the internal descriptor sets for a bind operation on the provided command buffer. It generates and/or
+		 * updates and descriptor sets, and registers the relevant resources with the command buffer.
+		 * 
+		 * Caller must perform external locking if some other thread could write to this object while it is being bound. 
+		 * The same applies to any resources held by this object.
+		 * 
+		 * @param[in]	buffer	Buffer on which the parameters will be bound to.
+		 * @param[out]	sets	Pre-allocated buffer in which the descriptor set handled will be written. Must be of
+		 *						getNumSets() size.
 		 * 
 		 * @note	Thread safe.
 		 */
-		void bind(VulkanCommandBuffer& buffer);
+		void prepareForBind(VulkanCmdBuffer& buffer, VkDescriptorSet* sets);
 
 	protected:
 		/** Contains data about writing to either buffer or a texture descriptor. */

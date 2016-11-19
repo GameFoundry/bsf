@@ -104,10 +104,13 @@ namespace BansheeEngine
 		: mId(id), mQueueFamily(queueFamily), mState(State::Ready), mDevice(device), mPool(pool), mFenceCounter(0)
 		, mFramebuffer(nullptr), mPresentSemaphore(VK_NULL_HANDLE), mRenderTargetWidth(0), mRenderTargetHeight(0)
 		, mRenderTargetDepthReadOnly(false), mGlobalQueueIdx(-1), mViewport(0.0f, 0.0f, 1.0f, 1.0f), mScissor(0, 0, 0, 0)
-		, mStencilRef(0), mDrawOp(DOT_TRIANGLE_LIST), mGfxPipelineRequiresBind(true), mCmpPipelineRequiresBind(true)
-		, mViewportRequiresBind(true), mStencilRefRequiresBind(true), mScissorRequiresBind(true), mVertexBuffersTemp()
-		, mVertexBufferOffsetsTemp()
+		, mStencilRef(0), mDrawOp(DOT_TRIANGLE_LIST), mNumBoundDescriptorSets(0), mGfxPipelineRequiresBind(true)
+		, mCmpPipelineRequiresBind(true), mViewportRequiresBind(true), mStencilRefRequiresBind(true)
+		, mScissorRequiresBind(true), mVertexBuffersTemp(), mVertexBufferOffsetsTemp()
 	{
+		UINT32 maxBoundDescriptorSets = device.getDeviceProperties().limits.maxBoundDescriptorSets;
+		mDescriptorSetsTemp = (VkDescriptorSet*)bs_alloc(sizeof(VkDescriptorSet) * maxBoundDescriptorSets);
+
 		VkCommandBufferAllocateInfo cmdBufferAllocInfo;
 		cmdBufferAllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 		cmdBufferAllocInfo.pNext = nullptr;
@@ -183,6 +186,8 @@ namespace BansheeEngine
 		vkDestroyFence(device, mFence, gVulkanAllocator);
 		vkDestroySemaphore(device, mSemaphore, gVulkanAllocator);
 		vkFreeCommandBuffers(device, mPool, 1, &mCmdBuffer);
+
+		bs_free(mDescriptorSetsTemp);
 	}
 
 	UINT32 VulkanCmdBuffer::getDeviceIdx() const
@@ -575,6 +580,23 @@ namespace BansheeEngine
 		mCmpPipelineRequiresBind = true;
 	}
 
+	void VulkanCmdBuffer::setGpuParams(const SPtr<GpuParamsCore>& gpuParams)
+	{
+		SPtr<VulkanGpuParams> vulkanGpuParams = std::static_pointer_cast<VulkanGpuParams>(gpuParams);
+
+		if(vulkanGpuParams != nullptr)
+		{
+			mNumBoundDescriptorSets = vulkanGpuParams->getNumSets();
+			vulkanGpuParams->prepareForBind(*this, mDescriptorSetsTemp);
+		}
+		else
+		{
+			mNumBoundDescriptorSets = 0;
+		}
+
+		mDescriptorSetsBindState = DescriptorSetBindFlag::Graphics | DescriptorSetBindFlag::Compute;
+	}
+
 	void VulkanCmdBuffer::setViewport(const Rect2& area)
 	{
 		if (mViewport == area)
@@ -681,18 +703,16 @@ namespace BansheeEngine
 		return mFramebuffer != nullptr && mVertexDecl != nullptr;
 	}
 
-	void VulkanCmdBuffer::bindGraphicsPipeline()
+	bool VulkanCmdBuffer::bindGraphicsPipeline()
 	{
-
-		
 		// TODO - Begin render pass as needed
 		// TODO - Retrieve and bind pipeline
 		bindDynamicStates(true);
 
-
-
+		// TODO - Register pipeline resource
 		// TODO
-		// TODO - Bind GPU params
+
+		// TODO - Make sure to return false without reseting the flag below, if binding fails
 
 		mGfxPipelineRequiresBind = false;
 	}
@@ -749,9 +769,23 @@ namespace BansheeEngine
 			return;
 
 		if (mGfxPipelineRequiresBind)
-			bindGraphicsPipeline();
+		{
+			if (!bindGraphicsPipeline())
+				return;
+		}
 		else
 			bindDynamicStates(false);
+
+		if (mDescriptorSetsBindState.isSet(DescriptorSetBindFlag::Graphics))
+		{
+			UINT32 deviceIdx = mDevice.getIndex();
+			VkPipelineLayout pipelineLayout = mGraphicsPipeline->getPipelineLayout(deviceIdx);
+
+			vkCmdBindDescriptorSets(mCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0,
+									mNumBoundDescriptorSets, mDescriptorSetsTemp, 0, nullptr);
+
+			mDescriptorSetsBindState.unset(DescriptorSetBindFlag::Graphics);
+		}
 
 		vkCmdDraw(mCmdBuffer, vertexCount, instanceCount, vertexOffset, 0);
 	}
@@ -762,9 +796,23 @@ namespace BansheeEngine
 			return;
 
 		if (mGfxPipelineRequiresBind)
-			bindGraphicsPipeline();
+		{
+			if (!bindGraphicsPipeline())
+				return;
+		}
 		else
 			bindDynamicStates(false);
+
+		if (mDescriptorSetsBindState.isSet(DescriptorSetBindFlag::Graphics))
+		{
+			UINT32 deviceIdx = mDevice.getIndex();
+			VkPipelineLayout pipelineLayout = mGraphicsPipeline->getPipelineLayout(deviceIdx);
+
+			vkCmdBindDescriptorSets(mCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0,
+									mNumBoundDescriptorSets, mDescriptorSetsTemp, 0, nullptr);
+
+			mDescriptorSetsBindState.unset(DescriptorSetBindFlag::Graphics);
+		}
 
 		vkCmdDrawIndexed(mCmdBuffer, indexCount, instanceCount, startIndex, vertexOffset, 0);
 	}
@@ -777,10 +825,9 @@ namespace BansheeEngine
 		if (isInRenderPass())
 			endRenderPass();
 
+		UINT32 deviceIdx = mDevice.getIndex();
 		if(mCmpPipelineRequiresBind)
 		{
-			UINT32 deviceIdx = mDevice.getIndex();
-
 			VulkanPipeline* pipeline = mComputePipeline->getPipeline(deviceIdx);
 			if (pipeline == nullptr)
 				return;
@@ -791,7 +838,14 @@ namespace BansheeEngine
 			mCmpPipelineRequiresBind = false;
 		}
 
-		// TODO - Bind GpuParams
+		if(mDescriptorSetsBindState.isSet(DescriptorSetBindFlag::Compute))
+		{
+			VkPipelineLayout pipelineLayout = mComputePipeline->getPipelineLayout(deviceIdx);
+			vkCmdBindDescriptorSets(mCmdBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipelineLayout, 0,
+				mNumBoundDescriptorSets, mDescriptorSetsTemp, 0, nullptr);
+
+			mDescriptorSetsBindState.unset(DescriptorSetBindFlag::Compute);
+		}
 
 		vkCmdDispatch(mCmdBuffer, numGroupsX, numGroupsY, numGroupsZ);
 	}
