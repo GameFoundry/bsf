@@ -474,12 +474,12 @@ namespace BansheeEngine
 	}
 
 	void VulkanRenderAPI::setRenderTarget(const SPtr<RenderTargetCore>& target, bool readOnlyDepthStencil,
-		const SPtr<CommandBuffer>& commandBuffer)
+		bool preserveContents, const SPtr<CommandBuffer>& commandBuffer)
 	{
 		VulkanCommandBuffer* cb = getCB(commandBuffer);
 		VulkanCmdBuffer* vkCB = cb->getInternal();
 
-		vkCB->setRenderTarget(target, readOnlyDepthStencil);
+		vkCB->setRenderTarget(target, readOnlyDepthStencil, preserveContents);
 		
 		BS_INC_RENDER_STAT(NumRenderTargetChanges);
 	}

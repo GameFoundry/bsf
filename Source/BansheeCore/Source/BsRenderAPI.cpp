@@ -84,10 +84,11 @@ namespace BansheeEngine
 			nullptr));
 	}
 
-	void RenderAPI::setRenderTarget(CoreAccessor& accessor, const SPtr<RenderTarget>& target, bool readOnlyDepthStencil)
+	void RenderAPI::setRenderTarget(CoreAccessor& accessor, const SPtr<RenderTarget>& target, bool readOnlyDepthStencil,
+									bool preserveContents)
 	{
 		accessor.queueCommand(std::bind(&RenderAPICore::setRenderTarget, 
-			RenderAPICore::instancePtr(), target->getCore(), readOnlyDepthStencil, nullptr));
+			RenderAPICore::instancePtr(), target->getCore(), readOnlyDepthStencil, preserveContents, nullptr));
 	}
 
 	void RenderAPI::beginRender(CoreAccessor& accessor)

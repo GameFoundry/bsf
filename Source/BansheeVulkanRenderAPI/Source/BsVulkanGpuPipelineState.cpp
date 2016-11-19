@@ -25,8 +25,9 @@ namespace BansheeEngine
 	}
 
 	VulkanGraphicsPipelineStateCore::GpuPipelineKey::GpuPipelineKey(
-		UINT32 framebufferId, UINT32 vertexInputId, bool readOnlyDepth, DrawOperationType drawOp)
-		:framebufferId(framebufferId), vertexInputId(vertexInputId), readOnlyDepth(readOnlyDepth), drawOp(drawOp)
+		UINT32 framebufferId, UINT32 vertexInputId, bool readOnlyDepth, bool preserveContents, DrawOperationType drawOp)
+		: framebufferId(framebufferId), vertexInputId(vertexInputId), readOnlyDepth(readOnlyDepth)
+		, preserveContents(preserveContents), drawOp(drawOp)
 	{
 		
 	}
@@ -37,6 +38,7 @@ namespace BansheeEngine
 		hash_combine(hash, key.framebufferId);
 		hash_combine(hash, key.vertexInputId);
 		hash_combine(hash, key.readOnlyDepth);
+		hash_combine(hash, key.preserveContents);
 		hash_combine(hash, key.drawOp);
 
 		return hash;
@@ -51,6 +53,9 @@ namespace BansheeEngine
 			return false;
 
 		if (a.readOnlyDepth != b.readOnlyDepth)
+			return false;
+
+		if (a.preserveContents != b.preserveContents)
 			return false;
 
 		if (a.drawOp != b.drawOp)
@@ -295,22 +300,23 @@ namespace BansheeEngine
 	}
 
 	VulkanPipeline* VulkanGraphicsPipelineStateCore::getPipeline(
-		UINT32 deviceIdx, VulkanFramebuffer* framebuffer, bool readOnlyDepth, DrawOperationType drawOp, 
-		const SPtr<VulkanVertexInput>& vertexInput)
+		UINT32 deviceIdx, VulkanFramebuffer* framebuffer, bool readOnlyDepth, bool preserveContents,
+		DrawOperationType drawOp, const SPtr<VulkanVertexInput>& vertexInput)
 	{
 		Lock(mMutex);
 
 		if (mPerDeviceData[deviceIdx].device == nullptr)
 			return nullptr;
 
-		GpuPipelineKey key(framebuffer->getId(), vertexInput->getId(), readOnlyDepth, drawOp);
+		GpuPipelineKey key(framebuffer->getId(), vertexInput->getId(), readOnlyDepth, preserveContents, drawOp);
 
 		PerDeviceData& perDeviceData = mPerDeviceData[deviceIdx];
 		auto iterFind = perDeviceData.pipelines.find(key);
 		if (iterFind != perDeviceData.pipelines.end())
 			return iterFind->second;
 
-		VulkanPipeline* newPipeline = createPipeline(deviceIdx, framebuffer, readOnlyDepth, drawOp, vertexInput);
+		VulkanPipeline* newPipeline = createPipeline(deviceIdx, framebuffer, readOnlyDepth, preserveContents,
+			drawOp, vertexInput);
 		perDeviceData.pipelines[key] = newPipeline;
 
 		return newPipeline;
@@ -322,8 +328,7 @@ namespace BansheeEngine
 	}
 
 	VulkanPipeline* VulkanGraphicsPipelineStateCore::createPipeline(UINT32 deviceIdx, VulkanFramebuffer* framebuffer,
-														  bool readOnlyDepth, DrawOperationType drawOp, 
-														  const SPtr<VulkanVertexInput>& vertexInput)
+		bool readOnlyDepth, bool preserveContents, DrawOperationType drawOp, const SPtr<VulkanVertexInput>& vertexInput)
 	{
 		mInputAssemblyInfo.topology = VulkanUtility::getDrawOp(drawOp);
 		mTesselationInfo.patchControlPoints = 3; // Not provided by our shaders for now
@@ -356,7 +361,7 @@ namespace BansheeEngine
 			mDepthStencilInfo.back.depthFailOp = VK_STENCIL_OP_KEEP;
 		}
 
-		mPipelineInfo.renderPass = framebuffer->getRenderPass();
+		mPipelineInfo.renderPass = framebuffer->getRenderPass(preserveContents);
 		mPipelineInfo.layout = mPerDeviceData[deviceIdx].pipelineLayout;
 		mPipelineInfo.pVertexInputState = vertexInput->getCreateInfo();
 

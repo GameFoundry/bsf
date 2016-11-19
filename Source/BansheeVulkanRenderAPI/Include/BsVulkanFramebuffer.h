@@ -64,11 +64,23 @@ namespace BansheeEngine
 		/** Returns a unique ID of this framebuffer. */
 		UINT32 getId() const { return mId; }
 
-		/** Gets internal Vulkan render pass object. */
-		VkRenderPass getRenderPass() const { return mRenderPass; }
+		/** 
+		 * Gets internal Vulkan render pass object. 
+		 * 
+		 * @param[in]	preserveContents	If true, returns render pass that preserves existing framebuffer attachment 
+		 *									contents on load. Otherwise returns render pass that discards them (more 
+		 *									efficient).
+		 */
+		VkRenderPass getRenderPass(bool preserveContents) const;
 
-		/** Gets internal Vulkan framebuffer object. */
-		VkFramebuffer getFramebuffer() const { return mFramebuffer; }
+		/**
+		 * Gets internal Vulkan framebuffer object.
+		 *
+		 * @param[in]	preserveContents	If true, returns render pass that preserves existing framebuffer attachment
+		 *									contents on load. Otherwise returns render pass that discards them (more
+		 *									efficient).
+		 */
+		VkFramebuffer getFramebuffer(bool preserveContents) const;
 
 		/** 
 		 * Gets the number of layers in each framebuffer surface. A layer is an element in a texture array, or a depth 
@@ -95,8 +107,11 @@ namespace BansheeEngine
 		VkSampleCountFlagBits getSampleFlags() const { return mSampleFlags; }
 	private:
 		UINT32 mId;
-		VkRenderPass mRenderPass;
-		VkFramebuffer mFramebuffer;
+		VkRenderPass mRenderPassDiscard;
+		VkFramebuffer mFramebufferDiscard;
+
+		VkRenderPass mRenderPassPreserve;
+		VkFramebuffer mFramebufferPreserve;
 
 		UINT32 mNumAttachments;
 		UINT32 mNumColorAttachments;

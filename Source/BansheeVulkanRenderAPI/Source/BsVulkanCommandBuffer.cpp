@@ -104,10 +104,11 @@ namespace BansheeEngine
 	VulkanCmdBuffer::VulkanCmdBuffer(VulkanDevice& device, UINT32 id, VkCommandPool pool, UINT32 queueFamily, bool secondary)
 		: mId(id), mQueueFamily(queueFamily), mState(State::Ready), mDevice(device), mPool(pool), mFenceCounter(0)
 		, mFramebuffer(nullptr), mPresentSemaphore(VK_NULL_HANDLE), mRenderTargetWidth(0), mRenderTargetHeight(0)
-		, mRenderTargetDepthReadOnly(false), mGlobalQueueIdx(-1), mViewport(0.0f, 0.0f, 1.0f, 1.0f), mScissor(0, 0, 0, 0)
-		, mStencilRef(0), mDrawOp(DOT_TRIANGLE_LIST), mNumBoundDescriptorSets(0), mGfxPipelineRequiresBind(true)
-		, mCmpPipelineRequiresBind(true), mViewportRequiresBind(true), mStencilRefRequiresBind(true)
-		, mScissorRequiresBind(true), mVertexBuffersTemp(), mVertexBufferOffsetsTemp()
+		, mRenderTargetDepthReadOnly(false), mRenderTargetPreserveContents(false), mGlobalQueueIdx(-1)
+		, mViewport(0.0f, 0.0f, 1.0f, 1.0f), mScissor(0, 0, 0, 0), mStencilRef(0), mDrawOp(DOT_TRIANGLE_LIST)
+		, mNumBoundDescriptorSets(0), mGfxPipelineRequiresBind(true), mCmpPipelineRequiresBind(true)
+		, mViewportRequiresBind(true), mStencilRefRequiresBind(true), mScissorRequiresBind(true), mVertexBuffersTemp()
+		, mVertexBufferOffsetsTemp()
 	{
 		UINT32 maxBoundDescriptorSets = device.getDeviceProperties().limits.maxBoundDescriptorSets;
 		mDescriptorSetsTemp = (VkDescriptorSet*)bs_alloc(sizeof(VkDescriptorSet) * maxBoundDescriptorSets);
@@ -235,8 +236,8 @@ namespace BansheeEngine
 		VkRenderPassBeginInfo renderPassBeginInfo;
 		renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 		renderPassBeginInfo.pNext = nullptr;
-		renderPassBeginInfo.framebuffer = mFramebuffer->getFramebuffer();
-		renderPassBeginInfo.renderPass = mFramebuffer->getRenderPass();
+		renderPassBeginInfo.framebuffer = mFramebuffer->getFramebuffer(mRenderTargetPreserveContents);
+		renderPassBeginInfo.renderPass = mFramebuffer->getRenderPass(mRenderTargetPreserveContents);
 		renderPassBeginInfo.renderArea.offset.x = 0;
 		renderPassBeginInfo.renderArea.offset.y = 0;
 		renderPassBeginInfo.renderArea.extent.width = mRenderTargetWidth;
@@ -532,7 +533,8 @@ namespace BansheeEngine
 			assert(!signaled); // We reset the fence along with mState so this shouldn't be possible
 	}
 
-	void VulkanCmdBuffer::setRenderTarget(const SPtr<RenderTargetCore>& rt, bool readOnlyDepthStencil)
+	void VulkanCmdBuffer::setRenderTarget(const SPtr<RenderTargetCore>& rt, bool readOnlyDepthStencil, 
+		bool preserveContents)
 	{
 		assert(mState != State::RecordingRenderPass && mState != State::Submitted);
 
@@ -543,6 +545,7 @@ namespace BansheeEngine
 			mRenderTargetWidth = 0;
 			mRenderTargetHeight = 0;
 			mRenderTargetDepthReadOnly = false;
+			mRenderTargetPreserveContents = false;
 		}
 		else
 		{
@@ -556,6 +559,7 @@ namespace BansheeEngine
 			mRenderTargetWidth = rt->getProperties().getWidth();
 			mRenderTargetHeight = rt->getProperties().getHeight();
 			mRenderTargetDepthReadOnly = readOnlyDepthStencil;
+			mRenderTargetPreserveContents = preserveContents;
 
 			registerResource(mFramebuffer, VulkanUseFlag::Write);
 		}
@@ -822,7 +826,8 @@ namespace BansheeEngine
 		SPtr<VulkanVertexInput> vertexInput = VulkanVertexInputManager::instance().getVertexInfo(mVertexDecl, inputDecl);
 
 		VulkanPipeline* pipeline = mGraphicsPipeline->getPipeline(mDevice.getIndex(), mFramebuffer,
-																  mRenderTargetDepthReadOnly, mDrawOp, vertexInput);
+																  mRenderTargetDepthReadOnly, mRenderTargetPreserveContents,
+																  mDrawOp, vertexInput);
 
 		if (pipeline == nullptr)
 			return false;

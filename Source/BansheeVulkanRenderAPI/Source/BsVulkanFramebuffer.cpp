@@ -134,30 +134,76 @@ namespace BansheeEngine
 
 		VkDevice device = mOwner->getDevice().getLogical();
 
-		VkResult result = vkCreateRenderPass(device, &renderPassCI, gVulkanAllocator, &mRenderPass);
+		// Create discard render pass and frame buffer
+		VkResult result = vkCreateRenderPass(device, &renderPassCI, gVulkanAllocator, &mRenderPassDiscard);
 		assert(result == VK_SUCCESS);
 
-		// Create frame buffer
+		//// Create frame buffer
 		VkFramebufferCreateInfo framebufferCI;
 		framebufferCI.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 		framebufferCI.pNext = nullptr;
 		framebufferCI.flags = 0;
-		framebufferCI.renderPass = mRenderPass;
+		framebufferCI.renderPass = mRenderPassDiscard;
 		framebufferCI.attachmentCount = mNumAttachments;
 		framebufferCI.pAttachments = attachmentViews;
 		framebufferCI.width = desc.width;
 		framebufferCI.height = desc.height;
 		framebufferCI.layers = desc.layers;
 
-		result = vkCreateFramebuffer(device, &framebufferCI, gVulkanAllocator, &mFramebuffer);
+		result = vkCreateFramebuffer(device, &framebufferCI, gVulkanAllocator, &mFramebufferDiscard);
 		assert(result == VK_SUCCESS);
+
+		// Create preserving render pass and frame buffer
+		for (UINT32 i = 0; i < mNumColorAttachments; i++)
+		{
+			VkAttachmentDescription& attachmentDesc = attachments[i];
+			attachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+			attachmentDesc.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		}
+
+		if (mHasDepth)
+		{
+			VkAttachmentDescription& attachmentDesc = attachments[mNumColorAttachments];
+			attachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+			attachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+			attachmentDesc.initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+		}
+
+		vkCreateRenderPass(device, &renderPassCI, gVulkanAllocator, &mRenderPassPreserve);
+		assert(result == VK_SUCCESS);
+
+		//// Create frame buffer
+		framebufferCI.renderPass = mRenderPassPreserve;
+
+		result = vkCreateFramebuffer(device, &framebufferCI, gVulkanAllocator, &mFramebufferPreserve);
+		assert(result == VK_SUCCESS);
+
 	}
 
 	VulkanFramebuffer::~VulkanFramebuffer()
 	{
 		VkDevice device = mOwner->getDevice().getLogical();
 
-		vkDestroyFramebuffer(device, mFramebuffer, gVulkanAllocator);
-		vkDestroyRenderPass(device, mRenderPass, gVulkanAllocator);
+		vkDestroyFramebuffer(device, mFramebufferDiscard, gVulkanAllocator);
+		vkDestroyRenderPass(device, mRenderPassDiscard, gVulkanAllocator);
+
+		vkDestroyFramebuffer(device, mFramebufferPreserve, gVulkanAllocator);
+		vkDestroyRenderPass(device, mRenderPassPreserve, gVulkanAllocator);
+	}
+
+	VkRenderPass VulkanFramebuffer::getRenderPass(bool preserveContents) const
+	{
+		if (preserveContents)
+			return mRenderPassPreserve;
+		
+		return mRenderPassDiscard;
+	}
+
+	VkFramebuffer VulkanFramebuffer::getFramebuffer(bool preserveContents) const
+	{
+		if (preserveContents)
+			return mFramebufferPreserve;
+
+		return mFramebufferDiscard;
 	}
 }

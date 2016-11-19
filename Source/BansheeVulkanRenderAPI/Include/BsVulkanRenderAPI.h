@@ -51,8 +51,8 @@ namespace BansheeEngine
 			UINT8 targetMask = 0xFF, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPICore::setRenderTarget */
-		void setRenderTarget(const SPtr<RenderTargetCore>& target, bool readOnlyDepthStencil = false, 
-			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
+		void setRenderTarget(const SPtr<RenderTargetCore>& target, bool readOnlyDepthStencil = false,
+			bool preserveContents = false, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPICore::setViewport */
 		void setViewport(const Rect2& area, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;

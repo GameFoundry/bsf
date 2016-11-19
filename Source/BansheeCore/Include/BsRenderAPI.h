@@ -64,7 +64,8 @@ namespace BansheeEngine
 		static void setScissorRect(CoreAccessor& accessor, UINT32 left = 0, UINT32 top = 0, UINT32 right = 800, UINT32 bottom = 600);
 
 		/** @see RenderAPICore::setRenderTarget() */
-		static void setRenderTarget(CoreAccessor& accessor, const SPtr<RenderTarget>& target, bool readOnlyDepthStencil = false);
+		static void setRenderTarget(CoreAccessor& accessor, const SPtr<RenderTarget>& target, 
+			bool readOnlyDepthStencil = false, bool preserveContents = false);
 
 		/** @see RenderAPICore::beginFrame() */
 		static void beginRender(CoreAccessor& accessor);
@@ -399,12 +400,17 @@ namespace BansheeEngine
 		 * @param[in]	readOnlyDepthStencil	If true the caller guarantees he won't write to the depth/stencil buffer 
 		 *										(if any was provided). This allows the depth buffer to be bound for depth 
 		 *										testing, as well as reading in a shader, at the same time.
+		 * @param[in]	preserveContents		Determines will the current contents of the render target be preserved.
+		 *										Perserving the contents comes at a performance cost, so it's best to set
+		 *										to false if you are sure you will overwrite or clear the contents later.
+		 *										Set to true if you need to perform blending or similar operations with the
+		 *										existing contents of the render target.
 		 * @param[in]	commandBuffer			Optional command buffer to queue the operation on. If not provided operation
 		 *										is executed immediately. Otherwise it is executed when executeCommands() is
 		 *										called. Buffer must support graphics operations.
 		 */
         virtual void setRenderTarget(const SPtr<RenderTargetCore>& target, bool readOnlyDepthStencil = false,
-			const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
+			bool preserveContents = false, const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**
 		 * Clears the currently active render target.

@@ -1024,7 +1024,7 @@ namespace BansheeEngine
 	}
 
 	void D3D11RenderAPI::setRenderTarget(const SPtr<RenderTargetCore>& target, bool readOnlyDepthStencil, 
-		const SPtr<CommandBuffer>& commandBuffer)
+		bool preserveContents, const SPtr<CommandBuffer>& commandBuffer)
 	{
 		auto executeRef = [&](const SPtr<RenderTargetCore>& target, bool readOnlyDepthStencil)
 		{
