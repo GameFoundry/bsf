@@ -9,6 +9,11 @@ namespace bs
 		: mFormat(PF_R8G8B8A8), mGenerateMips(false), mMaxMip(0), mCPUReadable(false), mCPUCached(false), mSRGB(false)
 	{ }
 
+	SPtr<TextureImportOptions> TextureImportOptions::create()
+	{
+		return bs_shared_ptr_new<TextureImportOptions>();
+	}
+
 	/************************************************************************/
 	/* 								SERIALIZATION                      		*/
 	/************************************************************************/

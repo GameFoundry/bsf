@@ -11,6 +11,11 @@ namespace bs
 		
 	}
 
+	SPtr<AudioClipImportOptions> AudioClipImportOptions::create()
+	{
+		return bs_shared_ptr_new<AudioClipImportOptions>();
+	}
+
 	/************************************************************************/
 	/* 								SERIALIZATION                      		*/
 	/************************************************************************/

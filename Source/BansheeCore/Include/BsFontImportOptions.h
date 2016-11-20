@@ -66,6 +66,9 @@ namespace bs
 		/**	Sets whether the italic font style should be used when rendering. */
 		bool getItalic() const { return mItalic; }
 
+		/** Creates a new import options object that allows you to customize how are fonts imported. */
+		static SPtr<FontImportOptions> create();
+
 	private:
 		Vector<UINT32> mFontSizes;
 		Vector<std::pair<UINT32, UINT32>> mCharIndexRanges;

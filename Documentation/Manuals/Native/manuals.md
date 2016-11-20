@@ -7,7 +7,8 @@ Manuals									{#manuals}
 - [Startup and main loop](@ref startup)
 - [Scene objects and components](@ref scenesAndComponents)
 - Resources
- - [Importing](@ref importing)
+ - [Basics and import](@ref resourceBasicsAndImport)
+ - [Saving and loading](@ref resourceSavingAndLoading)
  
 # Developer guides
 

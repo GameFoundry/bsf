@@ -66,6 +66,9 @@ namespace bs
 		 */
 		bool getSRGB() const { return mSRGB; }
 
+		/** Creates a new import options object that allows you to customize how are textures imported. */
+		static SPtr<TextureImportOptions> create();
+
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/
 		/************************************************************************/

@@ -19,7 +19,7 @@ namespace bs
 		/** If enabled all resources referenced by the root resource will be loaded as well. */
 		LoadDependencies = 1 << 0, 
 		/**
-		 * If enabled the resource system will keep an internal reference to the resource so it doesn't get destroyed with
+		 * If enabled the resource system will keep an internal reference to the resource so it doesn't get destroyed when
 		 * it goes out of scope. You can call Resources::release() to release the internal reference. Each call to load will
 		 * create a new internal reference and therefore must be followed by the same number of release calls. If
 		 * dependencies are being loaded, they will not have internal references created regardless of this parameter.
@@ -83,9 +83,6 @@ namespace bs
 		 * Loads the resource from a given path. Returns an empty handle if resource can't be loaded. Resource is loaded 
 		 * synchronously.
 		 *			
-		 * All loaded resources are reference counted and will be automatically unloaded when all of their references go out
-		 * of scope. 
-		 *			
 		 * @param[in]	filePath	File path to the resource to load. This can be absolute or relative to the working 
 		 *							folder.
 		 * @param[in]	loadFlags	Flags used to control the load process.
@@ -117,14 +114,11 @@ namespace bs
 
 		/**
 		 * Loads the resource asynchronously. Initially returned resource handle will be invalid until resource loading is 
-		 * done.
+		 * done. Use ResourceHandle<T>::isLoaded to check if resource has been loaded, or 
+		 * ResourceHandle<T>::blockUntilLoaded to wait until load completes.
 		 *
 		 * @param[in]	filePath	Full pathname of the file.
 		 * @param[in]	loadFlags	Flags used to control the load process.
-		 *
-		 * @note	
-		 * You can use returned invalid handle in many engine systems as the engine will check for handle validity before 
-		 * using it.
 		 *			
 		 * @see		load(const Path&, ResourceLoadFlags)
 		 */

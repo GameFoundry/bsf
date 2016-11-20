@@ -47,6 +47,9 @@ namespace bs
 
 		// Note: Add options to resample to a different frequency
 
+		/** Creates a new import options object that allows you to customize how are audio clips imported. */
+		static SPtr<AudioClipImportOptions> create();
+
 	private:
 		AudioFormat mFormat;
 		AudioReadMode mReadMode;

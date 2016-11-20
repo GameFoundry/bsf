@@ -24,6 +24,9 @@ namespace bs
 		/**	Checks whether the script is editor-only or a normal game script. */
 		bool isEditorScript() const { return mEditorScript; }
 
+		/** Creates a new import options object that allows you to customize how is script code imported. */
+		static SPtr<ScriptCodeImportOptions> create();
+
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/
 		/************************************************************************/

@@ -11,6 +11,11 @@ namespace bs
 
 	}
 
+	SPtr<ScriptCodeImportOptions> ScriptCodeImportOptions::create()
+	{
+		return bs_shared_ptr_new<ScriptCodeImportOptions>();
+	}
+
 	/************************************************************************/
 	/* 								SERIALIZATION                      		*/
 	/************************************************************************/

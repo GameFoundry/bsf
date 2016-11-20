@@ -168,6 +168,9 @@ namespace bs
 		 */
 		bool getImportRootMotion() const { return mImportRootMotion; }
 
+		/** Creates a new import options object that allows you to customize how are meshes imported. */
+		static SPtr<MeshImportOptions> create();
+
 	private:
 		bool mCPUCached;
 		bool mImportNormals;

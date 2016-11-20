@@ -22,6 +22,11 @@ namespace bs
 		mCharIndexRanges.clear();
 	}
 
+	SPtr<FontImportOptions> FontImportOptions::create()
+	{
+		return bs_shared_ptr_new<FontImportOptions>();
+	}
+
 	/************************************************************************/
 	/* 								SERIALIZATION                      		*/
 	/************************************************************************/

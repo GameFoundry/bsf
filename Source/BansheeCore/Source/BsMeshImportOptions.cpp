@@ -31,6 +31,11 @@ namespace bs
 		, mCollisionMeshType(CollisionMeshType::None)
 	{ }
 
+	SPtr<MeshImportOptions> MeshImportOptions::create()
+	{
+		return bs_shared_ptr_new<MeshImportOptions>();
+	}
+
 	RTTITypeBase* MeshImportOptions::getRTTIStatic()
 	{
 		return MeshImportOptionsRTTI::instance();
