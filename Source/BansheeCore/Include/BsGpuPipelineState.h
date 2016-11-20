@@ -227,7 +227,7 @@ namespace BansheeEngine
 		GraphicsPipelineStateCore(const PIPELINE_STATE_CORE_DESC& desc, GpuDeviceFlags deviceMask);
 		virtual ~GraphicsPipelineStateCore() { }
 
-		/** @copydoc RenderStateManager::createGraphicsPipelineState */
+		/** @copydoc RenderStateCoreManager::createGraphicsPipelineState */
 		static SPtr<GraphicsPipelineStateCore> create(const PIPELINE_STATE_CORE_DESC& desc, 
 			GpuDeviceFlags deviceMask = GDF_DEFAULT);
 	};
@@ -239,7 +239,7 @@ namespace BansheeEngine
 		ComputePipelineStateCore(const SPtr<GpuProgramCore>& program, GpuDeviceFlags deviceMask);
 		virtual ~ComputePipelineStateCore() { }
 
-		/** @copydoc RenderStateManager::createComputePipelineState */
+		/** @copydoc RenderStateCoreManager::createComputePipelineState */
 		static SPtr<ComputePipelineStateCore> create(const SPtr<GpuProgramCore>& program,
 			GpuDeviceFlags deviceMask = GDF_DEFAULT);
 	};

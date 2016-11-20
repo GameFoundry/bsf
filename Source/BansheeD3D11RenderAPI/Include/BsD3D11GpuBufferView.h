@@ -47,7 +47,10 @@ namespace BansheeEngine
 		GpuBufferView();
 		virtual ~GpuBufferView();
 
-		/** @copydoc GpuBufferView::initialize */
+		/** 
+		 * Initializes a new buffer view for the specified buffer. Descriptor structure defines which portion of the buffer,
+		 * and how will its contents be represented by the view.
+		 */
 		void initialize(const SPtr<D3D11GpuBufferCore>& buffer, GPU_BUFFER_VIEW_DESC& desc);
 
 		/** Returns a descriptor structure used for creating the view. */

@@ -160,6 +160,7 @@ namespace BansheeEngine
 		/**
 		 * Copy data from the provided buffer into this buffer. If buffers are not the same size, smaller size will be used.
 		 * 
+		 * @param[in]	srcBuffer	Hardware buffer to copy from.
 		 * @param[in]	queueIdx	Device queue to perform any read/write operations on. Using a non-default queue index
 		 *							allows the GPU to perform write or read operations while executing rendering or compute
 		 *							operations on the same time.

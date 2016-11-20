@@ -28,7 +28,7 @@ namespace BansheeEngine
         void readData(UINT32 offset, UINT32 length, void* dest, UINT32 deviceIdx = 0, UINT32 queueIdx = 0) override;
 
 		/** @copydoc GpuBufferCore::writeData */
-        void writeData(UINT32 offset, UINT32 length, const void* pSource,
+        void writeData(UINT32 offset, UINT32 length, const void* source,
 				BufferWriteType writeFlags = BWT_NORMAL, UINT32 queueIdx = 0) override;
 
 		/** @copydoc GpuBufferCore::copyData */

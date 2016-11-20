@@ -110,7 +110,11 @@ namespace BansheeEngine
 		 */
 		SPtr<GpuPipelineParamInfoCore> getCore() const;
 
-		/** Constructs the object using the provided GPU parameter descriptors. */
+		/** 
+		 * Constructs the object using the provided GPU parameter descriptors. 
+		 * 
+		 * @param[in]	desc	Object containing parameter descriptions for individual GPU program stages.
+		 */
 		static SPtr<GpuPipelineParamInfo> create(const GPU_PIPELINE_PARAMS_DESC& desc);
 
 	private:

@@ -126,10 +126,10 @@ namespace BansheeEngine
 		GLSupport* getGLSupport() const { return mGLSupport; }
 
 	protected:
-		/** @copydoc RenderAPICore::initializePrepare */
+		/** @copydoc RenderAPICore::initialize */
 		void initialize() override;
 
-		/** @copydoc RenderAPICore::initializeFinalize */
+		/** @copydoc RenderAPICore::initializeWithWindow */
 		void initializeWithWindow(const SPtr<RenderWindowCore>& primaryWindow) override;
 
 		/** @copydoc RenderAPICore::destroyCore */

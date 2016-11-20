@@ -124,7 +124,7 @@ namespace BansheeEngine
 		 */
 		SPtr<GpuBufferCore> createGpuBuffer(const GPU_BUFFER_DESC& desc, GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
-		/** @copydoc GpuParamsCore::create(const SPtr<GpuPipelineParamInfoCore>&) */
+		/** @copydoc GpuParamsCore::create(const SPtr<GpuPipelineParamInfoCore>&, GpuDeviceFlags) */
 		SPtr<GpuParamsCore> createGpuParams(const SPtr<GpuPipelineParamInfoCore>& paramInfo,
 											GpuDeviceFlags deviceMask = GDF_DEFAULT);
 	protected:

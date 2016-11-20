@@ -244,12 +244,15 @@ namespace BansheeEngine
 		static SPtr<GpuParamsCore> create(const SPtr<GraphicsPipelineStateCore>& pipelineState,
 										  GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
-		/** @copydoc GpuParams::create(const SPtr<ComputePipelineStateCore>&) */
+		/** 
+		 * @copydoc GpuParams::create(const SPtr<ComputePipelineState>&) 
+		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the buffer be created on.
+		 */
 		static SPtr<GpuParamsCore> create(const SPtr<ComputePipelineStateCore>& pipelineState,
 										  GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
 		/** 
-		 * @copydoc GpuParams::create(const SPtr<ComputePipelineStateCore>&)
+		 * @copydoc GpuParams::create(const SPtr<GpuPipelineParamInfo>&)
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the buffer be created on.
 		 */
 		static SPtr<GpuParamsCore> create(const SPtr<GpuPipelineParamInfoCore>& paramInfo,

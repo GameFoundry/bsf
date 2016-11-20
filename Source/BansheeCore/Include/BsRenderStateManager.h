@@ -21,7 +21,11 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT RenderStateManager : public Module <RenderStateManager>
 	{
 	public:
-		/**	Creates and initializes a new SamplerState. */
+		/**	
+		 * Creates and initializes a new SamplerState. 
+		 * 
+		 * @param[in]	desc	Object describing the sampler state to create.
+		 */
 		SPtr<SamplerState> createSamplerState(const SAMPLER_STATE_DESC& desc) const;
 
 		/** Creates and initializes a new DepthStencilState. */
@@ -33,10 +37,18 @@ namespace BansheeEngine
 		/**	Creates and initializes a new BlendState. */
 		SPtr<BlendState> createBlendState(const BLEND_STATE_DESC& desc) const;
 
-		/**	Creates and initializes a new GraphicsPipelineState. */
+		/**	
+		 * Creates and initializes a new GraphicsPipelineState. 
+		 *
+		 * @param[in]	desc	Object describing the pipeline to create.
+		 */
 		SPtr<GraphicsPipelineState> createGraphicsPipelineState(const PIPELINE_STATE_DESC& desc) const;
 
-		/**	Creates and initializes a new ComputePipelineState. */
+		/**	
+		 * Creates and initializes a new ComputePipelineState. 
+		 *
+		 * @param[in]	program		Compute GPU program to be executed by the pipeline.
+		 */
 		SPtr<ComputePipelineState> createComputePipelineState(const SPtr<GpuProgram>& program) const;
 
 		/** Creates an uninitialized sampler state. Requires manual initialization after creation. */
