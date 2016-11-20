@@ -2,6 +2,15 @@ Manuals									{#manuals}
 ===============
 [TOC]
 
+# User guides
+
+- [Startup and main loop](@ref startup)
+- [Scene objects and components](@ref scenesAndComponents)
+- Resources
+ - [Importing](@ref importing)
+ 
+# Developer guides
+
 Here you will find a list of all manuals relating to Banshee's native code, primarily focusing on explaining the engine internals instead of the user-facing code. The manuals are roughly ordered in the way they should be read, although if you are interested in a specific topic feel free to skip ahead as manuals often contain cross references to prerequisite manuals.
 
 Name                                      | Description

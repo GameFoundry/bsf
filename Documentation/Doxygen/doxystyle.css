@@ -38,7 +38,7 @@ a:visited {
 
 div.contents {
 	margin: auto;
-	width: 960px;
+	width: 700px;
 	padding-bottom: 170px;
 }
 
@@ -48,7 +48,7 @@ div.contents {
 	background-image: none;
     font-family: Lato,'Lucida Grande',Geneva,Helvetica,Arial,sans-serif;
 	border-bottom: none;
-	width: 960px;
+	width: 700px;
 	margin: auto;
 }
 
@@ -88,7 +88,7 @@ div.contents {
 	background-color: rgba(222, 222, 222, 0.46);
 	background-image: none;
 	border: none;
-	width: 960px;
+	width: 700px;
 	margin: auto;
 }
 
@@ -121,7 +121,7 @@ div.contents {
 
 /* Page header */
 div.header {
-	width: 960px;
+	width: 700px;
 	margin: auto auto 15px auto;
 	background-image: none;
 	border-bottom: 1px solid rgba(89, 160, 195, 0.86);
@@ -216,6 +216,11 @@ div.toc {
 }
 
 /* Other */
+
+blockquote {
+	border-left: 4px solid #ffb028;
+	margin: 10px 8px 0 4px;
+}
 
 #titlearea {
 	border-bottom: none;
