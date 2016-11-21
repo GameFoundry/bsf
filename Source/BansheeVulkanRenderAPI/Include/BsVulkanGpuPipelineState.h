@@ -12,7 +12,7 @@ namespace bs
 	 *  @{
 	 */
 
-	 /** Wrapper around a Vulkan graphics pipeline that manages its usage and lifetime. */
+	/** Wrapper around a Vulkan graphics pipeline that manages its usage and lifetime. */
 	class VulkanPipeline : public VulkanResource
 	{
 	public:

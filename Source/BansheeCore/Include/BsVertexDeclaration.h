@@ -53,7 +53,8 @@ namespace bs
 		VET_UINT2 = 22,  /**< 2D 32-bit signed integer value */
 		VET_UINT3 = 23,  /**< 3D 32-bit signed integer value */
 		VET_UBYTE4_NORM = 24, /**< 4D 8-bit unsigned integer interpreted as a normalized value in [0, 1] range. */
-		VET_COUNT // Keep at end
+		VET_COUNT, // Keep at end before VET_UNKNOWN
+		VET_UNKNOWN = 0xffff
     };
 
 	/**	Describes a single vertex element in a vertex declaration. */

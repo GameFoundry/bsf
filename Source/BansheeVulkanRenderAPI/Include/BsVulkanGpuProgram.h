@@ -3,6 +3,7 @@
 #pragma once
 
 #include "BsVulkanPrerequisites.h"
+#include "BsVulkanResource.h"
 #include "BsGpuProgram.h"
 
 namespace bs
@@ -10,6 +11,20 @@ namespace bs
 	/** @addtogroup Vulkan
 	 *  @{
 	 */
+
+	/** Wrapper around a Vulkan shader module (GPU program) that manages its usage and lifetime. */
+	class VulkanShaderModule : public VulkanResource
+	{
+	public:
+		VulkanShaderModule(VulkanResourceManager* owner, VkShaderModule module);
+		~VulkanShaderModule();
+
+		/** Returns the internal handle to the Vulkan object. */
+		VkShaderModule getHandle() const { return mModule; }
+
+	private:
+		VkShaderModule mModule;
+	};
 
 	/**	Abstraction of a Vulkan shader object. */
 	class 
@@ -19,10 +34,10 @@ namespace bs
 		virtual ~VulkanGpuProgramCore();
 
 		/** 
-		 * Returns a handle to the Vulkan shader module, on the specified device. If program device mask doesn't 
-		 * include the provided device, null is returned.  
+		 * Returns the shader module for the specified device. If program device mask doesn't include the provided device, 
+		 * null is returned.  
 		 */
-		VkShaderModule getHandle(UINT32 deviceIdx) const;
+		VulkanShaderModule* getShaderModule(UINT32 deviceIdx) const { return mModules[deviceIdx]; }
 
 	protected:
 		friend class VulkanGLSLProgramFactory;
@@ -33,6 +48,8 @@ namespace bs
 		void initialize() override;
 
 	private:
+		GpuDeviceFlags mDeviceMask;
+		VulkanShaderModule* mModules[BS_MAX_DEVICES];
 	};
 
 	/** @} */
