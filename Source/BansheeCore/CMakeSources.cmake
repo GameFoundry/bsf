@@ -334,7 +334,7 @@ set(BS_BANSHEECORE_INC_RTTI
 	"Include/BsCameraRTTI.h"
 	"Include/BsPostProcessSettingsRTTI.h"
 	"Include/BsMorphShapesRTTI.h"
-	"BsAudioClipImportOptionsRTTI.h"
+	"Include/BsAudioClipImportOptionsRTTI.h"
 )
 
 set(BS_BANSHEECORE_SRC_RENDERER
