@@ -19,7 +19,7 @@ namespace bs
 		~VulkanGpuParamBlockBufferCore();
 
 		/** @copydoc GpuParamBlockBufferCore::writeToGPU */
-		void writeToGPU(const UINT8* data) override;
+		void writeToGPU(const UINT8* data, UINT32 queueIdx = 0) override;
 
 		/** 
 		 * Gets the resource wrapping the buffer object, on the specified device. If GPU param block buffer's device mask

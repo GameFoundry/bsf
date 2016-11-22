@@ -16,6 +16,7 @@
 #include "BsVulkanCommandBuffer.h"
 #include "BsVulkanGpuParams.h"
 #include "BsVulkanVertexInputManager.h"
+#include "BsVulkanGpuParamBlockBuffer.h"
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 	#include "Win32/BsWin32VideoModeInfo.h"
@@ -331,6 +332,24 @@ namespace bs
 		VulkanCommandBuffer* cb = getCB(commandBuffer);
 		VulkanCmdBuffer* vkCB = cb->getInternal();
 
+		UINT32 globalQueueIdx = CommandSyncMask::getGlobalQueueIdx(cb->getType(), cb->getQueueIdx());
+
+		for (UINT32 i = 0; i < GPT_COUNT; i++)
+		{
+			SPtr<GpuParamDesc> paramDesc = gpuParams->getParamDesc((GpuProgramType)i);
+			if (paramDesc == nullptr)
+				return;
+
+			// Flush all param block buffers
+			for (auto iter = paramDesc->paramBlocks.begin(); iter != paramDesc->paramBlocks.end(); ++iter)
+			{
+				SPtr<GpuParamBlockBufferCore> buffer = gpuParams->getParamBlockBuffer(iter->second.set, iter->second.slot);
+
+				if (buffer != nullptr)
+					buffer->flushToGPU(globalQueueIdx);
+			}
+		}
+
 		vkCB->setGpuParams(gpuParams);
 
 		BS_INC_RENDER_STAT(NumGpuParamBinds);
@@ -488,6 +507,7 @@ namespace bs
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
+		executeCommands(mMainCommandBuffer, syncMask);
 		target->swapBuffers(syncMask);
 
 		// See if any command buffers finished executing

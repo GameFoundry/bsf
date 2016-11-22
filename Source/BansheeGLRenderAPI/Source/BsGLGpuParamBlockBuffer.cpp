@@ -36,7 +36,7 @@ namespace bs
 		GpuParamBlockBufferCore::initialize();
 	}
 
-	void GLGpuParamBlockBufferCore::writeToGPU(const UINT8* data)
+	void GLGpuParamBlockBufferCore::writeToGPU(const UINT8* data, UINT32 queueIdx)
 	{
 		glBindBuffer(GL_UNIFORM_BUFFER, mGLHandle);
 		glBufferSubData(GL_UNIFORM_BUFFER, 0 , mSize, data);

@@ -1092,6 +1092,9 @@ namespace bs
 		if (mBuffer->isRecording())
 			mBuffer->end();
 
+		if (!mBuffer->isReadyForSubmit()) // Possibly nothing was recorded in the buffer
+			return;
+
 		mBuffer->submit(mQueue, mQueueIdx, syncMask);
 
 		gVulkanCBManager().refreshStates(mDeviceIdx);

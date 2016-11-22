@@ -30,9 +30,9 @@ namespace bs
 		GpuParamBlockBufferCore::initialize();
 	}
 
-	void VulkanGpuParamBlockBufferCore::writeToGPU(const UINT8* data)
+	void VulkanGpuParamBlockBufferCore::writeToGPU(const UINT8* data, UINT32 queueIdx)
 	{
-		mBuffer->writeData(0, mSize, data, BWT_DISCARD);
+		mBuffer->writeData(0, mSize, data, BWT_DISCARD, queueIdx);
 
 		BS_INC_RENDER_STAT_CAT(ResWrite, RenderStatObject_GpuParamBuffer);
 	}

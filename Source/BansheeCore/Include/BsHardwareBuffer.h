@@ -32,16 +32,7 @@ namespace bs
 		 *							requested it here).
 		 * @param[in]	deviceIdx	Index of the device whose memory to map. If the buffer doesn't exist on this device,
 		 *							the method returns null.							
-		 * @param[in]	queueIdx	Device queue to perform any read/write operations on. Using a non-default queue index
-		 *							allows the GPU to perform write or read operations while executing rendering or compute
-		 *							operations on the same time.
-		 * 
-		 *							Note that when writing to a buffer that is being used on a command buffer with a
-		 *							different queue you must ensure to provide the command buffer with a valid sync mask
-		 *							so it knows to wait before the write operation completes.
-		 *							
-		 *							This value is a global queue index which encodes both the queue type and queue index.
-		 *							Retrieve it from CommandSyncMask::getGlobalQueueIdx().
+		 * @param[in]	queueIdx	Device queue to perform any read/write operations on. See @ref queuesDoc.
 		 */
 		virtual void* lock(UINT32 offset, UINT32 length, GpuLockOptions options, UINT32 deviceIdx = 0, UINT32 queueIdx = 0)
         {
@@ -62,16 +53,7 @@ namespace bs
 		 *							requested it here).
 		 * @param[in]	deviceIdx	Index of the device whose memory to map. If the buffer doesn't exist on this device,
 		 *							the method returns null.
-		 * @param[in]	queueIdx	Device queue to perform any read/write operations on. Using a non-default queue index
-		 *							allows the GPU to perform write or read operations while executing rendering or compute
-		 *							operations on the same time.
-		 *
-		 *							Note that when writing to a buffer that is being used on a command buffer with a
-		 *							different queue you must ensure to provide the command buffer with a valid sync mask
-		 *							so it knows to wait before the write operation completes.
-		 *
-		 *							This value is a global queue index which encodes both the queue type and queue index.
-		 *							Retrieve it from CommandSyncMask::getGlobalQueueIdx().
+		 * @param[in]	queueIdx	Device queue to perform any read/write operations on. See @ref queuesDoc.
 		 */
         void* lock(GpuLockOptions options, UINT32 deviceIdx = 0, UINT32 queueIdx = 0)
         {
@@ -97,12 +79,7 @@ namespace bs
 		 *							of the buffer (@p offset is only applied to the source).
 		 * @param[in]	deviceIdx	Index of the device whose memory to read. If the buffer doesn't exist on this device,
 		 *							no data will be read.		
-		 * @param[in]	queueIdx	Device queue to perform the read operation on. Using a non-default queue index
-		 *							allows the GPU to perform read operations while executing rendering or compute
-		 *							operations on the same time.
-		 *
-		 *							This value is a global queue index which encodes both the queue type and queue index.
-		 *							Retrieve it from CommandSyncMask::getGlobalQueueIdx().
+		 * @param[in]	queueIdx	Device queue to perform the read operation on. See @ref queuesDoc.
 		 */
         virtual void readData(UINT32 offset, UINT32 length, void* dest, UINT32 deviceIdx = 0, UINT32 queueIdx = 0) = 0;
 
@@ -114,16 +91,7 @@ namespace bs
 		 * @param[in]	source		Source buffer containing the data to write. Data is read from the start of the buffer
 		 *							(@p offset is only applied to the destination).
 		 * @param[in]	writeFlags	Optional write flags that may affect performance.
-		 * @param[in]	queueIdx	Device queue to perform any write operations on. Using a non-default queue index
-		 *							allows the GPU to perform write operations while executing rendering or compute
-		 *							operations on the same time.
-		 *
-		 *							Note that when writing to a buffer that is being used on a command buffer with a
-		 *							different queue you must ensure to provide the command buffer with a valid sync mask
-		 *							so it knows to wait before the write operation completes.
-		 *
-		 *							This value is a global queue index which encodes both the queue type and queue index.
-		 *							Retrieve it from CommandSyncMask::getGlobalQueueIdx().
+		 * @param[in]	queueIdx	Device queue to perform the write operation on. See @ref queuesDoc.
 		 */
         virtual void writeData(UINT32 offset, UINT32 length, const void* source,
 				BufferWriteType writeFlags = BWT_NORMAL, UINT32 queueIdx = 0) = 0;
@@ -137,16 +105,7 @@ namespace bs
 		 * @param[in]	length				Size of the data to copy, in bytes.
 		 * @param[in]	discardWholeBuffer	Specify true if the data in the current buffer can be entirely discarded. This
 		 *									may improve performance.
-		 * @param[in]	queueIdx			Device queue to perform any read/write operations on. Using a non-default queue
-		 *									index allows the GPU to perform write or read operations while executing 
-		 *									rendering or compute operations on the same time.
-		 *									
-		 *									Note that when writing to a buffer that is being used on a command buffer with a
-		 *									different queue you must ensure to provide the command buffer with a valid sync
-		 *									mask so it knows to wait before the write operation completes.
-		 *
-		 *									This value is a global queue index which encodes both the queue type and queue
-		 *									index. Retrieve it from CommandSyncMask::getGlobalQueueIdx().
+		 * @param[in]	queueIdx			Device queue to perform the copy operation on. See @ref queuesDoc.
 		 */
 		virtual void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, 
 			UINT32 dstOffset, UINT32 length, bool discardWholeBuffer = false, UINT32 queueIdx = 0)
@@ -161,16 +120,7 @@ namespace bs
 		 * Copy data from the provided buffer into this buffer. If buffers are not the same size, smaller size will be used.
 		 * 
 		 * @param[in]	srcBuffer	Hardware buffer to copy from.
-		 * @param[in]	queueIdx	Device queue to perform any read/write operations on. Using a non-default queue index
-		 *							allows the GPU to perform write or read operations while executing rendering or compute
-		 *							operations on the same time.
-		 *
-		 *							Note that when writing to a buffer that is being used on a command buffer with a
-		 *							different queue you must ensure to provide the command buffer with a valid sync mask
-		 *							so it knows to wait before the write operation completes.
-		 *
-		 *							This value is a global queue index which encodes both the queue type and queue index.
-		 *							Retrieve it from CommandSyncMask::getGlobalQueueIdx().
+		 * @param[in]	queueIdx	Device queue to perform the copy operation on. See @ref queuesDoc.
 		 */
 		virtual void copyData(HardwareBuffer& srcBuffer, UINT32 queueIdx = 0)
 		{

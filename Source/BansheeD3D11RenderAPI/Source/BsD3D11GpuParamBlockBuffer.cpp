@@ -46,7 +46,7 @@ namespace bs
 		return mBuffer->getD3DBuffer();
 	}
 
-	void D3D11GpuParamBlockBufferCore::writeToGPU(const UINT8* data)
+	void D3D11GpuParamBlockBufferCore::writeToGPU(const UINT8* data, UINT32 queueIdx)
 	{
 		mBuffer->writeData(0, mSize, data, BWT_DISCARD);
 

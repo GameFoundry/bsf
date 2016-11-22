@@ -53,17 +53,19 @@ namespace bs
 		 * @param[in]	type		Determines what type of commands can be added to the command buffer.
 		 * @param[in]	deviceIdx	Index of the GPU the command buffer will be used to queue commands on. 0 is always
 		 *							the primary available GPU.
-		 * @param[in]	queueIdx	Index of the hardware queue the command buffer will be used on. Command buffers with
+		 * @param[in]	queueIdx	Index of the GPU queue the command buffer will be used on. Command buffers with
 		 *							the same index will execute sequentially, but command buffers with different queue
-		 *							indices may execute in parallel, for a potential performance improvement. Queue indices
-		 *							are unique per buffer type (e.g. upload index 0 and graphics index 0 may map to 
-		 *							different queues internally). Must be in range [0, 7].
+		 *							indices may execute in parallel, for a potential performance improvement. 
+		 *							
+		 *							Caller must ensure to synchronize operations executing on different queues via
+		 *							sync masks. Command buffer dependant on another command buffer should provide a sync
+		 *							mask when being submitted (see RenderAPICore::executeCommands).
+		 *							
+		 *							Queue indices are unique per buffer type (e.g. upload index 0 and graphics index 0 may
+		 *							map to different queues internally). Must be in range [0, 7].
 		 * @param[in]	secondary	If true the command buffer will not be allowed to execute on its own, but it can
 		 *							be appended to a primary command buffer. 
 		 * @return					New CommandBuffer instance.
-		 * 
-		 * @note The parallelism provided by @p queueIdx is parallelism on the GPU itself, it has nothing to do with CPU
-		 *		 parallelism or threads.
 		 */
 		static SPtr<CommandBuffer> create(GpuQueueType type, UINT32 deviceIdx = 0, UINT32 queueIdx = 0,
 			bool secondary = false);

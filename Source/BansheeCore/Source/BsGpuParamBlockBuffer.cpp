@@ -65,11 +65,11 @@ namespace bs
 		mGPUBufferDirty = true;
 	}
 
-	void GpuParamBlockBufferCore::flushToGPU()
+	void GpuParamBlockBufferCore::flushToGPU(UINT32 queueIdx)
 	{
 		if (mGPUBufferDirty)
 		{
-			writeToGPU(mCachedData);
+			writeToGPU(mCachedData, queueIdx);
 			mGPUBufferDirty = false;
 		}
 	}

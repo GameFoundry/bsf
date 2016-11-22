@@ -47,7 +47,7 @@ namespace bs
 																															\
 		const SPtr<GpuParamBlockBufferCore>& getBuffer() const { return mBuffer; }											\
 		const GpuParamBlockDesc& getDesc() const { return mBlockDesc; }														\
-		void flushToGPU() {	mBuffer->flushToGPU(); }																		\
+		void flushToGPU(UINT32 queueIdx = 0) { mBuffer->flushToGPU(queueIdx); }												\
 																															\
 	private:																												\
 		struct META_FirstEntry {};																							\

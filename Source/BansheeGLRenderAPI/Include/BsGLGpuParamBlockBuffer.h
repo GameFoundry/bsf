@@ -19,7 +19,7 @@ namespace bs
 		~GLGpuParamBlockBufferCore();
 
 		/** @copydoc GpuParamBlockBufferCore::writeToGPU */
-		void writeToGPU(const UINT8* data) override;
+		void writeToGPU(const UINT8* data, UINT32 queueIdx = 0) override;
 
 		/**	Returns internal OpenGL uniform buffer handle. */
 		GLuint getGLHandle() const { return mGLHandle; }

@@ -22,16 +22,26 @@ namespace bs
 		GpuParamBlockBufferCore(UINT32 size, GpuParamBlockUsage usage, GpuDeviceFlags deviceMask);
 		virtual ~GpuParamBlockBufferCore();
 
-		/** Writes all of the specified data to the buffer. Data size must be the same size as the buffer. */
-		virtual void writeToGPU(const UINT8* data) = 0;
+		/** 
+		 * Writes all of the specified data to the buffer. Data size must be the same size as the buffer. 
+		 *
+		 * @param[in]	data		Data to write. Must match the size of the buffer.
+		 * @param[in]	queueIdx	Device queue to perform the write operation on. See @ref queuesDoc.
+		 */
+		virtual void writeToGPU(const UINT8* data, UINT32 queueIdx = 0) = 0;
 
-		/** Flushes any cached data into the actual GPU buffer. */
-		void flushToGPU();
+		/** 
+		 * Flushes any cached data into the actual GPU buffer. 
+		 *
+		 * @param[in]	queueIdx	Device queue to perform the write operation on. See @ref queuesDoc.
+		 */
+		void flushToGPU(UINT32 queueIdx = 0);
 
 		/**
 		 * Write some data to the specified offset in the buffer. 
 		 *
-		 * @note	All values are in bytes. Actual hardware buffer update is delayed until rendering.
+		 * @note	All values are in bytes. Actual hardware buffer update is delayed until rendering or until 
+		 *			flushToGPU() is called.
 		 */
 		void write(UINT32 offset, const void* data, UINT32 size);
 
@@ -45,7 +55,8 @@ namespace bs
 		/**
 		 * Clear specified section of the buffer to zero.
 		 *
-		 * @note	All values are in bytes. Actual hardware buffer update is delayed until rendering.
+		 * @note	All values are in bytes. Actual hardware buffer update is delayed until rendering or until 
+		 *			flushToGPU() is called.
 		 */
 		void zeroOut(UINT32 offset, UINT32 size);
 

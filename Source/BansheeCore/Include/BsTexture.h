@@ -343,12 +343,7 @@ namespace bs
 		 *									discarded. This can make the operation faster. Resources with certain buffer 
 		 *									types might require this flag to be in a specific state otherwise the operation 
 		 *									will fail.
-		 * @param[in]	queueIdx			Device queue to perform the write operation on. Using a non-default queue index
-		 *									allows the GPU to perform write operations while executing rendering or compute
-		 *									operations on the same time.
-		 *									
-		 *									This value is a global queue index which encodes both the queue type and queue
-		 *									index. Retrieve it from CommandSyncMask::getGlobalQueueIdx().									
+		 * @param[in]	queueIdx			Device queue to perform the write operation on. See @ref queuesDoc.								
 		 */
 		virtual void writeSubresource(UINT32 subresourceIdx, const PixelData& data, bool discardEntireBuffer,
 									  UINT32 queueIdx = 0);
@@ -361,12 +356,7 @@ namespace bs
 		 *									allocateSubresourceBuffer() to ensure it is of valid type and size.
 		 * @param[in]	deviceIdx			Index of the device whose memory to read. If the buffer doesn't exist on this
 		 *									device, no data will be read.
-		 * @param[in]	queueIdx			Device queue to perform the read operation on. Using a non-default queue index
-		 *									allows the GPU to perform read operations while executing rendering or compute
-		 *									operations on the same time.
-		 *
-		 *									This value is a global queue index which encodes both the queue type and queue
-		 *									index. Retrieve it from CommandSyncMask::getGlobalQueueIdx().
+		 * @param[in]	queueIdx			Device queue to perform the read operation on. See @ref queuesDoc.
 		 */
 		virtual void readSubresource(UINT32 subresourceIdx, PixelData& data, UINT32 deviceIdx = 0, UINT32 queueIdx = 0);
 
@@ -378,17 +368,7 @@ namespace bs
 		 * @param[in]	face		(optional) Texture face to lock.
 		 * @param[in]	deviceIdx	Index of the device whose memory to map. If the buffer doesn't exist on this device,
 		 *							the method returns null.
-		 * @param[in]	queueIdx	Device queue to perform any read/write operations on. Using a non-default queue index
-		 *							allows the GPU to perform write or read operations while executing rendering or compute
-		 *							operations on the same time.
-		 *
-		 *							Note that when writing to a texture that is being used on a command buffer with a
-		 *							different queue you must ensure to provide the command buffer with a valid sync mask
-		 *							so it knows to wait before the write operation completes.
-		 *
-		 *							This value is a global queue index which encodes both the queue type and queue index.
-		 *							Retrieve it from CommandSyncMask::getGlobalQueueIdx().
-		 * @return					Pointer to the buffer data. Only valid until you call unlock().
+		 * @param[in]	queueIdx	Device queue to perform the read/write operations on. See @ref queuesDoc.
 		 * 			
 		 * @note	
 		 * If you are just reading or writing one block of data use readData()/writeData() methods as they can be much faster
@@ -414,16 +394,7 @@ namespace bs
 		 * @param[in]	srcSubresourceIdx	Index of the subresource to copy from.
 		 * @param[in]	destSubresourceIdx	Index of the subresource to copy to.
 		 * @param[in]	target				Texture that contains the destination subresource.
-		 * @param[in]	queueIdx			Device queue to perform any read/write operations on. Using a non-default queue
-		 *									index allows the GPU to perform write or read operations while executing
-		 *									rendering or compute operations on the same time.
-		 *
-		 *									Note that when writing to a texture that is being used on a command buffer with
-		 *									a different queue you must ensure to provide the command buffer with a valid
-		 *									sync mask so it knows to wait before the write operation completes.
-		 *
-		 *									This value is a global queue index which encodes both the queue type and queue
-		 *									index. Retrieve it from CommandSyncMask::getGlobalQueueIdx().
+		 * @param[in]	queueIdx			Device queue to perform the copy operation on. See @ref queuesDoc.
 		 */
 		void copy(UINT32 srcSubresourceIdx, UINT32 destSubresourceIdx, const SPtr<TextureCore>& target, UINT32 queueIdx = 0);
 
@@ -435,12 +406,7 @@ namespace bs
 		 * @param[in]	face		(optional) Texture face to read from.
 		 * @param[in]	deviceIdx	Index of the device whose memory to read. If the buffer doesn't exist on this device,
 		 *							no data will be read.
-		 * @param[in]	queueIdx	Device queue to perform the read operation on. Using a non-default queue index
-		 *							allows the GPU to perform read operations while executing rendering or compute
-		 *							operations on the same time.
-		 *
-		 *							This value is a global queue index which encodes both the queue type and queue index.
-		 *							Retrieve it from CommandSyncMask::getGlobalQueueIdx().
+		 * @param[in]	queueIdx	Device queue to perform the read operation on. See @ref queuesDoc.
 		 */
 		virtual void readData(PixelData& dest, UINT32 mipLevel = 0, UINT32 face = 0, UINT32 deviceIdx = 0,
 							  UINT32 queueIdx = 0) = 0;
@@ -453,16 +419,7 @@ namespace bs
 		 * @param[in]	face				(optional) Texture face to write into.
 		 * @param[in]	discardWholeBuffer	(optional) If true any existing texture data will be discard. This can improve 
 		 *									performance of the write operation.
-		 * @param[in]	queueIdx			Device queue to perform any write operations on. Using a non-default queue index
-		 *									allows the GPU to perform write operations while executing rendering or compute
-		 *									operations on the same time.
-		 *
-		 *									Note that when writing to a texture that is being used on a command buffer with
-		 *									a different queue you must ensure to provide the command buffer with a valid
-		 *									sync mask so it knows to wait before the write operation completes.
-		 *
-		 *									This value is a global queue index which encodes both the queue type and queue
-		 *									index. Retrieve it from CommandSyncMask::getGlobalQueueIdx().
+		 * @param[in]	queueIdx			Device queue to perform the write operation on. See @ref queuesDoc.
 		 */
 		virtual void writeData(const PixelData& src, UINT32 mipLevel = 0, UINT32 face = 0, bool discardWholeBuffer = false,
 							   UINT32 queueIdx = 0) = 0;

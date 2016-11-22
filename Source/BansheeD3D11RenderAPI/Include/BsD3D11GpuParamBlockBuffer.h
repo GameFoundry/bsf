@@ -19,7 +19,7 @@ namespace bs
 		~D3D11GpuParamBlockBufferCore();
 
 		/** @copydoc GpuParamBlockBufferCore::writeToGPU */
-		void writeToGPU(const UINT8* data) override;
+		void writeToGPU(const UINT8* data, UINT32 queueIdx = 0) override;
 
 		/**	Returns internal DX11 buffer object. */
 		ID3D11Buffer* getD3D11Buffer() const;
