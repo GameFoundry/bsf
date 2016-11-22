@@ -62,6 +62,12 @@ namespace bs
 		 */
 		VkPipelineLayout getPipelineLayout(UINT32 deviceIdx) const;
 
+		/** 
+		 * Registers any resources used by the pipeline with the provided command buffer. This should be called whenever
+		 * a pipeline is bound to a command buffer.
+		 */
+		void registerPipelineResources(VulkanCmdBuffer* cmdBuffer);
+
 	protected:
 		friend class VulkanRenderStateCoreManager;
 
@@ -160,6 +166,12 @@ namespace bs
 		 * device mask provided on pipeline creation, null is returned.
 		 */
 		VkPipelineLayout getPipelineLayout(UINT32 deviceIdx) const;
+
+		/** 
+		 * Registers any resources used by the pipeline with the provided command buffer. This should be called whenever
+		 * a pipeline is bound to a command buffer.
+		 */
+		void registerPipelineResources(VulkanCmdBuffer* cmdBuffer);
 
 	protected:
 		friend class VulkanRenderStateCoreManager;

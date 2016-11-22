@@ -479,6 +479,7 @@ namespace bs
 		mComputePipeline = nullptr;
 		mGfxPipelineRequiresBind = true;
 		mCmpPipelineRequiresBind = true;
+		mDescriptorSetsBindState = DescriptorSetBindFlag::Graphics | DescriptorSetBindFlag::Compute;
 	}
 
 	void VulkanCmdBuffer::refreshFenceStatus()
@@ -832,6 +833,7 @@ namespace bs
 		if (pipeline == nullptr)
 			return false;
 
+		mGraphicsPipeline->registerPipelineResources(this);
 		registerResource(pipeline, VulkanUseFlag::Read);
 
 		vkCmdBindPipeline(mCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->getHandle());
@@ -963,6 +965,7 @@ namespace bs
 				return;
 
 			registerResource(pipeline, VulkanUseFlag::Read);
+			mComputePipeline->registerPipelineResources(this);
 
 			vkCmdBindPipeline(mCmdBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipeline->getHandle());
 			mCmpPipelineRequiresBind = false;

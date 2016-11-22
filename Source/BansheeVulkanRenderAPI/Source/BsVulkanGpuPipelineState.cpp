@@ -8,6 +8,7 @@
 #include "BsVulkanRenderAPI.h"
 #include "BsVulkanGpuPipelineParamInfo.h"
 #include "BsVulkanVertexInputManager.h"
+#include "BsVulkanCommandBuffer.h"
 #include "BsRasterizerState.h"
 #include "BsDepthStencilState.h"
 #include "BsBlendState.h"
@@ -327,6 +328,30 @@ namespace bs
 		return mPerDeviceData[deviceIdx].pipelineLayout;
 	}
 
+	void VulkanGraphicsPipelineStateCore::registerPipelineResources(VulkanCmdBuffer* cmdBuffer)
+	{
+		UINT32 deviceIdx = cmdBuffer->getDeviceIdx();
+
+		std::array<VulkanGpuProgramCore*, 5> programs = {
+			static_cast<VulkanGpuProgramCore*>(mData.vertexProgram.get()),
+			static_cast<VulkanGpuProgramCore*>(mData.hullProgram.get()),
+			static_cast<VulkanGpuProgramCore*>(mData.domainProgram.get()),
+			static_cast<VulkanGpuProgramCore*>(mData.geometryProgram.get()),
+			static_cast<VulkanGpuProgramCore*>(mData.fragmentProgram.get()),
+		};
+
+		for(auto& entry : programs)
+		{
+			if (entry != nullptr)
+			{
+				VulkanShaderModule* module = entry->getShaderModule(deviceIdx);
+
+				if(module != nullptr)
+					cmdBuffer->registerResource(module, VulkanUseFlag::Read);
+			}
+		}
+	}
+
 	VulkanPipeline* VulkanGraphicsPipelineStateCore::createPipeline(UINT32 deviceIdx, VulkanFramebuffer* framebuffer,
 		bool readOnlyDepth, bool preserveContents, DrawOperationType drawOp, const SPtr<VulkanVertexInput>& vertexInput)
 	{
@@ -393,7 +418,13 @@ namespace bs
 				continue;
 
 			VkPipelineShaderStageCreateInfo& stageCI = mShaderStageInfos[stageOutputIdx];
-			stageCI.module = program->getHandle(deviceIdx);
+
+			VulkanShaderModule* module = program->getShaderModule(i);
+
+			if (module != nullptr)
+				stageCI.module = module->getHandle();
+			else
+				stageCI.module = VK_NULL_HANDLE;
 
 			stageOutputIdx++;
 		}
@@ -475,7 +506,13 @@ namespace bs
 				for (UINT32 j = 0; j < numLayouts; j++)
 					layouts[j] = vkParamInfo.getLayout(i, j);
 
-				stageCI.module = vkProgram->getHandle(i);
+				VulkanShaderModule* module = vkProgram->getShaderModule(i);
+
+				if (module != nullptr)
+					stageCI.module = module->getHandle();
+				else
+					stageCI.module = VK_NULL_HANDLE;
+
 				pipelineCI.layout = descManager.getPipelineLayout(layouts, numLayouts);
 
 				VkPipeline pipeline;
@@ -507,5 +544,19 @@ namespace bs
 	VkPipelineLayout VulkanComputePipelineStateCore::getPipelineLayout(UINT32 deviceIdx) const
 	{
 		return mPerDeviceData[deviceIdx].pipelineLayout;
+	}
+
+	void VulkanComputePipelineStateCore::registerPipelineResources(VulkanCmdBuffer* cmdBuffer)
+	{
+		UINT32 deviceIdx = cmdBuffer->getDeviceIdx();
+
+		VulkanGpuProgramCore* program = static_cast<VulkanGpuProgramCore*>(mProgram.get());
+		if(program != nullptr)
+		{
+			VulkanShaderModule* module = program->getShaderModule(deviceIdx);
+
+			if (module != nullptr)
+				cmdBuffer->registerResource(module, VulkanUseFlag::Read);
+		}
 	}
 }

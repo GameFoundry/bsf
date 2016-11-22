@@ -557,7 +557,7 @@ namespace bs
 		if (!shader->parse(&resources, 450, false, EShMsgDefault))
 		{
 			mIsCompiled = false;
-			mCompileError = "Compile error: " + toString(shader->getInfoLog());
+			mCompileError = "Compile error: " + String(shader->getInfoLog());
 
 			goto cleanup;
 		}
@@ -567,7 +567,7 @@ namespace bs
 		if (!program->link(EShMsgDefault))
 		{
 			mIsCompiled = false;
-			mCompileError = "Link error: " + toString(program->getInfoLog());
+			mCompileError = "Link error: " + String(program->getInfoLog());
 
 			goto cleanup;
 		}
@@ -598,7 +598,7 @@ namespace bs
 		// Compile shader and create Vulkan module
 		// Note: We provide GLSL code to the driver under the hood instead of using SPIR-V, mainly because of
 		// optimization concerns. Later we can convert to SPIR-V and feed it directly.
-		UINT32 codeSize = source.size() + 3 * sizeof(UINT32);
+		UINT32 codeSize = (UINT32)source.size() + 3 * sizeof(UINT32);
 		UINT32* codeBytes = (UINT32*)bs_stack_alloc(codeSize);
 
 		// Add special header so code is recognized as GLSL
