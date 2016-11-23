@@ -55,7 +55,7 @@ namespace bs
 		void unlockImpl() override;
 
 		/** @copydoc TextureCore::copyImpl */
-		void copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel,
+		void copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 dstFace, UINT32 dstMipLevel,
 					  const SPtr<TextureCore>& target, UINT32 queueIdx = 0) override;
 
 		/** @copydoc TextureCore::readData */

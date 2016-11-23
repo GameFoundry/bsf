@@ -33,11 +33,11 @@ You can also create a non-empty mesh by creating it with a populated @ref bs::Me
 You can access various mesh properties by calling @ref bs::Mesh::getProperties() "Mesh::getProperties()" which will return an instance of @ref bs::MeshProperties "MeshProperties" which contains information such as mesh bounds, number of indices/vertices and sub-meshes. 
  
 # Reading/writing {#meshes_c}
-To read and write from/to the mesh use the @ref bs::Mesh::readSubresource "Mesh::readSubresource" and @ref bs::Mesh::writeSubresource "Mesh::writeSubresource" methods. These expect an index of a sub-resource to read/write to, and a @ref bs::MeshData "MeshData" object.
+To read and write from/to the mesh use the @ref bs::Mesh::readData "Mesh::readData" and @ref bs::Mesh::writeData "Mesh::writeData" methods. These expect a @ref bs::MeshData "MeshData" object as input.
 
-The sub-resource index for a mesh is currently ignored and should be always left as zero.
+@ref bs::MeshData "MeshData" object is just a container for a set of vertices and indices. You can create one manually or use @ref bs::Mesh::allocBuffer "Mesh::allocBuffer" to create the object of valid size and format for the specified mesh. When reading from the mesh the buffer will be filled with vertices/indices from the mesh, and when writing you are expected to populate the object.
 
-@ref bs::MeshData "MeshData" object is just a container for a set of vertices and indices. You can create one manually or use @ref bs::Mesh::allocateSubresourceBuffer "Mesh::allocateSubresourceBuffer" to create the object of valid size and format for the specified mesh. When reading from the mesh the buffer will be filled with vertices/indices from the mesh, and when writing you are expected to populate the object.
+Be aware that read and write operations are asynchronous and you must follow the rules for @ref asyncMethod "asynchronous methods".
 
 ## MeshData {#meshes_c_a}
 You can create @ref bs::MeshData "MeshData" manually by calling @ref bs::MeshData::create "MeshData::create" and providing it with vertex description, index type and number of vertices and indices. You must ensure that the formats and sizes matches the mesh this will be used on.
@@ -118,9 +118,9 @@ indices[5] = 3;
 ~~~~~~~~~~~~~
 
 ## Cached CPU data {#meshes_c_b}
-When you read from a mesh using the @ref bs::Mesh::readSubresource "Mesh::readSubresource" method the read will be performed from the GPU. This is useful if the GPU has in some way modified the mesh, but will also incur a potentially large performance penalty because it will introduce a CPU-GPU synchronization point. In a lot of cases you might just want to read mesh data from a mesh that was imported or created on the CPU in some other way.
+When you read from a mesh using the @ref bs::Mesh::readData "Mesh::readData" method the read will be performed from the GPU. This is useful if the GPU has in some way modified the mesh, but will also incur a potentially large performance penalty because it will introduce a CPU-GPU synchronization point. In a lot of cases you might just want to read mesh data from a mesh that was imported or created on the CPU in some other way.
 
-For this reason @ref bs::Mesh::readData "Mesh::readData" exists. It will read data quickly with little performance impact. However you must create the mesh using the @ref bs::MU_CPUCACHED "MU_CPUCACHED" usage. This also means that the mesh will keep a copy of its data in system memory, so use it sparingly. If the mesh is modified from the GPU this method will not reflect such changes.
+For this reason @ref bs::Mesh::readCachedData "Mesh::readCachedData" exists. It will read data quickly with little performance impact. However you must create the mesh using the @ref bs::MU_CPUCACHED "MU_CPUCACHED" usage. This also means that the mesh will keep a copy of its data in system memory, so use it sparingly. If the mesh is modified from the GPU this method will not reflect such changes.
 
 # Rendering using the mesh {#meshes_d}
 To use a mesh for rendering you need to bind its vertex buffer(s), index buffer, vertex declaration and draw operation using the @ref bs::RenderAPI "RenderAPI". Relevant methods are @ref bs::RenderAPI::setVertexBuffers "RenderAPI::setVertexBuffers", @ref bs::RenderAPI::setIndexBuffer "RenderAPI::setIndexBuffer", @ref bs::RenderAPI::setVertexDeclaration "RenderAPI::setVertexDeclaration" and @ref bs::RenderAPI::setDrawOperation "RenderAPI::setDrawOperation". See below for information about how to retrieve this information from a mesh.
@@ -133,7 +133,7 @@ If working on the core thread you can use the helper @ref bs::RendererUtility::d
 A mesh is a @ref bs::Resource "Resource" and can be saved/loaded like any other. See the [resource](@ref resources) manual.
 
 # Core thread meshes {#meshes_f}
-So far we have only talked about the simulation thread @ref bs::Mesh "Mesh" but have ignored the core thread @ref bs::MeshCore "MeshCore". The functionality between the two is mostly the same, with the major difference being that the core thread version doesn't require a @ref bs::CoreThreadAccessor "CoreAccessor" for access, and you can instead perform operations on it directly.
+So far we have only talked about the simulation thread @ref bs::Mesh "Mesh" but have ignored the core thread @ref bs::MeshCore "MeshCore". The functionality between the two is mostly the same, with the major difference being that the core thread version doesn't have asychronous write/read methods, and those operations are instead performed immediately.
 
 You can also use the core thread version to access and manipulate vertex and index buffers directly (including binding them to the pipeline as described earlier). Use @ref bs::MeshCore::getVertexData "MeshCore::getVertexData" to retrieve information about all @ref bs::VertexBufferCore "vertex buffers", @ref bs::MeshCore::getIndexBuffer "MeshCore::getIndexBuffer" to retrieve the @ref bs::IndexBufferCore "index buffer" and @ref bs::MeshCore::getVertexDesc "MeshCore::getVertexDesc" to retrieve the @ref bs::VertexDataDesc "vertex description".
 

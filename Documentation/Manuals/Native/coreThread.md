@@ -22,37 +22,34 @@ Here are some examples of when the simulation thread needs to interact with the 
 As you can see the communication is one directional. Simulation thread calls into the core thread when it needs to notify it of a certain event. In rare cases the core thread needs to notify the simulation thread (e.g. when the user moves/resizes the window the simulation thread needs to be aware of the new position/size), but this is handled on a per-case basis using normal thread synchronization primitives, and we won't touch on it further.
 
 # Command queue {#coreThread_a}
-All the operations listed above happen with the help of a @ref bs::CommandQueue<SyncPolicy> "CommandQueue". When simulation thread needs to notify the core thread about something it queues a command in the queue using @ref bs::CommandQueue<SyncPolicy>::queue "CommandQueue::queue", which accepts a function to be executed. The core thread continually reads from the command queue and executes commands in the order of they are submitted.
+All the operations listed above happen with the help of a command queue. When simulation thread needs to notify the core thread about something it queues a command, which is then eventually received and processed by the core thread.
 
-The main command queue can be accessed using @ref bs::CoreThread::queueCommand "CoreThread::queueCommand", which is just a wrapper for the @ref bs::CommandQueue<SyncPolicy>::queue "CommandQueue::queue" method mentioned above.
+@ref bs::CoreThread "CoreThread" managed the command queues. Use @ref bs::CoreThread::queueCommand "CoreThread::queueCommand" to queue a new command.
 
-## Returning values {#coreThread_a_a}
-Sometimes a queued command needs to return a value to the simulation thread (for example, when reading pixels from a texture). This can be performed by calling @ref bs::CoreThread::queueReturnCommand "CoreThread::queueReturnCommand", which internally calls @ref bs::CommandQueue<SyncPolicy>::queueReturn "CommandQueue::queueReturn". 
+Each thread has its own command queue, so calling this method from multiple threads will fill up different command queues.
+
+## Submitting commands {#coreThread_a_a}
+Commands that are queued aren't yet visible to the core thread. In order to make the command visible you must call @ref bs::CoreThread::submit "CoreThread::submit", which will submit all the commands for the current thread's command queue. You may also call @ref bs::CoreThread::submitAll "CoreThread::submitAll" to submit queues for all threads.
+
+By default commands are also submitted at the end of every frame, just before rendering. Therefore normally you do not need to submit commands manually.
+
+The most common case for submitting commands manually is when you need the results of the command right away. In such a case you can call @ref bs::CoreThread::submit "CoreThread::submit" or @ref bs::CoreThread::submitAll "CoreThread::submitAll" with the parameter @p blockUntilComplete set to true. This will block the calling thread until the command finishes executing. Not that this is expensive and shouldn't be done in performance critical code.
+
+## Internal queue {#coreThread_a_b}
+Internal command queue is different from the per-thread command queues because that's the only command queue that the core thread actually sees. For example, when you call @ref bs::CoreThread::submit "CoreThread::submit" the system takes all the commands from the per-thread command queue and moves them in the internal command queue, making them visible to the core thread.
+
+Optionally you may directly queue commands on the internal command queue by calling @ref bs::CoreThread::queueCommand "CoreThread::queueCommand" with the @ref bs::CTQF_InternalQueue "CTQF_InternalQueue" flag. When such a command is submitted it is immediately visible to the core thread. You may also optionally provide the @ref bs::CTQF_BlockUntilComplete "CTQF_BlockUntilComplete" if you wish to block the calling thread until the command finishes executing.
+
+There is only one internal command queue, so different threads can write to it in an interleaved manner, unlike with normal threads. Note that internal command queue is slower than per-thread queues and you should prefer to use them instead.
+
+Also note that since command queued on the internal command queue are seen by the core thread immediately, they will execute before commands previously queued on normal per-thread queues, unless they were submitted.
+
+## Returning values {#coreThread_a_c}
+Sometimes a queued command needs to return a value to the simulation thread (for example, when reading pixels from a texture). This can be performed by calling @ref bs::CoreThread::queueReturnCommand "CoreThread::queueReturnCommand". Aside from the return value it operates in the same manner as @ref bs::CoreThread::queueCommand "CoreThread::queueCommand".
 
 Since the command was queued and we don't know when will the core thread execute, we have no guarantees when its return value will be available. Therefore this method will return an @ref bs::AsyncOp "AsyncOp" object. This object can be used for checking if the return value is available by calling @ref bs::AsyncOp::hasCompleted "AsyncOp::hasCompleted". If the return value is available you can retrieve it via @ref bs::AsyncOp::getReturnValue<T> "AsyncOp::getReturnValue<T>".
 
-## Blocking {#coreThread_a_b}
-In certain cases you need to see the results of an operation right away. In such cases you can tell the simulation thread to wait until a certain command is done executing on the core thread. You can do this by setting the `blockUntilComplete` parameter of @ref bs::CoreThread::queueCommand "CoreThread::queueCommand" and @ref bs::CoreThread::queueReturnCommand "CoreThread::queueReturnCommand" to true.
-
-You can also block by calling @ref bs::AsyncOp::blockUntilComplete "AsyncOp::blockUntilComplete". This is similar to blocking directly on the @ref bs::CoreThread::queueReturnCommand "CoreThread::queueReturnCommand" call, but can be more useful if you're not sure immediately if you need to wait for the result or not.
-
-You should be very careful about blocking as it wastes CPU cycles since one thread is just sitting there doing nothing until the core thread reaches the command (which could be as long as a few dozen milliseconds).
-
-## Core accessors {#coreThread_a_c}
-Core accessors can be considered as light-weight command queues. They perform the same operations as @ref bs::CoreThread::queueCommand "CoreThread::queueCommand" and @ref bs::CoreThread::queueReturnCommand "CoreThread::queueReturnCommand". However core accessors can only be accessed from a single thread, while the methods just listed can be accessed from any thread. Accessors also don't submit their commands to the core thread immediately, instead they are submitted all together using a separate method.
-
-Because of these two reasons core accessors are much faster than the primary command queue, and you should always prefer to use them instead of directly queuing commands on the primary queue.
-
-Accessor for the current thread can be retrieved with @ref bs::CoreThread::getAccessor "CoreThread::getAccessor". You queue the commands in the accessor by calling @ref bs::CoreThreadAccessorBase::queueCommand "CoreThreadAccessor::queueCommand" and @ref bs::CoreThreadAccessorBase::queueReturnCommand "CoreThreadAccessor::queueReturnCommand". Once you are done queuing commands you can submit them to the core thread by calling @ref bs::CoreThread::submitAccessors "CoreThread::submitAccessors".
-
-Internally @ref bs::CoreThread::submitAccessors "CoreThread::submitAccessors" uses the primary queue to submit a command that reads all the commands from the accessor and executes them in order. So esentially they are just built on top of the primary command queue, and in fact most of the threading functionality is.
-
-### Core accessor APIs {#coreThread_a_c_a}
-Although you can queue your own commands to the core accessor, many systems provide methods that automatically queue commands on the core accessor. For example take a look at @ref bs::RenderAPI "RenderAPI" which allows you to interact directly with the render API from the simulation thread (something that is normally reserved for the core thread). Most of the methods accept a @ref bs::CoreThreadAccessor<CommandQueueSyncPolicy> "CoreThreadAccessor", and internally just queue commands on it. This allows you to perform low level rendering operations from the simulation thread.
-
-@ref bs::Mesh "Mesh", @ref bs::Texture "Texture" and @ref bs::RenderTarget "RenderTarget" also provide several methods for performing core thread operations from the simulation thread via the core accessors.
-
-It's important to remember these methods are just a convenience, and internally they use the same command queuing methods we described in the previous section.
+@ref bs::AsyncOp "AsyncOp" also allow you to block the calling thread by calling @ref bs::AsyncOp::blockUntilComplete "AsyncOp::blockUntilComplete". This is similar to blocking directly on the @ref bs::CoreThread::submit "CoreThread::submit" or @ref bs::CoreThread::queueReturnCommand "CoreThread::queueReturnCommand" call, but can be more useful if you're not sure immediately if you need to wait for the result or not.
 
 # Core objects {#coreThread_b}
 Core objects are objects that need to exist on both simulation and core threads. Although you could technically handle such cases manually by using the command queue, it is useful to provide an interface that allows the user to work normally with an object without needing to know about the threading internals, and this is where core objects come in.
@@ -128,7 +125,7 @@ void MyCoreObjectCore::syncToCore(const CoreSyncData& data)
 }
 ~~~~~~~~~~~~~
 
-Whenever you need to trigger synchronization you must call @ref bs::CoreObject::markCoreDirty "CoreObject::markCoreDirty" which notifies the system that synchronization is required. This will in turn trigger a call to @ref bs::CoreObject::syncToCore(FrameAlloc*) "CoreObject::syncToCore" method you implemented earlier. Synchronization happens automatically for all dirty core objects once per frame. Optionally you may call @ref bs::CoreObject::syncToCore(CoreAccessor&) "CoreObject::syncToCore" to manually queue the synchronization.
+Whenever you need to trigger synchronization you must call @ref bs::CoreObject::markCoreDirty "CoreObject::markCoreDirty" which notifies the system that synchronization is required. This will in turn trigger a call to @ref bs::CoreObject::syncToCore(FrameAlloc*) "CoreObject::syncToCore" method you implemented earlier. Synchronization happens automatically for all dirty core objects once per frame. Optionally you may call @ref bs::CoreObject::syncToCore() "CoreObject::syncToCore" to manually queue the synchronization.
 
 See implementation of @ref bs::Light "Light" and @ref bs::LightCore "LightCore" in "BsLight.cpp" for a simple example of synchronization.
 

@@ -33,11 +33,11 @@ You can also create a non-empty texture by creating it with a populated @ref bs:
 You can access all relevant information about a texture (e.g. width, height) by calling @ref bs::Texture::getProperties() "Texture::getProperties()" which will return an instance of @ref bs::TextureProperties "TextureProperties". 
  
 # Reading/writing {#textures_c}
-To read and write from/to the texture use the @ref bs::Texture::readSubresource "Texture::readSubresource" and @ref bs::Texture::writeSubresource "Texture::writeSubresource" methods. These expect an index of a sub-resource to read/write to, and a @ref bs::PixelData "PixelData" object.
+To read and write from/to the texture use the @ref bs::Texture::readData "Texture::readData" and @ref bs::Texture::writeData "Texture::writeData" methods. These expect a face and mipmap index to read/write to, and a @ref bs::PixelData "PixelData" object.
 
-The sub-resource index is simply a sequential index of the surface you want to access. If the texture has only one surface this will always be zero. But if the texture has multiple mipmaps or multiple faces (like for cube textures or texture arrays) you can use @ref bs::TextureProperties::mapToSubresourceIdx "TextureProperties::mapToSubresourceIdx" to convert mip/face combination into an subresource index, and @ref bs::TextureProperties::mapFromSubresourceIdx "TextureProperties::mapFromSubresourceIdx" for the other way around.
+@ref bs::PixelData "PixelData" object is just a container for a set of pixels. You can create one manually or use @ref bs::TextureProperties::allocBuffer "TextureProperties::allocBuffer" to create the object of valid size and format for the specified sub-resource index. When reading from the texture the buffer will be filled with pixels from the texture, and when writing you are expected to populate the object.
 
-@ref bs::PixelData "PixelData" object is just a container for a set of pixels. You can create one manually or use @ref bs::TextureProperties::allocateSubresourceBuffer "TextureProperties::allocateSubresourceBuffer" to create the object of valid size and format for the specified sub-resource index. When reading from the texture the buffer will be filled with pixels from the texture, and when writing you are expected to populate the object.
+Be aware that read and write operations are asynchronous and you must follow the rules for @ref asyncMethod "asynchronous methods".
 
 ## PixelData {#textures_c_a}
 You can create @ref bs::PixelData "PixelData" manually by calling @ref bs::PixelData::create "PixelData::create" and providing it with dimensions and pixel format. When working with textures you must ensure that the dimensions and the format matches the texture sub-resource.
@@ -47,9 +47,9 @@ Once created you can use @ref bs::PixelData::getColorAt "PixelData::getColorAt",
 You can also use @ref bs::PixelUtil "PixelUtil" to perform various operations on the pixels. This includes generating mip maps, converting to different pixel formats, compressing, scaling and other.
 
 ## Cached CPU data {#textures_c_b}
-When you read from a texture using the @ref bs::Texture::readSubresource "Texture::readSubresource" method the read will be performed from the GPU. This is useful if the GPU has in some way modified the texture, but will also incur a potentially large performance penalty because it will introduce a CPU-GPU synchronization point. In a lot of cases you might just want to read pixels from a texture that was imported or created on the CPU in some other way.
+When you read from a texture using the @ref bs::Texture::readData "Texture::readData" method the read will be performed from the GPU. This is useful if the GPU has in some way modified the texture, but will also incur a potentially large performance penalty because it will introduce a CPU-GPU synchronization point. In a lot of cases you might just want to read pixels from a texture that was imported or created on the CPU in some other way.
 
-For this reason @ref bs::Texture::readData "Texture::readData" exists. It will read data quickly with little performance impact. However you must create the texture using the @ref bs::TU_CPUCACHED "TU_CPUCACHED" usage. This also means that the texture will keep a copy of its pixels in system memory, so use it sparingly. If the texture is modified from the GPU this method will not reflect such changes.
+For this reason @ref bs::Texture::readCachedData "Texture::readCachedData" exists. It will read data quickly with little performance impact. However you must create the texture using the @ref bs::TU_CPUCACHED "TU_CPUCACHED" usage. This also means that the texture will keep a copy of its pixels in system memory, so use it sparingly. If the texture is modified from the GPU this method will not reflect such changes.
 
 # Rendering using the texture {#textures_d}
 To use a texture for rendering you need to either:
@@ -60,7 +60,7 @@ To use a texture for rendering you need to either:
 A texture is a @ref bs::Resource "Resource" and can be saved/loaded like any other. See the [resource](@ref resources) manual.
 
 # Core thread textures {#textures_f}
-So far we have only talked about the simulation thread @ref bs::Texture "Texture" but have ignored the core thread @ref bs::TextureCore "TextureCore". The functionality between the two is mostly the same, with the major difference being that the core thread version doesn't require a @ref bs::CoreThreadAccessor "CoreAccessor" for access, and you can instead perform operations on it directly.
+So far we have only talked about the simulation thread @ref bs::Texture "Texture" but have ignored the core thread @ref bs::TextureCore "TextureCore". The functionality between the two is mostly the same, with the major difference being that the core thread version doesn't have asychronous write/read methods, and those operations are instead performed immediately.
 
 You can also use @ref bs::TextureCore::lock "TextureCore::lock" and @ref bs::TextureCore::unlock "TextureCore::unlock" to get access to the texture buffer, which allows you to only read/write from/to portions of it, instead of always writing to the entire buffer.
 
