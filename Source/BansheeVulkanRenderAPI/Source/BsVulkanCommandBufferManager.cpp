@@ -64,6 +64,29 @@ namespace bs
 							 0, nullptr);
 	}
 
+	void VulkanTransferBuffer::setLayout(VkImage image, VkAccessFlags srcAccessFlags, VkAccessFlags dstAccessFlags, 
+		VkImageLayout oldLayout, VkImageLayout newLayout, const VkImageSubresourceRange& range)
+	{
+		VkImageMemoryBarrier barrier;
+		barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+		barrier.pNext = nullptr;
+		barrier.srcAccessMask = srcAccessFlags;
+		barrier.dstAccessMask = dstAccessFlags;
+		barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+		barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+		barrier.oldLayout = oldLayout;
+		barrier.newLayout = newLayout;
+		barrier.image = image;
+		barrier.subresourceRange = range;
+
+		vkCmdPipelineBarrier(mCB->getHandle(),
+							 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+							 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+							 0, 0, nullptr,
+							 0, nullptr,
+							 1, &barrier);
+	}
+
 	void VulkanTransferBuffer::flush(bool wait)
 	{
 		UINT32 syncMask = mSyncMask & ~mQueueMask; // Don't sync with itself

@@ -6,6 +6,7 @@
 #include "BsVulkanUtility.h"
 #include "BsVulkanCommandBufferManager.h"
 #include "BsVulkanCommandBuffer.h"
+#include "BsVulkanTexture.h"
 
 namespace bs
 {
@@ -53,6 +54,22 @@ namespace bs
 		region.dstOffset = dstOffset;
 
 		vkCmdCopyBuffer(cb->getCB()->getHandle(), mBuffer, destination->getHandle(), 1, &region);
+	}
+
+	void VulkanBuffer::copy(VulkanTransferBuffer* cb, VulkanImage* destination, const VkExtent3D& extent, 
+		const VkImageSubresourceLayers& range, VkImageLayout layout)
+	{
+		VkBufferImageCopy region;
+		region.bufferRowLength = 0;
+		region.bufferImageHeight = 0;
+		region.bufferOffset = 0;
+		region.imageOffset.x = 0;
+		region.imageOffset.y = 0;
+		region.imageOffset.z = 0;
+		region.imageExtent = extent;
+		region.imageSubresource = range;
+
+		vkCmdCopyBufferToImage(cb->getCB()->getHandle(), mBuffer, destination->getHandle(), layout, 1, &region);
 	}
 
 	VulkanHardwareBuffer::VulkanHardwareBuffer(BufferType type, GpuBufferFormat format, GpuBufferUsage usage, 
@@ -214,88 +231,112 @@ namespace bs
 		// If memory is host visible try mapping it directly
 		if(mDirectlyMappable)
 		{
-			// If GPU has the ability to write to the buffer we must issue a pipeline barrier to prevent any memory hazards
-			//  - Additionally it might be possible the GPU is /currently/ writing to the buffer, in which case we need to
-			//    wait for those writes to finish before continuing
-			if(mSupportsGPUWrites) // Note: It might be tempting to only do this step only if buffer is currently being 
-								   // written to, but that doesn't guarantee memory visibility if it was written to recently
+			// Check is the GPU currently reading or writing from the buffer
+			UINT32 useMask = buffer->getUseInfo(VulkanUseFlag::Read | VulkanUseFlag::Write);
+
+			// Note: Even if GPU isn't currently using the buffer, but the buffer supports GPU writes, we consider it as
+			// being used because the write could have completed yet still not visible, so we need to issue a pipeline
+			// barrier below.
+			bool isUsedOnGPU = useMask != 0 || mSupportsGPUWrites;
+
+			// We're safe to map directly since GPU isn't using the buffer
+			if (!isUsedOnGPU)
+				return buffer->map(offset, length);
+
+			// Caller guarantees he won't touch the same data as the GPU, so just map even though the GPU is using the buffer
+			if (options == GBL_WRITE_ONLY_NO_OVERWRITE)
+				return buffer->map(offset, length);
+
+			// Caller doesn't care about buffer contents, so just discard the existing buffer and create a new one
+			if (options == GBL_WRITE_ONLY_DISCARD)
 			{
-				// First try to avoid the expensive wait operation and barrier
-				if(options == GBL_WRITE_ONLY_NO_OVERWRITE) // Caller guarantees he won't touch the same data as the GPU, so just map
-					return buffer->map(offset, length);
+				buffer->destroy();
 
-				if(options == GBL_WRITE_ONLY_DISCARD) // Caller doesn't care about buffer contents, so just discard the 
-				{									  // existing buffer and create a new one
-					buffer->destroy();
+				buffer = createBuffer(device, false, mReadable);
+				mBuffers[deviceIdx] = buffer;
 
-					buffer = createBuffer(device, false, mReadable);
-					mBuffers[deviceIdx] = buffer;
+				return buffer->map(offset, length);
+			}
 
-					return buffer->map(offset, length);
-				}
+			// No GPU writes are are supported and we're only reading, so no need to wait on anything
+			if (options == GBL_READ_ONLY && !mSupportsGPUWrites)
+				return buffer->map(offset, length);
 
-				// Otherwise we need to wait until (potential) GPU write completes, and issue a barrier so:
-				//  - If reading: the device makes the written memory available for read (read-after-write hazard)
-				//  - If writing: ensures our writes properly overlap with GPU writes (write-after-write hazard)
+			// We need to read the buffer contents with GPU writes potentially enabled
+			if(options == GBL_READ_ONLY || options == GBL_READ_WRITE)
+			{
+				// We need to wait until (potential) GPU read/write completes
 				VulkanTransferBuffer* transferCB = cbManager.getTransferBuffer(deviceIdx, queueType, localQueueIdx);
 
+				// Ensure flush() will wait for all queues currently using to the buffer (if any) to finish
+				// If only reading, wait for all writes to complete, otherwise wait on both writes and reads
+				if (options == GBL_READ_ONLY)
+					useMask = buffer->getUseInfo(VulkanUseFlag::Write);
+				else
+					useMask = buffer->getUseInfo(VulkanUseFlag::Read | VulkanUseFlag::Write);
+
+				transferCB->appendMask(useMask);
+
+				// Make any writes visible before mapping
+				if (mSupportsGPUWrites)
+				{
+					// Issue a barrier so :
+					//  - If reading: the device makes the written memory available for read (read-after-write hazard)
+					//  - If writing: ensures our writes properly overlap with GPU writes (write-after-write hazard)
+					transferCB->memoryBarrier(buffer->getHandle(),
+											  VK_ACCESS_SHADER_WRITE_BIT,
+											  accessFlags,
+											  // Last stages that could have written to the buffer:
+											  VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT | VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
+											  VK_PIPELINE_STAGE_HOST_BIT
+					);
+				}
+
+				// Submit the command buffer and wait until it finishes
+				transferCB->flush(true);
+
+				return buffer->map(offset, length);
+			}
+
+			// Otherwise, we're doing write only, in which case it's best to use the staging buffer to avoid waiting
+			// and blocking, so fall through
+		}
+		
+		// Use a staging buffer
+		bool needRead = options == GBL_READ_WRITE || options == GBL_READ_ONLY;
+
+		// Allocate a staging buffer
+		mStagingBuffer = createBuffer(device, true, needRead);
+
+		if (needRead) // If reading, we need to copy the current contents of the buffer to the staging buffer
+		{
+			VulkanTransferBuffer* transferCB = cbManager.getTransferBuffer(deviceIdx, queueType, localQueueIdx);
+				
+			// Similar to above, if buffer supports GPU writes, we need to wait on any potential writes to complete
+			if(mSupportsGPUWrites)
+			{
 				// Ensure flush() will wait for all queues currently writing to the buffer (if any) to finish
 				UINT32 writeUseMask = buffer->getUseInfo(VulkanUseFlag::Write);
-				transferCB->appendMask(writeUseMask); 
-
-				// Issue barrier to avoid memory hazards
-				transferCB->memoryBarrier(buffer->getHandle(),
-										  VK_ACCESS_SHADER_WRITE_BIT,
-										  accessFlags,
-										  // Last stages that could have written to the buffer:
-										  VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT | VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, 
-										  VK_PIPELINE_STAGE_HOST_BIT
-				);
-
-				// Submit the command buffer and wait until it finishes
-				transferCB->flush(true);
-				assert(!buffer->isUsed());
+				transferCB->appendMask(writeUseMask);
 			}
 
-			return buffer->map(offset, length);
+			// Queue copy command
+			buffer->copy(transferCB, mStagingBuffer, offset, offset, length);
+
+			// Ensure data written to the staging buffer is visible
+			transferCB->memoryBarrier(mStagingBuffer->getHandle(),
+										VK_ACCESS_TRANSFER_WRITE_BIT,
+										accessFlags,
+										VK_PIPELINE_STAGE_TRANSFER_BIT,
+										VK_PIPELINE_STAGE_HOST_BIT
+			);
+
+			// Submit the command buffer and wait until it finishes
+			transferCB->flush(true);
+			assert(!buffer->isUsed());
 		}
-		else // Otherwise we use a staging buffer
-		{
-			bool needRead = options == GBL_READ_WRITE || options == GBL_READ_ONLY;
 
-			// Allocate a staging buffer
-			mStagingBuffer = createBuffer(device, true, needRead);
-
-			if (needRead) // If reading, we need to copy the current contents of the buffer to the staging buffer
-			{
-				VulkanTransferBuffer* transferCB = cbManager.getTransferBuffer(deviceIdx, queueType, localQueueIdx);
-				
-				// Similar to above, if buffer supports GPU writes, we need to wait on any potential writes to complete
-				if(mSupportsGPUWrites)
-				{
-					// Ensure flush() will wait for all queues currently writing to the buffer (if any) to finish
-					UINT32 writeUseMask = buffer->getUseInfo(VulkanUseFlag::Write);
-					transferCB->appendMask(writeUseMask);
-				}
-
-				// Queue copy command
-				buffer->copy(transferCB, mStagingBuffer, offset, offset, length);
-
-				// Ensure data written to the staging buffer is visible
-				transferCB->memoryBarrier(buffer->getHandle(),
-										  VK_ACCESS_TRANSFER_WRITE_BIT,
-										  accessFlags,
-										  VK_PIPELINE_STAGE_TRANSFER_BIT,
-										  VK_PIPELINE_STAGE_HOST_BIT
-				);
-
-				// Submit the command buffer and wait until it finishes
-				transferCB->flush(true);
-				assert(!buffer->isUsed());
-			}
-
-			return mStagingBuffer->map(offset, length);
-		}
+		return mStagingBuffer->map(offset, length);
 	}
 
 	void VulkanHardwareBuffer::unmap()
@@ -307,7 +348,7 @@ namespace bs
 		// Note: If we did any writes they need to be made visible to the GPU. However there is no need to execute 
 		// a pipeline barrier because (as per spec) host writes are implicitly visible to the device.
 
-		if(mDirectlyMappable)
+		if(mStagingBuffer == nullptr) // Means we directly mapped the buffer
 			mBuffers[mMappedDeviceIdx]->unmap();
 		else
 		{

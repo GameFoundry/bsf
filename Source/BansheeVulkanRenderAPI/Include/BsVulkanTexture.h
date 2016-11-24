@@ -35,6 +35,13 @@ namespace bs
 		/** Returns an image view that covers the specified faces and mip maps of the texture. */
 		VkImageView getView(const TextureSurface& surface) const;
 
+		/** 
+		 * Queues a command on the provided command buffer. The command copies the contents of the current image
+		 * subresource to the destination buffer. 
+		 */
+		void copy(VulkanTransferBuffer* cb, VulkanBuffer* destination, const VkExtent3D& extent, 
+			const VkImageSubresourceLayers& range, VkImageLayout layout);
+
 	private:
 		/** Creates a new view of the provided part (or entirety) of surface. */
 		VkImageView createView(const TextureSurface& surface) const;
@@ -108,12 +115,29 @@ namespace bs
 
 	private:
 		/** Creates a new image for the specified device, matching the current properties. */
-		VulkanImage* createImage(VulkanDevice& device, bool staging, bool readable);
+		VulkanImage* createImage(VulkanDevice& device);
+
+		/** 
+		 * Creates a new buffer for the specified device, with enough space to hold the provided mip level of this
+		 * texture. 
+		 */
+		VulkanBuffer* createStaging(VulkanDevice& device, UINT32 mipLevel, bool needsRead);
 
 		VulkanImage* mImages[BS_MAX_DEVICES];
 		GpuDeviceFlags mDeviceMask;
+		VkAccessFlags mAccessFlags;
+
+		VulkanBuffer* mStagingBuffer;
+		UINT32 mMappedDeviceIdx;
+		UINT32 mMappedGlobalQueueIdx;
+		UINT32 mMappedMip;
+		UINT32 mMappedFace;
+		GpuLockOptions mMappedLockOptions;
 
 		VkImageCreateInfo mImageCI;
+		bool mDirectlyMappable : 1;
+		bool mSupportsGPUWrites : 1;
+		bool mIsMapped : 1;
 	};
 
 	/** @} */

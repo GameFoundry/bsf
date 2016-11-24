@@ -38,6 +38,13 @@ namespace bs
 						   VkPipelineStageFlags srcStage, VkPipelineStageFlags dstStage);
 
 		/** 
+		 * Issues a pipeline barrier on the provided image, changing its layout. See vkCmdPipelineBarrier in Vulkan spec. 
+		 * for usage information.
+		 */
+		void setLayout(VkImage image, VkAccessFlags srcAccessFlags, VkAccessFlags dstAccessFlags, 
+			VkImageLayout oldLayout, VkImageLayout newLayout, const VkImageSubresourceRange& range);
+
+		/** 
 		 * Submits the command buffer on the queue. 
 		 * 
 		 *	@param[in]	wait	If true, the caller thread will wait until all device operations on the command buffer's

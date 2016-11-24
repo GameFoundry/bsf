@@ -42,6 +42,13 @@ namespace bs
 		void copy(VulkanTransferBuffer* cb, VulkanBuffer* destination, VkDeviceSize srcOffset, VkDeviceSize dstOffset, 
 			VkDeviceSize length);
 
+		/** 
+		 * Queues a command on the provided command buffer. The command copies the contents of the current buffer to
+		 * the destination image subresource. 
+		 */
+		void copy(VulkanTransferBuffer* cb, VulkanImage* destination, const VkExtent3D& extent, 
+			const VkImageSubresourceLayers& range, VkImageLayout layout);
+
 	private:
 		VkBuffer mBuffer;
 		VkBufferView mView;

@@ -406,7 +406,15 @@ namespace bs
 			range.baseMipLevel = 0;
 			range.levelCount = props.getNumMipmaps();
 
-			buffer.registerResource(resource, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+			VkImageLayout layout;
+
+			// Keep dynamic textures in general layout, so they can be easily mapped by CPU
+			if (props.getUsage() & TU_DYNAMIC)
+				layout = VK_IMAGE_LAYOUT_GENERAL;
+			else
+				layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+			buffer.registerResource(resource, VK_ACCESS_SHADER_READ_BIT, layout,
 				range, VulkanUseFlag::Read);
 		}
 
