@@ -36,6 +36,20 @@ namespace bs
 		VkImageView getView(const TextureSurface& surface) const;
 
 		/** 
+		 * Returns a pointer to internal image memory for the specified sub-resource. Must be followed by unmap(). Caller
+		 * must ensure the image was created in CPU readable memory, and that image isn't currently being written to by the
+		 * GPU.
+		 * 
+		 * @param[in]	face		Index of the face to map.
+		 * @param[in]	mipLevel	Index of the mip level to map.
+		 * @param[in]	output		Output object containing the pointer to the sub-resource data.
+		 */
+		void map(UINT32 face, UINT32 mipLevel, PixelData& output) const;
+
+		/** Unmaps a buffer previously mapped with map(). */
+		void unmap();
+
+		/** 
 		 * Queues a command on the provided command buffer. The command copies the contents of the current image
 		 * subresource to the destination buffer. 
 		 */
@@ -118,10 +132,14 @@ namespace bs
 		VulkanImage* createImage(VulkanDevice& device);
 
 		/** 
-		 * Creates a new buffer for the specified device, with enough space to hold the provided mip level of this
-		 * texture. 
+		 * Creates a staging buffer that can be used for texture transfer operations.
+		 * 
+		 * @param[in]	device		Device to create the buffer on.
+		 * @param[in]	pixelData	Object that describes the image sub-resource that will be in the buffer.
+		 * @param[in]	needsRead	True if we will be copying data from the buffer, false if just reading. True if both.
+		 * @return					Newly allocated buffer.
 		 */
-		VulkanBuffer* createStaging(VulkanDevice& device, UINT32 mipLevel, bool needsRead);
+		VulkanBuffer* createStaging(VulkanDevice& device, const PixelData& pixelData, bool needsRead);
 
 		VulkanImage* mImages[BS_MAX_DEVICES];
 		GpuDeviceFlags mDeviceMask;
@@ -132,6 +150,8 @@ namespace bs
 		UINT32 mMappedGlobalQueueIdx;
 		UINT32 mMappedMip;
 		UINT32 mMappedFace;
+		UINT32 mMappedRowPitch;
+		UINT32 mMappedSlicePitch;
 		GpuLockOptions mMappedLockOptions;
 
 		VkImageCreateInfo mImageCI;

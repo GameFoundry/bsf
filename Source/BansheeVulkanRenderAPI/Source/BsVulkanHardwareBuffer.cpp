@@ -10,8 +10,10 @@
 
 namespace bs
 {
-	VulkanBuffer::VulkanBuffer(VulkanResourceManager* owner, VkBuffer buffer, VkBufferView view, VkDeviceMemory memory)
-		:VulkanResource(owner, false), mBuffer(buffer), mView(view), mMemory(memory)
+	VulkanBuffer::VulkanBuffer(VulkanResourceManager* owner, VkBuffer buffer, VkBufferView view, VkDeviceMemory memory,
+							   UINT32 rowPitch, UINT32 slicePitch)
+		: VulkanResource(owner, false), mBuffer(buffer), mView(view), mMemory(memory), mRowPitch(rowPitch)
+		, mSliceHeight(slicePitch / rowPitch)
 	{
 
 	}
@@ -60,8 +62,8 @@ namespace bs
 		const VkImageSubresourceLayers& range, VkImageLayout layout)
 	{
 		VkBufferImageCopy region;
-		region.bufferRowLength = 0;
-		region.bufferImageHeight = 0;
+		region.bufferRowLength = mRowPitch;
+		region.bufferImageHeight = mSliceHeight;
 		region.bufferOffset = 0;
 		region.imageOffset.x = 0;
 		region.imageOffset.y = 0;

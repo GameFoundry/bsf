@@ -87,6 +87,14 @@ namespace bs
 		static void getSizeForMipLevel(UINT32 width, UINT32 height, UINT32 depth, UINT32 mipLevel, 
 			UINT32& mipWidth, UINT32& mipHeight, UINT32& mipDepth);
 
+		/** 
+		 * Calculates row and depth pitch for a texture surface of the specified size and format. For most this will be
+		 * equal to their width & height, respectively. But some texture formats (especially compressed ones) might
+		 * require extra padding.
+		 */
+		static void getPitch(UINT32 width, UINT32 height, UINT32 depth, PixelFormat format,
+			UINT32& rowPitch, UINT32& depthPitch);
+
 		/**
 		 * Returns property flags for this pixel format.
 		 *
@@ -110,7 +118,7 @@ namespace bs
         static bool isNativeEndian(PixelFormat format);
 		
 		/**
-		 * Checks are the provided dimensions valid for the specified pixel format. Some formats (like DXT) require 
+		 * Checks are the provided dimensions valid for the specified pixel format. Some formats (like BC) require 
 		 * width/height to be multiples of four and some formats dont allow depth larger than 1.
 		 */
 		static bool isValidExtent(UINT32 width, UINT32 height, UINT32 depth, PixelFormat format);

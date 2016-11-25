@@ -982,14 +982,42 @@ namespace bs
 
 				default:
 					BS_EXCEPT(InvalidParametersException, "Invalid compressed pixel format");
+					return 0;
 			}
 		}
-		else
+
+		return width*height*depth*getNumElemBytes(format);
+	}
+
+	void PixelUtil::getPitch(UINT32 width, UINT32 height, UINT32 depth, PixelFormat format,
+						 UINT32& rowPitch, UINT32& depthPitch)
+	{
+		if (isCompressed(format))
 		{
-			return width*height*depth*getNumElemBytes(format);
+			switch (format)
+			{
+				// BC formats work by dividing the image into 4x4 blocks, then encoding each
+				// 4x4 block with a certain number of bytes. 
+			case PF_BC1:
+			case PF_BC1a:
+			case PF_BC4:
+			case PF_BC2:
+			case PF_BC3:
+			case PF_BC5:
+			case PF_BC6H:
+			case PF_BC7:
+				rowPitch = div(width + 3, 4).quot * 4;
+				depthPitch = div(height + 3, 4).quot * 4 * rowPitch;
+				return;
+
+			default:
+				BS_EXCEPT(InvalidParametersException, "Invalid compressed pixel format");
+				return;
+			}
 		}
 
-		return 0;
+		rowPitch = width;
+		depthPitch = width * height;
 	}
 
 	void PixelUtil::getSizeForMipLevel(UINT32 width, UINT32 height, UINT32 depth, UINT32 mipLevel,

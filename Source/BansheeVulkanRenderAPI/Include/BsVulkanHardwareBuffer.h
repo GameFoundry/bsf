@@ -16,7 +16,16 @@ namespace bs
 	class VulkanBuffer : public VulkanResource
 	{
 	public:
-		VulkanBuffer(VulkanResourceManager* owner, VkBuffer buffer, VkBufferView view, VkDeviceMemory memory);
+		/** 
+		 * @param[in]	owner		Manager that takes care of tracking and releasing of this object.
+		 * @param[in]	buffer		Actual low-level Vulkan buffer handle.
+		 * @param[in]	view		Optional handle to the buffer view.
+		 * @param[in]	memory		Memory mapped to the buffer.
+		 * @param[in]	rowPitch	If buffer maps to an image sub-resource, length of a single row (in elements).
+		 * @param[in]	slicePitch	If buffer maps to an image sub-resource, size of a single 2D surface (in elements).
+		 */
+		VulkanBuffer(VulkanResourceManager* owner, VkBuffer buffer, VkBufferView view, VkDeviceMemory memory, 
+			UINT32 rowPitch = 0, UINT32 slicePitch = 0);
 		~VulkanBuffer();
 
 		/** Returns the internal handle to the Vulkan object. */
@@ -24,6 +33,18 @@ namespace bs
 
 		/** Returns a buffer view that covers the entire buffer. */
 		VkBufferView getView() const { return mView; }
+
+		/**
+		 * If buffer represents an image sub-resource, this is the number of elements that separate one row of the 
+		 * sub-resource from another (if no padding, it is equal to image width).
+		 */
+		UINT32 getRowPitch() const { return mRowPitch; }
+
+		/**
+		 * If buffer represents an image sub-resource, this is the number of elements that separate one column of the
+		 * sub-resource from another (if no padding, it is equal to image height). Only relevant for 3D images.
+		 */
+		UINT32 getSliceHeight() const { return mSliceHeight; }
 
 		/** 
 		 * Returns a pointer to internal buffer memory. Must be followed by unmap(). Caller must ensure the buffer was
@@ -53,6 +74,9 @@ namespace bs
 		VkBuffer mBuffer;
 		VkBufferView mView;
 		VkDeviceMemory mMemory;
+
+		UINT32 mRowPitch;
+		UINT32 mSliceHeight;
 	};
 	
 	/**	Class containing common functionality for all Vulkan hardware buffers. */

@@ -125,12 +125,46 @@ namespace bs
 		return view;
 	}
 
+	void VulkanImage::map(UINT32 face, UINT32 mipLevel, PixelData& output) const
+	{
+		VulkanDevice& device = mOwner->getDevice();
+
+		VkImageSubresource range;
+		range.mipLevel = mipLevel;
+		range.arrayLayer = face;
+
+		if (mImageViewCI.subresourceRange.aspectMask == VK_IMAGE_ASPECT_COLOR_BIT)
+			range.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		else // Depth stencil, but we only map depth
+			range.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+
+		VkSubresourceLayout layout;
+		vkGetImageSubresourceLayout(device.getLogical(), mImage, &range, &layout);
+
+		assert(layout.size == output.getSize());
+		output.setRowPitch(layout.rowPitch);
+		output.setSlicePitch(layout.depthPitch);
+
+		UINT8* data;
+		VkResult result = vkMapMemory(device.getLogical(), mMemory, layout.offset, layout.size, 0, (void**)&data);
+		assert(result == VK_SUCCESS);
+
+		output.setExternalBuffer(data);
+	}
+
+	void VulkanImage::unmap()
+	{
+		VulkanDevice& device = mOwner->getDevice();
+
+		vkUnmapMemory(device.getLogical(), mMemory);
+	}
+
 	void VulkanImage::copy(VulkanTransferBuffer* cb, VulkanBuffer* destination, const VkExtent3D& extent,
-							const VkImageSubresourceLayers& range, VkImageLayout layout)
+						   const VkImageSubresourceLayers& range, VkImageLayout layout)
 	{
 		VkBufferImageCopy region;
-		region.bufferRowLength = 0;
-		region.bufferImageHeight = 0;
+		region.bufferRowLength = destination->getRowPitch();
+		region.bufferImageHeight = destination->getSliceHeight();
 		region.bufferOffset = 0;
 		region.imageOffset.x = 0;
 		region.imageOffset.y = 0;
@@ -145,7 +179,8 @@ namespace bs
 		GpuDeviceFlags deviceMask)
 		: TextureCore(desc, initialData, deviceMask), mImages(), mDeviceMask(deviceMask), mAccessFlags(0)
 		, mStagingBuffer(nullptr), mMappedDeviceIdx(-1), mMappedGlobalQueueIdx(-1), mMappedMip(0), mMappedFace(0)
-		, mMappedLockOptions(GBL_WRITE_ONLY), mDirectlyMappable(false), mSupportsGPUWrites(false), mIsMapped(false)
+		, mMappedRowPitch(false), mMappedSlicePitch(false), mMappedLockOptions(GBL_WRITE_ONLY), mDirectlyMappable(false)
+		, mSupportsGPUWrites(false), mIsMapped(false)
 	{
 		
 	}
@@ -290,21 +325,13 @@ namespace bs
 		return device.getResourceManager().create<VulkanImage>(image, memory, mImageCI.initialLayout, getProperties());
 	}
 
-	VulkanBuffer* VulkanTextureCore::createStaging(VulkanDevice& device, UINT32 mipLevel, bool readable)
+	VulkanBuffer* VulkanTextureCore::createStaging(VulkanDevice& device, const PixelData& pixelData, bool readable)
 	{
-		const TextureProperties& props = getProperties();
-
-		UINT32 mipWidth, mipHeight, mipDepth;
-		PixelUtil::getSizeForMipLevel(props.getWidth(), props.getHeight(), props.getDepth(), mipLevel, mipWidth, mipHeight, 
-			mipDepth);
-
-		UINT32 mipLevelSize = PixelUtil::getMemorySize(mipWidth, mipHeight, mipDepth, props.getFormat());
-
 		VkBufferCreateInfo bufferCI;
 		bufferCI.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 		bufferCI.pNext = nullptr;
 		bufferCI.flags = 0;
-		bufferCI.size = mipLevelSize;
+		bufferCI.size = pixelData.getSize();
 		bufferCI.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 		bufferCI.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
 		bufferCI.queueFamilyIndexCount = 0;
@@ -328,7 +355,8 @@ namespace bs
 		result = vkBindBufferMemory(vkDevice, buffer, memory, 0);
 		assert(result == VK_SUCCESS);
 
-		return device.getResourceManager().create<VulkanBuffer>(buffer, VK_NULL_HANDLE, memory);
+		return device.getResourceManager().create<VulkanBuffer>(buffer, VK_NULL_HANDLE, memory, 
+			pixelData.getRowPitch(), pixelData.getSlicePitch());
 	}
 
 	VkImageView VulkanTextureCore::getView(UINT32 deviceIdx) const
@@ -356,7 +384,9 @@ namespace bs
 	PixelData VulkanTextureCore::lockImpl(GpuLockOptions options, UINT32 mipLevel, UINT32 face, UINT32 deviceIdx,
 										  UINT32 queueIdx)
 	{
-		if (mProperties.getNumSamples() > 1)
+		const TextureProperties& props = getProperties();
+
+		if (props.getNumSamples() > 1)
 		{
 			LOGERR("Multisampled textures cannot be accessed from the CPU directly.");
 			return PixelData();
@@ -374,11 +404,11 @@ namespace bs
 		}
 #endif
 
-		UINT32 mipWidth = std::max(1u, mProperties.getWidth() >> mipLevel);
-		UINT32 mipHeight = std::max(1u, mProperties.getHeight() >> mipLevel);
-		UINT32 mipDepth = std::max(1u, mProperties.getDepth() >> mipLevel);
+		UINT32 mipWidth = std::max(1u, props.getWidth() >> mipLevel);
+		UINT32 mipHeight = std::max(1u, props.getHeight() >> mipLevel);
+		UINT32 mipDepth = std::max(1u, props.getDepth() >> mipLevel);
 
-		PixelData lockedArea(mipWidth, mipHeight, mipDepth, mProperties.getFormat());
+		PixelData lockedArea(mipWidth, mipHeight, mipDepth, props.getFormat());
 
 		VulkanImage* image = mImages[deviceIdx];
 
@@ -418,16 +448,25 @@ namespace bs
 
 			// We're safe to map directly since GPU isn't using the subresource
 			if (!isUsedOnGPU)
-				return image->map(face, mipLevel);
+			{
+				image->map(face, mipLevel, lockedArea);
+				return lockedArea;
+			}
 
 			// Caller guarantees he won't touch the same data as the GPU, so just map even though the GPU is using the
 			// subresource
 			if (options == GBL_WRITE_ONLY_NO_OVERWRITE)
-				return image->map(face, mipLevel);
+			{
+				image->map(face, mipLevel, lockedArea);
+				return lockedArea;
+			}
 
 			// No GPU writes are are supported and we're only reading, so no need to wait on anything
 			if (options == GBL_READ_ONLY)
-				return image->map(face, mipLevel);
+			{
+				image->map(face, mipLevel, lockedArea);
+				return lockedArea;
+			}
 
 			// Caller doesn't care about buffer contents, so just discard the existing buffer and create a new one
 			if (options == GBL_WRITE_ONLY_DISCARD)
@@ -453,7 +492,8 @@ namespace bs
 				// Submit the command buffer and wait until it finishes
 				transferCB->flush(true);
 
-				return image->map(face, mipLevel);
+				image->map(face, mipLevel, lockedArea);
+				return lockedArea;
 			}
 
 			// Otherwise, we're doing write only, in which case it's best to use the staging buffer to avoid waiting
@@ -463,7 +503,7 @@ namespace bs
 		bool needRead = options == GBL_READ_WRITE || options == GBL_READ_ONLY;
 
 		// Allocate a staging buffer
-		mStagingBuffer = createStaging(device, mipLevel, needRead);
+		mStagingBuffer = createStaging(device, lockedArea, needRead);
 
 		if (needRead) // If reading, we need to copy the current contents of the image to the staging buffer
 		{
@@ -476,8 +516,6 @@ namespace bs
 				UINT32 writeUseMask = subresource->getUseInfo(VulkanUseFlag::Write);
 				transferCB->appendMask(writeUseMask);
 			}
-
-			const TextureProperties& props = getProperties();
 
 			VkImageSubresourceRange range;
 			if ((props.getUsage() & TU_DEPTHSTENCIL) != 0)
@@ -532,7 +570,10 @@ namespace bs
 			transferCB->flush(true);
 		}
 
-		return mStagingBuffer->map(offset, length);
+		UINT8* data = mStagingBuffer->map(0, lockedArea.getSize());
+		lockedArea.setExternalBuffer(data);
+
+		return lockedArea;
 	}
 
 	void VulkanTextureCore::unlockImpl()

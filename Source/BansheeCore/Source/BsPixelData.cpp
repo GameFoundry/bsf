@@ -8,6 +8,23 @@
 
 namespace bs
 {
+	PixelData::PixelData()
+		:mExtents(0, 0, 0, 0), mFormat(PF_UNKNOWN), mRowPitch(0), mSlicePitch(0)
+	{ }
+
+	PixelData::PixelData(const PixelVolume& extents, PixelFormat pixelFormat)
+		:mExtents(extents), mFormat(pixelFormat)
+	{
+		PixelUtil::getPitch(extents.getWidth(), extents.getHeight(), extents.getDepth(), pixelFormat, mRowPitch, 
+			mSlicePitch);
+	}
+
+	PixelData::PixelData(UINT32 width, UINT32 height, UINT32 depth, PixelFormat pixelFormat)
+		: mExtents(0, 0, 0, width, height, depth), mFormat(pixelFormat)
+	{
+		PixelUtil::getPitch(width, height, depth, pixelFormat, mRowPitch, mSlicePitch);
+	}
+
 	PixelData::PixelData(const PixelData& copy)
 		:GpuResourceData(copy)
 	{

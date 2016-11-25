@@ -169,28 +169,20 @@ namespace bs
     class BS_CORE_EXPORT PixelData : public GpuResourceData
 	{
     public:
-    	PixelData() {}
+		PixelData();
 		~PixelData() {}
 
 		/**
 		 * Constructs a new object with an internal buffer capable of holding "extents" volume of pixels, where each pixel 
 		 * is of the specified pixel format. Extent offsets are also stored, but are not used internally.
 		 */
-		PixelData(const PixelVolume& extents, PixelFormat pixelFormat)
-			:mExtents(extents), mFormat(pixelFormat)
-		{
-			setConsecutive();
-		}
+		PixelData(const PixelVolume& extents, PixelFormat pixelFormat);
 
 		/**
 		 * Constructs a new object with an internal buffer capable of holding volume of pixels described by	provided width, 
 		 * height and depth, where each pixel is of the specified pixel format.
 		 */
-    	PixelData(UINT32 width, UINT32 height, UINT32 depth, PixelFormat pixelFormat)
-			: mExtents(0, 0, 0, width, height, depth), mFormat(pixelFormat)
-    	{
-    		setConsecutive();
-    	}
+		PixelData(UINT32 width, UINT32 height, UINT32 depth, PixelFormat pixelFormat);
 
 		PixelData(const PixelData& copy);
 		PixelData& operator=(const PixelData& rhs);
@@ -354,16 +346,6 @@ namespace bs
 		static SPtr<PixelData> create(UINT32 width, UINT32 height, UINT32 depth, PixelFormat pixelFormat);
 
 	private:
-		/**
-		 * Set the rowPitch and slicePitch so that the buffer is laid out consecutive in memory. Does not actually modify
-		 * the buffer itself.
-		 */
-		void setConsecutive()
-		{
-			mRowPitch = getWidth();
-			mSlicePitch = getWidth()*getHeight();
-		}
-
 		/**
 		 * Initializes the internal buffer with the provided set of colors. The array should be of width * height * depth 
 		 * size and mapped as such: arrayIdx = x + y * width + z * width * height.
