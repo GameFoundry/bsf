@@ -22,17 +22,22 @@ namespace bs
 	class VulkanRenderTextureCore : public RenderTextureCore
 	{
 	public:
-		VulkanRenderTextureCore(const RENDER_TEXTURE_DESC_CORE& desc, GpuDeviceFlags deviceMask);
-		virtual ~VulkanRenderTextureCore() { }
+		VulkanRenderTextureCore(const RENDER_TEXTURE_DESC_CORE& desc, UINT32 deviceIdx);
+		virtual ~VulkanRenderTextureCore();
 
 		/** @copydoc RenderTextureCore::getCustomAttribute */
 		void getCustomAttribute(const String& name, void* data) const override;
 
 	protected:
+		/** @copydoc CoreObjectCore::initialize() */
+		void initialize() override;
+
 		/** @copydoc RenderTextureCore::getProperties */
 		const RenderTargetProperties& getPropertiesInternal() const override { return mProperties; }
 
 		RenderTextureProperties mProperties;
+		UINT32 mDeviceIdx;
+		VulkanFramebuffer* mFramebuffer;
 	};
 
 	/**

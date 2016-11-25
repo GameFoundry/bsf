@@ -22,7 +22,7 @@ namespace bs
 	class D3D11RenderTextureCore : public RenderTextureCore
 	{
 	public:
-		D3D11RenderTextureCore(const RENDER_TEXTURE_DESC_CORE& desc, GpuDeviceFlags deviceMask);
+		D3D11RenderTextureCore(const RENDER_TEXTURE_DESC_CORE& desc, UINT32 deviceIdx);
 		virtual ~D3D11RenderTextureCore() { }
 
 		/** @copydoc RenderTextureCore::getCustomAttribute */

@@ -30,7 +30,7 @@ namespace bs
 		virtual ~RenderTextureProperties() { }
 
 	private:
-		void construct(const TextureProperties* textureProps, bool requiresFlipping);
+		void construct(const TextureProperties* textureProps, UINT32 numSlices, bool requiresFlipping);
 
 		friend class RenderTextureCore;
 		friend class RenderTexture;
@@ -121,14 +121,14 @@ namespace bs
 	class BS_CORE_EXPORT RenderTextureCore : public RenderTargetCore
 	{
 	public:
-		RenderTextureCore(const RENDER_TEXTURE_DESC_CORE& desc, GpuDeviceFlags deviceMask);
+		RenderTextureCore(const RENDER_TEXTURE_DESC_CORE& desc, UINT32 deviceIdx);
 		virtual ~RenderTextureCore();
 
 		/** @copydoc CoreObjectCore::initialize */
 		void initialize() override;
 
-		/** @copydoc TextureCoreManager::createRenderTexture(const RENDER_TEXTURE_DESC_CORE&, GpuDeviceFlags) */
-		static SPtr<RenderTextureCore> create(const RENDER_TEXTURE_DESC_CORE& desc, GpuDeviceFlags deviceMask = GDF_DEFAULT);
+		/** @copydoc TextureCoreManager::createRenderTexture(const RENDER_TEXTURE_DESC_CORE&, UINT32) */
+		static SPtr<RenderTextureCore> create(const RENDER_TEXTURE_DESC_CORE& desc, UINT32 deviceIdx = 0);
 
 		/**
 		 * Returns a color surface texture you may bind as an input to an GPU program.

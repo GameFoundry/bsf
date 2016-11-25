@@ -25,7 +25,7 @@ namespace bs
     class BS_RSGL_EXPORT GLRenderTextureCore : public RenderTextureCore
     {
 	public:
-		GLRenderTextureCore(const RENDER_TEXTURE_DESC_CORE& desc, GpuDeviceFlags deviceMask);
+		GLRenderTextureCore(const RENDER_TEXTURE_DESC_CORE& desc, UINT32 deviceIdx);
 		virtual ~GLRenderTextureCore();
 
 		/** @copydoc RenderTextureCore::getCustomAttribute */

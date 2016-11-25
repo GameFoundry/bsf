@@ -19,7 +19,7 @@ namespace bs
 			if (texture.isLoaded())
 			{
 				const TextureProperties& texProps = texture->getProperties();
-				construct(&texProps, requiresFlipping);
+				construct(&texProps, desc.colorSurfaces[i].numFaces, requiresFlipping);
 
 				break;
 			}
@@ -35,19 +35,20 @@ namespace bs
 			if (texture != nullptr)
 			{
 				const TextureProperties& texProps = texture->getProperties();
-				construct(&texProps, requiresFlipping);
+				construct(&texProps, desc.colorSurfaces[i].numFaces, requiresFlipping);
 
 				break;
 			}
 		}
 	}
 
-	void RenderTextureProperties::construct(const TextureProperties* textureProps, bool requiresFlipping)
+	void RenderTextureProperties::construct(const TextureProperties* textureProps, UINT32 numSlices, bool requiresFlipping)
 	{
 		if (textureProps != nullptr)
 		{
 			mWidth = textureProps->getWidth();
 			mHeight = textureProps->getHeight();
+			mNumSlices = numSlices;
 			mColorDepth = bs::PixelUtil::getNumElemBits(textureProps->getFormat());
 			mHwGamma = textureProps->isHardwareGammaEnabled();
 			mMultisampleCount = textureProps->getNumSamples();
@@ -58,7 +59,7 @@ namespace bs
 		mRequiresTextureFlipping = requiresFlipping;
 	}
 
-	RenderTextureCore::RenderTextureCore(const RENDER_TEXTURE_DESC_CORE& desc, GpuDeviceFlags deviceMask)
+	RenderTextureCore::RenderTextureCore(const RENDER_TEXTURE_DESC_CORE& desc, UINT32 deviceIdx)
 		:mDesc(desc)
 	{ }
 
@@ -106,9 +107,9 @@ namespace bs
 		throwIfBuffersDontMatch();
 	}
 
-	SPtr<RenderTextureCore> RenderTextureCore::create(const RENDER_TEXTURE_DESC_CORE& desc, GpuDeviceFlags deviceMask)
+	SPtr<RenderTextureCore> RenderTextureCore::create(const RENDER_TEXTURE_DESC_CORE& desc, UINT32 deviceIdx)
 	{
-		return TextureCoreManager::instance().createRenderTexture(desc, deviceMask);
+		return TextureCoreManager::instance().createRenderTexture(desc, deviceIdx);
 	}
 
 	void RenderTextureCore::syncToCore(const CoreSyncData& data)
@@ -142,6 +143,9 @@ namespace bs
 			UINT32 curMsCount = curTexProps.getNumSamples();
 			UINT32 firstMsCount = firstTexProps.getNumSamples();
 
+			UINT32 curNumSlices = mColorSurfaces[i]->getNumArraySlices();
+			UINT32 firstNumSlices = firstSurfaceDesc->getNumArraySlices();
+
 			if (curMsCount == 0)
 				curMsCount = 1;
 
@@ -150,10 +154,12 @@ namespace bs
 
 			if (curTexProps.getWidth() != firstTexProps.getWidth() ||
 				curTexProps.getHeight() != firstTexProps.getHeight() ||
-				curMsCount != firstMsCount)
+				curMsCount != firstMsCount ||
+				curNumSlices != firstNumSlices)
 			{
 				String errorInfo = "\nWidth: " + toString(curTexProps.getWidth()) + "/" + toString(firstTexProps.getWidth());
 				errorInfo += "\nHeight: " + toString(curTexProps.getHeight()) + "/" + toString(firstTexProps.getHeight());
+				errorInfo += "\nNum. slices: " + toString(curNumSlices) + "/" + toString(firstNumSlices);
 				errorInfo += "\nMultisample Count: " + toString(curMsCount) + "/" + toString(firstMsCount);
 
 				BS_EXCEPT(InvalidParametersException, "Provided color textures don't match!" + errorInfo);

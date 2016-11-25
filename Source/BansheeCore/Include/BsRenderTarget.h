@@ -65,19 +65,17 @@ namespace bs
 		RenderTargetProperties() { }
 		virtual ~RenderTargetProperties() { }
 
-		/**
-		 * Returns width of the render target, in pixels.
-		 * 
-		 * @note	Sim thread only.
-		 */
+		/** Returns width of the render target, in pixels. */
         UINT32 getWidth() const { return mWidth; }
 
-		/**
-		 * Returns height of the render target, in pixels.
-		 *
-		 * @note	Sim thread only.
-		 */
+		/** Returns height of the render target, in pixels. */
         UINT32 getHeight() const { return mHeight; }
+
+		/** 
+		 * Returns the number of three dimensional slices of the render target. This will be the depth for 3D textures,
+		 * or number of layers for array textures.
+		 */
+        UINT32 getNumSlices() const { return mNumSlices; }
 
 		/** Gets the number of samples used for multisampling. (0 or 1 if multisampling is not used). */
 		UINT32 getMultisampleCount() const { return mMultisampleCount; }
@@ -126,6 +124,7 @@ namespace bs
 
 		UINT32 mWidth = 0;
 		UINT32 mHeight = 0;
+		UINT32 mNumSlices = 0;
 		UINT32 mColorDepth = 32;
 
 		INT32 mPriority = 0;

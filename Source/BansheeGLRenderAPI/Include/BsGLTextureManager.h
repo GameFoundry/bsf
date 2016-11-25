@@ -45,7 +45,7 @@ namespace bs
 
 		/** @copydoc TextureCoreManager::createRenderTextureInternal */
 		SPtr<RenderTextureCore> createRenderTextureInternal(const RENDER_TEXTURE_DESC_CORE& desc, 
-			GpuDeviceFlags deviceMask = GDF_DEFAULT) override;
+			UINT32 deviceIdx = 0) override;
 
 		GLSupport& mGLSupport;
 	};

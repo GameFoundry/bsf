@@ -103,10 +103,10 @@ namespace bs
 
 		/**
 		 * @copydoc TextureManager::createRenderTexture(const RENDER_TEXTURE_DESC&) 
-		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the object be created on.
+		 * @param[in]	deviceIdx		Index of the GPU device to create the object on.
 		 */
 		SPtr<RenderTextureCore> createRenderTexture(const RENDER_TEXTURE_DESC_CORE& desc, 
-			GpuDeviceFlags deviceMask = GDF_DEFAULT);
+													UINT32 deviceIdx = 0);
 
 	protected:
 		friend class Texture;
@@ -122,7 +122,7 @@ namespace bs
 
 		/** @copydoc createRenderTexture */
 		virtual SPtr<RenderTextureCore> createRenderTextureInternal(const RENDER_TEXTURE_DESC_CORE& desc, 
-			GpuDeviceFlags deviceMask = GDF_DEFAULT) = 0;
+			UINT32 deviceIdx = 0) = 0;
     };
 
 	/** @} */

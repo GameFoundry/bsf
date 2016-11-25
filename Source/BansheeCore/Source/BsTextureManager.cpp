@@ -146,9 +146,9 @@ namespace bs
 	}
 
 	SPtr<RenderTextureCore> TextureCoreManager::createRenderTexture(const RENDER_TEXTURE_DESC_CORE& desc, 
-		GpuDeviceFlags deviceMask)
+																	UINT32 deviceIdx)
 	{
-		SPtr<RenderTextureCore> newRT = createRenderTextureInternal(desc, deviceMask);
+		SPtr<RenderTextureCore> newRT = createRenderTextureInternal(desc, deviceIdx);
 		newRT->initialize();
 
 		return newRT;

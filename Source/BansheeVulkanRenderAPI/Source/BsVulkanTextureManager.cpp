@@ -30,9 +30,9 @@ namespace bs
 	}
 
 	SPtr<RenderTextureCore> VulkanTextureCoreManager::createRenderTextureInternal(const RENDER_TEXTURE_DESC_CORE& desc,
-		GpuDeviceFlags deviceMask)
+																				  UINT32 deviceIdx)
 	{
-		SPtr<VulkanRenderTextureCore> texPtr = bs_shared_ptr_new<VulkanRenderTextureCore>(desc, deviceMask);
+		SPtr<VulkanRenderTextureCore> texPtr = bs_shared_ptr_new<VulkanRenderTextureCore>(desc, deviceIdx);
 		texPtr->_setThisPtr(texPtr);
 
 		return texPtr;
