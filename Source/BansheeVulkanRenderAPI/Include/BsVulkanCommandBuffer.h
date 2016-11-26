@@ -182,7 +182,7 @@ namespace bs
 		 * Assigns a render target the the command buffer. This render target's framebuffer and render pass will be used
 		 * when beginRenderPass() is called. Command buffer must not be currently recording a render pass.
 		 */
-		void setRenderTarget(const SPtr<RenderTargetCore>& rt, bool readOnlyDepthStencil, bool preserveContents);
+		void setRenderTarget(const SPtr<RenderTargetCore>& rt, bool readOnlyDepthStencil, RenderSurfaceMask loadMask);
 
 		/** Clears the entirety currently bound render target. */
 		void clearRenderTarget(UINT32 buffers, const Color& color, float depth, UINT16 stencil, UINT8 targetMask);
@@ -290,7 +290,7 @@ namespace bs
 		UINT32 mRenderTargetWidth;
 		UINT32 mRenderTargetHeight;
 		bool mRenderTargetDepthReadOnly;
-		bool mRenderTargetPreserveContents;
+		RenderSurfaceMask mRenderTargetLoadMask;
 
 		UnorderedMap<VulkanResource*, ResourceUseHandle> mResources;
 		UnorderedMap<VulkanResource*, ImageInfo> mImages;

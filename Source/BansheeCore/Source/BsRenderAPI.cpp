@@ -85,10 +85,10 @@ namespace bs
 	}
 
 	void RenderAPI::setRenderTarget(const SPtr<RenderTarget>& target, bool readOnlyDepthStencil,
-									bool preserveContents)
+									RenderSurfaceMask loadMask)
 	{
 		gCoreThread().queueCommand(std::bind(&RenderAPICore::setRenderTarget, 
-			RenderAPICore::instancePtr(), target->getCore(), readOnlyDepthStencil, preserveContents, nullptr));
+			RenderAPICore::instancePtr(), target->getCore(), readOnlyDepthStencil, loadMask, nullptr));
 	}
 
 	void RenderAPI::beginRender()

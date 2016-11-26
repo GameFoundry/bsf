@@ -87,7 +87,7 @@ namespace bs
 
 		/** @copydoc RenderAPICore::setRenderTarget() */
 		void setRenderTarget(const SPtr<RenderTargetCore>& target, bool readOnlyDepthStencil = false, 
-			bool preserveContents = false, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
+			RenderSurfaceMask loadMask = RT_NONE, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPICore::clearRenderTarget() */
 		void clearRenderTarget(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0, 

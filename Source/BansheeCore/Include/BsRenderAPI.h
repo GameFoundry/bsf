@@ -109,7 +109,7 @@ namespace bs
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		static void setRenderTarget(const SPtr<RenderTarget>& target, bool readOnlyDepthStencil = false, 
-			bool preserveContents = false);
+			RenderSurfaceMask loadMask = RT_NONE);
 
 		/** 
 		 * @see RenderAPICore::beginFrame() 
@@ -476,17 +476,19 @@ namespace bs
 		 * @param[in]	readOnlyDepthStencil	If true the caller guarantees he won't write to the depth/stencil buffer 
 		 *										(if any was provided). This allows the depth buffer to be bound for depth 
 		 *										testing, as well as reading in a shader, at the same time.
-		 * @param[in]	preserveContents		Determines will the current contents of the render target be preserved.
-		 *										Perserving the contents comes at a performance cost, so it's best to set
-		 *										to false if you are sure you will overwrite or clear the contents later.
-		 *										Set to true if you need to perform blending or similar operations with the
-		 *										existing contents of the render target.
+		 * @param[in]	loadMask				Determines which render target surfaces will have their current contents
+		 *										preserved. By default when a render target is bound its contents will be
+		 *										lost. You might need to preserve contents if you need to perform blending 
+		 *										or similar operations with the existing contents of the render target. 
+		 *										
+		 *										Use the mask to select exactly which surfaces of the render target need
+		 *										their contents preserved.
 		 * @param[in]	commandBuffer			Optional command buffer to queue the operation on. If not provided operation
 		 *										is executed immediately. Otherwise it is executed when executeCommands() is
 		 *										called. Buffer must support graphics operations.
 		 */
         virtual void setRenderTarget(const SPtr<RenderTargetCore>& target, bool readOnlyDepthStencil = false,
-			bool preserveContents = false, const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
+			RenderSurfaceMask loadMask = RT_NONE, const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**
 		 * Clears the currently active render target.

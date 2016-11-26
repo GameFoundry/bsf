@@ -270,3 +270,20 @@ namespace bs
 	/** @endcond */
 	/** @} */
 }
+
+/** @cond STDLIB */
+
+namespace std
+{
+	/** Hash value generator for Flags<Enum, Storage>. */
+	template<class Enum, class Storage>
+	struct hash<bs::Flags<Enum, Storage>>
+	{
+		size_t operator()(const bs::Flags<Enum, Storage>& key) const
+		{
+			return (Storage)key;
+		}
+	};
+}
+
+/** @endcond */

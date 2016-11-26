@@ -183,8 +183,8 @@ namespace bs
 		vkGetImageSubresourceLayout(device.getLogical(), mImage, &range, &layout);
 
 		assert(layout.size == output.getSize());
-		output.setRowPitch(layout.rowPitch);
-		output.setSlicePitch(layout.depthPitch);
+		output.setRowPitch((UINT32)layout.rowPitch);
+		output.setSlicePitch((UINT32)layout.depthPitch);
 
 		UINT8* data;
 		VkResult result = vkMapMemory(device.getLogical(), mMemory, layout.offset, layout.size, 0, (void**)&data);
@@ -255,8 +255,6 @@ namespace bs
 		mImageCI.pNext = nullptr;
 		mImageCI.flags = 0;
 
-		// Note: If usage is dynamic I might consider creating a VK_IMAGE_TILING_LINEAR (if supported by the device)
-
 		TextureType texType = props.getTextureType();
 		switch(texType)
 		{
@@ -275,16 +273,19 @@ namespace bs
 			break;
 		}
 
+		// Note: I force rendertarget and depthstencil types to be readable in shader. Depending on performance impact
+		// it might be beneficial to allow the user to enable this explicitly only when needed.
+
 		int usage = props.getUsage();
 		if ((usage & TU_RENDERTARGET) != 0)
 		{
-			mImageCI.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+			mImageCI.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 			mSupportsGPUWrites = true;
 			mAccessFlags = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 		}
 		else if ((usage & TU_DEPTHSTENCIL) != 0)
 		{
-			mImageCI.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+			mImageCI.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 			mSupportsGPUWrites = true;
 			mAccessFlags = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 		}
@@ -400,7 +401,9 @@ namespace bs
 		result = vkBindBufferMemory(vkDevice, buffer, memory, 0);
 		assert(result == VK_SUCCESS);
 
-		return device.getResourceManager().create<VulkanBuffer>(buffer, VK_NULL_HANDLE, memory, 
+		VkBufferView view = VK_NULL_HANDLE;
+
+		return device.getResourceManager().create<VulkanBuffer>(buffer, view, memory,
 			pixelData.getRowPitch(), pixelData.getSlicePitch());
 	}
 

@@ -493,12 +493,12 @@ namespace bs
 	}
 
 	void VulkanRenderAPI::setRenderTarget(const SPtr<RenderTargetCore>& target, bool readOnlyDepthStencil,
-		bool preserveContents, const SPtr<CommandBuffer>& commandBuffer)
+		RenderSurfaceMask loadMask, const SPtr<CommandBuffer>& commandBuffer)
 	{
 		VulkanCommandBuffer* cb = getCB(commandBuffer);
 		VulkanCmdBuffer* vkCB = cb->getInternal();
 
-		vkCB->setRenderTarget(target, readOnlyDepthStencil, preserveContents);
+		vkCB->setRenderTarget(target, readOnlyDepthStencil, loadMask);
 		
 		BS_INC_RENDER_STAT(NumRenderTargetChanges);
 	}

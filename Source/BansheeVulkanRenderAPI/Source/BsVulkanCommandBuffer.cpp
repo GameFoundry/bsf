@@ -104,7 +104,7 @@ namespace bs
 	VulkanCmdBuffer::VulkanCmdBuffer(VulkanDevice& device, UINT32 id, VkCommandPool pool, UINT32 queueFamily, bool secondary)
 		: mId(id), mQueueFamily(queueFamily), mState(State::Ready), mDevice(device), mPool(pool), mFenceCounter(0)
 		, mFramebuffer(nullptr), mPresentSemaphore(VK_NULL_HANDLE), mRenderTargetWidth(0), mRenderTargetHeight(0)
-		, mRenderTargetDepthReadOnly(false), mRenderTargetPreserveContents(false), mGlobalQueueIdx(-1)
+		, mRenderTargetDepthReadOnly(false), mRenderTargetLoadMask(RT_NONE), mGlobalQueueIdx(-1)
 		, mViewport(0.0f, 0.0f, 1.0f, 1.0f), mScissor(0, 0, 0, 0), mStencilRef(0), mDrawOp(DOT_TRIANGLE_LIST)
 		, mNumBoundDescriptorSets(0), mGfxPipelineRequiresBind(true), mCmpPipelineRequiresBind(true)
 		, mViewportRequiresBind(true), mStencilRefRequiresBind(true), mScissorRequiresBind(true), mVertexBuffersTemp()
@@ -236,8 +236,8 @@ namespace bs
 		VkRenderPassBeginInfo renderPassBeginInfo;
 		renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 		renderPassBeginInfo.pNext = nullptr;
-		renderPassBeginInfo.framebuffer = mFramebuffer->getFramebuffer(mRenderTargetPreserveContents);
-		renderPassBeginInfo.renderPass = mFramebuffer->getRenderPass(mRenderTargetPreserveContents);
+		renderPassBeginInfo.framebuffer = mFramebuffer->getFramebuffer(mRenderTargetLoadMask, RT_NONE);
+		renderPassBeginInfo.renderPass = mFramebuffer->getRenderPass(mRenderTargetLoadMask, RT_NONE);
 		renderPassBeginInfo.renderArea.offset.x = 0;
 		renderPassBeginInfo.renderArea.offset.y = 0;
 		renderPassBeginInfo.renderArea.extent.width = mRenderTargetWidth;
@@ -532,7 +532,7 @@ namespace bs
 	}
 
 	void VulkanCmdBuffer::setRenderTarget(const SPtr<RenderTargetCore>& rt, bool readOnlyDepthStencil, 
-		bool preserveContents)
+		RenderSurfaceMask loadMask)
 	{
 		assert(mState != State::RecordingRenderPass && mState != State::Submitted);
 
@@ -545,7 +545,7 @@ namespace bs
 			mRenderTargetWidth = 0;
 			mRenderTargetHeight = 0;
 			mRenderTargetDepthReadOnly = false;
-			mRenderTargetPreserveContents = false;
+			mRenderTargetLoadMask = RT_NONE;
 		}
 		else
 		{
@@ -559,7 +559,7 @@ namespace bs
 			mRenderTargetWidth = rt->getProperties().getWidth();
 			mRenderTargetHeight = rt->getProperties().getHeight();
 			mRenderTargetDepthReadOnly = readOnlyDepthStencil;
-			mRenderTargetPreserveContents = preserveContents;
+			mRenderTargetLoadMask = loadMask;
 
 			registerResource(mFramebuffer, VulkanUseFlag::Write);
 		}
@@ -833,8 +833,8 @@ namespace bs
 		SPtr<VulkanVertexInput> vertexInput = VulkanVertexInputManager::instance().getVertexInfo(mVertexDecl, inputDecl);
 
 		VulkanPipeline* pipeline = mGraphicsPipeline->getPipeline(mDevice.getIndex(), mFramebuffer,
-																  mRenderTargetDepthReadOnly, mRenderTargetPreserveContents,
-																  mDrawOp, vertexInput);
+																  mRenderTargetDepthReadOnly, mRenderTargetLoadMask,
+																  RT_NONE, mDrawOp, vertexInput);
 
 		if (pipeline == nullptr)
 			return false;

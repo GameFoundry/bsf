@@ -7,6 +7,25 @@
 
 namespace bs
 {
+	VulkanFramebuffer::VariantKey::VariantKey(RenderSurfaceMask loadMask, RenderSurfaceMask readMask)
+		:loadMask(loadMask), readMask(readMask)
+	{ }
+
+	size_t VulkanFramebuffer::VariantKey::HashFunction::operator()(const VariantKey& v) const
+	{
+		size_t hash = 0;
+		hash_combine(hash, v.readMask);
+		hash_combine(hash, v.loadMask);
+
+		return hash;
+	}
+
+	bool VulkanFramebuffer::VariantKey::EqualFunction::operator()(const VariantKey& lhs,
+																			 const VariantKey& rhs) const
+	{
+		return lhs.loadMask == rhs.loadMask && lhs.readMask == rhs.readMask;
+	}
+
 	UINT32 VulkanFramebuffer::sNextValidId = 1;
 
 	VulkanFramebuffer::VulkanFramebuffer(VulkanResourceManager* owner, const VULKAN_FRAMEBUFFER_DESC& desc)
@@ -16,12 +35,6 @@ namespace bs
 	{
 		mId = sNextValidId++;
 
-		// Create render state
-		VkAttachmentDescription attachments[BS_MAX_MULTIPLE_RENDER_TARGETS + 1];
-		VkImageView attachmentViews[BS_MAX_MULTIPLE_RENDER_TARGETS + 1];
-		VkAttachmentReference colorReferences[BS_MAX_MULTIPLE_RENDER_TARGETS];
-		VkAttachmentReference depthReference;
-
 		mSampleFlags = VulkanUtility::getSampleFlags(desc.numSamples);
 
 		UINT32 attachmentIdx = 0;
@@ -30,7 +43,7 @@ namespace bs
 			if (desc.color[i].image == nullptr)
 				continue;
 
-			VkAttachmentDescription& attachmentDesc = attachments[attachmentIdx];
+			VkAttachmentDescription& attachmentDesc = mAttachments[attachmentIdx];
 			attachmentDesc.flags = 0;
 			attachmentDesc.format = desc.color[i].format;
 			attachmentDesc.samples = mSampleFlags;
@@ -49,12 +62,12 @@ namespace bs
 			mColorBaseLayers[attachmentIdx] = desc.color[i].baseLayer;
 			mColorImages[attachmentIdx] = desc.color[i].image;
 
-			VkAttachmentReference& ref = colorReferences[attachmentIdx];
+			VkAttachmentReference& ref = mColorReferences[attachmentIdx];
 			ref.attachment = attachmentIdx;
 			ref.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-			attachmentViews[attachmentIdx] = desc.color[i].view;
-;			attachmentIdx++;
+			mAttachmentViews[attachmentIdx] = desc.color[i].view;
+			attachmentIdx++;
 		}
 
 		mNumColorAttachments = attachmentIdx;
@@ -62,7 +75,7 @@ namespace bs
 
 		if (mHasDepth)
 		{
-			VkAttachmentDescription& attachmentDesc = attachments[attachmentIdx];
+			VkAttachmentDescription& attachmentDesc = mAttachments[attachmentIdx];
 			attachmentDesc.flags = 0;
 			attachmentDesc.format = desc.depth.format;
 			attachmentDesc.samples = mSampleFlags;
@@ -76,11 +89,11 @@ namespace bs
 			mDepthBaseLayer = desc.depth.baseLayer;
 			mDepthStencilImage = desc.depth.image;
 
-			VkAttachmentReference& ref = depthReference;
+			VkAttachmentReference& ref = mDepthReference;
 			ref.attachment = attachmentIdx;
 			ref.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
-			attachmentViews[attachmentIdx] = desc.depth.view;
+			mAttachmentViews[attachmentIdx] = desc.depth.view;
 			attachmentIdx++;
 		}
 
@@ -97,117 +110,162 @@ namespace bs
 		subpassDesc.pResolveAttachments = nullptr;
 
 		if (mNumColorAttachments > 0)
-			subpassDesc.pColorAttachments = colorReferences;
+			subpassDesc.pColorAttachments = mColorReferences;
 		else
 			subpassDesc.pColorAttachments = nullptr;
 
 		if (mHasDepth)
-			subpassDesc.pDepthStencilAttachment = &depthReference;
+			subpassDesc.pDepthStencilAttachment = &mDepthReference;
 		else
 			subpassDesc.pDepthStencilAttachment = nullptr;
 
 		// Subpass dependencies for layout transitions
-		VkSubpassDependency dependencies[2];
+		mDependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
+		mDependencies[0].dstSubpass = 0;
+		mDependencies[0].srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+		mDependencies[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		mDependencies[0].srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+		mDependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT; // Note: Do we really need read access?
+		mDependencies[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT; // Note: Is this really required?
 
-		dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
-		dependencies[0].dstSubpass = 0;
-		dependencies[0].srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
-		dependencies[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-		dependencies[0].srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-		dependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT; // Note: Do we really need read access?
-		dependencies[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT; // Note: Is this really required?
+		mDependencies[1].srcSubpass = 0;
+		mDependencies[1].dstSubpass = VK_SUBPASS_EXTERNAL;
+		mDependencies[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		mDependencies[1].dstStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+		mDependencies[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+		mDependencies[1].dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+		mDependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;// Note: Is this really required?
 
-		dependencies[1].srcSubpass = 0;
-		dependencies[1].dstSubpass = VK_SUBPASS_EXTERNAL;
-		dependencies[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-		dependencies[1].dstStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
-		dependencies[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-		dependencies[1].dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-		dependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;// Note: Is this really required?
+		// Create render pass and frame buffer create infos
+		mRenderPassCI.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+		mRenderPassCI.pNext = nullptr;
+		mRenderPassCI.flags = 0;
+		mRenderPassCI.attachmentCount = mNumAttachments;
+		mRenderPassCI.pAttachments = mAttachments;
+		mRenderPassCI.subpassCount = 1;
+		mRenderPassCI.pSubpasses = &subpassDesc;
+		mRenderPassCI.dependencyCount = 2;
+		mRenderPassCI.pDependencies = mDependencies;
 
-		VkRenderPassCreateInfo renderPassCI;
-		renderPassCI.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-		renderPassCI.pNext = nullptr;
-		renderPassCI.flags = 0;
-		renderPassCI.attachmentCount = mNumAttachments;
-		renderPassCI.pAttachments = attachments;
-		renderPassCI.subpassCount = 1;
-		renderPassCI.pSubpasses = &subpassDesc;
-		renderPassCI.dependencyCount = 2;
-		renderPassCI.pDependencies = dependencies;
+		mFramebufferCI.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+		mFramebufferCI.pNext = nullptr;
+		mFramebufferCI.flags = 0;
+		mFramebufferCI.renderPass = VK_NULL_HANDLE;
+		mFramebufferCI.attachmentCount = mNumAttachments;
+		mFramebufferCI.pAttachments = mAttachmentViews;
+		mFramebufferCI.width = desc.width;
+		mFramebufferCI.height = desc.height;
+		mFramebufferCI.layers = desc.layers;
 
-		VkDevice device = mOwner->getDevice().getLogical();
-
-		// Create discard render pass and frame buffer
-		VkResult result = vkCreateRenderPass(device, &renderPassCI, gVulkanAllocator, &mRenderPassDiscard);
-		assert(result == VK_SUCCESS);
-
-		//// Create frame buffer
-		VkFramebufferCreateInfo framebufferCI;
-		framebufferCI.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-		framebufferCI.pNext = nullptr;
-		framebufferCI.flags = 0;
-		framebufferCI.renderPass = mRenderPassDiscard;
-		framebufferCI.attachmentCount = mNumAttachments;
-		framebufferCI.pAttachments = attachmentViews;
-		framebufferCI.width = desc.width;
-		framebufferCI.height = desc.height;
-		framebufferCI.layers = desc.layers;
-
-		result = vkCreateFramebuffer(device, &framebufferCI, gVulkanAllocator, &mFramebufferDiscard);
-		assert(result == VK_SUCCESS);
-
-		// Create preserving render pass and frame buffer
-		for (UINT32 i = 0; i < mNumColorAttachments; i++)
-		{
-			VkAttachmentDescription& attachmentDesc = attachments[i];
-			attachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
-			attachmentDesc.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		}
-
-		if (mHasDepth)
-		{
-			VkAttachmentDescription& attachmentDesc = attachments[mNumColorAttachments];
-			attachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
-			attachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
-			attachmentDesc.initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-		}
-
-		vkCreateRenderPass(device, &renderPassCI, gVulkanAllocator, &mRenderPassPreserve);
-		assert(result == VK_SUCCESS);
-
-		//// Create frame buffer
-		framebufferCI.renderPass = mRenderPassPreserve;
-
-		result = vkCreateFramebuffer(device, &framebufferCI, gVulkanAllocator, &mFramebufferPreserve);
-		assert(result == VK_SUCCESS);
-
+		mDefault = createVariant(RT_NONE, RT_NONE);		
 	}
 
 	VulkanFramebuffer::~VulkanFramebuffer()
 	{
 		VkDevice device = mOwner->getDevice().getLogical();
 
-		vkDestroyFramebuffer(device, mFramebufferDiscard, gVulkanAllocator);
-		vkDestroyRenderPass(device, mRenderPassDiscard, gVulkanAllocator);
+		vkDestroyFramebuffer(device, mDefault.framebuffer, gVulkanAllocator);
+		vkDestroyRenderPass(device, mDefault.renderPass, gVulkanAllocator);
 
-		vkDestroyFramebuffer(device, mFramebufferPreserve, gVulkanAllocator);
-		vkDestroyRenderPass(device, mRenderPassPreserve, gVulkanAllocator);
+		for(auto& entry : mVariants)
+		{
+			vkDestroyFramebuffer(device, entry.second.framebuffer, gVulkanAllocator);
+			vkDestroyRenderPass(device, entry.second.renderPass, gVulkanAllocator);
+		}
 	}
 
-	VkRenderPass VulkanFramebuffer::getRenderPass(bool preserveContents) const
+	VulkanFramebuffer::Variant VulkanFramebuffer::createVariant(RenderSurfaceMask loadMask, 
+		RenderSurfaceMask readMask) const
 	{
-		if (preserveContents)
-			return mRenderPassPreserve;
-		
-		return mRenderPassDiscard;
+		for (UINT32 i = 0; i < mNumColorAttachments; i++)
+		{
+			VkAttachmentDescription& attachmentDesc = mAttachments[i];
+			VkAttachmentReference& attachmentRef = mColorReferences[i];
+
+			if (loadMask.isSet((RenderSurfaceMaskBits)i))
+			{
+				attachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+				attachmentDesc.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+			}
+			else
+			{
+				attachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+				attachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+			}
+
+			if(readMask.isSet((RenderSurfaceMaskBits)i))
+				attachmentRef.layout = VK_IMAGE_LAYOUT_GENERAL;
+			else
+				attachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		}
+
+		if (mHasDepth)
+		{
+			VkAttachmentDescription& attachmentDesc = mAttachments[mNumColorAttachments];
+			VkAttachmentReference& attachmentRef = mDepthReference;
+
+			if (loadMask.isSet(RT_DEPTH))
+			{
+				attachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+				attachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+				attachmentDesc.initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+			}
+			else
+			{
+				attachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+				attachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+				attachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+			}
+
+			if (readMask.isSet(RT_DEPTH))
+				attachmentRef.layout = VK_IMAGE_LAYOUT_GENERAL;
+			else
+				attachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+		}
+
+		VkDevice device = mOwner->getDevice().getLogical();
+
+		Variant variant;
+		VkResult result = vkCreateRenderPass(device, &mRenderPassCI, gVulkanAllocator, &variant.renderPass);
+		assert(result == VK_SUCCESS);
+
+		mFramebufferCI.renderPass = variant.renderPass;
+
+		result = vkCreateFramebuffer(device, &mFramebufferCI, gVulkanAllocator, &variant.framebuffer);
+		assert(result == VK_SUCCESS);
+
+		return variant;
 	}
 
-	VkFramebuffer VulkanFramebuffer::getFramebuffer(bool preserveContents) const
+	VkRenderPass VulkanFramebuffer::getRenderPass(RenderSurfaceMask loadMask, RenderSurfaceMask readMask) const
 	{
-		if (preserveContents)
-			return mFramebufferPreserve;
+		if (loadMask == RT_NONE && readMask == RT_NONE)
+			return mDefault.renderPass;
 
-		return mFramebufferDiscard;
+		VariantKey key(loadMask, readMask);
+		auto iterFind = mVariants.find(key);
+		if (iterFind != mVariants.end())
+			return iterFind->second.renderPass;
+
+		Variant newVariant = createVariant(loadMask, readMask);
+		mVariants[key] = newVariant;
+
+		return newVariant.renderPass;
+	}
+
+	VkFramebuffer VulkanFramebuffer::getFramebuffer(RenderSurfaceMask loadMask, RenderSurfaceMask readMask) const
+	{
+		if (loadMask == RT_NONE && readMask == RT_NONE)
+			return mDefault.framebuffer;
+
+		VariantKey key(loadMask, readMask);
+		auto iterFind = mVariants.find(key);
+		if (iterFind != mVariants.end())
+			return iterFind->second.framebuffer;
+
+		Variant newVariant = createVariant(loadMask, readMask);
+		mVariants[key] = newVariant;
+
+		return newVariant.framebuffer;
 	}
 }

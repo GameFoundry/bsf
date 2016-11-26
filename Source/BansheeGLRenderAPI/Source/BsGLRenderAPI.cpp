@@ -740,7 +740,7 @@ namespace bs
 	}
 
 	void GLRenderAPI::setRenderTarget(const SPtr<RenderTargetCore>& target, bool readOnlyDepthStencil, 
-		bool preserveContents, const SPtr<CommandBuffer>& commandBuffer)
+		RenderSurfaceMask loadMask, const SPtr<CommandBuffer>& commandBuffer)
 	{
 		auto executeRef = [&](const SPtr<RenderTargetCore>& target, bool readOnlyDepthStencil)
 		{

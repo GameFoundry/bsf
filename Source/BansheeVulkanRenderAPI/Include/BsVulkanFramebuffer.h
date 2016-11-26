@@ -70,20 +70,18 @@ namespace bs
 		/** 
 		 * Gets internal Vulkan render pass object. 
 		 * 
-		 * @param[in]	preserveContents	If true, returns render pass that preserves existing framebuffer attachment 
-		 *									contents on load. Otherwise returns render pass that discards them (more 
-		 *									efficient).
+		 * @param[in]	loadMask	Mask that control which render target surface contents should be preserved on load.
+		 * @param[in]	readMask	Mask that controls which render targets can be read by shaders while they're bound.
 		 */
-		VkRenderPass getRenderPass(bool preserveContents) const;
+		VkRenderPass getRenderPass(RenderSurfaceMask loadMask, RenderSurfaceMask readMask) const;
 
 		/**
 		 * Gets internal Vulkan framebuffer object.
 		 *
-		 * @param[in]	preserveContents	If true, returns render pass that preserves existing framebuffer attachment
-		 *									contents on load. Otherwise returns render pass that discards them (more
-		 *									efficient).
+		 * @param[in]	loadMask	Mask that control which render target surface contents should be preserved on load.
+		 * @param[in]	readMask	Mask that controls which render targets can be read by shaders while they're bound.
 		 */
-		VkFramebuffer getFramebuffer(bool preserveContents) const;
+		VkFramebuffer getFramebuffer(RenderSurfaceMask loadMask, RenderSurfaceMask readMask) const;
 
 		/** 
 		 * Gets the number of layers in each framebuffer surface. A layer is an element in a texture array, or a depth 
@@ -115,12 +113,41 @@ namespace bs
 		/** Returns sample flags that determine if the framebuffer supports multi-sampling, and for how many samples. */
 		VkSampleCountFlagBits getSampleFlags() const { return mSampleFlags; }
 	private:
-		UINT32 mId;
-		VkRenderPass mRenderPassDiscard;
-		VkFramebuffer mFramebufferDiscard;
+		/** Information about a single frame-buffer variant. */
+		struct Variant
+		{
+			VkRenderPass renderPass;
+			VkFramebuffer framebuffer;
+		};
 
-		VkRenderPass mRenderPassPreserve;
-		VkFramebuffer mFramebufferPreserve;
+		/** Key used for identifying different types of frame-buffer variants. */
+		struct VariantKey
+		{
+			VariantKey(RenderSurfaceMask loadMask, RenderSurfaceMask readMask);
+
+			class HashFunction
+			{
+			public:
+				size_t operator()(const VariantKey& key) const;
+			};
+
+			class EqualFunction
+			{
+			public:
+				bool operator()(const VariantKey& lhs, const VariantKey& rhs) const;
+			};
+
+			RenderSurfaceMask loadMask;
+			RenderSurfaceMask readMask;
+		};
+
+		/** Creates a new variant of the framebuffer. */
+		Variant createVariant(RenderSurfaceMask loadMask, RenderSurfaceMask readMask) const;
+
+		UINT32 mId;
+
+		Variant mDefault;
+		mutable UnorderedMap<VariantKey, Variant, VariantKey::HashFunction, VariantKey::EqualFunction> mVariants;
 
 		UINT32 mNumAttachments;
 		UINT32 mNumColorAttachments;
@@ -131,6 +158,14 @@ namespace bs
 		UINT32 mDepthBaseLayer;
 		bool mHasDepth;
 		VkSampleCountFlagBits mSampleFlags;
+
+		mutable VkAttachmentDescription mAttachments[BS_MAX_MULTIPLE_RENDER_TARGETS + 1];
+		mutable VkImageView mAttachmentViews[BS_MAX_MULTIPLE_RENDER_TARGETS + 1];
+		mutable VkAttachmentReference mColorReferences[BS_MAX_MULTIPLE_RENDER_TARGETS];
+		mutable VkAttachmentReference mDepthReference;
+		mutable VkSubpassDependency mDependencies[2];
+		mutable VkRenderPassCreateInfo mRenderPassCI;
+		mutable VkFramebufferCreateInfo mFramebufferCI;
 
 		static UINT32 sNextValidId;
 	};

@@ -52,7 +52,7 @@ namespace bs
 
 		/** @copydoc RenderAPICore::setRenderTarget */
 		void setRenderTarget(const SPtr<RenderTargetCore>& target, bool readOnlyDepthStencil = false,
-			bool preserveContents = false, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
+			RenderSurfaceMask loadMask = RT_NONE, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPICore::setViewport */
 		void setViewport(const Rect2& area, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
