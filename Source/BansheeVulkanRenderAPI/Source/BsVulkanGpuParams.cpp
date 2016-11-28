@@ -368,16 +368,20 @@ namespace bs
 			if (resource == nullptr)
 				continue;
 
+			const TextureProperties& props = element->getProperties();
 			VkAccessFlags accessFlags = VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT;
 			VulkanUseFlags useFlags = VulkanUseFlag::Read | VulkanUseFlag::Write;
 
 			const TextureSurface& surface = mLoadStoreSurfaces[i];
 			VkImageSubresourceRange range;
 			range.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-			range.baseArrayLayer = surface.arraySlice;
-			range.layerCount = surface.numArraySlices;
-			range.baseMipLevel = surface.mipLevel;
-			range.levelCount = surface.numMipLevels;
+
+			// Note: Currently layout transitions are only supported for entire images, not individual subresources, so
+			// make sure to bind all faces/mipmaps
+			range.baseArrayLayer = 0;
+			range.layerCount = props.getNumFaces();
+			range.baseMipLevel = 0;
+			range.levelCount = props.getNumMipmaps();
 
 			buffer.registerResource(resource, accessFlags, VK_IMAGE_LAYOUT_GENERAL, range, useFlags);
 		}
