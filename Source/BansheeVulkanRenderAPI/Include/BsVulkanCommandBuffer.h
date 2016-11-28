@@ -160,7 +160,7 @@ namespace bs
 		 * device when the command buffer is submitted.
 		 */
 		void registerResource(VulkanImage* res, VkAccessFlags accessFlags, VkImageLayout layout, 
-			const VkImageSubresourceRange& range, VulkanUseFlags flags);
+			VulkanUseFlags flags, bool isFBAttachment = false);
 
 		/** 
 		 * Lets the command buffer know that the provided image resource has been queued on it, and will be used by the
@@ -254,9 +254,16 @@ namespace bs
 		struct ImageInfo
 		{
 			VkAccessFlags accessFlags;
-			VkImageLayout layout;
 			VkImageSubresourceRange range;
 			ResourceUseHandle useHandle;
+
+			// Only relevant for layout transitions
+			VkImageLayout currentLayout;
+			VkImageLayout requiredLayout;
+			VkImageLayout finalLayout;
+
+			bool isFBAttachment : 1;
+			bool isShaderInput : 1;
 		};
 
 		/** Checks if all the prerequisites for rendering have been made (e.g. render target and pipeline state are set. */
@@ -293,8 +300,9 @@ namespace bs
 		RenderSurfaceMask mRenderTargetLoadMask;
 
 		UnorderedMap<VulkanResource*, ResourceUseHandle> mResources;
-		UnorderedMap<VulkanResource*, ImageInfo> mImages;
+		UnorderedMap<VulkanResource*, UINT32> mImages;
 		UnorderedMap<VulkanResource*, BufferInfo> mBuffers;
+		Vector<ImageInfo> mImageInfos;
 		UINT32 mGlobalQueueIdx;
 
 		SPtr<VulkanGraphicsPipelineStateCore> mGraphicsPipeline;
@@ -317,6 +325,8 @@ namespace bs
 		VkDeviceSize mVertexBufferOffsetsTemp[BS_MAX_BOUND_VERTEX_BUFFERS];
 		VkDescriptorSet* mDescriptorSetsTemp;
 		UnorderedMap<UINT32, TransitionInfo> mTransitionInfoTemp;
+		Vector<VkImageMemoryBarrier> mLayoutTransitionBarriersTemp;
+		UnorderedMap<VulkanImage*, UINT32> mQueuedLayoutTransitions;
 	};
 
 	/** CommandBuffer implementation for Vulkan. */
@@ -354,9 +364,6 @@ namespace bs
 		VulkanDevice& mDevice;
 		VulkanQueue* mQueue;
 		UINT32 mIdMask;
-
-		VkSemaphore mSemaphoresTemp[BS_MAX_UNIQUE_QUEUES];
-		UnorderedMap<UINT32, TransitionInfo> mTransitionInfoTemp;
 	};
 
 	/** @} */

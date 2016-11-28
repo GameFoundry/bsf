@@ -52,6 +52,14 @@ namespace bs
 		bool offscreen;
 	};
 
+	/** Information about a single framebuffer attachment. */
+	struct VulkanFramebufferAttachment
+	{
+		VulkanImage* image = nullptr;
+		UINT32 baseLayer = 0;
+		VkImageLayout finalLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	};
+
 	/** Vulkan frame buffer containing one or multiple color surfaces, and an optional depth surface. */
 	class VulkanFramebuffer : public VulkanResource
 	{
@@ -89,17 +97,11 @@ namespace bs
 		 */
 		UINT32 getNumLayers() const { return mNumLayers; }
 
-		/** Returns the image representing the color attachment at the provided index. */
-		VulkanImage* getColorImage(UINT32 colorIdx) const { return mColorImages[colorIdx]; }
+		/** Returns information about a color attachment at the specified index. */
+		const VulkanFramebufferAttachment& getColorAttachment(UINT32 colorIdx) const { return mColorAttachments[colorIdx]; }
 
-		/** Returns the image representing the depth/stencil attachment, if one exists. */
-		VulkanImage* getDepthStencilImage() const { return mDepthStencilImage; }
-
-		/** Returns the initial layer of the color texture surface in which to start rendering. */
-		UINT32 getColorBaseLayer(UINT32 colorIdx) const { return mColorBaseLayers[colorIdx]; }
-
-		/** Returns the initial layer of the depth-stencil texture surface in which to start rendering. */
-		UINT32 getDepthStencilBaseLayer() const { return mDepthBaseLayer; }
+		/** Returns information about a depth-stencil attachment. */
+		const VulkanFramebufferAttachment& getDepthStencilAttachment() const { return mDepthStencilAttachment; }
 
 		/** Gets the total number of frame-buffer attachments, including both color and depth. */
 		UINT32 getNumAttachments() const { return mNumAttachments; }
@@ -152,10 +154,8 @@ namespace bs
 		UINT32 mNumAttachments;
 		UINT32 mNumColorAttachments;
 		UINT32 mNumLayers;
-		VulkanImage* mColorImages[BS_MAX_MULTIPLE_RENDER_TARGETS];
-		VulkanImage* mDepthStencilImage;
-		UINT32 mColorBaseLayers[BS_MAX_MULTIPLE_RENDER_TARGETS];
-		UINT32 mDepthBaseLayer;
+		VulkanFramebufferAttachment mColorAttachments[BS_MAX_MULTIPLE_RENDER_TARGETS];
+		VulkanFramebufferAttachment mDepthStencilAttachment;
 		bool mHasDepth;
 		VkSampleCountFlagBits mSampleFlags;
 

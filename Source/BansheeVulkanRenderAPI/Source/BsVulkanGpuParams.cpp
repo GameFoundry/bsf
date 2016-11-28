@@ -372,18 +372,7 @@ namespace bs
 			VkAccessFlags accessFlags = VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT;
 			VulkanUseFlags useFlags = VulkanUseFlag::Read | VulkanUseFlag::Write;
 
-			const TextureSurface& surface = mLoadStoreSurfaces[i];
-			VkImageSubresourceRange range;
-			range.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-
-			// Note: Currently layout transitions are only supported for entire images, not individual subresources, so
-			// make sure to bind all faces/mipmaps
-			range.baseArrayLayer = 0;
-			range.layerCount = props.getNumFaces();
-			range.baseMipLevel = 0;
-			range.levelCount = props.getNumMipmaps();
-
-			buffer.registerResource(resource, accessFlags, VK_IMAGE_LAYOUT_GENERAL, range, useFlags);
+			buffer.registerResource(resource, accessFlags, VK_IMAGE_LAYOUT_GENERAL, useFlags);
 		}
 
 		for (UINT32 i = 0; i < numTextures; i++)
@@ -399,17 +388,6 @@ namespace bs
 
 			const TextureProperties& props = element->getProperties();
 
-			bool isDepthStencil = (props.getUsage() & TU_DEPTHSTENCIL) != 0;
-
-			VkImageSubresourceRange range;
-			range.aspectMask = isDepthStencil ? VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT
-				: VK_IMAGE_ASPECT_COLOR_BIT;
-
-			range.baseArrayLayer = 0;
-			range.layerCount = props.getNumFaces();
-			range.baseMipLevel = 0;
-			range.levelCount = props.getNumMipmaps();
-
 			VkImageLayout layout;
 
 			// Keep dynamic textures in general layout, so they can be easily mapped by CPU
@@ -418,8 +396,7 @@ namespace bs
 			else
 				layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
-			buffer.registerResource(resource, VK_ACCESS_SHADER_READ_BIT, layout,
-				range, VulkanUseFlag::Read);
+			buffer.registerResource(resource, VK_ACCESS_SHADER_READ_BIT, layout, VulkanUseFlag::Read);
 		}
 
 		// Acquire sets as needed, and updated their contents if dirty

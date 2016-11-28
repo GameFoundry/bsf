@@ -161,6 +161,18 @@ namespace bs
 		return view;
 	}
 
+	VkImageSubresourceRange VulkanImage::getRange() const
+	{
+		VkImageSubresourceRange range;
+		range.aspectMask = mImageViewCI.subresourceRange.aspectMask;
+		range.baseArrayLayer = 0;
+		range.layerCount = mNumFaces;
+		range.baseMipLevel = 0;
+		range.levelCount = mNumMipLevels;
+
+		return range;
+	}
+
 	VulkanImageSubresource* VulkanImage::getSubresource(UINT32 face, UINT32 mipLevel)
 	{
 		return mSubresources[face * mNumMipLevels + mipLevel];
@@ -552,10 +564,8 @@ namespace bs
 									transferDstLayout, dstImage->getLayout(), dstRange);
 
 			// Notify the command buffer that these resources are being used on it
-			transferCB->getCB()->registerResource(srcImage, mAccessFlags, srcImage->getLayout(), srcRange, 
-				VulkanUseFlag::Read);
-			transferCB->getCB()->registerResource(dstImage, other->getAccessFlags(), dstImage->getLayout(), dstRange,
-				VulkanUseFlag::Write);
+			transferCB->getCB()->registerResource(srcImage, mAccessFlags, srcImage->getLayout(), VulkanUseFlag::Read);
+			transferCB->getCB()->registerResource(dstImage, other->getAccessFlags(), dstImage->getLayout(), VulkanUseFlag::Write);
 
 			// Need to wait if subresource we're reading from is being written, or if the subresource we're writing to is
 			// being accessed in any way
@@ -864,7 +874,7 @@ namespace bs
 
 				// Notify the command buffer that these resources are being used on it
 				transferCB->getCB()->registerResource(mStagingBuffer, VK_ACCESS_TRANSFER_READ_BIT, VulkanUseFlag::Read);
-				transferCB->getCB()->registerResource(image, mAccessFlags, image->getLayout(), range, VulkanUseFlag::Write);
+				transferCB->getCB()->registerResource(image, mAccessFlags, image->getLayout(), VulkanUseFlag::Write);
 
 				// We don't actually flush the transfer buffer here since it's an expensive operation, but it's instead
 				// done automatically before next "normal" command buffer submission.

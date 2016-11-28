@@ -170,7 +170,10 @@ namespace bs
 
 			for (auto& entry : mImages)
 			{
-				ResourceUseHandle& useHandle = entry.second.useHandle;
+				UINT32 imageInfoIdx = entry.second;
+				ImageInfo& imageInfo = mImageInfos[imageInfoIdx];
+
+				ResourceUseHandle& useHandle = imageInfo.useHandle;
 				assert(useHandle.used);
 
 				entry.first->notifyUnbound();
@@ -233,11 +236,97 @@ namespace bs
 			return;
 		}
 
+		// Perform any queued layout transitions
+		auto createLayoutTransitionBarrier = [&](VulkanImage* image, ImageInfo& imageInfo)
+		{
+			VkAccessFlags srcAccessFlags;
+			if (imageInfo.currentLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+				srcAccessFlags = VK_ACCESS_SHADER_READ_BIT;
+			else if (imageInfo.currentLayout == VK_IMAGE_LAYOUT_GENERAL)
+			{
+				srcAccessFlags = VK_ACCESS_SHADER_READ_BIT;
+				srcAccessFlags |= VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
+			}
+			else if(imageInfo.currentLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL)
+				srcAccessFlags = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+			else if (imageInfo.currentLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
+				srcAccessFlags = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+			else
+			{
+				srcAccessFlags = VK_ACCESS_SHADER_READ_BIT;
+				LOGWRN("Unsupported source layout for a framebuffer attachment.");
+			}
+
+			mLayoutTransitionBarriersTemp.push_back(VkImageMemoryBarrier());
+			VkImageMemoryBarrier& barrier = mLayoutTransitionBarriersTemp.back();
+			barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+			barrier.pNext = nullptr;
+			barrier.srcAccessMask = srcAccessFlags;
+			barrier.dstAccessMask = imageInfo.accessFlags;
+			barrier.srcQueueFamilyIndex = mQueueFamily;
+			barrier.dstQueueFamilyIndex = mQueueFamily;
+			barrier.oldLayout = imageInfo.currentLayout;
+			barrier.newLayout = imageInfo.requiredLayout;
+			barrier.image = image->getHandle();
+			barrier.subresourceRange = imageInfo.range;
+
+			imageInfo.currentLayout = imageInfo.requiredLayout;
+		};
+
+		for (auto& entry : mQueuedLayoutTransitions)
+		{
+			UINT32 imageInfoIdx = entry.second;
+			ImageInfo& imageInfo = mImageInfos[imageInfoIdx];
+
+			createLayoutTransitionBarrier(entry.first, imageInfo);
+		}
+
+		mQueuedLayoutTransitions.clear();
+
+		vkCmdPipelineBarrier(mCmdBuffer,
+							 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, // Note: VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT might be more correct here, according to the spec
+							 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+							 0, 0, nullptr,
+							 0, nullptr,
+							 (UINT32)mLayoutTransitionBarriersTemp.size(), mLayoutTransitionBarriersTemp.data());
+
+		mLayoutTransitionBarriersTemp.clear();
+
+		// Check if any frame-buffer attachments are also used as shader inputs, in which case we make them read-only
+		RenderSurfaceMask readMask = RT_NONE;
+
+		UINT32 numColorAttachments = mFramebuffer->getNumColorAttachments();
+		for(UINT32 i = 0; i < numColorAttachments; i++)
+		{
+			VulkanImage* image = mFramebuffer->getColorAttachment(i).image;
+
+			UINT32 imageInfoIdx = mImages[image];
+			ImageInfo& imageInfo = mImageInfos[imageInfoIdx];
+
+			bool readOnly = imageInfo.isShaderInput;
+
+			if(readOnly)
+				readMask.set((RenderSurfaceMaskBits)(1 << i));
+		}
+
+		if(mFramebuffer->hasDepthAttachment())
+		{
+			VulkanImage* image = mFramebuffer->getDepthStencilAttachment().image;
+
+			UINT32 imageInfoIdx = mImages[image];
+			ImageInfo& imageInfo = mImageInfos[imageInfoIdx];
+
+			bool readOnly = imageInfo.isShaderInput;
+
+			if (readOnly)
+				readMask.set(RT_DEPTH);
+		}
+
 		VkRenderPassBeginInfo renderPassBeginInfo;
 		renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 		renderPassBeginInfo.pNext = nullptr;
-		renderPassBeginInfo.framebuffer = mFramebuffer->getFramebuffer(mRenderTargetLoadMask, RT_NONE);
-		renderPassBeginInfo.renderPass = mFramebuffer->getRenderPass(mRenderTargetLoadMask, RT_NONE);
+		renderPassBeginInfo.framebuffer = mFramebuffer->getFramebuffer(mRenderTargetLoadMask, readMask);
+		renderPassBeginInfo.renderPass = mFramebuffer->getRenderPass(mRenderTargetLoadMask, readMask);
 		renderPassBeginInfo.renderArea.offset.x = 0;
 		renderPassBeginInfo.renderArea.offset.y = 0;
 		renderPassBeginInfo.renderArea.extent.width = mRenderTargetWidth;
@@ -293,11 +382,12 @@ namespace bs
 		for (auto& entry : mImages)
 		{
 			VulkanImage* resource = static_cast<VulkanImage*>(entry.first);
+			ImageInfo& imageInfo = mImageInfos[entry.second];
 
 			UINT32 currentQueueFamily = resource->getQueueFamily();
 			bool queueMismatch = resource->isExclusive() && currentQueueFamily != mQueueFamily;
 
-			if (queueMismatch || resource->getLayout() != entry.second.layout)
+			if (queueMismatch || imageInfo.currentLayout != imageInfo.requiredLayout)
 			{
 				Vector<VkImageMemoryBarrier>& barriers = mTransitionInfoTemp[currentQueueFamily].imageBarriers;
 
@@ -305,16 +395,17 @@ namespace bs
 				VkImageMemoryBarrier& barrier = barriers.back();
 				barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
 				barrier.pNext = nullptr;
-				barrier.srcAccessMask = entry.second.accessFlags;
-				barrier.dstAccessMask = entry.second.accessFlags;
+				barrier.srcAccessMask = imageInfo.accessFlags;
+				barrier.dstAccessMask = imageInfo.accessFlags;
 				barrier.srcQueueFamilyIndex = currentQueueFamily;
 				barrier.dstQueueFamilyIndex = mQueueFamily;
-				barrier.oldLayout = resource->getLayout();
-				barrier.newLayout = entry.second.layout;
+				barrier.oldLayout = imageInfo.currentLayout;
+				barrier.newLayout = imageInfo.requiredLayout;
 				barrier.image = resource->getHandle();
-				barrier.subresourceRange = entry.second.range;
+				barrier.subresourceRange = imageInfo.range;
 
-				resource->setLayout(entry.second.layout);
+				imageInfo.currentLayout = imageInfo.requiredLayout;
+				resource->setLayout(imageInfo.finalLayout);
 			}
 		}
 
@@ -441,7 +532,10 @@ namespace bs
 
 		for (auto& entry : mImages)
 		{
-			ResourceUseHandle& useHandle = entry.second.useHandle;
+			UINT32 imageInfoIdx = entry.second;
+			ImageInfo& imageInfo = mImageInfos[imageInfoIdx];
+
+			ResourceUseHandle& useHandle = imageInfo.useHandle;
 			assert(!useHandle.used);
 
 			useHandle.used = true;
@@ -477,6 +571,7 @@ namespace bs
 		mCmpPipelineRequiresBind = true;
 		mFramebuffer = nullptr;
 		mDescriptorSetsBindState = DescriptorSetBindFlag::Graphics | DescriptorSetBindFlag::Compute;
+		mQueuedLayoutTransitions.clear();
 	}
 
 	void VulkanCmdBuffer::refreshFenceStatus()
@@ -508,7 +603,10 @@ namespace bs
 
 				for (auto& entry : mImages)
 				{
-					ResourceUseHandle& useHandle = entry.second.useHandle;
+					UINT32 imageInfoIdx = entry.second;
+					ImageInfo& imageInfo = mImageInfos[imageInfoIdx];
+
+					ResourceUseHandle& useHandle = imageInfo.useHandle;
 					assert(useHandle.used);
 
 					entry.first->notifyDone(mGlobalQueueIdx, useHandle.flags);
@@ -525,6 +623,7 @@ namespace bs
 				mResources.clear();
 				mImages.clear();
 				mBuffers.clear();
+				mImageInfos.clear();
 			}
 		}
 		else
@@ -560,8 +659,6 @@ namespace bs
 			mRenderTargetHeight = rt->getProperties().getHeight();
 			mRenderTargetDepthReadOnly = readOnlyDepthStencil;
 			mRenderTargetLoadMask = loadMask;
-
-			registerResource(mFramebuffer, VulkanUseFlag::Write);
 		}
 
 		// If anything changed
@@ -570,6 +667,19 @@ namespace bs
 			if (isInRenderPass())
 				endRenderPass();
 
+			// Reset flags that signal image usage
+			for (auto& entry : mImages)
+			{
+				UINT32 imageInfoIdx = entry.second;
+				ImageInfo& imageInfo = mImageInfos[imageInfoIdx];
+
+				imageInfo.isFBAttachment = false;
+				imageInfo.isShaderInput = false;
+			}
+
+			setGpuParams(nullptr);
+
+			registerResource(mFramebuffer, VulkanUseFlag::Write);
 			mGfxPipelineRequiresBind = true;
 		}
 	}
@@ -601,7 +711,7 @@ namespace bs
 				colorValue.float32[2] = color.b;
 				colorValue.float32[3] = color.a;
 
-				UINT32 curBaseLayer = mFramebuffer->getColorBaseLayer(i);
+				UINT32 curBaseLayer = mFramebuffer->getColorAttachment(i).baseLayer;
 				if (attachmentIdx == 0)
 					baseLayer = curBaseLayer;
 				else
@@ -638,7 +748,7 @@ namespace bs
 
 				attachments[attachmentIdx].colorAttachment = 0;
 
-				UINT32 curBaseLayer = mFramebuffer->getDepthStencilBaseLayer();
+				UINT32 curBaseLayer = mFramebuffer->getDepthStencilAttachment().baseLayer;
 				if (attachmentIdx == 0)
 					baseLayer = curBaseLayer;
 				else
@@ -839,6 +949,36 @@ namespace bs
 		if (pipeline == nullptr)
 			return false;
 
+		// Check that pipeline matches the read-only state of any framebuffer attachments
+		UINT32 numColorAttachments = mFramebuffer->getNumColorAttachments();
+		for (UINT32 i = 0; i < numColorAttachments; i++)
+		{
+			VulkanImage* image = mFramebuffer->getColorAttachment(i).image;
+
+			UINT32 imageInfoIdx = mImages[image];
+			ImageInfo& imageInfo = mImageInfos[imageInfoIdx];
+
+			if (imageInfo.isShaderInput && !pipeline->isColorReadOnly(i))
+			{
+				LOGWRN("Framebuffer attachment also used as a shader input, but color writes aren't disabled. This will"
+					" result in undefined behavior.");
+			}
+		}
+
+		if (mFramebuffer->hasDepthAttachment())
+		{
+			VulkanImage* image = mFramebuffer->getDepthStencilAttachment().image;
+
+			UINT32 imageInfoIdx = mImages[image];
+			ImageInfo& imageInfo = mImageInfos[imageInfoIdx];
+
+			if (imageInfo.isShaderInput && !pipeline->isDepthStencilReadOnly())
+			{
+				LOGWRN("Framebuffer attachment also used as a shader input, but depth/stencil writes aren't disabled. "
+					"This will result in undefined behavior.");
+			}
+		}
+
 		mGraphicsPipeline->registerPipelineResources(this);
 		registerResource(pipeline, VulkanUseFlag::Read);
 
@@ -1010,31 +1150,91 @@ namespace bs
 	}
 
 	void VulkanCmdBuffer::registerResource(VulkanImage* res, VkAccessFlags accessFlags, VkImageLayout layout, 
-		const VkImageSubresourceRange& range, VulkanUseFlags flags)
+		VulkanUseFlags flags, bool isFBAttachment)
 	{
-		auto insertResult = mImages.insert(std::make_pair(res, ImageInfo()));
+		// Note: I currently always perform pipeline barriers (layout transitions and similar), over the entire image.
+		//       In the case of render and storage images, the case is often that only a specific subresource requires
+		//       it. However this makes grouping and tracking of current image layouts much more difficult.
+		//       If this is ever requires we'll need to track image layout per-subresource instead per-image, and we
+		//       might also need a smart way to group layout transitions for multiple sub-resources on the same image.
+
+		VkImageSubresourceRange range = res->getRange();
+		UINT32 nextImageInfoIdx = (UINT32)mImageInfos.size();
+
+		auto insertResult = mImages.insert(std::make_pair(res, nextImageInfoIdx));
 		if (insertResult.second) // New element
 		{
-			ImageInfo& imageInfo = insertResult.first->second;
+			UINT32 imageInfoIdx = insertResult.first->second;
+			mImageInfos.push_back(ImageInfo());
+
+			ImageInfo& imageInfo = mImageInfos[imageInfoIdx];
 			imageInfo.accessFlags = accessFlags;
-			imageInfo.layout = layout;
+			imageInfo.currentLayout = res->getLayout();
+			imageInfo.requiredLayout = layout;
+			imageInfo.finalLayout = layout;
 			imageInfo.range = range;
+			imageInfo.isFBAttachment = isFBAttachment;
+			imageInfo.isShaderInput = !isFBAttachment;
 
 			imageInfo.useHandle.used = false;
 			imageInfo.useHandle.flags = flags;
 
 			res->notifyBound();
+
+			if (imageInfo.currentLayout != imageInfo.requiredLayout)
+				mQueuedLayoutTransitions[res] = imageInfoIdx;
 		}
 		else // Existing element
 		{
-			ImageInfo& imageInfo = insertResult.first->second;
+			UINT32 imageInfoIdx = insertResult.first->second;
+			ImageInfo& imageInfo = mImageInfos[imageInfoIdx];
 
 			assert(!imageInfo.useHandle.used);
 			imageInfo.useHandle.flags |= flags;
 
-			assert(imageInfo.layout == layout && "Cannot bind the same image with two different layouts on the same command buffer.");
 			imageInfo.accessFlags |= accessFlags;
-			imageInfo.range = range;
+
+			// Check if the same image is used with different layouts, in which case we need to transfer to the general
+			// layout
+			if (imageInfo.requiredLayout != layout)
+				imageInfo.requiredLayout = VK_IMAGE_LAYOUT_GENERAL;
+
+			// If attached to FB, then the final layout is set by the FB (provided as layout param here), otherwise its
+			// the same as required layout
+			if(!isFBAttachment && !imageInfo.isFBAttachment)
+				imageInfo.finalLayout = imageInfo.requiredLayout;
+			else
+			{
+				if (isFBAttachment)
+					imageInfo.finalLayout = layout;
+			}
+
+			if (imageInfo.currentLayout != imageInfo.requiredLayout)
+				mQueuedLayoutTransitions[res] = imageInfoIdx;
+
+			// If a FB attachment was just bound as a shader input, we might need to restart the render pass with a FB
+			// attachment that supports read-only attachments using the GENERAL layout
+			bool requiresReadOnlyFB = false;
+			if (isFBAttachment)
+			{
+				if (!imageInfo.isFBAttachment)
+				{
+					imageInfo.isFBAttachment = true;
+					requiresReadOnlyFB = imageInfo.isShaderInput;
+				}
+			}
+			else
+			{
+				if (!imageInfo.isShaderInput)
+				{
+					imageInfo.isShaderInput = true;
+					requiresReadOnlyFB = imageInfo.isFBAttachment;
+				}
+			}
+
+			// If we need to switch frame-buffers, end current render pass
+			if (requiresReadOnlyFB && isInRenderPass())
+				endRenderPass();
 		}
 
 		// Register any sub-resources
@@ -1093,18 +1293,20 @@ namespace bs
 		}
 
 		// Register any sub-resources
-		// (Purposely don't register them as images, as we will handle any layout transitions manually)
 		UINT32 numColorAttachments = res->getNumColorAttachments();
 		for (UINT32 i = 0; i < numColorAttachments; i++)
 		{
-			VulkanImage* image = res->getColorImage(i);
-			registerResource(image, VulkanUseFlag::Write);
+			const VulkanFramebufferAttachment& attachment = res->getColorAttachment(i);
+			registerResource(attachment.image, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT,
+							 attachment.finalLayout, VulkanUseFlag::Write, true);
 		}
 
 		if(res->hasDepthAttachment())
 		{
-			VulkanImage* image = res->getDepthStencilImage();
-			registerResource(image, VulkanUseFlag::Write);
+			const VulkanFramebufferAttachment& attachment = res->getDepthStencilAttachment();
+			registerResource(attachment.image,
+							 VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT,
+							 attachment.finalLayout, VulkanUseFlag::Write, true);
 		}
 	}
 

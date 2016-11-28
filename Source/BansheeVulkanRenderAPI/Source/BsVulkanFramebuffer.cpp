@@ -30,8 +30,7 @@ namespace bs
 
 	VulkanFramebuffer::VulkanFramebuffer(VulkanResourceManager* owner, const VULKAN_FRAMEBUFFER_DESC& desc)
 		: VulkanResource(owner, false), mNumAttachments(0), mNumColorAttachments(0), mNumLayers(desc.layers)
-		, mColorImages(), mDepthStencilImage(nullptr), mColorBaseLayers(), mDepthBaseLayer(0), mHasDepth(false)
-		, mSampleFlags(VK_SAMPLE_COUNT_1_BIT)
+		, mColorAttachments(), mDepthStencilAttachment(), mHasDepth(false), mSampleFlags(VK_SAMPLE_COUNT_1_BIT)
 	{
 		mId = sNextValidId++;
 
@@ -59,8 +58,9 @@ namespace bs
 			else
 				attachmentDesc.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
-			mColorBaseLayers[attachmentIdx] = desc.color[i].baseLayer;
-			mColorImages[attachmentIdx] = desc.color[i].image;
+			mColorAttachments[attachmentIdx].baseLayer = desc.color[i].baseLayer;
+			mColorAttachments[attachmentIdx].image = desc.color[i].image;
+			mColorAttachments[attachmentIdx].finalLayout = attachmentDesc.finalLayout;
 
 			VkAttachmentReference& ref = mColorReferences[attachmentIdx];
 			ref.attachment = attachmentIdx;
@@ -86,8 +86,9 @@ namespace bs
 			attachmentDesc.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 			attachmentDesc.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
-			mDepthBaseLayer = desc.depth.baseLayer;
-			mDepthStencilImage = desc.depth.image;
+			mDepthStencilAttachment.baseLayer = desc.depth.baseLayer;
+			mDepthStencilAttachment.image = desc.depth.image;
+			mDepthStencilAttachment.finalLayout = attachmentDesc.finalLayout;
 
 			VkAttachmentReference& ref = mDepthReference;
 			ref.attachment = attachmentIdx;

@@ -66,6 +66,9 @@ namespace bs
 
 		/** Returns an image view that covers the specified faces and mip maps of the texture. */
 		VkImageView getView(const TextureSurface& surface) const;
+		
+		/** Retrieves a subresource range covering all the sub-resources of the image. */
+		VkImageSubresourceRange getRange() const;
 
 		/** 
 		 * Retrieves a separate resource for a specific image face & mip level. This allows the caller to track subresource
