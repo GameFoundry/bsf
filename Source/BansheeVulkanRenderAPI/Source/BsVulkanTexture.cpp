@@ -281,13 +281,13 @@ namespace bs
 		{
 			mImageCI.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 			mSupportsGPUWrites = true;
-			mAccessFlags = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+			mAccessFlags = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
 		}
 		else if ((usage & TU_DEPTHSTENCIL) != 0)
 		{
 			mImageCI.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 			mSupportsGPUWrites = true;
-			mAccessFlags = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+			mAccessFlags = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
 		}
 		else if ((usage & TU_LOADSTORE) != 0)
 		{
@@ -298,7 +298,7 @@ namespace bs
 		else
 		{
 			mImageCI.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-			mAccessFlags = VK_ACCESS_SHADER_READ_BIT;;
+			mAccessFlags = VK_ACCESS_SHADER_READ_BIT;
 		}
 
 		if ((usage & TU_CPUREADABLE) != 0)
@@ -314,9 +314,13 @@ namespace bs
 			if(texType == TEX_TYPE_2D && props.getNumSamples() <= 1 && props.getNumMipmaps() == 0 && 
 				props.getNumFaces() == 1 && (mImageCI.usage & VK_IMAGE_USAGE_SAMPLED_BIT) != 0)
 			{
-				mDirectlyMappable = true;
-				tiling = VK_IMAGE_TILING_LINEAR;
-				layout = VK_IMAGE_LAYOUT_PREINITIALIZED;
+				// Also, only support normal textures, not render targets or storage textures
+				if (!mSupportsGPUWrites)
+				{
+					mDirectlyMappable = true;
+					tiling = VK_IMAGE_TILING_LINEAR;
+					layout = VK_IMAGE_LAYOUT_PREINITIALIZED;
+				}
 			}
 		}
 
