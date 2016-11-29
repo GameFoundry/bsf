@@ -15,6 +15,19 @@ namespace bs
 	 *  @{
 	 */
 
+	BS_PARAM_BLOCK_BEGIN(PerCameraParamBuffer)
+		BS_PARAM_BLOCK_ENTRY(Vector3, gViewDir)
+		BS_PARAM_BLOCK_ENTRY(Vector3, gViewOrigin)
+		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatViewProj)
+		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatView)
+		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatProj)
+		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatInvProj)
+		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatInvViewProj)
+		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatScreenToWorld)
+		BS_PARAM_BLOCK_ENTRY(Vector2, gDeviceZToWorldZ)
+		BS_PARAM_BLOCK_ENTRY(Vector4, gClipToUVScaleOffset)
+	BS_PARAM_BLOCK_END
+
 	/** Contains information about a Camera, used by the Renderer. */
 	class RendererCamera
 	{
@@ -64,9 +77,15 @@ namespace bs
 		 *									object. If the bit for an object is already set to true, the method will never
 		 *									change it to false which allows the same bitfield to be provided to multiple
 		 *									renderer cameras. Must be the same size as the @p renderables array.
+		 *									
+		 *									As a side-effect, per-camera visibility data is also calculated and can be
+		 *									retrieved by calling getVisibilityMask().
 		 */
 		void determineVisible(Vector<RendererObject>& renderables, const Vector<Bounds>& renderableBounds, 
 			Vector<bool>& visibility);
+
+		/** Returns the visibility mask calculated with the last call to determineVisible(). */
+		const Vector<bool> getVisibilityMask() const { return mVisibility; }
 
 		/** 
 		 * Returns a structure containing information about post-processing effects. This structure will be modified and
@@ -74,8 +93,11 @@ namespace bs
 		 */
 		PostProcessInfo& getPPInfo() { return mPostProcessInfo; }
 
-		/** Returns an object with camera's information, used for populating per-camera parameter buffers. */
-		CameraShaderData getShaderData();
+		/** Updates the GPU buffer containing per-camera information, with the latest data. */
+		void updatePerCameraBuffer();
+
+		/** Returns a buffer that stores per-camera parameters. */
+		PerCameraParamBuffer& getPerCameraBuffer() { return mParams; }
 
 	private:
 		/**
@@ -95,6 +117,9 @@ namespace bs
 		SPtr<RenderTargets> mRenderTargets;
 		PostProcessInfo mPostProcessInfo;
 		bool mUsingRenderTargets;
+
+		PerCameraParamBuffer mParams;
+		Vector<bool> mVisibility;
 	};
 
 	/** @} */

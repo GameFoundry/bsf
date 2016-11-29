@@ -150,9 +150,8 @@ namespace bs
 		SPtr<GpuParamsSetType> createParamsSet(UINT32 techniqueIdx = 0);
 
 		/**
-		 * Updates the provided parameter set by recording in it any changes that were made since the last call. It is
-		 * assumed only a single parameter set exists per-material per-technique. If there are multiple the material
-		 * will not be able to track which parameters were updated since the last call.
+		 * Updates the provided parameter set by recording in it any changes that were made in the material parameters 
+		 * since the last call. 
 		 *
 		 * @param[in]	paramsSet		Parameter set to update.
 		 * @param[in]	dirtyBitIdx		Index to use when checking if parameters are dirty. Must be in range [0, 30]. Allows

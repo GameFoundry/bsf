@@ -123,8 +123,9 @@ namespace bs
 		 *
 		 * @param[in]	camera		Camera whose data to update.
 		 * @param[in]	forceRemove	If true, the camera data will be removed instead of updated.
+		 * @return					Renderer camera object that represents the camera. Null if camera was removed.
 		 */
-		void updateCameraData(const CameraCore* camera, bool forceRemove = false);
+		RendererCamera* updateCameraData(const CameraCore* camera, bool forceRemove = false);
 
 		/**
 		 * Updates the render options on the core thread.
@@ -194,7 +195,7 @@ namespace bs
 
 		// Core thread only fields
 		Vector<RendererRenderTarget> mRenderTargets;
-		UnorderedMap<const CameraCore*, RendererCamera> mCameras;
+		UnorderedMap<const CameraCore*, RendererCamera*> mCameras;
 		UnorderedMap<SamplerOverrideKey, MaterialSamplerOverrides*> mSamplerOverrides;
 
 		Vector<RendererObject> mRenderables;

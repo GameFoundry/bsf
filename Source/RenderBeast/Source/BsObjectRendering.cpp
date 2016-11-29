@@ -34,8 +34,6 @@ namespace bs
 		{
 			if (paramBlockDesc.second.rendererSemantic == RBS_PerFrame)
 				element.params->setParamBlockBuffer(paramBlockDesc.second.name, mPerFrameParams.getBuffer(), true);
-			else if (paramBlockDesc.second.rendererSemantic == RBS_PerCamera)
-				element.params->setParamBlockBuffer(paramBlockDesc.second.name, mPerCameraParams.getBuffer(), true);
 			else if (paramBlockDesc.second.rendererSemantic == RBS_PerObject)
 				element.params->setParamBlockBuffer(paramBlockDesc.second.name, mPerObjectParams.getBuffer(), true);
 		}
@@ -60,22 +58,6 @@ namespace bs
 	void ObjectRenderer::setParamFrameParams(float time)
 	{
 		mPerFrameParams.gTime.set(time);
-	}
-
-	void ObjectRenderer::setPerCameraParams(const CameraShaderData& cameraData)
-	{
-		mPerCameraParams.gViewDir.set(cameraData.viewDir);
-		mPerCameraParams.gViewOrigin.set(cameraData.viewOrigin);
-		mPerCameraParams.gMatView.set(cameraData.view);
-		mPerCameraParams.gMatProj.set(cameraData.proj);
-		mPerCameraParams.gMatViewProj.set(cameraData.viewProj);
-		mPerCameraParams.gMatInvProj.set(cameraData.invProj);
-		mPerCameraParams.gMatInvViewProj.set(cameraData.invViewProj);
-		mPerCameraParams.gMatScreenToWorld.set(cameraData.screenToWorld);
-		mPerCameraParams.gDeviceZToWorldZ.set(cameraData.deviceZToWorldZ);
-		mPerCameraParams.gClipToUVScaleOffset.set(cameraData.clipToUVScaleOffset);
-
-		mPerCameraParams.flushToGPU();
 	}
 
 	void ObjectRenderer::setPerObjectParams(const BeastRenderableElement& element, const RenderableShaderData& data,

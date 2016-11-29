@@ -81,6 +81,9 @@ namespace bs
 	void RendererCamera::determineVisible(Vector<RendererObject>& renderables, const Vector<Bounds>& renderableBounds, 
 		Vector<bool>& visibility)
 	{
+		mVisibility.clear();
+		mVisibility.resize(renderables.size(), false);
+
 		bool isOverlayCamera = mCamera->getFlags().isSet(CameraFlag::Overlay);
 		if (isOverlayCamera)
 			return;
@@ -109,6 +112,7 @@ namespace bs
 				if (worldFrustum.intersects(boundingBox))
 				{
 					visibility[i] = true;
+					mVisibility[i] = true;
 
 					float distanceToCamera = (mCamera->getPosition() - boundingBox.getCenter()).length();
 
@@ -168,14 +172,18 @@ namespace bs
 		return output;
 	}
 
-	CameraShaderData RendererCamera::getShaderData()
+	void RendererCamera::updatePerCameraBuffer()
 	{
-		CameraShaderData data;
-		data.proj = mCamera->getProjectionMatrixRS();
-		data.view = mCamera->getViewMatrix();
-		data.viewProj = data.proj * data.view;
-		data.invProj = data.proj.inverse();
-		data.invViewProj = data.viewProj.inverse(); // Note: Calculate inverses separately (better precision possibly)
+		Matrix4 proj = mCamera->getProjectionMatrixRS();
+		Matrix4 view = mCamera->getViewMatrix();
+		Matrix4 viewProj = proj * view;
+		Matrix4 invViewProj = viewProj.inverse();
+
+		mParams.gMatProj.set(proj);
+		mParams.gMatView.set(view);
+		mParams.gMatViewProj.set(viewProj);
+		mParams.gMatInvViewProj.set(invViewProj); // Note: Calculate inverses separately (better precision possibly)
+		mParams.gMatInvProj.set(proj.inverse());
 
 		// Construct a special inverse view-projection matrix that had projection entries that affect z and w eliminated.
 		// Used to transform a vector(clip_x, clip_y, view_z, view_w), where clip_x/clip_y are in clip space, and 
@@ -183,15 +191,15 @@ namespace bs
 
 		// Only projects z/w coordinates
 		Matrix4 projZ = Matrix4::IDENTITY;
-		projZ[2][2] = data.proj[2][2];
-		projZ[2][3] = data.proj[2][3];
-		projZ[3][2] = data.proj[3][2];
+		projZ[2][2] = proj[2][2];
+		projZ[2][3] = proj[2][3];
+		projZ[3][2] = proj[3][2];
 		projZ[3][3] = 0.0f;
 
-		data.screenToWorld = data.invViewProj * projZ;
-		data.viewDir = mCamera->getForward();
-		data.viewOrigin = mCamera->getPosition();
-		data.deviceZToWorldZ = getDeviceZTransform(data.proj);
+		mParams.gMatScreenToWorld.set(invViewProj * projZ);
+		mParams.gViewDir.set(mCamera->getForward());
+		mParams.gViewOrigin.set(mCamera->getPosition());
+		mParams.gDeviceZToWorldZ.set(getDeviceZTransform(proj));
 
 		SPtr<ViewportCore> viewport = mCamera->getViewport();
 		SPtr<RenderTargetCore> rt = viewport->getTarget();
@@ -199,20 +207,32 @@ namespace bs
 		float halfWidth = viewport->getWidth() * 0.5f;
 		float halfHeight = viewport->getHeight() * 0.5f;
 
-		float rtWidth = (float)rt->getProperties().getWidth();
-		float rtHeight = (float)rt->getProperties().getHeight();
+		float rtWidth;
+		float rtHeight;
+
+		if(rt != nullptr)
+		{
+			rtWidth = (float)rt->getProperties().getWidth();
+			rtHeight = (float)rt->getProperties().getHeight();
+		}
+		else
+		{
+			rtWidth = 20.0f;
+			rtHeight = 20.0f;
+		}
 
 		RenderAPICore& rapi = RenderAPICore::instance();
 		const RenderAPIInfo& rapiInfo = rapi.getAPIInfo();
 
-		data.clipToUVScaleOffset.x = halfWidth / rtWidth;
-		data.clipToUVScaleOffset.y = -halfHeight / rtHeight;
-		data.clipToUVScaleOffset.z = viewport->getX() / rtWidth + (halfWidth + rapiInfo.getHorizontalTexelOffset()) / rtWidth;
-		data.clipToUVScaleOffset.w = viewport->getY() / rtHeight + (halfHeight + rapiInfo.getVerticalTexelOffset()) / rtHeight;
+		Vector4 clipToUVScaleOffset;
+		clipToUVScaleOffset.x = halfWidth / rtWidth;
+		clipToUVScaleOffset.y = -halfHeight / rtHeight;
+		clipToUVScaleOffset.z = viewport->getX() / rtWidth + (halfWidth + rapiInfo.getHorizontalTexelOffset()) / rtWidth;
+		clipToUVScaleOffset.w = viewport->getY() / rtHeight + (halfHeight + rapiInfo.getVerticalTexelOffset()) / rtHeight;
 
 		if (!rapiInfo.getNDCYAxisDown())
-			data.clipToUVScaleOffset.y = -data.clipToUVScaleOffset.y;
+			clipToUVScaleOffset.y = -clipToUVScaleOffset.y;
 
-		return data;
+		mParams.gClipToUVScaleOffset.set(clipToUVScaleOffset);
 	}
 }

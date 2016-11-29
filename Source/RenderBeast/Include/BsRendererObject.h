@@ -43,6 +43,9 @@ namespace bs
 		/** Index of the technique in the material to render the element with. */
 		UINT32 techniqueIdx;
 
+		/** Index to which should the per-camera param block buffer be bound to. */
+		UINT32 perCameraBindingIdx;
+
 		/** 
 		 * Parameter for setting global bone pose transforms used for an element with skeletal animation, null otherwise. 
 		 */

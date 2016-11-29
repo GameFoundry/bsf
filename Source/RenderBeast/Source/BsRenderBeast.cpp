@@ -86,6 +86,9 @@ namespace bs
 		if (mObjectRenderer != nullptr)
 			bs_delete(mObjectRenderer);
 
+		for (auto& entry : mCameras)
+			bs_delete(entry.second);
+
 		mRenderTargets.clear();
 		mCameras.clear();
 		mRenderables.clear();
@@ -262,6 +265,25 @@ namespace bs
 				}
 
 				mObjectRenderer->initElement(renElement);
+
+				// Set up or find bind spots for relevant GPU param buffers
+				SPtr<ShaderCore> shader = renElement.material->getShader();
+				if (shader != nullptr)
+				{
+					const Map<String, SHADER_PARAM_BLOCK_DESC>& paramBlockDescs = shader->getParamBlocks();
+
+					for (auto& paramBlockDesc : paramBlockDescs)
+					{
+						if (paramBlockDesc.second.rendererSemantic == RBS_PerCamera)
+						{
+							renElement.perCameraBindingIdx = renElement.params->getParamBlockBufferIndex(paramBlockDesc.second.name);
+
+							// TODO - Verify size
+						}
+					}
+				}
+				else
+					renElement.perCameraBindingIdx = -1;
 			}
 		}
 	}
@@ -399,20 +421,26 @@ namespace bs
 
 	void RenderBeast::notifyCameraAdded(const CameraCore* camera)
 	{
-		updateCameraData(camera);
+		RendererCamera* renCamera = updateCameraData(camera);
+		renCamera->updatePerCameraBuffer();
 	}
 
 	void RenderBeast::notifyCameraUpdated(const CameraCore* camera, UINT32 updateFlag)
 	{
+		RendererCamera* rendererCam;
 		if((updateFlag & (UINT32)CameraDirtyFlag::Everything) != 0)
 		{
-			updateCameraData(camera);
+			rendererCam = updateCameraData(camera);
 		}
 		else if((updateFlag & (UINT32)CameraDirtyFlag::PostProcess) != 0)
 		{
-			RendererCamera& rendererCam = mCameras[camera];
-			rendererCam.updatePP();
-		} 
+			rendererCam = mCameras[camera];
+			rendererCam->updatePP();
+		}
+		else
+			rendererCam = mCameras[camera];
+
+		rendererCam->updatePerCameraBuffer();
 	}
 
 	void RenderBeast::notifyCameraRemoved(const CameraCore* camera)
@@ -425,17 +453,27 @@ namespace bs
 		return bs_shared_ptr_new<StandardPostProcessSettings>();
 	}
 
-	void RenderBeast::updateCameraData(const CameraCore* camera, bool forceRemove)
+	RendererCamera* RenderBeast::updateCameraData(const CameraCore* camera, bool forceRemove)
 	{
+		RendererCamera* output;
+
 		SPtr<RenderTargetCore> renderTarget = camera->getViewport()->getTarget();
 		if(forceRemove)
 		{
-			mCameras.erase(camera);
+			auto iterFind = mCameras.find(camera);
+			if(iterFind != mCameras.end())
+			{
+				bs_delete(iterFind->second);
+				mCameras.erase(iterFind);
+			}
+
 			renderTarget = nullptr;
+			output = nullptr;
 		}
 		else
 		{
-			mCameras[camera] = RendererCamera(camera, mCoreOptions->stateReductionMode);
+			output = bs_new<RendererCamera>(camera, mCoreOptions->stateReductionMode);
+			mCameras[camera] = output;
 		}
 
 		// Remove from render target list
@@ -499,6 +537,8 @@ namespace bs
 				std::sort(begin(cameras), end(cameras), cameraComparer);
 			}
 		}
+
+		return output;
 	}
 
 	void RenderBeast::setOptions(const SPtr<CoreRendererOptions>& options)
@@ -525,8 +565,8 @@ namespace bs
 
 		for (auto& entry : mCameras)
 		{
-			RendererCamera& rendererCam = entry.second;
-			rendererCam.update(mCoreOptions->stateReductionMode);
+			RendererCamera* rendererCam = entry.second;
+			rendererCam->update(mCoreOptions->stateReductionMode);
 		}
 	}
 
@@ -562,8 +602,9 @@ namespace bs
 		mVisibility.assign(mVisibility.size(), false);
 
 		for (auto& entry : mCameras)
-			entry.second.determineVisible(mRenderables, mWorldBounds, mVisibility);
+			entry.second->determineVisible(mRenderables, mWorldBounds, mVisibility);
 
+		// Retrieve animation data
 		AnimationManager::instance().waitUntilComplete();
 		const RendererAnimationData& animData = AnimationManager::instance().getRendererData();
 		RendererFrame frameInfo(delta, animData);
@@ -614,15 +655,34 @@ namespace bs
 		gProfilerCPU().beginSample("Render");
 
 		const CameraCore* camera = rtInfo.cameras[camIdx];
-		RendererCamera& rendererCam = mCameras[camera];
-		CameraShaderData cameraShaderData = rendererCam.getShaderData();
+		RendererCamera* rendererCam = mCameras[camera];
+		PerCameraParamBuffer& parCameraBuffer = rendererCam->getPerCameraBuffer();
+		parCameraBuffer.flushToGPU();
 
 		assert(!camera->getFlags().isSet(CameraFlag::Overlay));
 
-		mObjectRenderer->setPerCameraParams(cameraShaderData);
-		rendererCam.beginRendering(true);
+		// Assign camera data to all relevant renderables
+		const Vector<bool>& visibility = rendererCam->getVisibilityMask();
+		UINT32 numRenderables = (UINT32)mRenderables.size();
+		for (UINT32 i = 0; i < numRenderables; i++)
+		{
+			if (!visibility[i])
+				continue;
 
-		SPtr<RenderTargets> renderTargets = rendererCam.getRenderTargets();
+			for (auto& element : mRenderables[i].elements)
+			{
+				if (element.perCameraBindingIdx != -1)
+					element.params->setParamBlockBuffer(element.perCameraBindingIdx, parCameraBuffer.getBuffer(), true);
+			}
+		}
+
+		Matrix4 proj = camera->getProjectionMatrixRS();
+		Matrix4 view = camera->getViewMatrix();
+		Matrix4 viewProj = proj * view;
+
+		rendererCam->beginRendering(true);
+
+		SPtr<RenderTargets> renderTargets = rendererCam->getRenderTargets();
 		renderTargets->bindGBuffer();
 
 		//// Trigger pre-scene callbacks
@@ -642,20 +702,22 @@ namespace bs
 				callbackData.callback();
 			}
 		}
+
+
 		
 		//// Render base pass
-		const Vector<RenderQueueElement>& opaqueElements = rendererCam.getOpaqueQueue()->getSortedElements();
+		const Vector<RenderQueueElement>& opaqueElements = rendererCam->getOpaqueQueue()->getSortedElements();
 		for (auto iter = opaqueElements.begin(); iter != opaqueElements.end(); ++iter)
 		{
 			BeastRenderableElement* renderElem = static_cast<BeastRenderableElement*>(iter->renderElem);
-			renderElement(*renderElem, iter->passIdx, iter->applyPass, frameInfo, cameraShaderData.viewProj);
+			renderElement(*renderElem, iter->passIdx, iter->applyPass, frameInfo, viewProj);
 		}
 
 		renderTargets->bindSceneColor(true);
 
 		//// Render light pass
 		{
-			SPtr<GpuParamBlockBufferCore> perCameraBuffer = mObjectRenderer->getPerCameraParams().getBuffer();
+			SPtr<GpuParamBlockBufferCore> perCameraBuffer = rendererCam->getPerCameraBuffer().getBuffer();;
 
 			mDirLightMat->bind(renderTargets, perCameraBuffer);
 			for (auto& light : mDirectionalLights)
@@ -715,11 +777,11 @@ namespace bs
 		renderTargets->bindSceneColor(false);
 		
 		// Render transparent objects (TODO - No lighting yet)
-		const Vector<RenderQueueElement>& transparentElements = rendererCam.getTransparentQueue()->getSortedElements();
+		const Vector<RenderQueueElement>& transparentElements = rendererCam->getTransparentQueue()->getSortedElements();
 		for (auto iter = transparentElements.begin(); iter != transparentElements.end(); ++iter)
 		{
 			BeastRenderableElement* renderElem = static_cast<BeastRenderableElement*>(iter->renderElem);
-			renderElement(*renderElem, iter->passIdx, iter->applyPass, frameInfo, cameraShaderData.viewProj);
+			renderElement(*renderElem, iter->passIdx, iter->applyPass, frameInfo, viewProj);
 		}
 
 		// Render non-overlay post-scene callbacks
@@ -738,7 +800,7 @@ namespace bs
 
 		// TODO - If GBuffer has multiple samples, I should resolve them before post-processing
 		PostProcessing::instance().postProcess(renderTargets->getSceneColorRT(),
-			camera, rendererCam.getPPInfo(), frameInfo.delta);
+			camera, rendererCam->getPPInfo(), frameInfo.delta);
 
 		// Render overlay post-scene callbacks
 		if (iterCameraCallbacks != mRenderCallbacks.end())
@@ -754,7 +816,7 @@ namespace bs
 			}
 		}
 
-		rendererCam.endRendering();
+		rendererCam->endRendering();
 
 		gProfilerCPU().endSample("Render");
 	}
@@ -767,11 +829,10 @@ namespace bs
 		assert(camera->getFlags().isSet(CameraFlag::Overlay));
 
 		SPtr<ViewportCore> viewport = camera->getViewport();
-		RendererCamera& rendererCam = mCameras[camera];
-		CameraShaderData cameraShaderData = rendererCam.getShaderData();
+		RendererCamera* rendererCam = mCameras[camera];
+		rendererCam->getPerCameraBuffer().flushToGPU();
 
-		mObjectRenderer->setPerCameraParams(cameraShaderData);
-		rendererCam.beginRendering(false);
+		rendererCam->beginRendering(false);
 
 		SPtr<RenderTargetCore> target = rtData.target;
 
@@ -813,7 +874,7 @@ namespace bs
 			}
 		}
 
-		rendererCam.endRendering();
+		rendererCam->endRendering();
 
 		gProfilerCPU().endSample("RenderOverlay");
 	}

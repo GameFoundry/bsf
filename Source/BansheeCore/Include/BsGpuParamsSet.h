@@ -35,18 +35,36 @@ namespace bs
 		typedef typename TPassTypes<Core>::GraphicsPipelineStateType GraphicsPipelineStateType;
 		typedef typename TPassTypes<Core>::ComputePipelineStateType ComputePipelineStateType;
 
+		/** Binding location for a single GPU param block buffer. */
+		struct BlockBinding
+		{
+			UINT32 set;
+			UINT32 slot;
+		};
+
+		/** All bindings for GPU param block buffers, for a single pass. */
+		struct PassBlockBindings
+		{
+			BlockBinding bindings[GPT_COUNT];
+		};
+
 		/** Information about a parameter block buffer. */
 		struct BlockInfo
 		{
-			BlockInfo(const String& name, const ParamBlockPtrType& buffer, bool shareable)
-				:name(name), buffer(buffer), shareable(shareable), allowUpdate(true), isUsed(true)
+			BlockInfo(const String& name, UINT32 set, UINT32 slot, const ParamBlockPtrType& buffer, bool shareable)
+				: name(name), set(set), slot(slot), buffer(buffer), shareable(shareable), allowUpdate(true), isUsed(true)
+				, passData(nullptr)
 			{ }
 
 			String name;
+			UINT32 set;
+			UINT32 slot;
 			ParamBlockPtrType buffer;
 			bool shareable;
 			bool allowUpdate;
 			bool isUsed;
+
+			PassBlockBindings* passData;
 		};
 
 		/** Information about how a data parameter maps from a material parameter into a parameter block buffer. */
@@ -81,7 +99,7 @@ namespace bs
 		/** Information about all object parameters for a specific pass. */
 		struct PassParamInfo
 		{
-			StageParamInfo stages[6];
+			StageParamInfo stages[GPT_COUNT];
 		};
 
 	public:
@@ -98,6 +116,28 @@ namespace bs
 		 *							in a pass. Returns null if pass doesn't exist.
 		 */
 		SPtr<GpuParamsType> getGpuParams(UINT32 passIdx = 0);
+
+		/** 
+		 * Searches for a parameter block buffer with the specified name, and returns an index you can use for accessing it.
+		 * Returns -1 if buffer was not found.
+		 */
+		UINT32 getParamBlockBufferIndex(const String& name) const;
+
+		/**
+		 * Assign a parameter block buffer with the specified index to all the relevant child GpuParams.
+		 *
+		 * @param[in]	index			Index of the buffer, as retrieved from getParamBlockBufferIndex().
+		 * @param[in]	paramBlock		Parameter block to assign.
+		 * @param[in]	ignoreInUpdate	If true the buffer will not be updated during the update() call. This is useful
+		 *								if the caller wishes to manually update the buffer contents externally, to prevent
+		 *								overwriting manually written data during update.
+		 *
+		 * @note	
+		 * Parameter block buffers can be used as quick way of setting multiple parameters on a material at once, or
+		 * potentially sharing parameters between multiple materials. This reduces driver overhead as the parameters
+		 * in the buffers need only be set once and then reused multiple times.
+		 */
+		void setParamBlockBuffer(UINT32 index, const ParamBlockPtrType& paramBlock, bool ignoreInUpdate = false);
 
 		/**
 		 * Assign a parameter block buffer with the specified name to all the relevant child GpuParams.
@@ -139,6 +179,8 @@ namespace bs
 		Vector<BlockInfo> mBlocks;
 		Vector<DataParamInfo> mDataParamInfos;
 		PassParamInfo* mPassParamInfos;
+
+		UINT8* mData;
 	};
 
 	/** Sim thread version of TGpuParamsSet<Core>. */

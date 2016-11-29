@@ -65,6 +65,8 @@ namespace bs
 		int size;
 		bool external;
 		UINT32 sequentialIdx;
+		UINT32 set;
+		UINT32 slot;
 	};
 
 	Vector<SPtr<GpuParamDesc>> getAllParamDescs(const SPtr<Technique>& technique)
@@ -176,13 +178,15 @@ namespace bs
 		struct BlockInfo
 		{
 			BlockInfo() { }
-			BlockInfo(const String& name, const SPtr<GpuParamDesc>& paramDesc, bool isValid = true)
-				:name(name), paramDesc(paramDesc), isValid(isValid)
+			BlockInfo(const GpuParamBlockDesc* blockDesc, const SPtr<GpuParamDesc>& paramDesc, bool isValid = true)
+				:blockDesc(blockDesc), paramDesc(paramDesc), isValid(isValid)
 			{ }
 
-			String name;
+			const GpuParamBlockDesc* blockDesc;
 			SPtr<GpuParamDesc> paramDesc;
 			bool isValid;
+			UINT32 set;
+			UINT32 slot;
 		};
 
 		// Make sure param blocks with the same name actually contain the same fields
@@ -202,15 +206,17 @@ namespace bs
 				auto iterFind = uniqueParamBlocks.find(blockIter->first);
 				if (iterFind == uniqueParamBlocks.end())
 				{
-					uniqueParamBlocks[blockIter->first] = BlockInfo(blockIter->first, *iter);
+					uniqueParamBlocks[blockIter->first] = BlockInfo(&curBlock, *iter);
 					continue;
 				}
+
+				const GpuParamBlockDesc& otherBlock = *iterFind->second.blockDesc;
 
 				// The block was already determined as invalid, no need to check further
 				if (!iterFind->second.isValid)
 					continue;
 
-				String otherBlockName = iterFind->second.name;
+				String otherBlockName = otherBlock.name;
 				SPtr<GpuParamDesc> otherDesc = iterFind->second.paramDesc;
 
 				for (auto myParamIter = curDesc.params.begin(); myParamIter != curDesc.params.end(); ++myParamIter)
@@ -241,7 +247,9 @@ namespace bs
 				if (!isBlockValid)
 				{
 					LOGWRN("Found two param blocks with the same name but different contents: " + blockIter->first);
-					uniqueParamBlocks[blockIter->first] = BlockInfo(blockIter->first, nullptr, false);
+					uniqueParamBlocks[blockIter->first] = BlockInfo(&curBlock, nullptr, false);
+
+					continue;
 				}
 			}
 		}
@@ -252,28 +260,21 @@ namespace bs
 			if (!entry.second.isValid)
 				continue;
 
+			const GpuParamBlockDesc& curBlock = *entry.second.blockDesc;
+
 			ShaderBlockDesc shaderBlockDesc;
 			shaderBlockDesc.external = false;
 			shaderBlockDesc.usage = GPBU_STATIC;
-			shaderBlockDesc.size = 0;
+			shaderBlockDesc.size = curBlock.blockSize * sizeof(UINT32);
 			shaderBlockDesc.name = entry.first;
+			shaderBlockDesc.set = curBlock.set;
+			shaderBlockDesc.slot = curBlock.slot;
 
 			auto iterFind = shaderDesc.find(entry.first);
 			if (iterFind != shaderDesc.end())
 			{
 				shaderBlockDesc.external = iterFind->second.shared || iterFind->second.rendererSemantic != StringID::NONE;
 				shaderBlockDesc.usage = iterFind->second.usage;
-			}
-
-			for (auto iter2 = paramDescs.begin(); iter2 != paramDescs.end(); ++iter2)
-			{
-				auto findParamBlockDesc = (*iter2)->paramBlocks.find(entry.first);
-
-				if (findParamBlockDesc != (*iter2)->paramBlocks.end())
-				{
-					shaderBlockDesc.size = findParamBlockDesc->second.blockSize * sizeof(UINT32);
-					break;
-				}
 			}
 
 			output.push_back(shaderBlockDesc);
@@ -509,10 +510,11 @@ namespace bs
 			paramBlock.sequentialIdx = (UINT32)mBlocks.size();
 
 			paramBlockBuffers[paramBlock.name] = newParamBlockBuffer;
-			mBlocks.push_back(BlockInfo(paramBlock.name, newParamBlockBuffer, true));
+			mBlocks.push_back(BlockInfo(paramBlock.name, paramBlock.set, paramBlock.slot, newParamBlockBuffer, true));
 		}
 
 		//// Assign param block buffers and generate information about data parameters
+		assert(numPasses < 64); // BlockInfo flags uses UINT64 for tracking usage
 		for (UINT32 i = 0; i < numPasses; i++)
 		{
 			SPtr<GpuParamsType> paramPtr = mPassParams[i];
@@ -549,7 +551,8 @@ namespace bs
 						globalBlockIdx = (UINT32)mBlocks.size();
 
 						paramPtr->setParamBlockBuffer(progType, iterBlockDesc->first, newParamBlockBuffer);
-						mBlocks.push_back(BlockInfo(iterBlockDesc->first, newParamBlockBuffer, false));
+						mBlocks.emplace_back(iterBlockDesc->first, iterBlockDesc->second.set, 
+							iterBlockDesc->second.slot, newParamBlockBuffer, false);
 					}
 					else
 					{
@@ -605,7 +608,7 @@ namespace bs
 
 			if(iterFind == mBlocks.end())
 			{
-				mBlocks.push_back(BlockInfo(entry.first, nullptr, true));
+				mBlocks.push_back(BlockInfo(entry.first, 0, 0, nullptr, true));
 				mBlocks.back().isUsed = false;
 			}
 		}
@@ -674,9 +677,15 @@ namespace bs
 			}
 
 			// Transfer all objects into their permanent storage
+			UINT32 numBlocks = (UINT32)mBlocks.size();
+			UINT32 blockBindingsSize = numBlocks * numPasses * sizeof(PassBlockBindings);
 			UINT32 objectParamInfosSize = totalNumObjects * sizeof(ObjectParamInfo) + numPasses * sizeof(PassParamInfo);
-			mPassParamInfos = (PassParamInfo*)bs_alloc(objectParamInfosSize);
+			mData = (UINT8*)bs_alloc(objectParamInfosSize + blockBindingsSize);
+			UINT8* dataIter = mData;
+
+			mPassParamInfos = (PassParamInfo*)dataIter;
 			memset(mPassParamInfos, 0, objectParamInfosSize);
+			dataIter += objectParamInfosSize;
 
 			StageParamInfo* stageInfos = (StageParamInfo*)mPassParamInfos;
 
@@ -736,6 +745,46 @@ namespace bs
 				}
 			}
 
+			// Determine on which passes & stages are buffers used on
+			for (auto& block : mBlocks)
+			{
+				block.passData = (PassBlockBindings*)dataIter;
+				dataIter += sizeof(PassBlockBindings) * numPasses;
+			}
+
+			for (auto& block : mBlocks)
+			{
+				for (UINT32 i = 0; i < numPasses; i++)
+				{
+					SPtr<GpuParamsType> paramPtr = mPassParams[i];
+					for (UINT32 j = 0; j < NUM_STAGES; j++)
+					{
+						GpuProgramType progType = (GpuProgramType)j;
+
+						SPtr<GpuParamDesc> curDesc = paramPtr->getParamDesc(progType);
+						if (curDesc == nullptr)
+						{
+							block.passData[i].bindings[j].set = -1;
+							block.passData[i].bindings[j].slot = -1;
+
+							continue;
+						}
+
+						auto iterFind = curDesc->paramBlocks.find(block.name);
+						if (iterFind == curDesc->paramBlocks.end())
+						{
+							block.passData[i].bindings[j].set = -1;
+							block.passData[i].bindings[j].slot = -1;
+
+							continue;
+						}
+
+						block.passData[i].bindings[j].set = iterFind->second.set;
+						block.passData[i].bindings[j].slot = iterFind->second.slot;
+					}
+				}
+			}
+
 			bs_frame_free(offsets);
 		}
 		bs_frame_clear();
@@ -745,7 +794,7 @@ namespace bs
 	TGpuParamsSet<Core>::~TGpuParamsSet()
 	{
 		// All allocations share the same memory, so we just clear it all at once
-		bs_free(mPassParamInfos);
+		bs_free(mData);
 	}
 
 	template<bool Core>
@@ -758,49 +807,68 @@ namespace bs
 	}
 
 	template<bool Core>
+	UINT32 TGpuParamsSet<Core>::getParamBlockBufferIndex(const String& name) const
+	{
+		for (UINT32 i = 0; i < (UINT32)mBlocks.size(); i++)
+		{
+			const BlockInfo& block = mBlocks[i];
+			if (block.name == name)
+				return i;
+		}
+
+		return -1;
+	}
+
+	template<bool Core>
+	void TGpuParamsSet<Core>::setParamBlockBuffer(UINT32 index, const ParamBlockPtrType& paramBlock,
+												  bool ignoreInUpdate)
+	{
+		BlockInfo& blockInfo = mBlocks[index];
+		if (!blockInfo.shareable)
+		{
+			LOGERR("Cannot set parameter block buffer with the name \"" + blockInfo.name + 
+				"\". Buffer is not assignable. ");
+			return;
+		}
+
+		if (!blockInfo.isUsed)
+			return;
+
+		blockInfo.allowUpdate = !ignoreInUpdate;
+
+		if (blockInfo.buffer != paramBlock)
+		{
+			blockInfo.buffer = paramBlock;
+
+			UINT32 numPasses = (UINT32)mPassParams.size();
+			for (UINT32 j = 0; j < numPasses; j++)
+			{
+				SPtr<GpuParamsType> paramPtr = mPassParams[j];
+				for (UINT32 i = 0; i < NUM_STAGES; i++)
+				{
+					GpuProgramType progType = (GpuProgramType)i;
+
+					const BlockBinding& binding = blockInfo.passData[j].bindings[progType];
+
+					if (binding.slot != -1)
+						paramPtr->setParamBlockBuffer(binding.set, binding.slot, paramBlock);
+				}
+			}
+		}
+	}
+
+	template<bool Core>
 	void TGpuParamsSet<Core>::setParamBlockBuffer(const String& name, const ParamBlockPtrType& paramBlock, 
 		bool ignoreInUpdate)
 	{
-		UINT32 foundIdx = (UINT32)-1;
-		for(UINT32 i = 0; i < (UINT32)mBlocks.size(); i++)
-		{
-			BlockInfo& block = mBlocks[i];
-			if(block.name == name)
-			{
-				if (!block.shareable)
-				{
-					LOGERR("Cannot set parameter block buffer with the name \"" + name + "\". Buffer is not assignable. ");
-					return;
-				}
-
-				foundIdx = i;
-			}
-		}
-
-		if(foundIdx == (UINT32)-1)
+		UINT32 bufferIdx = getParamBlockBufferIndex(name);
+		if(bufferIdx == (UINT32)-1)
 		{
 			LOGERR("Cannot set parameter block buffer with the name \"" + name + "\". Buffer name not found. ");
 			return;
 		}
 
-		if (!mBlocks[foundIdx].isUsed)
-			return;
-
-		mBlocks[foundIdx].buffer = paramBlock;
-		mBlocks[foundIdx].allowUpdate = !ignoreInUpdate;
-
-		UINT32 numPasses = (UINT32)mPassParams.size();
-		for (UINT32 j = 0; j < numPasses; j++)
-		{
-			SPtr<GpuParamsType> paramPtr = mPassParams[j];
-			for (UINT32 i = 0; i < NUM_STAGES; i++)
-			{
-				GpuProgramType progType = (GpuProgramType)i;
-
-				if (paramPtr->hasParamBlock(progType, name))
-					paramPtr->setParamBlockBuffer(progType, name, paramBlock);
-			}
-		}
+		setParamBlockBuffer(bufferIdx, paramBlock, ignoreInUpdate);
 	}
 
 	template<bool Core>
