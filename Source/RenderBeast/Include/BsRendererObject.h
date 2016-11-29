@@ -5,12 +5,26 @@
 #include "BsRenderBeastPrerequisites.h"
 #include "BsRenderableElement.h"
 #include "BsRenderable.h"
+#include "BsParamBlocks.h"
+#include "BsMaterialParam.h"
 
 namespace bs
 {
 	/** @addtogroup RenderBeast
 	 *  @{
 	 */
+
+	BS_PARAM_BLOCK_BEGIN(PerObjectParamBuffer)
+		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatWorld)
+		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatInvWorld)
+		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatWorldNoScale)
+		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatInvWorldNoScale)
+		BS_PARAM_BLOCK_ENTRY(float, gWorldDeterminantSign)
+	BS_PARAM_BLOCK_END
+
+	BS_PARAM_BLOCK_BEGIN(PerCallParamBuffer)
+		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatWorldViewProj)
+	BS_PARAM_BLOCK_END
 
 	struct MaterialSamplerOverrides;
 
@@ -46,11 +60,6 @@ namespace bs
 		/** Index to which should the per-camera param block buffer be bound to. */
 		UINT32 perCameraBindingIdx;
 
-		/** 
-		 * Parameter for setting global bone pose transforms used for an element with skeletal animation, null otherwise. 
-		 */
-		MaterialParamBufferCore boneMatricesParam;
-
 		/** GPU buffer containing element's bone matrices, if it requires any. */
 		SPtr<GpuBufferCore> boneMatrixBuffer;
 
@@ -67,8 +76,22 @@ namespace bs
 	 /** Contains information about a Renderable, used by the Renderer. */
 	struct RendererObject
 	{
+		/** Updates the per-object GPU buffer according to the currently set properties. */
+		void updatePerObjectBuffer();
+
+		/** 
+		 * Updates the per-call GPU buffer according to the provided parameters. 
+		 * 
+		 * @param[in]	viewProj	Combined view-projection matrix of the current camera.
+		 * @param[in]	flush		True if the buffer contents should be immediately flushed to the GPU.
+		 */
+		void updatePerCallBuffer(const Matrix4& viewProj, bool flush = true);
+
 		RenderableCore* renderable;
 		Vector<BeastRenderableElement> elements;
+
+		PerObjectParamBuffer perObjectParams;
+		PerCallParamBuffer perCallParams;
 	};
 
 	/** @} */

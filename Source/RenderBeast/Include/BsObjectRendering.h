@@ -22,25 +22,6 @@ namespace bs
 		BS_PARAM_BLOCK_ENTRY(float, gTime)
 	BS_PARAM_BLOCK_END
 
-	BS_PARAM_BLOCK_BEGIN(PerObjectParamBuffer)
-		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatWorldViewProj)
-		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatWorld)
-		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatInvWorld)
-		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatWorldNoScale)
-		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatInvWorldNoScale)
-		BS_PARAM_BLOCK_ENTRY(float, gWorldDeterminantSign)
-	BS_PARAM_BLOCK_END
-
-	/**	Data bound to the shader when rendering a specific renderable object. */
-	struct RenderableShaderData
-	{
-		Matrix4 worldTransform;
-		Matrix4 invWorldTransform;
-		Matrix4 worldNoScaleTransform;
-		Matrix4 invWorldNoScaleTransform;
-		float worldDeterminantSign;
-	};
-
 	/** Manages initialization and rendering of individual renderable object, represented as RenderableElement%s. */
 	class BS_BSRND_EXPORT ObjectRenderer
 	{
@@ -48,20 +29,13 @@ namespace bs
 		ObjectRenderer();
 
 		/** Initializes the specified renderable element, making it ready to be used. */
-		void initElement(BeastRenderableElement& element);
+		void initElement(RendererObject& owner, BeastRenderableElement& element);
 
 		/** Updates global per frame parameter buffers with new values. To be called at the start of every frame. */
 		void setParamFrameParams(float time);
 
-		/**
-		 * Updates object specific parameter buffers with new values. To be called whenever object specific values change.
-		 */
-		void setPerObjectParams(const BeastRenderableElement& element, const RenderableShaderData& data,
-			const Matrix4& wvpMatrix, const SPtr<GpuBufferCore>& boneMatrices = nullptr);
-
 	protected:
 		PerFrameParamBuffer mPerFrameParams;
-		PerObjectParamBuffer mPerObjectParams;
 	};
 
 	/** Basic shader that is used when no other is available. */

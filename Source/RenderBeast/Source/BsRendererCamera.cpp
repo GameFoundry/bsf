@@ -78,7 +78,7 @@ namespace bs
 		}
 	}
 
-	void RendererCamera::determineVisible(Vector<RendererObject>& renderables, const Vector<Bounds>& renderableBounds, 
+	void RendererCamera::determineVisible(const Vector<RendererObject*>& renderables, const Vector<Bounds>& renderableBounds,
 		Vector<bool>& visibility)
 	{
 		mVisibility.clear();
@@ -94,7 +94,7 @@ namespace bs
 		// Update per-object param buffers and queue render elements
 		for(UINT32 i = 0; i < (UINT32)renderables.size(); i++)
 		{
-			RenderableCore* renderable = renderables[i].renderable;
+			RenderableCore* renderable = renderables[i]->renderable;
 			UINT32 rendererId = renderable->getRendererId();
 
 			if ((renderable->getLayer() & cameraLayers) == 0)
@@ -116,7 +116,7 @@ namespace bs
 
 					float distanceToCamera = (mCamera->getPosition() - boundingBox.getCenter()).length();
 
-					for (auto& renderElem : renderables[i].elements)
+					for (auto& renderElem : renderables[i]->elements)
 					{
 						bool isTransparent = (renderElem.material->getShader()->getFlags() & (UINT32)ShaderFlags::Transparent) != 0;
 

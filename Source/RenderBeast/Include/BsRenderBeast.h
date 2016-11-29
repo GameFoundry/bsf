@@ -198,8 +198,7 @@ namespace bs
 		UnorderedMap<const CameraCore*, RendererCamera*> mCameras;
 		UnorderedMap<SamplerOverrideKey, MaterialSamplerOverrides*> mSamplerOverrides;
 
-		Vector<RendererObject> mRenderables;
-		Vector<RenderableShaderData> mRenderableShaderData;
+		Vector<RendererObject*> mRenderables;
 		Vector<Bounds> mWorldBounds;
 		Vector<bool> mVisibility; // Transient
 

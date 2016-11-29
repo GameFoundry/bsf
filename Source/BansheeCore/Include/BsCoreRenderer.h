@@ -22,6 +22,7 @@ namespace bs
 	static StringID RBS_PerCamera = "PerCamera";
 	static StringID RBS_PerFrame = "PerFrame";
 	static StringID RBS_PerObject = "PerObject";
+	static StringID RBS_PerCall = "PerCall";
 
 	/**
 	 * Available parameter semantics that allow the renderer to identify the use of a GPU parameter specified in a shader.

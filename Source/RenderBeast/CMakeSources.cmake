@@ -24,6 +24,7 @@ set(BS_RENDERBEAST_SRC_NOFILTER
 	"Source/BsLightRendering.cpp"
 	"Source/BsPostProcessing.cpp"
 	"Source/BsRendererCamera.cpp"
+	"Source/BsRendererObject.cpp"
 )
 
 source_group("Header Files" FILES ${BS_RENDERBEAST_INC_NOFILTER})

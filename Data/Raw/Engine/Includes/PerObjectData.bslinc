@@ -11,6 +11,7 @@ Parameters =
 Blocks =
 {
 	Block PerObject : auto("PerObject");
+	Block PerCall : auto("PerCall");
 };
 
 Technique : base("PerObjectData") =
@@ -23,12 +24,16 @@ Technique : base("PerObjectData") =
 		{
 			cbuffer PerObject
 			{
-				float4x4 gMatWorldViewProj;
 				float4x4 gMatWorld;
 				float4x4 gMatInvWorld;
 				float4x4 gMatWorldNoScale;
 				float4x4 gMatInvWorldNoScale;
 				float gWorldDeterminantSign;
+			}	
+
+			cbuffer PerCall
+			{
+				float4x4 gMatWorldViewProj;
 			}			
 		};
 	};
@@ -44,13 +49,17 @@ Technique : base("PerObjectData") =
 		{
 			layout(binding = 2, std140) uniform PerObject
 			{
-				mat4 gMatWorldViewProj;
 				mat4 gMatWorld;
 				mat4 gMatInvWorld;
 				mat4 gMatWorldNoScale;
 				mat4 gMatInvWorldNoScale;
 				float gWorldDeterminantSign;
-			};			
+			};
+			
+			layout(binding = 3, std140) uniform PerCall
+			{
+				mat4 gMatWorldViewProj;
+			};	
 		};
 	};
 };

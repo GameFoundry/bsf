@@ -17,11 +17,13 @@ namespace bs
 	ObjectRenderer::ObjectRenderer()
 	{ }
 
-	void ObjectRenderer::initElement(BeastRenderableElement& element)
+	void ObjectRenderer::initElement(RendererObject& owner, BeastRenderableElement& element)
 	{
 		SPtr<ShaderCore> shader = element.material->getShader();
 		if (shader == nullptr)
 		{
+			element.perCameraBindingIdx = -1;
+
 			LOGWRN("Missing shader on material.");
 			return;
 		}
@@ -35,7 +37,15 @@ namespace bs
 			if (paramBlockDesc.second.rendererSemantic == RBS_PerFrame)
 				element.params->setParamBlockBuffer(paramBlockDesc.second.name, mPerFrameParams.getBuffer(), true);
 			else if (paramBlockDesc.second.rendererSemantic == RBS_PerObject)
-				element.params->setParamBlockBuffer(paramBlockDesc.second.name, mPerObjectParams.getBuffer(), true);
+			{
+				element.params->setParamBlockBuffer(paramBlockDesc.second.name,
+													owner.perObjectParams.getBuffer(), true);
+			}
+			else if (paramBlockDesc.second.rendererSemantic == RBS_PerCall)
+			{
+				element.params->setParamBlockBuffer(paramBlockDesc.second.name,
+													owner.perCallParams.getBuffer(), true);
+			}
 		}
 
 		const Map<String, SHADER_OBJECT_PARAM_DESC>& bufferDescs = shader->getBufferParams();
@@ -49,30 +59,14 @@ namespace bs
 		
 		if (!boneMatricesParamName.empty())
 		{
-			// Note: Bone matrices should be shared between all sub-meshes, so maybe it's better to create this buffer
-			// on a per-Renderable basis, rather than per-element?
-			element.boneMatricesParam = element.material->getParamBuffer(boneMatricesParamName);
+			MaterialParamBufferCore boneMatricesParam = element.material->getParamBuffer(boneMatricesParamName);
+			boneMatricesParam.set(element.boneMatrixBuffer);
 		}
 	}
 
 	void ObjectRenderer::setParamFrameParams(float time)
 	{
 		mPerFrameParams.gTime.set(time);
-	}
-
-	void ObjectRenderer::setPerObjectParams(const BeastRenderableElement& element, const RenderableShaderData& data,
-		const Matrix4& wvpMatrix, const SPtr<GpuBufferCore>& boneMatrices)
-	{
-		// Note: If I kept all the values in the same structure maybe a simple memcpy directly into the constant buffer
-		// would be better (i.e. faster)?
-		mPerObjectParams.gMatWorld.set(data.worldTransform);
-		mPerObjectParams.gMatInvWorld.set(data.invWorldTransform);
-		mPerObjectParams.gMatWorldNoScale.set(data.worldNoScaleTransform);
-		mPerObjectParams.gMatInvWorldNoScale.set(data.invWorldNoScaleTransform);
-		mPerObjectParams.gWorldDeterminantSign.set(data.worldDeterminantSign);
-		mPerObjectParams.gMatWorldViewProj.set(wvpMatrix);
-
-		element.boneMatricesParam.set(boneMatrices);
 	}
 
 	void DefaultMaterial::_initDefines(ShaderDefines& defines)

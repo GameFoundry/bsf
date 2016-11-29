@@ -86,6 +86,9 @@ namespace bs
 		if (mObjectRenderer != nullptr)
 			bs_delete(mObjectRenderer);
 
+		for (auto& entry : mRenderables)
+			bs_delete(entry);
+
 		for (auto& entry : mCameras)
 			bs_delete(entry.second);
 
@@ -113,20 +116,13 @@ namespace bs
 
 		renderable->setRendererId(renderableId);
 
-		mRenderables.push_back(RendererObject());
-		mRenderableShaderData.push_back(RenderableShaderData());
+		mRenderables.push_back(bs_new<RendererObject>());
 		mWorldBounds.push_back(renderable->getBounds());
 		mVisibility.push_back(false);
 
-		RendererObject& rendererObject = mRenderables.back();
-		rendererObject.renderable = renderable;
-
-		RenderableShaderData& shaderData = mRenderableShaderData.back();
-		shaderData.worldTransform = renderable->getTransform();
-		shaderData.invWorldTransform = shaderData.worldTransform.inverseAffine();
-		shaderData.worldNoScaleTransform = renderable->getTransformNoScale();
-		shaderData.invWorldNoScaleTransform = shaderData.worldNoScaleTransform.inverseAffine();
-		shaderData.worldDeterminantSign = shaderData.worldTransform.determinant3x3() >= 0.0f ? 1.0f : -1.0f;
+		RendererObject* rendererObject = mRenderables.back();
+		rendererObject->renderable = renderable;
+		rendererObject->updatePerObjectBuffer();
 
 		SPtr<MeshCore> mesh = renderable->getMesh();
 		if (mesh != nullptr)
@@ -136,8 +132,8 @@ namespace bs
 
 			for (UINT32 i = 0; i < meshProps.getNumSubMeshes(); i++)
 			{
-				rendererObject.elements.push_back(BeastRenderableElement());
-				BeastRenderableElement& renElement = rendererObject.elements.back();
+				rendererObject->elements.push_back(BeastRenderableElement());
+				BeastRenderableElement& renElement = rendererObject->elements.back();
 
 				renElement.mesh = mesh;
 				renElement.subMesh = meshProps.getSubMesh(i);
@@ -264,26 +260,7 @@ namespace bs
 					samplerOverrides->refCount++;
 				}
 
-				mObjectRenderer->initElement(renElement);
-
-				// Set up or find bind spots for relevant GPU param buffers
-				SPtr<ShaderCore> shader = renElement.material->getShader();
-				if (shader != nullptr)
-				{
-					const Map<String, SHADER_PARAM_BLOCK_DESC>& paramBlockDescs = shader->getParamBlocks();
-
-					for (auto& paramBlockDesc : paramBlockDescs)
-					{
-						if (paramBlockDesc.second.rendererSemantic == RBS_PerCamera)
-						{
-							renElement.perCameraBindingIdx = renElement.params->getParamBlockBufferIndex(paramBlockDesc.second.name);
-
-							// TODO - Verify size
-						}
-					}
-				}
-				else
-					renElement.perCameraBindingIdx = -1;
+				mObjectRenderer->initElement(*rendererObject, renElement);
 			}
 		}
 	}
@@ -291,10 +268,11 @@ namespace bs
 	void RenderBeast::notifyRenderableRemoved(RenderableCore* renderable)
 	{
 		UINT32 renderableId = renderable->getRendererId();
-		RenderableCore* lastRenerable = mRenderables.back().renderable;
+		RenderableCore* lastRenerable = mRenderables.back()->renderable;
 		UINT32 lastRenderableId = lastRenerable->getRendererId();
 
-		Vector<BeastRenderableElement>& elements = mRenderables[renderableId].elements;
+		RendererObject* rendererObject = mRenderables[renderableId];
+		Vector<BeastRenderableElement>& elements = rendererObject->elements;
 		for (auto& element : elements)
 		{
 			SamplerOverrideKey samplerKey(element.material, element.techniqueIdx);
@@ -318,7 +296,6 @@ namespace bs
 			// Swap current last element with the one we want to erase
 			std::swap(mRenderables[renderableId], mRenderables[lastRenderableId]);
 			std::swap(mWorldBounds[renderableId], mWorldBounds[lastRenderableId]);
-			std::swap(mRenderableShaderData[renderableId], mRenderableShaderData[lastRenderableId]);
 
 			lastRenerable->setRendererId(renderableId);
 
@@ -329,21 +306,16 @@ namespace bs
 		// Last element is the one we want to erase
 		mRenderables.erase(mRenderables.end() - 1);
 		mWorldBounds.erase(mWorldBounds.end() - 1);
-		mRenderableShaderData.erase(mRenderableShaderData.end() - 1);
 		mVisibility.erase(mVisibility.end() - 1);
+
+		bs_delete(rendererObject);
 	}
 
 	void RenderBeast::notifyRenderableUpdated(RenderableCore* renderable)
 	{
 		UINT32 renderableId = renderable->getRendererId();
 
-		RenderableShaderData& shaderData = mRenderableShaderData[renderableId];
-		shaderData.worldTransform = renderable->getTransform();
-		shaderData.invWorldTransform = shaderData.worldTransform.inverseAffine();
-		shaderData.worldNoScaleTransform = renderable->getTransformNoScale();
-		shaderData.invWorldNoScaleTransform = shaderData.worldNoScaleTransform.inverseAffine();
-		shaderData.worldDeterminantSign = shaderData.worldTransform.determinant3x3() >= 0.0f ? 1.0f : -1.0f;
-
+		mRenderables[renderableId]->updatePerObjectBuffer();
 		mWorldBounds[renderableId] = renderable->getBounds();
 	}
 
@@ -609,21 +581,23 @@ namespace bs
 		const RendererAnimationData& animData = AnimationManager::instance().getRendererData();
 		RendererFrame frameInfo(delta, animData);
 
-		// Update bone matrix and morph shape GPU buffers
+		// Update per-object, bone matrix and morph shape GPU buffers
 		UINT32 numRenderables = (UINT32)mRenderables.size();
 		for (UINT32 i = 0; i < numRenderables; i++)
 		{
 			if (!mVisibility[i])
 				continue;
 
-			mRenderables[i].renderable->updateAnimationBuffers(animData);
+			// Note: Before uploading bone matrices perhaps check if they has actually been changed since last frame
+			mRenderables[i]->renderable->updateAnimationBuffers(animData);
 
-			// TODO - Also move per-object buffer updates here (will require worldViewProj matrix to be moved to a separate buffer (or a push constant))
-			// TODO - Before uploading bone matrices and per-object data, check if it has actually been changed since last frame (most objects will be static)
-			// TODO - Also move per-camera buffer updates in a separate loop
+			// Note: Could this step be moved in notifyRenderableUpdated, so it only triggers when material actually gets
+			// changed? Although it shouldn't matter much because if the internal dirty flags.
+			for (auto& element : mRenderables[i]->elements)
+				element.material->updateParamsSet(element.params, element.techniqueIdx);
+
+			mRenderables[i]->perObjectParams.flushToGPU();
 		}
-
-		// TODO - When porting to Vulkan, start upload and issue barrier (but somehow avoid blocking too long here?)
 
 		// Render everything, target by target
 		for (auto& rtInfo : mRenderTargets)
@@ -661,7 +635,11 @@ namespace bs
 
 		assert(!camera->getFlags().isSet(CameraFlag::Overlay));
 
-		// Assign camera data to all relevant renderables
+		Matrix4 proj = camera->getProjectionMatrixRS();
+		Matrix4 view = camera->getViewMatrix();
+		Matrix4 viewProj = proj * view;
+
+		// Assign camera and per-call data to all relevant renderables
 		const Vector<bool>& visibility = rendererCam->getVisibilityMask();
 		UINT32 numRenderables = (UINT32)mRenderables.size();
 		for (UINT32 i = 0; i < numRenderables; i++)
@@ -669,16 +647,15 @@ namespace bs
 			if (!visibility[i])
 				continue;
 
-			for (auto& element : mRenderables[i].elements)
+			RendererObject* rendererObject = mRenderables[i];
+			rendererObject->updatePerCallBuffer(viewProj);
+
+			for (auto& element : mRenderables[i]->elements)
 			{
 				if (element.perCameraBindingIdx != -1)
 					element.params->setParamBlockBuffer(element.perCameraBindingIdx, parCameraBuffer.getBuffer(), true);
 			}
 		}
-
-		Matrix4 proj = camera->getProjectionMatrixRS();
-		Matrix4 view = camera->getViewMatrix();
-		Matrix4 viewProj = proj * view;
 
 		rendererCam->beginRendering(true);
 
@@ -703,8 +680,6 @@ namespace bs
 			}
 		}
 
-
-		
 		//// Render base pass
 		const Vector<RenderQueueElement>& opaqueElements = rendererCam->getOpaqueQueue()->getSortedElements();
 		for (auto iter = opaqueElements.begin(); iter != opaqueElements.end(); ++iter)
@@ -884,13 +859,6 @@ namespace bs
 	{
 		SPtr<MaterialCore> material = element.material;
 
-		UINT32 rendererId = element.renderableId;
-		Matrix4 worldViewProjMatrix = viewProj * mRenderableShaderData[rendererId].worldTransform;
-		SPtr<GpuBufferCore> boneMatrices = element.boneMatrixBuffer;
-
-		mObjectRenderer->setPerObjectParams(element, mRenderableShaderData[rendererId], worldViewProjMatrix, boneMatrices);
-		material->updateParamsSet(element.params, element.techniqueIdx);
-
 		if (bindPass)
 			gRendererUtility().setPass(material, passIdx, element.techniqueIdx);
 
@@ -947,7 +915,7 @@ namespace bs
 		UINT32 numRenderables = (UINT32)mRenderables.size();
 		for (UINT32 i = 0; i < numRenderables; i++)
 		{
-			for(auto& element : mRenderables[i].elements)
+			for(auto& element : mRenderables[i]->elements)
 			{
 				MaterialSamplerOverrides* overrides = element.samplerOverrides;
 				if(overrides != nullptr && overrides->isDirty)

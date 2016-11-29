@@ -81,7 +81,7 @@ namespace bs
 		 *									As a side-effect, per-camera visibility data is also calculated and can be
 		 *									retrieved by calling getVisibilityMask().
 		 */
-		void determineVisible(Vector<RendererObject>& renderables, const Vector<Bounds>& renderableBounds, 
+		void determineVisible(const Vector<RendererObject*>& renderables, const Vector<Bounds>& renderableBounds, 
 			Vector<bool>& visibility);
 
 		/** Returns the visibility mask calculated with the last call to determineVisible(). */
