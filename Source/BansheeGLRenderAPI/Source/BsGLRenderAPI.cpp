@@ -1460,6 +1460,9 @@ namespace bs
 
 	void GLRenderAPI::setScissorTestEnable(bool enable)
 	{
+		if (mActiveRenderTarget == nullptr)
+			return;
+
 		const RenderTargetProperties& rtProps = mActiveRenderTarget->getProperties();
 
 		// If request texture flipping, use "upper-left", otherwise use "lower-left"

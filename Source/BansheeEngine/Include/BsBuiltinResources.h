@@ -87,7 +87,7 @@ namespace bs
 		/**	Returns the default application icon. */
 		const PixelData& getBansheeIcon();
 
-		/**	Returns a shader used for rendering only a diffuse texture. */
+		/**	Returns one of the builtin shader types. */
 		HShader getBuiltinShader(BuiltinShader type) const;
 
 		/**	Creates a material used for textual sprite rendering (for example text in GUI). */

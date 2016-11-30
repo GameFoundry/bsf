@@ -14,6 +14,7 @@ Manuals									{#manuals}
  - [Cameras](@ref cameras)
  - [Importing textures](@ref importingTextures)
  - [Importing meshes](@ref importingMeshes)
+ - [Materials](@ref simpleMaterials)
  
 # Developer guides
 
