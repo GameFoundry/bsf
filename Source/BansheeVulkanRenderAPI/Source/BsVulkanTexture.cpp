@@ -206,6 +206,17 @@ namespace bs
 		output.setExternalBuffer(data);
 	}
 
+	UINT8* VulkanImage::map(UINT32 offset, UINT32 size) const
+	{
+		VulkanDevice& device = mOwner->getDevice();
+
+		UINT8* data;
+		VkResult result = vkMapMemory(device.getLogical(), mMemory, offset, size, 0, (void**)&data);
+		assert(result == VK_SUCCESS);
+
+		return data;
+	}
+
 	void VulkanImage::unmap()
 	{
 		VulkanDevice& device = mOwner->getDevice();
@@ -782,6 +793,33 @@ namespace bs
 			// We're safe to map directly since GPU isn't using the subresource
 			if (!isUsedOnGPU)
 			{
+				// If some CB has an operation queued that will be using the current contents of the image, create a new 
+				// image so we don't modify the previous use of the image
+				if (subresource->isBound())
+				{
+					VulkanImage* newImage = createImage(device);
+
+					// Copy contents of the current image to the new one, unless caller explicitly specifies he doesn't
+					// care about the current contents
+					if (options != GBL_WRITE_ONLY_DISCARD)
+					{
+						VkMemoryRequirements memReqs;
+						vkGetImageMemoryRequirements(device.getLogical(), image->getHandle(), &memReqs);
+
+						UINT8* src = image->map(0, memReqs.size);
+						UINT8* dst = newImage->map(0, memReqs.size);
+
+						memcpy(dst, src, memReqs.size);
+
+						image->unmap();
+						newImage->unmap();
+					}
+
+					image->destroy();
+					image = newImage;
+					mImages[deviceIdx] = image;
+				}
+
 				image->map(face, mipLevel, lockedArea);
 				return lockedArea;
 			}
@@ -825,6 +863,28 @@ namespace bs
 				// Submit the command buffer and wait until it finishes
 				transferCB->flush(true);
 
+				// If some CB has an operation queued that will be using the current contents of the image, create a new 
+				// image so we don't modify the previous use of the image
+				if (subresource->isBound())
+				{
+					VulkanImage* newImage = createImage(device);
+
+					VkMemoryRequirements memReqs;
+					vkGetImageMemoryRequirements(device.getLogical(), image->getHandle(), &memReqs);
+
+					UINT8* src = image->map(0, memReqs.size);
+					UINT8* dst = newImage->map(0, memReqs.size);
+
+					memcpy(dst, src, memReqs.size);
+
+					image->unmap();
+					newImage->unmap();
+
+					image->destroy();
+					image = newImage;
+					mImages[deviceIdx] = image;
+				}
+
 				image->map(face, mipLevel, lockedArea);
 				return lockedArea;
 			}
@@ -833,7 +893,14 @@ namespace bs
 			// and blocking, so fall through
 		}
 
-		bool needRead = options == GBL_READ_WRITE || options == GBL_READ_ONLY;
+		// Can't use direct mapping, so use a staging buffer
+
+		// We might need to copy the current contents of the image to the staging buffer. Even if the user doesn't plan on
+		// reading, it is still required as we will eventually copy all of the contents back to the original image,
+		// and we can't write potentially uninitialized data. The only exception is when the caller specifies the image
+		// contents should be discarded in which he guarantees he will overwrite the entire locked area with his own
+		// contents.
+		bool needRead = options != GBL_WRITE_ONLY_DISCARD_RANGE && options != GBL_WRITE_ONLY_DISCARD;
 
 		// Allocate a staging buffer
 		mStagingBuffer = createStaging(device, lockedArea, needRead);
@@ -945,6 +1012,7 @@ namespace bs
 				// If the subresource is used in any way on the GPU, we need to wait for that use to finish before
 				// we issue our copy
 				UINT32 useMask = subresource->getUseInfo(VulkanUseFlag::Read | VulkanUseFlag::Write);
+				bool isNormalWrite = false;
 				if (useMask != 0) // Subresource is currently used on the GPU
 				{
 					// Try to avoid the wait by checking for special write conditions
@@ -966,10 +1034,42 @@ namespace bs
 						subresource = image->getSubresource(mMappedFace, mMappedMip);
 					}
 					else // Otherwise we have no choice but to issue a dependency between the queues
+					{
 						transferCB->appendMask(useMask);
+						isNormalWrite = true;
+					}
 				}
 
 				const TextureProperties& props = getProperties();
+
+				// Check if the subresource will still be bound somewhere after the CBs using it finish
+				if (isNormalWrite)
+				{
+					UINT32 useCount = subresource->getUseCount();
+					UINT32 boundCount = subresource->getBoundCount();
+
+					bool isBoundWithoutUse = boundCount > useCount;
+
+					// If image is queued for some operation on a CB, then we need to make a copy of the subresource to
+					// avoid modifying its use in the previous operation
+					if (isBoundWithoutUse)
+					{
+						VulkanImage* newImage = createImage(device);
+
+						// Avoid copying original contents if the image only has one sub-resource, which we'll overwrite anyway
+						if (props.getNumMipmaps() > 0 || props.getNumFaces() > 1)
+						{
+							copyImage(transferCB, image, newImage);
+
+							VkAccessFlags accessMask = image->getAccessFlags(image->getLayout());
+							transferCB->getCB()->registerResource(image, accessMask, image->getLayout(), VulkanUseFlag::Read);
+						}
+
+						image->destroy();
+						image = newImage;
+						mImages[mMappedDeviceIdx] = image;
+					}
+				}
 
 				VkImageSubresourceRange range;
 				if ((props.getUsage() & TU_DEPTHSTENCIL) != 0)

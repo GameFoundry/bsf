@@ -88,6 +88,13 @@ namespace bs
 		 */
 		void map(UINT32 face, UINT32 mipLevel, PixelData& output) const;
 
+		/** 
+		 * Returns a pointer to internal image memory for the entire resource. Must be followed by unmap(). Caller
+		 * must ensure the image was created in CPU readable memory, and that image isn't currently being written to by the
+		 * GPU.
+		 */
+		UINT8* map(UINT32 offset, UINT32 size) const;
+
 		/** Unmaps a buffer previously mapped with map(). */
 		void unmap();
 
