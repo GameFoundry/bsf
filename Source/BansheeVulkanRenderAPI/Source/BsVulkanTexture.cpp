@@ -822,6 +822,8 @@ namespace bs
 			mImages[mMappedDeviceIdx]->unmap();
 		else
 		{
+			mStagingBuffer->unmap();
+
 			bool isWrite = mMappedLockOptions != GBL_READ_ONLY;
 
 			// We the caller wrote anything to the staging buffer, we need to upload it back to the main buffer
@@ -844,7 +846,7 @@ namespace bs
 				UINT32 useMask = subresource->getUseInfo(VulkanUseFlag::Read | VulkanUseFlag::Write);
 				if (useMask != 0) // Subresource is currently used on the GPU
 				{
-					// Try to avoid the wait
+					// Try to avoid the wait by checking for special write conditions
 
 					// Caller guarantees he won't touch the same data as the GPU, so just copy
 					if (mMappedLockOptions == GBL_WRITE_ONLY_NO_OVERWRITE) 
@@ -915,8 +917,6 @@ namespace bs
 				// done automatically before next "normal" command buffer submission.
 			}
 
-			mStagingBuffer->unmap();
-
 			mStagingBuffer->destroy();
 			mStagingBuffer = nullptr;
 		}
@@ -975,8 +975,8 @@ namespace bs
 			if (mImages[i] == nullptr)
 				continue;
 
-			PixelData myData = lock(discardWholeBuffer ? GBL_WRITE_ONLY_DISCARD : GBL_WRITE_ONLY, mipLevel, face, i,
-									queueIdx);
+			PixelData myData = lock(discardWholeBuffer ? GBL_WRITE_ONLY_DISCARD : GBL_WRITE_ONLY_DISCARD_RANGE, 
+				mipLevel, face, i, queueIdx);
 			PixelUtil::bulkPixelConversion(src, myData);
 			unlock();
 		}

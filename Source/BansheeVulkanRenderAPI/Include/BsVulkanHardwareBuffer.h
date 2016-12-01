@@ -57,7 +57,7 @@ namespace bs
 
 		/** 
 		 * Queues a command on the provided command buffer. The command copies the contents of the current buffer to
-		 * the destination buffer. Caller must ensure the provided offsets and lengths are within valid bounds of
+		 * the destination buffer. Caller must ensure the provided offsets and length are within valid bounds of
 		 * both buffers.
 		 */
 		void copy(VulkanTransferBuffer* cb, VulkanBuffer* destination, VkDeviceSize srcOffset, VkDeviceSize dstOffset, 
@@ -69,6 +69,13 @@ namespace bs
 		 */
 		void copy(VulkanTransferBuffer* cb, VulkanImage* destination, const VkExtent3D& extent, 
 			const VkImageSubresourceLayers& range, VkImageLayout layout);
+
+		/** 
+		 * Queues a command on the provided command buffer. The command copies the contents of the provided memory location
+		 * the destination buffer. Caller must ensure the provided offset and length are within valid bounds of
+		 * both buffers. Caller must ensure the offset and size is a multiple of 4, and size is equal to or less then 65536.
+		 */
+		void update(VulkanTransferBuffer* cb, UINT8* data, VkDeviceSize offset, VkDeviceSize length);
 
 	private:
 		VkBuffer mBuffer;
@@ -127,11 +134,12 @@ namespace bs
 		void unmap() override;
 
 		/** Creates a new buffer for the specified device, matching the current buffer properties. */
-		VulkanBuffer* createBuffer(VulkanDevice& device, bool staging, bool readable);
+		VulkanBuffer* createBuffer(VulkanDevice& device, UINT32 size, bool staging, bool readable);
 
 		VulkanBuffer* mBuffers[BS_MAX_DEVICES];
 
 		VulkanBuffer* mStagingBuffer;
+		UINT8* mStagingMemory;
 		UINT32 mMappedDeviceIdx;
 		UINT32 mMappedGlobalQueueIdx;
 		UINT32 mMappedOffset;
@@ -144,7 +152,6 @@ namespace bs
 		bool mDirectlyMappable : 1;
 		bool mSupportsGPUWrites : 1;
 		bool mRequiresView : 1;
-		bool mReadable : 1;
 		bool mIsMapped : 1;
 	};
 

@@ -147,6 +147,12 @@ namespace bs
 		 * fairly fast) and you will avoid CPU-GPU stalls.
 		 */
 		GBL_WRITE_ONLY_DISCARD,
+		/**
+		 * Allows you to write to the buffer. Tells the driver to discard the contents of the mapped buffer range (but
+		 * not the entire buffer like with GBL_WRITE_ONLY_DISCARD). Use this if you plan on overwriting all of the
+		 * range. This can help avoid CPU-GPU stalls.
+		 */
+		GBL_WRITE_ONLY_DISCARD_RANGE,
 		/**  Allows you to read from a buffer. Be aware that reading is usually a very slow operation. */
 		GBL_READ_ONLY,
 		/**

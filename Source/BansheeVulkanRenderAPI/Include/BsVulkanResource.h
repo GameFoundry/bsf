@@ -113,6 +113,12 @@ namespace bs
 		 */
 		UINT32 getUseInfo(VulkanUseFlags useFlags) const;
 
+		/** Returns on how many command buffers is the buffer currently used on. */
+		UINT32 getUseCount() const { return mNumUsedHandles; }
+
+		/** Returns on how many command buffers is the buffer currently bound on. */
+		UINT32 getBoundCount() const { return mNumBoundHandles; }
+
 		/** Returns true if the resource is only allowed to be used by a single queue family at once. */
 		bool isExclusive() const { Lock(mMutex); return mState != State::Shared; }
 

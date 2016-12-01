@@ -74,12 +74,16 @@ namespace bs
 		vkCmdCopyBufferToImage(cb->getCB()->getHandle(), mBuffer, destination->getHandle(), layout, 1, &region);
 	}
 
+	void VulkanBuffer::update(VulkanTransferBuffer* cb, UINT8* data, VkDeviceSize offset, VkDeviceSize length)
+	{
+		vkCmdUpdateBuffer(cb->getCB()->getHandle(), mBuffer, offset, length, (uint32_t*)data);
+	}
+
 	VulkanHardwareBuffer::VulkanHardwareBuffer(BufferType type, GpuBufferFormat format, GpuBufferUsage usage, 
 		UINT32 size, GpuDeviceFlags deviceMask)
-		: HardwareBuffer(size), mBuffers(), mStagingBuffer(nullptr), mMappedDeviceIdx(-1), mMappedGlobalQueueIdx(-1)
-		, mMappedOffset(0), mMappedSize(0), mMappedLockOptions(GBL_WRITE_ONLY)
-		, mDirectlyMappable((usage & GBU_DYNAMIC) != 0)
-		, mSupportsGPUWrites(type == BT_STORAGE), mRequiresView(false), mReadable((usage & GBU_READABLE) != 0)
+		: HardwareBuffer(size), mBuffers(), mStagingBuffer(nullptr), mStagingMemory(nullptr), mMappedDeviceIdx(-1)
+		, mMappedGlobalQueueIdx(-1), mMappedOffset(0), mMappedSize(0), mMappedLockOptions(GBL_WRITE_ONLY)
+		, mDirectlyMappable((usage & GBU_DYNAMIC) != 0), mSupportsGPUWrites(type == BT_STORAGE), mRequiresView(false)
 		, mIsMapped(false)
 	{
 		VkBufferUsageFlags usageFlags = 0;
@@ -107,7 +111,6 @@ namespace bs
 		mBufferCI.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 		mBufferCI.pNext = nullptr;
 		mBufferCI.flags = 0;
-		mBufferCI.size = size;
 		mBufferCI.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 		mBufferCI.usage = usageFlags;
 		mBufferCI.queueFamilyIndexCount = 0;
@@ -130,7 +133,7 @@ namespace bs
 			if (devices[i] == nullptr)
 				continue;
 
-			mBuffers[i] = createBuffer(*devices[i], false, mReadable);
+			mBuffers[i] = createBuffer(*devices[i], size, false, true);
 		}
 	}
 
@@ -147,7 +150,7 @@ namespace bs
 		assert(mStagingBuffer == nullptr);
 	}
 
-	VulkanBuffer* VulkanHardwareBuffer::createBuffer(VulkanDevice& device, bool staging, bool readable)
+	VulkanBuffer* VulkanHardwareBuffer::createBuffer(VulkanDevice& device, UINT32 size, bool staging, bool readable)
 	{
 		VkBufferUsageFlags usage = mBufferCI.usage;
 		if (staging)
@@ -160,6 +163,8 @@ namespace bs
 		}
 		else if(readable) // Non-staging readable
 			mBufferCI.usage |= VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+
+		mBufferCI.size = size;
 
 		VkMemoryPropertyFlags flags = (mDirectlyMappable || staging) ?
 			(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT) : // Note: Try using cached memory
@@ -243,7 +248,33 @@ namespace bs
 
 			// We're safe to map directly since GPU isn't using the buffer
 			if (!isUsedOnGPU)
+			{
+				// If some CB has an operation queued that will be using the current contents of the buffer, create a new 
+				// buffer so we don't modify the previous use of the buffer
+				if(buffer->isBound())
+				{
+					VulkanBuffer* newBuffer = createBuffer(device, mSize, false, true);
+
+					// Copy contents of the current buffer to the new one, unless caller explicitly specifies he doesn't
+					// care about the current contents
+					if (options != GBL_WRITE_ONLY_DISCARD)
+					{
+						UINT8* src = buffer->map(offset, length);
+						UINT8* dst = newBuffer->map(offset, length);
+
+						memcpy(dst, src, length);
+
+						buffer->unmap();
+						newBuffer->unmap();
+					}
+
+					buffer->destroy();
+					buffer = newBuffer;
+					mBuffers[deviceIdx] = buffer;
+				}
+
 				return buffer->map(offset, length);
+			}
 
 			// Caller guarantees he won't touch the same data as the GPU, so just map even though the GPU is using the buffer
 			if (options == GBL_WRITE_ONLY_NO_OVERWRITE)
@@ -254,7 +285,7 @@ namespace bs
 			{
 				buffer->destroy();
 
-				buffer = createBuffer(device, false, mReadable);
+				buffer = createBuffer(device, mSize, false, true);
 				mBuffers[deviceIdx] = buffer;
 
 				return buffer->map(offset, length);
@@ -297,20 +328,53 @@ namespace bs
 				// Submit the command buffer and wait until it finishes
 				transferCB->flush(true);
 
+				// If some CB has an operation queued that will be using the current contents of the buffer, create a new 
+				// buffer so we don't modify the previous use of the buffer
+				if (buffer->isBound())
+				{
+					VulkanBuffer* newBuffer = createBuffer(device, mSize, false, true);
+
+					// Copy contents of the current buffer to the new one
+					UINT8* src = buffer->map(offset, length);
+					UINT8* dst = newBuffer->map(offset, length);
+
+					memcpy(dst, src, length);
+
+					buffer->unmap();
+					newBuffer->unmap();
+
+					buffer->destroy();
+					buffer = newBuffer;
+					mBuffers[deviceIdx] = buffer;
+				}
+
 				return buffer->map(offset, length);
 			}
 
 			// Otherwise, we're doing write only, in which case it's best to use the staging buffer to avoid waiting
 			// and blocking, so fall through
 		}
+
+		// Can't use direct mapping, so use a staging buffer or memory
+
+		// We might need to copy the current contents of the buffer to the staging buffer. Even if the user doesn't plan on
+		// reading, it is still required as we will eventually copy all of the contents back to the original buffer,
+		// and we can't write potentially uninitialized data. The only exception is when the caller specifies the buffer
+		// contents should be discarded in which he guarantees he will overwrite the entire locked area with his own
+		// contents.
+		bool needRead = options != GBL_WRITE_ONLY_DISCARD_RANGE && options != GBL_WRITE_ONLY_DISCARD;
 		
-		// Use a staging buffer
-		bool needRead = options == GBL_READ_WRITE || options == GBL_READ_ONLY;
+		// See if we can use the cheaper staging memory, rather than a staging buffer
+		if(!needRead && offset % 4 == 0 && length % 4 == 0 && length <= 65536)
+		{
+			mStagingMemory = (UINT8*)bs_alloc(length);
+			return mStagingMemory;
+		}
 
-		// Allocate a staging buffer
-		mStagingBuffer = createBuffer(device, true, needRead);
+		// Create a staging buffer
+		mStagingBuffer = createBuffer(device, length, true, needRead);
 
-		if (needRead) // If reading, we need to copy the current contents of the buffer to the staging buffer
+		if (needRead)
 		{
 			VulkanTransferBuffer* transferCB = cbManager.getTransferBuffer(deviceIdx, queueType, localQueueIdx);
 				
@@ -323,7 +387,7 @@ namespace bs
 			}
 
 			// Queue copy command
-			buffer->copy(transferCB, mStagingBuffer, offset, offset, length);
+			buffer->copy(transferCB, mStagingBuffer, offset, 0, length);
 
 			// Ensure data written to the staging buffer is visible
 			transferCB->memoryBarrier(mStagingBuffer->getHandle(),
@@ -338,7 +402,7 @@ namespace bs
 			assert(!buffer->isUsed());
 		}
 
-		return mStagingBuffer->map(offset, length);
+		return mStagingBuffer->map(0, length);
 	}
 
 	void VulkanHardwareBuffer::unmap()
@@ -350,10 +414,15 @@ namespace bs
 		// Note: If we did any writes they need to be made visible to the GPU. However there is no need to execute 
 		// a pipeline barrier because (as per spec) host writes are implicitly visible to the device.
 
-		if(mStagingBuffer == nullptr) // Means we directly mapped the buffer
+		if(mStagingMemory == nullptr && mStagingBuffer == nullptr) // We directly mapped the buffer
+		{
 			mBuffers[mMappedDeviceIdx]->unmap();
+		} 
 		else
 		{
+			if(mStagingBuffer != nullptr)
+				mStagingBuffer->unmap();
+
 			bool isWrite = mMappedLockOptions != GBL_READ_ONLY;
 
 			// We the caller wrote anything to the staging buffer, we need to upload it back to the main buffer
@@ -372,39 +441,87 @@ namespace bs
 				// If the buffer is used in any way on the GPU, we need to wait for that use to finish before
 				// we issue our copy
 				UINT32 useMask = buffer->getUseInfo(VulkanUseFlag::Read | VulkanUseFlag::Write);
+				bool isNormalWrite = false;
 				if(useMask != 0) // Buffer is currently used on the GPU
 				{
-					// Try to avoid the wait
-					if (mMappedLockOptions == GBL_WRITE_ONLY_NO_OVERWRITE) // Caller guarantees he won't touch the same data as the GPU, so just copy
+					// Try to avoid the wait by checking for special write conditions
+
+					// Caller guarantees he won't touch the same data as the GPU, so just copy
+					if (mMappedLockOptions == GBL_WRITE_ONLY_NO_OVERWRITE) 
 					{
 						// Fall through to copy()
 					}
-					else if (mMappedLockOptions == GBL_WRITE_ONLY_DISCARD) // Caller doesn't care about buffer contents, so just discard the 
-					{													   // existing buffer and create a new one
+					// Caller doesn't care about buffer contents, so just discard the existing buffer and create a new one
+					else if (mMappedLockOptions == GBL_WRITE_ONLY_DISCARD)
+					{
 						buffer->destroy();
 
-						buffer = createBuffer(device, false, mReadable);
+						buffer = createBuffer(device, mSize, false, true);
 						mBuffers[mMappedDeviceIdx] = buffer;
 					} 
 					else // Otherwise we have no choice but to issue a dependency between the queues
+					{
 						transferCB->appendMask(useMask);
+						isNormalWrite = true;
+					}
 				}
-				
-				// Queue copy command
-				mStagingBuffer->copy(transferCB, buffer, mMappedOffset, mMappedOffset, mMappedSize);
 
-				// Notify the command buffer that these resources are being used on it
-				transferCB->getCB()->registerResource(mStagingBuffer, VK_ACCESS_TRANSFER_READ_BIT, VulkanUseFlag::Read);
+				// Check if the buffer will still be bound somewhere after the CBs using it finish
+				if (isNormalWrite)
+				{
+					UINT32 useCount = buffer->getUseCount();
+					UINT32 boundCount = buffer->getBoundCount();
+
+					bool isBoundWithoutUse = boundCount > useCount;
+
+					// If buffer is queued for some operation on a CB, then we need to make a copy of the buffer to
+					// avoid modifying its use in the previous operation
+					if (isBoundWithoutUse)
+					{
+						VulkanBuffer* newBuffer = createBuffer(device, mSize, false, true);
+
+						// Avoid copying original contents if the staging buffer completely covers it
+						if (mMappedOffset > 0 || mMappedSize != mSize)
+						{
+							buffer->copy(transferCB, newBuffer, mMappedOffset, mMappedOffset, mMappedSize);
+
+							transferCB->getCB()->registerResource(buffer, VK_ACCESS_TRANSFER_READ_BIT, VulkanUseFlag::Read);
+						}
+
+						buffer->destroy();
+						buffer = newBuffer;
+						mBuffers[mMappedDeviceIdx] = buffer;
+					}
+				}
+
+				// Queue copy/update command
+				if (mStagingBuffer != nullptr)
+				{
+					mStagingBuffer->copy(transferCB, buffer, 0, mMappedOffset, mMappedSize);
+					transferCB->getCB()->registerResource(mStagingBuffer, VK_ACCESS_TRANSFER_READ_BIT, VulkanUseFlag::Read);
+				}
+				else // Staging memory
+				{
+					buffer->update(transferCB, mStagingMemory, mMappedOffset, mMappedSize);
+				}
+
 				transferCB->getCB()->registerResource(buffer, VK_ACCESS_TRANSFER_WRITE_BIT, VulkanUseFlag::Write);
 
 				// We don't actually flush the transfer buffer here since it's an expensive operation, but it's instead
 				// done automatically before next "normal" command buffer submission.
 			}
 
-			mStagingBuffer->unmap();
+			if (mStagingBuffer != nullptr)
+			{
+				mStagingBuffer->destroy();
+				mStagingBuffer = nullptr;
+			}
 
-			mStagingBuffer->destroy();
-			mStagingBuffer = nullptr;
+			if(mStagingMemory != nullptr)
+			{
+				bs_free(mStagingMemory);
+				mStagingMemory = nullptr;
+			}
 		}
 
 		mIsMapped = false;
@@ -460,7 +577,7 @@ namespace bs
 			{
 				dst->destroy();
 
-				dst = createBuffer(device, false, mReadable);
+				dst = createBuffer(device, mSize, false, true);
 				mBuffers[mMappedDeviceIdx] = dst;
 
 				dstUseMask = 0;
@@ -494,7 +611,7 @@ namespace bs
 	void VulkanHardwareBuffer::writeData(UINT32 offset, UINT32 length, const void* source, BufferWriteType writeFlags, 
 		UINT32 queueIdx)
 	{
-		GpuLockOptions lockOptions = GBL_WRITE_ONLY;
+		GpuLockOptions lockOptions = GBL_WRITE_ONLY_DISCARD_RANGE;
 
 		if (writeFlags == BTW_NO_OVERWRITE)
 			lockOptions = GBL_WRITE_ONLY_NO_OVERWRITE;
