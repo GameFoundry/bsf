@@ -242,6 +242,10 @@ namespace bs
 		mActiveMeshes.clear();
 	}
 
+	HandleDrawManagerCore::HandleDrawManagerCore(const PrivatelyConstruct& dummy)
+		:mTypeCounters()
+	{ }
+
 	HandleDrawManagerCore::~HandleDrawManagerCore()
 	{
 		clearQueued();
@@ -250,37 +254,14 @@ namespace bs
 	void HandleDrawManagerCore::initialize(const SPtr<MaterialCore>& lineMat, const SPtr<MaterialCore>& solidMat, 
 		const SPtr<MaterialCore>& textMat, const SPtr<MaterialCore>& clearMat)
 	{
-		{
-			mLineMaterial.mat = lineMat;
-			mLineMaterial.params = lineMat->createParamsSet();
+		mMaterials[(UINT32)MeshType::Line] = lineMat;
+		mMaterials[(UINT32)MeshType::Solid] = solidMat;
+		mMaterials[(UINT32)MeshType::Text] = textMat;
 
-			SPtr<GpuParamsCore> params = mLineMaterial.params->getGpuParams();
-			params->getParam(GPT_VERTEX_PROGRAM, "matViewProj", mLineMaterial.viewProj);
-		}
-
-		{
-			mSolidMaterial.mat = solidMat;
-			mSolidMaterial.params = solidMat->createParamsSet();
-
-			SPtr<GpuParamsCore> params = mSolidMaterial.params->getGpuParams();
-			params->getParam(GPT_VERTEX_PROGRAM, "matViewProj", mSolidMaterial.viewProj);
-			params->getParam(GPT_FRAGMENT_PROGRAM, "viewDir", mSolidMaterial.viewDir);
-		}
-		{
-			mTextMaterial.mat = textMat;
-			mTextMaterial.params = textMat->createParamsSet();
-
-			SPtr<GpuParamsCore> params = mTextMaterial.params->getGpuParams();
-			params->getParam(GPT_VERTEX_PROGRAM, "matViewProj", mTextMaterial.viewProj);
-			params->getTextureParam(GPT_FRAGMENT_PROGRAM, "mainTexture", mTextMaterial.texture);
-		}
-
-		{
-			mClearMaterial.mat = clearMat;
-		}
+		mClearMaterial = clearMat;
 	}
 
-	void HandleDrawManagerCore::queueForDraw(const SPtr<CameraCore>& camera, const Vector<MeshData>& meshes)
+	void HandleDrawManagerCore::queueForDraw(const SPtr<CameraCore>& camera, Vector<MeshData>& meshes)
 	{
 		SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
 		if (camera != nullptr)
@@ -289,6 +270,35 @@ namespace bs
 			mQueuedData.push_back({ camera, meshes });
 
 			activeRenderer->registerRenderCallback(camera.get(), 20, std::bind(&HandleDrawManagerCore::render, this, idx));
+
+			for(auto& entry : meshes)
+			{
+				UINT32 typeIdx = (UINT32)entry.type;
+				UINT32 paramsIdx = mTypeCounters[typeIdx];
+
+				entry.paramIdx = paramsIdx;
+
+				SPtr<GpuParamsSetCore> paramsSet;
+				if (paramsIdx >= mParamSets[typeIdx].size())
+				{
+					paramsSet = mMaterials[typeIdx]->createParamsSet();
+					paramsSet->setParamBlockBuffer("Uniforms", mParamBuffer.getBuffer(), true);
+
+					mParamSets[typeIdx].push_back(paramsSet);
+				}
+				else
+					paramsSet = mParamSets[typeIdx][entry.paramIdx];
+
+				if(entry.type == MeshType::Text)
+				{
+					GpuParamTextureCore texture;
+
+					paramsSet->getGpuParams()->getTextureParam(GPT_FRAGMENT_PROGRAM, "gMainTexture", texture);
+					texture.set(entry.texture);
+				}
+
+				mTypeCounters[typeIdx]++;
+			}
 		}
 	}
 
@@ -323,63 +333,26 @@ namespace bs
 		screenArea.height = (int)(normArea.height * height);
 
 		Matrix4 viewProjMat = camera->getProjectionMatrixRS() * camera->getViewMatrix();
-		mSolidMaterial.viewProj.set(viewProjMat);
-		mSolidMaterial.viewDir.set((Vector4)camera->getForward());
-		mLineMaterial.viewProj.set(viewProjMat);
-		mTextMaterial.viewProj.set(viewProjMat);
 
-		MeshType currentType = MeshType::Solid;
-		if (meshes.size() > 0)
-		{
-			currentType = meshes[0].type;
+		mParamBuffer.gMatViewProj.set(viewProjMat);
+		mParamBuffer.gViewDir.set((Vector4)camera->getForward());
 
-			if (currentType == MeshType::Solid)
-			{
-				gRendererUtility().setPass(mSolidMaterial.mat);
-				gRendererUtility().setPassParams(mSolidMaterial.params);
-			}
-			else if (currentType == MeshType::Line)
-			{
-				gRendererUtility().setPass(mLineMaterial.mat);
-				gRendererUtility().setPassParams(mLineMaterial.params);
-			}
-			else
-			{
-				mTextMaterial.texture.set(meshes[0].texture);
-				gRendererUtility().setPass(mTextMaterial.mat);
-				gRendererUtility().setPassParams(mTextMaterial.params);
-			}
-		}
-
+		UINT32 currentType = -1;
 		for (auto& meshData : meshes)
 		{
-			if (currentType != meshData.type)
+			UINT32 typeIdx = (UINT32)meshData.type;
+			if (currentType != typeIdx)
 			{
-				if (meshData.type == MeshType::Solid)
-				{
-					gRendererUtility().setPass(mSolidMaterial.mat);
-					gRendererUtility().setPassParams(mSolidMaterial.params);
-				}
-				else if (meshData.type == MeshType::Line)
-				{
-					gRendererUtility().setPass(mLineMaterial.mat);
-					gRendererUtility().setPassParams(mLineMaterial.params);
-				}
-				else
-				{
-					mTextMaterial.texture.set(meshData.texture);
-					gRendererUtility().setPass(mTextMaterial.mat);
-					gRendererUtility().setPassParams(mTextMaterial.params);
-				}
-
-				currentType = meshData.type;
+				gRendererUtility().setPass(mMaterials[typeIdx]);
+				currentType = typeIdx;
 			}
 
+			gRendererUtility().setPassParams(mParamSets[typeIdx][meshData.paramIdx]);
 			gRendererUtility().draw(meshData.mesh, meshData.mesh->getProperties().getSubMesh(0));
 		}
 
 		// Set alpha of everything that was drawn to 1 so we can overlay this texture onto GUI using transparency
-		gRendererUtility().setPass(mClearMaterial.mat, 0);
+		gRendererUtility().setPass(mClearMaterial, 0);
 		gRendererUtility().drawScreenQuad();
 	}
 }

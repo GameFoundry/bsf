@@ -5,6 +5,7 @@
 #include "BsEditorPrerequisites.h"
 #include "BsGpuParams.h"
 #include "BsDrawHelper.h"
+#include "BsParamBlocks.h"
 
 namespace bs
 {
@@ -199,45 +200,18 @@ namespace bs
 	 *  @{
 	 */
 
+	BS_PARAM_BLOCK_BEGIN(GizmoParamBuffer)
+		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatViewProj)
+		BS_PARAM_BLOCK_ENTRY(Vector4, gViewDir)
+	BS_PARAM_BLOCK_END
+
 	/** Core thread specific portion of the HandleDrawManager that handles actual rendering. */
 	class BS_ED_EXPORT HandleDrawManagerCore
 	{
-		/** Contains information about the material used for drawing solid objects and its parameters. */
-		struct SolidMaterialData
-		{
-			SPtr<MaterialCore> mat;
-			SPtr<GpuParamsSetCore> params;
-			GpuParamMat4Core viewProj;
-			GpuParamVec4Core viewDir;
-		};
-
-		/**	Contains information about the material used for drawing line objects and its parameters. */
-		struct LineMaterialData
-		{
-			SPtr<MaterialCore> mat;
-			SPtr<GpuParamsSetCore> params;
-			GpuParamMat4Core viewProj;
-		};
-
-		/**	Contains information about the material used for drawing text and its parameters. */
-		struct TextMaterialData
-		{
-			SPtr<MaterialCore> mat;
-			SPtr<GpuParamsSetCore> params;
-			GpuParamMat4Core viewProj;
-			GpuParamTextureCore texture;
-		};
-
-		/**	Contains information about the material used for clearing the alpha channel in the empty areas. */
-		struct ClearAlphaMaterialData
-		{
-			SPtr<MaterialCore> mat;
-		};
-
 		/** Type of mesh that can be drawn. */
 		enum class MeshType
 		{
-			Solid, Line, Text
+			Solid, Line, Text, Count
 		};
 
 		/** Data about a mesh rendered by the draw manager. */
@@ -249,6 +223,7 @@ namespace bs
 
 			SPtr<MeshCoreBase> mesh;
 			SPtr<TextureCore> texture;
+			UINT32 paramIdx;
 			MeshType type;
 		};
 
@@ -262,7 +237,7 @@ namespace bs
 		struct PrivatelyConstruct { };
 
 	public:
-		HandleDrawManagerCore(const PrivatelyConstruct& dummy) { }
+		HandleDrawManagerCore(const PrivatelyConstruct& dummy);
 		~HandleDrawManagerCore();
 
 	private:
@@ -285,7 +260,7 @@ namespace bs
 		 * @param[in]	camera	Camera to render to.
 		 * @param[in]	meshes	Meshes to render.
 		 */
-		void queueForDraw(const SPtr<CameraCore>& camera, const Vector<MeshData>& meshes);
+		void queueForDraw(const SPtr<CameraCore>& camera, Vector<MeshData>& meshes);
 
 		/** Deletes any meshes queued for rendering. */
 		void clearQueued();
@@ -295,11 +270,13 @@ namespace bs
 
 		Vector<QueuedData> mQueuedData;
 
+		GizmoParamBuffer mParamBuffer;
+		Vector<SPtr<GpuParamsSetCore>> mParamSets[(UINT32)MeshType::Count];
+		UINT32 mTypeCounters[(UINT32)MeshType::Count];
+
 		// Immutable
-		SolidMaterialData mSolidMaterial;
-		LineMaterialData mLineMaterial;
-		TextMaterialData mTextMaterial;
-		ClearAlphaMaterialData mClearMaterial;
+		SPtr<MaterialCore> mMaterials[(UINT32)MeshType::Count];
+		SPtr<MaterialCore> mClearMaterial;
 	};
 
 	/** @} */
