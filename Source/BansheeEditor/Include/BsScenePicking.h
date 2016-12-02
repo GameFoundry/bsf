@@ -6,6 +6,7 @@
 #include "BsModule.h"
 #include "BsMatrix4.h"
 #include "BsGpuParam.h"
+#include "BsParamBlocks.h"
 
 namespace bs
 {
@@ -97,25 +98,15 @@ namespace bs
 	 *  @{
 	 */
 
+	BS_PARAM_BLOCK_BEGIN(PickingParamBuffer)
+		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatViewProj)
+		BS_PARAM_BLOCK_ENTRY(Color, gColorIndex)
+		BS_PARAM_BLOCK_ENTRY(float, gAlphaCutoff)
+	BS_PARAM_BLOCK_END
+
 	/** Core thread version of the ScenePicking manager. Handles actual rendering. */
 	class ScenePickingCore
 	{
-		/** A list of materials and their parameters to be used for rendering of pickable objects. */
-		struct MaterialData
-		{
-			SPtr<MaterialCore> mMatPickingCore;
-			SPtr<MaterialCore> mMatPickingAlphaCore;
-
-			SPtr<GpuParamsSetCore> mPickingParams;
-			SPtr<GpuParamsSetCore> mPickingAlphaParams;
-
-			GpuParamMat4Core mParamPickingWVP;
-			GpuParamMat4Core mParamPickingAlphaWVP;
-			GpuParamColorCore mParamPickingColor;
-			GpuParamColorCore mParamPickingAlphaColor;
-			GpuParamTextureCore mParamPickingAlphaTexture;
-		};
-
 	public:
 		/**	Initializes the manager. Must be called right after construction. */
 		void initialize();
@@ -157,8 +148,11 @@ namespace bs
 
 		static const float ALPHA_CUTOFF;
 
-		MaterialData mMaterialData[3];
 		SPtr<RenderTextureCore> mPickingTexture;
+
+		SPtr<MaterialCore> mMaterials[6];
+		Vector<SPtr<GpuParamsSetCore>> mParamSets[6];
+		Vector<PickingParamBuffer*> mParamBuffers;
 	};
 
 	/** @} */

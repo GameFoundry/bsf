@@ -28,22 +28,29 @@ namespace bs
 	{																														\
 		Name()																												\
 		{																													\
-			Vector<GpuParamDataDesc> params = getEntries();																	\
-			RenderAPICore& rapi = RenderAPICore::instance();																\
+			static SPtr<GpuPipelineParamInfoCore> paramInfo = nullptr;														\
+			static GpuParamBlockDesc blockDesc;																				\
 																															\
-			mBlockDesc = rapi.generateParamBlockDesc(#Name, params);														\
+			if (paramInfo == nullptr)																						\
+			{																												\
+				Vector<GpuParamDataDesc> params = getEntries();																\
+				RenderAPICore& rapi = RenderAPICore::instance();															\
 																															\
-			SPtr<GpuParamDesc> paramsDesc = bs_shared_ptr_new<GpuParamDesc>();												\
-			paramsDesc->paramBlocks[#Name] = mBlockDesc;																	\
-			for (auto& param : params)																						\
-				paramsDesc->params[param.name] = param;																		\
+				blockDesc = rapi.generateParamBlockDesc(#Name, params);														\
 																															\
-			GPU_PIPELINE_PARAMS_DESC pipelineParamDesc;																		\
-			pipelineParamDesc.vertexParams = paramsDesc;																	\
-			SPtr<GpuPipelineParamInfoCore> paramInfo = GpuPipelineParamInfoCore::create(pipelineParamDesc);					\
+				SPtr<GpuParamDesc> paramsDesc = bs_shared_ptr_new<GpuParamDesc>();											\
+				paramsDesc->paramBlocks[#Name] = blockDesc;																	\
+				for (auto& param : params)																					\
+					paramsDesc->params[param.name] = param;																	\
+																															\
+				GPU_PIPELINE_PARAMS_DESC pipelineParamDesc;																	\
+				pipelineParamDesc.vertexParams = paramsDesc;																\
+				paramInfo = GpuPipelineParamInfoCore::create(pipelineParamDesc);											\
+			}																												\
+																															\
 			mParams = GpuParamsCore::create(paramInfo);																		\
 																															\
-			mBuffer = GpuParamBlockBufferCore::create(mBlockDesc.blockSize * sizeof(UINT32));								\
+			mBuffer = GpuParamBlockBufferCore::create(blockDesc.blockSize * sizeof(UINT32));								\
 			mParams->setParamBlockBuffer(GPT_VERTEX_PROGRAM, #Name, mBuffer);												\
 			initEntries();																									\
 		}																													\
@@ -54,7 +61,6 @@ namespace bs
 				mBuffer = buffer;																							\
 				mParams->setParamBlockBuffer(GPT_VERTEX_PROGRAM, #Name, mBuffer);											\
 		}																													\
-		const GpuParamBlockDesc& getDesc() const { return mBlockDesc; }														\
 		void flushToGPU(UINT32 queueIdx = 0) { mBuffer->flushToGPU(queueIdx); }												\
 																															\
 	private:																												\
@@ -117,7 +123,6 @@ namespace bs
 																															\
 		SPtr<GpuParamsCore> mParams;																						\
 		SPtr<GpuParamBlockBufferCore> mBuffer;																				\
-		GpuParamBlockDesc mBlockDesc;																						\
 	};
 
 	/** @} */

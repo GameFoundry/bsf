@@ -1,7 +1,7 @@
 Parameters =
 {
 	mat4x4		gMatWorldViewProj;
-	float4		gColorIndex;
+	color		gColorIndex;
 	float		gAlphaCutoff;
 	
 	Sampler2D 	gMainTexSamp : alias("gMainTexture");
@@ -10,7 +10,7 @@ Parameters =
 
 Blocks =
 {
-	Block Uniforms : auto("GizmoUniforms");
+	Block Uniforms : auto("PickingUniforms");
 };
 
 Technique : base("PickingAlphaCull") =

@@ -1,13 +1,13 @@
 Parameters =
 {
 	mat4x4		gMatWorldViewProj;
-	float4		gColorIndex;
+	color		gColorIndex;
 	float		gAlphaCutoff;
 };
 
 Blocks =
 {
-	Block Uniforms : auto("GizmoUniforms");
+	Block Uniforms : auto("PickingUniforms");
 };
 
 Technique : base("PickingCull") =

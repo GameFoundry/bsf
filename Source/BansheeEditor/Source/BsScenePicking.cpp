@@ -41,8 +41,8 @@ namespace bs
 			HMaterial matPicking = BuiltinEditorResources::instance().createPicking((CullingMode)i);
 			HMaterial matPickingAlpha = BuiltinEditorResources::instance().createPickingAlpha((CullingMode)i);
 
-			mCore->mMaterialData[i].mMatPickingCore = matPicking->getCore();
-			mCore->mMaterialData[i].mMatPickingAlphaCore = matPickingAlpha->getCore();
+			mCore->mMaterials[i] = matPicking->getCore();
+			mCore->mMaterials[3 + i] = matPickingAlpha->getCore();
 		}
 
 		gCoreThread().queueCommand(std::bind(&ScenePickingCore::initialize, mCore));
@@ -247,35 +247,14 @@ namespace bs
 
 	void ScenePickingCore::initialize()
 	{
-		for (UINT32 i = 0; i < 3; i++)
-		{
-			MaterialData& md = mMaterialData[i];
-
-			{
-				md.mPickingParams = md.mMatPickingCore->createParamsSet();
-
-				SPtr<GpuParamsCore> params = md.mPickingParams->getGpuParams();
-				params->getParam(GPT_VERTEX_PROGRAM, "matWorldViewProj", md.mParamPickingWVP);
-				params->getParam(GPT_FRAGMENT_PROGRAM, "colorIndex", md.mParamPickingColor);
-			}
-
-			{
-				md.mPickingAlphaParams = md.mMatPickingAlphaCore->createParamsSet();
-
-				SPtr<GpuParamsCore> params = md.mPickingAlphaParams->getGpuParams();
-				params->getParam(GPT_VERTEX_PROGRAM, "matWorldViewProj", md.mParamPickingAlphaWVP);
-				params->getParam(GPT_FRAGMENT_PROGRAM, "colorIndex", md.mParamPickingAlphaColor);
-				params->getTextureParam(GPT_FRAGMENT_PROGRAM, "mainTexture", md.mParamPickingAlphaTexture);
-
-				GpuParamFloatCore alphaCutoffParam;
-				params->getParam(GPT_FRAGMENT_PROGRAM, "alphaCutoff", alphaCutoffParam);
-				alphaCutoffParam.set(ALPHA_CUTOFF);
-			}
-		}
+		// Do nothing
 	}
 
 	void ScenePickingCore::destroy()
 	{
+		for (auto& entry : mParamBuffers)
+			bs_delete(entry);
+
 		bs_delete(this);
 	}
 
@@ -316,49 +295,88 @@ namespace bs
 		rs.clearRenderTarget(FBT_COLOR | FBT_DEPTH | FBT_STENCIL, Color::White);
 		rs.setScissorRect(position.x, position.y, position.x + area.x, position.y + area.y);
 
-		gRendererUtility().setPass(mMaterialData[0].mMatPickingCore, 0);
-		gRendererUtility().setPassParams(mMaterialData[0].mPickingParams, 0);
+		gRendererUtility().setPass(mMaterials[0]);
 
-		bool activeMaterialIsAlpha = false;
-		CullingMode activeMaterialCull = (CullingMode)0;
+		UINT32 numEntries = renderables.size();
+		UINT32* renderableIndices = bs_stack_alloc<UINT32>(numEntries);
 
+		UINT32 typeCounters[6];
+		bs_zero_out(typeCounters);
+
+		UINT32 idx = 0;
 		for (auto& renderable : renderables)
 		{
-			if (activeMaterialIsAlpha != renderable.alpha || activeMaterialCull != renderable.cullMode)
+			UINT32 typeIdx;
+			if (renderable.alpha)
+				typeIdx = 0;
+			else
+				typeIdx = 3;
+
+			typeIdx += (UINT32)renderable.cullMode;
+
+			UINT32 renderableIdx = typeCounters[typeIdx];
+			renderableIndices[idx] = renderableIdx;
+
+			SPtr<GpuParamsSetCore> paramsSet;
+			if (renderableIdx >= mParamSets[typeIdx].size())
 			{
-				activeMaterialIsAlpha = renderable.alpha;
-				activeMaterialCull = renderable.cullMode;
-
-				if (activeMaterialIsAlpha)
-					gRendererUtility().setPass(mMaterialData[(UINT32)activeMaterialCull].mMatPickingAlphaCore, 0);
-				else
-					gRendererUtility().setPass(mMaterialData[(UINT32)activeMaterialCull].mMatPickingCore, 0);
-			}
-
-			Color color = ScenePicking::encodeIndex(renderable.index);
-			MaterialData& md = mMaterialData[(UINT32)activeMaterialCull];
-
-			if (activeMaterialIsAlpha)
-			{
-				md.mParamPickingAlphaWVP.set(renderable.wvpTransform);
-				md.mParamPickingAlphaColor.set(color);
-				md.mParamPickingAlphaTexture.set(renderable.mainTexture->getCore());
-
-				gRendererUtility().setPassParams(md.mPickingAlphaParams);
+				paramsSet = mMaterials[typeIdx]->createParamsSet();
+				mParamSets[typeIdx].push_back(paramsSet);
 			}
 			else
-			{
-				md.mParamPickingWVP.set(renderable.wvpTransform);
-				md.mParamPickingColor.set(color);
+				paramsSet = mParamSets[typeIdx][renderableIdx];
 
-				gRendererUtility().setPassParams(md.mPickingParams);
+			PickingParamBuffer* paramBuffer;
+			if (idx >= mParamBuffers.size())
+			{
+				paramBuffer = bs_new<PickingParamBuffer>();
+				mParamBuffers.push_back(paramBuffer);
 			}
+			else
+				paramBuffer = mParamBuffers[idx];
+
+			paramsSet->setParamBlockBuffer("Uniforms", paramBuffer->getBuffer(), true);
+
+			Color color = ScenePicking::encodeIndex(renderable.index);
+
+			paramBuffer->gMatViewProj.set(renderable.wvpTransform);
+			paramBuffer->gAlphaCutoff.set(ALPHA_CUTOFF);
+			paramBuffer->gColorIndex.set(color);
+
+			typeCounters[typeIdx]++;
+			idx++;
+		}
+
+		UINT32 activeMaterialIdx = 0;
+		idx = 0;
+		for (auto& renderable : renderables)
+		{
+			UINT32 typeIdx;
+			if (renderable.alpha)
+				typeIdx = 0;
+			else
+				typeIdx = 3;
+
+			typeIdx += (UINT32)renderable.cullMode;
+
+			if (activeMaterialIdx != typeIdx)
+			{
+				gRendererUtility().setPass(mMaterials[typeIdx]);
+				activeMaterialIdx = typeIdx;
+			}
+
+			UINT32 renderableIdx = renderableIndices[idx];
+			gRendererUtility().setPassParams(mParamSets[typeIdx][renderableIdx]);
 
 			UINT32 numSubmeshes = renderable.mesh->getProperties().getNumSubMeshes();
 
 			for (UINT32 i = 0; i < numSubmeshes; i++)
 				gRendererUtility().draw(renderable.mesh, renderable.mesh->getProperties().getSubMesh(i));
+
+			idx++;
 		}
+
+		bs_stack_free(renderableIndices);
 	}
 
 	void ScenePickingCore::corePickingEnd(const SPtr<RenderTargetCore>& target, const Rect2& viewportArea, const Vector2I& position,
