@@ -596,7 +596,7 @@ namespace bs
 			for (auto& element : mRenderables[i]->elements)
 				element.material->updateParamsSet(element.params, element.techniqueIdx);
 
-			mRenderables[i]->perObjectParams.flushToGPU();
+			mRenderables[i]->perObjectParamBuffer->flushToGPU();
 		}
 
 		// Render everything, target by target
@@ -630,8 +630,8 @@ namespace bs
 
 		const CameraCore* camera = rtInfo.cameras[camIdx];
 		RendererCamera* rendererCam = mCameras[camera];
-		PerCameraParamBuffer& parCameraBuffer = rendererCam->getPerCameraBuffer();
-		parCameraBuffer.flushToGPU();
+		SPtr<GpuParamBlockBufferCore> perCameraBuffer = rendererCam->getPerCameraBuffer();
+		perCameraBuffer->flushToGPU();
 
 		assert(!camera->getFlags().isSet(CameraFlag::Overlay));
 
@@ -653,7 +653,7 @@ namespace bs
 			for (auto& element : mRenderables[i]->elements)
 			{
 				if (element.perCameraBindingIdx != -1)
-					element.params->setParamBlockBuffer(element.perCameraBindingIdx, parCameraBuffer.getBuffer(), true);
+					element.params->setParamBlockBuffer(element.perCameraBindingIdx, perCameraBuffer, true);
 			}
 		}
 
@@ -692,8 +692,6 @@ namespace bs
 
 		//// Render light pass
 		{
-			SPtr<GpuParamBlockBufferCore> perCameraBuffer = rendererCam->getPerCameraBuffer().getBuffer();;
-
 			mDirLightMat->bind(renderTargets, perCameraBuffer);
 			for (auto& light : mDirectionalLights)
 			{
@@ -805,7 +803,7 @@ namespace bs
 
 		SPtr<ViewportCore> viewport = camera->getViewport();
 		RendererCamera* rendererCam = mCameras[camera];
-		rendererCam->getPerCameraBuffer().flushToGPU();
+		rendererCam->getPerCameraBuffer()->flushToGPU();
 
 		rendererCam->beginRendering(false);
 

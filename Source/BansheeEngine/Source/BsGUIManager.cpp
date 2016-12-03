@@ -1738,14 +1738,13 @@ namespace bs
 		return GUIManager::instance();
 	}
 
+	GUISpriteParamBlockDef gGUISpriteParamBlockDef;
+
 	GUIManagerCore::~GUIManagerCore()
 	{
 		SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
 		for (auto& cameraData : mPerCameraData)
 			activeRenderer->unregisterRenderCallback(cameraData.first.get(), 30);
-
-		for(auto& entry : mParamBlocks)
-			bs_delete(entry);
 	}
 
 	void GUIManagerCore::initialize()
@@ -1822,7 +1821,7 @@ namespace bs
 				mParamBlocks.resize(numBuffers);
 
 				for (UINT32 i = numAllocatedBuffers; i < numBuffers; i++)
-					mParamBlocks[i] = bs_new<GUISpriteParamBuffer>();
+					mParamBlocks[i] = gGUISpriteParamBlockDef.createBuffer();
 			}
 
 			UINT32 curBufferIdx = 0;
@@ -1830,10 +1829,10 @@ namespace bs
 			{
 				for(auto& entry : cameraData.second)
 				{
-					GUISpriteParamBuffer* buffer = mParamBlocks[curBufferIdx];
+					SPtr<GpuParamBlockBufferCore> buffer = mParamBlocks[curBufferIdx];
 
-					buffer->gTint.set(entry.tint);
-					buffer->gWorldTransform.set(entry.worldTransform);
+					gGUISpriteParamBlockDef.gTint.set(buffer, entry.tint);
+					gGUISpriteParamBlockDef.gWorldTransform.set(buffer, entry.worldTransform);
 
 					entry.bufferIdx = curBufferIdx;
 					curBufferIdx++;
@@ -1853,12 +1852,12 @@ namespace bs
 
 		for (auto& entry : renderData)
 		{
-			GUISpriteParamBuffer* buffer = mParamBlocks[entry.bufferIdx];
+			SPtr<GpuParamBlockBufferCore> buffer = mParamBlocks[entry.bufferIdx];
 
-			buffer->gInvViewportWidth.set(invViewportWidth);
-			buffer->gInvViewportHeight.set(invViewportHeight);
+			gGUISpriteParamBlockDef.gInvViewportWidth.set(buffer, invViewportWidth);
+			gGUISpriteParamBlockDef.gInvViewportHeight.set(buffer, invViewportHeight);
 
-			buffer->getBuffer()->flushToGPU();
+			buffer->flushToGPU();
 		}
 
 		for (auto& entry : renderData)
@@ -1866,9 +1865,9 @@ namespace bs
 			// TODO - I shouldn't be re-applying the entire material for each entry, instead just check which programs
 			// changed, and apply only those + the modified constant buffers and/or texture.
 
-			GUISpriteParamBuffer* buffer = mParamBlocks[entry.bufferIdx];
+			SPtr<GpuParamBlockBufferCore> buffer = mParamBlocks[entry.bufferIdx];
 
-			entry.material->render(entry.mesh, entry.texture, mSamplerState, buffer->getBuffer(), entry.additionalData);
+			entry.material->render(entry.mesh, entry.texture, mSamplerState, buffer, entry.additionalData);
 		}
 	}
 }

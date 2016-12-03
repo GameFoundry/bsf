@@ -98,11 +98,13 @@ namespace bs
 	 *  @{
 	 */
 
-	BS_PARAM_BLOCK_BEGIN(PickingParamBuffer)
+	BS_PARAM_BLOCK_BEGIN(PickingParamBlockDef)
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatViewProj)
 		BS_PARAM_BLOCK_ENTRY(Color, gColorIndex)
 		BS_PARAM_BLOCK_ENTRY(float, gAlphaCutoff)
 	BS_PARAM_BLOCK_END
+
+	extern PickingParamBlockDef gPickingParamBlockDef;
 
 	/** Core thread version of the ScenePicking manager. Handles actual rendering. */
 	class ScenePickingCore
@@ -152,7 +154,7 @@ namespace bs
 
 		SPtr<MaterialCore> mMaterials[6];
 		Vector<SPtr<GpuParamsSetCore>> mParamSets[6];
-		Vector<PickingParamBuffer*> mParamBuffers;
+		Vector<SPtr<GpuParamBlockBufferCore>> mParamBuffers;
 	};
 
 	/** @} */

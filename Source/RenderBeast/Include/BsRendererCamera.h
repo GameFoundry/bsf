@@ -15,7 +15,7 @@ namespace bs
 	 *  @{
 	 */
 
-	BS_PARAM_BLOCK_BEGIN(PerCameraParamBuffer)
+	BS_PARAM_BLOCK_BEGIN(PerCameraParamDef)
 		BS_PARAM_BLOCK_ENTRY(Vector3, gViewDir)
 		BS_PARAM_BLOCK_ENTRY(Vector3, gViewOrigin)
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatViewProj)
@@ -27,6 +27,8 @@ namespace bs
 		BS_PARAM_BLOCK_ENTRY(Vector2, gDeviceZToWorldZ)
 		BS_PARAM_BLOCK_ENTRY(Vector4, gClipToUVScaleOffset)
 	BS_PARAM_BLOCK_END
+
+	extern PerCameraParamDef gPerCameraParamDef;
 
 	/** Contains information about a Camera, used by the Renderer. */
 	class RendererCamera
@@ -97,7 +99,7 @@ namespace bs
 		void updatePerCameraBuffer();
 
 		/** Returns a buffer that stores per-camera parameters. */
-		PerCameraParamBuffer& getPerCameraBuffer() { return mParams; }
+		SPtr<GpuParamBlockBufferCore> getPerCameraBuffer() const { return mParamBuffer; }
 
 	private:
 		/**
@@ -118,7 +120,7 @@ namespace bs
 		PostProcessInfo mPostProcessInfo;
 		bool mUsingRenderTargets;
 
-		PerCameraParamBuffer mParams;
+		SPtr<GpuParamBlockBufferCore> mParamBuffer;
 		Vector<bool> mVisibility;
 	};
 

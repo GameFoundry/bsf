@@ -421,12 +421,14 @@ namespace bs
 		HEvent mMouseLeftWindowConn;
 	};
 
-	BS_PARAM_BLOCK_BEGIN(GUISpriteParamBuffer)
+	BS_PARAM_BLOCK_BEGIN(GUISpriteParamBlockDef)
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gWorldTransform)
 		BS_PARAM_BLOCK_ENTRY(float, gInvViewportWidth)
 		BS_PARAM_BLOCK_ENTRY(float, gInvViewportHeight)
 		BS_PARAM_BLOCK_ENTRY(Color, gTint)
 	BS_PARAM_BLOCK_END
+
+	extern GUISpriteParamBlockDef gGUISpriteParamBlockDef;
 
 	/**	Handles GUI rendering on the core thread. */
 	class BS_EXPORT GUIManagerCore
@@ -451,7 +453,7 @@ namespace bs
 		void render(const SPtr<CameraCore>& camera);
 
 		UnorderedMap<SPtr<CameraCore>, Vector<GUIManager::GUICoreRenderData>> mPerCameraData;
-		Vector<GUISpriteParamBuffer*> mParamBlocks;
+		Vector<SPtr<GpuParamBlockBufferCore>> mParamBlocks;
 		SPtr<SamplerStateCore> mSamplerState;
 	};
 

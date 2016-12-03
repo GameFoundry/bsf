@@ -14,7 +14,7 @@ namespace bs
 	 *  @{
 	 */
 
-	BS_PARAM_BLOCK_BEGIN(PerObjectParamBuffer)
+	BS_PARAM_BLOCK_BEGIN(PerObjectParamDef)
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatWorld)
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatInvWorld)
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatWorldNoScale)
@@ -22,9 +22,13 @@ namespace bs
 		BS_PARAM_BLOCK_ENTRY(float, gWorldDeterminantSign)
 	BS_PARAM_BLOCK_END
 
-	BS_PARAM_BLOCK_BEGIN(PerCallParamBuffer)
+	extern PerObjectParamDef gPerObjectParamDef;
+
+	BS_PARAM_BLOCK_BEGIN(PerCallParamDef)
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatWorldViewProj)
 	BS_PARAM_BLOCK_END
+
+	extern PerCallParamDef gPerCallParamDef;
 
 	struct MaterialSamplerOverrides;
 
@@ -76,6 +80,8 @@ namespace bs
 	 /** Contains information about a Renderable, used by the Renderer. */
 	struct RendererObject
 	{
+		RendererObject();
+
 		/** Updates the per-object GPU buffer according to the currently set properties. */
 		void updatePerObjectBuffer();
 
@@ -90,8 +96,8 @@ namespace bs
 		RenderableCore* renderable;
 		Vector<BeastRenderableElement> elements;
 
-		PerObjectParamBuffer perObjectParams;
-		PerCallParamBuffer perCallParams;
+		SPtr<GpuParamBlockBufferCore> perObjectParamBuffer;
+		SPtr<GpuParamBlockBufferCore> perCallParamBuffer;
 	};
 
 	/** @} */

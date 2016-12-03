@@ -14,8 +14,12 @@
 
 namespace bs
 {
+	PerFrameParamDef gPerFrameParamDef;
+
 	ObjectRenderer::ObjectRenderer()
-	{ }
+	{
+		mPerFrameParamBuffer = gPerFrameParamDef.createBuffer();
+	}
 
 	void ObjectRenderer::initElement(RendererObject& owner, BeastRenderableElement& element)
 	{
@@ -35,16 +39,16 @@ namespace bs
 		for (auto& paramBlockDesc : paramBlockDescs)
 		{
 			if (paramBlockDesc.second.rendererSemantic == RBS_PerFrame)
-				element.params->setParamBlockBuffer(paramBlockDesc.second.name, mPerFrameParams.getBuffer(), true);
+				element.params->setParamBlockBuffer(paramBlockDesc.second.name, mPerFrameParamBuffer, true);
 			else if (paramBlockDesc.second.rendererSemantic == RBS_PerObject)
 			{
 				element.params->setParamBlockBuffer(paramBlockDesc.second.name,
-													owner.perObjectParams.getBuffer(), true);
+													owner.perObjectParamBuffer, true);
 			}
 			else if (paramBlockDesc.second.rendererSemantic == RBS_PerCall)
 			{
 				element.params->setParamBlockBuffer(paramBlockDesc.second.name,
-													owner.perCallParams.getBuffer(), true);
+													owner.perCallParamBuffer, true);
 			}
 		}
 
@@ -66,7 +70,7 @@ namespace bs
 
 	void ObjectRenderer::setParamFrameParams(float time)
 	{
-		mPerFrameParams.gTime.set(time);
+		gPerFrameParamDef.gTime.set(mPerFrameParamBuffer, time);
 	}
 
 	void DefaultMaterial::_initDefines(ShaderDefines& defines)

@@ -48,6 +48,7 @@
 #include "BsAudioManager.h"
 #include "BsAudio.h"
 #include "BsAnimationManager.h"
+#include "BsParamBlocks.h"
 
 namespace bs
 {
@@ -71,6 +72,7 @@ namespace bs
 		
 		Input::shutDown();
 
+		ParamBlockManager::shutDown();
 		StringTableManager::shutDown();
 		Resources::shutDown();
 		ResourceListenerManager::shutDown();
@@ -146,6 +148,7 @@ namespace bs
 
 		mPrimaryWindow = RenderAPIManager::instance().initialize(mStartUpDesc.renderAPI, mStartUpDesc.primaryWindowDesc);
 
+		ParamBlockManager::startUp();
 		Input::startUp();
 		RendererManager::startUp();
 

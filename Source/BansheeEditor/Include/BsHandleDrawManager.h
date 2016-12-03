@@ -200,10 +200,12 @@ namespace bs
 	 *  @{
 	 */
 
-	BS_PARAM_BLOCK_BEGIN(GizmoParamBuffer)
+	BS_PARAM_BLOCK_BEGIN(HandleParamBlockDef)
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatViewProj)
 		BS_PARAM_BLOCK_ENTRY(Vector4, gViewDir)
 	BS_PARAM_BLOCK_END
+
+	extern HandleParamBlockDef gHandleParamBlockDef;
 
 	/** Core thread specific portion of the HandleDrawManager that handles actual rendering. */
 	class BS_ED_EXPORT HandleDrawManagerCore
@@ -270,7 +272,7 @@ namespace bs
 
 		Vector<QueuedData> mQueuedData;
 
-		GizmoParamBuffer mParamBuffer;
+		SPtr<GpuParamBlockBufferCore> mParamBuffer;
 		Vector<SPtr<GpuParamsSetCore>> mParamSets[(UINT32)MeshType::Count];
 		UINT32 mTypeCounters[(UINT32)MeshType::Count];
 

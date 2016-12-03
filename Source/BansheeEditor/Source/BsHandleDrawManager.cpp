@@ -242,6 +242,8 @@ namespace bs
 		mActiveMeshes.clear();
 	}
 
+	HandleParamBlockDef gHandleParamBlockDef;
+
 	HandleDrawManagerCore::HandleDrawManagerCore(const PrivatelyConstruct& dummy)
 		:mTypeCounters()
 	{ }
@@ -259,6 +261,8 @@ namespace bs
 		mMaterials[(UINT32)MeshType::Text] = textMat;
 
 		mClearMaterial = clearMat;
+
+		mParamBuffer = gHandleParamBlockDef.createBuffer();
 	}
 
 	void HandleDrawManagerCore::queueForDraw(const SPtr<CameraCore>& camera, Vector<MeshData>& meshes)
@@ -280,7 +284,7 @@ namespace bs
 				if (paramsIdx >= mParamSets[typeIdx].size())
 				{
 					paramsSet = mMaterials[typeIdx]->createParamsSet();
-					paramsSet->setParamBlockBuffer("Uniforms", mParamBuffer.getBuffer(), true);
+					paramsSet->setParamBlockBuffer("Uniforms", mParamBuffer, true);
 
 					mParamSets[typeIdx].push_back(paramsSet);
 				}
@@ -334,8 +338,8 @@ namespace bs
 
 		Matrix4 viewProjMat = camera->getProjectionMatrixRS() * camera->getViewMatrix();
 
-		mParamBuffer.gMatViewProj.set(viewProjMat);
-		mParamBuffer.gViewDir.set((Vector4)camera->getForward());
+		gHandleParamBlockDef.gMatViewProj.set(mParamBuffer, viewProjMat);
+		gHandleParamBlockDef.gViewDir.set(mParamBuffer, (Vector4)camera->getForward());
 
 		UINT32 currentType = -1;
 		for (auto& meshData : meshes)

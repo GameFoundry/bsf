@@ -9,13 +9,18 @@
 
 namespace bs
 {
+	PerCameraParamDef gPerCameraParamDef;
+
 	RendererCamera::RendererCamera()
 		:mCamera(nullptr), mUsingRenderTargets(false)
-	{ }
+	{
+		mParamBuffer = gPerCameraParamDef.createBuffer();
+	}
 
 	RendererCamera::RendererCamera(const CameraCore* camera, StateReduction reductionMode)
 		:mCamera(camera), mUsingRenderTargets(false)
 	{
+		mParamBuffer = gPerCameraParamDef.createBuffer();
 		update(reductionMode);
 	}
 
@@ -179,11 +184,11 @@ namespace bs
 		Matrix4 viewProj = proj * view;
 		Matrix4 invViewProj = viewProj.inverse();
 
-		mParams.gMatProj.set(proj);
-		mParams.gMatView.set(view);
-		mParams.gMatViewProj.set(viewProj);
-		mParams.gMatInvViewProj.set(invViewProj); // Note: Calculate inverses separately (better precision possibly)
-		mParams.gMatInvProj.set(proj.inverse());
+		gPerCameraParamDef.gMatProj.set(mParamBuffer, proj);
+		gPerCameraParamDef.gMatView.set(mParamBuffer, view);
+		gPerCameraParamDef.gMatViewProj.set(mParamBuffer, viewProj);
+		gPerCameraParamDef.gMatInvViewProj.set(mParamBuffer, invViewProj); // Note: Calculate inverses separately (better precision possibly)
+		gPerCameraParamDef.gMatInvProj.set(mParamBuffer, proj.inverse());
 
 		// Construct a special inverse view-projection matrix that had projection entries that affect z and w eliminated.
 		// Used to transform a vector(clip_x, clip_y, view_z, view_w), where clip_x/clip_y are in clip space, and 
@@ -196,10 +201,10 @@ namespace bs
 		projZ[3][2] = proj[3][2];
 		projZ[3][3] = 0.0f;
 
-		mParams.gMatScreenToWorld.set(invViewProj * projZ);
-		mParams.gViewDir.set(mCamera->getForward());
-		mParams.gViewOrigin.set(mCamera->getPosition());
-		mParams.gDeviceZToWorldZ.set(getDeviceZTransform(proj));
+		gPerCameraParamDef.gMatScreenToWorld.set(mParamBuffer, invViewProj * projZ);
+		gPerCameraParamDef.gViewDir.set(mParamBuffer, mCamera->getForward());
+		gPerCameraParamDef.gViewOrigin.set(mParamBuffer, mCamera->getPosition());
+		gPerCameraParamDef.gDeviceZToWorldZ.set(mParamBuffer, getDeviceZTransform(proj));
 
 		SPtr<ViewportCore> viewport = mCamera->getViewport();
 		SPtr<RenderTargetCore> rt = viewport->getTarget();
@@ -233,6 +238,6 @@ namespace bs
 		if (!rapiInfo.getNDCYAxisDown())
 			clipToUVScaleOffset.y = -clipToUVScaleOffset.y;
 
-		mParams.gClipToUVScaleOffset.set(clipToUVScaleOffset);
+		gPerCameraParamDef.gClipToUVScaleOffset.set(mParamBuffer, clipToUVScaleOffset);
 	}
 }

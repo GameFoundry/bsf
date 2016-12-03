@@ -219,10 +219,10 @@ viewDirParam.set(Vector3(0.707.0, 0.707f, 0.0f));
 ... repeat for all other parameters
 ~~~~~~~~~~~~~
 
-It is more efficient to assign them as a parameter block. Primarily because parameter blocks can be set once, and then shared between multiple materials. To set up a parameter block use the @ref BS_PARAM_BLOCK_BEGIN, @ref BS_PARAM_BLOCK_ENTRY and @ref BS_PARAM_BLOCK_END macros, like so:
+It is more efficient to assign them as a parameter block. Primarily because parameter blocks can be set once, and then shared between multiple materials. To set up a parameter block you must first set up its definition by using @ref BS_PARAM_BLOCK_BEGIN, @ref BS_PARAM_BLOCK_ENTRY and @ref BS_PARAM_BLOCK_END macros, like so:
 
 ~~~~~~~~~~~~~{.cpp}
-BS_PARAM_BLOCK_BEGIN(PerCameraParamBlock)
+BS_PARAM_BLOCK_BEGIN(PerCameraParamBlockDef)
 	BS_PARAM_BLOCK_ENTRY(Vector3, gViewDir)
 	BS_PARAM_BLOCK_ENTRY(Vector3, gViewOrigin)
 	BS_PARAM_BLOCK_ENTRY(Matrix4, gMatViewProj)
@@ -235,14 +235,19 @@ BS_PARAM_BLOCK_END
 
 By using this approach you lose all the error checking normally performed by @ref bs::Material "Material". You must make sure that the layout in C++ matches the layout in the GPU program. In case of GLSL you must also specify `layout(std140)` keyword to ensure its layout is compatible with C++ struct layout. You must also make sure that variable names match the names in the GPU program.
 
-Once your parameter block is created, you can instantiate it, assign values to it, and assign the blocks to materials, like so:
+Once your parameter block definition is created, you can instantiate a parameter block buffer, assign values to it, and assign the blocks to materials, like so:
 ~~~~~~~~~~~~~{.cpp}
-PerCameraParamBlock block; // Instantiate block, normally you'd want to store this
-block.gViewDir.set(Vector3(0.707.0, 0.707f, 0.0f));
+PerCameraParamBlockDef def; // Normally you want to make this global
+
+// Instantiates a new parameter block from the definition
+SPtr<GpuParamBlockBufferCore> paramBlock = def.createBuffer(); 
+
+// Assign a value to the gViewDir parameter of the parameter block
+def.gViewDir.set(paramBlock, Vector3(0.707.0, 0.707f, 0.0f));
 ... set other parameters in block ...
 
 SPtr<MaterialCore> material = ...;
-material->setParamBlockBuffer("PerCamera", block.getBuffer());
+material->setParamBlockBuffer("PerCamera", paramBlock);
 
 ... render using the material ...
 ~~~~~~~~~~~~~

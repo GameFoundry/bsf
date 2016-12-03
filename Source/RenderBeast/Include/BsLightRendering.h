@@ -12,7 +12,7 @@ namespace bs
 	 *  @{
 	 */
 
-	BS_PARAM_BLOCK_BEGIN(PerLightParamBuffer)
+	BS_PARAM_BLOCK_BEGIN(PerLightParamDef)
 		BS_PARAM_BLOCK_ENTRY(Vector4, gLightPositionAndType)
 		BS_PARAM_BLOCK_ENTRY(Vector4, gLightColorAndIntensity)
 		BS_PARAM_BLOCK_ENTRY(Vector4, gLightSpotAnglesAndSqrdInvRadius)
@@ -20,6 +20,8 @@ namespace bs
 		BS_PARAM_BLOCK_ENTRY(Vector4, gLightGeometry)
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatConeTransform)
 	BS_PARAM_BLOCK_END
+
+	extern PerLightParamDef gPerLightParamDef;
 
 	/** Manipulates parameters used in various light rendering shaders. */
 	class LightRenderingParams
@@ -43,7 +45,7 @@ namespace bs
 		GpuParamTextureCore mGBufferA;
 		GpuParamTextureCore mGBufferB;
 		GpuParamTextureCore mGBufferDepth;
-		PerLightParamBuffer mBuffer;
+		SPtr<GpuParamBlockBufferCore> mParamBuffer;
 	};
 
 	/** Shader that renders directional light sources during deferred rendering light pass. */

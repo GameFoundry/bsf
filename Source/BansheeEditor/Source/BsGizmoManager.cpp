@@ -907,6 +907,9 @@ namespace bs
 		return HSceneObject();
 	}
 
+	GizmoParamBlockDef gHandleParamBlockDef;
+	GizmoPickingParamBlockDef gGizmoPickingParamBlockDef;
+
 	const float GizmoManagerCore::PICKING_ALPHA_CUTOFF = 0.5f;
 
 	GizmoManagerCore::GizmoManagerCore(const PrivatelyConstuct& dummy)
@@ -931,6 +934,11 @@ namespace bs
 		mIconMaterial = initData.iconMat;
 		mPickingMaterials[0] = initData.pickingMat;
 		mPickingMaterials[1] = initData.alphaPickingMat;
+
+		mMeshGizmoBuffer = gHandleParamBlockDef.createBuffer();
+		mIconGizmoBuffer = gHandleParamBlockDef.createBuffer();
+		mMeshPickingParamBuffer = gGizmoPickingParamBlockDef.createBuffer();
+		mIconPickingParamBuffer = gGizmoPickingParamBlockDef.createBuffer();
 	}
 
 	void GizmoManagerCore::updateData(const SPtr<CameraCore>& camera, const Vector<GizmoManager::MeshRenderData>& meshes,
@@ -965,7 +973,7 @@ namespace bs
 			if (paramsIdx >= mMeshParamSets[typeIdx].size())
 			{
 				SPtr<GpuParamsSetCore> paramsSet = mMeshMaterials[typeIdx]->createParamsSet();
-				paramsSet->setParamBlockBuffer("Uniforms", mMeshGizmoBuffer.getBuffer(), true);
+				paramsSet->setParamBlockBuffer("Uniforms", mMeshGizmoBuffer, true);
 
 				mMeshParamSets[typeIdx].push_back(paramsSet);
 			}
@@ -982,7 +990,7 @@ namespace bs
 			if (iconMeshIdx >= mIconParamSets.size())
 			{
 				mIconMaterial->createParamsSet();
-				paramsSet->setParamBlockBuffer("Uniforms", mIconGizmoBuffer.getBuffer(), true);
+				paramsSet->setParamBlockBuffer("Uniforms", mIconGizmoBuffer, true);
 
 				mIconParamSets.push_back(paramsSet);
 			}
@@ -1028,8 +1036,8 @@ namespace bs
 
 		if (!usePickingMaterial)
 		{
-			mMeshGizmoBuffer.gMatViewProj.set(viewProjMat);
-			mMeshGizmoBuffer.gViewDir.set((Vector4)camera->getForward());
+			gHandleParamBlockDef.gMatViewProj.set(mMeshGizmoBuffer, viewProjMat);
+			gHandleParamBlockDef.gViewDir.set(mMeshGizmoBuffer, (Vector4)camera->getForward());
 
 			for (auto& entry : meshes)
 			{
@@ -1057,7 +1065,7 @@ namespace bs
 				if (paramsIdx >= mPickingParamSets[typeIdx].size())
 				{
 					SPtr<GpuParamsSetCore> paramsSet = mPickingMaterials[typeIdx]->createParamsSet();
-					paramsSet->setParamBlockBuffer("Uniforms", mMeshPickingParamBuffer.getBuffer(), true);
+					paramsSet->setParamBlockBuffer("Uniforms", mMeshPickingParamBuffer, true);
 
 					mPickingParamSets[typeIdx].push_back(paramsSet);
 				}
@@ -1072,7 +1080,7 @@ namespace bs
 				if (iconData.paramsIdx >= mPickingParamSets[1].size())
 				{
 					SPtr<GpuParamsSetCore> paramsSet = mPickingMaterials[1]->createParamsSet();
-					paramsSet->setParamBlockBuffer("Uniforms", mIconPickingParamBuffer.getBuffer(), true);
+					paramsSet->setParamBlockBuffer("Uniforms", mIconPickingParamBuffer, true);
 
 					mPickingParamSets[1].push_back(paramsSet);
 				}
@@ -1080,8 +1088,8 @@ namespace bs
 				pickingCounters[1]++;
 			}
 
-			mMeshPickingParamBuffer.gMatViewProj.set(viewProjMat);
-			mMeshPickingParamBuffer.gAlphaCutoff.set(PICKING_ALPHA_CUTOFF);
+			gGizmoPickingParamBlockDef.gMatViewProj.set(mMeshPickingParamBuffer, viewProjMat);
+			gGizmoPickingParamBlockDef.gAlphaCutoff.set(mMeshPickingParamBuffer, PICKING_ALPHA_CUTOFF);
 
 			for (auto& entry : meshes)
 			{
@@ -1134,8 +1142,8 @@ namespace bs
 
 		if (!usePickingMaterial)
 		{
-			mIconGizmoBuffer.gMatViewProj.set(projMat);
-			mIconGizmoBuffer.gViewDir.set(Vector4::ZERO);
+			gHandleParamBlockDef.gMatViewProj.set(mIconGizmoBuffer, projMat);
+			gHandleParamBlockDef.gViewDir.set(mIconGizmoBuffer, Vector4::ZERO);
 
 			for (UINT32 passIdx = 0; passIdx < 2; passIdx++)
 			{
@@ -1153,8 +1161,8 @@ namespace bs
 		}
 		else
 		{
-			mMeshPickingParamBuffer.gMatViewProj.set(projMat);
-			mMeshPickingParamBuffer.gAlphaCutoff.set(PICKING_ALPHA_CUTOFF);
+			gGizmoPickingParamBlockDef.gMatViewProj.set(mIconPickingParamBuffer, projMat);
+			gGizmoPickingParamBlockDef.gAlphaCutoff.set(mIconPickingParamBuffer, PICKING_ALPHA_CUTOFF);
 
 			for (auto& iconData : *renderData)
 			{

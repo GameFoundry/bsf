@@ -243,6 +243,8 @@ namespace bs
 		return (r & 0xFF) | ((g & 0xFF) << 8) | ((b & 0xFF) << 16);
 	}
 
+	PickingParamBlockDef gPickingParamBlockDef;
+
 	void ScenePickingCore::initialize()
 	{
 		// Do nothing
@@ -250,9 +252,6 @@ namespace bs
 
 	void ScenePickingCore::destroy()
 	{
-		for (auto& entry : mParamBuffers)
-			bs_delete(entry);
-
 		bs_delete(this);
 	}
 
@@ -324,22 +323,22 @@ namespace bs
 			else
 				paramsSet = mParamSets[typeIdx][renderableIdx];
 
-			PickingParamBuffer* paramBuffer;
+			SPtr<GpuParamBlockBufferCore> paramBuffer;
 			if (idx >= mParamBuffers.size())
 			{
-				paramBuffer = bs_new<PickingParamBuffer>();
+				paramBuffer = gPickingParamBlockDef.createBuffer();
 				mParamBuffers.push_back(paramBuffer);
 			}
 			else
 				paramBuffer = mParamBuffers[idx];
 
-			paramsSet->setParamBlockBuffer("Uniforms", paramBuffer->getBuffer(), true);
+			paramsSet->setParamBlockBuffer("Uniforms", paramBuffer, true);
 
 			Color color = ScenePicking::encodeIndex(renderable.index);
 
-			paramBuffer->gMatViewProj.set(renderable.wvpTransform);
-			paramBuffer->gAlphaCutoff.set(ALPHA_CUTOFF);
-			paramBuffer->gColorIndex.set(color);
+			gPickingParamBlockDef.gMatViewProj.set(paramBuffer, renderable.wvpTransform);
+			gPickingParamBlockDef.gAlphaCutoff.set(paramBuffer, ALPHA_CUTOFF);
+			gPickingParamBlockDef.gColorIndex.set(paramBuffer, color);
 
 			typeCounters[typeIdx]++;
 			idx++;

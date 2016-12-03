@@ -12,6 +12,8 @@
 
 namespace bs
 {
+	PerLightParamDef gPerLightParamDef;
+
 	LightRenderingParams::LightRenderingParams(const SPtr<MaterialCore>& material, const SPtr<GpuParamsSetCore>& paramsSet)
 		:mMaterial(material), mParamsSet(paramsSet)
 	{
@@ -32,6 +34,8 @@ namespace bs
 	void LightRenderingParams::setStaticParameters(const SPtr<RenderTargets>& gbuffer, 
 		const SPtr<GpuParamBlockBufferCore>& perCamera)
 	{
+		mParamBuffer = gPerLightParamDef.createBuffer();
+
 		mGBufferA.set(gbuffer->getTextureA());
 		mGBufferB.set(gbuffer->getTextureB());
 		mGBufferDepth.set(gbuffer->getTextureDepth());
@@ -62,7 +66,7 @@ namespace bs
 			break;
 		}
 
-		mBuffer.gLightPositionAndType.set(positionAndType);
+		gPerLightParamDef.gLightPositionAndType.set(mParamBuffer, positionAndType);
 			
 		Vector4 colorAndIntensity;
 		colorAndIntensity.x = light->getColor().r;
@@ -70,7 +74,7 @@ namespace bs
 		colorAndIntensity.z = light->getColor().b;
 		colorAndIntensity.w = light->getIntensity();
 
-		mBuffer.gLightColorAndIntensity.set(colorAndIntensity);
+		gPerLightParamDef.gLightColorAndIntensity.set(mParamBuffer, colorAndIntensity);
 
 		Radian spotAngle = Math::clamp(light->getSpotAngle() * 0.5f, Degree(1), Degree(90));
 		Radian spotFalloffAngle = Math::clamp(light->getSpotFalloffAngle() * 0.5f, Degree(1), (Degree)spotAngle);
@@ -81,9 +85,9 @@ namespace bs
 		spotAnglesAndInvSqrdRadius.z = 1.0f / (Math::cos(spotFalloffAngle) - spotAnglesAndInvSqrdRadius.y);
 		spotAnglesAndInvSqrdRadius.w = 1.0f / (light->getBounds().getRadius() * light->getBounds().getRadius());
 
-		mBuffer.gLightSpotAnglesAndSqrdInvRadius.set(spotAnglesAndInvSqrdRadius);
+		gPerLightParamDef.gLightSpotAnglesAndSqrdInvRadius.set(mParamBuffer, spotAnglesAndInvSqrdRadius);
 
-		mBuffer.gLightDirection.set(-light->getRotation().zAxis());
+		gPerLightParamDef.gLightDirection.set(mParamBuffer, -light->getRotation().zAxis());
 
 		Vector4 lightGeometry;
 		lightGeometry.x = light->getType() == LightType::Spot ? (float)LightCore::LIGHT_CONE_NUM_SIDES : 0;
@@ -93,17 +97,17 @@ namespace bs
 		float coneRadius = Math::sin(spotAngle) * light->getRange();
 		lightGeometry.w = coneRadius;
 
-		mBuffer.gLightGeometry.set(lightGeometry);
+		gPerLightParamDef.gLightGeometry.set(mParamBuffer, lightGeometry);
 
 		Matrix4 transform = Matrix4::TRS(light->getPosition(), light->getRotation(), Vector3::ONE);
-		mBuffer.gMatConeTransform.set(transform);
+		gPerLightParamDef.gMatConeTransform.set(mParamBuffer, transform);
 
-		mBuffer.flushToGPU();
+		mParamBuffer->flushToGPU();
 	}
 
 	const SPtr<GpuParamBlockBufferCore>& LightRenderingParams::getBuffer() const
 	{
-		return mBuffer.getBuffer();
+		return mParamBuffer;
 	}
 	
 	DirectionalLightMat::DirectionalLightMat()

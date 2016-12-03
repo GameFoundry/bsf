@@ -28,9 +28,11 @@ namespace bs
 		INT32 lastEyeAdaptationTex = 0;
 	};
 
-	BS_PARAM_BLOCK_BEGIN(DownsampleParams)
+	BS_PARAM_BLOCK_BEGIN(DownsampleParamDef)
 		BS_PARAM_BLOCK_ENTRY(Vector2, gInvTexSize)
 	BS_PARAM_BLOCK_END
+
+	extern DownsampleParamDef gDownsampleParamDef;
 
 	/** Shader that downsamples a texture to half its size. */
 	class DownsampleMat : public RendererMaterial<DownsampleMat>
@@ -49,18 +51,20 @@ namespace bs
 		/** Returns the render texture where the output will be written. */
 		SPtr<RenderTextureCore> getOutput() const { return mOutput; }
 	private:
-		DownsampleParams mParams;
+		SPtr<GpuParamBlockBufferCore> mParamBuffer;
 		GpuParamTextureCore mInputTexture;
 
 		POOLED_RENDER_TEXTURE_DESC mOutputDesc;
 		SPtr<RenderTextureCore> mOutput;
 	};
 
-	BS_PARAM_BLOCK_BEGIN(EyeAdaptHistogramParams)
+	BS_PARAM_BLOCK_BEGIN(EyeAdaptHistogramParamDef)
 		BS_PARAM_BLOCK_ENTRY(Vector4I, gPixelOffsetAndSize)
 		BS_PARAM_BLOCK_ENTRY(Vector2, gHistogramParams)
 		BS_PARAM_BLOCK_ENTRY(Vector2I, gThreadGroupCount)
 	BS_PARAM_BLOCK_END
+
+	extern EyeAdaptHistogramParamDef gEyeAdaptHistogramParamDef;
 
 	/** Shader that creates a luminance histogram used for eye adaptation. */
 	class EyeAdaptHistogramMat : public RendererMaterial<EyeAdaptHistogramMat>
@@ -93,7 +97,7 @@ namespace bs
 		
 		static const UINT32 HISTOGRAM_NUM_TEXELS = (THREAD_GROUP_SIZE_X * THREAD_GROUP_SIZE_Y) / 4;
 	private:
-		EyeAdaptHistogramParams mParams;
+		SPtr<GpuParamBlockBufferCore> mParamBuffer;
 		GpuParamTextureCore mSceneColor;
 		GpuParamLoadStoreTextureCore mOutputTex;
 
@@ -104,9 +108,11 @@ namespace bs
 		static const UINT32 LOOP_COUNT_Y = 8;
 	};
 
-	BS_PARAM_BLOCK_BEGIN(EyeAdaptHistogramReduceParams)
+	BS_PARAM_BLOCK_BEGIN(EyeAdaptHistogramReduceParamDef)
 		BS_PARAM_BLOCK_ENTRY(int, gThreadGroupCount)
 	BS_PARAM_BLOCK_END
+
+	extern EyeAdaptHistogramReduceParamDef gEyeAdaptHistogramReduceParamDef;
 
 	/** Shader that reduces the luminance histograms created by EyeAdaptHistogramMat into a single histogram. */
 	class EyeAdaptHistogramReduceMat : public RendererMaterial<EyeAdaptHistogramReduceMat>
@@ -125,7 +131,7 @@ namespace bs
 		/** Returns the render texture where the output was written. */
 		SPtr<RenderTextureCore> getOutput() const { return mOutput; }
 	private:
-		EyeAdaptHistogramReduceParams mParams;
+		SPtr<GpuParamBlockBufferCore> mParamBuffer;
 
 		GpuParamTextureCore mHistogramTex;
 		GpuParamTextureCore mEyeAdaptationTex;
@@ -134,9 +140,11 @@ namespace bs
 		SPtr<RenderTextureCore> mOutput;
 	};
 
-	BS_PARAM_BLOCK_BEGIN(EyeAdaptationParams)
+	BS_PARAM_BLOCK_BEGIN(EyeAdaptationParamDef)
 		BS_PARAM_BLOCK_ENTRY_ARRAY(Vector4, gEyeAdaptationParams, 3)
 	BS_PARAM_BLOCK_END
+
+	extern EyeAdaptationParamDef gEyeAdaptationParamDef;
 
 	/** Shader that computes the eye adaptation value based on scene luminance. */
 	class EyeAdaptationMat : public RendererMaterial<EyeAdaptationMat>
@@ -149,11 +157,11 @@ namespace bs
 		/** Executes the post-process effect with the provided parameters. */
 		void execute(PostProcessInfo& ppInfo, float frameDelta);
 	private:
-		EyeAdaptationParams mParams;
+		SPtr<GpuParamBlockBufferCore> mParamBuffer;
 		GpuParamTextureCore mReducedHistogramTex;
 	};
 
-	BS_PARAM_BLOCK_BEGIN(CreateTonemapLUTParams)
+	BS_PARAM_BLOCK_BEGIN(CreateTonemapLUTParamDef)
 		BS_PARAM_BLOCK_ENTRY_ARRAY(Vector4, gTonemapParams, 2)
 		BS_PARAM_BLOCK_ENTRY(float, gGammaAdjustment)
 		BS_PARAM_BLOCK_ENTRY(int, gGammaCorrectionType)
@@ -163,10 +171,14 @@ namespace bs
 		BS_PARAM_BLOCK_ENTRY(Vector3, gOffset)
 	BS_PARAM_BLOCK_END
 
-	BS_PARAM_BLOCK_BEGIN(WhiteBalanceParams)
+	extern CreateTonemapLUTParamDef gCreateTonemapLUTParamDef;
+
+	BS_PARAM_BLOCK_BEGIN(WhiteBalanceParamDef)
 		BS_PARAM_BLOCK_ENTRY(float, gWhiteTemp)
 		BS_PARAM_BLOCK_ENTRY(float, gWhiteOffset)
 	BS_PARAM_BLOCK_END
+
+	extern WhiteBalanceParamDef gWhiteBalanceParamDef;
 
 	/** 
 	 * Shader that creates a 3D lookup texture that is used to apply tonemapping, color grading, white balancing and gamma
@@ -188,14 +200,16 @@ namespace bs
 		/** Size of the 3D color lookup table. */
 		static const UINT32 LUT_SIZE = 32;
 	private:
-		CreateTonemapLUTParams mParams;
-		WhiteBalanceParams mWhiteBalanceParams;
+		SPtr<GpuParamBlockBufferCore> mParamBuffer;
+		SPtr<GpuParamBlockBufferCore> mWhiteBalanceParamBuffer;
 	};
 
-	BS_PARAM_BLOCK_BEGIN(TonemappingParams)
+	BS_PARAM_BLOCK_BEGIN(TonemappingParamDef)
 		BS_PARAM_BLOCK_ENTRY(float, gRawGamma)
 		BS_PARAM_BLOCK_ENTRY(float, gManualExposureScale)
 	BS_PARAM_BLOCK_END
+
+	extern TonemappingParamDef gTonemappingParamDef;
 
 	/** Shader that applies tonemapping and converts a HDR image into a LDR image. */
 	template<bool GammaOnly, bool AutoExposure>
@@ -211,7 +225,7 @@ namespace bs
 			PostProcessInfo& ppInfo);
 
 	private:
-		TonemappingParams mParams;
+		SPtr<GpuParamBlockBufferCore> mParamBuffer;
 
 		GpuParamTextureCore mInputTex;
 		GpuParamTextureCore mColorLUT;

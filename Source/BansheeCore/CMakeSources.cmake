@@ -341,6 +341,7 @@ set(BS_BANSHEECORE_SRC_RENDERER
 	"Source/BsRendererManager.cpp"
 	"Source/BsCoreRenderer.cpp"
 	"Source/BsRendererMeshData.cpp"
+	"Source/BsParamBlocks.cpp"
 	"Source/BsCamera.cpp"
 	"Source/BsPostProcessSettings.cpp"
 )

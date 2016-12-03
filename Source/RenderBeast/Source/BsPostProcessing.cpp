@@ -10,9 +10,13 @@
 
 namespace bs
 {
+	DownsampleParamDef gDownsampleParamDef;
+
 	DownsampleMat::DownsampleMat()
 	{
-		mParamsSet->setParamBlockBuffer("Input", mParams.getBuffer());
+		mParamBuffer = gDownsampleParamDef.createBuffer();
+
+		mParamsSet->setParamBlockBuffer("Input", mParamBuffer);
 		mParamsSet->getGpuParams()->getTextureParam(GPT_FRAGMENT_PROGRAM, "gInputTex", mInputTexture);
 	}
 
@@ -30,7 +34,7 @@ namespace bs
 		const RenderTextureProperties& rtProps = target->getProperties();
 		Vector2 invTextureSize(1.0f / rtProps.getWidth(), 1.0f / rtProps.getHeight());
 
-		mParams.gInvTexSize.set(invTextureSize);
+		gDownsampleParamDef.gInvTexSize.set(mParamBuffer, invTextureSize);
 
 		// Set output
 		const TextureProperties& colorProps = colorTexture->getProperties();
@@ -61,9 +65,12 @@ namespace bs
 		mOutput = nullptr;
 	}
 
+	EyeAdaptHistogramParamDef gEyeAdaptHistogramParamDef;
+
 	EyeAdaptHistogramMat::EyeAdaptHistogramMat()
 	{
-		mParamsSet->setParamBlockBuffer("Input", mParams.getBuffer());
+		mParamBuffer = gEyeAdaptHistogramParamDef.createBuffer();
+		mParamsSet->setParamBlockBuffer("Input", mParamBuffer);
 
 		SPtr<GpuParamsCore> params = mParamsSet->getGpuParams();
 		params->getTextureParam(GPT_COMPUTE_PROGRAM, "gSceneColorTex", mSceneColor);
@@ -87,11 +94,11 @@ namespace bs
 		const RenderTextureProperties& props = target->getProperties();
 		int offsetAndSize[4] = { 0, 0, (INT32)props.getWidth(), (INT32)props.getHeight() };
 
-		mParams.gHistogramParams.set(getHistogramScaleOffset(ppInfo));
-		mParams.gPixelOffsetAndSize.set(Vector4I(offsetAndSize));
+		gEyeAdaptHistogramParamDef.gHistogramParams.set(mParamBuffer, getHistogramScaleOffset(ppInfo));
+		gEyeAdaptHistogramParamDef.gPixelOffsetAndSize.set(mParamBuffer, Vector4I(offsetAndSize));
 
 		Vector2I threadGroupCount = getThreadGroupCount(target);
-		mParams.gThreadGroupCount.set(threadGroupCount);
+		gEyeAdaptHistogramParamDef.gThreadGroupCount.set(mParamBuffer, threadGroupCount);
 
 		// Set output
 		UINT32 numHistograms = threadGroupCount.x * threadGroupCount.y;
@@ -143,9 +150,12 @@ namespace bs
 		return Vector2(scale, offset);
 	}
 
+	EyeAdaptHistogramReduceParamDef gEyeAdaptHistogramReduceParamDef;
+
 	EyeAdaptHistogramReduceMat::EyeAdaptHistogramReduceMat()
 	{
-		mParamsSet->setParamBlockBuffer("Input", mParams.getBuffer());
+		mParamBuffer = gEyeAdaptHistogramReduceParamDef.createBuffer();
+		mParamsSet->setParamBlockBuffer("Input", mParamBuffer);
 
 		SPtr<GpuParamsCore> params = mParamsSet->getGpuParams();
 		params->getTextureParam(GPT_FRAGMENT_PROGRAM, "gHistogramTex", mHistogramTex);
@@ -175,7 +185,7 @@ namespace bs
 		Vector2I threadGroupCount = EyeAdaptHistogramMat::getThreadGroupCount(ppInfo.downsampledSceneTex->renderTexture);
 		UINT32 numHistograms = threadGroupCount.x * threadGroupCount.y;
 
-		mParams.gThreadGroupCount.set(numHistograms);
+		gEyeAdaptHistogramReduceParamDef.gThreadGroupCount.set(mParamBuffer, numHistograms);
 
 		// Set output
 		mOutputDesc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_FLOAT16_RGBA, EyeAdaptHistogramMat::HISTOGRAM_NUM_TEXELS, 2,
@@ -204,9 +214,12 @@ namespace bs
 		mOutput = nullptr;
 	}
 
+	EyeAdaptationParamDef gEyeAdaptationParamDef;
+
 	EyeAdaptationMat::EyeAdaptationMat()
 	{
-		mParamsSet->setParamBlockBuffer("Input", mParams.getBuffer());
+		mParamBuffer = gEyeAdaptationParamDef.createBuffer();
+		mParamsSet->setParamBlockBuffer("Input", mParamBuffer);
 		mParamsSet->getGpuParams()->getTextureParam(GPT_FRAGMENT_PROGRAM, "gHistogramTex", mReducedHistogramTex);
 	}
 
@@ -256,9 +269,9 @@ namespace bs
 		eyeAdaptationParams[2].z = 0.0f; // Unused
 		eyeAdaptationParams[2].w = 0.0f; // Unused
 
-		mParams.gEyeAdaptationParams.set(eyeAdaptationParams[0], 0);
-		mParams.gEyeAdaptationParams.set(eyeAdaptationParams[1], 1);
-		mParams.gEyeAdaptationParams.set(eyeAdaptationParams[2], 2);
+		gEyeAdaptationParamDef.gEyeAdaptationParams.set(mParamBuffer, eyeAdaptationParams[0], 0);
+		gEyeAdaptationParamDef.gEyeAdaptationParams.set(mParamBuffer, eyeAdaptationParams[1], 1);
+		gEyeAdaptationParamDef.gEyeAdaptationParams.set(mParamBuffer, eyeAdaptationParams[2], 2);
 
 		// Render
 		SPtr<PooledRenderTexture> eyeAdaptationRT = ppInfo.eyeAdaptationTex[ppInfo.lastEyeAdaptationTex];
@@ -273,10 +286,16 @@ namespace bs
 		rapi.setRenderTarget(nullptr);
 	}
 
+	CreateTonemapLUTParamDef gCreateTonemapLUTParamDef;
+	WhiteBalanceParamDef gWhiteBalanceParamDef;
+
 	CreateTonemapLUTMat::CreateTonemapLUTMat()
 	{
-		mParamsSet->setParamBlockBuffer("Input", mParams.getBuffer());
-		mParamsSet->setParamBlockBuffer("WhiteBalanceInput", mWhiteBalanceParams.getBuffer());
+		mParamBuffer = gCreateTonemapLUTParamDef.createBuffer();
+		mWhiteBalanceParamBuffer = gWhiteBalanceParamDef.createBuffer();
+
+		mParamsSet->setParamBlockBuffer("Input", mParamBuffer);
+		mParamsSet->setParamBlockBuffer("WhiteBalanceInput", mWhiteBalanceParamBuffer);
 	}
 
 	void CreateTonemapLUTMat::_initDefines(ShaderDefines& defines)
@@ -289,11 +308,11 @@ namespace bs
 		const StandardPostProcessSettings& settings = *ppInfo.settings;
 
 		// Set parameters
-		mParams.gGammaAdjustment.set(2.2f / settings.gamma);
+		gCreateTonemapLUTParamDef.gGammaAdjustment.set(mParamBuffer, 2.2f / settings.gamma);
 
 		// Note: Assuming sRGB (PC monitor) for now, change to Rec.709 when running on console (value 1), or to raw 2.2
 		// gamma when running on Mac (value 2)
-		mParams.gGammaCorrectionType.set(0);
+		gCreateTonemapLUTParamDef.gGammaCorrectionType.set(mParamBuffer, 0);
 
 		Vector4 tonemapParams[2];
 		tonemapParams[0].x = settings.tonemapping.filmicCurveShoulderStrength;
@@ -306,18 +325,18 @@ namespace bs
 		tonemapParams[1].z = settings.tonemapping.filmicCurveLinearWhitePoint;
 		tonemapParams[1].w = 0.0f; // Unused
 
-		mParams.gTonemapParams.set(tonemapParams[0], 0);
-		mParams.gTonemapParams.set(tonemapParams[1], 1);
+		gCreateTonemapLUTParamDef.gTonemapParams.set(mParamBuffer, tonemapParams[0], 0);
+		gCreateTonemapLUTParamDef.gTonemapParams.set(mParamBuffer, tonemapParams[1], 1);
 
 		// Set color grading params
-		mParams.gSaturation.set(settings.colorGrading.saturation);
-		mParams.gContrast.set(settings.colorGrading.contrast);
-		mParams.gGain.set(settings.colorGrading.gain);
-		mParams.gOffset.set(settings.colorGrading.offset);
+		gCreateTonemapLUTParamDef.gSaturation.set(mParamBuffer, settings.colorGrading.saturation);
+		gCreateTonemapLUTParamDef.gContrast.set(mParamBuffer, settings.colorGrading.contrast);
+		gCreateTonemapLUTParamDef.gGain.set(mParamBuffer, settings.colorGrading.gain);
+		gCreateTonemapLUTParamDef.gOffset.set(mParamBuffer, settings.colorGrading.offset);
 
 		// Set white balance params
-		mWhiteBalanceParams.gWhiteTemp.set(settings.whiteBalance.temperature);
-		mWhiteBalanceParams.gWhiteOffset.set(settings.whiteBalance.tint);
+		gWhiteBalanceParamDef.gWhiteTemp.set(mWhiteBalanceParamBuffer, settings.whiteBalance.temperature);
+		gWhiteBalanceParamDef.gWhiteOffset.set(mWhiteBalanceParamBuffer, settings.whiteBalance.tint);
 
 		// Set output
 		POOLED_RENDER_TEXTURE_DESC outputDesc = POOLED_RENDER_TEXTURE_DESC::create3D(PF_B8G8R8X8, 
@@ -339,10 +358,13 @@ namespace bs
 		RenderTexturePool::instance().release(ppInfo.colorLUT);
 	}
 
+	TonemappingParamDef gTonemappingParamDef;
+
 	template<bool GammaOnly, bool AutoExposure>
 	TonemappingMat<GammaOnly, AutoExposure>::TonemappingMat()
 	{
-		mParamsSet->setParamBlockBuffer("Input", mParams.getBuffer());
+		mParamBuffer = gTonemappingParamDef.createBuffer();
+		mParamsSet->setParamBlockBuffer("Input", mParamBuffer);
 
 		SPtr<GpuParamsCore> params = mParamsSet->getGpuParams();
 		params->getTextureParam(GPT_VERTEX_PROGRAM, "gEyeAdaptationTex", mEyeAdaptationTex);
@@ -368,8 +390,8 @@ namespace bs
 	void TonemappingMat<GammaOnly, AutoExposure>::execute(const SPtr<RenderTextureCore>& sceneColor, const SPtr<ViewportCore>& outputViewport,
 		PostProcessInfo& ppInfo)
 	{
-		mParams.gRawGamma.set(1.0f / ppInfo.settings->gamma);
-		mParams.gManualExposureScale.set(Math::pow(2.0f, ppInfo.settings->exposureScale));
+		gTonemappingParamDef.gRawGamma.set(mParamBuffer, 1.0f / ppInfo.settings->gamma);
+		gTonemappingParamDef.gManualExposureScale.set(mParamBuffer, Math::pow(2.0f, ppInfo.settings->exposureScale));
 
 		// Set parameters
 		SPtr<TextureCore> colorTexture = sceneColor->getColorTexture(0);

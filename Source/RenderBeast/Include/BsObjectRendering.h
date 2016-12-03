@@ -18,9 +18,11 @@ namespace bs
 	 *  @{
 	 */
 
-	BS_PARAM_BLOCK_BEGIN(PerFrameParamBuffer)
+	BS_PARAM_BLOCK_BEGIN(PerFrameParamDef)
 		BS_PARAM_BLOCK_ENTRY(float, gTime)
 	BS_PARAM_BLOCK_END
+
+	extern PerFrameParamDef gPerFrameParamDef;
 
 	/** Manages initialization and rendering of individual renderable object, represented as RenderableElement%s. */
 	class BS_BSRND_EXPORT ObjectRenderer
@@ -35,7 +37,7 @@ namespace bs
 		void setParamFrameParams(float time);
 
 	protected:
-		PerFrameParamBuffer mPerFrameParams;
+		SPtr<GpuParamBlockBufferCore> mPerFrameParamBuffer;
 	};
 
 	/** Basic shader that is used when no other is available. */

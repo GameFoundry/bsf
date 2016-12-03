@@ -502,15 +502,19 @@ namespace bs
 	 *  @{
 	 */
 
-	BS_PARAM_BLOCK_BEGIN(GizmoParamBuffer)
+	BS_PARAM_BLOCK_BEGIN(GizmoParamBlockDef)
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatViewProj)
 		BS_PARAM_BLOCK_ENTRY(Vector4, gViewDir)
 	BS_PARAM_BLOCK_END
 
-	BS_PARAM_BLOCK_BEGIN(GizmoPickingParamBuffer)
+	extern GizmoParamBlockDef gHandleParamBlockDef;
+
+	BS_PARAM_BLOCK_BEGIN(GizmoPickingParamBlockDef)
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatViewProj)
 		BS_PARAM_BLOCK_ENTRY(float, gAlphaCutoff)
 	BS_PARAM_BLOCK_END
+
+	extern GizmoPickingParamBlockDef gGizmoPickingParamBlockDef;
 
 	/**
 	 * Core thread version of the gizmo manager that handles most of the rendering of meshes provided by the gizmo manager.
@@ -592,10 +596,10 @@ namespace bs
 		Vector<SPtr<GpuParamsSetCore>> mIconParamSets;
 		Vector<SPtr<GpuParamsSetCore>> mPickingParamSets[2];
 
-		GizmoParamBuffer mMeshGizmoBuffer;
-		GizmoParamBuffer mIconGizmoBuffer;
-		GizmoPickingParamBuffer mMeshPickingParamBuffer;
-		GizmoPickingParamBuffer mIconPickingParamBuffer;
+		SPtr<GpuParamBlockBufferCore> mMeshGizmoBuffer;
+		SPtr<GpuParamBlockBufferCore> mIconGizmoBuffer;
+		SPtr<GpuParamBlockBufferCore> mMeshPickingParamBuffer;
+		SPtr<GpuParamBlockBufferCore> mIconPickingParamBuffer;
 
 		// Immutable
 		SPtr<MaterialCore> mMeshMaterials[(UINT32)GizmoMeshType::Count];

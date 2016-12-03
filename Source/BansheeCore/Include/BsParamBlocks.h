@@ -5,7 +5,6 @@
 #include "BsCorePrerequisites.h"
 #include "BsGpuParamDesc.h"
 #include "BsGpuParams.h"
-#include "BsGpuPipelineParamInfo.h"
 #include "BsRenderAPI.h"
 #include "BsGpuParamBlockBuffer.h"
 
@@ -15,8 +14,55 @@ namespace bs
 	 *  @{
 	 */
 
-// Note: Every time one of these param blocks is instantiated we generate its descriptor. It would be better to generate
-// it once, and then just quickly instantiate for subsequent creations.
+	/** Wrapper for a single parameter in a parameter block buffer. */
+	template<class T>
+	class BS_CORE_EXPORT ParamBlockParam
+	{
+	public:
+		ParamBlockParam() { }
+		ParamBlockParam(const GpuParamDataDesc& paramDesc);
+
+		/** 
+		 * Sets the parameter in the provided parameter block buffer. Caller is responsible for ensuring the param block
+		 * buffer contains this parameter. 
+		 */
+		void set(const SPtr<GpuParamBlockBufferCore>& paramBlock, const T& value, UINT32 arrayIdx = 0) const;
+
+		/** 
+		 * Gets the parameter in the provided parameter block buffer. Caller is responsible for ensuring the param block
+		 * buffer contains this parameter. 
+		 */
+		T get(const SPtr<GpuParamBlockBufferCore>& paramBlock, UINT32 arrayIdx = 0) const;
+
+	protected:
+		GpuParamDataDesc mParamDesc;
+	};
+
+	/** Base class for all parameter blocks. */
+	struct BS_CORE_EXPORT ParamBlock
+	{
+		virtual ~ParamBlock();
+		virtual void initialize() = 0;
+	};
+
+	/** 
+	 * Takes care of initializing param block definitions in a delayed manner since they depend on engine systems yet
+	 * are usually used as global variables which are initialized before engine systems are ready. 
+	 */
+	class BS_CORE_EXPORT ParamBlockManager : public Module<ParamBlockManager>
+	{
+	public:
+		ParamBlockManager();
+
+		/** Registers a new param block, and initializes it when ready. */
+		static void registerBlock(ParamBlock* paramBlock);
+
+		/** Removes the param block from the initialization list. */
+		static void unregisterBlock(ParamBlock* paramBlock);
+
+	private:
+		static Vector<ParamBlock*> sToInitialize;
+	};
 
 /**
  * Starts a new custom parameter block. Custom parameter blocks allow you to create C++ structures that map directly
@@ -24,49 +70,32 @@ namespace bs
  * BS_PARAM_BLOCK_END.
  */
 #define BS_PARAM_BLOCK_BEGIN(Name)																							\
-	struct Name																												\
+	struct Name	: ParamBlock																								\
 	{																														\
 		Name()																												\
 		{																													\
-			static SPtr<GpuPipelineParamInfoCore> paramInfo = nullptr;														\
-			static GpuParamBlockDesc blockDesc;																				\
+			ParamBlockManager::registerBlock(this);																			\
+		}																													\
 																															\
-			if (paramInfo == nullptr)																						\
-			{																												\
-				Vector<GpuParamDataDesc> params = getEntries();																\
-				RenderAPICore& rapi = RenderAPICore::instance();															\
+		SPtr<GpuParamBlockBufferCore> createBuffer() const { return GpuParamBlockBufferCore::create(mBlockSize); }			\
 																															\
-				blockDesc = rapi.generateParamBlockDesc(#Name, params);														\
+	private:																												\
+		friend class ParamBlockManager;																						\
 																															\
-				SPtr<GpuParamDesc> paramsDesc = bs_shared_ptr_new<GpuParamDesc>();											\
-				paramsDesc->paramBlocks[#Name] = blockDesc;																	\
-				for (auto& param : params)																					\
-					paramsDesc->params[param.name] = param;																	\
+		void initialize() override																							\
+		{																													\
+			mParams = getEntries();																							\
+			RenderAPICore& rapi = RenderAPICore::instance();																\
 																															\
-				GPU_PIPELINE_PARAMS_DESC pipelineParamDesc;																	\
-				pipelineParamDesc.vertexParams = paramsDesc;																\
-				paramInfo = GpuPipelineParamInfoCore::create(pipelineParamDesc);											\
-			}																												\
+			GpuParamBlockDesc blockDesc = rapi.generateParamBlockDesc(#Name, mParams);										\
+			mBlockSize = blockDesc.blockSize * sizeof(UINT32);																\
 																															\
-			mParams = GpuParamsCore::create(paramInfo);																		\
-																															\
-			mBuffer = GpuParamBlockBufferCore::create(blockDesc.blockSize * sizeof(UINT32));								\
-			mParams->setParamBlockBuffer(GPT_VERTEX_PROGRAM, #Name, mBuffer);												\
 			initEntries();																									\
 		}																													\
 																															\
-		const SPtr<GpuParamBlockBufferCore>& getBuffer() const { return mBuffer; }											\
-		void setBuffer(const SPtr<GpuParamBlockBufferCore>& buffer)															\
-		{																													\
-				mBuffer = buffer;																							\
-				mParams->setParamBlockBuffer(GPT_VERTEX_PROGRAM, #Name, mBuffer);											\
-		}																													\
-		void flushToGPU(UINT32 queueIdx = 0) { mBuffer->flushToGPU(queueIdx); }												\
-																															\
-	private:																												\
 		struct META_FirstEntry {};																							\
 		static void META_GetPrevEntries(Vector<GpuParamDataDesc>& params, META_FirstEntry id) { }							\
-		void META_InitPrevEntry(const SPtr<GpuParamsCore>& params, META_FirstEntry id) { }									\
+		void META_InitPrevEntry(const Vector<GpuParamDataDesc>& params, UINT32 idx, META_FirstEntry id) { }					\
 																															\
 		typedef META_FirstEntry 
 
@@ -88,20 +117,20 @@ namespace bs
 			newEntry.arraySize = NumElements;																				\
 		}																													\
 																															\
-		void META_InitPrevEntry(const SPtr<GpuParamsCore>& params, META_NextEntry_##Name id)								\
+		void META_InitPrevEntry(const Vector<GpuParamDataDesc>& params, UINT32 idx, META_NextEntry_##Name id)				\
 		{																													\
-			META_InitPrevEntry(params, META_Entry_##Name());																\
-			params->getParam(GPT_VERTEX_PROGRAM, #Name, Name);																\
+			META_InitPrevEntry(params, idx - 1, META_Entry_##Name());														\
+			Name = ParamBlockParam<Type>(params[idx]);																		\
 		}																													\
 																															\
 	public:																													\
-		TGpuDataParam<Type, true> Name;																						\
+		ParamBlockParam<Type> Name;																							\
 																															\
 	private:																												\
 		typedef META_NextEntry_##Name
 
-/** 
- * Registers a new entry in a parameter block. Must be called in between BS_PARAM_BLOCK_BEGIN and BS_PARAM_BLOCK_END calls. 
+/**
+ * Registers a new entry in a parameter block. Must be called in between BS_PARAM_BLOCK_BEGIN and BS_PARAM_BLOCK_END calls.
  */
 #define BS_PARAM_BLOCK_ENTRY(Type, Name) BS_PARAM_BLOCK_ENTRY_ARRAY(Type, Name, 1)
 
@@ -118,11 +147,11 @@ namespace bs
 																															\
 		void initEntries()																									\
 		{																													\
-			META_InitPrevEntry(mParams, META_LastEntry());																	\
+			META_InitPrevEntry(mParams, (UINT32)mParams.size() - 1, META_LastEntry());										\
 		}																													\
 																															\
-		SPtr<GpuParamsCore> mParams;																						\
-		SPtr<GpuParamBlockBufferCore> mBuffer;																				\
+		Vector<GpuParamDataDesc> mParams;																					\
+		UINT32 mBlockSize;																									\
 	};
 
 	/** @} */
