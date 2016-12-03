@@ -5,8 +5,8 @@ Banshee is available on two branches:
  - **master** - This branch contains the latest changes, might be quite unstable and might not even compile. Use this if you absolutely need the bleeding edge changes.
  
 Banshee can be compiled in two modes:
- - **Runtime** (default) - This will compile the entire engine, scripting system and the editor. This is intended for those that plan on using the editor as a runtime to develop and build games.
- - **Framework** - This will compile only the C++ engine framework without the editor or the scripting API. This is intended for those that prefer to create applications more directly with less high level abstractions.
+ - **Runtime** (default) - This will compile the entire engine, scripting system and the editor. This is intended for those that plan on using the editor as their main environment for development.
+ - **Framework** - This will compile only the C++ engine framework without the editor or the scripting API. This is intended for those that prefer to develop more directly with less high level abstractions.
  
 Supported platforms:
  - Windows
@@ -16,11 +16,11 @@ Supported compilers:
  - MSVC++ 14.0 (Visual Studio 2015)
  - (Clang/GCC coming soon)
  
-## Compile steps (Simple)
-
-We provide two sets of compile intructions depending on what you need:
+Below we provide two sets of compile intructions depending on what you need:
  - Simple: Straightforward setup for those that don't need to perform any special configuration on Banshee's build and just want to compile with default settings
- - Advanced: Slightly more complicated setup, but allows you to configure exactly how to build Banshee and with which tools
+ - Advanced: Slightly more complicated setup, but allows you to configure exactly how to build Banshee and with which tools 
+ 
+## Compile steps (Simple)
 
 ### Windows
 
