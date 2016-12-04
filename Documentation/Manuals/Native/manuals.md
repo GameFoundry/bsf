@@ -15,6 +15,16 @@ Manuals									{#manuals}
  - [Importing textures](@ref importingTextures)
  - [Importing meshes](@ref importingMeshes)
  - [Materials](@ref simpleMaterials)
+- **Utilities**
+ - [Containers](@ref containers)
+ - [Strings](@ref strings)
+ - [Memory allocation](@ref memory)
+ - [Smart pointers](@ref smartPointers) 
+ - [Events](@ref events)
+ - [File system](@ref fileSystem) 
+ - [Math utilities](@ref mathUtilities)
+ - [Logging messages](@ref logging)
+ - [Measuring time](@ref time)
  
 # Developer guides
 
