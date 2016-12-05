@@ -2,9 +2,7 @@
 #
 # This module defines
 #  Vulkan_INCLUDE_DIRS
-#  Vulkan_LIBRARIES_DEBUG
-#  Vulkan_LIBRARIES_OPTIMIZED
-#  Vulkan_LIBRARY_DIRS
+#  Vulkan_LIBRARIES
 #  Vulkan_FOUND
 
 # TODO: Set default install paths for mac/unix
@@ -38,7 +36,13 @@ else()
 	message(STATUS "...Vulkan OK.")
 endif()
 
+if(Vulkan_FOUND)
+	add_library(Vulkan STATIC IMPORTED)
+	set_target_properties(Vulkan PROPERTIES IMPORTED_LOCATION_DEBUG "${Vulkan_LIBRARY_DEBUG}")
+	set_target_properties(Vulkan PROPERTIES IMPORTED_LOCATION_OPTIMIZEDDEBUG "${Vulkan_LIBRARY_DEBUG}")
+	set_target_properties(Vulkan PROPERTIES IMPORTED_LOCATION_RELEASE "${Vulkan_LIBRARY_OPTIMIZED}")	
+endif()
+
 mark_as_advanced(Vulkan_INSTALL_DIRS Vulkan_INCLUDE_DIR Vulkan_LIBRARY_OPTIMIZED Vulkan_LIBRARY_DEBUG)
 set(Vulkan_INCLUDE_DIRS ${Vulkan_INCLUDE_DIR})
-set(Vulkan_LIBRARIES_OPTIMIZED ${Vulkan_LIBRARY_OPTIMIZED})
-set(Vulkan_LIBRARIES_DEBUG ${Vulkan_LIBRARY_DEBUG})
+set(Vulkan_LIBRARIES Vulkan)

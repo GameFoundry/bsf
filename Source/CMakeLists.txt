@@ -167,16 +167,6 @@ function(add_library_per_config_multi target_name lib_name file_name release_nam
 	target_link_libraries(${target_name} PRIVATE ${lib_name})	
 endfunction()
 
-function(add_package_library target_name lib_name)
-	add_library(${lib_name} STATIC IMPORTED)
-
-	set_target_properties(${lib_name} PROPERTIES IMPORTED_LOCATION_DEBUG "${${lib_name}_LIBRARIES_DEBUG}")
-	set_target_properties(${lib_name} PROPERTIES IMPORTED_LOCATION_OPTIMIZEDDEBUG "${${lib_name}_LIBRARIES_DEBUG}")
-	set_target_properties(${lib_name} PROPERTIES IMPORTED_LOCATION_RELEASE "${${lib_name}_LIBRARIES_OPTIMIZED}")	
-
-	target_link_libraries(${target_name} PRIVATE ${lib_name})	
-endfunction()
-
 function(add_engine_dependencies target_name)
 	if(RENDER_API_MODULE MATCHES "DirectX 11")
 		add_dependencies(${target_name} BansheeD3D11RenderAPI)

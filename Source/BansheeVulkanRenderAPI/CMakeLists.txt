@@ -26,10 +26,13 @@ include_directories(${BansheeVulkanRenderAPI_INC})
 # Target
 add_library(BansheeVulkanRenderAPI SHARED ${BS_BANSHEEVULKANRENDERAPI_SRC})
 
+# Defines
+target_compile_definitions(BansheeVulkanRenderAPI PRIVATE -DBS_VULKAN_EXPORTS)
+
 # Libraries	
 ## External libs: Vulkan, glslang
-add_package_library(BansheeVulkanRenderAPI Vulkan)
-add_package_library(BansheeVulkanRenderAPI glslang)
+target_link_libraries(BansheeVulkanRenderAPI PRIVATE ${Vulkan_LIBRARIES})
+target_link_libraries(BansheeVulkanRenderAPI PRIVATE ${glslang_LIBRARIES})
 
 ## Local libs
 target_link_libraries(BansheeVulkanRenderAPI PRIVATE BansheeUtility BansheeCore)

@@ -26,7 +26,7 @@ target_compile_definitions(BansheeFMOD PRIVATE -DBS_FMOD_EXPORTS)
 
 # Libraries
 ## External libs: FMOD, Vorbis, Ogg
-add_package_library(BansheeFMOD FMOD)
+target_link_libraries(BansheeFMOD PRIVATE ${FMOD_LIBRARIES})	
 
 add_library_per_config_multi(BansheeFMOD libvorbis libvorbis libvorbis libvorbis)
 add_library_per_config_multi(BansheeFMOD libvorbisfile libvorbis libvorbisfile libvorbisfile)
