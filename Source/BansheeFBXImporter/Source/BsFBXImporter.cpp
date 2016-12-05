@@ -593,7 +593,7 @@ namespace bs
 		Vector3 rotationEuler = FBXToNativeType(fbxNode->LclRotation.Get());
 		Vector3 scale = FBXToNativeType(fbxNode->LclScaling.Get());
 
-		Quaternion rotation((Radian)rotationEuler.x, (Radian)rotationEuler.y, (Radian)rotationEuler.z);
+		Quaternion rotation((Degree)rotationEuler.x, (Degree)rotationEuler.y, (Degree)rotationEuler.z);
 
 		node->localTransform.setTRS(translation, rotation, scale);
 		node->name = fbxNode->GetNameWithoutNameSpacePrefix().Buffer();
