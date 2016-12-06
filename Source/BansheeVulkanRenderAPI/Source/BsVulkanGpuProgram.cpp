@@ -11,9 +11,10 @@
 #include "BsHardwareBufferManager.h"
 #include "BsRenderStats.h"
 
-#include "Public/ShaderLang.h"
-#include "Include/Types.h"
-#include "vulkan/icd-spv.h"
+#include "glslang/Public/ShaderLang.h"
+#include "glslang/Include/Types.h"
+#include "SPIRV/GlslangToSpv.h"
+#include "SPIRV/Logger.h"
 
 namespace bs
 {
@@ -568,6 +569,10 @@ namespace bs
 			break;
 		}
 
+		std::vector<UINT32> spirv;
+		spv::SpvBuildLogger logger;
+		std::string compileLog;
+
 		const String& source = mProperties.getSource();
 		const char* sourceBytes = source.c_str();
 
@@ -593,6 +598,9 @@ namespace bs
 			goto cleanup;
 		}
 
+		// Compile to SPIR-V
+		GlslangToSpv(*program->getIntermediate(glslType), spirv, &logger);
+
 		// Parse uniforms
 		program->buildReflection();
 
@@ -616,27 +624,13 @@ namespace bs
 			}
 		}
 
-		// Compile shader and create Vulkan module
-		// Note: We provide GLSL code to the driver under the hood instead of using SPIR-V, mainly because of
-		// optimization concerns. Later we can convert to SPIR-V and feed it directly.
-		UINT32 codeSize = (UINT32)source.size() + 3 * sizeof(UINT32);
-		UINT32* codeBytes = (UINT32*)bs_stack_alloc(codeSize);
-
-		// Add special header so code is recognized as GLSL
-		UINT32* header = (UINT32*)codeBytes;
-		header[0] = ICD_SPV_MAGIC;
-		header[1] = 0;
-		header[2] = VulkanUtility::getShaderStage(mProperties.getType());
-
-		UINT32* glslBytes = codeBytes + 3;
-		memcpy(glslBytes, sourceBytes, source.size());
-
+		// Create Vulkan module
 		VkShaderModuleCreateInfo moduleCI;
 		moduleCI.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
 		moduleCI.pNext = nullptr;
 		moduleCI.flags = 0;
-		moduleCI.codeSize = codeSize;
-		moduleCI.pCode = codeBytes;
+		moduleCI.codeSize = spirv.size();
+		moduleCI.pCode = spirv.data();
 
 		VulkanRenderAPI& rapi = static_cast<VulkanRenderAPI&>(RenderAPICore::instance());
 
@@ -657,8 +651,6 @@ namespace bs
 				mModules[i] = rescManager.create<VulkanShaderModule>(shaderModule);
 			}
 		}
-
-		bs_stack_free(codeBytes);
 
 cleanup:
 		delete program;
