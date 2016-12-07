@@ -14,7 +14,9 @@ Manuals									{#manuals}
  - [Cameras](@ref cameras)
  - [Importing textures](@ref importingTextures)
  - [Importing meshes](@ref importingMeshes)
- - [Materials](@ref simpleMaterials)
+ - [Materials](@ref simpleMaterial)
+ - [Rendering objects](@ref renderingObjects)
+ - [Lighting](@ref lights)
 - **Utilities**
  - [Containers](@ref containers)
  - [Strings](@ref strings)

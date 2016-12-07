@@ -30,15 +30,38 @@ namespace bs
 
 		bool operator==(const SAMPLER_STATE_DESC& rhs) const;
 
+		/** Determines how are texture coordinates outside of [0, 1] range handled. */
 		UVWAddressingMode addressMode;
+		
+		/** Filtering used when texture is displayed as smaller than its original size. */
 		FilterOptions minFilter;
+		
+		/** Filtering used when texture is displayed as larger than its original size. */
 		FilterOptions magFilter;
-		FilterOptions mipFilter;
+		
+		/** Filtering used to blend between the different mip levels. */
+		FilterOptions mipFilter; 
+
+		/** Maximum number of samples if anisotropic filtering is enabled. Max is 16. */
 		UINT32 maxAniso;
+
+		/**
+		 * Mipmap bias allows you to adjust the mipmap selection calculation. Negative values  force a larger mipmap to be
+		 * used, and positive values smaller. Units are in values of mip levels, so -1 means use a mipmap one level higher 
+		 * than default.
+		 */
 		float mipmapBias;
+
+		/** Minimum mip-map level that is allowed to be displayed. */
 		float mipMin;
+
+		/** Maximum mip-map level that is allowed to be displayed. Set to FLT_MAX for no limit. */
 		float mipMax;
+
+		/** Border color to use when using border addressing mode as specified by @p addressMode. */
 		Color borderColor;
+
+		/** Function that compares sampled data with existing sampled data. */
 		CompareFunction comparisonFunc;
 	};
 
