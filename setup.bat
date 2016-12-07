@@ -42,3 +42,5 @@ cd ../..
 echo.
 echo.
 echo All done! Visual Studio solution provided at %cd%/Build/VS2015/Banshee.sln
+
+pause
