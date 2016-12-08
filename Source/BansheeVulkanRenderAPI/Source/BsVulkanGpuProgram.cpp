@@ -10,6 +10,8 @@
 #include "BsVertexDeclaration.h"
 #include "BsHardwareBufferManager.h"
 #include "BsRenderStats.h"
+#include "BsFileSystem.h"
+#include "BsDataStream.h"
 
 #include "glslang/Public/ShaderLang.h"
 #include "glslang/Include/Types.h"
@@ -598,12 +600,13 @@ namespace bs
 			goto cleanup;
 		}
 
+		program->mapIO();
+		program->buildReflection();
+
 		// Compile to SPIR-V
 		GlslangToSpv(*program->getIntermediate(glslType), spirv, &logger);
 
 		// Parse uniforms
-		program->buildReflection();
-
 		if(!parseUniforms(program, *mParametersDesc, mCompileError))
 		{
 			mIsCompiled = false;
@@ -629,7 +632,7 @@ namespace bs
 		moduleCI.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
 		moduleCI.pNext = nullptr;
 		moduleCI.flags = 0;
-		moduleCI.codeSize = spirv.size();
+		moduleCI.codeSize = spirv.size() * sizeof(UINT32);
 		moduleCI.pCode = spirv.data();
 
 		VulkanRenderAPI& rapi = static_cast<VulkanRenderAPI&>(RenderAPICore::instance());

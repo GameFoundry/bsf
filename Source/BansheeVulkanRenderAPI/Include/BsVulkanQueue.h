@@ -46,6 +46,7 @@ namespace bs
 		VkQueue mQueue;
 		GpuQueueType mType;
 		UINT32 mIndex;
+		VkPipelineStageFlags mSubmitDstWaitMask[BS_MAX_UNIQUE_QUEUES];
 
 		VulkanCmdBuffer* mLastCommandBuffer;
 	};

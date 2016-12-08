@@ -343,7 +343,7 @@ namespace bs
 				continue;
 
 			UINT32 currentQueueFamily = resource->getQueueFamily();
-			if (currentQueueFamily != mQueueFamily)
+			if (currentQueueFamily != -1 && currentQueueFamily != mQueueFamily)
 			{
 				Vector<VkBufferMemoryBarrier>& barriers = mTransitionInfoTemp[currentQueueFamily].bufferBarriers;
 
@@ -367,7 +367,7 @@ namespace bs
 			ImageInfo& imageInfo = mImageInfos[entry.second];
 
 			UINT32 currentQueueFamily = resource->getQueueFamily();
-			bool queueMismatch = resource->isExclusive() && currentQueueFamily != mQueueFamily;
+			bool queueMismatch = resource->isExclusive() && currentQueueFamily != -1 && currentQueueFamily != mQueueFamily;
 
 			if (queueMismatch || imageInfo.currentLayout != imageInfo.requiredLayout)
 			{

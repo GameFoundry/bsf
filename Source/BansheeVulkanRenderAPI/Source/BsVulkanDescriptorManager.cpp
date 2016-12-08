@@ -10,7 +10,7 @@
 namespace bs
 {
 	VulkanLayoutKey::VulkanLayoutKey(VkDescriptorSetLayoutBinding* bindings, UINT32 numBindings)
-		:bindings(bindings), numBindings(numBindings)
+		:bindings(bindings), numBindings(numBindings), layout(nullptr)
 	{ }
 
 	bool VulkanLayoutKey::operator==(const VulkanLayoutKey& rhs) const

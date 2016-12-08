@@ -7,7 +7,10 @@ namespace bs
 {
 	VulkanQueue::VulkanQueue(VulkanDevice& device, VkQueue queue, GpuQueueType type, UINT32 index)
 		:mDevice(device), mQueue(queue), mType(type), mIndex(index), mLastCommandBuffer(nullptr)
-	{ }
+	{
+		for (UINT32 i = 0; i < BS_MAX_UNIQUE_QUEUES; i++)
+			mSubmitDstWaitMask[i] = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	}
 
 	bool VulkanQueue::isExecuting() const
 	{
@@ -25,16 +28,22 @@ namespace bs
 		VkSubmitInfo submitInfo;
 		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 		submitInfo.pNext = nullptr;
-		submitInfo.pWaitDstStageMask = 0;
 		submitInfo.commandBufferCount = 1;
 		submitInfo.pCommandBuffers = &vkCmdBuffer;
 		submitInfo.signalSemaphoreCount = 1;
 		submitInfo.pSignalSemaphores = &semaphore;
+		submitInfo.waitSemaphoreCount = semaphoresCount;
 
 		if (semaphoresCount > 0)
+		{
 			submitInfo.pWaitSemaphores = waitSemaphores;
+			submitInfo.pWaitDstStageMask = mSubmitDstWaitMask;
+		}
 		else
+		{
 			submitInfo.pWaitSemaphores = nullptr;
+			submitInfo.pWaitDstStageMask = nullptr;
+		}
 
 		VkResult result = vkQueueSubmit(mQueue, 1, &submitInfo, cmdBuffer->getFence());
 		assert(result == VK_SUCCESS);

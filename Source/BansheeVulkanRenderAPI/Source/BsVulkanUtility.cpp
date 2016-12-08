@@ -237,6 +237,9 @@ namespace bs
 		case GPT_COMPUTE_PROGRAM:
 			return VK_SHADER_STAGE_COMPUTE_BIT;
 		}
+
+		// Unsupported type
+		return VK_SHADER_STAGE_VERTEX_BIT;
 	}
 
 	VkSamplerAddressMode VulkanUtility::getAddressingMode(TextureAddressingMode mode)

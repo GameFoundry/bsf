@@ -39,7 +39,6 @@ namespace bs
 	void VulkanResource::notifyUsed(UINT32 globalQueueIdx, UINT32 queueFamily, VulkanUseFlags useFlags)
 	{
 		Lock lock(mMutex);
-		assert(mState != State::Destroyed);
 		assert(useFlags != VulkanUseFlag::None);
 
 		if(isUsed() && mState == State::Normal) // Used without support for concurrency
@@ -68,32 +67,44 @@ namespace bs
 
 	void VulkanResource::notifyDone(UINT32 globalQueueIdx, VulkanUseFlags useFlags)
 	{
-		Lock lock(mMutex);
-		mNumUsedHandles--;
-		mNumBoundHandles--;
-
-		if (useFlags.isSet(VulkanUseFlag::Read))
+		bool destroy;
 		{
-			assert(mReadUses[globalQueueIdx] > 0);
-			mReadUses[globalQueueIdx]--;
+			Lock lock(mMutex);
+			mNumUsedHandles--;
+			mNumBoundHandles--;
+
+			if (useFlags.isSet(VulkanUseFlag::Read))
+			{
+				assert(mReadUses[globalQueueIdx] > 0);
+				mReadUses[globalQueueIdx]--;
+			}
+
+			if (useFlags.isSet(VulkanUseFlag::Write))
+			{
+				assert(mWriteUses[globalQueueIdx] > 0);
+				mWriteUses[globalQueueIdx]--;
+			}
+
+			destroy = !isBound() && mState == State::Destroyed; // Queued for destruction
 		}
 
-		if (useFlags.isSet(VulkanUseFlag::Write))
-		{
-			assert(mWriteUses[globalQueueIdx] > 0);
-			mWriteUses[globalQueueIdx]--;
-		}
-
-		if (!isBound() && mState == State::Destroyed) // Queued for destruction
+		// (Safe to check outside of mutex as we guarantee that once queued for destruction, state cannot be changed)
+		if (destroy)
 			mOwner->destroy(this);
 	}
 
 	void VulkanResource::notifyUnbound()
 	{
-		Lock lock(mMutex);
-		mNumBoundHandles--;
+		bool destroy;
+		{
+			Lock lock(mMutex);
+			mNumBoundHandles--;
 
-		if (!isBound() && mState == State::Destroyed) // Queued for destruction
+			destroy = !isBound() && mState == State::Destroyed; // Queued for destruction
+		}
+
+		// (Safe to check outside of mutex as we guarantee that once queued for destruction, state cannot be changed)
+		if (destroy)
 			mOwner->destroy(this);
 	}
 
@@ -124,13 +135,19 @@ namespace bs
 
 	void VulkanResource::destroy()
 	{
-		Lock lock(mMutex);
-		assert(mState != State::Destroyed && "Vulkan resource destroy() called more than once.");
+		bool destroy;
+		{
+			Lock lock(mMutex);
+			assert(mState != State::Destroyed && "Vulkan resource destroy() called more than once.");
 
-		mState = State::Destroyed;
+			mState = State::Destroyed;
 
-		// If not bound anyhwere, destroy right away, otherwise check when it is reported as finished on the device
-		if (!isBound())
+			// If not bound anyhwere, destroy right away, otherwise check when it is reported as finished on the device
+			destroy = !isBound();
+		}
+
+		// (Safe to check outside of mutex as we guarantee that once queued for destruction, state cannot be changed)
+		if (destroy)
 			mOwner->destroy(this);
 	}
 

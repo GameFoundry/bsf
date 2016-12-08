@@ -293,14 +293,10 @@ namespace bs
 				return buffer->map(offset, length);
 			}
 
-			// No GPU writes are are supported and we're only reading, so no need to wait on anything
-			if (options == GBL_READ_ONLY && !mSupportsGPUWrites)
-				return buffer->map(offset, length);
-
-			// We need to read the buffer contents with GPU writes potentially enabled
+			// We need to read the buffer contents
 			if(options == GBL_READ_ONLY || options == GBL_READ_WRITE)
 			{
-				// We need to wait until (potential) GPU read/write completes
+				// We need to wait until (potential) read/write operations complete
 				VulkanTransferBuffer* transferCB = cbManager.getTransferBuffer(deviceIdx, queueType, localQueueIdx);
 
 				// Ensure flush() will wait for all queues currently using to the buffer (if any) to finish
@@ -330,9 +326,9 @@ namespace bs
 				// Submit the command buffer and wait until it finishes
 				transferCB->flush(true);
 
-				// If some CB has an operation queued that will be using the current contents of the buffer, create a new 
-				// buffer so we don't modify the previous use of the buffer
-				if (buffer->isBound())
+				// If writing and some CB has an operation queued that will be using the current contents of the buffer, 
+				// create a new  buffer so we don't modify the previous use of the buffer
+				if (options == GBL_READ_WRITE && buffer->isBound())
 				{
 					VulkanBuffer* newBuffer = createBuffer(device, mSize, false, true);
 
@@ -380,11 +376,12 @@ namespace bs
 		{
 			VulkanTransferBuffer* transferCB = cbManager.getTransferBuffer(deviceIdx, queueType, localQueueIdx);
 				
-			// Similar to above, if buffer supports GPU writes, we need to wait on any potential writes to complete
-			if(mSupportsGPUWrites)
+			// Similar to above, if buffer supports GPU writes or is currently being written to, we need to wait on any
+			// potential writes to complete
+			UINT32 writeUseMask = buffer->getUseInfo(VulkanUseFlag::Write);
+			if(mSupportsGPUWrites || writeUseMask != 0)
 			{
 				// Ensure flush() will wait for all queues currently writing to the buffer (if any) to finish
-				UINT32 writeUseMask = buffer->getUseInfo(VulkanUseFlag::Write);
 				transferCB->appendMask(writeUseMask);
 			}
 

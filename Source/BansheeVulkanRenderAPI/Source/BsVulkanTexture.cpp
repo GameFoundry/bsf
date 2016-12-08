@@ -867,13 +867,6 @@ namespace bs
 				return lockedArea;
 			}
 
-			// No GPU writes are are supported and we're only reading, so no need to wait on anything
-			if (options == GBL_READ_ONLY)
-			{
-				image->map(face, mipLevel, lockedArea);
-				return lockedArea;
-			}
-
 			// Caller doesn't care about buffer contents, so just discard the existing buffer and create a new one
 			if (options == GBL_WRITE_ONLY_DISCARD)
 			{
@@ -887,20 +880,26 @@ namespace bs
 				return lockedArea;
 			}
 
-			// We need to both read and write, meaning we need to wait until existing reads complete before we return
-			if (options == GBL_READ_WRITE)
+			// We need to read the buffer contents
+			if (options == GBL_READ_ONLY || options == GBL_READ_WRITE)
 			{
 				VulkanTransferBuffer* transferCB = cbManager.getTransferBuffer(deviceIdx, queueType, localQueueIdx);
 
-				// Ensure flush() will wait for all queues currently reading from the texture to finish
+				// Ensure flush() will wait for all queues currently using to the texture (if any) to finish
+				// If only reading, wait for all writes to complete, otherwise wait on both writes and reads
+				if (options == GBL_READ_ONLY)
+					useMask = subresource->getUseInfo(VulkanUseFlag::Write);
+				else
+					useMask = subresource->getUseInfo(VulkanUseFlag::Read | VulkanUseFlag::Write);
+
 				transferCB->appendMask(useMask);
 
 				// Submit the command buffer and wait until it finishes
 				transferCB->flush(true);
 
-				// If some CB has an operation queued that will be using the current contents of the image, create a new 
-				// image so we don't modify the previous use of the image
-				if (subresource->isBound())
+				// If writing and some CB has an operation queued that will be using the current contents of the image, 
+				// create a new image so we don't modify the previous use of the image
+				if (options == GBL_READ_WRITE && subresource->isBound())
 				{
 					VulkanImage* newImage = createImage(device);
 
@@ -944,11 +943,13 @@ namespace bs
 		{
 			VulkanTransferBuffer* transferCB = cbManager.getTransferBuffer(deviceIdx, queueType, localQueueIdx);
 
-			// Similar to above, if image supports GPU writes, we need to wait on any potential writes to complete
-			if (mSupportsGPUWrites)
+			// Similar to above, if image supports GPU writes or is currently being written to, we need to wait on any
+			// potential writes to complete
+			UINT32 writeUseMask = subresource->getUseInfo(VulkanUseFlag::Write);
+
+			if (mSupportsGPUWrites || writeUseMask != 0)
 			{
 				// Ensure flush() will wait for all queues currently writing to the image (if any) to finish
-				UINT32 writeUseMask = subresource->getUseInfo(VulkanUseFlag::Write);
 				transferCB->appendMask(writeUseMask);
 			}
 
@@ -989,8 +990,8 @@ namespace bs
 			VkImageLayout dstLayout = image->getLayout();
 			if (dstLayout == VK_IMAGE_LAYOUT_UNDEFINED || dstLayout == VK_IMAGE_LAYOUT_PREINITIALIZED)
 			{
-				currentAccessMask = image->getAccessFlags(dstLayout);
 				dstLayout = getOptimalLayout();
+				currentAccessMask = image->getAccessFlags(dstLayout);
 			}
 
 			transferCB->setLayout(image->getHandle(), VK_ACCESS_TRANSFER_READ_BIT, currentAccessMask,

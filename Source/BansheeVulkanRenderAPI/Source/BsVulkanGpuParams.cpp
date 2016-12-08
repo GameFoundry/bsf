@@ -54,7 +54,7 @@ namespace bs
 		UINT32 numDevices = 0;
 		for (UINT32 i = 0; i < BS_MAX_DEVICES; i++)
 		{
-			if (devices != nullptr)
+			if (devices[i] != nullptr)
 				numDevices++;
 		}
 
