@@ -13,6 +13,7 @@
 #include "BsFileSystem.h"
 #include "BsDataStream.h"
 
+#define AMD_EXTENSIONS
 #include "glslang/Public/ShaderLang.h"
 #include "glslang/Include/Types.h"
 #include "SPIRV/GlslangToSpv.h"
@@ -194,6 +195,14 @@ namespace bs
 				case 4:		return GPDT_INT4;
 				default:	return GPDT_UNKNOWN;
 				}
+			case glslang::EbtUint:
+				switch (vectorSize)
+				{
+				case 2:		return GPDT_INT2;
+				case 3:		return GPDT_INT3;
+				case 4:		return GPDT_INT4;
+				default:	return GPDT_UNKNOWN;
+				}
 			default:        
 				return GPDT_UNKNOWN;
 			}
@@ -242,6 +251,7 @@ namespace bs
 			{
 			case glslang::EbtFloat:     return GPDT_FLOAT1;
 			case glslang::EbtInt:       return GPDT_INT1;
+			case glslang::EbtUint:      return GPDT_INT1;
 			case glslang::EbtBool:      return GPDT_BOOL;
 			default:					return GPDT_UNKNOWN;
 			}
@@ -368,7 +378,6 @@ namespace bs
 
 			const char* name = program->getUniformBlockName(i);
 			int size = program->getUniformBlockSize(i); 
-			int index = program->getUniformBlockIndex(i);
 
 			GpuParamBlockDesc param;
 			param.name = name;
@@ -381,7 +390,7 @@ namespace bs
 				param.set = 0;
 
 			desc.paramBlocks[name] = param;
-			uniformBlockMap[index] = name;
+			uniformBlockMap[i] = name;
 		}
 
 		// Parse individual uniforms

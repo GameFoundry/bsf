@@ -101,6 +101,8 @@ namespace bs
 	{
 		Lock(mMutex);
 
+		GraphicsPipelineStateCore::initialize();
+
 		std::pair<VkShaderStageFlagBits, GpuProgramCore*> stages[] =
 			{ 
 				{ VK_SHADER_STAGE_VERTEX_BIT, mData.vertexProgram.get() },
@@ -320,7 +322,6 @@ namespace bs
 		}
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_PipelineState);
-		GraphicsPipelineStateCore::initialize();
 	}
 
 	VulkanPipeline* VulkanGraphicsPipelineStateCore::getPipeline(
@@ -515,6 +516,13 @@ namespace bs
 
 	void VulkanComputePipelineStateCore::initialize()
 	{
+		ComputePipelineStateCore::initialize();
+
+		// This might happen fairly often if shaders with unsupported languages are loaded, in which case the pipeline
+		// will never get used, and its fine not to initialize it.
+		if (!mProgram->isCompiled())
+			return;
+
 		VulkanGpuProgramCore* vkProgram = static_cast<VulkanGpuProgramCore*>(mProgram.get());
 
 		VkPipelineShaderStageCreateInfo stageCI;
@@ -582,7 +590,6 @@ namespace bs
 		}
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_PipelineState);
-		ComputePipelineStateCore::initialize();
 	}
 
 	VulkanPipeline* VulkanComputePipelineStateCore::getPipeline(UINT32 deviceIdx) const

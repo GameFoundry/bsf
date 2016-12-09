@@ -37,25 +37,30 @@ namespace bs
 	template class TGraphicsPipelineState < true >;
 
 	GraphicsPipelineStateCore::GraphicsPipelineStateCore(const PIPELINE_STATE_CORE_DESC& desc, GpuDeviceFlags deviceMask)
-		:TGraphicsPipelineState(desc)
+		:TGraphicsPipelineState(desc), mDeviceMask(deviceMask)
+	{ }
+
+	void GraphicsPipelineStateCore::initialize()
 	{
 		GPU_PIPELINE_PARAMS_DESC paramsDesc;
-		if (desc.vertexProgram != nullptr)
-			paramsDesc.vertexParams = desc.vertexProgram->getParamDesc();
+		if (mData.vertexProgram != nullptr)
+			paramsDesc.vertexParams = mData.vertexProgram->getParamDesc();
 
-		if (desc.fragmentProgram != nullptr)
-			paramsDesc.fragmentParams = desc.fragmentProgram->getParamDesc();
+		if (mData.fragmentProgram != nullptr)
+			paramsDesc.fragmentParams = mData.fragmentProgram->getParamDesc();
 
-		if (desc.geometryProgram != nullptr)
-			paramsDesc.geometryParams = desc.geometryProgram->getParamDesc();
+		if (mData.geometryProgram != nullptr)
+			paramsDesc.geometryParams = mData.geometryProgram->getParamDesc();
 
-		if (desc.hullProgram != nullptr)
-			paramsDesc.hullParams = desc.hullProgram->getParamDesc();
+		if (mData.hullProgram != nullptr)
+			paramsDesc.hullParams = mData.hullProgram->getParamDesc();
 
-		if (desc.domainProgram != nullptr)
-			paramsDesc.domainParams = desc.domainProgram->getParamDesc();
+		if (mData.domainProgram != nullptr)
+			paramsDesc.domainParams = mData.domainProgram->getParamDesc();
 
-		mParamInfo = GpuPipelineParamInfoCore::create(paramsDesc, deviceMask);
+		mParamInfo = GpuPipelineParamInfoCore::create(paramsDesc, mDeviceMask);
+
+		CoreObjectCore::initialize();
 	}
 
 	SPtr<GraphicsPipelineStateCore> GraphicsPipelineStateCore::create(const PIPELINE_STATE_CORE_DESC& desc, GpuDeviceFlags deviceMask)
@@ -131,12 +136,17 @@ namespace bs
 	template class TComputePipelineState < true >;
 
 	ComputePipelineStateCore::ComputePipelineStateCore(const SPtr<GpuProgramCore>& program, GpuDeviceFlags deviceMask)
-		:TComputePipelineState(program)
+		:TComputePipelineState(program), mDeviceMask(deviceMask)
+	{ }
+
+	void ComputePipelineStateCore::initialize()
 	{
 		GPU_PIPELINE_PARAMS_DESC paramsDesc;
-		paramsDesc.computeParams = program->getParamDesc();
+		paramsDesc.computeParams = mProgram->getParamDesc();
 
-		mParamInfo = GpuPipelineParamInfoCore::create(paramsDesc, deviceMask);
+		mParamInfo = GpuPipelineParamInfoCore::create(paramsDesc, mDeviceMask);
+
+		CoreObjectCore::initialize();
 	}
 
 	SPtr<ComputePipelineStateCore> ComputePipelineStateCore::create(const SPtr<GpuProgramCore>& program, 

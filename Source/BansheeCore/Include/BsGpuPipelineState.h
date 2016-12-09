@@ -227,9 +227,15 @@ namespace bs
 		GraphicsPipelineStateCore(const PIPELINE_STATE_CORE_DESC& desc, GpuDeviceFlags deviceMask);
 		virtual ~GraphicsPipelineStateCore() { }
 
+		/** @copydoc CoreObjectCore::initialize() */
+		void initialize() override;
+
 		/** @copydoc RenderStateCoreManager::createGraphicsPipelineState */
 		static SPtr<GraphicsPipelineStateCore> create(const PIPELINE_STATE_CORE_DESC& desc, 
 			GpuDeviceFlags deviceMask = GDF_DEFAULT);
+
+	protected:
+		GpuDeviceFlags mDeviceMask;
 	};
 
 	/** Core thread version of a ComputePipelineState. */
@@ -239,9 +245,15 @@ namespace bs
 		ComputePipelineStateCore(const SPtr<GpuProgramCore>& program, GpuDeviceFlags deviceMask);
 		virtual ~ComputePipelineStateCore() { }
 
+		/** @copydoc CoreObjectCore::initialize() */
+		void initialize() override;
+
 		/** @copydoc RenderStateCoreManager::createComputePipelineState */
 		static SPtr<ComputePipelineStateCore> create(const SPtr<GpuProgramCore>& program,
 			GpuDeviceFlags deviceMask = GDF_DEFAULT);
+
+	protected:
+		GpuDeviceFlags mDeviceMask;
 	};
 
 	/** @} */
