@@ -311,7 +311,7 @@ namespace bs
 		UINT32 numSemaphores;
 		cbm.getSyncSemaphores(deviceIdx, syncMask, mSemaphoresTemp, numSemaphores);
 
-		mSwapChain->present(queue->getHandle(), mSemaphoresTemp, numSemaphores);
+		queue->present(mSwapChain.get(), mSemaphoresTemp, numSemaphores);
 		mRequiresNewBackBuffer = true;
 	}
 
@@ -527,7 +527,7 @@ namespace bs
 
 		if(name == "PS")
 		{
-			VkSemaphore* presentSemaphore = (VkSemaphore*)data;
+			VulkanSemaphore** presentSemaphore = (VulkanSemaphore**)data;
 			*presentSemaphore = mSwapChain->getBackBuffer().sync;
 			return;
 		}

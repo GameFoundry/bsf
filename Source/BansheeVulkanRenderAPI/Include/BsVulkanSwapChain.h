@@ -16,7 +16,7 @@ namespace bs
 	{
 		VulkanImage* image;
 		VkImageView view;
-		VkSemaphore sync;
+		VulkanSemaphore* sync;
 		bool acquired;
 
 		VulkanFramebuffer* framebuffer;
@@ -48,15 +48,6 @@ namespace bs
 		 */
 		UINT32 getHeight() const { return mHeight; }
 
-		/** 
-		 * Presents the back buffer to the output device, swapping the buffers. 
-		 *
-		 * @param[in]	queue			Queue on which to queue the present operation. Must support present operations.
-		 * @param[in]	semaphores		Optional semaphores to wait on before presenting the queue.
-		 * @param[in]	numSemaphores	Number of semaphores in the @p semaphores array.
-		 */
-		void present(VkQueue queue, VkSemaphore* semaphores, UINT32 numSemaphores);
-
 		/**
 		 * Acquires a new back buffer image. Caller can retrieve the surface by calling getBackBuffer(). Caller must wait
 		 * on the semaphore provided by the surface before rendering to it.
@@ -64,6 +55,12 @@ namespace bs
 		 * @note Must only be called once in-between present() calls, or before the first present() call.
 		 */
 		void acquireBackBuffer();
+
+		/** 
+		 * Prepares the swap chain for the present operation. Returns the index of the image representing the current
+		 * back buffer.
+		 */
+		UINT32 prepareForPresent();
 
 		/** Returns information describing the current back buffer. */
 		const SwapChainSurface& getBackBuffer() { return mSurfaces[mCurrentBackBufferIdx]; }
@@ -76,6 +73,9 @@ namespace bs
 
 		/** Returns an image view representing the depth-stencil buffer, if any. */
 		VkImageView getDepthStencilView() const { return mDepthStencilView; }
+
+		/** Returns the internal swap chain handle. */
+		VkSwapchainKHR getHandle() const { return mSwapChain; }
 	private:
 		/** Destroys current swap chain and depth stencil image (if any). */
 		void clear(VkSwapchainKHR swapChain);

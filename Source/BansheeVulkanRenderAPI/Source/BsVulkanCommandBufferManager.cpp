@@ -111,8 +111,6 @@ namespace bs
 		{
 			SPtr<VulkanDevice> device = rapi._getDevice(i);
 
-			bs_zero_out(mDeviceData[i].lastActiveBuffer);
-
 			for (UINT32 j = 0; j < GQT_COUNT; j++)
 			{
 				GpuQueueType queueType = (GpuQueueType)j;
@@ -148,34 +146,33 @@ namespace bs
 		return bs_shared_ptr(buffer);
 	}
 
-	void VulkanCommandBufferManager::setActiveBuffer(GpuQueueType type, UINT32 deviceIdx, UINT32 queueIdx, 
-		VulkanCmdBuffer* buffer)
-	{
-		assert(deviceIdx < mNumDevices);
-		assert(buffer->isSubmitted());
-
-		UINT32 idx = CommandSyncMask::getGlobalQueueIdx(type, queueIdx);
-		mDeviceData[deviceIdx].lastActiveBuffer[idx] = buffer;
-		mDeviceData[deviceIdx].activeBuffers.push_back(buffer);
-	}
-
-	void VulkanCommandBufferManager::getSyncSemaphores(UINT32 deviceIdx, UINT32 syncMask, VkSemaphore* semaphores, 
+	void VulkanCommandBufferManager::getSyncSemaphores(UINT32 deviceIdx, UINT32 syncMask, VulkanSemaphore** semaphores,
 		UINT32& count)
 	{
-		assert(deviceIdx < mNumDevices);
-		const PerDeviceData& deviceData = mDeviceData[deviceIdx];
+		SPtr<VulkanDevice> device = mRapi._getDevice(deviceIdx);
 
 		UINT32 semaphoreIdx = 0;
-		for (UINT32 i = 0; i < BS_MAX_UNIQUE_QUEUES; i++)
+		for(UINT32 i = 0; i < GQT_COUNT; i++)
 		{
-			if (deviceData.lastActiveBuffer[i] == nullptr)
-				continue;
+			GpuQueueType queueType = (GpuQueueType)i;
 
-			if ((syncMask & (1 << i)) == 0) // We don't care about the command buffer
-				continue;
+			UINT32 numQueues = device->getNumQueues(queueType);
+			for(UINT32 j = 0; j < numQueues; j++)
+			{
+				VulkanQueue* queue = device->getQueue(queueType, j);
+				VulkanCmdBuffer* lastCB = queue->getLastCommandBuffer();
 
-			assert(deviceData.lastActiveBuffer[i]->isSubmitted()); // It shouldn't be here if it wasn't submitted
-			semaphores[semaphoreIdx++] = deviceData.lastActiveBuffer[i]->getSemaphore();
+				// Check if a buffer is currently executing on the queue
+				if (lastCB == nullptr || !lastCB->isSubmitted())
+					continue;
+
+				// Check if we care about this specific queue
+				UINT32 queueMask = device->getQueueMask(queueType, j);
+				if ((syncMask & queueMask) == 0)
+					continue;
+
+				semaphores[semaphoreIdx++] = lastCB->getSemaphore();
+			}
 		}
 
 		count = semaphoreIdx;
@@ -183,29 +180,16 @@ namespace bs
 
 	void VulkanCommandBufferManager::refreshStates(UINT32 deviceIdx)
 	{
-		assert(deviceIdx < mNumDevices);
-		PerDeviceData& deviceData = mDeviceData[deviceIdx];
+		SPtr<VulkanDevice> device = mRapi._getDevice(deviceIdx);
 
-		auto iter = deviceData.activeBuffers.begin();
-		while(iter != deviceData.activeBuffers.end())
+		for (UINT32 i = 0; i < GQT_COUNT; i++)
 		{
-			VulkanCmdBuffer* cmdBuffer = *iter;
-
-			cmdBuffer->refreshFenceStatus();
-			if (!cmdBuffer->isSubmitted())
-				iter = deviceData.activeBuffers.erase(iter);
-			else
-				++iter;
-		}
-
-		for (UINT32 i = 0; i < BS_MAX_UNIQUE_QUEUES; i++)
-		{
-			if (deviceData.lastActiveBuffer[i] == nullptr)
-				continue;
-
-			VulkanCmdBuffer* cmdBuffer = deviceData.lastActiveBuffer[i];
-			if (!cmdBuffer->isSubmitted())
-				deviceData.lastActiveBuffer[i] = nullptr;
+			UINT32 numQueues = device->getNumQueues((GpuQueueType)i);
+			for (UINT32 j = 0; j < numQueues; j++)
+			{
+				VulkanQueue* queue = device->getQueue((GpuQueueType)i, j);
+				queue->refreshStates();
+			}
 		}
 	}
 

@@ -36,19 +36,54 @@ namespace bs
 		bool isExecuting() const;
 
 		/** Submits the provided command buffer on the queue. */
-		void submit(VulkanCmdBuffer* cmdBuffer, VkSemaphore* waitSemaphores, UINT32 semaphoresCount);
+		void submit(VulkanCmdBuffer* cmdBuffer, VulkanSemaphore** waitSemaphores, UINT32 semaphoresCount);
+
+		/** 
+		 * Presents the back buffer of the provided swap chain. 
+		 *
+		 * @param[in]	swapChain			Swap chain whose back buffer to present.
+		 * @param[in]	waitSemaphores		Optional semaphores to wait on before presenting the queue.
+		 * @param[in]	semaphoresCount		Number of semaphores in the @p semaphores array.
+		 */
+		void present(VulkanSwapChain* swapChain, VulkanSemaphore** waitSemaphores, UINT32 semaphoresCount);
 
 		/** Blocks the calling thread until all operations on the queue finish. */
 		void waitIdle() const;
 
+		/** 
+		 * Checks if any of the active command buffers finished executing on the queue and updates their states 
+		 * accordingly. 
+		 */
+		void refreshStates();
+
+		/** Returns the last command buffer that was submitted on this queue. */
+		VulkanCmdBuffer* getLastCommandBuffer() const { return mLastCommandBuffer; }
+
 	protected:
+		/** Information about a single submitted command buffer. */
+		struct SubmitInfo
+		{
+			SubmitInfo(VulkanCmdBuffer* cmdBuffer, UINT32 submitIdx, VulkanSemaphore** semaphores, UINT32 numSemaphores)
+				:cmdBuffer(cmdBuffer), submitIdx(submitIdx), semaphores(semaphores), numSemaphores(numSemaphores)
+			{ }
+
+			VulkanCmdBuffer* cmdBuffer;
+			UINT32 submitIdx;
+			VulkanSemaphore** semaphores;
+			UINT32 numSemaphores;
+		};
+
 		VulkanDevice& mDevice;
 		VkQueue mQueue;
 		GpuQueueType mType;
 		UINT32 mIndex;
 		VkPipelineStageFlags mSubmitDstWaitMask[BS_MAX_UNIQUE_QUEUES];
 
+		List<SubmitInfo> mActiveBuffers;
 		VulkanCmdBuffer* mLastCommandBuffer;
+		UINT32 mNextSubmitIdx;
+
+		VkSemaphore mSemaphoresTemp[BS_MAX_UNIQUE_QUEUES + 1]; // +1 for present semaphore
 	};
 
 	/** @} */

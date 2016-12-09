@@ -21,6 +21,23 @@ static_assert(false, "Other platforms go here");
 
 namespace bs
 {
+	VulkanSemaphore::VulkanSemaphore(VulkanResourceManager* owner)
+		:VulkanResource(owner, true)
+	{
+		VkSemaphoreCreateInfo semaphoreCI;
+		semaphoreCI.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+		semaphoreCI.pNext = nullptr;
+		semaphoreCI.flags = 0;
+
+		VkResult result = vkCreateSemaphore(owner->getDevice().getLogical(), &semaphoreCI, gVulkanAllocator, &mSemaphore);
+		assert(result == VK_SUCCESS);
+	}
+
+	VulkanSemaphore::~VulkanSemaphore()
+	{
+		vkDestroySemaphore(mOwner->getDevice().getLogical(), mSemaphore, gVulkanAllocator);
+	}
+
 	VulkanCmdBufferPool::VulkanCmdBufferPool(VulkanDevice& device)
 		:mDevice(device), mNextId(1)
 	{
@@ -108,9 +125,9 @@ namespace bs
 	}
 
 	VulkanCmdBuffer::VulkanCmdBuffer(VulkanDevice& device, UINT32 id, VkCommandPool pool, UINT32 queueFamily, bool secondary)
-		: mId(id), mQueueFamily(queueFamily), mState(State::Ready), mDevice(device), mPool(pool), mFenceCounter(0)
-		, mFramebuffer(nullptr), mPresentSemaphore(VK_NULL_HANDLE), mRenderTargetWidth(0), mRenderTargetHeight(0)
-		, mRenderTargetDepthReadOnly(false), mRenderTargetLoadMask(RT_NONE), mGlobalQueueIdx(-1)
+		: mId(id), mQueueFamily(queueFamily), mState(State::Ready), mDevice(device), mPool(pool), mSemaphore(nullptr)
+		, mFenceCounter(0), mFramebuffer(nullptr), mPresentSemaphore(nullptr), mRenderTargetWidth(0)
+		, mRenderTargetHeight(0), mRenderTargetDepthReadOnly(false), mRenderTargetLoadMask(RT_NONE), mGlobalQueueIdx(-1)
 		, mViewport(0.0f, 0.0f, 1.0f, 1.0f), mScissor(0, 0, 0, 0), mStencilRef(0), mDrawOp(DOT_TRIANGLE_LIST)
 		, mNumBoundDescriptorSets(0), mGfxPipelineRequiresBind(true), mCmpPipelineRequiresBind(true)
 		, mViewportRequiresBind(true), mStencilRefRequiresBind(true), mScissorRequiresBind(true), mVertexBuffersTemp()
@@ -135,14 +152,6 @@ namespace bs
 		fenceCI.flags = 0;
 
 		result = vkCreateFence(mDevice.getLogical(), &fenceCI, gVulkanAllocator, &mFence);
-		assert(result == VK_SUCCESS);
-
-		VkSemaphoreCreateInfo semaphoreCI;
-		semaphoreCI.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-		semaphoreCI.pNext = nullptr;
-		semaphoreCI.flags = 0;
-
-		result = vkCreateSemaphore(mDevice.getLogical(), &semaphoreCI, gVulkanAllocator, &mSemaphore);
 		assert(result == VK_SUCCESS);
 	}
 
@@ -193,9 +202,11 @@ namespace bs
 				entry.first->notifyUnbound();
 			}
 		}
+
+		if (mSemaphore != nullptr)
+			mSemaphore->destroy();
 		
 		vkDestroyFence(device, mFence, gVulkanAllocator);
-		vkDestroySemaphore(device, mSemaphore, gVulkanAllocator);
 		vkFreeCommandBuffers(device, mPool, 1, &mCmdBuffer);
 
 		bs_free(mDescriptorSetsTemp);
@@ -336,6 +347,15 @@ namespace bs
 		mState = State::Recording;
 	}
 
+	VulkanSemaphore* VulkanCmdBuffer::allocateSemaphore()
+	{
+		if (mSemaphore != nullptr)
+			mSemaphore->destroy();
+
+		mSemaphore = mDevice.getResourceManager().create<VulkanSemaphore>();
+		return mSemaphore;
+	}
+
 	void VulkanCmdBuffer::submit(VulkanQueue* queue, UINT32 queueIdx, UINT32 syncMask)
 	{
 		assert(isReadyForSubmit());
@@ -474,7 +494,7 @@ namespace bs
 		cbm.getSyncSemaphores(deviceIdx, syncMask, mSemaphoresTemp, numSemaphores);
 
 		// Wait on present (i.e. until the back buffer becomes available), if we're rendering to a window
-		if (mPresentSemaphore != VK_NULL_HANDLE)
+		if (mPresentSemaphore != nullptr)
 		{
 			mSemaphoresTemp[numSemaphores] = mPresentSemaphore;
 			numSemaphores++;
@@ -502,11 +522,7 @@ namespace bs
 								 numImgBarriers, barriers.imageBarriers.data());
 
 			cmdBuffer->end();
-
 			queue->submit(cmdBuffer, mSemaphoresTemp, numSemaphores);
-
-			cmdBuffer->mState = State::Submitted;
-			cbm.setActiveBuffer(queue->getType(), deviceIdx, queueIdx, cmdBuffer);
 
 			numSemaphores = 0; // Semaphores are only needed the first time, since we're adding the buffers on the same queue
 		}
@@ -546,9 +562,6 @@ namespace bs
 
 		// Note: Uncommented for debugging only, prevents any device concurrency issues.
 		// vkQueueWaitIdle(queue->getHandle());
-
-		mState = State::Submitted;
-		cbm.setActiveBuffer(queue->getType(), deviceIdx, queueIdx, this);
 
 		// Clear vectors but don't clear the actual map, as we want to re-use the memory since we expect queue family
 		// indices to be the same
@@ -633,7 +646,7 @@ namespace bs
 		if(rt == nullptr)
 		{
 			mFramebuffer = nullptr;
-			mPresentSemaphore = VK_NULL_HANDLE;
+			mPresentSemaphore = nullptr;
 			mRenderTargetWidth = 0;
 			mRenderTargetHeight = 0;
 			mRenderTargetDepthReadOnly = false;
@@ -652,7 +665,7 @@ namespace bs
 			else
 			{
 				rt->getCustomAttribute("FB", &mFramebuffer);
-				mPresentSemaphore = VK_NULL_HANDLE;
+				mPresentSemaphore = nullptr;
 			}
 
 			mRenderTargetWidth = rt->getProperties().getWidth();

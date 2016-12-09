@@ -1086,7 +1086,7 @@ namespace bs
 		cb->appendSecondary(secondaryCb);
 	}
 
-	void D3D11RenderAPI::executeCommands(const SPtr<CommandBuffer>& commandBuffer, UINT32 syncMask)
+	void D3D11RenderAPI::submitCommandBuffer(const SPtr<CommandBuffer>& commandBuffer, UINT32 syncMask)
 	{
 		SPtr<D3D11CommandBuffer> cb = std::static_pointer_cast<D3D11CommandBuffer>(commandBuffer);
 		cb->executeCommands();

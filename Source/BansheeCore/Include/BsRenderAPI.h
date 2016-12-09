@@ -543,7 +543,7 @@ namespace bs
 		 *
 		 * @note	Core thread only.
 		 */
-		virtual void executeCommands(const SPtr<CommandBuffer>& commandBuffer, UINT32 syncMask = 0xFFFFFFFF) = 0;
+		virtual void submitCommandBuffer(const SPtr<CommandBuffer>& commandBuffer, UINT32 syncMask = 0xFFFFFFFF) = 0;
 
 		/**
 		 * Gets the capabilities of a specific GPU.

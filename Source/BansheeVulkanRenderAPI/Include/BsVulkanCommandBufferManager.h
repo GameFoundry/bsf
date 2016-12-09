@@ -85,9 +85,6 @@ namespace bs
 		SPtr<CommandBuffer> createInternal(GpuQueueType type, UINT32 deviceIdx = 0, UINT32 queueIdx = 0,
 			bool secondary = false) override;
 
-		/** Notifies the manager that this buffer was just submitted to the queue for execution. */
-		void setActiveBuffer(GpuQueueType type, UINT32 deviceIdx, UINT32 queueIdx, VulkanCmdBuffer* buffer);
-
 		/** 
 		 * Returns a set of command buffer semaphores depending on the provided sync mask. 
 		 *
@@ -98,7 +95,7 @@ namespace bs
 		 *							beginning of the array. Must be able to hold at least BS_MAX_COMMAND_BUFFERS entries.
 		 * @param[out]	count		Number of semaphores provided in the @p semaphores array.
 		 */
-		void getSyncSemaphores(UINT32 deviceIdx, UINT32 syncMask, VkSemaphore* semaphores, UINT32& count);
+		void getSyncSemaphores(UINT32 deviceIdx, UINT32 syncMask, VulkanSemaphore** semaphores, UINT32& count);
 
 		/** 
 		 * Checks if any of the active command buffers finished executing on the device and updates their states 
@@ -120,8 +117,6 @@ namespace bs
 		/** Contains command buffers specific to one device. */
 		struct PerDeviceData
 		{
-			List<VulkanCmdBuffer*> activeBuffers;
-			VulkanCmdBuffer* lastActiveBuffer[BS_MAX_UNIQUE_QUEUES];
 			VulkanTransferBuffer transferBuffers[GQT_COUNT][BS_MAX_QUEUES_PER_TYPE];
 		};
 

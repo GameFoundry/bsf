@@ -1145,7 +1145,7 @@ namespace bs
 		cb->appendSecondary(secondaryCb);
 	}
 
-	void GLRenderAPI::executeCommands(const SPtr<CommandBuffer>& commandBuffer, UINT32 syncMask)
+	void GLRenderAPI::submitCommandBuffer(const SPtr<CommandBuffer>& commandBuffer, UINT32 syncMask)
 	{
 		SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
 		cb->executeCommands();

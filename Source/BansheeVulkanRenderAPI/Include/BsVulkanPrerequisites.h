@@ -74,6 +74,7 @@ namespace bs
 	class VulkanQuery;
 	class VulkanQueryPool;
 	class VulkanVertexInput;
+	class VulkanSemaphore;
 
 	extern VkAllocationCallbacks* gVulkanAllocator;
 

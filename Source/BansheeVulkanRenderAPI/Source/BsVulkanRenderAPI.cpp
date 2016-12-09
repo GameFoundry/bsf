@@ -507,7 +507,7 @@ namespace bs
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		executeCommands(mMainCommandBuffer, syncMask);
+		submitCommandBuffer(mMainCommandBuffer, syncMask);
 		target->swapBuffers(syncMask);
 
 		// See if any command buffers finished executing
@@ -524,7 +524,7 @@ namespace bs
 		BS_EXCEPT(NotImplementedException, "Secondary command buffers not implemented");
 	}
 
-	void VulkanRenderAPI::executeCommands(const SPtr<CommandBuffer>& commandBuffer, UINT32 syncMask)
+	void VulkanRenderAPI::submitCommandBuffer(const SPtr<CommandBuffer>& commandBuffer, UINT32 syncMask)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 

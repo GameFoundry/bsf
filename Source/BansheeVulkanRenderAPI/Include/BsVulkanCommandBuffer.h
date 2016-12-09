@@ -15,9 +15,23 @@ namespace bs
 	 *  @{
 	 */
 
-	class VulkanCmdBuffer;
-
 #define BS_MAX_VULKAN_CB_PER_QUEUE_FAMILY BS_MAX_QUEUES_PER_TYPE * 32
+
+	/** Wrapper around a Vulkan semaphore object that manages its usage and lifetime. */
+	class VulkanSemaphore : public VulkanResource
+	{
+	public:
+		VulkanSemaphore(VulkanResourceManager* owner);
+		~VulkanSemaphore();
+
+		/** Returns the internal handle to the Vulkan object. */
+		VkSemaphore getHandle() const { return mSemaphore; }
+
+	private:
+		VkSemaphore mSemaphore;
+	};
+
+	class VulkanCmdBuffer;
 
 	/** Pool that allocates and distributes Vulkan command buffers. */
 	class VulkanCmdBufferPool
@@ -128,7 +142,14 @@ namespace bs
 		 * Returns a semaphore that may be used for synchronizing execution between command buffers executing on different 
 		 * queues. 
 		 */
-		VkSemaphore getSemaphore() const { return mSemaphore; }
+		VulkanSemaphore* getSemaphore() const { return mSemaphore; }
+
+		/** 
+		 * Allocates a new semaphore that may be used for synchronizing execution between command buffers executing on different 
+		 * queues. Releases the previously allocated semaphore, if one exist. Use getSemaphore() to retrieve latest
+		 * allocated semaphore.
+		 */
+		VulkanSemaphore* allocateSemaphore();
 
 		/** Returns true if the command buffer is currently being processed by the device. */
 		bool isSubmitted() const { return mState == State::Submitted; }
@@ -235,6 +256,7 @@ namespace bs
 	private:
 		friend class VulkanCmdBufferPool;
 		friend class VulkanCommandBuffer;
+		friend class VulkanQueue;
 
 		/** Contains information about a single Vulkan resource bound/used on this command buffer. */
 		struct ResourceUseHandle
@@ -269,6 +291,9 @@ namespace bs
 		/** Checks if all the prerequisites for rendering have been made (e.g. render target and pipeline state are set. */
 		bool isReadyForRender();
 
+		/** Marks the command buffer as submitted on a queue. */
+		void setIsSubmitted() { mState = State::Submitted; }
+
 		/** Binds the current graphics pipeline to the command buffer. Returns true if bind was successful. */
 		bool bindGraphicsPipeline();
 
@@ -289,11 +314,11 @@ namespace bs
 		VkCommandPool mPool;
 		VkCommandBuffer mCmdBuffer;
 		VkFence mFence;
-		VkSemaphore mSemaphore;
+		VulkanSemaphore* mSemaphore;
 		UINT32 mFenceCounter;
 
 		VulkanFramebuffer* mFramebuffer;
-		VkSemaphore mPresentSemaphore;
+		VulkanSemaphore* mPresentSemaphore;
 		UINT32 mRenderTargetWidth;
 		UINT32 mRenderTargetHeight;
 		bool mRenderTargetDepthReadOnly;
@@ -320,7 +345,7 @@ namespace bs
 		bool mScissorRequiresBind : 1;
 		DescriptorSetBindFlags mDescriptorSetsBindState;
 
-		VkSemaphore mSemaphoresTemp[BS_MAX_UNIQUE_QUEUES + 1]; // +1 for present semaphore
+		VulkanSemaphore* mSemaphoresTemp[BS_MAX_UNIQUE_QUEUES + 1]; // +1 for present semaphore
 		VkBuffer mVertexBuffersTemp[BS_MAX_BOUND_VERTEX_BUFFERS];
 		VkDeviceSize mVertexBufferOffsetsTemp[BS_MAX_BOUND_VERTEX_BUFFERS];
 		VkDescriptorSet* mDescriptorSetsTemp;

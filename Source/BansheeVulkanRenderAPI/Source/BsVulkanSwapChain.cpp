@@ -4,6 +4,7 @@
 #include "BsVulkanTexture.h"
 #include "BsVulkanRenderAPI.h"
 #include "BsVulkanDevice.h"
+#include "BsVulkanCommandBufferManager.h"
 
 namespace bs
 {
@@ -145,14 +146,7 @@ namespace bs
 			mSurfaces[i].acquired = false;
 			mSurfaces[i].image = resManager.create<VulkanImage>(imageDesc, false);
 			mSurfaces[i].view = mSurfaces[i].image->getView();
-
-			VkSemaphoreCreateInfo semaphoreCI;
-			semaphoreCI.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-			semaphoreCI.pNext = nullptr;
-			semaphoreCI.flags = 0;
-
-			result = vkCreateSemaphore(logicalDevice, &semaphoreCI, gVulkanAllocator, &mSurfaces[i].sync);
-			assert(result == VK_SUCCESS);
+			mSurfaces[i].sync = resManager.create<VulkanSemaphore>();
 		}
 
 		bs_stack_free(images);
@@ -219,41 +213,12 @@ namespace bs
 		}
 	}
 
-	void VulkanSwapChain::present(VkQueue queue, VkSemaphore* semaphores, UINT32 numSemaphores)
-	{
-		assert(mSurfaces[mCurrentBackBufferIdx].acquired && "Attempting to present an unacquired back buffer.");
-		mSurfaces[mCurrentBackBufferIdx].acquired = false;
-
-		VkPresentInfoKHR presentInfo;
-		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-		presentInfo.pNext = nullptr;
-		presentInfo.swapchainCount = 1;
-		presentInfo.pSwapchains = &mSwapChain;
-		presentInfo.pImageIndices = &mCurrentBackBufferIdx;
-		presentInfo.pResults = nullptr;
-
-		// Wait before presenting, if required
-		if (numSemaphores > 0)
-		{
-			presentInfo.pWaitSemaphores = semaphores;
-			presentInfo.waitSemaphoreCount = numSemaphores;
-		}
-		else
-		{
-			presentInfo.pWaitSemaphores = nullptr;
-			presentInfo.waitSemaphoreCount = 0;
-		}
-
-		VkResult result = vkQueuePresentKHR(queue, &presentInfo);
-		assert(result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR);
-	}
-
 	void VulkanSwapChain::acquireBackBuffer()
 	{
 		uint32_t imageIndex;
 
 		VkResult result = vkAcquireNextImageKHR(mDevice->getLogical(), mSwapChain, UINT64_MAX,
-			mSurfaces[mCurrentSemaphoreIdx].sync, VK_NULL_HANDLE, &imageIndex);
+			mSurfaces[mCurrentSemaphoreIdx].sync->getHandle(), VK_NULL_HANDLE, &imageIndex);
 		assert(result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR);
 
 		// In case surfaces aren't being distributed in round-robin fashion the image and semaphore indices might not match,
@@ -269,6 +234,14 @@ namespace bs
 		mCurrentBackBufferIdx = imageIndex;
 	}
 
+	UINT32 VulkanSwapChain::prepareForPresent()
+	{
+		assert(mSurfaces[mCurrentBackBufferIdx].acquired && "Attempting to present an unacquired back buffer.");
+		mSurfaces[mCurrentBackBufferIdx].acquired = false;
+
+		return mCurrentBackBufferIdx;
+	}
+
 	void VulkanSwapChain::clear(VkSwapchainKHR swapChain)
 	{
 		VkDevice logicalDevice = mDevice->getLogical();
@@ -282,7 +255,8 @@ namespace bs
 				surface.image->destroy();
 				surface.image = nullptr;
 
-				vkDestroySemaphore(logicalDevice, surface.sync, gVulkanAllocator);
+				surface.sync->destroy();
+				surface.sync = nullptr;
 			}
 
 			vkDestroySwapchainKHR(logicalDevice, swapChain, gVulkanAllocator);
