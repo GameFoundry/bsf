@@ -207,7 +207,7 @@ namespace bs
 				metaData.renderer = parseRenderer(removeQuotes(option->value.strValue));
 				break;
 			case OT_Language:
-				parseLanguage(removeQuotes(option->value.strValue), metaData.renderAPI, metaData.language);
+				parseLanguage(removeQuotes(option->value.strValue), metaData.language);
 				break;
 			case OT_Tags:
 			{
@@ -245,28 +245,16 @@ namespace bs
 		return RendererAny;
 	}
 
-	void BSLFXCompiler::parseLanguage(const String& name, StringID& renderAPI, String& language)
+	void BSLFXCompiler::parseLanguage(const String& name, String& language)
 	{
 		if (name == "HLSL" || name == "HLSL11")
-		{
-			renderAPI = RenderAPIDX11;
 			language = "hlsl";
-		}
 		else if (name == "HLSL9")
-		{
-			renderAPI = RenderAPIDX9;
 			language = "hlsl9";
-		}
 		else if (name == "GLSL")
-		{
-			renderAPI = RenderAPIOpenGL;
 			language = "glsl";
-		}
 		else // "Any"
-		{
-			renderAPI = RenderAPIAny;
 			language = "";
-		}
 	}
 
 	GpuParamBlockUsage BSLFXCompiler::parseBlockUsage(BufferUsageValue usage)
@@ -1372,7 +1360,6 @@ namespace bs
 				{
 					desc.source = passData.commonCode + passData.vertexCode;
 					desc.type = GPT_VERTEX_PROGRAM;
-					desc.profile = getProfile(metaData.renderAPI, GPT_VERTEX_PROGRAM);
 
 					passDesc.vertexProgram = GpuProgram::create(desc);
 				}
@@ -1381,7 +1368,6 @@ namespace bs
 				{
 					desc.source = passData.commonCode + passData.fragmentCode;
 					desc.type = GPT_FRAGMENT_PROGRAM;
-					desc.profile = getProfile(metaData.renderAPI, GPT_FRAGMENT_PROGRAM);
 
 					passDesc.fragmentProgram = GpuProgram::create(desc);
 				}
@@ -1390,7 +1376,6 @@ namespace bs
 				{
 					desc.source = passData.commonCode + passData.geometryCode;
 					desc.type = GPT_GEOMETRY_PROGRAM;
-					desc.profile = getProfile(metaData.renderAPI, GPT_GEOMETRY_PROGRAM);
 
 					passDesc.geometryProgram = GpuProgram::create(desc);
 				}
@@ -1399,7 +1384,6 @@ namespace bs
 				{
 					desc.source = passData.commonCode + passData.hullCode;
 					desc.type = GPT_HULL_PROGRAM;
-					desc.profile = getProfile(metaData.renderAPI, GPT_HULL_PROGRAM);
 
 					passDesc.hullProgram = GpuProgram::create(desc);
 				}
@@ -1408,7 +1392,6 @@ namespace bs
 				{
 					desc.source = passData.commonCode + passData.domainCode;
 					desc.type = GPT_DOMAIN_PROGRAM;
-					desc.profile = getProfile(metaData.renderAPI, GPT_DOMAIN_PROGRAM);
 
 					passDesc.domainProgram = GpuProgram::create(desc);
 				}
@@ -1417,7 +1400,6 @@ namespace bs
 				{
 					desc.source = passData.commonCode + passData.computeCode;
 					desc.type = GPT_COMPUTE_PROGRAM;
-					desc.profile = getProfile(metaData.renderAPI, GPT_COMPUTE_PROGRAM);
 
 					passDesc.computeProgram = GpuProgram::create(desc);
 				}
@@ -1435,8 +1417,8 @@ namespace bs
 
 			if (orderedPasses.size() > 0)
 			{
-				SPtr<Technique> technique = Technique::create(metaData.renderAPI, metaData.renderer,
-					metaData.tags, orderedPasses);
+				SPtr<Technique> technique = Technique::create(metaData.language, metaData.renderer, metaData.tags, 
+					orderedPasses);
 				techniques.push_back(technique);
 			}
 		}
@@ -1471,46 +1453,6 @@ namespace bs
 			output[i] = input[i + 1];
 
 		return output;
-	}
-
-	GpuProgramProfile BSLFXCompiler::getProfile(const StringID& renderAPI, GpuProgramType type)
-	{
-		StringID target = renderAPI;
-		if (target == RenderAPIAny)
-			target = RenderAPICore::instance().getName();
-
-		if (target == RenderAPIDX11 || target == RenderAPIOpenGL)
-		{
-			switch (type)
-			{
-			case GPT_VERTEX_PROGRAM:
-				return GPP_VS_5_0;
-			case GPT_FRAGMENT_PROGRAM:
-				return GPP_FS_5_0;
-			case GPT_GEOMETRY_PROGRAM:
-				return GPP_GS_5_0;
-			case GPT_HULL_PROGRAM:
-				return GPP_HS_5_0;
-			case GPT_DOMAIN_PROGRAM:
-				return GPP_DS_5_0;
-			case GPT_COMPUTE_PROGRAM:
-				return GPP_CS_5_0;
-			}
-		}
-		else if (target == RenderAPIDX9)
-		{
-			switch (type)
-			{
-			case GPT_VERTEX_PROGRAM:
-				return GPP_VS_3_0;
-			case GPT_FRAGMENT_PROGRAM:
-				return GPP_FS_3_0;
-			default:
-				break;
-			}
-		}
-
-		return GPP_NONE;
 	}
 
 	HTexture BSLFXCompiler::getBuiltinTexture(const String& name)

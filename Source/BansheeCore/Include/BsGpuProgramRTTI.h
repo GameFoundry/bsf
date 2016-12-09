@@ -25,9 +25,6 @@ namespace bs
 		String& getEntryPoint(GpuProgram* obj) { return obj->mProperties.mEntryPoint; }
 		void setEntryPoint(GpuProgram* obj, String& val) { obj->mProperties.mEntryPoint = val; }
 
-		GpuProgramProfile& getProfile(GpuProgram* obj) { return obj->mProperties.mProfile; }
-		void setProfile(GpuProgram* obj, GpuProgramProfile& val) { obj->mProperties.mProfile = val; }
-
 		String& getSource(GpuProgram* obj) { return obj->mProperties.mSource; }
 		void setSource(GpuProgram* obj, String& val) { obj->mProperties.mSource = val; }
 
@@ -40,7 +37,6 @@ namespace bs
 			addPlainField("mType", 2, &GpuProgramRTTI::getType, &GpuProgramRTTI::setType);
 			addPlainField("mNeedsAdjacencyInfo", 3, &GpuProgramRTTI::getNeedsAjdInfo, &GpuProgramRTTI::setNeedsAjdInfo);
 			addPlainField("mEntryPoint", 4, &GpuProgramRTTI::getEntryPoint, &GpuProgramRTTI::setEntryPoint);
-			addPlainField("mProfile", 5, &GpuProgramRTTI::getProfile, &GpuProgramRTTI::setProfile);
 			addPlainField("mSource", 6, &GpuProgramRTTI::getSource, &GpuProgramRTTI::setSource);
 			addPlainField("mLanguage", 7, &GpuProgramRTTI::getLanguage, &GpuProgramRTTI::setLanguage);
 		}

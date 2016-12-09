@@ -166,7 +166,7 @@ Technique =
 			
 			void main()
 			{
-				vec4 texColor = texture2D(gMainTexture, texcoord0.st);
+				vec4 texColor = texture(gMainTexture, texcoord0.st);
 				fragColor = color0 * texColor;
 			}		
 		};
@@ -221,7 +221,7 @@ Technique =
 			
 			void main()
 			{
-				vec4 texColor = texture2D(gMainTexture, texcoord0.st);
+				vec4 texColor = texture(gMainTexture, texcoord0.st);
 				fragColor = color0 * texColor;
 			}		
 		};

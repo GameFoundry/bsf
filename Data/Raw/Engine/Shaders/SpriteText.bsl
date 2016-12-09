@@ -133,7 +133,7 @@ Technique =
 
 			void main()
 			{
-				vec4 color = vec4(gTint.rgb, texture2D(gMainTexture, texcoord0.st).r * gTint.a);
+				vec4 color = vec4(gTint.rgb, texture(gMainTexture, texcoord0.st).r * gTint.a);
 				fragColor = color;
 			}
 		};

@@ -683,14 +683,6 @@ namespace bs
 
 			caps.setCapability(RSC_COMPUTE_PROGRAM);
 
-			caps.addShaderProfile("ps_5_0");
-			caps.addShaderProfile("vs_5_0");
-			caps.addShaderProfile("cs_5_0");
-
-			caps.addGpuProgramProfile(GPP_FS_5_0, "ps_5_0");
-			caps.addGpuProgramProfile(GPP_VS_5_0, "vs_5_0");
-			caps.addGpuProgramProfile(GPP_CS_5_0, "cs_5_0");
-
 			caps.setNumTextureUnits(GPT_FRAGMENT_PROGRAM, deviceLimits.maxPerStageDescriptorSampledImages);
 			caps.setNumTextureUnits(GPT_VERTEX_PROGRAM, deviceLimits.maxPerStageDescriptorSampledImages);
 			caps.setNumTextureUnits(GPT_COMPUTE_PROGRAM, deviceLimits.maxPerStageDescriptorSampledImages);
@@ -706,7 +698,6 @@ namespace bs
 			{
 				caps.setCapability(RSC_GEOMETRY_PROGRAM);
 				caps.addShaderProfile("gs_5_0");
-				caps.addGpuProgramProfile(GPP_GS_5_0, "gs_5_0");
 				caps.setNumTextureUnits(GPT_GEOMETRY_PROGRAM, deviceLimits.maxPerStageDescriptorSampledImages);
 				caps.setNumGpuParamBlockBuffers(GPT_GEOMETRY_PROGRAM, deviceLimits.maxPerStageDescriptorUniformBuffers);
 				caps.setGeometryProgramNumOutputVertices(deviceLimits.maxGeometryOutputVertices);
@@ -715,12 +706,6 @@ namespace bs
 			if (deviceFeatures.tessellationShader)
 			{
 				caps.setCapability(RSC_TESSELLATION_PROGRAM);
-
-				caps.addShaderProfile("hs_5_0");
-				caps.addShaderProfile("ds_5_0");
-
-				caps.addGpuProgramProfile(GPP_HS_5_0, "hs_5_0");
-				caps.addGpuProgramProfile(GPP_DS_5_0, "ds_5_0");
 
 				caps.setNumTextureUnits(GPT_HULL_PROGRAM, deviceLimits.maxPerStageDescriptorSampledImages);
 				caps.setNumTextureUnits(GPT_DOMAIN_PROGRAM, deviceLimits.maxPerStageDescriptorSampledImages);

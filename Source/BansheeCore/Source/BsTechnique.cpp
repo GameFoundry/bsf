@@ -11,16 +11,15 @@
 
 namespace bs
 {
-	TechniqueBase::TechniqueBase(const StringID& renderAPI, const StringID& renderer, const Vector<StringID>& tags)
-		:mRenderAPI(renderAPI), mRenderer(renderer), mTags(tags)
+	TechniqueBase::TechniqueBase(const String& language, const StringID& renderer, const Vector<StringID>& tags)
+		:mLanguage(language), mRenderer(renderer), mTags(tags)
 	{
 
 	}
 
 	bool TechniqueBase::isSupported() const
 	{
-		if ((RenderAPICore::instancePtr()->getName() == mRenderAPI ||
-			RenderAPIAny == mRenderAPI) &&
+		if ((RenderAPICore::instancePtr()->getShadingLanguageName() == mLanguage || mLanguage == "Any") &&
 			(RendererManager::instance().getActive()->getName() == mRenderer ||
 			RendererAny == mRenderer))
 		{
@@ -42,9 +41,9 @@ namespace bs
 	}
 
 	template<bool Core>
-	TTechnique<Core>::TTechnique(const StringID& renderAPI, const StringID& renderer, const Vector<StringID>& tags, 
+	TTechnique<Core>::TTechnique(const String& language, const StringID& renderer, const Vector<StringID>& tags,
 		const Vector<SPtr<PassType>>& passes)
-		: TechniqueBase(renderAPI, renderer, tags), mPasses(passes)
+		: TechniqueBase(language, renderer, tags), mPasses(passes)
 	{ }
 
 	template<bool Core>
@@ -64,15 +63,15 @@ namespace bs
 	template class TTechnique < false > ;
 	template class TTechnique < true >;
 
-	TechniqueCore::TechniqueCore(const StringID& renderAPI, const StringID& renderer, const Vector<StringID>& tags, 
+	TechniqueCore::TechniqueCore(const String& language, const StringID& renderer, const Vector<StringID>& tags,
 		const Vector<SPtr<PassCore>>& passes)
-		:TTechnique(renderAPI, renderer, tags, passes)
+		:TTechnique(language, renderer, tags, passes)
 	{ }
 
-	SPtr<TechniqueCore> TechniqueCore::create(const StringID& renderAPI, const StringID& renderer, 
+	SPtr<TechniqueCore> TechniqueCore::create(const String& language, const StringID& renderer,
 		const Vector<SPtr<PassCore>>& passes)
 	{
-		TechniqueCore* technique = new (bs_alloc<TechniqueCore>()) TechniqueCore(renderAPI, renderer, {}, passes);
+		TechniqueCore* technique = new (bs_alloc<TechniqueCore>()) TechniqueCore(language, renderer, {}, passes);
 		SPtr<TechniqueCore> techniquePtr = bs_shared_ptr<TechniqueCore>(technique);
 		techniquePtr->_setThisPtr(techniquePtr);
 		techniquePtr->initialize();
@@ -80,10 +79,10 @@ namespace bs
 		return techniquePtr;
 	}
 
-	SPtr<TechniqueCore> TechniqueCore::create(const StringID& renderAPI, const StringID& renderer, 
+	SPtr<TechniqueCore> TechniqueCore::create(const String& language, const StringID& renderer,
 		const Vector<StringID>& tags, const Vector<SPtr<PassCore>>& passes)
 	{
-		TechniqueCore* technique = new (bs_alloc<TechniqueCore>()) TechniqueCore(renderAPI, renderer, tags, passes);
+		TechniqueCore* technique = new (bs_alloc<TechniqueCore>()) TechniqueCore(language, renderer, tags, passes);
 		SPtr<TechniqueCore> techniquePtr = bs_shared_ptr<TechniqueCore>(technique);
 		techniquePtr->_setThisPtr(techniquePtr);
 		techniquePtr->initialize();
@@ -91,9 +90,9 @@ namespace bs
 		return techniquePtr;
 	}
 
-	Technique::Technique(const StringID& renderAPI, const StringID& renderer, const Vector<StringID>& tags, 
+	Technique::Technique(const String& language, const StringID& renderer, const Vector<StringID>& tags,
 		const Vector<SPtr<Pass>>& passes)
-		:TTechnique(renderAPI, renderer, tags, passes)
+		:TTechnique(language, renderer, tags, passes)
 	{ }
 
 	Technique::Technique()
@@ -111,7 +110,7 @@ namespace bs
 		for (auto& pass : mPasses)
 			passes.push_back(pass->getCore());
 
-		TechniqueCore* technique = new (bs_alloc<TechniqueCore>()) TechniqueCore(mRenderAPI, mRenderer, mTags, passes);
+		TechniqueCore* technique = new (bs_alloc<TechniqueCore>()) TechniqueCore(mLanguage, mRenderer, mTags, passes);
 		SPtr<TechniqueCore> techniquePtr = bs_shared_ptr<TechniqueCore>(technique);
 		techniquePtr->_setThisPtr(techniquePtr);
 
@@ -124,9 +123,9 @@ namespace bs
 			dependencies.push_back(pass.get());
 	}
 
-	SPtr<Technique> Technique::create(const StringID& renderAPI, const StringID& renderer, const Vector<SPtr<Pass>>& passes)
+	SPtr<Technique> Technique::create(const String& language, const StringID& renderer, const Vector<SPtr<Pass>>& passes)
 	{
-		Technique* technique = new (bs_alloc<Technique>()) Technique(renderAPI, renderer, {}, passes);
+		Technique* technique = new (bs_alloc<Technique>()) Technique(language, renderer, {}, passes);
 		SPtr<Technique> techniquePtr = bs_core_ptr<Technique>(technique);
 		techniquePtr->_setThisPtr(techniquePtr);
 		techniquePtr->initialize();
@@ -134,10 +133,10 @@ namespace bs
 		return techniquePtr;
 	}
 
-	SPtr<Technique> Technique::create(const StringID& renderAPI, const StringID& renderer, const Vector<StringID>& tags, 
+	SPtr<Technique> Technique::create(const String& language, const StringID& renderer, const Vector<StringID>& tags,
 		const Vector<SPtr<Pass>>& passes)
 	{
-		Technique* technique = new (bs_alloc<Technique>()) Technique(renderAPI, renderer, tags, passes);
+		Technique* technique = new (bs_alloc<Technique>()) Technique(language, renderer, tags, passes);
 		SPtr<Technique> techniquePtr = bs_core_ptr<Technique>(technique);
 		techniquePtr->_setThisPtr(techniquePtr);
 		techniquePtr->initialize();

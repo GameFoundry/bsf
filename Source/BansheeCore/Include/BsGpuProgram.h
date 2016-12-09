@@ -52,7 +52,6 @@ namespace bs
 		String entryPoint; /**< Name of the entry point function, for example "main". */
 		String language; /**< Language the source is written in, for example "hlsl" or "glsl". */
 		GpuProgramType type = GPT_VERTEX_PROGRAM; /**< Type of the program, for example vertex or fragment. */
-		GpuProgramProfile profile = GPP_NONE; /**< Program profile specifying supported feature-set. Must match the type. */
 		bool requiresAdjacency = false; /**< If true then adjacency information will be provided when rendering. */
 	};
 
@@ -60,8 +59,7 @@ namespace bs
 	class BS_CORE_EXPORT GpuProgramProperties
 	{
 	public:
-		GpuProgramProperties(const String& source, const String& entryPoint,
-			GpuProgramType gptype, GpuProgramProfile profile);
+		GpuProgramProperties(const String& source, const String& entryPoint, GpuProgramType gptype);
 
 		virtual ~GpuProgramProperties() { }
 
@@ -71,9 +69,6 @@ namespace bs
 		/**	Type of GPU program (for example fragment, vertex). */
         GpuProgramType getType() const { return mType; }
 
-		/**	Profile of the GPU program (for example VS_4_0, VS_5_0). */
-		GpuProgramProfile getProfile() const { return mProfile; }
-
 		/**	Name of the program entry method (for example "main"). */
 		const String& getEntryPoint() const { return mEntryPoint; }
 
@@ -82,7 +77,6 @@ namespace bs
 
 		GpuProgramType mType;
 		String mEntryPoint;
-		GpuProgramProfile mProfile;
 		String mSource;
 	};
 

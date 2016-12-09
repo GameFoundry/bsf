@@ -132,8 +132,6 @@ Technique : base("VolumeRenderBase") =
 				vec4 gl_Position;
 			};
 		
-			out int gl_Layer;
-		
 			void main()
 			{
 				gl_Layer = GSInput[0].layerIdx;

@@ -114,7 +114,7 @@ Technique =
 			
 			void main()
 			{
-				vec4 texColor = texture2D(gMainTexture, texcoord0);
+				vec4 texColor = texture(gMainTexture, texcoord0);
 				if(texColor.a < gAlphaCutoff)
 					discard;
 				

@@ -262,12 +262,6 @@ namespace bs
 			mSupportedShaderProfiles.insert(profile);
 		}
 
-		/**	Adds a mapping between GPU program profile enum and render-system specific profile name. */
-		void addGpuProgramProfile(GpuProgramProfile gpuProgProfile, const String& rsSpecificProfile)
-		{
-			mGenericToSpecificShaderProfileMap[gpuProgProfile] = rsSpecificProfile;
-		}
-
 		/**	Returns true if the provided profile is supported. */
 		bool isShaderProfileSupported(const String& profile) const
 		{
@@ -278,21 +272,6 @@ namespace bs
 		const Set<String>& getSupportedShaderProfiles() const
 		{
 			return mSupportedShaderProfiles;
-		}
-
-		/**
-		 * Converts a generic GpuProgramProfile identifier into a render-system specific one. Returns an empty string if 
-		 * conversion cannot be done.
-		 */
-		String gpuProgProfileToRSSpecificProfile(GpuProgramProfile gpuProgProfile) const
-		{
-			auto iterFind = mGenericToSpecificShaderProfileMap.find(gpuProgProfile);
-			if(mGenericToSpecificShaderProfileMap.end() != iterFind)
-			{
-				return iterFind->second;
-			}
-
-			return "";
 		}
 
 		/**	Sets the current GPU device name. */
@@ -369,9 +348,6 @@ namespace bs
 
 		// The list of supported shader profiles
 		Set<String> mSupportedShaderProfiles;
-
-		// Allows us to convert a generic shader profile to a render-system specific one
-		UnorderedMap<GpuProgramProfile, String> mGenericToSpecificShaderProfileMap;
 	};
 
 	/** @} */

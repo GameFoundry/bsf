@@ -119,7 +119,7 @@ Technique : base("SpriteImage") =
 
 			void main()
 			{
-				vec4 color = texture2D(gMainTexture, texcoord0.st);
+				vec4 color = texture(gMainTexture, texcoord0.st);
 				fragColor = color * gTint;
 			}
 		};

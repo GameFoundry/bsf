@@ -664,6 +664,8 @@ namespace bs
 			}
 		}
 
+		mIsCompiled = true;
+
 cleanup:
 		delete program;
 		delete shader;

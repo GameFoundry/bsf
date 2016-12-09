@@ -566,9 +566,9 @@ namespace bs
 				VulkanShaderModule* module = vkProgram->getShaderModule(i);
 
 				if (module != nullptr)
-					stageCI.module = module->getHandle();
+					pipelineCI.stage.module = module->getHandle();
 				else
-					stageCI.module = VK_NULL_HANDLE;
+					pipelineCI.stage.module = VK_NULL_HANDLE;
 
 				pipelineCI.layout = descManager.getPipelineLayout(layouts, numLayouts);
 

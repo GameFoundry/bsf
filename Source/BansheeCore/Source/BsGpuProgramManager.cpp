@@ -70,7 +70,6 @@ namespace bs
 		GPU_PROGRAM_DESC desc;
 		desc.language = language;
 		desc.type = type;
-		desc.profile = GPP_VS_1_1;
 
 		GpuProgram* program = new (bs_alloc<GpuProgram>()) GpuProgram(desc);
 		SPtr<GpuProgram> ret = bs_core_ptr<GpuProgram>(program);

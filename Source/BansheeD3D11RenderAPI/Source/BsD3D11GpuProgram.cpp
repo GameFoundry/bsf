@@ -42,11 +42,32 @@ namespace bs
 			return;
 		}
 
+		String hlslProfile;
+		switch(mProperties.getType())
+		{
+		case GPT_FRAGMENT_PROGRAM:
+			hlslProfile = "ps_5_0";
+			break;
+		case GPT_VERTEX_PROGRAM:
+			hlslProfile = "vs_5_0";
+			break;
+		case GPT_GEOMETRY_PROGRAM:
+			hlslProfile = "gs_5_0";
+			break;
+		case GPT_COMPUTE_PROGRAM:
+			hlslProfile = "cs_5_0";
+			break;
+		case GPT_HULL_PROGRAM:
+			hlslProfile = "hs_5_0";
+			break;
+		case GPT_DOMAIN_PROGRAM:
+			hlslProfile = "ds_5_0";
+			break;
+		}
+
 		D3D11RenderAPI* rapi = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
-		String hlslProfile = rapi->getCapabilities(0).gpuProgProfileToRSSpecificProfile(mProperties.getProfile());
 
 		ID3DBlob* microcode = compileMicrocode(hlslProfile);
-
 		if (microcode != nullptr)
 		{
 			mMicrocode.resize(microcode->GetBufferSize());

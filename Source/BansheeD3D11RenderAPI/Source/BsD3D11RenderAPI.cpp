@@ -1149,14 +1149,6 @@ namespace bs
 		{
 			caps.setCapability(RSC_GEOMETRY_PROGRAM);
 
-			caps.addShaderProfile("ps_4_0");
-			caps.addShaderProfile("vs_4_0");
-			caps.addShaderProfile("gs_4_0");
-
-			caps.addGpuProgramProfile(GPP_FS_4_0, "ps_4_0");
-			caps.addGpuProgramProfile(GPP_VS_4_0, "vs_4_0");
-			caps.addGpuProgramProfile(GPP_GS_4_0, "gs_4_0");
-
 			caps.setNumTextureUnits(GPT_FRAGMENT_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT);
 			caps.setNumTextureUnits(GPT_VERTEX_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT);
 			caps.setNumTextureUnits(GPT_GEOMETRY_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT);
@@ -1172,35 +1164,10 @@ namespace bs
 				+ caps.getNumGpuParamBlockBuffers(GPT_VERTEX_PROGRAM) + caps.getNumGpuParamBlockBuffers(GPT_GEOMETRY_PROGRAM));
 		}
 
-		if(mFeatureLevel >= D3D_FEATURE_LEVEL_10_1)
-		{
-			caps.addShaderProfile("ps_4_1");
-			caps.addShaderProfile("vs_4_1");
-			caps.addShaderProfile("gs_4_1");
-
-			caps.addGpuProgramProfile(GPP_FS_4_1, "ps_4_1");
-			caps.addGpuProgramProfile(GPP_VS_4_1, "vs_4_1");
-			caps.addGpuProgramProfile(GPP_GS_4_1, "gs_4_1");
-		}
-
 		if(mFeatureLevel >= D3D_FEATURE_LEVEL_11_0)
 		{
 			caps.setCapability(RSC_TESSELLATION_PROGRAM);
 			caps.setCapability(RSC_COMPUTE_PROGRAM);
-
-			caps.addShaderProfile("ps_5_0");
-			caps.addShaderProfile("vs_5_0");
-			caps.addShaderProfile("gs_5_0");
-			caps.addShaderProfile("cs_5_0");
-			caps.addShaderProfile("hs_5_0");
-			caps.addShaderProfile("ds_5_0");
-
-			caps.addGpuProgramProfile(GPP_FS_5_0, "ps_5_0");
-			caps.addGpuProgramProfile(GPP_VS_5_0, "vs_5_0");
-			caps.addGpuProgramProfile(GPP_GS_5_0, "gs_5_0");
-			caps.addGpuProgramProfile(GPP_CS_5_0, "cs_5_0");
-			caps.addGpuProgramProfile(GPP_HS_5_0, "hs_5_0");
-			caps.addGpuProgramProfile(GPP_DS_5_0, "ds_5_0");
 
 			caps.setNumTextureUnits(GPT_HULL_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT);
 			caps.setNumTextureUnits(GPT_DOMAIN_PROGRAM, D3D11_COMMONSHADER_INPUT_RESOURCE_REGISTER_COUNT);

@@ -167,7 +167,7 @@ Technique : inherits("PPTonemapCommon") =
 						
 			void main()
 			{
-				vec4 sceneColor = texture2D(gInputTex, FSInput.uv0);
+				vec4 sceneColor = texture(gInputTex, FSInput.uv0);
 				
 				#if AUTO_EXPOSURE
 					sceneColor.rgb = sceneColor.rgb * FSInput.exposureScale;

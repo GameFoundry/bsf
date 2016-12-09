@@ -61,11 +61,11 @@ Technique : base("Surface") =
 
 			void main()
 			{
-				vec3 normal = normalize(texture2D(gNormalTex, uv0).xyz * 2.0f - vec3(1, 1, 1));
+				vec3 normal = normalize(texture(gNormalTex, uv0).xyz * 2.0f - vec3(1, 1, 1));
 				vec3 worldNormal = calcWorldNormal(tangentToWorldZ, tangentToWorldX, normal);
 			
 				GBufferData gbufferData;
-				gbufferData.albedo = texture2D(gAlbedoTex, uv0);
+				gbufferData.albedo = texture(gAlbedoTex, uv0);
 				gbufferData.worldNormal.xyz = worldNormal;
 				
 				encodeGBuffer(gbufferData, gl_FragData[1], gl_FragData[2]);

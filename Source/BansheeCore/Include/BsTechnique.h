@@ -16,7 +16,7 @@ namespace bs
 	class BS_CORE_EXPORT TechniqueBase
 	{
 	public:
-		TechniqueBase(const StringID& renderAPI, const StringID& renderer, const Vector<StringID>& tags);
+		TechniqueBase(const String& language, const StringID& renderer, const Vector<StringID>& tags);
 		virtual ~TechniqueBase() { }
 
 		/**	Checks if this technique is supported based on current render and other systems. */
@@ -29,7 +29,7 @@ namespace bs
 		UINT32 hasTags() const { return !mTags.empty(); }
 
 	protected:
-		StringID mRenderAPI;
+		String mLanguage;
 		StringID mRenderer;
 		Vector<StringID> mTags;
 	};
@@ -50,7 +50,7 @@ namespace bs
 		typedef typename TPassType<Core>::Type PassType;
 		
 		TTechnique();
-		TTechnique(const StringID& renderAPI, const StringID& renderer, const Vector<StringID>& tags, 
+		TTechnique(const String& language, const StringID& renderer, const Vector<StringID>& tags, 
 			const Vector<SPtr<PassType>>& passes);
 		virtual ~TTechnique() { }
 
@@ -74,15 +74,15 @@ namespace bs
 	class BS_CORE_EXPORT TechniqueCore : public CoreObjectCore, public TTechnique<true>
 	{
 	public:
-		TechniqueCore(const StringID& renderAPI, const StringID& renderer, const Vector<StringID>& tags, 
+		TechniqueCore(const String& language, const StringID& renderer, const Vector<StringID>& tags,
 			const Vector<SPtr<PassCore>>& passes);
 
-		/** @copydoc Technique::create(const StringID&, const StringID&, const Vector<SPtr<Pass>>&) */
-		static SPtr<TechniqueCore> create(const StringID& renderAPI, const StringID& renderer, 
+		/** @copydoc Technique::create(const String&, const StringID&, const Vector<SPtr<Pass>>&) */
+		static SPtr<TechniqueCore> create(const String& language, const StringID& renderer,
 			const Vector<SPtr<PassCore>>& passes);
 
-		/** @copydoc Technique::create(const StringID&, const StringID&, const Vector<StringID>&, const Vector<SPtr<Pass>>&) */
-		static SPtr<TechniqueCore> create(const StringID& renderAPI, const StringID& renderer, const Vector<StringID>& tags,
+		/** @copydoc Technique::create(const String&, const StringID&, const Vector<StringID>&, const Vector<SPtr<Pass>>&) */
+		static SPtr<TechniqueCore> create(const String& language, const StringID& renderer, const Vector<StringID>& tags,
 			const Vector<SPtr<PassCore>>& passes);
 	};
 
@@ -104,7 +104,7 @@ namespace bs
 	class BS_CORE_EXPORT Technique : public IReflectable, public CoreObject, public TTechnique<false>
 	{
 	public:
-		Technique(const StringID& renderAPI, const StringID& renderer, const Vector<StringID>& tags, 
+		Technique(const String& language, const StringID& renderer, const Vector<StringID>& tags,
 			const Vector<SPtr<Pass>>& passes);
 
 		/** Retrieves an implementation of a technique usable only from the core thread. */
@@ -113,20 +113,20 @@ namespace bs
 		/** 
 		 * Creates a new technique. 
 		 *
-		 * @param[in]	renderAPI	Render API the technique supports. Under normal circumstances the engine will not use
-		 *							this technique unless this API is enabled.
+		 * @param[in]	language	Shading language used by the technique. The engine will not use this technique unless
+		 *							this language is supported by the render API.
 		 * @param[in]	renderer	Renderer the technique supports. Under normal circumstances the engine will not use
 		 *							this technique unless this renderer is enabled.
 		 * @param[in]	passes		A set of passes that define the technique.
 		 * @return					Newly creted technique.
 		 */
-		static SPtr<Technique> create(const StringID& renderAPI, const StringID& renderer, const Vector<SPtr<Pass>>& passes);
+		static SPtr<Technique> create(const String& language, const StringID& renderer, const Vector<SPtr<Pass>>& passes);
 
 		/** 
 		 * Creates a new technique. 
 		 *
-		 * @param[in]	renderAPI	Render API the technique supports. Under normal circumstances the engine will not use
-		 *							this technique unless this API is enabled.
+		 * @param[in]	language	Shading language used by the technique. The engine will not use this technique unless
+		 *							this language is supported by the render API.
 		 * @param[in]	renderer	Renderer the technique supports. Under normal circumstances the engine will not use
 		 *							this technique unless this renderer is enabled.
 		 * @param[in]	tags		An optional set of tags that can be used for further identifying under which 
@@ -134,7 +134,7 @@ namespace bs
 		 * @param[in]	passes		A set of passes that define the technique.
 		 * @return					Newly creted technique.
 		 */
-		static SPtr<Technique> create(const StringID& renderAPI, const StringID& renderer, const Vector<StringID>& tags, 
+		static SPtr<Technique> create(const String& language, const StringID& renderer, const Vector<StringID>& tags,
 			const Vector<SPtr<Pass>>& passes);
 
 	protected:

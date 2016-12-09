@@ -120,7 +120,7 @@ Technique : base("PickingAlphaCull") =
 
 			void main()
 			{
-				vec4 color = texture2D(gMainTexture, texcoord0);
+				vec4 color = texture(gMainTexture, texcoord0);
 				if(color.a < gAlphaCutoff)
 					discard;
 					

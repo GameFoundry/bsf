@@ -17,10 +17,10 @@ namespace bs
 	{
 	private:
 		BS_BEGIN_RTTI_MEMBERS
-			BS_RTTI_MEMBER_PLAIN(mRenderAPI, 0)
 			BS_RTTI_MEMBER_PLAIN(mRenderer, 1)
 			BS_RTTI_MEMBER_REFLPTR_ARRAY(mPasses, 2)
 			BS_RTTI_MEMBER_PLAIN_ARRAY(mTags, 3)
+			BS_RTTI_MEMBER_PLAIN(mLanguage, 4)
 		BS_END_RTTI_MEMBERS
 
 	public:

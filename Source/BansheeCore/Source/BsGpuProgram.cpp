@@ -10,14 +10,13 @@
 
 namespace bs
 {
-	GpuProgramProperties::GpuProgramProperties(const String& source, const String& entryPoint,
-		GpuProgramType gptype, GpuProgramProfile profile)
-		:mType(gptype), mEntryPoint(entryPoint), mProfile(profile), mSource(source)
+	GpuProgramProperties::GpuProgramProperties(const String& source, const String& entryPoint, GpuProgramType gptype)
+		:mType(gptype), mEntryPoint(entryPoint), mSource(source)
 	{ }
 		
 	GpuProgramCore::GpuProgramCore(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
 		:mNeedsAdjacencyInfo(desc.requiresAdjacency), mIsCompiled(false), mProperties(desc.source, desc.entryPoint, 
-			desc.type, desc.profile)
+			desc.type)
 	{
 		mParametersDesc = bs_shared_ptr_new<GpuParamDesc>();
 	}
@@ -27,10 +26,7 @@ namespace bs
 		if (!isRequiredCapabilitiesSupported())
 			return false;
 
-		RenderAPICore* rapi = RenderAPICore::instancePtr();
-		String profile = rapi->getCapabilities(0).gpuProgProfileToRSSpecificProfile(getProperties().getProfile());
-
-		return rapi->getCapabilities(0).isShaderProfileSupported(profile);
+		return true;
     }
 
 	bool GpuProgramCore::isRequiredCapabilitiesSupported() const
@@ -45,7 +41,7 @@ namespace bs
 
 	GpuProgram::GpuProgram(const GPU_PROGRAM_DESC& desc)
 		: mNeedsAdjacencyInfo(desc.requiresAdjacency), mLanguage(desc.language)
-		, mProperties(desc.source, desc.entryPoint, desc.type, desc.profile)
+		, mProperties(desc.source, desc.entryPoint, desc.type)
     {
 
     }
@@ -77,7 +73,6 @@ namespace bs
 		desc.entryPoint = mProperties.getEntryPoint();
 		desc.language = mLanguage;
 		desc.type = mProperties.getType();
-		desc.profile = mProperties.getProfile();
 		desc.requiresAdjacency = mNeedsAdjacencyInfo;
 
 		return GpuProgramCoreManager::instance().createInternal(desc);

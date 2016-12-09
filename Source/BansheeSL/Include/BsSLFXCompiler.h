@@ -64,7 +64,6 @@ namespace bs
 		struct TechniqueMetaData
 		{
 			StringID renderer = RendererAny;
-			StringID renderAPI = RenderAPIAny;
 			Vector<StringID> tags;
 			String language;
 
@@ -93,11 +92,8 @@ namespace bs
 		/**	Converts FX renderer name into an in-engine renderer identifier. */
 		static StringID parseRenderer(const String& name);
 
-		/**
-		 * Converts FX language into an in-engine shader language (for example hlsl, glsl) and a rendering API that supports
-		 * the provided language.
-		 */
-		static void parseLanguage(const String& name, StringID& renderAPI, String& language);
+		/** Converts FX language string into an in-engine shader language string (for example hlsl, glsl). */
+		static void parseLanguage(const String& name, String& language);
 
 		/**	Maps FX buffer usage enum into in-engine param block usage. */
 		static GpuParamBlockUsage parseBlockUsage(BufferUsageValue usage);
@@ -247,9 +243,6 @@ namespace bs
 		 * first and last index.
 		 */
 		static String removeQuotes(const char* input);
-
-		/**	Retrieves a GPU program profile to use with the specified API and GPU program type. */
-		static GpuProgramProfile getProfile(const StringID& renderAPI, GpuProgramType type);
 
 		/** Returns one of the builtin textures based on their name. */
 		static HTexture getBuiltinTexture(const String& name);

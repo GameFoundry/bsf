@@ -211,9 +211,7 @@ Technique
 			in GStoFS
 			{
 				layout(location = 0) vec2 uv0;
-			} input;
-			
-			in int gl_Layer;
+			} FSInput;
 			
 			layout(location = 0) out vec4 fragColor;
 			
@@ -226,7 +224,7 @@ Technique
 				
 				// By default pixel centers will be sampled, but we want to encode the entire range, so
 				// offset the sampling by half a pixel, and extend the entire range by one pixel.
-				vec2 uv = input.uv0 - (0.5f / LUT_SIZE);
+				vec2 uv = FSInput.uv0 - (0.5f / LUT_SIZE);
 				vec3 logColor = vec3(uv * LUT_SIZE / float(LUT_SIZE - 1), gl_Layer / float(LUT_SIZE - 1));
 				
 				vec3 linearColor;
