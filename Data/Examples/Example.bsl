@@ -2,11 +2,11 @@
 
 Parameters = 
 {
-	Sampler2D 	samp;
+	Sampler2D 	samp : alias("tex");
 	Texture2D 	tex;
 };
 
-Technique = 
+Technique : base("Surface") =
 {
 	Language = "HLSL11";
 	
@@ -34,3 +34,34 @@ Technique =
 		};
 	};
 };
+
+Technique : base("Surface") =
+{
+	Language = "GLSL";
+	
+	Pass =
+	{
+		Fragment =
+		{
+			layout(location = 0) in vec2 uv0;
+			layout(location = 1) in vec3 tangentToWorldZ;
+			layout(location = 2) in vec4 tangentToWorldX;			
+		
+			layout(binding = 4) uniform sampler2D tex;
+
+			void main()
+			{
+				GBufferData gbufferData;
+				gbufferData.albedo = texture(tex, uv0);
+				gbufferData.worldNormal.xyz = tangentToWorldZ;
+				
+				encodeGBuffer(gbufferData, gl_FragData[1], gl_FragData[2]);
+				
+				// TODO - Just returning a simple ambient term, use better environment lighting later
+				gl_FragData[0] = vec4(gbufferData.albedo.rgb, 1.0f) * 0.2f; 
+			}	
+		};
+	};
+};
+
+#include "$ENGINE$\Surface.bslinc"

@@ -103,12 +103,19 @@ namespace bs
 			{
 				for (auto& entry : params)
 				{
-					assert(false); // Accesing the slot below is wrong
+					LayoutInfo& layoutInfo = mLayoutInfos[entry.second.set];
+					for(UINT32 j = 0; j < layoutInfo.numBindings; j++)
+					{
+						if(layoutInfo.bindings[j].binding == entry.second.slot)
+						{
+							VkDescriptorSetLayoutBinding& binding = layoutInfo.bindings[j];
+							binding.descriptorCount = 1;
+							binding.stageFlags |= stageFlagsLookup[i];
+							binding.descriptorType = descType;
 
-					VkDescriptorSetLayoutBinding& binding = mLayoutInfos[entry.second.set].bindings[entry.second.slot];
-					binding.descriptorCount = 1;
-					binding.stageFlags |= stageFlagsLookup[i];
-					binding.descriptorType = descType;
+							break;
+						}
+					}
 				}
 			};
 
@@ -124,10 +131,19 @@ namespace bs
 				bool isLoadStore = entry.second.type != GPOT_BYTE_BUFFER &&
 					entry.second.type != GPOT_STRUCTURED_BUFFER;
 
-				VkDescriptorSetLayoutBinding& binding = mLayoutInfos[entry.second.set].bindings[entry.second.slot];
-				binding.descriptorCount = 1;
-				binding.stageFlags |= stageFlagsLookup[i];
-				binding.descriptorType = isLoadStore ? VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER : VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
+				LayoutInfo& layoutInfo = mLayoutInfos[entry.second.set];
+				for (UINT32 j = 0; j < layoutInfo.numBindings; j++)
+				{
+					if (layoutInfo.bindings[j].binding == entry.second.slot)
+					{
+						VkDescriptorSetLayoutBinding& binding = layoutInfo.bindings[j];
+						binding.descriptorCount = 1;
+						binding.stageFlags |= stageFlagsLookup[i];
+						binding.descriptorType = isLoadStore ? VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER : VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
+
+						break;
+					}
+				}
 			}
 		}
 

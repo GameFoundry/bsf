@@ -272,6 +272,9 @@ namespace bs
 			imageInfo.currentLayout = imageInfo.requiredLayout;
 		};
 
+		// Note: These layout transitions will contain transitions for offscreen framebuffer attachments (while they 
+		// transition to shader read-only layout). This can be avoided, since they're immediately used by the render pass
+		// as color attachments, making the layout change redundant.
 		for (auto& entry : mQueuedLayoutTransitions)
 		{
 			UINT32 imageInfoIdx = entry.second;
@@ -639,7 +642,7 @@ namespace bs
 	void VulkanCmdBuffer::setRenderTarget(const SPtr<RenderTargetCore>& rt, bool readOnlyDepthStencil, 
 		RenderSurfaceMask loadMask)
 	{
-		assert(mState != State::RecordingRenderPass && mState != State::Submitted);
+		assert(mState != State::Submitted);
 
 		VulkanFramebuffer* oldFramebuffer = mFramebuffer;
 
@@ -731,7 +734,6 @@ namespace bs
 					baseLayer = curBaseLayer;
 				else
 				{
-					
 					if(baseLayer != curBaseLayer)
 					{
 						// Note: This could be supported relatively easily: we would need to issue multiple separate
@@ -749,15 +751,17 @@ namespace bs
 		{
 			if (mFramebuffer->hasDepthAttachment())
 			{
+				attachments[attachmentIdx].aspectMask = 0;
+
 				if ((buffers & FBT_DEPTH) != 0)
 				{
-					attachments[attachmentIdx].aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+					attachments[attachmentIdx].aspectMask |= VK_IMAGE_ASPECT_DEPTH_BIT;
 					attachments[attachmentIdx].clearValue.depthStencil.depth = depth;
 				}
 
 				if ((buffers & FBT_STENCIL) != 0)
 				{
-					attachments[attachmentIdx].aspectMask = VK_IMAGE_ASPECT_STENCIL_BIT;
+					attachments[attachmentIdx].aspectMask |= VK_IMAGE_ASPECT_STENCIL_BIT;
 					attachments[attachmentIdx].clearValue.depthStencil.stencil = stencil;
 				}
 
@@ -768,7 +772,6 @@ namespace bs
 					baseLayer = curBaseLayer;
 				else
 				{
-
 					if (baseLayer != curBaseLayer)
 					{
 						// Note: This could be supported relatively easily: we would need to issue multiple separate
@@ -782,6 +785,13 @@ namespace bs
 			}
 		}
 
+		UINT32 numAttachments = attachmentIdx;
+		if (numAttachments == 0)
+			return;
+		
+		if (!isInRenderPass())
+			beginRenderPass();
+
 		VkClearRect clearRect;
 		clearRect.baseArrayLayer = baseLayer;
 		clearRect.layerCount = mFramebuffer->getNumLayers();
@@ -789,8 +799,7 @@ namespace bs
 		clearRect.rect.offset.y = area.y;
 		clearRect.rect.extent.width = area.width;
 		clearRect.rect.extent.height = area.height;
-
-		UINT32 numAttachments = attachmentIdx;
+				
 		vkCmdClearAttachments(mCmdBuffer, numAttachments, attachments, 1, &clearRect);
 	}
 
@@ -1312,16 +1321,24 @@ namespace bs
 		for (UINT32 i = 0; i < numColorAttachments; i++)
 		{
 			const VulkanFramebufferAttachment& attachment = res->getColorAttachment(i);
-			registerResource(attachment.image, VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT,
-							 attachment.image->getLayout(), attachment.finalLayout, VulkanUseFlag::Write, true);
+
+			VkAccessFlags accessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
+			if (attachment.finalLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+				accessMask |= VK_ACCESS_SHADER_READ_BIT;
+			else
+				accessMask |= VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
+			registerResource(attachment.image, accessMask, attachment.image->getLayout(), attachment.finalLayout, 
+				VulkanUseFlag::Write, true);
 		}
 
 		if(res->hasDepthAttachment())
 		{
 			const VulkanFramebufferAttachment& attachment = res->getDepthStencilAttachment();
-			registerResource(attachment.image,
-							 VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT,
-							 attachment.image->getLayout(), attachment.finalLayout, VulkanUseFlag::Write, true);
+
+			VkAccessFlags accessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
+			registerResource(attachment.image, accessMask, attachment.image->getLayout(), attachment.finalLayout, 
+				VulkanUseFlag::Write, true);
 		}
 	}
 

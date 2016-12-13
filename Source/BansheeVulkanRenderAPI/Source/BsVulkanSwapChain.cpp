@@ -194,7 +194,6 @@ namespace bs
 		for (UINT32 i = 0; i < numFramebuffers; i++)
 		{
 			VULKAN_FRAMEBUFFER_DESC& desc = mSurfaces[i].framebufferDesc;
-
 			desc.width = getWidth();
 			desc.height = getHeight();
 			desc.layers = 1;

@@ -48,7 +48,9 @@ namespace bs
 		{
 			auto firstElem = mVertexInputMap.begin();
 
+			firstElem->second->vertexInput.~SPtr<VulkanVertexInput>();
 			bs_free(firstElem->second);
+
 			mVertexInputMap.erase(firstElem);
 		}
 	}
@@ -111,6 +113,7 @@ namespace bs
 
 		UINT8* data = (UINT8*)bs_alloc(totalBytes);
 		VertexInputEntry* newEntry = (VertexInputEntry*)data;
+		new (&newEntry->vertexInput) SPtr<VulkanVertexInput>();
 		data += sizeof(VertexInputEntry);
 
 		newEntry->attributes = (VkVertexInputAttributeDescription*)data;

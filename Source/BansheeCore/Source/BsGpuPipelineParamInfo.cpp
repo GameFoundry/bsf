@@ -199,11 +199,19 @@ namespace bs
 			return -1;
 		}
 
-		if(mSetInfos[set].slotTypes[slot] != type)
+		ParamType slotType = mSetInfos[set].slotTypes[slot];
+		if(slotType != type)
 		{
-			LOGERR("Requested parameter is not of the valid type. Requested: " + toString((UINT32)type) + ". Actual: " + 
-				toString((UINT32)mSetInfos[set].slotTypes[slot]) + ".");
-			return -1;
+			// Allow sampler states & textures to share the same slot, as some APIs combine them
+			bool potentialCombinedSampler = (slotType == ParamType::SamplerState && type == ParamType::Texture) ||
+				(slotType == ParamType::Texture && type == ParamType::SamplerState);
+
+			if (!potentialCombinedSampler)
+			{
+				LOGERR("Requested parameter is not of the valid type. Requested: " + toString((UINT32)type) + ". Actual: " +
+					   toString((UINT32)mSetInfos[set].slotTypes[slot]) + ".");
+				return -1;
+			}
 		}
 
 #endif

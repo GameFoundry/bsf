@@ -15,16 +15,16 @@ namespace bs
 	struct VULKAN_ATTACHMENT_DESC
 	{
 		/** Image to attach or null if none. */
-		VulkanImage* image;
+		VulkanImage* image = nullptr;
 
 		/** View of the image to attach or VK_NULL_HANDLE if none. */
-		VkImageView view;
+		VkImageView view = VK_NULL_HANDLE;
 
 		/** Format of the attached image. */
-		VkFormat format;
+		VkFormat format = VK_FORMAT_UNDEFINED;
 
 		/** Initial layer of the surface as pointed to by the provided image view. */
-		UINT32 baseLayer;
+		UINT32 baseLayer = 0;
 	};
 
 	/** Contains parameters used for initializing VulkanFrameBuffer object. */
@@ -37,19 +37,19 @@ namespace bs
 		VULKAN_ATTACHMENT_DESC depth;
 
 		/** Width of the images, in pixels. All images must be the same size. */
-		UINT32 width;
+		UINT32 width = 0;
 
 		/** Height of the images, in pixels. All images must be the same size. */
-		UINT32 height;
+		UINT32 height = 0;
 
 		/** Number of image layers to render to. This value is used for all provided surfaces. */
-		UINT32 layers;
+		UINT32 layers = 0;
 
 		/** Number of samples in the attached images. All attachments must have the same number of samples. */
-		UINT32 numSamples;
+		UINT32 numSamples = 0;
 
 		/** Set to true if framebuffer represents an offscreen surface that will not be presented. */
-		bool offscreen;
+		bool offscreen = false;
 	};
 
 	/** Information about a single framebuffer attachment. */
