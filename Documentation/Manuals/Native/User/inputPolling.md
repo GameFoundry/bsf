@@ -35,7 +35,7 @@ position.z += gInput().getAxisValue(InputAxis::LeftStickY);
 
 Most axes report their input in range [-1, 1], with the exception of mouse axes, which are unbound. 
 
-# Mouse position
+# Mouse input
 Often it is useful to receive mouse position directly, rather than dealing with raw mouse axis data. Use @ref bs::Input::getPointerPosition "Input::getPointerPosition" to retrieve the current position of the mouse cursor, in coordinates relative to the screen.
 
 Use @ref bs::Input::getPointerDelta "Input::getPointerDelta" to get the difference in coordinates between the position of the mouse on the previous and current frame.

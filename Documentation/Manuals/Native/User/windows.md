@@ -70,8 +70,6 @@ auto& props = newWindow->getProperties();
 gDebug().logDebug(toString(props.getWidth()) + " x " + toString(props.getHeight()));
 ~~~~~~~~~~~~~
 
-> gDebug() is a shortcut to the logging system, as explained in the [logging manual](@ref logging), covered later.
-
 # Window events
 Sometimes you might want to be notified if the user resizes the window externally, in which case use the @ref bs::RenderWindow::onResized "RenderWindow::onResized" event.
 

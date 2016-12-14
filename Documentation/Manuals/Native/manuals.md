@@ -9,6 +9,16 @@ Manuals									{#manuals}
 - **Resources**
  - [Basics and import](@ref resourceBasicsAndImport)
  - [Saving and loading](@ref resourceSavingAndLoading)
+- **Utilities**
+ - [Containers](@ref containers)
+ - [Strings](@ref strings)
+ - [Memory allocation](@ref memory)
+ - [Smart pointers](@ref smartPointers) 
+ - [Events](@ref events)
+ - [File system](@ref fileSystem) 
+ - [Math utilities](@ref mathUtilities)
+ - [Logging messages](@ref logging)
+ - [Measuring time](@ref time)
 - **Graphics**
  - [Windows](@ref windows)
  - [Cameras](@ref cameras)
@@ -20,16 +30,6 @@ Manuals									{#manuals}
 - **Input**
  - [Input polling](@ref inputPolling) 
  - [Input events](@ref inputEvents)  
-- **Utilities**
- - [Containers](@ref containers)
- - [Strings](@ref strings)
- - [Memory allocation](@ref memory)
- - [Smart pointers](@ref smartPointers) 
- - [Events](@ref events)
- - [File system](@ref fileSystem) 
- - [Math utilities](@ref mathUtilities)
- - [Logging messages](@ref logging)
- - [Measuring time](@ref time)
  
 # Developer guides
 

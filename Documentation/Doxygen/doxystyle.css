@@ -308,6 +308,10 @@ dl.note {
 	border-color: rgba(89, 160, 195, 0.86);
 }
 
+div.fragment {
+	margin: 4px 8px 14px 2px;
+}
+
 #menuSegment {
     padding: 0;
     border-bottom: 5px solid #ffb028;
