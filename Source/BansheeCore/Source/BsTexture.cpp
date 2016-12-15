@@ -244,16 +244,9 @@ namespace bs
 
 		const TextureProperties& texProps = texture->getProperties();
 		if(numArraySlices == 0) // Automatically determine slice count
-		{
-			if(texProps.getTextureType() == TEX_TYPE_3D)
-				key.numArraySlices = texProps.getDepth();
-			else
-				key.numArraySlices = texProps.getNumFaces();
-		}
+			key.numArraySlices = texProps.getNumFaces();
 		else
-		{
 			key.numArraySlices = numArraySlices;
-		}
 
 		auto iterFind = texture->mTextureViews.find(key);
 		if (iterFind == texture->mTextureViews.end())

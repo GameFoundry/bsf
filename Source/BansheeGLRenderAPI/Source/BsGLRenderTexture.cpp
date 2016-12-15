@@ -61,7 +61,7 @@ namespace bs
 					}
 					else
 					{
-						surfaceDesc.zoffset = mColorSurfaces[i]->getFirstArraySlice();
+						surfaceDesc.zoffset = 0;
 						surfaceDesc.buffer = glColorSurface->getBuffer(0, mColorSurfaces[i]->getMostDetailedMip());
 					}
 				}
@@ -79,9 +79,6 @@ namespace bs
 					}
 					else
 					{
-						if (mColorSurfaces[i]->getNumArraySlices() != glColorSurface->getProperties().getDepth())
-							LOGWRN("OpenGL doesn't support binding of arbitrary ranges for array textures. The entire range will be bound instead.");
-
 						surfaceDesc.zoffset = 0;
 						surfaceDesc.buffer = glColorSurface->getBuffer(0, mColorSurfaces[i]->getMostDetailedMip());
 					}

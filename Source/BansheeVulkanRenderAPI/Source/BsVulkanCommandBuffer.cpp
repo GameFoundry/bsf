@@ -695,7 +695,9 @@ namespace bs
 
 			setGpuParams(nullptr);
 
-			registerResource(mFramebuffer, VulkanUseFlag::Write);
+			if(mFramebuffer != nullptr)
+				registerResource(mFramebuffer, VulkanUseFlag::Write);
+
 			mGfxPipelineRequiresBind = true;
 		}
 	}
@@ -1077,11 +1079,14 @@ namespace bs
 
 		if (mDescriptorSetsBindState.isSet(DescriptorSetBindFlag::Graphics))
 		{
-			UINT32 deviceIdx = mDevice.getIndex();
-			VkPipelineLayout pipelineLayout = mGraphicsPipeline->getPipelineLayout(deviceIdx);
+			if (mNumBoundDescriptorSets > 0)
+			{
+				UINT32 deviceIdx = mDevice.getIndex();
+				VkPipelineLayout pipelineLayout = mGraphicsPipeline->getPipelineLayout(deviceIdx);
 
-			vkCmdBindDescriptorSets(mCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0,
-									mNumBoundDescriptorSets, mDescriptorSetsTemp, 0, nullptr);
+				vkCmdBindDescriptorSets(mCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0,
+										mNumBoundDescriptorSets, mDescriptorSetsTemp, 0, nullptr);
+			}
 
 			mDescriptorSetsBindState.unset(DescriptorSetBindFlag::Graphics);
 		}
@@ -1107,11 +1112,14 @@ namespace bs
 
 		if (mDescriptorSetsBindState.isSet(DescriptorSetBindFlag::Graphics))
 		{
-			UINT32 deviceIdx = mDevice.getIndex();
-			VkPipelineLayout pipelineLayout = mGraphicsPipeline->getPipelineLayout(deviceIdx);
+			if (mNumBoundDescriptorSets > 0)
+			{
+				UINT32 deviceIdx = mDevice.getIndex();
+				VkPipelineLayout pipelineLayout = mGraphicsPipeline->getPipelineLayout(deviceIdx);
 
-			vkCmdBindDescriptorSets(mCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0,
-									mNumBoundDescriptorSets, mDescriptorSetsTemp, 0, nullptr);
+				vkCmdBindDescriptorSets(mCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0,
+										mNumBoundDescriptorSets, mDescriptorSetsTemp, 0, nullptr);
+			}
 
 			mDescriptorSetsBindState.unset(DescriptorSetBindFlag::Graphics);
 		}
@@ -1143,9 +1151,12 @@ namespace bs
 
 		if(mDescriptorSetsBindState.isSet(DescriptorSetBindFlag::Compute))
 		{
-			VkPipelineLayout pipelineLayout = mComputePipeline->getPipelineLayout(deviceIdx);
-			vkCmdBindDescriptorSets(mCmdBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipelineLayout, 0,
-				mNumBoundDescriptorSets, mDescriptorSetsTemp, 0, nullptr);
+			if (mNumBoundDescriptorSets > 0)
+			{
+				VkPipelineLayout pipelineLayout = mComputePipeline->getPipelineLayout(deviceIdx);
+				vkCmdBindDescriptorSets(mCmdBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, pipelineLayout, 0,
+										mNumBoundDescriptorSets, mDescriptorSetsTemp, 0, nullptr);
+			}
 
 			mDescriptorSetsBindState.unset(DescriptorSetBindFlag::Compute);
 		}

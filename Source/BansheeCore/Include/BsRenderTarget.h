@@ -72,8 +72,8 @@ namespace bs
         UINT32 getHeight() const { return mHeight; }
 
 		/** 
-		 * Returns the number of three dimensional slices of the render target. This will be the depth for 3D textures,
-		 * or number of layers for array textures.
+		 * Returns the number of three dimensional slices of the render target. This will be number of layers for array
+		 * textures or number of faces cube textures.
 		 */
         UINT32 getNumSlices() const { return mNumSlices; }
 

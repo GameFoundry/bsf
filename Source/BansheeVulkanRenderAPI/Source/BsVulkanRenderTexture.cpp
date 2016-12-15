@@ -27,7 +27,7 @@ namespace bs
 		VULKAN_FRAMEBUFFER_DESC fbDesc;
 		fbDesc.width = mProperties.getWidth();
 		fbDesc.height = mProperties.getHeight();
-		fbDesc.layers = mProperties.getNumSlices();
+		fbDesc.layers = 1;
 		fbDesc.numSamples = mProperties.getMultisampleCount() > 1 ? mProperties.getMultisampleCount() : 1;
 		fbDesc.offscreen = true;
 
@@ -44,15 +44,35 @@ namespace bs
 				continue;
 
 			TextureSurface surface;
-			surface.arraySlice = view->getFirstArraySlice();
-			surface.numArraySlices = view->getNumArraySlices();
 			surface.mipLevel = view->getMostDetailedMip();
 			surface.numMipLevels = view->getNumMips();
+
+			if (texture->getProperties().getTextureType() == TEX_TYPE_3D)
+			{
+				if(view->getFirstArraySlice() > 0)
+					LOGERR("Non-zero array slice offset not supported when rendering to a 3D texture.");
+
+				if (view->getNumArraySlices() > 1)
+					LOGERR("Cannot specify array slices when rendering to a 3D texture.");
+
+				surface.arraySlice = 0;
+				surface.numArraySlices = 1;
+
+				fbDesc.color[i].baseLayer = 0;
+				fbDesc.layers = 1;
+			}
+			else
+			{
+				surface.arraySlice = view->getFirstArraySlice();
+				surface.numArraySlices = view->getNumArraySlices();
+
+				fbDesc.color[i].baseLayer = view->getFirstArraySlice();
+				fbDesc.layers = view->getNumArraySlices();
+			}
 
 			fbDesc.color[i].image = image;
 			fbDesc.color[i].view = image->getView(surface);
 			fbDesc.color[i].format = VulkanUtility::getPixelFormat(texture->getProperties().getFormat());
-			fbDesc.color[i].baseLayer = view->getFirstArraySlice();
 		}
 
 		if(mDepthStencilSurface != nullptr)
@@ -64,10 +84,31 @@ namespace bs
 			if (image != nullptr)
 			{
 				TextureSurface surface;
-				surface.arraySlice = view->getFirstArraySlice();
-				surface.numArraySlices = view->getNumArraySlices();
 				surface.mipLevel = view->getMostDetailedMip();
 				surface.numMipLevels = view->getNumMips();
+
+				if (texture->getProperties().getTextureType() == TEX_TYPE_3D)
+				{
+					if (view->getFirstArraySlice() > 0)
+						LOGERR("Non-zero array slice offset not supported when rendering to a 3D texture.");
+
+					if (view->getNumArraySlices() > 1)
+						LOGERR("Cannot specify array slices when rendering to a 3D texture.");
+
+					surface.arraySlice = 0;
+					surface.numArraySlices = 1;
+
+					fbDesc.depth.baseLayer = 0;
+					fbDesc.layers = 1;
+				}
+				else
+				{
+					surface.arraySlice = view->getFirstArraySlice();
+					surface.numArraySlices = view->getNumArraySlices();
+
+					fbDesc.depth.baseLayer = view->getFirstArraySlice();
+					fbDesc.layers = view->getNumArraySlices();
+				}
 
 				fbDesc.depth.image = image;
 				fbDesc.depth.view = image->getView(surface);

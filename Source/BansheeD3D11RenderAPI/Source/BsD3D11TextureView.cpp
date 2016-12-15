@@ -195,8 +195,8 @@ namespace bs
 		case TEX_TYPE_3D:
 			desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE3D;
 			desc.Texture3D.MipSlice = mipSlice;
-			desc.Texture3D.FirstWSlice = firstArraySlice;
-			desc.Texture3D.WSize = numArraySlices;
+			desc.Texture3D.FirstWSlice = 0;
+			desc.Texture3D.WSize = texProps.getDepth();
 			break;
 		case TEX_TYPE_CUBE_MAP:
 			desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
@@ -266,8 +266,8 @@ namespace bs
 		case TEX_TYPE_3D:
 			desc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE3D;
 			desc.Texture3D.MipSlice = mipSlice;
-			desc.Texture3D.FirstWSlice = firstArraySlice;
-			desc.Texture3D.WSize = numArraySlices;
+			desc.Texture3D.FirstWSlice = 0;
+			desc.Texture3D.WSize = texProps.getDepth();
 			break;
 		case TEX_TYPE_CUBE_MAP:
 			desc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2DARRAY;
@@ -351,6 +351,11 @@ namespace bs
 			}
 			break;
 		case TEX_TYPE_3D:
+			desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
+			desc.Texture2DArray.FirstArraySlice = 0;
+			desc.Texture2DArray.ArraySize = texProps.getDepth();
+			desc.Texture2DArray.MipSlice = mipSlice;
+			break;
 		case TEX_TYPE_CUBE_MAP:
 			desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
 			desc.Texture2DArray.FirstArraySlice = firstArraySlice;

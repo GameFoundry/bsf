@@ -65,7 +65,7 @@ namespace bs
 			{
 				rtDesc.colorSurfaces[0].texture = newTextureData->texture;
 				rtDesc.colorSurfaces[0].face = 0;
-				rtDesc.colorSurfaces[0].numFaces = desc.depth;
+				rtDesc.colorSurfaces[0].numFaces = 1;
 				rtDesc.colorSurfaces[0].mipLevel = 0;
 			}
 
