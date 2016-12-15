@@ -318,7 +318,6 @@ namespace bs
 		UINT32 mFenceCounter;
 
 		VulkanFramebuffer* mFramebuffer;
-		VulkanSemaphore* mPresentSemaphore;
 		UINT32 mRenderTargetWidth;
 		UINT32 mRenderTargetHeight;
 		bool mRenderTargetDepthReadOnly;
@@ -345,7 +344,7 @@ namespace bs
 		bool mScissorRequiresBind : 1;
 		DescriptorSetBindFlags mDescriptorSetsBindState;
 
-		VulkanSemaphore* mSemaphoresTemp[BS_MAX_UNIQUE_QUEUES + 1]; // +1 for present semaphore
+		VulkanSemaphore* mSemaphoresTemp[BS_MAX_UNIQUE_QUEUES];
 		VkBuffer mVertexBuffersTemp[BS_MAX_BOUND_VERTEX_BUFFERS];
 		VkDeviceSize mVertexBufferOffsetsTemp[BS_MAX_BOUND_VERTEX_BUFFERS];
 		VkDescriptorSet* mDescriptorSetsTemp;

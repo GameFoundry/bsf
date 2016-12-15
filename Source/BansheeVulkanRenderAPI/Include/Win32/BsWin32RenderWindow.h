@@ -116,7 +116,7 @@ namespace bs
 		VkFormat mDepthFormat;
 		UINT32 mPresentQueueFamily;
 		SPtr<VulkanSwapChain> mSwapChain;
-		VulkanSemaphore* mSemaphoresTemp[BS_MAX_UNIQUE_QUEUES];
+		VulkanSemaphore* mSemaphoresTemp[BS_MAX_UNIQUE_QUEUES + 1]; // +1 for present semaphore
 		bool mRequiresNewBackBuffer;
 
 		Win32RenderWindowProperties mProperties;

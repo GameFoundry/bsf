@@ -126,7 +126,7 @@ namespace bs
 
 	VulkanCmdBuffer::VulkanCmdBuffer(VulkanDevice& device, UINT32 id, VkCommandPool pool, UINT32 queueFamily, bool secondary)
 		: mId(id), mQueueFamily(queueFamily), mState(State::Ready), mDevice(device), mPool(pool), mSemaphore(nullptr)
-		, mFenceCounter(0), mFramebuffer(nullptr), mPresentSemaphore(nullptr), mRenderTargetWidth(0)
+		, mFenceCounter(0), mFramebuffer(nullptr), mRenderTargetWidth(0)
 		, mRenderTargetHeight(0), mRenderTargetDepthReadOnly(false), mRenderTargetLoadMask(RT_NONE), mGlobalQueueIdx(-1)
 		, mViewport(0.0f, 0.0f, 1.0f, 1.0f), mScissor(0, 0, 0, 0), mStencilRef(0), mDrawOp(DOT_TRIANGLE_LIST)
 		, mNumBoundDescriptorSets(0), mGfxPipelineRequiresBind(true), mCmpPipelineRequiresBind(true)
@@ -496,13 +496,6 @@ namespace bs
 		UINT32 numSemaphores;
 		cbm.getSyncSemaphores(deviceIdx, syncMask, mSemaphoresTemp, numSemaphores);
 
-		// Wait on present (i.e. until the back buffer becomes available), if we're rendering to a window
-		if (mPresentSemaphore != nullptr)
-		{
-			mSemaphoresTemp[numSemaphores] = mPresentSemaphore;
-			numSemaphores++;
-		}
-
 		// Issue second part of transition pipeline barriers (on this queue)
 		for (auto& entry : mTransitionInfoTemp)
 		{
@@ -649,7 +642,6 @@ namespace bs
 		if(rt == nullptr)
 		{
 			mFramebuffer = nullptr;
-			mPresentSemaphore = nullptr;
 			mRenderTargetWidth = 0;
 			mRenderTargetHeight = 0;
 			mRenderTargetDepthReadOnly = false;
@@ -661,15 +653,9 @@ namespace bs
 			{
 				Win32RenderWindowCore* window = static_cast<Win32RenderWindowCore*>(rt.get());
 				window->acquireBackBuffer();
+			}
 
-				rt->getCustomAttribute("FB", &mFramebuffer);
-				rt->getCustomAttribute("PS", &mPresentSemaphore);
-			}
-			else
-			{
-				rt->getCustomAttribute("FB", &mFramebuffer);
-				mPresentSemaphore = nullptr;
-			}
+			rt->getCustomAttribute("FB", &mFramebuffer);
 
 			mRenderTargetWidth = rt->getProperties().getWidth();
 			mRenderTargetHeight = rt->getProperties().getHeight();
@@ -1333,11 +1319,14 @@ namespace bs
 		{
 			const VulkanFramebufferAttachment& attachment = res->getColorAttachment(i);
 
-			VkAccessFlags accessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
+			VkAccessFlags accessMask;
 			if (attachment.finalLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
-				accessMask |= VK_ACCESS_SHADER_READ_BIT;
+				accessMask = VK_ACCESS_SHADER_READ_BIT;
 			else
-				accessMask |= VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+			{
+				assert(attachment.finalLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+				accessMask = VK_ACCESS_MEMORY_READ_BIT;
+			}
 
 			registerResource(attachment.image, accessMask, attachment.image->getLayout(), attachment.finalLayout, 
 				VulkanUseFlag::Write, true);
@@ -1397,8 +1386,8 @@ namespace bs
 			return;
 
 		mBuffer->submit(mQueue, mQueueIdx, syncMask);
+		acquireNewBuffer();
 
 		gVulkanCBManager().refreshStates(mDeviceIdx);
-		acquireNewBuffer();
 	}
 }
