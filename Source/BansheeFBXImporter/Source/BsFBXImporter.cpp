@@ -1717,6 +1717,10 @@ namespace bs
 		scale[1] = node->LclScaling.GetCurve(layer, FBXSDK_CURVENODE_COMPONENT_Y);
 		scale[2] = node->LclScaling.GetCurve(layer, FBXSDK_CURVENODE_COMPONENT_Z);
 
+		Vector3 defaultTranslation = FBXToNativeType(node->LclTranslation.Get());
+		Vector3 defaultRotation = FBXToNativeType(node->LclRotation.Get());
+		Vector3 defaultScale = FBXToNativeType(node->LclScaling.Get());
+
 		auto hasCurveValues = [](FbxAnimCurve* curves[3])
 		{
 			for (UINT32 i = 0; i < 3; i++)
@@ -1735,15 +1739,58 @@ namespace bs
 			FBXBoneAnimation& boneAnim = clip.boneAnimations.back();
 			boneAnim.node = importScene.nodeMap[node];
 
-			if(hasCurveValues(translation))
-				boneAnim.translation = importCurve<Vector3, 3>(translation, importOptions, clip.start, clip.end);
+			if (hasCurveValues(translation))
+			{
+				float defaultValues[3];
+				memcpy(defaultValues, &defaultTranslation, sizeof(defaultValues));
 
-			if(hasCurveValues(scale))
-				boneAnim.scale = importCurve<Vector3, 3>(scale, importOptions, clip.start, clip.end);
+				boneAnim.translation = importCurve<Vector3, 3>(translation, defaultValues, importOptions, 
+					clip.start, clip.end);
+			}
+			else
+			{
+				Vector<TKeyframe<Vector3>> keyframes(1);
+				keyframes[0].value = defaultTranslation;
+				keyframes[0].inTangent = Vector3::ZERO;
+				keyframes[0].outTangent = Vector3::ZERO;
+
+				boneAnim.translation = TAnimationCurve<Vector3>(keyframes);
+			}
+
+			if (hasCurveValues(scale))
+			{
+				float defaultValues[3];
+				memcpy(defaultValues, &defaultScale, sizeof(defaultValues));
+
+				boneAnim.scale = importCurve<Vector3, 3>(scale, defaultValues, importOptions, clip.start, clip.end);
+			}
+			else
+			{
+				Vector<TKeyframe<Vector3>> keyframes(1);
+				keyframes[0].value = defaultScale;
+				keyframes[0].inTangent = Vector3::ZERO;
+				keyframes[0].outTangent = Vector3::ZERO;
+
+				boneAnim.scale = TAnimationCurve<Vector3>(keyframes);
+			}
 
 			TAnimationCurve<Vector3> eulerAnimation;
-			if(hasCurveValues(rotation))
-				eulerAnimation = importCurve<Vector3, 3>(rotation, importOptions, clip.start, clip.end);
+			if (hasCurveValues(rotation))
+			{
+				float defaultValues[3];
+				memcpy(defaultValues, &defaultRotation, sizeof(defaultValues));
+
+				eulerAnimation = importCurve<Vector3, 3>(rotation, defaultValues, importOptions, clip.start, clip.end);
+			}
+			else
+			{
+				Vector<TKeyframe<Vector3>> keyframes(1);
+				keyframes[0].value = defaultRotation;
+				keyframes[0].inTangent = Vector3::ZERO;
+				keyframes[0].outTangent = Vector3::ZERO;
+
+				eulerAnimation = TAnimationCurve<Vector3>(keyframes);
+			}
 
 			if(importOptions.reduceKeyframes)
 			{
@@ -1783,7 +1830,9 @@ namespace bs
 							blendShapeAnim.blendShape = StringUtil::replaceAll(blendShapeAnim.blendShape, "/", "_");
 
 							FbxAnimCurve* curves[1] = { curve };
-							blendShapeAnim.curve = importCurve<float, 1>(curves, importOptions, clip.start, clip.end);
+							float defaultValues[1] = { 0.0f };
+							blendShapeAnim.curve = importCurve<float, 1>(curves, defaultValues, importOptions, clip.start, 
+								clip.end);
 
 							// FBX contains data in [0, 100] range, but we need it in [0, 1] range
 							blendShapeAnim.curve = AnimationUtility::scaleCurve(blendShapeAnim.curve, 0.01f);
@@ -1913,24 +1962,35 @@ namespace bs
 	}
 
 	template<class T, int C>
-	TAnimationCurve<T> FBXImporter::importCurve(FbxAnimCurve*(&fbxCurve)[C], FBXImportOptions& importOptions,
-		float start, float end)
+	TAnimationCurve<T> FBXImporter::importCurve(FbxAnimCurve*(&fbxCurve)[C], float (&defaultValues)[C],
+		FBXImportOptions& importOptions, float start, float end)
 	{
+		int keyCounts[C];
+		for (int i = 0; i < C; i++)
+		{
+			if (fbxCurve[i] != nullptr)
+				keyCounts[i] = fbxCurve[i]->KeyGetCount();
+			else
+				keyCounts[i] = 0;
+		}
+
 		// If curve key-counts don't match, we need to force resampling 
 		bool forceResample = false;
-		
-		for(int i = 1; i < C; i++)
+		if (!forceResample)
 		{
-			forceResample |= fbxCurve[i - 1]->KeyGetCount() != fbxCurve[i]->KeyGetCount();
-			if (forceResample)
-				break;
+			for (int i = 1; i < C; i++)
+			{
+				forceResample |= keyCounts[i - 1] != keyCounts[i];
+				if (forceResample)
+					break;
+			}
 		}
 
 		// Read keys directly
 		if(!importOptions.animResample && !forceResample)
 		{
 			bool foundMismatch = false;
-			int keyCount = fbxCurve[0]->KeyGetCount();
+			int keyCount = keyCounts[0];
 			Vector<TKeyframe<T>> keyframes;
 			for (int i = 0; i < keyCount; i++)
 			{
@@ -1985,7 +2045,15 @@ namespace bs
 
 		for (INT32 i = 0; i < C; i++)
 		{
-			int keyCount = fbxCurve[i]->KeyGetCount();
+			if(fbxCurve[i] == nullptr)
+			{
+				curveStart = std::min(0.0f, curveStart);
+				curveEnd = std::max(0.0f, curveEnd);
+
+				continue;
+			}
+
+			int keyCount = keyCounts[i];
 			for (INT32 j = 0; j < keyCount; j++)
 			{
 				FbxTime fbxTime = fbxCurve[i]->KeyGetTime(j);
@@ -2023,10 +2091,17 @@ namespace bs
 
 			for (int j = 0; j < C; j++)
 			{
-				setKeyframeValues(keyFrame, j,
-					fbxCurve[j]->Evaluate(fbxSampleTime, &lastKeyframe[j]),
-					fbxCurve[j]->EvaluateLeftDerivative(fbxSampleTime, &lastLeftTangent[j]),
-					fbxCurve[j]->EvaluateRightDerivative(fbxSampleTime, &lastRightTangent[j]));
+				if (fbxCurve[j] != nullptr)
+				{
+					setKeyframeValues(keyFrame, j,
+									  fbxCurve[j]->Evaluate(fbxSampleTime, &lastKeyframe[j]),
+									  fbxCurve[j]->EvaluateLeftDerivative(fbxSampleTime, &lastLeftTangent[j]),
+									  fbxCurve[j]->EvaluateRightDerivative(fbxSampleTime, &lastRightTangent[j]));
+				}
+				else
+				{
+					setKeyframeValues(keyFrame, j, defaultValues[C], 0.0f, 0.0f);
+				}
 			}
 		}
 
