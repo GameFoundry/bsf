@@ -79,22 +79,4 @@ namespace bs
 			mSamplers[i] = devices[i]->getResourceManager().create<VulkanSampler>(sampler);
 		}
 	}
-
-	void VulkanSamplerStateCore::getHandles(GpuDeviceFlags mask, VkSampler(&handles)[BS_MAX_LINKED_DEVICES], 
-		UINT32& numHandles)
-	{
-		numHandles = 0;
-
-		for (UINT32 i = 0; i < BS_MAX_DEVICES; i++)
-		{
-			UINT32 deviceMask = 1 << i;
-			if ((mask & deviceMask) == 0 || mSamplers[i] == nullptr)
-				continue;
-
-			handles[numHandles++] = mSamplers[i]->getHandle();
-
-			if (numHandles >= BS_MAX_LINKED_DEVICES)
-				break;
-		}
-	}
 }

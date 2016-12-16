@@ -16,6 +16,16 @@ namespace bs
 	{
 	public:
 		VulkanHardwareBufferCoreManager();
+		~VulkanHardwareBufferCoreManager();
+
+		/** Returns a buffer view that can be used for buffer read operations when no other buffer is bound. */
+		VkBufferView getDummyReadBufferView(UINT32 deviceIdx) const;
+
+		/** Returns a buffer view that can be used for buffer storage operations when no other buffer is bound. */
+		VkBufferView getDummyStorageBufferView(UINT32 deviceIdx) const;
+
+		/** Returns a buffer that can be used for uniform storage when no other buffer is bound. */
+		VkBuffer getDummyUniformBuffer(UINT32 deviceIdx) const;
 
 	protected:     
 		/** @copydoc HardwareBufferCoreManager::createVertexBufferInternal */
@@ -37,6 +47,10 @@ namespace bs
 		/** @copydoc HardwareBufferCoreManager::createGpuParamsInternal */
 		SPtr<GpuParamsCore> createGpuParamsInternal(const SPtr<GpuPipelineParamInfoCore>& paramInfo,
 													GpuDeviceFlags deviceMask = GDF_DEFAULT) override;
+
+		VulkanHardwareBuffer* mDummyReadBuffer;
+		VulkanHardwareBuffer* mDummyStorageBuffer;
+		VulkanHardwareBuffer* mDummyUniformBuffer;
 	};
 
 	/** @} */

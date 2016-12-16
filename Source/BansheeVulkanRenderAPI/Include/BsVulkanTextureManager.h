@@ -26,6 +26,16 @@ namespace bs
 	/**	Handles creation of Vulkan textures. */
 	class VulkanTextureCoreManager : public TextureCoreManager
 	{
+	public:
+		/** @copydoc TextureCoreManager::onStartUp */
+		void onStartUp() override;
+
+		/** Returns a image view that can be used for shader read operations when no other image is bound. */
+		VkImageView getDummyReadImageView(UINT32 deviceIdx) const;
+
+		/** Returns a image view that can be used for shader storage operations when no other image is bound. */
+		VkImageView getDummyStorageImageView(UINT32 deviceIdx) const;
+
 	protected:
 		/** @copydoc TextureCoreManager::createTextureInternal */
 		SPtr<TextureCore> createTextureInternal(const TEXTURE_DESC& desc, 
@@ -34,6 +44,9 @@ namespace bs
 		/** @copydoc TextureCoreManager::createRenderTextureInternal */
 		SPtr<RenderTextureCore> createRenderTextureInternal(const RENDER_TEXTURE_DESC_CORE& desc, 
 			UINT32 deviceIdx = 0) override;
+
+		SPtr<VulkanTextureCore> mDummyReadTexture;
+		SPtr<VulkanTextureCore> mDummyStorageTexture;
 	};
 
 	/** @} */

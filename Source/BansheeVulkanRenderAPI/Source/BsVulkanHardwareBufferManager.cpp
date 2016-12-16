@@ -6,12 +6,45 @@
 #include "BsVulkanGpuBuffer.h"
 #include "BsVulkanGpuParamBlockBuffer.h"
 #include "BsVulkanGpuParams.h"
+#include "BsVulkanHardwareBuffer.h"
 #include "BsGpuParamDesc.h"
 
 namespace bs
 {
 	VulkanHardwareBufferCoreManager::VulkanHardwareBufferCoreManager()
-	{ }
+	{
+		// Note: When multi-GPU is properly tested, make sure to create these textures on all GPUs
+		mDummyReadBuffer = bs_new<VulkanHardwareBuffer>(
+			VulkanHardwareBuffer::BT_GENERIC, BF_32X1F, GBU_STATIC, 16, GDF_DEFAULT);
+
+		mDummyStorageBuffer = bs_new<VulkanHardwareBuffer>(
+			VulkanHardwareBuffer::BT_STORAGE, BF_32X1F, GBU_STATIC, 16, GDF_DEFAULT);
+
+		mDummyUniformBuffer = bs_new<VulkanHardwareBuffer>(
+			VulkanHardwareBuffer::BT_UNIFORM, BF_UNKNOWN, GBU_STATIC, 16, GDF_DEFAULT);
+	}
+
+	VulkanHardwareBufferCoreManager::~VulkanHardwareBufferCoreManager()
+	{
+		bs_delete(mDummyReadBuffer);
+		bs_delete(mDummyStorageBuffer);
+		bs_delete(mDummyUniformBuffer);
+	}
+
+	VkBufferView VulkanHardwareBufferCoreManager::getDummyReadBufferView(UINT32 deviceIdx) const
+	{
+		return mDummyReadBuffer->getResource(deviceIdx)->getView();
+	}
+
+	VkBufferView VulkanHardwareBufferCoreManager::getDummyStorageBufferView(UINT32 deviceIdx) const
+	{
+		return mDummyStorageBuffer->getResource(deviceIdx)->getView();
+	}
+
+	VkBuffer VulkanHardwareBufferCoreManager::getDummyUniformBuffer(UINT32 deviceIdx) const
+	{
+		return mDummyUniformBuffer->getResource(deviceIdx)->getHandle();
+	}
 
 	SPtr<VertexBufferCore> VulkanHardwareBufferCoreManager::createVertexBufferInternal(const VERTEX_BUFFER_DESC& desc,
 		GpuDeviceFlags deviceMask)

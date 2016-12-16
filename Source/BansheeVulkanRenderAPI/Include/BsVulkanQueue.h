@@ -63,13 +63,12 @@ namespace bs
 		/** Information about a single submitted command buffer. */
 		struct SubmitInfo
 		{
-			SubmitInfo(VulkanCmdBuffer* cmdBuffer, UINT32 submitIdx, VulkanSemaphore** semaphores, UINT32 numSemaphores)
-				:cmdBuffer(cmdBuffer), submitIdx(submitIdx), semaphores(semaphores), numSemaphores(numSemaphores)
+			SubmitInfo(VulkanCmdBuffer* cmdBuffer, UINT32 submitIdx, UINT32 numSemaphores)
+				:cmdBuffer(cmdBuffer), submitIdx(submitIdx), numSemaphores(numSemaphores)
 			{ }
 
 			VulkanCmdBuffer* cmdBuffer;
 			UINT32 submitIdx;
-			VulkanSemaphore** semaphores;
 			UINT32 numSemaphores;
 		};
 
@@ -80,6 +79,7 @@ namespace bs
 		VkPipelineStageFlags mSubmitDstWaitMask[BS_MAX_UNIQUE_QUEUES];
 
 		List<SubmitInfo> mActiveBuffers;
+		Queue<VulkanSemaphore*> mActiveSemaphores;
 		VulkanCmdBuffer* mLastCommandBuffer;
 		UINT32 mNextSubmitIdx;
 

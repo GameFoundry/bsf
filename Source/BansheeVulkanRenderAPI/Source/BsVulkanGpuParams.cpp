@@ -13,6 +13,8 @@
 #include "BsVulkanSamplerState.h"
 #include "BsVulkanGpuPipelineParamInfo.h"
 #include "BsVulkanCommandBuffer.h"
+#include "BsVulkanTextureManager.h"
+#include "BsVulkanHardwareBufferManager.h"
 #include "BsGpuParamDesc.h"
 
 namespace bs
@@ -79,6 +81,11 @@ namespace bs
 		memset(mSetsDirty, 1, setsDirtyBytes);
 		dataIter += setsDirtyBytes;
 
+		VulkanSamplerStateCore* defaultSampler = static_cast<VulkanSamplerStateCore*>(SamplerStateCore::getDefault().get());
+		VulkanTextureCoreManager& vkTexManager = static_cast<VulkanTextureCoreManager&>(TextureCoreManager::instance());
+		VulkanHardwareBufferCoreManager& vkBufManager = static_cast<VulkanHardwareBufferCoreManager&>(
+			HardwareBufferCoreManager::instance());
+
 		for (UINT32 i = 0; i < BS_MAX_DEVICES; i++)
 		{
 			if (devices[i] == nullptr)
@@ -92,6 +99,8 @@ namespace bs
 			dataIter += perSetBytes;
 
 			VulkanDescriptorManager& descManager = devices[i]->getDescriptorManager();
+			VulkanSampler* vkDefaultSampler = defaultSampler->getResource(i);
+
 			for (UINT32 j = 0; j < numSets; j++)
 			{
 				UINT32 numBindingsPerSet = vkParamInfo.getNumBindings(j);
@@ -133,9 +142,18 @@ namespace bs
 						bool isLoadStore = writeSetInfo.descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
 
 						VkDescriptorImageInfo& imageInfo = perSetData.writeInfos[k].image;
-						imageInfo.sampler = VK_NULL_HANDLE;
-						imageInfo.imageView = VK_NULL_HANDLE;
-						imageInfo.imageLayout = isLoadStore ? VK_IMAGE_LAYOUT_GENERAL : VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+						imageInfo.sampler = vkDefaultSampler->getHandle();
+						
+						if(isLoadStore)
+						{
+							imageInfo.imageView = vkTexManager.getDummyStorageImageView(i);
+							imageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
+						}
+						else
+						{
+							imageInfo.imageView = vkTexManager.getDummyReadImageView(i);
+							imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+						}
 
 						writeSetInfo.pImageInfo = &imageInfo;
 						writeSetInfo.pBufferInfo = nullptr;
@@ -143,21 +161,32 @@ namespace bs
 					}
 					else
 					{
-						bool isLoadStore = writeSetInfo.descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER;
+						bool isUniform = writeSetInfo.descriptorType == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 
-						if (!isLoadStore)
+						if (isUniform)
 						{
 							VkDescriptorBufferInfo& bufferInfo = perSetData.writeInfos[k].buffer;
-							bufferInfo.buffer = VK_NULL_HANDLE;
+							bufferInfo.buffer = vkBufManager.getDummyUniformBuffer(i);
 							bufferInfo.offset = 0;
 							bufferInfo.range = VK_WHOLE_SIZE;
 
 							writeSetInfo.pBufferInfo = &bufferInfo;
+							writeSetInfo.pTexelBufferView = nullptr;
 						}
 						else
+						{
 							writeSetInfo.pBufferInfo = nullptr;
 
-						writeSetInfo.pTexelBufferView = nullptr;
+							bool isLoadStore = writeSetInfo.descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER;
+							VkBufferView bufferView;
+							if(isLoadStore)
+								bufferView = vkBufManager.getDummyStorageBufferView(i);
+							else
+								bufferView = vkBufManager.getDummyReadBufferView(i);
+
+							writeSetInfo.pTexelBufferView = &bufferView;
+						}
+
 						writeSetInfo.pImageInfo = nullptr;
 					}
 				}
@@ -198,7 +227,13 @@ namespace bs
 			if (bufferRes != nullptr)
 				mPerDeviceData[i].perSetData[set].writeInfos[bindingIdx].buffer.buffer = bufferRes->getHandle();
 			else
-				mPerDeviceData[i].perSetData[set].writeInfos[bindingIdx].buffer.buffer = VK_NULL_HANDLE;
+			{
+				VulkanHardwareBufferCoreManager& vkBufManager = static_cast<VulkanHardwareBufferCoreManager&>(
+					HardwareBufferCoreManager::instance());
+
+				mPerDeviceData[i].perSetData[set].writeInfos[bindingIdx].buffer.buffer = 
+					vkBufManager.getDummyUniformBuffer(i);
+			}
 		}
 
 		mSetsDirty[set] = true;
@@ -225,7 +260,16 @@ namespace bs
 			if (mPerDeviceData[i].perSetData == nullptr)
 				continue;
 
-			mPerDeviceData[i].perSetData[set].writeInfos[bindingIdx].image.imageView = vulkanTexture->getView(i);
+			VkImageView& imageView = mPerDeviceData[i].perSetData[set].writeInfos[bindingIdx].image.imageView;
+			if (vulkanTexture != nullptr)
+				imageView = vulkanTexture->getView(i);
+			else
+			{
+				VulkanTextureCoreManager& vkTexManager = static_cast<VulkanTextureCoreManager&>(
+					TextureCoreManager::instance());
+
+				imageView = vkTexManager.getDummyReadImageView(i);
+			}
 		}
 
 		mSetsDirty[set] = true;
@@ -253,7 +297,16 @@ namespace bs
 			if (mPerDeviceData[i].perSetData == nullptr)
 				continue;
 
-			mPerDeviceData[i].perSetData[set].writeInfos[bindingIdx].image.imageView = vulkanTexture->getView(i, surface);
+			VkImageView& imageView = mPerDeviceData[i].perSetData[set].writeInfos[bindingIdx].image.imageView;
+			if (vulkanTexture != nullptr)
+				imageView = vulkanTexture->getView(i, surface);
+			else
+			{
+				VulkanTextureCoreManager& vkTexManager = static_cast<VulkanTextureCoreManager&>(
+					TextureCoreManager::instance());
+
+				imageView = vkTexManager.getDummyStorageImageView(i);
+			}
 		}
 
 		mSetsDirty[set] = true;
@@ -281,10 +334,24 @@ namespace bs
 				continue;
 
 			VulkanBuffer* bufferRes = vulkanBuffer->getResource(i);
+			VkWriteDescriptorSet& writeSetInfo = mPerDeviceData[i].perSetData[set].writeSetInfos[bindingIdx];
+			VkBufferView bufferView;
+
 			if (bufferRes != nullptr)
-				mPerDeviceData[i].perSetData[set].writeInfos[bindingIdx].bufferView = bufferRes->getView();
+				bufferView = bufferRes->getView();
 			else
-				mPerDeviceData[i].perSetData[set].writeInfos[bindingIdx].bufferView = VK_NULL_HANDLE;
+			{
+				VulkanHardwareBufferCoreManager& vkBufManager = static_cast<VulkanHardwareBufferCoreManager&>(
+					HardwareBufferCoreManager::instance());
+
+				bool isLoadStore = writeSetInfo.descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER;
+				if(isLoadStore)
+					bufferView = vkBufManager.getDummyStorageBufferView(i);
+				else
+					bufferView = vkBufManager.getDummyReadBufferView(i);
+			}
+
+			writeSetInfo.pTexelBufferView = &bufferView;
 		}
 
 		mSetsDirty[set] = true;
@@ -315,7 +382,13 @@ namespace bs
 			if (samplerRes != nullptr)
 				mPerDeviceData[i].perSetData[set].writeInfos[bindingIdx].image.sampler = samplerRes->getHandle();
 			else
-				mPerDeviceData[i].perSetData[set].writeInfos[bindingIdx].image.sampler = VK_NULL_HANDLE;
+			{
+				VulkanSamplerStateCore* defaultSampler = 
+					static_cast<VulkanSamplerStateCore*>(SamplerStateCore::getDefault().get());
+
+				VkSampler vkSampler = defaultSampler->getResource(i)->getHandle();;
+				mPerDeviceData[i].perSetData[set].writeInfos[bindingIdx].image.sampler = vkSampler;
+			}
 		}
 
 		mSetsDirty[set] = true;

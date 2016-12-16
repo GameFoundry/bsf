@@ -338,7 +338,7 @@ namespace bs
 		{
 			SPtr<GpuParamDesc> paramDesc = gpuParams->getParamDesc((GpuProgramType)i);
 			if (paramDesc == nullptr)
-				return;
+				continue;
 
 			// Flush all param block buffers
 			for (auto iter = paramDesc->paramBlocks.begin(); iter != paramDesc->paramBlocks.end(); ++iter)

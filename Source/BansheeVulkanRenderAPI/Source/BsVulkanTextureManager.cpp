@@ -3,6 +3,7 @@
 #include "BsVulkanTextureManager.h"
 #include "BsVulkanTexture.h"
 #include "BsVulkanRenderTexture.h"
+#include "BsVulkanResource.h"
 
 namespace bs
 {
@@ -16,6 +17,43 @@ namespace bs
 	PixelFormat VulkanTextureManager::getNativeFormat(TextureType ttype, PixelFormat format, int usage, bool hwGamma)
 	{
 		return PF_R8G8B8A8;;
+	}
+
+	void VulkanTextureCoreManager::onStartUp()
+	{
+		TextureCoreManager::onStartUp();
+
+		SPtr<PixelData> whitePixelData = PixelData::create(2, 2, 1, PF_R8G8B8A8);
+		whitePixelData->setColorAt(Color::White, 0, 0);
+		whitePixelData->setColorAt(Color::White, 0, 1);
+		whitePixelData->setColorAt(Color::White, 1, 0);
+		whitePixelData->setColorAt(Color::White, 1, 1);
+
+		TEXTURE_DESC desc;
+		desc.type = TEX_TYPE_2D;
+		desc.width = 2;
+		desc.height = 2;
+		desc.format = PF_R8G8B8A8;
+		desc.usage = TU_STATIC;
+
+		// Note: When multi-GPU is properly tested, make sure to create these textures on all GPUs
+		mDummyReadTexture = std::static_pointer_cast<VulkanTextureCore>(createTexture(desc));
+		mDummyReadTexture->writeData(*whitePixelData);
+
+		desc.usage = TU_LOADSTORE;
+
+		mDummyStorageTexture = std::static_pointer_cast<VulkanTextureCore>(createTexture(desc));
+		mDummyStorageTexture->writeData(*whitePixelData);
+	}
+
+	VkImageView VulkanTextureCoreManager::getDummyReadImageView(UINT32 deviceIdx) const
+	{
+		return mDummyReadTexture->getResource(deviceIdx)->getView();
+	}
+
+	VkImageView VulkanTextureCoreManager::getDummyStorageImageView(UINT32 deviceIdx) const
+	{
+		return mDummyStorageTexture->getResource(deviceIdx)->getView();
 	}
 
 	SPtr<TextureCore> VulkanTextureCoreManager::createTextureInternal(const TEXTURE_DESC& desc,

@@ -61,9 +61,11 @@ namespace bs
 		{
 			waitSemaphores[i]->notifyBound();
 			waitSemaphores[i]->notifyUsed(0, 0, VulkanUseFlag::Read | VulkanUseFlag::Write);
+
+			mActiveSemaphores.push(waitSemaphores[i]);
 		}
 
-		mActiveBuffers.push_back(SubmitInfo(cmdBuffer, mNextSubmitIdx++, waitSemaphores, semaphoresCount));
+		mActiveBuffers.push_back(SubmitInfo(cmdBuffer, mNextSubmitIdx++, semaphoresCount));
 	}
 
 	void VulkanQueue::present(VulkanSwapChain* swapChain, VulkanSemaphore** waitSemaphores, UINT32 semaphoresCount)
@@ -101,9 +103,11 @@ namespace bs
 		{
 			waitSemaphores[i]->notifyBound();
 			waitSemaphores[i]->notifyUsed(0, 0, VulkanUseFlag::Read | VulkanUseFlag::Write);
+
+			mActiveSemaphores.push(waitSemaphores[i]);
 		}
 
-		mActiveBuffers.push_back(SubmitInfo(nullptr, mNextSubmitIdx++, waitSemaphores, semaphoresCount));
+		mActiveBuffers.push_back(SubmitInfo(nullptr, mNextSubmitIdx++, semaphoresCount));
 	}
 
 	void VulkanQueue::waitIdle() const
@@ -121,7 +125,10 @@ namespace bs
 		{
 			VulkanCmdBuffer* cmdBuffer = iter->cmdBuffer;
 			if (cmdBuffer == nullptr)
+			{
+				++iter;
 				continue;
+			}
 
 			cmdBuffer->refreshFenceStatus();
 			if (cmdBuffer->isSubmitted())
@@ -137,8 +144,13 @@ namespace bs
 			if (iter->submitIdx > lastFinishedSubmission)
 				break;
 
-			for(UINT32 i = 0; i < iter->numSemaphores; i++)
-				iter->semaphores[i]->notifyDone(0, VulkanUseFlag::Read | VulkanUseFlag::Write);
+			for (UINT32 i = 0; i < iter->numSemaphores; i++)
+			{
+				VulkanSemaphore* semaphore = mActiveSemaphores.front();
+				mActiveSemaphores.pop();
+
+				semaphore->notifyDone(0, VulkanUseFlag::Read | VulkanUseFlag::Write);
+			}
 
 			iter = mActiveBuffers.erase(iter);
 		}

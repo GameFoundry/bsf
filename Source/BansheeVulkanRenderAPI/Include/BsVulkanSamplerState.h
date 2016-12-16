@@ -38,17 +38,6 @@ namespace bs
 		 */
 		VulkanSampler* getResource(UINT32 deviceIdx) const { return mSamplers[deviceIdx]; }
 
-		/* 
-		 * Returns a set sampler handles for the devices matching the provided mask. 
-		 * 
-		 * @param[in]	mask		Mask which determines for which devices we want the handles for. The device must exist 
-		 *							in both the provided mask and the mask of the sampler state was created with.
-		 * @param[out]	handles		Output array holding up to BS_MAX_LINKED_DEVICES handles. Only the first @p numHandles
-		 *							entries of the array are defined.
-		 * @param[out]	numHandles	Number of entries in the @p handles array. 
-		 */
-		void getHandles(GpuDeviceFlags mask, VkSampler(&handles)[BS_MAX_LINKED_DEVICES], UINT32& numHandles);
-
 	protected:
 		friend class VulkanRenderStateCoreManager;
 
