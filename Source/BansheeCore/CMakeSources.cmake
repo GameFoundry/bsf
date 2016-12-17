@@ -90,6 +90,7 @@ set(BS_BANSHEECORE_INC_RENDERER
 	"Include/BsParamBlocks.h"
 	"Include/BsCamera.h"
 	"Include/BsPostProcessSettings.h"
+	"Include/BsRendererExtension.h"
 )
 
 set(BS_BANSHEECORE_SRC_LOCALIZATION
@@ -344,6 +345,7 @@ set(BS_BANSHEECORE_SRC_RENDERER
 	"Source/BsParamBlocks.cpp"
 	"Source/BsCamera.cpp"
 	"Source/BsPostProcessSettings.cpp"
+	"Source/BsRendererExtension.cpp"
 )
 
 set(BS_BANSHEECORE_SRC_RESOURCES

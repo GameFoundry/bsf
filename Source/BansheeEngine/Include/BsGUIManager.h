@@ -3,6 +3,7 @@
 #pragma once
 
 #include "BsPrerequisites.h"
+#include "BsRendererExtension.h"
 #include "BsGUIMouseEvent.h"
 #include "BsGUITextInputEvent.h"
 #include "BsGUICommandEvent.h"
@@ -21,7 +22,7 @@ namespace bs
 	 *  @{
 	 */
 
-	class GUIManagerCore;
+	class GUIRenderer;
 
 	/**
 	 * Manages the rendering and input of all GUI widgets in the scene. 
@@ -220,11 +221,8 @@ namespace bs
 		 */
 		SPtr<RenderWindow> getBridgeWindow(const SPtr<RenderTexture>& target) const;
 
-		/** Gets the core thread portion of the GUI manager, responsible for rendering of GUI elements. */
-		GUIManagerCore* getCore() const { return mCore.load(std::memory_order_relaxed); }
-
 	private:
-		friend class GUIManagerCore;
+		friend class GUIRenderer;
 
 		/**	Recreates all dirty GUI meshes and makes them ready for rendering. */
 		void updateMeshes();
@@ -240,7 +238,7 @@ namespace bs
 		 *
 		 * @param[in]	core	Previously constructed core thread GUI manager instance.
 		 */
-		void destroyCore(GUIManagerCore* core);
+		void destroyCore(GUIRenderer* core);
 
 		/**
 		 * Destroys any elements or widgets queued for destruction.
@@ -351,7 +349,7 @@ namespace bs
 		SPtr<MeshHeap> mTriangleMeshHeap;
 		SPtr<MeshHeap> mLineMeshHeap;
 
-		std::atomic<GUIManagerCore*> mCore;
+		SPtr<GUIRenderer> mRenderer;
 		bool mCoreDirty;
 
 		SPtr<VertexDataDesc> mTriangleVertexDesc;
@@ -431,15 +429,21 @@ namespace bs
 	extern GUISpriteParamBlockDef gGUISpriteParamBlockDef;
 
 	/**	Handles GUI rendering on the core thread. */
-	class BS_EXPORT GUIManagerCore
+	class BS_EXPORT GUIRenderer : public RendererExtension
 	{
 		friend class GUIManager;
 
 	public:
-		~GUIManagerCore();
+		GUIRenderer();
 
-		/** Initializes the object. Must be called right after construction. */
-		void initialize();
+		/**	@copydoc RendererExtension::initialize */
+		void initialize(const Any& data) override;
+
+		/**	@copydoc RendererExtension::check */
+		bool check(const CameraCore& camera) override;
+
+		/**	@copydoc RendererExtension::render */
+		void render(const CameraCore& camera) override;
 
 	private:
 		/**
@@ -449,10 +453,8 @@ namespace bs
 		 */
 		void updateData(const UnorderedMap<SPtr<CameraCore>, Vector<GUIManager::GUICoreRenderData>>& perCameraData);
 
-		/**	Triggered by the Renderer when the GUI should be rendered. */
-		void render(const SPtr<CameraCore>& camera);
-
-		UnorderedMap<SPtr<CameraCore>, Vector<GUIManager::GUICoreRenderData>> mPerCameraData;
+		UnorderedMap<const CameraCore*, Vector<GUIManager::GUICoreRenderData>> mPerCameraData;
+		Set<SPtr<CameraCore>> mReferencedCameras;
 		Vector<SPtr<GpuParamBlockBufferCore>> mParamBlocks;
 		SPtr<SamplerStateCore> mSamplerState;
 	};

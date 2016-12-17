@@ -30,6 +30,7 @@
 #include "BsSkeleton.h"
 #include "BsGpuBuffer.h"
 #include "BsGpuParamsSet.h"
+#include "BsRendererExtension.h"
 #include "BsMeshData.h"
 
 using namespace std::placeholders;
@@ -665,22 +666,18 @@ namespace bs
 		SPtr<RenderTargets> renderTargets = rendererCam->getRenderTargets();
 		renderTargets->bindGBuffer();
 
-		//// Trigger pre-scene callbacks
-		auto iterCameraCallbacks = mRenderCallbacks.find(camera);
-		if (iterCameraCallbacks != mRenderCallbacks.end())
+		//// Trigger pre-base-pass callbacks
+		auto iterRenderCallback = mCallbacks.begin();
+		while(iterRenderCallback != mCallbacks.end())
 		{
-			for (auto& callbackPair : iterCameraCallbacks->second)
-			{
-				const RenderCallbackData& callbackData = callbackPair.second;
+			RendererExtension* extension = *iterRenderCallback;
+			if (extension->getLocation() != RenderLocation::PreBasePass)
+				break;
+			
+			if (extension->check(*camera))
+				extension->render(*camera);
 
-				if (callbackData.overlay)
-					continue;
-
-				if (callbackPair.first >= 0)
-					break;
-
-				callbackData.callback();
-			}
+			++iterRenderCallback;
 		}
 
 		//// Render base pass
@@ -689,6 +686,19 @@ namespace bs
 		{
 			BeastRenderableElement* renderElem = static_cast<BeastRenderableElement*>(iter->renderElem);
 			renderElement(*renderElem, iter->passIdx, iter->applyPass, frameInfo, viewProj);
+		}
+
+		//// Trigger post-base-pass callbacks
+		while (iterRenderCallback != mCallbacks.end())
+		{
+			RendererExtension* extension = *iterRenderCallback;
+			if (extension->getLocation() != RenderLocation::PostBasePass)
+				break;
+
+			if (extension->check(*camera))
+				extension->render(*camera);
+
+			++iterRenderCallback;
 		}
 
 		renderTargets->bindSceneColor(true);
@@ -760,36 +770,34 @@ namespace bs
 			renderElement(*renderElem, iter->passIdx, iter->applyPass, frameInfo, viewProj);
 		}
 
-		// Render non-overlay post-scene callbacks
-		if (iterCameraCallbacks != mRenderCallbacks.end())
+		//// Trigger post-light-pass callbacks
+		while (iterRenderCallback != mCallbacks.end())
 		{
-			for (auto& callbackPair : iterCameraCallbacks->second)
-			{
-				const RenderCallbackData& callbackData = callbackPair.second;
+			RendererExtension* extension = *iterRenderCallback;
+			if (extension->getLocation() != RenderLocation::PostLightPass)
+				break;
 
-				if (callbackData.overlay || callbackPair.first < 0)
-					continue;
+			if (extension->check(*camera))
+				extension->render(*camera);
 
-				callbackData.callback();
-			}
+			++iterRenderCallback;
 		}
 
 		// TODO - If GBuffer has multiple samples, I should resolve them before post-processing
 		PostProcessing::instance().postProcess(renderTargets->getSceneColorRT(),
 			camera, rendererCam->getPPInfo(), frameInfo.delta);
 
-		// Render overlay post-scene callbacks
-		if (iterCameraCallbacks != mRenderCallbacks.end())
+		//// Trigger overlay callbacks
+		while (iterRenderCallback != mCallbacks.end())
 		{
-			for (auto& callbackPair : iterCameraCallbacks->second)
-			{
-				const RenderCallbackData& callbackData = callbackPair.second;
+			RendererExtension* extension = *iterRenderCallback;
+			if (extension->getLocation() != RenderLocation::Overlay)
+				break;
 
-				if (!callbackData.overlay)
-					continue;
+			if (extension->check(*camera))
+				extension->render(*camera);
 
-				callbackData.callback();
-			}
+			++iterRenderCallback;
 		}
 
 		rendererCam->endRendering();
@@ -835,19 +843,21 @@ namespace bs
 			}
 		}
 
-		// Render overlay post-scene callbacks
-		auto iterCameraCallbacks = mRenderCallbacks.find(camera);
-		if (iterCameraCallbacks != mRenderCallbacks.end())
+		// Trigger overlay callbacks
+		auto iterRenderCallback = mCallbacks.begin();
+		while (iterRenderCallback != mCallbacks.end())
 		{
-			for (auto& callbackPair : iterCameraCallbacks->second)
+			RendererExtension* extension = *iterRenderCallback;
+			if (extension->getLocation() != RenderLocation::Overlay)
 			{
-				const RenderCallbackData& callbackData = callbackPair.second;
-
-				if (!callbackData.overlay)
-					continue;
-
-				callbackData.callback();
+				++iterRenderCallback;
+				continue;
 			}
+
+			if (extension->check(*camera))
+				extension->render(*camera);
+
+			++iterRenderCallback;
 		}
 
 		rendererCam->endRendering();

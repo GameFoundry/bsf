@@ -35,7 +35,7 @@ namespace bs
 
 	GizmoManager::GizmoManager()
 		: mPickable(false), mCurrentIdx(0), mTransformDirty(false), mColorDirty(false), mDrawHelper(nullptr)
-		, mPickingDrawHelper(nullptr), mCore(nullptr)
+		, mPickingDrawHelper(nullptr)
 		
 	{
 		mTransform = Matrix4::IDENTITY;
@@ -68,9 +68,7 @@ namespace bs
 		initData.pickingMat = pickingMaterial->getCore();
 		initData.alphaPickingMat = alphaPickingMaterial->getCore();
 
-		mCore.store(bs_new<GizmoManagerCore>(GizmoManagerCore::PrivatelyConstuct()), std::memory_order_release);
-
-		gCoreThread().queueCommand(std::bind(&GizmoManager::initializeCore, this, initData));
+		mGizmoRenderer = RendererExtension::create<GizmoRenderer>(initData);
 	}
 
 	GizmoManager::~GizmoManager()
@@ -83,18 +81,6 @@ namespace bs
 
 		bs_delete(mDrawHelper);
 		bs_delete(mPickingDrawHelper);
-
-		gCoreThread().queueCommand(std::bind(&GizmoManager::destroyCore, this, mCore.load(std::memory_order_relaxed)));
-	}
-
-	void GizmoManager::initializeCore(const CoreInitData& initData)
-	{
-		mCore.load(std::memory_order_acquire)->initialize(initData);
-	}
-
-	void GizmoManager::destroyCore(GizmoManagerCore* core)
-	{
-		bs_delete(core);
 	}
 
 	void GizmoManager::startGizmo(const HSceneObject& gizmoParent)
@@ -464,9 +450,9 @@ namespace bs
 		mIconMesh = buildIconMesh(camera, mIconData, false, iconRenderData);
 		SPtr<MeshCoreBase> iconMesh = mIconMesh->getCore();
 
-		GizmoManagerCore* core = mCore.load(std::memory_order_relaxed);
+		GizmoRenderer* renderer = mGizmoRenderer.get();
 
-		gCoreThread().queueCommand(std::bind(&GizmoManagerCore::updateData, core, camera->getCore(),
+		gCoreThread().queueCommand(std::bind(&GizmoRenderer::updateData, renderer, camera->getCore(),
 			proxyData, iconMesh, iconRenderData));
 	}
 
@@ -640,10 +626,10 @@ namespace bs
 		SPtr<TransientMesh> iconMesh = buildIconMesh(camera, iconData, true, iconRenderData);
 
 		// Note: This must be rendered while Scene view is being rendered
-		GizmoManagerCore* core = mCore.load(std::memory_order_relaxed);
+		GizmoRenderer* renderer = mGizmoRenderer.get();
 
 		Vector<MeshRenderData> proxyData = createMeshProxyData(meshes);
-		gCoreThread().queueCommand(std::bind(&GizmoManagerCore::renderData, core, camera->getCore(),
+		gCoreThread().queueCommand(std::bind(&GizmoRenderer::renderData, renderer, camera->getCore(),
 											 proxyData, iconMesh->getCore(), iconRenderData, true));
 
 		mPickingDrawHelper->clearMeshes(meshes);
@@ -683,10 +669,10 @@ namespace bs
 
 		mIconMesh = nullptr;
 
-		GizmoManagerCore* core = mCore.load(std::memory_order_relaxed);
+		GizmoRenderer* renderer = mGizmoRenderer.get();
 		IconRenderDataVecPtr iconRenderData = bs_shared_ptr_new<IconRenderDataVec>();
 		
-		gCoreThread().queueCommand(std::bind(&GizmoManagerCore::updateData, core,
+		gCoreThread().queueCommand(std::bind(&GizmoRenderer::updateData, renderer,
 			nullptr, Vector<MeshRenderData>(), nullptr, iconRenderData));
 	}
 
@@ -910,22 +896,18 @@ namespace bs
 	GizmoParamBlockDef gHandleParamBlockDef;
 	GizmoPickingParamBlockDef gGizmoPickingParamBlockDef;
 
-	const float GizmoManagerCore::PICKING_ALPHA_CUTOFF = 0.5f;
+	const float GizmoRenderer::PICKING_ALPHA_CUTOFF = 0.5f;
 
-	GizmoManagerCore::GizmoManagerCore(const PrivatelyConstuct& dummy)
+	GizmoRenderer::GizmoRenderer()
+		:RendererExtension(RenderLocation::PostLightPass, 0)
 	{
 	}
 
-	GizmoManagerCore::~GizmoManagerCore()
-	{
-		SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
-		if (mCamera != nullptr)
-			activeRenderer->unregisterRenderCallback(mCamera.get(), 20);
-	}
-
-	void GizmoManagerCore::initialize(const GizmoManager::CoreInitData& initData)
+	void GizmoRenderer::initialize(const Any& data)
 	{
 		THROW_IF_NOT_CORE_THREAD;
+
+		const GizmoManager::CoreInitData& initData = any_cast_ref<GizmoManager::CoreInitData>(data);
 
 		mMeshMaterials[(UINT32)GizmoMeshType::Solid] = initData.solidMat;
 		mMeshMaterials[(UINT32)GizmoMeshType::Wire] = initData.wireMat;
@@ -941,19 +923,9 @@ namespace bs
 		mIconPickingParamBuffer = gGizmoPickingParamBlockDef.createBuffer();
 	}
 
-	void GizmoManagerCore::updateData(const SPtr<CameraCore>& camera, const Vector<GizmoManager::MeshRenderData>& meshes,
+	void GizmoRenderer::updateData(const SPtr<CameraCore>& camera, const Vector<GizmoManager::MeshRenderData>& meshes,
 		const SPtr<MeshCoreBase>& iconMesh, const GizmoManager::IconRenderDataVecPtr& iconRenderData)
 	{
-		if (mCamera != camera)
-		{
-			SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
-			if (mCamera != nullptr)
-				activeRenderer->unregisterRenderCallback(mCamera.get(), 0);
-
-			if (camera != nullptr)
-				activeRenderer->registerRenderCallback(camera.get(), 0, std::bind(&GizmoManagerCore::render, this));
-		}
-
 		mCamera = camera;
 		mMeshes = meshes;
 		mIconMesh = iconMesh;
@@ -1013,12 +985,17 @@ namespace bs
 		}
 	}
 
-	void GizmoManagerCore::render()
+	bool GizmoRenderer::check(const CameraCore& camera)
+	{
+		return &camera == mCamera.get();
+	}
+
+	void GizmoRenderer::render(const CameraCore& camera)
 	{
 		renderData(mCamera, mMeshes, mIconMesh, mIconRenderData, false);
 	}
 
-	void GizmoManagerCore::renderData(const SPtr<CameraCore>& camera, Vector<GizmoManager::MeshRenderData>& meshes,
+	void GizmoRenderer::renderData(const SPtr<CameraCore>& camera, Vector<GizmoManager::MeshRenderData>& meshes,
 		const SPtr<MeshCoreBase>& iconMesh, const GizmoManager::IconRenderDataVecPtr& iconRenderData, bool usePickingMaterial)
 	{
 		if (camera == nullptr)
@@ -1106,7 +1083,7 @@ namespace bs
 			renderIconGizmos(screenArea, iconMesh, iconRenderData, usePickingMaterial);
 	}
 
-	void GizmoManagerCore::renderIconGizmos(Rect2I screenArea, SPtr<MeshCoreBase> mesh, 
+	void GizmoRenderer::renderIconGizmos(Rect2I screenArea, SPtr<MeshCoreBase> mesh, 
 		GizmoManager::IconRenderDataVecPtr renderData, bool usePickingMaterial)
 	{
 		RenderAPICore& rapi = RenderAPICore::instance();

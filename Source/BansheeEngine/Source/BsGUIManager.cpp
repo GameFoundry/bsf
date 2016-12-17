@@ -118,10 +118,7 @@ namespace bs
 		deferredCall(std::bind(&GUIManager::updateCaretTexture, this));
 		deferredCall(std::bind(&GUIManager::updateTextSelectionTexture, this));
 
-		GUIManagerCore* core = bs_new<GUIManagerCore>();
-		mCore.store(core, std::memory_order_release);
-
-		gCoreThread().queueCommand(std::bind(&GUIManagerCore::initialize, core));
+		mRenderer = RendererExtension::create<GUIRenderer>(nullptr);
 	}
 
 	GUIManager::~GUIManager()
@@ -158,12 +155,10 @@ namespace bs
 		bs_delete(mInputCaret);
 		bs_delete(mInputSelection);
 
-		gCoreThread().queueCommand(std::bind(&GUIManager::destroyCore, this, mCore.load(std::memory_order_relaxed)));
-
 		assert(mCachedGUIData.size() == 0);
 	}
 
-	void GUIManager::destroyCore(GUIManagerCore* core)
+	void GUIManager::destroyCore(GUIRenderer* core)
 	{
 		bs_delete(core);
 	}
@@ -422,8 +417,7 @@ namespace bs
 				}
 			}
 
-			GUIManagerCore* core = mCore.load(std::memory_order_relaxed);
-			gCoreThread().queueCommand(std::bind(&GUIManagerCore::updateData, core, corePerCameraData));
+			gCoreThread().queueCommand(std::bind(&GUIRenderer::updateData, mRenderer.get(), corePerCameraData));
 
 			mCoreDirty = false;
 		}
@@ -1740,14 +1734,11 @@ namespace bs
 
 	GUISpriteParamBlockDef gGUISpriteParamBlockDef;
 
-	GUIManagerCore::~GUIManagerCore()
-	{
-		SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
-		for (auto& cameraData : mPerCameraData)
-			activeRenderer->unregisterRenderCallback(cameraData.first.get(), 30);
-	}
+	GUIRenderer::GUIRenderer()
+		:RendererExtension(RenderLocation::Overlay, 10)
+	{ }
 
-	void GUIManagerCore::initialize()
+	void GUIRenderer::initialize(const Any& data)
 	{
 		SAMPLER_STATE_DESC ssDesc;
 		ssDesc.magFilter = FO_POINT;
@@ -1757,57 +1748,54 @@ namespace bs
 		mSamplerState = RenderStateCoreManager::instance().createSamplerState(ssDesc);
 	}
 
-	void GUIManagerCore::updateData(const UnorderedMap<SPtr<CameraCore>, Vector<GUIManager::GUICoreRenderData>>& newPerCameraData)
+	bool GUIRenderer::check(const CameraCore& camera)
+	{
+		auto iterFind = mPerCameraData.find(&camera);
+		return iterFind != mPerCameraData.end();
+	}
+
+	void GUIRenderer::render(const CameraCore& camera)
+	{
+		Vector<GUIManager::GUICoreRenderData>& renderData = mPerCameraData[&camera];
+
+		float invViewportWidth = 1.0f / (camera.getViewport()->getWidth() * 0.5f);
+		float invViewportHeight = 1.0f / (camera.getViewport()->getHeight() * 0.5f);
+
+		for (auto& entry : renderData)
+		{
+			SPtr<GpuParamBlockBufferCore> buffer = mParamBlocks[entry.bufferIdx];
+
+			gGUISpriteParamBlockDef.gInvViewportWidth.set(buffer, invViewportWidth);
+			gGUISpriteParamBlockDef.gInvViewportHeight.set(buffer, invViewportHeight);
+
+			buffer->flushToGPU();
+		}
+
+		for (auto& entry : renderData)
+		{
+			// TODO - I shouldn't be re-applying the entire material for each entry, instead just check which programs
+			// changed, and apply only those + the modified constant buffers and/or texture.
+
+			SPtr<GpuParamBlockBufferCore> buffer = mParamBlocks[entry.bufferIdx];
+
+			entry.material->render(entry.mesh, entry.texture, mSamplerState, buffer, entry.additionalData);
+		}
+	}
+
+	void GUIRenderer::updateData(const UnorderedMap<SPtr<CameraCore>, Vector<GUIManager::GUICoreRenderData>>& newPerCameraData)
 	{
 		bs_frame_mark();
 
 		{
-			// Assign new per camera data, and find if any cameras were added or removed
-			FrameSet<SPtr<CameraCore>> validCameras;
+			mPerCameraData.clear();
+			mReferencedCameras.clear();
 
-			SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
 			for (auto& newCameraData : newPerCameraData)
 			{
-				UINT32 idx = 0;
-				Vector<GUIManager::GUICoreRenderData>* renderData = nullptr;
-				for (auto& oldCameraData : mPerCameraData)
-				{
-					if (newCameraData.first == oldCameraData.first)
-					{
-						renderData = &oldCameraData.second;
-						validCameras.insert(oldCameraData.first);
-						break;
-					}
+				SPtr<CameraCore> camera = newCameraData.first;
 
-					idx++;
-				}
-
-				if (renderData == nullptr)
-				{
-					SPtr<CameraCore> camera = newCameraData.first;
-
-					auto insertedData = mPerCameraData.insert(std::make_pair(newCameraData.first, Vector<GUIManager::GUICoreRenderData>()));
-					renderData = &insertedData.first->second;
-
-					activeRenderer->registerRenderCallback(camera.get(), 30, std::bind(&GUIManagerCore::render, this, camera), true);
-					validCameras.insert(camera);
-				}
-
-				*renderData = newCameraData.second;
-			}
-
-			FrameVector<SPtr<CameraCore>> cameraToRemove;
-			for (auto& cameraData : mPerCameraData)
-			{
-				auto iterFind = validCameras.find(cameraData.first);
-				if (iterFind == validCameras.end())
-					cameraToRemove.push_back(cameraData.first);
-			}
-
-			for (auto& camera : cameraToRemove)
-			{
-				activeRenderer->unregisterRenderCallback(camera.get(), 30);
-				mPerCameraData.erase(camera);
+				mPerCameraData.insert(std::make_pair(camera.get(), newCameraData.second));
+				mReferencedCameras.insert(camera);
 			}
 
 			// Allocate GPU buffers containing the material parameters
@@ -1841,33 +1829,5 @@ namespace bs
 		}
 
 		bs_frame_clear();
-	}
-
-	void GUIManagerCore::render(const SPtr<CameraCore>& camera)
-	{
-		Vector<GUIManager::GUICoreRenderData>& renderData = mPerCameraData[camera];
-
-		float invViewportWidth = 1.0f / (camera->getViewport()->getWidth() * 0.5f);
-		float invViewportHeight = 1.0f / (camera->getViewport()->getHeight() * 0.5f);
-
-		for (auto& entry : renderData)
-		{
-			SPtr<GpuParamBlockBufferCore> buffer = mParamBlocks[entry.bufferIdx];
-
-			gGUISpriteParamBlockDef.gInvViewportWidth.set(buffer, invViewportWidth);
-			gGUISpriteParamBlockDef.gInvViewportHeight.set(buffer, invViewportHeight);
-
-			buffer->flushToGPU();
-		}
-
-		for (auto& entry : renderData)
-		{
-			// TODO - I shouldn't be re-applying the entire material for each entry, instead just check which programs
-			// changed, and apply only those + the modified constant buffers and/or texture.
-
-			SPtr<GpuParamBlockBufferCore> buffer = mParamBlocks[entry.bufferIdx];
-
-			entry.material->render(entry.mesh, entry.texture, mSamplerState, buffer, entry.additionalData);
-		}
 	}
 }

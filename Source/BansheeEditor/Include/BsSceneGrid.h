@@ -3,6 +3,7 @@
 #pragma once
 
 #include "BsEditorPrerequisites.h"
+#include "BsRendererExtension.h"
 #include "BsVector2I.h"
 #include "BsColor.h"
 #include "BsMaterial.h"
@@ -13,7 +14,7 @@ namespace bs
 	 *  @{
 	 */
 
-	class SceneGridCore;
+	class SceneGridRenderer;
 
 	/** Determines how is the scene grid drawn. */
 	enum class GridMode
@@ -55,17 +56,6 @@ namespace bs
 		/**	Rebuilds the scene grid mesh. Call this whenever grid parameters change. */
 		void updateGridMesh();
 
-		/**
-		 * Initializes the core thread portion of the scene grid renderer.
-		 *
-		 * @param[in]	material	Material used for drawing the grid.
-		 * @param[in]	camera		Camera to render the scene grid to.
-		 */
-		void initializeCore(const SPtr<CameraCore>& camera, const SPtr<MaterialCore>& material);
-
-		/** Destroys the core thread portion of the draw manager. */
-		void destroyCore(SceneGridCore* core);
-
 		float mSpacing = 1.0f;
 		UINT32 mSize = 256;
 		GridMode mMode = GridMode::Perspective;
@@ -76,26 +66,33 @@ namespace bs
 
 		HMesh mGridMesh;
 		SPtr<VertexDataDesc> mVertexDesc;
-		std::atomic<SceneGridCore*> mCore;
+		SPtr<SceneGridRenderer> mRenderer;
 	};
 
 	/** Handles scene grid rendering on the core thread. */
-	class SceneGridCore
+	class SceneGridRenderer : public RendererExtension
 	{
 	public:
-		SceneGridCore() { }
-		~SceneGridCore();
+		/** Structure used for initializing the renderer. */
+		struct InitData
+		{
+			SPtr<CameraCore> camera;
+			SPtr<MaterialCore> material;
+		};
+
+		SceneGridRenderer();
 
 	private:
 		friend class SceneGrid;
 
-		/**
-		 * Initializes the object. Must be called right after construction and before any use.
-		 *
-		 * @param[in]	material	Material used for drawing the grid.
-		 * @param[in]	camera		Camera to render the scene grid to.
-		 */
-		void initialize(const SPtr<CameraCore>& camera, const SPtr<MaterialCore>& material);
+		/**	@copydoc RendererExtension::initialize */
+		void initialize(const Any& data) override;
+
+		/**	@copydoc RendererExtension::check */
+		bool check(const CameraCore& camera) override;
+
+		/**	@copydoc RendererExtension::render */
+		void render(const CameraCore& camera) override;
 
 		/**
 		 * Updates the grid mesh to render.
@@ -107,9 +104,6 @@ namespace bs
 		 *								(can't be arbitrary).						
 		 */
 		void updateData(const SPtr<MeshCore>& mesh, float spacing, bool fadeGrid, const Vector3& gridPlaneNormal);
-
-		/**	Callback triggered by the renderer, actually draws the grid mesh. */
-		void render();
 
 		SPtr<CameraCore> mCamera;
 		SPtr<MeshCore> mGridMesh;

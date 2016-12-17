@@ -464,9 +464,7 @@ namespace bs
 
 		HMaterial dropOverlayMat = BuiltinEditorResources::instance().createDockDropOverlayMaterial();
 
-		mCore.store(bs_new<DockOverlayRenderer>(), std::memory_order_release);
-		gCoreThread().queueCommand(std::bind(&DockManager::initializeOverlayRenderer, 
-			this, dropOverlayMat->getCore()));
+		mRenderer = RendererExtension::create<DockOverlayRenderer>(dropOverlayMat->getCore());
 	}
 
 	DockManager::~DockManager()
@@ -475,19 +473,6 @@ namespace bs
 		bs_deleteN(mBotDropPolygon, 4);
 		bs_deleteN(mLeftDropPolygon, 4);
 		bs_deleteN(mRightDropPolygon, 4);
-
-		gCoreThread().queueCommand(std::bind(&DockManager::destroyOverlayRenderer,
-			this, mCore.load(std::memory_order_relaxed)));
-	}
-
-	void DockManager::initializeOverlayRenderer(const SPtr<MaterialCore>& initData)
-	{
-		mCore.load(std::memory_order_acquire)->initialize(initData);
-	}
-
-	void DockManager::destroyOverlayRenderer(DockOverlayRenderer* core)
-	{
-		bs_delete(core);
 	}
 
 	DockManager* DockManager::create(EditorWindowBase* parentWindow)
@@ -507,8 +492,8 @@ namespace bs
 
 		HCamera camera = mParentWindow->getGUICamera();
 
-		DockOverlayRenderer* core = mCore.load(std::memory_order_relaxed);
-		gCoreThread().queueCommand(std::bind(&DockOverlayRenderer::updateData, core, camera->_getCamera()->getCore(),
+		DockOverlayRenderer* renderer = mRenderer.get();
+		gCoreThread().queueCommand(std::bind(&DockOverlayRenderer::updateData, renderer, camera->_getCamera()->getCore(),
 			mDropOverlayMesh->getCore(), mShowOverlay, mHighlightedDropLoc));
 	}
 
@@ -1131,46 +1116,33 @@ namespace bs
 	const Color DockOverlayRenderer::HIGHLIGHT_COLOR = Color(0.44f, 0.44f, 0.44f, 0.42f);
 
 	DockOverlayRenderer::DockOverlayRenderer()
-		:mHighlightedDropLoc(DockManager::DockLocation::None), mShowOverlay(false)
+		: RendererExtension(RenderLocation::Overlay, 0), mHighlightedDropLoc(DockManager::DockLocation::None)
+		, mShowOverlay(false)
 	{
 		
 	}
 
-	DockOverlayRenderer::~DockOverlayRenderer()
+	void DockOverlayRenderer::initialize(const Any& data)
 	{
-		if (mCamera != nullptr)
-		{
-			SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
-			activeRenderer->unregisterRenderCallback(mCamera.get(), 40);
-		}
-	}
-
-	void DockOverlayRenderer::initialize(const SPtr<MaterialCore>& material)
-	{
-		mMaterial = material;
-		mParams = material->createParamsSet();
+		mMaterial = any_cast<SPtr<MaterialCore>>(data);
+		mParams = mMaterial->createParamsSet();
 	}
 
 	void DockOverlayRenderer::updateData(const SPtr<CameraCore>& camera, const SPtr<MeshCore>& mesh, bool active, 
 		DockManager::DockLocation location)
 	{
-		if (mCamera != camera)
-		{
-			SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
-			if (mCamera != nullptr)
-				activeRenderer->unregisterRenderCallback(mCamera.get(), 40);
-
-			if (camera != nullptr)
-				activeRenderer->registerRenderCallback(camera.get(), 40, std::bind(&DockOverlayRenderer::render, this), true);
-		}
-
 		mCamera = camera;
 		mMesh = mesh;
 		mShowOverlay = active;
 		mHighlightedDropLoc = location;
 	}
 
-	void DockOverlayRenderer::render()
+	bool DockOverlayRenderer::check(const CameraCore& camera)
+	{
+		return mCamera.get() == &camera;
+	}
+
+	void DockOverlayRenderer::render(const CameraCore& camera)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 

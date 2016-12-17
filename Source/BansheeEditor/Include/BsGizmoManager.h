@@ -10,6 +10,7 @@
 #include "BsGpuParam.h"
 #include "BsDrawHelper.h"
 #include "BsParamBlocks.h"
+#include "BsRendererExtension.h"
 
 namespace bs
 {
@@ -17,7 +18,7 @@ namespace bs
 	 *  @{
 	 */
 
-	class GizmoManagerCore;
+	class GizmoRenderer;
 
 	/** Type of mesh that can be drawn by the gizmo renderer. */
 	enum class GizmoMeshType
@@ -255,7 +256,7 @@ namespace bs
 		/** @} */
 
 	private:
-		friend class GizmoManagerCore;
+		friend class GizmoRenderer;
 
 		/**	Supported types of gizmo materials (shaders) */
 		enum class GizmoMaterial
@@ -433,12 +434,6 @@ namespace bs
 		void calculateIconColors(const Color& tint, const SPtr<Camera>& camera, UINT32 iconHeight, bool fixedScale,
 			Color& normalColor, Color& fadedColor);
 
-		/**	Initializes the core thread version of the gizmo manager. */
-		void initializeCore(const CoreInitData& initData);
-
-		/**	Destroys the core thread version of the gizmo manager. */
-		void destroyCore(GizmoManagerCore* core);
-
 		static const UINT32 VERTEX_BUFFER_GROWTH;
 		static const UINT32 INDEX_BUFFER_GROWTH;
 		static const UINT32 SPHERE_QUALITY;
@@ -481,7 +476,7 @@ namespace bs
 		SPtr<MeshHeap> mIconMeshHeap;
 		SPtr<TransientMesh> mIconMesh;
 
-		std::atomic<GizmoManagerCore*> mCore;
+		SPtr<GizmoRenderer> mGizmoRenderer;
 
 		// Immutable
 		SPtr<VertexDataDesc> mIconVertexDesc;
@@ -516,25 +511,23 @@ namespace bs
 
 	extern GizmoPickingParamBlockDef gGizmoPickingParamBlockDef;
 
-	/**
-	 * Core thread version of the gizmo manager that handles most of the rendering of meshes provided by the gizmo manager.
-	 */
-	class GizmoManagerCore
+	/** Performs rendering of gizmos on the core thread, as managed by the GizmoManager. */
+	class GizmoRenderer : public RendererExtension
 	{
 		friend class GizmoManager;
 
-		struct PrivatelyConstuct { };
-
 	public:
-		GizmoManagerCore(const PrivatelyConstuct& dummy);
-		~GizmoManagerCore();
+		GizmoRenderer();
 
 	private:
-		/**	Initializes the core gizmo manager. Must be called right after creation. */
-		void initialize(const GizmoManager::CoreInitData& initData);
+		/**	@copydoc RendererExtension::initialize */
+		void initialize(const Any& data) override;
 
-		/**	Renders all gizmos in the parent camera. */
-		void render();
+		/**	@copydoc RendererExtension::check */
+		bool check(const CameraCore& camera) override;
+
+		/**	@copydoc RendererExtension::render */
+		void render(const CameraCore& camera) override;
 
 		/**	
 		 * Renders all provided meshes using the provided camera. 
@@ -549,17 +542,6 @@ namespace bs
 		void renderData(const SPtr<CameraCore>& camera, Vector<GizmoManager::MeshRenderData>& meshes, 
 			const SPtr<MeshCoreBase>& iconMesh, const GizmoManager::IconRenderDataVecPtr& iconRenderData, 
 			bool usePickingMaterial);
-
-		/**
-		 * Renders a non-icon gizmo mesh using the provided material. Relevant material parameters are expected to be
-		 * assigned before this is called.
-		 *
-		 * @param[in]	mesh		Mesh to render. This is normally the solid or wireframe gizmo mesh.
-		 * @param[in]	texture		Texture to apply to the material, if the material supports a texture.
-		 * @param[in]	material	Material to use for rendering. This is normally the solid, wireframe or picking material.
-		 */
-		void renderGizmoMesh(const SPtr<MeshCoreBase>& mesh, const SPtr<TextureCore>& texture, 
-			GizmoManager::GizmoMaterial material);
 
 		/**
 		 * Renders the icon gizmo mesh using the provided parameters.

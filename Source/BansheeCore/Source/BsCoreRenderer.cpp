@@ -5,15 +5,12 @@
 #include "BsRenderAPI.h"
 #include "BsMesh.h"
 #include "BsMaterial.h"
-#include "BsPass.h"
-#include "BsBlendState.h"
-#include "BsDepthStencilState.h"
-#include "BsRasterizerState.h"
-#include "BsGpuParams.h"
+#include "BsRendererExtension.h"
 
 namespace bs
 {
 	CoreRenderer::CoreRenderer()
+		:mCallbacks(&compareCallback)
 	{ }
 
 	SPtr<RendererMeshData> CoreRenderer::_createMeshData(UINT32 numVertices, UINT32 numIndices, VertexLayout layout, IndexType indexType)
@@ -28,21 +25,17 @@ namespace bs
 			RendererMeshData(meshData));
 	}
 
-	void CoreRenderer::registerRenderCallback(const CameraCore* camera, INT32 index, 
-		const std::function<void()>& callback, bool isOverlay)
+	bool CoreRenderer::compareCallback(const RendererExtension* a, const RendererExtension* b)
 	{
-		mRenderCallbacks[camera][index] = { isOverlay, callback };
-	}
-
-	void CoreRenderer::unregisterRenderCallback(const CameraCore* camera, INT32 index)
-	{
-		auto iterFind = mRenderCallbacks.find(camera);
-		if (iterFind != mRenderCallbacks.end())
+		// Sort by alpha setting first, then by cull mode, then by index
+		if (a->getLocation() == b->getLocation())
 		{
-			iterFind->second.erase(index);
-
-			if (iterFind->second.empty())
-				mRenderCallbacks.erase(iterFind);
+			if (a->getPriority() == b->getPriority())
+				return a > b; // Use address, at this point it doesn't matter, but std::set requires us to differentiate
+			else
+				return a->getPriority() > b->getPriority();
 		}
-	}
+		else
+			return (UINT32)a->getLocation() < (UINT32)b->getLocation();
+	};
 }

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "BsEditorPrerequisites.h"
+#include "BsRendererExtension.h"
 #include "BsGpuParams.h"
 #include "BsDrawHelper.h"
 #include "BsParamBlocks.h"
@@ -13,7 +14,7 @@ namespace bs
 	 *  @{
 	 */
 
-	class HandleDrawManagerCore;
+	class HandleRenderer;
 
 	/**
 	 * Allows you to easily draw various kinds of simple shapes, primarily used for drawing handles in the scene view.
@@ -164,21 +165,7 @@ namespace bs
 		void clear();
 
 	private:
-		friend class HandleDrawManagerCore;
-
-		/**
-		 * Initializes the core thread portion of the draw manager.
-		 *
-		 * @param[in]	lineMat		Material used for drawing the line objects.
-		 * @param[in]	solidMat	Material used for drawing the solid objects.
-		 * @param[in]	textMat		Material used for drawing the text.
-		 * @param[in]	clearMat	Material used for clearing the alpha channel in the empty areas.
-		 */
-		void initializeCore(const SPtr<MaterialCore>& lineMat, const SPtr<MaterialCore>& solidMat,
-			const SPtr<MaterialCore>& textMat, const SPtr<MaterialCore>& clearMat);
-
-		/** Destroys the core thread portion of the draw manager. */
-		void destroyCore(HandleDrawManagerCore* core);
+		friend class HandleRenderer;
 
 		/** Destroys all meshes allocated since the last call to this method. */
 		void clearMeshes();
@@ -191,7 +178,7 @@ namespace bs
 		UINT64 mLastFrameIdx;
 
 		Matrix4 mTransform;
-		std::atomic<HandleDrawManagerCore*> mCore;
+		SPtr<HandleRenderer> mRenderer;
 		DrawHelper* mDrawHelper;
 	};
 
@@ -207,8 +194,8 @@ namespace bs
 
 	extern HandleParamBlockDef gHandleParamBlockDef;
 
-	/** Core thread specific portion of the HandleDrawManager that handles actual rendering. */
-	class BS_ED_EXPORT HandleDrawManagerCore
+	/** Performs rendering of handles on the core thread, managed by the parent HandleDrawManager. */
+	class BS_ED_EXPORT HandleRenderer : public RendererExtension
 	{
 		/** Type of mesh that can be drawn. */
 		enum class MeshType
@@ -236,25 +223,32 @@ namespace bs
 			Vector<MeshData> meshes;
 		};
 
-		struct PrivatelyConstruct { };
+		/** Data used for initializing the renderer. */
+		struct InitData
+		{
+			SPtr<MaterialCore> lineMat;
+			SPtr<MaterialCore> solidMat;
+			SPtr<MaterialCore> textMat;
+			SPtr<MaterialCore> clearMat;
+		};
 
 	public:
-		HandleDrawManagerCore(const PrivatelyConstruct& dummy);
-		~HandleDrawManagerCore();
+		HandleRenderer();
 
 	private:
 		friend class HandleDrawManager;
 
-		/**
-		 * Initializes the object. Must be called right after construction.
-		 *
-		 * @param[in]	lineMat		Material used for drawing the line objects.
-		 * @param[in]	solidMat	Material used for drawing the solid objects.
-		 * @param[in]	textMat		Material used for drawing the text.
-		 * @param[in]	clearMat	Material used for clearing the alpha channel in the empty areas.
-		 */
-		void initialize(const SPtr<MaterialCore>& lineMat, const SPtr<MaterialCore>& solidMat, 
-			const SPtr<MaterialCore>& textMat, const SPtr<MaterialCore>& clearMat);
+		/** @copydoc RendererExtension::initialize */
+		void initialize(const Any& data) override;
+
+		/** @copydoc RendererExtension::destroy */
+		void destroy() override;
+
+		/** @copydoc RendererExtension::check */
+		bool check(const CameraCore& camera) override;
+
+		/** @copydoc RendererExtension::render */
+		void render(const CameraCore& camera) override;
 
 		/**
 		 * Queues new data for rendering.
@@ -266,9 +260,6 @@ namespace bs
 
 		/** Deletes any meshes queued for rendering. */
 		void clearQueued();
-
-		/** Callback triggered by the renderer. Draws all queued meshes. */
-		void render(UINT32 queuedDataIdx);
 
 		Vector<QueuedData> mQueuedData;
 

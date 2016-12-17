@@ -3,6 +3,7 @@
 #pragma once
 
 #include "BsEditorPrerequisites.h"
+#include "BsRendererExtension.h"
 #include "BsColor.h"
 #include "BsMatrix4.h"
 #include "BsGpuParam.h"
@@ -28,44 +29,26 @@ namespace bs
 	private:
 		friend class SelectionRendererCore;
 
-		/**
-		 * Initializes the core thread counterpart of the selection renderer.
-		 *
-		 * @param[in]	mat		Material used for selection rendering.
-		 */
-		void initializeCore(const SPtr<MaterialCore>& mat);
-
-		/**
-		 * Destroys the core thread counterpart of the selection renderer.
-		 *
-		 * @param[in]	core	Previously constructed core thread selection renderer instance.
-		 */
-		void destroyCore(SelectionRendererCore* core);
-
-		std::atomic<SelectionRendererCore*> mCore;
+		SPtr<SelectionRendererCore> mRenderer;
 	};
 
 	/** Core thread version of the selection renderer, that handles actual rendering. */
-	class SelectionRendererCore
+	class SelectionRendererCore : public RendererExtension
 	{
 		friend class SelectionRenderer;
-		
-		struct PrivatelyConstuct { };
 
 	public:
-		SelectionRendererCore(const PrivatelyConstuct& dummy);
-		~SelectionRendererCore();
+		SelectionRendererCore();
 
 	private:
-		/**
-		 * Initializes the selection renderer. Should be called right after construction.
-		 *
-		 * @param[in]	mat	Material used for selection rendering.
-		 */
-		void initialize(const SPtr<MaterialCore>& mat);
+		/** @copydoc RendererExtension::initialize */
+		void initialize(const Any& data) override;
 
-		/** Triggered by the Renderer when the overlay should be rendered. */
-		void render();
+		/** @copydoc RendererExtension::check */
+		bool check(const CameraCore& camera) override;
+
+		/** @copydoc RendererExtension::render */
+		void render(const CameraCore& camera) override;
 
 		/**
 		 * Updates the internal data that determines what will be rendered on the next render() call.

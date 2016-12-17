@@ -17,46 +17,31 @@
 
 namespace bs
 {
-	const Color SceneGridCore::GRID_LINE_COLOR = Color(0.5f, 0.5f, 0.5f);
-	const float SceneGridCore::LINE_WIDTH = 0.025f;
-	const float SceneGridCore::LINE_BORDER_WIDTH = 0.00075f;
-	const float SceneGridCore::FADE_OUT_START = 5.0f;
-	const float SceneGridCore::FADE_OUT_END = 40.0f;
+	const Color SceneGridRenderer::GRID_LINE_COLOR = Color(0.5f, 0.5f, 0.5f);
+	const float SceneGridRenderer::LINE_WIDTH = 0.025f;
+	const float SceneGridRenderer::LINE_BORDER_WIDTH = 0.00075f;
+	const float SceneGridRenderer::FADE_OUT_START = 5.0f;
+	const float SceneGridRenderer::FADE_OUT_END = 40.0f;
 
 	SceneGrid::SceneGrid(const SPtr<Camera>& camera)
-		:mCoreDirty(true), mCore(nullptr)
+		:mCoreDirty(true)
 	{
 		mVertexDesc = bs_shared_ptr_new<VertexDataDesc>();
 		mVertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
 		mVertexDesc->addVertElem(VET_FLOAT3, VES_NORMAL);
 
-		mCore.store(bs_new<SceneGridCore>(), std::memory_order_release);
-
 		HMaterial gridMaterial = BuiltinEditorResources::instance().createSceneGridMaterial();
-		SPtr<MaterialCore> materialCore = gridMaterial->getCore();
-		gCoreThread().queueCommand(std::bind(&SceneGrid::initializeCore, this, camera->getCore(), materialCore));
 
+		SceneGridRenderer::InitData initData;
+		initData.material = gridMaterial->getCore();
+		initData.camera = camera->getCore();
+
+		mRenderer = RendererExtension::create<SceneGridRenderer>(initData);
 		updateGridMesh();
 	}
 
 	SceneGrid::~SceneGrid()
-	{
-		gCoreThread().queueCommand(std::bind(&SceneGrid::destroyCore, this, mCore.load(std::memory_order_relaxed)));
-	}
-
-	void SceneGrid::initializeCore(const SPtr<CameraCore>& camera, const SPtr<MaterialCore>& material)
-	{
-		THROW_IF_NOT_CORE_THREAD;
-
-		mCore.load()->initialize(camera, material);
-	}
-
-	void SceneGrid::destroyCore(SceneGridCore* core)
-	{
-		THROW_IF_NOT_CORE_THREAD;
-
-		bs_delete(core);
-	}
+	{ }
 
 	void SceneGrid::setSize(UINT32 size)
 	{
@@ -114,9 +99,9 @@ namespace bs
 				break;
 			}
 
-			SceneGridCore* core = mCore.load(std::memory_order_relaxed);
+			SceneGridRenderer* renderer = mRenderer.get();
 			gCoreThread().queueCommand(
-				std::bind(&SceneGridCore::updateData, core, mGridMesh->getCore(), mSpacing, 
+				std::bind(&SceneGridRenderer::updateData, renderer, mGridMesh->getCore(), mSpacing, 
 				mMode == GridMode::Perspective, gridPlaneNormal));
 
 			mCoreDirty = false;
@@ -187,17 +172,17 @@ namespace bs
 		mCoreDirty = true;
 	}
 
-	SceneGridCore::~SceneGridCore()
-	{
-		SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
-		activeRenderer->unregisterRenderCallback(mCamera.get(), 5);
-	}
+	SceneGridRenderer::SceneGridRenderer()
+		:RendererExtension(RenderLocation::PostLightPass, -5)
+	{ }
 
-	void SceneGridCore::initialize(const SPtr<CameraCore>& camera, const SPtr<MaterialCore>& material)
+	void SceneGridRenderer::initialize(const Any& data)
 	{
-		mCamera = camera;
-		mGridMaterial = material;
-		mMaterialParams = material->createParamsSet();
+		const InitData& initData = any_cast_ref<InitData>(data);
+
+		mCamera = initData.camera;
+		mGridMaterial = initData.material;
+		mMaterialParams = initData.material->createParamsSet();
 
 		mViewProjParam = mGridMaterial->getParamMat4("matViewProj");
 		mWorldCameraPosParam = mGridMaterial->getParamVec4("worldCameraPos");
@@ -206,13 +191,10 @@ namespace bs
 		mGridBorderWidthParam = mGridMaterial->getParamFloat("gridBorderWidth");
 		mGridFadeOutStartParam = mGridMaterial->getParamFloat("gridFadeOutStart");
 		mGridFadeOutEndParam = mGridMaterial->getParamFloat("gridFadeOutEnd");
-		mGridMaterial->getParam("gridPlaneNormal", mGridPlaneNormalParam);
-
-		SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
-		activeRenderer->registerRenderCallback(camera.get(), 5, std::bind(&SceneGridCore::render, this));			
+		mGridMaterial->getParam("gridPlaneNormal", mGridPlaneNormalParam);		
 	}
 
-	void SceneGridCore::updateData(const SPtr<MeshCore>& mesh, float spacing, bool fadeGrid, const Vector3& gridPlaneNormal)
+	void SceneGridRenderer::updateData(const SPtr<MeshCore>& mesh, float spacing, bool fadeGrid, const Vector3& gridPlaneNormal)
 	{
 		mGridMesh = mesh;
 		mSpacing = spacing;
@@ -220,7 +202,12 @@ namespace bs
 		mGridPlaneNormal = gridPlaneNormal;
 	}
 
-	void SceneGridCore::render()
+	bool SceneGridRenderer::check(const CameraCore& camera)
+	{
+		return mCamera.get() == &camera;
+	}
+
+	void SceneGridRenderer::render(const CameraCore& camera)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 

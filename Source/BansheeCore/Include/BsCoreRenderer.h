@@ -8,6 +8,7 @@
 
 namespace bs
 {
+	class RendererExtension;
 	struct PostProcessSettings;
 
 	/** @addtogroup Renderer-Internal
@@ -117,25 +118,20 @@ namespace bs
 		 */
 		virtual SPtr<RendererMeshData> _createMeshData(const SPtr<MeshData>& meshData);
 
-		/**
-		 * Registers a new callback that will be executed when the the specify camera is being rendered.
-		 *
-		 * @param[in]	camera		Camera for which to trigger the callback.
-		 * @param[in]	index		Index that determines the order of rendering when there are multiple registered 
-		 *							callbacks. This must be unique. Lower indices get rendered sooner. Indices below 0 get 
-		 *							rendered before the main viewport elements, while indices equal or greater to zero after. 
-		 * @param[in]	callback	Callback to trigger when the specified camera is being rendered.
-		 * @param[in]	isOverlay	If true the render callback guarantees that it will only render overlay data. Overlay 
-		 *							data doesn't require a depth buffer, a multisampled render target and is usually cheaper
-		 *							to render (although this depends on the exact renderer). 
-		 *							Overlay callbacks are always rendered after all other callbacks, even if their index is negative.
-		 *
+		/** 
+		 * Registers an extension object that will be called every frame by the renderer. Allows external code to perform
+		 * custom rendering interleaved with the renderer's output.
+		 * 
 		 * @note	Core thread.
 		 */
-		void registerRenderCallback(const CameraCore* camera, INT32 index, const std::function<void()>& callback, bool isOverlay = false);
+		void addPlugin(RendererExtension* plugin) { mCallbacks.insert(plugin); }
 
-		/** Removes a previously registered callback registered with _registerRenderCallback(). */
-		void unregisterRenderCallback(const CameraCore* camera, INT32 index);
+		/** 
+		 * Unregisters an extension registered with addPlugin(). 
+		 * 
+		 * @note	Core thread.
+		 */
+		void removePlugin(RendererExtension* plugin) { mCallbacks.erase(plugin); }
 
 		/**	Sets options used for controlling the rendering. */
 		virtual void setOptions(const SPtr<CoreRendererOptions>& options) { }
@@ -154,7 +150,10 @@ namespace bs
 			std::function<void()> callback;
 		};
 
-		UnorderedMap<const CameraCore*, Map<INT32, RenderCallbackData>> mRenderCallbacks;
+		/** Callback to trigger when comparing the order in which renderer extensions are called. */
+		static bool compareCallback(const RendererExtension* a, const RendererExtension* b);
+
+		Set<RendererExtension*, std::function<bool(const RendererExtension*, const RendererExtension*)>> mCallbacks;
 	};
 
 	/** @} */

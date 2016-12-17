@@ -3,6 +3,7 @@
 #pragma once
 
 #include "BsEditorPrerequisites.h"
+#include "BsRendererExtension.h"
 #include "BsGUIElementContainer.h"
 #include "BsRect2I.h"
 
@@ -221,12 +222,6 @@ namespace bs
 		 */
 		bool insidePolygon(Vector2* polyPoints, UINT32 numPoints, Vector2 point) const;
 
-		/**	Initializes the renderer used for displaying the dock overlay. */
-		void initializeOverlayRenderer(const SPtr<MaterialCore>& initData);
-
-		/**	Destroys the dock overlay renderer. */
-		void destroyOverlayRenderer(DockOverlayRenderer* core);
-
 		/** @copydoc GUIElementBase::updateClippedBounds */
 		void updateClippedBounds() override;
 
@@ -239,7 +234,7 @@ namespace bs
 		/** @copydoc GUIElementBase::_mouseEvent */
 		bool _mouseEvent(const GUIMouseEvent& event) override;
 
-		std::atomic<DockOverlayRenderer*> mCore;
+		SPtr<DockOverlayRenderer> mRenderer;
 
 		EditorWindowBase* mParentWindow;
 		DockContainer mRootContainer;
@@ -261,26 +256,23 @@ namespace bs
 		Vector2* mRightDropPolygon;
 	};
 
-	/**
-	 * Handles rendering of the dock overlay, on the core thread.
-	 * 			
-	 * @note	Core thread only.
-	 */
-	class DockOverlayRenderer
+	/** Handles rendering of the dock overlay on the core thread. */
+	class DockOverlayRenderer : public RendererExtension
 	{
 	public:
 		DockOverlayRenderer();
-		~DockOverlayRenderer();
 
 	private:
 		friend class DockManager;
 
-		/**
-		 * Initializes the object. Must be called right after construction and before any use.
-		 *
-		 * @param[in]	material	Material used for drawing the dock overlay.
-		 */
-		void initialize(const SPtr<MaterialCore>& material);
+		/**	@copydoc RendererExtension::initialize */
+		void initialize(const Any& data) override;
+
+		/**	@copydoc RendererExtension::check */
+		bool check(const CameraCore& camera) override;
+
+		/**	@copydoc RendererExtension::render */
+		void render(const CameraCore& camera) override;
 
 		/**
 		 * Updates the grid mesh to render.
@@ -293,9 +285,6 @@ namespace bs
 		void updateData(const SPtr<CameraCore>& camera, const SPtr<MeshCore>& mesh, bool active,
 			DockManager::DockLocation location);
 
-		/**	Callback triggered by the renderer, actually draws the dock overlay. */
-		void render();
-		
 		SPtr<CameraCore> mCamera;
 		SPtr<MaterialCore> mMaterial;
 		SPtr<GpuParamsSetCore> mParams;

@@ -29,29 +29,14 @@ using namespace std::placeholders;
 namespace bs
 {
 	SelectionRenderer::SelectionRenderer()
-		:mCore(nullptr)
 	{
 		HMaterial selectionMat = BuiltinEditorResources::instance().createSelectionMat();
 			
-		mCore.store(bs_new<SelectionRendererCore>(SelectionRendererCore::PrivatelyConstuct()), std::memory_order_release);
-
-		gCoreThread().queueCommand(std::bind(&SelectionRenderer::initializeCore, this, selectionMat->getCore()));
+		mRenderer = RendererExtension::create<SelectionRendererCore>(selectionMat->getCore());
 	}
 
 	SelectionRenderer::~SelectionRenderer()
-	{
-		gCoreThread().queueCommand(std::bind(&SelectionRenderer::destroyCore, this, mCore.load(std::memory_order_relaxed)));
-	}
-
-	void SelectionRenderer::initializeCore(const SPtr<MaterialCore>& initData)
-	{
-		mCore.load(std::memory_order_acquire)->initialize(initData);
-	}
-
-	void SelectionRenderer::destroyCore(SelectionRendererCore* core)
-	{
-		bs_delete(core);
-	}
+	{ }
 
 	void SelectionRenderer::update(const SPtr<Camera>& camera)
 	{
@@ -75,30 +60,25 @@ namespace bs
 			}
 		}
 
-		SelectionRendererCore* core = mCore.load(std::memory_order_relaxed);
-		gCoreThread().queueCommand(std::bind(&SelectionRendererCore::updateData, core, camera->getCore(), objects));
+		SelectionRendererCore* renderer = mRenderer.get();
+		gCoreThread().queueCommand(std::bind(&SelectionRendererCore::updateData, renderer, camera->getCore(), objects));
 	}
 
 	const Color SelectionRendererCore::SELECTION_COLOR = Color(1.0f, 1.0f, 1.0f, 0.3f);
 
-	SelectionRendererCore::SelectionRendererCore(const PrivatelyConstuct& dummy)
+	SelectionRendererCore::SelectionRendererCore()
+		:RendererExtension(RenderLocation::PostLightPass, -10)
 	{
 	}
 
-	SelectionRendererCore::~SelectionRendererCore()
-	{
-		SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
-		if (mCamera != nullptr)
-			activeRenderer->unregisterRenderCallback(mCamera.get(), 10);
-	}
-
-	void SelectionRendererCore::initialize(const SPtr<MaterialCore>& mat)
+	void SelectionRendererCore::initialize(const Any& data)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 		
 		constexpr int numTechniques = sizeof(mTechniqueIndices) / sizeof(mTechniqueIndices[0]);
 		static_assert(numTechniques == (int)RenderableAnimType::Count, "Number of techniques doesn't match the number of possible animation types.");
 
+		SPtr<MaterialCore> mat = any_cast<SPtr<MaterialCore>>(data);
 		for(UINT32 i = 0; i < numTechniques; i++)
 		{
 			RenderableAnimType animType = (RenderableAnimType)i;
@@ -138,26 +118,18 @@ namespace bs
 
 	void SelectionRendererCore::updateData(const SPtr<CameraCore>& camera, const Vector<SPtr<RenderableCore>>& objects)
 	{
-		if (mCamera != camera)
-		{
-			SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
-			if (mCamera != nullptr)
-				activeRenderer->unregisterRenderCallback(mCamera.get(), 10);
-
-			if (camera != nullptr)
-				activeRenderer->registerRenderCallback(camera.get(), 10, std::bind(&SelectionRendererCore::render, this));
-		}
-
 		mCamera = camera;
 		mObjects = objects;
 	}
 
-	void SelectionRendererCore::render()
+	bool SelectionRendererCore::check(const CameraCore& camera)
+	{
+		return mCamera.get() == &camera;
+	}
+
+	void SelectionRendererCore::render(const CameraCore& camera)
 	{
 		THROW_IF_NOT_CORE_THREAD;
-
-		if (mCamera == nullptr)
-			return;
 
 		const RendererAnimationData& animData = AnimationManager::instance().getRendererData();
 		Matrix4 viewProjMat = mCamera->getProjectionMatrixRS() * mCamera->getViewMatrix();

@@ -24,7 +24,7 @@ namespace bs
 	const UINT32 HandleDrawManager::ARC_QUALITY = 10;
 
 	HandleDrawManager::HandleDrawManager()
-		:mLastFrameIdx((UINT64)-1), mCore(nullptr)
+		:mLastFrameIdx((UINT64)-1)
 	{
 		mTransform = Matrix4::IDENTITY;
 		mDrawHelper = bs_new<DrawHelper>();
@@ -34,38 +34,19 @@ namespace bs
 		HMaterial textMaterial = BuiltinEditorResources::instance().createTextGizmoMat();
 		HMaterial clearMaterial = BuiltinEditorResources::instance().createHandleClearAlphaMat();
 
-		SPtr<MaterialCore> solidMaterialProxy = solidMaterial->getCore();
-		SPtr<MaterialCore> lineMaterialProxy = lineMaterial->getCore();
-		SPtr<MaterialCore> textMaterialProxy = textMaterial->getCore();
-		SPtr<MaterialCore> clearMaterialProxy = clearMaterial->getCore();
+		HandleRenderer::InitData rendererInitData;
+		rendererInitData.solidMat = solidMaterial->getCore();
+		rendererInitData.lineMat = lineMaterial->getCore();
+		rendererInitData.textMat = textMaterial->getCore();
+		rendererInitData.clearMat = clearMaterial->getCore();
 
-		mCore.store(bs_new<HandleDrawManagerCore>(HandleDrawManagerCore::PrivatelyConstruct()), std::memory_order_release);
-
-		gCoreThread().queueCommand(std::bind(&HandleDrawManager::initializeCore, this,
-			lineMaterialProxy, solidMaterialProxy, textMaterialProxy, clearMaterialProxy));
+		mRenderer = RendererExtension::create<HandleRenderer>(rendererInitData);
 	}
 
 	HandleDrawManager::~HandleDrawManager()
 	{
 		clearMeshes();
 		bs_delete(mDrawHelper);
-
-		gCoreThread().queueCommand(std::bind(&HandleDrawManager::destroyCore, this, mCore.load(std::memory_order_relaxed)));
-	}
-
-	void HandleDrawManager::initializeCore(const SPtr<MaterialCore>& lineMat, const SPtr<MaterialCore>& solidMat, 
-		const SPtr<MaterialCore>& textMat, const SPtr<MaterialCore>& clearMat)
-	{
-		THROW_IF_NOT_CORE_THREAD;
-
-		mCore.load(std::memory_order_acquire)->initialize(lineMat, solidMat, textMat, clearMat);
-	}
-
-	void HandleDrawManager::destroyCore(HandleDrawManagerCore* core)
-	{
-		THROW_IF_NOT_CORE_THREAD;
-
-		bs_delete(core);
 	}
 
 	void HandleDrawManager::setColor(const Color& color)
@@ -185,13 +166,13 @@ namespace bs
 
 	void HandleDrawManager::draw(const SPtr<Camera>& camera)
 	{
-		HandleDrawManagerCore* core = mCore.load(std::memory_order_relaxed);
+		HandleRenderer* renderer = mRenderer.get();
 
 		// Clear meshes from previous frame
 		UINT64 frameIdx = gTime().getFrameIdx();
 		if(frameIdx != mLastFrameIdx)
 		{
-			gCoreThread().queueCommand(std::bind(&HandleDrawManagerCore::clearQueued, core));
+			gCoreThread().queueCommand(std::bind(&HandleRenderer::clearQueued, renderer));
 
 			clearMeshes();
 			mLastFrameIdx = frameIdx;
@@ -202,7 +183,7 @@ namespace bs
 		const Vector<DrawHelper::ShapeMeshData>& meshes = mDrawHelper->getMeshes();
 		mActiveMeshes.push_back(meshes);
 
-		Vector<HandleDrawManagerCore::MeshData> proxyData;
+		Vector<HandleRenderer::MeshData> proxyData;
 		for (auto& meshData : meshes)
 		{
 			SPtr<TextureCore> tex;
@@ -211,22 +192,22 @@ namespace bs
 
 			if (meshData.type == DrawHelper::MeshType::Solid)
 			{
-				proxyData.push_back(HandleDrawManagerCore::MeshData(
-					meshData.mesh->getCore(), tex, HandleDrawManagerCore::MeshType::Solid));
+				proxyData.push_back(HandleRenderer::MeshData(
+					meshData.mesh->getCore(), tex, HandleRenderer::MeshType::Solid));
 			}
 			else if (meshData.type == DrawHelper::MeshType::Line)
 			{
-				proxyData.push_back(HandleDrawManagerCore::MeshData(
-					meshData.mesh->getCore(), tex, HandleDrawManagerCore::MeshType::Line));
+				proxyData.push_back(HandleRenderer::MeshData(
+					meshData.mesh->getCore(), tex, HandleRenderer::MeshType::Line));
 			}
 			else // Text
 			{
-				proxyData.push_back(HandleDrawManagerCore::MeshData(
-					meshData.mesh->getCore(), tex, HandleDrawManagerCore::MeshType::Text));
+				proxyData.push_back(HandleRenderer::MeshData(
+					meshData.mesh->getCore(), tex, HandleRenderer::MeshType::Text));
 			}
 		}
 
-		gCoreThread().queueCommand(std::bind(&HandleDrawManagerCore::queueForDraw, core, camera->getCore(), proxyData));
+		gCoreThread().queueCommand(std::bind(&HandleRenderer::queueForDraw, renderer, camera->getCore(), proxyData));
 	}
 
 	void HandleDrawManager::clear()
@@ -244,35 +225,33 @@ namespace bs
 
 	HandleParamBlockDef gHandleParamBlockDef;
 
-	HandleDrawManagerCore::HandleDrawManagerCore(const PrivatelyConstruct& dummy)
-		:mTypeCounters()
+	HandleRenderer::HandleRenderer()
+		:RendererExtension(RenderLocation::PostLightPass, -20), mTypeCounters()
 	{ }
 
-	HandleDrawManagerCore::~HandleDrawManagerCore()
+	void HandleRenderer::initialize(const Any& data)
 	{
-		clearQueued();
-	}
+		const InitData& initData = any_cast_ref<InitData>(data);
 
-	void HandleDrawManagerCore::initialize(const SPtr<MaterialCore>& lineMat, const SPtr<MaterialCore>& solidMat, 
-		const SPtr<MaterialCore>& textMat, const SPtr<MaterialCore>& clearMat)
-	{
-		mMaterials[(UINT32)MeshType::Line] = lineMat;
-		mMaterials[(UINT32)MeshType::Solid] = solidMat;
-		mMaterials[(UINT32)MeshType::Text] = textMat;
+		mMaterials[(UINT32)MeshType::Line] = initData.lineMat;
+		mMaterials[(UINT32)MeshType::Solid] = initData.solidMat;
+		mMaterials[(UINT32)MeshType::Text] = initData.textMat;
 
-		mClearMaterial = clearMat;
+		mClearMaterial = initData.clearMat;
 
 		mParamBuffer = gHandleParamBlockDef.createBuffer();
 	}
 
-	void HandleDrawManagerCore::queueForDraw(const SPtr<CameraCore>& camera, Vector<MeshData>& meshes)
+	void HandleRenderer::destroy()
+	{
+		clearQueued();
+	}
+
+	void HandleRenderer::queueForDraw(const SPtr<CameraCore>& camera, Vector<MeshData>& meshes)
 	{
 		SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
 		if (camera != nullptr)
 		{
-			UINT32 idx = (UINT32)mQueuedData.size();
-			activeRenderer->registerRenderCallback(camera.get(), 20, std::bind(&HandleDrawManagerCore::render, this, idx));
-
 			for(auto& entry : meshes)
 			{
 				UINT32 typeIdx = (UINT32)entry.type;
@@ -306,57 +285,69 @@ namespace bs
 		}
 	}
 
-	void HandleDrawManagerCore::clearQueued()
+	void HandleRenderer::clearQueued()
 	{
-		SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
-		for (auto& entry : mQueuedData)
-			activeRenderer->unregisterRenderCallback(entry.camera.get(), 20);
-
 		mQueuedData.clear();
 	}
 
-	void HandleDrawManagerCore::render(UINT32 queuedDataIdx)
+	bool HandleRenderer::check(const CameraCore& camera)
+	{
+		for(auto& entry : mQueuedData)
+		{
+			if (entry.camera.get() == &camera)
+				return true;
+		}
+
+		return false;
+	}
+
+	void HandleRenderer::render(const CameraCore& camera)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		const QueuedData& queueData = mQueuedData[queuedDataIdx];
-		SPtr<CameraCore> camera = queueData.camera;
-		const Vector<MeshData>& meshes = queueData.meshes;
-
-		SPtr<RenderTargetCore> renderTarget = camera->getViewport()->getTarget();
-
-		float width = (float)renderTarget->getProperties().getWidth();
-		float height = (float)renderTarget->getProperties().getHeight();
-
-		Rect2 normArea = camera->getViewport()->getNormArea();
-
-		Rect2I screenArea;
-		screenArea.x = (int)(normArea.x * width);
-		screenArea.y = (int)(normArea.y * height);
-		screenArea.width = (int)(normArea.width * width);
-		screenArea.height = (int)(normArea.height * height);
-
-		Matrix4 viewProjMat = camera->getProjectionMatrixRS() * camera->getViewMatrix();
-
-		gHandleParamBlockDef.gMatViewProj.set(mParamBuffer, viewProjMat);
-		gHandleParamBlockDef.gViewDir.set(mParamBuffer, (Vector4)camera->getForward());
-
-		UINT32 currentType = -1;
-		for (auto& meshData : meshes)
+		for (auto& entry : mQueuedData)
 		{
-			UINT32 typeIdx = (UINT32)meshData.type;
-			if (currentType != typeIdx)
+			if (entry.camera.get() != &camera)
+				continue;
+
+			const QueuedData& queueData = entry;
+			const Vector<MeshData>& meshes = queueData.meshes;
+
+			SPtr<RenderTargetCore> renderTarget = camera.getViewport()->getTarget();
+
+			float width = (float)renderTarget->getProperties().getWidth();
+			float height = (float)renderTarget->getProperties().getHeight();
+
+			Rect2 normArea = camera.getViewport()->getNormArea();
+
+			Rect2I screenArea;
+			screenArea.x = (int)(normArea.x * width);
+			screenArea.y = (int)(normArea.y * height);
+			screenArea.width = (int)(normArea.width * width);
+			screenArea.height = (int)(normArea.height * height);
+
+			Matrix4 viewProjMat = camera.getProjectionMatrixRS() * camera.getViewMatrix();
+
+			gHandleParamBlockDef.gMatViewProj.set(mParamBuffer, viewProjMat);
+			gHandleParamBlockDef.gViewDir.set(mParamBuffer, (Vector4)camera.getForward());
+
+			UINT32 currentType = -1;
+			for (auto& meshData : meshes)
 			{
-				gRendererUtility().setPass(mMaterials[typeIdx]);
-				currentType = typeIdx;
+				UINT32 typeIdx = (UINT32)meshData.type;
+				if (currentType != typeIdx)
+				{
+					gRendererUtility().setPass(mMaterials[typeIdx]);
+					currentType = typeIdx;
+				}
+
+				gRendererUtility().setPassParams(mParamSets[typeIdx][meshData.paramIdx]);
+				gRendererUtility().draw(meshData.mesh, meshData.mesh->getProperties().getSubMesh(0));
 			}
 
-			gRendererUtility().setPassParams(mParamSets[typeIdx][meshData.paramIdx]);
-			gRendererUtility().draw(meshData.mesh, meshData.mesh->getProperties().getSubMesh(0));
+			// Set alpha of everything that was drawn to 1 so we can overlay this texture onto GUI using transparency
+			gRendererUtility().setPass(mClearMaterial, 0);
+			gRendererUtility().drawScreenQuad();
 		}
-
-		// Set alpha of everything that was drawn to 1 so we can overlay this texture onto GUI using transparency
-		gRendererUtility().setPass(mClearMaterial, 0);
-		gRendererUtility().drawScreenQuad();
 	}
 }
