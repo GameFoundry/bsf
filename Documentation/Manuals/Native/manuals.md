@@ -30,6 +30,10 @@ Manuals									{#manuals}
 - **Input**
  - [Input polling](@ref inputPolling) 
  - [Input events](@ref inputEvents)  
+- **GUI**
+ - [Basic setup](@ref guiSetup)
+ - [Elements](@ref guiElements)
+ - [Layouts](@ref guiLayouts)
  
 # Developer guides
 

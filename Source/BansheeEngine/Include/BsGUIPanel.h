@@ -78,13 +78,13 @@ namespace bs
 		 */
 
 		/** @copydoc GUIElementBase::_getType */
-		virtual Type _getType() const override { return GUIElementBase::Type::Panel; }
+		Type _getType() const override { return GUIElementBase::Type::Panel; }
 
 		/**	Calculate optimal sizes of all child layout elements. */
 		void _updateOptimalLayoutSizes() override;
 
 		/** @copydoc GUIElementBase::_calculateLayoutSizeRange */
-		virtual LayoutSizeRange _calculateLayoutSizeRange() const override;
+		LayoutSizeRange _calculateLayoutSizeRange() const override;
 
 		/** @copydoc GUILayout::_getElementAreas */
 		void _getElementAreas(const Rect2I& layoutArea, Rect2I* elementAreas, UINT32 numElements,

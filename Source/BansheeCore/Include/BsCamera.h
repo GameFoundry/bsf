@@ -52,7 +52,8 @@ namespace bs
 	{
 		/** 
 		 * This flag is a signal to the renderer that his camera will only render overlays and doesn't require depth   
-		 * buffer or multi-sampled render targets. This can improve performance and memory usage. 
+		 * buffer or multi-sampled render targets. Such cameras will not render any scene objects. This can improve
+		 * performance and memory usage. 
 		 */
 		Overlay = 1,
 		/** 
