@@ -159,17 +159,15 @@ namespace bs
 		UINT32 getNumPasses() const { return (UINT32)mPassParams.size(); }
 
 		/**
-		 * Updates internal GPU params for all passes and stages from the provided material parameters object.
+		 * Updates parameter data in this object from the provided material parameters object.
 		 *
-		 * @param[in]	params			Object containing the parameter data to update from. Layout of the object must match the
-		 *								object used for creating this object (be created for the same shader).
-		 * @param[in]	dirtyBitIdx		Index to use when checking if parameters are dirty. Must be in range [0, 31]. Allows
-		 *								the same material params to record dirty state for multiple sets of GPU params
-		 *								(each with their own index).
-		 * @param[in]	updateAll		By default the system will only update parameters marked as dirty in @p params. If this
-		 *								is set to true, all parameters will be updated instead.
+		 * @param[in]	params			Object containing the parameter data to update from. Layout of the object must match
+		 *								the object used for creating this object (be created for the same shader).
+		 * @param[in]	updateAll		Normally the system will track dirty parameters since the last call to this method,
+		 *								and only update the dirty ones. Set this to true if you want to force all parameters
+		 *								to update, regardless of their dirty state.
 		 */
-		void update(const SPtr<MaterialParamsType>& params, UINT32 dirtyBitIdx, bool updateAll = false);
+		void update(const SPtr<MaterialParamsType>& params, bool updateAll = false);
 
 		static const UINT32 NUM_STAGES;
 	private:
@@ -180,6 +178,7 @@ namespace bs
 		Vector<DataParamInfo> mDataParamInfos;
 		PassParamInfo* mPassParamInfos;
 
+		UINT64 mParamVersion;
 		UINT8* mData;
 	};
 

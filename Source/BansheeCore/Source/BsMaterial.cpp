@@ -54,11 +54,9 @@ namespace bs
 	}
 
 	template<bool Core>
-	void TMaterial<Core>::updateParamsSet(const SPtr<GpuParamsSetType>& paramsSet, UINT32 dirtyBitIdx, bool forceRefresh)
+	void TMaterial<Core>::updateParamsSet(const SPtr<GpuParamsSetType>& paramsSet, bool updateAll)
 	{
-		paramsSet->update(mParams, dirtyBitIdx, forceRefresh);
-
-		mParams->clearDirtyFlags(dirtyBitIdx);
+		paramsSet->update(mParams, updateAll);
 	}
 
 	template<bool Core>
@@ -616,7 +614,8 @@ namespace bs
 	}
 
 	template<class T>
-	void copyParam(const SPtr<MaterialParams>& from, Material* to, const String& name, UINT32 index, UINT32 arraySize)
+	void copyParam(const SPtr<MaterialParams>& from, Material* to, const String& name, 
+		const MaterialParams::ParamData& paramRef, UINT32 arraySize)
 	{
 		TMaterialDataParam<T, false> param;
 		to->getParam(name, param);
@@ -624,7 +623,7 @@ namespace bs
 		T paramData;
 		for (UINT32 i = 0; i < arraySize; i++)
 		{
-			from->getDataParam(index, i, paramData);
+			from->getDataParam(paramRef, i, paramData);
 			param.set(paramData, i);
 		}
 	}
@@ -634,7 +633,9 @@ namespace bs
 		if (params == nullptr)
 			return;
 
-		std::function<void(const SPtr<MaterialParams>&, Material*, const String&, UINT32, UINT32)> copyParamLookup[GPDT_COUNT];
+		std::function<
+			void(const SPtr<MaterialParams>&, Material*, const String&, const MaterialParams::ParamData&, UINT32)> 
+			copyParamLookup[GPDT_COUNT];
 
 		copyParamLookup[GPDT_FLOAT1] = &copyParam<float>;
 		copyParamLookup[GPDT_FLOAT2] = &copyParam<Vector2>;
@@ -676,21 +677,21 @@ namespace bs
 
 			auto& copyFunction = copyParamLookup[param.second.type];
 			if (copyFunction != nullptr)
-				copyFunction(params, this, param.first, paramData->index, elemsToCopy);
+				copyFunction(params, this, param.first, *paramData, elemsToCopy);
 			else
 			{
 				if(param.second.type == GPDT_STRUCT)
 				{
 					TMaterialParamStruct<false> curParam = getParamStruct(param.first);
 
-					UINT32 structSize = params->getStructSize(paramData->index);
+					UINT32 structSize = params->getStructSize(*paramData);
 					if (param.second.elementSize != structSize)
 						continue;
 
 					UINT8* structData = (UINT8*)bs_stack_alloc(structSize);
 					for (UINT32 i = 0; i < elemsToCopy; i++)
 					{
-						params->getStructData(paramData->index + i, structData, structSize);
+						params->getStructData(*paramData, structData, structSize, i);
 						curParam.set(structData, structSize, i);
 					}
 
@@ -708,13 +709,13 @@ namespace bs
 			if (result != MaterialParams::GetParamResult::Success)
 				continue;
 
-			bool isLoadStore = params->getIsTextureLoadStore(paramData->index);
+			bool isLoadStore = params->getIsTextureLoadStore(*paramData);
 			if(!isLoadStore)
 			{
 				TMaterialParamTexture<false> curParam = getParamTexture(param.first);
 
 				HTexture texture;
-				params->getTexture(paramData->index, texture);
+				params->getTexture(*paramData, texture);
 				curParam.set(texture);
 			}
 			else
@@ -723,7 +724,7 @@ namespace bs
 
 				HTexture texture;
 				TextureSurface surface;
-				params->getLoadStoreTexture(paramData->index, texture, surface);
+				params->getLoadStoreTexture(*paramData, texture, surface);
 				curParam.set(texture, surface);
 			}
 		}
@@ -740,7 +741,7 @@ namespace bs
 			TMaterialParamBuffer<false> curParam = getParamBuffer(param.first);
 
 			SPtr<GpuBuffer> buffer;
-			params->getBuffer(paramData->index, buffer);
+			params->getBuffer(*paramData, buffer);
 			curParam.set(buffer);
 		}
 
@@ -756,7 +757,7 @@ namespace bs
 			TMaterialParamSampState<false> curParam = getParamSamplerState(param.first);
 
 			SPtr<SamplerState> samplerState;
-			params->getSamplerState(paramData->index, samplerState);
+			params->getSamplerState(*paramData, samplerState);
 			curParam.set(samplerState);
 		}
 	}

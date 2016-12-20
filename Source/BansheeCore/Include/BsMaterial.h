@@ -150,18 +150,14 @@ namespace bs
 		SPtr<GpuParamsSetType> createParamsSet(UINT32 techniqueIdx = 0);
 
 		/**
-		 * Updates the provided parameter set by recording in it any changes that were made in the material parameters 
-		 * since the last call. 
+		 * Copies internal material parameter data to the provided params set.
 		 *
 		 * @param[in]	paramsSet		Parameter set to update.
-		 * @param[in]	dirtyBitIdx		Index to use when checking if parameters are dirty. Must be in range [0, 30]. Allows
-		 *								the same material params to record dirty state for multiple sets of GPU params
-		 *								(each with their own index). Dirty state for the specified index will be cleared
-		 *								after the call.
-		 * @param[in]	forceRefresh	If true all material parameters will be assigned to the params set, regardless if
-		 *								they are marked dirty or not.
+		 * @param[in]	updateAll		Normally the system will track dirty parameters since the last call to this method
+		 *								(on a per-set basis), and only update the dirty ones. Set this to true if you want
+		 *								to force all parameters to update, regardless of their dirty state.
 		 */
-		void updateParamsSet(const SPtr<GpuParamsSetType>& paramsSet, UINT32 dirtyBitIdx = 0, bool forceRefresh = false);
+		void updateParamsSet(const SPtr<GpuParamsSetType>& paramsSet, bool updateAll = false);
 
 		/**   
 		 * Assigns a float value to the shader parameter with the specified name. 

@@ -469,7 +469,7 @@ namespace bs
 	template<bool Core>
 	TGpuParamsSet<Core>::TGpuParamsSet(const SPtr<TechniqueType>& technique, const ShaderType& shader,
 		const SPtr<MaterialParamsType>& params)
-		:mPassParams(technique->getNumPasses())
+		:mPassParams(technique->getNumPasses()), mParamVersion(0)
 	{
 		UINT32 numPasses = technique->getNumPasses();
 
@@ -874,15 +874,11 @@ namespace bs
 	}
 
 	template<bool Core>
-	void TGpuParamsSet<Core>::update(const SPtr<MaterialParamsType>& params, UINT32 dirtyBitIdx, bool updateAll)
+	void TGpuParamsSet<Core>::update(const SPtr<MaterialParamsType>& params, bool updateAll)
 	{
 		// Note: Instead of iterating over every single parameter, it might be more efficient for @p params to keep
 		// a ring buffer and a version number. Then we could just iterate over the ring buffer and only access dirty
 		// parameters. If the version number is too high (larger than ring buffer can store), then we force update for all.
-
-		// Maximum of 31 techniques are supported. Bit 32 is reserved.
-		assert(dirtyBitIdx < 31);
-		UINT32 dirtyFlagMask = 1 << dirtyBitIdx;
 
 		// Update data params
 		for(auto& paramInfo : mDataParamInfos)
@@ -892,7 +888,7 @@ namespace bs
 				continue;
 
 			const MaterialParams::ParamData* materialParamInfo = params->getParamData(paramInfo.paramIdx);
-			if ((materialParamInfo->dirtyFlags & dirtyFlagMask) == 0 && !updateAll)
+			if (materialParamInfo->version <= mParamVersion && !updateAll)
 				continue;
 
 			UINT32 arraySize = materialParamInfo->arraySize == 0 ? 1 : materialParamInfo->arraySize;
@@ -1000,11 +996,11 @@ namespace bs
 					const ObjectParamInfo& paramInfo = stageInfo.textures[k];
 
 					const MaterialParams::ParamData* materialParamInfo = params->getParamData(paramInfo.paramIdx);
-					if ((materialParamInfo->dirtyFlags & dirtyFlagMask) == 0 && !updateAll)
+					if (materialParamInfo->version <= mParamVersion && !updateAll)
 						continue;
 
 					TextureType texture;
-					params->getTexture(materialParamInfo->index, texture);
+					params->getTexture(*materialParamInfo, texture);
 
 					paramPtr->setTexture(paramInfo.setIdx, paramInfo.slotIdx, texture);
 				}
@@ -1014,12 +1010,12 @@ namespace bs
 					const ObjectParamInfo& paramInfo = stageInfo.loadStoreTextures[k];
 
 					const MaterialParams::ParamData* materialParamInfo = params->getParamData(paramInfo.paramIdx);
-					if ((materialParamInfo->dirtyFlags & dirtyFlagMask) == 0 && !updateAll)
+					if (materialParamInfo->version <= mParamVersion && !updateAll)
 						continue;
 
 					TextureSurface surface;
 					TextureType texture;
-					params->getLoadStoreTexture(materialParamInfo->index, texture, surface);
+					params->getLoadStoreTexture(*materialParamInfo, texture, surface);
 
 					paramPtr->setLoadStoreTexture(paramInfo.setIdx, paramInfo.slotIdx, texture, surface);
 				}
@@ -1029,11 +1025,11 @@ namespace bs
 					const ObjectParamInfo& paramInfo = stageInfo.buffers[k];
 
 					const MaterialParams::ParamData* materialParamInfo = params->getParamData(paramInfo.paramIdx);
-					if ((materialParamInfo->dirtyFlags & dirtyFlagMask) == 0 && !updateAll)
+					if (materialParamInfo->version <= mParamVersion && !updateAll)
 						continue;
 
 					BufferType buffer;
-					params->getBuffer(materialParamInfo->index, buffer);
+					params->getBuffer(*materialParamInfo, buffer);
 
 					paramPtr->setBuffer(paramInfo.setIdx, paramInfo.slotIdx, buffer);
 				}
@@ -1043,11 +1039,11 @@ namespace bs
 					const ObjectParamInfo& paramInfo = stageInfo.samplerStates[k];
 
 					const MaterialParams::ParamData* materialParamInfo = params->getParamData(paramInfo.paramIdx);
-					if ((materialParamInfo->dirtyFlags & dirtyFlagMask) == 0 && !updateAll)
+					if (materialParamInfo->version <= mParamVersion && !updateAll)
 						continue;
 
 					SamplerStateType samplerState;
-					params->getSamplerState(materialParamInfo->index, samplerState);
+					params->getSamplerState(*materialParamInfo, samplerState);
 
 					paramPtr->setSamplerState(paramInfo.setIdx, paramInfo.slotIdx, samplerState);
 				}
@@ -1055,6 +1051,8 @@ namespace bs
 
 			paramPtr->_markCoreDirty();
 		}
+
+		mParamVersion = params->getParamVersion();
 	}
 
 	template class TGpuParamsSet <false>;

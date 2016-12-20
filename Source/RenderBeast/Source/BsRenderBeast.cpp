@@ -221,7 +221,7 @@ namespace bs
 					matInfo.params[techniqueIdx] = renElement.material->createParamsSet(techniqueIdx);
 					matInfo.matVersion = renElement.material->getVersion();
 
-					renElement.material->updateParamsSet(matInfo.params[techniqueIdx], techniqueIdx, true);
+					renElement.material->updateParamsSet(matInfo.params[techniqueIdx], true);
 					renElement.material->setRendererData(matInfo);
 					renElement.params = matInfo.params[techniqueIdx];
 				}
@@ -236,7 +236,7 @@ namespace bs
 						matInfo.params[techniqueIdx] = renElement.material->createParamsSet(techniqueIdx);
 						matInfo.matVersion = renElement.material->getVersion();
 
-						renElement.material->updateParamsSet(matInfo.params[techniqueIdx], techniqueIdx, true);
+						renElement.material->updateParamsSet(matInfo.params[techniqueIdx], true);
 					}
 
 					renElement.params = matInfo.params[techniqueIdx];
@@ -597,7 +597,7 @@ namespace bs
 			// Note: Could this step be moved in notifyRenderableUpdated, so it only triggers when material actually gets
 			// changed? Although it shouldn't matter much because if the internal dirty flags.
 			for (auto& element : mRenderables[i]->elements)
-				element.material->updateParamsSet(element.params, element.techniqueIdx);
+				element.material->updateParamsSet(element.params);
 
 			mRenderables[i]->perObjectParamBuffer->flushToGPU();
 		}
@@ -896,7 +896,7 @@ namespace bs
 				const MaterialParamsBase::ParamData* materialParamData = materialParams->getParamData(override.paramIdx);
 
 				SPtr<SamplerStateCore> samplerState;
-				materialParams->getSamplerState(materialParamData->index, samplerState);
+				materialParams->getSamplerState(*materialParamData, samplerState);
 
 				UINT64 hash = 0;
 				if (samplerState != nullptr)

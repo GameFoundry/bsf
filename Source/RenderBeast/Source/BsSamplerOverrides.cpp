@@ -43,7 +43,7 @@ namespace bs
 				SamplerOverride& override = overrides.back();
 
 				SPtr<SamplerStateCore> samplerState;
-				params->getSamplerState(materialParamData->index, samplerState);
+				params->getSamplerState(*materialParamData, samplerState);
 
 				if (samplerState == nullptr)
 					samplerState = SamplerStateCore::getDefault();

@@ -50,7 +50,7 @@ namespace bs
 			dataParam.arraySize = arraySize;
 			dataParam.type = ParamType::Data;
 			dataParam.dataType = entry.second.type;
-			dataParam.dirtyFlags = 0xFFFFFFFF;
+			dataParam.version = 1;
 
 			const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES.lookup[(int)dataParam.dataType];
 			UINT32 paramSize = typeInfo.numColumns * typeInfo.numRows * typeInfo.baseTypeSize;
@@ -71,7 +71,7 @@ namespace bs
 			dataParam.type = ParamType::Texture;
 			dataParam.dataType = GPDT_UNKNOWN;
 			dataParam.index = textureIdx;
-			dataParam.dirtyFlags = 0xFFFFFFFF;
+			dataParam.version = 1;
 
 			textureIdx++;
 		}
@@ -88,7 +88,7 @@ namespace bs
 			dataParam.type = ParamType::Buffer;
 			dataParam.dataType = GPDT_UNKNOWN;
 			dataParam.index = bufferIdx;
-			dataParam.dirtyFlags = 0xFFFFFFFF;
+			dataParam.version = 1;
 
 			bufferIdx++;
 		}
@@ -105,7 +105,7 @@ namespace bs
 			dataParam.type = ParamType::Sampler;
 			dataParam.dataType = GPDT_UNKNOWN;
 			dataParam.index = samplerIdx;
-			dataParam.dirtyFlags = 0xFFFFFFFF;
+			dataParam.version = 1;
 
 			samplerIdx++;
 		}
@@ -183,14 +183,6 @@ namespace bs
 		default:
 			break;
 		}
-	}
-
-	void MaterialParamsBase::clearDirtyFlags(UINT32 techniqueIdx)
-	{
-		UINT32 mask = ~(1 << techniqueIdx);
-
-		for (auto& entry : mParams)
-			entry.dirtyFlags &= mask;
 	}
 
 	RTTITypeBase* MaterialParamStructData::getRTTIStatic()
@@ -305,7 +297,7 @@ namespace bs
 			return;
 		}
 
-		getStructData(param->index + arrayIdx, value, size);
+		getStructData(*param,  value, size, arrayIdx);
 	}
 
 	template<bool Core>
@@ -319,7 +311,7 @@ namespace bs
 			return;
 		}
 
-		setStructData(param->index + arrayIdx, value, size);
+		setStructData(*param, value, size, arrayIdx);
 	}
 
 	template<bool Core>
@@ -333,7 +325,7 @@ namespace bs
 			return;
 		}
 
-		getTexture(param->index, value);
+		getTexture(*param, value);
 	}
 
 	template<bool Core>
@@ -347,7 +339,7 @@ namespace bs
 			return;
 		}
 
-		setTexture(param->index, value);
+		setTexture(*param, value);
 	}
 
 	template<bool Core>
@@ -361,7 +353,7 @@ namespace bs
 			return;
 		}
 
-		getLoadStoreTexture(param->index, value, surface);
+		getLoadStoreTexture(*param, value, surface);
 	}
 
 	template<bool Core>
@@ -375,7 +367,7 @@ namespace bs
 			return;
 		}
 
-		setLoadStoreTexture(param->index, value, surface);
+		setLoadStoreTexture(*param, value, surface);
 	}
 
 	template<bool Core>
@@ -389,7 +381,7 @@ namespace bs
 			return;
 		}
 
-		getBuffer(param->index, value);
+		getBuffer(*param, value);
 	}
 
 	template<bool Core>
@@ -403,7 +395,7 @@ namespace bs
 			return;
 		}
 
-		setBuffer(param->index, value);
+		setBuffer(*param, value);
 	}
 
 	template<bool Core>
@@ -417,7 +409,7 @@ namespace bs
 			return;
 		}
 
-		getSamplerState(param->index, value);
+		getSamplerState(*param, value);
 	}
 
 	template<bool Core>
@@ -431,13 +423,13 @@ namespace bs
 			return;
 		}
 
-		setSamplerState(param->index, value);
+		setSamplerState(*param, value);
 	}
 
 	template<bool Core>
-	void TMaterialParams<Core>::getStructData(UINT32 index, void* value, UINT32 size) const
+	void TMaterialParams<Core>::getStructData(const ParamData& param, void* value, UINT32 size, UINT32 arrayIdx) const
 	{
-		const ParamStructDataType& structParam = mStructParams[index];
+		const ParamStructDataType& structParam = mStructParams[param.index + arrayIdx];
 		if (structParam.dataSize != size)
 		{
 			LOGWRN("Size mismatch when writing to a struct. Provided size was " + toString(size) + " bytes but the "
@@ -449,9 +441,9 @@ namespace bs
 	}
 
 	template<bool Core>
-	void TMaterialParams<Core>::setStructData(UINT32 index, const void* value, UINT32 size)
+	void TMaterialParams<Core>::setStructData(const ParamData& param, const void* value, UINT32 size, UINT32 arrayIdx)
 	{
-		const ParamStructDataType& structParam = mStructParams[index];
+		const ParamStructDataType& structParam = mStructParams[param.index + arrayIdx];
 		if (structParam.dataSize != size)
 		{
 			LOGWRN("Size mismatch when writing to a struct. Provided size was " + toString(size) + " bytes but the "
@@ -460,87 +452,96 @@ namespace bs
 		}
 
 		memcpy(structParam.data, value, structParam.dataSize);
+		param.version = ++mParamVersion;
 	}
 
 	template<bool Core>
-	UINT32 TMaterialParams<Core>::getStructSize(UINT32 index) const
+	UINT32 TMaterialParams<Core>::getStructSize(const ParamData& param) const
 	{
-		const ParamStructDataType& structParam = mStructParams[index];
+		const ParamStructDataType& structParam = mStructParams[param.index];
 		return structParam.dataSize;
 	}
 
 	template<bool Core>
-	void TMaterialParams<Core>::getTexture(UINT32 index, TextureType& value) const
+	void TMaterialParams<Core>::getTexture(const ParamData& param, TextureType& value) const
 	{
-		ParamTextureDataType& textureParam = mTextureParams[index];
+		ParamTextureDataType& textureParam = mTextureParams[param.index];
 		value = textureParam.value;
 	}
 	
 	template<bool Core>
-	void TMaterialParams<Core>::setTexture(UINT32 index, const TextureType& value)
+	void TMaterialParams<Core>::setTexture(const ParamData& param, const TextureType& value)
 	{
-		ParamTextureDataType& textureParam = mTextureParams[index];
+		ParamTextureDataType& textureParam = mTextureParams[param.index];
 		textureParam.value = value;
 		textureParam.isLoadStore = false;
+
+		param.version = ++mParamVersion;
 	}
 
 	template<bool Core>
-	void TMaterialParams<Core>::getBuffer(UINT32 index, BufferType& value) const
+	void TMaterialParams<Core>::getBuffer(const ParamData& param, BufferType& value) const
 	{
-		value = mBufferParams[index].value;
+		value = mBufferParams[param.index].value;
 	}
 
 	template<bool Core>
-	void TMaterialParams<Core>::setBuffer(UINT32 index, const BufferType& value)
+	void TMaterialParams<Core>::setBuffer(const ParamData& param, const BufferType& value)
 	{
-		mBufferParams[index].value = value;
+		mBufferParams[param.index].value = value;
+
+		param.version = ++mParamVersion;
 	}
 
 	template<bool Core>
-	void TMaterialParams<Core>::getLoadStoreTexture(UINT32 index, TextureType& value, TextureSurface& surface) const
+	void TMaterialParams<Core>::getLoadStoreTexture(const ParamData& param, TextureType& value, TextureSurface& surface) const
 	{
-		ParamTextureDataType& textureParam = mTextureParams[index];
+		ParamTextureDataType& textureParam = mTextureParams[param.index];
 		value = textureParam.value;
 		surface = textureParam.surface;
 	}
 
 	template<bool Core>
-	void TMaterialParams<Core>::setLoadStoreTexture(UINT32 index, const TextureType& value, const TextureSurface& surface)
+	void TMaterialParams<Core>::setLoadStoreTexture(const ParamData& param, const TextureType& value, const TextureSurface& surface)
 	{
-		ParamTextureDataType& textureParam = mTextureParams[index];
+		ParamTextureDataType& textureParam = mTextureParams[param.index];
 		textureParam.value = value;
 		textureParam.isLoadStore = true;
 		textureParam.surface = surface;
+
+		param.version = ++mParamVersion;
 	}
 
 	template<bool Core>
-	bool TMaterialParams<Core>::getIsTextureLoadStore(UINT32 index) const
+	bool TMaterialParams<Core>::getIsTextureLoadStore(const ParamData& param) const
 	{
-		return mTextureParams[index].isLoadStore;
+		return mTextureParams[param.index].isLoadStore;
 	}
 
 	template<bool Core>
-	void TMaterialParams<Core>::getSamplerState(UINT32 index, SamplerType& value) const
+	void TMaterialParams<Core>::getSamplerState(const ParamData& param, SamplerType& value) const
 	{
-		value = mSamplerStateParams[index].value;
+		value = mSamplerStateParams[param.index].value;
 	}
 
 	template<bool Core>
-	void TMaterialParams<Core>::setSamplerState(UINT32 index, const SamplerType& value)
+	void TMaterialParams<Core>::setSamplerState(const ParamData& param, const SamplerType& value)
 	{
-		mSamplerStateParams[index].value = value;
+		mSamplerStateParams[param.index].value = value;
+
+		param.version = ++mParamVersion;
 	}
 
 	template<bool Core>
-	void TMaterialParams<Core>::getDefaultTexture(UINT32 index, TextureType& value) const
+	void TMaterialParams<Core>::getDefaultTexture(const ParamData& param, TextureType& value) const
 	{
-		value = mDefaultTextureParams[index];
+		value = mDefaultTextureParams[param.index];
 	}
 
 	template<bool Core>
-	void TMaterialParams<Core>::getDefaultSamplerState(UINT32 index, SamplerType& value) const
+	void TMaterialParams<Core>::getDefaultSamplerState(const ParamData& param, SamplerType& value) const
 	{
-		value = mDefaultSamplerStateParams[index];
+		value = mDefaultSamplerStateParams[param.index];
 	}
 
 	template class TMaterialParams<true>;
@@ -593,10 +594,6 @@ namespace bs
 				break;
 			}
 		}
-
-		// Clean flags so it doesn't immediately require sync
-		for (auto& entry : params->mParams)
-			entry.dirtyFlags &= ~0x80000000;
 	}
 
 	void MaterialParamsCore::setSyncData(UINT8* buffer, UINT32 size)
@@ -613,13 +610,15 @@ namespace bs
 		sourceData = rttiReadElem(numDirtyBufferParams, sourceData);
 		sourceData = rttiReadElem(numDirtySamplerParams, sourceData);
 
+		mParamVersion++;
+
 		for(UINT32 i = 0; i < numDirtyDataParams; i++)
 		{
 			UINT32 paramIdx = 0;
 			sourceData = rttiReadElem(paramIdx, sourceData);
 
 			ParamData& param = mParams[paramIdx];
-			param.dirtyFlags = 0xFFFFFFFF;
+			param.version = mParamVersion;
 
 			UINT32 arraySize = param.arraySize > 1 ? param.arraySize : 1;
 			const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES.lookup[(int)param.type];
@@ -636,7 +635,7 @@ namespace bs
 			sourceData = rttiReadElem(paramIdx, sourceData);
 
 			ParamData& param = mParams[paramIdx];
-			param.dirtyFlags = 0xFFFFFFFF;
+			param.version = mParamVersion;
 
 			MaterialParamTextureDataCore* sourceTexData = (MaterialParamTextureDataCore*)sourceData;
 			sourceData += sizeof(MaterialParamTextureDataCore);
@@ -651,7 +650,7 @@ namespace bs
 			sourceData = rttiReadElem(paramIdx, sourceData);
 
 			ParamData& param = mParams[paramIdx];
-			param.dirtyFlags = 0xFFFFFFFF;
+			param.version = mParamVersion;
 
 			MaterialParamBufferDataCore* sourceBufferData = (MaterialParamBufferDataCore*)sourceData;
 			sourceData += sizeof(MaterialParamBufferDataCore);
@@ -666,7 +665,7 @@ namespace bs
 			sourceData = rttiReadElem(paramIdx, sourceData);
 
 			ParamData& param = mParams[paramIdx];
-			param.dirtyFlags = 0xFFFFFFFF;
+			param.version = mParamVersion;
 
 			MaterialParamSamplerStateDataCore* sourceSamplerStateData = (MaterialParamSamplerStateDataCore*)sourceData;
 			sourceData += sizeof(MaterialParamSamplerStateDataCore);
@@ -677,7 +676,7 @@ namespace bs
 	}
 
 	MaterialParams::MaterialParams(const HShader& shader)
-		:TMaterialParams(shader)
+		:TMaterialParams(shader), mLastSyncVersion(1)
 	{ }
 
 	void MaterialParams::getSyncData(UINT8* buffer, UINT32& size)
@@ -692,7 +691,7 @@ namespace bs
 		UINT32 dataParamSize = 0;
 		for(auto& param : mParams)
 		{
-			if ((param.dirtyFlags & 0x8000000) == 0)
+			if (param.version <= mLastSyncVersion)
 				continue;
 
 			switch(param.type)
@@ -757,10 +756,8 @@ namespace bs
 		for(UINT32 i = 0; i < (UINT32)mParams.size(); i++)
 		{
 			ParamData& param = mParams[i];
-			if ((param.dirtyFlags & 0x8000000) == 0)
+			if (param.version <= mLastSyncVersion)
 				continue;
-
-			param.dirtyFlags &= ~0x80000000;
 
 			switch (param.type)
 			{
@@ -830,6 +827,8 @@ namespace bs
 				break;
 			}
 		}
+
+		mLastSyncVersion = mParamVersion;
 	}
 
 	RTTITypeBase* MaterialParams::getRTTIStatic()

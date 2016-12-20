@@ -256,7 +256,7 @@ namespace bs
 			memory = rttiReadElem(data.dataType, memory, size);
 			memory = rttiReadElem(data.index, memory, size);
 			memory = rttiReadElem(data.arraySize, memory, size);
-			data.dirtyFlags = (UINT32)-1;
+			data.version = 1;
 
 			return size;
 		}

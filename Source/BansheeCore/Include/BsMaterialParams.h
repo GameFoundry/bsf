@@ -43,7 +43,7 @@ namespace bs
 			GpuParamDataType dataType;
 			UINT32 index;
 			UINT32 arraySize;
-			mutable UINT32 dirtyFlags;
+			mutable UINT64 version;
 		};
 
 		/** 
@@ -174,11 +174,12 @@ namespace bs
 		void reportGetParamError(GetParamResult errorCode, const String& name, UINT32 arrayIdx) const;
 
 		/**
-		 * Equivalent to getDataParam(const String&, UINT32, T&) except it uses the internal parameter index
-		 * directly, avoiding the name lookup. Caller must guarantee the index is valid.
+		 * Equivalent to getDataParam(const String&, UINT32, T&) except it uses the internal parameter reference
+		 * directly, avoiding the name lookup. Caller must guarantee the parameter reference is valid and belongs to this
+		 * object.
 		 */
 		template <typename T>
-		void getDataParam(UINT32 index, UINT32 arrayIdx, T& output) const
+		void getDataParam(const ParamData& param, UINT32 arrayIdx, T& output) const
 		{
 			GpuParamDataType dataType = (GpuParamDataType)TGpuDataParamInfo<T>::TypeId;
 
@@ -186,15 +187,16 @@ namespace bs
 			UINT32 paramTypeSize = typeInfo.numColumns * typeInfo.numRows * typeInfo.baseTypeSize;
 
 			assert(sizeof(output) == paramTypeSize);
-			memcpy(&output, &mDataParamsBuffer[index + arrayIdx * paramTypeSize], paramTypeSize);
+			memcpy(&output, &mDataParamsBuffer[param.index + arrayIdx * paramTypeSize], paramTypeSize);
 		}
 
 		/**
-		 * Equivalent to setDataParam(const String&, UINT32, T&) except it uses the internal parameter index
-		 * directly, avoiding the name lookup. Caller must guarantee the index is valid.
+		 * Equivalent to setDataParam(const String&, UINT32, T&) except it uses the internal parameter reference
+		 * directly, avoiding the name lookup. Caller must guarantee the parameter reference is valid and belongs to this
+		 * object.
 		 */
 		template <typename T>
-		void setDataParam(UINT32 index, UINT32 arrayIdx, const T& input) const
+		void setDataParam(const ParamData& param, UINT32 arrayIdx, const T& input) const
 		{
 			GpuParamDataType dataType = (GpuParamDataType)TGpuDataParamInfo<T>::TypeId;
 
@@ -202,7 +204,9 @@ namespace bs
 			UINT32 paramTypeSize = typeInfo.numColumns * typeInfo.numRows * typeInfo.baseTypeSize;
 
 			assert(sizeof(input) == paramTypeSize);
-			memcpy(&mDataParamsBuffer[index + arrayIdx * paramTypeSize], &input, paramTypeSize);
+			memcpy(&mDataParamsBuffer[param.index + arrayIdx * paramTypeSize], &input, paramTypeSize);
+
+			param.version = ++mParamVersion;
 		}
 
 		/** Returns pointer to the internal data buffer for a data parameter at the specified index. */
@@ -211,12 +215,8 @@ namespace bs
 			return &mDataParamsBuffer[index];
 		}
 
-		/** 
-		 * Clears dirty flags for all parameters, for the specified index. 
-		 *
-		 * @param[in]	index	Index of the bit to clear. Must be in range [0-31]
-		 */
-		void clearDirtyFlags(UINT32 index);
+		/** Returns a counter that gets incremented whenever a parameter gets updated. */
+		UINT64 getParamVersion() const { return mParamVersion; }
 
 	protected:
 		const static UINT32 STATIC_BUFFER_SIZE = 256;
@@ -232,6 +232,7 @@ namespace bs
 		UINT32 mNumBufferParams = 0;
 		UINT32 mNumSamplerParams = 0;
 
+		mutable UINT64 mParamVersion = 1;
 		mutable StaticAlloc<STATIC_BUFFER_SIZE, STATIC_BUFFER_SIZE> mAlloc;
 	};
 
@@ -455,88 +456,98 @@ namespace bs
 		void setSamplerState(const String& name, const SamplerType& value);
 
 		/**
-		 * Equivalent to getStructData(const String&, UINT32, void*, UINT32) except it uses the internal parameter index
-		 * directly, avoiding the name lookup. Caller must guarantee the index is valid.
+		 * Equivalent to getStructData(const String&, UINT32, void*, UINT32) except it uses the internal parameter reference
+		 * directly, avoiding the name lookup. Caller must guarantee the parameter reference is valid and belongs to this
+		 * object.
 		 */
-		void getStructData(UINT32 index, void* value, UINT32 size) const;
+		void getStructData(const ParamData& param, void* value, UINT32 size, UINT32 arrayIdx) const;
 
 		/**
-		 * Equivalent to setStructData(const String&, UINT32, void*, UINT32) except it uses the internal parameter index
-		 * directly, avoiding the name lookup. Caller must guarantee the index is valid.
+		 * Equivalent to setStructData(const String&, UINT32, void*, UINT32) except it uses the internal parameter reference
+		 * directly, avoiding the name lookup. Caller must guarantee the parameter reference is valid and belongs to this
+		 * object.
 		 */
-		void setStructData(UINT32 index, const void* value, UINT32 size);
+		void setStructData(const ParamData& param, const void* value, UINT32 size, UINT32 arrayIdx);
 
 		/**
-		 * Returns a size of a struct parameter in bytes, using the internal parameter index. Caller must guarantee the
-		 * index is valid.
+		 * Returns a size of a struct parameter in bytes, using the internal parameter reference. Caller must guarantee the
+		 * parameter reference is valid and belongs to this object.
 		 */
-		UINT32 getStructSize(UINT32 index) const;
+		UINT32 getStructSize(const ParamData& param) const;
 
 		/**
-		 * Equivalent to getTexture(const String&, HTexture&) except it uses the internal parameter index directly,
-		 * avoiding the name lookup. Caller must guarantee the index is valid.
+		 * Equivalent to getTexture(const String&, HTexture&) except it uses the internal parameter reference directly,
+		 * avoiding the name lookup. Caller must guarantee the parameter reference is valid and belongs to this object.
 		 */
-		void getTexture(UINT32 index, TextureType& value) const;
+		void getTexture(const ParamData& param, TextureType& value) const;
 
 		/**
-		 * Equivalent to setTexture(const String&, HTexture&) except it uses the internal parameter index directly,
-		 * avoiding the name lookup. Caller must guarantee the index is valid.
+		 * Equivalent to setTexture(const String&, HTexture&) except it uses the internal parameter reference directly,
+		 * avoiding the name lookup. Caller must guarantee the parameter reference is valid and belongs to this object.
 		 */
-		void setTexture(UINT32 index, const TextureType& value);
+		void setTexture(const ParamData& param, const TextureType& value);
 
 		/**
-		 * Equivalent to getBuffer(const String&, SPtr<GpuBuffer>&) except it uses the internal parameter index directly,
-		 * avoiding the name lookup. Caller must guarantee the index is valid.
+		 * Equivalent to getBuffer(const String&, SPtr<GpuBuffer>&) except it uses the internal parameter reference
+		 * directly, avoiding the name lookup. Caller must guarantee the parameter reference is valid and belongs to this
+		 * object.
 		 */
-		void getBuffer(UINT32 index, BufferType& value) const;
+		void getBuffer(const ParamData& param, BufferType& value) const;
 
 		/**
-		 * Equivalent to setBuffer(const String&, SPtr<GpuBuffer>&) except it uses the internal parameter index directly,
-		 * avoiding the name lookup. Caller must guarantee the index is valid.
+		 * Equivalent to setBuffer(const String&, SPtr<GpuBuffer>&) except it uses the internal parameter reference
+		 * directly, avoiding the name lookup. Caller must guarantee the parameter reference is valid and belongs to this
+		 * object.
 		 */
-		void setBuffer(UINT32 index, const BufferType& value);
+		void setBuffer(const ParamData& param, const BufferType& value);
 
 		/**
 		 * Equivalent to getLoadStoreTexture(const String&, HTexture&, TextureSurface&) except it uses the internal
-		 * parameter index directly, avoiding the name lookup. Caller must guarantee the index is valid.
+		 * parameter reference directly, avoiding the name lookup. Caller must guarantee the parameter reference is valid
+		 * and belongs to this object.
 		 */
-		void getLoadStoreTexture(UINT32 index, TextureType& value, TextureSurface& surface) const;
+		void getLoadStoreTexture(const ParamData& param, TextureType& value, TextureSurface& surface) const;
 
 		/**
 		 * Equivalent to setLoadStoreTexture(const String&, HTexture&, TextureSurface&) except it uses the internal
-		 * parameter index directly, avoiding the name lookup. Caller must guarantee the index is valid.
+		 * parameter reference directly, avoiding the name lookup. Caller must guarantee the parameter reference is valid
+		 * and belongs to this object.
 		 */
-		void setLoadStoreTexture(UINT32 index, const TextureType& value, const TextureSurface& surface);
+		void setLoadStoreTexture(const ParamData& param, const TextureType& value, const TextureSurface& surface);
 
 		/**
-		 * Checks is a texture with the specified index a load/store texture or a normal one. Caller must guarantee the
-		 * index is valid.
+		 * Checks is a texture with the specified parameter reference a load/store texture or a normal one. Caller must
+		 * guarantee the parameter reference is valid and belongs to this object.
 		 */
-		bool getIsTextureLoadStore(UINT32 index) const;
+		bool getIsTextureLoadStore(const ParamData& param) const;
 
 		/**
-		 * Equivalent to getSamplerState(const String&, SPtr<SamplerState>&) except it uses the internal parameter index
-		 * directly, avoiding the name lookup. Caller must guarantee the index is valid.
+		 * Equivalent to getSamplerState(const String&, SPtr<SamplerState>&) except it uses the internal parameter reference
+		 * directly, avoiding the name lookup. Caller must guarantee the parameter reference is valid and belongs to this
+		 * object.
 		 */
-		void getSamplerState(UINT32 index, SamplerType& value) const;
+		void getSamplerState(const ParamData& param, SamplerType& value) const;
 
 		/**
-		 * Equivalent to setSamplerState(const String&, SPtr<SamplerState>&) except it uses the internal parameter index
-		 * directly, avoiding the name lookup. Caller must guarantee the index is valid.
+		 * Equivalent to setSamplerState(const String&, SPtr<SamplerState>&) except it uses the internal parameter reference
+		 * directly, avoiding the name lookup. Caller must guarantee the parameter reference is valid and belongs to this
+		 * object.
 		 */
-		void setSamplerState(UINT32 index, const SamplerType& value);
+		void setSamplerState(const ParamData& param, const SamplerType& value);
 
 		/**
-		 * Returns the default texture (one assigned when no other is provided), if available for the specified index.
-		 * Index is the internal parameter index and the caller must guarantee the index is valid.
+		 * Returns the default texture (one assigned when no other is provided), if available for the specified parameter.
+		 * Parameter is represented using the internal parameter reference and the caller must guarantee the parameter 
+		 * eference is valid and belongs to this object.
 		 */
-		void getDefaultTexture(UINT32 index, TextureType& value) const;
+		void getDefaultTexture(const ParamData& param, TextureType& value) const;
 
 		/**
-		 * Returns the default sampler state (one assigned when no other is provided), if available for the specified index.
-		 * Index is the internal parameter index and the caller must guarantee the index is valid.
+		 * Returns the default sampler state (one assigned when no other is provided), if available for the specified 
+		 * parameter. Parameter is represented using the internal parameter reference and the caller must guarantee the
+		 * parameter reference is valid and belongs to this object.
 		 */
-		void getDefaultSamplerState(UINT32 index, SamplerType& value) const;
+		void getDefaultSamplerState(const ParamData& param, SamplerType& value) const;
 
 	protected:
 		ParamStructDataType* mStructParams = nullptr;
@@ -603,6 +614,8 @@ namespace bs
 
 	private:
 		friend class MaterialParamsCore;
+
+		UINT64 mLastSyncVersion;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
