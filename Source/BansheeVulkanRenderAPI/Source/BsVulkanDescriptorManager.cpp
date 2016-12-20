@@ -83,8 +83,11 @@ namespace bs
 			bs_free(entry.bindings);
 		}
 
-		for(auto& entry : mPipelineLayouts)
+		for (auto& entry : mPipelineLayouts)
+		{
+			bs_free(entry.first.layouts);
 			vkDestroyPipelineLayout(mDevice.getLogical(), entry.second, gVulkanAllocator);
+		}
 
 		for (auto& entry : mPools)
 			bs_delete(entry);
@@ -164,6 +167,9 @@ namespace bs
 		assert(result == VK_SUCCESS);
 
 		bs_stack_free(setLayouts);
+
+		key.layouts = (VulkanDescriptorLayout**)bs_alloc(sizeof(VulkanDescriptorLayout*) * numLayouts);
+		memcpy(key.layouts, layouts, sizeof(VulkanDescriptorLayout*) * numLayouts);
 
 		mPipelineLayouts.insert(std::make_pair(key, pipelineLayout));
 		return pipelineLayout;

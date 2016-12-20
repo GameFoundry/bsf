@@ -406,9 +406,10 @@ namespace bs
 		RendererCamera* output;
 
 		SPtr<RenderTargetCore> renderTarget = camera->getViewport()->getTarget();
+
+		auto iterFind = mCameras.find(camera);
 		if(forceRemove)
 		{
-			auto iterFind = mCameras.find(camera);
 			if(iterFind != mCameras.end())
 			{
 				bs_delete(iterFind->second);
@@ -420,8 +421,16 @@ namespace bs
 		}
 		else
 		{
-			output = bs_new<RendererCamera>(camera, mCoreOptions->stateReductionMode);
-			mCameras[camera] = output;
+			if (iterFind != mCameras.end())
+			{
+				output = iterFind->second;
+				output->update(mCoreOptions->stateReductionMode);
+			}
+			else
+			{
+				output = bs_new<RendererCamera>(camera, mCoreOptions->stateReductionMode);
+				mCameras[camera] = output;
+			}
 		}
 
 		// Remove from render target list
