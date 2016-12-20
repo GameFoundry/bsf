@@ -359,14 +359,12 @@ namespace bs
 	template BS_CORE_EXPORT void TMaterial<true>::getParam(const String&, TMaterialDataParam<Matrix4x3, true>&) const;
 
 	MaterialCore::MaterialCore(const SPtr<ShaderCore>& shader)
-		: mVersion(1)
 	{
 		setShader(shader);
 	}
 
 	MaterialCore::MaterialCore(const SPtr<ShaderCore>& shader, const Vector<SPtr<TechniqueCore>>& techniques,
 		const SPtr<MaterialParamsCore>& materialParams)
-		: mVersion(1)
 	{
 		mShader = shader;
 		mParams = materialParams;
@@ -387,8 +385,6 @@ namespace bs
 		char* dataPtr = (char*)data.getBuffer();
 
 		SPtr<ShaderCore>* shader = (SPtr<ShaderCore>*)dataPtr;
-		if (mShader != *shader)
-			mVersion++;
 
 		mShader = *shader;
 		shader->~SPtr<ShaderCore>();

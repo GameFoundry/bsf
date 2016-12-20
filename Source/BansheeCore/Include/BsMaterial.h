@@ -553,21 +553,6 @@ namespace bs
 		/** @copydoc Material::setShader */
 		void setShader(const SPtr<ShaderCore>& shader);
 
-		/** Returns any custom data set by the renderer. */
-		const Any& getRendererData() const { return mRendererData; }
-
-		/** 
-		 * Sets renderer-specific data on the material. This can by anything the renderer requires, as its not used by the
-		 * material directly. 
-		 */
-		void setRendererData(const Any& data) { mRendererData = data; }
-
-		/** 
-		 * Returns a version number that increments whenever the material's shader changes. Allows external systems to know
-		 * when they need to rebuild relevant cached data.
-		 */
-		UINT32 getVersion() const { return mVersion; }
-
 		/** Creates a new material with the specified shader. */
 		static SPtr<MaterialCore> create(const SPtr<ShaderCore>& shader);
 
@@ -581,9 +566,6 @@ namespace bs
 
 		/** @copydoc CoreObjectCore::syncToCore */
 		void syncToCore(const CoreSyncData& data) override;
-
-		Any mRendererData;
-		UINT32 mVersion;
 	};
 
 	/** @} */

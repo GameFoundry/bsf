@@ -213,34 +213,8 @@ namespace bs
 				}
 
 				// Generate or assigned renderer specific data for the material
-				Any materialInfo = renElement.material->getRendererData();
-				if(materialInfo.empty())
-				{
-					RendererMaterial matInfo;
-					matInfo.params.resize(techniqueIdx + 1);
-					matInfo.params[techniqueIdx] = renElement.material->createParamsSet(techniqueIdx);
-					matInfo.matVersion = renElement.material->getVersion();
-
-					renElement.material->updateParamsSet(matInfo.params[techniqueIdx], true);
-					renElement.material->setRendererData(matInfo);
-					renElement.params = matInfo.params[techniqueIdx];
-				}
-				else
-				{
-					RendererMaterial& matInfo = any_cast_ref<RendererMaterial>(materialInfo);
-					if (matInfo.params.size() <= techniqueIdx)
-						matInfo.params.resize(techniqueIdx + 1);
-
-					if(matInfo.params[techniqueIdx] == nullptr || matInfo.matVersion != renElement.material->getVersion())
-					{
-						matInfo.params[techniqueIdx] = renElement.material->createParamsSet(techniqueIdx);
-						matInfo.matVersion = renElement.material->getVersion();
-
-						renElement.material->updateParamsSet(matInfo.params[techniqueIdx], true);
-					}
-
-					renElement.params = matInfo.params[techniqueIdx];
-				}
+				renElement.params = renElement.material->createParamsSet(techniqueIdx);
+				renElement.material->updateParamsSet(renElement.params, true);
 
 				// Generate or assign sampler state overrides
 				SamplerOverrideKey samplerKey(renElement.material, techniqueIdx);
@@ -595,7 +569,7 @@ namespace bs
 			mRenderables[i]->renderable->updateAnimationBuffers(animData);
 
 			// Note: Could this step be moved in notifyRenderableUpdated, so it only triggers when material actually gets
-			// changed? Although it shouldn't matter much because if the internal dirty flags.
+			// changed? Although it shouldn't matter much because if the internal versions keeping track of dirty params.
 			for (auto& element : mRenderables[i]->elements)
 				element.material->updateParamsSet(element.params);
 
