@@ -10,11 +10,7 @@ namespace bs
 	 *  @{
 	 */
 
-	/**
-	 * Timer class used for querying high precision timers.
-	 *
-	 * @note	Not thread safe.
-	 */
+	/** Timer class used for querying high precision timers. */
 	class BS_UTILITY_EXPORT Timer
     {
     public:

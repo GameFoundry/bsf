@@ -16,9 +16,9 @@ namespace bs
 	 *
 	 * @note
 	 * These codes are only keyboard scan codes. This means that exact scan code identifier might not correspond to that 
-	 * exact character on users keyboard, depending on users input locale. Only for US locale will these scan code names 
-	 * will match the actual keyboard input. Think of the US key code names as only a convenience for more easily 
-	 * identifying which location on the keyboard a scan code represents.
+	 * exact character on user's keyboard, depending on user's input locale. Only for US locale will these scan code names 
+	 * match the actual keyboard input. Think of the US key code names as only a convenience for more easily identifying
+	 * which location on the keyboard a scan code represents.
 	 * @note
 	 * When storing these sequentially make sure to only reference the low order 2 bytes. Two high order bytes are used for 
 	 * various flags.
