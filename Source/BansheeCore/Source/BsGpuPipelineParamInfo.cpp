@@ -123,13 +123,16 @@ namespace bs
 		{
 			int typeIdx = (int)type;
 
+			UINT32 sequentialIdx = mNumElementsPerType[typeIdx];
+
 			SetInfo& setInfo = mSetInfos[entry.set];
-			setInfo.slotIndices[entry.slot] = mNumElementsPerType[typeIdx];
+			setInfo.slotIndices[entry.slot] = sequentialIdx;
 			setInfo.slotTypes[entry.slot] = type;
 
+			mResourceInfos[typeIdx][sequentialIdx].set = entry.set;
+			mResourceInfos[typeIdx][sequentialIdx].slot = entry.slot;
+
 			mNumElementsPerType[typeIdx]++;
-			mResourceInfos[typeIdx]->set = entry.set;
-			mResourceInfos[typeIdx]->slot = entry.slot;
 		};
 
 		for (UINT32 i = 0; i < numParamDescs; i++)
