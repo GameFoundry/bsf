@@ -253,6 +253,12 @@ namespace bs
 		/** Executes a dispatch command using the currently bound compute pipeline. */
 		void dispatch(UINT32 numGroupsX, UINT32 numGroupsY, UINT32 numGroupsZ);
 
+		/** 
+		 * Registers a command that signals the event when executed. Will be delayed until the end of the current
+		 * render pass, if any.
+		 */
+		void setEvent(VulkanEvent* event);
+
 	private:
 		friend class VulkanCmdBufferPool;
 		friend class VulkanCommandBuffer;
@@ -361,6 +367,7 @@ namespace bs
 		UnorderedMap<UINT32, TransitionInfo> mTransitionInfoTemp;
 		Vector<VkImageMemoryBarrier> mLayoutTransitionBarriersTemp;
 		UnorderedMap<VulkanImage*, UINT32> mQueuedLayoutTransitions;
+		Vector<VulkanEvent*> mQueuedEvents;
 	};
 
 	/** CommandBuffer implementation for Vulkan. */

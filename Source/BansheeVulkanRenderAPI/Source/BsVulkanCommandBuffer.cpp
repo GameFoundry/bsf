@@ -12,6 +12,7 @@
 #include "BsVulkanHardwareBuffer.h"
 #include "BsVulkanFramebuffer.h"
 #include "BsVulkanVertexInputManager.h"
+#include "BsVulkanEventQuery.h"
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 #include "Win32/BsWin32RenderWindow.h"
@@ -321,6 +322,12 @@ namespace bs
 		assert(mState == State::RecordingRenderPass);
 
 		vkCmdEndRenderPass(mCmdBuffer);
+
+		// Execute any queued events
+		for(auto& entry : mQueuedEvents)
+			vkCmdSetEvent(mCmdBuffer, entry->getHandle(), VK_PIPELINE_STAGE_ALL_COMMANDS_BIT);
+
+		mQueuedEvents.clear();
 
 		mState = State::Recording;
 	}
@@ -1259,6 +1266,14 @@ namespace bs
 		}
 
 		vkCmdDispatch(mCmdBuffer, numGroupsX, numGroupsY, numGroupsZ);
+	}
+
+	void VulkanCmdBuffer::setEvent(VulkanEvent* event)
+	{
+		if(isInRenderPass())
+			mQueuedEvents.push_back(event);
+		else
+			vkCmdSetEvent(mCmdBuffer, event->getHandle(), VK_PIPELINE_STAGE_ALL_COMMANDS_BIT);
 	}
 
 	void VulkanCmdBuffer::registerResource(VulkanResource* res, VulkanUseFlags flags)

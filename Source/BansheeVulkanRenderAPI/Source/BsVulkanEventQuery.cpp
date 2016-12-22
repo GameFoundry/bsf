@@ -83,8 +83,7 @@ namespace bs
 		VulkanCmdBuffer* internalCB = vulkanCB->getInternal(); 
 		internalCB->registerResource(mEvent, VulkanUseFlag::Read);
 
-		VkCommandBuffer vkCB = internalCB->getHandle();
-		vkCmdSetEvent(vkCB, mEvent->getHandle(), VK_PIPELINE_STAGE_ALL_COMMANDS_BIT);
+		internalCB->setEvent(mEvent);
 
 		setActive(true);
 	}
