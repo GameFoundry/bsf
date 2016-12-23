@@ -552,8 +552,6 @@ namespace bs
 			return;
 		}
 		
-		glslang::InitializeProcess();
-
 		TBuiltInResource resources = DefaultTBuiltInResource;
 		glslang::TProgram* program = new glslang::TProgram;
 
@@ -669,8 +667,6 @@ namespace bs
 cleanup:
 		delete program;
 		delete shader;
-
-		glslang::FinalizeProcess();
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_GpuProgram);
 

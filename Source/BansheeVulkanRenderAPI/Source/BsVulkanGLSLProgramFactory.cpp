@@ -3,9 +3,22 @@
 #include "BsVulkanGLSLProgramFactory.h"
 #include "BsVulkanGpuProgram.h"
 
+#define AMD_EXTENSIONS
+#include "glslang/Public/ShaderLang.h"
+
 namespace bs
 {
     const String VulkanGLSLProgramFactory::LANGUAGE_NAME = "glsl";
+
+	VulkanGLSLProgramFactory::VulkanGLSLProgramFactory()
+	{
+		glslang::InitializeProcess();
+	}
+
+	VulkanGLSLProgramFactory::~VulkanGLSLProgramFactory()
+	{
+		glslang::FinalizeProcess();
+	}
 
     const String& VulkanGLSLProgramFactory::getLanguage(void) const
     {

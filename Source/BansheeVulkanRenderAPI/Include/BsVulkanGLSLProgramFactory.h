@@ -15,8 +15,8 @@ namespace bs
 	class VulkanGLSLProgramFactory : public GpuProgramFactory
 	{
 	public:
-		VulkanGLSLProgramFactory() {}
-		~VulkanGLSLProgramFactory() {}
+		VulkanGLSLProgramFactory();
+		~VulkanGLSLProgramFactory();
 
 		/** @copydoc GpuProgramFactory::getLanguage */
 		const String& getLanguage() const override;
