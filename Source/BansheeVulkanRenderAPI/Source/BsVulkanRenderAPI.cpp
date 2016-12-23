@@ -548,7 +548,7 @@ namespace bs
 
 	const RenderAPIInfo& VulkanRenderAPI::getAPIInfo() const
 	{
-		static RenderAPIInfo info(0.0f, 0.0f, 0.0f, 1.0f, VET_COLOR_ABGR, false, true, true, true);
+		static RenderAPIInfo info(0.0f, 0.0f, 0.0f, 1.0f, VET_COLOR_ABGR, false, false, true, true);
 
 		return info;
 	}
