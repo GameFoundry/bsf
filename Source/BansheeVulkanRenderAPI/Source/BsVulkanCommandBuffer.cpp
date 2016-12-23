@@ -388,14 +388,24 @@ namespace bs
 				VkImageMemoryBarrier& barrier = barriers.back();
 				barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
 				barrier.pNext = nullptr;
-				barrier.srcAccessMask = imageInfo.accessFlags;
+				barrier.srcAccessMask = resource->getAccessFlags(imageInfo.currentLayout);
 				barrier.dstAccessMask = imageInfo.accessFlags;
-				barrier.srcQueueFamilyIndex = currentQueueFamily;
-				barrier.dstQueueFamilyIndex = mQueueFamily;
 				barrier.oldLayout = imageInfo.currentLayout;
 				barrier.newLayout = imageInfo.requiredLayout;
 				barrier.image = resource->getHandle();
 				barrier.subresourceRange = imageInfo.range;
+
+				// Check if queue transition needed
+				if (queueMismatch)
+				{
+					barrier.srcQueueFamilyIndex = currentQueueFamily;
+					barrier.dstQueueFamilyIndex = mQueueFamily;
+				}
+				else
+				{
+					barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+					barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+				}
 
 				imageInfo.currentLayout = imageInfo.requiredLayout;
 			}
@@ -413,7 +423,7 @@ namespace bs
 			UINT32 entryQueueFamily = entry.first;
 
 			// No queue transition needed for entries on this queue (this entry is most likely an image layout transition)
-			if (entryQueueFamily == mQueueFamily)
+			if (entryQueueFamily == -1 || entryQueueFamily == mQueueFamily)
 				continue;
 
 			VulkanCmdBuffer* cmdBuffer = device.getCmdBufferPool().getBuffer(entryQueueFamily, false);
@@ -1108,8 +1118,8 @@ namespace bs
 			barrier.pNext = nullptr;
 			barrier.srcAccessMask = image->getAccessFlags(imageInfo.currentLayout);
 			barrier.dstAccessMask = imageInfo.accessFlags;
-			barrier.srcQueueFamilyIndex = mQueueFamily;
-			barrier.dstQueueFamilyIndex = mQueueFamily;
+			barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+			barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 			barrier.oldLayout = imageInfo.currentLayout;
 			barrier.newLayout = imageInfo.requiredLayout;
 			barrier.image = image->getHandle();
