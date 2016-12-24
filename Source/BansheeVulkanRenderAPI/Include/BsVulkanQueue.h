@@ -39,6 +39,16 @@ namespace bs
 		void submit(VulkanCmdBuffer* cmdBuffer, VulkanSemaphore** waitSemaphores, UINT32 semaphoresCount);
 
 		/** 
+		 * Stores information about a submit internally, but doesn't actually execute it. The intended use is to queue
+		 * multiple submits and execute them all at once using submitQueued(), ensuring better performance than queuing them
+		 * all individually.
+		 */
+		void queueSubmit(VulkanCmdBuffer* cmdBuffer, VulkanSemaphore** waitSemaphores, UINT32 semaphoresCount);
+
+		/** Submits all previously queued commands buffers, as recorded by queueSubmit(). */
+		void submitQueued();
+
+		/** 
 		 * Presents the back buffer of the provided swap chain. 
 		 *
 		 * @param[in]	swapChain			Swap chain whose back buffer to present.
@@ -63,6 +73,23 @@ namespace bs
 		VulkanCmdBuffer* getLastCommandBuffer() const { return mLastCommandBuffer; }
 
 	protected:
+		/** 
+		 * Generates a submit-info structure that can be used for submitting the command buffer to the queue, but doesn't
+		 * perform the actual submit.
+		 */
+		void getSubmitInfo(VkCommandBuffer* cmdBuffer, VkSemaphore* signalSemaphore, VkSemaphore* waitSemaphores, 
+			UINT32 semaphoresCount, VkSubmitInfo& submitInfo);
+
+		/** 
+		 * Prepares a list of semaphores that can be provided to submit or present calls. *
+		 * 
+		 * @param[in]		inSemaphores	External wait semaphores that need to be waited on.
+		 * @param[out]		outSemaphores	All semaphores (external ones, and possibly additional ones), as Vulkan handles.
+		 * @param[in, out]	semaphoresCount	Number of semaphores in @p inSemaphores when calling. When method returns this
+		 *									will contain number of semaphores in @p outSemaphores.
+		 */
+		void prepareSemaphores(VulkanSemaphore** inSemaphores, VkSemaphore* outSemaphores, UINT32& semaphoresCount);
+
 		/** Information about a single submitted command buffer. */
 		struct SubmitInfo
 		{
@@ -81,12 +108,16 @@ namespace bs
 		UINT32 mIndex;
 		VkPipelineStageFlags mSubmitDstWaitMask[BS_MAX_UNIQUE_QUEUES];
 
+		Vector<SubmitInfo> mQueuedBuffers;
+		Vector<VulkanSemaphore*> mQueuedSemaphores;
+
 		List<SubmitInfo> mActiveBuffers;
 		Queue<VulkanSemaphore*> mActiveSemaphores;
 		VulkanCmdBuffer* mLastCommandBuffer;
+		bool mLastCBSemaphoreUsed;
 		UINT32 mNextSubmitIdx;
 
-		VkSemaphore mSemaphoresTemp[BS_MAX_UNIQUE_QUEUES + 1]; // +1 for present semaphore
+		VkSemaphore mSemaphoresTemp[BS_MAX_UNIQUE_QUEUES + 2]; // +1 for present semaphore, +1 for self-semaphore
 	};
 
 	/** @} */

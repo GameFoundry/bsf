@@ -108,7 +108,7 @@ namespace bs
 		query->mFree = false;
 
 		VkCommandBuffer vkCmdBuf = cb->getHandle();
-		vkCmdResetQueryPool(vkCmdBuf, query->mPool, query->mQueryIdx, 1);
+		cb->resetQuery(query);
 		vkCmdWriteTimestamp(vkCmdBuf, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, query->mPool, query->mQueryIdx);
 
 		// Note: Must happen only here because we need to check VulkanResource::isBound under the same mutex
@@ -125,7 +125,7 @@ namespace bs
 		query->mFree = false;
 
 		VkCommandBuffer vkCmdBuf = cb->getHandle();
-		vkCmdResetQueryPool(vkCmdBuf, query->mPool, query->mQueryIdx, 1);
+		cb->resetQuery(query);
 		vkCmdBeginQuery(vkCmdBuf, query->mPool, query->mQueryIdx, precise ? VK_QUERY_CONTROL_PRECISE_BIT : 0);
 
 		// Note: Must happen only here because we need to check VulkanResource::isBound under the same mutex
@@ -147,6 +147,7 @@ namespace bs
 		Lock(mMutex);
 
 		query->mFree = true;
+		query->mNeedsReset = true;
 	}
 
 	VulkanQueryManager::VulkanQueryManager(VulkanRenderAPI& rapi)
@@ -208,5 +209,10 @@ namespace bs
 		assert(vkResult == VK_SUCCESS || vkResult == VK_NOT_READY);
 
 		return vkResult == VK_SUCCESS;
+	}
+
+	void VulkanQuery::reset(VkCommandBuffer cmdBuf)
+	{
+		vkCmdResetQueryPool(cmdBuf, mPool, mQueryIdx, 1);
 	}
 }

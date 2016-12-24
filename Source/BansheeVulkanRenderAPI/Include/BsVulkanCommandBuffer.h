@@ -259,6 +259,12 @@ namespace bs
 		 */
 		void setEvent(VulkanEvent* event);
 
+		/** 
+		 * Registers a command that resets the query. The command will be delayed until the next submit() if a render
+		 * pass is currently in progress, but is guaranteed to execute before this command buffer is submitted.
+		 */
+		void resetQuery(VulkanQuery* query);
+
 	private:
 		friend class VulkanCmdBufferPool;
 		friend class VulkanCommandBuffer;
@@ -368,6 +374,7 @@ namespace bs
 		Vector<VkImageMemoryBarrier> mLayoutTransitionBarriersTemp;
 		UnorderedMap<VulkanImage*, UINT32> mQueuedLayoutTransitions;
 		Vector<VulkanEvent*> mQueuedEvents;
+		Vector<VulkanQuery*> mQueuedQueryResets;
 	};
 
 	/** CommandBuffer implementation for Vulkan. */

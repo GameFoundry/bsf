@@ -117,12 +117,16 @@ namespace bs
 		 */
 		bool getResult(UINT64& result) const;
 
+		/** Queues a command for the query reset, on the provided command buffer. */
+		void reset(VkCommandBuffer cmdBuf);
+
 	private:
 		friend class VulkanQueryPool;
 
 		VkQueryPool mPool;
 		UINT32 mQueryIdx;
-		bool mFree;		
+		bool mFree;
+		bool mNeedsReset;
 	};
 
 	/** @} */

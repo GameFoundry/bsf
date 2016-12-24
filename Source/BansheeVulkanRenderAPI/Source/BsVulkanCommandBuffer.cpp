@@ -13,6 +13,7 @@
 #include "BsVulkanFramebuffer.h"
 #include "BsVulkanVertexInputManager.h"
 #include "BsVulkanEventQuery.h"
+#include "BsVulkanQueryManager.h"
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 #include "Win32/BsWin32RenderWindow.h"
@@ -345,6 +346,22 @@ namespace bs
 	{
 		assert(isReadyForSubmit());
 
+		// If there are any query resets needed, execute those first
+		VulkanDevice& device = queue->getDevice();
+		if(!mQueuedQueryResets.empty())
+		{
+			VulkanCmdBuffer* cmdBuffer = device.getCmdBufferPool().getBuffer(mQueueFamily, false);
+			VkCommandBuffer vkCmdBuffer = cmdBuffer->getHandle();
+
+			for (auto& entry : mQueuedQueryResets)
+				entry->reset(vkCmdBuffer);
+
+			cmdBuffer->end();
+			queue->submit(cmdBuffer, nullptr, 0);
+
+			mQueuedQueryResets.clear();
+		}
+
 		// Issue pipeline barriers for queue transitions (need to happen on original queue first, then on new queue)
 		for (auto& entry : mBuffers)
 		{
@@ -413,7 +430,6 @@ namespace bs
 			resource->setLayout(imageInfo.finalLayout);
 		}
 
-		VulkanDevice& device = queue->getDevice();
 		for (auto& entry : mTransitionInfoTemp)
 		{
 			bool empty = entry.second.imageBarriers.size() == 0 && entry.second.bufferBarriers.size() == 0;
@@ -475,7 +491,7 @@ namespace bs
 			syncMask |= CommandSyncMask::getGlobalQueueMask(otherQueueType, otherQueueIdx);
 
 			cmdBuffer->end();
-			cmdBuffer->submit(otherQueue, otherQueueIdx, 0);
+			otherQueue->submit(cmdBuffer, nullptr, 0);
 
 			// If there are any layout transitions, reset them as we don't need them for the second pipeline barrier
 			for (auto& barrierEntry : barriers.imageBarriers)
@@ -1284,6 +1300,14 @@ namespace bs
 			mQueuedEvents.push_back(event);
 		else
 			vkCmdSetEvent(mCmdBuffer, event->getHandle(), VK_PIPELINE_STAGE_ALL_COMMANDS_BIT);
+	}
+
+	void VulkanCmdBuffer::resetQuery(VulkanQuery* query)
+	{
+		if (isInRenderPass())
+			mQueuedQueryResets.push_back(query);
+		else
+			query->reset(mCmdBuffer);
 	}
 
 	void VulkanCmdBuffer::registerResource(VulkanResource* res, VulkanUseFlags flags)
