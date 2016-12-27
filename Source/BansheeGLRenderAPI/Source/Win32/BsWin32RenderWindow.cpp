@@ -252,7 +252,10 @@ namespace bs
 		props.mWidth = width;
 		props.mHeight = height;
 
-		SetWindowPos(mWindow->getHWnd(), HWND_TOP, props.mLeft, props.mTop, width, height, SWP_NOACTIVATE);
+		SetWindowLong(mWindow->getHWnd(), GWL_STYLE, WS_POPUP | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
+		SetWindowLong(mWindow->getHWnd(), GWL_EXSTYLE, 0);
+
+		SetWindowPos(mWindow->getHWnd(), HWND_TOP, props.mLeft, props.mTop, width, height, SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
 
 		_windowMovedOrResized();
 	}
@@ -280,8 +283,8 @@ namespace bs
 		// Drop out of fullscreen
 		ChangeDisplaySettingsEx(mDeviceName, NULL, NULL, 0, NULL);
 
-		UINT32 winWidth = 0;
-		UINT32 winHeight = 0;
+		UINT32 winWidth = width;
+		UINT32 winHeight = height;
 
 		RECT rect;
 		SetRect(&rect, 0, 0, winWidth, winHeight);
@@ -303,7 +306,7 @@ namespace bs
 		INT32 left = screenw > INT32(winWidth) ? ((screenw - INT32(winWidth)) / 2) : 0;
 		INT32 top = screenh > INT32(winHeight) ? ((screenh - INT32(winHeight)) / 2) : 0;
 
-		SetWindowLong(mWindow->getHWnd(), GWL_STYLE, mWindow->getStyle());
+		SetWindowLong(mWindow->getHWnd(), GWL_STYLE, mWindow->getStyle() | WS_VISIBLE);
 		SetWindowLong(mWindow->getHWnd(), GWL_EXSTYLE, mWindow->getStyleEx());
 		SetWindowPos(mWindow->getHWnd(), HWND_NOTOPMOST, left, top, winWidth, winHeight,
 			SWP_DRAWFRAME | SWP_FRAMECHANGED | SWP_NOACTIVATE);
