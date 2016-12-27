@@ -448,7 +448,10 @@ namespace bs
 		Vector<MeshRenderData> proxyData = createMeshProxyData(mActiveMeshes);
 
 		mIconMesh = buildIconMesh(camera, mIconData, false, iconRenderData);
-		SPtr<MeshCoreBase> iconMesh = mIconMesh->getCore();
+
+		SPtr<MeshCoreBase> iconMesh;
+		if(mIconMesh != nullptr)
+			iconMesh = mIconMesh->getCore();
 
 		GizmoRenderer* renderer = mGizmoRenderer.get();
 
@@ -841,7 +844,10 @@ namespace bs
 			indices += 6;
 		}
 
-		return mIconMeshHeap->alloc(meshData, DOT_TRIANGLE_LIST);
+		if(actualNumIcons > 0)
+			return mIconMeshHeap->alloc(meshData, DOT_TRIANGLE_LIST);
+
+		return nullptr;
 	}
 
 	void GizmoManager::limitIconSize(UINT32& width, UINT32& height)
