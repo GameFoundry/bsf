@@ -441,7 +441,12 @@ namespace bs
 
 			PerSetData& perSetData = mPerDeviceData[i].perSetData[set];
 
-			VulkanSampler* samplerRes = vulkanSampler->getResource(i);
+			VulkanSampler* samplerRes;
+			if (vulkanSampler != nullptr)
+				samplerRes = vulkanSampler->getResource(i);
+			else
+				samplerRes = nullptr;
+
 			if (samplerRes != nullptr)
 			{
 				VkSampler vkSampler = samplerRes->getHandle();

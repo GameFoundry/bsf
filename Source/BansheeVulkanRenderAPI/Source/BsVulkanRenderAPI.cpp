@@ -539,6 +539,9 @@ namespace bs
 	{
 		dest = matrix;
 
+		// Flip Y axis
+		dest[1][1] = -dest[1][1];
+
 		// Convert depth range from [-1,1] to [0,1]
 		dest[2][0] = (dest[2][0] + dest[3][0]) / 2;
 		dest[2][1] = (dest[2][1] + dest[3][1]) / 2;

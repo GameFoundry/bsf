@@ -138,6 +138,8 @@ namespace bs
 		mInputAssemblyInfo.primitiveRestartEnable = false;
 
 		mTesselationInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO;
+		mTesselationInfo.pNext = nullptr;
+		mTesselationInfo.flags = 0;
 		mTesselationInfo.patchControlPoints = 3; // Assigned at runtime
 
 		mViewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -372,9 +374,13 @@ namespace bs
 		mInputAssemblyInfo.topology = VulkanUtility::getDrawOp(drawOp);
 		mTesselationInfo.patchControlPoints = 3; // Not provided by our shaders for now
 		mMultiSampleInfo.rasterizationSamples = framebuffer->getSampleFlags();
-		mColorBlendStateInfo.attachmentCount = framebuffer->getNumAttachments();
+		mColorBlendStateInfo.attachmentCount = framebuffer->getNumColorAttachments();
 
-		const DepthStencilProperties dsProps = getDepthStencilState()->getProperties();
+		DepthStencilStateCore* dsState = getDepthStencilState().get();
+		if (dsState == nullptr)
+			dsState = DepthStencilStateCore::getDefault().get();
+
+		const DepthStencilProperties dsProps = dsState->getProperties();
 		bool enableDepthWrites = dsProps.getDepthWriteEnable() && !readOnlyDepth;
 
 		mDepthStencilInfo.depthWriteEnable = enableDepthWrites; // If depth stencil attachment is read only, depthWriteEnable must be VK_FALSE

@@ -118,10 +118,11 @@ namespace bs
 			VkVertexInputBindingDescription& binding = newEntry.bindings[i];
 			binding.binding = i;
 			binding.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-			binding.stride = 0;
+			binding.stride = vbDecl->getProperties().getVertexSize(i);
 		}
 
 		UINT32 attribIdx = 0;
+		bool isFirstInBinding = true;
 		for (auto& vbElem : vbElements)
 		{
 			VkVertexInputAttributeDescription& attribute = newEntry.attributes[attribIdx];
@@ -147,9 +148,11 @@ namespace bs
 			VkVertexInputBindingDescription& binding = newEntry.bindings[attribute.binding];
 
 			bool isPerVertex = vbElem.getInstanceStepRate() == 0;
-			bool isFirstInBinding = binding.stride == 0;
 			if (isFirstInBinding)
+			{
 				binding.inputRate = isPerVertex ? VK_VERTEX_INPUT_RATE_VERTEX : VK_VERTEX_INPUT_RATE_INSTANCE;
+				isFirstInBinding = false;
+			}
 			else
 			{
 				if ((binding.inputRate == VK_VERTEX_INPUT_RATE_VERTEX && !isPerVertex) ||
@@ -159,8 +162,6 @@ namespace bs
 						"All attributes in a binding must have the same input rate. Ignoring invalid input rates.")
 				}
 			}
-
-			binding.stride += vbElem.getSize();
 
 			attribIdx++;
 		}
