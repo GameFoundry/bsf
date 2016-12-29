@@ -307,6 +307,16 @@ namespace bs
 				readMask.set(RT_DEPTH);
 		}
 
+		// Reset flags that signal image usage (since those only matter for the render-pass' purposes)
+		for (auto& entry : mImages)
+		{
+			UINT32 imageInfoIdx = entry.second;
+			ImageInfo& imageInfo = mImageInfos[imageInfoIdx];
+
+			imageInfo.isFBAttachment = false;
+			imageInfo.isShaderInput = false;
+		}
+
 		VkRenderPassBeginInfo renderPassBeginInfo;
 		renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 		renderPassBeginInfo.pNext = nullptr;
@@ -337,7 +347,8 @@ namespace bs
 
 		mQueuedEvents.clear();
 
-		// Update any layout transitions that were performed by subpass dependencies
+		// Update any layout transitions that were performed by subpass dependencies, reset flags that signal image usage
+		// and reset access flags
 		for (auto& entry : mImages)
 		{
 			UINT32 imageInfoIdx = entry.second;
@@ -345,6 +356,11 @@ namespace bs
 
 			imageInfo.currentLayout = imageInfo.finalLayout;
 			imageInfo.requiredLayout = imageInfo.finalLayout;
+
+			imageInfo.isFBAttachment = false;
+			imageInfo.isShaderInput = false;
+
+			imageInfo.accessFlags = 0;
 		}
 
 		mState = State::Recording;
@@ -727,7 +743,6 @@ namespace bs
 			ImageInfo& imageInfo = mImageInfos[imageInfoIdx];
 
 			imageInfo.isFBAttachment = false;
-			imageInfo.isShaderInput = false;
 		}
 
 		setGpuParams(nullptr);
@@ -1174,6 +1189,7 @@ namespace bs
 			barrier.subresourceRange = imageInfo.range;
 
 			imageInfo.currentLayout = imageInfo.requiredLayout;
+			imageInfo.accessFlags = 0;
 		};
 
 		// Note: These layout transitions will contain transitions for offscreen framebuffer attachments (while they 
@@ -1407,11 +1423,30 @@ namespace bs
 
 			imageInfo.accessFlags |= accessFlags;
 
-			// Note: We purposely ignore the "newLayout" param here. Almost all textures can only be in one layout (after
-			// the initial transition), so we keep the layout that they were originally registered with. The only exception
-			// are framebuffer attachments (that can be bound as attachments, or as normal textures, or both). However, we 
-			// handle FB attachment layouts through automatic layout transitions controlled by render-pass so no need
-			// to set them here.
+			// New layout is valid, check for transitions (UNDEFINED signifies the caller doesn't want a layout transition)
+			if (newLayout != VK_IMAGE_LAYOUT_UNDEFINED)
+			{
+				// If layout transition was requested by framebuffer bind, respect it because render-pass will only accept a
+				// specific layout (in certain cases), and we have no choice.
+				// In the case when a FB attachment is also bound for shader reads, this will override the layout required for
+				// shader read (GENERAL or DEPTH_READ_ONLY), but that is fine because those transitions are handled
+				// automatically by render-pass layout transitions.
+				// Any other texture (non FB attachment) will only even be bound in a single layout and we can keep the one it
+				// was originally registered with.
+				if (isFBAttachment)
+					imageInfo.requiredLayout = newLayout;
+				else if(!imageInfo.isFBAttachment) // Layout transition is not being done on a FB image
+				{
+					// Check if the image had a layout previously assigned, and if so check if multiple different layouts
+					// were requested. In that case we wish to transfer the image to GENERAL layout.
+
+					bool firstUseInRenderPass = !imageInfo.isShaderInput && !imageInfo.isFBAttachment;
+					if (firstUseInRenderPass || imageInfo.requiredLayout == VK_IMAGE_LAYOUT_UNDEFINED)
+						imageInfo.requiredLayout = newLayout;
+					else if (imageInfo.requiredLayout != newLayout)
+						imageInfo.requiredLayout = VK_IMAGE_LAYOUT_GENERAL;
+				}
+			}
 
 			// If attached to FB, then the final layout is set by the FB (provided as layout param here), otherwise its
 			// the same as required layout
@@ -1512,22 +1547,20 @@ namespace bs
 		{
 			const VulkanFramebufferAttachment& attachment = res->getColorAttachment(i);
 
-			VkAccessFlags accessMask;
-			if (attachment.finalLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
-				accessMask = VK_ACCESS_SHADER_READ_BIT;
-			else
-			{
-				assert(attachment.finalLayout == VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
-				accessMask = VK_ACCESS_MEMORY_READ_BIT;
-			}
-
 			VkImageLayout layout;
+			VkAccessFlags accessMask;
 
 			// If image is being loaded, we need to transfer it to correct layout, otherwise it doesn't matter
 			if (loadMask.isSet((RenderSurfaceMaskBits)(1 << i)))
+			{
 				layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+				accessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+			}
 			else
+			{
 				layout = attachment.image->getLayout();
+				accessMask = 0;
+			}
 
 			registerResource(attachment.image, accessMask, attachment.image->getLayout(), layout, attachment.finalLayout, 
 				VulkanUseFlag::Write, true);
@@ -1537,15 +1570,20 @@ namespace bs
 		{
 			const VulkanFramebufferAttachment& attachment = res->getDepthStencilAttachment();
 
-			VkAccessFlags accessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
-
 			VkImageLayout layout;
+			VkAccessFlags accessMask;
 
 			// If image is being loaded, we need to transfer it to correct layout, otherwise it doesn't matter
 			if (loadMask.isSet(RT_DEPTH))
+			{
 				layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+				accessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT;
+			}
 			else
+			{
 				layout = attachment.image->getLayout();
+				accessMask = 0;
+			}
 
 			registerResource(attachment.image, accessMask, attachment.image->getLayout(), layout, attachment.finalLayout, 
 				VulkanUseFlag::Write, true);

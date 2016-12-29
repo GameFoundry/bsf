@@ -313,6 +313,9 @@ namespace bs
 		case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
 			accessFlags = VK_ACCESS_SHADER_READ_BIT;
 			break;
+		case VK_IMAGE_LAYOUT_PRESENT_SRC_KHR:
+			accessFlags = VK_ACCESS_MEMORY_READ_BIT;
+			break;
 		case VK_IMAGE_LAYOUT_UNDEFINED:
 		case VK_IMAGE_LAYOUT_PREINITIALIZED:
 			accessFlags = 0;
