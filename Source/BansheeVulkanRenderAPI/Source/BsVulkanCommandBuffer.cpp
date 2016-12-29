@@ -133,8 +133,8 @@ namespace bs
 		, mRenderTargetHeight(0), mRenderTargetDepthReadOnly(false), mRenderTargetLoadMask(RT_NONE), mGlobalQueueIdx(-1)
 		, mViewport(0.0f, 0.0f, 1.0f, 1.0f), mScissor(0, 0, 0, 0), mStencilRef(0), mDrawOp(DOT_TRIANGLE_LIST)
 		, mNumBoundDescriptorSets(0), mGfxPipelineRequiresBind(true), mCmpPipelineRequiresBind(true)
-		, mViewportRequiresBind(true), mStencilRefRequiresBind(true), mScissorRequiresBind(true), mClearValues()
-		, mClearMask(), mVertexBuffersTemp(), mVertexBufferOffsetsTemp()
+		, mViewportRequiresBind(true), mStencilRefRequiresBind(true), mScissorRequiresBind(true), mBoundParamsDirty(false)
+		, mClearValues(), mClearMask(), mVertexBuffersTemp(), mVertexBufferOffsetsTemp()
 	{
 		UINT32 maxBoundDescriptorSets = device.getDeviceProperties().limits.maxBoundDescriptorSets;
 		mDescriptorSetsTemp = (VkDescriptorSet*)bs_alloc(sizeof(VkDescriptorSet) * maxBoundDescriptorSets);
@@ -637,6 +637,8 @@ namespace bs
 		mFramebuffer = nullptr;
 		mDescriptorSetsBindState = DescriptorSetBindFlag::Graphics | DescriptorSetBindFlag::Compute;
 		mQueuedLayoutTransitions.clear();
+		mBoundParams = nullptr;
+		mBoundParams = false;
 	}
 
 	bool VulkanCmdBuffer::checkFenceStatus() const
@@ -953,16 +955,18 @@ namespace bs
 
 	void VulkanCmdBuffer::setGpuParams(const SPtr<GpuParamsCore>& gpuParams)
 	{
-		SPtr<VulkanGpuParams> vulkanGpuParams = std::static_pointer_cast<VulkanGpuParams>(gpuParams);
+		// Note: We keep an internal reference to GPU params even though we shouldn't keep a reference to a core thread
+		// object. But it should be fine since we expect the resource to be externally synchronized so it should never
+		// be allowed to go out of scope on a non-core thread anyway.
 
-		if(vulkanGpuParams != nullptr)
-		{
-			mNumBoundDescriptorSets = vulkanGpuParams->getNumSets();
-			vulkanGpuParams->prepareForBind(*this, mDescriptorSetsTemp);
-		}
+		mBoundParams = std::static_pointer_cast<VulkanGpuParams>(gpuParams);
+		
+		if (mBoundParams != nullptr)
+			mBoundParamsDirty = true;
 		else
 		{
 			mNumBoundDescriptorSets = 0;
+			mBoundParamsDirty = false;
 		}
 
 		mDescriptorSetsBindState = DescriptorSetBindFlag::Graphics | DescriptorSetBindFlag::Compute;
@@ -1171,6 +1175,26 @@ namespace bs
 		}
 	}
 
+	void VulkanCmdBuffer::bindGpuParams()
+	{
+		if (mBoundParamsDirty)
+		{
+			if (mBoundParams != nullptr)
+			{
+				mNumBoundDescriptorSets = mBoundParams->getNumSets();
+				mBoundParams->prepareForBind(*this, mDescriptorSetsTemp);
+			}
+			else
+				mNumBoundDescriptorSets = 0;
+
+			mBoundParamsDirty = false;
+		}
+		else
+		{
+			mNumBoundDescriptorSets = 0;
+		}
+	}
+
 	void VulkanCmdBuffer::executeLayoutTransitions()
 	{
 		auto createLayoutTransitionBarrier = [&](VulkanImage* image, ImageInfo& imageInfo)
@@ -1244,6 +1268,8 @@ namespace bs
 		if (!isReadyForRender())
 			return;
 
+		bindGpuParams();
+
 		if (!isInRenderPass())
 			beginRenderPass();
 
@@ -1277,6 +1303,8 @@ namespace bs
 		if (!isReadyForRender())
 			return;
 
+		bindGpuParams();
+
 		if (!isInRenderPass())
 			beginRenderPass();
 
@@ -1309,6 +1337,8 @@ namespace bs
 	{
 		if (mComputePipeline == nullptr)
 			return;
+
+		bindGpuParams();
 
 		if (isInRenderPass())
 			endRenderPass();

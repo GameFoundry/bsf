@@ -323,11 +323,15 @@ namespace bs
 		/** Binds the current graphics pipeline to the command buffer. Returns true if bind was successful. */
 		bool bindGraphicsPipeline();
 
-		/** Binds any dynamic states to the pipeline, as required. 
+		/** 
+		 * Binds any dynamic states to the pipeline, as required. 
 		 *
 		 * @param[in]	forceAll	If true all states will be bound. If false only states marked as dirty will be bound.
 		 */
 		void bindDynamicStates(bool forceAll);
+
+		/** Binds the currently stored GPU parameters object, if dirty. */
+		void bindGpuParams();
 
 		/** Clears the specified area of the currently bound render target. */
 		void clearViewport(const Rect2I& area, UINT32 buffers, const Color& color, float depth, UINT16 stencil, 
@@ -376,7 +380,9 @@ namespace bs
 		bool mViewportRequiresBind : 1;
 		bool mStencilRefRequiresBind : 1;
 		bool mScissorRequiresBind : 1;
+		bool mBoundParamsDirty : 1;
 		DescriptorSetBindFlags mDescriptorSetsBindState;
+		SPtr<VulkanGpuParams> mBoundParams;
 
 		std::array<VkClearValue, BS_MAX_MULTIPLE_RENDER_TARGETS + 1> mClearValues;
 		ClearMask mClearMask;
