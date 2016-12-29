@@ -134,7 +134,7 @@ namespace bs
 	void RenderTargets::bindSceneColor(bool readOnlyDepthStencil)
 	{
 		RenderAPICore& rapi = RenderAPICore::instance();
-		rapi.setRenderTarget(mSceneColorRT, readOnlyDepthStencil);
+		rapi.setRenderTarget(mSceneColorRT, readOnlyDepthStencil, RT_COLOR0);
 
 		Rect2 area(0.0f, 0.0f, 1.0f, 1.0f);
 		rapi.setViewport(area);
