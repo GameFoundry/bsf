@@ -25,7 +25,7 @@ namespace bs
 		SAMPLER_STATE_DESC()
 			: minFilter(FO_LINEAR), magFilter(FO_LINEAR), mipFilter(FO_POINT), 
 			maxAniso(0), mipmapBias(0), mipMin(-FLT_MAX), mipMax(FLT_MAX),
-			borderColor(Color::White), comparisonFunc(CMPF_ALWAYS_FAIL)
+			borderColor(Color::White), comparisonFunc(CMPF_ALWAYS_PASS)
 		{ }
 
 		bool operator==(const SAMPLER_STATE_DESC& rhs) const;
