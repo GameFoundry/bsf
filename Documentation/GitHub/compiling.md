@@ -43,7 +43,7 @@ For those that wish to customize their build, or compile using something other t
   3. Point CMake to the /Source sub-folder in Banshee's source code (Browse Source... button in GUI)
   4. Choose an output folder (Browse Build... button in GUI)
   5. Hit Configure and choose the toolset to generate the files for (e.g. Visual Studio 2015 64-bit)
-  6. (Optionally) Customize your build by setting any of the properties that have appeared. You can choose whether to build the complete runtime or just the framework (BUILD_EDITOR property), as well as choose render API (Vulkan, DirectX, OpenGL), audio module (FMOD, OpenAudio) among other options.
+  6. (Optionally) Customize your build by setting any of the properties that have appeared. You can choose whether to build the complete runtime or just the framework, as well as choose render API (Vulkan, DirectX, OpenGL), audio module (FMOD, OpenAudio) among other options.
   7. Hit the Generate button
  4. Once CMake is done generating you can use the toolset you chose (e.g. Visual Studio) to open the generated files (e.g. open the .sln file provided in the Build folder in the case of Visual Studio)
 
@@ -70,7 +70,7 @@ The following dependencies will need to be installed manually regardless if you 
  - Go to Settings panel (type "Settings" in Start)->System->Apps & features->Manage optional Features->Add a feature->Select "Graphics Tools"
  
 **Vulkan SDK** (Optional if not using Vulkan) 
- - Only needed if you selected the Vulkan render API during build configuration (selected by default)
+ - Only needed if you selected the Vulkan render API during build configuration
  - https://lunarg.com/vulkan-sdk/
  - If CMake complains it cannot find Vulkan, manually set the Vulkan_INSTALL_DIRS to your installation directory
  
@@ -79,7 +79,7 @@ The following dependencies will need to be installed manually regardless if you 
  - https://www.python.org/downloads/
 
 **FMOD Low Level Programmer API** (Optional)
- - Only needed if you selected the FMOD audio module during build configuration (not selected by default)
+ - Only needed if you selected the FMOD audio module during build configuration
  - http://www.fmod.org/download/
  - If CMake complains it cannot find FMOD, manually set the FMOD_INSTALL_DIRS to your installation directory 
  - Copy the dynamic libraries from {INSTALLDIR}/api/lowlevel/lib into /bin folder in Banshee source code folder
