@@ -23,7 +23,7 @@ namespace bs
 	}
 
 	bool VulkanFramebuffer::VariantKey::EqualFunction::operator()(const VariantKey& lhs,
-																			 const VariantKey& rhs) const
+																  const VariantKey& rhs) const
 	{
 		return lhs.loadMask == rhs.loadMask && lhs.readMask == rhs.readMask && lhs.clearMask == rhs.clearMask;
 	}

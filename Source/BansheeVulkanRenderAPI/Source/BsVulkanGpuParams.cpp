@@ -651,8 +651,7 @@ namespace bs
 			VkAccessFlags accessFlags = VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT;
 			VulkanUseFlags useFlags = VulkanUseFlag::Read | VulkanUseFlag::Write;
 
-			buffer.registerResource(resource, accessFlags, resource->getLayout(), VK_IMAGE_LAYOUT_GENERAL, 
-				VK_IMAGE_LAYOUT_GENERAL, useFlags);
+			buffer.registerResource(resource, accessFlags, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_GENERAL, useFlags);
 
 			// Check if internal resource changed from what was previously bound in the descriptor set
 			assert(perDeviceData.storageImages[i] != VK_NULL_HANDLE);
@@ -695,8 +694,7 @@ namespace bs
 			else
 				layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
-			buffer.registerResource(resource, VK_ACCESS_SHADER_READ_BIT, resource->getLayout(), layout, layout, 
-				VulkanUseFlag::Read);
+			buffer.registerResource(resource, VK_ACCESS_SHADER_READ_BIT, layout, layout, VulkanUseFlag::Read);
 
 			// Check if internal resource changed from what was previously bound in the descriptor set
 			assert(perDeviceData.sampledImages[i] != VK_NULL_HANDLE);

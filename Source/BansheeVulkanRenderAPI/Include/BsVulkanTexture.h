@@ -14,6 +14,16 @@ namespace bs
 
 	class VulkanImageSubresource;
 
+	/** Type of a Vulkan image, determining its usage. */
+	enum class VulkanImageUsage
+	{
+		Sampled,
+		SampledDynamic,
+		Storage,
+		ColorAttachment,
+		DepthAttachment
+	};
+
 	/** Descriptor used for initializing a VulkanImage. */
 	struct VULKAN_IMAGE_DESC
 	{
@@ -24,8 +34,7 @@ namespace bs
 		VkFormat format; /**< Pixel format of the image. */
 		UINT32 numFaces; /**< Number of faces (array slices, or cube-map faces). */
 		UINT32 numMipLevels; /**< Number of mipmap levels per face. */
-		bool isDepthStencil; /**< True if the image represents a depth-stencil surface. */
-		bool isStorage; /**< True if the texture supports shader random access reads and writes. */
+		VulkanImageUsage usage; /** Determines how will the image be used. */
 	};
 
 	/** Wrapper around a Vulkan image object that manages its usage and lifetime. */
@@ -56,7 +65,14 @@ namespace bs
 		/** Returns the internal handle to the Vulkan object. */
 		VkImage getHandle() const { return mImage; }
 
-		/** Returns the layout the image is currently in. */
+		/** Returns the preferred (not necessarily current) layout of the image. */
+		VkImageLayout getOptimalLayout() const;
+
+		/** 
+		 * Returns the layout the image is currently in. Note that this is only used to communicate layouts between 
+		 * different command buffers, and will only be updated only after command buffer submit() call. In short this means
+		 * you should only care about this value on the core thread.
+		 */
 		VkImageLayout getLayout() const { return mLayout; }
 
 		/** Notifies the resource that the current image layout has changed. */
@@ -139,9 +155,8 @@ namespace bs
 		VkImageLayout mLayout;
 		VkImageView mMainView;
 		VkImageView mFramebufferMainView;
+		VulkanImageUsage mUsage;
 		bool mOwnsImage;
-		bool mIsStorage;
-		bool mIsDepthStencil;
 
 		UINT32 mNumFaces;
 		UINT32 mNumMipLevels;
@@ -218,9 +233,6 @@ namespace bs
 		 */
 		void copyImage(VulkanTransferBuffer* cb, VulkanImage* srcImage, VulkanImage* dstImage, 
 			VkImageLayout srcFinalLayout, VkImageLayout dstFinalLayout);
-
-		/** Returns the optimal layout this image should normally be in. */
-		VkImageLayout getOptimalLayout() const;
 
 		VulkanImage* mImages[BS_MAX_DEVICES];
 		GpuDeviceFlags mDeviceMask;

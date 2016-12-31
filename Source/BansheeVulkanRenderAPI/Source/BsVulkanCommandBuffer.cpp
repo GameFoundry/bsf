@@ -443,6 +443,7 @@ namespace bs
 			}
 		}
 
+		// For images issue queue transitions, as above. Also issue layout transitions to their optimal layouts.
 		for (auto& entry : mImages)
 		{
 			VulkanImage* resource = static_cast<VulkanImage*>(entry.first);
@@ -451,7 +452,9 @@ namespace bs
 			UINT32 currentQueueFamily = resource->getQueueFamily();
 			bool queueMismatch = resource->isExclusive() && currentQueueFamily != -1 && currentQueueFamily != mQueueFamily;
 
-			if (queueMismatch)
+			VkImageLayout currentLayout = resource->getLayout();
+			VkImageLayout optimalLayout = resource->getOptimalLayout();
+			if (queueMismatch || currentLayout != optimalLayout)
 			{
 				Vector<VkImageMemoryBarrier>& barriers = mTransitionInfoTemp[currentQueueFamily].imageBarriers;
 
@@ -459,15 +462,29 @@ namespace bs
 				VkImageMemoryBarrier& barrier = barriers.back();
 				barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
 				barrier.pNext = nullptr;
-				barrier.srcAccessMask = resource->getAccessFlags(imageInfo.currentLayout);
-				barrier.dstAccessMask = imageInfo.accessFlags;
-				barrier.oldLayout = imageInfo.currentLayout;
-				barrier.newLayout = imageInfo.currentLayout;
+				barrier.srcAccessMask = resource->getAccessFlags(currentLayout);
+				barrier.dstAccessMask = resource->getAccessFlags(optimalLayout);
+				barrier.oldLayout = currentLayout;
+				barrier.newLayout = optimalLayout;
 				barrier.image = resource->getHandle();
 				barrier.subresourceRange = imageInfo.range;
 				barrier.srcQueueFamilyIndex = currentQueueFamily;
 				barrier.dstQueueFamilyIndex = mQueueFamily;
+
+				// Check if queue transition needed
+				if (queueMismatch)
+				{
+					barrier.srcQueueFamilyIndex = currentQueueFamily;
+					barrier.dstQueueFamilyIndex = mQueueFamily;
+				}
+				else
+				{
+					barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+					barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+				}
 			}
+
+			resource->setLayout(imageInfo.finalLayout);
 		}
 
 		for (auto& entry : mTransitionInfoTemp)
@@ -478,7 +495,7 @@ namespace bs
 
 			UINT32 entryQueueFamily = entry.first;
 
-			// No queue transition needed for entries on this queue 
+			// No queue transition needed for entries on this queue (this entry is most likely an image layout transition)
 			if (entryQueueFamily == -1 || entryQueueFamily == mQueueFamily)
 				continue;
 
@@ -532,6 +549,10 @@ namespace bs
 
 			cmdBuffer->end();
 			otherQueue->submit(cmdBuffer, nullptr, 0);
+
+			// If there are any layout transitions, reset them as we don't need them for the second pipeline barrier
+			for (auto& barrierEntry : barriers.imageBarriers)
+				barrierEntry.oldLayout = barrierEntry.newLayout;
 		}
 
 		UINT32 deviceIdx = device.getIndex();
@@ -1209,8 +1230,6 @@ namespace bs
 			createLayoutTransitionBarrier(entry.first, imageInfo);
 		}
 
-		mQueuedLayoutTransitions.clear();
-
 		vkCmdPipelineBarrier(mCmdBuffer,
 							 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, // Note: VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT might be more correct here, according to the spec
 							 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
@@ -1218,6 +1237,7 @@ namespace bs
 							 0, nullptr,
 							 (UINT32)mLayoutTransitionBarriersTemp.size(), mLayoutTransitionBarriersTemp.data());
 
+		mQueuedLayoutTransitions.clear();
 		mLayoutTransitionBarriersTemp.clear();
 	}
 
@@ -1241,6 +1261,16 @@ namespace bs
 
 		vkCmdBeginRenderPass(mCmdBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 		vkCmdEndRenderPass(mCmdBuffer);
+
+		// Update any layout transitions that were performed by subpass dependencies
+		for (auto& entry : mImages)
+		{
+			UINT32 imageInfoIdx = entry.second;
+			ImageInfo& imageInfo = mImageInfos[imageInfoIdx];
+
+			imageInfo.currentLayout = imageInfo.finalLayout;
+			imageInfo.requiredLayout = imageInfo.finalLayout;
+		}
 
 		mClearMask = CLEAR_NONE;
 	}
@@ -1390,8 +1420,16 @@ namespace bs
 		}
 	}
 
-	void VulkanCmdBuffer::registerResource(VulkanImage* res, VkAccessFlags accessFlags, VkImageLayout currentLayout,
-			VkImageLayout newLayout, VkImageLayout finalLayout, VulkanUseFlags flags, bool isFBAttachment)
+	void VulkanCmdBuffer::registerResource(VulkanImage* res, VkAccessFlags accessFlags, VkImageLayout finalLayout, 
+		VulkanUseFlags flags)
+	{
+		VkImageLayout layout = res->getOptimalLayout();
+
+		registerResource(res, accessFlags, layout, finalLayout, flags, false);
+	}
+
+	void VulkanCmdBuffer::registerResource(VulkanImage* res, VkAccessFlags accessFlags, VkImageLayout newLayout, 
+		VkImageLayout finalLayout, VulkanUseFlags flags, bool isFBAttachment)
 	{
 		// Note: I currently always perform pipeline barriers (layout transitions and similar), over the entire image.
 		//       In the case of render and storage images, the case is often that only a specific subresource requires
@@ -1408,10 +1446,23 @@ namespace bs
 			UINT32 imageInfoIdx = insertResult.first->second;
 			mImageInfos.push_back(ImageInfo());
 
+			// System always assumes a certain initial layout depending on image's type. If the image isn't in this layout
+			// the system will execute a transition to that layout in submit(), before anything else. This makes the whole
+			// layout transition system simpler, and ensures layout transitions can neatly happen between multiple CB's
+			// for the same resource.
+			VkImageLayout currentLayout = res->getOptimalLayout();
+
+			// If new layout is set to UNDEFINED, that's a signal that we don't need to do a layout transition
+			VkImageLayout requiredLayout;
+			if (newLayout == VK_IMAGE_LAYOUT_UNDEFINED)
+				requiredLayout = currentLayout;
+			else
+				requiredLayout = newLayout;
+
 			ImageInfo& imageInfo = mImageInfos[imageInfoIdx];
 			imageInfo.accessFlags = accessFlags;
 			imageInfo.currentLayout = currentLayout;
-			imageInfo.requiredLayout = newLayout;
+			imageInfo.requiredLayout = requiredLayout;
 			imageInfo.finalLayout = finalLayout;
 			imageInfo.range = range;
 			imageInfo.isFBAttachment = isFBAttachment;
@@ -1570,12 +1621,11 @@ namespace bs
 			}
 			else
 			{
-				layout = attachment.image->getLayout();
+				layout = VK_IMAGE_LAYOUT_UNDEFINED;
 				accessMask = 0;
 			}
 
-			registerResource(attachment.image, accessMask, attachment.image->getLayout(), layout, attachment.finalLayout, 
-				VulkanUseFlag::Write, true);
+			registerResource(attachment.image, accessMask, layout, attachment.finalLayout, VulkanUseFlag::Write, true);
 		}
 
 		if(res->hasDepthAttachment())
@@ -1593,12 +1643,11 @@ namespace bs
 			}
 			else
 			{
-				layout = attachment.image->getLayout();
+				layout = VK_IMAGE_LAYOUT_UNDEFINED;
 				accessMask = 0;
 			}
 
-			registerResource(attachment.image, accessMask, attachment.image->getLayout(), layout, attachment.finalLayout, 
-				VulkanUseFlag::Write, true);
+			registerResource(attachment.image, accessMask, layout, attachment.finalLayout, VulkanUseFlag::Write, true);
 		}
 	}
 

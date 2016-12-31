@@ -129,10 +129,9 @@ namespace bs
 		VulkanResourceManager& resManager = device->getResourceManager();
 
 		VULKAN_IMAGE_DESC imageDesc;
-		imageDesc.isDepthStencil = false;
-		imageDesc.isStorage = false;
 		imageDesc.format = colorFormat;
 		imageDesc.type = TEX_TYPE_2D;
+		imageDesc.usage = VulkanImageUsage::ColorAttachment;
 		imageDesc.layout = VK_IMAGE_LAYOUT_UNDEFINED;
 		imageDesc.numFaces = 1;
 		imageDesc.numMipLevels = 1;
@@ -176,7 +175,7 @@ namespace bs
 			assert(result == VK_SUCCESS);
 
 			imageDesc.image = depthStencilImage;
-			imageDesc.isDepthStencil = true;
+			imageDesc.usage = VulkanImageUsage::DepthAttachment;
 			imageDesc.format = depthFormat;
 			imageDesc.memory = mDevice->allocateMemory(depthStencilImage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 

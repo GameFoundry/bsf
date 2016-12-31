@@ -21,9 +21,19 @@ namespace bs
 		desc.format = VulkanUtility::getPixelFormat(props.getFormat(), props.isHardwareGammaEnabled());
 		desc.numFaces = props.getNumFaces();
 		desc.numMipLevels = props.getNumMipmaps() + 1;
-		desc.isDepthStencil = (props.getUsage() & TU_DEPTHSTENCIL) != 0;
-		desc.isStorage = (props.getUsage() & TU_LOADSTORE) != 0;
 		desc.layout = layout;
+
+		int usage = props.getUsage();
+		if ((usage & TU_RENDERTARGET) != 0)
+			desc.usage = VulkanImageUsage::ColorAttachment;
+		else if ((usage & TU_DEPTHSTENCIL) != 0)
+			desc.usage = VulkanImageUsage::DepthAttachment;
+		else if ((usage & TU_LOADSTORE) != 0)
+			desc.usage = VulkanImageUsage::Storage;
+		else if ((usage & TU_DYNAMIC) != 0)
+			desc.usage = VulkanImageUsage::SampledDynamic;
+		else
+			desc.usage = VulkanImageUsage::Sampled;
 
 		return desc;
 	}
@@ -36,7 +46,7 @@ namespace bs
 	VulkanImage::VulkanImage(VulkanResourceManager* owner, const VULKAN_IMAGE_DESC& desc, bool ownsImage)
 		: VulkanResource(owner, false), mImage(desc.image), mMemory(desc.memory), mLayout(desc.layout)
 		, mFramebufferMainView(VK_NULL_HANDLE), mOwnsImage(ownsImage), mNumFaces(desc.numFaces)
-		, mNumMipLevels(desc.numMipLevels), mIsStorage(desc.isStorage)
+		, mNumMipLevels(desc.numMipLevels), mUsage(desc.usage)
 	{
 		mImageViewCI.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 		mImageViewCI.pNext = nullptr;
@@ -67,10 +77,8 @@ namespace bs
 			break;
 		}
 
-		mIsDepthStencil = desc.isDepthStencil;
-
 		TextureSurface completeSurface(0, desc.numMipLevels, 0, desc.numFaces);
-		if (mIsDepthStencil)
+		if (mUsage == VulkanImageUsage::DepthAttachment)
 		{
 			mFramebufferMainView = createView(completeSurface, VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT);
 			mMainView = createView(completeSurface, VK_IMAGE_ASPECT_DEPTH_BIT);
@@ -126,7 +134,7 @@ namespace bs
 
 	VkImageView VulkanImage::getView(bool framebuffer) const
 	{
-		if(framebuffer && mIsDepthStencil)
+		if(framebuffer && mUsage == VulkanImageUsage::DepthAttachment)
 			return mFramebufferMainView;
 
 		return mMainView;
@@ -141,7 +149,7 @@ namespace bs
 				surface.arraySlice == entry.surface.arraySlice &&
 				surface.numArraySlices == entry.surface.numArraySlices)
 			{
-				if(!mIsDepthStencil)
+				if(mUsage != VulkanImageUsage::DepthAttachment)
 					return entry.view;
 				else
 				{
@@ -155,7 +163,7 @@ namespace bs
 		info.surface = surface;
 		info.framebuffer = framebuffer;
 
-		if (mIsDepthStencil)
+		if (mUsage == VulkanImageUsage::DepthAttachment)
 		{
 			if(framebuffer)
 				info.view = createView(surface, VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT);
@@ -207,6 +215,22 @@ namespace bs
 		return view;
 	}
 
+	VkImageLayout VulkanImage::getOptimalLayout() const
+	{
+		switch (mUsage)
+		{
+		case VulkanImageUsage::ColorAttachment:
+			return VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		case VulkanImageUsage::DepthAttachment:
+			return VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+		case VulkanImageUsage::Storage:
+		case VulkanImageUsage::SampledDynamic:
+			return VK_IMAGE_LAYOUT_GENERAL;
+		default:
+			return VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		}
+	}
+
 	VkImageSubresourceRange VulkanImage::getRange() const
 	{
 		VkImageSubresourceRange range;
@@ -215,7 +239,7 @@ namespace bs
 		range.baseMipLevel = 0;
 		range.levelCount = mNumMipLevels;
 
-		if (mIsDepthStencil)
+		if (mUsage == VulkanImageUsage::DepthAttachment)
 			range.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
 		else
 			range.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
@@ -296,7 +320,7 @@ namespace bs
 		switch (layout)
 		{
 		case VK_IMAGE_LAYOUT_GENERAL: // Only used for render targets that are also read by shaders, or for storage textures
-			if (mIsStorage)
+			if (mUsage == VulkanImageUsage::Storage)
 				accessFlags = VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT;
 			else
 				accessFlags = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_SHADER_READ_BIT;
@@ -596,21 +620,6 @@ namespace bs
 		bs_stack_free(imageRegions);
 	}
 
-	VkImageLayout VulkanTextureCore::getOptimalLayout() const
-	{
-		int usage = getProperties().getUsage();
-		if ((usage & TU_RENDERTARGET) != 0)
-			return VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		else if ((usage & TU_DEPTHSTENCIL) != 0)
-			return VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-		else if ((usage & TU_LOADSTORE) != 0)
-			return VK_IMAGE_LAYOUT_GENERAL;
-		else if ((usage & TU_DYNAMIC) != 0)
-			return VK_IMAGE_LAYOUT_GENERAL;
-		else
-			return VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-	}
-
 	void VulkanTextureCore::copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel,
 									 const SPtr<TextureCore>& target, UINT32 queueIdx)
 	{
@@ -731,14 +740,13 @@ namespace bs
 				{
 					VkImageLayout oldDstLayout = dstLayout;
 					if (oldDstLayout == VK_IMAGE_LAYOUT_UNDEFINED || oldDstLayout == VK_IMAGE_LAYOUT_PREINITIALIZED)
-						oldDstLayout = getOptimalLayout();
+						oldDstLayout = dstImage->getOptimalLayout();
 
-					dstLayout = getOptimalLayout();
+					dstLayout = newImage->getOptimalLayout();
 					copyImage(transferCB, dstImage, newImage, oldDstLayout, dstLayout);
 
 					VkAccessFlags accessMask = dstImage->getAccessFlags(oldDstLayout);
-					transferCB->getCB()->registerResource(dstImage, accessMask, oldDstLayout, oldDstLayout, oldDstLayout,
-						VulkanUseFlag::Read);
+					transferCB->getCB()->registerResource(dstImage, accessMask, oldDstLayout, VulkanUseFlag::Read);
 				}
 
 				dstImage->destroy();
@@ -769,24 +777,22 @@ namespace bs
 
 			// Transfer back to original layouts
 			if (srcLayout == VK_IMAGE_LAYOUT_UNDEFINED || srcLayout == VK_IMAGE_LAYOUT_PREINITIALIZED)
-				srcLayout = getOptimalLayout();
+				srcLayout = srcImage->getOptimalLayout();
 
 			srcAccessMask = srcImage->getAccessFlags(srcLayout);
 			transferCB->setLayout(srcImage->getHandle(), VK_ACCESS_TRANSFER_READ_BIT, srcAccessMask,
 									transferSrcLayout, srcLayout, srcRange);
 
 			if (dstLayout == VK_IMAGE_LAYOUT_UNDEFINED || dstLayout == VK_IMAGE_LAYOUT_PREINITIALIZED)
-				dstLayout = other->getOptimalLayout();
+				dstLayout = dstImage->getOptimalLayout();
 
 			dstAccessMask = dstImage->getAccessFlags(dstLayout);
 			transferCB->setLayout(dstImage->getHandle(), VK_ACCESS_TRANSFER_WRITE_BIT, dstAccessMask,
 									transferDstLayout, dstLayout, dstRange);
 
 			// Notify the command buffer that these resources are being used on it
-			transferCB->getCB()->registerResource(srcImage, srcAccessMask, srcLayout, srcLayout, srcLayout, 
-				VulkanUseFlag::Read);
-			transferCB->getCB()->registerResource(dstImage, dstAccessMask, dstLayout, dstLayout, dstLayout, 
-				VulkanUseFlag::Write);
+			transferCB->getCB()->registerResource(srcImage, srcAccessMask, srcLayout, VulkanUseFlag::Read);
+			transferCB->getCB()->registerResource(dstImage, dstAccessMask, dstLayout, VulkanUseFlag::Write);
 
 			// Need to wait if subresource we're reading from is being written, or if the subresource we're writing to is
 			// being accessed in any way
@@ -1031,14 +1037,13 @@ namespace bs
 			VkImageLayout dstLayout = image->getLayout();
 			if (dstLayout == VK_IMAGE_LAYOUT_UNDEFINED || dstLayout == VK_IMAGE_LAYOUT_PREINITIALIZED)
 			{
-				dstLayout = getOptimalLayout();
+				dstLayout = image->getOptimalLayout();
 				currentAccessMask = image->getAccessFlags(dstLayout);
 			}
 
 			transferCB->setLayout(image->getHandle(), VK_ACCESS_TRANSFER_READ_BIT, currentAccessMask,
 								  VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, dstLayout, range);
-			transferCB->getCB()->registerResource(image, currentAccessMask, dstLayout, dstLayout, dstLayout,
-				VulkanUseFlag::Read);
+			transferCB->getCB()->registerResource(image, currentAccessMask, dstLayout, VulkanUseFlag::Read);
 
 			// Ensure data written to the staging buffer is visible
 			VkAccessFlags stagingAccessFlags;
@@ -1150,14 +1155,13 @@ namespace bs
 						{
 							VkImageLayout oldImgLayout = image->getLayout();
 							if (oldImgLayout == VK_IMAGE_LAYOUT_UNDEFINED || oldImgLayout == VK_IMAGE_LAYOUT_PREINITIALIZED)
-								oldImgLayout = getOptimalLayout();
+								oldImgLayout = image->getOptimalLayout();
 
-							curLayout = getOptimalLayout();
+							curLayout = newImage->getOptimalLayout();
 							copyImage(transferCB, image, newImage, oldImgLayout, curLayout);
 
 							VkAccessFlags accessMask = image->getAccessFlags(oldImgLayout);
-							transferCB->getCB()->registerResource(image, accessMask, oldImgLayout, oldImgLayout, 
-								oldImgLayout, VulkanUseFlag::Read);
+							transferCB->getCB()->registerResource(image, accessMask, oldImgLayout, VulkanUseFlag::Read);
 						}
 
 						image->destroy();
@@ -1204,7 +1208,7 @@ namespace bs
 				// Transfer back to original  (or optimal if initial layout was undefined/preinitialized)
 				VkImageLayout dstLayout = curLayout;
 				if(dstLayout == VK_IMAGE_LAYOUT_UNDEFINED || dstLayout == VK_IMAGE_LAYOUT_PREINITIALIZED)
-					dstLayout = getOptimalLayout();
+					dstLayout = image->getOptimalLayout();
 
 				currentAccessMask = image->getAccessFlags(dstLayout);
 				transferCB->setLayout(image->getHandle(), VK_ACCESS_TRANSFER_WRITE_BIT, currentAccessMask,
@@ -1212,8 +1216,7 @@ namespace bs
 
 				// Notify the command buffer that these resources are being used on it
 				transferCB->getCB()->registerResource(mStagingBuffer, VK_ACCESS_TRANSFER_READ_BIT, VulkanUseFlag::Read);
-				transferCB->getCB()->registerResource(image, currentAccessMask, dstLayout, dstLayout, dstLayout,
-					VulkanUseFlag::Write);
+				transferCB->getCB()->registerResource(image, currentAccessMask, dstLayout, VulkanUseFlag::Write);
 
 				// We don't actually flush the transfer buffer here since it's an expensive operation, but it's instead
 				// done automatically before next "normal" command buffer submission.
