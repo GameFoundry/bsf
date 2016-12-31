@@ -354,14 +354,13 @@ namespace bs
 			UINT32 imageInfoIdx = entry.second;
 			ImageInfo& imageInfo = mImageInfos[imageInfoIdx];
 
-			imageInfo.currentLayout = imageInfo.finalLayout;
-			imageInfo.requiredLayout = imageInfo.finalLayout;
-
 			imageInfo.isFBAttachment = false;
 			imageInfo.isShaderInput = false;
 
 			imageInfo.accessFlags = 0;
 		}
+
+		updateFinalLayouts();
 
 		mState = State::Recording;
 	}
@@ -443,7 +442,7 @@ namespace bs
 			}
 		}
 
-		// For images issue queue transitions, as above. Also issue layout transitions to their optimal layouts.
+		// For images issue queue transitions, as above. Also issue layout transitions to their inital layouts.
 		for (auto& entry : mImages)
 		{
 			VulkanImage* resource = static_cast<VulkanImage*>(entry.first);
@@ -453,19 +452,22 @@ namespace bs
 			bool queueMismatch = resource->isExclusive() && currentQueueFamily != -1 && currentQueueFamily != mQueueFamily;
 
 			VkImageLayout currentLayout = resource->getLayout();
-			VkImageLayout optimalLayout = resource->getOptimalLayout();
-			if (queueMismatch || currentLayout != optimalLayout)
+			VkImageLayout initialLayout = imageInfo.initialLayout;
+			if (queueMismatch || (currentLayout != initialLayout && initialLayout != VK_IMAGE_LAYOUT_UNDEFINED))
 			{
 				Vector<VkImageMemoryBarrier>& barriers = mTransitionInfoTemp[currentQueueFamily].imageBarriers;
+
+				if (initialLayout == VK_IMAGE_LAYOUT_UNDEFINED)
+					initialLayout = currentLayout;
 
 				barriers.push_back(VkImageMemoryBarrier());
 				VkImageMemoryBarrier& barrier = barriers.back();
 				barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
 				barrier.pNext = nullptr;
 				barrier.srcAccessMask = resource->getAccessFlags(currentLayout);
-				barrier.dstAccessMask = resource->getAccessFlags(optimalLayout);
+				barrier.dstAccessMask = imageInfo.accessFlags;
 				barrier.oldLayout = currentLayout;
-				barrier.newLayout = optimalLayout;
+				barrier.newLayout = initialLayout;
 				barrier.image = resource->getHandle();
 				barrier.subresourceRange = imageInfo.range;
 				barrier.srcQueueFamilyIndex = currentQueueFamily;
@@ -1217,6 +1219,7 @@ namespace bs
 
 			imageInfo.currentLayout = imageInfo.requiredLayout;
 			imageInfo.accessFlags = 0;
+			imageInfo.hasTransitioned = true;
 		};
 
 		// Note: These layout transitions will contain transitions for offscreen framebuffer attachments (while they 
@@ -1241,6 +1244,37 @@ namespace bs
 		mLayoutTransitionBarriersTemp.clear();
 	}
 
+	void VulkanCmdBuffer::updateFinalLayouts()
+	{
+		if (mFramebuffer == nullptr)
+			return;
+
+		UINT32 numColorAttachments = mFramebuffer->getNumColorAttachments();
+		for (UINT32 i = 0; i < numColorAttachments; i++)
+		{
+			const VulkanFramebufferAttachment& attachment = mFramebuffer->getColorAttachment(i);
+
+			UINT32 imageInfoIdx = mImages[attachment.image];
+			ImageInfo& imageInfo = mImageInfos[imageInfoIdx];
+
+			imageInfo.currentLayout = imageInfo.finalLayout;
+			imageInfo.requiredLayout = imageInfo.finalLayout;
+			imageInfo.hasTransitioned = true;
+		}
+
+		if (mFramebuffer->hasDepthAttachment())
+		{
+			const VulkanFramebufferAttachment& attachment = mFramebuffer->getDepthStencilAttachment();
+
+			UINT32 imageInfoIdx = mImages[attachment.image];
+			ImageInfo& imageInfo = mImageInfos[imageInfoIdx];
+
+			imageInfo.currentLayout = imageInfo.finalLayout;
+			imageInfo.requiredLayout = imageInfo.finalLayout;
+			imageInfo.hasTransitioned = true;
+		}
+	}
+
 	void VulkanCmdBuffer::executeClearPass()
 	{
 		assert(mState == State::Recording);
@@ -1262,15 +1296,7 @@ namespace bs
 		vkCmdBeginRenderPass(mCmdBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
 		vkCmdEndRenderPass(mCmdBuffer);
 
-		// Update any layout transitions that were performed by subpass dependencies
-		for (auto& entry : mImages)
-		{
-			UINT32 imageInfoIdx = entry.second;
-			ImageInfo& imageInfo = mImageInfos[imageInfoIdx];
-
-			imageInfo.currentLayout = imageInfo.finalLayout;
-			imageInfo.requiredLayout = imageInfo.finalLayout;
-		}
+		updateFinalLayouts();
 
 		mClearMask = CLEAR_NONE;
 	}
@@ -1425,7 +1451,7 @@ namespace bs
 		VkImageLayout layout = res->getOptimalLayout();
 		VkAccessFlags accessFlags = res->getAccessFlags(layout);
 
-		registerResource(res, accessFlags, layout, layout, flags, false);
+		registerResource(res, accessFlags, VK_IMAGE_LAYOUT_UNDEFINED, layout, flags, false);
 	}
 
 	void VulkanCmdBuffer::registerResource(VulkanImage* res, VkAccessFlags accessFlags, VkImageLayout newLayout, 
@@ -1446,35 +1472,21 @@ namespace bs
 			UINT32 imageInfoIdx = insertResult.first->second;
 			mImageInfos.push_back(ImageInfo());
 
-			// System always assumes a certain initial layout depending on image's type. If the image isn't in this layout
-			// the system will execute a transition to that layout in submit(), before anything else. This makes the whole
-			// layout transition system simpler, and ensures layout transitions can neatly happen between multiple CB's
-			// for the same resource.
-			VkImageLayout currentLayout = res->getOptimalLayout();
-
-			// If new layout is set to UNDEFINED, that's a signal that we don't need to do a layout transition
-			VkImageLayout requiredLayout;
-			if (newLayout == VK_IMAGE_LAYOUT_UNDEFINED)
-				requiredLayout = currentLayout;
-			else
-				requiredLayout = newLayout;
-
 			ImageInfo& imageInfo = mImageInfos[imageInfoIdx];
 			imageInfo.accessFlags = accessFlags;
-			imageInfo.currentLayout = currentLayout;
-			imageInfo.requiredLayout = requiredLayout;
+			imageInfo.currentLayout = newLayout;
+			imageInfo.initialLayout = newLayout;
+			imageInfo.requiredLayout = newLayout;
 			imageInfo.finalLayout = finalLayout;
 			imageInfo.range = range;
 			imageInfo.isFBAttachment = isFBAttachment;
 			imageInfo.isShaderInput = !isFBAttachment;
+			imageInfo.hasTransitioned = false;
 
 			imageInfo.useHandle.used = false;
 			imageInfo.useHandle.flags = flags;
 
 			res->notifyBound();
-
-			if (imageInfo.currentLayout != imageInfo.requiredLayout)
-				mQueuedLayoutTransitions[res] = imageInfoIdx;
 		}
 		else // Existing element
 		{
@@ -1521,8 +1533,19 @@ namespace bs
 					imageInfo.finalLayout = finalLayout;
 			}
 
-			if (imageInfo.currentLayout != imageInfo.requiredLayout)
-				mQueuedLayoutTransitions[res] = imageInfoIdx;
+			// If we haven't done a layout transition yet, we can just overwrite the previously written values, and the
+			// transition will be handled as the first thing in submit(), otherwise we queue a non-initial transition
+			// below.
+			if (!imageInfo.hasTransitioned)
+			{
+				imageInfo.initialLayout = imageInfo.requiredLayout;
+				imageInfo.currentLayout = imageInfo.requiredLayout;
+			}
+			else
+			{
+				if (imageInfo.currentLayout != imageInfo.requiredLayout)
+					mQueuedLayoutTransitions[res] = imageInfoIdx;
+			}
 
 			// If a FB attachment was just bound as a shader input, we might need to restart the render pass with a FB
 			// attachment that supports read-only attachments using the GENERAL layout
@@ -1687,6 +1710,9 @@ namespace bs
 
 		if (mBuffer->isInRenderPass())
 			mBuffer->endRenderPass();
+
+		// Execute any queued layout transitions that weren't already handled by the render pass
+		mBuffer->executeLayoutTransitions();
 
 		if (mBuffer->isRecording())
 			mBuffer->end();

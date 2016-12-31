@@ -194,13 +194,25 @@ namespace bs
 		 * Lets the command buffer know that the provided image resource has been queued on it, and will be used by the
 		 * device when the command buffer is submitted. Executes a layout transition to @p newLayout (if needed), and
 		 * updates the externally visible image layout field to @p finalLayout (once submitted).
+		 * 
+		 * @param[in]	res						Image to register with the command buffer.
+		 * @param[in]	accessFlags				Destination access flags used for the provided layout transition.
+		 * @param[in]	newLayout				Layout the image needs to be transitioned in before use. Set to undefined
+		 *										layout if no transition is required.
+		 * @param[in]	finalLayout				Determines what value the externally visible image layout will be set after
+		 *										submit() is called. Normally this will be same as @p newLayout, but can be
+		 *										different if some form of automatic layout transitions are happening.
+		 * @param[in]	flags					Flags that determine how will be command buffer be using the buffer.
+		 * @param[in]	isFBAttachment			Determines if the image is being used as a framebuffer attachment (if true),
+		 *										or just as regular shader input (if false).
 		 */
 		void registerResource(VulkanImage* res, VkAccessFlags accessFlags, VkImageLayout newLayout, 
 			VkImageLayout finalLayout, VulkanUseFlags flags, bool isFBAttachment = false);
 
 		/** 
 		 * Lets the command buffer know that the provided image resource has been queued on it, and will be used by the
-		 * device when the command buffer is submitted. 
+		 * device when the command buffer is submitted. Performs no layout transitions on the image, they must be performed
+		 * by the caller, or not required at all.
 		 */
 		void registerResource(VulkanImage* res, VulkanUseFlags flags);
 
@@ -313,12 +325,14 @@ namespace bs
 			ResourceUseHandle useHandle;
 
 			// Only relevant for layout transitions
+			VkImageLayout initialLayout;
 			VkImageLayout currentLayout;
 			VkImageLayout requiredLayout;
 			VkImageLayout finalLayout;
 
 			bool isFBAttachment : 1;
 			bool isShaderInput : 1;
+			bool hasTransitioned : 1;
 		};
 
 		/** Checks if all the prerequisites for rendering have been made (e.g. render target and pipeline state are set. */
@@ -349,6 +363,12 @@ namespace bs
 
 		/** Executes any queued layout transitions by issuing a pipeline barrier. */
 		void executeLayoutTransitions();
+
+		/** 
+		 * Updates final layouts for images used by the current framebuffer, reflecting layout changes performed by render
+		 * pass' automatic layout transitions. 
+		 */
+		void updateFinalLayouts();
 
 		UINT32 mId;
 		UINT32 mQueueFamily;
