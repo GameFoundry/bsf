@@ -76,6 +76,10 @@ namespace bs
 		static void internal_SetCPUCached(ScriptTextureImportOptions* thisPtr, bool value);
 		static bool internal_GetIsSRGB(ScriptTextureImportOptions* thisPtr);
 		static void internal_SetIsSRGB(ScriptTextureImportOptions* thisPtr, bool value);
+		static bool internal_GetIsCubemap(ScriptTextureImportOptions* thisPtr);
+		static void internal_SetIsCubemap(ScriptTextureImportOptions* thisPtr, bool value);
+		static CubemapSourceType internal_GetCubemapSourceType(ScriptTextureImportOptions* thisPtr);
+		static void internal_SetCubemapSourceType(ScriptTextureImportOptions* thisPtr, CubemapSourceType value);
 	};
 
 	/**	Interop class between C++ & CLR for MeshImportOptions. */

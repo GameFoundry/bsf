@@ -81,6 +81,10 @@ namespace bs
 		metaData.scriptClass->addInternalCall("Internal_SetCPUCached", &ScriptTextureImportOptions::internal_SetCPUCached);
 		metaData.scriptClass->addInternalCall("Internal_GetIsSRGB", &ScriptTextureImportOptions::internal_GetIsSRGB);
 		metaData.scriptClass->addInternalCall("Internal_SetIsSRGB", &ScriptTextureImportOptions::internal_SetIsSRGB);
+		metaData.scriptClass->addInternalCall("Internal_GetIsCubemap", &ScriptTextureImportOptions::internal_GetIsCubemap);
+		metaData.scriptClass->addInternalCall("Internal_SetIsCubemap", &ScriptTextureImportOptions::internal_SetIsCubemap);
+		metaData.scriptClass->addInternalCall("Internal_GetCubemapSourceType", &ScriptTextureImportOptions::internal_GetCubemapSourceType);
+		metaData.scriptClass->addInternalCall("Internal_SetCubemapSourceType", &ScriptTextureImportOptions::internal_SetCubemapSourceType);
 	}
 
 	SPtr<TextureImportOptions> ScriptTextureImportOptions::getTexImportOptions()
@@ -156,6 +160,28 @@ namespace bs
 	{
 		thisPtr->getTexImportOptions()->setSRGB(value);
 	}
+
+
+	bool ScriptTextureImportOptions::internal_GetIsCubemap(ScriptTextureImportOptions* thisPtr)
+	{
+		return thisPtr->getTexImportOptions()->getIsCubemap();
+	}
+
+	void ScriptTextureImportOptions::internal_SetIsCubemap(ScriptTextureImportOptions* thisPtr, bool value)
+	{
+		thisPtr->getTexImportOptions()->setIsCubemap(value);
+	}
+
+	CubemapSourceType ScriptTextureImportOptions::internal_GetCubemapSourceType(ScriptTextureImportOptions* thisPtr)
+	{
+		return thisPtr->getTexImportOptions()->getCubemapSourceType();
+	}
+
+	void ScriptTextureImportOptions::internal_SetCubemapSourceType(ScriptTextureImportOptions* thisPtr, CubemapSourceType value)
+	{
+		thisPtr->getTexImportOptions()->setCubemapSourceType(value);
+	}
+
 
 	ScriptMeshImportOptions::ScriptMeshImportOptions(MonoObject* instance)
 		:ScriptObject(instance)

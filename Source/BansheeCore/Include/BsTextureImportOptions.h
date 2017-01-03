@@ -60,6 +60,27 @@ namespace bs
 		 */
 		bool getSRGB() const { return mSRGB; }
 
+		/** 
+		 * Determines should the texture be imported as a cubemap. See setCubemapSource to choose how will the source
+		 * texture be converted to a cubemap.
+		 */
+		void setIsCubemap(bool cubemap) { mCubemap = cubemap; }
+
+		/** Checks if the texture will be imported as a cubemap. */
+		bool getIsCubemap() const { return mCubemap; }
+
+		/** 
+		 * Sets a value that determines how should the source texture be interpreted when generating a cubemap. Only
+		 * relevant when setIsCubemap() is set to true.
+		 */
+		void setCubemapSourceType(CubemapSourceType type) { mCubemapSourceType = type; }
+
+		/** 
+		 * Returns a value that determines how should the source texture be interpreted when generating a cubemap. Only
+		 * relevant when setIsCubemap() is set to true.
+		 */
+		CubemapSourceType getCubemapSourceType() const { return mCubemapSourceType; }
+
 		/** Creates a new import options object that allows you to customize how are textures imported. */
 		static SPtr<TextureImportOptions> create();
 
@@ -77,6 +98,8 @@ namespace bs
 		UINT32 mMaxMip;
 		bool mCPUCached;
 		bool mSRGB;
+		bool mCubemap;
+		CubemapSourceType mCubemapSourceType;
 	};
 
 	/** @} */

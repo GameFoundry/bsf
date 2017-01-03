@@ -10,8 +10,11 @@
 #include "BsFileSystem.h"
 #include "BsCoreApplication.h"
 #include "BsCoreThread.h"
-
+#include "BsMath.h"
+#include "BsVector2.h"
+#include "BsVector3.h"
 #include "FreeImage.h"
+#include "BsBitwise.h"
 
 using namespace std::placeholders;
 
@@ -135,18 +138,39 @@ namespace bs
 		if(imgData == nullptr || imgData->getData() == nullptr)
 			return nullptr;
 
-		UINT32 numMips = 0;
-		if (textureImportOptions->getGenerateMipmaps())
+		Vector<SPtr<PixelData>> faceData;
+
+		TextureType texType;
+		if(textureImportOptions->getIsCubemap())
 		{
-			UINT32 maxPossibleMip = PixelUtil::getMaxMipmaps(imgData->getWidth(), imgData->getHeight(), imgData->getDepth(), imgData->getFormat());
+			texType = TEX_TYPE_CUBE_MAP;
+
+			std::array<SPtr<PixelData>, 6> cubemapFaces;
+			if (generateCubemap(imgData, textureImportOptions->getCubemapSourceType(), cubemapFaces))
+				faceData.insert(faceData.begin(), cubemapFaces.begin(), cubemapFaces.end());
+			else // Fall-back to 2D texture
+			{
+				texType = TEX_TYPE_2D;
+				faceData.push_back(imgData);
+			}
+		}
+		else
+		{
+			texType = TEX_TYPE_2D;
+			faceData.push_back(imgData);
+		}
+
+		UINT32 numMips = 0;
+		if (textureImportOptions->getGenerateMipmaps() && Bitwise::isPow2(faceData[0]->getWidth()) && 
+			Bitwise::isPow2(faceData[0]->getHeight()))
+		{
+			UINT32 maxPossibleMip = PixelUtil::getMaxMipmaps(faceData[0]->getWidth(), faceData[0]->getHeight(), 
+				faceData[0]->getDepth(), faceData[0]->getFormat());
+
 			if (textureImportOptions->getMaxMip() == 0)
-			{
 				numMips = maxPossibleMip;
-			}
 			else
-			{
 				numMips = std::min(maxPossibleMip, textureImportOptions->getMaxMip());
-			}
 		}
 
 		int usage = TU_DEFAULT;
@@ -156,9 +180,9 @@ namespace bs
 		bool sRGB = textureImportOptions->getSRGB();
 
 		TEXTURE_DESC texDesc;
-		texDesc.type = TEX_TYPE_2D;
-		texDesc.width = imgData->getWidth();
-		texDesc.height = imgData->getHeight();
+		texDesc.type = texType;
+		texDesc.width = faceData[0]->getWidth();
+		texDesc.height = faceData[0]->getHeight();
 		texDesc.numMips = numMips;
 		texDesc.format = textureImportOptions->getFormat();
 		texDesc.usage = usage;
@@ -166,18 +190,22 @@ namespace bs
 
 		SPtr<Texture> newTexture = Texture::_createPtr(texDesc);
 
-		Vector<SPtr<PixelData>> mipLevels;
-		if (numMips > 0)
-			mipLevels = PixelUtil::genMipmaps(*imgData, MipMapGenOptions());
-		else
-			mipLevels.insert(mipLevels.begin(), imgData);
-
-		for (UINT32 mip = 0; mip < (UINT32)mipLevels.size(); ++mip)
+		UINT32 numFaces = (UINT32)faceData.size();
+		for (UINT32 i = 0; i < numFaces; i++)
 		{
-			SPtr<PixelData> dst = newTexture->getProperties().allocBuffer(0, mip);
+			Vector<SPtr<PixelData>> mipLevels;
+			if (numMips > 0)
+				mipLevels = PixelUtil::genMipmaps(*faceData[i], MipMapGenOptions());
+			else
+				mipLevels.push_back(faceData[i]);
 
-			PixelUtil::bulkPixelConversion(*mipLevels[mip], *dst);
-			newTexture->writeData(dst, 0, mip);
+			for (UINT32 mip = 0; mip < (UINT32)mipLevels.size(); ++mip)
+			{
+				SPtr<PixelData> dst = newTexture->getProperties().allocBuffer(0, mip);
+
+				PixelUtil::bulkPixelConversion(*mipLevels[mip], *dst);
+				newTexture->writeData(dst, i, mip);
+			}
 		}
 
 		fileData->close();
@@ -188,7 +216,7 @@ namespace bs
 		return newTexture;
 	}
 
-	SPtr<PixelData> FreeImgImporter::importRawImage(SPtr<DataStream> fileData)
+	SPtr<PixelData> FreeImgImporter::importRawImage(const SPtr<DataStream>& fileData)
 	{
 		if(fileData->size() > std::numeric_limits<UINT32>::max())
 		{
@@ -361,5 +389,287 @@ namespace bs
 		FreeImage_CloseMemory(fiMem);
 
 		return texData;
+	}
+
+	/** 
+	 * Reads the source texture as a horizontal or vertical list of 6 cubemap faces. 
+	 * 
+	 * @param[in]	source		Source texture to read.
+	 * @param[out]	output		Output array that will contain individual cubemap faces.
+	 * @param[in]	faceSize	Size of a single face, in pixels. Both width & height must match.
+	 * @param[in]	vertical	True if the faces are laid out vertically, false if horizontally.
+	 */
+	void readCubemapList(const SPtr<PixelData>& source, std::array<SPtr<PixelData>, 6>& output, UINT32 faceSize, bool vertical)
+	{
+		Vector2I faceStart;
+		for(UINT32 i = 0; i < 6; i++)
+		{
+			output[i] = PixelData::create(faceSize, faceSize, 1, source->getFormat());
+
+			if (vertical)
+				faceStart.y += faceSize;
+			else
+				faceStart.x += faceSize;
+
+			PixelVolume volume(faceStart.x, faceStart.y, faceStart.x + faceSize, faceStart.y + faceSize);
+			PixelData subVolumeData = source->getSubVolume(volume);
+
+			assert(output[i]->getSize() == subVolumeData.getSize());
+			memcpy(output[i]->getData(), subVolumeData.getData(), subVolumeData.getSize());
+		}
+	}
+
+	/** 
+	 * Reads the source texture as a horizontal or vertical "cross" of 6 cubemap faces. 
+	 * 
+	 * Vertical layout:
+	 *    +Y
+	 * -X -Z +X
+	 *    -Y
+	 *    +Z
+	 * 
+	 * Horizontal layout:
+	 *    +Y
+	 * -X -Z +X +Z
+	 *    -Y
+	 * 
+	 * @param[in]	source		Source texture to read.
+	 * @param[out]	output		Output array that will contain individual cubemap faces.
+	 * @param[in]	faceSize	Size of a single face, in pixels. Both width & height must match.
+	 * @param[in]	vertical	True if the faces are laid out vertically, false if horizontally.
+	 */
+	void readCubemapCross(const SPtr<PixelData>& source, std::array<SPtr<PixelData>, 6>& output, UINT32 faceSize,
+		bool vertical)
+	{
+		const static UINT32 vertFaceIndices[] = { 5, 3, 1, 7, 10, 4 };
+		const static UINT32 horzFaceIndices[] = { 6, 4, 1, 9, 7, 5 };
+
+		const UINT32* faceIndices = vertical ? vertFaceIndices : horzFaceIndices;
+		UINT32 numFacesInRow = vertical ? 3 : 4;
+
+		for (UINT32 i = 0; i < 6; i++)
+		{
+			output[i] = PixelData::create(faceSize, faceSize, 1, source->getFormat());
+
+			UINT32 faceX = (faceIndices[i] % numFacesInRow) * faceSize;
+			UINT32 faceY = (faceIndices[i] / numFacesInRow) * faceSize;
+
+			PixelVolume volume(faceX, faceY, faceX + faceSize, faceY + faceSize);
+			PixelData subVolumeData = source->getSubVolume(volume);
+
+			assert(output[i]->getSize() == subVolumeData.getSize());
+			memcpy(output[i]->getData(), subVolumeData.getData(), subVolumeData.getSize());
+		}
+	}
+
+	/** Method that maps a direction to a point on a plane in range [0, 1] using spherical mapping. */
+	Vector2 mapCubemapDirToSpherical(const Vector3& dir)
+	{
+		Vector3 nrmDir = Vector3::normalize(dir);
+
+		float u = acos(Math::abs(nrmDir.z)) / Math::PI;
+		if (nrmDir.x > 0.0f)
+			u = 1.0f - u;
+
+		float v = 1.0f - acos(nrmDir.y) / Math::PI;
+
+		return Vector2(u, v);
+	}
+
+	/** Method that maps a direction to a point on a plane in range [0, 1] using cylindrical mapping. */
+	Vector2 mapCubemapDirToCylindrical(const Vector3& dir)
+	{
+		Vector3 nrmDir = Vector3::normalize(dir);
+
+		float u = 0.75f - atan2(nrmDir.z, nrmDir.x) / Math::HALF_PI;
+		if (u > 1.0f)
+			u -= 1.0f;
+
+		float v = 1.0f - acos(nrmDir.y) / Math::PI;
+
+		return Vector2(u, v);
+	}
+
+	/** Resizes the provided cubemap faces and outputs a new set of resized faces. */
+	void downsampleCubemap(const std::array<SPtr<PixelData>, 6>& input, std::array<SPtr<PixelData>, 6>& output, UINT32 size)
+	{
+		for(UINT32 i = 0; i < 6; i++)
+		{
+			output[i] = PixelData::create(size, size, 1, input[i]->getFormat());
+			PixelUtil::scale(*input[i], *output[i]);
+		}
+	}
+
+	/** 
+	 * Reads the source texture and remaps its data into six faces of a cubemap.
+	 * 
+	 * @param[in]	source		Source texture to remap.
+	 * @param[out]	output		Remapped faces of the cubemap.
+	 * @param[in]	faceSize	Width/height of each individual face, in pixels.
+	 * @param[in]	remap		Function to use for remapping the cubemap direction to UV.
+	 */
+	void readCubemapUVRemap(const SPtr<PixelData>& source, std::array<SPtr<PixelData>, 6>& output, UINT32 faceSize, 
+		const std::function<Vector2(Vector3)>& remap)
+	{
+		struct RemapInfo
+		{
+			int idx[3];
+			Vector3 sign;
+		};
+
+		// Mapping from default (X, Y, 1.0f) plane to relevant cube face. Also flipping Y so it corresponds to how pixel
+		// coordinates are mapped.
+		static const RemapInfo remapLookup[] = 
+		{
+			{ 2, 1, 0, {  1.0f, -1.0f,  1.0f }}, // X+
+			{ 2, 1, 0, { -1.0f, -1.0f, -1.0f }}, // X-
+			{ 0, 2, 1, { -1.0f,  1.0f, -1.0f }}, // Y+
+			{ 0, 2, 1, { -1.0f, -1.0f,  1.0f }}, // Y-
+			{ 0, 1, 2, {  1.0f, -1.0f, -1.0f }}, // Z+
+			{ 0, 1, 2, { -1.0f, -1.0f,  1.0f }}  // Z-
+		};
+
+		float invSize = 1.0f / faceSize;
+		for (UINT32 faceIdx = 0; faceIdx < 6; faceIdx++)
+		{
+			output[faceIdx] = PixelData::create(faceSize, faceSize, 1, source->getFormat());
+
+			const RemapInfo& remapInfo = remapLookup[faceIdx];
+			for (UINT32 y = 0; y < faceSize; y++)
+			{
+				for (UINT32 x = 0; x < faceSize; x++)
+				{
+					// Map from pixel coordinates to [-1, 1] range.
+					Vector2 sourceCoord = (Vector2((float)x, (float)y) * invSize) * 2.0f - Vector2(1.0f, 1.0f);
+					Vector3 direction = Vector3(sourceCoord.x, sourceCoord.y, 1.0f);
+
+					// Rotate towards current face
+					Vector3 rotatedDir;
+					rotatedDir[remapInfo.idx[0]] = direction.x;
+					rotatedDir[remapInfo.idx[1]] = direction.y;
+					rotatedDir[remapInfo.idx[2]] = direction.z;
+
+					rotatedDir *= remapInfo.sign;
+
+					// Find location in the source to sample from
+					Vector2 sourceUV = remap(rotatedDir);
+					Color color = source->sampleColorAt(sourceUV);
+
+					// Write the sampled color
+					output[faceIdx]->setColorAt(color, x, y);
+				}
+			}
+		}
+	}
+
+	bool FreeImgImporter::generateCubemap(const SPtr<PixelData>& source, CubemapSourceType sourceType,
+						 std::array<SPtr<PixelData>, 6>& output)
+	{
+		Vector2I faceSize;
+		bool cross = false;
+		bool vertical = false;
+
+		switch(sourceType)
+		{
+		case CubemapSourceType::Faces:
+			{
+				float aspect = source->getWidth() / (float)source->getHeight();
+				
+				if(Math::approxEquals(aspect, 6.0f)) // Horizontal list
+				{
+					faceSize.x = source->getWidth() / 6;
+					faceSize.y = source->getHeight();
+				}
+				else if(Math::approxEquals(aspect, 1.0f / 6.0f)) // Vertical list
+				{
+					faceSize.x = source->getWidth();
+					faceSize.y = source->getHeight() / 6;
+					vertical = true;
+				}
+				else if(Math::approxEquals(aspect, 4.0f / 3.0f)) // Horizontal cross
+				{
+					faceSize.x = source->getWidth() / 4;
+					faceSize.y = source->getHeight() / 3;
+					cross = true;
+				}
+				else if(Math::approxEquals(aspect, 3.0f / 4.0f)) // Vertical cross
+				{
+					faceSize.x = source->getWidth() / 3;
+					faceSize.y = source->getHeight() / 4;
+					cross = true;
+					vertical = true;
+				}
+				else
+				{
+					LOGWRN("Unable to generate a cubemap: unrecognized face configuration.");
+					return false;
+				}
+			}
+			break;
+		case CubemapSourceType::Cylindrical:
+		case CubemapSourceType::Spherical:
+			// Half of the source size will be used for each cube face, which should yield good enough quality
+			faceSize.x = std::max(source->getWidth(), source->getHeight()) / 2;
+			faceSize.x = Bitwise::closestPow2(faceSize.x);
+
+			// Don't allow sizes larger than 4096
+			faceSize.x = std::min(faceSize.x, 4096);
+
+			// We also do 4x super-sampling, so increase size accordingly
+			faceSize.x *= 4;
+
+			faceSize.y = faceSize.x;
+
+			break;
+		default: // Assuming single-image
+			faceSize.x = source->getWidth();
+			faceSize.y = source->getHeight();
+			break;
+		}
+
+		if (faceSize.x != faceSize.y)
+		{
+			LOGWRN("Unable to generate a cubemap: width & height must match.");
+			return false;
+		}
+
+		if (!Bitwise::isPow2(faceSize.x))
+		{
+			LOGWRN("Unable to generate a cubemap: width & height must be powers of 2.");
+			return false;
+		}
+
+		switch (sourceType)
+		{
+		case CubemapSourceType::Faces:
+		{
+			if (cross)
+				readCubemapCross(source, output, faceSize.x, vertical);
+			else
+				readCubemapList(source, output, faceSize.x, vertical);
+		}
+		break;
+		case CubemapSourceType::Cylindrical:
+		{			
+			std::array<SPtr<PixelData>, 6> superSampledOutput;
+			readCubemapUVRemap(source, superSampledOutput, faceSize.x, &mapCubemapDirToCylindrical);
+			downsampleCubemap(superSampledOutput, output, faceSize.x / 4);
+		}
+		break;
+		case CubemapSourceType::Spherical:
+		{
+			std::array<SPtr<PixelData>, 6> superSampledOutput;
+			readCubemapUVRemap(source, superSampledOutput, faceSize.x, &mapCubemapDirToSpherical);
+			downsampleCubemap(superSampledOutput, output, faceSize.x / 4);
+		}
+		break;
+		default: // Single-image
+			for (UINT32 i = 0; i < 6; i++)
+				output[i] = source;
+
+			break;
+		}
+
+		return true;
 	}
 }

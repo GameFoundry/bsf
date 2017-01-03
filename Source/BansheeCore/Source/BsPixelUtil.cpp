@@ -1797,7 +1797,7 @@ namespace bs
 			return outputMipBuffers;
 		}
 
-		if (!Math::isPow2(src.getWidth()) || !Math::isPow2(src.getHeight()))
+		if (!Bitwise::isPow2(src.getWidth()) || !Bitwise::isPow2(src.getHeight()))
 		{
 			LOGERR("Mipmap generation failed. Texture width & height must be powers of 2.");
 			return outputMipBuffers;

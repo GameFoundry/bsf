@@ -15,9 +15,9 @@ namespace bs
 	{
     public:
 		/** Returns the most significant bit set in a value. */
-		static unsigned int mostSignificantBitSet(unsigned int value)
+		static UINT32 mostSignificantBitSet(unsigned int value)
         {
-            unsigned int result = 0;
+			UINT32 result = 0;
             while (value != 0) {
                 ++result;
                 value >>= 1;
@@ -25,8 +25,8 @@ namespace bs
             return result-1;
         }
 
-		/** Returns the closest power-of-two number greater or equal to value. */
-        static UINT32 firstPO2From(UINT32 n)
+		/** Returns the power-of-two number greater or equal to the provided value. */
+        static UINT32 nextPow2(UINT32 n)
         {
             --n;            
             n |= n >> 16;
@@ -38,9 +38,21 @@ namespace bs
             return n;
         }
 
+		/** Returns the power-of-two number closest to the provided value. */
+		static UINT32 closestPow2(UINT32 n)
+		{
+			UINT32 next = nextPow2(n);
+
+			UINT32 prev = next >> 1;
+			if (n - prev < next - n)
+				return prev;
+			
+			return next;
+		}
+
 		/** Determines whether the number is power-of-two or not. */
         template<typename T>
-        static bool isPO2(T n)
+        static bool isPow2(T n)
         {
             return (n & (n-1)) == 0;
         }

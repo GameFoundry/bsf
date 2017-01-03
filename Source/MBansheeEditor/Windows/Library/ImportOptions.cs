@@ -19,6 +19,33 @@ namespace BansheeEditor
     }
 
     /// <summary>
+    /// Determines the type of the source image for generating cubemaps.
+    /// </summary>
+    public enum CubemapSourceType
+    {
+        /// <summary>
+        /// Source is a single image that will be replicated on all cubemap faces.
+        /// </summary>
+        Single,
+
+		/// <summary>
+        /// Source is a list of 6 images, either sequentially next to each other or in a cross format. The system will 
+        /// automatically guess the layout and orientation based on the aspect ratio.
+        /// </summary>
+		Faces,
+
+        /// <summary>
+        /// Source is a single spherical panoramic image.
+        /// </summary>
+        Spherical,
+
+        /// <summary>
+        /// Source is a single cylindrical panoramic image.
+        /// </summary>
+        Cylindrical
+    };
+
+    /// <summary>
     /// Provides options for controlling how is a texture resource imported.
     /// </summary>
     public class TextureImportOptions : ImportOptions
@@ -77,6 +104,26 @@ namespace BansheeEditor
             set { Internal_SetIsSRGB(mCachedPtr, value); }
         }
 
+        /// <summary>
+        /// Determines should the texture be imported as a cubemap. See <see cref="CubemapSourceType"/> to choose how will
+        /// the source texture be converted to a cubemap.
+        /// </summary>
+        public bool IsCubemap
+        {
+            get { return Internal_GetIsCubemap(mCachedPtr); }
+            set { Internal_SetIsCubemap(mCachedPtr, value); }
+        }
+
+        /// <summary>
+        /// Sets a value that determines how should the source texture be interpreted when generating a cubemap. Only
+        /// relevant when <see cref="IsCubemap"/> is set to true.
+        /// </summary>
+        public CubemapSourceType CubemapSourceType
+        {
+            get { return Internal_GetCubemapSourceType(mCachedPtr); }
+            set { Internal_SetCubemapSourceType(mCachedPtr, value); }
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateInstance(TextureImportOptions instance);
 
@@ -109,6 +156,18 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetIsSRGB(IntPtr thisPtr, bool value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_GetIsCubemap(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetIsCubemap(IntPtr thisPtr, bool value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern CubemapSourceType Internal_GetCubemapSourceType(IntPtr thisPtr);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetCubemapSourceType(IntPtr thisPtr, CubemapSourceType value);
     }
 
     /// <summary>

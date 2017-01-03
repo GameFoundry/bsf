@@ -478,6 +478,25 @@ namespace bs
 		Convex
 	};
 
+	/** Determines the type of the source image for generating cubemaps. */
+	enum class CubemapSourceType
+	{
+		/** Source is a single image that will be replicated on all cubemap faces. */
+		Single,
+
+		/** 
+		 * Source is a list of 6 images, either sequentially next to each other or in a cross format. The system will 
+		 * automatically guess the layout and orientation based on the aspect ratio.
+		 */
+		Faces,
+
+		/** Source is a single spherical panoramic image. */
+		Spherical,
+
+		/** Source is a single cylindrical panoramic image. */
+		Cylindrical
+	};
+
 	/** 
 	 * Bits that map to a specific surface of a render target. Combine the bits to generate a mask that references
 	 * only specific render target surfaces.

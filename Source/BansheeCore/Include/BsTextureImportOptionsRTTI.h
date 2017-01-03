@@ -16,30 +16,20 @@ namespace bs
 	class BS_CORE_EXPORT TextureImportOptionsRTTI : public RTTIType<TextureImportOptions, ImportOptions, TextureImportOptionsRTTI>
 	{
 	private:
-		PixelFormat& getPixelFormat(TextureImportOptions* obj) { return obj->mFormat; }
-		void setPixelFormat(TextureImportOptions* obj, PixelFormat& value) { obj->mFormat = value; }
-
-		bool& getGenerateMips(TextureImportOptions* obj) { return obj->mGenerateMips; }
-		void setGenerateMips(TextureImportOptions* obj, bool& value) { obj->mGenerateMips = value; }
-
-		UINT32& getMaxMip(TextureImportOptions* obj) { return obj->mMaxMip; }
-		void setMaxMip(TextureImportOptions* obj, UINT32& value) { obj->mMaxMip = value; }
-
-		bool& getCPUCached(TextureImportOptions* obj) { return obj->mCPUCached; }
-		void setCPUCached(TextureImportOptions* obj, bool& value) { obj->mCPUCached = value; }
-
-		bool& getSRGB(TextureImportOptions* obj) { return obj->mSRGB; }
-		void setSRGB(TextureImportOptions* obj, bool& value) { obj->mSRGB = value; }
+		BS_BEGIN_RTTI_MEMBERS
+			BS_RTTI_MEMBER_PLAIN(mFormat, 0)
+			BS_RTTI_MEMBER_PLAIN(mGenerateMips, 1)
+			BS_RTTI_MEMBER_PLAIN(mMaxMip, 2)
+			BS_RTTI_MEMBER_PLAIN(mCPUCached, 3)
+			BS_RTTI_MEMBER_PLAIN(mSRGB, 4)
+			BS_RTTI_MEMBER_PLAIN(mCubemap, 5)
+			BS_RTTI_MEMBER_PLAIN(mCubemapSourceType, 6)
+		BS_END_RTTI_MEMBERS
 
 	public:
 		TextureImportOptionsRTTI()
-		{
-			addPlainField("mPixelFormat", 0, &TextureImportOptionsRTTI::getPixelFormat, &TextureImportOptionsRTTI::setPixelFormat);
-			addPlainField("mGenerateMips", 1, &TextureImportOptionsRTTI::getGenerateMips, &TextureImportOptionsRTTI::setGenerateMips);
-			addPlainField("mMaxMip", 2, &TextureImportOptionsRTTI::getMaxMip, &TextureImportOptionsRTTI::setMaxMip);
-			addPlainField("mCPUCached", 3, &TextureImportOptionsRTTI::getCPUCached, &TextureImportOptionsRTTI::setCPUCached);
-			addPlainField("mSRGB", 4, &TextureImportOptionsRTTI::getSRGB, &TextureImportOptionsRTTI::setSRGB);
-		}
+			:mInitMembers(this)
+		{ }
 
 		const String& getRTTIName() override
 		{

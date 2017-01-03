@@ -20,6 +20,10 @@ namespace BansheeEditor
         private GUIIntField maximumMipsField = new GUIIntField(new LocEdString("Maximum mipmap level"));
         private GUIToggleField srgbField = new GUIToggleField(new LocEdString("Gamma space"));
         private GUIToggleField cpuCachedField = new GUIToggleField(new LocEdString("CPU cached"));
+        private GUIToggleField isCubemapField = new GUIToggleField(new LocEdString("Cubemap"));
+        private GUIEnumField cubemapSourceTypeField = 
+            new GUIEnumField(typeof(CubemapSourceType), new LocEdString("Cubemap source"));
+
         private GUIButton reimportButton = new GUIButton(new LocEdString("Reimport"));
 
         private TextureImportOptions importOptions;
@@ -36,7 +40,8 @@ namespace BansheeEditor
                 maximumMipsField.OnChanged += x => importOptions.MaxMipmapLevel = x;
                 srgbField.OnChanged += x => importOptions.IsSRGB = x;
                 cpuCachedField.OnChanged += x => importOptions.CPUCached = x;
-
+                isCubemapField.OnChanged += x => importOptions.IsCubemap = x;
+                cubemapSourceTypeField.OnSelectionChanged += x => importOptions.CubemapSourceType = (CubemapSourceType)x;
                 reimportButton.OnClick += TriggerReimport;
 
                 Layout.AddElement(formatField);
@@ -44,6 +49,8 @@ namespace BansheeEditor
                 Layout.AddElement(maximumMipsField);
                 Layout.AddElement(srgbField);
                 Layout.AddElement(cpuCachedField);
+                Layout.AddElement(isCubemapField);
+                Layout.AddElement(cubemapSourceTypeField);
                 Layout.AddSpace(10);
 
                 GUILayout reimportButtonLayout = Layout.AddLayoutX();
@@ -62,6 +69,10 @@ namespace BansheeEditor
             maximumMipsField.Value = newImportOptions.MaxMipmapLevel;
             srgbField.Value = newImportOptions.IsSRGB;
             cpuCachedField.Value = newImportOptions.CPUCached;
+            isCubemapField.Value = newImportOptions.IsCubemap;
+            cubemapSourceTypeField.Value = (ulong) newImportOptions.CubemapSourceType;
+
+            cubemapSourceTypeField.Active = importOptions.IsCubemap;
 
             importOptions = newImportOptions;
 

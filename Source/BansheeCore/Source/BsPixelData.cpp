@@ -4,6 +4,8 @@
 #include "BsPixelUtil.h"
 #include "BsPixelDataRTTI.h"
 #include "BsColor.h"
+#include "BsVector2.h"
+#include "BsMath.h"
 #include "BsDebug.h"
 
 namespace bs
@@ -87,6 +89,46 @@ namespace bs
 		rval.mFormat = mFormat;
 
 		return rval;
+	}
+
+	Color PixelData::sampleColorAt(const Vector2& coords, TextureFilter filter) const
+	{
+		Vector2 pixelCoords = coords * Vector2(mExtents.getWidth(), mExtents.getHeight());
+
+		INT32 maxExtentX = std::max(0, (INT32)mExtents.getWidth() - 1);
+		INT32 maxExtentY = std::max(0, (INT32)mExtents.getHeight() - 1);
+
+		if(filter == TF_BILINEAR)
+		{
+			pixelCoords -= Vector2(0.5f, 0.5f);
+
+			UINT32 x = (UINT32)Math::clamp(Math::floorToInt(pixelCoords.x), 0, maxExtentX);
+			UINT32 y = (UINT32)Math::clamp(Math::floorToInt(pixelCoords.y), 0, maxExtentY);
+
+			float fracX = pixelCoords.x - x;
+			float fracY = pixelCoords.y - y;
+
+			x = Math::clamp(x, 0U, (UINT32)maxExtentX);
+			y = Math::clamp(y, 0U, (UINT32)maxExtentY);
+
+			INT32 x1 = Math::clamp(x + 1, 0U, (UINT32)maxExtentX);
+			INT32 y1 = Math::clamp(y + 1, 0U, (UINT32)maxExtentY);
+
+			Color color;
+			color += (1.0f - fracX) * (1.0f - fracY) * getColorAt(x, y);
+			color += fracX * (1.0f - fracY) * getColorAt(x1, y);
+			color += (1.0f - fracX) * fracY * getColorAt(x, y1);
+			color += fracX * fracY * getColorAt(x1, y1);
+
+			return color;
+		}
+		else
+		{
+			UINT32 x = (UINT32)Math::clamp(Math::floorToInt(pixelCoords.x), 0, maxExtentX);
+			UINT32 y = (UINT32)Math::clamp(Math::floorToInt(pixelCoords.y), 0, maxExtentY);
+
+			return getColorAt(x, y);
+		}
 	}
 
 	Color PixelData::getColorAt(UINT32 x, UINT32 y, UINT32 z) const
@@ -198,13 +240,6 @@ namespace bs
 		UINT32 pixelSize = PixelUtil::getNumElemBytes(mFormat);
 		UINT32 pixelOffset = pixelSize * (z * mSlicePitch + y * mRowPitch + x);
 		return PixelUtil::unpackDepth(mFormat, (unsigned char *)getData() + pixelOffset);;
-	}
-
-	void PixelData::setDepthAt(float depth, UINT32 x, UINT32 y, UINT32 z)
-	{
-		UINT32 pixelSize = PixelUtil::getNumElemBytes(mFormat);
-		UINT32 pixelOffset = pixelSize * (z * mSlicePitch + y * mRowPitch + x);
-		PixelUtil::packDepth(depth, mFormat, (unsigned char *)getData() + pixelOffset);
 	}
 
 	Vector<float> PixelData::getDepths() const

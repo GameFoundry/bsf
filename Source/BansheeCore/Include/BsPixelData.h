@@ -155,7 +155,27 @@ namespace bs
 		PCT_PACKED_R10G10B10A2 = 5, /**< 10 bits for first three components, 2 bits for last component */
         PCT_COUNT = 4    /**< Number of pixel types */
     };
-    
+
+	/** Determines how are texture pixels filtered during sampling. */
+	enum TextureFilter
+	{
+		/** Pixel nearest to the sampled location is chosen. */
+		TF_NEAREST,
+		/** Four pixels nearest to the sampled location are interpolated to yield the sampled color. */
+		TF_BILINEAR
+	};
+
+	/** A list of cubemap faces. */
+	enum CubemapFace
+	{
+		PositiveX,
+		NegativeX,
+		PositiveY,
+		NegativeY,
+		PositiveZ,
+		NegativeZ
+	};
+
 	/**
 	 * A buffer describing a volume (3D), image (2D) or line (1D) of pixels in memory. Pixels are stored as a succession 
 	 * of "depth" slices, each containing "height" rows of "width" pixels.
@@ -294,6 +314,16 @@ namespace bs
 		 */
       	PixelData getSubVolume(const PixelVolume &def) const;
         
+		/** 
+		 * Samples a color at the specified coordinates using a specific filter.
+		 * 
+		 * @param[in]	coords	Coordinates to sample the color at. They start at top left corner (0, 0), and are in range
+		 *						[0, 1].
+		 * @param[in]	filter	Filtering mode to use when sampling the color.
+		 * @return				Sampled color.
+		 */
+		Color sampleColorAt(const Vector2& coords, TextureFilter filter = TF_BILINEAR) const;
+
 		/**	Returns pixel color at the specified coordinates. */
 		Color getColorAt(UINT32 x, UINT32 y, UINT32 z = 0) const;
 
@@ -319,17 +349,14 @@ namespace bs
 		void setColors(Color* colors, UINT32 numElements);
 
 		/** 
-		 * Decodes data stored in a depth texture at the specified pixel coordinates, and outputs a floating point depth
-		 * value in range [0, 1]. 
+		 * Interprets pixel data as depth information as retrieved from the GPU's depth buffer. Converts the device specific
+		 * depth value to range [0, 1] and returns it.
 		 */
 		float getDepthAt(UINT32 x, UINT32 y, UINT32 z = 0) const;
 
-		/** Sets a depth value in range [0, 1] at the specified pixel coordinates. */
-		void setDepthAt(float depth, UINT32 x, UINT32 y, UINT32 z = 0);
-
 		/**
-		 * Converts all the internal data into an array of float. Array is mapped as such:
-		 * arrayIdx = x + y * width + z * width * height.
+		 * Converts all the internal data into an array of floats as if each individual pixel is retrieved with 
+		 * getDepthAt(). Array is mapped as such: arrayIdx = x + y * width + z * width * height.
 		 */
 		Vector<float> getDepths() const;
 
