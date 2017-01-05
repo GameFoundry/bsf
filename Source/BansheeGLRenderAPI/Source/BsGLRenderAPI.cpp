@@ -1111,6 +1111,9 @@ namespace bs
 	void GLRenderAPI::submitCommandBuffer(const SPtr<CommandBuffer>& commandBuffer, UINT32 syncMask)
 	{
 		SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
+		if (cb == nullptr)
+			return;
+
 		cb->executeCommands();
 		cb->clear();
 	}

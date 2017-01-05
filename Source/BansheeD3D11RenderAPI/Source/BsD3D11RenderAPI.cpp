@@ -1080,6 +1080,9 @@ namespace bs
 	void D3D11RenderAPI::submitCommandBuffer(const SPtr<CommandBuffer>& commandBuffer, UINT32 syncMask)
 	{
 		SPtr<D3D11CommandBuffer> cb = std::static_pointer_cast<D3D11CommandBuffer>(commandBuffer);
+		if (cb == nullptr)
+			return;
+
 		cb->executeCommands();
 		cb->clear();
 	}
