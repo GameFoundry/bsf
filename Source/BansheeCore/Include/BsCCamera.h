@@ -136,14 +136,17 @@ namespace bs
 		/** @copydoc Camera::setLayers */
 		void setLayers(UINT64 layers) { mInternal->setLayers(layers); }
 
-		/** Returns number of samples if the camera uses multiple samples per pixel. */
+		/** @copydoc Camera::getMSAACount */
 		UINT32 getMSAACount() const { return mInternal->getMSAACount(); }
 
-		/**
-		* Enables or disables multi-sampled anti-aliasing. Set to zero or one to disable, or to the required number of
-		* samples to enable.
-		*/
+		/** @copydoc Camera::setMSAACount */
 		void setMSAACount(UINT32 count) { mInternal->setMSAACount(count); }
+
+		/** @copydoc Camera::setSkybox */
+		void setSkybox(const HTexture& texture) { mInternal->setSkybox(texture); }
+
+		/** @copydoc Camera::getSkybox */
+		HTexture getSkybox() const { return mInternal->getSkybox(); }
 
 		/** Returns settings that are used for controling post-process operations like tonemapping. */
 		const SPtr<PostProcessSettings>& getPostProcessSettings() const { return mInternal->getPostProcessSettings(); }

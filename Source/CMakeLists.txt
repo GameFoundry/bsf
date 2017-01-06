@@ -46,7 +46,7 @@ set_property(CACHE RENDERER_MODULE PROPERTY STRINGS RenderBeast)
 set(BUILD_SCOPE "Runtime" CACHE STRING "Determines which parts of Banshee to build. Pick Framework to build only the low-level C++ framework. Pick Runtime to build everything, including the framework, scripting API and the editor.")
 set_property(CACHE BUILD_SCOPE PROPERTY STRINGS "Runtime" "Framework")
 
-set(INCLUDE_ALL_IN_WORKFLOW OFF CACHE BOOL "If true, all libraries (even those not selected) will be included in the generated workflow. Only relevant for workflow generators like Visual Studio.")
+set(INCLUDE_ALL_IN_WORKFLOW OFF CACHE BOOL "If true, all libraries (even those not selected) will be included in the generated workflow (e.g. Visual Studio solution). This is useful when working on engine internals with a need for easy access to all parts of it. Only relevant for workflow generators like Visual Studio or XCode.")
 
 if(BUILD_SCOPE MATCHES "Runtime")
 	set(BUILD_EDITOR ON)

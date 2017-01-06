@@ -44,6 +44,17 @@ namespace bs
 		Kaiser
 	};
 
+	/** Determines on which axes to mirror an image. */
+	enum class MirrorModeBits
+	{
+		X = 1 << 0,
+		Y = 1 << 1, 
+		Z = 1 << 2
+	};
+
+	typedef Flags<MirrorModeBits> MirrorMode;
+	BS_FLAGS_OPERATORS(MirrorModeBits);
+
 	/**	Options used to control texture compression. */
 	struct CompressionOptions
 	{
@@ -228,6 +239,17 @@ namespace bs
 		 * when scaling.
 		 */
 		static void scale(const PixelData& src, PixelData& dst, Filter filter = FILTER_LINEAR);
+
+		/** 
+		 * Mirrors the contents of the provided object along the X, Y and/or Z axes. */
+		static void mirror(PixelData& pixelData, MirrorMode mode);
+
+		/**
+		 * Copies the contents of the @p src buffer into the @p dst buffer. The size of the copied contents is determined
+		 * by the size of the @p dst buffer. First pixel copied from @p src is determined by offset provided in
+		 * @p offsetX, @p offsetY and @p offsetZ parameters.
+		 */
+		static void copy(const PixelData& src, PixelData& dst, UINT32 offsetX = 0, UINT32 offsetY = 0, UINT32 offsetZ = 0);
 
 		/**
 		 * Applies gamma correction to the pixels in the provided buffer.

@@ -43,7 +43,8 @@ namespace bs
 
 	RenderBeast::RenderBeast()
 		: mDefaultMaterial(nullptr), mPointLightInMat(nullptr), mPointLightOutMat(nullptr), mDirLightMat(nullptr)
-		, mObjectRenderer(nullptr), mOptions(bs_shared_ptr_new<RenderBeastOptions>()), mOptionsDirty(true)
+		, mSkyboxMat(nullptr), mObjectRenderer(nullptr), mOptions(bs_shared_ptr_new<RenderBeastOptions>())
+		, mOptionsDirty(true)
 	{ }
 
 	const StringID& RenderBeast::getName() const
@@ -78,6 +79,7 @@ namespace bs
 		mPointLightInMat = bs_new<PointLightInMat>();
 		mPointLightOutMat = bs_new<PointLightOutMat>();
 		mDirLightMat = bs_new<DirectionalLightMat>();
+		mSkyboxMat = bs_new<SkyboxMat>();
 
 		RenderTexturePool::startUp();
 		PostProcessing::startUp();
@@ -106,6 +108,7 @@ namespace bs
 		bs_delete(mPointLightInMat);
 		bs_delete(mPointLightOutMat);
 		bs_delete(mDirLightMat);
+		bs_delete(mSkyboxMat);
 
 		RendererUtility::shutDown();
 
@@ -743,8 +746,19 @@ namespace bs
 			}
 		}
 
+		// Render skybox (if any)
+		SPtr<TextureCore> skyTexture = camera->getSkybox();
+		if (skyTexture != nullptr && skyTexture->getProperties().getTextureType() == TEX_TYPE_CUBE_MAP)
+		{
+			mSkyboxMat->bind(perCameraBuffer);
+			mSkyboxMat->setParams(skyTexture);
+
+			SPtr<MeshCore> mesh = gRendererUtility().getSkyBoxMesh();
+			gRendererUtility().draw(mesh, mesh->getProperties().getSubMesh(0));
+		}
+
 		renderTargets->bindSceneColor(false);
-		
+
 		// Render transparent objects (TODO - No lighting yet)
 		const Vector<RenderQueueElement>& transparentElements = rendererCam->getTransparentQueue()->getSortedElements();
 		for (auto iter = transparentElements.begin(); iter != transparentElements.end(); ++iter)

@@ -506,13 +506,33 @@ namespace bs
 		mutable AABox mBoundingBox; /**< Frustum bounding box. */
      };
 
+	 /** @copydoc CameraBase */
+	 template<bool Core>
+	 class TCamera : public CameraBase
+	 {
+	 public:
+		 typedef typename TTextureType<Core>::Type TextureType;
+
+		/** 
+		 * Sets a texture that will be used for rendering areas of the camera's render target not covered by any geometry. 
+		 * If not set a clear color will be used instead.
+		 */
+		void setSkybox(const TextureType& texture) { mSkyTexture = texture; _markCoreDirty(); }
+
+		/** @see setSkybox() */
+		TextureType getSkybox() const { return mSkyTexture; }
+
+	 protected:
+		 TextureType mSkyTexture;
+	 };
+
 	/** @} */
 	/** @addtogroup Renderer-Engine-Internal
 	 *  @{
 	 */
 
 	/** @copydoc CameraBase */
-	class BS_CORE_EXPORT CameraCore : public CoreObjectCore, public CameraBase
+	class BS_CORE_EXPORT CameraCore : public CoreObjectCore, public TCamera<true>
 	{
 	public:
 		~CameraCore();
@@ -541,7 +561,7 @@ namespace bs
 	};
 
 	/** @copydoc CameraBase */
-	class BS_CORE_EXPORT Camera : public IReflectable, public CoreObject, public CameraBase
+	class BS_CORE_EXPORT Camera : public IReflectable, public CoreObject, public TCamera<false>
     {
     public:
 		/**	Returns the viewport used by the camera. */	

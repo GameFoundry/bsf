@@ -27,8 +27,7 @@ namespace bs
 	};
 
 	/**	Abstraction of a Vulkan shader object. */
-	class 
-	VulkanGpuProgramCore : public GpuProgramCore
+	class VulkanGpuProgramCore : public GpuProgramCore
 	{
 	public:
 		virtual ~VulkanGpuProgramCore();

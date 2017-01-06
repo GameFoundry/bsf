@@ -135,10 +135,14 @@ namespace bs
 		/** Returns a stencil mesh used for spot light. Actual vertex positions need to be computed in shader. */
 		SPtr<MeshCore> getSpotLightStencil() const { return mSpotLightStencilMesh; }
 
+		/** Returns a mesh that can be used for rendering a skybox. */
+		SPtr<MeshCore> getSkyBoxMesh() const { return mSkyBoxMesh; }
+
 	private:
 		SPtr<MeshCore> mFullScreenQuadMesh;
 		SPtr<MeshCore> mPointLightStencilMesh;
 		SPtr<MeshCore> mSpotLightStencilMesh;
+		SPtr<MeshCore> mSkyBoxMesh;
 		SPtr<ResolveMat> mResolveMat;
 		SPtr<BlitMat> mBlitMat;
 	};

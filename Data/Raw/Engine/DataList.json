@@ -497,6 +497,10 @@
             "UUID": "9d5f5101-2d7e-432c-b8ad-1998de9ca5c7"
         },
         {
+            "Path": "Skybox.bsl",
+            "UUID": "b1c191fa-0c24-4987-8d3b-72b17511621d"
+        },		
+        {
             "Path": "SpriteImageAlpha.bsl",
             "UUID": "4c00537f-9d3e-4cb7-8a30-b4ee9f278006"
         },

@@ -137,6 +137,9 @@ namespace bs
 		GLVertexArrayObjectManager::startUp();
 		glFrontFace(GL_CW);
 
+		// Ensure cubemaps are filtered across seams
+		glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+
 		mGLInitialised = true;
 
 		RenderAPICore::initializeWithWindow(primaryWindow);

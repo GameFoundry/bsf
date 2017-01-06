@@ -58,12 +58,12 @@ namespace bs
 		return PixelUtil::getMemorySize(mRowPitch, mSlicePitch / mRowPitch, getDepth(), getFormat());
 	}
 
-	PixelData PixelData::getSubVolume(const PixelVolume &def) const
+	PixelData PixelData::getSubVolume(const PixelVolume& volume) const
 	{
 		if (PixelUtil::isCompressed(mFormat))
 		{
-			if (def.left == getLeft() && def.top == getTop() && def.front == getFront() &&
-				def.right == getRight() && def.bottom == getBottom() && def.back == getBack())
+			if (volume.left == getLeft() && volume.top == getTop() && volume.front == getFront() &&
+				volume.right == getRight() && volume.bottom == getBottom() && volume.back == getBack())
 			{
 				// Entire buffer is being queried
 				return *this;
@@ -72,28 +72,28 @@ namespace bs
 			BS_EXCEPT(InvalidParametersException, "Cannot return subvolume of compressed PixelBuffer");
 		}
 
-		if (!mExtents.contains(def))
+		if (!mExtents.contains(volume))
 		{
 			BS_EXCEPT(InvalidParametersException, "Bounds out of range");
 		}
 
 		const size_t elemSize = PixelUtil::getNumElemBytes(mFormat);
-		PixelData rval(def.getWidth(), def.getHeight(), def.getDepth(), mFormat);
+		PixelData rval(volume.getWidth(), volume.getHeight(), volume.getDepth(), mFormat);
 
-		rval.setExternalBuffer(((UINT8*)getData()) + ((def.left - getLeft())*elemSize)
-			+ ((def.top - getTop())*mRowPitch*elemSize)
-			+ ((def.front - getFront())*mSlicePitch*elemSize));
+		rval.setExternalBuffer(((UINT8*)getData()) + ((volume.left - getLeft())*elemSize)
+			+ ((volume.top - getTop())*mRowPitch*elemSize)
+			+ ((volume.front - getFront())*mSlicePitch*elemSize));
 
-		rval.mRowPitch = mRowPitch;
-		rval.mSlicePitch = mSlicePitch;
 		rval.mFormat = mFormat;
+		PixelUtil::getPitch(volume.getWidth(), volume.getHeight(), volume.getDepth(), mFormat, rval.mRowPitch,
+							rval.mSlicePitch);
 
 		return rval;
 	}
 
 	Color PixelData::sampleColorAt(const Vector2& coords, TextureFilter filter) const
 	{
-		Vector2 pixelCoords = coords * Vector2(mExtents.getWidth(), mExtents.getHeight());
+		Vector2 pixelCoords = coords * Vector2((float)mExtents.getWidth(), (float)mExtents.getHeight());
 
 		INT32 maxExtentX = std::max(0, (INT32)mExtents.getWidth() - 1);
 		INT32 maxExtentY = std::max(0, (INT32)mExtents.getHeight() - 1);

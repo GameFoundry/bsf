@@ -6,10 +6,37 @@
 #include "BsMaterial.h"
 #include "BsShader.h"
 #include "BsRenderTargets.h"
+#include "BsRendererUtility.h"
+#include "BsGpuParamsSet.h"
 
 namespace bs
 {
 	PerCameraParamDef gPerCameraParamDef;
+
+	SkyboxMat::SkyboxMat()
+	{
+		SPtr<GpuParamsCore> params = mParamsSet->getGpuParams();
+
+		params->getTextureParam(GPT_FRAGMENT_PROGRAM, "gSkyTex", mSkyTextureParam);
+	}
+
+	void SkyboxMat::_initDefines(ShaderDefines& defines)
+	{
+		// Do nothing
+	}
+
+	void SkyboxMat::bind(const SPtr<GpuParamBlockBufferCore>& perCamera)
+	{
+		mParamsSet->setParamBlockBuffer("PerCamera", perCamera, true);
+
+		gRendererUtility().setPass(mMaterial, 0);
+	}
+
+	void SkyboxMat::setParams(const SPtr<TextureCore>& texture)
+	{
+		mSkyTextureParam.set(texture);
+		gRendererUtility().setPassParams(mParamsSet);
+	}
 
 	RendererCamera::RendererCamera()
 		:mCamera(nullptr), mUsingRenderTargets(false)

@@ -375,7 +375,8 @@ namespace bs
 
 		if (format != D3D11Mappings::getPF(d3dPF))
 		{
-			BS_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(format));
+			LOGWRN("Provided pixel format is not supported by the driver: " + toString(format) + ". Using " +
+				toString(closestFormat) + " instead.");
 		}
 
 		mDXGIColorFormat = d3dPF;

@@ -59,10 +59,6 @@ namespace bs
 	 *  @{
 	 */
 
-	template<bool Core> struct TTextureType {};
-	template<> struct TTextureType < false > { typedef HTexture Type; };
-	template<> struct TTextureType < true > { typedef SPtr<TextureCore> Type; };
-
 	template<bool Core> struct TSamplerStateType {};
 	template<> struct TSamplerStateType < false > { typedef SPtr<SamplerState> Type; };
 	template<> struct TSamplerStateType < true > { typedef SPtr<SamplerStateCore> Type; };

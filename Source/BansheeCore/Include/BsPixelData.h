@@ -312,7 +312,7 @@ namespace bs
 		 * Returns pixel data containing a sub-volume of this object. Returned data will not have its own buffer, but will
 		 * instead point to this one. It is up to the caller to ensure this object outlives any sub-volume objects.
 		 */
-      	PixelData getSubVolume(const PixelVolume &def) const;
+      	PixelData getSubVolume(const PixelVolume& volume) const;
         
 		/** 
 		 * Samples a color at the specified coordinates using a specific filter.

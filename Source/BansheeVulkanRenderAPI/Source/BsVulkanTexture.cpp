@@ -193,6 +193,14 @@ namespace bs
 			case VK_IMAGE_VIEW_TYPE_3D:
 				mImageViewCI.viewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY;
 				break;
+			default:
+				break;
+			}
+		} 
+		else if(surface.numArraySlices > 6)
+		{
+			switch (oldViewType)
+			{
 			case VK_IMAGE_VIEW_TYPE_CUBE:
 				mImageViewCI.viewType = VK_IMAGE_VIEW_TYPE_CUBE_ARRAY;
 				break;

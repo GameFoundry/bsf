@@ -600,6 +600,10 @@ namespace bs
 	template<> struct TMaterialPtrType < false > { typedef HMaterial Type; };
 	template<> struct TMaterialPtrType < true > { typedef SPtr<MaterialCore> Type; };
 
+	template<bool Core> struct TTextureType {};
+	template<> struct TTextureType < false > { typedef HTexture Type; };
+	template<> struct TTextureType < true > { typedef SPtr<TextureCore> Type; };
+
 	/** @cond SPECIALIZATIONS */
 	BS_ALLOW_MEMCPY_SERIALIZATION(TextureSurface);
 	/** @endcond */

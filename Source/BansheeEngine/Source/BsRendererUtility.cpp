@@ -107,6 +107,26 @@ namespace bs
 			mSpotLightStencilMesh = MeshCore::create(meshData);
 		}
 
+		{
+			SPtr<VertexDataDesc> vertexDesc = bs_shared_ptr_new<VertexDataDesc>();
+			vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
+
+			UINT32 numVertices = 0;
+			UINT32 numIndices = 0;
+
+			ShapeMeshes3D::getNumElementsAABox(numVertices, numIndices);
+			SPtr<MeshData> meshData = bs_shared_ptr_new<MeshData>(numVertices, numIndices, vertexDesc);
+
+			UINT32* indexData = meshData->getIndices32();
+			UINT8* positionData = meshData->getElementData(VES_POSITION);
+
+			AABox localBox(-Vector3::ONE * 1500.0f, Vector3::ONE * 1500.0f);
+			ShapeMeshes3D::solidAABox(localBox, positionData, nullptr, 0,
+									   vertexDesc->getVertexStride(), indexData, 0);
+
+			mSkyBoxMesh = MeshCore::create(meshData);
+		}
+
 		// TODO - When I add proper preprocessor support, merge these into a single material
 		mResolveMat = bs_shared_ptr_new<ResolveMat>();
 		mBlitMat = bs_shared_ptr_new<BlitMat>();

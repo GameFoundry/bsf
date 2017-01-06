@@ -447,13 +447,16 @@ namespace bs
 			Vector3(0, -1, 0)
 		};
 
-		outNormals += (vertexOffset * vertexStride);
-		for (UINT32 face = 0; face < 6; face++)
+		if (outNormals != nullptr)
 		{
-			outNormals = writeVector3(outNormals, vertexStride, faceNormals[face]);
-			outNormals = writeVector3(outNormals, vertexStride, faceNormals[face]);
-			outNormals = writeVector3(outNormals, vertexStride, faceNormals[face]);
-			outNormals = writeVector3(outNormals, vertexStride, faceNormals[face]);
+			outNormals += (vertexOffset * vertexStride);
+			for (UINT32 face = 0; face < 6; face++)
+			{
+				outNormals = writeVector3(outNormals, vertexStride, faceNormals[face]);
+				outNormals = writeVector3(outNormals, vertexStride, faceNormals[face]);
+				outNormals = writeVector3(outNormals, vertexStride, faceNormals[face]);
+				outNormals = writeVector3(outNormals, vertexStride, faceNormals[face]);
+			}
 		}
 
 		UINT32* indices = outIndices + indexOffset;

@@ -212,6 +212,7 @@ namespace bs
 		PointLightInMat* mPointLightInMat;
 		PointLightOutMat* mPointLightOutMat;
 		DirectionalLightMat* mDirLightMat;
+		SkyboxMat* mSkyboxMat;
 
 		ObjectRenderer* mObjectRenderer;
 

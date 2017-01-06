@@ -412,10 +412,7 @@ namespace bs
 				faceStart.x += faceSize;
 
 			PixelVolume volume(faceStart.x, faceStart.y, faceStart.x + faceSize, faceStart.y + faceSize);
-			PixelData subVolumeData = source->getSubVolume(volume);
-
-			assert(output[i]->getSize() == subVolumeData.getSize());
-			memcpy(output[i]->getData(), subVolumeData.getData(), subVolumeData.getSize());
+			PixelUtil::copy(*source, *output[i], faceStart.x, faceStart.y);
 		}
 	}
 
@@ -424,13 +421,13 @@ namespace bs
 	 * 
 	 * Vertical layout:
 	 *    +Y
-	 * -X -Z +X
+	 * -X +Z +X
 	 *    -Y
-	 *    +Z
+	 *    -Z
 	 * 
 	 * Horizontal layout:
 	 *    +Y
-	 * -X -Z +X +Z
+	 * -X +Z +X -Z
 	 *    -Y
 	 * 
 	 * @param[in]	source		Source texture to read.
@@ -441,8 +438,8 @@ namespace bs
 	void readCubemapCross(const SPtr<PixelData>& source, std::array<SPtr<PixelData>, 6>& output, UINT32 faceSize,
 		bool vertical)
 	{
-		const static UINT32 vertFaceIndices[] = { 5, 3, 1, 7, 10, 4 };
-		const static UINT32 horzFaceIndices[] = { 6, 4, 1, 9, 7, 5 };
+		const static UINT32 vertFaceIndices[] = { 5, 3, 1, 7, 4, 10 };
+		const static UINT32 horzFaceIndices[] = { 6, 4, 1, 9, 5, 7 };
 
 		const UINT32* faceIndices = vertical ? vertFaceIndices : horzFaceIndices;
 		UINT32 numFacesInRow = vertical ? 3 : 4;
@@ -455,11 +452,12 @@ namespace bs
 			UINT32 faceY = (faceIndices[i] / numFacesInRow) * faceSize;
 
 			PixelVolume volume(faceX, faceY, faceX + faceSize, faceY + faceSize);
-			PixelData subVolumeData = source->getSubVolume(volume);
-
-			assert(output[i]->getSize() == subVolumeData.getSize());
-			memcpy(output[i]->getData(), subVolumeData.getData(), subVolumeData.getSize());
+			PixelUtil::copy(*source, *output[i], faceX, faceY);
 		}
+
+		// Flip -Z as it's upside down
+		if (vertical)
+			PixelUtil::mirror(*output[5], MirrorModeBits::X | MirrorModeBits::Y);
 	}
 
 	/** Method that maps a direction to a point on a plane in range [0, 1] using spherical mapping. */

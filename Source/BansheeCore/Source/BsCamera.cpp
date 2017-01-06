@@ -778,6 +778,11 @@ namespace bs
 			dataPtr = rttiReadElem(mIsActive, dataPtr);
 			dataPtr = rttiReadElem(mMSAA, dataPtr);
 
+			SPtr<TextureCore>* skyTexture = (SPtr<TextureCore>*)dataPtr;
+			mSkyTexture = *skyTexture;
+			skyTexture->~SPtr<TextureCore>();
+			dataPtr += sizeof(SPtr<TextureCore>);
+
 			UINT32 ppSize = 0;
 			dataPtr = rttiReadElem(ppSize, dataPtr);
 
@@ -845,6 +850,10 @@ namespace bs
 	{
 		UINT32 dirtyFlag = getCoreDirtyFlags();
 
+		SPtr<TextureCore> skyTexture;
+		if (mSkyTexture.isLoaded())
+			skyTexture = mSkyTexture->getCore();
+
 		UINT32 size = 0;
 		size += rttiGetElemSize(dirtyFlag);
 		size += rttiGetElemSize(mPosition);
@@ -867,7 +876,7 @@ namespace bs
 			size += rttiGetElemSize(mCameraFlags);
 			size += rttiGetElemSize(mIsActive);
 			size += rttiGetElemSize(mMSAA);
-
+			size += sizeof(SPtr<TextureCore>);
 			size += sizeof(UINT32);
 
 			if(mPPSettings != nullptr)
@@ -900,6 +909,11 @@ namespace bs
 			dataPtr = rttiWriteElem(mCameraFlags, dataPtr);
 			dataPtr = rttiWriteElem(mIsActive, dataPtr);
 			dataPtr = rttiWriteElem(mMSAA, dataPtr);
+
+			SPtr<TextureCore>* skyTexDest = new (dataPtr) SPtr<TextureCore>();
+			*skyTexDest = skyTexture;
+			dataPtr += sizeof(skyTexture);
+
 			dataPtr = rttiWriteElem(ppSize, dataPtr);
 
 			if(mPPSettings != nullptr)

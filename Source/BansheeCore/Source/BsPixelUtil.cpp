@@ -1679,6 +1679,138 @@ namespace bs
 		}
 	}
 
+	void PixelUtil::copy(const PixelData& src, PixelData& dst, UINT32 offsetX, UINT32 offsetY, UINT32 offsetZ)
+	{
+		if(src.getFormat() != dst.getFormat())
+		{
+			LOGERR("Source format is different from destination format for copy(). This operation cannot be used for "
+				   "a format conversion. Aborting copy.");
+			return;
+		}
+
+		UINT32 right = offsetX + dst.getWidth();
+		UINT32 bottom = offsetY + dst.getHeight();
+		UINT32 back = offsetZ + dst.getDepth();
+
+		if(right > src.getWidth() || bottom > src.getHeight() || back > src.getDepth())
+		{
+			LOGERR("Provided offset or destination size is too large and is referencing pixels that are out of bounds"
+				   " on the source texture. Aborting copy().");
+			return;
+		}
+
+		UINT8* srcPtr = (UINT8*)src.getData() + offsetZ * src.getSlicePitch();
+		UINT8* dstPtr = (UINT8*)dst.getData();
+
+		UINT32 elemSize = getNumElemBytes(dst.getFormat());
+		UINT32 rowSize = dst.getWidth() * elemSize;
+
+		for(UINT32 z = 0; z < dst.getDepth(); z++)
+		{
+			UINT8* srcRowPtr = srcPtr + offsetY * src.getRowPitch() * elemSize;
+			UINT8* dstRowPtr = dstPtr;
+
+			for(UINT32 y = 0; y < dst.getHeight(); y++)
+			{
+				memcpy(dstRowPtr, srcRowPtr + offsetX * elemSize, rowSize);
+
+				srcRowPtr += src.getRowPitch() * elemSize;
+				dstRowPtr += dst.getRowPitch() * elemSize;
+			}
+
+			srcPtr += src.getSlicePitch() * elemSize;
+			dstPtr += dst.getSlicePitch() * elemSize;
+		}
+	}
+
+	void PixelUtil::mirror(PixelData& pixelData, MirrorMode mode)
+	{
+		UINT32 width = pixelData.getWidth();
+		UINT32 height = pixelData.getHeight();
+		UINT32 depth = pixelData.getDepth();
+
+		UINT32 elemSize = getNumElemBytes(pixelData.getFormat());
+
+		if (mode.isSet(MirrorModeBits::Z))
+		{
+			UINT32 sliceSize = width * height * elemSize;
+			UINT8* sliceTemp = bs_stack_alloc<UINT8>(sliceSize);
+
+			UINT8* dataPtr = pixelData.getData();
+			UINT32 halfDepth = depth / 2;
+			for (UINT32 z = 0; z < halfDepth; z++)
+			{
+				UINT32 srcZ = z * sliceSize;
+				UINT32 dstZ = (depth - z - 1) * sliceSize;
+
+				memcpy(sliceTemp, &dataPtr[dstZ], sliceSize);
+				memcpy(&dataPtr[srcZ], &dataPtr[srcZ], sliceSize);
+				memcpy(&dataPtr[dstZ], sliceTemp, sliceSize);
+			}
+
+			// Note: If flipping Y or X as well I could do it here without an extra set of memcpys
+
+			bs_stack_free(sliceTemp);
+		}
+
+		if(mode.isSet(MirrorModeBits::Y))
+		{
+			UINT32 rowSize = width * elemSize;
+			UINT8* rowTemp = bs_stack_alloc<UINT8>(rowSize);
+
+			UINT8* slicePtr = pixelData.getData();
+			for (UINT32 z = 0; z < depth; z++)
+			{
+				UINT32 halfHeight = height / 2;
+				for (UINT32 y = 0; y < halfHeight; y++)
+				{
+					UINT32 srcY = y * rowSize;
+					UINT32 dstY = (height - y - 1) * rowSize;
+
+					memcpy(rowTemp, &slicePtr[dstY], rowSize);
+					memcpy(&slicePtr[dstY], &slicePtr[srcY], rowSize);
+					memcpy(&slicePtr[srcY], rowTemp, rowSize);
+				}
+
+				// Note: If flipping X as well I could do it here without an extra set of memcpys
+
+				slicePtr += pixelData.getSlicePitch() * elemSize;
+			}
+
+			bs_stack_free(rowTemp);
+		}
+
+		if (mode.isSet(MirrorModeBits::X))
+		{
+			UINT8* elemTemp = bs_stack_alloc<UINT8>(elemSize);
+
+			UINT8* slicePtr = pixelData.getData();
+			for (UINT32 z = 0; z < depth; z++)
+			{
+				UINT8* rowPtr = slicePtr;
+				for (UINT32 y = 0; y < height; y++)
+				{
+					UINT32 halfWidth = width / 2;
+					for (UINT32 x = 0; x < halfWidth; x++)
+					{
+						UINT32 srcX = x * elemSize;
+						UINT32 dstX = (width - x - 1) * elemSize;
+
+						memcpy(elemTemp, &rowPtr[dstX], elemSize);
+						memcpy(&rowPtr[dstX], &rowPtr[srcX], elemSize);
+						memcpy(&rowPtr[srcX], elemTemp, elemSize);
+					}
+
+					rowPtr += pixelData.getRowPitch() * elemSize;
+				}
+
+				slicePtr += pixelData.getSlicePitch() * elemSize;
+			}
+
+			bs_stack_free(elemTemp);
+		}
+	}
+
 	void PixelUtil::applyGamma(UINT8* buffer, float gamma, UINT32 size, UINT8 bpp)
 	{
 		if(gamma == 1.0f)

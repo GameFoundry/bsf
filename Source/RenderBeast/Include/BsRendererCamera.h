@@ -30,6 +30,23 @@ namespace bs
 
 	extern PerCameraParamDef gPerCameraParamDef;
 
+	/** Shader that renders a skybox using a cubemap. */
+	class SkyboxMat : public RendererMaterial<SkyboxMat>
+	{
+		RMAT_DEF("Skybox.bsl");
+
+	public:
+		SkyboxMat();
+
+		/** Binds the material for rendering and sets up any global parameters. */
+		void bind(const SPtr<GpuParamBlockBufferCore>& perCamera);
+
+		/** Updates the skybox texture used by the material. */
+		void setParams(const SPtr<TextureCore>& texture);
+	private:
+		GpuParamTextureCore mSkyTextureParam;
+	};
+
 	/** Contains information about a Camera, used by the Renderer. */
 	class RendererCamera
 	{
