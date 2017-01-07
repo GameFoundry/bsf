@@ -90,6 +90,9 @@ namespace bs
 		static bool internal_GetHDR(ScriptCamera* instance);
 		static void internal_SetHDR(ScriptCamera* instance, bool value);
 
+		static MonoObject* internal_GetSkybox(ScriptCamera* instance);
+		static void internal_SetSkybox(ScriptCamera* instance, ScriptTextureCube* value);
+
 		static MonoObject* internal_GetPostProcessSettings(ScriptCamera* instance);
 		static void internal_SetPostProcessSettings(ScriptCamera* instance, MonoObject* value);
 

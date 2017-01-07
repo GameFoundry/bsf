@@ -33,6 +33,7 @@ namespace BansheeEditor
         private GUIListBoxField layersField = new GUIListBoxField(Layers.Names, true, new LocEdString("Layers"));
         private GUIToggleField hdrField = new GUIToggleField(new LocEdString("HDR"));
         private GUIToggleField mainField = new GUIToggleField(new LocEdString("Main"));
+        private GUITextureField skyboxField = new GUITextureField(new LocEdString("Skybox"));
 
         private GUIToggle postProcessFoldout = new GUIToggle(new LocEdString("Post processing"), EditorStyles.Foldout);
         private PostProcessSettingsGUI postProcessGUI;
@@ -77,6 +78,7 @@ namespace BansheeEditor
             priorityField.Value = camera.Priority;
             mainField.Value = camera.Main;
             hdrField.Value = camera.HDR;
+            skyboxField.Value = camera.Skybox;
             postProcessGUI.Settings = camera.PostProcess;
 
             if (layersValue != camera.Layers)
@@ -230,6 +232,15 @@ namespace BansheeEditor
                     ConfirmModify();
                 };
 
+                skyboxField.OnChanged += x =>
+                {
+                    Texture skyboxTex = Resources.Load<Texture>(x);
+
+                    camera.Skybox = skyboxTex as TextureCube;
+                    MarkAsModified();
+                    ConfirmModify();
+                };
+
                 Layout.AddElement(projectionTypeField);
                 Layout.AddElement(fieldOfView);
                 Layout.AddElement(orthoHeight);
@@ -256,6 +267,7 @@ namespace BansheeEditor
                 Layout.AddElement(layersField);
                 Layout.AddElement(mainField);
                 Layout.AddElement(hdrField);
+                Layout.AddElement(skyboxField);
 
                 postProcessFoldout.OnToggled += x =>
                 {

@@ -17,6 +17,8 @@
 #include "BsGUIManager.h"
 #include "BsStandardPostProcessSettings.h"
 #include "BsScriptPostProcessSettings.h"
+#include "BsScriptTextureCube.h"
+#include "BsScriptResourceManager.h"
 
 namespace bs
 {
@@ -75,6 +77,9 @@ namespace bs
 
 		metaData.scriptClass->addInternalCall("Internal_GetHDR", &ScriptCamera::internal_GetHDR);
 		metaData.scriptClass->addInternalCall("Internal_SetHDR", &ScriptCamera::internal_SetHDR);
+
+		metaData.scriptClass->addInternalCall("Internal_GetSkybox", &ScriptCamera::internal_GetSkybox);
+		metaData.scriptClass->addInternalCall("Internal_SetSkybox", &ScriptCamera::internal_SetSkybox);
 
 		metaData.scriptClass->addInternalCall("Internal_GetPostProcessSettings", &ScriptCamera::internal_GetPostProcessSettings);
 		metaData.scriptClass->addInternalCall("Internal_SetPostProcessSettings", &ScriptCamera::internal_SetPostProcessSettings);
@@ -299,6 +304,27 @@ namespace bs
 	void ScriptCamera::internal_SetHDR(ScriptCamera* instance, bool value)
 	{
 		instance->mCamera->setFlag(CameraFlag::HDR, value);
+	}
+
+	MonoObject* ScriptCamera::internal_GetSkybox(ScriptCamera* instance)
+	{
+		HTexture texture = instance->mCamera->getSkybox();
+		if (texture == nullptr || texture->getProperties().getTextureType() != TEX_TYPE_CUBE_MAP)
+			return nullptr;
+
+		ScriptTextureCube* scriptTexture;
+		ScriptResourceManager::instance().getScriptResource(texture, &scriptTexture, true);
+
+		return scriptTexture->getManagedInstance();
+	}
+
+	void ScriptCamera::internal_SetSkybox(ScriptCamera* instance, ScriptTextureCube* value)
+	{
+		HTexture texture;
+		if (value != nullptr)
+			texture = value->getHandle();
+
+		instance->mCamera->setSkybox(texture);
 	}
 
 	MonoObject* ScriptCamera::internal_GetPostProcessSettings(ScriptCamera* instance)
