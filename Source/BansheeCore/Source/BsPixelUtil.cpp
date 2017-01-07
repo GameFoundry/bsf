@@ -418,33 +418,9 @@ namespace bs
         16, 8, 0, 0
         },
 	//-----------------------------------------------------------------------
-        {"PF_A8R8G8B8",
-        /* Bytes per element */
-        4,
-        /* Flags */
-        PFF_HASALPHA | PFF_NATIVEENDIAN,
-        /* Component type and count */
-        PCT_BYTE, 4,
-        /* rbits, gbits, bbits, abits */
-        8, 8, 8, 8,
-        /* Masks and shifts */
-        0x0000FF00, 0x00FF0000, 0xFF000000, 0x000000FF,
-        8, 16, 24, 0
-        },
+		{}, // Deleted format
 	//-----------------------------------------------------------------------
-        {"PF_A8B8G8R8",
-        /* Bytes per element */
-        4,
-        /* Flags */
-        PFF_HASALPHA | PFF_NATIVEENDIAN,
-        /* Component type and count */
-        PCT_BYTE, 4,
-        /* rbits, gbits, bbits, abits */
-        8, 8, 8, 8,
-        /* Masks and shifts */
-        0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF,
-        24, 16, 8, 0,
-        },
+		{}, // Deleted format
 	//-----------------------------------------------------------------------
         {"PF_B8G8R8A8",
         /* Bytes per element */
@@ -474,61 +450,13 @@ namespace bs
 		0, 8, 16, 24
 		},
 	//-----------------------------------------------------------------------
-		{"PF_X8R8G8B8",
-		/* Bytes per element */
-		4,
-		/* Flags */
-		PFF_NATIVEENDIAN,
-		/* Component type and count */
-		PCT_BYTE, 3,
-		/* rbits, gbits, bbits, abits */
-		8, 8, 8, 0,
-		/* Masks and shifts */
-		0x0000FF00, 0x00FF0000, 0xFF000000, 0x000000FF,
-		8, 16, 24, 0
-		},
+		{}, // Deleted format
 	//-----------------------------------------------------------------------
-		{"PF_X8B8G8R8",
-		/* Bytes per element */
-		4,
-		/* Flags */
-		PFF_NATIVEENDIAN,
-		/* Component type and count */
-		PCT_BYTE, 3,
-		/* rbits, gbits, bbits, abits */
-		8, 8, 8, 0,
-		/* Masks and shifts */
-		0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF,
-		24, 16, 8, 0
-		},
+		{}, // Deleted format
 	//-----------------------------------------------------------------------
-		{"PF_R8G8B8X8",
-		/* Bytes per element */
-		4,
-		/* Flags */
-		PFF_HASALPHA | PFF_NATIVEENDIAN,
-		/* Component type and count */
-		PCT_BYTE, 3,
-		/* rbits, gbits, bbits, abits */
-		8, 8, 8, 0,
-		/* Masks and shifts */
-		0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000,
-		0, 8, 16, 0
-		},
+		{}, // Deleted format
 	//-----------------------------------------------------------------------
-		{"PF_B8G8R8X8",
-		/* Bytes per element */
-		4,
-		/* Flags */
-		PFF_HASALPHA | PFF_NATIVEENDIAN,
-		/* Component type and count */
-		PCT_BYTE, 3,
-		/* rbits, gbits, bbits, abits */
-		8, 8, 8, 0,
-		/* Masks and shifts */
-		0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000,
-		16, 8, 0, 0
-		},
+		{}, // Deleted format
 	//-----------------------------------------------------------------------
         {"PF_BC1",
         /* Bytes per element */
@@ -1512,31 +1440,6 @@ namespace bs
             return;
         }
 
-		// Converting to PF_X8R8G8B8 is exactly the same as converting to
-		// PF_A8R8G8B8. (same with PF_X8B8G8R8 and PF_A8B8G8R8)
-		if(dst.getFormat() == PF_X8R8G8B8 || dst.getFormat() == PF_X8B8G8R8)
-		{
-			// Do the same conversion, with PF_A8R8G8B8, which has a lot of
-			// optimized conversions
-			PixelFormat tempFormat = dst.getFormat() == PF_X8R8G8B8?PF_A8R8G8B8:PF_A8B8G8R8;
-			PixelData tempdst(dst.getWidth(), dst.getHeight(), dst.getDepth(), tempFormat);
-			bulkPixelConversion(src, tempdst);
-			return;
-		}
-
-		// Converting from PF_X8R8G8B8 is exactly the same as converting from
-		// PF_A8R8G8B8, given that the destination format does not have alpha.
-		if((src.getFormat() == PF_X8R8G8B8 || src.getFormat() == PF_X8B8G8R8) && !hasAlpha(dst.getFormat()))
-		{
-			// Do the same conversion, with PF_A8R8G8B8, which has a lot of
-			// optimized conversions
-			PixelFormat tempFormat = src.getFormat()==PF_X8R8G8B8?PF_A8R8G8B8:PF_A8B8G8R8;
-			PixelData tempsrc(src.getWidth(), src.getHeight(), src.getDepth(), tempFormat);
-			tempsrc.setExternalBuffer(src.getData());
-			bulkPixelConversion(tempsrc, dst);
-			return;
-		}
-
 		const UINT32 srcPixelSize = PixelUtil::getNumElemBytes(src.getFormat());
 		const UINT32 dstPixelSize = PixelUtil::getNumElemBytes(dst.getFormat());
         UINT8 *srcptr = static_cast<UINT8*>(src.getData())
@@ -1628,8 +1531,6 @@ namespace bs
 			case PF_R8G8:
 			case PF_R8G8B8: case PF_B8G8R8:
 			case PF_R8G8B8A8: case PF_B8G8R8A8:
-			case PF_A8B8G8R8: case PF_A8R8G8B8:
-			case PF_X8B8G8R8: case PF_X8R8G8B8:
 				if(src.getFormat() == scaled.getFormat()) 
 				{
 					// No intermediate buffer needed
@@ -1877,7 +1778,7 @@ namespace bs
 			return;
 		}
 
-		PixelData bgraData(src.getWidth(), src.getHeight(), 1, PF_B8G8R8A8);
+		PixelData bgraData(src.getWidth(), src.getHeight(), 1, PF_R8G8B8A8);
 		bgraData.allocateInternalBuffer();
 		bulkPixelConversion(src, bgraData);
 
@@ -1935,13 +1836,13 @@ namespace bs
 			return outputMipBuffers;
 		}
 
-		PixelData argbData(src.getWidth(), src.getHeight(), 1, PF_A8R8G8B8);
-		argbData.allocateInternalBuffer();
-		bulkPixelConversion(src, argbData);
+		PixelData rgbaData(src.getWidth(), src.getHeight(), 1, PF_R8G8B8A8);
+		rgbaData.allocateInternalBuffer();
+		bulkPixelConversion(src, rgbaData);
 
 		nvtt::InputOptions io;
 		io.setTextureLayout(nvtt::TextureType_2D, src.getWidth(), src.getHeight());
-		io.setMipmapData(argbData.getData(), src.getWidth(), src.getHeight());
+		io.setMipmapData(rgbaData.getData(), src.getWidth(), src.getHeight());
 		io.setMipmapGeneration(true);
 		io.setNormalMap(options.isNormalMap);
 		io.setNormalizeMipmaps(options.normalizeMipmaps);
@@ -1952,7 +1853,7 @@ namespace bs
 		
 		UINT32 numMips = getMaxMipmaps(src.getWidth(), src.getHeight(), 1, src.getFormat());
 
-		Vector<SPtr<PixelData>> argbMipBuffers;
+		Vector<SPtr<PixelData>> rgbaMipBuffers;
 
 		// Note: This can be done more effectively without creating so many temp buffers
 		// and working with the original formats directly, but it would complicate the code
@@ -1961,8 +1862,8 @@ namespace bs
 		UINT32 curHeight = src.getHeight();
 		for (UINT32 i = 0; i < numMips; i++)
 		{
-			argbMipBuffers.push_back(bs_shared_ptr_new<PixelData>(curWidth, curHeight, 1, PF_A8R8G8B8));
-			argbMipBuffers.back()->allocateInternalBuffer();
+			rgbaMipBuffers.push_back(bs_shared_ptr_new<PixelData>(curWidth, curHeight, 1, PF_R8G8B8A8));
+			rgbaMipBuffers.back()->allocateInternalBuffer();
 
 			if (curWidth > 1) 
 				curWidth = curWidth / 2;
@@ -1971,10 +1872,10 @@ namespace bs
 				curHeight = curHeight / 2;
 		}
 
-		argbMipBuffers.push_back(bs_shared_ptr_new<PixelData>(curWidth, curHeight, 1, PF_A8R8G8B8));
-		argbMipBuffers.back()->allocateInternalBuffer();
+		rgbaMipBuffers.push_back(bs_shared_ptr_new<PixelData>(curWidth, curHeight, 1, PF_R8G8B8A8));
+		rgbaMipBuffers.back()->allocateInternalBuffer();
 
-		NVTTMipmapOutputHandler outputHandler(argbMipBuffers);
+		NVTTMipmapOutputHandler outputHandler(rgbaMipBuffers);
 
 		nvtt::OutputOptions oo;
 		oo.setOutputHeader(false);
@@ -1987,11 +1888,11 @@ namespace bs
 			return outputMipBuffers;
 		}
 
-		argbData.freeInternalBuffer();
+		rgbaData.freeInternalBuffer();
 
-		for (UINT32 i = 0; i < (UINT32)argbMipBuffers.size(); i++)
+		for (UINT32 i = 0; i < (UINT32)rgbaMipBuffers.size(); i++)
 		{
-			SPtr<PixelData> argbBuffer = argbMipBuffers[i];
+			SPtr<PixelData> argbBuffer = rgbaMipBuffers[i];
 			SPtr<PixelData> outputBuffer = bs_shared_ptr_new<PixelData>(argbBuffer->getWidth(), argbBuffer->getHeight(), 1, src.getFormat());
 			outputBuffer->allocateInternalBuffer();
 

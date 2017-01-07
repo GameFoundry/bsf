@@ -29,6 +29,7 @@
 #include "BsSplashScreen.h"
 #include "BsDynLib.h"
 #include "BsSceneManager.h"
+#include "BsEngineConfig.h"
 
 namespace bs
 {

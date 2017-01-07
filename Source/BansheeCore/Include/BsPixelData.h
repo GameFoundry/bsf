@@ -26,40 +26,10 @@ namespace bs
         PF_R8G8B8 = 3,
         /** 24-bit pixel format, 8 bits for blue, green and red. */
         PF_B8G8R8 = 4,
-        /** 32-bit pixel format, 8 bits for alpha, red, green and blue. */
-        PF_A8R8G8B8 = 5,
-        /** 32-bit pixel format, 8 bits for blue, green, red and alpha. */
-        PF_A8B8G8R8 = 6,
         /** 32-bit pixel format, 8 bits for blue, green, red and alpha. */
         PF_B8G8R8A8 = 7,
 		/** 32-bit pixel format, 8 bits for red, green, blue and alpha. */
-		PF_R8G8B8A8 = 8,
-        /** 
-		 * 32-bit pixel format, 8 bits for red, 8 bits for green, 8 bits for blue. Like PF_A8R8G8B8, but alpha will get 
-		 * discarded.
-		 */
-        PF_X8R8G8B8 = 9,
-        /** 
-		 * 32-bit pixel format, 8 bits for blue, 8 bits for green, 8 bits for red. Like PF_A8B8G8R8, but alpha will get 
-		 * discarded.
-		 */
-        PF_X8B8G8R8 = 10,
-		/** 
-		 * 32-bit pixel format, 8 bits for red, 8 bits for green, 8 bits for blue. Like PF_R8G8B8A8, but alpha will get 
-		 * discarded. 
-		 */
-		PF_R8G8B8X8 = 11,
-		/** 32-bit pixel format, 8 bits for blue, 8 bits for green, 8 bits for red. */
-		/** Like PF_B8G8R8A8, but alpha will get discarded. */
-		PF_B8G8R8X8 = 12,
-		/** 24-bit pixel format, 8 bits for red, green and blue. */
-		PF_BYTE_RGB = PF_R8G8B8,
-		/** 24-bit pixel format, 8 bits for blue, green and red. */
-		PF_BYTE_BGR = PF_B8G8R8,
-		/** 32-bit pixel format, 8 bits for blue, green, red and alpha. */
-		PF_BYTE_BGRA = PF_B8G8R8A8,
-		/** 32-bit pixel format, 8 bits for red, green, blue and alpha. */
-		PF_BYTE_RGBA = PF_R8G8B8A8,      
+		PF_R8G8B8A8 = 8, 
         /** DXT1/BC1 format containing opaque RGB or 1-bit alpha RGB. 4 bits per pixel. */
         PF_BC1 = 13,
 		/** DXT3/BC2 format containing RGB with premultiplied alpha. 4 bits per pixel. */

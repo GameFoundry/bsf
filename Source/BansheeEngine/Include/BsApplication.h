@@ -4,7 +4,6 @@
 
 #include "BsPrerequisites.h"
 #include "BsCoreApplication.h"
-#include "BsEngineConfig.h"
 #include "BsEvent.h"
 
 namespace bs

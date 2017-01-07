@@ -20,6 +20,7 @@
 #include "BsRendererMaterialManager.h"
 #include "BsPlatform.h"
 #include "BsEngineShaderIncludeHandler.h"
+#include "BsEngineConfig.h"
 
 namespace bs
 {

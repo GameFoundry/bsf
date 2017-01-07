@@ -19,15 +19,9 @@ namespace bs
                 return GL_RGB;
             case PF_B8G8R8:
                 return GL_BGR;
-			case PF_R8G8B8X8:
 			case PF_R8G8B8A8:
-			case PF_A8R8G8B8:
-			case PF_X8R8G8B8:
                 return GL_RGBA;
             case PF_B8G8R8A8:
-			case PF_B8G8R8X8:
-			case PF_A8B8G8R8:
-			case PF_X8B8G8R8:
                 return GL_BGRA;
 			case PF_FLOAT16_R:
                 return GL_RED;
@@ -74,15 +68,8 @@ namespace bs
             case PF_B8G8R8:
 			case PF_R8G8:
 				return GL_UNSIGNED_BYTE;
-			case PF_X8B8G8R8:
-			case PF_A8B8G8R8:
-			case PF_X8R8G8B8:
-            case PF_A8R8G8B8:
-				return GL_UNSIGNED_INT_8_8_8_8;
             case PF_B8G8R8A8:
-			case PF_B8G8R8X8:
 			case PF_R8G8B8A8:
-			case PF_R8G8B8X8:
 				return GL_UNSIGNED_INT_8_8_8_8_REV;
 			case PF_FLOAT16_R:
 			case PF_FLOAT16_RG:
@@ -141,8 +128,6 @@ namespace bs
 				return GL_RG8;
             case PF_R8G8B8:
             case PF_B8G8R8:
-			case PF_B8G8R8X8:
-			case PF_R8G8B8X8:
 				if (hwGamma)
 					return GL_SRGB8;
 				else
@@ -257,7 +242,7 @@ namespace bs
 			return PF_R8G8;
 		case GL_RGB8:
 		case GL_SRGB8:
-			return PF_R8G8B8X8;
+			return PF_R8G8B8;
 		case GL_RGBA8:
 		case GL_SRGB8_ALPHA8:
 			return PF_R8G8B8A8;
@@ -327,9 +312,7 @@ namespace bs
 			return PF_R8G8;
 		case PF_R8G8B8:
 		case PF_B8G8R8:
-		case PF_B8G8R8X8:
-		case PF_R8G8B8X8:
-			return PF_R8G8B8X8;
+			return PF_R8G8B8;
 		case PF_B8G8R8A8:
 		case PF_R8G8B8A8:
 			return PF_R8G8B8A8;

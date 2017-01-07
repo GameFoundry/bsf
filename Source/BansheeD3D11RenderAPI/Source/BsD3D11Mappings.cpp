@@ -592,9 +592,6 @@ namespace bs
 		case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:
 		case DXGI_FORMAT_B8G8R8A8_UNORM:
 			return PF_B8G8R8A8;
-		case DXGI_FORMAT_B8G8R8X8_UNORM_SRGB:
-		case DXGI_FORMAT_B8G8R8X8_UNORM:
-			return PF_B8G8R8X8;
 		default:
 			return PF_UNKNOWN;
 		}
@@ -613,14 +610,6 @@ namespace bs
 			return DXGI_FORMAT_R8G8_UNORM; 
 		case PF_R8G8B8:
 			return DXGI_FORMAT_UNKNOWN;
-		case PF_A8R8G8B8:
-			return DXGI_FORMAT_UNKNOWN;
-		case PF_A8B8G8R8:
-			return DXGI_FORMAT_UNKNOWN;
-		case PF_X8R8G8B8:
-			return DXGI_FORMAT_UNKNOWN;
-		case PF_X8B8G8R8:
-			return DXGI_FORMAT_UNKNOWN;
 		case PF_R8G8B8A8:
 			if (gamma)
 				return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
@@ -632,14 +621,6 @@ namespace bs
 			if (gamma)
 				return DXGI_FORMAT_B8G8R8A8_UNORM_SRGB;
 			return DXGI_FORMAT_B8G8R8A8_UNORM;
-		case PF_B8G8R8X8:
-			if (!isSampledTexture)
-				return DXGI_FORMAT_UNKNOWN;
-
-			if (gamma)
-				return DXGI_FORMAT_B8G8R8X8_UNORM_SRGB;
-
-			return DXGI_FORMAT_B8G8R8X8_UNORM;
 		case PF_FLOAT16_R:
 			return DXGI_FORMAT_R16_FLOAT;
 		case PF_FLOAT16_RG:
@@ -838,19 +819,12 @@ namespace bs
 			return PF_FLOAT32_RGBA;
 		case PF_R8G8B8:
 		case PF_B8G8R8:
-		case PF_X8R8G8B8:
-		case PF_A8R8G8B8:
 		case PF_BC1:
 		case PF_BC1a:
 		case PF_BC2:
 		case PF_BC3:
 		case PF_UNKNOWN:
 			return PF_R8G8B8A8;
-		case PF_A8B8G8R8:
-		case PF_X8B8G8R8:
-		case PF_R8G8B8X8:
-		case PF_B8G8R8X8:
-			return PF_B8G8R8A8;
 		case PF_D32_S8X24:
 			return PF_FLOAT32_RG;
 		case PF_D24S8:

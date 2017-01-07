@@ -102,7 +102,7 @@ namespace bs
 			}
 		}
 
-		writeDataImpl(src, face, mipLevel, discardEntireBuffer, queueIdx);
+		writeDataImpl(src, mipLevel, face, discardEntireBuffer, queueIdx);
 	}
 
 	void TextureCore::readData(PixelData& dest, UINT32 mipLevel, UINT32 face, UINT32 deviceIdx, UINT32 queueIdx)
@@ -122,7 +122,7 @@ namespace bs
 			return;
 		}
 
-		readDataImpl(pixelData, face, mipLevel , deviceIdx, queueIdx);
+		readDataImpl(pixelData, mipLevel, face, deviceIdx, queueIdx);
 	}
 
 	PixelData TextureCore::lock(GpuLockOptions options, UINT32 mipLevel, UINT32 face, UINT32 deviceIdx, UINT32 queueIdx)
@@ -367,7 +367,7 @@ namespace bs
 			[&](const SPtr<TextureCore>& texture, UINT32 _face, UINT32 _mipLevel, const SPtr<PixelData>& _pixData, 
 				bool _discardEntireBuffer, AsyncOp& asyncOp)
 		{
-			texture->writeData(*_pixData, _face, _mipLevel, _discardEntireBuffer);
+			texture->writeData(*_pixData, _mipLevel, _face, _discardEntireBuffer);
 			_pixData->_unlock();
 			asyncOp._completeOperation();
 
@@ -388,7 +388,7 @@ namespace bs
 			// Make sure any queued command start executing before reading
 			RenderAPICore::instance().submitCommandBuffer(nullptr);
 
-			texture->readData(*_pixData, _face, _mipLevel);
+			texture->readData(*_pixData, _mipLevel, _face);
 			_pixData->_unlock();
 			asyncOp._completeOperation();
 

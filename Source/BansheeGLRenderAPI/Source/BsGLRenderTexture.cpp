@@ -238,11 +238,11 @@ namespace bs
     {
         // Try all formats, and report which ones work as target
         GLuint fb = 0, tid = 0;
-        GLint old_drawbuffer = 0, old_readbuffer = 0;
+        GLint oldDrawbuffer = 0, oldReadbuffer = 0;
         GLenum target = GL_TEXTURE_2D;
 
-        glGetIntegerv (GL_DRAW_BUFFER, &old_drawbuffer);
-        glGetIntegerv (GL_READ_BUFFER, &old_readbuffer);
+        glGetIntegerv (GL_DRAW_BUFFER, &oldDrawbuffer);
+        glGetIntegerv (GL_READ_BUFFER, &oldReadbuffer);
 
         for(size_t x=0; x<PF_COUNT; ++x)
         {
@@ -333,17 +333,8 @@ namespace bs
                 glDeleteTextures(1, &tid);
         }
 
-        // It seems a bug in nVidia driver: glBindFramebuffer should restore
-        // draw and read buffers, but in some unclear circumstances it won't.
-        glDrawBuffer(old_drawbuffer);
-        glReadBuffer(old_readbuffer);
-
-		String fmtstring = "";
-        for(size_t x = 0; x < PF_COUNT; ++x)
-        {
-            if(mProps[x].valid)
-                fmtstring += PixelUtil::getFormatName((PixelFormat)x)+" ";
-        }
+        glDrawBuffer(oldDrawbuffer);
+        glReadBuffer(oldReadbuffer);
     }
     
     PixelFormat GLRTTManager::getSupportedAlternative(PixelFormat format)
@@ -355,7 +346,7 @@ namespace bs
         PixelComponentType pct = PixelUtil::getElementType(format);
         switch(pct)
         {
-        case PCT_BYTE: format = PF_A8R8G8B8; break;
+        case PCT_BYTE: format = PF_R8G8B8A8; break;
         case PCT_FLOAT16: format = PF_FLOAT16_RGBA; break;
         case PCT_FLOAT32: format = PF_FLOAT32_RGBA; break;
         default: break;
@@ -365,7 +356,7 @@ namespace bs
             return format;
 
         // If none at all, return to default
-        return PF_A8R8G8B8;
+        return PF_R8G8B8A8;
     }
 
 	GLRenderTexture::GLRenderTexture(const RENDER_TEXTURE_DESC& desc)

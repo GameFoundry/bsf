@@ -32,7 +32,6 @@ namespace bs
 
 			return VK_FORMAT_R8G8B8A8_UNORM;
 		case PF_B8G8R8A8:
-		case PF_B8G8R8X8:
 			if (sRGB)
 				return VK_FORMAT_B8G8R8A8_SRGB;
 
@@ -54,15 +53,11 @@ namespace bs
 		case PF_FLOAT32_RGBA:
 			return VK_FORMAT_R32G32B32A32_SFLOAT;
 		case PF_BC1:
+		case PF_BC1a:
 			if (sRGB)
 				return VK_FORMAT_BC1_RGB_SRGB_BLOCK;
 
 			return VK_FORMAT_BC1_RGB_UNORM_BLOCK;
-		case PF_BC1a:
-			if (sRGB)
-				return VK_FORMAT_BC1_RGBA_SRGB_BLOCK;
-
-			return VK_FORMAT_BC1_RGBA_UNORM_BLOCK;
 		case PF_BC2:
 			if (sRGB)
 				return VK_FORMAT_BC2_SRGB_BLOCK;
@@ -96,10 +91,6 @@ namespace bs
 			return VK_FORMAT_B10G11R11_UFLOAT_PACK32;
 		case PF_UNORM_R10G10B10A2:
 			return VK_FORMAT_A2B10G10R10_UNORM_PACK32;
-		case PF_A8R8G8B8:
-		case PF_A8B8G8R8:
-		case PF_X8R8G8B8:
-		case PF_X8B8G8R8:
 		case PF_UNKNOWN:
 		default:
 			return VK_FORMAT_UNDEFINED;

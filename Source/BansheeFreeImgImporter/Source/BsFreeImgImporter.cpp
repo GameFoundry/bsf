@@ -325,16 +325,16 @@ namespace bs
 				//     PF_BYTE_BGR[A] for little endian (== PF_ARGB native)
 				//     PF_BYTE_RGB[A] for big endian (== PF_RGBA native)
 #if FREEIMAGE_COLORORDER == FREEIMAGE_COLORORDER_RGB
-				format = PF_BYTE_RGB;
+				format = PF_R8G8B8;
 #else
-				format = PF_BYTE_BGR;
+				format = PF_B8G8R8;
 #endif
 				break;
 			case 32:
 #if FREEIMAGE_COLORORDER == FREEIMAGE_COLORORDER_RGB
-				format = PF_BYTE_RGBA;
+				format = PF_R8G8B8A8;
 #else
-				format = PF_BYTE_BGRA;
+				format = PF_B8G8R8A8;
 #endif
 				break;
 
