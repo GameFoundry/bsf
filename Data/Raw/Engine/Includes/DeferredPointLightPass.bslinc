@@ -177,10 +177,10 @@ Technique
 		
 					uint sphereStartIdx = numSides * numSlices;
 					// Cone vertices
-					if (gl_VertexID < sphereStartIdx)
+					if (gl_VertexIndex < sphereStartIdx)
 					{
-						uint sliceIdx = gl_VertexID / numSides;
-						uint sideIdx = gl_VertexID % numSides;
+						uint sliceIdx = gl_VertexIndex / numSides;
+						uint sideIdx = gl_VertexIndex % numSides;
 
 						float curAngle = float(sideIdx) * 2 * PI / float(numSides);
 						float sliceOffset = height * sliceIdx / float(numSlices - 1);
@@ -192,7 +192,7 @@ Technique
 					}
 					else // Sphere cap vertices
 					{
-						uint sphereVertexIdx = gl_VertexID - sphereStartIdx;
+						uint sphereVertexIdx = gl_VertexIndex - sphereStartIdx;
 						uint sliceIdx = sphereVertexIdx / numSides;
 						uint sideIdx = sphereVertexIdx % numSides;
 
