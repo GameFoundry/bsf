@@ -4,7 +4,7 @@ Technique : base("PPTonemapCommon") =
 	
 	Pass =
 	{
-		Fragment =
+		Common =
 		{
 			static const float3x3 sRGBToXYZMatrix =
 			{
@@ -121,7 +121,7 @@ Technique : base("PPTonemapCommon") =
 	
 	Pass =
 	{
-		Fragment =
+		Common =
 		{
 			const mat3x3 sRGBToXYZMatrix = mat3x3(
 				vec3(0.4124564f, 0.2126729f, 0.0193339f),

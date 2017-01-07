@@ -242,7 +242,7 @@ namespace bs
 		UINT32 numMips = mProperties.getNumMipmaps();
 		PixelFormat format = mProperties.getFormat();
 		bool hwGamma = mProperties.isHardwareGammaEnabled();
-		PixelFormat closestFormat = D3D11Mappings::getClosestSupportedPF(format, hwGamma);
+		PixelFormat closestFormat = D3D11Mappings::getClosestSupportedPF(format, hwGamma, usage);
 		UINT32 numFaces = mProperties.getNumFaces();
 
 		// We must have those defined here
@@ -250,7 +250,7 @@ namespace bs
 
 		// Determine which D3D11 pixel format we'll use
 		HRESULT hr;
-		DXGI_FORMAT d3dPF = D3D11Mappings::getPF(closestFormat, hwGamma);
+		DXGI_FORMAT d3dPF = D3D11Mappings::getPF(closestFormat, hwGamma, usage);
 
 		if (format != D3D11Mappings::getPF(d3dPF))
 		{
@@ -360,7 +360,7 @@ namespace bs
 		bool hwGamma = mProperties.isHardwareGammaEnabled();
 		UINT32 sampleCount = mProperties.getNumSamples();
 		TextureType texType = mProperties.getTextureType();
-		PixelFormat closestFormat = D3D11Mappings::getClosestSupportedPF(format, hwGamma);
+		PixelFormat closestFormat = D3D11Mappings::getClosestSupportedPF(format, hwGamma, usage);
 		UINT32 numFaces = mProperties.getNumFaces();
 
 		// TODO - Consider making this a parameter eventually
@@ -371,7 +371,7 @@ namespace bs
 
 		// Determine which D3D11 pixel format we'll use
 		HRESULT hr;
-		DXGI_FORMAT d3dPF = D3D11Mappings::getPF(closestFormat, hwGamma);
+		DXGI_FORMAT d3dPF = D3D11Mappings::getPF(closestFormat, hwGamma, usage);
 
 		if (format != D3D11Mappings::getPF(d3dPF))
 		{
@@ -506,7 +506,7 @@ namespace bs
 		UINT32 numMips = mProperties.getNumMipmaps();
 		PixelFormat format = mProperties.getFormat();
 		bool hwGamma = mProperties.isHardwareGammaEnabled();
-		PixelFormat closestFormat = D3D11Mappings::getClosestSupportedPF(format, hwGamma);
+		PixelFormat closestFormat = D3D11Mappings::getClosestSupportedPF(format, hwGamma, usage);
 
 		// TODO - Consider making this a parameter eventually
 		bool readableDepth = true;
@@ -516,7 +516,7 @@ namespace bs
 
 		// Determine which D3D11 pixel format we'll use
 		HRESULT hr;
-		DXGI_FORMAT d3dPF = D3D11Mappings::getPF(closestFormat, hwGamma);
+		DXGI_FORMAT d3dPF = D3D11Mappings::getPF(closestFormat, hwGamma, usage);
 		
 		if (format != D3D11Mappings::getPF(d3dPF))
 		{

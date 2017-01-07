@@ -18,7 +18,8 @@ namespace bs
 	PixelFormat D3D11TextureManager::getNativeFormat(TextureType ttype, PixelFormat format, int usage, bool hwGamma)
 	{
 		// Basic filtering
-		DXGI_FORMAT d3dPF = D3D11Mappings::getPF(D3D11Mappings::getClosestSupportedPF(format, hwGamma), hwGamma);
+		DXGI_FORMAT d3dPF = D3D11Mappings::getPF(D3D11Mappings::getClosestSupportedPF(format, hwGamma, usage), 
+			hwGamma, usage);
 
 		return D3D11Mappings::getPF(d3dPF);
 	}

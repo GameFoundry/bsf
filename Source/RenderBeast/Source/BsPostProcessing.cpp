@@ -296,6 +296,9 @@ namespace bs
 
 		mParamsSet->setParamBlockBuffer("Input", mParamBuffer);
 		mParamsSet->setParamBlockBuffer("WhiteBalanceInput", mWhiteBalanceParamBuffer);
+
+		SPtr<GpuParamsCore> params = mParamsSet->getGpuParams();
+		params->getLoadStoreTextureParam(GPT_COMPUTE_PROGRAM, "gOutputTex", mOutputTex);
 	}
 
 	void CreateTonemapLUTMat::_initDefines(ShaderDefines& defines)
@@ -339,18 +342,19 @@ namespace bs
 		gWhiteBalanceParamDef.gWhiteOffset.set(mWhiteBalanceParamBuffer, settings.whiteBalance.tint);
 
 		// Set output
-		POOLED_RENDER_TEXTURE_DESC outputDesc = POOLED_RENDER_TEXTURE_DESC::create3D(PF_B8G8R8X8, 
-			LUT_SIZE, LUT_SIZE, LUT_SIZE, TU_RENDERTARGET);
+		POOLED_RENDER_TEXTURE_DESC outputDesc = POOLED_RENDER_TEXTURE_DESC::create3D(PF_R8G8B8A8, 
+			LUT_SIZE, LUT_SIZE, LUT_SIZE, TU_LOADSTORE);
 
-		// Render
+		// Dispatch
 		ppInfo.colorLUT = RenderTexturePool::instance().get(outputDesc);
 
-		RenderAPICore& rapi = RenderAPICore::instance();
-		rapi.setRenderTarget(ppInfo.colorLUT->renderTexture);
+		mOutputTex.set(ppInfo.colorLUT->texture);
 
-		gRendererUtility().setPass(mMaterial);
+		RenderAPICore& rapi = RenderAPICore::instance();
+		
+		gRendererUtility().setComputePass(mMaterial);
 		gRendererUtility().setPassParams(mParamsSet);
-		gRendererUtility().drawScreenQuad(LUT_SIZE);
+		rapi.dispatchCompute(LUT_SIZE / 8, LUT_SIZE / 8, LUT_SIZE);
 	}
 
 	void CreateTonemapLUTMat::release(PostProcessInfo& ppInfo)

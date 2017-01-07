@@ -36,8 +36,8 @@ namespace bs
 {
 	D3D11RenderAPI::D3D11RenderAPI()
 		: mDXGIFactory(nullptr), mDevice(nullptr), mDriverList(nullptr), mActiveD3DDriver(nullptr)
-		, mFeatureLevel(D3D_FEATURE_LEVEL_11_0), mHLSLFactory(nullptr), mIAManager(nullptr), mStencilRef(0)
-		, mActiveDrawOp(DOT_TRIANGLE_LIST), mViewportNorm(0.0f, 0.0f, 1.0f, 1.0f)
+		, mFeatureLevel(D3D_FEATURE_LEVEL_11_0), mHLSLFactory(nullptr), mIAManager(nullptr), mPSUAVsBound(false)
+		, mCSUAVsBound(false), mStencilRef(0), mActiveDrawOp(DOT_TRIANGLE_LIST), mViewportNorm(0.0f, 0.0f, 1.0f, 1.0f)
 	{ }
 
 	D3D11RenderAPI::~D3D11RenderAPI()
@@ -342,6 +342,32 @@ namespace bs
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
+			ID3D11DeviceContext* context = mDevice->getImmediateContext();
+
+			// Clear any previously bound UAVs (otherwise shaders attempting to read resources viewed by those view will
+			// be unable to)
+			if (mPSUAVsBound || mCSUAVsBound)
+			{
+				ID3D11UnorderedAccessView* emptyUAVs[D3D11_PS_CS_UAV_REGISTER_COUNT];
+				bs_zero_out(emptyUAVs);
+
+				if(mPSUAVsBound)
+				{
+					context->OMSetRenderTargetsAndUnorderedAccessViews(
+						D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr, 0, 
+						D3D11_PS_CS_UAV_REGISTER_COUNT, emptyUAVs, nullptr);
+
+					mPSUAVsBound = false;
+				}
+
+				if(mCSUAVsBound)
+				{
+					context->CSSetUnorderedAccessViews(0, D3D11_PS_CS_UAV_REGISTER_COUNT, emptyUAVs, nullptr);
+
+					mCSUAVsBound = false;
+				}
+			}
+
 			bs_frame_mark();
 			{
 				FrameVector<ID3D11ShaderResourceView*> srvs(8);
@@ -476,8 +502,6 @@ namespace bs
 					}
 				};
 
-				ID3D11DeviceContext* context = mDevice->getImmediateContext();
-
 				UINT32 numSRVs = 0;
 				UINT32 numUAVs = 0;
 				UINT32 numConstBuffers = 0;
@@ -485,18 +509,11 @@ namespace bs
 
 				populateViews(GPT_VERTEX_PROGRAM);
 				numSRVs = (UINT32)srvs.size();
-				numUAVs = (UINT32)uavs.size();
 				numConstBuffers = (UINT32)constBuffers.size();
 				numSamplers = (UINT32)samplers.size();
 
 				if(numSRVs > 0)
 					context->VSSetShaderResources(0, numSRVs, srvs.data());
-
-				if(numUAVs > 0)
-				{
-					context->OMSetRenderTargetsAndUnorderedAccessViews(D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr,
-						nullptr, 0, numUAVs, uavs.data(), nullptr);
-				}
 
 				if (numConstBuffers > 0)
 					context->VSSetConstantBuffers(0, numConstBuffers, constBuffers.data());
@@ -506,11 +523,19 @@ namespace bs
 
 				populateViews(GPT_FRAGMENT_PROGRAM);
 				numSRVs = (UINT32)srvs.size();
+				numUAVs = (UINT32)uavs.size();
 				numConstBuffers = (UINT32)constBuffers.size();
 				numSamplers = (UINT32)samplers.size();
 
 				if (numSRVs > 0)
 					context->PSSetShaderResources(0, numSRVs, srvs.data());
+
+				if (numUAVs > 0)
+				{
+					context->OMSetRenderTargetsAndUnorderedAccessViews(
+						D3D11_KEEP_RENDER_TARGETS_AND_DEPTH_STENCIL, nullptr, nullptr, 0, numUAVs, uavs.data(), nullptr);
+					mPSUAVsBound = true;
+				}
 
 				if (numConstBuffers > 0)
 					context->PSSetConstantBuffers(0, numConstBuffers, constBuffers.data());
@@ -569,8 +594,11 @@ namespace bs
 				if (numSRVs > 0)
 					context->CSSetShaderResources(0, numSRVs, srvs.data());
 
-				if(numUAVs > 0)
+				if (numUAVs > 0)
+				{
 					context->CSSetUnorderedAccessViews(0, numUAVs, uavs.data(), nullptr);
+					mCSUAVsBound = true;
+				}
 
 				if (numConstBuffers > 0)
 					context->CSSetConstantBuffers(0, numConstBuffers, constBuffers.data());

@@ -90,9 +90,10 @@ namespace bs
 
 		/**
 		 * Converts engine pixel format to DX11 pixel format. Some formats depend on whether hardware gamma is used or not,
-		 * in which case set the @p hwGamma parameter as needed.
+		 * in which case set the @p hwGamma parameter as needed. Most formats also depend on @p usage, as specified by
+		 * TextureUsage flags.
 		 */
-		static DXGI_FORMAT getPF(PixelFormat format, bool hwGamma);
+		static DXGI_FORMAT getPF(PixelFormat format, bool hwGamma, int usage);
 		
 		/** Converts engine GPU buffer format to DX11 GPU buffer format. */
 		static DXGI_FORMAT getBF(GpuBufferFormat format);
@@ -119,7 +120,7 @@ namespace bs
 		static bool isDynamic(GpuBufferUsage mUsage);
 
 		/**	Finds the closest pixel format that DX11 supports. */
-		static PixelFormat getClosestSupportedPF(PixelFormat format, bool hwGamma);
+		static PixelFormat getClosestSupportedPF(PixelFormat format, bool hwGamma, int usage);
 
 		/**
 		 * Returns size in bytes of a pixel surface of the specified size and format, while using DX11 allocation rules for

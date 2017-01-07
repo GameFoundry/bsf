@@ -13,8 +13,8 @@ namespace bs
 		:mViewport(viewport), mNumSamples(numSamples), mHDR(hdr)
 	{
 		// Note: Consider customizable HDR format via options? e.g. smaller PF_FLOAT_R11G11B10 or larger 32-bit format
-		mSceneColorFormat = hdr ? PF_FLOAT16_RGBA : PF_B8G8R8A8;
-		mAlbedoFormat = PF_B8G8R8X8; // Note: Also consider customizable format (e.g. 16-bit float?)
+		mSceneColorFormat = hdr ? PF_FLOAT16_RGBA : PF_R8G8B8A8;
+		mAlbedoFormat = PF_R8G8B8A8; // Note: Also consider customizable format (e.g. 16-bit float?)
 		mNormalFormat = PF_UNORM_R10G10B10A2; // Note: Also consider customizable format (e.g. 16-bit float?)
 	}
 

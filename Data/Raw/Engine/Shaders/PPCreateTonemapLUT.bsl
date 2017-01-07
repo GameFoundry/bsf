@@ -1,4 +1,3 @@
-#include "$ENGINE$\VolumeRenderBase.bslinc"
 #include "$ENGINE$\PPTonemapCommon.bslinc"
 #include "$ENGINE$\PPWhiteBalance.bslinc"
 
@@ -8,7 +7,6 @@ Parameters =
 };
 
 Technique
- : inherits("VolumeRenderBase")
  : inherits("PPTonemapCommon")
  : inherits("PPWhiteBalance") =
 {
@@ -16,10 +14,7 @@ Technique
 	
 	Pass =
 	{
-		DepthWrite = false;
-		DepthRead = false;
-	
-		Fragment =
+		Compute =
 		{
 			cbuffer Input
 			{
@@ -84,18 +79,19 @@ Technique
 				return color;
 			}		
 			
-			float4 main(GStoFS input) : SV_Target0
+			RWTexture3D<float4> gOutputTex;
+			
+			[numthreads(8, 8, 1)]
+			void main(
+				uint3 dispatchThreadId : SV_DispatchThreadID,
+				uint threadIndex : SV_GroupIndex)
 			{
 				// Constants
 				const float3x3 sRGBToACES2065Matrix = mul(XYZToACES2065Matrix, mul(D65ToD60Matrix, sRGBToXYZMatrix));
 				const float3x3 sRGBToACEScgMatrix = mul(XYZToACEScgMatrix, mul(D65ToD60Matrix, sRGBToXYZMatrix));
 				const float3x3 ACEScgTosRGBMatrix = mul(XYZTosRGBMatrix, mul(D60ToD65Matrix, ACEScgToXYZMatrix));
 				
-				// By default pixel centers will be sampled, but we want to encode the entire range, so
-				// offset the sampling by half a pixel, and extend the entire range by one pixel.
-				float2 uv = input.uv0 - (0.5f / LUT_SIZE);
-				float3 logColor = float3(uv * LUT_SIZE / (float)(LUT_SIZE - 1), input.layerIdx / (float)(LUT_SIZE - 1));
-				
+				float3 logColor = float3(dispatchThreadId.xyz / (float)(LUT_SIZE - 1));
 				float3 linearColor = LogToLinearColor(logColor);
 				
 				linearColor = WhiteBalance(linearColor);
@@ -119,14 +115,13 @@ Technique
 					gammaColor = pow(gammaColor, 1.0f/2.2f);
 				
 				// TODO - Divide by 1.05f here and then re-apply it when decoding from the texture?
-				return float4(gammaColor, 0.0f);
+				gOutputTex[dispatchThreadId] = float4(gammaColor, 1.0f);	
 			}	
 		};
 	};
 };
 
 Technique
- : inherits("VolumeRenderBase")
  : inherits("PPTonemapCommon")
  : inherits("PPWhiteBalance") =
 {
@@ -134,10 +129,7 @@ Technique
 	
 	Pass =
 	{
-		DepthWrite = false;
-		DepthRead = false;
-	
-		Fragment =
+		Compute =
 		{
 			layout(binding = 1) uniform Input
 			{
@@ -208,12 +200,8 @@ Technique
 				result = color;
 			}		
 			
-			in GStoFS
-			{
-				layout(location = 0) vec2 uv0;
-			} FSInput;
-			
-			layout(location = 0) out vec4 fragColor;
+			layout (local_size_x = 8, local_size_y = 8) in;
+			layout(binding = 2, rgba8) uniform image3D gOutputTex;
 			
 			void main()
 			{
@@ -222,10 +210,7 @@ Technique
 				const mat3x3 sRGBToACEScgMatrix = XYZToACEScgMatrix * (D65ToD60Matrix * sRGBToXYZMatrix);
 				const mat3x3 ACEScgTosRGBMatrix = XYZTosRGBMatrix * (D60ToD65Matrix * ACEScgToXYZMatrix);
 				
-				// By default pixel centers will be sampled, but we want to encode the entire range, so
-				// offset the sampling by half a pixel, and extend the entire range by one pixel.
-				vec2 uv = FSInput.uv0 - (0.5f / LUT_SIZE);
-				vec3 logColor = vec3(uv * LUT_SIZE / float(LUT_SIZE - 1), gl_Layer / float(LUT_SIZE - 1));
+				vec3 logColor = vec3(gl_GlobalInvocationID.xyz / float(LUT_SIZE - 1));
 				
 				vec3 linearColor;
 				LogToLinearColor(logColor, linearColor);
@@ -251,7 +236,7 @@ Technique
 					gammaColor = pow(gammaColor, vec3(1.0f/2.2f));
 				
 				// TODO - Divide by 1.05f here and then re-apply it when decoding from the texture?
-				fragColor = vec4(gammaColor, 0.0f);
+				imageStore(gOutputTex, ivec3(gl_GlobalInvocationID.xyz), vec4(gammaColor, 1.0f));
 			}	
 		};
 	};

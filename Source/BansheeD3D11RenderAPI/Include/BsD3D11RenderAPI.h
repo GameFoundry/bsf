@@ -211,6 +211,8 @@ namespace bs
 		D3D11InputLayoutManager* mIAManager;
 
 		std::pair<SPtr<TextureCore>, SPtr<TextureView>> mBoundUAVs[D3D11_PS_CS_UAV_REGISTER_COUNT];
+		bool mPSUAVsBound;
+		bool mCSUAVsBound;
 
 		UINT32 mStencilRef;
 		Rect2 mViewportNorm;

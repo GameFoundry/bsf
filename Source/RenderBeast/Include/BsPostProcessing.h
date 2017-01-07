@@ -202,6 +202,8 @@ namespace bs
 	private:
 		SPtr<GpuParamBlockBufferCore> mParamBuffer;
 		SPtr<GpuParamBlockBufferCore> mWhiteBalanceParamBuffer;
+
+		GpuParamLoadStoreTextureCore mOutputTex;
 	};
 
 	BS_PARAM_BLOCK_BEGIN(TonemappingParamDef)
