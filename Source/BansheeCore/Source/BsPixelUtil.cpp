@@ -1091,7 +1091,7 @@ namespace bs
 		}
 	}
 
-    void PixelUtil::getBitDepths(PixelFormat format, int rgba[4])
+    void PixelUtil::getBitDepths(PixelFormat format, int (&rgba)[4])
     {
         const PixelFormatDescription& des = getDescriptionFor(format);
         rgba[0] = des.rbits;
@@ -1100,7 +1100,7 @@ namespace bs
         rgba[3] = des.abits;
     }
 
-	void PixelUtil::getBitMasks(PixelFormat format, UINT32 rgba[4])
+	void PixelUtil::getBitMasks(PixelFormat format, UINT32 (&rgba)[4])
     {
         const PixelFormatDescription& des = getDescriptionFor(format);
         rgba[0] = des.rmask;
@@ -1109,7 +1109,7 @@ namespace bs
         rgba[3] = des.amask;
     }
 
-	void PixelUtil::getBitShifts(PixelFormat format, UINT8 rgba[4])
+	void PixelUtil::getBitShifts(PixelFormat format, UINT8 (&rgba)[4])
 	{
 		const PixelFormatDescription& des = getDescriptionFor(format);
 		rgba[0] = des.rshift;

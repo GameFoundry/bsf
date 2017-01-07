@@ -13,7 +13,7 @@ namespace bs
 {
 	GLPixelBuffer::GLPixelBuffer(UINT32 inWidth, UINT32 inHeight, UINT32 inDepth, PixelFormat inFormat, GpuBufferUsage usage)
 		: mUsage(usage), mIsLocked(false), mWidth(inWidth), mHeight(inHeight), mDepth(inDepth), mFormat(inFormat)
-		, mBuffer(inWidth, inHeight, inDepth, inFormat), mGLInternalFormat(GL_NONE)
+		, mBuffer(inWidth, inHeight, inDepth, inFormat)
 	{
 		mSizeInBytes = mHeight*mWidth*PixelUtil::getNumElemBytes(mFormat);
 		mCurrentLockOptions = (GpuLockOptions)0;
@@ -114,8 +114,8 @@ namespace bs
 
 	GLTextureBuffer::GLTextureBuffer(GLenum target, GLuint id, 
 									 GLint face, GLint level, GpuBufferUsage usage, 
-									 bool writeGamma, UINT32 multisampleCount):
-		GLPixelBuffer(0, 0, 0, PF_UNKNOWN, usage),
+									 PixelFormat format, UINT32 multisampleCount):
+		GLPixelBuffer(0, 0, 0, format, usage),
 		mTarget(target), mFaceTarget(0), mTextureID(id), mFace(face), mLevel(level), mMultisampleCount(multisampleCount)
 	{
 		GLint value = 0;
@@ -145,11 +145,6 @@ namespace bs
 			glGetTexLevelParameteriv(mFaceTarget, level, GL_TEXTURE_DEPTH, &value);
 		mDepth = value;
 
-		// Get format
-		glGetTexLevelParameteriv(mFaceTarget, level, GL_TEXTURE_INTERNAL_FORMAT, &value);
-		mGLInternalFormat = value;
-		mFormat = GLPixelUtil::getClosestEngineFormat(value);
-	
 		// Default
 		mSizeInBytes = PixelUtil::getMemorySize(mWidth, mHeight, mDepth, mFormat);
 	
@@ -162,20 +157,28 @@ namespace bs
 
 	void GLTextureBuffer::upload(const PixelData &data, const PixelVolume &dest)
 	{
-		if((mUsage & TU_RENDERTARGET) != 0)
-			BS_EXCEPT(NotImplementedException, "Writing to render texture from CPU not supported.");
+		if ((mUsage & TU_RENDERTARGET) != 0)
+		{
+			LOGERR("Writing to render texture from CPU not supported.");
+			return;
+		}
 
 		if ((mUsage & TU_DEPTHSTENCIL) != 0)
-			BS_EXCEPT(NotImplementedException, "Writing to depth stencil texture from CPU not supported.");
+		{
+			LOGERR("Writing to depth stencil texture from CPU not supported.");
+			return;
+		}
 
 		glBindTexture( mTarget, mTextureID );
 		if(PixelUtil::isCompressed(data.getFormat()))
 		{
-			if(data.getFormat() != mFormat || !data.isConsecutive())
-				BS_EXCEPT(InvalidParametersException, 
-				"Compressed images must be consecutive, in the source format");
+			if (data.getFormat() != mFormat || !data.isConsecutive())
+			{
+				LOGERR("Compressed images must be consecutive, in the source format");
+				return;
+			}
 
-			GLenum format = GLPixelUtil::getClosestGLInternalFormat(mFormat);
+			GLenum format = GLPixelUtil::getGLInternalFormat(mFormat);
 			switch(mTarget) {
 				case GL_TEXTURE_1D:
 					if (dest.left == 0)
@@ -293,15 +296,20 @@ namespace bs
 
 	void GLTextureBuffer::download(const PixelData &data)
 	{
-		if(data.getWidth() != getWidth() || data.getHeight() != getHeight() || data.getDepth() != getDepth())
-			BS_EXCEPT(InvalidParametersException, "only download of entire buffer is supported by GL");
+		if (data.getWidth() != getWidth() || data.getHeight() != getHeight() || data.getDepth() != getDepth())
+		{
+			LOGERR("Only download of entire buffer is supported by OpenGL.");
+			return;
+		}
 
-		glBindTexture( mTarget, mTextureID );
+		glBindTexture(mTarget, mTextureID);
 		if(PixelUtil::isCompressed(data.getFormat()))
 		{
-			if(data.getFormat() != mFormat || !data.isConsecutive())
-				BS_EXCEPT(InvalidParametersException, 
-				"Compressed images must be consecutive, in the source format");
+			if (data.getFormat() != mFormat || !data.isConsecutive())
+			{
+				LOGERR("Compressed images must be consecutive, in the source format");
+				return;
+			}
 
 			// Data must be consecutive and at beginning of buffer as PixelStorei not allowed
 			// for compressed formate
@@ -443,37 +451,4 @@ namespace bs
 			}
 		}		
 	}
-	
-	GLRenderBuffer::GLRenderBuffer(GLenum format, UINT32 width, UINT32 height, GLsizei numSamples):
-		GLPixelBuffer(width, height, 1, GLPixelUtil::getClosestEngineFormat(format), GBU_DYNAMIC),
-		mRenderbufferID(0)
-	{
-		mGLInternalFormat = format;
-		glGenRenderbuffers(1, &mRenderbufferID);
-		glBindRenderbuffer(GL_RENDERBUFFER, mRenderbufferID);
-    
-		/// Allocate storage for depth buffer
-		if (numSamples > 0)
-		{
-			glRenderbufferStorageMultisample(GL_RENDERBUFFER, 
-				numSamples, format, width, height);
-		}
-		else
-		{
-			glRenderbufferStorage(GL_RENDERBUFFER, format,
-								width, height);
-		}
-	}
-
-	GLRenderBuffer::~GLRenderBuffer()
-	{
-		glDeleteRenderbuffers(1, &mRenderbufferID);
-	}
-
-	void GLRenderBuffer::bindToFramebuffer(GLenum attachment, UINT32 zoffset, bool allLayers)
-	{
-		assert(zoffset < mDepth);
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, attachment,
-							GL_RENDERBUFFER, mRenderbufferID);
-	}
-};
+}

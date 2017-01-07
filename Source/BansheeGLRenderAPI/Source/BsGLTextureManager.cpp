@@ -31,7 +31,7 @@ namespace bs
 		if(usage & TU_RENDERTARGET)
             return GLRTTManager::instance().getSupportedAlternative(format);
 
-		return GLPixelUtil::getClosestValidFormat(format);
+		return GLPixelUtil::getClosestSupportedPF(format, ttype, usage);
 	}
 
 	GLTextureCoreManager::GLTextureCoreManager(GLSupport& support)

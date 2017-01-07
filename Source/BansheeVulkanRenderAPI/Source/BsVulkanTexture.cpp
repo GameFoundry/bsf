@@ -383,11 +383,11 @@ namespace bs
 	{ }
 
 	VulkanTextureCore::VulkanTextureCore(const TEXTURE_DESC& desc, const SPtr<PixelData>& initialData,
-		GpuDeviceFlags deviceMask)
+										 GpuDeviceFlags deviceMask)
 		: TextureCore(desc, initialData, deviceMask), mImages(), mDeviceMask(deviceMask), mStagingBuffer(nullptr)
 		, mMappedDeviceIdx(-1), mMappedGlobalQueueIdx(-1), mMappedMip(0), mMappedFace(0), mMappedRowPitch(false)
-		, mMappedSlicePitch(false), mMappedLockOptions(GBL_WRITE_ONLY), mDirectlyMappable(false), mSupportsGPUWrites(false)
-		, mIsMapped(false)
+		, mMappedSlicePitch(false), mMappedLockOptions(GBL_WRITE_ONLY), mInternalFormats()
+		, mDirectlyMappable(false), mSupportsGPUWrites(false), mIsMapped(false)
 	{
 		
 	}
@@ -481,7 +481,6 @@ namespace bs
 			}
 		}
 
-		mImageCI.format = VulkanUtility::getPixelFormat(props.getFormat(), props.isHardwareGammaEnabled());
 		mImageCI.extent = { props.getWidth(), props.getHeight(), props.getDepth() };
 		mImageCI.mipLevels = props.getNumMipmaps() + 1;
 		mImageCI.arrayLayers = props.getNumFaces();
@@ -502,14 +501,21 @@ namespace bs
 			if (devices[i] == nullptr)
 				continue;
 
-			mImages[i] = createImage(*devices[i]);
+			bool optimalTiling = tiling == VK_IMAGE_TILING_OPTIMAL;
+
+			mInternalFormats[i] = VulkanUtility::getClosestSupportedPixelFormat(
+				*devices[i], props.getFormat(), props.getTextureType(), props.getUsage(), optimalTiling,
+				props.isHardwareGammaEnabled());
+
+			mImages[i] = createImage(*devices[i], mInternalFormats[i]);
+			
 		}
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_Texture);
 		TextureCore::initialize();
 	}
 
-	VulkanImage* VulkanTextureCore::createImage(VulkanDevice& device)
+	VulkanImage* VulkanTextureCore::createImage(VulkanDevice& device, PixelFormat format)
 	{
 		bool directlyMappable = mImageCI.tiling == VK_IMAGE_TILING_LINEAR;
 		VkMemoryPropertyFlags flags = directlyMappable ?
@@ -517,6 +523,8 @@ namespace bs
 			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
 
 		VkDevice vkDevice = device.getLogical();
+
+		mImageCI.format = VulkanUtility::getPixelFormat(format, mProperties.isHardwareGammaEnabled());;
 
 		VkImage image;
 		VkResult result = vkCreateImage(vkDevice, &mImageCI, gVulkanAllocator, &image);
@@ -758,7 +766,7 @@ namespace bs
 			bool isBoundWithoutUse = boundCount > useCount;
 			if (isBoundWithoutUse)
 			{
-				VulkanImage* newImage = createImage(device);
+				VulkanImage* newImage = createImage(device, mInternalFormats[i]);
 
 				// Avoid copying original contents if the image only has one sub-resource, which we'll overwrite anyway
 				if (dstProps.getNumMipmaps() > 0 || dstProps.getNumFaces() > 1)
@@ -854,7 +862,7 @@ namespace bs
 		UINT32 mipHeight = std::max(1u, props.getHeight() >> mipLevel);
 		UINT32 mipDepth = std::max(1u, props.getDepth() >> mipLevel);
 
-		PixelData lockedArea(mipWidth, mipHeight, mipDepth, props.getFormat());
+		PixelData lockedArea(mipWidth, mipHeight, mipDepth, mInternalFormats[deviceIdx]);
 
 		VulkanImage* image = mImages[deviceIdx];
 
@@ -899,7 +907,7 @@ namespace bs
 				// image so we don't modify the previous use of the image
 				if (subresource->isBound())
 				{
-					VulkanImage* newImage = createImage(device);
+					VulkanImage* newImage = createImage(device, mInternalFormats[deviceIdx]);
 
 					// Copy contents of the current image to the new one, unless caller explicitly specifies he doesn't
 					// care about the current contents
@@ -940,7 +948,7 @@ namespace bs
 				// We need to discard the entire image, even though we're only writing to a single sub-resource
 				image->destroy();
 
-				image = createImage(device);
+				image = createImage(device, mInternalFormats[deviceIdx]);
 				mImages[deviceIdx] = image;
 
 				image->map(face, mipLevel, lockedArea);
@@ -968,7 +976,7 @@ namespace bs
 				// create a new image so we don't modify the previous use of the image
 				if (options == GBL_READ_WRITE && subresource->isBound())
 				{
-					VulkanImage* newImage = createImage(device);
+					VulkanImage* newImage = createImage(device, mInternalFormats[deviceIdx]);
 
 					VkMemoryRequirements memReqs;
 					vkGetImageMemoryRequirements(device.getLogical(), image->getHandle(), &memReqs);
@@ -1136,7 +1144,7 @@ namespace bs
 						// We need to discard the entire image, even though we're only writing to a single sub-resource
 						image->destroy();
 
-						image = createImage(device);
+						image = createImage(device, mInternalFormats[mMappedDeviceIdx]);
 						mImages[mMappedDeviceIdx] = image;
 
 						subresource = image->getSubresource(mMappedFace, mMappedMip);
@@ -1164,7 +1172,7 @@ namespace bs
 					// avoid modifying its use in the previous operation
 					if (isBoundWithoutUse)
 					{
-						VulkanImage* newImage = createImage(device);
+						VulkanImage* newImage = createImage(device, mInternalFormats[mMappedDeviceIdx]);
 
 						// Avoid copying original contents if the image only has one sub-resource, which we'll overwrite anyway
 						if (props.getNumMipmaps() > 0 || props.getNumFaces() > 1)
@@ -1249,17 +1257,7 @@ namespace bs
 		}
 
 		PixelData myData = lock(GBL_READ_ONLY, mipLevel, face, deviceIdx, queueIdx);
-
-#if BS_DEBUG_MODE
-		if (dest.getConsecutiveSize() != myData.getConsecutiveSize())
-		{
-			unlock();
-			BS_EXCEPT(InternalErrorException, "Buffer sizes don't match");
-		}
-#endif
-
 		PixelUtil::bulkPixelConversion(myData, dest);
-
 		unlock();
 
 		BS_INC_RENDER_STAT_CAT(ResRead, RenderStatObject_Texture);
@@ -1273,8 +1271,6 @@ namespace bs
 			LOGERR("Multisampled textures cannot be accessed from the CPU directly.");
 			return;
 		}
-
-		PixelFormat format = mProperties.getFormat();
 
 		mipLevel = Math::clamp(mipLevel, (UINT32)mipLevel, mProperties.getNumMipmaps());
 		face = Math::clamp(face, (UINT32)0, mProperties.getNumFaces() - 1);

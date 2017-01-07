@@ -157,7 +157,7 @@ namespace bs
 		 * Returns the number of bits per each element in the provided pixel format. This will return all zero for 
 		 * compressed and depth/stencil formats.
 		 */
-        static void getBitDepths(PixelFormat format, int rgba[4]);
+        static void getBitDepths(PixelFormat format, int (&rgba)[4]);
 
 		/**
 		 * Returns bit masks that determine in what bit range is each channel stored.
@@ -166,7 +166,7 @@ namespace bs
 		 * For example if your color is stored in an UINT32 and you want to extract the red channel you should AND the color
 		 * UINT32 with the bit-mask for the red channel and then right shift it by the red channel bit shift amount.
 		 */
-        static void getBitMasks(PixelFormat format, UINT32 rgba[4]);
+        static void getBitMasks(PixelFormat format, UINT32 (&rgba)[4]);
 
 		/**
 		 * Returns number of bits you need to shift a pixel element in order to move it to the start of the data type.
@@ -175,7 +175,7 @@ namespace bs
 		 * For example if your color is stored in an UINT32 and you want to extract the red channel you should AND the color 
 		 * UINT32 with the bit-mask for the red channel and then right shift it by the red channel bit shift amount.
 		 */
-		static void getBitShifts(PixelFormat format, UINT8 rgba[4]);
+		static void getBitShifts(PixelFormat format, UINT8 (&rgba)[4]);
 
 		/**	Returns the name of the pixel format. */
         static String getFormatName(PixelFormat srcformat);

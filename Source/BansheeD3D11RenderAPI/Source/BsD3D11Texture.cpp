@@ -240,7 +240,7 @@ namespace bs
 		HRESULT hr;
 		DXGI_FORMAT d3dPF = D3D11Mappings::getPF(closestFormat, hwGamma);
 
-		if (format != D3D11Mappings::getPF(d3dPF))
+		if (format != closestFormat)
 		{
 			LOGWRN(StringUtil::format("Provided pixel format is not supported by the driver: {0}. Falling back on: {1}.",
 									  format, closestFormat));
@@ -363,7 +363,7 @@ namespace bs
 		HRESULT hr;
 		DXGI_FORMAT d3dPF = D3D11Mappings::getPF(closestFormat, hwGamma);
 
-		if (format != D3D11Mappings::getPF(d3dPF))
+		if (format != closestFormat)
 		{
 			LOGWRN(StringUtil::format("Provided pixel format is not supported by the driver: {0}. Falling back on: {1}.",
 									  format, closestFormat));
@@ -509,7 +509,7 @@ namespace bs
 		HRESULT hr;
 		DXGI_FORMAT d3dPF = D3D11Mappings::getPF(closestFormat, hwGamma);
 		
-		if (format != D3D11Mappings::getPF(d3dPF))
+		if (format != closestFormat)
 		{
 			LOGWRN(StringUtil::format("Provided pixel format is not supported by the driver: {0}. Falling back on: {1}.",
 									  format, closestFormat));

@@ -218,7 +218,7 @@ namespace bs
 
 	private:
 		/** Creates a new image for the specified device, matching the current properties. */
-		VulkanImage* createImage(VulkanDevice& device);
+		VulkanImage* createImage(VulkanDevice& device, PixelFormat format);
 
 		/** 
 		 * Creates a staging buffer that can be used for texture transfer operations.
@@ -239,6 +239,7 @@ namespace bs
 			VkImageLayout srcFinalLayout, VkImageLayout dstFinalLayout);
 
 		VulkanImage* mImages[BS_MAX_DEVICES];
+		PixelFormat mInternalFormats[BS_MAX_DEVICES];
 		GpuDeviceFlags mDeviceMask;
 
 		VulkanBuffer* mStagingBuffer;

@@ -16,7 +16,7 @@ namespace bs
 	GLTextureCore::GLTextureCore(GLSupport& support, const TEXTURE_DESC& desc, const SPtr<PixelData>& initialData, 
 		GpuDeviceFlags deviceMask)
 		: TextureCore(desc, initialData, deviceMask),
-		mTextureID(0), mGLFormat(0), mGLSupport(support)
+		mTextureID(0), mGLFormat(0), mInternalFormat(PF_UNKNOWN), mGLSupport(support)
 	{
 		assert((deviceMask == GDF_DEFAULT || deviceMask == GDF_PRIMARY) && "Multiple GPUs not supported natively on OpenGL.");
 	}
@@ -37,23 +37,34 @@ namespace bs
 		UINT32 height = mProperties.getHeight();
 		UINT32 depth = mProperties.getDepth();
 		TextureType texType = mProperties.getTextureType();
-		PixelFormat pixFormat = mProperties.getFormat();
 		int usage = mProperties.getUsage();
 		UINT32 numMips = mProperties.getNumMipmaps();
 		UINT32 numFaces = mProperties.getNumFaces();
 
+		PixelFormat pixFormat = mProperties.getFormat();
+		mInternalFormat = GLPixelUtil::getClosestSupportedPF(pixFormat, texType, usage);
+
+		if (pixFormat != mInternalFormat)
+		{
+			LOGWRN(StringUtil::format("Provided pixel format is not supported by the driver: {0}. Falling back on: {1}.",
+									  pixFormat, mInternalFormat));
+		}
+
 		// Check requested number of mipmaps
 		UINT32 maxMips = PixelUtil::getMaxMipmaps(width, height, depth, mProperties.getFormat());
 		if (numMips > maxMips)
-			BS_EXCEPT(InvalidParametersException, "Invalid number of mipmaps. Maximum allowed is: " + toString(maxMips));
+		{
+			LOGERR("Invalid number of mipmaps. Maximum allowed is: " + toString(maxMips));
+			numMips = maxMips;
+		}
 
 		if ((usage & TU_DEPTHSTENCIL) != 0)
 		{
 			if (texType != TEX_TYPE_2D)
-				BS_EXCEPT(NotImplementedException, "Only 2D depth stencil targets are supported at the moment");
-
-			if (!PixelUtil::isDepth(pixFormat))
-				BS_EXCEPT(NotImplementedException, "Supplied format is not a depth stencil format. Format: " + toString(pixFormat));
+			{
+				LOGERR("Only 2D depth stencil targets are supported at the moment");
+				usage &= ~TU_DEPTHSTENCIL;
+			}
 		}
 
 		// Generate texture handle
@@ -66,16 +77,7 @@ namespace bs
 		glTexParameteri(getGLTextureTarget(), GL_TEXTURE_MAX_LEVEL, numMips);
 
 		// Allocate internal buffer so that glTexSubImageXD can be used
-		mGLFormat = GLPixelUtil::getClosestGLInternalFormat(pixFormat, mProperties.isHardwareGammaEnabled());
-
-		if (PixelUtil::isCompressed(pixFormat))
-		{
-			if((usage & TU_RENDERTARGET) != 0)
-				BS_EXCEPT(InvalidParametersException, "Cannot use a compressed format for a render target.");
-
-			if ((usage & TU_DEPTHSTENCIL) != 0)
-				BS_EXCEPT(InvalidParametersException, "Cannot use a compressed format for a depth stencil target.");
-		}
+		mGLFormat = GLPixelUtil::getGLInternalFormat(mInternalFormat, mProperties.isHardwareGammaEnabled());
 
 		UINT32 sampleCount = mProperties.getNumSamples();
 		if((usage & (TU_RENDERTARGET | TU_DEPTHSTENCIL)) != 0 && mProperties.getTextureType() == TEX_TYPE_2D && sampleCount > 1)
@@ -87,7 +89,7 @@ namespace bs
 		}
 		else if((usage & TU_DEPTHSTENCIL) != 0 && mProperties.getTextureType() == TEX_TYPE_2D)
 		{
-			GLenum depthStencilFormat = GLPixelUtil::getDepthStencilTypeFromFormat(pixFormat);
+			GLenum depthStencilFormat = GLPixelUtil::getDepthStencilTypeFromFormat(mInternalFormat);
 
 			if (numFaces <= 1)
 			{
@@ -102,8 +104,8 @@ namespace bs
 		}
 		else
 		{
-			GLenum baseFormat = GLPixelUtil::getGLOriginFormat(pixFormat);
-			GLenum baseDataType = GLPixelUtil::getGLOriginDataType(pixFormat);
+			GLenum baseFormat = GLPixelUtil::getGLOriginFormat(mInternalFormat);
+			GLenum baseDataType = GLPixelUtil::getGLOriginDataType(mInternalFormat);
 
 			// Run through this process to pre-generate mipmap pyramid
 			for (UINT32 mip = 0; mip <= numMips; mip++)
@@ -232,8 +234,11 @@ namespace bs
 
 	void GLTextureCore::unlockImpl()
 	{
-		if(mLockedBuffer == nullptr)
-			BS_EXCEPT(InternalErrorException, "Trying to unlock a buffer that's not locked.");
+		if (mLockedBuffer == nullptr)
+		{
+			LOGERR("Trying to unlock a buffer that's not locked.");
+			return;
+		}
 
 		mLockedBuffer->unlock();
 		mLockedBuffer = nullptr;
@@ -242,18 +247,42 @@ namespace bs
 	void GLTextureCore::readDataImpl(PixelData& dest, UINT32 mipLevel, UINT32 face, UINT32 deviceIdx, UINT32 queueIdx)
 	{
 		if (mProperties.getNumSamples() > 1)
-			BS_EXCEPT(InvalidStateException, "Multisampled textures cannot be accessed from the CPU directly.");
+		{
+			LOGERR("Multisampled textures cannot be accessed from the CPU directly.");
+			return;
+		}
 
-		getBuffer(face, mipLevel)->download(dest);
+		if(dest.getFormat() != mInternalFormat)
+		{
+			PixelData temp(dest.getExtents(), mInternalFormat);
+			temp.allocateInternalBuffer();
+
+			getBuffer(face, mipLevel)->download(temp);
+			PixelUtil::bulkPixelConversion(temp, dest);
+		}
+		else
+			getBuffer(face, mipLevel)->download(dest);
 	}
 
 	void GLTextureCore::writeDataImpl(const PixelData& src, UINT32 mipLevel, UINT32 face, bool discardWholeBuffer,
 								  UINT32 queueIdx)
 	{
 		if (mProperties.getNumSamples() > 1)
-			BS_EXCEPT(InvalidStateException, "Multisampled textures cannot be accessed from the CPU directly.");
+		{
+			LOGERR("Multisampled textures cannot be accessed from the CPU directly.");
+			return;
+		}
 
-		getBuffer(face, mipLevel)->upload(src, src.getExtents());
+		if (src.getFormat() != mInternalFormat)
+		{
+			PixelData temp(src.getExtents(), mInternalFormat);
+			temp.allocateInternalBuffer();
+
+			PixelUtil::bulkPixelConversion(src, temp);
+			getBuffer(face, mipLevel)->upload(temp, temp.getExtents());
+		}
+		else
+			getBuffer(face, mipLevel)->upload(src, src.getExtents());
 	}
 
 	void GLTextureCore::copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel,
@@ -274,8 +303,7 @@ namespace bs
 			for (UINT32 mip = 0; mip <= mProperties.getNumMipmaps(); mip++)
 			{
                 GLPixelBuffer *buf = bs_new<GLTextureBuffer>(getGLTextureTarget(), mTextureID, face, mip,
-					static_cast<GpuBufferUsage>(mProperties.getUsage()), 
-					mProperties.isHardwareGammaEnabled(), mProperties.getNumSamples());
+					static_cast<GpuBufferUsage>(mProperties.getUsage()), mInternalFormat, mProperties.getNumSamples());
 
 				mSurfaceList.push_back(bs_shared_ptr<GLPixelBuffer>(buf));
                 if(buf->getWidth() == 0 || buf->getHeight() == 0 || buf->getDepth() == 0)

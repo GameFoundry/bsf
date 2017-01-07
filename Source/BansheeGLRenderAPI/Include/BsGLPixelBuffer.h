@@ -104,9 +104,6 @@ namespace bs
 		 */
 		virtual void bindToFramebuffer(GLenum attachment, UINT32 zoffset, bool allLayers);
 
-		/**	Returns internal OpenGL pixel format used by the buffer. */
-		GLenum getGLFormat() const { return mGLInternalFormat; }
-
 		/**
 		 * Blits the contents of the provided buffer into this pixel buffer. Data is bilinearily interpolated in case buffer
 		 * sizes don't match.
@@ -138,7 +135,6 @@ namespace bs
 		PixelVolume mLockedBox;
 
 		PixelData mBuffer;
-		GLenum mGLInternalFormat;
 		GpuLockOptions mCurrentLockOptions;
 	};
 
@@ -154,11 +150,11 @@ namespace bs
 		 * @param[in]	face				Face index of the texture in the case of cube textures or texture arrays.
 		 * @param[in]	level				Mip level of the texture.
 		 * @param[in]	usage				Usage signaling the render system how we plan on using the buffer.
-		 * @param[in]	writeGamma			True if the parent texture was created with SRGB support.
+		 * @param[in]	format				Format of each pixel in the buffer.
 		 * @param[in]	multisampleCount	Number of samples the parent texture was created with.
 		 */
 		GLTextureBuffer(GLenum target, GLuint id, GLint face, 
-			GLint level, GpuBufferUsage usage, bool writeGamma, UINT32 multisampleCount);
+			GLint level, GpuBufferUsage usage, PixelFormat format, UINT32 multisampleCount);
         ~GLTextureBuffer();
         
 		/** @copydoc GLPixelBuffer::bindToFramebuffer */
@@ -187,27 +183,6 @@ namespace bs
 		GLint mFace;
 		GLint mLevel;
 		UINT32 mMultisampleCount;
-    };
-
-	/**	Pixel buffer specialization that represents a render buffer. */
-    class GLRenderBuffer : public GLPixelBuffer
-	{
-    public:
-		/**
-		 * Initializes a new render buffer.
-		 *
-		 * @param[in]	format		OpenGL pixel format.
-		 * @param[in]	width		Width of the render buffer in pixels.
-		 * @param[in]	height		Height of the render buffer in pixels.
-		 * @param[in]	numSamples	Number of samples to support.
-		 */
-        GLRenderBuffer(GLenum format, UINT32 width, UINT32 height, GLsizei numSamples);
-        ~GLRenderBuffer();
-        
-		/** @copydoc	GLPixelBuffer::bindToFramebuffer */
-        void bindToFramebuffer(GLenum attachment, UINT32 zoffset, bool allLayers) override;
-    protected:
-        GLuint mRenderbufferID;
     };
 
 	/** @} */

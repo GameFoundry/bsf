@@ -72,6 +72,7 @@ namespace bs
     private:
         GLuint mTextureID;
 		GLenum mGLFormat;
+		PixelFormat mInternalFormat;
         GLSupport& mGLSupport;
 		SPtr<GLPixelBuffer> mLockedBuffer;
 		
