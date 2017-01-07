@@ -728,7 +728,7 @@ namespace bs
 		switch(format)
 		{
 		case PF_D32_S8X24:
-			return DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS;
+			return DXGI_FORMAT_R32G8X24_TYPELESS;
 		case PF_D24S8:
 			return DXGI_FORMAT_R24G8_TYPELESS;
 		case PF_D32:

@@ -649,7 +649,7 @@ namespace bs
 			texDesc.type = TEX_TYPE_2D;
 			texDesc.width = BBDesc.Width;
 			texDesc.height = BBDesc.Height;
-			texDesc.format = PF_D24S8;
+			texDesc.format = PF_D32_S8X24;
 			texDesc.usage = TU_DEPTHSTENCIL;
 			texDesc.numSamples = getProperties().getMultisampleCount();
 

@@ -40,7 +40,7 @@ namespace bs
 			height, TU_RENDERTARGET, mNumSamples, true));
 		SPtr<PooledRenderTexture> newNormalRT = texPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(mNormalFormat, width, 
 			height, TU_RENDERTARGET, mNumSamples, false));
-		SPtr<PooledRenderTexture> newDepthRT = texPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_D24S8, width, height, 
+		SPtr<PooledRenderTexture> newDepthRT = texPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_D32_S8X24, width, height, 
 			TU_DEPTHSTENCIL, mNumSamples, false));
 
 		bool rebuildTargets = newColorRT != mSceneColorTex || newAlbedoRT != mAlbedoTex || newNormalRT != mNormalTex || newDepthRT != mDepthTex;

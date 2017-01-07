@@ -27,7 +27,7 @@ namespace BansheeEngine
         /// <param name="depthStencilFormat">Format of the depth/stencil buffer, if <paramref name="createDepth"/> is
         ///                                  enabled. Format must be a valid depth/stencil format.</param>
         public RenderTexture2D(PixelFormat format, int width, int height, int numSamples = 1, 
-            bool gammaCorrection = false, bool createDepth = false, PixelFormat depthStencilFormat = PixelFormat.D24S8)
+            bool gammaCorrection = false, bool createDepth = false, PixelFormat depthStencilFormat = PixelFormat.D32)
         {
             Internal_CreateDetailed(this, format, width, height, numSamples, gammaCorrection, createDepth, depthStencilFormat);
         }

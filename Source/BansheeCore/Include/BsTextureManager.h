@@ -53,7 +53,7 @@ namespace bs
 		 * @param[in]	depthStencilFormat	Format of the depth/stencil buffer if enabled.
 		 */
 		virtual SPtr<RenderTexture> createRenderTexture(const TEXTURE_DESC& colorDesc,
-			bool createDepth = true, PixelFormat depthStencilFormat = PF_D24S8);
+			bool createDepth = true, PixelFormat depthStencilFormat = PF_D32);
 
 		/** 
 		 * Creates a RenderTexture using the description struct. 

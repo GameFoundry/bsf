@@ -196,7 +196,7 @@ namespace bs
 		}
 
 		LOGERR("Invalid depth stencil format");
-		return PF_D24S8;
+		return PF_D32_S8X24;
 	}
 		
 	GLenum GLPixelUtil::getBufferFormat(GpuBufferFormat format)
