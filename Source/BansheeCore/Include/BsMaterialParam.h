@@ -11,19 +11,13 @@ namespace bs
 	 *  @{
 	 */
 
-	class Material;
-	class MaterialCore;
-
 	template<bool Core> struct TMaterialType { };
 	template<> struct TMaterialType<false> { typedef SPtr<Material> Type; };
-	template<> struct TMaterialType<true> { typedef SPtr<MaterialCore> Type; };
-
-	class MaterialParams;
-	class MaterialParamsCore;
+	template<> struct TMaterialType<true> { typedef SPtr<ct::MaterialCore> Type; };
 
 	template<bool Core> struct TMaterialParamsType { };
 	template<> struct TMaterialParamsType<false> { typedef MaterialParams Type; };
-	template<> struct TMaterialParamsType<true> { typedef MaterialParamsCore Type; };
+	template<> struct TMaterialParamsType<true> { typedef ct::MaterialParamsCore Type; };
 
 	/**
 	 * A handle that allows you to set a Material parameter. Internally keeps a reference to the material parameters so that
@@ -235,32 +229,32 @@ namespace bs
 	typedef TMaterialDataParam<Matrix4, false> MaterialParamMat4;
 	typedef TMaterialDataParam<Color, false> MaterialParamColor;
 
-	typedef TMaterialDataParam<float, true> MaterialParamFloatCore;
-	typedef TMaterialDataParam<Vector2, true> MaterialParamVec2Core;
-	typedef TMaterialDataParam<Vector3, true> MaterialParamVec3Core;
-	typedef TMaterialDataParam<Vector4, true> MaterialParamVec4Core;
-	typedef TMaterialDataParam<int, true> MaterialParamIntCore;
-	typedef TMaterialDataParam<Vector2I, true> MaterialParamVec2ICore;
-	typedef TMaterialDataParam<Vector3I, true> MaterialParamVec3ICore;
-	typedef TMaterialDataParam<Vector4I, true> MaterialParamVec4ICore;
-	typedef TMaterialDataParam<Matrix3, true> MaterialParamMat3Core;
-	typedef TMaterialDataParam<Matrix4, true> MaterialParamMat4Core;
-	typedef TMaterialDataParam<Color, true> MaterialParamColorCore;
-
 	typedef TMaterialParamStruct<false> MaterialParamStruct;
-	typedef TMaterialParamStruct<true> MaterialParamStructCore;
-
 	typedef TMaterialParamTexture<false> MaterialParamTexture;
-	typedef TMaterialParamTexture<true> MaterialParamTextureCore;
-
 	typedef TMaterialParamLoadStoreTexture<false> MaterialParamLoadStoreTexture;
-	typedef TMaterialParamLoadStoreTexture<true> MaterialParamLoadStoreTextureCore;
-
 	typedef TMaterialParamBuffer<false> MaterialParamBuffer;
-	typedef TMaterialParamBuffer<true> MaterialParamBufferCore;
-
 	typedef TMaterialParamSampState<false> MaterialParamSampState;
-	typedef TMaterialParamSampState<true> MaterialParamSampStateCore;
+
+	namespace ct
+	{
+		typedef TMaterialDataParam<float, true> MaterialParamFloatCore;
+		typedef TMaterialDataParam<Vector2, true> MaterialParamVec2Core;
+		typedef TMaterialDataParam<Vector3, true> MaterialParamVec3Core;
+		typedef TMaterialDataParam<Vector4, true> MaterialParamVec4Core;
+		typedef TMaterialDataParam<int, true> MaterialParamIntCore;
+		typedef TMaterialDataParam<Vector2I, true> MaterialParamVec2ICore;
+		typedef TMaterialDataParam<Vector3I, true> MaterialParamVec3ICore;
+		typedef TMaterialDataParam<Vector4I, true> MaterialParamVec4ICore;
+		typedef TMaterialDataParam<Matrix3, true> MaterialParamMat3Core;
+		typedef TMaterialDataParam<Matrix4, true> MaterialParamMat4Core;
+		typedef TMaterialDataParam<Color, true> MaterialParamColorCore;
+
+		typedef TMaterialParamStruct<true> MaterialParamStructCore;
+		typedef TMaterialParamTexture<true> MaterialParamTextureCore;
+		typedef TMaterialParamLoadStoreTexture<true> MaterialParamLoadStoreTextureCore;
+		typedef TMaterialParamBuffer<true> MaterialParamBufferCore;
+		typedef TMaterialParamSampState<true> MaterialParamSampStateCore;
+	}
 
 	/** @} */
 }

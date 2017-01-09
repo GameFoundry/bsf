@@ -29,7 +29,7 @@
 
 /** @} */
 
-namespace bs
+namespace bs { namespace ct
 {
 	class D3D11RenderAPI;
 	class D3D11RenderWindow;
@@ -83,4 +83,4 @@ namespace bs
 #else
 #	define BS_D3D11_EXPORT
 #endif
-}
+}}

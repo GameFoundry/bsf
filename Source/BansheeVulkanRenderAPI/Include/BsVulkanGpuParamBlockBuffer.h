@@ -5,7 +5,7 @@
 #include "BsVulkanPrerequisites.h"
 #include "BsGpuParamBlockBuffer.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup Vulkan
 	 *  @{
@@ -36,4 +36,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

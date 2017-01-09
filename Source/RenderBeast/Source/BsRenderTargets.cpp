@@ -7,7 +7,7 @@
 #include "BsTextureManager.h"
 #include "BsRendererUtility.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	RenderTargets::RenderTargets(const SPtr<ViewportCore>& viewport, bool hdr, UINT32 numSamples)
 		:mViewport(viewport), mNumSamples(numSamples), mHDR(hdr)
@@ -164,4 +164,4 @@ namespace bs
 	{
 		return (UINT32)mViewport->getHeight();
 	}
-}
+}}

@@ -5,7 +5,7 @@
 #include "BsGLRenderTexture.h"
 #include "BsGLPixelFormat.h"
 
-namespace bs
+namespace bs { namespace ct
 {
     GLTextureManager::GLTextureManager(GLSupport& support)
         :TextureManager(), mGLSupport(support)
@@ -57,4 +57,4 @@ namespace bs
 
 		return texPtr;
 	}
-}
+}}

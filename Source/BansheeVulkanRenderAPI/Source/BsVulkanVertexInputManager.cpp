@@ -5,7 +5,7 @@
 #include "BsVertexDeclaration.h"
 #include "BsRenderStats.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	VulkanVertexInput::VulkanVertexInput(UINT32 id, const VkPipelineVertexInputStateCreateInfo& createInfo)
 		:mId(id), mCreateInfo(createInfo)
@@ -218,4 +218,4 @@ namespace bs
 				break;
 		}
 	}
-}
+}}

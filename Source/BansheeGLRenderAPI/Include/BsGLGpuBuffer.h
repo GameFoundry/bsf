@@ -6,7 +6,7 @@
 #include "BsGpuBuffer.h"
 #include "BsGLBuffer.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup GL
 	 *  @{
@@ -61,4 +61,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

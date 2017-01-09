@@ -6,7 +6,7 @@
 #include "BsRenderAPIManager.h"
 #include "BsVulkanRenderAPI.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup Vulkan
 	 *  @{
@@ -45,4 +45,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

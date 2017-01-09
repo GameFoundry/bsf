@@ -4,7 +4,7 @@
 #include "BsRenderStats.h"
 #include "BsException.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	GLGpuParamBlockBufferCore::GLGpuParamBlockBufferCore(UINT32 size, GpuParamBlockUsage usage, GpuDeviceFlags deviceMask)
 		:GpuParamBlockBufferCore(size, usage, deviceMask), mGLHandle(0)
@@ -44,4 +44,4 @@ namespace bs
 
 		BS_INC_RENDER_STAT_CAT(ResWrite, RenderStatObject_GpuParamBuffer);
 	}
-}
+}}

@@ -138,7 +138,7 @@ namespace bs
 		void setTarget(const SPtr<RenderTarget>& target);
 
 		/**	Retrieves a core implementation of a viewport usable only from the core thread. */
-		SPtr<ViewportCore> getCore() const;
+		SPtr<ct::ViewportCore> getCore() const;
 
 	    /**
          * Creates a new viewport.
@@ -167,7 +167,7 @@ namespace bs
 		void getCoreDependencies(Vector<CoreObject*>& dependencies) override;
 
 		/** @copydoc CoreObject::createCore */
-		SPtr<CoreObjectCore> createCore() const override;
+		SPtr<ct::CoreObjectCore> createCore() const override;
 
         SPtr<RenderTarget> mTarget;
 
@@ -181,11 +181,13 @@ namespace bs
 	public:
 		friend class ViewportRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const override;
+		RTTITypeBase* getRTTI() const override;
     };
 
 	/** @} */
 
+	namespace ct
+	{
 	/** @addtogroup RenderAPI-Internal
 	 *  @{
 	 */
@@ -222,4 +224,5 @@ namespace bs
     };
 
 	/** @} */
+		}
 }

@@ -31,6 +31,8 @@ namespace bs
 
 	/** @} */
 
+	namespace ct
+	{
 	/** @addtogroup Material-Internal
 	 *  @{
 	 */
@@ -52,6 +54,7 @@ namespace bs
 	};
 
 	/** @} */
+	}
 
 	/** @addtogroup Implementation
 	 *  @{
@@ -77,13 +80,13 @@ namespace bs
 	template<>
 	struct TPassTypes < true >
 	{
-		typedef SPtr<BlendStateCore> BlendStateType;
-		typedef SPtr<RasterizerStateCore> RasterizerStateType;
-		typedef SPtr<DepthStencilStateCore> DepthStencilStateType;
-		typedef SPtr<GpuProgramCore> GpuProgramType;
-		typedef SPtr<GraphicsPipelineStateCore> GraphicsPipelineStateType;
-		typedef SPtr<ComputePipelineStateCore> ComputePipelineStateType;
-		typedef PASS_DESC_CORE PassDescType;
+		typedef SPtr<ct::BlendStateCore> BlendStateType;
+		typedef SPtr<ct::RasterizerStateCore> RasterizerStateType;
+		typedef SPtr<ct::DepthStencilStateCore> DepthStencilStateType;
+		typedef SPtr<ct::GpuProgramCore> GpuProgramType;
+		typedef SPtr<ct::GraphicsPipelineStateCore> GraphicsPipelineStateType;
+		typedef SPtr<ct::ComputePipelineStateCore> ComputePipelineStateType;
+		typedef ct::PASS_DESC_CORE PassDescType;
 	};
 
 	/**
@@ -145,6 +148,60 @@ namespace bs
 
 	/** @} */
 
+	/** @addtogroup Material
+	 *  @{
+	 */
+
+	/**
+	 * @copydoc	TPass
+	 *
+	 * @note	Sim thread.
+	 */
+	class BS_CORE_EXPORT Pass : public IReflectable, public CoreObject, public TPass<false>
+    {
+    public:
+		virtual ~Pass() { }
+
+		/** Retrieves an implementation of a pass usable only from the core thread. */
+		SPtr<ct::PassCore> getCore() const;
+
+		/**	Creates a new empty pass. */
+		static SPtr<Pass> create(const PASS_DESC& desc);
+
+	protected:
+		friend class Technique;
+
+		Pass() { }
+		Pass(const PASS_DESC& desc);
+
+		/** @copydoc CoreObject::initialize */
+		void initialize() override;
+
+		/** @copydoc CoreObject::syncToCore */
+		CoreSyncData syncToCore(FrameAlloc* allocator) override;
+
+		/** @copydoc CoreObject::createCore */
+		SPtr<ct::CoreObjectCore> createCore() const override;
+
+		/** @copydoc CoreObject::syncToCore */
+		void getCoreDependencies(Vector<CoreObject*>& dependencies) override;
+
+		/**	Creates a new empty pass but doesn't initialize it. */
+		static SPtr<Pass> createEmpty();
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+	public:
+		friend class PassRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		RTTITypeBase* getRTTI() const override;
+    };
+
+	/** @} */
+
+	namespace ct
+	{
 	/** @addtogroup Material-Internal
 	 *  @{
 	 */
@@ -179,55 +236,5 @@ namespace bs
     };
 
 	/** @} */
-	/** @addtogroup Material
-	 *  @{
-	 */
-
-	/**
-	 * @copydoc	TPass
-	 *
-	 * @note	Sim thread.
-	 */
-	class BS_CORE_EXPORT Pass : public IReflectable, public CoreObject, public TPass<false>
-    {
-    public:
-		virtual ~Pass() { }
-
-		/** Retrieves an implementation of a pass usable only from the core thread. */
-		SPtr<PassCore> getCore() const;
-
-		/**	Creates a new empty pass. */
-		static SPtr<Pass> create(const PASS_DESC& desc);
-
-	protected:
-		friend class Technique;
-
-		Pass() { }
-		Pass(const PASS_DESC& desc);
-
-		/** @copydoc CoreObject::initialize */
-		void initialize() override;
-
-		/** @copydoc CoreObject::syncToCore */
-		CoreSyncData syncToCore(FrameAlloc* allocator) override;
-
-		/** @copydoc CoreObject::createCore */
-		SPtr<CoreObjectCore> createCore() const override;
-
-		/** @copydoc CoreObject::syncToCore */
-		void getCoreDependencies(Vector<CoreObject*>& dependencies) override;
-
-		/**	Creates a new empty pass but doesn't initialize it. */
-		static SPtr<Pass> createEmpty();
-
-		/************************************************************************/
-		/* 								RTTI		                     		*/
-		/************************************************************************/
-	public:
-		friend class PassRTTI;
-		static RTTITypeBase* getRTTIStatic();
-		RTTITypeBase* getRTTI() const override;
-    };
-
-	/** @} */
+	}
 }

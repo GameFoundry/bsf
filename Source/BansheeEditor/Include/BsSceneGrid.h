@@ -14,7 +14,7 @@ namespace bs
 	 *  @{
 	 */
 
-	class SceneGridRenderer;
+	namespace ct { class SceneGridRenderer; }
 
 	/** Determines how is the scene grid drawn. */
 	enum class GridMode
@@ -66,9 +66,11 @@ namespace bs
 
 		HMesh mGridMesh;
 		SPtr<VertexDataDesc> mVertexDesc;
-		SPtr<SceneGridRenderer> mRenderer;
+		SPtr<ct::SceneGridRenderer> mRenderer;
 	};
 
+	namespace ct
+	{
 	/** Handles scene grid rendering on the core thread. */
 	class SceneGridRenderer : public RendererExtension
 	{
@@ -128,6 +130,7 @@ namespace bs
 		static const float FADE_OUT_START;
 		static const float FADE_OUT_END;
 	};
+	}
 
 	/** @} */
 }

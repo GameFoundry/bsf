@@ -138,6 +138,8 @@ namespace bs
 		return mDefaultDepthStencilState; 
 	}
 
+	namespace ct
+	{
 	RenderStateCoreManager::RenderStateCoreManager()
 		:mNextBlendStateId(0), mNextRasterizerStateId(0), mNextDepthStencilStateId(0)
 	{
@@ -521,5 +523,6 @@ namespace bs
 		state->_setThisPtr(state);
 
 		return state;
+	}
 	}
 }

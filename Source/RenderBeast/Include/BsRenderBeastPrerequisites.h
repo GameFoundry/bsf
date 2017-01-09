@@ -30,10 +30,10 @@
 
 /** @} */
 
-namespace bs
+namespace bs { namespace ct
 {
 	class ObjectRenderer;
 	struct RenderBeastOptions;
 	struct PooledRenderTexture;
 	class RenderTargets;
-}
+}}

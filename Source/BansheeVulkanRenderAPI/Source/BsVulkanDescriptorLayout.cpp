@@ -1,7 +1,7 @@
 #include "BsVulkanDescriptorLayout.h"
 #include "BsVulkanDevice.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	VulkanDescriptorLayout::VulkanDescriptorLayout(VulkanDevice& device, VkDescriptorSetLayoutBinding* bindings, 
 		UINT32 numBindings)
@@ -42,4 +42,4 @@ namespace bs
 
 		return hash;
 	}
-}
+}}

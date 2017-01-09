@@ -18,7 +18,7 @@ namespace bs
 	 *  @{
 	 */
 
-	class GizmoRenderer;
+	namespace ct { class GizmoRenderer; }
 
 	/** Type of mesh that can be drawn by the gizmo renderer. */
 	enum class GizmoMeshType
@@ -256,7 +256,7 @@ namespace bs
 		/** @} */
 
 	private:
-		friend class GizmoRenderer;
+		friend class ct::GizmoRenderer;
 
 		/**	Supported types of gizmo materials (shaders) */
 		enum class GizmoMaterial
@@ -366,19 +366,19 @@ namespace bs
 		struct IconRenderData
 		{
 			UINT32 count;
-			SPtr<TextureCore> texture;
+			SPtr<ct::TextureCore> texture;
 			UINT32 paramsIdx;
 		};
 
 		/** Data about a mesh rendered by the draw manager. */
 		struct MeshRenderData
 		{
-			MeshRenderData(const SPtr<MeshCoreBase>& mesh, SPtr<TextureCore> texture, GizmoMeshType type)
+			MeshRenderData(const SPtr<ct::MeshCoreBase>& mesh, SPtr<ct::TextureCore> texture, GizmoMeshType type)
 				:mesh(mesh), texture(texture), type(type), paramsIdx(0)
 			{ }
 
-			SPtr<MeshCoreBase> mesh;
-			SPtr<TextureCore> texture;
+			SPtr<ct::MeshCoreBase> mesh;
+			SPtr<ct::TextureCore> texture;
 			GizmoMeshType type;
 
 			UINT32 paramsIdx;
@@ -387,13 +387,13 @@ namespace bs
 		/**	Data used for initializing the core thread equivalent of the gizmo manager. */
 		struct CoreInitData
 		{
-			SPtr<MaterialCore> solidMat;
-			SPtr<MaterialCore> wireMat;
-			SPtr<MaterialCore> lineMat;
-			SPtr<MaterialCore> iconMat;
-			SPtr<MaterialCore> textMat;
-			SPtr<MaterialCore> pickingMat;
-			SPtr<MaterialCore> alphaPickingMat;
+			SPtr<ct::MaterialCore> solidMat;
+			SPtr<ct::MaterialCore> wireMat;
+			SPtr<ct::MaterialCore> lineMat;
+			SPtr<ct::MaterialCore> iconMat;
+			SPtr<ct::MaterialCore> textMat;
+			SPtr<ct::MaterialCore> pickingMat;
+			SPtr<ct::MaterialCore> alphaPickingMat;
 		};
 
 		typedef Vector<IconRenderData> IconRenderDataVec;
@@ -476,7 +476,7 @@ namespace bs
 		SPtr<MeshHeap> mIconMeshHeap;
 		SPtr<TransientMesh> mIconMesh;
 
-		SPtr<GizmoRenderer> mGizmoRenderer;
+		SPtr<ct::GizmoRenderer> mGizmoRenderer;
 
 		// Immutable
 		SPtr<VertexDataDesc> mIconVertexDesc;
@@ -493,6 +493,9 @@ namespace bs
 	};
 
 	/** @} */
+
+	namespace ct
+	{
 	/** @addtogroup Scene-Editor-Internal
 	 *  @{
 	 */
@@ -590,4 +593,5 @@ namespace bs
 	};
 
 	/** @} */
+	}
 }

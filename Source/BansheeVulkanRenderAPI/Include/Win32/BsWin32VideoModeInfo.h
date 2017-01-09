@@ -5,7 +5,7 @@
 #include "BsVulkanPrerequisites.h"
 #include "BsVideoModeInfo.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup Vulkan
 	 *  @{
@@ -42,4 +42,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

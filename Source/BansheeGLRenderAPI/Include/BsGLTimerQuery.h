@@ -5,7 +5,7 @@
 #include "BsGLPrerequisites.h"
 #include "BsTimerQuery.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup GL
 	 *  @{
@@ -46,4 +46,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

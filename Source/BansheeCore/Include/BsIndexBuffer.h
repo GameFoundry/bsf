@@ -37,7 +37,7 @@ namespace bs
 
 	protected:
 		friend class IndexBuffer;
-		friend class IndexBufferCore;
+		friend class ct::IndexBufferCore;
 
 		IndexType mIndexType;
 		UINT32 mNumIndices;
@@ -58,7 +58,7 @@ namespace bs
 		 *
 		 * @note	Core thread only.
 		 */
-		SPtr<IndexBufferCore> getCore() const;
+		SPtr<ct::IndexBufferCore> getCore() const;
 
 		/** @copydoc HardwareBufferManager::createIndexBuffer */
 		static SPtr<IndexBuffer> create(const INDEX_BUFFER_DESC& desc);
@@ -69,7 +69,7 @@ namespace bs
 		IndexBuffer(const INDEX_BUFFER_DESC& desc);
 
 		/** @copydoc CoreObject::createCore */
-		virtual SPtr<CoreObjectCore> createCore() const;
+		virtual SPtr<ct::CoreObjectCore> createCore() const;
 
 		IndexBufferProperties mProperties;
 		GpuBufferUsage mUsage;
@@ -77,6 +77,8 @@ namespace bs
 
 	/** @} */
 
+	namespace ct
+	{
 	/** @addtogroup RenderAPI-Internal
 	 *  @{
 	 */
@@ -99,4 +101,5 @@ namespace bs
 	};
 
 	/** @} */
+		}
 }

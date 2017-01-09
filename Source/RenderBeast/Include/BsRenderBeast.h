@@ -13,13 +13,15 @@
 #include "BsRendererCamera.h"
 #include "BsRendererObject.h"
 
-namespace bs
-{
+namespace bs 
+{ 
+	struct RendererAnimationData;
+
+	namespace ct
+	{
 	/** @addtogroup RenderBeast
 	 *  @{
 	 */
-
-	struct RendererAnimationData;
 
 	/** Semantics that may be used for signaling the renderer for what is a certain shader parameter used for. */
 	static StringID RPS_GBufferA = "GBufferA";
@@ -222,4 +224,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

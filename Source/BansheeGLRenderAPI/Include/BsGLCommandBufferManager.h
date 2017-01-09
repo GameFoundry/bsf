@@ -5,7 +5,7 @@
 #include "BsGLPrerequisites.h"
 #include "BsCommandBufferManager.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup GL
 	 *  @{
@@ -25,4 +25,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

@@ -7,7 +7,7 @@
 #include "BsRenderStats.h"
 #include "BsException.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	size_t GpuBufferView::HashFunction::operator()(const GPU_BUFFER_VIEW_DESC& key) const
 	{
@@ -166,4 +166,4 @@ namespace bs
 
 		return uav;
 	}
-}
+}}

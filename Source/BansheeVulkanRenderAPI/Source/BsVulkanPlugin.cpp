@@ -7,6 +7,6 @@ namespace bs
 {
 	extern "C" BS_VULKAN_EXPORT const char* getPluginName()
 	{
-		return SystemName;
+		return ct::SystemName;
 	}
 }

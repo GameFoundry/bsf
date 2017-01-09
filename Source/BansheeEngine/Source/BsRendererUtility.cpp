@@ -17,7 +17,7 @@
 #include "BsLight.h"
 #include "BsShader.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	RendererUtility::RendererUtility()
 	{
@@ -393,4 +393,4 @@ namespace bs
 
 		mMaterial->updateParamsSet(mParamsSet);
 	}
-}
+}}

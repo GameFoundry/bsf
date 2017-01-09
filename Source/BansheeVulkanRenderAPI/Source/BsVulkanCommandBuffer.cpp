@@ -21,7 +21,7 @@
 static_assert(false, "Other platforms go here");
 #endif
 
-namespace bs
+namespace bs { namespace ct
 {
 	VulkanSemaphore::VulkanSemaphore(VulkanResourceManager* owner)
 		:VulkanResource(owner, true)
@@ -1711,4 +1711,4 @@ namespace bs
 
 		gVulkanCBManager().refreshStates(mDeviceIdx);
 	}
-}
+}}

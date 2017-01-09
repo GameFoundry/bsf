@@ -7,7 +7,7 @@
 #include "BsRenderStats.h"
 #include "BsException.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	D3D11EventQuery::D3D11EventQuery(UINT32 deviceIdx)
 		:mQuery(nullptr)
@@ -64,4 +64,4 @@ namespace bs
 		BOOL queryData;
 		return mContext->GetData(mQuery, &queryData, sizeof(BOOL), 0) == S_OK;
 	}
-}
+}}

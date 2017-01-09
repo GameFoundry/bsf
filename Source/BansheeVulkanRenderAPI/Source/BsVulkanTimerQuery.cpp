@@ -7,7 +7,7 @@
 #include "BsVulkanCommandBuffer.h"
 #include "BsRenderStats.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	VulkanTimerQuery::VulkanTimerQuery(VulkanDevice& device)
 		: mDevice(device), mBeginQuery(nullptr), mEndQuery(nullptr), mTimeDelta(0.0f), mQueryEndCalled(false)
@@ -129,4 +129,4 @@ namespace bs
 
 		return mTimeDelta;
 	}
-}
+}}

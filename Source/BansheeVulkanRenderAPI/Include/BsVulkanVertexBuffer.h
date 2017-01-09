@@ -5,7 +5,7 @@
 #include "BsVulkanPrerequisites.h"
 #include "BsVertexBuffer.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup Vulkan
 	 *  @{
@@ -52,4 +52,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

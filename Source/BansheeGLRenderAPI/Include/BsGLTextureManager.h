@@ -7,7 +7,7 @@
 #include "BsGLSupport.h"
 #include "BsTextureManager.h"
 
-namespace bs 
+namespace bs { namespace ct
 {
 	/** @addtogroup GL
 	 *  @{
@@ -51,4 +51,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

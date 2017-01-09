@@ -32,7 +32,7 @@ namespace bs
 	{
 		HMaterial selectionMat = BuiltinEditorResources::instance().createSelectionMat();
 			
-		mRenderer = RendererExtension::create<SelectionRendererCore>(selectionMat->getCore());
+		mRenderer = RendererExtension::create<ct::SelectionRendererCore>(selectionMat->getCore());
 	}
 
 	SelectionRenderer::~SelectionRenderer()
@@ -40,7 +40,7 @@ namespace bs
 
 	void SelectionRenderer::update(const SPtr<Camera>& camera)
 	{
-		Vector<SPtr<RenderableCore>> objects;
+		Vector<SPtr<ct::RenderableCore>> objects;
 
 		const Vector<HSceneObject>& sceneObjects = Selection::instance().getSceneObjects();
 		const Map<Renderable*, SceneRenderableData>& renderables = SceneManager::instance().getAllRenderables();
@@ -60,10 +60,12 @@ namespace bs
 			}
 		}
 
-		SelectionRendererCore* renderer = mRenderer.get();
-		gCoreThread().queueCommand(std::bind(&SelectionRendererCore::updateData, renderer, camera->getCore(), objects));
+		ct::SelectionRendererCore* renderer = mRenderer.get();
+		gCoreThread().queueCommand(std::bind(&ct::SelectionRendererCore::updateData, renderer, camera->getCore(), objects));
 	}
 
+	namespace ct
+	{
 	const Color SelectionRendererCore::SELECTION_COLOR = Color(1.0f, 1.0f, 1.0f, 0.3f);
 
 	SelectionRendererCore::SelectionRendererCore()
@@ -167,5 +169,6 @@ namespace bs
 						morphVertexDeclaration);
 			}
 		}
+	}
 	}
 }

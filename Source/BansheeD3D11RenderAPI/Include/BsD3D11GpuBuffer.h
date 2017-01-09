@@ -6,7 +6,7 @@
 #include "BsGpuBuffer.h"
 #include "BsD3D11GpuBufferView.h"
 
-namespace bs 
+namespace bs { namespace ct
 {
 	/** @addtogroup D3D11
 	 *  @{
@@ -99,4 +99,4 @@ namespace bs
     };
 
 	/** @} */
-}
+}}

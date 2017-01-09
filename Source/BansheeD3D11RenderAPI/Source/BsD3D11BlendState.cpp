@@ -6,7 +6,7 @@
 #include "BsD3D11Device.h"
 #include "BsRenderStats.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	D3D11BlendStateCore::D3D11BlendStateCore(const BLEND_STATE_DESC& desc, UINT32 id)
 		:BlendStateCore(desc, id), mBlendState(nullptr)
@@ -53,4 +53,4 @@ namespace bs
 
 		BlendStateCore::createInternal();
 	}
-}
+}}

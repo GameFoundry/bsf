@@ -4,7 +4,6 @@
 #include "BsMeshBaseRTTI.h"
 #include "BsCoreThread.h"
 #include "BsFrameAlloc.h"
-#include "BsDebug.h"
 
 namespace bs
 {
@@ -42,15 +41,6 @@ namespace bs
 		return (UINT32)mSubMeshes.size();
 	}
 
-	MeshCoreBase::MeshCoreBase(UINT32 numVertices, UINT32 numIndices, const Vector<SubMesh>& subMeshes)
-		:mProperties(numVertices, numIndices, subMeshes)
-	{ }
-
-	void MeshCoreBase::syncToCore(const CoreSyncData& data)
-	{
-		mProperties.mBounds = data.getData<Bounds>();
-	}
-
 	MeshBase::MeshBase(UINT32 numVertices, UINT32 numIndices, DrawOperationType drawOp)
 		:mProperties(numVertices, numIndices, drawOp)
 	{ }
@@ -71,9 +61,9 @@ namespace bs
 		return CoreSyncData(buffer, size);
 	}
 
-	SPtr<MeshCoreBase> MeshBase::getCore() const
+	SPtr<ct::MeshCoreBase> MeshBase::getCore() const
 	{
-		return std::static_pointer_cast<MeshCoreBase>(mCoreSpecific);
+		return std::static_pointer_cast<ct::MeshCoreBase>(mCoreSpecific);
 	}
 
 	/************************************************************************/
@@ -88,5 +78,17 @@ namespace bs
 	RTTITypeBase* MeshBase::getRTTI() const
 	{
 		return MeshBase::getRTTIStatic();
+	}
+
+	namespace ct
+	{
+	MeshCoreBase::MeshCoreBase(UINT32 numVertices, UINT32 numIndices, const Vector<SubMesh>& subMeshes)
+		:mProperties(numVertices, numIndices, subMeshes)
+	{ }
+
+	void MeshCoreBase::syncToCore(const CoreSyncData& data)
+	{
+		mProperties.mBounds = data.getData<Bounds>();
+	}
 	}
 }

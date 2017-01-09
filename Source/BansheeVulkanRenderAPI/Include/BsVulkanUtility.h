@@ -6,7 +6,7 @@
 #include "BsPixelUtil.h"
 #include "BsVertexDeclaration.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup Vulkan
 	 *  @{
@@ -79,4 +79,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

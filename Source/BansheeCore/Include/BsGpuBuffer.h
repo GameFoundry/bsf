@@ -108,7 +108,7 @@ namespace bs
 		const GpuBufferProperties& getProperties() const { return mProperties; }
 
 		/** Retrieves a core implementation of a GPU buffer usable only from the core thread. */
-		SPtr<GpuBufferCore> getCore() const;
+		SPtr<ct::GpuBufferCore> getCore() const;
 
 		/** Returns the size of a single element in the buffer, of the provided format, in bytes. */
 		static UINT32 getFormatSize(GpuBufferFormat format);
@@ -122,13 +122,15 @@ namespace bs
 		GpuBuffer(const GPU_BUFFER_DESC& desc);
 
 		/** @copydoc CoreObject::createCore */
-		SPtr<CoreObjectCore> createCore() const override;
+		SPtr<ct::CoreObjectCore> createCore() const override;
 
 		GpuBufferProperties mProperties;
     };
 
 	/** @} */
 
+	namespace ct
+	{
 	/** @addtogroup RenderAPI-Internal
 	 *  @{
 	 */
@@ -156,4 +158,5 @@ namespace bs
 	};
 
 	/** @} */
+	}
 }

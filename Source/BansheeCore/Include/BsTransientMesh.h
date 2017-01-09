@@ -25,7 +25,7 @@ namespace bs
 		virtual ~TransientMesh();
 
 		/** Retrieves a core implementation of a mesh usable only from the core thread. */
-		SPtr<TransientMeshCore> getCore() const;
+		SPtr<ct::TransientMeshCore> getCore() const;
 
 	protected:
 		friend class MeshHeap;
@@ -42,7 +42,7 @@ namespace bs
 		void markAsDestroyed() { mIsDestroyed = true; }
 
 		/** @copydoc RenderTarget::createCore */
-		SPtr<CoreObjectCore> createCore() const override;
+		SPtr<ct::CoreObjectCore> createCore() const override;
 
 	protected:
 		bool mIsDestroyed;
@@ -52,6 +52,8 @@ namespace bs
 
 	/** @} */
 
+	namespace ct
+	{
 	/** @addtogroup Resources-Internal
 	 *  @{
 	 */
@@ -80,13 +82,13 @@ namespace bs
 		UINT32 getMeshHeapId() const { return mId; }
 
 		/** @copydoc MeshCoreBase::getVertexOffset */
-		virtual UINT32 getVertexOffset() const override;
+		UINT32 getVertexOffset() const override;
 
 		 /** @copydoc MeshCoreBase::getIndexOffset */
-		virtual UINT32 getIndexOffset() const override;
+		UINT32 getIndexOffset() const override;
 
 		 /** @copydoc MeshCoreBase::_notifyUsedOnGPU */
-		virtual void _notifyUsedOnGPU() override;
+		void _notifyUsedOnGPU() override;
 
 	protected:
 		friend class TransientMesh;
@@ -96,4 +98,5 @@ namespace bs
 	};
 
 	/** @} */
+	}
 }

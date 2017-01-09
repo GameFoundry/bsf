@@ -6,7 +6,7 @@
 #include "BsGLRenderTexture.h"
 #include "BsRenderStats.h"
 
-namespace bs 
+namespace bs { namespace ct
 {
     GLFrameBufferObject::GLFrameBufferObject()
     {
@@ -148,4 +148,4 @@ namespace bs
     {
 		glBindFramebuffer(GL_FRAMEBUFFER, mFB);
     }
-}
+}}

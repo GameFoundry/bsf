@@ -5,7 +5,7 @@
 #include "BsVulkanPrerequisites.h"
 #include "BsVulkanDescriptorLayout.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** Used as a key in a hash map containing VulkanDescriptorLayout%s. */
 	struct VulkanLayoutKey
@@ -35,7 +35,7 @@ namespace bs
 		UINT32 numLayouts;
 		VulkanDescriptorLayout** layouts;
 	};
-}
+}}
 
 /** @cond STDLIB */
 /** @addtogroup Vulkan
@@ -46,22 +46,22 @@ namespace std
 {
 	/**	Hash value generator for VulkanLayoutKey. */
 	template<>
-	struct hash<bs::VulkanLayoutKey>
+	struct hash<bs::ct::VulkanLayoutKey>
 	{
-		size_t operator()(const bs::VulkanLayoutKey& value) const
+		size_t operator()(const bs::ct::VulkanLayoutKey& value) const
 		{
 			if (value.layout != nullptr)
 				return value.layout->getHash();
 
-			return bs::VulkanDescriptorLayout::calculateHash(value.bindings, value.numBindings);
+			return bs::ct::VulkanDescriptorLayout::calculateHash(value.bindings, value.numBindings);
 		}
 	};
 
 	/**	Hash value generator for VulkanPipelineLayoutKey. */
 	template<>
-	struct hash<bs::VulkanPipelineLayoutKey>
+	struct hash<bs::ct::VulkanPipelineLayoutKey>
 	{
-		size_t operator()(const bs::VulkanPipelineLayoutKey& value) const
+		size_t operator()(const bs::ct::VulkanPipelineLayoutKey& value) const
 		{
 			return value.calculateHash();
 		}
@@ -71,7 +71,7 @@ namespace std
 /** @} */
 /** @endcond */
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup Vulkan
 	 *  @{
@@ -102,4 +102,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

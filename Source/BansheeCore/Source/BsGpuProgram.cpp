@@ -14,6 +14,65 @@ namespace bs
 		:mType(gptype), mEntryPoint(entryPoint), mSource(source)
 	{ }
 		
+	GpuProgram::GpuProgram(const GPU_PROGRAM_DESC& desc)
+		: mNeedsAdjacencyInfo(desc.requiresAdjacency), mLanguage(desc.language)
+		, mProperties(desc.source, desc.entryPoint, desc.type)
+    {
+
+    }
+
+	bool GpuProgram::isCompiled() const
+	{
+		return getCore()->isCompiled();
+	}
+
+	String GpuProgram::getCompileErrorMessage() const
+	{
+		return getCore()->getCompileErrorMessage();
+	}
+
+	SPtr<GpuParamDesc> GpuProgram::getParamDesc() const
+	{
+		return getCore()->getParamDesc();
+	}
+
+	SPtr<ct::GpuProgramCore> GpuProgram::getCore() const
+	{
+		return std::static_pointer_cast<ct::GpuProgramCore>(mCoreSpecific);
+	}
+
+	SPtr<ct::CoreObjectCore> GpuProgram::createCore() const
+	{
+		GPU_PROGRAM_DESC desc;
+		desc.source = mProperties.getSource();
+		desc.entryPoint = mProperties.getEntryPoint();
+		desc.language = mLanguage;
+		desc.type = mProperties.getType();
+		desc.requiresAdjacency = mNeedsAdjacencyInfo;
+
+		return ct::GpuProgramCoreManager::instance().createInternal(desc);
+	}
+
+	SPtr<GpuProgram> GpuProgram::create(const GPU_PROGRAM_DESC& desc)
+	{
+		return GpuProgramManager::instance().create(desc);
+	}
+
+	/************************************************************************/
+	/* 								SERIALIZATION                      		*/
+	/************************************************************************/
+	RTTITypeBase* GpuProgram::getRTTIStatic()
+	{
+		return GpuProgramRTTI::instance();
+	}
+
+	RTTITypeBase* GpuProgram::getRTTI() const
+	{
+		return GpuProgram::getRTTIStatic();
+	}
+
+	namespace ct
+	{
 	GpuProgramCore::GpuProgramCore(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
 		:mNeedsAdjacencyInfo(desc.requiresAdjacency), mIsCompiled(false), mProperties(desc.source, desc.entryPoint, 
 			desc.type)
@@ -38,61 +97,5 @@ namespace bs
 	{
 		return GpuProgramCoreManager::instance().create(desc, deviceMask);
 	}
-
-	GpuProgram::GpuProgram(const GPU_PROGRAM_DESC& desc)
-		: mNeedsAdjacencyInfo(desc.requiresAdjacency), mLanguage(desc.language)
-		, mProperties(desc.source, desc.entryPoint, desc.type)
-    {
-
-    }
-
-	bool GpuProgram::isCompiled() const
-	{
-		return getCore()->isCompiled();
-	}
-
-	String GpuProgram::getCompileErrorMessage() const
-	{
-		return getCore()->getCompileErrorMessage();
-	}
-
-	SPtr<GpuParamDesc> GpuProgram::getParamDesc() const
-	{
-		return getCore()->getParamDesc();
-	}
-
-	SPtr<GpuProgramCore> GpuProgram::getCore() const
-	{
-		return std::static_pointer_cast<GpuProgramCore>(mCoreSpecific);
-	}
-
-	SPtr<CoreObjectCore> GpuProgram::createCore() const
-	{
-		GPU_PROGRAM_DESC desc;
-		desc.source = mProperties.getSource();
-		desc.entryPoint = mProperties.getEntryPoint();
-		desc.language = mLanguage;
-		desc.type = mProperties.getType();
-		desc.requiresAdjacency = mNeedsAdjacencyInfo;
-
-		return GpuProgramCoreManager::instance().createInternal(desc);
-	}
-
-	SPtr<GpuProgram> GpuProgram::create(const GPU_PROGRAM_DESC& desc)
-	{
-		return GpuProgramManager::instance().create(desc);
-	}
-
-	/************************************************************************/
-	/* 								SERIALIZATION                      		*/
-	/************************************************************************/
-	RTTITypeBase* GpuProgram::getRTTIStatic()
-	{
-		return GpuProgramRTTI::instance();
-	}
-
-	RTTITypeBase* GpuProgram::getRTTI() const
-	{
-		return GpuProgram::getRTTIStatic();
 	}
 }

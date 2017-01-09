@@ -276,7 +276,7 @@ namespace bs
 				}
 			}
 
-			RenderAPICore* renderAPI = bs::RenderAPICore::instancePtr();
+			ct::RenderAPICore* renderAPI = ct::RenderAPICore::instancePtr();
 			renderAPI->convertProjectionMatrix(mProjMatrix, mProjMatrixRS);
 			mProjMatrixInv = mProjMatrix.inverse();
 			mProjMatrixRSInv = mProjMatrixRS.inverse();
@@ -721,6 +721,154 @@ namespace bs
 		return Vector3(0.0f, 0.0f, 0.0f);
 	}
 
+	Camera::Camera(SPtr<RenderTarget> target, float left, float top, float width, float height)
+		:mMain(false), mLastUpdateHash(0)
+	{
+		if (target != nullptr)
+			target->blockUntilCoreInitialized();
+
+		mViewport = Viewport::create(target, left, top, width, height);
+	}
+
+	SPtr<ct::CameraCore> Camera::getCore() const
+	{
+		return std::static_pointer_cast<ct::CameraCore>(mCoreSpecific);
+	}
+
+	SPtr<Camera> Camera::create(SPtr<RenderTarget> target, float left, float top, float width, float height)
+	{
+		Camera* handler = new (bs_alloc<Camera>()) Camera(target, left, top, width, height);
+		SPtr<Camera> handlerPtr = bs_core_ptr<Camera>(handler);
+		handlerPtr->_setThisPtr(handlerPtr);
+		handlerPtr->initialize();
+
+		return handlerPtr;
+	}
+
+	SPtr<Camera> Camera::createEmpty()
+	{
+		Camera* handler = new (bs_alloc<Camera>()) Camera();
+		SPtr<Camera> handlerPtr = bs_core_ptr<Camera>(handler);
+		handlerPtr->_setThisPtr(handlerPtr);
+
+		return handlerPtr;
+	}
+
+	SPtr<ct::CoreObjectCore> Camera::createCore() const
+	{
+		ct::CameraCore* handler = new (bs_alloc<ct::CameraCore>()) ct::CameraCore(mViewport->getCore());
+		SPtr<ct::CameraCore> handlerPtr = bs_shared_ptr<ct::CameraCore>(handler);
+		handlerPtr->_setThisPtr(handlerPtr);
+
+		return handlerPtr;
+	}
+
+	Rect2I Camera::getViewportRect() const
+	{
+		return mViewport->getArea();
+	}
+
+	CoreSyncData Camera::syncToCore(FrameAlloc* allocator)
+	{
+		UINT32 dirtyFlag = getCoreDirtyFlags();
+
+		SPtr<ct::TextureCore> skyTexture;
+		if (mSkyTexture.isLoaded())
+			skyTexture = mSkyTexture->getCore();
+
+		UINT32 size = 0;
+		size += rttiGetElemSize(dirtyFlag);
+		size += rttiGetElemSize(mPosition);
+		size += rttiGetElemSize(mRotation);
+
+		UINT32 ppSize = 0;
+		if (dirtyFlag != (UINT32)CameraDirtyFlag::Transform)
+		{
+			size += rttiGetElemSize(mLayers);
+			size += rttiGetElemSize(mProjType);
+			size += rttiGetElemSize(mHorzFOV);
+			size += rttiGetElemSize(mFarDist);
+			size += rttiGetElemSize(mNearDist);
+			size += rttiGetElemSize(mAspect);
+			size += rttiGetElemSize(mOrthoHeight);
+			size += rttiGetElemSize(mPriority);
+			size += rttiGetElemSize(mCustomViewMatrix);
+			size += rttiGetElemSize(mCustomProjMatrix);
+			size += rttiGetElemSize(mFrustumExtentsManuallySet);
+			size += rttiGetElemSize(mCameraFlags);
+			size += rttiGetElemSize(mIsActive);
+			size += rttiGetElemSize(mMSAA);
+			size += sizeof(SPtr<ct::TextureCore>);
+			size += sizeof(UINT32);
+
+			if(mPPSettings != nullptr)
+			{
+				mPPSettings->_getSyncData(nullptr, ppSize);
+				size += ppSize;
+			}
+		}
+
+		UINT8* buffer = allocator->alloc(size);
+
+		char* dataPtr = (char*)buffer;
+		dataPtr = rttiWriteElem(dirtyFlag, dataPtr);
+		dataPtr = rttiWriteElem(mPosition, dataPtr);
+		dataPtr = rttiWriteElem(mRotation, dataPtr);
+
+		if (dirtyFlag != (UINT32)CameraDirtyFlag::Transform)
+		{
+			dataPtr = rttiWriteElem(mLayers, dataPtr);
+			dataPtr = rttiWriteElem(mProjType, dataPtr);
+			dataPtr = rttiWriteElem(mHorzFOV, dataPtr);
+			dataPtr = rttiWriteElem(mFarDist, dataPtr);
+			dataPtr = rttiWriteElem(mNearDist, dataPtr);
+			dataPtr = rttiWriteElem(mAspect, dataPtr);
+			dataPtr = rttiWriteElem(mOrthoHeight, dataPtr);
+			dataPtr = rttiWriteElem(mPriority, dataPtr);
+			dataPtr = rttiWriteElem(mCustomViewMatrix, dataPtr);
+			dataPtr = rttiWriteElem(mCustomProjMatrix, dataPtr);
+			dataPtr = rttiWriteElem(mFrustumExtentsManuallySet, dataPtr);
+			dataPtr = rttiWriteElem(mCameraFlags, dataPtr);
+			dataPtr = rttiWriteElem(mIsActive, dataPtr);
+			dataPtr = rttiWriteElem(mMSAA, dataPtr);
+
+			SPtr<ct::TextureCore>* skyTexDest = new (dataPtr) SPtr<ct::TextureCore>();
+			*skyTexDest = skyTexture;
+			dataPtr += sizeof(skyTexture);
+
+			dataPtr = rttiWriteElem(ppSize, dataPtr);
+
+			if(mPPSettings != nullptr)
+				mPPSettings->_getSyncData((UINT8*)dataPtr, ppSize);
+
+			dataPtr += ppSize;
+		}
+
+		return CoreSyncData(buffer, size);
+	}
+
+	void Camera::getCoreDependencies(Vector<CoreObject*>& dependencies)
+	{
+		dependencies.push_back(mViewport.get());
+	}
+
+	void Camera::_markCoreDirty(CameraDirtyFlag flag)
+	{
+		markCoreDirty((UINT32)flag);
+	}
+
+	RTTITypeBase* Camera::getRTTIStatic()
+	{
+		return CameraRTTI::instance();
+	}
+
+	RTTITypeBase* Camera::getRTTI() const
+	{
+		return Camera::getRTTIStatic();
+	}
+
+	namespace ct
+	{
 	CameraCore::~CameraCore()
 	{
 		RendererManager::instance().getActive()->notifyCameraRemoved(this);
@@ -798,150 +946,5 @@ namespace bs
 
 		RendererManager::instance().getActive()->notifyCameraUpdated(this, (UINT32)dirtyFlag);
 	}
-
-	Camera::Camera(SPtr<RenderTarget> target, float left, float top, float width, float height)
-		:mMain(false), mLastUpdateHash(0)
-	{
-		if (target != nullptr)
-			target->blockUntilCoreInitialized();
-
-		mViewport = Viewport::create(target, left, top, width, height);
-	}
-
-	SPtr<CameraCore> Camera::getCore() const
-	{
-		return std::static_pointer_cast<CameraCore>(mCoreSpecific);
-	}
-
-	SPtr<Camera> Camera::create(SPtr<RenderTarget> target, float left, float top, float width, float height)
-	{
-		Camera* handler = new (bs_alloc<Camera>()) Camera(target, left, top, width, height);
-		SPtr<Camera> handlerPtr = bs_core_ptr<Camera>(handler);
-		handlerPtr->_setThisPtr(handlerPtr);
-		handlerPtr->initialize();
-
-		return handlerPtr;
-	}
-
-	SPtr<Camera> Camera::createEmpty()
-	{
-		Camera* handler = new (bs_alloc<Camera>()) Camera();
-		SPtr<Camera> handlerPtr = bs_core_ptr<Camera>(handler);
-		handlerPtr->_setThisPtr(handlerPtr);
-
-		return handlerPtr;
-	}
-
-	SPtr<CoreObjectCore> Camera::createCore() const
-	{
-		CameraCore* handler = new (bs_alloc<CameraCore>()) CameraCore(mViewport->getCore());
-		SPtr<CameraCore> handlerPtr = bs_shared_ptr<CameraCore>(handler);
-		handlerPtr->_setThisPtr(handlerPtr);
-
-		return handlerPtr;
-	}
-
-	Rect2I Camera::getViewportRect() const
-	{
-		return mViewport->getArea();
-	}
-
-	CoreSyncData Camera::syncToCore(FrameAlloc* allocator)
-	{
-		UINT32 dirtyFlag = getCoreDirtyFlags();
-
-		SPtr<TextureCore> skyTexture;
-		if (mSkyTexture.isLoaded())
-			skyTexture = mSkyTexture->getCore();
-
-		UINT32 size = 0;
-		size += rttiGetElemSize(dirtyFlag);
-		size += rttiGetElemSize(mPosition);
-		size += rttiGetElemSize(mRotation);
-
-		UINT32 ppSize = 0;
-		if (dirtyFlag != (UINT32)CameraDirtyFlag::Transform)
-		{
-			size += rttiGetElemSize(mLayers);
-			size += rttiGetElemSize(mProjType);
-			size += rttiGetElemSize(mHorzFOV);
-			size += rttiGetElemSize(mFarDist);
-			size += rttiGetElemSize(mNearDist);
-			size += rttiGetElemSize(mAspect);
-			size += rttiGetElemSize(mOrthoHeight);
-			size += rttiGetElemSize(mPriority);
-			size += rttiGetElemSize(mCustomViewMatrix);
-			size += rttiGetElemSize(mCustomProjMatrix);
-			size += rttiGetElemSize(mFrustumExtentsManuallySet);
-			size += rttiGetElemSize(mCameraFlags);
-			size += rttiGetElemSize(mIsActive);
-			size += rttiGetElemSize(mMSAA);
-			size += sizeof(SPtr<TextureCore>);
-			size += sizeof(UINT32);
-
-			if(mPPSettings != nullptr)
-			{
-				mPPSettings->_getSyncData(nullptr, ppSize);
-				size += ppSize;
-			}
-		}
-
-		UINT8* buffer = allocator->alloc(size);
-
-		char* dataPtr = (char*)buffer;
-		dataPtr = rttiWriteElem(dirtyFlag, dataPtr);
-		dataPtr = rttiWriteElem(mPosition, dataPtr);
-		dataPtr = rttiWriteElem(mRotation, dataPtr);
-
-		if (dirtyFlag != (UINT32)CameraDirtyFlag::Transform)
-		{
-			dataPtr = rttiWriteElem(mLayers, dataPtr);
-			dataPtr = rttiWriteElem(mProjType, dataPtr);
-			dataPtr = rttiWriteElem(mHorzFOV, dataPtr);
-			dataPtr = rttiWriteElem(mFarDist, dataPtr);
-			dataPtr = rttiWriteElem(mNearDist, dataPtr);
-			dataPtr = rttiWriteElem(mAspect, dataPtr);
-			dataPtr = rttiWriteElem(mOrthoHeight, dataPtr);
-			dataPtr = rttiWriteElem(mPriority, dataPtr);
-			dataPtr = rttiWriteElem(mCustomViewMatrix, dataPtr);
-			dataPtr = rttiWriteElem(mCustomProjMatrix, dataPtr);
-			dataPtr = rttiWriteElem(mFrustumExtentsManuallySet, dataPtr);
-			dataPtr = rttiWriteElem(mCameraFlags, dataPtr);
-			dataPtr = rttiWriteElem(mIsActive, dataPtr);
-			dataPtr = rttiWriteElem(mMSAA, dataPtr);
-
-			SPtr<TextureCore>* skyTexDest = new (dataPtr) SPtr<TextureCore>();
-			*skyTexDest = skyTexture;
-			dataPtr += sizeof(skyTexture);
-
-			dataPtr = rttiWriteElem(ppSize, dataPtr);
-
-			if(mPPSettings != nullptr)
-				mPPSettings->_getSyncData((UINT8*)dataPtr, ppSize);
-
-			dataPtr += ppSize;
-		}
-
-		return CoreSyncData(buffer, size);
-	}
-
-	void Camera::getCoreDependencies(Vector<CoreObject*>& dependencies)
-	{
-		dependencies.push_back(mViewport.get());
-	}
-
-	void Camera::_markCoreDirty(CameraDirtyFlag flag)
-	{
-		markCoreDirty((UINT32)flag);
-	}
-
-	RTTITypeBase* Camera::getRTTIStatic()
-	{
-		return CameraRTTI::instance();
-	}
-
-	RTTITypeBase* Camera::getRTTI() const
-	{
-		return Camera::getRTTIStatic();
 	}
 }

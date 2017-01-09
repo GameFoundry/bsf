@@ -6,7 +6,7 @@
 #include "BsGpuParams.h"
 #include "BsGroupAlloc.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup Vulkan
 	 *  @{
@@ -103,4 +103,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

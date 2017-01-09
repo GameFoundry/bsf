@@ -6,7 +6,7 @@
 #include "BsVulkanResource.h"
 #include "BsSamplerState.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup Vulkan
 	 *  @{
@@ -51,4 +51,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

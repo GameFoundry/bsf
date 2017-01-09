@@ -8,6 +8,39 @@
 
 namespace bs
 {
+	TransientMesh::TransientMesh(const SPtr<MeshHeap>& parentHeap, UINT32 id, UINT32 numVertices, UINT32 numIndices, DrawOperationType drawOp)
+		:MeshBase(numVertices, numIndices, drawOp), mIsDestroyed(false), mParentHeap(parentHeap), mId(id)
+	{
+
+	}
+
+	TransientMesh::~TransientMesh()
+	{
+		if (!mIsDestroyed)
+		{
+			SPtr<TransientMesh> meshPtr = std::static_pointer_cast<TransientMesh>(getThisPtr());
+			mParentHeap->dealloc(meshPtr);
+		}
+	}
+
+	SPtr<ct::TransientMeshCore> TransientMesh::getCore() const
+	{
+		return std::static_pointer_cast<ct::TransientMeshCore>(mCoreSpecific);
+	}
+
+	SPtr<ct::CoreObjectCore> TransientMesh::createCore() const
+	{
+		ct::TransientMeshCore* core = new (bs_alloc<ct::TransientMeshCore>()) ct::TransientMeshCore(
+			mParentHeap->getCore(), mId, mProperties.mNumVertices, mProperties.mNumIndices, mProperties.mSubMeshes);
+
+		SPtr<ct::CoreObjectCore> meshCore = bs_shared_ptr<ct::TransientMeshCore>(core);
+		meshCore->_setThisPtr(meshCore);
+
+		return meshCore;
+	}
+
+	namespace ct
+	{
 	TransientMeshCore::TransientMeshCore(const SPtr<MeshHeapCore>& parentHeap, UINT32 id, 
 		UINT32 numVertices, UINT32 numIndices, const Vector<SubMesh>& subMeshes)
 		:MeshCoreBase(numVertices, numIndices, subMeshes), mParentHeap(parentHeap), mId(id)
@@ -44,35 +77,5 @@ namespace bs
 	{
 		mParentHeap->notifyUsedOnGPU(mId);
 	}
-
-	TransientMesh::TransientMesh(const SPtr<MeshHeap>& parentHeap, UINT32 id, UINT32 numVertices, UINT32 numIndices, DrawOperationType drawOp)
-		:MeshBase(numVertices, numIndices, drawOp), mIsDestroyed(false), mParentHeap(parentHeap), mId(id)
-	{
-
-	}
-
-	TransientMesh::~TransientMesh()
-	{
-		if (!mIsDestroyed)
-		{
-			SPtr<TransientMesh> meshPtr = std::static_pointer_cast<TransientMesh>(getThisPtr());
-			mParentHeap->dealloc(meshPtr);
-		}
-	}
-
-	SPtr<TransientMeshCore> TransientMesh::getCore() const
-	{
-		return std::static_pointer_cast<TransientMeshCore>(mCoreSpecific);
-	}
-
-	SPtr<CoreObjectCore> TransientMesh::createCore() const
-	{
-		TransientMeshCore* core = new (bs_alloc<TransientMeshCore>()) TransientMeshCore(
-			mParentHeap->getCore(), mId, mProperties.mNumVertices, mProperties.mNumIndices, mProperties.mSubMeshes);
-
-		SPtr<CoreObjectCore> meshCore = bs_shared_ptr<TransientMeshCore>(core);
-		meshCore->_setThisPtr(meshCore);
-
-		return meshCore;
 	}
 }

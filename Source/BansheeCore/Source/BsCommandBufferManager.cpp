@@ -2,7 +2,7 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsCommandBufferManager.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	SPtr<CommandBuffer> CommandBufferManager::create(GpuQueueType type, UINT32 deviceIdx, UINT32 queueIdx,
 		bool secondary)
@@ -11,4 +11,4 @@ namespace bs
 
 		return createInternal(type, deviceIdx, queueIdx, secondary);
 	}
-}
+}}

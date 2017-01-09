@@ -10,10 +10,12 @@
 #include "BsParamBlocks.h"
 #include "BsRendererObject.h"
 
-namespace bs
-{
+namespace bs 
+{ 
 	struct RendererAnimationData;
 
+	namespace ct
+	{
 	/** @addtogroup RenderBeast
 	 *  @{
 	 */
@@ -44,4 +46,4 @@ namespace bs
 	class DefaultMaterial : public RendererMaterial<DefaultMaterial> { RMAT_DEF("Default.bsl"); };
 
 	/** @} */
-}
+}}

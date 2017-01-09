@@ -68,7 +68,7 @@ namespace bs
 		initData.pickingMat = pickingMaterial->getCore();
 		initData.alphaPickingMat = alphaPickingMaterial->getCore();
 
-		mGizmoRenderer = RendererExtension::create<GizmoRenderer>(initData);
+		mGizmoRenderer = RendererExtension::create<ct::GizmoRenderer>(initData);
 	}
 
 	GizmoManager::~GizmoManager()
@@ -415,7 +415,7 @@ namespace bs
 		Vector<MeshRenderData> proxyData;
 		for (auto& entry : meshData)
 		{
-			SPtr<TextureCore> tex;
+			SPtr<ct::TextureCore> tex;
 			if (entry.texture.isLoaded())
 				tex = entry.texture->getCore();
 
@@ -449,13 +449,13 @@ namespace bs
 
 		mIconMesh = buildIconMesh(camera, mIconData, false, iconRenderData);
 
-		SPtr<MeshCoreBase> iconMesh;
+		SPtr<ct::MeshCoreBase> iconMesh;
 		if(mIconMesh != nullptr)
 			iconMesh = mIconMesh->getCore();
 
-		GizmoRenderer* renderer = mGizmoRenderer.get();
+		ct::GizmoRenderer* renderer = mGizmoRenderer.get();
 
-		gCoreThread().queueCommand(std::bind(&GizmoRenderer::updateData, renderer, camera->getCore(),
+		gCoreThread().queueCommand(std::bind(&ct::GizmoRenderer::updateData, renderer, camera->getCore(),
 			proxyData, iconMesh, iconRenderData));
 	}
 
@@ -628,15 +628,15 @@ namespace bs
 
 		SPtr<TransientMesh> iconMesh = buildIconMesh(camera, iconData, true, iconRenderData);
 		
-		SPtr<TransientMeshCore> iconMeshCore;
+		SPtr<ct::TransientMeshCore> iconMeshCore;
 		if (iconMesh != nullptr)
 			iconMeshCore = iconMesh->getCore();
 
 		// Note: This must be rendered while Scene view is being rendered
-		GizmoRenderer* renderer = mGizmoRenderer.get();
+		ct::GizmoRenderer* renderer = mGizmoRenderer.get();
 
 		Vector<MeshRenderData> proxyData = createMeshProxyData(meshes);
-		gCoreThread().queueCommand(std::bind(&GizmoRenderer::renderData, renderer, camera->getCore(),
+		gCoreThread().queueCommand(std::bind(&ct::GizmoRenderer::renderData, renderer, camera->getCore(),
 											 proxyData, iconMeshCore, iconRenderData, true));
 
 		mPickingDrawHelper->clearMeshes(meshes);
@@ -676,10 +676,10 @@ namespace bs
 
 		mIconMesh = nullptr;
 
-		GizmoRenderer* renderer = mGizmoRenderer.get();
+		ct::GizmoRenderer* renderer = mGizmoRenderer.get();
 		IconRenderDataVecPtr iconRenderData = bs_shared_ptr_new<IconRenderDataVec>();
 		
-		gCoreThread().queueCommand(std::bind(&GizmoRenderer::updateData, renderer,
+		gCoreThread().queueCommand(std::bind(&ct::GizmoRenderer::updateData, renderer,
 			nullptr, Vector<MeshRenderData>(), nullptr, iconRenderData));
 	}
 
@@ -903,6 +903,8 @@ namespace bs
 		return HSceneObject();
 	}
 
+	namespace ct
+	{
 	GizmoParamBlockDef gHandleParamBlockDef;
 	GizmoPickingParamBlockDef gGizmoPickingParamBlockDef;
 
@@ -1177,5 +1179,6 @@ namespace bs
 		}
 
 		mesh->_notifyUsedOnGPU();
+	}
 	}
 }

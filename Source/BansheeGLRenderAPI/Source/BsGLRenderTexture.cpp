@@ -5,7 +5,7 @@
 #include "BsGLPixelBuffer.h"
 #include "BsTextureView.h"
 
-namespace bs 
+namespace bs { namespace ct
 {
 #define PROBE_SIZE 16
 
@@ -364,5 +364,4 @@ namespace bs
 	{
 
 	}
-}
-
+}}

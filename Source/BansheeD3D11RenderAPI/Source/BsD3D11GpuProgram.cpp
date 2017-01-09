@@ -12,7 +12,7 @@
 #include "BsRenderStats.h"
 #include <regex>
 
-namespace bs
+namespace bs { namespace ct
 {
 	UINT32 D3D11GpuProgramCore::GlobalProgramId = 0;
 
@@ -357,4 +357,4 @@ namespace bs
 	{
 		return mComputeShader;
 	}
-}
+}}

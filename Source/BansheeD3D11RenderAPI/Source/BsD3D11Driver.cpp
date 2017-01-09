@@ -4,7 +4,7 @@
 #include "BsD3D11VideoModeInfo.h"
 #include "BsException.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	D3D11Driver::D3D11Driver(const D3D11Driver &ob) 
 	{
@@ -111,4 +111,4 @@ namespace bs
 
 		return desc;
 	}
-}
+}}

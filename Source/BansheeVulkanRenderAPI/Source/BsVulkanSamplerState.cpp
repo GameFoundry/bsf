@@ -5,7 +5,7 @@
 #include "BsVulkanUtility.h"
 #include "BsVulkanRenderAPI.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	VulkanSampler::VulkanSampler(VulkanResourceManager* owner, VkSampler sampler)
 		:VulkanResource(owner, true), mSampler(sampler)
@@ -79,4 +79,4 @@ namespace bs
 			mSamplers[i] = devices[i]->getResourceManager().create<VulkanSampler>(sampler);
 		}
 	}
-}
+}}

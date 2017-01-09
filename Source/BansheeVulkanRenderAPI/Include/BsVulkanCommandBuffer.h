@@ -8,7 +8,7 @@
 #include "BsVulkanResource.h"
 #include "BsVulkanGpuPipelineState.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	class VulkanImage;
 	/** @addtogroup Vulkan
@@ -464,4 +464,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

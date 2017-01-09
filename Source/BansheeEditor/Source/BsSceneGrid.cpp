@@ -17,12 +17,6 @@
 
 namespace bs
 {
-	const Color SceneGridRenderer::GRID_LINE_COLOR = Color(0.5f, 0.5f, 0.5f);
-	const float SceneGridRenderer::LINE_WIDTH = 0.025f;
-	const float SceneGridRenderer::LINE_BORDER_WIDTH = 0.00075f;
-	const float SceneGridRenderer::FADE_OUT_START = 5.0f;
-	const float SceneGridRenderer::FADE_OUT_END = 40.0f;
-
 	SceneGrid::SceneGrid(const SPtr<Camera>& camera)
 		:mCoreDirty(true)
 	{
@@ -32,11 +26,11 @@ namespace bs
 
 		HMaterial gridMaterial = BuiltinEditorResources::instance().createSceneGridMaterial();
 
-		SceneGridRenderer::InitData initData;
+		ct::SceneGridRenderer::InitData initData;
 		initData.material = gridMaterial->getCore();
 		initData.camera = camera->getCore();
 
-		mRenderer = RendererExtension::create<SceneGridRenderer>(initData);
+		mRenderer = RendererExtension::create<ct::SceneGridRenderer>(initData);
 		updateGridMesh();
 	}
 
@@ -99,9 +93,9 @@ namespace bs
 				break;
 			}
 
-			SceneGridRenderer* renderer = mRenderer.get();
+			ct::SceneGridRenderer* renderer = mRenderer.get();
 			gCoreThread().queueCommand(
-				std::bind(&SceneGridRenderer::updateData, renderer, mGridMesh->getCore(), mSpacing, 
+				std::bind(&ct::SceneGridRenderer::updateData, renderer, mGridMesh->getCore(), mSpacing,
 				mMode == GridMode::Perspective, gridPlaneNormal));
 
 			mCoreDirty = false;
@@ -172,6 +166,14 @@ namespace bs
 		mCoreDirty = true;
 	}
 
+	namespace ct
+	{
+	const Color SceneGridRenderer::GRID_LINE_COLOR = Color(0.5f, 0.5f, 0.5f);
+	const float SceneGridRenderer::LINE_WIDTH = 0.025f;
+	const float SceneGridRenderer::LINE_BORDER_WIDTH = 0.00075f;
+	const float SceneGridRenderer::FADE_OUT_START = 5.0f;
+	const float SceneGridRenderer::FADE_OUT_END = 40.0f;
+
 	SceneGridRenderer::SceneGridRenderer()
 		:RendererExtension(RenderLocation::PostLightPass, -5)
 	{ }
@@ -239,5 +241,6 @@ namespace bs
 		gRendererUtility().setPass(mGridMaterial, 0);
 		gRendererUtility().setPassParams(mMaterialParams);
 		gRendererUtility().draw(mGridMesh, mGridMesh->getProperties().getSubMesh(0));
+	}
 	}
 }

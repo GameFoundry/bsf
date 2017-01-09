@@ -3,7 +3,7 @@
 #include "BsVulkanRenderWindowManager.h"
 #include "Win32/BsWin32RenderWindow.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	VulkanRenderWindowManager::VulkanRenderWindowManager()
 	{ }
@@ -39,4 +39,4 @@ namespace bs
 
 		return renderWindowPtr;
 	}
-}
+}}

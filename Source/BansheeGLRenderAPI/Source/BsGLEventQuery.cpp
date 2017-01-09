@@ -4,7 +4,7 @@
 #include "BsGLCommandBuffer.h"
 #include "BsRenderStats.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	GLEventQuery::GLEventQuery(UINT32 deviceIdx)
 		:mQueryObj(0)
@@ -45,4 +45,4 @@ namespace bs
 
 		return done == GL_TRUE;
 	}
-}
+}}

@@ -9,7 +9,7 @@
 #include "BsRendererObject.h"
 #include "BsBounds.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup RenderBeast
 	 *  @{
@@ -142,4 +142,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

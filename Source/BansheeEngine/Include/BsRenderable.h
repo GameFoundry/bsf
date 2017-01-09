@@ -173,6 +173,87 @@ namespace bs
 	 */
 
 	/** @copydoc TRenderable */
+	class BS_EXPORT Renderable : public IReflectable, public CoreObject, public TRenderable<false>, public IResourceListener
+	{
+	public:
+		/**	Gets world bounds of the mesh rendered by this object. */
+		Bounds getBounds() const;
+
+		/** Sets the animation that will be used for animating the attached mesh. */
+		void setAnimation(const SPtr<Animation>& animation);
+
+		/** Checks is the renderable animated or static. */
+		bool isAnimated() const { return mAnimation != nullptr; }
+
+		/**	Retrieves an implementation of a renderable handler usable only from the core thread. */
+		SPtr<ct::RenderableCore> getCore() const;
+
+		/**	Returns the hash value that can be used to identify if the internal data needs an update. */
+		UINT32 _getLastModifiedHash() const { return mLastUpdateHash; }
+
+		/**	Sets the hash value that can be used to identify if the internal data needs an update. */
+		void _setLastModifiedHash(UINT32 hash) { mLastUpdateHash = hash; }
+
+		/** Updates the transfrom from the provided scene object, if the scene object's data is detected to be dirty. */
+		void _updateTransform(const HSceneObject& so, bool force = false);
+
+		/**	Creates a new renderable handler instance. */
+		static SPtr<Renderable> create();
+
+	protected:
+		Renderable();
+
+		/** @copydoc CoreObject::createCore */
+		SPtr<ct::CoreObjectCore> createCore() const override;
+
+		/** @copydoc TRenderable::onMeshChanged */
+		void onMeshChanged() override;
+
+		/** Updates animation properties depending on the current mesh. */
+		void refreshAnimation();
+
+		/** @copydoc TRenderable::_markCoreDirty */
+		void _markCoreDirty(RenderableDirtyFlag flag = RenderableDirtyFlag::Everything) override;
+
+		/** @copydoc TRenderable::_markResourcesDirty */
+		void _markResourcesDirty() override;
+
+		/** @copydoc CoreObject::markDependenciesDirty */
+		void _markDependenciesDirty() override;
+
+		/** @copydoc CoreObject::syncToCore */
+		CoreSyncData syncToCore(FrameAlloc* allocator) override;
+
+		/** @copydoc CoreObject::getCoreDependencies */
+		void getCoreDependencies(Vector<CoreObject*>& dependencies) override;
+
+		/** @copydoc IResourceListener::getListenerResources */
+		void getListenerResources(Vector<HResource>& resources) override;
+
+		/** @copydoc IResourceListener::notifyResourceLoaded */
+		void notifyResourceLoaded(const HResource& resource) override;
+
+		/** @copydoc IResourceListener::notifyResourceChanged */
+		void notifyResourceChanged(const HResource& resource) override;
+
+		/**	Creates a new renderable handler instance without initializing it. */
+		static SPtr<Renderable> createEmpty();
+
+		UINT32 mLastUpdateHash;
+		SPtr<Animation> mAnimation;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+	public:
+		friend class RenderableRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		RTTITypeBase* getRTTI() const override;
+	};
+
+	namespace ct
+	{
+	/** @copydoc TRenderable */
 	class BS_EXPORT RenderableCore : public CoreObjectCore, public TRenderable<true>
 	{
 	public:
@@ -230,85 +311,7 @@ namespace bs
 		SPtr<VertexBufferCore> mMorphShapeBuffer;
 		SPtr<VertexDeclarationCore> mMorphVertexDeclaration;
 	};
-
-	/** @copydoc TRenderable */
-	class BS_EXPORT Renderable : public IReflectable, public CoreObject, public TRenderable<false>, public IResourceListener
-	{
-	public:
-		/**	Gets world bounds of the mesh rendered by this object. */
-		Bounds getBounds() const;
-
-		/** Sets the animation that will be used for animating the attached mesh. */
-		void setAnimation(const SPtr<Animation>& animation);
-
-		/** Checks is the renderable animated or static. */
-		bool isAnimated() const { return mAnimation != nullptr; }
-
-		/**	Retrieves an implementation of a renderable handler usable only from the core thread. */
-		SPtr<RenderableCore> getCore() const;
-
-		/**	Returns the hash value that can be used to identify if the internal data needs an update. */
-		UINT32 _getLastModifiedHash() const { return mLastUpdateHash; }
-
-		/**	Sets the hash value that can be used to identify if the internal data needs an update. */
-		void _setLastModifiedHash(UINT32 hash) { mLastUpdateHash = hash; }
-
-		/** Updates the transfrom from the provided scene object, if the scene object's data is detected to be dirty. */
-		void _updateTransform(const HSceneObject& so, bool force = false);
-
-		/**	Creates a new renderable handler instance. */
-		static SPtr<Renderable> create();
-
-	protected:
-		Renderable();
-
-		/** @copydoc CoreObject::createCore */
-		SPtr<CoreObjectCore> createCore() const override;
-
-		/** @copydoc TRenderable::onMeshChanged */
-		void onMeshChanged() override;
-
-		/** Updates animation properties depending on the current mesh. */
-		void refreshAnimation();
-
-		/** @copydoc TRenderable::_markCoreDirty */
-		void _markCoreDirty(RenderableDirtyFlag flag = RenderableDirtyFlag::Everything) override;
-
-		/** @copydoc TRenderable::_markResourcesDirty */
-		void _markResourcesDirty() override;
-
-		/** @copydoc CoreObject::markDependenciesDirty */
-		void _markDependenciesDirty() override;
-
-		/** @copydoc CoreObject::syncToCore */
-		CoreSyncData syncToCore(FrameAlloc* allocator) override;
-
-		/** @copydoc CoreObject::getCoreDependencies */
-		void getCoreDependencies(Vector<CoreObject*>& dependencies) override;
-
-		/** @copydoc IResourceListener::getListenerResources */
-		void getListenerResources(Vector<HResource>& resources) override;
-
-		/** @copydoc IResourceListener::notifyResourceLoaded */
-		void notifyResourceLoaded(const HResource& resource) override;
-
-		/** @copydoc IResourceListener::notifyResourceChanged */
-		void notifyResourceChanged(const HResource& resource) override;
-
-		/**	Creates a new renderable handler instance without initializing it. */
-		static SPtr<Renderable> createEmpty();
-
-		UINT32 mLastUpdateHash;
-		SPtr<Animation> mAnimation;
-
-		/************************************************************************/
-		/* 								RTTI		                     		*/
-		/************************************************************************/
-	public:
-		friend class RenderableRTTI;
-		static RTTITypeBase* getRTTIStatic();
-		RTTITypeBase* getRTTI() const override;
-	};
+	}
 
 	/** @} */
 }

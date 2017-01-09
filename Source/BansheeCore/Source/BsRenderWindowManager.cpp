@@ -20,7 +20,7 @@ namespace bs
 
 	SPtr<RenderWindow> RenderWindowManager::create(RENDER_WINDOW_DESC& desc, SPtr<RenderWindow> parentWindow)
 	{
-		UINT32 id = RenderWindowCoreManager::instance().mNextWindowId.fetch_add(1, std::memory_order_relaxed);
+		UINT32 id = ct::RenderWindowCoreManager::instance().mNextWindowId.fetch_add(1, std::memory_order_relaxed);
 
 		SPtr<RenderWindow> renderWindow = createImpl(desc, id, parentWindow);
 		renderWindow->_setThisPtr(renderWindow);
@@ -55,7 +55,7 @@ namespace bs
 		}
 	}
 
-	void RenderWindowManager::notifyFocusReceived(RenderWindowCore* coreWindow)
+	void RenderWindowManager::notifyFocusReceived(ct::RenderWindowCore* coreWindow)
 	{
 		Lock lock(mWindowMutex);
 
@@ -63,14 +63,14 @@ namespace bs
 		mNewWindowInFocus = window;
 	}
 
-	void RenderWindowManager::notifyFocusLost(RenderWindowCore* coreWindow)
+	void RenderWindowManager::notifyFocusLost(ct::RenderWindowCore* coreWindow)
 	{
 		Lock lock(mWindowMutex);
 
 		mNewWindowInFocus = nullptr;
 	}
 
-	void RenderWindowManager::notifyMovedOrResized(RenderWindowCore* coreWindow)
+	void RenderWindowManager::notifyMovedOrResized(ct::RenderWindowCore* coreWindow)
 	{
 		Lock lock(mWindowMutex);
 
@@ -103,7 +103,7 @@ namespace bs
 		moveResizeData->height = props.getHeight();
 	}
 
-	void RenderWindowManager::notifySyncDataDirty(RenderWindowCore* coreWindow)
+	void RenderWindowManager::notifySyncDataDirty(ct::RenderWindowCore* coreWindow)
 	{
 		Lock lock(mWindowMutex);
 
@@ -113,7 +113,7 @@ namespace bs
 			mDirtyProperties.insert(window);
 	}
 
-	void RenderWindowManager::windowMouseLeft(RenderWindowCore* coreWindow)
+	void RenderWindowManager::windowMouseLeft(ct::RenderWindowCore* coreWindow)
 	{
 		Lock lock(mWindowMutex);
 
@@ -194,7 +194,7 @@ namespace bs
 		return windows;
 	}
 
-	RenderWindow* RenderWindowManager::getNonCore(const RenderWindowCore* window) const
+	RenderWindow* RenderWindowManager::getNonCore(const ct::RenderWindowCore* window) const
 	{
 		auto iterFind = mWindows.find(window->mWindowId);
 
@@ -203,6 +203,9 @@ namespace bs
 
 		return nullptr;
 	}
+
+	namespace ct
+	{
 
 	RenderWindowCoreManager::RenderWindowCoreManager()
 	{
@@ -263,5 +266,6 @@ namespace bs
 		Lock lock(mWindowMutex);
 
 		mDirtyProperties.insert(window);
+	}
 	}
 }

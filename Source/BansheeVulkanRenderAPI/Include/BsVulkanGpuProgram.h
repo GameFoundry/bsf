@@ -6,7 +6,7 @@
 #include "BsVulkanResource.h"
 #include "BsGpuProgram.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup Vulkan
 	 *  @{
@@ -52,4 +52,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

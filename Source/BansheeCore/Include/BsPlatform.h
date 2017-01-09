@@ -282,7 +282,7 @@ namespace bs
 		 * All provided areas are relative to the specified window. Mostly useful for frameless windows that don't have 
 		 * typical caption bar.
 		 */
-		static void setCaptionNonClientAreas(const RenderWindowCore& window, const Vector<Rect2I>& nonClientAreas);
+		static void setCaptionNonClientAreas(const ct::RenderWindowCore& window, const Vector<Rect2I>& nonClientAreas);
 
 		/**
 		 * Sets custom non client areas for the specified window. Using custom client areas will override window resize 
@@ -294,14 +294,14 @@ namespace bs
 		 * All provided areas are relative to the specified window. Mostly useful for frameless windows that don't have 
 		 * typical border.
 		 */
-		static void setResizeNonClientAreas(const RenderWindowCore& window, const Vector<NonClientResizeArea>& nonClientAreas);
+		static void setResizeNonClientAreas(const ct::RenderWindowCore& window, const Vector<NonClientResizeArea>& nonClientAreas);
 
 		/**
 		 * Resets the non client areas for the specified windows and allows the platform to use the default values.
 		 *
 		 * @note	Thread safe.
 		 */
-		static void resetNonClientAreas(const RenderWindowCore& window);
+		static void resetNonClientAreas(const ct::RenderWindowCore& window);
 
 		/** 
 		 * Causes the current thread to pause execution for the specified amount of time.
@@ -379,7 +379,7 @@ namespace bs
 		 *
 		 * @note	Sim thread only.
 		 */
-		static Event<void(RenderWindowCore*)> onMouseLeftWindow;
+		static Event<void(ct::RenderWindowCore*)> onMouseLeftWindow;
 
 		/**
 		 * Triggered whenever the pointer moves.

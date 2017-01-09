@@ -4,7 +4,7 @@
 #include "BsVulkanHardwareBuffer.h"
 #include "BsRenderStats.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	VulkanGpuParamBlockBufferCore::VulkanGpuParamBlockBufferCore(UINT32 size, GpuParamBlockUsage usage,
 		GpuDeviceFlags deviceMask)
@@ -41,4 +41,4 @@ namespace bs
 	{
 		return mBuffer->getResource(deviceIdx);
 	}
-}
+}}

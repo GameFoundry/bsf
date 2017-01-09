@@ -6,7 +6,7 @@
 #include "BsCommandBuffer.h"
 #include "BsD3D11RenderAPI.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup D3D11
 	 *  @{
@@ -43,4 +43,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

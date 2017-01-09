@@ -6,7 +6,7 @@
 #include "BsVulkanDevice.h"
 #include "BsVulkanCommandBufferManager.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	VulkanSwapChain::~VulkanSwapChain()
 	{
@@ -270,4 +270,4 @@ namespace bs
 			mDepthStencilImage = nullptr;
 		}
 	}
-}
+}}

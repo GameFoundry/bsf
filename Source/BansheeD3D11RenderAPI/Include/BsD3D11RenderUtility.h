@@ -5,7 +5,7 @@
 #include "BsD3D11Prerequisites.h"
 #include "BsModule.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup D3D11
 	 *  @{
@@ -53,4 +53,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

@@ -12,7 +12,7 @@ namespace bs
 		BuiltinResources& br = BuiltinResources::instance();
 
 		Vector<RendererMaterialData>& materials = getMaterials();
-		Vector<SPtr<ShaderCore>> shaders;
+		Vector<SPtr<ct::ShaderCore>> shaders;
 		for (auto& material : materials)
 		{
 			HShader shader = br.getShader(material.resourcePath);
@@ -30,7 +30,7 @@ namespace bs
 		gCoreThread().queueCommand(std::bind(&RendererMaterialManager::destroyOnCore));
 	}
 
-	void RendererMaterialManager::_registerMaterial(RendererMaterialMetaData* metaData, const Path& shaderPath)
+	void RendererMaterialManager::_registerMaterial(ct::RendererMaterialMetaData* metaData, const Path& shaderPath)
 	{
 		Lock lock(getMutex());
 
@@ -76,7 +76,7 @@ namespace bs
 		}
 	}
 
-	void RendererMaterialManager::initOnCore(const Vector<SPtr<ShaderCore>>& shaders)
+	void RendererMaterialManager::initOnCore(const Vector<SPtr<ct::ShaderCore>>& shaders)
 	{
 		Lock lock(getMutex());
 

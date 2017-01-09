@@ -3,7 +3,7 @@
 #include "BsVulkanDescriptorPool.h"
 #include "BsVulkanDevice.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	VulkanDescriptorPool::VulkanDescriptorPool(VulkanDevice& device)
 		:mDevice(device)
@@ -40,4 +40,4 @@ namespace bs
 	{
 		vkDestroyDescriptorPool(mDevice.getLogical(), mPool, gVulkanAllocator);
 	}
-}
+}}

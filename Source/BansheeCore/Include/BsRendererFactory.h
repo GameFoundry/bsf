@@ -22,7 +22,7 @@ namespace bs
 		virtual ~RendererFactory() { }
 
 		/**	Creates a new instance of the renderer. */
-		virtual SPtr<CoreRenderer> create() = 0;
+		virtual SPtr<ct::CoreRenderer> create() = 0;
 
 		/**	Returns the name of the renderer this factory creates. */
 		virtual const String& name() const = 0;

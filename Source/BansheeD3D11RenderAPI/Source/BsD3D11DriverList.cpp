@@ -4,7 +4,7 @@
 #include "BsD3D11Driver.h"
 #include "BsException.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	D3D11DriverList::D3D11DriverList(IDXGIFactory* dxgiFactory) 
 	{
@@ -63,4 +63,4 @@ namespace bs
 		BS_EXCEPT(InvalidParametersException, "Cannot find video mode with the specified name.");
 		return nullptr;
 	}
-}
+}}

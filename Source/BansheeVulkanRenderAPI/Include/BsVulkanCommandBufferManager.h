@@ -6,7 +6,7 @@
 #include "BsCommandBufferManager.h"
 #include "BsVulkanCommandBuffer.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup Vulkan
 	 *  @{
@@ -130,4 +130,4 @@ namespace bs
 	VulkanCommandBufferManager& gVulkanCBManager();
 
 	/** @} */
-}
+}}

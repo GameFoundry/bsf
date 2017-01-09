@@ -7,7 +7,7 @@
 #include "BsRenderStats.h"
 #include "BsDebug.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	D3D11TimerQuery::D3D11TimerQuery(UINT32 deviceIdx)
 		:mFinalized(false), mContext(nullptr), mBeginQuery(nullptr), 
@@ -143,4 +143,4 @@ namespace bs
 			LOGWRN_VERBOSE("Unrealiable GPU timer query detected.");
 		}
 	}
-}
+}}

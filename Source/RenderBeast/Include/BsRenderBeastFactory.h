@@ -21,10 +21,10 @@ namespace bs
 	{
 	public:
 		/** @copydoc RendererFactory::create */
-		virtual SPtr<CoreRenderer> create() override;
+		SPtr<ct::CoreRenderer> create() override;
 
 		/** @copydoc RendererFactory::name */
-		virtual const String& name() const override;
+		const String& name() const override;
 	};
 
 	/** @} */

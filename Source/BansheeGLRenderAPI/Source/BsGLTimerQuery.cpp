@@ -5,7 +5,7 @@
 #include "BsMath.h"
 #include "BsRenderStats.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	GLTimerQuery::GLTimerQuery(UINT32 deviceIdx)
 		:mQueryStartObj(0), mQueryEndObj(0), mFinalized(false), mEndIssued(false), mTimeDelta(0.0f)
@@ -103,4 +103,4 @@ namespace bs
 
 		mTimeDelta = (timeEnd - timeStart) / 1000000.0f;
 	}
-}
+}}

@@ -6,7 +6,7 @@
 #include "BsTexture.h"
 #include "BsRenderTexture.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup D3D11
 	 *  @{
@@ -57,4 +57,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

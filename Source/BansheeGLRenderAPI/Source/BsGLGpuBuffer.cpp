@@ -6,7 +6,7 @@
 #include "BsGLPixelFormat.h"
 #include "BsGLHardwareBufferManager.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	GLGpuBufferCore::GLGpuBufferCore(const GPU_BUFFER_DESC& desc, GpuDeviceFlags deviceMask)
 		: GpuBufferCore(desc, deviceMask), mTextureID(0), mFormat(0)
@@ -94,4 +94,4 @@ namespace bs
 		GLuint srcId = glSrcBuffer.getGLBufferId();
 		glCopyBufferSubData(srcId, getGLBufferId(), srcOffset, dstOffset, length);
 	}
-}
+}}

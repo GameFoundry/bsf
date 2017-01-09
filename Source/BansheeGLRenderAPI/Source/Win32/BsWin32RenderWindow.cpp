@@ -18,9 +18,9 @@
 #include "Win32/BsWin32Window.h"
 #include "BsMath.h"
 
-GLenum GLEWAPIENTRY wglewContextInit(bs::GLSupport *glSupport);
+GLenum GLEWAPIENTRY wglewContextInit(bs::ct::GLSupport* glSupport);
 
-namespace bs 
+namespace bs { namespace ct
 {
 	#define _MAX_CLASS_NAME_ 128
 
@@ -412,8 +412,8 @@ namespace bs
 			buffer = mProperties.isFullScreen() ? FB_FRONT : FB_BACK;
 		}
 
-		GLenum format = bs::GLPixelUtil::getGLOriginFormat(dst.getFormat());
-		GLenum type = bs::GLPixelUtil::getGLOriginDataType(dst.getFormat());
+		GLenum format = GLPixelUtil::getGLOriginFormat(dst.getFormat());
+		GLenum type = GLPixelUtil::getGLOriginDataType(dst.getFormat());
 
 		if ((format == GL_NONE) || (type == 0))
 		{
@@ -435,8 +435,8 @@ namespace bs
 		{
 			size_t rowSpan = dst.getWidth() * PixelUtil::getNumElemBytes(dst.getFormat());
 			size_t height = dst.getHeight();
-			UINT8 *tmpData = (UINT8*)bs_alloc((UINT32)(rowSpan * height));
-			UINT8 *srcRow = (UINT8 *)dst.getData(), *tmpRow = tmpData + (height - 1) * rowSpan;
+			UINT8* tmpData = (UINT8*)bs_alloc((UINT32)(rowSpan * height));
+			UINT8* srcRow = (UINT8 *)dst.getData(), *tmpRow = tmpData + (height - 1) * rowSpan;
 
 			while (tmpRow >= tmpData)
 			{
@@ -567,4 +567,4 @@ namespace bs
 		blockUntilCoreInitialized();
 		return getCore()->_getHWnd();
 	}
-}
+}}

@@ -29,7 +29,7 @@ namespace bs
 		bool mIsCursorHidden = false;
 		NativeCursorData mCursor;
 		bool mUsingCustomCursor = false;
-		Map<const RenderWindowCore*, WindowNonClientAreaData> mNonClientAreas;
+		Map<const ct::RenderWindowCore*, WindowNonClientAreaData> mNonClientAreas;
 
 		bool mIsTrackingMouse = false;
 		NativeDropTargetData mDropTargets;

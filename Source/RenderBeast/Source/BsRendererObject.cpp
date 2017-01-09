@@ -2,7 +2,7 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsRendererObject.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	PerObjectParamDef gPerObjectParamDef;
 	PerCallParamDef gPerCallParamDef;
@@ -34,4 +34,4 @@ namespace bs
 		if(flush)
 			perCallParamBuffer->flushToGPU();
 	}
-}
+}}

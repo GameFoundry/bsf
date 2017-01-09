@@ -8,9 +8,9 @@ namespace bs
 {
 	const char* SystemName = "RenderBeast";
 
-	SPtr<CoreRenderer> RenderBeastFactory::create()
+	SPtr<ct::CoreRenderer> RenderBeastFactory::create()
 	{
-		return bs_shared_ptr_new<RenderBeast>();
+		return bs_shared_ptr_new<ct::RenderBeast>();
 	}
 
 	const String& RenderBeastFactory::name() const

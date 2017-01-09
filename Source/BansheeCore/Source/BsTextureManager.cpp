@@ -82,6 +82,8 @@ namespace bs
 		return newRT;
 	}
 
+	namespace ct
+	{
 	void TextureCoreManager::onStartUp()
     {
 		TEXTURE_DESC desc;
@@ -152,5 +154,6 @@ namespace bs
 		newRT->initialize();
 
 		return newRT;
+	}
 	}
 }

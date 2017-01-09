@@ -6,7 +6,7 @@
 #include "BsVulkanDevice.h"
 #include "BsGpuParamDesc.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	VulkanGpuPipelineParamInfo::VulkanGpuPipelineParamInfo(const GPU_PIPELINE_PARAMS_DESC& desc, GpuDeviceFlags deviceMask)
 		: GpuPipelineParamInfoCore(desc, deviceMask), mDeviceMask(deviceMask), mSetExtraInfos(nullptr), mLayouts()
@@ -167,4 +167,4 @@ namespace bs
 
 		return mLayouts[deviceIdx][layoutIdx];
 	}
-}
+}}

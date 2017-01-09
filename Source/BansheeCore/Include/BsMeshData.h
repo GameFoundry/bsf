@@ -279,9 +279,9 @@ namespace bs
 
 	private:
 		friend class Mesh;
-		friend class MeshCore;
+		friend class ct::MeshCore;
 		friend class MeshHeap;
-		friend class MeshHeapCore;
+		friend class ct::MeshHeapCore;
 
 		UINT32 mDescBuilding;
 

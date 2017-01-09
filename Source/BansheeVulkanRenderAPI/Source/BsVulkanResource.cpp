@@ -4,7 +4,7 @@
 #include "BsVulkanCommandBuffer.h"
 #include "BsCoreThread.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	VulkanResource::VulkanResource(VulkanResourceManager* owner, bool concurrency)
 	{
@@ -174,4 +174,4 @@ namespace bs
 
 		bs_delete(resource);
 	}
-}
+}}

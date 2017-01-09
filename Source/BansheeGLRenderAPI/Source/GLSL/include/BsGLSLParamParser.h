@@ -8,7 +8,7 @@
 #include "BsException.h"
 #include "BsGpuParamDesc.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup GL
 	 *  @{
@@ -108,4 +108,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

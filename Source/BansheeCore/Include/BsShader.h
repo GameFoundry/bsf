@@ -61,7 +61,7 @@ namespace bs
 
 	template<bool Core> struct TSamplerStateType {};
 	template<> struct TSamplerStateType < false > { typedef SPtr<SamplerState> Type; };
-	template<> struct TSamplerStateType < true > { typedef SPtr<SamplerStateCore> Type; };
+	template<> struct TSamplerStateType < true > { typedef SPtr<ct::SamplerStateCore> Type; };
 
 	/** Structure used for initializing a shader. */
 	template<bool Core>
@@ -351,28 +351,17 @@ namespace bs
 
 	/** @} */
 
+	namespace ct
+	{
 	/** @addtogroup Material-Internal
 	 *  @{
 	 */
 
 	typedef TSHADER_DESC<true> SHADER_DESC_CORE;
-	
-	/** Core thread version of Shader. */
-	class BS_CORE_EXPORT ShaderCore : public CoreObjectCore, public TShader<true>
-	{
-	public:
-		/** @copydoc Shader::create */
-		static SPtr<ShaderCore> create(const String& name, const SHADER_DESC_CORE& desc, const Vector<SPtr<TechniqueCore>>& techniques);
-
-	protected:
-		friend class Shader;
-
-		ShaderCore(const String& name, const SHADER_DESC_CORE& desc, const Vector<SPtr<TechniqueCore>>& techniques, UINT32 id);
-
-		static std::atomic<UINT32> mNextShaderId;
-	};
 
 	/** @} */
+	}
+
 	/** @addtogroup Material
 	 *  @{
 	 */
@@ -391,7 +380,7 @@ namespace bs
 	{
 	public:
 		/** Retrieves an implementation of a shader usable only from the core thread. */
-		SPtr<ShaderCore> getCore() const;
+		SPtr<ct::ShaderCore> getCore() const;
 
 		/**
 		 * Sets a list include file paths that are referenced by this shader.
@@ -448,10 +437,10 @@ namespace bs
 		void getCoreDependencies(Vector<CoreObject*>& dependencies) override;
 
 		/** @copydoc CoreObject::createCore */
-		SPtr<CoreObjectCore> createCore() const override;
+		SPtr<ct::CoreObjectCore> createCore() const override;
 
 		/** Converts a sim thread version of the shader descriptor to a core thread version. */
-		SHADER_DESC_CORE convertDesc(const SHADER_DESC& desc) const;
+		ct::SHADER_DESC_CORE convertDesc(const SHADER_DESC& desc) const;
 
 	private:
 		/************************************************************************/
@@ -486,4 +475,28 @@ namespace bs
 	};
 
 	/** @} */
+
+	namespace ct
+	{
+	/** @addtogroup Material-Internal
+	 *  @{
+	 */
+
+	/** Core thread version of Shader. */
+	class BS_CORE_EXPORT ShaderCore : public CoreObjectCore, public TShader<true>
+	{
+	public:
+		/** @copydoc Shader::create */
+		static SPtr<ShaderCore> create(const String& name, const SHADER_DESC_CORE& desc, const Vector<SPtr<TechniqueCore>>& techniques);
+
+	protected:
+		friend class Shader;
+
+		ShaderCore(const String& name, const SHADER_DESC_CORE& desc, const Vector<SPtr<TechniqueCore>>& techniques, UINT32 id);
+
+		static std::atomic<UINT32> mNextShaderId;
+	};
+
+	/** @} */
+	}
 }

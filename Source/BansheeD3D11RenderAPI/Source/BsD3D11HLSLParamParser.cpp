@@ -6,7 +6,7 @@
 #include "BsException.h"
 #include "BsDebug.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	void D3D11HLSLParamParser::parse(ID3DBlob* microcode, GpuProgramType type, GpuParamDesc& desc, 
 		List<VertexElement>* inputParams)
@@ -418,4 +418,4 @@ namespace bs
 		
 		return progTypeIdx * (UINT32)ParamType::Count + paramTypeIdx;
 	}
-}
+}}

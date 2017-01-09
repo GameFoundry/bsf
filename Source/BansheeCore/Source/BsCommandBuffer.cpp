@@ -3,7 +3,7 @@
 #include "BsCommandBuffer.h"
 #include "BsCommandBufferManager.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	void CommandSyncMask::addDependency(const SPtr<CommandBuffer>& buffer)
 	{
@@ -75,4 +75,4 @@ namespace bs
 	{
 		return CommandBufferManager::instance().create(type, deviceIdx, queueIdx, secondary);
 	}
-}
+}}

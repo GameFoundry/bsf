@@ -88,6 +88,35 @@ namespace bs
 		GroupAlloc mAlloc;
 	};
 
+	/** Holds meta-data about a set of GPU parameters used by a single pipeline state. */
+	class BS_CORE_EXPORT GpuPipelineParamInfo : public CoreObject, public GpuPipelineParamInfoBase
+	{
+	public:
+		virtual ~GpuPipelineParamInfo() { }
+
+		/**
+		 * Retrieves a core implementation of this object usable only from the core thread.
+		 *
+		 * @note	Core thread only.
+		 */
+		SPtr<ct::GpuPipelineParamInfoCore> getCore() const;
+
+		/** 
+		 * Constructs the object using the provided GPU parameter descriptors. 
+		 * 
+		 * @param[in]	desc	Object containing parameter descriptions for individual GPU program stages.
+		 */
+		static SPtr<GpuPipelineParamInfo> create(const GPU_PIPELINE_PARAMS_DESC& desc);
+
+	private:
+		GpuPipelineParamInfo(const GPU_PIPELINE_PARAMS_DESC& desc);
+
+		/** @copydoc CoreObject::createCore */
+		SPtr<ct::CoreObjectCore> createCore() const override;
+	};
+
+	namespace ct
+	{
 	/** Core thread version of a GpuPipelineParamInfo. */
 	class BS_CORE_EXPORT GpuPipelineParamInfoCore : public CoreObjectCore, public GpuPipelineParamInfoBase
 	{
@@ -106,33 +135,7 @@ namespace bs
 
 		GpuPipelineParamInfoCore(const GPU_PIPELINE_PARAMS_DESC& desc, GpuDeviceFlags deviceMask);
 	};
-
-	/** Holds meta-data about a set of GPU parameters used by a single pipeline state. */
-	class BS_CORE_EXPORT GpuPipelineParamInfo : public CoreObject, public GpuPipelineParamInfoBase
-	{
-	public:
-		virtual ~GpuPipelineParamInfo() { }
-
-		/**
-		 * Retrieves a core implementation of this object usable only from the core thread.
-		 *
-		 * @note	Core thread only.
-		 */
-		SPtr<GpuPipelineParamInfoCore> getCore() const;
-
-		/** 
-		 * Constructs the object using the provided GPU parameter descriptors. 
-		 * 
-		 * @param[in]	desc	Object containing parameter descriptions for individual GPU program stages.
-		 */
-		static SPtr<GpuPipelineParamInfo> create(const GPU_PIPELINE_PARAMS_DESC& desc);
-
-	private:
-		GpuPipelineParamInfo(const GPU_PIPELINE_PARAMS_DESC& desc);
-
-		/** @copydoc CoreObject::createCore */
-		SPtr<CoreObjectCore> createCore() const override;
-	};
+	}
 
 	/** @} */
 }

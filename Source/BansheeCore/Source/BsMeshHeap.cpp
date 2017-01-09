@@ -13,6 +13,73 @@
 
 namespace bs
 {
+	MeshHeap::MeshHeap(UINT32 numVertices, UINT32 numIndices, 
+		const SPtr<VertexDataDesc>& vertexDesc, IndexType indexType)
+		:mNumVertices(numVertices), mNumIndices(numIndices), mVertexDesc(vertexDesc), mIndexType(indexType), mNextFreeId(0)
+	{
+	}
+
+	SPtr<MeshHeap> MeshHeap::create(UINT32 numVertices, UINT32 numIndices, const SPtr<VertexDataDesc>& vertexDesc, 
+		IndexType indexType)
+	{
+		MeshHeap* meshHeap = new (bs_alloc<MeshHeap>()) MeshHeap(numVertices, numIndices, vertexDesc, indexType); 
+		SPtr<MeshHeap> meshHeapPtr = bs_core_ptr<MeshHeap>(meshHeap);
+
+		meshHeapPtr->_setThisPtr(meshHeapPtr);
+		meshHeapPtr->initialize();
+
+		return meshHeapPtr;
+	}
+
+	SPtr<TransientMesh> MeshHeap::alloc(const SPtr<MeshData>& meshData, DrawOperationType drawOp)
+	{
+		UINT32 meshIdx = mNextFreeId++;
+
+		SPtr<MeshHeap> thisPtr = std::static_pointer_cast<MeshHeap>(getThisPtr());
+		TransientMesh* transientMesh = new (bs_alloc<TransientMesh>()) TransientMesh(thisPtr, meshIdx, 
+			meshData->getNumVertices(), meshData->getNumIndices(), drawOp); 
+		SPtr<TransientMesh> transientMeshPtr = bs_core_ptr<TransientMesh>(transientMesh);
+
+		transientMeshPtr->_setThisPtr(transientMeshPtr);
+		transientMeshPtr->initialize();
+
+		mMeshes[meshIdx] = transientMeshPtr;
+
+		queueGpuCommand(getCore(), std::bind(&ct::MeshHeapCore::alloc, getCore().get(), transientMeshPtr->getCore(), meshData));
+
+		return transientMeshPtr;
+	}
+
+	void MeshHeap::dealloc(const SPtr<TransientMesh>& mesh)
+	{
+		auto iterFind = mMeshes.find(mesh->mId);
+		if(iterFind == mMeshes.end())
+			return;
+
+		mesh->markAsDestroyed();
+		mMeshes.erase(iterFind);
+
+		queueGpuCommand(getCore(), std::bind(&ct::MeshHeapCore::dealloc, getCore().get(), mesh->getCore()));
+	}
+
+	SPtr<ct::MeshHeapCore> MeshHeap::getCore() const
+	{
+		return std::static_pointer_cast<ct::MeshHeapCore>(mCoreSpecific);
+	}
+
+	SPtr<ct::CoreObjectCore> MeshHeap::createCore() const
+	{
+		ct::MeshHeapCore* obj = new (bs_alloc<ct::MeshHeapCore>()) ct::MeshHeapCore(mNumVertices, mNumIndices,
+			mVertexDesc, mIndexType, GDF_DEFAULT);
+
+		SPtr<ct::MeshHeapCore> corePtr = bs_shared_ptr<ct::MeshHeapCore>(obj);
+		obj->_setThisPtr(corePtr);
+
+		return corePtr;
+	}
+
+	namespace ct
+	{
 	const float MeshHeapCore::GrowPercent = 1.5f;
 
 	MeshHeapCore::MeshHeapCore(UINT32 numVertices, UINT32 numIndices,
@@ -642,69 +709,5 @@ namespace bs
 			}
 		}
 	}
-
-	MeshHeap::MeshHeap(UINT32 numVertices, UINT32 numIndices, 
-		const SPtr<VertexDataDesc>& vertexDesc, IndexType indexType)
-		:mNumVertices(numVertices), mNumIndices(numIndices), mVertexDesc(vertexDesc), mIndexType(indexType), mNextFreeId(0)
-	{
-	}
-
-	SPtr<MeshHeap> MeshHeap::create(UINT32 numVertices, UINT32 numIndices, const SPtr<VertexDataDesc>& vertexDesc, 
-		IndexType indexType)
-	{
-		MeshHeap* meshHeap = new (bs_alloc<MeshHeap>()) MeshHeap(numVertices, numIndices, vertexDesc, indexType); 
-		SPtr<MeshHeap> meshHeapPtr = bs_core_ptr<MeshHeap>(meshHeap);
-
-		meshHeapPtr->_setThisPtr(meshHeapPtr);
-		meshHeapPtr->initialize();
-
-		return meshHeapPtr;
-	}
-
-	SPtr<TransientMesh> MeshHeap::alloc(const SPtr<MeshData>& meshData, DrawOperationType drawOp)
-	{
-		UINT32 meshIdx = mNextFreeId++;
-
-		SPtr<MeshHeap> thisPtr = std::static_pointer_cast<MeshHeap>(getThisPtr());
-		TransientMesh* transientMesh = new (bs_alloc<TransientMesh>()) TransientMesh(thisPtr, meshIdx, 
-			meshData->getNumVertices(), meshData->getNumIndices(), drawOp); 
-		SPtr<TransientMesh> transientMeshPtr = bs_core_ptr<TransientMesh>(transientMesh);
-
-		transientMeshPtr->_setThisPtr(transientMeshPtr);
-		transientMeshPtr->initialize();
-
-		mMeshes[meshIdx] = transientMeshPtr;
-
-		queueGpuCommand(getCore(), std::bind(&MeshHeapCore::alloc, getCore().get(), transientMeshPtr->getCore(), meshData));
-
-		return transientMeshPtr;
-	}
-
-	void MeshHeap::dealloc(const SPtr<TransientMesh>& mesh)
-	{
-		auto iterFind = mMeshes.find(mesh->mId);
-		if(iterFind == mMeshes.end())
-			return;
-
-		mesh->markAsDestroyed();
-		mMeshes.erase(iterFind);
-
-		queueGpuCommand(getCore(), std::bind(&MeshHeapCore::dealloc, getCore().get(), mesh->getCore()));
-	}
-
-	SPtr<MeshHeapCore> MeshHeap::getCore() const
-	{
-		return std::static_pointer_cast<MeshHeapCore>(mCoreSpecific);
-	}
-
-	SPtr<CoreObjectCore> MeshHeap::createCore() const
-	{
-		MeshHeapCore* obj = new (bs_alloc<MeshHeapCore>()) MeshHeapCore(mNumVertices, mNumIndices,
-			mVertexDesc, mIndexType, GDF_DEFAULT);
-
-		SPtr<MeshHeapCore> corePtr = bs_shared_ptr<MeshHeapCore>(obj);
-		obj->_setThisPtr(corePtr);
-
-		return corePtr;
 	}
 }

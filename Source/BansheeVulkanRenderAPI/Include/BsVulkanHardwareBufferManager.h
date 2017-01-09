@@ -5,7 +5,7 @@
 #include "BsVulkanPrerequisites.h"
 #include "BsHardwareBufferManager.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup Vulkan
 	 *  @{
@@ -54,4 +54,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

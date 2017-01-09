@@ -24,7 +24,7 @@ namespace bs
 	bool isMeshValid(const HMesh& mesh) { return mesh.isLoaded(); }
 
 	template<>
-	bool isMeshValid(const SPtr<MeshCore>& mesh) { return mesh != nullptr; }
+	bool isMeshValid(const SPtr<ct::MeshCore>& mesh) { return mesh != nullptr; }
 
 	template<bool Core>
 	TRenderable<Core>::TRenderable()
@@ -148,6 +148,281 @@ namespace bs
 	template class TRenderable < false >;
 	template class TRenderable < true >;
 
+	Renderable::Renderable()
+		:mLastUpdateHash(0)
+	{
+		
+	}
+
+	void Renderable::setAnimation(const SPtr<Animation>& animation)
+	{
+		mAnimation = animation;
+		refreshAnimation();
+
+		_markCoreDirty();
+	}
+
+	Bounds Renderable::getBounds() const
+	{
+		if(mUseOverrideBounds)
+		{
+			Sphere sphere(mOverrideBounds.getCenter(), mOverrideBounds.getRadius());
+
+			Bounds bounds(mOverrideBounds, sphere);
+			bounds.transformAffine(mTransform);
+
+			return bounds;
+		}
+
+		HMesh mesh = getMesh();
+
+		if (!mesh.isLoaded())
+		{
+			AABox box(mPosition, mPosition);
+			Sphere sphere(mPosition, 0.0f);
+
+			return Bounds(box, sphere);
+		}
+		else
+		{
+			Bounds bounds = mesh->getProperties().getBounds();
+			bounds.transformAffine(mTransform);
+
+			return bounds;
+		}
+	}
+
+	SPtr<ct::RenderableCore> Renderable::getCore() const
+	{
+		return std::static_pointer_cast<ct::RenderableCore>(mCoreSpecific);
+	}
+
+	SPtr<ct::CoreObjectCore> Renderable::createCore() const
+	{
+		ct::RenderableCore* handler = new (bs_alloc<ct::RenderableCore>()) ct::RenderableCore();
+		SPtr<ct::RenderableCore> handlerPtr = bs_shared_ptr<ct::RenderableCore>(handler);
+		handlerPtr->_setThisPtr(handlerPtr);
+
+		return handlerPtr;
+	}
+
+	void Renderable::onMeshChanged()
+	{
+		refreshAnimation();
+	}
+
+	void Renderable::refreshAnimation()
+	{
+		if (mAnimation == nullptr)
+		{
+			mAnimType = RenderableAnimType::None;
+			return;
+		}
+
+		if (mMesh.isLoaded(false))
+		{
+			SPtr<Skeleton> skeleton = mMesh->getSkeleton();
+			SPtr<MorphShapes> morphShapes = mMesh->getMorphShapes();
+
+			if (skeleton != nullptr && morphShapes != nullptr)
+				mAnimType = RenderableAnimType::SkinnedMorph;
+			else if (skeleton != nullptr)
+				mAnimType = RenderableAnimType::Skinned;
+			else if (morphShapes != nullptr)
+				mAnimType = RenderableAnimType::Morph;
+			else
+				mAnimType = RenderableAnimType::None;
+
+			mAnimation->setSkeleton(mMesh->getSkeleton());
+			mAnimation->setMorphShapes(mMesh->getMorphShapes());
+		}
+		else
+		{
+			mAnimType = RenderableAnimType::None;
+
+			mAnimation->setSkeleton(nullptr);
+			mAnimation->setMorphShapes(nullptr);
+		}
+	}
+
+	void Renderable::_updateTransform(const HSceneObject& so, bool force)
+	{
+		UINT32 curHash = so->getTransformHash();
+		if (curHash != _getLastModifiedHash() || force)
+		{
+			// If skinned animation, don't include own transform since that will be handled by root bone animation
+			bool ignoreOwnTransform;
+			if (mAnimType == RenderableAnimType::Skinned || mAnimType == RenderableAnimType::SkinnedMorph)
+				ignoreOwnTransform = mAnimation->_getAnimatesRoot();
+			else
+				ignoreOwnTransform = false;
+
+			if (ignoreOwnTransform)
+			{
+				// Note: Technically we're checking child's hash but using parent's transform. Ideally we check the parent's
+				// hash to reduce the number of required updates.
+				HSceneObject parentSO = so->getParent();
+				if (parentSO != nullptr)
+				{
+					Matrix4 transformNoScale = Matrix4::TRS(parentSO->getWorldPosition(), parentSO->getWorldRotation(),
+						Vector3::ONE);
+					setTransform(parentSO->getWorldTfrm(), transformNoScale);
+				}
+				else
+					setTransform(Matrix4::IDENTITY, Matrix4::IDENTITY);
+			}
+			else
+			{
+				Matrix4 transformNoScale = Matrix4::TRS(so->getWorldPosition(), so->getWorldRotation(), Vector3::ONE);
+				setTransform(so->getWorldTfrm(), transformNoScale);
+			}
+
+			_setLastModifiedHash(curHash);
+		}
+	}
+
+	void Renderable::_markCoreDirty(RenderableDirtyFlag flag)
+	{
+		markCoreDirty((UINT32)flag);
+	}
+
+	void Renderable::_markDependenciesDirty()
+	{
+		markDependenciesDirty();
+	}
+
+	void Renderable::_markResourcesDirty()
+	{
+		markListenerResourcesDirty();
+	}
+
+	CoreSyncData Renderable::syncToCore(FrameAlloc* allocator)
+	{
+		UINT32 numMaterials = (UINT32)mMaterials.size();
+
+		UINT64 animationId;
+		if (mAnimation != nullptr)
+			animationId = mAnimation->_getId();
+		else
+			animationId = (UINT64)-1;
+
+		UINT32 size = rttiGetElemSize(mLayer) + 
+			rttiGetElemSize(mOverrideBounds) + 
+			rttiGetElemSize(mUseOverrideBounds) +
+			rttiGetElemSize(numMaterials) + 
+			rttiGetElemSize(mTransform) +
+			rttiGetElemSize(mTransformNoScale) +
+			rttiGetElemSize(mPosition) +
+			rttiGetElemSize(mIsActive) +
+			rttiGetElemSize(animationId) +
+			rttiGetElemSize(mAnimType) + 
+			rttiGetElemSize(getCoreDirtyFlags()) +
+			sizeof(SPtr<ct::MeshCore>) +
+			numMaterials * sizeof(SPtr<ct::MaterialCore>);
+
+		UINT8* data = allocator->alloc(size);
+		char* dataPtr = (char*)data;
+		dataPtr = rttiWriteElem(mLayer, dataPtr);
+		dataPtr = rttiWriteElem(mOverrideBounds, dataPtr);
+		dataPtr = rttiWriteElem(mUseOverrideBounds, dataPtr);
+		dataPtr = rttiWriteElem(numMaterials, dataPtr);
+		dataPtr = rttiWriteElem(mTransform, dataPtr);
+		dataPtr = rttiWriteElem(mTransformNoScale, dataPtr);
+		dataPtr = rttiWriteElem(mPosition, dataPtr);
+		dataPtr = rttiWriteElem(mIsActive, dataPtr);
+		dataPtr = rttiWriteElem(animationId, dataPtr);
+		dataPtr = rttiWriteElem(mAnimType, dataPtr);
+		dataPtr = rttiWriteElem(getCoreDirtyFlags(), dataPtr);
+
+		SPtr<ct::MeshCore>* mesh = new (dataPtr) SPtr<ct::MeshCore>();
+		if (mMesh.isLoaded())
+			*mesh = mMesh->getCore();
+
+		dataPtr += sizeof(SPtr<ct::MeshCore>);
+
+		for (UINT32 i = 0; i < numMaterials; i++)
+		{
+			SPtr<ct::MaterialCore>* material = new (dataPtr)SPtr<ct::MaterialCore>();
+			if (mMaterials[i].isLoaded())
+				*material = mMaterials[i]->getCore();
+
+			dataPtr += sizeof(SPtr<ct::MaterialCore>);
+		}
+
+		return CoreSyncData(data, size);
+	}
+
+	void Renderable::getCoreDependencies(Vector<CoreObject*>& dependencies)
+	{
+		if (mMesh.isLoaded())
+			dependencies.push_back(mMesh.get());
+
+		for (auto& material : mMaterials)
+		{
+			if (material.isLoaded())
+				dependencies.push_back(material.get());
+		}
+	}
+
+	void Renderable::getListenerResources(Vector<HResource>& resources)
+	{
+		if (mMesh != nullptr)
+			resources.push_back(mMesh);
+
+		for (auto& material : mMaterials)
+		{
+			if (material != nullptr)
+				resources.push_back(material);
+		}
+	}
+
+	void Renderable::notifyResourceLoaded(const HResource& resource)
+	{
+		if (resource == mMesh)
+			onMeshChanged();
+
+		markDependenciesDirty();
+		markCoreDirty();
+	}
+
+	void Renderable::notifyResourceChanged(const HResource& resource)
+	{
+		if(resource == mMesh)
+			onMeshChanged();
+
+		markDependenciesDirty();
+		markCoreDirty();
+	}
+
+	SPtr<Renderable> Renderable::create()
+	{
+		SPtr<Renderable> handlerPtr = createEmpty();
+		handlerPtr->initialize();
+
+		return handlerPtr;
+	}
+
+	SPtr<Renderable> Renderable::createEmpty()
+	{
+		Renderable* handler = new (bs_alloc<Renderable>()) Renderable();
+		SPtr<Renderable> handlerPtr = bs_core_ptr<Renderable>(handler);
+		handlerPtr->_setThisPtr(handlerPtr);
+
+		return handlerPtr;
+	}
+
+	RTTITypeBase* Renderable::getRTTIStatic()
+	{
+		return RenderableRTTI::instance();
+	}
+
+	RTTITypeBase* Renderable::getRTTI() const
+	{
+		return Renderable::getRTTIStatic();
+	}
+
+	namespace ct
+	{
 	RenderableCore::RenderableCore() 
 		:mRendererId(0), mAnimationId((UINT64)-1), mMorphShapeVersion(0)
 	{
@@ -379,277 +654,5 @@ namespace bs
 			}
 		}
 	}
-
-	Renderable::Renderable()
-		:mLastUpdateHash(0)
-	{
-		
-	}
-
-	void Renderable::setAnimation(const SPtr<Animation>& animation)
-	{
-		mAnimation = animation;
-		refreshAnimation();
-
-		_markCoreDirty();
-	}
-
-	Bounds Renderable::getBounds() const
-	{
-		if(mUseOverrideBounds)
-		{
-			Sphere sphere(mOverrideBounds.getCenter(), mOverrideBounds.getRadius());
-
-			Bounds bounds(mOverrideBounds, sphere);
-			bounds.transformAffine(mTransform);
-
-			return bounds;
-		}
-
-		HMesh mesh = getMesh();
-
-		if (!mesh.isLoaded())
-		{
-			AABox box(mPosition, mPosition);
-			Sphere sphere(mPosition, 0.0f);
-
-			return Bounds(box, sphere);
-		}
-		else
-		{
-			Bounds bounds = mesh->getProperties().getBounds();
-			bounds.transformAffine(mTransform);
-
-			return bounds;
-		}
-	}
-
-	SPtr<RenderableCore> Renderable::getCore() const
-	{
-		return std::static_pointer_cast<RenderableCore>(mCoreSpecific);
-	}
-
-	SPtr<CoreObjectCore> Renderable::createCore() const
-	{
-		RenderableCore* handler = new (bs_alloc<RenderableCore>()) RenderableCore();
-		SPtr<RenderableCore> handlerPtr = bs_shared_ptr<RenderableCore>(handler);
-		handlerPtr->_setThisPtr(handlerPtr);
-
-		return handlerPtr;
-	}
-
-	void Renderable::onMeshChanged()
-	{
-		refreshAnimation();
-	}
-
-	void Renderable::refreshAnimation()
-	{
-		if (mAnimation == nullptr)
-		{
-			mAnimType = RenderableAnimType::None;
-			return;
-		}
-
-		if (mMesh.isLoaded(false))
-		{
-			SPtr<Skeleton> skeleton = mMesh->getSkeleton();
-			SPtr<MorphShapes> morphShapes = mMesh->getMorphShapes();
-
-			if (skeleton != nullptr && morphShapes != nullptr)
-				mAnimType = RenderableAnimType::SkinnedMorph;
-			else if (skeleton != nullptr)
-				mAnimType = RenderableAnimType::Skinned;
-			else if (morphShapes != nullptr)
-				mAnimType = RenderableAnimType::Morph;
-			else
-				mAnimType = RenderableAnimType::None;
-
-			mAnimation->setSkeleton(mMesh->getSkeleton());
-			mAnimation->setMorphShapes(mMesh->getMorphShapes());
-		}
-		else
-		{
-			mAnimType = RenderableAnimType::None;
-
-			mAnimation->setSkeleton(nullptr);
-			mAnimation->setMorphShapes(nullptr);
-		}
-	}
-
-	void Renderable::_updateTransform(const HSceneObject& so, bool force)
-	{
-		UINT32 curHash = so->getTransformHash();
-		if (curHash != _getLastModifiedHash() || force)
-		{
-			// If skinned animation, don't include own transform since that will be handled by root bone animation
-			bool ignoreOwnTransform;
-			if (mAnimType == RenderableAnimType::Skinned || mAnimType == RenderableAnimType::SkinnedMorph)
-				ignoreOwnTransform = mAnimation->_getAnimatesRoot();
-			else
-				ignoreOwnTransform = false;
-
-			if (ignoreOwnTransform)
-			{
-				// Note: Technically we're checking child's hash but using parent's transform. Ideally we check the parent's
-				// hash to reduce the number of required updates.
-				HSceneObject parentSO = so->getParent();
-				if (parentSO != nullptr)
-				{
-					Matrix4 transformNoScale = Matrix4::TRS(parentSO->getWorldPosition(), parentSO->getWorldRotation(),
-						Vector3::ONE);
-					setTransform(parentSO->getWorldTfrm(), transformNoScale);
-				}
-				else
-					setTransform(Matrix4::IDENTITY, Matrix4::IDENTITY);
-			}
-			else
-			{
-				Matrix4 transformNoScale = Matrix4::TRS(so->getWorldPosition(), so->getWorldRotation(), Vector3::ONE);
-				setTransform(so->getWorldTfrm(), transformNoScale);
-			}
-
-			_setLastModifiedHash(curHash);
-		}
-	}
-
-	void Renderable::_markCoreDirty(RenderableDirtyFlag flag)
-	{
-		markCoreDirty((UINT32)flag);
-	}
-
-	void Renderable::_markDependenciesDirty()
-	{
-		markDependenciesDirty();
-	}
-
-	void Renderable::_markResourcesDirty()
-	{
-		markListenerResourcesDirty();
-	}
-
-	CoreSyncData Renderable::syncToCore(FrameAlloc* allocator)
-	{
-		UINT32 numMaterials = (UINT32)mMaterials.size();
-
-		UINT64 animationId;
-		if (mAnimation != nullptr)
-			animationId = mAnimation->_getId();
-		else
-			animationId = (UINT64)-1;
-
-		UINT32 size = rttiGetElemSize(mLayer) + 
-			rttiGetElemSize(mOverrideBounds) + 
-			rttiGetElemSize(mUseOverrideBounds) +
-			rttiGetElemSize(numMaterials) + 
-			rttiGetElemSize(mTransform) +
-			rttiGetElemSize(mTransformNoScale) +
-			rttiGetElemSize(mPosition) +
-			rttiGetElemSize(mIsActive) +
-			rttiGetElemSize(animationId) +
-			rttiGetElemSize(mAnimType) + 
-			rttiGetElemSize(getCoreDirtyFlags()) +
-			sizeof(SPtr<MeshCore>) + 
-			numMaterials * sizeof(SPtr<MaterialCore>);
-
-		UINT8* data = allocator->alloc(size);
-		char* dataPtr = (char*)data;
-		dataPtr = rttiWriteElem(mLayer, dataPtr);
-		dataPtr = rttiWriteElem(mOverrideBounds, dataPtr);
-		dataPtr = rttiWriteElem(mUseOverrideBounds, dataPtr);
-		dataPtr = rttiWriteElem(numMaterials, dataPtr);
-		dataPtr = rttiWriteElem(mTransform, dataPtr);
-		dataPtr = rttiWriteElem(mTransformNoScale, dataPtr);
-		dataPtr = rttiWriteElem(mPosition, dataPtr);
-		dataPtr = rttiWriteElem(mIsActive, dataPtr);
-		dataPtr = rttiWriteElem(animationId, dataPtr);
-		dataPtr = rttiWriteElem(mAnimType, dataPtr);
-		dataPtr = rttiWriteElem(getCoreDirtyFlags(), dataPtr);
-
-		SPtr<MeshCore>* mesh = new (dataPtr) SPtr<MeshCore>();
-		if (mMesh.isLoaded())
-			*mesh = mMesh->getCore();
-
-		dataPtr += sizeof(SPtr<MeshCore>);
-
-		for (UINT32 i = 0; i < numMaterials; i++)
-		{
-			SPtr<MaterialCore>* material = new (dataPtr)SPtr<MaterialCore>();
-			if (mMaterials[i].isLoaded())
-				*material = mMaterials[i]->getCore();
-
-			dataPtr += sizeof(SPtr<MaterialCore>);
-		}
-
-		return CoreSyncData(data, size);
-	}
-
-	void Renderable::getCoreDependencies(Vector<CoreObject*>& dependencies)
-	{
-		if (mMesh.isLoaded())
-			dependencies.push_back(mMesh.get());
-
-		for (auto& material : mMaterials)
-		{
-			if (material.isLoaded())
-				dependencies.push_back(material.get());
-		}
-	}
-
-	void Renderable::getListenerResources(Vector<HResource>& resources)
-	{
-		if (mMesh != nullptr)
-			resources.push_back(mMesh);
-
-		for (auto& material : mMaterials)
-		{
-			if (material != nullptr)
-				resources.push_back(material);
-		}
-	}
-
-	void Renderable::notifyResourceLoaded(const HResource& resource)
-	{
-		if (resource == mMesh)
-			onMeshChanged();
-
-		markDependenciesDirty();
-		markCoreDirty();
-	}
-
-	void Renderable::notifyResourceChanged(const HResource& resource)
-	{
-		if(resource == mMesh)
-			onMeshChanged();
-
-		markDependenciesDirty();
-		markCoreDirty();
-	}
-
-	SPtr<Renderable> Renderable::create()
-	{
-		SPtr<Renderable> handlerPtr = createEmpty();
-		handlerPtr->initialize();
-
-		return handlerPtr;
-	}
-
-	SPtr<Renderable> Renderable::createEmpty()
-	{
-		Renderable* handler = new (bs_alloc<Renderable>()) Renderable();
-		SPtr<Renderable> handlerPtr = bs_core_ptr<Renderable>(handler);
-		handlerPtr->_setThisPtr(handlerPtr);
-
-		return handlerPtr;
-	}
-
-	RTTITypeBase* Renderable::getRTTIStatic()
-	{
-		return RenderableRTTI::instance();
-	}
-
-	RTTITypeBase* Renderable::getRTTI() const
-	{
-		return Renderable::getRTTIStatic();
 	}
 }

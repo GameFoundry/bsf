@@ -126,7 +126,7 @@ namespace bs
 		SPtr<MorphShapes> getMorphShapes() const { return mMorphShapes; }
 
 		/** Retrieves a core implementation of a mesh usable only from the core thread. */
-		SPtr<MeshCore> getCore() const;
+		SPtr<ct::MeshCore> getCore() const;
 
 		/**	Returns a dummy mesh, containing just one triangle. Don't modify the returned mesh. */
 		static HMesh dummy();
@@ -141,7 +141,7 @@ namespace bs
 		void updateBounds(const MeshData& meshData);
 
 		/** @copydoc CoreObject::createCore */
-		SPtr<CoreObjectCore> createCore() const override;
+		SPtr<ct::CoreObjectCore> createCore() const override;
 
 		/**
 		 * Creates buffers used for caching of CPU mesh data.
@@ -263,6 +263,8 @@ namespace bs
 
 	/** @} */
 
+	namespace ct
+	{
 	/** @addtogroup Resources-Internal
 	 *  @{
 	 */
@@ -397,4 +399,5 @@ namespace bs
 	};
 
 	/** @} */
+	}
 }

@@ -120,6 +120,122 @@ namespace bs
 		}
 	}
 
+	Light::Light()
+		:mLastUpdateHash(0)
+	{
+		
+	}
+
+	Light::Light(LightType type, Color color,
+		float intensity, float range, bool castsShadows, Degree spotAngle, Degree spotFalloffAngle)
+		: LightBase(type, color, intensity, range, castsShadows, spotAngle, spotFalloffAngle),
+		mLastUpdateHash(0)
+	{
+		// Calling virtual method is okay here because this is the most derived type
+		updateBounds();
+	}
+
+	SPtr<ct::LightCore> Light::getCore() const
+	{
+		return std::static_pointer_cast<ct::LightCore>(mCoreSpecific);
+	}
+
+	SPtr<Light> Light::create(LightType type, Color color,
+		float intensity, float range, bool castsShadows, Degree spotAngle, Degree spotFalloffAngle)
+	{
+		Light* handler = new (bs_alloc<Light>()) 
+			Light(type, color, intensity, range, castsShadows, spotAngle, spotFalloffAngle);
+		SPtr<Light> handlerPtr = bs_core_ptr<Light>(handler);
+		handlerPtr->_setThisPtr(handlerPtr);
+		handlerPtr->initialize();
+
+		return handlerPtr;
+	}
+
+	SPtr<Light> Light::createEmpty()
+	{
+		Light* handler = new (bs_alloc<Light>()) Light();
+		SPtr<Light> handlerPtr = bs_core_ptr<Light>(handler);
+		handlerPtr->_setThisPtr(handlerPtr);
+
+		return handlerPtr;
+	}
+
+	SPtr<ct::CoreObjectCore> Light::createCore() const
+	{
+		ct::LightCore* handler = new (bs_alloc<ct::LightCore>())
+			ct::LightCore(mType, mColor, mIntensity, mRange, mCastsShadows, mSpotAngle, mSpotFalloffAngle);
+		SPtr<ct::LightCore> handlerPtr = bs_shared_ptr<ct::LightCore>(handler);
+		handlerPtr->_setThisPtr(handlerPtr);
+
+		return handlerPtr;
+	}
+
+	CoreSyncData Light::syncToCore(FrameAlloc* allocator)
+	{
+		UINT32 size = 0;
+		size += rttiGetElemSize(mPosition);
+		size += rttiGetElemSize(mRotation);
+		size += rttiGetElemSize(mType);
+		size += rttiGetElemSize(mCastsShadows);
+		size += rttiGetElemSize(mColor);
+		size += rttiGetElemSize(mRange);
+		size += rttiGetElemSize(mIntensity);
+		size += rttiGetElemSize(mSpotAngle);
+		size += rttiGetElemSize(mSpotFalloffAngle);
+		size += rttiGetElemSize(mPhysCorrectAtten);
+		size += rttiGetElemSize(mIsActive);
+		size += rttiGetElemSize(getCoreDirtyFlags());
+		size += rttiGetElemSize(mBounds);
+
+		UINT8* buffer = allocator->alloc(size);
+
+		char* dataPtr = (char*)buffer;
+		dataPtr = rttiWriteElem(mPosition, dataPtr);
+		dataPtr = rttiWriteElem(mRotation, dataPtr);
+		dataPtr = rttiWriteElem(mType, dataPtr);
+		dataPtr = rttiWriteElem(mCastsShadows, dataPtr);
+		dataPtr = rttiWriteElem(mColor, dataPtr);
+		dataPtr = rttiWriteElem(mRange, dataPtr);
+		dataPtr = rttiWriteElem(mIntensity, dataPtr);
+		dataPtr = rttiWriteElem(mSpotAngle, dataPtr);
+		dataPtr = rttiWriteElem(mSpotFalloffAngle, dataPtr);
+		dataPtr = rttiWriteElem(mPhysCorrectAtten, dataPtr);
+		dataPtr = rttiWriteElem(mIsActive, dataPtr);
+		dataPtr = rttiWriteElem(getCoreDirtyFlags(), dataPtr);
+		dataPtr = rttiWriteElem(mBounds, dataPtr);
+
+		return CoreSyncData(buffer, size);
+	}
+
+	void Light::_updateTransform(const HSceneObject& parent)
+	{
+		UINT32 curHash = parent->getTransformHash();
+		if (curHash != _getLastModifiedHash())
+		{
+			setPosition(parent->getWorldPosition());
+			setRotation(parent->getWorldRotation());
+			_setLastModifiedHash(curHash);
+		}
+	}
+
+	void Light::_markCoreDirty(LightDirtyFlag flag)
+	{
+		markCoreDirty((UINT32)flag);
+	}
+
+	RTTITypeBase* Light::getRTTIStatic()
+	{
+		return LightRTTI::instance();
+	}
+
+	RTTITypeBase* Light::getRTTI() const
+	{
+		return Light::getRTTIStatic();
+	}
+
+	namespace ct
+	{
 	const UINT32 LightCore::LIGHT_CONE_NUM_SIDES = 20;
 	const UINT32 LightCore::LIGHT_CONE_NUM_SLICES = 10;
 
@@ -212,118 +328,5 @@ namespace bs
 
 		return nullptr;
 	}
-
-	Light::Light()
-		:mLastUpdateHash(0)
-	{
-		
-	}
-
-	Light::Light(LightType type, Color color,
-		float intensity, float range, bool castsShadows, Degree spotAngle, Degree spotFalloffAngle)
-		: LightBase(type, color, intensity, range, castsShadows, spotAngle, spotFalloffAngle),
-		mLastUpdateHash(0)
-	{
-		// Calling virtual method is okay here because this is the most derived type
-		updateBounds();
-	}
-
-	SPtr<LightCore> Light::getCore() const
-	{
-		return std::static_pointer_cast<LightCore>(mCoreSpecific);
-	}
-
-	SPtr<Light> Light::create(LightType type, Color color,
-		float intensity, float range, bool castsShadows, Degree spotAngle, Degree spotFalloffAngle)
-	{
-		Light* handler = new (bs_alloc<Light>()) 
-			Light(type, color, intensity, range, castsShadows, spotAngle, spotFalloffAngle);
-		SPtr<Light> handlerPtr = bs_core_ptr<Light>(handler);
-		handlerPtr->_setThisPtr(handlerPtr);
-		handlerPtr->initialize();
-
-		return handlerPtr;
-	}
-
-	SPtr<Light> Light::createEmpty()
-	{
-		Light* handler = new (bs_alloc<Light>()) Light();
-		SPtr<Light> handlerPtr = bs_core_ptr<Light>(handler);
-		handlerPtr->_setThisPtr(handlerPtr);
-
-		return handlerPtr;
-	}
-
-	SPtr<CoreObjectCore> Light::createCore() const
-	{
-		LightCore* handler = new (bs_alloc<LightCore>()) 
-			LightCore(mType, mColor, mIntensity, mRange, mCastsShadows, mSpotAngle, mSpotFalloffAngle);
-		SPtr<LightCore> handlerPtr = bs_shared_ptr<LightCore>(handler);
-		handlerPtr->_setThisPtr(handlerPtr);
-
-		return handlerPtr;
-	}
-
-	CoreSyncData Light::syncToCore(FrameAlloc* allocator)
-	{
-		UINT32 size = 0;
-		size += rttiGetElemSize(mPosition);
-		size += rttiGetElemSize(mRotation);
-		size += rttiGetElemSize(mType);
-		size += rttiGetElemSize(mCastsShadows);
-		size += rttiGetElemSize(mColor);
-		size += rttiGetElemSize(mRange);
-		size += rttiGetElemSize(mIntensity);
-		size += rttiGetElemSize(mSpotAngle);
-		size += rttiGetElemSize(mSpotFalloffAngle);
-		size += rttiGetElemSize(mPhysCorrectAtten);
-		size += rttiGetElemSize(mIsActive);
-		size += rttiGetElemSize(getCoreDirtyFlags());
-		size += rttiGetElemSize(mBounds);
-
-		UINT8* buffer = allocator->alloc(size);
-
-		char* dataPtr = (char*)buffer;
-		dataPtr = rttiWriteElem(mPosition, dataPtr);
-		dataPtr = rttiWriteElem(mRotation, dataPtr);
-		dataPtr = rttiWriteElem(mType, dataPtr);
-		dataPtr = rttiWriteElem(mCastsShadows, dataPtr);
-		dataPtr = rttiWriteElem(mColor, dataPtr);
-		dataPtr = rttiWriteElem(mRange, dataPtr);
-		dataPtr = rttiWriteElem(mIntensity, dataPtr);
-		dataPtr = rttiWriteElem(mSpotAngle, dataPtr);
-		dataPtr = rttiWriteElem(mSpotFalloffAngle, dataPtr);
-		dataPtr = rttiWriteElem(mPhysCorrectAtten, dataPtr);
-		dataPtr = rttiWriteElem(mIsActive, dataPtr);
-		dataPtr = rttiWriteElem(getCoreDirtyFlags(), dataPtr);
-		dataPtr = rttiWriteElem(mBounds, dataPtr);
-
-		return CoreSyncData(buffer, size);
-	}
-
-	void Light::_updateTransform(const HSceneObject& parent)
-	{
-		UINT32 curHash = parent->getTransformHash();
-		if (curHash != _getLastModifiedHash())
-		{
-			setPosition(parent->getWorldPosition());
-			setRotation(parent->getWorldRotation());
-			_setLastModifiedHash(curHash);
-		}
-	}
-
-	void Light::_markCoreDirty(LightDirtyFlag flag)
-	{
-		markCoreDirty((UINT32)flag);
-	}
-
-	RTTITypeBase* Light::getRTTIStatic()
-	{
-		return LightRTTI::instance();
-	}
-
-	RTTITypeBase* Light::getRTTI() const
-	{
-		return Light::getRTTIStatic();
 	}
 }

@@ -17,7 +17,7 @@
 #include "BsVulkanHardwareBufferManager.h"
 #include "BsGpuParamDesc.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	VulkanGpuParams::VulkanGpuParams(const SPtr<GpuPipelineParamInfoCore>& paramInfo, GpuDeviceFlags deviceMask)
 		: GpuParamsCore(paramInfo, deviceMask), mPerDeviceData(), mDeviceMask(deviceMask), mSetsDirty(nullptr)
@@ -763,4 +763,4 @@ namespace bs
 			sets[i] = set->getHandle();
 		}
 	}
-}
+}}

@@ -58,7 +58,7 @@ namespace bs
 
 			if (isDirty)
 			{
-				SPtr<CoreObjectCore> coreObject = object->getCore();
+				SPtr<ct::CoreObjectCore> coreObject = object->getCore();
 				if (coreObject != nullptr)
 				{
 					CoreSyncData objSyncData = object->syncToCore(gCoreThread().getFrameAlloc());
@@ -215,7 +215,7 @@ namespace bs
 	{
 		struct IndividualCoreSyncData
 		{
-			SPtr<CoreObjectCore> destination;
+			SPtr<ct::CoreObjectCore> destination;
 			CoreSyncData syncData;
 			FrameAlloc* allocator;
 		};
@@ -244,7 +244,7 @@ namespace bs
 					syncObject(dependency);
 			}
 
-			SPtr<CoreObjectCore> objectCore = curObj->getCore();
+			SPtr<ct::CoreObjectCore> objectCore = curObj->getCore();
 			if (objectCore == nullptr)
 			{
 				curObj->markCoreClean();
@@ -347,7 +347,7 @@ namespace bs
 						syncObject(dependency);
 				}
 
-				SPtr<CoreObjectCore> objectCore = curObj->getCore();
+				SPtr<ct::CoreObjectCore> objectCore = curObj->getCore();
 				if (objectCore == nullptr)
 				{
 					curObj->markCoreClean();
@@ -387,7 +387,7 @@ namespace bs
 
 		for (auto& objSyncData : syncData.entries)
 		{
-			SPtr<CoreObjectCore> destinationObj = objSyncData.destinationObj;
+			SPtr<ct::CoreObjectCore> destinationObj = objSyncData.destinationObj;
 			if (destinationObj != nullptr)
 				destinationObj->syncToCore(objSyncData.syncData);
 

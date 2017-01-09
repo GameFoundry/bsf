@@ -5,7 +5,7 @@
 #include "BsVulkanPrerequisites.h"
 #include "BsTimerQuery.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup Vulkan
 	 *  @{
@@ -41,4 +41,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

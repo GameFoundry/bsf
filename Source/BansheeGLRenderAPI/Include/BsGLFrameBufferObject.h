@@ -7,7 +7,7 @@
 #include "BsGLPixelBuffer.h"
 #include "BsPixelData.h"
 
-namespace bs 
+namespace bs { namespace ct
 {
 	/** @addtogroup GL
 	 *  @{
@@ -89,4 +89,4 @@ namespace bs
     };
 
 	/** @} */
-}
+}}

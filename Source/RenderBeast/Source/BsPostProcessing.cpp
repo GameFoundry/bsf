@@ -8,7 +8,7 @@
 #include "BsCamera.h"
 #include "BsGpuParamsSet.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	DownsampleParamDef gDownsampleParamDef;
 
@@ -474,4 +474,4 @@ namespace bs
 
 		// TODO - External code depends on the main RT being bound when this exits, make this clearer
 	}
-}
+}}

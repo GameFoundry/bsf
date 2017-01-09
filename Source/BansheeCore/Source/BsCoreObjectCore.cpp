@@ -5,6 +5,8 @@
 
 namespace bs
 {
+	namespace ct 
+	{
 	Signal CoreObjectCore::mCoreGpuObjectLoadedCondition;
 	Mutex CoreObjectCore::mCoreGpuObjectLoadedMutex;
 
@@ -52,5 +54,6 @@ namespace bs
 	void CoreObjectCore::_setThisPtr(SPtr<CoreObjectCore> ptrThis)
 	{
 		mThis = ptrThis;
+	}
 	}
 }

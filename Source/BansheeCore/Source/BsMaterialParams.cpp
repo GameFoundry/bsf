@@ -547,134 +547,6 @@ namespace bs
 	template class TMaterialParams<true>;
 	template class TMaterialParams<false>;
 
-	MaterialParamsCore::MaterialParamsCore(const SPtr<ShaderCore>& shader)
-		:TMaterialParams(shader)
-	{ }
-
-	MaterialParamsCore::MaterialParamsCore(const SPtr<ShaderCore>& shader, const SPtr<MaterialParams>& params)
-		: TMaterialParams(shader)
-	{
-		memcpy(mDataParamsBuffer, params->mDataParamsBuffer, mDataSize);
-
-		for (auto& param : mParams)
-		{
-			switch (param.type)
-			{
-			case ParamType::Texture:
-			{
-				HTexture texture = params->mTextureParams[param.index].value;
-				SPtr<TextureCore> textureCore;
-				if (texture.isLoaded())
-					textureCore = texture->getCore();
-
-				mTextureParams[param.index].value = textureCore;
-				mTextureParams[param.index].isLoadStore = params->mTextureParams[param.index].isLoadStore;
-				mTextureParams[param.index].surface = params->mTextureParams[param.index].surface;
-			}
-				break;
-			case ParamType::Buffer:
-			{
-				SPtr<GpuBuffer> buffer = params->mBufferParams[param.index].value;
-				SPtr<GpuBufferCore> bufferCore;
-				if (buffer != nullptr)
-					bufferCore = buffer->getCore();
-
-				mBufferParams[param.index].value = bufferCore;
-			}
-				break;
-			case ParamType::Sampler:
-			{
-				SPtr<SamplerState> sampState = params->mSamplerStateParams[param.index].value;
-				SPtr<SamplerStateCore> sampStateCore;
-				if (sampState != nullptr)
-					sampStateCore = sampState->getCore();
-
-				mSamplerStateParams[param.index].value = sampStateCore;
-			}
-				break;
-			}
-		}
-	}
-
-	void MaterialParamsCore::setSyncData(UINT8* buffer, UINT32 size)
-	{
-		char* sourceData = (char*)buffer;
-
-		UINT32 numDirtyDataParams = 0;
-		UINT32 numDirtyTextureParams = 0;
-		UINT32 numDirtyBufferParams = 0;
-		UINT32 numDirtySamplerParams = 0;
-
-		sourceData = rttiReadElem(numDirtyDataParams, sourceData);
-		sourceData = rttiReadElem(numDirtyTextureParams, sourceData);
-		sourceData = rttiReadElem(numDirtyBufferParams, sourceData);
-		sourceData = rttiReadElem(numDirtySamplerParams, sourceData);
-
-		mParamVersion++;
-
-		for(UINT32 i = 0; i < numDirtyDataParams; i++)
-		{
-			UINT32 paramIdx = 0;
-			sourceData = rttiReadElem(paramIdx, sourceData);
-
-			ParamData& param = mParams[paramIdx];
-			param.version = mParamVersion;
-
-			UINT32 arraySize = param.arraySize > 1 ? param.arraySize : 1;
-			const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES.lookup[(int)param.type];
-			UINT32 paramSize = typeInfo.numColumns * typeInfo.numRows * typeInfo.baseTypeSize;
-
-			UINT32 dataParamSize = arraySize * paramSize;
-			memcpy(&mDataParamsBuffer[param.index], sourceData, dataParamSize);
-			sourceData += dataParamSize;
-		}
-
-		for(UINT32 i = 0; i < numDirtyTextureParams; i++)
-		{
-			UINT32 paramIdx = 0;
-			sourceData = rttiReadElem(paramIdx, sourceData);
-
-			ParamData& param = mParams[paramIdx];
-			param.version = mParamVersion;
-
-			MaterialParamTextureDataCore* sourceTexData = (MaterialParamTextureDataCore*)sourceData;
-			sourceData += sizeof(MaterialParamTextureDataCore);
-
-			mTextureParams[param.index] = *sourceTexData;
-			sourceTexData->~MaterialParamTextureDataCore();
-		}
-
-		for (UINT32 i = 0; i < numDirtyBufferParams; i++)
-		{
-			UINT32 paramIdx = 0;
-			sourceData = rttiReadElem(paramIdx, sourceData);
-
-			ParamData& param = mParams[paramIdx];
-			param.version = mParamVersion;
-
-			MaterialParamBufferDataCore* sourceBufferData = (MaterialParamBufferDataCore*)sourceData;
-			sourceData += sizeof(MaterialParamBufferDataCore);
-
-			mBufferParams[param.index] = *sourceBufferData;
-			sourceBufferData->~MaterialParamBufferDataCore();
-		}
-
-		for (UINT32 i = 0; i < numDirtySamplerParams; i++)
-		{
-			UINT32 paramIdx = 0;
-			sourceData = rttiReadElem(paramIdx, sourceData);
-
-			ParamData& param = mParams[paramIdx];
-			param.version = mParamVersion;
-
-			MaterialParamSamplerStateDataCore* sourceSamplerStateData = (MaterialParamSamplerStateDataCore*)sourceData;
-			sourceData += sizeof(MaterialParamSamplerStateDataCore);
-
-			mSamplerStateParams[param.index] = *sourceSamplerStateData;
-			sourceSamplerStateData->~MaterialParamSamplerStateDataCore();
-		}
-	}
-
 	MaterialParams::MaterialParams(const HShader& shader)
 		:TMaterialParams(shader), mLastSyncVersion(1)
 	{ }
@@ -839,5 +711,136 @@ namespace bs
 	RTTITypeBase* MaterialParams::getRTTI() const
 	{
 		return MaterialParams::getRTTIStatic();
+	}
+
+	namespace ct
+	{
+	MaterialParamsCore::MaterialParamsCore(const SPtr<ShaderCore>& shader)
+		:TMaterialParams(shader)
+	{ }
+
+	MaterialParamsCore::MaterialParamsCore(const SPtr<ShaderCore>& shader, const SPtr<MaterialParams>& params)
+		: TMaterialParams(shader)
+	{
+		memcpy(mDataParamsBuffer, params->mDataParamsBuffer, mDataSize);
+
+		for (auto& param : mParams)
+		{
+			switch (param.type)
+			{
+			case ParamType::Texture:
+			{
+				HTexture texture = params->mTextureParams[param.index].value;
+				SPtr<TextureCore> textureCore;
+				if (texture.isLoaded())
+					textureCore = texture->getCore();
+
+				mTextureParams[param.index].value = textureCore;
+				mTextureParams[param.index].isLoadStore = params->mTextureParams[param.index].isLoadStore;
+				mTextureParams[param.index].surface = params->mTextureParams[param.index].surface;
+			}
+				break;
+			case ParamType::Buffer:
+			{
+				SPtr<GpuBuffer> buffer = params->mBufferParams[param.index].value;
+				SPtr<GpuBufferCore> bufferCore;
+				if (buffer != nullptr)
+					bufferCore = buffer->getCore();
+
+				mBufferParams[param.index].value = bufferCore;
+			}
+				break;
+			case ParamType::Sampler:
+			{
+				SPtr<SamplerState> sampState = params->mSamplerStateParams[param.index].value;
+				SPtr<SamplerStateCore> sampStateCore;
+				if (sampState != nullptr)
+					sampStateCore = sampState->getCore();
+
+				mSamplerStateParams[param.index].value = sampStateCore;
+			}
+				break;
+			}
+		}
+	}
+
+	void MaterialParamsCore::setSyncData(UINT8* buffer, UINT32 size)
+	{
+		char* sourceData = (char*)buffer;
+
+		UINT32 numDirtyDataParams = 0;
+		UINT32 numDirtyTextureParams = 0;
+		UINT32 numDirtyBufferParams = 0;
+		UINT32 numDirtySamplerParams = 0;
+
+		sourceData = rttiReadElem(numDirtyDataParams, sourceData);
+		sourceData = rttiReadElem(numDirtyTextureParams, sourceData);
+		sourceData = rttiReadElem(numDirtyBufferParams, sourceData);
+		sourceData = rttiReadElem(numDirtySamplerParams, sourceData);
+
+		mParamVersion++;
+
+		for(UINT32 i = 0; i < numDirtyDataParams; i++)
+		{
+			UINT32 paramIdx = 0;
+			sourceData = rttiReadElem(paramIdx, sourceData);
+
+			ParamData& param = mParams[paramIdx];
+			param.version = mParamVersion;
+
+			UINT32 arraySize = param.arraySize > 1 ? param.arraySize : 1;
+			const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES.lookup[(int)param.type];
+			UINT32 paramSize = typeInfo.numColumns * typeInfo.numRows * typeInfo.baseTypeSize;
+
+			UINT32 dataParamSize = arraySize * paramSize;
+			memcpy(&mDataParamsBuffer[param.index], sourceData, dataParamSize);
+			sourceData += dataParamSize;
+		}
+
+		for(UINT32 i = 0; i < numDirtyTextureParams; i++)
+		{
+			UINT32 paramIdx = 0;
+			sourceData = rttiReadElem(paramIdx, sourceData);
+
+			ParamData& param = mParams[paramIdx];
+			param.version = mParamVersion;
+
+			MaterialParamTextureDataCore* sourceTexData = (MaterialParamTextureDataCore*)sourceData;
+			sourceData += sizeof(MaterialParamTextureDataCore);
+
+			mTextureParams[param.index] = *sourceTexData;
+			sourceTexData->~MaterialParamTextureDataCore();
+		}
+
+		for (UINT32 i = 0; i < numDirtyBufferParams; i++)
+		{
+			UINT32 paramIdx = 0;
+			sourceData = rttiReadElem(paramIdx, sourceData);
+
+			ParamData& param = mParams[paramIdx];
+			param.version = mParamVersion;
+
+			MaterialParamBufferDataCore* sourceBufferData = (MaterialParamBufferDataCore*)sourceData;
+			sourceData += sizeof(MaterialParamBufferDataCore);
+
+			mBufferParams[param.index] = *sourceBufferData;
+			sourceBufferData->~MaterialParamBufferDataCore();
+		}
+
+		for (UINT32 i = 0; i < numDirtySamplerParams; i++)
+		{
+			UINT32 paramIdx = 0;
+			sourceData = rttiReadElem(paramIdx, sourceData);
+
+			ParamData& param = mParams[paramIdx];
+			param.version = mParamVersion;
+
+			MaterialParamSamplerStateDataCore* sourceSamplerStateData = (MaterialParamSamplerStateDataCore*)sourceData;
+			sourceData += sizeof(MaterialParamSamplerStateDataCore);
+
+			mSamplerStateParams[param.index] = *sourceSamplerStateData;
+			sourceSamplerStateData->~MaterialParamSamplerStateDataCore();
+		}
+	}
 	}
 }

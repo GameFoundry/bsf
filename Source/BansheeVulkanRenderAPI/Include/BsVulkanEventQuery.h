@@ -6,7 +6,7 @@
 #include "BsVulkanResource.h"
 #include "BsEventQuery.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup Vulkan
 	 *  @{
@@ -50,4 +50,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

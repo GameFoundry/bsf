@@ -41,16 +41,16 @@ namespace bs
 		void notifyWindowDestroyed(RenderWindow* window);
 
 		/**	Called by the core thread when window receives focus. */
-		void notifyFocusReceived(RenderWindowCore* window);
+		void notifyFocusReceived(ct::RenderWindowCore* window);
 
 		/**	Called by the core thread when window loses focus. */
-		void notifyFocusLost(RenderWindowCore* window);
+		void notifyFocusLost(ct::RenderWindowCore* window);
 
 		/**	Called by the core thread when window is moved or resized. */
-		void notifyMovedOrResized(RenderWindowCore* window);
+		void notifyMovedOrResized(ct::RenderWindowCore* window);
 
 		/**	Called by the sim thread when window properties change. */
-		void notifySyncDataDirty(RenderWindowCore* coreWindow);
+		void notifySyncDataDirty(ct::RenderWindowCore* coreWindow);
 
 		/**	Returns a list of all open render windows. */
 		Vector<RenderWindow*> getRenderWindows() const;
@@ -67,10 +67,10 @@ namespace bs
 		friend class RenderWindow;
 
 		/**	Called by the core thread when mouse leaves a window. */
-		void windowMouseLeft(RenderWindowCore* window);
+		void windowMouseLeft(ct::RenderWindowCore* window);
 
 		/**	Finds a sim thread equivalent of the provided core thread window implementation. */
-		RenderWindow* getNonCore(const RenderWindowCore* window) const;
+		RenderWindow* getNonCore(const ct::RenderWindowCore* window) const;
 
 		/** @copydoc create */
 		virtual SPtr<RenderWindow> createImpl(RENDER_WINDOW_DESC& desc, UINT32 windowId, const SPtr<RenderWindow>& parentWindow) = 0;
@@ -86,6 +86,8 @@ namespace bs
 		UnorderedSet<RenderWindow*> mDirtyProperties;
 	};
 
+	namespace ct
+	{
 	/**
 	 * Handles creation and internal updates relating to render windows.
 	 *
@@ -109,7 +111,7 @@ namespace bs
 		Vector<RenderWindowCore*> getRenderWindows() const;
 
 	protected:
-		friend class RenderWindowCore;
+		friend class ct::RenderWindowCore;
 		friend class RenderWindow;
 		friend class RenderWindowManager;
 
@@ -127,6 +129,7 @@ namespace bs
 		UnorderedSet<RenderWindowCore*> mDirtyProperties;
 		std::atomic_uint mNextWindowId;
 	};
+	}
 
 	/** @} */
 }

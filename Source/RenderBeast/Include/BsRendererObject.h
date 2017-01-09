@@ -8,7 +8,7 @@
 #include "BsParamBlocks.h"
 #include "BsMaterialParam.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup RenderBeast
 	 *  @{
@@ -101,4 +101,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

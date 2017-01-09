@@ -9,7 +9,7 @@
 #include "BsGLRenderTexture.h"
 #include "BsRenderStats.h"
 
-namespace bs 
+namespace bs { namespace ct
 {
 	GLPixelBuffer::GLPixelBuffer(UINT32 inWidth, UINT32 inHeight, UINT32 inDepth, PixelFormat inFormat, GpuBufferUsage usage)
 		: mUsage(usage), mIsLocked(false), mWidth(inWidth), mHeight(inHeight), mDepth(inDepth), mFormat(inFormat)
@@ -451,4 +451,4 @@ namespace bs
 			}
 		}		
 	}
-}
+}}

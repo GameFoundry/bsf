@@ -93,6 +93,8 @@ namespace bs
 		mutable SPtr<DepthStencilState> mDefaultDepthStencilState;
 	};
 
+	namespace ct
+	{
 	/**	Handles creation of various render states. */
 	class BS_CORE_EXPORT RenderStateCoreManager : public Module<RenderStateCoreManager>
 	{
@@ -299,6 +301,7 @@ namespace bs
 
 		mutable Mutex mMutex;
 	};
+	}
 
 	/** @} */
 }

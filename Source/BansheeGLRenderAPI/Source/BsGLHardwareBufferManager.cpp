@@ -9,7 +9,7 @@
 #include "BsRenderAPI.h"
 #include "BsRenderAPICapabilities.h"
 
-namespace bs 
+namespace bs { namespace ct
 {
 	SPtr<VertexBufferCore> GLHardwareBufferCoreManager::createVertexBufferInternal(const VERTEX_BUFFER_DESC& desc, 
 		GpuDeviceFlags deviceMask)
@@ -100,4 +100,4 @@ namespace bs
                 return 0;
         };
     }
-}
+}}

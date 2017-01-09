@@ -5,7 +5,7 @@
 #include "BsRenderStats.h"
 #include "BsException.h"
 
-namespace bs 
+namespace bs { namespace ct
 {
 	GLIndexBufferCore::GLIndexBufferCore(const INDEX_BUFFER_DESC& desc, GpuDeviceFlags deviceMask)
 		:IndexBufferCore(desc, deviceMask), mUsage(desc.usage)
@@ -46,4 +46,4 @@ namespace bs
 	{
 		mBuffer.writeData(offset, length, pSource, writeFlags);
 	}
-}
+}}

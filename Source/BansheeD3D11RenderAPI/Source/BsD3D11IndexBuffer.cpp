@@ -4,7 +4,7 @@
 #include "BsD3D11Device.h"
 #include "BsRenderStats.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	D3D11IndexBufferCore::D3D11IndexBufferCore(D3D11Device& device, const INDEX_BUFFER_DESC& desc, 
 		GpuDeviceFlags deviceMask)
@@ -70,4 +70,4 @@ namespace bs
 	{
 		mBuffer->copyData(srcBuffer, srcOffset, dstOffset, length, discardWholeBuffer);
 	}
-}
+}}

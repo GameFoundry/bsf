@@ -6,7 +6,7 @@
 #include "BsOcclusionQuery.h"
 #include "BsProfilerCPU.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	QueryManager::QueryManager()
 	{
@@ -123,4 +123,4 @@ namespace bs
 
 		mDeletedOcclusionQueries.clear();
 	}
-}
+}}

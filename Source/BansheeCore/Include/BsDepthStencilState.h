@@ -152,7 +152,7 @@ namespace bs
 		const DepthStencilProperties& getProperties() const;
 
 		/**	Retrieves a core implementation of a sampler state usable only from the core thread. */
-		SPtr<DepthStencilStateCore> getCore() const;
+		SPtr<ct::DepthStencilStateCore> getCore() const;
 
 		/**	Creates a new depth stencil state using the specified depth stencil state description structure. */
 		static SPtr<DepthStencilState> create(const DEPTH_STENCIL_STATE_DESC& desc);
@@ -169,7 +169,7 @@ namespace bs
 		DepthStencilState(const DEPTH_STENCIL_STATE_DESC& desc);
 
 		/** @copydoc CoreObject::createCore */
-		SPtr<CoreObjectCore> createCore() const override;
+		SPtr<ct::CoreObjectCore> createCore() const override;
 
 		DepthStencilProperties mProperties;
 		mutable UINT32 mId;
@@ -181,11 +181,13 @@ namespace bs
 	public:
 		friend class DepthStencilStateRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const override;	
+		RTTITypeBase* getRTTI() const override;	
 	};
 
 	/** @} */
 
+	namespace ct
+	{
 	/** @addtogroup RenderAPI-Internal
 	 *  @{
 	 */
@@ -228,6 +230,7 @@ namespace bs
 	};
 
 	/** @} */
+	}
 }
 
 /** @cond STDLIB */

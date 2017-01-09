@@ -234,6 +234,9 @@ namespace bs
 	};
 
 	/** @} */
+
+	namespace ct
+	{
 	/** @addtogroup RenderAPI-Internal
 	 *  @{
 	 */
@@ -617,4 +620,5 @@ namespace bs
 	};
 
 	/** @} */
+	}
 }

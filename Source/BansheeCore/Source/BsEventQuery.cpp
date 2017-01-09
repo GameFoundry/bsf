@@ -3,10 +3,10 @@
 #include "BsEventQuery.h"
 #include "BsQueryManager.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	SPtr<EventQuery> EventQuery::create(UINT32 deviceIdx)
 	{
 		return QueryManager::instance().createEventQuery(deviceIdx);
 	}
-}
+}}

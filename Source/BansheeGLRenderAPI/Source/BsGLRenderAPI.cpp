@@ -28,7 +28,7 @@
 #include "BsGLCommandBuffer.h"
 #include "BsGLCommandBufferManager.h"
 
-namespace bs 
+namespace bs { namespace ct
 {
 	const char* MODULE_NAME = "BansheeGLRenderAPI.dll";
 
@@ -59,7 +59,7 @@ namespace bs
 		, mActiveTextureUnit(-1)
 	{
 		// Get our GLSupport
-		mGLSupport = bs::getGLSupport();
+		mGLSupport = getGLSupport();
 
 		mColorWrite[0] = mColorWrite[1] = mColorWrite[2] = mColorWrite[3] = true;
 
@@ -2320,4 +2320,4 @@ namespace bs
 			BS_EXCEPT(RenderingAPIException, "OpenGL error: " + String(message));
 		}
 	}
-}
+}}

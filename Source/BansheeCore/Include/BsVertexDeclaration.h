@@ -175,7 +175,7 @@ namespace bs
 		const VertexDeclarationProperties& getProperties() const { return mProperties; }
 
 		/**	Retrieves a core implementation of a vertex declaration usable only from the core thread. */
-		SPtr<VertexDeclarationCore> getCore() const;
+		SPtr<ct::VertexDeclarationCore> getCore() const;
 
 		/** @copydoc HardwareBufferManager::createVertexDeclaration */
 		static SPtr<VertexDeclaration> create(const SPtr<VertexDataDesc>& desc);
@@ -186,7 +186,7 @@ namespace bs
 		VertexDeclaration(const List<VertexElement>& elements);
 
 		/** @copydoc CoreObject::createCore */
-		SPtr<CoreObjectCore> createCore() const override;
+		SPtr<ct::CoreObjectCore> createCore() const override;
 
 	protected:
 		VertexDeclarationProperties mProperties;
@@ -208,6 +208,8 @@ namespace bs
 
 	/** @} */
 
+	namespace ct
+	{
 	/** @addtogroup RenderAPI-Internal
 	 *  @{
 	 */
@@ -258,4 +260,5 @@ namespace bs
     };
 
 	/** @} */
+	}
 }

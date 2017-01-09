@@ -7,7 +7,7 @@
 #include "BsException.h"
 #include "BsRenderAPI.h"
 
-namespace bs 
+namespace bs { namespace ct
 {
 	VertexData::VertexData()
 	{
@@ -55,4 +55,4 @@ namespace bs
 		for (auto& bufferData : mVertexBuffers)
 			mMaxBufferIdx = std::max(bufferData.first, mMaxBufferIdx);
 	}
-}
+}}

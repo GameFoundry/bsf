@@ -5,7 +5,7 @@
 #include "BsGLPrerequisites.h"
 #include "BsPixelUtil.h"
 
-namespace bs 
+namespace bs { namespace ct
 {
 	/** @addtogroup GL
 	 *  @{
@@ -39,4 +39,4 @@ namespace bs
 	};
 
 	/** @} */
-};
+}}

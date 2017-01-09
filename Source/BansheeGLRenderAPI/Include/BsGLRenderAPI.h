@@ -8,7 +8,7 @@
 #include "BsGLSLProgramFactory.h"
 #include "BsMatrix4.h"
 
-namespace bs 
+namespace bs { namespace ct
 {
 	/** @addtogroup GL
 	 *  @{
@@ -416,4 +416,4 @@ namespace bs
     };
 
 	/** @} */
-}
+}}

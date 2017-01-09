@@ -133,7 +133,7 @@ namespace bs
 		const RasterizerProperties& getProperties() const;
 
 		/** Retrieves a core implementation of the rasterizer state usable only from the core thread. */
-		SPtr<RasterizerStateCore> getCore() const;
+		SPtr<ct::RasterizerStateCore> getCore() const;
 
 		/** Creates a new rasterizer state using the specified rasterizer state descriptor structure. */
 		static SPtr<RasterizerState> create(const RASTERIZER_STATE_DESC& desc);
@@ -150,7 +150,7 @@ namespace bs
 		RasterizerState(const RASTERIZER_STATE_DESC& desc);
 		
 		/** @copydoc CoreObject::createCore */
-		SPtr<CoreObjectCore> createCore() const override;
+		SPtr<ct::CoreObjectCore> createCore() const override;
 
 		RasterizerProperties mProperties;
 		mutable UINT32 mId;
@@ -162,11 +162,13 @@ namespace bs
 	public:
 		friend class RasterizerStateRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const override;	
+		RTTITypeBase* getRTTI() const override;	
 	};
 
 	/** @} */
 
+	namespace ct
+	{
 	/** @addtogroup RenderAPI-Internal
 	 *  @{
 	 */
@@ -209,6 +211,7 @@ namespace bs
 	};
 
 	/** @} */
+		}
 }
 
 /** @cond STDLIB */

@@ -3,7 +3,7 @@
 #include "BsGLRenderAPIFactory.h"
 #include "BsGLRenderAPI.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	void GLRenderAPIFactory::create()
 	{
@@ -11,4 +11,4 @@ namespace bs
 	}
 
 	GLRenderAPIFactory::InitOnStart GLRenderAPIFactory::initOnStart;
-}
+}}

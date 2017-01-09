@@ -527,10 +527,86 @@ namespace bs
 	 };
 
 	/** @} */
+
 	/** @addtogroup Renderer-Engine-Internal
 	 *  @{
 	 */
 
+	/** @copydoc CameraBase */
+	class BS_CORE_EXPORT Camera : public IReflectable, public CoreObject, public TCamera<false>
+    {
+    public:
+		/**	Returns the viewport used by the camera. */	
+		SPtr<Viewport> getViewport() const { return mViewport; }
+
+		/**
+		 * Determines whether this is the main application camera. Main camera controls the final render surface that is
+		 * displayed to the user.
+		 */	
+		bool isMain() const { return mMain; }
+
+		/**
+		 * Marks or unmarks this camera as the main application camera. Main camera controls the final render surface that
+		 * is displayed to the user.
+		 */	
+		void setMain(bool main) { mMain = main; }
+
+		/** Retrieves an implementation of a camera handler usable only from the core thread. */
+		SPtr<ct::CameraCore> getCore() const;
+
+		/**	Creates a new camera that renders to the specified portion of the provided render target. */
+		static SPtr<Camera> create(SPtr<RenderTarget> target = nullptr,
+			float left = 0.0f, float top = 0.0f, float width = 1.0f, float height = 1.0f);
+
+		/** @name Internal
+		 *  @{
+		 */
+
+		/**	Returns the hash value that can be used to identify if the internal data needs an update. */
+		UINT32 _getLastModifiedHash() const { return mLastUpdateHash; }
+
+		/**	Sets the hash value that can be used to identify if the internal data needs an update. */
+		void _setLastModifiedHash(UINT32 hash) { mLastUpdateHash = hash; }
+
+		/** @} */
+
+	protected:
+		Camera(SPtr<RenderTarget> target = nullptr,
+			float left = 0.0f, float top = 0.0f, float width = 1.0f, float height = 1.0f);
+
+		/** @copydoc CameraBase */
+		Rect2I getViewportRect() const override;
+
+		/** @copydoc CoreObject::createCore */
+		SPtr<ct::CoreObjectCore> createCore() const override;
+
+		/** @copydoc CameraBase::_markCoreDirty */
+		void _markCoreDirty(CameraDirtyFlag flag = CameraDirtyFlag::Everything) override;
+
+		/** @copydoc CoreObject::syncToCore */
+		CoreSyncData syncToCore(FrameAlloc* allocator) override;
+
+		/** @copydoc CoreObject::getCoreDependencies */
+		void getCoreDependencies(Vector<CoreObject*>& dependencies) override;
+
+		/**	Creates a new camera without initializing it. */
+		static SPtr<Camera> createEmpty();
+
+		SPtr<Viewport> mViewport; /**< Viewport that describes 2D rendering surface. */
+		bool mMain;
+		UINT32 mLastUpdateHash;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+	public:
+		friend class CameraRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		RTTITypeBase* getRTTI() const override;
+     };
+
+	namespace ct
+	{
 	/** @copydoc CameraBase */
 	class BS_CORE_EXPORT CameraCore : public CoreObjectCore, public TCamera<true>
 	{
@@ -559,79 +635,7 @@ namespace bs
 
 		SPtr<ViewportCore> mViewport;
 	};
-
-	/** @copydoc CameraBase */
-	class BS_CORE_EXPORT Camera : public IReflectable, public CoreObject, public TCamera<false>
-    {
-    public:
-		/**	Returns the viewport used by the camera. */	
-		SPtr<Viewport> getViewport() const { return mViewport; }
-
-		/**
-		 * Determines whether this is the main application camera. Main camera controls the final render surface that is
-		 * displayed to the user.
-		 */	
-		bool isMain() const { return mMain; }
-
-		/**
-		 * Marks or unmarks this camera as the main application camera. Main camera controls the final render surface that
-		 * is displayed to the user.
-		 */	
-		void setMain(bool main) { mMain = main; }
-
-		/** Retrieves an implementation of a camera handler usable only from the core thread. */
-		SPtr<CameraCore> getCore() const;
-
-		/**	Creates a new camera that renders to the specified portion of the provided render target. */
-		static SPtr<Camera> create(SPtr<RenderTarget> target = nullptr,
-			float left = 0.0f, float top = 0.0f, float width = 1.0f, float height = 1.0f);
-
-		/** @name Internal
-		 *  @{
-		 */
-
-		/**	Returns the hash value that can be used to identify if the internal data needs an update. */
-		UINT32 _getLastModifiedHash() const { return mLastUpdateHash; }
-
-		/**	Sets the hash value that can be used to identify if the internal data needs an update. */
-		void _setLastModifiedHash(UINT32 hash) { mLastUpdateHash = hash; }
-
-		/** @} */
-
-	protected:
-		Camera(SPtr<RenderTarget> target = nullptr,
-			float left = 0.0f, float top = 0.0f, float width = 1.0f, float height = 1.0f);
-
-		/** @copydoc CameraBase */
-		Rect2I getViewportRect() const override;
-
-		/** @copydoc CoreObject::createCore */
-		SPtr<CoreObjectCore> createCore() const override;
-
-		/** @copydoc CameraBase::_markCoreDirty */
-		void _markCoreDirty(CameraDirtyFlag flag = CameraDirtyFlag::Everything) override;
-
-		/** @copydoc CoreObject::syncToCore */
-		CoreSyncData syncToCore(FrameAlloc* allocator) override;
-
-		/** @copydoc CoreObject::getCoreDependencies */
-		void getCoreDependencies(Vector<CoreObject*>& dependencies) override;
-
-		/**	Creates a new camera without initializing it. */
-		static SPtr<Camera> createEmpty();
-
-		SPtr<Viewport> mViewport; /**< Viewport that describes 2D rendering surface. */
-		bool mMain;
-		UINT32 mLastUpdateHash;
-
-		/************************************************************************/
-		/* 								RTTI		                     		*/
-		/************************************************************************/
-	public:
-		friend class CameraRTTI;
-		static RTTITypeBase* getRTTIStatic();
-		RTTITypeBase* getRTTI() const override;
-     };
+	}
 
 	/** @} */
 }

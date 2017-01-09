@@ -13,7 +13,7 @@ namespace bs
 	 *  @{
 	 */
 
-	class DockOverlayRenderer;
+	namespace ct { class DockOverlayRenderer; }
 
 	/**
 	 * GUI element that allows editor widgets to be docked in it using arbitrary layouts. Docked widgets can be resized,
@@ -234,7 +234,7 @@ namespace bs
 		/** @copydoc GUIElementBase::_mouseEvent */
 		bool _mouseEvent(const GUIMouseEvent& event) override;
 
-		SPtr<DockOverlayRenderer> mRenderer;
+		SPtr<ct::DockOverlayRenderer> mRenderer;
 
 		EditorWindowBase* mParentWindow;
 		DockContainer mRootContainer;
@@ -256,6 +256,8 @@ namespace bs
 		Vector2* mRightDropPolygon;
 	};
 
+	namespace ct
+	{
 	/** Handles rendering of the dock overlay on the core thread. */
 	class DockOverlayRenderer : public RendererExtension
 	{
@@ -295,6 +297,7 @@ namespace bs
 		static const Color TINT_COLOR;
 		static const Color HIGHLIGHT_COLOR;
 	};
+	}
 
 	/** @} */
 }

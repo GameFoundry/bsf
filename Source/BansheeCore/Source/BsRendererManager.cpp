@@ -19,7 +19,7 @@ namespace bs
 		{
 			if((*iter)->name() == name)
 			{
-				SPtr<CoreRenderer> newRenderer = (*iter)->create();
+				SPtr<ct::CoreRenderer> newRenderer = (*iter)->create();
 				if(newRenderer != nullptr)
 				{
 					if (mActiveRenderer != nullptr)

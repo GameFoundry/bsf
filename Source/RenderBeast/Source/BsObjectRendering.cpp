@@ -12,7 +12,7 @@
 #include "BsMorphShapes.h"
 #include "BsAnimationManager.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	PerFrameParamDef gPerFrameParamDef;
 
@@ -77,4 +77,4 @@ namespace bs
 	{
 		// Do nothing
 	}
-}
+}}

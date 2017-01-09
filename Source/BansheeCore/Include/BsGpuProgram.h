@@ -112,7 +112,7 @@ namespace bs
 		SPtr<GpuParamDesc> getParamDesc() const;
 
 		/** Retrieves a core implementation of a gpu program usable only from the core thread. */
-		SPtr<GpuProgramCore> getCore() const;
+		SPtr<ct::GpuProgramCore> getCore() const;
 
 		/** Returns properties that contain information about the GPU program. */
 		const GpuProgramProperties& getProperties() const { return mProperties; }
@@ -131,7 +131,7 @@ namespace bs
 		GpuProgram(const GPU_PROGRAM_DESC& desc);
 
 		/** @copydoc CoreObject::createCore */
-		SPtr<CoreObjectCore> createCore() const override;
+		SPtr<ct::CoreObjectCore> createCore() const override;
 
 	protected:
 		bool mNeedsAdjacencyInfo;
@@ -149,6 +149,8 @@ namespace bs
 
 	/** @} */
 
+	namespace ct
+	{
 	/** @addtogroup RenderAPI-Internal
 	 *  @{
 	 */
@@ -218,4 +220,5 @@ namespace bs
 	};
 
 	/** @} */
+		}
 }

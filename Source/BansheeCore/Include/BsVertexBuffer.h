@@ -35,7 +35,7 @@ namespace bs
 
 	protected:
 		friend class VertexBuffer;
-		friend class VertexBufferCore;
+		friend class ct::VertexBufferCore;
 
 		UINT32 mNumVertices;
 		UINT32 mVertexSize;
@@ -52,7 +52,7 @@ namespace bs
 		 *
 		 * @note	Core thread only.
 		 */
-		SPtr<VertexBufferCore> getCore() const;
+		SPtr<ct::VertexBufferCore> getCore() const;
 
 		/** @copydoc HardwareBufferManager::createVertexBuffer */
 		static SPtr<VertexBuffer> create(const VERTEX_BUFFER_DESC& desc);
@@ -64,7 +64,7 @@ namespace bs
 		VertexBuffer(const VERTEX_BUFFER_DESC& desc);
 
 		/** @copydoc CoreObject::createCore */
-		virtual SPtr<CoreObjectCore> createCore() const;
+		virtual SPtr<ct::CoreObjectCore> createCore() const;
 
 	protected:
 		VertexBufferProperties mProperties;
@@ -74,6 +74,8 @@ namespace bs
 
 	/** @} */
 
+	namespace ct
+	{
 	/** @addtogroup RenderAPI-Internal
 	 *  @{
 	 */
@@ -96,4 +98,5 @@ namespace bs
 	};
 
 	/** @} */
+		}
 }

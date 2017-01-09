@@ -7,7 +7,7 @@
 #include "BsD3D11GpuParamBlockBuffer.h"
 #include "BsGpuParamDesc.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	D3D11HardwareBufferCoreManager::D3D11HardwareBufferCoreManager(D3D11Device& device)
 		: mDevice(device)
@@ -54,4 +54,4 @@ namespace bs
 
 		return bufferPtr;
 	}
-}
+}}

@@ -9,7 +9,7 @@
 
 using namespace std::placeholders;
 
-namespace bs
+namespace bs { namespace ct
 {
 	RenderQueue::RenderQueue(StateReduction mode)
 		:mStateReductionMode(mode)
@@ -208,4 +208,4 @@ namespace bs
 	{
 		return mSortedRenderElements;
 	}
-}
+}}

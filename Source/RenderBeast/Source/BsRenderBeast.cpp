@@ -35,7 +35,7 @@
 
 using namespace std::placeholders;
 
-namespace bs
+namespace bs { namespace ct
 {
 	RenderBeast::RendererFrame::RendererFrame(float delta, const RendererAnimationData& animData)
 		:delta(delta), animData(animData)
@@ -968,4 +968,4 @@ namespace bs
 		for (auto& entry : mSamplerOverrides)
 			entry.second->isDirty = false;
 	}
-}
+}}

@@ -60,8 +60,8 @@ namespace bs
 			ProfilerString sampleName;
 			RenderStatsData startStats;
 			RenderStatsData endStats;
-			SPtr<TimerQuery> activeTimeQuery;
-			SPtr<OcclusionQuery> activeOcclusionQuery;
+			SPtr<ct::TimerQuery> activeTimeQuery;
+			SPtr<ct::OcclusionQuery> activeOcclusionQuery;
 		};
 
 		struct ActiveFrame
@@ -145,10 +145,10 @@ namespace bs
 		void endSampleInternal(ActiveSample& sample);
 
 		/**	Creates a new timer query or returns an existing free query. */
-		SPtr<TimerQuery> getTimerQuery() const;
+		SPtr<ct::TimerQuery> getTimerQuery() const;
 
 		/**	Creates a new occlusion query or returns an existing free query. */
-		SPtr<OcclusionQuery> getOcclusionQuery() const;
+		SPtr<ct::OcclusionQuery> getOcclusionQuery() const;
 
 		/**
 		 * Interprets the active frame results and generates a profiler report for the frame. Provided frame queries must 
@@ -167,8 +167,8 @@ namespace bs
 		Queue<ActiveFrame> mUnresolvedFrames;
 		Queue<GPUProfilerReport> mReadyReports;
 
-		mutable Stack<SPtr<TimerQuery>> mFreeTimerQueries;
-		mutable Stack<SPtr<OcclusionQuery>> mFreeOcclusionQueries;
+		mutable Stack<SPtr<ct::TimerQuery>> mFreeTimerQueries;
+		mutable Stack<SPtr<ct::OcclusionQuery>> mFreeOcclusionQueries;
 
 		Mutex mMutex;
 	};

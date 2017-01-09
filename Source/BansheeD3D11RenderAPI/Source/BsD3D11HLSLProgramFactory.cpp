@@ -3,7 +3,7 @@
 #include "BsD3D11HLSLProgramFactory.h"
 #include "BsD3D11GpuProgram.h"
 
-namespace bs
+namespace bs { namespace ct
 {
     const String D3D11HLSLProgramFactory::LANGUAGE_NAME = "hlsl";
 
@@ -98,4 +98,4 @@ namespace bs
 
 		return gpuProg;
 	}
-}
+}}

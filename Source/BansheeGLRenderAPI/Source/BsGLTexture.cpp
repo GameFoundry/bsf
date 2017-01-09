@@ -11,7 +11,7 @@
 #include "BsGLRenderTexture.h"
 #include "BsRenderStats.h"
 
-namespace bs 
+namespace bs { namespace ct
 {
 	GLTextureCore::GLTextureCore(GLSupport& support, const TEXTURE_DESC& desc, const SPtr<PixelData>& initialData, 
 		GpuDeviceFlags deviceMask)
@@ -332,4 +332,4 @@ namespace bs
 		assert(idx < mSurfaceList.size());
 		return mSurfaceList[idx];
 	}
-}
+}}

@@ -5,7 +5,7 @@
 #include "BsGLSupport.h"
 #include "BsAsyncOp.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	GLRenderWindowManager::GLRenderWindowManager(GLRenderAPI* renderSystem)
 		:mRenderSystem(renderSystem)
@@ -39,4 +39,4 @@ namespace bs
 
 		return window;
 	}
-}
+}}

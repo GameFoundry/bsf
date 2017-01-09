@@ -34,13 +34,13 @@ namespace bs
 		HMaterial textMaterial = BuiltinEditorResources::instance().createTextGizmoMat();
 		HMaterial clearMaterial = BuiltinEditorResources::instance().createHandleClearAlphaMat();
 
-		HandleRenderer::InitData rendererInitData;
+		ct::HandleRenderer::InitData rendererInitData;
 		rendererInitData.solidMat = solidMaterial->getCore();
 		rendererInitData.lineMat = lineMaterial->getCore();
 		rendererInitData.textMat = textMaterial->getCore();
 		rendererInitData.clearMat = clearMaterial->getCore();
 
-		mRenderer = RendererExtension::create<HandleRenderer>(rendererInitData);
+		mRenderer = RendererExtension::create<ct::HandleRenderer>(rendererInitData);
 	}
 
 	HandleDrawManager::~HandleDrawManager()
@@ -166,13 +166,13 @@ namespace bs
 
 	void HandleDrawManager::draw(const SPtr<Camera>& camera)
 	{
-		HandleRenderer* renderer = mRenderer.get();
+		ct::HandleRenderer* renderer = mRenderer.get();
 
 		// Clear meshes from previous frame
 		UINT64 frameIdx = gTime().getFrameIdx();
 		if(frameIdx != mLastFrameIdx)
 		{
-			gCoreThread().queueCommand(std::bind(&HandleRenderer::clearQueued, renderer));
+			gCoreThread().queueCommand(std::bind(&ct::HandleRenderer::clearQueued, renderer));
 
 			clearMeshes();
 			mLastFrameIdx = frameIdx;
@@ -183,31 +183,31 @@ namespace bs
 		const Vector<DrawHelper::ShapeMeshData>& meshes = mDrawHelper->getMeshes();
 		mActiveMeshes.push_back(meshes);
 
-		Vector<HandleRenderer::MeshData> proxyData;
+		Vector<ct::HandleRenderer::MeshData> proxyData;
 		for (auto& meshData : meshes)
 		{
-			SPtr<TextureCore> tex;
+			SPtr<ct::TextureCore> tex;
 			if (meshData.texture.isLoaded())
 				tex = meshData.texture->getCore();
 
 			if (meshData.type == DrawHelper::MeshType::Solid)
 			{
-				proxyData.push_back(HandleRenderer::MeshData(
-					meshData.mesh->getCore(), tex, HandleRenderer::MeshType::Solid));
+				proxyData.push_back(ct::HandleRenderer::MeshData(
+					meshData.mesh->getCore(), tex, ct::HandleRenderer::MeshType::Solid));
 			}
 			else if (meshData.type == DrawHelper::MeshType::Line)
 			{
-				proxyData.push_back(HandleRenderer::MeshData(
-					meshData.mesh->getCore(), tex, HandleRenderer::MeshType::Line));
+				proxyData.push_back(ct::HandleRenderer::MeshData(
+					meshData.mesh->getCore(), tex, ct::HandleRenderer::MeshType::Line));
 			}
 			else // Text
 			{
-				proxyData.push_back(HandleRenderer::MeshData(
-					meshData.mesh->getCore(), tex, HandleRenderer::MeshType::Text));
+				proxyData.push_back(ct::HandleRenderer::MeshData(
+					meshData.mesh->getCore(), tex, ct::HandleRenderer::MeshType::Text));
 			}
 		}
 
-		gCoreThread().queueCommand(std::bind(&HandleRenderer::queueForDraw, renderer, camera->getCore(), proxyData));
+		gCoreThread().queueCommand(std::bind(&ct::HandleRenderer::queueForDraw, renderer, camera->getCore(), proxyData));
 	}
 
 	void HandleDrawManager::clear()
@@ -223,6 +223,8 @@ namespace bs
 		mActiveMeshes.clear();
 	}
 
+	namespace ct
+	{
 	HandleParamBlockDef gHandleParamBlockDef;
 
 	HandleRenderer::HandleRenderer()
@@ -350,5 +352,6 @@ namespace bs
 			gRendererUtility().setPass(mClearMaterial, 0);
 			gRendererUtility().drawScreenQuad();
 		}
+	}
 	}
 }

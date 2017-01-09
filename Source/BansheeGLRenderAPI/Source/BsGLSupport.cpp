@@ -4,9 +4,9 @@
 #include "BsGLTexture.h"
 #include "GL/glew.h"
 
-GLenum GLEWAPIENTRY glewContextInit(bs::GLSupport *glSupport);
+GLenum GLEWAPIENTRY glewContextInit(bs::ct::GLSupport* glSupport);
 
-namespace bs
+namespace bs { namespace ct
 {
     void GLSupport::initializeExtensions()
     {
@@ -42,4 +42,4 @@ namespace bs
         
         return true;
     }
-}
+}}

@@ -7,7 +7,7 @@
 #include "BsRenderStats.h"
 #include "BsMath.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	D3D11RasterizerStateCore::D3D11RasterizerStateCore(const RASTERIZER_STATE_DESC& desc, UINT32 id)
 		:RasterizerStateCore(desc, id), mRasterizerState(nullptr)
@@ -51,4 +51,4 @@ namespace bs
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_RasterizerState);
 		RasterizerStateCore::createInternal();
 	}
-}
+}}

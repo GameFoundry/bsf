@@ -30,11 +30,9 @@ using namespace std::placeholders;
 
 namespace bs
 {
-	const float ScenePickingCore::ALPHA_CUTOFF = 0.5f;
-
 	ScenePicking::ScenePicking()
 	{
-		mCore = bs_new<ScenePickingCore>();
+		mCore = bs_new<ct::ScenePickingCore>();
 
 		for (UINT32 i = 0; i < 3; i++)
 		{
@@ -45,12 +43,12 @@ namespace bs
 			mCore->mMaterials[3 + i] = matPickingAlpha->getCore();
 		}
 
-		gCoreThread().queueCommand(std::bind(&ScenePickingCore::initialize, mCore));
+		gCoreThread().queueCommand(std::bind(&ct::ScenePickingCore::initialize, mCore));
 	}
 
 	ScenePicking::~ScenePicking()
 	{
-		gCoreThread().queueCommand(std::bind(&ScenePickingCore::destroy, mCore));
+		gCoreThread().queueCommand(std::bind(&ct::ScenePickingCore::destroy, mCore));
 	}
 
 	HSceneObject ScenePicking::pickClosestObject(const SPtr<Camera>& cam, const Vector2I& position, const Vector2I& area, 
@@ -157,7 +155,7 @@ namespace bs
 							const Map<String, SHADER_OBJECT_PARAM_DESC>& textureParams = originalMat->getShader()->getTextureParams();
 							for (auto& objectParam : textureParams)
 							{
-								if (objectParam.second.rendererSemantic == RPS_Diffuse)
+								if (objectParam.second.rendererSemantic == ct::RPS_Diffuse)
 								{
 									mainTexture = originalMat->getTexture(objectParam.first);
 									break;
@@ -176,13 +174,13 @@ namespace bs
 
 		UINT32 firstGizmoIdx = (UINT32)pickData.size();
 
-		SPtr<RenderTargetCore> target = cam->getViewport()->getTarget()->getCore();
-		gCoreThread().queueCommand(std::bind(&ScenePickingCore::corePickingBegin, mCore, target,
+		SPtr<ct::RenderTargetCore> target = cam->getViewport()->getTarget()->getCore();
+		gCoreThread().queueCommand(std::bind(&ct::ScenePickingCore::corePickingBegin, mCore, target,
 			cam->getViewport()->getNormArea(), std::cref(pickData), position, area));
 
 		GizmoManager::instance().renderForPicking(cam, [&](UINT32 inputIdx) { return encodeIndex(firstGizmoIdx + inputIdx); });
 
-		AsyncOp op = gCoreThread().queueReturnCommand(std::bind(&ScenePickingCore::corePickingEnd, mCore, target,
+		AsyncOp op = gCoreThread().queueReturnCommand(std::bind(&ct::ScenePickingCore::corePickingEnd, mCore, target,
 			cam->getViewport()->getNormArea(), position, area, data != nullptr, _1));
 		gCoreThread().submit(true);
 
@@ -242,6 +240,10 @@ namespace bs
 
 		return (r & 0xFF) | ((g & 0xFF) << 8) | ((b & 0xFF) << 16);
 	}
+
+	namespace ct
+	{
+	const float ScenePickingCore::ALPHA_CUTOFF = 0.5f;
 
 	PickingParamBlockDef gPickingParamBlockDef;
 
@@ -506,5 +508,6 @@ namespace bs
 		
 		result.objects = objects;
 		asyncOp._completeOperation(result);
+	}
 	}
 }

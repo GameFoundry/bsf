@@ -5,7 +5,7 @@
 #include "BsVulkanPrerequisites.h"
 #include "BsTextureManager.h"
 
-namespace bs 
+namespace bs { namespace ct
 {
 	/** @addtogroup Vulkan
 	 *  @{
@@ -50,4 +50,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

@@ -44,7 +44,7 @@
 
 /** @} */
 
-namespace bs
+namespace bs { namespace ct
 {
 	class VulkanRenderAPI;
 	class Win32RenderWindow;
@@ -110,7 +110,7 @@ namespace bs
 
 	typedef Flags<ClearMaskBits> ClearMask;
 	BS_FLAGS_OPERATORS(ClearMaskBits);
-}
+}}
 
 /** Macro to get a procedure address based on a Vulkan instance. */
 #define GET_INSTANCE_PROC_ADDR(instance, name) \

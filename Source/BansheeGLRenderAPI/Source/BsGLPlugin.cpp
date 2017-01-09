@@ -5,6 +5,6 @@ namespace bs
 {
 	extern "C" BS_RSGL_EXPORT const char* getPluginName()
 	{
-		return SystemName;
+		return ct::SystemName;
 	}
 }

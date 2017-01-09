@@ -3,7 +3,7 @@
 #include "BsD3D11RenderTexture.h"
 #include "BsD3D11TextureView.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	D3D11RenderTextureCore::D3D11RenderTextureCore(const RENDER_TEXTURE_DESC_CORE& desc, UINT32 deviceIdx)
 		:RenderTextureCore(desc, deviceIdx), mProperties(desc, false)
@@ -52,4 +52,4 @@ namespace bs
 	{ 
 
 	}
-}
+}}

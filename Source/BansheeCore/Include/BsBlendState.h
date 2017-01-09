@@ -139,7 +139,7 @@ namespace bs
 
 	protected:
 		friend class BlendState;
-		friend class BlendStateCore;
+		friend class ct::BlendStateCore;
 		friend class BlendStateRTTI;
 
 		BLEND_STATE_DESC mData;
@@ -161,7 +161,7 @@ namespace bs
 		const BlendProperties& getProperties() const;
 
 		/** Retrieves a core implementation of the sampler state usable only from the core thread. */
-		SPtr<BlendStateCore> getCore() const;
+		SPtr<ct::BlendStateCore> getCore() const;
 
 		/**	Creates a new blend state using the specified blend state description structure. */
 		static SPtr<BlendState> create(const BLEND_STATE_DESC& desc);
@@ -178,7 +178,7 @@ namespace bs
 		BlendState(const BLEND_STATE_DESC& desc);
 
 		/** @copydoc CoreObject::createCore */
-		SPtr<CoreObjectCore> createCore() const override;
+		SPtr<ct::CoreObjectCore> createCore() const override;
 
 		BlendProperties mProperties;
 		mutable UINT32 mId;
@@ -194,6 +194,9 @@ namespace bs
 	};
 
 	/** @} */
+
+	namespace ct
+	{
 	/** @addtogroup RenderAPI-Internal
 	 *  @{
 	 */
@@ -236,6 +239,7 @@ namespace bs
 	};
 
 	/** @} */
+	}
 }
 
 /** @cond STDLIB */

@@ -4,7 +4,7 @@
 
 #include "BsCorePrerequisites.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup RenderAPI-Internal
 	 *  @{
@@ -64,4 +64,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

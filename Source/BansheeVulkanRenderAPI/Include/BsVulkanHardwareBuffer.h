@@ -6,7 +6,7 @@
 #include "BsVulkanResource.h"
 #include "BsHardwareBuffer.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup Vulkan
 	 *  @{
@@ -156,4 +156,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

@@ -116,7 +116,7 @@ namespace bs
 
 	protected:
 		friend class SamplerState;
-		friend class SamplerStateCore;
+		friend class ct::SamplerStateCore;
 		friend class SamplerStateRTTI;
 
 		SAMPLER_STATE_DESC mData;
@@ -141,7 +141,7 @@ namespace bs
 		const SamplerProperties& getProperties() const;
 
 		/**	Retrieves a core implementation of the sampler state usable only from the core thread. */
-		SPtr<SamplerStateCore> getCore() const;
+		SPtr<ct::SamplerStateCore> getCore() const;
 
 		/**	Creates a new sampler state using the provided descriptor structure. */
 		static SPtr<SamplerState> create(const SAMPLER_STATE_DESC& desc);
@@ -156,7 +156,7 @@ namespace bs
 		SamplerState(const SAMPLER_STATE_DESC& desc);
 
 		/** @copydoc CoreObject::createCore */
-		SPtr<CoreObjectCore> createCore() const override;
+		SPtr<ct::CoreObjectCore> createCore() const override;
 
 		SamplerProperties mProperties;
 
@@ -174,6 +174,8 @@ namespace bs
 
 	/** @} */
 
+	namespace ct
+	{
 	/** @addtogroup RenderAPI-Internal
 	 *  @{
 	 */
@@ -210,8 +212,9 @@ namespace bs
 
 		SamplerProperties mProperties;
 	};
-
+	
 	/** @} */
+	}
 }
 
 /** @cond STDLIB */

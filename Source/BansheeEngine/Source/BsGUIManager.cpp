@@ -118,7 +118,7 @@ namespace bs
 		deferredCall(std::bind(&GUIManager::updateCaretTexture, this));
 		deferredCall(std::bind(&GUIManager::updateTextSelectionTexture, this));
 
-		mRenderer = RendererExtension::create<GUIRenderer>(nullptr);
+		mRenderer = RendererExtension::create<ct::GUIRenderer>(nullptr);
 	}
 
 	GUIManager::~GUIManager()
@@ -158,7 +158,7 @@ namespace bs
 		assert(mCachedGUIData.size() == 0);
 	}
 
-	void GUIManager::destroyCore(GUIRenderer* core)
+	void GUIManager::destroyCore(ct::GUIRenderer* core)
 	{
 		bs_delete(core);
 	}
@@ -374,7 +374,7 @@ namespace bs
 		// Send potentially updated meshes to core for rendering
 		if (mCoreDirty)
 		{
-			UnorderedMap<SPtr<CameraCore>, Vector<GUICoreRenderData>> corePerCameraData;
+			UnorderedMap<SPtr<ct::CameraCore>, Vector<GUICoreRenderData>> corePerCameraData;
 
 			for (auto& viewportData : mCachedGUIData)
 			{
@@ -402,7 +402,7 @@ namespace bs
 					cameraData.push_back(GUICoreRenderData());
 					GUICoreRenderData& newEntry = cameraData.back();
 
-					SPtr<TextureCore> textureCore;
+					SPtr<ct::TextureCore> textureCore;
 					if (entry.matInfo.texture.isLoaded())
 						textureCore = entry.matInfo.texture->getCore();
 					else
@@ -417,7 +417,7 @@ namespace bs
 				}
 			}
 
-			gCoreThread().queueCommand(std::bind(&GUIRenderer::updateData, mRenderer.get(), corePerCameraData));
+			gCoreThread().queueCommand(std::bind(&ct::GUIRenderer::updateData, mRenderer.get(), corePerCameraData));
 
 			mCoreDirty = false;
 		}
@@ -1732,6 +1732,8 @@ namespace bs
 		return GUIManager::instance();
 	}
 
+	namespace ct
+	{
 	GUISpriteParamBlockDef gGUISpriteParamBlockDef;
 
 	GUIRenderer::GUIRenderer()
@@ -1831,5 +1833,6 @@ namespace bs
 		}
 
 		bs_frame_clear();
+	}
 	}
 }

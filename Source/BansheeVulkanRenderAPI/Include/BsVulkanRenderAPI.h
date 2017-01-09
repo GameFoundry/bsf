@@ -5,7 +5,7 @@
 #include "BsVulkanPrerequisites.h"
 #include "BsRenderAPI.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup Vulkan
 	 *  @{
@@ -178,4 +178,4 @@ namespace bs
 	extern PFN_vkQueuePresentKHR vkQueuePresentKHR;
 
 	/** @} */
-}
+}}

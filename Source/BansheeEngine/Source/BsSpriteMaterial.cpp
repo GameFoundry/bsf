@@ -33,7 +33,7 @@ namespace bs
 
 		mParams = mMaterial->createParamsSet();
 
-		SPtr<ShaderCore> shader = mMaterial->getShader();
+		SPtr<ct::ShaderCore> shader = mMaterial->getShader();
 		if(shader->hasTextureParam("gMainTexture"))
 		{
 			mTextureParam = mMaterial->getParamTexture("gMainTexture");
@@ -53,7 +53,7 @@ namespace bs
 			LOGERR("Sprite material shader missing \"GUIParams\" block.");
 	}
 
-	void SpriteMaterial::destroy(const SPtr<MaterialCore>& material, const SPtr<GpuParamsSetCore>& params)
+	void SpriteMaterial::destroy(const SPtr<ct::MaterialCore>& material, const SPtr<ct::GpuParamsSetCore>& params)
 	{
 		// Do nothing, we just need to make sure the material pointer's last reference is lost while on the core thread
 	}
@@ -73,15 +73,15 @@ namespace bs
 		return (UINT64)hash;
 	}
 
-	void SpriteMaterial::render(const SPtr<MeshCoreBase>& mesh, const SPtr<TextureCore>& texture,
-		const SPtr<SamplerStateCore>& sampler, const SPtr<GpuParamBlockBufferCore>& paramBuffer,
+	void SpriteMaterial::render(const SPtr<ct::MeshCoreBase>& mesh, const SPtr<ct::TextureCore>& texture,
+		const SPtr<ct::SamplerStateCore>& sampler, const SPtr<ct::GpuParamBlockBufferCore>& paramBuffer,
 		const SPtr<SpriteMaterialExtraInfo>& additionalData) const
 	{
-		SPtr<TextureCore> spriteTexture;
+		SPtr<ct::TextureCore> spriteTexture;
 		if (texture != nullptr)
 			spriteTexture = texture;
 		else
-			spriteTexture = TextureCore::WHITE;
+			spriteTexture = ct::TextureCore::WHITE;
 
 		mTextureParam.set(spriteTexture);
 		mSamplerParam.set(sampler);
@@ -91,8 +91,8 @@ namespace bs
 
 		mMaterial->updateParamsSet(mParams);
 
-		gRendererUtility().setPass(mMaterial);
-		gRendererUtility().setPassParams(mParams);
-		gRendererUtility().draw(mesh, mesh->getProperties().getSubMesh(0));
+		ct::gRendererUtility().setPass(mMaterial);
+		ct::gRendererUtility().setPassParams(mParams);
+		ct::gRendererUtility().draw(mesh, mesh->getProperties().getSubMesh(0));
 	}
 }

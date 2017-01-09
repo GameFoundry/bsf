@@ -9,7 +9,7 @@
 #include "BsRenderStats.h"
 #include "BsDebug.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	size_t D3D11InputLayoutManager::HashFunc::operator()
 		(const D3D11InputLayoutManager::VertexDeclarationKey &key) const
@@ -203,4 +203,4 @@ namespace bs
 				break;
 		}
 	}
-}
+}}

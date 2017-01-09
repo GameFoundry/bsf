@@ -31,11 +31,11 @@ namespace bs
 	bool isShaderValid(const HShader& shader) { return shader.isLoaded(); }
 
 	template<>
-	bool isShaderValid(const SPtr<ShaderCore>& shader) { return shader != nullptr; }
+	bool isShaderValid(const SPtr<ct::ShaderCore>& shader) { return shader != nullptr; }
 
 	template<bool Core> struct TMatType { };
 	template<> struct TMatType<false> { typedef Material Type; };
-	template<> struct TMatType<true> { typedef MaterialCore Type; };
+	template<> struct TMatType<true> { typedef ct::MaterialCore Type; };
 
 	template<bool Core>
 	SPtr<typename TMatType<Core>::Type> getMaterialPtr(const TMaterial<Core>* material)
@@ -358,68 +358,6 @@ namespace bs
 	template BS_CORE_EXPORT void TMaterial<true>::getParam(const String&, TMaterialDataParam<Matrix4x2, true>&) const;
 	template BS_CORE_EXPORT void TMaterial<true>::getParam(const String&, TMaterialDataParam<Matrix4x3, true>&) const;
 
-	MaterialCore::MaterialCore(const SPtr<ShaderCore>& shader)
-	{
-		setShader(shader);
-	}
-
-	MaterialCore::MaterialCore(const SPtr<ShaderCore>& shader, const Vector<SPtr<TechniqueCore>>& techniques,
-		const SPtr<MaterialParamsCore>& materialParams)
-	{
-		mShader = shader;
-		mParams = materialParams;
-		mTechniques = techniques;
-	}
-
-	void MaterialCore::setShader(const SPtr<ShaderCore>& shader)
-	{
-		mShader = shader;
-
-		initializeTechniques();
-
-		_markCoreDirty();
-	}
-
-	void MaterialCore::syncToCore(const CoreSyncData& data)
-	{
-		char* dataPtr = (char*)data.getBuffer();
-
-		SPtr<ShaderCore>* shader = (SPtr<ShaderCore>*)dataPtr;
-
-		mShader = *shader;
-		shader->~SPtr<ShaderCore>();
-		dataPtr += sizeof(SPtr<ShaderCore>);
-
-		UINT32 numTechniques;
-		dataPtr = rttiReadElem(numTechniques, dataPtr);
-
-		mTechniques.resize(numTechniques);
-		for(UINT32 i = 0; i < numTechniques; i++)
-		{
-			SPtr<TechniqueCore>* technique = (SPtr<TechniqueCore>*)dataPtr;
-			mTechniques[i] = *technique;
-			technique->~SPtr<TechniqueCore>();
-			dataPtr += sizeof(SPtr<TechniqueCore>);
-		}
-
-		UINT32 paramsSize = 0;
-		dataPtr = rttiReadElem(paramsSize, dataPtr);
-		if (mParams != nullptr)
-			mParams->setSyncData((UINT8*)dataPtr, paramsSize);
-
-		dataPtr += paramsSize;
-	}
-
-	SPtr<MaterialCore> MaterialCore::create(const SPtr<ShaderCore>& shader)
-	{
-		MaterialCore* material = new (bs_alloc<MaterialCore>()) MaterialCore(shader);
-		SPtr<MaterialCore> materialPtr = bs_shared_ptr<MaterialCore>(material);
-		materialPtr->_setThisPtr(materialPtr);
-		materialPtr->initialize();
-
-		return materialPtr;
-	}
-
 	Material::Material()
 		:mLoadFlags(Load_None)
 	{ }
@@ -466,33 +404,33 @@ namespace bs
 		markListenerResourcesDirty();
 	}
 
-	SPtr<MaterialCore> Material::getCore() const
+	SPtr<ct::MaterialCore> Material::getCore() const
 	{
-		return std::static_pointer_cast<MaterialCore>(mCoreSpecific);
+		return std::static_pointer_cast<ct::MaterialCore>(mCoreSpecific);
 	}
 
-	SPtr<CoreObjectCore> Material::createCore() const
+	SPtr<ct::CoreObjectCore> Material::createCore() const
 	{
-		MaterialCore* material = nullptr;
+		ct::MaterialCore* material = nullptr;
 
-		SPtr<ShaderCore> shader;
+		SPtr<ct::ShaderCore> shader;
 		if (mShader.isLoaded())
 		{
 			shader = mShader->getCore();
 
-			Vector<SPtr<TechniqueCore>> techniques(mTechniques.size());
+			Vector<SPtr<ct::TechniqueCore>> techniques(mTechniques.size());
 			for (UINT32 i = 0; i < (UINT32)mTechniques.size(); i++)
 				techniques[i] = mTechniques[i]->getCore();
 			
-			SPtr<MaterialParamsCore> materialParams = bs_shared_ptr_new<MaterialParamsCore>(shader, mParams);
+			SPtr<ct::MaterialParamsCore> materialParams = bs_shared_ptr_new<ct::MaterialParamsCore>(shader, mParams);
 
-			material = new (bs_alloc<MaterialCore>()) MaterialCore(shader, techniques, materialParams);
+			material = new (bs_alloc<ct::MaterialCore>()) ct::MaterialCore(shader, techniques, materialParams);
 		}
 		
 		if (material == nullptr)
-			material = new (bs_alloc<MaterialCore>()) MaterialCore(shader);
+			material = new (bs_alloc<ct::MaterialCore>()) ct::MaterialCore(shader);
 
-		SPtr<MaterialCore> materialPtr = bs_shared_ptr<MaterialCore>(material);
+		SPtr<ct::MaterialCore> materialPtr = bs_shared_ptr<ct::MaterialCore>(material);
 		materialPtr->_setThisPtr(materialPtr);
 
 		return materialPtr;
@@ -505,27 +443,27 @@ namespace bs
 			mParams->getSyncData(nullptr, paramsSize);
 
 		UINT32 numTechniques = (UINT32)mTechniques.size();
-		UINT32 size = sizeof(UINT32) * 2 + sizeof(SPtr<ShaderCore>) + 
-			sizeof(SPtr<TechniqueCore>) * numTechniques + paramsSize;
+		UINT32 size = sizeof(UINT32) * 2 + sizeof(SPtr<ct::ShaderCore>) + 
+			sizeof(SPtr<ct::TechniqueCore>) * numTechniques + paramsSize;
 
 		UINT8* buffer = allocator->alloc(size);
 		char* dataPtr = (char*)buffer;
 		
-		SPtr<ShaderCore>* shader = new (dataPtr)SPtr<ShaderCore>();
+		SPtr<ct::ShaderCore>* shader = new (dataPtr)SPtr<ct::ShaderCore>();
 		if (mShader.isLoaded(false))
 			*shader = mShader->getCore();
 		else
 			*shader = nullptr;
 
-		dataPtr += sizeof(SPtr<ShaderCore>);
+		dataPtr += sizeof(SPtr<ct::ShaderCore>);
 		dataPtr = rttiWriteElem(numTechniques, dataPtr);
 
 		for(UINT32 i = 0; i < numTechniques; i++)
 		{
-			SPtr<TechniqueCore>* technique = new (dataPtr)SPtr<TechniqueCore>();
+			SPtr<ct::TechniqueCore>* technique = new (dataPtr)SPtr<ct::TechniqueCore>();
 				*technique = mTechniques[i]->getCore();
 
-			dataPtr += sizeof(SPtr<TechniqueCore>);
+			dataPtr += sizeof(SPtr<ct::TechniqueCore>);
 		}
 
 		dataPtr = rttiWriteElem(paramsSize, dataPtr);
@@ -780,5 +718,70 @@ namespace bs
 	RTTITypeBase* Material::getRTTI() const
 	{
 		return Material::getRTTIStatic();
+	}
+
+	namespace ct
+	{
+	MaterialCore::MaterialCore(const SPtr<ShaderCore>& shader)
+	{
+		setShader(shader);
+	}
+
+	MaterialCore::MaterialCore(const SPtr<ShaderCore>& shader, const Vector<SPtr<TechniqueCore>>& techniques,
+		const SPtr<MaterialParamsCore>& materialParams)
+	{
+		mShader = shader;
+		mParams = materialParams;
+		mTechniques = techniques;
+	}
+
+	void MaterialCore::setShader(const SPtr<ShaderCore>& shader)
+	{
+		mShader = shader;
+
+		initializeTechniques();
+
+		_markCoreDirty();
+	}
+
+	void MaterialCore::syncToCore(const CoreSyncData& data)
+	{
+		char* dataPtr = (char*)data.getBuffer();
+
+		SPtr<ShaderCore>* shader = (SPtr<ShaderCore>*)dataPtr;
+
+		mShader = *shader;
+		shader->~SPtr<ShaderCore>();
+		dataPtr += sizeof(SPtr<ShaderCore>);
+
+		UINT32 numTechniques;
+		dataPtr = rttiReadElem(numTechniques, dataPtr);
+
+		mTechniques.resize(numTechniques);
+		for(UINT32 i = 0; i < numTechniques; i++)
+		{
+			SPtr<TechniqueCore>* technique = (SPtr<TechniqueCore>*)dataPtr;
+			mTechniques[i] = *technique;
+			technique->~SPtr<TechniqueCore>();
+			dataPtr += sizeof(SPtr<TechniqueCore>);
+		}
+
+		UINT32 paramsSize = 0;
+		dataPtr = rttiReadElem(paramsSize, dataPtr);
+		if (mParams != nullptr)
+			mParams->setSyncData((UINT8*)dataPtr, paramsSize);
+
+		dataPtr += paramsSize;
+	}
+
+	SPtr<MaterialCore> MaterialCore::create(const SPtr<ShaderCore>& shader)
+	{
+		MaterialCore* material = new (bs_alloc<MaterialCore>()) MaterialCore(shader);
+		SPtr<MaterialCore> materialPtr = bs_shared_ptr<MaterialCore>(material);
+		materialPtr->_setThisPtr(materialPtr);
+		materialPtr->initialize();
+
+		return materialPtr;
+	}
 	}
 }

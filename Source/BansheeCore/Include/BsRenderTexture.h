@@ -19,14 +19,14 @@ namespace bs
 		RENDER_SURFACE_DESC depthStencilSurface;
 	};
 
-	struct RENDER_TEXTURE_DESC_CORE;
+	namespace ct { struct RENDER_TEXTURE_DESC_CORE; }
 
 	/**	Contains various properties that describe a render texture. */
 	class BS_CORE_EXPORT RenderTextureProperties : public RenderTargetProperties
 	{
 	public:
 		RenderTextureProperties(const RENDER_TEXTURE_DESC& desc, bool requiresFlipping);
-		RenderTextureProperties(const RENDER_TEXTURE_DESC_CORE& desc, bool requiresFlipping);
+		RenderTextureProperties(const ct::RENDER_TEXTURE_DESC_CORE& desc, bool requiresFlipping);
 		virtual ~RenderTextureProperties() { }
 
 	private:
@@ -73,7 +73,7 @@ namespace bs
 		 *
 		 * @note	Core thread only.
 		 */
-		SPtr<RenderTextureCore> getCore() const;
+		SPtr<ct::RenderTextureCore> getCore() const;
 
 		/**	Returns properties that describe the render texture. */
 		const RenderTextureProperties& getProperties() const;
@@ -84,7 +84,7 @@ namespace bs
 		RenderTexture(const RENDER_TEXTURE_DESC& desc);
 
 		/** @copydoc CoreObject::createCore */
-		SPtr<CoreObjectCore> createCore() const override;
+		SPtr<ct::CoreObjectCore> createCore() const override;
 
 		/** @copydoc CoreObject::syncToCore */
 		CoreSyncData syncToCore(FrameAlloc* allocator) override;
@@ -98,6 +98,8 @@ namespace bs
 
 	/** @} */
 
+	namespace ct
+	{
 	/** @addtogroup RenderAPI-Internal
 	 *  @{
 	 */
@@ -165,4 +167,5 @@ namespace bs
 	};
 
 	/** @} */
+	}
 }

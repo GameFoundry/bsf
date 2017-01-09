@@ -6,7 +6,7 @@
 #include "BsVertexDeclaration.h"
 #include "BsVertexBuffer.h"
 
-namespace bs 
+namespace bs { namespace ct
 {
 	/** @addtogroup RenderAPI
 	 *  @{
@@ -55,4 +55,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

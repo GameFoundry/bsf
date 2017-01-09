@@ -33,7 +33,7 @@ namespace bs
 		void initialize();
 
 		/**	Returns the currently active renderer. Null if no renderer is active. */
-		SPtr<CoreRenderer> getActive() { return mActiveRenderer; }
+		SPtr<ct::CoreRenderer> getActive() { return mActiveRenderer; }
 
 		/**
 		 * Registers a new renderer factory. Any renderer you try to make active with setActive() you will need to have 
@@ -43,7 +43,7 @@ namespace bs
 	private:
 		Vector<SPtr<RendererFactory>> mAvailableFactories;
 
-		SPtr<CoreRenderer> mActiveRenderer;
+		SPtr<ct::CoreRenderer> mActiveRenderer;
 	};
 
 	/** @} */

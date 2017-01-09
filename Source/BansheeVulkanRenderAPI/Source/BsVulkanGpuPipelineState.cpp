@@ -14,7 +14,7 @@
 #include "BsBlendState.h"
 #include "BsRenderStats.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	VulkanPipeline::VulkanPipeline(VulkanResourceManager* owner, VkPipeline pipeline, 
 		const std::array<bool, BS_MAX_MULTIPLE_RENDER_TARGETS>& colorReadOnly, bool depthStencilReadOnly)
@@ -609,4 +609,4 @@ namespace bs
 				cmdBuffer->registerResource(module, VulkanUseFlag::Read);
 		}
 	}
-}
+}}

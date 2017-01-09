@@ -5,7 +5,7 @@
 #include "BsVulkanDevice.h"
 #include "BsException.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	PixelFormat VulkanUtility::getClosestSupportedPixelFormat(VulkanDevice& device, PixelFormat format, TextureType texType,
 		int usage, bool optimalTiling, bool hwGamma)
@@ -544,4 +544,4 @@ namespace bs
 
 		return ((flags & (1 << idx)) != 0 || (flags == GDF_DEFAULT && device->isPrimary()));
 	}
-}
+}}

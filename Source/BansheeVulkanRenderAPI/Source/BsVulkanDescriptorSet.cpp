@@ -3,7 +3,7 @@
 #include "BsVulkanDescriptorSet.h"
 #include "BsVulkanDevice.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	VulkanDescriptorSet::VulkanDescriptorSet(VulkanResourceManager* owner, VkDescriptorSet set, VkDescriptorPool pool)
 		:VulkanResource(owner, true), mSet(set), mPool(pool)
@@ -22,4 +22,4 @@ namespace bs
 
 		vkUpdateDescriptorSets(mOwner->getDevice().getLogical(), count, entries, 0, nullptr);
 	}
-}
+}}

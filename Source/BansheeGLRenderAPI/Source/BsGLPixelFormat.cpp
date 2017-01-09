@@ -5,7 +5,7 @@
 #include "BsBitwise.h"
 #include "BsDebug.h"
 
-namespace bs  
+namespace bs { namespace ct
 {
 	PixelFormat GLPixelUtil::getClosestSupportedPF(PixelFormat pf, TextureType texType, int usage)
 	{
@@ -248,4 +248,4 @@ namespace bs
 
 		return lookup[(UINT32)format];
 	}
-};
+}}

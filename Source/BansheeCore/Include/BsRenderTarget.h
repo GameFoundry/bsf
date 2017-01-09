@@ -34,6 +34,8 @@ namespace bs
 		UINT32 mipLevel = 0; 
 	};
 
+	namespace ct
+	{
 	/**
 	 * @see		RENDER_SURFACE_DESC
 	 *
@@ -57,6 +59,7 @@ namespace bs
 		/** If the texture has multiple mips, which one to bind (only one can be bound for rendering). */
 		UINT32 mipLevel = 0; 
 	};
+	}
 
 	/** Contains various properties that describe a render target. */
 	class BS_CORE_EXPORT RenderTargetProperties
@@ -119,7 +122,7 @@ namespace bs
 		bool requiresTextureFlipping() const { return mRequiresTextureFlipping; }
 
 	protected:
-		friend class RenderTargetCore;
+		friend class ct::RenderTargetCore;
 		friend class RenderTarget;
 
 		UINT32 mWidth = 0;
@@ -169,7 +172,7 @@ namespace bs
 		const RenderTargetProperties& getProperties() const;
 
 		/** Retrieves a core implementation of a render target usable only from the core thread. */
-		SPtr<RenderTargetCore> getCore() const;
+		SPtr<ct::RenderTargetCore> getCore() const;
 
 		/**
 		 * Event that gets triggered whenever the render target is resized.
@@ -179,7 +182,7 @@ namespace bs
 		mutable Event<void()> onResized;
 
     protected:
-		friend class RenderTargetCore;
+		friend class ct::RenderTargetCore;
 
 		/**	Returns properties that describe the render target. */
 		virtual const RenderTargetProperties& getPropertiesInternal() const = 0;
@@ -187,6 +190,8 @@ namespace bs
 
 	/** @} */
 
+	namespace ct
+	{
 	/** @addtogroup RenderAPI-Internal
 	 *  @{
 	 */
@@ -242,4 +247,5 @@ namespace bs
 	};
 
 	/** @} */
+	}
 }

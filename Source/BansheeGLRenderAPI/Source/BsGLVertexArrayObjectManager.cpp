@@ -9,7 +9,7 @@
 
 #define VBO_BUFFER_OFFSET(i) ((char *)NULL + (i))
 
-namespace bs
+namespace bs { namespace ct
 {
 	GLVertexArrayObject::GLVertexArrayObject()
 		:mHandle(0), mVertProgId(0), mAttachedBuffers(nullptr), mNumBuffers(0)
@@ -226,4 +226,4 @@ namespace bs
 
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_VertexArrayObject);
 	}
-}
+}}

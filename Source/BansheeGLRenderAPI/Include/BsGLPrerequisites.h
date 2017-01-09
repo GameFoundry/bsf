@@ -69,7 +69,7 @@
 
 /** @} */
 
-namespace bs 
+namespace bs { namespace ct
 {
 	extern const char* MODULE_NAME;
 
@@ -101,4 +101,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

@@ -11,7 +11,7 @@
 #include "BsRenderStats.h"
 #include "BsMath.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	D3D11TextureCore::D3D11TextureCore(const TEXTURE_DESC& desc, const SPtr<PixelData>& initialData, 
 		GpuDeviceFlags deviceMask)
@@ -759,4 +759,4 @@ namespace bs
 	{
 		return bs_shared_ptr<D3D11TextureView>(new (bs_alloc<D3D11TextureView>()) D3D11TextureView(texture, desc));
 	}
-}
+}}

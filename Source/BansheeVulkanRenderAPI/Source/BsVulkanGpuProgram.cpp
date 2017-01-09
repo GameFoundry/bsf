@@ -19,7 +19,7 @@
 #include "SPIRV/GlslangToSpv.h"
 #include "SPIRV/Logger.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	const TBuiltInResource DefaultTBuiltInResource = {
 		/* .MaxLights = */ 32,
@@ -673,4 +673,4 @@ cleanup:
 
 		GpuProgramCore::initialize();
 	}
-}
+}}

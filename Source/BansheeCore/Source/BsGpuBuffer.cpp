@@ -26,35 +26,19 @@ namespace bs
 			mDesc.elementSize = GpuBuffer::getFormatSize(mDesc.format);
 	}
 
-	GpuBufferCore::GpuBufferCore(const GPU_BUFFER_DESC& desc, UINT32 deviceMask)
-		:HardwareBuffer(getBufferSize(desc)), mProperties(desc)
-	{
-	}
-
-	GpuBufferCore::~GpuBufferCore()
-	{
-		// Make sure that derived classes call clearBufferViews
-		// I can't call it here since it needs a virtual method call
-	}
-
-	SPtr<GpuBufferCore> GpuBufferCore::create(const GPU_BUFFER_DESC& desc, GpuDeviceFlags deviceMask)
-	{
-		return HardwareBufferCoreManager::instance().createGpuBuffer(desc, deviceMask);
-	}
-
 	GpuBuffer::GpuBuffer(const GPU_BUFFER_DESC& desc)
 		:mProperties(desc)
 	{  
 	}
 
-	SPtr<GpuBufferCore> GpuBuffer::getCore() const
+	SPtr<ct::GpuBufferCore> GpuBuffer::getCore() const
 	{
-		return std::static_pointer_cast<GpuBufferCore>(mCoreSpecific);
+		return std::static_pointer_cast<ct::GpuBufferCore>(mCoreSpecific);
 	}
 
-	SPtr<CoreObjectCore> GpuBuffer::createCore() const
+	SPtr<ct::CoreObjectCore> GpuBuffer::createCore() const
 	{
-		return HardwareBufferCoreManager::instance().createGpuBufferInternal(mProperties.mDesc);
+		return ct::HardwareBufferCoreManager::instance().createGpuBufferInternal(mProperties.mDesc);
 	}
 
 	UINT32 GpuBuffer::getFormatSize(GpuBufferFormat format)
@@ -110,5 +94,24 @@ namespace bs
 	SPtr<GpuBuffer> GpuBuffer::create(const GPU_BUFFER_DESC& desc)
 	{
 		return HardwareBufferManager::instance().createGpuBuffer(desc);
+	}
+
+	namespace ct
+	{
+	GpuBufferCore::GpuBufferCore(const GPU_BUFFER_DESC& desc, UINT32 deviceMask)
+		:HardwareBuffer(getBufferSize(desc)), mProperties(desc)
+	{
+	}
+
+	GpuBufferCore::~GpuBufferCore()
+	{
+		// Make sure that derived classes call clearBufferViews
+		// I can't call it here since it needs a virtual method call
+	}
+
+	SPtr<GpuBufferCore> GpuBufferCore::create(const GPU_BUFFER_DESC& desc, GpuDeviceFlags deviceMask)
+	{
+		return HardwareBufferCoreManager::instance().createGpuBuffer(desc, deviceMask);
+	}
 	}
 }

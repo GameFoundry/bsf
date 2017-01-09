@@ -4,7 +4,7 @@
 #include "BsVulkanHardwareBuffer.h"
 #include "BsRenderStats.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	VulkanVertexBufferCore::VulkanVertexBufferCore(const VERTEX_BUFFER_DESC& desc, GpuDeviceFlags deviceMask)
 		:VertexBufferCore(desc, deviceMask), mBuffer(nullptr), mUsage(desc.usage), mDeviceMask(deviceMask)
@@ -73,4 +73,4 @@ namespace bs
 	{
 		return mBuffer->getResource(deviceIdx);
 	}
-}
+}}

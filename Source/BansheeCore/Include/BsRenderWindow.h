@@ -74,7 +74,7 @@ namespace bs
 		bool isMaximized() const { return mIsMaximized; }
 
 	protected:
-		friend class RenderWindowCore;
+		friend class ct::RenderWindowCore;
 		friend class RenderWindow;
 
 		bool mIsFullScreen = false;
@@ -176,7 +176,7 @@ namespace bs
 		void setWindowed(UINT32 width, UINT32 height);
 
 		/**	Retrieves a core implementation of a render window usable only from the core thread. */
-		SPtr<RenderWindowCore> getCore() const;
+		SPtr<ct::RenderWindowCore> getCore() const;
 
 		/**	Returns properties that describe the render window. */
 		const RenderWindowProperties& getProperties() const;
@@ -199,7 +199,7 @@ namespace bs
 		RenderWindowProperties& getMutableProperties();
 
 		/** @copydoc RenderTarget::createCore */
-		SPtr<CoreObjectCore> createCore() const override;
+		SPtr<ct::CoreObjectCore> createCore() const override;
 
 		/**	Updates window properties from the synced property data. */
 		virtual void syncProperties() = 0;
@@ -211,6 +211,8 @@ namespace bs
 
 	/** @} */
 
+	namespace ct
+	{
 	/** @addtogroup RenderAPI-Internal
 	 *  @{
 	 */
@@ -339,4 +341,5 @@ namespace bs
 	};
 
 	/** @} */
+	}
 }

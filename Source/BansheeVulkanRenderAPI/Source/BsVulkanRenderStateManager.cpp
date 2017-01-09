@@ -5,7 +5,7 @@
 #include "BsVulkanGpuPipelineParamInfo.h"
 #include "BsVulkanSamplerState.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	SPtr<SamplerStateCore> VulkanRenderStateCoreManager::createSamplerStateInternal(const SAMPLER_STATE_DESC& desc,
 		GpuDeviceFlags deviceMask) const
@@ -49,4 +49,4 @@ namespace bs
 
 		return paramInfo;
 	}
-}
+}}

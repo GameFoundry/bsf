@@ -3,7 +3,7 @@
 #include "Win32/BsWin32VideoModeInfo.h"
 #include "BsMath.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	BOOL CALLBACK monitorEnumCallback(HMONITOR hMonitor, HDC hdc, LPRECT rect, LPARAM lParam)
 	{
@@ -102,4 +102,4 @@ namespace bs
 	Win32VideoMode::Win32VideoMode(UINT32 width, UINT32 height, float refreshRate, UINT32 outputIdx)
 		:VideoMode(width, height, refreshRate, outputIdx)
 	{ }
-}
+}}

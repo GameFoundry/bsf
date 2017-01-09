@@ -3,7 +3,7 @@
 #include "BsD3D11Device.h"
 #include "BsException.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	D3D11Device::D3D11Device() 
 		:mD3D11Device(nullptr), mImmediateContext(nullptr), mClassLinkage(nullptr)
@@ -153,4 +153,4 @@ namespace bs
 		mInfoQueue->AddStorageFilterEntries(&filter);
 		mInfoQueue->AddRetrievalFilterEntries(&filter);
 	}
-}
+}}

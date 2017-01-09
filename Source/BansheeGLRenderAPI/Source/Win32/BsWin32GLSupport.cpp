@@ -10,9 +10,9 @@
 #include "GL/wglew.h"
 #include <algorithm>
 
-GLenum __stdcall wglewContextInit (bs::GLSupport *glSupport);
+GLenum __stdcall wglewContextInit (bs::ct::GLSupport* glSupport);
 
-namespace bs 
+namespace bs { namespace ct
 {
 	template<class C> void remove_duplicates(C& c)
 	{
@@ -343,4 +343,4 @@ namespace bs
 
 		return String(errDesc);
 	}
-}
+}}

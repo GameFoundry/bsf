@@ -4,7 +4,7 @@
 #include "BsGLSLGpuProgram.h"
 #include "BsRenderStats.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	::std::size_t GLSLProgramPipelineManager::ProgramPipelineKeyHashFunction::operator()
 		(const GLSLProgramPipelineManager::ProgramPipelineKey &key) const
@@ -86,4 +86,4 @@ namespace bs
 		else
 			return &iterFind->second;
 	}
-}
+}}

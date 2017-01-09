@@ -5,7 +5,7 @@
 #include "BsTexture.h"
 #include "BsTextureManager.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	PooledRenderTexture::PooledRenderTexture(RenderTexturePool* pool)
 		:mPool(pool), mIsFree(false)
@@ -168,4 +168,4 @@ namespace bs
 
 		return desc;
 	}
-}
+}}

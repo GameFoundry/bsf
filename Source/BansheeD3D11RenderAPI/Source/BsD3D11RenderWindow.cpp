@@ -18,7 +18,7 @@
 #include "BsMath.h"
 #include "Win32/BsWin32Window.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	D3D11RenderWindowProperties::D3D11RenderWindowProperties(const RENDER_WINDOW_DESC& desc)
 		:RenderWindowProperties(desc)
@@ -762,4 +762,4 @@ namespace bs
 		ScopedSpinLock lock(getCore()->mLock);
 		mProperties = getCore()->mSyncedProperties;
 	}
-}
+}}

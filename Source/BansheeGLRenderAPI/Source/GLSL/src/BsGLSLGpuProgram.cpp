@@ -8,7 +8,7 @@
 #include "BsRenderStats.h"
 #include "BsGpuParams.h"
 
-namespace bs 
+namespace bs { namespace ct
 {
 	UINT32 GLSLGpuProgramCore::mVertexShaderCount = 0;
 	UINT32 GLSLGpuProgramCore::mFragmentShaderCount = 0;
@@ -210,5 +210,4 @@ namespace bs
 		RenderAPICore* rapi = RenderAPICore::instancePtr();
 		return rapi->getCapabilities(0).isShaderProfileSupported("glsl");
 	}
-}
-
+}}

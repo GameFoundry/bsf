@@ -26,11 +26,11 @@ namespace bs
 		}
 	}
 
-	RenderTextureProperties::RenderTextureProperties(const RENDER_TEXTURE_DESC_CORE& desc, bool requiresFlipping)
+	RenderTextureProperties::RenderTextureProperties(const ct::RENDER_TEXTURE_DESC_CORE& desc, bool requiresFlipping)
 	{
 		for (UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
 		{
-			SPtr<TextureCore> texture = desc.colorSurfaces[i].texture;
+			SPtr<ct::TextureCore> texture = desc.colorSurfaces[i].texture;
 
 			if (texture != nullptr)
 			{
@@ -59,6 +59,80 @@ namespace bs
 		mRequiresTextureFlipping = requiresFlipping;
 	}
 
+	SPtr<RenderTexture> RenderTexture::create(const TEXTURE_DESC& desc, 
+		bool createDepth, PixelFormat depthStencilFormat)
+	{
+		return TextureManager::instance().createRenderTexture(desc, createDepth, depthStencilFormat);
+	}
+
+	SPtr<RenderTexture> RenderTexture::create(const RENDER_TEXTURE_DESC& desc)
+	{
+		return TextureManager::instance().createRenderTexture(desc);
+	}
+
+	SPtr<ct::RenderTextureCore> RenderTexture::getCore() const
+	{ 
+		return std::static_pointer_cast<ct::RenderTextureCore>(mCoreSpecific);
+	}
+
+	RenderTexture::RenderTexture(const RENDER_TEXTURE_DESC& desc)
+		:mDesc(desc)
+	{
+		for (UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
+		{
+			if (desc.colorSurfaces[i].texture != nullptr)
+				mBindableColorTex[i] = desc.colorSurfaces[i].texture;
+		}
+
+		if (desc.depthStencilSurface.texture != nullptr)
+			mBindableDepthStencilTex = desc.depthStencilSurface.texture;
+	}
+
+	SPtr<ct::CoreObjectCore> RenderTexture::createCore() const
+	{
+		ct::RENDER_TEXTURE_DESC_CORE coreDesc;
+
+		for (UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
+		{
+			ct::RENDER_SURFACE_DESC_CORE surfaceDesc;
+			if (mDesc.colorSurfaces[i].texture.isLoaded())
+				surfaceDesc.texture = mDesc.colorSurfaces[i].texture->getCore();
+
+			surfaceDesc.face = mDesc.colorSurfaces[i].face;
+			surfaceDesc.numFaces = mDesc.colorSurfaces[i].numFaces;
+			surfaceDesc.mipLevel = mDesc.colorSurfaces[i].mipLevel;
+
+			coreDesc.colorSurfaces[i] = surfaceDesc;
+		}
+
+		if (mDesc.depthStencilSurface.texture.isLoaded())
+			coreDesc.depthStencilSurface.texture = mDesc.depthStencilSurface.texture->getCore();
+
+		coreDesc.depthStencilSurface.face = mDesc.depthStencilSurface.face;
+		coreDesc.depthStencilSurface.numFaces = mDesc.depthStencilSurface.numFaces;
+		coreDesc.depthStencilSurface.mipLevel = mDesc.depthStencilSurface.mipLevel;
+
+		return ct::TextureCoreManager::instance().createRenderTextureInternal(coreDesc);
+	}
+
+	CoreSyncData RenderTexture::syncToCore(FrameAlloc* allocator)
+	{
+		UINT32 size = sizeof(RenderTextureProperties);
+		UINT8* buffer = allocator->alloc(size);
+
+		RenderTextureProperties& props = const_cast<RenderTextureProperties&>(getProperties());
+
+		memcpy(buffer, (void*)&props, size);
+		return CoreSyncData(buffer, size);
+	}
+
+	const RenderTextureProperties& RenderTexture::getProperties() const
+	{
+		return static_cast<const RenderTextureProperties&>(getPropertiesInternal());
+	}
+
+	namespace ct
+	{
 	RenderTextureCore::RenderTextureCore(const RENDER_TEXTURE_DESC_CORE& desc, UINT32 deviceIdx)
 		:mDesc(desc)
 	{ }
@@ -215,76 +289,5 @@ namespace bs
 			}
 		}
 	}
-
-	SPtr<RenderTexture> RenderTexture::create(const TEXTURE_DESC& desc, 
-		bool createDepth, PixelFormat depthStencilFormat)
-	{
-		return TextureManager::instance().createRenderTexture(desc, createDepth, depthStencilFormat);
-	}
-
-	SPtr<RenderTexture> RenderTexture::create(const RENDER_TEXTURE_DESC& desc)
-	{
-		return TextureManager::instance().createRenderTexture(desc);
-	}
-
-	SPtr<RenderTextureCore> RenderTexture::getCore() const 
-	{ 
-		return std::static_pointer_cast<RenderTextureCore>(mCoreSpecific); 
-	}
-
-	RenderTexture::RenderTexture(const RENDER_TEXTURE_DESC& desc)
-		:mDesc(desc)
-	{
-		for (UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
-		{
-			if (desc.colorSurfaces[i].texture != nullptr)
-				mBindableColorTex[i] = desc.colorSurfaces[i].texture;
-		}
-
-		if (desc.depthStencilSurface.texture != nullptr)
-			mBindableDepthStencilTex = desc.depthStencilSurface.texture;
-	}
-
-	SPtr<CoreObjectCore> RenderTexture::createCore() const
-	{
-		RENDER_TEXTURE_DESC_CORE coreDesc;
-
-		for (UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
-		{
-			RENDER_SURFACE_DESC_CORE surfaceDesc;
-			if (mDesc.colorSurfaces[i].texture.isLoaded())
-				surfaceDesc.texture = mDesc.colorSurfaces[i].texture->getCore();
-
-			surfaceDesc.face = mDesc.colorSurfaces[i].face;
-			surfaceDesc.numFaces = mDesc.colorSurfaces[i].numFaces;
-			surfaceDesc.mipLevel = mDesc.colorSurfaces[i].mipLevel;
-
-			coreDesc.colorSurfaces[i] = surfaceDesc;
-		}
-
-		if (mDesc.depthStencilSurface.texture.isLoaded())
-			coreDesc.depthStencilSurface.texture = mDesc.depthStencilSurface.texture->getCore();
-
-		coreDesc.depthStencilSurface.face = mDesc.depthStencilSurface.face;
-		coreDesc.depthStencilSurface.numFaces = mDesc.depthStencilSurface.numFaces;
-		coreDesc.depthStencilSurface.mipLevel = mDesc.depthStencilSurface.mipLevel;
-
-		return TextureCoreManager::instance().createRenderTextureInternal(coreDesc);
-	}
-
-	CoreSyncData RenderTexture::syncToCore(FrameAlloc* allocator)
-	{
-		UINT32 size = sizeof(RenderTextureProperties);
-		UINT8* buffer = allocator->alloc(size);
-
-		RenderTextureProperties& props = const_cast<RenderTextureProperties&>(getProperties());
-
-		memcpy(buffer, (void*)&props, size);
-		return CoreSyncData(buffer, size);
-	}
-
-	const RenderTextureProperties& RenderTexture::getProperties() const
-	{
-		return static_cast<const RenderTextureProperties&>(getPropertiesInternal());
 	}
 }

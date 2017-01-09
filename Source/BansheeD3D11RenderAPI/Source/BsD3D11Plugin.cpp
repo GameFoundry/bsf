@@ -7,6 +7,6 @@ namespace bs
 {
 	extern "C" BS_D3D11_EXPORT const char* getPluginName()
 	{
-		return SystemName;
+		return ct::SystemName;
 	}
 }

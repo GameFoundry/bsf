@@ -6,7 +6,7 @@
 #include "BsVulkanDevice.h"
 #include "BsVulkanQueue.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	VulkanTransferBuffer::VulkanTransferBuffer()
 		:mDevice(nullptr), mType(GQT_GRAPHICS), mQueueIdx(0), mQueue(nullptr), mCB(nullptr), mSyncMask(0), mQueueMask(0)
@@ -240,4 +240,4 @@ namespace bs
 	{
 		return static_cast<VulkanCommandBufferManager&>(CommandBufferManager::instance());
 	}
-}
+}}

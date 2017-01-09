@@ -108,11 +108,11 @@ namespace bs
 
 	template<> struct TGpuParamsTypes < true >
 	{
-		typedef GpuParamsCore GpuParamsType;
-		typedef SPtr<TextureCore> TextureType;
-		typedef SPtr<GpuBufferCore> BufferType;
-		typedef SPtr<SamplerStateCore> SamplerType;
-		typedef SPtr<GpuParamBlockBufferCore> ParamsBufferType;
+		typedef ct::GpuParamsCore GpuParamsType;
+		typedef SPtr<ct::TextureCore> TextureType;
+		typedef SPtr<ct::GpuBufferCore> BufferType;
+		typedef SPtr<ct::SamplerStateCore> SamplerType;
+		typedef SPtr<ct::GpuParamBlockBufferCore> ParamsBufferType;
 	};
 
 	/** Templated version of GpuParams that contains functionality for both sim and core thread versions of stored data. */
@@ -226,6 +226,85 @@ namespace bs
 
 	/** @} */
 
+	/** @addtogroup RenderAPI
+	 *  @{
+	 */
+
+	/**
+	 * Contains descriptions for all parameters in a set of programs (ones for each stage) and allows you to write and read
+	 * those parameters. All parameter values are stored internally on the CPU, and are only submitted to the GPU once the
+	 * parameters are bound to the pipeline.
+	 *
+	 * @note	Sim thread only.
+	 */
+	class BS_CORE_EXPORT GpuParams : public CoreObject, public TGpuParams<false>, public IResourceListener
+	{
+	public:
+		~GpuParams() { }
+
+		/** Retrieves a core implementation of a mesh usable only from the core thread. */
+		SPtr<ct::GpuParamsCore> getCore() const;
+
+		/**
+		 * Creates new GpuParams object that can serve for changing the GPU program parameters on the specified pipeline.
+		 *
+		 * @param[in]	pipelineState	Pipeline state for which this object can set parameters for.
+		 * @return						New GpuParams object.
+		 */
+		static SPtr<GpuParams> create(const SPtr<GraphicsPipelineState>& pipelineState);
+
+		/** @copydoc GpuParams::create(const SPtr<GraphicsPipelineState>&) */
+		static SPtr<GpuParams> create(const SPtr<ComputePipelineState>& pipelineState);
+
+		/** 
+		 * Creates a new set of GPU parameters using an object describing the parameters for a pipeline.
+		 * 
+		 * @param[in]	paramInfo	Description of GPU parameters for a specific GPU pipeline state.
+		 */
+		static SPtr<GpuParams> create(const SPtr<GpuPipelineParamInfo>& paramInfo);
+
+		/** Contains a lookup table for sizes of all data parameters. Sizes are in bytes. */
+		const static GpuDataParamInfos PARAM_SIZES;
+
+		/** @name Internal
+		 *  @{
+		 */
+
+		/** @copydoc GpuParamsBase::_markCoreDirty */
+		void _markCoreDirty() override;
+
+		/** @copydoc IResourceListener::markListenerResourcesDirty */
+		void _markResourcesDirty() override;
+
+		/** @} */
+	protected:
+		friend class HardwareBufferManager;
+
+		GpuParams(const SPtr<GpuPipelineParamInfo>& paramInfo);
+
+		/** @copydoc CoreObject::getThisPtr */
+		SPtr<GpuParams> _getThisPtr() const override;
+
+		/** @copydoc CoreObject::createCore */
+		SPtr<ct::CoreObjectCore> createCore() const override;
+
+		/** @copydoc CoreObject::syncToCore */
+		CoreSyncData syncToCore(FrameAlloc* allocator) override;
+
+		/** @copydoc IResourceListener::getListenerResources */
+		void getListenerResources(Vector<HResource>& resources) override;
+
+		/** @copydoc IResourceListener::notifyResourceLoaded */
+		void notifyResourceLoaded(const HResource& resource) override { markCoreDirty(); }
+
+		/** @copydoc IResourceListener::notifyResourceChanged */
+		void notifyResourceChanged(const HResource& resource) override { markCoreDirty(); }
+	};
+
+	/** @} */
+
+	namespace ct
+	{
 	/** @addtogroup RenderAPI-Internal
 	 *  @{
 	 */
@@ -275,80 +354,5 @@ namespace bs
 	};
 
 	/** @} */
-	/** @addtogroup RenderAPI
-	 *  @{
-	 */
-
-	/**
-	 * Contains descriptions for all parameters in a set of programs (ones for each stage) and allows you to write and read
-	 * those parameters. All parameter values are stored internally on the CPU, and are only submitted to the GPU once the
-	 * parameters are bound to the pipeline.
-	 *
-	 * @note	Sim thread only.
-	 */
-	class BS_CORE_EXPORT GpuParams : public CoreObject, public TGpuParams<false>, public IResourceListener
-	{
-	public:
-		~GpuParams() { }
-
-		/** Retrieves a core implementation of a mesh usable only from the core thread. */
-		SPtr<GpuParamsCore> getCore() const;
-
-		/**
-		 * Creates new GpuParams object that can serve for changing the GPU program parameters on the specified pipeline.
-		 *
-		 * @param[in]	pipelineState	Pipeline state for which this object can set parameters for.
-		 * @return						New GpuParams object.
-		 */
-		static SPtr<GpuParams> create(const SPtr<GraphicsPipelineState>& pipelineState);
-
-		/** @copydoc GpuParams::create(const SPtr<GraphicsPipelineState>&) */
-		static SPtr<GpuParams> create(const SPtr<ComputePipelineState>& pipelineState);
-
-		/** 
-		 * Creates a new set of GPU parameters using an object describing the parameters for a pipeline.
-		 * 
-		 * @param[in]	paramInfo	Description of GPU parameters for a specific GPU pipeline state.
-		 */
-		static SPtr<GpuParams> create(const SPtr<GpuPipelineParamInfo>& paramInfo);
-
-		/** Contains a lookup table for sizes of all data parameters. Sizes are in bytes. */
-		const static GpuDataParamInfos PARAM_SIZES;
-
-		/** @name Internal
-		 *  @{
-		 */
-
-		/** @copydoc GpuParamsBase::_markCoreDirty */
-		void _markCoreDirty() override;
-
-		/** @copydoc IResourceListener::markListenerResourcesDirty */
-		void _markResourcesDirty() override;
-
-		/** @} */
-	protected:
-		friend class HardwareBufferManager;
-
-		GpuParams(const SPtr<GpuPipelineParamInfo>& paramInfo);
-
-		/** @copydoc CoreObject::getThisPtr */
-		SPtr<GpuParams> _getThisPtr() const override;
-
-		/** @copydoc CoreObject::createCore */
-		SPtr<CoreObjectCore> createCore() const override;
-
-		/** @copydoc CoreObject::syncToCore */
-		CoreSyncData syncToCore(FrameAlloc* allocator) override;
-
-		/** @copydoc IResourceListener::getListenerResources */
-		void getListenerResources(Vector<HResource>& resources) override;
-
-		/** @copydoc IResourceListener::notifyResourceLoaded */
-		void notifyResourceLoaded(const HResource& resource) override { markCoreDirty(); }
-
-		/** @copydoc IResourceListener::notifyResourceChanged */
-		void notifyResourceChanged(const HResource& resource) override { markCoreDirty(); }
-	};
-
-	/** @} */
+	}
 }

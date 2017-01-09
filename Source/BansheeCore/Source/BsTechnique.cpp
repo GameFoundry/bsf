@@ -19,7 +19,7 @@ namespace bs
 
 	bool TechniqueBase::isSupported() const
 	{
-		if ((RenderAPICore::instancePtr()->getShadingLanguageName() == mLanguage || mLanguage == "Any") &&
+		if ((ct::RenderAPICore::instancePtr()->getShadingLanguageName() == mLanguage || mLanguage == "Any") &&
 			(RendererManager::instance().getActive()->getName() == mRenderer ||
 			RendererAny == mRenderer))
 		{
@@ -63,33 +63,6 @@ namespace bs
 	template class TTechnique < false > ;
 	template class TTechnique < true >;
 
-	TechniqueCore::TechniqueCore(const String& language, const StringID& renderer, const Vector<StringID>& tags,
-		const Vector<SPtr<PassCore>>& passes)
-		:TTechnique(language, renderer, tags, passes)
-	{ }
-
-	SPtr<TechniqueCore> TechniqueCore::create(const String& language, const StringID& renderer,
-		const Vector<SPtr<PassCore>>& passes)
-	{
-		TechniqueCore* technique = new (bs_alloc<TechniqueCore>()) TechniqueCore(language, renderer, {}, passes);
-		SPtr<TechniqueCore> techniquePtr = bs_shared_ptr<TechniqueCore>(technique);
-		techniquePtr->_setThisPtr(techniquePtr);
-		techniquePtr->initialize();
-
-		return techniquePtr;
-	}
-
-	SPtr<TechniqueCore> TechniqueCore::create(const String& language, const StringID& renderer,
-		const Vector<StringID>& tags, const Vector<SPtr<PassCore>>& passes)
-	{
-		TechniqueCore* technique = new (bs_alloc<TechniqueCore>()) TechniqueCore(language, renderer, tags, passes);
-		SPtr<TechniqueCore> techniquePtr = bs_shared_ptr<TechniqueCore>(technique);
-		techniquePtr->_setThisPtr(techniquePtr);
-		techniquePtr->initialize();
-
-		return techniquePtr;
-	}
-
 	Technique::Technique(const String& language, const StringID& renderer, const Vector<StringID>& tags,
 		const Vector<SPtr<Pass>>& passes)
 		:TTechnique(language, renderer, tags, passes)
@@ -99,19 +72,19 @@ namespace bs
 		: TTechnique()
 	{ }
 
-	SPtr<TechniqueCore> Technique::getCore() const
+	SPtr<ct::TechniqueCore> Technique::getCore() const
 	{
-		return std::static_pointer_cast<TechniqueCore>(mCoreSpecific);
+		return std::static_pointer_cast<ct::TechniqueCore>(mCoreSpecific);
 	}
 
-	SPtr<CoreObjectCore> Technique::createCore() const
+	SPtr<ct::CoreObjectCore> Technique::createCore() const
 	{
-		Vector<SPtr<PassCore>> passes;
+		Vector<SPtr<ct::PassCore>> passes;
 		for (auto& pass : mPasses)
 			passes.push_back(pass->getCore());
 
-		TechniqueCore* technique = new (bs_alloc<TechniqueCore>()) TechniqueCore(mLanguage, mRenderer, mTags, passes);
-		SPtr<TechniqueCore> techniquePtr = bs_shared_ptr<TechniqueCore>(technique);
+		ct::TechniqueCore* technique = new (bs_alloc<ct::TechniqueCore>()) ct::TechniqueCore(mLanguage, mRenderer, mTags, passes);
+		SPtr<ct::TechniqueCore> techniquePtr = bs_shared_ptr<ct::TechniqueCore>(technique);
 		techniquePtr->_setThisPtr(techniquePtr);
 
 		return techniquePtr;
@@ -161,5 +134,35 @@ namespace bs
 	RTTITypeBase* Technique::getRTTI() const
 	{
 		return Technique::getRTTIStatic();
+	}
+
+	namespace ct
+	{
+	TechniqueCore::TechniqueCore(const String& language, const StringID& renderer, const Vector<StringID>& tags,
+		const Vector<SPtr<PassCore>>& passes)
+		:TTechnique(language, renderer, tags, passes)
+	{ }
+
+	SPtr<TechniqueCore> TechniqueCore::create(const String& language, const StringID& renderer,
+		const Vector<SPtr<PassCore>>& passes)
+	{
+		TechniqueCore* technique = new (bs_alloc<TechniqueCore>()) TechniqueCore(language, renderer, {}, passes);
+		SPtr<TechniqueCore> techniquePtr = bs_shared_ptr<TechniqueCore>(technique);
+		techniquePtr->_setThisPtr(techniquePtr);
+		techniquePtr->initialize();
+
+		return techniquePtr;
+	}
+
+	SPtr<TechniqueCore> TechniqueCore::create(const String& language, const StringID& renderer,
+		const Vector<StringID>& tags, const Vector<SPtr<PassCore>>& passes)
+	{
+		TechniqueCore* technique = new (bs_alloc<TechniqueCore>()) TechniqueCore(language, renderer, tags, passes);
+		SPtr<TechniqueCore> techniquePtr = bs_shared_ptr<TechniqueCore>(technique);
+		techniquePtr->_setThisPtr(techniquePtr);
+		techniquePtr->initialize();
+
+		return techniquePtr;
+	}
 	}
 }

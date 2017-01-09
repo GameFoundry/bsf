@@ -186,42 +186,7 @@ namespace bs
 	 *  @{
 	 */
 
-	/**
-	 * Core thread usable version of a light.
-	 *
-	 * @see		LightBase
-	 */
-	class BS_EXPORT LightCore : public CoreObjectCore, public LightBase
-	{
-	public:
-		~LightCore();
-
-		/**	Sets an ID that can be used for uniquely identifying this object by the renderer. */
-		void setRendererId(UINT32 id) { mRendererId = id; }
-
-		/**	Retrieves an ID that can be used for uniquely identifying this object by the renderer. */
-		UINT32 getRendererId() const { return mRendererId; }
-
-		/**	Returns a mesh that represents the light's bounds. */
-		SPtr<MeshCore> getMesh() const;
-
-		static const UINT32 LIGHT_CONE_NUM_SIDES;
-		static const UINT32 LIGHT_CONE_NUM_SLICES;
-	protected:
-		friend class Light;
-
-		LightCore(LightType type, Color color, float intensity, 
-			float range, bool castsShadows, Degree spotAngle, Degree spotFalloffAngle);
-
-		/** @copydoc CoreObjectCore::initialize */
-		void initialize() override;
-
-		/** @copydoc CoreObject::syncToCore */
-		void syncToCore(const CoreSyncData& data) override;
-
-		UINT32 mRendererId;
-		SPtr<MeshCore> mMesh;
-	};
+	namespace ct { class LightCore; }
 
 	/**
 	 * Sim thread usable version of a light.
@@ -232,7 +197,7 @@ namespace bs
 	{
 	public:
 		/**	Retrieves an implementation of a light usable only from the core thread. */
-		SPtr<LightCore> getCore() const;
+		SPtr<ct::LightCore> getCore() const;
 
 		/** Returns the hash value that can be used to identify if the internal data needs an update. */
 		UINT32 _getLastModifiedHash() const { return mLastUpdateHash; }
@@ -269,7 +234,7 @@ namespace bs
 			bool castsShadows, Degree spotAngle, Degree spotFalloffAngle);
 
 		/** @copydoc CoreObject::createCore */
-		SPtr<CoreObjectCore> createCore() const override;
+		SPtr<ct::CoreObjectCore> createCore() const override;
 
 		/** @copydoc LightBase::_markCoreDirty */
 		void _markCoreDirty(LightDirtyFlag flag = LightDirtyFlag::Everything) override;
@@ -288,11 +253,51 @@ namespace bs
 	public:
 		friend class LightRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const override;
+		RTTITypeBase* getRTTI() const override;
 
 	protected:
 		Light(); // Serialization only
 	};
+
+	namespace ct
+	{
+	/**
+	 * Core thread usable version of a light.
+	 *
+	 * @see		LightBase
+	 */
+	class BS_EXPORT LightCore : public CoreObjectCore, public LightBase
+	{
+	public:
+		~LightCore();
+
+		/**	Sets an ID that can be used for uniquely identifying this object by the renderer. */
+		void setRendererId(UINT32 id) { mRendererId = id; }
+
+		/**	Retrieves an ID that can be used for uniquely identifying this object by the renderer. */
+		UINT32 getRendererId() const { return mRendererId; }
+
+		/**	Returns a mesh that represents the light's bounds. */
+		SPtr<MeshCore> getMesh() const;
+
+		static const UINT32 LIGHT_CONE_NUM_SIDES;
+		static const UINT32 LIGHT_CONE_NUM_SLICES;
+	protected:
+		friend class Light;
+
+		LightCore(LightType type, Color color, float intensity, 
+			float range, bool castsShadows, Degree spotAngle, Degree spotFalloffAngle);
+
+		/** @copydoc CoreObjectCore::initialize */
+		void initialize() override;
+
+		/** @copydoc CoreObject::syncToCore */
+		void syncToCore(const CoreSyncData& data) override;
+
+		UINT32 mRendererId;
+		SPtr<MeshCore> mMesh;
+	};
+	}
 
 	/** @} */
 }

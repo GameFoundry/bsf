@@ -73,6 +73,9 @@ namespace bs
 		return paramsPtr;
     }
 
+	namespace ct
+	{
+
 	HardwareBufferCoreManager::VertexDeclarationKey::VertexDeclarationKey(const List<VertexElement>& elements)
 		:elements(elements)
 	{ }
@@ -196,4 +199,5 @@ namespace bs
 
 		return paramsPtr;
     }
+	}
 }

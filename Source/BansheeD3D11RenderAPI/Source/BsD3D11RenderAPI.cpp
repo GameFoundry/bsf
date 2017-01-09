@@ -32,7 +32,7 @@
 #include "BsD3D11GpuBuffer.h"
 #include "BsD3D11CommandBuffer.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	D3D11RenderAPI::D3D11RenderAPI()
 		: mDXGIFactory(nullptr), mDevice(nullptr), mDriverList(nullptr), mActiveD3DDriver(nullptr)
@@ -1440,4 +1440,4 @@ namespace bs
 
 		mDevice->getImmediateContext()->IASetInputLayout(ia);
 	}
-}
+}}

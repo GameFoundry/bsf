@@ -8,7 +8,7 @@
 #include "BsVulkanCommandBuffer.h"
 #include "BsVulkanTexture.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	VulkanBuffer::VulkanBuffer(VulkanResourceManager* owner, VkBuffer buffer, VkBufferView view, VkDeviceMemory memory,
 							   UINT32 rowPitch, UINT32 slicePitch)
@@ -663,4 +663,4 @@ namespace bs
 			unlock();
 		}
 	}
-}
+}}

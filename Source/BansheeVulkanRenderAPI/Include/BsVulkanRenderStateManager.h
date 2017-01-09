@@ -5,7 +5,7 @@
 #include "BsVulkanPrerequisites.h"
 #include "BsRenderStateManager.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup Vulkan
 	 *  @{
@@ -33,4 +33,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

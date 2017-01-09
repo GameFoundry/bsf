@@ -8,7 +8,7 @@
 #include "BsRenderTexturePool.h"
 #include "BsStandardPostProcessSettings.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup RenderBeast
 	 *  @{
@@ -260,4 +260,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

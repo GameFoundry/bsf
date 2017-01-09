@@ -15,7 +15,7 @@ namespace bs
 
 	template<bool Core> struct TGpuParamsType { };
 	template<> struct TGpuParamsType<false> { typedef GpuParams Type; };
-	template<> struct TGpuParamsType<true> { typedef GpuParamsCore Type; };
+	template<> struct TGpuParamsType<true> { typedef ct::GpuParamsCore Type; };
 
 	/** Contains a set of GpuParams used for a single technique within a Material. */
 	template<bool Core>
@@ -193,6 +193,8 @@ namespace bs
 		{ }
 	};
 
+	namespace ct
+	{
 	/** Core thread version of TGpuParamsSet<Core>. */
 	class BS_CORE_EXPORT GpuParamsSetCore : public TGpuParamsSet<true>
 	{
@@ -203,6 +205,7 @@ namespace bs
 			:TGpuParamsSet(technique, shader, params)
 		{ }
 	};
+	}
 
 	/** @} */
 }

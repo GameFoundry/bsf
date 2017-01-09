@@ -79,6 +79,8 @@ namespace bs
 		mutable HTexture mDummyTexture;
     };
 
+	namespace ct
+	{
 	/**
      * Defines interface for creation of textures. Render systems provide their own implementations.
 	 *
@@ -124,6 +126,7 @@ namespace bs
 		virtual SPtr<RenderTextureCore> createRenderTextureInternal(const RENDER_TEXTURE_DESC_CORE& desc, 
 			UINT32 deviceIdx = 0) = 0;
     };
+		}
 
 	/** @} */
 }

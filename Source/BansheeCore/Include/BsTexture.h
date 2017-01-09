@@ -208,7 +208,7 @@ namespace bs
 		const TextureProperties& getProperties() const { return mProperties; }
 
 		/**	Retrieves a core implementation of a texture usable only from the core thread. */
-		SPtr<TextureCore> getCore() const;
+		SPtr<ct::TextureCore> getCore() const;
 
 		/************************************************************************/
 		/* 								STATICS		                     		*/
@@ -262,7 +262,7 @@ namespace bs
 		void initialize() override;
 
 		/** @copydoc CoreObject::createCore */
-		SPtr<CoreObjectCore> createCore() const override;
+		SPtr<ct::CoreObjectCore> createCore() const override;
 
 		/** Calculates the size of the texture, in bytes. */
 		UINT32 calculateSize() const;
@@ -295,6 +295,8 @@ namespace bs
 
 	/** @} */
 
+	namespace ct
+	{
 	/** @addtogroup Resources-Internal
 	 *  @{
 	 */
@@ -479,4 +481,5 @@ namespace bs
 	};
 
 	/** @} */
+	}
 }

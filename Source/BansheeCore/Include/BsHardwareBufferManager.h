@@ -73,6 +73,9 @@ namespace bs
 		SPtr<GpuParams> createGpuParams(const SPtr<GpuPipelineParamInfo>& paramInfo);
 	};
 
+	namespace ct
+	{
+
 	/**
 	 * Handles creation of various hardware buffers.
 	 *
@@ -186,6 +189,7 @@ namespace bs
 
 		DeclarationMap mCachedDeclarations;
 	};
+	}
 
 	/** @} */
 }

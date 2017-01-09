@@ -5,7 +5,7 @@
 #include "BsGLPrerequisites.h"
 #include "BsEventQuery.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup GL
 	 *  @{
@@ -29,4 +29,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

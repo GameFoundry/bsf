@@ -6,7 +6,7 @@
 #include "BsVector3.h"
 #include "BsSubMesh.h"
 
-namespace bs 
+namespace bs { namespace ct
 {
 	/** @addtogroup Renderer-Engine-Internal
 	 *  @{
@@ -97,4 +97,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

@@ -7,7 +7,7 @@
 #include "BsVulkanDevice.h"
 #include "BsVulkanResource.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	VulkanLayoutKey::VulkanLayoutKey(VkDescriptorSetLayoutBinding* bindings, UINT32 numBindings)
 		:bindings(bindings), numBindings(numBindings), layout(nullptr)
@@ -174,4 +174,4 @@ namespace bs
 		mPipelineLayouts.insert(std::make_pair(key, pipelineLayout));
 		return pipelineLayout;
 	}
-}
+}}

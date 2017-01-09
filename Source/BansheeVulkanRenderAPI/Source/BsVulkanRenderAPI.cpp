@@ -26,7 +26,7 @@
 
 #define USE_VALIDATION_LAYERS 1
 
-namespace bs
+namespace bs { namespace ct
 {
 	VkAllocationCallbacks* gVulkanAllocator = nullptr;
 
@@ -740,4 +740,4 @@ namespace bs
 	{
 		return static_cast<VulkanRenderAPI&>(RenderAPICore::instance());
 	}
-}
+}}

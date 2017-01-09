@@ -6,7 +6,7 @@
 #include "BsRenderStats.h"
 #include "BsException.h"
 
-namespace bs 
+namespace bs { namespace ct
 {
 	GLVertexBufferCore::GLVertexBufferCore(const VERTEX_BUFFER_DESC& desc, GpuDeviceFlags deviceMask)
 		:VertexBufferCore(desc, deviceMask), mUsage(desc.usage)
@@ -63,4 +63,4 @@ namespace bs
     {
 		mBuffer.writeData(offset, length, pSource, writeFlags);
     }
-}
+}}

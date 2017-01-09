@@ -7,6 +7,8 @@
 
 namespace bs
 {
+	namespace ct
+	{
 	/** @addtogroup CoreThread
 	 *  @{
 	 */
@@ -90,5 +92,6 @@ namespace bs
 	};
 
 	/** @} */
+	}
 }
 

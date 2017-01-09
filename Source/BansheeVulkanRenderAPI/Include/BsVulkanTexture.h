@@ -6,7 +6,7 @@
 #include "BsVulkanResource.h"
 #include "BsTexture.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup Vulkan
 	 *  @{
@@ -258,4 +258,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

@@ -53,11 +53,11 @@ namespace bs
 
 	protected:
 		friend class MeshBase;
-		friend class MeshCoreBase;
+		friend class ct::MeshCoreBase;
 		friend class Mesh;
-		friend class MeshCore;
+		friend class ct::MeshCore;
 		friend class TransientMesh;
-		friend class TransientMeshCore;
+		friend class ct::TransientMeshCore;
 		friend class MeshBaseRTTI;
 
 		Vector<SubMesh> mSubMeshes;
@@ -72,6 +72,64 @@ namespace bs
 	 *  @{
 	 */
 
+	/**
+	 * Base class all mesh implementations derive from. Meshes hold geometry information, normally in the form of one or 
+	 * several index or vertex buffers. Different mesh implementations might choose to manage those buffers differently.
+	 *
+	 * @note	Sim thread.
+	 */
+	class BS_CORE_EXPORT MeshBase : public Resource
+	{
+	public:
+		/**
+		 * Constructs a new mesh with no sub-meshes.
+		 *
+		 * @param[in]	numVertices		Number of vertices in the mesh.
+		 * @param[in]	numIndices		Number of indices in the mesh. 
+		 * @param[in]	drawOp			Determines how should the provided indices be interpreted by the pipeline. Default 
+		 *								option is triangles, where three indices represent a single triangle.
+		 */
+		MeshBase(UINT32 numVertices, UINT32 numIndices, DrawOperationType drawOp = DOT_TRIANGLE_LIST);
+
+		/**
+		 * Constructs a new mesh with one or multiple sub-meshes. (When using just one sub-mesh it is equivalent to using
+		 * the other overload).
+		 *
+		 * @param[in]	numVertices		Number of vertices in the mesh.
+		 * @param[in]	numIndices		Number of indices in the mesh.
+		 * @param[in]	subMeshes		Defines how are indices separated into sub-meshes, and how are those sub-meshes 
+		 *								rendered.
+		 */
+		MeshBase(UINT32 numVertices, UINT32 numIndices, const Vector<SubMesh>& subMeshes);
+
+		virtual ~MeshBase();
+
+		/**	Returns properties that contain information about the mesh. */
+		const MeshProperties& getProperties() const { return mProperties; }
+
+		/**	Retrieves a core implementation of a mesh usable only from the core thread. */
+		SPtr<ct::MeshCoreBase> getCore() const;
+
+	protected:
+		/** @copydoc CoreObject::syncToCore */
+		CoreSyncData syncToCore(FrameAlloc* allocator) override;
+
+		MeshProperties mProperties;
+
+		/************************************************************************/
+		/* 								SERIALIZATION                      		*/
+		/************************************************************************/
+	private:
+		MeshBase() { } // Serialization only
+
+	public:
+		friend class MeshBaseRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		RTTITypeBase* getRTTI() const override;
+	};
+
+	namespace ct
+	{
 	/**
 	 * Core version of a class used as a basis for all implemenations of meshes.
 	 *
@@ -126,62 +184,7 @@ namespace bs
 
 		MeshProperties mProperties;
 	};
-
-	/**
-	 * Base class all mesh implementations derive from. Meshes hold geometry information, normally in the form of one or 
-	 * several index or vertex buffers. Different mesh implementations might choose to manage those buffers differently.
-	 *
-	 * @note	Sim thread.
-	 */
-	class BS_CORE_EXPORT MeshBase : public Resource
-	{
-	public:
-		/**
-		 * Constructs a new mesh with no sub-meshes.
-		 *
-		 * @param[in]	numVertices		Number of vertices in the mesh.
-		 * @param[in]	numIndices		Number of indices in the mesh. 
-		 * @param[in]	drawOp			Determines how should the provided indices be interpreted by the pipeline. Default 
-		 *								option is triangles, where three indices represent a single triangle.
-		 */
-		MeshBase(UINT32 numVertices, UINT32 numIndices, DrawOperationType drawOp = DOT_TRIANGLE_LIST);
-
-		/**
-		 * Constructs a new mesh with one or multiple sub-meshes. (When using just one sub-mesh it is equivalent to using
-		 * the other overload).
-		 *
-		 * @param[in]	numVertices		Number of vertices in the mesh.
-		 * @param[in]	numIndices		Number of indices in the mesh.
-		 * @param[in]	subMeshes		Defines how are indices separated into sub-meshes, and how are those sub-meshes 
-		 *								rendered.
-		 */
-		MeshBase(UINT32 numVertices, UINT32 numIndices, const Vector<SubMesh>& subMeshes);
-
-		virtual ~MeshBase();
-
-		/**	Returns properties that contain information about the mesh. */
-		const MeshProperties& getProperties() const { return mProperties; }
-
-		/**	Retrieves a core implementation of a mesh usable only from the core thread. */
-		SPtr<MeshCoreBase> getCore() const;
-
-	protected:
-		/** @copydoc CoreObject::syncToCore */
-		CoreSyncData syncToCore(FrameAlloc* allocator) override;
-
-		MeshProperties mProperties;
-
-		/************************************************************************/
-		/* 								SERIALIZATION                      		*/
-		/************************************************************************/
-	private:
-		MeshBase() { } // Serialization only
-
-	public:
-		friend class MeshBaseRTTI;
-		static RTTITypeBase* getRTTIStatic();
-		RTTITypeBase* getRTTI() const override;
-	};
+	}
 
 	/** @} */
 }

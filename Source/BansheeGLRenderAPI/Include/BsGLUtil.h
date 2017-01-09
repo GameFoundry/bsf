@@ -7,7 +7,7 @@
 #include "Win32/BsWin32GLSupport.h"
 #include "Win32/BsWin32VideoModeInfo.h"
 
-namespace bs 
+namespace bs { namespace ct
 {
 	/** @addtogroup GL
 	 *  @{
@@ -20,6 +20,6 @@ namespace bs
 	}
 
 	/** @} */
-};
+}}
 
 #endif

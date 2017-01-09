@@ -113,9 +113,9 @@ namespace bs
 	VertexElementType VertexElement::getBestColorVertexElementType()
 	{
 		// Use the current render system to determine if possible
-		if (RenderAPICore::instancePtr() != nullptr)
+		if (ct::RenderAPICore::instancePtr() != nullptr)
 		{
-			return RenderAPICore::instance().getAPIInfo().getColorVertexElementType();
+			return ct::RenderAPICore::instance().getAPIInfo().getColorVertexElementType();
 		}
 		else
 		{
@@ -248,6 +248,76 @@ namespace bs
 		return size;
 	}
 
+	VertexDeclaration::VertexDeclaration(const List<VertexElement>& elements)
+		:mProperties(elements)
+	{
+
+	}
+
+	SPtr<ct::VertexDeclarationCore> VertexDeclaration::getCore() const
+	{
+		return std::static_pointer_cast<ct::VertexDeclarationCore>(mCoreSpecific);
+	}
+
+	SPtr<ct::CoreObjectCore> VertexDeclaration::createCore() const
+	{
+		return ct::HardwareBufferCoreManager::instance().createVertexDeclarationInternal(mProperties.mElementList);
+	}
+
+	SPtr<VertexDeclaration> VertexDeclaration::create(const SPtr<VertexDataDesc>& desc)
+	{
+		return HardwareBufferManager::instance().createVertexDeclaration(desc);
+	}
+
+	/************************************************************************/
+	/* 								SERIALIZATION                      		*/
+	/************************************************************************/
+	RTTITypeBase* VertexDeclaration::getRTTIStatic()
+	{
+		return VertexDeclarationRTTI::instance();
+	}
+
+	RTTITypeBase* VertexDeclaration::getRTTI() const
+	{
+		return getRTTIStatic();
+	}
+
+	String toString(const VertexElementSemantic& val)
+	{
+		switch (val)
+		{
+		case VES_POSITION:
+			return "POSITION";
+		case VES_BLEND_WEIGHTS:
+			return "BLEND_WEIGHTS";
+		case VES_BLEND_INDICES:
+			return "BLEND_INDICES";
+		case VES_NORMAL:
+			return "NORMAL";
+		case VES_COLOR:
+			return "COLOR";
+		case VES_TEXCOORD:
+			return "TEXCOORD";
+		case VES_BITANGENT:
+			return "BITANGENT";
+		case VES_TANGENT:
+			return "TANGENT";
+		case VES_POSITIONT:
+			return "POSITIONT";
+		case VES_PSIZE:
+			return "PSIZE";
+		}
+
+		return "";
+	}
+
+	WString toWString(const VertexElementSemantic& val)
+	{
+		return toWString(toString(val));
+	}
+
+	namespace ct
+	{
 	UINT32 VertexDeclarationCore::NextFreeId = 0;
 
 	VertexDeclarationCore::VertexDeclarationCore(const List<VertexElement>& elements, GpuDeviceFlags deviceMask)
@@ -316,72 +386,5 @@ namespace bs
 
 		return missingElements;
 	}
-
-	VertexDeclaration::VertexDeclaration(const List<VertexElement>& elements)
-		:mProperties(elements)
-	{
-
-	}
-
-	SPtr<VertexDeclarationCore> VertexDeclaration::getCore() const
-	{
-		return std::static_pointer_cast<VertexDeclarationCore>(mCoreSpecific);
-	}
-
-	SPtr<CoreObjectCore> VertexDeclaration::createCore() const
-	{
-		return HardwareBufferCoreManager::instance().createVertexDeclarationInternal(mProperties.mElementList);
-	}
-
-	SPtr<VertexDeclaration> VertexDeclaration::create(const SPtr<VertexDataDesc>& desc)
-	{
-		return HardwareBufferManager::instance().createVertexDeclaration(desc);
-	}
-
-	/************************************************************************/
-	/* 								SERIALIZATION                      		*/
-	/************************************************************************/
-	RTTITypeBase* VertexDeclaration::getRTTIStatic()
-	{
-		return VertexDeclarationRTTI::instance();
-	}
-
-	RTTITypeBase* VertexDeclaration::getRTTI() const
-	{
-		return getRTTIStatic();
-	}
-
-	String toString(const VertexElementSemantic& val)
-	{
-		switch (val)
-		{
-		case VES_POSITION:
-			return "POSITION";
-		case VES_BLEND_WEIGHTS:
-			return "BLEND_WEIGHTS";
-		case VES_BLEND_INDICES:
-			return "BLEND_INDICES";
-		case VES_NORMAL:
-			return "NORMAL";
-		case VES_COLOR:
-			return "COLOR";
-		case VES_TEXCOORD:
-			return "TEXCOORD";
-		case VES_BITANGENT:
-			return "BITANGENT";
-		case VES_TANGENT:
-			return "TANGENT";
-		case VES_POSITIONT:
-			return "POSITIONT";
-		case VES_PSIZE:
-			return "PSIZE";
-		}
-
-		return "";
-	}
-
-	WString toWString(const VertexElementSemantic& val)
-	{
-		return toWString(toString(val));
 	}
 }

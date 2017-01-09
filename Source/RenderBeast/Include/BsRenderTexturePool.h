@@ -7,7 +7,7 @@
 #include "BsPixelUtil.h"
 #include "BsTexture.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup RenderBeast
 	 *  @{
@@ -135,4 +135,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

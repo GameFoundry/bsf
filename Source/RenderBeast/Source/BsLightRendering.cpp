@@ -10,7 +10,7 @@
 #include "BsLight.h"
 #include "BsRendererUtility.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	PerLightParamDef gPerLightParamDef;
 
@@ -178,4 +178,4 @@ namespace bs
 	{
 		mParams.setParameters(light);
 	}
-}
+}}

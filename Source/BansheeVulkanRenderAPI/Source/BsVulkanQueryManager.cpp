@@ -8,7 +8,7 @@
 #include "BsVulkanDevice.h"
 #include "BsVulkanCommandBuffer.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	VulkanQueryPool::VulkanQueryPool(VulkanDevice& device)
 		:mDevice(device)
@@ -215,4 +215,4 @@ namespace bs
 	{
 		vkCmdResetQueryPool(cmdBuf, mPool, mQueryIdx, 1);
 	}
-}
+}}

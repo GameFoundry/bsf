@@ -6,7 +6,7 @@
 #include "BsD3D11Mappings.h"
 #include "BsRenderStats.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	D3D11SamplerStateCore::D3D11SamplerStateCore(const SAMPLER_STATE_DESC& desc, GpuDeviceFlags deviceMask)
 		:SamplerStateCore(desc, deviceMask), mSamplerState(nullptr)
@@ -108,4 +108,4 @@ namespace bs
 
 		SamplerStateCore::createInternal();
 	}
-}
+}}

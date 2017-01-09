@@ -4,7 +4,7 @@
 
 #include "BsRenderBeastPrerequisites.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup RenderBeast
 	 *  @{
@@ -91,7 +91,7 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}
 
 /** @cond STDLIB */
 
@@ -99,9 +99,9 @@ namespace std
 {
 	/** Hash value generator for SamplerOverrideKey. */
 	template<>
-	struct hash<bs::SamplerOverrideKey>
+	struct hash<bs::ct::SamplerOverrideKey>
 	{
-		size_t operator()(const bs::SamplerOverrideKey& key) const
+		size_t operator()(const bs::ct::SamplerOverrideKey& key) const
 		{
 			size_t hash = 0;
 			bs::hash_combine(hash, key.material);

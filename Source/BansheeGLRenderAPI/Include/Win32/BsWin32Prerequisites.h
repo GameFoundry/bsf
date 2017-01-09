@@ -5,7 +5,7 @@
 #include <windows.h>
 #include <BsGLPrerequisites.h>
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup GL
 	 *  @{
@@ -20,4 +20,4 @@ namespace bs
 	String translateWGLError();
 
 	/** @} */
-}
+}}

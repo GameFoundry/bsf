@@ -9,7 +9,7 @@
 #include "BsRenderStats.h"
 #include "BsException.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	D3D11GpuBufferCore::D3D11GpuBufferCore(const GPU_BUFFER_DESC& desc, GpuDeviceFlags deviceMask)
 		: GpuBufferCore(desc, deviceMask), mBuffer(nullptr)
@@ -195,4 +195,4 @@ namespace bs
 	{
 		return mBufferView->getUAV();
 	}
-}
+}}

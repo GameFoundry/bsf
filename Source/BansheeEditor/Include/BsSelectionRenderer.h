@@ -14,7 +14,7 @@ namespace bs
 	 *  @{
 	 */
 
-	class SelectionRendererCore;
+	namespace ct { class SelectionRendererCore; }
 
 	/**	Handles rendering of the selected SceneObject%s overlay. */
 	class BS_ED_EXPORT SelectionRenderer
@@ -27,11 +27,13 @@ namespace bs
 		void update(const SPtr<Camera>& camera);
 
 	private:
-		friend class SelectionRendererCore;
+		friend class ct::SelectionRendererCore;
 
-		SPtr<SelectionRendererCore> mRenderer;
+		SPtr<ct::SelectionRendererCore> mRenderer;
 	};
 
+	namespace ct
+	{
 	/** Core thread version of the selection renderer, that handles actual rendering. */
 	class SelectionRendererCore : public RendererExtension
 	{
@@ -72,6 +74,7 @@ namespace bs
 
 		static const Color SELECTION_COLOR;
 	};
+	}
 
 	/** @} */
 }

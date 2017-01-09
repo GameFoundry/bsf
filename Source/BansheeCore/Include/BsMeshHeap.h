@@ -8,6 +8,78 @@
 
 namespace bs
 {
+	/** @addtogroup Resources
+	 *  @{
+	 */
+
+	/**
+	 * Mesh heap allows you to quickly allocate and deallocate a large amounts of temporary meshes without the large 
+	 * overhead of normal Mesh creation. Only requirement is that meshes share the same vertex description and index type.
+	 * 			
+	 * @note	
+	 * This class should be considered as a replacement for a normal Mesh if you are constantly updating the mesh (for 
+	 * example every frame) and you are not able to discard entire mesh contents on each update. Not using discard flag on
+	 * normal meshes may introduce GPU-CPU sync points which may severely limit performance. Primary purpose of this class
+	 * is to avoid those sync points by not forcing you to discard contents.
+	 * Downside is that this class may allocate 2-3x (or more) memory than it is actually needed for your data.
+	 * @note
+	 * Sim thread only
+	 */
+	class BS_CORE_EXPORT MeshHeap : public CoreObject
+	{
+	public:
+		/**
+		 * Allocates a new mesh in the heap, expanding the heap if needed. Mesh will be initialized with the provided 
+		 * @p meshData. You may use the returned transient mesh for drawing.
+		 *
+		 * @note	
+		 * Offsets provided by MeshData are ignored. MeshHeap will determine where the data will be written internally.
+		 */
+		SPtr<TransientMesh> alloc(const SPtr<MeshData>& meshData, DrawOperationType drawOp = DOT_TRIANGLE_LIST);
+
+		/**
+		 * Deallocates the provided mesh and makes that room on the heap re-usable as soon as the GPU is also done with the 
+		 * mesh.
+		 */
+		void dealloc(const SPtr<TransientMesh>& mesh);
+
+		/** Retrieves a core implementation of a mesh heap usable only from the core thread. */
+		SPtr<ct::MeshHeapCore> getCore() const;
+
+		/**
+		 * Creates a new mesh heap.
+		 *
+		 * @param[in]	numVertices	Initial number of vertices the heap may store. This will grow automatically if needed.
+		 * @param[in]	numIndices	Initial number of indices the heap may store. This will grow automatically if needed.
+		 * @param[in]	vertexDesc	Description of the stored vertices.
+		 * @param[in]	indexType	Type of the stored indices.
+		 */
+		static SPtr<MeshHeap> create(UINT32 numVertices, UINT32 numIndices, 
+			const SPtr<VertexDataDesc>& vertexDesc, IndexType indexType = IT_32BIT);
+
+	private:
+		/** @copydoc create */
+		MeshHeap(UINT32 numVertices, UINT32 numIndices, 
+			const SPtr<VertexDataDesc>& vertexDesc, IndexType indexType = IT_32BIT);
+
+		/** @copydoc CoreObject::createCore */
+		SPtr<ct::CoreObjectCore> createCore() const override;
+
+	private:
+		UINT32 mNumVertices;
+		UINT32 mNumIndices;
+
+		SPtr<VertexDataDesc> mVertexDesc;
+		IndexType mIndexType;
+
+		Map<UINT32, SPtr<TransientMesh>> mMeshes;
+		UINT32 mNextFreeId;
+	};
+
+	/** @} */
+
+	namespace ct
+	{
 	/** @addtogroup Resources-Internal
 	 *  @{
 	 */
@@ -162,73 +234,5 @@ namespace bs
 	};
 
 	/** @} */
-	/** @addtogroup Resources
-	 *  @{
-	 */
-
-	/**
-	 * Mesh heap allows you to quickly allocate and deallocate a large amounts of temporary meshes without the large 
-	 * overhead of normal Mesh creation. Only requirement is that meshes share the same vertex description and index type.
-	 * 			
-	 * @note	
-	 * This class should be considered as a replacement for a normal Mesh if you are constantly updating the mesh (for 
-	 * example every frame) and you are not able to discard entire mesh contents on each update. Not using discard flag on
-	 * normal meshes may introduce GPU-CPU sync points which may severely limit performance. Primary purpose of this class
-	 * is to avoid those sync points by not forcing you to discard contents.
-	 * Downside is that this class may allocate 2-3x (or more) memory than it is actually needed for your data.
-	 * @note
-	 * Sim thread only
-	 */
-	class BS_CORE_EXPORT MeshHeap : public CoreObject
-	{
-	public:
-		/**
-		 * Allocates a new mesh in the heap, expanding the heap if needed. Mesh will be initialized with the provided 
-		 * @p meshData. You may use the returned transient mesh for drawing.
-		 *
-		 * @note	
-		 * Offsets provided by MeshData are ignored. MeshHeap will determine where the data will be written internally.
-		 */
-		SPtr<TransientMesh> alloc(const SPtr<MeshData>& meshData, DrawOperationType drawOp = DOT_TRIANGLE_LIST);
-
-		/**
-		 * Deallocates the provided mesh and makes that room on the heap re-usable as soon as the GPU is also done with the 
-		 * mesh.
-		 */
-		void dealloc(const SPtr<TransientMesh>& mesh);
-
-		/** Retrieves a core implementation of a mesh heap usable only from the core thread. */
-		SPtr<MeshHeapCore> getCore() const;
-
-		/**
-		 * Creates a new mesh heap.
-		 *
-		 * @param[in]	numVertices	Initial number of vertices the heap may store. This will grow automatically if needed.
-		 * @param[in]	numIndices	Initial number of indices the heap may store. This will grow automatically if needed.
-		 * @param[in]	vertexDesc	Description of the stored vertices.
-		 * @param[in]	indexType	Type of the stored indices.
-		 */
-		static SPtr<MeshHeap> create(UINT32 numVertices, UINT32 numIndices, 
-			const SPtr<VertexDataDesc>& vertexDesc, IndexType indexType = IT_32BIT);
-
-	private:
-		/** @copydoc create */
-		MeshHeap(UINT32 numVertices, UINT32 numIndices, 
-			const SPtr<VertexDataDesc>& vertexDesc, IndexType indexType = IT_32BIT);
-
-		/** @copydoc CoreObject::createCore */
-		SPtr<CoreObjectCore> createCore() const override;
-
-	private:
-		UINT32 mNumVertices;
-		UINT32 mNumIndices;
-
-		SPtr<VertexDataDesc> mVertexDesc;
-		IndexType mIndexType;
-
-		Map<UINT32, SPtr<TransientMesh>> mMeshes;
-		UINT32 mNextFreeId;
-	};
-
-	/** @} */
+	}
 }

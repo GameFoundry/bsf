@@ -27,6 +27,8 @@ namespace bs
 
 	/** @} */
 
+	namespace ct
+	{
 	/** @addtogroup RenderAPI-Internal
 	 *  @{
 	 */
@@ -46,6 +48,7 @@ namespace bs
 	};
 
 	/** @} */
+	}
 
 	/** @addtogroup Implementation
 	 *  @{
@@ -70,12 +73,12 @@ namespace bs
 	template<>
 	struct TGpuPipelineStateTypes < true >
 	{
-		typedef SPtr<BlendStateCore> BlendStateType;
-		typedef SPtr<RasterizerStateCore> RasterizerStateType;
-		typedef SPtr<DepthStencilStateCore> DepthStencilStateType;
-		typedef SPtr<GpuProgramCore> GpuProgramType;
-		typedef GpuPipelineParamInfoCore GpuPipelineParamInfoType;
-		typedef PIPELINE_STATE_CORE_DESC StateDescType;
+		typedef SPtr<ct::BlendStateCore> BlendStateType;
+		typedef SPtr<ct::RasterizerStateCore> RasterizerStateType;
+		typedef SPtr<ct::DepthStencilStateCore> DepthStencilStateType;
+		typedef SPtr<ct::GpuProgramCore> GpuProgramType;
+		typedef ct::GpuPipelineParamInfoCore GpuPipelineParamInfoType;
+		typedef ct::PIPELINE_STATE_CORE_DESC StateDescType;
 	};
 
 	/** 
@@ -154,8 +157,6 @@ namespace bs
 	 *  @{
 	 */
 
-	class GraphicsPipelineStateCore;
-
 	/**
 	 * Describes the state of the GPU pipeline that determines how are primitives rendered. It consists of programmable
 	 * states (vertex, fragment, geometry, etc. GPU programs), as well as a set of fixed states (blend, rasterizer, 
@@ -171,7 +172,7 @@ namespace bs
 		 *
 		 * @note	Core thread only.
 		 */
-		SPtr<GraphicsPipelineStateCore> getCore() const;
+		SPtr<ct::GraphicsPipelineStateCore> getCore() const;
 
 		/** @copydoc RenderStateManager::createGraphicsPipelineState */
 		static SPtr<GraphicsPipelineState> create(const PIPELINE_STATE_DESC& desc);
@@ -181,10 +182,8 @@ namespace bs
 		GraphicsPipelineState(const PIPELINE_STATE_DESC& desc);
 
 		/** @copydoc CoreObject::createCore */
-		virtual SPtr<CoreObjectCore> createCore() const;
+		virtual SPtr<ct::CoreObjectCore> createCore() const;
     };
-
-	class ComputePipelineStateCore;
 
 	/**
 	 * Describes the state of the GPU pipeline that determines how are compute programs executed. It consists of 
@@ -201,7 +200,7 @@ namespace bs
 		 *
 		 * @note	Core thread only.
 		 */
-		SPtr<ComputePipelineStateCore> getCore() const;
+		SPtr<ct::ComputePipelineStateCore> getCore() const;
 
 		/** @copydoc RenderStateManager::createComputePipelineState */
 		static SPtr<ComputePipelineState> create(const SPtr<GpuProgram>& program);
@@ -211,11 +210,13 @@ namespace bs
 		ComputePipelineState(const SPtr<GpuProgram>& program);
 
 		/** @copydoc CoreObject::createCore */
-		virtual SPtr<CoreObjectCore> createCore() const;
+		virtual SPtr<ct::CoreObjectCore> createCore() const;
     };
 
 	/** @} */
 
+	namespace ct
+	{
 	/** @addtogroup RenderAPI-Internal
 	 *  @{
 	 */
@@ -257,4 +258,5 @@ namespace bs
 	};
 
 	/** @} */
+	}
 }

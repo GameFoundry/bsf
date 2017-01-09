@@ -7,7 +7,7 @@
 #include "BsVulkanCommandBuffer.h"
 #include "BsRenderStats.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	VulkanOcclusionQuery::VulkanOcclusionQuery(VulkanDevice& device, bool binary)
 		: OcclusionQuery(binary), mDevice(device), mQuery(nullptr), mNumSamples(0), mQueryEndCalled(false)
@@ -103,4 +103,4 @@ namespace bs
 
 		return (UINT32)mNumSamples;
 	}
-}
+}}

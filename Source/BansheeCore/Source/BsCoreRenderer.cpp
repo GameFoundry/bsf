@@ -7,7 +7,7 @@
 #include "BsMaterial.h"
 #include "BsRendererExtension.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	CoreRenderer::CoreRenderer()
 		:mCallbacks(&compareCallback)
@@ -37,5 +37,5 @@ namespace bs
 		}
 		else
 			return (UINT32)a->getLocation() < (UINT32)b->getLocation();
-	};
-}
+	}
+}}

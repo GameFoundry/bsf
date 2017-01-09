@@ -5,6 +5,31 @@
 
 namespace bs 
 {
+	SPtr<GpuProgram> GpuProgramManager::create(const GPU_PROGRAM_DESC& desc)
+	{
+		GpuProgram* program = new (bs_alloc<GpuProgram>()) GpuProgram(desc);
+		SPtr<GpuProgram> ret = bs_core_ptr<GpuProgram>(program);
+		ret->_setThisPtr(ret);
+		ret->initialize();
+
+		return ret;
+	}
+
+	SPtr<GpuProgram> GpuProgramManager::createEmpty(const String& language, GpuProgramType type)
+	{
+		GPU_PROGRAM_DESC desc;
+		desc.language = language;
+		desc.type = type;
+
+		GpuProgram* program = new (bs_alloc<GpuProgram>()) GpuProgram(desc);
+		SPtr<GpuProgram> ret = bs_core_ptr<GpuProgram>(program);
+		ret->_setThisPtr(ret);
+
+		return ret;
+	}
+
+	namespace ct
+	{
 	String sNullLang = "null";
 
 	/** Null GPU program used in place of GPU programs we cannot create. Null programs don't do anything. */
@@ -54,29 +79,6 @@ namespace bs
 			return ret;
 		}
 	};
-
-	SPtr<GpuProgram> GpuProgramManager::create(const GPU_PROGRAM_DESC& desc)
-	{
-		GpuProgram* program = new (bs_alloc<GpuProgram>()) GpuProgram(desc);
-		SPtr<GpuProgram> ret = bs_core_ptr<GpuProgram>(program);
-		ret->_setThisPtr(ret);
-		ret->initialize();
-
-		return ret;
-	}
-
-	SPtr<GpuProgram> GpuProgramManager::createEmpty(const String& language, GpuProgramType type)
-	{
-		GPU_PROGRAM_DESC desc;
-		desc.language = language;
-		desc.type = type;
-
-		GpuProgram* program = new (bs_alloc<GpuProgram>()) GpuProgram(desc);
-		SPtr<GpuProgram> ret = bs_core_ptr<GpuProgram>(program);
-		ret->_setThisPtr(ret);
-
-		return ret;
-	}
 
 	GpuProgramCoreManager::GpuProgramCoreManager()
 	{
@@ -134,5 +136,6 @@ namespace bs
 		SPtr<GpuProgramCore> ret = factory->create(desc, deviceMask);
 
 		return ret;
+	}
 	}
 }

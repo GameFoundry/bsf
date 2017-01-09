@@ -3,7 +3,7 @@
 #include "BsD3D11VideoModeInfo.h"
 #include "BsException.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	D3D11VideoModeInfo::D3D11VideoModeInfo(IDXGIAdapter* dxgiAdapter)
 	{
@@ -114,4 +114,4 @@ namespace bs
 		:VideoMode(width, height, refreshRate, outputIdx), mRefreshRateNumerator(refreshRateNumerator),
 		mRefreshRateDenominator(refreshRateDenominator), mD3D11Mode(mode)
 	{ }
-}
+}}

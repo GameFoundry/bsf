@@ -10,7 +10,7 @@
 #include "BsRenderStats.h"
 #include "BsMath.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	VULKAN_IMAGE_DESC createDesc(VkImage image, VkDeviceMemory memory, VkImageLayout layout, const TextureProperties& props)
 	{
@@ -1295,4 +1295,4 @@ namespace bs
 
 		BS_INC_RENDER_STAT_CAT(ResWrite, RenderStatObject_Texture);
 	}
-}
+}}

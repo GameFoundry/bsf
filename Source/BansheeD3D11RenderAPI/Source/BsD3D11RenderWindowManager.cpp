@@ -5,7 +5,7 @@
 #include "BsD3D11RenderWindow.h"
 #include "BsAsyncOp.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	D3D11RenderWindowManager::D3D11RenderWindowManager(D3D11RenderAPI* renderSystem)
 		:mRenderSystem(renderSystem)
@@ -51,4 +51,4 @@ namespace bs
 
 		return renderWindowPtr;
 	}
-}
+}}

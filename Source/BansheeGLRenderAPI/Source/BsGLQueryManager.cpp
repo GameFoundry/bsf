@@ -5,7 +5,7 @@
 #include "BsGLTimerQuery.h"
 #include "BsGLOcclusionQuery.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	SPtr<EventQuery> GLQueryManager::createEventQuery(UINT32 deviceIdx) const
 	{
@@ -33,4 +33,4 @@ namespace bs
 
 		return query;
 	}
-}
+}}

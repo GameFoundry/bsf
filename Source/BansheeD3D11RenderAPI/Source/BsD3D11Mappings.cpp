@@ -4,7 +4,7 @@
 #include "BsDebug.h"
 #include "BsException.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	D3D11_TEXTURE_ADDRESS_MODE D3D11Mappings::get(TextureAddressingMode tam)
 	{
@@ -903,4 +903,4 @@ namespace bs
 		BS_EXCEPT(RenderingAPIException, "Invalid lock option. No DX11 equivalent of: " + toString(lockOptions));
 		return D3D11_MAP_WRITE;
 	}
-}
+}}

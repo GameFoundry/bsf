@@ -5,7 +5,7 @@
 #include "BsD3D11TimerQuery.h"
 #include "BsD3D11OcclusionQuery.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	SPtr<EventQuery> D3D11QueryManager::createEventQuery(UINT32 deviceIdx) const
 	{
@@ -31,4 +31,4 @@ namespace bs
 
 		return query;
 	}
-}
+}}

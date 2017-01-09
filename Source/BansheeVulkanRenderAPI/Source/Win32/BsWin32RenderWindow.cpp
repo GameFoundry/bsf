@@ -16,7 +16,7 @@
 #include "BsVulkanQueue.h"
 #include "BsMath.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	Win32RenderWindowProperties::Win32RenderWindowProperties(const RENDER_WINDOW_DESC& desc)
 		:RenderWindowProperties(desc)
@@ -634,4 +634,4 @@ namespace bs
 		ScopedSpinLock lock(getCore()->mLock);
 		mProperties = getCore()->mSyncedProperties;
 	}
-}
+}}

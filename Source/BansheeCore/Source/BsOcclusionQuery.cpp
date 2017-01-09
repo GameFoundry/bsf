@@ -3,7 +3,7 @@
 #include "BsOcclusionQuery.h"
 #include "BsQueryManager.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	OcclusionQuery::OcclusionQuery(bool binary)
 		:mActive(false), mBinary(binary)
@@ -13,4 +13,4 @@ namespace bs
 	{
 		return QueryManager::instance().createOcclusionQuery(binary, deviceIdx);
 	}
-}
+}}

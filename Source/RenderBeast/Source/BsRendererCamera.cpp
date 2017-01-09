@@ -9,7 +9,7 @@
 #include "BsRendererUtility.h"
 #include "BsGpuParamsSet.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	PerCameraParamDef gPerCameraParamDef;
 
@@ -268,4 +268,4 @@ namespace bs
 
 		gPerCameraParamDef.gClipToUVScaleOffset.set(mParamBuffer, clipToUVScaleOffset);
 	}
-}
+}}

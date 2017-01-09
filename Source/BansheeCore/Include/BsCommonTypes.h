@@ -603,15 +603,15 @@ namespace bs
 
 	template<bool Core> struct TMeshType {};
 	template<> struct TMeshType < false > { typedef HMesh Type; };
-	template<> struct TMeshType < true > { typedef SPtr<MeshCore> Type; };
+	template<> struct TMeshType < true > { typedef SPtr<ct::MeshCore> Type; };
 
 	template<bool Core> struct TMaterialPtrType {};
 	template<> struct TMaterialPtrType < false > { typedef HMaterial Type; };
-	template<> struct TMaterialPtrType < true > { typedef SPtr<MaterialCore> Type; };
+	template<> struct TMaterialPtrType < true > { typedef SPtr<ct::MaterialCore> Type; };
 
 	template<bool Core> struct TTextureType {};
 	template<> struct TTextureType < false > { typedef HTexture Type; };
-	template<> struct TTextureType < true > { typedef SPtr<TextureCore> Type; };
+	template<> struct TTextureType < true > { typedef SPtr<ct::TextureCore> Type; };
 
 	/** @cond SPECIALIZATIONS */
 	BS_ALLOW_MEMCPY_SERIALIZATION(TextureSurface);

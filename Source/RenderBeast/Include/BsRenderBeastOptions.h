@@ -6,7 +6,7 @@
 #include "BsRenderer.h"
 #include "BsRenderQueue.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup RenderBeast
 	 *  @{
@@ -42,4 +42,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

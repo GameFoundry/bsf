@@ -216,16 +216,6 @@ namespace bs
 		slot = mResourceInfos[(int)type][sequentialSlot].slot;
 	}
 
-	GpuPipelineParamInfoCore::GpuPipelineParamInfoCore(const GPU_PIPELINE_PARAMS_DESC& desc, GpuDeviceFlags deviceMask)
-		:GpuPipelineParamInfoBase(desc)
-	{ }
-
-	SPtr<GpuPipelineParamInfoCore> GpuPipelineParamInfoCore::create(const GPU_PIPELINE_PARAMS_DESC& desc, 
-		GpuDeviceFlags deviceMask)
-	{
-		return RenderStateCoreManager::instance().createPipelineParamInfo(desc, deviceMask);
-	}
-
 	GpuPipelineParamInfo::GpuPipelineParamInfo(const GPU_PIPELINE_PARAMS_DESC& desc)
 		:GpuPipelineParamInfoBase(desc)
 	{ }
@@ -240,12 +230,12 @@ namespace bs
 		return paramInfo;
 	}
 
-	SPtr<GpuPipelineParamInfoCore> GpuPipelineParamInfo::getCore() const
+	SPtr<ct::GpuPipelineParamInfoCore> GpuPipelineParamInfo::getCore() const
 	{
-		return std::static_pointer_cast<GpuPipelineParamInfoCore>(mCoreSpecific);
+		return std::static_pointer_cast<ct::GpuPipelineParamInfoCore>(mCoreSpecific);
 	}
 
-	SPtr<CoreObjectCore> GpuPipelineParamInfo::createCore() const
+	SPtr<ct::CoreObjectCore> GpuPipelineParamInfo::createCore() const
 	{
 		GPU_PIPELINE_PARAMS_DESC desc;
 		desc.fragmentParams = mParamDescs[GPT_FRAGMENT_PROGRAM];
@@ -255,6 +245,19 @@ namespace bs
 		desc.domainParams = mParamDescs[GPT_DOMAIN_PROGRAM];
 		desc.computeParams = mParamDescs[GPT_COMPUTE_PROGRAM];
 
-		return RenderStateCoreManager::instance()._createPipelineParamInfo(desc);
+		return ct::RenderStateCoreManager::instance()._createPipelineParamInfo(desc);
+	}
+
+	namespace ct
+	{
+	GpuPipelineParamInfoCore::GpuPipelineParamInfoCore(const GPU_PIPELINE_PARAMS_DESC& desc, GpuDeviceFlags deviceMask)
+		:GpuPipelineParamInfoBase(desc)
+	{ }
+
+	SPtr<GpuPipelineParamInfoCore> GpuPipelineParamInfoCore::create(const GPU_PIPELINE_PARAMS_DESC& desc, 
+		GpuDeviceFlags deviceMask)
+	{
+		return RenderStateCoreManager::instance().createPipelineParamInfo(desc, deviceMask);
+	}
 	}
 }

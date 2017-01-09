@@ -5,7 +5,7 @@
 #include "BsMath.h"
 #include "BsRenderStats.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	GLOcclusionQuery::GLOcclusionQuery(bool binary, UINT32 deviceIdx)
 		:OcclusionQuery(binary), mQueryObj(0), mFinalized(false), mEndIssued(false), mNumSamples(0)
@@ -101,4 +101,4 @@ namespace bs
 			mNumSamples = (UINT32)numSamples;
 		}
 	}
-}
+}}

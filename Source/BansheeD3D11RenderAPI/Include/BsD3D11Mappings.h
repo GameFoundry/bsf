@@ -9,7 +9,7 @@
 #include "BsVertexData.h"
 #include "BsSamplerState.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup D3D11
 	 *  @{
@@ -129,4 +129,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

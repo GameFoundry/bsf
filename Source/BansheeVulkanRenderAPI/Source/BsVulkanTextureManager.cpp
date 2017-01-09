@@ -5,7 +5,7 @@
 #include "BsVulkanRenderTexture.h"
 #include "BsVulkanResource.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	SPtr<RenderTexture> VulkanTextureManager::createRenderTextureImpl(const RENDER_TEXTURE_DESC& desc)
 	{
@@ -74,4 +74,4 @@ namespace bs
 
 		return texPtr;
 	}
-}
+}}

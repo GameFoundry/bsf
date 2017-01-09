@@ -33,11 +33,11 @@ namespace bs
 				:internalId(0)
 			{ }
 
-			CoreStoredSyncObjData(const SPtr<CoreObjectCore> destObj, UINT64 internalId, const CoreSyncData& syncData)
+			CoreStoredSyncObjData(const SPtr<ct::CoreObjectCore> destObj, UINT64 internalId, const CoreSyncData& syncData)
 				:destinationObj(destObj), syncData(syncData), internalId(internalId)
 			{ }
 
-			SPtr<CoreObjectCore> destinationObj;
+			SPtr<ct::CoreObjectCore> destinationObj;
 			CoreSyncData syncData;
 			UINT64 internalId;
 		};

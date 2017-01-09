@@ -3,10 +3,10 @@
 #include "BsTimerQuery.h"
 #include "BsQueryManager.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	SPtr<TimerQuery> TimerQuery::create(UINT32 deviceIdx)
 	{
 		return QueryManager::instance().createTimerQuery(deviceIdx);
 	}
-}
+}}

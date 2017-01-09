@@ -10,7 +10,7 @@
 #include "BsSamplerState.h"
 #include "BsRenderStateManager.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	MaterialSamplerOverrides* SamplerOverrideUtility::generateSamplerOverrides(const SPtr<ShaderCore>& shader, 
 		const SPtr<MaterialParamsCore>& params, const SPtr<GpuParamsSetCore>& paramsSet, 
@@ -289,4 +289,4 @@ namespace bs
 
 		return RenderStateCoreManager::instance().createSamplerState(desc);
 	}
-}
+}}

@@ -5,7 +5,7 @@
 #include "BsGLPrerequisites.h"
 #include "BsOcclusionQuery.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup GL
 	 *  @{
@@ -45,4 +45,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

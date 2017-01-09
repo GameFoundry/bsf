@@ -10,7 +10,7 @@
 #include "BsD3D11DepthStencilState.h"
 #include "BsRenderStateManager.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	struct ClearVertex
 	{
@@ -310,4 +310,4 @@ namespace bs
 			BS_EXCEPT(RenderingAPIException, "Cannot create D3D11 buffer: " + msg);
 		}
 	}
-}
+}}

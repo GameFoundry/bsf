@@ -70,6 +70,260 @@ namespace bs
 		return dst;
 	}
 
+	Texture::Texture()
+	{
+
+	}
+
+	Texture::Texture(const TEXTURE_DESC& desc)
+		:mProperties(desc)
+    {
+        
+    }
+
+	Texture::Texture(const TEXTURE_DESC& desc, const SPtr<PixelData>& pixelData)
+		: mProperties(desc), mInitData(pixelData)
+	{
+		if (mInitData != nullptr)
+			mInitData->_lock();
+	}
+
+	void Texture::initialize()
+	{
+		mSize = calculateSize();
+
+		// Allocate CPU buffers if needed
+		if ((mProperties.getUsage() & TU_CPUCACHED) != 0)
+		{
+			createCPUBuffers();
+
+			if (mInitData != nullptr)
+				updateCPUBuffers(0, *mInitData);
+		}
+
+		Resource::initialize();
+	}
+
+	SPtr<ct::CoreObjectCore> Texture::createCore() const
+	{
+		const TextureProperties& props = getProperties();
+
+		SPtr<ct::CoreObjectCore> coreObj = ct::TextureCoreManager::instance().createTextureInternal(props.mDesc, mInitData);
+
+		if ((mProperties.getUsage() & TU_CPUCACHED) == 0)
+			mInitData = nullptr;
+
+		return coreObj;
+	}
+
+	AsyncOp Texture::writeData(const SPtr<PixelData>& data, UINT32 face, UINT32 mipLevel, bool discardEntireBuffer)
+	{
+		UINT32 subresourceIdx = mProperties.mapToSubresourceIdx(face, mipLevel);
+		updateCPUBuffers(subresourceIdx, *data);
+
+		data->_lock();
+
+		std::function<void(const SPtr<ct::TextureCore>&, UINT32, UINT32, const SPtr<PixelData>&, bool, AsyncOp&)> func =
+			[&](const SPtr<ct::TextureCore>& texture, UINT32 _face, UINT32 _mipLevel, const SPtr<PixelData>& _pixData,
+				bool _discardEntireBuffer, AsyncOp& asyncOp)
+		{
+			texture->writeData(*_pixData, _mipLevel, _face, _discardEntireBuffer);
+			_pixData->_unlock();
+			asyncOp._completeOperation();
+
+		};
+
+		return gCoreThread().queueReturnCommand(std::bind(func, getCore(), face, mipLevel,
+			data, discardEntireBuffer, std::placeholders::_1));
+	}
+
+	AsyncOp Texture::readData(const SPtr<PixelData>& data, UINT32 face, UINT32 mipLevel)
+	{
+		data->_lock();
+
+		std::function<void(const SPtr<ct::TextureCore>&, UINT32, UINT32, const SPtr<PixelData>&, AsyncOp&)> func =
+			[&](const SPtr<ct::TextureCore>& texture, UINT32 _face, UINT32 _mipLevel, const SPtr<PixelData>& _pixData,
+				AsyncOp& asyncOp)
+		{
+			// Make sure any queued command start executing before reading
+			ct::RenderAPICore::instance().submitCommandBuffer(nullptr);
+
+			texture->readData(*_pixData, _mipLevel, _face);
+			_pixData->_unlock();
+			asyncOp._completeOperation();
+
+		};
+
+		return gCoreThread().queueReturnCommand(std::bind(func, getCore(), face, mipLevel,
+			data, std::placeholders::_1));
+	}
+
+	UINT32 Texture::calculateSize() const
+	{
+		return mProperties.getNumFaces() * PixelUtil::getMemorySize(mProperties.getWidth(),
+			mProperties.getHeight(), mProperties.getDepth(), mProperties.getFormat());
+	}
+
+	void Texture::updateCPUBuffers(UINT32 subresourceIdx, const PixelData& pixelData)
+	{
+		if ((mProperties.getUsage() & TU_CPUCACHED) == 0)
+			return;
+
+		if (subresourceIdx >= (UINT32)mCPUSubresourceData.size())
+		{
+			LOGERR("Invalid subresource index: " + toString(subresourceIdx) + ". Supported range: 0 .. " + toString((UINT32)mCPUSubresourceData.size()));
+			return;
+		}
+
+		UINT32 mipLevel;
+		UINT32 face;
+		mProperties.mapFromSubresourceIdx(subresourceIdx, face, mipLevel);
+
+		UINT32 mipWidth, mipHeight, mipDepth;
+		PixelUtil::getSizeForMipLevel(mProperties.getWidth(), mProperties.getHeight(), mProperties.getDepth(),
+			mipLevel, mipWidth, mipHeight, mipDepth);
+
+		if (pixelData.getWidth() != mipWidth || pixelData.getHeight() != mipHeight ||
+			pixelData.getDepth() != mipDepth || pixelData.getFormat() != mProperties.getFormat())
+		{
+			LOGERR("Provided buffer is not of valid dimensions or format in order to update this texture.");
+			return;
+		}
+
+		if (mCPUSubresourceData[subresourceIdx]->getSize() != pixelData.getSize())
+			BS_EXCEPT(InternalErrorException, "Buffer sizes don't match.");
+
+		UINT8* dest = mCPUSubresourceData[subresourceIdx]->getData();
+		UINT8* src = pixelData.getData();
+
+		memcpy(dest, src, pixelData.getSize());
+	}
+
+	void Texture::readCachedData(PixelData& dest, UINT32 face, UINT32 mipLevel)
+	{
+		if ((mProperties.getUsage() & TU_CPUCACHED) == 0)
+		{
+			LOGERR("Attempting to read CPU data from a texture that is created without CPU caching.");
+			return;
+		}
+
+		UINT32 mipWidth, mipHeight, mipDepth;
+		PixelUtil::getSizeForMipLevel(mProperties.getWidth(), mProperties.getHeight(), mProperties.getDepth(),
+			mipLevel, mipWidth, mipHeight, mipDepth);
+
+		if (dest.getWidth() != mipWidth || dest.getHeight() != mipHeight ||
+			dest.getDepth() != mipDepth || dest.getFormat() != mProperties.getFormat())
+		{
+			LOGERR("Provided buffer is not of valid dimensions or format in order to read from this texture.");
+			return;
+		}
+
+		UINT32 subresourceIdx = mProperties.mapToSubresourceIdx(face, mipLevel);
+		if (subresourceIdx >= (UINT32)mCPUSubresourceData.size())
+		{
+			LOGERR("Invalid subresource index: " + toString(subresourceIdx) + ". Supported range: 0 .. " + toString((UINT32)mCPUSubresourceData.size()));
+			return;
+		}
+
+		if (mCPUSubresourceData[subresourceIdx]->getSize() != dest.getSize())
+			BS_EXCEPT(InternalErrorException, "Buffer sizes don't match.");
+
+		UINT8* srcPtr = mCPUSubresourceData[subresourceIdx]->getData();
+		UINT8* destPtr = dest.getData();
+
+		memcpy(destPtr, srcPtr, dest.getSize());
+	}
+
+	void Texture::createCPUBuffers()
+	{
+		UINT32 numFaces = mProperties.getNumFaces();
+		UINT32 numMips = mProperties.getNumMipmaps() + 1;
+
+		UINT32 numSubresources = numFaces * numMips;
+		mCPUSubresourceData.resize(numSubresources);
+
+		for (UINT32 i = 0; i < numFaces; i++)
+		{
+			UINT32 curWidth = mProperties.getWidth();
+			UINT32 curHeight = mProperties.getHeight();
+			UINT32 curDepth = mProperties.getDepth();
+
+			for (UINT32 j = 0; j < numMips; j++)
+			{
+				UINT32 subresourceIdx = mProperties.mapToSubresourceIdx(i, j);
+
+				mCPUSubresourceData[subresourceIdx] = bs_shared_ptr_new<PixelData>(curWidth, curHeight, curDepth, mProperties.getFormat());
+				mCPUSubresourceData[subresourceIdx]->allocateInternalBuffer();
+
+				if (curWidth > 1)
+					curWidth = curWidth / 2;
+
+				if (curHeight > 1)
+					curHeight = curHeight / 2;
+
+				if (curDepth > 1)
+					curDepth = curDepth / 2;
+			}
+		}
+	}
+
+	SPtr<ct::TextureCore> Texture::getCore() const
+	{
+		return std::static_pointer_cast<ct::TextureCore>(mCoreSpecific);
+	}
+
+	/************************************************************************/
+	/* 								SERIALIZATION                      		*/
+	/************************************************************************/
+
+	RTTITypeBase* Texture::getRTTIStatic()
+	{
+		return TextureRTTI::instance();
+	}
+
+	RTTITypeBase* Texture::getRTTI() const
+	{
+		return Texture::getRTTIStatic();
+	}
+
+	/************************************************************************/
+	/* 								STATICS	                      			*/
+	/************************************************************************/
+	HTexture Texture::create(const TEXTURE_DESC& desc)
+	{
+		SPtr<Texture> texturePtr = _createPtr(desc);
+
+		return static_resource_cast<Texture>(gResources()._createResourceHandle(texturePtr));
+	}
+	
+	HTexture Texture::create(const SPtr<PixelData>& pixelData, int usage, bool hwGammaCorrection)
+	{
+		SPtr<Texture> texturePtr = _createPtr(pixelData, usage, hwGammaCorrection);
+
+		return static_resource_cast<Texture>(gResources()._createResourceHandle(texturePtr));
+	}
+
+	SPtr<Texture> Texture::_createPtr(const TEXTURE_DESC& desc)
+	{
+		return TextureManager::instance().createTexture(desc);
+	}
+
+	SPtr<Texture> Texture::_createPtr(const SPtr<PixelData>& pixelData, int usage, bool hwGammaCorrection)
+	{
+		TEXTURE_DESC desc;
+		desc.type = pixelData->getDepth() > 1 ? TEX_TYPE_3D : TEX_TYPE_2D;
+		desc.width = pixelData->getWidth();
+		desc.height = pixelData->getHeight();
+		desc.depth = pixelData->getDepth();
+		desc.format = pixelData->getFormat();
+		desc.usage = usage;
+		desc.hwGamma = hwGammaCorrection;
+
+		return TextureManager::instance().createTexture(desc, pixelData);
+	}
+
+	namespace ct
+	{
 	SPtr<TextureCore> TextureCore::WHITE;
 	SPtr<TextureCore> TextureCore::BLACK;
 	SPtr<TextureCore> TextureCore::NORMAL;
@@ -309,256 +563,5 @@ namespace bs
 
 		return TextureCoreManager::instance().createTextureInternal(desc, pixelData, deviceMask);
 	}
-
-	Texture::Texture()
-	{
-
-	}
-
-	Texture::Texture(const TEXTURE_DESC& desc)
-		:mProperties(desc)
-    {
-        
-    }
-
-	Texture::Texture(const TEXTURE_DESC& desc, const SPtr<PixelData>& pixelData)
-		: mProperties(desc), mInitData(pixelData)
-	{
-		if (mInitData != nullptr)
-			mInitData->_lock();
-	}
-
-	void Texture::initialize()
-	{
-		mSize = calculateSize();
-
-		// Allocate CPU buffers if needed
-		if ((mProperties.getUsage() & TU_CPUCACHED) != 0)
-		{
-			createCPUBuffers();
-
-			if (mInitData != nullptr)
-				updateCPUBuffers(0, *mInitData);
-		}
-
-		Resource::initialize();
-	}
-
-	SPtr<CoreObjectCore> Texture::createCore() const
-	{
-		const TextureProperties& props = getProperties();
-
-		SPtr<CoreObjectCore> coreObj = TextureCoreManager::instance().createTextureInternal(props.mDesc, mInitData);
-
-		if ((mProperties.getUsage() & TU_CPUCACHED) == 0)
-			mInitData = nullptr;
-
-		return coreObj;
-	}
-
-	AsyncOp Texture::writeData(const SPtr<PixelData>& data, UINT32 face, UINT32 mipLevel, bool discardEntireBuffer)
-	{
-		UINT32 subresourceIdx = mProperties.mapToSubresourceIdx(face, mipLevel);
-		updateCPUBuffers(subresourceIdx, *data);
-
-		data->_lock();
-
-		std::function<void(const SPtr<TextureCore>&, UINT32, UINT32, const SPtr<PixelData>&, bool, AsyncOp&)> func =
-			[&](const SPtr<TextureCore>& texture, UINT32 _face, UINT32 _mipLevel, const SPtr<PixelData>& _pixData, 
-				bool _discardEntireBuffer, AsyncOp& asyncOp)
-		{
-			texture->writeData(*_pixData, _mipLevel, _face, _discardEntireBuffer);
-			_pixData->_unlock();
-			asyncOp._completeOperation();
-
-		};
-
-		return gCoreThread().queueReturnCommand(std::bind(func, getCore(), face, mipLevel,
-			data, discardEntireBuffer, std::placeholders::_1));
-	}
-
-	AsyncOp Texture::readData(const SPtr<PixelData>& data, UINT32 face, UINT32 mipLevel)
-	{
-		data->_lock();
-
-		std::function<void(const SPtr<TextureCore>&, UINT32, UINT32, const SPtr<PixelData>&, AsyncOp&)> func =
-			[&](const SPtr<TextureCore>& texture, UINT32 _face, UINT32 _mipLevel, const SPtr<PixelData>& _pixData, 
-				AsyncOp& asyncOp)
-		{
-			// Make sure any queued command start executing before reading
-			RenderAPICore::instance().submitCommandBuffer(nullptr);
-
-			texture->readData(*_pixData, _mipLevel, _face);
-			_pixData->_unlock();
-			asyncOp._completeOperation();
-
-		};
-
-		return gCoreThread().queueReturnCommand(std::bind(func, getCore(), face, mipLevel,
-			data, std::placeholders::_1));
-	}
-
-	UINT32 Texture::calculateSize() const
-	{
-		return mProperties.getNumFaces() * PixelUtil::getMemorySize(mProperties.getWidth(),
-			mProperties.getHeight(), mProperties.getDepth(), mProperties.getFormat());
-	}
-
-	void Texture::updateCPUBuffers(UINT32 subresourceIdx, const PixelData& pixelData)
-	{
-		if ((mProperties.getUsage() & TU_CPUCACHED) == 0)
-			return;
-
-		if (subresourceIdx >= (UINT32)mCPUSubresourceData.size())
-		{
-			LOGERR("Invalid subresource index: " + toString(subresourceIdx) + ". Supported range: 0 .. " + toString((UINT32)mCPUSubresourceData.size()));
-			return;
-		}
-
-		UINT32 mipLevel;
-		UINT32 face;
-		mProperties.mapFromSubresourceIdx(subresourceIdx, face, mipLevel);
-
-		UINT32 mipWidth, mipHeight, mipDepth;
-		PixelUtil::getSizeForMipLevel(mProperties.getWidth(), mProperties.getHeight(), mProperties.getDepth(),
-			mipLevel, mipWidth, mipHeight, mipDepth);
-
-		if (pixelData.getWidth() != mipWidth || pixelData.getHeight() != mipHeight ||
-			pixelData.getDepth() != mipDepth || pixelData.getFormat() != mProperties.getFormat())
-		{
-			LOGERR("Provided buffer is not of valid dimensions or format in order to update this texture.");
-			return;
-		}
-
-		if (mCPUSubresourceData[subresourceIdx]->getSize() != pixelData.getSize())
-			BS_EXCEPT(InternalErrorException, "Buffer sizes don't match.");
-
-		UINT8* dest = mCPUSubresourceData[subresourceIdx]->getData();
-		UINT8* src = pixelData.getData();
-
-		memcpy(dest, src, pixelData.getSize());
-	}
-
-	void Texture::readCachedData(PixelData& dest, UINT32 face, UINT32 mipLevel)
-	{
-		if ((mProperties.getUsage() & TU_CPUCACHED) == 0)
-		{
-			LOGERR("Attempting to read CPU data from a texture that is created without CPU caching.");
-			return;
-		}
-
-		UINT32 mipWidth, mipHeight, mipDepth;
-		PixelUtil::getSizeForMipLevel(mProperties.getWidth(), mProperties.getHeight(), mProperties.getDepth(),
-			mipLevel, mipWidth, mipHeight, mipDepth);
-
-		if (dest.getWidth() != mipWidth || dest.getHeight() != mipHeight ||
-			dest.getDepth() != mipDepth || dest.getFormat() != mProperties.getFormat())
-		{
-			LOGERR("Provided buffer is not of valid dimensions or format in order to read from this texture.");
-			return;
-		}
-
-		UINT32 subresourceIdx = mProperties.mapToSubresourceIdx(face, mipLevel);
-		if (subresourceIdx >= (UINT32)mCPUSubresourceData.size())
-		{
-			LOGERR("Invalid subresource index: " + toString(subresourceIdx) + ". Supported range: 0 .. " + toString((UINT32)mCPUSubresourceData.size()));
-			return;
-		}
-
-		if (mCPUSubresourceData[subresourceIdx]->getSize() != dest.getSize())
-			BS_EXCEPT(InternalErrorException, "Buffer sizes don't match.");
-
-		UINT8* srcPtr = mCPUSubresourceData[subresourceIdx]->getData();
-		UINT8* destPtr = dest.getData();
-
-		memcpy(destPtr, srcPtr, dest.getSize());
-	}
-
-	void Texture::createCPUBuffers()
-	{
-		UINT32 numFaces = mProperties.getNumFaces();
-		UINT32 numMips = mProperties.getNumMipmaps() + 1;
-
-		UINT32 numSubresources = numFaces * numMips;
-		mCPUSubresourceData.resize(numSubresources);
-
-		for (UINT32 i = 0; i < numFaces; i++)
-		{
-			UINT32 curWidth = mProperties.getWidth();
-			UINT32 curHeight = mProperties.getHeight();
-			UINT32 curDepth = mProperties.getDepth();
-
-			for (UINT32 j = 0; j < numMips; j++)
-			{
-				UINT32 subresourceIdx = mProperties.mapToSubresourceIdx(i, j);
-
-				mCPUSubresourceData[subresourceIdx] = bs_shared_ptr_new<PixelData>(curWidth, curHeight, curDepth, mProperties.getFormat());
-				mCPUSubresourceData[subresourceIdx]->allocateInternalBuffer();
-
-				if (curWidth > 1)
-					curWidth = curWidth / 2;
-
-				if (curHeight > 1)
-					curHeight = curHeight / 2;
-
-				if (curDepth > 1)
-					curDepth = curDepth / 2;
-			}
-		}
-	}
-
-	SPtr<TextureCore> Texture::getCore() const
-	{
-		return std::static_pointer_cast<TextureCore>(mCoreSpecific);
-	}
-
-	/************************************************************************/
-	/* 								SERIALIZATION                      		*/
-	/************************************************************************/
-
-	RTTITypeBase* Texture::getRTTIStatic()
-	{
-		return TextureRTTI::instance();
-	}
-
-	RTTITypeBase* Texture::getRTTI() const
-	{
-		return Texture::getRTTIStatic();
-	}
-
-	/************************************************************************/
-	/* 								STATICS	                      			*/
-	/************************************************************************/
-	HTexture Texture::create(const TEXTURE_DESC& desc)
-	{
-		SPtr<Texture> texturePtr = _createPtr(desc);
-
-		return static_resource_cast<Texture>(gResources()._createResourceHandle(texturePtr));
-	}
-	
-	HTexture Texture::create(const SPtr<PixelData>& pixelData, int usage, bool hwGammaCorrection)
-	{
-		SPtr<Texture> texturePtr = _createPtr(pixelData, usage, hwGammaCorrection);
-
-		return static_resource_cast<Texture>(gResources()._createResourceHandle(texturePtr));
-	}
-
-	SPtr<Texture> Texture::_createPtr(const TEXTURE_DESC& desc)
-	{
-		return TextureManager::instance().createTexture(desc);
-	}
-
-	SPtr<Texture> Texture::_createPtr(const SPtr<PixelData>& pixelData, int usage, bool hwGammaCorrection)
-	{
-		TEXTURE_DESC desc;
-		desc.type = pixelData->getDepth() > 1 ? TEX_TYPE_3D : TEX_TYPE_2D;
-		desc.width = pixelData->getWidth();
-		desc.height = pixelData->getHeight();
-		desc.depth = pixelData->getDepth();
-		desc.format = pixelData->getFormat();
-		desc.usage = usage;
-		desc.hwGamma = hwGammaCorrection;
-
-		return TextureManager::instance().createTexture(desc, pixelData);
 	}
 }

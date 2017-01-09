@@ -464,7 +464,7 @@ namespace bs
 
 		HMaterial dropOverlayMat = BuiltinEditorResources::instance().createDockDropOverlayMaterial();
 
-		mRenderer = RendererExtension::create<DockOverlayRenderer>(dropOverlayMat->getCore());
+		mRenderer = RendererExtension::create<ct::DockOverlayRenderer>(dropOverlayMat->getCore());
 	}
 
 	DockManager::~DockManager()
@@ -492,8 +492,8 @@ namespace bs
 
 		HCamera camera = mParentWindow->getGUICamera();
 
-		DockOverlayRenderer* renderer = mRenderer.get();
-		gCoreThread().queueCommand(std::bind(&DockOverlayRenderer::updateData, renderer, camera->_getCamera()->getCore(),
+		ct::DockOverlayRenderer* renderer = mRenderer.get();
+		gCoreThread().queueCommand(std::bind(&ct::DockOverlayRenderer::updateData, renderer, camera->_getCamera()->getCore(),
 			mDropOverlayMesh->getCore(), mShowOverlay, mHighlightedDropLoc));
 	}
 
@@ -1112,6 +1112,8 @@ namespace bs
 		return isInside;
 	}
 
+	namespace ct
+	{
 	const Color DockOverlayRenderer::TINT_COLOR = Color(0.44f, 0.44f, 0.44f, 0.22f);
 	const Color DockOverlayRenderer::HIGHLIGHT_COLOR = Color(0.44f, 0.44f, 0.44f, 0.42f);
 
@@ -1186,5 +1188,6 @@ namespace bs
 		gRendererUtility().setPass(mMaterial);
 		gRendererUtility().setPassParams(mParams);
 		gRendererUtility().draw(mMesh, mMesh->getProperties().getSubMesh(0));
+	}
 	}
 }

@@ -22,7 +22,7 @@ namespace bs
 	 *  @{
 	 */
 
-	class GUIRenderer;
+	namespace ct { class GUIRenderer; }
 
 	/**
 	 * Manages the rendering and input of all GUI widgets in the scene. 
@@ -73,8 +73,8 @@ namespace bs
 		/**	Render data for a single GUI group used for notifying the core GUI renderer. */
 		struct GUICoreRenderData
 		{
-			SPtr<TransientMeshCore> mesh;
-			SPtr<TextureCore> texture;
+			SPtr<ct::TransientMeshCore> mesh;
+			SPtr<ct::TextureCore> texture;
 			SpriteMaterial* material;
 			Color tint;
 			Matrix4 worldTransform;
@@ -222,7 +222,7 @@ namespace bs
 		SPtr<RenderWindow> getBridgeWindow(const SPtr<RenderTexture>& target) const;
 
 	private:
-		friend class GUIRenderer;
+		friend class ct::GUIRenderer;
 
 		/**	Recreates all dirty GUI meshes and makes them ready for rendering. */
 		void updateMeshes();
@@ -238,7 +238,7 @@ namespace bs
 		 *
 		 * @param[in]	core	Previously constructed core thread GUI manager instance.
 		 */
-		void destroyCore(GUIRenderer* core);
+		void destroyCore(ct::GUIRenderer* core);
 
 		/**
 		 * Destroys any elements or widgets queued for destruction.
@@ -349,7 +349,7 @@ namespace bs
 		SPtr<MeshHeap> mTriangleMeshHeap;
 		SPtr<MeshHeap> mLineMeshHeap;
 
-		SPtr<GUIRenderer> mRenderer;
+		SPtr<ct::GUIRenderer> mRenderer;
 		bool mCoreDirty;
 
 		SPtr<VertexDataDesc> mTriangleVertexDesc;
@@ -419,6 +419,8 @@ namespace bs
 		HEvent mMouseLeftWindowConn;
 	};
 
+	namespace ct
+	{
 	BS_PARAM_BLOCK_BEGIN(GUISpriteParamBlockDef)
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gWorldTransform)
 		BS_PARAM_BLOCK_ENTRY(float, gInvViewportWidth)
@@ -459,6 +461,7 @@ namespace bs
 		Vector<SPtr<GpuParamBlockBufferCore>> mParamBlocks;
 		SPtr<SamplerStateCore> mSamplerState;
 	};
+	}
 
 	/** Provides easier access to GUIManager. */
 	BS_EXPORT GUIManager& gGUIManager();

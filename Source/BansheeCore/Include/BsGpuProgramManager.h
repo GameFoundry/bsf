@@ -13,23 +13,6 @@ namespace bs
 	 *  @{
 	 */
 
-	/** Factory responsible for creating GPU programs of a certain type. */
-	class BS_CORE_EXPORT GpuProgramFactory
-	{
-	public:
-        GpuProgramFactory() {}
-		virtual ~GpuProgramFactory() { }
-
-		/**	Returns GPU program language this factory is capable creating GPU programs from. */
-		virtual const String& getLanguage() const = 0;
-
-		/** @copydoc GpuProgramCore::create */
-		virtual SPtr<GpuProgramCore> create(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask = GDF_DEFAULT) = 0;
-
-		/** @copydoc GpuProgramManager::createEmpty */
-		virtual SPtr<GpuProgramCore> create(GpuProgramType type, GpuDeviceFlags deviceMask = GDF_DEFAULT) = 0;
-	};
-
 	/**
 	 * Manager responsible for creating GPU programs. It will automatically try to find the appropriate handler for a 
 	 * specific GPU program language and create the program if possible.
@@ -47,6 +30,25 @@ namespace bs
 		 * deserialization, as it requires additional manual initialization that is not required normally.
 		 */
 		SPtr<GpuProgram> createEmpty(const String& language, GpuProgramType type);
+	};
+
+	namespace ct
+	{
+	/** Factory responsible for creating GPU programs of a certain type. */
+	class BS_CORE_EXPORT GpuProgramFactory
+	{
+	public:
+        GpuProgramFactory() {}
+		virtual ~GpuProgramFactory() { }
+
+		/**	Returns GPU program language this factory is capable creating GPU programs from. */
+		virtual const String& getLanguage() const = 0;
+
+		/** @copydoc GpuProgramCore::create */
+		virtual SPtr<GpuProgramCore> create(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask = GDF_DEFAULT) = 0;
+
+		/** @copydoc GpuProgramManager::createEmpty */
+		virtual SPtr<GpuProgramCore> create(GpuProgramType type, GpuDeviceFlags deviceMask = GDF_DEFAULT) = 0;
 	};
 
 	/**
@@ -98,6 +100,6 @@ namespace bs
 		FactoryMap mFactories;
 		GpuProgramFactory* mNullFactory; /**< Factory for dealing with GPU programs that can't be created. */
 	};
-
+	}
 	/** @} */
 }

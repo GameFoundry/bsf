@@ -7,7 +7,7 @@
 #include "Win32/BsWin32Context.h"
 #include "BsException.h"
 
-namespace bs 
+namespace bs { namespace ct
 {
     Win32Context::Win32Context(HDC hdc, HGLRC glrc, bool ownsContext):
 		mHDC(hdc), mGlrc(glrc), mOwnsContext(ownsContext)
@@ -39,4 +39,4 @@ namespace bs
 			mHDC  = 0;
 		}		
 	}
-}
+}}

@@ -4,7 +4,7 @@
 #include "BsD3D11Device.h"
 #include "BsRenderStats.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	D3D11VertexBufferCore::D3D11VertexBufferCore(D3D11Device& device, const VERTEX_BUFFER_DESC& desc, 
 		GpuDeviceFlags deviceMask)
@@ -71,4 +71,4 @@ namespace bs
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_VertexBuffer);
 		VertexBufferCore::initialize();
 	}
-}
+}}

@@ -5,7 +5,7 @@
 #include "BsGLPrerequisites.h"
 #include "BsGpuParamBlockBuffer.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup GL
 	 *  @{
@@ -32,4 +32,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

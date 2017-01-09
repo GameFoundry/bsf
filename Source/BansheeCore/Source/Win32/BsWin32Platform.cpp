@@ -22,7 +22,7 @@ namespace bs
 	Event<void(float)> Platform::onMouseWheelScrolled;
 	Event<void(UINT32)> Platform::onCharInput;
 
-	Event<void(RenderWindowCore*)> Platform::onMouseLeftWindow;
+	Event<void(ct::RenderWindowCore*)> Platform::onMouseLeftWindow;
 	Event<void()> Platform::onMouseCaptureChanged;
 
 	Platform::Pimpl* Platform::mData = bs_new<Platform::Pimpl>();
@@ -222,21 +222,21 @@ namespace bs
 		PostMessage((HWND)hwnd, WM_SETICON, WPARAM(ICON_BIG), (LPARAM)icon);
 	}
 
-	void Platform::setCaptionNonClientAreas(const RenderWindowCore& window, const Vector<Rect2I>& nonClientAreas)
+	void Platform::setCaptionNonClientAreas(const ct::RenderWindowCore& window, const Vector<Rect2I>& nonClientAreas)
 	{
 		Lock lock(mData->mSync);
 
 		mData->mNonClientAreas[&window].moveAreas = nonClientAreas;
 	}
 
-	void Platform::setResizeNonClientAreas(const RenderWindowCore& window, const Vector<NonClientResizeArea>& nonClientAreas)
+	void Platform::setResizeNonClientAreas(const ct::RenderWindowCore& window, const Vector<NonClientResizeArea>& nonClientAreas)
 	{
 		Lock lock(mData->mSync);
 
 		mData->mNonClientAreas[&window].resizeAreas = nonClientAreas;
 	}
 
-	void Platform::resetNonClientAreas(const RenderWindowCore& window)
+	void Platform::resetNonClientAreas(const ct::RenderWindowCore& window)
 	{
 		Lock lock(mData->mSync);
 
@@ -496,7 +496,7 @@ namespace bs
 		{	// Store pointer to Win32Window in user data area
 			SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)(((LPCREATESTRUCT)lParam)->lpCreateParams));
 
-			RenderWindowCore* newWindow = (RenderWindowCore*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+			ct::RenderWindowCore* newWindow = (ct::RenderWindowCore*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
 			if (newWindow != nullptr)
 			{
 				const RenderWindowProperties& props = newWindow->getProperties();
@@ -509,7 +509,7 @@ namespace bs
 			return 0;
 		}
 
-		RenderWindowCore* win = (RenderWindowCore*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+		ct::RenderWindowCore* win = (ct::RenderWindowCore*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
 		if (!win)
 			return DefWindowProc(hWnd, uMsg, wParam, lParam);
 

@@ -22,23 +22,23 @@ namespace bs
 
 	template<bool Core> struct TGpuParamBlockBufferPtrType { };
 	template<> struct TGpuParamBlockBufferPtrType<false> { typedef SPtr<GpuParamBlockBuffer> Type; };
-	template<> struct TGpuParamBlockBufferPtrType<true> { typedef SPtr<GpuParamBlockBufferCore> Type; };
+	template<> struct TGpuParamBlockBufferPtrType<true> { typedef SPtr<ct::GpuParamBlockBufferCore> Type; };
 
 	template<bool Core> struct TGpuProgramType { };
 	template<> struct TGpuProgramType<false> { typedef SPtr<GpuProgram> Type; };
-	template<> struct TGpuProgramType<true> { typedef SPtr<GpuProgramCore> Type; };
+	template<> struct TGpuProgramType<true> { typedef SPtr<ct::GpuProgramCore> Type; };
 
 	template<bool Core> struct TShaderType {};
 	template<> struct TShaderType < false > { typedef HShader Type; };
-	template<> struct TShaderType < true > { typedef SPtr<ShaderCore> Type; };
+	template<> struct TShaderType < true > { typedef SPtr<ct::ShaderCore> Type; };
 
 	template<bool Core> struct TGpuParamBlockBufferType {};
 	template<> struct TGpuParamBlockBufferType < false > { typedef GpuParamBlockBuffer Type; };
-	template<> struct TGpuParamBlockBufferType < true > { typedef GpuParamBlockBufferCore Type; };
+	template<> struct TGpuParamBlockBufferType < true > { typedef ct::GpuParamBlockBufferCore Type; };
 	
 	template<bool Core> struct TGpuParamsSetType {};
 	template<> struct TGpuParamsSetType < false > { typedef GpuParamsSet Type; };
-	template<> struct TGpuParamsSetType < true > { typedef GpuParamsSetCore Type; };
+	template<> struct TGpuParamsSetType < true > { typedef ct::GpuParamsSetCore Type; };
 
 	/**
 	 * Material that controls how objects are rendered. It is represented by a shader and parameters used to set up that
@@ -540,36 +540,6 @@ namespace bs
 
 	/** @} */
 
-	/** @addtogroup Material-Internal
-	 *  @{
-	 */
-
-	/** @copydoc MaterialBase */
-	class BS_CORE_EXPORT MaterialCore : public CoreObjectCore, public TMaterial<true>
-	{
-	public:
-		~MaterialCore() { }
-
-		/** @copydoc Material::setShader */
-		void setShader(const SPtr<ShaderCore>& shader);
-
-		/** Creates a new material with the specified shader. */
-		static SPtr<MaterialCore> create(const SPtr<ShaderCore>& shader);
-
-	private:
-		friend class Material;
-
-		MaterialCore() { }
-		MaterialCore(const SPtr<ShaderCore>& shader);
-		MaterialCore(const SPtr<ShaderCore>& shader, const Vector<SPtr<TechniqueCore>>& techniques,
-			const SPtr<MaterialParamsCore>& materialParams);
-
-		/** @copydoc CoreObjectCore::syncToCore */
-		void syncToCore(const CoreSyncData& data) override;
-	};
-
-	/** @} */
-
 	/** @addtogroup Material
 	 *  @{
 	 */
@@ -594,7 +564,7 @@ namespace bs
 		void setShader(const HShader& shader);
 
 		/** Retrieves an implementation of a material usable only from the core thread. */
-		SPtr<MaterialCore> getCore() const;
+		SPtr<ct::MaterialCore> getCore() const;
 
 		/** @copydoc CoreObject::initialize */
 		void initialize() override;
@@ -630,7 +600,7 @@ namespace bs
 		Material(const HShader& shader);
 
 		/** @copydoc CoreObject::createCore */
-		SPtr<CoreObjectCore> createCore() const override;
+		SPtr<ct::CoreObjectCore> createCore() const override;
 
 		/** @copydoc CoreObject::syncToCore */
 		CoreSyncData syncToCore(FrameAlloc* allocator) override;
@@ -678,4 +648,37 @@ namespace bs
 	};
 
 	/** @} */
+
+	namespace ct
+	{
+	/** @addtogroup Material-Internal
+	 *  @{
+	 */
+
+	/** @copydoc MaterialBase */
+	class BS_CORE_EXPORT MaterialCore : public CoreObjectCore, public TMaterial<true>
+	{
+	public:
+		~MaterialCore() { }
+
+		/** @copydoc Material::setShader */
+		void setShader(const SPtr<ShaderCore>& shader);
+
+		/** Creates a new material with the specified shader. */
+		static SPtr<MaterialCore> create(const SPtr<ShaderCore>& shader);
+
+	private:
+		friend class Material;
+
+		MaterialCore() { }
+		MaterialCore(const SPtr<ShaderCore>& shader);
+		MaterialCore(const SPtr<ShaderCore>& shader, const Vector<SPtr<TechniqueCore>>& techniques,
+			const SPtr<MaterialParamsCore>& materialParams);
+
+		/** @copydoc CoreObjectCore::syncToCore */
+		void syncToCore(const CoreSyncData& data) override;
+	};
+
+	/** @} */	
+	}
 }

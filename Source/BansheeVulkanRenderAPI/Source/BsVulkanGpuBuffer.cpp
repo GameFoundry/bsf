@@ -5,7 +5,7 @@
 #include "BsRenderStats.h"
 #include "BsException.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	VulkanGpuBufferCore::VulkanGpuBufferCore(const GPU_BUFFER_DESC& desc, GpuDeviceFlags deviceMask)
 		: GpuBufferCore(desc, deviceMask), mBuffer(nullptr), mDeviceMask(deviceMask)
@@ -89,4 +89,4 @@ namespace bs
 	{
 		return mBuffer->getResource(deviceIdx);
 	}
-}
+}}

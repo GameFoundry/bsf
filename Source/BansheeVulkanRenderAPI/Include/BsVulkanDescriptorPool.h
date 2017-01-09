@@ -4,7 +4,7 @@
 
 #include "BsVulkanPrerequisites.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup Vulkan
 	 *  @{
@@ -33,4 +33,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

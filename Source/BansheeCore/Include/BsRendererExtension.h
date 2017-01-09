@@ -72,14 +72,14 @@ namespace bs
 		virtual void destroy() {}
 
 		/** Returns true if the render() method should be called for the provided camera. */
-		virtual bool check(const CameraCore& camera) = 0;
+		virtual bool check(const ct::CameraCore& camera) = 0;
 
 		/** 
 		 * Called at the point at which rendering should be performed for the provided camera. Relevant render targets
 		 * are guaranteed to be already bound to the render API, depending on the RenderLocation. Note that actual structure
 		 * of the render targets depends on the active renderer.
 		 */
-		virtual void render(const CameraCore& camera) = 0;
+		virtual void render(const ct::CameraCore& camera) = 0;
 
 		/** 
 		 * Determines when will the render() method execute, compared to other plugins using the same RenderLocation. 

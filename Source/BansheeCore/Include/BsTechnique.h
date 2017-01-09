@@ -36,11 +36,11 @@ namespace bs
 
 	template<bool Core> struct TPassType { };
 	template<> struct TPassType < false > { typedef Pass Type; };
-	template<> struct TPassType < true > { typedef PassCore Type; };
+	template<> struct TPassType < true > { typedef ct::PassCore Type; };
 
 	template<bool Core> struct TTechniqueType {};
 	template<> struct TTechniqueType < false > { typedef Technique Type; };
-	template<> struct TTechniqueType < true > { typedef TechniqueCore Type; };
+	template<> struct TTechniqueType < true > { typedef ct::TechniqueCore Type; };
 
 	/** Templated class that is used for implementing both sim and core versions of Technique. */
 	template<bool Core>
@@ -66,27 +66,6 @@ namespace bs
 
 	/** @} */
 
-	/** @addtogroup Material-Internal
-	 *  @{
-	 */
-
-	/** Core thread version of Technique. */
-	class BS_CORE_EXPORT TechniqueCore : public CoreObjectCore, public TTechnique<true>
-	{
-	public:
-		TechniqueCore(const String& language, const StringID& renderer, const Vector<StringID>& tags,
-			const Vector<SPtr<PassCore>>& passes);
-
-		/** @copydoc Technique::create(const String&, const StringID&, const Vector<SPtr<Pass>>&) */
-		static SPtr<TechniqueCore> create(const String& language, const StringID& renderer,
-			const Vector<SPtr<PassCore>>& passes);
-
-		/** @copydoc Technique::create(const String&, const StringID&, const Vector<StringID>&, const Vector<SPtr<Pass>>&) */
-		static SPtr<TechniqueCore> create(const String& language, const StringID& renderer, const Vector<StringID>& tags,
-			const Vector<SPtr<PassCore>>& passes);
-	};
-
-	/** @} */
 	/** @addtogroup Material
 	 *  @{
 	 */
@@ -108,7 +87,7 @@ namespace bs
 			const Vector<SPtr<Pass>>& passes);
 
 		/** Retrieves an implementation of a technique usable only from the core thread. */
-		SPtr<TechniqueCore> getCore() const;
+		SPtr<ct::TechniqueCore> getCore() const;
 
 		/** 
 		 * Creates a new technique. 
@@ -139,7 +118,7 @@ namespace bs
 
 	protected:
 		/** @copydoc CoreObject::createCore */
-		SPtr<CoreObjectCore> createCore() const override;
+		SPtr<ct::CoreObjectCore> createCore() const override;
 
 		/** @copydoc CoreObject::getCoreDependencies */
 		void getCoreDependencies(Vector<CoreObject*>& dependencies) override;
@@ -162,4 +141,29 @@ namespace bs
 	};
 
 	/** @} */
+
+	namespace ct
+	{
+	/** @addtogroup Material-Internal
+	 *  @{
+	 */
+
+	/** Core thread version of Technique. */
+	class BS_CORE_EXPORT TechniqueCore : public CoreObjectCore, public TTechnique<true>
+	{
+	public:
+		TechniqueCore(const String& language, const StringID& renderer, const Vector<StringID>& tags,
+			const Vector<SPtr<PassCore>>& passes);
+
+		/** @copydoc Technique::create(const String&, const StringID&, const Vector<SPtr<Pass>>&) */
+		static SPtr<TechniqueCore> create(const String& language, const StringID& renderer,
+			const Vector<SPtr<PassCore>>& passes);
+
+		/** @copydoc Technique::create(const String&, const StringID&, const Vector<StringID>&, const Vector<SPtr<Pass>>&) */
+		static SPtr<TechniqueCore> create(const String& language, const StringID& renderer, const Vector<StringID>& tags,
+			const Vector<SPtr<PassCore>>& passes);
+	};
+
+	/** @} */
+	}
 }

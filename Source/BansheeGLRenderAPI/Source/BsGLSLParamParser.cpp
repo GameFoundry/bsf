@@ -2,7 +2,7 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsGLSLParamParser.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	INT32 GLSLAttribute::matchesName(const String& name)
 	{
@@ -632,4 +632,4 @@ namespace bs
 
 		return progTypeIdx * (UINT32)ParamType::Count + paramTypeIdx;
 	}
-}
+}}

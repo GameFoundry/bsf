@@ -4,7 +4,7 @@
 #include "BsVulkanHardwareBuffer.h"
 #include "BsRenderStats.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	VulkanIndexBufferCore::VulkanIndexBufferCore(const INDEX_BUFFER_DESC& desc, GpuDeviceFlags deviceMask)
 		:IndexBufferCore(desc, deviceMask), mBuffer(nullptr),  mUsage(desc.usage), mDeviceMask(deviceMask)
@@ -72,4 +72,4 @@ namespace bs
 	{
 		return mBuffer->getResource(deviceIdx);
 	}
-}
+}}

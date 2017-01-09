@@ -3,7 +3,7 @@
 #include "BsParamBlocks.h"
 #include "BsGpuParam.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	template<class T>
 	ParamBlockParam<T>::ParamBlockParam(const GpuParamDataDesc& paramDesc)
@@ -118,4 +118,4 @@ namespace bs
 		if (iterFind != sToInitialize.end())
 			sToInitialize.erase(iterFind);
 	}
-}
+}}

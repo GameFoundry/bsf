@@ -6,7 +6,7 @@
 #include "BsVulkanDescriptorManager.h"
 #include "BsVulkanQueryManager.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	VulkanDevice::VulkanDevice(VkPhysicalDevice device, UINT32 deviceIdx)
 		:mPhysicalDevice(device), mLogicalDevice(nullptr), mIsPrimary(false), mDeviceIdx(deviceIdx), mQueueInfos()
@@ -226,4 +226,4 @@ namespace bs
 
 		return -1;
 	}
-}
+}}

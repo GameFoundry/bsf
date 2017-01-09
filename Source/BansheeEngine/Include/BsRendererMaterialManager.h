@@ -12,8 +12,11 @@ namespace bs
 	 *  @{
 	 */
 
-	class RendererMaterialBase;
-	struct RendererMaterialMetaData;
+	namespace ct
+	{
+		class RendererMaterialBase;
+		struct RendererMaterialMetaData;
+	}
 
 	/**	Initializes and handles all renderer materials. */
 	class BS_EXPORT RendererMaterialManager : public Module<RendererMaterialManager>
@@ -21,7 +24,7 @@ namespace bs
 		/**	Information used for initializing a renderer material managed by this module. */	
 		struct RendererMaterialData
 		{
-			RendererMaterialMetaData* metaData;
+			ct::RendererMaterialMetaData* metaData;
 			Path shaderPath;
 			Path resourcePath;
 		};
@@ -31,7 +34,7 @@ namespace bs
 		~RendererMaterialManager();
 
 		/**	Registers a new material that should be initialized on module start-up. */
-		static void _registerMaterial(RendererMaterialMetaData* metaData, const Path& shaderPath);
+		static void _registerMaterial(ct::RendererMaterialMetaData* metaData, const Path& shaderPath);
 
 		/** Returns all available variations (specified by pre-processor defines) of a shader at the provided path. */
 		static Vector<ShaderDefines> _getVariations(const Path& shaderPath);
@@ -44,7 +47,7 @@ namespace bs
 		friend class RendererMaterial;
 
 		/**	Initializes all materials on the core thread. */
-		static void initOnCore(const Vector<SPtr<ShaderCore>>& shaders);
+		static void initOnCore(const Vector<SPtr<ct::ShaderCore>>& shaders);
 
 		/**	Destroys all materials on the core thread. */
 		static void destroyOnCore();

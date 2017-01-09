@@ -13,8 +13,6 @@
 
 namespace bs
 {
-	std::atomic<UINT32> ShaderCore::mNextShaderId;
-
 	template<bool Core>
 	TSHADER_DESC<Core>::TSHADER_DESC()
 		:queueSortType(QueueSortType::None), queuePriority(0), separablePasses(false), flags(0)
@@ -321,34 +319,15 @@ namespace bs
 	template class TShader < false > ;
 	template class TShader < true >;
 
-	ShaderCore::ShaderCore(const String& name, const SHADER_DESC_CORE& desc, const Vector<SPtr<TechniqueCore>>& techniques, UINT32 id)
-		:TShader(name, desc, techniques, id)
-	{
-		
-	}
-
-	SPtr<ShaderCore> ShaderCore::create(const String& name, const SHADER_DESC_CORE& desc, const Vector<SPtr<TechniqueCore>>& techniques)
-	{
-		UINT32 id = mNextShaderId.fetch_add(1, std::memory_order_relaxed);
-		assert(id < std::numeric_limits<UINT32>::max() && "Created too many shaders, reached maximum id.");
-
-		ShaderCore* shaderCore = new (bs_alloc<ShaderCore>()) ShaderCore(name, desc, techniques, id);
-		SPtr<ShaderCore> shaderCorePtr = bs_shared_ptr<ShaderCore>(shaderCore);
-		shaderCorePtr->_setThisPtr(shaderCorePtr);
-		shaderCorePtr->initialize();
-
-		return shaderCorePtr;
-	}
-
 	Shader::Shader(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques, UINT32 id)
 		:TShader(name, desc, techniques, id)
 	{
 		mMetaData = bs_shared_ptr_new<ShaderMetaData>();
 	}
 
-	SPtr<ShaderCore> Shader::getCore() const
+	SPtr<ct::ShaderCore> Shader::getCore() const
 	{
-		return std::static_pointer_cast<ShaderCore>(mCoreSpecific);
+		return std::static_pointer_cast<ct::ShaderCore>(mCoreSpecific);
 	}
 
 	void Shader::setIncludeFiles(const Vector<String>& includes)
@@ -357,22 +336,22 @@ namespace bs
 		meta->includes = includes;
 	}
 
-	SPtr<CoreObjectCore> Shader::createCore() const
+	SPtr<ct::CoreObjectCore> Shader::createCore() const
 	{
-		Vector<SPtr<TechniqueCore>> techniques;
+		Vector<SPtr<ct::TechniqueCore>> techniques;
 		for (auto& technique : mTechniques)
 			techniques.push_back(technique->getCore());
 
-		ShaderCore* shaderCore = new (bs_alloc<ShaderCore>()) ShaderCore(mName, convertDesc(mDesc), techniques, mId);
-		SPtr<ShaderCore> shaderCorePtr = bs_shared_ptr<ShaderCore>(shaderCore);
+		ct::ShaderCore* shaderCore = new (bs_alloc<ct::ShaderCore>()) ct::ShaderCore(mName, convertDesc(mDesc), techniques, mId);
+		SPtr<ct::ShaderCore> shaderCorePtr = bs_shared_ptr<ct::ShaderCore>(shaderCore);
 		shaderCorePtr->_setThisPtr(shaderCorePtr);
 
 		return shaderCorePtr;
 	}
 
-	SHADER_DESC_CORE Shader::convertDesc(const SHADER_DESC& desc) const
+	ct::SHADER_DESC_CORE Shader::convertDesc(const SHADER_DESC& desc) const
 	{
-		SHADER_DESC_CORE output;
+		ct::SHADER_DESC_CORE output;
 		output.dataParams = desc.dataParams;
 		output.textureParams = desc.textureParams;
 		output.samplerParams = desc.samplerParams;
@@ -476,7 +455,7 @@ namespace bs
 
 	SPtr<Shader> Shader::_createPtr(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques)
 	{
-		UINT32 id = ShaderCore::mNextShaderId.fetch_add(1, std::memory_order_relaxed);
+		UINT32 id = ct::ShaderCore::mNextShaderId.fetch_add(1, std::memory_order_relaxed);
 		assert(id < std::numeric_limits<UINT32>::max() && "Created too many shaders, reached maximum id.");
 
 		SPtr<Shader> newShader = bs_core_ptr<Shader>(new (bs_alloc<Shader>()) Shader(name, desc, techniques, id));
@@ -512,5 +491,31 @@ namespace bs
 	RTTITypeBase* ShaderMetaData::getRTTI() const
 	{
 		return ShaderMetaData::getRTTIStatic();
+	}
+
+	namespace ct
+	{
+	std::atomic<UINT32> ShaderCore::mNextShaderId;
+
+	ShaderCore::ShaderCore(const String& name, const SHADER_DESC_CORE& desc, const Vector<SPtr<TechniqueCore>>& techniques, 
+		UINT32 id)
+		:TShader(name, desc, techniques, id)
+	{
+
+	}
+
+	SPtr<ShaderCore> ShaderCore::create(const String& name, const SHADER_DESC_CORE& desc, 
+		const Vector<SPtr<TechniqueCore>>& techniques)
+	{
+		UINT32 id = mNextShaderId.fetch_add(1, std::memory_order_relaxed);
+		assert(id < std::numeric_limits<UINT32>::max() && "Created too many shaders, reached maximum id.");
+
+		ShaderCore* shaderCore = new (bs_alloc<ShaderCore>()) ShaderCore(name, desc, techniques, id);
+		SPtr<ShaderCore> shaderCorePtr = bs_shared_ptr<ShaderCore>(shaderCore);
+		shaderCorePtr->_setThisPtr(shaderCorePtr);
+		shaderCorePtr->initialize();
+
+		return shaderCorePtr;
+	}
 	}
 }

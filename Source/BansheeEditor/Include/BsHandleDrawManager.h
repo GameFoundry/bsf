@@ -14,7 +14,7 @@ namespace bs
 	 *  @{
 	 */
 
-	class HandleRenderer;
+	namespace ct { class HandleRenderer; }
 
 	/**
 	 * Allows you to easily draw various kinds of simple shapes, primarily used for drawing handles in the scene view.
@@ -165,7 +165,7 @@ namespace bs
 		void clear();
 
 	private:
-		friend class HandleRenderer;
+		friend class ct::HandleRenderer;
 
 		/** Destroys all meshes allocated since the last call to this method. */
 		void clearMeshes();
@@ -178,11 +178,14 @@ namespace bs
 		UINT64 mLastFrameIdx;
 
 		Matrix4 mTransform;
-		SPtr<HandleRenderer> mRenderer;
+		SPtr<ct::HandleRenderer> mRenderer;
 		DrawHelper* mDrawHelper;
 	};
 
 	/** @} */
+
+	namespace ct
+	{
 	/** @addtogroup Handles-Internal
 	 *  @{
 	 */
@@ -273,4 +276,5 @@ namespace bs
 	};
 
 	/** @} */
+	}
 }

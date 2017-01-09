@@ -29,7 +29,7 @@ namespace bs
 		float depth;
 	};
 
-	class ScenePickingCore;
+	namespace ct { class ScenePickingCore; }
 
 	/**	Handles picking of scene objects with a pointer in scene view. */
 	class BS_ED_EXPORT ScenePicking : public Module<ScenePicking>
@@ -37,7 +37,7 @@ namespace bs
 		/**	Contains information about a single pickable item (mesh). */
 		struct RenderablePickData
 		{
-			SPtr<MeshCore> mesh;
+			SPtr<ct::MeshCore> mesh;
 			UINT32 index;
 			Matrix4 wvpTransform;
 			bool alpha;
@@ -80,7 +80,7 @@ namespace bs
 			Vector<HSceneObject>& ignoreRenderables, SnapData* data = nullptr);
 
 	private:
-		friend class ScenePickingCore;
+		friend class ct::ScenePickingCore;
 
 		typedef Set<RenderablePickData, std::function<bool(const RenderablePickData&, const RenderablePickData&)>> RenderableSet;
 
@@ -90,10 +90,13 @@ namespace bs
 		/** Decodes a color into a unique object identifier. Color should have initially been encoded with encodeIndex(). */
 		static UINT32 decodeIndex(Color color);
 
-		ScenePickingCore* mCore;
+		ct::ScenePickingCore* mCore;
 	};
 
 	/** @} */
+
+	namespace ct
+	{
 	/** @addtogroup Scene-Editor-Internal
 	 *  @{
 	 */
@@ -158,4 +161,5 @@ namespace bs
 	};
 
 	/** @} */
+	}
 }

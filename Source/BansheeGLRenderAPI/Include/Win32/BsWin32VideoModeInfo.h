@@ -5,7 +5,7 @@
 #include "BsGLPrerequisites.h"
 #include "BsVideoModeInfo.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup GL
 	 *  @{
@@ -42,4 +42,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

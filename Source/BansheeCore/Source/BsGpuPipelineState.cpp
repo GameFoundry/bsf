@@ -12,7 +12,7 @@
 namespace bs
 {
 	/** Converts a sim thread pipeline state descriptor to a core thread one. */
-	void convertPassDesc(const PIPELINE_STATE_DESC& input, PIPELINE_STATE_CORE_DESC& output)
+	void convertPassDesc(const PIPELINE_STATE_DESC& input, ct::PIPELINE_STATE_CORE_DESC& output)
 	{
 		output.blendState = input.blendState != nullptr ? input.blendState->getCore() : nullptr;
 		output.rasterizerState = input.rasterizerState != nullptr ? input.rasterizerState->getCore() : nullptr;
@@ -35,38 +35,6 @@ namespace bs
 
 	template class TGraphicsPipelineState < false > ;
 	template class TGraphicsPipelineState < true >;
-
-	GraphicsPipelineStateCore::GraphicsPipelineStateCore(const PIPELINE_STATE_CORE_DESC& desc, GpuDeviceFlags deviceMask)
-		:TGraphicsPipelineState(desc), mDeviceMask(deviceMask)
-	{ }
-
-	void GraphicsPipelineStateCore::initialize()
-	{
-		GPU_PIPELINE_PARAMS_DESC paramsDesc;
-		if (mData.vertexProgram != nullptr)
-			paramsDesc.vertexParams = mData.vertexProgram->getParamDesc();
-
-		if (mData.fragmentProgram != nullptr)
-			paramsDesc.fragmentParams = mData.fragmentProgram->getParamDesc();
-
-		if (mData.geometryProgram != nullptr)
-			paramsDesc.geometryParams = mData.geometryProgram->getParamDesc();
-
-		if (mData.hullProgram != nullptr)
-			paramsDesc.hullParams = mData.hullProgram->getParamDesc();
-
-		if (mData.domainProgram != nullptr)
-			paramsDesc.domainParams = mData.domainProgram->getParamDesc();
-
-		mParamInfo = GpuPipelineParamInfoCore::create(paramsDesc, mDeviceMask);
-
-		CoreObjectCore::initialize();
-	}
-
-	SPtr<GraphicsPipelineStateCore> GraphicsPipelineStateCore::create(const PIPELINE_STATE_CORE_DESC& desc, GpuDeviceFlags deviceMask)
-	{
-		return RenderStateCoreManager::instance().createGraphicsPipelineState(desc, deviceMask);
-	}
 
 	GraphicsPipelineState::GraphicsPipelineState(const PIPELINE_STATE_DESC& desc)
 		:TGraphicsPipelineState(desc)
@@ -105,17 +73,17 @@ namespace bs
 		mParamInfo = GpuPipelineParamInfo::create(paramsDesc);
 	}
 
-	SPtr<GraphicsPipelineStateCore> GraphicsPipelineState::getCore() const
+	SPtr<ct::GraphicsPipelineStateCore> GraphicsPipelineState::getCore() const
 	{
-		return std::static_pointer_cast<GraphicsPipelineStateCore>(mCoreSpecific);
+		return std::static_pointer_cast<ct::GraphicsPipelineStateCore>(mCoreSpecific);
 	}
 
-	SPtr<CoreObjectCore> GraphicsPipelineState::createCore() const
+	SPtr<ct::CoreObjectCore> GraphicsPipelineState::createCore() const
 	{
-		PIPELINE_STATE_CORE_DESC desc;
+		ct::PIPELINE_STATE_CORE_DESC desc;
 		convertPassDesc(mData, desc);
 
-		return RenderStateCoreManager::instance()._createGraphicsPipelineState(desc);
+		return ct::RenderStateCoreManager::instance()._createGraphicsPipelineState(desc);
 	}
 
 	SPtr<GraphicsPipelineState> GraphicsPipelineState::create(const PIPELINE_STATE_DESC& desc)
@@ -134,6 +102,65 @@ namespace bs
 
 	template class TComputePipelineState < false >;
 	template class TComputePipelineState < true >;
+
+	ComputePipelineState::ComputePipelineState(const SPtr<GpuProgram>& program)
+		:TComputePipelineState(program)
+	{
+		GPU_PIPELINE_PARAMS_DESC paramsDesc;
+		program->blockUntilCoreInitialized();
+		paramsDesc.computeParams = program->getParamDesc();
+
+		mParamInfo = GpuPipelineParamInfo::create(paramsDesc);
+	}
+
+	SPtr<ct::ComputePipelineStateCore> ComputePipelineState::getCore() const
+	{
+		return std::static_pointer_cast<ct::ComputePipelineStateCore>(mCoreSpecific);
+	}
+
+	SPtr<ct::CoreObjectCore> ComputePipelineState::createCore() const
+	{
+		return ct::RenderStateCoreManager::instance()._createComputePipelineState(mProgram->getCore());
+	}
+
+	SPtr<ComputePipelineState> ComputePipelineState::create(const SPtr<GpuProgram>& program)
+	{
+		return RenderStateManager::instance().createComputePipelineState(program);
+	}
+
+	namespace ct
+	{
+	GraphicsPipelineStateCore::GraphicsPipelineStateCore(const PIPELINE_STATE_CORE_DESC& desc, GpuDeviceFlags deviceMask)
+		:TGraphicsPipelineState(desc), mDeviceMask(deviceMask)
+	{ }
+
+	void GraphicsPipelineStateCore::initialize()
+	{
+		GPU_PIPELINE_PARAMS_DESC paramsDesc;
+		if (mData.vertexProgram != nullptr)
+			paramsDesc.vertexParams = mData.vertexProgram->getParamDesc();
+
+		if (mData.fragmentProgram != nullptr)
+			paramsDesc.fragmentParams = mData.fragmentProgram->getParamDesc();
+
+		if (mData.geometryProgram != nullptr)
+			paramsDesc.geometryParams = mData.geometryProgram->getParamDesc();
+
+		if (mData.hullProgram != nullptr)
+			paramsDesc.hullParams = mData.hullProgram->getParamDesc();
+
+		if (mData.domainProgram != nullptr)
+			paramsDesc.domainParams = mData.domainProgram->getParamDesc();
+
+		mParamInfo = GpuPipelineParamInfoCore::create(paramsDesc, mDeviceMask);
+
+		CoreObjectCore::initialize();
+	}
+
+	SPtr<GraphicsPipelineStateCore> GraphicsPipelineStateCore::create(const PIPELINE_STATE_CORE_DESC& desc, GpuDeviceFlags deviceMask)
+	{
+		return RenderStateCoreManager::instance().createGraphicsPipelineState(desc, deviceMask);
+	}
 
 	ComputePipelineStateCore::ComputePipelineStateCore(const SPtr<GpuProgramCore>& program, GpuDeviceFlags deviceMask)
 		:TComputePipelineState(program), mDeviceMask(deviceMask)
@@ -154,29 +181,5 @@ namespace bs
 	{
 		return RenderStateCoreManager::instance().createComputePipelineState(program, deviceMask);
 	}
-
-	ComputePipelineState::ComputePipelineState(const SPtr<GpuProgram>& program)
-		:TComputePipelineState(program)
-	{
-		GPU_PIPELINE_PARAMS_DESC paramsDesc;
-		program->blockUntilCoreInitialized();
-		paramsDesc.computeParams = program->getParamDesc();
-
-		mParamInfo = GpuPipelineParamInfo::create(paramsDesc);
-	}
-
-	SPtr<ComputePipelineStateCore> ComputePipelineState::getCore() const
-	{
-		return std::static_pointer_cast<ComputePipelineStateCore>(mCoreSpecific);
-	}
-
-	SPtr<CoreObjectCore> ComputePipelineState::createCore() const
-	{
-		return RenderStateCoreManager::instance()._createComputePipelineState(mProgram->getCore());
-	}
-
-	SPtr<ComputePipelineState> ComputePipelineState::create(const SPtr<GpuProgram>& program)
-	{
-		return RenderStateManager::instance().createComputePipelineState(program);
 	}
 }

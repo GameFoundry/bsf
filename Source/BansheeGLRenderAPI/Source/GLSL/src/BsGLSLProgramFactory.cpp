@@ -3,7 +3,7 @@
 #include "BsGLSLProgramFactory.h"
 #include "BsGLSLGpuProgram.h"
 
-namespace bs 
+namespace bs { namespace ct
 {
     const String GLSLProgramFactory::LANGUAGE_NAME = "glsl";
 
@@ -34,4 +34,4 @@ namespace bs
 
 		return gpuProg;
 	}
-}
+}}

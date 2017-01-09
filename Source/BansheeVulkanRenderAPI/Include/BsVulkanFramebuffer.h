@@ -5,7 +5,7 @@
 #include "BsVulkanPrerequisites.h"
 #include "BsVulkanResource.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	/** @addtogroup Vulkan
 	 *  @{
@@ -180,4 +180,4 @@ namespace bs
 	};
 
 	/** @} */
-}
+}}

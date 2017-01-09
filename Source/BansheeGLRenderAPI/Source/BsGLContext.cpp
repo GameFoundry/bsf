@@ -2,7 +2,7 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsGLContext.h"
 
-namespace bs 
+namespace bs { namespace ct
 {
     GLContext::GLContext()
 	{ }
@@ -12,4 +12,4 @@ namespace bs
     
     void GLContext::endCurrent() 
 	{ } 
-}
+}}

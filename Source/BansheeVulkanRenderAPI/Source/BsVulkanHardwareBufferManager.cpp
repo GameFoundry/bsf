@@ -9,7 +9,7 @@
 #include "BsVulkanHardwareBuffer.h"
 #include "BsGpuParamDesc.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	VulkanHardwareBufferCoreManager::VulkanHardwareBufferCoreManager()
 	{
@@ -96,4 +96,4 @@ namespace bs
 
 		return paramsPtr;
 	}
-}
+}}

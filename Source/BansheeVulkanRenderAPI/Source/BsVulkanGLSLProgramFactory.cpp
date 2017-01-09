@@ -6,7 +6,7 @@
 #define AMD_EXTENSIONS
 #include "glslang/Public/ShaderLang.h"
 
-namespace bs
+namespace bs { namespace ct
 {
     const String VulkanGLSLProgramFactory::LANGUAGE_NAME = "glsl";
 
@@ -45,4 +45,4 @@ namespace bs
 
 		return gpuProg;
 	}
-}
+}}

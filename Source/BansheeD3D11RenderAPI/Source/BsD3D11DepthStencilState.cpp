@@ -6,7 +6,7 @@
 #include "BsD3D11Mappings.h"
 #include "BsRenderStats.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	D3D11DepthStencilStateCore::D3D11DepthStencilStateCore(const DEPTH_STENCIL_STATE_DESC& desc, UINT32 id)
 		:DepthStencilStateCore(desc, id), mDepthStencilState(nullptr)
@@ -53,4 +53,4 @@ namespace bs
 
 		DepthStencilStateCore::createInternal();
 	}
-}
+}}

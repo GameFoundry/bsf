@@ -5,7 +5,7 @@
 #include "BsVulkanUtility.h"
 #include "BsVulkanDevice.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	VulkanFramebuffer::VariantKey::VariantKey(RenderSurfaceMask loadMask, RenderSurfaceMask readMask, 
 		ClearMask clearMask)
@@ -292,4 +292,4 @@ namespace bs
 
 		return newVariant.framebuffer;
 	}
-}
+}}

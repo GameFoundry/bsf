@@ -5,7 +5,7 @@
 #include "BsVulkanCommandBuffer.h"
 #include "BsRenderStats.h"
 
-namespace bs
+namespace bs { namespace ct
 {
 	VulkanEvent::VulkanEvent(VulkanResourceManager* owner)
 		:VulkanResource(owner, false)
@@ -95,4 +95,4 @@ namespace bs
 
 		return mEvent->isSignaled();
 	}
-}
+}}
