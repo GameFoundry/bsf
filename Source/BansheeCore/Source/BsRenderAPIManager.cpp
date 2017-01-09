@@ -16,8 +16,8 @@ namespace bs
 	{
 		if(mRenderAPIInitialized)
 		{
-			ct::RenderAPICore::instance().destroy();
-			ct::RenderAPICore::shutDown();
+			ct::RenderAPI::instance().destroy();
+			ct::RenderAPI::shutDown();
 		}
 	}
 
@@ -43,7 +43,7 @@ namespace bs
 			{
 				(*iter)->create();		
 				mRenderAPIInitialized = true;
-				return ct::RenderAPICore::instance().initialize(primaryWindowDesc);
+				return ct::RenderAPI::instance().initialize(primaryWindowDesc);
 			}
 		}
 

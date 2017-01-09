@@ -25,7 +25,7 @@ namespace bs { namespace ct
 
 	void D3D11GpuParamBlockBuffer::initialize()
 	{
-		D3D11RenderAPI* d3d11rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
+		D3D11RenderAPI* d3d11rs = static_cast<D3D11RenderAPI*>(RenderAPI::instancePtr());
 		D3D11Device& device = d3d11rs->getPrimaryDevice();
 
 		if(mUsage == GPBU_STATIC)

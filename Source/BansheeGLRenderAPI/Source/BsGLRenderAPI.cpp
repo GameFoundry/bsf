@@ -106,7 +106,7 @@ namespace bs { namespace ct
 
 		QueryManager::startUp<GLQueryManager>();
 
-		RenderAPICore::initialize();
+		RenderAPI::initialize();
 	}
 
 	void GLRenderAPI::initializeWithWindow(const SPtr<RenderWindowCore>& primaryWindow)
@@ -142,12 +142,12 @@ namespace bs { namespace ct
 
 		mGLInitialised = true;
 
-		RenderAPICore::initializeWithWindow(primaryWindow);
+		RenderAPI::initializeWithWindow(primaryWindow);
 	}
 
 	void GLRenderAPI::destroyCore()
 	{
-		RenderAPICore::destroyCore();
+		RenderAPI::destroyCore();
 
 		// Deleting the GLSL program factory
 		if (mGLSLProgramFactory)

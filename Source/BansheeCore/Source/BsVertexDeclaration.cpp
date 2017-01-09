@@ -113,9 +113,9 @@ namespace bs
 	VertexElementType VertexElement::getBestColorVertexElementType()
 	{
 		// Use the current render system to determine if possible
-		if (ct::RenderAPICore::instancePtr() != nullptr)
+		if (ct::RenderAPI::instancePtr() != nullptr)
 		{
-			return ct::RenderAPICore::instance().getAPIInfo().getColorVertexElementType();
+			return ct::RenderAPI::instance().getAPIInfo().getColorVertexElementType();
 		}
 		else
 		{

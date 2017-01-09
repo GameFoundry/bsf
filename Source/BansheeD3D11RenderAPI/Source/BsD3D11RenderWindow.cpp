@@ -169,7 +169,7 @@ namespace bs
 
 		const D3D11VideoOutputInfo* outputInfo = nullptr;
 
-		const D3D11VideoModeInfo& videoModeInfo = static_cast<const D3D11VideoModeInfo&>(RenderAPICore::instance().getVideoModeInfo());
+		const D3D11VideoModeInfo& videoModeInfo = static_cast<const D3D11VideoModeInfo&>(RenderAPI::instance().getVideoModeInfo());
 		UINT32 numOutputs = videoModeInfo.getNumOutputs();
 		if (numOutputs > 0)
 		{
@@ -335,7 +335,7 @@ namespace bs
 		if (mIsChild)
 			return;
 
-		const D3D11VideoModeInfo& videoModeInfo = static_cast<const D3D11VideoModeInfo&>(RenderAPICore::instance().getVideoModeInfo());
+		const D3D11VideoModeInfo& videoModeInfo = static_cast<const D3D11VideoModeInfo&>(RenderAPI::instance().getVideoModeInfo());
 		UINT32 numOutputs = videoModeInfo.getNumOutputs();
 		if (numOutputs == 0)
 			return;
@@ -391,7 +391,7 @@ namespace bs
 			return;
 		}
 
-		const D3D11VideoModeInfo& videoModeInfo = static_cast<const D3D11VideoModeInfo&>(RenderAPICore::instance().getVideoModeInfo());
+		const D3D11VideoModeInfo& videoModeInfo = static_cast<const D3D11VideoModeInfo&>(RenderAPI::instance().getVideoModeInfo());
 		UINT32 numOutputs = videoModeInfo.getNumOutputs();
 		if (numOutputs == 0)
 			return;
@@ -641,7 +641,7 @@ namespace bs
 
 		mSwapChainDesc.Windowed	= true;
 
-		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
+		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPI::instancePtr());
 		rs->determineMultisampleSettings(props.mMultisampleCount, format, &mMultisampleType);
 		mSwapChainDesc.SampleDesc.Count = mMultisampleType.Count;
 		mSwapChainDesc.SampleDesc.Quality = mMultisampleType.Quality;

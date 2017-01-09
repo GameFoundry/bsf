@@ -1100,7 +1100,7 @@ namespace bs
 	void GizmoRenderer::renderIconGizmos(Rect2I screenArea, SPtr<MeshCoreBase> mesh, 
 		GizmoManager::IconRenderDataVecPtr renderData, bool usePickingMaterial)
 	{
-		RenderAPICore& rapi = RenderAPICore::instance();
+		RenderAPI& rapi = RenderAPI::instance();
 		SPtr<VertexData> vertexData = mesh->getVertexData();
 
 		rapi.setVertexDeclaration(vertexData->vertexDeclaration);

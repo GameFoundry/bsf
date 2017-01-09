@@ -151,7 +151,7 @@ namespace bs
 		if (opt != mDesc.platformSpecific.end())
 			windowDesc.external = (HWND)parseUINT64(opt->second);
 		
-		const Win32VideoModeInfo& videoModeInfo = static_cast<const Win32VideoModeInfo&>(RenderAPICore::instance().getVideoModeInfo());
+		const Win32VideoModeInfo& videoModeInfo = static_cast<const Win32VideoModeInfo&>(RenderAPI::instance().getVideoModeInfo());
 		UINT32 numOutputs = videoModeInfo.getNumOutputs();
 		if (numOutputs > 0)
 		{
@@ -267,7 +267,7 @@ namespace bs
 		if (mIsChild)
 			return;
 
-		const Win32VideoModeInfo& videoModeInfo = static_cast<const Win32VideoModeInfo&>(RenderAPICore::instance().getVideoModeInfo());
+		const Win32VideoModeInfo& videoModeInfo = static_cast<const Win32VideoModeInfo&>(RenderAPI::instance().getVideoModeInfo());
 		UINT32 numOutputs = videoModeInfo.getNumOutputs();
 		if (numOutputs == 0)
 			return;

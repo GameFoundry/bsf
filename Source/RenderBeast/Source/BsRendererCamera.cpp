@@ -187,7 +187,7 @@ namespace bs { namespace ct
 		// Are we reorganize it because it needs to fit the "(1.0f / (depth + y)) * x" format used in the shader:
 		// z = 1.0f / (depth + minDepth/(maxDepth - minDepth) - A/((maxDepth - minDepth) * C)) * B/((maxDepth - minDepth) * C)
 
-		RenderAPICore& rapi = RenderAPICore::instance();
+		RenderAPI& rapi = RenderAPI::instance();
 		const RenderAPIInfo& rapiInfo = rapi.getAPIInfo();
 
 		float depthRange = rapiInfo.getMaximumDepthInputValue() - rapiInfo.getMinimumDepthInputValue();
@@ -253,7 +253,7 @@ namespace bs { namespace ct
 			rtHeight = 20.0f;
 		}
 
-		RenderAPICore& rapi = RenderAPICore::instance();
+		RenderAPI& rapi = RenderAPI::instance();
 		const RenderAPIInfo& rapiInfo = rapi.getAPIInfo();
 
 		Vector4 clipToUVScaleOffset;

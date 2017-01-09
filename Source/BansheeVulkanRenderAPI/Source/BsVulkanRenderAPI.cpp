@@ -262,7 +262,7 @@ namespace bs { namespace ct
 
 		initCapabilites();
 		
-		RenderAPICore::initialize();
+		RenderAPI::initialize();
 	}
 
     void VulkanRenderAPI::destroyCore()
@@ -307,7 +307,7 @@ namespace bs { namespace ct
 
 		vkDestroyInstance(mInstance, gVulkanAllocator);
 
-		RenderAPICore::destroyCore();
+		RenderAPI::destroyCore();
 	}
 
 	void VulkanRenderAPI::setGraphicsPipeline(const SPtr<GraphicsPipelineStateCore>& pipelineState,
@@ -738,6 +738,6 @@ namespace bs { namespace ct
 
 	VulkanRenderAPI& gVulkanRenderAPI()
 	{
-		return static_cast<VulkanRenderAPI&>(RenderAPICore::instance());
+		return static_cast<VulkanRenderAPI&>(RenderAPI::instance());
 	}
 }}

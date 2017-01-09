@@ -288,7 +288,7 @@ namespace bs { namespace ct
 		if(mData.vertexProgram != nullptr)
 			mVertexDecl = mData.vertexProgram->getInputDeclaration();
 
-		VulkanRenderAPI& rapi = static_cast<VulkanRenderAPI&>(RenderAPICore::instance());
+		VulkanRenderAPI& rapi = static_cast<VulkanRenderAPI&>(RenderAPI::instance());
 
 		VulkanDevice* devices[BS_MAX_DEVICES];
 		VulkanUtility::getDevices(rapi, mDeviceMask, devices);
@@ -541,7 +541,7 @@ namespace bs { namespace ct
 		pipelineCI.basePipelineHandle = VK_NULL_HANDLE;
 		pipelineCI.basePipelineIndex = -1;
 
-		VulkanRenderAPI& rapi = static_cast<VulkanRenderAPI&>(RenderAPICore::instance());
+		VulkanRenderAPI& rapi = static_cast<VulkanRenderAPI&>(RenderAPI::instance());
 
 		VulkanDevice* devices[BS_MAX_DEVICES];
 		VulkanUtility::getDevices(rapi, mDeviceMask, devices);

@@ -125,7 +125,7 @@ namespace bs { namespace ct
 		mViewCI.offset = 0;
 		mViewCI.range = VK_WHOLE_SIZE;
 
-		VulkanRenderAPI& rapi = static_cast<VulkanRenderAPI&>(RenderAPICore::instance());
+		VulkanRenderAPI& rapi = static_cast<VulkanRenderAPI&>(RenderAPI::instance());
 		VulkanDevice* devices[BS_MAX_DEVICES];
 		VulkanUtility::getDevices(rapi, deviceMask, devices);
 
@@ -225,7 +225,7 @@ namespace bs { namespace ct
 		mMappedSize = length;
 		mMappedLockOptions = options;
 
-		VulkanRenderAPI& rapi = static_cast<VulkanRenderAPI&>(RenderAPICore::instance());
+		VulkanRenderAPI& rapi = static_cast<VulkanRenderAPI&>(RenderAPI::instance());
 		VulkanDevice& device = *rapi._getDevice(deviceIdx);
 
 		VulkanCommandBufferManager& cbManager = gVulkanCBManager();
@@ -430,7 +430,7 @@ namespace bs { namespace ct
 			// We the caller wrote anything to the staging buffer, we need to upload it back to the main buffer
 			if(isWrite)
 			{
-				VulkanRenderAPI& rapi = static_cast<VulkanRenderAPI&>(RenderAPICore::instance());
+				VulkanRenderAPI& rapi = static_cast<VulkanRenderAPI&>(RenderAPI::instance());
 				VulkanDevice& device = *rapi._getDevice(mMappedDeviceIdx);
 
 				VulkanCommandBufferManager& cbManager = gVulkanCBManager();
@@ -552,7 +552,7 @@ namespace bs { namespace ct
 
 		VulkanHardwareBuffer& vkSource = static_cast<VulkanHardwareBuffer&>(srcBuffer);
 
-		VulkanRenderAPI& rapi = static_cast<VulkanRenderAPI&>(RenderAPICore::instance());
+		VulkanRenderAPI& rapi = static_cast<VulkanRenderAPI&>(RenderAPI::instance());
 		VulkanCommandBufferManager& cbManager = gVulkanCBManager();
 
 		GpuQueueType queueType;

@@ -611,7 +611,7 @@ namespace bs { namespace ct
 		for (auto& rtInfo : mRenderTargets)
 		{
 			if(rtInfo.target->getProperties().isWindow())
-				RenderAPICore::instance().swapBuffers(rtInfo.target);
+				RenderAPI::instance().swapBuffers(rtInfo.target);
 		}
 
 		gProfilerCPU().endSample("renderAllCore");
@@ -823,7 +823,7 @@ namespace bs { namespace ct
 		// If first camera in render target, prepare the render target
 		if (camIdx == 0)
 		{
-			RenderAPICore::instance().setRenderTarget(target);
+			RenderAPI::instance().setRenderTarget(target);
 
 			UINT32 clearBuffers = 0;
 			if (viewport->getRequiresColorClear())
@@ -837,14 +837,14 @@ namespace bs { namespace ct
 
 			if (clearBuffers != 0)
 			{
-				RenderAPICore::instance().clearViewport(clearBuffers, viewport->getClearColor(),
+				RenderAPI::instance().clearViewport(clearBuffers, viewport->getClearColor(),
 					viewport->getClearDepthValue(), viewport->getClearStencilValue());
 			}
 		}
 		else
-			RenderAPICore::instance().setRenderTarget(target, false, RT_COLOR0);
+			RenderAPI::instance().setRenderTarget(target, false, RT_COLOR0);
 
-		RenderAPICore::instance().setViewport(viewport->getNormArea());
+		RenderAPI::instance().setViewport(viewport->getNormArea());
 
 		// Trigger overlay callbacks
 		auto iterRenderCallback = mCallbacks.begin();

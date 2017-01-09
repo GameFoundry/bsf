@@ -19,19 +19,19 @@ namespace bs
 {
 	void RenderAPI::setGpuParams(const SPtr<GpuParams>& gpuParams)
 	{
-		gCoreThread().queueCommand(std::bind(&ct::RenderAPICore::setGpuParams, ct::RenderAPICore::instancePtr(), gpuParams->getCore(),
+		gCoreThread().queueCommand(std::bind(&ct::RenderAPI::setGpuParams, ct::RenderAPI::instancePtr(), gpuParams->getCore(),
 			nullptr));
 	}
 
 	void RenderAPI::setGraphicsPipeline(const SPtr<GraphicsPipelineState>& pipelineState)
 	{
-		gCoreThread().queueCommand(std::bind(&ct::RenderAPICore::setGraphicsPipeline, ct::RenderAPICore::instancePtr(),
+		gCoreThread().queueCommand(std::bind(&ct::RenderAPI::setGraphicsPipeline, ct::RenderAPI::instancePtr(),
 			pipelineState->getCore(), nullptr));
 	}
 
 	void RenderAPI::setComputePipeline(const SPtr<ComputePipelineState>& pipelineState)
 	{
-		gCoreThread().queueCommand(std::bind(&ct::RenderAPICore::setComputePipeline, ct::RenderAPICore::instancePtr(),
+		gCoreThread().queueCommand(std::bind(&ct::RenderAPI::setComputePipeline, ct::RenderAPI::instancePtr(),
 							  pipelineState->getCore(), nullptr));
 	}
 
@@ -41,117 +41,117 @@ namespace bs
 		for (UINT32 i = 0; i < (UINT32)buffers.size(); i++)
 			coreBuffers[i] = buffers[i] != nullptr ? buffers[i]->getCore() : nullptr;
 
-		std::function<void(ct::RenderAPICore*, UINT32, const Vector<SPtr<ct::VertexBufferCore>>&)> resizeFunc =
-			[](ct::RenderAPICore* rs, UINT32 idx, const Vector<SPtr<ct::VertexBufferCore>>& _buffers)
+		std::function<void(ct::RenderAPI*, UINT32, const Vector<SPtr<ct::VertexBufferCore>>&)> resizeFunc =
+			[](ct::RenderAPI* rs, UINT32 idx, const Vector<SPtr<ct::VertexBufferCore>>& _buffers)
 		{
 			rs->setVertexBuffers(idx, (SPtr<ct::VertexBufferCore>*)_buffers.data(), (UINT32)_buffers.size());
 		};
 
-		gCoreThread().queueCommand(std::bind(resizeFunc, ct::RenderAPICore::instancePtr(), index, coreBuffers));
+		gCoreThread().queueCommand(std::bind(resizeFunc, ct::RenderAPI::instancePtr(), index, coreBuffers));
 	}
 
 	void RenderAPI::setIndexBuffer(const SPtr<IndexBuffer>& buffer)
 	{
-		gCoreThread().queueCommand(std::bind(&ct::RenderAPICore::setIndexBuffer, ct::RenderAPICore::instancePtr(), buffer->getCore(),
+		gCoreThread().queueCommand(std::bind(&ct::RenderAPI::setIndexBuffer, ct::RenderAPI::instancePtr(), buffer->getCore(),
 			nullptr));
 	}
 
 	void RenderAPI::setVertexDeclaration(const SPtr<VertexDeclaration>& vertexDeclaration)
 	{
-		gCoreThread().queueCommand(std::bind(&ct::RenderAPICore::setVertexDeclaration, ct::RenderAPICore::instancePtr(),
+		gCoreThread().queueCommand(std::bind(&ct::RenderAPI::setVertexDeclaration, ct::RenderAPI::instancePtr(),
 			vertexDeclaration->getCore(), nullptr));
 	}
 
 	void RenderAPI::setViewport(const Rect2& vp)
 	{
-		gCoreThread().queueCommand(std::bind(&ct::RenderAPICore::setViewport, ct::RenderAPICore::instancePtr(), vp, nullptr));
+		gCoreThread().queueCommand(std::bind(&ct::RenderAPI::setViewport, ct::RenderAPI::instancePtr(), vp, nullptr));
 	}
 
 	void RenderAPI::setStencilRef(UINT32 value)
 	{
-		gCoreThread().queueCommand(std::bind(&ct::RenderAPICore::setStencilRef, ct::RenderAPICore::instancePtr(), value, nullptr));
+		gCoreThread().queueCommand(std::bind(&ct::RenderAPI::setStencilRef, ct::RenderAPI::instancePtr(), value, nullptr));
 	}
 
 	void RenderAPI::setDrawOperation(DrawOperationType op)
 	{
-		gCoreThread().queueCommand(std::bind(&ct::RenderAPICore::setDrawOperation, ct::RenderAPICore::instancePtr(), op,
+		gCoreThread().queueCommand(std::bind(&ct::RenderAPI::setDrawOperation, ct::RenderAPI::instancePtr(), op,
 			nullptr));
 	}
 
 	void RenderAPI::setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
 	{
-		gCoreThread().queueCommand(std::bind(&ct::RenderAPICore::setScissorRect, ct::RenderAPICore::instancePtr(), left, top, right, bottom,
+		gCoreThread().queueCommand(std::bind(&ct::RenderAPI::setScissorRect, ct::RenderAPI::instancePtr(), left, top, right, bottom,
 			nullptr));
 	}
 
 	void RenderAPI::setRenderTarget(const SPtr<RenderTarget>& target, bool readOnlyDepthStencil,
 									RenderSurfaceMask loadMask)
 	{
-		gCoreThread().queueCommand(std::bind(&ct::RenderAPICore::setRenderTarget,
-											 ct::RenderAPICore::instancePtr(), target->getCore(), readOnlyDepthStencil, loadMask, nullptr));
+		gCoreThread().queueCommand(std::bind(&ct::RenderAPI::setRenderTarget,
+											 ct::RenderAPI::instancePtr(), target->getCore(), readOnlyDepthStencil, loadMask, nullptr));
 	}
 
 	void RenderAPI::clearRenderTarget(UINT32 buffers, const Color& color, float depth, 
 		UINT16 stencil, UINT8 targetMask)
 	{
-		gCoreThread().queueCommand(std::bind(&ct::RenderAPICore::clearRenderTarget, ct::RenderAPICore::instancePtr(), buffers, color,
+		gCoreThread().queueCommand(std::bind(&ct::RenderAPI::clearRenderTarget, ct::RenderAPI::instancePtr(), buffers, color,
 			depth, stencil, targetMask, nullptr));
 	}
 
 	void RenderAPI::clearViewport(UINT32 buffers, const Color& color, float depth, UINT16 stencil, 
 		UINT8 targetMask)
 	{
-		gCoreThread().queueCommand(std::bind(&ct::RenderAPICore::clearViewport, ct::RenderAPICore::instancePtr(), buffers, color, depth,
+		gCoreThread().queueCommand(std::bind(&ct::RenderAPI::clearViewport, ct::RenderAPI::instancePtr(), buffers, color, depth,
 			stencil, targetMask, nullptr));
 	}
 
 	void RenderAPI::swapBuffers(const SPtr<RenderTarget>& target)
 	{
-		gCoreThread().queueCommand(std::bind(&ct::RenderAPICore::swapBuffers, ct::RenderAPICore::instancePtr(), target->getCore(), 1));
+		gCoreThread().queueCommand(std::bind(&ct::RenderAPI::swapBuffers, ct::RenderAPI::instancePtr(), target->getCore(), 1));
 	}
 
 	void RenderAPI::draw(UINT32 vertexOffset, UINT32 vertexCount, UINT32 instanceCount)
 	{
-		gCoreThread().queueCommand(std::bind(&ct::RenderAPICore::draw, ct::RenderAPICore::instancePtr(), vertexOffset,
+		gCoreThread().queueCommand(std::bind(&ct::RenderAPI::draw, ct::RenderAPI::instancePtr(), vertexOffset,
 			vertexCount, instanceCount, nullptr));
 	}
 
 	void RenderAPI::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, 
 		UINT32 vertexCount, UINT32 instanceCount)
 	{
-		gCoreThread().queueCommand(std::bind(&ct::RenderAPICore::drawIndexed, ct::RenderAPICore::instancePtr(), startIndex, indexCount,
+		gCoreThread().queueCommand(std::bind(&ct::RenderAPI::drawIndexed, ct::RenderAPI::instancePtr(), startIndex, indexCount,
 			vertexOffset, vertexCount, instanceCount, nullptr));
 	}
 
 	void RenderAPI::dispatchCompute(UINT32 numGroupsX, UINT32 numGroupsY, UINT32 numGroupsZ)
 	{
-		gCoreThread().queueCommand(std::bind(&ct::RenderAPICore::dispatchCompute, ct::RenderAPICore::instancePtr(), numGroupsX,
+		gCoreThread().queueCommand(std::bind(&ct::RenderAPI::dispatchCompute, ct::RenderAPI::instancePtr(), numGroupsX,
 			numGroupsY, numGroupsZ, nullptr));
 	}
 
 	const VideoModeInfo& RenderAPI::getVideoModeInfo()
 	{
-		return ct::RenderAPICore::instance().getVideoModeInfo();
+		return ct::RenderAPI::instance().getVideoModeInfo();
 	}
 
 	void RenderAPI::convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest)
 	{
-		ct::RenderAPICore::instance().convertProjectionMatrix(matrix, dest);
+		ct::RenderAPI::instance().convertProjectionMatrix(matrix, dest);
 	}
 
 	const RenderAPIInfo& RenderAPI::getAPIInfo()
 	{
-		return ct::RenderAPICore::instance().getAPIInfo();
+		return ct::RenderAPI::instance().getAPIInfo();
 	}
 
 	namespace ct
 	{
-    RenderAPICore::RenderAPICore()
+    RenderAPI::RenderAPI()
         : mCurrentCapabilities(nullptr), mNumDevices(0)
     {
     }
 
-    RenderAPICore::~RenderAPICore()
+    RenderAPI::~RenderAPI()
     {
 		// Base classes need to call virtual destroy_internal method instead of a destructor
 
@@ -159,42 +159,42 @@ namespace bs
 		mCurrentCapabilities = nullptr;
     }
 
-	SPtr<RenderWindow> RenderAPICore::initialize(const RENDER_WINDOW_DESC& primaryWindowDesc)
+	SPtr<RenderWindow> RenderAPI::initialize(const RENDER_WINDOW_DESC& primaryWindowDesc)
 	{
-		gCoreThread().queueCommand(std::bind((void(RenderAPICore::*)())&RenderAPICore::initialize, this), 
+		gCoreThread().queueCommand(std::bind((void(RenderAPI::*)())&RenderAPI::initialize, this), 
 			CTQF_InternalQueue | CTQF_BlockUntilComplete);
 
 		RENDER_WINDOW_DESC windowDesc = primaryWindowDesc;
 		SPtr<RenderWindow> renderWindow = RenderWindow::create(windowDesc, nullptr);
 
-		gCoreThread().queueCommand(std::bind(&RenderAPICore::initializeWithWindow, this, renderWindow->getCore()), 
+		gCoreThread().queueCommand(std::bind(&RenderAPI::initializeWithWindow, this, renderWindow->getCore()), 
 			CTQF_InternalQueue | CTQF_BlockUntilComplete);
 
 		return renderWindow;
 	}
 
-	void RenderAPICore::initialize()
+	void RenderAPI::initialize()
 	{
 		// Do nothing
 	}
 
-	void RenderAPICore::initializeWithWindow(const SPtr<RenderWindowCore>& primaryWindow)
+	void RenderAPI::initializeWithWindow(const SPtr<RenderWindowCore>& primaryWindow)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 	}
 
-	void RenderAPICore::destroy()
+	void RenderAPI::destroy()
 	{
-		gCoreThread().queueCommand(std::bind(&RenderAPICore::destroyCore, this));
+		gCoreThread().queueCommand(std::bind(&RenderAPI::destroyCore, this));
 		gCoreThread().submitAll(true);
 	}
 
-	void RenderAPICore::destroyCore()
+	void RenderAPI::destroyCore()
 	{
 		mActiveRenderTarget = nullptr;
 	}
 
-	const RenderAPICapabilities& RenderAPICore::getCapabilities(UINT32 deviceIdx) const
+	const RenderAPICapabilities& RenderAPI::getCapabilities(UINT32 deviceIdx) const
 	{
 		if(deviceIdx >= mNumDevices)
 		{
@@ -205,7 +205,7 @@ namespace bs
 		return mCurrentCapabilities[deviceIdx];
 	}
 
-	UINT32 RenderAPICore::vertexCountToPrimCount(DrawOperationType type, UINT32 elementCount)
+	UINT32 RenderAPI::vertexCountToPrimCount(DrawOperationType type, UINT32 elementCount)
 	{
 		UINT32 primCount = 0;
 		switch (type)

@@ -139,7 +139,7 @@ namespace bs { namespace ct
 
 	void RendererUtility::setPass(const SPtr<MaterialCore>& material, UINT32 passIdx, UINT32 techniqueIdx)
 	{
-		RenderAPICore& rapi = RenderAPICore::instance();
+		RenderAPI& rapi = RenderAPI::instance();
 
 		SPtr<PassCore> pass = material->getPass(passIdx, techniqueIdx);
 		rapi.setGraphicsPipeline(pass->getGraphicsPipelineState());
@@ -148,7 +148,7 @@ namespace bs { namespace ct
 
 	void RendererUtility::setComputePass(const SPtr<MaterialCore>& material, UINT32 passIdx)
 	{
-		RenderAPICore& rapi = RenderAPICore::instance();
+		RenderAPI& rapi = RenderAPI::instance();
 
 		SPtr<PassCore> pass = material->getPass(passIdx);
 		rapi.setComputePipeline(pass->getComputePipelineState());
@@ -160,13 +160,13 @@ namespace bs { namespace ct
 		if (gpuParams == nullptr)
 			return;
 
-		RenderAPICore& rapi = RenderAPICore::instance();
+		RenderAPI& rapi = RenderAPI::instance();
 		rapi.setGpuParams(gpuParams);
 	}
 
 	void RendererUtility::draw(const SPtr<MeshCoreBase>& mesh, const SubMesh& subMesh, UINT32 numInstances)
 	{
-		RenderAPICore& rapi = RenderAPICore::instance();
+		RenderAPI& rapi = RenderAPI::instance();
 		SPtr<VertexData> vertexData = mesh->getVertexData();
 
 		rapi.setVertexDeclaration(mesh->getVertexData()->vertexDeclaration);
@@ -211,7 +211,7 @@ namespace bs { namespace ct
 		const SPtr<VertexBufferCore>& morphVertices, const SPtr<VertexDeclarationCore>& morphVertexDeclaration)
 	{
 		// Bind buffers and draw
-		RenderAPICore& rapi = RenderAPICore::instance();
+		RenderAPI& rapi = RenderAPI::instance();
 
 		SPtr<VertexData> vertexData = mesh->getVertexData();
 		rapi.setVertexDeclaration(morphVertexDeclaration);
@@ -288,7 +288,7 @@ namespace bs { namespace ct
 	{
 		// Note: Consider drawing the quad using a single large triangle for possibly better performance
 
-		const RenderAPIInfo& rapiInfo = RenderAPICore::instance().getAPIInfo();
+		const RenderAPIInfo& rapiInfo = RenderAPI::instance().getAPIInfo();
 
 		Vector3 vertices[4];
 

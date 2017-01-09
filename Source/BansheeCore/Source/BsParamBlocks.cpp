@@ -24,7 +24,7 @@ namespace bs { namespace ct
 		UINT32 elementSizeBytes = mParamDesc.elementSize * sizeof(UINT32);
 		UINT32 sizeBytes = std::min(elementSizeBytes, (UINT32)sizeof(T)); // Truncate if it doesn't fit within parameter size
 
-		bool transposeMatrices = RenderAPICore::instance().getAPIInfo().getGpuProgramHasColumnMajorMatrices();
+		bool transposeMatrices = RenderAPI::instance().getAPIInfo().getGpuProgramHasColumnMajorMatrices();
 		if (TransposePolicy<T>::transposeEnabled(transposeMatrices))
 		{
 			T transposed = TransposePolicy<T>::transpose(value);
@@ -63,7 +63,7 @@ namespace bs { namespace ct
 		paramBlock->read((mParamDesc.cpuMemOffset + arrayIdx * mParamDesc.arrayElementStride) * sizeof(UINT32), &value, 
 			sizeBytes);
 
-		bool transposeMatrices = RenderAPICore::instance().getAPIInfo().getGpuProgramHasColumnMajorMatrices();
+		bool transposeMatrices = RenderAPI::instance().getAPIInfo().getGpuProgramHasColumnMajorMatrices();
 		if (TransposePolicy<T>::transposeEnabled(transposeMatrices))
 			return TransposePolicy<T>::transpose(value);
 		else

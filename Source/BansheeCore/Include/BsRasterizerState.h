@@ -86,7 +86,7 @@ namespace bs
 		/**
 		 * Scissor rectangle allows you to cull all pixels outside of the scissor rectangle.
 		 *			
-		 * @see		RenderAPICore::setScissorRect
+		 * @see		ct::RenderAPI::setScissorRect
 		 */
 		bool getScissorEnable() const { return mData.scissorEnable; }
 

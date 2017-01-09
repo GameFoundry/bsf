@@ -643,7 +643,7 @@ namespace bs { namespace ct
 		moduleCI.codeSize = spirv.size() * sizeof(UINT32);
 		moduleCI.pCode = spirv.data();
 
-		VulkanRenderAPI& rapi = static_cast<VulkanRenderAPI&>(RenderAPICore::instance());
+		VulkanRenderAPI& rapi = static_cast<VulkanRenderAPI&>(RenderAPI::instance());
 
 		VulkanDevice* devices[BS_MAX_DEVICES];
 		VulkanUtility::getDevices(rapi, mDeviceMask, devices);

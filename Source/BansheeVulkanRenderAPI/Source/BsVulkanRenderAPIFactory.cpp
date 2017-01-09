@@ -9,7 +9,7 @@ namespace bs { namespace ct
 
 	void VulkanRenderAPIFactory::create()
 	{
-		RenderAPICore::startUp<VulkanRenderAPI>();
+		RenderAPI::startUp<VulkanRenderAPI>();
 	}
 
 	VulkanRenderAPIFactory::InitOnStart VulkanRenderAPIFactory::initOnStart;

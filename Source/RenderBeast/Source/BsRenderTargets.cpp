@@ -91,7 +91,7 @@ namespace bs { namespace ct
 
 	void RenderTargets::release()
 	{
-		RenderAPICore& rapi = RenderAPICore::instance();
+		RenderAPI& rapi = RenderAPI::instance();
 		rapi.setRenderTarget(nullptr);
 
 		RenderTexturePool& texPool = RenderTexturePool::instance();
@@ -104,7 +104,7 @@ namespace bs { namespace ct
 
 	void RenderTargets::bindGBuffer()
 	{
-		RenderAPICore& rapi = RenderAPICore::instance();
+		RenderAPI& rapi = RenderAPI::instance();
 		rapi.setRenderTarget(mGBufferRT);
 
 		Rect2 area(0.0f, 0.0f, 1.0f, 1.0f);
@@ -123,17 +123,17 @@ namespace bs { namespace ct
 		// Clear scene color, depth, stencil according to user defined values
 		if (clearBuffers != 0)
 		{
-			RenderAPICore::instance().clearViewport(clearBuffers, mViewport->getClearColor(),
+			RenderAPI::instance().clearViewport(clearBuffers, mViewport->getClearColor(),
 				mViewport->getClearDepthValue(), mViewport->getClearStencilValue(), 0x01);
 		}
 
 		// Clear all others
-		RenderAPICore::instance().clearViewport(FBT_COLOR, Color::ZERO, 1.0f, 0, 0xFF & ~0x01);
+		RenderAPI::instance().clearViewport(FBT_COLOR, Color::ZERO, 1.0f, 0, 0xFF & ~0x01);
 	}
 
 	void RenderTargets::bindSceneColor(bool readOnlyDepthStencil)
 	{
-		RenderAPICore& rapi = RenderAPICore::instance();
+		RenderAPI& rapi = RenderAPI::instance();
 		rapi.setRenderTarget(mSceneColorRT, readOnlyDepthStencil, RT_COLOR0 | RT_DEPTH);
 
 		Rect2 area(0.0f, 0.0f, 1.0f, 1.0f);

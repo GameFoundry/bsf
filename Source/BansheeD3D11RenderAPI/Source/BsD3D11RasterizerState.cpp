@@ -38,7 +38,7 @@ namespace bs { namespace ct
 		rasterizerStateDesc.SlopeScaledDepthBias = mProperties.getSlopeScaledDepthBias();
 		rasterizerStateDesc.FrontCounterClockwise = false;
 
-		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
+		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPI::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
 		HRESULT hr = device.getD3D11Device()->CreateRasterizerState(&rasterizerStateDesc, &mRasterizerState);
 

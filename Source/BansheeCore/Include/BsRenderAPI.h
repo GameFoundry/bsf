@@ -23,10 +23,10 @@ namespace bs
 	class RenderAPIInfo;
 
 	/**
-	 * Provides access to RenderAPICore from the simulation thread. All the commands get queued on the core thread queue 
+	 * Provides access to ct::RenderAPI from the simulation thread. All the commands get queued on the core thread queue 
 	 * for the calling thread.
 	 *
-	 * @see		RenderAPICore
+	 * @see		ct::RenderAPI
 	 *
 	 * @note	Sim thread only.
 	 */
@@ -34,77 +34,77 @@ namespace bs
 	{
 	public:
 		/** 
-		 * @see ct::RenderAPICore::setGpuParams() 
+		 * @see ct::RenderAPI::setGpuParams() 
 		 *
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		static void setGpuParams(const SPtr<GpuParams>& gpuParams);
 
 		/** 
-		 * @see ct::RenderAPICore::setGraphicsPipeline() 
+		 * @see ct::RenderAPI::setGraphicsPipeline() 
 		 * 
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		static void setGraphicsPipeline(const SPtr<GraphicsPipelineState>& pipelineState);
 
 		/** 
-		 * @see ct::RenderAPICore::setComputePipeline() 
+		 * @see ct::RenderAPI::setComputePipeline() 
 		 * 
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		static void setComputePipeline(const SPtr<ComputePipelineState>& pipelineState);
 
 		/** 
-		 * @see ct::RenderAPICore::setVertexBuffers() 
+		 * @see ct::RenderAPI::setVertexBuffers() 
 		 * 
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		static void setVertexBuffers(UINT32 index, const Vector<SPtr<VertexBuffer>>& buffers);
 
 		/** 
-		 * @see ct::RenderAPICore::setIndexBuffer() 
+		 * @see ct::RenderAPI::setIndexBuffer() 
 		 * 
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		static void setIndexBuffer(const SPtr<IndexBuffer>& buffer);
 
 		/** 
-		 * @see ct::RenderAPICore::setVertexDeclaration() 
+		 * @see ct::RenderAPI::setVertexDeclaration() 
 		 * 
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		static void setVertexDeclaration(const SPtr<VertexDeclaration>& vertexDeclaration);
 
 		/** 
-		 * @see ct::RenderAPICore::setViewport() 
+		 * @see ct::RenderAPI::setViewport() 
 		 * 
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		static void setViewport(const Rect2& area);
 
 		/** 
-		 * @see ct::RenderAPICore::setViewport() 
+		 * @see ct::RenderAPI::setViewport() 
 		 * 
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		static void setStencilRef(UINT32 value);
 
 		/** 
-		 * @see ct::RenderAPICore::setDrawOperation()  
+		 * @see ct::RenderAPI::setDrawOperation()  
 		 * 
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		static void setDrawOperation(DrawOperationType op);
 
 		/** 
-		 * @see ct::RenderAPICore::setScissorRect() 
+		 * @see ct::RenderAPI::setScissorRect() 
 		 * 
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		static void setScissorRect(UINT32 left = 0, UINT32 top = 0, UINT32 right = 800, UINT32 bottom = 600);
 
 		/** 
-		 * @see ct::RenderAPICore::setRenderTarget() 
+		 * @see ct::RenderAPI::setRenderTarget() 
 		 * 
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
@@ -112,7 +112,7 @@ namespace bs
 			RenderSurfaceMask loadMask = RT_NONE);
 
 		/** 
-		 * @see ct::RenderAPICore::clearRenderTarget() 
+		 * @see ct::RenderAPI::clearRenderTarget() 
 		 * 
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
@@ -120,7 +120,7 @@ namespace bs
 			UINT16 stencil = 0, UINT8 targetMask = 0xFF);
 
 		/** 
-		 * @see ct::RenderAPICore::clearViewport() 
+		 * @see ct::RenderAPI::clearViewport() 
 		 * 
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
@@ -128,21 +128,21 @@ namespace bs
 			UINT8 targetMask = 0xFF);
 
 		/** 
-		 * @see ct::RenderAPICore::swapBuffers() 
+		 * @see ct::RenderAPI::swapBuffers() 
 		 * 
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		static void swapBuffers(const SPtr<RenderTarget>& target);
 
 		/** 
-		 * @see ct::RenderAPICore::draw() 
+		 * @see ct::RenderAPI::draw() 
 		 * 
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		static void draw(UINT32 vertexOffset, UINT32 vertexCount, UINT32 instanceCount = 0);
 
 		/** 
-		 * @see ct::RenderAPICore::drawIndexed() 
+		 * @see ct::RenderAPI::drawIndexed() 
 		 * 
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
@@ -150,19 +150,19 @@ namespace bs
 			UINT32 instanceCount = 0);
 
 		/** 
-		 * @see ct::RenderAPICore::dispatchCompute() 
+		 * @see ct::RenderAPI::dispatchCompute() 
 		 * 
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		static void dispatchCompute(UINT32 numGroupsX, UINT32 numGroupsY = 1, UINT32 numGroupsZ = 1);
 
-		/** @copydoc ct::RenderAPICore::getVideoModeInfo */
+		/** @copydoc ct::RenderAPI::getVideoModeInfo */
 		static const VideoModeInfo& getVideoModeInfo();
 
-		/** @copydoc ct::RenderAPICore::convertProjectionMatrix */
+		/** @copydoc ct::RenderAPI::convertProjectionMatrix */
 		static void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest);
 
-		/** @copydoc ct::RenderAPICore::getAPIInfo */
+		/** @copydoc ct::RenderAPI::getAPIInfo */
 		static const RenderAPIInfo& getAPIInfo();
 	};
 
@@ -254,11 +254,11 @@ namespace bs
 	 * @note	Accessible on any thread for methods accepting a CommandBuffer. Otherwise core thread unless specifically
 	 *			noted otherwise on per-method basis.
 	 */
-	class BS_CORE_EXPORT RenderAPICore : public Module<RenderAPICore>
+	class BS_CORE_EXPORT RenderAPI : public Module<RenderAPI>
 	{
 	public:
-		RenderAPICore();
-		virtual ~RenderAPICore();
+		RenderAPI();
+		virtual ~RenderAPI();
 
 		/**
 		 * Returns the name of the rendering system. 

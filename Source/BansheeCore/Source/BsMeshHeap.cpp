@@ -295,7 +295,7 @@ namespace bs
 			UINT8* vertDest = mCPUVertexData[i] + vertChunkStart * vertSize;
 			memcpy(vertDest, meshData->getStreamData(i), meshData->getNumVertices() * vertSize);
 
-			if (RenderAPICore::instance().getAPIInfo().getVertexColorFlipRequired())
+			if (RenderAPI::instance().getAPIInfo().getVertexColorFlipRequired())
 			{
 				UINT32 vertexStride = mVertexDesc->getVertexStride(i);
 				for (INT32 semanticIdx = 0; semanticIdx < VertexBuffer::MAX_SEMANTIC_IDX; semanticIdx++)

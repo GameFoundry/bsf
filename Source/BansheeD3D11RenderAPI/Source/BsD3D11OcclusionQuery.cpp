@@ -14,7 +14,7 @@ namespace bs { namespace ct
 	{
 		assert(deviceIdx == 0 && "Multiple GPUs not supported natively on DirectX 11.");
 
-		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
+		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPI::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
 
 		D3D11_QUERY_DESC queryDesc;

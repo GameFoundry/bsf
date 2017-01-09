@@ -144,7 +144,7 @@ namespace bs { namespace ct
 			}
 		}
 
-		D3D11RenderAPI* d3d11rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
+		D3D11RenderAPI* d3d11rs = static_cast<D3D11RenderAPI*>(RenderAPI::instancePtr());
 		D3D11Device& device = d3d11rs->getPrimaryDevice();
 
 		const HLSLMicroCode& microcode = vertexProgram.getMicroCode();

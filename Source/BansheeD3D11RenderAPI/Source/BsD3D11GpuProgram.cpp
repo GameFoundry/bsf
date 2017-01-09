@@ -65,7 +65,7 @@ namespace bs { namespace ct
 			break;
 		}
 
-		D3D11RenderAPI* rapi = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
+		D3D11RenderAPI* rapi = static_cast<D3D11RenderAPI*>(RenderAPI::instancePtr());
 
 		ID3DBlob* microcode = compileMicrocode(hlslProfile);
 		if (microcode != nullptr)

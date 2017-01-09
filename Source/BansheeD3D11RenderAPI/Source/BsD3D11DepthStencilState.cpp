@@ -39,7 +39,7 @@ namespace bs { namespace ct
 		depthStencilState.StencilReadMask = mProperties.getStencilReadMask();
 		depthStencilState.StencilWriteMask = mProperties.getStencilWriteMask();
 
-		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
+		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPI::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
 		HRESULT hr = device.getD3D11Device()->CreateDepthStencilState(&depthStencilState, &mDepthStencilState);
 

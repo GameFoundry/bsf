@@ -47,7 +47,7 @@ namespace bs { namespace ct
 		// Render
 		ppInfo.downsampledSceneTex = RenderTexturePool::instance().get(mOutputDesc);
 
-		RenderAPICore& rapi = RenderAPICore::instance();
+		RenderAPI& rapi = RenderAPI::instance();
 		rapi.setRenderTarget(ppInfo.downsampledSceneTex->renderTexture, true);
 
 		gRendererUtility().setPass(mMaterial);
@@ -111,7 +111,7 @@ namespace bs { namespace ct
 
 		mOutputTex.set(ppInfo.histogramTex->texture);
 
-		RenderAPICore& rapi = RenderAPICore::instance();
+		RenderAPI& rapi = RenderAPI::instance();
 		gRendererUtility().setComputePass(mMaterial);
 		gRendererUtility().setPassParams(mParamsSet);
 		rapi.dispatchCompute(threadGroupCount.x, threadGroupCount.y);
@@ -194,7 +194,7 @@ namespace bs { namespace ct
 		// Render
 		ppInfo.histogramReduceTex = RenderTexturePool::instance().get(mOutputDesc);
 
-		RenderAPICore& rapi = RenderAPICore::instance();
+		RenderAPI& rapi = RenderAPI::instance();
 		rapi.setRenderTarget(ppInfo.histogramReduceTex->renderTexture, true);
 
 		gRendererUtility().setPass(mMaterial);
@@ -276,7 +276,7 @@ namespace bs { namespace ct
 		// Render
 		SPtr<PooledRenderTexture> eyeAdaptationRT = ppInfo.eyeAdaptationTex[ppInfo.lastEyeAdaptationTex];
 
-		RenderAPICore& rapi = RenderAPICore::instance();
+		RenderAPI& rapi = RenderAPI::instance();
 		rapi.setRenderTarget(eyeAdaptationRT->renderTexture, true);
 
 		gRendererUtility().setPass(mMaterial);
@@ -350,7 +350,7 @@ namespace bs { namespace ct
 
 		mOutputTex.set(ppInfo.colorLUT->texture);
 
-		RenderAPICore& rapi = RenderAPICore::instance();
+		RenderAPI& rapi = RenderAPI::instance();
 		
 		gRendererUtility().setComputePass(mMaterial);
 		gRendererUtility().setPassParams(mParamsSet);
@@ -414,7 +414,7 @@ namespace bs { namespace ct
 		mEyeAdaptationTex.set(eyeAdaptationTexture);
 
 		// Render
-		RenderAPICore& rapi = RenderAPICore::instance();
+		RenderAPI& rapi = RenderAPI::instance();
 		SPtr<RenderTargetCore> target = outputViewport->getTarget();
 
 		rapi.setRenderTarget(target);

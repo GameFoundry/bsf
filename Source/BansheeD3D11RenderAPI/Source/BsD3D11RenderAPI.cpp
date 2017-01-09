@@ -123,7 +123,7 @@ namespace bs { namespace ct
 
 		mIAManager = bs_new<D3D11InputLayoutManager>();
 
-		RenderAPICore::initialize();
+		RenderAPI::initialize();
 	}
 
 	void D3D11RenderAPI::initializeWithWindow(const SPtr<RenderWindowCore>& primaryWindow)
@@ -132,7 +132,7 @@ namespace bs { namespace ct
 
 		QueryManager::startUp<D3D11QueryManager>();
 
-		RenderAPICore::initializeWithWindow(primaryWindow);
+		RenderAPI::initializeWithWindow(primaryWindow);
 	}
 
     void D3D11RenderAPI::destroyCore()
@@ -203,7 +203,7 @@ namespace bs { namespace ct
 
 		mActiveD3DDriver = nullptr;
 
-		RenderAPICore::destroyCore();
+		RenderAPI::destroyCore();
 	}
 
 	void D3D11RenderAPI::setGraphicsPipeline(const SPtr<GraphicsPipelineStateCore>& pipelineState,

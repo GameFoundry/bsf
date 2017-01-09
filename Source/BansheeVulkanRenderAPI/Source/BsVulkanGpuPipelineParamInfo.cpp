@@ -20,7 +20,7 @@ namespace bs { namespace ct
 
 	void VulkanGpuPipelineParamInfo::initialize()
 	{
-		VulkanRenderAPI& rapi = static_cast<VulkanRenderAPI&>(RenderAPICore::instance());
+		VulkanRenderAPI& rapi = static_cast<VulkanRenderAPI&>(RenderAPI::instance());
 
 		VulkanDevice* devices[BS_MAX_DEVICES];
 		VulkanUtility::getDevices(rapi, mDeviceMask, devices);

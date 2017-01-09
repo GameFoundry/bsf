@@ -131,7 +131,7 @@ namespace bs { namespace ct
 		 *							from the actual VulkanQueue index since multiple command buffer queue indices can map
 		 *							to the same queue.
 		 * @param[in]	syncMask	Mask that controls which other command buffers does this command buffer depend upon
-		 *							(if any). See description of @p syncMask parameter in RenderAPICore::executeCommands().
+		 *							(if any). See description of @p syncMask parameter in RenderAPI::executeCommands().
 		 */
 		void submit(VulkanQueue* queue, UINT32 queueIdx, UINT32 syncMask);
 
@@ -434,7 +434,7 @@ namespace bs { namespace ct
 		 * Submits the command buffer for execution. 
 		 * 
 		 * @param[in]	syncMask	Mask that controls which other command buffers does this command buffer depend upon
-		 *							(if any). See description of @p syncMask parameter in RenderAPICore::executeCommands().
+		 *							(if any). See description of @p syncMask parameter in RenderAPI::executeCommands().
 		 */
 		void submit(UINT32 syncMask);
 

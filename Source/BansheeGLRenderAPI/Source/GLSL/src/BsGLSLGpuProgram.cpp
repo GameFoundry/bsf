@@ -207,7 +207,7 @@ namespace bs { namespace ct
 		if (!isRequiredCapabilitiesSupported())
 			return false;
 
-		RenderAPICore* rapi = RenderAPICore::instancePtr();
+		RenderAPI* rapi = RenderAPI::instancePtr();
 		return rapi->getCapabilities(0).isShaderProfileSupported("glsl");
 	}
 }}

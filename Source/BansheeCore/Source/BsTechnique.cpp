@@ -19,7 +19,7 @@ namespace bs
 
 	bool TechniqueBase::isSupported() const
 	{
-		if ((ct::RenderAPICore::instancePtr()->getShadingLanguageName() == mLanguage || mLanguage == "Any") &&
+		if ((ct::RenderAPI::instancePtr()->getShadingLanguageName() == mLanguage || mLanguage == "Any") &&
 			(RendererManager::instance().getActive()->getName() == mRenderer ||
 			RendererAny == mRenderer))
 		{

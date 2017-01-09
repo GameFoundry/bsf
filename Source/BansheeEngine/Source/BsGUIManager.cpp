@@ -1762,7 +1762,7 @@ namespace bs
 
 		float invViewportWidth = 1.0f / (camera.getViewport()->getWidth() * 0.5f);
 		float invViewportHeight = 1.0f / (camera.getViewport()->getHeight() * 0.5f);
-		float viewflipYFlip = RenderAPI::getAPIInfo().getNDCYAxisDown() ? -1.0f : 1.0f;
+		float viewflipYFlip = bs::RenderAPI::getAPIInfo().getNDCYAxisDown() ? -1.0f : 1.0f;
 
 		for (auto& entry : renderData)
 		{

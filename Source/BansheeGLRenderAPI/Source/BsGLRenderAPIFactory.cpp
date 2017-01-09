@@ -7,7 +7,7 @@ namespace bs { namespace ct
 {
 	void GLRenderAPIFactory::create()
 	{
-		RenderAPICore::startUp<GLRenderAPI>();
+		RenderAPI::startUp<GLRenderAPI>();
 	}
 
 	GLRenderAPIFactory::InitOnStart GLRenderAPIFactory::initOnStart;

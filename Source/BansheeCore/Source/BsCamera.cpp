@@ -276,7 +276,7 @@ namespace bs
 				}
 			}
 
-			ct::RenderAPICore* renderAPI = ct::RenderAPICore::instancePtr();
+			ct::RenderAPI* renderAPI = ct::RenderAPI::instancePtr();
 			renderAPI->convertProjectionMatrix(mProjMatrix, mProjMatrixRS);
 			mProjMatrixInv = mProjMatrix.inverse();
 			mProjMatrixRSInv = mProjMatrixRS.inverse();

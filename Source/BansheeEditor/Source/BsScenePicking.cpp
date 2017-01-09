@@ -260,7 +260,7 @@ namespace bs
 	void ScenePicking::corePickingBegin(const SPtr<RenderTargetCore>& target, const Rect2& viewportArea,
 		const bs::ScenePicking::RenderableSet& renderables, const Vector2I& position, const Vector2I& area)
 	{
-		RenderAPICore& rs = RenderAPICore::instance();
+		RenderAPI& rs = RenderAPI::instance();
 
 		SPtr<RenderTextureCore> rtt = std::static_pointer_cast<RenderTextureCore>(target);
 
@@ -381,7 +381,7 @@ namespace bs
 		const Vector2I& position, const Vector2I& area, bool gatherSnapData, AsyncOp& asyncOp)
 	{
 		const RenderTargetProperties& rtProps = target->getProperties();
-		RenderAPICore& rs = RenderAPICore::instance();
+		RenderAPI& rs = RenderAPI::instance();
 
 		rs.setRenderTarget(nullptr);
 		rs.submitCommandBuffer(nullptr);

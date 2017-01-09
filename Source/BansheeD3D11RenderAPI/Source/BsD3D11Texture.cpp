@@ -66,7 +66,7 @@ namespace bs { namespace ct
 		UINT32 srcResIdx = D3D11CalcSubresource(srcMipLevel, srcFace, mProperties.getNumMipmaps() + 1);
 		UINT32 destResIdx = D3D11CalcSubresource(destMipLevel, destFace, target->getProperties().getNumMipmaps() + 1);
 
-		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
+		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPI::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
 
 		bool srcHasMultisample = mProperties.getNumSamples() > 1;
@@ -200,7 +200,7 @@ namespace bs { namespace ct
 		}
 		else if ((mProperties.getUsage() & TU_DEPTHSTENCIL) == 0)
 		{
-			D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
+			D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPI::instancePtr());
 			D3D11Device& device = rs->getPrimaryDevice();
 
 			UINT subresourceIdx = D3D11CalcSubresource(mipLevel, face, mProperties.getNumMipmaps() + 1);
@@ -296,7 +296,7 @@ namespace bs { namespace ct
 			desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
 
 		// Create the texture
-		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
+		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPI::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
 		hr = device.getD3D11Device()->CreateTexture1D(&desc, nullptr, &m1DTex);
 
@@ -388,7 +388,7 @@ namespace bs { namespace ct
 			desc.MipLevels		= 1;
 
 			DXGI_SAMPLE_DESC sampleDesc;
-			D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
+			D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPI::instancePtr());
 			rs->determineMultisampleSettings(sampleCount, d3dPF, &sampleDesc);
 			desc.SampleDesc		= sampleDesc;
 
@@ -410,7 +410,7 @@ namespace bs { namespace ct
 				desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
 			DXGI_SAMPLE_DESC sampleDesc;
-			D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
+			D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPI::instancePtr());
 			rs->determineMultisampleSettings(sampleCount, d3dPF, &sampleDesc);
 			desc.SampleDesc		= sampleDesc;
 
@@ -444,7 +444,7 @@ namespace bs { namespace ct
 			desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
 
 		// Create the texture
-		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
+		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPI::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
 		hr = device.getD3D11Device()->CreateTexture2D(&desc, nullptr, &m2DTex);
 
@@ -562,7 +562,7 @@ namespace bs { namespace ct
 			desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
 
 		// Create the texture
-		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
+		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPI::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
 		hr = device.getD3D11Device()->CreateTexture3D(&desc, nullptr, &m3DTex);
 
@@ -617,7 +617,7 @@ namespace bs { namespace ct
 		if (mProperties.getTextureType() == TEX_TYPE_3D)
 			face = 0;
 
-		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
+		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPI::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
 
 		mLockedSubresourceIdx = D3D11CalcSubresource(mipLevel, face, mProperties.getNumMipmaps() + 1);
@@ -638,7 +638,7 @@ namespace bs { namespace ct
 
 	void D3D11Texture::unmap(ID3D11Resource* res)
 	{
-		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
+		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPI::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
 		device.getImmediateContext()->Unmap(res, mLockedSubresourceIdx);
 
@@ -658,7 +658,7 @@ namespace bs { namespace ct
 		if(!mStagingBuffer)
 			createStagingBuffer(); 
 
-		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
+		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPI::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
 		device.getImmediateContext()->CopyResource(mStagingBuffer, mTex);
 
@@ -687,7 +687,7 @@ namespace bs { namespace ct
 		UINT32 rowWidth = D3D11Mappings::getSizeInBytes(mStaticBuffer->getFormat(), mStaticBuffer->getWidth());
 		UINT32 sliceWidth = D3D11Mappings::getSizeInBytes(mStaticBuffer->getFormat(), mStaticBuffer->getWidth(), mStaticBuffer->getHeight());
 
-		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
+		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPI::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
 		device.getImmediateContext()->UpdateSubresource(mTex, mLockedSubresourceIdx, nullptr, mStaticBuffer->getData(), rowWidth, sliceWidth);
 
@@ -708,7 +708,7 @@ namespace bs { namespace ct
 
 	void D3D11Texture::createStagingBuffer()
 	{
-		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
+		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPI::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
 		switch (mProperties.getTextureType())
 		{

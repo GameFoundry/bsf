@@ -94,7 +94,7 @@ namespace bs { namespace ct
 			samplerState.Filter = (D3D11_FILTER)(0x80 | samplerState.Filter);
 		}
 
-		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
+		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPI::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
 		HRESULT hr = device.getD3D11Device()->CreateSamplerState(&samplerState, &mSamplerState);
 

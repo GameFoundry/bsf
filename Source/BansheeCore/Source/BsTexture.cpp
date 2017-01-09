@@ -146,7 +146,7 @@ namespace bs
 				AsyncOp& asyncOp)
 		{
 			// Make sure any queued command start executing before reading
-			ct::RenderAPICore::instance().submitCommandBuffer(nullptr);
+			ct::RenderAPI::instance().submitCommandBuffer(nullptr);
 
 			texture->readData(*_pixData, _mipLevel, _face);
 			_pixData->_unlock();

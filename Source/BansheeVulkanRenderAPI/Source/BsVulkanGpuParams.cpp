@@ -49,7 +49,7 @@ namespace bs { namespace ct
 	{
 		VulkanGpuPipelineParamInfo& vkParamInfo = static_cast<VulkanGpuPipelineParamInfo&>(*mParamInfo);
 
-		VulkanRenderAPI& rapi = static_cast<VulkanRenderAPI&>(RenderAPICore::instance());
+		VulkanRenderAPI& rapi = static_cast<VulkanRenderAPI&>(RenderAPI::instance());
 		VulkanDevice* devices[BS_MAX_DEVICES];
 
 		VulkanUtility::getDevices(rapi, mDeviceMask, devices);
@@ -713,7 +713,7 @@ namespace bs { namespace ct
 		}
 
 		// Acquire sets as needed, and updated their contents if dirty
-		VulkanRenderAPI& rapi = static_cast<VulkanRenderAPI&>(RenderAPICore::instance());
+		VulkanRenderAPI& rapi = static_cast<VulkanRenderAPI&>(RenderAPI::instance());
 		VulkanDevice& device = *rapi._getDevice(deviceIdx);
 		VulkanDescriptorManager& descManager = device.getDescriptorManager();
 

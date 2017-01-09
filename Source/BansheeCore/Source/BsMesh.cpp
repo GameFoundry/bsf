@@ -71,7 +71,7 @@ namespace bs
 			[&](const SPtr<ct::MeshCore>& mesh, const SPtr<MeshData>& _meshData, AsyncOp& asyncOp)
 		{
 			// Make sure any queued command start executing before reading
-			ct::RenderAPICore::instance().submitCommandBuffer(nullptr);
+			ct::RenderAPI::instance().submitCommandBuffer(nullptr);
 
 			mesh->readData(*_meshData);
 			_meshData->_unlock();
@@ -449,7 +449,7 @@ namespace bs
 				LOGERR("Vertex buffer values for stream \"" + toString(i) + "\" are being written out of valid range.");
 			}
 
-			if (RenderAPICore::instance().getAPIInfo().getVertexColorFlipRequired())
+			if (RenderAPI::instance().getAPIInfo().getVertexColorFlipRequired())
 			{
 				UINT8* bufferCopy = (UINT8*)bs_alloc(bufferSize);
 				memcpy(bufferCopy, srcVertBufferData, bufferSize); // TODO Low priority - Attempt to avoid this copy

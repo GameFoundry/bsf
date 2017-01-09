@@ -85,7 +85,7 @@ namespace bs { namespace ct
 		void initialize() override																							\
 		{																													\
 			mParams = getEntries();																							\
-			RenderAPICore& rapi = RenderAPICore::instance();																\
+			RenderAPI& rapi = RenderAPI::instance();																		\
 																															\
 			GpuParamBlockDesc blockDesc = rapi.generateParamBlockDesc(#Name, mParams);										\
 			mBlockSize = blockDesc.blockSize * sizeof(UINT32);																\

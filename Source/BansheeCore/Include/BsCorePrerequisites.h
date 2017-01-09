@@ -403,7 +403,7 @@ namespace bs
 		class SamplerStateCore;
 		class IndexBufferCore;
 		class VertexBufferCore;
-		class RenderAPICore;
+		class RenderAPI;
 		class RenderTargetCore;
 		class RenderTextureCore;
 		class RenderWindowCore;

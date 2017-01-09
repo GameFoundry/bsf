@@ -16,7 +16,7 @@ namespace bs
 	SPtr<RenderWindow> D3D11RenderWindowManager::createImpl(RENDER_WINDOW_DESC& desc, UINT32 windowId, 
 		const SPtr<RenderWindow>& parentWindow)
 	{
-		ct::RenderAPICore* rs = ct::RenderAPICore::instancePtr();
+		ct::RenderAPI* rs = ct::RenderAPI::instancePtr();
 		ct::D3D11RenderAPI* d3d11rs = static_cast<ct::D3D11RenderAPI*>(rs);
 
 		if(parentWindow != nullptr)
@@ -42,7 +42,7 @@ namespace bs
 
 	SPtr<RenderWindowCore> D3D11RenderWindowManager::createInternal(RENDER_WINDOW_DESC& desc, UINT32 windowId)
 	{
-		RenderAPICore* rs = RenderAPICore::instancePtr();
+		RenderAPI* rs = RenderAPI::instancePtr();
 		D3D11RenderAPI* d3d11rs = static_cast<D3D11RenderAPI*>(rs);
 
 		// Create the window
