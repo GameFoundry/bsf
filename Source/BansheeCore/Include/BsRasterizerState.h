@@ -111,7 +111,7 @@ namespace bs
 
 	protected:
 		friend class RasterizerState;
-		friend class RasterizerStateCore;
+		friend class ct::RasterizerState;
 		friend class RasterizerStateRTTI;
 
 		RASTERIZER_STATE_DESC mData;
@@ -133,7 +133,7 @@ namespace bs
 		const RasterizerProperties& getProperties() const;
 
 		/** Retrieves a core implementation of the rasterizer state usable only from the core thread. */
-		SPtr<ct::RasterizerStateCore> getCore() const;
+		SPtr<ct::RasterizerState> getCore() const;
 
 		/** Creates a new rasterizer state using the specified rasterizer state descriptor structure. */
 		static SPtr<RasterizerState> create(const RASTERIZER_STATE_DESC& desc);
@@ -174,14 +174,14 @@ namespace bs
 	 */
 
 	/**
-	 * Core thread version of RasterizerState.
+	 * Core thread version of bs::RasterizerState.
 	 *
 	 * @note	Core thread.
 	 */
-	class BS_CORE_EXPORT RasterizerStateCore : public CoreObject
+	class BS_CORE_EXPORT RasterizerState : public CoreObject
 	{
 	public:
-		virtual ~RasterizerStateCore();
+		virtual ~RasterizerState();
 
 		/** Returns information about the rasterizer state. */
 		const RasterizerProperties& getProperties() const;
@@ -190,15 +190,15 @@ namespace bs
 		UINT32 getId() const { return mId; }
 
 		/** Creates a new rasterizer state using the specified rasterizer state descriptor structure. */
-		static SPtr<RasterizerStateCore> create(const RASTERIZER_STATE_DESC& desc);
+		static SPtr<RasterizerState> create(const RASTERIZER_STATE_DESC& desc);
 
 		/** Returns the default rasterizer state. */
-		static const SPtr<RasterizerStateCore>& getDefault();
+		static const SPtr<RasterizerState>& getDefault();
 
 	protected:
 		friend class RenderStateManager;
 
-		RasterizerStateCore(const RASTERIZER_STATE_DESC& desc, UINT32 id);
+		RasterizerState(const RASTERIZER_STATE_DESC& desc, UINT32 id);
 
 		/** @copydoc CoreObject::initialize */
 		void initialize() override;

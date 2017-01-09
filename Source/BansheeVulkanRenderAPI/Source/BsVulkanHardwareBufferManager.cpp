@@ -46,7 +46,7 @@ namespace bs { namespace ct
 		return mDummyUniformBuffer->getResource(deviceIdx)->getHandle();
 	}
 
-	SPtr<VertexBufferCore> VulkanHardwareBufferManager::createVertexBufferInternal(const VERTEX_BUFFER_DESC& desc,
+	SPtr<VertexBuffer> VulkanHardwareBufferManager::createVertexBufferInternal(const VERTEX_BUFFER_DESC& desc,
 		GpuDeviceFlags deviceMask)
 	{
 		SPtr<VulkanVertexBuffer> ret = bs_shared_ptr_new<VulkanVertexBuffer>(desc, deviceMask);
@@ -55,7 +55,7 @@ namespace bs { namespace ct
 		return ret;
 	}
 
-	SPtr<IndexBufferCore> VulkanHardwareBufferManager::createIndexBufferInternal(const INDEX_BUFFER_DESC& desc,
+	SPtr<IndexBuffer> VulkanHardwareBufferManager::createIndexBufferInternal(const INDEX_BUFFER_DESC& desc,
 		GpuDeviceFlags deviceMask)
 	{
 		SPtr<VulkanIndexBuffer> ret = bs_shared_ptr_new<VulkanIndexBuffer>( desc, deviceMask);
@@ -64,19 +64,19 @@ namespace bs { namespace ct
 		return ret;
 	}
 
-	SPtr<GpuParamBlockBufferCore> VulkanHardwareBufferManager::createGpuParamBlockBufferInternal(UINT32 size,
+	SPtr<GpuParamBlockBuffer> VulkanHardwareBufferManager::createGpuParamBlockBufferInternal(UINT32 size,
 		GpuParamBlockUsage usage, GpuDeviceFlags deviceMask)
 	{
 		VulkanGpuParamBlockBuffer* paramBlockBuffer =
 			new (bs_alloc<VulkanGpuParamBlockBuffer>()) VulkanGpuParamBlockBuffer(size, usage, deviceMask);
 
-		SPtr<GpuParamBlockBufferCore> paramBlockBufferPtr = bs_shared_ptr<VulkanGpuParamBlockBuffer>(paramBlockBuffer);
+		SPtr<GpuParamBlockBuffer> paramBlockBufferPtr = bs_shared_ptr<VulkanGpuParamBlockBuffer>(paramBlockBuffer);
 		paramBlockBufferPtr->_setThisPtr(paramBlockBufferPtr);
 
 		return paramBlockBufferPtr;
 	}
 
-	SPtr<GpuBufferCore> VulkanHardwareBufferManager::createGpuBufferInternal(const GPU_BUFFER_DESC& desc,
+	SPtr<GpuBuffer> VulkanHardwareBufferManager::createGpuBufferInternal(const GPU_BUFFER_DESC& desc,
 		GpuDeviceFlags deviceMask)
 	{
 		VulkanGpuBuffer* buffer = new (bs_alloc<VulkanGpuBuffer>()) VulkanGpuBuffer(desc, deviceMask);
@@ -87,11 +87,11 @@ namespace bs { namespace ct
 		return bufferPtr;
 	}
 
-	SPtr<GpuParamsCore> VulkanHardwareBufferManager::createGpuParamsInternal(
-		const SPtr<GpuPipelineParamInfoCore>& paramInfo, GpuDeviceFlags deviceMask)
+	SPtr<GpuParams> VulkanHardwareBufferManager::createGpuParamsInternal(
+		const SPtr<GpuPipelineParamInfo>& paramInfo, GpuDeviceFlags deviceMask)
 	{
 		VulkanGpuParams* params = new (bs_alloc<VulkanGpuParams>()) VulkanGpuParams(paramInfo, deviceMask);
-		SPtr<GpuParamsCore> paramsPtr = bs_shared_ptr<GpuParamsCore>(params);
+		SPtr<GpuParams> paramsPtr = bs_shared_ptr<GpuParams>(params);
 		paramsPtr->_setThisPtr(paramsPtr);
 
 		return paramsPtr;

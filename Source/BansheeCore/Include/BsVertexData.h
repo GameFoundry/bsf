@@ -24,13 +24,13 @@ namespace bs { namespace ct
         ~VertexData();
 
 		/**	Assigns a new vertex buffer to the specified index. */
-		void setBuffer(UINT32 index, SPtr<VertexBufferCore> buffer);
+		void setBuffer(UINT32 index, SPtr<VertexBuffer> buffer);
 
 		/**	Retrieves a vertex buffer from the specified index. */
-		SPtr<VertexBufferCore> getBuffer(UINT32 index) const;
+		SPtr<VertexBuffer> getBuffer(UINT32 index) const;
 
 		/**	Returns a list of all bound vertex buffers. */
-		const UnorderedMap<UINT32, SPtr<VertexBufferCore>>& getBuffers() const { return mVertexBuffers; }
+		const UnorderedMap<UINT32, SPtr<VertexBuffer>>& getBuffers() const { return mVertexBuffers; }
 
 		/**	Checks if there is a buffer at the specified index. */
 		bool isBufferBound(UINT32 index) const;
@@ -42,7 +42,7 @@ namespace bs { namespace ct
 		UINT32 getMaxBufferIndex() const { return mMaxBufferIdx; }
 
 		/**	Declaration used for the contained vertex buffers. */
-		SPtr<VertexDeclarationCore> vertexDeclaration;
+		SPtr<VertexDeclaration> vertexDeclaration;
 
 		/**	Number of vertices to use. */
 		UINT32 vertexCount;
@@ -50,7 +50,7 @@ namespace bs { namespace ct
 	private:
 		void recalculateMaxIndex();
 
-		UnorderedMap<UINT32, SPtr<VertexBufferCore>> mVertexBuffers;
+		UnorderedMap<UINT32, SPtr<VertexBuffer>> mVertexBuffers;
 		UINT32 mMaxBufferIdx = 0;
 	};
 

@@ -2,9 +2,9 @@ Materials									{#materials}
 ===============
 [TOC]
 
-A material controls how is an object rendered. In Banshee it is represented with @ref bs::Material "Material" and @ref bs::MaterialCore "MaterialCore" classes. Both of these provide almost equivalent functionality, but the former is for use on the simulation thread, and the latter is for use on the core thread. If you are confused by the dual nature of the objects, read the [core thread](@ref coreThread) manual. 
+A material controls how is an object rendered. In Banshee it is represented with @ref bs::Material "Material" and @ref bs::ct::Material "ct::Material" classes. Both of these provide almost equivalent functionality, but the former is for use on the simulation thread, and the latter is for use on the core thread. If you are confused by the dual nature of the objects, read the [core thread](@ref coreThread) manual. 
 
-We'll focus on the simulation thread @ref bs::Material "Material" throughout this manual, but aside from the `Core` suffix there are no major differences between the two interfaces.
+We'll focus on the simulation thread @ref bs::Material "Material" throughout this manual, but aside from the `ct` namespace there are no major differences between the two interfaces.
 
 Internally material contains a set of GPU programs, render states and GPU program parameters. GPU programs and render states are immutable and are controlled by the @ref bs::Shader "Shader" assigned to the material. The parameters can be modified by the interface provided by the material, and this parameter access actually constitutes the bulk of the material's interface. Essentially materials can be thought of as shader "instances".
 
@@ -46,8 +46,8 @@ Now that we know how to create a pass, we can use one or multiple passes to init
 
 To create a technique call @ref bs::Technique::create "Technique::create" and provide it with:
  - One or multiple passes
- - Supported render API name: Use built-in `RenderAPIAny` to signal that the technique works on any API, or use the render API identifier to signal that it only works on a specific one. By default supported identifiers are: `"VulkanRenderAPI"`, `"D3D11RenderAPI"`, `"GLRenderAPI"`, but more can be added via plugins. In general those identifiers are returned from @ref bs::RenderAPICore::getName "RenderAPICore::getName". Most users should be okay by providing `RenderAPIAny`.
- - Supported renderer name: Use built-in `RendererAny` to signal that the technique works on any renderer, or use the renderer identifier to signal that it only works on a specific one. By default the only supported identifier is `"RenderBeast"`, but more can be added via plugins. In general those identifiers are returned from @ref bs::Renderer::getName "Renderer::getName". Most users should be okay by providing `RendererAny`.
+ - Supported render API name: Use built-in `RenderAPIAny` to signal that the technique works on any API, or use the render API identifier to signal that it only works on a specific one. By default supported identifiers are: `"VulkanRenderAPI"`, `"D3D11RenderAPI"`, `"GLRenderAPI"`, but more can be added via plugins. In general those identifiers are returned from @ref bs::ct::RenderAPI::getName "ct::RenderAPI::getName". Most users should be okay by providing `RenderAPIAny`.
+ - Supported renderer name: Use built-in `RendererAny` to signal that the technique works on any renderer, or use the renderer identifier to signal that it only works on a specific one. By default the only supported identifier is `"RenderBeast"`, but more can be added via plugins. In general those identifiers are returned from @ref bs::ct::Renderer::getName "ct::Renderer::getName". Most users should be okay by providing `RendererAny`.
  - An optional list of tags that allows renderer to pick which technique to use when rendering objects. Can be left empty in most cases.
 
 For example:
@@ -185,7 +185,7 @@ albedoParam.set(Texture::White);
 # Rendering with material {#materials_d}
 From the simulation thread you cannot use material to render manually (you must instead use GPU programs and states manually as described by the [render API](@ref renderAPI) manual). You are instead expected to set the material on a @ref bs::Renderable "Renderable" object which will then be used for rendering automatically. Read the [renderer](@ref renderer) manual for more information.
 
-Core thread gives you more flexibility and you can use @ref bs::RendererUtility::setPass "RendererUtility::setPass" to bind a specific pass from a material to the pipeline, and @ref bs::RendererUtility::setPassParams "RendererUtility::setPassParams" to bind material parameters for a specific pass. 
+Core thread gives you more flexibility and you can use @ref bs::ct::RendererUtility::setPass "ct::RendererUtility::setPass" to bind a specific pass from a material to the pipeline, and @ref bs::ct::RendererUtility::setPassParams "ct::RendererUtility::setPassParams" to bind material parameters for a specific pass. 
 
 In order to retrieve a set of per-pass @ref bs::GpuParams "GpuParams" that can be used for binding directly to the pipeline, call @ref bs::Material::createParamsSet "Material::createParamsSet", followed by @ref bs::Material::updateParamsSet "Material::updateParamsSet". You are required to call @ref bs::Material::updateParamsSet "Material::updateParamsSet" whenever material parameters change, in order to transfer the new data to @ref bs::GpuParams "GpuParams".
 

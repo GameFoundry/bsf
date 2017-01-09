@@ -43,13 +43,13 @@ namespace bs { namespace ct
 		ID3D11VertexShader* mClearQuadVS;
 		ID3D11PixelShader* mClearQuadPS;
 
-		SPtr<BlendStateCore> mClearQuadBlendStateYesC;
-		SPtr<BlendStateCore> mClearQuadBlendStateNoC;
-		SPtr<RasterizerStateCore> mClearQuadRasterizerState;
-		SPtr<DepthStencilStateCore> mClearQuadDSStateNoD_NoS;
-		SPtr<DepthStencilStateCore> mClearQuadDSStateYesD_NoS;
-		SPtr<DepthStencilStateCore> mClearQuadDSStateYesD_YesS;
-		SPtr<DepthStencilStateCore> mClearQuadDSStateNoD_YesS;
+		SPtr<BlendState> mClearQuadBlendStateYesC;
+		SPtr<BlendState> mClearQuadBlendStateNoC;
+		SPtr<RasterizerState> mClearQuadRasterizerState;
+		SPtr<DepthStencilState> mClearQuadDSStateNoD_NoS;
+		SPtr<DepthStencilState> mClearQuadDSStateYesD_NoS;
+		SPtr<DepthStencilState> mClearQuadDSStateYesD_YesS;
+		SPtr<DepthStencilState> mClearQuadDSStateNoD_YesS;
 	};
 
 	/** @} */

@@ -31,7 +31,7 @@ namespace bs { namespace ct
 		 *								window cannot have a parent.
 		 * @return						Returns newly created window.
 		 */
-		virtual SPtr<RenderWindow> newWindow(RENDER_WINDOW_DESC& desc, UINT32 windowId, SPtr<RenderWindow> parentWindow) = 0;
+		virtual SPtr<bs::RenderWindow> newWindow(RENDER_WINDOW_DESC& desc, UINT32 windowId, SPtr<bs::RenderWindow> parentWindow) = 0;
 
 		/**
 		 * Creates a new render window using the specified descriptor.
@@ -40,7 +40,7 @@ namespace bs { namespace ct
 		 * @param[in]	windowId		Window ID provided by the render window manager.
 		 * @return						Returns newly created window.
 		 */
-		virtual SPtr<RenderWindowCore> newWindowCore(RENDER_WINDOW_DESC& desc, UINT32 windowId) = 0;
+		virtual SPtr<RenderWindow> newWindowCore(RENDER_WINDOW_DESC& desc, UINT32 windowId) = 0;
 
 		/**	Called when OpenGL is being initialized. */
 		virtual void start() = 0;

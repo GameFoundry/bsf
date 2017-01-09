@@ -2,7 +2,7 @@ Textures									{#textures}
 ===============
 [TOC]
 
-Textures in Banshee are represented with the @ref bs::Texture "Texture" and @ref bs::TextureCore "TextureCore" classes. Both of these provide almost equivalent functionality, but the former is for use on the simulation thread, and the latter is for use on the core thread. If you are confused by the dual nature of the objects, read the [core thread](@ref coreThread) manual. 
+Textures in Banshee are represented with the @ref bs::Texture "Texture" and @ref bs::ct::Texture "ct::Texture" classes. Both of these provide almost equivalent functionality, but the former is for use on the simulation thread, and the latter is for use on the core thread. If you are confused by the dual nature of the objects, read the [core thread](@ref coreThread) manual. 
 
 We're going to focus on the simulation thread implementation in this manual, and then note the differences in the core thread version at the end.
 
@@ -60,11 +60,11 @@ To use a texture for rendering you need to either:
 A texture is a @ref bs::Resource "Resource" and can be saved/loaded like any other. See the [resource](@ref resources) manual.
 
 # Core thread textures {#textures_f}
-So far we have only talked about the simulation thread @ref bs::Texture "Texture" but have ignored the core thread @ref bs::TextureCore "TextureCore". The functionality between the two is mostly the same, with the major difference being that the core thread version doesn't have asychronous write/read methods, and those operations are instead performed immediately.
+So far we have only talked about the simulation thread @ref bs::Texture "Texture" but have ignored the core thread @ref bs::ct::Texture "ct::Texture". The functionality between the two is mostly the same, with the major difference being that the core thread version doesn't have asychronous write/read methods, and those operations are instead performed immediately.
 
-You can also use @ref bs::TextureCore::lock "TextureCore::lock" and @ref bs::TextureCore::unlock "TextureCore::unlock" to get access to the texture buffer, which allows you to only read/write from/to portions of it, instead of always writing to the entire buffer.
+You can also use @ref bs::ct::Texture::lock "ct::Texture::lock" and @ref bs::ct::Texture::unlock "ct::Texture::unlock" to get access to the texture buffer, which allows you to only read/write from/to portions of it, instead of always writing to the entire buffer.
 
-And finally @ref bs::TextureCore::copy "TextureCore::copy" method can be used for quickly copying a contents of one texture to another texture. This method will also resolve multi-sampled surface in the case the source is multi-sampled but the destination is not.
+And finally @ref bs::ct::Texture::copy "ct::Texture::copy" method can be used for quickly copying a contents of one texture to another texture. This method will also resolve multi-sampled surface in the case the source is multi-sampled but the destination is not.
 
 # Load-store textures {#textures_g}
 Load-store textures are a special type of textures that can be written to by the GPU. This is opposed to normal textures which are read only. They are particularily useful for compute operations which cannot use render targets for output, or for GPU operations that which to write to arbitrary locations rather than just to their own pixel location.

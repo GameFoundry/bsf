@@ -25,21 +25,21 @@ namespace bs { namespace ct
         return LANGUAGE_NAME;
     }
 
-	SPtr<GpuProgramCore> VulkanGLSLProgramFactory::create(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
+	SPtr<GpuProgram> VulkanGLSLProgramFactory::create(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
     {
-		SPtr<GpuProgramCore> gpuProg = bs_shared_ptr<VulkanGpuProgram>(new (bs_alloc<VulkanGpuProgram>())
+		SPtr<GpuProgram> gpuProg = bs_shared_ptr<VulkanGpuProgram>(new (bs_alloc<VulkanGpuProgram>())
 			VulkanGpuProgram(desc, deviceMask));
 		gpuProg->_setThisPtr(gpuProg);
 
 		return gpuProg;
     }
 
-	SPtr<GpuProgramCore> VulkanGLSLProgramFactory::create(GpuProgramType type, GpuDeviceFlags deviceMask)
+	SPtr<GpuProgram> VulkanGLSLProgramFactory::create(GpuProgramType type, GpuDeviceFlags deviceMask)
 	{
 		GPU_PROGRAM_DESC desc;
 		desc.type = type;
 
-		SPtr<GpuProgramCore> gpuProg = bs_shared_ptr<VulkanGpuProgram>(new (bs_alloc<VulkanGpuProgram>())
+		SPtr<GpuProgram> gpuProg = bs_shared_ptr<VulkanGpuProgram>(new (bs_alloc<VulkanGpuProgram>())
 			VulkanGpuProgram(desc, deviceMask));
 		gpuProg->_setThisPtr(gpuProg);
 

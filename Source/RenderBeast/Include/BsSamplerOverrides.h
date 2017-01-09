@@ -22,7 +22,7 @@ namespace bs { namespace ct
 	{
 		UINT32 paramIdx;
 		UINT64 originalStateHash;
-		SPtr<SamplerStateCore> state;
+		SPtr<SamplerState> state;
 		UINT32 set;
 		UINT32 slot;
 	};
@@ -79,14 +79,14 @@ namespace bs { namespace ct
 		 * Checks if the provided sampler state requires an override, in case the render options have requirements not
 		 * fulfilled by current sampler state (for example filtering type).
 		 */
-		static bool checkNeedsOverride(const SPtr<SamplerStateCore>& samplerState, 
+		static bool checkNeedsOverride(const SPtr<SamplerState>& samplerState, 
 			const SPtr<RenderBeastOptions>& options);
 
 		/**
 		 * Generates a new sampler state override using the provided state as the basis. Overridden properties are taken
 		 * from the provided render options.
 		 */
-		static SPtr<SamplerStateCore> generateSamplerOverride(const SPtr<SamplerStateCore>& samplerState, 
+		static SPtr<SamplerState> generateSamplerOverride(const SPtr<SamplerState>& samplerState, 
 			const SPtr<RenderBeastOptions>& options);
 	};
 

@@ -99,9 +99,9 @@ namespace bs
 		_markCoreDirty();
 	}
 
-	SPtr<ct::ViewportCore> Viewport::getCore() const
+	SPtr<ct::Viewport> Viewport::getCore() const
 	{
-		return std::static_pointer_cast<ct::ViewportCore>(mCoreSpecific);
+		return std::static_pointer_cast<ct::Viewport>(mCoreSpecific);
 	}
 
 	void Viewport::_markCoreDirty()
@@ -127,14 +127,14 @@ namespace bs
 
 	SPtr<ct::CoreObject> Viewport::createCore() const
 	{
-		SPtr<ct::RenderTargetCore> targetCore;
+		SPtr<ct::RenderTarget> targetCore;
 		if (mTarget != nullptr)
 			targetCore = mTarget->getCore();
 
-		ct::ViewportCore* viewport = new (bs_alloc<ct::ViewportCore>())
-			ct::ViewportCore(targetCore, mNormArea.x, mNormArea.y, mNormArea.width, mNormArea.height);
+		ct::Viewport* viewport = new (bs_alloc<ct::Viewport>())
+			ct::Viewport(targetCore, mNormArea.x, mNormArea.y, mNormArea.width, mNormArea.height);
 
-		SPtr<ct::ViewportCore> viewportPtr = bs_shared_ptr<ct::ViewportCore>(viewport);
+		SPtr<ct::Viewport> viewportPtr = bs_shared_ptr<ct::Viewport>(viewport);
 		viewportPtr->_setThisPtr(viewportPtr);
 
 		return viewportPtr;
@@ -150,7 +150,7 @@ namespace bs
 		size += rttiGetElemSize(mClearColor);
 		size += rttiGetElemSize(mDepthClearValue);
 		size += rttiGetElemSize(mStencilClearValue);
-		size += sizeof(SPtr<ct::RenderTargetCore>);
+		size += sizeof(SPtr<ct::RenderTarget>);
 
 		UINT8* buffer = allocator->alloc(size);
 
@@ -163,7 +163,7 @@ namespace bs
 		dataPtr = rttiWriteElem(mDepthClearValue, dataPtr);
 		dataPtr = rttiWriteElem(mStencilClearValue, dataPtr);
 
-		SPtr<ct::RenderTargetCore>* rtPtr = new (dataPtr) SPtr<ct::RenderTargetCore>();
+		SPtr<ct::RenderTarget>* rtPtr = new (dataPtr) SPtr<ct::RenderTarget>();
 		if (mTarget != nullptr)
 			*rtPtr = mTarget->getCore();
 		else
@@ -209,24 +209,24 @@ namespace bs
 
 	namespace ct
 	{
-	ViewportCore::ViewportCore(const SPtr<RenderTargetCore>& target, float x, float y, float width, float height)
+	Viewport::Viewport(const SPtr<RenderTarget>& target, float x, float y, float width, float height)
 		:ViewportBase(x, y, width, height), mTarget(target)
 	{
 
 	}
 
-	SPtr<ViewportCore> ViewportCore::create(const SPtr<RenderTargetCore>& target, float x, float y, float width, float height)
+	SPtr<Viewport> Viewport::create(const SPtr<RenderTarget>& target, float x, float y, float width, float height)
 	{
-		ViewportCore* viewport = new (bs_alloc<Viewport>()) ViewportCore(target, x, y, width, height);
+		Viewport* viewport = new (bs_alloc<Viewport>()) Viewport(target, x, y, width, height);
 
-		SPtr<ViewportCore> viewportPtr = bs_shared_ptr<ViewportCore>(viewport);
+		SPtr<Viewport> viewportPtr = bs_shared_ptr<Viewport>(viewport);
 		viewportPtr->_setThisPtr(viewportPtr);
 		viewportPtr->initialize();
 
 		return viewportPtr;
 	}
 
-	UINT32 ViewportCore::getTargetWidth() const
+	UINT32 Viewport::getTargetWidth() const
 	{
 		if (mTarget != nullptr)
 			return mTarget->getProperties().getWidth();
@@ -234,7 +234,7 @@ namespace bs
 		return 0;
 	}
 
-	UINT32 ViewportCore::getTargetHeight() const
+	UINT32 Viewport::getTargetHeight() const
 	{
 		if (mTarget != nullptr)
 			return mTarget->getProperties().getHeight();
@@ -242,7 +242,7 @@ namespace bs
 		return 0;
 	}
 
-	void ViewportCore::syncToCore(const CoreSyncData& data)
+	void Viewport::syncToCore(const CoreSyncData& data)
 	{
 		char* dataPtr = (char*)data.getBuffer();
 		dataPtr = rttiReadElem(mNormArea, dataPtr);
@@ -253,10 +253,10 @@ namespace bs
 		dataPtr = rttiReadElem(mDepthClearValue, dataPtr);
 		dataPtr = rttiReadElem(mStencilClearValue, dataPtr);
 
-		SPtr<RenderTargetCore>* rtPtr = (SPtr<RenderTargetCore>*)dataPtr;
+		SPtr<RenderTarget>* rtPtr = (SPtr<RenderTarget>*)dataPtr;
 		mTarget = *rtPtr;
 
-		rtPtr->~SPtr<RenderTargetCore>();
+		rtPtr->~SPtr<RenderTarget>();
 	}
 	}
 }

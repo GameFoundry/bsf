@@ -11,7 +11,7 @@ namespace bs { namespace ct
 	{ }
 
 	template<class T>
-	void ParamBlockParam<T>::set(const SPtr<GpuParamBlockBufferCore>& paramBlock, const T& value, UINT32 arrayIdx) const
+	void ParamBlockParam<T>::set(const SPtr<GpuParamBlockBuffer>& paramBlock, const T& value, UINT32 arrayIdx) const
 	{
 #if BS_DEBUG_MODE
 		if (arrayIdx >= mParamDesc.arraySize)
@@ -45,7 +45,7 @@ namespace bs { namespace ct
 	}
 
 	template<class T>
-	T ParamBlockParam<T>::get(const SPtr<GpuParamBlockBufferCore>& paramBlock, UINT32 arrayIdx) const
+	T ParamBlockParam<T>::get(const SPtr<GpuParamBlockBuffer>& paramBlock, UINT32 arrayIdx) const
 	{
 #if BS_DEBUG_MODE
 		if (arrayIdx >= mParamDesc.arraySize)

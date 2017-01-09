@@ -19,10 +19,10 @@ namespace bs { namespace ct
         Win32GLSupport();
 
 		/** @copydoc GLSupport::newWindow */
-		SPtr<RenderWindow> newWindow(RENDER_WINDOW_DESC& desc, UINT32 windowId, SPtr<RenderWindow> parentWindow) override;
+		SPtr<bs::RenderWindow> newWindow(RENDER_WINDOW_DESC& desc, UINT32 windowId, SPtr<bs::RenderWindow> parentWindow) override;
 
 		/** @copydoc GLSupport::newWindowCore */
-		SPtr<RenderWindowCore> newWindowCore(RENDER_WINDOW_DESC& desc, UINT32 windowId) override;
+		SPtr<RenderWindow> newWindowCore(RENDER_WINDOW_DESC& desc, UINT32 windowId) override;
 
 		/** @copydoc GLSupport::start */
 		void start() override;

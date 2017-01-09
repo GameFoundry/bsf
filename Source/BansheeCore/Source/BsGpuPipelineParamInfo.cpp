@@ -230,9 +230,9 @@ namespace bs
 		return paramInfo;
 	}
 
-	SPtr<ct::GpuPipelineParamInfoCore> GpuPipelineParamInfo::getCore() const
+	SPtr<ct::GpuPipelineParamInfo> GpuPipelineParamInfo::getCore() const
 	{
-		return std::static_pointer_cast<ct::GpuPipelineParamInfoCore>(mCoreSpecific);
+		return std::static_pointer_cast<ct::GpuPipelineParamInfo>(mCoreSpecific);
 	}
 
 	SPtr<ct::CoreObject> GpuPipelineParamInfo::createCore() const
@@ -250,11 +250,11 @@ namespace bs
 
 	namespace ct
 	{
-	GpuPipelineParamInfoCore::GpuPipelineParamInfoCore(const GPU_PIPELINE_PARAMS_DESC& desc, GpuDeviceFlags deviceMask)
+	GpuPipelineParamInfo::GpuPipelineParamInfo(const GPU_PIPELINE_PARAMS_DESC& desc, GpuDeviceFlags deviceMask)
 		:GpuPipelineParamInfoBase(desc)
 	{ }
 
-	SPtr<GpuPipelineParamInfoCore> GpuPipelineParamInfoCore::create(const GPU_PIPELINE_PARAMS_DESC& desc, 
+	SPtr<GpuPipelineParamInfo> GpuPipelineParamInfo::create(const GPU_PIPELINE_PARAMS_DESC& desc, 
 		GpuDeviceFlags deviceMask)
 	{
 		return RenderStateManager::instance().createPipelineParamInfo(desc, deviceMask);

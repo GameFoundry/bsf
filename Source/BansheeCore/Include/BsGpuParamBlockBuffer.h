@@ -53,7 +53,7 @@ namespace bs
 		UINT32 getSize() const { return mSize; }
 
 		/**	Retrieves a core implementation of a GPU param block buffer usable only from the core thread. */
-		SPtr<ct::GpuParamBlockBufferCore> getCore() const;
+		SPtr<ct::GpuParamBlockBuffer> getCore() const;
 
 		/** @copydoc HardwareBufferManager::createGpuParamBlockBuffer */
 		static SPtr<GpuParamBlockBuffer> create(UINT32 size, GpuParamBlockUsage usage = GPBU_DYNAMIC);
@@ -79,15 +79,15 @@ namespace bs
 	 */
 
 	/**
-	 * Core thread version of a GpuParamBlockBuffer.
+	 * Core thread version of a bs::GpuParamBlockBuffer.
 	 *
 	 * @note	Core thread only.
 	 */
-	class BS_CORE_EXPORT GpuParamBlockBufferCore : public CoreObject
+	class BS_CORE_EXPORT GpuParamBlockBuffer : public CoreObject
 	{
 	public:
-		GpuParamBlockBufferCore(UINT32 size, GpuParamBlockUsage usage, GpuDeviceFlags deviceMask);
-		virtual ~GpuParamBlockBufferCore();
+		GpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage, GpuDeviceFlags deviceMask);
+		virtual ~GpuParamBlockBuffer();
 
 		/** 
 		 * Writes all of the specified data to the buffer. Data size must be the same size as the buffer. 
@@ -131,7 +131,7 @@ namespace bs
 		UINT32 getSize() const { return mSize; }
 
 		/** @copydoc HardwareBufferManager::createGpuParamBlockBuffer */
-		static SPtr<GpuParamBlockBufferCore> create(UINT32 size, GpuParamBlockUsage usage = GPBU_DYNAMIC,
+		static SPtr<GpuParamBlockBuffer> create(UINT32 size, GpuParamBlockUsage usage = GPBU_DYNAMIC,
 			GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
 	protected:

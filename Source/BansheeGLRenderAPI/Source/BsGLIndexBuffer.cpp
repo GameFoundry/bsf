@@ -8,7 +8,7 @@
 namespace bs { namespace ct
 {
 	GLIndexBuffer::GLIndexBuffer(const INDEX_BUFFER_DESC& desc, GpuDeviceFlags deviceMask)
-		:IndexBufferCore(desc, deviceMask), mUsage(desc.usage)
+		:IndexBuffer(desc, deviceMask), mUsage(desc.usage)
 	{
 		assert((deviceMask == GDF_DEFAULT || deviceMask == GDF_PRIMARY) && "Multiple GPUs not supported natively on OpenGL.");
 	}
@@ -23,7 +23,7 @@ namespace bs { namespace ct
 		mBuffer.initialize(GL_ELEMENT_ARRAY_BUFFER, mSize, mUsage);
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_IndexBuffer);
-		IndexBufferCore::initialize();
+		IndexBuffer::initialize();
 	}
 
 	void* GLIndexBuffer::map(UINT32 offset, UINT32 length, GpuLockOptions options, UINT32 deviceIdx, UINT32 queueIdx)

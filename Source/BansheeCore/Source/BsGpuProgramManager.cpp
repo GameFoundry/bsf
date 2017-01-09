@@ -33,14 +33,14 @@ namespace bs
 	String sNullLang = "null";
 
 	/** Null GPU program used in place of GPU programs we cannot create. Null programs don't do anything. */
-	class NullProgramCore : public GpuProgramCore
+	class NullProgram : public GpuProgram
 	{
 	public:
-		NullProgramCore()
-			:GpuProgramCore(GPU_PROGRAM_DESC(), GDF_DEFAULT)
+		NullProgram()
+			:GpuProgram(GPU_PROGRAM_DESC(), GDF_DEFAULT)
 		{ }
 
-		~NullProgramCore() { }
+		~NullProgram() { }
 
 		bool isSupported() const { return false; }
 		const String& getLanguage() const { return sNullLang; }
@@ -63,17 +63,17 @@ namespace bs
 			return sNullLang;
 		}
 
-		SPtr<GpuProgramCore> create(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask) override
+		SPtr<GpuProgram> create(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask) override
 		{
-			SPtr<NullProgramCore> ret = bs_shared_ptr_new<NullProgramCore>();
+			SPtr<NullProgram> ret = bs_shared_ptr_new<NullProgram>();
 			ret->_setThisPtr(ret);
 
 			return ret;
 		}
 
-		SPtr<GpuProgramCore> create(GpuProgramType type, GpuDeviceFlags deviceMask) override
+		SPtr<GpuProgram> create(GpuProgramType type, GpuDeviceFlags deviceMask) override
 		{
-			SPtr<NullProgramCore> ret = bs_shared_ptr_new<NullProgramCore>();
+			SPtr<NullProgram> ret = bs_shared_ptr_new<NullProgram>();
 			ret->_setThisPtr(ret);
 
 			return ret;
@@ -122,18 +122,18 @@ namespace bs
 		return i != mFactories.end();
 	}
 
-	SPtr<GpuProgramCore> GpuProgramManager::create(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
+	SPtr<GpuProgram> GpuProgramManager::create(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
     {
-		SPtr<GpuProgramCore> ret = createInternal(desc, deviceMask);
+		SPtr<GpuProgram> ret = createInternal(desc, deviceMask);
 		ret->initialize();
 
         return ret;
     }
 
-	SPtr<GpuProgramCore> GpuProgramManager::createInternal(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
+	SPtr<GpuProgram> GpuProgramManager::createInternal(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
 	{
 		GpuProgramFactory* factory = getFactory(desc.language);
-		SPtr<GpuProgramCore> ret = factory->create(desc, deviceMask);
+		SPtr<GpuProgram> ret = factory->create(desc, deviceMask);
 
 		return ret;
 	}

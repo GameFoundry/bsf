@@ -37,14 +37,14 @@ namespace bs
 
 	void RenderAPI::setVertexBuffers(UINT32 index, const Vector<SPtr<VertexBuffer>>& buffers)
 	{
-		Vector<SPtr<ct::VertexBufferCore>> coreBuffers(buffers.size());
+		Vector<SPtr<ct::VertexBuffer>> coreBuffers(buffers.size());
 		for (UINT32 i = 0; i < (UINT32)buffers.size(); i++)
 			coreBuffers[i] = buffers[i] != nullptr ? buffers[i]->getCore() : nullptr;
 
-		std::function<void(ct::RenderAPI*, UINT32, const Vector<SPtr<ct::VertexBufferCore>>&)> resizeFunc =
-			[](ct::RenderAPI* rs, UINT32 idx, const Vector<SPtr<ct::VertexBufferCore>>& _buffers)
+		std::function<void(ct::RenderAPI*, UINT32, const Vector<SPtr<ct::VertexBuffer>>&)> resizeFunc =
+			[](ct::RenderAPI* rs, UINT32 idx, const Vector<SPtr<ct::VertexBuffer>>& _buffers)
 		{
-			rs->setVertexBuffers(idx, (SPtr<ct::VertexBufferCore>*)_buffers.data(), (UINT32)_buffers.size());
+			rs->setVertexBuffers(idx, (SPtr<ct::VertexBuffer>*)_buffers.data(), (UINT32)_buffers.size());
 		};
 
 		gCoreThread().queueCommand(std::bind(resizeFunc, ct::RenderAPI::instancePtr(), index, coreBuffers));
@@ -159,13 +159,13 @@ namespace bs
 		mCurrentCapabilities = nullptr;
     }
 
-	SPtr<RenderWindow> RenderAPI::initialize(const RENDER_WINDOW_DESC& primaryWindowDesc)
+	SPtr<bs::RenderWindow> RenderAPI::initialize(const RENDER_WINDOW_DESC& primaryWindowDesc)
 	{
 		gCoreThread().queueCommand(std::bind((void(RenderAPI::*)())&RenderAPI::initialize, this), 
 			CTQF_InternalQueue | CTQF_BlockUntilComplete);
 
 		RENDER_WINDOW_DESC windowDesc = primaryWindowDesc;
-		SPtr<RenderWindow> renderWindow = RenderWindow::create(windowDesc, nullptr);
+		SPtr<bs::RenderWindow> renderWindow = bs::RenderWindow::create(windowDesc, nullptr);
 
 		gCoreThread().queueCommand(std::bind(&RenderAPI::initializeWithWindow, this, renderWindow->getCore()), 
 			CTQF_InternalQueue | CTQF_BlockUntilComplete);
@@ -178,7 +178,7 @@ namespace bs
 		// Do nothing
 	}
 
-	void RenderAPI::initializeWithWindow(const SPtr<RenderWindowCore>& primaryWindow)
+	void RenderAPI::initializeWithWindow(const SPtr<RenderWindow>& primaryWindow)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 	}

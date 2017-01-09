@@ -36,9 +36,9 @@ namespace bs
 		return getCore()->getParamDesc();
 	}
 
-	SPtr<ct::GpuProgramCore> GpuProgram::getCore() const
+	SPtr<ct::GpuProgram> GpuProgram::getCore() const
 	{
-		return std::static_pointer_cast<ct::GpuProgramCore>(mCoreSpecific);
+		return std::static_pointer_cast<ct::GpuProgram>(mCoreSpecific);
 	}
 
 	SPtr<ct::CoreObject> GpuProgram::createCore() const
@@ -73,14 +73,14 @@ namespace bs
 
 	namespace ct
 	{
-	GpuProgramCore::GpuProgramCore(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
+	GpuProgram::GpuProgram(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
 		:mNeedsAdjacencyInfo(desc.requiresAdjacency), mIsCompiled(false), mProperties(desc.source, desc.entryPoint, 
 			desc.type)
 	{
 		mParametersDesc = bs_shared_ptr_new<GpuParamDesc>();
 	}
 
-	bool GpuProgramCore::isSupported() const
+	bool GpuProgram::isSupported() const
     {
 		if (!isRequiredCapabilitiesSupported())
 			return false;
@@ -88,12 +88,12 @@ namespace bs
 		return true;
     }
 
-	bool GpuProgramCore::isRequiredCapabilitiesSupported() const
+	bool GpuProgram::isRequiredCapabilitiesSupported() const
 	{
 		return true;
 	}
 
-	SPtr<GpuProgramCore> GpuProgramCore::create(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
+	SPtr<GpuProgram> GpuProgram::create(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
 	{
 		return GpuProgramManager::instance().create(desc, deviceMask);
 	}

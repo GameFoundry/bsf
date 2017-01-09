@@ -74,7 +74,7 @@ namespace bs
 		bool isMaximized() const { return mIsMaximized; }
 
 	protected:
-		friend class ct::RenderWindowCore;
+		friend class ct::RenderWindow;
 		friend class RenderWindow;
 
 		bool mIsFullScreen = false;
@@ -134,49 +134,49 @@ namespace bs
 		void show();
 
 		/** 
-		 * @copydoc ct::RenderWindowCore::minimize  
+		 * @copydoc ct::RenderWindow::minimize  
 		 * 
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		void minimize();
 
 		/** 
-		 * @copydoc ct::RenderWindowCore::maximize 
+		 * @copydoc ct::RenderWindow::maximize 
 		 * 
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		void maximize();
 
 		/** 
-		 * @copydoc ct::RenderWindowCore::restore  
+		 * @copydoc ct::RenderWindow::restore  
 		 * 
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		void restore();
 
 		/** 
-		 * @copydoc ct::RenderWindowCore::setFullscreen(UINT32, UINT32, float, UINT32) 
+		 * @copydoc ct::RenderWindow::setFullscreen(UINT32, UINT32, float, UINT32) 
 		 * 
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		void setFullscreen(UINT32 width, UINT32 height, float refreshRate = 60.0f, UINT32 monitorIdx = 0);
 
 		/** 
-		 * @copydoc ct::RenderWindowCore::setFullscreen(const VideoMode&) 
+		 * @copydoc ct::RenderWindow::setFullscreen(const VideoMode&) 
 		 * 
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		void setFullscreen(const VideoMode& videoMode);
 
 		/** 
-		 * @copydoc ct::RenderWindowCore::setWindowed 
+		 * @copydoc ct::RenderWindow::setWindowed 
 		 * 
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		void setWindowed(UINT32 width, UINT32 height);
 
 		/**	Retrieves a core implementation of a render window usable only from the core thread. */
-		SPtr<ct::RenderWindowCore> getCore() const;
+		SPtr<ct::RenderWindow> getCore() const;
 
 		/**	Returns properties that describe the render window. */
 		const RenderWindowProperties& getProperties() const;
@@ -217,12 +217,12 @@ namespace bs
 	 *  @{
 	 */
 
-	/** Core thread counterpart of RenderWindow. */
-	class BS_CORE_EXPORT RenderWindowCore : public RenderTargetCore
+	/** Core thread counterpart of bs::RenderWindow. */
+	class BS_CORE_EXPORT RenderWindow : public RenderTarget
 	{
 	public:
-		RenderWindowCore(const RENDER_WINDOW_DESC& desc, UINT32 windowId);
-		virtual ~RenderWindowCore();
+		RenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId);
+		virtual ~RenderWindow();
 
 		/** 
 		 * Switches the window to fullscreen mode. Child windows cannot go into fullscreen mode.

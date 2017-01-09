@@ -19,8 +19,8 @@
 
 namespace bs { namespace ct
 {
-	VulkanGpuParams::VulkanGpuParams(const SPtr<GpuPipelineParamInfoCore>& paramInfo, GpuDeviceFlags deviceMask)
-		: GpuParamsCore(paramInfo, deviceMask), mPerDeviceData(), mDeviceMask(deviceMask), mSetsDirty(nullptr)
+	VulkanGpuParams::VulkanGpuParams(const SPtr<GpuPipelineParamInfo>& paramInfo, GpuDeviceFlags deviceMask)
+		: GpuParams(paramInfo, deviceMask), mPerDeviceData(), mDeviceMask(deviceMask), mSetsDirty(nullptr)
 	{
 		
 	}
@@ -87,7 +87,7 @@ namespace bs { namespace ct
 		mSetsDirty = mAlloc.alloc<bool>(numSets);
 		bs_zero_out(mSetsDirty, numSets);
 
-		VulkanSamplerState* defaultSampler = static_cast<VulkanSamplerState*>(SamplerStateCore::getDefault().get());
+		VulkanSamplerState* defaultSampler = static_cast<VulkanSamplerState*>(SamplerState::getDefault().get());
 		VulkanTextureManager& vkTexManager = static_cast<VulkanTextureManager&>(TextureManager::instance());
 		VulkanHardwareBufferManager& vkBufManager = static_cast<VulkanHardwareBufferManager&>(
 			HardwareBufferManager::instance());
@@ -206,12 +206,12 @@ namespace bs { namespace ct
 			}
 		}
 
-		GpuParamsCore::initialize();
+		GpuParams::initialize();
 	}
 
-	void VulkanGpuParams::setParamBlockBuffer(UINT32 set, UINT32 slot, const SPtr<GpuParamBlockBufferCore>& paramBlockBuffer)
+	void VulkanGpuParams::setParamBlockBuffer(UINT32 set, UINT32 slot, const SPtr<GpuParamBlockBuffer>& paramBlockBuffer)
 	{
-		GpuParamsCore::setParamBlockBuffer(set, slot, paramBlockBuffer);
+		GpuParams::setParamBlockBuffer(set, slot, paramBlockBuffer);
 
 		VulkanGpuPipelineParamInfo& vkParamInfo = static_cast<VulkanGpuPipelineParamInfo&>(*mParamInfo);
 		UINT32 bindingIdx = vkParamInfo.getBindingIdx(set, slot);
@@ -260,9 +260,9 @@ namespace bs { namespace ct
 		mSetsDirty[set] = true;
 	}
 
-	void VulkanGpuParams::setTexture(UINT32 set, UINT32 slot, const SPtr<TextureCore>& texture)
+	void VulkanGpuParams::setTexture(UINT32 set, UINT32 slot, const SPtr<Texture>& texture)
 	{
-		GpuParamsCore::setTexture(set, slot, texture);
+		GpuParams::setTexture(set, slot, texture);
 
 		VulkanGpuPipelineParamInfo& vkParamInfo = static_cast<VulkanGpuPipelineParamInfo&>(*mParamInfo);
 		UINT32 bindingIdx = vkParamInfo.getBindingIdx(set, slot);
@@ -308,10 +308,10 @@ namespace bs { namespace ct
 		mSetsDirty[set] = true;
 	}
 
-	void VulkanGpuParams::setLoadStoreTexture(UINT32 set, UINT32 slot, const SPtr<TextureCore>& texture, 
+	void VulkanGpuParams::setLoadStoreTexture(UINT32 set, UINT32 slot, const SPtr<Texture>& texture, 
 		const TextureSurface& surface)
 	{
-		GpuParamsCore::setLoadStoreTexture(set, slot, texture, surface);
+		GpuParams::setLoadStoreTexture(set, slot, texture, surface);
 
 		VulkanGpuPipelineParamInfo& vkParamInfo = static_cast<VulkanGpuPipelineParamInfo&>(*mParamInfo);
 		UINT32 bindingIdx = vkParamInfo.getBindingIdx(set, slot);
@@ -357,9 +357,9 @@ namespace bs { namespace ct
 		mSetsDirty[set] = true;
 	}
 
-	void VulkanGpuParams::setBuffer(UINT32 set, UINT32 slot, const SPtr<GpuBufferCore>& buffer)
+	void VulkanGpuParams::setBuffer(UINT32 set, UINT32 slot, const SPtr<GpuBuffer>& buffer)
 	{
-		GpuParamsCore::setBuffer(set, slot, buffer);
+		GpuParams::setBuffer(set, slot, buffer);
 
 		VulkanGpuPipelineParamInfo& vkParamInfo = static_cast<VulkanGpuPipelineParamInfo&>(*mParamInfo);
 		UINT32 bindingIdx = vkParamInfo.getBindingIdx(set, slot);
@@ -416,9 +416,9 @@ namespace bs { namespace ct
 		mSetsDirty[set] = true;
 	}
 
-	void VulkanGpuParams::setSamplerState(UINT32 set, UINT32 slot, const SPtr<SamplerStateCore>& sampler)
+	void VulkanGpuParams::setSamplerState(UINT32 set, UINT32 slot, const SPtr<SamplerState>& sampler)
 	{
-		GpuParamsCore::setSamplerState(set, slot, sampler);
+		GpuParams::setSamplerState(set, slot, sampler);
 
 		VulkanGpuPipelineParamInfo& vkParamInfo = static_cast<VulkanGpuPipelineParamInfo&>(*mParamInfo);
 		UINT32 bindingIdx = vkParamInfo.getBindingIdx(set, slot);
@@ -457,7 +457,7 @@ namespace bs { namespace ct
 			else
 			{
 				VulkanSamplerState* defaultSampler = 
-					static_cast<VulkanSamplerState*>(SamplerStateCore::getDefault().get());
+					static_cast<VulkanSamplerState*>(SamplerState::getDefault().get());
 
 				VkSampler vkSampler = defaultSampler->getResource(i)->getHandle();;
 				perSetData.writeInfos[bindingIdx].image.sampler = vkSampler;
@@ -471,7 +471,7 @@ namespace bs { namespace ct
 
 	void VulkanGpuParams::setLoadStoreSurface(UINT32 set, UINT32 slot, const TextureSurface& surface)
 	{
-		GpuParamsCore::setLoadStoreSurface(set, slot, surface);
+		GpuParams::setLoadStoreSurface(set, slot, surface);
 
 		VulkanGpuPipelineParamInfo& vkParamInfo = static_cast<VulkanGpuPipelineParamInfo&>(*mParamInfo);
 		UINT32 bindingIdx = vkParamInfo.getBindingIdx(set, slot);
@@ -482,7 +482,7 @@ namespace bs { namespace ct
 			return;
 		}
 
-		SPtr<TextureCore> texture = getLoadStoreTexture(set, slot);
+		SPtr<Texture> texture = getLoadStoreTexture(set, slot);
 		if (texture == nullptr)
 			return;
 

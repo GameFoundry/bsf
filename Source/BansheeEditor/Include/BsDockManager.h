@@ -271,10 +271,10 @@ namespace bs
 		void initialize(const Any& data) override;
 
 		/**	@copydoc RendererExtension::check */
-		bool check(const CameraCore& camera) override;
+		bool check(const Camera& camera) override;
 
 		/**	@copydoc RendererExtension::render */
-		void render(const CameraCore& camera) override;
+		void render(const Camera& camera) override;
 
 		/**
 		 * Updates the grid mesh to render.
@@ -284,13 +284,13 @@ namespace bs
 		 * @param[in]	active		Should the overlay be shown or not.
 		 * @param[in]	location	Highlighted location of the overlay.
 		 */
-		void updateData(const SPtr<CameraCore>& camera, const SPtr<MeshCore>& mesh, bool active,
+		void updateData(const SPtr<Camera>& camera, const SPtr<Mesh>& mesh, bool active,
 			DockManager::DockLocation location);
 
-		SPtr<CameraCore> mCamera;
+		SPtr<Camera> mCamera;
 		SPtr<Material> mMaterial;
 		SPtr<GpuParamsSet> mParams;
-		SPtr<MeshCore> mMesh;
+		SPtr<Mesh> mMesh;
 		DockManager::DockLocation mHighlightedDropLoc;
 		bool mShowOverlay;
 

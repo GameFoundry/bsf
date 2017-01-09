@@ -138,7 +138,7 @@ namespace bs
 		void setTarget(const SPtr<RenderTarget>& target);
 
 		/**	Retrieves a core implementation of a viewport usable only from the core thread. */
-		SPtr<ct::ViewportCore> getCore() const;
+		SPtr<ct::Viewport> getCore() const;
 
 	    /**
          * Creates a new viewport.
@@ -193,23 +193,23 @@ namespace bs
 	 */
 
 	/** @copydoc ViewportBase */
-	class BS_CORE_EXPORT ViewportCore : public CoreObject, public ViewportBase
+	class BS_CORE_EXPORT Viewport : public CoreObject, public ViewportBase
     {
     public:       
         /**	Returns the render target the viewport is associated with. */
-		SPtr<RenderTargetCore> getTarget() const { return mTarget; }
+		SPtr<RenderTarget> getTarget() const { return mTarget; }
 
 		/**	Sets the render target the viewport will be associated with. */
-		void setTarget(const SPtr<RenderTargetCore>& target) { mTarget = target; }
+		void setTarget(const SPtr<RenderTarget>& target) { mTarget = target; }
 
-		/** @copydoc Viewport::create() */
-		static SPtr<ViewportCore> create(const SPtr<RenderTargetCore>& target, float x = 0.0f, float y = 0.0f, 
+		/** @copydoc bs::Viewport::create() */
+		static SPtr<Viewport> create(const SPtr<RenderTarget>& target, float x = 0.0f, float y = 0.0f, 
 			float width = 1.0f, float height = 1.0f);
 
     protected:
-		friend class Viewport;
+		friend class bs::Viewport;
 
-		ViewportCore(const SPtr<RenderTargetCore>& target, float x = 0.0f, float y = 0.0f, float width = 1.0f, float height = 1.0f);
+		Viewport(const SPtr<RenderTarget>& target, float x = 0.0f, float y = 0.0f, float width = 1.0f, float height = 1.0f);
 
 		/** @copydoc ViewportBase::getTargetWidth */
 		UINT32 getTargetWidth() const override;
@@ -220,7 +220,7 @@ namespace bs
 		/** @copydoc CoreObject::syncToCore */
 		void syncToCore(const CoreSyncData& data) override;
 
-		SPtr<RenderTargetCore> mTarget;
+		SPtr<RenderTarget> mTarget;
     };
 
 	/** @} */

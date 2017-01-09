@@ -12,13 +12,13 @@ namespace bs { namespace ct
 	 */
 
 	/**	Vulkan implementation of a parameter block buffer (uniform buffer in Vulkan lingo). */
-	class VulkanGpuParamBlockBuffer : public GpuParamBlockBufferCore
+	class VulkanGpuParamBlockBuffer : public GpuParamBlockBuffer
 	{
 	public:
 		VulkanGpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage, GpuDeviceFlags deviceMask);
 		~VulkanGpuParamBlockBuffer();
 
-		/** @copydoc GpuParamBlockBufferCore::writeToGPU */
+		/** @copydoc GpuParamBlockBuffer::writeToGPU */
 		void writeToGPU(const UINT8* data, UINT32 queueIdx = 0) override;
 
 		/** 
@@ -27,7 +27,7 @@ namespace bs { namespace ct
 		 */
 		VulkanBuffer* getResource(UINT32 deviceIdx) const;
 	protected:
-		/** @copydoc GpuParamBlockBufferCore::initialize */
+		/** @copydoc GpuParamBlockBuffer::initialize */
 		void initialize() override;
 
 	private:

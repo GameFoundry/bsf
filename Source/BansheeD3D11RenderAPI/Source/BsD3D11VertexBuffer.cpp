@@ -8,7 +8,7 @@ namespace bs { namespace ct
 {
 	D3D11VertexBuffer::D3D11VertexBuffer(D3D11Device& device, const VERTEX_BUFFER_DESC& desc, 
 		GpuDeviceFlags deviceMask)
-		: VertexBufferCore(desc, deviceMask), mBuffer(nullptr), mDevice(device), mStreamOut(desc.streamOut)
+		: VertexBuffer(desc, deviceMask), mBuffer(nullptr), mDevice(device), mStreamOut(desc.streamOut)
 		, mUsage(desc.usage)
 	{
 		assert((deviceMask == GDF_DEFAULT || deviceMask == GDF_PRIMARY) && "Multiple GPUs not supported natively on DirectX 11.");
@@ -69,6 +69,6 @@ namespace bs { namespace ct
 											  mUsage, 1, mSize, std::ref(mDevice), false, mStreamOut);
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_VertexBuffer);
-		VertexBufferCore::initialize();
+		VertexBuffer::initialize();
 	}
 }}

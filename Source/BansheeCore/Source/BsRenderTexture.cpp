@@ -30,7 +30,7 @@ namespace bs
 	{
 		for (UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
 		{
-			SPtr<ct::TextureCore> texture = desc.colorSurfaces[i].texture;
+			SPtr<ct::Texture> texture = desc.colorSurfaces[i].texture;
 
 			if (texture != nullptr)
 			{
@@ -70,9 +70,9 @@ namespace bs
 		return TextureManager::instance().createRenderTexture(desc);
 	}
 
-	SPtr<ct::RenderTextureCore> RenderTexture::getCore() const
+	SPtr<ct::RenderTexture> RenderTexture::getCore() const
 	{ 
-		return std::static_pointer_cast<ct::RenderTextureCore>(mCoreSpecific);
+		return std::static_pointer_cast<ct::RenderTexture>(mCoreSpecific);
 	}
 
 	RenderTexture::RenderTexture(const RENDER_TEXTURE_DESC& desc)
@@ -133,71 +133,71 @@ namespace bs
 
 	namespace ct
 	{
-	RenderTextureCore::RenderTextureCore(const RENDER_TEXTURE_DESC& desc, UINT32 deviceIdx)
+	RenderTexture::RenderTexture(const RENDER_TEXTURE_DESC& desc, UINT32 deviceIdx)
 		:mDesc(desc)
 	{ }
 
-	RenderTextureCore::~RenderTextureCore()
+	RenderTexture::~RenderTexture()
 	{ 
 		for (UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
 		{
 			if (mColorSurfaces[i] != nullptr)
-				TextureCore::releaseView(mColorSurfaces[i]);
+				Texture::releaseView(mColorSurfaces[i]);
 		}
 
 		if (mDepthStencilSurface != nullptr)
-			TextureCore::releaseView(mDepthStencilSurface);
+			Texture::releaseView(mDepthStencilSurface);
 	}
 
-	void RenderTextureCore::initialize()
+	void RenderTexture::initialize()
 	{
-		RenderTargetCore::initialize();
+		RenderTarget::initialize();
 
 		for (UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
 		{
 			if (mDesc.colorSurfaces[i].texture != nullptr)
 			{
-				SPtr<TextureCore> texture = mDesc.colorSurfaces[i].texture;
+				SPtr<Texture> texture = mDesc.colorSurfaces[i].texture;
 
 				if ((texture->getProperties().getUsage() & TU_RENDERTARGET) == 0)
 					BS_EXCEPT(InvalidParametersException, "Provided texture is not created with render target usage.");
 
-				mColorSurfaces[i] = TextureCore::requestView(texture, mDesc.colorSurfaces[i].mipLevel, 1,
+				mColorSurfaces[i] = Texture::requestView(texture, mDesc.colorSurfaces[i].mipLevel, 1,
 					mDesc.colorSurfaces[i].face, mDesc.colorSurfaces[i].numFaces, GVU_RENDERTARGET);
 			}
 		}
 
 		if (mDesc.depthStencilSurface.texture != nullptr)
 		{
-			SPtr<TextureCore> texture = mDesc.depthStencilSurface.texture;
+			SPtr<Texture> texture = mDesc.depthStencilSurface.texture;
 
 			if ((texture->getProperties().getUsage() & TU_DEPTHSTENCIL) == 0)
 				BS_EXCEPT(InvalidParametersException, "Provided texture is not created with depth stencil usage.");
 
-			mDepthStencilSurface = TextureCore::requestView(texture, mDesc.depthStencilSurface.mipLevel, 1,
+			mDepthStencilSurface = Texture::requestView(texture, mDesc.depthStencilSurface.mipLevel, 1,
 				mDesc.depthStencilSurface.face, 0, GVU_DEPTHSTENCIL);
 		}
 
 		throwIfBuffersDontMatch();
 	}
 
-	SPtr<RenderTextureCore> RenderTextureCore::create(const RENDER_TEXTURE_DESC& desc, UINT32 deviceIdx)
+	SPtr<RenderTexture> RenderTexture::create(const RENDER_TEXTURE_DESC& desc, UINT32 deviceIdx)
 	{
 		return TextureManager::instance().createRenderTexture(desc, deviceIdx);
 	}
 
-	void RenderTextureCore::syncToCore(const CoreSyncData& data)
+	void RenderTexture::syncToCore(const CoreSyncData& data)
 	{
 		RenderTextureProperties& props = const_cast<RenderTextureProperties&>(getProperties());
 		props = data.getData<RenderTextureProperties>();
 	}
 
-	const RenderTextureProperties& RenderTextureCore::getProperties() const
+	const RenderTextureProperties& RenderTexture::getProperties() const
 	{
 		return static_cast<const RenderTextureProperties&>(getPropertiesInternal());
 	}
 
-	void RenderTextureCore::throwIfBuffersDontMatch() const
+	void RenderTexture::throwIfBuffersDontMatch() const
 	{
 		SPtr<TextureView> firstSurfaceDesc = nullptr;
 		for (UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)

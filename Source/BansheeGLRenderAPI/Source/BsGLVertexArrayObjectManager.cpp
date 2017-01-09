@@ -76,7 +76,7 @@ namespace bs { namespace ct
 	}
 
 	const GLVertexArrayObject& GLVertexArrayObjectManager::getVAO(const SPtr<GLSLGpuProgram>& vertexProgram,
-		const SPtr<VertexDeclarationCore>& vertexDecl, const std::array<SPtr<VertexBufferCore>, 32>& boundBuffers)
+		const SPtr<VertexDeclaration>& vertexDecl, const std::array<SPtr<VertexBuffer>, 32>& boundBuffers)
 	{
 		UINT16 maxStreamIdx = 0;
 		const List<VertexElement>& decl = vertexDecl->getProperties().getElements();
@@ -102,7 +102,7 @@ namespace bs { namespace ct
 			if (streamToSeqIdx[streamIdx] != -1) // Already visited
 				continue;
 
-			SPtr<VertexBufferCore> vertexBuffer = boundBuffers[streamIdx];
+			SPtr<VertexBuffer> vertexBuffer = boundBuffers[streamIdx];
 			streamToSeqIdx[streamIdx] = (INT32)numUsedBuffers;
 
 			if (vertexBuffer != nullptr)

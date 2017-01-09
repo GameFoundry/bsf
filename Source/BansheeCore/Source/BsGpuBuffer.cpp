@@ -31,9 +31,9 @@ namespace bs
 	{  
 	}
 
-	SPtr<ct::GpuBufferCore> GpuBuffer::getCore() const
+	SPtr<ct::GpuBuffer> GpuBuffer::getCore() const
 	{
-		return std::static_pointer_cast<ct::GpuBufferCore>(mCoreSpecific);
+		return std::static_pointer_cast<ct::GpuBuffer>(mCoreSpecific);
 	}
 
 	SPtr<ct::CoreObject> GpuBuffer::createCore() const
@@ -98,18 +98,18 @@ namespace bs
 
 	namespace ct
 	{
-	GpuBufferCore::GpuBufferCore(const GPU_BUFFER_DESC& desc, UINT32 deviceMask)
+	GpuBuffer::GpuBuffer(const GPU_BUFFER_DESC& desc, UINT32 deviceMask)
 		:HardwareBuffer(getBufferSize(desc)), mProperties(desc)
 	{
 	}
 
-	GpuBufferCore::~GpuBufferCore()
+	GpuBuffer::~GpuBuffer()
 	{
 		// Make sure that derived classes call clearBufferViews
 		// I can't call it here since it needs a virtual method call
 	}
 
-	SPtr<GpuBufferCore> GpuBufferCore::create(const GPU_BUFFER_DESC& desc, GpuDeviceFlags deviceMask)
+	SPtr<GpuBuffer> GpuBuffer::create(const GPU_BUFFER_DESC& desc, GpuDeviceFlags deviceMask)
 	{
 		return HardwareBufferManager::instance().createGpuBuffer(desc, deviceMask);
 	}

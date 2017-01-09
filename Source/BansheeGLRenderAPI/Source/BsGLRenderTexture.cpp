@@ -29,7 +29,7 @@ namespace bs
 	namespace ct
 	{
 	GLRenderTexture::GLRenderTexture(const RENDER_TEXTURE_DESC& desc, UINT32 deviceIdx)
-		:RenderTextureCore(desc, deviceIdx), mProperties(desc, true), mFB(nullptr)
+		:RenderTexture(desc, deviceIdx), mProperties(desc, true), mFB(nullptr)
 	{
 		assert(deviceIdx == 0 && "Multiple GPUs not supported natively on OpenGL.");
 	}
@@ -42,7 +42,7 @@ namespace bs
 
 	void GLRenderTexture::initialize()
 	{
-		RenderTextureCore::initialize();
+		RenderTexture::initialize();
 
 		if (mFB != nullptr)
 			bs_delete(mFB);

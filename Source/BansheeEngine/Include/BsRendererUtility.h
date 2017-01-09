@@ -69,7 +69,7 @@ namespace bs { namespace ct
 		 *
 		 * @note	Core thread.
 		 */
-		void draw(const SPtr<MeshCoreBase>& mesh, const SubMesh& subMesh, UINT32 numInstances = 1);
+		void draw(const SPtr<MeshBase>& mesh, const SubMesh& subMesh, UINT32 numInstances = 1);
 
 
 		/**
@@ -84,8 +84,8 @@ namespace bs { namespace ct
 		 *
 		 * @note	Core thread.
 		 */
-		void drawMorph(const SPtr<MeshCoreBase>& mesh, const SubMesh& subMesh, const SPtr<VertexBufferCore>& morphVertices, 
-			const SPtr<VertexDeclarationCore>& morphVertexDeclaration);
+		void drawMorph(const SPtr<MeshBase>& mesh, const SubMesh& subMesh, const SPtr<VertexBuffer>& morphVertices, 
+			const SPtr<VertexDeclaration>& morphVertexDeclaration);
 
 		/**
 		 * Blits contents of the provided texture into the currently bound render target. If the provided texture contains
@@ -95,7 +95,7 @@ namespace bs { namespace ct
 		 * @param[in]	area	Area of the source texture to blit in pixels. If width or height is zero it is assumed
 		 *						the entire texture should be blitted.
 		 */
-		void blit(const SPtr<TextureCore>& texture, const Rect2I& area = Rect2I::EMPTY);
+		void blit(const SPtr<Texture>& texture, const Rect2I& area = Rect2I::EMPTY);
 
 		/**
 		 * Draws a quad over the entire viewport in normalized device coordinates.
@@ -130,19 +130,19 @@ namespace bs { namespace ct
 		}
 
 		/** Returns a stencil mesh used for a point light (a unit sphere). */
-		SPtr<MeshCore> getPointLightStencil() const { return mPointLightStencilMesh; }
+		SPtr<Mesh> getPointLightStencil() const { return mPointLightStencilMesh; }
 
 		/** Returns a stencil mesh used for spot light. Actual vertex positions need to be computed in shader. */
-		SPtr<MeshCore> getSpotLightStencil() const { return mSpotLightStencilMesh; }
+		SPtr<Mesh> getSpotLightStencil() const { return mSpotLightStencilMesh; }
 
 		/** Returns a mesh that can be used for rendering a skybox. */
-		SPtr<MeshCore> getSkyBoxMesh() const { return mSkyBoxMesh; }
+		SPtr<Mesh> getSkyBoxMesh() const { return mSkyBoxMesh; }
 
 	private:
-		SPtr<MeshCore> mFullScreenQuadMesh;
-		SPtr<MeshCore> mPointLightStencilMesh;
-		SPtr<MeshCore> mSpotLightStencilMesh;
-		SPtr<MeshCore> mSkyBoxMesh;
+		SPtr<Mesh> mFullScreenQuadMesh;
+		SPtr<Mesh> mPointLightStencilMesh;
+		SPtr<Mesh> mSpotLightStencilMesh;
+		SPtr<Mesh> mSkyBoxMesh;
 		SPtr<ResolveMat> mResolveMat;
 		SPtr<BlitMat> mBlitMat;
 	};
@@ -163,7 +163,7 @@ namespace bs { namespace ct
 		ResolveMat();
 
 		/** Updates the parameter buffers used by the material. */
-		void setParameters(const SPtr<TextureCore>& source);
+		void setParameters(const SPtr<Texture>& source);
 	private:
 		MaterialParamInt mNumSamples;
 		MaterialParamTexture mSource;
@@ -178,7 +178,7 @@ namespace bs { namespace ct
 		BlitMat();
 
 		/** Updates the parameter buffers used by the material. */
-		void setParameters(const SPtr<TextureCore>& source);
+		void setParameters(const SPtr<Texture>& source);
 	private:
 		MaterialParamTexture mSource;
 	};

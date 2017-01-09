@@ -40,7 +40,7 @@ namespace bs
 
 	void SelectionRenderer::update(const SPtr<Camera>& camera)
 	{
-		Vector<SPtr<ct::RenderableCore>> objects;
+		Vector<SPtr<ct::Renderable>> objects;
 
 		const Vector<HSceneObject>& sceneObjects = Selection::instance().getSceneObjects();
 		const Map<Renderable*, SceneRenderableData>& renderables = SceneManager::instance().getAllRenderables();
@@ -107,7 +107,7 @@ namespace bs
 		{
 			mParams[i] = mat->createParamsSet(i);
 
-			SPtr<GpuParamsCore> params = mParams[i]->getGpuParams();
+			SPtr<GpuParams> params = mParams[i]->getGpuParams();
 			params->getParam(GPT_VERTEX_PROGRAM, "matWorldViewProj", mMatWorldViewProj[i]);
 
 			RenderableAnimType animType = (RenderableAnimType)i;
@@ -118,18 +118,18 @@ namespace bs
 		}
 	}
 
-	void SelectionRendererCore::updateData(const SPtr<CameraCore>& camera, const Vector<SPtr<RenderableCore>>& objects)
+	void SelectionRendererCore::updateData(const SPtr<Camera>& camera, const Vector<SPtr<Renderable>>& objects)
 	{
 		mCamera = camera;
 		mObjects = objects;
 	}
 
-	bool SelectionRendererCore::check(const CameraCore& camera)
+	bool SelectionRendererCore::check(const Camera& camera)
 	{
 		return mCamera.get() == &camera;
 	}
 
-	void SelectionRendererCore::render(const CameraCore& camera)
+	void SelectionRendererCore::render(const Camera& camera)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -140,13 +140,13 @@ namespace bs
 
 		for (auto& renderable : mObjects)
 		{
-			SPtr<MeshCore> mesh = renderable->getMesh();
+			SPtr<Mesh> mesh = renderable->getMesh();
 			if (mesh == nullptr)
 				continue;
 
-			SPtr<GpuBufferCore> boneMatrixBuffer = renderable->getBoneMatrixBuffer();
-			SPtr<VertexBufferCore> morphShapeBuffer = renderable->getMorphShapeBuffer();
-			SPtr<VertexDeclarationCore> morphVertexDeclaration = renderable->getMorphVertexDeclaration();
+			SPtr<GpuBuffer> boneMatrixBuffer = renderable->getBoneMatrixBuffer();
+			SPtr<VertexBuffer> morphShapeBuffer = renderable->getMorphShapeBuffer();
+			SPtr<VertexDeclaration> morphVertexDeclaration = renderable->getMorphVertexDeclaration();
 
 			Matrix4 worldViewProjMat = viewProjMat * renderable->getTransform();
 			UINT32 techniqueIdx = mTechniqueIndices[(int)renderable->getAnimType()];

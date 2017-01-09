@@ -12,19 +12,19 @@ namespace bs { namespace ct
 	 */
 
 	/**	OpenGL implementation of a GPU parameter buffer (Uniform buffer). */
-	class BS_RSGL_EXPORT GLGpuParamBlockBuffer : public GpuParamBlockBufferCore
+	class BS_RSGL_EXPORT GLGpuParamBlockBuffer : public GpuParamBlockBuffer
 	{
 	public:
 		GLGpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage, GpuDeviceFlags deviceMask);
 		~GLGpuParamBlockBuffer();
 
-		/** @copydoc GpuParamBlockBufferCore::writeToGPU */
+		/** @copydoc GpuParamBlockBuffer::writeToGPU */
 		void writeToGPU(const UINT8* data, UINT32 queueIdx = 0) override;
 
 		/**	Returns internal OpenGL uniform buffer handle. */
 		GLuint getGLHandle() const { return mGLHandle; }
 	protected:
-		/** @copydoc GpuParamBlockBufferCore::initialize */
+		/** @copydoc GpuParamBlockBuffer::initialize */
 		void initialize() override ;
 
 	private:

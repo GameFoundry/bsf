@@ -13,21 +13,21 @@ namespace bs { namespace ct
 	 */
 
 	/**	DirectX 11 implementation of an index buffer. */
-	class BS_D3D11_EXPORT D3D11IndexBuffer : public IndexBufferCore
+	class BS_D3D11_EXPORT D3D11IndexBuffer : public IndexBuffer
 	{
 	public:
 		D3D11IndexBuffer(D3D11Device& device, const INDEX_BUFFER_DESC& desc, GpuDeviceFlags deviceMask);
 
 		~D3D11IndexBuffer();
 
-		/** @copydoc IndexBufferCore::readData */
+		/** @copydoc IndexBuffer::readData */
 		void readData(UINT32 offset, UINT32 length, void* dest, UINT32 deviceIdx = 0, UINT32 queueIdx = 0) override;
 
-		/** @copydoc IndexBufferCore::writeData */
+		/** @copydoc IndexBuffer::writeData */
 		void writeData(UINT32 offset, UINT32 length, const void* source, 
 			BufferWriteType writeFlags = BWT_NORMAL, UINT32 queueIdx = 0) override;
 
-		/** @copydoc IndexBufferCore::copyData */
+		/** @copydoc IndexBuffer::copyData */
 		void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length, 
 			bool discardWholeBuffer = false, UINT32 queueIdx = 0) override;
 
@@ -35,13 +35,13 @@ namespace bs { namespace ct
 		ID3D11Buffer* getD3DIndexBuffer() const { return mBuffer->getD3DBuffer(); }		
 
 	protected:
-		/** @copydoc IndexBufferCore::map */
+		/** @copydoc IndexBuffer::map */
 		void* map(UINT32 offset, UINT32 length, GpuLockOptions options, UINT32 deviceIdx, UINT32 queueIdx) override;
 
-		/** @copydoc IndexBufferCore::unmap */
+		/** @copydoc IndexBuffer::unmap */
 		void unmap() override;
 
-		/** @copydoc IndexBufferCore::initialize */
+		/** @copydoc IndexBuffer::initialize */
 		void initialize() override;
 
 		D3D11HardwareBuffer* mBuffer;

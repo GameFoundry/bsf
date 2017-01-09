@@ -12,7 +12,7 @@
 namespace bs { namespace ct
 {
 	D3D11GpuBuffer::D3D11GpuBuffer(const GPU_BUFFER_DESC& desc, GpuDeviceFlags deviceMask)
-		: GpuBufferCore(desc, deviceMask), mBuffer(nullptr)
+		: GpuBuffer(desc, deviceMask), mBuffer(nullptr)
 	{
 		if (desc.type != GBT_STANDARD)
 			assert(desc.format == BF_UNKNOWN && "Format must be set to BF_UNKNOWN when using non-standard buffers");
@@ -68,7 +68,7 @@ namespace bs { namespace ct
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_GpuBuffer);
 
-		GpuBufferCore::initialize();
+		GpuBuffer::initialize();
 	}
 
 	void* D3D11GpuBuffer::lock(UINT32 offset, UINT32 length, GpuLockOptions options, UINT32 deviceIdx, UINT32 queueIdx)

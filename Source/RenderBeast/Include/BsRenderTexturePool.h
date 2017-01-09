@@ -22,8 +22,8 @@ namespace bs { namespace ct
 		PooledRenderTexture(RenderTexturePool* pool);
 		~PooledRenderTexture();
 
-		SPtr<TextureCore> texture;
-		SPtr<RenderTextureCore> renderTexture;
+		SPtr<Texture> texture;
+		SPtr<RenderTexture> renderTexture;
 
 	private:
 		friend class RenderTexturePool;
@@ -71,7 +71,7 @@ namespace bs { namespace ct
 		 * @param[in]	desc	Descriptor structure that describes what kind of texture to match.
 		 * @return				True if the texture matches the descriptor, false otherwise.
 		 */
-		static bool matches(const SPtr<TextureCore>& texture, const POOLED_RENDER_TEXTURE_DESC& desc);
+		static bool matches(const SPtr<Texture>& texture, const POOLED_RENDER_TEXTURE_DESC& desc);
 
 		Map<PooledRenderTexture*, std::weak_ptr<PooledRenderTexture>> mTextures;
 	};

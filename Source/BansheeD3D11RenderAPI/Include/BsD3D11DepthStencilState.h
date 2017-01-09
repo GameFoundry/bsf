@@ -12,7 +12,7 @@ namespace bs { namespace ct
 	 */
 
 	/** DirectX 11 implementation of a depth stencil state. Corresponds directly with a DX11 depth stencil state object. */
-	class BS_D3D11_EXPORT D3D11DepthStencilState : public DepthStencilStateCore
+	class BS_D3D11_EXPORT D3D11DepthStencilState : public DepthStencilState
 	{
 	public:
 		~D3D11DepthStencilState();
@@ -25,7 +25,7 @@ namespace bs { namespace ct
 
 		D3D11DepthStencilState(const DEPTH_STENCIL_STATE_DESC& desc, UINT32 id);
 
-		/** @copydoc DepthStencilStateCore::createInternal() */
+		/** @copydoc DepthStencilState::createInternal() */
 		void createInternal() override;
 
 		ID3D11DepthStencilState* mDepthStencilState;

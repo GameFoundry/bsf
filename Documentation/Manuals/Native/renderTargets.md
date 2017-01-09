@@ -5,8 +5,8 @@ Render targets				{#renderTargets}
 Render targets represent destination surfaces onto which objects are rendered. They can be textures or windows.
 
 In Banshee render targets are represented with:
- - Windows - @ref bs::RenderWindow "RenderWindow" and @ref bs::RenderWindowCore "RenderWindowCore"
- - Textures - @ref bs::RenderTexture "RenderTexture" and @ref bs::RenderTextureCore "RenderTextureCore"
+ - Windows - @ref bs::RenderWindow "RenderWindow" and @ref bs::ct::RenderWindow "ct::RenderWindow"
+ - Textures - @ref bs::RenderTexture "RenderTexture" and @ref bs::ct::RenderTexture "ct::RenderTexture"
  
 Each type comes in two variants, both of which provide almost equivalent functionality, but the former is for use on the simulation thread, and the latter is for use on the core thread. If you are confused by the dual nature of the objects, read the [core thread](@ref coreThread) manual. 
 
@@ -120,9 +120,9 @@ Use `BS_MAX_MULTIPLE_RENDER_TARGETS` to learn what is the maximum supported numb
 ## Multi-sampled surfaces {#renderTargets_b_c}
 Same as windows, render textures can be created with support for multiple samples per pixel. This allows affects such as multi-sampled antialiasing and similar. To create a multi-sampled render texture simply create a @ref bs::Texture "Texture" with its `multisampleCount` parameter larger than one, which you then use to initialize a render texture. Make sure that all surfaces (including depth-stencil) in a render texture have the same number of samples.
 
-In order to display a multi-sampled render texture on the screen you need to resolve the texture into a non-multi-sampled one. For windows this is done automatically for you, but for textures you must do it manually. You can do it from the GPU program (render API dependant), or by calling @ref bs::TextureCore::copy "TextureCore::copy". 
+In order to display a multi-sampled render texture on the screen you need to resolve the texture into a non-multi-sampled one. For windows this is done automatically for you, but for textures you must do it manually. You can do it from the GPU program (render API dependant), or by calling @ref bs::ct::Texture::copy "ct::Texture::copy". 
 
-@ref bs::TextureCore::copy "TextureCore::copy" works only on the core thread, and it will copy contents of one texture to another texture. If you ensure that the source texture is multi-sampled but the destination is not, it will automatically resolve the multi-sampled texture.
+@ref bs::ct::Texture::copy "ct::Texture::copy" works only on the core thread, and it will copy contents of one texture to another texture. If you ensure that the source texture is multi-sampled but the destination is not, it will automatically resolve the multi-sampled texture.
 
 # Priority {#renderTargets_c}
 All render targets have a priority that can be set by calling @ref bs::RenderTarget::setPriority "RenderTarget::setPriority". This priority can be used as a hint to the renderer in which order should the targets be rendered to. Targets with higher priority will be rendered to before targets with lower priority. If you are rendering manually using the @ref bs::RenderAPI "RenderAPI" then this value is not used.

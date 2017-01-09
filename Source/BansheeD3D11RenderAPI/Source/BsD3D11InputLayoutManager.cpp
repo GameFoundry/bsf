@@ -54,8 +54,8 @@ namespace bs { namespace ct
 		}
 	}
 
-	ID3D11InputLayout* D3D11InputLayoutManager::retrieveInputLayout(const SPtr<VertexDeclarationCore>& vertexShaderDecl, 
-		const SPtr<VertexDeclarationCore>& vertexBufferDecl, D3D11GpuProgram& vertexProgram)
+	ID3D11InputLayout* D3D11InputLayoutManager::retrieveInputLayout(const SPtr<VertexDeclaration>& vertexShaderDecl, 
+		const SPtr<VertexDeclaration>& vertexBufferDecl, D3D11GpuProgram& vertexProgram)
 	{
 		VertexDeclarationKey pair;
 		pair.vertxDeclId = vertexBufferDecl->getId();
@@ -79,8 +79,8 @@ namespace bs { namespace ct
 		return iterFind->second->inputLayout;
 	}
 
-	void D3D11InputLayoutManager::addNewInputLayout(const SPtr<VertexDeclarationCore>& vertexShaderDecl, 
-		const SPtr<VertexDeclarationCore>& vertexBufferDecl, D3D11GpuProgram& vertexProgram)
+	void D3D11InputLayoutManager::addNewInputLayout(const SPtr<VertexDeclaration>& vertexShaderDecl, 
+		const SPtr<VertexDeclaration>& vertexBufferDecl, D3D11GpuProgram& vertexProgram)
 	{
 		const VertexDeclarationProperties& bufferDeclProps = vertexBufferDecl->getProperties();
 		const VertexDeclarationProperties& shaderDeclProps = vertexShaderDecl->getProperties();

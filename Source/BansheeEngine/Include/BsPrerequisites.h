@@ -200,7 +200,7 @@ namespace bs
 
 	namespace ct
 	{
-		class RenderableCore;
+		class Renderable;
 	}
 
 	typedef GameObjectHandle<CGUIWidget> HGUIWidget;

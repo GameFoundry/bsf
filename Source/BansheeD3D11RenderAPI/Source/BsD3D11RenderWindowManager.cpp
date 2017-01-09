@@ -40,7 +40,7 @@ namespace bs
 		assert(mRenderSystem != nullptr);
 	}
 
-	SPtr<RenderWindowCore> D3D11RenderWindowManager::createInternal(RENDER_WINDOW_DESC& desc, UINT32 windowId)
+	SPtr<RenderWindow> D3D11RenderWindowManager::createInternal(RENDER_WINDOW_DESC& desc, UINT32 windowId)
 	{
 		RenderAPI* rs = RenderAPI::instancePtr();
 		D3D11RenderAPI* d3d11rs = static_cast<D3D11RenderAPI*>(rs);

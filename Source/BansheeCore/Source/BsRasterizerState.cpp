@@ -36,14 +36,14 @@ namespace bs
 
 	}
 
-	SPtr<ct::RasterizerStateCore> RasterizerState::getCore() const
+	SPtr<ct::RasterizerState> RasterizerState::getCore() const
 	{
-		return std::static_pointer_cast<ct::RasterizerStateCore>(mCoreSpecific);
+		return std::static_pointer_cast<ct::RasterizerState>(mCoreSpecific);
 	}
 
 	SPtr<ct::CoreObject> RasterizerState::createCore() const
 	{
-		SPtr<ct::RasterizerStateCore> core = ct::RenderStateManager::instance()._createRasterizerState(mProperties.mData);
+		SPtr<ct::RasterizerState> core = ct::RenderStateManager::instance()._createRasterizerState(mProperties.mData);
 		mId = core->getId(); // Accessing core from sim thread is okay here since core ID is immutable
 
 		return core;
@@ -96,18 +96,18 @@ namespace bs
 
 	namespace ct
 	{
-	RasterizerStateCore::RasterizerStateCore(const RASTERIZER_STATE_DESC& desc, UINT32 id)
+	RasterizerState::RasterizerState(const RASTERIZER_STATE_DESC& desc, UINT32 id)
 		: mProperties(desc), mId(id)
 	{
 
 	}
 
-	RasterizerStateCore::~RasterizerStateCore()
+	RasterizerState::~RasterizerState()
 	{
 
 	}
 
-	void RasterizerStateCore::initialize()
+	void RasterizerState::initialize()
 	{
 		// Since we cache states it's possible this object was already initialized
 		// (i.e. multiple sim-states can share a single core-state)
@@ -118,17 +118,17 @@ namespace bs
 		CoreObject::initialize();
 	}
 
-	const RasterizerProperties& RasterizerStateCore::getProperties() const
+	const RasterizerProperties& RasterizerState::getProperties() const
 	{
 		return mProperties;
 	}
 
-	SPtr<RasterizerStateCore> RasterizerStateCore::create(const RASTERIZER_STATE_DESC& desc)
+	SPtr<RasterizerState> RasterizerState::create(const RASTERIZER_STATE_DESC& desc)
 	{
 		return RenderStateManager::instance().createRasterizerState(desc);
 	}
 
-	const SPtr<RasterizerStateCore>& RasterizerStateCore::getDefault()
+	const SPtr<RasterizerState>& RasterizerState::getDefault()
 	{
 		return RenderStateManager::instance().getDefaultRasterizerState();
 	}

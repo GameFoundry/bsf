@@ -178,7 +178,7 @@ namespace bs { namespace ct
 	};
 
 	/**	Vulkan implementation of a texture. */
-	class VulkanTexture : public TextureCore
+	class VulkanTexture : public Texture
 	{
 	public:
 		~VulkanTexture();
@@ -197,22 +197,22 @@ namespace bs { namespace ct
 		/** @copydoc CoreObject::initialize() */
 		void initialize() override;
 
-		/** @copydoc TextureCore::lockImpl */
+		/** @copydoc Texture::lockImpl */
 		PixelData lockImpl(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0, UINT32 deviceIdx = 0,
 						   UINT32 queueIdx = 0) override;
 
-		/** @copydoc TextureCore::unlockImpl */
+		/** @copydoc Texture::unlockImpl */
 		void unlockImpl() override;
 
-		/** @copydoc TextureCore::copyImpl */
+		/** @copydoc Texture::copyImpl */
 		void copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel,
-					  const SPtr<TextureCore>& target, UINT32 queueIdx = 0) override;
+					  const SPtr<Texture>& target, UINT32 queueIdx = 0) override;
 
-		/** @copydoc TextureCore::readData */
+		/** @copydoc Texture::readData */
 		void readDataImpl(PixelData& dest, UINT32 mipLevel = 0, UINT32 face = 0, UINT32 deviceIdx = 0,
 					  UINT32 queueIdx = 0) override;
 
-		/** @copydoc TextureCore::writeData */
+		/** @copydoc Texture::writeData */
 		void writeDataImpl(const PixelData& src, UINT32 mipLevel = 0, UINT32 face = 0, bool discardWholeBuffer = false,
 					   UINT32 queueIdx = 0) override;
 

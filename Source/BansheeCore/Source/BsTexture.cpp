@@ -123,8 +123,8 @@ namespace bs
 
 		data->_lock();
 
-		std::function<void(const SPtr<ct::TextureCore>&, UINT32, UINT32, const SPtr<PixelData>&, bool, AsyncOp&)> func =
-			[&](const SPtr<ct::TextureCore>& texture, UINT32 _face, UINT32 _mipLevel, const SPtr<PixelData>& _pixData,
+		std::function<void(const SPtr<ct::Texture>&, UINT32, UINT32, const SPtr<PixelData>&, bool, AsyncOp&)> func =
+			[&](const SPtr<ct::Texture>& texture, UINT32 _face, UINT32 _mipLevel, const SPtr<PixelData>& _pixData,
 				bool _discardEntireBuffer, AsyncOp& asyncOp)
 		{
 			texture->writeData(*_pixData, _mipLevel, _face, _discardEntireBuffer);
@@ -141,8 +141,8 @@ namespace bs
 	{
 		data->_lock();
 
-		std::function<void(const SPtr<ct::TextureCore>&, UINT32, UINT32, const SPtr<PixelData>&, AsyncOp&)> func =
-			[&](const SPtr<ct::TextureCore>& texture, UINT32 _face, UINT32 _mipLevel, const SPtr<PixelData>& _pixData,
+		std::function<void(const SPtr<ct::Texture>&, UINT32, UINT32, const SPtr<PixelData>&, AsyncOp&)> func =
+			[&](const SPtr<ct::Texture>& texture, UINT32 _face, UINT32 _mipLevel, const SPtr<PixelData>& _pixData,
 				AsyncOp& asyncOp)
 		{
 			// Make sure any queued command start executing before reading
@@ -267,9 +267,9 @@ namespace bs
 		}
 	}
 
-	SPtr<ct::TextureCore> Texture::getCore() const
+	SPtr<ct::Texture> Texture::getCore() const
 	{
-		return std::static_pointer_cast<ct::TextureCore>(mCoreSpecific);
+		return std::static_pointer_cast<ct::Texture>(mCoreSpecific);
 	}
 
 	/************************************************************************/
@@ -324,15 +324,15 @@ namespace bs
 
 	namespace ct
 	{
-	SPtr<TextureCore> TextureCore::WHITE;
-	SPtr<TextureCore> TextureCore::BLACK;
-	SPtr<TextureCore> TextureCore::NORMAL;
+	SPtr<Texture> Texture::WHITE;
+	SPtr<Texture> Texture::BLACK;
+	SPtr<Texture> Texture::NORMAL;
 
-	TextureCore::TextureCore(const TEXTURE_DESC& desc, const SPtr<PixelData>& initData, GpuDeviceFlags deviceMask)
+	Texture::Texture(const TEXTURE_DESC& desc, const SPtr<PixelData>& initData, GpuDeviceFlags deviceMask)
 		:mProperties(desc), mInitData(initData)
 	{ }
 
-	void TextureCore::initialize()
+	void Texture::initialize()
 	{
 		if (mInitData != nullptr)
 		{
@@ -342,7 +342,7 @@ namespace bs
 		}
 	}
 
-	void TextureCore::writeData(const PixelData& src, UINT32 mipLevel, UINT32 face, bool discardEntireBuffer,
+	void Texture::writeData(const PixelData& src, UINT32 mipLevel, UINT32 face, bool discardEntireBuffer,
 		UINT32 queueIdx)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -359,7 +359,7 @@ namespace bs
 		writeDataImpl(src, mipLevel, face, discardEntireBuffer, queueIdx);
 	}
 
-	void TextureCore::readData(PixelData& dest, UINT32 mipLevel, UINT32 face, UINT32 deviceIdx, UINT32 queueIdx)
+	void Texture::readData(PixelData& dest, UINT32 mipLevel, UINT32 face, UINT32 deviceIdx, UINT32 queueIdx)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -379,7 +379,7 @@ namespace bs
 		readDataImpl(pixelData, mipLevel, face, deviceIdx, queueIdx);
 	}
 
-	PixelData TextureCore::lock(GpuLockOptions options, UINT32 mipLevel, UINT32 face, UINT32 deviceIdx, UINT32 queueIdx)
+	PixelData Texture::lock(GpuLockOptions options, UINT32 mipLevel, UINT32 face, UINT32 deviceIdx, UINT32 queueIdx)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -398,14 +398,14 @@ namespace bs
 		return lockImpl(options, mipLevel, face, deviceIdx, queueIdx);
 	}
 
-	void TextureCore::unlock()
+	void Texture::unlock()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		unlockImpl();
 	}
 
-	void TextureCore::copy(const SPtr<TextureCore>& target, UINT32 srcFace, UINT32 srcMipLevel, UINT32 dstFace,
+	void Texture::copy(const SPtr<Texture>& target, UINT32 srcFace, UINT32 srcMipLevel, UINT32 dstFace,
 						   UINT32 dstMipLevel, UINT32 queueIdx)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -473,17 +473,17 @@ namespace bs
 	/* 								TEXTURE VIEW                      		*/
 	/************************************************************************/
 
-	SPtr<TextureView> TextureCore::createView(const SPtr<TextureCore>& texture, const TEXTURE_VIEW_DESC& desc)
+	SPtr<TextureView> Texture::createView(const SPtr<Texture>& texture, const TEXTURE_VIEW_DESC& desc)
 	{
 		return bs_shared_ptr<TextureView>(new (bs_alloc<TextureView>()) TextureView(texture, desc));
 	}
 
-	void TextureCore::clearBufferViews()
+	void Texture::clearBufferViews()
 	{
 		mTextureViews.clear();
 	}
 
-	SPtr<TextureView> TextureCore::requestView(const SPtr<TextureCore>& texture, UINT32 mostDetailMip, UINT32 numMips,
+	SPtr<TextureView> Texture::requestView(const SPtr<Texture>& texture, UINT32 mostDetailMip, UINT32 numMips,
 											   UINT32 firstArraySlice, UINT32 numArraySlices, GpuViewUsage usage)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -515,13 +515,13 @@ namespace bs
 		return iterFind->second->view;
 	}
 
-	void TextureCore::releaseView(const SPtr<TextureView>& view)
+	void Texture::releaseView(const SPtr<TextureView>& view)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		assert(view != nullptr);
 
-		SPtr<TextureCore> texture = view->getTexture();
+		SPtr<Texture> texture = view->getTexture();
 
 		auto iterFind = texture->mTextureViews.find(view->getDesc());
 		if (iterFind == texture->mTextureViews.end())
@@ -544,12 +544,12 @@ namespace bs
 	/************************************************************************/
 	/* 								STATICS	                      			*/
 	/************************************************************************/
-	SPtr<TextureCore> TextureCore::create(const TEXTURE_DESC& desc, GpuDeviceFlags deviceMask)
+	SPtr<Texture> Texture::create(const TEXTURE_DESC& desc, GpuDeviceFlags deviceMask)
 	{
 		return TextureManager::instance().createTexture(desc, deviceMask);
 	}
 
-	SPtr<TextureCore> TextureCore::create(const SPtr<PixelData>& pixelData, int usage, bool hwGammaCorrection, 
+	SPtr<Texture> Texture::create(const SPtr<PixelData>& pixelData, int usage, bool hwGammaCorrection, 
 		GpuDeviceFlags deviceMask)
 	{
 		TEXTURE_DESC desc;

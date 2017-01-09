@@ -493,7 +493,7 @@ namespace bs { namespace ct
 						LOGERR("Uniform is referencing a uniform block that doesn't exist: " + String(name));
 
 					const GpuParamBlockDesc& paramBlockDesc = desc.paramBlocks[iterFind->second];
-					const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES.lookup[paramType];
+					const GpuParamDataTypeInfo& typeInfo = bs::GpuParams::PARAM_SIZES.lookup[paramType];
 					int bufferOffset = program->getUniformBufferOffset(i) / 4;
 
 					GpuParamDataDesc param;
@@ -525,7 +525,7 @@ namespace bs { namespace ct
 	}
 
 	VulkanGpuProgram::VulkanGpuProgram(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
-		: GpuProgramCore(desc, deviceMask), mDeviceMask(deviceMask), mModules()
+		: GpuProgram(desc, deviceMask), mDeviceMask(deviceMask), mModules()
 	{
 
 	}
@@ -548,7 +548,7 @@ namespace bs { namespace ct
 			mIsCompiled = false;
 			mCompileError = "Specified program is not supported by the current render system.";
 
-			GpuProgramCore::initialize();
+			GpuProgram::initialize();
 			return;
 		}
 		
@@ -671,6 +671,6 @@ cleanup:
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_GpuProgram);
 
-		GpuProgramCore::initialize();
+		GpuProgram::initialize();
 	}
 }}

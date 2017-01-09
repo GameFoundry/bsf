@@ -69,7 +69,7 @@ namespace bs { namespace ct
 
 	VulkanGraphicsPipelineState::VulkanGraphicsPipelineState(const PIPELINE_STATE_DESC& desc,
 																	 GpuDeviceFlags deviceMask)
-		:GraphicsPipelineStateCore(desc, deviceMask), mScissorEnabled(false), mDeviceMask(deviceMask)
+		:GraphicsPipelineState(desc, deviceMask), mScissorEnabled(false), mDeviceMask(deviceMask)
 	{
 		for (UINT32 i = 0; i < BS_MAX_DEVICES; i++)
 		{
@@ -96,9 +96,9 @@ namespace bs { namespace ct
 	{
 		Lock(mMutex);
 
-		GraphicsPipelineStateCore::initialize();
+		GraphicsPipelineState::initialize();
 
-		std::pair<VkShaderStageFlagBits, GpuProgramCore*> stages[] =
+		std::pair<VkShaderStageFlagBits, GpuProgram*> stages[] =
 			{ 
 				{ VK_SHADER_STAGE_VERTEX_BIT, mData.vertexProgram.get() },
 				{ VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT, mData.hullProgram.get() },
@@ -150,17 +150,17 @@ namespace bs { namespace ct
 		mViewportInfo.pViewports = nullptr; // Dynamic
 		mViewportInfo.pScissors = nullptr; // Dynamic
 
-		RasterizerStateCore* rasterizerState = getRasterizerState().get();
+		RasterizerState* rasterizerState = getRasterizerState().get();
 		if (rasterizerState == nullptr)
-			rasterizerState = RasterizerStateCore::getDefault().get();
+			rasterizerState = RasterizerState::getDefault().get();
 
-		BlendStateCore* blendState = getBlendState().get();
+		BlendState* blendState = getBlendState().get();
 		if (blendState == nullptr)
-			blendState = BlendStateCore::getDefault().get();
+			blendState = BlendState::getDefault().get();
 
-		DepthStencilStateCore* depthStencilState = getDepthStencilState().get();
+		DepthStencilState* depthStencilState = getDepthStencilState().get();
 		if (depthStencilState == nullptr)
-			depthStencilState = DepthStencilStateCore::getDefault().get();
+			depthStencilState = DepthStencilState::getDefault().get();
 
 		const RasterizerProperties& rstProps = rasterizerState->getProperties();
 		const BlendProperties& blendProps = blendState->getProperties();
@@ -376,9 +376,9 @@ namespace bs { namespace ct
 		mMultiSampleInfo.rasterizationSamples = framebuffer->getSampleFlags();
 		mColorBlendStateInfo.attachmentCount = framebuffer->getNumColorAttachments();
 
-		DepthStencilStateCore* dsState = getDepthStencilState().get();
+		DepthStencilState* dsState = getDepthStencilState().get();
 		if (dsState == nullptr)
-			dsState = DepthStencilStateCore::getDefault().get();
+			dsState = DepthStencilState::getDefault().get();
 
 		const DepthStencilProperties dsProps = dsState->getProperties();
 		bool enableDepthWrites = dsProps.getDepthWriteEnable() && !readOnlyDepth;
@@ -447,7 +447,7 @@ namespace bs { namespace ct
 			}
 		}
 
-		std::pair<VkShaderStageFlagBits, GpuProgramCore*> stages[] =
+		std::pair<VkShaderStageFlagBits, GpuProgram*> stages[] =
 		{
 			{ VK_SHADER_STAGE_VERTEX_BIT, mData.vertexProgram.get() },
 			{ VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT, mData.hullProgram.get() },
@@ -495,9 +495,9 @@ namespace bs { namespace ct
 		return device->getResourceManager().create<VulkanPipeline>(pipeline, colorReadOnly, depthStencilReadOnly);
 	}
 
-	VulkanComputePipelineState::VulkanComputePipelineState(const SPtr<GpuProgramCore>& program, 
+	VulkanComputePipelineState::VulkanComputePipelineState(const SPtr<GpuProgram>& program, 
 		GpuDeviceFlags deviceMask)
-		:ComputePipelineStateCore(program, deviceMask), mDeviceMask(deviceMask)
+		:ComputePipelineState(program, deviceMask), mDeviceMask(deviceMask)
 	{
 		bs_zero_out(mPerDeviceData);
 	}
@@ -515,7 +515,7 @@ namespace bs { namespace ct
 
 	void VulkanComputePipelineState::initialize()
 	{
-		ComputePipelineStateCore::initialize();
+		ComputePipelineState::initialize();
 
 		// This might happen fairly often if shaders with unsupported languages are loaded, in which case the pipeline
 		// will never get used, and its fine not to initialize it.

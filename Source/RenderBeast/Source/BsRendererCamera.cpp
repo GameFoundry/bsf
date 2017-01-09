@@ -15,7 +15,7 @@ namespace bs { namespace ct
 
 	SkyboxMat::SkyboxMat()
 	{
-		SPtr<GpuParamsCore> params = mParamsSet->getGpuParams();
+		SPtr<GpuParams> params = mParamsSet->getGpuParams();
 
 		params->getTextureParam(GPT_FRAGMENT_PROGRAM, "gSkyTex", mSkyTextureParam);
 	}
@@ -25,14 +25,14 @@ namespace bs { namespace ct
 		// Do nothing
 	}
 
-	void SkyboxMat::bind(const SPtr<GpuParamBlockBufferCore>& perCamera)
+	void SkyboxMat::bind(const SPtr<GpuParamBlockBuffer>& perCamera)
 	{
 		mParamsSet->setParamBlockBuffer("PerCamera", perCamera, true);
 
 		gRendererUtility().setPass(mMaterial, 0);
 	}
 
-	void SkyboxMat::setParams(const SPtr<TextureCore>& texture)
+	void SkyboxMat::setParams(const SPtr<Texture>& texture)
 	{
 		mSkyTextureParam.set(texture);
 		gRendererUtility().setPassParams(mParamsSet);
@@ -44,7 +44,7 @@ namespace bs { namespace ct
 		mParamBuffer = gPerCameraParamDef.createBuffer();
 	}
 
-	RendererCamera::RendererCamera(const CameraCore* camera, StateReduction reductionMode)
+	RendererCamera::RendererCamera(const Camera* camera, StateReduction reductionMode)
 		:mCamera(camera), mUsingRenderTargets(false)
 	{
 		mParamBuffer = gPerCameraParamDef.createBuffer();
@@ -81,7 +81,7 @@ namespace bs { namespace ct
 	{
 		if (useGBuffer)
 		{
-			SPtr<ViewportCore> viewport = mCamera->getViewport();
+			SPtr<Viewport> viewport = mCamera->getViewport();
 			bool useHDR = mCamera->getFlags().isSet(CameraFlag::HDR);
 			UINT32 msaaCount = mCamera->getMSAACount();
 
@@ -126,7 +126,7 @@ namespace bs { namespace ct
 		// Update per-object param buffers and queue render elements
 		for(UINT32 i = 0; i < (UINT32)renderables.size(); i++)
 		{
-			RenderableCore* renderable = renderables[i]->renderable;
+			Renderable* renderable = renderables[i]->renderable;
 			UINT32 rendererId = renderable->getRendererId();
 
 			if ((renderable->getLayer() & cameraLayers) == 0)
@@ -233,8 +233,8 @@ namespace bs { namespace ct
 		gPerCameraParamDef.gViewOrigin.set(mParamBuffer, mCamera->getPosition());
 		gPerCameraParamDef.gDeviceZToWorldZ.set(mParamBuffer, getDeviceZTransform(proj));
 
-		SPtr<ViewportCore> viewport = mCamera->getViewport();
-		SPtr<RenderTargetCore> rt = viewport->getTarget();
+		SPtr<Viewport> viewport = mCamera->getViewport();
+		SPtr<RenderTarget> rt = viewport->getTarget();
 
 		float halfWidth = viewport->getWidth() * 0.5f;
 		float halfHeight = viewport->getHeight() * 0.5f;

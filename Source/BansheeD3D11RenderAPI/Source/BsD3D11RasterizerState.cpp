@@ -10,7 +10,7 @@
 namespace bs { namespace ct
 {
 	D3D11RasterizerState::D3D11RasterizerState(const RASTERIZER_STATE_DESC& desc, UINT32 id)
-		:RasterizerStateCore(desc, id), mRasterizerState(nullptr)
+		:RasterizerState(desc, id), mRasterizerState(nullptr)
 	{ }
 
 	D3D11RasterizerState::~D3D11RasterizerState()
@@ -49,6 +49,6 @@ namespace bs { namespace ct
 		}
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_RasterizerState);
-		RasterizerStateCore::createInternal();
+		RasterizerState::createInternal();
 	}
 }}

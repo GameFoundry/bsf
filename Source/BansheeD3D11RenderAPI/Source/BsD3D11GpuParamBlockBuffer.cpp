@@ -10,7 +10,7 @@ namespace bs { namespace ct
 {
 	D3D11GpuParamBlockBuffer::D3D11GpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage, 
 		GpuDeviceFlags deviceMask)
-		:GpuParamBlockBufferCore(size, usage, deviceMask), mBuffer(nullptr)
+		:GpuParamBlockBuffer(size, usage, deviceMask), mBuffer(nullptr)
 	{
 		assert((deviceMask == GDF_DEFAULT || deviceMask == GDF_PRIMARY) && "Multiple GPUs not supported natively on DirectX 11.");
 	}
@@ -37,7 +37,7 @@ namespace bs { namespace ct
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_GpuParamBuffer);
 
-		GpuParamBlockBufferCore::initialize();
+		GpuParamBlockBuffer::initialize();
 	}
 
 

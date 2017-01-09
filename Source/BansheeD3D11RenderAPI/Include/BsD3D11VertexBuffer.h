@@ -13,21 +13,21 @@ namespace bs { namespace ct
 	 */
 
 	/**	DirectX 11 implementation of a vertex buffer. */
-	class BS_D3D11_EXPORT D3D11VertexBuffer : public VertexBufferCore
+	class BS_D3D11_EXPORT D3D11VertexBuffer : public VertexBuffer
 	{
 	public:
 		D3D11VertexBuffer(D3D11Device& device, const VERTEX_BUFFER_DESC& desc, GpuDeviceFlags deviceMask);
 
 		~D3D11VertexBuffer();
 
-		/** @copydoc VertexBufferCore::readData */
+		/** @copydoc VertexBuffer::readData */
 		void readData(UINT32 offset, UINT32 length, void* dest, UINT32 deviceIdx = 0, UINT32 queueIdx = 0) override;
 
-		/** @copydoc VertexBufferCore::writeData */
+		/** @copydoc VertexBuffer::writeData */
 		void writeData(UINT32 offset, UINT32 length, const void* source, 
 			BufferWriteType writeFlags = BWT_NORMAL, UINT32 queueIdx = 0) override;
 
-		/** @copydoc VertexBufferCore::copyData */
+		/** @copydoc VertexBuffer::copyData */
 		void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length, 
 			bool discardWholeBuffer = false, UINT32 queueIdx = 0) override;
 
@@ -35,13 +35,13 @@ namespace bs { namespace ct
 		ID3D11Buffer* getD3DVertexBuffer() const { return mBuffer->getD3DBuffer(); }		
 
 	protected: 
-		/** @copydoc VertexBufferCore::map */
+		/** @copydoc VertexBuffer::map */
 		void* map(UINT32 offset, UINT32 length, GpuLockOptions options, UINT32 deviceIdx, UINT32 queueIdx) override;
 
-		/** @copydoc VertexBufferCore::unmap */
+		/** @copydoc VertexBuffer::unmap */
 		void unmap(void) override;
 
-		/** @copydoc VertexBufferCore::initialize */
+		/** @copydoc VertexBuffer::initialize */
 		void initialize() override;
 
 		D3D11HardwareBuffer* mBuffer;

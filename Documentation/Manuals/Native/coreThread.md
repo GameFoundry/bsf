@@ -58,11 +58,11 @@ For example, a @ref bs::Mesh "Mesh" is a core object because we want to allow th
 
 Every core object is split into two interfaces:
  - @ref bs::CoreObject "CoreObject" - Implementations of this interface represents the simulation thread counterpart of the object.
- - @ref bs::CoreObjectCore "CoreObjectCore" - Implementations of this interface represents the core thread counterpart of the object.
+ - @ref bs::ct::CoreObject "ct::CoreObject" - Implementations of this interface represents the core thread counterpart of the object.
  
-When a @ref bs::CoreObject "CoreObject" is created it internally queues the creation of its @ref bs::CoreObjectCore "CoreObjectCore" counterpart on the main command queue. Similar thing happens when it is destroyed, a destroy operation is queued and sent to the core thread.
+When a @ref bs::CoreObject "CoreObject" is created it internally queues the creation of its @ref bs::ct::CoreObject "ct::CoreObject" counterpart on the main command queue. Similar thing happens when it is destroyed, a destroy operation is queued and sent to the core thread. Objects used on the core thread are named the same as their simulation thread counterparts, but are in the **ct** namespace.
 
-Aside from initialization/destruction, core objects also support synchronization of data between the two threads (e.g. a @ref bs::Light "Light" is a core object, and when the user changes light radius, it is automatically synchronized to its core thread counterpart @ref bs::LightCore "LightCore").
+Aside from initialization/destruction, core objects also support synchronization of data between the two threads (e.g. a @ref bs::Light "Light" is a core object, and when the user changes light radius, it is automatically synchronized to its core thread counterpart @ref bs::ct::Light "ct::Light").
 
 ## Creating your own core objects {#coreThread_b_a}
 To create a custom core object, you need to implement the @ref bs::CoreObject "CoreObject" class, which by default requires no methods to be implemented. 
@@ -79,21 +79,21 @@ SPtr<MyCoreObject> MyCoreObject::create()
 }
 ~~~~~~~~~~~~~
 
-You will also want to override @ref bs::CoreObject::createCore "CoreObject::createCore", which creates the core thread counterpart of your object. It should return a normal shared pointer to your implementation of @ref bs::CoreObjectCore "CoreObjectCore".
+You will also want to override @ref bs::CoreObject::createCore "CoreObject::createCore", which creates the core thread counterpart of your object. It should return a normal shared pointer to your implementation of @ref bs::ct::CoreObject "CoreObject".
 
 Once a core object is created you can use it as a normal object, while you can retrieve its core thread counterpart by calling @ref bs::CoreObject::getCore "CoreObject::getCore", which you can use on the core thread. Object creation/destruction will happen automatically on the valid thread, and you also get the ability to synchronize information between the two (see below).
 
 ### CoreObjectCore {#coreThread_b_a_a}
-To create the core thread counterpart of a @ref bs::CoreObject "CoreObject" you must implement the @ref bs::CoreObjectCore "CoreObjectCore" class. 
+To create the core thread counterpart of a @ref bs::CoreObject "CoreObject" you must implement the @ref bs::ct::CoreObject "ct::CoreObject" class. 
 
 This object provides an @ref bs::CoreObject::initialize "CoreObject::initialize" method. You should perform any initialization in this method instead of the constructor, as it is guaranteed to be run on the core thread.
 
 The destructor is always assumed to be executed on the core thread. For this reason you must ensure never to store references to CoreObjectCore on the simulation thread, because if they go out of scope there it will trigger an error. Similar rule applies to @ref bs::CoreObject "CoreObjects" as they shouldn't be stored on the core thread.
 
 ### Synchronization {#coreThread_b_a_b}
-Earlier we mentioned that aside from handling construction/destruction the core objects also provide a way to synchronize between the two threads. The synchronization is always one way, from @ref bs::CoreObject "CoreObject" to @ref bs::CoreObjectCore "CoreObjectCore". 
+Earlier we mentioned that aside from handling construction/destruction the core objects also provide a way to synchronize between the two threads. The synchronization is always one way, from @ref bs::CoreObject "CoreObject" to @ref bs::ct::CoreObject "ct::CoreObject". 
 
-Synchronization should happen whenever some property on the @ref bs::CoreObject "CoreObject" changes, that you would wish to make available on the core thread. To synchronize implement the @ref bs::CoreObject::syncToCore(FrameAlloc*) "CoreObject::syncToCore" method, which generates the data for synchronization, and @ref bs::CoreObjectCore::syncToCore "CoreObjectCore::syncToCore" which accepts it.
+Synchronization should happen whenever some property on the @ref bs::CoreObject "CoreObject" changes, that you would wish to make available on the core thread. To synchronize implement the @ref bs::CoreObject::syncToCore(FrameAlloc*) "CoreObject::syncToCore" method, which generates the data for synchronization, and @ref bs::ct::CoreObject::syncToCore "ct::CoreObject::syncToCore" which accepts it.
 
 The synchronized data is transfered between the objects in the form of raw bytes, within the @ref bs::CoreSyncData "CoreSyncData" structure. You can use @ref bs::rttiGetElemSize "rttiGetElemSize" and @ref bs::rttiWriteElem "rttiWriteElem" to encode fields into raw memory, and @ref bs::rttiReadElem "rttiReadElem" to decode them. See the manual about [rtti](@ref rtti) for more information about serialization. @ref bs::CoreObject::syncToCore(FrameAlloc*) "CoreObject::syncToCore" is provided an instance of @ref bs::FrameAlloc "FrameAlloc" which should be used for allocating the serialization buffer. This is an allocator that is fast and doesn't require explicit memory deallocation making it perfect for synchronization. A simple synchronization example would look like so:
 ~~~~~~~~~~~~~{.cpp}
@@ -127,7 +127,7 @@ void MyCoreObjectCore::syncToCore(const CoreSyncData& data)
 
 Whenever you need to trigger synchronization you must call @ref bs::CoreObject::markCoreDirty "CoreObject::markCoreDirty" which notifies the system that synchronization is required. This will in turn trigger a call to @ref bs::CoreObject::syncToCore(FrameAlloc*) "CoreObject::syncToCore" method you implemented earlier. Synchronization happens automatically for all dirty core objects once per frame. Optionally you may call @ref bs::CoreObject::syncToCore() "CoreObject::syncToCore" to manually queue the synchronization.
 
-See implementation of @ref bs::Light "Light" and @ref bs::LightCore "LightCore" in "BsLight.cpp" for a simple example of synchronization.
+See implementation of @ref bs::Light "Light" and @ref bs::ct::Light "ct::Light" in "BsLight.cpp" for a simple example of synchronization.
 
 ### Dependencies {#coreThread_b_a_c}
 Core objects might be dependant on other core objects. For example a @ref bs::Material "Material" is dependant on a @ref bs::Shader "Shader". Whenever the shader's object is marked as dirty the material might need to perform synchronization as well. In general whenever a dependancy core object is marked as dirty, its dependant will be synchronized as well.
@@ -144,8 +144,8 @@ This ensures that @ref bs::CoreObject::initialize "CoreObject::initialize" has a
 ## Other features {#coreThread_b_c}
 Core objects also have some other potentially useful features:
  - @ref bs::CoreObject::getInternalID "CoreObject::getInternalID" will return a globally unique ID for the core object
- - @ref bs::CoreObject::destroy "CoreObject::destroy" will destroy the core object and its core thread counterpart. You do not need to call this manually as it will be automatically called when the object goes out of scope (is no longer referenced). The core thread counterpart (@ref bs::CoreObjectCore "CoreObjectCore") will not be destroyed if something on the core thread is still holding a reference to it.
+ - @ref bs::CoreObject::destroy "CoreObject::destroy" will destroy the core object and its core thread counterpart. You do not need to call this manually as it will be automatically called when the object goes out of scope (is no longer referenced). The core thread counterpart (@ref bs::ct::CoreObject "ct::CoreObject") will not be destroyed if something on the core thread is still holding a reference to it.
  - Override @ref bs::CoreObject::initialize "CoreObject::initialize" or @ref bs::CoreObject::destroy "CoreObject::destroy" methods instead of using the constructor/destructor. This ensures that your initialization code runs after things like serialization, and also allows you to call virtual methods.
  - You can construct a core object without a core thread counterpart. Simply don't override @ref bs::CoreObject::createCore "CoreObject::createCore".
- - You can construct a core object with a @ref bs::CoreObjectCore "CoreObjectCore" that isn't initialized on the core thread by setting the @ref bs::CoreObject "CoreObject" constructor parameter `requiresCoreInit` to false.
+ - You can construct a core object with a @ref bs::ct::CoreObject "CoreObject" that isn't initialized on the core thread by setting the @ref bs::CoreObject "CoreObject" constructor parameter `requiresCoreInit` to false.
  - Core objects always hold a shared pointer to themselves. Use @ref bs::CoreObject::getThisPtr "CoreObject::getThisPtr" to access it.

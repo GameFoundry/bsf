@@ -47,10 +47,10 @@ namespace bs
 		void initialize(const Any& data) override;
 
 		/** @copydoc RendererExtension::check */
-		bool check(const CameraCore& camera) override;
+		bool check(const Camera& camera) override;
 
 		/** @copydoc RendererExtension::render */
-		void render(const CameraCore& camera) override;
+		void render(const Camera& camera) override;
 
 		/**
 		 * Updates the internal data that determines what will be rendered on the next render() call.
@@ -58,10 +58,10 @@ namespace bs
 		 * @param[in]	camera		Camera to render the selection overlay in.
 		 * @param[in]	objects		A set of objects to render with the selection overlay.
 		 */
-		void updateData(const SPtr<CameraCore>& camera, const Vector<SPtr<RenderableCore>>& objects);
+		void updateData(const SPtr<Camera>& camera, const Vector<SPtr<Renderable>>& objects);
 
-		Vector<SPtr<RenderableCore>> mObjects;
-		SPtr<CameraCore> mCamera;
+		Vector<SPtr<Renderable>> mObjects;
+		SPtr<Camera> mCamera;
 
 		// Immutable
 		SPtr<Material> mMaterial;

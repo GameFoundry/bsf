@@ -112,12 +112,12 @@ namespace bs
 		ct::Pass* pass;
 		if(mComputePipelineState != nullptr)
 		{
-			SPtr<ct::ComputePipelineStateCore> corePipeline = mComputePipelineState->getCore();
+			SPtr<ct::ComputePipelineState> corePipeline = mComputePipelineState->getCore();
 			pass = new (bs_alloc<ct::Pass>()) ct::Pass(desc, corePipeline);
 		}
 		else
 		{
-			SPtr<ct::GraphicsPipelineStateCore> corePipeline;
+			SPtr<ct::GraphicsPipelineState> corePipeline;
 			if (mGraphicsPipelineState != nullptr)
 				corePipeline = mGraphicsPipelineState->getCore();
 
@@ -224,14 +224,14 @@ namespace bs
 		:TPass(desc)
 	{ }
 
-	Pass::Pass(const PASS_DESC& desc, const SPtr<GraphicsPipelineStateCore>& pipelineState)
+	Pass::Pass(const PASS_DESC& desc, const SPtr<GraphicsPipelineState>& pipelineState)
 		:TPass(desc)
 	{
 		mGraphicsPipelineState = pipelineState;
 	}
 
 
-	Pass::Pass(const PASS_DESC& desc, const SPtr<ComputePipelineStateCore>& pipelineState)
+	Pass::Pass(const PASS_DESC& desc, const SPtr<ComputePipelineState>& pipelineState)
 		:TPass(desc)
 	{
 		mComputePipelineState = pipelineState;
@@ -242,7 +242,7 @@ namespace bs
 		if(hasComputeProgram())
 		{
 			if(mComputePipelineState == nullptr)
-				mComputePipelineState = ComputePipelineStateCore::create(getComputeProgram());
+				mComputePipelineState = ComputePipelineState::create(getComputeProgram());
 		}
 		else
 		{
@@ -251,7 +251,7 @@ namespace bs
 				PIPELINE_STATE_DESC desc;
 				convertPassDesc(mData, desc);
 
-				mGraphicsPipelineState = GraphicsPipelineStateCore::create(desc);
+				mGraphicsPipelineState = GraphicsPipelineState::create(desc);
 			}
 		}
 

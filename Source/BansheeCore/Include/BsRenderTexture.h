@@ -32,7 +32,7 @@ namespace bs
 	private:
 		void construct(const TextureProperties* textureProps, UINT32 numSlices, bool requiresFlipping);
 
-		friend class RenderTextureCore;
+		friend class ct::RenderTexture;
 		friend class RenderTexture;
 	};
 
@@ -73,7 +73,7 @@ namespace bs
 		 *
 		 * @note	Core thread only.
 		 */
-		SPtr<ct::RenderTextureCore> getCore() const;
+		SPtr<ct::RenderTexture> getCore() const;
 
 		/**	Returns properties that describe the render texture. */
 		const RenderTextureProperties& getProperties() const;
@@ -120,31 +120,31 @@ namespace bs
 	 *
 	 * @note	Core thread only.
 	 */
-	class BS_CORE_EXPORT RenderTextureCore : public RenderTargetCore
+	class BS_CORE_EXPORT RenderTexture : public RenderTarget
 	{
 	public:
-		RenderTextureCore(const RENDER_TEXTURE_DESC& desc, UINT32 deviceIdx);
-		virtual ~RenderTextureCore();
+		RenderTexture(const RENDER_TEXTURE_DESC& desc, UINT32 deviceIdx);
+		virtual ~RenderTexture();
 
 		/** @copydoc CoreObject::initialize */
 		void initialize() override;
 
 		/** @copydoc TextureManager::createRenderTexture(const RENDER_TEXTURE_DESC&, UINT32) */
-		static SPtr<RenderTextureCore> create(const RENDER_TEXTURE_DESC& desc, UINT32 deviceIdx = 0);
+		static SPtr<RenderTexture> create(const RENDER_TEXTURE_DESC& desc, UINT32 deviceIdx = 0);
 
 		/**
 		 * Returns a color surface texture you may bind as an input to an GPU program.
 		 *
 		 * @note	Be aware that you cannot bind a render texture for reading and writing at the same time.
 		 */
-		SPtr<TextureCore> getColorTexture(UINT32 idx) const { return mDesc.colorSurfaces[idx].texture; }
+		SPtr<Texture> getColorTexture(UINT32 idx) const { return mDesc.colorSurfaces[idx].texture; }
 
 		/**
 		 * Returns a depth/stencil surface texture you may bind as an input to an GPU program.
 		 *
 		 * @note	Be aware that you cannot bind a render texture for reading and writing at the same time.
 		 */
-		SPtr<TextureCore> getDepthStencilTexture() const { return mDesc.depthStencilSurface.texture; }
+		SPtr<Texture> getDepthStencilTexture() const { return mDesc.depthStencilSurface.texture; }
 
 		/**	Returns properties that describe the render texture. */
 		const RenderTextureProperties& getProperties() const;
@@ -158,7 +158,7 @@ namespace bs
 		void throwIfBuffersDontMatch() const;
 
 	protected:
-		friend class RenderTexture;
+		friend class bs::RenderTexture;
 
 		SPtr<TextureView> mColorSurfaces[BS_MAX_MULTIPLE_RENDER_TARGETS];
 		SPtr<TextureView> mDepthStencilSurface;

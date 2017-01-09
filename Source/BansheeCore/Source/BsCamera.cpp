@@ -730,9 +730,9 @@ namespace bs
 		mViewport = Viewport::create(target, left, top, width, height);
 	}
 
-	SPtr<ct::CameraCore> Camera::getCore() const
+	SPtr<ct::Camera> Camera::getCore() const
 	{
-		return std::static_pointer_cast<ct::CameraCore>(mCoreSpecific);
+		return std::static_pointer_cast<ct::Camera>(mCoreSpecific);
 	}
 
 	SPtr<Camera> Camera::create(SPtr<RenderTarget> target, float left, float top, float width, float height)
@@ -756,8 +756,8 @@ namespace bs
 
 	SPtr<ct::CoreObject> Camera::createCore() const
 	{
-		ct::CameraCore* handler = new (bs_alloc<ct::CameraCore>()) ct::CameraCore(mViewport->getCore());
-		SPtr<ct::CameraCore> handlerPtr = bs_shared_ptr<ct::CameraCore>(handler);
+		ct::Camera* handler = new (bs_alloc<ct::Camera>()) ct::Camera(mViewport->getCore());
+		SPtr<ct::Camera> handlerPtr = bs_shared_ptr<ct::Camera>(handler);
 		handlerPtr->_setThisPtr(handlerPtr);
 
 		return handlerPtr;
@@ -772,7 +772,7 @@ namespace bs
 	{
 		UINT32 dirtyFlag = getCoreDirtyFlags();
 
-		SPtr<ct::TextureCore> skyTexture;
+		SPtr<ct::Texture> skyTexture;
 		if (mSkyTexture.isLoaded())
 			skyTexture = mSkyTexture->getCore();
 
@@ -798,7 +798,7 @@ namespace bs
 			size += rttiGetElemSize(mCameraFlags);
 			size += rttiGetElemSize(mIsActive);
 			size += rttiGetElemSize(mMSAA);
-			size += sizeof(SPtr<ct::TextureCore>);
+			size += sizeof(SPtr<ct::Texture>);
 			size += sizeof(UINT32);
 
 			if(mPPSettings != nullptr)
@@ -832,7 +832,7 @@ namespace bs
 			dataPtr = rttiWriteElem(mIsActive, dataPtr);
 			dataPtr = rttiWriteElem(mMSAA, dataPtr);
 
-			SPtr<ct::TextureCore>* skyTexDest = new (dataPtr) SPtr<ct::TextureCore>();
+			SPtr<ct::Texture>* skyTexDest = new (dataPtr) SPtr<ct::Texture>();
 			*skyTexDest = skyTexture;
 			dataPtr += sizeof(skyTexture);
 
@@ -869,34 +869,34 @@ namespace bs
 
 	namespace ct
 	{
-	CameraCore::~CameraCore()
+	Camera::~Camera()
 	{
 		RendererManager::instance().getActive()->notifyCameraRemoved(this);
 	}
 
-	CameraCore::CameraCore(SPtr<RenderTargetCore> target, float left, float top, float width, float height)
+	Camera::Camera(SPtr<RenderTarget> target, float left, float top, float width, float height)
 	{
-		mViewport = ViewportCore::create(target, left, top, width, height);
+		mViewport = Viewport::create(target, left, top, width, height);
 	}
 
-	CameraCore::CameraCore(const SPtr<ViewportCore>& viewport)
+	Camera::Camera(const SPtr<Viewport>& viewport)
 	{
 		mViewport = viewport;
 	}
 
-	void CameraCore::initialize()
+	void Camera::initialize()
 	{
 		RendererManager::instance().getActive()->notifyCameraAdded(this);
 
 		CoreObject::initialize();
 	}
 
-	Rect2I CameraCore::getViewportRect() const
+	Rect2I Camera::getViewportRect() const
 	{
 		return mViewport->getArea();
 	}
 
-	void CameraCore::syncToCore(const CoreSyncData& data)
+	void Camera::syncToCore(const CoreSyncData& data)
 	{
 		char* dataPtr = (char*)data.getBuffer();
 
@@ -926,10 +926,10 @@ namespace bs
 			dataPtr = rttiReadElem(mIsActive, dataPtr);
 			dataPtr = rttiReadElem(mMSAA, dataPtr);
 
-			SPtr<TextureCore>* skyTexture = (SPtr<TextureCore>*)dataPtr;
+			SPtr<Texture>* skyTexture = (SPtr<Texture>*)dataPtr;
 			mSkyTexture = *skyTexture;
-			skyTexture->~SPtr<TextureCore>();
-			dataPtr += sizeof(SPtr<TextureCore>);
+			skyTexture->~SPtr<Texture>();
+			dataPtr += sizeof(SPtr<Texture>);
 
 			UINT32 ppSize = 0;
 			dataPtr = rttiReadElem(ppSize, dataPtr);

@@ -108,11 +108,11 @@ namespace bs
 
 	template<> struct TGpuParamsTypes < true >
 	{
-		typedef ct::GpuParamsCore GpuParamsType;
-		typedef SPtr<ct::TextureCore> TextureType;
-		typedef SPtr<ct::GpuBufferCore> BufferType;
-		typedef SPtr<ct::SamplerStateCore> SamplerType;
-		typedef SPtr<ct::GpuParamBlockBufferCore> ParamsBufferType;
+		typedef ct::GpuParams GpuParamsType;
+		typedef SPtr<ct::Texture> TextureType;
+		typedef SPtr<ct::GpuBuffer> BufferType;
+		typedef SPtr<ct::SamplerState> SamplerType;
+		typedef SPtr<ct::GpuParamBlockBuffer> ParamsBufferType;
 	};
 
 	/** Templated version of GpuParams that contains functionality for both sim and core thread versions of stored data. */
@@ -243,7 +243,7 @@ namespace bs
 		~GpuParams() { }
 
 		/** Retrieves a core implementation of a mesh usable only from the core thread. */
-		SPtr<ct::GpuParamsCore> getCore() const;
+		SPtr<ct::GpuParams> getCore() const;
 
 		/**
 		 * Creates new GpuParams object that can serve for changing the GPU program parameters on the specified pipeline.
@@ -310,44 +310,44 @@ namespace bs
 	 */
 
 	/**
-	 * Core thread version of GpuParams.
+	 * Core thread version of bs::GpuParams.
 	 *
 	 * @note	Core thread only.
 	 */
-	class BS_CORE_EXPORT GpuParamsCore : public CoreObject, public TGpuParams<true>
+	class BS_CORE_EXPORT GpuParams : public CoreObject, public TGpuParams<true>
 	{
 	public:
-		virtual ~GpuParamsCore() { }
+		virtual ~GpuParams() { }
 
 		/** 
-		 * @copydoc GpuParams::create(const SPtr<GraphicsPipelineState>&)
+		 * @copydoc bs::GpuParams::create(const SPtr<GraphicsPipelineState>&)
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the buffer be created on.
 		 */
-		static SPtr<GpuParamsCore> create(const SPtr<GraphicsPipelineStateCore>& pipelineState,
+		static SPtr<GpuParams> create(const SPtr<GraphicsPipelineState>& pipelineState,
 										  GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
 		/** 
-		 * @copydoc GpuParams::create(const SPtr<ComputePipelineState>&) 
+		 * @copydoc bs::GpuParams::create(const SPtr<ComputePipelineState>&) 
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the buffer be created on.
 		 */
-		static SPtr<GpuParamsCore> create(const SPtr<ComputePipelineStateCore>& pipelineState,
+		static SPtr<GpuParams> create(const SPtr<ComputePipelineState>& pipelineState,
 										  GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
 		/** 
-		 * @copydoc GpuParams::create(const SPtr<GpuPipelineParamInfo>&)
+		 * @copydoc bs::GpuParams::create(const SPtr<GpuPipelineParamInfo>&)
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the buffer be created on.
 		 */
-		static SPtr<GpuParamsCore> create(const SPtr<GpuPipelineParamInfoCore>& paramInfo,
+		static SPtr<GpuParams> create(const SPtr<GpuPipelineParamInfo>& paramInfo,
 										  GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
 	protected:
-		friend class GpuParams;
+		friend class bs::GpuParams;
 		friend class HardwareBufferManager;
 
-		GpuParamsCore(const SPtr<GpuPipelineParamInfoCore>& paramInfo, GpuDeviceFlags deviceMask);
+		GpuParams(const SPtr<GpuPipelineParamInfo>& paramInfo, GpuDeviceFlags deviceMask);
 
 		/** @copydoc CoreObject::getThisPtr */
-		SPtr<GpuParamsCore> _getThisPtr() const override;
+		SPtr<GpuParams> _getThisPtr() const override;
 
 		/** @copydoc CoreObject::syncToCore */
 		void syncToCore(const CoreSyncData& data) override;

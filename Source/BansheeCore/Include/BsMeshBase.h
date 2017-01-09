@@ -53,11 +53,11 @@ namespace bs
 
 	protected:
 		friend class MeshBase;
-		friend class ct::MeshCoreBase;
+		friend class ct::MeshBase;
 		friend class Mesh;
-		friend class ct::MeshCore;
+		friend class ct::Mesh;
 		friend class TransientMesh;
-		friend class ct::TransientMeshCore;
+		friend class ct::TransientMesh;
 		friend class MeshBaseRTTI;
 
 		Vector<SubMesh> mSubMeshes;
@@ -108,7 +108,7 @@ namespace bs
 		const MeshProperties& getProperties() const { return mProperties; }
 
 		/**	Retrieves a core implementation of a mesh usable only from the core thread. */
-		SPtr<ct::MeshCoreBase> getCore() const;
+		SPtr<ct::MeshBase> getCore() const;
 
 	protected:
 		/** @copydoc CoreObject::syncToCore */
@@ -133,21 +133,21 @@ namespace bs
 	/**
 	 * Core version of a class used as a basis for all implemenations of meshes.
 	 *
-	 * @see		MeshBase
+	 * @see		bs::MeshBase
 	 *
 	 * @note	Core thread.
 	 */
-	class BS_CORE_EXPORT MeshCoreBase : public CoreObject
+	class BS_CORE_EXPORT MeshBase : public CoreObject
 	{
 	public:
-		MeshCoreBase(UINT32 numVertices, UINT32 numIndices, const Vector<SubMesh>& subMeshes);
-		virtual ~MeshCoreBase() { }
+		MeshBase(UINT32 numVertices, UINT32 numIndices, const Vector<SubMesh>& subMeshes);
+		virtual ~MeshBase() { }
 
 		/**	Get vertex data used for rendering. */
 		virtual SPtr<VertexData> getVertexData() const = 0;
 
 		/**	Get index data used for rendering. */
-		virtual SPtr<IndexBufferCore> getIndexBuffer() const = 0;
+		virtual SPtr<IndexBuffer> getIndexBuffer() const = 0;
 
 		/**
 		 * Returns an offset into the vertex buffers that is returned by getVertexData() that signifies where this meshes

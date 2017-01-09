@@ -105,14 +105,14 @@ namespace bs
 
 	}
 
-	SPtr<ct::BlendStateCore> BlendState::getCore() const
+	SPtr<ct::BlendState> BlendState::getCore() const
 	{
-		return std::static_pointer_cast<ct::BlendStateCore>(mCoreSpecific);
+		return std::static_pointer_cast<ct::BlendState>(mCoreSpecific);
 	}
 
 	SPtr<ct::CoreObject> BlendState::createCore() const
 	{
-		SPtr<ct::BlendStateCore> core = ct::RenderStateManager::instance()._createBlendState(mProperties.mData);
+		SPtr<ct::BlendState> core = ct::RenderStateManager::instance()._createBlendState(mProperties.mData);
 		mId = core->getId(); // Accessing core from sim thread is okay here since core ID is immutable
 
 		return core;
@@ -170,18 +170,18 @@ namespace bs
 
 	namespace ct
 	{
-	BlendStateCore::BlendStateCore(const BLEND_STATE_DESC& desc, UINT32 id)
+	BlendState::BlendState(const BLEND_STATE_DESC& desc, UINT32 id)
 		:mProperties(desc), mId(id)
 	{
 
 	}
 
-	BlendStateCore::~BlendStateCore()
+	BlendState::~BlendState()
 	{
 
 	}
 
-	void BlendStateCore::initialize()
+	void BlendState::initialize()
 	{
 		// Since we cache states it's possible this object was already initialized
 		// (i.e. multiple sim-states can share a single core-state)
@@ -192,17 +192,17 @@ namespace bs
 		CoreObject::initialize();
 	}
 
-	const BlendProperties& BlendStateCore::getProperties() const
+	const BlendProperties& BlendState::getProperties() const
 	{
 		return mProperties;
 	}
 
-	SPtr<BlendStateCore> BlendStateCore::create(const BLEND_STATE_DESC& desc)
+	SPtr<BlendState> BlendState::create(const BLEND_STATE_DESC& desc)
 	{
 		return RenderStateManager::instance().createBlendState(desc);
 	}
 
-	const SPtr<BlendStateCore>& BlendStateCore::getDefault()
+	const SPtr<BlendState>& BlendState::getDefault()
 	{
 		return RenderStateManager::instance().getDefaultBlendState();
 	}

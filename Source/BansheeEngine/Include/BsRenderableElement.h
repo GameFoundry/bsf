@@ -16,7 +16,7 @@ namespace bs { namespace ct
 	{
 	public:
 		/**	Reference to the mesh to render. */
-		SPtr<MeshCore> mesh;
+		SPtr<Mesh> mesh;
 
 		/**	Portion of the mesh to render. */
 		SubMesh subMesh;

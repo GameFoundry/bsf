@@ -12,20 +12,20 @@ namespace bs { namespace ct
 	 */
 
 	/**	Vulkan implementation of a vertex buffer. */
-	class VulkanVertexBuffer : public VertexBufferCore
+	class VulkanVertexBuffer : public VertexBuffer
 	{
 	public:
 		VulkanVertexBuffer(const VERTEX_BUFFER_DESC& desc, GpuDeviceFlags deviceMask);
 		~VulkanVertexBuffer();
 
-		/** @copydoc VertexBufferCore::readData */
+		/** @copydoc VertexBuffer::readData */
 		void readData(UINT32 offset, UINT32 length, void* dest, UINT32 deviceIdx = 0, UINT32 queueIdx = 0) override;
 
-		/** @copydoc VertexBufferCore::writeData */
+		/** @copydoc VertexBuffer::writeData */
 		void writeData(UINT32 offset, UINT32 length, const void* source, 
 			BufferWriteType writeFlags = BWT_NORMAL, UINT32 queueIdx = 0) override;
 
-		/** @copydoc VertexBufferCore::copyData */
+		/** @copydoc VertexBuffer::copyData */
 		void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length, 
 			bool discardWholeBuffer = false, UINT32 queueIdx = 0) override;
 
@@ -36,13 +36,13 @@ namespace bs { namespace ct
 		VulkanBuffer* getResource(UINT32 deviceIdx) const;
 
 	protected: 
-		/** @copydoc VertexBufferCore::map */
+		/** @copydoc VertexBuffer::map */
 		void* map(UINT32 offset, UINT32 length, GpuLockOptions options, UINT32 deviceIdx, UINT32 queueIdx) override;
 
-		/** @copydoc VertexBufferCore::unmap */
-		void unmap(void) override;
+		/** @copydoc VertexBuffer::unmap */
+		void unmap() override;
 
-		/** @copydoc VertexBufferCore::initialize */
+		/** @copydoc VertexBuffer::initialize */
 		void initialize() override;
 
 	private:

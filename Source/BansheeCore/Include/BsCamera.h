@@ -552,7 +552,7 @@ namespace bs
 		void setMain(bool main) { mMain = main; }
 
 		/** Retrieves an implementation of a camera handler usable only from the core thread. */
-		SPtr<ct::CameraCore> getCore() const;
+		SPtr<ct::Camera> getCore() const;
 
 		/**	Creates a new camera that renders to the specified portion of the provided render target. */
 		static SPtr<Camera> create(SPtr<RenderTarget> target = nullptr,
@@ -608,21 +608,21 @@ namespace bs
 	namespace ct
 	{
 	/** @copydoc CameraBase */
-	class BS_CORE_EXPORT CameraCore : public CoreObject, public TCamera<true>
+	class BS_CORE_EXPORT Camera : public CoreObject, public TCamera<true>
 	{
 	public:
-		~CameraCore();
+		~Camera();
 
 		/**	Returns the viewport used by the camera. */	
-		SPtr<ViewportCore> getViewport() const { return mViewport; }
+		SPtr<Viewport> getViewport() const { return mViewport; }
 
 	protected:
-		friend class Camera;
+		friend class bs::Camera;
 
-		CameraCore(SPtr<RenderTargetCore> target = nullptr,
+		Camera(SPtr<RenderTarget> target = nullptr,
 			float left = 0.0f, float top = 0.0f, float width = 1.0f, float height = 1.0f);
 
-		CameraCore(const SPtr<ViewportCore>& viewport);
+		Camera(const SPtr<Viewport>& viewport);
 
 		/** @copydoc CoreObject::initialize */
 		void initialize() override;
@@ -633,7 +633,7 @@ namespace bs
 		/** @copydoc CoreObject::syncToCore */
 		void syncToCore(const CoreSyncData& data) override;
 
-		SPtr<ViewportCore> mViewport;
+		SPtr<Viewport> mViewport;
 	};
 	}
 

@@ -7,7 +7,7 @@
 namespace bs { namespace ct
 {
 	GLGpuParamBlockBuffer::GLGpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage, GpuDeviceFlags deviceMask)
-		:GpuParamBlockBufferCore(size, usage, deviceMask), mGLHandle(0)
+		:GpuParamBlockBuffer(size, usage, deviceMask), mGLHandle(0)
 	{
 		assert((deviceMask == GDF_DEFAULT || deviceMask == GDF_PRIMARY) && "Multiple GPUs not supported natively on OpenGL.");
 	}
@@ -33,7 +33,7 @@ namespace bs { namespace ct
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_GpuParamBuffer);
-		GpuParamBlockBufferCore::initialize();
+		GpuParamBlockBuffer::initialize();
 	}
 
 	void GLGpuParamBlockBuffer::writeToGPU(const UINT8* data, UINT32 queueIdx)

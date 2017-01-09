@@ -8,7 +8,7 @@ namespace bs { namespace ct
 {
 	D3D11IndexBuffer::D3D11IndexBuffer(D3D11Device& device, const INDEX_BUFFER_DESC& desc, 
 		GpuDeviceFlags deviceMask)
-		:IndexBufferCore(desc, deviceMask), mBuffer(nullptr), mDevice(device), mUsage(desc.usage)
+		:IndexBuffer(desc, deviceMask), mBuffer(nullptr), mDevice(device), mUsage(desc.usage)
 	{
 		assert((deviceMask == GDF_DEFAULT || deviceMask == GDF_PRIMARY) && "Multiple GPUs not supported natively on DirectX.");
 	}
@@ -26,7 +26,7 @@ namespace bs { namespace ct
 		mBuffer = bs_new<D3D11HardwareBuffer>(D3D11HardwareBuffer::BT_INDEX, mUsage, 1, mSize, std::ref(mDevice), false);
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_IndexBuffer);
-		IndexBufferCore::initialize();
+		IndexBuffer::initialize();
 	}
 
 	void* D3D11IndexBuffer::map(UINT32 offset, UINT32 length, GpuLockOptions options, UINT32 deviceIdx, UINT32 queueIdx)

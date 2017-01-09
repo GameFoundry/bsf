@@ -64,7 +64,7 @@ namespace bs { namespace ct
 		 * Lifetime of returned VAO is managed by the vertex buffers that it binds.
 		 */
 		const GLVertexArrayObject& getVAO(const SPtr<GLSLGpuProgram>& vertexProgram,
-			const SPtr<VertexDeclarationCore>& vertexDecl, const std::array<SPtr<VertexBufferCore>, 32>& boundBuffers);
+			const SPtr<VertexDeclaration>& vertexDecl, const std::array<SPtr<VertexBuffer>, 32>& boundBuffers);
 
 		/**	Called when a vertex buffer containing the provided VAO is destroyed. */
 		void notifyBufferDestroyed(GLVertexArrayObject vao);

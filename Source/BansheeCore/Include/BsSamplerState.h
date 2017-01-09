@@ -116,7 +116,7 @@ namespace bs
 
 	protected:
 		friend class SamplerState;
-		friend class ct::SamplerStateCore;
+		friend class ct::SamplerState;
 		friend class SamplerStateRTTI;
 
 		SAMPLER_STATE_DESC mData;
@@ -141,7 +141,7 @@ namespace bs
 		const SamplerProperties& getProperties() const;
 
 		/**	Retrieves a core implementation of the sampler state usable only from the core thread. */
-		SPtr<ct::SamplerStateCore> getCore() const;
+		SPtr<ct::SamplerState> getCore() const;
 
 		/**	Creates a new sampler state using the provided descriptor structure. */
 		static SPtr<SamplerState> create(const SAMPLER_STATE_DESC& desc);
@@ -181,28 +181,28 @@ namespace bs
 	 */
 
 	/**
-	 * Core thread version of SamplerState.
+	 * Core thread version of bs::SamplerState.
 	 *
 	 * @note	Core thread.
 	 */
-	class BS_CORE_EXPORT SamplerStateCore : public CoreObject
+	class BS_CORE_EXPORT SamplerState : public CoreObject
 	{
 	public:
-		virtual ~SamplerStateCore();
+		virtual ~SamplerState();
 
 		/**	Returns information about the sampler state. */
 		const SamplerProperties& getProperties() const;
 
 		/**	@copydoc RenderStateManager::createSamplerState */
-		static SPtr<SamplerStateCore> create(const SAMPLER_STATE_DESC& desc, GpuDeviceFlags deviceMask = GDF_DEFAULT);
+		static SPtr<SamplerState> create(const SAMPLER_STATE_DESC& desc, GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
 		/**	Returns the default sampler state. */
-		static const SPtr<SamplerStateCore>& getDefault();
+		static const SPtr<SamplerState>& getDefault();
 
 	protected:
 		friend class RenderStateManager;
 
-		SamplerStateCore(const SAMPLER_STATE_DESC& desc, GpuDeviceFlags deviceMask);
+		SamplerState(const SAMPLER_STATE_DESC& desc, GpuDeviceFlags deviceMask);
 
 		/** @copydoc CoreObject::initialize */
 		void initialize() override;

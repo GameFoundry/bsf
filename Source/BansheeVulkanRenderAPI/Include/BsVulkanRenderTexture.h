@@ -40,20 +40,20 @@ namespace bs
 	 *
 	 * @note	Core thread only.
 	 */
-	class VulkanRenderTexture : public RenderTextureCore
+	class VulkanRenderTexture : public RenderTexture
 	{
 	public:
 		VulkanRenderTexture(const RENDER_TEXTURE_DESC& desc, UINT32 deviceIdx);
 		virtual ~VulkanRenderTexture();
 
-		/** @copydoc RenderTextureCore::getCustomAttribute */
+		/** @copydoc RenderTexture::getCustomAttribute */
 		void getCustomAttribute(const String& name, void* data) const override;
 
 	protected:
 		/** @copydoc CoreObject::initialize() */
 		void initialize() override;
 
-		/** @copydoc RenderTextureCore::getProperties */
+		/** @copydoc RenderTexture::getProperties */
 		const RenderTargetProperties& getPropertiesInternal() const override { return mProperties; }
 
 		RenderTextureProperties mProperties;

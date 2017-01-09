@@ -13,26 +13,26 @@ namespace bs { namespace ct
 	 */
 
 	/**	DirectX 11 implementation of a generic GPU buffer. */
-	class BS_D3D11_EXPORT D3D11GpuBuffer : public GpuBufferCore
+	class BS_D3D11_EXPORT D3D11GpuBuffer : public GpuBuffer
     {
     public:
 		~D3D11GpuBuffer();
 
-		/** @copydoc GpuBufferCore::lock */
+		/** @copydoc GpuBuffer::lock */
 		void* lock(UINT32 offset, UINT32 length, GpuLockOptions options, UINT32 deviceIdx = 0,
 				   UINT32 queueIdx = 0) override;
 
-		/** @copydoc GpuBufferCore::unlock */
+		/** @copydoc GpuBuffer::unlock */
 		void unlock() override;
 
-		/** @copydoc GpuBufferCore::readData */
+		/** @copydoc GpuBuffer::readData */
 		void readData(UINT32 offset, UINT32 length, void* dest, UINT32 deviceIdx = 0, UINT32 queueIdx = 0) override;
 
-		/** @copydoc GpuBufferCore::writeData */
+		/** @copydoc GpuBuffer::writeData */
         void writeData(UINT32 offset, UINT32 length, const void* source,
 			BufferWriteType writeFlags = BWT_NORMAL, UINT32 queueIdx = 0) override;
 
-		/** @copydoc GpuBufferCore::copyData */
+		/** @copydoc GpuBuffer::copyData */
 		void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, 
 			UINT32 dstOffset, UINT32 length, bool discardWholeBuffer = false, UINT32 queueIdx = 0) override;
 
@@ -77,7 +77,7 @@ namespace bs { namespace ct
 		/**	Destroys all buffer views regardless if their reference count is zero or not. */
 		void clearBufferViews();
 
-		/** @copydoc GpuBufferCore::initialize */
+		/** @copydoc GpuBuffer::initialize */
 		void initialize() override;
 
 	private:

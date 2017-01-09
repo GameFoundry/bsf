@@ -99,7 +99,7 @@ namespace bs
 		 *
 		 * @note	Core thread only.
 		 */
-		SPtr<ct::GpuPipelineParamInfoCore> getCore() const;
+		SPtr<ct::GpuPipelineParamInfo> getCore() const;
 
 		/** 
 		 * Constructs the object using the provided GPU parameter descriptors. 
@@ -117,23 +117,23 @@ namespace bs
 
 	namespace ct
 	{
-	/** Core thread version of a GpuPipelineParamInfo. */
-	class BS_CORE_EXPORT GpuPipelineParamInfoCore : public CoreObject, public GpuPipelineParamInfoBase
+	/** Core thread version of a bs::GpuPipelineParamInfo. */
+	class BS_CORE_EXPORT GpuPipelineParamInfo : public CoreObject, public GpuPipelineParamInfoBase
 	{
 	public:
-		virtual ~GpuPipelineParamInfoCore() { }
+		virtual ~GpuPipelineParamInfo() { }
 
 		/** 
-		 * @copydoc GpuPipelineParamInfo::create 
+		 * @copydoc bs::GpuPipelineParamInfo::create 
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the buffer be created on.
 		 */
-		static SPtr<GpuPipelineParamInfoCore> create(const GPU_PIPELINE_PARAMS_DESC& desc,
+		static SPtr<GpuPipelineParamInfo> create(const GPU_PIPELINE_PARAMS_DESC& desc,
 													 GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
 	protected:
 		friend class RenderStateManager;
 
-		GpuPipelineParamInfoCore(const GPU_PIPELINE_PARAMS_DESC& desc, GpuDeviceFlags deviceMask);
+		GpuPipelineParamInfo(const GPU_PIPELINE_PARAMS_DESC& desc, GpuDeviceFlags deviceMask);
 	};
 	}
 

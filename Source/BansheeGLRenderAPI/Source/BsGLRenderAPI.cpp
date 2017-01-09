@@ -109,7 +109,7 @@ namespace bs { namespace ct
 		RenderAPI::initialize();
 	}
 
-	void GLRenderAPI::initializeWithWindow(const SPtr<RenderWindowCore>& primaryWindow)
+	void GLRenderAPI::initializeWithWindow(const SPtr<RenderWindow>& primaryWindow)
 	{
 		// Get the context from the window and finish initialization
 		SPtr<GLContext> context;
@@ -199,16 +199,16 @@ namespace bs { namespace ct
 			bs_deleteN(mTextureInfos, mNumTextureUnits);
 	}
 
-	void GLRenderAPI::setGraphicsPipeline(const SPtr<GraphicsPipelineStateCore>& pipelineState,
+	void GLRenderAPI::setGraphicsPipeline(const SPtr<GraphicsPipelineState>& pipelineState,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
-		auto executeRef = [&](const SPtr<GraphicsPipelineStateCore>& pipelineState)
+		auto executeRef = [&](const SPtr<GraphicsPipelineState>& pipelineState)
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
-			BlendStateCore* blendState;
-			RasterizerStateCore* rasterizerState;
-			DepthStencilStateCore* depthStencilState;
+			BlendState* blendState;
+			RasterizerState* rasterizerState;
+			DepthStencilState* depthStencilState;
 			if (pipelineState != nullptr)
 			{
 				mCurrentVertexProgram = std::static_pointer_cast<GLSLGpuProgram>(pipelineState->getVertexProgram());
@@ -222,13 +222,13 @@ namespace bs { namespace ct
 				depthStencilState = pipelineState->getDepthStencilState().get();
 
 				if (blendState == nullptr)
-					blendState = BlendStateCore::getDefault().get();
+					blendState = BlendState::getDefault().get();
 
 				if (rasterizerState == nullptr)
-					rasterizerState = RasterizerStateCore::getDefault().get();
+					rasterizerState = RasterizerState::getDefault().get();
 
 				if(depthStencilState == nullptr)
-					depthStencilState = DepthStencilStateCore::getDefault().get();
+					depthStencilState = DepthStencilState::getDefault().get();
 			}
 			else
 			{
@@ -238,9 +238,9 @@ namespace bs { namespace ct
 				mCurrentDomainProgram = nullptr;
 				mCurrentHullProgram = nullptr;
 
-				blendState = BlendStateCore::getDefault().get();
-				rasterizerState = RasterizerStateCore::getDefault().get();
-				depthStencilState = DepthStencilStateCore::getDefault().get();
+				blendState = BlendState::getDefault().get();
+				rasterizerState = RasterizerState::getDefault().get();
+				depthStencilState = DepthStencilState::getDefault().get();
 			}
 
 			// Blend state
@@ -315,14 +315,14 @@ namespace bs { namespace ct
 		BS_INC_RENDER_STAT(NumPipelineStateChanges);
 	}
 
-	void GLRenderAPI::setComputePipeline(const SPtr<ComputePipelineStateCore>& pipelineState,
+	void GLRenderAPI::setComputePipeline(const SPtr<ComputePipelineState>& pipelineState,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
-		auto executeRef = [&](const SPtr<ComputePipelineStateCore>& pipelineState)
+		auto executeRef = [&](const SPtr<ComputePipelineState>& pipelineState)
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
-			SPtr<GpuProgramCore> program;
+			SPtr<GpuProgram> program;
 			if (pipelineState != nullptr)
 				program = pipelineState->getProgram();
 
@@ -345,9 +345,9 @@ namespace bs { namespace ct
 		BS_INC_RENDER_STAT(NumPipelineStateChanges);
 	}
 
-	void GLRenderAPI::setGpuParams(const SPtr<GpuParamsCore>& gpuParams, const SPtr<CommandBuffer>& commandBuffer)
+	void GLRenderAPI::setGpuParams(const SPtr<GpuParams>& gpuParams, const SPtr<CommandBuffer>& commandBuffer)
 	{
-		auto executeRef = [&](const SPtr<GpuParamsCore>& gpuParams)
+		auto executeRef = [&](const SPtr<GpuParams>& gpuParams)
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
@@ -420,7 +420,7 @@ namespace bs { namespace ct
 					for (auto& entry : paramDesc->textures)
 					{
 						UINT32 binding = entry.second.slot;
-						SPtr<TextureCore> texture = gpuParams->getTexture(entry.second.set, binding);
+						SPtr<Texture> texture = gpuParams->getTexture(entry.second.set, binding);
 
 						UINT32 unit = getTexUnit(binding);
 						if (!activateGLTextureUnit(unit))
@@ -453,10 +453,10 @@ namespace bs { namespace ct
 					for(auto& entry : paramDesc->samplers)
 					{
 						UINT32 binding = entry.second.slot;
-						SPtr<SamplerStateCore> samplerState = gpuParams->getSamplerState(entry.second.set, binding);
+						SPtr<SamplerState> samplerState = gpuParams->getSamplerState(entry.second.set, binding);
 
 						if (samplerState == nullptr)
-							samplerState = SamplerStateCore::getDefault();
+							samplerState = SamplerState::getDefault();
 
 						UINT32 unit = getTexUnit(binding);
 						if (!activateGLTextureUnit(unit))
@@ -480,7 +480,7 @@ namespace bs { namespace ct
 					for(auto& entry : paramDesc->buffers)
 					{
 						UINT32 binding = entry.second.slot;
-						SPtr<GpuBufferCore> buffer = gpuParams->getBuffer(entry.second.set, binding);
+						SPtr<GpuBuffer> buffer = gpuParams->getBuffer(entry.second.set, binding);
 
 						bool isLoadStore = entry.second.type != GPOT_BYTE_BUFFER &&
 							entry.second.type != GPOT_STRUCTURED_BUFFER;
@@ -537,7 +537,7 @@ namespace bs { namespace ct
 					{
 						UINT32 binding = entry.second.slot;
 
-						SPtr<TextureCore> texture = gpuParams->getLoadStoreTexture(entry.second.set, binding);
+						SPtr<Texture> texture = gpuParams->getLoadStoreTexture(entry.second.set, binding);
 						const TextureSurface& surface = gpuParams->getLoadStoreSurface(entry.second.set, binding);
 
 						UINT32 unit = getImageUnit(binding);
@@ -562,7 +562,7 @@ namespace bs { namespace ct
 					for (auto& entry : paramDesc->paramBlocks)
 					{
 						UINT32 binding = entry.second.slot;
-						SPtr<GpuParamBlockBufferCore> buffer = gpuParams->getParamBlockBuffer(entry.second.set, binding);
+						SPtr<GpuParamBlockBuffer> buffer = gpuParams->getParamBlockBuffer(entry.second.set, binding);
 						
 						if (buffer == nullptr)
 							continue;
@@ -737,10 +737,10 @@ namespace bs { namespace ct
 		}
 	}
 
-	void GLRenderAPI::setRenderTarget(const SPtr<RenderTargetCore>& target, bool readOnlyDepthStencil, 
+	void GLRenderAPI::setRenderTarget(const SPtr<RenderTarget>& target, bool readOnlyDepthStencil, 
 		RenderSurfaceMask loadMask, const SPtr<CommandBuffer>& commandBuffer)
 	{
-		auto executeRef = [&](const SPtr<RenderTargetCore>& target, bool readOnlyDepthStencil)
+		auto executeRef = [&](const SPtr<RenderTarget>& target, bool readOnlyDepthStencil)
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
@@ -792,7 +792,7 @@ namespace bs { namespace ct
 		BS_INC_RENDER_STAT(NumRenderTargetChanges);
 	}
 
-	void GLRenderAPI::setVertexBuffers(UINT32 index, SPtr<VertexBufferCore>* buffers, UINT32 numBuffers, 
+	void GLRenderAPI::setVertexBuffers(UINT32 index, SPtr<VertexBuffer>* buffers, UINT32 numBuffers, 
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
 #if BS_DEBUG_MODE
@@ -805,11 +805,11 @@ namespace bs { namespace ct
 		}
 #endif
 
-		std::array<SPtr<VertexBufferCore>, MAX_VB_COUNT> boundBuffers;
+		std::array<SPtr<VertexBuffer>, MAX_VB_COUNT> boundBuffers;
 		for(UINT32 i = 0; i < numBuffers; i++)
 			boundBuffers[index + i] = buffers[i];
 
-		auto executeRef = [&](UINT32 index, SPtr<VertexBufferCore>* buffers, UINT32 numBuffers)
+		auto executeRef = [&](UINT32 index, SPtr<VertexBuffer>* buffers, UINT32 numBuffers)
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
@@ -828,10 +828,10 @@ namespace bs { namespace ct
 		}
 	}
 
-	void GLRenderAPI::setVertexDeclaration(const SPtr<VertexDeclarationCore>& vertexDeclaration,
+	void GLRenderAPI::setVertexDeclaration(const SPtr<VertexDeclaration>& vertexDeclaration,
 		const SPtr<CommandBuffer>& commandBuffer)
 	{
-		auto executeRef = [&](const SPtr<VertexDeclarationCore>& vertexDeclaration)
+		auto executeRef = [&](const SPtr<VertexDeclaration>& vertexDeclaration)
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
@@ -871,9 +871,9 @@ namespace bs { namespace ct
 		}
 	}
 
-	void GLRenderAPI::setIndexBuffer(const SPtr<IndexBufferCore>& buffer, const SPtr<CommandBuffer>& commandBuffer)
+	void GLRenderAPI::setIndexBuffer(const SPtr<IndexBuffer>& buffer, const SPtr<CommandBuffer>& commandBuffer)
 	{
-		auto executeRef = [&](const SPtr<IndexBufferCore>& buffer)
+		auto executeRef = [&](const SPtr<IndexBuffer>& buffer)
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
@@ -1095,7 +1095,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	void GLRenderAPI::swapBuffers(const SPtr<RenderTargetCore>& target, UINT32 syncMask)
+	void GLRenderAPI::swapBuffers(const SPtr<RenderTarget>& target, UINT32 syncMask)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 		target->swapBuffers();
@@ -1991,7 +1991,7 @@ namespace bs { namespace ct
 		}
 #endif
 
-		HardwareBufferManager::startUp();
+		bs::HardwareBufferManager::startUp();
 		HardwareBufferManager::startUp<GLHardwareBufferManager>();
 
 		// GPU Program Manager setup
@@ -2256,7 +2256,7 @@ namespace bs { namespace ct
 
 		for (auto& param : params)
 		{
-			const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES.lookup[param.type];
+			const GpuParamDataTypeInfo& typeInfo = bs::GpuParams::PARAM_SIZES.lookup[param.type];
 			UINT32 size = typeInfo.size / 4;
 			UINT32 alignment = typeInfo.alignment / 4;
 

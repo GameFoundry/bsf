@@ -415,7 +415,7 @@ namespace bs
 		Vector<MeshRenderData> proxyData;
 		for (auto& entry : meshData)
 		{
-			SPtr<ct::TextureCore> tex;
+			SPtr<ct::Texture> tex;
 			if (entry.texture.isLoaded())
 				tex = entry.texture->getCore();
 
@@ -449,7 +449,7 @@ namespace bs
 
 		mIconMesh = buildIconMesh(camera, mIconData, false, iconRenderData);
 
-		SPtr<ct::MeshCoreBase> iconMesh;
+		SPtr<ct::MeshBase> iconMesh;
 		if(mIconMesh != nullptr)
 			iconMesh = mIconMesh->getCore();
 
@@ -628,7 +628,7 @@ namespace bs
 
 		SPtr<TransientMesh> iconMesh = buildIconMesh(camera, iconData, true, iconRenderData);
 		
-		SPtr<ct::TransientMeshCore> iconMeshCore;
+		SPtr<ct::TransientMesh> iconMeshCore;
 		if (iconMesh != nullptr)
 			iconMeshCore = iconMesh->getCore();
 
@@ -935,8 +935,8 @@ namespace bs
 		mIconPickingParamBuffer = gGizmoPickingParamBlockDef.createBuffer();
 	}
 
-	void GizmoRenderer::updateData(const SPtr<CameraCore>& camera, const Vector<GizmoManager::MeshRenderData>& meshes,
-		const SPtr<MeshCoreBase>& iconMesh, const GizmoManager::IconRenderDataVecPtr& iconRenderData)
+	void GizmoRenderer::updateData(const SPtr<Camera>& camera, const Vector<GizmoManager::MeshRenderData>& meshes,
+		const SPtr<MeshBase>& iconMesh, const GizmoManager::IconRenderDataVecPtr& iconRenderData)
 	{
 		mCamera = camera;
 		mMeshes = meshes;
@@ -981,8 +981,8 @@ namespace bs
 			else
 				paramsSet = mIconParamSets[iconMeshIdx];
 
-			SPtr<GpuParamsCore> params0 = paramsSet->getGpuParams(0);
-			SPtr<GpuParamsCore> params1 = paramsSet->getGpuParams(1);
+			SPtr<GpuParams> params0 = paramsSet->getGpuParams(0);
+			SPtr<GpuParams> params1 = paramsSet->getGpuParams(1);
 
 			GpuParamTexture textureParam0;
 			GpuParamTexture textureParam1;
@@ -997,23 +997,23 @@ namespace bs
 		}
 	}
 
-	bool GizmoRenderer::check(const CameraCore& camera)
+	bool GizmoRenderer::check(const Camera& camera)
 	{
 		return &camera == mCamera.get();
 	}
 
-	void GizmoRenderer::render(const CameraCore& camera)
+	void GizmoRenderer::render(const Camera& camera)
 	{
 		renderData(mCamera, mMeshes, mIconMesh, mIconRenderData, false);
 	}
 
-	void GizmoRenderer::renderData(const SPtr<CameraCore>& camera, Vector<GizmoManager::MeshRenderData>& meshes,
-		const SPtr<MeshCoreBase>& iconMesh, const GizmoManager::IconRenderDataVecPtr& iconRenderData, bool usePickingMaterial)
+	void GizmoRenderer::renderData(const SPtr<Camera>& camera, Vector<GizmoManager::MeshRenderData>& meshes,
+		const SPtr<MeshBase>& iconMesh, const GizmoManager::IconRenderDataVecPtr& iconRenderData, bool usePickingMaterial)
 	{
 		if (camera == nullptr)
 			return;
 
-		SPtr<RenderTargetCore> renderTarget = camera->getViewport()->getTarget();
+		SPtr<RenderTarget> renderTarget = camera->getViewport()->getTarget();
 		if (renderTarget == nullptr)
 			return;
 
@@ -1097,7 +1097,7 @@ namespace bs
 			renderIconGizmos(screenArea, iconMesh, iconRenderData, usePickingMaterial);
 	}
 
-	void GizmoRenderer::renderIconGizmos(Rect2I screenArea, SPtr<MeshCoreBase> mesh, 
+	void GizmoRenderer::renderIconGizmos(Rect2I screenArea, SPtr<MeshBase> mesh, 
 		GizmoManager::IconRenderDataVecPtr renderData, bool usePickingMaterial)
 	{
 		RenderAPI& rapi = RenderAPI::instance();
@@ -1106,10 +1106,10 @@ namespace bs
 		rapi.setVertexDeclaration(vertexData->vertexDeclaration);
 		auto vertexBuffers = vertexData->getBuffers();
 
-		SPtr<VertexBufferCore> vertBuffers[1] = { vertexBuffers.begin()->second };
+		SPtr<VertexBuffer> vertBuffers[1] = { vertexBuffers.begin()->second };
 		rapi.setVertexBuffers(0, vertBuffers, 1);
 
-		SPtr<IndexBufferCore> indexBuffer = mesh->getIndexBuffer();
+		SPtr<IndexBuffer> indexBuffer = mesh->getIndexBuffer();
 		rapi.setIndexBuffer(indexBuffer);
 
 		rapi.setDrawOperation(DOT_TRIANGLE_LIST);
@@ -1158,7 +1158,7 @@ namespace bs
 			for (auto& iconData : *renderData)
 			{
 				SPtr<GpuParamsSet> paramsSet = mPickingParamSets[1][iconData.paramsIdx];
-				SPtr<GpuParamsCore> params = paramsSet->getGpuParams();
+				SPtr<GpuParams> params = paramsSet->getGpuParams();
 
 				GpuParamTexture textureParam;
 				params->getTextureParam(GPT_FRAGMENT_PROGRAM, "gMainTexture", textureParam);

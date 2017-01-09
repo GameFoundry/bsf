@@ -12,7 +12,7 @@ namespace bs { namespace ct
 	 */
 
 	/**	DirectX 11 implementation of a texture. */
-	class D3D11Texture : public TextureCore
+	class D3D11Texture : public Texture
 	{
 	public:
 		~D3D11Texture();
@@ -40,22 +40,22 @@ namespace bs { namespace ct
 		/** @copydoc CoreObject::initialize() */
 		void initialize() override;
 
-		/** @copydoc TextureCore::lockImpl */
+		/** @copydoc Texture::lockImpl */
 		PixelData lockImpl(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0, UINT32 deviceIdx = 0,
 						   UINT32 queueIdx = 0) override;
 
-		/** @copydoc TextureCore::unlockImpl */
+		/** @copydoc Texture::unlockImpl */
 		void unlockImpl() override;
 
-		/** @copydoc TextureCore::copyImpl */
+		/** @copydoc Texture::copyImpl */
 		void copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 dstFace, UINT32 dstMipLevel,
-					  const SPtr<TextureCore>& target, UINT32 queueIdx = 0) override;
+					  const SPtr<Texture>& target, UINT32 queueIdx = 0) override;
 
-		/** @copydoc TextureCore::readData */
+		/** @copydoc Texture::readData */
 		void readDataImpl(PixelData& dest, UINT32 mipLevel = 0, UINT32 face = 0, UINT32 deviceIdx = 0,
 					  UINT32 queueIdx = 0) override;
 
-		/** @copydoc TextureCore::writeData */
+		/** @copydoc Texture::writeData */
 		void writeDataImpl(const PixelData& src, UINT32 mipLevel = 0, UINT32 face = 0, bool discardWholeBuffer = false,
 					   UINT32 queueIdx = 0) override;
 
@@ -124,7 +124,7 @@ namespace bs { namespace ct
 		void unmapstaticbuffer();
 
 		/**	Creates an empty and uninitialized texture view object. */
-		SPtr<TextureView> createView(const SPtr<TextureCore>& texture, const TEXTURE_VIEW_DESC& desc) override;
+		SPtr<TextureView> createView(const SPtr<Texture>& texture, const TEXTURE_VIEW_DESC& desc) override;
 
 	protected:
 		ID3D11Texture1D* m1DTex;

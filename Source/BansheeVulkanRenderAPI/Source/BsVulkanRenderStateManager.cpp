@@ -7,7 +7,7 @@
 
 namespace bs { namespace ct
 {
-	SPtr<SamplerStateCore> VulkanRenderStateManager::createSamplerStateInternal(const SAMPLER_STATE_DESC& desc,
+	SPtr<SamplerState> VulkanRenderStateManager::createSamplerStateInternal(const SAMPLER_STATE_DESC& desc,
 		GpuDeviceFlags deviceMask) const
 	{
 		SPtr<VulkanSamplerState> samplerState =
@@ -17,7 +17,7 @@ namespace bs { namespace ct
 		return samplerState;
 	}
 
-	SPtr<GraphicsPipelineStateCore> VulkanRenderStateManager::_createGraphicsPipelineState(
+	SPtr<GraphicsPipelineState> VulkanRenderStateManager::_createGraphicsPipelineState(
 		const PIPELINE_STATE_DESC& desc, GpuDeviceFlags deviceMask) const
 	{
 		SPtr<VulkanGraphicsPipelineState> pipelineState =
@@ -28,8 +28,8 @@ namespace bs { namespace ct
 		return pipelineState;
 	}
 
-	SPtr<ComputePipelineStateCore> VulkanRenderStateManager::_createComputePipelineState(
-		const SPtr<GpuProgramCore>& program, GpuDeviceFlags deviceMask) const
+	SPtr<ComputePipelineState> VulkanRenderStateManager::_createComputePipelineState(
+		const SPtr<GpuProgram>& program, GpuDeviceFlags deviceMask) const
 	{
 		SPtr<VulkanComputePipelineState> pipelineState =
 			bs_shared_ptr<VulkanComputePipelineState>(new (bs_alloc<VulkanComputePipelineState>())
@@ -39,7 +39,7 @@ namespace bs { namespace ct
 		return pipelineState;
 	}
 
-	SPtr<GpuPipelineParamInfoCore> VulkanRenderStateManager::_createPipelineParamInfo(
+	SPtr<GpuPipelineParamInfo> VulkanRenderStateManager::_createPipelineParamInfo(
 		const GPU_PIPELINE_PARAMS_DESC& desc, GpuDeviceFlags deviceMask) const
 	{
 		SPtr<VulkanGpuPipelineParamInfo> paramInfo =

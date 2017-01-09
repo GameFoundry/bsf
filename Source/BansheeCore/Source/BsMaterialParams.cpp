@@ -731,7 +731,7 @@ namespace bs
 			case ParamType::Texture:
 			{
 				HTexture texture = params->mTextureParams[param.index].value;
-				SPtr<TextureCore> textureCore;
+				SPtr<Texture> textureCore;
 				if (texture.isLoaded())
 					textureCore = texture->getCore();
 
@@ -742,8 +742,8 @@ namespace bs
 				break;
 			case ParamType::Buffer:
 			{
-				SPtr<GpuBuffer> buffer = params->mBufferParams[param.index].value;
-				SPtr<GpuBufferCore> bufferCore;
+				SPtr<bs::GpuBuffer> buffer = params->mBufferParams[param.index].value;
+				SPtr<GpuBuffer> bufferCore;
 				if (buffer != nullptr)
 					bufferCore = buffer->getCore();
 
@@ -752,8 +752,8 @@ namespace bs
 				break;
 			case ParamType::Sampler:
 			{
-				SPtr<SamplerState> sampState = params->mSamplerStateParams[param.index].value;
-				SPtr<SamplerStateCore> sampStateCore;
+				SPtr<bs::SamplerState> sampState = params->mSamplerStateParams[param.index].value;
+				SPtr<SamplerState> sampStateCore;
 				if (sampState != nullptr)
 					sampStateCore = sampState->getCore();
 
@@ -789,7 +789,7 @@ namespace bs
 			param.version = mParamVersion;
 
 			UINT32 arraySize = param.arraySize > 1 ? param.arraySize : 1;
-			const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES.lookup[(int)param.type];
+			const GpuParamDataTypeInfo& typeInfo = bs::GpuParams::PARAM_SIZES.lookup[(int)param.type];
 			UINT32 paramSize = typeInfo.numColumns * typeInfo.numRows * typeInfo.baseTypeSize;
 
 			UINT32 dataParamSize = arraySize * paramSize;

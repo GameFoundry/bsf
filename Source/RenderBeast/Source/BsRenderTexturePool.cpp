@@ -89,7 +89,7 @@ namespace bs { namespace ct
 		iterFind->second.lock()->mIsFree = true;
 	}
 
-	bool RenderTexturePool::matches(const SPtr<TextureCore>& texture, const POOLED_RENDER_TEXTURE_DESC& desc)
+	bool RenderTexturePool::matches(const SPtr<Texture>& texture, const POOLED_RENDER_TEXTURE_DESC& desc)
 	{
 		const TextureProperties& texProps = texture->getProperties();
 

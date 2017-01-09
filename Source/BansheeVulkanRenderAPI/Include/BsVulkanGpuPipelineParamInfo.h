@@ -13,7 +13,7 @@ namespace bs { namespace ct
 	 */
 
 	/** Holds meta-data about a set of GPU parameters used by a single pipeline state. */
-	class VulkanGpuPipelineParamInfo : public GpuPipelineParamInfoCore
+	class VulkanGpuPipelineParamInfo : public GpuPipelineParamInfo
 	{
 	public:
 		VulkanGpuPipelineParamInfo(const GPU_PIPELINE_PARAMS_DESC& desc, GpuDeviceFlags deviceMask);
@@ -35,7 +35,7 @@ namespace bs { namespace ct
 		VulkanDescriptorLayout* getLayout(UINT32 deviceIdx, UINT32 layoutIdx) const;
 
 	private:
-		/**	@copydoc GpuPipelineParamInfoCore::initialize */
+		/**	@copydoc GpuPipelineParamInfo::initialize */
 		void initialize() override;
 
 		/** Data related to a single descriptor set layout. */

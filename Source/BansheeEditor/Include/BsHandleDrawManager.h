@@ -209,12 +209,12 @@ namespace bs
 		/** Data about a mesh rendered by the draw manager. */
 		struct MeshData
 		{
-			MeshData(const SPtr<MeshCoreBase>& mesh, SPtr<TextureCore> texture, MeshType type)
+			MeshData(const SPtr<MeshBase>& mesh, SPtr<Texture> texture, MeshType type)
 				:mesh(mesh), texture(texture), type(type)
 			{ }
 
-			SPtr<MeshCoreBase> mesh;
-			SPtr<TextureCore> texture;
+			SPtr<MeshBase> mesh;
+			SPtr<Texture> texture;
 			UINT32 paramIdx;
 			MeshType type;
 		};
@@ -222,7 +222,7 @@ namespace bs
 		/** Data about a camera and the meshes that are queued for rendering on it */
 		struct QueuedData
 		{
-			SPtr<CameraCore> camera;
+			SPtr<Camera> camera;
 			Vector<MeshData> meshes;
 		};
 
@@ -248,10 +248,10 @@ namespace bs
 		void destroy() override;
 
 		/** @copydoc RendererExtension::check */
-		bool check(const CameraCore& camera) override;
+		bool check(const Camera& camera) override;
 
 		/** @copydoc RendererExtension::render */
-		void render(const CameraCore& camera) override;
+		void render(const Camera& camera) override;
 
 		/**
 		 * Queues new data for rendering.
@@ -259,14 +259,14 @@ namespace bs
 		 * @param[in]	camera	Camera to render to.
 		 * @param[in]	meshes	Meshes to render.
 		 */
-		void queueForDraw(const SPtr<CameraCore>& camera, Vector<MeshData>& meshes);
+		void queueForDraw(const SPtr<Camera>& camera, Vector<MeshData>& meshes);
 
 		/** Deletes any meshes queued for rendering. */
 		void clearQueued();
 
 		Vector<QueuedData> mQueuedData;
 
-		SPtr<GpuParamBlockBufferCore> mParamBuffer;
+		SPtr<GpuParamBlockBuffer> mParamBuffer;
 		Vector<SPtr<GpuParamsSet>> mParamSets[(UINT32)MeshType::Count];
 		UINT32 mTypeCounters[(UINT32)MeshType::Count];
 

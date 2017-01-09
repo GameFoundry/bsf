@@ -7,7 +7,7 @@
 namespace bs { namespace ct
 {
 	VulkanIndexBuffer::VulkanIndexBuffer(const INDEX_BUFFER_DESC& desc, GpuDeviceFlags deviceMask)
-		:IndexBufferCore(desc, deviceMask), mBuffer(nullptr),  mUsage(desc.usage), mDeviceMask(deviceMask)
+		:IndexBuffer(desc, deviceMask), mBuffer(nullptr),  mUsage(desc.usage), mDeviceMask(deviceMask)
 	{ }
 
 	VulkanIndexBuffer::~VulkanIndexBuffer()
@@ -23,7 +23,7 @@ namespace bs { namespace ct
 		mBuffer = bs_new<VulkanHardwareBuffer>(VulkanHardwareBuffer::BT_INDEX, BF_UNKNOWN, mUsage, mSize, mDeviceMask);
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_IndexBuffer);
-		IndexBufferCore::initialize();
+		IndexBuffer::initialize();
 	}
 
 	void* VulkanIndexBuffer::map(UINT32 offset, UINT32 length, GpuLockOptions options, UINT32 deviceIdx, UINT32 queueIdx)

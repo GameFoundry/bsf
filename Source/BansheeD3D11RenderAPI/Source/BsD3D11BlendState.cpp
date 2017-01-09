@@ -9,7 +9,7 @@
 namespace bs { namespace ct
 {
 	D3D11BlendState::D3D11BlendState(const BLEND_STATE_DESC& desc, UINT32 id)
-		:BlendStateCore(desc, id), mBlendState(nullptr)
+		:BlendState(desc, id), mBlendState(nullptr)
 	{ }
 
 	D3D11BlendState::~D3D11BlendState()
@@ -51,6 +51,6 @@ namespace bs { namespace ct
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_BlendState);
 
-		BlendStateCore::createInternal();
+		BlendState::createInternal();
 	}
 }}

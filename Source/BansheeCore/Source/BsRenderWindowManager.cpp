@@ -55,7 +55,7 @@ namespace bs
 		}
 	}
 
-	void RenderWindowManager::notifyFocusReceived(ct::RenderWindowCore* coreWindow)
+	void RenderWindowManager::notifyFocusReceived(ct::RenderWindow* coreWindow)
 	{
 		Lock lock(mWindowMutex);
 
@@ -63,14 +63,14 @@ namespace bs
 		mNewWindowInFocus = window;
 	}
 
-	void RenderWindowManager::notifyFocusLost(ct::RenderWindowCore* coreWindow)
+	void RenderWindowManager::notifyFocusLost(ct::RenderWindow* coreWindow)
 	{
 		Lock lock(mWindowMutex);
 
 		mNewWindowInFocus = nullptr;
 	}
 
-	void RenderWindowManager::notifyMovedOrResized(ct::RenderWindowCore* coreWindow)
+	void RenderWindowManager::notifyMovedOrResized(ct::RenderWindow* coreWindow)
 	{
 		Lock lock(mWindowMutex);
 
@@ -103,7 +103,7 @@ namespace bs
 		moveResizeData->height = props.getHeight();
 	}
 
-	void RenderWindowManager::notifySyncDataDirty(ct::RenderWindowCore* coreWindow)
+	void RenderWindowManager::notifySyncDataDirty(ct::RenderWindow* coreWindow)
 	{
 		Lock lock(mWindowMutex);
 
@@ -113,7 +113,7 @@ namespace bs
 			mDirtyProperties.insert(window);
 	}
 
-	void RenderWindowManager::windowMouseLeft(ct::RenderWindowCore* coreWindow)
+	void RenderWindowManager::windowMouseLeft(ct::RenderWindow* coreWindow)
 	{
 		Lock lock(mWindowMutex);
 
@@ -194,7 +194,7 @@ namespace bs
 		return windows;
 	}
 
-	RenderWindow* RenderWindowManager::getNonCore(const ct::RenderWindowCore* window) const
+	RenderWindow* RenderWindowManager::getNonCore(const ct::RenderWindow* window) const
 	{
 		auto iterFind = mWindows.find(window->mWindowId);
 
@@ -212,11 +212,11 @@ namespace bs
 		mNextWindowId = 0;
 	}
 
-	SPtr<RenderWindowCore> RenderWindowManager::create(RENDER_WINDOW_DESC& desc)
+	SPtr<RenderWindow> RenderWindowManager::create(RENDER_WINDOW_DESC& desc)
 	{
 		UINT32 id = mNextWindowId.fetch_add(1, std::memory_order_relaxed);
 
-		SPtr<RenderWindowCore> renderWindow = createInternal(desc, id);
+		SPtr<RenderWindow> renderWindow = createInternal(desc, id);
 		renderWindow->initialize();
 
 		return renderWindow;
@@ -232,14 +232,14 @@ namespace bs
 		mDirtyProperties.clear();
 	}
 
-	void RenderWindowManager::windowCreated(RenderWindowCore* window)
+	void RenderWindowManager::windowCreated(RenderWindow* window)
 	{
 		Lock lock(mWindowMutex);
 
 		mCreatedWindows.push_back(window);
 	}
 
-	void RenderWindowManager::windowDestroyed(RenderWindowCore* window)
+	void RenderWindowManager::windowDestroyed(RenderWindow* window)
 	{
 		{
 			Lock lock(mWindowMutex);
@@ -254,14 +254,14 @@ namespace bs
 		}
 	}
 
-	Vector<RenderWindowCore*> RenderWindowManager::getRenderWindows() const
+	Vector<RenderWindow*> RenderWindowManager::getRenderWindows() const
 	{
 		Lock lock(mWindowMutex);
 
 		return mCreatedWindows;
 	}
 
-	void RenderWindowManager::notifySyncDataDirty(RenderWindowCore* window)
+	void RenderWindowManager::notifySyncDataDirty(RenderWindow* window)
 	{
 		Lock lock(mWindowMutex);
 

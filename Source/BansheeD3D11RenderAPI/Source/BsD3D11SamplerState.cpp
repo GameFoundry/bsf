@@ -9,7 +9,7 @@
 namespace bs { namespace ct
 {
 	D3D11SamplerState::D3D11SamplerState(const SAMPLER_STATE_DESC& desc, GpuDeviceFlags deviceMask)
-		:SamplerStateCore(desc, deviceMask), mSamplerState(nullptr)
+		:SamplerState(desc, deviceMask), mSamplerState(nullptr)
 	{ }
 
 	D3D11SamplerState::~D3D11SamplerState()
@@ -106,6 +106,6 @@ namespace bs { namespace ct
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_SamplerState);
 
-		SamplerStateCore::createInternal();
+		SamplerState::createInternal();
 	}
 }}

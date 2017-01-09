@@ -26,9 +26,9 @@ namespace bs
 		return ct::HardwareBufferManager::instance().createVertexBufferInternal(desc);
 	}
 
-	SPtr<ct::VertexBufferCore> VertexBuffer::getCore() const
+	SPtr<ct::VertexBuffer> VertexBuffer::getCore() const
 	{
-		return std::static_pointer_cast<ct::VertexBufferCore>(mCoreSpecific);
+		return std::static_pointer_cast<ct::VertexBuffer>(mCoreSpecific);
 	}
 
 	SPtr<VertexBuffer> VertexBuffer::create(const VERTEX_BUFFER_DESC& desc)
@@ -38,11 +38,11 @@ namespace bs
 
 	namespace ct
 	{
-	VertexBufferCore::VertexBufferCore(const VERTEX_BUFFER_DESC& desc, GpuDeviceFlags deviceMask)
+	VertexBuffer::VertexBuffer(const VERTEX_BUFFER_DESC& desc, GpuDeviceFlags deviceMask)
 		:HardwareBuffer(desc.vertexSize * desc.numVerts), mProperties(desc.numVerts, desc.vertexSize)
 	{ }
 
-	SPtr<VertexBufferCore> VertexBufferCore::create(const VERTEX_BUFFER_DESC& desc, GpuDeviceFlags deviceMask)
+	SPtr<VertexBuffer> VertexBuffer::create(const VERTEX_BUFFER_DESC& desc, GpuDeviceFlags deviceMask)
 	{
 		return HardwareBufferManager::instance().createVertexBuffer(desc, deviceMask);
 	}

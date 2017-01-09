@@ -50,11 +50,11 @@ namespace bs
 
 	protected:
 		friend class VulkanRenderWindowManager;
-		friend class Win32RenderWindowCore;
+		friend class ct::Win32RenderWindow;
 
 		Win32RenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId);
 
-		/** @copydoc RenderWindowCore::getProperties */
+		/** @copydoc RenderWindow::getProperties */
 		const RenderTargetProperties& getPropertiesInternal() const override { return mProperties; }
 
 		/** @copydoc RenderWindow::syncProperties */
@@ -71,40 +71,40 @@ namespace bs
 	 *
 	 * @note	Core thread only.
 	 */
-	class Win32RenderWindow : public RenderWindowCore
+	class Win32RenderWindow : public RenderWindow
 	{
 	public:
 		Win32RenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId, VulkanRenderAPI& renderAPI);
 		~Win32RenderWindow();
 
-		/** @copydoc RenderWindowCore::move */
+		/** @copydoc RenderWindow::move */
 		void move(INT32 left, INT32 top) override;
 
-		/** @copydoc RenderWindowCore::resize */
+		/** @copydoc RenderWindow::resize */
 		void resize(UINT32 width, UINT32 height) override;
 
-		/** @copydoc RenderWindowCore::setHidden */
+		/** @copydoc RenderWindow::setHidden */
 		void setHidden(bool hidden) override;
 
-		/** @copydoc RenderWindowCore::setActive */
+		/** @copydoc RenderWindow::setActive */
 		void setActive(bool state) override;
 
-		/** @copydoc RenderWindowCore::minimize */
+		/** @copydoc RenderWindow::minimize */
 		void minimize() override;
 
-		/** @copydoc RenderWindowCore::maximize */
+		/** @copydoc RenderWindow::maximize */
 		void maximize() override;
 
-		/** @copydoc RenderWindowCore::restore */
+		/** @copydoc RenderWindow::restore */
 		void restore() override;
 
-		/** @copydoc RenderWindowCore::setFullscreen(UINT32, UINT32, float, UINT32) */
+		/** @copydoc RenderWindow::setFullscreen(UINT32, UINT32, float, UINT32) */
 		void setFullscreen(UINT32 width, UINT32 height, float refreshRate = 60.0f, UINT32 monitorIdx = 0) override;
 
-		/** @copydoc RenderWindowCore::setFullscreen(const VideoMode&) */
+		/** @copydoc RenderWindow::setFullscreen(const VideoMode&) */
 		void setFullscreen(const VideoMode& videoMode) override;
 
-		/** @copydoc RenderWindowCore::setWindowed */
+		/** @copydoc RenderWindow::setWindowed */
 		void setWindowed(UINT32 width, UINT32 height) override;
 
 		/** 
@@ -118,13 +118,13 @@ namespace bs
 		/** Prepares the back buffer for rendering. Should be called before it is bound to the GPU. */
 		void acquireBackBuffer();
 
-		/** @copydoc RenderWindowCore::swapBuffers */
+		/** @copydoc RenderWindow::swapBuffers */
 		void swapBuffers(UINT32 syncMask = 0xFFFFFFFF) override;
 
-		/** @copydoc RenderWindowCore::getCustomAttribute */
+		/** @copydoc RenderWindow::getCustomAttribute */
 		void getCustomAttribute(const String& name, void* data) const override;
 
-		/** @copydoc RenderWindowCore::_windowMovedOrResized */
+		/** @copydoc RenderWindow::_windowMovedOrResized */
 		void _windowMovedOrResized() override;
 
 		/**	Returns internal window handle. */
@@ -135,13 +135,13 @@ namespace bs
 		/** @copydoc CoreObject::initialize */
 		void initialize() override;
 
-		/** @copydoc RenderWindowCore::getProperties */
+		/** @copydoc RenderWindow::getProperties */
 		const RenderTargetProperties& getPropertiesInternal() const override { return mProperties; }
 
-		/** @copydoc RenderWindowCore::getSyncedProperties */
+		/** @copydoc RenderWindow::getSyncedProperties */
 		RenderWindowProperties& getSyncedProperties() override { return mSyncedProperties; }
 
-		/** @copydoc RenderWindowCore::syncProperties */
+		/** @copydoc RenderWindow::syncProperties */
 		void syncProperties() override;
 
 	protected:

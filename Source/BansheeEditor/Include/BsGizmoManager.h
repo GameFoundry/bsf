@@ -366,19 +366,19 @@ namespace bs
 		struct IconRenderData
 		{
 			UINT32 count;
-			SPtr<ct::TextureCore> texture;
+			SPtr<ct::Texture> texture;
 			UINT32 paramsIdx;
 		};
 
 		/** Data about a mesh rendered by the draw manager. */
 		struct MeshRenderData
 		{
-			MeshRenderData(const SPtr<ct::MeshCoreBase>& mesh, SPtr<ct::TextureCore> texture, GizmoMeshType type)
+			MeshRenderData(const SPtr<ct::MeshBase>& mesh, SPtr<ct::Texture> texture, GizmoMeshType type)
 				:mesh(mesh), texture(texture), type(type), paramsIdx(0)
 			{ }
 
-			SPtr<ct::MeshCoreBase> mesh;
-			SPtr<ct::TextureCore> texture;
+			SPtr<ct::MeshBase> mesh;
+			SPtr<ct::Texture> texture;
 			GizmoMeshType type;
 
 			UINT32 paramsIdx;
@@ -527,10 +527,10 @@ namespace bs
 		void initialize(const Any& data) override;
 
 		/**	@copydoc RendererExtension::check */
-		bool check(const CameraCore& camera) override;
+		bool check(const Camera& camera) override;
 
 		/**	@copydoc RendererExtension::render */
-		void render(const CameraCore& camera) override;
+		void render(const Camera& camera) override;
 
 		/**	
 		 * Renders all provided meshes using the provided camera. 
@@ -542,8 +542,8 @@ namespace bs
 		 * @param[in]	usePickingMaterial	If true, meshes will be rendered using a special picking materials, otherwise
 		 *									they'll be rendered using normal drawing materials.
 		 */
-		void renderData(const SPtr<CameraCore>& camera, Vector<GizmoManager::MeshRenderData>& meshes, 
-			const SPtr<MeshCoreBase>& iconMesh, const GizmoManager::IconRenderDataVecPtr& iconRenderData, 
+		void renderData(const SPtr<Camera>& camera, Vector<GizmoManager::MeshRenderData>& meshes, 
+			const SPtr<MeshBase>& iconMesh, const GizmoManager::IconRenderDataVecPtr& iconRenderData, 
 			bool usePickingMaterial);
 
 		/**
@@ -554,7 +554,7 @@ namespace bs
 		 * @param[in]	renderData			Icon render data outlining which parts of the icon mesh use which textures.
 		 * @param[in]	usePickingMaterial	Should the icons be rendered normally or for picking.
 		 */
-		void renderIconGizmos(Rect2I screenArea, SPtr<MeshCoreBase> mesh, GizmoManager::IconRenderDataVecPtr renderData, 
+		void renderIconGizmos(Rect2I screenArea, SPtr<MeshBase> mesh, GizmoManager::IconRenderDataVecPtr renderData, 
 			bool usePickingMaterial);
 
 		/**
@@ -566,25 +566,25 @@ namespace bs
 		 * @param[in]	iconMesh		Mesh containing icon meshes.
 		 * @param[in]	iconRenderData	Icon render data outlining which parts of the icon mesh use which textures.
 		 */
-		void updateData(const SPtr<CameraCore>& camera, const Vector<GizmoManager::MeshRenderData>& meshes, 
-			const SPtr<MeshCoreBase>& iconMesh,  const GizmoManager::IconRenderDataVecPtr& iconRenderData);
+		void updateData(const SPtr<Camera>& camera, const Vector<GizmoManager::MeshRenderData>& meshes, 
+			const SPtr<MeshBase>& iconMesh,  const GizmoManager::IconRenderDataVecPtr& iconRenderData);
 
 		static const float PICKING_ALPHA_CUTOFF;
 
-		SPtr<CameraCore> mCamera;
+		SPtr<Camera> mCamera;
 
 		Vector<GizmoManager::MeshRenderData> mMeshes;
-		SPtr<MeshCoreBase> mIconMesh;
+		SPtr<MeshBase> mIconMesh;
 		GizmoManager::IconRenderDataVecPtr mIconRenderData;
 
 		Vector<SPtr<GpuParamsSet>> mMeshParamSets[(UINT32)GizmoMeshType::Count];
 		Vector<SPtr<GpuParamsSet>> mIconParamSets;
 		Vector<SPtr<GpuParamsSet>> mPickingParamSets[2];
 
-		SPtr<GpuParamBlockBufferCore> mMeshGizmoBuffer;
-		SPtr<GpuParamBlockBufferCore> mIconGizmoBuffer;
-		SPtr<GpuParamBlockBufferCore> mMeshPickingParamBuffer;
-		SPtr<GpuParamBlockBufferCore> mIconPickingParamBuffer;
+		SPtr<GpuParamBlockBuffer> mMeshGizmoBuffer;
+		SPtr<GpuParamBlockBuffer> mIconGizmoBuffer;
+		SPtr<GpuParamBlockBuffer> mMeshPickingParamBuffer;
+		SPtr<GpuParamBlockBuffer> mIconPickingParamBuffer;
 
 		// Immutable
 		SPtr<Material> mMeshMaterials[(UINT32)GizmoMeshType::Count];

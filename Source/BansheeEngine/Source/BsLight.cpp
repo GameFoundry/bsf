@@ -135,9 +135,9 @@ namespace bs
 		updateBounds();
 	}
 
-	SPtr<ct::LightCore> Light::getCore() const
+	SPtr<ct::Light> Light::getCore() const
 	{
-		return std::static_pointer_cast<ct::LightCore>(mCoreSpecific);
+		return std::static_pointer_cast<ct::Light>(mCoreSpecific);
 	}
 
 	SPtr<Light> Light::create(LightType type, Color color,
@@ -163,9 +163,9 @@ namespace bs
 
 	SPtr<ct::CoreObject> Light::createCore() const
 	{
-		ct::LightCore* handler = new (bs_alloc<ct::LightCore>())
-			ct::LightCore(mType, mColor, mIntensity, mRange, mCastsShadows, mSpotAngle, mSpotFalloffAngle);
-		SPtr<ct::LightCore> handlerPtr = bs_shared_ptr<ct::LightCore>(handler);
+		ct::Light* handler = new (bs_alloc<ct::Light>())
+			ct::Light(mType, mColor, mIntensity, mRange, mCastsShadows, mSpotAngle, mSpotFalloffAngle);
+		SPtr<ct::Light> handlerPtr = bs_shared_ptr<ct::Light>(handler);
 		handlerPtr->_setThisPtr(handlerPtr);
 
 		return handlerPtr;
@@ -236,22 +236,22 @@ namespace bs
 
 	namespace ct
 	{
-	const UINT32 LightCore::LIGHT_CONE_NUM_SIDES = 20;
-	const UINT32 LightCore::LIGHT_CONE_NUM_SLICES = 10;
+	const UINT32 Light::LIGHT_CONE_NUM_SIDES = 20;
+	const UINT32 Light::LIGHT_CONE_NUM_SLICES = 10;
 
-	LightCore::LightCore(LightType type, Color color,
+	Light::Light(LightType type, Color color,
 		float intensity, float range, bool castsShadows, Degree spotAngle, Degree spotFalloffAngle)
 		:LightBase(type, color, intensity, range, castsShadows, spotAngle, spotFalloffAngle), mRendererId(0)
 	{
 
 	}
 
-	LightCore::~LightCore()
+	Light::~Light()
 	{
 		gRenderer()->notifyLightRemoved(this);
 	}
 
-	void LightCore::initialize()
+	void Light::initialize()
 	{
 		updateBounds();
 		gRenderer()->notifyLightAdded(this);
@@ -259,7 +259,7 @@ namespace bs
 		CoreObject::initialize();
 	}
 
-	void LightCore::syncToCore(const CoreSyncData& data)
+	void Light::syncToCore(const CoreSyncData& data)
 	{
 		char* dataPtr = (char*)data.getBuffer();
 
@@ -314,7 +314,7 @@ namespace bs
 		}
 	}
 
-	SPtr<MeshCore> LightCore::getMesh() const
+	SPtr<Mesh> Light::getMesh() const
 	{
 		switch (mType)
 		{

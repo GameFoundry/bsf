@@ -22,11 +22,11 @@ namespace bs
 
 	template<bool Core> struct TGpuParamBlockBufferPtrType { };
 	template<> struct TGpuParamBlockBufferPtrType<false> { typedef SPtr<GpuParamBlockBuffer> Type; };
-	template<> struct TGpuParamBlockBufferPtrType<true> { typedef SPtr<ct::GpuParamBlockBufferCore> Type; };
+	template<> struct TGpuParamBlockBufferPtrType<true> { typedef SPtr<ct::GpuParamBlockBuffer> Type; };
 
 	template<bool Core> struct TGpuProgramType { };
 	template<> struct TGpuProgramType<false> { typedef SPtr<GpuProgram> Type; };
-	template<> struct TGpuProgramType<true> { typedef SPtr<ct::GpuProgramCore> Type; };
+	template<> struct TGpuProgramType<true> { typedef SPtr<ct::GpuProgram> Type; };
 
 	template<bool Core> struct TShaderType {};
 	template<> struct TShaderType < false > { typedef HShader Type; };
@@ -34,7 +34,7 @@ namespace bs
 
 	template<bool Core> struct TGpuParamBlockBufferType {};
 	template<> struct TGpuParamBlockBufferType < false > { typedef GpuParamBlockBuffer Type; };
-	template<> struct TGpuParamBlockBufferType < true > { typedef ct::GpuParamBlockBufferCore Type; };
+	template<> struct TGpuParamBlockBufferType < true > { typedef ct::GpuParamBlockBuffer Type; };
 	
 	template<bool Core> struct TGpuParamsSetType {};
 	template<> struct TGpuParamsSetType < false > { typedef GpuParamsSet Type; };

@@ -30,12 +30,12 @@ namespace bs
 		assert(mRenderSystem != nullptr);
 	}
 
-	SPtr<RenderWindowCore> GLRenderWindowManager::createInternal(RENDER_WINDOW_DESC& desc, UINT32 windowId)
+	SPtr<RenderWindow> GLRenderWindowManager::createInternal(RENDER_WINDOW_DESC& desc, UINT32 windowId)
 	{
 		GLSupport* glSupport = mRenderSystem->getGLSupport();
 
 		// Create the window
-		SPtr<RenderWindowCore> window = glSupport->newWindowCore(desc, windowId);
+		SPtr<RenderWindow> window = glSupport->newWindowCore(desc, windowId);
 		window->_setThisPtr(window);
 
 		windowCreated(window.get());

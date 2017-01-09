@@ -557,9 +557,9 @@ namespace bs
 		return std::static_pointer_cast<GpuParams>(getThisPtr());
 	}
 
-	SPtr<ct::GpuParamsCore> GpuParams::getCore() const
+	SPtr<ct::GpuParams> GpuParams::getCore() const
 	{
-		return std::static_pointer_cast<ct::GpuParamsCore>(mCoreSpecific);
+		return std::static_pointer_cast<ct::GpuParams>(mCoreSpecific);
 	}
 
 	SPtr<ct::CoreObject> GpuParams::createCore() const
@@ -603,11 +603,11 @@ namespace bs
 		UINT32 numSamplers = mParamInfo->getNumElements(GpuPipelineParamInfo::ParamType::SamplerState);
 
 		UINT32 loadStoreSurfacesSize = numStorageTextures * sizeof(TextureSurface);
-		UINT32 paramBufferSize = numParamBlocks * sizeof(SPtr<ct::GpuParamBlockBufferCore>);
-		UINT32 textureArraySize = numTextures * sizeof(SPtr<ct::TextureCore>);
-		UINT32 loadStoreTextureArraySize = numStorageTextures * sizeof(SPtr<ct::TextureCore>);
-		UINT32 bufferArraySize = numBuffers * sizeof(SPtr<ct::GpuBufferCore>);
-		UINT32 samplerArraySize = numSamplers * sizeof(SPtr<ct::SamplerStateCore>);
+		UINT32 paramBufferSize = numParamBlocks * sizeof(SPtr<ct::GpuParamBlockBuffer>);
+		UINT32 textureArraySize = numTextures * sizeof(SPtr<ct::Texture>);
+		UINT32 loadStoreTextureArraySize = numStorageTextures * sizeof(SPtr<ct::Texture>);
+		UINT32 bufferArraySize = numBuffers * sizeof(SPtr<ct::GpuBuffer>);
+		UINT32 samplerArraySize = numSamplers * sizeof(SPtr<ct::SamplerState>);
 
 		UINT32 totalSize = loadStoreSurfacesSize + paramBufferSize + textureArraySize + loadStoreTextureArraySize 
 			+ bufferArraySize + samplerArraySize;
@@ -622,16 +622,16 @@ namespace bs
 		UINT8* data = allocator->alloc(totalSize);
 
 		TextureSurface* loadStoreSurfaces = (TextureSurface*)(data + textureInfoOffset);
-		SPtr<ct::GpuParamBlockBufferCore>* paramBuffers = (SPtr<ct::GpuParamBlockBufferCore>*)(data + paramBufferOffset);
-		SPtr<ct::TextureCore>* textures = (SPtr<ct::TextureCore>*)(data + textureArrayOffset);
-		SPtr<ct::TextureCore>* loadStoreTextures = (SPtr<ct::TextureCore>*)(data + loadStoreTextureArrayOffset);
-		SPtr<ct::GpuBufferCore>* buffers = (SPtr<ct::GpuBufferCore>*)(data + bufferArrayOffset);
-		SPtr<ct::SamplerStateCore>* samplers = (SPtr<ct::SamplerStateCore>*)(data + samplerArrayOffset);
+		SPtr<ct::GpuParamBlockBuffer>* paramBuffers = (SPtr<ct::GpuParamBlockBuffer>*)(data + paramBufferOffset);
+		SPtr<ct::Texture>* textures = (SPtr<ct::Texture>*)(data + textureArrayOffset);
+		SPtr<ct::Texture>* loadStoreTextures = (SPtr<ct::Texture>*)(data + loadStoreTextureArrayOffset);
+		SPtr<ct::GpuBuffer>* buffers = (SPtr<ct::GpuBuffer>*)(data + bufferArrayOffset);
+		SPtr<ct::SamplerState>* samplers = (SPtr<ct::SamplerState>*)(data + samplerArrayOffset);
 
 		// Construct & copy
 		for (UINT32 i = 0; i < numParamBlocks; i++)
 		{
-			new (&paramBuffers[i]) SPtr<ct::GpuParamBlockBufferCore>();
+			new (&paramBuffers[i]) SPtr<ct::GpuParamBlockBuffer>();
 
 			if (mParamBlockBuffers[i] != nullptr)
 				paramBuffers[i] = mParamBlockBuffers[i]->getCore();
@@ -639,7 +639,7 @@ namespace bs
 
 		for (UINT32 i = 0; i < numTextures; i++)
 		{
-			new (&textures[i]) SPtr<ct::TextureCore>();
+			new (&textures[i]) SPtr<ct::Texture>();
 
 			if (mTextures[i].isLoaded())
 				textures[i] = mTextures[i]->getCore();
@@ -652,7 +652,7 @@ namespace bs
 			new (&loadStoreSurfaces[i]) TextureSurface();
 			loadStoreSurfaces[i] = mLoadStoreSurfaces[i];
 
-			new (&loadStoreTextures[i]) SPtr<ct::TextureCore>();
+			new (&loadStoreTextures[i]) SPtr<ct::Texture>();
 
 			if (mLoadStoreTextures[i].isLoaded())
 				loadStoreTextures[i] = mLoadStoreTextures[i]->getCore();
@@ -662,7 +662,7 @@ namespace bs
 
 		for (UINT32 i = 0; i < numBuffers; i++)
 		{
-			new (&buffers[i]) SPtr<ct::GpuBufferCore>();
+			new (&buffers[i]) SPtr<ct::GpuBuffer>();
 
 			if (mBuffers[i] != nullptr)
 				buffers[i] = mBuffers[i]->getCore();
@@ -672,7 +672,7 @@ namespace bs
 
 		for (UINT32 i = 0; i < numSamplers; i++)
 		{
-			new (&samplers[i]) SPtr<ct::SamplerStateCore>();
+			new (&samplers[i]) SPtr<ct::SamplerState>();
 
 			if (mSamplerStates[i] != nullptr)
 				samplers[i] = mSamplerStates[i]->getCore();
@@ -703,18 +703,18 @@ namespace bs
 
 	namespace ct
 	{
-	GpuParamsCore::GpuParamsCore(const SPtr<GpuPipelineParamInfoCore>& paramInfo, GpuDeviceFlags deviceMask)
+	GpuParams::GpuParams(const SPtr<GpuPipelineParamInfo>& paramInfo, GpuDeviceFlags deviceMask)
 		: TGpuParams(paramInfo)
 	{
 
 	}
 
-	SPtr<GpuParamsCore> GpuParamsCore::_getThisPtr() const
+	SPtr<GpuParams> GpuParams::_getThisPtr() const
 	{
-		return std::static_pointer_cast<GpuParamsCore>(getThisPtr());
+		return std::static_pointer_cast<GpuParams>(getThisPtr());
 	}
 
-	void GpuParamsCore::syncToCore(const CoreSyncData& data)
+	void GpuParams::syncToCore(const CoreSyncData& data)
 	{
 		UINT32 numParamBlocks = mParamInfo->getNumElements(GpuPipelineParamInfo::ParamType::ParamBlock);
 		UINT32 numTextures = mParamInfo->getNumElements(GpuPipelineParamInfo::ParamType::Texture);
@@ -723,11 +723,11 @@ namespace bs
 		UINT32 numSamplers = mParamInfo->getNumElements(GpuPipelineParamInfo::ParamType::SamplerState);
 
 		UINT32 loadStoreSurfacesSize = numStorageTextures * sizeof(TextureSurface);
-		UINT32 paramBufferSize = numParamBlocks * sizeof(SPtr<GpuParamBlockBufferCore>);
-		UINT32 textureArraySize = numTextures * sizeof(SPtr<TextureCore>);
-		UINT32 loadStoreTextureArraySize = numStorageTextures * sizeof(SPtr<TextureCore>);
-		UINT32 bufferArraySize = numBuffers * sizeof(SPtr<GpuBufferCore>);
-		UINT32 samplerArraySize = numSamplers * sizeof(SPtr<SamplerStateCore>);
+		UINT32 paramBufferSize = numParamBlocks * sizeof(SPtr<GpuParamBlockBuffer>);
+		UINT32 textureArraySize = numTextures * sizeof(SPtr<Texture>);
+		UINT32 loadStoreTextureArraySize = numStorageTextures * sizeof(SPtr<Texture>);
+		UINT32 bufferArraySize = numBuffers * sizeof(SPtr<GpuBuffer>);
+		UINT32 samplerArraySize = numSamplers * sizeof(SPtr<SamplerState>);
 
 		UINT32 totalSize = loadStoreSurfacesSize + paramBufferSize + textureArraySize + loadStoreTextureArraySize
 			+ bufferArraySize + samplerArraySize;
@@ -744,23 +744,23 @@ namespace bs
 		UINT8* dataPtr = data.getBuffer();
 
 		TextureSurface* loadStoreSurfaces = (TextureSurface*)(dataPtr + textureInfoOffset);
-		SPtr<GpuParamBlockBufferCore>* paramBuffers = (SPtr<GpuParamBlockBufferCore>*)(dataPtr + paramBufferOffset);
-		SPtr<TextureCore>* textures = (SPtr<TextureCore>*)(dataPtr + textureArrayOffset);
-		SPtr<TextureCore>* loadStoreTextures = (SPtr<TextureCore>*)(dataPtr + loadStoreTextureArrayOffset);
-		SPtr<GpuBufferCore>* buffers = (SPtr<GpuBufferCore>*)(dataPtr + bufferArrayOffset);
-		SPtr<SamplerStateCore>* samplers = (SPtr<SamplerStateCore>*)(dataPtr + samplerArrayOffset);
+		SPtr<GpuParamBlockBuffer>* paramBuffers = (SPtr<GpuParamBlockBuffer>*)(dataPtr + paramBufferOffset);
+		SPtr<Texture>* textures = (SPtr<Texture>*)(dataPtr + textureArrayOffset);
+		SPtr<Texture>* loadStoreTextures = (SPtr<Texture>*)(dataPtr + loadStoreTextureArrayOffset);
+		SPtr<GpuBuffer>* buffers = (SPtr<GpuBuffer>*)(dataPtr + bufferArrayOffset);
+		SPtr<SamplerState>* samplers = (SPtr<SamplerState>*)(dataPtr + samplerArrayOffset);
 
 		// Copy & destruct
 		for (UINT32 i = 0; i < numParamBlocks; i++)
 		{
 			mParamBlockBuffers[i] = paramBuffers[i];
-			paramBuffers[i].~SPtr<GpuParamBlockBufferCore>();
+			paramBuffers[i].~SPtr<GpuParamBlockBuffer>();
 		}
 
 		for (UINT32 i = 0; i < numTextures; i++)
 		{
 			mTextures[i] = textures[i];
-			textures[i].~SPtr<TextureCore>();
+			textures[i].~SPtr<Texture>();
 		}
 
 		for (UINT32 i = 0; i < numStorageTextures; i++)
@@ -769,33 +769,33 @@ namespace bs
 			loadStoreSurfaces[i].~TextureSurface();
 
 			mLoadStoreTextures[i] = loadStoreTextures[i];
-			loadStoreTextures[i].~SPtr<TextureCore>();
+			loadStoreTextures[i].~SPtr<Texture>();
 		}
 
 		for (UINT32 i = 0; i < numBuffers; i++)
 		{
 			mBuffers[i] = buffers[i];
-			buffers[i].~SPtr<GpuBufferCore>();
+			buffers[i].~SPtr<GpuBuffer>();
 		}
 
 		for (UINT32 i = 0; i < numSamplers; i++)
 		{
 			mSamplerStates[i] = samplers[i];
-			samplers[i].~SPtr<SamplerStateCore>();
+			samplers[i].~SPtr<SamplerState>();
 		}
 	}
 
-	SPtr<GpuParamsCore> GpuParamsCore::create(const SPtr<GraphicsPipelineStateCore>& pipelineState, GpuDeviceFlags deviceMask)
+	SPtr<GpuParams> GpuParams::create(const SPtr<GraphicsPipelineState>& pipelineState, GpuDeviceFlags deviceMask)
 	{
 		return HardwareBufferManager::instance().createGpuParams(pipelineState->getParamInfo(), deviceMask);
 	}
 
-	SPtr<GpuParamsCore> GpuParamsCore::create(const SPtr<ComputePipelineStateCore>& pipelineState, GpuDeviceFlags deviceMask)
+	SPtr<GpuParams> GpuParams::create(const SPtr<ComputePipelineState>& pipelineState, GpuDeviceFlags deviceMask)
 	{
 		return HardwareBufferManager::instance().createGpuParams(pipelineState->getParamInfo(), deviceMask);
 	}
 
-	SPtr<GpuParamsCore> GpuParamsCore::create(const SPtr<GpuPipelineParamInfoCore>& paramInfo, GpuDeviceFlags deviceMask)
+	SPtr<GpuParams> GpuParams::create(const SPtr<GpuPipelineParamInfo>& paramInfo, GpuDeviceFlags deviceMask)
 	{
 		return HardwareBufferManager::instance().createGpuParams(paramInfo, deviceMask);
 	}

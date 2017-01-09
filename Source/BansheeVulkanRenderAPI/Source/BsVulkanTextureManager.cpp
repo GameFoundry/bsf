@@ -57,7 +57,7 @@ namespace bs
 		return mDummyStorageTexture->getResource(deviceIdx)->getView(false);
 	}
 
-	SPtr<TextureCore> VulkanTextureManager::createTextureInternal(const TEXTURE_DESC& desc,
+	SPtr<Texture> VulkanTextureManager::createTextureInternal(const TEXTURE_DESC& desc,
 		const SPtr<PixelData>& initialData, GpuDeviceFlags deviceMask)
 	{
 		VulkanTexture* tex = new (bs_alloc<VulkanTexture>()) VulkanTexture(desc, initialData, deviceMask);
@@ -68,7 +68,7 @@ namespace bs
 		return texPtr;
 	}
 
-	SPtr<RenderTextureCore> VulkanTextureManager::createRenderTextureInternal(const RENDER_TEXTURE_DESC& desc,
+	SPtr<RenderTexture> VulkanTextureManager::createRenderTextureInternal(const RENDER_TEXTURE_DESC& desc,
 																				  UINT32 deviceIdx)
 	{
 		SPtr<VulkanRenderTexture> texPtr = bs_shared_ptr_new<VulkanRenderTexture>(desc, deviceIdx);

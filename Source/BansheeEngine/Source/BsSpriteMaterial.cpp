@@ -73,15 +73,15 @@ namespace bs
 		return (UINT64)hash;
 	}
 
-	void SpriteMaterial::render(const SPtr<ct::MeshCoreBase>& mesh, const SPtr<ct::TextureCore>& texture,
-		const SPtr<ct::SamplerStateCore>& sampler, const SPtr<ct::GpuParamBlockBufferCore>& paramBuffer,
+	void SpriteMaterial::render(const SPtr<ct::MeshBase>& mesh, const SPtr<ct::Texture>& texture,
+		const SPtr<ct::SamplerState>& sampler, const SPtr<ct::GpuParamBlockBuffer>& paramBuffer,
 		const SPtr<SpriteMaterialExtraInfo>& additionalData) const
 	{
-		SPtr<ct::TextureCore> spriteTexture;
+		SPtr<ct::Texture> spriteTexture;
 		if (texture != nullptr)
 			spriteTexture = texture;
 		else
-			spriteTexture = ct::TextureCore::WHITE;
+			spriteTexture = ct::Texture::WHITE;
 
 		mTextureParam.set(spriteTexture);
 		mSamplerParam.set(sampler);

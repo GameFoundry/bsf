@@ -696,7 +696,7 @@ namespace bs { namespace ct
 		mImageInfos.clear();
 	}
 
-	void VulkanCmdBuffer::setRenderTarget(const SPtr<RenderTargetCore>& rt, bool readOnlyDepthStencil, 
+	void VulkanCmdBuffer::setRenderTarget(const SPtr<RenderTarget>& rt, bool readOnlyDepthStencil, 
 		RenderSurfaceMask loadMask)
 	{
 		assert(mState != State::Submitted);
@@ -941,7 +941,7 @@ namespace bs { namespace ct
 		clearViewport(area, buffers, color, depth, stencil, targetMask);
 	}
 
-	void VulkanCmdBuffer::setPipelineState(const SPtr<GraphicsPipelineStateCore>& state)
+	void VulkanCmdBuffer::setPipelineState(const SPtr<GraphicsPipelineState>& state)
 	{
 		if (mGraphicsPipeline == state)
 			return;
@@ -950,7 +950,7 @@ namespace bs { namespace ct
 		mGfxPipelineRequiresBind = true; 
 	}
 
-	void VulkanCmdBuffer::setPipelineState(const SPtr<ComputePipelineStateCore>& state)
+	void VulkanCmdBuffer::setPipelineState(const SPtr<ComputePipelineState>& state)
 	{
 		if (mComputePipeline == state)
 			return;
@@ -959,7 +959,7 @@ namespace bs { namespace ct
 		mCmpPipelineRequiresBind = true;
 	}
 
-	void VulkanCmdBuffer::setGpuParams(const SPtr<GpuParamsCore>& gpuParams)
+	void VulkanCmdBuffer::setGpuParams(const SPtr<GpuParams>& gpuParams)
 	{
 		// Note: We keep an internal reference to GPU params even though we shouldn't keep a reference to a core thread
 		// object. But it should be fine since we expect the resource to be externally synchronized so it should never
@@ -1014,7 +1014,7 @@ namespace bs { namespace ct
 		mGfxPipelineRequiresBind = true;
 	}
 
-	void VulkanCmdBuffer::setVertexBuffers(UINT32 index, SPtr<VertexBufferCore>* buffers, UINT32 numBuffers)
+	void VulkanCmdBuffer::setVertexBuffers(UINT32 index, SPtr<VertexBuffer>* buffers, UINT32 numBuffers)
 	{
 		if (numBuffers == 0)
 			return;
@@ -1042,7 +1042,7 @@ namespace bs { namespace ct
 		vkCmdBindVertexBuffers(mCmdBuffer, index, numBuffers, mVertexBuffersTemp, mVertexBufferOffsetsTemp);
 	}
 
-	void VulkanCmdBuffer::setIndexBuffer(const SPtr<IndexBufferCore>& buffer)
+	void VulkanCmdBuffer::setIndexBuffer(const SPtr<IndexBuffer>& buffer)
 	{
 		VulkanIndexBuffer* indexBuffer = static_cast<VulkanIndexBuffer*>(buffer.get());
 
@@ -1063,7 +1063,7 @@ namespace bs { namespace ct
 		vkCmdBindIndexBuffer(mCmdBuffer, vkBuffer, 0, indexType);
 	}
 
-	void VulkanCmdBuffer::setVertexDeclaration(const SPtr<VertexDeclarationCore>& decl)
+	void VulkanCmdBuffer::setVertexDeclaration(const SPtr<VertexDeclaration>& decl)
 	{
 		if (mVertexDecl == decl)
 			return;
@@ -1077,7 +1077,7 @@ namespace bs { namespace ct
 		if (mGraphicsPipeline == nullptr)
 			return false;
 
-		SPtr<VertexDeclarationCore> inputDecl = mGraphicsPipeline->getInputDeclaration();
+		SPtr<VertexDeclaration> inputDecl = mGraphicsPipeline->getInputDeclaration();
 		if (inputDecl == nullptr)
 			return false;
 
@@ -1086,7 +1086,7 @@ namespace bs { namespace ct
 
 	bool VulkanCmdBuffer::bindGraphicsPipeline()
 	{
-		SPtr<VertexDeclarationCore> inputDecl = mGraphicsPipeline->getInputDeclaration();
+		SPtr<VertexDeclaration> inputDecl = mGraphicsPipeline->getInputDeclaration();
 		SPtr<VulkanVertexInput> vertexInput = VulkanVertexInputManager::instance().getVertexInfo(mVertexDecl, inputDecl);
 
 		VulkanPipeline* pipeline = mGraphicsPipeline->getPipeline(mDevice.getIndex(), mFramebuffer,

@@ -10,7 +10,7 @@
 
 namespace bs { namespace ct
 {
-	D3D11TextureView::D3D11TextureView(const SPtr<TextureCore>& texture, const TEXTURE_VIEW_DESC& desc)
+	D3D11TextureView::D3D11TextureView(const SPtr<Texture>& texture, const TEXTURE_VIEW_DESC& desc)
 		:TextureView(texture, desc), mSRV(nullptr), mUAV(nullptr), mDSV(nullptr), mRTV(nullptr), mRODSV(nullptr)
 	{
 		D3D11Texture* d3d11Texture = static_cast<D3D11Texture*>(mOwnerTexture.get());

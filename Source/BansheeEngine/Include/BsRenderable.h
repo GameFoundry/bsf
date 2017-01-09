@@ -186,7 +186,7 @@ namespace bs
 		bool isAnimated() const { return mAnimation != nullptr; }
 
 		/**	Retrieves an implementation of a renderable handler usable only from the core thread. */
-		SPtr<ct::RenderableCore> getCore() const;
+		SPtr<ct::Renderable> getCore() const;
 
 		/**	Returns the hash value that can be used to identify if the internal data needs an update. */
 		UINT32 _getLastModifiedHash() const { return mLastUpdateHash; }
@@ -254,10 +254,10 @@ namespace bs
 	namespace ct
 	{
 	/** @copydoc TRenderable */
-	class BS_EXPORT RenderableCore : public CoreObject, public TRenderable<true>
+	class BS_EXPORT Renderable : public CoreObject, public TRenderable<true>
 	{
 	public:
-		~RenderableCore();
+		~Renderable();
 
 		/**	Gets world bounds of the mesh rendered by this object. */
 		Bounds getBounds() const;
@@ -281,18 +281,18 @@ namespace bs
 		void updateAnimationBuffers(const RendererAnimationData& animData);
 
 		/** Returns the GPU buffer containing element's bone matrices, if it has any. */
-		const SPtr<GpuBufferCore>& getBoneMatrixBuffer() const { return mBoneMatrixBuffer; }
+		const SPtr<GpuBuffer>& getBoneMatrixBuffer() const { return mBoneMatrixBuffer; }
 
 		/** Returns the vertex buffer containing element's morph shape vertices, if it has any. */
-		const SPtr<VertexBufferCore>& getMorphShapeBuffer() const { return mMorphShapeBuffer; }
+		const SPtr<VertexBuffer>& getMorphShapeBuffer() const { return mMorphShapeBuffer; }
 
 		/** Returns vertex declaration used for rendering meshes containing morph shape information. */
-		const SPtr<VertexDeclarationCore>& getMorphVertexDeclaration() const { return mMorphVertexDeclaration; }
+		const SPtr<VertexDeclaration>& getMorphVertexDeclaration() const { return mMorphVertexDeclaration; }
 
 	protected:
-		friend class Renderable;
+		friend class bs::Renderable;
 
-		RenderableCore();
+		Renderable();
 
 		/** @copydoc CoreObject::initialize */
 		void initialize() override;
@@ -307,9 +307,9 @@ namespace bs
 		UINT64 mAnimationId;
 		UINT32 mMorphShapeVersion;
 
-		SPtr<GpuBufferCore> mBoneMatrixBuffer;
-		SPtr<VertexBufferCore> mMorphShapeBuffer;
-		SPtr<VertexDeclarationCore> mMorphVertexDeclaration;
+		SPtr<GpuBuffer> mBoneMatrixBuffer;
+		SPtr<VertexBuffer> mMorphShapeBuffer;
+		SPtr<VertexDeclaration> mMorphVertexDeclaration;
 	};
 	}
 

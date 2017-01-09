@@ -55,9 +55,9 @@ namespace bs
 
 	}
 
-	SPtr<ct::SamplerStateCore> SamplerState::getCore() const
+	SPtr<ct::SamplerState> SamplerState::getCore() const
 	{
-		return std::static_pointer_cast<ct::SamplerStateCore>(mCoreSpecific);
+		return std::static_pointer_cast<ct::SamplerState>(mCoreSpecific);
 	}
 
 	SPtr<ct::CoreObject> SamplerState::createCore() const
@@ -116,18 +116,18 @@ namespace bs
 	namespace ct 
 	{
 
-	SamplerStateCore::SamplerStateCore(const SAMPLER_STATE_DESC& desc, GpuDeviceFlags deviceMask)
+	SamplerState::SamplerState(const SAMPLER_STATE_DESC& desc, GpuDeviceFlags deviceMask)
 		:mProperties(desc)
 	{
 
 	}
 
-	SamplerStateCore::~SamplerStateCore()
+	SamplerState::~SamplerState()
 	{
 		RenderStateManager::instance().notifySamplerStateDestroyed(mProperties.mData);
 	}
 
-	void SamplerStateCore::initialize()
+	void SamplerState::initialize()
 	{
 		// Since we cache states it's possible this object was already initialized
 		// (i.e. multiple sim-states can share a single core-state)
@@ -138,17 +138,17 @@ namespace bs
 		CoreObject::initialize();
 	}
 
-	const SamplerProperties& SamplerStateCore::getProperties() const
+	const SamplerProperties& SamplerState::getProperties() const
 	{
 		return mProperties;
 	}
 
-	SPtr<SamplerStateCore> SamplerStateCore::create(const SAMPLER_STATE_DESC& desc, GpuDeviceFlags deviceMask)
+	SPtr<SamplerState> SamplerState::create(const SAMPLER_STATE_DESC& desc, GpuDeviceFlags deviceMask)
 	{
 		return RenderStateManager::instance().createSamplerState(desc, deviceMask);
 	}
 
-	const SPtr<SamplerStateCore>& SamplerStateCore::getDefault()
+	const SPtr<SamplerState>& SamplerState::getDefault()
 	{
 		return RenderStateManager::instance().getDefaultSamplerState();
 	}

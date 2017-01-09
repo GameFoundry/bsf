@@ -196,7 +196,7 @@ namespace bs
 		mGridMaterial->getParam("gridPlaneNormal", mGridPlaneNormalParam);		
 	}
 
-	void SceneGridRenderer::updateData(const SPtr<MeshCore>& mesh, float spacing, bool fadeGrid, const Vector3& gridPlaneNormal)
+	void SceneGridRenderer::updateData(const SPtr<Mesh>& mesh, float spacing, bool fadeGrid, const Vector3& gridPlaneNormal)
 	{
 		mGridMesh = mesh;
 		mSpacing = spacing;
@@ -204,12 +204,12 @@ namespace bs
 		mGridPlaneNormal = gridPlaneNormal;
 	}
 
-	bool SceneGridRenderer::check(const CameraCore& camera)
+	bool SceneGridRenderer::check(const Camera& camera)
 	{
 		return mCamera.get() == &camera;
 	}
 
-	void SceneGridRenderer::render(const CameraCore& camera)
+	void SceneGridRenderer::render(const Camera& camera)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 

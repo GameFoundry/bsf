@@ -40,17 +40,17 @@ namespace bs
 	/** Descriptor structure used for initializing a core thread variant of a shader pass. */
 	struct PASS_DESC
 	{
-		SPtr<BlendStateCore> blendState;
-		SPtr<RasterizerStateCore> rasterizerState;
-		SPtr<DepthStencilStateCore> depthStencilState;
+		SPtr<BlendState> blendState;
+		SPtr<RasterizerState> rasterizerState;
+		SPtr<DepthStencilState> depthStencilState;
 		UINT32 stencilRefValue;
 
-		SPtr<GpuProgramCore> vertexProgram;
-		SPtr<GpuProgramCore> fragmentProgram;
-		SPtr<GpuProgramCore> geometryProgram;
-		SPtr<GpuProgramCore> hullProgram;
-		SPtr<GpuProgramCore> domainProgram;
-		SPtr<GpuProgramCore> computeProgram;
+		SPtr<GpuProgram> vertexProgram;
+		SPtr<GpuProgram> fragmentProgram;
+		SPtr<GpuProgram> geometryProgram;
+		SPtr<GpuProgram> hullProgram;
+		SPtr<GpuProgram> domainProgram;
+		SPtr<GpuProgram> computeProgram;
 	};
 
 	/** @} */
@@ -80,12 +80,12 @@ namespace bs
 	template<>
 	struct TPassTypes < true >
 	{
-		typedef SPtr<ct::BlendStateCore> BlendStateType;
-		typedef SPtr<ct::RasterizerStateCore> RasterizerStateType;
-		typedef SPtr<ct::DepthStencilStateCore> DepthStencilStateType;
-		typedef SPtr<ct::GpuProgramCore> GpuProgramType;
-		typedef SPtr<ct::GraphicsPipelineStateCore> GraphicsPipelineStateType;
-		typedef SPtr<ct::ComputePipelineStateCore> ComputePipelineStateType;
+		typedef SPtr<ct::BlendState> BlendStateType;
+		typedef SPtr<ct::RasterizerState> RasterizerStateType;
+		typedef SPtr<ct::DepthStencilState> DepthStencilStateType;
+		typedef SPtr<ct::GpuProgram> GpuProgramType;
+		typedef SPtr<ct::GraphicsPipelineState> GraphicsPipelineStateType;
+		typedef SPtr<ct::ComputePipelineState> ComputePipelineStateType;
 		typedef ct::PASS_DESC PassDescType;
 	};
 
@@ -228,8 +228,8 @@ namespace bs
 
 		Pass() { }
 		Pass(const PASS_DESC& desc);
-		Pass(const PASS_DESC& desc, const SPtr<GraphicsPipelineStateCore>& pipelineState);
-		Pass(const PASS_DESC& desc, const SPtr<ComputePipelineStateCore>& pipelineState);
+		Pass(const PASS_DESC& desc, const SPtr<GraphicsPipelineState>& pipelineState);
+		Pass(const PASS_DESC& desc, const SPtr<ComputePipelineState>& pipelineState);
 
 		/** @copydoc CoreObject::syncToCore */
 		void syncToCore(const CoreSyncData& data) override;

@@ -11,7 +11,7 @@
 
 namespace bs { namespace ct
 {
-	SPtr<VertexBufferCore> GLHardwareBufferManager::createVertexBufferInternal(const VERTEX_BUFFER_DESC& desc, 
+	SPtr<VertexBuffer> GLHardwareBufferManager::createVertexBufferInternal(const VERTEX_BUFFER_DESC& desc, 
 		GpuDeviceFlags deviceMask)
 	{
 		SPtr<GLVertexBuffer> ret = bs_shared_ptr_new<GLVertexBuffer>(desc, deviceMask);
@@ -20,7 +20,7 @@ namespace bs { namespace ct
 		return ret;
 	}
 
-	SPtr<IndexBufferCore> GLHardwareBufferManager::createIndexBufferInternal(const INDEX_BUFFER_DESC& desc,
+	SPtr<IndexBuffer> GLHardwareBufferManager::createIndexBufferInternal(const INDEX_BUFFER_DESC& desc,
 		GpuDeviceFlags deviceMask)
 	{
 		SPtr<GLIndexBuffer> ret = bs_shared_ptr_new<GLIndexBuffer>(desc, deviceMask);
@@ -29,24 +29,24 @@ namespace bs { namespace ct
 		return ret;
 	}
 
-	SPtr<GpuParamBlockBufferCore> GLHardwareBufferManager::createGpuParamBlockBufferInternal(UINT32 size, 
+	SPtr<GpuParamBlockBuffer> GLHardwareBufferManager::createGpuParamBlockBufferInternal(UINT32 size, 
 		GpuParamBlockUsage usage, GpuDeviceFlags deviceMask)
 	{
 		GLGpuParamBlockBuffer* paramBlockBuffer = 
 			new (bs_alloc<GLGpuParamBlockBuffer>()) GLGpuParamBlockBuffer(size, usage, deviceMask);
 
-		SPtr<GpuParamBlockBufferCore> paramBlockBufferPtr = bs_shared_ptr<GLGpuParamBlockBuffer>(paramBlockBuffer);
+		SPtr<GpuParamBlockBuffer> paramBlockBufferPtr = bs_shared_ptr<GLGpuParamBlockBuffer>(paramBlockBuffer);
 		paramBlockBufferPtr->_setThisPtr(paramBlockBufferPtr);
 
 		return paramBlockBufferPtr;
 	}
 
-	SPtr<GpuBufferCore> GLHardwareBufferManager::createGpuBufferInternal(const GPU_BUFFER_DESC& desc,
+	SPtr<GpuBuffer> GLHardwareBufferManager::createGpuBufferInternal(const GPU_BUFFER_DESC& desc,
 		GpuDeviceFlags deviceMask)
 	{
 		GLGpuBuffer* buffer = new (bs_alloc<GLGpuBuffer>()) GLGpuBuffer(desc, deviceMask);
 
-		SPtr<GpuBufferCore> bufferPtr = bs_shared_ptr<GLGpuBuffer>(buffer);
+		SPtr<GpuBuffer> bufferPtr = bs_shared_ptr<GLGpuBuffer>(buffer);
 		bufferPtr->_setThisPtr(bufferPtr);
 
 		return bufferPtr;

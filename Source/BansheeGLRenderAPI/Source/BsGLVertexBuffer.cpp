@@ -9,7 +9,7 @@
 namespace bs { namespace ct
 {
 	GLVertexBuffer::GLVertexBuffer(const VERTEX_BUFFER_DESC& desc, GpuDeviceFlags deviceMask)
-		:VertexBufferCore(desc, deviceMask), mUsage(desc.usage)
+		:VertexBuffer(desc, deviceMask), mUsage(desc.usage)
     {
 		assert((deviceMask == GDF_DEFAULT || deviceMask == GDF_PRIMARY) && "Multiple GPUs not supported natively on OpenGL.");
     }
@@ -27,7 +27,7 @@ namespace bs { namespace ct
 		mBuffer.initialize(GL_ARRAY_BUFFER, mSize, mUsage);
 		
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_VertexBuffer);
-		VertexBufferCore::initialize();
+		VertexBuffer::initialize();
 	}
 
 	void GLVertexBuffer::registerVAO(const GLVertexArrayObject& vao)

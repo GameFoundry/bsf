@@ -8,7 +8,7 @@ namespace bs { namespace ct
 {
 	VulkanGpuParamBlockBuffer::VulkanGpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage,
 		GpuDeviceFlags deviceMask)
-		:GpuParamBlockBufferCore(size, usage, deviceMask), mBuffer(nullptr), mDeviceMask(deviceMask)
+		:GpuParamBlockBuffer(size, usage, deviceMask), mBuffer(nullptr), mDeviceMask(deviceMask)
 	{ }
 
 	VulkanGpuParamBlockBuffer::~VulkanGpuParamBlockBuffer()
@@ -27,7 +27,7 @@ namespace bs { namespace ct
 
 		mBuffer = bs_new<VulkanHardwareBuffer>(VulkanHardwareBuffer::BT_UNIFORM, BF_UNKNOWN, usage, mSize, mDeviceMask);
 
-		GpuParamBlockBufferCore::initialize();
+		GpuParamBlockBuffer::initialize();
 	}
 
 	void VulkanGpuParamBlockBuffer::writeToGPU(const UINT8* data, UINT32 queueIdx)

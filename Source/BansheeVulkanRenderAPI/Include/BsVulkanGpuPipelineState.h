@@ -37,7 +37,7 @@ namespace bs { namespace ct
 	};
 
 	/**	Vulkan implementation of a graphics pipeline state. */
-	class VulkanGraphicsPipelineState : public GraphicsPipelineStateCore
+	class VulkanGraphicsPipelineState : public GraphicsPipelineState
 	{
 	public:
 		~VulkanGraphicsPipelineState();
@@ -46,7 +46,7 @@ namespace bs { namespace ct
 		bool isScissorEnabled() const { return mScissorEnabled; }
 
 		/** Returns the vertex input declaration from the vertex GPU program bound on the pipeline. */
-		SPtr<VertexDeclarationCore> getInputDeclaration() const { return mVertexDecl; }
+		SPtr<VertexDeclaration> getInputDeclaration() const { return mVertexDecl; }
 
 		/** 
 		 * Attempts to find an existing pipeline matching the provided parameters, or creates a new one if one cannot be 
@@ -81,7 +81,7 @@ namespace bs { namespace ct
 
 		VulkanGraphicsPipelineState(const PIPELINE_STATE_DESC& desc, GpuDeviceFlags deviceMask);
 
-		/**	@copydoc GraphicsPipelineStateCore::initialize */
+		/**	@copydoc GraphicsPipelineState::initialize */
 		void initialize() override;
 
 		/** 
@@ -145,7 +145,7 @@ namespace bs { namespace ct
 		VkDynamicState mDynamicStates[3];
 		VkGraphicsPipelineCreateInfo mPipelineInfo;
 		bool mScissorEnabled;
-		SPtr<VertexDeclarationCore> mVertexDecl;
+		SPtr<VertexDeclaration> mVertexDecl;
 
 		GpuDeviceFlags mDeviceMask;
 		PerDeviceData mPerDeviceData[BS_MAX_DEVICES];
@@ -154,7 +154,7 @@ namespace bs { namespace ct
 	};
 
 	/**	Vulkan implementation of a compute pipeline state. */
-	class VulkanComputePipelineState : public ComputePipelineStateCore
+	class VulkanComputePipelineState : public ComputePipelineState
 	{
 	public:
 		~VulkanComputePipelineState();
@@ -180,9 +180,9 @@ namespace bs { namespace ct
 	protected:
 		friend class VulkanRenderStateManager;
 
-		VulkanComputePipelineState(const SPtr<GpuProgramCore>& program, GpuDeviceFlags deviceMask);
+		VulkanComputePipelineState(const SPtr<GpuProgram>& program, GpuDeviceFlags deviceMask);
 
-		/**	@copydoc ComputePipelineStateCore::initialize */
+		/**	@copydoc ComputePipelineState::initialize */
 		void initialize() override;
 
 		/** Contains pipeline data specific to a single Vulkan device. */

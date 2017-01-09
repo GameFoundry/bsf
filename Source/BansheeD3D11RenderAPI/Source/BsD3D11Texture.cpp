@@ -15,7 +15,7 @@ namespace bs { namespace ct
 {
 	D3D11Texture::D3D11Texture(const TEXTURE_DESC& desc, const SPtr<PixelData>& initialData, 
 		GpuDeviceFlags deviceMask)
-		: TextureCore(desc, initialData, deviceMask),
+		: Texture(desc, initialData, deviceMask),
 		m1DTex(nullptr), m2DTex(nullptr), m3DTex(nullptr), mDXGIFormat(DXGI_FORMAT_UNKNOWN), mDXGIColorFormat(DXGI_FORMAT_UNKNOWN),
 		mTex(nullptr), mInternalFormat(PF_UNKNOWN), mStagingBuffer(nullptr), mDXGIDepthStencilFormat(DXGI_FORMAT_UNKNOWN),
 		mLockedSubresourceIdx(-1), mLockedForReading(false), mStaticBuffer(nullptr)
@@ -55,11 +55,11 @@ namespace bs { namespace ct
 		}
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_Texture);
-		TextureCore::initialize();
+		Texture::initialize();
 	}
 
 	void D3D11Texture::copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel,
-									const SPtr<TextureCore>& target, UINT32 queueIdx)
+									const SPtr<Texture>& target, UINT32 queueIdx)
 	{
 		D3D11Texture* other = static_cast<D3D11Texture*>(target.get());
 
@@ -335,7 +335,7 @@ namespace bs { namespace ct
 			viewDesc.numArraySlices = desc.ArraySize;
 			viewDesc.usage = GVU_DEFAULT;
 
-			SPtr<TextureCore> thisPtr = std::static_pointer_cast<TextureCore>(getThisPtr());
+			SPtr<Texture> thisPtr = std::static_pointer_cast<Texture>(getThisPtr());
 			mShaderResourceView = bs_shared_ptr<D3D11TextureView>(new (bs_alloc<D3D11TextureView>()) D3D11TextureView(thisPtr, viewDesc));
 		}
 	}
@@ -483,7 +483,7 @@ namespace bs { namespace ct
 			viewDesc.numArraySlices = desc.ArraySize;
 			viewDesc.usage = GVU_DEFAULT;
 
-			SPtr<TextureCore> thisPtr = std::static_pointer_cast<TextureCore>(getThisPtr());
+			SPtr<Texture> thisPtr = std::static_pointer_cast<Texture>(getThisPtr());
 			mShaderResourceView = bs_shared_ptr<D3D11TextureView>(new (bs_alloc<D3D11TextureView>()) D3D11TextureView(thisPtr, viewDesc));
 		}
 	}
@@ -601,7 +601,7 @@ namespace bs { namespace ct
 			viewDesc.numArraySlices = 1;
 			viewDesc.usage = GVU_DEFAULT;
 
-			SPtr<TextureCore> thisPtr = std::static_pointer_cast<TextureCore>(getThisPtr());
+			SPtr<Texture> thisPtr = std::static_pointer_cast<Texture>(getThisPtr());
 			mShaderResourceView = bs_shared_ptr<D3D11TextureView>(new (bs_alloc<D3D11TextureView>()) D3D11TextureView(thisPtr, viewDesc));
 		}
 	}
@@ -755,7 +755,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	SPtr<TextureView> D3D11Texture::createView(const SPtr<TextureCore>& texture, const TEXTURE_VIEW_DESC& desc)
+	SPtr<TextureView> D3D11Texture::createView(const SPtr<Texture>& texture, const TEXTURE_VIEW_DESC& desc)
 	{
 		return bs_shared_ptr<D3D11TextureView>(new (bs_alloc<D3D11TextureView>()) D3D11TextureView(texture, desc));
 	}

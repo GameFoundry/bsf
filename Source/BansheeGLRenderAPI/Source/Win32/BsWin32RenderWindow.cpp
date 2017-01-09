@@ -84,7 +84,7 @@ namespace bs
 	namespace ct
 	{
 		Win32RenderWindow::Win32RenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId, Win32GLSupport& glsupport)
-		: RenderWindowCore(desc, windowId), mWindow(nullptr), mGLSupport(glsupport), mHDC(nullptr), mIsChild(false)
+		: RenderWindow(desc, windowId), mWindow(nullptr), mGLSupport(glsupport), mHDC(nullptr), mIsChild(false)
 		, mDeviceName(nullptr), mDisplayFrequency(0), mShowOnSwap(false), mContext(nullptr), mProperties(desc)
 		, mSyncedProperties(desc)
 	{ }
@@ -256,8 +256,8 @@ namespace bs
 			mSyncedProperties = props;
 		}
 
-		RenderWindowManager::instance().notifySyncDataDirty(this);
-		RenderWindowCore::initialize();
+		bs::RenderWindowManager::instance().notifySyncDataDirty(this);
+		RenderWindow::initialize();
 	}
 
 	void Win32RenderWindow::setFullscreen(UINT32 width, UINT32 height, float refreshRate, UINT32 monitorIdx)
@@ -372,7 +372,7 @@ namespace bs
 			mSyncedProperties.mHeight = props.mHeight;
 		}
 
-		RenderWindowManager::instance().notifySyncDataDirty(this);
+		bs::RenderWindowManager::instance().notifySyncDataDirty(this);
 		_windowMovedOrResized();
 	}
 
@@ -394,7 +394,7 @@ namespace bs
 				mSyncedProperties.mLeft = props.mLeft;
 			}
 
-			RenderWindowManager::instance().notifySyncDataDirty(this);
+			bs::RenderWindowManager::instance().notifySyncDataDirty(this);
 		}
 	}
 
@@ -416,7 +416,7 @@ namespace bs
 				mSyncedProperties.mHeight = props.mHeight;
 			}
 
-			RenderWindowManager::instance().notifySyncDataDirty(this);
+			bs::RenderWindowManager::instance().notifySyncDataDirty(this);
 		}
 	}
 
@@ -527,7 +527,7 @@ namespace bs
 
 		mWindow->setActive(state);
 
-		RenderWindowCore::setActive(state);
+		RenderWindow::setActive(state);
 	}
 
 	void Win32RenderWindow::setHidden(bool hidden)
@@ -537,7 +537,7 @@ namespace bs
 		mShowOnSwap = false;
 		mWindow->setHidden(hidden);
 
-		RenderWindowCore::setHidden(hidden);
+		RenderWindow::setHidden(hidden);
 	}
 
 	void Win32RenderWindow::_windowMovedOrResized()
@@ -556,7 +556,7 @@ namespace bs
 			props.mHeight = mWindow->getHeight();
 		}
 
-		RenderWindowCore::_windowMovedOrResized();
+		RenderWindow::_windowMovedOrResized();
 	}
 
 	HWND Win32RenderWindow::_getHWnd() const

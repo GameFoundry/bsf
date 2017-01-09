@@ -70,7 +70,7 @@ namespace bs { namespace ct
 	}
 	
 	GLSLGpuProgram::GLSLGpuProgram(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
-		:GpuProgramCore(desc, deviceMask), mProgramID(0), mGLHandle(0)
+		:GpuProgram(desc, deviceMask), mProgramID(0), mGLHandle(0)
     { }
 
 	GLSLGpuProgram::~GLSLGpuProgram()
@@ -93,7 +93,7 @@ namespace bs { namespace ct
 			mIsCompiled = false;
 			mCompileError = "Specified program is not supported by the current render system.";
 
-			GpuProgramCore::initialize();
+			GpuProgram::initialize();
 			return;
 		}
 
@@ -199,7 +199,7 @@ namespace bs { namespace ct
 		}
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_GpuProgram);
-		GpuProgramCore::initialize();
+		GpuProgram::initialize();
 	}
 
 	bool GLSLGpuProgram::isSupported() const

@@ -130,7 +130,7 @@ namespace bs
 
 	protected:
 		friend class DepthStencilState;
-		friend class DepthStencilStateCore;
+		friend class ct::DepthStencilState;
 		friend class DepthStencilStateRTTI;
 
 		DEPTH_STENCIL_STATE_DESC mData;
@@ -152,7 +152,7 @@ namespace bs
 		const DepthStencilProperties& getProperties() const;
 
 		/**	Retrieves a core implementation of a sampler state usable only from the core thread. */
-		SPtr<ct::DepthStencilStateCore> getCore() const;
+		SPtr<ct::DepthStencilState> getCore() const;
 
 		/**	Creates a new depth stencil state using the specified depth stencil state description structure. */
 		static SPtr<DepthStencilState> create(const DEPTH_STENCIL_STATE_DESC& desc);
@@ -193,14 +193,14 @@ namespace bs
 	 */
 
 	/**
-	 * Core thread version of DepthStencilState.
+	 * Core thread version of bs::DepthStencilState.
 	 *
 	 * @note	Core thread.
 	 */
-	class BS_CORE_EXPORT DepthStencilStateCore : public CoreObject
+	class BS_CORE_EXPORT DepthStencilState : public CoreObject
 	{
 	public:
-		virtual ~DepthStencilStateCore();
+		virtual ~DepthStencilState();
 
 		/**	Returns information about the depth stencil state. */
 		const DepthStencilProperties& getProperties() const;
@@ -209,15 +209,15 @@ namespace bs
 		UINT32 getId() const { return mId; }
 
 		/**	Creates a new depth stencil state using the specified depth stencil state description structure. */
-		static SPtr<DepthStencilStateCore> create(const DEPTH_STENCIL_STATE_DESC& desc);
+		static SPtr<DepthStencilState> create(const DEPTH_STENCIL_STATE_DESC& desc);
 
 		/**	Returns the default depth stencil state that you may use when no other is available. */
-		static const SPtr<DepthStencilStateCore>& getDefault();
+		static const SPtr<DepthStencilState>& getDefault();
 
 	protected:
 		friend class RenderStateManager;
 
-		DepthStencilStateCore(const DEPTH_STENCIL_STATE_DESC& desc, UINT32 id);
+		DepthStencilState(const DEPTH_STENCIL_STATE_DESC& desc, UINT32 id);
 
 		/** @copydoc CoreObject::initialize */
 		void initialize() override;

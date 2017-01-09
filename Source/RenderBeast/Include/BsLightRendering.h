@@ -31,13 +31,13 @@ namespace bs { namespace ct
 
 		/** Updates parameters that are common for all lights. */
 		void setStaticParameters(const SPtr<RenderTargets>& gbuffer,
-			const SPtr<GpuParamBlockBufferCore>& perCamera);
+			const SPtr<GpuParamBlockBuffer>& perCamera);
 
 		/** Updates data in the parameter buffer from the data in the provided light. */
-		void setParameters(const LightCore* light);
+		void setParameters(const Light* light);
 
 		/** Returns the internal parameter buffer that can be bound to the pipeline. */
-		const SPtr<GpuParamBlockBufferCore>& getBuffer() const;
+		const SPtr<GpuParamBlockBuffer>& getBuffer() const;
 	private:
 		SPtr<Material> mMaterial;
 		SPtr<GpuParamsSet> mParamsSet;
@@ -45,7 +45,7 @@ namespace bs { namespace ct
 		GpuParamTexture mGBufferA;
 		GpuParamTexture mGBufferB;
 		GpuParamTexture mGBufferDepth;
-		SPtr<GpuParamBlockBufferCore> mParamBuffer;
+		SPtr<GpuParamBlockBuffer> mParamBuffer;
 	};
 
 	/** Shader that renders directional light sources during deferred rendering light pass. */
@@ -57,10 +57,10 @@ namespace bs { namespace ct
 		DirectionalLightMat();
 
 		/** Binds the material for rendering and sets up any global parameters. */
-		void bind(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBufferCore>& perCamera);
+		void bind(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBuffer>& perCamera);
 
 		/** Updates the per-light buffers used by the material. */
-		void setPerLightParams(const LightCore* light);
+		void setPerLightParams(const Light* light);
 	private:
 		LightRenderingParams mParams;
 	};
@@ -77,10 +77,10 @@ namespace bs { namespace ct
 		PointLightInMat();
 
 		/** Binds the material for rendering and sets up any global parameters. */
-		void bind(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBufferCore>& perCamera);
+		void bind(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBuffer>& perCamera);
 
 		/** Updates the per-light buffers used by the material. */
-		void setPerLightParams(const LightCore* light);
+		void setPerLightParams(const Light* light);
 	private:
 		LightRenderingParams mParams;
 	};
@@ -97,10 +97,10 @@ namespace bs { namespace ct
 		PointLightOutMat();
 
 		/** Binds the material for rendering and sets up any global parameters. */
-		void bind(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBufferCore>& perCamera);
+		void bind(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBuffer>& perCamera);
 
 		/** Updates the per-light buffers used by the material. */
-		void setPerLightParams(const LightCore* light);
+		void setPerLightParams(const Light* light);
 	private:
 		LightRenderingParams mParams;
 	};

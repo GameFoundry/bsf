@@ -79,26 +79,26 @@ light->setIntensity(1000.0f);
 # Creating your own renderer {#renderer_b}
 Renderer is the system that makes use of all the components we listed so far. Renderer isn't actually aware of scene objects and components, and instead operates on @ref bs::Camera "Camera", @ref bs::Renderable "Renderable" and @ref bs::Light "Light" types directly. These are the internal objects that are managed by @ref bs::CCamera "CCamera", @ref bs::CRenderable "CRenderable" and @ref bs::CLight "CLight", respectively. They provide the same interface as their component versions. They are also @ref bs::CoreObject "core objects", meaning they have both a simulation and a core thread counterparts.
 
-To create your own renderer you must implement the @ref bs::Renderer "Renderer" interface. The implementation should iterate over all renderable objects, cameras and lights and perform rendering according to your own rules. At the end of rendering, every render target in every active camera should be filled with an image of the rendered scene. During rendering you must consider mesh and material provided by the renderable objects, and apply lighting according to light objects. You should use the low level @ref bs::RenderAPI "RenderAPI" to render individual objects.
+To create your own renderer you must implement the @ref bs::ct::Renderer "ct::Renderer" interface. The implementation should iterate over all renderable objects, cameras and lights and perform rendering according to your own rules. At the end of rendering, every render target in every active camera should be filled with an image of the rendered scene. During rendering you must consider mesh and material provided by the renderable objects, and apply lighting according to light objects. You should use the low level @ref bs::RenderAPI "RenderAPI" to render individual objects.
 
 The renderer is mostly a core-thread system as then it has a more direct access to the @ref bs::RenderAPI "RenderAPI", as well as various utility functionality we'll describe later. Read the [core thread](@ref coreThread) manual for more information about the core thread and core objects, and the [render API](@ref renderAPI) manual on how to use the low level rendering functionality.
 
-The @ref bs::Renderer "Renderer" interface requires you to implement the following methods:
- - @ref bs::CoreRenderer::getName "Renderer::getName" - Returns a unique name of the renderer. This can be used by shader techniques to identify which renderer is active and when they should run, as described in the [material](@ref materials) manual.
- - @ref bs::CoreRenderer::renderAll "Renderer::renderAll" - This is a method called from the simulation thread that executes the rendering. It is called once per frame. In this method you should queue your actual rendering method for execution on the core thread.
- - @ref bs::CoreRenderer::notifyCameraAdded "Renderer::notifyCameraAdded" - Called on the core thread whenever a new @ref bs::Camera "Camera" is created (i.e. when a @ref bs::CCamera "CCamera" component is added to the scene). Also called when camera's properties change (camera is removed, then re-added).
- - @ref bs::CoreRenderer::notifyCameraUpdated "Renderer::notifyCameraUpdated" - Called on the core thread whenever a @ref bs::Camera "Camera's" position or rotation changes.
- - @ref bs::CoreRenderer::notifyCameraRemoved "Renderer::notifyCameraRemoved" - Called on the core thread whenever a @ref bs::Camera "Camera" is destroyed. Also called when camera's properties change (camera is removed, then re-added).
- - @ref bs::Renderer::notifyRenderableAdded "Renderer::notifyRenderableAdded" - Called on the core thread whenever a new @ref bs::Renderable "Renderable" is created (e.g. when a @ref bs::CRenderable "CRenderable" component is added to the scene).
- - @ref bs::Renderer::notifyRenderableUpdated "Renderer::notifyRenderableUpdated" - Called whenever @ref bs::Renderable "Renderable" properties change, e.g. when a scene object a renderable is attached to moves.
- - @ref bs::Renderer::notifyRenderableRemoved "Renderer::notifyRenderableRemoved" - Called whenever a @ref bs::Renderable "Renderable" is destroyed.
- - @ref bs::Renderer::notifyLightAdded "Renderer::notifyLightAdded" - Called whenever a new @ref bs::Light "Light" is created (e.g. when a @ref bs::CLight "CLight" component is added to the scene).
- - @ref bs::Renderer::notifyLightUpdated "Renderer::notifyLightUpdated" - Called whenever @ref bs::Light "Light" properties change, e.g. when a scene object a light is attached to moves.
- - @ref bs::Renderer::notifyLightRemoved "Renderer::notifyLightRemoved" - Called whenever @ref bs::Light "Light" is destroyed.
+The @ref bs::ct::Renderer "ct::Renderer" interface requires you to implement the following methods:
+ - @ref bs::ct::CoreRenderer::getName "ct::Renderer::getName" - Returns a unique name of the renderer. This can be used by shader techniques to identify which renderer is active and when they should run, as described in the [material](@ref materials) manual.
+ - @ref bs::ct::CoreRenderer::renderAll "ct::Renderer::renderAll" - This is a method called from the simulation thread that executes the rendering. It is called once per frame. In this method you should queue your actual rendering method for execution on the core thread.
+ - @ref bs::ct::CoreRenderer::notifyCameraAdded "ct::Renderer::notifyCameraAdded" - Called on the core thread whenever a new @ref bs::Camera "Camera" is created (i.e. when a @ref bs::CCamera "CCamera" component is added to the scene). Also called when camera's properties change (camera is removed, then re-added).
+ - @ref bs::ct::CoreRenderer::notifyCameraUpdated "ct::Renderer::notifyCameraUpdated" - Called on the core thread whenever a @ref bs::Camera "Camera's" position or rotation changes.
+ - @ref bs::ct::CoreRenderer::notifyCameraRemoved "ct::Renderer::notifyCameraRemoved" - Called on the core thread whenever a @ref bs::Camera "Camera" is destroyed. Also called when camera's properties change (camera is removed, then re-added).
+ - @ref bs::ct::Renderer::notifyRenderableAdded "ct::Renderer::notifyRenderableAdded" - Called on the core thread whenever a new @ref bs::Renderable "Renderable" is created (e.g. when a @ref bs::CRenderable "CRenderable" component is added to the scene).
+ - @ref bs::ct::Renderer::notifyRenderableUpdated "ct::Renderer::notifyRenderableUpdated" - Called whenever @ref bs::Renderable "Renderable" properties change, e.g. when a scene object a renderable is attached to moves.
+ - @ref bs::ct::Renderer::notifyRenderableRemoved "ct::Renderer::notifyRenderableRemoved" - Called whenever a @ref bs::Renderable "Renderable" is destroyed.
+ - @ref bs::ct::Renderer::notifyLightAdded "ct::Renderer::notifyLightAdded" - Called whenever a new @ref bs::Light "Light" is created (e.g. when a @ref bs::CLight "CLight" component is added to the scene).
+ - @ref bs::ct::Renderer::notifyLightUpdated "ct::Renderer::notifyLightUpdated" - Called whenever @ref bs::Light "Light" properties change, e.g. when a scene object a light is attached to moves.
+ - @ref bs::ct::Renderer::notifyLightRemoved "ct::Renderer::notifyLightRemoved" - Called whenever @ref bs::Light "Light" is destroyed.
  
 Implementing these methods should give you all the information you need to render your scene. You will have the required render target and projection/view matrices from the @ref bs::Camera "Camera", mesh/material/world transform from @ref bs::Renderable "Renderable" objects, and lighting information from @ref bs::Light "Light". Use the information provided in the [render API](@ref renderAPI) manual to learn how to render using those objects.
 
-Aside from rendering scene objects, the renderer should also take care of rendering everything else, like GUI, debug information and similar. This is handled in a general manner via callbacks. Every external system (like GUI) can register itself with the renderer by calling @ref bs::CoreRenderer::registerRenderCallback "Renderer::registerRenderCallback". This method accepts a few parameters:
+Aside from rendering scene objects, the renderer should also take care of rendering everything else, like GUI, debug information and similar. This is handled in a general manner via callbacks. Every external system (like GUI) can register itself with the renderer by calling @ref bs::ct::CoreRenderer::registerRenderCallback "ct::Renderer::registerRenderCallback". This method accepts a few parameters:
  - Pointer to a @ref bs::Camera "Camera" for which the callback is valid. The renderer should call the callback when rendering onto that camera.
  - Index that indicated the priority. Callbacks with indices lower than zero should be executed before scene object rendering, and indices equal to or higher than zero should be executed after scene object rendering.
  - Callback to execute. Other systems will usually call @ref bs::RenderAPI "RenderAPI" methods in such callback to perform rendering manually.
@@ -112,16 +112,16 @@ While this is enough to create a custom renderer, a variety of useful utilities 
 These systems aren't critical for renderer creation, but instead provide an easier way to perform commonly required functions.
 
 ### Render queue {#renderer_b_a_a}
-@ref bs::RenderQueue "RenderQueue" allows you to sort and group scene objects for rendering. For example transparent objects might need to be sorted back to front based on their distance from the camera. It is also often useful to group objects if they share the same material, to reduce state switching which can improve performance.
+@ref bs::ct::RenderQueue "ct::RenderQueue" allows you to sort and group scene objects for rendering. For example transparent objects might need to be sorted back to front based on their distance from the camera. It is also often useful to group objects if they share the same material, to reduce state switching which can improve performance.
 
-Use @ref bs::RenderQueue::add "RenderQueue::add" to add new objects to the queue. It expects a @ref bs::RenderableElement "RenderableElement" which you can create from information provided by @ref bs::Renderable "Renderable" when @ref bs::Renderer::notifyRenderableAdded "Renderer::notifyRenderableAdded" is called. Normally you wish to have a single @ref bs::RenderableElement "RenderableElement" for each sub-mesh present in the renderable object's mesh.
+Use @ref bs::ct::RenderQueue::add "ct::RenderQueue::add" to add new objects to the queue. It expects a @ref bs::ct::RenderableElement "ct::RenderableElement" which you can create from information provided by @ref bs::Renderable "Renderable" when @ref bs::ct::Renderer::notifyRenderableAdded "ct::Renderer::notifyRenderableAdded" is called. Normally you wish to have a single @ref bs::ct::RenderableElement "ct::RenderableElement" for each sub-mesh present in the renderable object's mesh.
 
-Once all elements are in the queue, you can call @ref bs::RenderQueue::setStateReduction "RenderQueue::setStateReduction" to select how to sort the objects:
- - @ref bs::StateReduction::None "StateReduction::None" - There will be no sorting, based either by distance or material.
- - @ref bs::StateReduction::Material "StateReduction::Material" - Elements will be sorted by material first, then by distance.
- - @ref bs::StateReduction::Distance "StateReduction::Distance" - Elements will be sorted by distance first, then by material.
+Once all elements are in the queue, you can call @ref bs::ct::RenderQueue::setStateReduction "ct::RenderQueue::setStateReduction" to select how to sort the objects:
+ - @ref bs::ct::StateReduction::None "ct::StateReduction::None" - There will be no sorting, based either by distance or material.
+ - @ref bs::ct::StateReduction::Material "ct::StateReduction::Material" - Elements will be sorted by material first, then by distance.
+ - @ref bs::ct::StateReduction::Distance "ct::StateReduction::Distance" - Elements will be sorted by distance first, then by material.
  
-Once the state reduction mode is set call @ref bs::RenderQueue::sort "RenderQueue::sort", and then @ref bs::RenderQueue::getSortedElements "RenderQueue::getSortedElements" to retrieve a sorted list of render elements. The returned list contains a list of @ref bs::RenderQueueElement "RenderQueueElement" which lets you know exactly which render element to render using which pass, and also tells you when a new pass needs to be applied (if multiple elements in a row use the same pass, it doesn't need to be re-applied).
+Once the state reduction mode is set call @ref bs::ct::RenderQueue::sort "ct::RenderQueue::sort", and then @ref bs::ct::RenderQueue::getSortedElements "ct::RenderQueue::getSortedElements" to retrieve a sorted list of render elements. The returned list contains a list of @ref bs::ct::RenderQueueElement "ct::RenderQueueElement" which lets you know exactly which render element to render using which pass, and also tells you when a new pass needs to be applied (if multiple elements in a row use the same pass, it doesn't need to be re-applied).
 
 For example:
 ~~~~~~~~~~~~~{.cpp}
@@ -140,7 +140,7 @@ const Vector<RenderQueueElement>& sortedElements = queue->getSortedElements();
 ~~~~~~~~~~~~~
 
 ### Renderer material {#renderer_b_a_b}
-Often the renderer needs to use special shaders for various effects (e.g. post-processing effects like FXAA). Unlike shaders and materials used by users, these shaders are built-in into the engine. Since we know they'll always be there we can make it easier for the renderer to load and use them by implementing the @ref bs::RendererMaterial "RendererMaterial" interface:
+Often the renderer needs to use special shaders for various effects (e.g. post-processing effects like FXAA). Unlike shaders and materials used by users, these shaders are built-in into the engine. Since we know they'll always be there we can make it easier for the renderer to load and use them by implementing the @ref bs::ct::RendererMaterial "ct::RendererMaterial" interface:
 ~~~~~~~~~~~~~{.cpp}
 // Set up a post-processing material
 class DownsampleMat : public RendererMaterial<DownsampleMat>
@@ -157,7 +157,7 @@ public:
 	}
 
 	// Set up parameters and render a full screen quad using the material
-	void execute(const SPtr<TextureCore>& input)
+	void execute(const SPtr<Texture>& input)
 	{
 		// Actually assign parameters before rendering
 		mInputTexture.set(input);
@@ -171,8 +171,8 @@ public:
 		... render using the material ...
 	}
 private:
-	MaterialParamVec2Core mInvTexSize;
-	MaterialParamTextureCore mInputTexture;
+	MaterialParamVec2 mInvTexSize;
+	MaterialParamTexture mInputTexture;
 };
 
 // Method defined in RMAT_DEF
@@ -184,7 +184,7 @@ void DirectionalLightMat::_initDefines(ShaderDefines& defines)
 
 ~~~~~~~~~~~~~
 
-Renderer material implementation starts by deriving from @ref bs::RendererMaterial<T> "RendererMaterial<T>". This is followed by a declaration of the @ref RMAT_DEF macro, which contains a path to the shader file. The shader file should be located in "Data/Raw/Engine/Shaders/" folder.
+Renderer material implementation starts by deriving from @ref bs::ct::RendererMaterial<T> "ct::RendererMaterial<T>". This is followed by a declaration of the @ref RMAT_DEF macro, which contains a path to the shader file. The shader file should be located in "Data/Raw/Engine/Shaders/" folder.
 
 You must also implement `_initDefines` method, which allows you to modify the compilation environment. It can be empty if not required, but it is useful if your shader has different settings in the form of \#ifdef blocks, in which case different renderer materials can reference the same file, but yield different results depending on what is set in this method. Be aware that all built-in shaders are pre-processed by the @ref bs::BuiltinResources "BuiltinResources" manager. If you are changing define options you should delete the "Data/Engine/Timestamp.asset" file, which will force the manager to rebuild all shaders (and actually apply the new defines).
 
@@ -211,7 +211,7 @@ cbuffer PerCamera
 
 While you could assign these parameters using the standard way as described in the [material](@ref materials) manual:
 ~~~~~~~~~~~~~{.cpp}
-MaterialParamVec3Core viewDirParam = mMaterial->getParamVec3("gViewDir");
+MaterialParamVec3 viewDirParam = mMaterial->getParamVec3("gViewDir");
 viewDirParam.set(Vector3(0.707.0, 0.707f, 0.0f));
 // Or just simply:
 // mMaterial->setVec3("gViewDir", Vector3(0.707.0, 0.707f, 0.0f));
@@ -240,13 +240,13 @@ Once your parameter block definition is created, you can instantiate a parameter
 PerCameraParamBlockDef def; // Normally you want to make this global
 
 // Instantiates a new parameter block from the definition
-SPtr<GpuParamBlockBufferCore> paramBlock = def.createBuffer(); 
+SPtr<GpuParamBlockBuffer> paramBlock = def.createBuffer(); 
 
 // Assign a value to the gViewDir parameter of the parameter block
 def.gViewDir.set(paramBlock, Vector3(0.707.0, 0.707f, 0.0f));
 ... set other parameters in block ...
 
-SPtr<MaterialCore> material = ...;
+SPtr<Material> material = ...;
 material->setParamBlockBuffer("PerCamera", paramBlock);
 
 ... render using the material ...
@@ -263,8 +263,8 @@ For example:
 ~~~~~~~~~~~~~{.cpp}
 StringID RPS_ViewProjTfrm = "VP"; // Define semantic identifier
 
-SPtr<MaterialCore> material = ...;
-SPtr<ShaderCore> shader = material->getShader();
+SPtr<Material> material = ...;
+SPtr<Shader> shader = material->getShader();
 auto& dataParams = shader->getDataParams();
 for (auto& entry : texParams)
 {
@@ -281,19 +281,19 @@ You can choose to implement semantics in your renderer, but they aren't required
 
 ### RendererUtility {#renderer_b_a_e}
 
-@ref bs::RendererUtility "RendererUtility" provides some commonly required functionality for rendering. For the most part these are just wrappers around @ref bs::RenderAPI "RenderAPI" methods, so you don't have to set things like vertex/index buffers manually, as described in [render API](@ref renderAPI) manual.
- - @ref bs::RendererUtility::setPass "RendererUtility::setPass" - Binds a pass from a specific @ref bs::Material "Material" for rendering. Any further draw calls will be rendered using this pass.
- - @ref bs::RendererUtility::setPassParams "RendererUtility::setPassParams" - Binds parameters (textures, samplers, etc.) from a @ref bs::Material "Material". Any further draw calls will be rendered using these parameters.
- - @ref bs::RendererUtility::draw "RendererUtility::draw" - Draws a specific sub-mesh of the provided @ref bs::MeshCore "Mesh", using the currently bound pass.
- - @ref bs::RendererUtility::blit "RendererUtility::blit" - Copies the contents of the provided texture into the currently bound render target.
- - @ref bs::RendererUtility::drawScreenQuad "RendererUtility::drawScreenQuad" - Draws a quad using the currently bound pass.
+@ref bs::ct::RendererUtility "ct::RendererUtility" provides some commonly required functionality for rendering. For the most part these are just wrappers around @ref bs::RenderAPI "RenderAPI" methods, so you don't have to set things like vertex/index buffers manually, as described in [render API](@ref renderAPI) manual.
+ - @ref bs::ct::RendererUtility::setPass "ct::RendererUtility::setPass" - Binds a pass from a specific @ref bs::Material "Material" for rendering. Any further draw calls will be rendered using this pass.
+ - @ref bs::ct::RendererUtility::setPassParams "ct::RendererUtility::setPassParams" - Binds parameters (textures, samplers, etc.) from a @ref bs::Material "Material". Any further draw calls will be rendered using these parameters.
+ - @ref bs::ct::RendererUtility::draw "ct::RendererUtility::draw" - Draws a specific sub-mesh of the provided @ref bs::ct::Mesh "ct::Mesh", using the currently bound pass.
+ - @ref bs::ct::RendererUtility::blit "ct::RendererUtility::blit" - Copies the contents of the provided texture into the currently bound render target.
+ - @ref bs::ct::RendererUtility::drawScreenQuad "ct::RendererUtility::drawScreenQuad" - Draws a quad using the currently bound pass.
  
-Use @ref bs::gRendererUtility "gRendererUtility" to access the @ref bs::RendererUtility "RendererUtility" more easily.
+Use @ref bs::ct::gRendererUtility() "ct::gRendererUtility()" to access the @ref bs::ct::RendererUtility "ct::RendererUtility" more easily.
  
-Binding a material and rendering using @ref bs::RendererUtility "RendererUtility":
+Binding a material and rendering using @ref bs::ct::RendererUtility "ct::RendererUtility":
 ~~~~~~~~~~~~~{.cpp}
-SPtr<MaterialCore> material = ...;
-SPtr<MeshCore> mesh = ...;
+SPtr<Material> material = ...;
+SPtr<Mesh> mesh = ...;
 
 gRendererUtility().setPass(material);
 ... set material parameters ...
@@ -302,26 +302,26 @@ gRendererUtility().draw(mesh, mesh->getProperties().getSubMesh(0));
 ~~~~~~~~~~~~~
  
 ### RenderTexturePool {#renderer_b_a_f}
-Although you can create render textures manually as described in the [render target](@ref renderTargets) manual, @ref bs::RenderTexturePool "RenderTexturePool" provides a simpler and more efficient way of doing it. It will keep alive any referenced render textures, so that other systems may re-use them if their size/formats match. This can improve performance when using many temporary/intermediary render textures (like in post-processing).
+Although you can create render textures manually as described in the [render target](@ref renderTargets) manual, @ref bs::ct::RenderTexturePool "ct::RenderTexturePool" provides a simpler and more efficient way of doing it. It will keep alive any referenced render textures, so that other systems may re-use them if their size/formats match. This can improve performance when using many temporary/intermediary render textures (like in post-processing).
 
-To request a render texture, first populate the @ref bs::POOLED_RENDER_TEXTURE_DESC "POOLED_RENDER_TEXTURE_DESC" descriptor, by calling either @ref bs::POOLED_RENDER_TEXTURE_DESC::create2D "POOLED_RENDER_TEXTURE_DESC::create2D", @ref bs::POOLED_RENDER_TEXTURE_DESC::create3D "POOLED_RENDER_TEXTURE_DESC::create3D" or @ref bs::POOLED_RENDER_TEXTURE_DESC::createCube "POOLED_RENDER_TEXTURE_DESC::createCube".
+To request a render texture, first populate the @ref bs::ct::POOLED_RENDER_TEXTURE_DESC "ct::POOLED_RENDER_TEXTURE_DESC" descriptor, by calling either @ref bs::ct::POOLED_RENDER_TEXTURE_DESC::create2D "ct::POOLED_RENDER_TEXTURE_DESC::create2D", @ref bs::ct::POOLED_RENDER_TEXTURE_DESC::create3D "ct::POOLED_RENDER_TEXTURE_DESC::create3D" or @ref bs::ct::POOLED_RENDER_TEXTURE_DESC::createCube "ct::POOLED_RENDER_TEXTURE_DESC::createCube".
 
-Then call @ref bs::RenderTexturePool::get "RenderTexturePool::get" which will either create a new render texture, or return one from the pool. The returned object is @ref bs::PooledRenderTexture "PooledRenderTexture" from which you can access the actual render texture.
+Then call @ref bs::ct::RenderTexturePool::get "ct::RenderTexturePool::get" which will either create a new render texture, or return one from the pool. The returned object is @ref bs::ct::PooledRenderTexture "ct::PooledRenderTexture" from which you can access the actual render texture.
 
-Once you are done using the texture, call @ref bs::RenderTexturePool::release "RenderTexturePool::release" to return the texture to the pool, and make it available for other systems. If you plan on using this texture again, make sure to keep a reference to the @ref bs::PooledRenderTexture "PooledRenderTexture". This will prevent the pool from fully destroying the texture so it may be reused.
+Once you are done using the texture, call @ref bs::ct::RenderTexturePool::release "ct::RenderTexturePool::release" to return the texture to the pool, and make it available for other systems. If you plan on using this texture again, make sure to keep a reference to the @ref bs::ct::PooledRenderTexture "ct::PooledRenderTexture". This will prevent the pool from fully destroying the texture so it may be reused.
 
 For example:
 ~~~~~~~~~~~~~{.cpp}
 POOLED_RENDER_TEXTURE_DESC desc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_R8G8B8A8, 1024, 1024);
 SPtr<PooledRenderTexture> pooledRT = RenderTexturePool::instance().get(desc);
 
-RenderAPICore::instance().setRenderTarget(pooledRT->renderTexture);
+RenderAPI::instance().setRenderTarget(pooledRT->renderTexture);
 ... render to target ...
 RenderTexturePool::instance().release(pooledRT);
 // Keep a reference to pooledRT if we plan on re-using it, then next time just call get() using the same descriptor
 ~~~~~~~~~~~~~
 
 ### Renderer options {#renderer_b_a_g}
-You can customize your rendering at runtime by implementing the @ref bs::CoreRendererOptions "RendererOptions" class. Your @ref bs::CoreRendererOptions "RendererOptions" implementation can then be assigned to the renderer by calling @ref bs::CoreRenderer::setOptions "Renderer::setOptions", and accessed within the renderer via the `mOptions` field. No default options are provided and it's up to your renderer to decide what it requires.
+You can customize your rendering at runtime by implementing the @ref bs::ct::CoreRendererOptions "ct::RendererOptions" class. Your @ref bs::ct::CoreRendererOptions "ct::RendererOptions" implementation can then be assigned to the renderer by calling @ref bs::ct::CoreRenderer::setOptions "ct::Renderer::setOptions", and accessed within the renderer via the `mOptions` field. No default options are provided and it's up to your renderer to decide what it requires.
 
 Be aware that options are set from the simulation thread, and if you want to use them on the core thread to either properly synchronize the access, or send a copy of the options to the core thread.

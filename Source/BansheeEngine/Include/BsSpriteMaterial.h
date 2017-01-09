@@ -92,8 +92,8 @@ namespace bs
 		 * @param[in]	paramBuffer		Buffer containing data GPU parameters.
 		 * @param[in]	additionalData	Optional additional data that might be required by the renderer.
 		 */
-		virtual void render(const SPtr<ct::MeshCoreBase>& mesh, const SPtr<ct::TextureCore>& texture,
-			const SPtr<ct::SamplerStateCore>& sampler, const SPtr<ct::GpuParamBlockBufferCore>& paramBuffer,
+		virtual void render(const SPtr<ct::MeshBase>& mesh, const SPtr<ct::Texture>& texture,
+			const SPtr<ct::SamplerState>& sampler, const SPtr<ct::GpuParamBlockBuffer>& paramBuffer,
 			const SPtr<SpriteMaterialExtraInfo>& additionalData) const;
 
 	protected:

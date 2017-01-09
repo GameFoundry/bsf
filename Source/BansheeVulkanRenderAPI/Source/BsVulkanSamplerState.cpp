@@ -17,7 +17,7 @@ namespace bs { namespace ct
 	}
 
 	VulkanSamplerState::VulkanSamplerState(const SAMPLER_STATE_DESC& desc, GpuDeviceFlags deviceMask)
-		:SamplerStateCore(desc, deviceMask), mSamplers(), mDeviceMask(deviceMask)
+		:SamplerState(desc, deviceMask), mSamplers(), mDeviceMask(deviceMask)
 	{ }
 
 	VulkanSamplerState::~VulkanSamplerState()

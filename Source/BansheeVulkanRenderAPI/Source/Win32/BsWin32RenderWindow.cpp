@@ -78,7 +78,7 @@ namespace bs
 	namespace ct
 	{
 		Win32RenderWindow::Win32RenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId, VulkanRenderAPI& renderAPI)
-		: RenderWindowCore(desc, windowId), mProperties(desc), mSyncedProperties(desc), mWindow(nullptr), mIsChild(false)
+		: RenderWindow(desc, windowId), mProperties(desc), mSyncedProperties(desc), mWindow(nullptr), mIsChild(false)
 		, mShowOnSwap(false), mDisplayFrequency(0), mRenderAPI(renderAPI), mRequiresNewBackBuffer(true)
 	{ }
 
@@ -327,8 +327,8 @@ namespace bs
 			mSyncedProperties = props;
 		}
 
-		RenderWindowManager::instance().notifySyncDataDirty(this);
-		RenderWindowCore::initialize();
+		bs::RenderWindowManager::instance().notifySyncDataDirty(this);
+		RenderWindow::initialize();
 	}
 
 	void Win32RenderWindow::acquireBackBuffer()
@@ -394,7 +394,7 @@ namespace bs
 				mSyncedProperties.mLeft = props.mLeft;
 			}
 
-			RenderWindowManager::instance().notifySyncDataDirty(this);
+			bs::RenderWindowManager::instance().notifySyncDataDirty(this);
 		}
 	}
 
@@ -417,7 +417,7 @@ namespace bs
 				mSyncedProperties.mHeight = props.mHeight;
 			}
 
-			RenderWindowManager::instance().notifySyncDataDirty(this);
+			bs::RenderWindowManager::instance().notifySyncDataDirty(this);
 		}
 	}
 
@@ -427,7 +427,7 @@ namespace bs
 
 		mWindow->setActive(state);
 
-		RenderWindowCore::setActive(state);
+		RenderWindow::setActive(state);
 	}
 
 	void Win32RenderWindow::setHidden(bool hidden)
@@ -437,7 +437,7 @@ namespace bs
 		mShowOnSwap = false;
 		mWindow->setHidden(hidden);
 
-		RenderWindowCore::setHidden(hidden);
+		RenderWindow::setHidden(hidden);
 	}
 
 	void Win32RenderWindow::minimize()
@@ -572,7 +572,7 @@ namespace bs
 			mSyncedProperties.mHeight = props.mHeight;
 		}
 
-		RenderWindowManager::instance().notifySyncDataDirty(this);
+		bs::RenderWindowManager::instance().notifySyncDataDirty(this);
 	}
 
 	HWND Win32RenderWindow::_getWindowHandle() const
@@ -596,7 +596,7 @@ namespace bs
 			return;
 		}
 
-		RenderWindowCore::getCustomAttribute(name, data);
+		RenderWindow::getCustomAttribute(name, data);
 	}
 
 	void Win32RenderWindow::_windowMovedOrResized()
@@ -628,7 +628,7 @@ namespace bs
 		mSwapChain->rebuild(presentDevice, mSurface, props.mWidth, props.mHeight, props.mVSync, mColorFormat, mColorSpace, 
 			mDesc.depthBuffer, mDepthFormat);
 
-		RenderWindowCore::_windowMovedOrResized();
+		RenderWindow::_windowMovedOrResized();
 	}
 
 	void Win32RenderWindow::syncProperties()

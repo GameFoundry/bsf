@@ -139,7 +139,7 @@ namespace bs
 
 	protected:
 		friend class BlendState;
-		friend class ct::BlendStateCore;
+		friend class ct::BlendState;
 		friend class BlendStateRTTI;
 
 		BLEND_STATE_DESC mData;
@@ -161,7 +161,7 @@ namespace bs
 		const BlendProperties& getProperties() const;
 
 		/** Retrieves a core implementation of the sampler state usable only from the core thread. */
-		SPtr<ct::BlendStateCore> getCore() const;
+		SPtr<ct::BlendState> getCore() const;
 
 		/**	Creates a new blend state using the specified blend state description structure. */
 		static SPtr<BlendState> create(const BLEND_STATE_DESC& desc);
@@ -202,14 +202,14 @@ namespace bs
 	 */
 
 	/**
-	 * Core thread version of BlendState.
+	 * Core thread version of bs::BlendState.
 	 *
 	 * @note	Core thread.
 	 */
-	class BS_CORE_EXPORT BlendStateCore : public CoreObject
+	class BS_CORE_EXPORT BlendState : public CoreObject
 	{
 	public:
-		virtual ~BlendStateCore();
+		virtual ~BlendState();
 
 		/** Returns information about the blend state. */
 		const BlendProperties& getProperties() const;
@@ -218,15 +218,15 @@ namespace bs
 		UINT32 getId() const { return mId; }
 
 		/**	Creates a new blend state using the specified blend state description structure. */
-		static SPtr<BlendStateCore> create(const BLEND_STATE_DESC& desc);
+		static SPtr<BlendState> create(const BLEND_STATE_DESC& desc);
 
 		/**	Returns the default blend state that you may use when no other is available. */
-		static const SPtr<BlendStateCore>& getDefault();
+		static const SPtr<BlendState>& getDefault();
 
 	protected:
 		friend class RenderStateManager;
 
-		BlendStateCore(const BLEND_STATE_DESC& desc, UINT32 id);
+		BlendState(const BLEND_STATE_DESC& desc, UINT32 id);
 
 		/** @copydoc CoreObject::initialize */
 		void initialize() override;

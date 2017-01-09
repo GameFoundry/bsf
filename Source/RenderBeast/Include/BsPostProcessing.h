@@ -43,19 +43,19 @@ namespace bs { namespace ct
 		DownsampleMat();
 
 		/** Renders the post-process effect with the provided parameters. */
-		void execute(const SPtr<RenderTextureCore>& target, PostProcessInfo& ppInfo);
+		void execute(const SPtr<RenderTexture>& target, PostProcessInfo& ppInfo);
 
 		/** Releases the output render target. */
 		void release(PostProcessInfo& ppInfo);
 
 		/** Returns the render texture where the output will be written. */
-		SPtr<RenderTextureCore> getOutput() const { return mOutput; }
+		SPtr<RenderTexture> getOutput() const { return mOutput; }
 	private:
-		SPtr<GpuParamBlockBufferCore> mParamBuffer;
+		SPtr<GpuParamBlockBuffer> mParamBuffer;
 		GpuParamTexture mInputTexture;
 
 		POOLED_RENDER_TEXTURE_DESC mOutputDesc;
-		SPtr<RenderTextureCore> mOutput;
+		SPtr<RenderTexture> mOutput;
 	};
 
 	BS_PARAM_BLOCK_BEGIN(EyeAdaptHistogramParamDef)
@@ -81,10 +81,10 @@ namespace bs { namespace ct
 		void release(PostProcessInfo& ppInfo);
 
 		/** Returns the render texture where the output was written. */
-		SPtr<RenderTextureCore> getOutput() const { return mOutput; }
+		SPtr<RenderTexture> getOutput() const { return mOutput; }
 
 		/** Calculates the number of thread groups that need to execute to cover the provided render target. */
-		static Vector2I getThreadGroupCount(const SPtr<RenderTextureCore>& target);
+		static Vector2I getThreadGroupCount(const SPtr<RenderTexture>& target);
 
 		/** 
 		 * Returns a vector containing scale and offset (in that order) that will be applied to luminance values
@@ -97,12 +97,12 @@ namespace bs { namespace ct
 		
 		static const UINT32 HISTOGRAM_NUM_TEXELS = (THREAD_GROUP_SIZE_X * THREAD_GROUP_SIZE_Y) / 4;
 	private:
-		SPtr<GpuParamBlockBufferCore> mParamBuffer;
+		SPtr<GpuParamBlockBuffer> mParamBuffer;
 		GpuParamTexture mSceneColor;
 		GpuParamLoadStoreTexture mOutputTex;
 
 		POOLED_RENDER_TEXTURE_DESC mOutputDesc;
-		SPtr<RenderTextureCore> mOutput;
+		SPtr<RenderTexture> mOutput;
 
 		static const UINT32 LOOP_COUNT_X = 8;
 		static const UINT32 LOOP_COUNT_Y = 8;
@@ -129,15 +129,15 @@ namespace bs { namespace ct
 		void release(PostProcessInfo& ppInfo);
 
 		/** Returns the render texture where the output was written. */
-		SPtr<RenderTextureCore> getOutput() const { return mOutput; }
+		SPtr<RenderTexture> getOutput() const { return mOutput; }
 	private:
-		SPtr<GpuParamBlockBufferCore> mParamBuffer;
+		SPtr<GpuParamBlockBuffer> mParamBuffer;
 
 		GpuParamTexture mHistogramTex;
 		GpuParamTexture mEyeAdaptationTex;
 
 		POOLED_RENDER_TEXTURE_DESC mOutputDesc;
-		SPtr<RenderTextureCore> mOutput;
+		SPtr<RenderTexture> mOutput;
 	};
 
 	BS_PARAM_BLOCK_BEGIN(EyeAdaptationParamDef)
@@ -157,7 +157,7 @@ namespace bs { namespace ct
 		/** Executes the post-process effect with the provided parameters. */
 		void execute(PostProcessInfo& ppInfo, float frameDelta);
 	private:
-		SPtr<GpuParamBlockBufferCore> mParamBuffer;
+		SPtr<GpuParamBlockBuffer> mParamBuffer;
 		GpuParamTexture mReducedHistogramTex;
 	};
 
@@ -200,8 +200,8 @@ namespace bs { namespace ct
 		/** Size of the 3D color lookup table. */
 		static const UINT32 LUT_SIZE = 32;
 	private:
-		SPtr<GpuParamBlockBufferCore> mParamBuffer;
-		SPtr<GpuParamBlockBufferCore> mWhiteBalanceParamBuffer;
+		SPtr<GpuParamBlockBuffer> mParamBuffer;
+		SPtr<GpuParamBlockBuffer> mWhiteBalanceParamBuffer;
 
 		GpuParamLoadStoreTexture mOutputTex;
 	};
@@ -223,11 +223,11 @@ namespace bs { namespace ct
 		TonemappingMat();
 
 		/** Executes the post-process effect with the provided parameters. */
-		void execute(const SPtr<RenderTextureCore>& sceneColor, const SPtr<ViewportCore>& outputViewport,
+		void execute(const SPtr<RenderTexture>& sceneColor, const SPtr<Viewport>& outputViewport,
 			PostProcessInfo& ppInfo);
 
 	private:
-		SPtr<GpuParamBlockBufferCore> mParamBuffer;
+		SPtr<GpuParamBlockBuffer> mParamBuffer;
 
 		GpuParamTexture mInputTex;
 		GpuParamTexture mColorLUT;
@@ -243,7 +243,7 @@ namespace bs { namespace ct
 	{
 	public:
 		/** Renders post-processing effects for the provided render target. */
-		void postProcess(const SPtr<RenderTextureCore>& sceneColor, const CameraCore* camera,
+		void postProcess(const SPtr<RenderTexture>& sceneColor, const Camera* camera,
 			PostProcessInfo& ppInfo, float frameDelta);
 		
 	private:

@@ -40,7 +40,7 @@ namespace bs
 		:mGLSupport(support)
 	{ }
 
-	SPtr<TextureCore> GLTextureManager::createTextureInternal(const TEXTURE_DESC& desc,
+	SPtr<Texture> GLTextureManager::createTextureInternal(const TEXTURE_DESC& desc,
 		const SPtr<PixelData>& initialData, GpuDeviceFlags deviceMask)
 	{
 		GLTexture* tex = new (bs_alloc<GLTexture>()) GLTexture(mGLSupport, desc, initialData, deviceMask);
@@ -51,7 +51,7 @@ namespace bs
 		return texPtr;
 	}
 
-	SPtr<RenderTextureCore> GLTextureManager::createRenderTextureInternal(const RENDER_TEXTURE_DESC& desc, 
+	SPtr<RenderTexture> GLTextureManager::createRenderTextureInternal(const RENDER_TEXTURE_DESC& desc, 
 																			  UINT32 deviceIdx)
 	{
 		SPtr<GLRenderTexture> texPtr = bs_shared_ptr_new<GLRenderTexture>(desc, deviceIdx);

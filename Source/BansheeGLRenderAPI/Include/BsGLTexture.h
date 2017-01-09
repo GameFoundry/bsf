@@ -13,7 +13,7 @@ namespace bs { namespace ct
 	 */
 
 	/**	OpenGL implementation of a texture. */
-    class BS_RSGL_EXPORT GLTexture : public TextureCore
+    class BS_RSGL_EXPORT GLTexture : public Texture
     {
     public:
 		virtual ~GLTexture();
@@ -44,25 +44,25 @@ namespace bs { namespace ct
 		GLTexture(GLSupport& support, const TEXTURE_DESC& desc, const SPtr<PixelData>& initialData, 
 			GpuDeviceFlags deviceMask);
 
-		/** @copydoc TextureCore::initialize */
+		/** @copydoc Texture::initialize */
 		void initialize() override;
 
-		/** @copydoc TextureCore::lock */
+		/** @copydoc Texture::lock */
 		PixelData lockImpl(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0, UINT32 deviceIdx = 0,
 						   UINT32 queueIdx = 0) override;
 
-		/** @copydoc TextureCore::unlock */
+		/** @copydoc Texture::unlock */
 		void unlockImpl() override;
 
-		/** @copydoc TextureCore::copyImpl */
+		/** @copydoc Texture::copyImpl */
 		void copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 dstFace, UINT32 dstMipLevel,
-					  const SPtr<TextureCore>& target, UINT32 queueIdx = 0) override;
+					  const SPtr<Texture>& target, UINT32 queueIdx = 0) override;
 
-		/** @copydoc TextureCore::readData */
+		/** @copydoc Texture::readData */
 		void readDataImpl(PixelData& dest, UINT32 mipLevel = 0, UINT32 face = 0, UINT32 deviceIdx = 0,
 					  UINT32 queueIdx = 0) override;
 
-		/** @copydoc TextureCore::writeData */
+		/** @copydoc Texture::writeData */
 		void writeDataImpl(const PixelData& src, UINT32 mipLevel = 0, UINT32 face = 0, bool discardWholeBuffer = false,
 					   UINT32 queueIdx = 0) override;
 

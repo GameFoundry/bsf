@@ -43,22 +43,22 @@ namespace bs
 	 *
 	 * @note	Core thread only.
 	 */
-    class BS_RSGL_EXPORT GLRenderTexture : public RenderTextureCore
+    class BS_RSGL_EXPORT GLRenderTexture : public RenderTexture
     {
 	public:
 		GLRenderTexture(const RENDER_TEXTURE_DESC& desc, UINT32 deviceIdx);
 		virtual ~GLRenderTexture();
 
-		/** @copydoc RenderTextureCore::getCustomAttribute */
+		/** @copydoc RenderTexture::getCustomAttribute */
 		void getCustomAttribute(const String& name, void* data) const override;
 
 	protected:
 		friend class bs::GLRenderTexture;
 
-		/** @copydoc RenderTextureCore::initialize */
+		/** @copydoc RenderTexture::initialize */
 		void initialize() override;
 
-		/** @copydoc RenderTextureCore::getProperties */
+		/** @copydoc RenderTexture::getProperties */
 		const RenderTargetProperties& getPropertiesInternal() const override { return mProperties; }
 
 		RenderTextureProperties mProperties;

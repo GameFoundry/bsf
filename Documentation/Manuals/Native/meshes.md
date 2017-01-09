@@ -2,7 +2,7 @@ Meshes									{#meshes}
 ===============
 [TOC]
 
-Mesh is an object represented by a set of points, their properties and a set of primitives formed by those points. In Banshee mesh is represented with the @ref bs::Mesh "Mesh" and @ref bs::MeshCore "MeshCore" classes. Both of these provide almost equivalent functionality, but the former is for use on the simulation thread, and the latter is for use on the core thread. If you are confused by the dual nature of the objects, read the [core thread](@ref coreThread) manual. 
+Mesh is an object represented by a set of points, their properties and a set of primitives formed by those points. In Banshee mesh is represented with the @ref bs::Mesh "Mesh" and @ref bs::ct::Mesh "ct::Mesh" classes. Both of these provide almost equivalent functionality, but the former is for use on the simulation thread, and the latter is for use on the core thread. If you are confused by the dual nature of the objects, read the [core thread](@ref coreThread) manual. 
 
 We're going to focus on the simulation thread implementation in this manual, and then note the differences in the core thread version at the end.
 
@@ -127,15 +127,15 @@ To use a mesh for rendering you need to bind its vertex buffer(s), index buffer,
 
 See the [render API](@ref renderAPI) manual for more information on how to manually execute rendering commands.
 
-If working on the core thread you can use the helper @ref bs::RendererUtility::draw "RendererUtility::draw" method that performs these operations for you.
+If working on the core thread you can use the helper @ref bs::ct::RendererUtility::draw "ct::RendererUtility::draw" method that performs these operations for you.
 
 # Saving/loading {#meshes_e}
 A mesh is a @ref bs::Resource "Resource" and can be saved/loaded like any other. See the [resource](@ref resources) manual.
 
 # Core thread meshes {#meshes_f}
-So far we have only talked about the simulation thread @ref bs::Mesh "Mesh" but have ignored the core thread @ref bs::MeshCore "MeshCore". The functionality between the two is mostly the same, with the major difference being that the core thread version doesn't have asychronous write/read methods, and those operations are instead performed immediately.
+So far we have only talked about the simulation thread @ref bs::Mesh "Mesh" but have ignored the core thread @ref bs::ct::Mesh "ct::Mesh". The functionality between the two is mostly the same, with the major difference being that the core thread version doesn't have asychronous write/read methods, and those operations are instead performed immediately.
 
-You can also use the core thread version to access and manipulate vertex and index buffers directly (including binding them to the pipeline as described earlier). Use @ref bs::MeshCore::getVertexData "MeshCore::getVertexData" to retrieve information about all @ref bs::VertexBufferCore "vertex buffers", @ref bs::MeshCore::getIndexBuffer "MeshCore::getIndexBuffer" to retrieve the @ref bs::IndexBufferCore "index buffer" and @ref bs::MeshCore::getVertexDesc "MeshCore::getVertexDesc" to retrieve the @ref bs::VertexDataDesc "vertex description".
+You can also use the core thread version to access and manipulate vertex and index buffers directly (including binding them to the pipeline as described earlier). Use @ref bs::ct::Mesh::getVertexData "ct::Mesh::getVertexData" to retrieve information about all @ref bs::ct::VertexBuffer "vertex buffers", @ref bs::ct::Mesh::getIndexBuffer "ct::Mesh::getIndexBuffer" to retrieve the @ref bs::ct::IndexBuffer "index buffer" and @ref bs::ct::Mesh::getVertexDesc "ct::Mesh::getVertexDesc" to retrieve the @ref bs::VertexDataDesc "vertex description".
 
 # Advanced meshes {#meshes_g}
 So far we have described the use of standard meshes. And while the described meshes can be used for all purposes, when we have a mesh that is updated often (every frame or every few frames) it can be beneficial for performance to use a different mesh type. This is because updates to a normal mesh can introduce GPU-CPU synchronization points if that mesh is still being used by the GPU while we are updating it (which can happen often).

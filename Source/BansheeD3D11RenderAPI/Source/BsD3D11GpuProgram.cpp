@@ -17,7 +17,7 @@ namespace bs { namespace ct
 	UINT32 D3D11GpuProgram::GlobalProgramId = 0;
 
 	D3D11GpuProgram::D3D11GpuProgram(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
-		: GpuProgramCore(desc, deviceMask),
+		: GpuProgram(desc, deviceMask),
 		mEnableBackwardsCompatibility(false), mProgramId(0)
 	{
 		assert((deviceMask == GDF_DEFAULT || deviceMask == GDF_PRIMARY) && "Multiple GPUs not supported natively on DirectX 11.");
@@ -38,7 +38,7 @@ namespace bs { namespace ct
 			mIsCompiled = false;
 			mCompileError = "Specified program is not supported by the current render system.";
 
-			GpuProgramCore::initialize();
+			GpuProgram::initialize();
 			return;
 		}
 
@@ -83,7 +83,7 @@ namespace bs { namespace ct
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_GpuProgram);
 
-		GpuProgramCore::initialize();
+		GpuProgram::initialize();
 	}
 
 	UINT32 D3D11GpuProgram::parseErrorMessage(const char* message)

@@ -17,7 +17,7 @@ namespace bs { namespace ct
 	LightRenderingParams::LightRenderingParams(const SPtr<Material>& material, const SPtr<GpuParamsSet>& paramsSet)
 		:mMaterial(material), mParamsSet(paramsSet)
 	{
-		SPtr<GpuParamsCore> params = mParamsSet->getGpuParams();
+		SPtr<GpuParams> params = mParamsSet->getGpuParams();
 
 		auto& texParams = material->getShader()->getTextureParams();
 		for (auto& entry : texParams)
@@ -35,7 +35,7 @@ namespace bs { namespace ct
 	}
 
 	void LightRenderingParams::setStaticParameters(const SPtr<RenderTargets>& gbuffer, 
-		const SPtr<GpuParamBlockBufferCore>& perCamera)
+		const SPtr<GpuParamBlockBuffer>& perCamera)
 	{
 		mGBufferA.set(gbuffer->getTextureA());
 		mGBufferB.set(gbuffer->getTextureB());
@@ -46,7 +46,7 @@ namespace bs { namespace ct
 		gRendererUtility().setPassParams(mParamsSet);
 	}
 
-	void LightRenderingParams::setParameters(const LightCore* light)
+	void LightRenderingParams::setParameters(const Light* light)
 	{
 		// Note: I could just copy the data directly to the parameter buffer if I ensured the parameter
 		// layout matches
@@ -90,8 +90,8 @@ namespace bs { namespace ct
 		gPerLightParamDef.gLightDirection.set(mParamBuffer, -light->getRotation().zAxis());
 
 		Vector4 lightGeometry;
-		lightGeometry.x = light->getType() == LightType::Spot ? (float)LightCore::LIGHT_CONE_NUM_SIDES : 0;
-		lightGeometry.y = (float)LightCore::LIGHT_CONE_NUM_SLICES;
+		lightGeometry.x = light->getType() == LightType::Spot ? (float)Light::LIGHT_CONE_NUM_SIDES : 0;
+		lightGeometry.y = (float)Light::LIGHT_CONE_NUM_SLICES;
 		lightGeometry.z = light->getBounds().getRadius();
 
 		float coneRadius = Math::sin(spotAngle) * light->getRange();
@@ -105,7 +105,7 @@ namespace bs { namespace ct
 		mParamBuffer->flushToGPU();
 	}
 
-	const SPtr<GpuParamBlockBufferCore>& LightRenderingParams::getBuffer() const
+	const SPtr<GpuParamBlockBuffer>& LightRenderingParams::getBuffer() const
 	{
 		return mParamBuffer;
 	}
@@ -122,13 +122,13 @@ namespace bs { namespace ct
 	}
 
 	void DirectionalLightMat::bind(const SPtr<RenderTargets>& gbuffer,
-		const SPtr<GpuParamBlockBufferCore>& perCamera)
+		const SPtr<GpuParamBlockBuffer>& perCamera)
 	{
 		RendererUtility::instance().setPass(mMaterial, 0);
 		mParams.setStaticParameters(gbuffer, perCamera);
 	}
 
-	void DirectionalLightMat::setPerLightParams(const LightCore* light)
+	void DirectionalLightMat::setPerLightParams(const Light* light)
 	{
 		mParams.setParameters(light);
 	}
@@ -145,13 +145,13 @@ namespace bs { namespace ct
 	}
 
 	void PointLightInMat::bind(const SPtr<RenderTargets>& gbuffer, 
-		const SPtr<GpuParamBlockBufferCore>& perCamera)
+		const SPtr<GpuParamBlockBuffer>& perCamera)
 	{
 		RendererUtility::instance().setPass(mMaterial, 0);
 		mParams.setStaticParameters(gbuffer, perCamera);
 	}
 
-	void PointLightInMat::setPerLightParams(const LightCore* light)
+	void PointLightInMat::setPerLightParams(const Light* light)
 	{
 		mParams.setParameters(light);
 	}
@@ -168,13 +168,13 @@ namespace bs { namespace ct
 	}
 
 	void PointLightOutMat::bind(const SPtr<RenderTargets>& gbuffer,
-		const SPtr<GpuParamBlockBufferCore>& perCamera)
+		const SPtr<GpuParamBlockBuffer>& perCamera)
 	{
 		RendererUtility::instance().setPass(mMaterial, 0);
 		mParams.setStaticParameters(gbuffer, perCamera);
 	}
 
-	void PointLightOutMat::setPerLightParams(const LightCore* light)
+	void PointLightOutMat::setPerLightParams(const Light* light)
 	{
 		mParams.setParameters(light);
 	}

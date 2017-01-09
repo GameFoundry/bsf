@@ -9,7 +9,7 @@
 namespace bs { namespace ct
 {
 	GLGpuBuffer::GLGpuBuffer(const GPU_BUFFER_DESC& desc, GpuDeviceFlags deviceMask)
-		: GpuBufferCore(desc, deviceMask), mTextureID(0), mFormat(0)
+		: GpuBuffer(desc, deviceMask), mTextureID(0), mFormat(0)
 	{
 		if(desc.type != GBT_STANDARD)
 			LOGERR("Only standard buffers are support on OpenGL.");
@@ -45,7 +45,7 @@ namespace bs { namespace ct
 		glTexBuffer(GL_TEXTURE_BUFFER, mFormat, mBuffer.getGLBufferId());
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_GpuBuffer);
-		GpuBufferCore::initialize();
+		GpuBuffer::initialize();
 	}
 
 	void* GLGpuBuffer::lock(UINT32 offset, UINT32 length, GpuLockOptions options, UINT32 deviceIdx, UINT32 queueIdx)

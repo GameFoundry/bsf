@@ -24,7 +24,7 @@ namespace bs
 	bool isMeshValid(const HMesh& mesh) { return mesh.isLoaded(); }
 
 	template<>
-	bool isMeshValid(const SPtr<ct::MeshCore>& mesh) { return mesh != nullptr; }
+	bool isMeshValid(const SPtr<ct::Mesh>& mesh) { return mesh != nullptr; }
 
 	template<bool Core>
 	TRenderable<Core>::TRenderable()
@@ -192,15 +192,15 @@ namespace bs
 		}
 	}
 
-	SPtr<ct::RenderableCore> Renderable::getCore() const
+	SPtr<ct::Renderable> Renderable::getCore() const
 	{
-		return std::static_pointer_cast<ct::RenderableCore>(mCoreSpecific);
+		return std::static_pointer_cast<ct::Renderable>(mCoreSpecific);
 	}
 
 	SPtr<ct::CoreObject> Renderable::createCore() const
 	{
-		ct::RenderableCore* handler = new (bs_alloc<ct::RenderableCore>()) ct::RenderableCore();
-		SPtr<ct::RenderableCore> handlerPtr = bs_shared_ptr<ct::RenderableCore>(handler);
+		ct::Renderable* handler = new (bs_alloc<ct::Renderable>()) ct::Renderable();
+		SPtr<ct::Renderable> handlerPtr = bs_shared_ptr<ct::Renderable>(handler);
 		handlerPtr->_setThisPtr(handlerPtr);
 
 		return handlerPtr;
@@ -317,7 +317,7 @@ namespace bs
 			rttiGetElemSize(animationId) +
 			rttiGetElemSize(mAnimType) + 
 			rttiGetElemSize(getCoreDirtyFlags()) +
-			sizeof(SPtr<ct::MeshCore>) +
+			sizeof(SPtr<ct::Mesh>) +
 			numMaterials * sizeof(SPtr<ct::Material>);
 
 		UINT8* data = allocator->alloc(size);
@@ -334,11 +334,11 @@ namespace bs
 		dataPtr = rttiWriteElem(mAnimType, dataPtr);
 		dataPtr = rttiWriteElem(getCoreDirtyFlags(), dataPtr);
 
-		SPtr<ct::MeshCore>* mesh = new (dataPtr) SPtr<ct::MeshCore>();
+		SPtr<ct::Mesh>* mesh = new (dataPtr) SPtr<ct::Mesh>();
 		if (mMesh.isLoaded())
 			*mesh = mMesh->getCore();
 
-		dataPtr += sizeof(SPtr<ct::MeshCore>);
+		dataPtr += sizeof(SPtr<ct::Mesh>);
 
 		for (UINT32 i = 0; i < numMaterials; i++)
 		{
@@ -423,25 +423,25 @@ namespace bs
 
 	namespace ct
 	{
-	RenderableCore::RenderableCore() 
+	Renderable::Renderable() 
 		:mRendererId(0), mAnimationId((UINT64)-1), mMorphShapeVersion(0)
 	{
 	}
 
-	RenderableCore::~RenderableCore()
+	Renderable::~Renderable()
 	{
 		if (mIsActive)
 			gRenderer()->notifyRenderableRemoved(this);
 	}
 
-	void RenderableCore::initialize()
+	void Renderable::initialize()
 	{
 		gRenderer()->notifyRenderableAdded(this);
 
 		CoreObject::initialize();
 	}
 
-	Bounds RenderableCore::getBounds() const
+	Bounds Renderable::getBounds() const
 	{
 		if (mUseOverrideBounds)
 		{
@@ -453,7 +453,7 @@ namespace bs
 			return bounds;
 		}
 
-		SPtr<MeshCore> mesh = getMesh();
+		SPtr<Mesh> mesh = getMesh();
 
 		if (mesh == nullptr)
 		{
@@ -471,7 +471,7 @@ namespace bs
 		}
 	}
 
-	void RenderableCore::createAnimationBuffers()
+	void Renderable::createAnimationBuffers()
 	{
 		if (mAnimType == RenderableAnimType::Skinned || mAnimType == RenderableAnimType::SkinnedMorph)
 		{
@@ -487,7 +487,7 @@ namespace bs
 				desc.format = BF_32X4F;
 				desc.usage = GBU_DYNAMIC;
 
-				SPtr<GpuBufferCore> buffer = GpuBufferCore::create(desc);
+				SPtr<GpuBuffer> buffer = GpuBuffer::create(desc);
 				UINT8* dest = (UINT8*)buffer->lock(0, numBones * 3 * sizeof(Vector4), GBL_WRITE_ONLY_DISCARD);
 
 				// Initialize bone transforms to identity, so the object renders properly even if no animation is animating it
@@ -520,7 +520,7 @@ namespace bs
 			desc.numVerts = numVertices;
 			desc.usage = GBU_DYNAMIC;
 
-			SPtr<VertexBufferCore> vertexBuffer = VertexBufferCore::create(desc);
+			SPtr<VertexBuffer> vertexBuffer = VertexBuffer::create(desc);
 
 			UINT32 totalSize = vertexSize * numVertices;
 			UINT8* dest = (UINT8*)vertexBuffer->lock(0, totalSize, GBL_WRITE_ONLY_DISCARD);
@@ -535,7 +535,7 @@ namespace bs
 		mMorphShapeVersion = 0;
 	}
 
-	void RenderableCore::updateAnimationBuffers(const RendererAnimationData& animData)
+	void Renderable::updateAnimationBuffers(const RendererAnimationData& animData)
 	{
 		if (mAnimationId == (UINT64)-1)
 			return;
@@ -582,7 +582,7 @@ namespace bs
 		}
 	}
 
-	void RenderableCore::syncToCore(const CoreSyncData& data)
+	void Renderable::syncToCore(const CoreSyncData& data)
 	{
 		char* dataPtr = (char*)data.getBuffer();
 
@@ -604,10 +604,10 @@ namespace bs
 		dataPtr = rttiReadElem(mAnimType, dataPtr);
 		dataPtr = rttiReadElem(dirtyFlags, dataPtr);
 
-		SPtr<MeshCore>* mesh = (SPtr<MeshCore>*)dataPtr;
+		SPtr<Mesh>* mesh = (SPtr<Mesh>*)dataPtr;
 		mMesh = *mesh;
-		mesh->~SPtr<MeshCore>();
-		dataPtr += sizeof(SPtr<MeshCore>);
+		mesh->~SPtr<Mesh>();
+		dataPtr += sizeof(SPtr<Mesh>);
 
 		for (UINT32 i = 0; i < numMaterials; i++)
 		{
@@ -635,7 +635,7 @@ namespace bs
 				vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION, 1, 1);
 				vertexDesc->addVertElem(VET_UBYTE4_NORM, VES_NORMAL, 1, 1);
 
-				mMorphVertexDeclaration = VertexDeclarationCore::create(vertexDesc);
+				mMorphVertexDeclaration = VertexDeclaration::create(vertexDesc);
 			}
 			else
 				mMorphVertexDeclaration = nullptr;

@@ -22,42 +22,42 @@ namespace bs { namespace ct
 		 *
 		 * @note	Core thread.
 		 */
-		virtual void notifyRenderableAdded(RenderableCore* renderable) { }
+		virtual void notifyRenderableAdded(Renderable* renderable) { }
 
 		/**
 		 * Called whenever a renderable is updated.
 		 *
 		 * @note	Core thread.
 		 */
-		virtual void notifyRenderableUpdated(RenderableCore* renderable) { }
+		virtual void notifyRenderableUpdated(Renderable* renderable) { }
 
 		/**
 		 * Called whenever a renderable is destroyed.
 		 *
 		 * @note	Core thread.
 		 */
-		virtual void notifyRenderableRemoved(RenderableCore* renderable) { }
+		virtual void notifyRenderableRemoved(Renderable* renderable) { }
 
 		/**
 		 * Called whenever a new light is created.
 		 *
 		 * @note	Core thread.
 		 */
-		virtual void notifyLightAdded(LightCore* light) { }
+		virtual void notifyLightAdded(Light* light) { }
 
 		/**
 		 * Called whenever a light is updated.
 		 *
 		 * @note	Core thread.
 		 */
-		virtual void notifyLightUpdated(LightCore* light) { }
+		virtual void notifyLightUpdated(Light* light) { }
 
 		/**
 		 * Called whenever a light is destroyed.
 		 *
 		 * @note	Core thread.
 		 */
-		virtual void notifyLightRemoved(LightCore* light) { }
+		virtual void notifyLightRemoved(Light* light) { }
 	};
 
 	/**	Provides easy access to Renderer. */

@@ -186,7 +186,7 @@ namespace bs
 		Vector<ct::HandleRenderer::MeshData> proxyData;
 		for (auto& meshData : meshes)
 		{
-			SPtr<ct::TextureCore> tex;
+			SPtr<ct::Texture> tex;
 			if (meshData.texture.isLoaded())
 				tex = meshData.texture->getCore();
 
@@ -249,7 +249,7 @@ namespace bs
 		clearQueued();
 	}
 
-	void HandleRenderer::queueForDraw(const SPtr<CameraCore>& camera, Vector<MeshData>& meshes)
+	void HandleRenderer::queueForDraw(const SPtr<Camera>& camera, Vector<MeshData>& meshes)
 	{
 		SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
 		if (camera != nullptr)
@@ -293,7 +293,7 @@ namespace bs
 		bs_zero_out(mTypeCounters);
 	}
 
-	bool HandleRenderer::check(const CameraCore& camera)
+	bool HandleRenderer::check(const Camera& camera)
 	{
 		for(auto& entry : mQueuedData)
 		{
@@ -304,7 +304,7 @@ namespace bs
 		return false;
 	}
 
-	void HandleRenderer::render(const CameraCore& camera)
+	void HandleRenderer::render(const Camera& camera)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -316,7 +316,7 @@ namespace bs
 			const QueuedData& queueData = entry;
 			const Vector<MeshData>& meshes = queueData.meshes;
 
-			SPtr<RenderTargetCore> renderTarget = camera.getViewport()->getTarget();
+			SPtr<RenderTarget> renderTarget = camera.getViewport()->getTarget();
 
 			float width = (float)renderTarget->getProperties().getWidth();
 			float height = (float)renderTarget->getProperties().getHeight();

@@ -12,12 +12,12 @@ namespace bs { namespace ct
 	 */
 
 	/**	GPU program compiled from GLSL and usable by OpenGL. */
-    class BS_RSGL_EXPORT GLSLGpuProgram : public GpuProgramCore
+    class BS_RSGL_EXPORT GLSLGpuProgram : public GpuProgram
     {
 	public:
 		~GLSLGpuProgram();
 
-		/** @copydoc GpuProgramCore::isSupported */
+		/** @copydoc GpuProgram::isSupported */
 		bool isSupported() const override;
 
 		/**	Gets internal OpenGL handle to the program. */
@@ -31,7 +31,7 @@ namespace bs { namespace ct
 
 		GLSLGpuProgram(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask);
 
-		/** @copydoc GpuProgramCore::initialize */
+		/** @copydoc GpuProgram::initialize */
 		void initialize() override;
 
 	private:

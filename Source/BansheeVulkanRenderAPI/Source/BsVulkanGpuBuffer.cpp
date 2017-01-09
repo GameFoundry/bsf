@@ -8,7 +8,7 @@
 namespace bs { namespace ct
 {
 	VulkanGpuBuffer::VulkanGpuBuffer(const GPU_BUFFER_DESC& desc, GpuDeviceFlags deviceMask)
-		: GpuBufferCore(desc, deviceMask), mBuffer(nullptr), mDeviceMask(deviceMask)
+		: GpuBuffer(desc, deviceMask), mBuffer(nullptr), mDeviceMask(deviceMask)
 	{
 		if (desc.type != GBT_STANDARD)
 			assert(desc.format == BF_UNKNOWN && "Format must be set to BF_UNKNOWN when using non-standard buffers");
@@ -39,7 +39,7 @@ namespace bs { namespace ct
 		UINT32 size = props.getElementCount() * props.getElementSize();;
 		mBuffer = bs_new<VulkanHardwareBuffer>(bufferType, props.getFormat(), props.getUsage(), size, mDeviceMask);
 
-		GpuBufferCore::initialize();
+		GpuBuffer::initialize();
 	}
 
 	void* VulkanGpuBuffer::lock(UINT32 offset, UINT32 length, GpuLockOptions options, UINT32 deviceIdx, UINT32 queueIdx)

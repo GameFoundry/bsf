@@ -65,9 +65,9 @@ namespace bs
 		markCoreDirty();
 	}
 
-	SPtr<ct::GpuParamBlockBufferCore> GpuParamBlockBuffer::getCore() const
+	SPtr<ct::GpuParamBlockBuffer> GpuParamBlockBuffer::getCore() const
 	{
-		return std::static_pointer_cast<ct::GpuParamBlockBufferCore>(mCoreSpecific);
+		return std::static_pointer_cast<ct::GpuParamBlockBuffer>(mCoreSpecific);
 	}
 
 	SPtr<ct::CoreObject> GpuParamBlockBuffer::createCore() const
@@ -90,7 +90,7 @@ namespace bs
 
 	namespace ct
 	{
-	GpuParamBlockBufferCore::GpuParamBlockBufferCore(UINT32 size, GpuParamBlockUsage usage, GpuDeviceFlags deviceMask)
+	GpuParamBlockBuffer::GpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage, GpuDeviceFlags deviceMask)
 		:mUsage(usage), mSize(size), mCachedData(nullptr), mGPUBufferDirty(false)
 	{
 		if (mSize > 0)
@@ -99,13 +99,13 @@ namespace bs
 		memset(mCachedData, 0, mSize);
 	}
 
-	GpuParamBlockBufferCore::~GpuParamBlockBufferCore()
+	GpuParamBlockBuffer::~GpuParamBlockBuffer()
 	{
 		if (mCachedData != nullptr)
 			bs_free(mCachedData);
 	}
 
-	void GpuParamBlockBufferCore::write(UINT32 offset, const void* data, UINT32 size)
+	void GpuParamBlockBuffer::write(UINT32 offset, const void* data, UINT32 size)
 	{
 #if BS_DEBUG_MODE
 		if ((offset + size) > mSize)
@@ -120,7 +120,7 @@ namespace bs
 		mGPUBufferDirty = true;
 	}
 
-	void GpuParamBlockBufferCore::read(UINT32 offset, void* data, UINT32 size)
+	void GpuParamBlockBuffer::read(UINT32 offset, void* data, UINT32 size)
 	{
 #if BS_DEBUG_MODE
 		if ((offset + size) > mSize)
@@ -134,7 +134,7 @@ namespace bs
 		memcpy(data, mCachedData + offset, size);
 	}
 
-	void GpuParamBlockBufferCore::zeroOut(UINT32 offset, UINT32 size)
+	void GpuParamBlockBuffer::zeroOut(UINT32 offset, UINT32 size)
 	{
 #if BS_DEBUG_MODE
 		if ((offset + size) > mSize)
@@ -149,7 +149,7 @@ namespace bs
 		mGPUBufferDirty = true;
 	}
 
-	void GpuParamBlockBufferCore::flushToGPU(UINT32 queueIdx)
+	void GpuParamBlockBuffer::flushToGPU(UINT32 queueIdx)
 	{
 		if (mGPUBufferDirty)
 		{
@@ -158,14 +158,14 @@ namespace bs
 		}
 	}
 
-	void GpuParamBlockBufferCore::syncToCore(const CoreSyncData& data)
+	void GpuParamBlockBuffer::syncToCore(const CoreSyncData& data)
 	{
 		assert(mSize == data.getBufferSize());
 
 		write(0, data.getBuffer(), data.getBufferSize());
 	}
 
-	SPtr<GpuParamBlockBufferCore> GpuParamBlockBufferCore::create(UINT32 size, GpuParamBlockUsage usage, 
+	SPtr<GpuParamBlockBuffer> GpuParamBlockBuffer::create(UINT32 size, GpuParamBlockUsage usage, 
 		GpuDeviceFlags deviceMask)
 	{
 		return HardwareBufferManager::instance().createGpuParamBlockBuffer(size, usage, deviceMask);

@@ -61,9 +61,9 @@ namespace bs
 		return CoreSyncData(buffer, size);
 	}
 
-	SPtr<ct::MeshCoreBase> MeshBase::getCore() const
+	SPtr<ct::MeshBase> MeshBase::getCore() const
 	{
-		return std::static_pointer_cast<ct::MeshCoreBase>(mCoreSpecific);
+		return std::static_pointer_cast<ct::MeshBase>(mCoreSpecific);
 	}
 
 	/************************************************************************/
@@ -82,11 +82,11 @@ namespace bs
 
 	namespace ct
 	{
-	MeshCoreBase::MeshCoreBase(UINT32 numVertices, UINT32 numIndices, const Vector<SubMesh>& subMeshes)
+	MeshBase::MeshBase(UINT32 numVertices, UINT32 numIndices, const Vector<SubMesh>& subMeshes)
 		:mProperties(numVertices, numIndices, subMeshes)
 	{ }
 
-	void MeshCoreBase::syncToCore(const CoreSyncData& data)
+	void MeshBase::syncToCore(const CoreSyncData& data)
 	{
 		mProperties.mBounds = data.getData<Bounds>();
 	}

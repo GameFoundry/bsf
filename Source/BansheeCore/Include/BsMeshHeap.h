@@ -44,7 +44,7 @@ namespace bs
 		void dealloc(const SPtr<TransientMesh>& mesh);
 
 		/** Retrieves a core implementation of a mesh heap usable only from the core thread. */
-		SPtr<ct::MeshHeapCore> getCore() const;
+		SPtr<ct::MeshHeap> getCore() const;
 
 		/**
 		 * Creates a new mesh heap.
@@ -85,11 +85,11 @@ namespace bs
 	 */
 
 	/**
-	 * Core thread version of MeshHeap.
+	 * Core thread version of bs::MeshHeap.
 	 *
 	 * @note	Core thread only.
 	 */
-	class BS_CORE_EXPORT MeshHeapCore : public CoreObject
+	class BS_CORE_EXPORT MeshHeap : public CoreObject
 	{
 		/**	Signifies how is a data chunk used. */
 		enum class UseFlags
@@ -114,7 +114,7 @@ namespace bs
 
 			UseFlags useFlags;
 			UINT32 eventQueryIdx;
-			SPtr<TransientMeshCore> mesh;
+			SPtr<TransientMesh> mesh;
 		};
 
 		/**	Data about a GPU query. */
@@ -125,14 +125,14 @@ namespace bs
 		};
 
 	public:
-		~MeshHeapCore();
+		~MeshHeap();
 
 	private:
-		friend class MeshHeap;
+		friend class bs::MeshHeap;
+		friend class bs::TransientMesh;
 		friend class TransientMesh;
-		friend class TransientMeshCore;
 
-		MeshHeapCore(UINT32 numVertices, UINT32 numIndices, 
+		MeshHeap(UINT32 numVertices, UINT32 numIndices, 
 			const SPtr<VertexDataDesc>& vertexDesc, IndexType indexType, GpuDeviceFlags deviceMask);
 
 		/** @copydoc CoreObject::initialize() */
@@ -144,10 +144,10 @@ namespace bs
 		 * @param[in]	mesh		Mesh for which we are allocating the data.
 		 * @param[in]	meshData	Data to initialize the new mesh with.
 		 */
-		void alloc(SPtr<TransientMeshCore> mesh, const SPtr<MeshData>& meshData);
+		void alloc(SPtr<TransientMesh> mesh, const SPtr<MeshData>& meshData);
 
 		/** Deallocates the provided mesh. Freed memory will be re-used as soon as the GPU is done with the mesh. */
-		void dealloc(SPtr<TransientMeshCore> mesh);
+		void dealloc(SPtr<TransientMesh> mesh);
 
 		/** Resizes the vertex buffers so they max contain the provided number of vertices. */
 		void growVertexBuffer(UINT32 numVertices);
@@ -168,7 +168,7 @@ namespace bs
 		SPtr<VertexData> getVertexData() const;
 
 		/**	Gets internal index data for all the meshes. */
-		SPtr<IndexBufferCore> getIndexBuffer() const;
+		SPtr<IndexBuffer> getIndexBuffer() const;
 
 		/** Returns a structure that describes how are the vertices stored in the mesh's vertex buffer. */
 		SPtr<VertexDataDesc> getVertexDesc() const;
@@ -190,7 +190,7 @@ namespace bs
 		 * Called by an GPU event query when GPU processes the query. Normally signals the heap that the GPU is done with 
 		 * the mesh.
 		 */
-		static void queryTriggered(SPtr<MeshHeapCore> thisPtr, UINT32 meshId, UINT32 queryId);
+		static void queryTriggered(SPtr<MeshHeap> thisPtr, UINT32 meshId, UINT32 queryId);
 
 		/**
 		 * Attempts to reorganize the vertex and index buffer chunks in order to in order to make free memory contigous.
@@ -208,7 +208,7 @@ namespace bs
 		UINT8* mCPUIndexData;
 
 		SPtr<VertexData> mVertexData;
-		SPtr<IndexBufferCore> mIndexBuffer;
+		SPtr<IndexBuffer> mIndexBuffer;
 
 		Map<UINT32, AllocatedData> mMeshAllocData;
 

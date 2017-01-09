@@ -186,7 +186,7 @@ namespace bs
 	 *  @{
 	 */
 
-	namespace ct { class LightCore; }
+	namespace ct { class Light; }
 
 	/**
 	 * Sim thread usable version of a light.
@@ -197,7 +197,7 @@ namespace bs
 	{
 	public:
 		/**	Retrieves an implementation of a light usable only from the core thread. */
-		SPtr<ct::LightCore> getCore() const;
+		SPtr<ct::Light> getCore() const;
 
 		/** Returns the hash value that can be used to identify if the internal data needs an update. */
 		UINT32 _getLastModifiedHash() const { return mLastUpdateHash; }
@@ -266,10 +266,10 @@ namespace bs
 	 *
 	 * @see		LightBase
 	 */
-	class BS_EXPORT LightCore : public CoreObject, public LightBase
+	class BS_EXPORT Light : public CoreObject, public LightBase
 	{
 	public:
-		~LightCore();
+		~Light();
 
 		/**	Sets an ID that can be used for uniquely identifying this object by the renderer. */
 		void setRendererId(UINT32 id) { mRendererId = id; }
@@ -278,14 +278,14 @@ namespace bs
 		UINT32 getRendererId() const { return mRendererId; }
 
 		/**	Returns a mesh that represents the light's bounds. */
-		SPtr<MeshCore> getMesh() const;
+		SPtr<Mesh> getMesh() const;
 
 		static const UINT32 LIGHT_CONE_NUM_SIDES;
 		static const UINT32 LIGHT_CONE_NUM_SLICES;
 	protected:
-		friend class Light;
+		friend class bs::Light;
 
-		LightCore(LightType type, Color color, float intensity, 
+		Light(LightType type, Color color, float intensity, 
 			float range, bool castsShadows, Degree spotAngle, Degree spotFalloffAngle);
 
 		/** @copydoc CoreObject::initialize */
@@ -295,7 +295,7 @@ namespace bs
 		void syncToCore(const CoreSyncData& data) override;
 
 		UINT32 mRendererId;
-		SPtr<MeshCore> mMesh;
+		SPtr<Mesh> mMesh;
 	};
 	}
 

@@ -115,7 +115,7 @@ namespace bs { namespace ct
 		assert(mSamplerOverrides.empty());
 	}
 
-	void RenderBeast::notifyRenderableAdded(RenderableCore* renderable)
+	void RenderBeast::notifyRenderableAdded(Renderable* renderable)
 	{
 		UINT32 renderableId = (UINT32)mRenderables.size();
 
@@ -129,11 +129,11 @@ namespace bs { namespace ct
 		rendererObject->renderable = renderable;
 		rendererObject->updatePerObjectBuffer();
 
-		SPtr<MeshCore> mesh = renderable->getMesh();
+		SPtr<Mesh> mesh = renderable->getMesh();
 		if (mesh != nullptr)
 		{
 			const MeshProperties& meshProps = mesh->getProperties();
-			SPtr<VertexDeclarationCore> vertexDecl = mesh->getVertexData()->vertexDeclaration;
+			SPtr<VertexDeclaration> vertexDecl = mesh->getVertexData()->vertexDeclaration;
 
 			for (UINT32 i = 0; i < meshProps.getNumSubMeshes(); i++)
 			{
@@ -183,7 +183,7 @@ namespace bs { namespace ct
 					{
 						SPtr<Pass> pass = renElement.material->getPass(j, techniqueIdx);
 
-						SPtr<VertexDeclarationCore> shaderDecl = pass->getVertexProgram()->getInputDeclaration();
+						SPtr<VertexDeclaration> shaderDecl = pass->getVertexProgram()->getInputDeclaration();
 						if (!vertexDecl->isCompatible(shaderDecl))
 						{
 							Vector<VertexElement> missingElements = vertexDecl->getMissingElements(shaderDecl);
@@ -244,10 +244,10 @@ namespace bs { namespace ct
 		}
 	}
 
-	void RenderBeast::notifyRenderableRemoved(RenderableCore* renderable)
+	void RenderBeast::notifyRenderableRemoved(Renderable* renderable)
 	{
 		UINT32 renderableId = renderable->getRendererId();
-		RenderableCore* lastRenerable = mRenderables.back()->renderable;
+		Renderable* lastRenerable = mRenderables.back()->renderable;
 		UINT32 lastRenderableId = lastRenerable->getRendererId();
 
 		RendererObject* rendererObject = mRenderables[renderableId];
@@ -290,7 +290,7 @@ namespace bs { namespace ct
 		bs_delete(rendererObject);
 	}
 
-	void RenderBeast::notifyRenderableUpdated(RenderableCore* renderable)
+	void RenderBeast::notifyRenderableUpdated(Renderable* renderable)
 	{
 		UINT32 renderableId = renderable->getRendererId();
 
@@ -298,7 +298,7 @@ namespace bs { namespace ct
 		mWorldBounds[renderableId] = renderable->getBounds();
 	}
 
-	void RenderBeast::notifyLightAdded(LightCore* light)
+	void RenderBeast::notifyLightAdded(Light* light)
 	{
 		if (light->getType() == LightType::Directional)
 		{
@@ -324,7 +324,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	void RenderBeast::notifyLightUpdated(LightCore* light)
+	void RenderBeast::notifyLightUpdated(Light* light)
 	{
 		UINT32 lightId = light->getRendererId();
 
@@ -332,12 +332,12 @@ namespace bs { namespace ct
 			mLightWorldBounds[lightId] = light->getBounds();
 	}
 
-	void RenderBeast::notifyLightRemoved(LightCore* light)
+	void RenderBeast::notifyLightRemoved(Light* light)
 	{
 		UINT32 lightId = light->getRendererId();
 		if (light->getType() == LightType::Directional)
 		{
-			LightCore* lastLight = mDirectionalLights.back().internal;
+			Light* lastLight = mDirectionalLights.back().internal;
 			UINT32 lastLightId = lastLight->getRendererId();
 
 			if (lightId != lastLightId)
@@ -352,7 +352,7 @@ namespace bs { namespace ct
 		}
 		else
 		{
-			LightCore* lastLight = mPointLights.back().internal;
+			Light* lastLight = mPointLights.back().internal;
 			UINT32 lastLightId = lastLight->getRendererId();
 
 			if (lightId != lastLightId)
@@ -370,13 +370,13 @@ namespace bs { namespace ct
 		}
 	}
 
-	void RenderBeast::notifyCameraAdded(const CameraCore* camera)
+	void RenderBeast::notifyCameraAdded(const Camera* camera)
 	{
 		RendererCamera* renCamera = updateCameraData(camera);
 		renCamera->updatePerCameraBuffer();
 	}
 
-	void RenderBeast::notifyCameraUpdated(const CameraCore* camera, UINT32 updateFlag)
+	void RenderBeast::notifyCameraUpdated(const Camera* camera, UINT32 updateFlag)
 	{
 		RendererCamera* rendererCam;
 		if((updateFlag & (UINT32)CameraDirtyFlag::Everything) != 0)
@@ -394,7 +394,7 @@ namespace bs { namespace ct
 		rendererCam->updatePerCameraBuffer();
 	}
 
-	void RenderBeast::notifyCameraRemoved(const CameraCore* camera)
+	void RenderBeast::notifyCameraRemoved(const Camera* camera)
 	{
 		updateCameraData(camera, true);
 	}
@@ -404,11 +404,11 @@ namespace bs { namespace ct
 		return bs_shared_ptr_new<StandardPostProcessSettings>();
 	}
 
-	RendererCamera* RenderBeast::updateCameraData(const CameraCore* camera, bool forceRemove)
+	RendererCamera* RenderBeast::updateCameraData(const Camera* camera, bool forceRemove)
 	{
 		RendererCamera* output;
 
-		SPtr<RenderTargetCore> renderTarget = camera->getViewport()->getTarget();
+		SPtr<RenderTarget> renderTarget = camera->getViewport()->getTarget();
 
 		auto iterFind = mCameras.find(camera);
 		if(forceRemove)
@@ -485,14 +485,14 @@ namespace bs { namespace ct
 			}
 
 			// Sort render targets based on priority
-			auto cameraComparer = [&](const CameraCore* a, const CameraCore* b) { return a->getPriority() > b->getPriority(); };
+			auto cameraComparer = [&](const Camera* a, const Camera* b) { return a->getPriority() > b->getPriority(); };
 			auto renderTargetInfoComparer = [&](const RendererRenderTarget& a, const RendererRenderTarget& b)
 			{ return a.target->getProperties().getPriority() > b.target->getProperties().getPriority(); };
 			std::sort(begin(mRenderTargets), end(mRenderTargets), renderTargetInfoComparer);
 
 			for (auto& camerasPerTarget : mRenderTargets)
 			{
-				Vector<const CameraCore*>& cameras = camerasPerTarget.cameras;
+				Vector<const Camera*>& cameras = camerasPerTarget.cameras;
 
 				std::sort(begin(cameras), end(cameras), cameraComparer);
 			}
@@ -591,8 +591,8 @@ namespace bs { namespace ct
 		// Render everything, target by target
 		for (auto& rtInfo : mRenderTargets)
 		{
-			SPtr<RenderTargetCore> target = rtInfo.target;
-			Vector<const CameraCore*>& cameras = rtInfo.cameras;
+			SPtr<RenderTarget> target = rtInfo.target;
+			Vector<const Camera*>& cameras = rtInfo.cameras;
 
 			UINT32 numCameras = (UINT32)cameras.size();
 			for (UINT32 i = 0; i < numCameras; i++)
@@ -621,9 +621,9 @@ namespace bs { namespace ct
 	{
 		gProfilerCPU().beginSample("Render");
 
-		const CameraCore* camera = rtInfo.cameras[camIdx];
+		const Camera* camera = rtInfo.cameras[camIdx];
 		RendererCamera* rendererCam = mCameras[camera];
-		SPtr<GpuParamBlockBufferCore> perCameraBuffer = rendererCam->getPerCameraBuffer();
+		SPtr<GpuParamBlockBuffer> perCameraBuffer = rendererCam->getPerCameraBuffer();
 		perCameraBuffer->flushToGPU();
 
 		assert(!camera->getFlags().isSet(CameraFlag::Overlay));
@@ -723,7 +723,7 @@ namespace bs { namespace ct
 
 				mPointLightInMat->setPerLightParams(light.internal);
 
-				SPtr<MeshCore> mesh = light.internal->getMesh();
+				SPtr<Mesh> mesh = light.internal->getMesh();
 				gRendererUtility().draw(mesh, mesh->getProperties().getSubMesh(0));
 			}
 
@@ -744,19 +744,19 @@ namespace bs { namespace ct
 
 				mPointLightOutMat->setPerLightParams(light.internal);
 
-				SPtr<MeshCore> mesh = light.internal->getMesh();
+				SPtr<Mesh> mesh = light.internal->getMesh();
 				gRendererUtility().draw(mesh, mesh->getProperties().getSubMesh(0));
 			}
 		}
 
 		// Render skybox (if any)
-		SPtr<TextureCore> skyTexture = camera->getSkybox();
+		SPtr<Texture> skyTexture = camera->getSkybox();
 		if (skyTexture != nullptr && skyTexture->getProperties().getTextureType() == TEX_TYPE_CUBE_MAP)
 		{
 			mSkyboxMat->bind(perCameraBuffer);
 			mSkyboxMat->setParams(skyTexture);
 
-			SPtr<MeshCore> mesh = gRendererUtility().getSkyBoxMesh();
+			SPtr<Mesh> mesh = gRendererUtility().getSkyBoxMesh();
 			gRendererUtility().draw(mesh, mesh->getProperties().getSubMesh(0));
 		}
 
@@ -809,16 +809,16 @@ namespace bs { namespace ct
 	{
 		gProfilerCPU().beginSample("RenderOverlay");
 
-		const CameraCore* camera = rtData.cameras[camIdx];
+		const Camera* camera = rtData.cameras[camIdx];
 		assert(camera->getFlags().isSet(CameraFlag::Overlay));
 
-		SPtr<ViewportCore> viewport = camera->getViewport();
+		SPtr<Viewport> viewport = camera->getViewport();
 		RendererCamera* rendererCam = mCameras[camera];
 		rendererCam->getPerCameraBuffer()->flushToGPU();
 
 		rendererCam->beginRendering(false);
 
-		SPtr<RenderTargetCore> target = rtData.target;
+		SPtr<RenderTarget> target = rtData.target;
 
 		// If first camera in render target, prepare the render target
 		if (camIdx == 0)
@@ -898,7 +898,7 @@ namespace bs { namespace ct
 				SamplerOverride& override = materialOverrides->overrides[i];
 				const MaterialParamsBase::ParamData* materialParamData = materialParams->getParamData(override.paramIdx);
 
-				SPtr<SamplerStateCore> samplerState;
+				SPtr<SamplerState> samplerState;
 				materialParams->getSamplerState(*materialParamData, samplerState);
 
 				UINT64 hash = 0;
@@ -910,7 +910,7 @@ namespace bs { namespace ct
 					if (samplerState != nullptr)
 						override.state = SamplerOverrideUtility::generateSamplerOverride(samplerState, mCoreOptions);
 					else
-						override.state = SamplerOverrideUtility::generateSamplerOverride(SamplerStateCore::getDefault(), mCoreOptions);
+						override.state = SamplerOverrideUtility::generateSamplerOverride(SamplerState::getDefault(), mCoreOptions);
 
 					override.originalStateHash = override.state->getProperties().getHash();
 					materialOverrides->isDirty = true;
@@ -937,7 +937,7 @@ namespace bs { namespace ct
 					UINT32 numPasses = element.material->getNumPasses();
 					for(UINT32 j = 0; j < numPasses; j++)
 					{
-						SPtr<GpuParamsCore> params = element.params->getGpuParams(j);
+						SPtr<GpuParams> params = element.params->getGpuParams(j);
 
 						const UINT32 numStages = 6;
 						for (UINT32 k = 0; k < numStages; k++)

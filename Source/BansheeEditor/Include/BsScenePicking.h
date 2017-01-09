@@ -37,7 +37,7 @@ namespace bs
 		/**	Contains information about a single pickable item (mesh). */
 		struct RenderablePickData
 		{
-			SPtr<ct::MeshCore> mesh;
+			SPtr<ct::Mesh> mesh;
 			UINT32 index;
 			Matrix4 wvpTransform;
 			bool alpha;
@@ -130,7 +130,7 @@ namespace bs
 		 * @param[in]	position		Position of the pointer where to pick objects, in pixels relative to viewport.
 		 * @param[in]	area			Width/height of the area to pick objects, in pixels.
 		 */
-		void corePickingBegin(const SPtr<RenderTargetCore>& target, const Rect2& viewportArea, 
+		void corePickingBegin(const SPtr<RenderTarget>& target, const Rect2& viewportArea, 
 			const bs::ScenePicking::RenderableSet& renderables, const Vector2I& position, const Vector2I& area);
 		
 		/**
@@ -145,7 +145,7 @@ namespace bs
 		 * @param[out]	asyncOp			Async operation handle that when complete will contain the results of the picking
 		 *								operation in the form of Vector<SelectedObject>.
 		 */
-		void corePickingEnd(const SPtr<RenderTargetCore>& target, const Rect2& viewportArea, const Vector2I& position,
+		void corePickingEnd(const SPtr<RenderTarget>& target, const Rect2& viewportArea, const Vector2I& position,
 			const Vector2I& area, bool gatherSnapData, AsyncOp& asyncOp);
 
 	private:
@@ -153,11 +153,11 @@ namespace bs
 
 		static const float ALPHA_CUTOFF;
 
-		SPtr<RenderTextureCore> mPickingTexture;
+		SPtr<RenderTexture> mPickingTexture;
 
 		SPtr<Material> mMaterials[6];
 		Vector<SPtr<GpuParamsSet>> mParamSets[6];
-		Vector<SPtr<GpuParamBlockBufferCore>> mParamBuffers;
+		Vector<SPtr<GpuParamBlockBuffer>> mParamBuffers;
 	};
 
 	/** @} */

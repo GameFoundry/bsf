@@ -27,7 +27,7 @@ namespace bs { namespace ct
 	TextureView::~TextureView()
 	{ }
 
-	TextureView::TextureView(const SPtr<TextureCore>& texture, const TEXTURE_VIEW_DESC& desc)
+	TextureView::TextureView(const SPtr<Texture>& texture, const TEXTURE_VIEW_DESC& desc)
 		:mDesc(desc), mOwnerTexture(texture)
 	{
 

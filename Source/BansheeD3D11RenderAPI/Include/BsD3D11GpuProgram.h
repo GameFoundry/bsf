@@ -12,7 +12,7 @@ namespace bs { namespace ct
 	 */
 
 	/**	Abstraction of a DirectX 11 shader object. */
-	class BS_D3D11_EXPORT D3D11GpuProgram : public GpuProgramCore
+	class BS_D3D11_EXPORT D3D11GpuProgram : public GpuProgram
 	{
 	public:
 		virtual ~D3D11GpuProgram();
@@ -26,7 +26,7 @@ namespace bs { namespace ct
 	protected:
 		D3D11GpuProgram(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask);
 
-		/** @copydoc GpuProgramCore::initialize */
+		/** @copydoc GpuProgram::initialize */
 		void initialize() override;
 
 		/**	Loads the shader from microcode. */

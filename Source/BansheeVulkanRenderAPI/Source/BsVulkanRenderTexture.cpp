@@ -18,7 +18,7 @@ namespace bs
 	namespace ct
 	{
 	VulkanRenderTexture::VulkanRenderTexture(const RENDER_TEXTURE_DESC& desc, UINT32 deviceIdx)
-		:RenderTextureCore(desc, deviceIdx), mProperties(desc, false), mDeviceIdx(deviceIdx), mFramebuffer(nullptr)
+		:RenderTexture(desc, deviceIdx), mProperties(desc, false), mDeviceIdx(deviceIdx), mFramebuffer(nullptr)
 	{
 		
 	}
@@ -30,7 +30,7 @@ namespace bs
 
 	void VulkanRenderTexture::initialize()
 	{
-		RenderTextureCore::initialize();
+		RenderTexture::initialize();
 
 		VULKAN_FRAMEBUFFER_DESC fbDesc;
 		fbDesc.width = mProperties.getWidth();

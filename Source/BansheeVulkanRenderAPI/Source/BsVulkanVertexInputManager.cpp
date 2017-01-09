@@ -52,7 +52,7 @@ namespace bs { namespace ct
 	}
 
 	SPtr<VulkanVertexInput> VulkanVertexInputManager::getVertexInfo(
-		const SPtr<VertexDeclarationCore>& vbDecl, const SPtr<VertexDeclarationCore>& shaderDecl)
+		const SPtr<VertexDeclaration>& vbDecl, const SPtr<VertexDeclaration>& shaderDecl)
 	{
 		Lock(mMutex);
 
@@ -75,8 +75,8 @@ namespace bs { namespace ct
 		return iterFind->second.vertexInput;
 	}
 
-	void VulkanVertexInputManager::addNew(const SPtr<VertexDeclarationCore>& vbDecl, 
-		const SPtr<VertexDeclarationCore>& shaderInputDecl)
+	void VulkanVertexInputManager::addNew(const SPtr<VertexDeclaration>& vbDecl, 
+		const SPtr<VertexDeclaration>& shaderInputDecl)
 	{
 		const List<VertexElement>& vbElements = vbDecl->getProperties().getElements();
 		const List<VertexElement>& inputElements = shaderInputDecl->getProperties().getElements();

@@ -25,15 +25,15 @@ namespace bs { namespace ct
 		const String& getShadingLanguageName() const override;
 
 		/** @copydoc RenderAPI::setGraphicsPipeline */
-		void setGraphicsPipeline(const SPtr<GraphicsPipelineStateCore>& pipelineState, 
+		void setGraphicsPipeline(const SPtr<GraphicsPipelineState>& pipelineState, 
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::setComputePipeline */
-		void setComputePipeline(const SPtr<ComputePipelineStateCore>& pipelineState,
+		void setComputePipeline(const SPtr<ComputePipelineState>& pipelineState,
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::setGpuParams */
-		void setGpuParams(const SPtr<GpuParamsCore>& gpuParams, 
+		void setGpuParams(const SPtr<GpuParams>& gpuParams, 
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::clearRenderTarget */
@@ -45,7 +45,7 @@ namespace bs { namespace ct
 			UINT8 targetMask = 0xFF, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::setRenderTarget */
-		void setRenderTarget(const SPtr<RenderTargetCore>& target, bool readOnlyDepthStencil = false, 
+		void setRenderTarget(const SPtr<RenderTarget>& target, bool readOnlyDepthStencil = false, 
 			RenderSurfaceMask loadMask = RT_NONE, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::setViewport */
@@ -59,15 +59,15 @@ namespace bs { namespace ct
 		void setStencilRef(UINT32 value, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::setVertexBuffers */
-		void setVertexBuffers(UINT32 index, SPtr<VertexBufferCore>* buffers, UINT32 numBuffers,
+		void setVertexBuffers(UINT32 index, SPtr<VertexBuffer>* buffers, UINT32 numBuffers,
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::setIndexBuffer */
-		void setIndexBuffer(const SPtr<IndexBufferCore>& buffer, 
+		void setIndexBuffer(const SPtr<IndexBuffer>& buffer, 
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::setVertexDeclaration */
-		void setVertexDeclaration(const SPtr<VertexDeclarationCore>& vertexDeclaration,
+		void setVertexDeclaration(const SPtr<VertexDeclaration>& vertexDeclaration,
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::setDrawOperation */
@@ -87,7 +87,7 @@ namespace bs { namespace ct
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::swapBuffers() */
-		void swapBuffers(const SPtr<RenderTargetCore>& target, UINT32 syncMask = 0xFFFFFFFF) override;
+		void swapBuffers(const SPtr<RenderTarget>& target, UINT32 syncMask = 0xFFFFFFFF) override;
 
 		/** @copydoc RenderAPI::addCommands() */
 		void addCommands(const SPtr<CommandBuffer>& commandBuffer, const SPtr<CommandBuffer>& secondary) override;
@@ -133,7 +133,7 @@ namespace bs { namespace ct
 		void initialize() override;
 
 		/** @copydoc RenderAPI::initializeWithWindow */
-		void initializeWithWindow(const SPtr<RenderWindowCore>& primaryWindow) override;
+		void initializeWithWindow(const SPtr<RenderWindow>& primaryWindow) override;
 
 		/** @copydoc RenderAPI::destroyCore */
 		void destroyCore() override;
@@ -147,7 +147,7 @@ namespace bs { namespace ct
 		 *
 		 * @see		SamplerState
 		 */
-		void setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SPtr<SamplerStateCore>& samplerState);
+		void setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SPtr<SamplerState>& samplerState);
 
 		/**
 		 * Binds a texture to the pipeline for the specified GPU program type at the specified slot. If the slot matches 
@@ -157,7 +157,7 @@ namespace bs { namespace ct
 		 * @param[in]	texUnit			Texture unit index to bind the texture to.
 		 * @param[in]	texture			Texture to bind.
 		 */
-		void setTexture(GpuProgramType gptype, UINT16 texUnit, const SPtr<TextureCore>& texture);
+		void setTexture(GpuProgramType gptype, UINT16 texUnit, const SPtr<Texture>& texture);
 
 		/**	
 		 * Binds a texture that can be used for random load/store operations from a GPU program. 
@@ -167,7 +167,7 @@ namespace bs { namespace ct
 		 * @param[in]	texture			Texture to bind.
 		 * @param[in]	surface			Determines which surface of the texture to bind.
 		 */
-		void setLoadStoreTexture(GpuProgramType gptype, UINT16 texUnit, const SPtr<TextureCore>& texture, 
+		void setLoadStoreTexture(GpuProgramType gptype, UINT16 texUnit, const SPtr<Texture>& texture, 
 			const TextureSurface& surface);
 
 		/**
@@ -179,7 +179,7 @@ namespace bs { namespace ct
 		 * @param[in]	loadStore		If true the buffer will be bound with support for unordered reads and writes, 
 		 *								otherwise it will only be bound for reads.
 		 */
-		void setBuffer(GpuProgramType gptype, UINT16 unit, const SPtr<GpuBufferCore>& buffer, 
+		void setBuffer(GpuProgramType gptype, UINT16 unit, const SPtr<GpuBuffer>& buffer, 
 			bool loadStore = false);
 
 		/**
@@ -210,7 +210,7 @@ namespace bs { namespace ct
 		D3D11HLSLProgramFactory* mHLSLFactory;
 		D3D11InputLayoutManager* mIAManager;
 
-		std::pair<SPtr<TextureCore>, SPtr<TextureView>> mBoundUAVs[D3D11_PS_CS_UAV_REGISTER_COUNT];
+		std::pair<SPtr<Texture>, SPtr<TextureView>> mBoundUAVs[D3D11_PS_CS_UAV_REGISTER_COUNT];
 		bool mPSUAVsBound;
 		bool mCSUAVsBound;
 
@@ -219,7 +219,7 @@ namespace bs { namespace ct
 		D3D11_VIEWPORT mViewport;
 		D3D11_RECT mScissorRect;
 
-		SPtr<VertexDeclarationCore> mActiveVertexDeclaration;
+		SPtr<VertexDeclaration> mActiveVertexDeclaration;
 		SPtr<D3D11GpuProgram> mActiveVertexShader;
 		SPtr<D3D11DepthStencilState> mActiveDepthStencilState;
 

@@ -12,7 +12,7 @@ namespace bs { namespace ct
 	 */
 
 	/** DirectX 11 implementation of a blend state. Corresponds directly with a DX11 blend state object. */
-	class BS_D3D11_EXPORT D3D11BlendState : public BlendStateCore
+	class BS_D3D11_EXPORT D3D11BlendState : public BlendState
 	{
 	public:
 		~D3D11BlendState();
@@ -25,7 +25,7 @@ namespace bs { namespace ct
 
 		D3D11BlendState(const BLEND_STATE_DESC& desc, UINT32 id);
 
-		/** @copydoc BlendStateCore::createInternal */
+		/** @copydoc BlendState::createInternal */
 		void createInternal() override;
 
 		ID3D11BlendState* mBlendState;

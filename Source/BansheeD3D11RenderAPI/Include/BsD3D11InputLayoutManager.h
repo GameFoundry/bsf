@@ -60,12 +60,12 @@ namespace bs { namespace ct
 		 *
 		 * @note	Error will be thrown if the vertex buffer doesn't provide all the necessary data that the shader expects.
 		 */
-		ID3D11InputLayout* retrieveInputLayout(const SPtr<VertexDeclarationCore>& vertexShaderDecl,
-			const SPtr<VertexDeclarationCore>& vertexBufferDecl, D3D11GpuProgram& vertexProgram);
+		ID3D11InputLayout* retrieveInputLayout(const SPtr<VertexDeclaration>& vertexShaderDecl,
+			const SPtr<VertexDeclaration>& vertexBufferDecl, D3D11GpuProgram& vertexProgram);
 
 	private:
 		/**	Creates a new input layout using the specified parameters and stores it in the input layout map. */
-		void addNewInputLayout(const SPtr<VertexDeclarationCore>& vertexShaderDecl, const SPtr<VertexDeclarationCore>& vertexBufferDecl,
+		void addNewInputLayout(const SPtr<VertexDeclaration>& vertexShaderDecl, const SPtr<VertexDeclaration>& vertexBufferDecl,
 			D3D11GpuProgram& vertexProgram);
 
 		/**	Destroys least used input layout. */

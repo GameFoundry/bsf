@@ -47,7 +47,7 @@ namespace bs { namespace ct
 	protected:
 		friend class D3D11Texture;
 
-		D3D11TextureView(const SPtr<TextureCore>& texture, const TEXTURE_VIEW_DESC& desc);
+		D3D11TextureView(const SPtr<Texture>& texture, const TEXTURE_VIEW_DESC& desc);
 	private:
 		/**
 		 * Creates a shader resource view that allows the provided surfaces to be bound as normal shader resources.

@@ -28,7 +28,7 @@ namespace bs { namespace ct
 		initialiseWGL();
     } 
 
-	SPtr<RenderWindow> Win32GLSupport::newWindow(RENDER_WINDOW_DESC& desc, UINT32 windowId, SPtr<RenderWindow> parentWindow)
+	SPtr<bs::RenderWindow> Win32GLSupport::newWindow(RENDER_WINDOW_DESC& desc, UINT32 windowId, SPtr<bs::RenderWindow> parentWindow)
 	{		
 		if(parentWindow != nullptr)
 		{
@@ -38,10 +38,10 @@ namespace bs { namespace ct
 		}
 
 		bs::Win32RenderWindow* window = new (bs_alloc<bs::Win32RenderWindow>()) bs::Win32RenderWindow(desc, windowId, *this);
-		return SPtr<RenderWindow>(window, &CoreObject::_delete<bs::Win32RenderWindow, GenAlloc>);
+		return SPtr<bs::RenderWindow>(window, &bs::CoreObject::_delete<bs::Win32RenderWindow, GenAlloc>);
 	}
 
-	SPtr<RenderWindowCore> Win32GLSupport::newWindowCore(RENDER_WINDOW_DESC& desc, UINT32 windowId)
+	SPtr<RenderWindow> Win32GLSupport::newWindowCore(RENDER_WINDOW_DESC& desc, UINT32 windowId)
 	{
 		Win32RenderWindow* window = new (bs_alloc<Win32RenderWindow>()) Win32RenderWindow(desc, windowId, *this);
 

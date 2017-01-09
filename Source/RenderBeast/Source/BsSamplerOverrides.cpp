@@ -42,11 +42,11 @@ namespace bs { namespace ct
 				overrides.push_back(SamplerOverride());
 				SamplerOverride& override = overrides.back();
 
-				SPtr<SamplerStateCore> samplerState;
+				SPtr<SamplerState> samplerState;
 				params->getSamplerState(*materialParamData, samplerState);
 
 				if (samplerState == nullptr)
-					samplerState = SamplerStateCore::getDefault();
+					samplerState = SamplerState::getDefault();
 
 				override.paramIdx = paramIdx;
 				
@@ -71,7 +71,7 @@ namespace bs { namespace ct
 			{
 				UINT32 maxSamplerSet = 0;
 
-				SPtr<GpuParamsCore> paramsPtr = paramsSet->getGpuParams(i);
+				SPtr<GpuParams> paramsPtr = paramsSet->getGpuParams(i);
 				for (UINT32 j = 0; j < GpuParamsSet::NUM_STAGES; j++)
 				{
 					GpuProgramType progType = (GpuProgramType)j;
@@ -97,7 +97,7 @@ namespace bs { namespace ct
 			UINT32* slotsPerSetIter = slotsPerSet;
 			for (UINT32 i = 0; i < numPasses; i++)
 			{
-				SPtr<GpuParamsCore> paramsPtr = paramsSet->getGpuParams(i);
+				SPtr<GpuParams> paramsPtr = paramsSet->getGpuParams(i);
 				for (UINT32 j = 0; j < GpuParamsSet::NUM_STAGES; j++)
 				{
 					GpuProgramType progType = (GpuProgramType)j;
@@ -138,7 +138,7 @@ namespace bs { namespace ct
 			slotsPerSetIter = slotsPerSet;
 			for (UINT32 i = 0; i < numPasses; i++)
 			{
-				SPtr<GpuParamsCore> paramsPtr = paramsSet->getGpuParams(i);
+				SPtr<GpuParams> paramsPtr = paramsSet->getGpuParams(i);
 
 				PassSamplerOverrides& passOverrides = output->passes[i];
 				passOverrides.numSets = numSetsPerPass[i];
@@ -187,7 +187,7 @@ namespace bs { namespace ct
 
 			for(UINT32 i = 0; i < output->numOverrides; i++)
 			{
-				new (&output->overrides[i].state) SPtr<SamplerStateCore>();
+				new (&output->overrides[i].state) SPtr<SamplerState>();
 				output->overrides[i] = overrides[i];
 			}
 
@@ -204,14 +204,14 @@ namespace bs { namespace ct
 		if (overrides != nullptr)
 		{
 			for (UINT32 i = 0; i < overrides->numOverrides; i++)
-				overrides->overrides[i].state.~SPtr<SamplerStateCore>();
+				overrides->overrides[i].state.~SPtr<SamplerState>();
 
 			bs_free(overrides);
 			overrides = nullptr;
 		}
 	}
 
-	bool SamplerOverrideUtility::checkNeedsOverride(const SPtr<SamplerStateCore>& samplerState, const SPtr<RenderBeastOptions>& options)
+	bool SamplerOverrideUtility::checkNeedsOverride(const SPtr<SamplerState>& samplerState, const SPtr<RenderBeastOptions>& options)
 	{
 		const SamplerProperties& props = samplerState->getProperties();
 
@@ -261,7 +261,7 @@ namespace bs { namespace ct
 		return false;
 	}
 
-	SPtr<SamplerStateCore> SamplerOverrideUtility::generateSamplerOverride(const SPtr<SamplerStateCore>& samplerState, const SPtr<RenderBeastOptions>& options)
+	SPtr<SamplerState> SamplerOverrideUtility::generateSamplerOverride(const SPtr<SamplerState>& samplerState, const SPtr<RenderBeastOptions>& options)
 	{
 		const SamplerProperties& props = samplerState->getProperties();
 		SAMPLER_STATE_DESC desc = props.getDesc();

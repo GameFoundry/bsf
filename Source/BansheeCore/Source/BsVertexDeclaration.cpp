@@ -254,9 +254,9 @@ namespace bs
 
 	}
 
-	SPtr<ct::VertexDeclarationCore> VertexDeclaration::getCore() const
+	SPtr<ct::VertexDeclaration> VertexDeclaration::getCore() const
 	{
-		return std::static_pointer_cast<ct::VertexDeclarationCore>(mCoreSpecific);
+		return std::static_pointer_cast<ct::VertexDeclaration>(mCoreSpecific);
 	}
 
 	SPtr<ct::CoreObject> VertexDeclaration::createCore() const
@@ -318,26 +318,26 @@ namespace bs
 
 	namespace ct
 	{
-	UINT32 VertexDeclarationCore::NextFreeId = 0;
+	UINT32 VertexDeclaration::NextFreeId = 0;
 
-	VertexDeclarationCore::VertexDeclarationCore(const List<VertexElement>& elements, GpuDeviceFlags deviceMask)
+	VertexDeclaration::VertexDeclaration(const List<VertexElement>& elements, GpuDeviceFlags deviceMask)
 		:mProperties(elements)
 	{
 		
 	}
 
-	void VertexDeclarationCore::initialize()
+	void VertexDeclaration::initialize()
 	{
 		mId = NextFreeId++;
 		CoreObject::initialize();
 	}
 
-	SPtr<VertexDeclarationCore> VertexDeclarationCore::create(const SPtr<VertexDataDesc>& desc, GpuDeviceFlags deviceMask)
+	SPtr<VertexDeclaration> VertexDeclaration::create(const SPtr<VertexDataDesc>& desc, GpuDeviceFlags deviceMask)
 	{
 		return HardwareBufferManager::instance().createVertexDeclaration(desc, deviceMask);
 	}
 
-	bool VertexDeclarationCore::isCompatible(const SPtr<VertexDeclarationCore>& shaderDecl)
+	bool VertexDeclaration::isCompatible(const SPtr<VertexDeclaration>& shaderDecl)
 	{
 		const List<VertexElement>& shaderElems = shaderDecl->getProperties().getElements();
 		const List<VertexElement>& bufferElems = getProperties().getElements();
@@ -361,7 +361,7 @@ namespace bs
 		return true;
 	}
 
-	Vector<VertexElement> VertexDeclarationCore::getMissingElements(const SPtr<VertexDeclarationCore>& shaderDecl)
+	Vector<VertexElement> VertexDeclaration::getMissingElements(const SPtr<VertexDeclaration>& shaderDecl)
 	{
 		Vector<VertexElement> missingElements;
 

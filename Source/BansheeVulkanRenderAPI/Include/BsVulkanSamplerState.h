@@ -27,7 +27,7 @@ namespace bs { namespace ct
 	};
 
 	/**	Vulkan implementation of a sampler state. Wraps a Vulkan sampler object. */
-	class VulkanSamplerState : public SamplerStateCore
+	class VulkanSamplerState : public SamplerState
 	{
 	public:
 		~VulkanSamplerState();
@@ -43,7 +43,7 @@ namespace bs { namespace ct
 
 		VulkanSamplerState(const SAMPLER_STATE_DESC& desc, GpuDeviceFlags deviceMask);
 
-		/** @copydoc SamplerStateCore::createInternal */
+		/** @copydoc SamplerState::createInternal */
 		void createInternal() override;
 
 		VulkanSampler* mSamplers[BS_MAX_DEVICES];

@@ -41,16 +41,16 @@ namespace bs
 		void notifyWindowDestroyed(RenderWindow* window);
 
 		/**	Called by the core thread when window receives focus. */
-		void notifyFocusReceived(ct::RenderWindowCore* window);
+		void notifyFocusReceived(ct::RenderWindow* window);
 
 		/**	Called by the core thread when window loses focus. */
-		void notifyFocusLost(ct::RenderWindowCore* window);
+		void notifyFocusLost(ct::RenderWindow* window);
 
 		/**	Called by the core thread when window is moved or resized. */
-		void notifyMovedOrResized(ct::RenderWindowCore* window);
+		void notifyMovedOrResized(ct::RenderWindow* window);
 
 		/**	Called by the sim thread when window properties change. */
-		void notifySyncDataDirty(ct::RenderWindowCore* coreWindow);
+		void notifySyncDataDirty(ct::RenderWindow* coreWindow);
 
 		/**	Returns a list of all open render windows. */
 		Vector<RenderWindow*> getRenderWindows() const;
@@ -67,10 +67,10 @@ namespace bs
 		friend class RenderWindow;
 
 		/**	Called by the core thread when mouse leaves a window. */
-		void windowMouseLeft(ct::RenderWindowCore* window);
+		void windowMouseLeft(ct::RenderWindow* window);
 
 		/**	Finds a sim thread equivalent of the provided core thread window implementation. */
-		RenderWindow* getNonCore(const ct::RenderWindowCore* window) const;
+		RenderWindow* getNonCore(const ct::RenderWindow* window) const;
 
 		/** @copydoc create */
 		virtual SPtr<RenderWindow> createImpl(RENDER_WINDOW_DESC& desc, UINT32 windowId, const SPtr<RenderWindow>& parentWindow) = 0;
@@ -99,34 +99,34 @@ namespace bs
 		RenderWindowManager();
 
 		/** Creates a new render window using the specified options. */
-		SPtr<RenderWindowCore> create(RENDER_WINDOW_DESC& desc);
+		SPtr<RenderWindow> create(RENDER_WINDOW_DESC& desc);
 
 		/** Called once per frame. Dispatches events. */
 		void _update();
 
 		/**	Called by the core thread when window properties change. */
-		void notifySyncDataDirty(RenderWindowCore* window);
+		void notifySyncDataDirty(RenderWindow* window);
 
 		/**	Returns a list of all open render windows. */
-		Vector<RenderWindowCore*> getRenderWindows() const;
+		Vector<RenderWindow*> getRenderWindows() const;
 
 	protected:
-		friend class RenderWindowCore;
+		friend class RenderWindow;
 		friend class bs::RenderWindow;
 		friend class bs::RenderWindowManager;
 
 		/** @copydoc create */
-		virtual SPtr<RenderWindowCore> createInternal(RENDER_WINDOW_DESC& desc, UINT32 windowId) = 0;
+		virtual SPtr<RenderWindow> createInternal(RENDER_WINDOW_DESC& desc, UINT32 windowId) = 0;
 
 		/**	Called whenever a window is created. */
-		void windowCreated(RenderWindowCore* window);
+		void windowCreated(RenderWindow* window);
 
 		/**	Called by the core thread when window is destroyed. */
-		void windowDestroyed(RenderWindowCore* window);
+		void windowDestroyed(RenderWindow* window);
 
 		mutable Mutex mWindowMutex;
-		Vector<RenderWindowCore*> mCreatedWindows;
-		UnorderedSet<RenderWindowCore*> mDirtyProperties;
+		Vector<RenderWindow*> mCreatedWindows;
+		UnorderedSet<RenderWindow*> mDirtyProperties;
 		std::atomic_uint mNextWindowId;
 	};
 	}

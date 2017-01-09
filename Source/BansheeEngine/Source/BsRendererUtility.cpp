@@ -26,7 +26,7 @@ namespace bs { namespace ct
 			vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
 			vertexDesc->addVertElem(VET_FLOAT2, VES_TEXCOORD);
 
-			mFullScreenQuadMesh = MeshCore::create(4, 6, vertexDesc);
+			mFullScreenQuadMesh = Mesh::create(4, 6, vertexDesc);
 		}
 
 		{
@@ -46,12 +46,12 @@ namespace bs { namespace ct
 			ShapeMeshes3D::solidSphere(localSphere, positionData, nullptr, 0,
 				vertexDesc->getVertexStride(), indexData, 0, 3);
 
-			mPointLightStencilMesh = MeshCore::create(meshData);
+			mPointLightStencilMesh = Mesh::create(meshData);
 		}
 
 		{
-			UINT32 numSides = LightCore::LIGHT_CONE_NUM_SIDES;
-			UINT32 numSlices = LightCore::LIGHT_CONE_NUM_SLICES;
+			UINT32 numSides = Light::LIGHT_CONE_NUM_SIDES;
+			UINT32 numSlices = Light::LIGHT_CONE_NUM_SLICES;
 
 			SPtr<VertexDataDesc> vertexDesc = bs_shared_ptr_new<VertexDataDesc>();
 			vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
@@ -104,7 +104,7 @@ namespace bs { namespace ct
 				}
 			}
 
-			mSpotLightStencilMesh = MeshCore::create(meshData);
+			mSpotLightStencilMesh = Mesh::create(meshData);
 		}
 
 		{
@@ -124,7 +124,7 @@ namespace bs { namespace ct
 			ShapeMeshes3D::solidAABox(localBox, positionData, nullptr, 0,
 									   vertexDesc->getVertexStride(), indexData, 0);
 
-			mSkyBoxMesh = MeshCore::create(meshData);
+			mSkyBoxMesh = Mesh::create(meshData);
 		}
 
 		// TODO - When I add proper preprocessor support, merge these into a single material
@@ -156,7 +156,7 @@ namespace bs { namespace ct
 
 	void RendererUtility::setPassParams(const SPtr<GpuParamsSet>& params, UINT32 passIdx)
 	{
-		SPtr<GpuParamsCore> gpuParams = params->getGpuParams(passIdx);
+		SPtr<GpuParams> gpuParams = params->getGpuParams(passIdx);
 		if (gpuParams == nullptr)
 			return;
 
@@ -164,7 +164,7 @@ namespace bs { namespace ct
 		rapi.setGpuParams(gpuParams);
 	}
 
-	void RendererUtility::draw(const SPtr<MeshCoreBase>& mesh, const SubMesh& subMesh, UINT32 numInstances)
+	void RendererUtility::draw(const SPtr<MeshBase>& mesh, const SubMesh& subMesh, UINT32 numInstances)
 	{
 		RenderAPI& rapi = RenderAPI::instance();
 		SPtr<VertexData> vertexData = mesh->getVertexData();
@@ -174,7 +174,7 @@ namespace bs { namespace ct
 		auto& vertexBuffers = vertexData->getBuffers();
 		if (vertexBuffers.size() > 0)
 		{
-			SPtr<VertexBufferCore> buffers[BS_MAX_BOUND_VERTEX_BUFFERS];
+			SPtr<VertexBuffer> buffers[BS_MAX_BOUND_VERTEX_BUFFERS];
 
 			UINT32 endSlot = 0;
 			UINT32 startSlot = BS_MAX_BOUND_VERTEX_BUFFERS;
@@ -195,7 +195,7 @@ namespace bs { namespace ct
 			rapi.setVertexBuffers(startSlot, buffers, endSlot - startSlot + 1);
 		}
 
-		SPtr<IndexBufferCore> indexBuffer = mesh->getIndexBuffer();
+		SPtr<IndexBuffer> indexBuffer = mesh->getIndexBuffer();
 		rapi.setIndexBuffer(indexBuffer);
 
 		rapi.setDrawOperation(subMesh.drawOp);
@@ -207,8 +207,8 @@ namespace bs { namespace ct
 		mesh->_notifyUsedOnGPU();
 	}
 
-	void RendererUtility::drawMorph(const SPtr<MeshCoreBase>& mesh, const SubMesh& subMesh, 
-		const SPtr<VertexBufferCore>& morphVertices, const SPtr<VertexDeclarationCore>& morphVertexDeclaration)
+	void RendererUtility::drawMorph(const SPtr<MeshBase>& mesh, const SubMesh& subMesh, 
+		const SPtr<VertexBuffer>& morphVertices, const SPtr<VertexDeclaration>& morphVertexDeclaration)
 	{
 		// Bind buffers and draw
 		RenderAPI& rapi = RenderAPI::instance();
@@ -217,7 +217,7 @@ namespace bs { namespace ct
 		rapi.setVertexDeclaration(morphVertexDeclaration);
 
 		auto& meshBuffers = vertexData->getBuffers();
-		SPtr<VertexBufferCore> allBuffers[BS_MAX_BOUND_VERTEX_BUFFERS];
+		SPtr<VertexBuffer> allBuffers[BS_MAX_BOUND_VERTEX_BUFFERS];
 
 		UINT32 endSlot = 0;
 		UINT32 startSlot = BS_MAX_BOUND_VERTEX_BUFFERS;
@@ -239,7 +239,7 @@ namespace bs { namespace ct
 		allBuffers[1] = morphVertices;
 		rapi.setVertexBuffers(startSlot, allBuffers, endSlot - startSlot + 1);
 
-		SPtr<IndexBufferCore> indexBuffer = mesh->getIndexBuffer();
+		SPtr<IndexBuffer> indexBuffer = mesh->getIndexBuffer();
 		rapi.setIndexBuffer(indexBuffer);
 
 		rapi.setDrawOperation(subMesh.drawOp);
@@ -251,7 +251,7 @@ namespace bs { namespace ct
 		mesh->_notifyUsedOnGPU();
 	}
 
-	void RendererUtility::blit(const SPtr<TextureCore>& texture, const Rect2I& area)
+	void RendererUtility::blit(const SPtr<Texture>& texture, const Rect2I& area)
 	{
 		auto& texProps = texture->getProperties();
 		SPtr<Material> mat;
@@ -367,7 +367,7 @@ namespace bs { namespace ct
 		// Do nothing
 	}
 
-	void BlitMat::setParameters(const SPtr<TextureCore>& source)
+	void BlitMat::setParameters(const SPtr<Texture>& source)
 	{
 		mSource.set(source);
 		mMaterial->updateParamsSet(mParamsSet);
@@ -384,7 +384,7 @@ namespace bs { namespace ct
 		// Do nothing
 	}
 
-	void ResolveMat::setParameters(const SPtr<TextureCore>& source)
+	void ResolveMat::setParameters(const SPtr<Texture>& source)
 	{
 		mSource.set(source);
 

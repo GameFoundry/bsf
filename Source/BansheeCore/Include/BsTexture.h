@@ -208,7 +208,7 @@ namespace bs
 		const TextureProperties& getProperties() const { return mProperties; }
 
 		/**	Retrieves a core implementation of a texture usable only from the core thread. */
-		SPtr<ct::TextureCore> getCore() const;
+		SPtr<ct::Texture> getCore() const;
 
 		/************************************************************************/
 		/* 								STATICS		                     		*/
@@ -302,15 +302,15 @@ namespace bs
 	 */
 
 	/**
-	 * Core thread version of a Texture.
+	 * Core thread version of a bs::Texture.
 	 *
 	 * @note	Core thread.
 	 */
-	class BS_CORE_EXPORT TextureCore : public CoreObject
+	class BS_CORE_EXPORT Texture : public CoreObject
 	{
 	public:
-		TextureCore(const TEXTURE_DESC& desc, const SPtr<PixelData>& initData, GpuDeviceFlags deviceMask);
-		virtual ~TextureCore() {}
+		Texture(const TEXTURE_DESC& desc, const SPtr<PixelData>& initData, GpuDeviceFlags deviceMask);
+		virtual ~Texture() {}
 
 
 		/** @copydoc CoreObject::initialize */
@@ -354,7 +354,7 @@ namespace bs
 		 * @param[in]	dstMipLevel			Mip level to copy to.
 		 * @param[in]	queueIdx			Device queue to perform the copy operation on. See @ref queuesDoc.
 		 */
-		void copy(const SPtr<TextureCore>& target, UINT32 srcFace = 0, UINT32 srcMipLevel = 0, UINT32 dstFace = 0,
+		void copy(const SPtr<Texture>& target, UINT32 srcFace = 0, UINT32 srcMipLevel = 0, UINT32 dstFace = 0,
 			UINT32 dstMipLevel = 0, UINT32 queueIdx = 0);
 
 		/**
@@ -391,16 +391,16 @@ namespace bs
 		/************************************************************************/
 
 		/** 
-		 * @copydoc Texture::create(const TEXTURE_DESC&) 
+		 * @copydoc bs::Texture::create(const TEXTURE_DESC&) 
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the object be created on.
 		 */
-		static SPtr<TextureCore> create(const TEXTURE_DESC& desc, GpuDeviceFlags deviceMask = GDF_DEFAULT);
+		static SPtr<Texture> create(const TEXTURE_DESC& desc, GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
 		/** 
-		 * @copydoc Texture::create(const SPtr<PixelData>&, int, bool) 
+		 * @copydoc bs::Texture::create(const SPtr<PixelData>&, int, bool) 
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the object be created on.
 		 */
-		static SPtr<TextureCore> create(const SPtr<PixelData>& pixelData, int usage = TU_DEFAULT, 
+		static SPtr<Texture> create(const SPtr<PixelData>& pixelData, int usage = TU_DEFAULT, 
 			bool hwGammaCorrection = false, GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
 		/************************************************************************/
@@ -413,7 +413,7 @@ namespace bs
 		 *
 		 * @note	Core thread only.
 		 */
-		static SPtr<TextureView> requestView(const SPtr<TextureCore>& texture, UINT32 mostDetailMip, UINT32 numMips,
+		static SPtr<TextureView> requestView(const SPtr<Texture>& texture, UINT32 mostDetailMip, UINT32 numMips,
 			UINT32 firstArraySlice, UINT32 numArraySlices, GpuViewUsage usage);
 
 		/**
@@ -424,13 +424,13 @@ namespace bs
 		static void releaseView(const SPtr<TextureView>& view);
 
 		/** Returns a plain white texture. */
-		static SPtr<TextureCore> WHITE;
+		static SPtr<Texture> WHITE;
 
 		/** Returns a plain black texture. */
-		static SPtr<TextureCore> BLACK;
+		static SPtr<Texture> BLACK;
 
 		/** Returns a plain normal map texture with normal pointing up (in Y direction). */
-		static SPtr<TextureCore> NORMAL;
+		static SPtr<Texture> NORMAL;
 	protected:
 		/** @copydoc lock */
 		virtual PixelData lockImpl(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0, UINT32 deviceIdx = 0,
@@ -441,7 +441,7 @@ namespace bs
 
 		/** @copydoc copy */
 		virtual void copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 dstFace, UINT32 dstMipLevel, 
-			const SPtr<TextureCore>& target, UINT32 queueIdx = 0) = 0;
+			const SPtr<Texture>& target, UINT32 queueIdx = 0) = 0;
 
 		/** @copydoc readData */
 		virtual void readDataImpl(PixelData& dest, UINT32 mipLevel = 0, UINT32 face = 0, UINT32 deviceIdx = 0,
@@ -456,7 +456,7 @@ namespace bs
 		/************************************************************************/
 
 		/**	Creates a new empty/undefined texture view. */
-		virtual SPtr<TextureView> createView(const SPtr<TextureCore>& texture, const TEXTURE_VIEW_DESC& desc);
+		virtual SPtr<TextureView> createView(const SPtr<Texture>& texture, const TEXTURE_VIEW_DESC& desc);
 
 		/**
 		 * Releases all internal texture view references. Views won't get destroyed if there are external references still 

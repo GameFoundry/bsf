@@ -133,27 +133,27 @@ namespace bs
 		{
 			SPtr<ct::Pass> curPass = technique->getPass(i);
 
-			SPtr<ct::GpuProgramCore> vertProgram = curPass->getVertexProgram();
+			SPtr<ct::GpuProgram> vertProgram = curPass->getVertexProgram();
 			if (vertProgram)
 				allParamDescs.push_back(vertProgram->getParamDesc());
 
-			SPtr<ct::GpuProgramCore> fragProgram = curPass->getFragmentProgram();
+			SPtr<ct::GpuProgram> fragProgram = curPass->getFragmentProgram();
 			if (fragProgram)
 				allParamDescs.push_back(fragProgram->getParamDesc());
 
-			SPtr<ct::GpuProgramCore> geomProgram = curPass->getGeometryProgram();
+			SPtr<ct::GpuProgram> geomProgram = curPass->getGeometryProgram();
 			if (geomProgram)
 				allParamDescs.push_back(geomProgram->getParamDesc());
 
-			SPtr<ct::GpuProgramCore> hullProgram = curPass->getHullProgram();
+			SPtr<ct::GpuProgram> hullProgram = curPass->getHullProgram();
 			if (hullProgram)
 				allParamDescs.push_back(hullProgram->getParamDesc());
 
-			SPtr<ct::GpuProgramCore> domainProgram = curPass->getDomainProgram();
+			SPtr<ct::GpuProgram> domainProgram = curPass->getDomainProgram();
 			if (domainProgram)
 				allParamDescs.push_back(domainProgram->getParamDesc());
 
-			SPtr<ct::GpuProgramCore> computeProgram = curPass->getComputeProgram();
+			SPtr<ct::GpuProgram> computeProgram = curPass->getComputeProgram();
 			if (computeProgram)
 				allParamDescs.push_back(computeProgram->getParamDesc());
 		}

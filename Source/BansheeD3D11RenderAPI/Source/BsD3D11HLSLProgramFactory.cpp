@@ -20,9 +20,9 @@ namespace bs { namespace ct
         return LANGUAGE_NAME;
     }
 
-	SPtr<GpuProgramCore> D3D11HLSLProgramFactory::create(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
+	SPtr<GpuProgram> D3D11HLSLProgramFactory::create(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
     {
-		SPtr<GpuProgramCore> gpuProg;
+		SPtr<GpuProgram> gpuProg;
 
 		switch (desc.type)
 		{
@@ -58,9 +58,9 @@ namespace bs { namespace ct
 		return gpuProg;
     }
 
-	SPtr<GpuProgramCore> D3D11HLSLProgramFactory::create(GpuProgramType type, GpuDeviceFlags deviceMask)
+	SPtr<GpuProgram> D3D11HLSLProgramFactory::create(GpuProgramType type, GpuDeviceFlags deviceMask)
 	{
-		SPtr<GpuProgramCore> gpuProg;
+		SPtr<GpuProgram> gpuProg;
 
 		GPU_PROGRAM_DESC desc;
 		desc.type = type;

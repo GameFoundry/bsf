@@ -15,7 +15,7 @@ namespace bs { namespace ct
 {
 	GLTexture::GLTexture(GLSupport& support, const TEXTURE_DESC& desc, const SPtr<PixelData>& initialData, 
 		GpuDeviceFlags deviceMask)
-		: TextureCore(desc, initialData, deviceMask),
+		: Texture(desc, initialData, deviceMask),
 		mTextureID(0), mGLFormat(0), mInternalFormat(PF_UNKNOWN), mGLSupport(support)
 	{
 		assert((deviceMask == GDF_DEFAULT || deviceMask == GDF_PRIMARY) && "Multiple GPUs not supported natively on OpenGL.");
@@ -165,7 +165,7 @@ namespace bs { namespace ct
 		createSurfaceList();
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_Texture);
-		TextureCore::initialize();
+		Texture::initialize();
 	}
 
     GLenum GLTexture::getGLTextureTarget() const
@@ -286,7 +286,7 @@ namespace bs { namespace ct
 	}
 
 	void GLTexture::copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel,
-								 const SPtr<TextureCore>& target, UINT32 queueIdx)
+								 const SPtr<Texture>& target, UINT32 queueIdx)
 	{
 		GLTexture* destTex = static_cast<GLTexture*>(target.get());
 		GLTextureBuffer *src = static_cast<GLTextureBuffer*>(getBuffer(srcFace, srcMipLevel).get());

@@ -49,14 +49,14 @@ namespace bs
 		/**	Renderer information specific to a single render target. */
 		struct RendererRenderTarget
 		{
-			SPtr<RenderTargetCore> target;
-			Vector<const CameraCore*> cameras;
+			SPtr<RenderTarget> target;
+			Vector<const Camera*> cameras;
 		};
 
 		/**	Renderer information specific to a single light. */
 		struct RendererLight
 		{
-			LightCore* internal;
+			Light* internal;
 		};
 
 		/** Renderer information for a single material. */
@@ -93,31 +93,31 @@ namespace bs
 
 	private:
 		/** @copydoc Renderer::notifyCameraAdded */
-		void notifyCameraAdded(const CameraCore* camera) override;
+		void notifyCameraAdded(const Camera* camera) override;
 
 		/** @copydoc Renderer::notifyCameraUpdated */
-		void notifyCameraUpdated(const CameraCore* camera, UINT32 updateFlag) override;
+		void notifyCameraUpdated(const Camera* camera, UINT32 updateFlag) override;
 
 		/** @copydocRenderer::notifyCameraRemoved */
-		void notifyCameraRemoved(const CameraCore* camera) override;
+		void notifyCameraRemoved(const Camera* camera) override;
 
 		/** @copydoc Renderer::notifyLightAdded */
-		void notifyLightAdded(LightCore* light) override;
+		void notifyLightAdded(Light* light) override;
 
 		/** @copydoc Renderer::notifyLightUpdated */
-		void notifyLightUpdated(LightCore* light) override;
+		void notifyLightUpdated(Light* light) override;
 
 		/** @copydoc Renderer::notifyLightRemoved */
-		void notifyLightRemoved(LightCore* light) override;
+		void notifyLightRemoved(Light* light) override;
 
 		/** @copydoc Renderer::notifyRenderableAdded */
-		void notifyRenderableAdded(RenderableCore* renderable) override;
+		void notifyRenderableAdded(Renderable* renderable) override;
 
 		/** @copydoc Renderer::notifyRenderableUpdated */
-		void notifyRenderableUpdated(RenderableCore* renderable) override;
+		void notifyRenderableUpdated(Renderable* renderable) override;
 
 		/** @copydoc Renderer::notifyRenderableRemoved */
-		void notifyRenderableRemoved(RenderableCore* renderable) override;
+		void notifyRenderableRemoved(Renderable* renderable) override;
 
 		/** 
 		 * Updates (or adds) renderer specific data for the specified camera. Should be called whenever camera properties
@@ -127,7 +127,7 @@ namespace bs
 		 * @param[in]	forceRemove	If true, the camera data will be removed instead of updated.
 		 * @return					Renderer camera object that represents the camera. Null if camera was removed.
 		 */
-		RendererCamera* updateCameraData(const CameraCore* camera, bool forceRemove = false);
+		RendererCamera* updateCameraData(const Camera* camera, bool forceRemove = false);
 
 		/**
 		 * Updates the render options on the core thread.
@@ -197,7 +197,7 @@ namespace bs
 
 		// Core thread only fields
 		Vector<RendererRenderTarget> mRenderTargets;
-		UnorderedMap<const CameraCore*, RendererCamera*> mCameras;
+		UnorderedMap<const Camera*, RendererCamera*> mCameras;
 		UnorderedMap<SamplerOverrideKey, MaterialSamplerOverrides*> mSamplerOverrides;
 
 		Vector<RendererObject*> mRenderables;

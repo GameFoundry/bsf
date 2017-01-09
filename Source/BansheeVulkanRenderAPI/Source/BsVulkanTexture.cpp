@@ -384,7 +384,7 @@ namespace bs { namespace ct
 
 	VulkanTexture::VulkanTexture(const TEXTURE_DESC& desc, const SPtr<PixelData>& initialData,
 										 GpuDeviceFlags deviceMask)
-		: TextureCore(desc, initialData, deviceMask), mImages(), mDeviceMask(deviceMask), mStagingBuffer(nullptr)
+		: Texture(desc, initialData, deviceMask), mImages(), mDeviceMask(deviceMask), mStagingBuffer(nullptr)
 		, mMappedDeviceIdx(-1), mMappedGlobalQueueIdx(-1), mMappedMip(0), mMappedFace(0), mMappedRowPitch(false)
 		, mMappedSlicePitch(false), mMappedLockOptions(GBL_WRITE_ONLY), mInternalFormats()
 		, mDirectlyMappable(false), mSupportsGPUWrites(false), mIsMapped(false)
@@ -512,7 +512,7 @@ namespace bs { namespace ct
 		}
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_Texture);
-		TextureCore::initialize();
+		Texture::initialize();
 	}
 
 	VulkanImage* VulkanTexture::createImage(VulkanDevice& device, PixelFormat format)
@@ -654,7 +654,7 @@ namespace bs { namespace ct
 	}
 
 	void VulkanTexture::copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel,
-									 const SPtr<TextureCore>& target, UINT32 queueIdx)
+									 const SPtr<Texture>& target, UINT32 queueIdx)
 	{
 		VulkanTexture* other = static_cast<VulkanTexture*>(target.get());
 

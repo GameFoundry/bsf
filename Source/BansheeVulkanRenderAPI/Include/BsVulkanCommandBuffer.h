@@ -235,7 +235,7 @@ namespace bs { namespace ct
 		 * Assigns a render target the the command buffer. This render target's framebuffer and render pass will be used
 		 * when beginRenderPass() is called. Command buffer must not be currently recording a render pass.
 		 */
-		void setRenderTarget(const SPtr<RenderTargetCore>& rt, bool readOnlyDepthStencil, RenderSurfaceMask loadMask);
+		void setRenderTarget(const SPtr<RenderTarget>& rt, bool readOnlyDepthStencil, RenderSurfaceMask loadMask);
 
 		/** Clears the entirety currently bound render target. */
 		void clearRenderTarget(UINT32 buffers, const Color& color, float depth, UINT16 stencil, UINT8 targetMask);
@@ -244,13 +244,13 @@ namespace bs { namespace ct
 		void clearViewport(UINT32 buffers, const Color& color, float depth, UINT16 stencil, UINT8 targetMask);
 
 		/** Assigns a pipeline state to use for subsequent draw commands. */
-		void setPipelineState(const SPtr<GraphicsPipelineStateCore>& state);
+		void setPipelineState(const SPtr<GraphicsPipelineState>& state);
 
 		/** Assigns a pipeline state to use for subsequent dispatch commands. */
-		void setPipelineState(const SPtr<ComputePipelineStateCore>& state);
+		void setPipelineState(const SPtr<ComputePipelineState>& state);
 
 		/** Assign GPU params to the GPU programs bound by the pipeline state. */
-		void setGpuParams(const SPtr<GpuParamsCore>& gpuParams);
+		void setGpuParams(const SPtr<GpuParams>& gpuParams);
 
 		/** Sets the current viewport which determine to which portion of the render target to render to. */
 		void setViewport(const Rect2& area);
@@ -268,13 +268,13 @@ namespace bs { namespace ct
 		void setDrawOp(DrawOperationType drawOp);
 
 		/** Sets one or multiple vertex buffers that will be used for subsequent draw() or drawIndexed() calls. */
-		void setVertexBuffers(UINT32 index, SPtr<VertexBufferCore>* buffers, UINT32 numBuffers);
+		void setVertexBuffers(UINT32 index, SPtr<VertexBuffer>* buffers, UINT32 numBuffers);
 
 		/** Sets an index buffer that will be used for subsequent drawIndexed() calls. */
-		void setIndexBuffer(const SPtr<IndexBufferCore>& buffer);
+		void setIndexBuffer(const SPtr<IndexBuffer>& buffer);
 
 		/** Sets a declaration that determines how are vertex buffer contents interpreted. */
-		void setVertexDeclaration(const SPtr<VertexDeclarationCore>& decl);
+		void setVertexDeclaration(const SPtr<VertexDeclaration>& decl);
 
 		/** Executes a draw command using the currently bound graphics pipeline, vertex buffer and render target. */
 		void draw(UINT32 vertexOffset, UINT32 vertexCount, UINT32 instanceCount);
@@ -396,7 +396,7 @@ namespace bs { namespace ct
 
 		SPtr<VulkanGraphicsPipelineState> mGraphicsPipeline;
 		SPtr<VulkanComputePipelineState> mComputePipeline;
-		SPtr<VertexDeclarationCore> mVertexDecl;
+		SPtr<VertexDeclaration> mVertexDecl;
 		Rect2 mViewport;
 		Rect2I mScissor;
 		UINT32 mStencilRef;

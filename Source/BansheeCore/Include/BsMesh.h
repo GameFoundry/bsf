@@ -126,7 +126,7 @@ namespace bs
 		SPtr<MorphShapes> getMorphShapes() const { return mMorphShapes; }
 
 		/** Retrieves a core implementation of a mesh usable only from the core thread. */
-		SPtr<ct::MeshCore> getCore() const;
+		SPtr<ct::Mesh> getCore() const;
 
 		/**	Returns a dummy mesh, containing just one triangle. Don't modify the returned mesh. */
 		static HMesh dummy();
@@ -270,27 +270,27 @@ namespace bs
 	 */
 
 	/**
-	 * Core thread portion of a Mesh.
+	 * Core thread portion of a bs::Mesh.
 	 *
 	 * @note	Core thread.
 	 */
-	class BS_CORE_EXPORT MeshCore : public MeshCoreBase
+	class BS_CORE_EXPORT Mesh : public MeshBase
 	{
 	public:
-		MeshCore(const SPtr<MeshData>& initialMeshData, const MESH_DESC& desc, GpuDeviceFlags deviceMask);
+		Mesh(const SPtr<MeshData>& initialMeshData, const MESH_DESC& desc, GpuDeviceFlags deviceMask);
 
-		~MeshCore();
+		~Mesh();
 
 		/** @copydoc CoreObject::initialize */
 		void initialize() override;
 
-		/** @copydoc MeshCoreBase::getVertexData */
+		/** @copydoc MeshBase::getVertexData */
 		SPtr<VertexData> getVertexData() const override;
 
-		/** @copydoc MeshCoreBase::getIndexBuffer */
-		SPtr<IndexBufferCore> getIndexBuffer() const override;
+		/** @copydoc MeshBase::getIndexBuffer */
+		SPtr<IndexBuffer> getIndexBuffer() const override;
 
-		/** @copydoc MeshCoreBase::getVertexDesc */
+		/** @copydoc MeshBase::getVertexDesc */
 		SPtr<VertexDataDesc> getVertexDesc() const override;
 
 		/** Returns a skeleton that can be used for animating the mesh. */
@@ -342,7 +342,7 @@ namespace bs
 		 *								go over the number of vertices limited by the size.
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the object be created on.
 		 */
-		static SPtr<MeshCore> create(UINT32 numVertices, UINT32 numIndices, const SPtr<VertexDataDesc>& vertexDesc, 
+		static SPtr<Mesh> create(UINT32 numVertices, UINT32 numIndices, const SPtr<VertexDataDesc>& vertexDesc, 
 			int usage = MU_STATIC, DrawOperationType drawOp = DOT_TRIANGLE_LIST, IndexType indexType = IT_32BIT, 
 			GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
@@ -352,7 +352,7 @@ namespace bs
 		 * @param[in]	desc			Descriptor containing the properties of the mesh to create.
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the object be created on.
 		 */
-		static SPtr<MeshCore> create(const MESH_DESC& desc, GpuDeviceFlags deviceMask = GDF_DEFAULT);
+		static SPtr<Mesh> create(const MESH_DESC& desc, GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
 		/**
 		 * Creates a new mesh from an existing mesh data. Created mesh will match the vertex and index buffers described
@@ -364,7 +364,7 @@ namespace bs
 		 *								mesh data instead.
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the object be created on.
 		 */
-		static SPtr<MeshCore> create(const SPtr<MeshData>& initialData, const MESH_DESC& desc, 
+		static SPtr<Mesh> create(const SPtr<MeshData>& initialData, const MESH_DESC& desc, 
 			GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
 		/**
@@ -377,17 +377,17 @@ namespace bs
 		 *								option is a triangle strip, where three indices represent a single triangle.
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the object be created on.
 		 */
-		static SPtr<MeshCore> create(const SPtr<MeshData>& initialData, int usage = MU_STATIC,
+		static SPtr<Mesh> create(const SPtr<MeshData>& initialData, int usage = MU_STATIC,
 			DrawOperationType drawOp = DOT_TRIANGLE_LIST, GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
 	protected:
-		friend class Mesh;
+		friend class bs::Mesh;
 
 		/** Updates bounds by calculating them from the vertices in the provided mesh data object. */
 		void updateBounds(const MeshData& meshData);
 
 		SPtr<VertexData> mVertexData;
-		SPtr<IndexBufferCore> mIndexBuffer;
+		SPtr<IndexBuffer> mIndexBuffer;
 
 		SPtr<VertexDataDesc> mVertexDesc;
 		int mUsage;

@@ -13,28 +13,28 @@ namespace bs { namespace ct
 	 */
 
 	/** Vulkan implementation of GpuParams, containing resource descriptors for all shader stages. */
-	class VulkanGpuParams : public GpuParamsCore
+	class VulkanGpuParams : public GpuParams
 	{
 	public:
 		~VulkanGpuParams();
 
-		/** @copydoc GpuParamsCore::setParamBlockBuffer(UINT32, UINT32, const ParamsBufferType&) */
-		void setParamBlockBuffer(UINT32 set, UINT32 slot, const SPtr<GpuParamBlockBufferCore>& paramBlockBuffer) override;
+		/** @copydoc GpuParams::setParamBlockBuffer(UINT32, UINT32, const ParamsBufferType&) */
+		void setParamBlockBuffer(UINT32 set, UINT32 slot, const SPtr<GpuParamBlockBuffer>& paramBlockBuffer) override;
 
-		/** @copydoc GpuParamsCore::setTexture */
-		void setTexture(UINT32 set, UINT32 slot, const SPtr<TextureCore>& texture) override;
+		/** @copydoc GpuParams::setTexture */
+		void setTexture(UINT32 set, UINT32 slot, const SPtr<Texture>& texture) override;
 
-		/** @copydoc GpuParamsCore::setLoadStoreTexture */
-		void setLoadStoreTexture(UINT32 set, UINT32 slot, const SPtr<TextureCore>& texture,
+		/** @copydoc GpuParams::setLoadStoreTexture */
+		void setLoadStoreTexture(UINT32 set, UINT32 slot, const SPtr<Texture>& texture,
 			const TextureSurface& surface) override;
 
-		/** @copydoc GpuParamsCore::setBuffer */
-		void setBuffer(UINT32 set, UINT32 slot, const SPtr<GpuBufferCore>& buffer) override;
+		/** @copydoc GpuParams::setBuffer */
+		void setBuffer(UINT32 set, UINT32 slot, const SPtr<GpuBuffer>& buffer) override;
 
-		/** @copydoc GpuParamsCore::setSamplerState */
-		void setSamplerState(UINT32 set, UINT32 slot, const SPtr<SamplerStateCore>& sampler) override;
+		/** @copydoc GpuParams::setSamplerState */
+		void setSamplerState(UINT32 set, UINT32 slot, const SPtr<SamplerState>& sampler) override;
 
-		/** @copydoc GpuParamsCore::setLoadStoreSurface */
+		/** @copydoc GpuParams::setLoadStoreSurface */
 		void setLoadStoreSurface(UINT32 set, UINT32 slot, const TextureSurface& surface) override;
 
 		/** Returns the total number of descriptor sets used by this object. */
@@ -89,9 +89,9 @@ namespace bs { namespace ct
 
 		friend class VulkanHardwareBufferManager;
 
-		VulkanGpuParams(const SPtr<GpuPipelineParamInfoCore>& paramInfo, GpuDeviceFlags deviceMask);
+		VulkanGpuParams(const SPtr<GpuPipelineParamInfo>& paramInfo, GpuDeviceFlags deviceMask);
 
-		/** @copydoc GpuParamsCore::initialize */
+		/** @copydoc GpuParams::initialize */
 		void initialize() override;
 
 		PerDeviceData mPerDeviceData[BS_MAX_DEVICES];

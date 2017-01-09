@@ -36,7 +36,7 @@ namespace bs
 
 	protected:
 		/** @copydoc RenderWindowManager::createInternal */
-		SPtr<RenderWindowCore> createInternal(RENDER_WINDOW_DESC& desc, UINT32 windowId) override;
+		SPtr<RenderWindow> createInternal(RENDER_WINDOW_DESC& desc, UINT32 windowId) override;
 
 	private:
 		D3D11RenderAPI* mRenderSystem;

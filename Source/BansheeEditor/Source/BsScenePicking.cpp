@@ -174,7 +174,7 @@ namespace bs
 
 		UINT32 firstGizmoIdx = (UINT32)pickData.size();
 
-		SPtr<ct::RenderTargetCore> target = cam->getViewport()->getTarget()->getCore();
+		SPtr<ct::RenderTarget> target = cam->getViewport()->getTarget()->getCore();
 		gCoreThread().queueCommand(std::bind(&ct::ScenePicking::corePickingBegin, mCore, target,
 			cam->getViewport()->getNormArea(), std::cref(pickData), position, area));
 
@@ -257,14 +257,14 @@ namespace bs
 		bs_delete(this);
 	}
 
-	void ScenePicking::corePickingBegin(const SPtr<RenderTargetCore>& target, const Rect2& viewportArea,
+	void ScenePicking::corePickingBegin(const SPtr<RenderTarget>& target, const Rect2& viewportArea,
 		const bs::ScenePicking::RenderableSet& renderables, const Vector2I& position, const Vector2I& area)
 	{
 		RenderAPI& rs = RenderAPI::instance();
 
-		SPtr<RenderTextureCore> rtt = std::static_pointer_cast<RenderTextureCore>(target);
+		SPtr<RenderTexture> rtt = std::static_pointer_cast<RenderTexture>(target);
 
-		SPtr<TextureCore> outputTexture = rtt->getColorTexture(0);
+		SPtr<Texture> outputTexture = rtt->getColorTexture(0);
 		TextureProperties outputTextureProperties = outputTexture->getProperties();
 
 		TEXTURE_DESC normalTexDesc;
@@ -274,8 +274,8 @@ namespace bs
 		normalTexDesc.format = PF_R8G8B8A8;
 		normalTexDesc.usage = TU_RENDERTARGET;
 
-		SPtr<TextureCore> normalsTexture = TextureCore::create(normalTexDesc);
-		SPtr<TextureCore> depthTexture = rtt->getDepthStencilTexture();
+		SPtr<Texture> normalsTexture = Texture::create(normalTexDesc);
+		SPtr<Texture> depthTexture = rtt->getDepthStencilTexture();
 
 		RENDER_TEXTURE_DESC pickingMRT;
 		pickingMRT.colorSurfaces[0].face = 0;
@@ -286,7 +286,7 @@ namespace bs
 		pickingMRT.depthStencilSurface.face = 0;
 		pickingMRT.depthStencilSurface.texture = depthTexture;
 		
-		mPickingTexture = RenderTextureCore::create(pickingMRT);
+		mPickingTexture = RenderTexture::create(pickingMRT);
 
 		rs.setRenderTarget(mPickingTexture);
 		rs.setViewport(viewportArea);
@@ -324,7 +324,7 @@ namespace bs
 			else
 				paramsSet = mParamSets[typeIdx][renderableIdx];
 
-			SPtr<GpuParamBlockBufferCore> paramBuffer;
+			SPtr<GpuParamBlockBuffer> paramBuffer;
 			if (idx >= mParamBuffers.size())
 			{
 				paramBuffer = gPickingParamBlockDef.createBuffer();
@@ -377,7 +377,7 @@ namespace bs
 		bs_stack_free(renderableIndices);
 	}
 
-	void ScenePicking::corePickingEnd(const SPtr<RenderTargetCore>& target, const Rect2& viewportArea, 
+	void ScenePicking::corePickingEnd(const SPtr<RenderTarget>& target, const Rect2& viewportArea, 
 		const Vector2I& position, const Vector2I& area, bool gatherSnapData, AsyncOp& asyncOp)
 	{
 		const RenderTargetProperties& rtProps = target->getProperties();
@@ -391,9 +391,9 @@ namespace bs
 			BS_EXCEPT(NotImplementedException, "Picking is not supported on render windows as framebuffer readback methods aren't implemented");
 		}
 
-		SPtr<TextureCore> outputTexture = mPickingTexture->getColorTexture(0);
-		SPtr<TextureCore> normalsTexture = mPickingTexture->getColorTexture(1);
-		SPtr<TextureCore> depthTexture = mPickingTexture->getDepthStencilTexture();
+		SPtr<Texture> outputTexture = mPickingTexture->getColorTexture(0);
+		SPtr<Texture> normalsTexture = mPickingTexture->getColorTexture(1);
+		SPtr<Texture> depthTexture = mPickingTexture->getDepthStencilTexture();
 
 		if (position.x < 0 || position.x >= (INT32)outputTexture->getProperties().getWidth() ||
 			position.y < 0 || position.y >= (INT32)outputTexture->getProperties().getHeight())

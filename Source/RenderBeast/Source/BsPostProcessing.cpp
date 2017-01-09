@@ -25,10 +25,10 @@ namespace bs { namespace ct
 		// Do nothing
 	}
 
-	void DownsampleMat::execute(const SPtr<RenderTextureCore>& target, PostProcessInfo& ppInfo)
+	void DownsampleMat::execute(const SPtr<RenderTexture>& target, PostProcessInfo& ppInfo)
 	{
 		// Set parameters
-		SPtr<TextureCore> colorTexture = target->getColorTexture(0);
+		SPtr<Texture> colorTexture = target->getColorTexture(0);
 		mInputTexture.set(colorTexture);
 
 		const RenderTextureProperties& rtProps = target->getProperties();
@@ -72,7 +72,7 @@ namespace bs { namespace ct
 		mParamBuffer = gEyeAdaptHistogramParamDef.createBuffer();
 		mParamsSet->setParamBlockBuffer("Input", mParamBuffer);
 
-		SPtr<GpuParamsCore> params = mParamsSet->getGpuParams();
+		SPtr<GpuParams> params = mParamsSet->getGpuParams();
 		params->getTextureParam(GPT_COMPUTE_PROGRAM, "gSceneColorTex", mSceneColor);
 		params->getLoadStoreTextureParam(GPT_COMPUTE_PROGRAM, "gOutputTex", mOutputTex);
 	}
@@ -88,7 +88,7 @@ namespace bs { namespace ct
 	void EyeAdaptHistogramMat::execute(PostProcessInfo& ppInfo)
 	{
 		// Set parameters
-		SPtr<RenderTextureCore> target = ppInfo.downsampledSceneTex->renderTexture;
+		SPtr<RenderTexture> target = ppInfo.downsampledSceneTex->renderTexture;
 		mSceneColor.set(ppInfo.downsampledSceneTex->texture);
 
 		const RenderTextureProperties& props = target->getProperties();
@@ -125,7 +125,7 @@ namespace bs { namespace ct
 		mOutput = nullptr;
 	}
 
-	Vector2I EyeAdaptHistogramMat::getThreadGroupCount(const SPtr<RenderTextureCore>& target)
+	Vector2I EyeAdaptHistogramMat::getThreadGroupCount(const SPtr<RenderTexture>& target)
 	{
 		const UINT32 texelsPerThreadGroupX = THREAD_GROUP_SIZE_X * LOOP_COUNT_X;
 		const UINT32 texelsPerThreadGroupY = THREAD_GROUP_SIZE_Y * LOOP_COUNT_Y;
@@ -157,7 +157,7 @@ namespace bs { namespace ct
 		mParamBuffer = gEyeAdaptHistogramReduceParamDef.createBuffer();
 		mParamsSet->setParamBlockBuffer("Input", mParamBuffer);
 
-		SPtr<GpuParamsCore> params = mParamsSet->getGpuParams();
+		SPtr<GpuParams> params = mParamsSet->getGpuParams();
 		params->getTextureParam(GPT_FRAGMENT_PROGRAM, "gHistogramTex", mHistogramTex);
 		params->getTextureParam(GPT_FRAGMENT_PROGRAM, "gEyeAdaptationTex", mEyeAdaptationTex);
 	}
@@ -173,12 +173,12 @@ namespace bs { namespace ct
 		mHistogramTex.set(ppInfo.histogramTex->texture);
 
 		SPtr<PooledRenderTexture> eyeAdaptationRT = ppInfo.eyeAdaptationTex[ppInfo.lastEyeAdaptationTex];
-		SPtr<TextureCore> eyeAdaptationTex;
+		SPtr<Texture> eyeAdaptationTex;
 
 		if (eyeAdaptationRT != nullptr) // Could be that this is the first run
 			eyeAdaptationTex = eyeAdaptationRT->texture;
 		else
-			eyeAdaptationTex = TextureCore::WHITE;
+			eyeAdaptationTex = Texture::WHITE;
 
 		mEyeAdaptationTex.set(eyeAdaptationTex);
 
@@ -297,7 +297,7 @@ namespace bs { namespace ct
 		mParamsSet->setParamBlockBuffer("Input", mParamBuffer);
 		mParamsSet->setParamBlockBuffer("WhiteBalanceInput", mWhiteBalanceParamBuffer);
 
-		SPtr<GpuParamsCore> params = mParamsSet->getGpuParams();
+		SPtr<GpuParams> params = mParamsSet->getGpuParams();
 		params->getLoadStoreTextureParam(GPT_COMPUTE_PROGRAM, "gOutputTex", mOutputTex);
 	}
 
@@ -370,7 +370,7 @@ namespace bs { namespace ct
 		mParamBuffer = gTonemappingParamDef.createBuffer();
 		mParamsSet->setParamBlockBuffer("Input", mParamBuffer);
 
-		SPtr<GpuParamsCore> params = mParamsSet->getGpuParams();
+		SPtr<GpuParams> params = mParamsSet->getGpuParams();
 		params->getTextureParam(GPT_VERTEX_PROGRAM, "gEyeAdaptationTex", mEyeAdaptationTex);
 		params->getTextureParam(GPT_FRAGMENT_PROGRAM, "gInputTex", mInputTex);
 
@@ -391,23 +391,23 @@ namespace bs { namespace ct
 	}
 
 	template<bool GammaOnly, bool AutoExposure>
-	void TonemappingMat<GammaOnly, AutoExposure>::execute(const SPtr<RenderTextureCore>& sceneColor, const SPtr<ViewportCore>& outputViewport,
+	void TonemappingMat<GammaOnly, AutoExposure>::execute(const SPtr<RenderTexture>& sceneColor, const SPtr<Viewport>& outputViewport,
 		PostProcessInfo& ppInfo)
 	{
 		gTonemappingParamDef.gRawGamma.set(mParamBuffer, 1.0f / ppInfo.settings->gamma);
 		gTonemappingParamDef.gManualExposureScale.set(mParamBuffer, Math::pow(2.0f, ppInfo.settings->exposureScale));
 
 		// Set parameters
-		SPtr<TextureCore> colorTexture = sceneColor->getColorTexture(0);
+		SPtr<Texture> colorTexture = sceneColor->getColorTexture(0);
 		mInputTex.set(colorTexture);
 
-		SPtr<TextureCore> colorLUT;
+		SPtr<Texture> colorLUT;
 		if(ppInfo.colorLUT != nullptr)
 			colorLUT = ppInfo.colorLUT->texture;
 
 		mColorLUT.set(colorLUT);
 
-		SPtr<TextureCore> eyeAdaptationTexture;
+		SPtr<Texture> eyeAdaptationTexture;
 		if(ppInfo.eyeAdaptationTex[ppInfo.lastEyeAdaptationTex] != nullptr)
 			eyeAdaptationTexture = ppInfo.eyeAdaptationTex[ppInfo.lastEyeAdaptationTex]->texture;
 
@@ -415,7 +415,7 @@ namespace bs { namespace ct
 
 		// Render
 		RenderAPI& rapi = RenderAPI::instance();
-		SPtr<RenderTargetCore> target = outputViewport->getTarget();
+		SPtr<RenderTarget> target = outputViewport->getTarget();
 
 		rapi.setRenderTarget(target);
 		rapi.setViewport(outputViewport->getNormArea());
@@ -430,12 +430,12 @@ namespace bs { namespace ct
 	template class TonemappingMat<true, false>;
 	template class TonemappingMat<false, false>;
 
-	void PostProcessing::postProcess(const SPtr<RenderTextureCore>& sceneColor, const CameraCore* camera, 
+	void PostProcessing::postProcess(const SPtr<RenderTexture>& sceneColor, const Camera* camera, 
 		PostProcessInfo& ppInfo, float frameDelta)
 	{
 		const StandardPostProcessSettings& settings = *ppInfo.settings;
 
-		SPtr<ViewportCore> outputViewport = camera->getViewport();
+		SPtr<Viewport> outputViewport = camera->getViewport();
 		bool hdr = camera->getFlags().isSet(CameraFlag::HDR);
 
 		if(hdr && settings.enableAutoExposure)

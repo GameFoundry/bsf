@@ -4,7 +4,7 @@ GPU programs									{#gpuPrograms}
 
 GPU programs are programmable parts of the GPU pipeline, in other literature often called shaders (Banshee uses the word shader for a higher level concept, see the [material](@ref materials) manual).
 
-GPU programs in Banshee are represented with the @ref bs::GpuProgram "GpuProgram" and @ref bs::GpuProgramCore "GpuProgramCore" classes. Both of these provide almost equivalent functionality, but the former is for use on the simulation thread, and the latter is for use on the core thread. If you are confused by the dual nature of the objects, read the [core thread](@ref coreThread) manual. 
+GPU programs in Banshee are represented with the @ref bs::GpuProgram "GpuProgram" and @ref bs::ct::GpuProgram "ct::GpuProgram" classes. Both of these provide almost equivalent functionality, but the former is for use on the simulation thread, and the latter is for use on the core thread. If you are confused by the dual nature of the objects, read the [core thread](@ref coreThread) manual. 
 
 In this manual we will focus on the simulation thread implementation, and then note the differences in the core thread version at the end.
 
@@ -43,28 +43,28 @@ There are two types of pipeline objects: @ref bs::GraphicsPipelineState "Graphic
 
 Example to create a graphics pipeline:
 ~~~~~~~~~~~~~{.cpp}
-PIPELINE_STATE_CORE_DESC desc;
+PIPELINE_STATE_DESC desc;
 desc.vertexProgram = ...
 desc.fragmentProgram = ...;
 desc.geometryProgram = ...;
 desc.hullProgram = ...;
 desc.domainProgram = ...;
 
-SPtr<GraphicsPipelineStateCore> graphicsPipeline = GraphicsPipelineStateCore::create(desc);
+SPtr<GraphicsPipelineState> graphicsPipeline = GraphicsPipelineState::create(desc);
 ~~~~~~~~~~~~~
 
 Example to create a compute pipeline:
 ~~~~~~~~~~~~~{.cpp}
-SPtr<GpuProgramCore> computeProgram = ...;
-SPtr<ComputePipelineStateCore> computePipeline = ComputePipelineStateCore::create(computeProgram);
+SPtr<GpuProgram> computeProgram = ...;
+SPtr<ComputePipelineState> computePipeline = ComputePipelineState::create(computeProgram);
 ~~~~~~~~~~~~~
 
-Once created the pipeline can be bound for rendering by calling @ref bs::RenderAPICore::setGraphicsPipeline "RenderAPICore::setGraphicsPipeline" or @ref bs::RenderAPI::setComputePipeline "RenderAPI::setComputePipeline".
+Once created the pipeline can be bound for rendering by calling @ref bs::ct::RenderAPI::setGraphicsPipeline "ct::RenderAPI::setGraphicsPipeline" or @ref bs::RenderAPI::setComputePipeline "RenderAPI::setComputePipeline".
 
 ~~~~~~~~~~~~~{.cpp}
 // Bind pipeline for use (continued from above)
 
-RenderAPICore& rapi = RenderAPICore::instance();
+RenderAPI& rapi = RenderAPI::instance();
 rapi.setGraphicsPipeline(graphicsPipeline);
 // Or: rapi.setComputePipeline(computePipeline);
 ~~~~~~~~~~~~~
@@ -104,9 +104,9 @@ As you can see we must first retrieve a handle to the parameter, and then we can
 See the [render API manual](@ref renderAPI) for more information about how to set and bind GPU program parameters.
 
 # Core thread GPU programs {#gpuPrograms_e}
-So far we have only talked about the simulation thread @ref bs::GpuProgram "GpuProgram" but have ignored the core thread @ref bs::GpuProgramCore "GpuProgramCore". The functionality between the two is mostly the same, with the major difference being that operations performed on the core thread version are immediate. So calls to @ref bs::GpuProgramCore::isCompiled() "GpuProgramCore::isCompiled" and @ref bs::GpuProgramCore::getCompileErrorMessage() "GpuProgramCore::getCompileErrorMessage" don't require any waiting.
+So far we have only talked about the simulation thread @ref bs::GpuProgram "GpuProgram" but have ignored the core thread @ref bs::ct::GpuProgram "ct::GpuProgram". The functionality between the two is mostly the same, with the major difference being that operations performed on the core thread version are immediate. So calls to @ref bs::ct::GpuProgram::isCompiled() "ct::GpuProgram::isCompiled" and @ref bs::ct::GpuProgram::getCompileErrorMessage() "ct::GpuProgram::getCompileErrorMessage" don't require any waiting.
 
-Addtionally the core thread object can provide information about vertex input declaration. Vertex input declaration is only available for vertex shaders, and it defines in what format does the GPU program expect vertices to be in. This can be useful for setting up your meshes in the valid format. Use @ref bs::GpuProgramCore::getInputDeclaration "GpuProgramCore::getInputDeclaration" to retrieve the @ref bs::VertexDeclarationCore "VertexDeclaration". Check out the [mesh](@ref meshes) manual for more information on how to use vertex declarations.
+Addtionally the core thread object can provide information about vertex input declaration. Vertex input declaration is only available for vertex shaders, and it defines in what format does the GPU program expect vertices to be in. This can be useful for setting up your meshes in the valid format. Use @ref bs::ct::GpuProgram::getInputDeclaration "ct::GpuProgram::getInputDeclaration" to retrieve the @ref bs::ct::VertexDeclaration "ct::VertexDeclaration". Check out the [mesh](@ref meshes) manual for more information on how to use vertex declarations.
 
 # OpenGL specifics {#gpuPrograms_f}
 When creating vertex inputs for a GPU program written in GLSL a set of built-in variables are provided:

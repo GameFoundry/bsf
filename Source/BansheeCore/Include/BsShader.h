@@ -61,7 +61,7 @@ namespace bs
 
 	template<bool Core> struct TSamplerStateType {};
 	template<> struct TSamplerStateType < false > { typedef SPtr<SamplerState> Type; };
-	template<> struct TSamplerStateType < true > { typedef SPtr<ct::SamplerStateCore> Type; };
+	template<> struct TSamplerStateType < true > { typedef SPtr<ct::SamplerState> Type; };
 
 	/** Structure used for initializing a shader. */
 	template<bool Core>

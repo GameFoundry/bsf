@@ -36,15 +36,15 @@ namespace bs
 	/** Descriptor structure used for initializing a GPU pipeline state. */
 	struct PIPELINE_STATE_DESC
 	{
-		SPtr<BlendStateCore> blendState;
-		SPtr<RasterizerStateCore> rasterizerState;
-		SPtr<DepthStencilStateCore> depthStencilState;
+		SPtr<BlendState> blendState;
+		SPtr<RasterizerState> rasterizerState;
+		SPtr<DepthStencilState> depthStencilState;
 
-		SPtr<GpuProgramCore> vertexProgram;
-		SPtr<GpuProgramCore> fragmentProgram;
-		SPtr<GpuProgramCore> geometryProgram;
-		SPtr<GpuProgramCore> hullProgram;
-		SPtr<GpuProgramCore> domainProgram;
+		SPtr<GpuProgram> vertexProgram;
+		SPtr<GpuProgram> fragmentProgram;
+		SPtr<GpuProgram> geometryProgram;
+		SPtr<GpuProgram> hullProgram;
+		SPtr<GpuProgram> domainProgram;
 	};
 
 	/** @} */
@@ -73,11 +73,11 @@ namespace bs
 	template<>
 	struct TGpuPipelineStateTypes < true >
 	{
-		typedef SPtr<ct::BlendStateCore> BlendStateType;
-		typedef SPtr<ct::RasterizerStateCore> RasterizerStateType;
-		typedef SPtr<ct::DepthStencilStateCore> DepthStencilStateType;
-		typedef SPtr<ct::GpuProgramCore> GpuProgramType;
-		typedef ct::GpuPipelineParamInfoCore GpuPipelineParamInfoType;
+		typedef SPtr<ct::BlendState> BlendStateType;
+		typedef SPtr<ct::RasterizerState> RasterizerStateType;
+		typedef SPtr<ct::DepthStencilState> DepthStencilStateType;
+		typedef SPtr<ct::GpuProgram> GpuProgramType;
+		typedef ct::GpuPipelineParamInfo GpuPipelineParamInfoType;
 		typedef ct::PIPELINE_STATE_DESC StateDescType;
 	};
 
@@ -172,7 +172,7 @@ namespace bs
 		 *
 		 * @note	Core thread only.
 		 */
-		SPtr<ct::GraphicsPipelineStateCore> getCore() const;
+		SPtr<ct::GraphicsPipelineState> getCore() const;
 
 		/** @copydoc RenderStateManager::createGraphicsPipelineState */
 		static SPtr<GraphicsPipelineState> create(const PIPELINE_STATE_DESC& desc);
@@ -200,7 +200,7 @@ namespace bs
 		 *
 		 * @note	Core thread only.
 		 */
-		SPtr<ct::ComputePipelineStateCore> getCore() const;
+		SPtr<ct::ComputePipelineState> getCore() const;
 
 		/** @copydoc RenderStateManager::createComputePipelineState */
 		static SPtr<ComputePipelineState> create(const SPtr<GpuProgram>& program);
@@ -221,36 +221,36 @@ namespace bs
 	 *  @{
 	 */
 
-	/** Core thread version of a GraphicsPipelineState. */
-	class BS_CORE_EXPORT GraphicsPipelineStateCore : public CoreObject, public TGraphicsPipelineState<true>
+	/** Core thread version of a bs::GraphicsPipelineState. */
+	class BS_CORE_EXPORT GraphicsPipelineState : public CoreObject, public TGraphicsPipelineState<true>
 	{
 	public:
-		GraphicsPipelineStateCore(const PIPELINE_STATE_DESC& desc, GpuDeviceFlags deviceMask);
-		virtual ~GraphicsPipelineStateCore() { }
+		GraphicsPipelineState(const PIPELINE_STATE_DESC& desc, GpuDeviceFlags deviceMask);
+		virtual ~GraphicsPipelineState() { }
 
 		/** @copydoc CoreObject::initialize() */
 		void initialize() override;
 
 		/** @copydoc RenderStateManager::createGraphicsPipelineState */
-		static SPtr<GraphicsPipelineStateCore> create(const PIPELINE_STATE_DESC& desc, 
+		static SPtr<GraphicsPipelineState> create(const PIPELINE_STATE_DESC& desc, 
 			GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
 	protected:
 		GpuDeviceFlags mDeviceMask;
 	};
 
-	/** Core thread version of a ComputePipelineState. */
-	class BS_CORE_EXPORT ComputePipelineStateCore : public CoreObject, public TComputePipelineState<true>
+	/** Core thread version of a bs::ComputePipelineState. */
+	class BS_CORE_EXPORT ComputePipelineState : public CoreObject, public TComputePipelineState<true>
 	{
 	public:
-		ComputePipelineStateCore(const SPtr<GpuProgramCore>& program, GpuDeviceFlags deviceMask);
-		virtual ~ComputePipelineStateCore() { }
+		ComputePipelineState(const SPtr<GpuProgram>& program, GpuDeviceFlags deviceMask);
+		virtual ~ComputePipelineState() { }
 
 		/** @copydoc CoreObject::initialize() */
 		void initialize() override;
 
 		/** @copydoc RenderStateManager::createComputePipelineState */
-		static SPtr<ComputePipelineStateCore> create(const SPtr<GpuProgramCore>& program,
+		static SPtr<ComputePipelineState> create(const SPtr<GpuProgram>& program,
 			GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
 	protected:

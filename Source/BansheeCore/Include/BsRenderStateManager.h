@@ -110,7 +110,7 @@ namespace bs
 				:id(id)
 			{ }
 
-			std::weak_ptr<BlendStateCore> state;
+			std::weak_ptr<BlendState> state;
 			UINT32 id;
 		};
 
@@ -125,7 +125,7 @@ namespace bs
 				:id(id)
 			{ }
 
-			std::weak_ptr<RasterizerStateCore> state;
+			std::weak_ptr<RasterizerState> state;
 			UINT32 id;
 		};
 
@@ -140,7 +140,7 @@ namespace bs
 				:id(id)
 			{ }
 
-			std::weak_ptr<DepthStencilStateCore> state;
+			std::weak_ptr<DepthStencilState> state;
 			UINT32 id;
 		};
 
@@ -151,101 +151,101 @@ namespace bs
 		 * @copydoc bs::RenderStateManager::createSamplerState 
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the object be created on.
 		 */
-		SPtr<SamplerStateCore> createSamplerState(const SAMPLER_STATE_DESC& desc, 
+		SPtr<SamplerState> createSamplerState(const SAMPLER_STATE_DESC& desc, 
 			GpuDeviceFlags deviceMask = GDF_DEFAULT) const;
 
 		/** @copydoc bs::RenderStateManager::createDepthStencilState */
-		SPtr<DepthStencilStateCore> createDepthStencilState(const DEPTH_STENCIL_STATE_DESC& desc) const;
+		SPtr<DepthStencilState> createDepthStencilState(const DEPTH_STENCIL_STATE_DESC& desc) const;
 
 		/** @copydoc bs::RenderStateManager::createRasterizerState */
-		SPtr<RasterizerStateCore> createRasterizerState(const RASTERIZER_STATE_DESC& desc) const;
+		SPtr<RasterizerState> createRasterizerState(const RASTERIZER_STATE_DESC& desc) const;
 
 		/** @copydoc bs::RenderStateManager::createBlendState */
-		SPtr<BlendStateCore> createBlendState(const BLEND_STATE_DESC& desc) const;
+		SPtr<BlendState> createBlendState(const BLEND_STATE_DESC& desc) const;
 
 		/** 
 		 * @copydoc bs::RenderStateManager::createGraphicsPipelineState 
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the object be created on.
 		 */
-		SPtr<GraphicsPipelineStateCore> createGraphicsPipelineState(const PIPELINE_STATE_DESC& desc, 
+		SPtr<GraphicsPipelineState> createGraphicsPipelineState(const PIPELINE_STATE_DESC& desc, 
 			GpuDeviceFlags deviceMask = GDF_DEFAULT) const;
 
 		/** 
 		 * @copydoc bs::RenderStateManager::createComputePipelineState 
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the object be created on.
 		 */
-		SPtr<ComputePipelineStateCore> createComputePipelineState(const SPtr<GpuProgramCore>& program,
+		SPtr<ComputePipelineState> createComputePipelineState(const SPtr<GpuProgram>& program,
 			GpuDeviceFlags deviceMask = GDF_DEFAULT) const;
 
-		/** @copydoc GpuPipelineParamInfoCore::create */
-		SPtr<GpuPipelineParamInfoCore> createPipelineParamInfo(const GPU_PIPELINE_PARAMS_DESC& desc,
+		/** @copydoc GpuPipelineParamInfo::create */
+		SPtr<GpuPipelineParamInfo> createPipelineParamInfo(const GPU_PIPELINE_PARAMS_DESC& desc,
 															   GpuDeviceFlags deviceMask = GDF_DEFAULT) const;
 
 		/** Creates an uninitialized sampler state. Requires manual initialization after creation. */
-		SPtr<SamplerStateCore> _createSamplerState(const SAMPLER_STATE_DESC& desc, 
+		SPtr<SamplerState> _createSamplerState(const SAMPLER_STATE_DESC& desc, 
 			GpuDeviceFlags deviceMask = GDF_DEFAULT) const;
 
 		/** Creates an uninitialized depth-stencil state. Requires manual initialization after creation. */
-		SPtr<DepthStencilStateCore> _createDepthStencilState(const DEPTH_STENCIL_STATE_DESC& desc) const;
+		SPtr<DepthStencilState> _createDepthStencilState(const DEPTH_STENCIL_STATE_DESC& desc) const;
 
 		/** Creates an uninitialized rasterizer state. Requires manual initialization after creation. */
-		SPtr<RasterizerStateCore> _createRasterizerState(const RASTERIZER_STATE_DESC& desc) const;
+		SPtr<RasterizerState> _createRasterizerState(const RASTERIZER_STATE_DESC& desc) const;
 
 		/** Creates an uninitialized blend state. Requires manual initialization after creation. */
-		SPtr<BlendStateCore> _createBlendState(const BLEND_STATE_DESC& desc) const;
+		SPtr<BlendState> _createBlendState(const BLEND_STATE_DESC& desc) const;
 
 		/**	Creates an uninitialized GraphicsPipelineState. Requires manual initialization after creation. */
-		virtual SPtr<GraphicsPipelineStateCore> _createGraphicsPipelineState(const PIPELINE_STATE_DESC& desc, 
+		virtual SPtr<GraphicsPipelineState> _createGraphicsPipelineState(const PIPELINE_STATE_DESC& desc, 
 			GpuDeviceFlags deviceMask = GDF_DEFAULT) const;
 
 		/**	Creates an uninitialized ComputePipelineState. Requires manual initialization after creation. */
-		virtual SPtr<ComputePipelineStateCore> _createComputePipelineState(const SPtr<GpuProgramCore>& program,
+		virtual SPtr<ComputePipelineState> _createComputePipelineState(const SPtr<GpuProgram>& program,
 																		   GpuDeviceFlags deviceMask = GDF_DEFAULT) const;
 
-		/**	Creates an uninitialized GpuPipelineParamInfoCore. Requires manual initialization after creation. */
-		virtual SPtr<GpuPipelineParamInfoCore> _createPipelineParamInfo(const GPU_PIPELINE_PARAMS_DESC& desc,
+		/**	Creates an uninitialized GpuPipelineParamInfo. Requires manual initialization after creation. */
+		virtual SPtr<GpuPipelineParamInfo> _createPipelineParamInfo(const GPU_PIPELINE_PARAMS_DESC& desc,
 																		GpuDeviceFlags deviceMask = GDF_DEFAULT) const;
 
 		/** Gets a sampler state initialized with default options. */
-		const SPtr<SamplerStateCore>& getDefaultSamplerState() const;
+		const SPtr<SamplerState>& getDefaultSamplerState() const;
 
 		/**	Gets a blend state initialized with default options. */
-		const SPtr<BlendStateCore>& getDefaultBlendState() const;
+		const SPtr<BlendState>& getDefaultBlendState() const;
 
 		/**	Gets a rasterizer state initialized with default options. */
-		const SPtr<RasterizerStateCore>& getDefaultRasterizerState() const;
+		const SPtr<RasterizerState>& getDefaultRasterizerState() const;
 
 		/**	Gets a depth stencil state initialized with default options. */
-		const SPtr<DepthStencilStateCore>& getDefaultDepthStencilState() const;
+		const SPtr<DepthStencilState>& getDefaultDepthStencilState() const;
 
 	protected:
+		friend class bs::SamplerState;
+		friend class bs::BlendState;
+		friend class bs::RasterizerState;
+		friend class bs::DepthStencilState;
 		friend class SamplerState;
 		friend class BlendState;
 		friend class RasterizerState;
 		friend class DepthStencilState;
-		friend class SamplerStateCore;
-		friend class BlendStateCore;
-		friend class RasterizerStateCore;
-		friend class DepthStencilStateCore;
 
 		/** @copydoc Module::onShutDown */
 		void onShutDown() override;
 
 		/** @copydoc createSamplerState */
-		virtual SPtr<SamplerStateCore> createSamplerStateInternal(const SAMPLER_STATE_DESC& desc, GpuDeviceFlags deviceMask) const;
+		virtual SPtr<SamplerState> createSamplerStateInternal(const SAMPLER_STATE_DESC& desc, GpuDeviceFlags deviceMask) const;
 
 		/** @copydoc createBlendState */
-		virtual SPtr<BlendStateCore> createBlendStateInternal(const BLEND_STATE_DESC& desc, UINT32 id) const;
+		virtual SPtr<BlendState> createBlendStateInternal(const BLEND_STATE_DESC& desc, UINT32 id) const;
 
 		/** @copydoc createRasterizerState */
-		virtual SPtr<RasterizerStateCore> createRasterizerStateInternal(const RASTERIZER_STATE_DESC& desc, UINT32 id) const;
+		virtual SPtr<RasterizerState> createRasterizerStateInternal(const RASTERIZER_STATE_DESC& desc, UINT32 id) const;
 
 		/** @copydoc createDepthStencilState */
-		virtual SPtr<DepthStencilStateCore> createDepthStencilStateInternal(const DEPTH_STENCIL_STATE_DESC& desc, UINT32 id) const;
+		virtual SPtr<DepthStencilState> createDepthStencilStateInternal(const DEPTH_STENCIL_STATE_DESC& desc, UINT32 id) const;
 
 	private:
 		/**	Triggered when a new sampler state is created. */
-		void notifySamplerStateCreated(const SAMPLER_STATE_DESC& desc, const SPtr<SamplerStateCore>& state) const;
+		void notifySamplerStateCreated(const SAMPLER_STATE_DESC& desc, const SPtr<SamplerState>& state) const;
 
 		/**	Triggered when a new sampler state is created. */
 		void notifyBlendStateCreated(const BLEND_STATE_DESC& desc, const CachedBlendState& state) const;
@@ -266,31 +266,31 @@ namespace bs
 		 * Attempts to find a cached sampler state corresponding to the provided descriptor. Returns null if one doesn't 
 		 * exist.
 		 */
-		SPtr<SamplerStateCore> findCachedState(const SAMPLER_STATE_DESC& desc) const;
+		SPtr<SamplerState> findCachedState(const SAMPLER_STATE_DESC& desc) const;
 
 		/**
 		 * Attempts to find a cached blend state corresponding to the provided descriptor. Returns null if one doesn't exist.
 		 */
-		SPtr<BlendStateCore> findCachedState(const BLEND_STATE_DESC& desc, UINT32& id) const;
+		SPtr<BlendState> findCachedState(const BLEND_STATE_DESC& desc, UINT32& id) const;
 
 		/**
 		 * Attempts to find a cached rasterizer state corresponding to the provided descriptor. Returns null if one doesn't 
 		 * exist.
 		 */
-		SPtr<RasterizerStateCore> findCachedState(const RASTERIZER_STATE_DESC& desc, UINT32& id) const;
+		SPtr<RasterizerState> findCachedState(const RASTERIZER_STATE_DESC& desc, UINT32& id) const;
 
 		/**
 		 * Attempts to find a cached depth-stencil state corresponding to the provided descriptor. Returns null if one 
 		 * doesn't exist.
 		 */
-		SPtr<DepthStencilStateCore> findCachedState(const DEPTH_STENCIL_STATE_DESC& desc, UINT32& id) const;
+		SPtr<DepthStencilState> findCachedState(const DEPTH_STENCIL_STATE_DESC& desc, UINT32& id) const;
 
-		mutable SPtr<SamplerStateCore> mDefaultSamplerState;
-		mutable SPtr<BlendStateCore> mDefaultBlendState;
-		mutable SPtr<RasterizerStateCore> mDefaultRasterizerState;
-		mutable SPtr<DepthStencilStateCore> mDefaultDepthStencilState;
+		mutable SPtr<SamplerState> mDefaultSamplerState;
+		mutable SPtr<BlendState> mDefaultBlendState;
+		mutable SPtr<RasterizerState> mDefaultRasterizerState;
+		mutable SPtr<DepthStencilState> mDefaultDepthStencilState;
 
-		mutable UnorderedMap<SAMPLER_STATE_DESC, std::weak_ptr<SamplerStateCore>> mCachedSamplerStates;
+		mutable UnorderedMap<SAMPLER_STATE_DESC, std::weak_ptr<SamplerState>> mCachedSamplerStates;
 		mutable UnorderedMap<BLEND_STATE_DESC, CachedBlendState> mCachedBlendStates;
 		mutable UnorderedMap<RASTERIZER_STATE_DESC, CachedRasterizerState> mCachedRasterizerStates;
 		mutable UnorderedMap<DEPTH_STENCIL_STATE_DESC, CachedDepthStencilState> mCachedDepthStencilStates;

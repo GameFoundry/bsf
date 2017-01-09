@@ -78,7 +78,7 @@ namespace bs
 		/** Structure used for initializing the renderer. */
 		struct InitData
 		{
-			SPtr<CameraCore> camera;
+			SPtr<Camera> camera;
 			SPtr<Material> material;
 		};
 
@@ -91,10 +91,10 @@ namespace bs
 		void initialize(const Any& data) override;
 
 		/**	@copydoc RendererExtension::check */
-		bool check(const CameraCore& camera) override;
+		bool check(const Camera& camera) override;
 
 		/**	@copydoc RendererExtension::render */
-		void render(const CameraCore& camera) override;
+		void render(const Camera& camera) override;
 
 		/**
 		 * Updates the grid mesh to render.
@@ -105,10 +105,10 @@ namespace bs
 		 * @param[in]	gridPlaneNormal	Normal to the plane to render the grid on. Must be one of the basis vectors
 		 *								(can't be arbitrary).						
 		 */
-		void updateData(const SPtr<MeshCore>& mesh, float spacing, bool fadeGrid, const Vector3& gridPlaneNormal);
+		void updateData(const SPtr<Mesh>& mesh, float spacing, bool fadeGrid, const Vector3& gridPlaneNormal);
 
-		SPtr<CameraCore> mCamera;
-		SPtr<MeshCore> mGridMesh;
+		SPtr<Camera> mCamera;
+		SPtr<Mesh> mGridMesh;
 		SPtr<Material> mGridMaterial;
 		SPtr<GpuParamsSet> mMaterialParams;
 		float mSpacing = 1.0f;

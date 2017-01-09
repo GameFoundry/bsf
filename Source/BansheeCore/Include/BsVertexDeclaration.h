@@ -146,13 +146,13 @@ namespace bs
 		/**
 		 * Attempts to find an element by the given semantic and semantic index. If no element can be found null is returned.
 		 */
-		virtual const VertexElement* findElementBySemantic(VertexElementSemantic sem, UINT16 index = 0) const;
+		const VertexElement* findElementBySemantic(VertexElementSemantic sem, UINT16 index = 0) const;
 
 		/**	Returns a list of all elements that use the provided source index. */
-		virtual List<VertexElement> findElementsBySource(UINT16 source) const;
+		List<VertexElement> findElementsBySource(UINT16 source) const;
 
 		/**	Returns the total size of all vertex elements using the provided source index. */
-		virtual UINT32 getVertexSize(UINT16 source) const;
+		UINT32 getVertexSize(UINT16 source) const;
 
 	protected:
 		friend class VertexDeclaration;
@@ -175,7 +175,7 @@ namespace bs
 		const VertexDeclarationProperties& getProperties() const { return mProperties; }
 
 		/**	Retrieves a core implementation of a vertex declaration usable only from the core thread. */
-		SPtr<ct::VertexDeclarationCore> getCore() const;
+		SPtr<ct::VertexDeclaration> getCore() const;
 
 		/** @copydoc HardwareBufferManager::createVertexDeclaration */
 		static SPtr<VertexDeclaration> create(const SPtr<VertexDataDesc>& desc);
@@ -215,14 +215,14 @@ namespace bs
 	 */
 
 	/**
-	 * Core thread portion of a VertexDeclaration.
+	 * Core thread portion of a bs::VertexDeclaration.
 	 *
 	 * @note	Core thread.
 	 */
-	class BS_CORE_EXPORT VertexDeclarationCore : public CoreObject
+	class BS_CORE_EXPORT VertexDeclaration : public CoreObject
     {
 	public:
-		virtual ~VertexDeclarationCore() { }
+		virtual ~VertexDeclaration() { }
 
 		/** @copydoc CoreObject::initialize */
 		void initialize() override;
@@ -237,21 +237,21 @@ namespace bs
 		 * Checks can a vertex buffer declared with this declaration be bound to a shader defined with the provided 
 		 * declaration.
 		 */
-		bool isCompatible(const SPtr<VertexDeclarationCore>& shaderDecl);
+		bool isCompatible(const SPtr<VertexDeclaration>& shaderDecl);
 
 		/**
 		 * Returns a list of vertex elements that the provided shader's vertex declaration expects but aren't present in 
 		 * this vertex declaration.
 		 */
-		Vector<VertexElement> getMissingElements(const SPtr<VertexDeclarationCore>& shaderDecl);
+		Vector<VertexElement> getMissingElements(const SPtr<VertexDeclaration>& shaderDecl);
 
 		/** @copydoc HardwareBufferManager::createVertexDeclaration */
-		static SPtr<VertexDeclarationCore> create(const SPtr<VertexDataDesc>& desc, GpuDeviceFlags deviceMask = GDF_DEFAULT);
+		static SPtr<VertexDeclaration> create(const SPtr<VertexDataDesc>& desc, GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
     protected:
 		friend class HardwareBufferManager;
 
-		VertexDeclarationCore(const List<VertexElement>& elements, GpuDeviceFlags deviceMask);
+		VertexDeclaration(const List<VertexElement>& elements, GpuDeviceFlags deviceMask);
 
 		VertexDeclarationProperties mProperties;
 		UINT32 mId;

@@ -28,7 +28,7 @@ namespace bs
 		:mRenderAPI(renderAPI)
 	{ }
 
-	SPtr<RenderWindowCore> VulkanRenderWindowManager::createInternal(RENDER_WINDOW_DESC& desc, UINT32 windowId)
+	SPtr<RenderWindow> VulkanRenderWindowManager::createInternal(RENDER_WINDOW_DESC& desc, UINT32 windowId)
 	{
 		// Create the window
 		Win32RenderWindow* renderWindow =

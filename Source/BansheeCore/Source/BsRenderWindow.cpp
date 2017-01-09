@@ -41,8 +41,8 @@ namespace bs
 
 	void RenderWindow::resize(UINT32 width, UINT32 height)
 	{
-		std::function<void(SPtr<ct::RenderWindowCore>, UINT32, UINT32)> resizeFunc =
-			[](SPtr<ct::RenderWindowCore> renderWindow, UINT32 width, UINT32 height)
+		std::function<void(SPtr<ct::RenderWindow>, UINT32, UINT32)> resizeFunc =
+			[](SPtr<ct::RenderWindow> renderWindow, UINT32 width, UINT32 height)
 		{
 			renderWindow->resize(width, height);
 		};
@@ -64,8 +64,8 @@ namespace bs
 
 	void RenderWindow::move(INT32 left, INT32 top)
 	{
-		std::function<void(SPtr<ct::RenderWindowCore>, INT32, INT32)> moveFunc =
-			[](SPtr<ct::RenderWindowCore> renderWindow, INT32 left, INT32 top)
+		std::function<void(SPtr<ct::RenderWindow>, INT32, INT32)> moveFunc =
+			[](SPtr<ct::RenderWindow> renderWindow, INT32 left, INT32 top)
 		{
 			renderWindow->move(left, top);
 		};
@@ -85,8 +85,8 @@ namespace bs
 
 	void RenderWindow::hide()
 	{
-		std::function<void(SPtr<ct::RenderWindowCore>)> hideFunc =
-			[](SPtr<ct::RenderWindowCore> renderWindow)
+		std::function<void(SPtr<ct::RenderWindow>)> hideFunc =
+			[](SPtr<ct::RenderWindow> renderWindow)
 		{
 			renderWindow->setHidden(true);
 		};
@@ -103,8 +103,8 @@ namespace bs
 
 	void RenderWindow::show()
 	{
-		std::function<void(SPtr<ct::RenderWindowCore>)> showFunc =
-			[](SPtr<ct::RenderWindowCore> renderWindow)
+		std::function<void(SPtr<ct::RenderWindow>)> showFunc =
+			[](SPtr<ct::RenderWindow> renderWindow)
 		{
 			renderWindow->setHidden(false);
 		};
@@ -121,8 +121,8 @@ namespace bs
 
 	void RenderWindow::minimize()
 	{
-		std::function<void(SPtr<ct::RenderWindowCore>)> minimizeFunc =
-			[](SPtr<ct::RenderWindowCore> renderWindow)
+		std::function<void(SPtr<ct::RenderWindow>)> minimizeFunc =
+			[](SPtr<ct::RenderWindow> renderWindow)
 		{
 			renderWindow->minimize();
 		};
@@ -139,8 +139,8 @@ namespace bs
 
 	void RenderWindow::maximize()
 	{
-		std::function<void(SPtr<ct::RenderWindowCore>)> maximizeFunc =
-			[](SPtr<ct::RenderWindowCore> renderWindow)
+		std::function<void(SPtr<ct::RenderWindow>)> maximizeFunc =
+			[](SPtr<ct::RenderWindow> renderWindow)
 		{
 			renderWindow->maximize();
 		};
@@ -157,8 +157,8 @@ namespace bs
 
 	void RenderWindow::restore()
 	{
-		std::function<void(SPtr<ct::RenderWindowCore>)> restoreFunc =
-			[](SPtr<ct::RenderWindowCore> renderWindow)
+		std::function<void(SPtr<ct::RenderWindow>)> restoreFunc =
+			[](SPtr<ct::RenderWindow> renderWindow)
 		{
 			renderWindow->restore();
 		};
@@ -175,8 +175,8 @@ namespace bs
 
 	void RenderWindow::setFullscreen(UINT32 width, UINT32 height, float refreshRate, UINT32 monitorIdx)
 	{
-		std::function<void(SPtr<ct::RenderWindowCore>, UINT32, UINT32, float, UINT32)> fullscreenFunc =
-			[](SPtr<ct::RenderWindowCore> renderWindow, UINT32 width, UINT32 height, float refreshRate, UINT32 monitorIdx)
+		std::function<void(SPtr<ct::RenderWindow>, UINT32, UINT32, float, UINT32)> fullscreenFunc =
+			[](SPtr<ct::RenderWindow> renderWindow, UINT32 width, UINT32 height, float refreshRate, UINT32 monitorIdx)
 		{
 			renderWindow->setFullscreen(width, height, refreshRate, monitorIdx);
 		};
@@ -186,8 +186,8 @@ namespace bs
 
 	void RenderWindow::setFullscreen(const VideoMode& mode)
 	{
-		std::function<void(SPtr<ct::RenderWindowCore>, const VideoMode&)> fullscreenFunc =
-			[](SPtr<ct::RenderWindowCore> renderWindow, const VideoMode& mode)
+		std::function<void(SPtr<ct::RenderWindow>, const VideoMode&)> fullscreenFunc =
+			[](SPtr<ct::RenderWindow> renderWindow, const VideoMode& mode)
 		{
 			renderWindow->setFullscreen(mode);
 		};
@@ -197,8 +197,8 @@ namespace bs
 
 	void RenderWindow::setWindowed(UINT32 width, UINT32 height)
 	{
-		std::function<void(SPtr<ct::RenderWindowCore>, UINT32, UINT32)> windowedFunc =
-			[](SPtr<ct::RenderWindowCore> renderWindow, UINT32 width, UINT32 height)
+		std::function<void(SPtr<ct::RenderWindow>, UINT32, UINT32)> windowedFunc =
+			[](SPtr<ct::RenderWindow> renderWindow, UINT32 width, UINT32 height)
 		{
 			renderWindow->setWindowed(width, height);
 		};
@@ -206,9 +206,9 @@ namespace bs
 		gCoreThread().queueCommand(std::bind(windowedFunc, getCore(), width, height));
 	}
 
-	SPtr<ct::RenderWindowCore> RenderWindow::getCore() const
+	SPtr<ct::RenderWindow> RenderWindow::getCore() const
 	{
-		return std::static_pointer_cast<ct::RenderWindowCore>(mCoreSpecific);
+		return std::static_pointer_cast<ct::RenderWindow>(mCoreSpecific);
 	}
 
 	SPtr<ct::CoreObject> RenderWindow::createCore() const
@@ -234,20 +234,20 @@ namespace bs
 
 	namespace ct
 	{
-	RenderWindowCore::RenderWindowCore(const RENDER_WINDOW_DESC& desc, UINT32 windowId)
+	RenderWindow::RenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId)
 		:mDesc(desc), mWindowId(windowId)
 	{
 
 	}
 
-	RenderWindowCore::~RenderWindowCore()
+	RenderWindow::~RenderWindow()
 	{
 		Platform::resetNonClientAreas(*this);
 
 		RenderWindowManager::instance().windowDestroyed(this);
 	}
 
-	void RenderWindowCore::setHidden(bool hidden)
+	void RenderWindow::setHidden(bool hidden)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -262,7 +262,7 @@ namespace bs
 		bs::RenderWindowManager::instance().notifySyncDataDirty(this);
 	}
 
-	void RenderWindowCore::setActive(bool state)
+	void RenderWindow::setActive(bool state)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -277,7 +277,7 @@ namespace bs
 		bs::RenderWindowManager::instance().notifySyncDataDirty(this);
 	}
 
-	void RenderWindowCore::_windowMovedOrResized()
+	void RenderWindow::_windowMovedOrResized()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -294,7 +294,7 @@ namespace bs
 		bs::RenderWindowManager::instance().notifyMovedOrResized(this);
 	}
 
-	void RenderWindowCore::_windowFocusReceived()
+	void RenderWindow::_windowFocusReceived()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -309,7 +309,7 @@ namespace bs
 		bs::RenderWindowManager::instance().notifyFocusReceived(this);
 	}
 
-	void RenderWindowCore::_windowFocusLost()
+	void RenderWindow::_windowFocusLost()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -324,7 +324,7 @@ namespace bs
 		bs::RenderWindowManager::instance().notifyFocusLost(this);
 	}
 
-	void RenderWindowCore::_notifyMaximized()
+	void RenderWindow::_notifyMaximized()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -339,7 +339,7 @@ namespace bs
 		bs::RenderWindowManager::instance().notifySyncDataDirty(this);
 	}
 
-	void RenderWindowCore::_notifyMinimized()
+	void RenderWindow::_notifyMinimized()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -354,7 +354,7 @@ namespace bs
 		bs::RenderWindowManager::instance().notifySyncDataDirty(this);
 	}
 
-	void RenderWindowCore::_notifyRestored()
+	void RenderWindow::_notifyRestored()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -369,7 +369,7 @@ namespace bs
 		bs::RenderWindowManager::instance().notifySyncDataDirty(this);
 	}
 
-	const RenderWindowProperties& RenderWindowCore::getProperties() const
+	const RenderWindowProperties& RenderWindow::getProperties() const
 	{
 		return static_cast<const RenderWindowProperties&>(getPropertiesInternal());
 	}

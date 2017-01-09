@@ -9,7 +9,7 @@
 
 namespace bs { namespace ct
 {
-	RenderTargets::RenderTargets(const SPtr<ViewportCore>& viewport, bool hdr, UINT32 numSamples)
+	RenderTargets::RenderTargets(const SPtr<Viewport>& viewport, bool hdr, UINT32 numSamples)
 		:mViewport(viewport), mNumSamples(numSamples), mHDR(hdr)
 	{
 		// Note: Consider customizable HDR format via options? e.g. smaller PF_FLOAT_R11G11B10 or larger 32-bit format
@@ -18,7 +18,7 @@ namespace bs { namespace ct
 		mNormalFormat = PF_UNORM_R10G10B10A2; // Note: Also consider customizable format (e.g. 16-bit float?)
 	}
 
-	SPtr<RenderTargets> RenderTargets::create(const SPtr<ViewportCore>& viewport, bool hdr, UINT32 numSamples)
+	SPtr<RenderTargets> RenderTargets::create(const SPtr<Viewport>& viewport, bool hdr, UINT32 numSamples)
 	{
 		return bs_shared_ptr<RenderTargets>(new (bs_alloc<RenderTargets>()) RenderTargets(viewport, hdr, numSamples));
 	}
@@ -72,7 +72,7 @@ namespace bs { namespace ct
 			gbufferDesc.depthStencilSurface.face = 0;
 			gbufferDesc.depthStencilSurface.mipLevel = 0;
 
-			mGBufferRT = RenderTextureCore::create(gbufferDesc);
+			mGBufferRT = RenderTexture::create(gbufferDesc);
 
 			RENDER_TEXTURE_DESC sceneColorDesc;
 			sceneColorDesc.colorSurfaces[0].texture = mSceneColorTex->texture;
@@ -140,17 +140,17 @@ namespace bs { namespace ct
 		rapi.setViewport(area);
 	}
 
-	SPtr<TextureCore> RenderTargets::getTextureA() const
+	SPtr<Texture> RenderTargets::getTextureA() const
 	{
 		return mAlbedoTex->texture;
 	}
 
-	SPtr<TextureCore> RenderTargets::getTextureB() const
+	SPtr<Texture> RenderTargets::getTextureB() const
 	{
 		return mNormalTex->texture;
 	}
 
-	SPtr<TextureCore> RenderTargets::getTextureDepth() const
+	SPtr<Texture> RenderTargets::getTextureDepth() const
 	{
 		return mDepthTex->texture;
 	}

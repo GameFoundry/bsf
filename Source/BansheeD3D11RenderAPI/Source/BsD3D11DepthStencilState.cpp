@@ -9,7 +9,7 @@
 namespace bs { namespace ct
 {
 	D3D11DepthStencilState::D3D11DepthStencilState(const DEPTH_STENCIL_STATE_DESC& desc, UINT32 id)
-		:DepthStencilStateCore(desc, id), mDepthStencilState(nullptr)
+		:DepthStencilState(desc, id), mDepthStencilState(nullptr)
 	{ }
 
 	D3D11DepthStencilState::~D3D11DepthStencilState()
@@ -51,6 +51,6 @@ namespace bs { namespace ct
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_DepthStencilState);
 
-		DepthStencilStateCore::createInternal();
+		DepthStencilState::createInternal();
 	}
 }}

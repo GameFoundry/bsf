@@ -279,7 +279,7 @@ namespace bs
 		 * like textures, samplers, or uniform buffers. Caller is expected to ensure the provided parameters actually
 		 * match the currently bound programs.
 		 */
-		virtual void setGpuParams(const SPtr<GpuParamsCore>& gpuParams, 
+		virtual void setGpuParams(const SPtr<GpuParams>& gpuParams, 
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**
@@ -292,7 +292,7 @@ namespace bs
 		 *
 		 * @see		GraphicsPipelineState
 		 */
-		virtual void setGraphicsPipeline(const SPtr<GraphicsPipelineStateCore>& pipelineState,
+		virtual void setGraphicsPipeline(const SPtr<GraphicsPipelineState>& pipelineState,
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**
@@ -303,7 +303,7 @@ namespace bs
 		 *									is executed immediately. Otherwise it is executed when executeCommands() is 
 		 *									called. Buffer must support graphics operations.
 		 */
-		virtual void setComputePipeline(const SPtr<ComputePipelineStateCore>& pipelineState,
+		virtual void setComputePipeline(const SPtr<ComputePipelineState>& pipelineState,
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**
@@ -352,7 +352,7 @@ namespace bs
 		 *								is executed immediately. Otherwise it is executed when executeCommands() is called.
 		 *								Buffer must support graphics operations.
 		 */
-		virtual void setVertexBuffers(UINT32 index, SPtr<VertexBufferCore>* buffers, UINT32 numBuffers, 
+		virtual void setVertexBuffers(UINT32 index, SPtr<VertexBuffer>* buffers, UINT32 numBuffers, 
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**
@@ -364,7 +364,7 @@ namespace bs
 		 *								is executed immediately. Otherwise it is executed when executeCommands() is called.
 		 *								Buffer must support graphics operations.
 		 */
-		virtual void setIndexBuffer(const SPtr<IndexBufferCore>& buffer, 
+		virtual void setIndexBuffer(const SPtr<IndexBuffer>& buffer, 
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**
@@ -376,7 +376,7 @@ namespace bs
 		 *									is executed immediately. Otherwise it is executed when executeCommands() is 
 		 *									called. Buffer must support graphics operations.
 		 */
-		virtual void setVertexDeclaration(const SPtr<VertexDeclarationCore>& vertexDeclaration, 
+		virtual void setVertexDeclaration(const SPtr<VertexDeclaration>& vertexDeclaration, 
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/** 
@@ -444,7 +444,7 @@ namespace bs
 		 *							related to the provided render target, you can exclude them from the sync mask for
 		 *							potentially better performance. You can use CommandSyncMask to generate a valid sync mask.
 		 */
-		virtual void swapBuffers(const SPtr<RenderTargetCore>& target, UINT32 syncMask = 0xFFFFFFFF) = 0;
+		virtual void swapBuffers(const SPtr<RenderTarget>& target, UINT32 syncMask = 0xFFFFFFFF) = 0;
 
 		/**
 		 * Change the render target into which we want to draw.
@@ -464,7 +464,7 @@ namespace bs
 		 *										is executed immediately. Otherwise it is executed when executeCommands() is
 		 *										called. Buffer must support graphics operations.
 		 */
-        virtual void setRenderTarget(const SPtr<RenderTargetCore>& target, bool readOnlyDepthStencil = false,
+        virtual void setRenderTarget(const SPtr<RenderTarget>& target, bool readOnlyDepthStencil = false,
 			RenderSurfaceMask loadMask = RT_NONE, const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**
@@ -582,7 +582,7 @@ namespace bs
 		 *
 		 * @note Sim thread only.
 		 */
-		SPtr<RenderWindow> initialize(const RENDER_WINDOW_DESC& primaryWindowDesc);
+		SPtr<bs::RenderWindow> initialize(const RENDER_WINDOW_DESC& primaryWindowDesc);
 
 		/** Initializes the render API system. Called before the primary render window is created. */
 		virtual void initialize();
@@ -591,7 +591,7 @@ namespace bs
 		 * Performs (optional) secondary initialization of the render API system. Called after the render window is 
 		 * created.
 		 */
-		virtual void initializeWithWindow(const SPtr<RenderWindowCore>& primaryWindow);
+		virtual void initializeWithWindow(const SPtr<RenderWindow>& primaryWindow);
 
 		/**
 		 * Shuts down the render API system and cleans up all resources.
@@ -612,7 +612,7 @@ namespace bs
 	protected:
 		friend class RenderAPIManager;
 
-		SPtr<RenderTargetCore> mActiveRenderTarget;
+		SPtr<RenderTarget> mActiveRenderTarget;
 
 		RenderAPICapabilities* mCurrentCapabilities;
 		UINT32 mNumDevices;

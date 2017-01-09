@@ -25,15 +25,15 @@ namespace bs { namespace ct
 		const String& getShadingLanguageName() const override;
 
 		/** @copydoc RenderAPI::setGraphicsPipeline */
-		void setGraphicsPipeline(const SPtr<GraphicsPipelineStateCore>& pipelineState, 
+		void setGraphicsPipeline(const SPtr<GraphicsPipelineState>& pipelineState, 
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::setComputePipeline */
-		void setComputePipeline(const SPtr<ComputePipelineStateCore>& pipelineState,
+		void setComputePipeline(const SPtr<ComputePipelineState>& pipelineState,
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::setGpuParams */
-		void setGpuParams(const SPtr<GpuParamsCore>& gpuParams, 
+		void setGpuParams(const SPtr<GpuParams>& gpuParams, 
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::clearRenderTarget */
@@ -45,7 +45,7 @@ namespace bs { namespace ct
 			UINT8 targetMask = 0xFF, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::setRenderTarget */
-		void setRenderTarget(const SPtr<RenderTargetCore>& target, bool readOnlyDepthStencil = false,
+		void setRenderTarget(const SPtr<RenderTarget>& target, bool readOnlyDepthStencil = false,
 			RenderSurfaceMask loadMask = RT_NONE, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::setViewport */
@@ -59,15 +59,15 @@ namespace bs { namespace ct
 		void setStencilRef(UINT32 value, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::setVertexBuffers */
-		void setVertexBuffers(UINT32 index, SPtr<VertexBufferCore>* buffers, UINT32 numBuffers,
+		void setVertexBuffers(UINT32 index, SPtr<VertexBuffer>* buffers, UINT32 numBuffers,
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::setIndexBuffer */
-		void setIndexBuffer(const SPtr<IndexBufferCore>& buffer, 
+		void setIndexBuffer(const SPtr<IndexBuffer>& buffer, 
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::setVertexDeclaration */
-		void setVertexDeclaration(const SPtr<VertexDeclarationCore>& vertexDeclaration,
+		void setVertexDeclaration(const SPtr<VertexDeclaration>& vertexDeclaration,
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::setDrawOperation */
@@ -87,7 +87,7 @@ namespace bs { namespace ct
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::swapBuffers() */
-		void swapBuffers(const SPtr<RenderTargetCore>& target, UINT32 syncMask = 0xFFFFFFFF) override;
+		void swapBuffers(const SPtr<RenderTarget>& target, UINT32 syncMask = 0xFFFFFFFF) override;
 
 		/** @copydoc RenderAPI::addCommands() */
 		void addCommands(const SPtr<CommandBuffer>& commandBuffer, const SPtr<CommandBuffer>& secondary) override;

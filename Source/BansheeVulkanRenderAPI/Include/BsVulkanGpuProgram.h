@@ -27,7 +27,7 @@ namespace bs { namespace ct
 	};
 
 	/**	Abstraction of a Vulkan shader object. */
-	class VulkanGpuProgram : public GpuProgramCore
+	class VulkanGpuProgram : public GpuProgram
 	{
 	public:
 		virtual ~VulkanGpuProgram();
@@ -43,7 +43,7 @@ namespace bs { namespace ct
 
 		VulkanGpuProgram(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask);
 
-		/** @copydoc GpuProgramCore::initialize */
+		/** @copydoc GpuProgram::initialize */
 		void initialize() override;
 
 	private:

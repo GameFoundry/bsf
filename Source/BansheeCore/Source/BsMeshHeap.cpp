@@ -45,7 +45,7 @@ namespace bs
 
 		mMeshes[meshIdx] = transientMeshPtr;
 
-		queueGpuCommand(getCore(), std::bind(&ct::MeshHeapCore::alloc, getCore().get(), transientMeshPtr->getCore(), meshData));
+		queueGpuCommand(getCore(), std::bind(&ct::MeshHeap::alloc, getCore().get(), transientMeshPtr->getCore(), meshData));
 
 		return transientMeshPtr;
 	}
@@ -59,20 +59,20 @@ namespace bs
 		mesh->markAsDestroyed();
 		mMeshes.erase(iterFind);
 
-		queueGpuCommand(getCore(), std::bind(&ct::MeshHeapCore::dealloc, getCore().get(), mesh->getCore()));
+		queueGpuCommand(getCore(), std::bind(&ct::MeshHeap::dealloc, getCore().get(), mesh->getCore()));
 	}
 
-	SPtr<ct::MeshHeapCore> MeshHeap::getCore() const
+	SPtr<ct::MeshHeap> MeshHeap::getCore() const
 	{
-		return std::static_pointer_cast<ct::MeshHeapCore>(mCoreSpecific);
+		return std::static_pointer_cast<ct::MeshHeap>(mCoreSpecific);
 	}
 
 	SPtr<ct::CoreObject> MeshHeap::createCore() const
 	{
-		ct::MeshHeapCore* obj = new (bs_alloc<ct::MeshHeapCore>()) ct::MeshHeapCore(mNumVertices, mNumIndices,
+		ct::MeshHeap* obj = new (bs_alloc<ct::MeshHeap>()) ct::MeshHeap(mNumVertices, mNumIndices,
 			mVertexDesc, mIndexType, GDF_DEFAULT);
 
-		SPtr<ct::MeshHeapCore> corePtr = bs_shared_ptr<ct::MeshHeapCore>(obj);
+		SPtr<ct::MeshHeap> corePtr = bs_shared_ptr<ct::MeshHeap>(obj);
 		obj->_setThisPtr(corePtr);
 
 		return corePtr;
@@ -80,9 +80,9 @@ namespace bs
 
 	namespace ct
 	{
-	const float MeshHeapCore::GrowPercent = 1.5f;
+	const float MeshHeap::GrowPercent = 1.5f;
 
-	MeshHeapCore::MeshHeapCore(UINT32 numVertices, UINT32 numIndices,
+	MeshHeap::MeshHeap(UINT32 numVertices, UINT32 numIndices,
 		const SPtr<VertexDataDesc>& vertexDesc, IndexType indexType, GpuDeviceFlags deviceMask)
 		: mNumVertices(numVertices), mNumIndices(numIndices), mCPUIndexData(nullptr), mVertexDesc(vertexDesc)
 		, mIndexType(indexType), mNextQueryId(0), mDeviceMask(deviceMask)
@@ -93,7 +93,7 @@ namespace bs
 		}
 	}
 
-	MeshHeapCore::~MeshHeapCore()
+	MeshHeap::~MeshHeap()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -108,7 +108,7 @@ namespace bs
 		mVertexDesc = nullptr;
 	}
 
-	void MeshHeapCore::initialize()
+	void MeshHeap::initialize()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -118,7 +118,7 @@ namespace bs
 		CoreObject::initialize();
 	}
 
-	void MeshHeapCore::alloc(SPtr<TransientMeshCore> mesh, const SPtr<MeshData>& meshData)
+	void MeshHeap::alloc(SPtr<TransientMesh> mesh, const SPtr<MeshData>& meshData)
 	{
 		// Find free vertex chunk and grow if needed
 		UINT32 smallestVertFit = 0;
@@ -290,7 +290,7 @@ namespace bs
 					toString(vertSize) + ". Got: " + toString(otherVertSize));
 			}
 
-			SPtr<VertexBufferCore> vertexBuffer = mVertexData->getBuffer(i);
+			SPtr<VertexBuffer> vertexBuffer = mVertexData->getBuffer(i);
 
 			UINT8* vertDest = mCPUVertexData[i] + vertChunkStart * vertSize;
 			memcpy(vertDest, meshData->getStreamData(i), meshData->getNumVertices() * vertSize);
@@ -298,7 +298,7 @@ namespace bs
 			if (RenderAPI::instance().getAPIInfo().getVertexColorFlipRequired())
 			{
 				UINT32 vertexStride = mVertexDesc->getVertexStride(i);
-				for (INT32 semanticIdx = 0; semanticIdx < VertexBuffer::MAX_SEMANTIC_IDX; semanticIdx++)
+				for (INT32 semanticIdx = 0; semanticIdx < bs::VertexBuffer::MAX_SEMANTIC_IDX; semanticIdx++)
 				{
 					if (!mVertexDesc->hasElement(VES_COLOR, semanticIdx, i))
 						continue;
@@ -334,7 +334,7 @@ namespace bs
 		mIndexBuffer->writeData(idxChunkStart * idxSize, meshData->getNumIndices() * idxSize, idxDest, BTW_NO_OVERWRITE);
 	}
 
-	void MeshHeapCore::dealloc(SPtr<TransientMeshCore> mesh)
+	void MeshHeap::dealloc(SPtr<TransientMesh> mesh)
 	{
 		auto findIter = mMeshAllocData.find(mesh->getMeshHeapId());
 		assert(findIter != mMeshAllocData.end());
@@ -356,13 +356,13 @@ namespace bs
 			allocData.useFlags = UseFlags::CPUFree;
 	}
 
-	void MeshHeapCore::growVertexBuffer(UINT32 numVertices)
+	void MeshHeap::growVertexBuffer(UINT32 numVertices)
 	{
 		mNumVertices = numVertices;
 		mVertexData = SPtr<VertexData>(bs_new<VertexData>());
 
 		mVertexData->vertexCount = mNumVertices;
-		mVertexData->vertexDeclaration = VertexDeclarationCore::create(mVertexDesc, mDeviceMask);
+		mVertexData->vertexDeclaration = VertexDeclaration::create(mVertexDesc, mDeviceMask);
 
 		// Create buffers and copy data
 		for (UINT32 i = 0; i <= mVertexDesc->getMaxStreamIdx(); i++)
@@ -377,7 +377,7 @@ namespace bs
 			desc.numVerts = mVertexData->vertexCount;
 			desc.usage = GBU_DYNAMIC;
 
-			SPtr<VertexBufferCore> vertexBuffer = VertexBufferCore::create(desc, mDeviceMask);
+			SPtr<VertexBuffer> vertexBuffer = VertexBuffer::create(desc, mDeviceMask);
 			mVertexData->setBuffer(i, vertexBuffer);
 
 			// Copy all data to the new buffer
@@ -443,7 +443,7 @@ namespace bs
 			mEmptyVertChunks.pop();
 	}
 
-	void MeshHeapCore::growIndexBuffer(UINT32 numIndices)
+	void MeshHeap::growIndexBuffer(UINT32 numIndices)
 	{
 		mNumIndices = numIndices;
 
@@ -452,7 +452,7 @@ namespace bs
 		ibDesc.numIndices = mNumIndices;
 		ibDesc.usage = GBU_DYNAMIC;
 
-		mIndexBuffer = IndexBufferCore::create(ibDesc, mDeviceMask);
+		mIndexBuffer = IndexBuffer::create(ibDesc, mDeviceMask);
 
 		const IndexBufferProperties& ibProps = mIndexBuffer->getProperties();
 
@@ -520,7 +520,7 @@ namespace bs
 			mEmptyIdxChunks.pop();
 	}
 
-	UINT32 MeshHeapCore::createEventQuery()
+	UINT32 MeshHeap::createEventQuery()
 	{
 		UINT32 idx = 0;
 		if (mFreeEventQueries.size() > 0)
@@ -541,29 +541,29 @@ namespace bs
 		return idx;
 	}
 
-	void MeshHeapCore::freeEventQuery(UINT32 idx)
+	void MeshHeap::freeEventQuery(UINT32 idx)
 	{
 		mEventQueries[idx].query->onTriggered.clear();
 		mEventQueries[idx].queryId = 0;
 		mFreeEventQueries.push(idx);
 	}
 
-	SPtr<VertexData> MeshHeapCore::getVertexData() const
+	SPtr<VertexData> MeshHeap::getVertexData() const
 	{
 		return mVertexData;
 	}
 
-	SPtr<IndexBufferCore> MeshHeapCore::getIndexBuffer() const
+	SPtr<IndexBuffer> MeshHeap::getIndexBuffer() const
 	{
 		return mIndexBuffer;
 	}
 
-	SPtr<VertexDataDesc> MeshHeapCore::getVertexDesc() const
+	SPtr<VertexDataDesc> MeshHeap::getVertexDesc() const
 	{
 		return mVertexDesc;
 	}
 
-	UINT32 MeshHeapCore::getVertexOffset(UINT32 meshId) const
+	UINT32 MeshHeap::getVertexOffset(UINT32 meshId) const
 	{
 		auto findIter = mMeshAllocData.find(meshId);
 		assert(findIter != mMeshAllocData.end());
@@ -572,7 +572,7 @@ namespace bs
 		return mVertChunks[chunkIdx].start;
 	}
 
-	UINT32 MeshHeapCore::getIndexOffset(UINT32 meshId) const
+	UINT32 MeshHeap::getIndexOffset(UINT32 meshId) const
 	{
 		auto findIter = mMeshAllocData.find(meshId);
 		assert(findIter != mMeshAllocData.end());
@@ -581,7 +581,7 @@ namespace bs
 		return mIdxChunks[chunkIdx].start;
 	}
 
-	void MeshHeapCore::notifyUsedOnGPU(UINT32 meshId)
+	void MeshHeap::notifyUsedOnGPU(UINT32 meshId)
 	{
 		auto findIter = mMeshAllocData.find(meshId);
 		assert(findIter != mMeshAllocData.end());
@@ -592,17 +592,17 @@ namespace bs
 		if (allocData.useFlags == UseFlags::GPUFree)
 			allocData.useFlags = UseFlags::Used;
 
-		SPtr<MeshHeapCore> thisPtr = std::static_pointer_cast<MeshHeapCore>(getThisPtr());
+		SPtr<MeshHeap> thisPtr = std::static_pointer_cast<MeshHeap>(getThisPtr());
 
 		QueryData& queryData = mEventQueries[allocData.eventQueryIdx];
 		queryData.queryId = mNextQueryId++;
 		queryData.query->onTriggered.clear();
-		queryData.query->onTriggered.connect(std::bind(&MeshHeapCore::queryTriggered, thisPtr, meshId, queryData.queryId));
+		queryData.query->onTriggered.connect(std::bind(&MeshHeap::queryTriggered, thisPtr, meshId, queryData.queryId));
 		queryData.query->begin();
 	}
 
 	// Note: Need to use a shared ptr here to ensure MeshHeap doesn't get deallocated sometime during this callback
-	void MeshHeapCore::queryTriggered(SPtr<MeshHeapCore> thisPtr, UINT32 meshId, UINT32 queryId)
+	void MeshHeap::queryTriggered(SPtr<MeshHeap> thisPtr, UINT32 meshId, UINT32 queryId)
 	{
 		auto findIter = thisPtr->mMeshAllocData.find(meshId);
 		assert(findIter != thisPtr->mMeshAllocData.end());
@@ -635,7 +635,7 @@ namespace bs
 		queryData.query->onTriggered.clear();
 	}
 
-	void MeshHeapCore::mergeWithNearbyChunks(UINT32 chunkVertIdx, UINT32 chunkIdxIdx)
+	void MeshHeap::mergeWithNearbyChunks(UINT32 chunkVertIdx, UINT32 chunkIdxIdx)
 	{
 		// Merge vertex chunks
 		ChunkData& vertChunk = mVertChunks[chunkVertIdx];

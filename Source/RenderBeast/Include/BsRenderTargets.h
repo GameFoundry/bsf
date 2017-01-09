@@ -29,7 +29,7 @@ namespace bs { namespace ct
 		 * @param[in]	numSamples		Number of samples to use if multisampling is active. Provide 0 or 1 if multisampled
 		 *								targets are not needed.
 		 */
-		static SPtr<RenderTargets> create(const SPtr<ViewportCore>& viewport, bool hdr, UINT32 numSamples);
+		static SPtr<RenderTargets> create(const SPtr<Viewport>& viewport, bool hdr, UINT32 numSamples);
 
 		/**
 		 * Allocates the textures required for rendering. Allocations are pooled so this is generally a fast operation
@@ -51,16 +51,16 @@ namespace bs { namespace ct
 		void bindSceneColor(bool readOnlyDepthStencil);
 
 		/** Returns the scene color render target. */
-		SPtr<RenderTextureCore> getSceneColorRT() const { return mSceneColorRT; }
+		SPtr<RenderTexture> getSceneColorRT() const { return mSceneColorRT; }
 
 		/**	Returns the first color texture of the gbuffer as a bindable texture. */
-		SPtr<TextureCore> getTextureA() const;
+		SPtr<Texture> getTextureA() const;
 
 		/**	Returns the second color texture of the gbuffer as a bindable texture. */
-		SPtr<TextureCore> getTextureB() const;
+		SPtr<Texture> getTextureB() const;
 
 		/**	Returns the depth texture of the gbuffer as a bindable texture. */
-		SPtr<TextureCore> getTextureDepth() const;
+		SPtr<Texture> getTextureDepth() const;
 
 		/**	Checks if the targets support HDR rendering. */
 		bool getHDR() const { return mHDR; }
@@ -69,7 +69,7 @@ namespace bs { namespace ct
 		UINT32 getNumSamples() const { return mNumSamples; }
 
 	private:
-		RenderTargets(const SPtr<ViewportCore>& viewport, bool hdr, UINT32 numSamples);
+		RenderTargets(const SPtr<Viewport>& viewport, bool hdr, UINT32 numSamples);
 
 		/**	Returns the width of gbuffer textures, in pixels. */
 		UINT32 getWidth() const;
@@ -77,15 +77,15 @@ namespace bs { namespace ct
 		/**	Returns the height of gbuffer textures, in pixels. */
 		UINT32 getHeight() const;
 
-		SPtr<ViewportCore> mViewport;
+		SPtr<Viewport> mViewport;
 
 		SPtr<PooledRenderTexture> mSceneColorTex;
 		SPtr<PooledRenderTexture> mAlbedoTex;
 		SPtr<PooledRenderTexture> mNormalTex;
 		SPtr<PooledRenderTexture> mDepthTex;
 
-		SPtr<RenderTextureCore> mGBufferRT;
-		SPtr<RenderTextureCore> mSceneColorRT;
+		SPtr<RenderTexture> mGBufferRT;
+		SPtr<RenderTexture> mSceneColorRT;
 
 		PixelFormat mSceneColorFormat;
 		PixelFormat mAlbedoFormat;

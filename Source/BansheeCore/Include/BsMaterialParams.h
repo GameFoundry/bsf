@@ -260,7 +260,7 @@ namespace bs
 	class BS_CORE_EXPORT MaterialParamTextureDataCore
 	{
 	public:
-		SPtr<ct::TextureCore> value;
+		SPtr<ct::Texture> value;
 		bool isLoadStore;
 		TextureSurface surface;
 	};
@@ -282,7 +282,7 @@ namespace bs
 	class BS_CORE_EXPORT MaterialParamBufferDataCore
 	{
 	public:
-		SPtr<ct::GpuBufferCore> value;
+		SPtr<ct::GpuBuffer> value;
 	};
 
 	/** Data for a single buffer parameter. */
@@ -296,7 +296,7 @@ namespace bs
 	class BS_CORE_EXPORT MaterialParamSamplerStateDataCore
 	{
 	public:
-		SPtr<ct::SamplerStateCore> value;
+		SPtr<ct::SamplerState> value;
 	};
 
 	/** Data for a single sampler state parameter. */
@@ -324,11 +324,11 @@ namespace bs
 
 	template<> struct TMaterialParamsTypes < true >
 	{
-		typedef ct::GpuParamsCore GpuParamsType;
-		typedef SPtr<ct::TextureCore> TextureType;
-		typedef SPtr<ct::GpuBufferCore> BufferType;
-		typedef SPtr<ct::SamplerStateCore> SamplerType;
-		typedef SPtr<ct::GpuParamBlockBufferCore> ParamsBufferType;
+		typedef ct::GpuParams GpuParamsType;
+		typedef SPtr<ct::Texture> TextureType;
+		typedef SPtr<ct::GpuBuffer> BufferType;
+		typedef SPtr<ct::SamplerState> SamplerType;
+		typedef SPtr<ct::GpuParamBlockBuffer> ParamsBufferType;
 		typedef MaterialParamStructDataCore StructParamDataType;
 		typedef MaterialParamTextureDataCore TextureParamDataType;
 		typedef MaterialParamBufferDataCore BufferParamDataType;

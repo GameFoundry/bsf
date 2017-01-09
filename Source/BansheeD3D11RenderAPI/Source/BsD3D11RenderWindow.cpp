@@ -81,7 +81,7 @@ namespace bs
 	namespace ct
 	{
 	D3D11RenderWindow::D3D11RenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId, D3D11Device& device, IDXGIFactory* DXGIFactory)
-		: RenderWindowCore(desc, windowId), mProperties(desc), mSyncedProperties(desc), mDevice(device), mDXGIFactory(DXGIFactory), 
+		: RenderWindow(desc, windowId), mProperties(desc), mSyncedProperties(desc), mDevice(device), mDXGIFactory(DXGIFactory), 
 		mSizing(false), mRenderTargetView(nullptr), mBackBuffer(nullptr), mSwapChain(nullptr), mDepthStencilView(nullptr), mIsChild(false), 
 		mRefreshRateNumerator(0), mRefreshRateDenominator(0), mShowOnSwap(false), mWindow(nullptr)
 	{ }
@@ -105,7 +105,7 @@ namespace bs
 		}
 
 		if (mDepthStencilView != nullptr)
-			TextureCore::releaseView(mDepthStencilView);
+			Texture::releaseView(mDepthStencilView);
 
 		destroySizeDependedD3DResources();
 	}
@@ -213,8 +213,8 @@ namespace bs
 			mSyncedProperties = props;
 		}
 
-		RenderWindowManager::instance().notifySyncDataDirty(this);
-		RenderWindowCore::initialize();
+		bs::RenderWindowManager::instance().notifySyncDataDirty(this);
+		RenderWindow::initialize();
 	}
 
 	void D3D11RenderWindow::swapBuffers(UINT32 syncMask)
@@ -252,7 +252,7 @@ namespace bs
 				mSyncedProperties.mLeft = props.mLeft;
 			}
 
-			RenderWindowManager::instance().notifySyncDataDirty(this);
+			bs::RenderWindowManager::instance().notifySyncDataDirty(this);
 		}
 	}
 
@@ -275,7 +275,7 @@ namespace bs
 				mSyncedProperties.mHeight = props.mHeight;
 			}
 
-			RenderWindowManager::instance().notifySyncDataDirty(this);
+			bs::RenderWindowManager::instance().notifySyncDataDirty(this);
 		}
 	}
 
@@ -294,7 +294,7 @@ namespace bs
 				mSwapChain->SetFullscreenState(FALSE, nullptr);
 		}
 
-		RenderWindowCore::setActive(state);
+		RenderWindow::setActive(state);
 	}
 
 	void D3D11RenderWindow::setHidden(bool hidden)
@@ -304,7 +304,7 @@ namespace bs
 		mShowOnSwap = false;
 		mWindow->setHidden(hidden);
 
-		RenderWindowCore::setHidden(hidden);
+		RenderWindow::setHidden(hidden);
 	}
 
 	void D3D11RenderWindow::minimize()
@@ -374,8 +374,8 @@ namespace bs
 			mSyncedProperties.mHeight = mProperties.mHeight;
 		}
 
-		RenderWindowManager::instance().notifySyncDataDirty(this);
-		RenderWindowManager::instance().notifyMovedOrResized(this);
+		bs::RenderWindowManager::instance().notifySyncDataDirty(this);
+		bs::RenderWindowManager::instance().notifyMovedOrResized(this);
 	}
 
 	void D3D11RenderWindow::setFullscreen(const VideoMode& mode)
@@ -416,8 +416,8 @@ namespace bs
 			mSyncedProperties.mHeight = mProperties.mHeight;
 		}
 
-		RenderWindowManager::instance().notifySyncDataDirty(this);
-		RenderWindowManager::instance().notifyMovedOrResized(this);
+		bs::RenderWindowManager::instance().notifySyncDataDirty(this);
+		bs::RenderWindowManager::instance().notifyMovedOrResized(this);
 	}
 
 	void D3D11RenderWindow::setWindowed(UINT32 width, UINT32 height)
@@ -454,8 +454,8 @@ namespace bs
 			mSyncedProperties.mHeight = mProperties.mHeight;
 		}
 
-		RenderWindowManager::instance().notifySyncDataDirty(this);
-		RenderWindowManager::instance().notifyMovedOrResized(this);
+		bs::RenderWindowManager::instance().notifySyncDataDirty(this);
+		bs::RenderWindowManager::instance().notifyMovedOrResized(this);
 	}
 
 	HWND D3D11RenderWindow::_getWindowHandle() const
@@ -506,7 +506,7 @@ namespace bs
 			return;
 		}
 
-		RenderWindowCore::getCustomAttribute(name, pData);
+		RenderWindow::getCustomAttribute(name, pData);
 	}
 
 	void D3D11RenderWindow::copyToMemory(PixelData &dst, FrameBuffer buffer)
@@ -603,7 +603,7 @@ namespace bs
 			props.mLeft = mWindow->getLeft();
 		}
 
-		RenderWindowCore::_windowMovedOrResized();
+		RenderWindow::_windowMovedOrResized();
 	}
 
 	void D3D11RenderWindow::createSwapChain()
@@ -695,7 +695,7 @@ namespace bs
 
 		if (mDepthStencilView != nullptr)
 		{
-			TextureCore::releaseView(mDepthStencilView);
+			Texture::releaseView(mDepthStencilView);
 			mDepthStencilView = nullptr;
 		}
 
@@ -709,8 +709,8 @@ namespace bs
 			texDesc.usage = TU_DEPTHSTENCIL;
 			texDesc.numSamples = getProperties().getMultisampleCount();
 
-			mDepthStencilBuffer = TextureCore::create(texDesc);
-			mDepthStencilView = TextureCore::requestView(mDepthStencilBuffer, 0, 1, 0, 1, GVU_DEPTHSTENCIL);
+			mDepthStencilBuffer = Texture::create(texDesc);
+			mDepthStencilView = Texture::requestView(mDepthStencilBuffer, 0, 1, 0, 1, GVU_DEPTHSTENCIL);
 		}
 		else
 			mDepthStencilBuffer = nullptr;

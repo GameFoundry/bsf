@@ -39,7 +39,7 @@ namespace bs
 		void setParamFrameParams(float time);
 
 	protected:
-		SPtr<GpuParamBlockBufferCore> mPerFrameParamBuffer;
+		SPtr<GpuParamBlockBuffer> mPerFrameParamBuffer;
 	};
 
 	/** Basic shader that is used when no other is available. */

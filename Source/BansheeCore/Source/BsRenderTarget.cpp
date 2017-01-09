@@ -17,8 +17,8 @@ namespace bs
 
 	void RenderTarget::setPriority(INT32 priority)
 	{
-		std::function<void(SPtr<ct::RenderTargetCore>, INT32)> windowedFunc =
-			[](SPtr<ct::RenderTargetCore> renderTarget, INT32 priority)
+		std::function<void(SPtr<ct::RenderTarget>, INT32)> windowedFunc =
+			[](SPtr<ct::RenderTarget> renderTarget, INT32 priority)
 		{
 			renderTarget->setPriority(priority);
 		};
@@ -26,9 +26,9 @@ namespace bs
 		gCoreThread().queueCommand(std::bind(windowedFunc, getCore(), priority));
 	}
 
-	SPtr<ct::RenderTargetCore> RenderTarget::getCore() const
+	SPtr<ct::RenderTarget> RenderTarget::getCore() const
 	{
-		return std::static_pointer_cast<ct::RenderTargetCore>(mCoreSpecific);
+		return std::static_pointer_cast<ct::RenderTarget>(mCoreSpecific);
 	}
 
 	const RenderTargetProperties& RenderTarget::getProperties() const
@@ -45,24 +45,24 @@ namespace bs
 
 	namespace ct
 	{
-		RenderTargetCore::RenderTargetCore()
+		RenderTarget::RenderTarget()
 		{
 
 		}
 
-		void RenderTargetCore::setPriority(INT32 priority)
+		void RenderTarget::setPriority(INT32 priority)
 		{
 			RenderTargetProperties& props = const_cast<RenderTargetProperties&>(getProperties());
 
 			props.mPriority = priority;
 		}
 
-		const RenderTargetProperties& RenderTargetCore::getProperties() const
+		const RenderTargetProperties& RenderTarget::getProperties() const
 		{
 			return getPropertiesInternal();
 		}
 
-		void RenderTargetCore::getCustomAttribute(const String& name, void* pData) const
+		void RenderTarget::getCustomAttribute(const String& name, void* pData) const
 		{
 			BS_EXCEPT(InvalidParametersException, "Attribute not found.");
 		}

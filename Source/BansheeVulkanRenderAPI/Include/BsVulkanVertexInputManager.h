@@ -78,12 +78,12 @@ namespace bs { namespace ct
 		 * @param[in]	shaderDecl	Describes the vertex element inputs expected by a vertex shader.
 		 * @return					Vertex input state description, usable by Vulkan.
 		 */
-		SPtr<VulkanVertexInput> getVertexInfo(const SPtr<VertexDeclarationCore>& vbDecl,
-											  const SPtr<VertexDeclarationCore>& shaderDecl);
+		SPtr<VulkanVertexInput> getVertexInfo(const SPtr<VertexDeclaration>& vbDecl,
+											  const SPtr<VertexDeclaration>& shaderDecl);
 
 	private:
 		/**	Creates a vertex input using the specified parameters and stores it in the input layout map. */
-		void addNew(const SPtr<VertexDeclarationCore>& vbDecl, const SPtr<VertexDeclarationCore>& shaderDecl);
+		void addNew(const SPtr<VertexDeclaration>& vbDecl, const SPtr<VertexDeclaration>& shaderDecl);
 
 		/**	Removes the least used vertex input. */
 		void removeLeastUsed();
