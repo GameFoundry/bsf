@@ -956,7 +956,7 @@ namespace bs
 
 			if (paramsIdx >= mMeshParamSets[typeIdx].size())
 			{
-				SPtr<GpuParamsSetCore> paramsSet = mMeshMaterials[typeIdx]->createParamsSet();
+				SPtr<GpuParamsSet> paramsSet = mMeshMaterials[typeIdx]->createParamsSet();
 				paramsSet->setParamBlockBuffer("Uniforms", mMeshGizmoBuffer, true);
 
 				mMeshParamSets[typeIdx].push_back(paramsSet);
@@ -970,7 +970,7 @@ namespace bs
 		{
 			iconData.paramsIdx = iconMeshIdx;
 
-			SPtr<GpuParamsSetCore> paramsSet;
+			SPtr<GpuParamsSet> paramsSet;
 			if (iconMeshIdx >= mIconParamSets.size())
 			{
 				mIconMaterial->createParamsSet();
@@ -1055,7 +1055,7 @@ namespace bs
 
 				if (paramsIdx >= mPickingParamSets[typeIdx].size())
 				{
-					SPtr<GpuParamsSetCore> paramsSet = mPickingMaterials[typeIdx]->createParamsSet();
+					SPtr<GpuParamsSet> paramsSet = mPickingMaterials[typeIdx]->createParamsSet();
 					paramsSet->setParamBlockBuffer("Uniforms", mMeshPickingParamBuffer, true);
 
 					mPickingParamSets[typeIdx].push_back(paramsSet);
@@ -1070,7 +1070,7 @@ namespace bs
 
 				if (iconData.paramsIdx >= mPickingParamSets[1].size())
 				{
-					SPtr<GpuParamsSetCore> paramsSet = mPickingMaterials[1]->createParamsSet();
+					SPtr<GpuParamsSet> paramsSet = mPickingMaterials[1]->createParamsSet();
 					paramsSet->setParamBlockBuffer("Uniforms", mIconPickingParamBuffer, true);
 
 					mPickingParamSets[1].push_back(paramsSet);
@@ -1157,7 +1157,7 @@ namespace bs
 
 			for (auto& iconData : *renderData)
 			{
-				SPtr<GpuParamsSetCore> paramsSet = mPickingParamSets[1][iconData.paramsIdx];
+				SPtr<GpuParamsSet> paramsSet = mPickingParamSets[1][iconData.paramsIdx];
 				SPtr<GpuParamsCore> params = paramsSet->getGpuParams();
 
 				GpuParamTexture textureParam;

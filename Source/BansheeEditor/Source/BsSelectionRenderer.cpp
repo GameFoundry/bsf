@@ -80,7 +80,7 @@ namespace bs
 		constexpr int numTechniques = sizeof(mTechniqueIndices) / sizeof(mTechniqueIndices[0]);
 		static_assert(numTechniques == (int)RenderableAnimType::Count, "Number of techniques doesn't match the number of possible animation types.");
 
-		SPtr<MaterialCore> mat = any_cast<SPtr<MaterialCore>>(data);
+		SPtr<Material> mat = any_cast<SPtr<Material>>(data);
 		for(UINT32 i = 0; i < numTechniques; i++)
 		{
 			RenderableAnimType animType = (RenderableAnimType)i;

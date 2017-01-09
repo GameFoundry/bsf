@@ -288,8 +288,8 @@ namespace bs
 			DockManager::DockLocation location);
 
 		SPtr<CameraCore> mCamera;
-		SPtr<MaterialCore> mMaterial;
-		SPtr<GpuParamsSetCore> mParams;
+		SPtr<Material> mMaterial;
+		SPtr<GpuParamsSet> mParams;
 		SPtr<MeshCore> mMesh;
 		DockManager::DockLocation mHighlightedDropLoc;
 		bool mShowOverlay;

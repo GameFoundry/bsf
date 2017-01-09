@@ -12,8 +12,8 @@
 
 namespace bs { namespace ct
 {
-	MaterialSamplerOverrides* SamplerOverrideUtility::generateSamplerOverrides(const SPtr<ShaderCore>& shader, 
-		const SPtr<MaterialParamsCore>& params, const SPtr<GpuParamsSetCore>& paramsSet, 
+	MaterialSamplerOverrides* SamplerOverrideUtility::generateSamplerOverrides(const SPtr<Shader>& shader, 
+		const SPtr<MaterialParams>& params, const SPtr<GpuParamsSet>& paramsSet, 
 		const SPtr<RenderBeastOptions>& options)
 	{
 		MaterialSamplerOverrides* output = nullptr;
@@ -72,7 +72,7 @@ namespace bs { namespace ct
 				UINT32 maxSamplerSet = 0;
 
 				SPtr<GpuParamsCore> paramsPtr = paramsSet->getGpuParams(i);
-				for (UINT32 j = 0; j < GpuParamsSetCore::NUM_STAGES; j++)
+				for (UINT32 j = 0; j < GpuParamsSet::NUM_STAGES; j++)
 				{
 					GpuProgramType progType = (GpuProgramType)j;
 					SPtr<GpuParamDesc> paramDesc = paramsPtr->getParamDesc(progType);
@@ -98,7 +98,7 @@ namespace bs { namespace ct
 			for (UINT32 i = 0; i < numPasses; i++)
 			{
 				SPtr<GpuParamsCore> paramsPtr = paramsSet->getGpuParams(i);
-				for (UINT32 j = 0; j < GpuParamsSetCore::NUM_STAGES; j++)
+				for (UINT32 j = 0; j < GpuParamsSet::NUM_STAGES; j++)
 				{
 					GpuProgramType progType = (GpuProgramType)j;
 					SPtr<GpuParamDesc> paramDesc = paramsPtr->getParamDesc(progType);
@@ -151,7 +151,7 @@ namespace bs { namespace ct
 					outputData += sizeof(UINT32) * slotsPerSetIter[j];
 				}
 
-				for (UINT32 j = 0; j < GpuParamsSetCore::NUM_STAGES; j++)
+				for (UINT32 j = 0; j < GpuParamsSet::NUM_STAGES; j++)
 				{
 					GpuProgramType progType = (GpuProgramType)j;
 					SPtr<GpuParamDesc> paramDesc = paramsPtr->getParamDesc(progType);

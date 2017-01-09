@@ -325,9 +325,9 @@ namespace bs
 		mMetaData = bs_shared_ptr_new<ShaderMetaData>();
 	}
 
-	SPtr<ct::ShaderCore> Shader::getCore() const
+	SPtr<ct::Shader> Shader::getCore() const
 	{
-		return std::static_pointer_cast<ct::ShaderCore>(mCoreSpecific);
+		return std::static_pointer_cast<ct::Shader>(mCoreSpecific);
 	}
 
 	void Shader::setIncludeFiles(const Vector<String>& includes)
@@ -338,12 +338,12 @@ namespace bs
 
 	SPtr<ct::CoreObject> Shader::createCore() const
 	{
-		Vector<SPtr<ct::TechniqueCore>> techniques;
+		Vector<SPtr<ct::Technique>> techniques;
 		for (auto& technique : mTechniques)
 			techniques.push_back(technique->getCore());
 
-		ct::ShaderCore* shaderCore = new (bs_alloc<ct::ShaderCore>()) ct::ShaderCore(mName, convertDesc(mDesc), techniques, mId);
-		SPtr<ct::ShaderCore> shaderCorePtr = bs_shared_ptr<ct::ShaderCore>(shaderCore);
+		ct::Shader* shaderCore = new (bs_alloc<ct::Shader>()) ct::Shader(mName, convertDesc(mDesc), techniques, mId);
+		SPtr<ct::Shader> shaderCorePtr = bs_shared_ptr<ct::Shader>(shaderCore);
 		shaderCorePtr->_setThisPtr(shaderCorePtr);
 
 		return shaderCorePtr;
@@ -455,7 +455,7 @@ namespace bs
 
 	SPtr<Shader> Shader::_createPtr(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques)
 	{
-		UINT32 id = ct::ShaderCore::mNextShaderId.fetch_add(1, std::memory_order_relaxed);
+		UINT32 id = ct::Shader::mNextShaderId.fetch_add(1, std::memory_order_relaxed);
 		assert(id < std::numeric_limits<UINT32>::max() && "Created too many shaders, reached maximum id.");
 
 		SPtr<Shader> newShader = bs_core_ptr<Shader>(new (bs_alloc<Shader>()) Shader(name, desc, techniques, id));
@@ -495,23 +495,23 @@ namespace bs
 
 	namespace ct
 	{
-	std::atomic<UINT32> ShaderCore::mNextShaderId;
+	std::atomic<UINT32> Shader::mNextShaderId;
 
-	ShaderCore::ShaderCore(const String& name, const SHADER_DESC& desc, const Vector<SPtr<TechniqueCore>>& techniques, 
+	Shader::Shader(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques, 
 		UINT32 id)
 		:TShader(name, desc, techniques, id)
 	{
 
 	}
 
-	SPtr<ShaderCore> ShaderCore::create(const String& name, const SHADER_DESC& desc, 
-		const Vector<SPtr<TechniqueCore>>& techniques)
+	SPtr<Shader> Shader::create(const String& name, const SHADER_DESC& desc, 
+		const Vector<SPtr<Technique>>& techniques)
 	{
 		UINT32 id = mNextShaderId.fetch_add(1, std::memory_order_relaxed);
 		assert(id < std::numeric_limits<UINT32>::max() && "Created too many shaders, reached maximum id.");
 
-		ShaderCore* shaderCore = new (bs_alloc<ShaderCore>()) ShaderCore(name, desc, techniques, id);
-		SPtr<ShaderCore> shaderCorePtr = bs_shared_ptr<ShaderCore>(shaderCore);
+		Shader* shaderCore = new (bs_alloc<Shader>()) Shader(name, desc, techniques, id);
+		SPtr<Shader> shaderCorePtr = bs_shared_ptr<Shader>(shaderCore);
 		shaderCorePtr->_setThisPtr(shaderCorePtr);
 		shaderCorePtr->initialize();
 

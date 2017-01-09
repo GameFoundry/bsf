@@ -101,15 +101,15 @@ namespace bs
 		virtual void initialize();
 
 		/** Destroys the core thread material. */
-		static void destroy(const SPtr<ct::MaterialCore>& material, const SPtr<ct::GpuParamsSetCore>& params);
+		static void destroy(const SPtr<ct::Material>& material, const SPtr<ct::GpuParamsSet>& params);
 
 		UINT32 mId;
 
 		// Core thread only (everything below)
-		SPtr<ct::MaterialCore> mMaterial;
+		SPtr<ct::Material> mMaterial;
 		std::atomic<bool> mMaterialStored;
 
-		SPtr<ct::GpuParamsSetCore> mParams;
+		SPtr<ct::GpuParamsSet> mParams;
 		UINT32 mParamBufferIdx;
 		mutable ct::MaterialParamTexture mTextureParam;
 		mutable ct::MaterialParamSampState mSamplerParam;

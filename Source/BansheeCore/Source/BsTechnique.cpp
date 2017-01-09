@@ -72,19 +72,19 @@ namespace bs
 		: TTechnique()
 	{ }
 
-	SPtr<ct::TechniqueCore> Technique::getCore() const
+	SPtr<ct::Technique> Technique::getCore() const
 	{
-		return std::static_pointer_cast<ct::TechniqueCore>(mCoreSpecific);
+		return std::static_pointer_cast<ct::Technique>(mCoreSpecific);
 	}
 
 	SPtr<ct::CoreObject> Technique::createCore() const
 	{
-		Vector<SPtr<ct::PassCore>> passes;
+		Vector<SPtr<ct::Pass>> passes;
 		for (auto& pass : mPasses)
 			passes.push_back(pass->getCore());
 
-		ct::TechniqueCore* technique = new (bs_alloc<ct::TechniqueCore>()) ct::TechniqueCore(mLanguage, mRenderer, mTags, passes);
-		SPtr<ct::TechniqueCore> techniquePtr = bs_shared_ptr<ct::TechniqueCore>(technique);
+		ct::Technique* technique = new (bs_alloc<ct::Technique>()) ct::Technique(mLanguage, mRenderer, mTags, passes);
+		SPtr<ct::Technique> techniquePtr = bs_shared_ptr<ct::Technique>(technique);
 		techniquePtr->_setThisPtr(techniquePtr);
 
 		return techniquePtr;
@@ -138,27 +138,27 @@ namespace bs
 
 	namespace ct
 	{
-	TechniqueCore::TechniqueCore(const String& language, const StringID& renderer, const Vector<StringID>& tags,
-		const Vector<SPtr<PassCore>>& passes)
+	Technique::Technique(const String& language, const StringID& renderer, const Vector<StringID>& tags,
+		const Vector<SPtr<Pass>>& passes)
 		:TTechnique(language, renderer, tags, passes)
 	{ }
 
-	SPtr<TechniqueCore> TechniqueCore::create(const String& language, const StringID& renderer,
-		const Vector<SPtr<PassCore>>& passes)
+	SPtr<Technique> Technique::create(const String& language, const StringID& renderer,
+		const Vector<SPtr<Pass>>& passes)
 	{
-		TechniqueCore* technique = new (bs_alloc<TechniqueCore>()) TechniqueCore(language, renderer, {}, passes);
-		SPtr<TechniqueCore> techniquePtr = bs_shared_ptr<TechniqueCore>(technique);
+		Technique* technique = new (bs_alloc<Technique>()) Technique(language, renderer, {}, passes);
+		SPtr<Technique> techniquePtr = bs_shared_ptr<Technique>(technique);
 		techniquePtr->_setThisPtr(techniquePtr);
 		techniquePtr->initialize();
 
 		return techniquePtr;
 	}
 
-	SPtr<TechniqueCore> TechniqueCore::create(const String& language, const StringID& renderer,
-		const Vector<StringID>& tags, const Vector<SPtr<PassCore>>& passes)
+	SPtr<Technique> Technique::create(const String& language, const StringID& renderer,
+		const Vector<StringID>& tags, const Vector<SPtr<Pass>>& passes)
 	{
-		TechniqueCore* technique = new (bs_alloc<TechniqueCore>()) TechniqueCore(language, renderer, tags, passes);
-		SPtr<TechniqueCore> techniquePtr = bs_shared_ptr<TechniqueCore>(technique);
+		Technique* technique = new (bs_alloc<Technique>()) Technique(language, renderer, tags, passes);
+		SPtr<Technique> techniquePtr = bs_shared_ptr<Technique>(technique);
 		techniquePtr->_setThisPtr(techniquePtr);
 		techniquePtr->initialize();
 

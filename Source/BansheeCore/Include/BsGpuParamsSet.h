@@ -196,12 +196,12 @@ namespace bs
 	namespace ct
 	{
 	/** Core thread version of TGpuParamsSet<Core>. */
-	class BS_CORE_EXPORT GpuParamsSetCore : public TGpuParamsSet<true>
+	class BS_CORE_EXPORT GpuParamsSet : public TGpuParamsSet<true>
 	{
 	public:
-		GpuParamsSetCore() { }
-		GpuParamsSetCore(const SPtr<TechniqueCore>& technique, const SPtr<ShaderCore>& shader,
-			const SPtr<MaterialParamsCore>& params)
+		GpuParamsSet() { }
+		GpuParamsSet(const SPtr<Technique>& technique, const SPtr<Shader>& shader,
+			const SPtr<MaterialParams>& params)
 			:TGpuParamsSet(technique, shader, params)
 		{ }
 	};

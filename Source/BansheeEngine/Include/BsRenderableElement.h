@@ -22,7 +22,7 @@ namespace bs { namespace ct
 		SubMesh subMesh;
 
 		/**	Material to render the mesh with. */
-		SPtr<MaterialCore> material;
+		SPtr<Material> material;
 	};
 
 	/** @} */

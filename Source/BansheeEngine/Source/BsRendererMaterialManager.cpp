@@ -12,7 +12,7 @@ namespace bs
 		BuiltinResources& br = BuiltinResources::instance();
 
 		Vector<RendererMaterialData>& materials = getMaterials();
-		Vector<SPtr<ct::ShaderCore>> shaders;
+		Vector<SPtr<ct::Shader>> shaders;
 		for (auto& material : materials)
 		{
 			HShader shader = br.getShader(material.resourcePath);
@@ -76,7 +76,7 @@ namespace bs
 		}
 	}
 
-	void RendererMaterialManager::initOnCore(const Vector<SPtr<ct::ShaderCore>>& shaders)
+	void RendererMaterialManager::initOnCore(const Vector<SPtr<ct::Shader>>& shaders)
 	{
 		Lock lock(getMutex());
 

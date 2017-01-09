@@ -124,14 +124,14 @@ namespace bs
 		return allParamDescs;
 	}
 
-	Vector<SPtr<GpuParamDesc>> getAllParamDescs(const SPtr<ct::TechniqueCore>& technique)
+	Vector<SPtr<GpuParamDesc>> getAllParamDescs(const SPtr<ct::Technique>& technique)
 	{
 		Vector<SPtr<GpuParamDesc>> allParamDescs;
 
 		// Make sure all gpu programs are fully loaded
 		for (UINT32 i = 0; i < technique->getNumPasses(); i++)
 		{
-			SPtr<ct::PassCore> curPass = technique->getPass(i);
+			SPtr<ct::Pass> curPass = technique->getPass(i);
 
 			SPtr<ct::GpuProgramCore> vertProgram = curPass->getVertexProgram();
 			if (vertProgram)

@@ -261,7 +261,7 @@ namespace bs
 
 				entry.paramIdx = paramsIdx;
 
-				SPtr<GpuParamsSetCore> paramsSet;
+				SPtr<GpuParamsSet> paramsSet;
 				if (paramsIdx >= mParamSets[typeIdx].size())
 				{
 					paramsSet = mMaterials[typeIdx]->createParamsSet();

@@ -62,7 +62,7 @@ namespace bs
 		/** Renderer information for a single material. */
 		struct RendererMaterial
 		{
-			Vector<SPtr<GpuParamsSetCore>> params;
+			Vector<SPtr<GpuParamsSet>> params;
 			UINT32 matVersion;
 		};
 

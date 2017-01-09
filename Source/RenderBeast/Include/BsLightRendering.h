@@ -27,7 +27,7 @@ namespace bs { namespace ct
 	class LightRenderingParams
 	{
 	public:
-		LightRenderingParams(const SPtr<MaterialCore>& lightMaterial, const SPtr<GpuParamsSetCore>& paramsSet);
+		LightRenderingParams(const SPtr<Material>& lightMaterial, const SPtr<GpuParamsSet>& paramsSet);
 
 		/** Updates parameters that are common for all lights. */
 		void setStaticParameters(const SPtr<RenderTargets>& gbuffer,
@@ -39,8 +39,8 @@ namespace bs { namespace ct
 		/** Returns the internal parameter buffer that can be bound to the pipeline. */
 		const SPtr<GpuParamBlockBufferCore>& getBuffer() const;
 	private:
-		SPtr<MaterialCore> mMaterial;
-		SPtr<GpuParamsSetCore> mParamsSet;
+		SPtr<Material> mMaterial;
+		SPtr<GpuParamsSet> mParamsSet;
 
 		GpuParamTexture mGBufferA;
 		GpuParamTexture mGBufferB;

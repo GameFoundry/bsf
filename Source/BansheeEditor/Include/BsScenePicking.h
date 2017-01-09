@@ -155,8 +155,8 @@ namespace bs
 
 		SPtr<RenderTextureCore> mPickingTexture;
 
-		SPtr<MaterialCore> mMaterials[6];
-		Vector<SPtr<GpuParamsSetCore>> mParamSets[6];
+		SPtr<Material> mMaterials[6];
+		Vector<SPtr<GpuParamsSet>> mParamSets[6];
 		Vector<SPtr<GpuParamBlockBufferCore>> mParamBuffers;
 	};
 

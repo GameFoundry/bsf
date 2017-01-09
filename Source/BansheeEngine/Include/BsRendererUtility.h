@@ -38,7 +38,7 @@ namespace bs { namespace ct
 		 *
 		 * @note	Core thread.
 		 */
-		void setPass(const SPtr<MaterialCore>& material, UINT32 passIdx = 0, UINT32 techniqueIdx = 0);
+		void setPass(const SPtr<Material>& material, UINT32 passIdx = 0, UINT32 techniqueIdx = 0);
 
 		/**
 		 * Activates the specified material pass for compute. Any further dispatch calls will be executed using this pass.
@@ -48,7 +48,7 @@ namespace bs { namespace ct
 		 *
 		 * @note	Core thread.
 		 */
-		void setComputePass(const SPtr<MaterialCore>& material, UINT32 passIdx = 0);
+		void setComputePass(const SPtr<Material>& material, UINT32 passIdx = 0);
 
 		/**
 		 * Sets parameters (textures, samplers, buffers) for the currently active pass.
@@ -58,7 +58,7 @@ namespace bs { namespace ct
 		 *					
 		 * @note	Core thread.
 		 */
-		void setPassParams(const SPtr<GpuParamsSetCore>& params, UINT32 passIdx = 0);
+		void setPassParams(const SPtr<GpuParamsSet>& params, UINT32 passIdx = 0);
 
 		/**
 		 * Draws the specified mesh.

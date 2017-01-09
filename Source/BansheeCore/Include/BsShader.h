@@ -380,7 +380,7 @@ namespace bs
 	{
 	public:
 		/** Retrieves an implementation of a shader usable only from the core thread. */
-		SPtr<ct::ShaderCore> getCore() const;
+		SPtr<ct::Shader> getCore() const;
 
 		/**
 		 * Sets a list include file paths that are referenced by this shader.
@@ -483,16 +483,16 @@ namespace bs
 	 */
 
 	/** Core thread version of Shader. */
-	class BS_CORE_EXPORT ShaderCore : public CoreObject, public TShader<true>
+	class BS_CORE_EXPORT Shader : public CoreObject, public TShader<true>
 	{
 	public:
-		/** @copydoc Shader::create */
-		static SPtr<ShaderCore> create(const String& name, const SHADER_DESC& desc, const Vector<SPtr<TechniqueCore>>& techniques);
+		/** @copydoc bs::Shader::create */
+		static SPtr<Shader> create(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques);
 
 	protected:
-		friend class Shader;
+		friend class bs::Shader;
 
-		ShaderCore(const String& name, const SHADER_DESC& desc, const Vector<SPtr<TechniqueCore>>& techniques, UINT32 id);
+		Shader(const String& name, const SHADER_DESC& desc, const Vector<SPtr<Technique>>& techniques, UINT32 id);
 
 		static std::atomic<UINT32> mNextShaderId;
 	};

@@ -607,7 +607,7 @@ namespace bs
 
 	template<bool Core> struct TMaterialPtrType {};
 	template<> struct TMaterialPtrType < false > { typedef HMaterial Type; };
-	template<> struct TMaterialPtrType < true > { typedef SPtr<ct::MaterialCore> Type; };
+	template<> struct TMaterialPtrType < true > { typedef SPtr<ct::Material> Type; };
 
 	template<bool Core> struct TTextureType {};
 	template<> struct TTextureType < false > { typedef HTexture Type; };

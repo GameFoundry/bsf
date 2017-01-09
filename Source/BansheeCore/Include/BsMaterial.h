@@ -30,7 +30,7 @@ namespace bs
 
 	template<bool Core> struct TShaderType {};
 	template<> struct TShaderType < false > { typedef HShader Type; };
-	template<> struct TShaderType < true > { typedef SPtr<ct::ShaderCore> Type; };
+	template<> struct TShaderType < true > { typedef SPtr<ct::Shader> Type; };
 
 	template<bool Core> struct TGpuParamBlockBufferType {};
 	template<> struct TGpuParamBlockBufferType < false > { typedef GpuParamBlockBuffer Type; };
@@ -38,7 +38,7 @@ namespace bs
 	
 	template<bool Core> struct TGpuParamsSetType {};
 	template<> struct TGpuParamsSetType < false > { typedef GpuParamsSet Type; };
-	template<> struct TGpuParamsSetType < true > { typedef ct::GpuParamsSetCore Type; };
+	template<> struct TGpuParamsSetType < true > { typedef ct::GpuParamsSet Type; };
 
 	/**
 	 * Material that controls how objects are rendered. It is represented by a shader and parameters used to set up that
@@ -564,7 +564,7 @@ namespace bs
 		void setShader(const HShader& shader);
 
 		/** Retrieves an implementation of a material usable only from the core thread. */
-		SPtr<ct::MaterialCore> getCore() const;
+		SPtr<ct::Material> getCore() const;
 
 		/** @copydoc CoreObject::initialize */
 		void initialize() override;
@@ -656,24 +656,24 @@ namespace bs
 	 */
 
 	/** @copydoc MaterialBase */
-	class BS_CORE_EXPORT MaterialCore : public CoreObject, public TMaterial<true>
+	class BS_CORE_EXPORT Material : public CoreObject, public TMaterial<true>
 	{
 	public:
-		~MaterialCore() { }
+		~Material() { }
 
-		/** @copydoc Material::setShader */
-		void setShader(const SPtr<ShaderCore>& shader);
+		/** @copydoc bs::Material::setShader */
+		void setShader(const SPtr<Shader>& shader);
 
 		/** Creates a new material with the specified shader. */
-		static SPtr<MaterialCore> create(const SPtr<ShaderCore>& shader);
+		static SPtr<Material> create(const SPtr<Shader>& shader);
 
 	private:
-		friend class Material;
+		friend class bs::Material;
 
-		MaterialCore() { }
-		MaterialCore(const SPtr<ShaderCore>& shader);
-		MaterialCore(const SPtr<ShaderCore>& shader, const Vector<SPtr<TechniqueCore>>& techniques,
-			const SPtr<MaterialParamsCore>& materialParams);
+		Material() { }
+		Material(const SPtr<Shader>& shader);
+		Material(const SPtr<Shader>& shader, const Vector<SPtr<Technique>>& techniques,
+			const SPtr<MaterialParams>& materialParams);
 
 		/** @copydoc CoreObject::syncToCore */
 		void syncToCore(const CoreSyncData& data) override;

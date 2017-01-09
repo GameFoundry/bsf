@@ -14,7 +14,7 @@ namespace bs { namespace ct
 {
 	PerLightParamDef gPerLightParamDef;
 
-	LightRenderingParams::LightRenderingParams(const SPtr<MaterialCore>& material, const SPtr<GpuParamsSetCore>& paramsSet)
+	LightRenderingParams::LightRenderingParams(const SPtr<Material>& material, const SPtr<GpuParamsSet>& paramsSet)
 		:mMaterial(material), mParamsSet(paramsSet)
 	{
 		SPtr<GpuParamsCore> params = mParamsSet->getGpuParams();

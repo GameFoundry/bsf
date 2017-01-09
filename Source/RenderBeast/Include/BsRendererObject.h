@@ -47,7 +47,7 @@ namespace bs { namespace ct
 		MaterialSamplerOverrides* samplerOverrides;
 
 		/** All GPU parameters from the material used by the renderable. */
-		SPtr<GpuParamsSetCore> params;
+		SPtr<GpuParamsSet> params;
 
 		/**	Identifier of the owner renderable. */
 		UINT32 renderableId;

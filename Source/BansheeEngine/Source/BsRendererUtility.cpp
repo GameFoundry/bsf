@@ -137,24 +137,24 @@ namespace bs { namespace ct
 
 	}
 
-	void RendererUtility::setPass(const SPtr<MaterialCore>& material, UINT32 passIdx, UINT32 techniqueIdx)
+	void RendererUtility::setPass(const SPtr<Material>& material, UINT32 passIdx, UINT32 techniqueIdx)
 	{
 		RenderAPI& rapi = RenderAPI::instance();
 
-		SPtr<PassCore> pass = material->getPass(passIdx, techniqueIdx);
+		SPtr<Pass> pass = material->getPass(passIdx, techniqueIdx);
 		rapi.setGraphicsPipeline(pass->getGraphicsPipelineState());
 		rapi.setStencilRef(pass->getStencilRefValue());
 	}
 
-	void RendererUtility::setComputePass(const SPtr<MaterialCore>& material, UINT32 passIdx)
+	void RendererUtility::setComputePass(const SPtr<Material>& material, UINT32 passIdx)
 	{
 		RenderAPI& rapi = RenderAPI::instance();
 
-		SPtr<PassCore> pass = material->getPass(passIdx);
+		SPtr<Pass> pass = material->getPass(passIdx);
 		rapi.setComputePipeline(pass->getComputePipelineState());
 	}
 
-	void RendererUtility::setPassParams(const SPtr<GpuParamsSetCore>& params, UINT32 passIdx)
+	void RendererUtility::setPassParams(const SPtr<GpuParamsSet>& params, UINT32 passIdx)
 	{
 		SPtr<GpuParamsCore> gpuParams = params->getGpuParams(passIdx);
 		if (gpuParams == nullptr)
@@ -254,8 +254,8 @@ namespace bs { namespace ct
 	void RendererUtility::blit(const SPtr<TextureCore>& texture, const Rect2I& area)
 	{
 		auto& texProps = texture->getProperties();
-		SPtr<MaterialCore> mat;
-		SPtr<GpuParamsSetCore> params;
+		SPtr<Material> mat;
+		SPtr<GpuParamsSet> params;
 		if (texProps.getNumSamples() > 1)
 		{
 			mat = mResolveMat->getMaterial();

@@ -163,7 +163,7 @@ namespace bs
 		virtual ~Pass() { }
 
 		/** Retrieves an implementation of a pass usable only from the core thread. */
-		SPtr<ct::PassCore> getCore() const;
+		SPtr<ct::Pass> getCore() const;
 
 		/**	Creates a new empty pass. */
 		static SPtr<Pass> create(const PASS_DESC& desc);
@@ -211,25 +211,25 @@ namespace bs
 	 *
 	 * @note	Core thread.
 	 */
-	class BS_CORE_EXPORT PassCore : public CoreObject, public TPass<true>
+	class BS_CORE_EXPORT Pass : public CoreObject, public TPass<true>
     {
     public:
-		virtual ~PassCore() { }
+		virtual ~Pass() { }
 
 		/**	Creates a new empty pass. */
-		static SPtr<PassCore> create(const PASS_DESC& desc);
+		static SPtr<Pass> create(const PASS_DESC& desc);
 
 	protected:
-		friend class Pass;
-		friend class TechniqueCore;
+		friend class bs::Pass;
+		friend class Technique;
 
 		/** @copydoc CoreObject::initialize */
 		void initialize() override;
 
-		PassCore() { }
-		PassCore(const PASS_DESC& desc);
-		PassCore(const PASS_DESC& desc, const SPtr<GraphicsPipelineStateCore>& pipelineState);
-		PassCore(const PASS_DESC& desc, const SPtr<ComputePipelineStateCore>& pipelineState);
+		Pass() { }
+		Pass(const PASS_DESC& desc);
+		Pass(const PASS_DESC& desc, const SPtr<GraphicsPipelineStateCore>& pipelineState);
+		Pass(const PASS_DESC& desc, const SPtr<ComputePipelineStateCore>& pipelineState);
 
 		/** @copydoc CoreObject::syncToCore */
 		void syncToCore(const CoreSyncData& data) override;

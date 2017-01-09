@@ -13,11 +13,11 @@ namespace bs
 
 	template<bool Core> struct TMaterialType { };
 	template<> struct TMaterialType<false> { typedef SPtr<Material> Type; };
-	template<> struct TMaterialType<true> { typedef SPtr<ct::MaterialCore> Type; };
+	template<> struct TMaterialType<true> { typedef SPtr<ct::Material> Type; };
 
 	template<bool Core> struct TMaterialParamsType { };
 	template<> struct TMaterialParamsType<false> { typedef MaterialParams Type; };
-	template<> struct TMaterialParamsType<true> { typedef ct::MaterialParamsCore Type; };
+	template<> struct TMaterialParamsType<true> { typedef ct::MaterialParams Type; };
 
 	/**
 	 * A handle that allows you to set a Material parameter. Internally keeps a reference to the material parameters so that

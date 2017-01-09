@@ -715,11 +715,11 @@ namespace bs
 
 	namespace ct
 	{
-	MaterialParamsCore::MaterialParamsCore(const SPtr<ShaderCore>& shader)
+	MaterialParams::MaterialParams(const SPtr<Shader>& shader)
 		:TMaterialParams(shader)
 	{ }
 
-	MaterialParamsCore::MaterialParamsCore(const SPtr<ShaderCore>& shader, const SPtr<MaterialParams>& params)
+	MaterialParams::MaterialParams(const SPtr<Shader>& shader, const SPtr<bs::MaterialParams>& params)
 		: TMaterialParams(shader)
 	{
 		memcpy(mDataParamsBuffer, params->mDataParamsBuffer, mDataSize);
@@ -764,7 +764,7 @@ namespace bs
 		}
 	}
 
-	void MaterialParamsCore::setSyncData(UINT8* buffer, UINT32 size)
+	void MaterialParams::setSyncData(UINT8* buffer, UINT32 size)
 	{
 		char* sourceData = (char*)buffer;
 

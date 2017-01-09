@@ -99,9 +99,9 @@ namespace bs
 		:TPass(desc)
 	{ }
 
-	SPtr<ct::PassCore> Pass::getCore() const
+	SPtr<ct::Pass> Pass::getCore() const
 	{
-		return std::static_pointer_cast<ct::PassCore>(mCoreSpecific);
+		return std::static_pointer_cast<ct::Pass>(mCoreSpecific);
 	}
 
 	SPtr<ct::CoreObject> Pass::createCore() const
@@ -109,11 +109,11 @@ namespace bs
 		ct::PASS_DESC desc;
 		convertPassDesc(mData, desc);
 
-		ct::PassCore* pass;
+		ct::Pass* pass;
 		if(mComputePipelineState != nullptr)
 		{
 			SPtr<ct::ComputePipelineStateCore> corePipeline = mComputePipelineState->getCore();
-			pass = new (bs_alloc<ct::PassCore>()) ct::PassCore(desc, corePipeline);
+			pass = new (bs_alloc<ct::Pass>()) ct::Pass(desc, corePipeline);
 		}
 		else
 		{
@@ -121,10 +121,10 @@ namespace bs
 			if (mGraphicsPipelineState != nullptr)
 				corePipeline = mGraphicsPipelineState->getCore();
 
-			pass = new (bs_alloc<ct::PassCore>()) ct::PassCore(desc, corePipeline);
+			pass = new (bs_alloc<ct::Pass>()) ct::Pass(desc, corePipeline);
 		}
 
-		SPtr<ct::PassCore> passPtr = bs_shared_ptr<ct::PassCore>(pass);
+		SPtr<ct::Pass> passPtr = bs_shared_ptr<ct::Pass>(pass);
 		passPtr->_setThisPtr(passPtr);
 
 		return passPtr;
@@ -220,24 +220,24 @@ namespace bs
 
 	namespace ct
 	{
-	PassCore::PassCore(const PASS_DESC& desc)
+	Pass::Pass(const PASS_DESC& desc)
 		:TPass(desc)
 	{ }
 
-	PassCore::PassCore(const PASS_DESC& desc, const SPtr<GraphicsPipelineStateCore>& pipelineState)
+	Pass::Pass(const PASS_DESC& desc, const SPtr<GraphicsPipelineStateCore>& pipelineState)
 		:TPass(desc)
 	{
 		mGraphicsPipelineState = pipelineState;
 	}
 
 
-	PassCore::PassCore(const PASS_DESC& desc, const SPtr<ComputePipelineStateCore>& pipelineState)
+	Pass::Pass(const PASS_DESC& desc, const SPtr<ComputePipelineStateCore>& pipelineState)
 		:TPass(desc)
 	{
 		mComputePipelineState = pipelineState;
 	}
 
-	void PassCore::initialize()
+	void Pass::initialize()
 	{
 		if(hasComputeProgram())
 		{
@@ -258,7 +258,7 @@ namespace bs
 		CoreObject::initialize();
 	}
 
-	void PassCore::syncToCore(const CoreSyncData& data)
+	void Pass::syncToCore(const CoreSyncData& data)
 	{
 		UINT8* dataPtr = data.getBuffer();
 		PASS_DESC* desc = (PASS_DESC*)dataPtr;
@@ -267,10 +267,10 @@ namespace bs
 		desc->~PASS_DESC();
 	}
 
-	SPtr<PassCore> PassCore::create(const PASS_DESC& desc)
+	SPtr<Pass> Pass::create(const PASS_DESC& desc)
 	{
-		PassCore* newPass = new (bs_alloc<PassCore>()) PassCore(desc);
-		SPtr<PassCore> newPassPtr = bs_shared_ptr<PassCore>(newPass);
+		Pass* newPass = new (bs_alloc<Pass>()) Pass(desc);
+		SPtr<Pass> newPassPtr = bs_shared_ptr<Pass>(newPass);
 		newPassPtr->_setThisPtr(newPassPtr);
 		newPassPtr->initialize();
 

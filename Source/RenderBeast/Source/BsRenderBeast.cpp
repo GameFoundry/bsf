@@ -181,7 +181,7 @@ namespace bs { namespace ct
 					UINT32 numPasses = renElement.material->getNumPasses(techniqueIdx);
 					for (UINT32 j = 0; j < numPasses; j++)
 					{
-						SPtr<PassCore> pass = renElement.material->getPass(j, techniqueIdx);
+						SPtr<Pass> pass = renElement.material->getPass(j, techniqueIdx);
 
 						SPtr<VertexDeclarationCore> shaderDecl = pass->getVertexProgram()->getInputDeclaration();
 						if (!vertexDecl->isCompatible(shaderDecl))
@@ -229,7 +229,7 @@ namespace bs { namespace ct
 				}
 				else
 				{
-					SPtr<ShaderCore> shader = renElement.material->getShader();
+					SPtr<Shader> shader = renElement.material->getShader();
 					MaterialSamplerOverrides* samplerOverrides = SamplerOverrideUtility::generateSamplerOverrides(shader,
 						renElement.material->_getInternalParams(), renElement.params, mCoreOptions);
 
@@ -552,7 +552,7 @@ namespace bs { namespace ct
 		gProfilerCPU().beginSample("renderAllCore");
 
 		// Note: I'm iterating over all sampler states every frame. If this ends up being a performance
-		// issue consider handling this internally in MaterialCore which can only do it when sampler states
+		// issue consider handling this internally in ct::Material which can only do it when sampler states
 		// are actually modified after sync
 		refreshSamplerOverrides();
 
@@ -871,7 +871,7 @@ namespace bs { namespace ct
 	void RenderBeast::renderElement(const BeastRenderableElement& element, UINT32 passIdx, bool bindPass,
 		const RendererFrame& frameInfo, const Matrix4& viewProj)
 	{
-		SPtr<MaterialCore> material = element.material;
+		SPtr<Material> material = element.material;
 
 		if (bindPass)
 			gRendererUtility().setPass(material, passIdx, element.techniqueIdx);
@@ -890,7 +890,7 @@ namespace bs { namespace ct
 		bool anyDirty = false;
 		for (auto& entry : mSamplerOverrides)
 		{
-			SPtr<MaterialParamsCore> materialParams = entry.first.material->_getInternalParams();
+			SPtr<MaterialParams> materialParams = entry.first.material->_getInternalParams();
 
 			MaterialSamplerOverrides* materialOverrides = entry.second;
 			for(UINT32 i = 0; i < materialOverrides->numOverrides; i++)

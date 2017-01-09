@@ -79,7 +79,7 @@ namespace bs
 		struct InitData
 		{
 			SPtr<CameraCore> camera;
-			SPtr<MaterialCore> material;
+			SPtr<Material> material;
 		};
 
 		SceneGridRenderer();
@@ -109,8 +109,8 @@ namespace bs
 
 		SPtr<CameraCore> mCamera;
 		SPtr<MeshCore> mGridMesh;
-		SPtr<MaterialCore> mGridMaterial;
-		SPtr<GpuParamsSetCore> mMaterialParams;
+		SPtr<Material> mGridMaterial;
+		SPtr<GpuParamsSet> mMaterialParams;
 		float mSpacing = 1.0f;
 		bool mFadeGrid = true;
 		Vector3 mGridPlaneNormal = Vector3::ZERO;

@@ -64,8 +64,8 @@ namespace bs
 		SPtr<CameraCore> mCamera;
 
 		// Immutable
-		SPtr<MaterialCore> mMaterial;
-		SPtr<GpuParamsSetCore> mParams[4];
+		SPtr<Material> mMaterial;
+		SPtr<GpuParamsSet> mParams[4];
 		GpuParamMat4 mMatWorldViewProj[4];
 		GpuParamColor mColor[4];
 		GpuParamBuffer mBoneMatrices[4];

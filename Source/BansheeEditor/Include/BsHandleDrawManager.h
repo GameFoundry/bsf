@@ -229,10 +229,10 @@ namespace bs
 		/** Data used for initializing the renderer. */
 		struct InitData
 		{
-			SPtr<MaterialCore> lineMat;
-			SPtr<MaterialCore> solidMat;
-			SPtr<MaterialCore> textMat;
-			SPtr<MaterialCore> clearMat;
+			SPtr<Material> lineMat;
+			SPtr<Material> solidMat;
+			SPtr<Material> textMat;
+			SPtr<Material> clearMat;
 		};
 
 	public:
@@ -267,12 +267,12 @@ namespace bs
 		Vector<QueuedData> mQueuedData;
 
 		SPtr<GpuParamBlockBufferCore> mParamBuffer;
-		Vector<SPtr<GpuParamsSetCore>> mParamSets[(UINT32)MeshType::Count];
+		Vector<SPtr<GpuParamsSet>> mParamSets[(UINT32)MeshType::Count];
 		UINT32 mTypeCounters[(UINT32)MeshType::Count];
 
 		// Immutable
-		SPtr<MaterialCore> mMaterials[(UINT32)MeshType::Count];
-		SPtr<MaterialCore> mClearMaterial;
+		SPtr<Material> mMaterials[(UINT32)MeshType::Count];
+		SPtr<Material> mClearMaterial;
 	};
 
 	/** @} */

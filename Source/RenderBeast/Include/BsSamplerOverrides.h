@@ -41,7 +41,7 @@ namespace bs { namespace ct
 	/** Key used for uniquely identifying a sampler override entry. */
 	struct SamplerOverrideKey
 	{
-		SamplerOverrideKey(const SPtr<MaterialCore>& material, UINT32 techniqueIdx)
+		SamplerOverrideKey(const SPtr<Material>& material, UINT32 techniqueIdx)
 			:material(material), techniqueIdx(techniqueIdx)
 		{ }
 
@@ -55,7 +55,7 @@ namespace bs { namespace ct
 			return !(*this == rhs); 
 		}
 
-		SPtr<MaterialCore> material;
+		SPtr<Material> material;
 		UINT32 techniqueIdx;
 	};
 
@@ -67,9 +67,9 @@ namespace bs { namespace ct
 		 * Generates a set of sampler overrides for the specified set of GPU program parameters. Overrides are generates
 		 * according to the provided render options. 
 		 */
-		static MaterialSamplerOverrides* generateSamplerOverrides(const SPtr<ShaderCore>& shader,
-			const SPtr<MaterialParamsCore>& params, 
-			const SPtr<GpuParamsSetCore>& paramsSet,
+		static MaterialSamplerOverrides* generateSamplerOverrides(const SPtr<Shader>& shader,
+			const SPtr<MaterialParams>& params, 
+			const SPtr<GpuParamsSet>& paramsSet,
 			const SPtr<RenderBeastOptions>& options);
 
 		/**	Destroys sampler overrides previously generated with generateSamplerOverrides(). */

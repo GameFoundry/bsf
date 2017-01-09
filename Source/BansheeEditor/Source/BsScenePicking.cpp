@@ -315,7 +315,7 @@ namespace bs
 			UINT32 renderableIdx = typeCounters[typeIdx];
 			renderableIndices[idx] = renderableIdx;
 
-			SPtr<GpuParamsSetCore> paramsSet;
+			SPtr<GpuParamsSet> paramsSet;
 			if (renderableIdx >= mParamSets[typeIdx].size())
 			{
 				paramsSet = mMaterials[typeIdx]->createParamsSet();

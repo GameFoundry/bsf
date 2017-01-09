@@ -23,7 +23,7 @@ namespace bs { namespace ct
 
 	void ObjectRenderer::initElement(RendererObject& owner, BeastRenderableElement& element)
 	{
-		SPtr<ShaderCore> shader = element.material->getShader();
+		SPtr<Shader> shader = element.material->getShader();
 		if (shader == nullptr)
 		{
 			element.perCameraBindingIdx = -1;

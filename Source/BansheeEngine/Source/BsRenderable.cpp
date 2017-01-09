@@ -318,7 +318,7 @@ namespace bs
 			rttiGetElemSize(mAnimType) + 
 			rttiGetElemSize(getCoreDirtyFlags()) +
 			sizeof(SPtr<ct::MeshCore>) +
-			numMaterials * sizeof(SPtr<ct::MaterialCore>);
+			numMaterials * sizeof(SPtr<ct::Material>);
 
 		UINT8* data = allocator->alloc(size);
 		char* dataPtr = (char*)data;
@@ -342,11 +342,11 @@ namespace bs
 
 		for (UINT32 i = 0; i < numMaterials; i++)
 		{
-			SPtr<ct::MaterialCore>* material = new (dataPtr)SPtr<ct::MaterialCore>();
+			SPtr<ct::Material>* material = new (dataPtr)SPtr<ct::Material>();
 			if (mMaterials[i].isLoaded())
 				*material = mMaterials[i]->getCore();
 
-			dataPtr += sizeof(SPtr<ct::MaterialCore>);
+			dataPtr += sizeof(SPtr<ct::Material>);
 		}
 
 		return CoreSyncData(data, size);
@@ -611,10 +611,10 @@ namespace bs
 
 		for (UINT32 i = 0; i < numMaterials; i++)
 		{
-			SPtr<MaterialCore>* material = (SPtr<MaterialCore>*)dataPtr;
+			SPtr<Material>* material = (SPtr<Material>*)dataPtr;
 			mMaterials.push_back(*material);
-			material->~SPtr<MaterialCore>();
-			dataPtr += sizeof(SPtr<MaterialCore>);
+			material->~SPtr<Material>();
+			dataPtr += sizeof(SPtr<Material>);
 		}
 
 		if (dirtyFlags == (UINT32)RenderableDirtyFlag::Transform)

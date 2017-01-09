@@ -1126,7 +1126,7 @@ namespace bs
 
 	void DockOverlayRenderer::initialize(const Any& data)
 	{
-		mMaterial = any_cast<SPtr<MaterialCore>>(data);
+		mMaterial = any_cast<SPtr<Material>>(data);
 		mParams = mMaterial->createParamsSet();
 	}
 

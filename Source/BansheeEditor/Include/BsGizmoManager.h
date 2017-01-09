@@ -387,13 +387,13 @@ namespace bs
 		/**	Data used for initializing the core thread equivalent of the gizmo manager. */
 		struct CoreInitData
 		{
-			SPtr<ct::MaterialCore> solidMat;
-			SPtr<ct::MaterialCore> wireMat;
-			SPtr<ct::MaterialCore> lineMat;
-			SPtr<ct::MaterialCore> iconMat;
-			SPtr<ct::MaterialCore> textMat;
-			SPtr<ct::MaterialCore> pickingMat;
-			SPtr<ct::MaterialCore> alphaPickingMat;
+			SPtr<ct::Material> solidMat;
+			SPtr<ct::Material> wireMat;
+			SPtr<ct::Material> lineMat;
+			SPtr<ct::Material> iconMat;
+			SPtr<ct::Material> textMat;
+			SPtr<ct::Material> pickingMat;
+			SPtr<ct::Material> alphaPickingMat;
 		};
 
 		typedef Vector<IconRenderData> IconRenderDataVec;
@@ -577,9 +577,9 @@ namespace bs
 		SPtr<MeshCoreBase> mIconMesh;
 		GizmoManager::IconRenderDataVecPtr mIconRenderData;
 
-		Vector<SPtr<GpuParamsSetCore>> mMeshParamSets[(UINT32)GizmoMeshType::Count];
-		Vector<SPtr<GpuParamsSetCore>> mIconParamSets;
-		Vector<SPtr<GpuParamsSetCore>> mPickingParamSets[2];
+		Vector<SPtr<GpuParamsSet>> mMeshParamSets[(UINT32)GizmoMeshType::Count];
+		Vector<SPtr<GpuParamsSet>> mIconParamSets;
+		Vector<SPtr<GpuParamsSet>> mPickingParamSets[2];
 
 		SPtr<GpuParamBlockBufferCore> mMeshGizmoBuffer;
 		SPtr<GpuParamBlockBufferCore> mIconGizmoBuffer;
@@ -587,9 +587,9 @@ namespace bs
 		SPtr<GpuParamBlockBufferCore> mIconPickingParamBuffer;
 
 		// Immutable
-		SPtr<MaterialCore> mMeshMaterials[(UINT32)GizmoMeshType::Count];
-		SPtr<MaterialCore> mIconMaterial;
-		SPtr<MaterialCore> mPickingMaterials[2];
+		SPtr<Material> mMeshMaterials[(UINT32)GizmoMeshType::Count];
+		SPtr<Material> mIconMaterial;
+		SPtr<Material> mPickingMaterials[2];
 	};
 
 	/** @} */
