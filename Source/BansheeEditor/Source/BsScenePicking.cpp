@@ -32,7 +32,7 @@ namespace bs
 {
 	ScenePicking::ScenePicking()
 	{
-		mCore = bs_new<ct::ScenePickingCore>();
+		mCore = bs_new<ct::ScenePicking>();
 
 		for (UINT32 i = 0; i < 3; i++)
 		{
@@ -43,12 +43,12 @@ namespace bs
 			mCore->mMaterials[3 + i] = matPickingAlpha->getCore();
 		}
 
-		gCoreThread().queueCommand(std::bind(&ct::ScenePickingCore::initialize, mCore));
+		gCoreThread().queueCommand(std::bind(&ct::ScenePicking::initialize, mCore));
 	}
 
 	ScenePicking::~ScenePicking()
 	{
-		gCoreThread().queueCommand(std::bind(&ct::ScenePickingCore::destroy, mCore));
+		gCoreThread().queueCommand(std::bind(&ct::ScenePicking::destroy, mCore));
 	}
 
 	HSceneObject ScenePicking::pickClosestObject(const SPtr<Camera>& cam, const Vector2I& position, const Vector2I& area, 
@@ -175,12 +175,12 @@ namespace bs
 		UINT32 firstGizmoIdx = (UINT32)pickData.size();
 
 		SPtr<ct::RenderTargetCore> target = cam->getViewport()->getTarget()->getCore();
-		gCoreThread().queueCommand(std::bind(&ct::ScenePickingCore::corePickingBegin, mCore, target,
+		gCoreThread().queueCommand(std::bind(&ct::ScenePicking::corePickingBegin, mCore, target,
 			cam->getViewport()->getNormArea(), std::cref(pickData), position, area));
 
 		GizmoManager::instance().renderForPicking(cam, [&](UINT32 inputIdx) { return encodeIndex(firstGizmoIdx + inputIdx); });
 
-		AsyncOp op = gCoreThread().queueReturnCommand(std::bind(&ct::ScenePickingCore::corePickingEnd, mCore, target,
+		AsyncOp op = gCoreThread().queueReturnCommand(std::bind(&ct::ScenePicking::corePickingEnd, mCore, target,
 			cam->getViewport()->getNormArea(), position, area, data != nullptr, _1));
 		gCoreThread().submit(true);
 
@@ -243,22 +243,22 @@ namespace bs
 
 	namespace ct
 	{
-	const float ScenePickingCore::ALPHA_CUTOFF = 0.5f;
+	const float ScenePicking::ALPHA_CUTOFF = 0.5f;
 
 	PickingParamBlockDef gPickingParamBlockDef;
 
-	void ScenePickingCore::initialize()
+	void ScenePicking::initialize()
 	{
 		// Do nothing
 	}
 
-	void ScenePickingCore::destroy()
+	void ScenePicking::destroy()
 	{
 		bs_delete(this);
 	}
 
-	void ScenePickingCore::corePickingBegin(const SPtr<RenderTargetCore>& target, const Rect2& viewportArea,
-		const ScenePicking::RenderableSet& renderables, const Vector2I& position, const Vector2I& area)
+	void ScenePicking::corePickingBegin(const SPtr<RenderTargetCore>& target, const Rect2& viewportArea,
+		const bs::ScenePicking::RenderableSet& renderables, const Vector2I& position, const Vector2I& area)
 	{
 		RenderAPICore& rs = RenderAPICore::instance();
 
@@ -335,7 +335,7 @@ namespace bs
 
 			paramsSet->setParamBlockBuffer("Uniforms", paramBuffer, true);
 
-			Color color = ScenePicking::encodeIndex(renderable.index);
+			Color color = bs::ScenePicking::encodeIndex(renderable.index);
 
 			gPickingParamBlockDef.gMatViewProj.set(paramBuffer, renderable.wvpTransform);
 			gPickingParamBlockDef.gAlphaCutoff.set(paramBuffer, ALPHA_CUTOFF);
@@ -377,7 +377,7 @@ namespace bs
 		bs_stack_free(renderableIndices);
 	}
 
-	void ScenePickingCore::corePickingEnd(const SPtr<RenderTargetCore>& target, const Rect2& viewportArea, 
+	void ScenePicking::corePickingEnd(const SPtr<RenderTargetCore>& target, const Rect2& viewportArea, 
 		const Vector2I& position, const Vector2I& area, bool gatherSnapData, AsyncOp& asyncOp)
 	{
 		const RenderTargetProperties& rtProps = target->getProperties();
@@ -428,7 +428,7 @@ namespace bs
 				for (UINT32 x = (UINT32)position.x; x < maxWidth; x++)
 				{
 					Color color = outputPixelData->getColorAt(x, vertOffset - y);
-					UINT32 index = ScenePicking::decodeIndex(color);
+					UINT32 index = bs::ScenePicking::decodeIndex(color);
 
 					if (index == 0x00FFFFFF) // Nothing selected
 						continue;
@@ -448,7 +448,7 @@ namespace bs
 				for (UINT32 x = (UINT32)position.x; x < maxWidth; x++)
 				{
 					Color color = outputPixelData->getColorAt(x, y);
-					UINT32 index = ScenePicking::decodeIndex(color);
+					UINT32 index = bs::ScenePicking::decodeIndex(color);
 
 					if (index == 0x00FFFFFF) // Nothing selected
 						continue;

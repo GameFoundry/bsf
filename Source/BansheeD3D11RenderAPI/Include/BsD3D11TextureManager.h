@@ -5,7 +5,7 @@
 #include "BsD3D11Prerequisites.h"
 #include "BsTextureManager.h"
 
-namespace bs { namespace ct
+namespace bs
 {
 	/** @addtogroup D3D11
 	 *  @{
@@ -23,8 +23,10 @@ namespace bs { namespace ct
 		SPtr<RenderTexture> createRenderTextureImpl(const RENDER_TEXTURE_DESC& desc) override;
 	};
 
+	namespace ct
+	{
 	/**	Handles creation of DirectX 11 textures. */
-	class BS_D3D11_EXPORT D3D11TextureCoreManager : public TextureCoreManager
+	class BS_D3D11_EXPORT D3D11TextureManager : public TextureCoreManager
 	{
 	protected:
 		/** @copydoc TextureCoreManager::createTextureInternal */
@@ -35,6 +37,7 @@ namespace bs { namespace ct
 		SPtr<RenderTextureCore> createRenderTextureInternal(const RENDER_TEXTURE_DESC_CORE& desc, 
 			UINT32 deviceIdx = 0) override;
 	};
+	}
 
 	/** @} */
-}}
+}

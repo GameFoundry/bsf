@@ -12,10 +12,10 @@ namespace bs { namespace ct
 	 */
 
 	/**	DirectX 11 implementation of a texture. */
-	class D3D11TextureCore : public TextureCore
+	class D3D11Texture : public TextureCore
 	{
 	public:
-		~D3D11TextureCore();
+		~D3D11Texture();
 
 		/**	Returns internal DX11 texture resource object. */
 		ID3D11Resource* getDX11Resource() const { return mTex; }
@@ -33,9 +33,9 @@ namespace bs { namespace ct
 		DXGI_FORMAT getDepthStencilFormat() const { return mDXGIDepthStencilFormat; }
 
 	protected:
-		friend class D3D11TextureCoreManager;
+		friend class D3D11TextureManager;
 
-		D3D11TextureCore(const TEXTURE_DESC& desc, const SPtr<PixelData>& initialData, GpuDeviceFlags deviceMask);
+		D3D11Texture(const TEXTURE_DESC& desc, const SPtr<PixelData>& initialData, GpuDeviceFlags deviceMask);
 
 		/** @copydoc CoreObjectCore::initialize() */
 		void initialize() override;

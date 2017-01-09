@@ -5,13 +5,10 @@
 #include "BsD3D11Prerequisites.h"
 #include "BsRenderWindow.h"
 
-namespace bs { namespace ct
-{
+namespace bs { 
 	/** @addtogroup D3D11
 	 *  @{
 	 */
-
-	class D3D11RenderWindow;
 
 	/**	Contains various properties that describe a render window. */
 	class BS_D3D11_EXPORT D3D11RenderWindowProperties : public RenderWindowProperties
@@ -21,22 +18,68 @@ namespace bs { namespace ct
 		virtual ~D3D11RenderWindowProperties() { }
 
 	private:
-		friend class D3D11RenderWindowCore;
 		friend class D3D11RenderWindow;
+		friend class ct::D3D11RenderWindow;
 	};
 
 	/**
 	 * Render window implementation for Windows and DirectX 11.
 	 *
-	 * @note	Core thread only.
+	 * @note	Sim thread only.
 	 */
-	class BS_D3D11_EXPORT D3D11RenderWindowCore : public RenderWindowCore
+	class BS_D3D11_EXPORT D3D11RenderWindow : public RenderWindow
 	{
 	public:
-		D3D11RenderWindowCore(const RENDER_WINDOW_DESC& desc, UINT32 windowId,
+		~D3D11RenderWindow() { }
+
+		/** @copydoc RenderWindow::screenToWindowPos */
+		void getCustomAttribute(const String& name, void* pData) const override;
+
+		/** @copydoc RenderWindow::screenToWindowPos */
+		Vector2I screenToWindowPos(const Vector2I& screenPos) const override;
+
+		/** @copydoc RenderWindow::windowToScreenPos */
+		Vector2I windowToScreenPos(const Vector2I& windowPos) const override;
+
+		/** @copydoc RenderWindow::getCore */
+		SPtr<ct::D3D11RenderWindow> getCore() const;
+
+	protected:
+		friend class D3D11RenderWindowManager;
+		friend class ct::D3D11RenderWindow;
+
+		D3D11RenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId, 
+			ct::D3D11Device& device, IDXGIFactory* DXGIFactory);
+
+		/** @copydoc RenderWindow::getProperties */
+		const RenderTargetProperties& getPropertiesInternal() const override { return mProperties; }
+
+		/** @copydoc RenderWindow::syncProperties */
+		void syncProperties() override;
+
+		/**	Retrieves internal window handle. */
+		HWND getHWnd() const;
+
+	private:
+		ct::D3D11Device& mDevice;
+		IDXGIFactory* mDXGIFactory;
+		D3D11RenderWindowProperties mProperties;
+	};
+
+	namespace ct
+	{
+	/**
+	 * Render window implementation for Windows and DirectX 11.
+	 *
+	 * @note	Core thread only.
+	 */
+	class BS_D3D11_EXPORT D3D11RenderWindow : public RenderWindowCore
+	{
+	public:
+		D3D11RenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId,
 			D3D11Device& device, IDXGIFactory* DXGIFactory);
 
-		~D3D11RenderWindowCore();
+		~D3D11RenderWindow();
 
 		/** @copydoc RenderWindowCore::move */
 		void move(INT32 left, INT32 top) override;
@@ -92,7 +135,7 @@ namespace bs { namespace ct
 		HWND _getWindowHandle() const;
 
 	protected:
-		friend class D3D11RenderWindow;
+		friend class bs::D3D11RenderWindow;
 
 		/** @copydoc CoreObjectCore::initialize */
 		void initialize() override;
@@ -143,50 +186,6 @@ namespace bs { namespace ct
 
 		D3D11RenderWindowProperties mProperties;
 		D3D11RenderWindowProperties mSyncedProperties;
-	};
-
-	/**
-	 * Render window implementation for Windows and DirectX 11.
-	 *
-	 * @note	Sim thread only.
-	 */
-	class BS_D3D11_EXPORT D3D11RenderWindow : public RenderWindow
-	{
-	public:
-		~D3D11RenderWindow() { }
-
-		/** @copydoc RenderWindow::screenToWindowPos */
-		void getCustomAttribute(const String& name, void* pData) const override;
-
-		/** @copydoc RenderWindow::screenToWindowPos */
-		Vector2I screenToWindowPos(const Vector2I& screenPos) const override;
-
-		/** @copydoc RenderWindow::windowToScreenPos */
-		Vector2I windowToScreenPos(const Vector2I& windowPos) const override;
-
-		/** @copydoc RenderWindow::getCore */
-		SPtr<D3D11RenderWindowCore> getCore() const;
-
-	protected:
-		friend class D3D11RenderWindowManager;
-		friend class D3D11RenderWindowCore;
-
-		D3D11RenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId, 
-			D3D11Device& device, IDXGIFactory* DXGIFactory);
-
-		/** @copydoc RenderWindowCore::getProperties */
-		const RenderTargetProperties& getPropertiesInternal() const override { return mProperties; }
-
-		/** @copydoc RenderWindow::syncProperties */
-		void syncProperties() override;
-
-		/**	Retrieves internal window handle. */
-		HWND getHWnd() const;
-
-	private:
-		D3D11Device& mDevice;
-		IDXGIFactory* mDXGIFactory;
-		D3D11RenderWindowProperties mProperties;
 	};
 	
 	/** @} */

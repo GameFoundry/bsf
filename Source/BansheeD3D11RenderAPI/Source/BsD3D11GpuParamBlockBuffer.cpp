@@ -8,14 +8,14 @@
 
 namespace bs { namespace ct
 {
-	D3D11GpuParamBlockBufferCore::D3D11GpuParamBlockBufferCore(UINT32 size, GpuParamBlockUsage usage, 
+	D3D11GpuParamBlockBuffer::D3D11GpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage, 
 		GpuDeviceFlags deviceMask)
 		:GpuParamBlockBufferCore(size, usage, deviceMask), mBuffer(nullptr)
 	{
 		assert((deviceMask == GDF_DEFAULT || deviceMask == GDF_PRIMARY) && "Multiple GPUs not supported natively on DirectX 11.");
 	}
 
-	D3D11GpuParamBlockBufferCore::~D3D11GpuParamBlockBufferCore()
+	D3D11GpuParamBlockBuffer::~D3D11GpuParamBlockBuffer()
 	{
 		if (mBuffer != nullptr)
 			bs_delete(mBuffer);
@@ -23,7 +23,7 @@ namespace bs { namespace ct
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_GpuParamBuffer);
 	}
 
-	void D3D11GpuParamBlockBufferCore::initialize()
+	void D3D11GpuParamBlockBuffer::initialize()
 	{
 		D3D11RenderAPI* d3d11rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
 		D3D11Device& device = d3d11rs->getPrimaryDevice();
@@ -41,12 +41,12 @@ namespace bs { namespace ct
 	}
 
 
-	ID3D11Buffer* D3D11GpuParamBlockBufferCore::getD3D11Buffer() const
+	ID3D11Buffer* D3D11GpuParamBlockBuffer::getD3D11Buffer() const
 	{
 		return mBuffer->getD3DBuffer();
 	}
 
-	void D3D11GpuParamBlockBufferCore::writeToGPU(const UINT8* data, UINT32 queueIdx)
+	void D3D11GpuParamBlockBuffer::writeToGPU(const UINT8* data, UINT32 queueIdx)
 	{
 		mBuffer->writeData(0, mSize, data, BWT_DISCARD);
 

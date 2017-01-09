@@ -6,14 +6,14 @@
 
 namespace bs { namespace ct
 {
-	D3D11IndexBufferCore::D3D11IndexBufferCore(D3D11Device& device, const INDEX_BUFFER_DESC& desc, 
+	D3D11IndexBuffer::D3D11IndexBuffer(D3D11Device& device, const INDEX_BUFFER_DESC& desc, 
 		GpuDeviceFlags deviceMask)
 		:IndexBufferCore(desc, deviceMask), mBuffer(nullptr), mDevice(device), mUsage(desc.usage)
 	{
 		assert((deviceMask == GDF_DEFAULT || deviceMask == GDF_PRIMARY) && "Multiple GPUs not supported natively on DirectX.");
 	}
 
-	D3D11IndexBufferCore::~D3D11IndexBufferCore()
+	D3D11IndexBuffer::~D3D11IndexBuffer()
 	{
 		if (mBuffer != nullptr)
 			bs_delete(mBuffer);
@@ -21,7 +21,7 @@ namespace bs { namespace ct
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_IndexBuffer);
 	}
 
-	void D3D11IndexBufferCore::initialize()
+	void D3D11IndexBuffer::initialize()
 	{
 		mBuffer = bs_new<D3D11HardwareBuffer>(D3D11HardwareBuffer::BT_INDEX, mUsage, 1, mSize, std::ref(mDevice), false);
 
@@ -29,7 +29,7 @@ namespace bs { namespace ct
 		IndexBufferCore::initialize();
 	}
 
-	void* D3D11IndexBufferCore::map(UINT32 offset, UINT32 length, GpuLockOptions options, UINT32 deviceIdx, UINT32 queueIdx)
+	void* D3D11IndexBuffer::map(UINT32 offset, UINT32 length, GpuLockOptions options, UINT32 deviceIdx, UINT32 queueIdx)
 	{
 #if BS_PROFILING_ENABLED
 		if (options == GBL_READ_ONLY || options == GBL_READ_WRITE)
@@ -46,26 +46,26 @@ namespace bs { namespace ct
 		return mBuffer->lock(offset, length, options);
 	}
 
-	void D3D11IndexBufferCore::unmap()
+	void D3D11IndexBuffer::unmap()
 	{
 		mBuffer->unlock();
 	}
 
-	void D3D11IndexBufferCore::readData(UINT32 offset, UINT32 length, void* dest, UINT32 deviceIdx, UINT32 queueIdx)
+	void D3D11IndexBuffer::readData(UINT32 offset, UINT32 length, void* dest, UINT32 deviceIdx, UINT32 queueIdx)
 	{
 		mBuffer->readData(offset, length, dest);
 
 		BS_INC_RENDER_STAT_CAT(ResRead, RenderStatObject_IndexBuffer);
 	}
 
-	void D3D11IndexBufferCore::writeData(UINT32 offset, UINT32 length, const void* pSource, BufferWriteType writeFlags, UINT32 queueIdx)
+	void D3D11IndexBuffer::writeData(UINT32 offset, UINT32 length, const void* pSource, BufferWriteType writeFlags, UINT32 queueIdx)
 	{
 		mBuffer->writeData(offset, length, pSource, writeFlags);
 
 		BS_INC_RENDER_STAT_CAT(ResWrite, RenderStatObject_IndexBuffer);
 	}
 
-	void D3D11IndexBufferCore::copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset,
+	void D3D11IndexBuffer::copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset,
 		UINT32 dstOffset, UINT32 length, bool discardWholeBuffer, UINT32 queueIdx)
 	{
 		mBuffer->copyData(srcBuffer, srcOffset, dstOffset, length, discardWholeBuffer);

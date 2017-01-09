@@ -8,18 +8,18 @@
 
 namespace bs { namespace ct
 {
-	D3D11SamplerStateCore::D3D11SamplerStateCore(const SAMPLER_STATE_DESC& desc, GpuDeviceFlags deviceMask)
+	D3D11SamplerState::D3D11SamplerState(const SAMPLER_STATE_DESC& desc, GpuDeviceFlags deviceMask)
 		:SamplerStateCore(desc, deviceMask), mSamplerState(nullptr)
 	{ }
 
-	D3D11SamplerStateCore::~D3D11SamplerStateCore()
+	D3D11SamplerState::~D3D11SamplerState()
 	{
 		SAFE_RELEASE(mSamplerState);
 
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_SamplerState);
 	}
 
-	void D3D11SamplerStateCore::createInternal()
+	void D3D11SamplerState::createInternal()
 	{
 		D3D11_SAMPLER_DESC samplerState;
 		ZeroMemory(&samplerState, sizeof(D3D11_SAMPLER_DESC));

@@ -158,7 +158,7 @@ namespace bs
 		virtual void getCustomAttribute(const String& name, void* pData) const;
 
 		/** 
-		 * @copydoc RenderTargetCore::setPriority 
+		 * @copydoc ct::RenderTargetCore::setPriority 
 		 *
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
@@ -240,7 +240,7 @@ namespace bs
 		const RenderTargetProperties& getProperties() const;
 
 	protected:
-		friend class RenderTarget;
+		friend class bs::RenderTarget;
 
 		/**	Returns properties that describe the render target. */
 		virtual const RenderTargetProperties& getPropertiesInternal() const = 0;

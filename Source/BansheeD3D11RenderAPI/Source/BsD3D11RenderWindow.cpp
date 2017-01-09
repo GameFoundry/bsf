@@ -18,19 +18,75 @@
 #include "BsMath.h"
 #include "Win32/BsWin32Window.h"
 
-namespace bs { namespace ct
+namespace bs
 {
 	D3D11RenderWindowProperties::D3D11RenderWindowProperties(const RENDER_WINDOW_DESC& desc)
 		:RenderWindowProperties(desc)
 	{ }
 
-	D3D11RenderWindowCore::D3D11RenderWindowCore(const RENDER_WINDOW_DESC& desc, UINT32 windowId, D3D11Device& device, IDXGIFactory* DXGIFactory)
+	D3D11RenderWindow::D3D11RenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId, ct::D3D11Device& device, 
+		IDXGIFactory* DXGIFactory)
+		:RenderWindow(desc, windowId), mProperties(desc), mDevice(device), mDXGIFactory(DXGIFactory)
+	{
+
+	}
+
+	void D3D11RenderWindow::getCustomAttribute(const String& name, void* pData) const
+	{
+		if (name == "WINDOW")
+		{
+			UINT64 *pHwnd = (UINT64*)pData;
+			*pHwnd = (UINT64)getHWnd();
+			return;
+		}
+	}
+
+	Vector2I D3D11RenderWindow::screenToWindowPos(const Vector2I& screenPos) const
+	{
+		POINT pos;
+		pos.x = screenPos.x;
+		pos.y = screenPos.y;
+
+		ScreenToClient(getHWnd(), &pos);
+		return Vector2I(pos.x, pos.y);
+	}
+
+	Vector2I D3D11RenderWindow::windowToScreenPos(const Vector2I& windowPos) const
+	{
+		POINT pos;
+		pos.x = windowPos.x;
+		pos.y = windowPos.y;
+
+		ClientToScreen(getHWnd(), &pos);
+		return Vector2I(pos.x, pos.y);
+	}
+
+	SPtr<ct::D3D11RenderWindow> D3D11RenderWindow::getCore() const
+	{
+		return std::static_pointer_cast<ct::D3D11RenderWindow>(mCoreSpecific);
+	}
+
+	HWND D3D11RenderWindow::getHWnd() const
+	{
+		blockUntilCoreInitialized();
+		return getCore()->_getWindowHandle();
+	}
+
+	void D3D11RenderWindow::syncProperties()
+	{
+		ScopedSpinLock lock(getCore()->mLock);
+		mProperties = getCore()->mSyncedProperties;
+	}
+
+	namespace ct
+	{
+	D3D11RenderWindow::D3D11RenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId, D3D11Device& device, IDXGIFactory* DXGIFactory)
 		: RenderWindowCore(desc, windowId), mProperties(desc), mSyncedProperties(desc), mDevice(device), mDXGIFactory(DXGIFactory), 
 		mSizing(false), mRenderTargetView(nullptr), mBackBuffer(nullptr), mSwapChain(nullptr), mDepthStencilView(nullptr), mIsChild(false), 
 		mRefreshRateNumerator(0), mRefreshRateDenominator(0), mShowOnSwap(false), mWindow(nullptr)
 	{ }
 
-	D3D11RenderWindowCore::~D3D11RenderWindowCore()
+	D3D11RenderWindow::~D3D11RenderWindow()
 	{ 
 		D3D11RenderWindowProperties& props = mProperties;
 
@@ -54,7 +110,7 @@ namespace bs { namespace ct
 		destroySizeDependedD3DResources();
 	}
 
-	void D3D11RenderWindowCore::initialize()
+	void D3D11RenderWindow::initialize()
 	{
 		ZeroMemory(&mSwapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
 
@@ -161,7 +217,7 @@ namespace bs { namespace ct
 		RenderWindowCore::initialize();
 	}
 
-	void D3D11RenderWindowCore::swapBuffers(UINT32 syncMask)
+	void D3D11RenderWindow::swapBuffers(UINT32 syncMask)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -177,7 +233,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	void D3D11RenderWindowCore::move(INT32 left, INT32 top)
+	void D3D11RenderWindow::move(INT32 left, INT32 top)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -200,7 +256,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	void D3D11RenderWindowCore::resize(UINT32 width, UINT32 height)
+	void D3D11RenderWindow::resize(UINT32 width, UINT32 height)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -223,7 +279,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	void D3D11RenderWindowCore::setActive(bool state)
+	void D3D11RenderWindow::setActive(bool state)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -241,7 +297,7 @@ namespace bs { namespace ct
 		RenderWindowCore::setActive(state);
 	}
 
-	void D3D11RenderWindowCore::setHidden(bool hidden)
+	void D3D11RenderWindow::setHidden(bool hidden)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -251,28 +307,28 @@ namespace bs { namespace ct
 		RenderWindowCore::setHidden(hidden);
 	}
 
-	void D3D11RenderWindowCore::minimize()
+	void D3D11RenderWindow::minimize()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		mWindow->minimize();
 	}
 
-	void D3D11RenderWindowCore::maximize()
+	void D3D11RenderWindow::maximize()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		mWindow->maximize();
 	}
 
-	void D3D11RenderWindowCore::restore()
+	void D3D11RenderWindow::restore()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		mWindow->restore();
 	}
 
-	void D3D11RenderWindowCore::setFullscreen(UINT32 width, UINT32 height, float refreshRate, UINT32 monitorIdx)
+	void D3D11RenderWindow::setFullscreen(UINT32 width, UINT32 height, float refreshRate, UINT32 monitorIdx)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -322,7 +378,7 @@ namespace bs { namespace ct
 		RenderWindowManager::instance().notifyMovedOrResized(this);
 	}
 
-	void D3D11RenderWindowCore::setFullscreen(const VideoMode& mode)
+	void D3D11RenderWindow::setFullscreen(const VideoMode& mode)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -364,7 +420,7 @@ namespace bs { namespace ct
 		RenderWindowManager::instance().notifyMovedOrResized(this);
 	}
 
-	void D3D11RenderWindowCore::setWindowed(UINT32 width, UINT32 height)
+	void D3D11RenderWindow::setWindowed(UINT32 width, UINT32 height)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -402,12 +458,12 @@ namespace bs { namespace ct
 		RenderWindowManager::instance().notifyMovedOrResized(this);
 	}
 
-	HWND D3D11RenderWindowCore::_getWindowHandle() const
+	HWND D3D11RenderWindow::_getWindowHandle() const
 	{
 		return mWindow->getHWnd();
 	}
 
-	void D3D11RenderWindowCore::getCustomAttribute(const String& name, void* pData) const
+	void D3D11RenderWindow::getCustomAttribute(const String& name, void* pData) const
 	{
 		if(name == "WINDOW")
 		{
@@ -453,7 +509,7 @@ namespace bs { namespace ct
 		RenderWindowCore::getCustomAttribute(name, pData);
 	}
 
-	void D3D11RenderWindowCore::copyToMemory(PixelData &dst, FrameBuffer buffer)
+	void D3D11RenderWindow::copyToMemory(PixelData &dst, FrameBuffer buffer)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -523,7 +579,7 @@ namespace bs { namespace ct
 		SAFE_RELEASE(backbuffer);
 	}
 
-	void D3D11RenderWindowCore::_windowMovedOrResized()
+	void D3D11RenderWindow::_windowMovedOrResized()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -550,7 +606,7 @@ namespace bs { namespace ct
 		RenderWindowCore::_windowMovedOrResized();
 	}
 
-	void D3D11RenderWindowCore::createSwapChain()
+	void D3D11RenderWindow::createSwapChain()
 	{
 		ZeroMemory(&mSwapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
 
@@ -610,7 +666,7 @@ namespace bs { namespace ct
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_SwapChain);
 	}
 
-	void D3D11RenderWindowCore::createSizeDependedD3DResources()
+	void D3D11RenderWindow::createSizeDependedD3DResources()
 	{
 		SAFE_RELEASE(mBackBuffer);
 
@@ -660,7 +716,7 @@ namespace bs { namespace ct
 			mDepthStencilBuffer = nullptr;
 	}
 
-	void D3D11RenderWindowCore::destroySizeDependedD3DResources()
+	void D3D11RenderWindow::destroySizeDependedD3DResources()
 	{
 		SAFE_RELEASE(mBackBuffer);
 		SAFE_RELEASE(mRenderTargetView);
@@ -668,7 +724,7 @@ namespace bs { namespace ct
 		mDepthStencilBuffer = nullptr;
 	}
 
-	void D3D11RenderWindowCore::resizeSwapChainBuffers(UINT32 width, UINT32 height)
+	void D3D11RenderWindow::resizeSwapChainBuffers(UINT32 width, UINT32 height)
 	{
 		destroySizeDependedD3DResources();
 
@@ -688,7 +744,7 @@ namespace bs { namespace ct
 		mDevice.getImmediateContext()->OMSetRenderTargets(0, 0, 0);
 	}
 
-	IDXGIDevice* D3D11RenderWindowCore::queryDxgiDevice()
+	IDXGIDevice* D3D11RenderWindow::queryDxgiDevice()
 	{
 		if (mDevice.getD3D11Device() == nullptr)
 		{
@@ -704,62 +760,10 @@ namespace bs { namespace ct
 		return pDXGIDevice;
 	}
 
-	void D3D11RenderWindowCore::syncProperties()
+	void D3D11RenderWindow::syncProperties()
 	{
 		ScopedSpinLock lock(mLock);
 		mProperties = mSyncedProperties;
+	}		
 	}
-
-	D3D11RenderWindow::D3D11RenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId, D3D11Device& device, IDXGIFactory* DXGIFactory)
-		:RenderWindow(desc, windowId), mProperties(desc), mDevice(device), mDXGIFactory(DXGIFactory)
-	{
-
-	}
-
-	void D3D11RenderWindow::getCustomAttribute(const String& name, void* pData) const
-	{
-		if (name == "WINDOW")
-		{
-			UINT64 *pHwnd = (UINT64*)pData;
-			*pHwnd = (UINT64)getHWnd();
-			return;
-		}
-	}
-
-	Vector2I D3D11RenderWindow::screenToWindowPos(const Vector2I& screenPos) const
-	{
-		POINT pos;
-		pos.x = screenPos.x;
-		pos.y = screenPos.y;
-
-		ScreenToClient(getHWnd(), &pos);
-		return Vector2I(pos.x, pos.y);
-	}
-
-	Vector2I D3D11RenderWindow::windowToScreenPos(const Vector2I& windowPos) const
-	{
-		POINT pos;
-		pos.x = windowPos.x;
-		pos.y = windowPos.y;
-
-		ClientToScreen(getHWnd(), &pos);
-		return Vector2I(pos.x, pos.y);
-	}
-
-	SPtr<D3D11RenderWindowCore> D3D11RenderWindow::getCore() const
-	{
-		return std::static_pointer_cast<D3D11RenderWindowCore>(mCoreSpecific);
-	}
-
-	HWND D3D11RenderWindow::getHWnd() const
-	{
-		blockUntilCoreInitialized();
-		return getCore()->_getWindowHandle();
-	}
-
-	void D3D11RenderWindow::syncProperties()
-	{
-		ScopedSpinLock lock(getCore()->mLock);
-		mProperties = getCore()->mSyncedProperties;
-	}
-}}
+}

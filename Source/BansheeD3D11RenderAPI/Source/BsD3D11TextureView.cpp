@@ -13,7 +13,7 @@ namespace bs { namespace ct
 	D3D11TextureView::D3D11TextureView(const SPtr<TextureCore>& texture, const TEXTURE_VIEW_DESC& desc)
 		:TextureView(texture, desc), mSRV(nullptr), mUAV(nullptr), mDSV(nullptr), mRTV(nullptr), mRODSV(nullptr)
 	{
-		D3D11TextureCore* d3d11Texture = static_cast<D3D11TextureCore*>(mOwnerTexture.get());
+		D3D11Texture* d3d11Texture = static_cast<D3D11Texture*>(mOwnerTexture.get());
 
 		if ((mDesc.usage & GVU_RANDOMWRITE) != 0)
 			mUAV = createUAV(d3d11Texture, mDesc.mostDetailMip, mDesc.firstArraySlice, mDesc.numArraySlices);
@@ -37,7 +37,7 @@ namespace bs { namespace ct
 		SAFE_RELEASE(mRTV);
 	}
 
-	ID3D11ShaderResourceView* D3D11TextureView::createSRV(D3D11TextureCore* texture, 
+	ID3D11ShaderResourceView* D3D11TextureView::createSRV(D3D11Texture* texture, 
 		UINT32 mostDetailMip, UINT32 numMips, UINT32 firstArraySlice, UINT32 numArraySlices)
 	{
 		D3D11_SHADER_RESOURCE_VIEW_DESC desc;
@@ -137,7 +137,7 @@ namespace bs { namespace ct
 		return srv;
 	}
 
-	ID3D11RenderTargetView* D3D11TextureView::createRTV(D3D11TextureCore* texture,
+	ID3D11RenderTargetView* D3D11TextureView::createRTV(D3D11Texture* texture,
 		UINT32 mipSlice, UINT32 firstArraySlice, UINT32 numArraySlices)
 	{
 		D3D11_RENDER_TARGET_VIEW_DESC desc;
@@ -224,7 +224,7 @@ namespace bs { namespace ct
 		return rtv;
 	}
 
-	ID3D11UnorderedAccessView* D3D11TextureView::createUAV(D3D11TextureCore* texture,
+	ID3D11UnorderedAccessView* D3D11TextureView::createUAV(D3D11Texture* texture,
 		UINT32 mipSlice, UINT32 firstArraySlice, UINT32 numArraySlices)
 	{
 		D3D11_UNORDERED_ACCESS_VIEW_DESC desc;
@@ -295,7 +295,7 @@ namespace bs { namespace ct
 		return uav;
 	}
 
-	ID3D11DepthStencilView* D3D11TextureView::createDSV(D3D11TextureCore* texture,
+	ID3D11DepthStencilView* D3D11TextureView::createDSV(D3D11Texture* texture,
 		UINT32 mipSlice, UINT32 firstArraySlice, UINT32 numArraySlices, bool readOnly)
 	{
 		D3D11_DEPTH_STENCIL_VIEW_DESC desc;

@@ -13,10 +13,10 @@ namespace bs { namespace ct
 	 */
 
 	/**	DirectX 11 implementation of a generic GPU buffer. */
-	class BS_D3D11_EXPORT D3D11GpuBufferCore : public GpuBufferCore
+	class BS_D3D11_EXPORT D3D11GpuBuffer : public GpuBufferCore
     {
     public:
-		~D3D11GpuBufferCore();
+		~D3D11GpuBuffer();
 
 		/** @copydoc GpuBufferCore::lock */
 		void* lock(UINT32 offset, UINT32 length, GpuLockOptions options, UINT32 deviceIdx = 0,
@@ -50,7 +50,7 @@ namespace bs { namespace ct
 		 * @note Only Default and RandomWrite views are supported for this type of buffer. 
 		 */
 		// TODO Low Priority: Perhaps reflect usage flag limitation by having an enum with only the supported two options?
-		static GpuBufferView* requestView(const SPtr<D3D11GpuBufferCore>& buffer, UINT32 firstElement, 
+		static GpuBufferView* requestView(const SPtr<D3D11GpuBuffer>& buffer, UINT32 firstElement, 
 			UINT32 numElements, GpuViewUsage usage);
 
 		/**
@@ -70,9 +70,9 @@ namespace bs { namespace ct
 		ID3D11UnorderedAccessView* getUAV() const;
 
 	protected:
-		friend class D3D11HardwareBufferCoreManager;
+		friend class D3D11HardwareBufferManager;
 
-		D3D11GpuBufferCore(const GPU_BUFFER_DESC& desc, GpuDeviceFlags deviceMask);
+		D3D11GpuBuffer(const GPU_BUFFER_DESC& desc, GpuDeviceFlags deviceMask);
 
 		/**	Destroys all buffer views regardless if their reference count is zero or not. */
 		void clearBufferViews();

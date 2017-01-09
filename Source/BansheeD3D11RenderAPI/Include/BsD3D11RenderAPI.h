@@ -220,8 +220,8 @@ namespace bs { namespace ct
 		D3D11_RECT mScissorRect;
 
 		SPtr<VertexDeclarationCore> mActiveVertexDeclaration;
-		SPtr<D3D11GpuProgramCore> mActiveVertexShader;
-		SPtr<D3D11DepthStencilStateCore> mActiveDepthStencilState;
+		SPtr<D3D11GpuProgram> mActiveVertexShader;
+		SPtr<D3D11DepthStencilState> mActiveDepthStencilState;
 
 		DrawOperationType mActiveDrawOp;
 	};

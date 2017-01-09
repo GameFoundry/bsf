@@ -39,28 +39,28 @@ namespace bs { namespace ct
 		// Set states
 		if((clearBuffers & FBT_COLOR) != 0)
 		{
-			D3D11BlendStateCore* d3d11BlendState = static_cast<D3D11BlendStateCore*>(const_cast<BlendStateCore*>(mClearQuadBlendStateYesC.get()));
+			D3D11BlendState* d3d11BlendState = static_cast<D3D11BlendState*>(const_cast<BlendStateCore*>(mClearQuadBlendStateYesC.get()));
 			mDevice->getImmediateContext()->OMSetBlendState(d3d11BlendState->getInternal(), nullptr, 0xFFFFFFFF);
 		}
 		else
 		{
-			D3D11BlendStateCore* d3d11BlendState = static_cast<D3D11BlendStateCore*>(const_cast<BlendStateCore*>(mClearQuadBlendStateNoC.get()));
+			D3D11BlendState* d3d11BlendState = static_cast<D3D11BlendState*>(const_cast<BlendStateCore*>(mClearQuadBlendStateNoC.get()));
 			mDevice->getImmediateContext()->OMSetBlendState(d3d11BlendState->getInternal(), nullptr, 0xFFFFFFFF);
 		}
 
-		D3D11RasterizerStateCore* d3d11RasterizerState = static_cast<D3D11RasterizerStateCore*>(const_cast<RasterizerStateCore*>(mClearQuadRasterizerState.get()));
+		D3D11RasterizerState* d3d11RasterizerState = static_cast<D3D11RasterizerState*>(const_cast<RasterizerStateCore*>(mClearQuadRasterizerState.get()));
 		mDevice->getImmediateContext()->RSSetState(d3d11RasterizerState->getInternal());
 
 		if((clearBuffers & FBT_DEPTH) != 0)
 		{
 			if((clearBuffers & FBT_STENCIL) != 0)
 			{
-				D3D11DepthStencilStateCore* d3d11RasterizerState = static_cast<D3D11DepthStencilStateCore*>(const_cast<DepthStencilStateCore*>(mClearQuadDSStateYesD_YesS.get()));
+				D3D11DepthStencilState* d3d11RasterizerState = static_cast<D3D11DepthStencilState*>(const_cast<DepthStencilStateCore*>(mClearQuadDSStateYesD_YesS.get()));
 				mDevice->getImmediateContext()->OMSetDepthStencilState(d3d11RasterizerState->getInternal(), stencil);
 			}
 			else
 			{
-				D3D11DepthStencilStateCore* d3d11RasterizerState = static_cast<D3D11DepthStencilStateCore*>(const_cast<DepthStencilStateCore*>(mClearQuadDSStateYesD_NoS.get()));
+				D3D11DepthStencilState* d3d11RasterizerState = static_cast<D3D11DepthStencilState*>(const_cast<DepthStencilStateCore*>(mClearQuadDSStateYesD_NoS.get()));
 				mDevice->getImmediateContext()->OMSetDepthStencilState(d3d11RasterizerState->getInternal(), stencil);
 			}
 		}
@@ -68,12 +68,12 @@ namespace bs { namespace ct
 		{
 			if((clearBuffers & FBT_STENCIL) != 0)
 			{
-				D3D11DepthStencilStateCore* d3d11RasterizerState = static_cast<D3D11DepthStencilStateCore*>(const_cast<DepthStencilStateCore*>(mClearQuadDSStateNoD_YesS.get()));
+				D3D11DepthStencilState* d3d11RasterizerState = static_cast<D3D11DepthStencilState*>(const_cast<DepthStencilStateCore*>(mClearQuadDSStateNoD_YesS.get()));
 				mDevice->getImmediateContext()->OMSetDepthStencilState(d3d11RasterizerState->getInternal(), stencil);
 			}
 			else
 			{
-				D3D11DepthStencilStateCore* d3d11RasterizerState = static_cast<D3D11DepthStencilStateCore*>(const_cast<DepthStencilStateCore*>(mClearQuadDSStateNoD_NoS.get()));
+				D3D11DepthStencilState* d3d11RasterizerState = static_cast<D3D11DepthStencilState*>(const_cast<DepthStencilStateCore*>(mClearQuadDSStateNoD_NoS.get()));
 				mDevice->getImmediateContext()->OMSetDepthStencilState(d3d11RasterizerState->getInternal(), stencil);
 			}
 		}

@@ -32,28 +32,21 @@
 namespace bs { namespace ct
 {
 	class D3D11RenderAPI;
-	class D3D11RenderWindow;
-	class D3D11TextureManager;
 	class D3D11Driver;
 	class D3D11DriverList;
 	class D3D11VideoMode;
 	class D3D11VideoModeList;
 	class D3D11GpuProgramManager;
-	class D3D11IndexBuffer;
 	class D3D11HLSLProgramFactory;
 	class D3D11Device;
 	class D3D11HardwareBuffer;
-	class D3D11GpuVertexProgram;
-	class D3D11GpuFragmentProgram;
-	class D3D11GpuGeometryProgram;
-	class D3D11GpuHullProgram;
-	class D3D11GpuDomainProgram;
-	class D3D11DepthStencilStateCore;
+	class D3D11DepthStencilState;
 	class D3D11InputLayoutManager;
-	class D3D11GpuBufferCore;
+	class D3D11GpuBuffer;
 	class D3D11RenderUtility;
-	class D3D11GpuProgramCore;
+	class D3D11GpuProgram;
 	class D3D11TextureView;
+	class D3D11RenderWindow;
 	class GpuBufferView;
 
 	/**	DirectX 11 specific types to track resource statistics for. */

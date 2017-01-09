@@ -6,34 +6,11 @@
 #include "BsTexture.h"
 #include "BsRenderTexture.h"
 
-namespace bs { namespace ct
+namespace bs
 {
 	/** @addtogroup D3D11
 	 *  @{
 	 */
-
-	class D3D11RenderTexture;
-
-	/**
-	 * DirectX 11 implementation of a render texture.
-	 *
-	 * @note	Core thread only.
-	 */
-	class D3D11RenderTextureCore : public RenderTextureCore
-	{
-	public:
-		D3D11RenderTextureCore(const RENDER_TEXTURE_DESC_CORE& desc, UINT32 deviceIdx);
-		virtual ~D3D11RenderTextureCore() { }
-
-		/** @copydoc RenderTextureCore::getCustomAttribute */
-		void getCustomAttribute(const String& name, void* data) const override;
-
-	protected:
-		/** @copydoc RenderTextureCore::getProperties */
-		const RenderTargetProperties& getPropertiesInternal() const override { return mProperties; }
-
-		RenderTextureProperties mProperties;
-	};
 
 	/**
 	 * DirectX 11 implementation of a render texture.
@@ -56,5 +33,29 @@ namespace bs { namespace ct
 		RenderTextureProperties mProperties;
 	};
 
+	namespace ct
+	{
+	/**
+	 * DirectX 11 implementation of a render texture.
+	 *
+	 * @note	Core thread only.
+	 */
+	class D3D11RenderTexture : public RenderTextureCore
+	{
+	public:
+		D3D11RenderTexture(const RENDER_TEXTURE_DESC_CORE& desc, UINT32 deviceIdx);
+		virtual ~D3D11RenderTexture() { }
+
+		/** @copydoc RenderTextureCore::getCustomAttribute */
+		void getCustomAttribute(const String& name, void* data) const override;
+
+	protected:
+		/** @copydoc RenderTextureCore::getProperties */
+		const RenderTargetProperties& getPropertiesInternal() const override { return mProperties; }
+
+		RenderTextureProperties mProperties;
+	};
+	}
+
 	/** @} */
-}}
+}

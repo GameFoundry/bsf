@@ -51,13 +51,13 @@ namespace bs { namespace ct
 		 * Initializes a new buffer view for the specified buffer. Descriptor structure defines which portion of the buffer,
 		 * and how will its contents be represented by the view.
 		 */
-		void initialize(const SPtr<D3D11GpuBufferCore>& buffer, GPU_BUFFER_VIEW_DESC& desc);
+		void initialize(const SPtr<D3D11GpuBuffer>& buffer, GPU_BUFFER_VIEW_DESC& desc);
 
 		/** Returns a descriptor structure used for creating the view. */
 		const GPU_BUFFER_VIEW_DESC& getDesc() const { return mDesc; }
 
 		/**	Returns the buffer this view was created for. */
-		SPtr<D3D11GpuBufferCore> getBuffer() const { return mBuffer; }
+		SPtr<D3D11GpuBuffer> getBuffer() const { return mBuffer; }
 
 		/** Returns index of first element in the buffer that this view provides access to. */
 		UINT32 getFirstElement() const { return mDesc.firstElement; }
@@ -95,7 +95,7 @@ namespace bs { namespace ct
 		 *								number of bytes for raw buffers or number of structures for structured buffers.
 		 * @return						Constructed DX11 shader resource view object.
 		 */
-		ID3D11ShaderResourceView* createSRV(D3D11GpuBufferCore* buffer, UINT32 firstElement, UINT32 elementWidth, UINT32 numElements);
+		ID3D11ShaderResourceView* createSRV(D3D11GpuBuffer* buffer, UINT32 firstElement, UINT32 elementWidth, UINT32 numElements);
 
 		/**
 		 * Creates a DX11 unordered access view that allows a buffer to be bound to a shader for random reading or writing.
@@ -108,13 +108,13 @@ namespace bs { namespace ct
 		 *								number of bytes for raw buffers or number of structures for structured buffers.
 		 * @return						Constructed DX11 unordered access view object.
 		 */
-		ID3D11UnorderedAccessView* createUAV(D3D11GpuBufferCore* buffer, UINT32 firstElement, UINT32 numElements, bool useCounter);
+		ID3D11UnorderedAccessView* createUAV(D3D11GpuBuffer* buffer, UINT32 firstElement, UINT32 numElements, bool useCounter);
 
 		ID3D11ShaderResourceView* mSRV;
 		ID3D11UnorderedAccessView* mUAV;
 
 		GPU_BUFFER_VIEW_DESC mDesc;
-		SPtr<D3D11GpuBufferCore> mBuffer;
+		SPtr<D3D11GpuBuffer> mBuffer;
 	};
 
 	/** @} */

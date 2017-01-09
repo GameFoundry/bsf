@@ -13,12 +13,12 @@ namespace bs { namespace ct
 	 */
 
 	/**	DirectX 11 implementation of an index buffer. */
-	class BS_D3D11_EXPORT D3D11IndexBufferCore : public IndexBufferCore
+	class BS_D3D11_EXPORT D3D11IndexBuffer : public IndexBufferCore
 	{
 	public:
-		D3D11IndexBufferCore(D3D11Device& device, const INDEX_BUFFER_DESC& desc, GpuDeviceFlags deviceMask);
+		D3D11IndexBuffer(D3D11Device& device, const INDEX_BUFFER_DESC& desc, GpuDeviceFlags deviceMask);
 
-		~D3D11IndexBufferCore();
+		~D3D11IndexBuffer();
 
 		/** @copydoc IndexBufferCore::readData */
 		void readData(UINT32 offset, UINT32 length, void* dest, UINT32 deviceIdx = 0, UINT32 queueIdx = 0) override;

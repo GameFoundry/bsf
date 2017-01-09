@@ -12,11 +12,11 @@ namespace bs { namespace ct
 	 */
 
 	/**	DirectX 11 implementation of a parameter block buffer (constant buffer in DX11 lingo). */
-	class BS_D3D11_EXPORT D3D11GpuParamBlockBufferCore : public GpuParamBlockBufferCore
+	class BS_D3D11_EXPORT D3D11GpuParamBlockBuffer : public GpuParamBlockBufferCore
 	{
 	public:
-		D3D11GpuParamBlockBufferCore(UINT32 size, GpuParamBlockUsage usage, GpuDeviceFlags deviceMask);
-		~D3D11GpuParamBlockBufferCore();
+		D3D11GpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage, GpuDeviceFlags deviceMask);
+		~D3D11GpuParamBlockBuffer();
 
 		/** @copydoc GpuParamBlockBufferCore::writeToGPU */
 		void writeToGPU(const UINT8* data, UINT32 queueIdx = 0) override;

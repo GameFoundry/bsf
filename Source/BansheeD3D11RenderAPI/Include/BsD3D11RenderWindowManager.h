@@ -5,7 +5,7 @@
 #include "BsD3D11Prerequisites.h"
 #include "BsRenderWindowManager.h"
 
-namespace bs { namespace ct
+namespace bs
 {
 	/** @addtogroup D3D11
 	 *  @{
@@ -15,29 +15,33 @@ namespace bs { namespace ct
 	class BS_D3D11_EXPORT D3D11RenderWindowManager : public RenderWindowManager
 	{
 	public:
-		D3D11RenderWindowManager(D3D11RenderAPI* renderSystem);
+		D3D11RenderWindowManager(ct::D3D11RenderAPI* renderSystem);
 
 	protected:
 		/** @copydoc RenderWindowManager::createImpl */
-		SPtr<RenderWindow> createImpl(RENDER_WINDOW_DESC& desc, UINT32 windowId, const SPtr<RenderWindow>& parentWindow) override;
+		SPtr<RenderWindow> createImpl(RENDER_WINDOW_DESC& desc, UINT32 windowId, 
+			const SPtr<RenderWindow>& parentWindow) override;
 
 	private:
-		D3D11RenderAPI* mRenderSystem;
+		ct::D3D11RenderAPI* mRenderSystem;
 	};
 
+	namespace ct
+	{
 	/** @copydoc RenderWindowCoreManager */
-	class BS_D3D11_EXPORT D3D11RenderWindowCoreManager : public RenderWindowCoreManager
+	class BS_D3D11_EXPORT D3D11RenderWindowManager : public RenderWindowCoreManager
 	{
 	public:
-		D3D11RenderWindowCoreManager(D3D11RenderAPI* renderSystem);
+		D3D11RenderWindowManager(D3D11RenderAPI* renderSystem);
 
 	protected:
 		/** @copydoc RenderWindowCoreManager::createInternal */
-		virtual SPtr<RenderWindowCore> createInternal(RENDER_WINDOW_DESC& desc, UINT32 windowId) override;
+		SPtr<RenderWindowCore> createInternal(RENDER_WINDOW_DESC& desc, UINT32 windowId) override;
 
 	private:
 		D3D11RenderAPI* mRenderSystem;
 	};
+	}
 
 	/** @} */
-}}
+}

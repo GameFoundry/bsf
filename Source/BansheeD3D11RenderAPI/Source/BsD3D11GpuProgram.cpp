@@ -14,16 +14,16 @@
 
 namespace bs { namespace ct
 {
-	UINT32 D3D11GpuProgramCore::GlobalProgramId = 0;
+	UINT32 D3D11GpuProgram::GlobalProgramId = 0;
 
-	D3D11GpuProgramCore::D3D11GpuProgramCore(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
+	D3D11GpuProgram::D3D11GpuProgram(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
 		: GpuProgramCore(desc, deviceMask),
 		mEnableBackwardsCompatibility(false), mProgramId(0)
 	{
 		assert((deviceMask == GDF_DEFAULT || deviceMask == GDF_PRIMARY) && "Multiple GPUs not supported natively on DirectX 11.");
 	}
 
-	D3D11GpuProgramCore::~D3D11GpuProgramCore()
+	D3D11GpuProgram::~D3D11GpuProgram()
 	{
 		mMicrocode.clear();
 		mInputDeclaration = nullptr;
@@ -31,7 +31,7 @@ namespace bs { namespace ct
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_GpuProgram);
 	}
 
-	void D3D11GpuProgramCore::initialize()
+	void D3D11GpuProgram::initialize()
 	{
 		if (!isSupported())
 		{
@@ -86,7 +86,7 @@ namespace bs { namespace ct
 		GpuProgramCore::initialize();
 	}
 
-	UINT32 D3D11GpuProgramCore::parseErrorMessage(const char* message)
+	UINT32 D3D11GpuProgram::parseErrorMessage(const char* message)
 	{
 		if (message == nullptr)
 			return 0;
@@ -105,7 +105,7 @@ namespace bs { namespace ct
 		return 0;
 	}
 
-	ID3DBlob* D3D11GpuProgramCore::compileMicrocode(const String& profile)
+	ID3DBlob* D3D11GpuProgram::compileMicrocode(const String& profile)
 	{
 		UINT compileFlags = 0;
 #if defined(BS_DEBUG_MODE)
@@ -168,7 +168,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	void D3D11GpuProgramCore::populateParametersAndConstants(ID3DBlob* microcode)
+	void D3D11GpuProgram::populateParametersAndConstants(ID3DBlob* microcode)
 	{
 		assert(microcode != nullptr);
 
@@ -186,16 +186,16 @@ namespace bs { namespace ct
 		}
 	}
 
-	D3D11GpuVertexProgramCore::D3D11GpuVertexProgramCore(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
-		: D3D11GpuProgramCore(desc, deviceMask), mVertexShader(nullptr)
+	D3D11GpuVertexProgram::D3D11GpuVertexProgram(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
+		: D3D11GpuProgram(desc, deviceMask), mVertexShader(nullptr)
 	{ }
 
-	D3D11GpuVertexProgramCore::~D3D11GpuVertexProgramCore()
+	D3D11GpuVertexProgram::~D3D11GpuVertexProgram()
 	{
 		SAFE_RELEASE(mVertexShader);
 	}
 
-	void D3D11GpuVertexProgramCore::loadFromMicrocode(D3D11Device& device, ID3D10Blob*  microcode)
+	void D3D11GpuVertexProgram::loadFromMicrocode(D3D11Device& device, ID3D10Blob*  microcode)
 	{
 		HRESULT hr = device.getD3D11Device()->CreateVertexShader( 
 			static_cast<DWORD*>(microcode->GetBufferPointer()), microcode->GetBufferSize(),
@@ -210,21 +210,21 @@ namespace bs { namespace ct
 		}
 	}
 
-	ID3D11VertexShader * D3D11GpuVertexProgramCore::getVertexShader() const
+	ID3D11VertexShader * D3D11GpuVertexProgram::getVertexShader() const
 	{
 		return mVertexShader;
 	}
 
-	D3D11GpuFragmentProgramCore::D3D11GpuFragmentProgramCore(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
-		: D3D11GpuProgramCore(desc, deviceMask), mPixelShader(nullptr)
+	D3D11GpuFragmentProgram::D3D11GpuFragmentProgram(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
+		: D3D11GpuProgram(desc, deviceMask), mPixelShader(nullptr)
 	{ }
 
-	D3D11GpuFragmentProgramCore::~D3D11GpuFragmentProgramCore()
+	D3D11GpuFragmentProgram::~D3D11GpuFragmentProgram()
 	{
 		SAFE_RELEASE(mPixelShader);
 	}
 
-	void D3D11GpuFragmentProgramCore::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
+	void D3D11GpuFragmentProgram::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
 	{
 		HRESULT hr = device.getD3D11Device()->CreatePixelShader(
 			static_cast<DWORD*>(microcode->GetBufferPointer()), microcode->GetBufferSize(),
@@ -238,22 +238,22 @@ namespace bs { namespace ct
 		}
 	}
 
-	ID3D11PixelShader * D3D11GpuFragmentProgramCore::getPixelShader() const
+	ID3D11PixelShader * D3D11GpuFragmentProgram::getPixelShader() const
 	{
 		return mPixelShader;
 	}
 
 
-	D3D11GpuGeometryProgramCore::D3D11GpuGeometryProgramCore(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
-		: D3D11GpuProgramCore(desc, deviceMask), mGeometryShader(nullptr)
+	D3D11GpuGeometryProgram::D3D11GpuGeometryProgram(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
+		: D3D11GpuProgram(desc, deviceMask), mGeometryShader(nullptr)
 	{ }
 
-	D3D11GpuGeometryProgramCore::~D3D11GpuGeometryProgramCore()
+	D3D11GpuGeometryProgram::~D3D11GpuGeometryProgram()
 	{ 
 		SAFE_RELEASE(mGeometryShader);
 	}
 
-	void D3D11GpuGeometryProgramCore::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
+	void D3D11GpuGeometryProgram::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
 	{
 		HRESULT hr = device.getD3D11Device()->CreateGeometryShader(
 			static_cast<DWORD*>(microcode->GetBufferPointer()), microcode->GetBufferSize(),
@@ -267,21 +267,21 @@ namespace bs { namespace ct
 		}
 	}
 
-	ID3D11GeometryShader * D3D11GpuGeometryProgramCore::getGeometryShader() const
+	ID3D11GeometryShader * D3D11GpuGeometryProgram::getGeometryShader() const
 	{
 		return mGeometryShader;
 	}
 
-	D3D11GpuDomainProgramCore::D3D11GpuDomainProgramCore(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
-		: D3D11GpuProgramCore(desc, deviceMask), mDomainShader(nullptr)
+	D3D11GpuDomainProgram::D3D11GpuDomainProgram(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
+		: D3D11GpuProgram(desc, deviceMask), mDomainShader(nullptr)
 	{ }
 
-	D3D11GpuDomainProgramCore::~D3D11GpuDomainProgramCore()
+	D3D11GpuDomainProgram::~D3D11GpuDomainProgram()
 	{ 
 		SAFE_RELEASE(mDomainShader);
 	}
 
-	void D3D11GpuDomainProgramCore::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
+	void D3D11GpuDomainProgram::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
 	{
 		HRESULT hr = device.getD3D11Device()->CreateDomainShader(
 			static_cast<DWORD*>(microcode->GetBufferPointer()), microcode->GetBufferSize(),
@@ -295,21 +295,21 @@ namespace bs { namespace ct
 		}
 	}
 
-	ID3D11DomainShader * D3D11GpuDomainProgramCore::getDomainShader() const
+	ID3D11DomainShader * D3D11GpuDomainProgram::getDomainShader() const
 	{
 		return mDomainShader;
 	}
 
-	D3D11GpuHullProgramCore::D3D11GpuHullProgramCore(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
-		: D3D11GpuProgramCore(desc, deviceMask), mHullShader(nullptr)
+	D3D11GpuHullProgram::D3D11GpuHullProgram(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
+		: D3D11GpuProgram(desc, deviceMask), mHullShader(nullptr)
 	{ }
 
-	D3D11GpuHullProgramCore::~D3D11GpuHullProgramCore()
+	D3D11GpuHullProgram::~D3D11GpuHullProgram()
 	{ 
 		SAFE_RELEASE(mHullShader);
 	}
 
-	void D3D11GpuHullProgramCore::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
+	void D3D11GpuHullProgram::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
 	{
 		// Create the shader
 		HRESULT hr = device.getD3D11Device()->CreateHullShader(
@@ -324,22 +324,22 @@ namespace bs { namespace ct
 		}
 	}
 
-	ID3D11HullShader* D3D11GpuHullProgramCore::getHullShader() const
+	ID3D11HullShader* D3D11GpuHullProgram::getHullShader() const
 	{
 		return mHullShader;
 	}
 
 
-	D3D11GpuComputeProgramCore::D3D11GpuComputeProgramCore(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
-		: D3D11GpuProgramCore(desc, deviceMask), mComputeShader(nullptr)
+	D3D11GpuComputeProgram::D3D11GpuComputeProgram(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
+		: D3D11GpuProgram(desc, deviceMask), mComputeShader(nullptr)
 	{ }
 
-	D3D11GpuComputeProgramCore::~D3D11GpuComputeProgramCore()
+	D3D11GpuComputeProgram::~D3D11GpuComputeProgram()
 	{
 		SAFE_RELEASE(mComputeShader);
 	}
 
-	void D3D11GpuComputeProgramCore::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
+	void D3D11GpuComputeProgram::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
 	{
 		HRESULT hr = device.getD3D11Device()->CreateComputeShader(
 			static_cast<DWORD*>(microcode->GetBufferPointer()), microcode->GetBufferSize(),
@@ -353,7 +353,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	ID3D11ComputeShader* D3D11GpuComputeProgramCore::getComputeShader() const
+	ID3D11ComputeShader* D3D11GpuComputeProgram::getComputeShader() const
 	{
 		return mComputeShader;
 	}

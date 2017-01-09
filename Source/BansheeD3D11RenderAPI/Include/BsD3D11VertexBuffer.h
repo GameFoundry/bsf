@@ -13,12 +13,12 @@ namespace bs { namespace ct
 	 */
 
 	/**	DirectX 11 implementation of a vertex buffer. */
-	class BS_D3D11_EXPORT D3D11VertexBufferCore : public VertexBufferCore
+	class BS_D3D11_EXPORT D3D11VertexBuffer : public VertexBufferCore
 	{
 	public:
-		D3D11VertexBufferCore(D3D11Device& device, const VERTEX_BUFFER_DESC& desc, GpuDeviceFlags deviceMask);
+		D3D11VertexBuffer(D3D11Device& device, const VERTEX_BUFFER_DESC& desc, GpuDeviceFlags deviceMask);
 
-		~D3D11VertexBufferCore();
+		~D3D11VertexBuffer();
 
 		/** @copydoc VertexBufferCore::readData */
 		void readData(UINT32 offset, UINT32 length, void* dest, UINT32 deviceIdx = 0, UINT32 queueIdx = 0) override;

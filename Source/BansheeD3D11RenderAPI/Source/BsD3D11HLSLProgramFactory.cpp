@@ -27,28 +27,28 @@ namespace bs { namespace ct
 		switch (desc.type)
 		{
 		case GPT_VERTEX_PROGRAM:
-			gpuProg = bs_shared_ptr<D3D11GpuVertexProgramCore>(new (bs_alloc<D3D11GpuVertexProgramCore>())
-				D3D11GpuVertexProgramCore(desc, deviceMask));
+			gpuProg = bs_shared_ptr<D3D11GpuVertexProgram>(new (bs_alloc<D3D11GpuVertexProgram>())
+				D3D11GpuVertexProgram(desc, deviceMask));
 			break;
 		case GPT_FRAGMENT_PROGRAM:
-			gpuProg = bs_shared_ptr<D3D11GpuFragmentProgramCore>(new (bs_alloc<D3D11GpuFragmentProgramCore>())
-				D3D11GpuFragmentProgramCore(desc, deviceMask));
+			gpuProg = bs_shared_ptr<D3D11GpuFragmentProgram>(new (bs_alloc<D3D11GpuFragmentProgram>())
+				D3D11GpuFragmentProgram(desc, deviceMask));
 			break;
 		case GPT_HULL_PROGRAM:
-			gpuProg = bs_shared_ptr<D3D11GpuHullProgramCore>(new (bs_alloc<D3D11GpuHullProgramCore>())
-				D3D11GpuHullProgramCore(desc, deviceMask));
+			gpuProg = bs_shared_ptr<D3D11GpuHullProgram>(new (bs_alloc<D3D11GpuHullProgram>())
+				D3D11GpuHullProgram(desc, deviceMask));
 			break;
 		case GPT_DOMAIN_PROGRAM:
-			gpuProg = bs_shared_ptr<D3D11GpuDomainProgramCore>(new (bs_alloc<D3D11GpuDomainProgramCore>())
-				D3D11GpuDomainProgramCore(desc, deviceMask));
+			gpuProg = bs_shared_ptr<D3D11GpuDomainProgram>(new (bs_alloc<D3D11GpuDomainProgram>())
+				D3D11GpuDomainProgram(desc, deviceMask));
 			break;
 		case GPT_GEOMETRY_PROGRAM:
-			gpuProg = bs_shared_ptr<D3D11GpuGeometryProgramCore>(new (bs_alloc<D3D11GpuGeometryProgramCore>())
-				D3D11GpuGeometryProgramCore(desc, deviceMask));
+			gpuProg = bs_shared_ptr<D3D11GpuGeometryProgram>(new (bs_alloc<D3D11GpuGeometryProgram>())
+				D3D11GpuGeometryProgram(desc, deviceMask));
 			break;
 		case GPT_COMPUTE_PROGRAM:
-			gpuProg = bs_shared_ptr<D3D11GpuComputeProgramCore>(new (bs_alloc<D3D11GpuComputeProgramCore>())
-				D3D11GpuComputeProgramCore(desc, deviceMask));
+			gpuProg = bs_shared_ptr<D3D11GpuComputeProgram>(new (bs_alloc<D3D11GpuComputeProgram>())
+				D3D11GpuComputeProgram(desc, deviceMask));
 			break;
 		}
 
@@ -68,28 +68,28 @@ namespace bs { namespace ct
 		switch (type)
 		{
 		case GPT_VERTEX_PROGRAM:
-			gpuProg = bs_shared_ptr<D3D11GpuVertexProgramCore>(new (bs_alloc<D3D11GpuVertexProgramCore>())
-				D3D11GpuVertexProgramCore(desc, deviceMask));
+			gpuProg = bs_shared_ptr<D3D11GpuVertexProgram>(new (bs_alloc<D3D11GpuVertexProgram>())
+				D3D11GpuVertexProgram(desc, deviceMask));
 			break;
 		case GPT_FRAGMENT_PROGRAM:
-			gpuProg = bs_shared_ptr<D3D11GpuFragmentProgramCore>(new (bs_alloc<D3D11GpuFragmentProgramCore>())
-				D3D11GpuFragmentProgramCore(desc, deviceMask));
+			gpuProg = bs_shared_ptr<D3D11GpuFragmentProgram>(new (bs_alloc<D3D11GpuFragmentProgram>())
+				D3D11GpuFragmentProgram(desc, deviceMask));
 			break;
 		case GPT_HULL_PROGRAM:
-			gpuProg = bs_shared_ptr<D3D11GpuHullProgramCore>(new (bs_alloc<D3D11GpuHullProgramCore>())
-				D3D11GpuHullProgramCore(desc, deviceMask));
+			gpuProg = bs_shared_ptr<D3D11GpuHullProgram>(new (bs_alloc<D3D11GpuHullProgram>())
+				D3D11GpuHullProgram(desc, deviceMask));
 			break;
 		case GPT_DOMAIN_PROGRAM:
-			gpuProg = bs_shared_ptr<D3D11GpuDomainProgramCore>(new (bs_alloc<D3D11GpuDomainProgramCore>())
-				D3D11GpuDomainProgramCore(desc, deviceMask));
+			gpuProg = bs_shared_ptr<D3D11GpuDomainProgram>(new (bs_alloc<D3D11GpuDomainProgram>())
+				D3D11GpuDomainProgram(desc, deviceMask));
 			break;
 		case GPT_GEOMETRY_PROGRAM:
-			gpuProg = bs_shared_ptr<D3D11GpuGeometryProgramCore>(new (bs_alloc<D3D11GpuGeometryProgramCore>())
-				D3D11GpuGeometryProgramCore(desc, deviceMask));
+			gpuProg = bs_shared_ptr<D3D11GpuGeometryProgram>(new (bs_alloc<D3D11GpuGeometryProgram>())
+				D3D11GpuGeometryProgram(desc, deviceMask));
 			break;
 		case GPT_COMPUTE_PROGRAM:
-			gpuProg = bs_shared_ptr<D3D11GpuComputeProgramCore>(new (bs_alloc<D3D11GpuComputeProgramCore>())
-				D3D11GpuComputeProgramCore(desc, deviceMask));
+			gpuProg = bs_shared_ptr<D3D11GpuComputeProgram>(new (bs_alloc<D3D11GpuComputeProgram>())
+				D3D11GpuComputeProgram(desc, deviceMask));
 			break;
 		}
 

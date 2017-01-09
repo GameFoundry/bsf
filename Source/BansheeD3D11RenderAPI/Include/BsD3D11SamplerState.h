@@ -12,16 +12,16 @@ namespace bs { namespace ct
 	 */
 
 	/**	DirectX 11 implementation of a sampler state. Wraps a DX11 sampler state object. */
-	class BS_D3D11_EXPORT D3D11SamplerStateCore : public SamplerStateCore
+	class BS_D3D11_EXPORT D3D11SamplerState : public SamplerStateCore
 	{
 	public:
-		~D3D11SamplerStateCore();
+		~D3D11SamplerState();
 		ID3D11SamplerState* getInternal() const { return mSamplerState; }
 
 	protected:
-		friend class D3D11RenderStateCoreManager;
+		friend class D3D11RenderStateManager;
 
-		D3D11SamplerStateCore(const SAMPLER_STATE_DESC& desc, GpuDeviceFlags deviceMask);
+		D3D11SamplerState(const SAMPLER_STATE_DESC& desc, GpuDeviceFlags deviceMask);
 
 		/** @copydoc SamplerStateCore::createInternal */
 		void createInternal() override;

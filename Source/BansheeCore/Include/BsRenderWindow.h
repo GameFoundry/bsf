@@ -134,42 +134,42 @@ namespace bs
 		void show();
 
 		/** 
-		 * @copydoc RenderWindowCore::minimize  
+		 * @copydoc ct::RenderWindowCore::minimize  
 		 * 
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		void minimize();
 
 		/** 
-		 * @copydoc RenderWindowCore::maximize 
+		 * @copydoc ct::RenderWindowCore::maximize 
 		 * 
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		void maximize();
 
 		/** 
-		 * @copydoc RenderWindowCore::restore  
+		 * @copydoc ct::RenderWindowCore::restore  
 		 * 
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		void restore();
 
 		/** 
-		 * @copydoc RenderWindowCore::setFullscreen(UINT32, UINT32, float, UINT32) 
+		 * @copydoc ct::RenderWindowCore::setFullscreen(UINT32, UINT32, float, UINT32) 
 		 * 
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		void setFullscreen(UINT32 width, UINT32 height, float refreshRate = 60.0f, UINT32 monitorIdx = 0);
 
 		/** 
-		 * @copydoc RenderWindowCore::setFullscreen(const VideoMode&) 
+		 * @copydoc ct::RenderWindowCore::setFullscreen(const VideoMode&) 
 		 * 
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
 		void setFullscreen(const VideoMode& videoMode);
 
 		/** 
-		 * @copydoc RenderWindowCore::setWindowed 
+		 * @copydoc ct::RenderWindowCore::setWindowed 
 		 * 
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */

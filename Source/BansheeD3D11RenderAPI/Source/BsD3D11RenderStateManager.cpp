@@ -8,33 +8,33 @@
 
 namespace bs { namespace ct
 {
-	SPtr<SamplerStateCore> D3D11RenderStateCoreManager::createSamplerStateInternal(const SAMPLER_STATE_DESC& desc, GpuDeviceFlags deviceMask) const
+	SPtr<SamplerStateCore> D3D11RenderStateManager::createSamplerStateInternal(const SAMPLER_STATE_DESC& desc, GpuDeviceFlags deviceMask) const
 	{
-		SPtr<SamplerStateCore> ret = bs_shared_ptr<D3D11SamplerStateCore>(new (bs_alloc<D3D11SamplerStateCore>()) D3D11SamplerStateCore(desc, deviceMask));
+		SPtr<SamplerStateCore> ret = bs_shared_ptr<D3D11SamplerState>(new (bs_alloc<D3D11SamplerState>()) D3D11SamplerState(desc, deviceMask));
 		ret->_setThisPtr(ret);
 
 		return ret;
 	}
 
-	SPtr<BlendStateCore> D3D11RenderStateCoreManager::createBlendStateInternal(const BLEND_STATE_DESC& desc, UINT32 id) const
+	SPtr<BlendStateCore> D3D11RenderStateManager::createBlendStateInternal(const BLEND_STATE_DESC& desc, UINT32 id) const
 	{
-		SPtr<BlendStateCore> ret = bs_shared_ptr<D3D11BlendStateCore>(new (bs_alloc<D3D11BlendStateCore>()) D3D11BlendStateCore(desc, id));
+		SPtr<BlendStateCore> ret = bs_shared_ptr<D3D11BlendState>(new (bs_alloc<D3D11BlendState>()) D3D11BlendState(desc, id));
 		ret->_setThisPtr(ret);
 
 		return ret;
 	}
 
-	SPtr<RasterizerStateCore> D3D11RenderStateCoreManager::createRasterizerStateInternal(const RASTERIZER_STATE_DESC& desc, UINT32 id) const
+	SPtr<RasterizerStateCore> D3D11RenderStateManager::createRasterizerStateInternal(const RASTERIZER_STATE_DESC& desc, UINT32 id) const
 	{
-		SPtr<RasterizerStateCore> ret = bs_shared_ptr<D3D11RasterizerStateCore>(new (bs_alloc<D3D11RasterizerStateCore>()) D3D11RasterizerStateCore(desc, id));
+		SPtr<RasterizerStateCore> ret = bs_shared_ptr<D3D11RasterizerState>(new (bs_alloc<D3D11RasterizerState>()) D3D11RasterizerState(desc, id));
 		ret->_setThisPtr(ret);
 
 		return ret;
 	}
 
-	SPtr<DepthStencilStateCore> D3D11RenderStateCoreManager::createDepthStencilStateInternal(const DEPTH_STENCIL_STATE_DESC& desc, UINT32 id) const
+	SPtr<DepthStencilStateCore> D3D11RenderStateManager::createDepthStencilStateInternal(const DEPTH_STENCIL_STATE_DESC& desc, UINT32 id) const
 	{
-		SPtr<DepthStencilStateCore> ret = bs_shared_ptr<D3D11DepthStencilStateCore>(new (bs_alloc<D3D11DepthStencilStateCore>()) D3D11DepthStencilStateCore(desc, id));
+		SPtr<DepthStencilStateCore> ret = bs_shared_ptr<D3D11DepthStencilState>(new (bs_alloc<D3D11DepthStencilState>()) D3D11DepthStencilState(desc, id));
 		ret->_setThisPtr(ret);
 
 		return ret;

@@ -13,7 +13,7 @@
 
 namespace bs { namespace ct
 {
-	D3D11TextureCore::D3D11TextureCore(const TEXTURE_DESC& desc, const SPtr<PixelData>& initialData, 
+	D3D11Texture::D3D11Texture(const TEXTURE_DESC& desc, const SPtr<PixelData>& initialData, 
 		GpuDeviceFlags deviceMask)
 		: TextureCore(desc, initialData, deviceMask),
 		m1DTex(nullptr), m2DTex(nullptr), m3DTex(nullptr), mDXGIFormat(DXGI_FORMAT_UNKNOWN), mDXGIColorFormat(DXGI_FORMAT_UNKNOWN),
@@ -23,7 +23,7 @@ namespace bs { namespace ct
 		assert((deviceMask == GDF_DEFAULT || deviceMask == GDF_PRIMARY) && "Multiple GPUs not supported natively on DirectX 11.");
 	}
 
-	D3D11TextureCore::~D3D11TextureCore()
+	D3D11Texture::~D3D11Texture()
 	{ 
 		SAFE_RELEASE(mTex);
 		SAFE_RELEASE(m1DTex);
@@ -34,7 +34,7 @@ namespace bs { namespace ct
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Texture);
 	}
 
-	void D3D11TextureCore::initialize()
+	void D3D11Texture::initialize()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -58,10 +58,10 @@ namespace bs { namespace ct
 		TextureCore::initialize();
 	}
 
-	void D3D11TextureCore::copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel,
+	void D3D11Texture::copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel,
 									const SPtr<TextureCore>& target, UINT32 queueIdx)
 	{
-		D3D11TextureCore* other = static_cast<D3D11TextureCore*>(target.get());
+		D3D11Texture* other = static_cast<D3D11Texture*>(target.get());
 
 		UINT32 srcResIdx = D3D11CalcSubresource(srcMipLevel, srcFace, mProperties.getNumMipmaps() + 1);
 		UINT32 destResIdx = D3D11CalcSubresource(destMipLevel, destFace, target->getProperties().getNumMipmaps() + 1);
@@ -94,7 +94,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	PixelData D3D11TextureCore::lockImpl(GpuLockOptions options, UINT32 mipLevel, UINT32 face, UINT32 deviceIdx,
+	PixelData D3D11Texture::lockImpl(GpuLockOptions options, UINT32 mipLevel, UINT32 face, UINT32 deviceIdx,
 										 UINT32 queueIdx)
 	{
 		if (mProperties.getNumSamples() > 1)
@@ -146,7 +146,7 @@ namespace bs { namespace ct
 		return lockedArea;
 	}
 
-	void D3D11TextureCore::unlockImpl()
+	void D3D11Texture::unlockImpl()
 	{
 		if(mLockedForReading)
 			unmapstagingbuffer();
@@ -159,7 +159,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	void D3D11TextureCore::readDataImpl(PixelData& dest, UINT32 mipLevel, UINT32 face, UINT32 deviceIdx, UINT32 queueIdx)
+	void D3D11Texture::readDataImpl(PixelData& dest, UINT32 mipLevel, UINT32 face, UINT32 deviceIdx, UINT32 queueIdx)
 	{
 		if (mProperties.getNumSamples() > 1)
 		{
@@ -172,7 +172,7 @@ namespace bs { namespace ct
 		unlock();
 	}
 
-	void D3D11TextureCore::writeDataImpl(const PixelData& src, UINT32 mipLevel, UINT32 face, bool discardWholeBuffer,
+	void D3D11Texture::writeDataImpl(const PixelData& src, UINT32 mipLevel, UINT32 face, bool discardWholeBuffer,
 									 UINT32 queueIdx)
 	{
 		PixelFormat format = mProperties.getFormat();
@@ -223,7 +223,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	void D3D11TextureCore::create1DTex()
+	void D3D11Texture::create1DTex()
 	{
 		UINT32 width = mProperties.getWidth();
 		int usage = mProperties.getUsage();
@@ -340,7 +340,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	void D3D11TextureCore::create2DTex()
+	void D3D11Texture::create2DTex()
 	{
 		UINT32 width = mProperties.getWidth();
 		UINT32 height = mProperties.getHeight();
@@ -488,7 +488,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	void D3D11TextureCore::create3DTex()
+	void D3D11Texture::create3DTex()
 	{
 		UINT32 width = mProperties.getWidth();
 		UINT32 height = mProperties.getHeight();
@@ -606,7 +606,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	void* D3D11TextureCore::map(ID3D11Resource* res, D3D11_MAP flags, UINT32 mipLevel, UINT32 face, UINT32& rowPitch, UINT32& slicePitch)
+	void* D3D11Texture::map(ID3D11Resource* res, D3D11_MAP flags, UINT32 mipLevel, UINT32 face, UINT32& rowPitch, UINT32& slicePitch)
 	{
 		D3D11_MAPPED_SUBRESOURCE pMappedResource;
 		pMappedResource.pData = nullptr;
@@ -636,7 +636,7 @@ namespace bs { namespace ct
 		return pMappedResource.pData;
 	}
 
-	void D3D11TextureCore::unmap(ID3D11Resource* res)
+	void D3D11Texture::unmap(ID3D11Resource* res)
 	{
 		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
@@ -649,7 +649,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	void* D3D11TextureCore::mapstagingbuffer(D3D11_MAP flags, UINT32 mipLevel, UINT32 face, UINT32& rowPitch, UINT32& slicePitch)
+	void* D3D11Texture::mapstagingbuffer(D3D11_MAP flags, UINT32 mipLevel, UINT32 face, UINT32& rowPitch, UINT32& slicePitch)
 	{
 		// Note: I am creating and destroying a staging resource every time a texture is read. 
 		// Consider offering a flag on init that will keep this active all the time (at the cost of double memory).
@@ -665,13 +665,13 @@ namespace bs { namespace ct
 		return map(mStagingBuffer, flags, face, mipLevel, rowPitch, slicePitch);
 	}
 
-	void D3D11TextureCore::unmapstagingbuffer()
+	void D3D11Texture::unmapstagingbuffer()
 	{
 		unmap(mStagingBuffer);
 		SAFE_RELEASE(mStagingBuffer);
 	}
 
-	void* D3D11TextureCore::mapstaticbuffer(PixelData lock, UINT32 mipLevel, UINT32 face)
+	void* D3D11Texture::mapstaticbuffer(PixelData lock, UINT32 mipLevel, UINT32 face)
 	{
 		UINT32 sizeOfImage = lock.getConsecutiveSize();
 		mLockedSubresourceIdx = D3D11CalcSubresource(mipLevel, face, mProperties.getNumMipmaps()+1);
@@ -682,7 +682,7 @@ namespace bs { namespace ct
 		return mStaticBuffer->getData();
 	}
 
-	void D3D11TextureCore::unmapstaticbuffer()
+	void D3D11Texture::unmapstaticbuffer()
 	{
 		UINT32 rowWidth = D3D11Mappings::getSizeInBytes(mStaticBuffer->getFormat(), mStaticBuffer->getWidth());
 		UINT32 sliceWidth = D3D11Mappings::getSizeInBytes(mStaticBuffer->getFormat(), mStaticBuffer->getWidth(), mStaticBuffer->getHeight());
@@ -701,12 +701,12 @@ namespace bs { namespace ct
 			bs_delete(mStaticBuffer);
 	}
 
-	ID3D11ShaderResourceView* D3D11TextureCore::getSRV() const
+	ID3D11ShaderResourceView* D3D11Texture::getSRV() const
 	{
 		return mShaderResourceView->getSRV();
 	}
 
-	void D3D11TextureCore::createStagingBuffer()
+	void D3D11Texture::createStagingBuffer()
 	{
 		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPICore::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
@@ -755,7 +755,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	SPtr<TextureView> D3D11TextureCore::createView(const SPtr<TextureCore>& texture, const TEXTURE_VIEW_DESC& desc)
+	SPtr<TextureView> D3D11Texture::createView(const SPtr<TextureCore>& texture, const TEXTURE_VIEW_DESC& desc)
 	{
 		return bs_shared_ptr<D3D11TextureView>(new (bs_alloc<D3D11TextureView>()) D3D11TextureView(texture, desc));
 	}

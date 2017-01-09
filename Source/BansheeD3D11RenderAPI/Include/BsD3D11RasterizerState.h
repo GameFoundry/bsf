@@ -12,16 +12,16 @@ namespace bs { namespace ct
 	 */
 
 	/** DirectX 11 implementation of a rasterizer state. Wraps a DX11 rasterizer state object. */
-	class BS_D3D11_EXPORT D3D11RasterizerStateCore : public RasterizerStateCore
+	class BS_D3D11_EXPORT D3D11RasterizerState : public RasterizerStateCore
 	{
 	public:
-		~D3D11RasterizerStateCore();
+		~D3D11RasterizerState();
 		ID3D11RasterizerState* getInternal() const { return mRasterizerState; }
 
 	protected:
-		friend class D3D11RenderStateCoreManager;
+		friend class D3D11RenderStateManager;
 
-		D3D11RasterizerStateCore(const RASTERIZER_STATE_DESC& desc, UINT32 id);
+		D3D11RasterizerState(const RASTERIZER_STATE_DESC& desc, UINT32 id);
 
 		/** @copydoc RasterizerStateCore::createInternal */
 		void createInternal() override;

@@ -43,12 +43,12 @@ namespace bs { namespace ct
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_ResourceView);
 	}
 
-	void GpuBufferView::initialize(const SPtr<D3D11GpuBufferCore>& buffer, GPU_BUFFER_VIEW_DESC& desc)
+	void GpuBufferView::initialize(const SPtr<D3D11GpuBuffer>& buffer, GPU_BUFFER_VIEW_DESC& desc)
 	{
 		mBuffer = buffer;
 		mDesc = desc;
 
-		D3D11GpuBufferCore* d3d11GpuBuffer = static_cast<D3D11GpuBufferCore*>(buffer.get());
+		D3D11GpuBuffer* d3d11GpuBuffer = static_cast<D3D11GpuBuffer*>(buffer.get());
 
 		if ((desc.usage & GVU_DEFAULT) != 0)
 			mSRV = createSRV(d3d11GpuBuffer, desc.firstElement, desc.elementWidth, desc.numElements);
@@ -64,7 +64,7 @@ namespace bs { namespace ct
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_ResourceView);
 	}
 
-	ID3D11ShaderResourceView* GpuBufferView::createSRV(D3D11GpuBufferCore* buffer, UINT32 firstElement, UINT32 elementWidth, UINT32 numElements)
+	ID3D11ShaderResourceView* GpuBufferView::createSRV(D3D11GpuBuffer* buffer, UINT32 firstElement, UINT32 elementWidth, UINT32 numElements)
 	{
 		const GpuBufferProperties& props = buffer->getProperties();
 
@@ -111,7 +111,8 @@ namespace bs { namespace ct
 		return srv;
 	}
 
-	ID3D11UnorderedAccessView* GpuBufferView::createUAV(D3D11GpuBufferCore* buffer, UINT32 firstElement, UINT32 numElements, bool useCounter)
+	ID3D11UnorderedAccessView* GpuBufferView::createUAV(D3D11GpuBuffer* buffer, UINT32 firstElement, UINT32 numElements, 
+		bool useCounter)
 	{
 		const GpuBufferProperties& props = buffer->getProperties();
 

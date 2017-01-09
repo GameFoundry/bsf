@@ -98,22 +98,22 @@ namespace bs { namespace ct
 		mDevice = bs_new<D3D11Device>(device);
 		
 		// Create the texture manager for use by others		
-		TextureManager::startUp<D3D11TextureManager>();
-		TextureCoreManager::startUp<D3D11TextureCoreManager>();
+		TextureManager::startUp<bs::D3D11TextureManager>();
+		TextureCoreManager::startUp<D3D11TextureManager>();
 
 		// Create hardware buffer manager		
 		HardwareBufferManager::startUp();
-		HardwareBufferCoreManager::startUp<D3D11HardwareBufferCoreManager>(std::ref(*mDevice));
+		HardwareBufferCoreManager::startUp<D3D11HardwareBufferManager>(std::ref(*mDevice));
 
 		// Create render window manager
-		RenderWindowManager::startUp<D3D11RenderWindowManager>(this);
-		RenderWindowCoreManager::startUp<D3D11RenderWindowCoreManager>(this);
+		RenderWindowManager::startUp<bs::D3D11RenderWindowManager>(this);
+		RenderWindowCoreManager::startUp<D3D11RenderWindowManager>(this);
 
 		// Create & register HLSL factory		
 		mHLSLFactory = bs_new<D3D11HLSLProgramFactory>();
 
 		// Create render state manager
-		RenderStateCoreManager::startUp<D3D11RenderStateCoreManager>();
+		RenderStateCoreManager::startUp<D3D11RenderStateManager>();
 
 		mNumDevices = 1;
 		mCurrentCapabilities = bs_newN<RenderAPICapabilities>(mNumDevices);
@@ -213,40 +213,40 @@ namespace bs { namespace ct
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
-			D3D11BlendStateCore* d3d11BlendState;
-			D3D11RasterizerStateCore* d3d11RasterizerState;
+			D3D11BlendState* d3d11BlendState;
+			D3D11RasterizerState* d3d11RasterizerState;
 
-			D3D11GpuFragmentProgramCore* d3d11FragmentProgram;
-			D3D11GpuGeometryProgramCore* d3d11GeometryProgram;
-			D3D11GpuDomainProgramCore* d3d11DomainProgram;
-			D3D11GpuHullProgramCore* d3d11HullProgram;
+			D3D11GpuFragmentProgram* d3d11FragmentProgram;
+			D3D11GpuGeometryProgram* d3d11GeometryProgram;
+			D3D11GpuDomainProgram* d3d11DomainProgram;
+			D3D11GpuHullProgram* d3d11HullProgram;
 
 			if(pipelineState != nullptr)
 			{
-				d3d11BlendState = static_cast<D3D11BlendStateCore*>(pipelineState->getBlendState().get());
-				d3d11RasterizerState = static_cast<D3D11RasterizerStateCore*>(pipelineState->getRasterizerState().get());
-				mActiveDepthStencilState = std::static_pointer_cast<D3D11DepthStencilStateCore>(pipelineState->getDepthStencilState());
+				d3d11BlendState = static_cast<D3D11BlendState*>(pipelineState->getBlendState().get());
+				d3d11RasterizerState = static_cast<D3D11RasterizerState*>(pipelineState->getRasterizerState().get());
+				mActiveDepthStencilState = std::static_pointer_cast<D3D11DepthStencilState>(pipelineState->getDepthStencilState());
 
-				mActiveVertexShader = std::static_pointer_cast<D3D11GpuVertexProgramCore>(pipelineState->getVertexProgram());
-				d3d11FragmentProgram = static_cast<D3D11GpuFragmentProgramCore*>(pipelineState->getFragmentProgram().get());
-				d3d11GeometryProgram = static_cast<D3D11GpuGeometryProgramCore*>(pipelineState->getGeometryProgram().get());
-				d3d11DomainProgram = static_cast<D3D11GpuDomainProgramCore*>(pipelineState->getDomainProgram().get());
-				d3d11HullProgram = static_cast<D3D11GpuHullProgramCore*>(pipelineState->getHullProgram().get());
+				mActiveVertexShader = std::static_pointer_cast<D3D11GpuVertexProgram>(pipelineState->getVertexProgram());
+				d3d11FragmentProgram = static_cast<D3D11GpuFragmentProgram*>(pipelineState->getFragmentProgram().get());
+				d3d11GeometryProgram = static_cast<D3D11GpuGeometryProgram*>(pipelineState->getGeometryProgram().get());
+				d3d11DomainProgram = static_cast<D3D11GpuDomainProgram*>(pipelineState->getDomainProgram().get());
+				d3d11HullProgram = static_cast<D3D11GpuHullProgram*>(pipelineState->getHullProgram().get());
 
 				if (d3d11BlendState == nullptr)
-					d3d11BlendState = static_cast<D3D11BlendStateCore*>(BlendStateCore::getDefault().get());
+					d3d11BlendState = static_cast<D3D11BlendState*>(BlendStateCore::getDefault().get());
 
 				if (d3d11RasterizerState == nullptr)
-					d3d11RasterizerState = static_cast<D3D11RasterizerStateCore*>(RasterizerStateCore::getDefault().get());
+					d3d11RasterizerState = static_cast<D3D11RasterizerState*>(RasterizerStateCore::getDefault().get());
 
 				if (mActiveDepthStencilState == nullptr)
-					mActiveDepthStencilState = std::static_pointer_cast<D3D11DepthStencilStateCore>(DepthStencilStateCore::getDefault());
+					mActiveDepthStencilState = std::static_pointer_cast<D3D11DepthStencilState>(DepthStencilStateCore::getDefault());
 			}
 			else
 			{
-				d3d11BlendState = static_cast<D3D11BlendStateCore*>(BlendStateCore::getDefault().get());
-				d3d11RasterizerState = static_cast<D3D11RasterizerStateCore*>(RasterizerStateCore::getDefault().get());
-				mActiveDepthStencilState = std::static_pointer_cast<D3D11DepthStencilStateCore>(DepthStencilStateCore::getDefault());
+				d3d11BlendState = static_cast<D3D11BlendState*>(BlendStateCore::getDefault().get());
+				d3d11RasterizerState = static_cast<D3D11RasterizerState*>(RasterizerStateCore::getDefault().get());
+				mActiveDepthStencilState = std::static_pointer_cast<D3D11DepthStencilState>(DepthStencilStateCore::getDefault());
 
 				mActiveVertexShader = nullptr;
 				d3d11FragmentProgram = nullptr;
@@ -262,7 +262,7 @@ namespace bs { namespace ct
 
 			if (mActiveVertexShader != nullptr)
 			{
-				D3D11GpuVertexProgramCore* vertexProgram = static_cast<D3D11GpuVertexProgramCore*>(mActiveVertexShader.get());
+				D3D11GpuVertexProgram* vertexProgram = static_cast<D3D11GpuVertexProgram*>(mActiveVertexShader.get());
 				d3d11Context->VSSetShader(vertexProgram->getVertexShader(), nullptr, 0);
 			}
 			else
@@ -316,7 +316,7 @@ namespace bs { namespace ct
 
 			if (program != nullptr && program->getProperties().getType() == GPT_COMPUTE_PROGRAM)
 			{
-				D3D11GpuComputeProgramCore *d3d11ComputeProgram = static_cast<D3D11GpuComputeProgramCore*>(program.get());
+				D3D11GpuComputeProgram *d3d11ComputeProgram = static_cast<D3D11GpuComputeProgram*>(program.get());
 				mDevice->getImmediateContext()->CSSetShader(d3d11ComputeProgram->getComputeShader(), nullptr, 0);
 			}
 			else
@@ -396,7 +396,7 @@ namespace bs { namespace ct
 
 						if (texture != nullptr)
 						{
-							D3D11TextureCore* d3d11Texture = static_cast<D3D11TextureCore*>(texture.get());
+							D3D11Texture* d3d11Texture = static_cast<D3D11Texture*>(texture.get());
 							srvs[slot] = d3d11Texture->getSRV();
 						}
 					}
@@ -416,7 +416,7 @@ namespace bs { namespace ct
 
 							if (buffer != nullptr)
 							{
-								D3D11GpuBufferCore* d3d11buffer = static_cast<D3D11GpuBufferCore*>(buffer.get());
+								D3D11GpuBuffer* d3d11buffer = static_cast<D3D11GpuBuffer*>(buffer.get());
 								srvs[slot] = d3d11buffer->getSRV();
 							}
 						}
@@ -427,7 +427,7 @@ namespace bs { namespace ct
 
 							if (buffer != nullptr)
 							{
-								D3D11GpuBufferCore* d3d11buffer = static_cast<D3D11GpuBufferCore*>(buffer.get());
+								D3D11GpuBuffer* d3d11buffer = static_cast<D3D11GpuBuffer*>(buffer.get());
 								uavs[slot] = d3d11buffer->getUAV();
 							}
 						}
@@ -478,8 +478,8 @@ namespace bs { namespace ct
 						if (samplerState == nullptr)
 							samplerState = SamplerStateCore::getDefault();
 
-						D3D11SamplerStateCore* d3d11SamplerState = 
-							static_cast<D3D11SamplerStateCore*>(const_cast<SamplerStateCore*>(samplerState.get()));
+						D3D11SamplerState* d3d11SamplerState = 
+							static_cast<D3D11SamplerState*>(const_cast<SamplerStateCore*>(samplerState.get()));
 						samplers[slot] = d3d11SamplerState->getInternal();
 					}
 
@@ -495,8 +495,8 @@ namespace bs { namespace ct
 						{
 							buffer->flushToGPU();
 
-							const D3D11GpuParamBlockBufferCore* d3d11paramBlockBuffer =
-								static_cast<const D3D11GpuParamBlockBufferCore*>(buffer.get());
+							const D3D11GpuParamBlockBuffer* d3d11paramBlockBuffer =
+								static_cast<const D3D11GpuParamBlockBuffer*>(buffer.get());
 							constBuffers[slot] = d3d11paramBlockBuffer->getD3D11Buffer();
 						}
 					}
@@ -667,7 +667,7 @@ namespace bs { namespace ct
 
 			for (UINT32 i = 0; i < numBuffers; i++)
 			{
-				SPtr<D3D11VertexBufferCore> vertexBuffer = std::static_pointer_cast<D3D11VertexBufferCore>(buffers[i]);
+				SPtr<D3D11VertexBuffer> vertexBuffer = std::static_pointer_cast<D3D11VertexBuffer>(buffers[i]);
 				const VertexBufferProperties& vbProps = vertexBuffer->getProperties();
 
 				dx11buffers[i] = vertexBuffer->getD3DVertexBuffer();
@@ -698,7 +698,7 @@ namespace bs { namespace ct
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
-			SPtr<D3D11IndexBufferCore> indexBuffer = std::static_pointer_cast<D3D11IndexBufferCore>(buffer);
+			SPtr<D3D11IndexBuffer> indexBuffer = std::static_pointer_cast<D3D11IndexBuffer>(buffer);
 
 			DXGI_FORMAT indexFormat = DXGI_FORMAT_R16_UINT;
 			if (indexBuffer->getProperties().getType() == IT_16BIT)

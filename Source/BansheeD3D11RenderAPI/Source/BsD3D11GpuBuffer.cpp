@@ -11,7 +11,7 @@
 
 namespace bs { namespace ct
 {
-	D3D11GpuBufferCore::D3D11GpuBufferCore(const GPU_BUFFER_DESC& desc, GpuDeviceFlags deviceMask)
+	D3D11GpuBuffer::D3D11GpuBuffer(const GPU_BUFFER_DESC& desc, GpuDeviceFlags deviceMask)
 		: GpuBufferCore(desc, deviceMask), mBuffer(nullptr)
 	{
 		if (desc.type != GBT_STANDARD)
@@ -22,14 +22,14 @@ namespace bs { namespace ct
 		assert((deviceMask == GDF_DEFAULT || deviceMask == GDF_PRIMARY) && "Multiple GPUs not supported natively on DirectX 11.");
 	}
 
-	D3D11GpuBufferCore::~D3D11GpuBufferCore()
+	D3D11GpuBuffer::~D3D11GpuBuffer()
 	{ 
 		bs_delete(mBuffer);
 		clearBufferViews();
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_GpuBuffer);
 	}
 
-	void D3D11GpuBufferCore::initialize()
+	void D3D11GpuBuffer::initialize()
 	{
 		D3D11HardwareBuffer::BufferType bufferType;
 		D3D11RenderAPI* d3d11rs = static_cast<D3D11RenderAPI*>(D3D11RenderAPI::instancePtr());
@@ -58,7 +58,7 @@ namespace bs { namespace ct
 		mBuffer = bs_new<D3D11HardwareBuffer>(bufferType, props.getUsage(), props.getElementCount(), props.getElementSize(),
 			d3d11rs->getPrimaryDevice(), false, false, props.getRandomGpuWrite(), props.getUseCounter());
 
-		SPtr<D3D11GpuBufferCore> thisPtr = std::static_pointer_cast<D3D11GpuBufferCore>(getThisPtr());
+		SPtr<D3D11GpuBuffer> thisPtr = std::static_pointer_cast<D3D11GpuBuffer>(getThisPtr());
 		UINT32 usage = GVU_DEFAULT;
 		if (props.getRandomGpuWrite())
 			usage |= GVU_RANDOMWRITE;
@@ -71,7 +71,7 @@ namespace bs { namespace ct
 		GpuBufferCore::initialize();
 	}
 
-	void* D3D11GpuBufferCore::lock(UINT32 offset, UINT32 length, GpuLockOptions options, UINT32 deviceIdx, UINT32 queueIdx)
+	void* D3D11GpuBuffer::lock(UINT32 offset, UINT32 length, GpuLockOptions options, UINT32 deviceIdx, UINT32 queueIdx)
 	{
 #if BS_PROFILING_ENABLED
 		if (options == GBL_READ_ONLY || options == GBL_READ_WRITE)
@@ -88,19 +88,19 @@ namespace bs { namespace ct
 		return mBuffer->lock(offset, length, options);
 	}
 
-	void D3D11GpuBufferCore::unlock()
+	void D3D11GpuBuffer::unlock()
 	{
 		mBuffer->unlock();
 	}
 
-	void D3D11GpuBufferCore::readData(UINT32 offset, UINT32 length, void* dest, UINT32 deviceIdx, UINT32 queueIdx)
+	void D3D11GpuBuffer::readData(UINT32 offset, UINT32 length, void* dest, UINT32 deviceIdx, UINT32 queueIdx)
 	{
 		BS_INC_RENDER_STAT_CAT(ResRead, RenderStatObject_GpuBuffer);
 
 		mBuffer->readData(offset, length, dest);
 	}
 
-	void D3D11GpuBufferCore::writeData(UINT32 offset, UINT32 length, const void* source, BufferWriteType writeFlags, 
+	void D3D11GpuBuffer::writeData(UINT32 offset, UINT32 length, const void* source, BufferWriteType writeFlags, 
 		UINT32 queueIdx)
 	{
 		BS_INC_RENDER_STAT_CAT(ResWrite, RenderStatObject_GpuBuffer);
@@ -108,20 +108,20 @@ namespace bs { namespace ct
 		mBuffer->writeData(offset, length, source, writeFlags);
 	}
 
-	void D3D11GpuBufferCore::copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset,
+	void D3D11GpuBuffer::copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset,
 		UINT32 dstOffset, UINT32 length, bool discardWholeBuffer, UINT32 queueIdx)
 	{
-		D3D11GpuBufferCore* d3d11SrcBuffer = static_cast<D3D11GpuBufferCore*>(&srcBuffer);
+		D3D11GpuBuffer* d3d11SrcBuffer = static_cast<D3D11GpuBuffer*>(&srcBuffer);
 
 		mBuffer->copyData(*d3d11SrcBuffer->mBuffer, srcOffset, dstOffset, length, discardWholeBuffer);
 	}
 
-	ID3D11Buffer* D3D11GpuBufferCore::getDX11Buffer() const
+	ID3D11Buffer* D3D11GpuBuffer::getDX11Buffer() const
 	{ 
 		return mBuffer->getD3DBuffer(); 
 	}
 
-	GpuBufferView* D3D11GpuBufferCore::requestView(const SPtr<D3D11GpuBufferCore>& buffer, UINT32 firstElement,
+	GpuBufferView* D3D11GpuBuffer::requestView(const SPtr<D3D11GpuBuffer>& buffer, UINT32 firstElement,
 		UINT32 numElements, GpuViewUsage usage)
 	{
 		const auto& props = buffer->getProperties();
@@ -148,9 +148,9 @@ namespace bs { namespace ct
 		return iterFind->second->view;
 	}
 
-	void D3D11GpuBufferCore::releaseView(GpuBufferView* view)
+	void D3D11GpuBuffer::releaseView(GpuBufferView* view)
 	{
-		SPtr<D3D11GpuBufferCore> buffer = view->getBuffer();
+		SPtr<D3D11GpuBuffer> buffer = view->getBuffer();
 
 		auto iterFind = buffer->mBufferViews.find(view->getDesc());
 		if (iterFind == buffer->mBufferViews.end())
@@ -173,7 +173,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	void D3D11GpuBufferCore::clearBufferViews()
+	void D3D11GpuBuffer::clearBufferViews()
 	{
 		for (auto iter = mBufferViews.begin(); iter != mBufferViews.end(); ++iter)
 		{
@@ -186,12 +186,12 @@ namespace bs { namespace ct
 		mBufferViews.clear();
 	}
 
-	ID3D11ShaderResourceView* D3D11GpuBufferCore::getSRV() const
+	ID3D11ShaderResourceView* D3D11GpuBuffer::getSRV() const
 	{
 		return mBufferView->getSRV();
 	}
 
-	ID3D11UnorderedAccessView* D3D11GpuBufferCore::getUAV() const
+	ID3D11UnorderedAccessView* D3D11GpuBuffer::getUAV() const
 	{
 		return mBufferView->getUAV();
 	}

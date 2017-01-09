@@ -8,18 +8,18 @@
 
 namespace bs { namespace ct
 {
-	D3D11BlendStateCore::D3D11BlendStateCore(const BLEND_STATE_DESC& desc, UINT32 id)
+	D3D11BlendState::D3D11BlendState(const BLEND_STATE_DESC& desc, UINT32 id)
 		:BlendStateCore(desc, id), mBlendState(nullptr)
 	{ }
 
-	D3D11BlendStateCore::~D3D11BlendStateCore()
+	D3D11BlendState::~D3D11BlendState()
 	{
 		SAFE_RELEASE(mBlendState);
 
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_BlendState);
 	}
 
-	void D3D11BlendStateCore::createInternal()
+	void D3D11BlendState::createInternal()
 	{
 		D3D11_BLEND_DESC blendStateDesc;
 		ZeroMemory(&blendStateDesc, sizeof(D3D11_BLEND_DESC));
