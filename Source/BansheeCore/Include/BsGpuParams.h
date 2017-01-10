@@ -210,6 +210,26 @@ namespace bs
 		/**	Sets information that determines which texture surfaces to bind	as load/store parameters. */
 		virtual void setLoadStoreSurface(UINT32 set, UINT32 slot, const TextureSurface& surface);
 
+		/**	Assigns a data value to the parameter with the specified name. */
+		template<class T> void setParam(GpuProgramType type, const String& name, const T& value)
+		{ TGpuDataParam<T, Core> param; getParam(type, name, param); param.set(value); }
+
+		/**	Assigns a texture to the parameter with the specified name. */
+		void setTexture(GpuProgramType type, const String& name, const TextureType& texture)
+		{ TGpuParamTexture<Core> param; getTextureParam(type, name, param); param.set(texture); }
+
+		/**	Assigns a load/store texture to the parameter with the specified name. */
+		void setLoadStoreTexture(GpuProgramType type, const String& name, const TextureType& texture, const TextureSurface& surface)
+		{ TGpuParamLoadStoreTexture<Core> param; getLoadStoreTextureParam(type, name, param); param.set(texture, surface); }
+
+		/**	Assigns a buffer to the parameter with the specified name. */
+		void setBuffer(GpuProgramType type, const String& name, const BufferType& buffer)
+		{ TGpuParamBuffer<Core> param; getBufferParam(type, name, param); param.set(buffer); }
+
+		/**	Assigns a sampler state to the parameter with the specified name. */
+		void setSamplerState(GpuProgramType type, const String& name, const SamplerType& sampler)
+		{ TGpuParamSampState<Core> param; getSamplerStateParam(type, name, param); param.set(sampler); }
+
 	protected:
 		TGpuParams(const SPtr<GpuPipelineParamInfoBase>& paramInfo);
 
