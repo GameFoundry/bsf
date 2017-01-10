@@ -31,6 +31,7 @@
 #include "BsGpuParamDesc.h"
 #include "BsD3D11GpuBuffer.h"
 #include "BsD3D11CommandBuffer.h"
+#include "BsD3D11CommandBufferManager.h"
 
 namespace bs { namespace ct
 {
@@ -97,6 +98,8 @@ namespace bs { namespace ct
 
 		mDevice = bs_new<D3D11Device>(device);
 		
+		CommandBufferManager::startUp<D3D11CommandBufferManager>();
+
 		// Create the texture manager for use by others		
 		bs::TextureManager::startUp<bs::D3D11TextureManager>();
 		TextureManager::startUp<D3D11TextureManager>();
@@ -186,6 +189,7 @@ namespace bs { namespace ct
 		bs::HardwareBufferManager::shutDown();
 		TextureManager::shutDown();
 		bs::TextureManager::shutDown();
+		CommandBufferManager::shutDown();
 
 		SAFE_RELEASE(mDXGIFactory);
 
