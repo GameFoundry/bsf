@@ -366,10 +366,18 @@ namespace bs { namespace ct
 			BS_EXCEPT(InvalidParametersException, "Invalid texture type for this view type.");
 		}
 
-		if (readOnly)
-			desc.Flags = D3D11_DSV_READ_ONLY_DEPTH | D3D11_DSV_READ_ONLY_STENCIL;
-
 		desc.Format = texture->getDepthStencilFormat();
+
+		if (readOnly)
+		{
+			bool hasStencil = desc.Format == DXGI_FORMAT_D32_FLOAT_S8X24_UINT ||
+				desc.Format == DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+			desc.Flags = D3D11_DSV_READ_ONLY_DEPTH;
+
+			if (hasStencil)
+				desc.Flags |= D3D11_DSV_READ_ONLY_STENCIL;
+		}		
 
 		ID3D11DepthStencilView* dsv = nullptr;
 
