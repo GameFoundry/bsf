@@ -99,7 +99,7 @@ namespace bs
 
 using namespace bs;
 
-/** Main entry point into the application. */
+// Main entry point into the application
 int CALLBACK WinMain(
 	_In_  HINSTANCE hInstance,
 	_In_  HINSTANCE hPrevInstance,
@@ -155,13 +155,13 @@ namespace bs { namespace ct
 		Color gTint; // Tint to apply on top of the texture
 	};
 
-	// Initialized any resources required for rendering
+	// Initializes any resources required for rendering
 	void setup(const SPtr<RenderWindow>& renderWindow)
 	{
 		// This will be the primary output for our rendering (created by the main thread on start-up)
 		gRenderWindow = renderWindow;
 
-		// Create a GLSL vertex GPU program
+		// Create a vertex GPU program
 		const char* vertProgSrc = getVertexProgSource();
 
 		GPU_PROGRAM_DESC vertProgDesc;
@@ -172,7 +172,7 @@ namespace bs { namespace ct
 
 		SPtr<GpuProgram> vertProg = GpuProgram::create(vertProgDesc);
 
-		// Create a GLSL fragment GPU program
+		// Create a fragment GPU program
 		const char* fragProgSrc = getFragmentProgSource();
 
 		GPU_PROGRAM_DESC fragProgDesc;
