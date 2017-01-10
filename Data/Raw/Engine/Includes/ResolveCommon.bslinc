@@ -109,7 +109,7 @@ Technique =
 		Fragment = 
 		{
 			layout(location = 0) in vec2 texcoord0;
-			layout(location = 1) out vec4 fragColor;
+			layout(location = 0) out vec4 fragColor;
 		
 			#ifdef ENABLE_MSAA
 		

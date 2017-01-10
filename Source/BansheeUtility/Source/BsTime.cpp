@@ -27,7 +27,7 @@ namespace bs
 
 		mFrameDelta = (float)((currentFrameTime - mLastFrameTime) * MICROSEC_TO_SEC);
 		mTimeSinceStartMs = (UINT64)(currentFrameTime / 1000);
-		mTimeSinceStart = (mTimeSinceStartMs - mAppStartTime) / 1000.0f;
+		mTimeSinceStart = mTimeSinceStartMs / 1000.0f;
 		
 		mLastFrameTime = currentFrameTime;
 

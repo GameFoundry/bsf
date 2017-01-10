@@ -88,38 +88,6 @@ namespace bs
 		CoreApplication::onShutDown();
 	}
 
-	void Application::startUp(VideoMode videoMode, const String& title, bool fullscreen,
-						std::function<void()> updateCallback)
-	{
-		START_UP_DESC desc;
-
-		// Set up default plugins
-		desc.renderAPI = BS_RENDER_API_MODULE;
-		desc.renderer = BS_RENDERER_MODULE;
-		desc.audio = BS_AUDIO_MODULE;
-		desc.physics = BS_PHYSICS_MODULE;
-		desc.input = BS_INPUT_MODULE;
-		desc.scripting = false;
-
-		desc.importers.push_back("BansheeFreeImgImporter");
-		desc.importers.push_back("BansheeFBXImporter");
-		desc.importers.push_back("BansheeFontImporter");
-		desc.importers.push_back("BansheeSL");
-
-		desc.primaryWindowDesc.videoMode = videoMode;
-		desc.primaryWindowDesc.fullscreen = fullscreen;
-		desc.primaryWindowDesc.title = title;
-
-		desc.updateCallback = updateCallback;
-
-		startUp(desc);
-	}
-
-	void Application::startUp(const START_UP_DESC& desc)
-	{
-		CoreApplication::startUp<Application>(desc);
-	}
-
 	void Application::preUpdate()
 	{
 		CoreApplication::preUpdate();
@@ -157,6 +125,30 @@ namespace bs
 	void Application::startUpRenderer()
 	{
 		// Do nothing, we activate the renderer at a later stage
+	}
+
+	START_UP_DESC Application::buildStartUpDesc(VideoMode videoMode, const String& title, bool fullscreen)
+	{
+		START_UP_DESC desc;
+
+		// Set up default plugins
+		desc.renderAPI = BS_RENDER_API_MODULE;
+		desc.renderer = BS_RENDERER_MODULE;
+		desc.audio = BS_AUDIO_MODULE;
+		desc.physics = BS_PHYSICS_MODULE;
+		desc.input = BS_INPUT_MODULE;
+		desc.scripting = false;
+
+		desc.importers.push_back("BansheeFreeImgImporter");
+		desc.importers.push_back("BansheeFBXImporter");
+		desc.importers.push_back("BansheeFontImporter");
+		desc.importers.push_back("BansheeSL");
+
+		desc.primaryWindowDesc.videoMode = videoMode;
+		desc.primaryWindowDesc.fullscreen = fullscreen;
+		desc.primaryWindowDesc.title = title;
+
+		return desc;
 	}
 
 	Path Application::getEngineAssemblyPath() const

@@ -224,9 +224,6 @@ namespace bs
 
 			preUpdate();
 
-			if (mStartUpDesc.updateCallback != nullptr)
-				mStartUpDesc.updateCallback();
-
 			PROFILE_CALL(gCoreSceneManager()._update(), "SceneManager");
 			gAudio()._update();
 			gPhysics().update();

@@ -247,6 +247,7 @@ endif()
 
 ## Executables
 add_subdirectory(ExampleProject)
+add_subdirectory(ExampleLowLevelRendering)
 
 if(BUILD_EDITOR OR (INCLUDE_ALL_IN_WORKFLOW AND MSVC))
 	add_subdirectory(BansheeEditorExec)

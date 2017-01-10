@@ -26,9 +26,6 @@ namespace bs
 		RENDER_WINDOW_DESC primaryWindowDesc; /**< Describes the window to create during start-up. */
 
 		Vector<String> importers; /**< A list of importer plugins to load. */
-
-		/** Optional callback function to be called every frame while the application is running. */
-		std::function<void()> updateCallback; 
 	};
 
 	/**

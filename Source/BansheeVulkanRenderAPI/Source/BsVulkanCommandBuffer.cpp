@@ -657,34 +657,50 @@ namespace bs { namespace ct
 
 	void VulkanCmdBuffer::reset()
 	{
+		bool wasSubmitted = mState == State::Submitted;
+
 		mState = State::Ready;
 		vkResetCommandBuffer(mCmdBuffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT); // Note: Maybe better not to release resources?
 
-		for (auto& entry : mResources)
+		if (wasSubmitted)
 		{
-			ResourceUseHandle& useHandle = entry.second;
-			assert(useHandle.used);
+			for (auto& entry : mResources)
+			{
+				ResourceUseHandle& useHandle = entry.second;
+				assert(useHandle.used);
 
-			entry.first->notifyDone(mGlobalQueueIdx, useHandle.flags);
+				entry.first->notifyDone(mGlobalQueueIdx, useHandle.flags);
+			}
+
+			for (auto& entry : mImages)
+			{
+				UINT32 imageInfoIdx = entry.second;
+				ImageInfo& imageInfo = mImageInfos[imageInfoIdx];
+
+				ResourceUseHandle& useHandle = imageInfo.useHandle;
+				assert(useHandle.used);
+
+				entry.first->notifyDone(mGlobalQueueIdx, useHandle.flags);
+			}
+
+			for (auto& entry : mBuffers)
+			{
+				ResourceUseHandle& useHandle = entry.second.useHandle;
+				assert(useHandle.used);
+
+				entry.first->notifyDone(mGlobalQueueIdx, useHandle.flags);
+			}
 		}
-
-		for (auto& entry : mImages)
+		else
 		{
-			UINT32 imageInfoIdx = entry.second;
-			ImageInfo& imageInfo = mImageInfos[imageInfoIdx];
+			for (auto& entry : mResources)
+				entry.first->notifyUnbound();
 
-			ResourceUseHandle& useHandle = imageInfo.useHandle;
-			assert(useHandle.used);
+			for (auto& entry : mImages)
+				entry.first->notifyUnbound();
 
-			entry.first->notifyDone(mGlobalQueueIdx, useHandle.flags);
-		}
-
-		for (auto& entry : mBuffers)
-		{
-			ResourceUseHandle& useHandle = entry.second.useHandle;
-			assert(useHandle.used);
-
-			entry.first->notifyDone(mGlobalQueueIdx, useHandle.flags);
+			for (auto& entry : mBuffers)
+				entry.first->notifyUnbound();
 		}
 
 		mResources.clear();

@@ -22,7 +22,7 @@ endif()
 target_link_libraries(ExampleProject BansheeEngine BansheeUtility BansheeCore)
 
 # IDE specific
-set_property(TARGET ExampleProject PROPERTY FOLDER Executable)
+set_property(TARGET ExampleProject PROPERTY FOLDER Examples)
 
 # Plugin dependencies
 add_engine_dependencies(ExampleProject)
