@@ -805,13 +805,13 @@ namespace bs { namespace ct
 		}
 #endif
 
-		std::array<SPtr<VertexBuffer>, MAX_VB_COUNT> boundBuffers;
-		for(UINT32 i = 0; i < numBuffers; i++)
-			boundBuffers[index + i] = buffers[i];
-
 		auto executeRef = [&](UINT32 index, SPtr<VertexBuffer>* buffers, UINT32 numBuffers)
 		{
 			THROW_IF_NOT_CORE_THREAD;
+
+			std::array<SPtr<VertexBuffer>, MAX_VB_COUNT> boundBuffers;
+			for (UINT32 i = 0; i < numBuffers; i++)
+				boundBuffers[index + i] = buffers[i];
 
 			for (UINT32 i = 0; i < numBuffers; i++)
 				mBoundVertexBuffers[index + i] = boundBuffers[index + i];
