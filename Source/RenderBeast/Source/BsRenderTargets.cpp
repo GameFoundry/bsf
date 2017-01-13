@@ -9,8 +9,8 @@
 
 namespace bs { namespace ct
 {
-	RenderTargets::RenderTargets(const SPtr<Viewport>& viewport, bool hdr, UINT32 numSamples)
-		:mViewport(viewport), mNumSamples(numSamples), mHDR(hdr)
+	RenderTargets::RenderTargets(const RENDERER_VIEW_TARGET_DESC& view, bool hdr)
+		:mViewTarget(view), mHDR(hdr)
 	{
 		// Note: Consider customizable HDR format via options? e.g. smaller PF_FLOAT_R11G11B10 or larger 32-bit format
 		mSceneColorFormat = hdr ? PF_FLOAT16_RGBA : PF_R8G8B8A8;
@@ -18,30 +18,30 @@ namespace bs { namespace ct
 		mNormalFormat = PF_UNORM_R10G10B10A2; // Note: Also consider customizable format (e.g. 16-bit float?)
 	}
 
-	SPtr<RenderTargets> RenderTargets::create(const SPtr<Viewport>& viewport, bool hdr, UINT32 numSamples)
+	SPtr<RenderTargets> RenderTargets::create(const RENDERER_VIEW_TARGET_DESC& view, bool hdr)
 	{
-		return bs_shared_ptr<RenderTargets>(new (bs_alloc<RenderTargets>()) RenderTargets(viewport, hdr, numSamples));
+		return bs_shared_ptr<RenderTargets>(new (bs_alloc<RenderTargets>()) RenderTargets(view, hdr));
 	}
 
 	void RenderTargets::allocate()
 	{
 		RenderTexturePool& texPool = RenderTexturePool::instance();
 
-		UINT32 width = getWidth();
-		UINT32 height = getHeight();
+		UINT32 width = mViewTarget.viewRect.width;
+		UINT32 height = mViewTarget.viewRect.height;
 
 		// Note: Albedo is allocated as SRGB, meaning when reading from textures during depth pass we decode from sRGB into linear,
 		// then back into sRGB when writing to albedo, and back to linear when reading from albedo during light pass. This /might/ have
 		// a performance impact. In which case we could just use a higher precision albedo buffer, which can then store linear color
 		// directly (storing linear in 8bit buffer causes too much detail to be lost in the blacks).
 		SPtr<PooledRenderTexture> newColorRT = texPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(mSceneColorFormat, width, height, TU_RENDERTARGET,
-			mNumSamples, false));
+			mViewTarget.numSamples, false));
 		SPtr<PooledRenderTexture> newAlbedoRT = texPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(mAlbedoFormat, width, 
-			height, TU_RENDERTARGET, mNumSamples, true));
+			height, TU_RENDERTARGET, mViewTarget.numSamples, true));
 		SPtr<PooledRenderTexture> newNormalRT = texPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(mNormalFormat, width, 
-			height, TU_RENDERTARGET, mNumSamples, false));
+			height, TU_RENDERTARGET, mViewTarget.numSamples, false));
 		SPtr<PooledRenderTexture> newDepthRT = texPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_D32_S8X24, width, height, 
-			TU_DEPTHSTENCIL, mNumSamples, false));
+			TU_DEPTHSTENCIL, mViewTarget.numSamples, false));
 
 		bool rebuildTargets = newColorRT != mSceneColorTex || newAlbedoRT != mAlbedoTex || newNormalRT != mNormalTex || newDepthRT != mDepthTex;
 
@@ -110,21 +110,12 @@ namespace bs { namespace ct
 		Rect2 area(0.0f, 0.0f, 1.0f, 1.0f);
 		rapi.setViewport(area);
 
-		UINT32 clearBuffers = 0;
-		if (mViewport->getRequiresColorClear())
-			clearBuffers |= FBT_COLOR;
-
-		if (mViewport->getRequiresDepthClear())
-			clearBuffers |= FBT_DEPTH;
-
-		if (mViewport->getRequiresStencilClear())
-			clearBuffers |= FBT_STENCIL;
-
 		// Clear scene color, depth, stencil according to user defined values
-		if (clearBuffers != 0)
+		UINT32 clearFlags = mViewTarget.clearFlags;
+		if (clearFlags != 0)
 		{
-			RenderAPI::instance().clearViewport(clearBuffers, mViewport->getClearColor(),
-				mViewport->getClearDepthValue(), mViewport->getClearStencilValue(), 0x01);
+			RenderAPI::instance().clearViewport(clearFlags, mViewTarget.clearColor,
+												mViewTarget.clearDepthValue, mViewTarget.clearStencilValue, 0x01);
 		}
 
 		// Clear all others
@@ -153,15 +144,5 @@ namespace bs { namespace ct
 	SPtr<Texture> RenderTargets::getTextureDepth() const
 	{
 		return mDepthTex->texture;
-	}
-
-	UINT32 RenderTargets::getWidth() const
-	{
-		return (UINT32)mViewport->getWidth();
-	}
-
-	UINT32 RenderTargets::getHeight() const
-	{
-		return (UINT32)mViewport->getHeight();
 	}
 }}

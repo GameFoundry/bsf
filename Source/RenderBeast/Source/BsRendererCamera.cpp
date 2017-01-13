@@ -39,19 +39,20 @@ namespace bs { namespace ct
 	}
 
 	RendererCamera::RendererCamera()
-		:mCamera(nullptr), mUsingRenderTargets(false)
+		: mUsingRenderTargets(false)
 	{
 		mParamBuffer = gPerCameraParamDef.createBuffer();
 	}
 
-	RendererCamera::RendererCamera(const Camera* camera, StateReduction reductionMode)
-		:mCamera(camera), mUsingRenderTargets(false)
+	RendererCamera::RendererCamera(const RENDERER_VIEW_DESC& desc)
+		: mViewDesc(desc), mUsingRenderTargets(false)
 	{
 		mParamBuffer = gPerCameraParamDef.createBuffer();
-		update(reductionMode);
+
+		setStateReductionMode(desc.stateReduction);
 	}
 
-	void RendererCamera::update(StateReduction reductionMode)
+	void RendererCamera::setStateReductionMode(StateReduction reductionMode)
 	{
 		mOpaqueQueue = bs_shared_ptr_new<RenderQueue>(reductionMode);
 
@@ -60,38 +61,46 @@ namespace bs { namespace ct
 			transparentStateReduction = StateReduction::Distance; // Transparent object MUST be sorted by distance
 
 		mTransparentQueue = bs_shared_ptr_new<RenderQueue>(transparentStateReduction);
-		updatePP();
 	}
 
-	void RendererCamera::updatePP()
+	void RendererCamera::setPostProcessSettings(const SPtr<PostProcessSettings>& ppSettings)
 	{
 		if (mPostProcessInfo.settings == nullptr)
 			mPostProcessInfo.settings = bs_shared_ptr_new<StandardPostProcessSettings>();
 
-		SPtr<StandardPostProcessSettings> ppSettings = std::static_pointer_cast<StandardPostProcessSettings>(mCamera->getPostProcessSettings());
-		if (ppSettings != nullptr)
-			*mPostProcessInfo.settings = *ppSettings;
+		SPtr<StandardPostProcessSettings> stdPPSettings = std::static_pointer_cast<StandardPostProcessSettings>(ppSettings);
+		if (stdPPSettings != nullptr)
+			*mPostProcessInfo.settings = *stdPPSettings;
 		else
 			*mPostProcessInfo.settings = StandardPostProcessSettings();
 
 		mPostProcessInfo.settingDirty = true;
 	}
 
+	void RendererCamera::setTransform(const Vector3& origin, const Vector3& direction, const Matrix4& view, const Matrix4& proj)
+	{
+		mViewDesc.viewOrigin = origin;
+		mViewDesc.viewDirection = direction;
+		mViewDesc.viewTransform = view;
+		mViewDesc.projTransform = proj;
+	}
+
+	void RendererCamera::setView(const RENDERER_VIEW_DESC& desc)
+	{
+		mViewDesc = desc;
+	}
+
 	void RendererCamera::beginRendering(bool useGBuffer)
 	{
 		if (useGBuffer)
 		{
-			SPtr<Viewport> viewport = mCamera->getViewport();
-			bool useHDR = mCamera->getFlags().isSet(CameraFlag::HDR);
-			UINT32 msaaCount = mCamera->getMSAACount();
-
 			// Render scene objects to g-buffer
 			bool createGBuffer = mRenderTargets == nullptr ||
-				mRenderTargets->getHDR() != useHDR ||
-				mRenderTargets->getNumSamples() != msaaCount;
+				mRenderTargets->getHDR() != mViewDesc.isHDR ||
+				mRenderTargets->getNumSamples() != mViewDesc.target.numSamples;
 
 			if (createGBuffer)
-				mRenderTargets = RenderTargets::create(viewport, useHDR, msaaCount);
+				mRenderTargets = RenderTargets::create(mViewDesc.target, mViewDesc.isHDR);
 
 			mRenderTargets->allocate();
 			mUsingRenderTargets = true;
@@ -116,12 +125,11 @@ namespace bs { namespace ct
 		mVisibility.clear();
 		mVisibility.resize(renderables.size(), false);
 
-		bool isOverlayCamera = mCamera->getFlags().isSet(CameraFlag::Overlay);
-		if (isOverlayCamera)
+		if (mViewDesc.isOverlay)
 			return;
 
-		UINT64 cameraLayers = mCamera->getLayers();
-		ConvexVolume worldFrustum = mCamera->getWorldFrustum();
+		UINT64 cameraLayers = mViewDesc.visibleLayers;
+		const ConvexVolume& worldFrustum = mViewDesc.cullFrustum;
 
 		// Update per-object param buffers and queue render elements
 		for(UINT32 i = 0; i < (UINT32)renderables.size(); i++)
@@ -146,7 +154,7 @@ namespace bs { namespace ct
 					visibility[i] = true;
 					mVisibility[i] = true;
 
-					float distanceToCamera = (mCamera->getPosition() - boundingBox.getCenter()).length();
+					float distanceToCamera = (mViewDesc.viewOrigin - boundingBox.getCenter()).length();
 
 					for (auto& renderElem : renderables[i]->elements)
 					{
@@ -204,18 +212,16 @@ namespace bs { namespace ct
 		return output;
 	}
 
-	void RendererCamera::updatePerCameraBuffer()
+	void RendererCamera::updatePerViewBuffer()
 	{
-		Matrix4 proj = mCamera->getProjectionMatrixRS();
-		Matrix4 view = mCamera->getViewMatrix();
-		Matrix4 viewProj = proj * view;
+		Matrix4 viewProj = mViewDesc.projTransform * mViewDesc.viewTransform;
 		Matrix4 invViewProj = viewProj.inverse();
 
-		gPerCameraParamDef.gMatProj.set(mParamBuffer, proj);
-		gPerCameraParamDef.gMatView.set(mParamBuffer, view);
+		gPerCameraParamDef.gMatProj.set(mParamBuffer, mViewDesc.projTransform);
+		gPerCameraParamDef.gMatView.set(mParamBuffer, mViewDesc.viewTransform);
 		gPerCameraParamDef.gMatViewProj.set(mParamBuffer, viewProj);
 		gPerCameraParamDef.gMatInvViewProj.set(mParamBuffer, invViewProj); // Note: Calculate inverses separately (better precision possibly)
-		gPerCameraParamDef.gMatInvProj.set(mParamBuffer, proj.inverse());
+		gPerCameraParamDef.gMatInvProj.set(mParamBuffer, mViewDesc.projTransform.inverse());
 
 		// Construct a special inverse view-projection matrix that had projection entries that affect z and w eliminated.
 		// Used to transform a vector(clip_x, clip_y, view_z, view_w), where clip_x/clip_y are in clip space, and 
@@ -223,35 +229,23 @@ namespace bs { namespace ct
 
 		// Only projects z/w coordinates
 		Matrix4 projZ = Matrix4::IDENTITY;
-		projZ[2][2] = proj[2][2];
-		projZ[2][3] = proj[2][3];
-		projZ[3][2] = proj[3][2];
+		projZ[2][2] = mViewDesc.projTransform[2][2];
+		projZ[2][3] = mViewDesc.projTransform[2][3];
+		projZ[3][2] = mViewDesc.projTransform[3][2];
 		projZ[3][3] = 0.0f;
 
 		gPerCameraParamDef.gMatScreenToWorld.set(mParamBuffer, invViewProj * projZ);
-		gPerCameraParamDef.gViewDir.set(mParamBuffer, mCamera->getForward());
-		gPerCameraParamDef.gViewOrigin.set(mParamBuffer, mCamera->getPosition());
-		gPerCameraParamDef.gDeviceZToWorldZ.set(mParamBuffer, getDeviceZTransform(proj));
+		gPerCameraParamDef.gViewDir.set(mParamBuffer, mViewDesc.viewDirection);
+		gPerCameraParamDef.gViewOrigin.set(mParamBuffer, mViewDesc.viewOrigin);
+		gPerCameraParamDef.gDeviceZToWorldZ.set(mParamBuffer, getDeviceZTransform(mViewDesc.projTransform));
 
-		SPtr<Viewport> viewport = mCamera->getViewport();
-		SPtr<RenderTarget> rt = viewport->getTarget();
+		const Rect2I& viewRect = mViewDesc.target.viewRect;
 
-		float halfWidth = viewport->getWidth() * 0.5f;
-		float halfHeight = viewport->getHeight() * 0.5f;
+		float halfWidth = viewRect.width * 0.5f;
+		float halfHeight = viewRect.height * 0.5f;
 
-		float rtWidth;
-		float rtHeight;
-
-		if(rt != nullptr)
-		{
-			rtWidth = (float)rt->getProperties().getWidth();
-			rtHeight = (float)rt->getProperties().getHeight();
-		}
-		else
-		{
-			rtWidth = 20.0f;
-			rtHeight = 20.0f;
-		}
+		float rtWidth = mViewDesc.target.targetWidth != 0 ? (float)mViewDesc.target.targetWidth : 20.0f;
+		float rtHeight = mViewDesc.target.targetHeight != 0 ? (float)mViewDesc.target.targetHeight : 20.0f;
 
 		RenderAPI& rapi = RenderAPI::instance();
 		const RenderAPIInfo& rapiInfo = rapi.getAPIInfo();
@@ -259,8 +253,8 @@ namespace bs { namespace ct
 		Vector4 clipToUVScaleOffset;
 		clipToUVScaleOffset.x = halfWidth / rtWidth;
 		clipToUVScaleOffset.y = -halfHeight / rtHeight;
-		clipToUVScaleOffset.z = viewport->getX() / rtWidth + (halfWidth + rapiInfo.getHorizontalTexelOffset()) / rtWidth;
-		clipToUVScaleOffset.w = viewport->getY() / rtHeight + (halfHeight + rapiInfo.getVerticalTexelOffset()) / rtHeight;
+		clipToUVScaleOffset.z = viewRect.x / rtWidth + (halfWidth + rapiInfo.getHorizontalTexelOffset()) / rtWidth;
+		clipToUVScaleOffset.w = viewRect.y / rtHeight + (halfHeight + rapiInfo.getVerticalTexelOffset()) / rtHeight;
 
 		// Either of these flips the Y axis, but if they're both true they cancel out
 		if (rapiInfo.getUVYAxisUp() ^ rapiInfo.getNDCYAxisDown())

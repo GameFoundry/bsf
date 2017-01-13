@@ -241,7 +241,7 @@ namespace bs
 			
 			if (textBounds.width == 0)
 			{
-				UINT32 freeWidth = (UINT32)std::max(0, contentBounds.width - textBounds.width - imageBounds.width);
+				UINT32 freeWidth = (UINT32)std::max(0, (INT32)contentBounds.width - (INT32)textBounds.width - (INT32)imageBounds.width);
 				imageXOffset = (INT32)(freeWidth / 2);
 			}
 			else
@@ -249,7 +249,7 @@ namespace bs
 
 			if(_getStyle()->imagePosition == GUIImagePosition::Right)
 			{
-				INT32 imageReservedWidth = std::max(0, contentBounds.width - textBounds.width);
+				INT32 imageReservedWidth = std::max(0, (INT32)contentBounds.width - (INT32)textBounds.width);
 
 				textOffset = Vector2I(contentBounds.x, contentBounds.y);
 				textClipRect = contentClipRect;
@@ -266,7 +266,7 @@ namespace bs
 				imageOffset = Vector2I(contentBounds.x + imageXOffset, contentBounds.y);
 				imageClipRect = contentClipRect;
 				imageClipRect.x -= imageXOffset;
-				imageClipRect.width = std::min(imageReservedWidth, imageClipRect.width);
+				imageClipRect.width = std::min(imageReservedWidth, (INT32)imageClipRect.width);
 
 				textOffset = Vector2I(contentBounds.x + imageReservedWidth + textImageSpacing, contentBounds.y);
 				textClipRect = contentClipRect;

@@ -77,8 +77,8 @@ namespace bs
 			min.x = std::min(min.x, childArea.x);
 			min.y = std::min(min.y, childArea.y);
 
-			max.x = std::max(max.x, childArea.x + childArea.width);
-			max.y = std::max(max.y, childArea.y + childArea.height);
+			max.x = std::max(max.x, childArea.x + (INT32)childArea.width);
+			max.y = std::max(max.y, childArea.y + (INT32)childArea.height);
 		}
 
 		Vector2I actualSize = max - min;

@@ -77,7 +77,7 @@ namespace bs
 		}
 
 		// Determine x position and whether to align to left or right side of the drop down list
-		UINT32 availableRightwardWidth = (UINT32)std::max(0, (availableArea.x + availableArea.width) - potentialRightStart);
+		UINT32 availableRightwardWidth = (UINT32)std::max(0, (availableArea.x + (INT32)availableArea.width) - potentialRightStart);
 		UINT32 availableLeftwardWidth = (UINT32)std::max(0, potentialLeftStart - availableArea.x);
 
 		//// Prefer right if possible
@@ -104,7 +104,7 @@ namespace bs
 		}
 
 		// Determine y position and whether to open upward or downward
-		UINT32 availableDownwardHeight = (UINT32)std::max(0, (availableArea.y + availableArea.height) - potentialBottomStart);
+		UINT32 availableDownwardHeight = (UINT32)std::max(0, (availableArea.y + (INT32)availableArea.height) - potentialBottomStart);
 		UINT32 availableUpwardHeight = (UINT32)std::max(0, potentialTopStart - availableArea.y);
 
 		//// Prefer down if possible

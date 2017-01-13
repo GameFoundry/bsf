@@ -15,9 +15,10 @@ namespace bs
 	{
 	public:
 		Rect2I();
-		Rect2I(int _x, int _y, int _width, int _height);
+		Rect2I(INT32 x, INT32 y, UINT32 width, UINT32 height);
 
-		int x, y, width, height;
+		INT32 x, y;
+		UINT32 width, height;
 
 		/** Returns true if the rectangle contains the provided point. */
 		bool contains(const Vector2I& point) const;
@@ -56,12 +57,12 @@ namespace bs
 		 */
 		void transform(const Matrix4& matrix);
 
-		inline bool operator== (const Rect2I& rhs) const
+		bool operator== (const Rect2I& rhs) const
 		{
 			return x == rhs.x && y == rhs.y && width == rhs.width && height == rhs.height;
 		}
 
-		inline bool operator!= (const Rect2I& rhs) const
+		bool operator!= (const Rect2I& rhs) const
 		{
 			return !(*this == rhs);
 		}

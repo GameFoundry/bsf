@@ -373,7 +373,7 @@ namespace bs { namespace ct
 	void RenderBeast::notifyCameraAdded(const Camera* camera)
 	{
 		RendererCamera* renCamera = updateCameraData(camera);
-		renCamera->updatePerCameraBuffer();
+		renCamera->updatePerViewBuffer();
 	}
 
 	void RenderBeast::notifyCameraUpdated(const Camera* camera, UINT32 updateFlag)
@@ -386,12 +386,21 @@ namespace bs { namespace ct
 		else if((updateFlag & (UINT32)CameraDirtyFlag::PostProcess) != 0)
 		{
 			rendererCam = mCameras[camera];
-			rendererCam->updatePP();
+
+			rendererCam->setPostProcessSettings(camera->getPostProcessSettings());
 		}
-		else
+		else // Transform
+		{
 			rendererCam = mCameras[camera];
 
-		rendererCam->updatePerCameraBuffer();
+			rendererCam->setTransform(
+				camera->getPosition(),
+				camera->getForward(),
+				camera->getViewMatrix(),
+				camera->getProjectionMatrixRS());
+		}
+
+		rendererCam->updatePerViewBuffer();
 	}
 
 	void RenderBeast::notifyCameraRemoved(const Camera* camera)
@@ -424,16 +433,70 @@ namespace bs { namespace ct
 		}
 		else
 		{
-			if (iterFind != mCameras.end())
+			SPtr<Viewport> viewport = camera->getViewport();
+			RENDERER_VIEW_DESC viewDesc;
+
+			viewDesc.target.clearFlags = 0;
+			if (viewport->getRequiresColorClear())
+				viewDesc.target.clearFlags |= FBT_COLOR;
+
+			if (viewport->getRequiresDepthClear())
+				viewDesc.target.clearFlags |= FBT_DEPTH;
+
+			if (viewport->getRequiresStencilClear())
+				viewDesc.target.clearFlags |= FBT_STENCIL;
+
+			viewDesc.target.clearColor = viewport->getClearColor();
+			viewDesc.target.clearDepthValue = viewport->getClearDepthValue();
+			viewDesc.target.clearStencilValue = viewport->getClearStencilValue();
+
+			viewDesc.target.viewRect = Rect2I(
+				viewport->getX(),
+				viewport->getY(),
+				(UINT32)viewport->getWidth(),
+				(UINT32)viewport->getHeight());
+
+			SPtr<RenderTarget> rt = viewport->getTarget();
+			if (rt != nullptr)
 			{
-				output = iterFind->second;
-				output->update(mCoreOptions->stateReductionMode);
+				viewDesc.target.targetWidth = rt->getProperties().getWidth();
+				viewDesc.target.targetHeight = rt->getProperties().getHeight();
 			}
 			else
 			{
-				output = bs_new<RendererCamera>(camera, mCoreOptions->stateReductionMode);
+				viewDesc.target.targetWidth = 0;
+				viewDesc.target.targetHeight = 0;
+			}
+
+			viewDesc.target.numSamples = camera->getMSAACount();
+
+			viewDesc.isOverlay = camera->getFlags().isSet(CameraFlag::Overlay);
+			viewDesc.isHDR = camera->getFlags().isSet(CameraFlag::HDR);
+
+			viewDesc.cullFrustum = camera->getWorldFrustum();
+			viewDesc.visibleLayers = camera->getLayers();
+			viewDesc.nearPlane = camera->getNearClipDistance();
+
+			viewDesc.viewOrigin = camera->getPosition();
+			viewDesc.viewDirection = camera->getForward();
+			viewDesc.projTransform = camera->getProjectionMatrixRS();
+			viewDesc.viewTransform = camera->getViewMatrix();
+
+			viewDesc.stateReduction = mCoreOptions->stateReductionMode;
+			viewDesc.skyboxTexture = camera->getSkybox();
+
+			if (iterFind != mCameras.end())
+			{
+				output = iterFind->second;
+				output->setView(viewDesc);
+			}
+			else
+			{
+				output = bs_new<RendererCamera>(viewDesc);
 				mCameras[camera] = output;
 			}
+
+			output->setPostProcessSettings(camera->getPostProcessSettings());
 		}
 
 		// Remove from render target list
@@ -526,7 +589,7 @@ namespace bs { namespace ct
 		for (auto& entry : mCameras)
 		{
 			RendererCamera* rendererCam = entry.second;
-			rendererCam->update(mCoreOptions->stateReductionMode);
+			rendererCam->setStateReductionMode(mCoreOptions->stateReductionMode);
 		}
 	}
 
@@ -623,7 +686,7 @@ namespace bs { namespace ct
 
 		const Camera* camera = rtInfo.cameras[camIdx];
 		RendererCamera* rendererCam = mCameras[camera];
-		SPtr<GpuParamBlockBuffer> perCameraBuffer = rendererCam->getPerCameraBuffer();
+		SPtr<GpuParamBlockBuffer> perCameraBuffer = rendererCam->getPerViewBuffer();
 		perCameraBuffer->flushToGPU();
 
 		assert(!camera->getFlags().isSet(CameraFlag::Overlay));
@@ -814,7 +877,7 @@ namespace bs { namespace ct
 
 		SPtr<Viewport> viewport = camera->getViewport();
 		RendererCamera* rendererCam = mCameras[camera];
-		rendererCam->getPerCameraBuffer()->flushToGPU();
+		rendererCam->getPerViewBuffer()->flushToGPU();
 
 		rendererCam->beginRendering(false);
 

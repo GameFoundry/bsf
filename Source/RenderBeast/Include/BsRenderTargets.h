@@ -4,6 +4,7 @@
 
 #include "BsRenderBeastPrerequisites.h"
 #include "BsPixelUtil.h"
+#include "BsRendererCamera.h"
 
 namespace bs { namespace ct
 {
@@ -12,7 +13,7 @@ namespace bs { namespace ct
 	 */
 
 	/**
-	 * Allocates and handles all the required render targets for rendering a scene from a specific viewport.
+	 * Allocates and handles all the required render targets for rendering a scene from a specific view.
 	 *
 	 * @note	Core thread only.
 	 */
@@ -23,13 +24,11 @@ namespace bs { namespace ct
 		 * Creates a new set of render targets. This will not actually allocate the internal render targets - this happens
 		 * the first time you call bind().
 		 *
-		 * @param[in]	viewport		Viewport that the render targets will be used for. Determines size of the render
-		 *								targets, and the output color render target.
+		 * @param[in]	view			Information about the view that the render targets will be used for. Determines size
+		 *								of the render targets, and the output color render target.
 		 * @param[in]	hdr				Should the render targets support high dynamic range rendering.
-		 * @param[in]	numSamples		Number of samples to use if multisampling is active. Provide 0 or 1 if multisampled
-		 *								targets are not needed.
 		 */
-		static SPtr<RenderTargets> create(const SPtr<Viewport>& viewport, bool hdr, UINT32 numSamples);
+		static SPtr<RenderTargets> create(const RENDERER_VIEW_TARGET_DESC& view, bool hdr);
 
 		/**
 		 * Allocates the textures required for rendering. Allocations are pooled so this is generally a fast operation
@@ -66,18 +65,12 @@ namespace bs { namespace ct
 		bool getHDR() const { return mHDR; }
 
 		/**	Returns the number of samples per pixel supported by the targets. */
-		UINT32 getNumSamples() const { return mNumSamples; }
+		UINT32 getNumSamples() const { return mViewTarget.numSamples; }
 
 	private:
-		RenderTargets(const SPtr<Viewport>& viewport, bool hdr, UINT32 numSamples);
+		RenderTargets(const RENDERER_VIEW_TARGET_DESC& view, bool hdr);
 
-		/**	Returns the width of gbuffer textures, in pixels. */
-		UINT32 getWidth() const;
-
-		/**	Returns the height of gbuffer textures, in pixels. */
-		UINT32 getHeight() const;
-
-		SPtr<Viewport> mViewport;
+		RENDERER_VIEW_TARGET_DESC mViewTarget;
 
 		SPtr<PooledRenderTexture> mSceneColorTex;
 		SPtr<PooledRenderTexture> mAlbedoTex;
@@ -90,7 +83,6 @@ namespace bs { namespace ct
 		PixelFormat mSceneColorFormat;
 		PixelFormat mAlbedoFormat;
 		PixelFormat mNormalFormat;
-		UINT32 mNumSamples;
 		bool mHDR;
 	};
 
