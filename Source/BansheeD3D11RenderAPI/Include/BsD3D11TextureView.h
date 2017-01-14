@@ -47,7 +47,7 @@ namespace bs { namespace ct
 	protected:
 		friend class D3D11Texture;
 
-		D3D11TextureView(const SPtr<Texture>& texture, const TEXTURE_VIEW_DESC& desc);
+		D3D11TextureView(const D3D11Texture* texture, const TEXTURE_VIEW_DESC& desc);
 	private:
 		/**
 		 * Creates a shader resource view that allows the provided surfaces to be bound as normal shader resources.
@@ -62,7 +62,7 @@ namespace bs { namespace ct
 		 *								for 1D and 2D array textures, number of slices for 3D textures, and number of cubes
 		 *								for cube textures.
 		 */
-		ID3D11ShaderResourceView* createSRV(D3D11Texture* texture, 
+		ID3D11ShaderResourceView* createSRV(const D3D11Texture* texture, 
 			UINT32 mostDetailMip, UINT32 numMips, UINT32 firstArraySlice, UINT32 numArraySlices);
 
 		/**
@@ -77,7 +77,7 @@ namespace bs { namespace ct
 		 *								for 1D and 2D array textures, number of slices for 3D textures, and number of cubes
 		 *								for cube textures.
 		 */
-		ID3D11RenderTargetView* createRTV(D3D11Texture* texture, 
+		ID3D11RenderTargetView* createRTV(const D3D11Texture* texture,
 			UINT32 mipSlice, UINT32 firstArraySlice, UINT32 numArraySlices);
 
 		/**
@@ -92,7 +92,7 @@ namespace bs { namespace ct
 		 *								for 1D and 2D array textures, number of slices for 3D textures, and number of cubes
 		 *								for cube textures.
 		 */
-		ID3D11UnorderedAccessView* createUAV(D3D11Texture* texture, 
+		ID3D11UnorderedAccessView* createUAV(const D3D11Texture* texture,
 			UINT32 mipSlice, UINT32 firstArraySlice, UINT32 numArraySlices);
 
 		/**
@@ -109,7 +109,7 @@ namespace bs { namespace ct
 		 * @param[in]	readOnly		Should the depth stencil view only support read operations (allows the bound texture
 		 *								to be also used as a shader resource view while bound as a depth stencil target).
 		 */
-		ID3D11DepthStencilView* createDSV(D3D11Texture* texture, 
+		ID3D11DepthStencilView* createDSV(const D3D11Texture* texture,
 			UINT32 mipSlice, UINT32 firstArraySlice, UINT32 numArraySlices, bool readOnly);
 
 		ID3D11ShaderResourceView* mSRV;

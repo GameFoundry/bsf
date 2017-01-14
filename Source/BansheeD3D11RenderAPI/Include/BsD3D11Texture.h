@@ -124,7 +124,7 @@ namespace bs { namespace ct
 		void unmapstaticbuffer();
 
 		/**	Creates an empty and uninitialized texture view object. */
-		SPtr<TextureView> createView(const SPtr<Texture>& texture, const TEXTURE_VIEW_DESC& desc) override;
+		SPtr<TextureView> createView(const TEXTURE_VIEW_DESC& desc) override;
 
 	protected:
 		ID3D11Texture1D* m1DTex;

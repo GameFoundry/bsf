@@ -83,17 +83,13 @@ namespace bs
 		/**	Returns the descriptor structure used for initializing the view. */
 		const TEXTURE_VIEW_DESC& getDesc() const { return mDesc; }
 
-		/**	Gets the owner texture the view is referencing. */
-		SPtr<Texture> getTexture() const { return mOwnerTexture; }
-
 	protected:
-		TextureView(const SPtr<Texture>& texture, const TEXTURE_VIEW_DESC& _desc);
+		TextureView(const TEXTURE_VIEW_DESC& _desc);
 
 	protected:
 		friend class Texture;
 
 		TEXTURE_VIEW_DESC mDesc;
-		SPtr<Texture> mOwnerTexture;
 	};
 
 	/** @} */

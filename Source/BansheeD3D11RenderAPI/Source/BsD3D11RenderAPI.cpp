@@ -449,7 +449,7 @@ namespace bs { namespace ct
 
 						if (texture != nullptr)
 						{
-							SPtr<TextureView> texView = Texture::requestView(texture, surface.mipLevel, 1,
+							SPtr<TextureView> texView = texture->requestView(surface.mipLevel, 1,
 								surface.arraySlice, surface.numArraySlices, GVU_RANDOMWRITE);
 
 							D3D11TextureView* d3d11texView = static_cast<D3D11TextureView*>(texView.get());
@@ -1246,6 +1246,14 @@ namespace bs { namespace ct
 
 	void D3D11RenderAPI::determineMultisampleSettings(UINT32 multisampleCount, DXGI_FORMAT format, DXGI_SAMPLE_DESC* outputSampleDesc)
 	{
+		if(multisampleCount == 0 || multisampleCount == 1)
+		{
+			outputSampleDesc->Count = 1;
+			outputSampleDesc->Quality = 0;
+
+			return;
+		}
+
 		bool tryCSAA = false; // Note: Disabled for now, but leaving the code for later so it might be useful
 		enum CSAAMode { CSAA_Normal, CSAA_Quality };
 		CSAAMode csaaMode = CSAA_Normal;

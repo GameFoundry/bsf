@@ -413,15 +413,15 @@ namespace bs
 		 *
 		 * @note	Core thread only.
 		 */
-		static SPtr<TextureView> requestView(const SPtr<Texture>& texture, UINT32 mostDetailMip, UINT32 numMips,
-			UINT32 firstArraySlice, UINT32 numArraySlices, GpuViewUsage usage);
+		SPtr<TextureView> requestView(UINT32 mostDetailMip, UINT32 numMips, UINT32 firstArraySlice, UINT32 numArraySlices, 
+									  GpuViewUsage usage);
 
 		/**
 		 * Releases the view. View won't actually get destroyed until all references to it are released.
 		 *
 		 * @note	Core thread only.
 		 */
-		static void releaseView(const SPtr<TextureView>& view);
+		void releaseView(const SPtr<TextureView>& view);
 
 		/** Returns a plain white texture. */
 		static SPtr<Texture> WHITE;
@@ -455,8 +455,8 @@ namespace bs
 		/* 								TEXTURE VIEW                      		*/
 		/************************************************************************/
 
-		/**	Creates a new empty/undefined texture view. */
-		virtual SPtr<TextureView> createView(const SPtr<Texture>& texture, const TEXTURE_VIEW_DESC& desc);
+		/**	Creates a view of a specific subresource in a texture. */
+		virtual SPtr<TextureView> createView(const TEXTURE_VIEW_DESC& desc);
 
 		/**
 		 * Releases all internal texture view references. Views won't get destroyed if there are external references still 

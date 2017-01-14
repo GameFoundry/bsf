@@ -142,11 +142,11 @@ namespace bs
 		for (UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
 		{
 			if (mColorSurfaces[i] != nullptr)
-				Texture::releaseView(mColorSurfaces[i]);
+				mDesc.colorSurfaces[i].texture->releaseView(mColorSurfaces[i]);
 		}
 
 		if (mDepthStencilSurface != nullptr)
-			Texture::releaseView(mDepthStencilSurface);
+			mDesc.depthStencilSurface.texture->releaseView(mDepthStencilSurface);
 	}
 
 	void RenderTexture::initialize()
@@ -162,7 +162,7 @@ namespace bs
 				if ((texture->getProperties().getUsage() & TU_RENDERTARGET) == 0)
 					BS_EXCEPT(InvalidParametersException, "Provided texture is not created with render target usage.");
 
-				mColorSurfaces[i] = Texture::requestView(texture, mDesc.colorSurfaces[i].mipLevel, 1,
+				mColorSurfaces[i] = texture->requestView(mDesc.colorSurfaces[i].mipLevel, 1,
 					mDesc.colorSurfaces[i].face, mDesc.colorSurfaces[i].numFaces, GVU_RENDERTARGET);
 			}
 		}
@@ -174,7 +174,7 @@ namespace bs
 			if ((texture->getProperties().getUsage() & TU_DEPTHSTENCIL) == 0)
 				BS_EXCEPT(InvalidParametersException, "Provided texture is not created with depth stencil usage.");
 
-			mDepthStencilSurface = Texture::requestView(texture, mDesc.depthStencilSurface.mipLevel, 1,
+			mDepthStencilSurface = texture->requestView(mDesc.depthStencilSurface.mipLevel, 1,
 				mDesc.depthStencilSurface.face, 0, GVU_DEPTHSTENCIL);
 		}
 
@@ -199,26 +199,26 @@ namespace bs
 
 	void RenderTexture::throwIfBuffersDontMatch() const
 	{
-		SPtr<TextureView> firstSurfaceDesc = nullptr;
+		UINT32 firstSurfaceIdx = -1;
 		for (UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
 		{
 			if (mColorSurfaces[i] == nullptr)
 				continue;
 
-			if (firstSurfaceDesc == nullptr)
+			if (firstSurfaceIdx == -1)
 			{
-				firstSurfaceDesc = mColorSurfaces[i];
+				firstSurfaceIdx = i;
 				continue;
 			}
 
-			const TextureProperties& curTexProps = mColorSurfaces[i]->getTexture()->getProperties();
-			const TextureProperties& firstTexProps = firstSurfaceDesc->getTexture()->getProperties();
+			const TextureProperties& curTexProps = mDesc.colorSurfaces[i].texture->getProperties();
+			const TextureProperties& firstTexProps = mDesc.colorSurfaces[firstSurfaceIdx].texture->getProperties();
 
 			UINT32 curMsCount = curTexProps.getNumSamples();
 			UINT32 firstMsCount = firstTexProps.getNumSamples();
 
 			UINT32 curNumSlices = mColorSurfaces[i]->getNumArraySlices();
-			UINT32 firstNumSlices = firstSurfaceDesc->getNumArraySlices();
+			UINT32 firstNumSlices = mColorSurfaces[firstSurfaceIdx]->getNumArraySlices();
 
 			if (curMsCount == 0)
 				curMsCount = 1;
@@ -242,9 +242,10 @@ namespace bs
 			}
 		}
 
-		if (firstSurfaceDesc != nullptr)
+		if (firstSurfaceIdx != -1)
 		{
-			const TextureProperties& firstTexProps = firstSurfaceDesc->getTexture()->getProperties();
+			const TextureProperties& firstTexProps = mDesc.colorSurfaces[firstSurfaceIdx].texture->getProperties();
+			SPtr<TextureView> firstSurfaceView = mColorSurfaces[firstSurfaceIdx];
 
 			UINT32 numSlices;
 			if (firstTexProps.getTextureType() == TEX_TYPE_3D)
@@ -252,22 +253,22 @@ namespace bs
 			else
 				numSlices = firstTexProps.getNumFaces();
 
-			if ((firstSurfaceDesc->getFirstArraySlice() + firstSurfaceDesc->getNumArraySlices()) > numSlices)
+			if ((firstSurfaceView->getFirstArraySlice() + firstSurfaceView->getNumArraySlices()) > numSlices)
 			{
 				BS_EXCEPT(InvalidParametersException, "Provided number of faces is out of range. Face: " +
-					toString(firstSurfaceDesc->getFirstArraySlice() + firstSurfaceDesc->getNumArraySlices()) + ". Max num faces: " + toString(numSlices));
+					toString(firstSurfaceView->getFirstArraySlice() + firstSurfaceView->getNumArraySlices()) + ". Max num faces: " + toString(numSlices));
 			}
 
-			if (firstSurfaceDesc->getMostDetailedMip() > firstTexProps.getNumMipmaps())
+			if (firstSurfaceView->getMostDetailedMip() > firstTexProps.getNumMipmaps())
 			{
 				BS_EXCEPT(InvalidParametersException, "Provided number of mip maps is out of range. Mip level: " +
-					toString(firstSurfaceDesc->getMostDetailedMip()) + ". Max num mipmaps: " + toString(firstTexProps.getNumMipmaps()));
+					toString(firstSurfaceView->getMostDetailedMip()) + ". Max num mipmaps: " + toString(firstTexProps.getNumMipmaps()));
 			}
 
 			if (mDepthStencilSurface == nullptr)
 				return;
 
-			const TextureProperties& depthTexProps = mDepthStencilSurface->getTexture()->getProperties();
+			const TextureProperties& depthTexProps = mDesc.depthStencilSurface.texture->getProperties();
 			UINT32 depthMsCount = depthTexProps.getNumSamples();
 			UINT32 colorMsCount = firstTexProps.getNumSamples();
 

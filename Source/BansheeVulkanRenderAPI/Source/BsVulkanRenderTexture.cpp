@@ -45,7 +45,7 @@ namespace bs
 				continue;
 
 			const SPtr<TextureView>& view = mColorSurfaces[i];
-			VulkanTexture* texture = static_cast<VulkanTexture*>(view->getTexture().get());
+			VulkanTexture* texture = static_cast<VulkanTexture*>(mDesc.colorSurfaces[i].texture.get());
 
 			VulkanImage* image = texture->getResource(mDeviceIdx);
 			if (image == nullptr)
@@ -86,7 +86,7 @@ namespace bs
 		if(mDepthStencilSurface != nullptr)
 		{
 			const SPtr<TextureView>& view = mDepthStencilSurface;
-			VulkanTexture* texture = static_cast<VulkanTexture*>(view->getTexture().get());
+			VulkanTexture* texture = static_cast<VulkanTexture*>(mDesc.depthStencilSurface.texture.get());
 
 			VulkanImage* image = texture->getResource(mDeviceIdx);
 			if (image != nullptr)

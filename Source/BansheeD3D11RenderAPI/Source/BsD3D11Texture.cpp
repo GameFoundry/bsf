@@ -335,8 +335,7 @@ namespace bs { namespace ct
 			viewDesc.numArraySlices = desc.ArraySize;
 			viewDesc.usage = GVU_DEFAULT;
 
-			SPtr<Texture> thisPtr = std::static_pointer_cast<Texture>(getThisPtr());
-			mShaderResourceView = bs_shared_ptr<D3D11TextureView>(new (bs_alloc<D3D11TextureView>()) D3D11TextureView(thisPtr, viewDesc));
+			mShaderResourceView = bs_shared_ptr<D3D11TextureView>(new (bs_alloc<D3D11TextureView>()) D3D11TextureView(this, viewDesc));
 		}
 	}
 
@@ -391,11 +390,6 @@ namespace bs { namespace ct
 			D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPI::instancePtr());
 			rs->determineMultisampleSettings(sampleCount, d3dPF, &sampleDesc);
 			desc.SampleDesc		= sampleDesc;
-
-			if (texType == TEX_TYPE_CUBE_MAP)
-			{
-				BS_EXCEPT(NotImplementedException, "Cube map not yet supported as a render target."); // TODO: Will be once I add proper texture array support
-			}
 		}
 		else if((usage & TU_DEPTHSTENCIL) != 0)
 		{
@@ -413,11 +407,6 @@ namespace bs { namespace ct
 			D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPI::instancePtr());
 			rs->determineMultisampleSettings(sampleCount, d3dPF, &sampleDesc);
 			desc.SampleDesc		= sampleDesc;
-
-			if (texType == TEX_TYPE_CUBE_MAP)
-			{
-				BS_EXCEPT(NotImplementedException, "Cube map not yet supported as a depth stencil target."); // TODO: Will be once I add proper texture array support
-			}
 
 			mDXGIColorFormat = D3D11Mappings::getShaderResourceDepthStencilPF(closestFormat);
 			mDXGIDepthStencilFormat = d3dPF;
@@ -483,8 +472,7 @@ namespace bs { namespace ct
 			viewDesc.numArraySlices = desc.ArraySize;
 			viewDesc.usage = GVU_DEFAULT;
 
-			SPtr<Texture> thisPtr = std::static_pointer_cast<Texture>(getThisPtr());
-			mShaderResourceView = bs_shared_ptr<D3D11TextureView>(new (bs_alloc<D3D11TextureView>()) D3D11TextureView(thisPtr, viewDesc));
+			mShaderResourceView = bs_shared_ptr<D3D11TextureView>(new (bs_alloc<D3D11TextureView>()) D3D11TextureView(this, viewDesc));
 		}
 	}
 
@@ -601,8 +589,7 @@ namespace bs { namespace ct
 			viewDesc.numArraySlices = 1;
 			viewDesc.usage = GVU_DEFAULT;
 
-			SPtr<Texture> thisPtr = std::static_pointer_cast<Texture>(getThisPtr());
-			mShaderResourceView = bs_shared_ptr<D3D11TextureView>(new (bs_alloc<D3D11TextureView>()) D3D11TextureView(thisPtr, viewDesc));
+			mShaderResourceView = bs_shared_ptr<D3D11TextureView>(new (bs_alloc<D3D11TextureView>()) D3D11TextureView(this, viewDesc));
 		}
 	}
 
@@ -755,8 +742,8 @@ namespace bs { namespace ct
 		}
 	}
 
-	SPtr<TextureView> D3D11Texture::createView(const SPtr<Texture>& texture, const TEXTURE_VIEW_DESC& desc)
+	SPtr<TextureView> D3D11Texture::createView(const TEXTURE_VIEW_DESC& desc)
 	{
-		return bs_shared_ptr<D3D11TextureView>(new (bs_alloc<D3D11TextureView>()) D3D11TextureView(texture, desc));
+		return bs_shared_ptr<D3D11TextureView>(new (bs_alloc<D3D11TextureView>()) D3D11TextureView(this, desc));
 	}
 }}

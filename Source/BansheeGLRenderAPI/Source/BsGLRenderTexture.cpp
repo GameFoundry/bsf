@@ -53,7 +53,7 @@ namespace bs
 		{
 			if (mColorSurfaces[i] != nullptr)
 			{
-				GLTexture* glColorSurface = static_cast<GLTexture*>(mColorSurfaces[i]->getTexture().get());
+				GLTexture* glColorSurface = static_cast<GLTexture*>(mDesc.colorSurfaces[i].texture.get());
 				GLSurfaceDesc surfaceDesc;
 				surfaceDesc.numSamples = getProperties().getMultisampleCount();
 
@@ -100,9 +100,9 @@ namespace bs
 			}
 		}
 
-		if (mDepthStencilSurface != nullptr && mDepthStencilSurface->getTexture() != nullptr)
+		if (mDepthStencilSurface != nullptr && mDesc.depthStencilSurface.texture != nullptr)
 		{
-			GLTexture* glDepthStencilTexture = static_cast<GLTexture*>(mDepthStencilSurface->getTexture().get());
+			GLTexture* glDepthStencilTexture = static_cast<GLTexture*>(mDesc.depthStencilSurface.texture.get());
 			SPtr<GLPixelBuffer> depthStencilBuffer = nullptr;
 
 			if (glDepthStencilTexture->getProperties().getTextureType() != TEX_TYPE_3D)
