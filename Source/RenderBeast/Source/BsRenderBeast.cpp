@@ -626,7 +626,7 @@ namespace bs { namespace ct
 		mVisibility.assign(mVisibility.size(), false);
 
 		for (auto& entry : mCameras)
-			entry.second->determineVisible(mRenderables, mWorldBounds, mVisibility);
+			entry.second->determineVisible(mRenderables, mWorldBounds, &mVisibility);
 
 		// Retrieve animation data
 		AnimationManager::instance().waitUntilComplete();
@@ -975,6 +975,130 @@ namespace bs { namespace ct
 		else
 			gRendererUtility().drawMorph(element.mesh, element.subMesh, element.morphShapeBuffer, 
 				element.morphVertexDeclaration);
+	}
+
+	SPtr<Texture> RenderBeast::captureSceneCubeMap(const Vector3& position, bool hdr, UINT32 size)
+	{
+		TEXTURE_DESC cubeMapDesc;
+		cubeMapDesc.type = TEX_TYPE_CUBE_MAP;
+		cubeMapDesc.format = hdr ? PF_FLOAT16_RGBA : PF_R8G8B8A8;
+		cubeMapDesc.width = size;
+		cubeMapDesc.height = size;
+		cubeMapDesc.usage = TU_RENDERTARGET;
+
+		SPtr<Texture> cubemap = Texture::create(cubeMapDesc);
+
+		Matrix4 projTransform = Matrix4::projectionPerspective(Degree(90.0f), 1.0f, 0.05f, 1000.0f);
+		ConvexVolume localFrustum(projTransform);
+		RenderAPI::instance().convertProjectionMatrix(projTransform, projTransform);
+
+		RENDERER_VIEW_DESC viewDesc;
+		viewDesc.target.clearFlags = FBT_COLOR | FBT_DEPTH;
+		viewDesc.target.clearColor = Color::Black;
+		viewDesc.target.clearDepthValue = 1.0f;
+		viewDesc.target.clearStencilValue = 0;
+
+		viewDesc.target.nrmViewRect = Rect2(0, 0, 1.0f, 1.0f);
+		viewDesc.target.viewRect = Rect2I(0, 0, size, size);
+		viewDesc.target.targetWidth = size;
+		viewDesc.target.targetHeight = size;
+		viewDesc.target.numSamples = 1;
+
+		viewDesc.isOverlay = false;
+		viewDesc.isHDR = hdr;
+		viewDesc.triggerCallbacks = false;
+		viewDesc.runPostProcessing = false;
+
+		viewDesc.visibleLayers = 0xFFFFFFFFFFFFFFFF;
+		viewDesc.nearPlane = 0.5f;
+
+		viewDesc.viewOrigin = position;
+		viewDesc.projTransform = projTransform;
+
+		viewDesc.stateReduction = mCoreOptions->stateReductionMode;
+		viewDesc.sceneCamera = nullptr;
+
+		// Note: Find a camera to receive skybox from. Skybox should probably be a global property instead of a per-camera
+		// one.
+		for(auto& entry : mRenderTargets)
+		{
+			for(auto& camera : entry.cameras)
+			{
+				if (camera->getSkybox() != nullptr)
+				{
+					viewDesc.skyboxTexture = camera->getSkybox();
+					break;
+				}
+			}
+		}
+
+		Matrix4 viewOffsetMat = Matrix4::translation(-position);
+
+		for(UINT32 i = 0; i < 6; i++)
+		{
+			// Calculate view matrix
+			Vector3 forward;
+			Vector3 up = Vector3::UNIT_Y;
+
+			switch(i)
+			{
+			case CF_PositiveX:
+				forward = Vector3::UNIT_X;
+				break;
+			case CF_NegativeX:
+				forward = -Vector3::UNIT_X;
+				break;
+			case CF_PositiveY:
+				forward = Vector3::UNIT_Y;
+				up = -Vector3::UNIT_Z;
+				break;
+			case CF_NegativeY:
+				forward = Vector3::UNIT_X;
+				up = Vector3::UNIT_Z;
+				break;
+			case CF_PositiveZ:
+				forward = Vector3::UNIT_Z;
+				break;
+			case CF_NegativeZ:
+				forward = -Vector3::UNIT_Z;
+				break;
+			}
+
+			Vector3 right = Vector3::cross(up, forward);
+			Matrix3 viewRotationMat = Matrix3(right, up, forward);
+
+			viewDesc.viewDirection = forward;
+			viewDesc.viewTransform = viewOffsetMat * Matrix4(viewRotationMat);
+
+			// Calculate world frustum for culling
+			const Vector<Plane>& frustumPlanes = localFrustum.getPlanes();
+			Matrix4 worldMatrix = viewDesc.viewTransform.transpose();
+
+			Vector<Plane> worldPlanes(frustumPlanes.size());
+			UINT32 j = 0;
+			for (auto& plane : frustumPlanes)
+			{
+				worldPlanes[j] = worldMatrix.multiplyAffine(plane);
+				j++;
+			}
+
+			viewDesc.cullFrustum = ConvexVolume(worldPlanes);
+
+			// Set up face render target
+			RENDER_TEXTURE_DESC cubeFaceRTDesc;
+			cubeFaceRTDesc.colorSurfaces[0].texture = cubemap;
+			cubeFaceRTDesc.colorSurfaces[0].face = i;
+			cubeFaceRTDesc.colorSurfaces[0].numFaces = 1;
+			
+			viewDesc.target.target = RenderTexture::create(cubeFaceRTDesc);
+
+			RendererCamera view(viewDesc);
+
+			view.determineVisible(mRenderables, mWorldBounds);
+			render(&view, 0.0f);
+		}
+
+		return cubemap;
 	}
 
 	void RenderBeast::refreshSamplerOverrides(bool force)

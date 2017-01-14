@@ -120,7 +120,7 @@ namespace bs { namespace ct
 	}
 
 	void RendererCamera::determineVisible(const Vector<RendererObject*>& renderables, const Vector<Bounds>& renderableBounds,
-		Vector<bool>& visibility)
+		Vector<bool>* visibility)
 	{
 		mVisibility.clear();
 		mVisibility.resize(renderables.size(), false);
@@ -151,7 +151,6 @@ namespace bs { namespace ct
 
 				if (worldFrustum.intersects(boundingBox))
 				{
-					visibility[i] = true;
 					mVisibility[i] = true;
 
 					float distanceToCamera = (mViewDesc.viewOrigin - boundingBox.getCenter()).length();
@@ -167,6 +166,16 @@ namespace bs { namespace ct
 					}
 
 				}
+			}
+		}
+
+		if(visibility != nullptr)
+		{
+			for (UINT32 i = 0; i < (UINT32)renderables.size(); i++)
+			{
+				bool visible = (*visibility)[i];
+
+				(*visibility)[i] = visible || mVisibility[i];
 			}
 		}
 

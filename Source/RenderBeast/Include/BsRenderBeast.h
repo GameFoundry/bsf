@@ -162,6 +162,15 @@ namespace bs
 		 */
 		void renderElement(const BeastRenderableElement& element, UINT32 passIdx, bool bindPass, const Matrix4& viewProj);
 
+		/** 
+		 * Captures the scene at the specified location into a cubemap. 
+		 * 
+		 * @param[in]	position	Position to capture the scene at.
+		 * @param[in]	hdr			If true scene will be captured in a format that supports high dynamic range.
+		 * @param[in]	size		Cubemap face width/height in pixels.
+		 */
+		SPtr<Texture> captureSceneCubeMap(const Vector3& position, bool hdr, UINT32 size);
+
 		/**	Creates data used by the renderer on the core thread. */
 		void initializeCore();
 

@@ -18,6 +18,9 @@ namespace bs
 		ConvexVolume() {}
 		ConvexVolume(const Vector<Plane>& planes);
 
+		/** Creates frustum planes from the provided projection matrix. */
+		ConvexVolume(const Matrix4& projectionMatrix);
+
 		/**
 		 * Checks does the volume intersects the provided axis aligned box.
 		 * This will return true if the box is fully inside the volume.

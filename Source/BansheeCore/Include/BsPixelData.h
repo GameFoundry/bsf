@@ -138,12 +138,12 @@ namespace bs
 	/** A list of cubemap faces. */
 	enum CubemapFace
 	{
-		PositiveX,
-		NegativeX,
-		PositiveY,
-		NegativeY,
-		PositiveZ,
-		NegativeZ
+		CF_PositiveX,
+		CF_NegativeX,
+		CF_PositiveY,
+		CF_NegativeY,
+		CF_PositiveZ,
+		CF_NegativeZ
 	};
 
 	/**

@@ -36,17 +36,6 @@ namespace bs
 		PT_PERSPECTIVE /**< Projection type that emulates human vision. Objects farther away appear smaller. */
     };
 
-	/**	Clip planes that form the camera frustum (visible area). */
-    enum FrustumPlane
-    {
-        FRUSTUM_PLANE_NEAR = 0,
-        FRUSTUM_PLANE_FAR = 1,
-        FRUSTUM_PLANE_LEFT = 2,
-        FRUSTUM_PLANE_RIGHT = 3,
-        FRUSTUM_PLANE_TOP = 4,
-        FRUSTUM_PLANE_BOTTOM = 5
-    };
-
 	/**	Flags that describe a camera. */
 	enum class CameraFlag
 	{

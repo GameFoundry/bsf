@@ -335,46 +335,7 @@ namespace bs
 
 		if (mRecalcFrustumPlanes)
 		{
-			Vector<Plane> frustumPlanes(6);
-			Matrix4 combo = mProjMatrix;
-
-			frustumPlanes[FRUSTUM_PLANE_LEFT].normal.x = combo[3][0] + combo[0][0];
-			frustumPlanes[FRUSTUM_PLANE_LEFT].normal.y = combo[3][1] + combo[0][1];
-			frustumPlanes[FRUSTUM_PLANE_LEFT].normal.z = combo[3][2] + combo[0][2];
-			frustumPlanes[FRUSTUM_PLANE_LEFT].d = combo[3][3] + combo[0][3];
-
-			frustumPlanes[FRUSTUM_PLANE_RIGHT].normal.x = combo[3][0] - combo[0][0];
-			frustumPlanes[FRUSTUM_PLANE_RIGHT].normal.y = combo[3][1] - combo[0][1];
-			frustumPlanes[FRUSTUM_PLANE_RIGHT].normal.z = combo[3][2] - combo[0][2];
-			frustumPlanes[FRUSTUM_PLANE_RIGHT].d = combo[3][3] - combo[0][3];
-
-			frustumPlanes[FRUSTUM_PLANE_TOP].normal.x = combo[3][0] - combo[1][0];
-			frustumPlanes[FRUSTUM_PLANE_TOP].normal.y = combo[3][1] - combo[1][1];
-			frustumPlanes[FRUSTUM_PLANE_TOP].normal.z = combo[3][2] - combo[1][2];
-			frustumPlanes[FRUSTUM_PLANE_TOP].d = combo[3][3] - combo[1][3];
-
-			frustumPlanes[FRUSTUM_PLANE_BOTTOM].normal.x = combo[3][0] + combo[1][0];
-			frustumPlanes[FRUSTUM_PLANE_BOTTOM].normal.y = combo[3][1] + combo[1][1];
-			frustumPlanes[FRUSTUM_PLANE_BOTTOM].normal.z = combo[3][2] + combo[1][2];
-			frustumPlanes[FRUSTUM_PLANE_BOTTOM].d = combo[3][3] + combo[1][3];
-
-			frustumPlanes[FRUSTUM_PLANE_NEAR].normal.x = combo[3][0] + combo[2][0];
-			frustumPlanes[FRUSTUM_PLANE_NEAR].normal.y = combo[3][1] + combo[2][1];
-			frustumPlanes[FRUSTUM_PLANE_NEAR].normal.z = combo[3][2] + combo[2][2];
-			frustumPlanes[FRUSTUM_PLANE_NEAR].d = combo[3][3] + combo[2][3];
-
-			frustumPlanes[FRUSTUM_PLANE_FAR].normal.x = combo[3][0] - combo[2][0];
-			frustumPlanes[FRUSTUM_PLANE_FAR].normal.y = combo[3][1] - combo[2][1];
-			frustumPlanes[FRUSTUM_PLANE_FAR].normal.z = combo[3][2] - combo[2][2];
-			frustumPlanes[FRUSTUM_PLANE_FAR].d = combo[3][3] - combo[2][3];
-
-			for (UINT32 i = 0; i < 6; i++)
-			{
-				float length = frustumPlanes[i].normal.normalize();
-				frustumPlanes[i].d /= -length;
-			}
-
-			mFrustum = ConvexVolume(frustumPlanes);
+			mFrustum = ConvexVolume(mProjMatrix);
 			mRecalcFrustumPlanes = false;
 		}
 	}

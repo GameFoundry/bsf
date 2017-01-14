@@ -172,7 +172,7 @@ namespace bs { namespace ct
 		 * @param[in]	renderables			A set of renderable objects to iterate over and determine visibility for.
 		 * @param[in]	renderableBounds	A set of world bounds for the provided renderable objects. Must be the same size
 		 *									as the @p renderables array.
-		 * @param[in]	visibility			Output parameter that will have the true bit set for any visible renderable
+		 * @param[out]	visibility			Output parameter that will have the true bit set for any visible renderable
 		 *									object. If the bit for an object is already set to true, the method will never
 		 *									change it to false which allows the same bitfield to be provided to multiple
 		 *									renderer views. Must be the same size as the @p renderables array.
@@ -181,7 +181,7 @@ namespace bs { namespace ct
 		 *									retrieved by calling getVisibilityMask().
 		 */
 		void determineVisible(const Vector<RendererObject*>& renderables, const Vector<Bounds>& renderableBounds, 
-			Vector<bool>& visibility);
+			Vector<bool>* visibility = nullptr);
 
 		/** Returns the visibility mask calculated with the last call to determineVisible(). */
 		const Vector<bool>& getVisibilityMask() const { return mVisibility; }

@@ -227,7 +227,7 @@ namespace bs
 		position = Vector3(m[0][3], m[1][3], m[2][3]);
 	}
 
-	void Matrix4::makeView(const Vector3& position, const Quaternion& orientation, const Matrix4* reflectMatrix)
+	void Matrix4::makeView(const Vector3& position, const Quaternion& orientation)
 	{
 		// View matrix is:
 		//
@@ -251,12 +251,6 @@ namespace bs
 		m[0][3] = trans.x;
 		m[1][3] = trans.y;
 		m[2][3] = trans.z;
-
-		// Deal with reflections
-		if (reflectMatrix)
-		{
-			*this = (*this) * (*reflectMatrix);
-		}
 	}
 
 	void Matrix4::makeProjectionOrtho(float left, float right, float top,
@@ -384,10 +378,10 @@ namespace bs
 		return mat;
     }
 
-	Matrix4 Matrix4::view(const Vector3& position, const Quaternion& orientation, const Matrix4* reflectMatrix)
+	Matrix4 Matrix4::view(const Vector3& position, const Quaternion& orientation)
     {
 		Matrix4 mat;
-		mat.makeView(position, orientation, reflectMatrix);
+		mat.makeView(position, orientation);
 
 		return mat;
     }
