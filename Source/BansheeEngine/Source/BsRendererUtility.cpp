@@ -251,7 +251,7 @@ namespace bs { namespace ct
 		mesh->_notifyUsedOnGPU();
 	}
 
-	void RendererUtility::blit(const SPtr<Texture>& texture, const Rect2I& area)
+	void RendererUtility::blit(const SPtr<Texture>& texture, const Rect2I& area, bool flipUV)
 	{
 		auto& texProps = texture->getProperties();
 		SPtr<Material> mat;
@@ -273,7 +273,7 @@ namespace bs { namespace ct
 		setPassParams(params);
 
 		Rect2 fArea((float)area.x, (float)area.y, (float)area.width, (float)area.height);
-		if(area.width == 0 || area.height == 0)
+		if (area.width == 0 || area.height == 0)
 		{
 			fArea.x = 0.0f;
 			fArea.y = 0.0f;
@@ -281,18 +281,17 @@ namespace bs { namespace ct
 			fArea.height = (float)texProps.getHeight();
 		}
 
-		drawScreenQuad(fArea);
+		drawScreenQuad(fArea, Vector2I(1, 1), 1, flipUV);
 	}
 
-	void RendererUtility::drawScreenQuad(const Rect2& uv, const Vector2I& textureSize, UINT32 numInstances)
+	void RendererUtility::drawScreenQuad(const Rect2& uv, const Vector2I& textureSize, UINT32 numInstances, bool flipUV)
 	{
 		// Note: Consider drawing the quad using a single large triangle for possibly better performance
 
 		const RenderAPIInfo& rapiInfo = RenderAPI::instance().getAPIInfo();
-
 		Vector3 vertices[4];
 
-		if(rapiInfo.getNDCYAxisDown())
+		if (rapiInfo.getNDCYAxisDown())
 		{
 			vertices[0] = Vector3(-1.0f, -1.0f, 0.0f);
 			vertices[1] = Vector3(1.0f, -1.0f, 0.0f);
@@ -308,7 +307,7 @@ namespace bs { namespace ct
 		}
 
 		Vector2 uvs[4];
-		if (rapiInfo.getUVYAxisUp())
+		if (rapiInfo.getUVYAxisUp() ^ flipUV)
 		{
 			uvs[0] = Vector2(uv.x, uv.y + uv.height);
 			uvs[1] = Vector2(uv.x + uv.width, uv.y + uv.height);

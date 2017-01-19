@@ -94,8 +94,9 @@ namespace bs { namespace ct
 		 * @param[in]	texture	Source texture to blit.
 		 * @param[in]	area	Area of the source texture to blit in pixels. If width or height is zero it is assumed
 		 *						the entire texture should be blitted.
+		 * @param[in]	flipUV If true, vertical UV coordinate will be flipped upside down.
 		 */
-		void blit(const SPtr<Texture>& texture, const Rect2I& area = Rect2I::EMPTY);
+		void blit(const SPtr<Texture>& texture, const Rect2I& area = Rect2I::EMPTY, bool flipUV = false);
 
 		/**
 		 * Draws a quad over the entire viewport in normalized device coordinates.
@@ -107,11 +108,12 @@ namespace bs { namespace ct
 		 *								internally.
 		 * @param[in]	numInstances	How many instances of the quad to draw (using instanced rendering). Useful when
 		 *								drawing to 3D textures.
+		 * @param[in]	flipUV			If true, vertical UV coordinate will be flipped upside down.
 		 * 			
 		 * @note	Core thread.
 		 */
 		void drawScreenQuad(const Rect2& uv, const Vector2I& textureSize = Vector2I(1, 1), 
-			UINT32 numInstances = 1);
+			UINT32 numInstances = 1, bool flipUV = false);
 
 		/**
 		 * Draws a quad over the entire viewport in normalized device coordinates.
