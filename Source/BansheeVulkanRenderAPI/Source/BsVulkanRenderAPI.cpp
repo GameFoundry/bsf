@@ -78,8 +78,12 @@ namespace bs { namespace ct
 	}
 
 	VulkanRenderAPI::VulkanRenderAPI()
-		:mInstance(nullptr), mDebugCallback(nullptr)
-	{ }
+		:mInstance(nullptr)
+	{
+#if BS_DEBUG_MODE
+		mDebugCallback = nullptr;
+#endif
+	}
 
 	VulkanRenderAPI::~VulkanRenderAPI()
 	{
@@ -531,7 +535,7 @@ namespace bs { namespace ct
 
 		cmdBuffer->submit(syncMask);
 	}
-	
+
 	void VulkanRenderAPI::convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest)
 	{
 		dest = matrix;
