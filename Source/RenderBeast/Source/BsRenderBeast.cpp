@@ -475,6 +475,7 @@ namespace bs { namespace ct
 			viewDesc.cullFrustum = camera->getWorldFrustum();
 			viewDesc.visibleLayers = camera->getLayers();
 			viewDesc.nearPlane = camera->getNearClipDistance();
+			viewDesc.flipView = false;
 
 			viewDesc.viewOrigin = camera->getPosition();
 			viewDesc.viewDirection = camera->getForward();
@@ -607,6 +608,8 @@ namespace bs { namespace ct
 		gCoreThread().queueCommand(std::bind(&RenderBeast::renderAllCore, this, gTime().getTime(), gTime().getFrameDelta()));
 	}
 
+	static SPtr<Texture> dbgSkyTex;
+
 	void RenderBeast::renderAllCore(float time, float delta)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -649,6 +652,9 @@ namespace bs { namespace ct
 
 			mRenderables[i]->perObjectParamBuffer->flushToGPU();
 		}
+
+		//if (dbgSkyTex == nullptr)
+		//	dbgSkyTex = captureSceneCubeMap(Vector3(0, 2, 0), true, 1024);
 
 		// Render everything, target by target
 		for (auto& rtInfo : mRenderTargets)
@@ -876,7 +882,7 @@ namespace bs { namespace ct
 			rapi.setViewport(viewportArea);
 
 			SPtr<Texture> sceneColor = renderTargets->getSceneColorRT()->getColorTexture(0);
-			gRendererUtility().blit(sceneColor);
+			gRendererUtility().blit(sceneColor, Rect2I::EMPTY, viewInfo->getFlipView());
 		}
 
 		// Trigger overlay callbacks
@@ -1011,6 +1017,7 @@ namespace bs { namespace ct
 
 		viewDesc.visibleLayers = 0xFFFFFFFFFFFFFFFF;
 		viewDesc.nearPlane = 0.5f;
+		viewDesc.flipView = RenderAPI::instance().getAPIInfo().getUVYAxisUp();
 
 		viewDesc.viewOrigin = position;
 		viewDesc.projTransform = projTransform;
@@ -1034,13 +1041,16 @@ namespace bs { namespace ct
 
 		Matrix4 viewOffsetMat = Matrix4::translation(-position);
 
+		RendererCamera view(viewDesc);
 		for(UINT32 i = 0; i < 6; i++)
 		{
 			// Calculate view matrix
+			Matrix3 viewRotationMat;
 			Vector3 forward;
+
 			Vector3 up = Vector3::UNIT_Y;
 
-			switch(i)
+			switch (i)
 			{
 			case CF_PositiveX:
 				forward = Vector3::UNIT_X;
@@ -1065,10 +1075,10 @@ namespace bs { namespace ct
 			}
 
 			Vector3 right = Vector3::cross(up, forward);
-			Matrix3 viewRotationMat = Matrix3(right, up, forward);
+			viewRotationMat = Matrix3(right, up, forward);
 
 			viewDesc.viewDirection = forward;
-			viewDesc.viewTransform = viewOffsetMat * Matrix4(viewRotationMat);
+			viewDesc.viewTransform = Matrix4(viewRotationMat) * viewOffsetMat;
 
 			// Calculate world frustum for culling
 			const Vector<Plane>& frustumPlanes = localFrustum.getPlanes();
@@ -1092,9 +1102,10 @@ namespace bs { namespace ct
 			
 			viewDesc.target.target = RenderTexture::create(cubeFaceRTDesc);
 
-			RendererCamera view(viewDesc);
-
+			view.setView(viewDesc);
+			view.updatePerViewBuffer();
 			view.determineVisible(mRenderables, mWorldBounds);
+
 			render(&view, 0.0f);
 		}
 

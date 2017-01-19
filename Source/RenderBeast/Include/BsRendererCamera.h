@@ -74,6 +74,7 @@ namespace bs { namespace ct
 		Matrix4 projTransform;
 		Vector3 viewDirection;
 		Vector3 viewOrigin;
+		bool flipView;
 		float nearPlane;
 
 		bool isOverlay : 1;
@@ -130,6 +131,9 @@ namespace bs { namespace ct
 
 		/** Returns normalized coordinates of the viewport area this view renders to. */
 		Rect2 getViewportRect() const { return mViewDesc.target.nrmViewRect; }
+
+		/** Returns true if the resulting render target should be flipped vertically. */
+		bool getFlipView() const { return mViewDesc.flipView; }
 
 		/** Returns the scene camera this object is based of. This can be null for manually constructed renderer cameras. */
 		const Camera* getSceneCamera() const { return mViewDesc.sceneCamera; }
