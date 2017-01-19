@@ -92,7 +92,7 @@ namespace bs { namespace ct
 		 * @param[in]	syncMask	Mask that has a bit enabled for each command buffer to retrieve the semaphore for.
 		 *							If the command buffer is not currently executing, semaphore won't be returned.
 		 * @param[out]	semaphores	List containing all the required semaphores. Semaphores are tightly packed at the
-		 *							beginning of the array. Must be able to hold at least BS_MAX_COMMAND_BUFFERS entries.
+		 *							beginning of the array. Must be able to hold at least BS_MAX_UNIQUE_QUEUES entries.
 		 * @param[out]	count		Number of semaphores provided in the @p semaphores array.
 		 */
 		void getSyncSemaphores(UINT32 deviceIdx, UINT32 syncMask, VulkanSemaphore** semaphores, UINT32& count);

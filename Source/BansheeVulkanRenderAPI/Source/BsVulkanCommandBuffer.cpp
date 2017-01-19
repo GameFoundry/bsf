@@ -14,6 +14,7 @@
 #include "BsVulkanVertexInputManager.h"
 #include "BsVulkanEventQuery.h"
 #include "BsVulkanQueryManager.h"
+#include "BsVulkanSwapChain.h"
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 #include "Win32/BsWin32RenderWindow.h"
@@ -134,7 +135,8 @@ namespace bs { namespace ct
 		, mViewport(0.0f, 0.0f, 1.0f, 1.0f), mScissor(0, 0, 0, 0), mStencilRef(0), mDrawOp(DOT_TRIANGLE_LIST)
 		, mNumBoundDescriptorSets(0), mGfxPipelineRequiresBind(true), mCmpPipelineRequiresBind(true)
 		, mViewportRequiresBind(true), mStencilRefRequiresBind(true), mScissorRequiresBind(true), mBoundParamsDirty(false)
-		, mClearValues(), mClearMask(), mVertexBuffersTemp(), mVertexBufferOffsetsTemp()
+		, mClearValues(), mClearMask(), mSemaphoresTemp(BS_MAX_UNIQUE_QUEUES), mVertexBuffersTemp()
+		, mVertexBufferOffsetsTemp()
 	{
 		UINT32 maxBoundDescriptorSets = device.getDeviceProperties().limits.maxBoundDescriptorSets;
 		mDescriptorSetsTemp = (VkDescriptorSet*)bs_alloc(sizeof(VkDescriptorSet) * maxBoundDescriptorSets);
@@ -366,19 +368,21 @@ namespace bs { namespace ct
 		mState = State::Recording;
 	}
 
-	void VulkanCmdBuffer::allocateSemaphores()
+	void VulkanCmdBuffer::allocateSemaphores(VkSemaphore* semaphores)
 	{
 		if (mIntraQueueSemaphore != nullptr)
 			mIntraQueueSemaphore->destroy();
 
 		mIntraQueueSemaphore = mDevice.getResourceManager().create<VulkanSemaphore>();
-		
+		semaphores[0] = mIntraQueueSemaphore->getHandle();
+
 		for (UINT32 i = 0; i < BS_MAX_VULKAN_CB_DEPENDENCIES; i++)
 		{
 			if (mInterQueueSemaphores[i] != nullptr)
 				mInterQueueSemaphores[i]->destroy();
 
 			mInterQueueSemaphores[i] = mDevice.getResourceManager().create<VulkanSemaphore>();
+			semaphores[i + 1] = mInterQueueSemaphores[i]->getHandle();
 		}
 
 		mNumUsedInterQueueSemaphores = 0;
@@ -453,10 +457,28 @@ namespace bs { namespace ct
 			bool queueMismatch = resource->isExclusive() && currentQueueFamily != -1 && currentQueueFamily != mQueueFamily;
 
 			VkImageLayout currentLayout = resource->getLayout();
-			VkImageLayout initialLayout = imageInfo.initialLayout;
-			if (queueMismatch || (currentLayout != initialLayout && initialLayout != VK_IMAGE_LAYOUT_UNDEFINED))
+			if (queueMismatch)
 			{
 				Vector<VkImageMemoryBarrier>& barriers = mTransitionInfoTemp[currentQueueFamily].imageBarriers;
+
+				barriers.push_back(VkImageMemoryBarrier());
+				VkImageMemoryBarrier& barrier = barriers.back();
+				barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+				barrier.pNext = nullptr;
+				barrier.srcAccessMask = resource->getAccessFlags(currentLayout);
+				barrier.dstAccessMask = resource->getAccessFlags(currentLayout);
+				barrier.oldLayout = currentLayout;
+				barrier.newLayout = currentLayout;
+				barrier.image = resource->getHandle();
+				barrier.subresourceRange = imageInfo.range;
+				barrier.srcQueueFamilyIndex = currentQueueFamily;
+				barrier.dstQueueFamilyIndex = mQueueFamily;
+			}
+
+			VkImageLayout initialLayout = imageInfo.initialLayout;
+			if(currentLayout != initialLayout && initialLayout != VK_IMAGE_LAYOUT_UNDEFINED)
+			{
+				Vector<VkImageMemoryBarrier>& barriers = mTransitionInfoTemp[mQueueFamily].imageBarriers;
 
 				if (initialLayout == VK_IMAGE_LAYOUT_UNDEFINED)
 					initialLayout = currentLayout;
@@ -471,20 +493,8 @@ namespace bs { namespace ct
 				barrier.newLayout = initialLayout;
 				barrier.image = resource->getHandle();
 				barrier.subresourceRange = imageInfo.range;
-				barrier.srcQueueFamilyIndex = currentQueueFamily;
-				barrier.dstQueueFamilyIndex = mQueueFamily;
-
-				// Check if queue transition needed
-				if (queueMismatch)
-				{
-					barrier.srcQueueFamilyIndex = currentQueueFamily;
-					barrier.dstQueueFamilyIndex = mQueueFamily;
-				}
-				else
-				{
-					barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-					barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-				}
+				barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+				barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 			}
 
 			resource->setLayout(imageInfo.finalLayout);
@@ -551,18 +561,35 @@ namespace bs { namespace ct
 			syncMask |= CommandSyncMask::getGlobalQueueMask(otherQueueType, otherQueueIdx);
 
 			cmdBuffer->end();
-			otherQueue->submit(cmdBuffer, nullptr, 0);
 
-			// If there are any layout transitions, reset them as we don't need them for the second pipeline barrier
-			for (auto& barrierEntry : barriers.imageBarriers)
-				barrierEntry.oldLayout = barrierEntry.newLayout;
+			// Note: If I switch back to doing layout transitions here, I need to wait on present semaphore
+			otherQueue->submit(cmdBuffer, nullptr, 0);
 		}
 
 		UINT32 deviceIdx = device.getIndex();
 		VulkanCommandBufferManager& cbm = static_cast<VulkanCommandBufferManager&>(CommandBufferManager::instance());
 
 		UINT32 numSemaphores;
-		cbm.getSyncSemaphores(deviceIdx, syncMask, mSemaphoresTemp, numSemaphores);
+		cbm.getSyncSemaphores(deviceIdx, syncMask, mSemaphoresTemp.data(), numSemaphores);
+
+		// Wait on present (i.e. until the back buffer becomes available) for any swap chains
+		for(auto& entry : mSwapChains)
+		{
+			const SwapChainSurface& surface = entry->getBackBuffer();
+			if (surface.needsWait)
+			{
+				VulkanSemaphore* semaphore = entry->getBackBuffer().sync;
+
+				if (numSemaphores >= (UINT32)mSemaphoresTemp.size())
+					mSemaphoresTemp.push_back(semaphore);
+				else
+					mSemaphoresTemp[numSemaphores] = semaphore;
+
+				numSemaphores++;
+
+				entry->notifyBackBufferWaitIssued();
+			}
+		}
 
 		// Issue second part of transition pipeline barriers (on this queue)
 		for (auto& entry : mTransitionInfoTemp)
@@ -586,12 +613,12 @@ namespace bs { namespace ct
 								 numImgBarriers, barriers.imageBarriers.data());
 
 			cmdBuffer->end();
-			queue->queueSubmit(cmdBuffer, mSemaphoresTemp, numSemaphores);
+			queue->queueSubmit(cmdBuffer, mSemaphoresTemp.data(), numSemaphores);
 
 			numSemaphores = 0; // Semaphores are only needed the first time, since we're adding the buffers on the same queue
 		}
 
-		queue->queueSubmit(this, mSemaphoresTemp, numSemaphores);
+		queue->queueSubmit(this, mSemaphoresTemp.data(), numSemaphores);
 		queue->submitQueued();
 
 		mGlobalQueueIdx = CommandSyncMask::getGlobalQueueIdx(queue->getType(), queueIdx);
@@ -645,6 +672,7 @@ namespace bs { namespace ct
 		mQueuedLayoutTransitions.clear();
 		mBoundParams = nullptr;
 		mBoundParams = false;
+		mSwapChains.clear();
 	}
 
 	bool VulkanCmdBuffer::checkFenceStatus() const
@@ -721,12 +749,19 @@ namespace bs { namespace ct
 			{
 				Win32RenderWindow* window = static_cast<Win32RenderWindow*>(rt.get());
 				window->acquireBackBuffer();
+
+				VulkanSwapChain* swapChain;
+				rt->getCustomAttribute("SC", &swapChain);
+
+				mSwapChains.insert(swapChain);
 			}
 
 			rt->getCustomAttribute("FB", &newFB);
 		}
 		else
+		{
 			newFB = nullptr;
+		}
 
 		if (mFramebuffer == newFB && mRenderTargetDepthReadOnly == readOnlyDepthStencil && mRenderTargetLoadMask == loadMask)
 			return;

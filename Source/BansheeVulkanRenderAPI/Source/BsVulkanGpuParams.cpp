@@ -69,6 +69,9 @@ namespace bs { namespace ct
 		UINT32 numSets = vkParamInfo.getNumSets();
 		UINT32 numBindings = vkParamInfo.getNumElements();
 
+		if (numSets == 0)
+			return;
+
 		// Note: I'm assuming a single WriteInfo per binding, but if arrays sizes larger than 1 are eventually supported
 		// I'll need to adjust the code.
 		mAlloc.reserve<bool>(numSets)

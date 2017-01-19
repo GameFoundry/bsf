@@ -77,8 +77,8 @@ namespace bs { namespace ct
 		 * Generates a submit-info structure that can be used for submitting the command buffer to the queue, but doesn't
 		 * perform the actual submit.
 		 */
-		void getSubmitInfo(VkCommandBuffer* cmdBuffer, VkSemaphore* signalSemaphore, VkSemaphore* waitSemaphores, 
-			UINT32 semaphoresCount, VkSubmitInfo& submitInfo);
+		void getSubmitInfo(VkCommandBuffer* cmdBuffer, VkSemaphore* signalSemaphores, UINT32 numSignalSemaphores,
+						   VkSemaphore* waitSemaphores, UINT32 numWaitSemaphores, VkSubmitInfo& submitInfo);
 
 		/** 
 		 * Prepares a list of semaphores that can be provided to submit or present calls. *
@@ -120,7 +120,7 @@ namespace bs { namespace ct
 		bool mLastCBSemaphoreUsed;
 		UINT32 mNextSubmitIdx;
 
-		VkSemaphore mSemaphoresTemp[BS_MAX_UNIQUE_QUEUES + 2]; // +1 for present semaphore, +1 for self-semaphore
+		Vector<VkSemaphore> mSemaphoresTemp;
 	};
 
 	/** @} */

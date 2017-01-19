@@ -367,9 +367,15 @@ namespace bs
 		UINT32 numSemaphores;
 		cbm.getSyncSemaphores(deviceIdx, syncMask, mSemaphoresTemp, numSemaphores);
 
-		// Wait on present (i.e. until the back buffer becomes available), if we're rendering to a window
-		mSemaphoresTemp[numSemaphores] = mSwapChain->getBackBuffer().sync;
-		numSemaphores++;
+		// Wait on present (i.e. until the back buffer becomes available), if we haven't already done so
+		const SwapChainSurface& surface = mSwapChain->getBackBuffer();
+		if(surface.needsWait)
+		{
+			mSemaphoresTemp[numSemaphores] = mSwapChain->getBackBuffer().sync;
+			numSemaphores++;
+
+			mSwapChain->notifyBackBufferWaitIssued();
+		}
 
 		queue->present(mSwapChain.get(), mSemaphoresTemp, numSemaphores);
 		mRequiresNewBackBuffer = true;
@@ -586,6 +592,13 @@ namespace bs
 		{
 			VulkanFramebuffer** fb = (VulkanFramebuffer**)data;
 			*fb = mSwapChain->getBackBuffer().framebuffer;
+			return;
+		}
+
+		if(name == "SC")
+		{
+			VulkanSwapChain** sc = (VulkanSwapChain**)data;
+			*sc = mSwapChain.get();
 			return;
 		}
 

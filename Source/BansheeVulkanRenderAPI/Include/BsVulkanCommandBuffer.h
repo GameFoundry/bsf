@@ -159,8 +159,11 @@ namespace bs { namespace ct
 		 * Allocates a new set of semaphores that may be used for synchronizing execution between different command buffers.
 		 * Releases the previously allocated semaphores, if they exist. Use getIntraQueueSemaphore() & 
 		 * requestInterQueueSemaphore() to retrieve latest allocated semaphores.
+		 * 
+		 * @param[out]	semaphores	Output array to place all allocated semaphores in. The array must be of size
+		 *							(BS_MAX_VULKAN_CB_DEPENDENCIES + 1).
 		 */
-		void allocateSemaphores();
+		void allocateSemaphores(VkSemaphore* semaphores);
 
 		/** Returns true if the command buffer is currently being processed by the device. */
 		bool isSubmitted() const { return mState == State::Submitted; }
@@ -415,7 +418,7 @@ namespace bs { namespace ct
 		ClearMask mClearMask;
 		Rect2I mClearArea;
 
-		VulkanSemaphore* mSemaphoresTemp[BS_MAX_UNIQUE_QUEUES];
+		Vector<VulkanSemaphore*> mSemaphoresTemp;
 		VkBuffer mVertexBuffersTemp[BS_MAX_BOUND_VERTEX_BUFFERS];
 		VkDeviceSize mVertexBufferOffsetsTemp[BS_MAX_BOUND_VERTEX_BUFFERS];
 		VkDescriptorSet* mDescriptorSetsTemp;
@@ -424,6 +427,7 @@ namespace bs { namespace ct
 		UnorderedMap<VulkanImage*, UINT32> mQueuedLayoutTransitions;
 		Vector<VulkanEvent*> mQueuedEvents;
 		Vector<VulkanQuery*> mQueuedQueryResets;
+		UnorderedSet<VulkanSwapChain*> mSwapChains;
 	};
 
 	/** CommandBuffer implementation for Vulkan. */

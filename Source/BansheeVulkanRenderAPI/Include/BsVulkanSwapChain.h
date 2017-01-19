@@ -18,6 +18,7 @@ namespace bs { namespace ct
 		VkImageView view;
 		VulkanSemaphore* sync;
 		bool acquired;
+		bool needsWait;
 
 		VulkanFramebuffer* framebuffer;
 		VULKAN_FRAMEBUFFER_DESC framebufferDesc;
@@ -63,6 +64,9 @@ namespace bs { namespace ct
 		 * @return						True if there is anything to present, false otherwise.
 		 */
 		bool prepareForPresent(UINT32& backBufferIdx);
+
+		/** Notifies the chain that the semaphore waiting for the back buffer to become available is being waited on. */
+		void notifyBackBufferWaitIssued();
 
 		/** Returns information describing the current back buffer. */
 		const SwapChainSurface& getBackBuffer() { return mSurfaces[mCurrentBackBufferIdx]; }

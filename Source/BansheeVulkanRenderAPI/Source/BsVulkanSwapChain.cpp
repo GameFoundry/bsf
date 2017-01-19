@@ -143,6 +143,7 @@ namespace bs { namespace ct
 			imageDesc.image = images[i];
 
 			mSurfaces[i].acquired = false;
+			mSurfaces[i].needsWait = false;
 			mSurfaces[i].image = resManager.create<VulkanImage>(imageDesc, false);
 			mSurfaces[i].view = mSurfaces[i].image->getView(true);
 			mSurfaces[i].sync = resManager.create<VulkanSemaphore>();
@@ -228,6 +229,7 @@ namespace bs { namespace ct
 
 		assert(!mSurfaces[imageIndex].acquired && "Same swap chain surface being acquired twice in a row without present().");
 		mSurfaces[imageIndex].acquired = true;
+		mSurfaces[imageIndex].needsWait = true;
 
 		mCurrentBackBufferIdx = imageIndex;
 	}
@@ -242,6 +244,14 @@ namespace bs { namespace ct
 
 		backBufferIdx = mCurrentBackBufferIdx;
 		return true;
+	}
+
+	void VulkanSwapChain::notifyBackBufferWaitIssued()
+	{
+		if (!mSurfaces[mCurrentBackBufferIdx].acquired)
+			return;
+
+		mSurfaces[mCurrentBackBufferIdx].needsWait = false;
 	}
 
 	void VulkanSwapChain::clear(VkSwapchainKHR swapChain)
