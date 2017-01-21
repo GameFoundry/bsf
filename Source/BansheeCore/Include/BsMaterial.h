@@ -218,7 +218,10 @@ namespace bs
 		void setStructData(const String& name, void* value, UINT32 size, UINT32 arrayIdx = 0) { return getParamStruct(name).set(value, size, arrayIdx); }
 
 		/** Assigns a texture to the shader parameter with the specified name. */
-		void setTexture(const String& name, const TextureType& value) { return getParamTexture(name).set(value); }
+		void setTexture(const String& name, const TextureType& value, const TextureSurface& surface = TextureSurface::COMPLETE)
+		{
+			return getParamTexture(name).set(value, surface);
+		}
 
 		/** Assigns a texture to be used for random load/store operations to the shader parameter with the specified name. */
 		void setLoadStoreTexture(const String& name, const TextureType& value, const TextureSurface& surface)

@@ -168,7 +168,10 @@ namespace bs
 		/**	Gets a sampler state bound to the specified set/slot combination. */
 		SamplerType getSamplerState(UINT32 set, UINT32 slot) const;
 
-		/** Gets information that determines which texture surfaces to bind as load/store parameters. */
+		/** Gets information that determines which texture surfaces to bind as a sampled texture parameter. */
+		const TextureSurface& getTextureSurface(UINT32 set, UINT32 slot) const;
+
+		/** Gets information that determines which texture surfaces to bind as a load/store parameter. */
 		const TextureSurface& getLoadStoreSurface(UINT32 set, UINT32 slot) const;
 
 		/**
@@ -196,7 +199,8 @@ namespace bs
 		virtual void setParamBlockBuffer(UINT32 set, UINT32 slot, const ParamsBufferType& paramBlockBuffer);
 
 		/**	Sets a texture at the specified set/slot combination. */
-		virtual void setTexture(UINT32 set, UINT32 slot, const TextureType& texture);
+		virtual void setTexture(UINT32 set, UINT32 slot, const TextureType& texture, 
+								const TextureSurface& surface = TextureSurface::COMPLETE);
 
 		/**	Sets a load/store texture at the specified set/slot combination. */
 		virtual void setLoadStoreTexture(UINT32 set, UINT32 slot, const TextureType& texture, const TextureSurface& surface);
@@ -207,16 +211,14 @@ namespace bs
 		/**	Sets a sampler state at the specified set/slot combination. */
 		virtual void setSamplerState(UINT32 set, UINT32 slot, const SamplerType& sampler);
 
-		/**	Sets information that determines which texture surfaces to bind	as load/store parameters. */
-		virtual void setLoadStoreSurface(UINT32 set, UINT32 slot, const TextureSurface& surface);
-
 		/**	Assigns a data value to the parameter with the specified name. */
 		template<class T> void setParam(GpuProgramType type, const String& name, const T& value)
 		{ TGpuDataParam<T, Core> param; getParam(type, name, param); param.set(value); }
 
 		/**	Assigns a texture to the parameter with the specified name. */
-		void setTexture(GpuProgramType type, const String& name, const TextureType& texture)
-		{ TGpuParamTexture<Core> param; getTextureParam(type, name, param); param.set(texture); }
+		void setTexture(GpuProgramType type, const String& name, const TextureType& texture,
+						const TextureSurface& surface = TextureSurface::COMPLETE)
+		{ TGpuParamTexture<Core> param; getTextureParam(type, name, param); param.set(texture, surface); }
 
 		/**	Assigns a load/store texture to the parameter with the specified name. */
 		void setLoadStoreTexture(GpuProgramType type, const String& name, const TextureType& texture, const TextureSurface& surface)
@@ -236,10 +238,16 @@ namespace bs
 		/** @copydoc CoreObject::getThisPtr */
 		virtual SPtr<GpuParamsType> _getThisPtr() const = 0;
 
+		/** Data for a single bound texture. */
+		struct TextureData
+		{
+			TextureType texture;
+			TextureSurface surface;
+		};
+
 		ParamsBufferType* mParamBlockBuffers = nullptr;
-		TextureType* mTextures = nullptr;
-		TextureType* mLoadStoreTextures = nullptr;
-		TextureSurface* mLoadStoreSurfaces = nullptr;
+		TextureData* mSampledTextureData = nullptr;
+		TextureData* mLoadStoreTextureData = nullptr;
 		BufferType* mBuffers = nullptr;
 		SamplerType* mSamplerStates = nullptr;
 	};

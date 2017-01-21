@@ -210,9 +210,9 @@ namespace bs { namespace ct
 
 		mImageViewCI.subresourceRange.aspectMask = aspectMask;
 		mImageViewCI.subresourceRange.baseMipLevel = surface.mipLevel;
-		mImageViewCI.subresourceRange.levelCount = surface.numMipLevels;
+		mImageViewCI.subresourceRange.levelCount = surface.numMipLevels == 0 ? VK_REMAINING_MIP_LEVELS : surface.numMipLevels;
 		mImageViewCI.subresourceRange.baseArrayLayer = surface.arraySlice;
-		mImageViewCI.subresourceRange.layerCount = surface.numArraySlices;
+		mImageViewCI.subresourceRange.layerCount = surface.numArraySlices == 0 ? VK_REMAINING_ARRAY_LAYERS : surface.numArraySlices;
 
 		VkImageView view;
 		VkResult result = vkCreateImageView(mOwner->getDevice().getLogical(), &mImageViewCI, gVulkanAllocator, &view);

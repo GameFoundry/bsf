@@ -157,7 +157,7 @@ namespace bs
 	}
 
 	template<bool Core>
-	void TMaterialParamTexture<Core>::set(const TextureType& texture) const
+	void TMaterialParamTexture<Core>::set(const TextureType& texture, const TextureSurface& surface) const
 	{
 		if (mMaterial == nullptr)
 			return;
@@ -170,7 +170,7 @@ namespace bs
 		if (newValue == nullptr)
 			params->getDefaultTexture(*data, newValue);
 
-		params->setTexture(*data, newValue);
+		params->setTexture(*data, newValue, surface);
 		mMaterial->_markCoreDirty();
 	}
 
@@ -181,10 +181,12 @@ namespace bs
 		if (mMaterial == nullptr)
 			return texture;
 
+		TextureSurface surface;
+
 		SPtr<MaterialParamsType> params = mMaterial->_getInternalParams();
 		const MaterialParams::ParamData* data = params->getParamData(mParamIndex);
 
-		params->getTexture(*data, texture);
+		params->getTexture(*data, texture, surface);
 		return texture;
 	}
 	
@@ -234,6 +236,7 @@ namespace bs
 
 		SPtr<MaterialParamsType> params = mMaterial->_getInternalParams();
 		const MaterialParams::ParamData* data = params->getParamData(mParamIndex);
+
 		params->getLoadStoreTexture(*data, texture, surface);
 
 		return texture;

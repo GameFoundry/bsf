@@ -315,7 +315,7 @@ namespace bs
 	}
 
 	template<bool Core>
-	void TMaterialParams<Core>::getTexture(const String& name, TextureType& value) const
+	void TMaterialParams<Core>::getTexture(const String& name, TextureType& value, TextureSurface& surface) const
 	{
 		const ParamData* param = nullptr;
 		GetParamResult result = getParamData(name, ParamType::Texture, GPDT_UNKNOWN, 0, &param);
@@ -325,11 +325,11 @@ namespace bs
 			return;
 		}
 
-		getTexture(*param, value);
+		getTexture(*param, value, surface);
 	}
 
 	template<bool Core>
-	void TMaterialParams<Core>::setTexture(const String& name, const TextureType& value)
+	void TMaterialParams<Core>::setTexture(const String& name, const TextureType& value, const TextureSurface& surface)
 	{
 		const ParamData* param = nullptr;
 		GetParamResult result = getParamData(name, ParamType::Texture, GPDT_UNKNOWN, 0, &param);
@@ -339,7 +339,7 @@ namespace bs
 			return;
 		}
 
-		setTexture(*param, value);
+		setTexture(*param, value, surface);
 	}
 
 	template<bool Core>
@@ -463,18 +463,20 @@ namespace bs
 	}
 
 	template<bool Core>
-	void TMaterialParams<Core>::getTexture(const ParamData& param, TextureType& value) const
+	void TMaterialParams<Core>::getTexture(const ParamData& param, TextureType& value, TextureSurface& surface) const
 	{
 		ParamTextureDataType& textureParam = mTextureParams[param.index];
 		value = textureParam.value;
+		surface = textureParam.surface;
 	}
 	
 	template<bool Core>
-	void TMaterialParams<Core>::setTexture(const ParamData& param, const TextureType& value)
+	void TMaterialParams<Core>::setTexture(const ParamData& param, const TextureType& value, const TextureSurface& surface)
 	{
 		ParamTextureDataType& textureParam = mTextureParams[param.index];
 		textureParam.value = value;
 		textureParam.isLoadStore = false;
+		textureParam.surface = surface;
 
 		param.version = ++mParamVersion;
 	}

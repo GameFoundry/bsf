@@ -193,12 +193,12 @@ namespace bs
 	{ }
 
 	template<bool Core>
-	void TGpuParamTexture<Core>::set(const TextureType& texture) const
+	void TGpuParamTexture<Core>::set(const TextureType& texture, const TextureSurface& surface) const
 	{
 		if (mParent == nullptr)
 			return;
 
-		mParent->setTexture(mParamDesc->set, mParamDesc->slot, texture);
+		mParent->setTexture(mParamDesc->set, mParamDesc->slot, texture, surface);
 
 		mParent->_markResourcesDirty();
 		mParent->_markCoreDirty();

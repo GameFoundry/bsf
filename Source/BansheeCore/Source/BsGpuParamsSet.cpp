@@ -999,10 +999,11 @@ namespace bs
 					if (materialParamInfo->version <= mParamVersion && !updateAll)
 						continue;
 
+					TextureSurface surface;
 					TextureType texture;
-					params->getTexture(*materialParamInfo, texture);
+					params->getTexture(*materialParamInfo, texture, surface);
 
-					paramPtr->setTexture(paramInfo.setIdx, paramInfo.slotIdx, texture);
+					paramPtr->setTexture(paramInfo.setIdx, paramInfo.slotIdx, texture, surface);
 				}
 
 				for (UINT32 k = 0; k < stageInfo.numLoadStoreTextures; k++)

@@ -108,7 +108,7 @@ namespace bs
 		TMaterialParamTexture() { }
 
 		/** @copydoc GpuParamTexture::set */
-		void set(const TextureType& texture) const;
+		void set(const TextureType& texture, const TextureSurface& surface = TextureSurface::COMPLETE) const;
 
 		/** @copydoc GpuParamTexture::get */
 		TextureType get() const;

@@ -388,7 +388,7 @@ namespace bs
 		 * @param[in]	name		Name of the shader parameter.
 		 * @param[out]	value		Output value of the parameter.
 		 */
-		void getTexture(const String& name, TextureType& value) const;
+		void getTexture(const String& name, TextureType& value, TextureSurface& surface) const;
 
 		/**
 		 * Sets the value of a shader texture parameter with the specified name. If the parameter name or type is not
@@ -397,7 +397,8 @@ namespace bs
 		 * @param[in]	name		Name of the shader parameter.
 		 * @param[in]	value		New value of the parameter.
 		 */
-		void setTexture(const String& name, const TextureType& value);
+		void setTexture(const String& name, const TextureType& value, 
+						const TextureSurface& surface = TextureSurface::COMPLETE);
 
 		/**
 		 * Returns the value of a shader load/store texture parameter with the specified name. If the parameter name or
@@ -479,13 +480,14 @@ namespace bs
 		 * Equivalent to getTexture(const String&, HTexture&) except it uses the internal parameter reference directly,
 		 * avoiding the name lookup. Caller must guarantee the parameter reference is valid and belongs to this object.
 		 */
-		void getTexture(const ParamData& param, TextureType& value) const;
+		void getTexture(const ParamData& param, TextureType& value, TextureSurface& surface) const;
 
 		/**
 		 * Equivalent to setTexture(const String&, HTexture&) except it uses the internal parameter reference directly,
 		 * avoiding the name lookup. Caller must guarantee the parameter reference is valid and belongs to this object.
 		 */
-		void setTexture(const ParamData& param, const TextureType& value);
+		void setTexture(const ParamData& param, const TextureType& value, 
+						const TextureSurface& surface = TextureSurface::COMPLETE);
 
 		/**
 		 * Equivalent to getBuffer(const String&, SPtr<GpuBuffer>&) except it uses the internal parameter reference

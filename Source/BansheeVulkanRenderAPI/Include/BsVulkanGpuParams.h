@@ -22,7 +22,8 @@ namespace bs { namespace ct
 		void setParamBlockBuffer(UINT32 set, UINT32 slot, const SPtr<GpuParamBlockBuffer>& paramBlockBuffer) override;
 
 		/** @copydoc GpuParams::setTexture */
-		void setTexture(UINT32 set, UINT32 slot, const SPtr<Texture>& texture) override;
+		void setTexture(UINT32 set, UINT32 slot, const SPtr<Texture>& texture, 
+						const TextureSurface& surface = TextureSurface::COMPLETE) override;
 
 		/** @copydoc GpuParams::setLoadStoreTexture */
 		void setLoadStoreTexture(UINT32 set, UINT32 slot, const SPtr<Texture>& texture,
@@ -33,9 +34,6 @@ namespace bs { namespace ct
 
 		/** @copydoc GpuParams::setSamplerState */
 		void setSamplerState(UINT32 set, UINT32 slot, const SPtr<SamplerState>& sampler) override;
-
-		/** @copydoc GpuParams::setLoadStoreSurface */
-		void setLoadStoreSurface(UINT32 set, UINT32 slot, const TextureSurface& surface) override;
 
 		/** Returns the total number of descriptor sets used by this object. */
 		UINT32 getNumSets() const;

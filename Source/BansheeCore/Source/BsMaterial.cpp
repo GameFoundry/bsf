@@ -649,7 +649,8 @@ namespace bs
 				TMaterialParamTexture<false> curParam = getParamTexture(param.first);
 
 				HTexture texture;
-				params->getTexture(*paramData, texture);
+				TextureSurface surface;
+				params->getTexture(*paramData, texture, surface);
 				curParam.set(texture);
 			}
 			else

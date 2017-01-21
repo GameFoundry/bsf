@@ -263,9 +263,9 @@ namespace bs { namespace ct
 		mSetsDirty[set] = true;
 	}
 
-	void VulkanGpuParams::setTexture(UINT32 set, UINT32 slot, const SPtr<Texture>& texture)
+	void VulkanGpuParams::setTexture(UINT32 set, UINT32 slot, const SPtr<Texture>& texture, const TextureSurface& surface)
 	{
-		GpuParams::setTexture(set, slot, texture);
+		GpuParams::setTexture(set, slot, texture, surface);
 
 		VulkanGpuPipelineParamInfo& vkParamInfo = static_cast<VulkanGpuPipelineParamInfo&>(*mParamInfo);
 		UINT32 bindingIdx = vkParamInfo.getBindingIdx(set, slot);
@@ -295,7 +295,7 @@ namespace bs { namespace ct
 			PerSetData& perSetData = mPerDeviceData[i].perSetData[set];
 			if (imageRes != nullptr)
 			{
-				perSetData.writeInfos[bindingIdx].image.imageView = imageRes->getView(false);
+				perSetData.writeInfos[bindingIdx].image.imageView = imageRes->getView(surface, false);
 				mPerDeviceData[i].sampledImages[sequentialIdx] = imageRes->getHandle();
 			}
 			else
@@ -472,41 +472,6 @@ namespace bs { namespace ct
 		mSetsDirty[set] = true;
 	}
 
-	void VulkanGpuParams::setLoadStoreSurface(UINT32 set, UINT32 slot, const TextureSurface& surface)
-	{
-		GpuParams::setLoadStoreSurface(set, slot, surface);
-
-		VulkanGpuPipelineParamInfo& vkParamInfo = static_cast<VulkanGpuPipelineParamInfo&>(*mParamInfo);
-		UINT32 bindingIdx = vkParamInfo.getBindingIdx(set, slot);
-		if (bindingIdx == -1)
-		{
-			LOGERR("Provided set/slot combination is not used by the GPU program: " + toString(set) + "," +
-				   toString(slot) + ".");
-			return;
-		}
-
-		SPtr<Texture> texture = getLoadStoreTexture(set, slot);
-		if (texture == nullptr)
-			return;
-
-		Lock(mMutex);
-
-		VulkanTexture* vulkanTexture = static_cast<VulkanTexture*>(texture.get());
-		for (UINT32 i = 0; i < BS_MAX_DEVICES; i++)
-		{
-			if (mPerDeviceData[i].perSetData == nullptr)
-				continue;
-
-			VulkanImage* imageRes = vulkanTexture->getResource(i);
-
-			PerSetData& perSetData = mPerDeviceData[i].perSetData[set];
-			if (imageRes != nullptr)
-				perSetData.writeInfos[bindingIdx].image.imageView = imageRes->getView(surface, false);
-		}
-
-		mSetsDirty[set] = true;
-	}
-
 	UINT32 VulkanGpuParams::getNumSets() const
 	{
 		return mParamInfo->getNumSets();
@@ -642,10 +607,10 @@ namespace bs { namespace ct
 
 		for (UINT32 i = 0; i < numStorageTextures; i++)
 		{
-			if (mLoadStoreTextures[i] == nullptr)
+			if (mLoadStoreTextureData[i].texture == nullptr)
 				continue;
 
-			VulkanTexture* element = static_cast<VulkanTexture*>(mLoadStoreTextures[i].get());
+			VulkanTexture* element = static_cast<VulkanTexture*>(mLoadStoreTextureData[i].texture.get());
 			VulkanImage* resource = element->getResource(deviceIdx);
 			if (resource == nullptr)
 				continue;
@@ -667,7 +632,7 @@ namespace bs { namespace ct
 
 				UINT32 bindingIdx = vkParamInfo.getBindingIdx(set, slot);
 
-				const TextureSurface& surface = mLoadStoreSurfaces[i];
+				const TextureSurface& surface = mLoadStoreTextureData[i].surface;
 				perDeviceData.perSetData[set].writeInfos[bindingIdx].image.imageView = resource->getView(surface, false);;
 
 				mSetsDirty[set] = true;
@@ -676,10 +641,10 @@ namespace bs { namespace ct
 
 		for (UINT32 i = 0; i < numTextures; i++)
 		{
-			if (mTextures[i] == nullptr)
+			if (mSampledTextureData[i].texture == nullptr)
 				continue;
 
-			VulkanTexture* element = static_cast<VulkanTexture*>(mTextures[i].get());
+			VulkanTexture* element = static_cast<VulkanTexture*>(mSampledTextureData[i].texture.get());
 			VulkanImage* resource = element->getResource(deviceIdx);
 			if (resource == nullptr)
 				continue;
@@ -709,7 +674,9 @@ namespace bs { namespace ct
 				mParamInfo->getSetSlot(GpuPipelineParamInfo::ParamType::Texture, i, set, slot);
 
 				UINT32 bindingIdx = vkParamInfo.getBindingIdx(set, slot);
-				perDeviceData.perSetData[set].writeInfos[bindingIdx].image.imageView = resource->getView(false);
+
+				const TextureSurface& surface = mSampledTextureData[i].surface;
+				perDeviceData.perSetData[set].writeInfos[bindingIdx].image.imageView = resource->getView(surface, false);
 
 				mSetsDirty[set] = true;
 			}
