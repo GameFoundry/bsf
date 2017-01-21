@@ -133,9 +133,6 @@ namespace bs { namespace ct
 			// Set up buffer bindings
 			for (auto& entry : paramDesc->buffers)
 			{
-				bool isLoadStore = entry.second.type != GPOT_BYTE_BUFFER &&
-					entry.second.type != GPOT_STRUCTURED_BUFFER;
-
 				UINT32 bindingIdx = getBindingIdx(entry.second.set, entry.second.slot);
 				assert(bindingIdx != -1);
 
@@ -143,8 +140,21 @@ namespace bs { namespace ct
 				VkDescriptorSetLayoutBinding& binding = layoutInfo.bindings[bindingIdx];
 				binding.descriptorCount = 1;
 				binding.stageFlags |= stageFlagsLookup[i];
-				binding.descriptorType = 
-					isLoadStore ? VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER : VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
+
+				switch(entry.second.type)
+				{
+				default:
+				case GPOT_BYTE_BUFFER:
+					binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER;
+					break;
+				case GPOT_RWBYTE_BUFFER:
+					binding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER;
+					break;
+				case GPOT_STRUCTURED_BUFFER:
+				case GPOT_RWSTRUCTURED_BUFFER:
+					binding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+					break;
+				}
 			}
 		}
 

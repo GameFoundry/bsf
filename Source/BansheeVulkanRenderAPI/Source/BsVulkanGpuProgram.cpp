@@ -367,8 +367,10 @@ namespace bs { namespace ct
 		for (int i = 0; i < numBlocks; i++)
 		{
 			const glslang::TType* ttype = program->getUniformBlockTType(i);
+			const glslang::TQualifier& qualifier = ttype->getQualifier();
+			const char* name = program->getUniformBlockName(i);
 
-			if (!ttype->getQualifier().hasBinding())
+			if (!qualifier.hasBinding())
 			{
 				log = "Uniform parsing error: Found a uniform block without a binding qualifier. Each uniform block must "
 					" have an explicitly defined binding number.";
@@ -376,21 +378,36 @@ namespace bs { namespace ct
 				return false;
 			}
 
-			const char* name = program->getUniformBlockName(i);
-			int size = program->getUniformBlockSize(i); 
+			if(qualifier.storage == glslang::EvqBuffer) // Shared storage buffer
+			{
+				GpuParamObjectDesc param;
+				param.name = name;
+				param.slot = qualifier.layoutBinding;
+				param.set = qualifier.layoutSet;
 
-			GpuParamBlockDesc param;
-			param.name = name;
-			param.blockSize = size / 4;
-			param.isShareable = true;
-			param.slot = ttype->getQualifier().layoutBinding;
-			param.set = ttype->getQualifier().layoutSet;
+				if (param.set == glslang::TQualifier::layoutSetEnd)
+					param.set = 0;
 
-			if (param.set == glslang::TQualifier::layoutSetEnd)
-				param.set = 0;
+				param.type = GPOT_RWSTRUCTURED_BUFFER;
+				desc.buffers[name] = param;
+			}
+			else // Uniform buffer
+			{
+				int size = program->getUniformBlockSize(i);
 
-			desc.paramBlocks[name] = param;
-			uniformBlockMap[i] = name;
+				GpuParamBlockDesc param;
+				param.name = name;
+				param.blockSize = size / 4;
+				param.isShareable = true;
+				param.slot = qualifier.layoutBinding;
+				param.set = qualifier.layoutSet;
+
+				if (param.set == glslang::TQualifier::layoutSetEnd)
+					param.set = 0;
+
+				desc.paramBlocks[name] = param;
+				uniformBlockMap[i] = name;
+			}
 		}
 
 		// Parse individual uniforms
@@ -398,6 +415,7 @@ namespace bs { namespace ct
 		for (int i = 0; i < numUniforms; i++)
 		{
 			const glslang::TType* ttype = program->getUniformTType(i);
+			const glslang::TQualifier& qualifier = ttype->getQualifier();
 			const char* name = program->getUniformName(i);
 
 			if (ttype->getBasicType() == glslang::EbtSampler) // Object type
@@ -405,7 +423,7 @@ namespace bs { namespace ct
 				// Note: Even though the type is named EbtSampler, all object types are categorized under it (including non
 				// sampled images and buffers)
 
-				if (!ttype->getQualifier().hasBinding())
+				if (!qualifier.hasBinding())
 				{
 					log = "Uniform parsing error: Found an uniform without a binding qualifier. Each uniform must have an "
 						"explicitly defined binding number.";
@@ -417,8 +435,8 @@ namespace bs { namespace ct
 
 				GpuParamObjectDesc param;
 				param.name = name;
-				param.slot = ttype->getQualifier().layoutBinding;
-				param.set = ttype->getQualifier().layoutSet;
+				param.slot = qualifier.layoutBinding;
+				param.set = qualifier.layoutSet;
 
 				if (param.set == glslang::TQualifier::layoutSetEnd)
 					param.set = 0;
@@ -473,6 +491,10 @@ namespace bs { namespace ct
 			}
 			else
 			{
+				// We don't parse individual members of shared storage buffers
+				if (qualifier.storage == glslang::EvqBuffer)
+					continue;
+
 				if(ttype->getBasicType() == glslang::EbtStruct)
 				{
 					// Not handling structs at the moment
@@ -553,7 +575,7 @@ namespace bs { namespace ct
 		}
 		
 		TBuiltInResource resources = DefaultTBuiltInResource;
-		glslang::TProgram* program = new glslang::TProgram;
+		glslang::TProgram* program = bs_new<glslang::TProgram>();
 
 		EShLanguage glslType;
 		switch(mProperties.getType())
@@ -585,7 +607,7 @@ namespace bs { namespace ct
 		const String& source = mProperties.getSource();
 		const char* sourceBytes = source.c_str();
 
-		glslang::TShader* shader = new glslang::TShader(glslType);
+		glslang::TShader* shader = bs_new<glslang::TShader>(glslType);
 		shader->setStrings(&sourceBytes, 1);
 		shader->setEntryPoint("main");
 
@@ -666,8 +688,8 @@ namespace bs { namespace ct
 		mIsCompiled = true;
 
 cleanup:
-		delete program;
-		delete shader;
+		bs_delete(program);
+		bs_delete(shader);
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_GpuProgram);
 

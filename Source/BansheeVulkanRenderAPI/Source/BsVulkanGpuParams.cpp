@@ -177,14 +177,19 @@ namespace bs { namespace ct
 					}
 					else
 					{
-						bool isUniform = writeSetInfo.descriptorType == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+						bool useView = writeSetInfo.descriptorType != VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER && 
+							writeSetInfo.descriptorType != VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 
-						if (isUniform)
+						if (!useView)
 						{
 							VkDescriptorBufferInfo& bufferInfo = perSetData.writeInfos[k].buffer;
-							bufferInfo.buffer = vkBufManager.getDummyUniformBuffer(i);
 							bufferInfo.offset = 0;
 							bufferInfo.range = VK_WHOLE_SIZE;
+
+							if(writeSetInfo.descriptorType == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
+								bufferInfo.buffer = vkBufManager.getDummyUniformBuffer(i);
+							else
+								bufferInfo.buffer = vkBufManager.getDummyStructuredBuffer(i);
 
 							writeSetInfo.pBufferInfo = &bufferInfo;
 							writeSetInfo.pTexelBufferView = nullptr;
@@ -200,6 +205,7 @@ namespace bs { namespace ct
 							else
 								bufferView = vkBufManager.getDummyReadBufferView(i);
 
+							writeSetInfo.pBufferInfo = nullptr;
 							writeSetInfo.pTexelBufferView = &bufferView;
 						}
 
@@ -393,27 +399,49 @@ namespace bs { namespace ct
 			PerSetData& perSetData = mPerDeviceData[i].perSetData[set];
 			VkWriteDescriptorSet& writeSetInfo = perSetData.writeSetInfos[bindingIdx];
 
-			VkBufferView bufferView;
-			if (bufferRes != nullptr)
+			bool useView = writeSetInfo.descriptorType != VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+			if (useView)
 			{
-				bufferView = bufferRes->getView();
-				mPerDeviceData[i].buffers[sequentialIdx] = bufferRes->getHandle();
-			}
-			else
-			{
-				VulkanHardwareBufferManager& vkBufManager = static_cast<VulkanHardwareBufferManager&>(
-					HardwareBufferManager::instance());
-
-				bool isLoadStore = writeSetInfo.descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER;
-				if(isLoadStore)
-					bufferView = vkBufManager.getDummyStorageBufferView(i);
+				VkBufferView bufferView;
+				if (bufferRes != nullptr)
+				{
+					bufferView = bufferRes->getView();
+					mPerDeviceData[i].buffers[sequentialIdx] = bufferRes->getHandle();
+				}
 				else
-					bufferView = vkBufManager.getDummyReadBufferView(i);
+				{
+					VulkanHardwareBufferManager& vkBufManager = static_cast<VulkanHardwareBufferManager&>(
+						HardwareBufferManager::instance());
 
-				mPerDeviceData[i].buffers[sequentialIdx] = 0;
+					bool isLoadStore = writeSetInfo.descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER;
+					if (isLoadStore)
+						bufferView = vkBufManager.getDummyStorageBufferView(i);
+					else
+						bufferView = vkBufManager.getDummyReadBufferView(i);
+
+					mPerDeviceData[i].buffers[sequentialIdx] = 0;
+				}
+
+				writeSetInfo.pTexelBufferView = &bufferView;
 			}
+			else // Structured storage buffer
+			{
+				if (bufferRes != nullptr)
+				{
+					VkBuffer vkBuffer = bufferRes->getHandle();
 
-			writeSetInfo.pTexelBufferView = &bufferView;
+					perSetData.writeInfos[bindingIdx].buffer.buffer = vkBuffer;
+					mPerDeviceData[i].uniformBuffers[sequentialIdx] = vkBuffer;
+				}
+				else
+				{
+					VulkanHardwareBufferManager& vkBufManager = static_cast<VulkanHardwareBufferManager&>(
+						HardwareBufferManager::instance());
+
+					perSetData.writeInfos[bindingIdx].buffer.buffer = vkBufManager.getDummyStructuredBuffer(i);
+					mPerDeviceData[i].buffers[sequentialIdx] = nullptr;
+				}
+			}
 		}
 
 		mSetsDirty[set] = true;

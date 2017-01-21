@@ -22,6 +22,9 @@ namespace bs { namespace ct
 
 		mDummyUniformBuffer = bs_new<VulkanHardwareBuffer>(
 			VulkanHardwareBuffer::BT_UNIFORM, BF_UNKNOWN, GBU_STATIC, 16, GDF_DEFAULT);
+
+		mDummyStructuredBuffer = bs_new<VulkanHardwareBuffer>(
+			VulkanHardwareBuffer::BT_STRUCTURED, BF_UNKNOWN, GBU_STATIC, 16, GDF_DEFAULT);
 	}
 
 	VulkanHardwareBufferManager::~VulkanHardwareBufferManager()
@@ -29,6 +32,7 @@ namespace bs { namespace ct
 		bs_delete(mDummyReadBuffer);
 		bs_delete(mDummyStorageBuffer);
 		bs_delete(mDummyUniformBuffer);
+		bs_delete(mDummyStructuredBuffer);
 	}
 
 	VkBufferView VulkanHardwareBufferManager::getDummyReadBufferView(UINT32 deviceIdx) const
@@ -44,6 +48,11 @@ namespace bs { namespace ct
 	VkBuffer VulkanHardwareBufferManager::getDummyUniformBuffer(UINT32 deviceIdx) const
 	{
 		return mDummyUniformBuffer->getResource(deviceIdx)->getHandle();
+	}
+
+	VkBuffer VulkanHardwareBufferManager::getDummyStructuredBuffer(UINT32 deviceIdx) const
+	{
+		return mDummyStructuredBuffer->getResource(deviceIdx)->getHandle();
 	}
 
 	SPtr<VertexBuffer> VulkanHardwareBufferManager::createVertexBufferInternal(const VERTEX_BUFFER_DESC& desc,

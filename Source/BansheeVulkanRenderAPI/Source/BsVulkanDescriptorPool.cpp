@@ -8,7 +8,7 @@ namespace bs { namespace ct
 	VulkanDescriptorPool::VulkanDescriptorPool(VulkanDevice& device)
 		:mDevice(device)
 	{
-		VkDescriptorPoolSize poolSizes[5];
+		VkDescriptorPoolSize poolSizes[6];
 		poolSizes[0].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		poolSizes[0].descriptorCount = sMaxSampledImages;
 
@@ -23,6 +23,9 @@ namespace bs { namespace ct
 
 		poolSizes[4].type = VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER;
 		poolSizes[4].descriptorCount = sMaxBuffers;
+
+		poolSizes[5].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+		poolSizes[5].descriptorCount = sMaxBuffers;
 
 		VkDescriptorPoolCreateInfo poolCI;
 		poolCI.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;

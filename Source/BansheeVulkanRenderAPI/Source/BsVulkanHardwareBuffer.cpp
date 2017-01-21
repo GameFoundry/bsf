@@ -108,6 +108,9 @@ namespace bs { namespace ct
 			usageFlags = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT;
 			mRequiresView = true;
 			break;
+		case BT_STRUCTURED:
+			usageFlags = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
+			break;
 		}
 
 		mBufferCI.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;

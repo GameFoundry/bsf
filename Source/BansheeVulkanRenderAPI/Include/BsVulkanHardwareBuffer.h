@@ -94,15 +94,17 @@ namespace bs { namespace ct
 		enum BufferType
 		{
 			/** Contains geometry vertices and their properties. */
-			BT_VERTEX = 0x1,
+			BT_VERTEX,
 			/** Contains triangle to vertex mapping. */
-			BT_INDEX = 0x2,
+			BT_INDEX,
 			/** Contains GPU program parameters. */
-			BT_UNIFORM = 0x4,
-			/** Generic read-only GPU buffer containing formatted data. */
-			BT_GENERIC = 0x8,
-			/** Generic read/write GPU buffer containing formatted data. */
-			BT_STORAGE = 0x10,
+			BT_UNIFORM,
+			/** Generic read-only GPU buffer containing non-formatted data. */
+			BT_GENERIC,
+			/** Generic read/write GPU buffer containing non-formatted data. */
+			BT_STORAGE,
+			/** Read/write GPU buffer containing structured data. */
+			BT_STRUCTURED
 		};
 
 		VulkanHardwareBuffer(BufferType type, GpuBufferFormat format, GpuBufferUsage usage, UINT32 size,
