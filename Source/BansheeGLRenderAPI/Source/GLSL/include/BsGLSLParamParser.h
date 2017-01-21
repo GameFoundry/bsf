@@ -67,6 +67,7 @@ namespace bs { namespace ct
 			Texture,
 			Sampler,
 			Image,
+			StorageBlock,
 			Count // Keep at end
 		};
 

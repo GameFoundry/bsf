@@ -124,15 +124,18 @@ namespace bs { namespace ct
 
 	void GLSLParamParser::buildUniformDescriptions(GLuint glProgram, GpuProgramType type, GpuParamDesc& returnParamDesc)
 	{
-		// scan through the active uniforms and add them to the reference list
+		// Scan through the active uniform blocks
 		GLint maxBufferSize = 0;
 		glGetProgramiv(glProgram, GL_ACTIVE_UNIFORM_MAX_LENGTH, &maxBufferSize);
 
 		GLint maxBlockNameBufferSize = 0;
 		glGetProgramiv(glProgram, GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH, &maxBlockNameBufferSize);
 
-		if (maxBlockNameBufferSize > maxBufferSize)
-			maxBufferSize = maxBlockNameBufferSize;
+		GLint maxStorageBlockNameBufferSize = 0;
+		glGetProgramInterfaceiv(glProgram, GL_SHADER_STORAGE_BLOCK, GL_MAX_NAME_LENGTH, &maxStorageBlockNameBufferSize);
+
+		maxBufferSize = std::max(maxBufferSize, maxBlockNameBufferSize);
+		maxBufferSize = std::max(maxBufferSize, maxStorageBlockNameBufferSize);
 
 		GLchar* uniformName = (GLchar*)bs_alloc(sizeof(GLchar)* maxBufferSize);
 
@@ -147,14 +150,14 @@ namespace bs { namespace ct
 		GpuParamBlockDesc& globalBlockDesc = returnParamDesc.paramBlocks[newGlobalBlockDesc.name];
 
 		GLint uniformBlockCount = 0;
-		glGetProgramiv(glProgram, GL_ACTIVE_UNIFORM_BLOCKS, &uniformBlockCount);
+		glGetProgramInterfaceiv(glProgram, GL_UNIFORM_BLOCK, GL_ACTIVE_RESOURCES, &uniformBlockCount);
 
 		Map<UINT32, String> blockSlotToName;
 		Set<String> blockNames;
 		for (GLuint index = 0; index < (GLuint)uniformBlockCount; index++)
 		{
 			GLsizei unusedSize = 0;
-			glGetActiveUniformBlockName(glProgram, index, maxBufferSize, &unusedSize, uniformName);
+			glGetProgramResourceName(glProgram, GL_UNIFORM_BLOCK, index, maxBufferSize, &unusedSize, uniformName);
 
 			GpuParamBlockDesc newBlockDesc;
 			newBlockDesc.slot = index + 1;
@@ -164,14 +167,32 @@ namespace bs { namespace ct
 			newBlockDesc.isShareable = true;
 
 			returnParamDesc.paramBlocks[newBlockDesc.name] = newBlockDesc;
-			blockSlotToName.insert(std::make_pair(newBlockDesc.slot, newBlockDesc.name));
+			blockSlotToName.insert(std::make_pair(index + 1, newBlockDesc.name));
 			blockNames.insert(newBlockDesc.name);
+		}
+
+		// Scan through the shared storage blocks
+		GLint storageBlockCount = 0;
+		glGetProgramInterfaceiv(glProgram, GL_SHADER_STORAGE_BLOCK, GL_ACTIVE_RESOURCES, &storageBlockCount);
+
+		for (GLuint index = 0; index < (GLuint)storageBlockCount; index++)
+		{
+			GLsizei unusedSize = 0;
+			glGetProgramResourceName(glProgram, GL_SHADER_STORAGE_BLOCK, index, maxBufferSize, &unusedSize, uniformName);
+
+			GpuParamObjectDesc bufferParam;
+			bufferParam.name = uniformName;
+			bufferParam.slot = index;
+			bufferParam.type = GPOT_RWSTRUCTURED_BUFFER;
+			bufferParam.set = mapParameterToSet(type, ParamType::StorageBlock);
+
+			returnParamDesc.buffers.insert(std::make_pair(uniformName, bufferParam));
 		}
 
 		Map<String, UINT32> foundFirstArrayIndex;
 		Map<String, GpuParamDataDesc> foundStructs;
 
-		// get the number of active uniforms
+		// Get the number of active uniforms
 		GLint uniformCount = 0;
 		glGetProgramiv(glProgram, GL_ACTIVE_UNIFORMS, &uniformCount);
 
@@ -386,12 +407,12 @@ namespace bs { namespace ct
 
 				if (uniformType == GL_IMAGE_BUFFER)
 				{
-					bufferParam.type = GPOT_RWSTRUCTURED_BUFFER;
+					bufferParam.type = GPOT_RWBYTE_BUFFER;
 					bufferParam.set = mapParameterToSet(type, ParamType::Image);
 				}
 				else // Sampler buffer
 				{
-					bufferParam.type = GPOT_STRUCTURED_BUFFER;
+					bufferParam.type = GPOT_BYTE_BUFFER;
 					bufferParam.set = mapParameterToSet(type, ParamType::Texture);
 				}
 
@@ -423,12 +444,12 @@ namespace bs { namespace ct
 					blockOffset = blockOffset / 4;
 
 					gpuParam.gpuMemOffset = blockOffset;
-					gpuParam.paramBlockSlot = blockIndex + 1; // 0 is reserved for globals
-					gpuParam.paramBlockSet = mapParameterToSet(type, ParamType::UniformBlock);
 
-					String& blockName = blockSlotToName[gpuParam.paramBlockSlot];
+					String& blockName = blockSlotToName[blockIndex + 1];
 					GpuParamBlockDesc& curBlockDesc = returnParamDesc.paramBlocks[blockName];
 
+					gpuParam.paramBlockSlot = curBlockDesc.slot;
+					gpuParam.paramBlockSet = mapParameterToSet(type, ParamType::UniformBlock);
 					gpuParam.cpuMemOffset = blockOffset;
 					curBlockDesc.blockSize = std::max(curBlockDesc.blockSize, gpuParam.cpuMemOffset + gpuParam.arrayElementStride * gpuParam.arraySize);
 				}
@@ -503,19 +524,22 @@ namespace bs { namespace ct
 
 #if BS_DEBUG_MODE
 		// Check if manually calculated and OpenGL buffer sizes match
+		UINT32 blockIdx = 0;
 		for (auto iter = returnParamDesc.paramBlocks.begin(); iter != returnParamDesc.paramBlocks.end(); ++iter)
 		{
 			if (iter->second.slot == 0)
 				continue;
 
 			GLint blockSize = 0;
-			glGetActiveUniformBlockiv(glProgram, iter->second.slot - 1, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
+			glGetActiveUniformBlockiv(glProgram, blockIdx, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
 
 			assert(blockSize % 4 == 0);
 			blockSize = blockSize / 4;
 
 			if (iter->second.blockSize != blockSize)
 				BS_EXCEPT(InternalErrorException, "OpenGL specified and manual uniform block buffer sizes don't match!");
+
+			blockIdx++;
 		}
 #endif
 

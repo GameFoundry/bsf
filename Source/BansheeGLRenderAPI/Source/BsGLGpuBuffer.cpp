@@ -11,8 +11,8 @@ namespace bs { namespace ct
 	GLGpuBuffer::GLGpuBuffer(const GPU_BUFFER_DESC& desc, GpuDeviceFlags deviceMask)
 		: GpuBuffer(desc, deviceMask), mTextureID(0), mFormat(0)
 	{
-		if(desc.type != GBT_STANDARD)
-			LOGERR("Only standard buffers are support on OpenGL.");
+		if(desc.type == GBT_APPENDCONSUME || desc.type == GBT_INDIRECTARGUMENT || desc.type == GBT_RAW)
+			LOGERR("Only standard and structured buffers are supported on OpenGL.");
 
 		if (desc.useCounter)
 			LOGERR("Buffer counters not supported on OpenGL.");
@@ -35,14 +35,23 @@ namespace bs { namespace ct
 	void GLGpuBuffer::initialize()
 	{
 		// Create buffer
-		const auto& props = getProperties();
-		UINT32 size = props.getElementCount() * props.getElementSize();
-		mBuffer.initialize(GL_TEXTURE_BUFFER, size, props.getUsage());
-		
-		// Create texture
-		glGenTextures(1, &mTextureID);
-		glBindTexture(GL_TEXTURE_BUFFER, mTextureID);
-		glTexBuffer(GL_TEXTURE_BUFFER, mFormat, mBuffer.getGLBufferId());
+		if(mProperties.getType() == GBT_STRUCTURED)
+		{
+			const auto& props = getProperties();
+			UINT32 size = props.getElementCount() * props.getElementSize();
+			mBuffer.initialize(GL_SHADER_STORAGE_BUFFER, size, props.getUsage());
+		}
+		else
+		{
+			const auto& props = getProperties();
+			UINT32 size = props.getElementCount() * props.getElementSize();
+			mBuffer.initialize(GL_TEXTURE_BUFFER, size, props.getUsage());
+
+			// Create texture
+			glGenTextures(1, &mTextureID);
+			glBindTexture(GL_TEXTURE_BUFFER, mTextureID);
+			glTexBuffer(GL_TEXTURE_BUFFER, mFormat, mBuffer.getGLBufferId());
+		}
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_GpuBuffer);
 		GpuBuffer::initialize();

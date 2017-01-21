@@ -448,7 +448,7 @@ namespace bs { namespace ct
 					case glslang::Esd1D:		param.type = GPOT_RWTEXTURE1D; break;
 					case glslang::Esd2D:		param.type = sampler.isMultiSample() ? GPOT_RWTEXTURE2DMS : GPOT_RWTEXTURE2D; break;
 					case glslang::Esd3D:		param.type = GPOT_RWTEXTURE3D; break;
-					case glslang::EsdBuffer:	param.type = GPOT_RWSTRUCTURED_BUFFER; break;
+					case glslang::EsdBuffer:	param.type = GPOT_RWBYTE_BUFFER; break;
 					}
 
 					if(sampler.dim != glslang::EsdBuffer)
@@ -476,7 +476,7 @@ namespace bs { namespace ct
 						case glslang::Esd2D:		param.type = sampler.isMultiSample() ? GPOT_TEXTURE2DMS : GPOT_TEXTURE2D; break;
 						case glslang::Esd3D:		param.type = GPOT_TEXTURE3D; break;
 						case glslang::EsdCube:		param.type = GPOT_TEXTURECUBE; break;
-						case glslang::EsdBuffer:	param.type = GPOT_STRUCTURED_BUFFER; break;
+						case glslang::EsdBuffer:	param.type = GPOT_BYTE_BUFFER; break;
 						}
 
 						if (sampler.dim != glslang::EsdBuffer)

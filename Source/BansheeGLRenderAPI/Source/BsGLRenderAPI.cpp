@@ -405,6 +405,22 @@ namespace bs { namespace ct
 					return unit;
 				};
 
+				UINT32 sharedStorageUnitCount = 0;
+				FrameVector<UINT32> sharedStorageUnits(6);
+				auto getSharedStorageUnit = [&](UINT32 binding)
+				{
+					for (UINT32 i = 0; i < (UINT32)sharedStorageUnits.size(); i++)
+					{
+						if (sharedStorageUnits[i] == binding)
+							return i;
+					}
+
+					UINT32 unit = sharedStorageUnitCount++;
+					sharedStorageUnits.push_back(binding);
+
+					return unit;
+				};
+
 				const UINT32 numStages = 6;
 				for(UINT32 i = 0; i < numStages; i++)
 				{
@@ -488,54 +504,76 @@ namespace bs { namespace ct
 						UINT32 binding = entry.second.slot;
 						SPtr<GpuBuffer> buffer = gpuParams->getBuffer(entry.second.set, binding);
 
-						bool isLoadStore = entry.second.type != GPOT_BYTE_BUFFER &&
-							entry.second.type != GPOT_STRUCTURED_BUFFER;
-
 						GLGpuBuffer* glBuffer = static_cast<GLGpuBuffer*>(buffer.get());
-						if (!isLoadStore)
-						{
-							UINT32 unit = getTexUnit(binding);
-							if (!activateGLTextureUnit(unit))
-								continue;
 
-							if (glBuffer != nullptr)
+						switch(entry.second.type)
+						{
+						case GPOT_BYTE_BUFFER: // Texture buffer (read-only, unstructured)
 							{
-								if (mTextureInfos[unit].type != GL_TEXTURE_BUFFER)
+								UINT32 unit = getTexUnit(binding);
+								if (!activateGLTextureUnit(unit))
+									continue;
+
+								if (glBuffer != nullptr)
+								{
+									if (mTextureInfos[unit].type != GL_TEXTURE_BUFFER)
+										glBindTexture(mTextureInfos[unit].type, 0);
+
+									mTextureInfos[unit].type = GL_TEXTURE_BUFFER;
+
+									glBindTexture(GL_TEXTURE_BUFFER, glBuffer->getGLTextureId());
+
+									SPtr<GLSLGpuProgram> activeProgram = getActiveProgram(type);
+									if (activeProgram != nullptr)
+									{
+										GLuint glProgram = activeProgram->getGLHandle();
+
+										glProgramUniform1i(glProgram, binding, unit);
+									}
+								}
+								else
 									glBindTexture(mTextureInfos[unit].type, 0);
-
-								mTextureInfos[unit].type = GL_TEXTURE_BUFFER;
-
-								glBindTexture(GL_TEXTURE_BUFFER, glBuffer->getGLTextureId());
-
-								SPtr<GLSLGpuProgram> activeProgram = getActiveProgram(type);
-								if (activeProgram != nullptr)
-								{
-									GLuint glProgram = activeProgram->getGLHandle();
-
-									glProgramUniform1i(glProgram, binding, unit);
-								}
 							}
-							else
-								glBindTexture(mTextureInfos[unit].type, 0);
-						}
-						else
-						{
-							UINT32 unit = getImageUnit(binding);
-							if (glBuffer != nullptr)
+							break;
+						case GPOT_RWBYTE_BUFFER: // Storage buffer (read/write, unstructured)
 							{
-								glBindImageTexture(unit, glBuffer->getGLTextureId(), 0, false,
-									0, GL_READ_WRITE, glBuffer->getGLFormat());
-
-								SPtr<GLSLGpuProgram> activeProgram = getActiveProgram(type);
-								if (activeProgram != nullptr)
+								UINT32 unit = getImageUnit(binding);
+								if (glBuffer != nullptr)
 								{
-									GLuint glProgram = activeProgram->getGLHandle();
+									glBindImageTexture(unit, glBuffer->getGLTextureId(), 0, false,
+													   0, GL_READ_WRITE, glBuffer->getGLFormat());
 
-									glProgramUniform1i(glProgram, binding, unit);
+									SPtr<GLSLGpuProgram> activeProgram = getActiveProgram(type);
+									if (activeProgram != nullptr)
+									{
+										GLuint glProgram = activeProgram->getGLHandle();
+
+										glProgramUniform1i(glProgram, binding, unit);
+									}
 								}
+								else
+									glBindImageTexture(unit, 0, 0, false, 0, GL_READ_WRITE, GL_R32F);
 							}
-							else
-								glBindImageTexture(unit, 0, 0, false, 0, GL_READ_WRITE, GL_R32F);
+							break;
+						case GPOT_RWSTRUCTURED_BUFFER: // Shared storage block (read/write, structured)
+							{
+								UINT32 unit = getSharedStorageUnit(binding);
+								if (glBuffer != nullptr)
+								{
+									glBindBufferBase(GL_SHADER_STORAGE_BUFFER, unit, glBuffer->getGLBufferId());
+									
+									SPtr<GLSLGpuProgram> activeProgram = getActiveProgram(type);
+									if (activeProgram != nullptr)
+									{
+										GLuint glProgram = activeProgram->getGLHandle();
+
+										glShaderStorageBlockBinding(glProgram, binding, unit);
+									}
+								}
+								else
+									glBindBufferBase(GL_SHADER_STORAGE_BUFFER, unit, 0);
+							}
+							break;
 						}
 					}
 
@@ -677,8 +715,7 @@ namespace bs { namespace ct
 
 							UINT32 unit = getUniformUnit(binding - 1);
 							glUniformBlockBinding(glProgram, binding - 1, unit);
-							glBindBufferRange(GL_UNIFORM_BUFFER, unit, glParamBlockBuffer->getGLHandle(), 0,
-								glParamBlockBuffer->getSize());
+							glBindBufferBase(GL_UNIFORM_BUFFER, unit, glParamBlockBuffer->getGLHandle());
 						}
 					}
 				}
