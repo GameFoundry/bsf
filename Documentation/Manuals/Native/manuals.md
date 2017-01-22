@@ -53,6 +53,7 @@ Manuals									{#manuals}
 
 Here you will find a list of all manuals relating to Banshee's native code, primarily focusing on explaining the engine internals instead of the user-facing code. The manuals are roughly ordered in the way they should be read, although if you are interested in a specific topic feel free to skip ahead as manuals often contain cross references to prerequisite manuals.
 
+## General guides
 Name                                      | Description
 ------------------------------------------|-------------
 [Getting started](@ref gettingStarted)    | Shows how to perform some basic operations using Banshee's user-facing interface. Allows you to get a general idea of how Banshee works.
@@ -62,12 +63,6 @@ Name                                      | Description
 [Resources](@ref resources)  			  | Explains how resources work, including saving, loading and creating brand new resource types.
 [RTTI](@ref rtti)                         | Shows you how to add run-time type information for your objects.
 [Game objects](@ref gameObjects)          | Explains what are scene objects and components and how can you use them to create your scene.
-[Render API](@ref renderAPI)              | Explains how to use the render API to use the graphics pipeline and draw objects. 
-[Textures](@ref textures)                 | Shows you how to create, use and manipulate textures.
-[Meshes](@ref meshes)                     | Shows you how to create, use and manipulate meshes.
-[Render targets](@ref renderTargets)	  | Shows you how to create and use render textures and windows.
-[GPU programs](@ref gpuPrograms)		  | Shows you how to create and use GPU programs.
-[Materials](@ref materials)				  | Shows you how to create and use materials and shaders.
 [Scripting](@ref scripting)               | Shows you how to interact with the scripting system, and how to expose C++ objects to the scripting API.
 [Renderer](@ref renderer)    	  		  | Explains how the renderer works on the low level, and how to create a custom renderer so you may fully customize the look of your application.
 [BSLFX](@ref bslfx)    	  		  		  | Provides a reference for the Banshee Shading Language FX syntax.
@@ -77,3 +72,14 @@ Name                                      | Description
 [Quick reference](@ref quickref)          | Provides a few bits of commonly required information, that might be hard to remember otherwise.
 [Porting](@ref porting)                   | Information about how to go on about porting Banshee to a different operating system.
 [Code style](@ref style)                  | Information about code style used when writing Banshee.
+
+## Low level render API
+
+Name                                      | Description
+------------------------------------------|-------------
+[Render API](@ref renderAPI)              | Explains how to use the render API to use the graphics pipeline and draw objects. 
+[Textures](@ref textures)                 | Shows you how to create, use and manipulate textures.
+[Meshes](@ref meshes)                     | Shows you how to create, use and manipulate meshes.
+[Render targets](@ref renderTargets)	  | Shows you how to create and use render textures and windows.
+[GPU programs](@ref gpuPrograms)		  | Shows you how to create and use GPU programs.
+[Materials](@ref materials)				  | Shows you how to create and use materials and shaders.
