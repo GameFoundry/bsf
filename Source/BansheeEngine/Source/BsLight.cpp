@@ -97,21 +97,18 @@ namespace bs
 			break;
 		case LightType::Spot:
 		{
-			Degree angle = Math::clamp(mSpotAngle, Degree(-89), Degree(89));
-			float coneRadius = Math::tan(angle) * mRange;
+			// Note: We could use the formula for calculating the circumcircle of a triangle (after projecting the cone),
+			// but the radius of the sphere is the same as in the formula we use here, yet it is much simpler with no need
+			// to calculate multiple determinants. Neither are good approximations when cone angle is wide.
+			Vector3 offset(0, 0, mRange * 0.5f);
 
-			float radius;
-			Vector3 offset;
-			if (coneRadius < mRange)
-			{
-				radius = (mRange * mRange + coneRadius * coneRadius) / (0.5f * mRange);
-				offset = Vector3(0, 0, -(mRange - coneRadius));
-			}
-			else
-			{
-				radius = coneRadius;
-				offset = Vector3::ZERO;
-			}
+			// Direction along the edge of the cone, on the YZ plane (doesn't matter if we used XZ instead)
+			Degree angle = Math::clamp(mSpotAngle, Degree(-89), Degree(89));
+			Vector3 coneDir(0, Math::tan(angle)*mRange, mRange);
+
+			// Distance between the "corner" of the cone and our center, must be the radius (provided the center is at
+			// the middle of the range)
+			float radius = (offset - coneDir).length();
 
 			Vector3 center = mPosition + mRotation.rotate(offset);
 			mBounds = Sphere(center, radius);
