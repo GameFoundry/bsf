@@ -47,7 +47,8 @@ Manuals									{#manuals}
  - [Physics mesh import](@ref physicsMesh)
  - [Triggers](@ref triggers)
  - [Dynamic objects](@ref rigidbodies)
- - [Physical materials](@ref physicalMaterial)
+ - [Physics material](@ref physicsMaterial)
+ - [Character controller](@ref characterController)
  
 # Developer guides
 
