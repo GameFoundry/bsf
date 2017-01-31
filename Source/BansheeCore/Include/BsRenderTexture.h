@@ -30,7 +30,8 @@ namespace bs
 		virtual ~RenderTextureProperties() { }
 
 	private:
-		void construct(const TextureProperties* textureProps, UINT32 numSlices, UINT32 mipLevel, bool requiresFlipping);
+		void construct(const TextureProperties* textureProps, UINT32 numSlices, UINT32 mipLevel, bool requiresFlipping, 
+					   bool hwGamma);
 
 		friend class ct::RenderTexture;
 		friend class RenderTexture;

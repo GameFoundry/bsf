@@ -12,38 +12,80 @@ namespace bs
 {
 	RenderTextureProperties::RenderTextureProperties(const RENDER_TEXTURE_DESC& desc, bool requiresFlipping)
 	{
+		UINT32 firstIdx = -1;
+		bool requiresHwGamma = false;
 		for (UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
 		{
 			HTexture texture = desc.colorSurfaces[i].texture;
 
+			if (!texture.isLoaded())
+				continue;
+
+			if (firstIdx == -1)
+				firstIdx = i;
+
+			requiresHwGamma |= texture->getProperties().isHardwareGammaEnabled();
+		}
+
+		if (firstIdx == -1)
+		{
+			HTexture texture = desc.depthStencilSurface.texture;
 			if (texture.isLoaded())
 			{
 				const TextureProperties& texProps = texture->getProperties();
-				construct(&texProps, desc.colorSurfaces[i].numFaces, desc.colorSurfaces[i].mipLevel, requiresFlipping);
-
-				break;
+				construct(&texProps, desc.depthStencilSurface.numFaces, desc.depthStencilSurface.mipLevel,
+						  requiresFlipping, false);
 			}
+		}
+		else
+		{
+			HTexture texture = desc.colorSurfaces[firstIdx].texture;
+
+			const TextureProperties& texProps = texture->getProperties();
+			construct(&texProps, desc.colorSurfaces[firstIdx].numFaces, desc.colorSurfaces[firstIdx].mipLevel,
+					  requiresFlipping, requiresHwGamma);
 		}
 	}
 
 	RenderTextureProperties::RenderTextureProperties(const ct::RENDER_TEXTURE_DESC& desc, bool requiresFlipping)
 	{
+		UINT32 firstIdx = -1;
+		bool requiresHwGamma = false;
 		for (UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
 		{
 			SPtr<ct::Texture> texture = desc.colorSurfaces[i].texture;
 
-			if (texture != nullptr)
+			if (texture == nullptr)
+				continue;
+
+			if (firstIdx == -1)
+				firstIdx = i;
+
+			requiresHwGamma |= texture->getProperties().isHardwareGammaEnabled();
+		}
+
+		if(firstIdx == -1)
+		{
+			SPtr<ct::Texture> texture = desc.depthStencilSurface.texture;
+			if(texture != nullptr)
 			{
 				const TextureProperties& texProps = texture->getProperties();
-				construct(&texProps, desc.colorSurfaces[i].numFaces, desc.colorSurfaces[i].mipLevel, requiresFlipping);
-
-				break;
+				construct(&texProps, desc.depthStencilSurface.numFaces, desc.depthStencilSurface.mipLevel, 
+						  requiresFlipping, false);
 			}
+		}
+		else
+		{
+			SPtr<ct::Texture> texture = desc.colorSurfaces[firstIdx].texture;
+
+			const TextureProperties& texProps = texture->getProperties();
+			construct(&texProps, desc.colorSurfaces[firstIdx].numFaces, desc.colorSurfaces[firstIdx].mipLevel, 
+					  requiresFlipping, requiresHwGamma);
 		}
 	}
 
 	void RenderTextureProperties::construct(const TextureProperties* textureProps, UINT32 numSlices, 
-											UINT32 mipLevel, bool requiresFlipping)
+											UINT32 mipLevel, bool requiresFlipping, bool hwGamma)
 	{
 		if (textureProps != nullptr)
 		{
@@ -52,13 +94,13 @@ namespace bs
 
 			mNumSlices *= numSlices;
 			mColorDepth = bs::PixelUtil::getNumElemBits(textureProps->getFormat());
-			mHwGamma = textureProps->isHardwareGammaEnabled();
 			mMultisampleCount = textureProps->getNumSamples();
 		}
 
 		mActive = true;
 		mIsWindow = false;
 		mRequiresTextureFlipping = requiresFlipping;
+		mHwGamma = hwGamma;
 	}
 
 	SPtr<RenderTexture> RenderTexture::create(const TEXTURE_DESC& desc, 
