@@ -87,9 +87,9 @@ Technique
 			void main(
 				uint3 groupId : SV_GroupID,
 				uint3 groupThreadId : SV_GroupThreadID,
-				uint3 dispatchThreadId : SV_DispatchThreadID,
-				uint threadIndex : SV_GroupIndex)
+				uint3 dispatchThreadId : SV_DispatchThreadID)
 			{
+				uint threadIndex = groupThreadId.y * TILE_SIZE + groupThreadId.x;
 				uint2 pixelPos = dispatchThreadId.xy + gViewportRectangle.xy;
 				
 				float deviceZ = gDepthBufferTex.Load(int3(pixelPos, 0)).r;
@@ -118,7 +118,7 @@ Technique
 				
 				// Create a frustum for the current tile
 				// First determine a scale of the tile compared to the viewport
-				float2 tileScale = gViewportRectangle.zw / float2(TILE_SIZE, TILE_SIZE);
+				float2 tileScale = gViewportRectangle.zw * rcp(float2(TILE_SIZE, TILE_SIZE));
 
 				// Now we need to use that scale to scale down the frustum.
 				// Assume a projection matrix:
@@ -281,6 +281,9 @@ Technique
 	{
 		Compute = 
 		{
+			// Arbitrary limit, increase if needed
+            #define MAX_LIGHTS 512
+		
 			layout (local_size_x = TILE_SIZE, local_size_y = TILE_SIZE) in;
 		
 			layout(binding = 1) uniform sampler2D gGBufferATex;
@@ -333,43 +336,146 @@ Technique
 				uvec3 gLightOffsets;
 			};
 			
+			shared uint sTileMinZ;
+			shared uint sTileMaxZ;
+			
+			shared uint sNumLightsPerType[2];
+			shared uint sTotalNumLights;
+            shared uint sLightIndices[MAX_LIGHTS];
+			
 			void main()
 			{
+				uint threadIndex = gl_LocalInvocationID.y * TILE_SIZE + gl_LocalInvocationID.x;
 				ivec2 pixelPos = ivec2(gl_GlobalInvocationID.xy) + gViewportRectangle.xy;
 				SurfaceData surfaceData = getGBufferData(pixelPos);
 
+				// Set initial values
+				if(threadIndex == 0)
+				{
+					sTileMinZ = 0x7F7FFFFF;
+					sTileMaxZ = 0;
+					sNumLightsPerType[0] = 0;
+					sNumLightsPerType[0] = 0;
+					sTotalNumLights = 0;
+				}
+				
+				groupMemoryBarrier();
+				barrier();
+				
+				atomicMin(sTileMinZ, floatBitsToUint(-surfaceData.depth));
+				atomicMax(sTileMaxZ, floatBitsToUint(-surfaceData.depth));
+				
+				groupMemoryBarrier();
+				barrier();
+				
+			    float minTileZ = uintBitsToFloat(sTileMinZ);
+				float maxTileZ = uintBitsToFloat(sTileMaxZ);
+				
+				// Create a frustum for the current tile
+				// See HLSL version for an explanation of the math
+				vec2 tileScale = gViewportRectangle.zw / vec2(TILE_SIZE, TILE_SIZE);
+				vec2 tileBias = tileScale - 1 - gl_WorkGroupID.xy * 2;
+				
+				float At = gMatProj[0][0] * tileScale.x;
+				float Ctt = gMatProj[2][0] * tileScale.x - tileBias.x;
+				
+				float Bt = gMatProj[1][1] * tileScale.y;
+				float Dtt = gMatProj[2][1] * tileScale.y + tileBias.y;
+				
+				// Extract left/right/top/bottom frustum planes from scaled projection matrix
+				vec4 frustumPlanes[6];
+				frustumPlanes[0] = vec4(At, 0.0f, gMatProj[2][3] + Ctt, 0.0f);
+				frustumPlanes[1] = vec4(-At, 0.0f, gMatProj[2][3] - Ctt, 0.0f);
+				frustumPlanes[2] = vec4(0.0f, -Bt, gMatProj[2][3] - Dtt, 0.0f);
+				frustumPlanes[3] = vec4(0.0f, Bt, gMatProj[2][3] + Dtt, 0.0f);
+				
+				// Normalize
+                for (uint i = 0; i < 4; ++i) 
+					frustumPlanes[i] /= length(frustumPlanes[i].xyz);
+				
+				// Generate near/far frustum planes
+				frustumPlanes[4] = vec4(0.0f, 0.0f, -1.0f, -minTileZ); 
+				frustumPlanes[5] = vec4(0.0f, 0.0f, 1.0f, maxTileZ);
+				
+				vec2 screenUv = (vec2(gViewportRectangle.xy + pixelPos) + 0.5f) / vec2(gViewportRectangle.zw);
+				vec2 clipSpacePos = (screenUv - gClipToUVScaleOffset.zw) / gClipToUVScaleOffset.xy;
+			
+				// x, y are now in clip space, z, w are in view space
+				// We multiply them by a special inverse view-projection matrix, that had the projection entries that effect
+				// z, w eliminated (since they are already in view space)
+				// Note: Multiply by depth should be avoided if using ortographic projection
+				vec4 mixedSpacePos = vec4(clipSpacePos.xy * -surfaceData.depth, surfaceData.depth, 1);
+				vec4 worldPosition4D = gMatScreenToWorld * mixedSpacePos;
+				vec3 worldPosition = worldPosition4D.xyz / worldPosition4D.w;
+			
+				// Find radial & spot lights overlapping the tile
+				for(uint type = 0; type < 2; type++)
+				{
+					uint lightOffset = threadIndex + gLightOffsets[type];
+					uint lightsEnd = gLightOffsets[type + 1];
+					for (uint i = lightOffset; i < lightsEnd && i < MAX_LIGHTS; i += TILE_SIZE)
+					{
+						vec4 lightPosition = gMatView * vec4(gLightsData[i].position, 1.0f);
+						float lightRadius = gLightsData[i].radius;
+						
+						bool lightInTile = true;
+					
+						// First check side planes as this will cull majority of the lights
+						for (uint j = 0; j < 4; ++j)
+						{
+							float dist = dot(frustumPlanes[j], lightPosition);
+							lightInTile = lightInTile && (dist >= -lightRadius);
+						}
+
+						if (lightInTile)
+						{
+							bool inDepthRange = true;
+					
+							// Check near/far planes
+							for (uint j = 4; j < 6; ++j)
+							{
+								float dist = dot(frustumPlanes[j], lightPosition);
+								inDepthRange = inDepthRange && (dist >= -lightRadius);
+							}
+							
+							// In tile, add to branch
+							if (inDepthRange)
+							{
+								atomicAdd(sNumLightsPerType[type], 1U);
+								
+								uint idx = atomicAdd(sTotalNumLights, 1U);
+								sLightIndices[idx] = i;
+							}
+						}
+					}
+				}
+
+                groupMemoryBarrier();
+				barrier();		
+			
 				float alpha = 0.0f;
 				vec3 lightAccumulator = vec3(0, 0, 0);
 				if(surfaceData.worldNormal.w > 0.0f)
 				{
-					vec2 screenUv = (vec2(gViewportRectangle.xy + pixelPos) + 0.5f) / vec2(gViewportRectangle.zw);
-					vec2 clipSpacePos = (screenUv - gClipToUVScaleOffset.zw) / gClipToUVScaleOffset.xy;
-				
-					// x, y are now in clip space, z, w are in view space
-					// We multiply them by a special inverse view-projection matrix, that had the projection entries that effect
-					// z, w eliminated (since they are already in view space)
-					// Note: Multiply by depth should be avoided if using ortographic projection
-					vec4 mixedSpacePos = vec4(clipSpacePos.xy * -surfaceData.depth, surfaceData.depth, 1);
-					vec4 worldPosition4D = gMatScreenToWorld * mixedSpacePos;
-					vec3 worldPosition = worldPosition4D.xyz / worldPosition4D.w;
-					
-					for(uint i = 0; i < gLightOffsets.x; i++)
+					for(uint i = 0; i < gLightOffsets[0]; ++i)
 					{
-						LightData data = gLightsData[i];
-						lightAccumulator += getDirLightContibution(surfaceData, data);
+						LightData lightData = gLightsData[i];
+						lightAccumulator += getDirLightContibution(surfaceData, lightData);
 					}
 					
-					for(uint i = gLightOffsets.x; i < gLightOffsets.y; i++)
-					{
-						LightData data = gLightsData[i];
-						lightAccumulator += getPointLightContribution(worldPosition, surfaceData, data);
-					}
-					
-					for(uint i = gLightOffsets.y; i < gLightOffsets.z; i++)
-					{
-						LightData data = gLightsData[i];
-						lightAccumulator += getSpotLightContribution(worldPosition, surfaceData, data);
-					}
+                    for (uint i = 0; i < sNumLightsPerType[0]; ++i)
+                    {
+                        uint lightIdx = sLightIndices[i];
+						LightData lightData = gLightsData[lightIdx];
+                        lightAccumulator += getPointLightContribution(worldPosition, surfaceData, lightData);
+                    }
+
+					for(uint i = sNumLightsPerType[0]; i < sTotalNumLights; ++i)
+                    {
+                        uint lightIdx = sLightIndices[i];
+						LightData lightData = gLightsData[lightIdx];
+                        lightAccumulator += getSpotLightContribution(worldPosition, surfaceData, lightData);
+                    }
 					
 					alpha = 1.0f;
 				}
