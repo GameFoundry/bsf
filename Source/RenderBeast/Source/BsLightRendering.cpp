@@ -123,7 +123,8 @@ namespace bs { namespace ct
 				mLightBuffers[i] = GpuBuffer::create(bufferDesc);
 			}
 
-			mLightBuffers[i]->writeData(0, size, lightData[i].data(), BWT_DISCARD);
+			if(size > 0)
+				mLightBuffers[i]->writeData(0, size, lightData[i].data(), BWT_DISCARD);
 		}
 
 		mDirLightBufferParam.set(mLightBuffers[0]);
