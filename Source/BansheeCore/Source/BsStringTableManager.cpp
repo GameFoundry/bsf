@@ -45,4 +45,9 @@ namespace bs
 		if (table != nullptr)
 			table->setActiveLanguage(mActiveLanguage);
 	}
+
+	StringTableManager& gStringTableManager()
+	{
+		return StringTableManager::instance();
+	}
 }

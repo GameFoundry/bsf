@@ -68,7 +68,7 @@ namespace bs
 	{
 		Vector3 point; /**< Position of the hit in world space. */
 		Vector3 normal; /**< Normal to the surface that was hit. */
-		Vector2 uv; /**< UV coordinates of the triangle that was hit (only applicable when triangle meshes are hit). */
+		Vector2 uv; /**< Barycentric coordinates of the triangle that was hit (only applicable when triangle meshes are hit). */
 		float distance = 0.0f; /**< Distance from the query origin to the hit position. */
 		UINT32 triangleIdx = 0; /**< Index of the triangle that was hit (only applicable when triangle meshes are hit). */
 		Collider* colliderRaw = nullptr; /**< Collider that was hit. */

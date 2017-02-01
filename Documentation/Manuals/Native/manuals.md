@@ -39,6 +39,7 @@ Manuals									{#manuals}
  - [Layouts](@ref guiLayouts)
  - [Styles](@ref guiStyles)
  - [Importing fonts](@ref importingFonts)
+ - [Localization](@ref guiLocalization)
 - **Audio**
  - [Importing audio files](@ref importingAudio)
  - [Playing audio](@ref playingAudio)
@@ -49,6 +50,7 @@ Manuals									{#manuals}
  - [Dynamic objects](@ref rigidbodies)
  - [Physics material](@ref physicsMaterial)
  - [Character controller](@ref characterController)
+ - [Scene queries](@ref sceneQueries)
  
 # Developer guides
 

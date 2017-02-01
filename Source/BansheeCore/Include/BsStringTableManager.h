@@ -41,5 +41,8 @@ namespace bs
 		UnorderedMap<UINT32, HStringTable> mTables;
 	};
 
+	/** Provides easier access to StringTableManager. */
+	BS_CORE_EXPORT StringTableManager& gStringTableManager();
+
 	/** @} */
 }
