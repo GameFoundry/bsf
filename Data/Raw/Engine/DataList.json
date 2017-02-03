@@ -197,6 +197,14 @@
         {
             "Path": "TiledDeferredLighting.bsl",
             "UUID": "787d7293-f335-4eda-a897-c706e6b5c818"
+        },
+        {
+            "Path": "LightGridLLCreation.bsl",
+            "UUID": "097acd4f-9eeb-4a25-bbd8-e3ee31118a0f"
+        },
+        {
+            "Path": "LightGridLLReduction.bsl",
+            "UUID": "d190e4e1-5ea9-4961-9ee3-b5df218cb5e6"
         }
     ],
     "Skin": [

@@ -271,6 +271,9 @@ namespace bs { namespace ct
 		gPerCameraParamDef.gViewOrigin.set(mParamBuffer, mViewDesc.viewOrigin);
 		gPerCameraParamDef.gDeviceZToWorldZ.set(mParamBuffer, getDeviceZTransform(mViewDesc.projTransform));
 
+		Vector2 nearFar(mViewDesc.nearPlane, mViewDesc.farPlane);
+		gPerCameraParamDef.gNearFar.set(mParamBuffer, nearFar);
+
 		const Rect2I& viewRect = mViewDesc.target.viewRect;
 
 		Vector4I viewportRect;

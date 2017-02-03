@@ -37,4 +37,5 @@ namespace bs { namespace ct
 	struct PooledRenderTexture;
 	class RenderTargets;
 	class RendererCamera;
+	struct LightData;
 }}

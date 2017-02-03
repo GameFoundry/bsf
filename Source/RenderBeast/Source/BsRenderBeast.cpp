@@ -500,6 +500,7 @@ namespace bs { namespace ct
 			viewDesc.cullFrustum = camera->getWorldFrustum();
 			viewDesc.visibleLayers = camera->getLayers();
 			viewDesc.nearPlane = camera->getNearClipDistance();
+			viewDesc.farPlane = camera->getFarClipDistance();
 			viewDesc.flipView = false;
 
 			viewDesc.viewOrigin = camera->getPosition();
@@ -1032,6 +1033,7 @@ namespace bs { namespace ct
 
 		viewDesc.visibleLayers = 0xFFFFFFFFFFFFFFFF;
 		viewDesc.nearPlane = 0.5f;
+		viewDesc.farPlane = 1000.0f;
 		viewDesc.flipView = RenderAPI::instance().getAPIInfo().getUVYAxisUp();
 
 		viewDesc.viewOrigin = position;

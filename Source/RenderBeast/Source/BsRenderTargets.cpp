@@ -10,7 +10,7 @@
 namespace bs { namespace ct
 {
 	RenderTargets::RenderTargets(const RENDERER_VIEW_TARGET_DESC& view, bool hdr)
-		:mViewTarget(view), mHDR(hdr)
+		:mViewTarget(view), mHDR(hdr), mWidth(view.targetWidth), mHeight(view.targetHeight)
 	{
 		// Note: Consider customizable HDR format via options? e.g. smaller PF_FLOAT_R11G11B10 or larger 32-bit format
 		mSceneColorFormat = hdr ? PF_FLOAT16_RGBA : PF_R8G8B8A8;

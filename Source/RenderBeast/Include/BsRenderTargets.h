@@ -70,6 +70,12 @@ namespace bs { namespace ct
 		/**	Returns the number of samples per pixel supported by the targets. */
 		UINT32 getNumSamples() const { return mViewTarget.numSamples; }
 
+		/** Gets the width of the targets, in pixels. */
+		UINT32 getWidth() const { return mWidth; }
+
+		/** Gets the height of the targets, in pixels. */
+		UINT32 getHeight() const { return mHeight; }
+
 	private:
 		RenderTargets(const RENDERER_VIEW_TARGET_DESC& view, bool hdr);
 
@@ -87,6 +93,9 @@ namespace bs { namespace ct
 		PixelFormat mAlbedoFormat;
 		PixelFormat mNormalFormat;
 		bool mHDR;
+
+		UINT32 mWidth;
+		UINT32 mHeight;
 	};
 
 	/** @} */

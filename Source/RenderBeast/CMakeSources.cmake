@@ -12,6 +12,7 @@ set(BS_RENDERBEAST_INC_NOFILTER
 	"Include/BsRendererCamera.h"
 	"Include/BsRendererObject.h"
 	"Include/BsReflectionCubemap.h"
+	"Include/BsLightGrid.h"
 )
 
 set(BS_RENDERBEAST_SRC_NOFILTER
@@ -27,6 +28,7 @@ set(BS_RENDERBEAST_SRC_NOFILTER
 	"Source/BsRendererCamera.cpp"
 	"Source/BsRendererObject.cpp"
 	"Source/BsReflectionCubemap.cpp"
+	"Source/BsLightGrid.cpp"
 )
 
 source_group("Header Files" FILES ${BS_RENDERBEAST_INC_NOFILTER})

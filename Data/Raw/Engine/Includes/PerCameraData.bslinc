@@ -16,6 +16,9 @@ Parameters =
 	// Converts device Z to world Z using this formula: worldZ = (1 / (deviceZ + y)) * x
 	float2		gDeviceZToWorldZ : auto("DeviceToWorldZ");
 	
+	// x - near plane distance, y - far plane distance
+	float2		gNearFar : auto("NearFar");
+	
 	// xy - Viewport offset in pixels
 	// zw - Viewport width & height in pixels
 	int4 		gViewportRectangle : auto("ViewportRect");
@@ -49,6 +52,7 @@ Technique : base("PerCameraData") =
 				float4x4 gMatInvViewProj;
 				float4x4 gMatScreenToWorld;
 				float2 	 gDeviceZToWorldZ;
+				float2	 gNearFar;
 				int4 	 gViewportRectangle;
 				float4 	 gClipToUVScaleOffset;				
 			}
@@ -75,6 +79,7 @@ Technique : base("PerCameraData") =
 				mat4 gMatInvViewProj;
 				mat4 gMatScreenToWorld;
 				vec2 gDeviceZToWorldZ;
+				vec2 gNearFar;
 				ivec4 gViewportRectangle;
 				vec4 gClipToUVScaleOffset;				
 			};
