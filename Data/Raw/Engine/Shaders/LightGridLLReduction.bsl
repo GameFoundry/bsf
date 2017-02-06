@@ -1,4 +1,6 @@
-Technique
+#include "$ENGINE$\PerCameraData.bslinc"
+
+Technique : inherits("PerCameraData") = 
 {
 	Language = "HLSL11";
 	
@@ -71,7 +73,7 @@ Technique
 	};
 };
 
-Technique
+Technique : inherits("PerCameraData") = 
 {
 	Language = "GLSL";
 	
@@ -108,15 +110,15 @@ Technique
 					return;
 					
 				uint maxNumLinks = gNumCells * gMaxNumLightsPerCell;	
-				uint cellIdx = (gl_GlobalInvocationID.z * gGridSize.y + gl_GlobalInvocationID.y) * gGridSize.x + gl_GlobalInvocationID.x;
+				int cellIdx = int((gl_GlobalInvocationID.z * gGridSize.y + gl_GlobalInvocationID.y) * gGridSize.x + gl_GlobalInvocationID.x);
 				
 				// First count total number of lights affecting the tile
-				uint currentIdx = texelFetch(gLinkedListHeads, cellIdx).x;
+				int currentIdx = int(texelFetch(gLinkedListHeads, cellIdx).x);
 				uint numLights = 0;
 				while(currentIdx != 0xFFFFFFFF)
 				{
 					numLights++;
-					currentIdx = texelFetch(gLinkedList, currentIdx).y;
+					currentIdx = int(texelFetch(gLinkedList, currentIdx).y);
 				}
 				
 				// Allocate enough room and remember the offset to indices
@@ -125,15 +127,15 @@ Technique
 
 				// Actually write light indices
 				// Note: Values are written in the reverse order than they were found in
-				currentIdx = texelFetch(gLinkedListHeads, cellIdx).x;
+				currentIdx = int(texelFetch(gLinkedListHeads, cellIdx).x);
 				uint lightIdx = 0;
 				while(currentIdx != 0xFFFFFFFF)
 				{
 					uvec2 entry = texelFetch(gLinkedList, currentIdx).xy;
 				
-					imageStore(gGridLightIndices, indicesStart + lightIdx, uvec4(entry.x, 0, 0, 0));
+					imageStore(gGridLightIndices, int(indicesStart + lightIdx), uvec4(entry.x, 0, 0, 0));
 					
-					currentIdx = entry.y;
+					currentIdx = int(entry.y);
 					lightIdx++;
 				}
 			}

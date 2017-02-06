@@ -7,8 +7,9 @@
 #define USE_BLEND_SHAPES
 #include "$ENGINE$\SkinnedVertexInput.bslinc"
 #include "$ENGINE$\NormalVertexInput.bslinc"
+#undef USE_BLEND_SHAPES
 
-Technique : base("DeferredBasePassCommon") =
+Technique : base("BasePassCommon") =
 {
 	Language = "HLSL11";
 	
@@ -23,6 +24,7 @@ Technique : base("DeferredBasePassCommon") =
 				VertexIntermediate intermediate = getVertexIntermediate(input);
 				float4 worldPosition = getVertexWorldPosition(input, intermediate);
 				
+				output.worldPosition = worldPosition.xyz;
 				output.position = mul(gMatViewProj, worldPosition);
 				populateVertexOutput(input, intermediate, output);
 							
@@ -48,51 +50,51 @@ Technique : base("DeferredBasePassCommon") =
 };
 
 Technique
- : base("DeferredBasePass")
+ : base("BasePass")
  : inherits("GBuffer")
  : inherits("PerCameraData")
  : inherits("PerObjectData")
  : inherits("NormalVertexInput")
- : inherits("DeferredBasePassCommon") =
+ : inherits("BasePassCommon") =
 { 
 	Language = "HLSL11";
 };
 
 Technique
- : base("DeferredBasePassSkinned")
+ : base("BasePassSkinned")
  : inherits("GBuffer")
  : inherits("PerCameraData")
  : inherits("PerObjectData")
  : inherits("SkinnedVertexInput")
- : inherits("DeferredBasePassCommon") =
+ : inherits("BasePassCommon") =
 {
 	Language = "HLSL11";
 };
 
 Technique
- : base("DeferredBasePassMorph")
+ : base("BasePassMorph")
  : inherits("GBuffer")
  : inherits("PerCameraData")
  : inherits("PerObjectData")
  : inherits("MorphVertexInput")
- : inherits("DeferredBasePassCommon") =
+ : inherits("BasePassCommon") =
 {
 	Language = "HLSL11";
 };
 
 Technique
- : base("DeferredBasePassSkinnedMorph")
+ : base("BasePassSkinnedMorph")
  : inherits("GBuffer")
  : inherits("PerCameraData")
  : inherits("PerObjectData")
  : inherits("SkinnedMorphVertexInput")
- : inherits("DeferredBasePassCommon") =
+ : inherits("BasePassCommon") =
 {
 	Language = "HLSL11";
 };
 
 Technique 
-	: base("DeferredBasePassCommon") =
+	: base("BasePassCommon") =
 {
 	Language = "GLSL";
 	
@@ -107,8 +109,10 @@ Technique
 			
 				vec4 worldPos;
 				getVertexWorldPosition(intermediate, worldPos);
-			
+				
+				outWorldPosition = worldPos.xyz;
 				gl_Position = gMatViewProj * worldPos;
+				
 				populateVertexOutput(intermediate);
 			}
 		};
@@ -129,45 +133,45 @@ Technique
 };
 
 Technique
- : base("DeferredBasePass")
+ : base("BasePass")
  : inherits("GBuffer")
  : inherits("PerCameraData")
  : inherits("PerObjectData")
  : inherits("NormalVertexInput")
- : inherits("DeferredBasePassCommon") =
+ : inherits("BasePassCommon") =
 { 
 	Language = "GLSL";
 };
 
 Technique
- : base("DeferredBasePassSkinned")
+ : base("BasePassSkinned")
  : inherits("GBuffer")
  : inherits("PerCameraData")
  : inherits("PerObjectData")
  : inherits("SkinnedVertexInput")
- : inherits("DeferredBasePassCommon") =
+ : inherits("BasePassCommon") =
 {
 	Language = "GLSL";
 };
 
 Technique
- : base("DeferredBasePassMorph")
+ : base("BasePassMorph")
  : inherits("GBuffer")
  : inherits("PerCameraData")
  : inherits("PerObjectData")
  : inherits("MorphVertexInput")
- : inherits("DeferredBasePassCommon") =
+ : inherits("BasePassCommon") =
 {
 	Language = "GLSL";
 };
 
 Technique
- : base("DeferredBasePassSkinnedMorph")
+ : base("BasePassSkinnedMorph")
  : inherits("GBuffer")
  : inherits("PerCameraData")
  : inherits("PerObjectData")
  : inherits("SkinnedMorphVertexInput")
- : inherits("DeferredBasePassCommon") =
+ : inherits("BasePassCommon") =
 {
 	Language = "GLSL";
 };

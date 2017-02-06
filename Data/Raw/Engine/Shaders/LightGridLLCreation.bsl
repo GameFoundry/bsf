@@ -1,4 +1,5 @@
 #include "$ENGINE$\GBuffer.bslinc"
+#include "$ENGINE$\PerCameraData.bslinc"
 #include "$ENGINE$\LightingCommon.bslinc"
 
 Blocks =
@@ -8,6 +9,7 @@ Blocks =
 
 Technique
  : inherits("GBuffer")
+ : inherits("PerCameraData")
  : inherits("LightingCommon") =
 {
 	Language = "HLSL11";
@@ -133,6 +135,7 @@ Technique
 
 Technique
  : inherits("GBuffer")
+ : inherits("PerCameraData")
  : inherits("LightingCommon") =
 {
 	Language = "GLSL";

@@ -186,7 +186,7 @@ Technique block should therefore always contain a "Language" property. This will
 	Language = "HLSL"
 ~~~~~~~~~~~~~~
 
-Supported values are "HLSL" (DirectX 11 HLSL), "HLSL9" (DirectX 9 HLSL), and "GLSL".
+Supported values are "HLSL" and "GLSL".
 
 In case you are using a non-standard render, you can also specify a renderer using the "Renderer" property. This will ensure the propert technique is used as you switch between renderers.
 ~~~~~~~~~~~~~~
@@ -201,9 +201,11 @@ And finally you may specify an optional set of tags that serve as hints to the r
 ~~~~~~~~~~~~~~
 
 Currently recognized tags by the default renderer are:
- - Animated - When renderer detects it is rendering a mesh that supports skeletal or blend shape animation, it will prefer to pick a technique with this tag, rather than one without it.
+ - Skinned - Technique capable of rendering a skin animated mesh
+ - Morph -  Technique capable of rendering a blend shape animated mesh
+ - SkinnedMorph -  Technique capable of rendering a skin and blend shape animated mesh
 
-Unrecognized tags will just be ignored. Renderer can be extended so it supports custom tags.
+When renderer detects an object is using skinned or morph animation (or both), it will prefer to pick a technique with the relevant tag. Unrecognized tags will just be ignored. Renderer can be extended so it supports custom tags.
  
 Once the base properties are defined you can start defining code blocks and states.
 

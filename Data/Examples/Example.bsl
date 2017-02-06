@@ -1,4 +1,4 @@
-#include "$ENGINE$\DeferredBasePass.bslinc"
+#include "$ENGINE$\BasePass.bslinc"
 
 Parameters = 
 {
@@ -44,8 +44,9 @@ Technique : base("Surface") =
 		Fragment =
 		{
 			layout(location = 0) in vec2 uv0;
-			layout(location = 1) in vec3 tangentToWorldZ;
-			layout(location = 2) in vec4 tangentToWorldX;			
+			layout(location = 1) in vec3 worldPosition;
+			layout(location = 2) in vec3 tangentToWorldZ;
+			layout(location = 3) in vec4 tangentToWorldX;			
 		
 			layout(binding = 4) uniform sampler2D tex;
 

@@ -14,8 +14,9 @@ namespace BansheeEngine
     /// </summary>
     public enum BuiltinShader // Note: Must match C++ BuiltinShader enum
     {
+        Custom,
         Standard,
-        Custom
+        Transparent
     }
 
     /// <summary>

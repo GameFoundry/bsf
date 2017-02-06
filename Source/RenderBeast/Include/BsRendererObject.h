@@ -64,6 +64,12 @@ namespace bs { namespace ct
 		/** Index to which should the per-camera param block buffer be bound to. */
 		UINT32 perCameraBindingIdx;
 
+		/** Index to which should the lights param block buffer be bound to. */
+		UINT32 lightParamsBindingIdx;
+
+		/** Parameter to which to bind light buffer used for forward rendering. */
+		GpuParamBuffer lightsBufferParam;
+
 		/** GPU buffer containing element's bone matrices, if it requires any. */
 		SPtr<GpuBuffer> boneMatrixBuffer;
 

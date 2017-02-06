@@ -39,9 +39,8 @@ using namespace std::placeholders;
 namespace bs { namespace ct
 {
 	RenderBeast::RenderBeast()
-		: mDefaultMaterial(nullptr), mTiledDeferredLightingMat(nullptr)
-		, mSkyboxMat(nullptr), mObjectRenderer(nullptr), mOptions(bs_shared_ptr_new<RenderBeastOptions>())
-		, mOptionsDirty(true)
+		: mDefaultMaterial(nullptr), mTiledDeferredLightingMat(nullptr), mSkyboxMat(nullptr), mGPULightData(nullptr)
+		, mObjectRenderer(nullptr), mOptions(bs_shared_ptr_new<RenderBeastOptions>()), mOptionsDirty(true)
 	{ }
 
 	const StringID& RenderBeast::getName() const
@@ -76,6 +75,8 @@ namespace bs { namespace ct
 		mTiledDeferredLightingMat = bs_new<TiledDeferredLightingMat>();
 		mSkyboxMat = bs_new<SkyboxMat>();
 
+		mGPULightData = bs_new<GPULightData>();
+
 		RenderTexturePool::startUp();
 		PostProcessing::startUp();
 	}
@@ -102,6 +103,7 @@ namespace bs { namespace ct
 		bs_delete(mDefaultMaterial);
 		bs_delete(mTiledDeferredLightingMat);
 		bs_delete(mSkyboxMat);
+		bs_delete(mGPULightData);
 
 		RendererUtility::shutDown();
 
@@ -698,24 +700,6 @@ namespace bs { namespace ct
 		for(UINT32 i = 0; i < numViews; i++)
 			views[i]->determineVisible(mRenderables, mRenderableCullInfos, &mRenderableVisibility);
 
-		// Update per-object, bone matrix and morph shape GPU buffers
-		UINT32 numRenderables = (UINT32)mRenderables.size();
-		for (UINT32 i = 0; i < numRenderables; i++)
-		{
-			if (!mRenderableVisibility[i])
-				continue;
-
-			// Note: Before uploading bone matrices perhaps check if they has actually been changed since last frame
-			mRenderables[i]->renderable->updateAnimationBuffers(frameInfo.animData);
-
-			// Note: Could this step be moved in notifyRenderableUpdated, so it only triggers when material actually gets
-			// changed? Although it shouldn't matter much because if the internal versions keeping track of dirty params.
-			for (auto& element : mRenderables[i]->elements)
-				element.material->updateParamsSet(element.params);
-
-			mRenderables[i]->perObjectParamBuffer->flushToGPU();
-		}
-
 		// Generate a list of lights and their GPU buffers
 		UINT32 numDirLights = (UINT32)mDirectionalLights.size();
 		for (UINT32 i = 0; i < numDirLights; i++)
@@ -752,10 +736,38 @@ namespace bs { namespace ct
 			mSpotLights[i].getParameters(mLightDataTemp.back());
 		}
 
-		mTiledDeferredLightingMat->setLights(mLightDataTemp, numDirLights, numRadialLights, numSpotLights);
+		mGPULightData->setLights(mLightDataTemp, numDirLights, numRadialLights, numSpotLights);
 
 		mLightDataTemp.clear();
 		mLightVisibilityTemp.clear();
+
+		mTiledDeferredLightingMat->setLights(*mGPULightData);
+
+		// Update various buffers required by each renderable
+		UINT32 numRenderables = (UINT32)mRenderables.size();
+		for (UINT32 i = 0; i < numRenderables; i++)
+		{
+			if (!mRenderableVisibility[i])
+				continue;
+
+			// Note: Before uploading bone matrices perhaps check if they has actually been changed since last frame
+			mRenderables[i]->renderable->updateAnimationBuffers(frameInfo.animData);
+
+			// Note: Could this step be moved in notifyRenderableUpdated, so it only triggers when material actually gets
+			// changed? Although it shouldn't matter much because if the internal versions keeping track of dirty params.
+			for (auto& element : mRenderables[i]->elements)
+			{
+				bool isTransparent = (element.material->getShader()->getFlags() & (UINT32)ShaderFlags::Transparent) != 0;
+				if(isTransparent)
+				{
+					
+				}
+
+				element.material->updateParamsSet(element.params);
+			}
+
+			mRenderables[i]->perObjectParamBuffer->flushToGPU();
+		}
 
 		for (UINT32 i = 0; i < numViews; i++)
 		{
@@ -792,6 +804,11 @@ namespace bs { namespace ct
 			{
 				if (element.perCameraBindingIdx != -1)
 					element.params->setParamBlockBuffer(element.perCameraBindingIdx, perCameraBuffer, true);
+
+				if (element.lightParamsBindingIdx != -1)
+					element.params->setParamBlockBuffer(element.lightParamsBindingIdx, mGPULightData->getParamBuffer(), true);
+
+				element.lightsBufferParam.set(mGPULightData->getLightBuffer());
 			}
 		}
 
@@ -861,7 +878,7 @@ namespace bs { namespace ct
 
 		renderTargets->bindSceneColor(false);
 
-		// Render transparent objects (TODO - No lighting yet)
+		// Render transparent objects
 		const Vector<RenderQueueElement>& transparentElements = viewInfo->getTransparentQueue()->getSortedElements();
 		for (auto iter = transparentElements.begin(); iter != transparentElements.end(); ++iter)
 		{

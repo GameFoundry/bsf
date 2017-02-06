@@ -40,6 +40,27 @@ namespace bs { namespace ct
 		Light* mInternal;
 	};
 
+	/** Contains GPU buffers used by the renderer to manipulate lights. */
+	class GPULightData
+	{
+	public:
+		GPULightData();
+
+		/** Updates the internal buffers with a new set of lights. */
+		void setLights(const Vector<LightData>& lightData, UINT32 numDirLights, UINT32 numRadialLights,
+					   UINT32 numSpotLights);
+
+		/** Returns a GPU bindable buffer containing information about every light. */
+		SPtr<GpuBuffer> getLightBuffer() const { return mLightBuffer; }
+
+		/** Returns a GPU bindable param buffer containing meta-data about light in the ligth buffer. */
+		SPtr<GpuParamBlockBuffer> getParamBuffer() const { return mParamBuffer; }
+
+	private:
+		SPtr<GpuParamBlockBuffer> mParamBuffer;
+		SPtr<GpuBuffer> mLightBuffer;
+	};
+
 	BS_PARAM_BLOCK_BEGIN(TiledLightingParamDef)
 		BS_PARAM_BLOCK_ENTRY(Vector3I, gLightOffsets)
 	BS_PARAM_BLOCK_END
@@ -58,8 +79,7 @@ namespace bs { namespace ct
 		void execute(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBuffer>& perCamera);
 
 		/** Binds all the active lights. */
-		void setLights(const Vector<LightData>& lightData, UINT32 numDirLights, UINT32 numRadialLights, 
-					   UINT32 numSpotLights);
+		void setLights(const GPULightData& lightData);
 	private:
 		GpuParamTexture mGBufferA;
 		GpuParamTexture mGBufferB;
@@ -67,9 +87,6 @@ namespace bs { namespace ct
 
 		GpuParamBuffer mLightBufferParam;
 		GpuParamLoadStoreTexture mOutputParam;
-
-		SPtr<GpuParamBlockBuffer> mParamBuffer;
-		SPtr<GpuBuffer> mLightBuffer;
 
 		static const UINT32 TILE_SIZE;
 	};

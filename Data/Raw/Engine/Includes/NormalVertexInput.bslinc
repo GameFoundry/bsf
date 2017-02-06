@@ -15,6 +15,7 @@ Technique
 			{
 				float4 position : SV_Position;
 				float2 uv0 : TEXCOORD0;
+				float3 worldPosition : TEXCOORD1;
 				
 				float3 tangentToWorldZ : NORMAL; // Note: Half-precision could be used
 				float4 tangentToWorldX : TANGENT; // Note: Half-precision could be used
@@ -124,9 +125,10 @@ Technique
 				layout(location = 5) in vec4 bs_normal1;
 			#endif
 		
-			layout(location = 0) out vec2 uv0;
-			layout(location = 1) out vec3 tangentToWorldZ;
-			layout(location = 2) out vec4 tangentToWorldX;	
+			layout(location = 0) out vec2 outUV0;
+			layout(location = 1) out vec3 outWorldPosition;
+			layout(location = 2) out vec3 outTangentToWorldZ;
+			layout(location = 3) out vec4 outTangentToWorldX;	
 		
 			out gl_PerVertex
 			{
@@ -182,10 +184,10 @@ Technique
 			
 			void populateVertexOutput(VertexIntermediate intermediate)
 			{
-				uv0 = bs_texcoord0;
+				outUV0 = bs_texcoord0;
 				
-				tangentToWorldZ = intermediate.worldNormal;
-				tangentToWorldX = intermediate.worldTangent;
+				outTangentToWorldZ = intermediate.worldNormal;
+				outTangentToWorldX = intermediate.worldTangent;
 			}
 		};
 	};

@@ -112,8 +112,11 @@ namespace BansheeEditor
         {
             // Note: Need a better way to detect the builtin shader perhaps (store it in Material?)
             Shader standardShader = Builtin.GetShader(BuiltinShader.Standard);
-            if(standardShader == shader)
+            Shader transparentShader = Builtin.GetShader(BuiltinShader.Transparent);
+;            if(standardShader == shader)
                 return BuiltinShader.Standard;
+            else if(transparentShader == shader)
+                return BuiltinShader.Transparent;
             
             return BuiltinShader.Custom;
         }

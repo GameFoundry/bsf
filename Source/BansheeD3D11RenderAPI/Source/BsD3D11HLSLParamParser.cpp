@@ -113,7 +113,9 @@ namespace bs { namespace ct
 					desc.samplers.insert(std::make_pair(memberDesc.name, memberDesc));
 					break;
 				case D3D_SIT_TEXTURE:
-					switch(resourceDesc.Dimension)
+				{
+					bool isTexture = true;
+					switch (resourceDesc.Dimension)
 					{
 					case D3D_SRV_DIMENSION_TEXTURE1D:
 					case D3D_SRV_DIMENSION_TEXTURE1DARRAY:
@@ -134,6 +136,10 @@ namespace bs { namespace ct
 					case D3D_SRV_DIMENSION_TEXTURE2DMSARRAY:
 						memberDesc.type = GPOT_TEXTURE2DMS;
 						break;
+					case D3D_SRV_DIMENSION_BUFFER:
+						memberDesc.type = GPOT_BYTE_BUFFER;
+						isTexture = false;
+						break;
 					default:
 						LOGWRN("Skipping texture because it has unsupported dimension: " + toString(resourceDesc.Dimension));
 					}
@@ -141,8 +147,13 @@ namespace bs { namespace ct
 					if (memberDesc.type != GPOT_UNKNOWN)
 					{
 						memberDesc.set = mapParameterToSet(type, ParamType::Texture);
-						desc.textures.insert(std::make_pair(memberDesc.name, memberDesc));
+
+						if (isTexture)
+							desc.textures.insert(std::make_pair(memberDesc.name, memberDesc));
+						else
+							desc.buffers.insert(std::make_pair(memberDesc.name, memberDesc));
 					}
+				}
 					break;
 				case D3D_SIT_STRUCTURED:
 					memberDesc.type = GPOT_STRUCTURED_BUFFER;

@@ -219,6 +219,8 @@ namespace bs
 		TiledDeferredLightingMat* mTiledDeferredLightingMat;
 		SkyboxMat* mSkyboxMat;
 
+		GPULightData* mGPULightData;
+
 		ObjectRenderer* mObjectRenderer;
 
 		// Sim thread only fields

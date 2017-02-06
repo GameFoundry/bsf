@@ -1,4 +1,4 @@
-#include "$ENGINE$\DeferredBasePass.bslinc"
+#include "$ENGINE$\BasePass.bslinc"
 
 Technique : base("Surface") =
 {

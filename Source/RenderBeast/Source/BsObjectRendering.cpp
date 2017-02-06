@@ -27,6 +27,7 @@ namespace bs { namespace ct
 		if (shader == nullptr)
 		{
 			element.perCameraBindingIdx = -1;
+			element.lightParamsBindingIdx = -1;
 
 			LOGWRN("Missing shader on material.");
 			return;
@@ -50,7 +51,17 @@ namespace bs { namespace ct
 				element.params->setParamBlockBuffer(paramBlockDesc.second.name,
 													owner.perCallParamBuffer, true);
 			}
+			else if(paramBlockDesc.second.rendererSemantic == RBS_PerCamera)
+			{
+				element.perCameraBindingIdx = element.params->getParamBlockBufferIndex(paramBlockDesc.second.name);
+			}
 		}
+
+		element.lightParamsBindingIdx = element.params->getParamBlockBufferIndex("LightParams");
+
+		SPtr<GpuParams> gpuParams = element.params->getGpuParams();
+		if(gpuParams->hasBuffer(GPT_FRAGMENT_PROGRAM, "gLights"))
+			gpuParams->getBufferParam(GPT_FRAGMENT_PROGRAM, "gLights", element.lightsBufferParam);
 
 		const Map<String, SHADER_OBJECT_PARAM_DESC>& bufferDescs = shader->getBufferParams();
 		String boneMatricesParamName;

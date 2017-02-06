@@ -49,10 +49,6 @@
     ],
     "Includes": [
         {
-            "Path": "DeferredBasePass.bslinc",
-            "UUID": "d4078f9c-d7e9-4d63-b506-4d270c08b01e"
-        },
-        {
             "Path": "GBuffer.bslinc",
             "UUID": "ef1a179a-4bf9-4dbd-b62a-e18524d959b6"
         },
@@ -111,6 +107,10 @@
         {
             "Path": "SurfaceData.bslinc",
             "UUID": "3364cb35-9140-4571-8fae-d5648ae7386f"
+        },
+        {
+            "Path": "BasePass.bslinc",
+            "UUID": "ec1d3d37-5509-4bcb-9be2-93208d6ae224"
         }
     ],
     "Shaders": [
@@ -205,6 +205,10 @@
         {
             "Path": "LightGridLLReduction.bsl",
             "UUID": "d190e4e1-5ea9-4961-9ee3-b5df218cb5e6"
+        },
+        {
+            "Path": "Transparent.bsl",
+            "UUID": "10db2029-145c-424e-8399-2be48aa66680"
         }
     ],
     "Skin": [

@@ -575,7 +575,7 @@ namespace bs
 				numDirtyDataParams++;
 
 				UINT32 arraySize = param.arraySize > 1 ? param.arraySize : 1;
-				const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES.lookup[(int)param.type];
+				const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES.lookup[(int)param.dataType];
 				UINT32 paramSize = typeInfo.numColumns * typeInfo.numRows * typeInfo.baseTypeSize;
 
 				dataParamSize += arraySize * paramSize;
@@ -638,7 +638,7 @@ namespace bs
 			case ParamType::Data:
 			{
 				UINT32 arraySize = param.arraySize > 1 ? param.arraySize : 1;
-				const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES.lookup[(int)param.type];
+				const GpuParamDataTypeInfo& typeInfo = GpuParams::PARAM_SIZES.lookup[(int)param.dataType];
 				UINT32 paramSize = typeInfo.numColumns * typeInfo.numRows * typeInfo.baseTypeSize;
 
 				UINT32 dataSize = arraySize * paramSize;
@@ -791,7 +791,7 @@ namespace bs
 			param.version = mParamVersion;
 
 			UINT32 arraySize = param.arraySize > 1 ? param.arraySize : 1;
-			const GpuParamDataTypeInfo& typeInfo = bs::GpuParams::PARAM_SIZES.lookup[(int)param.type];
+			const GpuParamDataTypeInfo& typeInfo = bs::GpuParams::PARAM_SIZES.lookup[(int)param.dataType];
 			UINT32 paramSize = typeInfo.numColumns * typeInfo.numRows * typeInfo.baseTypeSize;
 
 			UINT32 dataParamSize = arraySize * paramSize;

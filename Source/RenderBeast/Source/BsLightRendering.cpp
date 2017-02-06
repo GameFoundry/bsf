@@ -38,60 +38,13 @@ namespace bs { namespace ct
 		output.color = Vector3(color.r, color.g, color.b);
 	}
 
-	const UINT32 TiledDeferredLightingMat::TILE_SIZE = 16;
-
-	TiledDeferredLightingMat::TiledDeferredLightingMat()
+	GPULightData::GPULightData()
 	{
-		SPtr<GpuParams> params = mParamsSet->getGpuParams();
-
-		auto& texParams = mMaterial->getShader()->getTextureParams();
-		for (auto& entry : texParams)
-		{
-			if (entry.second.rendererSemantic == RPS_GBufferA)
-				params->getTextureParam(GPT_COMPUTE_PROGRAM, entry.second.name, mGBufferA);
-			else if (entry.second.rendererSemantic == RPS_GBufferB)
-				params->getTextureParam(GPT_COMPUTE_PROGRAM, entry.second.name, mGBufferB);
-			else if (entry.second.rendererSemantic == RPS_GBufferDepth)
-				params->getTextureParam(GPT_COMPUTE_PROGRAM, entry.second.name, mGBufferDepth);
-		}
-
-		params->getBufferParam(GPT_COMPUTE_PROGRAM, "gLights", mLightBufferParam);
-		params->getLoadStoreTextureParam(GPT_COMPUTE_PROGRAM, "gOutput", mOutputParam);
-
 		mParamBuffer = gTiledLightingParamDef.createBuffer();
-		mParamsSet->setParamBlockBuffer("Params", mParamBuffer, true);
 	}
 
-	void TiledDeferredLightingMat::_initDefines(ShaderDefines& defines)
-	{
-		defines.set("TILE_SIZE", TILE_SIZE);
-	}
-
-	void TiledDeferredLightingMat::execute(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBuffer>& perCamera)
-	{
-		mGBufferA.set(gbuffer->getTextureA());
-		mGBufferB.set(gbuffer->getTextureB());
-		mGBufferDepth.set(gbuffer->getTextureDepth());
-
-		mParamsSet->setParamBlockBuffer("PerCamera", perCamera, true);
-
-		SPtr<Texture> sceneColorTex = gbuffer->getSceneColor();
-		mOutputParam.set(sceneColorTex);
-
-		UINT32 width = sceneColorTex->getProperties().getWidth();
-		UINT32 height = sceneColorTex->getProperties().getHeight();
-
-		UINT32 numTilesX = (UINT32)Math::ceilToInt(width / (float)TILE_SIZE);
-		UINT32 numTilesY = (UINT32)Math::ceilToInt(height / (float)TILE_SIZE);
-
-		gRendererUtility().setComputePass(mMaterial, 0);
-		gRendererUtility().setPassParams(mParamsSet);
-
-		RenderAPI::instance().dispatchCompute(numTilesX, numTilesY);
-	}
-
-	void TiledDeferredLightingMat::setLights(const Vector<LightData>& lightData, UINT32 numDirLights, 
-											 UINT32 numRadialLights, UINT32 numSpotLights)
+	void GPULightData::setLights(const Vector<LightData>& lightData, UINT32 numDirLights, UINT32 numRadialLights,
+				   UINT32 numSpotLights)
 	{
 		Vector3I lightOffsets;
 		lightOffsets[0] = numDirLights;
@@ -125,10 +78,62 @@ namespace bs { namespace ct
 		if (size > 0)
 			mLightBuffer->writeData(0, size, lightData.data(), BWT_DISCARD);
 
-		mLightBufferParam.set(mLightBuffer);
-
 		gTiledLightingParamDef.gLightOffsets.set(mParamBuffer, lightOffsets);
-
 		mParamBuffer->flushToGPU();
+	}
+
+	const UINT32 TiledDeferredLightingMat::TILE_SIZE = 16;
+
+	TiledDeferredLightingMat::TiledDeferredLightingMat()
+	{
+		SPtr<GpuParams> params = mParamsSet->getGpuParams();
+
+		auto& texParams = mMaterial->getShader()->getTextureParams();
+		for (auto& entry : texParams)
+		{
+			if (entry.second.rendererSemantic == RPS_GBufferA)
+				params->getTextureParam(GPT_COMPUTE_PROGRAM, entry.second.name, mGBufferA);
+			else if (entry.second.rendererSemantic == RPS_GBufferB)
+				params->getTextureParam(GPT_COMPUTE_PROGRAM, entry.second.name, mGBufferB);
+			else if (entry.second.rendererSemantic == RPS_GBufferDepth)
+				params->getTextureParam(GPT_COMPUTE_PROGRAM, entry.second.name, mGBufferDepth);
+		}
+
+		params->getBufferParam(GPT_COMPUTE_PROGRAM, "gLights", mLightBufferParam);
+		params->getLoadStoreTextureParam(GPT_COMPUTE_PROGRAM, "gOutput", mOutputParam);
+	}
+
+	void TiledDeferredLightingMat::_initDefines(ShaderDefines& defines)
+	{
+		defines.set("TILE_SIZE", TILE_SIZE);
+	}
+
+	void TiledDeferredLightingMat::execute(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBuffer>& perCamera)
+	{
+		mGBufferA.set(gbuffer->getTextureA());
+		mGBufferB.set(gbuffer->getTextureB());
+		mGBufferDepth.set(gbuffer->getTextureDepth());
+
+		mParamsSet->setParamBlockBuffer("PerCamera", perCamera, true);
+
+		SPtr<Texture> sceneColorTex = gbuffer->getSceneColor();
+		mOutputParam.set(sceneColorTex);
+
+		UINT32 width = sceneColorTex->getProperties().getWidth();
+		UINT32 height = sceneColorTex->getProperties().getHeight();
+
+		UINT32 numTilesX = (UINT32)Math::ceilToInt(width / (float)TILE_SIZE);
+		UINT32 numTilesY = (UINT32)Math::ceilToInt(height / (float)TILE_SIZE);
+
+		gRendererUtility().setComputePass(mMaterial, 0);
+		gRendererUtility().setPassParams(mParamsSet);
+
+		RenderAPI::instance().dispatchCompute(numTilesX, numTilesY);
+	}
+
+	void TiledDeferredLightingMat::setLights(const GPULightData& lightData)
+	{
+		mLightBufferParam.set(lightData.getLightBuffer());
+		mParamsSet->setParamBlockBuffer("Params", lightData.getParamBuffer(), true);
 	}
 }}

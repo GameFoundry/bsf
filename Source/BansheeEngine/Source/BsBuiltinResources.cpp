@@ -185,6 +185,7 @@ namespace bs
 	const WString BuiltinResources::ShaderSpriteImageNoAlphaFile = L"SpriteImageNoAlpha.bsl";
 	const WString BuiltinResources::ShaderSpriteLineFile = L"SpriteLine.bsl";
 	const WString BuiltinResources::ShaderDiffuseFile = L"Diffuse.bsl";
+	const WString BuiltinResources::ShaderTransparentFile = L"Transparent.bsl";
 
 	/************************************************************************/
 	/* 								MESHES							  		*/
@@ -278,6 +279,7 @@ namespace bs
 		mShaderSpriteNonAlphaImage = getShader(ShaderSpriteImageNoAlphaFile);
 		mShaderSpriteLine = getShader(ShaderSpriteLineFile);
 		mShaderDiffuse = getShader(ShaderDiffuseFile);
+		mShaderTransparent = getShader(ShaderTransparentFile);
 
 		SPtr<PixelData> dummyPixelData = PixelData::create(2, 2, 1, PF_R8G8B8A8);
 
@@ -1311,7 +1313,9 @@ namespace bs
 		switch(type)
 		{
 		case BuiltinShader::Standard:
-				return mShaderDiffuse;
+			return mShaderDiffuse;
+		case BuiltinShader::Transparent:
+			return mShaderTransparent;
 		}
 
 		return HShader();

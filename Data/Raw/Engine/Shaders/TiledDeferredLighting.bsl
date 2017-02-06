@@ -1,4 +1,5 @@
 #include "$ENGINE$\GBuffer.bslinc"
+#include "$ENGINE$\PerCameraData.bslinc"
 #include "$ENGINE$\LightingCommon.bslinc"
 
 Parameters =
@@ -12,8 +13,14 @@ Parameters =
 	Texture2D 	gDepthBufferTex : auto("GBufferDepth");
 };
 
+Blocks =
+{
+	Block PerCamera : auto("PerCamera");
+};
+
 Technique 
   : inherits("GBuffer")
+  : inherits("PerCameraData")
   : inherits("LightingCommon") =
 {
 	Language = "HLSL11";
@@ -273,6 +280,7 @@ Technique
 
 Technique 
   : inherits("GBuffer")
+  : inherits("PerCameraData")
   : inherits("LightingCommon") =
 {
 	Language = "GLSL";

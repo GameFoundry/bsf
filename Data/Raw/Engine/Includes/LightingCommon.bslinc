@@ -1,19 +1,11 @@
-#include "$ENGINE$\PerCameraData.bslinc"
-
-Blocks =
-{
-	Block PerCamera : auto("PerCamera");
-};
-
 Technique
- : base("LightingCommon")
- : inherits("PerCameraData") =
+ : base("LightingCommon") =
 {
 	Language = "HLSL11";
 	
 	Pass =
 	{
-		Compute = 
+		Common = 
 		{
 			#define PI 3.1415926
 			#define HALF_PI 1.5707963
@@ -88,14 +80,13 @@ Technique
 };
 
 Technique
- : base("LightingCommon")
- : inherits("PerCameraData") =
+ : base("LightingCommon") =
 {
 	Language = "GLSL";
 	
 	Pass =
 	{
-		Compute = 
+		Common = 
 		{
 			#define PI 3.1415926
 			#define HALF_PI 1.5707963

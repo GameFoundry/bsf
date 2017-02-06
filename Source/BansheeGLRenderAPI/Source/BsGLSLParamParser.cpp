@@ -397,6 +397,8 @@ namespace bs { namespace ct
 				isImage = true;
 				break;
 			case GL_SAMPLER_BUFFER:
+			case GL_UNSIGNED_INT_SAMPLER_BUFFER:
+			case GL_INT_SAMPLER_BUFFER:
 			case GL_IMAGE_BUFFER:
 			case GL_UNSIGNED_INT_IMAGE_BUFFER:
 			case GL_INT_IMAGE_BUFFER:

@@ -10,6 +10,7 @@
 #include "BsFrameAlloc.h"
 #include "BsPass.h"
 #include "BsSamplerState.h"
+#include "BsTexture.h"
 
 namespace bs
 {
@@ -35,8 +36,6 @@ namespace bs
 		desc.rendererSemantic = rendererSemantic;
 		desc.elementSize = elementSize;
 
-		dataParams[name] = desc;
-
 		if (defaultValue != nullptr)
 		{
 			desc.defaultValueIdx = (UINT32)dataDefaultValues.size();
@@ -47,6 +46,8 @@ namespace bs
 		}
 		else
 			desc.defaultValueIdx = (UINT32)-1;
+
+		dataParams[name] = desc;
 	}
 
 	template<bool Core>
@@ -358,9 +359,30 @@ namespace bs
 		output.bufferParams = desc.bufferParams;
 		output.paramBlocks = desc.paramBlocks;
 
+		output.dataDefaultValues = desc.dataDefaultValues;
+
+		output.samplerDefaultValues.resize(desc.samplerDefaultValues.size());
+		for (UINT32 i = 0; i < (UINT32)desc.samplerDefaultValues.size(); i++)
+		{
+			if (desc.samplerDefaultValues[i] != nullptr)
+				output.samplerDefaultValues.push_back(desc.samplerDefaultValues[i]->getCore());
+			else
+				output.samplerDefaultValues.push_back(nullptr);
+		}
+
+		output.textureDefaultValues.resize(desc.textureDefaultValues.size());
+		for (UINT32 i = 0; i < (UINT32)desc.textureDefaultValues.size(); i++)
+		{
+			if (desc.textureDefaultValues[i].isLoaded())
+				output.textureDefaultValues.push_back(desc.textureDefaultValues[i]->getCore());
+			else
+				output.textureDefaultValues.push_back(nullptr);
+		}
+
 		output.queuePriority = desc.queuePriority;
 		output.queueSortType = desc.queueSortType;
 		output.separablePasses = desc.separablePasses;
+		output.flags = desc.flags;
 		
 		// Ignoring default values as they are not needed for syncing since
 		// they're initialized through the material.

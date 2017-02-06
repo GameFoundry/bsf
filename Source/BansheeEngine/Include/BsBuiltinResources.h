@@ -29,7 +29,7 @@ namespace bs
 	/** Types of builtin shaders that are always available. */
 	enum class BuiltinShader
 	{
-		Standard, Custom
+		Custom, Standard, Transparent
 	};
 
 	/**	Holds references to built-in resources used by the core engine. */
@@ -180,6 +180,7 @@ namespace bs
 		HShader mShaderSpriteNonAlphaImage;
 		HShader mShaderSpriteLine;
 		HShader mShaderDiffuse;
+		HShader mShaderTransparent;
 
 		SPtr<ResourceManifest> mResourceManifest;
 
@@ -322,6 +323,7 @@ namespace bs
 		static const WString ShaderSpriteImageNoAlphaFile;
 		static const WString ShaderSpriteLineFile;
 		static const WString ShaderDiffuseFile;
+		static const WString ShaderTransparentFile;
 
 		static const WString MeshSphereFile;
 		static const WString MeshBoxFile;
