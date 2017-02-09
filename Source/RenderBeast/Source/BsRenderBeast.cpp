@@ -33,6 +33,7 @@
 #include "BsRendererExtension.h"
 #include "BsReflectionCubemap.h"
 #include "BsMeshData.h"
+#include "BsLightGrid.h"
 
 using namespace std::placeholders;
 
@@ -40,7 +41,8 @@ namespace bs { namespace ct
 {
 	RenderBeast::RenderBeast()
 		: mDefaultMaterial(nullptr), mTiledDeferredLightingMat(nullptr), mSkyboxMat(nullptr), mGPULightData(nullptr)
-		, mObjectRenderer(nullptr), mOptions(bs_shared_ptr_new<RenderBeastOptions>()), mOptionsDirty(true)
+		, mLightGrid(nullptr), mObjectRenderer(nullptr), mOptions(bs_shared_ptr_new<RenderBeastOptions>())
+		, mOptionsDirty(true)
 	{ }
 
 	const StringID& RenderBeast::getName() const
@@ -76,6 +78,7 @@ namespace bs { namespace ct
 		mSkyboxMat = bs_new<SkyboxMat>();
 
 		mGPULightData = bs_new<GPULightData>();
+		mLightGrid = bs_new<LightGrid>();
 
 		RenderTexturePool::startUp();
 		PostProcessing::startUp();
@@ -104,6 +107,7 @@ namespace bs { namespace ct
 		bs_delete(mTiledDeferredLightingMat);
 		bs_delete(mSkyboxMat);
 		bs_delete(mGPULightData);
+		bs_delete(mLightGrid);
 
 		RendererUtility::shutDown();
 
@@ -756,15 +760,7 @@ namespace bs { namespace ct
 			// Note: Could this step be moved in notifyRenderableUpdated, so it only triggers when material actually gets
 			// changed? Although it shouldn't matter much because if the internal versions keeping track of dirty params.
 			for (auto& element : mRenderables[i]->elements)
-			{
-				bool isTransparent = (element.material->getShader()->getFlags() & (UINT32)ShaderFlags::Transparent) != 0;
-				if(isTransparent)
-				{
-					
-				}
-
 				element.material->updateParamsSet(element.params);
-			}
 
 			mRenderables[i]->perObjectParamBuffer->flushToGPU();
 		}
@@ -789,6 +785,15 @@ namespace bs { namespace ct
 
 		Matrix4 viewProj = viewInfo->getViewProjMatrix();
 
+		viewInfo->beginRendering(true);
+
+		// Prepare light grid required for transparent object rendering
+		mLightGrid->updateGrid(*viewInfo, *mGPULightData);
+
+		SPtr<GpuParamBlockBuffer> gridParams;
+		SPtr<GpuBuffer> gridOffsetsAndSize, gridLightIndices;
+		mLightGrid->getOutputs(gridOffsetsAndSize, gridLightIndices, gridParams);
+
 		// Assign camera and per-call data to all relevant renderables
 		const VisibilityInfo& visibility = viewInfo->getVisibilityMasks();
 		UINT32 numRenderables = (UINT32)mRenderables.size();
@@ -805,14 +810,14 @@ namespace bs { namespace ct
 				if (element.perCameraBindingIdx != -1)
 					element.params->setParamBlockBuffer(element.perCameraBindingIdx, perCameraBuffer, true);
 
-				if (element.lightParamsBindingIdx != -1)
-					element.params->setParamBlockBuffer(element.lightParamsBindingIdx, mGPULightData->getParamBuffer(), true);
+				if (element.gridParamsBindingIdx != -1)
+					element.params->setParamBlockBuffer(element.gridParamsBindingIdx, gridParams, true);
 
+				element.gridOffsetsAndSizeParam.set(gridOffsetsAndSize);
+				element.gridLightIndicesParam.set(gridLightIndices);
 				element.lightsBufferParam.set(mGPULightData->getLightBuffer());
 			}
 		}
-
-		viewInfo->beginRendering(true);
 
 		SPtr<RenderTargets> renderTargets = viewInfo->getRenderTargets();
 		renderTargets->bindGBuffer();

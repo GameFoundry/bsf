@@ -329,7 +329,7 @@ Technique
 				return decodeGBuffer(GBufferAData, GBufferBData, deviceZ);
 			}	
 			
-			layout(std430, binding = 4) buffer gLights
+			layout(std430, binding = 4) readonly buffer gLights
 			{
 				LightData[] gLightsData;
 			};

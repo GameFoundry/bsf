@@ -19,6 +19,8 @@ namespace bs
 
 	namespace ct
 	{
+	class LightGrid;
+
 	/** @addtogroup RenderBeast
 	 *  @{
 	 */
@@ -220,6 +222,7 @@ namespace bs
 		SkyboxMat* mSkyboxMat;
 
 		GPULightData* mGPULightData;
+		LightGrid* mLightGrid;
 
 		ObjectRenderer* mObjectRenderer;
 

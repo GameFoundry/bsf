@@ -9,6 +9,8 @@
 
 namespace bs { namespace ct
 {
+	class GPULightData;
+
 	/** @addtogroup RenderBeast
 	 *  @{
 	 */
@@ -18,6 +20,7 @@ namespace bs { namespace ct
 		BS_PARAM_BLOCK_ENTRY(INT32, gNumCells)
 		BS_PARAM_BLOCK_ENTRY(Vector3I, gGridSize)
 		BS_PARAM_BLOCK_ENTRY(INT32, gMaxNumLightsPerCell)
+		BS_PARAM_BLOCK_ENTRY(Vector2I, gGridPixelSize)
 	BS_PARAM_BLOCK_END
 
 	extern LightGridParamDef gLightGridParamDefDef;
@@ -96,19 +99,20 @@ namespace bs { namespace ct
 		LightGrid();
 
 		/** Updates the light grid from the provided view. */
-		void updateGrid(const RendererCamera& view, const SPtr<GpuBuffer>& lightsBuffer, UINT32 numDirLights, 
-						UINT32 numRadialLights, UINT32 numSpotLights);
+		void updateGrid(const RendererCamera& view, const GPULightData& lightData);
 
 		/** 
-		 * Returns the buffers containing light indices per grid cell. 
+		 * Returns the buffers containing light indices per grid cell and global grid parameters. 
 		 *
 		 * @param[out]	gridOffsetsAndSize	Flattened array of grid cells, where each entry contains the number of lights
 		 *									affecting that cell, and a index into the @p gridLightIndices buffer.
 		 * @param[out]	gridLightIndices	A list of light indices. Each cell's indices start at specific position and
 		 *									are placed sequentially one after another. Lookup into this array is done
 		 *									through offset & size provided by @p gridOffsetsAndSize. 
+		 * @param[out]	gridParams			Global grid parameter block.
 		 */
-		void getOutputs(SPtr<GpuBuffer>& gridOffsetsAndSize, SPtr<GpuBuffer>& gridLightIndices) const;
+		void getOutputs(SPtr<GpuBuffer>& gridOffsetsAndSize, SPtr<GpuBuffer>& gridLightIndices, 
+						SPtr<GpuParamBlockBuffer>& gridParams) const;
 
 	private:
 		LightGridLLCreationMat mLLCreationMat;

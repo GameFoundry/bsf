@@ -56,6 +56,11 @@ Technique : base("PerCameraData") =
 				int4 	 gViewportRectangle;
 				float4 	 gClipToUVScaleOffset;				
 			}
+			
+			float convertFromDeviceZ(float deviceZ)
+			{
+				return (1.0f / (deviceZ + gDeviceZToWorldZ.y)) * gDeviceZToWorldZ.x;
+			}
 		};
 	};
 };
@@ -83,6 +88,11 @@ Technique : base("PerCameraData") =
 				ivec4 gViewportRectangle;
 				vec4 gClipToUVScaleOffset;				
 			};
+			
+			float convertFromDeviceZ(float deviceZ)
+			{
+				return (1.0f / (deviceZ + gDeviceZToWorldZ.y)) * gDeviceZToWorldZ.x;	
+			}
 		};
 	};
 };

@@ -1,16 +1,19 @@
 #include "$ENGINE$\GBuffer.bslinc"
 #include "$ENGINE$\PerCameraData.bslinc"
 #include "$ENGINE$\LightingCommon.bslinc"
+#include "$ENGINE$\LightGridCommon.bslinc"
 
 Blocks =
 {
 	Block PerCamera : auto("PerCamera");
+	Block GridParams : auto("GridParams");
 };
 
 Technique
  : inherits("GBuffer")
  : inherits("PerCameraData")
- : inherits("LightingCommon") =
+ : inherits("LightingCommon")
+ : inherits("LightGridCommon") =
 {
 	Language = "HLSL11";
 	
@@ -18,36 +21,14 @@ Technique
 	{
 		Compute = 
 		{
-			cbuffer Params : register(b0)
-			{
-				// Offsets at which specific light types begin in gLights buffer
-				// Assumed directional lights start at 0
-				// x - offset to point lights, y - offset to spot lights, z - total number of lights
-				uint3 gLightOffsets;			
-				uint gNumCells;
-				uint3 gGridSize;
-				uint gMaxNumLightsPerCell;
-			}
-			
 			StructuredBuffer<LightData> gLights : register(t0);
 			RWBuffer<uint> gLinkedListCounter : register(u0);
 			RWBuffer<uint> gLinkedListHeads : register(u1);
-			RWBuffer<uint2> gLinkedList : register(u2);
-			
-			float convertToDeviceZ(float viewZ)
-			{
-				return (gDeviceZToWorldZ.x - viewZ * gDeviceZToWorldZ.y) / viewZ;
-			}
-			
-			float calcViewZFromCellZ(uint cellZ)
-			{
-				// TODO - Need better Z distribution. Currently I uniformly distribute in view space, but this
-				// results in very elongated cells along Z
-				float viewZ = gNearFar.x + (gNearFar.y - gNearFar.x) * cellZ / (float)gGridSize.z;
-				
-				return viewZ;
-			}
-		
+			RWBuffer<uint4> gLinkedList : register(u2);
+					
+			// Generates a an axis aligned bounding box in NDC and transforms it to view space.
+			// Note: This will overlap other cells, so it might be better to use frustum planes
+			// instead of AABB, although frustum testing procedure could result in more false positive
 			void calcCellAABB(uint3 cellIdx, out float3 center, out float3 extent)
 			{
 				// Convert grid XY coordinates to clip coordinates
@@ -63,19 +44,40 @@ Technique
 				float flipY = sign(gMatProj[1][1]);
 				ndcMin.y *= flipY;
 				ndcMax.y *= flipY;
-				
+			
 				// Because we're viewing along negative Z, farther end is the minimum
 				float viewZMin = calcViewZFromCellZ(cellIdx.z + 1);
 				float viewZMax = calcViewZFromCellZ(cellIdx.z);
 			
-				ndcMin.z = convertToDeviceZ(viewZMin);
-				ndcMax.z = convertToDeviceZ(viewZMax);
+				ndcMin.z = convertToDeviceZ(viewZMax);
+				ndcMax.z = convertToDeviceZ(viewZMin);
 			
-				float4 clipMin = mul(gMatInvProj, float4(ndcMin, 1.0f));
-				float4 clipMax = mul(gMatInvProj, float4(ndcMax, 1.0f));
+				float4 corner[8];
+				// Near
+				corner[0] = mul(gMatInvProj, float4(ndcMin.x, ndcMin.y, ndcMin.z, 1.0f));
+				corner[1] = mul(gMatInvProj, float4(ndcMax.x, ndcMin.y, ndcMin.z, 1.0f));
+				corner[2] = mul(gMatInvProj, float4(ndcMax.x, ndcMax.y, ndcMin.z, 1.0f));
+				corner[3] = mul(gMatInvProj, float4(ndcMin.x, ndcMax.y, ndcMin.z, 1.0f));
+			
+				// Far
+				corner[4] = mul(gMatInvProj, float4(ndcMin.x, ndcMin.y, ndcMax.z, 1.0f));
+				corner[5] = mul(gMatInvProj, float4(ndcMax.x, ndcMin.y, ndcMax.z, 1.0f));
+				corner[6] = mul(gMatInvProj, float4(ndcMax.x, ndcMax.y, ndcMax.z, 1.0f));
+				corner[7] = mul(gMatInvProj, float4(ndcMin.x, ndcMax.y, ndcMax.z, 1.0f));
+			
+				[unroll]
+				for(uint i = 0; i < 8; ++i)
+					corner[i].xy /= corner[i].w;
+			
+				float3 viewMin = float3(corner[0].xy, viewZMin);
+				float3 viewMax = float3(corner[0].xy, viewZMax);
 				
-				float3 viewMin = float3(clipMin.xy / clipMin.w, viewZMin);
-				float3 viewMax = float3(clipMax.xy / clipMax.w, viewZMax);				
+				[unroll]
+				for(uint i = 1; i < 8; ++i)
+				{
+					viewMin.xy = min(viewMin.xy, corner[i].xy);
+					viewMax.xy = max(viewMax.xy, corner[i].xy);
+				}
 				
 				extent = (viewMax - viewMin) * 0.5f;
 				center = viewMin + extent;
@@ -123,7 +125,7 @@ Technique
 								uint prevLink;
 								InterlockedExchange(gLinkedListHeads[cellIdx], nextLink, prevLink);
 								
-								gLinkedList[nextLink] = uint2(i, prevLink);
+								gLinkedList[nextLink] = uint4(i, type, prevLink, 0);
 							}
 						}
 					}
@@ -136,7 +138,8 @@ Technique
 Technique
  : inherits("GBuffer")
  : inherits("PerCameraData")
- : inherits("LightingCommon") =
+ : inherits("LightingCommon")
+ : inherits("LightGridCommon") =
 {
 	Language = "GLSL";
 	
@@ -146,40 +149,15 @@ Technique
 		{
 			layout (local_size_x = THREADGROUP_SIZE, local_size_y = THREADGROUP_SIZE, local_size_z = THREADGROUP_SIZE) in;
 		
-			layout(binding = 0, std140) uniform Params
-			{
-				// Offsets at which specific light types begin in gLights buffer
-				// Assumed directional lights start at 0
-				// x - offset to point lights, y - offset to spot lights, z - total number of lights
-				uvec3 gLightOffsets;			
-				uint gNumCells;
-				uvec3 gGridSize;
-				uint gMaxNumLightsPerCell;
-			};
-			
-			layout(std430, binding = 1) buffer gLights
+			layout(std430, binding = 1) readonly buffer gLights
 			{
 				LightData[] gLightsData;
 			};
 			
 			layout(binding = 2, r32ui) uniform uimageBuffer gLinkedListCounter;
 			layout(binding = 3, r32ui) uniform uimageBuffer gLinkedListHeads;
-			layout(binding = 4, rg32ui) uniform uimageBuffer gLinkedList;
+			layout(binding = 5, rgba32ui) uniform uimageBuffer gLinkedList;
 			
-			float convertToDeviceZ(float viewZ)
-			{
-				return (gDeviceZToWorldZ.x - viewZ * gDeviceZToWorldZ.y) / viewZ;
-			}
-			
-			float calcViewZFromCellZ(uint cellZ)
-			{
-				// TODO - Need better Z distribution. Currently I uniformly distribute in view space, but this
-				// results in very elongated cells along Z
-				float viewZ = gNearFar.x + (gNearFar.y - gNearFar.x) * cellZ / float(gGridSize.z);
-				
-				return viewZ;
-			}
-		
 			void calcCellAABB(uvec3 cellIdx, out vec3 center, out vec3 extent)
 			{
 				// Convert grid XY coordinates to clip coordinates
@@ -195,19 +173,38 @@ Technique
 				float flipY = sign(gMatProj[1][1]);
 				ndcMin.y *= flipY;
 				ndcMax.y *= flipY;
-				
+			
 				// Because we're viewing along negative Z, farther end is the minimum
 				float viewZMin = calcViewZFromCellZ(cellIdx.z + 1);
 				float viewZMax = calcViewZFromCellZ(cellIdx.z);
 			
 				ndcMin.z = convertToDeviceZ(viewZMin);
 				ndcMax.z = convertToDeviceZ(viewZMax);
+							
+				vec4 corner[8];
+				// Near
+				corner[0] = gMatInvProj * vec4(ndcMin.x, ndcMin.y, ndcMin.z, 1.0f);
+				corner[1] = gMatInvProj * vec4(ndcMax.x, ndcMin.y, ndcMin.z, 1.0f);
+				corner[2] = gMatInvProj * vec4(ndcMax.x, ndcMax.y, ndcMin.z, 1.0f);
+				corner[3] = gMatInvProj * vec4(ndcMin.x, ndcMax.y, ndcMin.z, 1.0f);
 			
-				vec4 clipMin = gMatInvProj * vec4(ndcMin, 1.0f);
-				vec4 clipMax = gMatInvProj * vec4(ndcMax, 1.0f);
+				// Far
+				corner[4] = gMatInvProj * vec4(ndcMin.x, ndcMin.y, ndcMax.z, 1.0f);
+				corner[5] = gMatInvProj * vec4(ndcMax.x, ndcMin.y, ndcMax.z, 1.0f);
+				corner[6] = gMatInvProj * vec4(ndcMax.x, ndcMax.y, ndcMax.z, 1.0f);
+				corner[7] = gMatInvProj * vec4(ndcMin.x, ndcMax.y, ndcMax.z, 1.0f);
+			
+				for(uint i = 0; i < 8; ++i)
+					corner[i].xy /= corner[i].w;
+			
+				vec3 viewMin = vec3(corner[0].xy, viewZMin);
+				vec3 viewMax = vec3(corner[0].xy, viewZMax);
 				
-				vec3 viewMin = vec3(clipMin.xy / clipMin.w, viewZMin);
-				vec3 viewMax = vec3(clipMax.xy / clipMax.w, viewZMax);				
+				for(uint i = 1; i < 8; ++i)
+				{
+					viewMin.xy = min(viewMin.xy, corner[i].xy);
+					viewMax.xy = max(viewMax.xy, corner[i].xy);
+				}		
 				
 				extent = (viewMax - viewMin) * 0.5f;
 				center = viewMin + extent;
@@ -248,7 +245,7 @@ Technique
 							{
 								uint prevLink = imageAtomicExchange(gLinkedListHeads, int(cellIdx), nextLink);
 								
-								imageStore(gLinkedList, int(nextLink), uvec4(i, prevLink, 0, 0));
+								imageStore(gLinkedList, int(nextLink), uvec4(i, type, prevLink, 0));
 							}
 						}
 					}

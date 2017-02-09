@@ -56,9 +56,20 @@ namespace bs { namespace ct
 		/** Returns a GPU bindable param buffer containing meta-data about light in the ligth buffer. */
 		SPtr<GpuParamBlockBuffer> getParamBuffer() const { return mParamBuffer; }
 
+		/** Returns the number of directional lights in the lights buffer. */
+		UINT32 getNumDirLights() const { return mNumLights[0]; }
+
+		/** Returns the number of radial point lights in the lights buffer. */
+		UINT32 getNumRadialLights() const { return mNumLights[1]; }
+
+		/** Returns the number of spot point lights in the lights buffer. */
+		UINT32 getNumSpotLights() const { return mNumLights[2]; }
+
 	private:
 		SPtr<GpuParamBlockBuffer> mParamBuffer;
 		SPtr<GpuBuffer> mLightBuffer;
+
+		UINT32 mNumLights[3];
 	};
 
 	BS_PARAM_BLOCK_BEGIN(TiledLightingParamDef)

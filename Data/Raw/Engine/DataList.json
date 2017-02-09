@@ -111,6 +111,10 @@
         {
             "Path": "BasePass.bslinc",
             "UUID": "ec1d3d37-5509-4bcb-9be2-93208d6ae224"
+        },
+        {
+            "Path": "LightGridCommon.bslinc",
+            "UUID": "26caf86e-433c-4ade-9bc5-55c136d82912"
         }
     ],
     "Shaders": [

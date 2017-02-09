@@ -39,6 +39,7 @@ namespace bs { namespace ct
 	}
 
 	GPULightData::GPULightData()
+		:mNumLights {}
 	{
 		mParamBuffer = gTiledLightingParamDef.createBuffer();
 	}
@@ -46,6 +47,10 @@ namespace bs { namespace ct
 	void GPULightData::setLights(const Vector<LightData>& lightData, UINT32 numDirLights, UINT32 numRadialLights,
 				   UINT32 numSpotLights)
 	{
+		mNumLights[0] = numDirLights;
+		mNumLights[1] = numRadialLights;
+		mNumLights[2] = numSpotLights;
+
 		Vector3I lightOffsets;
 		lightOffsets[0] = numDirLights;
 		lightOffsets[1] = lightOffsets[0] + numRadialLights;

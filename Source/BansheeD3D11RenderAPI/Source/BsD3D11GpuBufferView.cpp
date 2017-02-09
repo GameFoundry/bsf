@@ -6,6 +6,7 @@
 #include "BsD3D11Device.h"
 #include "BsRenderStats.h"
 #include "BsException.h"
+#include "BsD3D11Mappings.h"
 
 namespace bs { namespace ct
 {
@@ -74,7 +75,14 @@ namespace bs { namespace ct
 		D3D11_SHADER_RESOURCE_VIEW_DESC desc;
 		ZeroMemory(&desc, sizeof(desc));
 
-		if (props.getType() == GBT_STRUCTURED || props.getType() == GBT_STANDARD)
+		if (props.getType() == GBT_STANDARD)
+		{
+			desc.Format = D3D11Mappings::getBF(props.getFormat());
+			desc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+			desc.Buffer.FirstElement = firstElement;
+			desc.Buffer.NumElements = numElements;
+		}
+		else if (props.getType() == GBT_STRUCTURED)
 		{
 			desc.Format = DXGI_FORMAT_UNKNOWN;
 			desc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
@@ -121,7 +129,18 @@ namespace bs { namespace ct
 
 		desc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
 
-		if (props.getType() == GBT_STRUCTURED || props.getType() == GBT_STANDARD)
+		if (props.getType() == GBT_STANDARD)
+		{
+			desc.Format = D3D11Mappings::getBF(props.getFormat());
+			desc.Buffer.FirstElement = firstElement;
+			desc.Buffer.NumElements = numElements;
+
+			if (useCounter)
+				desc.Buffer.Flags = D3D11_BUFFER_UAV_FLAG_COUNTER;
+			else
+				desc.Buffer.Flags = 0;
+		} 
+		else if (props.getType() == GBT_STRUCTURED)
 		{
 			desc.Format = DXGI_FORMAT_UNKNOWN;
 			desc.Buffer.FirstElement = firstElement;

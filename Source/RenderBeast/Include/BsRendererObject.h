@@ -65,7 +65,16 @@ namespace bs { namespace ct
 		UINT32 perCameraBindingIdx;
 
 		/** Index to which should the lights param block buffer be bound to. */
-		UINT32 lightParamsBindingIdx;
+		UINT32 gridParamsBindingIdx;
+
+		/** 
+		 * Parameter to which to bind a buffer containing light grid offsets and size, per grid cell. Used for forward
+		 * rendering. 
+		 */
+		GpuParamBuffer gridOffsetsAndSizeParam;
+
+		/** Parameter to which to bind a buffer containing all light indices, as mapped by grid offsets & size. */
+		GpuParamBuffer gridLightIndicesParam;
 
 		/** Parameter to which to bind light buffer used for forward rendering. */
 		GpuParamBuffer lightsBufferParam;
