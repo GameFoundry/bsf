@@ -41,7 +41,8 @@ Technique
 				ndcMax.xy = (cellIdx.xy + 1) * a - float2(1.0f, 1.0f);
 			
 				// Flip Y depending on render API, depending if Y in NDC is facing up or down
-				float flipY = sign(gMatProj[1][1]);
+				// (We negate the value because we want NDC with Y flipped, so origin is top left)
+				float flipY = -sign(gMatProj[1][1]);
 				ndcMin.y *= flipY;
 				ndcMax.y *= flipY;
 			
@@ -49,8 +50,8 @@ Technique
 				float viewZMin = calcViewZFromCellZ(cellIdx.z + 1);
 				float viewZMax = calcViewZFromCellZ(cellIdx.z);
 			
-				ndcMin.z = convertToDeviceZ(viewZMax);
-				ndcMax.z = convertToDeviceZ(viewZMin);
+				ndcMin.z = convertToNDCZ(viewZMax);
+				ndcMax.z = convertToNDCZ(viewZMin);
 			
 				float4 corner[8];
 				// Near
@@ -170,7 +171,8 @@ Technique
 				ndcMax.xy = (cellIdx.xy + 1) * a - vec2(1.0f, 1.0f);
 			
 				// Flip Y depending on render API, depending if Y in NDC is facing up or down
-				float flipY = sign(gMatProj[1][1]);
+				// (We negate the value because we want NDC with Y flipped, so origin is top left)
+				float flipY = -sign(gMatProj[1][1]);
 				ndcMin.y *= flipY;
 				ndcMax.y *= flipY;
 			
@@ -178,8 +180,8 @@ Technique
 				float viewZMin = calcViewZFromCellZ(cellIdx.z + 1);
 				float viewZMax = calcViewZFromCellZ(cellIdx.z);
 			
-				ndcMin.z = convertToDeviceZ(viewZMin);
-				ndcMax.z = convertToDeviceZ(viewZMax);
+				ndcMin.z = convertToNDCZ(viewZMax);
+				ndcMax.z = convertToNDCZ(viewZMin);
 							
 				vec4 corner[8];
 				// Near

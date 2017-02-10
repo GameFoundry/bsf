@@ -26,6 +26,7 @@ namespace bs { namespace ct
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatInvViewProj)
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatScreenToWorld)
 		BS_PARAM_BLOCK_ENTRY(Vector2, gDeviceZToWorldZ)
+		BS_PARAM_BLOCK_ENTRY(Vector2, gNDCZToWorldZ)
 		BS_PARAM_BLOCK_ENTRY(Vector2, gNearFar)
 		BS_PARAM_BLOCK_ENTRY(Vector4I, gViewportRectangle)
 		BS_PARAM_BLOCK_ENTRY(Vector4, gClipToUVScaleOffset)
@@ -242,14 +243,24 @@ namespace bs { namespace ct
 
 	private:
 		/**
-		 * Extracts the necessary values from the projection matrix that allow you to transform device Z value into
-		 * world Z value.
+		 * Extracts the necessary values from the projection matrix that allow you to transform device Z value (range [0, 1]
+		 * into view Z value.
 		 * 
 		 * @param[in]	projMatrix	Projection matrix that was used to create the device Z value to transform.
-		 * @return					Returns two values that can be used to transform device z to world z using this formula:
+		 * @return					Returns two values that can be used to transform device z to view z using this formula:
 		 * 							z = (deviceZ + y) * x.
 		 */
 		Vector2 getDeviceZTransform(const Matrix4& projMatrix) const;
+
+		/**
+		 * Extracts the necessary values from the projection matrix that allow you to transform NDC Z value (range depending
+		 * on render API) into view Z value.
+		 * 
+		 * @param[in]	projMatrix	Projection matrix that was used to create the NDC Z value to transform.
+		 * @return					Returns two values that can be used to transform NDC z to view z using this formula:
+		 * 							z = (NDCZ + y) * x.
+		 */
+		Vector2 getNDCZTransform(const Matrix4& projMatrix) const;
 
 		RENDERER_VIEW_DESC mViewDesc;
 

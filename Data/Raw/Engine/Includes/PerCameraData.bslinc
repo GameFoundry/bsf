@@ -52,11 +52,13 @@ Technique : base("PerCameraData") =
 				float4x4 gMatInvViewProj;
 				float4x4 gMatScreenToWorld;
 				float2 	 gDeviceZToWorldZ;
+				float2	 gNDCZToWorldZ;
 				float2	 gNearFar;
 				int4 	 gViewportRectangle;
 				float4 	 gClipToUVScaleOffset;				
 			}
 			
+			/** Converts Z value in range [0,1] into Z value in view space. */
 			float convertFromDeviceZ(float deviceZ)
 			{
 				return (1.0f / (deviceZ + gDeviceZToWorldZ.y)) * gDeviceZToWorldZ.x;
@@ -84,11 +86,13 @@ Technique : base("PerCameraData") =
 				mat4 gMatInvViewProj;
 				mat4 gMatScreenToWorld;
 				vec2 gDeviceZToWorldZ;
+				vec2 gNDCZToWorldZ;
 				vec2 gNearFar;
 				ivec4 gViewportRectangle;
 				vec4 gClipToUVScaleOffset;				
 			};
 			
+			/** Converts Z value in range [0,1] into Z value in view space. */
 			float convertFromDeviceZ(float deviceZ)
 			{
 				return (1.0f / (deviceZ + gDeviceZToWorldZ.y)) * gDeviceZToWorldZ.x;	

@@ -89,9 +89,6 @@ namespace bs { namespace ct
 	{
 		mParamsSet->setParamBlockBuffer("PerCamera", view.getPerViewBuffer(), true);
 
-		UINT32 width = view.getRenderTargets()->getWidth();
-		UINT32 height = view.getRenderTargets()->getHeight();
-
 		UINT32 numGroupsX = (mGridSize[0] + THREADGROUP_SIZE - 1) / THREADGROUP_SIZE;
 		UINT32 numGroupsY = (mGridSize[1] + THREADGROUP_SIZE - 1) / THREADGROUP_SIZE;
 		UINT32 numGroupsZ = (mGridSize[2] + THREADGROUP_SIZE - 1) / THREADGROUP_SIZE;
@@ -137,7 +134,7 @@ namespace bs { namespace ct
 	}
 
 	void LightGridLLReductionMat::setParams(const Vector3I& gridSize, const SPtr<GpuParamBlockBuffer>& gridParams,
-											SPtr<GpuBuffer>& linkedListHeads, SPtr<GpuBuffer>& linkedList)
+											const SPtr<GpuBuffer>& linkedListHeads, const SPtr<GpuBuffer>& linkedList)
 	{
 		mGridSize = gridSize;
 		UINT32 numCells = gridSize[0] * gridSize[1] * gridSize[2];

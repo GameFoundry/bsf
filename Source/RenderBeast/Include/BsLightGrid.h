@@ -66,7 +66,7 @@ namespace bs { namespace ct
 
 		/** Binds parameter buffers and prepares any internal buffers. Must be called before execute(). */
 		void setParams(const Vector3I& gridSize, const SPtr<GpuParamBlockBuffer>& gridParams, 
-					   SPtr<GpuBuffer>& linkedListHeads, SPtr<GpuBuffer>& linkedList);
+					   const SPtr<GpuBuffer>& linkedListHeads, const SPtr<GpuBuffer>& linkedList);
 
 		/** Binds the material for renderingand executes it. */
 		void execute(const RendererCamera& view);

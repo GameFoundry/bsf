@@ -86,8 +86,8 @@ namespace bs { namespace ct
 
 	void GLSLGpuProgram::initialize()
 	{
-		static const char GLSL_VERSION_LINE[] = "#version 440\n";
-
+		static const char* EXTRA_LINES[] = { "#version 440\n", "#define OPENGL\n" };
+		
 		if (!isSupported())
 		{
 			mIsCompiled = false;
@@ -132,10 +132,16 @@ namespace bs { namespace ct
 		{
 			Vector<GLchar*> lines;
 
-			GLchar* firstLineData = (GLchar*)bs_stack_alloc(sizeof(GLSL_VERSION_LINE));
-			memcpy(firstLineData, GLSL_VERSION_LINE, sizeof(GLSL_VERSION_LINE));
+			UINT32 numExtraLines = sizeof(EXTRA_LINES) / sizeof(EXTRA_LINES[0]);
+			for(UINT32 i = 0; i < numExtraLines; i++)
+			{
+				UINT32 length = strlen(EXTRA_LINES[i]) + 1;
 
-			lines.push_back(firstLineData);
+				GLchar* extraLineData = (GLchar*)bs_stack_alloc(length);
+				memcpy(extraLineData, EXTRA_LINES[i], length);
+
+				lines.push_back(extraLineData);
+			}
 
 			UINT32 lineLength = 0;
 			for (UINT32 i = 0; i < source.size(); i++)

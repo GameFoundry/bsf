@@ -208,8 +208,8 @@ namespace bs { namespace ct
 
 	Vector2 RendererCamera::getDeviceZTransform(const Matrix4& projMatrix) const
 	{
-		// Returns a set of values that will transform depth buffer values (e.g. [0, 1] in DX, [-1, 1] in GL) to a distance
-		// in world space. This involes applying the inverse projection transform to the depth value. When you multiply
+		// Returns a set of values that will transform depth buffer values (in range [0, 1]) to a distance
+		// in view space. This involes applying the inverse projection transform to the depth value. When you multiply
 		// a vector with the projection matrix you get [clipX, clipY, Az + B, C * z], where we don't care about clipX/clipY.
 		// A is [2, 2], B is [2, 3] and C is [3, 2] elements of the projection matrix (only ones that matter for our depth 
 		// value). The hardware will also automatically divide the z value with w to get the depth, therefore the final 
@@ -244,6 +244,36 @@ namespace bs { namespace ct
 		return output;
 	}
 
+	Vector2 RendererCamera::getNDCZTransform(const Matrix4& projMatrix) const
+	{
+		// Returns a set of values that will transform depth buffer values (e.g. [0, 1] in DX, [-1, 1] in GL) to a distance
+		// in view space. This involes applying the inverse projection transform to the depth value. When you multiply
+		// a vector with the projection matrix you get [clipX, clipY, Az + B, C * z], where we don't care about clipX/clipY.
+		// A is [2, 2], B is [2, 3] and C is [3, 2] elements of the projection matrix (only ones that matter for our depth 
+		// value). The hardware will also automatically divide the z value with w to get the depth, therefore the final 
+		// formula is:
+		// depth = (Az + B) / (C * z)
+
+		// To get the z coordinate back we simply do the opposite: 
+		// z = B / (depth * C - A)
+
+		// Are we reorganize it because it needs to fit the "(1.0f / (depth + y)) * x" format used in the shader:
+		// z = 1.0f / (depth - A/C) * B/C
+
+		RenderAPI& rapi = RenderAPI::instance();
+		const RenderAPIInfo& rapiInfo = rapi.getAPIInfo();
+
+		float a = projMatrix[2][2];
+		float b = projMatrix[2][3];
+		float c = projMatrix[3][2];
+
+		Vector2 output;
+		output.x = b / c;
+		output.y = - a / c;
+
+		return output;
+	}
+
 	void RendererCamera::updatePerViewBuffer()
 	{
 		Matrix4 viewProj = mViewDesc.projTransform * mViewDesc.viewTransform;
@@ -270,6 +300,7 @@ namespace bs { namespace ct
 		gPerCameraParamDef.gViewDir.set(mParamBuffer, mViewDesc.viewDirection);
 		gPerCameraParamDef.gViewOrigin.set(mParamBuffer, mViewDesc.viewOrigin);
 		gPerCameraParamDef.gDeviceZToWorldZ.set(mParamBuffer, getDeviceZTransform(mViewDesc.projTransform));
+		gPerCameraParamDef.gNDCZToWorldZ.set(mParamBuffer, getNDCZTransform(mViewDesc.projTransform));
 
 		Vector2 nearFar(mViewDesc.nearPlane, mViewDesc.farPlane);
 		gPerCameraParamDef.gNearFar.set(mParamBuffer, nearFar);

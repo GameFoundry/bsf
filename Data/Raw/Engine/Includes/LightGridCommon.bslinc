@@ -18,9 +18,9 @@ Technique : base("LightGridCommon") =
 				uint2 gGridPixelSize;
 			}
 			
-			float convertToDeviceZ(float viewZ)
+			float convertToNDCZ(float viewZ)
 			{
-				return -gDeviceZToWorldZ.y + (gDeviceZToWorldZ.x / viewZ);
+				return -gNDCZToWorldZ.y + (gNDCZToWorldZ.x / viewZ);
 			}
 			
 			float calcViewZFromCellZ(uint cellZ)
@@ -43,10 +43,6 @@ Technique : base("LightGridCommon") =
 			
 			uint calcCellIdx(uint2 pixelPos, float deviceZ)
 			{
-				// MARK: API_SPECIFIC
-				// Grid origin is bottom left but DirectX pixel position origin is top left
-				pixelPos.y = gViewportRectangle.w - pixelPos.y;
-			
 				// Note: Use bitshift to divide since gGridPixelSize will be a power of 2
 				uint2 cellXY = pixelPos / gGridPixelSize;
 				uint cellZ = calcCellZFromViewZ(convertFromDeviceZ(deviceZ));
@@ -78,9 +74,9 @@ Technique : base("LightGridCommon") =
 				uvec2 gGridPixelSize;
 			};
 			
-			float convertToDeviceZ(float viewZ)
+			float convertToNDCZ(float viewZ)
 			{
-				return -gDeviceZToWorldZ.y + (gDeviceZToWorldZ.x / viewZ);
+				return -gNDCZToWorldZ.y + (gNDCZToWorldZ.x / viewZ);
 			}
 			
 			float calcViewZFromCellZ(uint cellZ)
@@ -103,6 +99,11 @@ Technique : base("LightGridCommon") =
 			
 			int calcCellIdx(uvec2 pixelPos, float deviceZ)
 			{
+				// OpenGL uses lower left for window space origin, we use upper-left
+				#ifdef OPENGL
+					pixelPos.y = gViewportRectangle.w - pixelPos.y;
+				#endif
+			
 				// Note: Use bitshift to divide since gGridPixelSize will be a power of 2
 				uvec2 cellXY = pixelPos / gGridPixelSize;
 				uint cellZ = calcCellZFromViewZ(convertFromDeviceZ(deviceZ));
