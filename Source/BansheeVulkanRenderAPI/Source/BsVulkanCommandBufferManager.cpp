@@ -142,7 +142,9 @@ namespace bs { namespace ct
 		if (wait)
 		{
 			mQueue->waitIdle();
-			gVulkanCBManager().refreshStates(mDevice->getIndex());
+			gVulkanCBManager().refreshStates(mDevice->getIndex(), true);
+
+			assert(!mCB->isSubmitted());
 		}
 
 		mCB = nullptr;
@@ -239,7 +241,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	void VulkanCommandBufferManager::refreshStates(UINT32 deviceIdx)
+	void VulkanCommandBufferManager::refreshStates(UINT32 deviceIdx, bool forceWait)
 	{
 		SPtr<VulkanDevice> device = mRapi._getDevice(deviceIdx);
 
@@ -249,7 +251,7 @@ namespace bs { namespace ct
 			for (UINT32 j = 0; j < numQueues; j++)
 			{
 				VulkanQueue* queue = device->getQueue((GpuQueueType)i, j);
-				queue->refreshStates();
+				queue->refreshStates(forceWait, false);
 			}
 		}
 	}

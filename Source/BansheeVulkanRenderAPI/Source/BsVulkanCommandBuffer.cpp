@@ -702,10 +702,10 @@ namespace bs { namespace ct
 		mSwapChains.clear();
 	}
 
-	bool VulkanCmdBuffer::checkFenceStatus() const
+	bool VulkanCmdBuffer::checkFenceStatus(bool block) const
 	{
-		VkResult result = vkGetFenceStatus(mDevice.getLogical(), mFence);
-		assert(result == VK_SUCCESS || result == VK_NOT_READY);
+		VkResult result = vkWaitForFences(mDevice.getLogical(), 1, &mFence, true, block ? 1'000'000'000 : 0);
+		assert(result == VK_SUCCESS || result == VK_TIMEOUT);
 
 		return result == VK_SUCCESS;
 	}

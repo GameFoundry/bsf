@@ -64,10 +64,11 @@ namespace bs { namespace ct
 		 * Checks if any of the active command buffers finished executing on the queue and updates their states 
 		 * accordingly. 
 		 * 
+		 * @param[in]	forceWait	Set to true if the system should wait until all command buffers finish executing.
 		 * @param[in]	queueEmpty	Set to true if the caller guarantees the queue will be empty (e.g. on shutdown). This
 		 *							allows the system to free all needed resources.
 		 */
-		void refreshStates(bool queueEmpty = false);
+		void refreshStates(bool forceWait, bool queueEmpty = false);
 
 		/** Returns the last command buffer that was submitted on this queue. */
 		VulkanCmdBuffer* getLastCommandBuffer() const { return mLastCommandBuffer; }

@@ -177,8 +177,12 @@ namespace bs { namespace ct
 		/** Returns true if the command buffer is currently recording a render pass. */
 		bool isInRenderPass() const { return mState == State::RecordingRenderPass; }
 
-		/** Checks the internal fence if done executing. */
-		bool checkFenceStatus() const;
+		/** 
+		 * Checks the internal fence if done executing. 
+		 * 
+		 * @param[in]	block	If true, the system will block until the fence is signaled.
+		 */
+		bool checkFenceStatus(bool block) const;
 
 		/** 
 		 * Resets the command buffer back in Ready state. Should be called when command buffer is done executing on a 

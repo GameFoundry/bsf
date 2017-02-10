@@ -111,7 +111,7 @@ namespace bs { namespace ct
 		 * Checks if any of the active command buffers finished executing on the device and updates their states 
 		 * accordingly. 
 		 */
-		void refreshStates(UINT32 deviceIdx);
+		void refreshStates(UINT32 deviceIdx, bool forceWait = false);
 
 		/** 
 		 * Returns an command buffer that can be used for executing transfer operations on the specified queue. 

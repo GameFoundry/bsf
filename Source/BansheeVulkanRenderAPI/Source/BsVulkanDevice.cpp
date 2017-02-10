@@ -125,7 +125,7 @@ namespace bs { namespace ct
 			UINT32 numQueues = (UINT32)mQueueInfos[i].queues.size();
 			for (UINT32 j = 0; j < numQueues; j++)
 			{
-				mQueueInfos[i].queues[j]->refreshStates(true);
+				mQueueInfos[i].queues[j]->refreshStates(true, true);
 				bs_delete(mQueueInfos[i].queues[j]);
 			}
 		}

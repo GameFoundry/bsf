@@ -185,7 +185,7 @@ namespace bs { namespace ct
 		assert(result == VK_SUCCESS);
 	}
 
-	void VulkanQueue::refreshStates(bool queueEmpty)
+	void VulkanQueue::refreshStates(bool forceWait, bool queueEmpty)
 	{
 		UINT32 lastFinishedSubmission = 0;
 
@@ -199,9 +199,12 @@ namespace bs { namespace ct
 				continue;
 			}
 
-			if(!cmdBuffer->checkFenceStatus())
+			if (!cmdBuffer->checkFenceStatus(forceWait))
+			{
+				assert(!forceWait);
 				break; // No chance of any later CBs of being done either
-				
+			}
+
 			lastFinishedSubmission = iter->submitIdx;
 			++iter;
 		}
