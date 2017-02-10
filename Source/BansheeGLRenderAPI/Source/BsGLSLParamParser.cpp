@@ -310,6 +310,7 @@ namespace bs { namespace ct
 			bool isSampler = false;
 			bool isImage = false;
 			bool isBuffer = false;
+			bool isRWBuffer = false;
 			switch (uniformType)
 			{
 			case GL_SAMPLER_1D:
@@ -399,10 +400,12 @@ namespace bs { namespace ct
 			case GL_SAMPLER_BUFFER:
 			case GL_UNSIGNED_INT_SAMPLER_BUFFER:
 			case GL_INT_SAMPLER_BUFFER:
+				isBuffer = true;
+				break;
 			case GL_IMAGE_BUFFER:
 			case GL_UNSIGNED_INT_IMAGE_BUFFER:
 			case GL_INT_IMAGE_BUFFER:
-				isBuffer = true;
+				isRWBuffer = true;
 				break;
 			}
 
@@ -437,18 +440,19 @@ namespace bs { namespace ct
 			{
 				GpuParamObjectDesc bufferParam;
 				bufferParam.name = paramName;
+				bufferParam.type = GPOT_BYTE_BUFFER;
 				bufferParam.slot = glGetUniformLocation(glProgram, uniformName);
+				bufferParam.set = mapParameterToSet(type, ParamType::Texture);
 
-				if (uniformType == GL_IMAGE_BUFFER)
-				{
-					bufferParam.type = GPOT_RWBYTE_BUFFER;
-					bufferParam.set = mapParameterToSet(type, ParamType::Image);
-				}
-				else // Sampler buffer
-				{
-					bufferParam.type = GPOT_BYTE_BUFFER;
-					bufferParam.set = mapParameterToSet(type, ParamType::Texture);
-				}
+				returnParamDesc.buffers.insert(std::make_pair(paramName, bufferParam));
+			}
+			else if(isRWBuffer)
+			{
+				GpuParamObjectDesc bufferParam;
+				bufferParam.name = paramName;
+				bufferParam.type = GPOT_RWBYTE_BUFFER;
+				bufferParam.slot = glGetUniformLocation(glProgram, uniformName);
+				bufferParam.set = mapParameterToSet(type, ParamType::Image);
 
 				returnParamDesc.buffers.insert(std::make_pair(paramName, bufferParam));
 			}

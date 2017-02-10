@@ -123,6 +123,7 @@ namespace bs { namespace ct
             break;
         case GL_FRAMEBUFFER_UNSUPPORTED:
             LOGERR("All framebuffer formats with this texture internal format unsupported");
+			break;
         default:
             LOGERR("Framebuffer incomplete or other FBO status error");
         }
