@@ -111,6 +111,7 @@ namespace bs { namespace ct
 	void TiledDeferredLightingMat::_initDefines(ShaderDefines& defines)
 	{
 		defines.set("TILE_SIZE", TILE_SIZE);
+		defines.set("MSAA_COUNT", 1);
 	}
 
 	void TiledDeferredLightingMat::execute(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBuffer>& perCamera)
