@@ -52,6 +52,8 @@ Manuals									{#manuals}
  - [Character controller](@ref characterController)
  - [Scene queries](@ref sceneQueries)
  - [Joints](@ref joints)
+- **Animation**
+ - [Loading animation clips](@ref animationClip)
  
 # Developer guides
 
