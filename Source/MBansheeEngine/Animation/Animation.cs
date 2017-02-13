@@ -381,7 +381,7 @@ namespace BansheeEngine
         /// </summary>
         /// <param name="name">Name of the morph channel to modify the weight for. This depends on the mesh the animation
         ///                    is currently animating.</param>
-        /// <param name="weight">Weight that determines how much of the channel to apply to the mesh, in range[0, 1].
+        /// <param name="weight">Weight that determines how much of the channel to apply to the mesh, in range [0, 1].
         ///                     </param>
         public void SetMorphChannelWeight(string name, float weight)
         {

@@ -449,7 +449,7 @@ namespace bs
 				LOGERR("Vertex buffer values for stream \"" + toString(i) + "\" are being written out of valid range.");
 			}
 
-			if (RenderAPI::instance().getAPIInfo().getVertexColorFlipRequired())
+			if (RenderAPI::instance().getAPIInfo().isFlagSet(RenderAPIFeatureFlag::VertexColorFlip))
 			{
 				UINT8* bufferCopy = (UINT8*)bs_alloc(bufferSize);
 				memcpy(bufferCopy, srcVertBufferData, bufferSize); // TODO Low priority - Attempt to avoid this copy

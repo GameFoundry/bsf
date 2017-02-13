@@ -1,13 +1,14 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
-#include "BsRenderTexturePool.h"
+#include "BsGpuResourcePool.h"
 #include "BsRenderTexture.h"
 #include "BsTexture.h"
+#include "BsGpuBuffer.h"
 #include "BsTextureManager.h"
 
 namespace bs { namespace ct
 {
-	PooledRenderTexture::PooledRenderTexture(RenderTexturePool* pool)
+	PooledRenderTexture::PooledRenderTexture(GpuResourcePool* pool)
 		:mPool(pool), mIsFree(false)
 	{ }
 
@@ -17,13 +18,26 @@ namespace bs { namespace ct
 			mPool->_unregisterTexture(this);
 	}
 
-	RenderTexturePool::~RenderTexturePool()
+	PooledStorageBuffer::PooledStorageBuffer(GpuResourcePool* pool)
+		:mPool(pool), mIsFree(false)
+	{ }
+
+	PooledStorageBuffer::~PooledStorageBuffer()
+	{
+		if (mPool != nullptr)
+			mPool->_unregisterBuffer(this);
+	}
+
+	GpuResourcePool::~GpuResourcePool()
 	{
 		for (auto& texture : mTextures)
 			texture.second.lock()->mPool = nullptr;
+
+		for (auto& buffer : mBuffers)
+			buffer.second.lock()->mPool = nullptr;
 	}
 
-	SPtr<PooledRenderTexture> RenderTexturePool::get(const POOLED_RENDER_TEXTURE_DESC& desc)
+	SPtr<PooledRenderTexture> GpuResourcePool::get(const POOLED_RENDER_TEXTURE_DESC& desc)
 	{
 		for (auto& texturePair : mTextures)
 		{
@@ -83,13 +97,53 @@ namespace bs { namespace ct
 		return newTextureData;
 	}
 
-	void RenderTexturePool::release(const SPtr<PooledRenderTexture>& texture)
+	SPtr<PooledStorageBuffer> GpuResourcePool::get(const POOLED_STORAGE_BUFFER_DESC& desc)
+	{
+		for (auto& bufferPair : mBuffers)
+		{
+			SPtr<PooledStorageBuffer> bufferData = bufferPair.second.lock();
+
+			if (!bufferData->mIsFree)
+				continue;
+
+			if (bufferData->buffer == nullptr)
+				continue;
+
+			if (matches(bufferData->buffer, desc))
+			{
+				bufferData->mIsFree = false;
+				return bufferData;
+			}
+		}
+
+		SPtr<PooledStorageBuffer> newBufferData = bs_shared_ptr_new<PooledStorageBuffer>(this);
+		_registerBuffer(newBufferData);
+
+		GPU_BUFFER_DESC bufferDesc;
+		bufferDesc.type = desc.type;
+		bufferDesc.elementSize = desc.elementSize;
+		bufferDesc.elementCount = desc.numElements;
+		bufferDesc.format = desc.format;
+		bufferDesc.randomGpuWrite = true;
+
+		newBufferData->buffer = GpuBuffer::create(bufferDesc);
+
+		return newBufferData;
+	}
+
+	void GpuResourcePool::release(const SPtr<PooledRenderTexture>& texture)
 	{
 		auto iterFind = mTextures.find(texture.get());
 		iterFind->second.lock()->mIsFree = true;
 	}
 
-	bool RenderTexturePool::matches(const SPtr<Texture>& texture, const POOLED_RENDER_TEXTURE_DESC& desc)
+	void GpuResourcePool::release(const SPtr<PooledStorageBuffer>& buffer)
+	{
+		auto iterFind = mBuffers.find(buffer.get());
+		iterFind->second.lock()->mIsFree = true;
+	}
+
+	bool GpuResourcePool::matches(const SPtr<Texture>& texture, const POOLED_RENDER_TEXTURE_DESC& desc)
 	{
 		const TextureProperties& texProps = texture->getProperties();
 
@@ -111,14 +165,40 @@ namespace bs { namespace ct
 		return match;
 	}
 
-	void RenderTexturePool::_registerTexture(const SPtr<PooledRenderTexture>& texture)
+	bool GpuResourcePool::matches(const SPtr<GpuBuffer>& buffer, const POOLED_STORAGE_BUFFER_DESC& desc)
+	{
+		const GpuBufferProperties& props = buffer->getProperties();
+
+		bool match = props.getType() == desc.type && props.getElementCount() == desc.numElements;
+		if(match)
+		{
+			if (desc.type == GBT_STANDARD)
+				match = props.getFormat() == desc.format;
+			else // Structured
+				match = props.getElementSize() == desc.elementSize;
+		}
+
+		return match;
+	}
+
+	void GpuResourcePool::_registerTexture(const SPtr<PooledRenderTexture>& texture)
 	{
 		mTextures.insert(std::make_pair(texture.get(), texture));
 	}
 
-	void RenderTexturePool::_unregisterTexture(PooledRenderTexture* texture)
+	void GpuResourcePool::_unregisterTexture(PooledRenderTexture* texture)
 	{
 		mTextures.erase(texture);
+	}
+
+	void GpuResourcePool::_registerBuffer(const SPtr<PooledStorageBuffer>& buffer)
+	{
+		mBuffers.insert(std::make_pair(buffer.get(), buffer));
+	}
+
+	void GpuResourcePool::_unregisterBuffer(PooledStorageBuffer* buffer)
+	{
+		mBuffers.erase(buffer);
 	}
 
 	POOLED_RENDER_TEXTURE_DESC POOLED_RENDER_TEXTURE_DESC::create2D(PixelFormat format, UINT32 width, UINT32 height,
@@ -165,6 +245,28 @@ namespace bs { namespace ct
 		desc.flag = (TextureUsage)usage;
 		desc.hwGamma = false;
 		desc.type = TEX_TYPE_CUBE_MAP;
+
+		return desc;
+	}
+
+	POOLED_STORAGE_BUFFER_DESC POOLED_STORAGE_BUFFER_DESC::createStandard(GpuBufferFormat format, UINT32 numElements)
+	{
+		POOLED_STORAGE_BUFFER_DESC desc;
+		desc.type = GBT_STANDARD;
+		desc.format = format;
+		desc.numElements = numElements;
+		desc.elementSize = 0;
+
+		return desc;
+	}
+
+	POOLED_STORAGE_BUFFER_DESC POOLED_STORAGE_BUFFER_DESC::createStructured(UINT32 elementSize, UINT32 numElements)
+	{
+		POOLED_STORAGE_BUFFER_DESC desc;
+		desc.type = GBT_STRUCTURED;
+		desc.format = BF_UNKNOWN;
+		desc.numElements = numElements;
+		desc.elementSize = elementSize;
 
 		return desc;
 	}

@@ -218,7 +218,8 @@ namespace bs
 		SPtr<RenderBeastOptions> mCoreOptions;
 
 		DefaultMaterial* mDefaultMaterial;
-		TiledDeferredLightingMat* mTiledDeferredLightingMat;
+		ITiledDeferredLightingMat* mTiledDeferredLightingMats[4];
+		FlatFramebufferToTextureMat* mFlatFramebufferToTextureMat;
 		SkyboxMat* mSkyboxMat;
 
 		GPULightData* mGPULightData;

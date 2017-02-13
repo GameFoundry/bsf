@@ -1,7 +1,7 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsRenderTargets.h"
-#include "BsRenderTexturePool.h"
+#include "BsGpuResourcePool.h"
 #include "BsViewport.h"
 #include "BsRenderAPI.h"
 #include "BsTextureManager.h"
@@ -25,10 +25,14 @@ namespace bs { namespace ct
 
 	void RenderTargets::allocate()
 	{
-		RenderTexturePool& texPool = RenderTexturePool::instance();
+		GpuResourcePool& texPool = GpuResourcePool::instance();
 
 		UINT32 width = mViewTarget.viewRect.width;
 		UINT32 height = mViewTarget.viewRect.height;
+
+		// Note: This class is keeping all these textures alive for too long (even after they are done for a frame). We
+		// could save on memory by deallocating and reallocating them every frame, but it remains to be seen how much of
+		// a performance impact would that have.
 
 		// Note: Albedo is allocated as SRGB, meaning when reading from textures during depth pass we decode from sRGB into linear,
 		// then back into sRGB when writing to albedo, and back to linear when reading from albedo during light pass. This /might/ have
@@ -42,6 +46,23 @@ namespace bs { namespace ct
 			height, TU_RENDERTARGET, mViewTarget.numSamples, false));
 		SPtr<PooledRenderTexture> newDepthRT = texPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_D32_S8X24, width, height, 
 			TU_DEPTHSTENCIL, mViewTarget.numSamples, false));
+
+		if(mViewTarget.numSamples > 1)
+		{
+			const RenderAPIInfo& rapiInfo = RenderAPI::instance().getAPIInfo();
+
+			// DX11/HLSL is unable to have an UAV for a multisampled texture, so we need to use a buffer instead and then
+			// perform a blit to the actual scene color
+			if (!rapiInfo.isFlagSet(RenderAPIFeatureFlag::MSAAImageStores))
+			{
+				UINT32 bufferNumElements = width * height * mViewTarget.numSamples;
+				mFlattenedSceneColorBuffer = texPool.get(POOLED_STORAGE_BUFFER_DESC::createStandard(BF_16X4F, bufferNumElements));
+			}
+
+			// Need a texture we'll resolve MSAA to before post-processing
+			mSceneColorNonMSAATex = texPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(mSceneColorFormat, width,
+																					 height, TU_RENDERTARGET, 1, false));
+		}
 
 		bool rebuildTargets = newColorRT != mSceneColorTex || newAlbedoRT != mAlbedoTex || newNormalRT != mNormalTex || newDepthRT != mDepthTex;
 
@@ -94,12 +115,18 @@ namespace bs { namespace ct
 		RenderAPI& rapi = RenderAPI::instance();
 		rapi.setRenderTarget(nullptr);
 
-		RenderTexturePool& texPool = RenderTexturePool::instance();
+		GpuResourcePool& texPool = GpuResourcePool::instance();
 
 		texPool.release(mSceneColorTex);
 		texPool.release(mAlbedoTex);
 		texPool.release(mNormalTex);
 		texPool.release(mDepthTex);
+
+		if(mSceneColorNonMSAATex != nullptr)
+			texPool.release(mSceneColorNonMSAATex);
+
+		if (mFlattenedSceneColorBuffer != nullptr)
+			texPool.release(mFlattenedSceneColorBuffer);
 	}
 
 	void RenderTargets::bindGBuffer()
@@ -149,5 +176,26 @@ namespace bs { namespace ct
 	SPtr<Texture> RenderTargets::getTextureDepth() const
 	{
 		return mDepthTex->texture;
+	}
+
+	SPtr<Texture> RenderTargets::getSceneColorNonMSAA() const
+	{
+		if (mSceneColorNonMSAATex != nullptr)
+			return mSceneColorNonMSAATex->texture;
+
+		return getSceneColor();
+	}
+
+	SPtr<RenderTexture> RenderTargets::getSceneColorNonMSAART() const
+	{
+		if (mSceneColorNonMSAATex != nullptr)
+			return mSceneColorNonMSAATex->renderTexture;
+
+		return mSceneColorTex->renderTexture;
+	}
+
+	SPtr<GpuBuffer> RenderTargets::getFlattenedSceneColorBuffer() const
+	{
+		return mFlattenedSceneColorBuffer->buffer;
 	}
 }}

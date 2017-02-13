@@ -5,7 +5,7 @@
 #include "BsRenderBeastPrerequisites.h"
 #include "BsRendererMaterial.h"
 #include "BsParamBlocks.h"
-#include "BsRenderTexturePool.h"
+#include "BsGpuResourcePool.h"
 #include "BsStandardPostProcessSettings.h"
 
 namespace bs { namespace ct
@@ -43,7 +43,7 @@ namespace bs { namespace ct
 		DownsampleMat();
 
 		/** Renders the post-process effect with the provided parameters. */
-		void execute(const SPtr<RenderTexture>& target, PostProcessInfo& ppInfo);
+		void execute(const SPtr<Texture>& target, PostProcessInfo& ppInfo);
 
 		/** Releases the output render target. */
 		void release(PostProcessInfo& ppInfo);
@@ -223,7 +223,7 @@ namespace bs { namespace ct
 		TonemappingMat();
 
 		/** Executes the post-process effect with the provided parameters. */
-		void execute(const SPtr<RenderTexture>& sceneColor, const SPtr<RenderTarget>& outputRT, const Rect2& outputRect,
+		void execute(const SPtr<Texture>& sceneColor, const SPtr<RenderTarget>& outputRT, const Rect2& outputRect,
 			PostProcessInfo& ppInfo);
 
 	private:
@@ -247,7 +247,7 @@ namespace bs { namespace ct
 		 * view's final output render target. Once the method exits, final render target is guaranteed to be currently
 		 * bound for rendering. 
 		 */
-		void postProcess(RendererCamera* viewInfo, const SPtr<RenderTexture>& sceneColor, float frameDelta);
+		void postProcess(RendererCamera* viewInfo, const SPtr<Texture>& sceneColor, float frameDelta);
 		
 	private:
 		DownsampleMat mDownsample;

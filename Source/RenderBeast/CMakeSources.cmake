@@ -1,5 +1,5 @@
 set(BS_RENDERBEAST_INC_NOFILTER
-	"Include/BsRenderTexturePool.h"
+	"Include/BsGpuResourcePool.h"
 	"Include/BsRenderBeastOptions.h"
 	"Include/BsSamplerOverrides.h"
 	"Include/BsRenderBeast.h"
@@ -16,7 +16,7 @@ set(BS_RENDERBEAST_INC_NOFILTER
 )
 
 set(BS_RENDERBEAST_SRC_NOFILTER
-	"Source/BsRenderTexturePool.cpp"
+	"Source/BsGpuResourcePool.cpp"
 	"Source/BsSamplerOverrides.cpp"
 	"Source/BsRenderBeast.cpp"
 	"Source/BsRenderBeastFactory.cpp"

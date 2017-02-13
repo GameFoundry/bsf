@@ -2,7 +2,7 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsPostProcessing.h"
 #include "BsRenderTexture.h"
-#include "BsRenderTexturePool.h"
+#include "BsGpuResourcePool.h"
 #include "BsRendererUtility.h"
 #include "BsTextureManager.h"
 #include "BsCamera.h"
@@ -26,27 +26,24 @@ namespace bs { namespace ct
 		// Do nothing
 	}
 
-	void DownsampleMat::execute(const SPtr<RenderTexture>& target, PostProcessInfo& ppInfo)
+	void DownsampleMat::execute(const SPtr<Texture>& target, PostProcessInfo& ppInfo)
 	{
 		// Set parameters
-		SPtr<Texture> colorTexture = target->getColorTexture(0);
-		mInputTexture.set(colorTexture);
+		mInputTexture.set(target);
 
-		const RenderTextureProperties& rtProps = target->getProperties();
+		const TextureProperties& rtProps = target->getProperties();
 		Vector2 invTextureSize(1.0f / rtProps.getWidth(), 1.0f / rtProps.getHeight());
 
 		gDownsampleParamDef.gInvTexSize.set(mParamBuffer, invTextureSize);
 
 		// Set output
-		const TextureProperties& colorProps = colorTexture->getProperties();
+		UINT32 width = std::max(1, Math::ceilToInt(rtProps.getWidth() * 0.5f));
+		UINT32 height = std::max(1, Math::ceilToInt(rtProps.getHeight() * 0.5f));
 
-		UINT32 width = std::max(1, Math::ceilToInt(colorProps.getWidth() * 0.5f));
-		UINT32 height = std::max(1, Math::ceilToInt(colorProps.getHeight() * 0.5f));
-
-		mOutputDesc = POOLED_RENDER_TEXTURE_DESC::create2D(colorProps.getFormat(), width, height, TU_RENDERTARGET);
+		mOutputDesc = POOLED_RENDER_TEXTURE_DESC::create2D(rtProps.getFormat(), width, height, TU_RENDERTARGET);
 
 		// Render
-		ppInfo.downsampledSceneTex = RenderTexturePool::instance().get(mOutputDesc);
+		ppInfo.downsampledSceneTex = GpuResourcePool::instance().get(mOutputDesc);
 
 		RenderAPI& rapi = RenderAPI::instance();
 		rapi.setRenderTarget(ppInfo.downsampledSceneTex->renderTexture, true);
@@ -62,7 +59,7 @@ namespace bs { namespace ct
 
 	void DownsampleMat::release(PostProcessInfo& ppInfo)
 	{
-		RenderTexturePool::instance().release(ppInfo.downsampledSceneTex);
+		GpuResourcePool::instance().release(ppInfo.downsampledSceneTex);
 		mOutput = nullptr;
 	}
 
@@ -108,7 +105,7 @@ namespace bs { namespace ct
 			TU_LOADSTORE);
 
 		// Dispatch
-		ppInfo.histogramTex = RenderTexturePool::instance().get(mOutputDesc);
+		ppInfo.histogramTex = GpuResourcePool::instance().get(mOutputDesc);
 
 		mOutputTex.set(ppInfo.histogramTex->texture);
 
@@ -122,7 +119,7 @@ namespace bs { namespace ct
 
 	void EyeAdaptHistogramMat::release(PostProcessInfo& ppInfo)
 	{
-		RenderTexturePool::instance().release(ppInfo.histogramTex);
+		GpuResourcePool::instance().release(ppInfo.histogramTex);
 		mOutput = nullptr;
 	}
 
@@ -193,7 +190,7 @@ namespace bs { namespace ct
 			TU_RENDERTARGET);
 
 		// Render
-		ppInfo.histogramReduceTex = RenderTexturePool::instance().get(mOutputDesc);
+		ppInfo.histogramReduceTex = GpuResourcePool::instance().get(mOutputDesc);
 
 		RenderAPI& rapi = RenderAPI::instance();
 		rapi.setRenderTarget(ppInfo.histogramReduceTex->renderTexture, true);
@@ -211,7 +208,7 @@ namespace bs { namespace ct
 
 	void EyeAdaptHistogramReduceMat::release(PostProcessInfo& ppInfo)
 	{
-		RenderTexturePool::instance().release(ppInfo.histogramReduceTex);
+		GpuResourcePool::instance().release(ppInfo.histogramReduceTex);
 		mOutput = nullptr;
 	}
 
@@ -236,8 +233,8 @@ namespace bs { namespace ct
 		if(!texturesInitialized)
 		{
 			POOLED_RENDER_TEXTURE_DESC outputDesc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_FLOAT32_R, 1, 1, TU_RENDERTARGET);
-			ppInfo.eyeAdaptationTex[0] = RenderTexturePool::instance().get(outputDesc);
-			ppInfo.eyeAdaptationTex[1] = RenderTexturePool::instance().get(outputDesc);
+			ppInfo.eyeAdaptationTex[0] = GpuResourcePool::instance().get(outputDesc);
+			ppInfo.eyeAdaptationTex[1] = GpuResourcePool::instance().get(outputDesc);
 		}
 
 		ppInfo.lastEyeAdaptationTex = (ppInfo.lastEyeAdaptationTex + 1) % 2; // TODO - Do I really need two targets?
@@ -347,7 +344,7 @@ namespace bs { namespace ct
 			LUT_SIZE, LUT_SIZE, LUT_SIZE, TU_LOADSTORE);
 
 		// Dispatch
-		ppInfo.colorLUT = RenderTexturePool::instance().get(outputDesc);
+		ppInfo.colorLUT = GpuResourcePool::instance().get(outputDesc);
 
 		mOutputTex.set(ppInfo.colorLUT->texture);
 
@@ -360,7 +357,7 @@ namespace bs { namespace ct
 
 	void CreateTonemapLUTMat::release(PostProcessInfo& ppInfo)
 	{
-		RenderTexturePool::instance().release(ppInfo.colorLUT);
+		GpuResourcePool::instance().release(ppInfo.colorLUT);
 	}
 
 	TonemappingParamDef gTonemappingParamDef;
@@ -392,15 +389,14 @@ namespace bs { namespace ct
 	}
 
 	template<bool GammaOnly, bool AutoExposure>
-	void TonemappingMat<GammaOnly, AutoExposure>::execute(const SPtr<RenderTexture>& sceneColor, 
+	void TonemappingMat<GammaOnly, AutoExposure>::execute(const SPtr<Texture>& sceneColor, 
 		const SPtr<RenderTarget>& outputRT, const Rect2& outputRect, PostProcessInfo& ppInfo)
 	{
 		gTonemappingParamDef.gRawGamma.set(mParamBuffer, 1.0f / ppInfo.settings->gamma);
 		gTonemappingParamDef.gManualExposureScale.set(mParamBuffer, Math::pow(2.0f, ppInfo.settings->exposureScale));
 
 		// Set parameters
-		SPtr<Texture> colorTexture = sceneColor->getColorTexture(0);
-		mInputTex.set(colorTexture);
+		mInputTex.set(sceneColor);
 
 		SPtr<Texture> colorLUT;
 		if(ppInfo.colorLUT != nullptr)
@@ -430,7 +426,7 @@ namespace bs { namespace ct
 	template class TonemappingMat<true, false>;
 	template class TonemappingMat<false, false>;
 
-	void PostProcessing::postProcess(RendererCamera* viewInfo, const SPtr<RenderTexture>& sceneColor, float frameDelta)
+	void PostProcessing::postProcess(RendererCamera* viewInfo, const SPtr<Texture>& sceneColor, float frameDelta)
 	{
 		PostProcessInfo& ppInfo = viewInfo->getPPInfo();
 		const StandardPostProcessSettings& settings = *ppInfo.settings;

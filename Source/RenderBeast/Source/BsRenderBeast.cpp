@@ -23,7 +23,7 @@
 #include "BsRenderBeastOptions.h"
 #include "BsSamplerOverrides.h"
 #include "BsLight.h"
-#include "BsRenderTexturePool.h"
+#include "BsGpuResourcePool.h"
 #include "BsRenderTargets.h"
 #include "BsRendererUtility.h"
 #include "BsAnimationManager.h"
@@ -40,9 +40,9 @@ using namespace std::placeholders;
 namespace bs { namespace ct
 {
 	RenderBeast::RenderBeast()
-		: mDefaultMaterial(nullptr), mTiledDeferredLightingMat(nullptr), mSkyboxMat(nullptr), mGPULightData(nullptr)
-		, mLightGrid(nullptr), mObjectRenderer(nullptr), mOptions(bs_shared_ptr_new<RenderBeastOptions>())
-		, mOptionsDirty(true)
+		: mDefaultMaterial(nullptr), mTiledDeferredLightingMats(), mFlatFramebufferToTextureMat(nullptr)
+		, mSkyboxMat(nullptr), mGPULightData(nullptr), mLightGrid(nullptr), mObjectRenderer(nullptr)
+		, mOptions(bs_shared_ptr_new<RenderBeastOptions>()), mOptionsDirty(true)
 	{ }
 
 	const StringID& RenderBeast::getName() const
@@ -74,13 +74,18 @@ namespace bs { namespace ct
 		mObjectRenderer = bs_new<ObjectRenderer>();
 
 		mDefaultMaterial = bs_new<DefaultMaterial>();
-		mTiledDeferredLightingMat = bs_new<TiledDeferredLightingMat>();
 		mSkyboxMat = bs_new<SkyboxMat>();
+		mFlatFramebufferToTextureMat = bs_new<FlatFramebufferToTextureMat>();
+
+		mTiledDeferredLightingMats[0] = bs_new<TTiledDeferredLightingMat<1>>();
+		mTiledDeferredLightingMats[1] = bs_new<TTiledDeferredLightingMat<2>>();
+		mTiledDeferredLightingMats[2] = bs_new<TTiledDeferredLightingMat<4>>();
+		mTiledDeferredLightingMats[3] = bs_new<TTiledDeferredLightingMat<8>>();
 
 		mGPULightData = bs_new<GPULightData>();
 		mLightGrid = bs_new<LightGrid>();
 
-		RenderTexturePool::startUp();
+		GpuResourcePool::startUp();
 		PostProcessing::startUp();
 	}
 
@@ -101,13 +106,17 @@ namespace bs { namespace ct
 		mRenderableVisibility.clear();
 
 		PostProcessing::shutDown();
-		RenderTexturePool::shutDown();
+		GpuResourcePool::shutDown();
 
 		bs_delete(mDefaultMaterial);
-		bs_delete(mTiledDeferredLightingMat);
 		bs_delete(mSkyboxMat);
 		bs_delete(mGPULightData);
 		bs_delete(mLightGrid);
+		bs_delete(mFlatFramebufferToTextureMat);
+
+		UINT32 numDeferredMats = sizeof(mTiledDeferredLightingMats) / sizeof(mTiledDeferredLightingMats[0]);
+		for (UINT32 i = 0; i < numDeferredMats; i++)
+			bs_delete(mTiledDeferredLightingMats[i]);
 
 		RendererUtility::shutDown();
 
@@ -745,8 +754,6 @@ namespace bs { namespace ct
 		mLightDataTemp.clear();
 		mLightVisibilityTemp.clear();
 
-		mTiledDeferredLightingMat->setLights(*mGPULightData);
-
 		// Update various buffers required by each renderable
 		UINT32 numRenderables = (UINT32)mRenderables.size();
 		for (UINT32 i = 0; i < numRenderables; i++)
@@ -867,7 +874,39 @@ namespace bs { namespace ct
 		renderTargets->bindSceneColor(true);
 
 		// Render light pass
-		mTiledDeferredLightingMat->execute(renderTargets, perCameraBuffer);
+		ITiledDeferredLightingMat* lightingMat;
+
+		UINT32 numSamples = viewInfo->getNumSamples();
+		switch(numSamples)
+		{
+		case 0:
+		case 1:
+			lightingMat = mTiledDeferredLightingMats[0]; // No MSAA
+			break;
+		case 2:
+			lightingMat = mTiledDeferredLightingMats[1]; // 2X MSAA
+			break;
+		case 4:
+			lightingMat = mTiledDeferredLightingMats[2]; // 4X MSAA
+			break;
+		default:
+			lightingMat = mTiledDeferredLightingMats[3]; // 8X MSAA or higher
+			break;
+		}
+
+		lightingMat->setLights(*mGPULightData);
+		lightingMat->execute(renderTargets, perCameraBuffer);
+
+		const RenderAPIInfo& rapiInfo = RenderAPI::instance().getAPIInfo();
+		bool usingFlattenedFB = numSamples > 1 && !rapiInfo.isFlagSet(RenderAPIFeatureFlag::MSAAImageStores);
+
+		// If we're using flattened framebuffer for MSAA we need to copy its contents to the MSAA scene texture before
+		// continuing
+		if(usingFlattenedFB)
+		{
+			mFlatFramebufferToTextureMat->execute(renderTargets->getFlattenedSceneColorBuffer(), 
+												  renderTargets->getSceneColor());
+		}
 
 		// Render skybox (if any)
 		SPtr<Texture> skyTexture = viewInfo->getSkybox();
@@ -908,22 +947,33 @@ namespace bs { namespace ct
 		}
 
 		// Post-processing and final resolve
+		RenderAPI& rapi = RenderAPI::instance();
+		Rect2 viewportArea = viewInfo->getViewportRect();
+
 		if (viewInfo->checkRunPostProcessing())
 		{
-			// TODO - If GBuffer has multiple samples, I should resolve them before post-processing
-			PostProcessing::instance().postProcess(viewInfo, renderTargets->getSceneColorRT(), frameDelta);
+			// If using MSAA, resolve into non-MSAA texture before post-processing
+			if(numSamples > 1)
+			{
+				rapi.setRenderTarget(renderTargets->getSceneColorNonMSAART());
+				rapi.setViewport(viewportArea);
+
+				SPtr<Texture> sceneColor = renderTargets->getSceneColor();
+				gRendererUtility().blit(sceneColor, Rect2I::EMPTY, viewInfo->getFlipView());
+			}
+
+			// Post-processing code also takes care of writting to the final output target
+			PostProcessing::instance().postProcess(viewInfo, renderTargets->getSceneColor(), frameDelta);
 		}
 		else
 		{
 			// Just copy from scene color to output if no post-processing
-			RenderAPI& rapi = RenderAPI::instance();
 			SPtr<RenderTarget> target = viewInfo->getFinalTarget();
-			Rect2 viewportArea = viewInfo->getViewportRect();
 
 			rapi.setRenderTarget(target);
 			rapi.setViewport(viewportArea);
 
-			SPtr<Texture> sceneColor = renderTargets->getSceneColorRT()->getColorTexture(0);
+			SPtr<Texture> sceneColor = renderTargets->getSceneColor();
 			gRendererUtility().blit(sceneColor, Rect2I::EMPTY, viewInfo->getFlipView());
 		}
 
@@ -1056,7 +1106,7 @@ namespace bs { namespace ct
 		viewDesc.visibleLayers = 0xFFFFFFFFFFFFFFFF;
 		viewDesc.nearPlane = 0.5f;
 		viewDesc.farPlane = 1000.0f;
-		viewDesc.flipView = RenderAPI::instance().getAPIInfo().getUVYAxisUp();
+		viewDesc.flipView = RenderAPI::instance().getAPIInfo().isFlagSet(RenderAPIFeatureFlag::UVYAxisUp);
 
 		viewDesc.viewOrigin = position;
 		viewDesc.projTransform = projTransform;

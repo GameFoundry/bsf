@@ -291,7 +291,7 @@ namespace bs { namespace ct
 		const RenderAPIInfo& rapiInfo = RenderAPI::instance().getAPIInfo();
 		Vector3 vertices[4];
 
-		if (rapiInfo.getNDCYAxisDown())
+		if (rapiInfo.isFlagSet(RenderAPIFeatureFlag::NDCYAxisDown))
 		{
 			vertices[0] = Vector3(-1.0f, -1.0f, 0.0f);
 			vertices[1] = Vector3(1.0f, -1.0f, 0.0f);
@@ -307,7 +307,7 @@ namespace bs { namespace ct
 		}
 
 		Vector2 uvs[4];
-		if (rapiInfo.getUVYAxisUp() ^ flipUV)
+		if (rapiInfo.isFlagSet(RenderAPIFeatureFlag::UVYAxisUp) ^ flipUV)
 		{
 			uvs[0] = Vector2(uv.x, uv.y + uv.height);
 			uvs[1] = Vector2(uv.x + uv.width, uv.y + uv.height);

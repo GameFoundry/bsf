@@ -109,9 +109,9 @@ Technique
 			
 			SurfaceData getGBufferData(uint2 pixelPos, uint sampleIndex)
 			{
-				float4 GBufferAData = gGBufferATex.Load(int3(pixelPos, 0), sampleIndex);
-				float4 GBufferBData = gGBufferBTex.Load(int3(pixelPos, 0), sampleIndex);
-				float deviceZ = gDepthBufferTex.Load(int3(pixelPos, 0), sampleIndex).r;
+				float4 GBufferAData = gGBufferATex.Load(pixelPos, sampleIndex);
+				float4 GBufferBData = gGBufferBTex.Load(pixelPos, sampleIndex);
+				float deviceZ = gDepthBufferTex.Load(pixelPos, sampleIndex).r;
 				
 				return decodeGBuffer(GBufferAData, GBufferBData, deviceZ);
 			}
@@ -170,7 +170,7 @@ Technique
 				
 				float3 diffuse = surfaceData.albedo.xyz / PI; // TODO - Add better lighting model later
 				return float4(lightAccumulator * diffuse, alpha);
-			}			
+			}
 			
 			[numthreads(TILE_SIZE, TILE_SIZE, 1)]
 			void main(
@@ -342,8 +342,8 @@ Technique
 					float4 lighting = getLighting(clipSpacePos.xy, surfaceData[0]);
 					writeBufferSample(pixelPos, 0, lighting);
 
-					bool needsPerSampleShading = needsPerSampleShading(pixelPos);
-					if(needsPerSampleShading)
+					bool doPerSampleShading = needsPerSampleShading(surfaceData);
+					if(doPerSampleShading)
 					{
 						[unroll]
 						for(uint i = 1; i < MSAA_COUNT; ++i)
@@ -351,6 +351,12 @@ Technique
 							lighting = getLighting(clipSpacePos.xy, surfaceData[i]);
 							writeBufferSample(pixelPos, i, lighting);
 						}
+					}
+					else // Splat same information to all samples
+					{
+						[unroll]
+						for(uint i = 1; i < MSAA_COUNT; ++i)
+							writeBufferSample(pixelPos, i, lighting);
 					}
 					
 					#else
@@ -379,9 +385,15 @@ Technique
 		
 			layout (local_size_x = TILE_SIZE, local_size_y = TILE_SIZE) in;
 		
+			#if MSAA_COUNT > 1
+			layout(binding = 1) uniform sampler2DMS gGBufferATex;
+			layout(binding = 2) uniform sampler2DMS gGBufferBTex;
+			layout(binding = 3) uniform sampler2DMS gDepthBufferTex;
+			#else
 			layout(binding = 1) uniform sampler2D gGBufferATex;
 			layout(binding = 2) uniform sampler2D gGBufferBTex;
 			layout(binding = 3) uniform sampler2D gDepthBufferTex;
+			#endif
 			
 			SurfaceData decodeGBuffer(vec4 GBufferAData, vec4 GBufferBData, float deviceZ)
 			{
@@ -394,7 +406,44 @@ Technique
 				surfaceData.depth = convertFromDeviceZ(deviceZ);
 				
 				return surfaceData;
-			}			
+			}
+			
+			#if MSAA_COUNT > 1
+			layout(binding = 5, rgba16f) uniform image2DMS gOutput;
+			
+			bool needsPerSampleShading(SurfaceData samples[MSAA_COUNT])
+			{
+				vec3 albedo = samples[0].albedo.xyz;
+				vec3 normal = samples[0].worldNormal.xyz;
+				float depth = samples[0].depth;
+
+				for(int i = 1; i < MSAA_COUNT; i++)
+				{
+					vec3 otherAlbedo = samples[i].albedo.xyz;
+					vec3 otherNormal = samples[i].worldNormal.xyz;
+					float otherDepth = samples[i].depth;
+
+					if(abs(depth - otherDepth) > 0.1f || abs(dot(abs(normal - otherNormal), vec3(1, 1, 1))) > 0.1f || abs(dot(albedo - otherAlbedo, vec3(1, 1, 1))) > 0.1f)
+					{
+						return true;
+					}
+				}
+				
+				return false;
+			}
+			
+			SurfaceData getGBufferData(ivec2 pixelPos, int sampleIndex)
+			{
+				vec4 GBufferAData = texelFetch(gGBufferATex, pixelPos, sampleIndex);
+				vec4 GBufferBData = texelFetch(gGBufferBTex, pixelPos, sampleIndex);
+				float deviceZ = texelFetch(gDepthBufferTex, pixelPos, sampleIndex).r;
+				
+				return decodeGBuffer(GBufferAData, GBufferBData, deviceZ);
+			}
+			
+			#else
+			
+			layout(binding = 5, rgba16f) uniform image2D gOutput;
 			
 			SurfaceData getGBufferData(ivec2 pixelPos)
 			{
@@ -405,13 +454,13 @@ Technique
 				return decodeGBuffer(GBufferAData, GBufferBData, deviceZ);
 			}	
 			
+			#endif
+			
 			layout(std430, binding = 4) readonly buffer gLights
 			{
 				LightData[] gLightsData;
 			};
-						
-			layout(binding = 5, rgba16f) uniform image2D gOutput;
-			
+
 			layout(binding = 6, std140) uniform Params
 			{
 				// Offsets at which specific light types begin in gLights buffer
@@ -427,12 +476,71 @@ Technique
 			shared uint sTotalNumLights;
             shared uint sLightIndices[MAX_LIGHTS];
 			
+			vec4 getLighting(vec2 clipSpacePos, SurfaceData surfaceData)
+			{
+				// x, y are now in clip space, z, w are in view space
+				// We multiply them by a special inverse view-projection matrix, that had the projection entries that effect
+				// z, w eliminated (since they are already in view space)
+				// Note: Multiply by depth should be avoided if using ortographic projection
+				vec4 mixedSpacePos = vec4(clipSpacePos.xy * -surfaceData.depth, surfaceData.depth, 1);
+				vec4 worldPosition4D = gMatScreenToWorld * mixedSpacePos;
+				vec3 worldPosition = worldPosition4D.xyz / worldPosition4D.w;	
+				
+				float alpha = 0.0f;
+				vec3 lightAccumulator = vec3(0, 0, 0);
+				if(surfaceData.worldNormal.w > 0.0f)
+				{
+					for(uint i = 0; i < gLightOffsets[0]; ++i)
+					{
+						LightData lightData = gLightsData[i];
+						lightAccumulator += getDirLightContibution(surfaceData, lightData);
+					}
+					
+                    for (uint i = 0; i < sNumLightsPerType[0]; ++i)
+                    {
+                        uint lightIdx = sLightIndices[i];
+						LightData lightData = gLightsData[lightIdx];
+                        lightAccumulator += getPointLightContribution(worldPosition, surfaceData, lightData);
+                    }
+
+					for(uint i = sNumLightsPerType[0]; i < sTotalNumLights; ++i)
+                    {
+                        uint lightIdx = sLightIndices[i];
+						LightData lightData = gLightsData[lightIdx];
+                        lightAccumulator += getSpotLightContribution(worldPosition, surfaceData, lightData);
+                    }
+					
+					alpha = 1.0f;
+				}
+				
+				vec3 diffuse = surfaceData.albedo.xyz / PI; // TODO - Add better lighting model later				
+				return vec4(lightAccumulator * diffuse, alpha);
+			}
+			
 			void main()
 			{
 				uint threadIndex = gl_LocalInvocationID.y * TILE_SIZE + gl_LocalInvocationID.x;
 				ivec2 pixelPos = ivec2(gl_GlobalInvocationID.xy) + gViewportRectangle.xy;
-				SurfaceData surfaceData = getGBufferData(pixelPos);
 
+				// Get data for all samples, and determine per-pixel minimum and maximum depth values
+				SurfaceData surfaceData[MSAA_COUNT];
+				uint sampleMinZ = 0x7F7FFFFF;
+				uint sampleMaxZ = 0;
+
+				#if MSAA_COUNT > 1
+				for(int i = 0; i < MSAA_COUNT; ++i)
+				{
+					surfaceData[i] = getGBufferData(pixelPos, i);
+					
+					sampleMinZ = min(sampleMinZ, floatBitsToUint(-surfaceData[i].depth));
+					sampleMaxZ = max(sampleMaxZ, floatBitsToUint(-surfaceData[i].depth));
+				}
+				#else
+				surfaceData[0] = getGBufferData(pixelPos);
+				sampleMinZ = floatBitsToUint(-surfaceData[0].depth);
+				sampleMaxZ = floatBitsToUint(-surfaceData[0].depth);
+				#endif				
+				
 				// Set initial values
 				if(threadIndex == 0)
 				{
@@ -446,8 +554,8 @@ Technique
 				groupMemoryBarrier();
 				barrier();
 				
-				atomicMin(sTileMinZ, floatBitsToUint(-surfaceData.depth));
-				atomicMax(sTileMaxZ, floatBitsToUint(-surfaceData.depth));
+				atomicMin(sTileMinZ, sampleMinZ);
+				atomicMax(sTileMaxZ, sampleMaxZ);
 				
 				groupMemoryBarrier();
 				barrier();
@@ -480,18 +588,7 @@ Technique
 				// Generate near/far frustum planes
 				frustumPlanes[4] = vec4(0.0f, 0.0f, -1.0f, -minTileZ); 
 				frustumPlanes[5] = vec4(0.0f, 0.0f, 1.0f, maxTileZ);
-				
-				vec2 screenUv = (vec2(gViewportRectangle.xy + pixelPos) + 0.5f) / vec2(gViewportRectangle.zw);
-				vec2 clipSpacePos = (screenUv - gClipToUVScaleOffset.zw) / gClipToUVScaleOffset.xy;
-			
-				// x, y are now in clip space, z, w are in view space
-				// We multiply them by a special inverse view-projection matrix, that had the projection entries that effect
-				// z, w eliminated (since they are already in view space)
-				// Note: Multiply by depth should be avoided if using ortographic projection
-				vec4 mixedSpacePos = vec4(clipSpacePos.xy * -surfaceData.depth, surfaceData.depth, 1);
-				vec4 worldPosition4D = gMatScreenToWorld * mixedSpacePos;
-				vec3 worldPosition = worldPosition4D.xyz / worldPosition4D.w;
-			
+							
 				// Find radial & spot lights overlapping the tile
 				for(uint type = 0; type < 2; type++)
 				{
@@ -535,44 +632,41 @@ Technique
 				}
 
                 groupMemoryBarrier();
-				barrier();		
-			
-				float alpha = 0.0f;
-				vec3 lightAccumulator = vec3(0, 0, 0);
-				if(surfaceData.worldNormal.w > 0.0f)
-				{
-					for(uint i = 0; i < gLightOffsets[0]; ++i)
-					{
-						LightData lightData = gLightsData[i];
-						lightAccumulator += getDirLightContibution(surfaceData, lightData);
-					}
-					
-                    for (uint i = 0; i < sNumLightsPerType[0]; ++i)
-                    {
-                        uint lightIdx = sLightIndices[i];
-						LightData lightData = gLightsData[lightIdx];
-                        lightAccumulator += getPointLightContribution(worldPosition, surfaceData, lightData);
-                    }
+				barrier();	
 
-					for(uint i = sNumLightsPerType[0]; i < sTotalNumLights; ++i)
-                    {
-                        uint lightIdx = sLightIndices[i];
-						LightData lightData = gLightsData[lightIdx];
-                        lightAccumulator += getSpotLightContribution(worldPosition, surfaceData, lightData);
-                    }
-					
-					alpha = 1.0f;
-				}
-				
-				vec3 diffuse = surfaceData.albedo.xyz / PI; // TODO - Add better lighting model later
+				vec2 screenUv = (vec2(gViewportRectangle.xy + pixelPos) + 0.5f) / vec2(gViewportRectangle.zw);
+				vec2 clipSpacePos = (screenUv - gClipToUVScaleOffset.zw) / gClipToUVScaleOffset.xy;
 				
 				uvec2 viewportMax = gViewportRectangle.xy + gViewportRectangle.zw;
 
 				// Ignore pixels out of valid range
 				if (all(lessThan(gl_GlobalInvocationID.xy, viewportMax))) 
 				{
+					#if MSAA_COUNT > 1
+					vec4 lighting = getLighting(clipSpacePos.xy, surfaceData[0]);
+					imageStore(gOutput, pixelPos, 0, lighting);
+
+					bool doPerSampleShading = needsPerSampleShading(surfaceData);
+					if(doPerSampleShading)
+					{
+						for(int i = 1; i < MSAA_COUNT; ++i)
+						{
+							lighting = getLighting(clipSpacePos.xy, surfaceData[i]);
+							imageStore(gOutput, pixelPos, i, lighting);
+						}
+					}
+					else // Splat same information to all samples
+					{
+						for(int i = 1; i < MSAA_COUNT; ++i)
+							imageStore(gOutput, pixelPos, i, lighting);
+					}
+					
+					#else
+					vec4 lighting = getLighting(clipSpacePos.xy, surfaceData[0]);
+					
 					vec4 existingValue = imageLoad(gOutput, pixelPos);
-					imageStore(gOutput, pixelPos, vec4(diffuse * lightAccumulator + existingValue.xyz, alpha));
+					imageStore(gOutput, pixelPos, vec4(existingValue.rgb + lighting.rgb, lighting.a));
+					#endif
 				}
 			}
 		};

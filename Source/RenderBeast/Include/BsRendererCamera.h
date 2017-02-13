@@ -162,6 +162,9 @@ namespace bs { namespace ct
 		/** Returns true if the resulting render target should be flipped vertically. */
 		bool getFlipView() const { return mViewDesc.flipView; }
 
+		/** Returns the number of samples per pixel to render. */
+		UINT32 getNumSamples() const { return mViewDesc.target.numSamples; }
+
 		/** Returns the scene camera this object is based of. This can be null for manually constructed renderer cameras. */
 		const Camera* getSceneCamera() const { return mViewDesc.sceneCamera; }
 

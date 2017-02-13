@@ -897,7 +897,7 @@ namespace bs
 
 			UINT8* data = params->getData(materialParamInfo->index);
 
-			bool transposeMatrices = ct::RenderAPI::instance().getAPIInfo().getGpuProgramHasColumnMajorMatrices();
+			bool transposeMatrices = ct::RenderAPI::instance().getAPIInfo().isFlagSet(RenderAPIFeatureFlag::ColumnMajorMatrices);
 			if (transposeMatrices)
 			{
 				auto writeTransposed = [&](auto& temp)

@@ -64,6 +64,21 @@ namespace bs { namespace ct
 		/**	Returns the depth texture of the gbuffer as a bindable texture. */
 		SPtr<Texture> getTextureDepth() const;
 
+		/** 
+		 * Returns a scene color texture with a single-sample per pixel. If no multisampling is used, this is the same as
+		 * getSceneColor().
+		 */
+		SPtr<Texture> getSceneColorNonMSAA() const;
+
+		/** Returns a render target that can be used for rendering to the texture returned by getSceneColorNonMSAA(). */
+		SPtr<RenderTexture> getSceneColorNonMSAART() const;
+
+		/** 
+		 * Returns a buffer that is meant to be used for rendering when MSAA is used, since writes to multisampled textures
+		 * aren't supported on all render backends.
+		 */
+		SPtr<GpuBuffer> getFlattenedSceneColorBuffer() const;
+
 		/**	Checks if the targets support HDR rendering. */
 		bool getHDR() const { return mHDR; }
 
@@ -85,6 +100,9 @@ namespace bs { namespace ct
 		SPtr<PooledRenderTexture> mAlbedoTex;
 		SPtr<PooledRenderTexture> mNormalTex;
 		SPtr<PooledRenderTexture> mDepthTex;
+
+		SPtr<PooledRenderTexture> mSceneColorNonMSAATex;
+		SPtr<PooledStorageBuffer> mFlattenedSceneColorBuffer;
 
 		SPtr<RenderTexture> mGBufferRT;
 		SPtr<RenderTexture> mSceneColorRT;

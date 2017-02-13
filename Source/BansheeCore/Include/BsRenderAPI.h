@@ -166,20 +166,46 @@ namespace bs
 		static const RenderAPIInfo& getAPIInfo();
 	};
 
+	/** Feature flags that describe which render API specific features are enabled. */
+	enum class RenderAPIFeatureFlag
+	{
+		/** If set, vertex color order will be reversed before being sent to the shader. */
+		VertexColorFlip			= 1 << 0,
+		/** 
+		 * If set, the Y axis in texture (UV) coordinates is assumed to be pointing up, instead of down (which is the 
+		 * default). 
+		 */
+		UVYAxisUp				= 1 << 1,
+		/**
+		 * If set, the Y axis in normalized device coordinates (NDC) is assumed to be pointing down, instead of up (which
+		 * is the default).
+		 */
+		NDCYAxisDown			= 1 << 2,
+		/**
+		 * If set, the matrices used by shaders are in column major order, instead of in row major (which is the default).
+		 */
+		ColumnMajorMatrices		= 1 << 3,
+		/** 
+		 * If set, the render API has native support for multi-threaded command buffer generation. Otherwise it is 
+		 * emulated and using command buffers might not be beneficial. 
+		 */
+		MultiThreadedCB			= 1 << 4,
+		/** If set, the render API supports unordered stores to a texture with more than one sample. */
+		MSAAImageStores			= 1 << 5
+	};
+
+	typedef Flags<RenderAPIFeatureFlag> RenderAPIFeatures;
+	BS_FLAGS_OPERATORS(RenderAPIFeatureFlag)
+
 	/** Contains properties specific to a render API implementation. */
 	class RenderAPIInfo
 	{
 	public:
 		RenderAPIInfo(float horzTexelOffset, float vertTexelOffset, float minDepth, float maxDepth, 
-			VertexElementType vertexColorType, bool vertexColorFlip, bool uvYAxisUp, bool ndcYAxisDown, 
-				bool columnMajorMatrices, bool multiThreadedCB)
+			VertexElementType vertexColorType, RenderAPIFeatures featureFlags)
 			: mHorizontalTexelOffset(horzTexelOffset), mVerticalTexelOffset(vertTexelOffset), mMinDepth(minDepth)
-			, mMaxDepth(maxDepth), mVertexColorType(vertexColorType), mVertexColorFlip(vertexColorFlip)
-			, mUVYAxisUp(uvYAxisUp), mNDCYAxisDown(ndcYAxisDown), mColumnMajorMatrices(columnMajorMatrices)
-			, mMultiThreadedCB(multiThreadedCB)
-		{
-			
-		}
+			, mMaxDepth(maxDepth), mVertexColorType(vertexColorType), mFeatureFlags(featureFlags)
+		{ }
 
 		/** Gets the native type used for vertex colors. */
 		VertexElementType getColorVertexElementType() const { return mVertexColorType; }
@@ -196,29 +222,8 @@ namespace bs
 		/** Gets the maximum (farthest) depth value used by this render system. */
 		float getMaximumDepthInputValue() const { return mMaxDepth; }
 
-		/** Checks if vertex color needs to be flipped before sent to the shader. */
-		bool getVertexColorFlipRequired() const { return mVertexColorFlip; }
-
-		/** Checks whether GPU programs expect matrices in column major format. */
-		bool getGpuProgramHasColumnMajorMatrices() const { return mColumnMajorMatrices; }
-		
-		/** 
-		 * Returns true if Y axis in texture (UV) coordinates is pointing up, false if down. If axis is pointing up the axis
-		 * value at the top if 1 and at the bottom 0, otherwise reverse. 
-		 */
-		bool getUVYAxisUp() const { return mUVYAxisUp; }
-
-		/**
-		 * Returns true if the Y axis in NDC coordinates is pointing down, false if up. If axis is pointing down the value
-		 * at the top will -1 and at the bottom 1, otherwise reverse.
-		 */
-		bool getNDCYAxisDown() const { return mNDCYAxisDown; }
-
-		/**
-		 * Checks if the API supports native multi-threaded command buffer generation. On APIs that don't support it 
-		 * command buffers can still be used, but it will be more efficient to use the immediate rendering operations.
-		 */
-		bool getMultiThreadedCBGeneration() const { return mMultiThreadedCB; }
+		/** Checks is a specific feature flag enabled. */
+		bool isFlagSet(RenderAPIFeatureFlag flag) const { return mFeatureFlags.isSet(flag); }
 
 	private:
 		float mHorizontalTexelOffset = 0.0f;
@@ -226,11 +231,7 @@ namespace bs
 		float mMinDepth = 0.0f;
 		float mMaxDepth = 1.0f;
 		VertexElementType mVertexColorType = VET_COLOR_ABGR;
-		bool mVertexColorFlip = false;
-		bool mUVYAxisUp = true;
-		bool mNDCYAxisDown = false;
-		bool mColumnMajorMatrices = false;
-		bool mMultiThreadedCB = false;
+		RenderAPIFeatures mFeatureFlags;
 	};
 
 	/** @} */
