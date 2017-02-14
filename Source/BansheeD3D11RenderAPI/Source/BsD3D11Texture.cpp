@@ -430,7 +430,15 @@ namespace bs { namespace ct
             desc.MiscFlags |= D3D11_RESOURCE_MISC_TEXTURECUBE;
 
 		if ((usage & TU_LOADSTORE) != 0)
-			desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
+		{
+			if(desc.SampleDesc.Count <= 1)
+				desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
+			else
+			{
+				LOGWRN("Unable to create a load-store texture with multiple samples. This is not supported on DirectX 11. "
+					   "Ignoring load-store usage flag.");
+			}
+		}
 
 		// Create the texture
 		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPI::instancePtr());

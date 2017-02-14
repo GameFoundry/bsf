@@ -484,19 +484,26 @@ namespace bs { namespace ct
 						if (!activateGLTextureUnit(unit))
 							continue;
 
-						const SamplerProperties& stateProps = samplerState->getProperties();
+						bool isMultisample = mTextureInfos[unit].type == GL_TEXTURE_2D_MULTISAMPLE ||
+							mTextureInfos[unit].type == GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
 
-						setTextureFiltering(unit, FT_MIN, stateProps.getTextureFiltering(FT_MIN));
-						setTextureFiltering(unit, FT_MAG, stateProps.getTextureFiltering(FT_MAG));
-						setTextureFiltering(unit, FT_MIP, stateProps.getTextureFiltering(FT_MIP));
+						// No sampler options for multisampled textures
+						if (!isMultisample)
+						{
+							const SamplerProperties& stateProps = samplerState->getProperties();
 
-						setTextureAnisotropy(unit, stateProps.getTextureAnisotropy());
-						setTextureMipmapBias(unit, stateProps.getTextureMipmapBias());
+							setTextureFiltering(unit, FT_MIN, stateProps.getTextureFiltering(FT_MIN));
+							setTextureFiltering(unit, FT_MAG, stateProps.getTextureFiltering(FT_MAG));
+							setTextureFiltering(unit, FT_MIP, stateProps.getTextureFiltering(FT_MIP));
 
-						const UVWAddressingMode& uvw = stateProps.getTextureAddressingMode();
-						setTextureAddressingMode(unit, uvw);
+							setTextureAnisotropy(unit, stateProps.getTextureAnisotropy());
+							setTextureMipmapBias(unit, stateProps.getTextureMipmapBias());
 
-						setTextureBorderColor(unit, stateProps.getBorderColor());
+							const UVWAddressingMode& uvw = stateProps.getTextureAddressingMode();
+							setTextureAddressingMode(unit, uvw);
+
+							setTextureBorderColor(unit, stateProps.getBorderColor());
+						}
 					}
 
 					for(auto& entry : paramDesc->buffers)

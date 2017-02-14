@@ -129,7 +129,8 @@ namespace bs { namespace ct
 
 		mParamsSet->setParamBlockBuffer("PerCamera", perCamera, true);
 
-		if (mSampleCount > 1)
+		const RenderAPIInfo& rapiInfo = RenderAPI::instance().getAPIInfo();
+		if (mSampleCount > 1 && !rapiInfo.isFlagSet(RenderAPIFeatureFlag::MSAAImageStores))
 		{
 			SPtr<GpuBuffer> sceneColorBuffer = gbuffer->getFlattenedSceneColorBuffer();
 			mOutputBufferParam.set(sceneColorBuffer);
@@ -229,7 +230,8 @@ namespace bs { namespace ct
 
 		gRendererUtility().setPass(mMaterial, 0);
 		gRendererUtility().setPassParams(mParamsSet);
-		gRendererUtility().drawScreenQuad();
-	}
 
+		Rect2 area(0.0f, 0.0f, (float)props.getWidth(), (float)props.getHeight());
+		gRendererUtility().drawScreenQuad(area);
+	}
 }}

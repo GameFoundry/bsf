@@ -963,7 +963,7 @@ namespace bs { namespace ct
 			}
 
 			// Post-processing code also takes care of writting to the final output target
-			PostProcessing::instance().postProcess(viewInfo, renderTargets->getSceneColor(), frameDelta);
+			PostProcessing::instance().postProcess(viewInfo, renderTargets->getSceneColorNonMSAA(), frameDelta);
 		}
 		else
 		{

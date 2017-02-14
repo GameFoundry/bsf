@@ -644,7 +644,8 @@ Technique
 				{
 					#if MSAA_COUNT > 1
 					vec4 lighting = getLighting(clipSpacePos.xy, surfaceData[0]);
-					imageStore(gOutput, pixelPos, 0, lighting);
+					vec4 existingValue = imageLoad(gOutput, pixelPos, 0);
+					imageStore(gOutput, pixelPos, 0, vec4(existingValue.rgb + lighting.rgb, lighting.a));
 
 					bool doPerSampleShading = needsPerSampleShading(surfaceData);
 					if(doPerSampleShading)
@@ -652,13 +653,14 @@ Technique
 						for(int i = 1; i < MSAA_COUNT; ++i)
 						{
 							lighting = getLighting(clipSpacePos.xy, surfaceData[i]);
-							imageStore(gOutput, pixelPos, i, lighting);
+							existingValue = imageLoad(gOutput, pixelPos, i);
+							imageStore(gOutput, pixelPos, i, vec4(existingValue.rgb + lighting.rgb, lighting.a));
 						}
 					}
 					else // Splat same information to all samples
 					{
 						for(int i = 1; i < MSAA_COUNT; ++i)
-							imageStore(gOutput, pixelPos, i, lighting);
+							imageStore(gOutput, pixelPos, i, vec4(existingValue.rgb + lighting.rgb, lighting.a));
 					}
 					
 					#else
