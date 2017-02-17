@@ -10,7 +10,7 @@ namespace BansheeEngine
     /// Component that illuminates a portion of the scene covered by the light.
     /// </summary>
     [RunInEditor]
-    public sealed class Light : Component
+    public sealed class Light : ManagedComponent
     {
         private NativeLight _nativeLight;
 

@@ -68,7 +68,9 @@ namespace bs
 	class ScriptGUIScrollAreaLayout;
 	class ScriptGameObjectBase;
 	class ScriptSceneObject;
+	class ScriptComponentBase;
 	class ScriptComponent;
+	class ScriptManagedComponent;
 	class ScriptManagedResource;
 	class ScriptRenderTarget;
 	class ScriptRenderTexture2D;
@@ -107,6 +109,7 @@ namespace bs
 	class ScriptRigidbody;
 	class ScriptColliderBase;
 	class ScriptAudioClip;
+	struct ScriptMeta;
 
 	typedef GameObjectHandle<ManagedComponent> HManagedComponent;
 	typedef ResourceHandle<ManagedResource> HManagedResource;
@@ -165,5 +168,14 @@ namespace bs
 		TID_SerializableTypeInfoRef = 50050,
 		TID_SerializableFieldInfo = 50051,
 		TID_SerializablePropertyInfo = 50052
+	};
+
+	/** Information about a builtin component wrapped as a script object. */
+	struct BuiltinComponentInfo
+	{
+		const ScriptMeta* metaData;
+		UINT32 typeId;
+		MonoClass* monoClass;
+		std::function<ScriptComponentBase*(const HComponent&)> createCallback;
 	};
 }

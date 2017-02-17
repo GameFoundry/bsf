@@ -68,6 +68,12 @@ namespace bs
 		 */
 		virtual void _instantiate() {}
 
+		/** Sets new flags that determine when is onTransformChanged called. */
+		void _setNotifyFlags(TransformChangedFlags flags) { mNotifyFlags = flags; }
+
+		/** Gets the currently assigned notify flags. See _setNotifyFlags(). */
+		TransformChangedFlags _getNotifyFlags() const { return mNotifyFlags; }
+
 		/** @} */
 	protected:
 		friend class SceneObject;
@@ -90,9 +96,6 @@ namespace bs
 
 		/** Called when the component's parent scene object has changed. */
 		virtual void onTransformChanged(TransformChangedFlags flags) { }
-
-		/** Sets new flags that determine when is onTransformChanged called. */
-		void setNotifyFlags(TransformChangedFlags flags) { mNotifyFlags = flags; }
 
 		/** Checks whether the component wants to received the specified transform changed message. */
 		bool supportsNotify(TransformChangedFlags flags) const { return (mNotifyFlags & flags) != 0; }

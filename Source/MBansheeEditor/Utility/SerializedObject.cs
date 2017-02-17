@@ -12,7 +12,7 @@ namespace BansheeEditor
 
     /// <summary>
     /// Container and functionality to creating a serialized version of an object. The object must be of valid serializable
-    /// type (<see cref="Component"/>, <see cref="ManagedResource"/> or a class/struct marked with 
+    /// type (<see cref="ManagedComponent"/>, <see cref="ManagedResource"/> or a class/struct marked with 
     /// <see cref="SerializeObject"/> attribute).
     /// </summary>
     public class SerializedObject : ScriptObject
@@ -28,7 +28,7 @@ namespace BansheeEditor
         /// </summary>
         /// <param name="obj">Component to serialize.</param>
         /// <returns>Object containing serialized data.</returns>
-        public static SerializedObject Create(Component obj)
+        public static SerializedObject Create(ManagedComponent obj)
         {
             if (obj == null)
                 return null;

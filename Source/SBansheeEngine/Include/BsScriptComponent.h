@@ -5,7 +5,7 @@
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptGameObject.h"
 #include "BsScriptObject.h"
-#include "BsFont.h"
+#include "BsMonoUtil.h"
 
 namespace bs
 {
@@ -13,45 +13,102 @@ namespace bs
 	 *  @{
 	 */
 
-	/**	Interop class between C++ & CLR for ManagedComponent. */
-	class BS_SCR_BE_EXPORT ScriptComponent : public ScriptObject<ScriptComponent, ScriptGameObjectBase>
+	/**	Base class for all Component interop classes. */
+	class BS_SCR_BE_EXPORT ScriptComponentBase : public ScriptGameObjectBase
+	{
+	public:
+		ScriptComponentBase(MonoObject* instance);
+		virtual ~ScriptComponentBase() { }
+
+		/** Returns the component wrapped by this object. */
+		HComponent getComponent() const { return static_object_cast<Component>(getNativeHandle()); }
+
+	protected:
+		friend class ScriptGameObjectManager;
+
+		/** Destroys the interop object, unless refresh is in progress in which case it is just prepared for re-creation. */
+		void destroy();
+
+		/**	Triggered by the script game object manager when the handle this object is referencing is destroyed. */
+		virtual void _notifyDestroyed() { }
+
+		/** Checks if the provided game object is destroyed and logs a warning if it is. */
+		static bool checkIfDestroyed(const GameObjectHandleBase& handle);
+	};
+
+	/**	Base class for a specific builtin component's interop object. */
+	template<class ScriptClass, class CompType>
+	class BS_SCR_BE_EXPORT TScriptComponent : public ScriptObject <ScriptClass, ScriptComponentBase>
+	{
+	public:
+		/**	Returns a generic handle to the internal wrapped component. */
+		HGameObject getNativeHandle() const override { return mComponent; }
+
+		/**	Sets the internal component this object wraps. */
+		void setNativeHandle(const HGameObject& gameObject) override { mComponent = static_object_cast<CompType>(gameObject); }
+
+		/**	Returns a handle to the internal wrapped component. */
+		const GameObjectHandle<CompType>& getHandle() const { return mComponent; }
+
+	protected:
+		friend class ScriptGameObjectManager;
+
+		TScriptComponent(MonoObject* instance, const GameObjectHandle<CompType>& component)
+			:ScriptObject<ScriptClass, ScriptComponentBase>(instance), mComponent(component)
+		{
+			mManagedHandle = MonoUtil::newGCHandle(instance);
+
+			BS_DEBUG_ONLY(mHandleValid = true);
+		}
+
+		virtual ~TScriptComponent() {}
+
+		/**
+		 * Called after assembly reload starts to give the object a chance to restore the data backed up by the previous
+		 * beginRefresh() call.
+		 */
+		virtual void endRefresh(const ScriptObjectBackup& backupData) override
+		{
+			BS_ASSERT(!mHandleValid);
+			mManagedHandle = MonoUtil::newGCHandle(this->mManagedInstance);
+
+			ScriptObject<ScriptClass, ScriptComponentBase>::endRefresh(backupData);
+		}
+
+		/**
+		 * Triggered by the script game object manager when the native component handle this object point to has been
+		 * destroyed.
+		 */
+		void _notifyDestroyed() override
+		{
+			MonoUtil::freeGCHandle(mManagedHandle);
+			BS_DEBUG_ONLY(mHandleValid = false);
+		}
+
+		/**	Called when the managed instance gets finalized by the CLR. */
+		void _onManagedInstanceDeleted() override
+		{
+			MonoUtil::freeGCHandle(mManagedHandle);
+			BS_DEBUG_ONLY(mHandleValid = false);
+
+			this->destroy();
+		}
+
+		GameObjectHandle<CompType> mComponent;
+		uint32_t mManagedHandle;
+		BS_DEBUG_ONLY(bool mHandleValid);
+	};
+
+	/**	Interop class between C++ & CLR for Component. */
+	class BS_SCR_BE_EXPORT ScriptComponent : public ScriptObject<ScriptComponent, ScriptComponentBase>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Component")
-
-		/** @copydoc ScriptGameObjectBase::getNativeHandle */
-		HGameObject getNativeHandle() const override { return mManagedComponent; }
-
-		/** @copydoc ScriptGameObjectBase::setNativeHandle */
-		void setNativeHandle(const HGameObject& gameObject) override;
-
-		/** Returns the managed component this object wraps. */
-		HManagedComponent getHandle() const { return mManagedComponent; }
 
 	private:
 		friend class ScriptGameObjectManager;
 
 		ScriptComponent(MonoObject* instance);
-		
-		/** @copydoc ScriptObjectBase::beginRefresh */
-		ScriptObjectBackup beginRefresh() override;
-
-		/** @copydoc ScriptObjectBase::endRefresh */
-		void endRefresh(const ScriptObjectBackup& backupData) override;
-
-		/** @copydoc ScriptObjectBase::_createManagedInstance */
-		MonoObject* _createManagedInstance(bool construct) override;
-
-		/** @copydoc ScriptObjectBase::_onManagedInstanceDeleted */
-		void _onManagedInstanceDeleted() override;
-
-		/** Checks if the provided game object is destroyed and logs a warning if it is. */
-		static bool checkIfDestroyed(const GameObjectHandleBase& handle);
-
-		HManagedComponent mManagedComponent;
-		String mNamespace;
-		String mType;
-		bool mTypeMissing;
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
@@ -61,11 +118,10 @@ namespace bs
 		static MonoArray* internal_getComponents(MonoObject* parentSceneObject);
 		static MonoArray* internal_getComponentsPerType(MonoObject* parentSceneObject, MonoReflectionType* type);
 		static void internal_removeComponent(MonoObject* parentSceneObject, MonoReflectionType* type);
-		static MonoObject* internal_getSceneObject(ScriptComponent* nativeInstance);
-		static TransformChangedFlags internal_getNotifyFlags(ScriptComponent* nativeInstance);
-		static void internal_setNotifyFlags(ScriptComponent* nativeInstance, TransformChangedFlags flags);
-		static void internal_invoke(ScriptComponent* nativeInstance, MonoString* name);
-		static void internal_destroy(ScriptComponent* nativeInstance, bool immediate);
+		static MonoObject* internal_getSceneObject(ScriptComponentBase* nativeInstance);
+		static TransformChangedFlags internal_getNotifyFlags(ScriptComponentBase* nativeInstance);
+		static void internal_setNotifyFlags(ScriptComponentBase* nativeInstance, TransformChangedFlags flags);
+		static void internal_destroy(ScriptComponentBase* nativeInstance, bool immediate);
 	};
 
 	/** @} */

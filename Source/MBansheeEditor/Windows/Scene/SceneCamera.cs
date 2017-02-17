@@ -12,7 +12,7 @@ namespace BansheeEditor
     /// Handles camera movement in the scene view.
     /// </summary>
     [RunInEditor]
-    internal sealed class SceneCamera : Component
+    internal sealed class SceneCamera : ManagedComponent
     {
         #region Constants
         public const string MoveForwardBinding = "SceneForward";

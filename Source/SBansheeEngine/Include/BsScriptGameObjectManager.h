@@ -7,6 +7,8 @@
 
 namespace bs
 {
+	class ScriptRenderable;
+
 	/** @addtogroup SBansheeEngine
 	 *  @{
 	 */
@@ -47,22 +49,32 @@ namespace bs
 		ScriptSceneObject* createScriptSceneObject(MonoObject* existingInstance, const HSceneObject& sceneObject);
 
 		/**
-		 * Connects an existing managed ManagedComponent instance with the native ManagedComponent by creating the interop
-		 * object. Throws an exception if the interop object already exists.
+		 * Connects an existing instance of a ManagedComponent instance with the native ManagedComponent class by creating
+		 * the interop object. Throws an exception if the interop object already exists.
 		 */
-		ScriptComponent* createScriptComponent(MonoObject* existingInstance, 
-			const GameObjectHandle<ManagedComponent>& component);
+		ScriptManagedComponent* createManagedScriptComponent(MonoObject* existingInstance, const HManagedComponent& component);
+
+		/**
+		 * Creates a new interop object that connects a built-in native component with a managed version of that component.
+		 */
+		ScriptComponentBase* createBuiltinScriptComponent(const HComponent& component);
+
+		/**
+		 * Attempts to find the interop object for the specified built-in component. If one cannot be found a new
+		 * script interop object is created.
+		 */
+		ScriptComponentBase* getBuiltinScriptComponent(const HComponent& component);
 
 		/**
 		 * Attempts to find the interop object for the specified managed component. If one cannot be found null is returned.
 		 */
-		ScriptComponent* getScriptComponent(const GameObjectHandle<ManagedComponent>& component) const;
+		ScriptManagedComponent* getManagedScriptComponent(const HManagedComponent& component) const;
 
 		/**
-		 * Attempts to find the interop object for a managed component with the specified instance ID. If one cannot be
+		 * Attempts to find the interop object for a component with the specified instance ID. If one cannot be
 		 * found null is returned.
 		 */
-		ScriptComponent* getScriptComponent(UINT64 instanceId) const;
+		ScriptComponentBase* getScriptComponent(UINT64 instanceId) const;
 
 		/** Attempts to find the interop object for the specified SceneObject. If one cannot be found null is returned. */
 		ScriptSceneObject* getScriptSceneObject(const HSceneObject& sceneObject) const;
@@ -83,7 +95,7 @@ namespace bs
 		void destroyScriptSceneObject(ScriptSceneObject* sceneObject);
 
 		/**	Destroys and unregisters the specified ManagedComponent interop object. */
-		void destroyScriptComponent(ScriptComponent* component);
+		void destroyScriptComponent(ScriptComponentBase* component);
 
 		/** 
 		 * Sends OnInitialize/OnEnable events to all components that run only while the game is playing (ones without 
@@ -102,7 +114,7 @@ namespace bs
 		/**	Triggered when the any game object is destroyed. */
 		void onGameObjectDestroyed(const HGameObject& go);
 
-		UnorderedMap<UINT64, ScriptComponent*> mScriptComponents;
+		UnorderedMap<UINT64, ScriptComponentBase*> mScriptComponents;
 		UnorderedMap<UINT64, ScriptSceneObject*> mScriptSceneObjects;
 
 		HEvent mOnAssemblyReloadDoneConn;

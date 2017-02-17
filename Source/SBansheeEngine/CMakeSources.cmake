@@ -147,6 +147,7 @@ set(BS_SBANSHEEENGINE_INC_WRAPPERS
 	"Include/BsScriptAnimationCurves.h"
 	"Include/BsScriptSkeleton.h"
 	"Include/BsScriptMorphShapes.h"
+	"Include/BsScriptManagedComponent.h"
 )
 
 set(BS_SBANSHEEENGINE_INC_WRAPPERS_GUI
@@ -284,6 +285,7 @@ set(BS_SBANSHEEENGINE_SRC_WRAPPERS
 	"Source/BsScriptAnimationCurves.cpp"
 	"Source/BsScriptSkeleton.cpp"
 	"Source/BsScriptMorphShapes.cpp"
+	"Source/BsScriptManagedComponent.cpp"
 )
 
 set(BS_SBANSHEEENGINE_INC_SERIALIZATION
@@ -296,6 +298,7 @@ set(BS_SBANSHEEENGINE_INC_SERIALIZATION
 	"Include/BsScriptAssemblyManager.h"
 	"Include/BsManagedSerializableDiff.h"
 	"Include/BsManagedDiff.h"
+	"Include/BsBuiltinComponentLookup.h"
 )
 
 set(BS_SBANSHEEENGINE_SRC_NOFILTER

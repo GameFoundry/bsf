@@ -10,7 +10,7 @@ namespace BansheeEngine
     /// Container of GUI elements that can be positioned in the scene, and can output the rendered GUI to a user defined
     /// camera.
     /// </summary>
-    public class GUIWidget : Component
+    public class GUIWidget : ManagedComponent
     {
         private NativeGUIWidget nativeGUIWidget;
 

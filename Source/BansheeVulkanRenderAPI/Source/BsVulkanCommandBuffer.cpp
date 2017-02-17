@@ -183,7 +183,7 @@ namespace bs { namespace ct
 			for (auto& entry : mResources)
 			{
 				ResourceUseHandle& useHandle = entry.second;
-				assert(useHandle.used);
+				assert(!useHandle.used);
 
 				entry.first->notifyUnbound();
 			}
@@ -194,7 +194,7 @@ namespace bs { namespace ct
 				ImageInfo& imageInfo = mImageInfos[imageInfoIdx];
 
 				ResourceUseHandle& useHandle = imageInfo.useHandle;
-				assert(useHandle.used);
+				assert(!useHandle.used);
 
 				entry.first->notifyUnbound();
 			}
@@ -202,7 +202,7 @@ namespace bs { namespace ct
 			for (auto& entry : mBuffers)
 			{
 				ResourceUseHandle& useHandle = entry.second.useHandle;
-				assert(useHandle.used);
+				assert(!useHandle.used);
 
 				entry.first->notifyUnbound();
 			}

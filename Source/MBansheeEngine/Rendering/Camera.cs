@@ -14,7 +14,7 @@ namespace BansheeEngine
     /// rendering.
     /// </summary>
     [RunInEditor]
-    public sealed class Camera : Component
+    public sealed class Camera : ManagedComponent
     {
         private NativeCamera native;
 

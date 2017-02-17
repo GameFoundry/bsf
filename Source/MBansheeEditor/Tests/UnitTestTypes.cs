@@ -12,7 +12,7 @@ namespace BansheeEditor
     /// <summary>
     /// Helper component used for unit tests.
     /// </summary>
-    internal class UT1_Component1 : Component
+    internal class UT1_Component1 : ManagedComponent
     {
         public int a;
         public string b;
@@ -40,7 +40,7 @@ namespace BansheeEditor
     /// <summary>
     /// Helper component used for unit tests.
     /// </summary>
-    internal class UT1_Component2 : Component
+    internal class UT1_Component2 : ManagedComponent
     {
         public int a2;
     }

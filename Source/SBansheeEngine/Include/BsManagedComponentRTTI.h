@@ -87,18 +87,18 @@ namespace bs
 			mc->mRTTIData = nullptr;
 		}
 
-		virtual const String& getRTTIName() override
+		const String& getRTTIName() override
 		{
 			static String name = "ManagedComponent";
 			return name;
 		}
 
-		virtual UINT32 getRTTIId() override
+		UINT32 getRTTIId() override
 		{
 			return TID_ManagedComponent;
 		}
 
-		virtual SPtr<IReflectable> newRTTIObject() override
+		SPtr<IReflectable> newRTTIObject() override
 		{
 			return GameObjectRTTI::createGameObject<ManagedComponent>();
 		}

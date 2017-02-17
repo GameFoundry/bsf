@@ -12,30 +12,11 @@ namespace BansheeEngine
     /// <summary>
     /// Base class for all components. Components represent primary logic elements in the scene. They are attached to 
     /// scene objects.
-    ///
-    /// Implementations of <see cref="Component"/> can implement a set of callbacks that will be called by the runtime
-    /// at specified occassions:
-    /// void OnInitialize() - Called once when the component is instantiated. Only called when the game is playing.
-    /// void OnUpdate() - Called every frame while the game is running and the component is enabled.
-    /// void OnEnable() - Called whenever a component is enabled, or instantiated as enabled in which case it is called 
-    ///                   after OnInitialize. Only called when the game is playing.
-    /// void OnDisable() - Called whenever a component is disabled. This includes destruction where it is called before 
-    ///                    OnDestroy. Only called when the game is playing.
-    /// void OnDestroy() - Called before the component is destroyed. Destruction is usually delayed until the end of the 
-    ///                    current frame unless specified otherwise in a call to Destroy. 
-    /// void OnReset() - Called when script assemblies have been refreshed or when the component is initialized. During
-    ///                  initialization it is called after OnInitialize but before OnEnable. Only relevant in editor.
-    /// void OnTransformChanged(TransformChangedFlags) - Called when the transform of the owning scene object changes.
-    ///                                                  When and if this gets triggered depends on 
-    ///                                                  <see cref="NotifyFlags"/>.
-    ///
-    /// You can also make these callbacks trigger when the game is stopped/paused by using the <see cref="RunInEditor"/>
-    /// attribute on the component.
     /// </summary>
     public class Component : GameObject
     {
         // Internal use only
-        protected Component()
+        internal Component()
         { }
 
         /// <summary>
@@ -86,10 +67,8 @@ namespace BansheeEngine
         /// Calls a parameterless method with the specified name, on the component. 
         /// </summary>
         /// <param name="name">Name of the method to call.</param>
-        protected internal void Invoke(string name)
-        {
-            Internal_Invoke(mCachedPtr, name);
-        }
+        protected internal virtual void Invoke(string name)
+        { }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern Component Internal_AddComponent(SceneObject parent, Type type);
@@ -116,10 +95,44 @@ namespace BansheeEngine
         internal static extern void Internal_SetNotifyFlags(IntPtr nativeInstance, TransformChangedFlags flags);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern void Internal_Invoke(IntPtr nativeInstance, string name);
+        private static extern void Internal_Destroy(IntPtr nativeInstance, bool immediate);
+    }
+
+    /// <summary>
+    /// Base class for custom component implementations.
+    ///
+    /// Implementations of <see cref="ManagedComponent"/> can implement a set of callbacks that will be called by the
+    /// runtime at specified occassions:
+    /// void OnInitialize() - Called once when the component is instantiated. Only called when the game is playing.
+    /// void OnUpdate() - Called every frame while the game is running and the component is enabled.
+    /// void OnEnable() - Called whenever a component is enabled, or instantiated as enabled in which case it is called 
+    ///                   after OnInitialize. Only called when the game is playing.
+    /// void OnDisable() - Called whenever a component is disabled. This includes destruction where it is called before 
+    ///                    OnDestroy. Only called when the game is playing.
+    /// void OnDestroy() - Called before the component is destroyed. Destruction is usually delayed until the end of the 
+    ///                    current frame unless specified otherwise in a call to Destroy. 
+    /// void OnReset() - Called when script assemblies have been refreshed or when the component is initialized. During
+    ///                  initialization it is called after OnInitialize but before OnEnable. Only relevant in editor.
+    /// void OnTransformChanged(TransformChangedFlags) - Called when the transform of the owning scene object changes.
+    ///                                                  When and if this gets triggered depends on 
+    ///                                                  <see cref="Component.NotifyFlags"/>.
+    ///
+    /// You can also make these callbacks trigger when the game is stopped/paused by using the <see cref="RunInEditor"/>
+    /// attribute on the component.
+    /// </summary>
+    public class ManagedComponent : Component
+    {
+        protected ManagedComponent()
+        { }
+
+        /// <inheritdoc/>
+        protected internal override void Invoke(string name)
+        {
+            Internal_Invoke(mCachedPtr, name);
+        }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_Destroy(IntPtr nativeInstance, bool immediate);
+        internal static extern void Internal_Invoke(IntPtr nativeInstance, string name);
     }
 
     /** @} */

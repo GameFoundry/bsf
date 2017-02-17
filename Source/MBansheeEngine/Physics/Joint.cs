@@ -13,7 +13,7 @@ namespace BansheeEngine
     /// Base class for all Joint types. Joints constrain how two rigidbodies move relative to one another (for example a
     /// door hinge). One of the bodies in the joint must always be movable (that is non-kinematic).
     /// </summary>
-    public abstract class Joint : Component
+    public abstract class Joint : ManagedComponent
     {
         internal NativeJoint native;
 

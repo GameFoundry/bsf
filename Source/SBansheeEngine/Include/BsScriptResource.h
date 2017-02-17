@@ -30,10 +30,10 @@ namespace bs
 		virtual void setResource(const HResource& resource) = 0;
 
 		/** @copydoc ScriptObjectBase::beginRefresh */
-		virtual ScriptObjectBackup beginRefresh() override;
+		ScriptObjectBackup beginRefresh() override;
 
 		/** @copydoc ScriptObjectBase::endRefresh */
-		virtual void endRefresh(const ScriptObjectBackup& backupData) override;
+		void endRefresh(const ScriptObjectBackup& backupData) override;
 
 	protected:
 		friend class ScriptResourceManager;

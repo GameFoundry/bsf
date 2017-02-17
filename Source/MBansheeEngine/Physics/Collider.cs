@@ -15,7 +15,7 @@ namespace BansheeEngine
     ///  - Dynamic: Dynamic geometry that is a part of a Rigidbody.A set of colliders defines the shape of the parent 
     ///             rigidbody.
     /// </summary>
-    public abstract class Collider : Component
+    public abstract class Collider : ManagedComponent
     {
         internal NativeCollider native;
         protected Rigidbody parent;

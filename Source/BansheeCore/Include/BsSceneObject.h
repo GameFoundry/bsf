@@ -528,6 +528,12 @@ namespace bs
 			return newComponent;
 		}
 
+		/** 
+		 * Constructs a new component of the specified type id and adds it to the internal component list. Component must
+		 * have a parameterless constructor.
+		 */
+		HComponent addComponent(UINT32 typeId);
+
 		/**
 		 * Searches for a component with the specific type and returns the first one it finds. Will also return components
 		 * derived from the type.

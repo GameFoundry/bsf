@@ -3,6 +3,7 @@
 #include "BsScriptGameObjectManager.h"
 #include "BsScriptGameObject.h"
 #include "BsScriptComponent.h"
+#include "BsScriptManagedComponent.h"
 #include "BsScriptSceneObject.h"
 #include "BsGameObjectManager.h"
 #include "BsGameObject.h"
@@ -14,6 +15,7 @@
 #include "BsMonoClass.h"
 #include "BsScriptAssemblyManager.h"
 #include "BsScriptObjectManager.h"
+#include "BsBuiltinComponentLookup.h"
 
 using namespace std::placeholders;
 
@@ -72,9 +74,10 @@ namespace bs
 		return nativeInstance;
 	}
 
-	ScriptComponent* ScriptGameObjectManager::createScriptComponent(MonoObject* existingInstance, const GameObjectHandle<ManagedComponent>& component)
+	ScriptManagedComponent* ScriptGameObjectManager::createManagedScriptComponent(MonoObject* existingInstance,
+																				  const HManagedComponent& component)
 	{
-		ScriptComponent* nativeInstance = new (bs_alloc<ScriptComponent>()) ScriptComponent(existingInstance);
+		ScriptManagedComponent* nativeInstance = new (bs_alloc<ScriptManagedComponent>()) ScriptManagedComponent(existingInstance);
 		nativeInstance->setNativeHandle(component);
 
 		UINT64 instanceId = component->getInstanceId();
@@ -83,16 +86,42 @@ namespace bs
 		return nativeInstance;
 	}
 
-	ScriptComponent* ScriptGameObjectManager::getScriptComponent(const GameObjectHandle<ManagedComponent>& component) const
+	ScriptComponentBase* ScriptGameObjectManager::createBuiltinScriptComponent(const HComponent& component)
+	{
+		UINT32 rttiId = component->getRTTI()->getRTTIId();
+		BuiltinComponentInfo* info = ScriptAssemblyManager::instance().getBuiltinComponentInfo(rttiId);
+
+		if (info == nullptr)
+			return nullptr;
+
+		ScriptComponentBase* nativeInstance = info->createCallback(component);
+		nativeInstance->setNativeHandle(component);
+
+		UINT64 instanceId = component->getInstanceId();
+		mScriptComponents[instanceId] = nativeInstance;
+
+		return nativeInstance;
+	}
+
+	ScriptComponentBase* ScriptGameObjectManager::getBuiltinScriptComponent(const HComponent& component)
+	{
+		ScriptComponentBase* scriptComponent = getScriptComponent(component.getInstanceId());
+		if (scriptComponent != nullptr)
+			return scriptComponent;
+
+		return createBuiltinScriptComponent(component);
+	}
+
+	ScriptManagedComponent* ScriptGameObjectManager::getManagedScriptComponent(const HManagedComponent& component) const
 	{
 		auto findIter = mScriptComponents.find(component.getInstanceId());
 		if (findIter != mScriptComponents.end())
-			return findIter->second;
+			return static_cast<ScriptManagedComponent*>(findIter->second);
 
 		return nullptr;
 	}
 
-	ScriptComponent* ScriptGameObjectManager::getScriptComponent(UINT64 instanceId) const
+	ScriptComponentBase* ScriptGameObjectManager::getScriptComponent(UINT64 instanceId) const
 	{
 		auto findIter = mScriptComponents.find(instanceId);
 		if (findIter != mScriptComponents.end())
@@ -140,7 +169,7 @@ namespace bs
 		bs_delete(sceneObject);
 	}
 
-	void ScriptGameObjectManager::destroyScriptComponent(ScriptComponent* component)
+	void ScriptGameObjectManager::destroyScriptComponent(ScriptComponentBase* component)
 	{
 		UINT64 instanceId = component->getNativeHandle().getInstanceId();
 		mScriptComponents.erase(instanceId);
@@ -152,11 +181,15 @@ namespace bs
 	{
 		for (auto& scriptObjectEntry : mScriptComponents)
 		{
-			ScriptComponent* scriptComponent = scriptObjectEntry.second;
-			HManagedComponent component = scriptComponent->getNativeHandle();
+			ScriptComponentBase* scriptComponent = scriptObjectEntry.second;
+			HComponent component = scriptComponent->getComponent();
 
-			if (!component.isDestroyed())
-				component->triggerOnReset();
+			if (component->getRTTI()->getRTTIId() == TID_ManagedComponent)
+			{
+				HManagedComponent managedComponent = static_object_cast<ManagedComponent>(component);
+				if (!managedComponent.isDestroyed())
+					managedComponent->triggerOnReset();
+			}
 		}
 	}
 
@@ -164,16 +197,21 @@ namespace bs
 	{
 		for (auto& scriptObjectEntry : mScriptComponents)
 		{
-			ScriptComponent* scriptComponent = scriptObjectEntry.second;
-			HManagedComponent component = scriptComponent->getNativeHandle();
+			ScriptComponentBase* scriptComponent = scriptObjectEntry.second;
+			HComponent component = scriptComponent->getNativeHandle();
 
-			if (component.isDestroyed() || component->runInEditor())
-				continue;
+			if (component->getRTTI()->getRTTIId() == TID_ManagedComponent)
+			{
+				HManagedComponent managedComponent = static_object_cast<ManagedComponent>(component);
 
-			component->triggerOnInitialize();
+				if (managedComponent.isDestroyed() || managedComponent->runInEditor())
+					continue;
 
-			if(component->SO()->getActive())
-				component->triggerOnEnable();
+				managedComponent->triggerOnInitialize();
+
+				if (component->SO()->getActive())
+					managedComponent->triggerOnEnable();
+			}
 		}
 	}
 
@@ -182,10 +220,17 @@ namespace bs
 		UINT64 instanceId = go.getInstanceId();
 
 		ScriptSceneObject* so = getScriptSceneObject(instanceId);
-		if (so == nullptr)
-			return;
+		if (so != nullptr)
+		{
+			so->_notifyDestroyed();
+			mScriptSceneObjects.erase(instanceId);
+		}
 
-		so->_notifyDestroyed();
-		mScriptSceneObjects.erase(instanceId);
+		ScriptComponentBase* component = getScriptComponent(instanceId);
+		if(component != nullptr)
+		{
+			component->_notifyDestroyed();
+			mScriptComponents.erase(instanceId);
+		}
 	}
 }

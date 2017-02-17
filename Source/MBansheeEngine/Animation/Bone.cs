@@ -12,7 +12,7 @@ namespace BansheeEngine
     /// Component that maps animation for specific bone also be applied to the <see cref="SceneObject"/> this component
     /// is attached to. The component will attach to the first found parent <see cref="Animation"/> component.
     /// </summary>
-    public class Bone : Component
+    public class Bone : ManagedComponent
     {
         [SerializeField]
         private string name;

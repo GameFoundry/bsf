@@ -12,7 +12,7 @@ namespace BansheeEditor
     /// <summary>
     /// Contains editor data that should persist assembly refresh.
     /// </summary>
-    internal class EditorPersistentData : Component
+    internal class EditorPersistentData : ManagedComponent
     {
         [SerializeField]
         internal Dictionary<string, bool> dirtyResources = new Dictionary<string, bool>();

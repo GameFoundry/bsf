@@ -12,7 +12,7 @@ namespace BansheeEditor
     /// <summary>
     /// Contains Inspector specific data that should persist assembly refresh.
     /// </summary>
-    internal class InspectorPersistentData : Component
+    internal class InspectorPersistentData : ManagedComponent
     {
         [SerializeField]
         private Dictionary<ulong, SerializableProperties> componentProperties =

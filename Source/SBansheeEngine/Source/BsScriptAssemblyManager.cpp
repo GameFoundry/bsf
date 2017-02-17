@@ -9,6 +9,7 @@
 #include "BsMonoMethod.h"
 #include "BsMonoProperty.h"
 #include "BsScriptManagedResource.h"
+#include "BsScriptComponent.h"
 #include "BsScriptTexture2D.h"
 #include "BsScriptTexture3D.h"
 #include "BsScriptTextureCube.h"
@@ -27,15 +28,17 @@
 #include "BsScriptAudioClip.h"
 #include "BsScriptPrefab.h"
 #include "BsScriptAnimationClip.h"
+#include "BsBuiltinComponentLookup.h"
 
 namespace bs
 {
 	ScriptAssemblyManager::ScriptAssemblyManager()
 		: mBaseTypesInitialized(false), mSystemArrayClass(nullptr), mSystemGenericListClass(nullptr)
 		, mSystemGenericDictionaryClass(nullptr), mSystemTypeClass(nullptr), mComponentClass(nullptr)
-		, mSceneObjectClass(nullptr), mMissingComponentClass(nullptr), mSerializeObjectAttribute(nullptr)
-		, mDontSerializeFieldAttribute(nullptr), mSerializeFieldAttribute(nullptr), mHideInInspectorAttribute(nullptr)
-		, mShowInInspectorAttribute(nullptr), mRangeAttribute(nullptr), mStepAttribute(nullptr)
+		, mManagedComponentClass(nullptr), mSceneObjectClass(nullptr), mMissingComponentClass(nullptr)
+		, mSerializeObjectAttribute(nullptr), mDontSerializeFieldAttribute(nullptr), mSerializeFieldAttribute(nullptr)
+		, mHideInInspectorAttribute(nullptr), mShowInInspectorAttribute(nullptr), mRangeAttribute(nullptr)
+		, mStepAttribute(nullptr)
 	{
 
 	}
@@ -59,6 +62,8 @@ namespace bs
 		if(!mBaseTypesInitialized)
 			initializeBaseTypes();
 
+		initializeBuiltinComponentInfos();
+
 		// Process all classes and fields
 		UINT32 mUniqueTypeId = 1;
 
@@ -77,8 +82,9 @@ namespace bs
 		const Vector<MonoClass*>& allClasses = curAssembly->getAllClasses();
 		for(auto& curClass : allClasses)
 		{
-			if ((curClass->isSubClassOf(mComponentClass) || curClass->isSubClassOf(managedResourceClass) ||
-				curClass->hasAttribute(mSerializeObjectAttribute)) && curClass != mComponentClass && curClass != managedResourceClass)
+			if ((curClass->isSubClassOf(mManagedComponentClass) || curClass->isSubClassOf(managedResourceClass) ||
+				curClass->hasAttribute(mSerializeObjectAttribute)) && curClass != mManagedComponentClass && 
+				curClass != managedResourceClass)
 			{
 				SPtr<ManagedSerializableTypeInfoObject> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoObject>();
 				typeInfo->mTypeNamespace = curClass->getNamespace();
@@ -372,13 +378,30 @@ namespace bs
 				SPtr<ManagedSerializableTypeInfoRef> typeInfo = bs_shared_ptr_new<ManagedSerializableTypeInfoRef>();
 				typeInfo->mTypeNamespace = monoClass->getNamespace();
 				typeInfo->mTypeName = monoClass->getTypeName();
+				typeInfo->mRTIITypeId = 0;
 
 				if (monoClass == mComponentClass)
-					typeInfo->mType = ScriptReferenceType::Component;
+					typeInfo->mType = ScriptReferenceType::BuiltinComponentBase;
+				else if (monoClass == mManagedComponentClass)
+					typeInfo->mType = ScriptReferenceType::ManagedComponentBase;
 				else if (monoClass->isSubClassOf(mSceneObjectClass))
 					typeInfo->mType = ScriptReferenceType::SceneObject;
-				else if (monoClass->isSubClassOf(mComponentClass))
+				else if (monoClass->isSubClassOf(mManagedComponentClass))
 					typeInfo->mType = ScriptReferenceType::ManagedComponent;
+				else if (monoClass->isSubClassOf(mComponentClass))
+				{
+					typeInfo->mType = ScriptReferenceType::BuiltinComponent;
+
+					::MonoReflectionType* type = MonoUtil::getType(monoClass->_getInternalClass());
+					BuiltinComponentInfo* builtinInfo = getBuiltinComponentInfo(type);
+					if(builtinInfo == nullptr)
+					{
+						assert(false && "Unable to find information about a built-in component. Did you update BuiltinComponents list?");
+						return nullptr;
+					}
+
+					typeInfo->mRTIITypeId = builtinInfo->typeId;
+				}
 
 				return typeInfo;
 			}
@@ -480,6 +503,7 @@ namespace bs
 		mDontSerializeFieldAttribute = nullptr;
 
 		mComponentClass = nullptr;
+		mManagedComponentClass = nullptr;
 		mSceneObjectClass = nullptr;
 		mMissingComponentClass = nullptr;
 
@@ -537,6 +561,10 @@ namespace bs
 		if(mComponentClass == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find Component managed class.");
 
+		mManagedComponentClass = bansheeEngineAssembly->getClass("BansheeEngine", "ManagedComponent");
+		if (mManagedComponentClass == nullptr)
+			BS_EXCEPT(InvalidStateException, "Cannot find ManagedComponent managed class.");
+
 		mMissingComponentClass = bansheeEngineAssembly->getClass("BansheeEngine", "MissingComponent");
 		if (mMissingComponentClass == nullptr)
 			BS_EXCEPT(InvalidStateException, "Cannot find MissingComponent managed class.");
@@ -558,6 +586,47 @@ namespace bs
 			BS_EXCEPT(InvalidStateException, "Cannot find ShowInInspector managed class.");
 
 		mBaseTypesInitialized = true;
+	}
+
+	void ScriptAssemblyManager::initializeBuiltinComponentInfos()
+	{
+		mBuiltinComponentInfos.clear();
+		mBuiltinComponentInfosByTID.clear();
+
+		Vector<BuiltinComponentInfo> allComponentsInfos = BuiltinComponents::getEntries();
+
+		for(auto& entry : allComponentsInfos)
+		{
+			MonoAssembly* assembly = MonoManager::instance().getAssembly(entry.metaData->assembly);
+			if (assembly == nullptr)
+				continue;
+
+			BuiltinComponentInfo info = entry;
+			info.monoClass = assembly->getClass(entry.metaData->ns, entry.metaData->name);
+
+			::MonoReflectionType* type = MonoUtil::getType(info.monoClass->_getInternalClass());
+
+			mBuiltinComponentInfos[type] = info;
+			mBuiltinComponentInfosByTID[info.typeId] = info;
+		}
+	}
+
+	BuiltinComponentInfo* ScriptAssemblyManager::getBuiltinComponentInfo(::MonoReflectionType* type)
+	{
+		auto iterFind = mBuiltinComponentInfos.find(type);
+		if (iterFind == mBuiltinComponentInfos.end())
+			return nullptr;
+
+		return &(iterFind->second);
+	}
+
+	BuiltinComponentInfo* ScriptAssemblyManager::getBuiltinComponentInfo(UINT32 rttiTypeId)
+	{
+		auto iterFind = mBuiltinComponentInfosByTID.find(rttiTypeId);
+		if (iterFind == mBuiltinComponentInfosByTID.end())
+			return nullptr;
+
+		return &(iterFind->second);
 	}
 
 	bool ScriptAssemblyManager::getSerializableObjectInfo(const String& ns, const String& typeName, SPtr<ManagedSerializableObjectInfo>& outInfo)

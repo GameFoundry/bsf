@@ -35,13 +35,13 @@ namespace bs
 		friend class ScriptResourceManager;
 
 		/** @copydoc ScriptObjectBase::beginRefresh */
-		virtual ScriptObjectBackup beginRefresh() override;
+		ScriptObjectBackup beginRefresh() override;
 
 		/** @copydoc ScriptObjectBase::endRefresh */
-		virtual void endRefresh(const ScriptObjectBackup& backupData) override;
+		void endRefresh(const ScriptObjectBackup& backupData) override;
 
 		/** @copydoc ScriptObjectBase::_createManagedInstance */
-		virtual MonoObject* _createManagedInstance(bool construct) override;
+		MonoObject* _createManagedInstance(bool construct) override;
 
 		/** @copydoc ScriptObjectBase::_onManagedInstanceDeleted */
 		void _onManagedInstanceDeleted() override;

@@ -28,10 +28,12 @@
 #include "BsScriptAnimationClip.h"
 #include "BsScriptSceneObject.h"
 #include "BsScriptComponent.h"
+#include "BsScriptManagedComponent.h"
 #include "BsManagedSerializableObject.h"
 #include "BsManagedSerializableArray.h"
 #include "BsManagedSerializableList.h"
 #include "BsManagedSerializableDictionary.h"
+#include "BsScriptAssemblyManager.h"
 
 namespace bs
 {
@@ -185,7 +187,7 @@ namespace bs
 				{ &getScriptResource<AudioClip, ScriptAudioClip>, &setScriptResource<ScriptAudioClip> };
 
 			lookup[(int)ScriptReferenceType::AnimationClip] =
-			{ &getScriptResource<AnimationClip, ScriptAnimationClip>, &setScriptResource<ScriptAnimationClip> };
+				{ &getScriptResource<AnimationClip, ScriptAnimationClip>, &setScriptResource<ScriptAnimationClip> };
 
 			lookup[(int)ScriptReferenceType::ManagedResource] =
 				{ &getScriptResource<ManagedResource, ScriptManagedResource>, &setScriptResource<ScriptManagedResource> };
@@ -336,15 +338,32 @@ namespace bs
 
 				return fieldData;
 			}
+			case ScriptReferenceType::ManagedComponentBase:
 			case ScriptReferenceType::ManagedComponent:
-			case ScriptReferenceType::Component:
 			{
 				auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataGameObjectRef>();
 
 				if (value != nullptr)
 				{
-					ScriptComponent* scriptComponent = ScriptComponent::toNative(value);
+					ScriptManagedComponent* scriptComponent = ScriptManagedComponent::toNative(value);
 					fieldData->value = static_object_cast<Component>(scriptComponent->getNativeHandle());
+				}
+
+				return fieldData;
+			}
+			case ScriptReferenceType::BuiltinComponentBase:
+			case ScriptReferenceType::BuiltinComponent:
+			{
+				BuiltinComponentInfo* info = ScriptAssemblyManager::instance().getBuiltinComponentInfo(refTypeInfo->mRTIITypeId);
+				if (info == nullptr)
+					return nullptr;
+
+				auto fieldData = bs_shared_ptr_new<ManagedSerializableFieldDataGameObjectRef>();
+
+				if (value != nullptr)
+				{
+					ScriptComponentBase* scriptComponent = ScriptComponent::toNative(value);
+					fieldData->value = scriptComponent->getComponent();
 				}
 
 				return fieldData;
@@ -610,11 +629,25 @@ namespace bs
 				else
 					return nullptr;
 			}
-			else if(refTypeInfo->mType == ScriptReferenceType::Component || refTypeInfo->mType == ScriptReferenceType::ManagedComponent)
+			else if(refTypeInfo->mType == ScriptReferenceType::ManagedComponentBase || 
+					refTypeInfo->mType == ScriptReferenceType::ManagedComponent)
 			{
 				if (value)
 				{
-					ScriptComponent* scriptComponent = ScriptGameObjectManager::instance().getScriptComponent(value);
+					ScriptManagedComponent* scriptComponent = ScriptGameObjectManager::instance().getManagedScriptComponent(value);
+					assert(scriptComponent != nullptr);
+
+					return scriptComponent->getManagedInstance();
+				}
+				else
+					return nullptr;
+			}
+			else if (refTypeInfo->mType == ScriptReferenceType::BuiltinComponentBase || 
+					 refTypeInfo->mType == ScriptReferenceType::BuiltinComponent)
+			{
+				if (value)
+				{
+					ScriptComponentBase* scriptComponent = ScriptGameObjectManager::instance().getBuiltinScriptComponent(value);
 					assert(scriptComponent != nullptr);
 
 					return scriptComponent->getManagedInstance();

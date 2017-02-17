@@ -1225,7 +1225,7 @@ namespace bs
 	}
 
 	/** Creates a new object just from its type ID. */
-	SPtr<IReflectable> rtti_create(UINT32 rttiId);
+	BS_UTILITY_EXPORT SPtr<IReflectable> rtti_create(UINT32 rttiId);
 
 	/** Checks is the current object a subclass of some type. */
 	template<class T>

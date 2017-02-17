@@ -772,6 +772,35 @@ namespace bs
 		}
 	}
 
+	HComponent SceneObject::addComponent(UINT32 typeId)
+	{
+		SPtr<IReflectable> newObj = rtti_create(typeId);
+
+		if(!rtti_is_subclass<Component>(newObj.get()))
+		{
+			LOGERR("Specified type is not a valid Component.");
+			return HComponent();
+		}
+
+		SPtr<Component> componentPtr = std::static_pointer_cast<Component>(newObj);
+		HComponent newComponent = GameObjectManager::instance().registerObject(componentPtr);
+
+		newComponent->mParent = mThisHandle;
+		newComponent->mThisHandle = newComponent;
+		mComponents.push_back(newComponent);
+
+		if (isInstantiated())
+		{
+			newComponent->_instantiate();
+			newComponent->onInitialized();
+
+			if (getActive())
+				newComponent->onEnabled();
+		}
+
+		return newComponent;
+	}
+
 	void SceneObject::addComponentInternal(const SPtr<Component> component)
 	{
 		GameObjectHandle<Component> newComponent = GameObjectManager::instance().getObject(component->getInstanceId());

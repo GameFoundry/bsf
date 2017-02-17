@@ -3,12 +3,13 @@
 #include "BsScriptSerializedObject.h"
 #include "BsScriptMeta.h"
 #include "BsMonoClass.h"
-#include "BsScriptComponent.h"
+#include "BsScriptManagedComponent.h"
 #include "BsScriptManagedResource.h"
 #include "BsManagedComponent.h"
 #include "BsManagedResource.h"
 #include "BsManagedSerializableObject.h"
 #include "BsScriptAssemblyManager.h"
+#include "BsRTTIType.h"
 
 namespace bs
 {
@@ -26,9 +27,9 @@ namespace bs
 		metaData.scriptClass->addInternalCall("Internal_Deserialize", &ScriptSerializedObject::internal_Deserialize);
 	}
 
-	MonoObject* ScriptSerializedObject::internal_CreateComponent(ScriptComponent* componentPtr)
+	MonoObject* ScriptSerializedObject::internal_CreateComponent(ScriptManagedComponent* componentPtr)
 	{
-		HManagedComponent component = componentPtr->getHandle();
+		HManagedComponent component = static_object_cast<ManagedComponent>(componentPtr->getHandle());
 		if (component.isDestroyed())
 			return nullptr;
 

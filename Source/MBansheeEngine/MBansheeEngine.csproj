@@ -60,6 +60,7 @@
     <Compile Include="GUI\GUICanvas.cs" />
     <Compile Include="GUI\GUIScrollBar.cs" />
     <Compile Include="Rendering\PostProcessSettings.cs" />
+    <Compile Include="Rendering\Renderable2.cs" />
     <Compile Include="Serialization\ShowInInspector.cs" />
     <Compile Include="Serialization\Step.cs" />
     <Compile Include="Utility\AsyncOp.cs" />

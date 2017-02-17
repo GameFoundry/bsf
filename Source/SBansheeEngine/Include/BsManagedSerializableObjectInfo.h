@@ -49,13 +49,15 @@ namespace bs
 		StringTable,
 		GUISkin,
 		SceneObject,
-		Component,
+		BuiltinComponent,
 		PhysicsMaterial,
 		PhysicsMesh,
 		AudioClip,
 		AnimationClip,
 		ManagedComponent,
 		Resource,
+		BuiltinComponentBase,
+		ManagedComponentBase,
 		Count // Keep at end
 	};
 
@@ -140,6 +142,7 @@ namespace bs
 		::MonoClass* getMonoClass() const override;
 
 		ScriptReferenceType mType;
+		UINT32 mRTIITypeId;
 		String mTypeNamespace;
 		String mTypeName;
 

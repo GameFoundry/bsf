@@ -38,7 +38,7 @@ namespace BansheeEngine
         /// <summary>
         /// Returns a pointer to the native script interop object.
         /// </summary>
-        /// <returns>Pointer to the native script interop object</returns>
+        /// <returns>Pointer to the native script interop object.</returns>
         internal IntPtr GetCachedPtr()
         {
             return mCachedPtr;

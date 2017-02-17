@@ -393,7 +393,9 @@ namespace bs
 		case ScriptReferenceType::AudioClip:
 		case ScriptReferenceType::AnimationClip:
 		case ScriptReferenceType::SceneObject:
-		case ScriptReferenceType::Component:
+		case ScriptReferenceType::BuiltinComponentBase:
+		case ScriptReferenceType::ManagedComponentBase:
+		case ScriptReferenceType::BuiltinComponent:
 			return true;
 		default:
 			break;
@@ -446,8 +448,10 @@ namespace bs
 			return ScriptAnimationClip::getMetaData()->scriptClass->_getInternalClass();
 		case ScriptReferenceType::SceneObject:
 			return ScriptAssemblyManager::instance().getSceneObjectClass()->_getInternalClass();
-		case ScriptReferenceType::Component:
+		case ScriptReferenceType::BuiltinComponentBase:
 			return ScriptAssemblyManager::instance().getComponentClass()->_getInternalClass();
+		case ScriptReferenceType::ManagedComponentBase:
+			return ScriptAssemblyManager::instance().getManagedComponentClass()->_getInternalClass();
 		default:
 			break;
 		}

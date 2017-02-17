@@ -13,7 +13,7 @@ namespace BansheeEngine
     /// render any Renderable objects visible by a camera.
     /// </summary>
     [RunInEditor]
-    public sealed class Renderable : Component
+    public sealed class Renderable : ManagedComponent
     {
         private NativeRenderable _native;
         private Animation animation;

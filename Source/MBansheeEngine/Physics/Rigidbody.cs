@@ -18,7 +18,7 @@ namespace BansheeEngine
     /// rigidbody to be valid. Colliders that are on the same scene object as the rigidbody, or on child scene objects
     /// are automatically considered as part of the rigidbody.
     /// </summary>
-    public sealed class Rigidbody : Component
+    public sealed class Rigidbody : ManagedComponent
     {
         internal NativeRigidbody native;
         private List<Collider> children = new List<Collider>();

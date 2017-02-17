@@ -32,7 +32,7 @@ namespace BansheeEngine
     /// Whether or not an audio source is spatial is controlled by the assigned AudioClip.The volume and the pitch of a
     /// spatial audio source is controlled by its position and the AudioListener's position/direction/velocity.
     /// </summary>
-    public abstract class AudioSource : Component
+    public abstract class AudioSource : ManagedComponent
     {
         internal NativeAudioSource native;
 

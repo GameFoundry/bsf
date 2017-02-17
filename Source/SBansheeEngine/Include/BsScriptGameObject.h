@@ -25,10 +25,10 @@ namespace bs
 		virtual void setNativeHandle(const HGameObject& gameObject) = 0;
 
 		/** @copydoc ScriptObjectBase::beginRefresh */
-		virtual ScriptObjectBackup beginRefresh() override;
+		ScriptObjectBackup beginRefresh() override;
 
 		/** @copydoc ScriptObjectBase::endRefresh */
-		virtual void endRefresh(const ScriptObjectBackup& backupData) override;
+		void endRefresh(const ScriptObjectBackup& backupData) override;
 	protected:
 		bool mRefreshInProgress;
 	};

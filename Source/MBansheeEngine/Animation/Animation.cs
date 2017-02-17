@@ -17,7 +17,7 @@ namespace BansheeEngine
     /// thread for updating attached scene objects and bones (if skeleton is attached), or the data is made available for
     /// manual queries in the case of generic animation.
     /// </summary>
-    public class Animation : Component
+    public class Animation : ManagedComponent
     {
         private NativeAnimation _native;
 

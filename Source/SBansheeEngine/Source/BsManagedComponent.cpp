@@ -10,6 +10,7 @@
 #include "BsManagedSerializableObject.h"
 #include "BsScriptGameObjectManager.h"
 #include "BsScriptAssemblyManager.h"
+#include "BsScriptManagedComponent.h"
 #include "BsMonoAssembly.h"
 #include "BsPlayInEditorManager.h"
 
@@ -209,7 +210,7 @@ namespace bs
 
 			// Search for methods on base class if there is one
 			MonoClass* baseClass = mManagedClass->getBaseClass();
-			if (baseClass != ScriptComponent::getMetaData()->scriptClass)
+			if (baseClass != ScriptManagedComponent::getMetaData()->scriptClass)
 				mManagedClass = baseClass;
 			else
 				break;
@@ -358,7 +359,7 @@ namespace bs
 		}
 
 		assert(componentHandle != nullptr);
-		ScriptGameObjectManager::instance().createScriptComponent(mManagedInstance, componentHandle);
+		ScriptGameObjectManager::instance().createManagedScriptComponent(mManagedInstance, componentHandle);
 	}
 
 	void ManagedComponent::onInitialized()
