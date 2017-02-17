@@ -113,9 +113,6 @@
 
 namespace bs
 {
-	static const StringID RenderAPIDX9 = "D3D9RenderAPI";
-	static const StringID RenderAPIDX11 = "D3D11RenderAPI";
-	static const StringID RenderAPIOpenGL = "GLRenderAPI";
 	static const StringID RendererDefault = "RenderBeast";
 
 	class VirtualButton;
@@ -179,7 +176,6 @@ namespace bs
 	class ProfilerOverlay;
 	class ProfilerOverlayInternal;
 	class DrawHelper;
-	class Renderable;
 	class PlainText;
 	class ScriptCode;
 	class ScriptCodeImportOptions;
@@ -192,22 +188,7 @@ namespace bs
 	class SpriteMaterial;
 	struct SpriteMaterialInfo;
 
-	// Components
-	class CRenderable;
-	class CLight;
-	class CAnimation;
-	class CBone;
-
-	namespace ct
-	{
-		class Renderable;
-	}
-
 	typedef GameObjectHandle<CGUIWidget> HGUIWidget;
-	typedef GameObjectHandle<CRenderable> HRenderable;
-	typedef GameObjectHandle<CLight> HLight;
-	typedef GameObjectHandle<CAnimation> HAnimation;
-	typedef GameObjectHandle<CBone> HBone;
 	typedef GameObjectHandle<ProfilerOverlay> HProfilerOverlay;
 
 	typedef ResourceHandle<SpriteTexture> HSpriteTexture;
@@ -219,18 +200,18 @@ namespace bs
 	enum TypeID_Banshee
 	{
 		/* TID_CCamera = 30000, */
-		TID_CRenderable = 30001,
+		/* TID_CRenderable = 30001, */
 		TID_SpriteTexture = 30002,
 		/* TID_Camera = 30003, */
-		TID_Renderable = 30004,
+		/* TID_Renderable = 30004, */
 		TID_PlainText = 30005,
 		TID_ScriptCode = 30006,
 		TID_ScriptCodeImportOptions = 30007,
 		TID_GUIElementStyle = 30008,
 		TID_GUISkin = 30009,
 		TID_GUISkinEntry = 30010,
-		TID_Light = 30011,
-		TID_CLight = 30012,
+		/* TID_Light = 30011, */
+		/* TID_CLight = 30012, */
 		TID_GameSettings = 30013,
 		TID_ResourceMapping = 30014,
 		TID_StandardPostProcessSettings = 30015,

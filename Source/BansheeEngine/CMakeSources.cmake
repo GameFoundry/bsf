@@ -1,10 +1,3 @@
-set(BS_BANSHEEENGINE_INC_COMPONENTS
-	"Include/BsCRenderable.h"
-	"Include/BsCLight.h"
-	"Include/BsCAnimation.h"
-	"Include/BsCBone.h"
-)
-
 set(BS_BANSHEEENGINE_SRC_RESOURCES
 	"Source/BsScriptCodeImportOptions.cpp"
 	"Source/BsScriptCodeImporter.cpp"
@@ -89,14 +82,10 @@ set(BS_BANSHEEENGINE_INC_PLATFORM
 )
 
 set(BS_BANSHEEENGINE_INC_RENDERER
-	"Include/BsLight.h"
-	"Include/BsRenderable.h"
 	"Include/BsRenderableElement.h"
-	"Include/BsRenderer.h"
 	"Include/BsRendererMaterial.h"
 	"Include/BsRendererMaterialManager.h"
 	"Include/BsRenderQueue.h"
-	"Include/BsSceneManager.h"
 	"Include/BsRendererUtility.h"
 	"Include/BsStandardPostProcessSettings.h"	
 )
@@ -142,15 +131,9 @@ set(BS_BANSHEEENGINE_INC_RTTI
 	"Include/BsGUIElementStyleRTTI.h"
 	"Include/BsGUISkinRTTI.h"
 	"Include/BsProfilerOverlayRTTI.h"
-	"Include/BsCRenderableRTTI.h"
-	"Include/BsCLightRTTI.h"
-	"Include/BsRenderableRTTI.h"
-	"Include/BsLightRTTI.h"
 	"Include/BsCGUIWidgetRTTI.h"
 	"Include/BsGameSettingsRTTI.h"
 	"Include/BsResourceMappingRTTI.h"
-	"Include/BsCAnimationRTTI.h"
-	"Include/BsCBoneRTTI.h"
 	"Include/BsStandardPostProcessSettingsRTTI.h"
 )
 
@@ -171,13 +154,6 @@ set(BS_BANSHEEENGINE_INC_RESOURCES
 	"Include/BsBuiltinResourcesHelper.h"
 )
 
-set(BS_BANSHEEENGINE_SRC_COMPONENTS
-	"Source/BsCRenderable.cpp"
-	"Source/BsCLight.cpp"
-	"Source/BsCAnimation.cpp"
-	"Source/BsCBone.cpp"
-)
-
 set(BS_BANSHEEENGINE_INC_SCRIPT
 	"Include/BsScriptManager.h"
 )
@@ -194,13 +170,9 @@ set(BS_BANSHEEENGINE_INC_UTILITY
 )
 
 set(BS_BANSHEEENGINE_SRC_RENDERER
-	"Source/BsLight.cpp"
-	"Source/BsRenderable.cpp"
-	"Source/BsRenderer.cpp"
 	"Source/BsRendererMaterial.cpp"
 	"Source/BsRendererMaterialManager.cpp"
 	"Source/BsRenderQueue.cpp"
-	"Source/BsSceneManager.cpp"
 	"Source/BsRendererUtility.cpp"
 	"Source/BsStandardPostProcessSettings.cpp"	
 )
@@ -279,7 +251,6 @@ set(BS_BANSHEEENGINE_SRC_PLATFORM
 	"Source/BsSplashScreen.cpp"
 )
 
-source_group("Header Files\\Components" FILES ${BS_BANSHEEENGINE_INC_COMPONENTS})
 source_group("Source Files\\Resources" FILES ${BS_BANSHEEENGINE_SRC_RESOURCES})
 source_group("Source Files\\Script" FILES ${BS_BANSHEEENGINE_SRC_SCRIPT})
 source_group("Header Files\\Input" FILES ${BS_BANSHEEENGINE_INC_INPUT})
@@ -293,7 +264,6 @@ source_group("Header Files\\2D" FILES ${BS_BANSHEEENGINE_INC_2D})
 source_group("Header Files\\RTTI" FILES ${BS_BANSHEEENGINE_INC_RTTI})
 source_group("Header Files" FILES ${BS_BANSHEEENGINE_INC_NOFILTER})
 source_group("Header Files\\Resources" FILES ${BS_BANSHEEENGINE_INC_RESOURCES})
-source_group("Source Files\\Components" FILES ${BS_BANSHEEENGINE_SRC_COMPONENTS})
 source_group("Header Files\\Script" FILES ${BS_BANSHEEENGINE_INC_SCRIPT})
 source_group("Header Files\\Utility" FILES ${BS_BANSHEEENGINE_INC_UTILITY})
 source_group("Source Files\\Renderer" FILES ${BS_BANSHEEENGINE_SRC_RENDERER})
@@ -303,7 +273,6 @@ source_group("Source Files" FILES ${BS_BANSHEEENGINE_SRC_NOFILTER})
 source_group("Source Files\\Platform" FILES ${BS_BANSHEEENGINE_SRC_PLATFORM})
 
 set(BS_BANSHEEENGINE_SRC
-	${BS_BANSHEEENGINE_INC_COMPONENTS}
 	${BS_BANSHEEENGINE_SRC_RESOURCES}
 	${BS_BANSHEEENGINE_SRC_SCRIPT}
 	${BS_BANSHEEENGINE_INC_INPUT}
@@ -317,7 +286,6 @@ set(BS_BANSHEEENGINE_SRC
 	${BS_BANSHEEENGINE_INC_RTTI}
 	${BS_BANSHEEENGINE_INC_NOFILTER}
 	${BS_BANSHEEENGINE_INC_RESOURCES}
-	${BS_BANSHEEENGINE_SRC_COMPONENTS}
 	${BS_BANSHEEENGINE_INC_SCRIPT}
 	${BS_BANSHEEENGINE_INC_UTILITY}
 	${BS_BANSHEEENGINE_SRC_RENDERER}

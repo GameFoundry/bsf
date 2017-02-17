@@ -25,7 +25,7 @@
 #include "BsImporter.h"
 #include "BsVirtualInput.h"
 #include "BsResources.h"
-#include "BsCoreSceneManager.h"
+#include "BsSceneManager.h"
 #include "BsSplashScreen.h"
 #include "BsDynLib.h"
 #include "BsSceneManager.h"
@@ -239,7 +239,7 @@ namespace bs
 		EditorWidgetManager::instance().closeAll();
 		gProjectLibrary().unloadLibrary();
 		Resources::instance().unloadAllUnused();
-		gCoreSceneManager().clearScene();
+		gSceneManager().clearScene();
 
 		mProjectPath = Path::BLANK;
 		mProjectName = StringUtil::WBLANK;

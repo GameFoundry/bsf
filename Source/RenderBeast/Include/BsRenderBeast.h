@@ -75,10 +75,10 @@ namespace bs
 		void renderAll() override;
 
 		/**	Sets options used for controlling the rendering. */
-		void setOptions(const SPtr<CoreRendererOptions>& options) override;
+		void setOptions(const SPtr<RendererOptions>& options) override;
 
 		/**	Returns current set of options used for controlling the rendering. */
-		SPtr<CoreRendererOptions> getOptions() const override;
+		SPtr<RendererOptions> getOptions() const override;
 
 		/** @copydoc Renderer::initialize */
 		void initialize() override;

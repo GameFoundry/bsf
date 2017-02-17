@@ -3,7 +3,7 @@
 #include "BsCCamera.h"
 #include "BsCCameraRTTI.h"
 #include "BsSceneObject.h"
-#include "BsCoreSceneManager.h"
+#include "BsSceneManager.h"
 
 namespace bs 
 {
@@ -50,7 +50,7 @@ namespace bs
 	{
 		mInternal->setMain(main);
 
-		gCoreSceneManager()._notifyMainCameraStateChanged(mInternal);
+		gSceneManager()._notifyMainCameraStateChanged(mInternal);
 	}
 
 	void CCamera::update() 
@@ -70,12 +70,12 @@ namespace bs
 			mTarget = nullptr;
 		}
 
-		gCoreSceneManager()._registerCamera(mInternal, SO());
+		gSceneManager()._registerCamera(mInternal, SO());
 	}
 
 	void CCamera::onDestroyed()
 	{
-		gCoreSceneManager()._unregisterCamera(mInternal);
+		gSceneManager()._unregisterCamera(mInternal);
 	}
 
 	RTTITypeBase* CCamera::getRTTIStatic()

@@ -22,7 +22,7 @@
 #include "BsGpuParamsSet.h"
 #include "BsBuiltinEditorResources.h"
 #include "BsShader.h"
-#include "BsCoreRenderer.h"
+#include "BsRenderer.h"
 #include "BsGizmoManager.h"
 #include "BsRendererUtility.h"
 

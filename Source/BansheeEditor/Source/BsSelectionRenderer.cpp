@@ -10,7 +10,7 @@
 #include "BsGpuParams.h"
 #include "BsGpuParamsSet.h"
 #include "BsRenderAPI.h"
-#include "BsCoreRenderer.h"
+#include "BsRenderer.h"
 #include "BsRendererManager.h"
 #include "BsSelection.h"
 #include "BsSceneObject.h"

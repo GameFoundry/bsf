@@ -2,7 +2,7 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsSceneObject.h"
 #include "BsComponent.h"
-#include "BsCoreSceneManager.h"
+#include "BsSceneManager.h"
 #include "BsException.h"
 #include "BsDebug.h"
 #include "BsSceneObjectRTTI.h"
@@ -37,7 +37,7 @@ namespace bs
 		HSceneObject newObject = createInternal(name, flags);
 
 		if (newObject->isInstantiated())
-			gCoreSceneManager().registerNewSO(newObject);
+			gSceneManager().registerNewSO(newObject);
 
 		return newObject;
 	}
@@ -206,7 +206,7 @@ namespace bs
 			obj->mFlags &= ~SOF_DontInstantiate;
 
 			if (obj->mParent == nullptr)
-				gCoreSceneManager().registerNewSO(obj->mThisHandle);
+				gSceneManager().registerNewSO(obj->mThisHandle);
 
 			for (auto& component : obj->mComponents)
 				component->_instantiate();

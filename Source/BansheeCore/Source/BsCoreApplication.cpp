@@ -15,7 +15,7 @@
 #include "BsGameObjectManager.h"
 #include "BsDynLib.h"
 #include "BsDynLibManager.h"
-#include "BsCoreSceneManager.h"
+#include "BsSceneManager.h"
 #include "BsImporter.h"
 #include "BsResources.h"
 #include "BsMesh.h"
@@ -28,7 +28,7 @@
 #include "BsMaterialManager.h"
 #include "BsFontManager.h"
 #include "BsRenderWindowManager.h"
-#include "BsCoreRenderer.h"
+#include "BsRenderer.h"
 #include "BsDeferredCallManager.h"
 #include "BsCoreThread.h"
 #include "BsStringTableManager.h"
@@ -68,7 +68,7 @@ namespace bs
 		MeshManager::shutDown();
 		ProfilerGPU::shutDown();
 
-		CoreSceneManager::shutDown();
+		SceneManager::shutDown();
 		
 		Input::shutDown();
 
@@ -154,7 +154,7 @@ namespace bs
 
 		loadPlugin(mStartUpDesc.renderer, &mRendererPlugin);
 
-		SceneManagerFactory::create();
+		SceneManager::startUp();
 		RendererManager::instance().setActive(mStartUpDesc.renderer);
 		startUpRenderer();
 
@@ -224,7 +224,7 @@ namespace bs
 
 			preUpdate();
 
-			PROFILE_CALL(gCoreSceneManager()._update(), "SceneManager");
+			PROFILE_CALL(gSceneManager()._update(), "SceneManager");
 			gAudio()._update();
 			gPhysics().update();
 			AnimationManager::instance().postUpdate();
@@ -238,7 +238,7 @@ namespace bs
 			// Send out resource events in case any were loaded/destroyed/modified
 			ResourceListenerManager::instance().update();
 
-			gCoreSceneManager()._updateCoreObjectTransforms();
+			gSceneManager()._updateCoreObjectTransforms();
 			PROFILE_CALL(RendererManager::instance().getActive()->renderAll(), "Render");
 
 			// Core and sim thread run in lockstep. This will result in a larger input latency than if I was 

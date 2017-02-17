@@ -2,7 +2,7 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
-#include "BsPrerequisites.h"
+#include "BsCorePrerequisites.h"
 #include "BsAnimation.h"
 #include "BsComponent.h"
 
@@ -17,7 +17,7 @@ namespace bs
 	 *
 	 * Wraps Animation as a Component.
 	 */
-    class BS_EXPORT CAnimation : public Component
+    class BS_CORE_EXPORT CAnimation : public Component
     {
 		/** Information about scene objects bound to a specific animation curve. */
 		struct SceneObjectMappingInfo

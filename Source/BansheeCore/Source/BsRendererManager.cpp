@@ -1,7 +1,7 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsRendererManager.h"
-#include "BsCoreRenderer.h"
+#include "BsRenderer.h"
 #include "BsException.h"
 #include "BsRendererFactory.h"
 
@@ -19,7 +19,7 @@ namespace bs
 		{
 			if((*iter)->name() == name)
 			{
-				SPtr<ct::CoreRenderer> newRenderer = (*iter)->create();
+				SPtr<ct::Renderer> newRenderer = (*iter)->create();
 				if(newRenderer != nullptr)
 				{
 					if (mActiveRenderer != nullptr)

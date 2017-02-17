@@ -17,6 +17,10 @@ set(BS_BANSHEECORE_INC_COMPONENTS
 	"Include/BsCAudioSource.h"
 	"Include/BsCAudioListener.h"
 	"Include/BsCCamera.h"
+	"Include/BsCRenderable.h"
+	"Include/BsCLight.h"
+	"Include/BsCAnimation.h"
+	"Include/BsCBone.h"	
 )
 
 set(BS_BANSHEECORE_INC_PHYSICS
@@ -69,7 +73,7 @@ set(BS_BANSHEECORE_INC_SCENE
 	"Include/BsGameObjectHandle.h"
 	"Include/BsGameObjectManager.h"
 	"Include/BsSceneObject.h"
-	"Include/BsCoreSceneManager.h"
+	"Include/BsSceneManager.h"
 	"Include/BsPrefab.h"
 	"Include/BsPrefabDiff.h"
 	"Include/BsPrefabUtility.h"
@@ -83,9 +87,11 @@ set(BS_BANSHEECORE_INC_INPUT
 )
 
 set(BS_BANSHEECORE_INC_RENDERER
+	"Include/BsLight.h"
+	"Include/BsRenderable.h"
 	"Include/BsRendererManager.h"
 	"Include/BsRendererFactory.h"
-	"Include/BsCoreRenderer.h"
+	"Include/BsRenderer.h"
 	"Include/BsRendererMeshData.h"
 	"Include/BsParamBlocks.h"
 	"Include/BsCamera.h"
@@ -246,6 +252,10 @@ set(BS_BANSHEECORE_SRC_COMPONENTS
 	"Source/BsCAudioSource.cpp"
 	"Source/BsCAudioListener.cpp"
 	"Source/BsCCamera.cpp"
+	"Source/BsCRenderable.cpp"
+	"Source/BsCLight.cpp"
+	"Source/BsCAnimation.cpp"
+	"Source/BsCBone.cpp"	
 )
 
 set(BS_BANSHEECORE_SRC_IMPORTER
@@ -336,11 +346,19 @@ set(BS_BANSHEECORE_INC_RTTI
 	"Include/BsPostProcessSettingsRTTI.h"
 	"Include/BsMorphShapesRTTI.h"
 	"Include/BsAudioClipImportOptionsRTTI.h"
+	"Include/BsCRenderableRTTI.h"
+	"Include/BsCLightRTTI.h"
+	"Include/BsCAnimationRTTI.h"
+	"Include/BsCBoneRTTI.h"
+	"Include/BsRenderableRTTI.h"
+	"Include/BsLightRTTI.h"	
 )
 
 set(BS_BANSHEECORE_SRC_RENDERER
+	"Source/BsLight.cpp"
+	"Source/BsRenderable.cpp"
 	"Source/BsRendererManager.cpp"
-	"Source/BsCoreRenderer.cpp"
+	"Source/BsRenderer.cpp"
 	"Source/BsRendererMeshData.cpp"
 	"Source/BsParamBlocks.cpp"
 	"Source/BsCamera.cpp"
@@ -476,7 +494,7 @@ set(BS_BANSHEECORE_SRC_SCENE
 	"Source/BsGameObjectHandle.cpp"
 	"Source/BsGameObjectManager.cpp"
 	"Source/BsSceneObject.cpp"
-	"Source/BsCoreSceneManager.cpp"
+	"Source/BsSceneManager.cpp"
 	"Source/BsPrefab.cpp"
 	"Source/BsPrefabDiff.cpp"
 	"Source/BsPrefabUtility.cpp"

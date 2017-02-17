@@ -3,7 +3,7 @@
 #include "BsRendererExtension.h"
 #include "BsCoreThread.h"
 #include "BsRendererManager.h"
-#include "BsCoreRenderer.h"
+#include "BsRenderer.h"
 
 namespace bs
 {

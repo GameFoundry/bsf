@@ -42,7 +42,7 @@ namespace bs
 			WorldTfrmDirty = 0x02
 		};
 
-		friend class CoreSceneManager;
+		friend class SceneManager;
 		friend class Prefab;
 		friend class PrefabDiff;
 		friend class PrefabUtility;
@@ -472,9 +472,9 @@ namespace bs
 		/**
 		 * Internal version of setParent() that allows you to set a null parent.
 		 *
-		 * @param[in]	parent			New parent.
-		 * @param[in]	keepWorldPos	Determines should the current transform be maintained even after the parent is 
-		 *								changed (this means the local transform will be modified accordingly).
+		 * @param[in]	parent				New parent.
+		 * @param[in]	keepWorldTransform	Determines should the current transform be maintained even after the parent is 
+		 *									changed (this means the local transform will be modified accordingly).
 		 */
 		void _setParent(const HSceneObject& parent, bool keepWorldTransform = true);
 
@@ -538,8 +538,8 @@ namespace bs
 		 * Searches for a component with the specific type and returns the first one it finds. Will also return components
 		 * derived from the type.
 		 * 			
-		 * @tparam	typename T	Type of the component.
-		 * @return				Component if found, nullptr otherwise.
+		 * @tparam	T	Type of the component.
+		 * @return		Component if found, nullptr otherwise.
 		 *
 		 * @note	
 		 * Don't call this too often as it is relatively slow. It is more efficient to call it once and store the result 

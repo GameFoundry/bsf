@@ -2,7 +2,7 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
-#include "BsPrerequisites.h"
+#include "BsCorePrerequisites.h"
 #include "BsComponent.h"
 
 namespace bs 
@@ -15,7 +15,7 @@ namespace bs
 	 * Component that maps animation for specific bone also be applied to the SceneObject this component is attached to. 
 	 * The component will attach to the first found parent Animation component.
 	 */
-    class BS_EXPORT CBone : public Component
+    class BS_CORE_EXPORT CBone : public Component
     {
     public:
 		CBone(const HSceneObject& parent);

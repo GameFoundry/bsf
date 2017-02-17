@@ -1,29 +1,29 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
-#include "BsCoreSceneManager.h"
+#include "BsSceneManager.h"
 #include "BsSceneObject.h"
 #include "BsComponent.h"
+#include "BsRenderable.h"
 #include "BsCamera.h"
+#include "BsLight.h"
 #include "BsViewport.h"
 #include "BsGameObjectManager.h"
 #include "BsRenderTarget.h"
 
 namespace bs
 {
-	std::function<void()> SceneManagerFactory::mFactoryMethod;
-
-	CoreSceneManager::CoreSceneManager()
+	SceneManager::SceneManager()
 	{
 		mRootNode = SceneObject::createInternal("SceneRoot");
 	}
 
-	CoreSceneManager::~CoreSceneManager()
+	SceneManager::~SceneManager()
 	{
 		if (mRootNode != nullptr && !mRootNode.isDestroyed())
 			mRootNode->destroy(true);
 	}
 
-	void CoreSceneManager::clearScene(bool forceAll)
+	void SceneManager::clearScene(bool forceAll)
 	{
 		UINT32 numChildren = mRootNode->getNumChildren();
 
@@ -44,7 +44,7 @@ namespace bs
 		_setRootNode(newRoot);
 	}
 
-	void CoreSceneManager::_setRootNode(const HSceneObject& root)
+	void SceneManager::_setRootNode(const HSceneObject& root)
 	{
 		if (root == nullptr)
 			return;
@@ -76,12 +76,32 @@ namespace bs
 		oldRoot->destroy();
 	}
 
-	void CoreSceneManager::_registerCamera(const SPtr<Camera>& camera, const HSceneObject& so)
+	void SceneManager::_registerRenderable(const SPtr<Renderable>& renderable, const HSceneObject& so)
+	{
+		mRenderables[renderable.get()] = SceneRenderableData(renderable, so);
+	}
+
+	void SceneManager::_unregisterRenderable(const SPtr<Renderable>& renderable)
+	{
+		mRenderables.erase(renderable.get());
+	}
+
+	void SceneManager::_registerLight(const SPtr<Light>& light, const HSceneObject& so)
+	{
+		mLights[light.get()] = SceneLightData(light, so);
+	}
+
+	void SceneManager::_unregisterLight(const SPtr<Light>& light)
+	{
+		mLights.erase(light.get());
+	}
+
+	void SceneManager::_registerCamera(const SPtr<Camera>& camera, const HSceneObject& so)
 	{
 		mCameras[camera.get()] = SceneCameraData(camera, so);
 	}
 
-	void CoreSceneManager::_unregisterCamera(const SPtr<Camera>& camera)
+	void SceneManager::_unregisterCamera(const SPtr<Camera>& camera)
 	{
 		mCameras.erase(camera.get());
 
@@ -95,7 +115,7 @@ namespace bs
 			mMainCameras.erase(iterFind);
 	}
 
-	void CoreSceneManager::_notifyMainCameraStateChanged(const SPtr<Camera>& camera)
+	void SceneManager::_notifyMainCameraStateChanged(const SPtr<Camera>& camera)
 	{
 		auto iterFind = std::find_if(mMainCameras.begin(), mMainCameras.end(),
 			[&](const SceneCameraData& entry)
@@ -121,7 +141,61 @@ namespace bs
 		}
 	}
 
-	SceneCameraData CoreSceneManager::getMainCamera() const
+	void SceneManager::_updateCoreObjectTransforms()
+	{
+		for (auto& renderablePair : mRenderables)
+		{
+			SPtr<Renderable> renderable = renderablePair.second.renderable;
+			HSceneObject so = renderablePair.second.sceneObject;
+
+			renderable->_updateTransform(so);
+
+			if (so->getActive() != renderable->getIsActive())
+				renderable->setIsActive(so->getActive());
+		}
+
+		for (auto& cameraPair : mCameras)
+		{
+			SPtr<Camera> handler = cameraPair.second.camera;
+			HSceneObject so = cameraPair.second.sceneObject;
+
+			UINT32 curHash = so->getTransformHash();
+			if (curHash != handler->_getLastModifiedHash())
+			{
+				handler->setPosition(so->getWorldPosition());
+				handler->setRotation(so->getWorldRotation());
+
+				handler->_setLastModifiedHash(curHash);
+			}
+
+			if (so->getActive() != handler->getIsActive())
+			{
+				handler->setIsActive(so->getActive());
+			}
+		}
+
+		for (auto& lightPair : mLights)
+		{
+			SPtr<Light> handler = lightPair.second.light;
+			HSceneObject so = lightPair.second.sceneObject;
+
+			UINT32 curHash = so->getTransformHash();
+			if (curHash != handler->_getLastModifiedHash())
+			{
+				handler->setPosition(so->getWorldPosition());
+				handler->setRotation(so->getWorldRotation());
+
+				handler->_setLastModifiedHash(curHash);
+			}
+
+			if (so->getActive() != handler->getIsActive())
+			{
+				handler->setIsActive(so->getActive());
+			}
+		}
+	}
+
+	SceneCameraData SceneManager::getMainCamera() const
 	{
 		if (mMainCameras.size() > 0)
 			return mMainCameras[0];
@@ -129,7 +203,7 @@ namespace bs
 		return SceneCameraData();
 	}
 
-	void CoreSceneManager::setMainRenderTarget(const SPtr<RenderTarget>& rt)
+	void SceneManager::setMainRenderTarget(const SPtr<RenderTarget>& rt)
 	{
 		if (mMainRT == rt)
 			return;
@@ -137,7 +211,7 @@ namespace bs
 		mMainRTResizedConn.disconnect();
 
 		if (rt != nullptr)
-			mMainRTResizedConn = rt->onResized.connect(std::bind(&CoreSceneManager::onMainRenderTargetResized, this));
+			mMainRTResizedConn = rt->onResized.connect(std::bind(&SceneManager::onMainRenderTargetResized, this));
 
 		mMainRT = rt;
 
@@ -155,7 +229,7 @@ namespace bs
 		}
 	}
 
-	void CoreSceneManager::_update()
+	void SceneManager::_update()
 	{
 		Stack<HSceneObject> todo;
 		todo.push(mRootNode);
@@ -182,13 +256,13 @@ namespace bs
 		GameObjectManager::instance().destroyQueuedObjects();
 	}
 
-	void CoreSceneManager::registerNewSO(const HSceneObject& node) 
+	void SceneManager::registerNewSO(const HSceneObject& node)
 	{ 
 		if(mRootNode)
 			node->setParent(mRootNode);
 	}
 
-	void CoreSceneManager::onMainRenderTargetResized()
+	void SceneManager::onMainRenderTargetResized()
 	{
 		auto& rtProps = mMainRT->getProperties();
 		float aspect = rtProps.getWidth() / (float)rtProps.getHeight();
@@ -197,16 +271,8 @@ namespace bs
 			entry.camera->setAspectRatio(aspect);
 	}
 
-	CoreSceneManager& gCoreSceneManager()
+	SceneManager& gSceneManager()
 	{
-		return CoreSceneManager::instance();
-	}
-
-	void SceneManagerFactory::create()
-	{
-		if (mFactoryMethod != nullptr)
-			mFactoryMethod();
-		else
-			BS_EXCEPT(InvalidStateException, "Failed to initialize scene manager because no valid factory method is set.");
+		return SceneManager::instance();
 	}
 }

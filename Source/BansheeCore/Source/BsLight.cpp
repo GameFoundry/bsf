@@ -6,7 +6,6 @@
 #include "BsFrameAlloc.h"
 #include "BsSceneObject.h"
 #include "BsMesh.h"
-#include "BsRendererUtility.h"
 
 namespace bs
 {
@@ -311,19 +310,4 @@ namespace bs
 		}
 	}
 
-	SPtr<Mesh> Light::getMesh() const
-	{
-		switch (mType)
-		{
-		case LightType::Directional:
-			return nullptr;
-		case LightType::Point:
-			return RendererUtility::instance().getPointLightStencil();
-		case LightType::Spot:
-			return RendererUtility::instance().getSpotLightStencil();
-		}
-
-		return nullptr;
-	}
-	}
-}
+}}

@@ -5,7 +5,7 @@
 #include "BsAnimationClip.h"
 #include "BsTaskScheduler.h"
 #include "BsTime.h"
-#include "BsCoreSceneManager.h"
+#include "BsSceneManager.h"
 #include "BsCamera.h"
 #include "BsMorphShapes.h"
 #include "BsMeshData.h"
@@ -85,7 +85,7 @@ namespace bs
 
 		mCullFrustums.clear();
 
-		auto& allCameras = gCoreSceneManager().getAllCameras();
+		auto& allCameras = gSceneManager().getAllCameras();
 		for(auto& entry : allCameras)
 		{
 			bool isOverlayCamera = entry.second.camera->getFlags().isSet(CameraFlag::Overlay);

@@ -11,7 +11,7 @@
 #include "BsVector2.h"
 #include "BsCoreApplication.h"
 #include "BsRendererManager.h"
-#include "BsCoreRenderer.h"
+#include "BsRenderer.h"
 #include "BsSceneObject.h"
 #include "BsGUIManager.h"
 #include "BsBuiltinEditorResources.h"

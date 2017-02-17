@@ -219,7 +219,7 @@ namespace bs
 		static SPtr<VertexDataDesc> vertexLayoutVertexDesc(VertexLayout type);
 
 	private:
-		friend class ct::CoreRenderer;
+		friend class ct::Renderer;
 
 		RendererMeshData(UINT32 numVertices, UINT32 numIndices, VertexLayout layout, IndexType indexType = IT_32BIT);
 		RendererMeshData(const SPtr<MeshData>& meshData);

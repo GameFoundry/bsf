@@ -5,7 +5,7 @@
 #include "BsRenderAPI.h"
 #include "BsRendererManager.h"
 #include "BsPass.h"
-#include "BsCoreRenderer.h"
+#include "BsRenderer.h"
 #include "BsFrameAlloc.h"
 #include "BsTechniqueRTTI.h"
 

@@ -8,7 +8,7 @@
 #include "BsColor.h"
 #include "BsPixelUtil.h"
 #include "BsRendererManager.h"
-#include "BsCoreRenderer.h"
+#include "BsRenderer.h"
 #include "BsMeshUtility.h"
 
 namespace bs

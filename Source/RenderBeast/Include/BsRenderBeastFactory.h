@@ -21,7 +21,7 @@ namespace bs
 	{
 	public:
 		/** @copydoc RendererFactory::create */
-		SPtr<ct::CoreRenderer> create() override;
+		SPtr<ct::Renderer> create() override;
 
 		/** @copydoc RendererFactory::name */
 		const String& name() const override;

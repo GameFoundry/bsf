@@ -332,6 +332,10 @@ namespace bs
 	class AudioClipImportOptions;
 	class AnimationClip;
 	class CCamera;
+	class CRenderable;
+	class CLight;
+	class CAnimation;
+	class CBone;
 	class GpuPipelineParamInfo;
 	class MaterialParams;
 	template <class T> class TAnimationCurve;
@@ -340,6 +344,7 @@ namespace bs
 	class Animation;
 	class GpuParamsSet;
 	class Camera;
+	class Renderable;
 	class MorphShapes;
 	class MorphShape;
 	class MorphChannel;
@@ -398,7 +403,7 @@ namespace bs
 
 	namespace ct
 	{
-		class CoreRenderer;
+		class Renderer;
 		class VertexData;
 		class SamplerState;
 		class IndexBuffer;
@@ -412,6 +417,7 @@ namespace bs
 		class BlendState;
 		class CoreObject;
 		class Camera;
+		class Renderable;
 		class MeshBase;
 		class Mesh;
 		class TransientMesh;
@@ -566,6 +572,10 @@ namespace bs
 		// Moved from Engine layer
 		TID_CCamera = 30000,
 		TID_Camera = 30003,
+		TID_CRenderable = 30001,
+		TID_Renderable = 30004,
+		TID_Light = 30011,
+		TID_CLight = 30012,
 	};
 }
 
@@ -611,6 +621,10 @@ namespace bs
 	typedef GameObjectHandle<SceneObject> HSceneObject;
 	typedef GameObjectHandle<Component> HComponent;
 	typedef GameObjectHandle<CCamera> HCamera;
+	typedef GameObjectHandle<CRenderable> HRenderable;
+	typedef GameObjectHandle<CLight> HLight;
+	typedef GameObjectHandle<CAnimation> HAnimation;
+	typedef GameObjectHandle<CBone> HBone;
 	typedef GameObjectHandle<CRigidbody> HRigidbody;
 	typedef GameObjectHandle<CCollider> HCollider;
 	typedef GameObjectHandle<CBoxCollider> HBoxCollider;

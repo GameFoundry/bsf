@@ -2,9 +2,9 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
-#include "BsPrerequisites.h"
+#include "BsCorePrerequisites.h"
 #include "BsRTTIType.h"
-#include "BsCBone.h"
+#include "BsCLight.h"
 #include "BsGameObjectRTTI.h"
 
 namespace bs
@@ -14,30 +14,32 @@ namespace bs
 	 *  @{
 	 */
 
-	class BS_EXPORT CBoneRTTI : public RTTIType<CBone, Component, CBoneRTTI>
+	class BS_CORE_EXPORT CLightRTTI : public RTTIType <CLight, Component, CLightRTTI>
 	{
-		BS_BEGIN_RTTI_MEMBERS
-			BS_RTTI_MEMBER_PLAIN(mBoneName, 0)
-		BS_END_RTTI_MEMBERS
+	private:
+		SPtr<Light> getInternal(CLight* obj) { return obj->mInternal; }
+		void setInternal(CLight* obj, SPtr<Light> val) { obj->mInternal = val; }
+
 	public:
-		CBoneRTTI()
-			:mInitMembers(this)
-		{ }
+		CLightRTTI()
+		{
+			addReflectablePtrField("mInternal", 0, &CLightRTTI::getInternal, &CLightRTTI::setInternal);
+		}
 
 		const String& getRTTIName() override
 		{
-			static String name = "CBone";
+			static String name = "CLight";
 			return name;
 		}
 
 		UINT32 getRTTIId() override
 		{
-			return TID_CBone;
+			return TID_CLight;
 		}
 
 		SPtr<IReflectable> newRTTIObject() override
 		{
-			return GameObjectRTTI::createGameObject<CBone>();
+			return GameObjectRTTI::createGameObject<CLight>();
 		}
 	};
 

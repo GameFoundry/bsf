@@ -7,7 +7,7 @@
 #include "BsBuiltinEditorResources.h"
 #include "BsCoreThread.h"
 #include "BsRendererManager.h"
-#include "BsCoreRenderer.h"
+#include "BsRenderer.h"
 #include "BsTransientMesh.h"
 #include "BsCamera.h"
 #include "BsRendererUtility.h"
@@ -251,7 +251,7 @@ namespace bs
 
 	void HandleRenderer::queueForDraw(const SPtr<Camera>& camera, Vector<MeshData>& meshes)
 	{
-		SPtr<CoreRenderer> activeRenderer = RendererManager::instance().getActive();
+		SPtr<Renderer> activeRenderer = RendererManager::instance().getActive();
 		if (camera != nullptr)
 		{
 			for(auto& entry : meshes)

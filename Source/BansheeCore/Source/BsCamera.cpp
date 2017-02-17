@@ -11,7 +11,7 @@
 #include "BsRenderAPI.h"
 #include "BsSceneObject.h"
 #include "BsRendererManager.h"
-#include "BsCoreRenderer.h"
+#include "BsRenderer.h"
 #include "BsFrameAlloc.h"
 
 namespace bs

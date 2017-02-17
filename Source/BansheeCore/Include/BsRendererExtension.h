@@ -42,7 +42,7 @@ namespace bs
 
 	/** 
 	 * Interface that can be implemented in order to provide custom rendering code to the renderer. 
-	 * See CoreRenderer::addPlugin().
+	 * See Renderer::addPlugin().
 	 * 
 	 * @note	Core thread.
 	 */

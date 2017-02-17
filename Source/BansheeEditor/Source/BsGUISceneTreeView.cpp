@@ -252,7 +252,7 @@ namespace bs
 
 	void GUISceneTreeView::updateTreeElementHierarchy()
 	{
-		HSceneObject root = gCoreSceneManager().getRootNode();
+		HSceneObject root = gSceneManager().getRootNode();
 		mRootElement.mSceneObject = root;
 		mRootElement.mId = root->getInstanceId();
 		mRootElement.mSortedIdx = 0;
