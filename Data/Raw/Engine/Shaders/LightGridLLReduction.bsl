@@ -24,10 +24,8 @@ Technique
 				uint3 groupThreadId : SV_GroupThreadID,
 				uint3 dispatchThreadId : SV_DispatchThreadID)
 			{
-				uint2 viewportMax = gViewportRectangle.xy + gViewportRectangle.zw;
-
 				// Ignore pixels out of valid range
-				if (all(dispatchThreadId.xy >= viewportMax))
+				if (any(dispatchThreadId.xy >= gGridSize.xy))
 					return;
 					
 				uint maxNumLinks = gNumCells * gMaxNumLightsPerCell;	
@@ -93,10 +91,8 @@ Technique
 			
 			void main()
 			{
-				uvec2 viewportMax = gViewportRectangle.xy + gViewportRectangle.zw;
-
 				// Ignore pixels out of valid range
-				if (all(greaterThanEqual(gl_GlobalInvocationID.xy, viewportMax)))
+				if (any(greaterThanEqual(gl_GlobalInvocationID.xy, gGridSize.xy)))
 					return;
 					
 				uint maxNumLinks = gNumCells * gMaxNumLightsPerCell;	

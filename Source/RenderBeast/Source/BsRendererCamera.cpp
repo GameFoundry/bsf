@@ -238,8 +238,17 @@ namespace bs { namespace ct
 		float c = projMatrix[3][2];
 
 		Vector2 output;
-		output.x = b / (depthRange * c);
-		output.y = minDepth / depthRange - a / (depthRange * c);
+
+		if (c != 0.0f)
+		{
+			output.x = b / (depthRange * c);
+			output.y = minDepth / depthRange - a / (depthRange * c);
+		}
+		else // Ortographic, assuming viewing towards negative Z
+		{
+			output.x = b / -depthRange;
+			output.y = minDepth / depthRange - a / -depthRange;
+		}
 
 		return output;
 	}
@@ -268,8 +277,17 @@ namespace bs { namespace ct
 		float c = projMatrix[3][2];
 
 		Vector2 output;
-		output.x = b / c;
-		output.y = - a / c;
+
+		if (c != 0.0f)
+		{
+			output.x = b / c;
+			output.y = -a / c;
+		}
+		else // Ortographic, assuming viewing towards negative Z
+		{
+			output.x = -b;
+			output.y = a;
+		}
 
 		return output;
 	}
