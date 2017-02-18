@@ -110,9 +110,9 @@ namespace bs
 	public:
 		friend class CGUIWidgetRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const override;
+		RTTITypeBase* getRTTI() const override;
 
-		CGUIWidget() { } // Serialization only
+		CGUIWidget(); // Serialization only
 	};
 
 	/** @} */

@@ -291,6 +291,11 @@ namespace bs
 
 	const UINT32 ProfilerOverlayInternal::MAX_DEPTH = 4;
 
+	ProfilerOverlay::ProfilerOverlay()
+	{
+		setFlag(ComponentFlag::AlwaysRun, true);
+	}
+
 	ProfilerOverlay::ProfilerOverlay(const HSceneObject& parent, const SPtr<Camera>& target)
 		:Component(parent), mInternal(nullptr)
 	{

@@ -6,6 +6,12 @@
 
 namespace bs
 {
+	CLight::CLight()
+	{
+		setFlag(ComponentFlag::AlwaysRun, true);
+		setName("Light");
+	}
+
 	CLight::CLight(const HSceneObject& parent, LightType type, Color color,
 		float intensity, float range, bool castsShadows, Degree spotAngle, Degree spotFalloffAngle)
 		: Component(parent), mType(type), mColor(color), mIntensity(intensity), mRange(range),

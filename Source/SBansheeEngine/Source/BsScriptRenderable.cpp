@@ -172,7 +172,7 @@ namespace bs
 	}
 
 	ScriptRenderable2::ScriptRenderable2(MonoObject* managedInstance, const HComponent& component)
-		:TScriptComponent <ScriptRenderable2, Renderable>(managedInstance, component)
+		:TScriptComponent <ScriptRenderable2, CRenderable>(managedInstance, component)
 	{ }
 
 	ScriptRenderable2::~ScriptRenderable2()
@@ -210,7 +210,8 @@ namespace bs
 		if (mesh != nullptr)
 			nativeMesh = mesh->getHandle();
 
-		thisPtr->getHandle()->setMesh(nativeMesh);
+		HRenderable renderable = thisPtr->getHandle();
+		renderable->setMesh(nativeMesh);
 	}
 
 	void ScriptRenderable2::internal_GetBounds(ScriptRenderable2* thisPtr, AABox* box, Sphere* sphere)
@@ -282,6 +283,8 @@ namespace bs
 
 	void ScriptRenderable2::internal_SetMaterials(ScriptRenderable2* thisPtr, MonoArray* materials)
 	{
+		HRenderable renderable = thisPtr->getHandle();
+
 		if (materials != nullptr)
 		{
 			ScriptArray scriptMaterials(materials);
@@ -293,14 +296,18 @@ namespace bs
 				ScriptMaterial* scriptMaterial = ScriptMaterial::toNative(monoMaterial);
 
 				if (scriptMaterial != nullptr)
-					nativeMaterials[i] = scriptMaterial->getHandle();
+					renderable->setMaterial(i, scriptMaterial->getHandle());
 			}
-
-			thisPtr->getHandle()->setMaterials(nativeMaterials);
 		}
 		else
 		{
-			thisPtr->getHandle()->setMaterials({});
+			HMesh mesh = renderable->getMesh();
+			if (!mesh.isLoaded())
+				return;
+
+			UINT32 numMaterials = mesh->getProperties().getNumSubMeshes();
+			for (UINT32 i = 0; i < numMaterials; i++)
+				renderable->setMaterial(i, HMaterial());
 		}
 	}
 }

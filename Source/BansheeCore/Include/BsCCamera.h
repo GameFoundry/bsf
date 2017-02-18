@@ -258,7 +258,7 @@ namespace bs
 		RTTITypeBase* getRTTI() const override;
 
 	protected:
-		CCamera() {} // Serialization only
+		CCamera();// Serialization only
      };
 
 	 /** @} */

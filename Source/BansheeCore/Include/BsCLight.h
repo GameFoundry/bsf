@@ -122,7 +122,7 @@ namespace bs
 		RTTITypeBase* getRTTI() const override;
 
 	protected:
-		CLight() {} // Serialization only
+		CLight(); // Serialization only
      };
 
 	 /** @} */

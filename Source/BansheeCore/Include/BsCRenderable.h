@@ -95,7 +95,7 @@ namespace bs
 		RTTITypeBase* getRTTI() const override;
 
 	protected:
-		CRenderable() {} // Serialization only
+		CRenderable(); // Serialization only
 	};
 
 	/** @} */

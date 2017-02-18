@@ -58,7 +58,7 @@ namespace bs
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
 
-		ProfilerOverlay() { } // Serialization only
+		ProfilerOverlay(); // Serialization only
 	};
 
 	/**	Handles rendering of Profiler information as an overlay in a viewport. */

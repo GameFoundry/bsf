@@ -75,8 +75,8 @@ namespace bs
 		ct::ParamBlockManager::shutDown();
 		StringTableManager::shutDown();
 		Resources::shutDown();
-		ResourceListenerManager::shutDown();
 		GameObjectManager::shutDown();
+		ResourceListenerManager::shutDown();
 		RenderStateManager::shutDown();
 
 		// This must be done after all resources are released since it will unload the physics plugin, and some resources

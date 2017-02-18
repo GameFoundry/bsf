@@ -11,6 +11,12 @@
 
 namespace bs
 {
+	CRenderable::CRenderable()
+	{
+		setName("Renderable");
+		setFlag(ComponentFlag::AlwaysRun, true);
+	}
+
 	CRenderable::CRenderable(const HSceneObject& parent)
 		:Component(parent)
 	{

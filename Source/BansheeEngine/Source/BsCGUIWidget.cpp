@@ -8,6 +8,11 @@
 
 namespace bs
 {
+	CGUIWidget::CGUIWidget()
+	{
+		setFlag(ComponentFlag::AlwaysRun, true);
+	}
+
 	CGUIWidget::CGUIWidget(const HSceneObject& parent, const SPtr<Camera>& camera)
 		:Component(parent), mCamera(camera), mParentHash((UINT32)-1)
 	{

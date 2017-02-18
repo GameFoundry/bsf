@@ -55,7 +55,7 @@ namespace bs
 	};
 
 	/**	Interop class between C++ & CLR for Renderable. */
-	class BS_SCR_BE_EXPORT ScriptRenderable2 : public TScriptComponent <ScriptRenderable2, Renderable>
+	class BS_SCR_BE_EXPORT ScriptRenderable2 : public TScriptComponent <ScriptRenderable2, CRenderable>
 	{
 	public:
 		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Renderable2")

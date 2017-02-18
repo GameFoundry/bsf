@@ -73,7 +73,7 @@ namespace bs
 	};
 
 	LOOKUP_BEGIN
-		ADD_ENTRY(TID_Renderable, ScriptRenderable2)
+		ADD_ENTRY(TID_CRenderable, ScriptRenderable2)
 	LOOKUP_END
 
 #undef LOOKUP_BEGIN
