@@ -444,7 +444,7 @@ namespace bs
 				{
 					for (auto iter3 = validObjectParameters.begin(); iter3 != validObjectParameters.end(); ++iter3)
 					{
-						if ((*iter3)->name == (*iter2) && (*iter3)->type == iter->second.type)
+						if ((*iter3)->name == (*iter2))
 						{
 							ValidParamKey key(*iter2, paramType);
 							validParams.insert(std::make_pair(key, iter->first));
