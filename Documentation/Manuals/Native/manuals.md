@@ -32,6 +32,7 @@ Manuals									{#manuals}
  - [Input events](@ref inputEvents) 
  - [Virtual input](@ref virtualInput)
 - [Creating custom components](@ref customComponents)
+- [Serializing objects](@ref serializingObjects)
 - **GUI**
  - [Sprite textures](@ref spriteTextures)
  - [Basic setup](@ref guiSetup)
@@ -57,6 +58,8 @@ Manuals									{#manuals}
  - [Playing animation](@ref animation)
  - [Bones](@ref bones)
  - [Advanced animation](@ref advancedAnimation)
+- **Advanced**
+ - [Advanced RTTI](@ref advancedRtti) 
  
 # Developer guides
 
@@ -70,7 +73,6 @@ Name                                      | Description
 [Utilities](@ref utilities)               | Provides an overview of a variety of utility systems used throughout Banshee.
 [Core thread](@ref coreThread)            | Explains how core (rendering) thread works, how it interacts with simulation thread, what are core objects and how to create your own.
 [Resources](@ref resources)  			  | Explains how resources work, including saving, loading and creating brand new resource types.
-[RTTI](@ref rtti)                         | Shows you how to add run-time type information for your objects.
 [Game objects](@ref gameObjects)          | Explains what are scene objects and components and how can you use them to create your scene.
 [Scripting](@ref scripting)               | Shows you how to interact with the scripting system, and how to expose C++ objects to the scripting API.
 [Renderer](@ref renderer)    	  		  | Explains how the renderer works on the low level, and how to create a custom renderer so you may fully customize the look of your application.

@@ -95,10 +95,19 @@ namespace bs
 		SerializableFieldType mType;
 		UINT64 mFlags;
 
+		/** Checks is the field plain type and castable to RTTIPlainFieldBase. */
 		bool isPlainType() const { return mType == SerializableFT_Plain; }
+
+		/** Checks is the field a data block type and castable to RTTIManagedDataBlockFieldBase. */
 		bool isDataBlockType() const { return mType == SerializableFT_DataBlock; }
+
+		/** Checks is the field a reflectable type and castable to RTTIReflectableFieldBase. */
 		bool isReflectableType() const { return mType == SerializableFT_Reflectable; }
+
+		/** Checks is the field a reflectable pointer type and castable to RTTIReflectablePtrFieldBase. */
 		bool isReflectablePtrType() const { return mType == SerializableFT_ReflectablePtr; }
+
+		/** Checks is the field contains an array or a single entry. */
 		bool isArray() const { return mIsVectorType; }
 
 		/** Returns flags that were set in the field meta-data. */

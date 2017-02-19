@@ -84,11 +84,11 @@ To create your own renderer you must implement the @ref bs::ct::Renderer "ct::Re
 The renderer is mostly a core-thread system as then it has a more direct access to the @ref bs::RenderAPI "RenderAPI", as well as various utility functionality we'll describe later. Read the [core thread](@ref coreThread) manual for more information about the core thread and core objects, and the [render API](@ref renderAPI) manual on how to use the low level rendering functionality.
 
 The @ref bs::ct::Renderer "ct::Renderer" interface requires you to implement the following methods:
- - @ref bs::ct::CoreRenderer::getName "ct::Renderer::getName" - Returns a unique name of the renderer. This can be used by shader techniques to identify which renderer is active and when they should run, as described in the [material](@ref materials) manual.
- - @ref bs::ct::CoreRenderer::renderAll "ct::Renderer::renderAll" - This is a method called from the simulation thread that executes the rendering. It is called once per frame. In this method you should queue your actual rendering method for execution on the core thread.
- - @ref bs::ct::CoreRenderer::notifyCameraAdded "ct::Renderer::notifyCameraAdded" - Called on the core thread whenever a new @ref bs::Camera "Camera" is created (i.e. when a @ref bs::CCamera "CCamera" component is added to the scene). Also called when camera's properties change (camera is removed, then re-added).
- - @ref bs::ct::CoreRenderer::notifyCameraUpdated "ct::Renderer::notifyCameraUpdated" - Called on the core thread whenever a @ref bs::Camera "Camera's" position or rotation changes.
- - @ref bs::ct::CoreRenderer::notifyCameraRemoved "ct::Renderer::notifyCameraRemoved" - Called on the core thread whenever a @ref bs::Camera "Camera" is destroyed. Also called when camera's properties change (camera is removed, then re-added).
+ - @ref bs::ct::Renderer::getName "ct::Renderer::getName" - Returns a unique name of the renderer. This can be used by shader techniques to identify which renderer is active and when they should run, as described in the [material](@ref materials) manual.
+ - @ref bs::ct::Renderer::renderAll "ct::Renderer::renderAll" - This is a method called from the simulation thread that executes the rendering. It is called once per frame. In this method you should queue your actual rendering method for execution on the core thread.
+ - @ref bs::ct::Renderer::notifyCameraAdded "ct::Renderer::notifyCameraAdded" - Called on the core thread whenever a new @ref bs::Camera "Camera" is created (i.e. when a @ref bs::CCamera "CCamera" component is added to the scene). Also called when camera's properties change (camera is removed, then re-added).
+ - @ref bs::ct::Renderer::notifyCameraUpdated "ct::Renderer::notifyCameraUpdated" - Called on the core thread whenever a @ref bs::Camera "Camera's" position or rotation changes.
+ - @ref bs::ct::Renderer::notifyCameraRemoved "ct::Renderer::notifyCameraRemoved" - Called on the core thread whenever a @ref bs::Camera "Camera" is destroyed. Also called when camera's properties change (camera is removed, then re-added).
  - @ref bs::ct::Renderer::notifyRenderableAdded "ct::Renderer::notifyRenderableAdded" - Called on the core thread whenever a new @ref bs::Renderable "Renderable" is created (e.g. when a @ref bs::CRenderable "CRenderable" component is added to the scene).
  - @ref bs::ct::Renderer::notifyRenderableUpdated "ct::Renderer::notifyRenderableUpdated" - Called whenever @ref bs::Renderable "Renderable" properties change, e.g. when a scene object a renderable is attached to moves.
  - @ref bs::ct::Renderer::notifyRenderableRemoved "ct::Renderer::notifyRenderableRemoved" - Called whenever a @ref bs::Renderable "Renderable" is destroyed.
@@ -302,26 +302,26 @@ gRendererUtility().draw(mesh, mesh->getProperties().getSubMesh(0));
 ~~~~~~~~~~~~~
  
 ### RenderTexturePool {#renderer_b_a_f}
-Although you can create render textures manually as described in the [render target](@ref renderTargets) manual, @ref bs::ct::RenderTexturePool "ct::RenderTexturePool" provides a simpler and more efficient way of doing it. It will keep alive any referenced render textures, so that other systems may re-use them if their size/formats match. This can improve performance when using many temporary/intermediary render textures (like in post-processing).
+Although you can create render textures manually as described in the [render target](@ref renderTargets) manual, @ref bs::ct::GpuResourcePool "ct::GpuResourcePool" provides a simpler and more efficient way of doing it. It will keep alive any referenced render textures, so that other systems may re-use them if their size/formats match. This can improve performance when using many temporary/intermediary render textures (like in post-processing).
 
 To request a render texture, first populate the @ref bs::ct::POOLED_RENDER_TEXTURE_DESC "ct::POOLED_RENDER_TEXTURE_DESC" descriptor, by calling either @ref bs::ct::POOLED_RENDER_TEXTURE_DESC::create2D "ct::POOLED_RENDER_TEXTURE_DESC::create2D", @ref bs::ct::POOLED_RENDER_TEXTURE_DESC::create3D "ct::POOLED_RENDER_TEXTURE_DESC::create3D" or @ref bs::ct::POOLED_RENDER_TEXTURE_DESC::createCube "ct::POOLED_RENDER_TEXTURE_DESC::createCube".
 
-Then call @ref bs::ct::RenderTexturePool::get "ct::RenderTexturePool::get" which will either create a new render texture, or return one from the pool. The returned object is @ref bs::ct::PooledRenderTexture "ct::PooledRenderTexture" from which you can access the actual render texture.
+Then call @ref bs::ct::GpuResourcePool::get "ct::GpuResourcePool::get" which will either create a new render texture, or return one from the pool. The returned object is @ref bs::ct::PooledRenderTexture "ct::PooledRenderTexture" from which you can access the actual render texture.
 
-Once you are done using the texture, call @ref bs::ct::RenderTexturePool::release "ct::RenderTexturePool::release" to return the texture to the pool, and make it available for other systems. If you plan on using this texture again, make sure to keep a reference to the @ref bs::ct::PooledRenderTexture "ct::PooledRenderTexture". This will prevent the pool from fully destroying the texture so it may be reused.
+Once you are done using the texture, call @ref bs::ct::GpuResourcePool::release "ct::GpuResourcePool::release" to return the texture to the pool, and make it available for other systems. If you plan on using this texture again, make sure to keep a reference to the @ref bs::ct::PooledRenderTexture "ct::PooledRenderTexture". This will prevent the pool from fully destroying the texture so it may be reused.
 
 For example:
 ~~~~~~~~~~~~~{.cpp}
 POOLED_RENDER_TEXTURE_DESC desc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_R8G8B8A8, 1024, 1024);
-SPtr<PooledRenderTexture> pooledRT = RenderTexturePool::instance().get(desc);
+SPtr<PooledRenderTexture> pooledRT = GpuResourcePool::instance().get(desc);
 
 RenderAPI::instance().setRenderTarget(pooledRT->renderTexture);
 ... render to target ...
-RenderTexturePool::instance().release(pooledRT);
+GpuResourcePool::instance().release(pooledRT);
 // Keep a reference to pooledRT if we plan on re-using it, then next time just call get() using the same descriptor
 ~~~~~~~~~~~~~
 
 ### Renderer options {#renderer_b_a_g}
-You can customize your rendering at runtime by implementing the @ref bs::ct::CoreRendererOptions "ct::RendererOptions" class. Your @ref bs::ct::CoreRendererOptions "ct::RendererOptions" implementation can then be assigned to the renderer by calling @ref bs::ct::CoreRenderer::setOptions "ct::Renderer::setOptions", and accessed within the renderer via the `mOptions` field. No default options are provided and it's up to your renderer to decide what it requires.
+You can customize your rendering at runtime by implementing the @ref bs::ct::RendererOptions "ct::RendererOptions" class. Your @ref bs::ct::RendererOptions "ct::RendererOptions" implementation can then be assigned to the renderer by calling @ref bs::ct::Renderer::setOptions "ct::Renderer::setOptions", and accessed within the renderer via the `mOptions` field. No default options are provided and it's up to your renderer to decide what it requires.
 
 Be aware that options are set from the simulation thread, and if you want to use them on the core thread to either properly synchronize the access, or send a copy of the options to the core thread.
