@@ -168,6 +168,16 @@ namespace BansheeEngine
         }
 
         /// <summary>
+        /// If enabled no lighting will be applied to scene objects and everything should be rendered using their
+        /// albedo texture.
+        /// </summary>
+        public bool NoLighting
+        {
+            get { return native.noLighting; }
+            set { native.noLighting = value; serializableData.noLighting = value; }
+        }
+
+        /// <summary>
         /// Texture that will be used for rendering areas of the camera's render target not covered by any geometry. 
         /// If not set a clear color will be used instead.
         /// </summary>
@@ -436,6 +446,7 @@ namespace BansheeEngine
             native.priority = serializableData.priority;
             native.layers = serializableData.layers;
             native.main = serializableData.main;
+            native.noLighting = serializableData.noLighting;
 
             // TODO - Make RenderTexture a resource so I can save/restore it?
         }
@@ -474,6 +485,7 @@ namespace BansheeEngine
             public ClearFlags clearFlags = ClearFlags.Color | ClearFlags.Depth | ClearFlags.Stencil;
             public int priority;
             public bool HDR = true;
+            public bool noLighting;
             public PostProcessSettings postProcessSettings;
             public ulong layers = 0xFFFFFFFFFFFFFFFF;
             public bool main;

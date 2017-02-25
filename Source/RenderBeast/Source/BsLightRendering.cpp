@@ -86,7 +86,7 @@ namespace bs { namespace ct
 
 	TiledDeferredLighting::TiledDeferredLighting(const SPtr<Material>& material, const SPtr<GpuParamsSet>& paramsSet, 
 												 UINT32 sampleCount)
-		:mSampleCount(sampleCount), mMaterial(material), mParamsSet(paramsSet)
+		:mSampleCount(sampleCount), mMaterial(material), mParamsSet(paramsSet), mLightOffsets()
 	{
 		SPtr<GpuParams> params = mParamsSet->getGpuParams();
 
@@ -114,13 +114,26 @@ namespace bs { namespace ct
 	}
 
 	void TiledDeferredLighting::execute(const SPtr<RenderTargets>& gbuffer,
-										const SPtr<GpuParamBlockBuffer>& perCamera)
+										const SPtr<GpuParamBlockBuffer>& perCamera, bool noLighting)
 	{
 		Vector2I framebufferSize;
 		framebufferSize[0] = gbuffer->getWidth();
 		framebufferSize[1] = gbuffer->getHeight();
 		gTiledLightingParamDef.gFramebufferSize.set(mParamBuffer, framebufferSize);
 
+		if (noLighting)
+		{
+			Vector3I lightOffsets;
+			lightOffsets[0] = 0;
+			lightOffsets[1] = 0;
+			lightOffsets[2] = 0;
+
+			gTiledLightingParamDef.gLightOffsets.set(mParamBuffer, lightOffsets);
+		}
+		else
+		{
+			gTiledLightingParamDef.gLightOffsets.set(mParamBuffer, mLightOffsets);
+		}
 		mParamBuffer->flushToGPU();
 
 		mGBufferA.set(gbuffer->getTextureA());
@@ -157,12 +170,9 @@ namespace bs { namespace ct
 	{
 		mLightBufferParam.set(lightData.getLightBuffer());
 
-		Vector3I lightOffsets;
-		lightOffsets[0] = lightData.getNumDirLights();
-		lightOffsets[1] = lightOffsets[0] + lightData.getNumRadialLights();
-		lightOffsets[2] = lightOffsets[1] + lightData.getNumSpotLights();
-
-		gTiledLightingParamDef.gLightOffsets.set(mParamBuffer, lightOffsets);
+		mLightOffsets[0] = lightData.getNumDirLights();
+		mLightOffsets[1] = mLightOffsets[0] + lightData.getNumRadialLights();
+		mLightOffsets[2] = mLightOffsets[1] + lightData.getNumSpotLights();
 	}
 
 	template<int MSAA_COUNT>
@@ -181,9 +191,9 @@ namespace bs { namespace ct
 
 	template<int MSAA_COUNT>
 	void TTiledDeferredLightingMat<MSAA_COUNT>::execute(const SPtr<RenderTargets>& gbuffer,
-													const SPtr<GpuParamBlockBuffer>& perCamera)
+													const SPtr<GpuParamBlockBuffer>& perCamera, bool noLighting)
 	{
-		mInternal.execute(gbuffer, perCamera);
+		mInternal.execute(gbuffer, perCamera, noLighting);
 	}
 
 	template<int MSAA_COUNT>

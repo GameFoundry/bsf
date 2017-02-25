@@ -220,7 +220,8 @@ namespace bs
 		DefaultMaterial* mDefaultMaterial;
 		ITiledDeferredLightingMat* mTiledDeferredLightingMats[4];
 		FlatFramebufferToTextureMat* mFlatFramebufferToTextureMat;
-		SkyboxMat* mSkyboxMat;
+		SkyboxMat<false>* mSkyboxMat;
+		SkyboxMat<true>* mSkyboxSolidColorMat;
 
 		GPULightData* mGPULightData;
 		LightGrid* mLightGrid;

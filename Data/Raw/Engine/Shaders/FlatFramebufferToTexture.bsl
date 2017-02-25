@@ -7,13 +7,6 @@ Technique =
 		DepthRead = false;
 		DepthWrite = false;
 		
-		Target = 
-		{
-			Blend = true;
-			Color = { ONE, ONE, ADD };
-			WriteMask = RGB;
-		};		
-	
 		Common = 
 		{
 			struct VStoFS
@@ -76,13 +69,6 @@ Technique =
 	{
 		DepthRead = false;
 		DepthWrite = false;
-		
-		Target = 
-		{
-			Blend = true;
-			Color = { ONE, ONE, ADD };
-			WriteMask = RGB;
-		};		
 		
 		Vertex =
 		{

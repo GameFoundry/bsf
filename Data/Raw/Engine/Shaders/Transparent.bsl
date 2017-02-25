@@ -94,6 +94,8 @@ Technique
 					lightAccumulator += getSpotLightContribution(input.worldPosition, surfaceData, lightData);
 				}
 				
+				lightAccumulator += surfaceData.albedo.xyz * gAmbientFactor;
+				
 				float3 diffuse = surfaceData.albedo.xyz / PI;
 				return float4(diffuse * lightAccumulator, gOpacity); // TODO - Add better lighting model later
 			}	
@@ -183,6 +185,8 @@ Technique
 					
 					lightAccumulator += getSpotLightContribution(worldPosition, surfaceData, lightData);
 				}
+				
+				lightAccumulator += surfaceData.albedo.xyz * gAmbientFactor;
 				
 				vec3 diffuse = surfaceData.albedo.xyz / PI; // TODO - Add better lighting model later
 				fragColor = vec4(diffuse * lightAccumulator, gOpacity); 

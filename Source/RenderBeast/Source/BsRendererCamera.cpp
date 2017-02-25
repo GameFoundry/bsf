@@ -12,29 +12,45 @@
 namespace bs { namespace ct
 {
 	PerCameraParamDef gPerCameraParamDef;
+	SkyboxParamDef gSkyboxParamDef;
 
-	SkyboxMat::SkyboxMat()
+	template<bool SOLID_COLOR>
+	SkyboxMat<SOLID_COLOR>::SkyboxMat()
 	{
 		SPtr<GpuParams> params = mParamsSet->getGpuParams();
 
-		params->getTextureParam(GPT_FRAGMENT_PROGRAM, "gSkyTex", mSkyTextureParam);
+		if(params->hasTexture(GPT_FRAGMENT_PROGRAM, "gSkyTex"))
+			params->getTextureParam(GPT_FRAGMENT_PROGRAM, "gSkyTex", mSkyTextureParam);
+
+		mParamBuffer = gSkyboxParamDef.createBuffer();
+
+		if(params->hasParamBlock(GPT_FRAGMENT_PROGRAM, "Params"))
+			mParamsSet->setParamBlockBuffer("Params", mParamBuffer, true);
 	}
 
-	void SkyboxMat::_initDefines(ShaderDefines& defines)
+	template<bool SOLID_COLOR>
+	void SkyboxMat<SOLID_COLOR>::_initDefines(ShaderDefines& defines)
 	{
-		// Do nothing
+		if (SOLID_COLOR)
+			defines.set("SOLID_COLOR", 1);
 	}
 
-	void SkyboxMat::bind(const SPtr<GpuParamBlockBuffer>& perCamera)
+	template<bool SOLID_COLOR>
+	void SkyboxMat<SOLID_COLOR>::bind(const SPtr<GpuParamBlockBuffer>& perCamera)
 	{
 		mParamsSet->setParamBlockBuffer("PerCamera", perCamera, true);
 
 		gRendererUtility().setPass(mMaterial, 0);
 	}
 
-	void SkyboxMat::setParams(const SPtr<Texture>& texture)
+	template<bool SOLID_COLOR>
+	void SkyboxMat<SOLID_COLOR>::setParams(const SPtr<Texture>& texture, const Color& solidColor)
 	{
 		mSkyTextureParam.set(texture, TextureSurface(1, 1, 0, 0));
+
+		gSkyboxParamDef.gClearColor.set(mParamBuffer, solidColor);
+		mParamBuffer->flushToGPU();
+
 		gRendererUtility().setPassParams(mParamsSet);
 	}
 
@@ -89,6 +105,10 @@ namespace bs { namespace ct
 
 	void RendererCamera::setView(const RENDERER_VIEW_DESC& desc)
 	{
+		if (mViewDesc.target.targetWidth != desc.target.targetWidth ||
+			mViewDesc.target.targetHeight != desc.target.targetHeight)
+			mRenderTargets = nullptr;
+
 		mViewDesc = desc;
 
 		setStateReductionMode(desc.stateReduction);
@@ -353,5 +373,13 @@ namespace bs { namespace ct
 			clipToUVScaleOffset.y = -clipToUVScaleOffset.y;
 
 		gPerCameraParamDef.gClipToUVScaleOffset.set(mParamBuffer, clipToUVScaleOffset);
+
+		if (mViewDesc.noLighting)
+			gPerCameraParamDef.gAmbientFactor.set(mParamBuffer, 100.0f);
+		else
+			gPerCameraParamDef.gAmbientFactor.set(mParamBuffer, 0.0f);
 	}
+
+	template class SkyboxMat<true>;
+	template class SkyboxMat<false>;
 }}

@@ -13,7 +13,7 @@ namespace bs { namespace ct
 		:mViewTarget(view), mHDR(hdr), mWidth(view.targetWidth), mHeight(view.targetHeight)
 	{
 		// Note: Consider customizable HDR format via options? e.g. smaller PF_FLOAT_R11G11B10 or larger 32-bit format
-		mSceneColorFormat = hdr ? PF_FLOAT16_RGBA : PF_R8G8B8A8;
+		mSceneColorFormat = PF_FLOAT16_RGBA;
 		mAlbedoFormat = PF_R8G8B8A8; // Note: Also consider customizable format (e.g. 16-bit float?)
 		mNormalFormat = PF_UNORM_R10G10B10A2; // Note: Also consider customizable format (e.g. 16-bit float?)
 	}
@@ -137,15 +137,15 @@ namespace bs { namespace ct
 		Rect2 area(0.0f, 0.0f, 1.0f, 1.0f);
 		rapi.setViewport(area);
 
-		// Clear scene color, depth, stencil according to user defined values
-		UINT32 clearFlags = mViewTarget.clearFlags;
+		// Clear depth & stencil according to user defined values, don't clear color as all values will get written to
+		UINT32 clearFlags = mViewTarget.clearFlags & ~FBT_COLOR;
 		if (clearFlags != 0)
 		{
 			RenderAPI::instance().clearViewport(clearFlags, mViewTarget.clearColor,
 												mViewTarget.clearDepthValue, mViewTarget.clearStencilValue, 0x01);
 		}
 
-		// Clear all others
+		// Clear all non primary targets (Note: I could perhaps clear all but albedo, since it stores a per-pixel write mask)
 		RenderAPI::instance().clearViewport(FBT_COLOR, Color::ZERO, 1.0f, 0, 0xFF & ~0x01);
 	}
 

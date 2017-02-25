@@ -44,13 +44,18 @@ namespace bs
 		 * buffer or multi-sampled render targets. Such cameras will not render any scene objects. This can improve
 		 * performance and memory usage. 
 		 */
-		Overlay = 1,
+		Overlay = 1 << 0,
 		/** 
 		 * High dynamic range allows light intensity to be more correctly recorded when rendering by allowing for a larger
 		 * range of values. The stored light is then converted into visible color range using exposure and a tone mapping 
 		 * operator.
 		 */
-		HDR = 2
+		HDR = 1 << 1,
+		/** 
+		 * Specify that no lighting should be applied to scene objects and everything should be rendered using their
+		 * albedo texture.
+		 */
+		NoLighting = 1 << 2
 	};
 
 	typedef Flags<CameraFlag> CameraFlags;

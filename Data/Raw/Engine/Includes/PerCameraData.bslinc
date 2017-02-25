@@ -25,7 +25,9 @@ Parameters =
 	
 	// xy - (Viewport size in pixels / 2) / Target size in pixels
 	// zw - (Viewport offset in pixels + (Viewport size in pixels / 2) + Optional pixel center offset) / Target size in pixels	
-	float4 		gClipToUVScaleOffset : auto("ClipToUVScaleOffset");		
+	float4 		gClipToUVScaleOffset : auto("ClipToUVScaleOffset");	
+
+	float		gAmbientFactor;
 };
 
 Blocks =
@@ -55,7 +57,8 @@ Technique : base("PerCameraData") =
 				float2	 gNDCZToWorldZ;
 				float2	 gNearFar;
 				int4 	 gViewportRectangle;
-				float4 	 gClipToUVScaleOffset;				
+				float4 	 gClipToUVScaleOffset;	
+				float	gAmbientFactor;
 			}
 			
 			/** Converts Z value in range [0,1] into Z value in view space. */
@@ -89,7 +92,8 @@ Technique : base("PerCameraData") =
 				vec2 gNDCZToWorldZ;
 				vec2 gNearFar;
 				ivec4 gViewportRectangle;
-				vec4 gClipToUVScaleOffset;				
+				vec4 gClipToUVScaleOffset;
+				float gAmbientFactor;
 			};
 			
 			/** Converts Z value in range [0,1] into Z value in view space. */

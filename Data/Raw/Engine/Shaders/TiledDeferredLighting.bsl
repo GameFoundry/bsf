@@ -164,7 +164,8 @@ Technique
                         uint lightIdx = sLightIndices[i];
                         lightAccumulator += getSpotLightContribution(worldPosition, surfaceData, gLights[lightIdx]);
                     }
-
+					
+					lightAccumulator += surfaceData.albedo * gAmbientFactor;
 					alpha = 1.0f;
 				}
 				
@@ -361,7 +362,7 @@ Technique
 					
 					#else
 					float4 lighting = getLighting(clipSpacePos.xy, surfaceData[0]);
-					gOutput[pixelPos] = float4(gOutput[pixelPos].rgb + lighting.rgb, lighting.a);
+					gOutput[pixelPos] = lighting;
 					#endif
 				}
 			}
@@ -467,6 +468,7 @@ Technique
 				// Assumed directional lights start at 0
 				// x - offset to point lights, y - offset to spot lights, z - total number of lights
 				uvec3 gLightOffsets;
+				uvec2 gFramebufferSize;
 			};
 			
 			shared uint sTileMinZ;
@@ -510,6 +512,7 @@ Technique
                         lightAccumulator += getSpotLightContribution(worldPosition, surfaceData, lightData);
                     }
 					
+					lightAccumulator += surfaceData.albedo.rgb * gAmbientFactor;
 					alpha = 1.0f;
 				}
 				
@@ -644,8 +647,7 @@ Technique
 				{
 					#if MSAA_COUNT > 1
 					vec4 lighting = getLighting(clipSpacePos.xy, surfaceData[0]);
-					vec4 existingValue = imageLoad(gOutput, pixelPos, 0);
-					imageStore(gOutput, pixelPos, 0, vec4(existingValue.rgb + lighting.rgb, lighting.a));
+					imageStore(gOutput, pixelPos, 0, lighting);
 
 					bool doPerSampleShading = needsPerSampleShading(surfaceData);
 					if(doPerSampleShading)
@@ -653,21 +655,18 @@ Technique
 						for(int i = 1; i < MSAA_COUNT; ++i)
 						{
 							lighting = getLighting(clipSpacePos.xy, surfaceData[i]);
-							existingValue = imageLoad(gOutput, pixelPos, i);
-							imageStore(gOutput, pixelPos, i, vec4(existingValue.rgb + lighting.rgb, lighting.a));
+							imageStore(gOutput, pixelPos, i, lighting);
 						}
 					}
 					else // Splat same information to all samples
 					{
 						for(int i = 1; i < MSAA_COUNT; ++i)
-							imageStore(gOutput, pixelPos, i, vec4(existingValue.rgb + lighting.rgb, lighting.a));
+							imageStore(gOutput, pixelPos, i, lighting);
 					}
 					
 					#else
 					vec4 lighting = getLighting(clipSpacePos.xy, surfaceData[0]);
-					
-					vec4 existingValue = imageLoad(gOutput, pixelPos);
-					imageStore(gOutput, pixelPos, vec4(existingValue.rgb + lighting.rgb, lighting.a));
+					imageStore(gOutput, pixelPos, lighting);
 					#endif
 				}
 			}

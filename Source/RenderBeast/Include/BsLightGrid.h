@@ -99,7 +99,7 @@ namespace bs { namespace ct
 		LightGrid();
 
 		/** Updates the light grid from the provided view. */
-		void updateGrid(const RendererCamera& view, const GPULightData& lightData);
+		void updateGrid(const RendererCamera& view, const GPULightData& lightData, bool noLighting);
 
 		/** 
 		 * Returns the buffers containing light indices per grid cell and global grid parameters. 

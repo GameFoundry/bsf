@@ -193,7 +193,7 @@ namespace bs { namespace ct
 		mGridParamBuffer = gLightGridParamDefDef.createBuffer();
 	}
 
-	void LightGrid::updateGrid(const RendererCamera& view, const GPULightData& lightData)
+	void LightGrid::updateGrid(const RendererCamera& view, const GPULightData& lightData, bool noLighting)
 	{
 		UINT32 width = view.getRenderTargets()->getWidth();
 		UINT32 height = view.getRenderTargets()->getHeight();
@@ -204,9 +204,18 @@ namespace bs { namespace ct
 		gridSize[2] = NUM_Z_SUBDIVIDES;
 
 		Vector3I lightOffsets;
-		lightOffsets[0] = lightData.getNumDirLights();
-		lightOffsets[1] = lightOffsets[0] + lightData.getNumRadialLights();
-		lightOffsets[2] = lightOffsets[1] + lightData.getNumSpotLights();
+		if (!noLighting)
+		{
+			lightOffsets[0] = lightData.getNumDirLights();
+			lightOffsets[1] = lightOffsets[0] + lightData.getNumRadialLights();
+			lightOffsets[2] = lightOffsets[1] + lightData.getNumSpotLights();
+		}
+		else
+		{
+			lightOffsets[0] = 0;
+			lightOffsets[1] = 1;
+			lightOffsets[2] = 2;
+		}
 
 		UINT32 numCells = gridSize[0] * gridSize[1] * gridSize[2];
 

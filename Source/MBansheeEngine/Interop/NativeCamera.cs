@@ -131,6 +131,12 @@ namespace BansheeEngine
             set { Internal_SetHDR(mCachedPtr, value); }
         }
 
+        internal bool noLighting
+        {
+            get { return Internal_GetNoLighting(mCachedPtr); }
+            set { Internal_SetNoLighting(mCachedPtr, value); }
+        }
+
         public TextureCube skybox
         {
             get { return Internal_GetSkybox(mCachedPtr); }
@@ -440,6 +446,11 @@ namespace BansheeEngine
         private static extern bool Internal_GetHDR(IntPtr instance);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetHDR(IntPtr instance, bool value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool Internal_GetNoLighting(IntPtr instance);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetNoLighting(IntPtr instance, bool value);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern TextureCube Internal_GetSkybox(IntPtr instance);

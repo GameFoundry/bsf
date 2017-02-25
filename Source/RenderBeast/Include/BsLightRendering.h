@@ -82,7 +82,7 @@ namespace bs { namespace ct
 		TiledDeferredLighting(const SPtr<Material>& material, const SPtr<GpuParamsSet>& paramsSet, UINT32 sampleCount);
 
 		/** Binds the material for rendering, sets up parameters and executes it. */
-		void execute(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBuffer>& perCamera);
+		void execute(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBuffer>& perCamera, bool noLighting);
 
 		/** Binds all the active lights. */
 		void setLights(const GPULightData& lightData);
@@ -97,6 +97,7 @@ namespace bs { namespace ct
 		GpuParamTexture mGBufferB;
 		GpuParamTexture mGBufferDepth;
 
+		Vector3I mLightOffsets;
 		GpuParamBuffer mLightBufferParam;
 		GpuParamLoadStoreTexture mOutputTextureParam;
 		GpuParamBuffer mOutputBufferParam;
@@ -111,7 +112,7 @@ namespace bs { namespace ct
 		virtual ~ITiledDeferredLightingMat() {}
 
 		/** Binds the material for rendering, sets up parameters and executes it. */
-		virtual void execute(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBuffer>& perCamera) = 0;
+		virtual void execute(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBuffer>& perCamera, bool noLighting) = 0;
 
 		/** Binds all the active lights. */
 		virtual void setLights(const GPULightData& lightData) = 0;
@@ -127,7 +128,7 @@ namespace bs { namespace ct
 		TTiledDeferredLightingMat();
 
 		/** Binds the material for rendering, sets up parameters and executes it. */
-		void execute(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBuffer>& perCamera) override;
+		void execute(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBuffer>& perCamera, bool noLighting) override;
 
 		/** Binds all the active lights. */
 		void setLights(const GPULightData& lightData) override;

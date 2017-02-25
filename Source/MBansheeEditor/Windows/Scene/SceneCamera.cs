@@ -136,6 +136,7 @@ namespace BansheeEditor
         private void OnReset()
         {
             camera = SceneObject.GetComponent<Camera>();
+            camera.NoLighting = true;
 
             moveForwardBtn = new VirtualButton(MoveForwardBinding);
             moveLeftBtn = new VirtualButton(MoveLeftBinding);

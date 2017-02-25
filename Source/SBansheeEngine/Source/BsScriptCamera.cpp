@@ -78,6 +78,9 @@ namespace bs
 		metaData.scriptClass->addInternalCall("Internal_GetHDR", &ScriptCamera::internal_GetHDR);
 		metaData.scriptClass->addInternalCall("Internal_SetHDR", &ScriptCamera::internal_SetHDR);
 
+		metaData.scriptClass->addInternalCall("Internal_GetNoLighting", &ScriptCamera::internal_GetNoLighting);
+		metaData.scriptClass->addInternalCall("Internal_SetNoLighting", &ScriptCamera::internal_SetNoLighting);
+
 		metaData.scriptClass->addInternalCall("Internal_GetSkybox", &ScriptCamera::internal_GetSkybox);
 		metaData.scriptClass->addInternalCall("Internal_SetSkybox", &ScriptCamera::internal_SetSkybox);
 
@@ -304,6 +307,16 @@ namespace bs
 	void ScriptCamera::internal_SetHDR(ScriptCamera* instance, bool value)
 	{
 		instance->mCamera->setFlag(CameraFlag::HDR, value);
+	}
+
+	bool ScriptCamera::internal_GetNoLighting(ScriptCamera* instance)
+	{
+		return instance->mCamera->getFlags().isSet(CameraFlag::NoLighting);
+	}
+
+	void ScriptCamera::internal_SetNoLighting(ScriptCamera* instance, bool value)
+	{
+		instance->mCamera->setFlag(CameraFlag::NoLighting, value);
 	}
 
 	MonoObject* ScriptCamera::internal_GetSkybox(ScriptCamera* instance)

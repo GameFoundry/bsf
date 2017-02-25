@@ -30,12 +30,20 @@ namespace bs { namespace ct
 		BS_PARAM_BLOCK_ENTRY(Vector2, gNearFar)
 		BS_PARAM_BLOCK_ENTRY(Vector4I, gViewportRectangle)
 		BS_PARAM_BLOCK_ENTRY(Vector4, gClipToUVScaleOffset)
+		BS_PARAM_BLOCK_ENTRY(float, gAmbientFactor)
 	BS_PARAM_BLOCK_END
 
 	extern PerCameraParamDef gPerCameraParamDef;
 
-	/** Shader that renders a skybox using a cubemap. */
-	class SkyboxMat : public RendererMaterial<SkyboxMat>
+	BS_PARAM_BLOCK_BEGIN(SkyboxParamDef)
+		BS_PARAM_BLOCK_ENTRY(Color, gClearColor)
+	BS_PARAM_BLOCK_END
+
+	extern SkyboxParamDef gSkyboxParamDef;
+
+	/** Shader that renders a skybox using a cubemap or a solid color. */
+	template<bool SOLID_COLOR>
+	class SkyboxMat : public RendererMaterial<SkyboxMat<SOLID_COLOR>>
 	{
 		RMAT_DEF("Skybox.bsl");
 
@@ -45,10 +53,11 @@ namespace bs { namespace ct
 		/** Binds the material for rendering and sets up any global parameters. */
 		void bind(const SPtr<GpuParamBlockBuffer>& perCamera);
 
-		/** Updates the skybox texture used by the material. */
-		void setParams(const SPtr<Texture>& texture);
+		/** Updates the skybox texture & solid color used by the material. */
+		void setParams(const SPtr<Texture>& texture, const Color& solidColor);
 	private:
 		GpuParamTexture mSkyTextureParam;
+		SPtr<GpuParamBlockBuffer> mParamBuffer;
 	};
 
 	/** Set of properties describing the output render target used by a renderer view. */
@@ -83,6 +92,7 @@ namespace bs { namespace ct
 
 		bool isOverlay : 1;
 		bool isHDR : 1;
+		bool noLighting : 1;
 		bool triggerCallbacks : 1;
 		bool runPostProcessing : 1;
 
@@ -150,6 +160,9 @@ namespace bs { namespace ct
 		/** Returns true if this view only renders overlay, and not scene objects. */
 		bool isOverlay() const { return mViewDesc.isOverlay; }
 
+		/** Returns true if the view should be rendered with no lighting. */
+		bool renderWithNoLighting() const { return mViewDesc.noLighting; }
+
 		/** Returns the texture to use for the skybox (if any). */
 		SPtr<Texture> getSkybox() const { return mViewDesc.skyboxTexture; }
 
@@ -161,6 +174,9 @@ namespace bs { namespace ct
 
 		/** Returns true if the resulting render target should be flipped vertically. */
 		bool getFlipView() const { return mViewDesc.flipView; }
+
+		/** Returns the color to clear the non-rendered areas of the scene color target to. */
+		Color getClearColor() const { return mViewDesc.target.clearColor; }
 
 		/** Returns the number of samples per pixel to render. */
 		UINT32 getNumSamples() const { return mViewDesc.target.numSamples; }

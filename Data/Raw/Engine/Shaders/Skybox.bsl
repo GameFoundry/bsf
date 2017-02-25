@@ -36,12 +36,21 @@ Technique : inherits("PerCameraData") =
 			TextureCube gSkyTex : register(t0);
 			SamplerState gSkySamp : register(s0);
 		
+			cbuffer Params : register(b0)
+			{
+				float4 gClearColor;
+			}
+		
 			float4 main(
 				in float4 inPos : SV_Position, 
 				in float3 dir : TEXCOORD0) : SV_Target
 			{
-				return gSkyTex.Sample(gSkySamp, dir);
-			}
+				#ifdef SOLID_COLOR
+					return gClearColor;
+				#else
+					return gSkyTex.Sample(gSkySamp, dir);
+				#endif
+				}
 		};	
 	};
 };
@@ -79,12 +88,22 @@ Technique : inherits("PerCameraData") =
 		Fragment =
 		{
 			layout(location = 0) in vec3 dir;		
+			
 			layout(binding = 1) uniform samplerCube gSkyTex;
+			layout(binding = 2, std140) uniform Params
+			{
+				vec4 gClearColor;
+			};
+			
 			layout(location = 0) out vec4 fragColor;
 			
 			void main()
 			{
+			#ifdef SOLID_COLOR
+				fragColor = gClearColor;
+			#else
 				fragColor = texture(gSkyTex, dir);
+			#endif
 			}	
 		};
 	};

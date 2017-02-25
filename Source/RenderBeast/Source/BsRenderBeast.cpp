@@ -41,8 +41,8 @@ namespace bs { namespace ct
 {
 	RenderBeast::RenderBeast()
 		: mDefaultMaterial(nullptr), mTiledDeferredLightingMats(), mFlatFramebufferToTextureMat(nullptr)
-		, mSkyboxMat(nullptr), mGPULightData(nullptr), mLightGrid(nullptr), mObjectRenderer(nullptr)
-		, mOptions(bs_shared_ptr_new<RenderBeastOptions>()), mOptionsDirty(true)
+		, mSkyboxMat(nullptr), mSkyboxSolidColorMat(nullptr), mGPULightData(nullptr), mLightGrid(nullptr)
+		, mObjectRenderer(nullptr), mOptions(bs_shared_ptr_new<RenderBeastOptions>()), mOptionsDirty(true)
 	{ }
 
 	const StringID& RenderBeast::getName() const
@@ -74,7 +74,8 @@ namespace bs { namespace ct
 		mObjectRenderer = bs_new<ObjectRenderer>();
 
 		mDefaultMaterial = bs_new<DefaultMaterial>();
-		mSkyboxMat = bs_new<SkyboxMat>();
+		mSkyboxMat = bs_new<SkyboxMat<false>>();
+		mSkyboxSolidColorMat = bs_new<SkyboxMat<true>>();
 		mFlatFramebufferToTextureMat = bs_new<FlatFramebufferToTextureMat>();
 
 		mTiledDeferredLightingMats[0] = bs_new<TTiledDeferredLightingMat<1>>();
@@ -110,6 +111,7 @@ namespace bs { namespace ct
 
 		bs_delete(mDefaultMaterial);
 		bs_delete(mSkyboxMat);
+		bs_delete(mSkyboxSolidColorMat);
 		bs_delete(mGPULightData);
 		bs_delete(mLightGrid);
 		bs_delete(mFlatFramebufferToTextureMat);
@@ -509,6 +511,7 @@ namespace bs { namespace ct
 
 			viewDesc.isOverlay = camera->getFlags().isSet(CameraFlag::Overlay);
 			viewDesc.isHDR = camera->getFlags().isSet(CameraFlag::HDR);
+			viewDesc.noLighting = camera->getFlags().isSet(CameraFlag::NoLighting);
 			viewDesc.triggerCallbacks = true;
 			viewDesc.runPostProcessing = true;
 
@@ -795,7 +798,7 @@ namespace bs { namespace ct
 		viewInfo->beginRendering(true);
 
 		// Prepare light grid required for transparent object rendering
-		mLightGrid->updateGrid(*viewInfo, *mGPULightData);
+		mLightGrid->updateGrid(*viewInfo, *mGPULightData, viewInfo->renderWithNoLighting());
 
 		SPtr<GpuParamBlockBuffer> gridParams;
 		SPtr<GpuBuffer> gridOffsetsAndSize, gridLightIndices;
@@ -871,7 +874,8 @@ namespace bs { namespace ct
 			}
 		}
 
-		renderTargets->bindSceneColor(true);
+		RenderAPI& rapi = RenderAPI::instance();
+		rapi.setRenderTarget(nullptr);
 
 		// Render light pass
 		ITiledDeferredLightingMat* lightingMat;
@@ -895,10 +899,12 @@ namespace bs { namespace ct
 		}
 
 		lightingMat->setLights(*mGPULightData);
-		lightingMat->execute(renderTargets, perCameraBuffer);
+		lightingMat->execute(renderTargets, perCameraBuffer, viewInfo->renderWithNoLighting());
 
 		const RenderAPIInfo& rapiInfo = RenderAPI::instance().getAPIInfo();
 		bool usingFlattenedFB = numSamples > 1 && !rapiInfo.isFlagSet(RenderAPIFeatureFlag::MSAAImageStores);
+
+		renderTargets->bindSceneColor(true);
 
 		// If we're using flattened framebuffer for MSAA we need to copy its contents to the MSAA scene texture before
 		// continuing
@@ -911,14 +917,20 @@ namespace bs { namespace ct
 		// Render skybox (if any)
 		SPtr<Texture> skyTexture = viewInfo->getSkybox();
 		if (skyTexture != nullptr && skyTexture->getProperties().getTextureType() == TEX_TYPE_CUBE_MAP)
-		//if (dbgSkyTex != nullptr)
 		{
 			mSkyboxMat->bind(perCameraBuffer);
-			mSkyboxMat->setParams(skyTexture);
-
-			SPtr<Mesh> mesh = gRendererUtility().getSkyBoxMesh();
-			gRendererUtility().draw(mesh, mesh->getProperties().getSubMesh(0));
+			mSkyboxMat->setParams(skyTexture, Color::White);
 		}
+		else
+		{
+			Color clearColor = viewInfo->getClearColor();
+
+			mSkyboxSolidColorMat->bind(perCameraBuffer);
+			mSkyboxSolidColorMat->setParams(nullptr, clearColor);
+		}
+
+		SPtr<Mesh> mesh = gRendererUtility().getSkyBoxMesh();
+		gRendererUtility().draw(mesh, mesh->getProperties().getSubMesh(0));
 
 		renderTargets->bindSceneColor(false);
 
@@ -947,7 +959,6 @@ namespace bs { namespace ct
 		}
 
 		// Post-processing and final resolve
-		RenderAPI& rapi = RenderAPI::instance();
 		Rect2 viewportArea = viewInfo->getViewportRect();
 
 		if (viewInfo->checkRunPostProcessing())
@@ -1100,6 +1111,7 @@ namespace bs { namespace ct
 
 		viewDesc.isOverlay = false;
 		viewDesc.isHDR = hdr;
+		viewDesc.noLighting = false;
 		viewDesc.triggerCallbacks = false;
 		viewDesc.runPostProcessing = false;
 
