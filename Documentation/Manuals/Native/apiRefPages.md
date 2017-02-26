@@ -33,3 +33,5 @@ Optionally, if the method returns an @ref bs::AsyncOp "AsyncOp" object, you can 
 If the method provides a return value, you can use the provided **AsyncOp** object to retrieve it using @ref bs::AsyncOp::getReturnValue<T> "AsyncOp::getReturnValue<T>". Calling this is only valid if @ref bs::AsyncOp::hasCompleted "AsyncOp::hasCompleted" returns true. Return value is always available after you blocked using either of the ways mentioned above.
 
 Note that blocking is a very expensive operation and should not be done in performance critical code. If you need to wait until an async method completes, it is preferable to keep querying **AsyncOp::hasCompleted** and do something else until it returns true.
+
+If you wish to learn more about how core thread works, visit the [core thread manual](@ref coreThread).

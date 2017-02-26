@@ -103,7 +103,7 @@ importOptions->setSRGB(true);
 ## Caching
 Sometimes you need to import a texture you don't want to only use for rendering, but rather for manually reading its contents. When that's the case you can enable the @ref bs::TextureImportOptions::setCPUCached "TextureImportOptions::setCPUCached" option.
 
-This will allow you to call @ref bs::Texture::readCachedData "Texture::readCachedData" and to manually read individual pixels of the texture.
+This will allow you to call @ref bs::Texture::readCachedData "Texture::readCachedData()" and to manually read individual pixels of the texture.
 
 Note that caching a texture means its data will be available in system memory, essentially doubling its memory usage.
 

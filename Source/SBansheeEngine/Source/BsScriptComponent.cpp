@@ -266,7 +266,7 @@ namespace bs
 		HComponent component = nativeInstance->getComponent();
 
 		if (!checkIfDestroyed(component))
-			component->_setNotifyFlags(flags);
+			component->setNotifyFlags(flags);
 	}
 	
 	void ScriptComponent::internal_destroy(ScriptComponentBase* nativeInstance, bool immediate)

@@ -24,7 +24,7 @@ As you can see the communication is one directional. Simulation thread calls int
 # Command queue {#coreThread_a}
 All the operations listed above happen with the help of a command queue. When simulation thread needs to notify the core thread about something it queues a command, which is then eventually received and processed by the core thread.
 
-@ref bs::CoreThread "CoreThread" managed the command queues. Use @ref bs::CoreThread::queueCommand "CoreThread::queueCommand" to queue a new command.
+@ref bs::CoreThread "CoreThread" manages the command queues. Use @ref bs::CoreThread::queueCommand "CoreThread::queueCommand" to queue a new command.
 
 Each thread has its own command queue, so calling this method from multiple threads will fill up different command queues.
 

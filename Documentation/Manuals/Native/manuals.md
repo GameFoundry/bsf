@@ -59,6 +59,7 @@ Manuals									{#manuals}
  - [Bones](@ref bones)
  - [Advanced animation](@ref advancedAnimation)
 - **Advanced**
+ - [Manipulating textures](@ref advancedTextures)
  - [Advanced RTTI](@ref advancedRtti) 
  
 # Developer guides

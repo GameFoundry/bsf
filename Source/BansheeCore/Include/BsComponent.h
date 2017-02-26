@@ -92,7 +92,7 @@ namespace bs
 		virtual void _instantiate() {}
 
 		/** Sets new flags that determine when is onTransformChanged called. */
-		void _setNotifyFlags(TransformChangedFlags flags) { mNotifyFlags = flags; }
+		void setNotifyFlags(TransformChangedFlags flags) { mNotifyFlags = flags; }
 
 		/** Gets the currently assigned notify flags. See _setNotifyFlags(). */
 		TransformChangedFlags _getNotifyFlags() const { return mNotifyFlags; }
