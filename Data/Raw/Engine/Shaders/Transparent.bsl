@@ -6,9 +6,13 @@ Parameters =
 {
 	Sampler2D 	gAlbedoSamp : alias("gAlbedoTex");
 	Sampler2D 	gNormalSamp : alias("gNormalTex");
+	Sampler2D	gRoughnessSamp : alias("gRoughnessTex");
+	Sampler2D	gMetalnessSamp : alias("gMetalnessTex");
 	
 	Texture2D 	gAlbedoTex;
 	Texture2D	gNormalTex = "normal";
+	Texture2D	gRoughnessTex = "white";
+	Texture2D	gMetalnessTex = "black";
 	
 	float		gOpacity   = 1.0f;
 };
@@ -41,13 +45,17 @@ Technique
 		{
 			SamplerState gAlbedoSamp : register(s0);
 			SamplerState gNormalSamp : register(s1);
+			SamplerState gRoughnessSamp : register(s2);
+			SamplerState gMetalnessSamp : register(s3);
 			
 			Texture2D gAlbedoTex : register(t0);
 			Texture2D gNormalTex : register(t1);
+			Texture2D gRoughnessTex : register(t2);
+			Texture2D gMetalnessTex : register(t3);
 			
-			Buffer<uint3> gGridOffsetsAndSize : register(t2);
-			Buffer<uint> gGridLightIndices : register(t3);
-			StructuredBuffer<LightData> gLights : register(t4);
+			Buffer<uint3> gGridOffsetsAndSize : register(t4);
+			Buffer<uint> gGridLightIndices : register(t5);
+			StructuredBuffer<LightData> gLights : register(t6);
 
 			cbuffer MaterialParams : register(b5)
 			{
@@ -62,6 +70,8 @@ Technique
 				SurfaceData surfaceData;
 				surfaceData.albedo = gAlbedoTex.Sample(gAlbedoSamp, input.uv0);
 				surfaceData.worldNormal.xyz = worldNormal;
+				surfaceData.roughness = gRoughnessTex.Sample(gRoughnessSamp, input.uv0).x;
+				surfaceData.metalness = gMetalnessTex.Sample(gMetalnessSamp, input.uv0).x;
 				
 				float3 lightAccumulator = 0;
 				
@@ -129,15 +139,17 @@ Technique
 		
 			layout(binding = 5) uniform sampler2D gAlbedoTex;
 			layout(binding = 6) uniform sampler2D gNormalTex;
-
-			layout(binding = 7) uniform usamplerBuffer gGridOffsetsAndSize;
-			layout(binding = 8) uniform usamplerBuffer gGridLightIndices;
-			layout(std430, binding = 9) readonly buffer gLights
+			layout(binding = 7) uniform sampler2D gRoughnessTex;
+			layout(binding = 8) uniform sampler2D gMetalnessTex;
+			
+			layout(binding = 9) uniform usamplerBuffer gGridOffsetsAndSize;
+			layout(binding = 10) uniform usamplerBuffer gGridLightIndices;
+			layout(std430, binding = 11) readonly buffer gLights
 			{
 				LightData[] gLightsData;
 			};
 						
-			layout(binding = 10, std140) uniform MaterialParams
+			layout(binding = 12, std140) uniform MaterialParams
 			{
 				float gOpacity;
 			};
@@ -152,6 +164,8 @@ Technique
 				SurfaceData surfaceData;
 				surfaceData.albedo = texture(gAlbedoTex, uv0);
 				surfaceData.worldNormal.xyz = worldNormal;
+				surfaceData.roughness = texture(gRoughnessTex, uv0).x;
+				surfaceData.metalness = texture(gMetalnessTex, uv0).x;
 				
 				// Directional lights
 				vec3 lightAccumulator = vec3(0, 0, 0);

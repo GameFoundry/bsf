@@ -44,6 +44,8 @@ namespace bs { namespace ct
 			height, TU_RENDERTARGET, mViewTarget.numSamples, true));
 		SPtr<PooledRenderTexture> newNormalRT = texPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(mNormalFormat, width, 
 			height, TU_RENDERTARGET, mViewTarget.numSamples, false));
+		SPtr<PooledRenderTexture> newRoughMetalRT = texPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_FLOAT16_RG, width,
+			height, TU_RENDERTARGET, mViewTarget.numSamples, false));
 		SPtr<PooledRenderTexture> newDepthRT = texPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_D32_S8X24, width, height, 
 			TU_DEPTHSTENCIL, mViewTarget.numSamples, false));
 
@@ -64,27 +66,29 @@ namespace bs { namespace ct
 																					 height, TU_RENDERTARGET, 1, false));
 		}
 
-		bool rebuildTargets = newColorRT != mSceneColorTex || newAlbedoRT != mAlbedoTex || newNormalRT != mNormalTex || newDepthRT != mDepthTex;
+		bool rebuildTargets = newColorRT != mSceneColorTex || newAlbedoRT != mAlbedoTex || newNormalRT != mNormalTex 
+			|| newRoughMetalRT != mRoughMetalTex || newDepthRT != mDepthTex;
 
 		mSceneColorTex = newColorRT;
 		mAlbedoTex = newAlbedoRT;
 		mNormalTex = newNormalRT;
+		mRoughMetalTex = newRoughMetalRT;
 		mDepthTex = newDepthRT;
 
 		if (mGBufferRT == nullptr || mSceneColorRT == nullptr || rebuildTargets)
 		{
 			RENDER_TEXTURE_DESC gbufferDesc;
-			gbufferDesc.colorSurfaces[0].texture = mSceneColorTex->texture;
+			gbufferDesc.colorSurfaces[0].texture = mAlbedoTex->texture;
 			gbufferDesc.colorSurfaces[0].face = 0;
 			gbufferDesc.colorSurfaces[0].numFaces = 1;
 			gbufferDesc.colorSurfaces[0].mipLevel = 0;
 
-			gbufferDesc.colorSurfaces[1].texture = mAlbedoTex->texture;
+			gbufferDesc.colorSurfaces[1].texture = mNormalTex->texture;
 			gbufferDesc.colorSurfaces[1].face = 0;
 			gbufferDesc.colorSurfaces[1].numFaces = 1;
 			gbufferDesc.colorSurfaces[1].mipLevel = 0;
 
-			gbufferDesc.colorSurfaces[2].texture = mNormalTex->texture;
+			gbufferDesc.colorSurfaces[2].texture = mRoughMetalTex->texture;
 			gbufferDesc.colorSurfaces[2].face = 0;
 			gbufferDesc.colorSurfaces[2].numFaces = 1;
 			gbufferDesc.colorSurfaces[2].mipLevel = 0;
@@ -171,6 +175,11 @@ namespace bs { namespace ct
 	SPtr<Texture> RenderTargets::getTextureB() const
 	{
 		return mNormalTex->texture;
+	}
+
+	SPtr<Texture> RenderTargets::getTextureC() const
+	{
+		return mRoughMetalTex->texture;
 	}
 
 	SPtr<Texture> RenderTargets::getTextureDepth() const

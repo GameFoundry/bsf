@@ -20,7 +20,59 @@ Technique
 				float radiusSqrdInv;
 				float3 color;
 			};
-						
+			
+			float3 calcMicrofacetFresnelShlick(float3 F0, float LoH)
+			{
+				return F0 + (1.0f - F0) * pow(1.0f - LoH, 5.0f);
+			}
+
+			float calcMicrofacetShadowingSmithGGX(float roughness, float NoV, float NoL)
+			{
+				// Note: It's probably better to use the joint shadowing + masking version of this function
+				// Note: Pull these multiplies out, since they're used by the distribution function as well?
+				float roughness2 = roughness * roughness;
+				float roughness4 = roughness2 * roughness2;
+
+				// Note: Original GGX G1 multiplied by NoV & NoL (respectively), so that the microfacet function divisor gets canceled out
+				// Original formula being (ignoring the factor for masking negative directions):
+				//   G1(v) = 2 / (1 + sqrt(1 + roughness^4 * tan^2(v)))
+				//
+				// Using trig identities: tan = sin/cos & sin^2 + cos^2 = 1
+				//   G1(v) = 2 / (1 + sqrt(1 + roughness^4 * (1 - cos^2(v))/cos^2(v)))
+				//
+				// Multiply by cos(v) so that we cancel out the (NoL * NoV) factor in the microfacet formula divisor
+				//   G1(v) = 2 * cos(v) / (cos^2(v) + sqrt(cos^2 + roughness^4 - roughness^4 * cos^2(v)))
+				// 
+				// Actually do the cancellation:
+				//    G1(v) = 2 / (cos^2(v) + sqrt(cos^2 + roughness^4 - roughness^4 * cos^2(v)))
+				//
+				// Also cancel out the 2 and the 4:
+				//    G1(v) = 1 / (cos^2(v) + sqrt(cos^2 + roughness^4 - roughness^4 * cos^2(v)))
+				//
+				// Final equation being:
+				//    G(v, l) = G1(v) * G1(l)
+				//
+				// Where cos(v) is NoV or NoL
+				
+				float g1V = NoV + sqrt(NoV * (NoV - NoV * roughness4) + roughness4);
+				float g1L = NoL + sqrt(NoL * (NoL - NoL * roughness4) + roughness4);
+				return rcp(g1V * g1L);
+			}
+			
+			float calcMicrofacetDistGGX(float roughness, float NoH)
+			{
+				float roughness2 = roughness * roughness;
+				float roughness4 = roughness2 * roughness2;
+				
+				float d = (NoH * roughness4 - NoH) * NoH + 1.0f;
+				return roughness4 / (PI * d * d);
+			}
+			
+			float calcDiffuseLambert(float color)
+			{
+				return color * (1.0f / PI);
+			}
+			
 			float getSpotAttenuation(float3 worldPosToLight, float3 direction, float3 angles)
 			{
 				float output = saturate((dot(-worldPosToLight, direction) - angles.y) * angles.z);
@@ -96,6 +148,40 @@ Technique
 				float radiusSqrdInv;
 				vec3 color;
 			};
+									
+			vec3 calcMicrofacetFresnelShlick(vec3 F0, float LoH)
+			{
+				return F0 + (1.0f - F0) * pow(1.0f - LoH, 5.0f);
+			}
+
+			float calcMicrofacetShadowingSmithGGX(float roughness, float NoV, float NoL)
+			{
+				// Note: It's probably better to use the joint shadowing + masking version of this function
+				// Note: Pull these multiplies out, since they're used by the distribution function as well?
+				float roughness2 = roughness * roughness;
+				float roughness4 = roughness2 * roughness2;
+
+				// Note: Original GGX G1 multiplied by NoV & NoL (respectively), so that the microfacet function divisor gets canceled out
+				// See HLSL code for derivation
+				
+				float g1V = NoV + sqrt(NoV * (NoV - NoV * roughness4) + roughness4);
+				float g1L = NoL + sqrt(NoL * (NoL - NoL * roughness4) + roughness4);
+				return 1.0f / (g1V * g1L);
+			}
+			
+			float calcMicrofacetDistGGX(float roughness, float NoH)
+			{
+				float roughness2 = roughness * roughness;
+				float roughness4 = roughness2 * roughness2;
+				
+				float d = (NoH * roughness4 - NoH) * NoH + 1.0f;
+				return roughness4 / (PI * d * d);
+			}
+			
+			float calcDiffuseLambert(float color)
+			{
+				return color * (1.0f / PI);
+			}
 									
 			float getSpotAttenuation(vec3 worldPosToLight, vec3 direction, vec3 angles)
 			{

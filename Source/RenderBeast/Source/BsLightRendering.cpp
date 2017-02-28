@@ -97,6 +97,8 @@ namespace bs { namespace ct
 				params->getTextureParam(GPT_COMPUTE_PROGRAM, entry.second.name, mGBufferA);
 			else if (entry.second.rendererSemantic == RPS_GBufferB)
 				params->getTextureParam(GPT_COMPUTE_PROGRAM, entry.second.name, mGBufferB);
+			else if (entry.second.rendererSemantic == RPS_GBufferC)
+				params->getTextureParam(GPT_COMPUTE_PROGRAM, entry.second.name, mGBufferC);
 			else if (entry.second.rendererSemantic == RPS_GBufferDepth)
 				params->getTextureParam(GPT_COMPUTE_PROGRAM, entry.second.name, mGBufferDepth);
 		}
@@ -138,6 +140,7 @@ namespace bs { namespace ct
 
 		mGBufferA.set(gbuffer->getTextureA());
 		mGBufferB.set(gbuffer->getTextureB());
+		mGBufferC.set(gbuffer->getTextureC());
 		mGBufferDepth.set(gbuffer->getTextureDepth());
 
 		mParamsSet->setParamBlockBuffer("PerCamera", perCamera, true);

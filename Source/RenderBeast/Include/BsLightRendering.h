@@ -95,6 +95,7 @@ namespace bs { namespace ct
 
 		GpuParamTexture mGBufferA;
 		GpuParamTexture mGBufferB;
+		GpuParamTexture mGBufferC;
 		GpuParamTexture mGBufferDepth;
 
 		Vector3I mLightOffsets;

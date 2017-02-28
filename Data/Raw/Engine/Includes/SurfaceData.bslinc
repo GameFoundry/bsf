@@ -11,6 +11,8 @@ Technique : base("SurfaceData") =
 				float4 albedo;
 				float4 worldNormal;
 				float depth;
+				float roughness;
+				float metalness;
 			};
 		};
 	};
@@ -29,6 +31,8 @@ Technique : base("SurfaceData") =
 				vec4 albedo;
 				vec4 worldNormal;
 				float depth;
+				float roughness;
+				float metalness;
 			};
 		};
 	};

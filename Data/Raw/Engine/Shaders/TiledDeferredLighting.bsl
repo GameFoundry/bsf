@@ -6,10 +6,12 @@ Parameters =
 {
 	Sampler2D 	gGBufferASamp : alias("gGBufferATex");
 	Sampler2D 	gGBufferBSamp : alias("gGBufferBTex");
+	Sampler2D 	gGBufferCSamp : alias("gGBufferCTex");
 	Sampler2D 	gDepthBufferSamp : alias("gDepthBufferTex");
 	
 	Texture2D 	gGBufferATex : auto("GBufferA");
 	Texture2D	gGBufferBTex : auto("GBufferB");
+	Texture2D	gGBufferCTex : auto("GBufferC");
 	Texture2D 	gDepthBufferTex : auto("GBufferDepth");
 };
 
@@ -34,19 +36,22 @@ Technique
 
 			SamplerState gGBufferASamp : register(s0);
 			SamplerState gGBufferBSamp : register(s1);
-			SamplerState gDepthBufferSamp : register(s2);
+			SamplerState gGBufferCSamp : register(s2);
+			SamplerState gDepthBufferSamp : register(s3);
 	
 			#if MSAA_COUNT > 1
 			Texture2DMS<float4, MSAA_COUNT> gGBufferATex : register(t0);
 			Texture2DMS<float4, MSAA_COUNT>	gGBufferBTex : register(t1);
-			Texture2DMS<float4, MSAA_COUNT> gDepthBufferTex : register(t2);
+			Texture2DMS<float2, MSAA_COUNT>	gGBufferCTex : register(t2);
+			Texture2DMS<float4, MSAA_COUNT> gDepthBufferTex : register(t3);
 			#else
 			Texture2D gGBufferATex : register(t0);
 			Texture2D gGBufferBTex : register(t1);
-			Texture2D gDepthBufferTex : register(t2);
+			Texture2D gGBufferCTex : register(t2);
+			Texture2D gDepthBufferTex : register(t3);
 			#endif
 			
-			SurfaceData decodeGBuffer(float4 GBufferAData, float4 GBufferBData, float deviceZ)
+			SurfaceData decodeGBuffer(float4 GBufferAData, float4 GBufferBData, float2 GBufferCData, float deviceZ)
 			{
 				SurfaceData output;
 				
@@ -55,11 +60,13 @@ Technique
 				output.worldNormal = GBufferBData * float4(2, 2, 2, 1) - float4(1, 1, 1, 0);
 				output.worldNormal.xyz = normalize(output.worldNormal.xyz);
 				output.depth = convertFromDeviceZ(deviceZ);
+				output.roughness = GBufferCData.x;
+				output.metalness = GBufferCData.y;
 				
 				return output;
 			}			
 						
-			StructuredBuffer<LightData> gLights : register(t3);		
+			StructuredBuffer<LightData> gLights : register(t4);		
 		
 			cbuffer Params : register(b0)
 			{
@@ -111,9 +118,10 @@ Technique
 			{
 				float4 GBufferAData = gGBufferATex.Load(pixelPos, sampleIndex);
 				float4 GBufferBData = gGBufferBTex.Load(pixelPos, sampleIndex);
+				float2 GBufferCData = gGBufferCTex.Load(pixelPos, sampleIndex).rg;
 				float deviceZ = gDepthBufferTex.Load(pixelPos, sampleIndex).r;
 				
-				return decodeGBuffer(GBufferAData, GBufferBData, deviceZ);
+				return decodeGBuffer(GBufferAData, GBufferBData, GBufferCData, deviceZ);
 			}
 			
 			#else
@@ -123,9 +131,10 @@ Technique
 			{
 				float4 GBufferAData = gGBufferATex.Load(int3(pixelPos, 0));
 				float4 GBufferBData = gGBufferBTex.Load(int3(pixelPos, 0));
+				float2 GBufferCData = gGBufferCTex.Load(int3(pixelPos, 0)).rg;
 				float deviceZ = gDepthBufferTex.Load(int3(pixelPos, 0)).r;
 				
-				return decodeGBuffer(GBufferAData, GBufferBData, deviceZ);
+				return decodeGBuffer(GBufferAData, GBufferBData, GBufferCData, deviceZ);
 			}			
 			#endif
 						
@@ -208,7 +217,7 @@ Technique
 					sTileMinZ = 0x7F7FFFFF;
 					sTileMaxZ = 0;
 					sNumLightsPerType[0] = 0;
-					sNumLightsPerType[0] = 0;
+					sNumLightsPerType[1] = 0;
 					sTotalNumLights = 0;
 				}
 				
@@ -389,14 +398,16 @@ Technique
 			#if MSAA_COUNT > 1
 			layout(binding = 1) uniform sampler2DMS gGBufferATex;
 			layout(binding = 2) uniform sampler2DMS gGBufferBTex;
-			layout(binding = 3) uniform sampler2DMS gDepthBufferTex;
+			layout(binding = 3) uniform sampler2DMS gGBufferCTex;
+			layout(binding = 4) uniform sampler2DMS gDepthBufferTex;
 			#else
 			layout(binding = 1) uniform sampler2D gGBufferATex;
 			layout(binding = 2) uniform sampler2D gGBufferBTex;
-			layout(binding = 3) uniform sampler2D gDepthBufferTex;
+			layout(binding = 3) uniform sampler2D gGBufferCTex;
+			layout(binding = 4) uniform sampler2D gDepthBufferTex;
 			#endif
 			
-			SurfaceData decodeGBuffer(vec4 GBufferAData, vec4 GBufferBData, float deviceZ)
+			SurfaceData decodeGBuffer(vec4 GBufferAData, vec4 GBufferBData, vec2 GBufferCData, float deviceZ)
 			{
 				SurfaceData surfaceData;
 				
@@ -405,6 +416,8 @@ Technique
 				surfaceData.worldNormal = GBufferBData * vec4(2, 2, 2, 1) - vec4(1, 1, 1, 0);
 				surfaceData.worldNormal.xyz = normalize(surfaceData.worldNormal.xyz);
 				surfaceData.depth = convertFromDeviceZ(deviceZ);
+				surfaceData.roughness = GBufferCData.x;
+				surfaceData.metalness = GBufferCData.y;
 				
 				return surfaceData;
 			}
@@ -437,9 +450,10 @@ Technique
 			{
 				vec4 GBufferAData = texelFetch(gGBufferATex, pixelPos, sampleIndex);
 				vec4 GBufferBData = texelFetch(gGBufferBTex, pixelPos, sampleIndex);
+				vec2 GBufferCData = texelFetch(gGBufferCTex, pixelPos, sampleIndex).rg;
 				float deviceZ = texelFetch(gDepthBufferTex, pixelPos, sampleIndex).r;
 				
-				return decodeGBuffer(GBufferAData, GBufferBData, deviceZ);
+				return decodeGBuffer(GBufferAData, GBufferBData, GBufferCData, deviceZ);
 			}
 			
 			#else
@@ -450,19 +464,20 @@ Technique
 			{
 				vec4 GBufferAData = texelFetch(gGBufferATex, pixelPos, 0);
 				vec4 GBufferBData = texelFetch(gGBufferBTex, pixelPos, 0);
+				vec2 GBufferCData = texelFetch(gGBufferCTex, pixelPos, 0).rg;
 				float deviceZ = texelFetch(gDepthBufferTex, pixelPos, 0).r;
 				
-				return decodeGBuffer(GBufferAData, GBufferBData, deviceZ);
+				return decodeGBuffer(GBufferAData, GBufferBData, GBufferCData, deviceZ);
 			}	
 			
 			#endif
 			
-			layout(std430, binding = 4) readonly buffer gLights
+			layout(std430, binding = 6) readonly buffer gLights
 			{
-				LightData[] gLightsData;
+				LightData gLightsData[];
 			};
 
-			layout(binding = 6, std140) uniform Params
+			layout(binding = 7, std140) uniform Params
 			{
 				// Offsets at which specific light types begin in gLights buffer
 				// Assumed directional lights start at 0
@@ -550,7 +565,7 @@ Technique
 					sTileMinZ = 0x7F7FFFFF;
 					sTileMaxZ = 0;
 					sNumLightsPerType[0] = 0;
-					sNumLightsPerType[0] = 0;
+					sNumLightsPerType[1] = 0;
 					sTotalNumLights = 0;
 				}
 				
@@ -599,8 +614,9 @@ Technique
 					uint lightsEnd = gLightOffsets[type + 1];
 					for (uint i = lightOffset; i < lightsEnd && i < MAX_LIGHTS; i += TILE_SIZE)
 					{
-						vec4 lightPosition = gMatView * vec4(gLightsData[i].position, 1.0f);
-						float lightRadius = gLightsData[i].radius;
+						LightData lightData = gLightsData[i];
+						vec4 lightPosition = gMatView * vec4(lightData.position, 1.0f);
+						float lightRadius = lightData.radius;
 						
 						bool lightInTile = true;
 					

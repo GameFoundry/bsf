@@ -28,6 +28,7 @@ namespace bs
 	/** Semantics that may be used for signaling the renderer for what is a certain shader parameter used for. */
 	static StringID RPS_GBufferA = "GBufferA";
 	static StringID RPS_GBufferB = "GBufferB";
+	static StringID RPS_GBufferC = "GBufferC";
 	static StringID RPS_GBufferDepth = "GBufferDepth";
 	static StringID RPS_BoneMatrices = "BoneMatrices";
 

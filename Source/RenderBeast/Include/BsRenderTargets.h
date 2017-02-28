@@ -61,6 +61,9 @@ namespace bs { namespace ct
 		/**	Returns the second color texture of the gbuffer as a bindable texture. */
 		SPtr<Texture> getTextureB() const;
 
+		/**	Returns the third color texture of the gbuffer as a bindable texture. */
+		SPtr<Texture> getTextureC() const;
+
 		/**	Returns the depth texture of the gbuffer as a bindable texture. */
 		SPtr<Texture> getTextureDepth() const;
 
@@ -99,6 +102,7 @@ namespace bs { namespace ct
 		SPtr<PooledRenderTexture> mSceneColorTex;
 		SPtr<PooledRenderTexture> mAlbedoTex;
 		SPtr<PooledRenderTexture> mNormalTex;
+		SPtr<PooledRenderTexture> mRoughMetalTex;
 		SPtr<PooledRenderTexture> mDepthTex;
 
 		SPtr<PooledRenderTexture> mSceneColorNonMSAATex;

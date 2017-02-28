@@ -10,11 +10,13 @@ Technique
 	{
 		Common = 
 		{
-			void encodeGBuffer(SurfaceData data, out float4 GBufferAData, out float4 GBufferBData)
+			void encodeGBuffer(SurfaceData data, out float4 GBufferAData, out float4 GBufferBData, out float2 GBufferCData)
 			{
 				GBufferAData = data.albedo;
 				GBufferBData.xyz = float3(data.worldNormal.xyz * 0.5f + 0.5f);
 				GBufferBData.w = 1.0f; // Marks that some deferred data was written
+				GBufferCData.x = data.roughness;
+				GBufferCData.y = data.metalness;
 			}
 		};
 	};
@@ -30,11 +32,13 @@ Technique
 	{
 		Common = 
 		{
-			void encodeGBuffer(SurfaceData data, out vec4 GBufferAData, out vec4 GBufferBData)
+			void encodeGBuffer(SurfaceData data, out vec4 GBufferAData, out vec4 GBufferBData, out vec4 GBufferCData)
 			{
 				GBufferAData = data.albedo;
 				GBufferBData.xyz = vec3(data.worldNormal.xyz * 0.5f + 0.5f);
 				GBufferBData.w = 1.0f; // Marks that some deferred data was written
+				GBufferCData.x = data.roughness;
+				GBufferCData.y = data.metalness;
 			}
 		};
 	};
