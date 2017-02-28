@@ -51,6 +51,18 @@ namespace bs
 		HSceneObject sceneObject;
 	};
 
+	/**	Contains information about a reflection probe managed by the scene manager. */
+	struct SceneReflectionProbeData
+	{
+		SceneReflectionProbeData() { }
+		SceneReflectionProbeData(const SPtr<ReflectionProbe>& probe, const HSceneObject& sceneObject)
+			:probe(probe), sceneObject(sceneObject)
+		{ }
+
+		SPtr<ReflectionProbe> probe;
+		HSceneObject sceneObject;
+	};
+
 	/** Possible states components can be in. Controls which component callbacks are triggered. */
 	enum class ComponentState
 	{
@@ -120,6 +132,12 @@ namespace bs
 
 		/**	Notifies the scene manager that a camera was removed. */
 		void _unregisterCamera(const SPtr<Camera>& camera);
+
+		/**	Notifies the scene manager that a new reflection probe was created. */
+		void _registerReflectionProbe(const SPtr<ReflectionProbe>& probe, const HSceneObject& so);
+
+		/**	Notifies the scene manager that a reflection probe was removed. */
+		void _unregisterReflectionProbe(const SPtr<ReflectionProbe>& probe);
 
 		/**	Notifies the scene manager that a camera either became the main camera, or has stopped being main camera. */
 		void _notifyMainCameraStateChanged(const SPtr<Camera>& camera);
@@ -196,6 +214,7 @@ namespace bs
 
 		Map<Renderable*, SceneRenderableData> mRenderables;
 		Map<Light*, SceneLightData> mLights;
+		Map<ReflectionProbe*, SceneReflectionProbeData> mReflectionProbes;
 
 		Vector<HComponent> mActiveComponents;
 		Vector<HComponent> mInactiveComponents;

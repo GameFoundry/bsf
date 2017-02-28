@@ -6,6 +6,7 @@
 #include "BsRenderable.h"
 #include "BsCamera.h"
 #include "BsLight.h"
+#include "BsReflectionProbe.h"
 #include "BsViewport.h"
 #include "BsGameObjectManager.h"
 #include "BsRenderTarget.h"
@@ -122,6 +123,16 @@ namespace bs
 			mMainCameras.erase(iterFind);
 	}
 
+	void SceneManager::_registerReflectionProbe(const SPtr<ReflectionProbe>& probe, const HSceneObject& so)
+	{
+		mReflectionProbes[probe.get()] = SceneReflectionProbeData(probe, so);
+	}
+
+	void SceneManager::_unregisterReflectionProbe(const SPtr<ReflectionProbe>& probe)
+	{
+		mReflectionProbes.erase(probe.get());
+	}
+
 	void SceneManager::_notifyMainCameraStateChanged(const SPtr<Camera>& camera)
 	{
 		auto iterFind = std::find_if(mMainCameras.begin(), mMainCameras.end(),
@@ -198,6 +209,26 @@ namespace bs
 			if (so->getActive() != handler->getIsActive())
 			{
 				handler->setIsActive(so->getActive());
+			}
+		}
+
+		for (auto& probePair : mReflectionProbes)
+		{
+			SPtr<ReflectionProbe> probe = probePair.second.probe;
+			HSceneObject so = probePair.second.sceneObject;
+
+			UINT32 curHash = so->getTransformHash();
+			if (curHash != probe->_getLastModifiedHash())
+			{
+				probe->setPosition(so->getWorldPosition());
+				probe->setRotation(so->getWorldRotation());
+
+				probe->_setLastModifiedHash(curHash);
+			}
+
+			if (so->getActive() != probe->getIsActive())
+			{
+				probe->setIsActive(so->getActive());
 			}
 		}
 	}

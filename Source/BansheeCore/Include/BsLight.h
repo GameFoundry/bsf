@@ -24,7 +24,7 @@ namespace bs
 		Spot
 	};
 
-	/**	Signals which portion of a LightInternal is dirty. */
+	/**	Signals which portion of a light is dirty. */
 	enum class LightDirtyFlag
 	{
 		Transform = 0x01,
@@ -37,9 +37,7 @@ namespace bs
 	 *  @{
 	 */
 
-	/**
-	 * Illuminates a portion of the scene covered by a light. Base class for both sim and core thread Light implementations.
-	 */
+	/** Base class for both sim and core thread Light implementations. */
 	class BS_CORE_EXPORT LightBase
 	{
 	public:
@@ -53,13 +51,15 @@ namespace bs
 		Vector3 getPosition() const { return mPosition; }
 
 		/**	Sets the position of the light, in world space. */
-		void setPosition(const Vector3& position) { mPosition = position; _markCoreDirty(); updateBounds(); }
+		void setPosition(const Vector3& position) 
+			{ mPosition = position; _markCoreDirty(LightDirtyFlag::Transform); updateBounds(); }
 
 		/**	Returns the rotation of the light, in world space. */
 		Quaternion getRotation() const { return mRotation; }
 
 		/**	Sets the rotation of the light, in world space. */
-		void setRotation(const Quaternion& rotation) { mRotation = rotation; _markCoreDirty(); updateBounds(); }
+		void setRotation(const Quaternion& rotation) 
+			{ mRotation = rotation; _markCoreDirty(LightDirtyFlag::Transform); updateBounds(); }
 
 		/**	Returns the type of the light. */
 		LightType getType() const { return mType; }
@@ -188,15 +188,11 @@ namespace bs
 
 	namespace ct { class Light; }
 
-	/**
-	 * Sim thread usable version of a light.
-	 *
-	 * @see		LightBase
-	 */
+	/** Illuminates a portion of the scene covered by a light. */
 	class BS_CORE_EXPORT Light : public IReflectable, public CoreObject, public LightBase
 	{
 	public:
-		/**	Retrieves an implementation of a light usable only from the core thread. */
+		/**	Retrieves an implementation of the light usable only from the core thread. */
 		SPtr<ct::Light> getCore() const;
 
 		/** Returns the hash value that can be used to identify if the internal data needs an update. */
@@ -261,11 +257,7 @@ namespace bs
 
 	namespace ct
 	{
-	/**
-	 * Core thread usable version of a light.
-	 *
-	 * @see		LightBase
-	 */
+	/** Core thread usable version of bs::Light. */
 	class BS_CORE_EXPORT Light : public CoreObject, public LightBase
 	{
 	public:

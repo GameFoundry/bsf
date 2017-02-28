@@ -146,6 +146,27 @@ namespace bs
 		virtual void notifyLightRemoved(Light* light) { }
 
 		/**
+		 * Called whenever a new reflection probe is created.
+		 *
+		 * @note	Core thread.
+		 */
+		virtual void notifyReflectionProbeAdded(ReflectionProbe* probe) { }
+
+		/**
+		 * Called whenever a reflection probe is updated.
+		 *
+		 * @note	Core thread.
+		 */
+		virtual void notifyReflectionProbeUpdated(ReflectionProbe* probe) { }
+
+		/**
+		 * Called whenever a reflection probe is destroyed.
+		 *
+		 * @note	Core thread.
+		 */
+		virtual void notifyReflectionProbeRemoved(ReflectionProbe* probe) { }
+
+		/**
 		 * Creates a new empty renderer mesh data.
 		 *
 		 * @note	Sim thread.
