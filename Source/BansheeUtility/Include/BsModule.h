@@ -104,7 +104,7 @@ namespace bs
 			((Module*)_instance())->onShutDown();
 
 			bs_delete(_instance());
-			isDestroyed() = true;
+			isShutDown() = true;
 		}
 
 		/** Query if the module has been started. */
