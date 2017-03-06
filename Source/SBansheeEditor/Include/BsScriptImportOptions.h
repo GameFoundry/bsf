@@ -80,6 +80,8 @@ namespace bs
 		static void internal_SetIsCubemap(ScriptTextureImportOptions* thisPtr, bool value);
 		static CubemapSourceType internal_GetCubemapSourceType(ScriptTextureImportOptions* thisPtr);
 		static void internal_SetCubemapSourceType(ScriptTextureImportOptions* thisPtr, CubemapSourceType value);
+		static bool internal_GetIsCubemapReflection(ScriptTextureImportOptions* thisPtr);
+		static void internal_SetIsCubemapReflection(ScriptTextureImportOptions* thisPtr, bool value);
 	};
 
 	/**	Interop class between C++ & CLR for MeshImportOptions. */

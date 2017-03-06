@@ -2,7 +2,7 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
-#include "BsRenderBeastPrerequisites.h"
+#include "BsPrerequisites.h"
 #include "BsRendererMaterial.h"
 #include "BsParamBlocks.h"
 
@@ -63,7 +63,7 @@ namespace bs { namespace ct
 
 
 	/** Helper class that handles generation and processing of textures used for reflection probes. */
-	class ReflectionProbes
+	class BS_EXPORT ReflectionProbes
 	{
 	public:
 		/**
@@ -73,7 +73,7 @@ namespace bs { namespace ct
 		 * @param[in, out]	cubemap		Cubemap to filter. Its mip level 0 will be read, filtered and written into
 		 *								other mip levels.
 		 * @param[in]		scratch		Temporary cubemap texture to use for the filtering process. Must match the size of
-		 *								the source cubemap.
+		 *								the source cubemap. Provide null to automatically create a scratch cubemap.
 		 */
 		static void filterCubemapForSpecular(const SPtr<Texture>& cubemap, const SPtr<Texture>& scratch);
 

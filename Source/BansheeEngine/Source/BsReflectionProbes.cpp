@@ -3,7 +3,6 @@
 #include "BsReflectionProbes.h"
 #include "BsTexture.h"
 #include "BsGpuParamsSet.h"
-#include "BsRendererCamera.h"
 #include "BsRendererUtility.h"
 
 namespace bs { namespace ct
@@ -83,8 +82,23 @@ namespace bs { namespace ct
 		static ReflectionCubeDownsampleMat downsampleMat;
 		static ReflectionCubeImportanceSampleMat importanceSampleMat;
 
+		auto& props = cubemap->getProperties();
+
+		SPtr<Texture> scratchCubemap = scratch;
+		if (scratchCubemap == nullptr)
+		{
+			TEXTURE_DESC cubemapDesc;
+			cubemapDesc.type = TEX_TYPE_CUBE_MAP;
+			cubemapDesc.format = props.getFormat();
+			cubemapDesc.width = props.getWidth();
+			cubemapDesc.height = props.getHeight();
+			cubemapDesc.numMips = PixelUtil::getMaxMipmaps(cubemapDesc.width, cubemapDesc.height, 1, cubemapDesc.format);
+
+			scratchCubemap = Texture::create(cubemapDesc);
+		}
+
 		// We sample the cubemaps using importance sampling to generate roughness
-		UINT32 numMips = cubemap->getProperties().getNumMipmaps();
+		UINT32 numMips = props.getNumMipmaps();
 
 		// Before importance sampling the cubemaps we first create box filtered versions for each mip level. This helps fix
 		// the aliasing artifacts that would otherwise be noticeable on importance sampled cubemaps. The aliasing happens
@@ -96,7 +110,7 @@ namespace bs { namespace ct
 
 		// Copy base mip level to scratch cubemap
 		for (UINT32 face = 0; face < 6; face++)
-			cubemap->copy(scratch, face, 0, face, 0);
+			cubemap->copy(scratchCubemap, face, 0, face, 0);
 
 		// Fill out remaining scratch mip levels by downsampling
 		for (UINT32 mip = 1; mip < numMips; mip++)
@@ -104,7 +118,7 @@ namespace bs { namespace ct
 			for (UINT32 face = 0; face < 6; face++)
 			{
 				RENDER_TEXTURE_DESC cubeFaceRTDesc;
-				cubeFaceRTDesc.colorSurfaces[0].texture = scratch;
+				cubeFaceRTDesc.colorSurfaces[0].texture = scratchCubemap;
 				cubeFaceRTDesc.colorSurfaces[0].face = face;
 				cubeFaceRTDesc.colorSurfaces[0].numFaces = 1;
 				cubeFaceRTDesc.colorSurfaces[0].mipLevel = mip;
@@ -113,7 +127,7 @@ namespace bs { namespace ct
 
 				UINT32 sourceMip = mip - 1;
 				TextureSurface sourceSurface(sourceMip, 1, 0, 6);
-				downsampleMat.execute(scratch, face, sourceSurface, target);
+				downsampleMat.execute(scratchCubemap, face, sourceSurface, target);
 			}
 		}
 
@@ -130,7 +144,7 @@ namespace bs { namespace ct
 
 				SPtr<RenderTarget> target = RenderTexture::create(cubeFaceRTDesc);
 
-				importanceSampleMat.execute(scratch, face, mip, target);
+				importanceSampleMat.execute(scratchCubemap, face, mip, target);
 			}
 		}
 	}

@@ -23,6 +23,7 @@ namespace BansheeEditor
         private GUIToggleField isCubemapField = new GUIToggleField(new LocEdString("Cubemap"));
         private GUIEnumField cubemapSourceTypeField = 
             new GUIEnumField(typeof(CubemapSourceType), new LocEdString("Cubemap source"));
+        private GUIToggleField isReflectionCubemapField = new GUIToggleField(new LocEdString("Reflection cubemap"));
 
         private GUIButton reimportButton = new GUIButton(new LocEdString("Reimport"));
 
@@ -42,6 +43,7 @@ namespace BansheeEditor
                 cpuCachedField.OnChanged += x => importOptions.CPUCached = x;
                 isCubemapField.OnChanged += x => importOptions.IsCubemap = x;
                 cubemapSourceTypeField.OnSelectionChanged += x => importOptions.CubemapSourceType = (CubemapSourceType)x;
+                isReflectionCubemapField.OnChanged += x => importOptions.IsCubemapReflection = x;
                 reimportButton.OnClick += TriggerReimport;
 
                 Layout.AddElement(formatField);
@@ -51,6 +53,7 @@ namespace BansheeEditor
                 Layout.AddElement(cpuCachedField);
                 Layout.AddElement(isCubemapField);
                 Layout.AddElement(cubemapSourceTypeField);
+                Layout.AddElement(isReflectionCubemapField);
                 Layout.AddSpace(10);
 
                 GUILayout reimportButtonLayout = Layout.AddLayoutX();
@@ -71,8 +74,10 @@ namespace BansheeEditor
             cpuCachedField.Value = newImportOptions.CPUCached;
             isCubemapField.Value = newImportOptions.IsCubemap;
             cubemapSourceTypeField.Value = (ulong) newImportOptions.CubemapSourceType;
+            isReflectionCubemapField.Value = newImportOptions.IsCubemapReflection;
 
             cubemapSourceTypeField.Active = importOptions.IsCubemap;
+            isReflectionCubemapField.Active = importOptions.IsCubemap;
 
             importOptions = newImportOptions;
 

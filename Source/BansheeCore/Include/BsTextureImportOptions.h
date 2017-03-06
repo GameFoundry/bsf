@@ -81,6 +81,16 @@ namespace bs
 		 */
 		CubemapSourceType getCubemapSourceType() const { return mCubemapSourceType; }
 
+		/**
+		 * Marks the cubemap as a reflection cubemap and perform special filtering on the cubemap mip-maps. Only relevant
+		 * when texture is imported as a cubemap. This will override texture size and mip levels to match the requirements
+		 * needed for reflection cubemaps.
+		 */
+		void setCubemapIsReflection(bool reflection) { mCubemapIsReflection = reflection; }
+
+		/** Checks is the specified cubemap used for reflections. See setCubemapIsReflection(). */
+		bool getCubemapIsReflection() const { return mCubemapIsReflection; }
+
 		/** Creates a new import options object that allows you to customize how are textures imported. */
 		static SPtr<TextureImportOptions> create();
 
@@ -100,6 +110,7 @@ namespace bs
 		bool mSRGB;
 		bool mCubemap;
 		CubemapSourceType mCubemapSourceType;
+		bool mCubemapIsReflection;
 	};
 
 	/** @} */

@@ -89,6 +89,7 @@ set(BS_BANSHEEENGINE_INC_RENDERER
 	"Include/BsRendererUtility.h"
 	"Include/BsStandardPostProcessSettings.h"	
 	"Include/BsReflectionCubemapCache.h"
+	"Include/BsReflectionProbes.h"
 )
 
 set(BS_BANSHEEENGINE_SRC_RTTI
@@ -177,6 +178,7 @@ set(BS_BANSHEEENGINE_SRC_RENDERER
 	"Source/BsRendererUtility.cpp"
 	"Source/BsStandardPostProcessSettings.cpp"
 	"Source/BsReflectionCubemapCache.cpp"
+	"Source/BsReflectionProbes.cpp"
 )
 
 set(BS_BANSHEEENGINE_SRC_INPUT

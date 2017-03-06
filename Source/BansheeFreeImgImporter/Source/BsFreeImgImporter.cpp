@@ -15,6 +15,8 @@
 #include "BsVector3.h"
 #include "FreeImage.h"
 #include "BsBitwise.h"
+#include "BsRenderer.h"
+#include "BsReflectionProbes.h"
 
 using namespace std::placeholders;
 
@@ -141,13 +143,26 @@ namespace bs
 		Vector<SPtr<PixelData>> faceData;
 
 		TextureType texType;
+		bool filterForReflections = false;
 		if(textureImportOptions->getIsCubemap())
 		{
 			texType = TEX_TYPE_CUBE_MAP;
 
+			if(textureImportOptions->getCubemapIsReflection())
+			{
+				SPtr<PixelData> scaledImgData = PixelData::create(ct::ReflectionProbes::REFLECTION_CUBEMAP_SIZE, 
+					ct::ReflectionProbes::REFLECTION_CUBEMAP_SIZE, 0, imgData->getFormat());
+
+				PixelUtil::scale(*imgData, *scaledImgData);
+				imgData = scaledImgData;
+			}
+
 			std::array<SPtr<PixelData>, 6> cubemapFaces;
 			if (generateCubemap(imgData, textureImportOptions->getCubemapSourceType(), cubemapFaces))
+			{
 				faceData.insert(faceData.begin(), cubemapFaces.begin(), cubemapFaces.end());
+				filterForReflections = textureImportOptions->getCubemapIsReflection();
+			}
 			else // Fall-back to 2D texture
 			{
 				texType = TEX_TYPE_2D;
@@ -161,13 +176,13 @@ namespace bs
 		}
 
 		UINT32 numMips = 0;
-		if (textureImportOptions->getGenerateMipmaps() && Bitwise::isPow2(faceData[0]->getWidth()) && 
-			Bitwise::isPow2(faceData[0]->getHeight()))
+		if ((textureImportOptions->getGenerateMipmaps() || filterForReflections) && 
+			Bitwise::isPow2(faceData[0]->getWidth()) && Bitwise::isPow2(faceData[0]->getHeight()))
 		{
 			UINT32 maxPossibleMip = PixelUtil::getMaxMipmaps(faceData[0]->getWidth(), faceData[0]->getHeight(), 
 				faceData[0]->getDepth(), faceData[0]->getFormat());
 
-			if (textureImportOptions->getMaxMip() == 0)
+			if (textureImportOptions->getMaxMip() == 0 || filterForReflections)
 				numMips = maxPossibleMip;
 			else
 				numMips = std::min(maxPossibleMip, textureImportOptions->getMaxMip());
@@ -194,7 +209,7 @@ namespace bs
 		for (UINT32 i = 0; i < numFaces; i++)
 		{
 			Vector<SPtr<PixelData>> mipLevels;
-			if (numMips > 0)
+			if (numMips > 0 && !filterForReflections)
 				mipLevels = PixelUtil::genMipmaps(*faceData[i], MipMapGenOptions());
 			else
 				mipLevels.push_back(faceData[i]);
@@ -209,6 +224,13 @@ namespace bs
 		}
 
 		fileData->close();
+
+		if(filterForReflections)
+		{
+			SPtr<ct::Texture> coreCubemap = newTexture->getCore();
+			gCoreThread().queueCommand(std::bind(&ct::ReflectionProbes::filterCubemapForSpecular, coreCubemap, nullptr));
+			gCoreThread().submit(true);
+		}
 
 		WString fileName = filePath.getWFilename(false);
 		newTexture->setName(fileName);

@@ -24,6 +24,7 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(mSRGB, 4)
 			BS_RTTI_MEMBER_PLAIN(mCubemap, 5)
 			BS_RTTI_MEMBER_PLAIN(mCubemapSourceType, 6)
+			BS_RTTI_MEMBER_PLAIN(mCubemapIsReflection, 7)
 		BS_END_RTTI_MEMBERS
 
 	public:

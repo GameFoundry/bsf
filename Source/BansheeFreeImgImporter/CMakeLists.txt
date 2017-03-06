@@ -6,6 +6,7 @@ set(BansheeFreeImgImporter_INC
 	"Include" 
 	"../BansheeUtility/Include" 
 	"../BansheeCore/Include"
+	"../BansheeEngine/Include"
 	"../../Dependencies/freeimg/include")
 
 include_directories(${BansheeFreeImgImporter_INC})	
@@ -21,7 +22,7 @@ target_compile_definitions(BansheeFreeImgImporter PRIVATE -DBS_FREEIMG_EXPORTS -
 add_library_per_config(BansheeFreeImgImporter freeimg Release/FreeImage Debug/FreeImage)
 
 ## Local libs
-target_link_libraries(BansheeFreeImgImporter PUBLIC BansheeUtility BansheeCore)
+target_link_libraries(BansheeFreeImgImporter PUBLIC BansheeUtility BansheeCore BansheeEngine)
 
 # IDE specific
 set_property(TARGET BansheeFreeImgImporter PROPERTY FOLDER Plugins)

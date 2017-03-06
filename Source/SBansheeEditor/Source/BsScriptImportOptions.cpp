@@ -85,6 +85,8 @@ namespace bs
 		metaData.scriptClass->addInternalCall("Internal_SetIsCubemap", &ScriptTextureImportOptions::internal_SetIsCubemap);
 		metaData.scriptClass->addInternalCall("Internal_GetCubemapSourceType", &ScriptTextureImportOptions::internal_GetCubemapSourceType);
 		metaData.scriptClass->addInternalCall("Internal_SetCubemapSourceType", &ScriptTextureImportOptions::internal_SetCubemapSourceType);
+		metaData.scriptClass->addInternalCall("Internal_GetIsCubemapReflection", &ScriptTextureImportOptions::internal_GetIsCubemapReflection);
+		metaData.scriptClass->addInternalCall("Internal_SetIsCubemapReflection", &ScriptTextureImportOptions::internal_SetIsCubemapReflection);
 	}
 
 	SPtr<TextureImportOptions> ScriptTextureImportOptions::getTexImportOptions()
@@ -182,6 +184,15 @@ namespace bs
 		thisPtr->getTexImportOptions()->setCubemapSourceType(value);
 	}
 
+	bool ScriptTextureImportOptions::internal_GetIsCubemapReflection(ScriptTextureImportOptions* thisPtr)
+	{
+		return thisPtr->getTexImportOptions()->getCubemapIsReflection();
+	}
+
+	void ScriptTextureImportOptions::internal_SetIsCubemapReflection(ScriptTextureImportOptions* thisPtr, bool value)
+	{
+		thisPtr->getTexImportOptions()->setCubemapIsReflection(value);
+	}
 
 	ScriptMeshImportOptions::ScriptMeshImportOptions(MonoObject* instance)
 		:ScriptObject(instance)
