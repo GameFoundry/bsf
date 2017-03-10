@@ -42,9 +42,17 @@ using namespace std::placeholders;
 namespace bs { namespace ct
 {
 	RenderBeast::RenderBeast()
-		: mDefaultMaterial(nullptr), mTiledDeferredLightingMats(), mFlatFramebufferToTextureMat(nullptr)
-		, mSkyboxMat(nullptr), mSkyboxSolidColorMat(nullptr), mGPULightData(nullptr), mLightGrid(nullptr)
-		, mObjectRenderer(nullptr), mOptions(bs_shared_ptr_new<RenderBeastOptions>()), mOptionsDirty(true)
+		: mDefaultMaterial(nullptr)
+		, mTiledDeferredLightingMats()
+		, mFlatFramebufferToTextureMat(nullptr)
+		, mSkyboxMat(nullptr)
+		, mSkyboxSolidColorMat(nullptr)
+		, mGPULightData(nullptr)
+		, mGPUReflProbeData(nullptr)
+		, mLightGrid(nullptr)
+		, mObjectRenderer(nullptr)
+		, mOptions(bs_shared_ptr_new<RenderBeastOptions>())
+		, mOptionsDirty(true)
 	{ }
 
 	const StringID& RenderBeast::getName() const
@@ -86,6 +94,7 @@ namespace bs { namespace ct
 		mTiledDeferredLightingMats[3] = bs_new<TTiledDeferredLightingMat<8>>();
 
 		mGPULightData = bs_new<GPULightData>();
+		mGPUReflProbeData = bs_new<GPUReflProbeData>();
 		mLightGrid = bs_new<LightGrid>();
 
 		GpuResourcePool::startUp();
@@ -117,6 +126,7 @@ namespace bs { namespace ct
 		bs_delete(mSkyboxMat);
 		bs_delete(mSkyboxSolidColorMat);
 		bs_delete(mGPULightData);
+		bs_delete(mGPUReflProbeData);
 		bs_delete(mLightGrid);
 		bs_delete(mFlatFramebufferToTextureMat);
 
@@ -455,15 +465,8 @@ namespace bs { namespace ct
 		UINT32 probeId = (UINT32)mReflProbes.size();
 		probe->setRendererId(probeId);
 
-		mReflProbes.push_back(ReflProbeInfo());
-		ReflProbeInfo& probeInfo = mReflProbes.back();
-		probeInfo.probe = probe;
-		probeInfo.arrayIdx = -1;
-		probeInfo.texture = probe->getCustomTexture();
-		probeInfo.customTexture = probeInfo.texture != nullptr;
-		probeInfo.textureDirty = ReflectionCubemapCache::instance().isDirty(probe->getUUID());
-		probeInfo.arrayDirty = true;
-		probeInfo.errorFlagged = false;
+		mReflProbes.push_back(RendererReflectionProbe(probe));
+		RendererReflectionProbe& probeInfo = mReflProbes.back();
 
 		mReflProbeWorldBounds.push_back(probe->getBounds());
 
@@ -496,7 +499,7 @@ namespace bs { namespace ct
 		UINT32 probeId = probe->getRendererId();
 		mReflProbeWorldBounds[probeId] = probe->getBounds();
 
-		ReflProbeInfo& probeInfo = mReflProbes[probeId];
+		RendererReflectionProbe& probeInfo = mReflProbes[probeId];
 		probeInfo.arrayDirty = true;
 
 		if (!probeInfo.customTexture)
@@ -843,6 +846,27 @@ namespace bs { namespace ct
 
 		mLightDataTemp.clear();
 		mLightVisibilityTemp.clear();
+
+		// Gemerate reflection probes and their GPU buffers
+		UINT32 numProbes = (UINT32)mReflProbes.size();
+
+		mReflProbeVisibilityTemp.resize(numProbes, false);
+		for (UINT32 i = 0; i < numViews; i++)
+			views[i]->calculateVisibility(mReflProbeWorldBounds, mReflProbeVisibilityTemp);
+
+		for(UINT32 i = 0; i < numProbes; i++)
+		{
+			if (!mReflProbeVisibilityTemp[i])
+				continue;
+
+			mReflProbeDataTemp.push_back(ReflProbeData());
+			mReflProbes[i].getParameters(mReflProbeDataTemp.back());
+		}
+
+		mGPUReflProbeData->setProbes(mReflProbeDataTemp, numProbes);
+
+		mReflProbeDataTemp.clear();
+		mReflProbeVisibilityTemp.clear();
 
 		// Update various buffers required by each renderable
 		UINT32 numRenderables = (UINT32)mRenderables.size();
@@ -1205,7 +1229,7 @@ namespace bs { namespace ct
 			FrameQueue<UINT32> emptySlots;
 			for (UINT32 i = 0; i < numProbes; i++)
 			{
-				ReflProbeInfo& probeInfo = mReflProbes[i];
+				RendererReflectionProbe& probeInfo = mReflProbes[i];
 				if (!probeInfo.customTexture)
 				{
 					if (probeInfo.probe->getType() != ReflectionProbeType::Plane)

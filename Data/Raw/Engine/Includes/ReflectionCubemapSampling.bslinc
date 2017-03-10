@@ -6,17 +6,36 @@ Technique : base("ReflectionCubemapSampling") =
 	{
 		Common = 
 		{
+			struct ReflProbeData
+			{
+				float3 position;
+				float radius;
+				float3 boxExtents;
+				float4x4 invBoxTransform;
+				float transitionDistance;
+				uint cubemapIdx;
+				uint type; // 0 - Sphere, 1 - Box
+			};
+		
 			TextureCube gSkyCubemapTex;
 			SamplerState gSkyCubemapSamp;
+			
+			TextureCubeArray gReflProbeCubmaps;
+			SamplerState gReflProbeSamp;
+			
+			StructuredBuffer<ReflProbeData> gReflectionProbes;	
 
-			cbuffer ReflectionParams
+			cbuffer ReflProbeParams
 			{
-				int gSkyNumMips;
+				uint gReflCubemapNumMips;
+				uint gNumProbes;
+				uint gSkyCubemapAvailable;
+				uint gSkyCubemapNumMips;
 			}	
 			
 			float3 getSkyReflection(float3 dir, float roughness)
 			{
-				float mipLevel = mapRoughnessToMipLevel(roughness, gSkyNumMips);
+				float mipLevel = mapRoughnessToMipLevel(roughness, gReflCubemapNumMips);
 				float3 reflection = gSkyCubemapTex.SampleLevel(gSkyCubemapSamp, dir, mipLevel);
 
 				return reflection;
@@ -102,6 +121,63 @@ Technique : base("ReflectionCubemapSampling") =
 				return t * t * (3.0 - 2.0 * t);
 				
 				return lookupDir;
+			}
+			
+			float3 gatherReflectionRadiance(float3 worldPos, float3 dir, float roughness, uint probeOffset, uint numProbes)
+			{
+				#if FIXED_REFLECTION_COLOR
+					return float3(1.0f, 1.0f, 1.0f);
+				#else
+				
+				float mipLevel = mapRoughnessToMipLevel(roughness, gReflCubemapNumMips);
+				
+				float3 output = 0;
+				float leftoverContribution = 1.0f;
+				for(uint i = 0; i < numProbes; i++)
+				{
+					if(leftoverContribution < 0.001f)
+						break;
+							
+					uint probeIdx = gReflectionProbeIndices[probeOffset + i];
+					ReflProbeData probeData = gReflectionProbes[probeIdx];
+					
+					float3 probeToPos = worldPos - probeData.position;
+					float distToProbe = length(probeToPos);
+					float normalizedDist = saturate(distToProbe / probeData.radius);
+								
+					if(distToProbe <= probeData.radius)
+					{
+						float3 correctedDir;
+						float contribution = 0;
+						if(probeData.type == 0) // Sphere
+						{
+							correctedDir = getLookupForSphereProxy(worldPos, dir, probeData.position, probeData.radius);
+							contibution = getSphereReflectionContribution(normalizedDist);
+						}
+						else if(probeData.type == 1) // Box
+						{
+							correctedDir = getLookupForBoxProxy(worldPos, dir, probeData.position, probeData.boxExtents, probeData.invBoxTransform, probeData.transitionDistance, contribution);
+						}
+						
+						float4 sample = gReflProbeCubmaps.SampleLevel(gReflProbeSamp, float4(correctedDir, probeData.cubemapIdx), mipLevel);
+						sample *= contribution;
+						
+						output += sample * leftoverContribution; 
+						leftoverContribution *= (1.0f - contribution);
+					}
+				}
+				
+				if(gSkyCubemapAvailable > 0)
+				{
+					float skyMipLevel = mapRoughnessToMipLevel(roughness, gSkyCubemapNumMips);
+					float4 sample = gSkyCubemapTex.SampleLevel(gSkyCubemapSamp, dir, skyMipLevel);
+					
+					output += sample * leftoverContribution; 
+				}
+						
+				return output;
+						
+				#endif
 			}
 		};
 	};
