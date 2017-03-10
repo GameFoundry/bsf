@@ -83,7 +83,7 @@ namespace bs
 
 		/**
 		 * Marks the cubemap as a reflection cubemap and perform special filtering on the cubemap mip-maps. Only relevant
-		 * when texture is imported as a cubemap. This will override texture size and mip levels to match the requirements
+		 * when texture is imported as a cubemap. This will override texture mip levels to match the requirements
 		 * needed for reflection cubemaps.
 		 */
 		void setCubemapIsReflection(bool reflection) { mCubemapIsReflection = reflection; }

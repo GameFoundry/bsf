@@ -148,15 +148,6 @@ namespace bs
 		{
 			texType = TEX_TYPE_CUBE_MAP;
 
-			if(textureImportOptions->getCubemapIsReflection())
-			{
-				SPtr<PixelData> scaledImgData = PixelData::create(ct::ReflectionProbes::REFLECTION_CUBEMAP_SIZE, 
-					ct::ReflectionProbes::REFLECTION_CUBEMAP_SIZE, 0, imgData->getFormat());
-
-				PixelUtil::scale(*imgData, *scaledImgData);
-				imgData = scaledImgData;
-			}
-
 			std::array<SPtr<PixelData>, 6> cubemapFaces;
 			if (generateCubemap(imgData, textureImportOptions->getCubemapSourceType(), cubemapFaces))
 			{

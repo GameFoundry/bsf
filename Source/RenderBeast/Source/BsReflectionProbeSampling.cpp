@@ -52,8 +52,8 @@ namespace bs { namespace ct
 		:probe(probe)
 	{
 		arrayIdx = -1;
-		texture = probe->getCustomTexture();
-		customTexture = texture != nullptr;
+		texture = nullptr;
+		customTexture = probe->getCustomTexture() != nullptr;
 		textureDirty = ReflectionCubemapCache::instance().isDirty(probe->getUUID());
 		arrayDirty = true;
 		errorFlagged = false;

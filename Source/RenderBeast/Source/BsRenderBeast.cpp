@@ -502,11 +502,8 @@ namespace bs { namespace ct
 		RendererReflectionProbe& probeInfo = mReflProbes[probeId];
 		probeInfo.arrayDirty = true;
 
-		if (!probeInfo.customTexture)
-		{
-			ReflectionCubemapCache::instance().notifyDirty(probe->getUUID());
-			probeInfo.textureDirty = true;
-		}
+		ReflectionCubemapCache::instance().notifyDirty(probe->getUUID());
+		probeInfo.textureDirty = true;
 	}
 
 	void RenderBeast::notifyReflectionProbeRemoved(ReflectionProbe* probe)
@@ -1230,22 +1227,43 @@ namespace bs { namespace ct
 			for (UINT32 i = 0; i < numProbes; i++)
 			{
 				RendererReflectionProbe& probeInfo = mReflProbes[i];
-				if (!probeInfo.customTexture)
+				if (probeInfo.probe->getType() != ReflectionProbeType::Plane)
 				{
-					if (probeInfo.probe->getType() != ReflectionProbeType::Plane)
+					if (probeInfo.texture == nullptr)
+						probeInfo.texture = ReflectionCubemapCache::instance().getCachedTexture(probeInfo.probe->getUUID());
+
+					if (probeInfo.texture == nullptr || probeInfo.textureDirty)
 					{
-						if (probeInfo.texture == nullptr)
-							probeInfo.texture = ReflectionCubemapCache::instance().getCachedTexture(probeInfo.probe->getUUID());
+						probeInfo.texture = Texture::create(cubemapDesc);
 
-						if (probeInfo.texture == nullptr || probeInfo.textureDirty)
+						if (!probeInfo.customTexture)
 						{
-							probeInfo.texture = Texture::create(cubemapDesc);
-
 							captureSceneCubeMap(probeInfo.texture, probeInfo.probe->getPosition(), true, frameInfo);
-							ReflectionProbes::filterCubemapForSpecular(probeInfo.texture, scratchCubemap);
-
-							ReflectionCubemapCache::instance().setCachedTexture(probeInfo.probe->getUUID(), probeInfo.texture);
 						}
+						else
+						{
+							SPtr<Texture> customTexture = probeInfo.probe->getCustomTexture();
+
+							// Note: If the Texture class supported scale on copy we could avoid using CPU reads & buffers
+							auto& texProps = probeInfo.texture->getProperties();
+							SPtr<PixelData> scaledFaceData = texProps.allocBuffer(0, 0);
+
+							auto& customTexProps = customTexture->getProperties();
+							SPtr<PixelData> originalFaceData = customTexProps.allocBuffer(0, 0);
+							for (UINT32 j = 0; j < 6; j++)
+							{
+								if (j < customTexProps.getNumFaces())
+									customTexture->readData(*originalFaceData, 0, j);
+
+								PixelUtil::scale(*originalFaceData, *scaledFaceData);
+
+								probeInfo.texture->writeData(*scaledFaceData, 0, j);
+
+							}
+						}
+
+						ReflectionProbes::filterCubemapForSpecular(probeInfo.texture, scratchCubemap);
+						ReflectionCubemapCache::instance().setCachedTexture(probeInfo.probe->getUUID(), probeInfo.texture);
 					}
 				}
 
