@@ -6,6 +6,9 @@ Technique : base("ReflectionCubemapSampling") =
 	{
 		Common = 
 		{
+			// Arbitrary limit, increase if needed
+			#define MAX_PROBES 512
+		
 			struct ReflProbeData
 			{
 				float3 position;
@@ -23,8 +26,17 @@ Technique : base("ReflectionCubemapSampling") =
 			TextureCubeArray gReflProbeCubmaps;
 			SamplerState gReflProbeSamp;
 			
+			Texture2D gPreintegratedEnvBRDF;
+			SamplerState gPreintegratedEnvBRDFSamp;
+			
 			StructuredBuffer<ReflProbeData> gReflectionProbes;	
 
+			#ifdef USE_COMPUTE_INDICES
+				groupshared uint gReflectionProbeIndices[MAX_PROBES];
+			#else
+				Buffer<uint> gReflectionProbeIndices;
+			#endif
+			
 			cbuffer ReflProbeParams
 			{
 				uint gReflCubemapNumMips;
@@ -74,9 +86,9 @@ Technique : base("ReflectionCubemapSampling") =
 				return lookupDir;
 			}
 			
-			float3 getDistBoxToPoint(float3 point, float3 extents)
+			float3 getDistBoxToPoint(float3 pt, float3 extents)
 			{
-				float3 d = max(max(-extents - point, 0), point - extents);
+				float3 d = max(max(-extents - pt, 0), pt - extents);
 				return length(d);
 			}
 			
@@ -152,7 +164,7 @@ Technique : base("ReflectionCubemapSampling") =
 						if(probeData.type == 0) // Sphere
 						{
 							correctedDir = getLookupForSphereProxy(worldPos, dir, probeData.position, probeData.radius);
-							contibution = getSphereReflectionContribution(normalizedDist);
+							contribution = getSphereReflectionContribution(normalizedDist);
 						}
 						else if(probeData.type == 1) // Box
 						{
@@ -179,6 +191,24 @@ Technique : base("ReflectionCubemapSampling") =
 						
 				#endif
 			}
+			
+			float3 getImageBasedSpecular(float3 worldPos, float3 V, SurfaceData surfaceData)
+			{
+				// See C++ code for generation of gPreintegratedEnvBRDF to see why this code works as is
+				float3 N = surfaceData.worldNormal.xyz;
+				float NoV = saturate(dot(N, V));
+				
+				// Note: Using a fixed F0 value of 0.04 (plastic) for dielectrics, and using albedo as specular for conductors.
+				// For more customizability allow the user to provide separate albedo/specular colors for both types.
+				float3 specularColor = lerp(float3(0.04f, 0.04f, 0.04f), surfaceData.albedo.rgb, surfaceData.metalness);
+				
+				float3 R = 2 * dot(V, N) * N - V;
+				float radiance = gatherReflectionRadiance(worldPos, R, surfaceData.roughness, 0, 0);
+				
+				float2 envBRDF = gPreintegratedEnvBRDF.SampleLevel(gPreintegratedEnvBRDFSamp, float2(NoV, surfaceData.roughness), 0).rg;
+				
+				return radiance * (specularColor * envBRDF.x + envBRDF.y);
+			}		
 		};
 	};
 };

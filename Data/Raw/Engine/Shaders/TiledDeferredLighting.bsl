@@ -1,6 +1,9 @@
 #include "$ENGINE$\GBuffer.bslinc"
 #include "$ENGINE$\PerCameraData.bslinc"
+#define USE_COMPUTE_INDICES
 #include "$ENGINE$\LightingCommon.bslinc"
+#include "$ENGINE$\ReflectionCubemapCommon.bslinc"
+#include "$ENGINE$\ReflectionCubemapSampling.bslinc"
 
 Parameters =
 {
@@ -23,7 +26,9 @@ Blocks =
 Technique 
   : inherits("GBuffer")
   : inherits("PerCameraData")
-  : inherits("LightingCommon") =
+  : inherits("LightingCommon")
+  : inherits("ReflectionCubemapCommon")
+  : inherits("ReflectionCubemapSampling") =
 {
 	Language = "HLSL11";
 	
@@ -31,9 +36,6 @@ Technique
 	{
 		Compute = 
 		{
-			// Arbitrary limit, increase if needed
-            #define MAX_LIGHTS 512
-
 			SamplerState gGBufferASamp : register(s0);
 			SamplerState gGBufferBSamp : register(s1);
 			SamplerState gGBufferCSamp : register(s2);
@@ -66,8 +68,6 @@ Technique
 				return output;
 			}			
 						
-			StructuredBuffer<LightData> gLights : register(t4);		
-		
 			cbuffer Params : register(b0)
 			{
 				// Offsets at which specific light types begin in gLights buffer
@@ -143,7 +143,6 @@ Technique
 
             groupshared uint sNumLightsPerType[2];
 			groupshared uint sTotalNumLights;
-            groupshared uint sLightIndices[MAX_LIGHTS];
 
 			float4 getLighting(float2 clipSpacePos, SurfaceData surfaceData)
 			{
@@ -155,31 +154,19 @@ Technique
 				float4 worldPosition4D = mul(gMatScreenToWorld, mixedSpacePos);
 				float3 worldPosition = worldPosition4D.xyz / worldPosition4D.w;
 				
-				float3 lightAccumulator = 0;
-				float alpha = 0.0f;
-				if(surfaceData.worldNormal.w > 0.0f)
-				{
-					for(uint i = 0; i < gLightOffsets[0]; ++i)
-						lightAccumulator += getDirLightContibution(surfaceData, gLights[i]);
-					
-                    for (uint i = 0; i < sNumLightsPerType[0]; ++i)
-                    {
-                        uint lightIdx = sLightIndices[i];
-                        lightAccumulator += getPointLightContribution(worldPosition, surfaceData, gLights[lightIdx]);
-                    }
-
-					for(uint i = sNumLightsPerType[0]; i < sTotalNumLights; ++i)
-                    {
-                        uint lightIdx = sLightIndices[i];
-                        lightAccumulator += getSpotLightContribution(worldPosition, surfaceData, gLights[lightIdx]);
-                    }
-					
-					lightAccumulator += surfaceData.albedo * gAmbientFactor;
-					alpha = 1.0f;
-				}
+				uint4 lightOffsets;
+				lightOffsets.x = gLightOffsets[0];
+				lightOffsets.y = 0;
+				lightOffsets.z = sNumLightsPerType[0];
+				lightOffsets.w = sTotalNumLights;
 				
-				float3 diffuse = surfaceData.albedo.xyz / PI; // TODO - Add better lighting model later
-				return float4(lightAccumulator * diffuse, alpha);
+				float4 directLighting = getDirectLighting(worldPosition, surfaceData, lightOffsets);
+				float3 imageBasedSpecular = getImageBasedSpecular(worldPosition, gViewDir, surfaceData);
+
+				float4 totalLighting = directLighting;
+				totalLighting.rgb += imageBasedSpecular;
+				
+				return totalLighting;				
 			}
 			
 			[numthreads(TILE_SIZE, TILE_SIZE, 1)]
@@ -331,7 +318,7 @@ Technique
 								
 								uint idx;
 								InterlockedAdd(sTotalNumLights, 1U, idx);
-								sLightIndices[idx] = i;
+								gLightIndices[idx] = i;
 							}
 						}
 					}

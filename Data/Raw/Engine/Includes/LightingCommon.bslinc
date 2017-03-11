@@ -7,6 +7,9 @@ Technique
 	{
 		Common = 
 		{
+			// Arbitrary limit, increase if needed
+            #define MAX_LIGHTS 512
+		
 			#define PI 3.1415926
 			#define HALF_PI 1.5707963
 			
@@ -68,7 +71,7 @@ Technique
 				return roughness4 / (PI * d * d);
 			}
 			
-			float calcDiffuseLambert(float color)
+			float3 calcDiffuseLambert(float3 color)
 			{
 				return color * (1.0f / PI);
 			}
@@ -81,11 +84,7 @@ Technique
 			
 			float3 getDirLightContibution(SurfaceData surfaceData, LightData lightData)
 			{
-				float3 N = surfaceData.worldNormal.xyz;
-				float3 L = -lightData.direction;
-				
-				float NoL = saturate(dot(N, L)); // TODO - Add bias here?
-				return lightData.color * lightData.intensity * NoL;
+				return lightData.color * lightData.intensity;
 			}
 			
 			float3 getPointLightContribution(float3 L, float3 worldPosition, SurfaceData surfaceData, LightData lightData)
@@ -95,32 +94,108 @@ Technique
 				float distanceSqrd = dot(L, L);
 				float distanceAttenuation = 1/(distanceSqrd + 1);
 				
-				L = normalize(L);
-				float NoL = saturate(dot(N, L)); // TODO - Add bias here?
-
 				float radiusAttenuation = distanceSqrd * lightData.radiusSqrdInv;
 				radiusAttenuation *= radiusAttenuation;
 				radiusAttenuation = saturate(1.0f - radiusAttenuation);
 				radiusAttenuation *= radiusAttenuation;
 
 				float attenuation = distanceAttenuation * radiusAttenuation;
-				return lightData.color * lightData.intensity * (NoL * attenuation);
+				return lightData.color * lightData.intensity * attenuation;
 			}
 			
-			float3 getPointLightContribution(float3 worldPosition, SurfaceData surfaceData, LightData lightData)
+			float3 getSpotLightContribution(float3 L, float3 worldPosition, SurfaceData surfaceData, LightData lightData)
 			{
-				float3 L = lightData.position - worldPosition;
-				
-				return getPointLightContribution(L, worldPosition, surfaceData, lightData);
-			}
-			
-			float3 getSpotLightContribution(float3 worldPosition, SurfaceData surfaceData, LightData lightData)
-			{
-				float3 L = lightData.position - worldPosition;
 				float3 pointLightContribution = getPointLightContribution(L, worldPosition, surfaceData, lightData);
 				float spotFalloff = getSpotAttenuation(L, lightData.direction, lightData.spotAngles);
 				
 				return pointLightContribution * spotFalloff;
+			}
+			
+			float3 getSurfaceShading(float3 V, float3 L, SurfaceData surfaceData)
+			{
+				float3 N = surfaceData.worldNormal.xyz;
+
+				float3 H = normalize(V + L);
+				float LoH = saturate(dot(L, H));
+				float NoH = saturate(dot(N, H));
+				float NoV = saturate(dot(N, V));
+				float NoL = saturate(dot(N, L));
+				
+				float3 diffuseColor = lerp(surfaceData.albedo.rgb, float3(0.0f, 0.0f, 0.0f), 1.0f - surfaceData.metalness);
+				
+				// Note: Using a fixed F0 value of 0.04 (plastic) for dielectrics, and using albedo as specular for conductors.
+				// For more customizability allow the user to provide separate albedo/specular colors for both types.
+				float3 specularColor = lerp(float3(0.04f, 0.04f, 0.04f), surfaceData.albedo.rgb, surfaceData.metalness);
+				
+				float3 diffuse = calcDiffuseLambert(diffuseColor);
+				float3 specular = calcMicrofacetFresnelShlick(specularColor, LoH) * 
+					calcMicrofacetDistGGX(surfaceData.roughness, NoH) *
+					calcMicrofacetShadowingSmithGGX(surfaceData.roughness, NoV, NoL);
+				
+				// Note: Need to add energy conservation between diffuse and specular terms?
+				return diffuse + specular;
+			}	
+			
+			StructuredBuffer<LightData> gLights;
+			
+			#ifdef USE_COMPUTE_INDICES
+				groupshared uint gLightIndices[MAX_LIGHTS];
+			#else
+				Buffer<uint> gLightIndices;
+			#endif
+			
+			float4 getDirectLighting(float3 worldPos, SurfaceData surfaceData, uint4 lightOffsets)
+			{
+				float3 N = surfaceData.worldNormal;
+				
+				float3 lightContribution = 0;
+				float alpha = 0.0f;
+				if(surfaceData.worldNormal.w > 0.0f)
+				{
+					for(uint i = 0; i < lightOffsets.x; ++i)
+					{
+						float3 L = -gLights[i].direction;
+						float3 lightContrib = getDirLightContibution(surfaceData, gLights[i]);
+						
+						float NoL = saturate(dot(N, L));
+						lightContribution += lightContrib * NoL;
+					}
+					
+                    for (uint i = lightOffsets.y; i < lightOffsets.z; ++i)
+                    {
+                        uint lightIdx = gLightIndices[i];
+                        
+						float3 L = gLights[lightIdx].position - worldPos;
+						L = normalize(L);
+						
+						float3 lightContrib = getPointLightContribution(L, worldPos, surfaceData, gLights[lightIdx]);
+
+						float NoL = saturate(dot(N, L));
+						lightContribution += lightContrib * NoL;
+                    }
+
+					for(uint i = lightOffsets.z; i < lightOffsets.w; ++i)
+                    {
+                        uint lightIdx = gLightIndices[i];
+						
+						float3 L = gLights[lightIdx].position - worldPos;
+						L = normalize(L);
+						
+                        float3 lightContrib = getSpotLightContribution(L, worldPos, surfaceData, gLights[lightIdx]);
+						
+						float NoL = saturate(dot(N, L));
+						lightContribution += lightContrib * NoL;
+                    }
+										
+					lightContribution += surfaceData.albedo.rgb * gAmbientFactor;
+					
+					// Note: Only possible because we are using Lambert only for lights
+					lightContribution *= surfaceData.albedo.rgb / PI;
+					
+					alpha = 1.0f;
+				}
+				
+				return float4(lightContribution, alpha);
 			}
 		};
 	};

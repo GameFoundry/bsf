@@ -21,7 +21,6 @@ Technique
 	{
 		Compute = 
 		{
-			StructuredBuffer<LightData> gLights : register(t0);
 			RWBuffer<uint> gLinkedListCounter : register(u0);
 			RWBuffer<uint> gLinkedListHeads : register(u1);
 			RWBuffer<uint4> gLinkedList : register(u2);

@@ -54,8 +54,6 @@ Technique
 			Texture2D gMetalnessTex : register(t3);
 			
 			Buffer<uint3> gGridOffsetsAndSize : register(t4);
-			Buffer<uint> gGridLightIndices : register(t5);
-			StructuredBuffer<LightData> gLights : register(t6);
 
 			cbuffer MaterialParams : register(b5)
 			{
@@ -70,44 +68,22 @@ Technique
 				SurfaceData surfaceData;
 				surfaceData.albedo = gAlbedoTex.Sample(gAlbedoSamp, input.uv0);
 				surfaceData.worldNormal.xyz = worldNormal;
+				surfaceData.worldNormal.w = 0.0f;
 				surfaceData.roughness = gRoughnessTex.Sample(gRoughnessSamp, input.uv0).x;
 				surfaceData.metalness = gMetalnessTex.Sample(gMetalnessSamp, input.uv0).x;
-				
-				float3 lightAccumulator = 0;
-				
-				// Directional lights
-				for(uint lightIdx = 0; lightIdx < gLightOffsets[0]; ++lightIdx)
-					lightAccumulator += getDirLightContibution(surfaceData, gLights[lightIdx]);
 				
 				uint2 pixelPos = (uint2)input.position.xy;
 				uint cellIdx = calcCellIdx(pixelPos, input.position.z);
 				uint3 offsetAndSize = gGridOffsetsAndSize[cellIdx];
 				
-				// Radial lights
-				uint i = offsetAndSize.x;
-				uint end = offsetAndSize.x + offsetAndSize.y;
-				for(; i < end; i++)
-				{
-					uint lightIndex = gGridLightIndices[i];
-					LightData lightData = gLights[lightIndex];
-					
-					lightAccumulator += getPointLightContribution(input.worldPosition, surfaceData, lightData);
-				}
+				uint4 lightOffsets;
+				lightOffsets.x = gLightOffsets[0];
+				lightOffsets.y = offsetAndSize.x;
+				lightOffsets.z = lightOffsets.y + offsetAndSize.y;
+				lightOffsets.w = lightOffsets.z + offsetAndSize.z;
 				
-				// Spot lights
-				end += offsetAndSize.z;
-				for(; i < end; i++)
-				{
-					uint lightIndex = gGridLightIndices[i];
-					LightData lightData = gLights[lightIndex];
-					
-					lightAccumulator += getSpotLightContribution(input.worldPosition, surfaceData, lightData);
-				}
-				
-				lightAccumulator += surfaceData.albedo.xyz * gAmbientFactor;
-				
-				float3 diffuse = surfaceData.albedo.xyz / PI;
-				return float4(diffuse * lightAccumulator, gOpacity); // TODO - Add better lighting model later
+				float3 color = getDirectLighting(input.worldPosition, surfaceData, lightOffsets);
+				return float4(color, gOpacity);
 			}	
 		};
 	};

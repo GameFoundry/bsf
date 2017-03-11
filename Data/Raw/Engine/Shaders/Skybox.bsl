@@ -48,7 +48,7 @@ Technique : inherits("PerCameraData") =
 				#ifdef SOLID_COLOR
 					return gClearColor;
 				#else
-					return gSkyTex.Sample(gSkySamp, dir);
+					return gSkyTex.SampleLevel(gSkySamp, dir, 0);
 				#endif
 				}
 		};	
@@ -102,7 +102,7 @@ Technique : inherits("PerCameraData") =
 			#ifdef SOLID_COLOR
 				fragColor = gClearColor;
 			#else
-				fragColor = texture(gSkyTex, dir);
+				fragColor = textureLod(gSkyTex, dir, 0);
 			#endif
 			}	
 		};
