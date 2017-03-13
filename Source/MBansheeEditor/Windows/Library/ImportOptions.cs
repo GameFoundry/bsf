@@ -124,17 +124,6 @@ namespace BansheeEditor
             set { Internal_SetCubemapSourceType(mCachedPtr, value); }
         }
 
-        /// <summary>
-        /// If true makrs the cubemap as a reflection cubemap and perform special filtering on the cubemap mip-maps. Only
-        /// relevant when texture is imported as a cubemap. This will override texture mip levels to match the requirements
-        /// needed for reflection cubemaps.
-        /// </summary>
-        public bool IsCubemapReflection
-        {
-            get { return Internal_GetIsCubemapReflection(mCachedPtr); }
-            set { Internal_SetIsCubemapReflection(mCachedPtr, value); }
-        }
-
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateInstance(TextureImportOptions instance);
 
@@ -179,12 +168,6 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetCubemapSourceType(IntPtr thisPtr, CubemapSourceType value);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern bool Internal_GetIsCubemapReflection(IntPtr thisPtr);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetIsCubemapReflection(IntPtr thisPtr, bool value);
     }
 
     /// <summary>
