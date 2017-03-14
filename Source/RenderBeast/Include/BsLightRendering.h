@@ -130,8 +130,8 @@ namespace bs { namespace ct
 	};
 
 	/** Shader that performs a lighting pass over data stored in the Gbuffer. */
-	template<int MSAA_COUNT>
-	class TTiledDeferredLightingMat : public ITiledDeferredLightingMat, public RendererMaterial<TTiledDeferredLightingMat<MSAA_COUNT>>
+	template<int MSAA_COUNT, bool FixedReflColor>
+	class TTiledDeferredLightingMat : public ITiledDeferredLightingMat, public RendererMaterial<TTiledDeferredLightingMat<MSAA_COUNT, FixedReflColor>>
 	{
 		RMAT_DEF("TiledDeferredLighting.bsl");
 
@@ -146,6 +146,26 @@ namespace bs { namespace ct
 	private:
 		TiledDeferredLighting mInternal;
 	};
+
+    /** Contains instances for all types of tile deferred lighting materials. */
+    class TiledDeferredLightingMaterials
+    {
+    public:
+        TiledDeferredLightingMaterials();
+        ~TiledDeferredLightingMaterials();
+
+        /**
+         * Returns a version of the tile-deferred lighting material that matches the parameters.
+         * 
+         * @param[in]   msaa                Number of samples per pixel.
+         * @param[in]   fixedReflColor      If true reflection probes will not be evaluated and instead a fixed color will
+         *                                  be returned instead. Useful when rendering reflection probes.
+         */
+        ITiledDeferredLightingMat* get(UINT32 msaa, bool fixedReflColor);
+
+    private:
+        ITiledDeferredLightingMat* mInstances[8];
+    };
 
 	BS_PARAM_BLOCK_BEGIN(FlatFramebufferToTextureParamDef)
 		BS_PARAM_BLOCK_ENTRY(Vector2I, gFramebufferSize)

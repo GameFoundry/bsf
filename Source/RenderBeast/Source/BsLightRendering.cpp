@@ -10,6 +10,7 @@
 #include "BsGpuBuffer.h"
 #include "BsLight.h"
 #include "BsRendererUtility.h"
+#include "BsReflectionProbeSampling.h"
 
 namespace bs { namespace ct
 {
@@ -311,37 +312,88 @@ namespace bs { namespace ct
 		return texture;
 	}
 
-	template<int MSAA_COUNT>
-	TTiledDeferredLightingMat<MSAA_COUNT>::TTiledDeferredLightingMat()
+	template<int MSAA_COUNT, bool FixedReflColor>
+	TTiledDeferredLightingMat<MSAA_COUNT, FixedReflColor>::TTiledDeferredLightingMat()
 		:mInternal(mMaterial, mParamsSet, MSAA_COUNT)
 	{
 
 	}
 
-	template<int MSAA_COUNT>
-	void TTiledDeferredLightingMat<MSAA_COUNT>::_initDefines(ShaderDefines& defines)
+	template<int MSAA_COUNT, bool FixedReflColor>
+	void TTiledDeferredLightingMat<MSAA_COUNT, FixedReflColor>::_initDefines(ShaderDefines& defines)
 	{
 		defines.set("TILE_SIZE", TiledDeferredLighting::TILE_SIZE);
 		defines.set("MSAA_COUNT", MSAA_COUNT);
+        defines.set("FIXED_REFLECTION_COLOR", FixedReflColor);
 	}
 
-	template<int MSAA_COUNT>
-	void TTiledDeferredLightingMat<MSAA_COUNT>::execute(const SPtr<RenderTargets>& gbuffer,
+	template<int MSAA_COUNT, bool FixedReflColor>
+	void TTiledDeferredLightingMat<MSAA_COUNT, FixedReflColor>::execute(const SPtr<RenderTargets>& gbuffer,
 													const SPtr<GpuParamBlockBuffer>& perCamera, bool noLighting)
 	{
 		mInternal.execute(gbuffer, perCamera, noLighting);
 	}
 
-	template<int MSAA_COUNT>
-	void TTiledDeferredLightingMat<MSAA_COUNT>::setLights(const GPULightData& lightData)
+	template<int MSAA_COUNT, bool FixedReflColor>
+	void TTiledDeferredLightingMat<MSAA_COUNT, FixedReflColor>::setLights(const GPULightData& lightData)
 	{
 		mInternal.setLights(lightData);
 	}
 
-	template class TTiledDeferredLightingMat<1>;
-	template class TTiledDeferredLightingMat<2>;
-	template class TTiledDeferredLightingMat<4>;
-	template class TTiledDeferredLightingMat<8>;
+	template class TTiledDeferredLightingMat<1, false>;
+	template class TTiledDeferredLightingMat<2, false>;
+	template class TTiledDeferredLightingMat<4, false>;
+	template class TTiledDeferredLightingMat<8, false>;
+
+    template class TTiledDeferredLightingMat<1, true>;
+    template class TTiledDeferredLightingMat<2, true>;
+    template class TTiledDeferredLightingMat<4, true>;
+    template class TTiledDeferredLightingMat<8, true>;
+
+    TiledDeferredLightingMaterials::TiledDeferredLightingMaterials()
+    {
+        mInstances[0] = bs_new<TTiledDeferredLightingMat<1, false>>();
+        mInstances[1] = bs_new<TTiledDeferredLightingMat<2, false>>();
+        mInstances[2] = bs_new<TTiledDeferredLightingMat<4, false>>();
+        mInstances[3] = bs_new<TTiledDeferredLightingMat<8, false>>();
+
+        mInstances[4] = bs_new<TTiledDeferredLightingMat<1, true>>();
+        mInstances[5] = bs_new<TTiledDeferredLightingMat<2, true>>();
+        mInstances[6] = bs_new<TTiledDeferredLightingMat<4, true>>();
+        mInstances[7] = bs_new<TTiledDeferredLightingMat<8, true>>();
+    }
+
+    TiledDeferredLightingMaterials::~TiledDeferredLightingMaterials()
+    {
+        for (UINT32 i = 0; i < 8; i++)
+            bs_delete(mInstances[i]);
+    }
+
+    ITiledDeferredLightingMat* TiledDeferredLightingMaterials::get(UINT32 msaa, bool fixedReflColor)
+    {
+        if(!fixedReflColor)
+        {
+            if (msaa == 1)
+                return mInstances[0];
+            else if (msaa == 2)
+                return mInstances[1];
+            else if (msaa == 4)
+                return mInstances[2];
+            else
+                return mInstances[3];
+        }
+        else
+        {
+            if (msaa == 1)
+                return mInstances[4];
+            else if (msaa == 2)
+                return mInstances[5];
+            else if (msaa == 4)
+                return mInstances[6];
+            else
+                return mInstances[7];
+        }
+    }
 
 	FlatFramebufferToTextureParamDef gFlatFramebufferToTextureParamDef;
 

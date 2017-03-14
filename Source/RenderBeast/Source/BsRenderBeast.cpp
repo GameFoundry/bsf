@@ -92,10 +92,7 @@ namespace bs { namespace ct
 		mSkyboxSolidColorMat = bs_new<SkyboxMat<true>>();
 		mFlatFramebufferToTextureMat = bs_new<FlatFramebufferToTextureMat>();
 
-		mTiledDeferredLightingMats[0] = bs_new<TTiledDeferredLightingMat<1>>();
-		mTiledDeferredLightingMats[1] = bs_new<TTiledDeferredLightingMat<2>>();
-		mTiledDeferredLightingMats[2] = bs_new<TTiledDeferredLightingMat<4>>();
-		mTiledDeferredLightingMats[3] = bs_new<TTiledDeferredLightingMat<8>>();
+		mTiledDeferredLightingMats = bs_new<TiledDeferredLightingMaterials>();
 
 		mGPULightData = bs_new<GPULightData>();
 		mGPUReflProbeData = bs_new<GPUReflProbeData>();
@@ -135,10 +132,7 @@ namespace bs { namespace ct
 		bs_delete(mGPUReflProbeData);
 		bs_delete(mLightGrid);
 		bs_delete(mFlatFramebufferToTextureMat);
-
-		UINT32 numDeferredMats = sizeof(mTiledDeferredLightingMats) / sizeof(mTiledDeferredLightingMats[0]);
-		for (UINT32 i = 0; i < numDeferredMats; i++)
-			bs_delete(mTiledDeferredLightingMats[i]);
+		bs_delete(mTiledDeferredLightingMats);
 
 		RendererUtility::shutDown();
 
@@ -640,6 +634,7 @@ namespace bs { namespace ct
 			viewDesc.noLighting = camera->getFlags().isSet(CameraFlag::NoLighting);
 			viewDesc.triggerCallbacks = true;
 			viewDesc.runPostProcessing = true;
+            viewDesc.renderingReflections = false;
 
 			viewDesc.cullFrustum = camera->getWorldFrustum();
 			viewDesc.visibleLayers = camera->getLayers();
@@ -1033,25 +1028,8 @@ namespace bs { namespace ct
 		rapi.setRenderTarget(nullptr);
 
 		// Render light pass
-		ITiledDeferredLightingMat* lightingMat;
-
-		UINT32 numSamples = viewInfo->getNumSamples();
-		switch(numSamples)
-		{
-		case 0:
-		case 1:
-			lightingMat = mTiledDeferredLightingMats[0]; // No MSAA
-			break;
-		case 2:
-			lightingMat = mTiledDeferredLightingMats[1]; // 2X MSAA
-			break;
-		case 4:
-			lightingMat = mTiledDeferredLightingMats[2]; // 4X MSAA
-			break;
-		default:
-			lightingMat = mTiledDeferredLightingMats[3]; // 8X MSAA or higher
-			break;
-		}
+        UINT32 numSamples = viewInfo->getNumSamples();
+		ITiledDeferredLightingMat* lightingMat = mTiledDeferredLightingMats->get(numSamples, viewInfo->isRenderingReflections());
 
 		lightingMat->setLights(*mGPULightData);
 		lightingMat->execute(renderTargets, perCameraBuffer, viewInfo->renderWithNoLighting());
@@ -1422,6 +1400,7 @@ namespace bs { namespace ct
 		viewDesc.noLighting = false;
 		viewDesc.triggerCallbacks = false;
 		viewDesc.runPostProcessing = false;
+        viewDesc.renderingReflections = true;
 
 		viewDesc.visibleLayers = 0xFFFFFFFFFFFFFFFF;
 		viewDesc.nearPlane = 0.5f;
