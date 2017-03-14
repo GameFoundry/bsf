@@ -232,7 +232,7 @@ namespace bs { namespace ct
 		bits = ((bits & 0x0F0F0F0Fu) << 4u) | ((bits & 0xF0F0F0F0u) >> 4u);
 		bits = ((bits & 0x00FF00FFu) << 8u) | ((bits & 0xFF00FF00u) >> 8u);
 
-		return float(bits) * 2.3283064365386963e-10f; // 0x100000000
+		return (float)(double(bits) / (double)0x100000000LL);
 	}
 
 	void hammersleySequence(UINT32 i, UINT32 count, float& e0, float& e1)
@@ -279,9 +279,6 @@ namespace bs { namespace ct
 		
 		SPtr<Texture> texture = Texture::create(desc);
 		PixelData pixelData = texture->lock(GBL_WRITE_ONLY_DISCARD);
-
-		UINT16* rawPixels = (UINT16*)pixelData.getData();
-		UINT32 rowPitch = pixelData.getRowPitch();
 
 		for (UINT32 y = 0; y < desc.height; y++)
 		{
@@ -345,9 +342,11 @@ namespace bs { namespace ct
 				scale /= NumSamples;
 				offset /= NumSamples;
 
-				UINT16* dest = rawPixels + x * 2 + y * rowPitch;
-				dest[0] = (UINT16)(Math::clamp01(scale) * 65535.0f + 0.5f);
-				dest[1] = (UINT16)(Math::clamp01(offset) * 65535.0f + 0.5f);
+                Color color;
+                color.r = Math::clamp01(scale);
+                color.g = Math::clamp01(offset);
+
+                pixelData.setColorAt(color, x, y);
 			}
 		}
 
