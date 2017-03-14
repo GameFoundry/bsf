@@ -59,7 +59,8 @@ namespace bs
 	{
 		if (nearPlane <= 0)
 		{
-			BS_EXCEPT(InvalidParametersException, "Near clip distance must be greater than zero.");
+			LOGERR("Near clip distance must be greater than zero.");
+            return;
 		}
 
 		mNearDist = nearPlane;

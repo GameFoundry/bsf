@@ -1240,7 +1240,10 @@ namespace bs { namespace ct
 
 		bs_frame_mark();
 		{		
-            UINT32 currentCubeArraySize = mCubemapArrayTex->getProperties().getNumArraySlices();
+            UINT32 currentCubeArraySize = 0;
+		    
+            if(mCubemapArrayTex != nullptr)
+		        mCubemapArrayTex->getProperties().getNumArraySlices();
 
 			bool forceArrayUpdate = false;
 			if(mCubemapArrayTex == nullptr || (currentCubeArraySize < numProbes && currentCubeArraySize != MaxReflectionCubemaps))
