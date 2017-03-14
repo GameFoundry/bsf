@@ -94,6 +94,7 @@ namespace bs { namespace ct
 
 		mTiledDeferredLightingMats = bs_new<TiledDeferredLightingMaterials>();
 
+        mPreintegratedEnvBRDF = TiledDeferredLighting::generatePreintegratedEnvBRDF();
 		mGPULightData = bs_new<GPULightData>();
 		mGPUReflProbeData = bs_new<GPUReflProbeData>();
 		mLightGrid = bs_new<LightGrid>();
@@ -118,7 +119,7 @@ namespace bs { namespace ct
 		mRenderables.clear();
 		mRenderableVisibility.clear();
 
-		mCubemapArrayTex = nullptr;
+		mReflCubemapArrayTex = nullptr;
         mSkyboxTexture = nullptr;
         mSkyboxFilteredReflections = nullptr;
 
@@ -133,6 +134,8 @@ namespace bs { namespace ct
 		bs_delete(mLightGrid);
 		bs_delete(mFlatFramebufferToTextureMat);
 		bs_delete(mTiledDeferredLightingMats);
+
+        mPreintegratedEnvBRDF = nullptr;
 
 		RendererUtility::shutDown();
 
@@ -1032,7 +1035,10 @@ namespace bs { namespace ct
 		ITiledDeferredLightingMat* lightingMat = mTiledDeferredLightingMats->get(numSamples, viewInfo->isRenderingReflections());
 
 		lightingMat->setLights(*mGPULightData);
-		lightingMat->execute(renderTargets, perCameraBuffer, viewInfo->renderWithNoLighting());
+        lightingMat->setReflectionProbes(*mGPUReflProbeData, mReflCubemapArrayTex);
+        lightingMat->setSkyReflections(mSkyboxFilteredReflections);
+
+		lightingMat->execute(renderTargets, perCameraBuffer, mPreintegratedEnvBRDF, viewInfo->renderWithNoLighting());
 
 		const RenderAPIInfo& rapiInfo = RenderAPI::instance().getAPIInfo();
 		bool usingFlattenedFB = numSamples > 1 && !rapiInfo.isFlagSet(RenderAPIFeatureFlag::MSAAImageStores);
@@ -1220,11 +1226,11 @@ namespace bs { namespace ct
 		{		
             UINT32 currentCubeArraySize = 0;
 		    
-            if(mCubemapArrayTex != nullptr)
-		        mCubemapArrayTex->getProperties().getNumArraySlices();
+            if(mReflCubemapArrayTex != nullptr)
+		        mReflCubemapArrayTex->getProperties().getNumArraySlices();
 
 			bool forceArrayUpdate = false;
-			if(mCubemapArrayTex == nullptr || (currentCubeArraySize < numProbes && currentCubeArraySize != MaxReflectionCubemaps))
+			if(mReflCubemapArrayTex == nullptr || (currentCubeArraySize < numProbes && currentCubeArraySize != MaxReflectionCubemaps))
 			{
 				TEXTURE_DESC cubeMapDesc;
 				cubeMapDesc.type = TEX_TYPE_CUBE_MAP;
@@ -1234,12 +1240,12 @@ namespace bs { namespace ct
 				cubeMapDesc.numMips = PixelUtil::getMaxMipmaps(cubeMapDesc.width, cubeMapDesc.height, 1, cubeMapDesc.format);
 				cubeMapDesc.numArraySlices = std::min(MaxReflectionCubemaps, numProbes + 4); // Keep a few empty entries
 
-				mCubemapArrayTex = Texture::create(cubeMapDesc);
+				mReflCubemapArrayTex = Texture::create(cubeMapDesc);
 
 				forceArrayUpdate = true;
 			}
 
-			auto& cubemapArrayProps = mCubemapArrayTex->getProperties();
+			auto& cubemapArrayProps = mReflCubemapArrayTex->getProperties();
 
 			TEXTURE_DESC cubemapDesc;
 			cubemapDesc.type = TEX_TYPE_CUBE_MAP;
@@ -1326,7 +1332,7 @@ namespace bs { namespace ct
 					{
 						for(UINT32 face = 0; face < 6; face++)
 							for(UINT32 mip = 0; mip <= srcProps.getNumMipmaps(); mip++)
-								probeInfo.texture->copy(mCubemapArrayTex, face, mip, probeInfo.arrayIdx * 6 + face, mip);
+								probeInfo.texture->copy(mReflCubemapArrayTex, face, mip, probeInfo.arrayIdx * 6 + face, mip);
 					}
 
 					probeInfo.arrayDirty = false;

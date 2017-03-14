@@ -241,7 +241,7 @@ namespace bs
 		Vector<RendererReflectionProbe> mReflProbes;
 		Vector<Sphere> mReflProbeWorldBounds;
 		Vector<bool> mCubemapArrayUsedSlots;
-		SPtr<Texture> mCubemapArrayTex;
+		SPtr<Texture> mReflCubemapArrayTex;
 
 		SPtr<RenderBeastOptions> mCoreOptions;
 
@@ -255,6 +255,7 @@ namespace bs
         SPtr<Texture> mSkyboxTexture;
         SPtr<Texture> mSkyboxFilteredReflections;
 
+        SPtr<Texture> mPreintegratedEnvBRDF;
 		GPULightData* mGPULightData;
 		GPUReflProbeData* mGPUReflProbeData;
 		LightGrid* mLightGrid;

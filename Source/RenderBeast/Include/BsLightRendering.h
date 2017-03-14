@@ -5,6 +5,7 @@
 #include "BsRenderBeastPrerequisites.h"
 #include "BsRendererMaterial.h"
 #include "BsParamBlocks.h"
+#include "BsReflectionProbeSampling.h"
 
 namespace bs { namespace ct
 {
@@ -82,10 +83,17 @@ namespace bs { namespace ct
 		TiledDeferredLighting(const SPtr<Material>& material, const SPtr<GpuParamsSet>& paramsSet, UINT32 sampleCount);
 
 		/** Binds the material for rendering, sets up parameters and executes it. */
-		void execute(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBuffer>& perCamera, bool noLighting);
+		void execute(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBuffer>& perCamera, 
+                     const SPtr<Texture>& preintegratedGF, bool noLighting);
 
 		/** Binds all the active lights. */
 		void setLights(const GPULightData& lightData);
+
+        /** Binds all the active reflection probes. */
+        void setReflectionProbes(const GPUReflProbeData& probeData, const SPtr<Texture>& reflectionCubemaps);
+
+        /** Binds the sky reflection. If no sky reflection set to null. */
+        void setSkyReflections(const SPtr<Texture>& skyReflections);
 
 		/** 
 		 * Generates a 2D 2-channel texture containing a pre-integrated G and F factors of the microfactet BRDF. This is an
@@ -108,12 +116,18 @@ namespace bs { namespace ct
 		GpuParamTexture mGBufferC;
 		GpuParamTexture mGBufferDepth;
 
+        GpuParamTexture mSkyCubemapTexParam;
+        GpuParamTexture mReflectionProbeCubemapsParam;
+        GpuParamTexture mPreintegratedEnvBRDFParam;
+        GpuParamBuffer mReflectionProbesParam;
+
 		Vector3I mLightOffsets;
 		GpuParamBuffer mLightBufferParam;
 		GpuParamLoadStoreTexture mOutputTextureParam;
 		GpuParamBuffer mOutputBufferParam;
 
 		SPtr<GpuParamBlockBuffer> mParamBuffer;
+        SPtr<GpuParamBlockBuffer> mReflectionsParamBuffer;
 	};
 
 	/** Interface implemented by all versions of TTiledDeferredLightingMat<T>. */
@@ -122,11 +136,18 @@ namespace bs { namespace ct
 	public:
 		virtual ~ITiledDeferredLightingMat() {}
 
-		/** Binds the material for rendering, sets up parameters and executes it. */
-		virtual void execute(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBuffer>& perCamera, bool noLighting) = 0;
+        /** @copydoc TiledDeferredLighting::execute() */
+		virtual void execute(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBuffer>& perCamera, 
+                             const SPtr<Texture>& preintegratedGF, bool noLighting) = 0;
 
-		/** Binds all the active lights. */
+        /** @copydoc TiledDeferredLighting::setLights() */
 		virtual void setLights(const GPULightData& lightData) = 0;
+
+        /** @copydoc TiledDeferredLighting::setReflectionProbes() */
+        virtual void setReflectionProbes(const GPUReflProbeData& probeData, const SPtr<Texture>& reflectionCubemaps) = 0;
+
+        /** @copydoc TiledDeferredLighting::setSkyReflections() */
+        virtual void setSkyReflections(const SPtr<Texture>& skyReflections) = 0;
 	};
 
 	/** Shader that performs a lighting pass over data stored in the Gbuffer. */
@@ -138,11 +159,18 @@ namespace bs { namespace ct
 	public:
 		TTiledDeferredLightingMat();
 
-		/** Binds the material for rendering, sets up parameters and executes it. */
-		void execute(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBuffer>& perCamera, bool noLighting) override;
+		/** @copydoc ITiledDeferredLightingMat::execute() */
+		void execute(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBuffer>& perCamera, 
+                     const SPtr<Texture>& preintegratedGF, bool noLighting) override;
 
-		/** Binds all the active lights. */
+        /** @copydoc ITiledDeferredLightingMat::setLights() */
 		void setLights(const GPULightData& lightData) override;
+
+        /** @copydoc ITiledDeferredLightingMat::setReflectionProbes() */
+        void setReflectionProbes(const GPUReflProbeData& probeData, const SPtr<Texture>& reflectionCubemaps) override;
+
+        /** @copydoc ITiledDeferredLightingMat::setSkyReflections() */
+        void setSkyReflections(const SPtr<Texture>& skyReflections) override;
 	private:
 		TiledDeferredLighting mInternal;
 	};
