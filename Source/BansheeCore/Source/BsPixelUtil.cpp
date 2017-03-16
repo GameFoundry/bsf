@@ -1261,6 +1261,16 @@ namespace bs
 			case PF_R8:
 				((UINT8*)dest)[0] = (UINT8)Bitwise::floatToFixed(r, 8);
 				break;
+			case PF_FLOAT_R11G11B10:
+				{
+					UINT32 value;
+					value = Bitwise::floatToFloat11(r);
+					value |= Bitwise::floatToFloat11(g) << 11;
+					value |= Bitwise::floatToFloat10(b) << 22;
+
+					((UINT32*)dest)[0] = value;
+				}
+				break;
             default:
                 LOGERR("Pack to " + getFormatName(format) + " not implemented");
                 break;

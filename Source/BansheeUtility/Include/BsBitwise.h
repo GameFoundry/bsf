@@ -10,6 +10,24 @@ namespace bs
 	 *  @{
 	 */
 
+	/** Floating point number broken down into components for easier access. */
+	union Float754 
+	{
+		UINT32 raw;
+		float value;
+		struct {
+#if BS_ENDIAN == BS_ENDIAN_BIG
+			UINT32 negative : 1;
+			UINT32 exponent : 8;
+			UINT32 mantissa : 23;
+#else
+			UINT32 mantissa : 23;
+			UINT32 exponent : 8;
+			UINT32 negative : 1;
+#endif
+		} field;
+	};
+
     /** Class for manipulating bit patterns. */
     class Bitwise 
 	{
@@ -284,6 +302,86 @@ namespace bs
         
             return (s << 31) | (e << 23) | m;
         }
+
+		/** Converts a 32-bit float to a 10-bit float according to OpenGL packed_float extension. */
+		static UINT32 floatToFloat10(float v)
+		{
+			Float754 f;
+			f.value = v;
+
+			if (f.field.exponent == 0xFF)
+			{
+				// NAN or INF
+				if (f.field.mantissa > 0)
+					return 0x3E0 | (((f.raw >> 18) | (f.raw >> 13) | (f.raw >> 3) | f.raw) & 0x1F);
+				else if (f.field.negative)
+					return 0; // Negative infinity clamped to 0
+				else
+					return 0x3E0; // Positive infinity
+
+			}
+			else if (f.field.negative)
+				return 0; // Negative clamped to 0, no negatives allowed
+			else if (f.raw > 0x477C0000)
+				return 0x3DF; // Too large, clamp to max value
+			else
+			{
+				UINT32 val;
+				if (f.raw < 0x38800000U)
+				{
+					// Too small to be represented as a normalized float, convert to denormalized value
+					UINT32 shift = 113 - f.field.exponent;
+					val = (0x800000U | f.field.mantissa) >> shift;
+				}
+				else
+				{
+					// Rebias exponent
+					val = f.raw + 0xC8000000;
+				}
+
+				return  ((val + 0x1FFFFU + ((val >> 18) & 1)) >> 18) & 0x3FF;
+			}
+		}
+
+		/** Converts a 32-bit float to a 11-bit float according to OpenGL packed_float extension. */
+		static UINT32 floatToFloat11(float v)
+		{
+			Float754 f;
+			f.value = v;
+
+			if (f.field.exponent == 0xFF)
+			{
+				// NAN or INF
+				if (f.field.mantissa > 0)
+					return 0x7C0 | (((f.raw >> 17) | (f.raw >> 11) | (f.raw >> 6) | f.raw) & 0x3F);
+				else if (f.field.negative)
+					return 0; // Negative infinity clamped to 0
+				else
+					return 0x7C0; // Positive infinity
+
+			}
+			else if (f.field.negative)
+				return 0; // Negative clamped to 0, no negatives allowed
+			else if (f.raw > 0x477E0000)
+				return 0x7BF; // Too large, clamp to max value
+			else
+			{
+				UINT32 val;
+				if(f.raw < 0x38800000U)
+				{
+					// Too small to be represented as a normalized float, convert to denormalized value
+					UINT32 shift = 113 - f.field.exponent;
+					val = (0x800000U | f.field.mantissa) >> shift;
+				}
+				else
+				{
+					// Rebias exponent
+					val = f.raw + 0xC8000000;
+				}
+
+				return  ((val + 0xFFFFU + ((val >> 17) & 1)) >> 17) & 0x7FF;
+			}
+		}
     };
 
 	/** @} */
