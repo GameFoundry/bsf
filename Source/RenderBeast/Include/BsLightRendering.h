@@ -84,16 +84,16 @@ namespace bs { namespace ct
 
 		/** Binds the material for rendering, sets up parameters and executes it. */
 		void execute(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBuffer>& perCamera, 
-                     const SPtr<Texture>& preintegratedGF, bool noLighting);
+			const SPtr<Texture>& preintegratedGF, bool noLighting);
 
 		/** Binds all the active lights. */
 		void setLights(const GPULightData& lightData);
 
-        /** Binds all the active reflection probes. */
-        void setReflectionProbes(const GPUReflProbeData& probeData, const SPtr<Texture>& reflectionCubemaps);
+		/** Binds all the active reflection probes. */
+		void setReflectionProbes(const GPUReflProbeData& probeData, const SPtr<Texture>& reflectionCubemaps);
 
-        /** Binds the sky reflection. If no sky reflection set to null. */
-        void setSkyReflections(const SPtr<Texture>& skyReflections);
+		/** Binds the sky reflection. If no sky reflection set to null. */
+		void setSkyReflections(const SPtr<Texture>& skyReflections);
 
 		/** 
 		 * Generates a 2D 2-channel texture containing a pre-integrated G and F factors of the microfactet BRDF. This is an
@@ -116,10 +116,10 @@ namespace bs { namespace ct
 		GpuParamTexture mGBufferC;
 		GpuParamTexture mGBufferDepth;
 
-        GpuParamTexture mSkyCubemapTexParam;
-        GpuParamTexture mReflectionProbeCubemapsParam;
-        GpuParamTexture mPreintegratedEnvBRDFParam;
-        GpuParamBuffer mReflectionProbesParam;
+		GpuParamTexture mSkyCubemapTexParam;
+		GpuParamTexture mReflectionProbeCubemapsParam;
+		GpuParamTexture mPreintegratedEnvBRDFParam;
+		GpuParamBuffer mReflectionProbesParam;
 
 		Vector3I mLightOffsets;
 		GpuParamBuffer mLightBufferParam;
@@ -127,7 +127,7 @@ namespace bs { namespace ct
 		GpuParamBuffer mOutputBufferParam;
 
 		SPtr<GpuParamBlockBuffer> mParamBuffer;
-        SPtr<GpuParamBlockBuffer> mReflectionsParamBuffer;
+		SPtr<GpuParamBlockBuffer> mReflectionsParamBuffer;
 	};
 
 	/** Interface implemented by all versions of TTiledDeferredLightingMat<T>. */
@@ -136,18 +136,18 @@ namespace bs { namespace ct
 	public:
 		virtual ~ITiledDeferredLightingMat() {}
 
-        /** @copydoc TiledDeferredLighting::execute() */
+		/** @copydoc TiledDeferredLighting::execute() */
 		virtual void execute(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBuffer>& perCamera, 
-                             const SPtr<Texture>& preintegratedGF, bool noLighting) = 0;
+			const SPtr<Texture>& preintegratedGF, bool noLighting) = 0;
 
-        /** @copydoc TiledDeferredLighting::setLights() */
+		/** @copydoc TiledDeferredLighting::setLights() */
 		virtual void setLights(const GPULightData& lightData) = 0;
 
-        /** @copydoc TiledDeferredLighting::setReflectionProbes() */
-        virtual void setReflectionProbes(const GPUReflProbeData& probeData, const SPtr<Texture>& reflectionCubemaps) = 0;
+		/** @copydoc TiledDeferredLighting::setReflectionProbes() */
+		virtual void setReflectionProbes(const GPUReflProbeData& probeData, const SPtr<Texture>& reflectionCubemaps) = 0;
 
-        /** @copydoc TiledDeferredLighting::setSkyReflections() */
-        virtual void setSkyReflections(const SPtr<Texture>& skyReflections) = 0;
+		/** @copydoc TiledDeferredLighting::setSkyReflections() */
+		virtual void setSkyReflections(const SPtr<Texture>& skyReflections) = 0;
 	};
 
 	/** Shader that performs a lighting pass over data stored in the Gbuffer. */
@@ -161,39 +161,39 @@ namespace bs { namespace ct
 
 		/** @copydoc ITiledDeferredLightingMat::execute() */
 		void execute(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBuffer>& perCamera, 
-                     const SPtr<Texture>& preintegratedGF, bool noLighting) override;
+			const SPtr<Texture>& preintegratedGF, bool noLighting) override;
 
-        /** @copydoc ITiledDeferredLightingMat::setLights() */
+		/** @copydoc ITiledDeferredLightingMat::setLights() */
 		void setLights(const GPULightData& lightData) override;
 
-        /** @copydoc ITiledDeferredLightingMat::setReflectionProbes() */
-        void setReflectionProbes(const GPUReflProbeData& probeData, const SPtr<Texture>& reflectionCubemaps) override;
+		/** @copydoc ITiledDeferredLightingMat::setReflectionProbes() */
+		void setReflectionProbes(const GPUReflProbeData& probeData, const SPtr<Texture>& reflectionCubemaps) override;
 
-        /** @copydoc ITiledDeferredLightingMat::setSkyReflections() */
-        void setSkyReflections(const SPtr<Texture>& skyReflections) override;
+		/** @copydoc ITiledDeferredLightingMat::setSkyReflections() */
+		void setSkyReflections(const SPtr<Texture>& skyReflections) override;
 	private:
 		TiledDeferredLighting mInternal;
 	};
 
-    /** Contains instances for all types of tile deferred lighting materials. */
-    class TiledDeferredLightingMaterials
-    {
-    public:
-        TiledDeferredLightingMaterials();
-        ~TiledDeferredLightingMaterials();
+	/** Contains instances for all types of tile deferred lighting materials. */
+	class TiledDeferredLightingMaterials
+	{
+	public:
+		TiledDeferredLightingMaterials();
+		~TiledDeferredLightingMaterials();
 
-        /**
-         * Returns a version of the tile-deferred lighting material that matches the parameters.
-         * 
-         * @param[in]   msaa                Number of samples per pixel.
-         * @param[in]   fixedReflColor      If true reflection probes will not be evaluated and instead a fixed color will
-         *                                  be returned instead. Useful when rendering reflection probes.
-         */
-        ITiledDeferredLightingMat* get(UINT32 msaa, bool fixedReflColor);
+		/**
+		 * Returns a version of the tile-deferred lighting material that matches the parameters.
+		 * 
+		 * @param[in]   msaa				Number of samples per pixel.
+		 * @param[in]   fixedReflColor		If true reflection probes will not be evaluated and instead a fixed color will
+		 *									be returned instead. Useful when rendering reflection probes.
+		 */
+		ITiledDeferredLightingMat* get(UINT32 msaa, bool fixedReflColor);
 
-    private:
-        ITiledDeferredLightingMat* mInstances[8];
-    };
+	private:
+		ITiledDeferredLightingMat* mInstances[8];
+	};
 
 	BS_PARAM_BLOCK_BEGIN(FlatFramebufferToTextureParamDef)
 		BS_PARAM_BLOCK_ENTRY(Vector2I, gFramebufferSize)

@@ -128,14 +128,14 @@ namespace bs
 		/** @copydoc Renderer::notifyReflectionProbeRemoved */
 		void notifyReflectionProbeRemoved(ReflectionProbe* probe) override;
 
-        /** @copydoc Renderer::notifySkyboxAdded */
-        void notifySkyboxAdded(Skybox* skybox) override;
+		/** @copydoc Renderer::notifySkyboxAdded */
+		void notifySkyboxAdded(Skybox* skybox) override;
 
-        /** @copydoc Renderer::notifySkyboxTextureChanged */
-        void notifySkyboxTextureChanged(Skybox* skybox) override;
+		/** @copydoc Renderer::notifySkyboxTextureChanged */
+		void notifySkyboxTextureChanged(Skybox* skybox) override;
 
-        /** @copydoc Renderer::notifySkyboxRemoved */
-        void notifySkyboxRemoved(Skybox* skybox) override;
+		/** @copydoc Renderer::notifySkyboxRemoved */
+		void notifySkyboxRemoved(Skybox* skybox) override;
 
 		/** 
 		 * Updates (or adds) renderer specific data for the specified camera. Should be called whenever camera properties
@@ -246,16 +246,16 @@ namespace bs
 		SPtr<RenderBeastOptions> mCoreOptions;
 
 		DefaultMaterial* mDefaultMaterial;
-        TiledDeferredLightingMaterials* mTiledDeferredLightingMats;
+		TiledDeferredLightingMaterials* mTiledDeferredLightingMats;
 		FlatFramebufferToTextureMat* mFlatFramebufferToTextureMat;
 		SkyboxMat<false>* mSkyboxMat;
 		SkyboxMat<true>* mSkyboxSolidColorMat;
 
-        Skybox* mSkybox;
-        SPtr<Texture> mSkyboxTexture;
-        SPtr<Texture> mSkyboxFilteredReflections;
+		Skybox* mSkybox;
+		SPtr<Texture> mSkyboxTexture;
+		SPtr<Texture> mSkyboxFilteredReflections;
 
-        SPtr<Texture> mPreintegratedEnvBRDF;
+		SPtr<Texture> mPreintegratedEnvBRDF;
 		GPULightData* mGPULightData;
 		GPUReflProbeData* mGPUReflProbeData;
 		LightGrid* mLightGrid;

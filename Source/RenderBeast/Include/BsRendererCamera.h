@@ -95,7 +95,7 @@ namespace bs { namespace ct
 		bool noLighting : 1;
 		bool triggerCallbacks : 1;
 		bool runPostProcessing : 1;
-        bool renderingReflections : 1;
+		bool renderingReflections : 1;
 
 		UINT64 visibleLayers;
 		ConvexVolume cullFrustum;
@@ -178,8 +178,8 @@ namespace bs { namespace ct
 		/** Returns the number of samples per pixel to render. */
 		UINT32 getNumSamples() const { return mViewDesc.target.numSamples; }
 
-        /** Returns true if the current view is being used to render reflection probes. */
-        bool isRenderingReflections() const { return mViewDesc.renderingReflections; }
+		/** Returns true if the current view is being used to render reflection probes. */
+		bool isRenderingReflections() const { return mViewDesc.renderingReflections; }
 
 		/** Returns the scene camera this object is based of. This can be null for manually constructed renderer cameras. */
 		const Camera* getSceneCamera() const { return mViewDesc.sceneCamera; }

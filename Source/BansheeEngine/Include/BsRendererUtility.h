@@ -71,7 +71,6 @@ namespace bs { namespace ct
 		 */
 		void draw(const SPtr<MeshBase>& mesh, const SubMesh& subMesh, UINT32 numInstances = 1);
 
-
 		/**
 		 * Draws the specified mesh with an additional vertex buffer containing morph shape vertices.
 		 *

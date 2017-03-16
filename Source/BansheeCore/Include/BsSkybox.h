@@ -23,9 +23,9 @@ namespace bs
 	class BS_CORE_EXPORT SkyboxBase
 	{
 	public:
-        SkyboxBase();
+		SkyboxBase();
 		virtual ~SkyboxBase() { }
-        
+
 		/**	Checks whether the skybox should be used or not. */
 		bool getIsActive() const { return mIsActive; }
 
@@ -35,9 +35,9 @@ namespace bs
 		/** Returns an identifier that uniquely identifies the skybox. */
 		const String& getUUID() const { return mUUID; }
 
-		/** 
-		 * Marks the simulation thread object as dirty and notifies the system its data should be synced with its core 
-		 * thread counterpart. 
+		/**
+		 * Marks the simulation thread object as dirty and notifies the system its data should be synced with its core
+		 * thread counterpart.
 		 */
 		virtual void _markCoreDirty(SkyboxDirtyFlag flags = SkyboxDirtyFlag::Everything) { }
 
@@ -53,10 +53,10 @@ namespace bs
 		typedef typename TTextureType<Core>::Type TextureType;
 
 	public:
-        TSkybox();
+		TSkybox();
 		virtual ~TSkybox() { }
 
-		/** 
+		/**
 		 * Assigns an environment map to use for sampling skybox radiance. Must be a cube-map texture, and should ideally
 		 * contain HDR data.
 		 */
@@ -87,7 +87,7 @@ namespace bs
 		static SPtr<Skybox> create();
 
 	protected:
-        Skybox();
+		Skybox();
 
 		/** @copydoc CoreObject::createCore */
 		SPtr<ct::CoreObject> createCore() const override;
@@ -109,23 +109,23 @@ namespace bs
 
 	namespace ct
 	{
-	/** Core thread usable version of a bs::Skybox */
-	class BS_CORE_EXPORT Skybox : public CoreObject, public TSkybox<true>
-	{
-	public:
-		~Skybox();
+		/** Core thread usable version of a bs::Skybox */
+		class BS_CORE_EXPORT Skybox : public CoreObject, public TSkybox<true>
+		{
+		public:
+			~Skybox();
 
-	protected:
-		friend class bs::Skybox;
+		protected:
+			friend class bs::Skybox;
 
-        Skybox();
+			Skybox();
 
-		/** @copydoc CoreObject::initialize */
-		void initialize() override;
+			/** @copydoc CoreObject::initialize */
+			void initialize() override;
 
-		/** @copydoc CoreObject::syncToCore */
-		void syncToCore(const CoreSyncData& data) override;
-	};
+			/** @copydoc CoreObject::syncToCore */
+			void syncToCore(const CoreSyncData& data) override;
+		};
 	}
 
 	/** @} */
