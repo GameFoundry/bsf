@@ -28,6 +28,36 @@ namespace bs
 		} field;
 	};
 
+	/** 10-bit floating point number broken down into components for easier access. */
+	union Float10
+	{
+		UINT32 raw;
+		struct {
+#if BS_ENDIAN == BS_ENDIAN_BIG
+			UINT32 exponent : 5;
+			UINT32 mantissa : 5;
+#else
+			UINT32 mantissa : 5;
+			UINT32 exponent : 5;
+#endif
+		} field;
+	};
+
+	/** 11-bit floating point number broken down into components for easier access. */
+	union Float11
+	{
+		UINT32 raw;
+		struct {
+#if BS_ENDIAN == BS_ENDIAN_BIG
+			UINT32 exponent : 5;
+			UINT32 mantissa : 6;
+#else
+			UINT32 mantissa : 6;
+			UINT32 exponent : 5;
+#endif
+		} field;
+	};
+
     /** Class for manipulating bit patterns. */
     class Bitwise 
 	{
@@ -381,6 +411,86 @@ namespace bs
 
 				return  ((val + 0xFFFFU + ((val >> 17) & 1)) >> 17) & 0x7FF;
 			}
+		}
+
+		/** Converts a 10-bit float to a 32-bit float according to OpenGL packed_float extension. */
+		static float float10ToFloat(UINT32 v)
+		{
+			Float10 f;
+			f.raw = v;
+
+			UINT32 output;
+			if (f.field.exponent == 0x1F) // INF or NAN
+			{
+				output = 0x7f800000 | (f.field.mantissa << 17);
+			}
+			else
+			{
+				UINT32 exponent;
+				UINT32 mantissa = f.field.mantissa;
+
+				if (f.field.exponent != 0) // The value is normalized
+					exponent = f.field.exponent;
+				else if (mantissa != 0) // The value is denormalized
+				{
+					// Normalize the value in the resulting float
+					exponent = 1;
+
+					do
+					{
+						exponent--;
+						mantissa <<= 1;
+					} while ((mantissa & 0x20) == 0);
+
+					mantissa &= 0x1F;
+				}
+				else // The value is zero
+					exponent = (UINT32)-112;
+
+				output = ((exponent + 112) << 23) | (mantissa << 18);
+			}
+
+			return *(float*)&output;
+		}
+
+		/** Converts a 11-bit float to a 32-bit float according to OpenGL packed_float extension. */
+		static float float11ToFloat(UINT32 v)
+		{
+			Float11 f;
+			f.raw = v;
+
+			UINT32 output;
+			if (f.field.exponent == 0x1F) // INF or NAN
+			{
+				output = 0x7f800000 | (f.field.mantissa << 17);
+			}
+			else
+			{
+				UINT32 exponent;
+				UINT32 mantissa = f.field.mantissa;
+
+				if (f.field.exponent != 0) // The value is normalized
+					exponent = f.field.exponent;
+				else if (mantissa != 0) // The value is denormalized
+				{
+					// Normalize the value in the resulting float
+					exponent = 1;
+
+					do
+					{
+						exponent--;
+						mantissa <<= 1;
+					} while ((mantissa & 0x40) == 0);
+
+					mantissa &= 0x3F;
+				}
+				else // The value is zero
+					exponent = (UINT32)-112;
+
+				output = ((exponent + 112) << 23) | (mantissa << 17);
+			}
+
+			return *(float*)&output;
 		}
     };
 

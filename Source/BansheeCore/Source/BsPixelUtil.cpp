@@ -1396,6 +1396,14 @@ namespace bs
 				*b = 0.0f;
 				*a = 1.0f;
 				break;
+			case PF_FLOAT_R11G11B10:
+			{
+				UINT32 value = ((UINT32*)src)[0];
+				*r = Bitwise::float11ToFloat(value);
+				*g = Bitwise::float11ToFloat(value >> 11);
+				*b = Bitwise::float10ToFloat(value >> 22);
+			}
+			break;
             default:
                 LOGERR("Unpack from " + getFormatName(format) + " not implemented");
                 break;
