@@ -9,20 +9,17 @@
 #include "BsTextureImportOptions.h"
 #include "BsMeshImportOptions.h"
 #include "BsMaterial.h"
-#include "BsShader.h"
 #include "BsVirtualInput.h"
 #include "BsCCamera.h"
 #include "BsCRenderable.h"
 #include "BsCLight.h"
-#include "BsGUIButton.h"
 #include "BsRenderAPI.h"
 #include "BsBuiltinResources.h"
 #include "BsRTTIType.h"
-#include "BsHString.h"
 #include "BsRenderWindow.h"
 #include "BsSceneObject.h"
 #include "BsCoreThread.h"
-#include "BsProfilerOverlay.h"
+#include "BsCSkybox.h"
 #include "BsEngineConfig.h"
 
 // Example includes
@@ -44,9 +41,10 @@ namespace bs
 	
 	/** 
 	 * Imports a texture at the provided path. Textures not in sRGB space (e.g. normal maps) need to be specially marked by
-	 * setting 'isSRGB' to false. 
+	 * setting 'isSRGB' to false. Also allows for conversion of texture to cubemap by setting the 'isCubemap' parameter.
+	 * If the data should be imported in a floating point format, specify 'isHDR' to true.
 	 */
-	HTexture loadTexture(const Path& path, bool isSRGB = true);	
+	HTexture loadTexture(const Path& path, bool isSRGB = true, bool isCubemap = false, bool isHDR = false);
 	
 	/** Create a material used by our example model. */
 	HMaterial createMaterial();
@@ -125,6 +123,7 @@ namespace bs
 	Path exampleNormalsTexPath = dataPath + "Examples\\Pistol\\Pistol_NM.png";
 	Path exampleRoughnessTexPath = dataPath + "Examples\\Pistol\\Pistol_RGH.png";
 	Path exampleMetalnessTexPath = dataPath + "Examples\\Pistol\\Pistol_MTL.png";
+    Path exampleSkyCubemapPath = dataPath + "Examples\\Environments\\PaperMill_E_3k.hdr";
 
 	HCamera sceneCamera;
 
@@ -133,6 +132,7 @@ namespace bs
     HTexture exampleNormalsTex;
     HTexture exampleRoughnessTex;
     HTexture exampleMetalnessTex;
+    HTexture exampleSkyCubemap;
     HShader exampleShader;
     HMaterial exampleMaterial;
 
@@ -159,6 +159,7 @@ namespace bs
         exampleNormalsTex = loadTexture(exampleNormalsTexPath, false);
         exampleRoughnessTex = loadTexture(exampleRoughnessTexPath, false);
         exampleMetalnessTex = loadTexture(exampleMetalnessTexPath, false);
+        exampleSkyCubemap = loadTexture(exampleSkyCubemapPath, false, true, true);
 
 		// Load the default physically based shader for rendering opaque objects
         exampleShader = BuiltinResources::instance().getBuiltinShader(BuiltinShader::Standard);
@@ -193,7 +194,7 @@ namespace bs
 		return model;
 	}
 
-	HTexture loadTexture(const Path& path, bool isSRGB)
+	HTexture loadTexture(const Path& path, bool isSRGB, bool isCubemap, bool isHDR)
 	{
 		Path assetPath = path;
 		assetPath.setExtension(path.getExtension() + ".asset");
@@ -218,6 +219,16 @@ namespace bs
 
 				// Ensures we can save the texture contents
 				importOptions->setCPUCached(true);
+
+                // Import as cubemap if needed
+                importOptions->setIsCubemap(isCubemap);
+
+                // If importing as cubemap, assume source is a panorama
+                importOptions->setCubemapSourceType(CubemapSourceType::Cylindrical);
+
+                // Importing using a HDR format if requested
+                if (isHDR)
+                    importOptions->setFormat(PF_FLOAT_R11G11B10);
 			}
 
 			// Import texture with specified import options
@@ -267,7 +278,7 @@ namespace bs
 		renderable->setMaterial(material);
 
         /************************************************************************/
-        /* 									LIGHTS                      		*/
+        /* 									LIGHT                       		*/
         /************************************************************************/
 
         // Add a light so that our object isn't completely in the dark.
@@ -282,6 +293,16 @@ namespace bs
 
 	    light->setRange(10.0f);
         light->setIntensity(100.0f);
+
+        /************************************************************************/
+        /* 									SKYBOX                       		*/
+        /************************************************************************/
+
+        // Add a skybox texture for sky reflections
+        HSceneObject skyboxSO = SceneObject::create("Skybox");
+
+        HSkybox skybox = skyboxSO->addComponent<CSkybox>();
+        skybox->setTexture(exampleSkyCubemap);
 
 		/************************************************************************/
 		/* 									CAMERA	                     		*/

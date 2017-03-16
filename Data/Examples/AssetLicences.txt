@@ -1,0 +1,6 @@
+Pistol & Hangar, models and textures
+ - Licensed privately for use in Banshee 3D example projects only. Created by Danijel Ribiæ:
+
+Paper mill HDR environment map
+ - Licensed under the Creative Commons Attribution-Noncommercial-Share Alike 3.0 License. Grabbed from http://www.hdrlabs.com/sibl/archive.html.
+ - License terms: https://creativecommons.org/licenses/by-nc-sa/3.0/us/
