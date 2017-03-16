@@ -6,7 +6,7 @@
 #include "BsSkybox.h"
 #include "BsComponent.h"
 
-namespace bs 
+namespace bs
 {
 	/** @addtogroup Components
 	 *  @{
@@ -17,28 +17,28 @@ namespace bs
 	 *
 	 * Wraps Skybox as a Component.
 	 */
-    class BS_CORE_EXPORT CSkybox : public Component
-    {
-    public:
-        CSkybox(const HSceneObject& parent);
+	class BS_CORE_EXPORT CSkybox : public Component
+	{
+	public:
+		CSkybox(const HSceneObject& parent);
 		virtual ~CSkybox();
 
-        /** @copydoc Skybox::getTexture */
-        HTexture getTexture() const { return mInternal->getTexture(); }
+		/** @copydoc Skybox::getTexture */
+		HTexture getTexture() const { return mInternal->getTexture(); }
 
-        /** @copydoc Skybox::setTexture */
-        void setTexture(const HTexture& texture) { mInternal->setTexture(texture); }
+		/** @copydoc Skybox::setTexture */
+		void setTexture(const HTexture& texture) { mInternal->setTexture(texture); }
 
-		/** @name Internal 
+		/** @name Internal
 		 *  @{
 		 */
 
-	    /**	Returns the skybox that this component wraps. */
+		/**	Returns the skybox that this component wraps. */
 		SPtr<Skybox> _getSkybox() const { return mInternal; }
 
 		/** @} */
 
-    protected:
+	protected:
 		mutable SPtr<Skybox> mInternal;
 
 		/************************************************************************/
@@ -46,6 +46,9 @@ namespace bs
 		/************************************************************************/
 	protected:
 		friend class SceneObject;
+
+		/** @copydoc Component::onInitialized */
+		void onInitialized() override;
 
 		/** @copydoc Component::update */
 		void update() override { }
@@ -60,7 +63,7 @@ namespace bs
 
 	protected:
 		CSkybox(); // Serialization only
-     };
+	};
 
-	 /** @} */
+	/** @} */
 }

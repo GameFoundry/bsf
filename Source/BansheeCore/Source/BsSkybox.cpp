@@ -10,139 +10,139 @@
 
 namespace bs
 {
-    SkyboxBase::SkyboxBase()
-        : mIsActive(true)
-    { }
+	SkyboxBase::SkyboxBase()
+		: mIsActive(true)
+	{ }
 
-    template <bool Core>
-    TSkybox<Core>::TSkybox()
-        : SkyboxBase()
-    { }
+	template <bool Core>
+	TSkybox<Core>::TSkybox()
+		: SkyboxBase()
+	{ }
 
-    template class TSkybox<true>;
-    template class TSkybox<false>;
+	template class TSkybox<true>;
+	template class TSkybox<false>;
 
-    Skybox::Skybox()
-    { }
+	Skybox::Skybox()
+	{ }
 
-    SPtr<ct::Skybox> Skybox::getCore() const
-    {
-        return std::static_pointer_cast<ct::Skybox>(mCoreSpecific);
-    }
+	SPtr<ct::Skybox> Skybox::getCore() const
+	{
+		return std::static_pointer_cast<ct::Skybox>(mCoreSpecific);
+	}
 
-    SPtr<Skybox> Skybox::create()
-    {
-        Skybox* skybox = new (bs_alloc<Skybox>()) Skybox();
-        SPtr<Skybox> skyboxPtr = bs_core_ptr<Skybox>(skybox);
-        skyboxPtr->_setThisPtr(skyboxPtr);
-        skyboxPtr->mUUID = UUIDGenerator::generateRandom();
-        skyboxPtr->initialize();
+	SPtr<Skybox> Skybox::create()
+	{
+		Skybox* skybox = new (bs_alloc<Skybox>()) Skybox();
+		SPtr<Skybox> skyboxPtr = bs_core_ptr<Skybox>(skybox);
+		skyboxPtr->_setThisPtr(skyboxPtr);
+		skyboxPtr->mUUID = UUIDGenerator::generateRandom();
+		skyboxPtr->initialize();
 
-        return skyboxPtr;
-    }
+		return skyboxPtr;
+	}
 
-    SPtr<ct::CoreObject> Skybox::createCore() const
-    {
-        ct::Skybox* skybox = new (bs_alloc<ct::Skybox>()) ct::Skybox();
-        SPtr<ct::Skybox> skyboxPtr = bs_shared_ptr<ct::Skybox>(skybox);
-        skyboxPtr->mUUID = mUUID;
-        skyboxPtr->_setThisPtr(skyboxPtr);
+	SPtr<ct::CoreObject> Skybox::createCore() const
+	{
+		ct::Skybox* skybox = new (bs_alloc<ct::Skybox>()) ct::Skybox();
+		SPtr<ct::Skybox> skyboxPtr = bs_shared_ptr<ct::Skybox>(skybox);
+		skyboxPtr->mUUID = mUUID;
+		skyboxPtr->_setThisPtr(skyboxPtr);
 
-        return skyboxPtr;
-    }
+		return skyboxPtr;
+	}
 
-    CoreSyncData Skybox::syncToCore(FrameAlloc* allocator)
-    {
-        UINT32 size = 0;
-        size += rttiGetElemSize(mIsActive);
-        size += rttiGetElemSize(sizeof(SPtr<ct::Texture>));
-        size += rttiGetElemSize(mUUID);
-        size += rttiGetElemSize(getCoreDirtyFlags());
+	CoreSyncData Skybox::syncToCore(FrameAlloc* allocator)
+	{
+		UINT32 size = 0;
+		size += rttiGetElemSize(mIsActive);
+		size += sizeof(SPtr<ct::Texture>);
+		size += rttiGetElemSize(mUUID);
+		size += rttiGetElemSize(getCoreDirtyFlags());
 
-        UINT8* buffer = allocator->alloc(size);
+		UINT8* buffer = allocator->alloc(size);
 
-        char* dataPtr = (char*)buffer;
-        dataPtr = rttiWriteElem(mIsActive, dataPtr);
-        dataPtr = rttiWriteElem(mUUID, dataPtr);
-        dataPtr = rttiWriteElem(getCoreDirtyFlags(), dataPtr);
+		char* dataPtr = (char*)buffer;
+		dataPtr = rttiWriteElem(mIsActive, dataPtr);
+		dataPtr = rttiWriteElem(mUUID, dataPtr);
+		dataPtr = rttiWriteElem(getCoreDirtyFlags(), dataPtr);
 
-        SPtr<ct::Texture>* texture = new (dataPtr) SPtr<ct::Texture>();
-        if (mTexture.isLoaded(false))
-            *texture = mTexture->getCore();
-        else
-            *texture = nullptr;
+		SPtr<ct::Texture>* texture = new (dataPtr) SPtr<ct::Texture>();
+		if (mTexture.isLoaded(false))
+			*texture = mTexture->getCore();
+		else
+			*texture = nullptr;
 
-        dataPtr += sizeof(SPtr<ct::Texture>);
+		dataPtr += sizeof(SPtr<ct::Texture>);
 
-        return CoreSyncData(buffer, size);
-    }
+		return CoreSyncData(buffer, size);
+	}
 
-    void Skybox::_markCoreDirty(SkyboxDirtyFlag flags)
-    {
-        markCoreDirty((UINT32)flags);
-    }
+	void Skybox::_markCoreDirty(SkyboxDirtyFlag flags)
+	{
+		markCoreDirty((UINT32)flags);
+	}
 
-    RTTITypeBase* Skybox::getRTTIStatic()
-    {
-        return SkyboxRTTI::instance();
-    }
+	RTTITypeBase* Skybox::getRTTIStatic()
+	{
+		return SkyboxRTTI::instance();
+	}
 
-    RTTITypeBase* Skybox::getRTTI() const
-    {
-        return Skybox::getRTTIStatic();
-    }
+	RTTITypeBase* Skybox::getRTTI() const
+	{
+		return Skybox::getRTTIStatic();
+	}
 
-    namespace ct
-    {
-        Skybox::Skybox()
-        { }
+	namespace ct
+	{
+		Skybox::Skybox()
+		{ }
 
-        Skybox::~Skybox()
-        {
-            gRenderer()->notifySkyboxRemoved(this);
-        }
+		Skybox::~Skybox()
+		{
+			gRenderer()->notifySkyboxRemoved(this);
+		}
 
-        void Skybox::initialize()
-        {
-            gRenderer()->notifySkyboxAdded(this);
+		void Skybox::initialize()
+		{
+			gRenderer()->notifySkyboxAdded(this);
 
-            CoreObject::initialize();
-        }
+			CoreObject::initialize();
+		}
 
-        void Skybox::syncToCore(const CoreSyncData& data)
-        {
-            char* dataPtr = (char*)data.getBuffer();
+		void Skybox::syncToCore(const CoreSyncData& data)
+		{
+			char* dataPtr = (char*)data.getBuffer();
 
-            SkyboxDirtyFlag dirtyFlags;
-            bool oldIsActive = mIsActive;
+			SkyboxDirtyFlag dirtyFlags;
+			bool oldIsActive = mIsActive;
 
-            dataPtr = rttiReadElem(mIsActive, dataPtr);
-            dataPtr = rttiReadElem(mUUID, dataPtr);
-            dataPtr = rttiReadElem(dirtyFlags, dataPtr);
+			dataPtr = rttiReadElem(mIsActive, dataPtr);
+			dataPtr = rttiReadElem(mUUID, dataPtr);
+			dataPtr = rttiReadElem(dirtyFlags, dataPtr);
 
-            SPtr<Texture>* texture = (SPtr<Texture>*)dataPtr;
+			SPtr<Texture>* texture = (SPtr<Texture>*)dataPtr;
 
-            mTexture = *texture;
-            texture->~SPtr<Texture>();
-            dataPtr += sizeof(SPtr<Texture>);
+			mTexture = *texture;
+			texture->~SPtr<Texture>();
+			dataPtr += sizeof(SPtr<Texture>);
 
-            if (oldIsActive != mIsActive)
-            {
-                if (mIsActive)
-                    gRenderer()->notifySkyboxAdded(this);
-                else
-                    gRenderer()->notifySkyboxRemoved(this);
-            }
-            else
-            {
-                if (dirtyFlags == SkyboxDirtyFlag::Texture)
-                    gRenderer()->notifySkyboxTextureChanged(this);
-                else
-                {
-                    gRenderer()->notifySkyboxRemoved(this);
-                    gRenderer()->notifySkyboxAdded(this);
-                }
-            }
-        }
-    }
+			if (oldIsActive != mIsActive)
+			{
+				if (mIsActive)
+					gRenderer()->notifySkyboxAdded(this);
+				else
+					gRenderer()->notifySkyboxRemoved(this);
+			}
+			else
+			{
+				if (dirtyFlags == SkyboxDirtyFlag::Texture)
+					gRenderer()->notifySkyboxTextureChanged(this);
+				else
+				{
+					gRenderer()->notifySkyboxRemoved(this);
+					gRenderer()->notifySkyboxAdded(this);
+				}
+			}
+		}
+	}
 }

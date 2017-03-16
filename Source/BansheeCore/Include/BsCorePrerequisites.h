@@ -344,6 +344,8 @@ namespace bs
 	class GraphicsPipelineState;
 	class ComputePipelineState;
 	class ReflectionProbe;
+    class CReflectionProbe;
+    class CSkybox;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -640,6 +642,8 @@ namespace bs
 	typedef GameObjectHandle<CFixedJoint> HFixedJoint;
 	typedef GameObjectHandle<CD6Joint> HD6Joint;
 	typedef GameObjectHandle<CCharacterController> HCharacterController;
+    typedef GameObjectHandle<CReflectionProbe> HReflectionProbe;
+    typedef GameObjectHandle<CSkybox> HSkybox;
 
 	/** @} */
 }

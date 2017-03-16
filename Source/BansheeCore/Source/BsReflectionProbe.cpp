@@ -137,7 +137,7 @@ namespace bs
 		size += rttiGetElemSize(mIsActive);
 		size += rttiGetElemSize(getCoreDirtyFlags());
 		size += rttiGetElemSize(mBounds);
-		size += rttiGetElemSize(sizeof(SPtr<ct::Texture>));
+		size += sizeof(SPtr<ct::Texture>);
 		size += rttiGetElemSize(mUUID);
 
 		UINT8* buffer = allocator->alloc(size);
