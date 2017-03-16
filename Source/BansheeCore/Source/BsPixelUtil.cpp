@@ -763,10 +763,10 @@ namespace bs
 			:buffer(buffer), bufferWritePos(buffer), bufferEnd(buffer + sizeBytes)
 		{ }
 
-		virtual void beginImage(int size, int width, int height, int depth, int face, int miplevel) override
+		void beginImage(int size, int width, int height, int depth, int face, int miplevel) override
 		{ }
 
-		virtual bool writeData(const void* data, int size) override
+		bool writeData(const void* data, int size) override
 		{
 			assert((bufferWritePos + size) <= bufferEnd);
 			memcpy(bufferWritePos, data, size);
@@ -774,6 +774,9 @@ namespace bs
 
 			return true;
 		}
+
+		void endImage() override
+		{ }
 
 		UINT8* buffer;
 		UINT8* bufferWritePos;
@@ -807,6 +810,9 @@ namespace bs
 			return true;
 		}
 
+		void endImage() override
+		{ }
+
 		Vector<SPtr<PixelData>> buffers;
 		SPtr<PixelData> activeBuffer;
 
@@ -830,6 +836,10 @@ namespace bs
 			return nvtt::Format_BC4;
 		case PF_BC5:
 			return nvtt::Format_BC5;
+		case PF_BC6H:
+			return nvtt::Format_BC6;
+		case PF_BC7:
+			return nvtt::Format_BC7;
 		default: // Unsupported format
 			return nvtt::Format_BC3;
 		}
@@ -1828,13 +1838,6 @@ namespace bs
 			return;
 		}
 
-		// Note: NVTT site has implementations for these two formats for when I decide to add them
-		if (options.format == PF_BC6H || options.format == PF_BC7)
-		{
-			LOGERR("Compression failed. BC6H and BC7 formats are currently not supported.")
-			return;
-		}
-
 		if (src.getDepth() != 1)
 		{
 			LOGERR("Compression failed. 3D texture compression not supported.")
@@ -1847,26 +1850,34 @@ namespace bs
 			return;
 		}
 
-		PixelData bgraData(src.getWidth(), src.getHeight(), 1, PF_R8G8B8A8);
+		PixelFormat interimFormat = options.format == PF_BC6H ? PF_FLOAT32_RGBA : PF_R8G8B8A8;
+
+		PixelData bgraData(src.getWidth(), src.getHeight(), 1, interimFormat);
 		bgraData.allocateInternalBuffer();
 		bulkPixelConversion(src, bgraData);
 
 		nvtt::InputOptions io;
 		io.setTextureLayout(nvtt::TextureType_2D, src.getWidth(), src.getHeight());
-		io.setMipmapData(bgraData.getData(), src.getWidth(), src.getHeight());
 		io.setMipmapGeneration(false);
 		io.setAlphaMode(toNVTTAlphaMode(options.alphaMode));
 		io.setNormalMap(options.isNormalMap);
+
+		if (interimFormat == PF_FLOAT32_RGBA)
+			io.setFormat(nvtt::InputFormat_RGBA_32F);
+		else
+			io.setFormat(nvtt::InputFormat_BGRA_8UB);
 
 		if (options.isSRGB)
 			io.setGamma(2.2f, 2.2f);
 		else
 			io.setGamma(1.0f, 1.0f);
 
+		io.setMipmapData(bgraData.getData(), src.getWidth(), src.getHeight());
+
 		nvtt::CompressionOptions co;
 		co.setFormat(toNVTTFormat(options.format));
 		co.setQuality(toNVTTQuality(options.quality));
-		
+
 		NVTTCompressOutputHandler outputHandler(dst.getData(), dst.getConsecutiveSize());
 
 		nvtt::OutputOptions oo;
@@ -1891,11 +1902,9 @@ namespace bs
 			return outputMipBuffers;
 		}
 
-		// Note: Add support for floating point mips, no reason they shouldn't be supported other than
-		// nvtt doesn't support them natively
-		if (isCompressed(src.getFormat()) || isFloatingPoint(src.getFormat()))
+		if (isCompressed(src.getFormat()))
 		{
-			LOGERR("Mipmap generation failed. Source data cannot be compressed or in floating point format.")
+			LOGERR("Mipmap generation failed. Source data cannot be compressed.")
 			return outputMipBuffers;
 		}
 
@@ -1905,21 +1914,40 @@ namespace bs
 			return outputMipBuffers;
 		}
 
-		PixelData rgbaData(src.getWidth(), src.getHeight(), 1, PF_R8G8B8A8);
+		PixelFormat interimFormat = isFloatingPoint(src.getFormat()) ? PF_FLOAT32_RGBA : PF_R8G8B8A8;
+
+		PixelData rgbaData(src.getWidth(), src.getHeight(), 1, interimFormat);
 		rgbaData.allocateInternalBuffer();
 		bulkPixelConversion(src, rgbaData);
 
 		nvtt::InputOptions io;
 		io.setTextureLayout(nvtt::TextureType_2D, src.getWidth(), src.getHeight());
-		io.setMipmapData(rgbaData.getData(), src.getWidth(), src.getHeight());
 		io.setMipmapGeneration(true);
 		io.setNormalMap(options.isNormalMap);
 		io.setNormalizeMipmaps(options.normalizeMipmaps);
 		io.setWrapMode(toNVTTWrapMode(options.wrapMode));
 
+		if (interimFormat == PF_FLOAT32_RGBA)
+			io.setFormat(nvtt::InputFormat_RGBA_32F);
+		else
+			io.setFormat(nvtt::InputFormat_BGRA_8UB);
+
+		io.setMipmapData(rgbaData.getData(), src.getWidth(), src.getHeight());
+
 		nvtt::CompressionOptions co;
 		co.setFormat(nvtt::Format_RGBA);
 		
+		if (interimFormat == PF_FLOAT32_RGBA)
+		{
+			co.setPixelType(nvtt::PixelType_Float);
+			co.setPixelFormat(32, 32, 32, 32);
+		}
+		else
+		{
+			co.setPixelType(nvtt::PixelType_UnsignedNorm);
+			co.setPixelFormat(8, 8, 8, 8);
+		}
+
 		UINT32 numMips = getMaxMipmaps(src.getWidth(), src.getHeight(), 1, src.getFormat());
 
 		Vector<SPtr<PixelData>> rgbaMipBuffers;
@@ -1931,7 +1959,7 @@ namespace bs
 		UINT32 curHeight = src.getHeight();
 		for (UINT32 i = 0; i < numMips; i++)
 		{
-			rgbaMipBuffers.push_back(bs_shared_ptr_new<PixelData>(curWidth, curHeight, 1, PF_R8G8B8A8));
+			rgbaMipBuffers.push_back(bs_shared_ptr_new<PixelData>(curWidth, curHeight, 1, interimFormat));
 			rgbaMipBuffers.back()->allocateInternalBuffer();
 
 			if (curWidth > 1) 
@@ -1941,7 +1969,7 @@ namespace bs
 				curHeight = curHeight / 2;
 		}
 
-		rgbaMipBuffers.push_back(bs_shared_ptr_new<PixelData>(curWidth, curHeight, 1, PF_R8G8B8A8));
+		rgbaMipBuffers.push_back(bs_shared_ptr_new<PixelData>(curWidth, curHeight, 1, interimFormat));
 		rgbaMipBuffers.back()->allocateInternalBuffer();
 
 		NVTTMipmapOutputHandler outputHandler(rgbaMipBuffers);
