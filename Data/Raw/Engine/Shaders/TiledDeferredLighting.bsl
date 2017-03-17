@@ -160,8 +160,10 @@ Technique
 				lightOffsets.z = sNumLightsPerType[0];
 				lightOffsets.w = sTotalNumLights;
 				
+				float3 V = normalize(gViewOrigin - worldPosition);
+				
 				float4 directLighting = getDirectLighting(worldPosition, surfaceData, lightOffsets);
-				float3 imageBasedSpecular = getImageBasedSpecular(worldPosition, gViewDir, surfaceData);
+				float3 imageBasedSpecular = getImageBasedSpecular(worldPosition, V, surfaceData);
 
 				float4 totalLighting = directLighting;
 				totalLighting.rgb += imageBasedSpecular;
