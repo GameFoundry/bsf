@@ -117,13 +117,23 @@ namespace bs { namespace ct
 
 		// Reflections
 		params->getTextureParam(GPT_COMPUTE_PROGRAM, "gSkyCubemapTex", mSkyCubemapTexParam);
-		params->getTextureParam(GPT_COMPUTE_PROGRAM, "gReflProbeCubmaps", mReflectionProbeCubemapsParam);
+		params->getTextureParam(GPT_COMPUTE_PROGRAM, "gReflProbeCubemaps", mReflectionProbeCubemapsParam);
 		params->getTextureParam(GPT_COMPUTE_PROGRAM, "gPreintegratedEnvBRDF", mPreintegratedEnvBRDFParam);
 
 		params->getBufferParam(GPT_COMPUTE_PROGRAM, "gReflectionProbes", mReflectionProbesParam);
 
 		mReflectionsParamBuffer = gReflProbeParamsParamDef.createBuffer();
 		mParamsSet->setParamBlockBuffer("ReflProbeParams", mReflectionsParamBuffer);
+
+		SAMPLER_STATE_DESC reflSamplerDesc;
+		reflSamplerDesc.magFilter = FO_LINEAR;
+		reflSamplerDesc.minFilter = FO_LINEAR;
+		reflSamplerDesc.mipFilter = FO_LINEAR;
+
+		mReflectionSamplerState = SamplerState::create(reflSamplerDesc);
+
+		params->setSamplerState(GPT_COMPUTE_PROGRAM, "gSkyCubemapSamp", mReflectionSamplerState);
+		params->setSamplerState(GPT_COMPUTE_PROGRAM, "gReflProbeSamp", mReflectionSamplerState);
 	}
 
 	void TiledDeferredLighting::execute(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBuffer>& perCamera,
@@ -200,11 +210,11 @@ namespace bs { namespace ct
 
 		gReflProbeParamsParamDef.gNumProbes.set(mReflectionsParamBuffer, probeData.getNumProbes());
 
-		UINT32 maxMip = 0;
+		UINT32 numMips = 0;
 		if (reflectionCubemaps != nullptr)
-			maxMip = reflectionCubemaps->getProperties().getNumMipmaps();
+			numMips = reflectionCubemaps->getProperties().getNumMipmaps() + 1;
 
-		gReflProbeParamsParamDef.gReflCubemapNumMips.set(mReflectionsParamBuffer, maxMip);
+		gReflProbeParamsParamDef.gReflCubemapNumMips.set(mReflectionsParamBuffer, numMips);
 	}
 
 	void TiledDeferredLighting::setSkyReflections(const SPtr<Texture>& skyReflections)
@@ -212,14 +222,14 @@ namespace bs { namespace ct
 		mSkyCubemapTexParam.set(skyReflections);
 
 		UINT32 skyReflectionsAvailable = 0;
-		UINT32 maxMip = 0;
+		UINT32 numMips = 0;
 		if (skyReflections != nullptr)
 		{
-			maxMip = skyReflections->getProperties().getNumMipmaps();
+			numMips = skyReflections->getProperties().getNumMipmaps() + 1;
 			skyReflectionsAvailable = 1;
 		}
 
-		gReflProbeParamsParamDef.gSkyCubemapNumMips.set(mReflectionsParamBuffer, maxMip);
+		gReflProbeParamsParamDef.gSkyCubemapNumMips.set(mReflectionsParamBuffer, numMips);
 		gReflProbeParamsParamDef.gSkyCubemapAvailable.set(mReflectionsParamBuffer, skyReflectionsAvailable);
 	}
 

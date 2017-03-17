@@ -128,6 +128,8 @@ namespace bs { namespace ct
 
 		SPtr<GpuParamBlockBuffer> mParamBuffer;
 		SPtr<GpuParamBlockBuffer> mReflectionsParamBuffer;
+
+		SPtr<SamplerState> mReflectionSamplerState;
 	};
 
 	/** Interface implemented by all versions of TTiledDeferredLightingMat<T>. */
