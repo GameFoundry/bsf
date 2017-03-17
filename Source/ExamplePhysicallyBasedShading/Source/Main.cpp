@@ -24,6 +24,7 @@
 
 // Example includes
 #include "CameraFlyer.h"
+#include "ObjectRotator.h"
 
 namespace bs
 {
@@ -277,6 +278,9 @@ namespace bs
 		renderable->setMesh(mesh);
 		renderable->setMaterial(material);
 
+		// Add a rotator component so we can rotate the object during runtime
+		pistolSO->addComponent<ObjectRotator>();
+
         /************************************************************************/
         /* 									LIGHT                       		*/
         /************************************************************************/
@@ -364,6 +368,7 @@ namespace bs
 		inputConfig->registerButton("Left", BC_LEFT);
 		inputConfig->registerButton("Right", BC_RIGHT);
 		inputConfig->registerButton("FastMove", BC_LSHIFT);
+		inputConfig->registerButton("RotateObj", BC_MOUSE_LEFT);
 		inputConfig->registerButton("RotateCam", BC_MOUSE_RIGHT);
 
 		// Camera controls for axes (analog input, e.g. mouse or gamepad thumbstick)

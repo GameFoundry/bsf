@@ -1,9 +1,11 @@
 set(BS_EXAMPLEPHYSICALLYBASEDSHADING_INC_NOFILTER
 	"Include/CameraFlyer.h"
+	"Include/ObjectRotator.h"
 )
 
 set(BS_EXAMPLEPHYSICALLYBASEDSHADING_SRC_NOFILTER
 	"Source/CameraFlyer.cpp"
+	"Source/ObjectRotator.cpp"
 	"Source/Main.cpp"
 )
 
