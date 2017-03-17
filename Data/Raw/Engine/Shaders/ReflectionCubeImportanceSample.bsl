@@ -52,7 +52,7 @@ Technique
 				// See GGXImportanceSample.nb for derivation (essentially, take base GGX, normalize it,
 				// generate PDF, split PDF into marginal probability for theta and conditional probability
 				// for phi. Plug those into the CDF, invert it.)				
-				float cosTheta = sqrt((1.0f - e.x) / (1.0f + (roughness4 - 1.0f) * e.y));
+				float cosTheta = sqrt((1.0f - e.x) / (1.0f + (roughness4 - 1.0f) * e.x));
 				float phi = 2.0f * PI * e.y;
 				
 				return float2(cosTheta, phi);
@@ -78,6 +78,7 @@ Technique
 			{
 				int gCubeFace;
 				int gMipLevel;
+				int gNumMips;
 				float gPrecomputedMipFactor;
 			}	
 		
@@ -94,7 +95,7 @@ Technique
 				// Determine which mip level to sample from depending on PDF and cube -> sphere mapping distortion
 				float distortion = rcp(pow(N.x * N.x + N.y * N.y + N.z * N.z, 3.0f/2.0f));
 				
-				float roughness = mapMipLevelToRoughness(gMipLevel);
+				float roughness = mapMipLevelToRoughness(gMipLevel, gNumMips);
 				float roughness2 = roughness * roughness;
 				float roughness4 = roughness2 * roughness2;
 				
@@ -107,7 +108,7 @@ Technique
 					float cosTheta = sphericalH.x;
 					float phi = sphericalH.y;
 					
-					float sinTheta = sqrt(1.0f - cosTheta);
+					float sinTheta = sqrt(1.0f - cosTheta * cosTheta);
 					
 					float3 H = sphericalToCartesian(cosTheta, sinTheta, phi);
 					float PDF = pdfGGX(cosTheta, sinTheta, roughness4);
@@ -126,7 +127,7 @@ Technique
 					mipLevel++;
 					
 					// sum += H * GGX / PDF. In GGX/PDF most factors cancel out and we're left with 1/sin*cos
-					sum += gInputTex.SampleLevel(gInputSamp, H, mipLevel) / (cosTheta * sinTheta);
+					sum += gInputTex.SampleLevel(gInputSamp, H, mipLevel) * cosTheta;
 				}
 				
 				return sum / NUM_SAMPLES;
