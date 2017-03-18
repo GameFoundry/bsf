@@ -267,7 +267,7 @@ namespace bs { namespace ct
 	{
 		// See GGXImportanceSample.nb for derivation (essentially, take base GGX, normalize it, generate PDF, split PDF into
 		// marginal probability for theta and conditional probability for phi. Plug those into the CDF, invert it.)				
-		cosTheta = sqrt((1.0f - e0) / (1.0f + (roughness4 - 1.0f) * e1));
+		cosTheta = sqrt((1.0f - e0) / (1.0f + (roughness4 - 1.0f) * e0));
 		phi = 2.0f * Math::PI * e1;
 	}
 
@@ -330,10 +330,10 @@ namespace bs { namespace ct
 					float NoL = std::max(L.z, 0.0f); // N assumed (0, 0, 1)
 					float NoH = std::max(H.z, 0.0f); // N assumed (0, 0, 1)
 
-														// Set second part of the split sum integral is split into two parts:
-														//   F0*I[G * (1 - (1 - v.h)^5) * cos(theta)] + I[G * (1 - v.h)^5 * cos(theta)] (F0 * scale + bias)
+					// Set second part of the split sum integral is split into two parts:
+					//   F0*I[G * (1 - (1 - v.h)^5) * cos(theta)] + I[G * (1 - v.h)^5 * cos(theta)] (F0 * scale + bias)
 
-														// We calculate the fresnel scale (1 - (1 - v.h)^5) and bias ((1 - v.h)^5) parts
+					// We calculate the fresnel scale (1 - (1 - v.h)^5) and bias ((1 - v.h)^5) parts
 					float fc = pow(1.0f - VoH, 5.0f);
 					float fresnelScale = 1.0f - fc;
 					float fresnelOffset = fc;
@@ -341,11 +341,17 @@ namespace bs { namespace ct
 					// We calculate the G part
 					float G = calcMicrofacetShadowingSmithGGX(m2, NoV, NoL);
 
-					// Note: PDF?
+					// When we factor out G and F, then divide D by PDF, this is what's left
+					//float pdfFactor = 1.0f / NoH;
+
+					// Note: This is based on PDF: D * NoH / (4 * VoH), but I'm not sure where does the (4 * VoH) factor
+					// come from. I'm keeping it since it seems to look better.
+					float pdfFactor = 4.0f * VoH / NoH;
+
 					if (NoL > 0.0f)
 					{
-						scale += NoL * G * fresnelScale;
-						offset += NoL * G * fresnelOffset;
+						scale += NoL * pdfFactor * G * fresnelScale;
+						offset += NoL * pdfFactor * G * fresnelOffset;
 					}
 				}
 

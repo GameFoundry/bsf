@@ -63,7 +63,7 @@ namespace bs { namespace ct
 		float width = (float)source->getProperties().getWidth();
 		float height = (float)source->getProperties().getHeight();
 
-		// First part of the equation for determining mip level for sample from.
+		// First part of the equation for determining mip level to sample from.
 		// See http://http.developer.nvidia.com/GPUGems3/gpugems3_ch20.html
 		float mipFactor = 0.5f * std::log2(width * height / NUM_SAMPLES);
 		gReflectionCubeImportanceSampleParamDef.gPrecomputedMipFactor.set(mParamBuffer, mipFactor);
