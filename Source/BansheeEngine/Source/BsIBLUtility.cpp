@@ -1,6 +1,6 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
-#include "BsReflectionProbes.h"
+#include "BsIBLUtility.h"
 #include "BsTexture.h"
 #include "BsGpuParamsSet.h"
 #include "BsRendererUtility.h"
@@ -226,9 +226,10 @@ namespace bs { namespace ct
 		gRendererUtility().drawScreenQuad();
 	}
 
-	const UINT32 ReflectionProbes::REFLECTION_CUBEMAP_SIZE = 256;
+	const UINT32 IBLUtility::REFLECTION_CUBEMAP_SIZE = 256;
+	const UINT32 IBLUtility::IRRADIANCE_CUBEMAP_SIZE = 32;
 
-	void ReflectionProbes::filterCubemapForSpecular(const SPtr<Texture>& cubemap, const SPtr<Texture>& scratch)
+	void IBLUtility::filterCubemapForSpecular(const SPtr<Texture>& cubemap, const SPtr<Texture>& scratch)
 	{
 		static ReflectionCubeDownsampleMat downsampleMat;
 		static ReflectionCubeImportanceSampleMat importanceSampleMat;
@@ -292,7 +293,7 @@ namespace bs { namespace ct
 		rapi.setRenderTarget(nullptr);
 	}
 
-	void ReflectionProbes::filterCubemapForIrradiance(const SPtr<Texture>& cubemap, const SPtr<Texture>& output)
+	void IBLUtility::filterCubemapForIrradiance(const SPtr<Texture>& cubemap, const SPtr<Texture>& output)
 	{
 		static IrradianceComputeSHMat shCompute;
 		static IrradianceReduceSHMat shReduce;
@@ -319,7 +320,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	void ReflectionProbes::scaleCubemap(const SPtr<Texture>& src, UINT32 srcMip, const SPtr<Texture>& dst, UINT32 dstMip)
+	void IBLUtility::scaleCubemap(const SPtr<Texture>& src, UINT32 srcMip, const SPtr<Texture>& dst, UINT32 dstMip)
 	{
 		static ReflectionCubeDownsampleMat downsampleMat;
 
@@ -366,7 +367,7 @@ namespace bs { namespace ct
 			downsampleCubemap(src, srcMip, dst, dstMip);
 	}
 
-	void ReflectionProbes::downsampleCubemap(const SPtr<Texture>& src, UINT32 srcMip, const SPtr<Texture>& dst, UINT32 dstMip)
+	void IBLUtility::downsampleCubemap(const SPtr<Texture>& src, UINT32 srcMip, const SPtr<Texture>& dst, UINT32 dstMip)
 	{
 		static ReflectionCubeDownsampleMat downsampleMat;
 

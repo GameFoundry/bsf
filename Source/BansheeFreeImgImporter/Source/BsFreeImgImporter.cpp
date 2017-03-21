@@ -16,7 +16,6 @@
 #include "FreeImage.h"
 #include "BsBitwise.h"
 #include "BsRenderer.h"
-#include "BsReflectionProbes.h"
 
 using namespace std::placeholders;
 

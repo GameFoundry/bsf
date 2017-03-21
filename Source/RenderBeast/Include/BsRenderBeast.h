@@ -212,8 +212,8 @@ namespace bs
 		/**	Destroys data used by the renderer on the core thread. */
 		void destroyCore();
 
-		/** Updates reflection probes, rendering ones that are dirty and updating the global probe cubemap array. */
-		void updateReflectionProbes(const FrameInfo& frameInfo);
+		/** Updates light probes, rendering & filtering ones that are dirty and updating the global probe cubemap array. */
+		void updateLightProbes(const FrameInfo& frameInfo);
 
 		/**
 		 * Checks all sampler overrides in case material sampler states changed, and updates them.

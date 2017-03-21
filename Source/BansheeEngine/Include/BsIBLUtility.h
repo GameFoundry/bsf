@@ -183,8 +183,8 @@ namespace bs { namespace ct
 		GpuParamBuffer mInputBuffer;
 	};
 
-	/** Helper class that handles generation and processing of textures used for reflection probes. */
-	class BS_EXPORT ReflectionProbes
+	/** Helper class that handles generation and processing of textures used for image based lighting. */
+	class BS_EXPORT IBLUtility
 	{
 	public:
 		/**
@@ -219,7 +219,7 @@ namespace bs { namespace ct
 		static void scaleCubemap(const SPtr<Texture>& src, UINT32 srcMip, const SPtr<Texture>& dst, UINT32 dstMip);
 
 		static const UINT32 REFLECTION_CUBEMAP_SIZE;
-
+		static const UINT32 IRRADIANCE_CUBEMAP_SIZE;
 	private:
 		/** 
 		 * Downsamples a cubemap using hardware bilinear filtering. 
