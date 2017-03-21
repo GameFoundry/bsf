@@ -92,8 +92,8 @@ namespace bs { namespace ct
 		/** Binds all the active reflection probes. */
 		void setReflectionProbes(const GPUReflProbeData& probeData, const SPtr<Texture>& reflectionCubemaps);
 
-		/** Binds the sky reflection. If no sky reflection set to null. */
-		void setSkyReflections(const SPtr<Texture>& skyReflections);
+		/** Binds the sky reflection & irradiance textures. Set textures to null if not available. */
+		void setSky(const SPtr<Texture>& skyReflections, const SPtr<Texture>& skyIrradiance);
 
 		/** 
 		 * Generates a 2D 2-channel texture containing a pre-integrated G and F factors of the microfactet BRDF. This is an
@@ -116,7 +116,8 @@ namespace bs { namespace ct
 		GpuParamTexture mGBufferC;
 		GpuParamTexture mGBufferDepth;
 
-		GpuParamTexture mSkyCubemapTexParam;
+		GpuParamTexture mSkyReflectionsParam;
+		GpuParamTexture mSkyIrradianceParam;
 		GpuParamTexture mReflectionProbeCubemapsParam;
 		GpuParamTexture mPreintegratedEnvBRDFParam;
 		GpuParamBuffer mReflectionProbesParam;
@@ -148,8 +149,8 @@ namespace bs { namespace ct
 		/** @copydoc TiledDeferredLighting::setReflectionProbes() */
 		virtual void setReflectionProbes(const GPUReflProbeData& probeData, const SPtr<Texture>& reflectionCubemaps) = 0;
 
-		/** @copydoc TiledDeferredLighting::setSkyReflections() */
-		virtual void setSkyReflections(const SPtr<Texture>& skyReflections) = 0;
+		/** @copydoc TiledDeferredLighting::setSky() */
+		virtual void setSky(const SPtr<Texture>& skyReflections, const SPtr<Texture>& skyIrradiance) = 0;
 	};
 
 	/** Shader that performs a lighting pass over data stored in the Gbuffer. */
@@ -171,8 +172,8 @@ namespace bs { namespace ct
 		/** @copydoc ITiledDeferredLightingMat::setReflectionProbes() */
 		void setReflectionProbes(const GPUReflProbeData& probeData, const SPtr<Texture>& reflectionCubemaps) override;
 
-		/** @copydoc ITiledDeferredLightingMat::setSkyReflections() */
-		void setSkyReflections(const SPtr<Texture>& skyReflections) override;
+		/** @copydoc ITiledDeferredLightingMat::setSky() */
+		void setSky(const SPtr<Texture>& skyReflections, const SPtr<Texture>& skyIrradiance) override;
 	private:
 		TiledDeferredLighting mInternal;
 	};

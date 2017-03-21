@@ -79,7 +79,7 @@ namespace bs { namespace ct
 
 	IrradianceComputeSHParamDef gIrradianceComputeSHParamDef;
 
-	const static UINT32 TILE_WIDTH = 16;
+	const static UINT32 TILE_WIDTH = 8;
 	const static UINT32 TILE_HEIGHT = 8;
 	const static UINT32 PIXELS_PER_THREAD = 4;
 
@@ -138,13 +138,14 @@ namespace bs { namespace ct
 		dispatchSize.x = Math::divideAndRoundUp(faceSize, TILE_WIDTH * PIXELS_PER_THREAD);
 		dispatchSize.y = Math::divideAndRoundUp(faceSize, TILE_HEIGHT * PIXELS_PER_THREAD);
 
-		numCoeffSets = dispatchSize.x * dispatchSize.y;
+		numCoeffSets = dispatchSize.x * dispatchSize.y * 6;
 
 		GPU_BUFFER_DESC bufferDesc;
 		bufferDesc.type = GBT_STRUCTURED;
 		bufferDesc.elementCount = numCoeffSets;
 		bufferDesc.elementSize = sizeof(SHCoeffsAndWeight);
 		bufferDesc.format = BF_UNKNOWN;
+		bufferDesc.randomGpuWrite = true;
 
 		return GpuBuffer::create(bufferDesc);
 	}
@@ -189,6 +190,7 @@ namespace bs { namespace ct
 		bufferDesc.elementCount = 1;
 		bufferDesc.elementSize = sizeof(SHVector5RGB);
 		bufferDesc.format = BF_UNKNOWN;
+		bufferDesc.randomGpuWrite = true;
 
 		return GpuBuffer::create(bufferDesc);
 	}
@@ -285,6 +287,9 @@ namespace bs { namespace ct
 				importanceSampleMat.execute(scratchCubemap, face, mip, target);
 			}
 		}
+
+		RenderAPI& rapi = RenderAPI::instance();
+		rapi.setRenderTarget(nullptr);
 	}
 
 	void ReflectionProbes::filterCubemapForIrradiance(const SPtr<Texture>& cubemap, const SPtr<Texture>& output)
@@ -295,7 +300,12 @@ namespace bs { namespace ct
 
 		UINT32 numCoeffSets;
 		SPtr<GpuBuffer> coeffSetBuffer = IrradianceComputeSHMat::createOutputBuffer(cubemap, numCoeffSets);
+		for (UINT32 face = 0; face < 6; face++)
+			shCompute.execute(cubemap, face, coeffSetBuffer);
+
 		SPtr<GpuBuffer> coeffBuffer = IrradianceReduceSHMat::createOutputBuffer();
+		shReduce.execute(coeffSetBuffer, numCoeffSets, coeffBuffer);
+
 		for (UINT32 face = 0; face < 6; face++)
 		{
 			RENDER_TEXTURE_DESC cubeFaceRTDesc;
@@ -305,9 +315,6 @@ namespace bs { namespace ct
 			cubeFaceRTDesc.colorSurfaces[0].mipLevel = 0;
 
 			SPtr<RenderTarget> target = RenderTexture::create(cubeFaceRTDesc);
-
-			shCompute.execute(cubemap, face, coeffSetBuffer);
-			shReduce.execute(coeffSetBuffer, numCoeffSets, coeffBuffer);
 			shProject.execute(coeffBuffer, face, target);
 		}
 	}

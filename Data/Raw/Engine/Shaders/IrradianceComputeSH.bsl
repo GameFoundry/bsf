@@ -3,7 +3,7 @@
 
 Technique
  : inherits("ReflectionCubemapCommon")
- : inherits("SHCommon")
+ : inherits("SHCommon") =
 {
 	Language = "HLSL11";
 	
@@ -15,7 +15,7 @@ Technique
 			{
 				SHVector5RGB coeffs;
 				float weight;
-			}
+			};
 		
 			SamplerState gInputSamp;
 			TextureCube gInputTex;
@@ -59,7 +59,7 @@ Technique
 			[numthreads(TILE_WIDTH, TILE_HEIGHT, 1)]
 			void main(
 				uint groupIdx : SV_GroupIndex,
-				uint groupId : SV_GroupID,
+				uint3 groupId : SV_GroupID,
 				uint3 dispatchThreadId : SV_DispatchThreadID)
 			{
 				SHCoeffsAndWeight data;
@@ -82,13 +82,12 @@ Technique
 							break;
 							
 						// Map from [0, size-1] to [-1.0 + invSize, 1.0 - invSize].
-                        // Reference: u = 2.0 * (x + 0.5) / faceSize - 1.0;
-                        //      	  v = 2.0 * (y + 0.5) / faceSize - 1.0;
 						// (+0.5 in order to sample center of texel)
-                        float u = x * invFaceSize - 1.0f;
-                        float v = x * invFaceSize - 1.0f;
+                        float u = 2.0f * (x + 0.5f) * invFaceSize - 1.0f;
+                        float v = 2.0f * (y + 0.5f) * invFaceSize - 1.0f;
 						
 						float3 dir = getDirFromCubeFace(gCubeFace, float2(u, v));
+						dir = normalize(dir);
 						
 						// Need to calculate solid angle (weight) of the texel, as cube face corners have
 						// much smaller solid angle, meaning many of them occupy the same area when projected
@@ -96,7 +95,7 @@ Technique
 						float weight = texelSolidAngle(u, v, invFaceSize);
 						
 						SHVector5 shBasis = SHBasis5(dir);
-						float3 radiance = gInputTex.SampleLevel(gInputSamp, dir, 0);
+						float3 radiance = gInputTex.SampleLevel(gInputSamp, dir, 0).rgb;
 						
 						SHMultiplyAdd(data.coeffs.R, shBasis, radiance.r * weight);
 						SHMultiplyAdd(data.coeffs.G, shBasis, radiance.g * weight);
@@ -116,9 +115,9 @@ Technique
 				{
 					if(groupIdx < tc)
 					{
-						SHAdd(sCoeffs[groupIdx].R, sCoeffs[groupIdx + tc].R);
-						SHAdd(sCoeffs[groupIdx].G, sCoeffs[groupIdx + tc].G);
-						SHAdd(sCoeffs[groupIdx].B, sCoeffs[groupIdx + tc].B);
+						SHAdd(sCoeffs[groupIdx].coeffs.R, sCoeffs[groupIdx + tc].coeffs.R);
+						SHAdd(sCoeffs[groupIdx].coeffs.G, sCoeffs[groupIdx + tc].coeffs.G);
+						SHAdd(sCoeffs[groupIdx].coeffs.B, sCoeffs[groupIdx + tc].coeffs.B);
 
 						sCoeffs[groupIdx].weight += sCoeffs[groupIdx + tc].weight;
 					}
@@ -128,7 +127,8 @@ Technique
 				
 				if(groupIdx == 0)
 				{
-					uint outputIdx = groupId.y * gDispatchSize.x + groupId.x;
+					uint faceOffset = gDispatchSize.x * gDispatchSize.y * gCubeFace;
+					uint outputIdx = faceOffset + groupId.y * gDispatchSize.x + groupId.x;
 					gOutput[outputIdx] = sCoeffs[0];
 				}
 			}

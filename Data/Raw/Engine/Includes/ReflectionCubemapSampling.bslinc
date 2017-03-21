@@ -20,8 +20,11 @@ Technique : base("ReflectionCubemapSampling") =
 				uint type; // 0 - Sphere, 1 - Box
 			};
 		
-			TextureCube gSkyCubemapTex;
-			SamplerState gSkyCubemapSamp;
+			TextureCube gSkyReflectionTex;
+			SamplerState gSkyReflectionSamp;
+			
+			TextureCube gSkyIrradianceTex;
+			SamplerState gSkyIrradianceSamp;
 			
 			TextureCubeArray gReflProbeCubemaps;
 			SamplerState gReflProbeSamp;
@@ -45,12 +48,9 @@ Technique : base("ReflectionCubemapSampling") =
 				uint gSkyCubemapNumMips;
 			}	
 			
-			float3 getSkyReflection(float3 dir, float roughness)
+			float3 getSkyIndirectDiffuse(float3 dir)
 			{
-				float mipLevel = mapRoughnessToMipLevel(roughness, gReflCubemapNumMips);
-				float3 reflection = gSkyCubemapTex.SampleLevel(gSkyCubemapSamp, dir, mipLevel);
-
-				return reflection;
+				return gSkyIrradianceTex.SampleLevel(gSkyIrradianceSamp, dir, 0).rgb;
 			}
 			
 			float3 getSphereReflectionContribution(float normalizedDistance)
@@ -182,7 +182,7 @@ Technique : base("ReflectionCubemapSampling") =
 				if(gSkyCubemapAvailable > 0)
 				{
 					float skyMipLevel = mapRoughnessToMipLevel(roughness, gSkyCubemapNumMips);
-					float4 sample = gSkyCubemapTex.SampleLevel(gSkyCubemapSamp, dir, skyMipLevel);
+					float4 sample = gSkyReflectionTex.SampleLevel(gSkyReflectionSamp, dir, skyMipLevel);
 					
 					output += sample.rgb * leftoverContribution; 
 				}

@@ -131,7 +131,7 @@ namespace bs { namespace ct
 	 */
 	class IrradianceReduceSHMat : public RendererMaterial<IrradianceReduceSHMat>
 	{
-		RMAT_DEF("IrradianceComputeSH.bsl")
+		RMAT_DEF("IrradianceReduceSH.bsl")
 
 	public:
 		IrradianceReduceSHMat();

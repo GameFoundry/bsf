@@ -115,8 +115,11 @@ namespace bs { namespace ct
 		mParamBuffer = gTiledLightingParamDef.createBuffer();
 		mParamsSet->setParamBlockBuffer("Params", mParamBuffer, true);
 
+		// Sky
+		params->getTextureParam(GPT_COMPUTE_PROGRAM, "gSkyReflectionTex", mSkyReflectionsParam);
+		params->getTextureParam(GPT_COMPUTE_PROGRAM, "gSkyIrradianceTex", mSkyIrradianceParam);
+
 		// Reflections
-		params->getTextureParam(GPT_COMPUTE_PROGRAM, "gSkyCubemapTex", mSkyCubemapTexParam);
 		params->getTextureParam(GPT_COMPUTE_PROGRAM, "gReflProbeCubemaps", mReflectionProbeCubemapsParam);
 		params->getTextureParam(GPT_COMPUTE_PROGRAM, "gPreintegratedEnvBRDF", mPreintegratedEnvBRDFParam);
 
@@ -132,7 +135,7 @@ namespace bs { namespace ct
 
 		mReflectionSamplerState = SamplerState::create(reflSamplerDesc);
 
-		params->setSamplerState(GPT_COMPUTE_PROGRAM, "gSkyCubemapSamp", mReflectionSamplerState);
+		params->setSamplerState(GPT_COMPUTE_PROGRAM, "gSkyReflectionSamp", mReflectionSamplerState);
 		params->setSamplerState(GPT_COMPUTE_PROGRAM, "gReflProbeSamp", mReflectionSamplerState);
 	}
 
@@ -217,9 +220,10 @@ namespace bs { namespace ct
 		gReflProbeParamsParamDef.gReflCubemapNumMips.set(mReflectionsParamBuffer, numMips);
 	}
 
-	void TiledDeferredLighting::setSkyReflections(const SPtr<Texture>& skyReflections)
+	void TiledDeferredLighting::setSky(const SPtr<Texture>& skyReflections, const SPtr<Texture>& skyIrradiance)
 	{
-		mSkyCubemapTexParam.set(skyReflections);
+		mSkyReflectionsParam.set(skyReflections);
+		mSkyIrradianceParam.set(skyIrradiance);
 
 		UINT32 skyReflectionsAvailable = 0;
 		UINT32 numMips = 0;
@@ -388,7 +392,7 @@ namespace bs { namespace ct
 
 	template<int MSAA_COUNT, bool FixedReflColor>
 	void TTiledDeferredLightingMat<MSAA_COUNT, FixedReflColor>::execute(const SPtr<RenderTargets>& gbuffer,
-																		const SPtr<GpuParamBlockBuffer>& perCamera, const SPtr<Texture>& preintegratedGF, bool noLighting)
+		const SPtr<GpuParamBlockBuffer>& perCamera, const SPtr<Texture>& preintegratedGF, bool noLighting)
 	{
 		mInternal.execute(gbuffer, perCamera, preintegratedGF, noLighting);
 	}
@@ -400,15 +404,17 @@ namespace bs { namespace ct
 	}
 
 	template<int MSAA_COUNT, bool FixedReflColor>
-	void TTiledDeferredLightingMat<MSAA_COUNT, FixedReflColor>::setReflectionProbes(const GPUReflProbeData& probeData, const SPtr<Texture>& reflectionCubemaps)
+	void TTiledDeferredLightingMat<MSAA_COUNT, FixedReflColor>::setReflectionProbes(const GPUReflProbeData& probeData, 
+		const SPtr<Texture>& reflectionCubemaps)
 	{
 		mInternal.setReflectionProbes(probeData, reflectionCubemaps);
 	}
 
 	template<int MSAA_COUNT, bool FixedReflColor>
-	void TTiledDeferredLightingMat<MSAA_COUNT, FixedReflColor>::setSkyReflections(const SPtr<Texture>& skyReflections)
+	void TTiledDeferredLightingMat<MSAA_COUNT, FixedReflColor>::setSky(const SPtr<Texture>& skyReflections, 
+		const SPtr<Texture>& skyIrradiance)
 	{
-		mInternal.setSkyReflections(skyReflections);
+		mInternal.setSky(skyReflections, skyIrradiance);
 	}
 
 	TiledDeferredLightingMaterials::TiledDeferredLightingMaterials()

@@ -3,7 +3,7 @@
 
 Technique
  : inherits("ReflectionCubemapCommon")
- : inherits("SHCommon")
+ : inherits("SHCommon") =
 {
 	Language = "HLSL11";
 	
@@ -17,7 +17,7 @@ Technique
 			{
 				SHVector5RGB coeffs;
 				float weight;
-			}
+			};
 
 			StructuredBuffer<SHCoeffsAndWeight> gInput;
 			RWStructuredBuffer<SHVector5RGB> gOutput;

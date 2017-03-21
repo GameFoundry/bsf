@@ -60,6 +60,7 @@ Technique
 			{
 				float2 scaledUV = input.uv0 * 2.0f - 1.0f;
 				float3 dir = getDirFromCubeFace(gCubeFace, scaledUV);
+				dir = normalize(dir);
 				
 				SHVector5 shBasis = SHBasis5(dir);
 								

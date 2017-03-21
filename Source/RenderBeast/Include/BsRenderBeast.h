@@ -254,6 +254,7 @@ namespace bs
 		Skybox* mSkybox;
 		SPtr<Texture> mSkyboxTexture;
 		SPtr<Texture> mSkyboxFilteredReflections;
+		SPtr<Texture> mSkyboxIrradiance;
 
 		SPtr<Texture> mPreintegratedEnvBRDF;
 		GPULightData* mGPULightData;

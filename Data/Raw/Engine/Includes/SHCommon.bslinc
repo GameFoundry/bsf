@@ -68,6 +68,17 @@ Technique : base("SHCommon") =
 				lhs.v6 *= rhs.v6;
 			}	
 			
+			void SHMultiply(inout SHVector5 lhs, float rhs)
+			{
+				lhs.v0 *= rhs;
+				lhs.v1 *= rhs;
+				lhs.v2 *= rhs;
+				lhs.v3 *= rhs;
+				lhs.v4 *= rhs;
+				lhs.v5 *= rhs;
+				lhs.v6 *= rhs;
+			}				
+			
 			SHVector5 SHBasis5(float3 dir)
 			{
 				float x = dir.x;
@@ -109,7 +120,7 @@ Technique : base("SHCommon") =
 				o.v4[1] = -1.770130f * y * z * (3.0f * x2 - y2);
 				o.v4[2] =  0.946175f * y * x * (-1.0f + 7.0f * z2);
 				o.v4[3] = -0.669046f * y * z * (-3.0f + 7.0f * z2);
-				o.v5[0] =  (105.0f * z4 - 90.0f * z2 + 9.0f) / 9.02703f;
+				o.v5[0] =  (105.0f * z4 - 90.0f * z2 + 9.0f) / 28.359261f;
 				o.v5[1] = -0.669046f * x * z * (-3.0f + 7.0f * z2);
 				o.v5[2] =  0.473087f * (x2 - y2) * (-1.0f + 7.0f * z2);
 				o.v5[3] = -1.770130f * x * z * (x2 - 3.0f * y2);

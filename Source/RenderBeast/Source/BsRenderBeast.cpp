@@ -122,6 +122,7 @@ namespace bs { namespace ct
 		mReflCubemapArrayTex = nullptr;
 		mSkyboxTexture = nullptr;
 		mSkyboxFilteredReflections = nullptr;
+		mSkyboxIrradiance = nullptr;
 
 		PostProcessing::shutDown();
 		GpuResourcePool::shutDown();
@@ -551,6 +552,7 @@ namespace bs { namespace ct
 			mSkyboxTexture = skyTex;
 
 		mSkyboxFilteredReflections = nullptr;
+		mSkyboxIrradiance = nullptr;
 	}
 
 	void RenderBeast::notifySkyboxTextureChanged(Skybox* skybox)
@@ -561,6 +563,7 @@ namespace bs { namespace ct
 		{
 			mSkyboxTexture = skybox->getTexture();
 			mSkyboxFilteredReflections = nullptr;
+			mSkyboxIrradiance = nullptr;
 		}
 	}
 
@@ -777,8 +780,6 @@ namespace bs { namespace ct
 
 		gCoreThread().queueCommand(std::bind(&RenderBeast::renderAllCore, this, gTime().getTime(), gTime().getFrameDelta()));
 	}
-
-	static SPtr<Texture> dbgSkyTex;
 
 	void RenderBeast::renderAllCore(float time, float delta)
 	{
@@ -1039,7 +1040,7 @@ namespace bs { namespace ct
 
 		lightingMat->setLights(*mGPULightData);
 		lightingMat->setReflectionProbes(*mGPUReflProbeData, mReflCubemapArrayTex);
-		lightingMat->setSkyReflections(mSkyboxFilteredReflections);
+		lightingMat->setSky(mSkyboxFilteredReflections, mSkyboxIrradiance);
 
 		lightingMat->execute(renderTargets, perCameraBuffer, mPreintegratedEnvBRDF, viewInfo->renderWithNoLighting());
 
@@ -1329,7 +1330,7 @@ namespace bs { namespace ct
 				// Note: Consider pruning the reflection cubemap array if empty slot count becomes too high
 			}
 
-			// Get reflections for skybox if needed/available
+			// Get skybox image-based lighting textures if needed/available
 			if (mSkybox != nullptr && mSkyboxTexture != nullptr)
 			{
 				// If haven't assigned them already, do it now
@@ -1346,9 +1347,31 @@ namespace bs { namespace ct
 						ReflectionCubemapCache::instance().setCachedTexture(mSkybox->getUUID(), mSkyboxFilteredReflections);
 					}
 				}
+
+				if(mSkyboxIrradiance == nullptr)
+				{
+					// TODO - Not uisng cache
+
+
+					TEXTURE_DESC irradianceCubemapDesc;
+					irradianceCubemapDesc.type = TEX_TYPE_CUBE_MAP;
+					irradianceCubemapDesc.format = PF_FLOAT_R11G11B10;
+					irradianceCubemapDesc.width = 32;
+					irradianceCubemapDesc.height = 32;
+					irradianceCubemapDesc.numMips = 0;
+					irradianceCubemapDesc.usage = TU_STATIC | TU_RENDERTARGET;
+
+					mSkyboxIrradiance = Texture::create(irradianceCubemapDesc);
+
+					ReflectionProbes::filterCubemapForIrradiance(mSkyboxFilteredReflections, mSkyboxIrradiance);
+					//ReflectionCubemapCache::instance().setCachedTexture(mSkybox->getUUID(), mSkyboxFilteredReflections);
+				}
 			}
 			else
+			{
 				mSkyboxFilteredReflections = nullptr;
+				mSkyboxIrradiance = nullptr;
+			}
 
 		}
 		bs_frame_clear();
