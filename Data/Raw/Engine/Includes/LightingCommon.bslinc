@@ -18,7 +18,7 @@ Technique
 				float3 position;
 				float radius;
 				float3 direction;
-				float intensity;
+				float luminance;
 				float3 spotAngles;
 				float radiusSqrdInv;
 				float3 color;
@@ -76,23 +76,23 @@ Technique
 				return color * (1.0f / PI);
 			}
 			
-			float getSpotAttenuation(float3 worldPosToLight, float3 direction, float3 angles)
+			float getSpotAttenuation(float3 toLight, float3 direction, float3 angles)
 			{
-				float output = saturate((dot(-worldPosToLight, direction) - angles.y) * angles.z);
+				float output = saturate((dot(-toLight, direction) - angles.y) * angles.z);
 				return output * output;
 			}			
 			
 			float3 getDirLightContibution(SurfaceData surfaceData, LightData lightData)
 			{
-				return lightData.color * lightData.intensity;
+				return lightData.color * lightData.luminance;
 			}
 			
-			float3 getPointLightContribution(float3 L, float3 worldPosition, SurfaceData surfaceData, LightData lightData)
+			float3 getPointLightContribution(float3 toLight, SurfaceData surfaceData, LightData lightData)
 			{
 				float3 N = surfaceData.worldNormal.xyz;
 				
-				float distanceSqrd = dot(L, L);
-				float distanceAttenuation = 1/(distanceSqrd + 1);
+				float distanceSqrd = dot(toLight, toLight);
+				float distanceAttenuation = 1.0f / max(distanceSqrd, 0.01f*0.01f);
 				
 				float radiusAttenuation = distanceSqrd * lightData.radiusSqrdInv;
 				radiusAttenuation *= radiusAttenuation;
@@ -100,13 +100,13 @@ Technique
 				radiusAttenuation *= radiusAttenuation;
 
 				float attenuation = distanceAttenuation * radiusAttenuation;
-				return lightData.color * lightData.intensity * attenuation;
+				return lightData.color * lightData.luminance * attenuation;
 			}
 			
-			float3 getSpotLightContribution(float3 L, float3 worldPosition, SurfaceData surfaceData, LightData lightData)
+			float3 getSpotLightContribution(float3 toLight, SurfaceData surfaceData, LightData lightData)
 			{
-				float3 pointLightContribution = getPointLightContribution(L, worldPosition, surfaceData, lightData);
-				float spotFalloff = getSpotAttenuation(L, lightData.direction, lightData.spotAngles);
+				float3 pointLightContribution = getPointLightContribution(toLight, surfaceData, lightData);
+				float spotFalloff = getSpotAttenuation(toLight, lightData.direction, lightData.spotAngles);
 				
 				return pointLightContribution * spotFalloff;
 			}
@@ -165,11 +165,10 @@ Technique
                     {
                         uint lightIdx = gLightIndices[i];
                         
-						float3 L = gLights[lightIdx].position - worldPos;
-						L = normalize(L);
-						
-						float3 lightContrib = getPointLightContribution(L, worldPos, surfaceData, gLights[lightIdx]);
+						float3 toLight = gLights[lightIdx].position - worldPos;
+						float3 lightContrib = getPointLightContribution(toLight, surfaceData, gLights[lightIdx]);
 
+						float3 L = normalize(toLight);
 						float NoL = saturate(dot(N, L));
 						lightContribution += lightContrib * NoL;
                     }
@@ -178,11 +177,10 @@ Technique
                     {
                         uint lightIdx = gLightIndices[i];
 						
-						float3 L = gLights[lightIdx].position - worldPos;
-						L = normalize(L);
+						float3 toLight = gLights[lightIdx].position - worldPos;
+                        float3 lightContrib = getSpotLightContribution(toLight, surfaceData, gLights[lightIdx]);
 						
-                        float3 lightContrib = getSpotLightContribution(L, worldPos, surfaceData, gLights[lightIdx]);
-						
+						float3 L = normalize(toLight);
 						float NoL = saturate(dot(N, L));
 						lightContribution += lightContrib * NoL;
                     }
@@ -218,7 +216,7 @@ Technique
 				vec3 position;
 				float radius;
 				vec3 direction;
-				float intensity;
+				float luminance;
 				vec3 spotAngles;
 				float radiusSqrdInv;
 				vec3 color;
@@ -270,7 +268,7 @@ Technique
 				vec3 L = -lightData.direction;
 				
 				float NoL = clamp(dot(N, L), 0.0, 1.0); // TODO - Add bias here?
-				return lightData.color * lightData.intensity * NoL;
+				return lightData.color * lightData.luminance * NoL;
 			}
 			
 			vec3 getPointLightContribution(vec3 L, vec3 worldPosition, SurfaceData surfaceData, LightData lightData)
@@ -289,7 +287,7 @@ Technique
 				radiusAttenuation *= radiusAttenuation;
 				
 				float attenuation = distanceAttenuation * radiusAttenuation;
-				return lightData.color * lightData.intensity * ((NoL * attenuation));
+				return lightData.color * lightData.luminance * ((NoL * attenuation));
 			}
 			
 			vec3 getPointLightContribution(vec3 worldPosition, SurfaceData surfaceData, LightData lightData)

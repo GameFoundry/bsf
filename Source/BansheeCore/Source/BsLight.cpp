@@ -55,7 +55,7 @@ namespace bs
 		_markCoreDirty(); 
 	}
 
-	float LightBase::getRadiance() const
+	float LightBase::getLuminance() const
 	{
 		switch (mType)
 		{
@@ -78,8 +78,8 @@ namespace bs
 	void LightBase::updatePhysicallyCorrectRange()
 	{
 		// When lower than this attenuation light influence is assumed to be zero
-		const float minAttenuation = 0.05f;
-		mRange = sqrt(std::max(0.0f, mIntensity / minAttenuation - 1.0f));
+		const float minAttenuation = 0.2f;
+		mRange = sqrt(std::max(0.0f, getLuminance() / minAttenuation));
 
 		updateBounds();
 	}

@@ -105,7 +105,7 @@ namespace bs
 		void setPhysicallyBasedAttenuation(bool enabled);
 
 		/**
-		 * Gets the power of the light source. This is luminous flux for point & spot lights, and radiance for directional 
+		 * Gets the power of the light source. This is luminous flux for point & spot lights, and luminance for directional 
 		 * lights.
 		 */
 		float getIntensity() const { return mIntensity; }
@@ -139,13 +139,13 @@ namespace bs
 		Sphere getBounds() const { return mBounds; }
 
 		/**
-		 * Returns the radiance of the light source. This is the value that should be used in lighting equations.
+		 * Returns the luminance of the light source. This is the value that should be used in lighting equations.
 		 *
 		 * @note	
 		 * Ignores the light direction, therefore caller must ensure to properly handle non-uniform emitters like spot 
 		 * lights.
 		 */
-		float getRadiance() const;
+		float getLuminance() const;
 
 		/**	Checks whether the light should be rendered or not. */
 		bool getIsActive() const { return mIsActive; }

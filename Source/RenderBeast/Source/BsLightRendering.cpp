@@ -31,7 +31,7 @@ namespace bs { namespace ct
 		output.position = mInternal->getPosition();
 		output.radius = mInternal->getBounds().getRadius();
 		output.direction = mInternal->getRotation().zAxis();
-		output.intensity = mInternal->getIntensity();
+		output.luminance = mInternal->getLuminance();
 		output.spotAngles.x = spotAngle.valueRadians();
 		output.spotAngles.y = Math::cos(output.spotAngles.x);
 		output.spotAngles.z = 1.0f / (Math::cos(spotFalloffAngle) - output.spotAngles.y);

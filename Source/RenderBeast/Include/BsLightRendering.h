@@ -19,7 +19,7 @@ namespace bs { namespace ct
 		Vector3 position;
 		float radius;
 		Vector3 direction;
-		float intensity;
+		float luminance;
 		Vector3 spotAngles;
 		float radiusSqrdInv;
 		Vector3 color;
