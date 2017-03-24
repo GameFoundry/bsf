@@ -20,7 +20,7 @@ namespace bs
 	enum class LightType
 	{
 		Directional, 
-		Point, 
+		Radial, 
 		Spot
 	};
 
@@ -42,7 +42,7 @@ namespace bs
 	{
 	public:
 		LightBase();
-		LightBase(LightType type, Color color, float intensity, float range, 
+		LightBase(LightType type, Color color, float intensity, float attRadius, float srcRadius,
 			bool castsShadows, Degree spotAngle, Degree spotFalloffAngle);
 
 		virtual ~LightBase() { }
@@ -79,40 +79,48 @@ namespace bs
 		/**	Sets the color emitted from the light. */
 		void setColor(const Color& color) { mColor = color; _markCoreDirty(); }
 
-		/**	Returns the maximum range of the light. Light will not affect any geometry past that point. */
-		float getRange() const { return mRange; }
+		/**	@see setAttenuationRadius */
+		float getAttenuationRadius() const { return mAttRadius; }
 
 		/**
-		 * Sets the maximum range of the light. Light will not affect any geometry past that point. Value is ignored if
-		 * physically based attenuation is active.
-		 *
-		 * @note	Normally you want to set this at a point where light intensity is too low due to attenuation.
+		 * Range at which the light contribution fades out to zero. Use setUseAutoAttenuation to provide a radius
+		 * automatically dependant on light intensity. The radius will cut-off light contribution and therefore manually set
+		 * very small radius can end up being very physically incorrect.
 		 */
-		void setRange(float range);
+		void setAttenuationRadius(float radius);
 
-		/** 
-		 * Checks is physically based attenuation active. If true the range and attenuation of the light are controlled
-		 * by inverse square of distance. If false then the user is allowed to set the range and attenuation is adjusted
-		 * accordingly. 
-		 */
-		bool getPhysicallyBasedAttenuation() const { return mPhysCorrectAtten; }
-
-		/** 
-		 * Activates or deactivates physically based attenuation. If true the range and attenuation of the light are 
-		 * controlled by inverse square of distance. If false then the user is allowed to set the range and attenuation is 
-		 * adjusted accordingly. 
-		 */
-		void setPhysicallyBasedAttenuation(bool enabled);
+		/**	@see setSourceRadius */
+		float getSourceRadius() const { return mSourceRadius; }
 
 		/**
-		 * Gets the power of the light source. This is luminous flux for point & spot lights, and luminance for directional 
-		 * lights.
+		 * Radius of the light source. If non-zero then this light represents an area light, otherwise it is a punctual
+		 * light. Area lights have different attenuation then punctual lights, and their appearance in specular reflections
+		 * is realistic. Shape of the area light depends on light type:
+		 *  - For directional light the shape is a disc projected on the hemisphere on the horizon. This parameter
+		 *    represents angular radius (in degrees) of the disk and should be very small (think of how much space the Sun
+		 *    takes on the sky - roughly 0.5 degrees).
+		 *  - For radial light the shape is a sphere and the radius is the radius of the sphere.
+		 *  - For spot lights the shape is a disc oriented in the direction of the spot light and the radius is the radius
+		 *    of the disc.
 		 */
+		void setSourceRadius(float radius);
+
+		/** @see setUseAutoAttenuation */
+		bool getUseAutoAttenuation() const { return mAutoAttenuation; }
+
+		/** 
+		 * If enabled the attenuation radius will automatically be controlled in order to provide reasonable light radius, 
+		 * depending on its intensity.
+		 */
+		void setUseAutoAttenuation(bool enabled);
+
+		/** @see setIntensity */
 		float getIntensity() const { return mIntensity; }
 
 		/**
-		 * Sets the power of the light source. This will be luminous flux for point & spot lights, and radiance for 
-		 * directional lights.
+		 * Determines the power of the light source. This will be luminous flux for radial & spot lights, 
+		 * luminance for directional lights with no area, and illuminance for directional lights with area (non-zero source
+		 * radius).
 		 */
 		void setIntensity(float intensity);
 
@@ -141,9 +149,9 @@ namespace bs
 		/**
 		 * Returns the luminance of the light source. This is the value that should be used in lighting equations.
 		 *
-		 * @note	
-		 * Ignores the light direction, therefore caller must ensure to properly handle non-uniform emitters like spot 
-		 * lights.
+		 * @note
+		 * For point light sources this method returns luminous intensity and not luminance. We use the same method for both
+		 * as a convenience since in either case its used as a measure of intensity in lighting equations.
 		 */
 		float getLuminance() const;
 
@@ -164,7 +172,7 @@ namespace bs
 		void updateBounds();
 
 		/** Calculates maximum light range based on light intensity. */
-		void updatePhysicallyCorrectRange();
+		void updateAttenuationRange();
 
 		Vector3 mPosition; /**< World space position. */
 		Quaternion mRotation; /**< World space rotation. */
@@ -172,13 +180,14 @@ namespace bs
 		LightType mType; /**< Type of light that determines how are the rest of the parameters interpreted. */
 		bool mCastsShadows; /**< Determines whether the light casts shadows. */
 		Color mColor; /**< Color of the light. */
-		float mRange; /**< Cut off range for the light when rendering. */
-		float mIntensity; /**< Power of the light source. This will be luminous flux for point & spot lights, and radiance for directional lights. */
+		float mAttRadius; /**< Radius at which light intensity falls off to zero. */
+		float mSourceRadius; /**< Radius of the light source. If > 0 the light is an area light. */
+		float mIntensity; /**< Power of the light source. @see setIntensity. */
 		Degree mSpotAngle; /**< Total angle covered by a spot light. */
 		Degree mSpotFalloffAngle; /**< Spot light angle at which falloff starts. Must be smaller than total angle. */
 		bool mIsActive; /**< Whether the light should be rendered or not. */
 		Sphere mBounds; /**< Sphere that bounds the light area of influence. */
-		bool mPhysCorrectAtten; /**< Determines is physically based attentuation active. */
+		bool mAutoAttenuation; /**< Determines is attenuation radius is automatically determined. */
 	};
 
 	/** @} */
@@ -214,19 +223,20 @@ namespace bs
 		 *
 		 * @param[in]	type				Type of light that determines how are the rest of the parameters interpreted.
 		 * @param[in]	color				Color of the light.
-		 * @param[in]	intensity			Power of the light source. This will be luminous flux for point & spot lights, 
-		 *									and radiance for directional lights.
-		 * @param[in]	range				Cut off range for the light when rendering.
+		 * @param[in]	intensity			Power of the light source. This will be luminous flux for radial & spot lights, 
+		 *									luminance for directional lights with no area, and illuminance for directional 
+		 *									lights with area (non-zero source radius).
+		 * @param[in]	attRadius			Radius at which light's influence fades out to zero.
 		 * @param[in]	castsShadows		Determines whether the light casts shadows.
 		 * @param[in]	spotAngle			Total angle covered by a spot light.
 		 * @param[in]	spotFalloffAngle	Spot light angle at which falloff starts. Must be smaller than total angle.
 		 */
-		static SPtr<Light> create(LightType type = LightType::Point, Color color = Color::White,
-			float intensity = 100.0f, float range = 10.0f, bool castsShadows = false,
+		static SPtr<Light> create(LightType type = LightType::Radial, Color color = Color::White,
+			float intensity = 100.0f, float attRadius = 10.0f, bool castsShadows = false,
 			Degree spotAngle = Degree(45), Degree spotFalloffAngle = Degree(40));
 
 	protected:
-		Light(LightType type, Color color, float intensity, float range, 
+		Light(LightType type, Color color, float intensity, float attRadius, float srcRadius, 
 			bool castsShadows, Degree spotAngle, Degree spotFalloffAngle);
 
 		/** @copydoc CoreObject::createCore */
@@ -274,8 +284,8 @@ namespace bs
 	protected:
 		friend class bs::Light;
 
-		Light(LightType type, Color color, float intensity, 
-			float range, bool castsShadows, Degree spotAngle, Degree spotFalloffAngle);
+		Light(LightType type, Color color, float intensity, float attRadius, float srcRadius, bool castsShadows, 
+			  Degree spotAngle, Degree spotFalloffAngle);
 
 		/** @copydoc CoreObject::initialize */
 		void initialize() override;

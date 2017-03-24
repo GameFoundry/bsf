@@ -20,7 +20,7 @@ namespace bs
     class BS_CORE_EXPORT CLight : public Component
     {
     public:
-		CLight(const HSceneObject& parent, LightType type = LightType::Point, Color color = Color::White, 
+		CLight(const HSceneObject& parent, LightType type = LightType::Radial, Color color = Color::White, 
 			float intensity = 100.0f, float range = 1.0f, bool castsShadows = false, Degree spotAngle = Degree(45), 
 			Degree spotFalloffAngle = Degree(40));
 
@@ -44,11 +44,17 @@ namespace bs
 	    /** @copydoc Light::setColor */
 		void setColor(const Color& color) { mInternal->setColor(color); }
 
-	    /** @copydoc Light::getRange */
-		float getRange() const { return mInternal->getRange(); }
+	    /** @copydoc Light::getAttenuationRadius */
+		float getAttenuationRadius() const { return mInternal->getAttenuationRadius(); }
 
-	    /** @copydoc Light::setRange */
-		void setRange(float range) { mInternal->setRange(range);; }
+	    /** @copydoc Light::setAttenuationRadius */
+		void setAttenuationRadius(float radius) { mInternal->setAttenuationRadius(radius); }
+
+		/** @copydoc Light::getSourceRadius */
+		float getSourceRadius() const { return mInternal->getSourceRadius(); }
+
+		/** @copydoc Light::setSourceRadius */
+		void setSourceRadius(float radius) { mInternal->setSourceRadius(radius); }
 
 	    /** @copydoc Light::getIntensity */
 		float getIntensity() const { return mInternal->getIntensity(); }
@@ -68,11 +74,11 @@ namespace bs
 		/** @copydoc Light::setSpotFalloffAngle */
 		void setSpotFalloffAngle(const Degree& spotAngle) { mInternal->setSpotFalloffAngle(spotAngle); }
 
-		/** @copydoc Light::getPhysicallyBasedAttenuation  */
-		bool getPhysicallyBasedAttenuation() const { return mInternal->getPhysicallyBasedAttenuation(); }
+		/** @copydoc Light::getUseAutoAttenuation  */
+		bool getUseAutoAttenuation() const { return mInternal->getUseAutoAttenuation(); }
 
-		/**  @copydoc Light::setPhysicallyBasedAttenuation  */
-		void setPhysicallyBasedAttenuation(bool enabled) { mInternal->setPhysicallyBasedAttenuation(enabled); }
+		/**  @copydoc Light::setUseAutoAttenuation  */
+		void setUseAutoAttenuation(bool enabled) { mInternal->setUseAutoAttenuation(enabled); }
 
 	    /** @copydoc Light::getBounds  */
 		Sphere getBounds() const;

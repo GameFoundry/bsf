@@ -47,8 +47,8 @@ namespace BansheeEditor
                     Gizmos.DrawLine(botLeft, botLeft + forward*5.0f);
                 }
                     break;
-                case LightType.Point:
-                    Gizmos.DrawWireSphere(position, light.Range);
+                case LightType.Radial:
+                    Gizmos.DrawWireSphere(position, light.AttenuationRadius);
 
                     break;
                 case LightType.Spot:
@@ -57,17 +57,17 @@ namespace BansheeEditor
                     Vector3 up = light.SceneObject.Rotation.Rotate(Vector3.YAxis);
                     Vector3 forward = light.SceneObject.Forward;
 
-                    float discRadius = light.Range*MathEx.Tan(light.SpotAngle*0.5f);
+                    float discRadius = light.AttenuationRadius * MathEx.Tan(light.SpotAngle*0.5f);
 
-                    Gizmos.DrawLine(position, position + forward * light.Range + up * discRadius);
-                    Gizmos.DrawLine(position, position + forward * light.Range - up * discRadius);
-                    Gizmos.DrawLine(position, position + forward * light.Range + right * discRadius);
-                    Gizmos.DrawLine(position, position + forward * light.Range - right * discRadius);
+                    Gizmos.DrawLine(position, position + forward * light.AttenuationRadius + up * discRadius);
+                    Gizmos.DrawLine(position, position + forward * light.AttenuationRadius - up * discRadius);
+                    Gizmos.DrawLine(position, position + forward * light.AttenuationRadius + right * discRadius);
+                    Gizmos.DrawLine(position, position + forward * light.AttenuationRadius - right * discRadius);
 
-                    float falloffDiscRadius = light.Range * MathEx.Tan(light.SpotFalloffAngle * 0.5f);
+                    float falloffDiscRadius = light.AttenuationRadius * MathEx.Tan(light.SpotFalloffAngle * 0.5f);
 
-                    Gizmos.DrawWireDisc(position + forward * light.Range, forward, discRadius);
-                    Gizmos.DrawWireDisc(position + forward * light.Range, forward, falloffDiscRadius);
+                    Gizmos.DrawWireDisc(position + forward * light.AttenuationRadius, forward, discRadius);
+                    Gizmos.DrawWireDisc(position + forward * light.AttenuationRadius, forward, falloffDiscRadius);
                 }
                     break;
             }

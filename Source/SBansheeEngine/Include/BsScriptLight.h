@@ -47,14 +47,17 @@ namespace bs
 		static bool internal_getCastsShadow(ScriptLight* thisPtr);
 		static void internal_setCastsShadow(ScriptLight* thisPtr, bool castsShadow);
 
-		static bool internal_getPhysicallyBasedAttenuation(ScriptLight* thisPtr);
-		static void internal_setPhysicallyBasedAttenuation(ScriptLight* thisPtr, bool value);
+		static bool internal_getUseAutoAttenuation(ScriptLight* thisPtr);
+		static void internal_setUseAutoAttenuation(ScriptLight* thisPtr, bool value);
 
 		static void internal_getColor(ScriptLight* thisPtr, Color* color);
 		static void internal_setColor(ScriptLight* thisPtr, Color color);
 
-		static float internal_getRange(ScriptLight* thisPtr);
-		static void internal_setRange(ScriptLight* thisPtr, float range);
+		static float internal_getAttenuationRadius(ScriptLight* thisPtr);
+		static void internal_setAttenuationRadius(ScriptLight* thisPtr, float radius);
+
+		static float internal_getSourceRadius(ScriptLight* thisPtr);
+		static void internal_setSourceRadius(ScriptLight* thisPtr, float radius);
 
 		static float internal_getIntensity(ScriptLight* thisPtr);
 		static void internal_setIntensity(ScriptLight* thisPtr, float intensity);

@@ -291,12 +291,7 @@ namespace bs
         lightSO->setPosition(Vector3(0.1f, 0.0f, 0.0f));
 
         HLight light = lightSO->addComponent<CLight>();
-
-        // Disable physically based attentuation because we want to set our own range
-        light->setPhysicallyBasedAttenuation(false);
-
-	    light->setRange(10.0f);
-        light->setIntensity(10.0f);
+        light->setIntensity(2.0f);
 
         /************************************************************************/
         /* 									SKYBOX                       		*/

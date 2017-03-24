@@ -12,7 +12,7 @@ namespace BansheeEngine
     /// </summary>
     public enum LightType // Note: Must match C++ enum LightType
     {
-        Directional, Point, Spot
+        Directional, Radial, Spot
     }
 
     /// <summary>
@@ -38,10 +38,16 @@ namespace BansheeEngine
             set { Internal_SetColor(mCachedPtr, value); }
         }
 
-        internal float Range
+        internal float AttenuationRadius
         {
-            get { return Internal_GetRange(mCachedPtr); }
-            set { Internal_SetRange(mCachedPtr, value); }
+            get { return Internal_GetAttenuationRadius(mCachedPtr); }
+            set { Internal_SetAttenuationRadius(mCachedPtr, value); }
+        }
+
+        internal float SourceRadius
+        {
+            get { return Internal_GetSourceRadius(mCachedPtr); }
+            set { Internal_SetSourceRadius(mCachedPtr, value); }
         }
 
         internal float Intensity
@@ -68,10 +74,10 @@ namespace BansheeEngine
             set { Internal_SetCastsShadow(mCachedPtr, value); }
         }
 
-        internal bool PhysicallyBasedAttenuation
+        internal bool UseAutoAttenuation
         {
-            get { return Internal_GetPhysicallyBasedAttenuation(mCachedPtr); }
-            set { Internal_SetPhysicallyBasedAttenuation(mCachedPtr, value); }
+            get { return Internal_GetUseAutoAttenuation(mCachedPtr); }
+            set { Internal_SetUseAutoAttenuation(mCachedPtr, value); }
         }
 
         internal Sphere Bounds
@@ -112,9 +118,13 @@ namespace BansheeEngine
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetType(IntPtr instance, LightType value);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern float Internal_GetRange(IntPtr instance);
+        private static extern float Internal_GetAttenuationRadius(IntPtr instance);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetRange(IntPtr instance, float value);
+        private static extern void Internal_SetAttenuationRadius(IntPtr instance, float value);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern float Internal_GetSourceRadius(IntPtr instance);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetSourceRadius(IntPtr instance, float value);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern float Internal_GetIntensity(IntPtr instance);
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -128,9 +138,9 @@ namespace BansheeEngine
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetCastsShadow(IntPtr instance, bool value);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern bool Internal_GetPhysicallyBasedAttenuation(IntPtr instance);
+        private static extern bool Internal_GetUseAutoAttenuation(IntPtr instance);
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetPhysicallyBasedAttenuation(IntPtr instance, bool value);
+        private static extern void Internal_SetUseAutoAttenuation(IntPtr instance, bool value);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern float Internal_GetSpotAngle(IntPtr instance);
         [MethodImpl(MethodImplOptions.InternalCall)]

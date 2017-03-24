@@ -17,11 +17,12 @@ namespace BansheeEditor
     {
         private GUIEnumField lightTypeField = new GUIEnumField(typeof(LightType), new LocEdString("Light type"));
         private GUIColorField colorField = new GUIColorField(new LocEdString("Color"));
-        private GUIFloatField rangeField = new GUIFloatField(new LocEdString("Range"));
+        private GUIFloatField attRadiusField = new GUIFloatField(new LocEdString("Attenuation radius"));
+        private GUIFloatField sourceRadiusField = new GUIFloatField(new LocEdString("Source radius"));
         private GUIFloatField intensityField = new GUIFloatField(new LocEdString("Intensity"));
         private GUISliderField spotAngleField = new GUISliderField(1, 180, new LocEdString("Spot angle"));
         private GUISliderField spotFalloffAngleField = new GUISliderField(1, 180, new LocEdString("Spot falloff angle"));
-        private GUIToggleField physBasedAttenField = new GUIToggleField(new LocEdString("Physically based attenuation"));
+        private GUIToggleField autoAttenuationField = new GUIToggleField(new LocEdString("Use auto. attenuation"));
         private GUIToggleField castShadowField = new GUIToggleField(new LocEdString("Cast shadow"));
 
         private InspectableState modifyState;
@@ -37,7 +38,7 @@ namespace BansheeEditor
                 {
                     light.Type = (LightType)x;
 
-                    ToggleTypeSpecificFields((LightType) x, light.PhysicallyBasedAttenuation);
+                    ToggleTypeSpecificFields((LightType) x, light.UseAutoAttenuation);
                 };
 
                 colorField.OnChanged += x =>
@@ -47,9 +48,13 @@ namespace BansheeEditor
                     ConfirmModify();
                 };
 
-                rangeField.OnChanged += x => { light.Range = x; MarkAsModified(); };
-                rangeField.OnConfirmed += ConfirmModify;
-                rangeField.OnFocusLost += ConfirmModify;
+                attRadiusField.OnChanged += x => { light.AttenuationRadius = x; MarkAsModified(); };
+                attRadiusField.OnConfirmed += ConfirmModify;
+                attRadiusField.OnFocusLost += ConfirmModify;
+
+                sourceRadiusField.OnChanged += x => { light.SourceRadius = x; MarkAsModified(); };
+                sourceRadiusField.OnConfirmed += ConfirmModify;
+                sourceRadiusField.OnFocusLost += ConfirmModify;
 
                 intensityField.OnChanged += x => { light.Intensity = x; MarkAsModified(); };
                 intensityField.OnConfirmed += ConfirmModify;
@@ -68,9 +73,9 @@ namespace BansheeEditor
                     ConfirmModify();
                 };
 
-                physBasedAttenField.OnChanged += x =>
+                autoAttenuationField.OnChanged += x =>
                 {
-                    light.PhysicallyBasedAttenuation = x;
+                    light.UseAutoAttenuation = x;
                     ToggleTypeSpecificFields(light.Type, x);
                     MarkAsModified();
                     ConfirmModify();
@@ -79,13 +84,14 @@ namespace BansheeEditor
                 Layout.AddElement(lightTypeField);
                 Layout.AddElement(colorField);
                 Layout.AddElement(intensityField);
-                Layout.AddElement(rangeField);
+                Layout.AddElement(attRadiusField);
+                Layout.AddElement(sourceRadiusField);
                 Layout.AddElement(spotAngleField);
                 Layout.AddElement(spotFalloffAngleField);
-                Layout.AddElement(physBasedAttenField);
+                Layout.AddElement(autoAttenuationField);
                 Layout.AddElement(castShadowField);
 
-                ToggleTypeSpecificFields(light.Type, light.PhysicallyBasedAttenuation);
+                ToggleTypeSpecificFields(light.Type, light.UseAutoAttenuation);
             }
         }
 
@@ -97,16 +103,17 @@ namespace BansheeEditor
                 return InspectableState.NotModified;
 
             LightType lightType = light.Type;
-            if (lightTypeField.Value != (ulong)lightType || physBasedAttenField.Value != light.PhysicallyBasedAttenuation)
-                ToggleTypeSpecificFields(lightType, light.PhysicallyBasedAttenuation);
+            if (lightTypeField.Value != (ulong)lightType || autoAttenuationField.Value != light.UseAutoAttenuation)
+                ToggleTypeSpecificFields(lightType, light.UseAutoAttenuation);
 
             lightTypeField.Value = (ulong)lightType;
             colorField.Value = light.Color;
             intensityField.Value = light.Intensity;
-            rangeField.Value = light.Range;
+            attRadiusField.Value = light.AttenuationRadius;
+            sourceRadiusField.Value = light.SourceRadius;
             spotAngleField.Value = light.SpotAngle.Degrees;
             spotFalloffAngleField.Value = light.SpotFalloffAngle.Degrees;
-            physBasedAttenField.Value = light.PhysicallyBasedAttenuation;
+            autoAttenuationField.Value = light.UseAutoAttenuation;
             castShadowField.Value = light.CastsShadow;
 
             InspectableState oldState = modifyState;
@@ -125,24 +132,24 @@ namespace BansheeEditor
         {
             if (type == LightType.Directional)
             {
-                rangeField.Active = false;
+                attRadiusField.Active = false;
                 spotAngleField.Active = false;
                 spotFalloffAngleField.Active = false;
-                physBasedAttenField.Active = false;
+                autoAttenuationField.Active = false;
             }
-            else if (type == LightType.Point)
+            else if (type == LightType.Radial)
             {
-                rangeField.Active = !physBasedAttenuation;
+                attRadiusField.Active = !physBasedAttenuation;
                 spotAngleField.Active = false;
                 spotFalloffAngleField.Active = false;
-                physBasedAttenField.Active = true;
+                autoAttenuationField.Active = true;
             }
             else
             {
-                rangeField.Active = !physBasedAttenuation;
+                attRadiusField.Active = !physBasedAttenuation;
                 spotAngleField.Active = true;
                 spotFalloffAngleField.Active = true;
-                physBasedAttenField.Active = true;
+                autoAttenuationField.Active = true;
             }
         }
 

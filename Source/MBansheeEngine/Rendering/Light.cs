@@ -44,17 +44,36 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Maximum range of the light. Light will not affect any geometry past that point. Range is automatically 
-        /// calculated from intensity if <see cref="PhysicallyBasedAttenuation"/> is turned on.
+        /// Range at which the light contribution fades out to zero. Use <see cref="UseAutoAttenuation"/> to provide
+        /// a radius automatically dependant on light intensity. The radius will cut-off light contribution and therefore
+        /// manually set very small radius can end up being very physically incorrect.
         /// </summary>
-        public float Range
+        public float AttenuationRadius
         {
-            get { return _nativeLight.Range; }
-            set { _nativeLight.Range = value; serializableData.range = value; }
+            get { return _nativeLight.AttenuationRadius; }
+            set { _nativeLight.AttenuationRadius = value; serializableData.attenuationRadius = value; }
         }
 
         /// <summary>
-        /// Power of the light source. This is luminous flux for point & spot lights, and radiance for directional lights.
+        /// Radius of the light source. If non-zero then this light represents an area light, otherwise it is a punctual
+        /// light. Area lights have different attenuation then punctual lights, and their appearance in specular reflections
+        /// is realistic. Shape of the area light depends on light type:
+        ///  - For directional light the shape is a disc projected on the hemisphere on the horizon. This parameter
+        ///    represents angular radius (in degrees) of the disk and should be very small (think of how much space the Sun
+        ///    takes on the sky - roughly 0.5 degrees).
+        ///  - For radial light the shape is a sphere and the radius is the radius of the sphere.
+        ///  - For spot lights the shape is a disc oriented in the direction of the spot light and the radius is the radius
+        ///    of the disc.
+        /// </summary>
+        public float SourceRadius
+        {
+            get { return _nativeLight.SourceRadius; }
+            set { _nativeLight.SourceRadius = value; serializableData.sourceRadius = value; }
+        }
+
+        /// <summary>
+        /// Determines the power of the light source.This will be luminous flux for radial & spot lights, luminance for
+        /// directional lights with no area, and illuminance for directional lights with area(non-zero source radius).
         /// </summary>
         public float Intensity
         {
@@ -82,14 +101,13 @@ namespace BansheeEngine
         }
 
         /// <summary>
-        /// Determines is the light attenuation handled in a physically correct way, or should the user have more artistic
-        /// control over it. If true the range and attenuation of the light are controlled by inverse square of distance. 
-        /// If false then the user is allowed to set the range and attenuation is adjusted accordingly. 
+        /// If enabled the <see cref="AttenuationRadius"/> property will automatically be controlled in order to provide
+        /// reasonable light radius, depending on its intensity.
         /// </summary>
-        public bool PhysicallyBasedAttenuation
+        public bool UseAutoAttenuation
         {
-            get { return _nativeLight.PhysicallyBasedAttenuation; }
-            set { _nativeLight.PhysicallyBasedAttenuation = value; serializableData.physicallyBasedAttenuation = value; }
+            get { return _nativeLight.UseAutoAttenuation; }
+            set { _nativeLight.UseAutoAttenuation = value; serializableData.useAutoAttenuation = value; }
         }
 
         /// <summary>
@@ -120,11 +138,12 @@ namespace BansheeEngine
             _nativeLight.Color = serializableData.color;
             _nativeLight.SpotAngle = serializableData.spotAngle;
             _nativeLight.SpotFalloffAngle = serializableData.spotFalloffAngle;
-            _nativeLight.Range = serializableData.range;
+            _nativeLight.AttenuationRadius = serializableData.attenuationRadius;
+            _nativeLight.SourceRadius = serializableData.sourceRadius;
             _nativeLight.Intensity = serializableData.intensity;
             _nativeLight.Type = serializableData.type;
             _nativeLight.CastsShadow = serializableData.castShadows;
-            _nativeLight.PhysicallyBasedAttenuation = serializableData.physicallyBasedAttenuation;
+            _nativeLight.UseAutoAttenuation = serializableData.useAutoAttenuation;
         }
 
         private void OnUpdate()
@@ -157,11 +176,12 @@ namespace BansheeEngine
             public Color color = Color.White;
             public Degree spotAngle = new Degree(45);
             public Degree spotFalloffAngle = new Degree(40);
-            public float range = 10.0f;
+            public float attenuationRadius = 10.0f;
+            public float sourceRadius = 0.0f;
             public float intensity = 5.0f;
-            public LightType type = LightType.Point;
+            public LightType type = LightType.Radial;
             public bool castShadows = false;
-            public bool physicallyBasedAttenuation = true;
+            public bool useAutoAttenuation = true;
         }
     }
 

@@ -22,11 +22,12 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(mType, 2)
 			BS_RTTI_MEMBER_PLAIN(mCastsShadows, 3)
 			BS_RTTI_MEMBER_PLAIN(mColor, 4)
-			BS_RTTI_MEMBER_PLAIN(mRange, 5)
+			BS_RTTI_MEMBER_PLAIN(mAttRadius, 5)
 			BS_RTTI_MEMBER_PLAIN(mIntensity, 6)
 			BS_RTTI_MEMBER_PLAIN(mSpotAngle, 7)
 			BS_RTTI_MEMBER_PLAIN(mSpotFalloffAngle, 8)
-			BS_RTTI_MEMBER_PLAIN(mPhysCorrectAtten, 9)
+			BS_RTTI_MEMBER_PLAIN(mAutoAttenuation, 9)
+			BS_RTTI_MEMBER_PLAIN(mSourceRadius, 10)
 		BS_END_RTTI_MEMBERS
 	public:
 		LightRTTI()

@@ -25,14 +25,16 @@ namespace bs
 		metaData.scriptClass->addInternalCall("Internal_SetType", &ScriptLight::internal_setType);
 		metaData.scriptClass->addInternalCall("Internal_GetCastsShadow", &ScriptLight::internal_getCastsShadow);
 		metaData.scriptClass->addInternalCall("Internal_SetCastsShadow", &ScriptLight::internal_setCastsShadow);
-		metaData.scriptClass->addInternalCall("Internal_GetPhysicallyBasedAttenuation", 
-			&ScriptLight::internal_getPhysicallyBasedAttenuation);
-		metaData.scriptClass->addInternalCall("Internal_SetPhysicallyBasedAttenuation", 
-			&ScriptLight::internal_setPhysicallyBasedAttenuation);
+		metaData.scriptClass->addInternalCall("Internal_GetUseAutoAttenuation", 
+			&ScriptLight::internal_getUseAutoAttenuation);
+		metaData.scriptClass->addInternalCall("Internal_SetUseAutoAttenuation", 
+			&ScriptLight::internal_setUseAutoAttenuation);
 		metaData.scriptClass->addInternalCall("Internal_GetColor", &ScriptLight::internal_getColor);
 		metaData.scriptClass->addInternalCall("Internal_SetColor", &ScriptLight::internal_setColor);
-		metaData.scriptClass->addInternalCall("Internal_GetRange", &ScriptLight::internal_getRange);
-		metaData.scriptClass->addInternalCall("Internal_SetRange", &ScriptLight::internal_setRange);
+		metaData.scriptClass->addInternalCall("Internal_GetAttenuationRadius", &ScriptLight::internal_getAttenuationRadius);
+		metaData.scriptClass->addInternalCall("Internal_SetAttenuationRadius", &ScriptLight::internal_setAttenuationRadius);
+		metaData.scriptClass->addInternalCall("Internal_GetSourceRadius", &ScriptLight::internal_getSourceRadius);
+		metaData.scriptClass->addInternalCall("Internal_SetSourceRadius", &ScriptLight::internal_setSourceRadius);
 		metaData.scriptClass->addInternalCall("Internal_GetIntensity", &ScriptLight::internal_getIntensity);
 		metaData.scriptClass->addInternalCall("Internal_SetIntensity", &ScriptLight::internal_setIntensity);
 		metaData.scriptClass->addInternalCall("Internal_GetSpotAngle", &ScriptLight::internal_getSpotAngle);
@@ -73,14 +75,14 @@ namespace bs
 		thisPtr->getInternal()->setCastsShadow(castsShadow);
 	}
 
-	bool ScriptLight::internal_getPhysicallyBasedAttenuation(ScriptLight* thisPtr)
+	bool ScriptLight::internal_getUseAutoAttenuation(ScriptLight* thisPtr)
 	{
-		return thisPtr->getInternal()->getPhysicallyBasedAttenuation();
+		return thisPtr->getInternal()->getUseAutoAttenuation();
 	}
 
-	void ScriptLight::internal_setPhysicallyBasedAttenuation(ScriptLight* thisPtr, bool value)
+	void ScriptLight::internal_setUseAutoAttenuation(ScriptLight* thisPtr, bool value)
 	{
-		thisPtr->getInternal()->setPhysicallyBasedAttenuation(value);
+		thisPtr->getInternal()->setUseAutoAttenuation(value);
 	}
 
 	void ScriptLight::internal_getColor(ScriptLight* thisPtr, Color* color)
@@ -93,14 +95,24 @@ namespace bs
 		thisPtr->getInternal()->setColor(color);
 	}
 
-	float ScriptLight::internal_getRange(ScriptLight* thisPtr)
+	float ScriptLight::internal_getAttenuationRadius(ScriptLight* thisPtr)
 	{
-		return thisPtr->getInternal()->getRange();
+		return thisPtr->getInternal()->getAttenuationRadius();
 	}
 
-	void ScriptLight::internal_setRange(ScriptLight* thisPtr, float range)
+	void ScriptLight::internal_setAttenuationRadius(ScriptLight* thisPtr, float radius)
 	{
-		thisPtr->getInternal()->setRange(range);
+		thisPtr->getInternal()->setAttenuationRadius(radius);
+	}
+
+	float ScriptLight::internal_getSourceRadius(ScriptLight* thisPtr)
+	{
+		return thisPtr->getInternal()->getSourceRadius();
+	}
+
+	void ScriptLight::internal_setSourceRadius(ScriptLight* thisPtr, float radius)
+	{
+		thisPtr->getInternal()->setSourceRadius(radius);
 	}
 
 	float ScriptLight::internal_getIntensity(ScriptLight* thisPtr)

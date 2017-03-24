@@ -346,10 +346,8 @@ namespace bs { namespace ct
 					float G = calcMicrofacetShadowingSmithGGX(m2, NoV, NoL);
 
 					// When we factor out G and F, then divide D by PDF, this is what's left
-					//float pdfFactor = 1.0f / NoH;
-
-					// Note: This is based on PDF: D * NoH / (4 * VoH), but I'm not sure where does the (4 * VoH) factor
-					// come from. I'm keeping it since it seems to look better.
+					// Note: This is based on PDF: D * NoH / (4 * VoH). (4 * VoH) factor comes from the Jacobian of the
+					// transformation from half vector to light vector
 					float pdfFactor = 4.0f * VoH / NoH;
 
 					if (NoL > 0.0f)

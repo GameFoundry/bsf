@@ -10,76 +10,105 @@
 namespace bs
 {
 	LightBase::LightBase()
-		: mPosition(BsZero), mRotation(BsIdentity), mType(LightType::Point), mCastsShadows(false), mColor(Color::White)
-		, mRange(10.0f), mIntensity(5.0f), mSpotAngle(45), mSpotFalloffAngle(35.0f), mIsActive(true), mPhysCorrectAtten(true)
+		: mPosition(BsZero), mRotation(BsIdentity), mType(LightType::Radial), mCastsShadows(false), mColor(Color::White)
+		, mAttRadius(10.0f), mSourceRadius(0.0f), mIntensity(5.0f), mSpotAngle(45), mSpotFalloffAngle(35.0f)
+		, mIsActive(true), mAutoAttenuation(true)
 	{
-		updatePhysicallyCorrectRange();
+		updateAttenuationRange();
 	}
 
-	LightBase::LightBase(LightType type, Color color,
-		float intensity, float range, bool castsShadows, Degree spotAngle, Degree spotFalloffAngle)
-		: mPosition(BsZero), mRotation(BsIdentity), mType(type), mCastsShadows(castsShadows), mColor(color), mRange(range)
-		, mIntensity(intensity), mSpotAngle(spotAngle), mSpotFalloffAngle(spotFalloffAngle), mIsActive(true)
-		, mPhysCorrectAtten(true)
+	LightBase::LightBase(LightType type, Color color, float intensity, float attRadius, float srcRadius, bool castsShadows, 
+		Degree spotAngle, Degree spotFalloffAngle)
+		: mPosition(BsZero), mRotation(BsIdentity), mType(type), mCastsShadows(castsShadows), mColor(color)
+		, mAttRadius(attRadius), mSourceRadius(srcRadius), mIntensity(intensity), mSpotAngle(spotAngle)
+		, mSpotFalloffAngle(spotFalloffAngle), mIsActive(true), mAutoAttenuation(true)
 	{
-		updatePhysicallyCorrectRange();
+		updateAttenuationRange();
 	}
 
-	void LightBase::setPhysicallyBasedAttenuation(bool enabled)
+	void LightBase::setUseAutoAttenuation(bool enabled)
 	{
-		mPhysCorrectAtten = enabled; 
+		mAutoAttenuation = enabled; 
 
 		if(enabled)
-			updatePhysicallyCorrectRange();
+			updateAttenuationRange();
 
 		_markCoreDirty();
 	}
 
-	void LightBase::setRange(float range)
+	void LightBase::setAttenuationRadius(float radius)
 	{
-		if (mPhysCorrectAtten)
+		if (mAutoAttenuation)
 			return;
 
-		mRange = range; 
+		mAttRadius = radius;
 		_markCoreDirty(); 
 		updateBounds();
+	}
+
+	void LightBase::setSourceRadius(float radius)
+	{
+		mSourceRadius = radius;
+		_markCoreDirty();
 	}
 
 	void LightBase::setIntensity(float intensity)
 	{
 		mIntensity = intensity; 
 
-		if (mPhysCorrectAtten)
-			updatePhysicallyCorrectRange();
+		if (mAutoAttenuation)
+			updateAttenuationRange();
 
 		_markCoreDirty(); 
 	}
 
 	float LightBase::getLuminance() const
 	{
+		float radius2 = mSourceRadius * mSourceRadius;
+		float pi2 = Math::PI * Math::PI;
+
 		switch (mType)
 		{
-		case LightType::Point:
-			return mIntensity / (4 * Math::PI);
+		case LightType::Radial:
+			if (mSourceRadius > 0.0f)
+				return mIntensity / (4 * radius2 * pi2); // Luminous flux -> luminance
+			else
+				return mIntensity / (4 * Math::PI); // Luminous flux -> luminous intensity
 		case LightType::Spot:
 		{
-			float cosTotalAngle = Math::cos(mSpotAngle);
-			float cosFalloffAngle = Math::cos(mSpotFalloffAngle);
+			if (mSourceRadius > 0.0f) 
+				return mIntensity / (radius2 * pi2); // Luminous flux -> luminance
+			else 
+			{
+				// Note: Consider using the simpler conversion I / PI to match with the area-light conversion
+				float cosTotalAngle = Math::cos(mSpotAngle);
+				float cosFalloffAngle = Math::cos(mSpotFalloffAngle);
 
-			return mIntensity / (Math::TWO_PI * (1.0f - (cosFalloffAngle + cosTotalAngle) * 0.5f));
+				// Luminous flux -> luminous intensity
+				return mIntensity / (Math::TWO_PI * (1.0f - (cosFalloffAngle + cosTotalAngle) * 0.5f));
+			}
 		}
 		case LightType::Directional:
-			return mIntensity;
+			if (mSourceRadius > 0.0f)
+			{
+				float angularDiameter = mSourceRadius * 2; // Assumed in degrees
+
+				// Use cone solid angle formulae to calculate disc solid angle
+				float solidAngle = Math::TWO_PI * (1 - cos(0.5f * angularDiameter * Math::DEG2RAD));
+				return mIntensity / solidAngle; // Illuminance -> luminance
+			}
+			else
+				return mIntensity; // In luminance units by default
 		default:
 			return 0.0f;
 		}
 	}
 
-	void LightBase::updatePhysicallyCorrectRange()
+	void LightBase::updateAttenuationRange()
 	{
 		// When lower than this attenuation light influence is assumed to be zero
 		const float minAttenuation = 0.2f;
-		mRange = sqrt(std::max(0.0f, getLuminance() / minAttenuation));
+		mAttRadius = sqrt(std::max(0.0f, getLuminance() / minAttenuation));
 
 		updateBounds();
 	}
@@ -91,19 +120,19 @@ namespace bs
 		case LightType::Directional:
 			mBounds = Sphere(mPosition, std::numeric_limits<float>::infinity());
 			break;
-		case LightType::Point:
-			mBounds = Sphere(mPosition, mRange);
+		case LightType::Radial:
+			mBounds = Sphere(mPosition, mAttRadius);
 			break;
 		case LightType::Spot:
 		{
 			// Note: We could use the formula for calculating the circumcircle of a triangle (after projecting the cone),
 			// but the radius of the sphere is the same as in the formula we use here, yet it is much simpler with no need
 			// to calculate multiple determinants. Neither are good approximations when cone angle is wide.
-			Vector3 offset(0, 0, mRange * 0.5f);
+			Vector3 offset(0, 0, mAttRadius * 0.5f);
 
 			// Direction along the edge of the cone, on the YZ plane (doesn't matter if we used XZ instead)
 			Degree angle = Math::clamp(mSpotAngle, Degree(-89), Degree(89));
-			Vector3 coneDir(0, Math::tan(angle)*mRange, mRange);
+			Vector3 coneDir(0, Math::tan(angle)*mAttRadius, mAttRadius);
 
 			// Distance between the "corner" of the cone and our center, must be the radius (provided the center is at
 			// the middle of the range)
@@ -122,9 +151,9 @@ namespace bs
 		
 	}
 
-	Light::Light(LightType type, Color color,
-		float intensity, float range, bool castsShadows, Degree spotAngle, Degree spotFalloffAngle)
-		: LightBase(type, color, intensity, range, castsShadows, spotAngle, spotFalloffAngle),
+	Light::Light(LightType type, Color color, float intensity, float attRadius, float srcRadius, bool castsShadows, 
+		Degree spotAngle, Degree spotFalloffAngle)
+		: LightBase(type, color, intensity, attRadius, srcRadius, castsShadows, spotAngle, spotFalloffAngle),
 		mLastUpdateHash(0)
 	{
 		// Calling virtual method is okay here because this is the most derived type
@@ -137,10 +166,10 @@ namespace bs
 	}
 
 	SPtr<Light> Light::create(LightType type, Color color,
-		float intensity, float range, bool castsShadows, Degree spotAngle, Degree spotFalloffAngle)
+		float intensity, float attRadius, bool castsShadows, Degree spotAngle, Degree spotFalloffAngle)
 	{
 		Light* handler = new (bs_alloc<Light>()) 
-			Light(type, color, intensity, range, castsShadows, spotAngle, spotFalloffAngle);
+			Light(type, color, intensity, attRadius, 0.0f, castsShadows, spotAngle, spotFalloffAngle);
 		SPtr<Light> handlerPtr = bs_core_ptr<Light>(handler);
 		handlerPtr->_setThisPtr(handlerPtr);
 		handlerPtr->initialize();
@@ -160,7 +189,7 @@ namespace bs
 	SPtr<ct::CoreObject> Light::createCore() const
 	{
 		ct::Light* handler = new (bs_alloc<ct::Light>())
-			ct::Light(mType, mColor, mIntensity, mRange, mCastsShadows, mSpotAngle, mSpotFalloffAngle);
+			ct::Light(mType, mColor, mIntensity, mAttRadius, mSourceRadius, mCastsShadows, mSpotAngle, mSpotFalloffAngle);
 		SPtr<ct::Light> handlerPtr = bs_shared_ptr<ct::Light>(handler);
 		handlerPtr->_setThisPtr(handlerPtr);
 
@@ -175,11 +204,12 @@ namespace bs
 		size += rttiGetElemSize(mType);
 		size += rttiGetElemSize(mCastsShadows);
 		size += rttiGetElemSize(mColor);
-		size += rttiGetElemSize(mRange);
+		size += rttiGetElemSize(mAttRadius);
+		size += rttiGetElemSize(mSourceRadius);
 		size += rttiGetElemSize(mIntensity);
 		size += rttiGetElemSize(mSpotAngle);
 		size += rttiGetElemSize(mSpotFalloffAngle);
-		size += rttiGetElemSize(mPhysCorrectAtten);
+		size += rttiGetElemSize(mAutoAttenuation);
 		size += rttiGetElemSize(mIsActive);
 		size += rttiGetElemSize(getCoreDirtyFlags());
 		size += rttiGetElemSize(mBounds);
@@ -192,11 +222,12 @@ namespace bs
 		dataPtr = rttiWriteElem(mType, dataPtr);
 		dataPtr = rttiWriteElem(mCastsShadows, dataPtr);
 		dataPtr = rttiWriteElem(mColor, dataPtr);
-		dataPtr = rttiWriteElem(mRange, dataPtr);
+		dataPtr = rttiWriteElem(mAttRadius, dataPtr);
+		dataPtr = rttiWriteElem(mSourceRadius, dataPtr);
 		dataPtr = rttiWriteElem(mIntensity, dataPtr);
 		dataPtr = rttiWriteElem(mSpotAngle, dataPtr);
 		dataPtr = rttiWriteElem(mSpotFalloffAngle, dataPtr);
-		dataPtr = rttiWriteElem(mPhysCorrectAtten, dataPtr);
+		dataPtr = rttiWriteElem(mAutoAttenuation, dataPtr);
 		dataPtr = rttiWriteElem(mIsActive, dataPtr);
 		dataPtr = rttiWriteElem(getCoreDirtyFlags(), dataPtr);
 		dataPtr = rttiWriteElem(mBounds, dataPtr);
@@ -236,8 +267,8 @@ namespace bs
 	const UINT32 Light::LIGHT_CONE_NUM_SLICES = 10;
 
 	Light::Light(LightType type, Color color,
-		float intensity, float range, bool castsShadows, Degree spotAngle, Degree spotFalloffAngle)
-		:LightBase(type, color, intensity, range, castsShadows, spotAngle, spotFalloffAngle), mRendererId(0)
+		float intensity, float attRadius, float srcRadius, bool castsShadows, Degree spotAngle, Degree spotFalloffAngle)
+		:LightBase(type, color, intensity, attRadius, srcRadius, castsShadows, spotAngle, spotFalloffAngle), mRendererId(0)
 	{
 
 	}
@@ -268,11 +299,12 @@ namespace bs
 		dataPtr = rttiReadElem(mType, dataPtr);
 		dataPtr = rttiReadElem(mCastsShadows, dataPtr);
 		dataPtr = rttiReadElem(mColor, dataPtr);
-		dataPtr = rttiReadElem(mRange, dataPtr);
+		dataPtr = rttiReadElem(mAttRadius, dataPtr);
+		dataPtr = rttiReadElem(mSourceRadius, dataPtr);
 		dataPtr = rttiReadElem(mIntensity, dataPtr);
 		dataPtr = rttiReadElem(mSpotAngle, dataPtr);
 		dataPtr = rttiReadElem(mSpotFalloffAngle, dataPtr);
-		dataPtr = rttiReadElem(mPhysCorrectAtten, dataPtr);
+		dataPtr = rttiReadElem(mAutoAttenuation, dataPtr);
 		dataPtr = rttiReadElem(mIsActive, dataPtr);
 		dataPtr = rttiReadElem(dirtyFlags, dataPtr);
 		dataPtr = rttiReadElem(mBounds, dataPtr);

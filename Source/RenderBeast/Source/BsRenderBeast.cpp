@@ -337,7 +337,7 @@ namespace bs { namespace ct
 		}
 		else
 		{
-			if (light->getType() == LightType::Point)
+			if (light->getType() == LightType::Radial)
 			{
 				UINT32 lightId = (UINT32)mRadialLights.size();
 				light->setRendererId(lightId);
@@ -360,7 +360,7 @@ namespace bs { namespace ct
 	{
 		UINT32 lightId = light->getRendererId();
 
-		if (light->getType() == LightType::Point)
+		if (light->getType() == LightType::Radial)
 			mPointLightWorldBounds[lightId] = light->getBounds();
 		else if(light->getType() == LightType::Spot)
 			mSpotLightWorldBounds[lightId] = light->getBounds();
@@ -386,7 +386,7 @@ namespace bs { namespace ct
 		}
 		else
 		{
-			if (light->getType() == LightType::Point)
+			if (light->getType() == LightType::Radial)
 			{
 				Light* lastLight = mRadialLights.back().getInternal();
 				UINT32 lastLightId = lastLight->getRendererId();
