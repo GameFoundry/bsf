@@ -107,7 +107,7 @@ Technique
 					for(uint i = lightOffset; i < lightEnd; ++i)
 					{
 						float4 lightPosition = mul(gMatView, float4(gLights[i].position, 1.0f));
-						float lightRadius = gLights[i].radius;
+						float lightRadius = gLights[i].attRadius;
 						
 						// Calculate distance from box to light
 						float3 distances = max(abs(lightPosition - cellCenter) - cellExtent, 0);
@@ -229,7 +229,7 @@ Technique
 					for(uint i = lightOffset; i < lightEnd; ++i)
 					{
 						vec4 lightPosition = gMatView * vec4(gLightsData[i].position, 1.0f);
-						float lightRadius = gLightsData[i].radius;
+						float lightRadius = gLightsData[i].attRadius;
 						
 						// Calculate distance from box to light
 						vec3 distances = max(abs(lightPosition.xyz - cellCenter) - cellExtent, 0);

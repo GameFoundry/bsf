@@ -161,10 +161,13 @@ Technique
 				lightOffsets.w = sTotalNumLights;
 				
 				float3 V = normalize(gViewOrigin - worldPosition);
+				float3 N = surfaceData.worldNormal.xyz;
+				float3 R = 2 * dot(V, N) * N - V;
+				float3 specR = getSpecularDominantDir(N, R, surfaceData.roughness);
 				
 				float4 directLighting = getDirectLighting(worldPosition, surfaceData, lightOffsets);
 				float3 indirectDiffuse = getSkyIndirectDiffuse(surfaceData.worldNormal) * surfaceData.albedo;
-				float3 imageBasedSpecular = getImageBasedSpecular(worldPosition, V, surfaceData);
+				float3 imageBasedSpecular = getImageBasedSpecular(worldPosition, V, specR, surfaceData);
 
 				float4 totalLighting = directLighting;
 				totalLighting.rgb += indirectDiffuse;
@@ -286,7 +289,7 @@ Technique
 					for (uint i = lightOffset; i < lightsEnd && i < MAX_LIGHTS; i += TILE_SIZE)
 					{
 						float4 lightPosition = mul(gMatView, float4(gLights[i].position, 1.0f));
-						float lightRadius = gLights[i].radius;
+						float lightRadius = gLights[i].attRadius;
 						
 						// Note: The cull method can have false positives. In case of large light bounds and small tiles, it
 						// can end up being quite a lot. Consider adding an extra heuristic to check a separating plane.
@@ -607,7 +610,7 @@ Technique
 					{
 						LightData lightData = gLightsData[i];
 						vec4 lightPosition = gMatView * vec4(lightData.position, 1.0f);
-						float lightRadius = lightData.radius;
+						float lightRadius = lightData.attRadius;
 						
 						bool lightInTile = true;
 					

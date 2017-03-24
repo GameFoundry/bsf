@@ -29,13 +29,14 @@ namespace bs { namespace ct
 		Color color = mInternal->getColor();
 
 		output.position = mInternal->getPosition();
-		output.radius = mInternal->getBounds().getRadius();
+		output.attRadius = mInternal->getBounds().getRadius();
+		output.srcRadius = mInternal->getSourceRadius();
 		output.direction = mInternal->getRotation().zAxis();
 		output.luminance = mInternal->getLuminance();
 		output.spotAngles.x = spotAngle.valueRadians();
 		output.spotAngles.y = Math::cos(output.spotAngles.x);
 		output.spotAngles.z = 1.0f / (Math::cos(spotFalloffAngle) - output.spotAngles.y);
-		output.radiusSqrdInv = 1.0f / (output.radius * output.radius);
+		output.attRadiusSqrdInv = 1.0f / (output.attRadius * output.attRadius);
 		output.color = Vector3(color.r, color.g, color.b);
 	}
 
@@ -373,43 +374,43 @@ namespace bs { namespace ct
 		return texture;
 	}
 
-	template<int MSAA_COUNT, bool FixedReflColor>
-	TTiledDeferredLightingMat<MSAA_COUNT, FixedReflColor>::TTiledDeferredLightingMat()
+	template<int MSAA_COUNT, bool CapturingReflections>
+	TTiledDeferredLightingMat<MSAA_COUNT, CapturingReflections>::TTiledDeferredLightingMat()
 		:mInternal(mMaterial, mParamsSet, MSAA_COUNT)
 	{
 
 	}
 
-	template<int MSAA_COUNT, bool FixedReflColor>
-	void TTiledDeferredLightingMat<MSAA_COUNT, FixedReflColor>::_initDefines(ShaderDefines& defines)
+	template<int MSAA_COUNT, bool CapturingReflections>
+	void TTiledDeferredLightingMat<MSAA_COUNT, CapturingReflections>::_initDefines(ShaderDefines& defines)
 	{
 		defines.set("TILE_SIZE", TiledDeferredLighting::TILE_SIZE);
 		defines.set("MSAA_COUNT", MSAA_COUNT);
-		defines.set("FIXED_REFLECTION_COLOR", FixedReflColor);
+		defines.set("CAPTURING_REFLECTIONS", CapturingReflections);
 	}
 
-	template<int MSAA_COUNT, bool FixedReflColor>
-	void TTiledDeferredLightingMat<MSAA_COUNT, FixedReflColor>::execute(const SPtr<RenderTargets>& gbuffer,
+	template<int MSAA_COUNT, bool CapturingReflections>
+	void TTiledDeferredLightingMat<MSAA_COUNT, CapturingReflections>::execute(const SPtr<RenderTargets>& gbuffer,
 		const SPtr<GpuParamBlockBuffer>& perCamera, const SPtr<Texture>& preintegratedGF, bool noLighting)
 	{
 		mInternal.execute(gbuffer, perCamera, preintegratedGF, noLighting);
 	}
 
-	template<int MSAA_COUNT, bool FixedReflColor>
-	void TTiledDeferredLightingMat<MSAA_COUNT, FixedReflColor>::setLights(const GPULightData& lightData)
+	template<int MSAA_COUNT, bool CapturingReflections>
+	void TTiledDeferredLightingMat<MSAA_COUNT, CapturingReflections>::setLights(const GPULightData& lightData)
 	{
 		mInternal.setLights(lightData);
 	}
 
-	template<int MSAA_COUNT, bool FixedReflColor>
-	void TTiledDeferredLightingMat<MSAA_COUNT, FixedReflColor>::setReflectionProbes(const GPUReflProbeData& probeData, 
+	template<int MSAA_COUNT, bool CapturingReflections>
+	void TTiledDeferredLightingMat<MSAA_COUNT, CapturingReflections>::setReflectionProbes(const GPUReflProbeData& probeData,
 		const SPtr<Texture>& reflectionCubemaps)
 	{
 		mInternal.setReflectionProbes(probeData, reflectionCubemaps);
 	}
 
-	template<int MSAA_COUNT, bool FixedReflColor>
-	void TTiledDeferredLightingMat<MSAA_COUNT, FixedReflColor>::setSky(const SPtr<Texture>& skyReflections, 
+	template<int MSAA_COUNT, bool CapturingReflections>
+	void TTiledDeferredLightingMat<MSAA_COUNT, CapturingReflections>::setSky(const SPtr<Texture>& skyReflections,
 		const SPtr<Texture>& skyIrradiance)
 	{
 		mInternal.setSky(skyReflections, skyIrradiance);
@@ -434,9 +435,9 @@ namespace bs { namespace ct
 			bs_delete(mInstances[i]);
 	}
 
-	ITiledDeferredLightingMat* TiledDeferredLightingMaterials::get(UINT32 msaa, bool fixedReflColor)
+	ITiledDeferredLightingMat* TiledDeferredLightingMaterials::get(UINT32 msaa, bool capturingReflections)
 	{
-		if (!fixedReflColor)
+		if (!capturingReflections)
 		{
 			if (msaa == 1)
 				return mInstances[0];

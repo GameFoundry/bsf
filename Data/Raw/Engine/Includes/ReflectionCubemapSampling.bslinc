@@ -135,10 +135,10 @@ Technique : base("ReflectionCubemapSampling") =
 				return lookupDir;
 			}
 			
-			float3 gatherReflectionRadiance(float3 worldPos, float3 dir, float roughness, uint probeOffset, uint numProbes)
+			float3 gatherReflectionRadiance(float3 worldPos, float3 dir, float roughness, float3 specularColor, uint probeOffset, uint numProbes)
 			{
-				#if FIXED_REFLECTION_COLOR
-					return float3(1.0f, 1.0f, 1.0f);
+				#if CAPTURING_REFLECTIONS
+					return specularColor;
 				#else
 				
 				float mipLevel = mapRoughnessToMipLevel(roughness, gReflCubemapNumMips);
@@ -192,7 +192,7 @@ Technique : base("ReflectionCubemapSampling") =
 				#endif
 			}
 			
-			float3 getImageBasedSpecular(float3 worldPos, float3 V, SurfaceData surfaceData)
+			float3 getImageBasedSpecular(float3 worldPos, float3 V, float3 R, SurfaceData surfaceData)
 			{
 				// See C++ code for generation of gPreintegratedEnvBRDF to see why this code works as is
 				float3 N = surfaceData.worldNormal.xyz;
@@ -201,9 +201,7 @@ Technique : base("ReflectionCubemapSampling") =
 				// Note: Using a fixed F0 value of 0.04 (plastic) for dielectrics, and using albedo as specular for conductors.
 				// For more customizability allow the user to provide separate albedo/specular colors for both types.
 				float3 specularColor = lerp(float3(0.04f, 0.04f, 0.04f), surfaceData.albedo.rgb, surfaceData.metalness);
-				
-				float3 R = 2 * dot(V, N) * N - V;
-				float3 radiance = gatherReflectionRadiance(worldPos, R, surfaceData.roughness, 0, 0);
+				float3 radiance = gatherReflectionRadiance(worldPos, R, surfaceData.roughness, specularColor, 0, 0);
 				
 				float2 envBRDF = gPreintegratedEnvBRDF.SampleLevel(gPreintegratedEnvBRDFSamp, float2(NoV, surfaceData.roughness), 0).rg;
 				

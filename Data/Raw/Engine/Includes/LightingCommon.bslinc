@@ -16,11 +16,12 @@ Technique
 			struct LightData
 			{
 				float3 position;
-				float radius;
+				float attRadius;
+				float srcRadius;
 				float3 direction;
 				float luminance;
 				float3 spotAngles;
-				float radiusSqrdInv;
+				float attRadiusSqrdInv;
 				float3 color;
 			};
 			
@@ -94,7 +95,8 @@ Technique
 				float distanceSqrd = dot(toLight, toLight);
 				float distanceAttenuation = 1.0f / max(distanceSqrd, 0.01f*0.01f);
 				
-				float radiusAttenuation = distanceSqrd * lightData.radiusSqrdInv;
+				// Window function to ensure the light contribution fades out to 0 at attenuation radius
+				float radiusAttenuation = distanceSqrd * lightData.attRadiusSqrdInv;
 				radiusAttenuation *= radiusAttenuation;
 				radiusAttenuation = saturate(1.0f - radiusAttenuation);
 				radiusAttenuation *= radiusAttenuation;
@@ -109,6 +111,19 @@ Technique
 				float spotFalloff = getSpotAttenuation(toLight, lightData.direction, lightData.spotAngles);
 				
 				return pointLightContribution * spotFalloff;
+			}
+			
+			// With microfacet BRDF the BRDF lobe is not centered around the reflected (mirror) direction.
+			// Because of NoL and shadow-masking terms the lobe gets shifted toward the normal as roughness
+			// increases. This is called the "off-specular peak". We approximate it using this function.
+			float3 getSpecularDominantDir(float3 N, float3 R, float roughness)
+			{
+				// Note: Try this formula as well:
+				//  float smoothness = 1 - roughness;
+				//  return lerp(N, R, smoothness * (sqrt(smoothness) + roughness));
+			
+				float r2 = roughness * roughness;
+				return lerp(N, R, (1 - r2) * (sqrt(1 - r2) + r2)); // Not normalized
 			}
 			
 			float3 getSurfaceShading(float3 V, float3 L, SurfaceData surfaceData)
@@ -214,11 +229,12 @@ Technique
 			struct LightData
 			{
 				vec3 position;
-				float radius;
+				float attRadius;
+				float srcRadius;
 				vec3 direction;
 				float luminance;
 				vec3 spotAngles;
-				float radiusSqrdInv;
+				float attRadiusSqrdInv;
 				vec3 color;
 			};
 									
@@ -281,7 +297,7 @@ Technique
 				L = normalize(L);
 				float NoL = clamp(dot(N, L), 0.0, 1.0); // TODO - Add bias here?
 
-				float radiusAttenuation = distanceSqrd * lightData.radiusSqrdInv;
+				float radiusAttenuation = distanceSqrd * lightData.attRadiusSqrdInv;
 				radiusAttenuation *= radiusAttenuation;
 				radiusAttenuation = clamp(1.0f - radiusAttenuation, 0.0, 1.0);
 				radiusAttenuation *= radiusAttenuation;

@@ -17,11 +17,12 @@ namespace bs { namespace ct
 	struct LightData
 	{
 		Vector3 position;
-		float radius;
+		float attRadius;
+		float srcRadius;
 		Vector3 direction;
 		float luminance;
 		Vector3 spotAngles;
-		float radiusSqrdInv;
+		float attRadiusSqrdInv;
 		Vector3 color;
 	};
 
@@ -154,8 +155,8 @@ namespace bs { namespace ct
 	};
 
 	/** Shader that performs a lighting pass over data stored in the Gbuffer. */
-	template<int MSAA_COUNT, bool FixedReflColor>
-	class TTiledDeferredLightingMat : public ITiledDeferredLightingMat, public RendererMaterial<TTiledDeferredLightingMat<MSAA_COUNT, FixedReflColor>>
+	template<int MSAA_COUNT, bool CapturingReflections>
+	class TTiledDeferredLightingMat : public ITiledDeferredLightingMat, public RendererMaterial<TTiledDeferredLightingMat<MSAA_COUNT, CapturingReflections>>
 	{
 		RMAT_DEF("TiledDeferredLighting.bsl");
 
@@ -188,11 +189,12 @@ namespace bs { namespace ct
 		/**
 		 * Returns a version of the tile-deferred lighting material that matches the parameters.
 		 * 
-		 * @param[in]   msaa				Number of samples per pixel.
-		 * @param[in]   fixedReflColor		If true reflection probes will not be evaluated and instead a fixed color will
-		 *									be returned instead. Useful when rendering reflection probes.
+		 * @param[in]   msaa					Number of samples per pixel.
+		 * @param[in]   capturingReflections	If true reflection probes will not be evaluated and instead the material's
+		 *										specular color will be returned instead. Useful when rendering reflection
+		 *										probes.
 		 */
-		ITiledDeferredLightingMat* get(UINT32 msaa, bool fixedReflColor);
+		ITiledDeferredLightingMat* get(UINT32 msaa, bool capturingReflections);
 
 	private:
 		ITiledDeferredLightingMat* mInstances[8];
