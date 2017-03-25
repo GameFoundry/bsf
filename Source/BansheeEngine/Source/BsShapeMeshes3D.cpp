@@ -63,8 +63,8 @@ namespace bs
 		if (uvData != nullptr && desc->hasElement(VES_TANGENT))
 		{
 			UINT8* tangentData = meshData->getElementData(VES_TANGENT);
-			generateTangents(positionData, normalData, uvData, indexData, numVertices, numIndices, vertexStride,
-							 tangentData);
+			generateTangents(positionData, normalData, uvData, indexData, numVertices, numIndices, 
+				vertexOffset, indexOffset, vertexStride, tangentData);
 		}
 	}
 
@@ -117,8 +117,8 @@ namespace bs
 		if (uvData != nullptr && desc->hasElement(VES_TANGENT))
 		{
 			UINT8* tangentData = meshData->getElementData(VES_TANGENT);
-			generateTangents(positionData, normalData, uvData, indexData, numVertices, numIndices, vertexStride,
-							 tangentData);
+			generateTangents(positionData, normalData, uvData, indexData, numVertices, numIndices, 
+				vertexOffset, indexOffset, vertexStride, tangentData);
 		}
 	}
 
@@ -179,8 +179,8 @@ namespace bs
 		if (uvData != nullptr && desc->hasElement(VES_TANGENT))
 		{
 			UINT8* tangentData = meshData->getElementData(VES_TANGENT);
-			generateTangents(positionData, normalData, uvData, indexData, numVertices, numIndices, vertexStride,
-							 tangentData);
+			generateTangents(positionData, normalData, uvData, indexData, numVertices, numIndices, 
+				vertexOffset, indexOffset, vertexStride, tangentData);
 		}
 	}
 
@@ -225,8 +225,8 @@ namespace bs
 		if (uvData != nullptr && desc->hasElement(VES_TANGENT))
 		{
 			UINT8* tangentData = meshData->getElementData(VES_TANGENT);
-			generateTangents(positionData, normalData, uvData, indexData, numVertices, numIndices, vertexStride,
-							 tangentData);
+			generateTangents(positionData, normalData, uvData, indexData, numVertices, numIndices, 
+				vertexOffset, indexOffset, vertexStride, tangentData);
 		}
 	}
 
@@ -271,8 +271,8 @@ namespace bs
 		if(uvData != nullptr && desc->hasElement(VES_TANGENT))
 		{
 			UINT8* tangentData = meshData->getElementData(VES_TANGENT);
-			generateTangents(positionData, normalData, uvData, indexData, numVertices, numIndices, vertexStride, 
-				tangentData);
+			generateTangents(positionData, normalData, uvData, indexData, numVertices, numIndices, 
+				vertexOffset, indexOffset, vertexStride, tangentData);
 		}
 	}
 
@@ -1331,17 +1331,21 @@ namespace bs
 	}
 
 	void ShapeMeshes3D::generateTangents(UINT8* positions, UINT8* normals, UINT8* uv, UINT32* indices,
-		UINT32 numVertices, UINT32 numIndices, UINT32 vertexStride, UINT8* tangents)
+		UINT32 numVertices, UINT32 numIndices, UINT32 vertexOffset, UINT32 indexOffset, UINT32 vertexStride, UINT8* tangents)
 	{
 		Vector3* tempTangents = bs_stack_alloc<Vector3>(numVertices);
 		Vector3* tempBitangents = bs_stack_alloc<Vector3>(numVertices);
 
-		MeshUtility::calculateTangents((Vector3*)positions, (Vector3*)normals, (Vector2*)uv, (UINT8*)indices, numVertices,
-			 numIndices, tempTangents, tempBitangents, 4, vertexStride);
+		MeshUtility::calculateTangents(
+			(Vector3*)(positions + vertexOffset * vertexStride), 
+			(Vector3*)(normals + vertexOffset * vertexStride), 
+			(Vector2*)(uv + vertexOffset * vertexStride), 
+			(UINT8*)(indices + indexOffset), 
+			numVertices, numIndices, tempTangents, tempBitangents, 4, vertexStride);
 
 		for (UINT32 i = 0; i < (UINT32)numVertices; i++)
 		{
-			Vector3 normal = *(Vector3*)&normals[i * vertexStride];
+			Vector3 normal = *(Vector3*)&normals[(vertexOffset + i) * vertexStride];
 			Vector3 tangent = tempTangents[i];
 			Vector3 bitangent = tempBitangents[i];
 
@@ -1349,7 +1353,7 @@ namespace bs
 			float sign = Vector3::dot(engineBitangent, bitangent);
 
 			Vector4 packedTangent(tangent.x, tangent.y, tangent.z, sign > 0 ? 1.0f : -1.0f);
-			memcpy(tangents + i * vertexStride, &packedTangent, sizeof(Vector4));
+			memcpy(tangents + (vertexOffset + i) * vertexStride, &packedTangent, sizeof(Vector4));
 		}
 
 		bs_stack_free(tempBitangents);

@@ -758,6 +758,8 @@ namespace bs
 		 * @param[in]	indices			Set of 32-bit indices containing indexes into vertex array for each triangle.
 		 * @param[in]	numVertices		Number of vertices in the @p vertices, @p normals and @p uv arrays.
 		 * @param[in]	numIndices		Number of indices in the @p indices array. Must be a multiple of three.
+		 * @param[in]	vertexOffset	Offset in number of vertices from the start of the buffers to start reading/writing.
+		 * @param[in]	indexOffset 	Offset in number of indices from the start of the buffer to start reading from.
 		 * @param[in]	vertexStride	Number of bytes to advance the @p vertices, @p normals and @p uv arrays with each
 		 *								vertex. If set to zero them each array is advanced according to its own size.
 		 * @param[out]	tangents		Pre-allocated buffer that will contain the calculated tangents & bitangents packed
@@ -765,7 +767,8 @@ namespace bs
 		 *								the bitangent. Must be the same length as the vertex array.
 		 */
 		static void generateTangents(UINT8* positions, UINT8* normals, UINT8* uv, UINT32* indices, UINT32 numVertices,
-									 UINT32 numIndices, UINT32 vertexStride, UINT8* tangents);
+									 UINT32 numIndices, UINT32 vertexOffset, UINT32 indexOffset, UINT32 vertexStride, 
+									 UINT8* tangents);
 	};
 
 	/** @} */
