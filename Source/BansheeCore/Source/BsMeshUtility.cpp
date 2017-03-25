@@ -764,9 +764,15 @@ namespace bs
 	}
 
 	void MeshUtility::calculateTangents(Vector3* vertices, Vector3* normals, Vector2* uv, UINT8* indices, UINT32 numVertices,
-		UINT32 numIndices, Vector3* tangents, Vector3* bitangents, UINT32 indexSize)
+		UINT32 numIndices, Vector3* tangents, Vector3* bitangents, UINT32 indexSize, UINT32 vertexStride)
 	{
 		UINT32 numFaces = numIndices / 3;
+		UINT32 vec2Stride = vertexStride == 0 ? sizeof(Vector2) : vertexStride;
+		UINT32 vec3Stride = vertexStride == 0 ? sizeof(Vector3) : vertexStride;
+
+		UINT8* positionBytes = (UINT8*)vertices;
+		UINT8* normalBytes = (UINT8*)normals;
+		UINT8* uvBytes = (UINT8*)uv;
 
 		Vector3* faceTangents = bs_newN<Vector3>(numFaces);
 		Vector3* faceBitangents = bs_newN<Vector3>(numFaces);
@@ -777,13 +783,13 @@ namespace bs
 			memcpy(&triangle[1], indices + (i * 3 + 1) * indexSize, indexSize);
 			memcpy(&triangle[2], indices + (i * 3 + 2) * indexSize, indexSize);
 
-			Vector3 p0 = vertices[triangle[0]];
-			Vector3 p1 = vertices[triangle[1]];
-			Vector3 p2 = vertices[triangle[2]];
+			Vector3 p0 = *(Vector3*)&positionBytes[triangle[0] * vec3Stride];
+			Vector3 p1 = *(Vector3*)&positionBytes[triangle[1] * vec3Stride];
+			Vector3 p2 = *(Vector3*)&positionBytes[triangle[2] * vec3Stride];
 
-			Vector2 uv0 = uv[triangle[0]];
-			Vector2 uv1 = uv[triangle[1]];
-			Vector2 uv2 = uv[triangle[2]];
+			Vector2 uv0 = *(Vector2*)&uvBytes[triangle[0] * vec2Stride];
+			Vector2 uv1 = *(Vector2*)&uvBytes[triangle[1] * vec2Stride];
+			Vector2 uv2 = *(Vector2*)&uvBytes[triangle[2] * vec2Stride];
 
 			Vector3 q0 = p1 - p0;
 			Vector3 q1 = p2 - p0;
@@ -831,14 +837,16 @@ namespace bs
 			tangents[i].normalize();
 			bitangents[i].normalize();
 
+			Vector3 normal = *(Vector3*)&normalBytes[i * vec3Stride];
+
 			// Orthonormalize
-			float dot0 = normals[i].dot(tangents[i]);
-			tangents[i] -= dot0*normals[i];
+			float dot0 = normal.dot(tangents[i]);
+			tangents[i] -= dot0*normal;
 			tangents[i].normalize();
 
 			float dot1 = tangents[i].dot(bitangents[i]);
-			dot0 = normals[i].dot(bitangents[i]);
-			bitangents[i] -= dot0*normals[i] + dot1*tangents[i];
+			dot0 = normal.dot(bitangents[i]);
+			bitangents[i] -= dot0*normal + dot1*tangents[i];
 			bitangents[i].normalize();
 		}
 
@@ -869,33 +877,41 @@ namespace bs
 		clipper.clip(vertices, uvs, numTris, vertexStride, clipPlanes, writeCallback);
 	}
 
-	void MeshUtility::packNormals(Vector3* source, UINT8* destination, UINT32 count, UINT32 stride)
+	void MeshUtility::packNormals(Vector3* source, UINT8* destination, UINT32 count, UINT32 inStride, UINT32 outStride)
 	{
-		UINT8* ptr = destination;
+		UINT8* srcPtr = (UINT8*)source;
+		UINT8* dstPtr = destination;
 		for (UINT32 i = 0; i < count; i++)
 		{
-			PackedNormal& packed = *(PackedNormal*)ptr;
-			packed.x = Math::clamp((int)(source[i].x * 127.5f + 127.5f), 0, 255);
-			packed.y = Math::clamp((int)(source[i].y * 127.5f + 127.5f), 0, 255);
-			packed.z = Math::clamp((int)(source[i].z * 127.5f + 127.5f), 0, 255);
+			Vector3 src = *(Vector3*)srcPtr;
+
+			PackedNormal& packed = *(PackedNormal*)dstPtr;
+			packed.x = Math::clamp((int)(src.x * 127.5f + 127.5f), 0, 255);
+			packed.y = Math::clamp((int)(src.y * 127.5f + 127.5f), 0, 255);
+			packed.z = Math::clamp((int)(src.z * 127.5f + 127.5f), 0, 255);
 			packed.w = 128;
 
-			ptr += stride;
+			srcPtr += inStride;
+			dstPtr += outStride;
 		}
 	}
 
-	void MeshUtility::packNormals(Vector4* source, UINT8* destination, UINT32 count, UINT32 stride)
+	void MeshUtility::packNormals(Vector4* source, UINT8* destination, UINT32 count, UINT32 inStride, UINT32 outStride)
 	{
-		UINT8* ptr = destination;
+		UINT8* srcPtr = (UINT8*)source;
+		UINT8* dstPtr = destination;
 		for (UINT32 i = 0; i < count; i++)
 		{
-			PackedNormal& packed = *(PackedNormal*)ptr;
-			packed.x = Math::clamp((int)(source[i].x * 127.5f + 127.5f), 0, 255);
-			packed.y = Math::clamp((int)(source[i].y * 127.5f + 127.5f), 0, 255);
-			packed.z = Math::clamp((int)(source[i].z * 127.5f + 127.5f), 0, 255);
-			packed.w = Math::clamp((int)(source[i].w * 127.5f + 127.5f), 0, 255);
+			Vector4 src = *(Vector4*)srcPtr;
+			PackedNormal& packed = *(PackedNormal*)dstPtr;
 
-			ptr += stride;
+			packed.x = Math::clamp((int)(src.x * 127.5f + 127.5f), 0, 255);
+			packed.y = Math::clamp((int)(src.y * 127.5f + 127.5f), 0, 255);
+			packed.z = Math::clamp((int)(src.z * 127.5f + 127.5f), 0, 255);
+			packed.w = Math::clamp((int)(src.w * 127.5f + 127.5f), 0, 255);
+
+			srcPtr += inStride;
+			dstPtr += outStride;
 		}
 	}
 

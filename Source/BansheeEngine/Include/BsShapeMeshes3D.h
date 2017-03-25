@@ -49,6 +49,9 @@ namespace bs
 		 *	Vector3 VES_NORMAL
 		 * 	32bit index buffer
 		 * 	Enough space for 24 vertices and 36 indices
+		 * Optionally it may also have:
+		 *  Vector2 VES_TEXCOORD
+		 *  Vector4 VES_TANGENT
 		 * @note
 		 * Primitives are output in the form of a triangle list.
 		 */
@@ -93,6 +96,9 @@ namespace bs
 		 * 	32bit index buffer
 		 * 	Enough space for 20 * (4 * (3 ^ quality)) vertices 
 		 *	Enough space for 20 * (4 * (3 ^ quality)) indices
+		 * Optionally it may also have:
+		 *  Vector2 VES_TEXCOORD
+		 *  Vector4 VES_TANGENT
 		 * @note
 		 * Primitives are output in the form of a triangle list.
 		 */
@@ -148,6 +154,9 @@ namespace bs
 		 * 	32bit index buffer
 		 * 	Enough space for ((quality + 1) * 5 + 1) * 2 vertices 
 		 *	Enough space for (((quality + 1) * 5 - 1) * 6) indices
+		 * Optionally it may also have:
+		 *  Vector2 VES_TEXCOORD
+		 *  Vector4 VES_TANGENT
 		 * @note
 		 * Primitives are output in the form of a triangle list.
 		 */
@@ -276,6 +285,9 @@ namespace bs
 		 * 	32bit index buffer
 		 * 	Enough space for ((quality + 1) * 4) * 3 + 1 vertices 
 		 *	Enough space for (((quality + 1) * 4) * 6) indices
+		 * Optionally it may also have:
+		 *  Vector2 VES_TEXCOORD
+		 *  Vector4 VES_TANGENT
 		 * @note
 		 * Primitives are output in the form of a triangle list.
 		 */
@@ -296,6 +308,9 @@ namespace bs
 		 *	Vector3 VES_NORMAL
 		 * 	32bit index buffer
 		 * 	Enough space for 8 vertices and 12 indices
+		 * Optionally it may also have:
+		 *  Vector2 VES_TEXCOORD
+		 *  Vector4 VES_TANGENT
 		 * @note
 		 * Primitives are output in the form of a triangle list.
 		 */
@@ -410,13 +425,15 @@ namespace bs
 		 * @param[in]	box				Box to create geometry for.
 		 * @param[out]	outVertices		Pre-allocated output buffer that will store the vertex position data.
 		 * @param[out]	outNormals		Pre-allocated output buffer that will store the vertex normal data.
+		 * @param[out]	outUV			Pre-allocated output buffer that will store the vertex UV data. Set to null if not
+		 *								required.
 		 * @param[in]	vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
 		 * @param[in]	vertexStride	Size of a single vertex, in bytes. (Same for both position and normal buffer)
 		 * @param[out]	outIndices		Pre-allocated output buffer that will store the index data. Indices are 32bit.
 		 * @param[in]	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
 		 */
-		static void solidAABox(const AABox& box, UINT8* outVertices, UINT8* outNormals, UINT32 vertexOffset, UINT32 vertexStride,
-			UINT32* outIndices, UINT32 indexOffset);
+		static void solidAABox(const AABox& box, UINT8* outVertices, UINT8* outNormals, UINT8* outUV, UINT32 vertexOffset, 
+			UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset);
 
 		/**
 		 * Fills the provided buffers with position and index data representing a sphere. Use getNumElementsSphere() to
@@ -426,6 +443,8 @@ namespace bs
 		 * @param[out]	outVertices		Pre-allocated output buffer that will store the vertex position data.
 		 * @param[out]	outNormals		Pre-allocated output buffer that will store the vertex normal data. Can be null if
 		 *								normals aren't needed.
+		 * @param[out]	outUV			Pre-allocated output buffer that will store the vertex UV data. Set to null if not
+		 *								required.
 		 * @param[in]	vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
 		 * @param[in]	vertexStride	Size of a single vertex, in bytes. (Same for both position and normal buffer)
 		 * @param[out]	outIndices		Pre-allocated output buffer that will store the index data. Indices are 32bit.
@@ -433,8 +452,8 @@ namespace bs
 		 * @param[in]	quality			Represents the level of tessellation the sphere will have. Higher level means higher
 		 *								quality but also more vertices and primitives.
 		 */
-		static void solidSphere(const Sphere& sphere, UINT8* outVertices, UINT8* outNormals, UINT32 vertexOffset, UINT32 vertexStride,
-			UINT32* outIndices, UINT32 indexOffset, UINT32 quality);
+		static void solidSphere(const Sphere& sphere, UINT8* outVertices, UINT8* outNormals, UINT8* outUV, 
+			UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset, UINT32 quality);
 
 		/**
 		 * Fills the provided buffers with position and index data representing an outline of an arc. Use
@@ -469,6 +488,8 @@ namespace bs
 		 * @param[in]	amountAngle		Angle that the arc spans.
 		 * @param[out]	outVertices		Pre-allocated output buffer that will store the vertex position data.
 		 * @param[out]	outNormals		Pre-allocated output buffer that will store the vertex normal data.
+		 * @param[out]	outUV			Pre-allocated output buffer that will store the vertex UV data. Set to null if not
+		 *								required.	
 		 * @param[in]	vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
 		 * @param[in]	vertexStride	Size of a single vertex, in bytes. (Same for both position and normal buffer)
 		 * @param[out]	outIndices		Pre-allocated output buffer that will store the index data. Indices are 32bit.
@@ -476,8 +497,9 @@ namespace bs
 		 * @param[in]	quality			Represents the level of tessellation the arc will have. Higher level means higher
 		 *								quality but also more vertices and primitives.
 		 */
-		static void solidArc(const Vector3& center, float radius, const Vector3& normal, Degree startAngle, Degree amountAngle,
-			UINT8* outVertices, UINT8* outNormals, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset, UINT32 quality);
+		static void solidArc(const Vector3& center, float radius, const Vector3& normal, Degree startAngle, 
+			Degree amountAngle, UINT8* outVertices, UINT8* outNormals, UINT8* outUV, UINT32 vertexOffset, 
+			UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset, UINT32 quality);
 
 		/**
 		 * Fills the provided buffers with position and index data representing an outline of a camera frustum. Use
@@ -509,6 +531,8 @@ namespace bs
 		 * @param[out]	outVertices		Pre-allocated output buffer that will store the vertex position data.
 		 * @param[out]	outNormals		Pre-allocated output buffer that will store the vertex normal data. Can be null if
 		 *								normals aren't needed.
+		 * @param[out]	outUV			Pre-allocated output buffer that will store the vertex UV data. Set to null if not
+		 *								required.	
 		 * @param[in]	vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
 		 * @param[in]	vertexStride	Size of a single vertex, in bytes. (Same for both position and normal buffer)
 		 * @param[out]	outIndices		Pre-allocated output buffer that will store the index data. Indices are 32bit.
@@ -517,8 +541,8 @@ namespace bs
 		 *								quality but also more vertices and primitives.
 		 */
 		static void solidCone(const Vector3& base, const Vector3& normal, float height, float radius, Vector2 scale,
-			UINT8* outVertices, UINT8* outNormals, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, 
-			UINT32 indexOffset, UINT32 quality);
+			UINT8* outVertices, UINT8* outNormals, UINT8* outUV, UINT32 vertexOffset, UINT32 vertexStride, 
+			UINT32* outIndices, UINT32 indexOffset, UINT32 quality);
 
 		/**
 		 * Fills the provided buffers with position and index data representing a wire cone. Use getNumElementsWireCone() to
@@ -548,12 +572,15 @@ namespace bs
 		 * @param[in]	area			Area covered by the quad.
 		 * @param[out]	outVertices		Pre-allocated output buffer that will store the vertex position data.
 		 * @param[out]	outNormals		Pre-allocated output buffer that will store the vertex normal data.
+		 * @param[out]	outUV			Pre-allocated output buffer that will store the vertex UV data. Set to null if not
+		 *								required.
 		 * @param[in]	vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
 		 * @param[in]	vertexStride	Size of a single vertex, in bytes. (Same for both position and normal buffer)
 		 * @param[out]	outIndices		Pre-allocated output buffer that will store the index data. Indices are 32bit.
 		 * @param[in]	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
 		 */
-		static void solidQuad(const Rect3& area, UINT8* outVertices, UINT8* outNormals, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset);
+		static void solidQuad(const Rect3& area, UINT8* outVertices, UINT8* outNormals, UINT8* outUV, UINT32 vertexOffset, 
+			UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset);
 
 		/**	Calculates number of vertices and indices required for geometry of a solid axis aligned box. */
 		static void getNumElementsAABox(UINT32& numVertices, UINT32& numIndices);
@@ -721,6 +748,24 @@ namespace bs
 		 */
 		static void generateArcVertices(const Vector3& center, const Vector3& up, float radius, Degree startAngle, 
 			Degree angleAmount, Vector2 scale, UINT32 numVertices, UINT8* outvertices, UINT32 vertexOffset, UINT32 vertexStride);
+
+		/**
+		 * Calculates per-vertex tangents and bitangents based on the provided vertices, uv coordinates and indices.
+		 *
+		 * @param[in]	positions		Pointer to an array of vertex positions.
+		 * @param[in]	normals			Pointer to an array of vertex normals.
+		 * @param[in]	uv				Pointer to an array of vertex UV coordinates.
+		 * @param[in]	indices			Set of 32-bit indices containing indexes into vertex array for each triangle.
+		 * @param[in]	numVertices		Number of vertices in the @p vertices, @p normals and @p uv arrays.
+		 * @param[in]	numIndices		Number of indices in the @p indices array. Must be a multiple of three.
+		 * @param[in]	vertexStride	Number of bytes to advance the @p vertices, @p normals and @p uv arrays with each
+		 *								vertex. If set to zero them each array is advanced according to its own size.
+		 * @param[out]	tangents		Pre-allocated buffer that will contain the calculated tangents & bitangents packed
+		 *								into 4D vector where first three components are the tangent, and 4th is the sign of
+		 *								the bitangent. Must be the same length as the vertex array.
+		 */
+		static void generateTangents(UINT8* positions, UINT8* normals, UINT8* uv, UINT32* indices, UINT32 numVertices,
+									 UINT32 numIndices, UINT32 vertexStride, UINT8* tangents);
 	};
 
 	/** @} */

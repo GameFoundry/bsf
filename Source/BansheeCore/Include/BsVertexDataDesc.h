@@ -64,6 +64,9 @@ namespace bs
 		/**	Returns the vertex element at the specified index. */
 		const VertexElement& getElement(UINT32 idx) const { return mVertexElements[idx]; }
 
+		/**	Returns the vertex element with the specified semantic. */
+		const VertexElement* getElement(VertexElementSemantic semantic, UINT32 semanticIdx = 0, UINT32 streamIdx = 0) const;
+
 		/**	Creates a list of vertex elements from internal data. */
 		List<VertexElement> createElements() const;
 

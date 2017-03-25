@@ -50,19 +50,21 @@ namespace bs
 		/**
 		 * Calculates per-vertex tangents and bitangents based on the provided vertices, uv coordinates and indices.
 		 *
-		 * @param[in]	vertices	Set of vertices containing vertex positions.
-		 * @param[in]	normals		Set of normals to use when calculating tangents. Must the the same length as the number
-		 *							of vertices.
-		 * @param[in]	uv			Set of UV coordinates to use when calculating tangents. Must the the same length as the
-		 *							number of vertices.
-		 * @param[in]	indices		Set of indices containing indexes into vertex array for each triangle.
-		 * @param[in]	numVertices	Number of vertices in the @p vertices, @p normals and @p uv arrays.
-		 * @param[in]	numIndices	Number of indices in the @p indices array. Must be a multiple of three.
-		 * @param[out]	tangents	Pre-allocated buffer that will contain the calculated tangents. Must be the same size
-		 *							as the vertex array.
-		 * @param[out]	bitangents	Pre-allocated buffer that will contain the calculated bitangents. Must be the same size
-		 *							as the vertex array.
-		 * @param[in]	indexSize	Size of a single index in the indices array, in bytes.
+		 * @param[in]	vertices		Set of vertices containing vertex positions.
+		 * @param[in]	normals			Set of normals to use when calculating tangents. Must the the same length as the
+		 *								number of vertices.
+		 * @param[in]	uv				Set of UV coordinates to use when calculating tangents. Must the the same length as
+		 *								the number of vertices.
+		 * @param[in]	indices			Set of indices containing indexes into vertex array for each triangle.
+		 * @param[in]	numVertices		Number of vertices in the @p vertices, @p normals and @p uv arrays.
+		 * @param[in]	numIndices		Number of indices in the @p indices array. Must be a multiple of three.
+		 * @param[out]	tangents		Pre-allocated buffer that will contain the calculated tangents. Must be the same
+		 *								size as the vertex array.
+		 * @param[out]	bitangents		Pre-allocated buffer that will contain the calculated bitangents. Must be the same
+		 *								size as the vertex array.
+		 * @param[in]	indexSize		Size of a single index in the indices array, in bytes.
+		 * @param[in]	vertexStride	Number of bytes to advance the @p vertices, @p normals and @p uv arrays with each
+		 *								vertex. If set to zero them each array is advanced according to its own size.
 		 *
 		 * @note	
 		 * Vertices should be split before calling this method if there are any discontinuities. (for example a vertex on a
@@ -70,7 +72,7 @@ namespace bs
 		 * valid.)
 		 */
 		static void calculateTangents(Vector3* vertices, Vector3* normals, Vector2* uv, UINT8* indices, UINT32 numVertices, 
-			UINT32 numIndices, Vector3* tangents, Vector3* bitangents, UINT32 indexSize = 4);
+			UINT32 numIndices, Vector3* tangents, Vector3* bitangents, UINT32 indexSize = 4, UINT32 vertexStride = 0);
 
 		/**
 		 * Calculates per-vertex tangent space (normal, tangent, bitangent) based on the provided vertices, uv coordinates
@@ -140,9 +142,10 @@ namespace bs
 		 * @param[in]	source			Buffer containing data to encode. Must have @p count entries.
 		 * @param[out]	destination		Buffer to output the data to. Must have @p count entries, each 32-bits.
 		 * @param[in]	count			Number of entries in the @p source and @p destination arrays.
-		 * @param[in]	stride			Distance between two entries in the @p destination buffer, in bytes.
+		 * @param[in]	inStride		Distance between two entries in the @p source buffer, in bytes.
+		 * @param[in]	outStride		Distance between two entries in the @p destination buffer, in bytes.
 		 */
-		static void packNormals(Vector3* source, UINT8* destination, UINT32 count, UINT32 stride);
+		static void packNormals(Vector3* source, UINT8* destination, UINT32 count, UINT32 inStride, UINT32 outStride);
 
 		/** 
 		 * Encodes normals from 32-bit float format into 4D 8-bit packed format. 
@@ -150,9 +153,10 @@ namespace bs
 		 * @param[in]	source			Buffer containing data to encode. Must have @p count entries.
 		 * @param[out]	destination		Buffer to output the data to. Must have @p count entries, each 32-bits.
 		 * @param[in]	count			Number of entries in the @p source and @p destination arrays.
-		 * @param[in]	stride			Distance between two entries in the @p destination buffer, in bytes.
+		 * @param[in]	inStride		Distance between two entries in the @p source buffer, in bytes.
+		 * @param[in]	outStride		Distance between two entries in the @p destination buffer, in bytes.
 		 */
-		static void packNormals(Vector4* source, UINT8* destination, UINT32 count, UINT32 stride);
+		static void packNormals(Vector4* source, UINT8* destination, UINT32 count, UINT32 inStride, UINT32 outStride);
 
 		/** 
 		 * Decodes normals from 4D 8-bit packed format into a 32-bit float format. 

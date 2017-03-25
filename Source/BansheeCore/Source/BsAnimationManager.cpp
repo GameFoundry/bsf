@@ -440,7 +440,7 @@ namespace bs
 							Vector3 normal = tempNormals[i] / accumulatedWeight[i];
 							normal /= 2.0f; // Accumulated normal is in range [-2, 2] but our normal packing method assumes [-1, 1] range
 
-							MeshUtility::packNormals(&normal, (UINT8*)destNrm, 1, stride);
+							MeshUtility::packNormals(&normal, (UINT8*)destNrm, 1, sizeof(Vector3), stride);
 							destNrm->w = (UINT8)(std::min(1.0f, accumulatedWeight[i]) * 255.999f);
 						}
 						else

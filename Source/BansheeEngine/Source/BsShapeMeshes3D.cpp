@@ -3,21 +3,13 @@
 #include "BsShapeMeshes3D.h"
 #include "BsRect2.h"
 #include "BsMesh.h"
-#include "BsTime.h"
 #include "BsVector2.h"
 #include "BsQuaternion.h"
 #include "BsSphere.h"
-#include "BsMaterial.h"
 #include "BsPass.h"
-#include "BsCoreApplication.h"
-#include "BsRenderQueue.h"
-#include "BsException.h"
 #include "BsCCamera.h"
-#include "BsBuiltinResources.h"
 #include "BsVertexDataDesc.h"
-
-// DEBUG ONLY
-#include "BsDebug.h"
+#include "BsMeshUtility.h"
 
 namespace bs
 {
@@ -27,6 +19,12 @@ namespace bs
 	inline UINT8* writeVector3(UINT8* buffer, UINT32 stride, const Vector3& value)
 	{
 		*(Vector3*)buffer = value;
+		return buffer + stride;
+	}
+
+	inline UINT8* writeVector2(UINT8* buffer, UINT32 stride, const Vector2& value)
+	{
+		*(Vector2*)buffer = value;
 		return buffer + stride;
 	}
 
@@ -43,14 +41,31 @@ namespace bs
 
 	void ShapeMeshes3D::solidAABox(const AABox& box, const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
+		const SPtr<VertexDataDesc>& desc = meshData->getVertexDesc();
+
 		UINT32* indexData = meshData->getIndices32();
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
 		UINT8* normalData = meshData->getElementData(VES_NORMAL);
 
+		UINT32 numVertices = meshData->getNumVertices();
+		UINT32 numIndices = meshData->getNumIndices();
+		UINT32 vertexStride = desc->getVertexStride();
+
 		assert((vertexOffset + 24) <= meshData->getNumVertices());
 		assert((indexOffset + 36) <= meshData->getNumIndices());
 
-		solidAABox(box, positionData, normalData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
+		UINT8* uvData = nullptr;
+		if (desc->hasElement(VES_TEXCOORD))
+			uvData = meshData->getElementData(VES_TEXCOORD);
+
+		solidAABox(box, positionData, normalData, uvData, vertexOffset, vertexStride, indexData, indexOffset);
+
+		if (uvData != nullptr && desc->hasElement(VES_TANGENT))
+		{
+			UINT8* tangentData = meshData->getElementData(VES_TANGENT);
+			generateTangents(positionData, normalData, uvData, indexData, numVertices, numIndices, vertexStride,
+							 tangentData);
+		}
 	}
 
 	void ShapeMeshes3D::wireSphere(const Sphere& sphere, const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality)
@@ -74,20 +89,37 @@ namespace bs
 			vertexOffset + verticesPerArc * 2, indexOffset + indicesPerArc * 2, quality);
 	}
 
-	void ShapeMeshes3D::solidSphere(const Sphere& sphere, const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality)
+	void ShapeMeshes3D::solidSphere(const Sphere& sphere, const SPtr<MeshData>& meshData, UINT32 vertexOffset, 
+		UINT32 indexOffset, UINT32 quality)
 	{
+		const SPtr<VertexDataDesc>& desc = meshData->getVertexDesc();
+
 		UINT32* indexData = meshData->getIndices32();
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
 		UINT8* normalData = meshData->getElementData(VES_NORMAL);
 
+		UINT32 numVertices = meshData->getNumVertices();
+		UINT32 numIndices = meshData->getNumIndices();
+		UINT32 vertexStride = desc->getVertexStride();
+
 		UINT32 requiredNumVertices, requiredNumIndices;
 		getNumElementsSphere(quality, requiredNumVertices, requiredNumIndices);
 
-		assert((vertexOffset + requiredNumVertices) <= meshData->getNumVertices());
-		assert((indexOffset + requiredNumIndices) <= meshData->getNumIndices());
+		assert((vertexOffset + requiredNumVertices) <= numVertices);
+		assert((indexOffset + requiredNumIndices) <= numIndices);
 
-		solidSphere(sphere, positionData, normalData, vertexOffset, 
-			meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset, quality);
+		UINT8* uvData = nullptr;
+		if (desc->hasElement(VES_TEXCOORD))
+			uvData = meshData->getElementData(VES_TEXCOORD);
+
+		solidSphere(sphere, positionData, normalData, uvData, vertexOffset, vertexStride, indexData, indexOffset, quality);
+
+		if (uvData != nullptr && desc->hasElement(VES_TANGENT))
+		{
+			UINT8* tangentData = meshData->getElementData(VES_TANGENT);
+			generateTangents(positionData, normalData, uvData, indexData, numVertices, numIndices, vertexStride,
+							 tangentData);
+		}
 	}
 
 	void ShapeMeshes3D::wireDisc(const Vector3& center, float radius, const Vector3& normal, const SPtr<MeshData>& meshData,
@@ -121,9 +153,15 @@ namespace bs
 	void ShapeMeshes3D::solidArc(const Vector3& center, float radius, const Vector3& normal, Degree startAngle, Degree amountAngle,
 		const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality)
 	{
+		const SPtr<VertexDataDesc>& desc = meshData->getVertexDesc();
+
 		UINT32* indexData = meshData->getIndices32();
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
 		UINT8* normalData = meshData->getElementData(VES_NORMAL);
+
+		UINT32 numVertices = meshData->getNumVertices();
+		UINT32 numIndices = meshData->getNumIndices();
+		UINT32 vertexStride = desc->getVertexStride();
 
 		UINT32 requiredNumVertices, requiredNumIndices;
 		getNumElementsArc(quality, requiredNumVertices, requiredNumIndices);
@@ -131,8 +169,19 @@ namespace bs
 		assert((vertexOffset + requiredNumVertices) <= meshData->getNumVertices());
 		assert((indexOffset + requiredNumIndices) <= meshData->getNumIndices());
 
-		solidArc(center, radius, normal, startAngle, amountAngle, positionData, normalData, vertexOffset,
-			meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset, quality);
+		UINT8* uvData = nullptr;
+		if (desc->hasElement(VES_TEXCOORD))
+			uvData = meshData->getElementData(VES_TEXCOORD);
+
+		solidArc(center, radius, normal, startAngle, amountAngle, positionData, normalData, uvData, vertexOffset,
+			vertexStride, indexData, indexOffset, quality);
+
+		if (uvData != nullptr && desc->hasElement(VES_TANGENT))
+		{
+			UINT8* tangentData = meshData->getElementData(VES_TANGENT);
+			generateTangents(positionData, normalData, uvData, indexData, numVertices, numIndices, vertexStride,
+							 tangentData);
+		}
 	}
 
 	void ShapeMeshes3D::wireFrustum(const Vector3& position, float aspect, Degree FOV, float near, float far,
@@ -150,9 +199,15 @@ namespace bs
 	void ShapeMeshes3D::solidCone(const Vector3& base, const Vector3& normal, float height, float radius, Vector2 scale,
 		const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset, UINT32 quality)
 	{
+		const SPtr<VertexDataDesc>& desc = meshData->getVertexDesc();
+
 		UINT32* indexData = meshData->getIndices32();
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
 		UINT8* normalData = meshData->getElementData(VES_NORMAL);
+
+		UINT32 numVertices = meshData->getNumVertices();
+		UINT32 numIndices = meshData->getNumIndices();
+		UINT32 vertexStride = desc->getVertexStride();
 
 		UINT32 requiredNumVertices, requiredNumIndices;
 		getNumElementsCone(quality, requiredNumVertices, requiredNumIndices);
@@ -160,8 +215,19 @@ namespace bs
 		assert((vertexOffset + requiredNumVertices) <= meshData->getNumVertices());
 		assert((indexOffset + requiredNumIndices) <= meshData->getNumIndices());
 
-		solidCone(base, normal, height, radius, scale, positionData, normalData, vertexOffset,
-			meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset, quality);
+		UINT8* uvData = nullptr;
+		if (desc->hasElement(VES_TEXCOORD))
+			uvData = meshData->getElementData(VES_TEXCOORD);
+
+		solidCone(base, normal, height, radius, scale, positionData, normalData, uvData, vertexOffset,
+			vertexStride, indexData, indexOffset, quality);
+
+		if (uvData != nullptr && desc->hasElement(VES_TANGENT))
+		{
+			UINT8* tangentData = meshData->getElementData(VES_TANGENT);
+			generateTangents(positionData, normalData, uvData, indexData, numVertices, numIndices, vertexStride,
+							 tangentData);
+		}
 	}
 
 	void ShapeMeshes3D::wireCone(const Vector3& base, const Vector3& normal, float height, float radius, Vector2 scale,
@@ -182,15 +248,32 @@ namespace bs
 
 	void ShapeMeshes3D::solidQuad(const Rect3& area, const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
+		const SPtr<VertexDataDesc>& desc = meshData->getVertexDesc();
+
 		UINT32* indexData = meshData->getIndices32();
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
 		UINT8* normalData = meshData->getElementData(VES_NORMAL);
 
-		assert((vertexOffset + 8) <= meshData->getNumVertices());
-		assert((indexOffset + 12) <= meshData->getNumIndices());
+		UINT32 numVertices = meshData->getNumVertices();
+		UINT32 numIndices = meshData->getNumIndices();
+		UINT32 vertexStride = desc->getVertexStride();
 
-		solidQuad(area, positionData, normalData, vertexOffset,
+		assert((vertexOffset + 8) <= numVertices);
+		assert((indexOffset + 12) <= numIndices);
+
+		UINT8* uvData = nullptr;
+		if (desc->hasElement(VES_TEXCOORD))
+			uvData = meshData->getElementData(VES_TEXCOORD);
+
+		solidQuad(area, positionData, normalData, uvData, vertexOffset,
 			meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
+
+		if(uvData != nullptr && desc->hasElement(VES_TANGENT))
+		{
+			UINT8* tangentData = meshData->getElementData(VES_TANGENT);
+			generateTangents(positionData, normalData, uvData, indexData, numVertices, numIndices, vertexStride, 
+				tangentData);
+		}
 	}
 
 	void ShapeMeshes3D::pixelLine(const Vector3& a, const Vector3& b, const SPtr<MeshData>& meshData, UINT32 vertexOffset, UINT32 indexOffset)
@@ -297,7 +380,7 @@ namespace bs
 	void ShapeMeshes3D::getNumElementsArc(UINT32 quality, UINT32& numVertices, UINT32& numIndices)
 	{
 		numVertices = ((quality + 1) * 5 + 1) * 2;
-		numIndices = ((quality + 1) * 5 - 1) * 6;
+		numIndices = ((quality + 1) * 5) * 6;
 	}
 
 	void ShapeMeshes3D::getNumElementsWireArc(UINT32 quality, UINT32& numVertices, UINT32& numIndices)
@@ -396,8 +479,8 @@ namespace bs
 		outIndices[23] = vertexOffset + 4;
 	}
 
-	void ShapeMeshes3D::solidAABox(const AABox& box, UINT8* outVertices, UINT8* outNormals, UINT32 vertexOffset, UINT32 vertexStride,
-		UINT32* outIndices, UINT32 indexOffset)
+	void ShapeMeshes3D::solidAABox(const AABox& box, UINT8* outVertices, UINT8* outNormals, UINT8* outUVs, 
+		UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
 	{
 		outVertices += (vertexOffset * vertexStride);
 
@@ -437,6 +520,7 @@ namespace bs
 		outVertices = writeVector3(outVertices, vertexStride, box.getCorner(AABox::NEAR_RIGHT_BOTTOM));
 		outVertices = writeVector3(outVertices, vertexStride, box.getCorner(AABox::NEAR_LEFT_BOTTOM));
 
+		// Normals
 		static const Vector3 faceNormals[6] = 
 		{
 			Vector3(0, 0, 1),
@@ -450,7 +534,7 @@ namespace bs
 		if (outNormals != nullptr)
 		{
 			outNormals += (vertexOffset * vertexStride);
-			for (UINT32 face = 0; face < 6; face++)
+			for (UINT32 face = 0; face < 4; face++)
 			{
 				outNormals = writeVector3(outNormals, vertexStride, faceNormals[face]);
 				outNormals = writeVector3(outNormals, vertexStride, faceNormals[face]);
@@ -459,6 +543,20 @@ namespace bs
 			}
 		}
 
+		// UV
+		if(outUVs != nullptr)
+		{
+			outUVs += (vertexOffset * vertexStride);
+			for (UINT32 face = 0; face < 6; face++)
+			{
+				outUVs = writeVector2(outUVs, vertexStride, Vector2(0.0f, 1.0f));
+				outUVs = writeVector2(outUVs, vertexStride, Vector2(1.0f, 1.0f));
+				outUVs = writeVector2(outUVs, vertexStride, Vector2(1.0f, 0.0f));
+				outUVs = writeVector2(outUVs, vertexStride, Vector2(0.0f, 0.0f));
+			}
+		}
+
+		// Indices
 		UINT32* indices = outIndices + indexOffset;
 		for (UINT32 face = 0; face < 6; face++)
 		{
@@ -473,8 +571,8 @@ namespace bs
 		}
 	}
 
-	void ShapeMeshes3D::solidSphere(const Sphere& sphere, UINT8* outVertices, UINT8* outNormals, UINT32 vertexOffset, 
-		UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset, UINT32 quality)
+	void ShapeMeshes3D::solidSphere(const Sphere& sphere, UINT8* outVertices, UINT8* outNormals, UINT8 *outUV,
+		UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset, UINT32 quality)
 	{
 		// Create icosahedron
 		static const float x = 0.525731112119133606f;
@@ -514,6 +612,25 @@ namespace bs
 				outVertices, outNormals, curVertOffset, vertexStride);
 		}
 
+		// Create UV if required
+		if (outUV != nullptr)
+		{
+			UINT32 numVertices = curVertOffset - vertexOffset;
+
+			outUV += (vertexOffset * vertexStride);
+			for(UINT32 i = 0; i < numVertices; i++)
+			{
+				Vector3 position = *(Vector3*)&outVertices[(vertexOffset + i) * vertexStride];
+				Vector3 normal = Vector3::normalize(position);
+
+				Vector2 uv;
+				uv.x = atan2(normal.x, normal.z) / Math::TWO_PI + 0.5f;
+				uv.y = normal.y * 0.5f + 0.5f;
+
+				outUV = writeVector2(outUV, vertexStride, uv);
+			}
+		}
+
 		// Create indices
 		outIndices += indexOffset;
 
@@ -543,8 +660,9 @@ namespace bs
 		}
 	}
 
-	void ShapeMeshes3D::solidArc(const Vector3& center, float radius, const Vector3& normal, Degree startAngle, Degree amountAngle, 
-		UINT8* outVertices, UINT8* outNormals, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset, UINT32 quality)
+	void ShapeMeshes3D::solidArc(const Vector3& center, float radius, const Vector3& normal, Degree startAngle, 
+		Degree amountAngle, UINT8* outVertices, UINT8* outNormals, UINT8* outUV, UINT32 vertexOffset, UINT32 vertexStride, 
+		UINT32* outIndices, UINT32 indexOffset, UINT32 quality)
 	{
 		outVertices += vertexOffset * vertexStride;
 		outNormals += vertexOffset * vertexStride;
@@ -568,14 +686,53 @@ namespace bs
 
 		for (UINT32 i = 0; i < numArcVertices; i++)
 		{
-			otherSideVertices = writeVector3(otherSideVertices, vertexStride, *(Vector3*)outVertices);
-			outVertices += vertexStride;
+			otherSideVertices = writeVector3(otherSideVertices, vertexStride, *(Vector3*)&outVertices[i * vertexStride]);
 
 			outNormals = writeVector3(outNormals, vertexStride, visibleNormal);
 			otherSideNormals = writeVector3(otherSideNormals, vertexStride, -visibleNormal);
 		}
 
-		UINT32 numTriangles = numArcVertices - 1;
+		// UV
+		if(outUV != nullptr)
+		{
+			outUV += vertexOffset * vertexStride;
+
+			// Center
+			outUV = writeVector2(outUV, vertexStride, Vector2(0.5f, 0.5f));
+
+			Vector3 arcNormal = normal;
+			Vector3 right, top;
+			arcNormal.orthogonalComplement(right, top);
+
+			for (UINT32 i = 0; i < numArcVertices; i++)
+			{
+				Vector3 vec = *(Vector3*)&outVertices[i * vertexStride];
+				Vector3 diff = Vector3::normalize(vec - center);
+
+				Vector2 uv;
+				uv.x = Vector3::dot(diff, right) * 0.5f + 0.5f;
+				uv.y = Vector3::dot(diff, top) * 0.5f + 0.5f;
+
+				outUV = writeVector2(outUV, vertexStride, uv);
+			}
+
+			// Reverse
+			outUV = writeVector2(outUV, vertexStride, Vector2(0.5f, 0.5f));
+
+			for (UINT32 i = 0; i < numArcVertices; i++)
+			{
+				Vector3 vec = *(Vector3*)&outVertices[(numArcVertices + i + 1) * vertexStride];
+				Vector3 diff = Vector3::normalize(vec - center);
+
+				Vector2 uv;
+				uv.x = Vector3::dot(diff, -right) * 0.5f + 0.5f;
+				uv.y = Vector3::dot(diff, -top) * 0.5f + 0.5f;
+
+				outUV = writeVector2(outUV, vertexStride, uv);
+			}
+		}
+
+		UINT32 numTriangles = numArcVertices;
 
 		// If angle is negative the order of vertices is reversed so we need to reverse the indexes too
 		UINT32 frontSideOffset = vertexOffset + (reverseOrder ? (numArcVertices + 1) : 0);
@@ -645,10 +802,14 @@ namespace bs
 	}
 
 	void ShapeMeshes3D::solidCone(const Vector3& base, const Vector3& normal, float height, float radius, Vector2 scale,
-		UINT8* outVertices, UINT8* outNormals, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset, UINT32 quality)
+		UINT8* outVertices, UINT8* outNormals, UINT8* outUV, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices,
+		UINT32 indexOffset, UINT32 quality)
 	{
 		outVertices += vertexOffset * vertexStride;
 		outIndices += indexOffset;
+
+		if (outUV != nullptr)
+			outUV += vertexOffset * vertexStride;
 
 		if (outNormals != nullptr)
 			outNormals += vertexOffset * vertexStride;
@@ -658,6 +819,28 @@ namespace bs
 
 		generateArcVertices(base, normal, radius, Degree(0), Degree(360), scale,
 			numArcVertices + 1, outVertices, 0, vertexStride);
+
+		if (outUV != nullptr)
+		{
+			Vector3 arcNormal = normal;
+			Vector3 right, top;
+			arcNormal.orthogonalComplement(right, top);
+
+			for (UINT32 i = 0; i < numArcVertices; i++)
+			{
+				Vector3 vec = *(Vector3*)&outVertices[i * vertexStride];
+				Vector3 diff = Vector3::normalize(vec - base);
+
+				Vector2 uv;
+				uv.x = Vector3::dot(diff, right) * 0.5f + 0.5f;
+				uv.y = Vector3::dot(diff, top) * 0.5f + 0.5f;
+
+				outUV = writeVector2(outUV, vertexStride, uv);
+			}
+
+			// Center base
+			outUV = writeVector2(outUV, vertexStride, Vector2(0.5f, 0.5f));
+		}
 
 		outVertices += numArcVertices * vertexStride;
 		outVertices = writeVector3(outVertices, vertexStride, base); // Write base vertex
@@ -723,7 +906,37 @@ namespace bs
 			}
 		}
 
-		// Top vertices (All same position, but need them separate because of different normals)
+		// UV
+		if(outUV != nullptr)
+		{
+			float angle = 0.0f;
+			float angleIncrement = Math::TWO_PI / numArcVertices;
+
+			// Bottom
+			for (UINT32 i = 0; i < numArcVertices; i++)
+			{
+				Vector2 uv;
+				uv.x = angle / Math::TWO_PI;
+				uv.y = 1.0f;
+
+				outUV = writeVector2(outUV, vertexStride, uv);
+				angle += angleIncrement;
+			}
+
+			// Top
+			angle = 0.0f;
+			for (UINT32 i = 0; i < numArcVertices; i++)
+			{
+				Vector2 uv;
+				uv.x = angle / Math::TWO_PI;
+				uv.y = 0.0f;
+
+				outUV = writeVector2(outUV, vertexStride, uv);
+				angle += angleIncrement;
+			}
+		}
+
+		// Top vertices (All same position, but need them separate because of different normals & uv)
 		outVertices += numArcVertices * vertexStride;
 
 		for (UINT32 i = 0; i < numArcVertices; i++)
@@ -787,7 +1000,8 @@ namespace bs
 		}
 	}
 
-	void ShapeMeshes3D::solidQuad(const Rect3& area, UINT8* outVertices, UINT8* outNormals, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
+	void ShapeMeshes3D::solidQuad(const Rect3& area, UINT8* outVertices, UINT8* outNormals, UINT8* outUV, 
+		UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
 	{
 		outVertices += (vertexOffset * vertexStride);
 
@@ -819,6 +1033,20 @@ namespace bs
 		outNormals = writeVector3(outNormals, vertexStride, reverseNormal);
 		outNormals = writeVector3(outNormals, vertexStride, reverseNormal);
 		outNormals = writeVector3(outNormals, vertexStride, reverseNormal);
+
+		if(outUV != nullptr)
+		{
+			outUV += (vertexOffset * vertexStride);
+			outUV = writeVector2(outUV, vertexStride, Vector2(0.0f, 0.0f));
+			outUV = writeVector2(outUV, vertexStride, Vector2(1.0f, 0.0f));
+			outUV = writeVector2(outUV, vertexStride, Vector2(1.0f, 1.0f));
+			outUV = writeVector2(outUV, vertexStride, Vector2(0.0f, 1.0f));
+
+			outUV = writeVector2(outUV, vertexStride, Vector2(0.0f, 0.0f));
+			outUV = writeVector2(outUV, vertexStride, Vector2(1.0f, 0.0f));
+			outUV = writeVector2(outUV, vertexStride, Vector2(1.0f, 1.0f));
+			outUV = writeVector2(outUV, vertexStride, Vector2(0.0f, 1.0f));
+		}
 
 		outIndices += indexOffset;
 		outIndices[0] = vertexOffset;
@@ -1100,5 +1328,31 @@ namespace bs
 			outVertices = writeVector3(outVertices, vertexStride, (center + curDirection));
 			curDirection = increment.rotate(curDirection);
 		}
+	}
+
+	void ShapeMeshes3D::generateTangents(UINT8* positions, UINT8* normals, UINT8* uv, UINT32* indices,
+		UINT32 numVertices, UINT32 numIndices, UINT32 vertexStride, UINT8* tangents)
+	{
+		Vector3* tempTangents = bs_stack_alloc<Vector3>(numVertices);
+		Vector3* tempBitangents = bs_stack_alloc<Vector3>(numVertices);
+
+		MeshUtility::calculateTangents((Vector3*)positions, (Vector3*)normals, (Vector2*)uv, (UINT8*)indices, numVertices,
+			 numIndices, tempTangents, tempBitangents, 4, vertexStride);
+
+		for (UINT32 i = 0; i < (UINT32)numVertices; i++)
+		{
+			Vector3 normal = *(Vector3*)&normals[i * vertexStride];
+			Vector3 tangent = tempTangents[i];
+			Vector3 bitangent = tempBitangents[i];
+
+			Vector3 engineBitangent = Vector3::cross(normal, tangent);
+			float sign = Vector3::dot(engineBitangent, bitangent);
+
+			Vector4 packedTangent(tangent.x, tangent.y, tangent.z, sign > 0 ? 1.0f : -1.0f);
+			memcpy(tangents + i * vertexStride, &packedTangent, sizeof(Vector4));
+		}
+
+		bs_stack_free(tempBitangents);
+		bs_stack_free(tempTangents);
 	}
 }
