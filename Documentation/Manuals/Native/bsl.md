@@ -1,14 +1,14 @@
-Banshee Shading Language FX			{#bslfx}
+Banshee Shading Language			{#bsl}
 ===============
 [TOC]
 
-BSLFX is a material definition language that allows you to specify non-programmable render states together with programmable ones. For example BSLFX will allow you to define a set of input parameters, rasterizer, depth-stencil and blend states along with actual vertex/fragment GPU program code.
+BSL is a material definition language that allows you to specify non-programmable render states together with programmable ones. For example BSL will allow you to define a set of input parameters, rasterizer, depth-stencil and blend states along with actual vertex/fragment GPU program code.
 
 Actual GPU program code itself is written in any of the standard languages: HLSL or GLSL. A unified shading language is in the works so you will don't have to write separate code for DirectX and OpenGL renderers.
 
-Before continuing it is highly suggested you read the [material](@ref materials) manual, as it describes how to create shaders without the use of BSLFX which can provide a good background of where BSLFX is useful.
+Before continuing it is highly suggested you read the [material](@ref materials) manual, as it describes how to create shaders without the use of BSL which can provide a good background of where BSL is useful.
 
-BSLFX is a language with simple syntax that handles configuration but no actual logic. All syntax can be represented using this primitive:
+BSL is a language with simple syntax that handles configuration but no actual logic. All syntax can be represented using this primitive:
  - Type [Name] [= Value|Block] [: Modifier];
 
 Where:
@@ -406,16 +406,16 @@ When merging passes within techniques, pass "Index" properties are compared and 
 Code blocks are merged in the order they are defined.
 
 ## Pre-processor {#bslfx_d_b}
-Use \#include "Path/To/File.bslinc" to share code by including other BSLFX files. Included files must end with a .bslinc extension but otherwise their syntax is the same as a normal BSLFX file. The provided path is a path to the shader relative to the project library if running in editor, or relative to the working directory otherwise. You can also use built-in $ENGINE$ and $EDITOR$ folders to access builtin shaders. e.g.
+Use \#include "Path/To/File.bslinc" to share code by including other BSL files. Included files must end with a .bslinc extension but otherwise their syntax is the same as a normal BSL file. The provided path is a path to the shader relative to the project library if running in editor, or relative to the working directory otherwise. You can also use built-in $ENGINE$ and $EDITOR$ folders to access builtin shaders. e.g.
 ~~~~~~~~~~~~~~
 #include "$ENGINE$/SpriteImage.bslinc"
 ~~~~~~~~~~~~~~
 
 These values correspond to "Data/Engine/Includes" and "Data/Editor/Includes" folders, respectively. Be aware that $EDITOR$ folder will not be available in your standalone game.
 
-Use standard pre-processor commands \#define/\#undef/\#ifdef/\#ifndef/\#else/\#elif/\#endif to conditionally compile parts of the BSLFX file.
+Use standard pre-processor commands \#define/\#undef/\#ifdef/\#ifndef/\#else/\#elif/\#endif to conditionally compile parts of the BSL file.
 
-Macros using \#defines are not supported in BSLFX code, but are within code-blocks. So while you are allowed to write:
+Macros using \#defines are not supported in BSL code, but are within code-blocks. So while you are allowed to write:
 ~~~~~~~~~~~~~~
 #define PI 3.14
 ~~~~~~~~~~~~~~

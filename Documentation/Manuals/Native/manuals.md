@@ -2,7 +2,7 @@ Manuals									{#manuals}
 ===============
 
 # Quick start
-TODO - [Getting started](@ref gettingStarted) - This is a short guide on how to create a fully functional Banshee application, aimed to get you up and running quickly, without going into too much detail.
+[Getting started](@ref gettingStarted) - This is a short guide on how to create a fully functional Banshee application, aimed to get you up and running quickly, without going into too much detail.
 
 # User manuals
 A complete set of manuals covering all major functionality provided by Banshee, starting with basics and slowly guiding you through more advanced concepts. This should be the primary entry point for new users.
@@ -84,6 +84,7 @@ A set of manuals covering advanced functionality intented for those wanting to e
  - [Generic buffers](@ref genericBuffers)
  - [Compute](@ref compute)
  - [Command buffers](@ref commandBuffers)
+ - [Complete example](@ref lowLevelRenderingExample)
 
 ## General guides
 Name                                      | Description
@@ -92,7 +93,7 @@ Name                                      | Description
 [Resources](@ref resources)  			  | Explains how resources work, including saving, loading and creating brand new resource types.
 [Scripting](@ref scripting)               | Shows you how to interact with the scripting system, and how to expose C++ objects to the scripting API.
 [Renderer](@ref renderer)    	  		  | Explains how the renderer works on the low level, and how to create a custom renderer so you may fully customize the look of your application.
-[BSLFX](@ref bslfx)    	  		  		  | Provides a reference for the Banshee Shading Language FX syntax.
+[BSLFX](@ref bsl)    	  		  		  | Provides a reference for the Banshee Shading Language syntax.
 [Custom GUI elements](@ref customGUI)     | Shows you how to create custom GUI elements, manually render text or modify GUI system in a general way.
 [Custom importers](@ref customImporters)  | Shows you how to create importers that handle conversion of third party resources into engine ready formats.
 [Custom plugins](@ref customPlugins)      | Shows you how to create custom plugins that can be loaded by Banshee.

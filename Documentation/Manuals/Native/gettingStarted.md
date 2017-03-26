@@ -2,48 +2,30 @@ Getting started								{#gettingStarted}
 ===============
 [TOC]
 
-This manual offers a quick overview of commonly used Banshee functionality, in order to give you a better idea of how Banshee works. For a fully working example check out the `ExampleProject` project available with the source code.
+This manual offers a quick overview of commonly used Banshee functionality, in order to give you a better idea of how Banshee works. For a fully working example check out the `ExampleGettingStarted` project available with the source code.
 
 # Starting an application
-Banshee is started through the @ref bs::Application "Application" interface. To start the engine you need to provide it with a description of the primary render window and choose which modules to load. Since Banshee is a plugin based engine you have a selection between multiple modules for each system like render API or physics, and a set of completely optional plugins (like importers for various file formats).
+Banshee is started through the @ref bs::Application "Application" interface. To start the engine you need to provide it with a description of the primary render window.
 
-After the application is started by calling @ref bs::Application::startUp "Application::startUp", you can set up your custom code in the form of @ref bs::Component "components" (see later). After that you can run the main loop with @ref bs::Application::runMainLoop "Application::runMainLoop" which will execute your code and actually get everything in motion.
+The application is started by calling @ref bs::Application::startUp "Application::startUp()", after which you can set up your custom code in the form of components (see later). Finally you can run the main loop with @ref bs::Application::runMainLoop "Application::runMainLoop()" which will execute your code and actually get everything in motion.
 
-Once the main loop terminates use @ref bs::Application::shutDown "Application::shutDown" to clean everything up.
+Once the main loop terminates use @ref bs::Application::shutDown "Application::shutDown()" to clean everything up.
 
 ~~~~~~~~~~~~~{.cpp}
-// Descriptor used for initializing the engine
-START_UP_DESC startUpDesc;
+// Start an application in windowed mode using 1280x720 resolution
+Application::startUp(
+	VideoMode(1280, 720), // Window resolution
+	"My app", // Window title
+	false); // True for fullscreen, false for windowed
 
-// Choose which plugins to load. In this case use the default values as specified by the build system.
-startUpDesc.renderAPI = BS_RENDER_API_MODULE;
-startUpDesc.renderer = BS_RENDERER_MODULE;
-startUpDesc.audio = BS_AUDIO_MODULE;
-startUpDesc.physics = BS_PHYSICS_MODULE;
-startUpDesc.input = BS_INPUT_MODULE;
+// Set up your scene here
 
-// List of optional importer plugins we plan on using for importing various resources.
-startUpDesc.importers.push_back("BansheeFreeImgImporter"); // For importing textures
-startUpDesc.importers.push_back("BansheeFBXImporter"); // For importing meshes
-startUpDesc.importers.push_back("BansheeFontImporter"); // For importing fonts
-startUpDesc.importers.push_back("BansheeSL"); // For importing shaders
-
-// Descriptor used for initializing the primary application window.
-startUpDesc.primaryWindowDesc.videoMode = VideoMode(windowResWidth, windowResHeight);
-startUpDesc.primaryWindowDesc.title = "Banshee Example App";
-startUpDesc.primaryWindowDesc.fullscreen = false;
-startUpDesc.primaryWindowDesc.depthBuffer = false;
-
-Application::startUp(startUpDesc);
-... set up game code ...
 Application::instance().runMainLoop();
 Application::shutDown();
 ~~~~~~~~~~~~~
 
-Read the [render targets](@ref renderTargets) manual for more information about creating render windows, and the [game objects](@ref gameObjects) manual on how to create your own components.
-
 # Importing resources
-To import a resource from a third party format into an engine-readable format use the @ref bs::Importer "Importer" module. A variety of formats like PNG, JPG, PSD, FBX, etc. are supported. Read the [importer](@ref customImporters) manual for more information about importers. 
+To import a resource from a third party format into an engine-readable format use the @ref bs::Importer "Importer" module. A variety of formats like PNG, JPG, PSD, FBX, etc. are supported. Read the @ref resourceBasicsAndImport manual for more information about resources and import. 
 
 In the example below we'll import a @ref bs::Mesh "Mesh" and a @ref bs::Texture "Texture".
 ~~~~~~~~~~~~~{.cpp}
@@ -52,9 +34,9 @@ HTexture dragonTexture = gImporter().import<Texture>("Dragon.psd");
 ~~~~~~~~~~~~~
 
 # Setting up a material
-Once we have a mesh and a texture we need some way to apply that texture to the mesh. For that reason we first import a @ref bs::Shader "Shader" that describes how is an object rendered, which we then use to create a @ref bs::Material "Material" which allows us to apply our previously loaded @ref bs::Texture "Texture".
+Once we have a mesh and a texture we need some way to apply that texture to the mesh. For that reason we first import a @ref bs::Shader "Shader" that describes how is an object rendered, which we then use to create a @ref bs::Material "Material" which allows us to apply our previously loaded **Texture**.
 
-Read the [material](@ref materials) manual for more information about shaders and materials.
+Banshee uses .bsl files to describe shaders and you can learn more about BSL syntax in the @ref bsl manual. To learn more about materials and how to use them read the @ref simpleMaterial manual.
 
 ~~~~~~~~~~~~~{.cpp}
 HShader diffuse = gImporter().import<Shader>("Diffuse.bsl");
@@ -66,9 +48,9 @@ dragonMaterial->setTexture("albedo", dragonTexture);
 # Adding an object for rendering
 To actually make our mesh render with our material, we need to add a @ref bs::SceneObject "SceneObject" onto which we attach a @ref bs::CRenderable "CRenderable" component. This component allows us to set up a mesh and a material, after which they will be automatically rendered to the active camera.
 
-To learn more about @ref bs::SceneObject "scene objects" and @ref bs::Component "components" read the [game object](@ref gameObjects) manual. You can use the same approach we followed here to add your own custom components, containing custom code.
+To learn more about scene objects and components read the @ref scenesAndComponents manual. You can use the same approach we followed here to add your own custom components, containing custom code - read more about custom components in the @ref customComponents manual.
 
-You can also read up on the [renderer](@ref renderer) manual to learn more about how the @ref bs::CRenderable "CRenderable" components works.
+You can also read the @ref renderingObjects manual to learn more about how the **CRenderable** component works.
 
 ~~~~~~~~~~~~~{.cpp}
 HSceneObject dragonSO = SceneObject::create("Dragon");
@@ -79,9 +61,10 @@ renderable->setMaterial(dragonMaterial);
 ~~~~~~~~~~~~~
 
 # Adding a scene camera
-In order to actually see our object we need to set up a camera. First create a new @ref bs::SceneObject "SceneObject" onto which you can then attach a @ref bs::CCamera "CCamera" component. After that we position the @ref bs::SceneObject "SceneObject" so it is looking at the object we set up in previous steps.
+In order to actually see our object we need to set up a camera. First create a new **SceneObject** onto which you can then attach a @ref bs::CCamera "CCamera" component. After that we position the **SceneObject** so it is looking at the object we set up in previous steps. Camera required an output surface, for which we use the primary application window as retrieved from @ref bs::Application::getPrimaryWindow() "Application::getPrimaryWindow()". Learn more about cameras in the @ref cameras manual.
 
 ~~~~~~~~~~~~~{.cpp}
+SPtr<RenderWindow> window = gApplication().getPrimaryWindow();
 HSceneObject sceneCameraSO = SceneObject::create("SceneCamera");
 HCamera sceneCamera = sceneCameraSO->addComponent<CCamera>(window);
 
@@ -90,11 +73,11 @@ sceneCameraSO->lookAt(Vector3(0, 0, 0));
 ~~~~~~~~~~~~~
 
 # Adding a GUI element
-Finally you might want to add a GUI to your application. Similar to above, create a new @ref bs::SceneObject "SceneObject" onto which we add a new @ref bs::CCamera "CCamera" used only for rendering GUI. Since we don't want it to render normal scene objects, we let it's filter `layers` to 0. 
+Finally you might want to add a GUI to your application. Similar to above, create a new **SceneObject** onto which we add a new **CCamera** used only for rendering GUI. Since we don't want it to render normal scene objects, we let it's filter `layers` to 0. 
 
-We also add a @ref bs::CGUIWidget "CGUIWidget" component onto the same @ref bs::SceneObject "SceneObject", which is used as a container for all GUI elements. After that we add a couple of @ref bs::GUIButton "GUIButtons" to the GUI.
+We also add a @ref bs::CGUIWidget "CGUIWidget" component onto the same **SceneObject**, which is used as a container for all GUI elements. After that we add a couple of @ref bs::GUIButton "GUIButton"%s to the GUI.
 
-Read the [GUI](@ref customGUI) manual for more information about GUI.
+Read the @ref guiElements and related manuals for more information about GUI.
 
 ~~~~~~~~~~~~~{.cpp}
 HSceneObject guiSO = SceneObject::create("GUI");
@@ -109,5 +92,8 @@ GUILayout* guiLayout = guiPanel->addNewElement<GUILayoutY>();
 guiLayout->addNewElement<GUIButton>(HString(L"Click me!"));
 guiLayout->addNewElement<GUIButton>(HString(L"Click me too!"));
 ~~~~~~~~~~~~~
+
+# Final result
+@ref TODO_IMAGE
 
 There is a lot more to Banshee, but hopefully this gave you a quick taste of how it works. Continue reading other manuals and the API reference for more information.
