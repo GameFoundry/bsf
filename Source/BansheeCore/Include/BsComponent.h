@@ -141,7 +141,7 @@ namespace bs
 		bool supportsNotify(TransformChangedFlags flags) const { return (mNotifyFlags & flags) != 0; }
 
 		/** Enables or disabled a flag controlling component's behaviour. */
-		void setFlag(ComponentFlag flag, bool enabled) { enabled ? mFlags.set(flag) : mFlags.unset(flag); }
+		void setFlag(ComponentFlag flag, bool enabled) { if (enabled) mFlags.set(flag); else mFlags.unset(flag); }
 
 		/** Checks if the component has a certain flag enabled. */
 		bool hasFlag(ComponentFlag flag) const { return mFlags.isSet(flag); }

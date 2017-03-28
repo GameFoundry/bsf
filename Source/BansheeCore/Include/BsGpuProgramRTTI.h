@@ -5,6 +5,7 @@
 #include "BsCorePrerequisites.h"
 #include "BsRTTIType.h"
 #include "BsGpuProgram.h"
+#include "BsGpuProgramManager.h"
 
 namespace bs
 {

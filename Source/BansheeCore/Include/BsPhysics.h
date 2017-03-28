@@ -557,8 +557,6 @@ namespace bs
 
 		bool mUpdateInProgress = false;
 		PhysicsFlags mFlags;
-
-		const static UINT32 MAX_PRIORITY = 128;
 	};
 
 	/** Provides easier access to Physics. */

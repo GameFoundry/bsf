@@ -505,7 +505,7 @@ namespace bs
 		BS_PARAM_BLOCK_ENTRY(Vector4, gViewDir)
 	BS_PARAM_BLOCK_END
 
-	extern GizmoParamBlockDef gHandleParamBlockDef;
+	extern GizmoParamBlockDef gGizmoParamBlockDef;
 
 	BS_PARAM_BLOCK_BEGIN(GizmoPickingParamBlockDef)
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatViewProj)

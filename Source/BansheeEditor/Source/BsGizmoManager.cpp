@@ -905,7 +905,7 @@ namespace bs
 
 	namespace ct
 	{
-	GizmoParamBlockDef gHandleParamBlockDef;
+	GizmoParamBlockDef gGizmoParamBlockDef;
 	GizmoPickingParamBlockDef gGizmoPickingParamBlockDef;
 
 	const float GizmoRenderer::PICKING_ALPHA_CUTOFF = 0.5f;
@@ -929,8 +929,8 @@ namespace bs
 		mPickingMaterials[0] = initData.pickingMat;
 		mPickingMaterials[1] = initData.alphaPickingMat;
 
-		mMeshGizmoBuffer = gHandleParamBlockDef.createBuffer();
-		mIconGizmoBuffer = gHandleParamBlockDef.createBuffer();
+		mMeshGizmoBuffer = gGizmoParamBlockDef.createBuffer();
+		mIconGizmoBuffer = gGizmoParamBlockDef.createBuffer();
 		mMeshPickingParamBuffer = gGizmoPickingParamBlockDef.createBuffer();
 		mIconPickingParamBuffer = gGizmoPickingParamBlockDef.createBuffer();
 	}
@@ -1027,8 +1027,8 @@ namespace bs
 
 		if (!usePickingMaterial)
 		{
-			gHandleParamBlockDef.gMatViewProj.set(mMeshGizmoBuffer, viewProjMat);
-			gHandleParamBlockDef.gViewDir.set(mMeshGizmoBuffer, (Vector4)camera->getForward());
+			gGizmoParamBlockDef.gMatViewProj.set(mMeshGizmoBuffer, viewProjMat);
+			gGizmoParamBlockDef.gViewDir.set(mMeshGizmoBuffer, (Vector4)camera->getForward());
 
 			for (auto& entry : meshes)
 			{
@@ -1133,8 +1133,8 @@ namespace bs
 
 		if (!usePickingMaterial)
 		{
-			gHandleParamBlockDef.gMatViewProj.set(mIconGizmoBuffer, projMat);
-			gHandleParamBlockDef.gViewDir.set(mIconGizmoBuffer, Vector4::ZERO);
+			gGizmoParamBlockDef.gMatViewProj.set(mIconGizmoBuffer, projMat);
+			gGizmoParamBlockDef.gViewDir.set(mIconGizmoBuffer, Vector4::ZERO);
 
 			for (UINT32 passIdx = 0; passIdx < 2; passIdx++)
 			{
