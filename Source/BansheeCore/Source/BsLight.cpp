@@ -95,10 +95,8 @@ namespace bs
 		case LightType::Directional:
 			if (mSourceRadius > 0.0f)
 			{
-				float angularDiameter = mSourceRadius * 2; // Assumed in degrees
-
 				// Use cone solid angle formulae to calculate disc solid angle
-				float solidAngle = Math::TWO_PI * (1 - cos(0.5f * angularDiameter * Math::DEG2RAD));
+				float solidAngle = Math::TWO_PI * (1 - cos(mSourceRadius * Math::DEG2RAD));
 				return mIntensity / solidAngle; // Illuminance -> luminance
 			}
 			else

@@ -39,6 +39,10 @@ namespace bs { namespace ct
 		output.attRadiusSqrdInv = 1.0f / (output.attRadius * output.attRadius);
 		output.color = Vector3(color.r, color.g, color.b);
 
+		// If directional lights, convert angular radius in degrees to radians
+		if (mInternal->getType() == LightType::Directional)
+			output.srcRadius *= Math::DEG2RAD;
+
 		// Create position for fake attenuation for area spot lights (with disc center)
 		if (mInternal->getType() == LightType::Spot)
 			output.shiftedLightPosition = output.position - output.direction * (output.srcRadius / Math::tan(spotAngle * 0.5f));

@@ -206,7 +206,7 @@ Technique
 				float roughness2 = max(surfaceData.roughness, 0.08f);
 				roughness2 *= roughness2;
 				
-				float3 lightContribution = 0;
+				float3 outLuminance = 0;
 				float alpha = 0.0f;
 				if(surfaceData.worldNormal.w > 0.0f)
 				{
@@ -233,11 +233,9 @@ Technique
 							L = DoR < distanceToDisk ? normalize(distanceToDisk * L + S * diskRadius) : R;
 						}
 						
-						// TODO - Energy conservation term?
-
 						float3 surfaceShading = getSurfaceShading(V, L, specEnergy, surfaceData);
 						float illuminance = lightData.luminance * NoL;
-						lightContribution += lightData.color * illuminance * surfaceShading;
+						outLuminance += lightData.color * illuminance * surfaceShading;
 					}
 					
 					// Handle radial lights
@@ -294,7 +292,7 @@ Technique
 						float attenuation = getRadialAttenuation(distToLightSqrd, lightData);
 						float3 surfaceShading = getSurfaceShading(V, L, specEnergy, surfaceData);
 							
-						lightContribution += lightData.color * illuminance * attenuation * surfaceShading;
+						outLuminance += lightData.color * illuminance * attenuation * surfaceShading;
                     }
 
 					// Handle spot lights
@@ -362,15 +360,15 @@ Technique
 						float attenuation = spotAttenuation * radialAttenuation;
 						float3 surfaceShading = getSurfaceShading(V, L, specEnergy, surfaceData);
 							
-						lightContribution += lightData.color * illuminance * attenuation * surfaceShading;
+						outLuminance += lightData.color * illuminance * attenuation * surfaceShading;
                     }
 					
 					// Ambient term for in-editor visualization, not used in actual lighting
-					lightContribution += surfaceData.albedo.rgb * gAmbientFactor / PI;
+					outLuminance += surfaceData.albedo.rgb * gAmbientFactor / PI;
 					alpha = 1.0f;
 				}
 				
-				return float4(lightContribution, alpha);
+				return float4(outLuminance, alpha);
 			}
 		};
 	};

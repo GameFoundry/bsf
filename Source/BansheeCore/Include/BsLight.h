@@ -96,12 +96,12 @@ namespace bs
 		 * Radius of the light source. If non-zero then this light represents an area light, otherwise it is a punctual
 		 * light. Area lights have different attenuation then punctual lights, and their appearance in specular reflections
 		 * is realistic. Shape of the area light depends on light type:
-		 *  - For directional light the shape is a disc projected on the hemisphere on the horizon. This parameter
+		 *  - For directional light the shape is a disc projected on the hemisphere on the sky. This parameter
 		 *    represents angular radius (in degrees) of the disk and should be very small (think of how much space the Sun
-		 *    takes on the sky - roughly 0.5 degrees).
-		 *  - For radial light the shape is a sphere and the radius is the radius of the sphere.
-		 *  - For spot lights the shape is a disc oriented in the direction of the spot light and the radius is the radius
-		 *    of the disc.
+		 *    takes on the sky - roughly 0.25 degree radius).
+		 *  - For radial light the shape is a sphere and the source radius is the radius of the sphere.
+		 *  - For spot lights the shape is a disc oriented in the direction of the spot light and the source radius is the
+		 *    radius of the disc.
 		 */
 		void setSourceRadius(float radius);
 
