@@ -3,7 +3,7 @@
 #define USE_COMPUTE_INDICES
 #include "$ENGINE$\LightingCommon.bslinc"
 #include "$ENGINE$\ReflectionCubemapCommon.bslinc"
-#include "$ENGINE$\ReflectionCubemapSampling.bslinc"
+#include "$ENGINE$\ImageBasedLighting.bslinc"
 
 Parameters =
 {
@@ -28,7 +28,7 @@ Technique
   : inherits("PerCameraData")
   : inherits("LightingCommon")
   : inherits("ReflectionCubemapCommon")
-  : inherits("ReflectionCubemapSampling") =
+  : inherits("ImageBasedLighting") =
 {
 	Language = "HLSL11";
 	

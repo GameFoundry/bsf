@@ -117,12 +117,12 @@
             "UUID": "26caf86e-433c-4ade-9bc5-55c136d82912"
         },
         {
-            "Path": "ReflectionCubemapSampling.bslinc",
-            "UUID": "b65d98df-45db-4b03-a97c-bca6b07f1d22"
-        },
-        {
             "Path": "SHCommon.bslinc",
             "UUID": "b2a3ecfd-77d7-4a4c-900b-91c3804f4a58"
+        },
+        {
+            "Path": "ImageBasedLighting.bslinc",
+            "UUID": "ff162afd-ed4d-4460-8982-ad6c0f7be19c"
         }
     ],
     "Shaders": [

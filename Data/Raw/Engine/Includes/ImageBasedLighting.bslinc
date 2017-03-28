@@ -1,4 +1,4 @@
-Technique : base("ReflectionCubemapSampling") =
+Technique : base("ImageBasedLighting") =
 {
 	Language = "HLSL11";
 
@@ -212,7 +212,7 @@ Technique : base("ReflectionCubemapSampling") =
 	};
 };
 
-Technique : base("ReflectionCubemapSampling") =
+Technique : base("ImageBasedLighting") =
 {
 	Language = "GLSL";
 
