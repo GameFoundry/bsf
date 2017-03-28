@@ -50,6 +50,7 @@ namespace bs { namespace ct
 		BS_PARAM_BLOCK_ENTRY(INT32, gNumProbes)
 		BS_PARAM_BLOCK_ENTRY(INT32, gSkyCubemapAvailable)
 		BS_PARAM_BLOCK_ENTRY(INT32, gSkyCubemapNumMips)
+		BS_PARAM_BLOCK_ENTRY(float, gSkyBrightness)
 	BS_PARAM_BLOCK_END
 
 	extern ReflProbeParamsParamDef gReflProbeParamsParamDef;

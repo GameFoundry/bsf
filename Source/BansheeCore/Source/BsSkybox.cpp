@@ -11,7 +11,7 @@
 namespace bs
 {
 	SkyboxBase::SkyboxBase()
-		: mIsActive(true)
+		: mIsActive(true), mBrightness(1.0f)
 	{ }
 
 	template <bool Core>
@@ -55,6 +55,7 @@ namespace bs
 	{
 		UINT32 size = 0;
 		size += rttiGetElemSize(mIsActive);
+		size += rttiGetElemSize(mBrightness);
 		size += sizeof(SPtr<ct::Texture>);
 		size += rttiGetElemSize(mUUID);
 		size += rttiGetElemSize(getCoreDirtyFlags());
@@ -63,6 +64,7 @@ namespace bs
 
 		char* dataPtr = (char*)buffer;
 		dataPtr = rttiWriteElem(mIsActive, dataPtr);
+		dataPtr = rttiWriteElem(mBrightness, dataPtr);
 		dataPtr = rttiWriteElem(mUUID, dataPtr);
 		dataPtr = rttiWriteElem(getCoreDirtyFlags(), dataPtr);
 
@@ -117,6 +119,7 @@ namespace bs
 			bool oldIsActive = mIsActive;
 
 			dataPtr = rttiReadElem(mIsActive, dataPtr);
+			dataPtr = rttiReadElem(mBrightness, dataPtr);
 			dataPtr = rttiReadElem(mUUID, dataPtr);
 			dataPtr = rttiReadElem(dirtyFlags, dataPtr);
 

@@ -95,7 +95,7 @@ namespace bs { namespace ct
 		void setReflectionProbes(const GPUReflProbeData& probeData, const SPtr<Texture>& reflectionCubemaps);
 
 		/** Binds the sky reflection & irradiance textures. Set textures to null if not available. */
-		void setSky(const SPtr<Texture>& skyReflections, const SPtr<Texture>& skyIrradiance);
+		void setSky(const SPtr<Texture>& skyReflections, const SPtr<Texture>& skyIrradiance, float brightness);
 
 		/** 
 		 * Generates a 2D 2-channel texture containing a pre-integrated G and F factors of the microfactet BRDF. This is an
@@ -152,7 +152,7 @@ namespace bs { namespace ct
 		virtual void setReflectionProbes(const GPUReflProbeData& probeData, const SPtr<Texture>& reflectionCubemaps) = 0;
 
 		/** @copydoc TiledDeferredLighting::setSky() */
-		virtual void setSky(const SPtr<Texture>& skyReflections, const SPtr<Texture>& skyIrradiance) = 0;
+		virtual void setSky(const SPtr<Texture>& skyReflections, const SPtr<Texture>& skyIrradiance, float brightness) = 0;
 	};
 
 	/** Shader that performs a lighting pass over data stored in the Gbuffer. */
@@ -175,7 +175,7 @@ namespace bs { namespace ct
 		void setReflectionProbes(const GPUReflProbeData& probeData, const SPtr<Texture>& reflectionCubemaps) override;
 
 		/** @copydoc ITiledDeferredLightingMat::setSky() */
-		void setSky(const SPtr<Texture>& skyReflections, const SPtr<Texture>& skyIrradiance) override;
+		void setSky(const SPtr<Texture>& skyReflections, const SPtr<Texture>& skyIrradiance, float brightness) override;
 	private:
 		TiledDeferredLighting mInternal;
 	};

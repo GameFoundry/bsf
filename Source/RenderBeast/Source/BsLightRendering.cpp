@@ -231,7 +231,8 @@ namespace bs { namespace ct
 		gReflProbeParamsParamDef.gReflCubemapNumMips.set(mReflectionsParamBuffer, numMips);
 	}
 
-	void TiledDeferredLighting::setSky(const SPtr<Texture>& skyReflections, const SPtr<Texture>& skyIrradiance)
+	void TiledDeferredLighting::setSky(const SPtr<Texture>& skyReflections, const SPtr<Texture>& skyIrradiance, 
+		float brightness)
 	{
 		mSkyReflectionsParam.set(skyReflections);
 		mSkyIrradianceParam.set(skyIrradiance);
@@ -246,6 +247,7 @@ namespace bs { namespace ct
 
 		gReflProbeParamsParamDef.gSkyCubemapNumMips.set(mReflectionsParamBuffer, numMips);
 		gReflProbeParamsParamDef.gSkyCubemapAvailable.set(mReflectionsParamBuffer, skyReflectionsAvailable);
+		gReflProbeParamsParamDef.gSkyBrightness.set(mReflectionsParamBuffer, brightness);
 	}
 
 	// Reverse bits functions used for Hammersley sequence
@@ -421,9 +423,9 @@ namespace bs { namespace ct
 
 	template<int MSAA_COUNT, bool CapturingReflections>
 	void TTiledDeferredLightingMat<MSAA_COUNT, CapturingReflections>::setSky(const SPtr<Texture>& skyReflections,
-		const SPtr<Texture>& skyIrradiance)
+		const SPtr<Texture>& skyIrradiance, float brightness)
 	{
-		mInternal.setSky(skyReflections, skyIrradiance);
+		mInternal.setSky(skyReflections, skyIrradiance, brightness);
 	}
 
 	TiledDeferredLightingMaterials::TiledDeferredLightingMaterials()

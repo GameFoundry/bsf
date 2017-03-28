@@ -46,11 +46,12 @@ Technique : base("ReflectionCubemapSampling") =
 				uint gNumProbes;
 				uint gSkyCubemapAvailable;
 				uint gSkyCubemapNumMips;
+				float gSkyBrightness;
 			}	
 			
 			float3 getSkyIndirectDiffuse(float3 dir)
 			{
-				return gSkyIrradianceTex.SampleLevel(gSkyIrradianceSamp, dir, 0).rgb;
+				return gSkyIrradianceTex.SampleLevel(gSkyIrradianceSamp, dir, 0).rgb * gSkyBrightness;
 			}
 			
 			float3 getSphereReflectionContribution(float normalizedDistance)
@@ -182,7 +183,7 @@ Technique : base("ReflectionCubemapSampling") =
 				if(gSkyCubemapAvailable > 0)
 				{
 					float skyMipLevel = mapRoughnessToMipLevel(roughness, gSkyCubemapNumMips);
-					float4 sample = gSkyReflectionTex.SampleLevel(gSkyReflectionSamp, dir, skyMipLevel);
+					float4 sample = gSkyReflectionTex.SampleLevel(gSkyReflectionSamp, dir, skyMipLevel) * gSkyBrightness;
 					
 					output += sample.rgb * leftoverContribution; 
 				}

@@ -29,6 +29,12 @@ namespace bs
 		/** @copydoc Skybox::setTexture */
 		void setTexture(const HTexture& texture) { mInternal->setTexture(texture); }
 
+		/** @copydoc Skybox::setBrightness */
+		void setBrightness(float brightness) { mInternal->setBrightness(brightness); }
+
+		/** @copydoc Skybox::getBrightness */
+		float getBrightness() const { return mInternal->getBrightness(); }
+
 		/** @name Internal
 		 *  @{
 		 */

@@ -1044,7 +1044,7 @@ namespace bs { namespace ct
 
 		lightingMat->setLights(*mGPULightData);
 		lightingMat->setReflectionProbes(*mGPUReflProbeData, mReflCubemapArrayTex);
-		lightingMat->setSky(mSkyboxFilteredReflections, mSkyboxIrradiance);
+		lightingMat->setSky(mSkyboxFilteredReflections, mSkyboxIrradiance, mSkybox->getBrightness());
 
 		lightingMat->execute(renderTargets, perCameraBuffer, mPreintegratedEnvBRDF, viewInfo->renderWithNoLighting());
 

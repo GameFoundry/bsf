@@ -32,6 +32,15 @@ namespace bs
 		/**	Sets whether the skybox should be used or not. */
 		void setIsActive(bool active) { mIsActive = active; _markCoreDirty(); }
 
+		/** 
+		 * Brightness multiplier that will be applied to skybox values before they're being used. Allows you to make the
+		 * skybox more or less bright. Equal to one by default. 
+		 */
+		void setBrightness(float brightness) { mBrightness = brightness; _markCoreDirty(); }
+
+		/** @see setBrightness */
+		float getBrightness() const { return mBrightness; }
+
 		/** Returns an identifier that uniquely identifies the skybox. */
 		const String& getUUID() const { return mUUID; }
 
@@ -44,6 +53,7 @@ namespace bs
 	protected:
 		String mUUID; /**< Identifier that uniquely identifies the skybox. */
 		bool mIsActive; /**< Determines whether the skybox should be rendered or not. */
+		float mBrightness; /**< Multiplier to apply to evaluated skybox values before using them. */
 	};
 
 	/** Templated base class for both core and sim thread implementations of a skybox. */
