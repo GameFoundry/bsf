@@ -28,6 +28,8 @@
 
 namespace bs
 {
+	struct Assets;
+
 	UINT32 windowResWidth = 1280;
 	UINT32 windowResHeight = 720;
 
@@ -35,7 +37,7 @@ namespace bs
 	void setUpExample();
 
 	/** Import mesh & textures used by the example. */
-	void loadAssets();
+	void loadAssets(Assets& assets);
 
 	/** Imports a mesh at the provided path and optionally scales it. */
 	HMesh loadMesh(const Path& path, float scale = 1.0f);
@@ -48,10 +50,10 @@ namespace bs
 	HTexture loadTexture(const Path& path, bool isSRGB = true, bool isCubemap = false, bool isHDR = false);
 	
 	/** Create a material used by our example model. */
-	HMaterial createMaterial();
+	void createMaterial(Assets& assets);
 
 	/** Set up example scene objects. */
-	void setUp3DScene(const HMesh& mesh, const HMaterial& material);
+	void setUp3DScene(const Assets& assets);
 
 	/** Set up input configuration and callbacks. */
 	void setUpInput();
@@ -128,21 +130,26 @@ namespace bs
 
 	HCamera sceneCamera;
 
-    HMesh exampleModel;
-    HTexture exampleAlbedoTex;
-    HTexture exampleNormalsTex;
-    HTexture exampleRoughnessTex;
-    HTexture exampleMetalnessTex;
-    HTexture exampleSkyCubemap;
-    HShader exampleShader;
-    HMaterial exampleMaterial;
+	/** Container for all resources used by the example. */
+	struct Assets
+	{
+		HMesh exampleModel;
+		HTexture exampleAlbedoTex;
+		HTexture exampleNormalsTex;
+		HTexture exampleRoughnessTex;
+		HTexture exampleMetalnessTex;
+		HTexture exampleSkyCubemap;
+		HShader exampleShader;
+		HMaterial exampleMaterial;
+	};
 
 	void setUpExample()
 	{
-		loadAssets();
-		exampleMaterial = createMaterial();
+		Assets assets;
+		loadAssets(assets);
+		createMaterial(assets);
 
-		setUp3DScene(exampleModel, exampleMaterial);
+		setUp3DScene(assets);
 		setUpInput();
 	}
 
@@ -150,20 +157,20 @@ namespace bs
 	 * Load the required resources. First try to load a pre-processed version of the resources. If they don't exist import
 	 * resources from the source formats into engine format, and save them for next time.
 	 */
-	void loadAssets()
+	void loadAssets(Assets& assets)
 	{
 		// Load an FBX mesh.
-		exampleModel = loadMesh(exampleModelPath, 10.0f);
+		assets.exampleModel = loadMesh(exampleModelPath, 10.0f);
 
         // Load textures
-        exampleAlbedoTex = loadTexture(exampleAlbedoTexPath);
-        exampleNormalsTex = loadTexture(exampleNormalsTexPath, false);
-        exampleRoughnessTex = loadTexture(exampleRoughnessTexPath, false);
-        exampleMetalnessTex = loadTexture(exampleMetalnessTexPath, false);
-        exampleSkyCubemap = loadTexture(exampleSkyCubemapPath, false, true, true);
+		assets.exampleAlbedoTex = loadTexture(exampleAlbedoTexPath);
+		assets.exampleNormalsTex = loadTexture(exampleNormalsTexPath, false);
+		assets.exampleRoughnessTex = loadTexture(exampleRoughnessTexPath, false);
+		assets.exampleMetalnessTex = loadTexture(exampleMetalnessTexPath, false);
+		assets.exampleSkyCubemap = loadTexture(exampleSkyCubemapPath, false, true, true);
 
 		// Load the default physically based shader for rendering opaque objects
-        exampleShader = BuiltinResources::instance().getBuiltinShader(BuiltinShader::Standard);
+		assets.exampleShader = BuiltinResources::instance().getBuiltinShader(BuiltinShader::Standard);
 	}
 	
 	HMesh loadMesh(const Path& path, float scale)
@@ -243,22 +250,22 @@ namespace bs
 	}	
 
 	/** Create a material using the active shader, and assign the relevant textures to it. */
-	HMaterial createMaterial()
+	void createMaterial(Assets& assets)
 	{
 		// Create a material with the active shader.
-		HMaterial exampleMaterial = Material::create(exampleShader);
+		HMaterial exampleMaterial = Material::create(assets.exampleShader);
 
         // Assign the four textures requires by the PBS shader
-        exampleMaterial->setTexture("gAlbedoTex", exampleAlbedoTex);
-        exampleMaterial->setTexture("gNormalTex", exampleNormalsTex);
-        exampleMaterial->setTexture("gRoughnessTex", exampleRoughnessTex);
-        exampleMaterial->setTexture("gMetalnessTex", exampleMetalnessTex);
+        exampleMaterial->setTexture("gAlbedoTex", assets.exampleAlbedoTex);
+        exampleMaterial->setTexture("gNormalTex", assets.exampleNormalsTex);
+        exampleMaterial->setTexture("gRoughnessTex", assets.exampleRoughnessTex);
+        exampleMaterial->setTexture("gMetalnessTex", assets.exampleMetalnessTex);
 
-		return exampleMaterial;
+		assets.exampleMaterial = exampleMaterial;
 	}
 
 	/** Set up the 3D object used by the example, and the camera to view the world through. */
-	void setUp3DScene(const HMesh& mesh, const HMaterial& material)
+	void setUp3DScene(const Assets& assets)
 	{
 		/************************************************************************/
 		/* 								SCENE OBJECT                      		*/
@@ -275,27 +282,11 @@ namespace bs
 		// Attach the Renderable component and hook up the mesh we imported earlier,
 		// and the material we created in the previous section.
 		HRenderable renderable = pistolSO->addComponent<CRenderable>();
-		renderable->setMesh(mesh);
-		renderable->setMaterial(material);
+		renderable->setMesh(assets.exampleModel);
+		renderable->setMaterial(assets.exampleMaterial);
 
 		// Add a rotator component so we can rotate the object during runtime
 		pistolSO->addComponent<ObjectRotator>();
-
-		HSceneObject planeSO = SceneObject::create("Plane");
-		planeSO->setRotation(Quaternion::getRotationFromTo(Vector3::UNIT_Z, Vector3::UNIT_Y));
-		planeSO->setScale(Vector3(3.0f, 3.0f, 1.0f));
-
-		HMaterial planeMaterial = Material::create(exampleShader);
-
-		// Assign the four textures requires by the PBS shader
-		planeMaterial->setTexture("gAlbedoTex", BuiltinResources::getTexture(BuiltinTexture::White));
-		planeMaterial->setTexture("gNormalTex", BuiltinResources::getTexture(BuiltinTexture::Normal));
-		planeMaterial->setTexture("gRoughnessTex", BuiltinResources::getTexture(BuiltinTexture::Black));
-		planeMaterial->setTexture("gMetalnessTex", BuiltinResources::getTexture(BuiltinTexture::White));
-
-		HRenderable planeRenderable = planeSO->addComponent<CRenderable>();
-		planeRenderable->setMesh(BuiltinResources::instance().getMesh(BuiltinMesh::Quad));
-		planeRenderable->setMaterial(planeMaterial);
 
         /************************************************************************/
         /* 									SKYBOX                       		*/
@@ -305,7 +296,7 @@ namespace bs
         HSceneObject skyboxSO = SceneObject::create("Skybox");
 
         HSkybox skybox = skyboxSO->addComponent<CSkybox>();
-        skybox->setTexture(exampleSkyCubemap);
+        skybox->setTexture(assets.exampleSkyCubemap);
 
 		/************************************************************************/
 		/* 									CAMERA	                     		*/
