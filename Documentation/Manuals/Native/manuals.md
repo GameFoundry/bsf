@@ -81,10 +81,10 @@ A set of manuals covering advanced functionality intented for those wanting to e
  - [Render targets](@ref renderTargets)
  - [Drawing](@ref drawing) 
  - [Load-store textures](@ref loadStoreTextures)
- - [Generic buffers](@ref genericBuffers)
+ - [GPU buffers](@ref gpuBuffers)
  - [Compute](@ref compute)
  - [Command buffers](@ref commandBuffers)
- - [Complete example](@ref lowLevelRenderingExample)
+ - [Working example](@ref lowLevelRenderingExample)
 
 ## General guides
 Name                                      | Description
@@ -105,7 +105,5 @@ Name                                      | Description
 
 Name                                      | Description
 ------------------------------------------|-------------
-[Textures](@ref textures)                 | Shows you how to create, use and manipulate textures.
 [Meshes](@ref meshes)                     | Shows you how to create, use and manipulate meshes.
 [Materials](@ref materials)				  | Shows you how to create and use materials and shaders.
-[Render API](@ref renderAPI)
