@@ -84,12 +84,24 @@ A set of manuals covering advanced functionality intented for those wanting to e
  - [GPU buffers](@ref gpuBuffers)
  - [Compute](@ref compute)
  - [Command buffers](@ref commandBuffers)
+ - [GPU profiling](@ref gpuProfiling)
  - [Working example](@ref lowLevelRenderingExample)
-
+- **More utilities**
+ - [Modules](@ref modules)
+ - [Advanced memory allocation](@ref advMemAlloc)
+ - [Crash handling](@ref crashHandling)
+ - [Dynamic libraries](@ref dynLib)
+ - [Flags](@ref flags)
+ - [Any](@ref any) 
+ - [Unit tests](@ref unitTests)
+- [Threading](@ref threading)
+- **Renderer**
+ - [Renderer extensions](@ref rendererExtensions)
+ - [Creating a renderer manually](@ref customRenderer)
+ 
 ## General guides
 Name                                      | Description
 ------------------------------------------|-------------
-[Utilities](@ref utilities)               | Provides an overview of a variety of utility systems used throughout Banshee.
 [Resources](@ref resources)  			  | Explains how resources work, including saving, loading and creating brand new resource types.
 [Scripting](@ref scripting)               | Shows you how to interact with the scripting system, and how to expose C++ objects to the scripting API.
 [Renderer](@ref renderer)    	  		  | Explains how the renderer works on the low level, and how to create a custom renderer so you may fully customize the look of your application.
