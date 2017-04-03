@@ -7,6 +7,7 @@
 #include "BsRendererCamera.h"
 #include "BsRenderTargets.h"
 #include "BsLightRendering.h"
+#include "BsImageBasedLighting.h"
 
 namespace bs { namespace ct
 {
@@ -23,9 +24,14 @@ namespace bs { namespace ct
 		SPtr<GpuParams> params = mParamsSet->getGpuParams();
 
 		params->getBufferParam(GPT_COMPUTE_PROGRAM, "gLights", mLightBufferParam);
-		params->getBufferParam(GPT_COMPUTE_PROGRAM, "gLinkedListCounter", mLinkedListCounterParam);
-		params->getBufferParam(GPT_COMPUTE_PROGRAM, "gLinkedListHeads", mLinkedListHeadsParam);
-		params->getBufferParam(GPT_COMPUTE_PROGRAM, "gLinkedList", mLinkedListParam);
+		params->getBufferParam(GPT_COMPUTE_PROGRAM, "gLightsCounter", mLightsCounterParam);
+		params->getBufferParam(GPT_COMPUTE_PROGRAM, "gLightsLLHeads", mLightsLLHeadsParam);
+		params->getBufferParam(GPT_COMPUTE_PROGRAM, "gLightsLL", mLightsLLParam);
+
+		params->getBufferParam(GPT_COMPUTE_PROGRAM, "gReflectionProbes", mProbesBufferParam);
+		params->getBufferParam(GPT_COMPUTE_PROGRAM, "gProbesCounter", mProbesCounterParam);
+		params->getBufferParam(GPT_COMPUTE_PROGRAM, "gProbesLLHeads", mProbesLLHeadsParam);
+		params->getBufferParam(GPT_COMPUTE_PROGRAM, "gProbesLL", mProbesLLParam);
 
 		GPU_BUFFER_DESC desc;
 		desc.elementCount = 1;
@@ -34,8 +40,11 @@ namespace bs { namespace ct
 		desc.type = GBT_STANDARD;
 		desc.elementSize = 0;
 
-		mLinkedListCounter = GpuBuffer::create(desc);
-		mLinkedListCounterParam.set(mLinkedListCounter);
+		mLightsCounter = GpuBuffer::create(desc);
+		mLightsCounterParam.set(mLightsCounter);
+
+		mProbesCounter = GpuBuffer::create(desc);
+		mProbesCounterParam.set(mProbesCounter);
 	}
 
 	void LightGridLLCreationMat::_initDefines(ShaderDefines& defines)
@@ -44,7 +53,7 @@ namespace bs { namespace ct
 	}
 
 	void LightGridLLCreationMat::setParams(const Vector3I& gridSize, const SPtr<GpuParamBlockBuffer>& gridParams,
-											   const SPtr<GpuBuffer>& lightsBuffer)
+		const SPtr<GpuBuffer>& lightsBuffer, const SPtr<GpuBuffer>& probesBuffer)
 	{
 		mGridSize = gridSize;
 		UINT32 numCells = gridSize[0] * gridSize[1] * gridSize[2];
@@ -58,31 +67,45 @@ namespace bs { namespace ct
 			desc.type = GBT_STANDARD;
 			desc.elementSize = 0;
 
-			mLinkedListHeads = GpuBuffer::create(desc);
-			mLinkedListHeadsParam.set(mLinkedListHeads);
+			mLightsLLHeads = GpuBuffer::create(desc);
+			mLightsLLHeadsParam.set(mLightsLLHeads);
+
+			mProbesLLHeads = GpuBuffer::create(desc);
+			mProbesLLHeadsParam.set(mProbesLLHeads);
 
 			desc.format = BF_32X4U;
 			desc.elementCount = numCells * MAX_LIGHTS_PER_CELL;
 
-			mLinkedList = GpuBuffer::create(desc);
-			mLinkedListParam.set(mLinkedList);
+			mLightsLL = GpuBuffer::create(desc);
+			mLightsLLParam.set(mLightsLL);
+
+			desc.format = BF_32X2U;
+			mProbesLL = GpuBuffer::create(desc);
+			mProbesLLParam.set(mProbesLL);
 
 			mBufferNumCells = numCells;
 		}
 
 		UINT32 zero = 0;
-		mLinkedListCounter->writeData(0, sizeof(UINT32), &zero, BWT_DISCARD);
+		mLightsCounter->writeData(0, sizeof(UINT32), &zero, BWT_DISCARD);
+		mProbesCounter->writeData(0, sizeof(UINT32), &zero, BWT_DISCARD);
 
 		// Note: Add a method to clear buffer data directly? e.g. GpuBuffer->clear(value);
-		UINT32* headsClearData = (UINT32*)bs_stack_alloc(mLinkedListHeads->getSize());
-		memset(headsClearData, 0xFFFFFFFF, mLinkedListHeads->getSize());
+		UINT32* headsClearData = (UINT32*)bs_stack_alloc(mLightsLLHeads->getSize());
+		memset(headsClearData, 0xFFFFFFFF, mLightsLLHeads->getSize());
 
-		mLinkedListHeads->writeData(0, mLinkedListHeads->getSize(), headsClearData, BWT_DISCARD);
+		mLightsLLHeads->writeData(0, mLightsLLHeads->getSize(), headsClearData, BWT_DISCARD);
+		bs_stack_free(headsClearData);
 
+		headsClearData = (UINT32*)bs_stack_alloc(mProbesLLHeads->getSize());
+		memset(headsClearData, 0xFFFFFFFF, mProbesLLHeads->getSize());
+
+		mProbesLLHeads->writeData(0, mProbesLLHeads->getSize(), headsClearData, BWT_DISCARD);
 		bs_stack_free(headsClearData);
 
 		mParamsSet->setParamBlockBuffer("GridParams", gridParams, true);
 		mLightBufferParam.set(lightsBuffer);
+		mProbesBufferParam.set(probesBuffer);
 	}
 
 	void LightGridLLCreationMat::execute(const RendererCamera& view)
@@ -99,10 +122,13 @@ namespace bs { namespace ct
 		RenderAPI::instance().dispatchCompute(numGroupsX, numGroupsY, numGroupsZ);
 	}
 
-	void LightGridLLCreationMat::getOutputs(SPtr<GpuBuffer>& linkedListHeads, SPtr<GpuBuffer>& linkedList) const
+	void LightGridLLCreationMat::getOutputs(SPtr<GpuBuffer>& lightsLLHeads, SPtr<GpuBuffer>& lightsLL, 
+		SPtr<GpuBuffer>& probesLLHeads, SPtr<GpuBuffer>& probesLL) const
 	{
-		linkedListHeads = mLinkedListHeads;
-		linkedList = mLinkedList;
+		lightsLLHeads = mLightsLLHeads;
+		lightsLL = mLightsLL;
+		probesLLHeads = mProbesLLHeads;
+		probesLL = mProbesLL;
 	}
 
 	LightGridLLReductionMat::LightGridLLReductionMat()
@@ -110,15 +136,22 @@ namespace bs { namespace ct
 	{
 		SPtr<GpuParams> params = mParamsSet->getGpuParams();
 
-		params->getBufferParam(GPT_COMPUTE_PROGRAM, "gLinkedListHeads", mLinkedListHeadsParam);
-		params->getBufferParam(GPT_COMPUTE_PROGRAM, "gLinkedList", mLinkedListParam);
+		params->getBufferParam(GPT_COMPUTE_PROGRAM, "gLightsLLHeads", mLightsLLHeadsParam);
+		params->getBufferParam(GPT_COMPUTE_PROGRAM, "gLightsLL", mLightsLLParam);
+
+		params->getBufferParam(GPT_COMPUTE_PROGRAM, "gProbesLLHeads", mProbesLLHeadsParam);
+		params->getBufferParam(GPT_COMPUTE_PROGRAM, "gProbesLL", mProbesLLParam);
 
 		params->getBufferParam(GPT_COMPUTE_PROGRAM, "gGridDataCounter", mGridDataCounterParam);
+
 		params->getBufferParam(GPT_COMPUTE_PROGRAM, "gGridLightOffsetAndSize", mGridLightOffsetAndSizeParam);
 		params->getBufferParam(GPT_COMPUTE_PROGRAM, "gGridLightIndices", mGridLightIndicesParam);
 
+		params->getBufferParam(GPT_COMPUTE_PROGRAM, "gGridProbeOffsetAndSize", mGridProbeOffsetAndSizeParam);
+		params->getBufferParam(GPT_COMPUTE_PROGRAM, "gGridProbeIndices", mGridProbeIndicesParam);
+
 		GPU_BUFFER_DESC desc;
-		desc.elementCount = 1;
+		desc.elementCount = 2;
 		desc.format = BF_32X1U;
 		desc.randomGpuWrite = true;
 		desc.type = GBT_STANDARD;
@@ -134,7 +167,8 @@ namespace bs { namespace ct
 	}
 
 	void LightGridLLReductionMat::setParams(const Vector3I& gridSize, const SPtr<GpuParamBlockBuffer>& gridParams,
-											const SPtr<GpuBuffer>& linkedListHeads, const SPtr<GpuBuffer>& linkedList)
+		const SPtr<GpuBuffer>& lightsLLHeads, const SPtr<GpuBuffer>& lightsLL,
+		const SPtr<GpuBuffer>& probeLLHeads, const SPtr<GpuBuffer>& probeLL)
 	{
 		mGridSize = gridSize;
 		UINT32 numCells = gridSize[0] * gridSize[1] * gridSize[2];
@@ -151,21 +185,33 @@ namespace bs { namespace ct
 			mGridLightOffsetAndSize = GpuBuffer::create(desc);
 			mGridLightOffsetAndSizeParam.set(mGridLightOffsetAndSize);
 
+			desc.format = BF_32X2U;
+
+			mGridProbeOffsetAndSize = GpuBuffer::create(desc);
+			mGridProbeOffsetAndSizeParam.set(mGridProbeOffsetAndSize);
+
 			desc.format = BF_32X1U;
 			desc.elementCount = numCells * MAX_LIGHTS_PER_CELL;
 			mGridLightIndices = GpuBuffer::create(desc);
 			mGridLightIndicesParam.set(mGridLightIndices);
 
+			mGridProbeIndices = GpuBuffer::create(desc);
+			mGridProbeIndicesParam.set(mGridProbeIndices);
+
 			mBufferNumCells = numCells;
 		}
 
 		// Note: Add a method to clear buffer data directly? e.g. GpuBuffer->clear(value);
-		UINT32 zero = 0;
-		mGridDataCounter->writeData(0, sizeof(UINT32), &zero, BWT_DISCARD);
+		UINT32 zeros[] = { 0, 0 };
+		mGridDataCounter->writeData(0, sizeof(UINT32) * 2, zeros, BWT_DISCARD);
 
 		mParamsSet->setParamBlockBuffer("GridParams", gridParams, true);
-		mLinkedListHeadsParam.set(linkedListHeads);
-		mLinkedListParam.set(linkedList);
+
+		mLightsLLHeadsParam.set(lightsLLHeads);
+		mLightsLLParam.set(lightsLL);
+
+		mProbesLLHeadsParam.set(probeLLHeads);
+		mProbesLLParam.set(probeLL);
 	}
 
 	void LightGridLLReductionMat::execute(const RendererCamera& view)
@@ -182,10 +228,13 @@ namespace bs { namespace ct
 		RenderAPI::instance().dispatchCompute(numGroupsX, numGroupsY, numGroupsZ);
 	}
 
-	void LightGridLLReductionMat::getOutputs(SPtr<GpuBuffer>& gridOffsetsAndSize, SPtr<GpuBuffer>& gridLightIndices) const
+	void LightGridLLReductionMat::getOutputs(SPtr<GpuBuffer>& gridLightOffsetsAndSize, SPtr<GpuBuffer>& gridLightIndices,
+		SPtr<GpuBuffer>& gridProbeOffsetsAndSize, SPtr<GpuBuffer>& gridProbeIndices) const
 	{
-		gridOffsetsAndSize = mGridLightOffsetAndSize;
+		gridLightOffsetsAndSize = mGridLightOffsetAndSize;
 		gridLightIndices = mGridLightIndices;
+		gridProbeOffsetsAndSize = mGridProbeOffsetAndSize;
+		gridProbeIndices = mGridProbeIndices;
 	}
 
 	LightGrid::LightGrid()
@@ -193,7 +242,8 @@ namespace bs { namespace ct
 		mGridParamBuffer = gLightGridParamDefDef.createBuffer();
 	}
 
-	void LightGrid::updateGrid(const RendererCamera& view, const GPULightData& lightData, bool noLighting)
+	void LightGrid::updateGrid(const RendererCamera& view, const GPULightData& lightData, const GPUReflProbeData& probeData,
+		bool noLighting)
 	{
 		UINT32 width = view.getRenderTargets()->getWidth();
 		UINT32 height = view.getRenderTargets()->getHeight();
@@ -220,26 +270,30 @@ namespace bs { namespace ct
 		UINT32 numCells = gridSize[0] * gridSize[1] * gridSize[2];
 
 		gLightGridParamDefDef.gLightOffsets.set(mGridParamBuffer, lightOffsets);
+		gLightGridParamDefDef.gNumReflProbes.set(mGridParamBuffer, probeData.getNumProbes());
 		gLightGridParamDefDef.gNumCells.set(mGridParamBuffer, numCells);
 		gLightGridParamDefDef.gGridSize.set(mGridParamBuffer, gridSize);
 		gLightGridParamDefDef.gMaxNumLightsPerCell.set(mGridParamBuffer, MAX_LIGHTS_PER_CELL);
 		gLightGridParamDefDef.gGridPixelSize.set(mGridParamBuffer, Vector2I(CELL_XY_SIZE, CELL_XY_SIZE));
 
-		mLLCreationMat.setParams(gridSize, mGridParamBuffer, lightData.getLightBuffer());
+		mLLCreationMat.setParams(gridSize, mGridParamBuffer, lightData.getLightBuffer(), probeData.getProbeBuffer());
 		mLLCreationMat.execute(view);
 
-		SPtr<GpuBuffer> linkedListHeads;
-		SPtr<GpuBuffer> linkedList;
-		mLLCreationMat.getOutputs(linkedListHeads, linkedList);
+		SPtr<GpuBuffer> lightLLHeads;
+		SPtr<GpuBuffer> lightLL;
+		SPtr<GpuBuffer> probeLLHeads;
+		SPtr<GpuBuffer> probeLL;
+		mLLCreationMat.getOutputs(lightLLHeads, lightLL, probeLLHeads, probeLL);
 
-		mLLReductionMat.setParams(gridSize, mGridParamBuffer, linkedListHeads, linkedList);
+		mLLReductionMat.setParams(gridSize, mGridParamBuffer, lightLLHeads, lightLL, probeLLHeads, probeLL);
 		mLLReductionMat.execute(view);
 	}
 
-	void LightGrid::getOutputs(SPtr<GpuBuffer>& gridOffsetsAndSize, SPtr<GpuBuffer>& gridLightIndices, 
-							   SPtr<GpuParamBlockBuffer>& gridParams) const
+	void LightGrid::getOutputs(SPtr<GpuBuffer>& gridLightOffsetsAndSize, SPtr<GpuBuffer>& gridLightIndices,
+		SPtr<GpuBuffer>& gridProbeOffsetsAndSize, SPtr<GpuBuffer>& gridProbeIndices, 
+		SPtr<GpuParamBlockBuffer>& gridParams) const
 	{
-		mLLReductionMat.getOutputs(gridOffsetsAndSize, gridLightIndices);
+		mLLReductionMat.getOutputs(gridLightOffsetsAndSize, gridLightIndices, gridProbeOffsetsAndSize, gridProbeIndices);
 		gridParams = mGridParamBuffer;
 	}
 }}

@@ -1,6 +1,7 @@
 #include "$ENGINE$\PerCameraData.bslinc"
 #define USE_LIGHT_GRID_INDICES
 #include "$ENGINE$\LightingCommon.bslinc"
+#include "$ENGINE$\ImageBasedLighting.bslinc"
 #include "$ENGINE$\LightGridCommon.bslinc"
 
 Blocks =
@@ -12,7 +13,8 @@ Blocks =
 Technique
  : inherits("PerCameraData")
  : inherits("LightingCommon")
- : inherits("LightGridCommon") =
+ : inherits("LightGridCommon")
+ : inherits("ImageBasedLighting") =
 {
 	Language = "HLSL11";
 	
@@ -20,15 +22,22 @@ Technique
 	{
 		Compute = 
 		{
-			RWBuffer<uint> gLinkedListCounter : register(u0);
-			RWBuffer<uint> gLinkedListHeads : register(u1);
-			RWBuffer<uint4> gLinkedList : register(u2);
-					
+			RWBuffer<uint> gLightsCounter;
+			RWBuffer<uint> gLightsLLHeads;
+			RWBuffer<uint4> gLightsLL;
+				
+			RWBuffer<uint> gProbesCounter;
+			RWBuffer<uint> gProbesLLHeads;
+			RWBuffer<uint2> gProbesLL;
+				
 			// Generates a an axis aligned bounding box in NDC and transforms it to view space.
 			// Note: This will overlap other cells, so it might be better to use frustum planes
 			// instead of AABB, although frustum testing procedure could result in more false positive
 			void calcCellAABB(uint3 cellIdx, out float3 center, out float3 extent)
 			{
+				// Note:: AABB calculation in tiled deferred image based lighting shader uses less instructions than this,
+				// see if it can be applied here.
+			
 				// Convert grid XY coordinates to clip coordinates
 				float2 a = 2.0f / gGridSize.xy;
 			
@@ -115,15 +124,39 @@ Technique
 						if(distSqrd <= (lightRadius * lightRadius))
 						{
 							uint nextLink;
-							InterlockedAdd(gLinkedListCounter[0], 1U, nextLink);
+							InterlockedAdd(gLightsCounter[0], 1U, nextLink);
 							
 							if(nextLink < maxNumLinks)
 							{
 								uint prevLink;
-								InterlockedExchange(gLinkedListHeads[cellIdx], nextLink, prevLink);
+								InterlockedExchange(gLightsLLHeads[cellIdx], nextLink, prevLink);
 								
-								gLinkedList[nextLink] = uint4(i, type, prevLink, 0);
+								gLightsLL[nextLink] = uint4(i, type, prevLink, 0);
 							}
+						}
+					}
+				}
+				
+				for(uint i = 0; i < gNumReflProbes; ++i)
+				{
+					float4 probePosition = mul(gMatView, float4(gReflectionProbes[i].position, 1.0f));
+					float probeRadius = gReflectionProbes[i].radius;
+					
+					// Calculate distance from box to light
+					float3 distances = max(abs(probePosition - cellCenter) - cellExtent, 0);
+					float distSqrd = dot(distances, distances);
+					
+					if(distSqrd <= (probeRadius * probeRadius))
+					{
+						uint nextLink;
+						InterlockedAdd(gProbesCounter[0], 1U, nextLink);
+						
+						if(nextLink < maxNumLinks)
+						{
+							uint prevLink;
+							InterlockedExchange(gProbesLLHeads[cellIdx], nextLink, prevLink);
+							
+							gProbesLL[nextLink] = uint2(i, prevLink);
 						}
 					}
 				}

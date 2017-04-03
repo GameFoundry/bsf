@@ -63,11 +63,16 @@ namespace bs { namespace ct
 		if (gpuParams->hasBuffer(GPT_FRAGMENT_PROGRAM, "gLights"))
 			gpuParams->getBufferParam(GPT_FRAGMENT_PROGRAM, "gLights", element.lightsBufferParam);
 
-		if(gpuParams->hasBuffer(GPT_FRAGMENT_PROGRAM, "gGridOffsetsAndSize"))
-			gpuParams->getBufferParam(GPT_FRAGMENT_PROGRAM, "gGridOffsetsAndSize", element.gridOffsetsAndSizeParam);
+		if(gpuParams->hasBuffer(GPT_FRAGMENT_PROGRAM, "gGridLightOffsetsAndSize"))
+			gpuParams->getBufferParam(GPT_FRAGMENT_PROGRAM, "gGridLightOffsetsAndSize", element.gridLightOffsetsAndSizeParam);
 
 		if (gpuParams->hasBuffer(GPT_FRAGMENT_PROGRAM, "gGridLightIndices"))
 			gpuParams->getBufferParam(GPT_FRAGMENT_PROGRAM, "gGridLightIndices", element.gridLightIndicesParam);
+
+		if (gpuParams->hasBuffer(GPT_FRAGMENT_PROGRAM, "gGridProbeOffsetsAndSize"))
+			gpuParams->getBufferParam(GPT_FRAGMENT_PROGRAM, "gGridProbeOffsetsAndSize", element.gridProbeOffsetsAndSizeParam);
+
+		element.imageBasedParams.populate(element.params, GPT_FRAGMENT_PROGRAM, true, true);
 
 		const Map<String, SHADER_OBJECT_PARAM_DESC>& bufferDescs = shader->getBufferParams();
 		String boneMatricesParamName;

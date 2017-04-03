@@ -948,19 +948,31 @@ namespace bs { namespace ct
 		perCameraBuffer->flushToGPU();
 
 		Matrix4 viewProj = viewInfo->getViewProjMatrix();
+		UINT32 numSamples = viewInfo->getNumSamples();
 
 		viewInfo->beginRendering(true);
 
 		// Prepare light grid required for transparent object rendering
-		mLightGrid->updateGrid(*viewInfo, *mGPULightData, viewInfo->renderWithNoLighting());
+		mLightGrid->updateGrid(*viewInfo, *mGPULightData, *mGPUReflProbeData, viewInfo->renderWithNoLighting());
 
 		SPtr<GpuParamBlockBuffer> gridParams;
-		SPtr<GpuBuffer> gridOffsetsAndSize, gridLightIndices;
-		mLightGrid->getOutputs(gridOffsetsAndSize, gridLightIndices, gridParams);
+		SPtr<GpuBuffer> gridLightOffsetsAndSize, gridLightIndices;
+		SPtr<GpuBuffer> gridProbeOffsetsAndSize, gridProbeIndices;
+		mLightGrid->getOutputs(gridLightOffsetsAndSize, gridLightIndices, gridProbeOffsetsAndSize, gridProbeIndices, 
+			gridParams);
+
+		// Prepare image based material and its param buffer
+		ITiledDeferredImageBasedLightingMat* imageBasedLightingMat =
+			mTileDeferredImageBasedLightingMats->get(numSamples);
+
+		imageBasedLightingMat->setReflectionProbes(*mGPUReflProbeData, mReflCubemapArrayTex, viewInfo->isRenderingReflections());
+		imageBasedLightingMat->setSky(mSkyboxFilteredReflections, mSkyboxIrradiance, mSkybox->getBrightness());
 
 		// Assign camera and per-call data to all relevant renderables
 		const VisibilityInfo& visibility = viewInfo->getVisibilityMasks();
 		UINT32 numRenderables = (UINT32)mRenderables.size();
+		SPtr<GpuParamBlockBuffer> reflParamBuffer = imageBasedLightingMat->getReflectionsParamBuffer();
+		SPtr<SamplerState> reflSamplerState = imageBasedLightingMat->getReflectionsSamplerState();
 		for (UINT32 i = 0; i < numRenderables; i++)
 		{
 			if (!visibility.renderables[i])
@@ -974,12 +986,35 @@ namespace bs { namespace ct
 				if (element.perCameraBindingIdx != -1)
 					element.params->setParamBlockBuffer(element.perCameraBindingIdx, perCameraBuffer, true);
 
+				// Everything below is required only for forward rendering (ATM only used for transparent objects)
+				// Note: It would be nice to be able to set this once and keep it, only updating if the buffers actually
+				// change (e.g. when growing). Although technically the internal systems should be smart enough to
+				// avoid updates unless objects actually changed.
 				if (element.gridParamsBindingIdx != -1)
 					element.params->setParamBlockBuffer(element.gridParamsBindingIdx, gridParams, true);
 
-				element.gridOffsetsAndSizeParam.set(gridOffsetsAndSize);
+				element.gridLightOffsetsAndSizeParam.set(gridLightOffsetsAndSize);
 				element.gridLightIndicesParam.set(gridLightIndices);
 				element.lightsBufferParam.set(mGPULightData->getLightBuffer());
+
+				// Image based lighting params
+				ImageBasedLightingParams& iblParams = element.imageBasedParams;
+				if (iblParams.reflProbeParamsBindingIdx != -1)
+					element.params->setParamBlockBuffer(iblParams.reflProbeParamsBindingIdx, reflParamBuffer);
+
+				element.gridProbeOffsetsAndSizeParam.set(gridProbeOffsetsAndSize);
+
+				iblParams.reflectionProbeIndicesParam.set(gridProbeIndices);
+				iblParams.reflectionProbesParam.set(mGPUReflProbeData->getProbeBuffer());
+
+				iblParams.skyReflectionsTexParam.set(mSkyboxFilteredReflections);
+				iblParams.skyIrradianceTexParam.set(mSkyboxIrradiance);
+
+				iblParams.reflectionProbeCubemapsTexParam.set(mReflCubemapArrayTex);
+				iblParams.preintegratedEnvBRDFParam.set(mPreintegratedEnvBRDF);
+
+				iblParams.reflectionProbeCubemapsSampParam.set(reflSamplerState);
+				iblParams.skyReflectionsSampParam.set(reflSamplerState);
 			}
 		}
 
@@ -1033,7 +1068,6 @@ namespace bs { namespace ct
 		rapi.setRenderTarget(nullptr);
 
 		// Render light pass into light accumulation buffer
-		UINT32 numSamples = viewInfo->getNumSamples();
 		ITiledDeferredLightingMat* lightingMat = mTiledDeferredLightingMats->get(numSamples);
 
 		renderTargets->allocate(RTT_LightAccumulation);
@@ -1047,11 +1081,6 @@ namespace bs { namespace ct
 		// Note: Image based lighting is split from direct lighting in order to reduce load on GPU shared memory. The
 		// image based shader ends up re-doing a lot of calculations and it could be beneficial to profile and see if
 		// both methods can be squeezed into the same shader.
-		ITiledDeferredImageBasedLightingMat* imageBasedLightingMat =
-			mTileDeferredImageBasedLightingMats->get(numSamples, viewInfo->isRenderingReflections());
-
-		imageBasedLightingMat->setReflectionProbes(*mGPUReflProbeData, mReflCubemapArrayTex);
-		imageBasedLightingMat->setSky(mSkyboxFilteredReflections, mSkyboxIrradiance, mSkybox->getBrightness());
 		imageBasedLightingMat->execute(renderTargets, perCameraBuffer, mPreintegratedEnvBRDF);
 
 		renderTargets->release(RTT_LightAccumulation);

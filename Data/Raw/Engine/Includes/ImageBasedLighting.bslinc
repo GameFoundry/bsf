@@ -1,4 +1,8 @@
-Technique : base("ImageBasedLighting") =
+#include "$ENGINE$\ReflectionCubemapCommon.bslinc"
+
+Technique 
+ : base("ImageBasedLighting")
+ : inherits("ReflectionCubemapCommon") =
 {
 	Language = "HLSL11";
 
@@ -46,6 +50,7 @@ Technique : base("ImageBasedLighting") =
 				uint gReflCubemapNumMips;
 				uint gNumProbes;
 				uint gSkyCubemapAvailable;
+				uint gUseReflectionMaps;
 				uint gSkyCubemapNumMips;
 				float gSkyBrightness;
 			}	
@@ -139,10 +144,9 @@ Technique : base("ImageBasedLighting") =
 			
 			float3 gatherReflectionRadiance(float3 worldPos, float3 dir, float roughness, float3 specularColor, uint probeOffset, uint numProbes)
 			{
-				#if CAPTURING_REFLECTIONS
+				if(gUseReflectionMaps == 0)
 					return specularColor;
-				#else
-				
+										
 				float mipLevel = mapRoughnessToMipLevel(roughness, gReflCubemapNumMips);
 				
 				float3 output = 0;
@@ -180,7 +184,7 @@ Technique : base("ImageBasedLighting") =
 						leftoverContribution *= (1.0f - contribution);
 					}
 				}
-				
+					
 				if(gSkyCubemapAvailable > 0)
 				{
 					float skyMipLevel = mapRoughnessToMipLevel(roughness, gSkyCubemapNumMips);
@@ -190,8 +194,6 @@ Technique : base("ImageBasedLighting") =
 				}
 						
 				return output;
-						
-				#endif
 			}
 			
 			float3 getImageBasedSpecular(float3 worldPos, float3 V, float3 R, SurfaceData surfaceData, uint probeOffset, uint numProbes)

@@ -4,6 +4,7 @@
 #include "BsMaterial.h"
 #include "BsShader.h"
 #include "BsGpuBuffer.h"
+#include "BsGpuParamsSet.h"
 #include "BsReflectionProbe.h"
 #include "BsLightProbeCache.h"
 #include "BsGpuParamsSet.h"
@@ -81,6 +82,40 @@ namespace bs { namespace ct
 		output.invBoxTransform.setInverseTRS(output.position, probe->getRotation(), output.boxExtents);
 	}
 
+	void ImageBasedLightingParams::populate(const SPtr<GpuParamsSet>& paramsSet, GpuProgramType programType, bool optional, 
+		bool gridIndices)
+	{
+		SPtr<GpuParams> params = paramsSet->getGpuParams();
+
+		// Sky
+		if (!optional || params->hasTexture(programType, "gSkyReflectionTex"))
+		{
+			params->getTextureParam(programType, "gSkyReflectionTex", skyReflectionsTexParam);
+			params->getSamplerStateParam(programType, "gSkyReflectionSamp", skyReflectionsSampParam);
+
+			params->getTextureParam(programType, "gSkyIrradianceTex", skyIrradianceTexParam);
+		}
+
+		// Reflections
+		if (!optional || params->hasTexture(programType, "gReflProbeCubemaps"))
+		{
+			params->getTextureParam(programType, "gReflProbeCubemaps", reflectionProbeCubemapsTexParam);
+			params->getSamplerStateParam(programType, "gReflProbeSamp", reflectionProbeCubemapsSampParam);
+
+			params->getBufferParam(programType, "gReflectionProbes", reflectionProbesParam);
+
+			params->getTextureParam(programType, "gPreintegratedEnvBRDF", preintegratedEnvBRDFParam);
+		}
+
+		if(gridIndices)
+		{
+			if (!optional || params->hasBuffer(programType, "gReflectionProbeIndices"))
+				params->getBufferParam(programType, "gReflectionProbeIndices", reflectionProbeIndicesParam);
+		}
+
+		reflProbeParamsBindingIdx = paramsSet->getParamBlockBufferIndex("ReflProbeParams");
+	}
+
 	// Note: Using larger tiles than in tiled deferred lighting since we use AABB for intersections, which is more
 	// expensive to compute than frustums. This way we amortize the cost even though other parts of the shader might suffer
 	// due to increased thread group load.
@@ -119,15 +154,7 @@ namespace bs { namespace ct
 		mParamBuffer = gTiledImageBasedLightingParamDef.createBuffer();
 		mParamsSet->setParamBlockBuffer("Params", mParamBuffer, true);
 
-		// Sky
-		params->getTextureParam(GPT_COMPUTE_PROGRAM, "gSkyReflectionTex", mSkyReflectionsParam);
-		params->getTextureParam(GPT_COMPUTE_PROGRAM, "gSkyIrradianceTex", mSkyIrradianceParam);
-
-		// Reflections
-		params->getTextureParam(GPT_COMPUTE_PROGRAM, "gReflProbeCubemaps", mReflectionProbeCubemapsParam);
-		params->getTextureParam(GPT_COMPUTE_PROGRAM, "gPreintegratedEnvBRDF", mPreintegratedEnvBRDFParam);
-
-		params->getBufferParam(GPT_COMPUTE_PROGRAM, "gReflectionProbes", mReflectionProbesParam);
+		mImageBasedParams.populate(mParamsSet, GPT_COMPUTE_PROGRAM, false, false);
 
 		mReflectionsParamBuffer = gReflProbeParamsParamDef.createBuffer();
 		mParamsSet->setParamBlockBuffer("ReflProbeParams", mReflectionsParamBuffer);
@@ -139,8 +166,8 @@ namespace bs { namespace ct
 
 		mReflectionSamplerState = SamplerState::create(reflSamplerDesc);
 
-		params->setSamplerState(GPT_COMPUTE_PROGRAM, "gSkyReflectionSamp", mReflectionSamplerState);
-		params->setSamplerState(GPT_COMPUTE_PROGRAM, "gReflProbeSamp", mReflectionSamplerState);
+		mImageBasedParams.skyReflectionsSampParam.set(mReflectionSamplerState);
+		mImageBasedParams.reflectionProbeCubemapsSampParam.set(mReflectionSamplerState);
 	}
 
 	void TiledDeferredImageBasedLighting::execute(const SPtr<RenderTargets>& renderTargets,
@@ -159,7 +186,7 @@ namespace bs { namespace ct
 		mGBufferC.set(renderTargets->getGBufferC());
 		mGBufferDepth.set(renderTargets->getSceneDepth());
 
-		mPreintegratedEnvBRDFParam.set(preintegratedGF);
+		mImageBasedParams.preintegratedEnvBRDFParam.set(preintegratedGF);
 
 		mParamsSet->setParamBlockBuffer("PerCamera", perCamera, true);
 
@@ -187,10 +214,10 @@ namespace bs { namespace ct
 	}
 
 	void TiledDeferredImageBasedLighting::setReflectionProbes(const GPUReflProbeData& probeData,
-		const SPtr<Texture>& reflectionCubemaps)
+		const SPtr<Texture>& reflectionCubemaps, bool capturingReflections)
 	{
-		mReflectionProbesParam.set(probeData.getProbeBuffer());
-		mReflectionProbeCubemapsParam.set(reflectionCubemaps);
+		mImageBasedParams.reflectionProbesParam.set(probeData.getProbeBuffer());
+		mImageBasedParams.reflectionProbeCubemapsTexParam.set(reflectionCubemaps);
 
 		gReflProbeParamsParamDef.gNumProbes.set(mReflectionsParamBuffer, probeData.getNumProbes());
 
@@ -199,13 +226,14 @@ namespace bs { namespace ct
 			numMips = reflectionCubemaps->getProperties().getNumMipmaps() + 1;
 
 		gReflProbeParamsParamDef.gReflCubemapNumMips.set(mReflectionsParamBuffer, numMips);
+		gReflProbeParamsParamDef.gUseReflectionMaps.set(mReflectionsParamBuffer, capturingReflections ? 0 : 1);
 	}
 
 	void TiledDeferredImageBasedLighting::setSky(const SPtr<Texture>& skyReflections, const SPtr<Texture>& skyIrradiance,
 		float brightness)
 	{
-		mSkyReflectionsParam.set(skyReflections);
-		mSkyIrradianceParam.set(skyIrradiance);
+		mImageBasedParams.skyReflectionsTexParam.set(skyReflections);
+		mImageBasedParams.skyIrradianceTexParam.set(skyIrradiance);
 
 		UINT32 skyReflectionsAvailable = 0;
 		UINT32 numMips = 0;
@@ -317,10 +345,10 @@ namespace bs { namespace ct
 					float NoL = std::max(L.z, 0.0f); // N assumed (0, 0, 1)
 					float NoH = std::max(H.z, 0.0f); // N assumed (0, 0, 1)
 
-													 // Set second part of the split sum integral is split into two parts:
-													 //   F0*I[G * (1 - (1 - v.h)^5) * cos(theta)] + I[G * (1 - v.h)^5 * cos(theta)] (F0 * scale + bias)
+					// Set second part of the split sum integral is split into two parts:
+					//   F0*I[G * (1 - (1 - v.h)^5) * cos(theta)] + I[G * (1 - v.h)^5 * cos(theta)] (F0 * scale + bias)
 
-													 // We calculate the fresnel scale (1 - (1 - v.h)^5) and bias ((1 - v.h)^5) parts
+					// We calculate the fresnel scale (1 - (1 - v.h)^5) and bias ((1 - v.h)^5) parts
 					float fc = pow(1.0f - VoH, 5.0f);
 					float fresnelScale = 1.0f - fc;
 					float fresnelOffset = fc;
@@ -356,84 +384,76 @@ namespace bs { namespace ct
 		return texture;
 	}
 
-	template<int MSAA_COUNT, bool CapturingReflections>
-	TTiledDeferredImageBasedLightingMat<MSAA_COUNT, CapturingReflections>::TTiledDeferredImageBasedLightingMat()
+	template<int MSAA_COUNT>
+	TTiledDeferredImageBasedLightingMat<MSAA_COUNT>::TTiledDeferredImageBasedLightingMat()
 		:mInternal(mMaterial, mParamsSet, MSAA_COUNT)
 	{
 
 	}
 
-	template<int MSAA_COUNT, bool CapturingReflections>
-	void TTiledDeferredImageBasedLightingMat<MSAA_COUNT, CapturingReflections>::_initDefines(ShaderDefines& defines)
+	template<int MSAA_COUNT>
+	void TTiledDeferredImageBasedLightingMat<MSAA_COUNT>::_initDefines(ShaderDefines& defines)
 	{
 		defines.set("TILE_SIZE", TiledDeferredImageBasedLighting::TILE_SIZE);
 		defines.set("MSAA_COUNT", MSAA_COUNT);
-		defines.set("CAPTURING_REFLECTIONS", CapturingReflections);
 	}
 
-	template<int MSAA_COUNT, bool CapturingReflections>
-	void TTiledDeferredImageBasedLightingMat<MSAA_COUNT, CapturingReflections>::execute(const SPtr<RenderTargets>& gbuffer,
+	template<int MSAA_COUNT>
+	void TTiledDeferredImageBasedLightingMat<MSAA_COUNT>::execute(const SPtr<RenderTargets>& gbuffer,
 		const SPtr<GpuParamBlockBuffer>& perCamera, const SPtr<Texture>& preintegratedGF)
 	{
 		mInternal.execute(gbuffer, perCamera, preintegratedGF);
 	}
 
-	template<int MSAA_COUNT, bool CapturingReflections>
-	void TTiledDeferredImageBasedLightingMat<MSAA_COUNT, CapturingReflections>::setReflectionProbes(
-		const GPUReflProbeData& probeData, const SPtr<Texture>& reflectionCubemaps)
+	template<int MSAA_COUNT>
+	void TTiledDeferredImageBasedLightingMat<MSAA_COUNT>::setReflectionProbes(const GPUReflProbeData& probeData, 
+		const SPtr<Texture>& reflectionCubemaps, bool capturingReflections)
 	{
-		mInternal.setReflectionProbes(probeData, reflectionCubemaps);
+		mInternal.setReflectionProbes(probeData, reflectionCubemaps, capturingReflections);
 	}
 
-	template<int MSAA_COUNT, bool CapturingReflections>
-	void TTiledDeferredImageBasedLightingMat<MSAA_COUNT, CapturingReflections>::setSky(const SPtr<Texture>& skyReflections,
+	template<int MSAA_COUNT>
+	void TTiledDeferredImageBasedLightingMat<MSAA_COUNT>::setSky(const SPtr<Texture>& skyReflections,
 		const SPtr<Texture>& skyIrradiance, float brightness)
 	{
 		mInternal.setSky(skyReflections, skyIrradiance, brightness);
 	}
 
+	template<int MSAA_COUNT>
+	SPtr<GpuParamBlockBuffer> TTiledDeferredImageBasedLightingMat<MSAA_COUNT>::getReflectionsParamBuffer() const
+	{
+		return mInternal.getReflectionsParamBuffer();
+	}
+
+	template<int MSAA_COUNT>
+	SPtr<SamplerState> TTiledDeferredImageBasedLightingMat<MSAA_COUNT>::getReflectionsSamplerState() const
+	{
+		return mInternal.getReflectionsSamplerState();
+	}
+
 	TiledDeferredImageBasedLightingMaterials::TiledDeferredImageBasedLightingMaterials()
 	{
-		mInstances[0] = bs_new<TTiledDeferredImageBasedLightingMat<1, false>>();
-		mInstances[1] = bs_new<TTiledDeferredImageBasedLightingMat<2, false>>();
-		mInstances[2] = bs_new<TTiledDeferredImageBasedLightingMat<4, false>>();
-		mInstances[3] = bs_new<TTiledDeferredImageBasedLightingMat<8, false>>();
-
-		mInstances[4] = bs_new<TTiledDeferredImageBasedLightingMat<1, true>>();
-		mInstances[5] = bs_new<TTiledDeferredImageBasedLightingMat<2, true>>();
-		mInstances[6] = bs_new<TTiledDeferredImageBasedLightingMat<4, true>>();
-		mInstances[7] = bs_new<TTiledDeferredImageBasedLightingMat<8, true>>();
+		mInstances[0] = bs_new<TTiledDeferredImageBasedLightingMat<1>>();
+		mInstances[1] = bs_new<TTiledDeferredImageBasedLightingMat<2>>();
+		mInstances[2] = bs_new<TTiledDeferredImageBasedLightingMat<4>>();
+		mInstances[3] = bs_new<TTiledDeferredImageBasedLightingMat<8>>();
 	}
 
 	TiledDeferredImageBasedLightingMaterials::~TiledDeferredImageBasedLightingMaterials()
 	{
-		for (UINT32 i = 0; i < 8; i++)
+		for (UINT32 i = 0; i < 4; i++)
 			bs_delete(mInstances[i]);
 	}
 
-	ITiledDeferredImageBasedLightingMat* TiledDeferredImageBasedLightingMaterials::get(UINT32 msaa, bool capturingReflections)
+	ITiledDeferredImageBasedLightingMat* TiledDeferredImageBasedLightingMaterials::get(UINT32 msaa)
 	{
-		if (!capturingReflections)
-		{
-			if (msaa == 1)
-				return mInstances[0];
-			else if (msaa == 2)
-				return mInstances[1];
-			else if (msaa == 4)
-				return mInstances[2];
-			else
-				return mInstances[3];
-		}
+		if (msaa == 1)
+			return mInstances[0];
+		else if (msaa == 2)
+			return mInstances[1];
+		else if (msaa == 4)
+			return mInstances[2];
 		else
-		{
-			if (msaa == 1)
-				return mInstances[4];
-			else if (msaa == 2)
-				return mInstances[5];
-			else if (msaa == 4)
-				return mInstances[6];
-			else
-				return mInstances[7];
-		}
+			return mInstances[3];
 	}
 }}

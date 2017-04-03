@@ -7,6 +7,7 @@
 #include "BsRenderable.h"
 #include "BsParamBlocks.h"
 #include "BsMaterialParam.h"
+#include "BsImageBasedLighting.h"
 
 namespace bs { namespace ct
 {
@@ -71,13 +72,22 @@ namespace bs { namespace ct
 		 * Parameter to which to bind a buffer containing light grid offsets and size, per grid cell. Used for forward
 		 * rendering. 
 		 */
-		GpuParamBuffer gridOffsetsAndSizeParam;
+		GpuParamBuffer gridLightOffsetsAndSizeParam;
 
 		/** Parameter to which to bind a buffer containing all light indices, as mapped by grid offsets & size. */
 		GpuParamBuffer gridLightIndicesParam;
 
 		/** Parameter to which to bind light buffer used for forward rendering. */
 		GpuParamBuffer lightsBufferParam;
+
+		/** 
+		 * Parameter to which to bind a buffer containing reflection probe grid offsets and size, per grid cell. Used for
+		 * forward rendering. 
+		 */
+		GpuParamBuffer gridProbeOffsetsAndSizeParam;
+
+		/** Collection of parameters used for image based lighting. */
+		ImageBasedLightingParams imageBasedParams;
 
 		/** GPU buffer containing element's bone matrices, if it requires any. */
 		SPtr<GpuBuffer> boneMatrixBuffer;

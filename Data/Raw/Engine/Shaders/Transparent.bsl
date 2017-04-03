@@ -59,7 +59,8 @@ Technique
 			Texture2D gRoughnessTex : register(t2);
 			Texture2D gMetalnessTex : register(t3);
 			
-			Buffer<uint3> gGridOffsetsAndSize : register(t4);
+			Buffer<uint4> gGridLightOffsetsAndSize;
+			Buffer<uint2> gGridProbeOffsetsAndSize;
 
 			cbuffer MaterialParams : register(b5)
 			{
@@ -80,13 +81,15 @@ Technique
 				
 				uint2 pixelPos = (uint2)input.position.xy;
 				uint cellIdx = calcCellIdx(pixelPos, input.position.z);
-				uint3 offsetAndSize = gGridOffsetsAndSize[cellIdx];
+				uint3 lightOffsetAndSize = gGridLightOffsetsAndSize[cellIdx].rgb;
 				
 				uint4 lightOffsets;
 				lightOffsets.x = gLightOffsets[0];
-				lightOffsets.y = offsetAndSize.x;
-				lightOffsets.z = lightOffsets.y + offsetAndSize.y;
-				lightOffsets.w = lightOffsets.z + offsetAndSize.z;
+				lightOffsets.y = lightOffsetAndSize.x;
+				lightOffsets.z = lightOffsets.y + lightOffsetAndSize.y;
+				lightOffsets.w = lightOffsets.z + lightOffsetAndSize.z;
+				
+				uint2 reflProbeOffsetAndSize = gGridProbeOffsetsAndSize[cellIdx];
 				
 				float3 V = normalize(gViewOrigin - input.worldPosition);
 				float3 N = surfaceData.worldNormal.xyz;
@@ -95,7 +98,8 @@ Technique
 				
 				float4 directLighting = getDirectLighting(input.worldPosition, V, specR, surfaceData, lightOffsets);
 				float3 indirectDiffuse = getSkyIndirectDiffuse(surfaceData.worldNormal) * surfaceData.albedo;
-				float3 imageBasedSpecular = getImageBasedSpecular(input.worldPosition, V, specR, surfaceData, 0, 0);
+				float3 imageBasedSpecular = getImageBasedSpecular(input.worldPosition, V, specR, surfaceData, 
+					reflProbeOffsetAndSize.x, reflProbeOffsetAndSize.y);
 
 				float3 totalLighting = directLighting.rgb;
 				totalLighting.rgb += indirectDiffuse;
