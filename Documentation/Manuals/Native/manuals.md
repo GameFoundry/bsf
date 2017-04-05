@@ -95,6 +95,7 @@ A set of manuals covering advanced functionality intented for those wanting to e
  - [Any](@ref any) 
  - [Unit tests](@ref unitTests)
 - [Threading](@ref threading)
+- [Plugins](@ref plugins)
 - **Renderer**
  - [Renderer extensions](@ref rendererExtensions)
  - [Creating a renderer manually](@ref customRenderer)
@@ -108,7 +109,6 @@ Name                                      | Description
 [BSLFX](@ref bsl)    	  		  		  | Provides a reference for the Banshee Shading Language syntax.
 [Custom GUI elements](@ref customGUI)     | Shows you how to create custom GUI elements, manually render text or modify GUI system in a general way.
 [Custom importers](@ref customImporters)  | Shows you how to create importers that handle conversion of third party resources into engine ready formats.
-[Custom plugins](@ref customPlugins)      | Shows you how to create custom plugins that can be loaded by Banshee.
 [Quick reference](@ref quickref)          | Provides a few bits of commonly required information, that might be hard to remember otherwise.
 [Porting](@ref porting)                   | Information about how to go on about porting Banshee to a different operating system.
 [Code style](@ref style)                  | Information about code style used when writing Banshee.

@@ -1,32 +1,103 @@
-Creating custom plugins						{#customPlugins}
+Plugins						{#plugins}
 ===============
 [TOC]
 
 Many systems in Banshee are implemented through plugins, libraries that are separate from the core of the engine and can be dynamically loaded or unloaded. If possible, it is the prefered way of extending the engine.
 
-The default Banshee @ref bs::CoreApplication "Application" supports plugins for the following systems:
- - Rendering API - Wrappers for render APIs like DirectX or OpenGL. See the manual about working with [low level render API] (@ref renderAPI) for more information.
- - Renderer - Renderer that determines how is the scene displayed (lighting, shadows, post-processing, etc.). See the manual about implementing [custom renderers](@ref renderer).
+Banshee supports plugins for the following systems:
+ - Audio - Systems for providing audio playback.
+ - Importers - Importers that handle conversion of some third party resource format into an engine-ready format.
  - Input - Reports input events (mouse, keyboard, gamepad, etc.)
- - Physics - Runs the physics simulation (like NVIDIA PhysX)
- - Importers - Importers that handle conversion of some third party resource format into an engine-ready format. See the manual about implementing [custom importers](@ref customImporters).
+ - Physics - Runs the physics simulation.
+ - Renderer - Determines how is the scene displayed (lighting, shadows, post-processing, etc.). 
+ - Rendering API - Wrappers for render APIs like DirectX, OpenGL or Vulkan.
  
-The supported plugins will be automatically loaded and unloaded by the application as needed, all you need to do is to provide names of their libraries to the @ref bs::START_UP_DESC "START_UP_DESC" used to initialize the application. All plugins should be in the same folder as the main application executable. 
+You can choose which plugins are loaded on **Application** start-up, by filling out the @ref bs::START_UP_DESC "START_UP_DESC" structure.
 
-Aside from the supported plugins you can also create fully custom plugins that you load or unload manually.
-
-# Implementing supported plugins {#customPlugins_a}
-All supported plugins implement an informal interface through global "extern" methods. The interface supports three methods:
- - loadPlugin() - Called when the plugin is initially loaded
- - updatePlugin() - Called every frame
- - unloadPlugin() - Called just before the plugin is unloaded
- 
-You may choose to implement some, or none of these, although usually at least `loadPlugin()` method is needed so the plugin can register itself with the necessary system. A simple implementation might look like so:
 ~~~~~~~~~~~~~{.cpp}
+START_UP_DESC startUpDesc;
+
+// Required plugins
+startUpDesc.renderAPI = "BansheeD3D11RenderAPI";
+startUpDesc.renderer = "RenderBeast";
+startUpDesc.audio = "BansheeOpenAudio";
+startUpDesc.physics = "BansheePhysX";
+startUpDesc.input = "BansheeOISInput";
+
+// List of importer plugins we plan on using for importing various resources
+startUpDesc.importers.push_back("BansheeFreeImgImporter"); // For importing textures
+startUpDesc.importers.push_back("BansheeFBXImporter"); // For importing meshes
+startUpDesc.importers.push_back("BansheeFontImporter"); // For importing fonts
+startUpDesc.importers.push_back("BansheeSL"); // For importing shaders
+
+// ... also set up primary window in startUpDesc ...
+
+Application::startUp(startUpDesc);
+
+// ... create scene, run main loop, shutdown
+~~~~~~~~~~~~~ 
+ 
+In this manual we'll focus on general functionality common to all plugins, while we'll talk about how to implement plugins for specific systems in later manuals. 
+
+# Generating a CMake project {#plugins_a}
+Plugins are always created as their own projects/libraries. Banshee uses the CMake build system for managing its projects. Therefore the first step you need to take is to create your own CMake project. This involves creating a new folder in the /Source directory (e.g. Source/MyPlugin), with a CMakeLists.txt file inside it. CMakeLists.txt will contain references to needed header & source files, as well as dependencies to any other libraries. 
+ 
+An example CMakeLists.txt might look like so:
+~~~~~~~~~~~~~
+# --Source files--
+set(SOURCE_FILES
+	"Include/MyHeader.h"
+	"Source/MyPlugin.cpp"	
+)
+
+# --Include directories--
+# This plugin depends on BansheeUtility, BansheeCore and BansheeEngine libraries, as well as a third party library named someThirdPartyLib, so we reference the folders where their header files are located. Paths are relative to the plugin folder.
+set(INCLUDE_DIRS
+	"Include" 
+	"../BansheeUtility/Include" 
+	"../BansheeCore/Include"
+	"../BansheeEngine/Include"
+	"../../Dependencies/someThirdPartyLib/include")
+
+include_directories(${INCLUDE_DIRS})	
+	
+# --Target--
+# Registers our plugin a specific name (MyPlugin) and with the relevant source files
+add_library(MyPlugin SHARED ${SOURCE_FILES})
+
+# --Libraries--
+# Registers dependencies on any other libraries
+## Register dependency on an external library: someThirdPartyLib
+add_library_per_config(MyPlugin someThirdPartyLib Release/someThirdPartyLib Debug/someThirdPartyLib)
+
+## Register dependencies on Banshee libraries
+target_link_libraries(MyPlugin PUBLIC BansheeUtility BansheeCore BansheeEngine)
+~~~~~~~~~~~~~
+
+Note that we won't go into details about CMake syntax, it's complex and there are many other guides already written on it.
+
+After creating your project's CMake file, you need to register it with the main CMakeLists.txt present in the /Source directory. Simply append the following line:
+~~~~~~~~~~~~~
+# Provided your plugin is located in Source/MyPlugin folder
+add_subdirectory(MyPlugin)
+~~~~~~~~~~~~~
+
+# Plugin interface {#customPlugins_b}
+If you wish to create a plugin for any of the systems listed above, you will need to implement an informal interface through global "extern" methods. The interface supports three functions:
+ - **loadPlugin()** - Called when the plugin is initially loaded
+ - **updatePlugin()** - Called every frame
+ - **unloadPlugin()** - Called just before the plugin is unloaded
+ 
+You may choose to implement some, or none of these, although usually at least **loadPlugin()** method is needed so the plugin can register itself with the necessary system.
+~~~~~~~~~~~~~{.cpp}
+class MyPlugin : Module<MyPlugin>
+{
+};
 
 extern "C" BS_MYPLUGIN_EXPORT void* loadPlugin()
 {
-	// Do something on load
+	MyPlugin::startUp();
+
 	return nullptr; // Not used
 }
 
@@ -37,38 +108,39 @@ extern "C" BS_MYPLUGIN_EXPORT void updatePlugin()
 
 extern "C" BS_MYPLUGIN_EXPORT void unloadPlugin()
 {
-	// Do something before unload
+	MyPlugin::shutDown();
 }
 
+// BS_MYPLUGIN_EXPORT is a macro for a compiler-specific export attribute
+// (e.g. __declspec(dllexport) for Visual Studio (MSVC))
 ~~~~~~~~~~~~~
 
-It's important that all instances of types (classes/structs) from the plugin are deleted before plugin unload happens. If this doesn't happen, and an object instance is deleted after the plugin has been unloaded you will end up with a corrupt virtual function table and a crash. Normally this is handled for you, but it's good to keep in mind depending on what your plugin is doing.
+After you have your plugin interface, all you need to do is to pass the name of your plugin (as defined in CMake) to one of the entries in **START_UP_DESC** for it to be loaded.
 
-The exact implementations of these methods differ depending for which system are you implementing a plugin for, but we won't go into details for individual systems here. In most cases it just involves registering the plugin instance using some global manager. For example check "BsSLPlugin.cpp" in the @ref BansheeSL plugin, which registers a new importer that supports ".bsl" files.
+> It's important that all objects created by the plugin are deleted before plugin unload happens. If this doesn't happen, and an object instance is deleted after the plugin has been unloaded you will end up with a corrupt virtual function table and a crash. 
 
-# Custom plugins {#customPlugins_b}
-Custom plugins can do whatever you wish, engine has no expectations from them so its up to your to load/unload them and to call their methods.
+# Fully custom plugins {#plugins_c}
+You can also create a fully customized plugin that doesn't implement functionality for any existing engine system. The engine has no interface expectations for such plugins, and it's up to you to manually load/unload them, as well as to manually call their functions.
 
 To load a custom plugin you can use:
- - @ref bs::CoreApplication::loadPlugin "Application::loadPlugin" - Accepts the name of the plugin library and outputs the library object. Optionally you may also pass a parameter to the `loadPlugin` method, if yours accepts one.
- - @ref bs::CoreApplication::unloadPlugin "Application::unloadPlugin" - Unloads a previously loaded plugin. 
+ - @ref bs::CoreApplication::loadPlugin "Application::loadPlugin()" - Accepts the name of the plugin library and outputs the library object. Optionally you may also pass a parameter to the **loadPlugin** method, if your plugin defines one.
+ - @ref bs::CoreApplication::unloadPlugin "Application::unloadPlugin()" - Unloads a previously loaded plugin. 
 
-Both of those methods internally call @ref bs::DynLibManager "DynLibManager". You can use it directly if you do not need the plugin interface (`loadPlugin` and etc.), it has two methods:
- - @ref bs::DynLibManager::load "DynLibManager::load" - Accepts a file name to the library, and returns the @ref bs::DynLib "DynLib" object if the load is successful or null otherwise. 
- - @ref bs::DynLibManager::unload "DynLibManager::unload" - Unloads a previously loaded library.
- 
-Once the library is loaded you can use the @ref bs::DynLib "DynLib" object, and its @ref bs::DynLib::getSymbol "DynLib::getSymbol" method to retrieve a function pointer within the dynamic library, and call into it. For example if we wanted to retrieve a function pointer for the `loadPlugin` method from the previous chapter:
 ~~~~~~~~~~~~~{.cpp}
-// Load library
-DynLib* myLibrary = DynLibManager::instance().load("myPlugin");
+DynLib* pluginLib;
+gApplication()::loadPlugin("MyPlugin", &pluginLib);
+// Do something
+gApplication()::unloadPlugin(pluginLib);
+~~~~~~~~~~~~~ 
+ 
+Both of those methods internally call **DynLibManager** which we described earlier. In fact you can also use it directly for loading plugins, as an alternative to this approach.
 
+Once the library is loaded you can use the @ref bs::DynLib "DynLib" object, and its @ref bs::DynLib::getSymbol "DynLib::getSymbol()" method to retrieve a function pointer within the dynamic library, and call into it. 
+~~~~~~~~~~~~~{.cpp}
 // Retrieve function pointer (symbol)
 typedef void* (*LoadPluginFunc)();
-LoadPluginFunc loadPluginFunc = (LoadPluginFunc)myLibrary->getSymbol("loadPlugin");
+LoadPluginFunc loadPluginFunc = (LoadPluginFunc)pluginLib->getSymbol("loadPlugin");
 
 // Call the function
 loadPluginFunc();
-
-// Assuming we're done, unload the plugin
-DynLibManager::instance().unload(myLibrary);
 ~~~~~~~~~~~~~
