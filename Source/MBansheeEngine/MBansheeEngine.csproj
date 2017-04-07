@@ -213,6 +213,7 @@
     <Compile Include="Rendering\TextureCube.cs" />
     <Compile Include="Utility\Time.cs" />
     <Compile Include="Input\VirtualInput.cs" />
+	<Compile Include="Generated\*.cs"/>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

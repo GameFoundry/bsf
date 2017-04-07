@@ -37,8 +37,8 @@ namespace bs
 	};
 
 	/**	Base class for a specific builtin component's interop object. */
-	template<class ScriptClass, class CompType>
-	class BS_SCR_BE_EXPORT TScriptComponent : public ScriptObject <ScriptClass, ScriptComponentBase>
+	template<class ScriptClass, class CompType, class BaseType = ScriptComponentBase>
+	class BS_SCR_BE_EXPORT TScriptComponent : public ScriptObject <ScriptClass, BaseType>
 	{
 	public:
 		/**	Returns a generic handle to the internal wrapped component. */
@@ -54,7 +54,7 @@ namespace bs
 		friend class ScriptGameObjectManager;
 
 		TScriptComponent(MonoObject* instance, const GameObjectHandle<CompType>& component)
-			:ScriptObject<ScriptClass, ScriptComponentBase>(instance), mComponent(component)
+			:ScriptObject<ScriptClass, BaseType>(instance), mComponent(component)
 		{
 			mManagedHandle = MonoUtil::newGCHandle(instance);
 
@@ -72,7 +72,7 @@ namespace bs
 			BS_ASSERT(!mHandleValid);
 			mManagedHandle = MonoUtil::newGCHandle(this->mManagedInstance);
 
-			ScriptObject<ScriptClass, ScriptComponentBase>::endRefresh(backupData);
+			ScriptObject<ScriptClass, BaseType>::endRefresh(backupData);
 		}
 
 		/**

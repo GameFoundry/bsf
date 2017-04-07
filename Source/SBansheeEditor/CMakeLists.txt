@@ -1,6 +1,9 @@
 # Source files and their filters
 include(CMakeSources.cmake)
 
+source_group("Header Files\\Generated" FILES ${BS_GENERATED_EDITOR_H_FILES})
+source_group("Source Files\\Generated" FILES ${BS_GENERATED_EDITOR_CPP_FILES})
+
 # Includes
 set(SBansheeEditor_INC 
 	"Include"
@@ -10,7 +13,7 @@ set(SBansheeEditor_INC
 	"../BansheeEditor/Include"
 	"../BansheeMono/Include"
 	"../SBansheeEngine/Include"
-	"${PROJECT_BINARY_DIR}/Generated/Cpp/Editor/Include")
+	"${PROJECT_BINARY_DIR}/Generated/Editor/Include")
 
 include_directories(${SBansheeEditor_INC})	
 

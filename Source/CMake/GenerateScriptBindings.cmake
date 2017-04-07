@@ -47,11 +47,9 @@ set(BS_SCRIPT_PARSER_INCLUDE_DIRS ${BS_SCRIPT_PARSER_INCLUDE_DIRS} "BansheeMono/
 list(REMOVE_DUPLICATES BS_SCRIPT_PARSER_INCLUDE_DIRS)
 list(REMOVE_DUPLICATES BS_SCRIPT_PARSER_H_FILES)
 
-# Overriding previous code and using a fixed set of files in order to speed up parsing
-#set(BS_SCRIPT_PARSER_SOURCE_FILES "")
-#list(APPEND BS_SCRIPT_PARSER_SOURCE_FILES "BansheeUtility/Include/PixelVolume.h");
-
-set(BS_GENERATED_FILES_OUTPUT_DIR ${PROJECT_BINARY_DIR}/Generated)
+set(BS_GENERATED_CPP_OUTPUT_DIR ${PROJECT_BINARY_DIR}/Generated)
+set(BS_GENERATED_CS_ENGINE_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/MBansheeEngine/Generated)
+set(BS_GENERATED_CS_EDITOR_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/MBansheeEditor/Generated)
 prepend(BS_INCLUDE_DIRS "-I${PROJECT_SOURCE_DIR}" ${BS_SCRIPT_PARSER_INCLUDE_DIRS})
 
 # Generate a single .cpp file including all headers
@@ -60,27 +58,50 @@ FOREACH(f ${BS_SCRIPT_PARSER_H_FILES})
 	LIST(APPEND BS_GLOBAL_FILE_CONTENTS "#include \"${f}\"\n")
 ENDFOREACH(f)
 
-file(WRITE ${BS_GENERATED_FILES_OUTPUT_DIR}/toParse.cpp ${BS_GLOBAL_FILE_CONTENTS})
+file(WRITE ${BS_GENERATED_CPP_OUTPUT_DIR}/toParse.cpp ${BS_GLOBAL_FILE_CONTENTS})
 
-#execute_process(
-#    COMMAND ${PROJECT_SOURCE_DIR}/../Dependencies/tools/SBGen 
-#		${BS_GENERATED_FILES_OUTPUT_DIR}/toParse.cpp
-#		-output ${BS_GENERATED_FILES_OUTPUT_DIR}
-#		-- ${BS_INCLUDE_DIRS}
-#		-DBS_STATIC_LIB
-#	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-#    RESULT_VARIABLE SBGEN_RETURN_VALUE
-#)
+find_package(BansheeSBGen)
+if(BansheeSBGen_FOUND)
+	set(BS_GSB_COMMAND ${BansheeSBGen_EXECUTABLE_PATH}
+		${BS_GENERATED_CPP_OUTPUT_DIR}/toParse.cpp
+		-output-cpp ${BS_GENERATED_CPP_OUTPUT_DIR}
+		-output-cs-engine ${BS_GENERATED_CS_ENGINE_OUTPUT_DIR}
+		-output-cs-editor ${BS_GENERATED_CS_EDITOR_OUTPUT_DIR}
+		-- ${BS_INCLUDE_DIRS}
+		-DBS_STATIC_LIB
+		-w)
 
-#if (NOT SBGEN_RETURN_VALUE EQUAL 0)
-#    message(FATAL_ERROR "Failed to generate script bindings.")
-#endif()
+	message(STATUS "Generating script bindings, please wait...")
+	execute_process(
+		COMMAND ${BS_GSB_COMMAND}
+		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+		RESULT_VARIABLE SBGEN_RETURN_VALUE
+	)
 
-file(GLOB BS_GENERATED_ENGINE_H_FILES ${BS_GENERATED_FILES_OUTPUT_DIR}/Cpp/Engine/Include/*)
-file(GLOB BS_GENERATED_ENGINE_CPP_FILES ${BS_GENERATED_FILES_OUTPUT_DIR}/Cpp/Engine/Source/*)
+	if (NOT SBGEN_RETURN_VALUE EQUAL 0)
+		message(FATAL_ERROR "Failed to generate script bindings.")
+	else()
+		message(STATUS "...scripting binding generation OK.")
+	endif()	
+		
+	add_custom_target(GenerateScriptBindings
+		COMMAND ${BS_GSB_COMMAND}
+		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+		COMMENT "Generating script bindings, please wait...")	
+		
+	#add_custom_command(
+	#	OUTPUT ${BS_GENERATED_CPP_OUTPUT_DIR}/scriptBindings2.timestamp
+	#	COMMAND echo "Test"
+	#	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/input.cpp
+	#	COMMENT "Generating script bindings, please wait...")	
+		
+	#add_custom_target(GenerateScriptBindings 
+	#	DEPENDS ${BS_GENERATED_CPP_OUTPUT_DIR}/scriptBindings2.timestamp
+	#	COMMENT "Running custom target")	
+		
+	file(GLOB BS_GENERATED_ENGINE_H_FILES ${BS_GENERATED_CPP_OUTPUT_DIR}/Engine/Include/*)
+	file(GLOB BS_GENERATED_ENGINE_CPP_FILES ${BS_GENERATED_CPP_OUTPUT_DIR}/Engine/Source/*)
 
-file(GLOB BS_GENERATED_EDITOR_H_FILES ${BS_GENERATED_FILES_OUTPUT_DIR}/Cpp/Editor/Include/*)
-file(GLOB BS_GENERATED_EDITOR_CPP_FILES ${BS_GENERATED_FILES_OUTPUT_DIR}/Cpp/Editor/Source/*)
-
-file(GLOB BS_GENERATED_ENGINE_CS_FILES ${BS_GENERATED_FILES_OUTPUT_DIR}/Cs/Engine/*)
-file(GLOB BS_GENERATED_EDITOR_CS_FILES ${BS_GENERATED_FILES_OUTPUT_DIR}/Cs/Editor/*)
+	file(GLOB BS_GENERATED_EDITOR_H_FILES ${BS_GENERATED_CPP_OUTPUT_DIR}/Editor/Include/*)
+	file(GLOB BS_GENERATED_EDITOR_CPP_FILES ${BS_GENERATED_CPP_OUTPUT_DIR}/Editor/Source/*)
+endif()

@@ -53,8 +53,8 @@ namespace bs
 	};
 
 	/**	Base class for a specific resource's interop object. */
-	template<class ScriptClass, class ResType>
-	class BS_SCR_BE_EXPORT TScriptResource : public ScriptObject <ScriptClass, ScriptResourceBase>
+	template<class ScriptClass, class ResType, class BaseType = ScriptResourceBase>
+	class BS_SCR_BE_EXPORT TScriptResource : public ScriptObject <ScriptClass, BaseType>
 	{
 	public:
 		/**	Returns a generic handle to the internal wrapped resource. */
@@ -70,7 +70,7 @@ namespace bs
 		friend class ScriptResourceManager;
 
 		TScriptResource(MonoObject* instance, const ResourceHandle<ResType>& resource)
-			:ScriptObject<ScriptClass, ScriptResourceBase>(instance), mResource(resource)
+			:ScriptObject<ScriptClass, BaseType>(instance), mResource(resource)
 		{
 			mManagedHandle = MonoUtil::newGCHandle(instance);
 
@@ -88,7 +88,7 @@ namespace bs
 			BS_ASSERT(!mHandleValid);
 			mManagedHandle = MonoUtil::newGCHandle(this->mManagedInstance);
 
-			ScriptObject<ScriptClass, ScriptResourceBase>::endRefresh(backupData);
+			ScriptObject<ScriptClass, BaseType>::endRefresh(backupData);
 		}
 
 		/**	
