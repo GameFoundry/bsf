@@ -468,31 +468,28 @@ namespace bs { namespace ct
 		mReflProbeWorldBounds.push_back(probe->getBounds());
 
 		// Find a spot in cubemap array
-		if(probe->getType() != ReflectionProbeType::Plane)
+		UINT32 numArrayEntries = (UINT32)mCubemapArrayUsedSlots.size();
+		for(UINT32 i = 0; i < numArrayEntries; i++)
 		{
-			UINT32 numArrayEntries = (UINT32)mCubemapArrayUsedSlots.size();
-			for(UINT32 i = 0; i < numArrayEntries; i++)
+			if(!mCubemapArrayUsedSlots[i])
 			{
-				if(!mCubemapArrayUsedSlots[i])
-				{
-					probeInfo.arrayIdx = i;
-					mCubemapArrayUsedSlots[i] = true;
-					break;
-				}
+				probeInfo.arrayIdx = i;
+				mCubemapArrayUsedSlots[i] = true;
+				break;
 			}
+		}
 
-			// No empty slot was found
-			if (probeInfo.arrayIdx == -1)
-			{
-				probeInfo.arrayIdx = numArrayEntries;
-				mCubemapArrayUsedSlots.push_back(true);
-			}
+		// No empty slot was found
+		if (probeInfo.arrayIdx == -1)
+		{
+			probeInfo.arrayIdx = numArrayEntries;
+			mCubemapArrayUsedSlots.push_back(true);
+		}
 
-			if(probeInfo.arrayIdx > MaxReflectionCubemaps)
-			{
-				LOGERR("Reached the maximum number of allowed reflection probe cubemaps at once. "
-					"Ignoring reflection probe data.");
-			}
+		if(probeInfo.arrayIdx > MaxReflectionCubemaps)
+		{
+			LOGERR("Reached the maximum number of allowed reflection probe cubemaps at once. "
+				"Ignoring reflection probe data.");
 		}
 	}
 
@@ -1314,33 +1311,30 @@ namespace bs { namespace ct
 				if (probeInfo.arrayIdx > MaxReflectionCubemaps)
 					continue;
 
-				if (probeInfo.probe->getType() != ReflectionProbeType::Plane)
+				if (probeInfo.texture == nullptr)
+					probeInfo.texture = LightProbeCache::instance().getCachedRadianceTexture(probeInfo.probe->getUUID());
+
+				if (probeInfo.texture == nullptr || probeInfo.textureDirty)
 				{
-					if (probeInfo.texture == nullptr)
-						probeInfo.texture = LightProbeCache::instance().getCachedRadianceTexture(probeInfo.probe->getUUID());
+					probeInfo.texture = Texture::create(cubemapDesc);
 
-					if (probeInfo.texture == nullptr || probeInfo.textureDirty)
+					if (!probeInfo.customTexture)
 					{
-						probeInfo.texture = Texture::create(cubemapDesc);
-
-						if (!probeInfo.customTexture)
-						{
-							captureSceneCubeMap(probeInfo.texture, probeInfo.probe->getPosition(), true, frameInfo);
-						}
-						else
-						{
-							SPtr<Texture> customTexture = probeInfo.probe->getCustomTexture();
-							IBLUtility::scaleCubemap(customTexture, 0, probeInfo.texture, 0);
-						}
-
-						IBLUtility::filterCubemapForSpecular(probeInfo.texture, scratchCubemap);
-						LightProbeCache::instance().setCachedRadianceTexture(probeInfo.probe->getUUID(), probeInfo.texture);
+						captureSceneCubeMap(probeInfo.texture, probeInfo.probe->getPosition(), true, frameInfo);
 					}
+					else
+					{
+						SPtr<Texture> customTexture = probeInfo.probe->getCustomTexture();
+						IBLUtility::scaleCubemap(customTexture, 0, probeInfo.texture, 0);
+					}
+
+					IBLUtility::filterCubemapForSpecular(probeInfo.texture, scratchCubemap);
+					LightProbeCache::instance().setCachedRadianceTexture(probeInfo.probe->getUUID(), probeInfo.texture);
 				}
 
 				probeInfo.textureDirty = false;
 
-				if(probeInfo.probe->getType() != ReflectionProbeType::Plane && (probeInfo.arrayDirty || forceArrayUpdate))
+				if(probeInfo.arrayDirty || forceArrayUpdate)
 				{
 					auto& srcProps = probeInfo.texture->getProperties();
 					bool isValid = srcProps.getWidth() == IBLUtility::REFLECTION_CUBEMAP_SIZE && 

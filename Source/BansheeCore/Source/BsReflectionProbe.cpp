@@ -28,7 +28,6 @@ namespace bs
 			mBounds = Sphere(mPosition, mRadius * std::max(std::max(mScale.x, mScale.y), mScale.z));
 			break;
 		case ReflectionProbeType::Box:
-		case ReflectionProbeType::Plane:
 			mBounds = Sphere(mPosition, (mExtents * mScale).length());
 			break;
 		}
@@ -86,17 +85,6 @@ namespace bs
 	SPtr<ReflectionProbe> ReflectionProbe::createBox(const Vector3& extents)
 	{
 		ReflectionProbe* probe = new (bs_alloc<ReflectionProbe>()) ReflectionProbe(ReflectionProbeType::Box, 0.0f, extents);
-		SPtr<ReflectionProbe> probePtr = bs_core_ptr<ReflectionProbe>(probe);
-		probePtr->_setThisPtr(probePtr);
-		probePtr->mUUID = UUIDGenerator::generateRandom();
-		probePtr->initialize();
-
-		return probePtr;
-	}
-
-	SPtr<ReflectionProbe> ReflectionProbe::createPlane(const Vector3& extents)
-	{
-		ReflectionProbe* probe = new (bs_alloc<ReflectionProbe>()) ReflectionProbe(ReflectionProbeType::Plane, 0.0f, extents);
 		SPtr<ReflectionProbe> probePtr = bs_core_ptr<ReflectionProbe>(probe);
 		probePtr->_setThisPtr(probePtr);
 		probePtr->mUUID = UUIDGenerator::generateRandom();

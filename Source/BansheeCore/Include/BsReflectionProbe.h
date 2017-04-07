@@ -27,12 +27,7 @@ namespace bs
 		 * Reflection probe cubemap is generated, but sphere is used for calculating the influence radius and
 		 * proxy geometry. 
 		 */
-		Sphere,
-		/**
-		 * Reflection probe 2D texture is generated instead of a cubemap. This texture corresponds to the -Z direction face
-		 * of the cubemap.
-		 */
-		Plane
+		Sphere
 	};
 
 	/**	Signals which portion of a reflection probe is dirty. */
@@ -89,10 +84,10 @@ namespace bs
 		/** Sets the radius of a sphere reflection probe. */
 		void setRadius(float radius) { mRadius = radius; _markCoreDirty(); updateBounds(); }
 
-		/** Returns the extents of a box or plane reflection probe. */
+		/** Returns the extents of a box reflection probe. */
 		Vector3 getExtents() const { return mExtents * mScale; }
 
-		/** Sets the extents of a box or a plane reflection probe. Determines range of influence. */
+		/** Sets the extents of a box reflection probe. Determines range of influence. */
 		void setExtents(const Vector3& extents) { mExtents = extents; _markCoreDirty(); updateBounds(); }
 
 		/**	Returns world space bounds that completely encompass the probe's area of influence. */
@@ -132,7 +127,7 @@ namespace bs
 
 		ReflectionProbeType mType; /**< Type of probe that determines how are the rest of the parameters interpreted. */
 		float mRadius; /**< Radius used for sphere reflection probes. */
-		Vector3 mExtents; /**< Extents used by box & plane reflection probes. */
+		Vector3 mExtents; /**< Extents used by box reflection probe. */
 		float mTransitionDistance; /**< Extra distance to used for fading out box probes. */
 		String mUUID; /**< Identifier that uniquely identifies the probe. */
 
@@ -214,14 +209,6 @@ namespace bs
 		 * @returns				New reflection probe.
 		 */
 		static SPtr<ReflectionProbe> createBox(const Vector3& extents);
-
-		/**
-		 * Creates a new plane reflection probe.
-		 *
-		 * @param[in]	extents	Extents of the box in which the reflection probe will be rendered within.
-		 * @returns				New reflection probe.
-		 */
-		static SPtr<ReflectionProbe> createPlane(const Vector3& extents);
 
 	protected:
 		ReflectionProbe(ReflectionProbeType type, float radius, const Vector3& extents);
