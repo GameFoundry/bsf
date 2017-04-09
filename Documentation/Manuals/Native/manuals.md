@@ -94,18 +94,19 @@ A set of manuals covering advanced functionality intented for those wanting to e
  - [Flags](@ref flags)
  - [Any](@ref any) 
  - [Unit tests](@ref unitTests)
+- [Advanced material](@ref advMaterial)
 - [Threading](@ref threading)
 - [Plugins](@ref plugins)
 - **Renderer**
  - [Renderer extensions](@ref rendererExtensions)
- - [Creating a renderer manually](@ref customRenderer)
+ - [Creating a renderer plugin](@ref customRenderer)
+ 
  
 ## General guides
 Name                                      | Description
 ------------------------------------------|-------------
 [Resources](@ref resources)  			  | Explains how resources work, including saving, loading and creating brand new resource types.
 [Scripting](@ref scripting)               | Shows you how to interact with the scripting system, and how to expose C++ objects to the scripting API.
-[Renderer](@ref renderer)    	  		  | Explains how the renderer works on the low level, and how to create a custom renderer so you may fully customize the look of your application.
 [BSLFX](@ref bsl)    	  		  		  | Provides a reference for the Banshee Shading Language syntax.
 [Custom GUI elements](@ref customGUI)     | Shows you how to create custom GUI elements, manually render text or modify GUI system in a general way.
 [Custom importers](@ref customImporters)  | Shows you how to create importers that handle conversion of third party resources into engine ready formats.

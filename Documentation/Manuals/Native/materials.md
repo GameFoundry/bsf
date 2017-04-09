@@ -2,6 +2,10 @@ Materials									{#materials}
 ===============
 [TOC]
 
+TODO:
+ - GpuParamsSet
+ - MaterialParam%s
+
 A material controls how is an object rendered. In Banshee it is represented with @ref bs::Material "Material" and @ref bs::ct::Material "ct::Material" classes. Both of these provide almost equivalent functionality, but the former is for use on the simulation thread, and the latter is for use on the core thread. If you are confused by the dual nature of the objects, read the [core thread](@ref coreThread) manual. 
 
 We'll focus on the simulation thread @ref bs::Material "Material" throughout this manual, but aside from the `ct` namespace there are no major differences between the two interfaces.
