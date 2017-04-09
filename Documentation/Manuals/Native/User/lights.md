@@ -62,7 +62,7 @@ Use @ref bs::CLight::setIntensity "CLight::setIntensity()" to change the light i
 The specific units used for intensity (in case you want to look them up for actual light sources) are *luminous flux* for radial/spot lights, and *luminance* for directional lights.
 
 ## Source radius
-By default all lights are considered point (punctual) lights, meaning they have no area. In case you want to make an area light set the source radius of the light by calling @ref bs::CLight::setSourceRadius "CLight::setSourceRadius()". The value of this property is interpreted differently depending on light type:
+By default all lights are considered point (punctual) lights, meaning they have no surface area. In case you want to make an area light set the source radius of the light by calling @ref bs::CLight::setSourceRadius "CLight::setSourceRadius()". The value of this property is interpreted differently depending on light type:
  - Radial - Light represents a spherical area light and source radius is the sphere's radius
  - Spot - Light represents a disc area light (oriented toward spot direction) and the source radius in the disc radius
  - Directional - Light represents a disc area light projected on the sky, and the source radius represents the angular radius (in degrees) of the light. For example, Sun's angular radius is roughly 0.5° (varies slighly).

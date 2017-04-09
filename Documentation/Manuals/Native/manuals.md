@@ -29,6 +29,7 @@ A complete set of manuals covering all major functionality provided by Banshee, 
  - [Materials](@ref simpleMaterial)
  - [Rendering objects](@ref renderingObjects)
  - [Lighting](@ref lights)
+ - [Image based lighting](@ref imageBasedLighting)
 - **Input**
  - [Input polling](@ref inputPolling) 
  - [Input events](@ref inputEvents) 
