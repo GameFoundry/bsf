@@ -257,3 +257,37 @@ class ScriptGUIButton : public ScriptObject<ScriptGUIButton, ScriptGUIElementBas
 This ensures that all GUI elements can now be accessed through the common `ScriptGUIElementBase` interface. Which is important if `GUIElement` provides some internal method calls shared between all GUI element types, otherwise we wouldn't know what to cast the interop object held by its managed object to.
 
 See @ref bs::ScriptGUIElement "ScriptGUIElement" and @ref bs::ScriptGUIButton "ScriptGUIButton" for an example.
+
+
+
+
+
+
+## Exposing resources to scripting {#resources_c_a}
+Once you have a custom resource you might want to expose it to the scripting API. Take a look at the [scripting interop guide](@ref scripting) to learn how to create scripting API objects. 
+
+Every resource scripting interop object must implement @ref bs::TScriptResource "TScriptResource", but other than that creating GUI interop objects is the same as the general case described in the guide above. See @ref bs::ScriptFont "ScriptFont" in `BsScriptFont.cpp` for an example.
+
+Creating managed GUI objects is again the same as the general case. Take a look at the managed `Font` implementation in `Font.cs` for an example.
+
+Resources are unlike most other scripting objects because they can be created in the native code and then used in the managed code, or vice versa. Resources are also serialized by reference, which requires some specialized code for managed serialization to properly recognize the resource. 
+
+### Native <-> managed resource conversion {#resources_c_a_a}
+When a resource is created in native code, but needs to be passed to scripting code, the system creates a script interop object and a managed object, which wrap the native resource. The system also needs to be aware if such managed representation of an object already exists, and return an existing one if so. This is the job of the @ref bs::ScriptResourceManager "ScriptResourceManager".
+
+You will need to update this manager with your custom resource type. Relevant methods are:
+ - @ref bs::ScriptResourceManager::createScriptResource "ScriptResourceManager::createScriptResource" - Creates a new managed object instance from a native resource (only valid if one doesn't already exist). This method has two overloads, and is specialized for specific resource types. Make sure to add a specialization for both overloads, with your custom resource type. And also update the specialization that accepts a generic @ref bs::ResourceHandleBase "HResource" with an entry of your own resource. You can use existing resources as an example of how it should be done, only the type names need changing.
+ - @ref bs::ScriptResourceManager::getScriptResource<RetType, InType> "ScriptResourceManager::getScriptResource" - Retrieves an existing managed object instance from a native resource handle. Optionally creates the managed object if one doesn't already exist. Add a specialization for your own resource type similar to methods above.
+
+### Managed resource serialization {#resources_c_a_b}
+In order for your new resource type to be properly referenced by serialized managed objects you need to make a few more additions:
+ - First of append a new resource type to the @ref bs::ScriptReferenceType "ScriptReferenceType" enum.
+ - Append a new entry to @ref bs::ManagedSerializableTypeInfoRef::getMonoClass "ManagedSerializableTypeInfoRef::getMonoClass" which maps the enum entry above to your resource script interop object type
+ - Append a new entry to @ref bs::ManagedSerializableTypeInfoRef::isTypeLoaded "ManagedSerializableTypeInfoRef::isTypeLoaded" so it always returns true if your resource is encountered (since it's built-in, it's always loaded)
+ - Append a new entry in the @ref bs::ScriptAssemblyManager::getTypeInfo "ScriptAssemblyManager::getTypeInfo" which maps the managed resource object type to the enum above
+ - Append a new entry to the `getResourceFieldLookup` method in `BsManagedSerializableField.cpp` which uses the native <-> managed conversion methods to map between a native and a managed instance of a resource during serialization/deserialization
+ 
+For all of these you can use examples of existing resources which already exist within the mentioned methods, it is just a matter of changing the type/enum names for your own resource. 
+ 
+### Other {#resources_c_a_c}
+In order for your resources to be properly recognized by GUI drop fields, as well as the project library append new entries to @ref bs::ScriptResource::getClassFromTypeId "ScriptResource::getClassFromTypeId" and @ref bs::ScriptResource::getTypeFromTypeId "ScriptResource::getTypeFromTypeId" which map between the enum above and the RTTI type ID of the resource.

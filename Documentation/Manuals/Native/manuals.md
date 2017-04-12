@@ -67,6 +67,7 @@ A complete set of manuals covering all major functionality provided by Banshee, 
  - [Creating meshes](@ref creatingMeshes)
  - [Advanced startup](@ref advancedStartup)
  - [Advanced RTTI](@ref advancedRtti)
+ - [Advanced resources](@ref advResources)
  - [Prefabs](@ref prefabs)
  - [Cursors](@ref cursors)
  - [Profiling](@ref cpuProfiling)
@@ -101,23 +102,18 @@ A set of manuals covering advanced functionality intented for those wanting to e
 - **Renderer**
  - [Renderer extensions](@ref rendererExtensions)
  - [Creating a renderer plugin](@ref customRenderer)
- 
+- **Resources**
+ - [Creating new resource types](@ref customResources)
+ - [Creating custom importers](@ref customImporters)
  
 ## General guides
 Name                                      | Description
 ------------------------------------------|-------------
-[Resources](@ref resources)  			  | Explains how resources work, including saving, loading and creating brand new resource types.
 [Scripting](@ref scripting)               | Shows you how to interact with the scripting system, and how to expose C++ objects to the scripting API.
 [BSLFX](@ref bsl)    	  		  		  | Provides a reference for the Banshee Shading Language syntax.
 [Custom GUI elements](@ref customGUI)     | Shows you how to create custom GUI elements, manually render text or modify GUI system in a general way.
-[Custom importers](@ref customImporters)  | Shows you how to create importers that handle conversion of third party resources into engine ready formats.
+[Meshes](@ref meshes)                     | Shows you how to create, use and manipulate meshes.
+[Materials](@ref materials)				  | Shows you how to create and use materials and shaders.
 [Quick reference](@ref quickref)          | Provides a few bits of commonly required information, that might be hard to remember otherwise.
 [Porting](@ref porting)                   | Information about how to go on about porting Banshee to a different operating system.
 [Code style](@ref style)                  | Information about code style used when writing Banshee.
-
-## Low level render API
-
-Name                                      | Description
-------------------------------------------|-------------
-[Meshes](@ref meshes)                     | Shows you how to create, use and manipulate meshes.
-[Materials](@ref materials)				  | Shows you how to create and use materials and shaders.
