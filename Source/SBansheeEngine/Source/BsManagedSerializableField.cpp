@@ -7,7 +7,6 @@
 #include "BsMonoManager.h"
 #include "BsScriptResourceManager.h"
 #include "BsScriptGameObjectManager.h"
-#include "BsScriptTexture.h"
 #include "BsScriptSpriteTexture.h"
 #include "BsScriptManagedResource.h"
 #include "BsScriptPlainText.h"
@@ -32,6 +31,8 @@
 #include "BsManagedSerializableList.h"
 #include "BsManagedSerializableDictionary.h"
 #include "BsScriptAssemblyManager.h"
+
+#include "BsScriptTexture.generated.h"
 
 namespace bs
 {

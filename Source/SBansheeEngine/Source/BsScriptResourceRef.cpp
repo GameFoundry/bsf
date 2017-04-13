@@ -6,9 +6,10 @@
 #include "BsMonoUtil.h"
 #include "BsResources.h"
 #include "BsScriptResource.h"
-#include "BsScriptTexture.h"
 #include "BsScriptResourceManager.h"
 #include "BsApplication.h"
+
+#include "BsScriptTexture.generated.h"
 
 namespace bs
 {

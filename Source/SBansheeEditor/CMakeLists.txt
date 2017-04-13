@@ -13,6 +13,7 @@ set(SBansheeEditor_INC
 	"../BansheeEditor/Include"
 	"../BansheeMono/Include"
 	"../SBansheeEngine/Include"
+	"${PROJECT_BINARY_DIR}/Generated/Engine/Include"
 	"${PROJECT_BINARY_DIR}/Generated/Editor/Include")
 
 include_directories(${SBansheeEditor_INC})	

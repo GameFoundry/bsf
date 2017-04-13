@@ -135,7 +135,7 @@ namespace bs
 	public:
 		friend class WeakResourceHandleRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const override;
+		RTTITypeBase* getRTTI() const override;
 	};
 
 	/**	Specialization of TResourceHandleBase for normal (non-weak) handles. */
@@ -165,7 +165,7 @@ namespace bs
 		friend class WeakResourceHandleRTTI;
 		friend class ResourceHandleRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const override;
+		RTTITypeBase* getRTTI() const override;
 	};
 
 	/** @copydoc ResourceHandleBase */

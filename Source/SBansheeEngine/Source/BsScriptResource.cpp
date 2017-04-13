@@ -4,7 +4,6 @@
 #include "BsScriptResourceManager.h"
 #include "BsResource.h"
 #include "BsMonoUtil.h"
-#include "BsScriptTexture.h"
 #include "BsScriptSpriteTexture.h"
 #include "BsScriptMaterial.h"
 #include "BsScriptMesh.h"
@@ -20,6 +19,8 @@
 #include "BsScriptAudioClip.h"
 #include "BsScriptPrefab.h"
 #include "BsScriptAnimationClip.h"
+
+#include "BsScriptTexture.generated.h"
 
 namespace bs
 {

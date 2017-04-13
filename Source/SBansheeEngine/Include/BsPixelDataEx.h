@@ -11,6 +11,7 @@ namespace bs
 	/** @addtogroup ScriptInteropEngine
 	 *  @{
 	 */
+	/** @cond SCRIPT_EXTENSIONS */
 
 	/** Extension class for PixelData, for adding additional functionality for the script version of PixelData. */
 	class BS_SCRIPT_EXPORT(e:PixelData) PixelDataEx
@@ -83,5 +84,6 @@ namespace bs
 		static bool checkIsLocked(const SPtr<PixelData>& thisPtr);
 	};
 
+	/** @endcond */
 	/** @} */
 }

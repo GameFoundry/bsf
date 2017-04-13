@@ -605,7 +605,7 @@ namespace bs
 		/** @copydoc CoreObject::markDependenciesDirty */
 		void _markDependenciesDirty() override;
 
-		/** @copydoc IResourceListener::markResourcesDirty */
+		/** @copydoc IResourceListener::markListenerResourcesDirty */
 		void _markResourcesDirty() override;
 
 		/** @} */

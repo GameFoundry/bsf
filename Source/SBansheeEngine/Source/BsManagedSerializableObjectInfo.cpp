@@ -8,7 +8,6 @@
 #include "BsMonoManager.h"
 #include "BsMonoField.h"
 #include "BsMonoProperty.h"
-#include "BsScriptTexture.h"
 #include "BsScriptSpriteTexture.h"
 #include "BsScriptAssemblyManager.h"
 #include "BsScriptMaterial.h"
@@ -27,6 +26,8 @@
 #include "BsScriptPrefab.h"
 #include "BsScriptManagedResource.h"
 #include <BsScriptStep.h>
+
+#include "BsScriptTexture.generated.h"
 
 namespace bs
 {

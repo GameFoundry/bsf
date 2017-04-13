@@ -219,8 +219,8 @@
  *
  * Supported options:
  *  - n - Specify a different name for the type in the scripting API (e.g. "n:MyName"). Usable on types and methods.
- *  - v - Specify a different visibility (default is public). Supported values are "public" and "internal". Usable on types
- *		  and methods.
+ *  - v - Specify a different visibility (default is public). Supported values are "public", "internal" and "private". 
+ *		  Usable on types and methods.
  *  - f - Specify the name of the output file(s) for the script object and its potential wrappers. If not specified
  *		  the name of the type will be used for the file. Usable on types only.
  *	- pl - Specify whether the type is plain or not (default is false). Supported values are "true" or "false". Plain 

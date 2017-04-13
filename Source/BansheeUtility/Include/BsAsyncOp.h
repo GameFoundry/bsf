@@ -77,7 +77,7 @@ namespace bs
 			:mSyncData(syncData)
 		{ }
 
-		/** True if the async operation has completed. */
+		/** Returns true if the async operation has completed. */
 		bool hasCompleted() const;
 
 		/**
@@ -101,6 +101,12 @@ namespace bs
 			// types must be EXACT. (You'll have to cast the data yourself when completing the operation)
 			return any_cast<T>(mData->mReturnValue);
 		}
+
+		/** 
+		 * Retrieves the value returned by the async operation as a generic type. Only valid if hasCompleted() returns 
+		 * true. 
+		 */
+		Any getGenericReturnValue() const { return mData->mReturnValue; }
 
 	public: // ***** INTERNAL ******
 		/** @name Internal 

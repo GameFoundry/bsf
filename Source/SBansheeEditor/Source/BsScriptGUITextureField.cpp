@@ -10,9 +10,10 @@
 #include "BsGUIOptions.h"
 #include "BsGUIContent.h"
 #include "BsScriptGUIContent.h"
-#include "BsScriptTexture.h"
 #include "BsScriptResourceManager.h"
 #include "BsScriptResourceRef.h"
+
+#include "BsScriptTexture.generated.h"
 
 using namespace std::placeholders;
 

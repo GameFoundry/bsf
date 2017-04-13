@@ -332,12 +332,16 @@ namespace bs
 	};
 
 	/**	Available texture types. */
-	enum TextureType
+	enum BS_SCRIPT_EXPORT() TextureType
 	{
-		TEX_TYPE_1D = 1, /**< One dimensional texture. Just a row of pixels. */
-		TEX_TYPE_2D = 2, /**< Two dimensional texture. */
-		TEX_TYPE_3D = 3, /**< Three dimensional texture. */
-		TEX_TYPE_CUBE_MAP = 4 /**< Texture consisting out of six 2D textures describing an inside of a cube. Allows special sampling. */
+		/** One dimensional texture. Just a row of pixels. */
+		TEX_TYPE_1D			BS_SCRIPT_EXPORT(n:Texture1D)	= 1, 
+		/** Two dimensional texture. */
+		TEX_TYPE_2D			BS_SCRIPT_EXPORT(n:Texture2D)	= 2,
+		/** Three dimensional texture. */
+		TEX_TYPE_3D			BS_SCRIPT_EXPORT(n:Texture3D)	= 3,
+		/** Texture consisting out of six 2D textures describing an inside of a cube. Allows special sampling. */
+		TEX_TYPE_CUBE_MAP	BS_SCRIPT_EXPORT(n:TextureCube) = 4 
 	};
 
 	/**	Contains data about a type used for GPU data parameters. */

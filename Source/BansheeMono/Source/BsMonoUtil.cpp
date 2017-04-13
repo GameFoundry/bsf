@@ -300,6 +300,11 @@ namespace bs
 		return mono_get_char_class();
 	}
 
+	::MonoClass* MonoUtil::getObjectClass()
+	{
+		return mono_get_object_class();
+	}
+
 	void MonoUtil::throwIfException(MonoException* exception)
 	{
 		throwIfException(reinterpret_cast<MonoObject*>(exception));

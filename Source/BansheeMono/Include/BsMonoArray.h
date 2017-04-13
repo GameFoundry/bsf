@@ -212,6 +212,12 @@ namespace bs
 		{
 			return ScriptArray(MonoUtil::getBoolClass(), size);
 		}
+
+		template<>
+		inline ScriptArray ScriptArray_create<MonoObject*>(UINT32 size)
+		{
+			return ScriptArray(MonoUtil::getObjectClass(), size);
+		}
 	}
 
 	/** @} */

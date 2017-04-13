@@ -5,7 +5,6 @@
 #include "BsMonoAssembly.h"
 #include "BsMonoClass.h"
 #include "BsResources.h"
-#include "BsScriptTexture.h"
 #include "BsScriptSpriteTexture.h"
 #include "BsScriptPlainText.h"
 #include "BsScriptScriptCode.h"
@@ -23,6 +22,8 @@
 #include "BsScriptAnimationClip.h"
 #include "BsScriptManagedResource.h"
 #include "BsScriptAssemblyManager.h"
+
+#include "BsScriptTexture.generated.h"
 
 using namespace std::placeholders;
 

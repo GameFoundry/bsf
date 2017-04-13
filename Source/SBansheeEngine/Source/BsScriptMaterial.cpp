@@ -8,8 +8,9 @@
 #include "BsMonoManager.h"
 #include "BsMonoUtil.h"
 #include "BsScriptShader.h"
-#include "BsScriptTexture.h"
-#include <BsBuiltinResources.h>
+#include "BsBuiltinResources.h"
+
+#include "BsScriptTexture.generated.h"
 
 namespace bs
 {

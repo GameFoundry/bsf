@@ -77,7 +77,6 @@ set(BS_SBANSHEEENGINE_SRC_WRAPPERS_PHYSICS
 )
 
 set(BS_SBANSHEEENGINE_INC_WRAPPERS
-	"Include/BsScriptAsyncOp.h"
 	"Include/BsScriptBoneWeight.h"
 	"Include/BsScriptBuiltin.h"
 	"Include/BsScriptCamera.h"
@@ -115,7 +114,6 @@ set(BS_SBANSHEEENGINE_INC_WRAPPERS
 	"Include/BsScriptVector2I.h"
 	"Include/BsScriptVector.h"
 	"Include/BsScriptTime.h"
-	"Include/BsScriptTexture.h"
 	"Include/BsScriptStringTable.h"
 	"Include/BsScriptSpriteTexture.h"
 	"Include/BsScriptShaderInclude.h"
@@ -211,7 +209,6 @@ set(BS_SBANSHEEENGINE_SRC_SERIALIZATION
 )
 
 set(BS_SBANSHEEENGINE_SRC_WRAPPERS
-	"Source/BsScriptAsyncOp.cpp"
 	"Source/BsScriptBoneWeight.cpp"
 	"Source/BsScriptBuiltin.cpp"
 	"Source/BsScriptCamera.cpp"
@@ -244,7 +241,6 @@ set(BS_SBANSHEEENGINE_SRC_WRAPPERS
 	"Source/BsScriptVector2I.cpp"
 	"Source/BsScriptVector.cpp"
 	"Source/BsScriptTime.cpp"
-	"Source/BsScriptTexture.cpp"
 	"Source/BsScriptStringTable.cpp"
 	"Source/BsScriptSpriteTexture.cpp"
 	"Source/BsScriptShaderInclude.cpp"
@@ -317,10 +313,14 @@ set(BS_SBANSHEEENGINE_INC_RTTI
 
 set(BS_SBANSHEEENGINE_INC_EXTENSIONS
 	"Include/BsPixelDataEx.h"
+	"Include/BsAsyncOpEx.h"
+	"Include/BsTextureEx.h"
 )
 
 set(BS_SBANSHEEENGINE_SRC_EXTENSIONS
 	"Source/BsPixelDataEx.cpp"
+	"Source/BsAsyncOpEx.cpp"
+	"Source/BsTextureEx.cpp"
 )
 
 source_group("Header Files" FILES ${BS_SBANSHEEENGINE_INC_NOFILTER})

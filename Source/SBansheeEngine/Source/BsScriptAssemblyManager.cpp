@@ -10,7 +10,6 @@
 #include "BsMonoProperty.h"
 #include "BsScriptManagedResource.h"
 #include "BsScriptComponent.h"
-#include "BsScriptTexture.h"
 #include "BsScriptSpriteTexture.h"
 #include "BsScriptMaterial.h"
 #include "BsScriptMesh.h"
@@ -27,6 +26,8 @@
 #include "BsScriptPrefab.h"
 #include "BsScriptAnimationClip.h"
 #include "BsBuiltinComponentLookup.h"
+
+#include "BsScriptTexture.generated.h"
 
 namespace bs
 {

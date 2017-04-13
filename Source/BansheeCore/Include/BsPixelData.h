@@ -14,7 +14,7 @@ namespace bs
 	 */
 
 	/** Pixel formats usable by images, textures and render surfaces. */
-    enum BS_SCRIPT_EXPORT(n:PixelFormat) PixelFormat
+    enum BS_SCRIPT_EXPORT() PixelFormat
     {
         /** Unknown pixel format. */
         PF_UNKNOWN				BS_SCRIPT_EXPORT(ex:true) = 0,
@@ -155,7 +155,7 @@ namespace bs
 	 *
 	 * @see		GpuResourceData
 	 */
-    class BS_CORE_EXPORT BS_SCRIPT_EXPORT(n:PixelData) PixelData : public GpuResourceData
+    class BS_CORE_EXPORT BS_SCRIPT_EXPORT() PixelData : public GpuResourceData
 	{
     public:
 		PixelData();

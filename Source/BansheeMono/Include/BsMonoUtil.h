@@ -116,6 +116,9 @@ namespace bs
 		/** Returns Mono class for a char. */
 		static ::MonoClass* getCharClass();
 
+		/** Returns Mono class for a generic object. */
+		static ::MonoClass* getObjectClass();
+
 		/** @copydoc throwIfException(MonoObject*) */
 		static void throwIfException(MonoException* exception);
 

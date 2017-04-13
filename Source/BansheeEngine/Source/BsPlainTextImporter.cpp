@@ -7,17 +7,6 @@
 
 namespace bs
 {
-	PlainTextImporter::PlainTextImporter()
-		:SpecificImporter()
-	{
-
-	}
-
-	PlainTextImporter::~PlainTextImporter()
-	{
-
-	}
-
 	bool PlainTextImporter::isExtensionSupported(const WString& ext) const
 	{
 		WString lowerCaseExt = ext;
