@@ -25,8 +25,8 @@
 #include "BsScriptAudioClip.h"
 #include "BsScriptPrefab.h"
 #include "BsScriptAnimationClip.h"
-#include "BsBuiltinComponentLookup.h"
 
+#include "BsBuiltinComponentLookup.generated.h"
 #include "BsScriptTexture.generated.h"
 
 namespace bs

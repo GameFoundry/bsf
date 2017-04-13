@@ -14,10 +14,6 @@ namespace bs
 #define LOOKUP_BEGIN																										\
 	class BuiltinComponents																									\
 	{																														\
-	public:																													\
-		template<int TID>																									\
-		class TLookup { };																									\
-																															\
 	private:																												\
 		struct META_FirstEntry {};																							\
 		static void META_GetPrevEntries(Vector<BuiltinComponentInfo>& entries, META_FirstEntry id) { }						\
@@ -25,39 +21,33 @@ namespace bs
 		typedef META_FirstEntry 
 
 	/** Registers a new entry in the component lookup table. */
-#define ADD_ENTRY(TID, Type)																								\
-		META_Entry_##Type;																									\
+#define ADD_ENTRY(ComponentType, ScriptType)																				\
+		META_Entry_##ScriptType;																							\
 																															\
 	public:																													\
-		template<>																											\
-		class TLookup<TID>																									\
+		static ScriptComponentBase* create##ScriptType(const HComponent& component)											\
 		{																													\
-			typedef Type ScriptType;																						\
-		};																													\
-																															\
-		static ScriptComponentBase* create##Type(const HComponent& component)												\
-		{																													\
-			MonoObject* managedInstance = Type::getMetaData()->scriptClass->createInstance();								\
-			Type* scriptComponent = new (bs_alloc<Type>()) Type(managedInstance, component);								\
+			MonoObject* managedInstance = ScriptType::getMetaData()->scriptClass->createInstance();							\
+			ScriptType* scriptComponent = new (bs_alloc<ScriptType>()) ScriptType(managedInstance, component);				\
 																															\
 			return scriptComponent;																							\
 		}																													\
 																															\
-		struct META_NextEntry_##Type {};																					\
-		static void META_GetPrevEntries(Vector<BuiltinComponentInfo>& entries, META_NextEntry_##Type id)					\
+		struct META_NextEntry_##ScriptType {};																				\
+		static void META_GetPrevEntries(Vector<BuiltinComponentInfo>& entries, META_NextEntry_##ScriptType id)				\
 		{																													\
-			META_GetPrevEntries(entries, META_Entry_##Type());																\
+			META_GetPrevEntries(entries, META_Entry_##ScriptType());														\
 																															\
 			BuiltinComponentInfo entry;																						\
-			entry.metaData = Type::getMetaData();																			\
-			entry.typeId = TID;																								\
+			entry.metaData = ScriptType::getMetaData();																		\
+			entry.typeId = ComponentType::getRTTIStatic()->getRTTIId();														\
 			entry.monoClass = nullptr;																						\
-			entry.createCallback = &create##Type;																			\
+			entry.createCallback = &create##ScriptType;																		\
 																															\
 			entries.push_back(entry);																						\
 		}																													\
 																															\
-		typedef META_NextEntry_##Type
+		typedef META_NextEntry_##ScriptType
 
 	/** End the definition for the builtin component lookup table. */
 #define LOOKUP_END																											\
@@ -71,12 +61,4 @@ namespace bs
 			return entries;																									\
 		}																													\
 	};
-
-	LOOKUP_BEGIN
-		ADD_ENTRY(TID_CRenderable, ScriptRenderable2)
-	LOOKUP_END
-
-#undef LOOKUP_BEGIN
-#undef ADD_ENTRY
-#undef LOOKUP_END
 }

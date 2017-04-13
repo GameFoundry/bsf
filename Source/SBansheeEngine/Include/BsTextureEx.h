@@ -72,7 +72,7 @@ namespace bs
          * @return			A set of pixels for the specified mip level.
 		 */
 		BS_SCRIPT_EXPORT(e:Texture,n:GetPixels)
-		static SPtr<PixelData> getPixels(const HTexture& thisPtr, UINT32 face, UINT32 mipLevel);
+		static SPtr<PixelData> getPixels(const HTexture& thisPtr, UINT32 face = 0, UINT32 mipLevel = 0);
 
 		/**
 		 * Reads texture pixels directly from the GPU. This is similar to GetPixels" but the texture doesn't
@@ -87,7 +87,7 @@ namespace bs
 		 * @return			AsyncOp object that will contain a PixelData object when the operation completes.
 		 */
 		BS_SCRIPT_EXPORT(e:Texture,n:GetGPUPixels)
-		static SPtr<AsyncOpEx> getGPUPixels(const HTexture& thisPtr, UINT32 face, UINT32 mipLevel);
+		static SPtr<AsyncOpEx> getGPUPixels(const HTexture& thisPtr, UINT32 face = 0, UINT32 mipLevel = 0);
 
 		/**
 		 * Sets pixels for the specified mip level and face.
@@ -100,7 +100,7 @@ namespace bs
 		 *					cubemap array it has to be a multiple of 6).
 		 */
 		BS_SCRIPT_EXPORT(e:Texture,n:SetPixels)
-		static void setPixels(const HTexture& thisPtr, const SPtr<PixelData>& data, UINT32 face, UINT32 mipLevel);
+		static void setPixels(const HTexture& thisPtr, const SPtr<PixelData>& data, UINT32 face = 0, UINT32 mipLevel = 0);
 
 		/**
 		 * Sets pixels for the specified mip level and face.
@@ -114,7 +114,7 @@ namespace bs
 		 *					cubemap array it has to be a multiple of 6).
 		 */
 		BS_SCRIPT_EXPORT(e:Texture,n:SetPixels)
-		static void setPixelsArray(const HTexture& thisPtr, const Vector<Color>& colors, UINT32 face, UINT32 mipLevel);
+		static void setPixelsArray(const HTexture& thisPtr, const Vector<Color>& colors, UINT32 face = 0, UINT32 mipLevel = 0);
 	};
 
 	/** @endcond */

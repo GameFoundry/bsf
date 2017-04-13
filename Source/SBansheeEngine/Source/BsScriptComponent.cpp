@@ -15,7 +15,6 @@
 #include "BsManagedComponent.h"
 #include "BsSceneObject.h"
 #include "BsMonoUtil.h"
-#include "BsBuiltinComponentLookup.h"
 
 namespace bs
 {

@@ -15,24 +15,28 @@ namespace bs
 	/**
 	 * @copydoc	Skybox
 	 *
-	 * Wraps Skybox as a Component.
+	 * @note	Wraps Skybox as a Component.
 	 */
-	class BS_CORE_EXPORT CSkybox : public Component
+	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(n:Skybox) CSkybox : public Component
 	{
 	public:
 		CSkybox(const HSceneObject& parent);
 		virtual ~CSkybox();
 
 		/** @copydoc Skybox::getTexture */
+		BS_SCRIPT_EXPORT(n:Texture,pr:getter)
 		HTexture getTexture() const { return mInternal->getTexture(); }
 
 		/** @copydoc Skybox::setTexture */
+		BS_SCRIPT_EXPORT(n:Texture,pr:setter)
 		void setTexture(const HTexture& texture) { mInternal->setTexture(texture); }
 
 		/** @copydoc Skybox::setBrightness */
+		BS_SCRIPT_EXPORT(n:Brightness,pr:setter)
 		void setBrightness(float brightness) { mInternal->setBrightness(brightness); }
 
 		/** @copydoc Skybox::getBrightness */
+		BS_SCRIPT_EXPORT(n:Brightness,pr:getter)
 		float getBrightness() const { return mInternal->getBrightness(); }
 
 		/** @name Internal

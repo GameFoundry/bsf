@@ -15,7 +15,6 @@
 #include "BsMonoClass.h"
 #include "BsScriptAssemblyManager.h"
 #include "BsScriptObjectManager.h"
-#include "BsBuiltinComponentLookup.h"
 
 using namespace std::placeholders;
 

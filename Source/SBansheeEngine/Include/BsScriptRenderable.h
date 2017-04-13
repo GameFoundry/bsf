@@ -54,30 +54,5 @@ namespace bs
 		static void internal_OnDestroy(ScriptRenderable* thisPtr);
 	};
 
-	/**	Interop class between C++ & CLR for Renderable. */
-	class BS_SCR_BE_EXPORT ScriptRenderable2 : public TScriptComponent <ScriptRenderable2, CRenderable>
-	{
-	public:
-		SCRIPT_OBJ(ENGINE_ASSEMBLY, "BansheeEngine", "Renderable2")
-
-		ScriptRenderable2(MonoObject* managedInstance, const HComponent& component);
-
-	private:
-		~ScriptRenderable2();
-
-		/************************************************************************/
-		/* 								CLR HOOKS						   		*/
-		/************************************************************************/
-		static MonoObject* internal_GetMesh(ScriptRenderable2* thisPtr);
-		static void internal_SetMesh(ScriptRenderable2* thisPtr, ScriptMesh* mesh);
-		static void internal_GetBounds(ScriptRenderable2* thisPtr, AABox* box, Sphere* sphere);
-		static UINT64 internal_GetLayers(ScriptRenderable2* thisPtr);
-		static void internal_SetLayers(ScriptRenderable2* thisPtr, UINT64 layers);
-		static MonoObject* internal_GetMaterial(ScriptRenderable2* thisPtr, int index);
-		static void internal_SetMaterial(ScriptRenderable2* thisPtr, ScriptMaterial* material, int index);
-		static MonoArray* internal_GetMaterials(ScriptRenderable2* thisPtr);
-		static void internal_SetMaterials(ScriptRenderable2* thisPtr, MonoArray* materials);
-	};
-
 	/** @} */
 }
