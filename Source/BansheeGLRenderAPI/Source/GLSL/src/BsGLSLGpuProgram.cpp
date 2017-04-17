@@ -135,7 +135,7 @@ namespace bs { namespace ct
 			UINT32 numExtraLines = sizeof(EXTRA_LINES) / sizeof(EXTRA_LINES[0]);
 			for(UINT32 i = 0; i < numExtraLines; i++)
 			{
-				UINT32 length = strlen(EXTRA_LINES[i]) + 1;
+				UINT32 length = (UINT32)strlen(EXTRA_LINES[i]) + 1;
 
 				GLchar* extraLineData = (GLchar*)bs_stack_alloc(length);
 				memcpy(extraLineData, EXTRA_LINES[i], length);
