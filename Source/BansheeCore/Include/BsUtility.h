@@ -35,6 +35,15 @@ namespace bs
 		 */
 		static Vector<ResourceDependency> findResourceDependencies(IReflectable& object, bool recursive = true);
 
+		/**
+		 * Finds all components of a specific type on a scene object and any of its children.
+		 * 
+		 * @param[in]	object		Object which to search for components. All children will be searched as well.
+		 * @param[in]	typeId		RTTI type ID of the component type to search for.
+		 * @return					A list of all components of the specified type.
+		 */
+		static Vector<HComponent> findComponents(const HSceneObject& object, UINT32 typeId);
+
 		/** Calculates how deep in the scene object hierarchy is the provided object. Zero means root. */
 		static UINT32 getSceneObjectDepth(const HSceneObject& so);
 

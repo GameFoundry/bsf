@@ -137,6 +137,33 @@ namespace bs
 		rtti->onSerializationEnded(&obj, dummyParams);
 	}
 
+	Vector<HComponent> Utility::findComponents(const HSceneObject& object, UINT32 typeId)
+	{
+		Vector<HComponent> output;
+
+		Stack<HSceneObject> todo;
+		todo.push(object);
+
+		while(!todo.empty())
+		{
+			HSceneObject curSO = todo.top();
+			todo.pop();
+
+			const Vector<HComponent>& components = curSO->getComponents();
+			for(auto& entry : components)
+			{
+				if (entry->getRTTI()->getRTTIId() == typeId)
+					output.push_back(entry);
+			}
+
+			UINT32 numChildren = curSO->getNumChildren();
+			for (UINT32 i = 0; i < numChildren; i++)
+				todo.push(curSO->getChild(i));
+		}
+
+		return output;
+	}
+
 	bool Utility::hasReflectableChildren(RTTITypeBase* type)
 	{
 		UINT32 numFields = type->getNumFields();
