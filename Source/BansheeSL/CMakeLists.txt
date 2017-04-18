@@ -24,6 +24,11 @@ else()
 		COMMAND mv BsParserFX.c ${PROJECT_SOURCE_DIR}/BansheeSL/Source)
 endif()
 
+set(DEPENDENCY_BUILD_DIR "${CMAKE_SOURCE_DIR}/../Dependencies/Build/${DEPENDENCY_NAME}")
+set(DEPENDENCY_PARAMS -DXSC_BUILD_SHELL=OFF)
+
+find_package_or_build(XShaderCompiler inc/Xsc/Xsc.h ${DEPENDENCY_PARAMS})
+
 # Source files and their filters
 include(CMakeSources.cmake)
 
@@ -32,7 +37,8 @@ set(BansheeSL_INC
 	"Include"
 	"../BansheeUtility/Include"
 	"../BansheeCore/Include"
-	"../BansheeEngine/Include")
+	"../BansheeEngine/Include"
+	${XShaderCompiler_INCLUDE_DIR})
 
 include_directories(${BansheeSL_INC})
 
@@ -56,6 +62,9 @@ if(WIN32)
 endif()
 
 # Libraries
+## External lib: XShaderCompiler
+target_link_libraries(BansheeSL PRIVATE ${XShaderCompiler_LIBRARIES})
+
 ## Local libs
 target_link_libraries(BansheeSL BansheeEngine BansheeUtility BansheeCore)
 

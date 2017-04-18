@@ -130,8 +130,6 @@ else()
 endif()
 
 # Output
-set(CMAKE_BINARY_DIR "${PROJECT_SOURCE_DIR}/../Build/${CMAKE_GENERATOR}/")
-
 if(BS_64BIT)
 	set(BS_OUTPUT_DIR_PREFIX x64)
 else()
@@ -201,6 +199,8 @@ function(add_subdirectory_optional subdir_name)
 		add_subdirectory(${subdir_name})
 	endif()
 endfunction()
+
+include(CMake/FindPackageOrBuild.cmake)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS TRUE)
 
