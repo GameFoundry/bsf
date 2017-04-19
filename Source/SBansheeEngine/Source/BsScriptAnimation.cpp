@@ -241,14 +241,14 @@ namespace bs
 	{
 		BlendClipInfo output;
 
-		MonoObject* managedAnimClip = clipField->getValueBoxed(instance);
+		MonoObject* managedAnimClip = clipField->getBoxed(instance);
 		if(managedAnimClip)
 		{
 			ScriptAnimationClip* clip = ScriptAnimationClip::toNative(managedAnimClip);
 			output.clip = clip->getHandle();
 		}
 		
-		positionField->getValue(instance, &output.position);
+		positionField->get(instance, &output.position);
 
 		return output;
 	}
@@ -266,7 +266,7 @@ namespace bs
 
 	Blend1DInfo ScriptBlend1DInfo::fromManaged(MonoObject* instance)
 	{
-		MonoArray* managedClipsArray = (MonoArray*)clipsField->getValueBoxed(instance);
+		MonoArray* managedClipsArray = (MonoArray*)clipsField->getBoxed(instance);
 		if (managedClipsArray == nullptr)
 			return Blend1DInfo(0);
 
@@ -302,28 +302,28 @@ namespace bs
 	{
 		Blend2DInfo output;
 
-		MonoObject* managedTopLeftClip = topLeftClipField->getValueBoxed(instance);
+		MonoObject* managedTopLeftClip = topLeftClipField->getBoxed(instance);
 		if (managedTopLeftClip != nullptr)
 		{
 			ScriptAnimationClip* clip = ScriptAnimationClip::toNative(managedTopLeftClip);
 			output.topLeftClip = clip->getHandle();
 		}
 
-		MonoObject* managedTopRightClip = topRightClipField->getValueBoxed(instance);
+		MonoObject* managedTopRightClip = topRightClipField->getBoxed(instance);
 		if (managedTopRightClip != nullptr)
 		{
 			ScriptAnimationClip* clip = ScriptAnimationClip::toNative(managedTopRightClip);
 			output.topRightClip = clip->getHandle();
 		}
 
-		MonoObject* managedBotLeftClip = botLeftClipField->getValueBoxed(instance);
+		MonoObject* managedBotLeftClip = botLeftClipField->getBoxed(instance);
 		if (managedBotLeftClip != nullptr)
 		{
 			ScriptAnimationClip* clip = ScriptAnimationClip::toNative(managedBotLeftClip);
 			output.botLeftClip = clip->getHandle();
 		}
 
-		MonoObject* managedBotRightClip = botRightClipField->getValueBoxed(instance);
+		MonoObject* managedBotRightClip = botRightClipField->getBoxed(instance);
 		if (managedBotRightClip != nullptr)
 		{
 			ScriptAnimationClip* clip = ScriptAnimationClip::toNative(managedBotRightClip);

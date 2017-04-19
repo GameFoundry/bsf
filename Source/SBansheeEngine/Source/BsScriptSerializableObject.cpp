@@ -93,7 +93,7 @@ namespace bs
 			i++;
 		}
 
-		FieldsField->setValue(instance, scriptArray.getInternal());
+		FieldsField->set(instance, scriptArray.getInternal());
 
 		return nativeInstance;
 	}

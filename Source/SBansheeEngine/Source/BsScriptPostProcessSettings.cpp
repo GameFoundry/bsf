@@ -39,14 +39,14 @@ namespace bs
 	{
 		SPtr<AutoExposureSettings> output = bs_shared_ptr_new<AutoExposureSettings>();
 
-		sHistogramLog2Min->getValue(object, &output->histogramLog2Min);
-		sHistogramLog2Max->getValue(object, &output->histogramLog2Max);
-		sHistogramPctLow->getValue(object, &output->histogramPctLow);
-		sHistogramPctHigh->getValue(object, &output->histogramPctHigh);
-		sMinEyeAdaptation->getValue(object, &output->minEyeAdaptation);
-		sMaxEyeAdaptation->getValue(object, &output->maxEyeAdaptation);
-		sEyeAdaptationSpeedUp->getValue(object, &output->eyeAdaptationSpeedUp);
-		sEyeAdaptationSpeedDown->getValue(object, &output->eyeAdaptationSpeedDown);
+		sHistogramLog2Min->get(object, &output->histogramLog2Min);
+		sHistogramLog2Max->get(object, &output->histogramLog2Max);
+		sHistogramPctLow->get(object, &output->histogramPctLow);
+		sHistogramPctHigh->get(object, &output->histogramPctHigh);
+		sMinEyeAdaptation->get(object, &output->minEyeAdaptation);
+		sMaxEyeAdaptation->get(object, &output->maxEyeAdaptation);
+		sEyeAdaptationSpeedUp->get(object, &output->eyeAdaptationSpeedUp);
+		sEyeAdaptationSpeedDown->get(object, &output->eyeAdaptationSpeedDown);
 
 		return output;
 	}
@@ -55,14 +55,14 @@ namespace bs
 	{
 		MonoObject* object = metaData.scriptClass->createInstance();
 
-		sHistogramLog2Min->setValue(object, &value.histogramLog2Min);
-		sHistogramLog2Max->setValue(object, &value.histogramLog2Max);
-		sHistogramPctLow->setValue(object, &value.histogramPctLow);
-		sHistogramPctHigh->setValue(object, &value.histogramPctHigh);
-		sMinEyeAdaptation->setValue(object, &value.minEyeAdaptation);
-		sMaxEyeAdaptation->setValue(object, &value.maxEyeAdaptation);
-		sEyeAdaptationSpeedUp->setValue(object, &value.eyeAdaptationSpeedUp);
-		sEyeAdaptationSpeedDown->setValue(object, &value.eyeAdaptationSpeedDown);
+		sHistogramLog2Min->set(object, &value.histogramLog2Min);
+		sHistogramLog2Max->set(object, &value.histogramLog2Max);
+		sHistogramPctLow->set(object, &value.histogramPctLow);
+		sHistogramPctHigh->set(object, &value.histogramPctHigh);
+		sMinEyeAdaptation->set(object, &value.minEyeAdaptation);
+		sMaxEyeAdaptation->set(object, &value.maxEyeAdaptation);
+		sEyeAdaptationSpeedUp->set(object, &value.eyeAdaptationSpeedUp);
+		sEyeAdaptationSpeedDown->set(object, &value.eyeAdaptationSpeedDown);
 
 		return object;
 	}
@@ -94,13 +94,13 @@ namespace bs
 	{
 		SPtr<TonemappingSettings> output = bs_shared_ptr_new<TonemappingSettings>();
 
-		sFilmicCurveShoulderStrength->getValue(object, &output->filmicCurveShoulderStrength);
-		sFilmicCurveLinearStrength->getValue(object, &output->filmicCurveLinearStrength);
-		sFilmicCurveLinearAngle->getValue(object, &output->filmicCurveLinearAngle);
-		sFilmicCurveToeStrength->getValue(object, &output->filmicCurveToeStrength);
-		sFilmicCurveToeNumerator->getValue(object, &output->filmicCurveToeNumerator);
-		sFilmicCurveToeDenominator->getValue(object, &output->filmicCurveToeDenominator);
-		sFilmicCurveLinearWhitePoint->getValue(object, &output->filmicCurveLinearWhitePoint);
+		sFilmicCurveShoulderStrength->get(object, &output->filmicCurveShoulderStrength);
+		sFilmicCurveLinearStrength->get(object, &output->filmicCurveLinearStrength);
+		sFilmicCurveLinearAngle->get(object, &output->filmicCurveLinearAngle);
+		sFilmicCurveToeStrength->get(object, &output->filmicCurveToeStrength);
+		sFilmicCurveToeNumerator->get(object, &output->filmicCurveToeNumerator);
+		sFilmicCurveToeDenominator->get(object, &output->filmicCurveToeDenominator);
+		sFilmicCurveLinearWhitePoint->get(object, &output->filmicCurveLinearWhitePoint);
 
 		return output;
 	}
@@ -109,13 +109,13 @@ namespace bs
 	{
 		MonoObject* object = metaData.scriptClass->createInstance();
 
-		sFilmicCurveShoulderStrength->setValue(object, &value.filmicCurveShoulderStrength);
-		sFilmicCurveLinearStrength->setValue(object, &value.filmicCurveLinearStrength);
-		sFilmicCurveLinearAngle->setValue(object, &value.filmicCurveLinearAngle);
-		sFilmicCurveToeStrength->setValue(object, &value.filmicCurveToeStrength);
-		sFilmicCurveToeNumerator->setValue(object, &value.filmicCurveToeNumerator);
-		sFilmicCurveToeDenominator->setValue(object, &value.filmicCurveToeDenominator);
-		sFilmicCurveLinearWhitePoint->setValue(object, &value.filmicCurveLinearWhitePoint);
+		sFilmicCurveShoulderStrength->set(object, &value.filmicCurveShoulderStrength);
+		sFilmicCurveLinearStrength->set(object, &value.filmicCurveLinearStrength);
+		sFilmicCurveLinearAngle->set(object, &value.filmicCurveLinearAngle);
+		sFilmicCurveToeStrength->set(object, &value.filmicCurveToeStrength);
+		sFilmicCurveToeNumerator->set(object, &value.filmicCurveToeNumerator);
+		sFilmicCurveToeDenominator->set(object, &value.filmicCurveToeDenominator);
+		sFilmicCurveLinearWhitePoint->set(object, &value.filmicCurveLinearWhitePoint);
 
 		return object;
 	}
@@ -137,8 +137,8 @@ namespace bs
 	{
 		SPtr<WhiteBalanceSettings> output = bs_shared_ptr_new<WhiteBalanceSettings>();
 
-		sTemperature->getValue(object, &output->temperature);
-		sTint->getValue(object, &output->tint);
+		sTemperature->get(object, &output->temperature);
+		sTint->get(object, &output->tint);
 
 		return output;
 	}
@@ -147,8 +147,8 @@ namespace bs
 	{
 		MonoObject* object = metaData.scriptClass->createInstance();
 
-		sTemperature->setValue(object, &value.temperature);
-		sTint->setValue(object, &value.tint);
+		sTemperature->set(object, &value.temperature);
+		sTint->set(object, &value.tint);
 
 		return object;
 	}
@@ -174,10 +174,10 @@ namespace bs
 	{
 		SPtr<ColorGradingSettings> output = bs_shared_ptr_new<ColorGradingSettings>();
 
-		sSaturation->getValue(object, &output->saturation);
-		sContrast->getValue(object, &output->contrast);
-		sGain->getValue(object, &output->gain);
-		sOffset->getValue(object, &output->offset);
+		sSaturation->get(object, &output->saturation);
+		sContrast->get(object, &output->contrast);
+		sGain->get(object, &output->gain);
+		sOffset->get(object, &output->offset);
 
 		return output;
 	}
@@ -186,10 +186,10 @@ namespace bs
 	{
 		MonoObject* object = metaData.scriptClass->createInstance();
 
-		sSaturation->setValue(object, &value.saturation);
-		sContrast->setValue(object, &value.contrast);
-		sGain->setValue(object, &value.gain);
-		sOffset->setValue(object, &value.offset);
+		sSaturation->set(object, &value.saturation);
+		sContrast->set(object, &value.contrast);
+		sGain->set(object, &value.gain);
+		sOffset->set(object, &value.offset);
 
 		return object;
 	}
@@ -225,25 +225,25 @@ namespace bs
 	{
 		SPtr<StandardPostProcessSettings> output = bs_shared_ptr_new<StandardPostProcessSettings>();
 
-		sEnableAutoExposure->getValue(object, &output->enableAutoExposure);
-		sEnableTonemapping->getValue(object, &output->enableTonemapping);
-		sExposureScale->getValue(object, &output->exposureScale);
-		sGamma->getValue(object, &output->gamma);
+		sEnableAutoExposure->get(object, &output->enableAutoExposure);
+		sEnableTonemapping->get(object, &output->enableTonemapping);
+		sExposureScale->get(object, &output->exposureScale);
+		sGamma->get(object, &output->gamma);
 
 		MonoObject* autoExposureMono;
-		sAutoExposure->getValue(object, &autoExposureMono);
+		sAutoExposure->get(object, &autoExposureMono);
 		output->autoExposure = *ScriptAutoExposureSettings::toNative(autoExposureMono);
 
 		MonoObject* tonemappingMono;
-		sTonemapping->getValue(object, &tonemappingMono);
+		sTonemapping->get(object, &tonemappingMono);
 		output->tonemapping = *ScriptTonemappingSettings::toNative(tonemappingMono);
 
 		MonoObject* whiteBalanceMono;
-		sWhiteBalance->getValue(object, &whiteBalanceMono);
+		sWhiteBalance->get(object, &whiteBalanceMono);
 		output->whiteBalance = *ScriptWhiteBalanceSettings::toNative(whiteBalanceMono);
 
 		MonoObject* colorGradingMono;
-		sColorGrading->getValue(object, &colorGradingMono);
+		sColorGrading->get(object, &colorGradingMono);
 		output->colorGrading = *ScriptColorGradingSettings::toNative(colorGradingMono);
 
 		return output;
@@ -253,22 +253,22 @@ namespace bs
 	{
 		MonoObject* object = metaData.scriptClass->createInstance();
 
-		sEnableAutoExposure->setValue(object, &value->enableAutoExposure);
-		sEnableTonemapping->setValue(object, &value->enableTonemapping);
-		sExposureScale->setValue(object, &value->exposureScale);
-		sGamma->setValue(object, &value->gamma);
+		sEnableAutoExposure->set(object, &value->enableAutoExposure);
+		sEnableTonemapping->set(object, &value->enableTonemapping);
+		sExposureScale->set(object, &value->exposureScale);
+		sGamma->set(object, &value->gamma);
 
 		MonoObject* autoExposureMono = ScriptAutoExposureSettings::toManaged(value->autoExposure);
-		sAutoExposure->setValue(object, autoExposureMono);
+		sAutoExposure->set(object, autoExposureMono);
 
 		MonoObject* tonemappingMono = ScriptTonemappingSettings::toManaged(value->tonemapping);
-		sTonemapping->setValue(object, tonemappingMono);
+		sTonemapping->set(object, tonemappingMono);
 
 		MonoObject* whiteBalanceMono = ScriptWhiteBalanceSettings::toManaged(value->whiteBalance);
-		sWhiteBalance->setValue(object, whiteBalanceMono);
+		sWhiteBalance->set(object, whiteBalanceMono);
 
 		MonoObject* colorGradingMono = ScriptColorGradingSettings::toManaged(value->colorGrading);
-		sColorGrading->setValue(object, colorGradingMono);
+		sColorGrading->set(object, colorGradingMono);
 
 		return object;
 	}

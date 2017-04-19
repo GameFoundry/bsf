@@ -238,7 +238,7 @@ namespace bs
 		MonoObject* customHandleAttrib = type->getAttribute(mCustomHandleAttribute);
 		MonoReflectionType* attribReflType = nullptr;
 
-		mTypeField->getValue(customHandleAttrib, &attribReflType);
+		mTypeField->get(customHandleAttrib, &attribReflType);
 
 		// Handle shown only when specific component type is selected
 		if (attribReflType != nullptr)

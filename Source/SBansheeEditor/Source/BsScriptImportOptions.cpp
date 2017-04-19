@@ -703,13 +703,13 @@ namespace bs
 		AnimationSplitInfo output;
 
 		MonoString* monoName = nullptr;
-		nameField->getValue(instance, &monoName);
+		nameField->get(instance, &monoName);
 
 		output.name = MonoUtil::monoToString(monoName);
 
-		startFrameField->getValue(instance, &output.startFrame);
-		endFrameField->getValue(instance, &output.endFrame);
-		isAdditiveField->getValue(instance, &output.isAdditive);
+		startFrameField->get(instance, &output.startFrame);
+		endFrameField->get(instance, &output.endFrame);
+		isAdditiveField->get(instance, &output.isAdditive);
 
 		return output;
 	}
@@ -743,12 +743,12 @@ namespace bs
 		ImportedAnimationEvents output;
 
 		MonoString* monoName = nullptr;
-		nameField->getValue(instance, &monoName);
+		nameField->get(instance, &monoName);
 
 		output.name = MonoUtil::monoToString(monoName);
 
 		MonoArray* monoEvents;
-		eventsField->getValue(instance, &monoEvents);
+		eventsField->get(instance, &monoEvents);
 
 		if (monoEvents != nullptr)
 		{
@@ -779,8 +779,8 @@ namespace bs
 		}
 
 		MonoObject* instance = metaData.scriptClass->createInstance();
-		nameField->setValue(instance, monoString);
-		eventsField->setValue(instance, scriptEvents.getInternal());
+		nameField->set(instance, monoString);
+		eventsField->set(instance, scriptEvents.getInternal());
 
 		return instance;
 	}

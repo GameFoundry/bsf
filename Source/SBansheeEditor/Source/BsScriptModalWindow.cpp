@@ -134,7 +134,7 @@ namespace bs
 
 		MonoObject* guiPanel = ScriptGUIPanel::createFromExisting(mContents);
 		mContentsPanel = ScriptGUILayout::toNative(guiPanel);
-		ScriptModalWindow::guiPanelField->setValue(mManagedInstance, guiPanel);
+		ScriptModalWindow::guiPanelField->set(mManagedInstance, guiPanel);
 
 		::MonoClass* rawMonoClass = MonoUtil::getClass(mManagedInstance);
 		MonoClass* monoClass = MonoManager::instance().findClass(rawMonoClass);
@@ -166,7 +166,7 @@ namespace bs
 
 				MonoObject* guiPanel = ScriptGUIPanel::createFromExisting(mContents);
 				mContentsPanel = ScriptGUILayout::toNative(guiPanel);
-				ScriptModalWindow::guiPanelField->setValue(mManagedInstance, guiPanel);
+				ScriptModalWindow::guiPanelField->set(mManagedInstance, guiPanel);
 
 				reloadMonoTypes(editorWindowClass);
 				return true;

@@ -125,11 +125,11 @@ namespace bs
 		AnimationEvent output;
 
 		MonoString* monoName = nullptr;
-		sNameField->getValue(instance, &monoName);
+		sNameField->get(instance, &monoName);
 
 		output.name = MonoUtil::monoToString(monoName);
 
-		sTimeField->getValue(instance, &output.time);
+		sTimeField->get(instance, &output.time);
 
 		return output;
 	}

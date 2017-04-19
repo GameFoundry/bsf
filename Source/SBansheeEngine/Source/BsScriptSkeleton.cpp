@@ -73,9 +73,9 @@ namespace bs
 		Matrix4 monoInvBindPose = invBindPose;
 
 		MonoObject* instance = metaData.scriptClass->createInstance();
-		sNameField->setValue(instance, monoName);
-		sParentField->setValue(instance, &parentIdx);
-		sInvBindPoseField->setValue(instance, &monoInvBindPose);
+		sNameField->set(instance, monoName);
+		sParentField->set(instance, &parentIdx);
+		sInvBindPoseField->set(instance, &monoInvBindPose);
 
 		return instance;
 	}

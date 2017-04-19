@@ -77,8 +77,8 @@ namespace bs
 		MonoObject* defaultSizeObj = windowClass->getAttribute(defaultSizeAttrib);
 		if (defaultSizeObj != nullptr)
 		{
-			defaultWidthField->getValue(defaultSizeObj, &width);
-			defaultHeightField->getValue(defaultSizeObj, &height);
+			defaultWidthField->get(defaultSizeObj, &width);
+			defaultHeightField->get(defaultSizeObj, &height);
 		}
 
 		MonoObject* instance = windowClass->createInstance(false);
@@ -181,7 +181,7 @@ namespace bs
 
 		MonoObject* guiPanel = ScriptGUIPanel::createFromExisting(mContents);
 		mContentsPanel = ScriptGUILayout::toNative(guiPanel);
-		ScriptDropDownWindow::guiPanelField->setValue(mManagedInstance, guiPanel);
+		ScriptDropDownWindow::guiPanelField->set(mManagedInstance, guiPanel);
 
 		::MonoClass* rawMonoClass = MonoUtil::getClass(mManagedInstance);
 		MonoClass* monoClass = MonoManager::instance().findClass(rawMonoClass);

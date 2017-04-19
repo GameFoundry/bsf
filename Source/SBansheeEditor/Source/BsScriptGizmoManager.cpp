@@ -165,7 +165,7 @@ namespace bs
 		componentType = paramType;
 
 		MonoObject* drawGizmoAttrib = method->getAttribute(mDrawGizmoAttribute);
-		mFlagsField->getValue(drawGizmoAttrib, &drawGizmoFlags);
+		mFlagsField->get(drawGizmoAttrib, &drawGizmoFlags);
 
 		return true;
 	}

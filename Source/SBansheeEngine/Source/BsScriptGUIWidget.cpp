@@ -25,7 +25,7 @@ namespace bs
 		MonoObject* guiPanel = ScriptGUIPanel::createFromExisting(mGUIWidget->getPanel());
 		mPanel = ScriptGUILayout::toNative(guiPanel);
 
-		sGUIPanelField->setValue(managedInstance, guiPanel);
+		sGUIPanelField->set(managedInstance, guiPanel);
 	}
 
 	ScriptGUIWidget::~ScriptGUIWidget()

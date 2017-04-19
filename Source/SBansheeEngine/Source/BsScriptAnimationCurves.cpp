@@ -37,7 +37,7 @@ namespace bs
 		SPtr<AnimationCurves> output = bs_shared_ptr_new<AnimationCurves>();
 
 		MonoArray* monoPosCurves;
-		sPositionCurvesField->getValue(instance, &monoPosCurves);
+		sPositionCurvesField->get(instance, &monoPosCurves);
 
 		if (monoPosCurves != nullptr)
 		{
@@ -50,7 +50,7 @@ namespace bs
 		}
 
 		MonoArray* monoRotCurves;
-		sRotationCurvesField->getValue(instance, &monoRotCurves);
+		sRotationCurvesField->get(instance, &monoRotCurves);
 
 		if (monoRotCurves != nullptr)
 		{
@@ -72,7 +72,7 @@ namespace bs
 		}
 
 		MonoArray* monoScaleCurves;
-		sScaleCurvesField->getValue(instance, &monoScaleCurves);
+		sScaleCurvesField->get(instance, &monoScaleCurves);
 
 		if (monoScaleCurves != nullptr)
 		{
@@ -85,7 +85,7 @@ namespace bs
 		}
 
 		MonoArray* monoFloatCurves;
-		sFloatCurvesField->getValue(instance, &monoFloatCurves);
+		sFloatCurvesField->get(instance, &monoFloatCurves);
 
 		if (monoFloatCurves != nullptr)
 		{
@@ -143,10 +143,10 @@ namespace bs
 		}
 
 		MonoObject* instance = metaData.scriptClass->createInstance();
-		sPositionCurvesField->setValue(instance, scriptPositionCurves.getInternal());
-		sRotationCurvesField->setValue(instance, scriptRotationCurves.getInternal());
-		sScaleCurvesField->setValue(instance, scriptScaleCurves.getInternal());
-		sFloatCurvesField->setValue(instance, scriptFloatCurves.getInternal());
+		sPositionCurvesField->set(instance, scriptPositionCurves.getInternal());
+		sRotationCurvesField->set(instance, scriptRotationCurves.getInternal());
+		sScaleCurvesField->set(instance, scriptScaleCurves.getInternal());
+		sFloatCurvesField->set(instance, scriptFloatCurves.getInternal());
 
 		return instance;
 	}
@@ -217,19 +217,19 @@ namespace bs
 		TNamedAnimationCurve<Vector3> output;
 
 		MonoString* monoName = nullptr;
-		sNameField->getValue(instance, &monoName);
+		sNameField->get(instance, &monoName);
 
 		output.name = MonoUtil::monoToString(monoName);
 
 		UINT32 flags;
-		sFlagsField->getValue(instance, &flags);
+		sFlagsField->get(instance, &flags);
 		output.flags = (AnimationCurveFlags)flags;
 
 		// Convert from three separate floating point curves, to a Vector3 curve
 		MonoObject* monoCurves[3];
-		sXCurveField->getValue(instance, &monoCurves[0]);
-		sYCurveField->getValue(instance, &monoCurves[1]);
-		sZCurveField->getValue(instance, &monoCurves[2]);
+		sXCurveField->get(instance, &monoCurves[0]);
+		sYCurveField->get(instance, &monoCurves[1]);
+		sZCurveField->get(instance, &monoCurves[2]);
 
 		SPtr<TAnimationCurve<float>> curves[3];
 
@@ -322,16 +322,16 @@ namespace bs
 		TNamedAnimationCurve<float> output;
 
 		MonoString* monoName = nullptr;
-		sNameField->getValue(instance, &monoName);
+		sNameField->get(instance, &monoName);
 
 		output.name = MonoUtil::monoToString(monoName);
 
 		UINT32 flags;
-		sFlagsField->getValue(instance, &flags);
+		sFlagsField->get(instance, &flags);
 		output.flags = (AnimationCurveFlags)flags;
 
 		MonoObject* monoCurve = nullptr;
-		sCurveField->getValue(instance, &monoCurve);
+		sCurveField->get(instance, &monoCurve);
 
 		if(monoCurve != nullptr)
 		{
@@ -412,8 +412,8 @@ namespace bs
 		MonoObject* monoRotationCurve = ScriptQuaternionCurve::toManaged(rootMotion->rotation);
 
 		MonoObject* instance = metaData.scriptClass->createInstance();
-		sPositionField->setValue(instance, monoPositionCurve);
-		sRotationField->setValue(instance, monoRotationCurve);
+		sPositionField->set(instance, monoPositionCurve);
+		sRotationField->set(instance, monoRotationCurve);
 
 		return instance;
 	}

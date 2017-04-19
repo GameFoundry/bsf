@@ -31,7 +31,7 @@ namespace bs
 	const HString& ScriptGUIContent::getText(MonoObject* instance)
 	{
 		MonoObject* textManaged = nullptr;
-		mTextField->getValue(instance, &textManaged);
+		mTextField->get(instance, &textManaged);
 
 		if(textManaged == nullptr)
 			return HString::dummy();
@@ -43,7 +43,7 @@ namespace bs
 	const HString& ScriptGUIContent::getTooltip(MonoObject* instance)
 	{
 		MonoObject* tooltipManaged = nullptr;
-		mTooltipField->getValue(instance, &tooltipManaged);
+		mTooltipField->get(instance, &tooltipManaged);
 
 		if(tooltipManaged == nullptr)
 			return HString::dummy();
@@ -55,7 +55,7 @@ namespace bs
 	GUIContentImages ScriptGUIContent::getImage(MonoObject* instance)
 	{
 		MonoObject* imagesManaged = nullptr;
-		mImagesField->getValue(instance, &imagesManaged);
+		mImagesField->get(instance, &imagesManaged);
 
 		if(imagesManaged == nullptr)
 			return GUIContentImages();

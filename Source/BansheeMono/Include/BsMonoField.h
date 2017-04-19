@@ -31,13 +31,13 @@ namespace bs
 		 * Value will be a pointer to raw data type for value types (for example int, float), and a MonoObject* for
 		 * reference types.
 		 */
-		void getValue(MonoObject* instance, void* outValue);
+		void get(MonoObject* instance, void* outValue);
 
 		/**
 		 * Retrieves value currently set in the field on the specified object instance. If field is static object instance
 		 * can be null. If returned value is a value type it will be boxed.
 		 */
-		MonoObject* getValueBoxed(MonoObject* instance);
+		MonoObject* getBoxed(MonoObject* instance);
 
 		/**
 		 * Sets a value for the field on the specified object instance. If field is static object instance can be null. 
@@ -46,7 +46,7 @@ namespace bs
 		 * Value should be a pointer to raw data type for value types (for example int, float), and a MonoObject* for
 		 * reference types.
 		 */
-		void setValue(MonoObject* instance, void* value);
+		void set(MonoObject* instance, void* value);
 
 		/**	Checks if field has an attribute of the specified type. */
 		bool hasAttribute(MonoClass* monoClass);

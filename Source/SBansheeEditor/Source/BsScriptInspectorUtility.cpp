@@ -80,7 +80,7 @@ namespace bs
 
 				// Check if the attribute references a valid class
 				MonoReflectionType* referencedReflType = nullptr;
-				mTypeField->getValue(attrib, &referencedReflType);
+				mTypeField->get(attrib, &referencedReflType);
 
 				::MonoClass* referencedMonoClass = MonoUtil::getClass(referencedReflType);
 

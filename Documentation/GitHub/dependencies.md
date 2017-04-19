@@ -193,6 +193,10 @@ If the library structure still isn't clear, download one of the pre-compiled dep
     - OSDependent.lib (Compile using "release" configuration)
     - OSDependentd.lib (Compile using "debug" configuration)
    
+**XShaderCompiler**
+- Distributed with Banshee source in Source/External/XShaderCompiler
+- Required by BansheeSL
+   
 **bison**
 - Bison 2.7
 - http://sourceforge.net/projects/winflexbison/files/

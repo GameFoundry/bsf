@@ -107,7 +107,9 @@ A set of manuals covering advanced functionality intented for those wanting to e
  - [Creating custom importers](@ref customImporters)
 - **Scripting**
  - [Exposing code to script API (automated)](@ref scriptingAuto)
- - [TODO - Exposing code to script API (manual)](@ref scripting)
+ - **Exposing code to script API (manually)**
+  - [Interacting with the script runtime](@ref mono)
+  - [Script objects](@ref scriptObjects)
  
 ## General guides
 Name                                      | Description

@@ -343,8 +343,8 @@ namespace bs
 					MonoObject* defaultSize = curClass->getAttribute(defaultSizeAttrib);
 					if (defaultSize != nullptr)
 					{
-						defaultWidthField->getValue(defaultSize, &width);
-						defaultHeightField->getValue(defaultSize, &height);
+						defaultWidthField->get(defaultSize, &width);
+						defaultHeightField->get(defaultSize, &height);
 					}
 
 					bool hasLocalUndoRedo = curClass->getAttribute(undoRedoLocalAttrib) != nullptr;
@@ -465,12 +465,12 @@ namespace bs
 
 					MonoObject* guiPanel = ScriptGUIPanel::createFromExisting(mContent);
 					mContentsPanel = ScriptGUILayout::toNative(guiPanel);
-					ScriptEditorWindow::guiPanelField->setValue(mManagedInstance, guiPanel);
+					ScriptEditorWindow::guiPanelField->set(mManagedInstance, guiPanel);
 
 					if(mHasLocalUndoRedo)
 					{
 						MonoObject* undoRedo = ScriptUndoRedo::create();
-						ScriptEditorWindow::undoRedoField->setValue(mManagedInstance, undoRedo);
+						ScriptEditorWindow::undoRedoField->set(mManagedInstance, undoRedo);
 					}
 
 					reloadMonoTypes(editorWindowClass);

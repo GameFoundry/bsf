@@ -31,17 +31,17 @@ namespace bs
 		return mFieldType;
 	}
 
-	void MonoField::getValue(MonoObject* instance, void* outValue)
+	void MonoField::get(MonoObject* instance, void* outValue)
 	{
 		mono_field_get_value(instance, mField, outValue);
 	}
 
-	MonoObject* MonoField::getValueBoxed(MonoObject* instance)
+	MonoObject* MonoField::getBoxed(MonoObject* instance)
 	{
 		return mono_field_get_value_object(MonoManager::instance().getDomain(), mField, instance);
 	}
 
-	void MonoField::setValue(MonoObject* instance, void* value)
+	void MonoField::set(MonoObject* instance, void* value)
 	{
 		mono_field_set_value(instance, mField, value);
 	}

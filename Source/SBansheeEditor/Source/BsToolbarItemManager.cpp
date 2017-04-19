@@ -115,11 +115,11 @@ namespace bs
 		MonoObject* toolbarItemAttrib = method->getAttribute(mToolbarItemAttribute);
 
 		MonoString* monoName;
-		mNameField->getValue(toolbarItemAttrib, &monoName);
+		mNameField->get(toolbarItemAttrib, &monoName);
 		name = MonoUtil::monoToString(monoName);
 
 		int builtinIcon;
-		mBuiltinIconField->getValue(toolbarItemAttrib, &builtinIcon);
+		mBuiltinIconField->get(toolbarItemAttrib, &builtinIcon);
 
 		if (builtinIcon != -1)
 		{
@@ -128,19 +128,19 @@ namespace bs
 		else
 		{
 			MonoString* monoTexturePath;
-			mIconField->getValue(toolbarItemAttrib, &monoTexturePath);
+			mIconField->get(toolbarItemAttrib, &monoTexturePath);
 
 			Path texturePath = MonoUtil::monoToWString(monoTexturePath);
 			icon = static_resource_cast<SpriteTexture>(gProjectLibrary().load(texturePath));
 		}
 
 		MonoString* tooltipMono;
-		mTooltipField->getValue(toolbarItemAttrib, &tooltipMono);
+		mTooltipField->get(toolbarItemAttrib, &tooltipMono);
 
 		tooltip = HString(MonoUtil::monoToWString(tooltipMono));
 
-		mPriorityField->getValue(toolbarItemAttrib, &priority);
-		mSeparatorField->getValue(toolbarItemAttrib, &separator);
+		mPriorityField->get(toolbarItemAttrib, &priority);
+		mSeparatorField->get(toolbarItemAttrib, &separator);
 
 		return true;
 	}

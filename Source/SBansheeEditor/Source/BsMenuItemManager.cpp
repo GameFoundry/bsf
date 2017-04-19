@@ -143,12 +143,12 @@ namespace bs
 		MonoObject* menuItemAttrib = method->getAttribute(mMenuItemAttribute);
 
 		MonoString* monoPath;
-		mPathField->getValue(menuItemAttrib, &monoPath);
+		mPathField->get(menuItemAttrib, &monoPath);
 
-		mShortcutField->getValue(menuItemAttrib, &shortcut);
+		mShortcutField->get(menuItemAttrib, &shortcut);
 		path = MonoUtil::monoToWString(monoPath);
-		mPriorityField->getValue(menuItemAttrib, &priority);
-		mSeparatorField->getValue(menuItemAttrib, &separator);
+		mPriorityField->get(menuItemAttrib, &priority);
+		mSeparatorField->get(menuItemAttrib, &separator);
 
 		return true;
 	}

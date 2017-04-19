@@ -105,7 +105,7 @@ namespace bs
 			if (range != nullptr)
 			{
 				float min = 0;
-				ScriptRange::getMinRangeField()->getValue(mMonoField->getAttribute(range), &min);
+				ScriptRange::getMinRangeField()->get(mMonoField->getAttribute(range), &min);
 				return min;
 			}
 		}
@@ -120,7 +120,7 @@ namespace bs
 			if (range != nullptr)
 			{
 				float max = 0;
-				ScriptRange::getMaxRangeField()->getValue(mMonoField->getAttribute(range), &max);
+				ScriptRange::getMaxRangeField()->get(mMonoField->getAttribute(range), &max);
 				return max;
 			}
 		}
@@ -135,7 +135,7 @@ namespace bs
 			if (range != nullptr)
 			{
 				bool slider = false;
-				ScriptRange::getSliderField()->getValue(mMonoField->getAttribute(range), &slider);
+				ScriptRange::getSliderField()->get(mMonoField->getAttribute(range), &slider);
 				return slider;
 			}
 		}
@@ -151,7 +151,7 @@ namespace bs
 			if (step != nullptr)
 			{
 				float value = 0;
-				ScriptStep::getStepField()->getValue(mMonoField->getAttribute(step), &value);
+				ScriptStep::getStepField()->get(mMonoField->getAttribute(step), &value);
 				return value;
 			}
 		}
@@ -160,12 +160,12 @@ namespace bs
 
 	MonoObject* ManagedSerializableFieldInfo::getValue(MonoObject* instance) const
 	{
-		return mMonoField->getValueBoxed(instance);
+		return mMonoField->getBoxed(instance);
 	}
 
 	void ManagedSerializableFieldInfo::setValue(MonoObject* instance, void* value) const
 	{
-		mMonoField->setValue(instance, value);
+		mMonoField->set(instance, value);
 	}
 
 	RTTITypeBase* ManagedSerializableFieldInfo::getRTTIStatic()
@@ -192,7 +192,7 @@ namespace bs
 			if (range != nullptr)
 			{
 				float min = 0;
-				ScriptRange::getMinRangeField()->getValue(mMonoProperty->getAttribute(range), &min);
+				ScriptRange::getMinRangeField()->get(mMonoProperty->getAttribute(range), &min);
 				return min;
 			}
 		}
@@ -208,7 +208,7 @@ namespace bs
 			if (range != nullptr)
 			{
 				float max = 0;
-				ScriptRange::getMaxRangeField()->getValue(mMonoProperty->getAttribute(range), &max);
+				ScriptRange::getMaxRangeField()->get(mMonoProperty->getAttribute(range), &max);
 				return max;
 			}
 		}
@@ -224,7 +224,7 @@ namespace bs
 			if (range != nullptr)
 			{
 				bool slider = false;
-				ScriptRange::getSliderField()->getValue(mMonoProperty->getAttribute(range), &slider);
+				ScriptRange::getSliderField()->get(mMonoProperty->getAttribute(range), &slider);
 				return slider;
 			}
 		}
@@ -241,7 +241,7 @@ namespace bs
 			if (step != nullptr)
 			{
 				float value = 0;
-				ScriptStep::getStepField()->getValue(mMonoProperty->getAttribute(step), &value);
+				ScriptStep::getStepField()->get(mMonoProperty->getAttribute(step), &value);
 				return value;
 			}
 		}

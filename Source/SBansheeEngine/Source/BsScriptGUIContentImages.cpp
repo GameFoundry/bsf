@@ -60,7 +60,7 @@ namespace bs
 		for (auto& entry : entries)
 		{
 			MonoObject* managedImage;
-			entry.field->getValue(instance, &managedImage);
+			entry.field->get(instance, &managedImage);
 
 			if (managedImage != nullptr)
 				entry.outputImage = ScriptSpriteTexture::toNative(managedImage)->getHandle();
@@ -103,7 +103,7 @@ namespace bs
 				managedImage = scriptImage->getManagedInstance();
 			}
 
-			entry.field->setValue(output, managedImage);
+			entry.field->set(output, managedImage);
 		}
 
 		return output;

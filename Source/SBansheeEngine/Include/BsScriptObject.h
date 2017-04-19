@@ -97,7 +97,7 @@ namespace bs
 			Type* param = (Type*)(Base*)this; // Needed due to multiple inheritance. Safe since Type must point to an class derived from this one.
 
 			if(metaData.thisPtrField != nullptr)
-				metaData.thisPtrField->setValue(instance, &param);
+				metaData.thisPtrField->set(instance, &param);
 		}
 
 		virtual ~ScriptObject() 
@@ -110,7 +110,7 @@ namespace bs
 		void _clearManagedInstance()
 		{
 			if (metaData.thisPtrField != nullptr && this->mManagedInstance != nullptr)
-				metaData.thisPtrField->setValue(this->mManagedInstance, nullptr);
+				metaData.thisPtrField->set(this->mManagedInstance, nullptr);
 
 			this->mManagedInstance = nullptr;
 		}
@@ -123,7 +123,7 @@ namespace bs
 			Type* param = (Type*)(Base*)this; // Needed due to multiple inheritance. Safe since Type must point to an class derived from this one.
 
 			if (metaData.thisPtrField != nullptr && this->mManagedInstance != nullptr)
-				metaData.thisPtrField->setValue(this->mManagedInstance, &param);
+				metaData.thisPtrField->set(this->mManagedInstance, &param);
 		}
 
 		/**	Creates a new managed instance of the type wrapped by this interop object. */
@@ -141,7 +141,7 @@ namespace bs
 			Type* nativeInstance = nullptr;
 
 			if (metaData.thisPtrField != nullptr && managedInstance != nullptr)
-				metaData.thisPtrField->getValue(managedInstance, &nativeInstance);
+				metaData.thisPtrField->get(managedInstance, &nativeInstance);
 
 			return nativeInstance;
 		}
