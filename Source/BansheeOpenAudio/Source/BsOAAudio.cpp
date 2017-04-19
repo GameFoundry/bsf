@@ -62,10 +62,7 @@ namespace bs
 			mDevice = alcOpenDevice(nullptr);
 
 		if (mDevice == nullptr)
-		{
-			BS_EXCEPT(InternalErrorException, "Failed to open OpenAL device: " + defaultDeviceName);
-			return;
-		}
+			LOGERR("Failed to open OpenAL device: " + defaultDeviceName);
 
 		rebuildContexts();
 	}
@@ -75,7 +72,8 @@ namespace bs
 		assert(mListeners.size() == 0 && mSources.size() == 0); // Everything should be destroyed at this point
 		clearContexts();
 
-		alcCloseDevice(mDevice);
+		if(mDevice != nullptr)
+			alcCloseDevice(mDevice);
 	}
 
 	void OAAudio::setVolume(float volume)
@@ -123,22 +121,24 @@ namespace bs
 
 		clearContexts();
 
-		alcCloseDevice(mDevice);
+		if(mDevice != nullptr)
+			alcCloseDevice(mDevice);
+		
 		mActiveDevice = device;
 
 		String narrowName = toString(device.name);
 		mDevice = alcOpenDevice(narrowName.c_str());
 		if (mDevice == nullptr)
-		{
-			BS_EXCEPT(InternalErrorException, "Failed to open OpenAL device: " + narrowName);
-			return;
-		}
+			LOGERR("Failed to open OpenAL device: " + narrowName);
 
 		rebuildContexts();
 	}
 
 	bool OAAudio::_isExtensionSupported(const String& extension) const
 	{
+		if (mDevice == nullptr)
+			return false;
+
 		if ((extension.length() > 2) && (extension.substr(0, 3) == "ALC"))
 			return alcIsExtensionPresent(mDevice, extension.c_str()) != AL_FALSE;
 		else
@@ -229,6 +229,9 @@ namespace bs
 			source->clear();
 
 		clearContexts();
+
+		if (mDevice == nullptr)
+			return;
 
 		UINT32 numListeners = (UINT32)mListeners.size();
 		UINT32 numContexts = numListeners > 1 ? numListeners : 1;
