@@ -26,6 +26,11 @@ list(APPEND XShaderCompiler_LIBRARY_DEBUG_SEARCH_DIRS "${XShaderCompiler_BUILD_D
 
 message(STATUS "Looking for XShaderCompiler installation...")
 	
+# Force the system to always look for files, instead of reading cached entries
+unset(XShaderCompiler_INCLUDE_DIR CACHE)
+unset(XShaderCompiler_LIBRARY_RELEASE CACHE)
+unset(XShaderCompiler_LIBRARY_DEBUG CACHE)
+	
 find_path(XShaderCompiler_INCLUDE_DIR Xsc/Xsc.h PATHS ${XShaderCompiler_INCLUDE_SEARCH_DIRS})
 find_library(XShaderCompiler_LIBRARY_RELEASE NAMES xsc_core PATHS ${XShaderCompiler_LIBRARY_RELEASE_SEARCH_DIRS})
 find_library(XShaderCompiler_LIBRARY_DEBUG NAMES xsc_core PATHS ${XShaderCompiler_LIBRARY_DEBUG_SEARCH_DIRS})

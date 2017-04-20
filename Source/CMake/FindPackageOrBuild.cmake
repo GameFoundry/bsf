@@ -25,7 +25,8 @@ function(build_dependency DEPENDENCY_NAME BUILD_CONFIG BUILD_OPTIONS)
 endfunction()
 
 function(find_package_or_build DEPENDENCY_NAME DEPENDENCY_INCLUDE_PATH BUILD_OPTIONS)
-	set(DEPENDENCY_BUILD_DIR "${CMAKE_SOURCE_DIR}/../Dependencies/Build/${DEPENDENCY_NAME}")
+	set(DEPENDENCIES_BUILD_DIR "${CMAKE_SOURCE_DIR}/../Dependencies/Build")
+	set(DEPENDENCY_BUILD_DIR "${DEPENDENCIES_BUILD_DIR}/${DEPENDENCY_NAME}")
 	set(DEPENDENCY_SOURCE_DIR "${CMAKE_SOURCE_DIR}/External/${DEPENDENCY_NAME}")
 
 	# Look for dependency binaries
@@ -47,6 +48,9 @@ function(find_package_or_build DEPENDENCY_NAME DEPENDENCY_INCLUDE_PATH BUILD_OPT
 		# Build
 		build_dependency(${DEPENDENCY_NAME} Release ${BUILD_OPTIONS})
 		build_dependency(${DEPENDENCY_NAME} Debug ${BUILD_OPTIONS})
+		
+		# Update the dependencies version
+		file(WRITE ${DEPENDENCIES_BUILD_DIR}/.version ${BS_DEPENDENCIES_VERSION})
 		
 		# Now try finding the package again, this time it's required
 		find_package(${DEPENDENCY_NAME} REQUIRED)

@@ -5,6 +5,8 @@ project (Banshee)
 set (BS_VERSION_MAJOR 0)
 set (BS_VERSION_MINOR 4)
 
+set (BS_DEPENDENCIES_VERSION 1)
+
 # Configuration types
 if(CMAKE_CONFIGURATION_TYPES) # Multiconfig generator?
 	set(CMAKE_CONFIGURATION_TYPES "Debug;OptimizedDebug;Release;" CACHE INTERNAL "") 
@@ -58,7 +60,35 @@ endif()
 
 mark_as_advanced(CMAKE_INSTALL_PREFIX)
 
-# External code
+# Ensure dependencies are up to date
+## Check prebuilt dependencies that user downloads in a .zip
+set(BUILTIN_DEP_VERSION_FILE ${PROJECT_SOURCE_DIR}/../Dependencies/.version)
+if(NOT EXISTS ${BUILTIN_DEP_VERSION_FILE})
+	message(FATAL_ERROR "Precompiled dependencies package is missing our out of date. Re-run setup or manually re-download and extract dependencies.")
+else()
+	file (STRINGS ${BUILTIN_DEP_VERSION_FILE} CURRENT_BUILTIN_DEP_VERSION)
+	if(${BS_DEPENDENCIES_VERSION} GREATER ${CURRENT_BUILTIN_DEP_VERSION})
+		message(FATAL_ERROR "Your precomiled dependencies package is out of date. Re-run setup or manually re-download and extract dependencies.")
+	endif()
+endif()
+	
+## Check dependencies built from source
+set(SOURCE_DEP_BUILD_DIR ${PROJECT_SOURCE_DIR}/../Dependencies/Build)
+set(SOURCE_DEP_BUILD_VERSION_FILE ${SOURCE_DEP_BUILD_DIR}/.version)
+if(EXISTS ${SOURCE_DEP_BUILD_VERSION_FILE})
+	file (STRINGS ${SOURCE_DEP_BUILD_VERSION_FILE} CURRENT_SOURCE_DEP_VERSION)
+	if(${BS_DEPENDENCIES_VERSION} GREATER ${CURRENT_SOURCE_DEP_VERSION})
+		message(STATUS "Built dependencies are out of date, forcing recompile.")
+		execute_process(COMMAND "${CMAKE_COMMAND}" 
+			-E remove_directory "${SOURCE_DEP_BUILD_DIR}")	
+	endif()
+else()
+	message(STATUS "Built dependencies are out of date, forcing recompile.")
+	execute_process(COMMAND "${CMAKE_COMMAND}" 
+		-E remove_directory "${SOURCE_DEP_BUILD_DIR}")	
+endif()
+
+# Includes required for various find_package calls
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMake/Modules/")
 
 # Global compile & linker flags
@@ -157,6 +187,7 @@ else()
 	set(BS_LIBRARY_EXTENSION ".a")
 endif()
 
+# Helper functions
 function(add_library_per_config target_name lib_name release_name debug_name)
 	add_library(${lib_name} STATIC IMPORTED)
 	set_target_properties(${lib_name} PROPERTIES IMPORTED_LOCATION_DEBUG ${PROJECT_SOURCE_DIR}/../Dependencies/${lib_name}/lib/${BS_OUTPUT_DIR_PREFIX}/${debug_name}${BS_LIBRARY_EXTENSION})
