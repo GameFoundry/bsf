@@ -66,7 +66,7 @@ endif()
 target_link_libraries(BansheeSL PRIVATE ${XShaderCompiler_LIBRARIES})
 
 ## Local libs
-target_link_libraries(BansheeSL BansheeEngine BansheeUtility BansheeCore)
+target_link_libraries(BansheeSL PRIVATE BansheeEngine BansheeUtility BansheeCore)
 
 # IDE specific
 set_property(TARGET BansheeSL PROPERTY FOLDER Plugins)

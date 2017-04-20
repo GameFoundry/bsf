@@ -14,6 +14,12 @@
 #include "BsMatrix4.h"
 #include "BsBuiltinResources.h"
 
+#include "Xsc/Xsc.h"
+
+//DEBUG ONLY
+#include "BsFileSystem.h"
+#include "BsDataStream.h"
+
 extern "C" {
 #include "BsMMAlloc.h"
 #include "BsParserFX.h"
@@ -68,7 +74,70 @@ namespace bs
 		}
 	}
 
-	BSLFXCompileResult BSLFXCompiler::compile(const String& source, const UnorderedMap<String, String>& defines)
+	// Convert HLSL code to GLSL
+	String HLSLtoGLSL(const String& hlsl, GpuProgramType type, UINT32& startBindingSlot)
+	{
+		SPtr<StringStream> input = bs_shared_ptr_new<StringStream>();
+		*input << hlsl;
+
+		Xsc::ShaderInput inputDesc;
+		inputDesc.entryPoint = "main";
+		inputDesc.shaderVersion = Xsc::InputShaderVersion::HLSL5;
+		inputDesc.sourceCode = input;
+
+		switch (type)
+		{
+		case GPT_VERTEX_PROGRAM:
+			inputDesc.shaderTarget = Xsc::ShaderTarget::VertexShader;
+			break;
+		case GPT_GEOMETRY_PROGRAM:
+			inputDesc.shaderTarget = Xsc::ShaderTarget::GeometryShader;
+			break;
+		case GPT_HULL_PROGRAM:
+			inputDesc.shaderTarget = Xsc::ShaderTarget::TessellationControlShader;
+			break;
+		case GPT_DOMAIN_PROGRAM:
+			inputDesc.shaderTarget = Xsc::ShaderTarget::TessellationEvaluationShader;
+			break;
+		case GPT_FRAGMENT_PROGRAM:
+			inputDesc.shaderTarget = Xsc::ShaderTarget::FragmentShader;
+			break;
+		}
+
+		StringStream output;
+
+		Xsc::ShaderOutput outputDesc;
+		outputDesc.shaderVersion = Xsc::OutputShaderVersion::VKSL450;
+		outputDesc.sourceCode = &output;
+		outputDesc.options.autoBinding = true;
+		outputDesc.options.autoBindingStartSlot = startBindingSlot;
+		outputDesc.nameMangling.inputPrefix = "bs_";
+		outputDesc.nameMangling.useAlwaysSemantics = true;
+
+		Xsc::StdLog log;
+		Xsc::Reflection::ReflectionData reflectionData;
+		if (!Xsc::CompileShader(inputDesc, outputDesc, &log, &reflectionData))
+		{
+			LOGERR("Shader cross compilation failed.");
+			return "";
+		}
+
+		INT32 maxBindingSlot = 0;
+		for (auto& entry : reflectionData.constantBuffers)
+			maxBindingSlot = std::max(maxBindingSlot, entry.location);
+
+		for (auto& entry : reflectionData.textures)
+			maxBindingSlot = std::max(maxBindingSlot, entry.location);
+
+		for (auto& entry : reflectionData.storageBuffers)
+			maxBindingSlot = std::max(maxBindingSlot, entry.location);
+
+		startBindingSlot = maxBindingSlot;
+		return output.str();
+	}
+
+	BSLFXCompileResult BSLFXCompiler::compile(const String& name, const String& source, 
+		const UnorderedMap<String, String>& defines)
 	{
 		BSLFXCompileResult output;
 
@@ -115,7 +184,7 @@ namespace bs
 				codeString = codeString->next;
 			}
 
-			output = parseShader("Shader", parseState, codeBlocks);
+			output = parseShader(name, parseState, codeBlocks);
 
 			StringStream gpuProgError;
 			bool hasError = false;
@@ -1338,6 +1407,7 @@ namespace bs
 
 
 		// Actually parse techniques
+		bool hasGLSLTechnique = false;
 		for (auto& entry : techniqueData)
 		{
 			const TechniqueMetaData& metaData = entry.second.metaData;
@@ -1352,9 +1422,79 @@ namespace bs
 			}
 
 			parseTechnique(entry.first, codeBlocks, entry.second);
+
+			if (entry.second.metaData.language == "glsl")
+				hasGLSLTechnique = true;
 		}
 
 		bs_stack_free(techniqueWasParsed);
+
+		// If no GLSL technique, auto-generate them for each non-base technique
+		if(!hasGLSLTechnique)
+		{
+			UINT32 end = (UINT32)techniqueData.size();
+			for(UINT32 i = 0; i < end; i++)
+			{
+				const TechniqueMetaData& metaData = techniqueData[i].second.metaData;
+				if (!metaData.baseName.empty())
+					continue;
+
+				TechniqueData copy = techniqueData[i].second;
+				copy.metaData.language = "glsl";
+				for(auto& passData : copy.passes)
+				{
+					UINT32 nextFreeBindingSlot = 0;
+					if (!passData.vertexCode.empty())
+					{
+						String hlslCode = passData.commonCode + passData.vertexCode;
+						passData.vertexCode = HLSLtoGLSL(hlslCode, GPT_VERTEX_PROGRAM, nextFreeBindingSlot);
+
+						auto ds = FileSystem::createAndOpenFile("E:\\GenShaders\\" + name + "_VS.glsl");
+						ds->writeString(passData.vertexCode);
+					}
+
+					if (!passData.fragmentCode.empty())
+					{
+						String hlslCode = passData.commonCode + passData.fragmentCode;
+						passData.fragmentCode = HLSLtoGLSL(hlslCode, GPT_FRAGMENT_PROGRAM, nextFreeBindingSlot);
+
+						auto ds = FileSystem::createAndOpenFile("E:\\GenShaders\\" + name + "_FS.glsl");
+						ds->writeString(passData.fragmentCode);
+					}
+
+					if (!passData.geometryCode.empty())
+					{
+						String hlslCode = passData.commonCode + passData.geometryCode;
+						passData.geometryCode = HLSLtoGLSL(hlslCode, GPT_GEOMETRY_PROGRAM, nextFreeBindingSlot);
+					}
+
+					if (!passData.hullCode.empty())
+					{
+						String hlslCode = passData.commonCode + passData.hullCode;
+						passData.hullCode = HLSLtoGLSL(hlslCode, GPT_HULL_PROGRAM, nextFreeBindingSlot);
+					}
+
+					if (!passData.domainCode.empty())
+					{
+						String hlslCode = passData.commonCode + passData.domainCode;
+						passData.domainCode = HLSLtoGLSL(hlslCode, GPT_DOMAIN_PROGRAM, nextFreeBindingSlot);
+					}
+
+					if (!passData.computeCode.empty())
+					{
+						String hlslCode = passData.commonCode + passData.computeCode;
+						passData.computeCode = HLSLtoGLSL(hlslCode, GPT_COMPUTE_PROGRAM, nextFreeBindingSlot);
+
+						auto ds = FileSystem::createAndOpenFile("E:\\GenShaders\\" + name + "_CS.glsl");
+						ds->writeString(passData.computeCode);
+					}
+
+					passData.commonCode = "";
+				}
+
+				techniqueData.push_back(std::make_pair(techniqueData[i].first, copy));
+			}
+		}
 
 		Vector<SPtr<Technique>> techniques;
 		for(auto& entry : techniqueData)

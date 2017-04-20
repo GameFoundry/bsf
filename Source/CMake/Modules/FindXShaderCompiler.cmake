@@ -49,7 +49,7 @@ else()
 	message(STATUS "...XShaderCompiler OK.")
 endif()
 
-if(XShaderCompiler)
+if(XShaderCompiler_FOUND)
 	add_library(XShaderCompiler STATIC IMPORTED)
 	set_target_properties(XShaderCompiler PROPERTIES IMPORTED_LOCATION_DEBUG "${XShaderCompiler_LIBRARY_DEBUG}")
 	set_target_properties(XShaderCompiler PROPERTIES IMPORTED_LOCATION_OPTIMIZEDDEBUG "${XShaderCompiler_LIBRARY_DEBUG}")
@@ -64,3 +64,6 @@ mark_as_advanced(
 
 set(XShaderCompiler_INCLUDE_DIRS ${XShaderCompiler_INCLUDE_DIR})
 set(XShaderCompiler_LIBRARIES XShaderCompiler)
+
+set(XShaderCompiler_INCLUDE_DIRS ${XShaderCompiler_INCLUDE_DIR} PARENT_SCOPE)
+set(XShaderCompiler_LIBRARIES XShaderCompiler PARENT_SCOPE)

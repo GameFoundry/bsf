@@ -38,10 +38,11 @@ namespace bs
 		String source = stream->getAsString();
 
 		SPtr<const ShaderImportOptions> io = std::static_pointer_cast<const ShaderImportOptions>(importOptions);
-		BSLFXCompileResult result = BSLFXCompiler::compile(source, io->getDefines());
+		WString shaderName = filePath.getWFilename(false);
+		BSLFXCompileResult result = BSLFXCompiler::compile(toString(shaderName), source, io->getDefines());
 
 		if (result.shader != nullptr)
-			result.shader->setName(filePath.getWFilename(false));
+			result.shader->setName(shaderName);
 		else
 		{
 			String file;
