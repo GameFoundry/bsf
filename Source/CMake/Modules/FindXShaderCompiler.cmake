@@ -1,4 +1,4 @@
-# Find XShaderCompiler tool dependency
+# Find XShaderCompiler dependency
 #
 # This module defines
 #  XShaderCompiler_INCLUDE_DIRS

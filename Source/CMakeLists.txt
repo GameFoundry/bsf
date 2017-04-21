@@ -187,50 +187,7 @@ else()
 	set(BS_LIBRARY_EXTENSION ".a")
 endif()
 
-# Helper functions
-function(add_library_per_config target_name lib_name release_name debug_name)
-	add_library(${lib_name} STATIC IMPORTED)
-	set_target_properties(${lib_name} PROPERTIES IMPORTED_LOCATION_DEBUG ${PROJECT_SOURCE_DIR}/../Dependencies/${lib_name}/lib/${BS_OUTPUT_DIR_PREFIX}/${debug_name}${BS_LIBRARY_EXTENSION})
-	set_target_properties(${lib_name} PROPERTIES IMPORTED_LOCATION_OPTIMIZEDDEBUG ${PROJECT_SOURCE_DIR}/../Dependencies/${lib_name}/lib/${BS_OUTPUT_DIR_PREFIX}/${release_name}${BS_LIBRARY_EXTENSION})
-	set_target_properties(${lib_name} PROPERTIES IMPORTED_LOCATION_RELEASE ${PROJECT_SOURCE_DIR}/../Dependencies/${lib_name}/lib/${BS_OUTPUT_DIR_PREFIX}/${release_name}${BS_LIBRARY_EXTENSION})	
-	
-	target_link_libraries(${target_name} PRIVATE ${lib_name})	
-endfunction()
-
-function(add_library_per_config_multi target_name lib_name file_name release_name debug_name)
-	add_library(${lib_name} STATIC IMPORTED)
-	set_target_properties(${lib_name} PROPERTIES IMPORTED_LOCATION_DEBUG ${PROJECT_SOURCE_DIR}/../Dependencies/${file_name}/lib/${BS_OUTPUT_DIR_PREFIX}/${debug_name}${BS_LIBRARY_EXTENSION})
-	set_target_properties(${lib_name} PROPERTIES IMPORTED_LOCATION_OPTIMIZEDDEBUG ${PROJECT_SOURCE_DIR}/../Dependencies/${file_name}/lib/${BS_OUTPUT_DIR_PREFIX}/${release_name}${BS_LIBRARY_EXTENSION})
-	set_target_properties(${lib_name} PROPERTIES IMPORTED_LOCATION_RELEASE ${PROJECT_SOURCE_DIR}/../Dependencies/${file_name}/lib/${BS_OUTPUT_DIR_PREFIX}/${release_name}${BS_LIBRARY_EXTENSION})	
-	
-	target_link_libraries(${target_name} PRIVATE ${lib_name})	
-endfunction()
-
-function(add_engine_dependencies target_name)
-	if(RENDER_API_MODULE MATCHES "DirectX 11")
-		add_dependencies(${target_name} BansheeD3D11RenderAPI)
-	elseif(RENDER_API_MODULE MATCHES "Vulkan")
-		add_dependencies(${target_name} BansheeVulkanRenderAPI)
-	else()
-		add_dependencies(${target_name} BansheeGLRenderAPI)
-	endif()
-
-	if(AUDIO_MODULE MATCHES "FMOD")
-		add_dependencies(${target_name} BansheeFMOD)
-	else() # Default to OpenAudio
-		add_dependencies(${target_name} BansheeOpenAudio)
-	endif()
-	
-	add_dependencies(${target_name} BansheeMono BansheeSL BansheeOISInput BansheePhysX RenderBeast SBansheeEngine)
-endfunction()
-
-function(add_subdirectory_optional subdir_name)
-	get_filename_component(fullPath ${subdir_name} ABSOLUTE)
-	if(EXISTS ${fullPath}/CMakeLists.txt)
-		add_subdirectory(${subdir_name})
-	endif()
-endfunction()
-
+include(CMake/Common.cmake)
 include(CMake/FindPackageOrBuild.cmake)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS TRUE)
