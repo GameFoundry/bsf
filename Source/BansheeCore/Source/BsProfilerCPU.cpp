@@ -5,6 +5,10 @@
 #include "BsPlatform.h"
 #include <chrono>
 
+#if BS_COMPILER == BS_COMPILER_MSVC
+	#include <intrin.h>
+#endif
+
 #if BS_COMPILER == BS_COMPILER_GNUC || BS_COMPILER == BS_COMPILER_CLANG
 	#include "cpuid.h"
 #endif
