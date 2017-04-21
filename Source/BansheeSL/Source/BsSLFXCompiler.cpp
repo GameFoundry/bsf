@@ -226,7 +226,6 @@ namespace bs
 
 			if (hasError)
 			{
-				output.shader = nullptr;
 				output.errorMessage = "Failed compiling GPU program(s): " + gpuProgError.str();
 				output.errorLine = 0;
 				output.errorColumn = 0;
@@ -1430,7 +1429,7 @@ namespace bs
 		bs_stack_free(techniqueWasParsed);
 
 		// If no GLSL technique, auto-generate them for each non-base technique
-		if(!hasGLSLTechnique)
+		if(false /*!hasGLSLTechnique*/) // TODO : Disabled for now
 		{
 			UINT32 end = (UINT32)techniqueData.size();
 			for(UINT32 i = 0; i < end; i++)

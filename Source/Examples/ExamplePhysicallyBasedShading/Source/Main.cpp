@@ -81,6 +81,9 @@ int CALLBACK WinMain(
 	_In_  int nCmdShow
 	)
 {
+	// Ensure all errors are reported properly
+	CrashHandler::startUp();
+
 	// Descriptor used for initializing the engine
 	START_UP_DESC startUpDesc;
 
@@ -114,6 +117,7 @@ int CALLBACK WinMain(
 	Application::instance().runMainLoop();
 
 	Application::shutDown();
+	CrashHandler::shutDown();
 
 	return 0;
 }

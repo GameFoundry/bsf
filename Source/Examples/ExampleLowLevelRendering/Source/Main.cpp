@@ -107,6 +107,9 @@ int CALLBACK WinMain(
 	_In_  int nCmdShow
 )
 {
+	// Ensure all errors are reported properly
+	CrashHandler::startUp();
+
 	// Define a video mode for the resolution of the primary rendering window.
 	VideoMode videoMode(windowResWidth, windowResHeight);
 
@@ -119,6 +122,7 @@ int CALLBACK WinMain(
 	Application::instance().runMainLoop();
 
 	Application::shutDown();
+	CrashHandler::shutDown();
 
 	return 0;
 }

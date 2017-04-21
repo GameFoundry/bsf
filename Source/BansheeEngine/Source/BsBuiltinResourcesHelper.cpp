@@ -16,16 +16,19 @@
 #include "BsFileSystem.h"
 #include "BsCoreThread.h"
 #include "BsUUID.h"
+#include "BsShader.h"
+#include "BsPass.h"
+#include "BsGpuProgram.h"
 
 using json = nlohmann::json;
 
 namespace bs
 {
-	void BuiltinResourcesHelper::importAssets(const nlohmann::json& entries, const Path& inputFolder, 
+	bool BuiltinResourcesHelper::importAssets(const nlohmann::json& entries, const Path& inputFolder, 
 		const Path& outputFolder, const SPtr<ResourceManifest>& manifest, AssetType mode)
 	{
 		if (!FileSystem::exists(inputFolder))
-			return;
+			return true;
 
 		if (FileSystem::exists(outputFolder))
 			FileSystem::remove(outputFolder);
@@ -174,6 +177,13 @@ namespace bs
 			if (outputRes == nullptr)
 				continue;
 
+			if (rtti_is_of_type<Shader>(outputRes.get()))
+			{
+				HShader shader = static_resource_cast<Shader>(outputRes);
+				if (!verifyAndReportShader(shader))
+					return false;
+			}
+
 			if (mode == AssetType::Sprite)
 			{
 				std::string spriteUUID = entry["SpriteUUID"];
@@ -258,6 +268,8 @@ namespace bs
 				generateSprite(tex16, iconsToGenerate[i].name + "16", iconsToGenerate[i].SpriteUUIDs[2].c_str());
 			}
 		}
+
+		return true;
 	}
 
 	void BuiltinResourcesHelper::importFont(const Path& inputFile, const WString& outputName, const Path& outputFolder,
@@ -410,5 +422,57 @@ namespace bs
 		FileSystem::iterate(folder, checkUpToDate, checkUpToDate);
 
 		return !upToDate;
+	}
+
+	bool BuiltinResourcesHelper::verifyAndReportShader(const HShader& shader)
+	{
+		if(!shader.isLoaded(false) || shader->getNumTechniques() == 0)
+		{
+#if BS_DEBUG_MODE
+			BS_EXCEPT(InvalidStateException, "Error occured while compiling a shader. Check earlier log messages for exact error.");
+#else
+			LOGERR("Error occured while compiling a shader. Check earlier log messages for exact error.")
+#endif
+			return false;
+		}
+
+		Vector<SPtr<Technique>> techniques = shader->getCompatibleTechniques();
+		for(auto& technique : techniques)
+		{
+			UINT32 numPasses = technique->getNumPasses();
+			for(UINT32 i = 0; i < numPasses; i++)
+			{
+				SPtr<Pass> pass = technique->getPass(i);
+
+				std::array<SPtr<GpuProgram>, 6> gpuPrograms;
+				gpuPrograms[0] = pass->getVertexProgram();
+				gpuPrograms[1] = pass->getFragmentProgram();
+				gpuPrograms[2] = pass->getGeometryProgram();
+				gpuPrograms[3] = pass->getHullProgram();
+				gpuPrograms[4] = pass->getDomainProgram();
+				gpuPrograms[5] = pass->getComputeProgram();
+
+				for(auto& program : gpuPrograms)
+				{
+					if (program == nullptr)
+						continue;
+
+					program->blockUntilCoreInitialized();
+					if(!program->isCompiled())
+					{
+#if BS_DEBUG_MODE
+						BS_EXCEPT(InvalidStateException, "Error occured while compiling a shader. Error message: " + 
+							program->getCompileErrorMessage());
+#else
+						LOGERR("Error occured while compiling a shader. Error message: " +
+							program->getCompileErrorMessage())
+#endif
+						return false;
+					}
+				}
+			}
+		}
+
+		return true;
 	}
 }

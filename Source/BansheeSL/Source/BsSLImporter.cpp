@@ -43,7 +43,8 @@ namespace bs
 
 		if (result.shader != nullptr)
 			result.shader->setName(shaderName);
-		else
+		
+		if(!result.errorMessage.empty())
 		{
 			String file;
 			if (result.errorFile.empty())
@@ -51,7 +52,7 @@ namespace bs
 			else
 				file = result.errorFile;
 
-			LOGERR("Error while parsing shader FX code \"" + file + "\":\n" + result.errorMessage + ". Location: " +
+			LOGERR("Compilation error when importing shader \"" + file + "\":\n" + result.errorMessage + ". Location: " +
 				toString(result.errorLine) + " (" + toString(result.errorColumn) + ")");
 		}
 

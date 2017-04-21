@@ -2061,7 +2061,13 @@ namespace bs
 		Path programPath = EditorShaderFolder;
 		programPath.append(name + L".asset");
 
-		return gResources().load<Shader>(programPath);
+		HShader shader = gResources().load<Shader>(programPath);
+
+#if BS_DEBUG_MODE
+		BuiltinResourcesHelper::verifyAndReportShader(shader);
+#endif
+
+		return shader;
 	}
 
 	HMaterial BuiltinEditorResources::createDockDropOverlayMaterial() const

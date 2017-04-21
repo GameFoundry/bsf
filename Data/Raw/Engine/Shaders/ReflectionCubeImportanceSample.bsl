@@ -26,7 +26,7 @@ Technique
 			#define PI 3.1415926
 		
 			// From Hacker's Delight
-			float reverseBits(uint bits) 
+			float reverseBits(uint bits)  
 			{
 				bits = (bits << 16u) | (bits >> 16u);
 				bits = ((bits & 0x55555555u) << 1u) | ((bits & 0xAAAAAAAAu) >> 1u);
