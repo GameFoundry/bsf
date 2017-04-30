@@ -110,6 +110,9 @@ A set of manuals covering advanced functionality intented for those wanting to e
  - **Exposing code to script API (manually)**
   - [Interacting with the script runtime](@ref mono)
   - [Script objects](@ref scriptObjects)
+- [Porting to other platforms](@ref porting)
+- [Code style](@ref codeStyle)
+- [Quick reference](@ref quickref)
  
 ## General guides
 Name                                      | Description
@@ -118,6 +121,3 @@ Name                                      | Description
 [Custom GUI elements](@ref customGUI)     | Shows you how to create custom GUI elements, manually render text or modify GUI system in a general way.
 [Meshes](@ref meshes)                     | Shows you how to create, use and manipulate meshes.
 [Materials](@ref materials)				  | Shows you how to create and use materials and shaders.
-[Quick reference](@ref quickref)          | Provides a few bits of commonly required information, that might be hard to remember otherwise.
-[Porting](@ref porting)                   | Information about how to go on about porting Banshee to a different operating system.
-[Code style](@ref style)                  | Information about code style used when writing Banshee.

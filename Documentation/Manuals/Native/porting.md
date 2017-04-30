@@ -10,17 +10,18 @@ Banshee currently compiles using MSVC and Clang on Windows. There should be litt
 This means that as far as the compilation goes most of the work should be done for you.
 
 # Platform specific functionality {#porting_b}
-Most of the porting work remains in adding platform specific functionality like file-system, windows and similar. Banshee comes with a fully working implementation of OpenGL, which means the rendering API is already cross-platform (for the most part), and the platform functionality mostly lies in various utility functionality.
+Most of the porting work remains in adding platform specific functionality like file-system, windows and similar. Banshee comes with a fully working implementation of OpenGL & Vulkan, which means the rendering API is already cross-platform (for the most part), and the platform-specific functionality mostly lies in various utility functionality.
 
 Banshee was built with multi-platform in mind from day one, and it tries to minimize the amount of platform specific functionality as much as possible. The functionality that is platform specific is encapsulated so external code never needs to access it directly, making the porting process transparent to higher level systems. All of the platform specific functionality is cleanly marked either in an \#ifdef block or is in a separate source file with a special prefix.
 
-Banshee is built in layers, higher layers referencing lower layers. This should make porting easier as you can start with the lowest layer and work your way up. This way you can compile and test layer by layer instead of needing to fully port the entire engine to properly compile it. Additionally a lot of functionality is in plugins and those generally don't have any platform specific code (except the OpenGL plugin), which should also help with dividing the work into manageable chunks. These aspects of Banshee should significantly help with the porting effort, so keep the layers/plugins in mind.
+Banshee is built in layers, higher layers referencing lower layers. This should make porting easier as you can start with the lowest layer and work your way up. This way you can compile and test layer by layer instead of needing to fully port the entire engine to properly compile it. Additionally a lot of functionality is in plugins and those generally don't have any platform specific code (except the OpenGL & Vulkan plugins), which should also help with dividing the work into manageable chunks. These aspects of Banshee should significantly help with the porting effort, so keep the layers/plugins in mind.
 
-Aside from dividing the work by layers/plugins you should most definitely also divide it by functionality needed: editor requires significantly more platform specific code than a standalone game. You should first strive to port all the features used by the standalone game, then after everything is working should you proceed with working on editor features. You can use the `ExampleProject` as a test-bed for the standalone features. 
+Aside from dividing the work by layers/plugins you should most definitely also divide it by functionality needed: editor requires significantly more platform specific code than the core framework. You should first strive to port all the features used by the core framework, then after everything is working should you proceed with working on editor features.
 
 All the features that need porting are wrapped in a BS_PLATFORM \#ifdef block, or in files prefixed with "Win32". In a very limited set of cases there are also BS_COMPILER defines for functionality specific to a compiler. For every such block and file you will need to write equivalent code for the destination platform. 
 
-Below you will find a fairly complete list of all such blocks/files that need to be modified, to give you a good idea of the scope. Each listed feature has an indication whether this is a engine or editor-only feature.
+Below you will find a fairly complete list of all such blocks/files that need to be modified, to give you a good idea of the scope. Each listed feature has an indication whether this is a framework or editor-only feature.
+
 Additionally, not all features are critical, meaning you can get the engine to run without them (e.g. platform cursors or clipboard), which are also specially marked. For them it is suggested you implement a dummy version first, and only proceed with actual implementation once the critical features are done.
 
 ## Critical features {#porting_b_a}
@@ -30,8 +31,9 @@ Feature                                         | Editor only 	| Library        
 ------------------------------------------------|---------------|-------------------------------|-----------------------|--------------------------------------------------------|-----------------
 File system*								   	| No			| BansheeUtility				| No					| BsFileSystem.h/BsWin32FileSystem.cpp 					 | Opening/creating files, iterating over directories
 Dynamic library loading							| No			| BansheeUtility				| No					| BsDynLib.h/BsDynLib.cpp 							     | Loading dynamic libraries (.dll, .so)
-OpenGL initialization*							| No			| BansheeGLRenderAPI			| No					| BsGLUtil.h, BsGLSupport.h/BsWin32GLSupport.cpp, BsWin32Context.h/BsWin32Context.cpp, BsWin32VideoModeInfo.cpp | Initializing the OpenGL context (or other context if non-OpenGL API is used for the port)
-Window creation*								| No			| BansheeUtility, BansheeGLRenderAPI | No				| BsWin32Window.h/BsWin32Window.cpp, BsWin32Platform.h/BsWin32Platform.cpp, BsWin32RenderWindow.h/BsWin32RenderWindow.cpp | Creating and interacting with the window
+OpenGL initialization*							| No			| BansheeGLRenderAPI			| No					| BsGLUtil.h, BsGLSupport.h/BsWin32GLSupport.cpp, BsWin32Context.h/BsWin32Context.cpp, BsWin32VideoModeInfo.cpp | Initializing the OpenGL context 
+Vulkan initialization*							| No			| BansheeVulkanRenderAPI		| No					| BsVulkanRenderAPI.cpp, BsWin32VideoModeInfo.cpp | Initializing the Vulkan context
+Window creation*								| No			| BansheeUtility, BansheeGLRenderAPI, BansheeVulkanRenderAPI | No				| BsWin32Window.h/BsWin32Window.cpp, BsWin32Platform.h/BsWin32Platform.cpp, BsWin32RenderWindow.h/BsWin32RenderWindow.cpp | Creating and interacting with the window
 OS message loop*								| No			| BansheeCore					| No					| BsWin32Platform.h/BsWin32Platform.cpp 				 | Running the main message loop, responding to its events
 Input*											| No			| BansheeCore					| Maybe					| BsPlatform.h/BsWin32Platform.cpp 						 | Receive input from OS (mouse, keyboard)
 UUID generation									| No			| BansheeUtility				| No					| BsPlatformUtility.h/BsWin32PlatformUtility.cpp 		 | Generate UUID/GUID
@@ -62,7 +64,9 @@ MonoDevelop integration*						| Yes			|BansheeEditor					| Yes					| BsCodeEdito
 # Compiling third party dependencies {#porting_c} 
 In order to run Banshee on different platforms you will also need to compile all of Banshee's dependencies. Most of Banshee's dependencies are only used in plugins, which should make it easier to compile and test them individually.
 
-All used dependencies are already multi-platform and you should have little trouble compiling them for major platforms. See "CompilingDependenciesManually.txt" (distributed with the source code) for information which dependencies are needed.
+All used dependencies are already multi-platform and you should have little trouble compiling them for major platforms. See [this link](http://bit.ly/2oLL0uR) for information which dependencies are needed.
 
 # Mobile platforms {#porting_d} 
-If building for mobile platforms you will also need to provide a compatible render API plugin. It is suggested you use the BansheeOpenGL plugin as an example of creating such an API (for example OpenGL ES). API's like Metal or Vulkan for mobiles will require more work but you can still use the existing render API plugins for a good basis of what needs to be implemented.
+If porting to mobile platforms you will also need to provide a compatible render API plugin. Vulkan can be used for some mobiles but isn't supported for all, so you might need to write your own render API plugin. It is suggested you use the BansheeOpenGL plugin as an example of creating it (OpenGL ES is commonly supported on most mobiles, or Metal supported only on Apple platforms).
+
+When porting to mobile you do not need to port any editor specific functionality, and can concern yourself only with porting the core framework. 

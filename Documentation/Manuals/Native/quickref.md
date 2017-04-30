@@ -2,9 +2,9 @@ Quick reference									{#quickref}
 ===============
 [TOC]
 
-Here is some commonly required information that is assumed throughout Banshee.
- - Right handed coordinate system is used
- - Camera is looking towards negative z axis
+Here are some common conventions used throughout Banshee:
+ - It uses right handed coordinate system
+ - Camera is looking towards the negative z axis
  - Screen/window space origin is located in the top left corner
  - Normalized device coordinates origin is located in the bottom left corner
  - Clip space ranges from -1 to 1 for x, y and depth
