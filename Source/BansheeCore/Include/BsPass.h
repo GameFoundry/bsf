@@ -135,7 +135,10 @@ namespace bs
 		const GpuProgramType& getDomainProgram() const { return mData.domainProgram; }
 		const GpuProgramType& getComputeProgram() const { return mData.computeProgram; }
 
+		/** Returns the graphics pipeline state describing this pass, or null if its a compute pass. */
 		const GraphicsPipelineStateType& getGraphicsPipelineState() const { return mGraphicsPipelineState; }
+
+		/** Returns the compute pipeline state describing this pass, or null if its a graphics pass. */
 		const ComputePipelineStateType& getComputePipelineState() const { return mComputePipelineState; }
 	protected:
 		TPass();

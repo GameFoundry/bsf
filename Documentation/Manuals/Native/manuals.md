@@ -96,7 +96,7 @@ A set of manuals covering advanced functionality intented for those wanting to e
  - [Flags](@ref flags)
  - [Any](@ref any) 
  - [Unit tests](@ref unitTests)
-- [Advanced material](@ref advMaterial)
+- [Advanced materials](@ref advMaterials)
 - [Threading](@ref threading)
 - [Plugins](@ref plugins)
 - **Renderer**
@@ -120,4 +120,3 @@ Name                                      | Description
 [BSLFX](@ref bsl)    	  		  		  | Provides a reference for the Banshee Shading Language syntax.
 [Custom GUI elements](@ref customGUI)     | Shows you how to create custom GUI elements, manually render text or modify GUI system in a general way.
 [Meshes](@ref meshes)                     | Shows you how to create, use and manipulate meshes.
-[Materials](@ref materials)				  | Shows you how to create and use materials and shaders.

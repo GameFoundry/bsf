@@ -8,7 +8,7 @@ A shader is a set of GPU programs and render states that tell the GPU how is mes
 We will delay further discussion of shaders and GPU programs to a later chapter.
 
 # Material creation
-To create a material use the @ref bs::Material::create "Material::create" method, which expects a **Shader** as a parameter.
+To create a material use the @ref bs::Material::create "Material::create()" method, which expects a **Shader** as a parameter.
 
 ~~~~~~~~~~~~~{.cpp}
 // Get one of the built-in shaders
@@ -35,7 +35,7 @@ material->setTexture("gAlbedoTex", texture);
 
 After the texture has been set, anything rendered with that material will now have that particular texture applied. Different shaders will accept different parameters of different types. You can find out parameter names and types by looking at the shader source (discussed later).
 
-In this particular example we have a parameter named "gAlbedoTex" that accepts a **Texture** resource. We set such a parameter by calling @ref bs::Material::setTexture "Material::setTexture". There are other parameter types like floats, ints, colors, as well as multi-dimensional types like vectors and matrices which can be set by calling @ref bs::Material::setFloat "Material::setFloat", @ref bs::Material::setColor "Material::setColor", @ref bs::Material::setVec4 "Material::setVec4" and similar.
+In this particular example we have a parameter named "gAlbedoTex" that accepts a **Texture** resource. We set such a parameter by calling @ref bs::Material::setTexture "Material::setTexture()". There are other parameter types like floats, ints, colors, as well as multi-dimensional types like vectors and matrices which can be set by calling @ref bs::Material::setFloat "Material::setFloat()", @ref bs::Material::setColor "Material::setColor()", @ref bs::Material::setVec4 "Material::setVec4()" and similar.
 
 ~~~~~~~~~~~~~{.cpp}
 // Assuming our material has some more parameters, for purposes of the example
@@ -46,7 +46,7 @@ material->setMat4("someTransform", Matrix4::IDENTITY);
 ~~~~~~~~~~~~~
 
 ## Sampler states
-Sampler states are a special type of parameters that can be set by calling @ref bs::Material::setSamplerState "Material::setSamplerState". These states are used to control how is a texture read in a shader - for example they control what type of filtering to use, how to handle out of range texture coordinates and similar. Sampler states are created by calling @ref bs::SamplerState::create "SamplerState::create", while previously filling out the @ref bs::SAMPLER_STATE_DESC "SAMPLER_STATE_DESC" structure.
+Sampler states are a special type of parameters that can be set by calling @ref bs::Material::setSamplerState "Material::setSamplerState()". These states are used to control how is a texture read in a shader - for example they control what type of filtering to use, how to handle out of range texture coordinates and similar. Sampler states are created by calling @ref bs::SamplerState::create "SamplerState::create()", while previously filling out the @ref bs::SAMPLER_STATE_DESC "SAMPLER_STATE_DESC" structure.
 
 In most cases you don't need to set sampler states as the default one should be adequate. Shaders can also read textures without samplers by directly accessing their pixels, but this is not wanted for normal rendering as it ruins image quality due to the lack of filtering and it may not be as performance efficient. 
 
