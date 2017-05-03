@@ -110,6 +110,7 @@ A set of manuals covering advanced functionality intented for those wanting to e
  - **Exposing code to script API (manually)**
   - [Interacting with the script runtime](@ref mono)
   - [Script objects](@ref scriptObjects)
+- [Extending the GUI system](@ref customGUI)
 - [Porting to other platforms](@ref porting)
 - [Code style](@ref codeStyle)
 - [Quick reference](@ref quickref)
@@ -118,5 +119,3 @@ A set of manuals covering advanced functionality intented for those wanting to e
 Name                                      | Description
 ------------------------------------------|-------------
 [BSLFX](@ref bsl)    	  		  		  | Provides a reference for the Banshee Shading Language syntax.
-[Custom GUI elements](@ref customGUI)     | Shows you how to create custom GUI elements, manually render text or modify GUI system in a general way.
-[Meshes](@ref meshes)                     | Shows you how to create, use and manipulate meshes.
