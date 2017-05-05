@@ -88,7 +88,6 @@ Blocks =
 Technique = 
 {
 	Renderer = "Any";
-	Language = "HLSL11";
 	Tags = { "Animated", "OtherTag" };
 
 	Pass =

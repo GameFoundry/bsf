@@ -5,8 +5,6 @@ Technique
  : inherits("PerCameraData")
  : inherits("LightGridCommon") = 
 {
-	Language = "HLSL11";
-	
 	Pass =
 	{
 		Compute = 

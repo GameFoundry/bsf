@@ -419,7 +419,7 @@ namespace bs
 		TechniqueMetaData metaData;
 
 		metaData.renderer = RendererAny;
-		metaData.language = "Any";
+		metaData.language = "hlsl";
 
 		for (int i = 0; i < technique->options->count; i++)
 		{
@@ -1562,7 +1562,6 @@ namespace bs
 
 
 		// Actually parse techniques
-		bool hasGLSLTechnique = false;
 		for (auto& entry : techniqueData)
 		{
 			const TechniqueMetaData& metaData = entry.second.metaData;
@@ -1577,78 +1576,72 @@ namespace bs
 			}
 
 			parseTechnique(entry.first, codeBlocks, entry.second);
-
-			if (entry.second.metaData.language == "glsl")
-				hasGLSLTechnique = true;
 		}
 
 		bs_stack_free(techniqueWasParsed);
 
-		// If no GLSL technique, auto-generate them for each non-base technique
-		if(!hasGLSLTechnique)
+		// Auto-generate GLSL techniques
+		UINT32 end = (UINT32)techniqueData.size();
+		for(UINT32 i = 0; i < end; i++)
 		{
-			UINT32 end = (UINT32)techniqueData.size();
-			for(UINT32 i = 0; i < end; i++)
+			const TechniqueMetaData& metaData = techniqueData[i].second.metaData;
+			if (!metaData.baseName.empty())
+				continue;
+
+			auto createTechniqueForLanguage = [](const String& name, const TechniqueData& orig, bool vulkan)
 			{
-				const TechniqueMetaData& metaData = techniqueData[i].second.metaData;
-				if (!metaData.baseName.empty())
-					continue;
-
-				auto createTechniqueForLanguage = [](const String& name, const TechniqueData& orig, bool vulkan)
+				TechniqueData copy = orig;
+				copy.metaData.language = vulkan ? "vksl" : "glsl";
+				for (auto& passData : copy.passes)
 				{
-					TechniqueData copy = orig;
-					copy.metaData.language = vulkan ? "vksl" : "glsl";
-					for (auto& passData : copy.passes)
+					UINT32 nextFreeBindingSlot = 0;
+					if (!passData.vertexCode.empty())
 					{
-						UINT32 nextFreeBindingSlot = 0;
-						if (!passData.vertexCode.empty())
-						{
-							String hlslCode = passData.commonCode + passData.vertexCode;
-							passData.vertexCode = HLSLtoGLSL(hlslCode, GPT_VERTEX_PROGRAM, vulkan, nextFreeBindingSlot);
-						}
-
-						if (!passData.fragmentCode.empty())
-						{
-							String hlslCode = passData.commonCode + passData.fragmentCode;
-							passData.fragmentCode = HLSLtoGLSL(hlslCode, GPT_FRAGMENT_PROGRAM, vulkan, nextFreeBindingSlot);
-						}
-
-						if (!passData.geometryCode.empty())
-						{
-							String hlslCode = passData.commonCode + passData.geometryCode;
-							passData.geometryCode = HLSLtoGLSL(hlslCode, GPT_GEOMETRY_PROGRAM, vulkan, nextFreeBindingSlot);
-						}
-
-						if (!passData.hullCode.empty())
-						{
-							String hlslCode = passData.commonCode + passData.hullCode;
-							passData.hullCode = HLSLtoGLSL(hlslCode, GPT_HULL_PROGRAM, vulkan, nextFreeBindingSlot);
-						}
-
-						if (!passData.domainCode.empty())
-						{
-							String hlslCode = passData.commonCode + passData.domainCode;
-							passData.domainCode = HLSLtoGLSL(hlslCode, GPT_DOMAIN_PROGRAM, vulkan, nextFreeBindingSlot);
-						}
-
-						if (!passData.computeCode.empty())
-						{
-							String hlslCode = passData.commonCode + passData.computeCode;
-							passData.computeCode = HLSLtoGLSL(hlslCode, GPT_COMPUTE_PROGRAM, vulkan, nextFreeBindingSlot);
-						}
-
-						passData.commonCode = "";
+						String hlslCode = passData.commonCode + passData.vertexCode;
+						passData.vertexCode = HLSLtoGLSL(hlslCode, GPT_VERTEX_PROGRAM, vulkan, nextFreeBindingSlot);
 					}
 
-					return copy;
-				};
+					if (!passData.fragmentCode.empty())
+					{
+						String hlslCode = passData.commonCode + passData.fragmentCode;
+						passData.fragmentCode = HLSLtoGLSL(hlslCode, GPT_FRAGMENT_PROGRAM, vulkan, nextFreeBindingSlot);
+					}
 
-				TechniqueData glslTechnique = createTechniqueForLanguage(name, techniqueData[i].second, false);
-				techniqueData.push_back(std::make_pair(techniqueData[i].first, glslTechnique));
+					if (!passData.geometryCode.empty())
+					{
+						String hlslCode = passData.commonCode + passData.geometryCode;
+						passData.geometryCode = HLSLtoGLSL(hlslCode, GPT_GEOMETRY_PROGRAM, vulkan, nextFreeBindingSlot);
+					}
 
-				TechniqueData vkslTechnique = createTechniqueForLanguage(name, techniqueData[i].second, true);
-				techniqueData.push_back(std::make_pair(techniqueData[i].first, vkslTechnique));
-			}
+					if (!passData.hullCode.empty())
+					{
+						String hlslCode = passData.commonCode + passData.hullCode;
+						passData.hullCode = HLSLtoGLSL(hlslCode, GPT_HULL_PROGRAM, vulkan, nextFreeBindingSlot);
+					}
+
+					if (!passData.domainCode.empty())
+					{
+						String hlslCode = passData.commonCode + passData.domainCode;
+						passData.domainCode = HLSLtoGLSL(hlslCode, GPT_DOMAIN_PROGRAM, vulkan, nextFreeBindingSlot);
+					}
+
+					if (!passData.computeCode.empty())
+					{
+						String hlslCode = passData.commonCode + passData.computeCode;
+						passData.computeCode = HLSLtoGLSL(hlslCode, GPT_COMPUTE_PROGRAM, vulkan, nextFreeBindingSlot);
+					}
+
+					passData.commonCode = "";
+				}
+
+				return copy;
+			};
+
+			TechniqueData glslTechnique = createTechniqueForLanguage(name, techniqueData[i].second, false);
+			techniqueData.push_back(std::make_pair(techniqueData[i].first, glslTechnique));
+
+			TechniqueData vkslTechnique = createTechniqueForLanguage(name, techniqueData[i].second, true);
+			techniqueData.push_back(std::make_pair(techniqueData[i].first, vkslTechnique));
 		}
 
 		Vector<SPtr<Technique>> techniques;

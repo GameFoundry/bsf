@@ -8,8 +8,6 @@ Parameters =
 
 Technique : inherits("PerCameraData") =
 {
-	Language = "HLSL11";
-	
 	Pass =
 	{
 		Cull = CW;

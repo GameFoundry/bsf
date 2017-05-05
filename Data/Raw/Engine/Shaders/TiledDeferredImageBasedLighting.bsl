@@ -12,8 +12,6 @@ Technique
   : inherits("ReflectionCubemapCommon")
   : inherits("ImageBasedLighting") =
 {
-	Language = "HLSL11";
-	
 	Pass =
 	{
 		Compute = 

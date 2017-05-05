@@ -16,8 +16,6 @@ Technique
  : inherits("LightGridCommon")
  : inherits("ImageBasedLighting") =
 {
-	Language = "HLSL11";
-	
 	Pass =
 	{
 		Compute = 

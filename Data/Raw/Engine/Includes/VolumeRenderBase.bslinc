@@ -1,7 +1,5 @@
 Technique : base("VolumeRenderBase") =
 {
-	Language = "HLSL11";
-	
 	Pass =
 	{
 		DepthWrite = false;
@@ -68,85 +66,6 @@ Technique : base("VolumeRenderBase") =
 				outStream.Append(vert0);
 				outStream.Append(vert1);
 				outStream.Append(vert2);
-			}
-		};
-	};
-};
-
-Technique : base("VolumeRenderBase") =
-{
-	Language = "GLSL";
-	
-	Pass =
-	{
-		DepthWrite = false;
-		DepthRead = false;
-	
-		Vertex =
-		{
-			layout(location = 0) in vec2 bs_position;
-			layout(location = 1) in vec2 bs_texcoord0;
-			
-			layout(location = 0) out VStoGS
-			{
-				vec2 uv0;
-				flat int layerIdx;
-			} VSOutput;
-			
-			out gl_PerVertex
-			{
-				vec4 gl_Position;
-			};
-		
-			void main()
-			{
-				gl_Position = vec4(bs_position, 0, 1);
-				VSOutput.uv0 = bs_texcoord0;
-				VSOutput.layerIdx = int(gl_InstanceID);
-			}
-		};
-		
-		Geometry = 
-		{		
-			layout (triangles) in;
-			layout (triangle_strip, max_vertices=3) out;
-		
-			layout(location = 0) in VStoGS
-			{
-				vec2 uv0;
-				flat int layerIdx;
-			} GSInput[3];
-		
-			out GStoFS
-			{
-				layout(location = 0) vec2 uv0;
-			} GSOutput;
-		
-			in gl_PerVertex 
-			{
-				vec4 gl_Position;
-			} gl_in[];
-		
-			out gl_PerVertex
-			{
-				vec4 gl_Position;
-			};
-		
-			void main()
-			{
-				gl_Layer = GSInput[0].layerIdx;
-			
-				gl_Position = gl_in[0].gl_Position;
-				GSOutput.uv0 = GSInput[0].uv0;
-				EmitVertex();
-				
-				gl_Position = gl_in[1].gl_Position;
-				GSOutput.uv0 = GSInput[1].uv0;
-				EmitVertex();
-				
-				gl_Position = gl_in[2].gl_Position;
-				GSOutput.uv0 = GSInput[2].uv0;
-				EmitVertex();
 			}
 		};
 	};

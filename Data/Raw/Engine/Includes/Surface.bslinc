@@ -2,14 +2,12 @@ Technique
  : inherits("BasePass")
  : inherits("Surface") =
 {
-	Language = "HLSL11";
 };
 
 Technique 
  : inherits("BasePassSkinned")
  : inherits("Surface") =
 {
-	Language = "HLSL11";
 	Tags = { "Skinned" };
 };
 
@@ -17,7 +15,6 @@ Technique
  : inherits("BasePassMorph")
  : inherits("Surface") =
 {
-	Language = "HLSL11";
 	Tags = { "Morph" };
 };
 
@@ -25,6 +22,5 @@ Technique
  : inherits("BasePassSkinnedMorph")
  : inherits("Surface") =
 {
-	Language = "HLSL11";
 	Tags = { "SkinnedMorph" };
 };

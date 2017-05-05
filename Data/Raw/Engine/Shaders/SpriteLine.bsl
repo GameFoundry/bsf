@@ -9,8 +9,6 @@ Parameters =
 
 Technique =
 {
-	Language = "HLSL11";
-	
 	Pass =
 	{
 		Target = 
@@ -66,66 +64,6 @@ Technique =
 			float4 main(VStoFS input) : SV_Target
 			{
 				return tint;
-			}
-		};
-	};
-};
-
-Technique =
-{
-	Language = "GLSL";
-	
-	Pass =
-	{
-		Target = 
-		{
-			Blend = true;
-			Color = { SRCA, SRCIA, ADD };
-			WriteMask = RGB;
-		};
-		
-		DepthRead = false;
-		DepthWrite = false;
-		
-		Vertex =
-		{
-			layout (binding = 0) uniform VertUBO
-			{
-				float invViewportWidth;
-				float invViewportHeight;
-				mat4 worldTransform;
-			};
-		
-			layout (location = 0) in vec2 bs_position;
-
-			out gl_PerVertex
-			{
-				vec4 gl_Position;
-			};			
-			
-			void main()
-			{
-				vec4 tfrmdPos = worldTransform * vec4(bs_position, 0, 1);
-				
-				float tfrmdX = -1.0f + (tfrmdPos.x * invViewportWidth);
-				float tfrmdY = 1.0f - (tfrmdPos.y * invViewportHeight);
-
-				gl_Position = vec4(tfrmdX, tfrmdY, 0, 1);
-			}
-		};
-		
-		Fragment =
-		{
-			layout (binding = 1) uniform FragUBO
-			{
-				vec4 tint;
-			};
-			
-			out vec4 fragColor;
-
-			void main()
-			{
-				fragColor = tint;
 			}
 		};
 	};

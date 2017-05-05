@@ -5,8 +5,6 @@ Technique
  : inherits("ReflectionCubemapCommon")
  : inherits("SHCommon") =
 {
-	Language = "HLSL11";
-	
 	Pass =
 	{
 		Compute = 

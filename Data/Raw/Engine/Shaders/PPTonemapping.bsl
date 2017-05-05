@@ -16,8 +16,6 @@ Blocks =
 
 Technique : inherits("PPTonemapCommon") =
 {
-	Language = "HLSL11";
-	
 	Pass =
 	{
 		DepthWrite = false;
@@ -95,96 +93,6 @@ Technique : inherits("PPTonemapCommon") =
 				#endif
 
 				return sceneColor;
-			}	
-		};
-	};
-};
-
-Technique : inherits("PPTonemapCommon") =
-{
-	Language = "GLSL";
-	
-	Pass =
-	{
-		DepthWrite = false;
-		DepthRead = false;
-	
-		Vertex =
-		{
-			layout(location = 0) in vec2 bs_position;
-			layout(location = 1) in vec2 bs_texcoord0;
-			
-			out VStoFS
-			{
-				layout(location = 0) vec2 uv0;
-				layout(location = 1) float exposureScale;
-			} VSOutput;
-			
-			layout(binding = 0) uniform sampler2D gEyeAdaptationTex;
-			
-			out gl_PerVertex
-			{
-				vec4 gl_Position;
-			};			
-			
-			void main()
-			{
-				gl_Position = vec4(bs_position, 0, 1);
-				VSOutput.uv0 = bs_texcoord0;
-				VSOutput.exposureScale = texelFetch(gEyeAdaptationTex, ivec2(0, 0), 0).r;
-			}			
-		};	
-	
-		Fragment =
-		{
-			in VStoFS
-			{
-				layout(location = 0) vec2 uv0;
-				layout(location = 1) float exposureScale;
-			} FSInput;
-		
-			layout(location = 0) out vec4 fragColor;
-		
-			layout(binding = 1) uniform sampler2D gInputTex;
-			layout(binding = 2) uniform sampler3D gColorLUT;
-			
-			layout(binding = 3) uniform Input
-			{
-				float gRawGamma;
-				float gManualExposureScale;
-			};
-
-			void ColorLookupTable(vec3 linearColor, out vec3 result)
-			{
-				vec3 logColor;
-				LinearToLogColor(linearColor, logColor);
-				
-				vec3 UVW = logColor * ((LUT_SIZE - 1) / float(LUT_SIZE)) + (0.5f / LUT_SIZE);
-				
-				vec3 gradedColor = texture(gColorLUT, UVW).rgb;
-				result = gradedColor;
-			}
-						
-			void main()
-			{
-				vec4 sceneColor = texture(gInputTex, FSInput.uv0);
-				
-				#if AUTO_EXPOSURE
-					sceneColor.rgb = sceneColor.rgb * FSInput.exposureScale;
-				#else
-					sceneColor.rgb = sceneColor.rgb * gManualExposureScale;
-				#endif
-				
-				#if GAMMA_ONLY
-					sceneColor.rgb = pow(sceneColor.rgb, vec3(gRawGamma));				
-				#else
-					vec3 lookupColor;
-					ColorLookupTable(sceneColor.rgb, lookupColor);
-					
-					sceneColor.rgb = lookupColor;
-				#endif
-
-				fragColor = sceneColor;
 			}	
 		};
 	};

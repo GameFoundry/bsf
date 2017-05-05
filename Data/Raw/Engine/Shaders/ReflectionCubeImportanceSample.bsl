@@ -17,8 +17,6 @@ Technique
  : inherits("PPBase")
  : inherits("ReflectionCubemapCommon") =
 {
-	Language = "HLSL11";
-	
 	Pass =
 	{
 		Fragment =
