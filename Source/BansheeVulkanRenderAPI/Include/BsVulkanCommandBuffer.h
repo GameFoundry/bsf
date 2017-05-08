@@ -10,7 +10,10 @@
 
 namespace bs { namespace ct
 {
+	class VulkanOcclusionQuery;
+	class VulkanTimerQuery;
 	class VulkanImage;
+
 	/** @addtogroup Vulkan
 	 *  @{
 	 */
@@ -235,6 +238,12 @@ namespace bs { namespace ct
 		 */
 		void registerResource(VulkanFramebuffer* res, RenderSurfaceMask loadMask, VulkanUseFlags flags);
 
+		/** Notifies the command buffer that the provided query has been queued on it. */
+		void registerQuery(VulkanOcclusionQuery* query) { mOcclusionQueries.insert(query); }
+
+		/** Notifies the command buffer that the provided query has been queued on it. */
+		void registerQuery(VulkanTimerQuery* query) { mTimerQueries.insert(query); }
+
 		/************************************************************************/
 		/* 								COMMANDS	                     		*/
 		/************************************************************************/
@@ -431,6 +440,9 @@ namespace bs { namespace ct
 		/** Finds a subresource info structure containing the specified face and mip level of the provided image. */
 		ImageSubresourceInfo& findSubresourceInfo(VulkanImage* image, UINT32 face, UINT32 mip);
 
+		/** Gets all queries registered on this command buffer that haven't been ended. */
+		void getInProgressQueries(Vector<VulkanTimerQuery*>& timer, Vector<VulkanOcclusionQuery*>& occlusion) const;
+
 		UINT32 mId;
 		UINT32 mQueueFamily;
 		State mState;
@@ -452,6 +464,8 @@ namespace bs { namespace ct
 		UnorderedMap<VulkanResource*, ResourceUseHandle> mResources;
 		UnorderedMap<VulkanResource*, UINT32> mImages;
 		UnorderedMap<VulkanResource*, BufferInfo> mBuffers;
+		UnorderedSet<VulkanOcclusionQuery*> mOcclusionQueries;
+		UnorderedSet<VulkanTimerQuery*> mTimerQueries;
 		Vector<ImageInfo> mImageInfos;
 		Vector<ImageSubresourceInfo> mSubresourceInfos;
 		UINT32 mGlobalQueueIdx;

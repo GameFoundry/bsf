@@ -15,6 +15,8 @@
 #include "BsVulkanEventQuery.h"
 #include "BsVulkanQueryManager.h"
 #include "BsVulkanSwapChain.h"
+#include "BsVulkanTimerQuery.h"
+#include "BsVulkanOcclusionQuery.h"
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 #include "Win32/BsWin32RenderWindow.h"
@@ -766,6 +768,8 @@ namespace bs { namespace ct
 		mResources.clear();
 		mImages.clear();
 		mBuffers.clear();
+		mOcclusionQueries.clear();
+		mTimerQueries.clear();
 		mImageInfos.clear();
 		mSubresourceInfos.clear();
 	}
@@ -2030,6 +2034,21 @@ namespace bs { namespace ct
 		return subresourceInfos[0];
 	}
 
+	void VulkanCmdBuffer::getInProgressQueries(Vector<VulkanTimerQuery*>& timer, Vector<VulkanOcclusionQuery*>& occlusion) const
+	{
+		for(auto& query : mTimerQueries)
+		{
+			if (query->_isInProgress())
+				timer.push_back(query);
+		}
+
+		for (auto& query : mOcclusionQueries)
+		{
+			if (query->_isInProgress())
+				occlusion.push_back(query);
+		}
+	}
+
 	VulkanCommandBuffer::VulkanCommandBuffer(VulkanDevice& device, GpuQueueType type, UINT32 deviceIdx,
 		UINT32 queueIdx, bool secondary)
 		: CommandBuffer(type, deviceIdx, queueIdx, secondary), mBuffer(nullptr)
@@ -2075,15 +2094,33 @@ namespace bs { namespace ct
 		// Execute any queued layout transitions that weren't already handled by the render pass
 		mBuffer->executeLayoutTransitions();
 
+		// Interrupt any in-progress queries (no in-progress queries allowed during command buffer submit)
+		Vector<VulkanTimerQuery*> timerQueries;
+		Vector<VulkanOcclusionQuery*> occlusionQueries;
+		mBuffer->getInProgressQueries(timerQueries, occlusionQueries);
+
+		for (auto& query : timerQueries)
+			query->_interrupt(*mBuffer);
+
+		for (auto& query : occlusionQueries)
+			query->_interrupt(*mBuffer);
+
 		if (mBuffer->isRecording())
 			mBuffer->end();
 
-		if (!mBuffer->isReadyForSubmit()) // Possibly nothing was recorded in the buffer
-			return;
+		if (mBuffer->isReadyForSubmit()) // Possibly nothing was recorded in the buffer
+		{
+			mBuffer->submit(mQueue, mQueueIdx, syncMask);
+			acquireNewBuffer();
 
-		mBuffer->submit(mQueue, mQueueIdx, syncMask);
-		acquireNewBuffer();
+			gVulkanCBManager().refreshStates(mDeviceIdx);
+		}
 
-		gVulkanCBManager().refreshStates(mDeviceIdx);
+		// Resume interrupted queries on the new command buffer
+		for (auto& query : timerQueries)
+			query->_resume(*mBuffer);
+
+		for (auto& query : occlusionQueries)
+			query->_resume(*mBuffer);
 	}
 }}

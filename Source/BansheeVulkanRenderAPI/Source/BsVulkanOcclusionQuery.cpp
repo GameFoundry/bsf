@@ -10,16 +10,18 @@
 namespace bs { namespace ct
 {
 	VulkanOcclusionQuery::VulkanOcclusionQuery(VulkanDevice& device, bool binary)
-		: OcclusionQuery(binary), mDevice(device), mQuery(nullptr), mNumSamples(0), mQueryEndCalled(false)
-		, mQueryFinalized(false)
+		: OcclusionQuery(binary), mDevice(device), mNumSamples(0), mQueryEndCalled(false), mQueryFinalized(false)
+		, mQueryInterrupted(false)
 	{
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_Query);
 	}
 
 	VulkanOcclusionQuery::~VulkanOcclusionQuery()
 	{
-		if (mQuery != nullptr)
-			mDevice.getQueryPool().releaseQuery(mQuery);
+		for(auto& query : mQueries)
+			mDevice.getQueryPool().releaseQuery(query);
+
+		mQueries.clear();
 
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Query);
 	}
@@ -28,12 +30,11 @@ namespace bs { namespace ct
 	{
 		VulkanQueryPool& queryPool = mDevice.getQueryPool();
 
-		// Clear any existing query
-		if (mQuery != nullptr)
-		{
-			queryPool.releaseQuery(mQuery);
-			mQuery = nullptr;
-		}
+		// Clear any existing queries
+		for (auto& query : mQueries)
+			mDevice.getQueryPool().releaseQuery(query);
+
+		mQueries.clear();
 
 		mQueryEndCalled = false;
 		mNumSamples = 0;
@@ -46,14 +47,17 @@ namespace bs { namespace ct
 			vulkanCB = static_cast<VulkanCommandBuffer*>(gVulkanRenderAPI()._getMainCommandBuffer());
 
 		VulkanCmdBuffer* internalCB = vulkanCB->getInternal();
-		mQuery = queryPool.beginOcclusionQuery(internalCB, !mBinary);
+		mQueries.push_back(queryPool.beginOcclusionQuery(internalCB, !mBinary));
+		internalCB->registerQuery(this);
 
 		setActive(true);
 	}
 
 	void VulkanOcclusionQuery::end(const SPtr<CommandBuffer>& cb)
 	{
-		if(mQuery == nullptr)
+		assert(!mQueryInterrupted);
+
+		if(mQueries.size() == 0)
 		{
 			LOGERR("end() called but query was never started.");
 			return;
@@ -70,7 +74,33 @@ namespace bs { namespace ct
 
 		VulkanQueryPool& queryPool = mDevice.getQueryPool();
 		VulkanCmdBuffer* internalCB = vulkanCB->getInternal();
-		queryPool.endOcclusionQuery(mQuery, internalCB);
+		queryPool.endOcclusionQuery(mQueries.back(), internalCB);
+	}
+
+	bool VulkanOcclusionQuery::_isInProgress() const
+	{
+		return !mQueries.empty() && !mQueryEndCalled;
+	}
+
+	void VulkanOcclusionQuery::_interrupt(VulkanCmdBuffer& cb)
+	{
+		assert(mQueries.size() != 0 && !mQueryEndCalled);
+
+		VulkanQueryPool& queryPool = mDevice.getQueryPool();
+		queryPool.endOcclusionQuery(mQueries.back(), &cb);
+
+		mQueryInterrupted = true;
+	}
+
+	void VulkanOcclusionQuery::_resume(VulkanCmdBuffer& cb)
+	{
+		assert(mQueryInterrupted);
+
+		VulkanQueryPool& queryPool = mDevice.getQueryPool();
+		mQueries.push_back(queryPool.beginOcclusionQuery(&cb, !mBinary));
+		cb.registerQuery(this);
+
+		mQueryInterrupted = false;
 	}
 
 	bool VulkanOcclusionQuery::isReady() const
@@ -82,24 +112,42 @@ namespace bs { namespace ct
 			return true;
 
 		UINT64 numSamples;
-		return !mQuery->isBound() && mQuery->getResult(numSamples);
+		bool ready = true;
+		for (auto& query : mQueries)
+			ready &= !query->isBound() && query->getResult(numSamples);
+
+		return ready;
 	}
 
 	UINT32 VulkanOcclusionQuery::getNumSamples()
 	{
 		if(!mQueryFinalized)
 		{
-			UINT64 numSamples;
-			if(!mQuery->isBound() && mQuery->getResult(numSamples))
+			UINT64 totalNumSamples = 0;
+			bool ready = true;
+			for (auto& query : mQueries)
+			{
+				UINT64 numSamples;
+				ready &= !query->isBound() && query->getResult(numSamples);
+
+				totalNumSamples += numSamples;
+			}
+
+			if(ready)
 			{
 				mQueryFinalized = true;
-				mNumSamples = numSamples;
+				mNumSamples = totalNumSamples;
 
 				VulkanQueryPool& queryPool = mDevice.getQueryPool();
-				queryPool.releaseQuery(mQuery);
-				mQuery = nullptr;
+				for (auto& query : mQueries)
+					queryPool.releaseQuery(query);
+
+				mQueries.clear();
 			}
 		}
+
+		if (mBinary)
+			return mNumSamples == 0 ? 0 : 1;
 
 		return (UINT32)mNumSamples;
 	}

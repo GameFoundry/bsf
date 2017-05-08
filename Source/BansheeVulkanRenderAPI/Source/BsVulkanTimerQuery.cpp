@@ -10,19 +10,23 @@
 namespace bs { namespace ct
 {
 	VulkanTimerQuery::VulkanTimerQuery(VulkanDevice& device)
-		: mDevice(device), mBeginQuery(nullptr), mEndQuery(nullptr), mTimeDelta(0.0f), mQueryEndCalled(false)
-		, mQueryFinalized(false)
+		: mDevice(device), mTimeDelta(0.0f), mQueryEndCalled(false), mQueryFinalized(false), mQueryInterrupted(false)
 	{
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_Query);
 	}
 
 	VulkanTimerQuery::~VulkanTimerQuery()
 	{
-		if (mBeginQuery != nullptr)
-			mDevice.getQueryPool().releaseQuery(mBeginQuery);
+		for (auto& query : mQueries)
+		{
+			if(query.first != nullptr)
+				mDevice.getQueryPool().releaseQuery(query.first);
 
-		if (mEndQuery != nullptr)
-			mDevice.getQueryPool().releaseQuery(mEndQuery);
+			if (query.second != nullptr)
+				mDevice.getQueryPool().releaseQuery(query.second);
+		}
+
+		mQueries.clear();
 
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Query);
 	}
@@ -32,17 +36,16 @@ namespace bs { namespace ct
 		VulkanQueryPool& queryPool = mDevice.getQueryPool();
 
 		// Clear any existing queries
-		if (mBeginQuery != nullptr)
+		for (auto& query : mQueries)
 		{
-			queryPool.releaseQuery(mBeginQuery);
-			mBeginQuery = nullptr;
+			if (query.first != nullptr)
+				queryPool.releaseQuery(query.first);
+
+			if (query.second != nullptr)
+				queryPool.releaseQuery(query.second);
 		}
 
-		if (mEndQuery != nullptr)
-		{
-			queryPool.releaseQuery(mEndQuery);
-			mEndQuery = nullptr;
-		}
+		mQueries.clear();
 
 		mQueryEndCalled = false;
 		mTimeDelta = 0.0f;
@@ -55,14 +58,19 @@ namespace bs { namespace ct
 			vulkanCB = static_cast<VulkanCommandBuffer*>(gVulkanRenderAPI()._getMainCommandBuffer());
 
 		VulkanCmdBuffer* internalCB = vulkanCB->getInternal();
-		mBeginQuery = queryPool.beginTimerQuery(internalCB);
+		VulkanQuery* beginQuery = queryPool.beginTimerQuery(internalCB);
+		internalCB->registerQuery(this);
+
+		mQueries.push_back(std::make_pair(beginQuery, nullptr));
 
 		setActive(true);
 	}
 
 	void VulkanTimerQuery::end(const SPtr<CommandBuffer>& cb)
 	{
-		if (mBeginQuery == nullptr)
+		assert(!mQueryInterrupted);
+
+		if (mQueries.empty())
 		{
 			LOGERR("end() called but query was never started.");
 			return;
@@ -79,7 +87,39 @@ namespace bs { namespace ct
 
 		VulkanQueryPool& queryPool = mDevice.getQueryPool();
 		VulkanCmdBuffer* internalCB = vulkanCB->getInternal();
-		mEndQuery = queryPool.beginTimerQuery(internalCB);
+		VulkanQuery* endQuery = queryPool.beginTimerQuery(internalCB);
+		internalCB->registerQuery(this);
+
+		mQueries.back().second = endQuery;
+	}
+
+	bool VulkanTimerQuery::_isInProgress() const
+	{
+		return !mQueries.empty() && !mQueryEndCalled;
+	}
+
+	void VulkanTimerQuery::_interrupt(VulkanCmdBuffer& cb)
+	{
+		assert(mQueries.size() != 0 && !mQueryEndCalled);
+
+		VulkanQueryPool& queryPool = mDevice.getQueryPool();
+		VulkanQuery* endQuery = queryPool.beginTimerQuery(&cb);
+		cb.registerQuery(this);
+
+		mQueries.back().second = endQuery;
+		mQueryInterrupted = true;
+	}
+
+	void VulkanTimerQuery::_resume(VulkanCmdBuffer& cb)
+	{
+		assert(mQueryInterrupted);
+
+		VulkanQueryPool& queryPool = mDevice.getQueryPool();
+		VulkanQuery* beginQuery = queryPool.beginTimerQuery(&cb);
+		cb.registerQuery(this);
+
+		mQueries.push_back(std::make_pair(beginQuery, nullptr));
+		mQueryInterrupted = false;
 	}
 
 	bool VulkanTimerQuery::isReady() const
@@ -90,40 +130,50 @@ namespace bs { namespace ct
 		if (mQueryFinalized)
 			return true;
 
-		UINT64 timeBegin;
-		bool beginReady = !mBeginQuery->isBound() && mBeginQuery->getResult(timeBegin);
+		UINT64 timeBegin, timeEnd;
+		bool ready = true;
+		for (auto& entry : mQueries)
+		{
+			ready &= !entry.first->isBound() && entry.first->getResult(timeBegin);
+			ready &= !entry.second->isBound() && entry.second->getResult(timeEnd);
+		}
 
-		UINT64 timeEnd;
-		bool endReady = !mEndQuery->isBound() && mEndQuery->getResult(timeEnd);
-
-		return beginReady && endReady;
+		return ready;
 	}
 
 	float VulkanTimerQuery::getTimeMs()
 	{
 		if (!mQueryFinalized)
 		{
-			UINT64 timeBegin;
-			bool beginReady = !mBeginQuery->isBound() && mBeginQuery->getResult(timeBegin);
+			UINT64 totalTimeDiff = 0;
+			bool ready = true;
+			for (auto& entry : mQueries)
+			{
+				UINT64 timeBegin, timeEnd;
+				ready &= !entry.first->isBound() && entry.first->getResult(timeBegin);
+				ready &= !entry.second->isBound() && entry.second->getResult(timeEnd);
 
-			UINT64 timeEnd;
-			bool endReady = !mEndQuery->isBound() && mEndQuery->getResult(timeEnd);
+				totalTimeDiff += (timeEnd - timeBegin);
+			}
 
-			if (beginReady && endReady)
+			if (ready)
 			{
 				mQueryFinalized = true;
 
-				UINT64 timeDiff = timeEnd - timeBegin;
 				double timestampToMs = (double)mDevice.getDeviceProperties().limits.timestampPeriod / 1e6; // Nano to milli
-
-				mTimeDelta = (float)((double)timeDiff * timestampToMs);
+				mTimeDelta = (float)((double)totalTimeDiff * timestampToMs);
 
 				VulkanQueryPool& queryPool = mDevice.getQueryPool();
-				queryPool.releaseQuery(mBeginQuery);
-				mBeginQuery = nullptr;
+				for (auto& query : mQueries)
+				{
+					if (query.first != nullptr)
+						queryPool.releaseQuery(query.first);
 
-				queryPool.releaseQuery(mEndQuery);
-				mEndQuery = nullptr;
+					if (query.second != nullptr)
+						queryPool.releaseQuery(query.second);
+				}
+
+				mQueries.clear();
 			}
 		}
 

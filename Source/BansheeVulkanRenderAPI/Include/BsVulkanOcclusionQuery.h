@@ -30,15 +30,28 @@ namespace bs { namespace ct
 		/** @copydoc OcclusionQuery::getNumSamples */
 		UINT32 getNumSamples() override;
 
+		/** Returns true if the query begin() was called, but not end(). */
+		bool _isInProgress() const;
+
+		/**
+		 * Interrupts an in-progress query, allowing the command buffer to submitted. Interrupted queries must be resumed
+		 * using _resume().
+		 */
+		void _interrupt(VulkanCmdBuffer& cb);
+
+		/** Resumes an interrupted query, restoring it back to its original in-progress state. */
+		void _resume(VulkanCmdBuffer& cb);
+
 	private:
 		friend class QueryManager;
 
 		VulkanDevice& mDevice;
-		VulkanQuery* mQuery;
+		Vector<VulkanQuery*> mQueries;
 
 		UINT64 mNumSamples;
 		bool mQueryEndCalled : 1;
 		bool mQueryFinalized : 1;
+		bool mQueryInterrupted : 1;
 	};
 
 	/** @} */
