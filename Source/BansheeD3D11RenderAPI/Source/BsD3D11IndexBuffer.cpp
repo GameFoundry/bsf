@@ -66,8 +66,8 @@ namespace bs { namespace ct
 	}
 
 	void D3D11IndexBuffer::copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset,
-		UINT32 dstOffset, UINT32 length, bool discardWholeBuffer, UINT32 queueIdx)
+		UINT32 dstOffset, UINT32 length, bool discardWholeBuffer, const SPtr<CommandBuffer>& commandBuffer)
 	{
-		mBuffer->copyData(srcBuffer, srcOffset, dstOffset, length, discardWholeBuffer);
+		mBuffer->copyData(srcBuffer, srcOffset, dstOffset, length, discardWholeBuffer, commandBuffer);
 	}
 }}

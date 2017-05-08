@@ -1347,7 +1347,7 @@ namespace bs { namespace ct
 									  curLayout, transferLayout, range);
 
 				// Queue copy command
-				mStagingBuffer->copy(transferCB, image, extent, rangeLayers, transferLayout);
+				mStagingBuffer->copy(transferCB->getCB(), image, extent, rangeLayers, transferLayout);
 
 				// Transfer back to original  (or optimal if initial layout was undefined/preinitialized)
 				VkImageLayout dstLayout = image->getOptimalLayout();

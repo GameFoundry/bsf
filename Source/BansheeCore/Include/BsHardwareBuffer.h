@@ -105,27 +105,23 @@ namespace bs
 		 * @param[in]	length				Size of the data to copy, in bytes.
 		 * @param[in]	discardWholeBuffer	Specify true if the data in the current buffer can be entirely discarded. This
 		 *									may improve performance.
-		 * @param[in]	queueIdx			Device queue to perform the copy operation on. See @ref queuesDoc.
+		 * @param[in]	commandBuffer		Command buffer to queue the copy operation on. If null, main command buffer is
+		 *									used.
 		 */
-		virtual void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, 
-			UINT32 dstOffset, UINT32 length, bool discardWholeBuffer = false, UINT32 queueIdx = 0)
-		{
-			const void *srcData = srcBuffer.lock(
-				srcOffset, length, GBL_READ_ONLY, queueIdx);
-			this->writeData(dstOffset, length, srcData, discardWholeBuffer ? BWT_DISCARD : BWT_NORMAL, queueIdx);
-			srcBuffer.unlock();
-		}
+		virtual void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length, 
+			bool discardWholeBuffer = false, const SPtr<ct::CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**
 		 * Copy data from the provided buffer into this buffer. If buffers are not the same size, smaller size will be used.
 		 * 
-		 * @param[in]	srcBuffer	Hardware buffer to copy from.
-		 * @param[in]	queueIdx	Device queue to perform the copy operation on. See @ref queuesDoc.
+		 * @param[in]	srcBuffer		Hardware buffer to copy from.
+		 * @param[in]	commandBuffer	Command buffer to queue the copy operation on. If null, main command buffer is
+		 *								used.
 		 */
-		virtual void copyData(HardwareBuffer& srcBuffer, UINT32 queueIdx = 0)
+		virtual void copyData(HardwareBuffer& srcBuffer, const SPtr<ct::CommandBuffer>& commandBuffer = nullptr)
 		{
 			UINT32 sz = std::min(getSize(), srcBuffer.getSize());
-			copyData(srcBuffer, 0, 0, sz, true, queueIdx);
+			copyData(srcBuffer, 0, 0, sz, true, commandBuffer);
 		}
 			
 		/** Returns the size of this buffer in bytes. */

@@ -4,7 +4,7 @@
 #include "BsGLVertexBuffer.h"
 #include "BsGLVertexArrayObjectManager.h"
 #include "BsRenderStats.h"
-#include "BsException.h"
+#include "BsGLCommandBuffer.h"
 
 namespace bs { namespace ct
 {
@@ -63,4 +63,24 @@ namespace bs { namespace ct
     {
 		mBuffer.writeData(offset, length, pSource, writeFlags);
     }
+
+	void GLVertexBuffer::copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset,
+		UINT32 dstOffset, UINT32 length, bool discardWholeBuffer, const SPtr<ct::CommandBuffer>& commandBuffer)
+	{
+		auto executeRef = [this](HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length)
+		{
+			GLVertexBuffer& glSrcBuffer = static_cast<GLVertexBuffer&>(srcBuffer);
+			glSrcBuffer.mBuffer.copyData(mBuffer, srcOffset, dstOffset, length);
+		};
+
+		if (commandBuffer == nullptr)
+			executeRef(srcBuffer, srcOffset, dstOffset, length);
+		else
+		{
+			auto execute = [&]() { executeRef(srcBuffer, srcOffset, dstOffset, length); };
+
+			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
+			cb->queueCommand(execute);
+		}
+	}
 }}

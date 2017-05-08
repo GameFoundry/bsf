@@ -52,7 +52,7 @@ namespace bs { namespace ct
 
 		/** @copydoc HardwareBuffer::copyData */
 		void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, 
-			UINT32 length, bool discardWholeBuffer = false, UINT32 queueIdx = 0) override;
+			UINT32 length, bool discardWholeBuffer = false, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/**	Returns the internal DX11 buffer object. */
 		ID3D11Buffer* getD3DBuffer() const { return mD3DBuffer; }

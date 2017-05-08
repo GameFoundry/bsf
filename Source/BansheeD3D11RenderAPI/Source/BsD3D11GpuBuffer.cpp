@@ -110,12 +110,12 @@ namespace bs { namespace ct
 		mBuffer->writeData(offset, length, source, writeFlags);
 	}
 
-	void D3D11GpuBuffer::copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset,
-		UINT32 dstOffset, UINT32 length, bool discardWholeBuffer, UINT32 queueIdx)
+	void D3D11GpuBuffer::copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length, 
+		bool discardWholeBuffer, const SPtr<CommandBuffer>& commandBuffer)
 	{
 		D3D11GpuBuffer* d3d11SrcBuffer = static_cast<D3D11GpuBuffer*>(&srcBuffer);
 
-		mBuffer->copyData(*d3d11SrcBuffer->mBuffer, srcOffset, dstOffset, length, discardWholeBuffer);
+		mBuffer->copyData(*d3d11SrcBuffer->mBuffer, srcOffset, dstOffset, length, discardWholeBuffer, commandBuffer);
 	}
 
 	ID3D11Buffer* D3D11GpuBuffer::getDX11Buffer() const

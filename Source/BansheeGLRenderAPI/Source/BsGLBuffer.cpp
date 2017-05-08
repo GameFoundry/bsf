@@ -113,4 +113,10 @@ namespace bs { namespace ct
 		memcpy(bufferData, pSource, length);
 		unlock();
 	}
+
+	void GLBuffer::copyData(GLBuffer& dstBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length)
+	{
+		GLuint srcId = dstBuffer.getGLBufferId();
+		glCopyBufferSubData(srcId, getGLBufferId(), srcOffset, dstOffset, length);
+	}
 }}

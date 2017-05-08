@@ -64,9 +64,9 @@ namespace bs { namespace ct
 	}
 
 	void VulkanVertexBuffer::copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset,
-		UINT32 dstOffset, UINT32 length, bool discardWholeBuffer, UINT32 queueIdx)
+		UINT32 dstOffset, UINT32 length, bool discardWholeBuffer, const SPtr<CommandBuffer>& commandBuffer)
 	{
-		mBuffer->copyData(srcBuffer, srcOffset, dstOffset, length, discardWholeBuffer, queueIdx);
+		mBuffer->copyData(srcBuffer, srcOffset, dstOffset, length, discardWholeBuffer, commandBuffer);
 	}
 
 	VulkanBuffer* VulkanVertexBuffer::getResource(UINT32 deviceIdx) const

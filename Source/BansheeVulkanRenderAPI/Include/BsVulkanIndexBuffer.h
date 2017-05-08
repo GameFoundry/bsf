@@ -27,7 +27,7 @@ namespace bs { namespace ct
 
 		/** @copydoc IndexBuffer::copyData */
 		void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length, 
-			bool discardWholeBuffer = false, UINT32 queueIdx = 0) override;
+			bool discardWholeBuffer = false, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** 
 		 * Gets the resource wrapping the buffer object, on the specified device. If GPU param block buffer's device mask

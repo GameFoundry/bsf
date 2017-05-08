@@ -60,14 +60,14 @@ namespace bs { namespace ct
 		 * the destination buffer. Caller must ensure the provided offsets and length are within valid bounds of
 		 * both buffers.
 		 */
-		void copy(VulkanTransferBuffer* cb, VulkanBuffer* destination, VkDeviceSize srcOffset, VkDeviceSize dstOffset, 
+		void copy(VulkanCmdBuffer* cb, VulkanBuffer* destination, VkDeviceSize srcOffset, VkDeviceSize dstOffset,
 			VkDeviceSize length);
 
 		/** 
 		 * Queues a command on the provided command buffer. The command copies the contents of the current buffer to
 		 * the destination image subresource. 
 		 */
-		void copy(VulkanTransferBuffer* cb, VulkanImage* destination, const VkExtent3D& extent, 
+		void copy(VulkanCmdBuffer* cb, VulkanImage* destination, const VkExtent3D& extent,
 			const VkImageSubresourceLayers& range, VkImageLayout layout);
 
 		/** 
@@ -75,7 +75,7 @@ namespace bs { namespace ct
 		 * the destination buffer. Caller must ensure the provided offset and length are within valid bounds of
 		 * both buffers. Caller must ensure the offset and size is a multiple of 4, and size is equal to or less then 65536.
 		 */
-		void update(VulkanTransferBuffer* cb, UINT8* data, VkDeviceSize offset, VkDeviceSize length);
+		void update(VulkanCmdBuffer* cb, UINT8* data, VkDeviceSize offset, VkDeviceSize length);
 
 	private:
 		VkBuffer mBuffer;
@@ -120,7 +120,7 @@ namespace bs { namespace ct
 
 		/** @copydoc HardwareBuffer::copyData */
 		void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, 
-			UINT32 length, bool discardWholeBuffer = false, UINT32 queueIdx = 0) override;
+			UINT32 length, bool discardWholeBuffer = false, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** 
 		 * Gets the resource wrapping the buffer object, on the specified device. If hardware buffer device mask doesn't 

@@ -33,8 +33,8 @@ namespace bs { namespace ct
 			BufferWriteType writeFlags = BWT_NORMAL, UINT32 queueIdx = 0) override;
 
 		/** @copydoc GpuBuffer::copyData */
-		void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, 
-			UINT32 dstOffset, UINT32 length, bool discardWholeBuffer = false, UINT32 queueIdx = 0) override;
+		void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length, 
+			bool discardWholeBuffer = false, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/**
 		 * Creates a buffer view that may be used for binding a buffer to a slot in the pipeline. Views allow you to specify

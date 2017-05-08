@@ -64,6 +64,16 @@ namespace bs { namespace ct
         void writeData(UINT32 offset, UINT32 length, const void* source, 
 			BufferWriteType writeFlags = BWT_NORMAL);
 
+		/**
+		 * Copies data from a specific portion of this buffer into a specific portion of the provided buffer.
+		 *
+		 * @param[in]	dstBuffer			Buffer to copy from.
+		 * @param[in]	srcOffset			Offset into the source buffer to start copying from, in bytes.
+		 * @param[in]	dstOffset			Offset into this buffer to start copying to, in bytes.
+		 * @param[in]	length				Size of the data to copy, in bytes.
+		 */
+		void copyData(GLBuffer& dstBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length);
+
 		/**	Returns internal OpenGL buffer ID. */
         GLuint getGLBufferId() const { return mBufferId; }
 

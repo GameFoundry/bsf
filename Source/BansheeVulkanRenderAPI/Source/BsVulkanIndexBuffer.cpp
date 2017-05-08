@@ -62,10 +62,10 @@ namespace bs { namespace ct
 		BS_INC_RENDER_STAT_CAT(ResWrite, RenderStatObject_IndexBuffer);
 	}
 
-	void VulkanIndexBuffer::copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset,
-										UINT32 dstOffset, UINT32 length, bool discardWholeBuffer, UINT32 queueIdx)
+	void VulkanIndexBuffer::copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length, 
+		bool discardWholeBuffer, const SPtr<CommandBuffer>& commandBuffer)
 	{
-		mBuffer->copyData(srcBuffer, srcOffset, dstOffset, length, discardWholeBuffer, queueIdx);
+		mBuffer->copyData(srcBuffer, srcOffset, dstOffset, length, discardWholeBuffer, commandBuffer);
 	}
 
 	VulkanBuffer* VulkanIndexBuffer::getResource(UINT32 deviceIdx) const

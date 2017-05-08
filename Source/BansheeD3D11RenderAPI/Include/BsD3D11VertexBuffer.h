@@ -29,7 +29,7 @@ namespace bs { namespace ct
 
 		/** @copydoc VertexBuffer::copyData */
 		void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length, 
-			bool discardWholeBuffer = false, UINT32 queueIdx = 0) override;
+			bool discardWholeBuffer = false, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/**	Get the D3D-specific index buffer */
 		ID3D11Buffer* getD3DVertexBuffer() const { return mBuffer->getD3DBuffer(); }		

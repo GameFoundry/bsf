@@ -5,6 +5,7 @@
 #include "BsD3D11Device.h"
 #include "BsException.h"
 #include "BsDebug.h"
+#include "BsD3D11CommandBuffer.h"
 
 namespace bs { namespace ct
 {
@@ -230,37 +231,52 @@ namespace bs { namespace ct
 	}
 
 	void D3D11HardwareBuffer::copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, 
-		UINT32 dstOffset, UINT32 length, bool discardWholeBuffer, UINT32 queueIdx)
+		UINT32 dstOffset, UINT32 length, bool discardWholeBuffer, const SPtr<ct::CommandBuffer>& commandBuffer)
 	{
-		// If we're copying same-size buffers in their entirety
-		if (srcOffset == 0 && dstOffset == 0 &&
-			length == mSize && mSize == srcBuffer.getSize())
+		auto executeRef = [this](HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length)
 		{
-			mDevice.getImmediateContext()->CopyResource(mD3DBuffer, static_cast<D3D11HardwareBuffer&>(srcBuffer).getD3DBuffer());
-			if (mDevice.hasError())
+			// If we're copying same-size buffers in their entirety
+			if (srcOffset == 0 && dstOffset == 0 &&
+				length == mSize && mSize == srcBuffer.getSize())
 			{
-				String errorDescription = mDevice.getErrorDescription();
-				BS_EXCEPT(RenderingAPIException, "Cannot copy D3D11 resource\nError Description:" + errorDescription);
+				mDevice.getImmediateContext()->CopyResource(mD3DBuffer, 
+					static_cast<D3D11HardwareBuffer&>(srcBuffer).getD3DBuffer());
+				if (mDevice.hasError())
+				{
+					String errorDescription = mDevice.getErrorDescription();
+					BS_EXCEPT(RenderingAPIException, "Cannot copy D3D11 resource\nError Description:" + errorDescription);
+				}
 			}
-		}
+			else
+			{
+				// Copy subregion
+				D3D11_BOX srcBox;
+				srcBox.left = (UINT)srcOffset;
+				srcBox.right = (UINT)srcOffset + length;
+				srcBox.top = 0;
+				srcBox.bottom = 1;
+				srcBox.front = 0;
+				srcBox.back = 1;
+
+				mDevice.getImmediateContext()->CopySubresourceRegion(mD3DBuffer, 0, (UINT)dstOffset, 0, 0,
+					static_cast<D3D11HardwareBuffer&>(srcBuffer).getD3DBuffer(), 0, &srcBox);
+				if (mDevice.hasError())
+				{
+					String errorDescription = mDevice.getErrorDescription();
+					BS_EXCEPT(RenderingAPIException, "Cannot copy D3D11 subresource region\nError Description:" + 
+						errorDescription);
+				}
+			}
+		};
+
+		if (commandBuffer == nullptr)
+			executeRef(srcBuffer, srcOffset, dstOffset, length);
 		else
 		{
-			// Copy subregion
-			D3D11_BOX srcBox;
-			srcBox.left = (UINT)srcOffset;
-			srcBox.right = (UINT)srcOffset + length;
-			srcBox.top = 0;
-			srcBox.bottom = 1;
-			srcBox.front = 0;
-			srcBox.back = 1;
+			auto execute = [&]() { executeRef(srcBuffer, srcOffset, dstOffset, length); };
 
-			mDevice.getImmediateContext()->CopySubresourceRegion(mD3DBuffer, 0, (UINT)dstOffset, 0, 0, 
-				static_cast<D3D11HardwareBuffer&>(srcBuffer).getD3DBuffer(), 0, &srcBox);
-			if (mDevice.hasError())
-			{
-				String errorDescription = mDevice.getErrorDescription();
-				BS_EXCEPT(RenderingAPIException, "Cannot copy D3D11 subresource region\nError Description:" + errorDescription);
-			}
+			SPtr<D3D11CommandBuffer> cb = std::static_pointer_cast<D3D11CommandBuffer>(commandBuffer);
+			cb->queueCommand(execute);
 		}
 	}
 

@@ -29,11 +29,11 @@ namespace bs { namespace ct
 
 		/** @copydoc GpuBuffer::writeData */
         void writeData(UINT32 offset, UINT32 length, const void* source,
-				BufferWriteType writeFlags = BWT_NORMAL, UINT32 queueIdx = 0) override;
+			BufferWriteType writeFlags = BWT_NORMAL, UINT32 queueIdx = 0) override;
 
 		/** @copydoc GpuBuffer::copyData */
-		void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset,
-			UINT32 dstOffset, UINT32 length, bool discardWholeBuffer = false, UINT32 queueIdx = 0) override;
+		void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length, 
+			bool discardWholeBuffer = false, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/**	
 		 * Returns internal OpenGL buffer ID. If binding the buffer to the pipeline, bind the texture using

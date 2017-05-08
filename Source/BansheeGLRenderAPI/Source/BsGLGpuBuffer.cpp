@@ -5,6 +5,7 @@
 #include "BsRenderStats.h"
 #include "BsGLPixelFormat.h"
 #include "BsGLHardwareBufferManager.h"
+#include "BsGLCommandBuffer.h"
 
 namespace bs { namespace ct
 {
@@ -95,12 +96,25 @@ namespace bs { namespace ct
 		BS_INC_RENDER_STAT_CAT(ResWrite, RenderStatObject_GpuBuffer);
 	}
 
-	void GLGpuBuffer::copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset,
-								   UINT32 dstOffset, UINT32 length, bool discardWholeBuffer, UINT32 queueIdx)
+	void GLGpuBuffer::copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length, 
+		bool discardWholeBuffer, const SPtr<CommandBuffer>& commandBuffer)
 	{
-		GLGpuBuffer& glSrcBuffer = static_cast<GLGpuBuffer&>(srcBuffer);
+		auto executeRef = [this](HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length)
+		{
+			GLGpuBuffer& glSrcBuffer = static_cast<GLGpuBuffer&>(srcBuffer);
 
-		GLuint srcId = glSrcBuffer.getGLBufferId();
-		glCopyBufferSubData(srcId, getGLBufferId(), srcOffset, dstOffset, length);
+			GLuint srcId = glSrcBuffer.getGLBufferId();
+			glCopyBufferSubData(srcId, getGLBufferId(), srcOffset, dstOffset, length);
+		};
+
+		if (commandBuffer == nullptr)
+			executeRef(srcBuffer, srcOffset, dstOffset, length);
+		else
+		{
+			auto execute = [&]() { executeRef(srcBuffer, srcOffset, dstOffset, length); };
+
+			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
+			cb->queueCommand(execute);
+		}
 	}
 }}
