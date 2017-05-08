@@ -49,7 +49,7 @@ namespace bs { namespace ct
 
 		/** @copydoc Texture::copyImpl */
 		void copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 dstFace, UINT32 dstMipLevel,
-					  const SPtr<Texture>& target, UINT32 queueIdx = 0) override;
+					  const SPtr<Texture>& target, const SPtr<CommandBuffer>& commandBuffer) override;
 
 		/** @copydoc Texture::readData */
 		void readDataImpl(PixelData& dest, UINT32 mipLevel = 0, UINT32 face = 0, UINT32 deviceIdx = 0,

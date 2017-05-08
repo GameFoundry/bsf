@@ -408,7 +408,7 @@ namespace bs
 	}
 
 	void Texture::copy(const SPtr<Texture>& target, UINT32 srcFace, UINT32 srcMipLevel, UINT32 dstFace,
-						   UINT32 dstMipLevel, UINT32 queueIdx)
+						   UINT32 dstMipLevel, const SPtr<CommandBuffer>& commandBuffer)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -468,7 +468,7 @@ namespace bs
 			return;
 		}
 
-		copyImpl(srcFace, srcMipLevel, dstFace, dstMipLevel, target, queueIdx);
+		copyImpl(srcFace, srcMipLevel, dstFace, dstMipLevel, target, commandBuffer);
 	}
 
 	/************************************************************************/

@@ -363,10 +363,11 @@ namespace bs
 		 * @param[in]	srcMipLevel			Mip level to copy from.
 		 * @param[in]	dstFace				Face to copy to.
 		 * @param[in]	dstMipLevel			Mip level to copy to.
-		 * @param[in]	queueIdx			Device queue to perform the copy operation on. See @ref queuesDoc.
+		 * @param[in]	commandBuffer		Command buffer to queue the copy operation on. If null, main command buffer is
+		 *									used.
 		 */
 		void copy(const SPtr<Texture>& target, UINT32 srcFace = 0, UINT32 srcMipLevel = 0, UINT32 dstFace = 0,
-			UINT32 dstMipLevel = 0, UINT32 queueIdx = 0);
+			UINT32 dstMipLevel = 0, const SPtr<CommandBuffer>& commandBuffer = nullptr);
 
 		/**
 		 * Reads data from the texture buffer into the provided buffer.
@@ -445,7 +446,7 @@ namespace bs
 
 		/** @copydoc copy */
 		virtual void copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 dstFace, UINT32 dstMipLevel, 
-			const SPtr<Texture>& target, UINT32 queueIdx = 0) = 0;
+			const SPtr<Texture>& target, const SPtr<CommandBuffer>& commandBuffer) = 0;
 
 		/** @copydoc readData */
 		virtual void readDataImpl(PixelData& dest, UINT32 mipLevel = 0, UINT32 face = 0, UINT32 deviceIdx = 0,

@@ -11,6 +11,7 @@
 #include "BsGLRenderTexture.h"
 #include "BsGLTextureView.h"
 #include "BsRenderStats.h"
+#include "BsGLCommandBuffer.h"
 
 namespace bs { namespace ct
 {
@@ -256,12 +257,26 @@ namespace bs { namespace ct
 	}
 
 	void GLTexture::copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel,
-								 const SPtr<Texture>& target, UINT32 queueIdx)
+								 const SPtr<Texture>& target, const SPtr<CommandBuffer>& commandBuffer)
 	{
-		GLTexture* destTex = static_cast<GLTexture*>(target.get());
-		GLTextureBuffer *src = static_cast<GLTextureBuffer*>(getBuffer(srcFace, srcMipLevel).get());
+		auto executeRef = [this](UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel, 
+			const SPtr<Texture>& target)
+		{
+			GLTexture* destTex = static_cast<GLTexture*>(target.get());
+			GLTextureBuffer *src = static_cast<GLTextureBuffer*>(getBuffer(srcFace, srcMipLevel).get());
 
-		destTex->getBuffer(destFace, destMipLevel)->blitFromTexture(src);
+			destTex->getBuffer(destFace, destMipLevel)->blitFromTexture(src);
+		};
+
+		if (commandBuffer == nullptr)
+			executeRef(srcFace, srcMipLevel, destFace, destMipLevel, target);
+		else
+		{
+			auto execute = [=]() { executeRef(srcFace, srcMipLevel, destFace, destMipLevel, target); };
+
+			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
+			cb->queueCommand(execute);
+		}
 	}
 
 	void GLTexture::createSurfaceList()

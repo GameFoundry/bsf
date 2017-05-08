@@ -10,6 +10,7 @@
 #include "BsAsyncOp.h"
 #include "BsRenderStats.h"
 #include "BsMath.h"
+#include "BsD3D11CommandBuffer.h"
 
 namespace bs { namespace ct
 {
@@ -61,38 +62,52 @@ namespace bs { namespace ct
 	}
 
 	void D3D11Texture::copyImpl(UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel,
-									const SPtr<Texture>& target, UINT32 queueIdx)
+									const SPtr<Texture>& target, const SPtr<CommandBuffer>& commandBuffer)
 	{
-		D3D11Texture* other = static_cast<D3D11Texture*>(target.get());
-
-		UINT32 srcResIdx = D3D11CalcSubresource(srcMipLevel, srcFace, mProperties.getNumMipmaps() + 1);
-		UINT32 destResIdx = D3D11CalcSubresource(destMipLevel, destFace, target->getProperties().getNumMipmaps() + 1);
-
-		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPI::instancePtr());
-		D3D11Device& device = rs->getPrimaryDevice();
-
-		bool srcHasMultisample = mProperties.getNumSamples() > 1;
-		bool destHasMultisample = target->getProperties().getNumSamples() > 1;
-
-		if (srcHasMultisample && !destHasMultisample) // Resolving from MS to non-MS texture
+		auto executeRef = [this](UINT32 srcFace, UINT32 srcMipLevel, UINT32 destFace, UINT32 destMipLevel,
+			const SPtr<Texture>& target)
 		{
-			device.getImmediateContext()->ResolveSubresource(other->getDX11Resource(), destResIdx, mTex, srcResIdx, mDXGIFormat);
-		}
+			D3D11Texture* other = static_cast<D3D11Texture*>(target.get());
+
+			UINT32 srcResIdx = D3D11CalcSubresource(srcMipLevel, srcFace, mProperties.getNumMipmaps() + 1);
+			UINT32 destResIdx = D3D11CalcSubresource(destMipLevel, destFace, target->getProperties().getNumMipmaps() + 1);
+
+			D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPI::instancePtr());
+			D3D11Device& device = rs->getPrimaryDevice();
+
+			bool srcHasMultisample = mProperties.getNumSamples() > 1;
+			bool destHasMultisample = target->getProperties().getNumSamples() > 1;
+
+			if (srcHasMultisample && !destHasMultisample) // Resolving from MS to non-MS texture
+			{
+				device.getImmediateContext()->ResolveSubresource(other->getDX11Resource(), destResIdx, mTex, srcResIdx, mDXGIFormat);
+			}
+			else
+			{
+				if (mProperties.getNumSamples() != target->getProperties().getNumSamples())
+				{
+					LOGERR("When copying textures their multisample counts must match. Ignoring copy.");
+					return;
+				}
+
+				device.getImmediateContext()->CopySubresourceRegion(other->getDX11Resource(), destResIdx, 0, 0, 0, mTex, srcResIdx, nullptr);
+
+				if (device.hasError())
+				{
+					String errorDescription = device.getErrorDescription();
+					BS_EXCEPT(RenderingAPIException, "D3D11 device cannot copy subresource\nError Description:" + errorDescription);
+				}
+			}
+		};
+
+		if (commandBuffer == nullptr)
+			executeRef(srcFace, srcMipLevel, destFace, destMipLevel, target);
 		else
 		{
-			if(mProperties.getNumSamples() != target->getProperties().getNumSamples())
-			{
-				LOGERR("When copying textures their multisample counts must match. Ignoring copy.");
-				return;
-			}
+			auto execute = [=]() { executeRef(srcFace, srcMipLevel, destFace, destMipLevel, target); };
 
-			device.getImmediateContext()->CopySubresourceRegion(other->getDX11Resource(), destResIdx, 0, 0, 0, mTex, srcResIdx, nullptr);
-
-			if (device.hasError())
-			{
-				String errorDescription = device.getErrorDescription();
-				BS_EXCEPT(RenderingAPIException, "D3D11 device cannot copy subresource\nError Description:" + errorDescription);
-			}
+			SPtr<D3D11CommandBuffer> cb = std::static_pointer_cast<D3D11CommandBuffer>(commandBuffer);
+			cb->queueCommand(execute);
 		}
 	}
 
