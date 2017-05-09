@@ -547,7 +547,12 @@ namespace bs
 
 		Vector2 ndcPoint;
 		ndcPoint.x = (float)(((screenPoint.x - viewport.x) / (float)viewport.width) * 2.0f - 1.0f);
-		ndcPoint.y = (float)((1.0f - ((screenPoint.y - viewport.y) / (float)viewport.height)) * 2.0f - 1.0f);
+
+		const RenderAPIInfo& info = RenderAPI::getAPIInfo();
+		if(info.isFlagSet(RenderAPIFeatureFlag::NDCYAxisDown))
+			ndcPoint.y = (float)(((screenPoint.y - viewport.y) / (float)viewport.height) * 2.0f - 1.0f);
+		else
+			ndcPoint.y = (float)((1.0f - ((screenPoint.y - viewport.y) / (float)viewport.height)) * 2.0f - 1.0f);
 
 		return ndcPoint;
 	}
