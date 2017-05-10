@@ -11,6 +11,7 @@ enum tagNodeType
 	NT_Shader,
 	NT_Options,
 	NT_Technique,
+	NT_Mixin,
 	NT_Pass,
 	NT_Blend,
 	NT_Raster,
@@ -38,6 +39,7 @@ enum tagOptionType
 	OT_Sort,
 	OT_Transparent,
 	OT_Technique,
+	OT_Mixin,
 	OT_Raster,
 	OT_Depth,
 	OT_Stencil,
@@ -78,8 +80,6 @@ enum tagOptionType
 	OT_StencilRef,
 	OT_Tags,
 	OT_TagValue,
-	OT_Base,
-	OT_Inherits,
 	OT_Count
 };
 

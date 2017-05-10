@@ -13,6 +13,7 @@ OptionInfo OPTION_LOOKUP[] =
 	{ OT_Sort, ODT_Int },
 	{ OT_Transparent, ODT_Bool },
 	{ OT_Technique, ODT_Complex }, 
+	{ OT_Mixin, ODT_Complex },
 	{ OT_Raster, ODT_Complex },
 	{ OT_Depth, ODT_Complex },
 	{ OT_Stencil, ODT_Complex },
@@ -53,8 +54,6 @@ OptionInfo OPTION_LOOKUP[] =
 	{ OT_StencilRef, ODT_Int },
 	{ OT_Tags, ODT_Complex },
 	{ OT_TagValue, ODT_String },
-	{ OT_Base, ODT_String },
-	{ OT_Inherits, ODT_String }
 };
 
 NodeOptions* nodeOptionsCreate(void* context)

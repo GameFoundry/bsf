@@ -48,6 +48,7 @@ false			{ yylval->intValue = 0; return TOKEN_BOOLEAN; }
 	/* Shader keywords */
 options			{ return TOKEN_OPTIONS; }
 technique		{ return TOKEN_TECHNIQUE; }
+mixin			{ return TOKEN_MIXIN; }
 
 	/* Options keywords */
 separable		{ return TOKEN_SEPARABLE; }
@@ -101,10 +102,6 @@ alpha				{ return TOKEN_ALPHA; }
 source				{ return TOKEN_SOURCE; }
 dest				{ return TOKEN_DEST; }
 op					{ return TOKEN_OP; }
-
-	/* Qualifiers */
-base				{ return TOKEN_BASE; }
-inherits			{ return TOKEN_INHERITS; }
 
 	/* State values */
 wire			{ yylval->intValue = FMV_Wire; return TOKEN_FILLMODEVALUE; }

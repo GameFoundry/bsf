@@ -80,11 +80,8 @@ typedef struct YYLTYPE {
 %token <intValue>	TOKEN_BLENDOPVALUE
 %token <intValue>	TOKEN_COLORMASK
 
-	/* Qualifiers */
-%token TOKEN_BASE TOKEN_INHERITS
-
 	/* Shader keywords */
-%token TOKEN_OPTIONS TOKEN_TECHNIQUE
+%token TOKEN_OPTIONS TOKEN_TECHNIQUE TOKEN_MIXIN
 
 	/* Options keywords */
 %token TOKEN_SEPARABLE TOKEN_SORT TOKEN_PRIORITY TOKEN_TRANSPARENT
@@ -97,19 +94,19 @@ typedef struct YYLTYPE {
 %token TOKEN_BLEND TOKEN_RASTER TOKEN_DEPTH TOKEN_STENCIL
 
 	/* Rasterizer state keywords */
-%token	TOKEN_FILLMODE TOKEN_CULLMODE TOKEN_DEPTHBIAS TOKEN_SDEPTHBIAS
-%token	TOKEN_DEPTHCLIP TOKEN_SCISSOR TOKEN_MULTISAMPLE TOKEN_AALINE
+%token TOKEN_FILLMODE TOKEN_CULLMODE TOKEN_DEPTHBIAS TOKEN_SDEPTHBIAS
+%token TOKEN_DEPTHCLIP TOKEN_SCISSOR TOKEN_MULTISAMPLE TOKEN_AALINE
 
 	/* Depth state keywords */
-%token	TOKEN_DEPTHREAD TOKEN_DEPTHWRITE TOKEN_COMPAREFUNC
+%token TOKEN_DEPTHREAD TOKEN_DEPTHWRITE TOKEN_COMPAREFUNC
 
 	/* Stencil state keywords */
 %token TOKEN_STENCILREF TOKEN_ENABLED TOKEN_READMASK TOKEN_WRITEMASK 
 %token TOKEN_STENCILOPFRONT TOKEN_STENCILOPBACK TOKEN_FAIL TOKEN_ZFAIL
 
 	/* Blend state keywords */
-%token	TOKEN_ALPHATOCOVERAGE TOKEN_INDEPENDANTBLEND TOKEN_TARGET TOKEN_INDEX
-%token	TOKEN_COLOR TOKEN_ALPHA TOKEN_SOURCE TOKEN_DEST TOKEN_OP
+%token TOKEN_ALPHATOCOVERAGE TOKEN_INDEPENDANTBLEND TOKEN_TARGET TOKEN_INDEX
+%token TOKEN_COLOR TOKEN_ALPHA TOKEN_SOURCE TOKEN_DEST TOKEN_OP
 
 %type <nodePtr>		shader;
 %type <nodeOption>	shader_statement;
@@ -162,8 +159,6 @@ typedef struct YYLTYPE {
 %type <nodePtr>		blend_alpha_header;
 %type <nodeOption>	blenddef_option;
 
-%type <nodeOption> technique_qualifier
-
 %%
 
 	/* Shader */
@@ -206,14 +201,25 @@ options_option
 	/* Technique */
 
 technique
-	: technique_header technique_qualifier_list '{' technique_body '}' ';' { nodePop(parse_state); $$ = $1; }
+	: technique_header '{' technique_body '}' ';' { nodePop(parse_state); $$ = $1; }
 	;
 
 technique_header
-	: TOKEN_TECHNIQUE
+	: TOKEN_TECHNIQUE TOKEN_IDENTIFIER
 		{ 
 			$$ = nodeCreate(parse_state->memContext, NT_Technique); 
 			nodePush(parse_state, $$);
+			
+			NodeOption entry; entry.type = OT_Identifier; entry.value.strValue = $2;
+			nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &entry); 
+		}
+	| TOKEN_MIXIN TOKEN_IDENTIFIER
+		{ 
+			$$ = nodeCreate(parse_state->memContext, NT_Mixin); 
+			nodePush(parse_state, $$);
+			
+			NodeOption entry; entry.type = OT_Identifier; entry.value.strValue = $2;
+			nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &entry); 
 		}
 	;
 
@@ -231,6 +237,7 @@ technique_statement
 
 technique_option
 	: TOKEN_RENDERER '=' TOKEN_STRING ';'	{ $$.type = OT_Renderer; $$.value.strValue = $3; }
+	| TOKEN_MIXIN TOKEN_IDENTIFIER ';'		{ $$.type = OT_Mixin; $$.value.strValue = $2; }
 	| tags									{ $$.type = OT_Tags; $$.value.nodePtr = $1; }
 	;
 	
@@ -261,17 +268,6 @@ tags_body
 		}	
 	;
 
-	/* Technique qualifiers */
-technique_qualifier_list
-	: /* empty */
-	| technique_qualifier technique_qualifier_list		{ nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$1); }
-	;
-
-technique_qualifier
-	: ':' TOKEN_BASE '(' TOKEN_STRING ')'		{ $$.type = OT_Base; $$.value.strValue = $4; }
-	| ':' TOKEN_INHERITS '(' TOKEN_STRING ')'	{ $$.type = OT_Inherits; $$.value.strValue = $4; }
-	;	
-	
 	/* Pass */
 
 pass

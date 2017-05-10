@@ -63,12 +63,14 @@ namespace bs
 		/** Information describing a technique, without the actual contents. */
 		struct TechniqueMetaData
 		{
-			StringID renderer = RendererAny;
-			Vector<StringID> tags;
-			String language;
+			String name;
+			Vector<String> includes;
+			bool isMixin;
 
-			String baseName;
-			Vector<String> inherits;
+			String language;
+			StringID renderer = RendererAny;
+
+			Vector<StringID> tags;
 		};
 
 		/** Temporary data for describing a technique during parsing. */

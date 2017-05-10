@@ -418,6 +418,7 @@ namespace bs
 
 		metaData.renderer = RendererAny;
 		metaData.language = "hlsl";
+		metaData.isMixin = technique->type == NT_Mixin;
 
 		for (int i = 0; i < technique->options->count; i++)
 		{
@@ -440,11 +441,11 @@ namespace bs
 				}
 			}
 				break;
-			case OT_Base:
-				metaData.baseName = removeQuotes(option->value.strValue);
+			case OT_Identifier:
+				metaData.name = option->value.strValue;
 				break;
-			case OT_Inherits:
-				metaData.inherits.push_back(removeQuotes(option->value.strValue));
+			case OT_Mixin:
+				metaData.includes.push_back(option->value.strValue);
 				break;
 			default:
 				break;
@@ -1192,16 +1193,18 @@ namespace bs
 		std::function<bool(const TechniqueMetaData&, TechniqueData&)> parseInherited = 
 			[&](const TechniqueMetaData& metaData, TechniqueData& outTechnique)
 		{
-			for (auto riter = metaData.inherits.rbegin(); riter != metaData.inherits.rend(); ++riter)
+			for (auto riter = metaData.includes.rbegin(); riter != metaData.includes.rend(); ++riter)
 			{
-				const String& inherits = *riter;
+				const String& includes = *riter;
 
 				UINT32 baseIdx = -1;
 				for(UINT32 i = 0; i < (UINT32)techniqueData.size(); i++)
 				{
 					auto& entry = techniqueData[i];
+					if (!entry.second.metaData.isMixin)
+						continue;
 
-					if (entry.second.metaData.baseName == inherits)
+					if (entry.second.metaData.name == includes)
 					{
 						bool matches = entry.second.metaData.language == metaData.language || entry.second.metaData.language == "Any";
 						matches &= entry.second.metaData.renderer == metaData.renderer || entry.second.metaData.renderer == RendererAny;
@@ -1217,7 +1220,7 @@ namespace bs
 					auto& entry = techniqueData[baseIdx];
 
 					// Was already parsed previously, don't parse it multiple times (happens when multiple techniques 
-					// include the same base)
+					// include the same mixin)
 					if (techniqueWasParsed[baseIdx])
 						continue;
 
@@ -1230,7 +1233,7 @@ namespace bs
 				}
 				else
 				{
-					output.errorMessage = "Base technique \"" + inherits + "\" cannot be found.";
+					output.errorMessage = "Base technique \"" + includes + "\" cannot be found.";
 					return false;
 				}
 			}
@@ -1243,7 +1246,7 @@ namespace bs
 		for (auto& entry : techniqueData)
 		{
 			const TechniqueMetaData& metaData = entry.second.metaData;
-			if (!metaData.baseName.empty())
+			if (metaData.isMixin)
 				continue;
 
 			bs_zero_out(techniqueWasParsed, techniqueData.size());
@@ -1263,7 +1266,7 @@ namespace bs
 		for(UINT32 i = 0; i < end; i++)
 		{
 			const TechniqueMetaData& metaData = techniqueData[i].second.metaData;
-			if (!metaData.baseName.empty())
+			if (metaData.isMixin)
 				continue;
 
 			auto createTechniqueForLanguage = [](const String& name, const TechniqueData& orig, bool vulkan)
@@ -1326,7 +1329,7 @@ namespace bs
 		for(auto& entry : techniqueData)
 		{
 			const TechniqueMetaData& metaData = entry.second.metaData;
-			if (!metaData.baseName.empty())
+			if (metaData.isMixin)
 				continue;
 
 			Map<UINT32, SPtr<Pass>, std::greater<UINT32>> passes;
