@@ -428,9 +428,6 @@ namespace bs
 			case OT_Renderer:
 				metaData.renderer = parseRenderer(removeQuotes(option->value.strValue));
 				break;
-			case OT_Language:
-				parseLanguage(removeQuotes(option->value.strValue), metaData.language);
-				break;
 			case OT_Tags:
 			{
 				ASTFXNode* tagsNode = option->value.nodePtr;
@@ -465,49 +462,6 @@ namespace bs
 			return RendererDefault;
 
 		return RendererAny;
-	}
-
-	void BSLFXCompiler::parseLanguage(const String& name, String& language)
-	{
-		if (name == "HLSL" || name == "HLSL11")
-			language = "hlsl";
-		else if (name == "HLSL9")
-			language = "hlsl9";
-		else if (name == "GLSL")
-			language = "glsl";
-		else // "Any"
-			language = "";
-	}
-
-	GpuParamBlockUsage BSLFXCompiler::parseBlockUsage(BufferUsageValue usage)
-	{
-		if (usage == BUV_Dynamic)
-			return GPBU_DYNAMIC;
-
-		return GPBU_STATIC;
-	}
-
-	UINT32 BSLFXCompiler::parseFilterMode(FilterValue filter)
-	{
-		switch (filter)
-		{
-		case FV_Point:
-			return FO_POINT;
-		case FV_Linear:
-			return FO_LINEAR;
-		case FV_Anisotropic:
-			return FO_ANISOTROPIC;
-		case FV_PointCmp:
-			return FO_POINT | FO_USE_COMPARISON;
-		case FV_LinearCmp:
-			return FO_LINEAR | FO_USE_COMPARISON;
-		case FV_AnisotropicCmp:
-			return FO_ANISOTROPIC | FO_USE_COMPARISON;
-		default:
-			break;
-		}
-
-		return FO_NONE;
 	}
 
 	QueueSortType BSLFXCompiler::parseSortType(QueueSortTypeValue sortType)
@@ -548,23 +502,6 @@ namespace bs
 		}
 
 		return CMPF_ALWAYS_PASS;
-	}
-
-	TextureAddressingMode BSLFXCompiler::parseAddrMode(AddrModeValue addrMode)
-	{
-		switch (addrMode)
-		{
-		case AMV_Wrap:
-			return TAM_WRAP;
-		case AMV_Mirror:
-			return TAM_MIRROR;
-		case AMV_Clamp:
-			return TAM_CLAMP;
-		case AMV_Border:
-			return TAM_BORDER;
-		}
-
-		return TAM_WRAP;
 	}
 
 	BlendFactor BSLFXCompiler::parseBlendFactor(OpValue factor)
@@ -615,74 +552,6 @@ namespace bs
 		}
 
 		return BO_ADD;
-	}
-
-	void BSLFXCompiler::parseParamType(ParamType type, bool& isObjType, UINT32& typeId)
-	{
-		struct ParamData
-		{
-			UINT32 type;
-			bool isObjType;
-		};
-
-		static bool initialized = false;
-		static ParamData lookup[PT_Count];
-
-		if (!initialized)
-		{
-			lookup[PT_Float] = { GPDT_FLOAT1, false };
-			lookup[PT_Float2] = { GPDT_FLOAT2, false };
-			lookup[PT_Float3] = { GPDT_FLOAT3, false };
-			lookup[PT_Float4] = { GPDT_FLOAT4, false };
-
-			lookup[PT_Int] = { GPDT_INT1, false };
-			lookup[PT_Int2] = { GPDT_INT2, false };
-			lookup[PT_Int3] = { GPDT_INT3, false };
-			lookup[PT_Int4] = { GPDT_INT4, false };
-			lookup[PT_Color] = { GPDT_COLOR, false };
-
-			lookup[PT_Mat2x2] = { GPDT_MATRIX_2X2, false };
-			lookup[PT_Mat2x3] = { GPDT_MATRIX_2X3, false };
-			lookup[PT_Mat2x4] = { GPDT_MATRIX_2X4, false };
-
-			lookup[PT_Mat3x2] = { GPDT_MATRIX_3X2, false };
-			lookup[PT_Mat3x3] = { GPDT_MATRIX_3X3, false };
-			lookup[PT_Mat3x4] = { GPDT_MATRIX_3X4, false };
-
-			lookup[PT_Mat4x2] = { GPDT_MATRIX_4X2, false };
-			lookup[PT_Mat4x3] = { GPDT_MATRIX_4X3, false };
-			lookup[PT_Mat4x4] = { GPDT_MATRIX_4X4, false };
-
-			lookup[PT_Sampler1D] = { GPOT_SAMPLER1D, true };
-			lookup[PT_Sampler2D] = { GPOT_SAMPLER2D, true };
-			lookup[PT_Sampler3D] = { GPOT_SAMPLER3D, true };
-			lookup[PT_SamplerCUBE] = { GPOT_SAMPLERCUBE, true };
-			lookup[PT_Sampler2DMS] = { GPOT_SAMPLER2DMS, true };
-
-			lookup[PT_Texture1D] = { GPOT_TEXTURE1D, true };
-			lookup[PT_Texture2D] = { GPOT_TEXTURE2D, true };
-			lookup[PT_Texture3D] = { GPOT_TEXTURE3D, true };
-			lookup[PT_TextureCUBE] = { GPOT_TEXTURECUBE, true };
-			lookup[PT_Texture2DMS] = { GPOT_TEXTURE2DMS, true };
-
-			lookup[PT_RWTexture1D] = { GPOT_RWTEXTURE1D, true };
-			lookup[PT_RWTexture2D] = { GPOT_RWTEXTURE2D, true };
-			lookup[PT_RWTexture3D] = { GPOT_RWTEXTURE3D, true };
-			lookup[PT_RWTexture2DMS] = { GPOT_RWTEXTURE2DMS, true };
-
-			lookup[PT_ByteBuffer] = { GPOT_BYTE_BUFFER, true };
-			lookup[PT_StructBuffer] = { GPOT_STRUCTURED_BUFFER, true };
-			lookup[PT_TypedBufferRW] = { GPOT_RWTYPED_BUFFER, true };
-			lookup[PT_ByteBufferRW] = { GPOT_RWBYTE_BUFFER, true };
-			lookup[PT_StructBufferRW] = { GPOT_RWSTRUCTURED_BUFFER, true };
-			lookup[PT_AppendBuffer] = { GPOT_RWAPPEND_BUFFER, true };
-			lookup[PT_ConsumeBuffer] = { GPOT_RWCONSUME_BUFFER, true };
-
-			initialized = true;
-		}
-
-		isObjType = lookup[type].isObjType;
-		typeId = lookup[type].type;
 	}
 
 	StencilOperation BSLFXCompiler::parseStencilOp(OpValue op)
@@ -786,32 +655,6 @@ namespace bs
 				break;
 			case OT_CompareFunc:
 				desc.backStencilComparisonFunc = parseCompFunc((CompFuncValue)option->value.intValue);
-				break;
-			default:
-				break;
-			}
-		}
-	}
-
-	void BSLFXCompiler::parseAddrMode(SAMPLER_STATE_DESC& desc, ASTFXNode* addrModeNode)
-	{
-		if (addrModeNode == nullptr || addrModeNode->type != NT_AddrMode)
-			return;
-
-		for (int i = 0; i < addrModeNode->options->count; i++)
-		{
-			NodeOption* option = &addrModeNode->options->entries[i];
-
-			switch (option->type)
-			{
-			case OT_U:
-				desc.addressMode.u = parseAddrMode((AddrModeValue)option->value.intValue);
-				break;
-			case OT_V:
-				desc.addressMode.v = parseAddrMode((AddrModeValue)option->value.intValue);
-				break;
-			case OT_W:
-				desc.addressMode.w = parseAddrMode((AddrModeValue)option->value.intValue);
 				break;
 			default:
 				break;
@@ -1058,73 +901,7 @@ namespace bs
 
 		return !isDefault;
 	}
-
-	SPtr<SamplerState> BSLFXCompiler::parseSamplerState(ASTFXNode* samplerStateNode)
-	{
-		if (samplerStateNode == nullptr || samplerStateNode->type != NT_SamplerState)
-			return nullptr;
-
-		SAMPLER_STATE_DESC desc;
-		bool isDefault = true;
-
-		for (int i = 0; i < samplerStateNode->options->count; i++)
-		{
-			NodeOption* option = &samplerStateNode->options->entries[i];
-
-			switch (option->type)
-			{
-			case OT_AddrMode:
-				parseAddrMode(desc, option->value.nodePtr);
-				isDefault = false;
-				break;
-			case OT_MinFilter:
-				desc.minFilter = (FilterOptions)parseFilterMode((FilterValue)option->value.intValue);
-				isDefault = false;
-				break;
-			case OT_MagFilter:
-				desc.magFilter = (FilterOptions)parseFilterMode((FilterValue)option->value.intValue);
-				isDefault = false;
-				break;
-			case OT_MipFilter:
-				desc.mipFilter = (FilterOptions)parseFilterMode((FilterValue)option->value.intValue);
-				isDefault = false;
-				break;
-			case OT_MaxAniso:
-				desc.maxAniso = option->value.intValue;
-				isDefault = false;
-				break;
-			case OT_MipBias:
-				desc.mipmapBias = option->value.floatValue;
-				isDefault = false;
-				break;
-			case OT_MipMin:
-				desc.mipMin = option->value.floatValue;
-				isDefault = false;
-				break;
-			case OT_MipMax:
-				desc.mipMax = option->value.floatValue;
-				isDefault = false;
-				break;
-			case OT_BorderColor:
-				desc.borderColor = Color(option->value.matrixValue[0], option->value.matrixValue[1],
-					option->value.matrixValue[2], option->value.matrixValue[3]);
-				isDefault = false;
-				break;
-			case OT_CompareFunc:
-				desc.comparisonFunc = parseCompFunc((CompFuncValue)option->value.intValue);
-				isDefault = false;
-				break;
-			default:
-				break;
-			}
-		}
-
-		if (isDefault)
-			return nullptr;
-
-		return SamplerState::create(desc);
-	}
-
+	
 	void BSLFXCompiler::parseCodeBlock(ASTFXNode* codeNode, const Vector<String>& codeBlocks, PassData& passData)
 	{
 		if (codeNode == nullptr || (codeNode->type != NT_CodeCommon && codeNode->type != NT_CodeVertex && 
@@ -1300,158 +1077,6 @@ namespace bs
 		}
 	}
 
-	void BSLFXCompiler::parseParameters(SHADER_DESC& desc, ASTFXNode* parametersNode)
-	{
-		if (parametersNode == nullptr || parametersNode->type != NT_Parameters)
-			return;
-
-		for (int i = 0; i < parametersNode->options->count; i++)
-		{
-			NodeOption* option = &parametersNode->options->entries[i];
-
-			if (option->type != OT_Parameter)
-				continue;
-
-			ASTFXNode* parameter = option->value.nodePtr;
-
-			String name;
-			String alias;
-
-			UINT32 typeId = 0;
-			bool isObjType = false;
-			StringID semantic;
-			SPtr<SamplerState> samplerState = nullptr;
-			float defaultValue[16];
-			HTexture defaultTexture;
-			bool hasDefaultValue = false;
-			for (int j = 0; j < parameter->options->count; j++)
-			{
-				NodeOption* paramOption = &parameter->options->entries[j];
-
-				switch (paramOption->type)
-				{
-				case OT_Identifier:
-					name = paramOption->value.strValue;
-					break;
-				case OT_Alias:
-					alias = removeQuotes(paramOption->value.strValue);
-					break;
-				case OT_ParamType:
-					parseParamType((ParamType)paramOption->value.intValue, isObjType, typeId);
-					break;
-				case OT_ParamValue:
-					memcpy(defaultValue, paramOption->value.matrixValue, sizeof(defaultValue));
-					hasDefaultValue = true;
-					break;
-				case OT_ParamStrValue:
-				{
-					String defaultTextureName = removeQuotes(paramOption->value.strValue);
-					defaultTexture = getBuiltinTexture(defaultTextureName);
-					hasDefaultValue = true;
-				}
-					break;
-				case OT_Auto:
-					semantic = removeQuotes(paramOption->value.strValue);
-					break;
-				case OT_SamplerState:
-					samplerState = parseSamplerState(paramOption->value.nodePtr);
-					break;
-				default:
-					break;
-				}
-			}
-
-			if (name.empty())
-				continue;
-
-			auto addParameter = [&](const String& paramName, const String& gpuVarName)
-			{
-				if (isObjType)
-				{
-					GpuParamObjectType objType = (GpuParamObjectType)typeId;
-
-					if (Shader::isSampler(objType))
-					{
-						if(hasDefaultValue)
-							desc.addParameter(paramName, gpuVarName, objType, samplerState, semantic);
-						else
-							desc.addParameter(paramName, gpuVarName, objType, semantic);
-					}
-					else if(Shader::isTexture(objType))
-					{
-						if(hasDefaultValue)
-							desc.addParameter(paramName, gpuVarName, objType, defaultTexture, semantic);
-						else
-							desc.addParameter(paramName, gpuVarName, objType, semantic);
-					}
-					else
-						desc.addParameter(paramName, gpuVarName, objType, semantic);
-				}
-				else
-				{
-					if (hasDefaultValue)
-						desc.addParameter(paramName, gpuVarName, (GpuParamDataType)typeId, semantic, 1, 0, (UINT8*)defaultValue);
-					else
-						desc.addParameter(paramName, gpuVarName, (GpuParamDataType)typeId, semantic);
-				}
-			};
-
-			addParameter(name, name);
-
-			if (!alias.empty())
-				addParameter(name, alias);
-		}
-	}
-
-	void BSLFXCompiler::parseBlocks(SHADER_DESC& desc, ASTFXNode* blocksNode)
-	{
-		if (blocksNode == nullptr || blocksNode->type != NT_Blocks)
-			return;
-
-		for (int i = 0; i < blocksNode->options->count; i++)
-		{
-			NodeOption* option = &blocksNode->options->entries[i];
-
-			if (option->type != OT_Block)
-				continue;
-
-			ASTFXNode* parameter = option->value.nodePtr;
-
-			String name;
-			bool shared = false;
-			GpuParamBlockUsage usage = GPBU_STATIC;
-			StringID semantic;
-
-			for (int j = 0; j < parameter->options->count; j++)
-			{
-				NodeOption* paramOption = &parameter->options->entries[j];
-
-				switch (paramOption->type)
-				{
-				case OT_Identifier:
-					name = paramOption->value.strValue;
-					break;
-				case OT_Shared:
-					shared = paramOption->value.intValue > 0;
-					break;
-				case OT_Usage:
-					usage = parseBlockUsage((BufferUsageValue)paramOption->value.intValue);
-					break;
-				case OT_Auto:
-					semantic = removeQuotes(paramOption->value.strValue);
-					break;
-				default:
-					break;
-				}
-			}
-
-			if (name.empty())
-				continue;
-
-			desc.setParamBlockAttribs(name, shared, usage, semantic);
-		}
-	}
-	
 	BSLFXCompileResult BSLFXCompiler::parseShader(const String& name, ParseState* parseState, Vector<String>& codeBlocks)
 	{
 		BSLFXCompileResult output;
@@ -1497,12 +1122,6 @@ namespace bs
 
 				break;
 			}
-			case OT_Parameters:
-				parseParameters(shaderDesc, option->value.nodePtr);
-				break;
-			case OT_Blocks:
-				parseBlocks(shaderDesc, option->value.nodePtr);
-				break;
 			default:
 				break;
 			}

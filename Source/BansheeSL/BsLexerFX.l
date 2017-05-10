@@ -45,71 +45,15 @@ DEFINE_EXPR		[^\r\n]*
 true			{ yylval->intValue = 1; return TOKEN_BOOLEAN; }
 false			{ yylval->intValue = 0; return TOKEN_BOOLEAN; }
 
-	/* Value types */
-
-int				{ yylval->intValue = PT_Int; return TOKEN_INTTYPE; } 
-int2			{ yylval->intValue = PT_Int2; return TOKEN_INT2TYPE; } 
-int3			{ yylval->intValue = PT_Int3; return TOKEN_INT3TYPE; } 
-int4			{ yylval->intValue = PT_Int4; return TOKEN_INT4TYPE; }
-
-float			{ yylval->intValue = PT_Float; return TOKEN_FLOATTYPE; } 
-float2			{ yylval->intValue = PT_Float2; return TOKEN_FLOAT2TYPE; } 
-float3			{ yylval->intValue = PT_Float3; return TOKEN_FLOAT3TYPE; } 
-float4			{ yylval->intValue = PT_Float4; return TOKEN_FLOAT4TYPE; }
-color			{ yylval->intValue = PT_Color; return TOKEN_COLORTYPE; }
-
-mat2x2			{ yylval->intValue = PT_Mat2x2; return TOKEN_MAT2x2TYPE; } 
-mat2x3			{ yylval->intValue = PT_Mat2x3; return TOKEN_MAT2x3TYPE; } 
-mat2x4			{ yylval->intValue = PT_Mat2x4; return TOKEN_MAT2x4TYPE; }
-
-mat3x2			{ yylval->intValue = PT_Mat3x2; return TOKEN_MAT3x2TYPE; } 
-mat3x3			{ yylval->intValue = PT_Mat3x3; return TOKEN_MAT3x3TYPE; } 
-mat3x4			{ yylval->intValue = PT_Mat3x4; return TOKEN_MAT3x4TYPE; }
-
-mat4x2			{ yylval->intValue = PT_Mat4x2; return TOKEN_MAT4x2TYPE; } 
-mat4x3			{ yylval->intValue = PT_Mat4x3; return TOKEN_MAT4x3TYPE; } 
-mat4x4			{ yylval->intValue = PT_Mat4x4; return TOKEN_MAT4x4TYPE; }
-
-Sampler1D		{ yylval->intValue = PT_Sampler1D; return TOKEN_SAMPLER1D; } 
-Sampler2D		{ yylval->intValue = PT_Sampler2D; return TOKEN_SAMPLER2D; } 
-Sampler3D		{ yylval->intValue = PT_Sampler3D; return TOKEN_SAMPLER3D; } 
-SamplerCUBE		{ yylval->intValue = PT_SamplerCUBE; return TOKEN_SAMPLERCUBE; } 
-Sampler2DMS		{ yylval->intValue = PT_Sampler2DMS; return TOKEN_SAMPLER2DMS; }
-
-Texture1D		{ yylval->intValue = PT_Texture1D; return TOKEN_TEXTURE1D; } 
-Texture2D		{ yylval->intValue = PT_Texture2D; return TOKEN_TEXTURE2D; } 
-Texture3D		{ yylval->intValue = PT_Texture3D; return TOKEN_TEXTURE3D; } 
-TextureCUBE		{ yylval->intValue = PT_TextureCUBE; return TOKEN_TEXTURECUBE; } 
-Texture2DMS		{ yylval->intValue = PT_Texture2DMS; return TOKEN_TEXTURE2DMS; }
-
-RWTexture1D		{ yylval->intValue = PT_RWTexture1D; return TOKEN_RWTEXTURE1D; } 
-RWTexture2D		{ yylval->intValue = PT_RWTexture2D; return TOKEN_RWTEXTURE2D; } 
-RWTexture3D		{ yylval->intValue = PT_RWTexture3D; return TOKEN_RWTEXTURE3D; } 
-RWTexture2DMS	{ yylval->intValue = PT_RWTexture2DMS; return TOKEN_RWTEXTURE2DMS; }
-
-ByteBuffer		{ yylval->intValue = PT_ByteBuffer; return TOKEN_BYTEBUFFER; } 
-StructBuffer	{ yylval->intValue = PT_StructBuffer; return TOKEN_STRUCTBUFFER; } 
-
-RWTypedBuffer	{ yylval->intValue = PT_TypedBufferRW; return TOKEN_RWTYPEDBUFFER; } 
-RWByteBuffer	{ yylval->intValue = PT_ByteBufferRW; return TOKEN_RWBYTEBUFFER; }
-RWStructBuffer	{ yylval->intValue = PT_StructBufferRW; return TOKEN_RWSTRUCTBUFFER; } 
-AppendBuffer	{ yylval->intValue = PT_AppendBuffer; return TOKEN_RWAPPENDBUFFER; } 
-ConsumeBuffer	{ yylval->intValue = PT_ConsumeBuffer; return TOKEN_RWCONSUMEBUFFER; }
-
-Block			{ return TOKEN_PARAMSBLOCK; }
-
 	/* Shader keywords */
 Separable		{ return TOKEN_SEPARABLE; }
 Sort			{ return TOKEN_SORT; }
 Priority		{ return TOKEN_PRIORITY; }
 Transparent		{ return TOKEN_TRANSPARENT; }
 Technique		{ return TOKEN_TECHNIQUE; }
-Parameters		{ return TOKEN_PARAMETERS; }
-Blocks			{ return TOKEN_BLOCKS; }
 
 	/* Technique keywords */
 Renderer		{ return TOKEN_RENDERER; }
-Language		{ return TOKEN_LANGUAGE; }
 Tags			{ return TOKEN_TAGS; }
 Pass			{ return TOKEN_PASS; }
 
@@ -151,25 +95,7 @@ Source				{ return TOKEN_SOURCE; }
 Dest				{ return TOKEN_DEST; }
 Op					{ return TOKEN_OP; }
 
-	/* Sampler state keywords */
-AddressMode			{ return TOKEN_ADDRMODE; }
-MinFilter			{ return TOKEN_MINFILTER; }
-MagFilter			{ return TOKEN_MAGFILTER; }
-MipFilter			{ return TOKEN_MIPFILTER; }
-MaxAniso			{ return TOKEN_MAXANISO; }
-MipmapBias			{ return TOKEN_MIPBIAS; }
-MipMin				{ return TOKEN_MIPMIN; }
-MipMax				{ return TOKEN_MIPMAX; }
-BorderColor			{ return TOKEN_BORDERCOLOR; }
-U					{ return TOKEN_U; }
-V					{ return TOKEN_V; }
-W					{ return TOKEN_W; }
-
 	/* Qualifiers */
-auto				{ return TOKEN_AUTO; }
-alias				{ return TOKEN_ALIAS; }
-shared				{ return TOKEN_SHARED; }
-usage				{ return TOKEN_USAGE; }
 base				{ return TOKEN_BASE; }
 inherits			{ return TOKEN_INHERITS; }
 
@@ -230,22 +156,6 @@ RGA				{ yylval->intValue = 0xB; return TOKEN_COLORMASK; }
 RBA				{ yylval->intValue = 0xD; return TOKEN_COLORMASK; }
 GBA				{ yylval->intValue = 0xE; return TOKEN_COLORMASK; }
 RGBA			{ yylval->intValue = 0xF; return TOKEN_COLORMASK; }
-
-WRAP			{ yylval->intValue = AMV_Wrap; return TOKEN_ADDRMODEVALUE; }
-MIRROR			{ yylval->intValue = AMV_Mirror; return TOKEN_ADDRMODEVALUE; }
-CLAMP			{ yylval->intValue = AMV_Clamp; return TOKEN_ADDRMODEVALUE; }
-BORDER			{ yylval->intValue = AMV_Border; return TOKEN_ADDRMODEVALUE; }
-
-NOFILTER		{ yylval->intValue = FV_None; return TOKEN_FILTERVALUE; }
-POINT			{ yylval->intValue = FV_Point; return TOKEN_FILTERVALUE; }
-LINEAR			{ yylval->intValue = FV_Linear; return TOKEN_FILTERVALUE; }
-ANISO			{ yylval->intValue = FV_Anisotropic; return TOKEN_FILTERVALUE; }
-POINTC			{ yylval->intValue = FV_PointCmp; return TOKEN_FILTERVALUE; }
-LINEARC			{ yylval->intValue = FV_LinearCmp; return TOKEN_FILTERVALUE; }
-ANISOC			{ yylval->intValue = FV_AnisotropicCmp; return TOKEN_FILTERVALUE; }
-
-STATIC			{ yylval->intValue = BUV_Static; return TOKEN_BUFFERUSAGE; }
-DYNAMIC			{ yylval->intValue = BUV_Dynamic; return TOKEN_BUFFERUSAGE; }
 
 FRONTTOBACK		{ yylval->intValue = QST_FrontToBack; return TOKEN_QUEUETYPE; }
 BACKTOFRONT		{ yylval->intValue = QST_BackToFront; return TOKEN_QUEUETYPE; }

@@ -93,39 +93,17 @@ namespace bs
 		/**	Converts FX renderer name into an in-engine renderer identifier. */
 		static StringID parseRenderer(const String& name);
 
-		/** Converts FX language string into an in-engine shader language string (for example hlsl, glsl). */
-		static void parseLanguage(const String& name, String& language);
-
-		/**	Maps FX buffer usage enum into in-engine param block usage. */
-		static GpuParamBlockUsage parseBlockUsage(BufferUsageValue usage);
-
-		/**	Maps FX filter mode enum into in-engine filter mode. */
-		static UINT32 parseFilterMode(FilterValue filter);
-
 		/**	Maps FX queue sort type enum into in-engine queue sort type mode. */
 		static QueueSortType parseSortType(QueueSortTypeValue sortType);
 
 		/**	Maps FX comparison function enum into in-engine compare function. */
 		static CompareFunction parseCompFunc(CompFuncValue compFunc);
 
-		/**	Maps FX addressing mode enum into in-engine addressing mode. */
-		static TextureAddressingMode parseAddrMode(AddrModeValue addrMode);
-
 		/**	Maps FX operation to in-engine blend factor. */
 		static BlendFactor parseBlendFactor(OpValue factor);
 
 		/**	Maps FX blend operation to in-engine blend operation. */
 		static BlendOperation parseBlendOp(BlendOpValue op);
-
-		/**
-		 * Maps FX parameter type to in-engine shader parameter.
-		 *
-		 * @param[in]	type		Input FX parameter type.
-		 * @param[in]	isObjType	Output parameter signaling whether the in-engine parameter is a data or an object type.
-		 * @param[in]	typeId		Type ID corresponding to a value of in-game GpuParamDataType or GpuParamObjectType
-		 *							enum (depending on isObjType()).
-		 */
-		static void parseParamType(ParamType type, bool& isObjType, UINT32& typeId);
 
 		/**	Maps FX operation to in-engine stencil operation. */
 		static StencilOperation parseStencilOp(OpValue op);
@@ -147,12 +125,6 @@ namespace bs
 		 * AST node.
 		 */
 		static void parseStencilBack(DEPTH_STENCIL_STATE_DESC& desc, ASTFXNode* stencilOpNode);
-
-		/**
-		 * Populates the addressing mode portion of the sampler state descriptor for U/V/W axes from the provided addressing
-		 * mode AST node.
-		 */
-		static void parseAddrMode(SAMPLER_STATE_DESC& desc, ASTFXNode* addrModeNode);
 
 		/** Populates the color (RGB) portion of the blend state descriptor from the provided blend definition AST node. */
 		static void parseColorBlendDef(RENDER_TARGET_BLEND_STATE_DESC& desc, ASTFXNode* blendDefNode);
@@ -184,9 +156,6 @@ namespace bs
 		 */
 		static bool parseDepthStencilState(DEPTH_STENCIL_STATE_DESC& desc, ASTFXNode* passNode);
 
-		/** Parses the sampler state AST node and outputs a sampler state object, or a nullptr in case AST node is empty. */
-		static SPtr<SamplerState> parseSamplerState(ASTFXNode* samplerStateNode);
-
 		/**
 		 * Parses a code AST node and outputs the result in one of the streams within the provided pass data.
 		 *
@@ -215,18 +184,6 @@ namespace bs
 		 * @param[out]	techniqueData	Will contain technique data after parsing.
 		 */
 		static void parseTechnique(ASTFXNode* techniqueNode, const Vector<String>& codeBlocks, TechniqueData& techniqueData);
-
-		/**
-		 * Parses the parameters AST node and populates the shader descriptor with information about GPU program parameters
-		 * and their default values.
-		 */
-		static void parseParameters(SHADER_DESC& desc, ASTFXNode* parametersNode);
-
-		/**
-		 * Parses the blocks AST node and populates the shader descriptor with information about GPU program parameter 
-		 * blocks.
-		 */
-		static void parseBlocks(SHADER_DESC& desc, ASTFXNode* blocksNode);
 
 		/**
 		 * Parses the AST node hierarchy and generates a shader object.
