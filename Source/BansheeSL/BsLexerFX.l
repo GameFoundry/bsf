@@ -46,101 +46,109 @@ true			{ yylval->intValue = 1; return TOKEN_BOOLEAN; }
 false			{ yylval->intValue = 0; return TOKEN_BOOLEAN; }
 
 	/* Shader keywords */
-Separable		{ return TOKEN_SEPARABLE; }
-Sort			{ return TOKEN_SORT; }
-Priority		{ return TOKEN_PRIORITY; }
-Transparent		{ return TOKEN_TRANSPARENT; }
-Technique		{ return TOKEN_TECHNIQUE; }
+options			{ return TOKEN_OPTIONS; }
+technique		{ return TOKEN_TECHNIQUE; }
+
+	/* Options keywords */
+separable		{ return TOKEN_SEPARABLE; }
+sort			{ return TOKEN_SORT; }
+priority		{ return TOKEN_PRIORITY; }
+transparent		{ return TOKEN_TRANSPARENT; }
 
 	/* Technique keywords */
-Renderer		{ return TOKEN_RENDERER; }
-Tags			{ return TOKEN_TAGS; }
-Pass			{ return TOKEN_PASS; }
+renderer		{ return TOKEN_RENDERER; }
+tags			{ return TOKEN_TAGS; }
+pass			{ return TOKEN_PASS; }
 
 	/* Pass keywords */
-StencilRef		{ return TOKEN_STENCILREF; }
+blend			{ return TOKEN_BLEND; }
+raster			{ return TOKEN_RASTER; }
+depth			{ return TOKEN_DEPTH; }
+stencil			{ return TOKEN_STENCIL; }
 
 	/* Rasterizer state keywords */
-Fill			{ return TOKEN_FILLMODE; }
-Cull			{ return TOKEN_CULLMODE; }
-DepthBias		{ return TOKEN_DEPTHBIAS; }
-ScaledDepthBias	{ return TOKEN_SDEPTHBIAS; }
-DepthClip		{ return TOKEN_DEPTHCLIP; }
-Scissor			{ return TOKEN_SCISSOR; }
-Multisample		{ return TOKEN_MULTISAMPLE; }
-AALine			{ return TOKEN_AALINE; }
+fill			{ return TOKEN_FILLMODE; }
+cull			{ return TOKEN_CULLMODE; }
+bias			{ return TOKEN_DEPTHBIAS; }
+scaledbias		{ return TOKEN_SDEPTHBIAS; }
+clip			{ return TOKEN_DEPTHCLIP; }
+scissor			{ return TOKEN_SCISSOR; }
+multisample		{ return TOKEN_MULTISAMPLE; }
+lineaa			{ return TOKEN_AALINE; }
 
-	/* Depth-stencil state keywords */
-DepthRead			{ return TOKEN_DEPTHREAD; }
-DepthWrite			{ return TOKEN_DEPTHWRITE; }
-CompareFunc			{ return TOKEN_COMPAREFUNC; }
-Stencil				{ return TOKEN_STENCIL; }
-StencilReadMask		{ return TOKEN_STENCILREADMASK; }
-StencilWriteMask	{ return TOKEN_STENCILWRITEMASK; }
-StencilOpFront		{ return TOKEN_STENCILOPFRONT; }
-StencilOpBack		{ return TOKEN_STENCILOPBACK; }
-Fail				{ return TOKEN_FAIL; }
-ZFail				{ return TOKEN_ZFAIL; }
+	/* Depth state keywords */
+read			{ return TOKEN_DEPTHREAD; }
+write			{ return TOKEN_DEPTHWRITE; }
+compare			{ return TOKEN_COMPAREFUNC; }
+
+	/* Stencil state keywords */
+reference			{ return TOKEN_STENCILREF; }
+enabled				{ return TOKEN_ENABLED; }
+readmask			{ return TOKEN_READMASK; }
+writemask			{ return TOKEN_WRITEMASK; }
+front				{ return TOKEN_STENCILOPFRONT; }
+back				{ return TOKEN_STENCILOPBACK; }
+fail				{ return TOKEN_FAIL; }
+zfail				{ return TOKEN_ZFAIL; }
 
 	/* Blend state keywords */
-AlphaToCoverage		{ return TOKEN_ALPHATOCOVERAGE; }
-IndependantBlend	{ return TOKEN_INDEPENDANTBLEND; }
-Target				{ return TOKEN_TARGET; }
-Index				{ return TOKEN_INDEX; }
-Blend				{ return TOKEN_BLEND; }
-Color				{ return TOKEN_COLOR; }
-Alpha				{ return TOKEN_ALPHA; }
-WriteMask			{ return TOKEN_WRITEMASK; }
-Source				{ return TOKEN_SOURCE; }
-Dest				{ return TOKEN_DEST; }
-Op					{ return TOKEN_OP; }
+dither				{ return TOKEN_ALPHATOCOVERAGE; }
+independant			{ return TOKEN_INDEPENDANTBLEND; }
+target				{ return TOKEN_TARGET; }
+index				{ return TOKEN_INDEX; }
+color				{ return TOKEN_COLOR; }
+alpha				{ return TOKEN_ALPHA; }
+source				{ return TOKEN_SOURCE; }
+dest				{ return TOKEN_DEST; }
+op					{ return TOKEN_OP; }
 
 	/* Qualifiers */
 base				{ return TOKEN_BASE; }
 inherits			{ return TOKEN_INHERITS; }
 
 	/* State values */
-WIRE			{ yylval->intValue = FMV_Wire; return TOKEN_FILLMODEVALUE; }
-SOLID			{ yylval->intValue = FMV_Solid; return TOKEN_FILLMODEVALUE; }
+wire			{ yylval->intValue = FMV_Wire; return TOKEN_FILLMODEVALUE; }
+solid			{ yylval->intValue = FMV_Solid; return TOKEN_FILLMODEVALUE; }
 
-NOCULL			{ yylval->intValue = CMV_None; return TOKEN_CULLMODEVALUE; }
-CW				{ yylval->intValue = CMV_CW; return TOKEN_CULLMODEVALUE; }
-CCW				{ yylval->intValue = CMV_CCW; return TOKEN_CULLMODEVALUE; }
+none			{ yylval->intValue = CASV_None; return TOKEN_CULLANDQUEUEVALUE; }
+cw				{ yylval->intValue = CASV_CW; return TOKEN_CULLANDQUEUEVALUE; }
+ccw				{ yylval->intValue = CASV_CCW; return TOKEN_CULLANDQUEUEVALUE; }
+fronttoback		{ yylval->intValue = CASV_FrontToBack; return TOKEN_CULLANDQUEUEVALUE; }
+backtofront		{ yylval->intValue = CASV_BackToFront; return TOKEN_CULLANDQUEUEVALUE; }
 
-FAIL			{ yylval->intValue = CFV_Fail; return TOKEN_COMPFUNCVALUE; }
-PASS			{ yylval->intValue = CFV_Pass; return TOKEN_COMPFUNCVALUE; }
-LT				{ yylval->intValue = CFV_LT; return TOKEN_COMPFUNCVALUE; }
-LTE				{ yylval->intValue = CFV_LTE; return TOKEN_COMPFUNCVALUE; }
-EQ				{ yylval->intValue = CFV_EQ; return TOKEN_COMPFUNCVALUE; }
-NEQ				{ yylval->intValue = CFV_NEQ; return TOKEN_COMPFUNCVALUE; }
-GTE				{ yylval->intValue = CFV_GTE; return TOKEN_COMPFUNCVALUE; }
-GT				{ yylval->intValue = CFV_GT; return TOKEN_COMPFUNCVALUE; }
+never			{ yylval->intValue = CFV_Fail; return TOKEN_COMPFUNCVALUE; }
+always			{ yylval->intValue = CFV_Pass; return TOKEN_COMPFUNCVALUE; }
+lt				{ yylval->intValue = CFV_LT; return TOKEN_COMPFUNCVALUE; }
+lte				{ yylval->intValue = CFV_LTE; return TOKEN_COMPFUNCVALUE; }
+eq				{ yylval->intValue = CFV_EQ; return TOKEN_COMPFUNCVALUE; }
+neq				{ yylval->intValue = CFV_NEQ; return TOKEN_COMPFUNCVALUE; }
+gte				{ yylval->intValue = CFV_GTE; return TOKEN_COMPFUNCVALUE; }
+gt				{ yylval->intValue = CFV_GT; return TOKEN_COMPFUNCVALUE; }
 
-KEEP				{ yylval->intValue = OV_Keep; return TOKEN_OPVALUE; }
-ZERO				{ yylval->intValue = OV_Zero; return TOKEN_OPVALUE; }
-REPLACE				{ yylval->intValue = OV_Replace; return TOKEN_OPVALUE; }
-INC					{ yylval->intValue = OV_Incr; return TOKEN_OPVALUE; }
-DEC					{ yylval->intValue = OV_Decr; return TOKEN_OPVALUE; }
-INCWRAP				{ yylval->intValue = OV_IncrWrap; return TOKEN_OPVALUE; }
-DECWRAP				{ yylval->intValue = OV_DecrWrap; return TOKEN_OPVALUE; }
-INV					{ yylval->intValue = OV_Invert; return TOKEN_OPVALUE; }
-ONE					{ yylval->intValue = OV_One; return TOKEN_OPVALUE; }
-DSTRGB				{ yylval->intValue = OV_DestColor; return TOKEN_OPVALUE; }
-SRCRGB				{ yylval->intValue = OV_SrcColor; return TOKEN_OPVALUE; }
-DSTIRGB				{ yylval->intValue = OV_InvDestColor; return TOKEN_OPVALUE; }
-SRCIRGB				{ yylval->intValue = OV_InvSrcColor; return TOKEN_OPVALUE; }
-DSTA				{ yylval->intValue = OV_DestAlpha; return TOKEN_OPVALUE; }
-SRCA				{ yylval->intValue = OV_SrcAlpha; return TOKEN_OPVALUE; }
-DSTIA				{ yylval->intValue = OV_InvDestAlpha; return TOKEN_OPVALUE; }
-SRCIA				{ yylval->intValue = OV_InvSrcAlpha; return TOKEN_OPVALUE; }
+keep			{ yylval->intValue = OV_Keep; return TOKEN_OPVALUE; }
+zero			{ yylval->intValue = OV_Zero; return TOKEN_OPVALUE; }
+replace			{ yylval->intValue = OV_Replace; return TOKEN_OPVALUE; }
+inc				{ yylval->intValue = OV_Incr; return TOKEN_OPVALUE; }
+dec				{ yylval->intValue = OV_Decr; return TOKEN_OPVALUE; }
+incwrap			{ yylval->intValue = OV_IncrWrap; return TOKEN_OPVALUE; }
+decwrap			{ yylval->intValue = OV_DecrWrap; return TOKEN_OPVALUE; }
+inverse			{ yylval->intValue = OV_Invert; return TOKEN_OPVALUE; }
+one				{ yylval->intValue = OV_One; return TOKEN_OPVALUE; }
+dstRGB			{ yylval->intValue = OV_DestColor; return TOKEN_OPVALUE; }
+srcRGB			{ yylval->intValue = OV_SrcColor; return TOKEN_OPVALUE; }
+dstiRGB			{ yylval->intValue = OV_InvDestColor; return TOKEN_OPVALUE; }
+srciRGB			{ yylval->intValue = OV_InvSrcColor; return TOKEN_OPVALUE; }
+dstA			{ yylval->intValue = OV_DestAlpha; return TOKEN_OPVALUE; }
+srcA			{ yylval->intValue = OV_SrcAlpha; return TOKEN_OPVALUE; }
+dstIA			{ yylval->intValue = OV_InvDestAlpha; return TOKEN_OPVALUE; }
+srcIA			{ yylval->intValue = OV_InvSrcAlpha; return TOKEN_OPVALUE; }
 
-ADD					{ yylval->intValue = BOV_Add; return TOKEN_BLENDOPVALUE; }
-SUB					{ yylval->intValue = BOV_Subtract; return TOKEN_BLENDOPVALUE; }
-RSUB				{ yylval->intValue = BOV_RevSubtract; return TOKEN_BLENDOPVALUE; }
-MIN					{ yylval->intValue = BOV_Min; return TOKEN_BLENDOPVALUE; }
-MAX					{ yylval->intValue = BOV_Max; return TOKEN_BLENDOPVALUE; }
+add				{ yylval->intValue = BOV_Add; return TOKEN_BLENDOPVALUE; }
+sub				{ yylval->intValue = BOV_Subtract; return TOKEN_BLENDOPVALUE; }
+rsub			{ yylval->intValue = BOV_RevSubtract; return TOKEN_BLENDOPVALUE; }
+min				{ yylval->intValue = BOV_Min; return TOKEN_BLENDOPVALUE; }
+max				{ yylval->intValue = BOV_Max; return TOKEN_BLENDOPVALUE; }
 
-NOCOLOR			{ yylval->intValue = 0x0; return TOKEN_COLORMASK; }
 R				{ yylval->intValue = 0x1; return TOKEN_COLORMASK; }
 G				{ yylval->intValue = 0x2; return TOKEN_COLORMASK; }
 B				{ yylval->intValue = 0x4; return TOKEN_COLORMASK; }
@@ -156,10 +164,6 @@ RGA				{ yylval->intValue = 0xB; return TOKEN_COLORMASK; }
 RBA				{ yylval->intValue = 0xD; return TOKEN_COLORMASK; }
 GBA				{ yylval->intValue = 0xE; return TOKEN_COLORMASK; }
 RGBA			{ yylval->intValue = 0xF; return TOKEN_COLORMASK; }
-
-FRONTTOBACK		{ yylval->intValue = QST_FrontToBack; return TOKEN_QUEUETYPE; }
-BACKTOFRONT		{ yylval->intValue = QST_BackToFront; return TOKEN_QUEUETYPE; }
-NOSORT			{ yylval->intValue = QST_None; return TOKEN_QUEUETYPE; }
 
 	/* Preprocessor */
 #include				{ BEGIN(INCLUDE); }

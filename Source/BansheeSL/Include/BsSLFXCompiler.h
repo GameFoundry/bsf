@@ -94,7 +94,7 @@ namespace bs
 		static StringID parseRenderer(const String& name);
 
 		/**	Maps FX queue sort type enum into in-engine queue sort type mode. */
-		static QueueSortType parseSortType(QueueSortTypeValue sortType);
+		static QueueSortType parseSortType(CullAndSortModeValue sortType);
 
 		/**	Maps FX comparison function enum into in-engine compare function. */
 		static CompareFunction parseCompFunc(CompFuncValue compFunc);
@@ -109,7 +109,7 @@ namespace bs
 		static StencilOperation parseStencilOp(OpValue op);
 		
 		/**	Maps FX cull mode enum to in-engine cull mode. */
-		static CullingMode parseCullMode(CullModeValue cm);
+		static CullingMode parseCullMode(CullAndSortModeValue cm);
 
 		/**	Maps FX fill mode enum to in-engine fill mode. */
 		static PolygonMode parseFillMode(FillModeValue fm);
@@ -139,22 +139,28 @@ namespace bs
 		static void parseRenderTargetBlendState(BLEND_STATE_DESC& desc, ASTFXNode* targetNode);
 
 		/**
-		 * Parses the blend state AST node and outputs a blend state descriptor. Returns false if the descriptor wasn't 
-		 * modified.
-		 */
-		static bool parseBlendState(BLEND_STATE_DESC& desc, ASTFXNode* passNode);
-
-		/**
-		 * Parses the rasterizer state AST node and outputs a rasterizer state descriptor. Returns false if the descriptor
+		 * Parses the blend state AST node and populates the pass' blend state descriptor. Returns false if the descriptor
 		 * wasn't modified.
 		 */
-		static bool parseRasterizerState(RASTERIZER_STATE_DESC& desc, ASTFXNode* passNode);
+		static bool parseBlendState(PassData& passData, ASTFXNode* blendNode);
 
 		/**
-		 * Parses the depth-stencil state AST node and outputs a depth-stencil state descriptor. Returns false if the 
+		 * Parses the rasterizer state AST node and populates the pass' rasterizer state descriptor. Returns false if the
 		 * descriptor wasn't modified.
 		 */
-		static bool parseDepthStencilState(DEPTH_STENCIL_STATE_DESC& desc, ASTFXNode* passNode);
+		static bool parseRasterizerState(PassData& passData, ASTFXNode* rasterNode);
+
+		/**
+		 * Parses the depth state AST node and populates the pass' depth-stencil state descriptor. Returns false if the 
+		 * descriptor wasn't modified.
+		 */
+		static bool parseDepthState(PassData& passData, ASTFXNode* depthNode);
+
+		/**
+		* Parses the stencil state AST node and populates the pass' depth-stencil state descriptor. Returns false if the
+		* descriptor wasn't modified.
+		*/
+		static bool parseStencilState(PassData& passData, ASTFXNode* stencilNode);
 
 		/**
 		 * Parses a code AST node and outputs the result in one of the streams within the provided pass data.
@@ -176,14 +182,21 @@ namespace bs
 		static void parsePass(ASTFXNode* passNode, const Vector<String>& codeBlocks, PassData& passData);
 
 		/**
-		 * Parses the technique AST node and generates a single technique object. Returns null if no technique can be 
-		 * parsed.
+		 * Parses the technique AST node and generates a single technique object.
 		 *
 		 * @param[in]	techniqueNode	Node to parse.
 		 * @param[in]	codeBlocks		GPU program source code.
 		 * @param[out]	techniqueData	Will contain technique data after parsing.
 		 */
 		static void parseTechnique(ASTFXNode* techniqueNode, const Vector<String>& codeBlocks, TechniqueData& techniqueData);
+
+		/**
+		 * Parser the options AST node that contains global shader options.
+		 * 
+		 * @param[in]	optionsNode			Node to parse.
+		 * @param[in]	shaderDesc			Descriptor to apply the found options to.
+		 */
+		static void parseOptions(ASTFXNode* optionsNode, SHADER_DESC& shaderDesc);
 
 		/**
 		 * Parses the AST node hierarchy and generates a shader object.

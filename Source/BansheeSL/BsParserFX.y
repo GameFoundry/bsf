@@ -72,42 +72,51 @@ typedef struct YYLTYPE {
 %token <strValue>	TOKEN_STRING
 %token <strValue>	TOKEN_IDENTIFIER
 
+	/* State value types */
 %token <intValue>	TOKEN_FILLMODEVALUE
-%token <intValue>	TOKEN_CULLMODEVALUE
+%token <intValue>	TOKEN_CULLANDQUEUEVALUE
 %token <intValue>	TOKEN_COMPFUNCVALUE
 %token <intValue>	TOKEN_OPVALUE
-%token <intValue>	TOKEN_COLORMASK
 %token <intValue>	TOKEN_BLENDOPVALUE
-%token <intValue>	TOKEN_QUEUETYPE
+%token <intValue>	TOKEN_COLORMASK
 
 	/* Qualifiers */
 %token TOKEN_BASE TOKEN_INHERITS
 
 	/* Shader keywords */
-%token TOKEN_SEPARABLE TOKEN_SORT TOKEN_PRIORITY TOKEN_TRANSPARENT
-%token TOKEN_TECHNIQUE
+%token TOKEN_OPTIONS TOKEN_TECHNIQUE
 
+	/* Options keywords */
+%token TOKEN_SEPARABLE TOKEN_SORT TOKEN_PRIORITY TOKEN_TRANSPARENT
+	
 	/* Technique keywords */
-%token	TOKEN_RENDERER TOKEN_PASS TOKEN_TAGS
+%token TOKEN_RENDERER TOKEN_PASS TOKEN_TAGS
 
 	/* Pass keywords */
-%token	TOKEN_VERTEX TOKEN_FRAGMENT TOKEN_GEOMETRY TOKEN_HULL TOKEN_DOMAIN TOKEN_COMPUTE TOKEN_COMMON
-%token	TOKEN_STENCILREF
+%token TOKEN_VERTEX TOKEN_FRAGMENT TOKEN_GEOMETRY TOKEN_HULL TOKEN_DOMAIN TOKEN_COMPUTE TOKEN_COMMON
+%token TOKEN_BLEND TOKEN_RASTER TOKEN_DEPTH TOKEN_STENCIL
 
+	/* Rasterizer state keywords */
 %token	TOKEN_FILLMODE TOKEN_CULLMODE TOKEN_DEPTHBIAS TOKEN_SDEPTHBIAS
 %token	TOKEN_DEPTHCLIP TOKEN_SCISSOR TOKEN_MULTISAMPLE TOKEN_AALINE
 
-%token	TOKEN_DEPTHREAD TOKEN_DEPTHWRITE TOKEN_COMPAREFUNC TOKEN_STENCIL
-%token	TOKEN_STENCILREADMASK TOKEN_STENCILWRITEMASK TOKEN_STENCILOPFRONT TOKEN_STENCILOPBACK
-%token	TOKEN_FAIL TOKEN_ZFAIL
+	/* Depth state keywords */
+%token	TOKEN_DEPTHREAD TOKEN_DEPTHWRITE TOKEN_COMPAREFUNC
 
+	/* Stencil state keywords */
+%token TOKEN_STENCILREF TOKEN_ENABLED TOKEN_READMASK TOKEN_WRITEMASK 
+%token TOKEN_STENCILOPFRONT TOKEN_STENCILOPBACK TOKEN_FAIL TOKEN_ZFAIL
+
+	/* Blend state keywords */
 %token	TOKEN_ALPHATOCOVERAGE TOKEN_INDEPENDANTBLEND TOKEN_TARGET TOKEN_INDEX
-%token	TOKEN_BLEND TOKEN_COLOR TOKEN_ALPHA TOKEN_WRITEMASK
-%token	TOKEN_SOURCE TOKEN_DEST TOKEN_OP
+%token	TOKEN_COLOR TOKEN_ALPHA TOKEN_SOURCE TOKEN_DEST TOKEN_OP
 
 %type <nodePtr>		shader;
 %type <nodeOption>	shader_statement;
-%type <nodeOption>	shader_option;
+
+%type <nodePtr>		options;
+%type <nodePtr>		options_header;
+%type <nodeOption>	options_option;
 
 %type <nodePtr>		technique;
 %type <nodePtr>		technique_header;
@@ -120,6 +129,22 @@ typedef struct YYLTYPE {
 %type <nodePtr>		pass_header;
 %type <nodeOption>	pass_statement;
 %type <nodeOption>	pass_option;
+
+%type <nodePtr>		raster;
+%type <nodePtr>		raster_header;
+%type <nodeOption>	raster_option;
+
+%type <nodePtr>		depth;
+%type <nodePtr>		depth_header;
+%type <nodeOption>	depth_option;
+
+%type <nodePtr>		stencil;
+%type <nodePtr>		stencil_header;
+%type <nodeOption>	stencil_option;
+
+%type <nodePtr>		blend;
+%type <nodePtr>		blend_header;
+%type <nodeOption>	blend_option;
 
 %type <nodePtr>		code;
 %type <nodePtr>		code_header;
@@ -149,21 +174,39 @@ shader
 	;
 
 shader_statement
-	: shader_option
+	: options			{ $$.type = OT_Options; $$.value.nodePtr = $1; }
 	| technique			{ $$.type = OT_Technique; $$.value.nodePtr = $1; }
 	;
 
-shader_option
-	: TOKEN_SEPARABLE '=' TOKEN_BOOLEAN ';'		{ $$.type = OT_Separable; $$.value.intValue = $3; }
-	| TOKEN_SORT '=' TOKEN_QUEUETYPE ';'		{ $$.type = OT_Sort; $$.value.intValue = $3; }
-	| TOKEN_PRIORITY '=' TOKEN_INTEGER ';'		{ $$.type = OT_Priority; $$.value.intValue = $3; }
-	| TOKEN_TRANSPARENT '=' TOKEN_BOOLEAN ';'	{ $$.type = OT_Transparent; $$.value.intValue = $3; }
+	/* Options */
+options
+	: options_header '{' options_body '}' ';' { nodePop(parse_state); $$ = $1; }
+	;
+
+options_header
+	: TOKEN_OPTIONS
+		{ 
+			$$ = nodeCreate(parse_state->memContext, NT_Options); 
+			nodePush(parse_state, $$);
+		}
+	;	
+	
+options_body
+	: /* empty */
+	| options_option options_body		{ nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$1); }
+	;
+	
+options_option
+	: TOKEN_SEPARABLE '=' TOKEN_BOOLEAN ';'			{ $$.type = OT_Separable; $$.value.intValue = $3; }
+	| TOKEN_SORT '=' TOKEN_CULLANDQUEUEVALUE ';'	{ $$.type = OT_Sort; $$.value.intValue = $3; }
+	| TOKEN_PRIORITY '=' TOKEN_INTEGER ';'			{ $$.type = OT_Priority; $$.value.intValue = $3; }
+	| TOKEN_TRANSPARENT '=' TOKEN_BOOLEAN ';'		{ $$.type = OT_Transparent; $$.value.intValue = $3; }
 	;
 
 	/* Technique */
 
 technique
-	: technique_header technique_qualifier_list '=' '{' technique_body '}' ';' { nodePop(parse_state); $$ = $1; }
+	: technique_header technique_qualifier_list '{' technique_body '}' ';' { nodePop(parse_state); $$ = $1; }
 	;
 
 technique_header
@@ -236,7 +279,7 @@ pass
 	;
 
 pass_header
-	: TOKEN_PASS '=' 
+	: TOKEN_PASS
 		{ 
 			$$ = nodeCreate(parse_state->memContext, NT_Pass); 
 			nodePush(parse_state, $$);
@@ -250,35 +293,122 @@ pass_body
 
 pass_statement
 	: pass_option
-	| code				{ $$.type = OT_Code; $$.value.nodePtr = $1; }
+	| code							{ $$.type = OT_Code; $$.value.nodePtr = $1; }
 	;
 
 pass_option
-	: TOKEN_INDEX '=' TOKEN_INTEGER ';'							{ $$.type = OT_Index; $$.value.intValue = $3; }
-	| TOKEN_FILLMODE '=' TOKEN_FILLMODEVALUE ';'				{ $$.type = OT_FillMode; $$.value.intValue = $3; }
-	| TOKEN_CULLMODE '=' TOKEN_CULLMODEVALUE ';'				{ $$.type = OT_CullMode; $$.value.intValue = $3; }
+	: raster						{ $$.type = OT_Raster; $$.value.nodePtr = $1; }
+	| depth							{ $$.type = OT_Depth; $$.value.nodePtr = $1; }
+	| stencil						{ $$.type = OT_Stencil; $$.value.nodePtr = $1; }
+	| blend							{ $$.type = OT_Blend; $$.value.nodePtr = $1; }
+	;
+
+	/* Raster state */
+raster
+	: raster_header '{' raster_body '}' ';' { nodePop(parse_state); $$ = $1; }
+	;
+
+raster_header
+	: TOKEN_RASTER
+		{ 
+			$$ = nodeCreate(parse_state->memContext, NT_Raster); 
+			nodePush(parse_state, $$);
+		}
+	;
+
+raster_body
+	: /* empty */
+	| raster_option raster_body		{ nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$1); }
+	;
+
+raster_option
+	: TOKEN_FILLMODE '=' TOKEN_FILLMODEVALUE ';'				{ $$.type = OT_FillMode; $$.value.intValue = $3; }
+	| TOKEN_CULLMODE '=' TOKEN_CULLANDQUEUEVALUE ';'			{ $$.type = OT_CullMode; $$.value.intValue = $3; }
 	| TOKEN_DEPTHBIAS '=' TOKEN_FLOAT ';'						{ $$.type = OT_DepthBias; $$.value.floatValue = $3; }
 	| TOKEN_SDEPTHBIAS '=' TOKEN_FLOAT ';'						{ $$.type = OT_SDepthBias; $$.value.floatValue = $3; }
 	| TOKEN_DEPTHCLIP '=' TOKEN_BOOLEAN ';'						{ $$.type = OT_DepthClip; $$.value.intValue = $3; }
 	| TOKEN_SCISSOR '=' TOKEN_BOOLEAN ';'						{ $$.type = OT_Scissor; $$.value.intValue = $3; }
 	| TOKEN_MULTISAMPLE '=' TOKEN_BOOLEAN ';'					{ $$.type = OT_Multisample; $$.value.intValue = $3; }
 	| TOKEN_AALINE '=' TOKEN_BOOLEAN ';'						{ $$.type = OT_AALine; $$.value.intValue = $3; }
-	| TOKEN_DEPTHREAD '=' TOKEN_BOOLEAN ';'						{ $$.type = OT_DepthRead; $$.value.intValue = $3; }
+	;	
+	
+	/* Depth state */
+depth
+	: depth_header '{' depth_body '}' ';' { nodePop(parse_state); $$ = $1; }
+	;
+
+depth_header
+	: TOKEN_DEPTH
+		{ 
+			$$ = nodeCreate(parse_state->memContext, NT_Depth); 
+			nodePush(parse_state, $$);
+		}
+	;
+
+depth_body
+	: /* empty */
+	| depth_option depth_body		{ nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$1); }
+	;
+
+depth_option
+	: TOKEN_DEPTHREAD '=' TOKEN_BOOLEAN ';'						{ $$.type = OT_DepthRead; $$.value.intValue = $3; }
 	| TOKEN_DEPTHWRITE '=' TOKEN_BOOLEAN ';'					{ $$.type = OT_DepthWrite; $$.value.intValue = $3; }
 	| TOKEN_COMPAREFUNC '=' TOKEN_COMPFUNCVALUE ';'				{ $$.type = OT_CompareFunc; $$.value.intValue = $3; }
-	| TOKEN_STENCIL '=' TOKEN_BOOLEAN ';'						{ $$.type = OT_Stencil; $$.value.intValue = $3; }
-	| TOKEN_STENCILREADMASK '=' TOKEN_INTEGER ';'				{ $$.type = OT_StencilReadMask; $$.value.intValue = $3; }
-	| TOKEN_STENCILWRITEMASK '=' TOKEN_INTEGER ';'				{ $$.type = OT_StencilWriteMask; $$.value.intValue = $3; }
+	;
+	
+	/* Stencil state */
+stencil
+	: stencil_header '{' stencil_body '}' ';' { nodePop(parse_state); $$ = $1; }
+	;
+
+stencil_header
+	: TOKEN_STENCIL
+		{ 
+			$$ = nodeCreate(parse_state->memContext, NT_Stencil); 
+			nodePush(parse_state, $$);
+		}
+	;
+
+stencil_body
+	: /* empty */
+	| stencil_option stencil_body		{ nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$1); }
+	;
+
+stencil_option
+	: TOKEN_ENABLED '=' TOKEN_BOOLEAN ';'						{ $$.type = OT_Enabled; $$.value.intValue = $3; }
+	| TOKEN_READMASK '=' TOKEN_INTEGER ';'						{ $$.type = OT_StencilReadMask; $$.value.intValue = $3; }
+	| TOKEN_WRITEMASK '=' TOKEN_INTEGER ';'						{ $$.type = OT_StencilWriteMask; $$.value.intValue = $3; }
 	| stencil_op_front_header '{' stencil_op_body '}' ';'		{ nodePop(parse_state); $$.type = OT_StencilOpFront; $$.value.nodePtr = $1; }
 	| stencil_op_back_header '{' stencil_op_body '}' ';'		{ nodePop(parse_state); $$.type = OT_StencilOpBack; $$.value.nodePtr = $1; }
 	| stencil_op_front_header '{' stencil_op_body_init '}' ';'	{ nodePop(parse_state); $$.type = OT_StencilOpFront; $$.value.nodePtr = $1; }
 	| stencil_op_back_header '{' stencil_op_body_init '}' ';'	{ nodePop(parse_state); $$.type = OT_StencilOpBack; $$.value.nodePtr = $1; }
-	| TOKEN_ALPHATOCOVERAGE '=' TOKEN_BOOLEAN ';'				{ $$.type = OT_AlphaToCoverage; $$.value.intValue = $3; }
-	| TOKEN_INDEPENDANTBLEND '=' TOKEN_BOOLEAN ';'				{ $$.type = OT_IndependantBlend; $$.value.intValue = $3; }
-	| target													{ $$.type = OT_Target; $$.value.nodePtr = $1; }
 	| TOKEN_STENCILREF '=' TOKEN_INTEGER ';'					{ $$.type = OT_StencilRef; $$.value.intValue = $3; }
+	;	
+	
+	/* Blend state */
+blend
+	: blend_header '{' blend_body '}' ';' { nodePop(parse_state); $$ = $1; }
 	;
 
+blend_header
+	: TOKEN_BLEND
+		{ 
+			$$ = nodeCreate(parse_state->memContext, NT_Blend); 
+			nodePush(parse_state, $$);
+		}
+	;
+
+blend_body
+	: /* empty */
+	| blend_option blend_body		{ nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$1); }
+	;
+
+blend_option
+	: TOKEN_ALPHATOCOVERAGE '=' TOKEN_BOOLEAN ';'				{ $$.type = OT_AlphaToCoverage; $$.value.intValue = $3; }
+	| TOKEN_INDEPENDANTBLEND '=' TOKEN_BOOLEAN ';'				{ $$.type = OT_IndependantBlend; $$.value.intValue = $3; }
+	| target													{ $$.type = OT_Target; $$.value.nodePtr = $1; }
+	;
+	
 	/* Code blocks */
 
 code
@@ -296,37 +426,37 @@ code
 	;
 
 code_header
-	: TOKEN_VERTEX '='
+	: TOKEN_VERTEX
 		{ 
 			$$ = nodeCreate(parse_state->memContext, NT_CodeVertex); 
 			nodePush(parse_state, $$);
 		}
-	| TOKEN_FRAGMENT '='
+	| TOKEN_FRAGMENT
 		{ 
 			$$ = nodeCreate(parse_state->memContext, NT_CodeFragment); 
 			nodePush(parse_state, $$);
 		}
-	| TOKEN_GEOMETRY '='
+	| TOKEN_GEOMETRY
 		{ 
 			$$ = nodeCreate(parse_state->memContext, NT_CodeGeometry); 
 			nodePush(parse_state, $$);
 		}
-	| TOKEN_HULL '='
+	| TOKEN_HULL
 		{ 
 			$$ = nodeCreate(parse_state->memContext, NT_CodeHull); 
 			nodePush(parse_state, $$);
 		}
-	| TOKEN_DOMAIN '='
+	| TOKEN_DOMAIN
 		{ 
 			$$ = nodeCreate(parse_state->memContext, NT_CodeDomain); 
 			nodePush(parse_state, $$);
 		}
-	| TOKEN_COMPUTE '='
+	| TOKEN_COMPUTE
 		{ 
 			$$ = nodeCreate(parse_state->memContext, NT_CodeCompute); 
 			nodePush(parse_state, $$);
 		}
-	| TOKEN_COMMON '='
+	| TOKEN_COMMON
 		{ 
 			$$ = nodeCreate(parse_state->memContext, NT_CodeCommon); 
 			nodePush(parse_state, $$);
@@ -384,7 +514,7 @@ target
 	;
 
 target_header
-	: TOKEN_TARGET '='
+	: TOKEN_TARGET
 		{ 
 			$$ = nodeCreate(parse_state->memContext, NT_Target); 
 			nodePush(parse_state, $$);
@@ -402,11 +532,11 @@ target_statement
 
 target_option
 	: TOKEN_INDEX '=' TOKEN_INTEGER ';'					{ $$.type = OT_Index; $$.value.intValue = $3; }
-	| TOKEN_BLEND '=' TOKEN_BOOLEAN ';'					{ $$.type = OT_Blend; $$.value.intValue = $3; }
+	| TOKEN_ENABLED '=' TOKEN_BOOLEAN ';'				{ $$.type = OT_Enabled; $$.value.intValue = $3; }
 	| blend_color_header '{' blenddef_body '}' ';'		{ nodePop(parse_state); $$.type = OT_Color; $$.value.nodePtr = $1; }
 	| blend_alpha_header '{' blenddef_body '}' ';'		{ nodePop(parse_state); $$.type = OT_Alpha; $$.value.nodePtr = $1; }
-	| blend_color_header '{' blenddef_body_init '}' ';'		{ nodePop(parse_state); $$.type = OT_Color; $$.value.nodePtr = $1; }
-	| blend_alpha_header '{' blenddef_body_init '}' ';'		{ nodePop(parse_state); $$.type = OT_Alpha; $$.value.nodePtr = $1; }
+	| blend_color_header '{' blenddef_body_init '}' ';'	{ nodePop(parse_state); $$.type = OT_Color; $$.value.nodePtr = $1; }
+	| blend_alpha_header '{' blenddef_body_init '}' ';'	{ nodePop(parse_state); $$.type = OT_Alpha; $$.value.nodePtr = $1; }
 	| TOKEN_WRITEMASK '=' TOKEN_COLORMASK ';'			{ $$.type = OT_WriteMask; $$.value.intValue = $3; }
 	;
 

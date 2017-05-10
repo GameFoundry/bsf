@@ -9,12 +9,16 @@
 enum tagNodeType
 {
 	NT_Shader,
+	NT_Options,
 	NT_Technique,
 	NT_Pass,
-	NT_StencilOp,
+	NT_Blend,
+	NT_Raster,
+	NT_Depth,
+	NT_Stencil,
 	NT_Target,
+	NT_StencilOp,
 	NT_BlendDef,
-	NT_AddrMode,
 	NT_Tags,
 	NT_CodeVertex,
 	NT_CodeFragment,
@@ -28,11 +32,16 @@ enum tagNodeType
 enum tagOptionType
 {
 	OT_None = 0,
+	OT_Options,
 	OT_Separable,
 	OT_Priority,
 	OT_Sort,
 	OT_Transparent,
 	OT_Technique,
+	OT_Raster,
+	OT_Depth,
+	OT_Stencil,
+	OT_Blend,
 	OT_Renderer,
 	OT_Pass,
 	OT_FillMode,
@@ -46,7 +55,6 @@ enum tagOptionType
 	OT_DepthRead,
 	OT_DepthWrite,
 	OT_CompareFunc,
-	OT_Stencil,
 	OT_StencilReadMask,
 	OT_StencilWriteMask,
 	OT_StencilOpFront,
@@ -58,7 +66,7 @@ enum tagOptionType
 	OT_IndependantBlend,
 	OT_Target,
 	OT_Index,
-	OT_Blend,
+	OT_Enabled,
 	OT_Color,
 	OT_Alpha,
 	OT_WriteMask,
@@ -90,9 +98,9 @@ enum tagFillModeValue
 	FMV_Wire, FMV_Solid 
 };
 
-enum tagCullModeValue 
+enum tagCullAndSortModeValue 
 { 
-	CMV_None, CMV_CW, CMV_CCW 
+	CASV_None, CASV_CW, CASV_CCW, CASV_FrontToBack, CASV_BackToFront
 };
 
 enum tagCompFuncValue
@@ -115,11 +123,6 @@ enum tagBlendOpValue
 	BOV_Min, BOV_Max 
 };
 
-enum tagQueueSortTypeValue
-{
-	QST_FrontToBack, QST_BackToFront, QST_None
-};
-
 typedef enum tagNodeType NodeType;
 typedef enum tagOptionType OptionType;
 typedef enum tagOptionDataType OptionDataType;
@@ -136,11 +139,10 @@ typedef struct tagConditionalData ConditionalData;
 typedef struct tagCodeString CodeString;
 typedef struct tagDefineEntry DefineEntry;
 typedef enum tagFillModeValue FillModeValue;
-typedef enum tagCullModeValue CullModeValue;
+typedef enum tagCullAndSortModeValue CullAndSortModeValue;
 typedef enum tagCompFuncValue CompFuncValue;
 typedef enum tagOpValue OpValue;
 typedef enum tagBlendOpValue BlendOpValue;
-typedef enum tagQueueSortTypeValue QueueSortTypeValue;
 
 struct tagNodeLink
 {

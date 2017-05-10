@@ -464,15 +464,15 @@ namespace bs
 		return RendererAny;
 	}
 
-	QueueSortType BSLFXCompiler::parseSortType(QueueSortTypeValue sortType)
+	QueueSortType BSLFXCompiler::parseSortType(CullAndSortModeValue sortType)
 	{
 		switch (sortType)
 		{
-		case QST_BackToFront:
+		case CASV_BackToFront:
 			return QueueSortType::BackToFront;
-		case QST_FrontToBack:
+		case CASV_FrontToBack:
 			return QueueSortType::FrontToBack;
-		case QST_None:
+		case CASV_None:
 			return QueueSortType::None;
 		}
 
@@ -581,15 +581,15 @@ namespace bs
 		return SOP_KEEP;
 	}
 
-	CullingMode BSLFXCompiler::parseCullMode(CullModeValue cm)
+	CullingMode BSLFXCompiler::parseCullMode(CullAndSortModeValue cm)
 	{
 		switch (cm)
 		{
-		case CMV_None:
+		case CASV_None:
 			return CULL_NONE;
-		case CMV_CW:
+		case CASV_CW:
 			return CULL_CLOCKWISE;
-		case CMV_CCW:
+		case CASV_CCW:
 			return CULL_COUNTERCLOCKWISE;
 		}
 
@@ -745,7 +745,7 @@ namespace bs
 
 			switch (option->type)
 			{
-			case OT_Blend:
+			case OT_Enabled:
 				rtDesc.blendEnable = option->value.intValue > 0;
 				break;
 			case OT_Color:
@@ -763,29 +763,29 @@ namespace bs
 		}
 	}
 
-	bool BSLFXCompiler::parseBlendState(BLEND_STATE_DESC& desc, ASTFXNode* passNode)
+	bool BSLFXCompiler::parseBlendState(PassData& desc, ASTFXNode* blendNode)
 	{
-		if (passNode == nullptr || (passNode->type != NT_Pass && passNode->type != NT_Technique))
+		if (blendNode == nullptr || blendNode->type != NT_Blend)
 			return false;
 
 		bool isDefault = true;
 
-		for (int i = 0; i < passNode->options->count; i++)
+		for (int i = 0; i < blendNode->options->count; i++)
 		{
-			NodeOption* option = &passNode->options->entries[i];
+			NodeOption* option = &blendNode->options->entries[i];
 
 			switch (option->type)
 			{
 			case OT_AlphaToCoverage:
-				desc.alphaToCoverageEnable = option->value.intValue > 0;
+				desc.blendDesc.alphaToCoverageEnable = option->value.intValue > 0;
 				isDefault = false;
 				break;
 			case OT_IndependantBlend:
-				desc.independantBlendEnable = option->value.intValue > 0;
+				desc.blendDesc.independantBlendEnable = option->value.intValue > 0;
 				isDefault = false;
 				break;
 			case OT_Target:
-				parseRenderTargetBlendState(desc, option->value.nodePtr);
+				parseRenderTargetBlendState(desc.blendDesc, option->value.nodePtr);
 				isDefault = false;
 				break;
 			default:
@@ -796,49 +796,49 @@ namespace bs
 		return !isDefault;
 	}
 
-	bool BSLFXCompiler::parseRasterizerState(RASTERIZER_STATE_DESC& desc, ASTFXNode* passNode)
+	bool BSLFXCompiler::parseRasterizerState(PassData& desc, ASTFXNode* rasterNode)
 	{
-		if (passNode == nullptr || (passNode->type != NT_Pass && passNode->type != NT_Technique))
+		if (rasterNode == nullptr || rasterNode->type != NT_Raster)
 			return false;
 
 		bool isDefault = true;
 
-		for (int i = 0; i < passNode->options->count; i++)
+		for (int i = 0; i < rasterNode->options->count; i++)
 		{
-			NodeOption* option = &passNode->options->entries[i];
+			NodeOption* option = &rasterNode->options->entries[i];
 
 			switch (option->type)
 			{
 			case OT_FillMode:
-				desc.polygonMode = parseFillMode((FillModeValue)option->value.intValue);
+				desc.rasterizerDesc.polygonMode = parseFillMode((FillModeValue)option->value.intValue);
 				isDefault = false;
 				break;
 			case OT_CullMode:
-				desc.cullMode = parseCullMode((CullModeValue)option->value.intValue);
+				desc.rasterizerDesc.cullMode = parseCullMode((CullAndSortModeValue)option->value.intValue);
 				isDefault = false;
 				break;
 			case OT_DepthBias:
-				desc.depthBias = option->value.floatValue;
+				desc.rasterizerDesc.depthBias = option->value.floatValue;
 				isDefault = false;
 				break;
 			case OT_SDepthBias:
-				desc.slopeScaledDepthBias = option->value.floatValue;
+				desc.rasterizerDesc.slopeScaledDepthBias = option->value.floatValue;
 				isDefault = false;
 				break;
 			case OT_DepthClip:
-				desc.depthClipEnable = option->value.intValue > 0;
+				desc.rasterizerDesc.depthClipEnable = option->value.intValue > 0;
 				isDefault = false;
 				break;
 			case OT_Scissor:
-				desc.scissorEnable = option->value.intValue > 0;
+				desc.rasterizerDesc.scissorEnable = option->value.intValue > 0;
 				isDefault = false;
 				break;
 			case OT_Multisample:
-				desc.multisampleEnable = option->value.intValue > 0;
+				desc.rasterizerDesc.multisampleEnable = option->value.intValue > 0;
 				isDefault = false;
 				break;
 			case OT_AALine:
-				desc.antialiasedLineEnable = option->value.intValue > 0;
+				desc.rasterizerDesc.antialiasedLineEnable = option->value.intValue > 0;
 				isDefault = false;
 				break;
 			default:
@@ -849,50 +849,74 @@ namespace bs
 		return !isDefault;
 	}
 
-	bool BSLFXCompiler::parseDepthStencilState(DEPTH_STENCIL_STATE_DESC& desc, ASTFXNode* passNode)
+	bool BSLFXCompiler::parseDepthState(PassData& passData, ASTFXNode* depthNode)
 	{
-		if (passNode == nullptr || (passNode->type != NT_Pass && passNode->type != NT_Technique))
+		if (depthNode == nullptr || depthNode->type != NT_Depth)
 			return false;
 
 		bool isDefault = true;
 
-		for (int i = 0; i < passNode->options->count; i++)
+		for (int i = 0; i < depthNode->options->count; i++)
 		{
-			NodeOption* option = &passNode->options->entries[i];
+			NodeOption* option = &depthNode->options->entries[i];
 
 			switch (option->type)
 			{
 			case OT_DepthRead:
-				desc.depthReadEnable = option->value.intValue > 0;
+				passData.depthStencilDesc.depthReadEnable = option->value.intValue > 0;
 				isDefault = false;
 				break;
 			case OT_DepthWrite:
-				desc.depthWriteEnable = option->value.intValue > 0;
+				passData.depthStencilDesc.depthWriteEnable = option->value.intValue > 0;
 				isDefault = false;
 				break;
 			case OT_CompareFunc:
-				desc.depthComparisonFunc = parseCompFunc((CompFuncValue)option->value.intValue);
+				passData.depthStencilDesc.depthComparisonFunc = parseCompFunc((CompFuncValue)option->value.intValue);
 				isDefault = false;
 				break;
-			case OT_Stencil:
-				desc.stencilEnable = option->value.intValue > 0;
+			default:
+				break;
+			}
+		}
+
+		return !isDefault;
+	}
+
+	bool BSLFXCompiler::parseStencilState(PassData& passData, ASTFXNode* stencilNode)
+	{
+		if (stencilNode == nullptr || stencilNode->type != NT_Stencil)
+			return false;
+
+		bool isDefault = true;
+
+		for (int i = 0; i < stencilNode->options->count; i++)
+		{
+			NodeOption* option = &stencilNode->options->entries[i];
+
+			switch (option->type)
+			{
+			case OT_Enabled:
+				passData.depthStencilDesc.stencilEnable = option->value.intValue > 0;
 				isDefault = false;
 				break;
 			case OT_StencilReadMask:
-				desc.stencilReadMask = (UINT8)option->value.intValue;
+				passData.depthStencilDesc.stencilReadMask = (UINT8)option->value.intValue;
 				isDefault = false;
 				break;
 			case OT_StencilWriteMask:
-				desc.stencilWriteMask = (UINT8)option->value.intValue;
+				passData.depthStencilDesc.stencilWriteMask = (UINT8)option->value.intValue;
 				isDefault = false;
 				break;
 			case OT_StencilOpFront:
-				parseStencilFront(desc, option->value.nodePtr);
+				parseStencilFront(passData.depthStencilDesc, option->value.nodePtr);
 				isDefault = false;
 				break;
 			case OT_StencilOpBack:
-				parseStencilBack(desc, option->value.nodePtr);
+				parseStencilBack(passData.depthStencilDesc, option->value.nodePtr);
 				isDefault = false;
+				break;
+			case OT_StencilRef:
+				passData.stencilRefValue = option->value.intValue;
 				break;
 			default:
 				break;
@@ -954,18 +978,23 @@ namespace bs
 		if (passNode == nullptr || passNode->type != NT_Pass)
 			return;
 
-		passData.blendIsDefault &= !parseBlendState(passData.blendDesc, passNode);
-		passData.rasterizerIsDefault &= !parseRasterizerState(passData.rasterizerDesc, passNode);
-		passData.depthStencilIsDefault &= !parseDepthStencilState(passData.depthStencilDesc, passNode);
-
 		for (int i = 0; i < passNode->options->count; i++)
 		{
 			NodeOption* option = &passNode->options->entries[i];
 
 			switch (option->type)
 			{
-			case OT_StencilRef:
-				passData.stencilRefValue = option->value.intValue;
+			case OT_Blend:
+				passData.blendIsDefault &= !parseBlendState(passData, option->value.nodePtr);
+				break;
+			case OT_Raster:
+				passData.rasterizerIsDefault &= !parseRasterizerState(passData, option->value.nodePtr);
+				break;
+			case OT_Depth:
+				passData.depthStencilIsDefault &= !parseDepthState(passData, option->value.nodePtr);
+				break;
+			case OT_Stencil:
+				passData.depthStencilIsDefault &= !parseStencilState(passData, option->value.nodePtr);
 				break;
 			case OT_Code:
 				parseCodeBlock(option->value.nodePtr, codeBlocks, passData);
@@ -981,6 +1010,13 @@ namespace bs
 		if (techniqueNode == nullptr || techniqueNode->type != NT_Technique)
 			return;
 
+		// There must always be at least one pass
+		if(techniqueData.passes.empty())
+		{
+			techniqueData.passes.push_back(PassData());
+			techniqueData.passes.back().seqIdx = 0;
+		}
+
 		PassData combinedCommonPassData;
 
 		UINT32 nextPassIdx = 0;
@@ -994,22 +1030,6 @@ namespace bs
 			case OT_Pass:
 			{
 				UINT32 passIdx = nextPassIdx;
-
-				ASTFXNode* passNode = option->value.nodePtr;
-				for (int j = 0; j < passNode->options->count; j++)
-				{
-					NodeOption* passOption = &passNode->options->entries[j];
-
-					switch (passOption->type)
-					{
-					case OT_Index:
-						passIdx = passOption->value.intValue;
-						break;
-					default:
-						break;
-					}
-				}
-
 				PassData* passData = nullptr;
 				for (auto& entry : techniqueData.passes)
 				{
@@ -1035,6 +1055,7 @@ namespace bs
 				passData->computeCode = combinedCommonPassData.computeCode + passData->computeCode;
 				passData->commonCode = combinedCommonPassData.commonCode + passData->commonCode;
 				
+				ASTFXNode* passNode = option->value.nodePtr;
 				parsePass(passNode, codeBlocks, *passData);
 			}
 				break;
@@ -1069,11 +1090,60 @@ namespace bs
 		}
 
 		// Parse common pass states
-		for (auto& passData : techniqueData.passes)
+		for (int i = 0; i < techniqueNode->options->count; i++)
 		{
-			passData.blendIsDefault &= !parseBlendState(passData.blendDesc, techniqueNode);
-			passData.rasterizerIsDefault &= !parseRasterizerState(passData.rasterizerDesc, techniqueNode);
-			passData.depthStencilIsDefault &= !parseDepthStencilState(passData.depthStencilDesc, techniqueNode);
+			NodeOption* option = &techniqueNode->options->entries[i];
+
+			switch (option->type)
+			{
+			case OT_Blend:
+				for (auto& passData : techniqueData.passes)
+					passData.blendIsDefault &= !parseBlendState(passData, option->value.nodePtr);
+				break;
+			case OT_Raster:
+				for (auto& passData : techniqueData.passes)
+					passData.rasterizerIsDefault &= !parseRasterizerState(passData, option->value.nodePtr);
+				break;
+			case OT_Depth:
+				for (auto& passData : techniqueData.passes)
+					passData.depthStencilIsDefault &= !parseDepthState(passData, option->value.nodePtr);
+				break;
+			case OT_Stencil:
+				for (auto& passData : techniqueData.passes)
+					passData.depthStencilIsDefault &= !parseStencilState(passData, option->value.nodePtr);
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+	void BSLFXCompiler::parseOptions(ASTFXNode* optionsNode, SHADER_DESC& shaderDesc)
+	{
+		if (optionsNode == nullptr || optionsNode->type != NT_Options)
+			return;
+
+		for (int i = optionsNode->options->count - 1; i >= 0; i--)
+		{
+			NodeOption* option = &optionsNode->options->entries[i];
+
+			switch (option->type)
+			{
+			case OT_Separable:
+				shaderDesc.separablePasses = option->value.intValue > 1;
+				break;
+			case OT_Sort:
+				shaderDesc.queueSortType = parseSortType((CullAndSortModeValue)option->value.intValue);
+				break;
+			case OT_Priority:
+				shaderDesc.queuePriority = option->value.intValue;
+				break;
+			case OT_Transparent:
+				shaderDesc.flags |= (UINT32)ShaderFlags::Transparent;
+				break;
+			default:
+				break;
+			}
 		}
 	}
 
@@ -1099,17 +1169,8 @@ namespace bs
 
 			switch (option->type)
 			{
-			case OT_Separable:
-				shaderDesc.separablePasses = option->value.intValue > 1;
-				break;
-			case OT_Sort:
-				shaderDesc.queueSortType = parseSortType((QueueSortTypeValue)option->value.intValue);
-				break;
-			case OT_Priority:
-				shaderDesc.queuePriority = option->value.intValue;
-				break;
-			case OT_Transparent:
-				shaderDesc.flags |= (UINT32)ShaderFlags::Transparent;
+			case OT_Options:
+				parseOptions(option->value.nodePtr, shaderDesc);
 				break;
 			case OT_Technique:
 			{
