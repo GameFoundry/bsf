@@ -344,6 +344,13 @@ namespace bs
 		TEX_TYPE_CUBE_MAP	BS_SCRIPT_EXPORT(n:TextureCube) = 4 
 	};
 
+	/**	Projection type to use by the camera. */
+	enum ProjectionType
+	{
+		PT_ORTHOGRAPHIC, /**< Projection type where object size remains constant and parallel lines remain parallel. */
+		PT_PERSPECTIVE /**< Projection type that emulates human vision. Objects farther away appear smaller. */
+	};
+
 	/**	Contains data about a type used for GPU data parameters. */
 	struct GpuParamDataTypeInfo
 	{

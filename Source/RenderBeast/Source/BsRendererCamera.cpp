@@ -54,6 +54,21 @@ namespace bs { namespace ct
 		gRendererUtility().setPassParams(mParamsSet);
 	}
 
+	RendererViewProperties::RendererViewProperties(const RENDERER_VIEW_DESC& src)
+		:RendererViewData(src)
+	{
+		viewProjTransform = src.projTransform * src.viewTransform;
+
+		target = src.target.target;
+		nrmViewRect = src.target.nrmViewRect;
+		numSamples = src.target.numSamples;
+
+		clearFlags = src.target.clearFlags;
+		clearColor = src.target.clearColor;
+		clearDepthValue = src.target.clearDepthValue;
+		clearStencilValue = src.target.clearStencilValue;
+	}
+
 	RendererCamera::RendererCamera()
 		: mUsingGBuffer(false)
 	{
@@ -61,7 +76,7 @@ namespace bs { namespace ct
 	}
 
 	RendererCamera::RendererCamera(const RENDERER_VIEW_DESC& desc)
-		: mViewDesc(desc), mUsingGBuffer(false)
+		: mProperties(desc), mTargetDesc(desc.target), mCamera(desc.sceneCamera), mUsingGBuffer(false)
 	{
 		mParamBuffer = gPerCameraParamDef.createBuffer();
 
@@ -96,20 +111,23 @@ namespace bs { namespace ct
 	void RendererCamera::setTransform(const Vector3& origin, const Vector3& direction, const Matrix4& view, 
 									  const Matrix4& proj, const ConvexVolume& worldFrustum)
 	{
-		mViewDesc.viewOrigin = origin;
-		mViewDesc.viewDirection = direction;
-		mViewDesc.viewTransform = view;
-		mViewDesc.projTransform = proj;
-		mViewDesc.cullFrustum = worldFrustum;
+		mProperties.viewOrigin = origin;
+		mProperties.viewDirection = direction;
+		mProperties.viewTransform = view;
+		mProperties.projTransform = proj;
+		mProperties.cullFrustum = worldFrustum;
+		mProperties.viewProjTransform = proj * view;
 	}
 
 	void RendererCamera::setView(const RENDERER_VIEW_DESC& desc)
 	{
-		if (mViewDesc.target.targetWidth != desc.target.targetWidth ||
-			mViewDesc.target.targetHeight != desc.target.targetHeight)
+		if (mTargetDesc.targetWidth != desc.target.targetWidth ||
+			mTargetDesc.targetHeight != desc.target.targetHeight)
 			mRenderTargets = nullptr;
 
-		mViewDesc = desc;
+		mCamera = desc.sceneCamera;
+		mProperties = desc;
+		mTargetDesc = desc.target;
 
 		setStateReductionMode(desc.stateReduction);
 	}
@@ -120,11 +138,11 @@ namespace bs { namespace ct
 		{
 			// Render scene objects to g-buffer
 			bool createGBuffer = mRenderTargets == nullptr ||
-				mRenderTargets->getHDR() != mViewDesc.isHDR ||
-				mRenderTargets->getNumSamples() != mViewDesc.target.numSamples;
+				mRenderTargets->getHDR() != mProperties.isHDR ||
+				mRenderTargets->getNumSamples() != mTargetDesc.numSamples;
 
 			if (createGBuffer)
-				mRenderTargets = RenderTargets::create(mViewDesc.target, mViewDesc.isHDR);
+				mRenderTargets = RenderTargets::create(mTargetDesc, mProperties.isHDR);
 
 			mRenderTargets->prepare();
 			mUsingGBuffer = true;
@@ -149,7 +167,7 @@ namespace bs { namespace ct
 		mVisibility.renderables.clear();
 		mVisibility.renderables.resize(renderables.size(), false);
 
-		if (mViewDesc.isOverlay)
+		if (mProperties.isOverlay)
 			return;
 
 		calculateVisibility(cullInfos, mVisibility.renderables);
@@ -161,7 +179,7 @@ namespace bs { namespace ct
 				continue;
 
 			const AABox& boundingBox = cullInfos[i].bounds.getBox();
-			float distanceToCamera = (mViewDesc.viewOrigin - boundingBox.getCenter()).length();
+			float distanceToCamera = (mProperties.viewOrigin - boundingBox.getCenter()).length();
 
 			for (auto& renderElem : renderables[i]->elements)
 			{
@@ -192,8 +210,8 @@ namespace bs { namespace ct
 
 	void RendererCamera::calculateVisibility(const Vector<CullInfo>& cullInfos, Vector<bool>& visibility) const
 	{
-		UINT64 cameraLayers = mViewDesc.visibleLayers;
-		const ConvexVolume& worldFrustum = mViewDesc.cullFrustum;
+		UINT64 cameraLayers = mProperties.visibleLayers;
+		const ConvexVolume& worldFrustum = mProperties.cullFrustum;
 
 		for (UINT32 i = 0; i < (UINT32)cullInfos.size(); i++)
 		{
@@ -217,7 +235,7 @@ namespace bs { namespace ct
 
 	void RendererCamera::calculateVisibility(const Vector<Sphere>& bounds, Vector<bool>& visibility) const
 	{
-		const ConvexVolume& worldFrustum = mViewDesc.cullFrustum;
+		const ConvexVolume& worldFrustum = mProperties.cullFrustum;
 
 		for (UINT32 i = 0; i < (UINT32)bounds.size(); i++)
 		{
@@ -314,14 +332,14 @@ namespace bs { namespace ct
 
 	void RendererCamera::updatePerViewBuffer()
 	{
-		Matrix4 viewProj = mViewDesc.projTransform * mViewDesc.viewTransform;
+		Matrix4 viewProj = mProperties.projTransform * mProperties.viewTransform;
 		Matrix4 invViewProj = viewProj.inverse();
 
-		gPerCameraParamDef.gMatProj.set(mParamBuffer, mViewDesc.projTransform);
-		gPerCameraParamDef.gMatView.set(mParamBuffer, mViewDesc.viewTransform);
+		gPerCameraParamDef.gMatProj.set(mParamBuffer, mProperties.projTransform);
+		gPerCameraParamDef.gMatView.set(mParamBuffer, mProperties.viewTransform);
 		gPerCameraParamDef.gMatViewProj.set(mParamBuffer, viewProj);
 		gPerCameraParamDef.gMatInvViewProj.set(mParamBuffer, invViewProj); // Note: Calculate inverses separately (better precision possibly)
-		gPerCameraParamDef.gMatInvProj.set(mParamBuffer, mViewDesc.projTransform.inverse());
+		gPerCameraParamDef.gMatInvProj.set(mParamBuffer, mProperties.projTransform.inverse());
 
 		// Construct a special inverse view-projection matrix that had projection entries that affect z and w eliminated.
 		// Used to transform a vector(clip_x, clip_y, view_z, view_w), where clip_x/clip_y are in clip space, and 
@@ -329,21 +347,21 @@ namespace bs { namespace ct
 
 		// Only projects z/w coordinates
 		Matrix4 projZ = Matrix4::IDENTITY;
-		projZ[2][2] = mViewDesc.projTransform[2][2];
-		projZ[2][3] = mViewDesc.projTransform[2][3];
-		projZ[3][2] = mViewDesc.projTransform[3][2];
+		projZ[2][2] = mProperties.projTransform[2][2];
+		projZ[2][3] = mProperties.projTransform[2][3];
+		projZ[3][2] = mProperties.projTransform[3][2];
 		projZ[3][3] = 0.0f;
 		
 		gPerCameraParamDef.gMatScreenToWorld.set(mParamBuffer, invViewProj * projZ);
-		gPerCameraParamDef.gViewDir.set(mParamBuffer, mViewDesc.viewDirection);
-		gPerCameraParamDef.gViewOrigin.set(mParamBuffer, mViewDesc.viewOrigin);
-		gPerCameraParamDef.gDeviceZToWorldZ.set(mParamBuffer, getDeviceZTransform(mViewDesc.projTransform));
-		gPerCameraParamDef.gNDCZToWorldZ.set(mParamBuffer, getNDCZTransform(mViewDesc.projTransform));
+		gPerCameraParamDef.gViewDir.set(mParamBuffer, mProperties.viewDirection);
+		gPerCameraParamDef.gViewOrigin.set(mParamBuffer, mProperties.viewOrigin);
+		gPerCameraParamDef.gDeviceZToWorldZ.set(mParamBuffer, getDeviceZTransform(mProperties.projTransform));
+		gPerCameraParamDef.gNDCZToWorldZ.set(mParamBuffer, getNDCZTransform(mProperties.projTransform));
 
-		Vector2 nearFar(mViewDesc.nearPlane, mViewDesc.farPlane);
+		Vector2 nearFar(mProperties.nearPlane, mProperties.farPlane);
 		gPerCameraParamDef.gNearFar.set(mParamBuffer, nearFar);
 
-		const Rect2I& viewRect = mViewDesc.target.viewRect;
+		const Rect2I& viewRect = mTargetDesc.viewRect;
 
 		Vector4I viewportRect;
 		viewportRect[0] = viewRect.x;
@@ -356,8 +374,8 @@ namespace bs { namespace ct
 		float halfWidth = viewRect.width * 0.5f;
 		float halfHeight = viewRect.height * 0.5f;
 
-		float rtWidth = mViewDesc.target.targetWidth != 0 ? (float)mViewDesc.target.targetWidth : 20.0f;
-		float rtHeight = mViewDesc.target.targetHeight != 0 ? (float)mViewDesc.target.targetHeight : 20.0f;
+		float rtWidth = mTargetDesc.targetWidth != 0 ? (float)mTargetDesc.targetWidth : 20.0f;
+		float rtHeight = mTargetDesc.targetHeight != 0 ? (float)mTargetDesc.targetHeight : 20.0f;
 
 		RenderAPI& rapi = RenderAPI::instance();
 		const RenderAPIInfo& rapiInfo = rapi.getAPIInfo();
@@ -374,7 +392,7 @@ namespace bs { namespace ct
 
 		gPerCameraParamDef.gClipToUVScaleOffset.set(mParamBuffer, clipToUVScaleOffset);
 
-		if (mViewDesc.noLighting)
+		if (mProperties.noLighting)
 			gPerCameraParamDef.gAmbientFactor.set(mParamBuffer, 100.0f);
 		else
 			gPerCameraParamDef.gAmbientFactor.set(mParamBuffer, 0.0f);

@@ -37,6 +37,7 @@
 #include "BsMeshData.h"
 #include "BsLightGrid.h"
 #include "BsSkybox.h"
+#include "BsShadowRendering.h"
 
 using namespace std::placeholders;
 
@@ -93,6 +94,7 @@ namespace bs { namespace ct
 
 		GpuResourcePool::startUp();
 		PostProcessing::startUp();
+		ShadowRendering::startUp();
 	}
 
 	void RenderBeast::destroyCore()
@@ -116,6 +118,7 @@ namespace bs { namespace ct
 		mSkyboxFilteredReflections = nullptr;
 		mSkyboxIrradiance = nullptr;
 
+		ShadowRendering::shutDown();
 		PostProcessing::shutDown();
 		GpuResourcePool::shutDown();
 
@@ -645,6 +648,7 @@ namespace bs { namespace ct
 			viewDesc.viewDirection = camera->getForward();
 			viewDesc.projTransform = camera->getProjectionMatrixRS();
 			viewDesc.viewTransform = camera->getViewMatrix();
+			viewDesc.projType = camera->getProjectionType();
 
 			viewDesc.stateReduction = mCoreOptions->stateReductionMode;
 			viewDesc.sceneCamera = camera;
@@ -928,7 +932,7 @@ namespace bs { namespace ct
 
 		for (UINT32 i = 0; i < numViews; i++)
 		{
-			if (views[i]->isOverlay())
+			if (views[i]->getProperties().isOverlay)
 				renderOverlay(views[i]);
 			else
 				renderView(views[i], frameInfo.timeDelta);
@@ -939,18 +943,19 @@ namespace bs { namespace ct
 	{
 		gProfilerCPU().beginSample("Render");
 
+		auto& viewProps = viewInfo->getProperties();
 		const Camera* sceneCamera = viewInfo->getSceneCamera();
 
 		SPtr<GpuParamBlockBuffer> perCameraBuffer = viewInfo->getPerViewBuffer();
 		perCameraBuffer->flushToGPU();
 
-		Matrix4 viewProj = viewInfo->getViewProjMatrix();
-		UINT32 numSamples = viewInfo->getNumSamples();
+		Matrix4 viewProj = viewProps.viewProjTransform;
+		UINT32 numSamples = viewProps.numSamples;
 
 		viewInfo->beginRendering(true);
 
 		// Prepare light grid required for transparent object rendering
-		mLightGrid->updateGrid(*viewInfo, *mGPULightData, *mGPUReflProbeData, viewInfo->renderWithNoLighting());
+		mLightGrid->updateGrid(*viewInfo, *mGPULightData, *mGPUReflProbeData, viewProps.noLighting);
 
 		SPtr<GpuParamBlockBuffer> gridParams;
 		SPtr<GpuBuffer> gridLightOffsetsAndSize, gridLightIndices;
@@ -962,7 +967,7 @@ namespace bs { namespace ct
 		ITiledDeferredImageBasedLightingMat* imageBasedLightingMat =
 			mTileDeferredImageBasedLightingMats->get(numSamples);
 
-		imageBasedLightingMat->setReflectionProbes(*mGPUReflProbeData, mReflCubemapArrayTex, viewInfo->isRenderingReflections());
+		imageBasedLightingMat->setReflectionProbes(*mGPUReflProbeData, mReflCubemapArrayTex, viewProps.renderingReflections);
 
 		float skyBrightness = 1.0f;
 		if (mSkybox != nullptr)
@@ -1027,7 +1032,7 @@ namespace bs { namespace ct
 		// Trigger pre-base-pass callbacks
 		auto iterRenderCallback = mCallbacks.begin();
 
-		if (viewInfo->checkTriggerCallbacks())
+		if (viewProps.triggerCallbacks)
 		{
 			while (iterRenderCallback != mCallbacks.end())
 			{
@@ -1051,7 +1056,7 @@ namespace bs { namespace ct
 		}
 
 		// Trigger post-base-pass callbacks
-		if (viewInfo->checkTriggerCallbacks())
+		if (viewProps.triggerCallbacks)
 		{
 			while (iterRenderCallback != mCallbacks.end())
 			{
@@ -1075,7 +1080,7 @@ namespace bs { namespace ct
 		renderTargets->allocate(RTT_LightAccumulation);
 
 		lightingMat->setLights(*mGPULightData);
-		lightingMat->execute(renderTargets, perCameraBuffer, viewInfo->renderWithNoLighting());
+		lightingMat->execute(renderTargets, perCameraBuffer, viewProps.noLighting);
 
 		renderTargets->allocate(RTT_SceneColor);
 
@@ -1108,7 +1113,7 @@ namespace bs { namespace ct
 		}
 		else
 		{
-			Color clearColor = viewInfo->getClearColor();
+			Color clearColor = viewProps.clearColor;
 
 			mSkyboxSolidColorMat->bind(perCameraBuffer);
 			mSkyboxSolidColorMat->setParams(nullptr, clearColor);
@@ -1128,7 +1133,7 @@ namespace bs { namespace ct
 		}
 
 		// Trigger post-light-pass callbacks
-		if (viewInfo->checkTriggerCallbacks())
+		if (viewProps.triggerCallbacks)
 		{
 			while (iterRenderCallback != mCallbacks.end())
 			{
@@ -1144,9 +1149,9 @@ namespace bs { namespace ct
 		}
 
 		// Post-processing and final resolve
-		Rect2 viewportArea = viewInfo->getViewportRect();
+		Rect2 viewportArea = viewProps.nrmViewRect;
 
-		if (viewInfo->checkRunPostProcessing())
+		if (viewProps.runPostProcessing)
 		{
 			// If using MSAA, resolve into non-MSAA texture before post-processing
 			if(numSamples > 1)
@@ -1155,7 +1160,7 @@ namespace bs { namespace ct
 				rapi.setViewport(viewportArea);
 
 				SPtr<Texture> sceneColor = renderTargets->getSceneColor();
-				gRendererUtility().blit(sceneColor, Rect2I::EMPTY, viewInfo->getFlipView());
+				gRendererUtility().blit(sceneColor, Rect2I::EMPTY, viewProps.flipView);
 			}
 
 			// Post-processing code also takes care of writting to the final output target
@@ -1164,19 +1169,19 @@ namespace bs { namespace ct
 		else
 		{
 			// Just copy from scene color to output if no post-processing
-			SPtr<RenderTarget> target = viewInfo->getFinalTarget();
+			SPtr<RenderTarget> target = viewProps.target;
 
 			rapi.setRenderTarget(target);
 			rapi.setViewport(viewportArea);
 
 			SPtr<Texture> sceneColor = renderTargets->getSceneColor();
-			gRendererUtility().blit(sceneColor, Rect2I::EMPTY, viewInfo->getFlipView());
+			gRendererUtility().blit(sceneColor, Rect2I::EMPTY, viewProps.flipView);
 		}
 
 		renderTargets->release(RTT_SceneColor);
 
 		// Trigger overlay callbacks
-		if (viewInfo->checkTriggerCallbacks())
+		if (viewProps.triggerCallbacks)
 		{
 			while (iterRenderCallback != mCallbacks.end())
 			{
@@ -1203,8 +1208,9 @@ namespace bs { namespace ct
 		viewInfo->getPerViewBuffer()->flushToGPU();
 		viewInfo->beginRendering(false);
 
+		auto& viewProps = viewInfo->getProperties();
 		const Camera* camera = viewInfo->getSceneCamera();
-		SPtr<RenderTarget> target = viewInfo->getFinalTarget();
+		SPtr<RenderTarget> target = viewProps.target;
 		SPtr<Viewport> viewport = camera->getViewport();
 
 		UINT32 clearBuffers = 0;
@@ -1455,6 +1461,7 @@ namespace bs { namespace ct
 
 		viewDesc.viewOrigin = position;
 		viewDesc.projTransform = projTransform;
+		viewDesc.projType = PT_PERSPECTIVE;
 
 		viewDesc.stateReduction = mCoreOptions->stateReductionMode;
 		viewDesc.sceneCamera = nullptr;
