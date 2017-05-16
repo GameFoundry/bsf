@@ -55,6 +55,7 @@ set(BS_BANSHEEUTILITY_SRC_GENERAL
 	"Source/BsTimer.cpp"
 	"Source/BsTime.cpp"
 	"Source/BsUtil.cpp"
+	"Source/BsCompression.cpp"
 )
 
 set(BS_BANSHEEUTILITY_INC_DEBUG
@@ -96,6 +97,7 @@ set(BS_BANSHEEUTILITY_INC_GENERAL
 	"Include/BsTimer.h"
 	"Include/BsUtil.h"
 	"Include/BsFlags.h"
+	"Include/BsCompression.h"
 )
 
 set(BS_BANSHEEUTILITY_SRC_ALLOCATORS
