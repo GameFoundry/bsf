@@ -1,216 +1,214 @@
 #include "$ENGINE$\ReflectionCubemapCommon.bslinc"
 
-Technique 
- : base("ImageBasedLighting")
- : inherits("ReflectionCubemapCommon") =
+mixin ImageBasedLighting 
 {
-	Pass =
+	mixin ReflectionCubemapCommon;
+
+	code
 	{
-		Common = 
+		// Arbitrary limit, increase if needed
+		#define MAX_PROBES 512
+	
+		// Note: Size must be multiple of largest element, because of std430 rules
+		struct ReflProbeData
 		{
-			// Arbitrary limit, increase if needed
-			#define MAX_PROBES 512
-		
-			// Note: Size must be multiple of largest element, because of std430 rules
-			struct ReflProbeData
-			{
-				float3 position;
-				float radius;
-				float3 boxExtents;
-				float transitionDistance;
-				float4x4 invBoxTransform;
-				uint cubemapIdx;
-				uint type; // 0 - Sphere, 1 - Box
-				float2 padding;
-			};
-		
-			TextureCube gSkyReflectionTex;
-			SamplerState gSkyReflectionSamp;
-			
-			TextureCube gSkyIrradianceTex;
-			SamplerState gSkyIrradianceSamp;
-			
-			TextureCubeArray gReflProbeCubemaps;
-			SamplerState gReflProbeSamp;
-			
-			Texture2D gPreintegratedEnvBRDF;
-			SamplerState gPreintegratedEnvBRDFSamp;
-			
-			StructuredBuffer<ReflProbeData> gReflectionProbes;	
-
-			#ifdef USE_COMPUTE_INDICES
-				groupshared uint gReflectionProbeIndices[MAX_PROBES];
-			#endif
-			#ifdef USE_LIGHT_GRID_INDICES
-				Buffer<uint> gReflectionProbeIndices;
-			#endif
-			
-			cbuffer ReflProbeParams
-			{
-				uint gReflCubemapNumMips;
-				uint gNumProbes;
-				uint gSkyCubemapAvailable;
-				uint gUseReflectionMaps;
-				uint gSkyCubemapNumMips;
-				float gSkyBrightness;
-			}	
-			
-			float3 getSkyIndirectDiffuse(float3 dir)
-			{
-				return gSkyIrradianceTex.SampleLevel(gSkyIrradianceSamp, dir, 0).rgb * gSkyBrightness;
-			}
-			
-			float getSphereReflectionContribution(float normalizedDistance)
-			{			
-				// If closer than 60% to the probe radius, then full contribution is used.
-				// For the other 40% we smoothstep and return contribution lower than 1 so other
-				// reflection probes can be blended.			
-			
-				// smoothstep from 1 to 0.6:
-				//   float t = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
-				//   return t * t * (3.0 - 2.0 * t);
-				float t = saturate(2.5 - 2.5 * normalizedDistance);
-				return t * t * (3.0 - 2.0 * t);
-			}
-			
-			float3 getLookupForSphereProxy(float3 originWS, float3 dirWS, float3 centerWS, float radius)
-			{
-				float radius2 = radius * radius;
-				float3 originLS = originWS - centerWS;
-				
-				float a = dot(originLS, dirWS);
-				float dist2 = a * a - dot(originLS, originLS) + radius2;
-
-				float3 lookupDir = dirWS;
-				
-				[flatten]
-				if(dist2 >= 0)
-				{
-					float farDist = sqrt(dist2) - a;
-					lookupDir = originLS + farDist * dirWS;
-				}
-				
-				return lookupDir;
-			}
-			
-			float getDistBoxToPoint(float3 pt, float3 extents)
-			{
-				float3 d = max(max(-extents - pt, 0), pt - extents);
-				return length(d);
-			}
-			
-			float3 getLookupForBoxProxy(float3 originWS, float3 dirWS, float3 centerWS, float3 extents, float4x4 invBoxTransform, float transitionDistance, out float contribution)
-			{
-				// Transform origin and direction into box local space, where it is united sized and axis aligned
-				float3 originLS = mul(invBoxTransform, float4(originWS, 1)).xyz;
-				float3 dirLS = mul(invBoxTransform, float4(dirWS, 0)).xyz;
-				
-				// Get distance from 3 min planes and 3 max planes of the unit AABB
-				//  float3 unitVec = float3(1.0f, 1.0f, 1.0f);
-				//  float3 intersectsMax = (unitVec - originLS) / dirLS;
-				//  float3 intersectsMin = (-unitVec - originLS) / dirLS;
-				
-				float3 invDirLS = rcp(dirLS);
-				float3 intersectsMax = invDirLS - originLS * invDirLS;
-				float3 intersectsMin = -invDirLS - originLS * invDirLS;
-				
-				// Find nearest positive (along ray direction) intersection
-				float3 positiveIntersections = max(intersectsMax, intersectsMin);
-				float intersectDist = min(positiveIntersections.x, min(positiveIntersections.y, positiveIntersections.z));
-				
-				float3 intersectPositionWS = originWS + intersectDist * dirWS;
-				float3 lookupDir = intersectPositionWS - centerWS;
-				
-				// Calculate contribution
-				//// Shrink the box so fade out happens within box extents
-				float3 reducedExtents = extents - float3(transitionDistance, transitionDistance, transitionDistance);
-				float distToBox = getDistBoxToPoint(originLS * reducedExtents, reducedExtents);
-				
-				float normalizedDistance = distToBox / transitionDistance;
-				
-				// If closer than 70% to the probe radius, then full contribution is used.
-				// For the other 30% we smoothstep and return contribution lower than 1 so other
-				// reflection probes can be blended.			
-			
-				// smoothstep from 1 to 0.7:
-				//   float t = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
-				//   return t * t * (3.0 - 2.0 * t);
-				
-				float t = saturate(3.3333 - 3.3333 * normalizedDistance);
-				contribution = t * t * (3.0 - 2.0 * t);
-				
-				return lookupDir;
-			}
-			
-			float3 gatherReflectionRadiance(float3 worldPos, float3 dir, float roughness, float3 specularColor, uint probeOffset, uint numProbes)
-			{
-				if(gUseReflectionMaps == 0)
-					return specularColor;
-										
-				float mipLevel = mapRoughnessToMipLevel(roughness, gReflCubemapNumMips);
-				
-				float3 output = 0;
-				float leftoverContribution = 1.0f;
-				for(uint i = 0; i < numProbes; i++)
-				{
-					if(leftoverContribution < 0.001f)
-						break;
-							
-					uint probeIdx = gReflectionProbeIndices[probeOffset + i];
-					ReflProbeData probeData = gReflectionProbes[probeIdx];
-					
-					float3 probeToPos = worldPos - probeData.position;
-					float distToProbe = length(probeToPos);
-					float normalizedDist = saturate(distToProbe / probeData.radius);
-								
-					if(distToProbe <= probeData.radius)
-					{
-						float3 correctedDir;
-						float contribution = 0;
-						if(probeData.type == 0) // Sphere
-						{
-							correctedDir = getLookupForSphereProxy(worldPos, dir, probeData.position, probeData.radius);
-							contribution = getSphereReflectionContribution(normalizedDist);
-						}
-						else if(probeData.type == 1) // Box
-						{
-							correctedDir = getLookupForBoxProxy(worldPos, dir, probeData.position, probeData.boxExtents, probeData.invBoxTransform, probeData.transitionDistance, contribution);
-						}
-						
-						float4 probeSample = gReflProbeCubemaps.SampleLevel(gReflProbeSamp, float4(correctedDir, probeData.cubemapIdx), mipLevel);
-						probeSample *= contribution;
-						
-						output += probeSample.rgb * leftoverContribution; 
-						leftoverContribution *= (1.0f - contribution);
-					}
-				}
-					
-				if(gSkyCubemapAvailable > 0)
-				{
-					float skyMipLevel = mapRoughnessToMipLevel(roughness, gSkyCubemapNumMips);
-					float4 skySample = gSkyReflectionTex.SampleLevel(gSkyReflectionSamp, dir, skyMipLevel) * gSkyBrightness;
-					
-					output += skySample.rgb * leftoverContribution; 
-				}
-						
-				return output;
-			}
-			
-			float3 getImageBasedSpecular(float3 worldPos, float3 V, float3 R, SurfaceData surfaceData, uint probeOffset, uint numProbes)
-			{
-				// See C++ code for generation of gPreintegratedEnvBRDF to see why this code works as is
-				float3 N = surfaceData.worldNormal.xyz;
-				float NoV = saturate(dot(N, V));
-				
-				// Note: Using a fixed F0 value of 0.04 (plastic) for dielectrics, and using albedo as specular for conductors.
-				// For more customizability allow the user to provide separate albedo/specular colors for both types.
-				float3 specularColor = lerp(float3(0.04f, 0.04f, 0.04f), surfaceData.albedo.rgb, surfaceData.metalness);
-				float3 radiance = gatherReflectionRadiance(worldPos, R, surfaceData.roughness, specularColor, probeOffset, numProbes);
-				
-				float2 envBRDF = gPreintegratedEnvBRDF.SampleLevel(gPreintegratedEnvBRDFSamp, float2(NoV, surfaceData.roughness), 0).rg;
-				
-				return radiance * (specularColor * envBRDF.x + envBRDF.y);
-			}		
+			float3 position;
+			float radius;
+			float3 boxExtents;
+			float transitionDistance;
+			float4x4 invBoxTransform;
+			uint cubemapIdx;
+			uint type; // 0 - Sphere, 1 - Box
+			float2 padding;
 		};
+	
+		[internal] TextureCube gSkyReflectionTex;
+		[internal] SamplerState gSkyReflectionSamp;
+		
+		[internal] TextureCube gSkyIrradianceTex;
+		[internal] SamplerState gSkyIrradianceSamp;
+		
+		[internal] TextureCubeArray gReflProbeCubemaps;
+		[internal] SamplerState gReflProbeSamp;
+		
+		[internal] Texture2D gPreintegratedEnvBRDF;
+		[internal] SamplerState gPreintegratedEnvBRDFSamp;
+		
+		[internal] StructuredBuffer<ReflProbeData> gReflectionProbes;	
+
+		#ifdef USE_COMPUTE_INDICES
+			groupshared uint gReflectionProbeIndices[MAX_PROBES];
+		#endif
+		#ifdef USE_LIGHT_GRID_INDICES
+			[internal] Buffer<uint> gReflectionProbeIndices;
+		#endif
+		
+		[internal]
+		cbuffer ReflProbeParams
+		{
+			uint gReflCubemapNumMips;
+			uint gNumProbes;
+			uint gSkyCubemapAvailable;
+			uint gUseReflectionMaps;
+			uint gSkyCubemapNumMips;
+			float gSkyBrightness;
+		}	
+		
+		float3 getSkyIndirectDiffuse(float3 dir)
+		{
+			return gSkyIrradianceTex.SampleLevel(gSkyIrradianceSamp, dir, 0).rgb * gSkyBrightness;
+		}
+		
+		float getSphereReflectionContribution(float normalizedDistance)
+		{			
+			// If closer than 60% to the probe radius, then full contribution is used.
+			// For the other 40% we smoothstep and return contribution lower than 1 so other
+			// reflection probes can be blended.			
+		
+			// smoothstep from 1 to 0.6:
+			//   float t = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
+			//   return t * t * (3.0 - 2.0 * t);
+			float t = saturate(2.5 - 2.5 * normalizedDistance);
+			return t * t * (3.0 - 2.0 * t);
+		}
+		
+		float3 getLookupForSphereProxy(float3 originWS, float3 dirWS, float3 centerWS, float radius)
+		{
+			float radius2 = radius * radius;
+			float3 originLS = originWS - centerWS;
+			
+			float a = dot(originLS, dirWS);
+			float dist2 = a * a - dot(originLS, originLS) + radius2;
+
+			float3 lookupDir = dirWS;
+			
+			[flatten]
+			if(dist2 >= 0)
+			{
+				float farDist = sqrt(dist2) - a;
+				lookupDir = originLS + farDist * dirWS;
+			}
+			
+			return lookupDir;
+		}
+		
+		float getDistBoxToPoint(float3 pt, float3 extents)
+		{
+			float3 d = max(max(-extents - pt, 0), pt - extents);
+			return length(d);
+		}
+		
+		float3 getLookupForBoxProxy(float3 originWS, float3 dirWS, float3 centerWS, float3 extents, float4x4 invBoxTransform, float transitionDistance, out float contribution)
+		{
+			// Transform origin and direction into box local space, where it is united sized and axis aligned
+			float3 originLS = mul(invBoxTransform, float4(originWS, 1)).xyz;
+			float3 dirLS = mul(invBoxTransform, float4(dirWS, 0)).xyz;
+			
+			// Get distance from 3 min planes and 3 max planes of the unit AABB
+			//  float3 unitVec = float3(1.0f, 1.0f, 1.0f);
+			//  float3 intersectsMax = (unitVec - originLS) / dirLS;
+			//  float3 intersectsMin = (-unitVec - originLS) / dirLS;
+			
+			float3 invDirLS = rcp(dirLS);
+			float3 intersectsMax = invDirLS - originLS * invDirLS;
+			float3 intersectsMin = -invDirLS - originLS * invDirLS;
+			
+			// Find nearest positive (along ray direction) intersection
+			float3 positiveIntersections = max(intersectsMax, intersectsMin);
+			float intersectDist = min(positiveIntersections.x, min(positiveIntersections.y, positiveIntersections.z));
+			
+			float3 intersectPositionWS = originWS + intersectDist * dirWS;
+			float3 lookupDir = intersectPositionWS - centerWS;
+			
+			// Calculate contribution
+			//// Shrink the box so fade out happens within box extents
+			float3 reducedExtents = extents - float3(transitionDistance, transitionDistance, transitionDistance);
+			float distToBox = getDistBoxToPoint(originLS * reducedExtents, reducedExtents);
+			
+			float normalizedDistance = distToBox / transitionDistance;
+			
+			// If closer than 70% to the probe radius, then full contribution is used.
+			// For the other 30% we smoothstep and return contribution lower than 1 so other
+			// reflection probes can be blended.			
+		
+			// smoothstep from 1 to 0.7:
+			//   float t = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
+			//   return t * t * (3.0 - 2.0 * t);
+			
+			float t = saturate(3.3333 - 3.3333 * normalizedDistance);
+			contribution = t * t * (3.0 - 2.0 * t);
+			
+			return lookupDir;
+		}
+		
+		float3 gatherReflectionRadiance(float3 worldPos, float3 dir, float roughness, float3 specularColor, uint probeOffset, uint numProbes)
+		{
+			if(gUseReflectionMaps == 0)
+				return specularColor;
+									
+			float mipLevel = mapRoughnessToMipLevel(roughness, gReflCubemapNumMips);
+			
+			float3 output = 0;
+			float leftoverContribution = 1.0f;
+			for(uint i = 0; i < numProbes; i++)
+			{
+				if(leftoverContribution < 0.001f)
+					break;
+						
+				uint probeIdx = gReflectionProbeIndices[probeOffset + i];
+				ReflProbeData probeData = gReflectionProbes[probeIdx];
+				
+				float3 probeToPos = worldPos - probeData.position;
+				float distToProbe = length(probeToPos);
+				float normalizedDist = saturate(distToProbe / probeData.radius);
+							
+				if(distToProbe <= probeData.radius)
+				{
+					float3 correctedDir;
+					float contribution = 0;
+					if(probeData.type == 0) // Sphere
+					{
+						correctedDir = getLookupForSphereProxy(worldPos, dir, probeData.position, probeData.radius);
+						contribution = getSphereReflectionContribution(normalizedDist);
+					}
+					else if(probeData.type == 1) // Box
+					{
+						correctedDir = getLookupForBoxProxy(worldPos, dir, probeData.position, probeData.boxExtents, probeData.invBoxTransform, probeData.transitionDistance, contribution);
+					}
+					
+					float4 probeSample = gReflProbeCubemaps.SampleLevel(gReflProbeSamp, float4(correctedDir, probeData.cubemapIdx), mipLevel);
+					probeSample *= contribution;
+					
+					output += probeSample.rgb * leftoverContribution; 
+					leftoverContribution *= (1.0f - contribution);
+				}
+			}
+				
+			if(gSkyCubemapAvailable > 0)
+			{
+				float skyMipLevel = mapRoughnessToMipLevel(roughness, gSkyCubemapNumMips);
+				float4 skySample = gSkyReflectionTex.SampleLevel(gSkyReflectionSamp, dir, skyMipLevel) * gSkyBrightness;
+				
+				output += skySample.rgb * leftoverContribution; 
+			}
+					
+			return output;
+		}
+		
+		float3 getImageBasedSpecular(float3 worldPos, float3 V, float3 R, SurfaceData surfaceData, uint probeOffset, uint numProbes)
+		{
+			// See C++ code for generation of gPreintegratedEnvBRDF to see why this code works as is
+			float3 N = surfaceData.worldNormal.xyz;
+			float NoV = saturate(dot(N, V));
+			
+			// Note: Using a fixed F0 value of 0.04 (plastic) for dielectrics, and using albedo as specular for conductors.
+			// For more customizability allow the user to provide separate albedo/specular colors for both types.
+			float3 specularColor = lerp(float3(0.04f, 0.04f, 0.04f), surfaceData.albedo.rgb, surfaceData.metalness);
+			float3 radiance = gatherReflectionRadiance(worldPos, R, surfaceData.roughness, specularColor, probeOffset, numProbes);
+			
+			float2 envBRDF = gPreintegratedEnvBRDF.SampleLevel(gPreintegratedEnvBRDFSamp, float2(NoV, surfaceData.roughness), 0).rg;
+			
+			return radiance * (specularColor * envBRDF.x + envBRDF.y);
+		}		
 	};
 };

@@ -264,13 +264,9 @@ code			{ BEGIN(CODEBLOCK_HEADER); return TOKEN_CODE; }
 	/* Track when the code block begins, insert all code block characters into our own buffer, record a sequential index */
 	/* of all code blocks in the text, and track bracket open/closed state so we know when we're done with the code block. */
 	/* And finally output a sequential code block index to the parser (it shouldn't be aware of anything else in the block). */
-<CODEBLOCK_HEADER>=		{ BEGIN(CODEBLOCK_EQUALS); return yytext[0]; }
+<CODEBLOCK_HEADER>\{	{ BEGIN(CODEBLOCK); beginCodeBlock(yyextra); yyextra->numOpenBrackets = 1; return yytext[0]; }
 <CODEBLOCK_HEADER>{WS}	{ /* Skip blank */ }
 <CODEBLOCK_HEADER>.		{ return yytext[0]; }
-
-<CODEBLOCK_EQUALS>\{	{ BEGIN(CODEBLOCK); beginCodeBlock(yyextra); yyextra->numOpenBrackets = 1; return yytext[0]; }
-<CODEBLOCK_EQUALS>{WS}	{ /* Skip blank */ }
-<CODEBLOCK_EQUALS>.		{ return yytext[0]; }
 
 <CODEBLOCK>\{			{ yyextra->numOpenBrackets++; appendCodeBlock(yyextra, yytext, 1); }
 <CODEBLOCK>\}			{ 

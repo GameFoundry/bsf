@@ -1,41 +1,28 @@
 #include "$ENGINE$\PPBase.bslinc"
 #include "$ENGINE$\ReflectionCubemapCommon.bslinc"
 
-Parameters =
+technique ReflectionCubeDownsample
 {
-	int			gCubeFace;
-	SamplerCUBE	gInputSamp : alias("gInputTex");
-	TextureCUBE gInputTex;
-};
+	mixin PPBase;
+	mixin ReflectionCubemapCommon;
 
-Blocks =
-{
-	Block Input;
-};
-
-Technique 
- : inherits("PPBase")
- : inherits("ReflectionCubemapCommon") =
-{
-	Pass =
+	code
 	{
-		Fragment =
+		[internal]
+		cbuffer Input
 		{
-			cbuffer Input
-			{
-				int gCubeFace;
-			}	
-		
-			SamplerState gInputSamp;
-			TextureCube gInputTex;
+			int gCubeFace;
+		}	
+	
+		SamplerState gInputSamp;
+		TextureCube gInputTex;
 
-			float4 main(VStoFS input) : SV_Target0
-			{
-				float2 scaledUV = input.uv0 * 2.0f - 1.0f;
-				float3 dir = getDirFromCubeFace(gCubeFace, scaledUV);
-				
-				return gInputTex.Sample(gInputSamp, dir);
-			}	
-		};
+		float4 fsmain(VStoFS input) : SV_Target0
+		{
+			float2 scaledUV = input.uv0 * 2.0f - 1.0f;
+			float3 dir = getDirFromCubeFace(gCubeFace, scaledUV);
+			
+			return gInputTex.Sample(gInputSamp, dir);
+		}	
 	};
 };

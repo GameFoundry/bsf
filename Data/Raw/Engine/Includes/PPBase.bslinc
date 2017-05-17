@@ -1,36 +1,33 @@
-Technique : base("PPBase") =
+mixin PPBase
 {
-	Pass =
+	depth
 	{
-		DepthWrite = false;
-		DepthRead = false;
-	
-		Common = 
+		write = false;
+		read = false;
+	};
+
+	code
+	{
+		struct VStoFS
 		{
-			struct VStoFS
-			{
-				float4 position : SV_POSITION;
-				float2 uv0 : TEXCOORD0;
-			};
+			float4 position : SV_POSITION;
+			float2 uv0 : TEXCOORD0;
 		};
 
-		Vertex =
+		struct VertexInput
 		{
-			struct VertexInput
-			{
-				float2 screenPos : POSITION;
-				float2 uv0 : TEXCOORD0;
-			};
-			
-			VStoFS main(VertexInput input)
-			{
-				VStoFS output;
-			
-				output.position = float4(input.screenPos, 0, 1);
-				output.uv0 = input.uv0;
-
-				return output;
-			}			
+			float2 screenPos : POSITION;
+			float2 uv0 : TEXCOORD0;
 		};
+		
+		VStoFS vsmain(VertexInput input)
+		{
+			VStoFS output;
+		
+			output.position = float4(input.screenPos, 0, 1);
+			output.uv0 = input.uv0;
+
+			return output;
+		}			
 	};
 };

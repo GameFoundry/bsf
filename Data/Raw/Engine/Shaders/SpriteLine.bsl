@@ -1,76 +1,67 @@
-Parameters =
+technique SpriteLine
 {
-	mat4x4 	worldTransform;
-	float	invViewportWidth;
-	float	invViewportHeight;
-
-	color	tint;
-};
-
-Technique =
-{
-	Pass =
+	blend
 	{
-		Target = 
+		target	
 		{
-			Blend = true;
-			Color = { SRCA, SRCIA, ADD };
-			WriteMask = RGB;
+			enabled = true;
+			color = { srcA, srcIA, add };
+			writemask = RGB;
 		};
-		
-		DepthRead = false;
-		DepthWrite = false;
-		
-		Multisample = false; // This controls line rendering algorithm
-		AALine = true;
-		
-		Common = 
+	};	
+	
+	depth
+	{
+		read = false;
+		write = false;
+	};
+	
+	raster
+	{
+		multisample = false; // This controls line rendering algorithm
+		lineaa = false;
+	};
+	
+	code
+	{
+		struct VStoFS
 		{
-			struct VStoFS
-			{
-				float4 position : SV_POSITION;
-			};
+			float4 position : SV_POSITION;
 		};
-		
-		Vertex =
-		{
-			cbuffer VertParams
-			{
-				float invViewportWidth;
-				float invViewportHeight;
-				float4x4 worldTransform;
-			};
-			
-			struct VertexInput
-			{
-				float2 position : POSITION;
-			};			
-			
-			VStoFS main(VertexInput input)
-			{
-				float4 tfrmdPos = mul(worldTransform, float4(input.position, 0, 1));
-				
-				float tfrmdX = -1.0f + (tfrmdPos.x * invViewportWidth);
-				float tfrmdY = 1.0f - (tfrmdPos.y * invViewportHeight);
 
-				VStoFS output;
-				output.position = float4(tfrmdX, tfrmdY, 0, 1);
-
-				return output;
-			}
+		cbuffer VertParams
+		{
+			float invViewportWidth;
+			float invViewportHeight;
+			float4x4 worldTransform;
 		};
 		
-		Fragment =
+		struct VertexInput
 		{
-			cbuffer VertParams
-			{
-				float4 tint;
-			};
+			float2 position : POSITION;
+		};			
+		
+		VStoFS vsmain(VertexInput input)
+		{
+			float4 tfrmdPos = mul(worldTransform, float4(input.position, 0, 1));
 			
-			float4 main(VStoFS input) : SV_Target
-			{
-				return tint;
-			}
+			float tfrmdX = -1.0f + (tfrmdPos.x * invViewportWidth);
+			float tfrmdY = 1.0f - (tfrmdPos.y * invViewportHeight);
+
+			VStoFS output;
+			output.position = float4(tfrmdX, tfrmdY, 0, 1);
+
+			return output;
+		}
+
+		cbuffer VertParams
+		{
+			float4 tint;
 		};
+		
+		float4 fsmain(VStoFS input) : SV_Target
+		{
+			return tint;
+		}
 	};
 };

@@ -13,7 +13,7 @@ OptionInfo OPTION_LOOKUP[] =
 	{ OT_Sort, ODT_Int },
 	{ OT_Transparent, ODT_Bool },
 	{ OT_Technique, ODT_Complex }, 
-	{ OT_Mixin, ODT_Complex },
+	{ OT_Mixin, ODT_String },
 	{ OT_Raster, ODT_Complex },
 	{ OT_Depth, ODT_Complex },
 	{ OT_Stencil, ODT_Complex },

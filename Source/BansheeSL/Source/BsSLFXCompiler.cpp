@@ -233,7 +233,7 @@ namespace bs
 		case Xsc::Reflection::BufferType::RWByteAddressBuffer: return GPOT_RWBYTE_BUFFER;
 		case Xsc::Reflection::BufferType::AppendStructuredBuffer: return GPOT_RWAPPEND_BUFFER;
 		case Xsc::Reflection::BufferType::ConsumeStructuredBuffer: return GPOT_RWCONSUME_BUFFER;
-		default: GPOT_UNKNOWN;
+		default: return GPOT_UNKNOWN;
 		}
 	}
 
@@ -1547,7 +1547,7 @@ namespace bs
 				}
 				else
 				{
-					output.errorMessage = "Base technique \"" + includes + "\" cannot be found.";
+					output.errorMessage = "Mixin \"" + includes + "\" cannot be found.";
 					return false;
 				}
 			}
@@ -1600,7 +1600,7 @@ namespace bs
 				PassData& vkslPassData = vkslTechnique.passes[j];
 
 				// Clean non-standard HLSL 
-				static const std::regex regex("\\[.*layout.*\\(.*\\).*\\]");
+				static const std::regex regex("\\[.*layout.*\\(.*\\).*\\]|\\[.*internal.*\\]|\\[.*color.*\\]");
 				hlslPassData.code = regex_replace(hlslPassData.code, regex, "");
 
 				// Find valid entry points and parameters
@@ -1681,11 +1681,11 @@ namespace bs
 					passDesc.depthStencilState = DepthStencilState::create(passData.depthStencilDesc);
 
 				GPU_PROGRAM_DESC desc;
-				desc.entryPoint = "main";
 				desc.language = metaData.language;
 
 				if (!passData.vertexCode.empty())
 				{
+					desc.entryPoint = "vsmain";
 					desc.source = passData.vertexCode;
 					desc.type = GPT_VERTEX_PROGRAM;
 
@@ -1694,6 +1694,7 @@ namespace bs
 
 				if (!passData.fragmentCode.empty())
 				{
+					desc.entryPoint = "fsmain";
 					desc.source = passData.fragmentCode;
 					desc.type = GPT_FRAGMENT_PROGRAM;
 
@@ -1702,6 +1703,7 @@ namespace bs
 
 				if (!passData.geometryCode.empty())
 				{
+					desc.entryPoint = "gsmain";
 					desc.source = passData.geometryCode;
 					desc.type = GPT_GEOMETRY_PROGRAM;
 
@@ -1710,6 +1712,7 @@ namespace bs
 
 				if (!passData.hullCode.empty())
 				{
+					desc.entryPoint = "hsmain";
 					desc.source = passData.hullCode;
 					desc.type = GPT_HULL_PROGRAM;
 
@@ -1718,6 +1721,7 @@ namespace bs
 
 				if (!passData.domainCode.empty())
 				{
+					desc.entryPoint = "dsmain";
 					desc.source = passData.domainCode;
 					desc.type = GPT_DOMAIN_PROGRAM;
 
@@ -1726,6 +1730,7 @@ namespace bs
 
 				if (!passData.computeCode.empty())
 				{
+					desc.entryPoint = "csmain";
 					desc.source = passData.computeCode;
 					desc.type = GPT_COMPUTE_PROGRAM;
 

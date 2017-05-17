@@ -9,76 +9,70 @@
 #include "$ENGINE$\NormalVertexInput.bslinc"
 #undef USE_BLEND_SHAPES
 
-Technique : base("BasePassCommon") =
+mixin BasePassCommon
 {
-	Pass =
-	{
-		Vertex =
-		{			
-			VStoFS main(VertexInput input)
-			{
-				VStoFS output;
-			
-				VertexIntermediate intermediate = getVertexIntermediate(input);
-				float4 worldPosition = getVertexWorldPosition(input, intermediate);
-				
-				output.worldPosition = worldPosition.xyz;
-				output.position = mul(gMatViewProj, worldPosition);
-				populateVertexOutput(input, intermediate, output);
-							
-				return output;
-			}
-		};
-		
-		Fragment =
+	code
+	{			
+		VStoFS vsmain(VertexInput input)
 		{
-			float3 calcWorldNormal(VStoFS input, float3 surfaceNormal)
-			{
-				float3 tangentToWorldX = input.tangentToWorldX.xyz;
-				float3 tangentToWorldZ = input.tangentToWorldZ;
-				float3 tangentToWorldY = cross(tangentToWorldZ, tangentToWorldX) * input.tangentToWorldX.w;
-				
-				float3x3 tangentToWorld = float3x3(tangentToWorldX, tangentToWorldY, tangentToWorldZ);
-				
-				// Multiplication order flipped because we stored basis vectors as rows
-				return normalize(mul(surfaceNormal, tangentToWorld));			
-			}
-		};
+			VStoFS output;
+		
+			VertexIntermediate intermediate = getVertexIntermediate(input);
+			float4 worldPosition = getVertexWorldPosition(input, intermediate);
+			
+			output.worldPosition = worldPosition.xyz;
+			output.position = mul(gMatViewProj, worldPosition);
+			populateVertexOutput(input, intermediate, output);
+						
+			return output;
+		}
+
+		float3 calcWorldNormal(VStoFS input, float3 surfaceNormal)
+		{
+			float3 tangentToWorldX = input.tangentToWorldX.xyz;
+			float3 tangentToWorldZ = input.tangentToWorldZ;
+			float3 tangentToWorldY = cross(tangentToWorldZ, tangentToWorldX) * input.tangentToWorldX.w;
+			
+			float3x3 tangentToWorld = float3x3(tangentToWorldX, tangentToWorldY, tangentToWorldZ);
+			
+			// Multiplication order flipped because we stored basis vectors as rows
+			return normalize(mul(surfaceNormal, tangentToWorld));			
+		}
 	};
 };
 
-Technique
- : base("BasePass")
- : inherits("GBufferOutput")
- : inherits("PerCameraData")
- : inherits("PerObjectData")
- : inherits("NormalVertexInput")
- : inherits("BasePassCommon") =
-{ };
+mixin BasePass
+{ 
+	mixin GBufferOutput;
+	mixin PerCameraData;
+	mixin PerObjectData;
+	mixin NormalVertexInput;
+	mixin BasePassCommon;
+};
 
-Technique
- : base("BasePassSkinned")
- : inherits("GBufferOutput")
- : inherits("PerCameraData")
- : inherits("PerObjectData")
- : inherits("SkinnedVertexInput")
- : inherits("BasePassCommon") =
-{ };
+mixin BasePassSkinned
+{
+	mixin GBufferOutput;
+	mixin PerCameraData;
+	mixin PerObjectData;
+	mixin SkinnedVertexInput;
+	mixin BasePassCommon;
+};
 
-Technique
- : base("BasePassMorph")
- : inherits("GBufferOutput")
- : inherits("PerCameraData")
- : inherits("PerObjectData")
- : inherits("MorphVertexInput")
- : inherits("BasePassCommon") =
-{ };
+mixin BasePassMorph
+{
+	mixin GBufferOutput;
+	mixin PerCameraData;
+	mixin PerObjectData;
+	mixin MorphVertexInput;
+	mixin BasePassCommon;
+};
 
-Technique
- : base("BasePassSkinnedMorph")
- : inherits("GBufferOutput")
- : inherits("PerCameraData")
- : inherits("PerObjectData")
- : inherits("SkinnedMorphVertexInput")
- : inherits("BasePassCommon") =
-{ };
+mixin BasePassSkinnedMorph
+{
+	mixin GBufferOutput;
+	mixin PerCameraData;
+	mixin PerObjectData;
+	mixin SkinnedMorphVertexInput;
+	mixin BasePassCommon;
+};

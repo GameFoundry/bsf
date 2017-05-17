@@ -1,64 +1,61 @@
-Technique : base("LightGridCommon") =
+mixin LightGridCommon
 {
-	Pass =
+	code
 	{
-		Common = 
+		cbuffer GridParams : register(b4)
 		{
-			cbuffer GridParams : register(b4)
-			{
-				// Offsets at which specific light types begin in gLights buffer
-				// Assumed directional lights start at 0
-				// x - offset to point lights, y - offset to spot lights, z - total number of lights
-				uint3 gLightOffsets;
-				uint gNumReflProbes;
-				uint gNumCells;
-				uint3 gGridSize;
-				uint gMaxNumLightsPerCell;
-				uint2 gGridPixelSize;
-			}
-						
-			float calcViewZFromCellZ(uint cellZ)
-			{
-				// We don't want to subdivide depth uniformly because XY sizes will be much
-				// smaller closer to the near plane, and larger towards far plane. We want 
-				// our cells to be as close to cube shape as possible, so that width/height/depth
-				// are all similar. Ideally we would use either width or height as calculated for
-				// purposes of the projection matrix, for the depth. But since we'll be splitting
-				// the depth range into multiple slices, in practice this ends up with many tiny
-				// cells close to the near plane. Instead we use a square function, which is
-				// somewhere between the two extremes:
-				//  view = slice^2
-				
-				// We need it in range [near, far] so we normalize and scale
-				//  view = slice^2 / maxSlices^2 * (far - near) + near
-				
-				// Note: Some of these calculations could be moved to CPU
-				float viewZ = (pow(cellZ, 2) / pow(gGridSize.z, 2)) * (gNearFar.y - gNearFar.x) + gNearFar.x; 
-				return -viewZ;
-			}
+			// Offsets at which specific light types begin in gLights buffer
+			// Assumed directional lights start at 0
+			// x - offset to point lights, y - offset to spot lights, z - total number of lights
+			uint3 gLightOffsets;
+			uint gNumReflProbes;
+			uint gNumCells;
+			uint3 gGridSize;
+			uint gMaxNumLightsPerCell;
+			uint2 gGridPixelSize;
+		}
+					
+		float calcViewZFromCellZ(uint cellZ)
+		{
+			// We don't want to subdivide depth uniformly because XY sizes will be much
+			// smaller closer to the near plane, and larger towards far plane. We want 
+			// our cells to be as close to cube shape as possible, so that width/height/depth
+			// are all similar. Ideally we would use either width or height as calculated for
+			// purposes of the projection matrix, for the depth. But since we'll be splitting
+			// the depth range into multiple slices, in practice this ends up with many tiny
+			// cells close to the near plane. Instead we use a square function, which is
+			// somewhere between the two extremes:
+			//  view = slice^2
 			
-			uint calcCellZFromViewZ(float viewZ)
-			{
-				// Inverse of calculation in calcViewZFromCellZ
-				uint cellZ = min((uint)floor(sqrt(((-viewZ - gNearFar.x)*pow(gGridSize.z, 2))/(gNearFar.y - gNearFar.x))), gGridSize.z);
-				
-				return cellZ;
-			}
+			// We need it in range [near, far] so we normalize and scale
+			//  view = slice^2 / maxSlices^2 * (far - near) + near
 			
-			uint calcCellIdx(uint2 pixelPos, float deviceZ)
-			{
-				// OpenGL uses lower left for window space origin
-				#ifdef OPENGL
-					pixelPos.y = gViewportRectangle.w - pixelPos.y;
-				#endif			
+			// Note: Some of these calculations could be moved to CPU
+			float viewZ = (pow(cellZ, 2) / pow(gGridSize.z, 2)) * (gNearFar.y - gNearFar.x) + gNearFar.x; 
+			return -viewZ;
+		}
+		
+		uint calcCellZFromViewZ(float viewZ)
+		{
+			// Inverse of calculation in calcViewZFromCellZ
+			uint cellZ = min((uint)floor(sqrt(((-viewZ - gNearFar.x)*pow(gGridSize.z, 2))/(gNearFar.y - gNearFar.x))), gGridSize.z);
 			
-				// Note: Use bitshift to divide since gGridPixelSize will be a power of 2
-				uint2 cellXY = pixelPos / gGridPixelSize;
-				uint cellZ = calcCellZFromViewZ(convertFromDeviceZ(deviceZ));
-				
-				uint cellIdx = (cellZ * gGridSize.y + cellXY.y) * gGridSize.x + cellXY.x;
-				return cellIdx;
-			}
-		};
+			return cellZ;
+		}
+		
+		uint calcCellIdx(uint2 pixelPos, float deviceZ)
+		{
+			// OpenGL uses lower left for window space origin
+			#ifdef OPENGL
+				pixelPos.y = gViewportRectangle.w - pixelPos.y;
+			#endif			
+		
+			// Note: Use bitshift to divide since gGridPixelSize will be a power of 2
+			uint2 cellXY = pixelPos / gGridPixelSize;
+			uint cellZ = calcCellZFromViewZ(convertFromDeviceZ(deviceZ));
+			
+			uint cellIdx = (cellZ * gGridSize.y + cellXY.y) * gGridSize.x + cellXY.x;
+			return cellIdx;
+		}
 	};
 };

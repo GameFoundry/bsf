@@ -203,10 +203,6 @@
             "UUID": "25df2c87-c206-4c2f-ab2b-3aad9e7f90f1"
         },
         {
-            "Path": "TestFX.bsl",
-            "UUID": "9e783e45-bf1f-41cc-bb48-eb2e1200cfb6"
-        },
-        {
             "Path": "TiledDeferredLighting.bsl",
             "UUID": "787d7293-f335-4eda-a897-c706e6b5c818"
         },

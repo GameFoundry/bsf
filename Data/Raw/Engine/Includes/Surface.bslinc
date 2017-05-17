@@ -1,26 +1,29 @@
-Technique 
- : inherits("BasePass")
- : inherits("Surface") =
+technique Surface1
 {
+	mixin BasePass;
+	mixin Surface;
 };
 
-Technique 
- : inherits("BasePassSkinned")
- : inherits("Surface") =
+technique Surface2
 {
-	Tags = { "Skinned" };
+	mixin BasePassSkinned;
+	mixin Surface;
+
+	tags = { "Skinned" };
 };
 
-Technique 
- : inherits("BasePassMorph")
- : inherits("Surface") =
+technique Surface3
 {
-	Tags = { "Morph" };
+	mixin BasePassMorph;
+	mixin Surface;
+
+	tags = { "Morph" };
 };
 
-Technique 
- : inherits("BasePassSkinnedMorph")
- : inherits("Surface") =
+technique Surface4
 {
-	Tags = { "SkinnedMorph" };
+	mixin BasePassSkinnedMorph;
+	mixin Surface;
+
+	tags = { "SkinnedMorph" };
 };

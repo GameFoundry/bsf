@@ -1,54 +1,52 @@
 #include "$ENGINE$\PerCameraData.bslinc"
 
-Parameters =
+technique Skybox
 {
-	SamplerCUBE 	gSkySamp : alias("gSkyTex");
-	TextureCUBE  	gSkyTex;
-};
+	mixin PerCameraData;
 
-Technique : inherits("PerCameraData") =
-{
-	Pass =
+	raster
 	{
-		Cull = CW;
-		CompareFunc = LTE;
-		DepthWrite = false;
-		
-		Vertex =
-		{
-			void main(
-				in float3 inPos : POSITION,
-				out float4 oPosition : SV_Position,
-				out float3 oDir : TEXCOORD0)
-			{
-				float4 pos = mul(gMatViewProj, float4(inPos.xyz + gViewOrigin, 1));
-			
-				// Set Z = W so that final depth is 1.0f and it renders behind everything else
-				oPosition = pos.xyww;
-				oDir = inPos;
-			}
-		};
-		
-		Fragment =
-		{
-			TextureCube gSkyTex : register(t0);
-			SamplerState gSkySamp : register(s0);
-		
-			cbuffer Params : register(b0)
-			{
-				float4 gClearColor;
-			}
-		
-			float4 main(
-				in float4 inPos : SV_Position, 
-				in float3 dir : TEXCOORD0) : SV_Target
-			{
-				#ifdef SOLID_COLOR
-					return gClearColor;
-				#else
-					return gSkyTex.SampleLevel(gSkySamp, dir, 0);
-				#endif
-				}
-		};	
+		cull = cw;
 	};
+
+	depth
+	{
+		compare = lte;
+		write = false;
+	};
+		
+	code
+	{
+		void vsmain(
+			in float3 inPos : POSITION,
+			out float4 oPosition : SV_Position,
+			out float3 oDir : TEXCOORD0)
+		{
+			float4 pos = mul(gMatViewProj, float4(inPos.xyz + gViewOrigin, 1));
+		
+			// Set Z = W so that final depth is 1.0f and it renders behind everything else
+			oPosition = pos.xyww;
+			oDir = inPos;
+		}
+
+		TextureCube gSkyTex;
+		SamplerState gSkySamp;
+	
+		[internal]
+		cbuffer Params
+		{
+			float4 gClearColor;
+		}
+	
+		float4 fsmain(
+			in float4 inPos : SV_Position, 
+			in float3 dir : TEXCOORD0) : SV_Target
+		{
+			#ifdef SOLID_COLOR
+				return gClearColor;
+			#else
+				return gSkyTex.SampleLevel(gSkySamp, dir, 0);
+			#endif
+			}
+	};	
 };

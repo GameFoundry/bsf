@@ -488,11 +488,7 @@ target_header
 
 target_body
 	: /* empty */
-	| target_statement target_body		{ nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$1); }
-	;
-
-target_statement
-	: target_option
+	| target_option target_body		{ nodeOptionsAdd(parse_state->memContext, parse_state->topNode->options, &$1); }
 	;
 
 target_option
