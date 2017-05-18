@@ -148,6 +148,13 @@ namespace bs { namespace ct
 		UINT64 layer;
 	};
 
+	/**	Renderer information specific to a single render target. */
+	struct RendererRenderTarget
+	{
+		SPtr<RenderTarget> target;
+		Vector<const Camera*> cameras;
+	};
+
 	/** Contains information about a single view into the scene, used by the renderer. */
 	class RendererView
 	{
@@ -219,13 +226,13 @@ namespace bs { namespace ct
 
 		/**
 		 * Culls the provided set of bounds against the current frustum and outputs a set of visibility flags determining
-		 * which entry is or ins't visible by this view. Both inputs must be arrays of the same size.
+		 * which entry is or isn't visible by this view. Both inputs must be arrays of the same size.
 		 */
 		void calculateVisibility(const Vector<CullInfo>& cullInfos, Vector<bool>& visibility) const;
 
 		/**
 		* Culls the provided set of bounds against the current frustum and outputs a set of visibility flags determining
-		* which entry is or ins't visible by this view. Both inputs must be arrays of the same size.
+		* which entry is or isn't visible by this view. Both inputs must be arrays of the same size.
 		*/
 		void calculateVisibility(const Vector<Sphere>& bounds, Vector<bool>& visibility) const;
 
