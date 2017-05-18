@@ -11,7 +11,7 @@
 #include "BsImageBasedLighting.h"
 #include "BsObjectRendering.h"
 #include "BsPostProcessing.h"
-#include "BsRendererCamera.h"
+#include "BsRendererView.h"
 #include "BsRendererObject.h"
 
 namespace bs 
@@ -145,7 +145,7 @@ namespace bs
 		 * @param[in]	forceRemove	If true, the camera data will be removed instead of updated.
 		 * @return					Renderer camera object that represents the camera. Null if camera was removed.
 		 */
-		RendererCamera* updateCameraData(const Camera* camera, bool forceRemove = false);
+		RendererView* updateCameraData(const Camera* camera, bool forceRemove = false);
 
 		/**
 		 * Updates the render options on the core thread.
@@ -169,21 +169,21 @@ namespace bs
 		 * 
 		 * @note	Core thread only. 
 		 */
-		void renderViews(RendererCamera** views, UINT32 numViews, const FrameInfo& frameInfo);
+		void renderViews(RendererView** views, UINT32 numViews, const FrameInfo& frameInfo);
 
 		/**
 		 * Renders all objects visible by the provided view.
 		 *			
 		 * @note	Core thread only.
 		 */
-		void renderView(RendererCamera* viewInfo, float frameDelta);
+		void renderView(RendererView* viewInfo, float frameDelta);
 
 		/**
 		 * Renders all overlay callbacks of the provided view.
 		 * 					
 		 * @note	Core thread only.
 		 */
-		void renderOverlay(RendererCamera* viewInfo);
+		void renderOverlay(RendererView* viewInfo);
 
 		/** 
 		 * Renders a single element of a renderable object. 
@@ -228,7 +228,7 @@ namespace bs
 		// Scene data
 		//// Cameras and render targets
 		Vector<RendererRenderTarget> mRenderTargets;
-		UnorderedMap<const Camera*, RendererCamera*> mCameras;
+		UnorderedMap<const Camera*, RendererView*> mCameras;
 		
 		//// Renderables
 		Vector<RendererObject*> mRenderables;

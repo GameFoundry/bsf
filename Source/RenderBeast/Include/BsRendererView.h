@@ -148,12 +148,12 @@ namespace bs { namespace ct
 		UINT64 layer;
 	};
 
-	/** Contains information about a Camera, used by the Renderer. */
-	class RendererCamera
+	/** Contains information about a single view into the scene, used by the renderer. */
+	class RendererView
 	{
 	public:
-		RendererCamera();
-		RendererCamera(const RENDERER_VIEW_DESC& desc);
+		RendererView();
+		RendererView(const RENDERER_VIEW_DESC& desc);
 
 		/** Sets state reduction mode that determines how do render queues group & sort renderables. */
 		void setStateReductionMode(StateReduction reductionMode);

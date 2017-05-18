@@ -1,11 +1,11 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsShadowRendering.h"
-#include "BsRendererCamera.h"
+#include "BsRendererView.h"
 
 namespace bs { namespace ct
 {
-	ConvexVolume ShadowRendering::getCSMSplitFrustum(const RendererCamera& view, const Vector3& lightDir, UINT32 cascade, 
+	ConvexVolume ShadowRendering::getCSMSplitFrustum(const RendererView& view, const Vector3& lightDir, UINT32 cascade, 
 		UINT32 numCascades, Sphere& outBounds)
 	{
 		// Determine split range
@@ -145,7 +145,7 @@ namespace bs { namespace ct
 		return ConvexVolume(lightVolume);
 	}
 
-	float ShadowRendering::getCSMSplitDistance(const RendererCamera& view, UINT32 index, UINT32 numCascades)
+	float ShadowRendering::getCSMSplitDistance(const RendererView& view, UINT32 index, UINT32 numCascades)
 	{
 		// Determines the size of each subsequent cascade split. Value of 1 means the cascades will be linearly split.
 		// Value of 2 means each subsequent split will be twice the size of the previous one. Valid range is roughly

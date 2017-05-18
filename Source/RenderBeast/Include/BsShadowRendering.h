@@ -32,7 +32,7 @@ namespace bs { namespace ct
 		 * @param[out]	outBounds	Spherical bounds of the split view frustum.
 		 * @return					Convex volume covering the area of the split view frustum visible from the light.
 		 */
-		static ConvexVolume getCSMSplitFrustum(const RendererCamera& view, const Vector3& lightDir, UINT32 cascade, 
+		static ConvexVolume getCSMSplitFrustum(const RendererView& view, const Vector3& lightDir, UINT32 cascade, 
 			UINT32 numCascades, Sphere& outBounds);
 
 		/**
@@ -45,7 +45,7 @@ namespace bs { namespace ct
 		 *								and greater or equal to @p index.
 		 * @return						Distance to the split position along the view direction.
 		 */
-		static float getCSMSplitDistance(const RendererCamera& view, UINT32 index, UINT32 numCascades);
+		static float getCSMSplitDistance(const RendererView& view, UINT32 index, UINT32 numCascades);
 	};
 
 	/* @} */

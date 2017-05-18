@@ -423,13 +423,13 @@ namespace bs { namespace ct
 
 	void RenderBeast::notifyCameraAdded(const Camera* camera)
 	{
-		RendererCamera* renCamera = updateCameraData(camera);
+		RendererView* renCamera = updateCameraData(camera);
 		renCamera->updatePerViewBuffer();
 	}
 
 	void RenderBeast::notifyCameraUpdated(const Camera* camera, UINT32 updateFlag)
 	{
-		RendererCamera* rendererCam;
+		RendererView* rendererCam;
 		if((updateFlag & (UINT32)CameraDirtyFlag::Everything) != 0)
 		{
 			rendererCam = updateCameraData(camera);
@@ -573,9 +573,9 @@ namespace bs { namespace ct
 		return bs_shared_ptr_new<StandardPostProcessSettings>();
 	}
 
-	RendererCamera* RenderBeast::updateCameraData(const Camera* camera, bool forceRemove)
+	RendererView* RenderBeast::updateCameraData(const Camera* camera, bool forceRemove)
 	{
-		RendererCamera* output;
+		RendererView* output;
 
 		SPtr<RenderTarget> renderTarget = camera->getViewport()->getTarget();
 
@@ -660,7 +660,7 @@ namespace bs { namespace ct
 			}
 			else
 			{
-				output = bs_new<RendererCamera>(viewDesc);
+				output = bs_new<RendererView>(viewDesc);
 				mCameras[camera] = output;
 			}
 
@@ -756,7 +756,7 @@ namespace bs { namespace ct
 
 		for (auto& entry : mCameras)
 		{
-			RendererCamera* rendererCam = entry.second;
+			RendererView* rendererCam = entry.second;
 			rendererCam->setStateReductionMode(mCoreOptions->stateReductionMode);
 		}
 	}
@@ -800,7 +800,7 @@ namespace bs { namespace ct
 		updateLightProbes(frameInfo);
 
 		// Gather all views
-		Vector<RendererCamera*> views;
+		Vector<RendererView*> views;
 		for (auto& rtInfo : mRenderTargets)
 		{
 			SPtr<RenderTarget> target = rtInfo.target;
@@ -809,7 +809,7 @@ namespace bs { namespace ct
 			UINT32 numCameras = (UINT32)cameras.size();
 			for (UINT32 i = 0; i < numCameras; i++)
 			{
-				RendererCamera* viewInfo = mCameras[cameras[i]];
+				RendererView* viewInfo = mCameras[cameras[i]];
 				views.push_back(viewInfo);
 			}
 		}
@@ -829,7 +829,7 @@ namespace bs { namespace ct
 		gProfilerCPU().endSample("renderAllCore");
 	}
 
-	void RenderBeast::renderViews(RendererCamera** views, UINT32 numViews, const FrameInfo& frameInfo)
+	void RenderBeast::renderViews(RendererView** views, UINT32 numViews, const FrameInfo& frameInfo)
 	{
 		// Generate render queues per camera
 		mRenderableVisibility.assign(mRenderableVisibility.size(), false);
@@ -939,7 +939,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	void RenderBeast::renderView(RendererCamera* viewInfo, float frameDelta)
+	void RenderBeast::renderView(RendererView* viewInfo, float frameDelta)
 	{
 		gProfilerCPU().beginSample("Render");
 
@@ -1201,7 +1201,7 @@ namespace bs { namespace ct
 		gProfilerCPU().endSample("Render");
 	}
 
-	void RenderBeast::renderOverlay(RendererCamera* viewInfo)
+	void RenderBeast::renderOverlay(RendererView* viewInfo)
 	{
 		gProfilerCPU().beginSample("RenderOverlay");
 
@@ -1468,7 +1468,7 @@ namespace bs { namespace ct
 
 		Matrix4 viewOffsetMat = Matrix4::translation(-position);
 
-		RendererCamera views[6];
+		RendererView views[6];
 		for(UINT32 i = 0; i < 6; i++)
 		{
 			// Calculate view matrix
@@ -1534,7 +1534,7 @@ namespace bs { namespace ct
 			views[i].determineVisible(mRenderables, mRenderableCullInfos);
 		}
 
-		RendererCamera* viewPtrs[] = { &views[0], &views[1], &views[2], &views[3], &views[4], &views[5] };
+		RendererView* viewPtrs[] = { &views[0], &views[1], &views[2], &views[3], &views[4], &views[5] };
 		renderViews(viewPtrs, 6, frameInfo);
 	}
 

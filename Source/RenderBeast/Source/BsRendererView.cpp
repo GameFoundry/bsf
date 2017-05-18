@@ -1,6 +1,6 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
-#include "BsRendererCamera.h"
+#include "BsRendererView.h"
 #include "BsCamera.h"
 #include "BsRenderable.h"
 #include "BsMaterial.h"
@@ -69,13 +69,13 @@ namespace bs { namespace ct
 		clearStencilValue = src.target.clearStencilValue;
 	}
 
-	RendererCamera::RendererCamera()
+	RendererView::RendererView()
 		: mUsingGBuffer(false)
 	{
 		mParamBuffer = gPerCameraParamDef.createBuffer();
 	}
 
-	RendererCamera::RendererCamera(const RENDERER_VIEW_DESC& desc)
+	RendererView::RendererView(const RENDERER_VIEW_DESC& desc)
 		: mProperties(desc), mTargetDesc(desc.target), mCamera(desc.sceneCamera), mUsingGBuffer(false)
 	{
 		mParamBuffer = gPerCameraParamDef.createBuffer();
@@ -83,7 +83,7 @@ namespace bs { namespace ct
 		setStateReductionMode(desc.stateReduction);
 	}
 
-	void RendererCamera::setStateReductionMode(StateReduction reductionMode)
+	void RendererView::setStateReductionMode(StateReduction reductionMode)
 	{
 		mOpaqueQueue = bs_shared_ptr_new<RenderQueue>(reductionMode);
 
@@ -94,7 +94,7 @@ namespace bs { namespace ct
 		mTransparentQueue = bs_shared_ptr_new<RenderQueue>(transparentStateReduction);
 	}
 
-	void RendererCamera::setPostProcessSettings(const SPtr<PostProcessSettings>& ppSettings)
+	void RendererView::setPostProcessSettings(const SPtr<PostProcessSettings>& ppSettings)
 	{
 		if (mPostProcessInfo.settings == nullptr)
 			mPostProcessInfo.settings = bs_shared_ptr_new<StandardPostProcessSettings>();
@@ -108,7 +108,7 @@ namespace bs { namespace ct
 		mPostProcessInfo.settingDirty = true;
 	}
 
-	void RendererCamera::setTransform(const Vector3& origin, const Vector3& direction, const Matrix4& view, 
+	void RendererView::setTransform(const Vector3& origin, const Vector3& direction, const Matrix4& view, 
 									  const Matrix4& proj, const ConvexVolume& worldFrustum)
 	{
 		mProperties.viewOrigin = origin;
@@ -119,7 +119,7 @@ namespace bs { namespace ct
 		mProperties.viewProjTransform = proj * view;
 	}
 
-	void RendererCamera::setView(const RENDERER_VIEW_DESC& desc)
+	void RendererView::setView(const RENDERER_VIEW_DESC& desc)
 	{
 		if (mTargetDesc.targetWidth != desc.target.targetWidth ||
 			mTargetDesc.targetHeight != desc.target.targetHeight)
@@ -132,7 +132,7 @@ namespace bs { namespace ct
 		setStateReductionMode(desc.stateReduction);
 	}
 
-	void RendererCamera::beginRendering(bool useGBuffer)
+	void RendererView::beginRendering(bool useGBuffer)
 	{
 		if (useGBuffer)
 		{
@@ -149,7 +149,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	void RendererCamera::endRendering()
+	void RendererView::endRendering()
 	{
 		mOpaqueQueue->clear();
 		mTransparentQueue->clear();
@@ -161,7 +161,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	void RendererCamera::determineVisible(const Vector<RendererObject*>& renderables, const Vector<CullInfo>& cullInfos,
+	void RendererView::determineVisible(const Vector<RendererObject*>& renderables, const Vector<CullInfo>& cullInfos,
 		Vector<bool>* visibility)
 	{
 		mVisibility.renderables.clear();
@@ -208,7 +208,7 @@ namespace bs { namespace ct
 		mTransparentQueue->sort();
 	}
 
-	void RendererCamera::calculateVisibility(const Vector<CullInfo>& cullInfos, Vector<bool>& visibility) const
+	void RendererView::calculateVisibility(const Vector<CullInfo>& cullInfos, Vector<bool>& visibility) const
 	{
 		UINT64 cameraLayers = mProperties.visibleLayers;
 		const ConvexVolume& worldFrustum = mProperties.cullFrustum;
@@ -233,7 +233,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	void RendererCamera::calculateVisibility(const Vector<Sphere>& bounds, Vector<bool>& visibility) const
+	void RendererView::calculateVisibility(const Vector<Sphere>& bounds, Vector<bool>& visibility) const
 	{
 		const ConvexVolume& worldFrustum = mProperties.cullFrustum;
 
@@ -244,7 +244,7 @@ namespace bs { namespace ct
 		}
 	}
 
-	Vector2 RendererCamera::getDeviceZTransform(const Matrix4& projMatrix) const
+	Vector2 RendererView::getDeviceZTransform(const Matrix4& projMatrix) const
 	{
 		// Returns a set of values that will transform depth buffer values (in range [0, 1]) to a distance
 		// in view space. This involes applying the inverse projection transform to the depth value. When you multiply
@@ -291,7 +291,7 @@ namespace bs { namespace ct
 		return output;
 	}
 
-	Vector2 RendererCamera::getNDCZTransform(const Matrix4& projMatrix) const
+	Vector2 RendererView::getNDCZTransform(const Matrix4& projMatrix) const
 	{
 		// Returns a set of values that will transform depth buffer values (e.g. [0, 1] in DX, [-1, 1] in GL) to a distance
 		// in view space. This involes applying the inverse projection transform to the depth value. When you multiply
@@ -330,7 +330,7 @@ namespace bs { namespace ct
 		return output;
 	}
 
-	void RendererCamera::updatePerViewBuffer()
+	void RendererView::updatePerViewBuffer()
 	{
 		Matrix4 viewProj = mProperties.projTransform * mProperties.viewTransform;
 		Matrix4 invViewProj = viewProj.inverse();
