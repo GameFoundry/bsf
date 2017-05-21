@@ -1,9 +1,11 @@
 #include "$EDITOR$/PickingCull.bslinc"
 
-Technique : inherits("PickingCull") =
+technique PickingCullNone
 {
-	Pass =
+	mixin PickingCull;
+
+	raster
 	{
-		Cull = NOCULL;
+		cull = none;
 	};
 };

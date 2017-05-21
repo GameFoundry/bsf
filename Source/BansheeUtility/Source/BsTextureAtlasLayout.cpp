@@ -119,7 +119,7 @@ namespace bs
 	{
 		for (size_t i = 0; i < elements.size(); i++)
 		{
-			elements[i].output.idx = i; // Preserve original index before sorting
+			elements[i].output.idx = (UINT32)i; // Preserve original index before sorting
 			elements[i].output.page = -1;
 		}
 

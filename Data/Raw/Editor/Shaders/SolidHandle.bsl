@@ -1,19 +1,32 @@
 #include "$EDITOR$/SolidGizmo.bslinc"
-Priority = 10;
 
-Technique : inherits("SolidGizmo") =
+options
 {
-	Pass =
+	priority = 10;
+}
+
+technique SolidGizmo
+{
+	mixin SolidGizmoBase;
+
+	depth
 	{
-		DepthWrite = false;
-		DepthRead = false;
-		Stencil = true;
-		StencilOpFront = { KEEP, KEEP, INC, PASS };
-		
-		Target =
+		write = false;
+		read = false;
+	};
+	
+	stencil
+	{
+		enabled = true;
+		front = { keep, keep, inc, pass };
+	};
+	
+	blend
+	{
+		target
 		{
-			Blend = true;
-			Color = { SRCA, SRCIA, ADD };
+			enabled = true;
+			color = { srcA, srcIA, add };
 		};
 	};
 };

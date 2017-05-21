@@ -1,55 +1,37 @@
-Parameters =
+mixin PickingCull
 {
-	mat4x4		gMatWorldViewProj;
-	color		gColorIndex;
-	float		gAlphaCutoff;
-};
-
-Blocks =
-{
-	Block Uniforms : auto("PickingUniforms");
-};
-
-Technique : base("PickingCull") =
-{
-	Pass =
+	raster
 	{
-		Scissor = true;
-		
-		Common =
-		{
-			cbuffer Uniforms
-			{
-				float4x4 	gMatWorldViewProj;
-				float4		gColorIndex;
-				float		gAlphaCutoff;
-			}
-		};		
+		scissor = true;
+	};
 
-		Vertex =
+	code
+	{
+		cbuffer Uniforms
 		{
-			void main(
-				in float3 inPos : POSITION,
-				in float3 inNorm : NORMAL,
-				out float4 oPosition : SV_Position,
-				out float4 oNorm : NORMAL)
-			{
-				oPosition = mul(gMatWorldViewProj, float4(inPos.xyz, 1));
-				oNorm = float4(inNorm, 0);
-			}
-		};
-		
-		Fragment =
+			float4x4 	gMatWorldViewProj;
+			float4		gColorIndex;
+			float		gAlphaCutoff;
+		}
+
+		void vsmain(
+			in float3 inPos : POSITION,
+			in float3 inNorm : NORMAL,
+			out float4 oPosition : SV_Position,
+			out float4 oNorm : NORMAL)
 		{
-			float4 main(
-				in float4 inPos : SV_Position,
-				in float4 inNorm : NORMAL,	
-				out float4 oNorm : SV_Target1
-			) : SV_Target0
-			{
-				oNorm = (inNorm + float4(1,1,1,0)) / 2;
-				return gColorIndex;
-			}
-		};
+			oPosition = mul(gMatWorldViewProj, float4(inPos.xyz, 1));
+			oNorm = float4(inNorm, 0);
+		}
+
+		float4 fsmain(
+			in float4 inPos : SV_Position,
+			in float4 inNorm : NORMAL,	
+			out float4 oNorm : SV_Target1
+		) : SV_Target0
+		{
+			oNorm = (inNorm + float4(1,1,1,0)) / 2;
+			return gColorIndex;
+		}
 	};
 };

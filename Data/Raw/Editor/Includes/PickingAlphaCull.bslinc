@@ -1,68 +1,47 @@
-Parameters =
+mixin PickingAlphaCull
 {
-	mat4x4		gMatWorldViewProj;
-	color		gColorIndex;
-	float		gAlphaCutoff;
-	
-	Sampler2D 	gMainTexSamp : alias("gMainTexture");
-	Texture2D 	gMainTexture;	
-};
-
-Blocks =
-{
-	Block Uniforms : auto("PickingUniforms");
-};
-
-Technique : base("PickingAlphaCull") =
-{
-	Pass =
+	raster
 	{
-		Scissor = true;
+		scissor = true;
+	};
 
-		Common =
+	code
+	{
+		cbuffer Uniforms
 		{
-			cbuffer Uniforms
-			{
-				float4x4 	gMatWorldViewProj;
-				float4		gColorIndex;
-				float		gAlphaCutoff;
-			}
-		};			
-		
-		Vertex =
-		{
-			void main(
-				in float3 inPos : POSITION,
-				in float3 inNorm : NORMAL,
-				in float2 uv : TEXCOORD0,
-				out float4 oPosition : SV_Position,
-				out float4 oNorm : NORMAL,
-				out float2 oUv : TEXCOORD0)
-			{
-				oPosition = mul(gMatWorldViewProj, float4(inPos.xyz, 1));
-				oNorm = float4(inNorm, 0);
-				oUv = uv;
-			}
-		};
-		
-		Fragment =
-		{
-			SamplerState gMainTexSamp : register(s0);
-			Texture2D gMainTexture : register(t0);
+			float4x4 	gMatWorldViewProj;
+			float4		gColorIndex;
+			float		gAlphaCutoff;
+		}
 
-			float4 main(
-				in float4 inPos : SV_Position,
-				in float4 inNorm : NORMAL,
-				in float2 uv : TEXCOORD0,
-				out float4 oNorm : SV_Target1) : SV_Target0
-			{
-				float4 color = gMainTexture.Sample(gMainTexSamp, uv);
-				oNorm = (inNorm + float4(1,1,1,0)) / 2;
-				if(color.a < gAlphaCutoff)
-					discard;
-				
-				return gColorIndex;
-			}
-		};
+		void vsmain(
+			in float3 inPos : POSITION,
+			in float3 inNorm : NORMAL,
+			in float2 uv : TEXCOORD0,
+			out float4 oPosition : SV_Position,
+			out float4 oNorm : NORMAL,
+			out float2 oUv : TEXCOORD0)
+		{
+			oPosition = mul(gMatWorldViewProj, float4(inPos.xyz, 1));
+			oNorm = float4(inNorm, 0);
+			oUv = uv;
+		}
+
+		SamplerState gMainTexSamp;
+		Texture2D gMainTexture;
+
+		float4 fsmain(
+			in float4 inPos : SV_Position,
+			in float4 inNorm : NORMAL,
+			in float2 uv : TEXCOORD0,
+			out float4 oNorm : SV_Target1) : SV_Target0
+		{
+			float4 color = gMainTexture.Sample(gMainTexSamp, uv);
+			oNorm = (inNorm + float4(1,1,1,0)) / 2;
+			if(color.a < gAlphaCutoff)
+				discard;
+			
+			return gColorIndex;
+		}
 	};
 };

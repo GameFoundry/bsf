@@ -1,31 +1,23 @@
-Parameters =
+technique IconGizmo
 {
-	mat4x4		gMatViewProj;
-	float4		gViewDir;
-	
-	Sampler2D 	gMainTexSamp : alias("gMainTexture");
-	Texture2D 	gMainTexture;
-};
-
-Blocks =
-{
-	Block Uniforms : auto("GizmoUniforms");
-};
-
-Technique =
-{
-	Pass =
+	pass
 	{
-		Target = 
+		blend
 		{
-			Blend = true;
-			Color = { SRCA, SRCIA, ADD };
+			target
+			{
+				enabled = true;
+				color = { srcA, srcIA, add };
+			};
 		};
 		
-		DepthWrite = false;
-		CompareFunc = LTE;
+		depth
+		{
+			write = false;
+			compare = lte;
+		};
 		
-		Vertex =
+		code
 		{
 			cbuffer Uniforms
 			{
@@ -33,7 +25,7 @@ Technique =
 				float4		gViewDir;
 			}
 
-			void main(
+			void vsmain(
 				in float3 inPos : POSITION,
 				in float2 uv : TEXCOORD0,
 				in float4 color : COLOR0,
@@ -45,14 +37,11 @@ Technique =
 				oUv = uv;
 				oColor = color;
 			}		
-		};
-		
-		Fragment =
-		{
+
 			SamplerState gMainTexSamp : register(s0);
 			Texture2D gMainTexture : register(t0);
 
-			float4 main(
+			float4 fsmain(
 				in float4 inPos : SV_Position, 
 				float2 uv : TEXCOORD0, 
 				float4 color : COLOR0) : SV_Target
@@ -62,18 +51,24 @@ Technique =
 		};
 	};
 	
-	Pass =
+	pass
 	{
-		Target = 
+		blend
 		{
-			Blend = true;
-			Color = { SRCA, SRCIA, ADD };
+			target
+			{
+				enabled = true;
+				color = { srcA, srcIA, add };
+			};
 		};
 		
-		DepthWrite = false;
-		CompareFunc = GT;
+		depth
+		{
+			write = false;
+			compare = gt;
+		};
 		
-		Vertex =
+		code
 		{
 			cbuffer Uniforms
 			{
@@ -81,7 +76,7 @@ Technique =
 				float4		gViewDir;
 			}
 
-			void main(
+			void vsmain(
 				in float3 inPos : POSITION,
 				in float2 uv : TEXCOORD0,
 				in float4 color : COLOR1,
@@ -93,14 +88,11 @@ Technique =
 				oUv = uv;
 				oColor = color;
 			}		
-		};
-		
-		Fragment =
-		{
+
 			SamplerState gMainTexSamp : register(s0);
 			Texture2D gMainTexture : register(t0);
 
-			float4 main(
+			float4 fsmain(
 				in float4 inPos : SV_Position, 
 				float2 uv : TEXCOORD0, 
 				float4 color : COLOR0) : SV_Target

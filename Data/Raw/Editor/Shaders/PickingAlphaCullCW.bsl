@@ -1,9 +1,11 @@
 #include "$EDITOR$/PickingAlphaCull.bslinc"
 
-Technique : inherits("PickingAlphaCull") =
+technique PickingAlphaCullCW
 {
-	Pass =
+	mixin PickingAlphaCull;
+
+	raster
 	{
-		Cull = CW;
+		cull = cw;
 	};
 };

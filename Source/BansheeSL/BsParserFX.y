@@ -151,7 +151,6 @@ typedef struct YYLTYPE {
 
 %type <nodePtr>		target;
 %type <nodePtr>		target_header;
-%type <nodeOption>	target_statement;
 %type <nodeOption>	target_option;
 
 %type <nodePtr>		blend_color_header;

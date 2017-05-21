@@ -9,106 +9,103 @@
 #include "$ENGINE$\NormalVertexInput.bslinc"
 #undef USE_BLEND_SHAPES
 
-Technique : base("ShadowDepthBase") =
+mixin ShadowDepthBase
 {
-	Pass =
+	code
 	{
-		Common =
+		struct ShadowVStoFS
 		{
-			struct ShadowVStoFS
-			{
-				float4 position : SV_Position;
-				
-				#ifdef USES_GS
-				float4 worldPos : TEXCOORD0;
-				#endif
-			};
+			float4 position : SV_Position;
 			
-			cbuffer ShadowParams
-			{
-				float gDepthBias;
-				float gDepthRange;
-			};
+			#ifdef USES_GS
+			float4 worldPos : TEXCOORD0;
+			#endif
 		};
-	
-		Vertex =
-		{
-			void linearizeDepth(inout float4 clipPos)
-			{
-				// Clamp to near plane if behind it
-				if (clipPos.z < 0)
-				{
-					clipPos.z = 0.000001f;
-					clipPos.w = 1.0f;
-				}
-
-				// Output linear depth in range [0, 1]
-				// TODO - Handle case for backends using [-1, 1] depth range
-				float linearDepth = clipPos.z * gDepthRange + gDepthBias;
-				clipPos.z = linearDepth * clipPos.w;
-			}		
 		
-			ShadowVStoFS main(VertexInput_PO input)
-			{
-				ShadowVStoFS output;
-			
-				float4 worldPosition = getVertexWorldPosition(input);
-				
-				#ifdef USES_GS
-				output.worldPos = worldPosition;
-				output.position = worldPosition;
-				#else
-				float4 clipPos = mul(gMatViewProj, worldPosition);
-				linearizeDepth(clipPos);
-				
-				output.position = clipPos;
-				#endif
-				
-				return output;
-			}
+		cbuffer ShadowParams
+		{
+			float gDepthBias;
+			float gDepthRange;
 		};
+
+		void linearizeDepth(inout float4 clipPos)
+		{
+			// Clamp to near plane if behind it
+			if (clipPos.z < 0)
+			{
+				clipPos.z = 0.000001f;
+				clipPos.w = 1.0f;
+			}
+
+			// Output linear depth in range [0, 1]
+			// TODO - Handle case for backends using [-1, 1] depth range
+			float linearDepth = clipPos.z * gDepthRange + gDepthBias;
+			clipPos.z = linearDepth * clipPos.w;
+		}		
+	
+		ShadowVStoFS vsmain(VertexInput_PO input)
+		{
+			ShadowVStoFS output;
+		
+			float4 worldPosition = getVertexWorldPosition(input);
+			
+			#ifdef USES_GS
+			output.worldPos = worldPosition;
+			output.position = worldPosition;
+			#else
+			float4 clipPos = mul(gMatViewProj, worldPosition);
+			linearizeDepth(clipPos);
+			
+			output.position = clipPos;
+			#endif
+			
+			return output;
+		}
 	};
 };
 
-Technique 
- : inherits("GBufferOutput")
- : inherits("PerCameraData")
- : inherits("PerObjectData")
- : inherits("NormalVertexInput")
- : inherits("ShadowDepthBase")
- : inherits("ShadowDepth") =
+technique ShadowDepth
 {
+	mixin GBufferOutput;
+	mixin PerCameraData;
+	mixin PerObjectData;
+	mixin NormalVertexInput;
+	mixin ShadowDepthBase;
+	mixin ShadowDepth;
 };
 
-Technique 
- : inherits("GBufferOutput")
- : inherits("PerCameraData")
- : inherits("PerObjectData")
- : inherits("SkinnedVertexInput")
- : inherits("ShadowDepthBase")
- : inherits("ShadowDepth") =
+technique ShadowDepthSkinned
 {
-	Tags = { "Skinned" };
+	mixin GBufferOutput;
+	mixin PerCameraData;
+	mixin PerObjectData;
+	mixin SkinnedVertexInput;
+	mixin ShadowDepthBase;
+	mixin ShadowDepth;
+
+	tags = { "Skinned" };
 };
 
-Technique 
- : inherits("GBufferOutput")
- : inherits("PerCameraData")
- : inherits("PerObjectData")
- : inherits("MorphVertexInput")
- : inherits("ShadowDepthBase")
- : inherits("ShadowDepth") =
+technique ShadowDepthMorph
 {
-	Tags = { "Morph" };
+	mixin GBufferOutput;
+	mixin PerCameraData;
+	mixin PerObjectData;
+	mixin MorphVertexInput;
+	mixin ShadowDepthBase;
+	mixin ShadowDepth;
+
+	tags = { "Morph" };
 };
 
-Technique 
- : inherits("GBufferOutput")
- : inherits("PerCameraData")
- : inherits("PerObjectData")
- : inherits("SkinnedMorphVertexInput")
- : inherits("ShadowDepthBase")
- : inherits("ShadowDepth") =
+technique ShadowDepthSkinnedMorph
 {
-	Tags = { "SkinnedMorph" };
+	mixin GBufferOutput;
+	mixin PerCameraData;
+	mixin PerObjectData;
+	mixin SkinnedMorphVertexInput;
+	mixin ShadowDepthBase;
+	mixin ShadowDepth;
+
+	tags = { "SkinnedMorph" };
 };

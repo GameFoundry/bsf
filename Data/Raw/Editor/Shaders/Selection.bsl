@@ -10,24 +10,28 @@
 #define USE_SKELETON
 #include "$EDITOR$\SelectionBase.bslinc"
 
-Technique 
- : inherits("Selection") =
-{ };
+technique Selection1
+{ 
+	mixin Selection;
+};
 
-Technique 
- : inherits("SelectionSkinned") =
+technique Selection2
 {
+	mixin SelectionSkinned;
+
 	Tags = { "Skinned" };
 };
 
-Technique 
- : inherits("SelectionMorph") =
+technique Selection3
 {
+	mixin SelectionMorph;
+
 	Tags = { "Morph" };
 };
 
-Technique 
- : inherits("SelectionSkinnedMorph") =
+technique Selection4
 {
+	mixin SelectionSkinnedMorph;
+
 	Tags = { "SkinnedMorph" };
 };

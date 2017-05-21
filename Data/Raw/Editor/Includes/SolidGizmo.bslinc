@@ -1,52 +1,32 @@
-Parameters =
+mixin SolidGizmoBase
 {
-	mat4x4		gMatViewProj;
-	float4		gViewDir;
-};
-
-Blocks =
-{
-	Block Uniforms : auto("GizmoUniforms");
-};
-
-Technique : base("SolidGizmo") =
-{
-	Pass =
+	code
 	{
-		Common =
+		cbuffer Uniforms
 		{
-			cbuffer Uniforms
-			{
-				float4x4 	gMatViewProj;
-				float4		gViewDir;
-			}
-		};
-	
-		Vertex =
+			float4x4 	gMatViewProj;
+			float4		gViewDir;
+		}
+
+		void vsmain(
+			in float3 inPos : POSITION,
+			in float3 inNormal : NORMAL,
+			in float4 color : COLOR0,
+			out float4 oPosition : SV_Position,
+			out float3 oNormal : NORMAL,
+			out float4 oColor : COLOR0)
 		{
-			void main(
-				in float3 inPos : POSITION,
-				in float3 inNormal : NORMAL,
-				in float4 color : COLOR0,
-				out float4 oPosition : SV_Position,
-				out float3 oNormal : NORMAL,
-				out float4 oColor : COLOR0)
-			{
-				oPosition = mul(gMatViewProj, float4(inPos.xyz, 1));
-				oNormal = inNormal;
-				oColor = color;
-			}
-		};
-		
-		Fragment =
+			oPosition = mul(gMatViewProj, float4(inPos.xyz, 1));
+			oNormal = inNormal;
+			oColor = color;
+		}
+
+		float4 fsmain(in float4 inPos : SV_Position, in float3 normal : NORMAL, in float4 color : COLOR0) : SV_Target
 		{
-			float4 main(in float4 inPos : SV_Position, in float3 normal : NORMAL, in float4 color : COLOR0) : SV_Target
-			{
-				float4 outColor = color * dot(normalize(normal), -gViewDir);
-				outColor.a = color.a;
-				
-				return outColor;
-			}
-		};
+			float4 outColor = color * dot(normalize(normal), -gViewDir);
+			outColor.a = color.a;
+			
+			return outColor;
+		}
 	};
 };

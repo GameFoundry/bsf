@@ -1,16 +1,21 @@
 #include "$EDITOR$/LineGizmo.bslinc"
 
-Technique : inherits("LineGizmo") =
+technique LineGizmo
 {
-	Pass =
+	mixin LineGizmoBase;
+
+	raster
 	{
-		Multisample = false; // This controls line rendering algorithm
-		AALine = true;
-		
-		Target =
+		multisample = false; // This controls line rendering algorithm
+		lineaa = true;
+	};
+	
+	blend
+	{
+		target
 		{
-			Blend = true;
-			Color = { SRCA, SRCIA, ADD };
+			enabled = true;
+			color = { srcA, srcIA, add };
 		};
 	};
 };
