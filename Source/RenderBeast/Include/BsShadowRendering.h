@@ -9,6 +9,7 @@
 #include "BsParamBlocks.h"
 #include "BsRendererMaterial.h"
 #include "BsTextureAtlasLayout.h"
+#include "BsLight.h"
 
 namespace bs { namespace ct
 {
@@ -205,6 +206,13 @@ namespace bs { namespace ct
 	/** Provides functionality for rendering shadow maps. */
 	class ShadowRendering : public Module<ShadowRendering>
 	{
+		/** Contains information required for generating a shadow map for a specific light. */
+		struct ShadowMapOptions
+		{
+			UINT32 lightIdx;
+			UINT32 mapSize;
+			float fadePercent;
+		};
 	public:
 		ShadowRendering(UINT32 shadowMapSize);
 
@@ -219,10 +227,24 @@ namespace bs { namespace ct
 			const FrameInfo& frameInfo);
 
 		/** Renders shadow maps for the provided spot light. */
-		void renderSpotShadowMaps(const RendererLight& light, RendererScene& scene, const FrameInfo& frameInfo);
+		void renderSpotShadowMaps(const RendererLight& light, UINT32 mapSize, RendererScene& scene,
+			const FrameInfo& frameInfo);
 
 		/** Renders shadow maps for the provided radial light. */
-		void renderRadialShadowMaps(const RendererLight& light, RendererScene& scene, const FrameInfo& frameInfo);
+		void renderRadialShadowMaps(const RendererLight& light, UINT32 mapSize, RendererScene& scene,
+			const FrameInfo& frameInfo);
+
+		/** 
+		 * Calculates optimal shadow map size, taking into account all views in the scene. Also calculates a fade value
+		 * that can be used for fading out small shadow maps.
+		 * 
+		 * @param[in]	light		Light for which to calculate the shadow map properties. Cannot be a directional light.
+		 * @param[in]	scene		Scene information containing all the views the light can be seen through.
+		 * @param[out]	size		Optimal size of the shadow map, in pixels.
+		 * @param[out]	fadePercent	Value in range [0, 1] determining how much should the shadow map be faded out.
+		 */
+		void calcShadowMapProperties(const RendererLight& light, RendererScene& scene, UINT32& size, 
+			float& fadePercent) const;
 
 		/**
 		 * Generates a frustum for a single cascade of a cascaded shadow map. Also outputs spherical bounds of the
@@ -256,6 +278,15 @@ namespace bs { namespace ct
 		/** Determines how long will an unused shadow map atlas stay allocated, in frames. */
 		static const UINT32 MAX_UNUSED_FRAMES;
 
+		/** Determines the minimal resolution of a shadow map. */
+		static const UINT32 MIN_SHADOW_MAP_SIZE;
+
+		/** Determines the resolution at which shadow maps begin fading out. */
+		static const UINT32 SHADOW_MAP_FADE_SIZE;
+
+		/** Size of the border of a shadow map in a shadow map atlas, in pixels. */
+		static const UINT32 SHADOW_MAP_BORDER;
+
 		ShadowDepthNormalMat mDepthNormalMat;
 		ShadowDepthCubeMat mDepthCubeMat;
 		ShadowDepthDirectionalMat mDepthDirectionalMat;
@@ -266,7 +297,12 @@ namespace bs { namespace ct
 		Vector<ShadowCascadedMap> mCascadedShadowMaps;
 		Vector<ShadowCubemap> mShadowCubemaps;
 
+		Vector<ShadowMapInfo> mSpotLightShadowInfos;
+		Vector<ShadowMapInfo> mRadialLightShadowInfos;
+
 		Vector<bool> mRenderableVisibility; // Transient
+		Vector<ShadowMapOptions> mSpotLightShadowOptions; // Transient
+		Vector<ShadowMapOptions> mRadialLightShadowOptions; // Transient
 	};
 
 	/* @} */

@@ -41,7 +41,8 @@ namespace bs
 		TextureAtlasLayout(UINT32 width, UINT32 height, UINT32 maxWidth, UINT32 maxHeight, bool pow2 = false);
 
 		/**
-		 * Attempts to add a new element in the layout.
+		 * Attempts to add a new element in the layout. Elements should be added to the atlas from largest to smallest,
+		 * otherwise a non-optimal layout is likely to be generated.
 		 * 
 		 * @param[in]	width	Width of the new element, in pixels.
 		 * @param[in]	height	Height of the new element, in pixels.

@@ -122,6 +122,7 @@ namespace bs { namespace ct
 		Matrix4 viewProjTransform;
 
 		SPtr<RenderTarget> target;
+		Rect2I viewRect;
 		Rect2 nrmViewRect;
 		UINT32 numSamples;
 
