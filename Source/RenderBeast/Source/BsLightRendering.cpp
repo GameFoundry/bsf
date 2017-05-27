@@ -101,18 +101,10 @@ namespace bs { namespace ct
 	{
 		SPtr<GpuParams> params = mParamsSet->getGpuParams();
 
-		auto& texParams = mMaterial->getShader()->getTextureParams();
-		for (auto& entry : texParams)
-		{
-			if (entry.second.rendererSemantic == RPS_GBufferA)
-				params->getTextureParam(GPT_COMPUTE_PROGRAM, entry.second.name, mGBufferA);
-			else if (entry.second.rendererSemantic == RPS_GBufferB)
-				params->getTextureParam(GPT_COMPUTE_PROGRAM, entry.second.name, mGBufferB);
-			else if (entry.second.rendererSemantic == RPS_GBufferC)
-				params->getTextureParam(GPT_COMPUTE_PROGRAM, entry.second.name, mGBufferC);
-			else if (entry.second.rendererSemantic == RPS_GBufferDepth)
-				params->getTextureParam(GPT_COMPUTE_PROGRAM, entry.second.name, mGBufferDepth);
-		}
+		params->getTextureParam(GPT_COMPUTE_PROGRAM, "gGBufferATex", mGBufferA);
+		params->getTextureParam(GPT_COMPUTE_PROGRAM, "gGBufferBTex", mGBufferB);
+		params->getTextureParam(GPT_COMPUTE_PROGRAM, "gGBufferCTex", mGBufferC);
+		params->getTextureParam(GPT_COMPUTE_PROGRAM, "gDepthBufferTex", mGBufferDepth);
 
 		params->getBufferParam(GPT_COMPUTE_PROGRAM, "gLights", mLightBufferParam);
 

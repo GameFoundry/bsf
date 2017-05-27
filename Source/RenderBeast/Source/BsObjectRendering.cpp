@@ -33,33 +33,24 @@ namespace bs { namespace ct
 			return;
 		}
 
+		SPtr<GpuParams> gpuParams = element.params->getGpuParams();
+
 		// Note: Perhaps perform buffer validation to ensure expected buffer has the same size and layout as the provided
 		// buffer, and show a warning otherwise. But this is perhaps better handled on a higher level.
-		const Map<String, SHADER_PARAM_BLOCK_DESC>& paramBlockDescs = shader->getParamBlocks();
+		if(shader->hasParamBlock("PerFrame"))
+			element.params->setParamBlockBuffer("PerFrame", mPerFrameParamBuffer, true);
 
-		for (auto& paramBlockDesc : paramBlockDescs)
-		{
-			if (paramBlockDesc.second.rendererSemantic == RBS_PerFrame)
-				element.params->setParamBlockBuffer(paramBlockDesc.second.name, mPerFrameParamBuffer, true);
-			else if (paramBlockDesc.second.rendererSemantic == RBS_PerObject)
-			{
-				element.params->setParamBlockBuffer(paramBlockDesc.second.name,
-													owner.perObjectParamBuffer, true);
-			}
-			else if (paramBlockDesc.second.rendererSemantic == RBS_PerCall)
-			{
-				element.params->setParamBlockBuffer(paramBlockDesc.second.name,
-													owner.perCallParamBuffer, true);
-			}
-			else if(paramBlockDesc.second.rendererSemantic == RBS_PerCamera)
-			{
-				element.perCameraBindingIdx = element.params->getParamBlockBufferIndex(paramBlockDesc.second.name);
-			}
-		}
+		if(shader->hasParamBlock("PerObject"))
+			element.params->setParamBlockBuffer("PerObject", owner.perObjectParamBuffer, true);
+
+		if(shader->hasParamBlock("PerCall"))
+			element.params->setParamBlockBuffer("PerCall", owner.perCallParamBuffer, true);
+
+		if(shader->hasParamBlock("PerCamera"))
+			element.perCameraBindingIdx = element.params->getParamBlockBufferIndex("PerCamera");
 
 		element.gridParamsBindingIdx = element.params->getParamBlockBufferIndex("GridParams");
 
-		SPtr<GpuParams> gpuParams = element.params->getGpuParams();
 		if (gpuParams->hasBuffer(GPT_FRAGMENT_PROGRAM, "gLights"))
 			gpuParams->getBufferParam(GPT_FRAGMENT_PROGRAM, "gLights", element.lightsBufferParam);
 
@@ -74,20 +65,8 @@ namespace bs { namespace ct
 
 		element.imageBasedParams.populate(element.params, GPT_FRAGMENT_PROGRAM, true, true);
 
-		const Map<String, SHADER_OBJECT_PARAM_DESC>& bufferDescs = shader->getBufferParams();
-		String boneMatricesParamName;
-
-		for(auto& entry : bufferDescs)
-		{
-			if (entry.second.rendererSemantic == RPS_BoneMatrices)
-				boneMatricesParamName = entry.second.name;
-		}
-		
-		if (!boneMatricesParamName.empty())
-		{
-			MaterialParamBuffer boneMatricesParam = element.material->getParamBuffer(boneMatricesParamName);
-			boneMatricesParam.set(element.boneMatrixBuffer);
-		}
+		if (gpuParams->hasBuffer(GPT_VERTEX_PROGRAM, "boneMatrices"))
+			gpuParams->setBuffer(GPT_VERTEX_PROGRAM, "boneMatrices", element.boneMatrixBuffer);
 	}
 
 	void ObjectRenderer::setParamFrameParams(float time)

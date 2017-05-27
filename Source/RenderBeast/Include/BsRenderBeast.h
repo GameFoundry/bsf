@@ -25,13 +25,6 @@ namespace bs
 	 *  @{
 	 */
 
-	/** Semantics that may be used for signaling the renderer for what is a certain shader parameter used for. */
-	static StringID RPS_GBufferA = "GBufferA";
-	static StringID RPS_GBufferB = "GBufferB";
-	static StringID RPS_GBufferC = "GBufferC";
-	static StringID RPS_GBufferDepth = "GBufferDepth";
-	static StringID RPS_BoneMatrices = "BoneMatrices";
-
 	/**
 	 * Default renderer for Banshee. Performs frustum culling, sorting and renders all scene objects while applying
 	 * lighting, shadowing, special effects and post-processing.

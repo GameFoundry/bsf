@@ -151,17 +151,7 @@ namespace bs
 
 						HTexture mainTexture;
 						if (useAlphaShader)
-						{
-							const Map<String, SHADER_OBJECT_PARAM_DESC>& textureParams = originalMat->getShader()->getTextureParams();
-							for (auto& objectParam : textureParams)
-							{
-								if (objectParam.second.rendererSemantic == ct::RPS_Diffuse)
-								{
-									mainTexture = originalMat->getTexture(objectParam.first);
-									break;
-								}
-							}
-						}
+							mainTexture = originalMat->getTexture("gAlbedoTex");
 
 						idxToRenderable[idx] = so;
 
