@@ -29,12 +29,14 @@ technique SpriteLine
 			float4 position : SV_POSITION;
 		};
 
-		cbuffer VertParams
+		cbuffer GUIParams
 		{
-			float invViewportWidth;
-			float invViewportHeight;
-			float4x4 worldTransform;
-		};
+			float4x4 gWorldTransform;
+			float gInvViewportWidth;
+			float gInvViewportHeight;
+			float gViewportYFlip;
+			float4 gTint;
+		}	
 		
 		struct VertexInput
 		{
@@ -43,10 +45,10 @@ technique SpriteLine
 		
 		VStoFS vsmain(VertexInput input)
 		{
-			float4 tfrmdPos = mul(worldTransform, float4(input.position, 0, 1));
+			float4 tfrmdPos = mul(gWorldTransform, float4(input.position, 0, 1));
 			
-			float tfrmdX = -1.0f + (tfrmdPos.x * invViewportWidth);
-			float tfrmdY = 1.0f - (tfrmdPos.y * invViewportHeight);
+			float tfrmdX = -1.0f + (tfrmdPos.x * gInvViewportWidth);
+			float tfrmdY = 1.0f - (tfrmdPos.y * gInvViewportHeight);
 
 			VStoFS output;
 			output.position = float4(tfrmdX, tfrmdY, 0, 1);
@@ -54,14 +56,9 @@ technique SpriteLine
 			return output;
 		}
 
-		cbuffer VertParams
-		{
-			float4 tint;
-		};
-		
 		float4 fsmain(VStoFS input) : SV_Target
 		{
-			return tint;
+			return gTint;
 		}
 	};
 };
