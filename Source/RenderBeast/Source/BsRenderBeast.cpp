@@ -347,7 +347,8 @@ namespace bs { namespace ct
 			UINT32 numCameras = (UINT32)cameras.size();
 			for (UINT32 i = 0; i < numCameras; i++)
 			{
-				RendererView* viewInfo = sceneInfo.cameraToView.at(cameras[i]);
+				UINT32 viewIdx = sceneInfo.cameraToView.at(cameras[i]);
+				RendererView* viewInfo = sceneInfo.views[viewIdx];
 				views.push_back(viewInfo);
 			}
 		}

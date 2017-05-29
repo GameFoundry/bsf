@@ -135,6 +135,14 @@
         {
             "Path": "ShadowFiltering.bslinc",
             "UUID": "50cfc08b-4869-4373-9b7e-22de12c26b20"
+        },
+        {
+            "Path": "CubeShadowFiltering.bslinc",
+            "UUID": "f2b61e2a-20a7-4721-8808-76c1737251b4"
+        },
+        {
+            "Path": "DeferredLightCommon.bslinc",
+            "UUID": "8ffd1df9-3de4-442d-adca-95e8766fa81a"
         }
     ],
     "Shaders": [
@@ -269,6 +277,14 @@
         {
             "Path": "ShadowDepthDirectional.bsl",
             "UUID": "acd0f016-8084-4b32-806c-66a85b34ee5a"
+        },
+        {
+            "Path": "DeferredDirectionalLight.bsl",
+            "UUID": "17d573f8-1142-4257-9e32-90038d3786f3"
+        },
+        {
+            "Path": "DeferredPointLight.bslinc",
+            "UUID": "863e3d6c-7342-4715-900c-b38e03011798"
         }
     ],
     "Skin": [

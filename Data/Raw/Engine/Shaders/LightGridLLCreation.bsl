@@ -1,5 +1,5 @@
 #include "$ENGINE$\PerCameraData.bslinc"
-#define USE_LIGHT_GRID_INDICES
+#define USE_LIGHT_GRID_INDICES 1
 #include "$ENGINE$\LightingCommon.bslinc"
 #include "$ENGINE$\ImageBasedLighting.bslinc"
 #include "$ENGINE$\LightGridCommon.bslinc"

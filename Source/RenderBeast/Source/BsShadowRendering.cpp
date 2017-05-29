@@ -364,6 +364,44 @@ namespace bs { namespace ct
 		}
 	}
 
+	void ShadowRendering::renderShadowOcclusion(const RendererScene& scene, const RendererLight& rendererLight, 
+		UINT32 viewIdx)
+	{
+		const Light* light = rendererLight.internal;
+		UINT32 lightIdx = light->getRendererId();
+
+		RenderAPI& rapi = RenderAPI::instance();
+		// TODO - Calculate and set a scissor rectangle for the light
+
+		switch (light->getType())
+		{
+		case LightType::Directional: 
+			// TODO
+			break;
+		case LightType::Radial:
+			{
+				const LightShadows& shadows = mRadialLightShadows[lightIdx];
+				for (UINT32 i = 0; i < shadows.numShadows; ++i)
+				{
+					UINT32 shadowIdx = shadows.startIdx + i;
+					const ShadowInfo& shadowInfo = mShadowInfos[shadowIdx];
+
+					if (shadowInfo.fadePerView[viewIdx] < 0.005f)
+						continue;
+
+					// TODO - Bind shader and necessary parameters
+
+				}
+			}
+			break;
+		case LightType::Spot: 
+			// TODO
+			break;
+		default: 
+			break;
+		}
+	}
+
 	void ShadowRendering::renderCascadedShadowMaps(UINT32 viewIdx, UINT32 lightIdx, RendererScene& scene, 
 		const FrameInfo& frameInfo)
 	{

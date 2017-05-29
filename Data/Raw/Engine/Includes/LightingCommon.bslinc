@@ -195,14 +195,160 @@ Technique
 				return diffuse + specular * specLobeEnergy;
 			}	
 			
-			StructuredBuffer<LightData> gLights;
+			float3 getLuminanceDirectional(LightData lightData, float3 worldPos, float3 V, float3 R, SurfaceData surfaceData)
+			{
+				float3 N = surfaceData.worldNormal.xyz;
+				float3 L = -lightData.direction;
+				float NoL = saturate(dot(N, L));
+				float specEnergy = 1.0f;
+				
+				// Distant disk area light. Calculate its contribution analytically by
+				// finding the most important (least error) point on the area light and
+				// use it as a form of importance sampling.
+				if(lightData.srcRadius > 0)
+				{
+					float diskRadius = sin(lightData.srcRadius);
+					float distanceToDisk = cos(lightData.srcRadius);
+					
+					// Closest point to disk (approximation for distant disks)
+					float DoR = dot(L, R);
+					float3 S = normalize(R - DoR * L);
+					L = DoR < distanceToDisk ? normalize(distanceToDisk * L + S * diskRadius) : R;
+				}
+				
+				float3 surfaceShading = getSurfaceShading(V, L, specEnergy, surfaceData);
+				float illuminance = lightData.luminance * NoL;
+				return lightData.color * illuminance * surfaceShading;
+			}
 			
-			#ifdef USE_COMPUTE_INDICES
+			float3 getLuminanceRadial(LightData lightData, float3 worldPos, float3 V, float3 R, float roughness2, SurfaceData surfaceData)
+			{
+				float3 N = surfaceData.worldNormal.xyz;
+				float3 toLight = lightData.position - worldPos;
+				float distToLightSqrd = dot(toLight, toLight);
+				float invDistToLight = rsqrt(distToLightSqrd);
+				
+				float3 L = toLight * invDistToLight;
+				float NoL = dot(N, L);
+				
+				float specEnergy = 1.0f;
+				float illuminance = 0.0f;
+
+				// Sphere area light. Calculate its contribution analytically by
+				// finding the most important (least error) point on the area light and
+				// use it as a form of importance sampling.
+				if(lightData.srcRadius > 0)
+				{
+					// Calculate illuminance depending on source size, distance and angle
+					illuminance = illuminanceSphereAreaLight(NoL, distToLightSqrd, lightData);	
+
+					// Energy conservation:
+					//    We are widening the specular distribution by the sphere's subtended angle, 
+					//    so we need to handle the increase in energy. It is not enough just to account
+					//    for the sphere solid angle, since the energy difference is highly dependent on
+					//    specular distribution. By accounting for this energy difference we ensure glossy
+					//    reflections have sharp edges, instead of being too blurry.
+					//    See http://blog.selfshadow.com/publications/s2013-shading-course/karis/s2013_pbs_epic_notes_v2.pdf for reference
+					float sphereAngle = saturate(lightData.srcRadius * invDistToLight);
+					
+					specEnergy = roughness2 / saturate(roughness2 + 0.5f * sphereAngle);
+					specEnergy *= specEnergy;							
+				
+					// Find closest point on sphere to ray
+					float3 closestPointOnRay = dot(toLight, R) * R;
+					float3 centerToRay = closestPointOnRay - toLight;
+					float invDistToRay = rsqrt(dot(centerToRay, centerToRay));
+					float3 closestPointOnSphere = toLight + centerToRay * saturate(lightData.srcRadius * invDistToRay);
+					
+					toLight = closestPointOnSphere;
+					L = normalize(toLight);
+				}
+				else
+				{
+					NoL = saturate(NoL);
+					illuminance = illuminancePointLight(distToLightSqrd, NoL, lightData);
+				}
+				
+				float attenuation = getRadialAttenuation(distToLightSqrd, lightData);
+				float3 surfaceShading = getSurfaceShading(V, L, specEnergy, surfaceData);
+					
+				return lightData.color * illuminance * attenuation * surfaceShading;
+			}
+			
+			float3 getLuminanceSpot(LightData lightData, float3 worldPos, float3 V, float3 R, float roughness2, SurfaceData surfaceData)
+			{
+				float3 N = surfaceData.worldNormal.xyz;
+				float3 toLight = lightData.position - worldPos;
+				float distToLightSqrd = dot(toLight, toLight);
+				float invDistToLight = rsqrt(distToLightSqrd);
+				
+				float3 L = toLight * invDistToLight;
+				float NoL = dot(N, L);
+				
+				float specEnergy = 1.0f;
+				float illuminance = 0.0f;
+				float spotAttenuation = 1.0f;
+				
+				// Disc area light. Calculate its contribution analytically by
+				// finding the most important (least error) point on the area light and
+				// use it as a form of importance sampling.
+				if(lightData.srcRadius > 0)
+				{
+					// Calculate illuminance depending on source size, distance and angle
+					illuminance = illuminanceDiscAreaLight(NoL, distToLightSqrd, L, lightData);	
+				
+					// Energy conservation: Similar case as with radial lights
+					float rightDiscAngle = saturate(lightData.srcRadius * invDistToLight);
+					
+					// Account for disc orientation somewhat
+					float discAngle = rightDiscAngle * saturate(dot(lightData.direction, -L));
+					
+					specEnergy = roughness2 / saturate(roughness2 + 0.5f * discAngle);
+					specEnergy *= specEnergy;							
+				
+					// Find closest point on disc to ray
+					float3 discNormal = -lightData.direction;
+					float distAlongLightDir = max(dot(R, discNormal), 1e-6f);
+					float t = dot(toLight, discNormal) / distAlongLightDir;
+					float3 closestPointOnPlane = R * t; // Relative to shaded world point
+					
+					float3 centerToRay = closestPointOnPlane - toLight;
+					float invDistToRay = rsqrt(dot(centerToRay, centerToRay));
+					float3 closestPointOnDisc = toLight + centerToRay * saturate(lightData.srcRadius * invDistToRay);
+
+					toLight = closestPointOnDisc;
+					L = normalize(toLight);
+					
+					// Expand spot attenuation by disc radius (not physically based)
+					float3 toSpotEdge = normalize(lightData.shiftedLightPosition - worldPos);
+					spotAttenuation = getSpotAttenuation(toSpotEdge, lightData);
+					
+					// TODO - Spot attenuation fades out the specular highlight in a noticeable way
+				}
+				else
+				{
+					NoL = saturate(NoL);
+					illuminance = illuminancePointLight(distToLightSqrd, NoL, lightData);
+					
+					spotAttenuation = getSpotAttenuation(L, lightData);
+				}
+				
+				float radialAttenuation = getRadialAttenuation(distToLightSqrd, lightData);
+				float attenuation = spotAttenuation * radialAttenuation;
+				float3 surfaceShading = getSurfaceShading(V, L, specEnergy, surfaceData);
+					
+				return lightData.color * illuminance * attenuation * surfaceShading;
+			}
+			
+			#if USE_COMPUTE_INDICES
 				groupshared uint gLightIndices[MAX_LIGHTS];
 			#endif
-			#ifdef USE_LIGHT_GRID_INDICES
+			#if USE_LIGHT_GRID_INDICES
 				Buffer<uint> gLightIndices;
 			#endif
+			
+			#if USE_COMPUTE_INDICES || USE_LIGHT_GRID_INDICES
+			StructuredBuffer<LightData> gLights;
 			
 			float4 getDirectLighting(float3 worldPos, float3 V, float3 R, SurfaceData surfaceData, uint4 lightOffsets)
 			{
@@ -218,28 +364,7 @@ Technique
 					for(uint i = 0; i < lightOffsets.x; ++i)
 					{
 						LightData lightData = gLights[i];
-					
-						float3 L = -lightData.direction;
-						float NoL = saturate(dot(N, L));
-						float specEnergy = 1.0f;
-						
-						// Distant disk area light. Calculate its contribution analytically by
-						// finding the most important (least error) point on the area light and
-						// use it as a form of importance sampling.
-						if(lightData.srcRadius > 0)
-						{
-							float diskRadius = sin(lightData.srcRadius);
-							float distanceToDisk = cos(lightData.srcRadius);
-							
-							// Closest point to disk (approximation for distant disks)
-							float DoR = dot(L, R);
-							float3 S = normalize(R - DoR * L);
-							L = DoR < distanceToDisk ? normalize(distanceToDisk * L + S * diskRadius) : R;
-						}
-						
-						float3 surfaceShading = getSurfaceShading(V, L, specEnergy, surfaceData);
-						float illuminance = lightData.luminance * NoL;
-						outLuminance += lightData.color * illuminance * surfaceShading;
+						outLuminance += getLuminanceDirectional(lightData, worldPos, V, R, surfaceData);
 					}
 					
 					// Handle radial lights
@@ -248,55 +373,7 @@ Technique
                         uint lightIdx = gLightIndices[i];
 						LightData lightData = gLights[lightIdx];
                         
-						float3 toLight = lightData.position - worldPos;
-						float distToLightSqrd = dot(toLight, toLight);
-						float invDistToLight = rsqrt(distToLightSqrd);
-						
-						float3 L = toLight * invDistToLight;
-						float NoL = dot(N, L);
-						
-						float specEnergy = 1.0f;
-						float illuminance = 0.0f;
-
-						// Sphere area light. Calculate its contribution analytically by
-						// finding the most important (least error) point on the area light and
-						// use it as a form of importance sampling.
-						if(lightData.srcRadius > 0)
-						{
-							// Calculate illuminance depending on source size, distance and angle
-							illuminance = illuminanceSphereAreaLight(NoL, distToLightSqrd, lightData);	
-
-							// Energy conservation:
-							//    We are widening the specular distribution by the sphere's subtended angle, 
-							//    so we need to handle the increase in energy. It is not enough just to account
-							//    for the sphere solid angle, since the energy difference is highly dependent on
-							//    specular distribution. By accounting for this energy difference we ensure glossy
-							//    reflections have sharp edges, instead of being too blurry.
-							//    See http://blog.selfshadow.com/publications/s2013-shading-course/karis/s2013_pbs_epic_notes_v2.pdf for reference
-							float sphereAngle = saturate(lightData.srcRadius * invDistToLight);
-							
-							specEnergy = roughness2 / saturate(roughness2 + 0.5f * sphereAngle);
-							specEnergy *= specEnergy;							
-						
-							// Find closest point on sphere to ray
-							float3 closestPointOnRay = dot(toLight, R) * R;
-							float3 centerToRay = closestPointOnRay - toLight;
-							float invDistToRay = rsqrt(dot(centerToRay, centerToRay));
-							float3 closestPointOnSphere = toLight + centerToRay * saturate(lightData.srcRadius * invDistToRay);
-							
-							toLight = closestPointOnSphere;
-							L = normalize(toLight);
-						}
-						else
-						{
-							NoL = saturate(NoL);
-							illuminance = illuminancePointLight(distToLightSqrd, NoL, lightData);
-						}
-						
-						float attenuation = getRadialAttenuation(distToLightSqrd, lightData);
-						float3 surfaceShading = getSurfaceShading(V, L, specEnergy, surfaceData);
-							
-						outLuminance += lightData.color * illuminance * attenuation * surfaceShading;
+						outLuminance += getLuminanceRadial(lightData, worldPos, V, R, roughness2, surfaceData);
                     }
 
 					// Handle spot lights
@@ -305,66 +382,7 @@ Technique
                         uint lightIdx = gLightIndices[i];
 						LightData lightData = gLights[lightIdx];
 						
-						float3 toLight = lightData.position - worldPos;
-						float distToLightSqrd = dot(toLight, toLight);
-						float invDistToLight = rsqrt(distToLightSqrd);
-						
-						float3 L = toLight * invDistToLight;
-						float NoL = dot(N, L);
-						
-						float specEnergy = 1.0f;
-						float illuminance = 0.0f;
-						float spotAttenuation = 1.0f;
-						
-						// Disc area light. Calculate its contribution analytically by
-						// finding the most important (least error) point on the area light and
-						// use it as a form of importance sampling.
-						if(lightData.srcRadius > 0)
-						{
-							// Calculate illuminance depending on source size, distance and angle
-							illuminance = illuminanceDiscAreaLight(NoL, distToLightSqrd, L, lightData);	
-						
-							// Energy conservation: Similar case as with radial lights
-							float rightDiscAngle = saturate(lightData.srcRadius * invDistToLight);
-							
-							// Account for disc orientation somewhat
-							float discAngle = rightDiscAngle * saturate(dot(lightData.direction, -L));
-							
-							specEnergy = roughness2 / saturate(roughness2 + 0.5f * discAngle);
-							specEnergy *= specEnergy;							
-						
-							// Find closest point on disc to ray
-							float3 discNormal = -lightData.direction;
-							float distAlongLightDir = max(dot(R, discNormal), 1e-6f);
-							float t = dot(toLight, discNormal) / distAlongLightDir;
-							float3 closestPointOnPlane = R * t; // Relative to shaded world point
-							
-							float3 centerToRay = closestPointOnPlane - toLight;
-							float invDistToRay = rsqrt(dot(centerToRay, centerToRay));
-							float3 closestPointOnDisc = toLight + centerToRay * saturate(lightData.srcRadius * invDistToRay);
-
-							toLight = closestPointOnDisc;
-							L = normalize(toLight);
-							
-							// Expand spot attenuation by disc radius (not physically based)
-							float3 toSpotEdge = normalize(lightData.shiftedLightPosition - worldPos);
-							spotAttenuation = getSpotAttenuation(toSpotEdge, lightData);
-							
-							// TODO - Spot attenuation fades out the specular highlight in a noticeable way
-						}
-						else
-						{
-							NoL = saturate(NoL);
-							illuminance = illuminancePointLight(distToLightSqrd, NoL, lightData);
-							
-							spotAttenuation = getSpotAttenuation(L, lightData);
-						}
-						
-						float radialAttenuation = getRadialAttenuation(distToLightSqrd, lightData);
-						float attenuation = spotAttenuation * radialAttenuation;
-						float3 surfaceShading = getSurfaceShading(V, L, specEnergy, surfaceData);
-							
-						outLuminance += lightData.color * illuminance * attenuation * surfaceShading;
+						outLuminance += getLuminanceSpot(lightData, worldPos, V, R, roughness2, surfaceData);
                     }
 					
 					// Ambient term for in-editor visualization, not used in actual lighting
@@ -374,6 +392,7 @@ Technique
 				
 				return float4(outLuminance, alpha);
 			}
+			#endif
 		};
 	};
 };

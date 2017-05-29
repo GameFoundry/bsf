@@ -27,7 +27,7 @@ namespace bs
 		// Cameras and render targets
 		Vector<RendererRenderTarget> renderTargets;
 		Vector<RendererView*> views;
-		UnorderedMap<const Camera*, RendererView*> cameraToView;
+		UnorderedMap<const Camera*, UINT32> cameraToView;
 		
 		// Renderables
 		Vector<RendererObject*> renderables;

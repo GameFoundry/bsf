@@ -41,12 +41,11 @@ namespace bs {	namespace ct
 		view->setPostProcessSettings(camera->getPostProcessSettings());
 		view->updatePerViewBuffer();
 
-		mInfo.cameraToView[camera] = view;
-
-		UINT32 cameraId = (UINT32)mInfo.views.size();
+		UINT32 viewIdx = (UINT32)mInfo.views.size();
 		mInfo.views.push_back(view);
 
-		camera->setRendererId(cameraId);
+		mInfo.cameraToView[camera] = viewIdx;
+		camera->setRendererId(viewIdx);
 
 		updateCameraRenderTargets(camera);
 	}
@@ -99,14 +98,14 @@ namespace bs {	namespace ct
 		}
 		
 		// Last element is the one we want to erase
+		RendererView* view = mInfo.views[mInfo.views.size() - 1];
+		bs_delete(view);
+
 		mInfo.views.erase(mInfo.views.end() - 1);
 
 		auto iterFind = mInfo.cameraToView.find(camera);
 		if(iterFind != mInfo.cameraToView.end())
-		{
-			bs_delete(iterFind->second);
 			mInfo.cameraToView.erase(iterFind);
-		}
 
 		updateCameraRenderTargets(camera);
 	}

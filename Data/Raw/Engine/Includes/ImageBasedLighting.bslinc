@@ -38,10 +38,10 @@ Technique
 			
 			StructuredBuffer<ReflProbeData> gReflectionProbes;	
 
-			#ifdef USE_COMPUTE_INDICES
+			#if USE_COMPUTE_INDICES
 				groupshared uint gReflectionProbeIndices[MAX_PROBES];
 			#endif
-			#ifdef USE_LIGHT_GRID_INDICES
+			#if USE_LIGHT_GRID_INDICES
 				Buffer<uint> gReflectionProbeIndices;
 			#endif
 			

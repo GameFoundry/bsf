@@ -1,6 +1,6 @@
 #include "$ENGINE$\GBufferInput.bslinc"
 #include "$ENGINE$\PerCameraData.bslinc"
-#define USE_COMPUTE_INDICES
+#define USE_COMPUTE_INDICES 1
 #include "$ENGINE$\LightingCommon.bslinc"
 #include "$ENGINE$\ReflectionCubemapCommon.bslinc"
 #include "$ENGINE$\ImageBasedLighting.bslinc"
