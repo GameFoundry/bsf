@@ -16,6 +16,7 @@ namespace bs { namespace ct
 	static const UINT32 BUFFER_INCREMENT = 16 * sizeof(LightData);
 
 	TiledLightingParamDef gTiledLightingParamDef;
+	PerLightParamDef gPerLightParamDef;
 
 	RendererLight::RendererLight(Light* light)
 		:internal(light)
@@ -48,6 +49,144 @@ namespace bs { namespace ct
 		else
 			output.shiftedLightPosition = output.position;
 	}
+
+	void RendererLight::getParameters(SPtr<GpuParamBlockBuffer>& buffer) const
+	{
+		LightData lightData;
+		getParameters(lightData);
+
+		float type = 0.0f;
+		switch (internal->getType())
+		{
+		case LightType::Directional:
+			type = 0;
+			break;
+		case LightType::Radial:
+			type = 0.3f;
+			break;
+		case LightType::Spot:
+			type = 0.8f;
+			break;
+		}
+
+		gPerLightParamDef.gLightPositionAndSrcRadius.set(buffer, Vector4(lightData.position, lightData.srcRadius));
+		gPerLightParamDef.gLightColorAndLuminance.set(buffer, Vector4(lightData.color, lightData.luminance));
+		gPerLightParamDef.gLightSpotAnglesAndSqrdInvAttRadius.set(buffer, Vector4(lightData.spotAngles, lightData.attRadiusSqrdInv));
+		gPerLightParamDef.gLightDirectionAndAttRadius.set(buffer, Vector4(lightData.direction, lightData.attRadius));
+		gPerLightParamDef.gShiftedLightPositionAndType.set(buffer, Vector4(lightData.shiftedLightPosition, type));
+
+		Vector4 lightGeometry;
+		lightGeometry.x = internal->getType() == LightType::Spot ? (float)Light::LIGHT_CONE_NUM_SIDES : 0;
+		lightGeometry.y = (float)Light::LIGHT_CONE_NUM_SLICES;
+		lightGeometry.z = internal->getBounds().getRadius();
+
+		float coneRadius = Math::sin(lightData.spotAngles.x) * internal->getAttenuationRadius();
+		lightGeometry.w = coneRadius;
+
+		gPerLightParamDef.gLightGeometry.set(buffer, lightGeometry);
+
+		Matrix4 transform = Matrix4::TRS(internal->getPosition(), internal->getRotation(), Vector3::ONE);
+		gPerLightParamDef.gMatConeTransform.set(buffer, transform);
+	}
+
+	GBufferParams::GBufferParams(const SPtr<Material>& material, const SPtr<GpuParamsSet>& paramsSet)
+	{
+		SPtr<GpuParams> params = paramsSet->getGpuParams();
+
+		auto& texParams = material->getShader()->getTextureParams();
+		for (auto& entry : texParams)
+		{
+			if (entry.second.rendererSemantic == RPS_GBufferA)
+				params->getTextureParam(GPT_COMPUTE_PROGRAM, entry.second.name, mGBufferA);
+			else if (entry.second.rendererSemantic == RPS_GBufferB)
+				params->getTextureParam(GPT_COMPUTE_PROGRAM, entry.second.name, mGBufferB);
+			else if (entry.second.rendererSemantic == RPS_GBufferC)
+				params->getTextureParam(GPT_COMPUTE_PROGRAM, entry.second.name, mGBufferC);
+			else if (entry.second.rendererSemantic == RPS_GBufferDepth)
+				params->getTextureParam(GPT_COMPUTE_PROGRAM, entry.second.name, mGBufferDepth);
+		}
+	}
+
+	void GBufferParams::bind(const SPtr<RenderTargets>& renderTargets)
+	{
+		mGBufferA.set(renderTargets->getGBufferA());
+		mGBufferB.set(renderTargets->getGBufferB());
+		mGBufferC.set(renderTargets->getGBufferC());
+		mGBufferDepth.set(renderTargets->getSceneDepth());
+	}
+
+	template<bool MSAA>
+	DirectionalLightMat<MSAA>::DirectionalLightMat()
+		:mGBufferParams(mMaterial, mParamsSet)
+	{
+
+	}
+
+	template<bool MSAA>
+	void DirectionalLightMat<MSAA>::_initDefines(ShaderDefines& defines)
+	{
+		if (MSAA)
+			defines.set("MSAA_COUNT", 2); // Actual count doesn't matter, as long as it's greater than one
+		else
+			defines.set("MSAA_COUNT", 1);
+	}
+
+	template<bool MSAA>
+	void DirectionalLightMat<MSAA>::bind(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBuffer>& perCamera)
+	{
+		RendererUtility::instance().setPass(mMaterial, 0);
+
+		mGBufferParams.bind(gbuffer);
+		mParamsSet->setParamBlockBuffer("PerCamera", perCamera, true);
+	}
+
+	template<bool MSAA>
+	void DirectionalLightMat<MSAA>::setPerLightParams(const SPtr<GpuParamBlockBuffer>& perLight)
+	{
+		mParamsSet->setParamBlockBuffer("PerLight", perLight, true);
+	}
+
+	template class DirectionalLightMat<true>;
+	template class DirectionalLightMat<false>;
+
+	template<bool MSAA, bool InsideGeometry>
+	PointLightMat<MSAA, InsideGeometry>::PointLightMat()
+		:mGBufferParams(mMaterial, mParamsSet)
+	{
+	}
+
+	template<bool MSAA, bool InsideGeometry>
+	void PointLightMat<MSAA, InsideGeometry>::_initDefines(ShaderDefines& defines)
+	{
+		if (MSAA)
+			defines.set("MSAA_COUNT", 2); // Actual count doesn't matter, as long as it's greater than one
+		else
+			defines.set("MSAA_COUNT", 1);
+
+		if (InsideGeometry)
+			defines.set("INSIDE_GEOMETRY", 1);
+	}
+
+	template<bool MSAA, bool InsideGeometry>
+	void PointLightMat<MSAA, InsideGeometry>::bind(const SPtr<RenderTargets>& gbuffer, 
+		const SPtr<GpuParamBlockBuffer>& perCamera)
+	{
+		RendererUtility::instance().setPass(mMaterial, 0);
+
+		mGBufferParams.bind(gbuffer);
+		mParamsSet->setParamBlockBuffer("PerCamera", perCamera, true);
+	}
+
+	template<bool MSAA, bool InsideGeometry>
+	void PointLightMat<MSAA, InsideGeometry>::setPerLightParams(const SPtr<GpuParamBlockBuffer>& perLight)
+	{
+		mParamsSet->setParamBlockBuffer("PerLight", perLight, true);
+	}
+
+	template class PointLightMat<false, false>;
+	template class PointLightMat<false, true>;
+	template class PointLightMat<true, false>;
+	template class PointLightMat<true, true>;
 
 	GPULightData::GPULightData()
 		:mNumLights{}
@@ -97,22 +236,10 @@ namespace bs { namespace ct
 
 	TiledDeferredLighting::TiledDeferredLighting(const SPtr<Material>& material, const SPtr<GpuParamsSet>& paramsSet,
 													UINT32 sampleCount)
-		:mSampleCount(sampleCount), mMaterial(material), mParamsSet(paramsSet), mLightOffsets()
+		: mSampleCount(sampleCount), mMaterial(material), mParamsSet(paramsSet), mGBufferParams(material, paramsSet)
+		, mLightOffsets()
 	{
 		SPtr<GpuParams> params = mParamsSet->getGpuParams();
-
-		auto& texParams = mMaterial->getShader()->getTextureParams();
-		for (auto& entry : texParams)
-		{
-			if (entry.second.rendererSemantic == RPS_GBufferA)
-				params->getTextureParam(GPT_COMPUTE_PROGRAM, entry.second.name, mGBufferA);
-			else if (entry.second.rendererSemantic == RPS_GBufferB)
-				params->getTextureParam(GPT_COMPUTE_PROGRAM, entry.second.name, mGBufferB);
-			else if (entry.second.rendererSemantic == RPS_GBufferC)
-				params->getTextureParam(GPT_COMPUTE_PROGRAM, entry.second.name, mGBufferC);
-			else if (entry.second.rendererSemantic == RPS_GBufferDepth)
-				params->getTextureParam(GPT_COMPUTE_PROGRAM, entry.second.name, mGBufferDepth);
-		}
 
 		params->getBufferParam(GPT_COMPUTE_PROGRAM, "gLights", mLightBufferParam);
 
@@ -149,11 +276,7 @@ namespace bs { namespace ct
 		}
 		mParamBuffer->flushToGPU();
 
-		mGBufferA.set(renderTargets->getGBufferA());
-		mGBufferB.set(renderTargets->getGBufferB());
-		mGBufferC.set(renderTargets->getGBufferC());
-		mGBufferDepth.set(renderTargets->getSceneDepth());
-
+		mGBufferParams.bind(renderTargets);
 		mParamsSet->setParamBlockBuffer("PerCamera", perCamera, true);
 
 		if (mSampleCount > 1)

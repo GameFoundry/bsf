@@ -38,7 +38,7 @@ Technique : inherits("DeferredLightCommon") =
 		
 		Fragment = 
 		{
-			float4 main(VStoFS input) : SV_Target0
+			float4 main(VStoFS input, uint sampleIdx : SV_SampleIndex) : SV_Target0
 			{
 				uint2 pixelPos = (uint2)(input.uv0 * (float2)gViewportRectangle.zw - ((float2)gViewportRectangle.xy + 0.5f));
 				

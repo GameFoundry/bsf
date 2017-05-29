@@ -22,10 +22,22 @@ namespace bs { namespace ct
 		Vector3 spotAngles;
 		float attRadiusSqrdInv;
 		Vector3 color;
-        float srcRadius;
+		float srcRadius;
 		Vector3 shiftedLightPosition;
 		float padding;
 	};
+
+	BS_PARAM_BLOCK_BEGIN(PerLightParamDef)
+		BS_PARAM_BLOCK_ENTRY(Vector4, gLightPositionAndSrcRadius)
+		BS_PARAM_BLOCK_ENTRY(Vector4, gLightColorAndLuminance)
+		BS_PARAM_BLOCK_ENTRY(Vector4, gLightSpotAnglesAndSqrdInvAttRadius)
+		BS_PARAM_BLOCK_ENTRY(Vector4, gLightDirectionAndAttRadius)
+		BS_PARAM_BLOCK_ENTRY(Vector4, gShiftedLightPositionAndType)
+		BS_PARAM_BLOCK_ENTRY(Vector4, gLightGeometry)
+		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatConeTransform)
+	BS_PARAM_BLOCK_END
+
+	extern PerLightParamDef gPerLightParamDef;
 
 	/**	Renderer information specific to a single light. */
 	class RendererLight
@@ -35,8 +47,66 @@ namespace bs { namespace ct
 
 		/** Populates the structure with light parameters. */
 		void getParameters(LightData& output) const;
+
+		/** 
+		 * Populates the provided parameter block buffer with information about the light. Provided buffer's structure
+		 * must match PerLightParamDef.
+		 */
+		void getParameters(SPtr<GpuParamBlockBuffer>& buffer) const;
 		
 		Light* internal;
+	};
+
+	/** Allows you to easily bind GBuffer textures to some material. */
+	class GBufferParams
+	{
+	public:
+		GBufferParams(const SPtr<Material>& material, const SPtr<GpuParamsSet>& paramsSet);
+
+		/** Binds the GBuffer textures to the pipeline. */
+		void bind(const SPtr<RenderTargets>& renderTargets);
+
+	private:
+		GpuParamTexture mGBufferA;
+		GpuParamTexture mGBufferB;
+		GpuParamTexture mGBufferC;
+		GpuParamTexture mGBufferDepth;
+	};
+
+	/** Shader that renders directional light sources during deferred rendering light pass. */
+	template<bool MSAA>
+	class DirectionalLightMat : public RendererMaterial<DirectionalLightMat<MSAA>>
+	{
+		RMAT_DEF("DeferredDirectionalLight.bsl");
+
+	public:
+		DirectionalLightMat();
+
+		/** Binds the material for rendering and sets up any global parameters. */
+		void bind(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBuffer>& perCamera);
+
+		/** Updates the per-light buffers used by the material. */
+		void setPerLightParams(const SPtr<GpuParamBlockBuffer>& perLight);
+	private:
+		GBufferParams mGBufferParams;
+	};
+
+	/** Shader that renders point (radial & spot) light sources during deferred rendering light pass. */
+	template<bool MSAA, bool InsideGeometry>
+	class PointLightMat : public RendererMaterial<PointLightMat<MSAA, InsideGeometry>>
+	{
+		RMAT_DEF("DeferredPointLight.bsl");
+
+	public:
+		PointLightMat();
+
+		/** Binds the material for rendering and sets up any global parameters. */
+		void bind(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBuffer>& perCamera);
+
+		/** Updates the per-light buffers used by the material. */
+		void setPerLightParams(const SPtr<GpuParamBlockBuffer>& perLight);
+	private:
+		GBufferParams mGBufferParams;
 	};
 
 	/** Contains GPU buffers used by the renderer to manipulate lights. */
@@ -92,10 +162,7 @@ namespace bs { namespace ct
 		SPtr<Material> mMaterial;
 		SPtr<GpuParamsSet> mParamsSet;
 
-		GpuParamTexture mGBufferA;
-		GpuParamTexture mGBufferB;
-		GpuParamTexture mGBufferC;
-		GpuParamTexture mGBufferDepth;
+		GBufferParams mGBufferParams;
 
 		Vector3I mLightOffsets;
 		GpuParamBuffer mLightBufferParam;
