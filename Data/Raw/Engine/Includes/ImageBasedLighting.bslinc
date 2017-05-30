@@ -1,6 +1,6 @@
 #include "$ENGINE$\ReflectionCubemapCommon.bslinc"
 
-mixin ImageBasedLighting 
+mixin ImageBasedLighting
 {
 	mixin ReflectionCubemapCommon;
 
@@ -22,28 +22,27 @@ mixin ImageBasedLighting
 			float2 padding;
 		};
 	
-		[internal] TextureCube gSkyReflectionTex;
-		[internal] SamplerState gSkyReflectionSamp;
+		TextureCube gSkyReflectionTex;
+		SamplerState gSkyReflectionSamp;
 		
-		[internal] TextureCube gSkyIrradianceTex;
-		[internal] SamplerState gSkyIrradianceSamp;
+		TextureCube gSkyIrradianceTex;
+		SamplerState gSkyIrradianceSamp;
 		
-		[internal] TextureCubeArray gReflProbeCubemaps;
-		[internal] SamplerState gReflProbeSamp;
+		TextureCubeArray gReflProbeCubemaps;
+		SamplerState gReflProbeSamp;
 		
-		[internal] Texture2D gPreintegratedEnvBRDF;
-		[internal] SamplerState gPreintegratedEnvBRDFSamp;
+		Texture2D gPreintegratedEnvBRDF;
+		SamplerState gPreintegratedEnvBRDFSamp;
 		
-		[internal] StructuredBuffer<ReflProbeData> gReflectionProbes;	
+		StructuredBuffer<ReflProbeData> gReflectionProbes;	
 
-		#ifdef USE_COMPUTE_INDICES
+		#if USE_COMPUTE_INDICES
 			groupshared uint gReflectionProbeIndices[MAX_PROBES];
 		#endif
-		#ifdef USE_LIGHT_GRID_INDICES
-			[internal] Buffer<uint> gReflectionProbeIndices;
+		#if USE_LIGHT_GRID_INDICES
+			Buffer<uint> gReflectionProbeIndices;
 		#endif
 		
-		[internal]
 		cbuffer ReflProbeParams
 		{
 			uint gReflCubemapNumMips;

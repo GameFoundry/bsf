@@ -115,7 +115,7 @@ A set of manuals covering advanced functionality intented for those wanting to e
 - [Code style](@ref codeStyle)
 - [Quick reference](@ref quickref)
  
-## General guides
+## Old guides (need updating)
 Name                                      | Description
 ------------------------------------------|-------------
 [BSLFX](@ref bsl)    	  		  		  | Provides a reference for the Banshee Shading Language syntax.

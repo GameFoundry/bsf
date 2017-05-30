@@ -1,7 +1,7 @@
 #include "$ENGINE$\BasePass.bslinc"
 #include "$ENGINE$\LightGridCommon.bslinc"
 #include "$ENGINE$\ReflectionCubemapCommon.bslinc"
-#define USE_LIGHT_GRID_INDICES
+#define USE_LIGHT_GRID_INDICES 1
 #include "$ENGINE$\LightingCommon.bslinc"
 #include "$ENGINE$\ImageBasedLighting.bslinc"
 #include "$ENGINE$\Surface.bslinc"

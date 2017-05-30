@@ -25,11 +25,20 @@ namespace bs
 	 *  @{
 	 */
 
+	/** Contains information global to an entire frame. */
+	struct FrameInfo
+	{
+		FrameInfo(float timeDelta, const RendererAnimationData& animData)
+			:timeDelta(timeDelta), animData(animData)
+		{ }
+
+		float timeDelta;
+		const RendererAnimationData& animData;
+	};
+
 	/**
 	 * Default renderer for Banshee. Performs frustum culling, sorting and renders all scene objects while applying
 	 * lighting, shadowing, special effects and post-processing.
-	 *
-	 * @note	Sim thread unless otherwise noted.
 	 */
 	class RenderBeast : public Renderer
 	{
@@ -38,17 +47,6 @@ namespace bs
 		{
 			Vector<SPtr<GpuParamsSet>> params;
 			UINT32 matVersion;
-		};
-
-		/** Contains information global to an entire frame. */
-		struct FrameInfo
-		{
-			FrameInfo(float timeDelta, const RendererAnimationData& animData)
-				:timeDelta(timeDelta), animData(animData)
-			{ }
-
-			float timeDelta;
-			const RendererAnimationData& animData;
 		};
 
 	public:
@@ -78,13 +76,13 @@ namespace bs
 
 	private:
 		/** @copydoc Renderer::notifyCameraAdded */
-		void notifyCameraAdded(const Camera* camera) override;
+		void notifyCameraAdded(Camera* camera) override;
 
 		/** @copydoc Renderer::notifyCameraUpdated */
-		void notifyCameraUpdated(const Camera* camera, UINT32 updateFlag) override;
+		void notifyCameraUpdated(Camera* camera, UINT32 updateFlag) override;
 
 		/** @copydocRenderer::notifyCameraRemoved */
-		void notifyCameraRemoved(const Camera* camera) override;
+		void notifyCameraRemoved(Camera* camera) override;
 
 		/** @copydoc Renderer::notifyLightAdded */
 		void notifyLightAdded(Light* light) override;
@@ -194,9 +192,6 @@ namespace bs
 
 		// Scene data
 		SPtr<RendererScene> mScene;
-		Vector<bool> mRenderableVisibility; // Transient
-		Vector<bool> mRadialLightVisibility; // Transient
-		Vector<bool> mSpotLightVisibility; // Transient
 
 		//// Reflection probes
 		Vector<bool> mCubemapArrayUsedSlots;

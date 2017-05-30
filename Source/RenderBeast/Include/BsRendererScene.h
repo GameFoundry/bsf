@@ -7,6 +7,7 @@
 #include "BsSamplerOverrides.h"
 #include "BsLightRendering.h"
 #include "BsRendererView.h"
+#include "BsLight.h"
 
 namespace bs 
 { 
@@ -14,6 +15,8 @@ namespace bs
 
 	namespace ct
 	{
+		struct FrameInfo;
+
 	/** @addtogroup RenderBeast
 	 *  @{
 	 */
@@ -23,7 +26,8 @@ namespace bs
 	{
 		// Cameras and render targets
 		Vector<RendererRenderTarget> renderTargets;
-		UnorderedMap<const Camera*, RendererView*> views;
+		Vector<RendererView*> views;
+		UnorderedMap<const Camera*, UINT32> cameraToView;
 		
 		// Renderables
 		Vector<RendererObject*> renderables;
@@ -39,6 +43,15 @@ namespace bs
 		// Reflection probes
 		Vector<RendererReflectionProbe> reflProbes;
 		Vector<Sphere> reflProbeWorldBounds;
+
+		// Buffers for various transient data that gets rebuilt every frame
+		//// Rebuilt every frame
+		mutable Vector<bool> renderableReady;
+
+		//// Rebuilt for every set of views
+		mutable Vector<bool> renderableVisibility;
+		mutable Vector<bool> radialLightVisibility;
+		mutable Vector<bool> spotLightVisibility;
 	};
 
 	/** Contains information about the scene (e.g. renderables, lights, cameras) required by the renderer. */
@@ -49,13 +62,13 @@ namespace bs
 		~RendererScene();
 
 		/** Registers a new camera in the scene. */
-		void registerCamera(const Camera* camera);
+		void registerCamera(Camera* camera);
 
 		/** Updates information about a previously registered camera. */
-		void updateCamera(const Camera* camera, UINT32 updateFlag);
+		void updateCamera(Camera* camera, UINT32 updateFlag);
 
 		/** Removes a camera from the scene. */
-		void unregisterCamera(const Camera* camera);
+		void unregisterCamera(Camera* camera);
 
 		/** Registers a new light in the scene. */
 		void registerLight(Light* light);
@@ -103,16 +116,25 @@ namespace bs
 		 *						was detected or not.
 		 */
 		void refreshSamplerOverrides(bool force = false);
-	private:
-		/** 
-		 * Updates (or adds) renderer specific data for the specified camera. Should be called whenever camera properties
-		 * change. 
-		 *
-		 * @param[in]	camera		Camera whose data to update.
-		 * @param[in]	forceRemove	If true, the camera data will be removed instead of updated.
-		 * @return					Renderer view object that represents the camera. Null if camera was removed.
+
+		/**
+		 * Performs necessary steps to make a renderable ready for rendering. This must be called at least once every frame,
+		 * for every renderable that will be drawn. Multiple calls for the same renderable during a single frame will result
+		 * in a no-op.
+		 * 
+		 * @param[in]	idx			Index of the renderable to prepare.
+		 * @param[in]	frameInfo	Global information describing the current frame.
 		 */
-		RendererView* updateCameraData(const Camera* camera, bool forceRemove = false);
+		void prepareRenderable(UINT32 idx, const FrameInfo& frameInfo);
+	private:
+		/** Creates a renderer view descriptor for the particular camera. */
+		RENDERER_VIEW_DESC createViewDesc(Camera* camera) const;
+
+		/** 
+		 * Find the render target the camera belongs to and adds it to the relevant list. If the camera was previously
+		 * registered with some other render target it will be removed from it and added to the new target.
+		 */
+		void updateCameraRenderTargets(Camera* camera);
 
 		SceneInfo mInfo;
 		UnorderedMap<SamplerOverrideKey, MaterialSamplerOverrides*> mSamplerOverrides;
@@ -120,7 +142,6 @@ namespace bs
 		DefaultMaterial* mDefaultMaterial = nullptr;
 		SPtr<RenderBeastOptions> mOptions;
 	};
-
 
 	/** @} */
 }}

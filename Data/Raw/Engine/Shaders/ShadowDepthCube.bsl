@@ -11,11 +11,14 @@ mixin ShadowDepth
 			uint targetIdx : SV_RenderTargetArrayIndex;
 		};
 
-		cbuffer ShadowCubeParams
+		cbuffer ShadowCubeMatrices
 		{
 			float4x4 gFaceVPMatrices[6];
+		};
+		
+		cbuffer ShadowCubeMasks
+		{
 			uint gFaceMasks[6];
-			uint padding[2];
 		};
 		
 		[maxvertexcount(18)]

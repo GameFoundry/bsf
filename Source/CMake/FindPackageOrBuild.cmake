@@ -43,6 +43,10 @@ function(find_package_or_build DEPENDENCY_NAME DEPENDENCY_INCLUDE_PATH BUILD_OPT
 								--init 
 								-- External/${DEPENDENCY_NAME}
 							WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+		else()
+			execute_process(COMMAND git submodule update
+								-- External/${DEPENDENCY_NAME}
+							WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 		endif()
 
 		# Build

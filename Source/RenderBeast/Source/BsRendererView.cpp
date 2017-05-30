@@ -60,6 +60,7 @@ namespace bs { namespace ct
 		viewProjTransform = src.projTransform * src.viewTransform;
 
 		target = src.target.target;
+		viewRect = src.target.viewRect;
 		nrmViewRect = src.target.nrmViewRect;
 		numSamples = src.target.numSamples;
 

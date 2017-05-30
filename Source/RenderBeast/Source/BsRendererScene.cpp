@@ -10,6 +10,7 @@
 #include "BsPass.h"
 #include "BsGpuParamsSet.h"
 #include "BsRenderBeastOptions.h"
+#include "BsRenderBeast.h"
 
 namespace bs {	namespace ct
 {
@@ -25,37 +26,53 @@ namespace bs {	namespace ct
 			bs_delete(entry);
 
 		for (auto& entry : mInfo.views)
-			bs_delete(entry.second);
+			bs_delete(entry);
 
 		assert(mSamplerOverrides.empty());
 
 		bs_delete(mDefaultMaterial);
 	}
 
-	void RendererScene::registerCamera(const Camera* camera)
+	void RendererScene::registerCamera(Camera* camera)
 	{
-		RendererView* view = updateCameraData(camera);
+		RENDERER_VIEW_DESC viewDesc = createViewDesc(camera);
+
+		RendererView* view = bs_new<RendererView>(viewDesc);
+		view->setPostProcessSettings(camera->getPostProcessSettings());
 		view->updatePerViewBuffer();
+
+		UINT32 viewIdx = (UINT32)mInfo.views.size();
+		mInfo.views.push_back(view);
+
+		mInfo.cameraToView[camera] = viewIdx;
+		camera->setRendererId(viewIdx);
+
+		updateCameraRenderTargets(camera);
 	}
 
-	void RendererScene::updateCamera(const Camera* camera, UINT32 updateFlag)
+	void RendererScene::updateCamera(Camera* camera, UINT32 updateFlag)
 	{
-		RendererView* rendererCam;
+		UINT32 cameraId = camera->getRendererId();
+		RendererView* view = mInfo.views[cameraId];
+
 		if((updateFlag & (UINT32)CameraDirtyFlag::Everything) != 0)
 		{
-			rendererCam = updateCameraData(camera);
+			RENDERER_VIEW_DESC viewDesc = createViewDesc(camera);
+
+			view->setView(viewDesc);
+			view->setPostProcessSettings(camera->getPostProcessSettings());
+
+			updateCameraRenderTargets(camera);
 		}
 		else if((updateFlag & (UINT32)CameraDirtyFlag::PostProcess) != 0)
 		{
-			rendererCam = mInfo.views[camera];
-
-			rendererCam->setPostProcessSettings(camera->getPostProcessSettings());
+			view->setPostProcessSettings(camera->getPostProcessSettings());
 		}
 		else // Transform
 		{
-			rendererCam = mInfo.views[camera];
+			view = mInfo.views[cameraId];
 
-			rendererCam->setTransform(
+			view->setTransform(
 				camera->getPosition(),
 				camera->getForward(),
 				camera->getViewMatrix(),
@@ -63,12 +80,34 @@ namespace bs {	namespace ct
 				camera->getWorldFrustum());
 		}
 
-		rendererCam->updatePerViewBuffer();
+		view->updatePerViewBuffer();
 	}
 
-	void RendererScene::unregisterCamera(const Camera* camera)
+	void RendererScene::unregisterCamera(Camera* camera)
 	{
-		updateCameraData(camera, true);
+		UINT32 cameraId = camera->getRendererId();
+
+		Camera* lastCamera = mInfo.views.back()->getSceneCamera();
+		UINT32 lastCameraId = lastCamera->getRendererId();
+		
+		if (cameraId != lastCameraId)
+		{
+			// Swap current last element with the one we want to erase
+			std::swap(mInfo.views[cameraId], mInfo.views[lastCameraId]);
+			lastCamera->setRendererId(cameraId);
+		}
+		
+		// Last element is the one we want to erase
+		RendererView* view = mInfo.views[mInfo.views.size() - 1];
+		bs_delete(view);
+
+		mInfo.views.erase(mInfo.views.end() - 1);
+
+		auto iterFind = mInfo.cameraToView.find(camera);
+		if(iterFind != mInfo.cameraToView.end())
+			mInfo.cameraToView.erase(iterFind);
+
+		updateCameraRenderTargets(camera);
 	}
 
 	void RendererScene::registerLight(Light* light)
@@ -116,7 +155,7 @@ namespace bs {	namespace ct
 		UINT32 lightId = light->getRendererId();
 		if (light->getType() == LightType::Directional)
 		{
-			Light* lastLight = mInfo.directionalLights.back().getInternal();
+			Light* lastLight = mInfo.directionalLights.back().internal;
 			UINT32 lastLightId = lastLight->getRendererId();
 
 			if (lightId != lastLightId)
@@ -133,7 +172,7 @@ namespace bs {	namespace ct
 		{
 			if (light->getType() == LightType::Radial)
 			{
-				Light* lastLight = mInfo.radialLights.back().getInternal();
+				Light* lastLight = mInfo.radialLights.back().internal;
 				UINT32 lastLightId = lastLight->getRendererId();
 
 				if (lightId != lastLightId)
@@ -151,7 +190,7 @@ namespace bs {	namespace ct
 			}
 			else // Spot
 			{
-				Light* lastLight = mInfo.spotLights.back().getInternal();
+				Light* lastLight = mInfo.spotLights.back().internal;
 				UINT32 lastLightId = lastLight->getRendererId();
 
 				if (lightId != lastLightId)
@@ -417,105 +456,77 @@ namespace bs {	namespace ct
 		mOptions = options;
 
 		for (auto& entry : mInfo.views)
-		{
-			RendererView* rendererCam = entry.second;
-			rendererCam->setStateReductionMode(mOptions->stateReductionMode);
-		}
+			entry->setStateReductionMode(mOptions->stateReductionMode);
 	}
 
-	RendererView* RendererScene::updateCameraData(const Camera* camera, bool forceRemove)
+	RENDERER_VIEW_DESC RendererScene::createViewDesc(Camera* camera) const
 	{
-		RendererView* output;
+		SPtr<Viewport> viewport = camera->getViewport();
+		RENDERER_VIEW_DESC viewDesc;
 
-		SPtr<RenderTarget> renderTarget = camera->getViewport()->getTarget();
+		viewDesc.target.clearFlags = 0;
+		if (viewport->getRequiresColorClear())
+			viewDesc.target.clearFlags |= FBT_COLOR;
 
-		auto iterFind = mInfo.views.find(camera);
-		if(forceRemove)
+		if (viewport->getRequiresDepthClear())
+			viewDesc.target.clearFlags |= FBT_DEPTH;
+
+		if (viewport->getRequiresStencilClear())
+			viewDesc.target.clearFlags |= FBT_STENCIL;
+
+		viewDesc.target.clearColor = viewport->getClearColor();
+		viewDesc.target.clearDepthValue = viewport->getClearDepthValue();
+		viewDesc.target.clearStencilValue = viewport->getClearStencilValue();
+
+		viewDesc.target.target = viewport->getTarget();
+		viewDesc.target.nrmViewRect = viewport->getNormArea();
+		viewDesc.target.viewRect = Rect2I(
+			viewport->getX(),
+			viewport->getY(),
+			(UINT32)viewport->getWidth(),
+			(UINT32)viewport->getHeight());
+
+		if (viewDesc.target.target != nullptr)
 		{
-			if(iterFind != mInfo.views.end())
-			{
-				bs_delete(iterFind->second);
-				mInfo.views.erase(iterFind);
-			}
-
-			renderTarget = nullptr;
-			output = nullptr;
+			viewDesc.target.targetWidth = viewDesc.target.target->getProperties().getWidth();
+			viewDesc.target.targetHeight = viewDesc.target.target->getProperties().getHeight();
 		}
 		else
 		{
-			SPtr<Viewport> viewport = camera->getViewport();
-			RENDERER_VIEW_DESC viewDesc;
-
-			viewDesc.target.clearFlags = 0;
-			if (viewport->getRequiresColorClear())
-				viewDesc.target.clearFlags |= FBT_COLOR;
-
-			if (viewport->getRequiresDepthClear())
-				viewDesc.target.clearFlags |= FBT_DEPTH;
-
-			if (viewport->getRequiresStencilClear())
-				viewDesc.target.clearFlags |= FBT_STENCIL;
-
-			viewDesc.target.clearColor = viewport->getClearColor();
-			viewDesc.target.clearDepthValue = viewport->getClearDepthValue();
-			viewDesc.target.clearStencilValue = viewport->getClearStencilValue();
-
-			viewDesc.target.target = viewport->getTarget();
-			viewDesc.target.nrmViewRect = viewport->getNormArea();
-			viewDesc.target.viewRect = Rect2I(
-				viewport->getX(),
-				viewport->getY(),
-				(UINT32)viewport->getWidth(),
-				(UINT32)viewport->getHeight());
-
-			if (viewDesc.target.target != nullptr)
-			{
-				viewDesc.target.targetWidth = viewDesc.target.target->getProperties().getWidth();
-				viewDesc.target.targetHeight = viewDesc.target.target->getProperties().getHeight();
-			}
-			else
-			{
-				viewDesc.target.targetWidth = 0;
-				viewDesc.target.targetHeight = 0;
-			}
-
-			viewDesc.target.numSamples = camera->getMSAACount();
-
-			viewDesc.isOverlay = camera->getFlags().isSet(CameraFlag::Overlay);
-			viewDesc.isHDR = camera->getFlags().isSet(CameraFlag::HDR);
-			viewDesc.noLighting = camera->getFlags().isSet(CameraFlag::NoLighting);
-			viewDesc.triggerCallbacks = true;
-			viewDesc.runPostProcessing = true;
-			viewDesc.renderingReflections = false;
-
-			viewDesc.cullFrustum = camera->getWorldFrustum();
-			viewDesc.visibleLayers = camera->getLayers();
-			viewDesc.nearPlane = camera->getNearClipDistance();
-			viewDesc.farPlane = camera->getFarClipDistance();
-			viewDesc.flipView = false;
-
-			viewDesc.viewOrigin = camera->getPosition();
-			viewDesc.viewDirection = camera->getForward();
-			viewDesc.projTransform = camera->getProjectionMatrixRS();
-			viewDesc.viewTransform = camera->getViewMatrix();
-			viewDesc.projType = camera->getProjectionType();
-
-			viewDesc.stateReduction = mOptions->stateReductionMode;
-			viewDesc.sceneCamera = camera;
-
-			if (iterFind != mInfo.views.end())
-			{
-				output = iterFind->second;
-				output->setView(viewDesc);
-			}
-			else
-			{
-				output = bs_new<RendererView>(viewDesc);
-				mInfo.views[camera] = output;
-			}
-
-			output->setPostProcessSettings(camera->getPostProcessSettings());
+			viewDesc.target.targetWidth = 0;
+			viewDesc.target.targetHeight = 0;
 		}
+
+		viewDesc.target.numSamples = camera->getMSAACount();
+
+		viewDesc.isOverlay = camera->getFlags().isSet(CameraFlag::Overlay);
+		viewDesc.isHDR = camera->getFlags().isSet(CameraFlag::HDR);
+		viewDesc.noLighting = camera->getFlags().isSet(CameraFlag::NoLighting);
+		viewDesc.triggerCallbacks = true;
+		viewDesc.runPostProcessing = true;
+		viewDesc.renderingReflections = false;
+
+		viewDesc.cullFrustum = camera->getWorldFrustum();
+		viewDesc.visibleLayers = camera->getLayers();
+		viewDesc.nearPlane = camera->getNearClipDistance();
+		viewDesc.farPlane = camera->getFarClipDistance();
+		viewDesc.flipView = false;
+
+		viewDesc.viewOrigin = camera->getPosition();
+		viewDesc.viewDirection = camera->getForward();
+		viewDesc.projTransform = camera->getProjectionMatrixRS();
+		viewDesc.viewTransform = camera->getViewMatrix();
+		viewDesc.projType = camera->getProjectionType();
+
+		viewDesc.stateReduction = mOptions->stateReductionMode;
+		viewDesc.sceneCamera = camera;
+
+		return viewDesc;
+	}
+
+	void RendererScene::updateCameraRenderTargets(Camera* camera)
+	{
+		SPtr<RenderTarget> renderTarget = camera->getViewport()->getTarget();
 
 		// Remove from render target list
 		int rtChanged = 0; // 0 - No RT, 1 - RT found, 2 - RT changed
@@ -573,13 +584,11 @@ namespace bs {	namespace ct
 
 			for (auto& camerasPerTarget : mInfo.renderTargets)
 			{
-				Vector<const Camera*>& cameras = camerasPerTarget.cameras;
+				Vector<Camera*>& cameras = camerasPerTarget.cameras;
 
 				std::sort(begin(cameras), end(cameras), cameraComparer);
 			}
 		}
-
-		return output;
 	}
 
 	void RendererScene::refreshSamplerOverrides(bool force)
@@ -664,5 +673,22 @@ namespace bs {	namespace ct
 
 		for (auto& entry : mSamplerOverrides)
 			entry.second->isDirty = false;
+	}
+
+	void RendererScene::prepareRenderable(UINT32 idx, const FrameInfo& frameInfo)
+	{
+		if (mInfo.renderableReady[idx])
+			return;
+		
+		// Note: Before uploading bone matrices perhaps check if they has actually been changed since last frame
+		mInfo.renderables[idx]->renderable->updateAnimationBuffers(frameInfo.animData);
+		
+		// Note: Could this step be moved in notifyRenderableUpdated, so it only triggers when material actually gets
+		// changed? Although it shouldn't matter much because if the internal versions keeping track of dirty params.
+		for (auto& element : mInfo.renderables[idx]->elements)
+			element.material->updateParamsSet(element.params);
+		
+		mInfo.renderables[idx]->perObjectParamBuffer->flushToGPU();
+		mInfo.renderableReady[idx] = true;
 	}
 }}

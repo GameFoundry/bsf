@@ -16,22 +16,23 @@ namespace bs { namespace ct
 	static const UINT32 BUFFER_INCREMENT = 16 * sizeof(LightData);
 
 	TiledLightingParamDef gTiledLightingParamDef;
+	PerLightParamDef gPerLightParamDef;
 
 	RendererLight::RendererLight(Light* light)
-		:mInternal(light)
+		:internal(light)
 	{ }
 
 	void RendererLight::getParameters(LightData& output) const
 	{
-		Radian spotAngle = Math::clamp(mInternal->getSpotAngle() * 0.5f, Degree(0), Degree(89));
-		Radian spotFalloffAngle = Math::clamp(mInternal->getSpotFalloffAngle() * 0.5f, Degree(0), (Degree)spotAngle);
-		Color color = mInternal->getColor();
+		Radian spotAngle = Math::clamp(internal->getSpotAngle() * 0.5f, Degree(0), Degree(89));
+		Radian spotFalloffAngle = Math::clamp(internal->getSpotFalloffAngle() * 0.5f, Degree(0), (Degree)spotAngle);
+		Color color = internal->getColor();
 
-		output.position = mInternal->getPosition();
-		output.attRadius = mInternal->getBounds().getRadius();
-		output.srcRadius = mInternal->getSourceRadius();
-		output.direction = mInternal->getRotation().zAxis();
-		output.luminance = mInternal->getLuminance();
+		output.position = internal->getPosition();
+		output.attRadius = internal->getBounds().getRadius();
+		output.srcRadius = internal->getSourceRadius();
+		output.direction = internal->getRotation().zAxis();
+		output.luminance = internal->getLuminance();
 		output.spotAngles.x = spotAngle.valueRadians();
 		output.spotAngles.y = Math::cos(output.spotAngles.x);
 		output.spotAngles.z = 1.0f / std::max(Math::cos(spotFalloffAngle) - output.spotAngles.y, 0.001f);
@@ -39,15 +40,149 @@ namespace bs { namespace ct
 		output.color = Vector3(color.r, color.g, color.b);
 
 		// If directional lights, convert angular radius in degrees to radians
-		if (mInternal->getType() == LightType::Directional)
+		if (internal->getType() == LightType::Directional)
 			output.srcRadius *= Math::DEG2RAD;
 
 		// Create position for fake attenuation for area spot lights (with disc center)
-		if (mInternal->getType() == LightType::Spot)
+		if (internal->getType() == LightType::Spot)
 			output.shiftedLightPosition = output.position - output.direction * (output.srcRadius / Math::tan(spotAngle * 0.5f));
 		else
 			output.shiftedLightPosition = output.position;
 	}
+
+	void RendererLight::getParameters(SPtr<GpuParamBlockBuffer>& buffer) const
+	{
+		LightData lightData;
+		getParameters(lightData);
+
+		float type = 0.0f;
+		switch (internal->getType())
+		{
+		case LightType::Directional:
+			type = 0;
+			break;
+		case LightType::Radial:
+			type = 0.3f;
+			break;
+		case LightType::Spot:
+			type = 0.8f;
+			break;
+		}
+
+		gPerLightParamDef.gLightPositionAndSrcRadius.set(buffer, Vector4(lightData.position, lightData.srcRadius));
+		gPerLightParamDef.gLightColorAndLuminance.set(buffer, Vector4(lightData.color, lightData.luminance));
+		gPerLightParamDef.gLightSpotAnglesAndSqrdInvAttRadius.set(buffer, Vector4(lightData.spotAngles, lightData.attRadiusSqrdInv));
+		gPerLightParamDef.gLightDirectionAndAttRadius.set(buffer, Vector4(lightData.direction, lightData.attRadius));
+		gPerLightParamDef.gShiftedLightPositionAndType.set(buffer, Vector4(lightData.shiftedLightPosition, type));
+
+		Vector4 lightGeometry;
+		lightGeometry.x = internal->getType() == LightType::Spot ? (float)Light::LIGHT_CONE_NUM_SIDES : 0;
+		lightGeometry.y = (float)Light::LIGHT_CONE_NUM_SLICES;
+		lightGeometry.z = internal->getBounds().getRadius();
+
+		float coneRadius = Math::sin(lightData.spotAngles.x) * internal->getAttenuationRadius();
+		lightGeometry.w = coneRadius;
+
+		gPerLightParamDef.gLightGeometry.set(buffer, lightGeometry);
+
+		Matrix4 transform = Matrix4::TRS(internal->getPosition(), internal->getRotation(), Vector3::ONE);
+		gPerLightParamDef.gMatConeTransform.set(buffer, transform);
+	}
+
+	GBufferParams::GBufferParams(const SPtr<Material>& material, const SPtr<GpuParamsSet>& paramsSet)
+	{
+		SPtr<GpuParams> params = paramsSet->getGpuParams();
+
+		params->getTextureParam(GPT_COMPUTE_PROGRAM, "gGBufferATex", mGBufferA);
+		params->getTextureParam(GPT_COMPUTE_PROGRAM, "gGBufferBTex", mGBufferB);
+		params->getTextureParam(GPT_COMPUTE_PROGRAM, "gGBufferCTex", mGBufferC);
+		params->getTextureParam(GPT_COMPUTE_PROGRAM, "gDepthBufferTex", mGBufferDepth);
+	}
+
+	void GBufferParams::bind(const SPtr<RenderTargets>& renderTargets)
+	{
+		mGBufferA.set(renderTargets->getGBufferA());
+		mGBufferB.set(renderTargets->getGBufferB());
+		mGBufferC.set(renderTargets->getGBufferC());
+		mGBufferDepth.set(renderTargets->getSceneDepth());
+	}
+
+	template<bool MSAA>
+	DirectionalLightMat<MSAA>::DirectionalLightMat()
+		:mGBufferParams(mMaterial, mParamsSet)
+	{
+
+	}
+
+	template<bool MSAA>
+	void DirectionalLightMat<MSAA>::_initDefines(ShaderDefines& defines)
+	{
+		if (MSAA)
+			defines.set("MSAA_COUNT", 2); // Actual count doesn't matter, as long as it's greater than one
+		else
+			defines.set("MSAA_COUNT", 1);
+	}
+
+	template<bool MSAA>
+	void DirectionalLightMat<MSAA>::bind(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBuffer>& perCamera)
+	{
+		RendererUtility::instance().setPass(mMaterial, 0);
+
+		mGBufferParams.bind(gbuffer);
+		mParamsSet->setParamBlockBuffer("PerCamera", perCamera, true);
+	}
+
+	template<bool MSAA>
+	void DirectionalLightMat<MSAA>::setPerLightParams(const SPtr<GpuParamBlockBuffer>& perLight)
+	{
+		mParamsSet->setParamBlockBuffer("PerLight", perLight, true);
+		
+		gRendererUtility().setPassParams(mParamsSet);
+	}
+
+	template class DirectionalLightMat<true>;
+	template class DirectionalLightMat<false>;
+
+	template<bool MSAA, bool InsideGeometry>
+	PointLightMat<MSAA, InsideGeometry>::PointLightMat()
+		:mGBufferParams(mMaterial, mParamsSet)
+	{
+	}
+
+	template<bool MSAA, bool InsideGeometry>
+	void PointLightMat<MSAA, InsideGeometry>::_initDefines(ShaderDefines& defines)
+	{
+		if (MSAA)
+			defines.set("MSAA_COUNT", 2); // Actual count doesn't matter, as long as it's greater than one
+		else
+			defines.set("MSAA_COUNT", 1);
+
+		if (InsideGeometry)
+			defines.set("INSIDE_GEOMETRY", 1);
+	}
+
+	template<bool MSAA, bool InsideGeometry>
+	void PointLightMat<MSAA, InsideGeometry>::bind(const SPtr<RenderTargets>& gbuffer, 
+		const SPtr<GpuParamBlockBuffer>& perCamera)
+	{
+		RendererUtility::instance().setPass(mMaterial, 0);
+
+		mGBufferParams.bind(gbuffer);
+		mParamsSet->setParamBlockBuffer("PerCamera", perCamera, true);
+	}
+
+	template<bool MSAA, bool InsideGeometry>
+	void PointLightMat<MSAA, InsideGeometry>::setPerLightParams(const SPtr<GpuParamBlockBuffer>& perLight)
+	{
+		mParamsSet->setParamBlockBuffer("PerLight", perLight, true);
+		
+		gRendererUtility().setPassParams(mParamsSet);
+	}
+
+	template class PointLightMat<false, false>;
+	template class PointLightMat<false, true>;
+	template class PointLightMat<true, false>;
+	template class PointLightMat<true, true>;
 
 	GPULightData::GPULightData()
 		:mNumLights{}
@@ -97,14 +232,10 @@ namespace bs { namespace ct
 
 	TiledDeferredLighting::TiledDeferredLighting(const SPtr<Material>& material, const SPtr<GpuParamsSet>& paramsSet,
 													UINT32 sampleCount)
-		:mSampleCount(sampleCount), mMaterial(material), mParamsSet(paramsSet), mLightOffsets()
+		: mSampleCount(sampleCount), mMaterial(material), mParamsSet(paramsSet), mGBufferParams(material, paramsSet)
+		, mLightOffsets()
 	{
 		SPtr<GpuParams> params = mParamsSet->getGpuParams();
-
-		params->getTextureParam(GPT_COMPUTE_PROGRAM, "gGBufferATex", mGBufferA);
-		params->getTextureParam(GPT_COMPUTE_PROGRAM, "gGBufferBTex", mGBufferB);
-		params->getTextureParam(GPT_COMPUTE_PROGRAM, "gGBufferCTex", mGBufferC);
-		params->getTextureParam(GPT_COMPUTE_PROGRAM, "gDepthBufferTex", mGBufferDepth);
 
 		params->getBufferParam(GPT_COMPUTE_PROGRAM, "gLights", mLightBufferParam);
 
@@ -141,11 +272,7 @@ namespace bs { namespace ct
 		}
 		mParamBuffer->flushToGPU();
 
-		mGBufferA.set(renderTargets->getGBufferA());
-		mGBufferB.set(renderTargets->getGBufferB());
-		mGBufferC.set(renderTargets->getGBufferC());
-		mGBufferDepth.set(renderTargets->getSceneDepth());
-
+		mGBufferParams.bind(renderTargets);
 		mParamsSet->setParamBlockBuffer("PerCamera", perCamera, true);
 
 		if (mSampleCount > 1)

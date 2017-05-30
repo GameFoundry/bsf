@@ -10,23 +10,24 @@ technique ReflectionCubeImportanceSample
 	{
 		#define PI 3.1415926
 	
-		// From Hacker's Delight
-		float reverseBits(uint bits)  
+		float radicalInverse(uint bits)  
 		{
+			// Reverse bits. Algorithm from Hacker's Delight.
 			bits = (bits << 16u) | (bits >> 16u);
 			bits = ((bits & 0x55555555u) << 1u) | ((bits & 0xAAAAAAAAu) >> 1u);
 			bits = ((bits & 0x33333333u) << 2u) | ((bits & 0xCCCCCCCCu) >> 2u);
 			bits = ((bits & 0x0F0F0F0Fu) << 4u) | ((bits & 0xF0F0F0F0u) >> 4u);
 			bits = ((bits & 0x00FF00FFu) << 8u) | ((bits & 0xFF00FF00u) >> 8u);
 			
-			return float(bits) * 2.3283064365386963e-10; // 0x100000000
+			// Normalizes unsigned int in range [0, 4294967295] to [0, 1]
+			return float(bits) * 2.3283064365386963e-10;
 		}
 		
 		float2 hammersleySequence(uint i, uint count)
 		{
 			float2 output;
 			output.x = i / (float)count;
-			output.y = reverseBits(i);
+			output.y = radicalInverse(i);
 			
 			return output;
 		}
@@ -59,7 +60,6 @@ technique ReflectionCubeImportanceSample
 			return roughness4 * cosTheta * sinTheta / (d*d*PI);
 		}
 		
-		[internal]
 		cbuffer Input
 		{
 			int gCubeFace;

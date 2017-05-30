@@ -1,0 +1,71 @@
+#include "$ENGINE$\GBufferInput.bslinc"
+#include "$ENGINE$\PerCameraData.bslinc"
+#include "$ENGINE$\LightingCommon.bslinc"
+
+mixin DeferredLightCommon
+{
+	mixin GBufferInput;
+	mixin PerCameraData;
+	mixin LightingCommon;
+
+	depth
+	{
+		write = false;
+		
+		#ifdef INSIDE_GEOMETRY
+		read = false;
+		#else
+		read = true;
+		#endif
+	};
+	
+	raster
+	{
+		#ifdef INSIDE_GEOMETRY
+		cull = cw;
+		#else
+		cull = ccw;
+		#endif
+	};
+
+	code
+	{
+		cbuffer PerLight
+		{
+			// x, y, z - World position of the light
+			// w - Radius of the area light source, zero if not an area light
+			float4 gLightPositionAndSrcRadius;
+			float4 gLightColorAndLuminance;
+			// x - outerAngle in radians, y - cos(outerAngle), z - 1.0f/(cos(innerAngle) - cos(outerAngle)), w - inverse light attenuation radius
+			float4 gLightSpotAnglesAndSqrdInvAttRadius;
+			float4 gLightDirectionAndAttRadius;
+			// xyz - light position shifted in order to adjust for area spot lights
+			// w - light type -> Directional = 0, Radial = >0, Spot = >0.5
+			float4 gShiftedLightPositionAndType;
+			
+			// x - Num sides (zero for radial lights)
+			// y - Num slices (zero for radial lights)
+			// z - Sphere radius for radial lights
+			// w - Cone radius for spot lights
+			float4 gLightGeometry; 
+			float4x4 gMatConeTransform;
+		}		
+
+		LightData getLightData()
+		{
+			LightData output;
+			
+			output.position = gLightPositionAndSrcRadius.xyz;
+			output.attRadius = gLightDirectionAndAttRadius.w;
+			output.direction = gLightDirectionAndAttRadius.xyz;
+			output.luminance = gLightColorAndLuminance.w;
+			output.spotAngles = gLightSpotAnglesAndSqrdInvAttRadius.xyz;
+			output.attRadiusSqrdInv = gLightSpotAnglesAndSqrdInvAttRadius.w;
+			output.color = gLightColorAndLuminance.rgb;
+			output.srcRadius = gLightPositionAndSrcRadius.w;
+			output.shiftedLightPosition = gShiftedLightPositionAndType.rgb;
+
+			return output;
+		}
+	};
+};

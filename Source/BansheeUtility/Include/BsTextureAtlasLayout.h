@@ -41,7 +41,8 @@ namespace bs
 		TextureAtlasLayout(UINT32 width, UINT32 height, UINT32 maxWidth, UINT32 maxHeight, bool pow2 = false);
 
 		/**
-		 * Attempts to add a new element in the layout.
+		 * Attempts to add a new element in the layout. Elements should be added to the atlas from largest to smallest,
+		 * otherwise a non-optimal layout is likely to be generated.
 		 * 
 		 * @param[in]	width	Width of the new element, in pixels.
 		 * @param[in]	height	Height of the new element, in pixels.
@@ -50,6 +51,12 @@ namespace bs
 		 * @return				True if the element was added to the atlas, false if the element doesn't fit.
 		 */
 		bool addElement(UINT32 width, UINT32 height, UINT32& x, UINT32& y);
+
+		/** Removes all entries from the layout. */
+		void clear();
+
+		/** Checks have any elements been added to the layout. */
+		bool isEmpty() const { return mNodes.size() == 1; }
 
 		/** Returns the width of the atlas texture, in pixels. */
 		UINT32 getWidth() const { return mWidth; }
@@ -73,6 +80,8 @@ namespace bs
 		 */
 		bool addToNode(UINT32 nodeIdx, UINT32 width, UINT32 height, UINT32& x, UINT32& y, bool allowGrowth);
 
+		UINT32 mInitialWidth;
+		UINT32 mInitialHeight;
 		UINT32 mWidth;
 		UINT32 mHeight;
 		UINT32 mMaxWidth;
