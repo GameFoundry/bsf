@@ -9,7 +9,7 @@ Remaining v1.0 features (in order):
 
 Post v1.0 features (in no specific order): 
  - Sprites & 2D rendering
- - 2D physics (Box2D integration)
+ - 2D physics (Box2D or Chipmunk integration)
  - 2D animation (Sprite based at least, likely bones as well)
  - Mobile render API (likely Vulkan, possibly Metal for iOS)
  - Android/iOS/WP ports
@@ -31,6 +31,7 @@ And more to come after that:
  - XBONE/PS4 ports
  - BSP brushes for level prototyping
  - Offline lightmapper
+ - WebGL port
  - And more to be decided later...
  
 Implementation times for each of those roughly ranges from 1-4 months.
