@@ -155,13 +155,13 @@ technique ShadowProjectOmni
 			
 			float occlusion = 0.0f;
 			#if SHADOW_QUALITY <= 1
-				//occlusion = gShadowCubeTex.SampleCmpLevelZero(gShadowCubeSampler, lightDir, receiverDepth - shadowBias);
+				occlusion = gShadowCubeTex.SampleCmpLevelZero(gShadowCubeSampler, lightDir, receiverDepth - shadowBias);
 			#elif SHADOW_QUALITY == 2
 				[unroll]
 				for(int i = 0; i < 4; ++i)
 				{
 					float sampleDir = lightDir + side * discSamples4[i].x + up * discSamples4[i].y;
-					//occlusion += gShadowCubeTex.SampleCmpLevelZero(gShadowCubeSampler, sampleDir, receiverDepth - shadowBias);
+					occlusion += gShadowCubeTex.SampleCmpLevelZero(gShadowCubeSampler, sampleDir, receiverDepth - shadowBias);
 				}
 				
 				occlusion /= 4;
@@ -170,7 +170,7 @@ technique ShadowProjectOmni
 				for(int i = 0; i < 12; ++i)
 				{
 					float sampleDir = lightDir + side * discSamples12[i].x + up * discSamples12[i].y;
-					//occlusion += gShadowCubeTex.SampleCmpLevelZero(gShadowCubeSampler, sampleDir, receiverDepth - shadowBias);
+					occlusion += gShadowCubeTex.SampleCmpLevelZero(gShadowCubeSampler, sampleDir, receiverDepth - shadowBias);
 				}
 				
 				occlusion /= 12;
@@ -179,7 +179,7 @@ technique ShadowProjectOmni
 				for(int i = 0; i < 32; ++i)
 				{
 					float sampleDir = lightDir + side * discSamples32[i].x + up * discSamples32[i].y;
-					//occlusion += gShadowCubeTex.SampleCmpLevelZero(gShadowCubeSampler, sampleDir, receiverDepth - shadowBias);
+					occlusion += gShadowCubeTex.SampleCmpLevelZero(gShadowCubeSampler, sampleDir, receiverDepth - shadowBias);
 				}
 				
 				occlusion /= 32;

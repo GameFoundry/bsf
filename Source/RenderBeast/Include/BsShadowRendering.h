@@ -28,7 +28,6 @@ namespace bs { namespace ct
 
 	BS_PARAM_BLOCK_BEGIN(ShadowParamsDef)
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatViewProj)
-		BS_PARAM_BLOCK_ENTRY(Vector2, gNDCZToViewZ)
 		BS_PARAM_BLOCK_ENTRY(Vector2, gNDCZToDeviceZ)
 		BS_PARAM_BLOCK_ENTRY(float, gDepthBias)
 		BS_PARAM_BLOCK_ENTRY(float, gInvDepthRange)

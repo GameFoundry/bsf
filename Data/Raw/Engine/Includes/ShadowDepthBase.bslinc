@@ -28,16 +28,15 @@ mixin ShadowDepthBase
 		cbuffer ShadowParams
 		{
 			float4x4 gMatViewProj;
-			float2 gNDCZToViewZ;
 			float2 gNDCZToDeviceZ;
 			float gDepthBias;
-			float gDepthRange;
+			float gInvDepthRange;
 		};
 		
-		/** Converts Z value from view space to NDC space. */
-		float convertToNDCZ(float viewZ)
+		/** Converts Z value from device range ([0, 1]) to NDC space. */
+		float DeviceZToNDCZ(float deviceZ)
 		{
-			return -gNDCZToViewZ.y + (gNDCZToViewZ.x / viewZ);
+			return deviceZ / gNDCZToDeviceZ.x - gNDCZToDeviceZ.y;
 		}
 		
 		/** Converts Z value from NDC space to device Z value in range [0, 1]. */

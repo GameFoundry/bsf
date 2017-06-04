@@ -74,7 +74,7 @@ namespace bs
 	class XscLog : public Xsc::Log
 	{
 	public:
-		void SumitReport(const Xsc::Report& report) override
+		void SubmitReport(const Xsc::Report& report) override
 		{
 			switch (report.Type())
 			{
@@ -586,7 +586,8 @@ namespace bs
 
 		XscLog log;
 		Xsc::Reflection::ReflectionData reflectionData;
-		if (!Xsc::CompileShader(inputDesc, outputDesc, &log, &reflectionData))
+		bool compileSuccess = Xsc::CompileShader(inputDesc, outputDesc, &log, &reflectionData);
+		if (!compileSuccess)
 		{
 			// If enabled, don't fail if entry point isn't found
 			bool done = true;
@@ -641,6 +642,16 @@ namespace bs
 					detectedTypes->push_back(GPT_HULL_PROGRAM);
 				else if (entry.ident == "csmain")
 					detectedTypes->push_back(GPT_COMPUTE_PROGRAM);
+			}
+
+			// If no entry points found, and error occurred, report error
+			if(!compileSuccess && detectedTypes->size() == 0)
+			{
+				StringStream logOutput;
+				log.getMessages(logOutput);
+
+				LOGERR("Shader cross compilation failed. Log: \n\n" + logOutput.str());
+				return "";
 			}
 		}
 

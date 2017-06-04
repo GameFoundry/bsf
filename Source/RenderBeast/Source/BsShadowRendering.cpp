@@ -989,7 +989,6 @@ namespace bs { namespace ct
 			gShadowParamsDef.gInvDepthRange.set(shadowParamsBuffer, 1.0f / shadowInfo.depthRange);
 			gShadowParamsDef.gMatViewProj.set(shadowParamsBuffer, shadowInfo.shadowVPTransform);
 			gShadowParamsDef.gNDCZToDeviceZ.set(shadowParamsBuffer, RendererView::getNDCZToDeviceZ());
-			gShadowParamsDef.gNDCZToViewZ.set(shadowParamsBuffer, RendererView::getNDCZToViewZ(proj));
 
 			rapi.setRenderTarget(shadowMap.getTarget(i));
 			rapi.clearRenderTarget(FBT_DEPTH);
@@ -1083,7 +1082,6 @@ namespace bs { namespace ct
 		gShadowParamsDef.gInvDepthRange.set(shadowParamsBuffer, 1.0f / mapInfo.depthRange);
 		gShadowParamsDef.gMatViewProj.set(shadowParamsBuffer, mapInfo.shadowVPTransform);
 		gShadowParamsDef.gNDCZToDeviceZ.set(shadowParamsBuffer, RendererView::getNDCZToDeviceZ());
-		gShadowParamsDef.gNDCZToViewZ.set(shadowParamsBuffer, RendererView::getNDCZToViewZ(proj));
 
 		mDepthNormalMat.bind(shadowParamsBuffer);
 
@@ -1186,7 +1184,6 @@ namespace bs { namespace ct
 		gShadowParamsDef.gInvDepthRange.set(shadowParamsBuffer, 1.0f / mapInfo.depthRange);
 		gShadowParamsDef.gMatViewProj.set(shadowParamsBuffer, Matrix4::IDENTITY);
 		gShadowParamsDef.gNDCZToDeviceZ.set(shadowParamsBuffer, RendererView::getNDCZToDeviceZ());
-		gShadowParamsDef.gNDCZToViewZ.set(shadowParamsBuffer, RendererView::getNDCZToViewZ(proj));
 
 		Matrix4 viewOffsetMat = Matrix4::translation(-light->getPosition());
 

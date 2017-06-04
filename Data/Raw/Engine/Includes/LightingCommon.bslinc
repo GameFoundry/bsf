@@ -338,16 +338,19 @@ mixin LightingCommon
 			return lightData.color * illuminance * attenuation * surfaceShading;
 		}
 		
-		#if USE_COMPUTE_INDICES
+		#ifdef USE_COMPUTE_INDICES
 			groupshared uint gLightIndices[MAX_LIGHTS];
+			StructuredBuffer<LightData> gLights;
+			#define REQUIRES_LIGHT_ITERATION 1
 		#endif
-		#if USE_LIGHT_GRID_INDICES
+		
+		#ifdef USE_LIGHT_GRID_INDICES
 			Buffer<uint> gLightIndices;
+			StructuredBuffer<LightData> gLights;
+			#define REQUIRES_LIGHT_ITERATION 1
 		#endif
 		
-		#if USE_COMPUTE_INDICES || USE_LIGHT_GRID_INDICES
-		StructuredBuffer<LightData> gLights;
-		
+		#ifdef REQUIRES_LIGHT_ITERATION
 		float4 getDirectLighting(float3 worldPos, float3 V, float3 R, SurfaceData surfaceData, uint4 lightOffsets)
 		{
 			float3 N = surfaceData.worldNormal.xyz;
