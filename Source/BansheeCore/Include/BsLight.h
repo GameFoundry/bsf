@@ -21,7 +21,9 @@ namespace bs
 	{
 		Directional, 
 		Radial, 
-		Spot
+		Spot,
+
+		Count // Keep at end
 	};
 
 	/**	Signals which portion of a light is dirty. */

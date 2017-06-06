@@ -48,7 +48,9 @@ namespace bs
 		 * Specify that no lighting should be applied to scene objects and everything should be rendered using their
 		 * albedo texture.
 		 */
-		NoLighting = 1 << 2
+		NoLighting = 1 << 2,
+		/** Specify that no shadows should be applied to scene objects. Only relevant if lighting is turned on. */
+		NoShadows = 1 << 3
 	};
 
 	typedef Flags<CameraFlag> CameraFlags;

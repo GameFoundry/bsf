@@ -19,6 +19,16 @@ mixin DeferredLightCommon
 		#endif
 	};
 	
+	blend
+	{
+		target
+		{
+			enabled = true;
+			color = { one, one, add };
+			writemask = RGB;			
+		};
+	};
+	
 	raster
 	{
 		#ifdef INSIDE_GEOMETRY
@@ -67,5 +77,11 @@ mixin DeferredLightCommon
 
 			return output;
 		}
+		
+		#if MSAA_COUNT > 1
+		Texture2DMS<float4> gLightOcclusionTex;
+		#else
+		Texture2D<float4> gLightOcclusionTex;
+		#endif
 	};
 };

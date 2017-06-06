@@ -242,7 +242,7 @@ namespace bs { namespace ct
 		mGridParamBuffer = gLightGridParamDefDef.createBuffer();
 	}
 
-	void LightGrid::updateGrid(const RendererView& view, const GPULightData& lightData, const GPUReflProbeData& probeData,
+	void LightGrid::updateGrid(const RendererView& view, const VisibleLightData& lightData, const GPUReflProbeData& probeData,
 		bool noLighting)
 	{
 		UINT32 width = view.getRenderTargets()->getWidth();
@@ -253,23 +253,33 @@ namespace bs { namespace ct
 		gridSize[1] = (height + CELL_XY_SIZE - 1) / CELL_XY_SIZE;
 		gridSize[2] = NUM_Z_SUBDIVIDES;
 
-		Vector3I lightOffsets;
+		Vector4I lightCount;
+		Vector2I lightStrides;
 		if (!noLighting)
 		{
-			lightOffsets[0] = lightData.getNumDirLights();
-			lightOffsets[1] = lightOffsets[0] + lightData.getNumRadialLights();
-			lightOffsets[2] = lightOffsets[1] + lightData.getNumSpotLights();
+			lightCount[0] = lightData.getNumLights(LightType::Directional);
+			lightCount[1] = lightData.getNumLights(LightType::Radial);
+			lightCount[2] = lightData.getNumLights(LightType::Spot);
+			lightCount[3] = lightCount[0] + lightCount[1] + lightCount[2];
+
+			lightStrides[0] = lightCount[0];
+			lightStrides[1] = lightStrides[0] + lightCount[1];
 		}
 		else
 		{
-			lightOffsets[0] = 0;
-			lightOffsets[1] = 1;
-			lightOffsets[2] = 2;
+			lightCount[0] = 0;
+			lightCount[1] = 0;
+			lightCount[2] = 0;
+			lightCount[3] = 0;
+
+			lightStrides[0] = 0;
+			lightStrides[1] = 0;
 		}
 
 		UINT32 numCells = gridSize[0] * gridSize[1] * gridSize[2];
 
-		gLightGridParamDefDef.gLightOffsets.set(mGridParamBuffer, lightOffsets);
+		gLightGridParamDefDef.gLightCounts.set(mGridParamBuffer, lightCount);
+		gLightGridParamDefDef.gLightStrides.set(mGridParamBuffer, lightStrides);
 		gLightGridParamDefDef.gNumReflProbes.set(mGridParamBuffer, probeData.getNumProbes());
 		gLightGridParamDefDef.gNumCells.set(mGridParamBuffer, numCells);
 		gLightGridParamDefDef.gGridSize.set(mGridParamBuffer, gridSize);

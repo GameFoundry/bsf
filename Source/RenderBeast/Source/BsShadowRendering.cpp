@@ -390,7 +390,7 @@ namespace bs { namespace ct
 		:mLastUsedCounter(0)
 	{
 		mAtlas = GpuResourcePool::instance().get(
-			POOLED_RENDER_TEXTURE_DESC::create2D(PF_D24S8, size, size, TU_DEPTHSTENCIL));
+			POOLED_RENDER_TEXTURE_DESC::create2D(SHADOW_MAP_FORMAT, size, size, TU_DEPTHSTENCIL));
 	}
 
 	ShadowMapAtlas::~ShadowMapAtlas()
@@ -448,7 +448,7 @@ namespace bs { namespace ct
 		:ShadowMapBase(size)
 	{
 		mShadowMap = GpuResourcePool::instance().get(
-			POOLED_RENDER_TEXTURE_DESC::createCube(PF_D24S8, size, size, TU_DEPTHSTENCIL));
+			POOLED_RENDER_TEXTURE_DESC::createCube(SHADOW_MAP_FORMAT, size, size, TU_DEPTHSTENCIL));
 
 		RENDER_TEXTURE_DESC rtDesc;
 		rtDesc.depthStencilSurface.texture = mShadowMap->texture;
@@ -468,8 +468,8 @@ namespace bs { namespace ct
 	ShadowCascadedMap::ShadowCascadedMap(UINT32 size)
 		:ShadowMapBase(size)
 	{
-		mShadowMap = GpuResourcePool::instance().get(
-			POOLED_RENDER_TEXTURE_DESC::create2D(PF_D24S8, size, size, TU_DEPTHSTENCIL, 0, false, NUM_CASCADE_SPLITS));
+		mShadowMap = GpuResourcePool::instance().get(POOLED_RENDER_TEXTURE_DESC::create2D(SHADOW_MAP_FORMAT, size, size, 
+			TU_DEPTHSTENCIL, 0, false, NUM_CASCADE_SPLITS));
 
 		RENDER_TEXTURE_DESC rtDesc;
 		rtDesc.depthStencilSurface.texture = mShadowMap->texture;
@@ -802,7 +802,7 @@ namespace bs { namespace ct
 				SPtr<Texture> shadowMap = mShadowCubemaps[shadowInfo.textureIdx].getTexture();
 				SPtr<RenderTargets> renderTargets = view->getRenderTargets();
 
-				ShadowProjectParams shadowParams(*light, shadowMap, 0, shadowParamBuffer, perViewBuffer, renderTargets);
+				ShadowProjectParams shadowParams(*light, shadowMap, 0, shadowParamBuffer, perViewBuffer, *renderTargets);
 				mProjectOmniMaterials.bind(effectiveShadowQuality, viewerInsideVolume, viewProps.numSamples > 1, shadowParams);
 
 				gRendererUtility().draw(gRendererUtility().getRadialLightStencil());
@@ -897,7 +897,7 @@ namespace bs { namespace ct
 
 				SPtr<RenderTargets> renderTargets = view->getRenderTargets();
 				ShadowProjectParams shadowParams(*light, shadowMap, shadowMapFace, shadowParamBuffer, perViewBuffer, 
-					renderTargets);
+					*renderTargets);
 				mProjectMaterials.bind(effectiveShadowQuality, isCSM, viewProps.numSamples > 1, shadowParams);
 
 				if(!isCSM)

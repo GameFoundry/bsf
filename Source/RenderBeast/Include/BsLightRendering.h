@@ -5,9 +5,12 @@
 #include "BsRenderBeastPrerequisites.h"
 #include "BsRendererMaterial.h"
 #include "BsParamBlocks.h"
+#include "BsLight.h"
 
 namespace bs { namespace ct
 {
+	struct SceneInfo;
+
 	/** @addtogroup RenderBeast
 	 *  @{
 	 */
@@ -26,18 +29,6 @@ namespace bs { namespace ct
 		Vector3 shiftedLightPosition;
 		float padding;
 	};
-
-	BS_PARAM_BLOCK_BEGIN(PerLightParamDef)
-		BS_PARAM_BLOCK_ENTRY(Vector4, gLightPositionAndSrcRadius)
-		BS_PARAM_BLOCK_ENTRY(Vector4, gLightColorAndLuminance)
-		BS_PARAM_BLOCK_ENTRY(Vector4, gLightSpotAnglesAndSqrdInvAttRadius)
-		BS_PARAM_BLOCK_ENTRY(Vector4, gLightDirectionAndAttRadius)
-		BS_PARAM_BLOCK_ENTRY(Vector4, gShiftedLightPositionAndType)
-		BS_PARAM_BLOCK_ENTRY(Vector4, gLightGeometry)
-		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatConeTransform)
-	BS_PARAM_BLOCK_END
-
-	extern PerLightParamDef gPerLightParamDef;
 
 	/**	Renderer information specific to a single light. */
 	class RendererLight
@@ -64,7 +55,7 @@ namespace bs { namespace ct
 		GBufferParams(const SPtr<Material>& material, const SPtr<GpuParamsSet>& paramsSet);
 
 		/** Binds the GBuffer textures to the pipeline. */
-		void bind(const SPtr<RenderTargets>& renderTargets);
+		void bind(const RenderTargets& renderTargets);
 
 	private:
 		MaterialParamTexture mGBufferA;
@@ -73,51 +64,20 @@ namespace bs { namespace ct
 		MaterialParamTexture mGBufferDepth;
 	};
 
-	/** Shader that renders directional light sources during deferred rendering light pass. */
-	template<bool MSAA>
-	class DirectionalLightMat : public RendererMaterial<DirectionalLightMat<MSAA>>
-	{
-		RMAT_DEF("DeferredDirectionalLight.bsl");
-
-	public:
-		DirectionalLightMat();
-
-		/** Binds the material for rendering and sets up any global parameters. */
-		void bind(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBuffer>& perCamera);
-
-		/** Updates the per-light buffers used by the material. */
-		void setPerLightParams(const SPtr<GpuParamBlockBuffer>& perLight);
-	private:
-		GBufferParams mGBufferParams;
-	};
-
-	/** Shader that renders point (radial & spot) light sources during deferred rendering light pass. */
-	template<bool MSAA, bool InsideGeometry>
-	class PointLightMat : public RendererMaterial<PointLightMat<MSAA, InsideGeometry>>
-	{
-		RMAT_DEF("DeferredPointLight.bsl");
-
-	public:
-		PointLightMat();
-
-		/** Binds the material for rendering and sets up any global parameters. */
-		void bind(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBuffer>& perCamera);
-
-		/** Updates the per-light buffers used by the material. */
-		void setPerLightParams(const SPtr<GpuParamBlockBuffer>& perLight);
-	private:
-		GBufferParams mGBufferParams;
-	};
-
-	/** Contains GPU buffers used by the renderer to manipulate lights. */
-	class GPULightData
+	/** 
+	 * Contains lights that are visible from a specific set of views, determined by scene information provided to 
+	 * setLights().
+	 */
+	class VisibleLightData
 	{
 	public:
-		GPULightData();
+		VisibleLightData();
 
-		/** Updates the internal buffers with a new set of lights. */
-		void setLights(const Vector<LightData>& lightData, UINT32 numDirLights, UINT32 numRadialLights,
-					   UINT32 numSpotLights);
+		/** 
+		 * Updates the internal buffers with a new set of lights. Before calling make sure that light visibility has
+		 * been calculated and assigned to @p sceneInfo.
+		 */
+		void setLights(const SceneInfo& sceneInfo);
 
 		/** Returns a GPU bindable buffer containing information about every light. */
 		SPtr<GpuBuffer> getLightBuffer() const { return mLightBuffer; }
@@ -131,14 +91,33 @@ namespace bs { namespace ct
 		/** Returns the number of spot point lights in the lights buffer. */
 		UINT32 getNumSpotLights() const { return mNumLights[2]; }
 
+		/** Returns the number of visible lights of the specified type. */
+		UINT32 getNumLights(LightType type) const { return mNumLights[(UINT32)type]; }
+
+		/** Returns the number of visible shadowed lights of the specified type. */
+		UINT32 getNumShadowedLights(LightType type) const { return mNumShadowedLights[(UINT32)type]; }
+
+		/** Returns the number of visible unshadowed lights of the specified type. */
+		UINT32 getNumUnshadowedLights(LightType type) const { return mNumLights[(UINT32)type] - mNumShadowedLights[(UINT32)type]; }
+
+		/** Returns a list of all visible lights of the specified type. */
+		const Vector<const RendererLight*>& getLights(LightType type) const { return mVisibleLights[(UINT32)type]; }
 	private:
 		SPtr<GpuBuffer> mLightBuffer;
 
-		UINT32 mNumLights[3];
+		UINT32 mNumLights[(UINT32)LightType::Count];
+		UINT32 mNumShadowedLights[(UINT32)LightType::Count];
+
+		// These are rebuilt every call to setLights()
+		Vector<const RendererLight*> mVisibleLights[(UINT32)LightType::Count];
+
+		// Helpers to avoid memory allocations
+		Vector<LightData> mLightDataTemp;
 	};
 
 	BS_PARAM_BLOCK_BEGIN(TiledLightingParamDef)
-		BS_PARAM_BLOCK_ENTRY(Vector3I, gLightOffsets)
+		BS_PARAM_BLOCK_ENTRY(Vector4I, gLightCounts)
+		BS_PARAM_BLOCK_ENTRY(Vector2I, gLightStrides)
 		BS_PARAM_BLOCK_ENTRY(Vector2I, gFramebufferSize)
 	BS_PARAM_BLOCK_END
 
@@ -151,10 +130,11 @@ namespace bs { namespace ct
 		TiledDeferredLighting(const SPtr<Material>& material, const SPtr<GpuParamsSet>& paramsSet, UINT32 sampleCount);
 
 		/** Binds the material for rendering, sets up parameters and executes it. */
-		void execute(const SPtr<RenderTargets>& renderTargets, const SPtr<GpuParamBlockBuffer>& perCamera, bool noLighting);
+		void execute(const SPtr<RenderTargets>& renderTargets, const SPtr<GpuParamBlockBuffer>& perCamera, bool noLighting,
+			bool noShadows);
 
 		/** Binds all the active lights. */
-		void setLights(const GPULightData& lightData);
+		void setLights(const VisibleLightData& lightData);
 
 		static const UINT32 TILE_SIZE;
 	private:
@@ -164,7 +144,9 @@ namespace bs { namespace ct
 
 		GBufferParams mGBufferParams;
 
-		Vector3I mLightOffsets;
+		Vector4I mUnshadowedLightCounts;
+		Vector4I mLightCounts;
+		Vector2I mLightStrides;
 		GpuParamBuffer mLightBufferParam;
 		GpuParamLoadStoreTexture mOutputTextureParam;
 		GpuParamBuffer mOutputBufferParam;
@@ -180,10 +162,10 @@ namespace bs { namespace ct
 
 		/** @copydoc TiledDeferredLighting::execute() */
 		virtual void execute(const SPtr<RenderTargets>& renderTargets, const SPtr<GpuParamBlockBuffer>& perCamera,
-			bool noLighting) = 0;
+			bool noLighting, bool noShadows) = 0;
 
 		/** @copydoc TiledDeferredLighting::setLights() */
-		virtual void setLights(const GPULightData& lightData) = 0;
+		virtual void setLights(const VisibleLightData& lightData) = 0;
 	};
 
 	/** Shader that performs a lighting pass over data stored in the Gbuffer. */
@@ -197,10 +179,10 @@ namespace bs { namespace ct
 
 		/** @copydoc ITiledDeferredLightingMat::execute() */
 		void execute(const SPtr<RenderTargets>& renderTargets, const SPtr<GpuParamBlockBuffer>& perCamera,
-			bool noLighting) override;
+			bool noLighting, bool noShaodws) override;
 
 		/** @copydoc ITiledDeferredLightingMat::setLights() */
-		void setLights(const GPULightData& lightData) override;
+		void setLights(const VisibleLightData& lightData) override;
 	private:
 		TiledDeferredLighting mInternal;
 	};

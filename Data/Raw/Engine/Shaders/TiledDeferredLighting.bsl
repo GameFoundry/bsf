@@ -16,12 +16,15 @@ technique TiledDeferredLighting
 	code
 	{	
 		[internal]
-		cbuffer Params : register(b0)
+		cbuffer Params
 		{
-			// Offsets at which specific light types begin in gLights buffer
-			// Assumed directional lights start at 0
-			// x - offset to point lights, y - offset to spot lights, z - total number of lights
-			uint3 gLightOffsets;
+			// Number of lights per type in the lights buffer
+			// x - directional lights, y - radial lights, z - spot lights, w - total number of lights
+			uint4 gLightCounts;
+			// Strides between different light types in the light buffer
+			// x - stride to radial lights, y - stride to spot lights. Directional lights are assumed to start at 0.
+			uint2 gLightStrides;
+			
 			uint2 gFramebufferSize;
 		}
 	
@@ -60,7 +63,7 @@ technique TiledDeferredLighting
 			float3 worldPosition = worldPosition4D.xyz / worldPosition4D.w;
 			
 			uint4 lightOffsets;
-			lightOffsets.x = gLightOffsets[0];
+			lightOffsets.x = gLightCounts[0];
 			lightOffsets.y = 0;
 			lightOffsets.z = sNumLightsPerType[0];
 			lightOffsets.w = sTotalNumLights;
@@ -194,9 +197,9 @@ technique TiledDeferredLighting
 			// Find radial & spot lights overlapping the tile
 			for(uint type = 0; type < 2; type++)
 			{
-				uint lightOffset = threadIndex + gLightOffsets[type];
-				uint lightsEnd = gLightOffsets[type + 1];
-				for (uint i = lightOffset; i < lightsEnd && i < MAX_LIGHTS; i += TILE_SIZE)
+				uint lightsStart = threadIndex + gLightStrides[type];
+				uint lightsEnd = lightsStart + gLightCounts[type + 1];
+				for (uint i = lightsStart; i < lightsEnd && i < MAX_LIGHTS; i += TILE_SIZE)
 				{
 					float4 lightPosition = mul(gMatView, float4(gLights[i].position, 1.0f));
 					float lightRadius = gLights[i].attRadius;

@@ -10,14 +10,15 @@
 namespace bs { namespace ct
 {
 	class GPUReflProbeData;
-	class GPULightData;
+	class VisibleLightData;
 
 	/** @addtogroup RenderBeast
 	 *  @{
 	 */
 
 	BS_PARAM_BLOCK_BEGIN(LightGridParamDef)
-		BS_PARAM_BLOCK_ENTRY(Vector3I, gLightOffsets)
+		BS_PARAM_BLOCK_ENTRY(Vector4I, gLightCounts)
+		BS_PARAM_BLOCK_ENTRY(Vector2I, gLightStrides)
 		BS_PARAM_BLOCK_ENTRY(INT32, gNumReflProbes)
 		BS_PARAM_BLOCK_ENTRY(INT32, gNumCells)
 		BS_PARAM_BLOCK_ENTRY(Vector3I, gGridSize)
@@ -127,7 +128,7 @@ namespace bs { namespace ct
 		LightGrid();
 
 		/** Updates the light grid from the provided view. */
-		void updateGrid(const RendererView& view, const GPULightData& lightData, const GPUReflProbeData& probeData, 
+		void updateGrid(const RendererView& view, const VisibleLightData& lightData, const GPUReflProbeData& probeData, 
 			bool noLighting);
 
 		/** 

@@ -69,7 +69,7 @@ mixin Surface
 			uint3 lightOffsetAndSize = gGridLightOffsetsAndSize[cellIdx].rgb;
 			
 			uint4 lightOffsets;
-			lightOffsets.x = gLightOffsets[0];
+			lightOffsets.x = gLightCounts.x;
 			lightOffsets.y = lightOffsetAndSize.x;
 			lightOffsets.z = lightOffsets.y + lightOffsetAndSize.y;
 			lightOffsets.w = lightOffsets.z + lightOffsetAndSize.z;

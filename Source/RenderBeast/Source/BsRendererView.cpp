@@ -7,6 +7,7 @@
 #include "BsShader.h"
 #include "BsRenderTargets.h"
 #include "BsRendererUtility.h"
+#include "BsLightRendering.h"
 #include "BsGpuParamsSet.h"
 
 namespace bs { namespace ct
@@ -207,6 +208,50 @@ namespace bs { namespace ct
 
 		mOpaqueQueue->sort();
 		mTransparentQueue->sort();
+	}
+
+	void RendererView::determineVisible(const Vector<RendererLight>& lights, const Vector<Sphere>& bounds, 
+		LightType lightType, Vector<bool>* visibility)
+	{
+		// Special case for directional lights, they're always visible
+		if(lightType == LightType::Directional)
+		{
+			if (visibility)
+				visibility->assign(lights.size(), true);
+
+			return;
+		}
+
+		Vector<bool>* perViewVisibility;
+		if(lightType == LightType::Radial)
+		{
+			mVisibility.radialLights.clear();
+			mVisibility.radialLights.resize(lights.size(), false);
+
+			perViewVisibility = &mVisibility.radialLights;
+		}
+		else // Spot
+		{
+			mVisibility.spotLights.clear();
+			mVisibility.spotLights.resize(lights.size(), false);
+
+			perViewVisibility = &mVisibility.spotLights;
+		}
+
+		if (mProperties.isOverlay)
+			return;
+
+		calculateVisibility(bounds, *perViewVisibility);
+
+		if(visibility != nullptr)
+		{
+			for (UINT32 i = 0; i < (UINT32)lights.size(); i++)
+			{
+				bool visible = (*visibility)[i];
+
+				(*visibility)[i] = visible || (*perViewVisibility)[i];
+			}
+		}
 	}
 
 	void RendererView::calculateVisibility(const Vector<CullInfo>& cullInfos, Vector<bool>& visibility) const

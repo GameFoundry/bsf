@@ -155,7 +155,6 @@ namespace bs { namespace ct
 		GpuParamTexture mGBufferDepth;
 
 		GpuParamTexture mInColorTextureParam;
-		GpuParamBuffer mInColorBufferParam;
 
 		ImageBasedLightingParams mImageBasedParams;
 

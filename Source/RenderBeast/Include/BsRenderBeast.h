@@ -210,7 +210,7 @@ namespace bs
 		//// Lighting
 		TiledDeferredLightingMaterials* mTiledDeferredLightingMats = nullptr;
 		LightGrid* mLightGrid = nullptr;
-		GPULightData* mGPULightData = nullptr;
+		VisibleLightData* mVisibleLightInfo = nullptr;
 
 		//// Image based lighting
 		TiledDeferredImageBasedLightingMaterials* mTileDeferredImageBasedLightingMats = nullptr;
@@ -227,8 +227,6 @@ namespace bs
 		SPtr<RenderBeastOptions> mCoreOptions;
 
 		// Helpers to avoid memory allocations
-		Vector<LightData> mLightDataTemp;
-
 		Vector<ReflProbeData> mReflProbeDataTemp;
 		Vector<bool> mReflProbeVisibilityTemp;
 

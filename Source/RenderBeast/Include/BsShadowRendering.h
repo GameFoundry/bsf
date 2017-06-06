@@ -141,9 +141,9 @@ namespace bs { namespace ct
 	{
 		ShadowProjectParams(const Light& light, const SPtr<Texture>& shadowMap, UINT32 shadowMapFace,
 			const SPtr<GpuParamBlockBuffer>& shadowParams, const SPtr<GpuParamBlockBuffer>& perCameraParams,
-			const SPtr<RenderTargets>& renderTargets)
-			: light{light}, shadowMap{shadowMap}, shadowParams{shadowParams}, perCamera{perCameraParams}
-			, renderTargets{renderTargets}
+			const RenderTargets& renderTargets)
+			: light(light), shadowMap(shadowMap), shadowMapFace(shadowMapFace), shadowParams(shadowParams)
+			, perCamera(perCameraParams), renderTargets(renderTargets)
 		{ }
 
 		/** Light which is casting the shadow. */
@@ -162,7 +162,7 @@ namespace bs { namespace ct
 		const SPtr<GpuParamBlockBuffer>& perCamera;
 
 		/** Contains the GBuffer textures. */
-		SPtr<RenderTargets> renderTargets;
+		const RenderTargets& renderTargets;
 	};
 
 	BS_PARAM_BLOCK_BEGIN(ShadowProjectParamsDef)
@@ -288,6 +288,9 @@ namespace bs { namespace ct
 #undef MAT_MEMBERS
 
 	};
+
+	/** Pixel format used for rendering and storing shadow maps. */
+	const PixelFormat SHADOW_MAP_FORMAT = PF_D16;
 
 	/** Information about a shadow cast from a single light. */
 	struct ShadowInfo

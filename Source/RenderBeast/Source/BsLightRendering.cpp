@@ -10,13 +10,13 @@
 #include "BsGpuBuffer.h"
 #include "BsLight.h"
 #include "BsRendererUtility.h"
+#include "BsStandardDeferredLighting.h"
 
 namespace bs { namespace ct
 {
 	static const UINT32 BUFFER_INCREMENT = 16 * sizeof(LightData);
 
 	TiledLightingParamDef gTiledLightingParamDef;
-	PerLightParamDef gPerLightParamDef;
 
 	RendererLight::RendererLight(Light* light)
 		:internal(light)
@@ -97,110 +97,88 @@ namespace bs { namespace ct
 		mGBufferDepth = material->getParamTexture("gDepthBufferTex");
 	}
 
-	void GBufferParams::bind(const SPtr<RenderTargets>& renderTargets)
+	void GBufferParams::bind(const RenderTargets& renderTargets)
 	{
-		mGBufferA.set(renderTargets->getGBufferA());
-		mGBufferB.set(renderTargets->getGBufferB());
-		mGBufferC.set(renderTargets->getGBufferC());
-		mGBufferDepth.set(renderTargets->getSceneDepth());
+		mGBufferA.set(renderTargets.getGBufferA());
+		mGBufferB.set(renderTargets.getGBufferB());
+		mGBufferC.set(renderTargets.getGBufferC());
+		mGBufferDepth.set(renderTargets.getSceneDepth());
 	}
 
-	template<bool MSAA>
-	DirectionalLightMat<MSAA>::DirectionalLightMat()
-		:mGBufferParams(mMaterial, mParamsSet)
-	{
-
-	}
-
-	template<bool MSAA>
-	void DirectionalLightMat<MSAA>::_initDefines(ShaderDefines& defines)
-	{
-		if (MSAA)
-			defines.set("MSAA_COUNT", 2); // Actual count doesn't matter, as long as it's greater than one
-		else
-			defines.set("MSAA_COUNT", 1);
-	}
-
-	template<bool MSAA>
-	void DirectionalLightMat<MSAA>::bind(const SPtr<RenderTargets>& gbuffer, const SPtr<GpuParamBlockBuffer>& perCamera)
-	{
-		RendererUtility::instance().setPass(mMaterial, 0);
-
-		mGBufferParams.bind(gbuffer);
-		mParamsSet->setParamBlockBuffer("PerCamera", perCamera, true);
-	}
-
-	template<bool MSAA>
-	void DirectionalLightMat<MSAA>::setPerLightParams(const SPtr<GpuParamBlockBuffer>& perLight)
-	{
-		mParamsSet->setParamBlockBuffer("PerLight", perLight, true);
-		
-		gRendererUtility().setPassParams(mParamsSet);
-	}
-
-	template class DirectionalLightMat<true>;
-	template class DirectionalLightMat<false>;
-
-	template<bool MSAA, bool InsideGeometry>
-	PointLightMat<MSAA, InsideGeometry>::PointLightMat()
-		:mGBufferParams(mMaterial, mParamsSet)
-	{
-	}
-
-	template<bool MSAA, bool InsideGeometry>
-	void PointLightMat<MSAA, InsideGeometry>::_initDefines(ShaderDefines& defines)
-	{
-		if (MSAA)
-			defines.set("MSAA_COUNT", 2); // Actual count doesn't matter, as long as it's greater than one
-		else
-			defines.set("MSAA_COUNT", 1);
-
-		if (InsideGeometry)
-			defines.set("INSIDE_GEOMETRY", 1);
-	}
-
-	template<bool MSAA, bool InsideGeometry>
-	void PointLightMat<MSAA, InsideGeometry>::bind(const SPtr<RenderTargets>& gbuffer, 
-		const SPtr<GpuParamBlockBuffer>& perCamera)
-	{
-		RendererUtility::instance().setPass(mMaterial, 0);
-
-		mGBufferParams.bind(gbuffer);
-		mParamsSet->setParamBlockBuffer("PerCamera", perCamera, true);
-	}
-
-	template<bool MSAA, bool InsideGeometry>
-	void PointLightMat<MSAA, InsideGeometry>::setPerLightParams(const SPtr<GpuParamBlockBuffer>& perLight)
-	{
-		mParamsSet->setParamBlockBuffer("PerLight", perLight, true);
-		
-		gRendererUtility().setPassParams(mParamsSet);
-	}
-
-	template class PointLightMat<false, false>;
-	template class PointLightMat<false, true>;
-	template class PointLightMat<true, false>;
-	template class PointLightMat<true, true>;
-
-	GPULightData::GPULightData()
-		:mNumLights{}
+	VisibleLightData::VisibleLightData()
+		:mNumLights{}, mNumShadowedLights{}
 	{ }
 
-	void GPULightData::setLights(const Vector<LightData>& lightData, UINT32 numDirLights, UINT32 numRadialLights,
-									UINT32 numSpotLights)
+	void VisibleLightData::setLights(const SceneInfo& sceneInfo)
 	{
-		mNumLights[0] = numDirLights;
-		mNumLights[1] = numRadialLights;
-		mNumLights[2] = numSpotLights;
+		for (UINT32 i = 0; i < (UINT32)LightType::Count; i++)
+			mVisibleLights[i].clear();
 
-		Vector3I lightOffsets;
-		lightOffsets[0] = numDirLights;
-		lightOffsets[1] = lightOffsets[0] + numRadialLights;
-		lightOffsets[2] = lightOffsets[1] + numSpotLights;
+		// Generate a list of lights and their GPU buffers
+		UINT32 numDirLights = (UINT32)sceneInfo.directionalLights.size();
+		for (UINT32 i = 0; i < numDirLights; i++)
+			mVisibleLights[(UINT32)LightType::Directional].push_back(&sceneInfo.directionalLights[i]);
 
-		UINT32 totalNumLights = (UINT32)lightOffsets[2];
+		UINT32 numRadialLights = (UINT32)sceneInfo.radialLights.size();
+		for(UINT32 i = 0; i < numRadialLights; i++)
+		{
+			if (!sceneInfo.radialLightVisibility[i])
+				continue;
 
-		UINT32 size = totalNumLights * sizeof(LightData);
+			mVisibleLights[(UINT32)LightType::Radial].push_back(&sceneInfo.radialLights[i]);
+		}
+
+		UINT32 numSpotLights = (UINT32)sceneInfo.spotLights.size();
+		for (UINT32 i = 0; i < numSpotLights; i++)
+		{
+			if (!sceneInfo.spotLightVisibility[i])
+				continue;
+
+			mVisibleLights[(UINT32)LightType::Spot].push_back(&sceneInfo.spotLights[i]);
+		}
+
+		for (UINT32 i = 0; i < (UINT32)LightType::Count; i++)
+			mNumLights[i] = (UINT32)mVisibleLights[i].size();
+
+		// Partition all visible lights so that unshadowed ones come first
+		auto partition = [](Vector<const RendererLight*>& entries)
+		{
+			int first = 0;
+			for (int i = 0; i < entries.size(); ++i)
+			{
+				if(entries[i]->internal->getCastsShadow())
+				{
+					first = i;
+					break;
+				}
+			}
+
+			for(int i = first + 1; i < entries.size(); ++i)
+			{
+				if(!entries[i]->internal->getCastsShadow())
+				{
+					std::swap(entries[i], entries[first]);
+					++first;
+				}
+			}
+
+			return first;
+		};
+
+		for (UINT32 i = 0; i < (UINT32)LightType::Count; i++)
+			mNumShadowedLights[i] = mNumLights[i] - partition(mVisibleLights[i]);
+
+		// Generate light data to initialize the GPU buffer with
+		for(auto& lightsPerType : mVisibleLights)
+		{
+			for(auto& entry : lightsPerType)
+			{
+				mLightDataTemp.push_back(LightData());
+				entry->getParameters(mLightDataTemp.back());
+			}
+		}
+
+		UINT32 size = (UINT32)mLightDataTemp.size() * sizeof(LightData);
 		UINT32 curBufferSize;
 
 		if (mLightBuffer != nullptr)
@@ -223,7 +201,9 @@ namespace bs { namespace ct
 		}
 
 		if (size > 0)
-			mLightBuffer->writeData(0, size, lightData.data(), BWT_DISCARD);
+			mLightBuffer->writeData(0, size, mLightDataTemp.data(), BWT_DISCARD);
+
+		mLightDataTemp.clear();
 	}
 
 	const UINT32 TiledDeferredLighting::TILE_SIZE = 16;
@@ -231,7 +211,6 @@ namespace bs { namespace ct
 	TiledDeferredLighting::TiledDeferredLighting(const SPtr<Material>& material, const SPtr<GpuParamsSet>& paramsSet,
 													UINT32 sampleCount)
 		: mSampleCount(sampleCount), mMaterial(material), mParamsSet(paramsSet), mGBufferParams(material, paramsSet)
-		, mLightOffsets()
 	{
 		SPtr<GpuParams> params = mParamsSet->getGpuParams();
 
@@ -247,8 +226,8 @@ namespace bs { namespace ct
 		mParamsSet->setParamBlockBuffer("Params", mParamBuffer, true);
 	}
 
-	void TiledDeferredLighting::execute(const SPtr<RenderTargets>& renderTargets, const SPtr<GpuParamBlockBuffer>& perCamera,
-		bool noLighting)
+	void TiledDeferredLighting::execute(const SPtr<RenderTargets>& renderTargets, 
+		const SPtr<GpuParamBlockBuffer>& perCamera, bool noLighting, bool noShadows)
 	{
 		Vector2I framebufferSize;
 		framebufferSize[0] = renderTargets->getWidth();
@@ -257,20 +236,32 @@ namespace bs { namespace ct
 
 		if (noLighting)
 		{
-			Vector3I lightOffsets;
-			lightOffsets[0] = 0;
-			lightOffsets[1] = 0;
-			lightOffsets[2] = 0;
+			Vector4I lightCounts;
+			lightCounts[0] = 0;
+			lightCounts[1] = 0;
+			lightCounts[2] = 0;
+			lightCounts[3] = 0;
 
-			gTiledLightingParamDef.gLightOffsets.set(mParamBuffer, lightOffsets);
+			Vector2I lightStrides;
+			lightStrides[0] = 0;
+			lightStrides[1] = 0;
+
+			gTiledLightingParamDef.gLightCounts.set(mParamBuffer, lightCounts);
+			gTiledLightingParamDef.gLightStrides.set(mParamBuffer, lightStrides);
 		}
 		else
 		{
-			gTiledLightingParamDef.gLightOffsets.set(mParamBuffer, mLightOffsets);
+			if(noShadows)
+				gTiledLightingParamDef.gLightCounts.set(mParamBuffer, mLightCounts);
+			else
+				gTiledLightingParamDef.gLightCounts.set(mParamBuffer, mUnshadowedLightCounts);
+
+			gTiledLightingParamDef.gLightStrides.set(mParamBuffer, mLightStrides);
 		}
+
 		mParamBuffer->flushToGPU();
 
-		mGBufferParams.bind(renderTargets);
+		mGBufferParams.bind(*renderTargets);
 		mParamsSet->setParamBlockBuffer("PerCamera", perCamera, true);
 
 		if (mSampleCount > 1)
@@ -296,13 +287,22 @@ namespace bs { namespace ct
 		RenderAPI::instance().dispatchCompute(numTilesX, numTilesY);
 	}
 
-	void TiledDeferredLighting::setLights(const GPULightData& lightData)
+	void TiledDeferredLighting::setLights(const VisibleLightData& lightData)
 	{
 		mLightBufferParam.set(lightData.getLightBuffer());
 
-		mLightOffsets[0] = lightData.getNumDirLights();
-		mLightOffsets[1] = mLightOffsets[0] + lightData.getNumRadialLights();
-		mLightOffsets[2] = mLightOffsets[1] + lightData.getNumSpotLights();
+		mUnshadowedLightCounts[0] = lightData.getNumUnshadowedLights(LightType::Directional);
+		mUnshadowedLightCounts[1] = lightData.getNumUnshadowedLights(LightType::Radial);
+		mUnshadowedLightCounts[2] = lightData.getNumUnshadowedLights(LightType::Spot);
+		mUnshadowedLightCounts[3] = mUnshadowedLightCounts[0] + mUnshadowedLightCounts[1] + mUnshadowedLightCounts[2];
+
+		mLightCounts[0] = lightData.getNumLights(LightType::Directional);
+		mLightCounts[1] = lightData.getNumLights(LightType::Radial);
+		mLightCounts[2] = lightData.getNumLights(LightType::Spot);
+		mLightCounts[3] = mLightCounts[0] + mLightCounts[1] + mLightCounts[2];
+
+		mLightStrides[0] = mLightCounts[0];
+		mLightStrides[1] = mLightStrides[0] + mLightCounts[1];
 	}
 
 	template<int MSAA_COUNT>
@@ -321,13 +321,13 @@ namespace bs { namespace ct
 
 	template<int MSAA_COUNT>
 	void TTiledDeferredLightingMat<MSAA_COUNT>::execute(const SPtr<RenderTargets>& gbuffer,
-		const SPtr<GpuParamBlockBuffer>& perCamera, bool noLighting)
+		const SPtr<GpuParamBlockBuffer>& perCamera, bool noLighting, bool noShadows)
 	{
-		mInternal.execute(gbuffer, perCamera, noLighting);
+		mInternal.execute(gbuffer, perCamera, noLighting, noShadows);
 	}
 
 	template<int MSAA_COUNT>
-	void TTiledDeferredLightingMat<MSAA_COUNT>::setLights(const GPULightData& lightData)
+	void TTiledDeferredLightingMat<MSAA_COUNT>::setLights(const VisibleLightData& lightData)
 	{
 		mInternal.setLights(lightData);
 	}

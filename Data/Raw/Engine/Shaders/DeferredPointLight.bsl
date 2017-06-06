@@ -108,11 +108,17 @@ technique DeferredPointLight
 				
 				LightData lightData = getLightData();
 				
+				#if MSAA_COUNT > 1
+				float occlusion = 1.0f - gLightOcclusionTex.Load(pixelPos, 0).r;
+				#else
+				float occlusion = 1.0f - gLightOcclusionTex.Load(int3(pixelPos, 0)).r;
+				#endif
+				
 				bool isSpot = gShiftedLightPositionAndType.w > 0.5f;
 				if(isSpot)
-					return float4(getLuminanceSpot(lightData, worldPosition, V, R, roughness2, surfaceData), 1.0f);
+					return float4(getLuminanceSpot(lightData, worldPosition, V, R, roughness2, surfaceData) * occlusion, 1.0f);
 				else // Radial
-					return float4(getLuminanceRadial(lightData, worldPosition, V, R, roughness2, surfaceData), 1.0f);
+					return float4(getLuminanceRadial(lightData, worldPosition, V, R, roughness2, surfaceData) * occlusion, 1.0f);
 			}
 			else
 				return float4(0.0f, 0.0f, 0.0f, 0.0f);

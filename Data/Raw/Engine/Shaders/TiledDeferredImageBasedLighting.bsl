@@ -22,7 +22,7 @@ technique TiledDeferredImageBasedLighting
 		}
 	
 		#if MSAA_COUNT > 1
-		Buffer<float4> gInColor;
+		Texture2DMS<float4> gInColor;
 		RWBuffer<float4> gOutput;
 		
 		uint getLinearAddress(uint2 coord, uint sampleIndex)
@@ -34,12 +34,6 @@ technique TiledDeferredImageBasedLighting
 		{
 			uint idx = getLinearAddress(coord, sampleIndex);
 			gOutput[idx] = color;
-		}
-		
-		float4 readInColorSample(uint2 coord, uint sampleIndex)
-		{
-			uint idx = getLinearAddress(coord, sampleIndex);
-			return gInColor[idx];
 		}
 
 		#else
@@ -165,7 +159,7 @@ technique TiledDeferredImageBasedLighting
 			
 			float4 existingColor;
 			#if MSAA_COUNT > 1
-			existingColor = readInColorSample(pixelPos, sampleIdx);
+			existingColor = gInColor.Load(pixelPos.xy, sampleIdx);
 			#else
 			existingColor = gInColor.Load(int3(pixelPos.xy, 0));
 			#endif				

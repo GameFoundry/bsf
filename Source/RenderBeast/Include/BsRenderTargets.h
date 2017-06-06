@@ -22,6 +22,8 @@ namespace bs { namespace ct
 		RTT_GBuffer,
 		/** Buffer containing intermediate lighting information used during deferred lighting pass. */
 		RTT_LightAccumulation,
+		/** Buffer containing temporary combined occlusion data for a specific light (from shadow maps or attenuation. */
+		RTT_LightOcclusion,
 		/** Buffer containing final scene color information. */
 		RTT_SceneColor
 	};
@@ -78,6 +80,15 @@ namespace bs { namespace ct
 		/**	Binds the scene color render target for rendering. */
 		void bindSceneColor(bool readOnlyDepthStencil);
 
+		/** Binds the light accumulation render target for rendering. */
+		void bindLightAccumulation();
+
+		/** 
+		 * Binds the light occlusion render target for rendering. Light occlusion texture and GBuffer must be allocated,
+		 * and depth must have been previously rendered to the depth buffer. Target is cleared before the method returns.
+		 */
+		void bindLightOcclusion();
+
 		/** 
 		 * Returns the texture for storing the final scene color. If using MSAA see getSceneColorBuffer() instead. Only 
 		 * available after bindSceneColor() has been called from this frame.
@@ -93,10 +104,13 @@ namespace bs { namespace ct
 		/** Returns the texture for storing of the intermediate lighting information. */
 		SPtr<Texture> getLightAccumulation() const;
 
+		/** Returns the texture for storing shadow/attenuation data for single light, from viewers perspective. */
+		SPtr<Texture> getLightOcclusion() const;
+
 		/**
-		* Flattened, buffer version of the texture returned by getLightAccumulation(). Required when MSAA is used, since
-		* random writes to multisampled textures aren't supported on all render backends.
-		*/
+		 * Flattened, buffer version of the texture returned by getLightAccumulation(). Required when MSAA is used, since
+		 * random writes to multisampled textures aren't supported on all render backends.
+		 */
 		SPtr<GpuBuffer> getLightAccumulationBuffer() const;
 
 		/** 
@@ -141,6 +155,7 @@ namespace bs { namespace ct
 		SPtr<PooledRenderTexture> mDepthTex;
 
 		SPtr<PooledRenderTexture> mLightAccumulationTex;
+		SPtr<PooledRenderTexture> mLightOcclusionTex;
 		SPtr<PooledStorageBuffer> mFlattenedLightAccumulationBuffer;
 
 		SPtr<PooledRenderTexture> mSceneColorTex;
@@ -149,6 +164,8 @@ namespace bs { namespace ct
 
 		SPtr<RenderTexture> mGBufferRT;
 		SPtr<RenderTexture> mSceneColorRT;
+		SPtr<RenderTexture> mLightAccumulationRT;
+		SPtr<RenderTexture> mLightOcclusionRT;
 
 		PixelFormat mSceneColorFormat;
 		PixelFormat mAlbedoFormat;

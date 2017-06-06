@@ -105,9 +105,9 @@ technique LightGridLLCreation
 			
 			for(uint type = 1; type < 3; ++type)
 			{
-				uint lightOffset = gLightOffsets[type - 1];
-				uint lightEnd = gLightOffsets[type];
-				for(uint i = lightOffset; i < lightEnd; ++i)
+				uint lightsStart = gLightStrides[type - 1];
+				uint lightsEnd = lightsStart + gLightCounts[type];
+				for(uint i = lightsStart; i < lightsEnd; ++i)
 				{
 					float4 lightPosition = mul(gMatView, float4(gLights[i].position, 1.0f));
 					float lightRadius = gLights[i].attRadius;

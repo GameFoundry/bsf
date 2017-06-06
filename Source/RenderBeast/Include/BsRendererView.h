@@ -9,9 +9,12 @@
 #include "BsRendererObject.h"
 #include "BsBounds.h"
 #include "BsConvexVolume.h"
+#include "BsLight.h"
 
 namespace bs { namespace ct
 {
+	class RendererLight;
+
 	/** @addtogroup RenderBeast
 	 *  @{
 	 */
@@ -76,6 +79,7 @@ namespace bs { namespace ct
 		bool isOverlay : 1;
 		bool isHDR : 1;
 		bool noLighting : 1;
+		bool noShadows : 1;
 		bool triggerCallbacks : 1;
 		bool runPostProcessing : 1;
 		bool renderingReflections : 1;
@@ -137,6 +141,8 @@ namespace bs { namespace ct
 	struct VisibilityInfo
 	{
 		Vector<bool> renderables;
+		Vector<bool> radialLights;
+		Vector<bool> spotLights;
 	};
 
 	/** Information used for culling an object against a view. */
@@ -224,6 +230,24 @@ namespace bs { namespace ct
 		 *									retrieved by calling getVisibilityMask().
 		 */
 		void determineVisible(const Vector<RendererObject*>& renderables, const Vector<CullInfo>& cullInfos,
+			Vector<bool>* visibility = nullptr);
+
+		/**
+		 * Calculates the visibility masks for all the lights of the provided type.
+		 * 
+		 * @param[in]	lights				A set of lights to determine visibility for.
+		 * @param[in]	bounds				Bounding sphere for each provided light. Must be the same size as the @p lights
+		 *									array.
+		 * @param[in]	type				Type of all the lights in the @p lights array.
+		 * @param[out]	visibility			Output parameter that will have the true bit set for any visible light. If the
+		 *									bit for a light is already set to true, the method will never change it to false
+		 *									which allows the same bitfield to be provided to multiple renderer views. Must
+		 *									be the same size as the @p lights array.
+		 *									
+		 *									As a side-effect, per-view visibility data is also calculated and can be
+		 *									retrieved by calling getVisibilityMask().
+		 */
+		void determineVisible(const Vector<RendererLight>& lights, const Vector<Sphere>& bounds, LightType type, 
 			Vector<bool>* visibility = nullptr);
 
 		/**

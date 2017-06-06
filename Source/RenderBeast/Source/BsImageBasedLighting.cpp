@@ -132,16 +132,11 @@ namespace bs { namespace ct
 		params->getTextureParam(GPT_COMPUTE_PROGRAM, "gGBufferCTex", mGBufferC);
 		params->getTextureParam(GPT_COMPUTE_PROGRAM, "gDepthBufferTex", mGBufferDepth);
 
+		params->getTextureParam(GPT_COMPUTE_PROGRAM, "gInColor", mInColorTextureParam);
 		if (mSampleCount > 1)
-		{
-			params->getBufferParam(GPT_COMPUTE_PROGRAM, "gInColor", mInColorBufferParam);
 			params->getBufferParam(GPT_COMPUTE_PROGRAM, "gOutput", mOutputBufferParam);
-		}
 		else
-		{
-			params->getTextureParam(GPT_COMPUTE_PROGRAM, "gInColor", mInColorTextureParam);
 			params->getLoadStoreTextureParam(GPT_COMPUTE_PROGRAM, "gOutput", mOutputTextureParam);
-		}
 
 		mParamBuffer = gTiledImageBasedLightingParamDef.createBuffer();
 		mParamsSet->setParamBlockBuffer("Params", mParamBuffer, true);
@@ -182,16 +177,11 @@ namespace bs { namespace ct
 
 		mParamsSet->setParamBlockBuffer("PerCamera", perCamera, true);
 
+		mInColorTextureParam.set(renderTargets->getLightAccumulation());
 		if (mSampleCount > 1)
-		{
-			mInColorBufferParam.set(renderTargets->getLightAccumulationBuffer());
 			mOutputBufferParam.set(renderTargets->getSceneColorBuffer());
-		}
 		else
-		{
-			mInColorTextureParam.set(renderTargets->getLightAccumulation());
 			mOutputTextureParam.set(renderTargets->getSceneColor());
-		}
 
 		UINT32 width = renderTargets->getWidth();
 		UINT32 height = renderTargets->getHeight();

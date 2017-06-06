@@ -4,10 +4,12 @@ mixin LightGridCommon
 	{
 		cbuffer GridParams : register(b4)
 		{
-			// Offsets at which specific light types begin in gLights buffer
-			// Assumed directional lights start at 0
-			// x - offset to point lights, y - offset to spot lights, z - total number of lights
-			uint3 gLightOffsets;
+			// Number of lights per type in the lights buffer
+			// x - directional lights, y - radial lights, z - spot lights, w - total number of lights
+			uint4 gLightCounts;
+			// Strides between different light types in the light buffer
+			// x - stride to radial lights, y - stride to spot lights. Directional lights are assumed to start at 0.
+			uint2 gLightStrides;			
 			uint gNumReflProbes;
 			uint gNumCells;
 			uint3 gGridSize;

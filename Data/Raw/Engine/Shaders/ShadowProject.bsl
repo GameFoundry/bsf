@@ -39,7 +39,7 @@ technique ShadowProject
 		{
 			enabled = true;
 			writemask = R;
-			color = { one, one, min };
+			color = { one, one, max };
 		};
 	};	
 	#endif
