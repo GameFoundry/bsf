@@ -36,7 +36,7 @@ HTexture dragonTexture = gImporter().import<Texture>("Dragon.psd");
 # Setting up a material
 Once we have a mesh and a texture we need some way to apply that texture to the mesh. For that reason we first import a @ref bs::Shader "Shader" that describes how is an object rendered, which we then use to create a @ref bs::Material "Material" which allows us to apply our previously loaded **Texture**.
 
-Banshee uses .bsl files to describe shaders and you can learn more about BSL syntax in the @ref bsl manual. To learn more about materials and how to use them read the @ref simpleMaterial manual.
+Banshee uses .bsl files to describe shaders and you can learn more about BSL syntax in the @ref shaders manual. To learn more about materials and how to use them read the @ref simpleMaterial manual.
 
 ~~~~~~~~~~~~~{.cpp}
 HShader diffuse = gImporter().import<Shader>("Diffuse.bsl");

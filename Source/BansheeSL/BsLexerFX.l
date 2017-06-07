@@ -69,9 +69,6 @@ stencil			{ return TOKEN_STENCIL; }
 	/* Rasterizer state keywords */
 fill			{ return TOKEN_FILLMODE; }
 cull			{ return TOKEN_CULLMODE; }
-bias			{ return TOKEN_DEPTHBIAS; }
-scaledbias		{ return TOKEN_SDEPTHBIAS; }
-clip			{ return TOKEN_DEPTHCLIP; }
 scissor			{ return TOKEN_SCISSOR; }
 multisample		{ return TOKEN_MULTISAMPLE; }
 lineaa			{ return TOKEN_AALINE; }
@@ -80,6 +77,9 @@ lineaa			{ return TOKEN_AALINE; }
 read			{ return TOKEN_DEPTHREAD; }
 write			{ return TOKEN_DEPTHWRITE; }
 compare			{ return TOKEN_COMPAREFUNC; }
+bias			{ return TOKEN_DEPTHBIAS; }
+scaledbias		{ return TOKEN_SDEPTHBIAS; }
+clip			{ return TOKEN_DEPTHCLIP; }
 
 	/* Stencil state keywords */
 reference			{ return TOKEN_STENCILREF; }

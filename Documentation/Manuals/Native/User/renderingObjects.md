@@ -12,7 +12,7 @@ HRenderable renderable = renderableSO->addComponent<CRenderable>();
 ~~~~~~~~~~~~~
 
 # Rendering a mesh
-Once created you must assign it a **Mesh** to render, and a **Material** to render it with, both of which we have discussed in the previous chapters. Use @ref bs::CRenderable::setMesh "CRenderable::setMesh" and @ref bs::CRenderable::setMaterial "CRenderable::setMaterial".
+Once created you must assign it a **Mesh** to render, and a **Material** to render it with, both of which we have discussed in the previous chapters. Use @ref bs::CRenderable::setMesh "CRenderable::setMesh()" and @ref bs::CRenderable::setMaterial "CRenderable::setMaterial()".
 
 ~~~~~~~~~~~~~{.cpp}
 ... set up a camera ...
@@ -49,7 +49,7 @@ In the example above we use a single material for a single mesh, but it can some
 
 It is up to the artist (creator of the mesh) to specify the regions of the mesh that will use separate materials. Upon mesh import those regions will be recognized as sub-meshes.
 
-You can assign a different material to a sub-mesh by calling a @ref bs::CRenderable::setMaterial(UINT32, HMaterial) "Renderable::setMaterial" overload which accepts an additional index parameter, specifying which sub-mesh to apply the material on.
+You can assign a different material to a sub-mesh by calling a @ref bs::CRenderable::setMaterial(UINT32, HMaterial) "Renderable::setMaterial()" overload which accepts an additional index parameter, specifying which sub-mesh to apply the material on.
 
 ~~~~~~~~~~~~~{.cpp}
 HMesh mesh = gImporter().import<Mesh>("myMesh.fbx");
