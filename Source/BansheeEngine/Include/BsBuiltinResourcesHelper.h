@@ -37,10 +37,12 @@ namespace bs
 		 * @param[in]	outputFolder	Folder in which to store the imported resources.
 		 * @param[in]	manifest		Manifest in which to register the imported resources in.
 		 * @param[in]	mode			Mode that controls how are files imported.
+		 * @param[in]	forceImport		If true, all assets will be imported regardless if they have been modified or not.
+		 *								If false, assets will be imported only if the source is newer than the imported file.
 		 * @return						True if the process was sucessful.
 		 */
 		static bool importAssets(const nlohmann::json& entries, const Path& inputFolder, const Path& outputFolder, 
-			const SPtr<ResourceManifest>& manifest, AssetType mode = AssetType::Normal);
+			const SPtr<ResourceManifest>& manifest, AssetType mode = AssetType::Normal, bool forceImport = false);
 
 		/**
 		 * Imports a font from the specified file. Imported font assets are saved in the output folder. All saved resources
@@ -64,9 +66,10 @@ namespace bs
 
 		/**
 		 * Checks all files in the specified folder for modifications compared to the time stored in the timestamp file. 
-		 * Timestamp file must have been saved using writeTimestamp().
+		 * Timestamp file must have been saved using writeTimestamp(). Returns 0 if no changes, 1 if timestamp is out date,
+		 * or 2 if timestamp doesn't exist.
 		 */
-		static bool checkForModifications(const Path& folder, const Path& timeStampFile);
+		static UINT32 checkForModifications(const Path& folder, const Path& timeStampFile);
 
 		/** Checks if the shader compiled properly and reports the problem if it hasn't. Returns true if shader is valid. */
 		static bool verifyAndReportShader(const HShader& shader);

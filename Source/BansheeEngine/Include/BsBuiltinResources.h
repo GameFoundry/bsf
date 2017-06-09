@@ -137,7 +137,7 @@ namespace bs
 		 * @note	
 		 * Normally you only want to use this during development phase and then ship with engine-ready format only.
 		 */
-		void preprocess();
+		void preprocess(bool forceImport);
 
 		/**	Generates the default engine skin and all GUI element styles. */
 		SPtr<GUISkin> generateGUISkin();

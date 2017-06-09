@@ -26,15 +26,17 @@ using json = nlohmann::json;
 namespace bs
 {
 	bool BuiltinResourcesHelper::importAssets(const nlohmann::json& entries, const Path& inputFolder, 
-		const Path& outputFolder, const SPtr<ResourceManifest>& manifest, AssetType mode)
+		const Path& outputFolder, const SPtr<ResourceManifest>& manifest, AssetType mode, bool forceImport)
 	{
 		if (!FileSystem::exists(inputFolder))
 			return true;
 
-		if (FileSystem::exists(outputFolder))
+		bool outputExists = FileSystem::exists(outputFolder);
+		if (forceImport && outputExists)
 			FileSystem::remove(outputFolder);
 		
-		FileSystem::createDir(outputFolder);
+		if(!outputExists || forceImport)
+			FileSystem::createDir(outputFolder);
 
 		Path spriteOutputFolder = outputFolder + "/Sprites/";
 		if(mode == AssetType::Sprite)
@@ -99,32 +101,53 @@ namespace bs
 					resourcesToSave.push_back(std::make_pair(relativeAssetPath, nullptr));
 			}
 
-			// Use the provided UUID if just one resource, otherwise we ignore the UUID. The current assumption is that
-			// such resources don't require persistent UUIDs. If that changes then this method needs to be updated.
-			if(resourcesToSave.size() == 1)
+			// Check if this resource actually changed
+			bool import = true;
+			if(!forceImport)
 			{
-				Path outputPath = outputFolder + resourcesToSave[0].first;
+				import = false;
 
-				HResource resource = Importer::instance().import(filePath, resourcesToSave[0].second, UUID);
-				if (resource != nullptr)
+				time_t lastModifiedSrc = FileSystem::getLastModifiedTime(filePath);
+				for(auto& entry : resourcesToSave)
 				{
-					Resources::instance().save(resource, outputPath, true);
-					manifest->registerResource(resource.getUUID(), outputPath);
+					Path outputPath = outputFolder + entry.first;
+					if(lastModifiedSrc > FileSystem::getLastModifiedTime(outputPath))
+					{
+						import = true;
+						break;
+					}
 				}
-
-				return resource;
 			}
-			else
-			{
-				for (auto& entry : resourcesToSave)
-				{
-					Path outputPath = outputFolder + entry.first;;
 
-					HResource resource = Importer::instance().import(filePath, entry.second);
+			if (import)
+			{
+				// Use the provided UUID if just one resource, otherwise we ignore the UUID. The current assumption is that
+				// such resources don't require persistent UUIDs. If that changes then this method needs to be updated.
+				if (resourcesToSave.size() == 1)
+				{
+					Path outputPath = outputFolder + resourcesToSave[0].first;
+
+					HResource resource = Importer::instance().import(filePath, resourcesToSave[0].second, UUID);
 					if (resource != nullptr)
 					{
 						Resources::instance().save(resource, outputPath, true);
 						manifest->registerResource(resource.getUUID(), outputPath);
+					}
+
+					return resource;
+				}
+				else
+				{
+					for (auto& entry : resourcesToSave)
+					{
+						Path outputPath = outputFolder + entry.first;;
+
+						HResource resource = Importer::instance().import(filePath, entry.second);
+						if (resource != nullptr)
+						{
+							Resources::instance().save(resource, outputPath, true);
+							manifest->registerResource(resource.getUUID(), outputPath);
+						}
 					}
 				}
 			}
@@ -396,10 +419,10 @@ namespace bs
 		fileStream->close();
 	}
 
-	bool BuiltinResourcesHelper::checkForModifications(const Path& folder, const Path& timeStampFile)
+	UINT32 BuiltinResourcesHelper::checkForModifications(const Path& folder, const Path& timeStampFile)
 	{
 		if (!FileSystem::exists(timeStampFile))
-			return true;
+			return 2;
 
 		SPtr<DataStream> fileStream = FileSystem::openFile(timeStampFile);
 		time_t lastUpdateTime = 0;
@@ -421,8 +444,11 @@ namespace bs
 		};
 
 		FileSystem::iterate(folder, checkUpToDate, checkUpToDate);
+		
+		if (!upToDate)
+			return 1;
 
-		return !upToDate;
+		return 0;
 	}
 
 	bool BuiltinResourcesHelper::verifyAndReportShader(const HShader& shader)

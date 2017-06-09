@@ -327,7 +327,9 @@ namespace bs
 
 		// Update from raw assets if needed
 #if BS_DEBUG_MODE
-		if (BuiltinResourcesHelper::checkForModifications(BuiltinRawDataFolder, BuiltinDataFolder + L"Timestamp.asset"))
+		UINT32 modifications =
+			BuiltinResourcesHelper::checkForModifications(BuiltinRawDataFolder, BuiltinDataFolder + L"Timestamp.asset");
+		if (modifications > 0)
 		{
 			SPtr<ResourceManifest> oldResourceManifest;
 			if (FileSystem::exists(ResourceManifestPath))
@@ -340,7 +342,7 @@ namespace bs
 			mResourceManifest = ResourceManifest::create("BuiltinResources");
 			gResources().registerResourceManifest(mResourceManifest);
 
-			preprocess();
+			preprocess(modifications == 2);
 			BuiltinResourcesHelper::writeTimestamp(BuiltinDataFolder + L"Timestamp.asset");
 
 			ResourceManifest::save(mResourceManifest, ResourceManifestPath, BuiltinDataFolder);
@@ -391,7 +393,7 @@ namespace bs
 	BuiltinEditorResources::~BuiltinEditorResources()
 	{ }
 
-	void BuiltinEditorResources::preprocess()
+	void BuiltinEditorResources::preprocess(bool forceImport)
 	{
 		Resources::instance().unloadAllUnused();
 
@@ -429,10 +431,14 @@ namespace bs
 			dataListStream->close();
 		}
 
-		BuiltinResourcesHelper::importAssets(iconsJSON, EditorRawIconsFolder, EditorIconFolder, mResourceManifest, BuiltinResourcesHelper::AssetType::Sprite);
-		BuiltinResourcesHelper::importAssets(includesJSON, EditorRawShaderIncludeFolder, EditorShaderIncludeFolder, mResourceManifest); // Hidden dependency: Includes must be imported before shaders
-		BuiltinResourcesHelper::importAssets(shadersJSON, EditorRawShaderFolder, EditorShaderFolder, mResourceManifest);
-		BuiltinResourcesHelper::importAssets(skinJSON, EditorRawSkinFolder, EditorSkinFolder, mResourceManifest, BuiltinResourcesHelper::AssetType::Sprite);
+		BuiltinResourcesHelper::importAssets(iconsJSON, EditorRawIconsFolder, EditorIconFolder, mResourceManifest, 
+			BuiltinResourcesHelper::AssetType::Sprite, forceImport);
+		BuiltinResourcesHelper::importAssets(includesJSON, EditorRawShaderIncludeFolder, EditorShaderIncludeFolder, 
+			mResourceManifest, BuiltinResourcesHelper::AssetType::Normal, forceImport); // Hidden dependency: Includes must be imported before shaders
+		BuiltinResourcesHelper::importAssets(shadersJSON, EditorRawShaderFolder, EditorShaderFolder, mResourceManifest,
+			BuiltinResourcesHelper::AssetType::Normal, forceImport);
+		BuiltinResourcesHelper::importAssets(skinJSON, EditorRawSkinFolder, EditorSkinFolder, mResourceManifest, 
+			BuiltinResourcesHelper::AssetType::Sprite, forceImport);
 
 		// Import fonts
 		BuiltinResourcesHelper::importFont(BuiltinRawDataFolder + DefaultFontFilename, DefaultFontFilename, 
