@@ -9,6 +9,7 @@ mixin ShadowProjectionCommon
 		struct VStoFS
 		{
 			float4 position : SV_POSITION;
+			float4 clipSpacePos : TEXCOORD0;
 		};
 
 		struct VertexInput
@@ -30,8 +31,10 @@ mixin ShadowProjectionCommon
 			
 			#if NEEDS_TRANSFORM
 				float3 worldPos = input.position.xyz * gPositionAndScale.w + gPositionAndScale.xyz;
-				output.position = mul(gMatViewProj, float4(worldPos, 1));
+				output.clipSpacePos = mul(gMatViewProj, float4(worldPos, 1));
+				output.position = output.clipSpacePos;
 			#else
+				output.clipSpacePos = float4(input.position, 1);
 				output.position = float4(input.position, 1);
 			#endif
 		

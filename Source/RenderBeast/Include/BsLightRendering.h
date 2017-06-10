@@ -59,6 +59,9 @@ namespace bs { namespace ct
 		void bind(const RenderTargets& renderTargets);
 
 	private:
+		SPtr<Material> mMaterial;
+		SPtr<GpuParamsSet> mParamsSet;
+
 		MaterialParamTexture mGBufferA;
 		MaterialParamTexture mGBufferB;
 		MaterialParamTexture mGBufferC;

@@ -324,7 +324,6 @@ namespace bs
 		void syncToCore(const CoreSyncData& data) override;
 
 		UINT32 mRendererId;
-		SPtr<Mesh> mMesh;
 	};
 	}
 

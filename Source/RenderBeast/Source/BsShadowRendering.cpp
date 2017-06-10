@@ -238,10 +238,10 @@ namespace bs { namespace ct
 		TextureSurface surface;
 		surface.arraySlice = params.shadowMapFace;
 
+		mGBufferParams.bind(params.renderTargets);
+
 		mShadowMapParam.set(params.shadowMap, surface);
 		mShadowSamplerParam.set(mSamplerState);
-
-		mGBufferParams.bind(params.renderTargets);
 
 		mParamsSet->setParamBlockBuffer("Params", params.shadowParams);
 		mParamsSet->setParamBlockBuffer("PerCamera", params.perCamera);
@@ -338,10 +338,10 @@ namespace bs { namespace ct
 		Vector4 lightPosAndScale(params.light.getPosition(), params.light.getAttenuationRadius());
 		gShadowProjectVertParamsDef.gPositionAndScale.set(mVertParams, lightPosAndScale);
 
+		mGBufferParams.bind(params.renderTargets);
+
 		mShadowMapParam.set(params.shadowMap);
 		mShadowSamplerParam.set(mSamplerState);
-
-		mGBufferParams.bind(params.renderTargets);
 
 		mParamsSet->setParamBlockBuffer("Params", params.shadowParams);
 		mParamsSet->setParamBlockBuffer("PerCamera", params.perCamera);
@@ -350,11 +350,11 @@ namespace bs { namespace ct
 		gRendererUtility().setPassParams(mParamsSet);
 	}
 
-	void ShadowProjectOmniMaterials::bind(UINT32 quality, bool directional, bool MSAA, const ShadowProjectParams& params)
+	void ShadowProjectOmniMaterials::bind(UINT32 quality, bool insideVolume, bool MSAA, const ShadowProjectParams& params)
 	{
 #define BIND_MAT(QUALITY)						\
 	{											\
-		if(directional)							\
+		if(insideVolume)						\
 			if (MSAA)							\
 				mMat##QUALITY##TT.bind(params);	\
 			else								\
@@ -449,10 +449,6 @@ namespace bs { namespace ct
 	{
 		mShadowMap = GpuResourcePool::instance().get(
 			POOLED_RENDER_TEXTURE_DESC::createCube(SHADOW_MAP_FORMAT, size, size, TU_DEPTHSTENCIL));
-
-		RENDER_TEXTURE_DESC rtDesc;
-		rtDesc.depthStencilSurface.texture = mShadowMap->texture;
-		rtDesc.depthStencilSurface.numFaces = 6;
 	}
 
 	ShadowCubemap::~ShadowCubemap()
@@ -613,7 +609,7 @@ namespace bs { namespace ct
 			options.lightIdx = i;
 
 			float maxFadePercent;
-			calcShadowMapProperties(light, scene, options.mapSize, options.fadePercents, maxFadePercent);
+			calcShadowMapProperties(light, scene, SHADOW_MAP_BORDER, options.mapSize, options.fadePercents, maxFadePercent);
 
 			// Don't render shadow maps that will end up nearly completely faded out
 			if (maxFadePercent < 0.005f)
@@ -639,7 +635,7 @@ namespace bs { namespace ct
 			options.lightIdx = i;
 
 			float maxFadePercent;
-			calcShadowMapProperties(light, scene, options.mapSize, options.fadePercents, maxFadePercent);
+			calcShadowMapProperties(light, scene, 0, options.mapSize, options.fadePercents, maxFadePercent);
 
 			// Don't render shadow maps that will end up nearly completely faded out
 			if (maxFadePercent < 0.005f)
@@ -804,7 +800,7 @@ namespace bs { namespace ct
 				SPtr<Texture> shadowMap = mShadowCubemaps[shadowInfo.textureIdx].getTexture();
 				SPtr<RenderTargets> renderTargets = view->getRenderTargets();
 
-				ShadowProjectParams shadowParams(*light, shadowMap, 0, shadowParamBuffer, perViewBuffer, *renderTargets);
+				ShadowProjectParams shadowParams(*light, shadowMap, 0, shadowOmniParamBuffer, perViewBuffer, *renderTargets);
 				mProjectOmniMaterials.bind(effectiveShadowQuality, viewerInsideVolume, viewProps.numSamples > 1, shadowParams);
 
 				gRendererUtility().draw(gRendererUtility().getRadialLightStencil());
@@ -933,6 +929,8 @@ namespace bs { namespace ct
 		shadowInfo.textureIdx = -1;
 
 		UINT32 mapSize = std::min(mShadowMapSize, MAX_ATLAS_SIZE);
+		shadowInfo.area = Rect2I(0, 0, mapSize, mapSize);
+		shadowInfo.updateNormArea(mapSize);
 
 		for (UINT32 i = 0; i < (UINT32)mCascadedShadowMaps.size(); i++)
 		{
@@ -1145,6 +1143,8 @@ namespace bs { namespace ct
 		mapInfo.textureIdx = -1;
 		mapInfo.fadePerView = options.fadePercents;
 		mapInfo.cascadeIdx = -1;
+		mapInfo.area = Rect2I(0, 0, options.mapSize, options.mapSize);
+		mapInfo.updateNormArea(options.mapSize);
 
 		for (UINT32 i = 0; i < (UINT32)mShadowCubemaps.size(); i++)
 		{
@@ -1178,9 +1178,9 @@ namespace bs { namespace ct
 		mapInfo.depthBias = getDepthBias(*light, mapInfo.depthRange, options.mapSize);
 
 		Matrix4 proj = Matrix4::projectionPerspective(Degree(90.0f), 1.0f, 0.05f, light->getAttenuationRadius());
-		RenderAPI::instance().convertProjectionMatrix(proj, proj);
-
 		ConvexVolume localFrustum(proj);
+
+		RenderAPI::instance().convertProjectionMatrix(proj, proj);
 
 		gShadowParamsDef.gDepthBias.set(shadowParamsBuffer, mapInfo.depthBias);
 		gShadowParamsDef.gInvDepthRange.set(shadowParamsBuffer, 1.0f / mapInfo.depthRange);
@@ -1210,7 +1210,7 @@ namespace bs { namespace ct
 				up = -Vector3::UNIT_Z;
 				break;
 			case CF_NegativeY:
-				forward = Vector3::UNIT_X;
+				forward = -Vector3::UNIT_Y;
 				up = Vector3::UNIT_Z;
 				break;
 			case CF_PositiveZ:
@@ -1222,7 +1222,7 @@ namespace bs { namespace ct
 			}
 
 			Vector3 right = Vector3::cross(up, forward);
-			Matrix3 viewRotationMat = Matrix3(right, up, forward);
+			Matrix3 viewRotationMat = Matrix3(right, up, -forward);
 
 			Matrix4 view = Matrix4(viewRotationMat) * viewOffsetMat;
 			mapInfo.shadowVPTransforms[i] = proj * view;
@@ -1265,7 +1265,7 @@ namespace bs { namespace ct
 
 			for(UINT32 j = 0; j < 6; j++)
 			{
-				int mask = frustums->intersects(bounds) ? 1 : 0;
+				int mask = frustums[j].intersects(bounds) ? 1 : 0;
 				gShadowCubeMasksDef.gFaceMasks.set(shadowCubeMasksBuffer, mask, j);
 			}
 
@@ -1288,32 +1288,43 @@ namespace bs { namespace ct
 		lightShadows.numShadows++;
 	}
 
-	void ShadowRendering::calcShadowMapProperties(const RendererLight& light, RendererScene& scene, UINT32& size, 
-		SmallVector<float, 4>& fadePercents, float& maxFadePercent) const
+	void ShadowRendering::calcShadowMapProperties(const RendererLight& light, RendererScene& scene, UINT32 border,
+		UINT32& size, SmallVector<float, 4>& fadePercents, float& maxFadePercent) const
 	{
+		const static float SHADOW_TEXELS_PER_PIXEL = 1.0f;
+
 		const SceneInfo& sceneInfo = scene.getSceneInfo();
 
 		// Find a view in which the light has the largest radius
-		float maxRadiusPercent = 0.0f;
+		float maxMapSize = 0.0f;
 		maxFadePercent = 0.0f;
 		for (int i = 0; i < (int)sceneInfo.views.size(); ++i)
 		{
 			const RendererViewProperties& viewProps = sceneInfo.views[i]->getProperties();
 
-			float viewScaleX = viewProps.projTransform[0][0] * 0.5f;
-			float viewScaleY = viewProps.projTransform[1][1] * 0.5f;
-			float viewScale = std::max(viewScaleX, viewScaleY);
-
+			// Approximation for screen space sphere radius: screenSize * 0.5 * cot(fov) * radius / Z, where FOV is the 
+			// largest one
+			//// First get sphere depth
 			const Matrix4& viewVP = viewProps.viewProjTransform;
+			float depth = viewVP.multiply(Vector4(light.internal->getPosition(), 1.0f)).w;
 
-			Vector4 lightClipPos = viewVP.multiply(Vector4(light.internal->getPosition(), 1.0f));
-			float radiusNDC = light.internal->getBounds().getRadius() / std::max(lightClipPos.w, 1.0f);
+			// This is just 1/tan(fov), for both horz. and vert. FOV
+			float viewScaleX = viewProps.projTransform[0][0];
+			float viewScaleY = viewProps.projTransform[1][1];
 
-			// Radius of light bounds in percent of the view surface
-			float radiusPercent = radiusNDC * viewScale;
-			maxRadiusPercent = std::max(maxRadiusPercent, radiusPercent);
+			float screenScaleX = viewScaleX * viewProps.viewRect.width * 0.5f;
+			float screenScaleY = viewScaleY * viewProps.viewRect.height * 0.5f;
 
-			float optimalMapSize = mShadowMapSize * radiusPercent;
+			float screenScale = std::max(screenScaleX, screenScaleY);
+
+			//// Calc radius (clamp if too close to avoid massive numbers)
+			float radiusNDC = light.internal->getBounds().getRadius() / std::max(depth, 1.0f);
+
+			//// Radius of light bounds in percent of the view surface, multiplied by screen size in pixels
+			float radiusScreen = radiusNDC * screenScale;
+
+			float optimalMapSize = SHADOW_TEXELS_PER_PIXEL * radiusScreen;
+			maxMapSize = std::max(maxMapSize, optimalMapSize);
 			
 			// Determine if the shadow should fade out
 			float fadePercent = Math::lerp01(optimalMapSize, (float)MIN_SHADOW_MAP_SIZE, (float)SHADOW_MAP_FADE_SIZE);
@@ -1323,12 +1334,11 @@ namespace bs { namespace ct
 
 		// If light fully (or nearly fully) covers the screen, use full shadow map resolution, otherwise
 		// scale it down to smaller power of two, while clamping to minimal allowed resolution
-		float maxOptimalMapSize = mShadowMapSize * maxRadiusPercent;
-		UINT32 effectiveMapSize = Bitwise::nextPow2((UINT32)maxOptimalMapSize);
+		UINT32 effectiveMapSize = Bitwise::nextPow2((UINT32)maxMapSize);
 		effectiveMapSize = Math::clamp(effectiveMapSize, MIN_SHADOW_MAP_SIZE, mShadowMapSize);
 
 		// Leave room for border
-		size = std::max(effectiveMapSize - 2 * SHADOW_MAP_BORDER, 1u);
+		size = std::max(effectiveMapSize - 2 * border, 1u);
 	}
 
 	void ShadowRendering::drawNearFarPlanes(float near, float far, bool drawNear)
@@ -1604,7 +1614,7 @@ namespace bs { namespace ct
 			break;
 		}
 		
-		return defaultBias * light.getShadowBias() *resolutionScale * rangeScale;
+		return defaultBias * light.getShadowBias() * resolutionScale * rangeScale;
 	}
 
 	float ShadowRendering::getFadeTransition(const Light& light, float depthRange, UINT32 mapSize)

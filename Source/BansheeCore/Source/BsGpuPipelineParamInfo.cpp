@@ -160,11 +160,10 @@ namespace bs
 			// Samplers need to be handled specially because certain slots could be texture/buffer + sampler combinations
 			{
 				int typeIdx = (int)ParamType::SamplerState;
-				UINT32 sequentialIdx = mNumElementsPerType[typeIdx];
-
 				for (auto& entry : paramDesc->samplers)
 				{
 					const GpuParamObjectDesc& samplerDesc = entry.second;
+					UINT32 sequentialIdx = mNumElementsPerType[typeIdx];
 
 					SetInfo& setInfo = mSetInfos[samplerDesc.set];
 					if (setInfo.slotIndices[samplerDesc.slot] == -1) // Slot is sampler only

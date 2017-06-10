@@ -13,10 +13,10 @@ mixin GBufferInput
 		SamplerState gDepthBufferSamp;
 
 		#if MSAA_COUNT > 1
-		Texture2DMS<float4, MSAA_COUNT> gGBufferATex;
-		Texture2DMS<float4, MSAA_COUNT>	gGBufferBTex;
-		Texture2DMS<float2, MSAA_COUNT>	gGBufferCTex;
-		Texture2DMS<float4, MSAA_COUNT> gDepthBufferTex;
+		Texture2DMS<float4> gGBufferATex;
+		Texture2DMS<float4>	gGBufferBTex;
+		Texture2DMS<float2>	gGBufferCTex;
+		Texture2DMS<float4> gDepthBufferTex;
 		#else
 		Texture2D gGBufferATex;
 		Texture2D gGBufferBTex;

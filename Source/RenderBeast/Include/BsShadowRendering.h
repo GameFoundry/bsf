@@ -481,12 +481,13 @@ namespace bs { namespace ct
 		 * 
 		 * @param[in]	light			Light for which to calculate the shadow map properties. Cannot be a directional light.
 		 * @param[in]	scene			Scene information containing all the views the light can be seen through.
+		 * @param[in]	border			Border to reduce the shadow map size by, in pixels.
 		 * @param[out]	size			Optimal size of the shadow map, in pixels.
 		 * @param[out]	fadePercents	Value in range [0, 1] determining how much should the shadow map be faded out. Each
 		 *								entry corresponds to a single view.
 		 * @param[out]	maxFadePercent	Maximum value in the @p fadePercents array.
 		 */
-		void calcShadowMapProperties(const RendererLight& light, RendererScene& scene, UINT32& size, 
+		void calcShadowMapProperties(const RendererLight& light, RendererScene& scene, UINT32 border, UINT32& size, 
 			SmallVector<float, 4>& fadePercents, float& maxFadePercent) const;
 
 		/**

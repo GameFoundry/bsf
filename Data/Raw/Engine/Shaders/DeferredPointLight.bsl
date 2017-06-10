@@ -109,10 +109,15 @@ technique DeferredPointLight
 				LightData lightData = getLightData();
 				
 				#if MSAA_COUNT > 1
-				float occlusion = 1.0f - gLightOcclusionTex.Load(pixelPos, 0).r;
+				float occlusion = gLightOcclusionTex.Load(pixelPos, sampleIdx).r;
 				#else
-				float occlusion = 1.0f - gLightOcclusionTex.Load(int3(pixelPos, 0)).r;
+				float occlusion = gLightOcclusionTex.Load(int3(pixelPos, 0)).r;
 				#endif
+				
+				// Reverse the sqrt we did when storing it
+				occlusion *= occlusion;
+				
+				occlusion = 1.0f - occlusion;
 				
 				bool isSpot = gShiftedLightPositionAndType.w > 0.5f;
 				if(isSpot)

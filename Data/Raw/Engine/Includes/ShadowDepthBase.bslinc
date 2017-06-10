@@ -24,7 +24,6 @@ mixin ShadowDepthBase
 			#endif
 		};
 		
-		[internal]
 		cbuffer ShadowParams
 		{
 			float4x4 gMatViewProj;

@@ -90,6 +90,7 @@ namespace bs { namespace ct
 	}
 
 	GBufferParams::GBufferParams(const SPtr<Material>& material, const SPtr<GpuParamsSet>& paramsSet)
+		: mMaterial(material), mParamsSet(paramsSet)
 	{
 		mGBufferA = material->getParamTexture("gGBufferATex");
 		mGBufferB = material->getParamTexture("gGBufferBTex");
@@ -103,6 +104,8 @@ namespace bs { namespace ct
 		mGBufferB.set(renderTargets.getGBufferB());
 		mGBufferC.set(renderTargets.getGBufferC());
 		mGBufferDepth.set(renderTargets.getSceneDepth());
+
+		mMaterial->updateParamsSet(mParamsSet);
 	}
 
 	VisibleLightData::VisibleLightData()

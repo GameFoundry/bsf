@@ -418,13 +418,6 @@ namespace bs
 				continue;
 			}
 
-			if (findIter->second->arraySize != iter->second.arraySize)
-			{
-				LOGWRN("Ignoring shader parameter \"" + iter->first + "\". Array size doesn't match the one defined in the gpu program."
-					+ "Shader defined array size: " + toString(iter->second.arraySize) + " - Gpu program defined array size: " + toString(findIter->second->arraySize));
-				continue;
-			}
-
 			auto findBlockIter = paramToParamBlockMap.find(iter->second.gpuVariableName);
 
 			if (findBlockIter == paramToParamBlockMap.end())

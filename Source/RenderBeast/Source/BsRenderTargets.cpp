@@ -6,6 +6,7 @@
 #include "BsRenderAPI.h"
 #include "BsTextureManager.h"
 #include "BsRendererUtility.h"
+#include "BsGpuBuffer.h"
 
 namespace bs { namespace ct
 {
@@ -151,6 +152,17 @@ namespace bs { namespace ct
 				UINT32 bufferNumElements = width * height * mViewTarget.numSamples;
 				mFlattenedLightAccumulationBuffer =
 					texPool.get(POOLED_STORAGE_BUFFER_DESC::createStandard(BF_16X4F, bufferNumElements));
+
+				SPtr<GpuBuffer> buffer = mFlattenedLightAccumulationBuffer->buffer;
+
+				auto& bufferProps = buffer->getProperties();
+
+				UINT32 bufferSize = bufferProps.getElementSize() * bufferProps.getElementCount();
+				UINT16* data = (UINT16*)buffer->lock(0, bufferSize, GBL_WRITE_ONLY_DISCARD);
+				{
+					memset(data, 0, bufferSize);
+				}
+				buffer->unlock();
 			}
 
 			mLightAccumulationTex = texPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(mSceneColorFormat, width,
@@ -272,13 +284,13 @@ namespace bs { namespace ct
 	void RenderTargets::bindLightAccumulation()
 	{
 		RenderAPI& rapi = RenderAPI::instance();
-		rapi.setRenderTarget(mLightAccumulationRT);
+		rapi.setRenderTarget(mLightAccumulationRT, true, RT_COLOR0 | RT_DEPTH);
 	}
 
 	void RenderTargets::bindLightOcclusion()
 	{
 		RenderAPI& rapi = RenderAPI::instance();
-		rapi.setRenderTarget(mLightOcclusionRT);
+		rapi.setRenderTarget(mLightOcclusionRT, true, RT_DEPTH);
 
 		Rect2 area(0.0f, 0.0f, 1.0f, 1.0f);
 		rapi.setViewport(area);

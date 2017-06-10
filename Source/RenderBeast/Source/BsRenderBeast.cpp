@@ -354,7 +354,7 @@ namespace bs { namespace ct
 		mMainViewGroup.determineVisibility(sceneInfo);
 
 		// Render shadow maps
-		//ShadowRendering::instance().renderShadowMaps(*mScene, mMainViewGroup, frameInfo);
+		ShadowRendering::instance().renderShadowMaps(*mScene, mMainViewGroup, frameInfo);
 
 		// Update reflection probes
 		updateLightProbes(frameInfo);
@@ -568,12 +568,12 @@ namespace bs { namespace ct
 		bool isMSAA = numSamples > 1;
 		if(isMSAA)
 		{
+			renderTargets->bindLightAccumulation();
 			mFlatFramebufferToTextureMat->execute(renderTargets->getLightAccumulationBuffer(), 
 				renderTargets->getLightAccumulation());
 		}
 
 		// Render shadowed lights into light accumulation texture, using standard deferred
-		allowShadows = false; // DEBUG ONLY
 		if (allowShadows)
 		{
 			renderTargets->allocate(RTT_LightOcclusion);
@@ -604,6 +604,9 @@ namespace bs { namespace ct
 
 			renderTargets->release(RTT_LightOcclusion);
 		}
+
+		// Make sure light accumulation buffer isn't bound and can be read from
+		rapi.setRenderTarget(nullptr);
 
 		// Render image based lighting, add it to light accumulation and output scene color
 		renderTargets->allocate(RTT_SceneColor);
@@ -1012,7 +1015,7 @@ namespace bs { namespace ct
 				up = -Vector3::UNIT_Z;
 				break;
 			case CF_NegativeY:
-				forward = Vector3::UNIT_X;
+				forward = Vector3::UNIT_X; // TODO: Why X here?
 				up = Vector3::UNIT_Z;
 				break;
 			case CF_PositiveZ:
@@ -1024,7 +1027,7 @@ namespace bs { namespace ct
 			}
 
 			Vector3 right = Vector3::cross(up, forward);
-			viewRotationMat = Matrix3(right, up, forward);
+			viewRotationMat = Matrix3(right, up, forward); // TODO - Use -forward here? (Works for shadows)
 
 			viewDesc.viewDirection = forward;
 			viewDesc.viewTransform = Matrix4(viewRotationMat) * viewOffsetMat;

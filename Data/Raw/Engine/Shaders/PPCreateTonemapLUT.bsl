@@ -72,7 +72,7 @@ technique PPCreateTonemapLUT
 			return color;
 		}		
 		
-		RWTexture3D<float4> gOutputTex;
+		RWTexture3D<unorm float4> gOutputTex;
 		
 		[numthreads(8, 8, 1)]
 		void csmain(
