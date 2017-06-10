@@ -107,13 +107,15 @@ mixin LightingCommon
 			// Handles parts of the area light below the surface horizon
 			// See https://seblagarde.files.wordpress.com/2015/07/course_notes_moving_frostbite_to_pbr_v32.pdf for reference
 			float sinSolidAngle = sqrt(sinSolidAngleSqrd);
-			if(unclampedNoL < sinSolidAngle)
-			{
-				// Hermite spline approximation (see reference for exact formula)
-				unclampedNoL = max(unclampedNoL, -sinSolidAngle);
-				return ((sinSolidAngle + unclampedNoL) * (sinSolidAngle + unclampedNoL)) / (4 * sinSolidAngle);
-			}
-			else
+			
+			// TODO - Below horizon handling disabled as it currently outputs incorrect values, need to find a better approximation or just use the reference implementation
+			//if(unclampedNoL < sinSolidAngle)
+			//{
+			//	// Hermite spline approximation (see reference for exact formula)
+			//	unclampedNoL = max(unclampedNoL, -sinSolidAngle);
+			//	return ((sinSolidAngle + unclampedNoL) * (sinSolidAngle + unclampedNoL)) / (4 * sinSolidAngle);
+			//}
+			//else
 				return PI * sinSolidAngleSqrd * saturate(unclampedNoL);
 		}
 
