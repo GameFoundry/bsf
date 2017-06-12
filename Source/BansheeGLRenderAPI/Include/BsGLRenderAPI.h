@@ -80,7 +80,7 @@ namespace bs { namespace ct
 		void swapBuffers(const SPtr<RenderTarget>& target, UINT32 syncMask = 0xFFFFFFFF) override;
 
 		/** @copydoc RenderAPI::setRenderTarget() */
-		void setRenderTarget(const SPtr<RenderTarget>& target, bool readOnlyDepthStencil = false, 
+		void setRenderTarget(const SPtr<RenderTarget>& target, UINT32 readOnlyFlags = 0, 
 			RenderSurfaceMask loadMask = RT_NONE, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::clearRenderTarget() */

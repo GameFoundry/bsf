@@ -108,7 +108,7 @@ namespace bs
 		 * 
 		 * @note This is an @ref asyncMethod "asynchronous method".
 		 */
-		static void setRenderTarget(const SPtr<RenderTarget>& target, bool readOnlyDepthStencil = false, 
+		static void setRenderTarget(const SPtr<RenderTarget>& target, UINT32 readOnlyFlags = 0, 
 			RenderSurfaceMask loadMask = RT_NONE);
 
 		/** 
@@ -451,9 +451,10 @@ namespace bs
 		 * Change the render target into which we want to draw.
 		 *
 		 * @param[in]	target					Render target to draw to.
-		 * @param[in]	readOnlyDepthStencil	If true the caller guarantees he won't write to the depth/stencil buffer 
-		 *										(if any was provided). This allows the depth buffer to be bound for depth 
-		 *										testing, as well as reading in a shader, at the same time.
+		 * @param[in]	readOnlyFlags			Combination of one or more elements of FrameBuferType denoting which buffers
+		 *										will be bound for read-only operations. This is useful for depth or stencil
+		 *										buffers which need to be bound both for depth/stencil tests, as well as
+		 *										shader reads.
 		 * @param[in]	loadMask				Determines which render target surfaces will have their current contents
 		 *										preserved. By default when a render target is bound its contents will be
 		 *										lost. You might need to preserve contents if you need to perform blending 
@@ -465,7 +466,7 @@ namespace bs
 		 *										is executed immediately. Otherwise it is executed when executeCommands() is
 		 *										called. Buffer must support graphics operations.
 		 */
-        virtual void setRenderTarget(const SPtr<RenderTarget>& target, bool readOnlyDepthStencil = false,
+		virtual void setRenderTarget(const SPtr<RenderTarget>& target, UINT32 readOnlyFlags = 0,
 			RenderSurfaceMask loadMask = RT_NONE, const SPtr<CommandBuffer>& commandBuffer = nullptr) = 0;
 
 		/**

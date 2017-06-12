@@ -45,7 +45,7 @@ namespace bs { namespace ct
 			UINT8 targetMask = 0xFF, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::setRenderTarget */
-		void setRenderTarget(const SPtr<RenderTarget>& target, bool readOnlyDepthStencil = false, 
+		void setRenderTarget(const SPtr<RenderTarget>& target, UINT32 readOnlyFlags, 
 			RenderSurfaceMask loadMask = RT_NONE, const SPtr<CommandBuffer>& commandBuffer = nullptr) override;
 
 		/** @copydoc RenderAPI::setViewport */

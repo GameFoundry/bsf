@@ -19,11 +19,11 @@ namespace bs { namespace ct
 	VulkanPipeline::VulkanPipeline(VulkanResourceManager* owner, VkPipeline pipeline, 
 		const std::array<bool, BS_MAX_MULTIPLE_RENDER_TARGETS>& colorReadOnly, bool depthStencilReadOnly)
 		: VulkanResource(owner, true), mPipeline(pipeline), mReadOnlyColor(colorReadOnly)
-		, mReadOnlyDepthStencil(depthStencilReadOnly)
+		, mReadOnlyDepth(depthStencilReadOnly)
 	{ }
 
 	VulkanPipeline::VulkanPipeline(VulkanResourceManager* owner, VkPipeline pipeline)
-		: VulkanResource(owner, true), mPipeline(pipeline), mReadOnlyColor(), mReadOnlyDepthStencil(false)
+		: VulkanResource(owner, true), mPipeline(pipeline), mReadOnlyColor(), mReadOnlyDepth(false)
 	{ }
 
 	VulkanPipeline::~VulkanPipeline()
@@ -32,8 +32,8 @@ namespace bs { namespace ct
 	}
 
 	VulkanGraphicsPipelineState::GpuPipelineKey::GpuPipelineKey(
-		UINT32 framebufferId, UINT32 vertexInputId, bool readOnlyDepth, DrawOperationType drawOp)
-		: framebufferId(framebufferId), vertexInputId(vertexInputId), readOnlyDepth(readOnlyDepth)
+		UINT32 framebufferId, UINT32 vertexInputId, UINT32 readOnlyFlags, DrawOperationType drawOp)
+		: framebufferId(framebufferId), vertexInputId(vertexInputId), readOnlyFlags(readOnlyFlags)
 		, drawOp(drawOp)
 	{
 		
@@ -44,7 +44,7 @@ namespace bs { namespace ct
 		size_t hash = 0;
 		hash_combine(hash, key.framebufferId);
 		hash_combine(hash, key.vertexInputId);
-		hash_combine(hash, key.readOnlyDepth);
+		hash_combine(hash, key.readOnlyFlags);
 		hash_combine(hash, key.drawOp);
 
 		return hash;
@@ -58,7 +58,7 @@ namespace bs { namespace ct
 		if (a.vertexInputId != b.vertexInputId)
 			return false;
 
-		if (a.readOnlyDepth != b.readOnlyDepth)
+		if (a.readOnlyFlags != b.readOnlyFlags)
 			return false;
 
 		if (a.drawOp != b.drawOp)
@@ -318,7 +318,7 @@ namespace bs { namespace ct
 	}
 
 	VulkanPipeline* VulkanGraphicsPipelineState::getPipeline(
-		UINT32 deviceIdx, VulkanFramebuffer* framebuffer, bool readOnlyDepth, DrawOperationType drawOp, 
+		UINT32 deviceIdx, VulkanFramebuffer* framebuffer, UINT32 readOnlyFlags, DrawOperationType drawOp, 
 			const SPtr<VulkanVertexInput>& vertexInput)
 	{
 		Lock(mMutex);
@@ -326,14 +326,15 @@ namespace bs { namespace ct
 		if (mPerDeviceData[deviceIdx].device == nullptr)
 			return nullptr;
 
-		GpuPipelineKey key(framebuffer->getId(), vertexInput->getId(), readOnlyDepth, drawOp);
+		readOnlyFlags &= ~FBT_COLOR; // Ignore the color
+		GpuPipelineKey key(framebuffer->getId(), vertexInput->getId(), readOnlyFlags, drawOp);
 
 		PerDeviceData& perDeviceData = mPerDeviceData[deviceIdx];
 		auto iterFind = perDeviceData.pipelines.find(key);
 		if (iterFind != perDeviceData.pipelines.end())
 			return iterFind->second;
 
-		VulkanPipeline* newPipeline = createPipeline(deviceIdx, framebuffer, readOnlyDepth, drawOp, vertexInput);
+		VulkanPipeline* newPipeline = createPipeline(deviceIdx, framebuffer, readOnlyFlags, drawOp, vertexInput);
 		perDeviceData.pipelines[key] = newPipeline;
 
 		return newPipeline;
@@ -369,7 +370,7 @@ namespace bs { namespace ct
 	}
 
 	VulkanPipeline* VulkanGraphicsPipelineState::createPipeline(UINT32 deviceIdx, VulkanFramebuffer* framebuffer,
-		bool readOnlyDepth, DrawOperationType drawOp, const SPtr<VulkanVertexInput>& vertexInput)
+		UINT32 readOnlyFlags, DrawOperationType drawOp, const SPtr<VulkanVertexInput>& vertexInput)
 	{
 		mInputAssemblyInfo.topology = VulkanUtility::getDrawOp(drawOp);
 		mTesselationInfo.patchControlPoints = 3; // Not provided by our shaders for now
@@ -381,7 +382,7 @@ namespace bs { namespace ct
 			dsState = DepthStencilState::getDefault().get();
 
 		const DepthStencilProperties dsProps = dsState->getProperties();
-		bool enableDepthWrites = dsProps.getDepthWriteEnable() && !readOnlyDepth;
+		bool enableDepthWrites = dsProps.getDepthWriteEnable() && (readOnlyFlags & FBT_DEPTH) == 0;
 
 		mDepthStencilInfo.depthWriteEnable = enableDepthWrites; // If depth stencil attachment is read only, depthWriteEnable must be VK_FALSE
 
@@ -394,7 +395,7 @@ namespace bs { namespace ct
 		VkStencilOp oldBackFailOp = mDepthStencilInfo.back.failOp;
 		VkStencilOp oldBackZFailOp = mDepthStencilInfo.back.depthFailOp;
 
-		if(readOnlyDepth)
+		if((readOnlyFlags & FBT_STENCIL) == 1)
 		{
 			// Disable any stencil writes
 			mDepthStencilInfo.front.passOp = VK_STENCIL_OP_KEEP;
@@ -413,16 +414,16 @@ namespace bs { namespace ct
 		mPipelineInfo.layout = mPerDeviceData[deviceIdx].pipelineLayout;
 		mPipelineInfo.pVertexInputState = vertexInput->getCreateInfo();
 
-		bool depthStencilReadOnly;
+		bool depthReadOnly;
 		if (framebuffer->hasDepthAttachment())
 		{
 			mPipelineInfo.pDepthStencilState = &mDepthStencilInfo;
-			depthStencilReadOnly = readOnlyDepth;
+			depthReadOnly = (readOnlyFlags & FBT_DEPTH) == 1;
 		}
 		else
 		{
 			mPipelineInfo.pDepthStencilState = nullptr;
-			depthStencilReadOnly = true;
+			depthReadOnly = true;
 		}
 
 		std::array<bool, BS_MAX_MULTIPLE_RENDER_TARGETS> colorReadOnly;
@@ -492,7 +493,7 @@ namespace bs { namespace ct
 		mDepthStencilInfo.back.failOp = oldBackFailOp;
 		mDepthStencilInfo.back.depthFailOp = oldBackZFailOp;
 
-		return device->getResourceManager().create<VulkanPipeline>(pipeline, colorReadOnly, depthStencilReadOnly);
+		return device->getResourceManager().create<VulkanPipeline>(pipeline, colorReadOnly, depthReadOnly);
 	}
 
 	VulkanComputePipelineState::VulkanComputePipelineState(const SPtr<GpuProgram>& program, 

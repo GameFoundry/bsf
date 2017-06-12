@@ -27,13 +27,13 @@ namespace bs { namespace ct
 		/** Checks is the specified color attachment read-only. Only relevant for graphics pipelines. */
 		bool isColorReadOnly(UINT32 colorIdx) const { return mReadOnlyColor[colorIdx]; }
 
-		/** Checks is the depth-stencil attachment read-only. Only relevant for graphics pipelines. */
-		bool isDepthStencilReadOnly() const { return mReadOnlyDepthStencil; }
+		/** Checks is the depth attachment read-only. Only relevant for graphics pipelines. */
+		bool isDepthReadOnly() const { return mReadOnlyDepth; }
 	private:
 		VkPipeline mPipeline;
 
 		std::array<bool, BS_MAX_MULTIPLE_RENDER_TARGETS> mReadOnlyColor;
-		bool mReadOnlyDepthStencil;
+		bool mReadOnlyDepth;
 	};
 
 	/**	Vulkan implementation of a graphics pipeline state. */
@@ -54,14 +54,15 @@ namespace bs { namespace ct
 		 * 
 		 * @param[in]	deviceIdx			Index of the device to retrieve the pipeline for.
 		 * @param[in]	framebuffer			Framebuffer object that defines the surfaces this pipeline will render to.
-		 * @param[in]	readOnlyDepth		True if the pipeline is only allowed to read the depth buffer, without writes.
+		 * @param[in]	readOnlyFlags		Flags that control which portion of the framebuffer is read-only. Accepts
+		 *									combinations of FrameBufferType enum.
 		 * @param[in]	drawOp				Type of geometry that will be drawn using the pipeline.
 		 * @param[in]	vertexInput			State describing inputs to the vertex program.
 		 * @return							Vulkan graphics pipeline object.
 		 * 
 		 * @note	Thread safe.
 		 */
-		VulkanPipeline* getPipeline(UINT32 deviceIdx, VulkanFramebuffer* framebuffer, bool readOnlyDepth, 
+		VulkanPipeline* getPipeline(UINT32 deviceIdx, VulkanFramebuffer* framebuffer, UINT32 readOnlyFlags, 
 			DrawOperationType drawOp, const SPtr<VulkanVertexInput>& vertexInput);
 
 		/** 
@@ -89,24 +90,25 @@ namespace bs { namespace ct
 		 * 
 		 * @param[in]	deviceIdx			Index of the device to create the pipeline for.
 		 * @param[in]	framebuffer			Framebuffer object that defines the surfaces this pipeline will render to.
-		 * @param[in]	readOnlyDepth		True if the pipeline is only allowed to read the depth buffer, without writes.
+		 * @param[in]	readOnlyFlags		Flags that control which portion of the framebuffer is read-only. Accepts
+		 *									combinations of FrameBufferType enum.
 		 * @param[in]	drawOp				Type of geometry that will be drawn using the pipeline.
 		 * @param[in]	vertexInput			State describing inputs to the vertex program.
 		 * @return							Vulkan graphics pipeline object.
 		 * 
 		 * @note	Thread safe.
 		 */
-		VulkanPipeline* createPipeline(UINT32 deviceIdx, VulkanFramebuffer* framebuffer, bool readOnlyDepth, 
+		VulkanPipeline* createPipeline(UINT32 deviceIdx, VulkanFramebuffer* framebuffer, UINT32 readOnlyFlags, 
 			DrawOperationType drawOp, const SPtr<VulkanVertexInput>& vertexInput);
 
 		/**	Key uniquely identifying GPU pipelines. */
 		struct GpuPipelineKey
 		{
-			GpuPipelineKey(UINT32 framebufferId, UINT32 vertexInputId, bool readOnlyDepth, DrawOperationType drawOp);
+			GpuPipelineKey(UINT32 framebufferId, UINT32 vertexInputId, UINT32 readOnlyFlags, DrawOperationType drawOp);
 
 			UINT32 framebufferId;
 			UINT32 vertexInputId;
-			bool readOnlyDepth;
+			UINT32 readOnlyFlags;
 			DrawOperationType drawOp;
 		};
 

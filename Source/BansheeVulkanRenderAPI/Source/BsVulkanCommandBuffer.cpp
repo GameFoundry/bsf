@@ -133,7 +133,7 @@ namespace bs { namespace ct
 		: mId(id), mQueueFamily(queueFamily), mState(State::Ready), mDevice(device), mPool(pool)
 		, mIntraQueueSemaphore(nullptr), mInterQueueSemaphores(), mNumUsedInterQueueSemaphores(0)
 		, mFramebuffer(nullptr), mRenderTargetWidth(0)
-		, mRenderTargetHeight(0), mRenderTargetDepthReadOnly(false), mRenderTargetLoadMask(RT_NONE), mGlobalQueueIdx(-1)
+		, mRenderTargetHeight(0), mRenderTargetReadOnlyFlags(0), mRenderTargetLoadMask(RT_NONE), mGlobalQueueIdx(-1)
 		, mViewport(0.0f, 0.0f, 1.0f, 1.0f), mScissor(0, 0, 0, 0), mStencilRef(0), mDrawOp(DOT_TRIANGLE_LIST)
 		, mNumBoundDescriptorSets(0), mGfxPipelineRequiresBind(true), mCmpPipelineRequiresBind(true)
 		, mViewportRequiresBind(true), mStencilRefRequiresBind(true), mScissorRequiresBind(true), mBoundParamsDirty(false)
@@ -774,7 +774,7 @@ namespace bs { namespace ct
 		mSubresourceInfos.clear();
 	}
 
-	void VulkanCmdBuffer::setRenderTarget(const SPtr<RenderTarget>& rt, bool readOnlyDepthStencil, 
+	void VulkanCmdBuffer::setRenderTarget(const SPtr<RenderTarget>& rt, UINT32 readOnlyFlags, 
 		RenderSurfaceMask loadMask)
 	{
 		assert(mState != State::Submitted);
@@ -800,7 +800,7 @@ namespace bs { namespace ct
 			newFB = nullptr;
 		}
 
-		if (mFramebuffer == newFB && mRenderTargetDepthReadOnly == readOnlyDepthStencil && mRenderTargetLoadMask == loadMask)
+		if (mFramebuffer == newFB && mRenderTargetReadOnlyFlags == readOnlyFlags && mRenderTargetLoadMask == loadMask)
 			return;
 
 		if (isInRenderPass())
@@ -817,7 +817,7 @@ namespace bs { namespace ct
 			mFramebuffer = nullptr;
 			mRenderTargetWidth = 0;
 			mRenderTargetHeight = 0;
-			mRenderTargetDepthReadOnly = false;
+			mRenderTargetReadOnlyFlags = 0;
 			mRenderTargetLoadMask = RT_NONE;
 		}
 		else
@@ -825,7 +825,7 @@ namespace bs { namespace ct
 			mFramebuffer = newFB;
 			mRenderTargetWidth = rt->getProperties().getWidth();
 			mRenderTargetHeight = rt->getProperties().getHeight();
-			mRenderTargetDepthReadOnly = readOnlyDepthStencil;
+			mRenderTargetReadOnlyFlags = readOnlyFlags;
 			mRenderTargetLoadMask = loadMask;
 		}
 
@@ -1170,7 +1170,7 @@ namespace bs { namespace ct
 		SPtr<VulkanVertexInput> vertexInput = VulkanVertexInputManager::instance().getVertexInfo(mVertexDecl, inputDecl);
 
 		VulkanPipeline* pipeline = mGraphicsPipeline->getPipeline(mDevice.getIndex(), mFramebuffer,
-																  mRenderTargetDepthReadOnly, mDrawOp, vertexInput);
+																  mRenderTargetReadOnlyFlags, mDrawOp, vertexInput);
 
 		if (pipeline == nullptr)
 			return false;
@@ -1196,7 +1196,7 @@ namespace bs { namespace ct
 			ImageSubresourceInfo& subresourceInfo = findSubresourceInfo(fbAttachment.image, fbAttachment.surface.arraySlice,
 																		fbAttachment.surface.mipLevel);
 
-			if (subresourceInfo.isShaderInput && !pipeline->isDepthStencilReadOnly())
+			if (subresourceInfo.isShaderInput && !pipeline->isDepthReadOnly())
 			{
 				LOGWRN("Framebuffer attachment also used as a shader input, but depth/stencil writes aren't disabled. "
 					"This will result in undefined behavior.");

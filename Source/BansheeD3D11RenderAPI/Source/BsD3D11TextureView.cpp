@@ -11,7 +11,8 @@
 namespace bs { namespace ct
 {
 	D3D11TextureView::D3D11TextureView(const D3D11Texture* texture, const TEXTURE_VIEW_DESC& desc)
-		:TextureView(desc), mSRV(nullptr), mUAV(nullptr), mDSV(nullptr), mRTV(nullptr), mRODSV(nullptr)
+		: TextureView(desc), mSRV(nullptr), mUAV(nullptr), mRTV(nullptr), mWDepthWStencilView(nullptr)
+		, mRODepthWStencilView(nullptr), mRODepthROStencilView(nullptr), mWDepthROStencilView(nullptr)
 	{
 		if ((mDesc.usage & GVU_RANDOMWRITE) != 0)
 			mUAV = createUAV(texture, mDesc.mostDetailMip, mDesc.firstArraySlice, mDesc.numArraySlices);
@@ -19,8 +20,14 @@ namespace bs { namespace ct
 			mRTV = createRTV(texture, mDesc.mostDetailMip, mDesc.firstArraySlice, mDesc.numArraySlices);
 		else if ((mDesc.usage & GVU_DEPTHSTENCIL) != 0)
 		{
-			mDSV = createDSV(texture, mDesc.mostDetailMip, mDesc.firstArraySlice, mDesc.numArraySlices, false);
-			mRODSV = createDSV(texture, mDesc.mostDetailMip, mDesc.firstArraySlice, mDesc.numArraySlices, true);
+			mWDepthWStencilView = createDSV(texture, mDesc.mostDetailMip, mDesc.firstArraySlice, mDesc.numArraySlices, 
+				false, false);
+			mRODepthWStencilView = createDSV(texture, mDesc.mostDetailMip, mDesc.firstArraySlice, mDesc.numArraySlices, 
+				true, false);
+			mRODepthROStencilView = createDSV(texture, mDesc.mostDetailMip, mDesc.firstArraySlice, mDesc.numArraySlices, 
+				true, true);
+			mWDepthROStencilView = createDSV(texture, mDesc.mostDetailMip, mDesc.firstArraySlice, mDesc.numArraySlices, 
+				false, true);
 		}
 		else
 			mSRV = createSRV(texture, mDesc.mostDetailMip, mDesc.numMips, mDesc.firstArraySlice, mDesc.numArraySlices);
@@ -30,9 +37,29 @@ namespace bs { namespace ct
 	{
 		SAFE_RELEASE(mSRV);
 		SAFE_RELEASE(mUAV);
-		SAFE_RELEASE(mDSV);
-		SAFE_RELEASE(mRODSV);
 		SAFE_RELEASE(mRTV);
+		SAFE_RELEASE(mWDepthWStencilView);
+		SAFE_RELEASE(mWDepthROStencilView);
+		SAFE_RELEASE(mRODepthWStencilView);
+		SAFE_RELEASE(mRODepthROStencilView);
+	}
+
+	ID3D11DepthStencilView* D3D11TextureView::getDSV(bool readOnlyDepth, bool readOnlyStencil) const
+	{
+		if(readOnlyDepth)
+		{
+			if (readOnlyStencil)
+				return mRODepthROStencilView;
+			else
+				return mRODepthWStencilView;
+		}
+		else
+		{
+			if (readOnlyStencil)
+				return mWDepthROStencilView;
+			else
+				return mWDepthWStencilView;
+		}
 	}
 
 	ID3D11ShaderResourceView* D3D11TextureView::createSRV(const D3D11Texture* texture,
@@ -306,7 +333,7 @@ namespace bs { namespace ct
 	}
 
 	ID3D11DepthStencilView* D3D11TextureView::createDSV(const D3D11Texture* texture,
-		UINT32 mipSlice, UINT32 firstArraySlice, UINT32 numArraySlices, bool readOnly)
+		UINT32 mipSlice, UINT32 firstArraySlice, UINT32 numArraySlices, bool readOnlyDepth, bool readOnlyStencil)
 	{
 		D3D11_DEPTH_STENCIL_VIEW_DESC desc;
 		ZeroMemory(&desc, sizeof(desc));
@@ -378,16 +405,14 @@ namespace bs { namespace ct
 
 		desc.Format = texture->getDepthStencilFormat();
 
-		if (readOnly)
-		{
-			bool hasStencil = desc.Format == DXGI_FORMAT_D32_FLOAT_S8X24_UINT ||
-				desc.Format == DXGI_FORMAT_D24_UNORM_S8_UINT;
-
+		if (readOnlyDepth)
 			desc.Flags = D3D11_DSV_READ_ONLY_DEPTH;
 
-			if (hasStencil)
-				desc.Flags |= D3D11_DSV_READ_ONLY_STENCIL;
-		}		
+		bool hasStencil = desc.Format == DXGI_FORMAT_D32_FLOAT_S8X24_UINT ||
+			desc.Format == DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+		if (readOnlyStencil && hasStencil)
+			desc.Flags |= D3D11_DSV_READ_ONLY_STENCIL;
 
 		ID3D11DepthStencilView* dsv = nullptr;
 

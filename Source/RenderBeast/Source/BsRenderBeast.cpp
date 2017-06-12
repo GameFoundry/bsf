@@ -753,7 +753,7 @@ namespace bs { namespace ct
 				viewport->getClearDepthValue(), viewport->getClearStencilValue());
 		}
 		else
-			RenderAPI::instance().setRenderTarget(target, false, RT_COLOR0);
+			RenderAPI::instance().setRenderTarget(target, 0, RT_COLOR0);
 
 		RenderAPI::instance().setViewport(viewport->getNormArea());
 

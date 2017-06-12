@@ -39,10 +39,14 @@ namespace bs { namespace ct
 		 * Returns a depth stencil view. Caller must take care this texture view actually contains a depth stencil view,
 		 * otherwise it returns null.
 		 *
-		 * @param[in]	readOnly	Should the depth stencil view only support read operations (allows the bound texture to
-		 *							be also used as a shader resource view while bound as a depth stencil target).
+		 * @param[in]	readOnlyDepth	Should the view only support read operations for the depth portion of the 
+		 *								depth/stencil buffer(allows the bound texture to be also used as a shader resource
+		 *								view while bound as a depth stencil target).
+		 * @param[in]	readOnlyStencil	Should the view only support read operations for the stencil portion of the 
+		 *								depth/stencil buffer(allows the bound texture to be also used as a shader resource
+		 *								view while bound as a depth stencil target).
 		 */
-		ID3D11DepthStencilView*	getDSV(bool readOnly) const { return readOnly ? mRODSV : mDSV; }
+		ID3D11DepthStencilView*	getDSV(bool readOnlyDepth, bool readOnlyStencil) const;
 
 	protected:
 		friend class D3D11Texture;
@@ -106,17 +110,23 @@ namespace bs { namespace ct
 		 * @param[in]	numArraySlices	Number of array slices to create the view for. This will be number of array elements
 		 *								for 1D and 2D array textures, number of slices for 3D textures, and number of cubes
 		 *								for cube textures.
-		 * @param[in]	readOnly		Should the depth stencil view only support read operations (allows the bound texture
-		 *								to be also used as a shader resource view while bound as a depth stencil target).
+		 * @param[in]	readOnlyDepth	Should the view only support read operations for the depth portion of the 
+		 *								depth/stencil buffer(allows the bound texture to be also used as a shader resource
+		 *								view while bound as a depth stencil target).
+		 * @param[in]	readOnlyStencil	Should the view only support read operations for the stencil portion of the 
+		 *								depth/stencil buffer(allows the bound texture to be also used as a shader resource
+		 *								view while bound as a depth stencil target).
 		 */
-		ID3D11DepthStencilView* createDSV(const D3D11Texture* texture,
-			UINT32 mipSlice, UINT32 firstArraySlice, UINT32 numArraySlices, bool readOnly);
+		ID3D11DepthStencilView* createDSV(const D3D11Texture* texture, UINT32 mipSlice, UINT32 firstArraySlice, 
+			UINT32 numArraySlices, bool readOnlyDepth, bool readOnlyStencil);
 
 		ID3D11ShaderResourceView* mSRV;
 		ID3D11RenderTargetView* mRTV;
 		ID3D11UnorderedAccessView* mUAV;
-		ID3D11DepthStencilView*	mDSV;
-		ID3D11DepthStencilView*	mRODSV;
+		ID3D11DepthStencilView*	mWDepthWStencilView;
+		ID3D11DepthStencilView*	mRODepthWStencilView;
+		ID3D11DepthStencilView*	mRODepthROStencilView;
+		ID3D11DepthStencilView*	mWDepthROStencilView;
 	};
 
 	/** @} */

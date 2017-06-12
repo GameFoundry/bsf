@@ -789,10 +789,10 @@ namespace bs { namespace ct
 		}
 	}
 
-	void GLRenderAPI::setRenderTarget(const SPtr<RenderTarget>& target, bool readOnlyDepthStencil, 
+	void GLRenderAPI::setRenderTarget(const SPtr<RenderTarget>& target, UINT32 readOnlyFlags, 
 		RenderSurfaceMask loadMask, const SPtr<CommandBuffer>& commandBuffer)
 	{
-		auto executeRef = [&](const SPtr<RenderTarget>& target, bool readOnlyDepthStencil)
+		auto executeRef = [&](const SPtr<RenderTarget>& target, UINT32 readOnlyFlags)
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
@@ -832,10 +832,10 @@ namespace bs { namespace ct
 		};
 
 		if (commandBuffer == nullptr)
-			executeRef(target, readOnlyDepthStencil);
+			executeRef(target, readOnlyFlags);
 		else
 		{
-			auto execute = [=]() { executeRef(target, readOnlyDepthStencil); };
+			auto execute = [=]() { executeRef(target, readOnlyFlags); };
 
 			SPtr<GLCommandBuffer> cb = std::static_pointer_cast<GLCommandBuffer>(commandBuffer);
 			cb->queueCommand(execute);

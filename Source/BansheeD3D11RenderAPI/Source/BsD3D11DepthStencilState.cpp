@@ -24,6 +24,13 @@ namespace bs { namespace ct
 		D3D11_DEPTH_STENCIL_DESC depthStencilState;
 		ZeroMemory(&depthStencilState, sizeof(D3D11_DEPTH_STENCIL_DESC));
 
+		bool depthEnable = mProperties.getDepthWriteEnable() || mProperties.getDepthReadEnable();
+		CompareFunction compareFunc;
+		if (mProperties.getDepthReadEnable())
+			compareFunc = mProperties.getDepthComparisonFunc();
+		else
+			compareFunc = CMPF_ALWAYS_PASS;
+
 		depthStencilState.BackFace.StencilPassOp = D3D11Mappings::get(mProperties.getStencilBackPassOp());
 		depthStencilState.BackFace.StencilFailOp = D3D11Mappings::get(mProperties.getStencilBackFailOp());
 		depthStencilState.BackFace.StencilDepthFailOp = D3D11Mappings::get(mProperties.getStencilBackZFailOp());
@@ -32,9 +39,9 @@ namespace bs { namespace ct
 		depthStencilState.FrontFace.StencilFailOp = D3D11Mappings::get(mProperties.getStencilFrontFailOp());
 		depthStencilState.FrontFace.StencilDepthFailOp = D3D11Mappings::get(mProperties.getStencilFrontZFailOp());
 		depthStencilState.FrontFace.StencilFunc = D3D11Mappings::get(mProperties.getStencilFrontCompFunc());
-		depthStencilState.DepthEnable = mProperties.getDepthReadEnable();
+		depthStencilState.DepthEnable = depthEnable;
 		depthStencilState.DepthWriteMask = mProperties.getDepthWriteEnable() ? D3D11_DEPTH_WRITE_MASK_ALL : D3D11_DEPTH_WRITE_MASK_ZERO;
-		depthStencilState.DepthFunc = D3D11Mappings::get(mProperties.getDepthComparisonFunc());
+		depthStencilState.DepthFunc = D3D11Mappings::get(compareFunc);
 		depthStencilState.StencilEnable = mProperties.getStencilEnable();
 		depthStencilState.StencilReadMask = mProperties.getStencilReadMask();
 		depthStencilState.StencilWriteMask = mProperties.getStencilWriteMask();

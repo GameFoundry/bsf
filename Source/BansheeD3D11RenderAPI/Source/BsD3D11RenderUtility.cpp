@@ -55,26 +55,26 @@ namespace bs { namespace ct
 		{
 			if((clearBuffers & FBT_STENCIL) != 0)
 			{
-				D3D11DepthStencilState* d3d11RasterizerState = static_cast<D3D11DepthStencilState*>(const_cast<DepthStencilState*>(mClearQuadDSStateYesD_YesS.get()));
-				mDevice->getImmediateContext()->OMSetDepthStencilState(d3d11RasterizerState->getInternal(), stencil);
+				D3D11DepthStencilState* d3d11DepthStencilState = static_cast<D3D11DepthStencilState*>(const_cast<DepthStencilState*>(mClearQuadDSStateYesD_YesS.get()));
+				mDevice->getImmediateContext()->OMSetDepthStencilState(d3d11DepthStencilState->getInternal(), stencil);
 			}
 			else
 			{
-				D3D11DepthStencilState* d3d11RasterizerState = static_cast<D3D11DepthStencilState*>(const_cast<DepthStencilState*>(mClearQuadDSStateYesD_NoS.get()));
-				mDevice->getImmediateContext()->OMSetDepthStencilState(d3d11RasterizerState->getInternal(), stencil);
+				D3D11DepthStencilState* d3d11DepthStencilState = static_cast<D3D11DepthStencilState*>(const_cast<DepthStencilState*>(mClearQuadDSStateYesD_NoS.get()));
+				mDevice->getImmediateContext()->OMSetDepthStencilState(d3d11DepthStencilState->getInternal(), stencil);
 			}
 		}
 		else
 		{
 			if((clearBuffers & FBT_STENCIL) != 0)
 			{
-				D3D11DepthStencilState* d3d11RasterizerState = static_cast<D3D11DepthStencilState*>(const_cast<DepthStencilState*>(mClearQuadDSStateNoD_YesS.get()));
-				mDevice->getImmediateContext()->OMSetDepthStencilState(d3d11RasterizerState->getInternal(), stencil);
+				D3D11DepthStencilState* d3d11DepthStencilState = static_cast<D3D11DepthStencilState*>(const_cast<DepthStencilState*>(mClearQuadDSStateNoD_YesS.get()));
+				mDevice->getImmediateContext()->OMSetDepthStencilState(d3d11DepthStencilState->getInternal(), stencil);
 			}
 			else
 			{
-				D3D11DepthStencilState* d3d11RasterizerState = static_cast<D3D11DepthStencilState*>(const_cast<DepthStencilState*>(mClearQuadDSStateNoD_NoS.get()));
-				mDevice->getImmediateContext()->OMSetDepthStencilState(d3d11RasterizerState->getInternal(), stencil);
+				D3D11DepthStencilState* d3d11DepthStencilState = static_cast<D3D11DepthStencilState*>(const_cast<DepthStencilState*>(mClearQuadDSStateNoD_NoS.get()));
+				mDevice->getImmediateContext()->OMSetDepthStencilState(d3d11DepthStencilState->getInternal(), stencil);
 			}
 		}
 
@@ -128,8 +128,8 @@ namespace bs { namespace ct
 
 		DEPTH_STENCIL_STATE_DESC depthStateDescYesD_NoS;
 		depthStateDescYesD_NoS.depthReadEnable = false;
-		depthStateDescYesD_NoS.depthWriteEnable = false; // TODO - Set to true
-		//depthStateDescYesD_NoS.depthComparisonFunc = CMPF_ALWAYS_PASS;
+		depthStateDescYesD_NoS.depthWriteEnable = true;
+		depthStateDescYesD_NoS.depthComparisonFunc = CMPF_ALWAYS_PASS;
 		mClearQuadDSStateYesD_NoS = RenderStateManager::instance().createDepthStencilState(depthStateDescYesD_NoS);
 
 		DEPTH_STENCIL_STATE_DESC depthStateDescYesD_YesS;

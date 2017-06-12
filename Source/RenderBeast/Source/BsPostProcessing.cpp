@@ -46,7 +46,7 @@ namespace bs { namespace ct
 		ppInfo.downsampledSceneTex = GpuResourcePool::instance().get(mOutputDesc);
 
 		RenderAPI& rapi = RenderAPI::instance();
-		rapi.setRenderTarget(ppInfo.downsampledSceneTex->renderTexture, true);
+		rapi.setRenderTarget(ppInfo.downsampledSceneTex->renderTexture, FBT_DEPTH | FBT_STENCIL);
 
 		gRendererUtility().setPass(mMaterial);
 		gRendererUtility().setPassParams(mParamsSet);
@@ -193,7 +193,7 @@ namespace bs { namespace ct
 		ppInfo.histogramReduceTex = GpuResourcePool::instance().get(mOutputDesc);
 
 		RenderAPI& rapi = RenderAPI::instance();
-		rapi.setRenderTarget(ppInfo.histogramReduceTex->renderTexture, true);
+		rapi.setRenderTarget(ppInfo.histogramReduceTex->renderTexture, FBT_DEPTH | FBT_STENCIL);
 
 		gRendererUtility().setPass(mMaterial);
 		gRendererUtility().setPassParams(mParamsSet);
@@ -275,7 +275,7 @@ namespace bs { namespace ct
 		SPtr<PooledRenderTexture> eyeAdaptationRT = ppInfo.eyeAdaptationTex[ppInfo.lastEyeAdaptationTex];
 
 		RenderAPI& rapi = RenderAPI::instance();
-		rapi.setRenderTarget(eyeAdaptationRT->renderTexture, true);
+		rapi.setRenderTarget(eyeAdaptationRT->renderTexture, FBT_DEPTH | FBT_STENCIL);
 
 		gRendererUtility().setPass(mMaterial);
 		gRendererUtility().setPassParams(mParamsSet);

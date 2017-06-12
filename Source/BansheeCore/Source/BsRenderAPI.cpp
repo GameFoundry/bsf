@@ -84,11 +84,11 @@ namespace bs
 			nullptr));
 	}
 
-	void RenderAPI::setRenderTarget(const SPtr<RenderTarget>& target, bool readOnlyDepthStencil,
+	void RenderAPI::setRenderTarget(const SPtr<RenderTarget>& target, UINT32 readOnlyFlags,
 									RenderSurfaceMask loadMask)
 	{
 		gCoreThread().queueCommand(std::bind(&ct::RenderAPI::setRenderTarget,
-											 ct::RenderAPI::instancePtr(), target->getCore(), readOnlyDepthStencil, loadMask, nullptr));
+			ct::RenderAPI::instancePtr(), target->getCore(), readOnlyFlags, loadMask, nullptr));
 	}
 
 	void RenderAPI::clearRenderTarget(UINT32 buffers, const Color& color, float depth, 

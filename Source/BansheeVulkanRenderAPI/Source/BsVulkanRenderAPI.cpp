@@ -491,13 +491,13 @@ namespace bs { namespace ct
 		BS_INC_RENDER_STAT(NumClears);
 	}
 
-	void VulkanRenderAPI::setRenderTarget(const SPtr<RenderTarget>& target, bool readOnlyDepthStencil,
+	void VulkanRenderAPI::setRenderTarget(const SPtr<RenderTarget>& target, UINT32 readOnlyFlags,
 		RenderSurfaceMask loadMask, const SPtr<CommandBuffer>& commandBuffer)
 	{
 		VulkanCommandBuffer* cb = getCB(commandBuffer);
 		VulkanCmdBuffer* vkCB = cb->getInternal();
 
-		vkCB->setRenderTarget(target, readOnlyDepthStencil, loadMask);
+		vkCB->setRenderTarget(target, readOnlyFlags, loadMask);
 		
 		BS_INC_RENDER_STAT(NumRenderTargetChanges);
 	}
