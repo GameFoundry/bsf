@@ -46,6 +46,13 @@ namespace bs { namespace ct
 		 */
 		void getParameters(SPtr<GpuParamBlockBuffer>& buffer) const;
 		
+		/** 
+		 * Calculates the light position that is shifted in order to account for area spot lights. For non-spot lights
+		 * this method will return normal light position. The position will be shifted back from the light direction, 
+		 * magnitude of the shift depending on the source radius.
+		 */
+		Vector3 getShiftedLightPosition() const;
+
 		Light* internal;
 	};
 

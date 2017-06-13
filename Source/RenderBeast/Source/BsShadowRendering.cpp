@@ -1075,7 +1075,7 @@ namespace bs { namespace ct
 		Quaternion lightRotation(BsIdentity);
 		lightRotation.lookRotation(light->getRotation().zAxis());
 
-		Matrix4 view = Matrix4::view(light->getPosition(), lightRotation);
+		Matrix4 view = Matrix4::view(rendererLight.getShiftedLightPosition(), lightRotation);
 		Matrix4 proj = Matrix4::projectionPerspective(light->getSpotAngle(), 1.0f, 0.05f, light->getAttenuationRadius());
 
 		ConvexVolume localFrustum = ConvexVolume(proj);

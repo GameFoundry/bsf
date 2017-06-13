@@ -43,11 +43,7 @@ namespace bs { namespace ct
 		if (internal->getType() == LightType::Directional)
 			output.srcRadius *= Math::DEG2RAD;
 
-		// Create position for fake attenuation for area spot lights (with disc center)
-		if (internal->getType() == LightType::Spot)
-			output.shiftedLightPosition = output.position - output.direction * (output.srcRadius / Math::tan(spotAngle * 0.5f));
-		else
-			output.shiftedLightPosition = output.position;
+		output.shiftedLightPosition = getShiftedLightPosition();
 	}
 
 	void RendererLight::getParameters(SPtr<GpuParamBlockBuffer>& buffer) const
@@ -80,7 +76,8 @@ namespace bs { namespace ct
 		lightGeometry.y = (float)Light::LIGHT_CONE_NUM_SLICES;
 		lightGeometry.z = internal->getBounds().getRadius();
 
-		float coneRadius = Math::sin(lightData.spotAngles.x) * internal->getAttenuationRadius();
+		float extraRadius = lightData.srcRadius / Math::tan(lightData.spotAngles.x * 0.5f);
+		float coneRadius = Math::sin(lightData.spotAngles.x) * (internal->getAttenuationRadius() + extraRadius);
 		lightGeometry.w = coneRadius;
 
 		gPerLightParamDef.gLightGeometry.set(buffer, lightGeometry);
@@ -88,8 +85,19 @@ namespace bs { namespace ct
 		Quaternion lightRotation(BsIdentity);
 		lightRotation.lookRotation(internal->getRotation().zAxis());
 
-		Matrix4 transform = Matrix4::TRS(internal->getPosition(), lightRotation, Vector3::ONE);
+		Matrix4 transform = Matrix4::TRS(lightData.shiftedLightPosition, lightRotation, Vector3::ONE);
 		gPerLightParamDef.gMatConeTransform.set(buffer, transform);
+	}
+
+	Vector3 RendererLight::getShiftedLightPosition() const
+	{
+		Vector3 direction = internal->getRotation().zAxis();
+
+		// Create position for fake attenuation for area spot lights (with disc center)
+		if (internal->getType() == LightType::Spot)
+			return internal->getPosition() - direction * (internal->getSourceRadius() / Math::tan(internal->getSpotAngle() * 0.5f));
+		else
+			return internal->getPosition();
 	}
 
 	GBufferParams::GBufferParams(const SPtr<Material>& material, const SPtr<GpuParamsSet>& paramsSet)
