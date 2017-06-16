@@ -226,6 +226,7 @@ namespace bs { namespace ct
 			texPool.release(mSceneColorTex);
 			texPool.release(mAlbedoTex);
 			texPool.release(mNormalTex);
+			texPool.release(mRoughMetalTex);
 		}
 		else if(type == RTT_SceneColor)
 		{
