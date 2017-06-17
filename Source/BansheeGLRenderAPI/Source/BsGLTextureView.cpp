@@ -66,7 +66,9 @@ namespace bs { namespace ct {
 
 		glGenTextures(1, &mViewID);
 		glTextureView(mViewID, target, originalTexture, texture->getGLFormat(), desc.mostDetailMip, desc.numMips,
-					  desc.firstArraySlice, desc.numArraySlices);
+			desc.firstArraySlice, desc.numArraySlices);
+
+		mTarget = GLTexture::getGLTextureTarget(props.getTextureType(), props.getNumSamples(), desc.numArraySlices);
 	}
 
 	GLTextureView::~GLTextureView()

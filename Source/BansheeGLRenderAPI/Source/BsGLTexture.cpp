@@ -132,47 +132,52 @@ namespace bs { namespace ct
 		Texture::initialize();
 	}
 
-    GLenum GLTexture::getGLTextureTarget() const
-    {
-		switch (mProperties.getTextureType())
-        {
-            case TEX_TYPE_1D:
-				if(mProperties.getNumFaces() <= 1)
-					return GL_TEXTURE_1D;
-				else
-					return GL_TEXTURE_1D_ARRAY;
-            case TEX_TYPE_2D:
-				if (mProperties.getNumSamples() > 1)
-				{
-					if (mProperties.getNumFaces() <= 1)
-						return GL_TEXTURE_2D_MULTISAMPLE;
-					else
-						return GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
-				}
-				else
-				{
-					if (mProperties.getNumFaces() <= 1)
-						return GL_TEXTURE_2D;
-					else
-						return GL_TEXTURE_2D_ARRAY;
-				}
-            case TEX_TYPE_3D:
-                return GL_TEXTURE_3D;
-            case TEX_TYPE_CUBE_MAP:
-				if (mProperties.getNumFaces() <= 6)
-					return GL_TEXTURE_CUBE_MAP;
-				else
-					return GL_TEXTURE_CUBE_MAP_ARRAY;
-            default:
-                return 0;
-        };
-    }
+	GLenum GLTexture::getGLTextureTarget() const
+	{
+		return getGLTextureTarget(mProperties.getTextureType(), mProperties.getNumSamples(), mProperties.getNumFaces());
+	}
 
 	GLuint GLTexture::getGLID() const
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		return mTextureID;
+	}
+
+	GLenum GLTexture::getGLTextureTarget(TextureType type, UINT32 numSamples, UINT32 numFaces)
+	{
+		switch (type)
+		{
+		case TEX_TYPE_1D:
+			if (numFaces <= 1)
+				return GL_TEXTURE_1D;
+			else
+				return GL_TEXTURE_1D_ARRAY;
+		case TEX_TYPE_2D:
+			if (numSamples > 1)
+			{
+				if (numFaces <= 1)
+					return GL_TEXTURE_2D_MULTISAMPLE;
+				else
+					return GL_TEXTURE_2D_MULTISAMPLE_ARRAY;
+			}
+			else
+			{
+				if (numFaces <= 1)
+					return GL_TEXTURE_2D;
+				else
+					return GL_TEXTURE_2D_ARRAY;
+			}
+		case TEX_TYPE_3D:
+			return GL_TEXTURE_3D;
+		case TEX_TYPE_CUBE_MAP:
+			if (numFaces <= 6)
+				return GL_TEXTURE_CUBE_MAP;
+			else
+				return GL_TEXTURE_CUBE_MAP_ARRAY;
+		default:
+			return 0;
+		};
 	}
 
 	PixelData GLTexture::lockImpl(GpuLockOptions options, UINT32 mipLevel, UINT32 face, UINT32 deviceIdx,

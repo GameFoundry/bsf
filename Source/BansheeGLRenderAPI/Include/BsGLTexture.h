@@ -12,24 +12,24 @@ namespace bs { namespace ct
 	 *  @{
 	 */
 
-	/**	OpenGL implementation of a texture. */
-    class GLTexture : public Texture
-    {
-    public:
+	 /**	OpenGL implementation of a texture. */
+	class GLTexture : public Texture
+	{
+	public:
 		virtual ~GLTexture();
 
 		/**	Returns OpenGL texture target type. */
-        GLenum getGLTextureTarget() const;
+		GLenum getGLTextureTarget() const;
 
 		/**	Returns internal OpenGL texture handle. */
-        GLuint getGLID() const;
+		GLuint getGLID() const;
 
 		/**	Returns the internal OpenGL format used by the texture. */
 		GLenum getGLFormat() const { return mGLFormat; }
-		
+
 		/**
 		 * Returns a hardware pixel buffer for a certain face and level of the texture.
-		 * 
+		 *
 		 * @param[in]	face	Index of the texture face, if texture has more than one. Array index for texture arrays and
 		 *						a cube face for cube textures.
 		 * @param[in]	mipmap	Index of the mip level. 0 being the largest mip level.
@@ -38,7 +38,12 @@ namespace bs { namespace ct
 		 */
 		SPtr<GLPixelBuffer> getBuffer(UINT32 face, UINT32 mipmap);
 
-    protected:
+		/** 
+		 * Generates an OpenGL texture target based on the texture type, number of samples per pixel, and number of faces.
+		 */
+		static GLenum getGLTextureTarget(TextureType type, UINT32 numSamples, UINT32 numFaces);
+
+	protected:
 		friend class GLTextureManager;
 
 		GLTexture(GLSupport& support, const TEXTURE_DESC& desc, const SPtr<PixelData>& initialData, 

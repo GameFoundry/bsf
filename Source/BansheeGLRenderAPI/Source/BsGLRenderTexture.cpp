@@ -105,13 +105,21 @@ namespace bs
 			GLTexture* glDepthStencilTexture = static_cast<GLTexture*>(mDesc.depthStencilSurface.texture.get());
 			SPtr<GLPixelBuffer> depthStencilBuffer = nullptr;
 
+			bool allLayers = false;
+			if (mDepthStencilSurface->getNumArraySlices() == 1) // Binding a single texture layer
+				allLayers = glDepthStencilTexture->getProperties().getNumFaces() == 1;
+
 			if (glDepthStencilTexture->getProperties().getTextureType() != TEX_TYPE_3D)
 			{
-				depthStencilBuffer = glDepthStencilTexture->getBuffer(mDepthStencilSurface->getFirstArraySlice(),
+				UINT32 firstSlice = 0;
+				if (!allLayers)
+					firstSlice = mDepthStencilSurface->getFirstArraySlice();
+
+				depthStencilBuffer = glDepthStencilTexture->getBuffer(firstSlice, 
 					mDepthStencilSurface->getMostDetailedMip());
 			}
 
-			mFB->bindDepthStencil(depthStencilBuffer);
+			mFB->bindDepthStencil(depthStencilBuffer, allLayers);
 		}
 
 		mFB->rebuild();

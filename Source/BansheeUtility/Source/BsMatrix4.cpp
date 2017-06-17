@@ -277,8 +277,17 @@ namespace bs
 
 		m[2][0] = 0.0f;
 		m[2][1] = 0.0f;
-		m[2][2] = -2.0F / deltaZ;
-		m[2][3] = -(far + near) / deltaZ;
+
+		if (far == 0.0f)
+		{
+			m[2][2] = 1.0f;
+			m[2][3] = 0.0f;
+		}
+		else
+		{
+			m[2][2] = -2.0F / deltaZ;
+			m[2][3] = -(far + near) / deltaZ;
+		}
 
 		m[3][0] = 0.0f;
 		m[3][1] = 0.0f;

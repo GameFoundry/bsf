@@ -458,15 +458,15 @@ namespace bs { namespace ct
 
 						if (glTex != nullptr)
 						{
-							GLenum newTextureType = glTex->getGLTextureTarget();
+							SPtr<TextureView> texView = glTex->requestView(surface.mipLevel, surface.numMipLevels, 
+								surface.arraySlice, surface.numArraySlices, GVU_DEFAULT);
+
+							GLTextureView* glTexView = static_cast<GLTextureView*>(texView.get());
+							GLenum newTextureType = glTexView->getGLTextureTarget();
 
 							if (mTextureInfos[unit].type != newTextureType)
 								glBindTexture(mTextureInfos[unit].type, 0);
 
-							SPtr<TextureView> texView = glTex->requestView(surface.mipLevel, surface.numMipLevels, 
-																surface.arraySlice, surface.numArraySlices, GVU_DEFAULT);
-
-							GLTextureView* glTexView = static_cast<GLTextureView*>(texView.get());
 							glBindTexture(newTextureType, glTexView->getGLID());
 							mTextureInfos[unit].type = newTextureType;
 
@@ -1495,24 +1495,15 @@ namespace bs { namespace ct
 
 		const RenderTargetProperties& rtProps = mActiveRenderTarget->getProperties();
 
-		// If request texture flipping, use "upper-left", otherwise use "lower-left"
-		bool flipping = rtProps.requiresTextureFlipping();
-		//  GL measures from the bottom, not the top
-		UINT32 targetHeight = rtProps.getHeight();
 		// Calculate the "lower-left" corner of the viewport
 		GLsizei x = 0, y = 0, w = 0, h = 0;
 
 		if (enable)
 		{
 			glEnable(GL_SCISSOR_TEST);
-			// GL uses width / height rather than right / bottom
+
 			x = mScissorLeft;
-
-			if (flipping)
-				y = targetHeight - mScissorBottom;
-			else
-				y = mScissorTop;
-
+			y = mScissorTop;
 			w = mScissorRight - mScissorLeft;
 			h = mScissorBottom - mScissorTop;
 
@@ -2284,12 +2275,6 @@ namespace bs { namespace ct
 		mViewportTop = (UINT32)(rtProps.getHeight() * mViewportNorm.y);
 		mViewportWidth = (UINT32)(rtProps.getWidth() * mViewportNorm.width);
 		mViewportHeight = (UINT32)(rtProps.getHeight() * mViewportNorm.height);
-
-		if (rtProps.requiresTextureFlipping())
-		{
-			// Convert "upper-left" corner to "lower-left"
-			mViewportTop = rtProps.getHeight() - (mViewportTop + mViewportHeight);
-		}
 
 		glViewport(mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight);
 

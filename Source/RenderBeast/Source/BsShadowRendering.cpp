@@ -191,47 +191,6 @@ namespace bs { namespace ct
 		defines.set("MSAA_COUNT", MSAA ? 2 : 1); // Actual count doesn't matter, as long as its >1 if enabled
 	}
 
-	/**
-	 * Converts a point in mixed space (clip_x, clip_y, view_z, view_w) to UV coordinates on a shadow map (x, y),
-	 * and normalized linear depth from the shadow caster's perspective (z).
-	 */
-	Matrix4 createMixedToShadowUVMatrix(const Matrix4& viewP, const Matrix4& viewInvVP, const Rect2& shadowMapArea,
-		float depthRange, const Matrix4& shadowViewProj)
-	{
-		// Projects a point from (clip_x, clip_y, view_z, view_w) into clip space
-		Matrix4 mixedToShadow = Matrix4::IDENTITY;
-		mixedToShadow[2][2] = viewP[2][2];
-		mixedToShadow[2][3] = viewP[2][3];
-		mixedToShadow[3][2] = viewP[3][2];
-		mixedToShadow[3][3] = 0.0f;
-
-		// Projects a point in clip space back to homogeneus world space
-		mixedToShadow = viewInvVP * mixedToShadow;
-
-		// Projects a point in world space to shadow clip space
-		mixedToShadow = shadowViewProj * mixedToShadow;
-		
-		// Convert shadow clip space coordinates to UV coordinates relative to the shadow map rectangle, and normalize
-		// depth
-		RenderAPI& rapi = RenderAPI::instance();
-		const RenderAPIInfo& rapiInfo = rapi.getAPIInfo();
-
-		float flipY = -1.0f;
-		// Either of these flips the Y axis, but if they're both true they cancel out
-		if (rapiInfo.isFlagSet(RenderAPIFeatureFlag::UVYAxisUp) ^ rapiInfo.isFlagSet(RenderAPIFeatureFlag::NDCYAxisDown))
-			flipY = -flipY;
-
-		Matrix4 shadowMapTfrm
-		(
-			shadowMapArea.width * 0.5f, 0, 0, shadowMapArea.x + 0.5f * shadowMapArea.width,
-			0, flipY * shadowMapArea.height * 0.5f, 0, shadowMapArea.y + 0.5f * shadowMapArea.height,
-			0, 0, 1.0f / depthRange, 0,
-			0, 0, 0, 1
-		);
-
-		return shadowMapTfrm * mixedToShadow;
-	}
-
 	template <int ShadowQuality, bool Directional, bool MSAA>
 	void ShadowProjectMat<ShadowQuality, Directional, MSAA>::bind(const ShadowProjectParams& params)
 	{
@@ -752,6 +711,47 @@ namespace bs { namespace ct
 		return output;
 	}
 
+	/**
+	 * Converts a point in mixed space (clip_x, clip_y, view_z, view_w) to UV coordinates on a shadow map (x, y),
+	 * and normalized linear depth from the shadow caster's perspective (z).
+	 */
+	Matrix4 createMixedToShadowUVMatrix(const Matrix4& viewP, const Matrix4& viewInvVP, const Rect2& shadowMapArea,
+		float depthScale, float depthOffset, const Matrix4& shadowViewProj)
+	{
+		// Projects a point from (clip_x, clip_y, view_z, view_w) into clip space
+		Matrix4 mixedToShadow = Matrix4::IDENTITY;
+		mixedToShadow[2][2] = viewP[2][2];
+		mixedToShadow[2][3] = viewP[2][3];
+		mixedToShadow[3][2] = viewP[3][2];
+		mixedToShadow[3][3] = 0.0f;
+
+		// Projects a point in clip space back to homogeneus world space
+		mixedToShadow = viewInvVP * mixedToShadow;
+
+		// Projects a point in world space to shadow clip space
+		mixedToShadow = shadowViewProj * mixedToShadow;
+		
+		// Convert shadow clip space coordinates to UV coordinates relative to the shadow map rectangle, and normalize
+		// depth
+		RenderAPI& rapi = RenderAPI::instance();
+		const RenderAPIInfo& rapiInfo = rapi.getAPIInfo();
+
+		float flipY = -1.0f;
+		// Either of these flips the Y axis, but if they're both true they cancel out
+		if (rapiInfo.isFlagSet(RenderAPIFeatureFlag::UVYAxisUp) ^ rapiInfo.isFlagSet(RenderAPIFeatureFlag::NDCYAxisDown))
+			flipY = -flipY;
+
+		Matrix4 shadowMapTfrm
+		(
+			shadowMapArea.width * 0.5f, 0, 0, shadowMapArea.x + 0.5f * shadowMapArea.width,
+			0, flipY * shadowMapArea.height * 0.5f, 0, shadowMapArea.y + 0.5f * shadowMapArea.height,
+			0, 0, depthScale, depthOffset,
+			0, 0, 0, 1
+		);
+
+		return shadowMapTfrm * mixedToShadow;
+	}
+
 	void ShadowRendering::renderShadowOcclusion(const RendererScene& scene, UINT32 shadowQuality, 
 		const RendererLight& rendererLight, UINT32 viewIdx)
 	{
@@ -767,6 +767,7 @@ namespace bs { namespace ct
 		SPtr<GpuParamBlockBuffer> perViewBuffer = view->getPerViewBuffer();
 
 		RenderAPI& rapi = RenderAPI::instance();
+		const RenderAPIInfo& rapiInfo = rapi.getAPIInfo();
 		// TODO - Calculate and set a scissor rectangle for the light
 
 		SPtr<GpuParamBlockBuffer> shadowParamBuffer = gShadowProjectParamsDef.createBuffer();
@@ -845,14 +846,23 @@ namespace bs { namespace ct
 
 			for(auto& shadowInfo : shadowInfos)
 			{
-				float depthRange = shadowInfo->depthRange;
+				float depthScale, depthOffset;
 
-				// Depth range scale is already baked into the ortho projection matrix, no avoid doing it here
+				// Depth range scale is already baked into the ortho projection matrix, so avoid doing it here
 				if (isCSM)
-					depthRange = 1.0f;
+				{
+					// Need to map from NDC depth to [0, 1]
+					depthScale = 1.0f / (rapiInfo.getMaximumDepthInputValue() - rapiInfo.getMinimumDepthInputValue());
+					depthOffset = -rapiInfo.getMinimumDepthInputValue() * depthScale;
+				}
+				else
+				{
+					depthScale = 1.0f / shadowInfo->depthRange;
+					depthOffset = 0.0f;
+				}
 
 				Matrix4 mixedToShadowUV = createMixedToShadowUVMatrix(viewP, viewInvVP, shadowInfo->normArea, 
-					depthRange, shadowInfo->shadowVPTransform);
+					depthScale, depthOffset, shadowInfo->shadowVPTransform);
 
 				Vector2 shadowMapSize((float)shadowInfo->area.width, (float)shadowInfo->area.height);
 				float transitionScale = getFadeTransition(*light, shadowInfo->subjectBounds.getRadius(), 
@@ -942,7 +952,7 @@ namespace bs { namespace ct
 		Light* light = rendererLight.internal;
 
 		RenderAPI& rapi = RenderAPI::instance();
-	const RenderAPIInfo& rapiInfo = rapi.getAPIInfo();
+		const RenderAPIInfo& rapiInfo = rapi.getAPIInfo();
 
 		Vector3 lightDir = -light->getRotation().zAxis();
 		SPtr<GpuParamBlockBuffer> shadowParamsBuffer = gShadowParamsDef.createBuffer();
@@ -1001,6 +1011,7 @@ namespace bs { namespace ct
 			float orthoSize = frustumBounds.getRadius() * 0.5f;
 			Matrix4 proj = Matrix4::projectionOrthographic(-orthoSize, orthoSize, orthoSize, -orthoSize, 0.0f, 
 				shadowInfo.depthRange);
+
 			RenderAPI::instance().convertProjectionMatrix(proj, proj);
 
 			shadowInfo.cascadeIdx = i;
