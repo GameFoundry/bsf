@@ -85,8 +85,7 @@ namespace bs { namespace ct
 		 * @param[in]	clearMask	Mask that controls which render targets should be cleared on render pass start. Target
 		 *							cannot have both load and clear bits set. If load bit is set, clear will be ignored.
 		 */
-		VkRenderPass getRenderPass(RenderSurfaceMask loadMask, RenderSurfaceMask readMask, 
-								   ClearMask clearMask) const;
+		VkRenderPass getRenderPass(RenderSurfaceMask loadMask, RenderSurfaceMask readMask, ClearMask clearMask) const;
 
 		/**
 		 * Gets internal Vulkan framebuffer object.
@@ -96,8 +95,7 @@ namespace bs { namespace ct
 		 * @param[in]	clearMask	Mask that controls which render targets should be cleared on render pass start. Target
 		 *							cannot have both load and clear bits set. If load bit is set, clear will be ignored.
 		 */
-		VkFramebuffer getFramebuffer(RenderSurfaceMask loadMask, RenderSurfaceMask readMask, 
-									 ClearMask clearMask) const;
+		VkFramebuffer getFramebuffer(RenderSurfaceMask loadMask, RenderSurfaceMask readMask, ClearMask clearMask) const;
 
 		/** 
 		 * Gets the number of layers in each framebuffer surface. A layer is an element in a texture array, or a depth 

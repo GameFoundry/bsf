@@ -538,7 +538,9 @@ namespace bs
 		RT_COLOR5 = 1 << 5,
 		RT_COLOR6 = 1 << 6,
 		RT_COLOR7 = 1 << 7,
-		RT_DEPTH = 1 << 31,
+		RT_DEPTH = 1 << 30,
+		RT_STENCIL = 1 << 31,
+		RT_DEPTH_STENCIL = (1 << 30) | (1 << 31),
 		RT_ALL = 0xFF
 	};
 

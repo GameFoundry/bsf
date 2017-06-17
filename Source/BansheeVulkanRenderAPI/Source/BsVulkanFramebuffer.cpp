@@ -226,7 +226,7 @@ namespace bs { namespace ct
 			VkAttachmentDescription& attachmentDesc = mAttachments[mNumColorAttachments];
 			VkAttachmentReference& attachmentRef = mDepthReference;
 
-			if (loadMask.isSet(RT_DEPTH))
+			if (loadMask.isSet(RT_DEPTH) || loadMask.isSet(RT_STENCIL))
 			{
 				attachmentDesc.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
 				attachmentDesc.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
@@ -250,7 +250,12 @@ namespace bs { namespace ct
 			// When depth-stencil is readable it's up to the caller to ensure he doesn't try to write to it as well, so we
 			// just assume a read-only layout.
 			if (readMask.isSet(RT_DEPTH))
-				attachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
+			{
+				if (readMask.isSet(RT_STENCIL))
+					attachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
+				else // Depth readable but stencil isn't
+					attachmentRef.layout = VK_IMAGE_LAYOUT_GENERAL;
+			}
 			else
 				attachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		}

@@ -451,7 +451,7 @@ namespace bs
 		 * Change the render target into which we want to draw.
 		 *
 		 * @param[in]	target					Render target to draw to.
-		 * @param[in]	readOnlyFlags			Combination of one or more elements of FrameBuferType denoting which buffers
+		 * @param[in]	readOnlyFlags			Combination of one or more elements of FrameBufferType denoting which buffers
 		 *										will be bound for read-only operations. This is useful for depth or stencil
 		 *										buffers which need to be bound both for depth/stencil tests, as well as
 		 *										shader reads.

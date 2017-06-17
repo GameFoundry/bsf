@@ -289,7 +289,7 @@ namespace bs { namespace ct
 		{
 			const VulkanFramebufferAttachment& fbAttachment = mFramebuffer->getColorAttachment(i);
 			ImageSubresourceInfo& subresourceInfo = findSubresourceInfo(fbAttachment.image, fbAttachment.surface.arraySlice,
-																		fbAttachment.surface.mipLevel);
+				fbAttachment.surface.mipLevel);
 
 			bool readOnly = subresourceInfo.isShaderInput;
 
@@ -297,26 +297,26 @@ namespace bs { namespace ct
 				readMask.set((RenderSurfaceMaskBits)(1 << i));
 		}
 
-		if(mFramebuffer->hasDepthAttachment())
+		if (mFramebuffer->hasDepthAttachment())
 		{
 			const VulkanFramebufferAttachment& fbAttachment = mFramebuffer->getDepthStencilAttachment();
 			ImageSubresourceInfo& subresourceInfo = findSubresourceInfo(fbAttachment.image, fbAttachment.surface.arraySlice,
-																		fbAttachment.surface.mipLevel);
+				fbAttachment.surface.mipLevel);
 
 			bool readOnly = subresourceInfo.isShaderInput;
 
 			if (readOnly)
 				readMask.set(RT_DEPTH);
+
+			if ((mRenderTargetReadOnlyFlags & FBT_DEPTH) != 0)
+				readMask.set(RT_DEPTH);
+
+			if ((mRenderTargetReadOnlyFlags & FBT_STENCIL) != 0)
+				readMask.set(RT_STENCIL);
 		}
 
-		// Reset flags that signal image usage (since those only matter for the render-pass' purposes), as well as barrier
-		// requirements
 		for (auto& entry : mSubresourceInfos)
-		{
-			entry.isFBAttachment = false;
-			entry.isShaderInput = false;
 			entry.needsBarrier = false;
-		}
 
 		for (auto& entry : mBuffers)
 			entry.second.needsBarrier = false;
@@ -353,11 +353,8 @@ namespace bs { namespace ct
 
 		// Update any layout transitions that were performed by subpass dependencies, reset flags that signal image usage
 		// and reset read-only state.
-		// Note: It's okay reset these even those they might still be bound on the GPU, because these values only matter
-		// for state transitions.
 		for (auto& entry : mSubresourceInfos)
 		{
-			entry.isFBAttachment = false;
 			entry.isShaderInput = false;
 			entry.isReadOnly = true;
 		}
@@ -365,6 +362,9 @@ namespace bs { namespace ct
 		updateFinalLayouts();
 
 		mState = State::Recording;
+
+		// In case the same GPU params from last pass get used, this makes sure the states we reset above, get re-applied
+		mBoundParamsDirty = true;
 	}
 
 	void VulkanCmdBuffer::allocateSemaphores(VkSemaphore* semaphores)
@@ -800,6 +800,23 @@ namespace bs { namespace ct
 			newFB = nullptr;
 		}
 
+		// Warn if invalid load mask
+		if (loadMask.isSet(RT_DEPTH) && !loadMask.isSet(RT_STENCIL))
+		{
+			LOGWRN("setRenderTarget() invalid load mask, depth enabled but stencil disabled. This is not supported. Both \
+				will be loaded.");
+
+			loadMask.set(RT_STENCIL);
+		}
+
+		if (!loadMask.isSet(RT_DEPTH) && loadMask.isSet(RT_STENCIL))
+		{
+			LOGWRN("setRenderTarget() invalid load mask, stencil enabled but depth disabled. This is not supported. Both \
+				will be loaded.");
+
+			loadMask.set(RT_DEPTH);
+		}
+
 		if (mFramebuffer == newFB && mRenderTargetReadOnlyFlags == readOnlyFlags && mRenderTargetLoadMask == loadMask)
 			return;
 
@@ -810,6 +827,39 @@ namespace bs { namespace ct
 			// If a clear is queued for previous FB, execute the render pass with no additional instructions
 			if (mClearMask)
 				executeClearPass();
+		}
+
+		// Reset isFBAttachment flags for subresources from the old framebuffer
+		if(mFramebuffer != nullptr)
+		{
+			UINT32 numColorAttachments = mFramebuffer->getNumColorAttachments();
+			for(UINT32 i = 0; i < numColorAttachments; i++)
+			{
+				const VulkanFramebufferAttachment& fbAttachment = mFramebuffer->getColorAttachment(i);
+				UINT32 imageInfoIdx = mImages[fbAttachment.image];
+				ImageInfo& imageInfo = mImageInfos[imageInfoIdx];
+
+				ImageSubresourceInfo* subresourceInfos = &mSubresourceInfos[imageInfo.subresourceInfoIdx];
+				for(UINT32 j = 0; j < imageInfo.numSubresourceInfos; j++)
+				{
+					ImageSubresourceInfo& entry = subresourceInfos[j];
+					entry.isFBAttachment = false;
+				}
+			}
+
+			if(mFramebuffer->hasDepthAttachment())
+			{
+				const VulkanFramebufferAttachment& fbAttachment = mFramebuffer->getDepthStencilAttachment();
+				UINT32 imageInfoIdx = mImages[fbAttachment.image];
+				ImageInfo& imageInfo = mImageInfos[imageInfoIdx];
+
+				ImageSubresourceInfo* subresourceInfos = &mSubresourceInfos[imageInfo.subresourceInfoIdx];
+				for(UINT32 j = 0; j < imageInfo.numSubresourceInfos; j++)
+				{
+					ImageSubresourceInfo& entry = subresourceInfos[j];
+					entry.isFBAttachment = false;
+				}
+			}
 		}
 
 		if(newFB == nullptr)
@@ -829,14 +879,10 @@ namespace bs { namespace ct
 			mRenderTargetLoadMask = loadMask;
 		}
 
-		// Reset flags that signal image usage
-		for (auto& entry : mSubresourceInfos)
-			entry.isFBAttachment = false;
-
 		setGpuParams(nullptr);
 
-		if(mFramebuffer != nullptr)
-			registerResource(mFramebuffer, loadMask, VulkanUseFlag::Write);
+		if (mFramebuffer != nullptr)
+			registerResource(mFramebuffer, loadMask, readOnlyFlags);
 
 		mGfxPipelineRequiresBind = true;
 	}
@@ -1170,7 +1216,7 @@ namespace bs { namespace ct
 		SPtr<VulkanVertexInput> vertexInput = VulkanVertexInputManager::instance().getVertexInfo(mVertexDecl, inputDecl);
 
 		VulkanPipeline* pipeline = mGraphicsPipeline->getPipeline(mDevice.getIndex(), mFramebuffer,
-																  mRenderTargetReadOnlyFlags, mDrawOp, vertexInput);
+			mRenderTargetReadOnlyFlags, mDrawOp, vertexInput);
 
 		if (pipeline == nullptr)
 			return false;
@@ -1180,8 +1226,8 @@ namespace bs { namespace ct
 		for (UINT32 i = 0; i < numColorAttachments; i++)
 		{
 			const VulkanFramebufferAttachment& fbAttachment = mFramebuffer->getColorAttachment(i);
-			ImageSubresourceInfo& subresourceInfo = findSubresourceInfo(fbAttachment.image, fbAttachment.surface.arraySlice,
-																		fbAttachment.surface.mipLevel);
+			ImageSubresourceInfo& subresourceInfo = findSubresourceInfo(fbAttachment.image, fbAttachment.surface.arraySlice, 
+				fbAttachment.surface.mipLevel);
 
 			if (subresourceInfo.isShaderInput && !pipeline->isColorReadOnly(i))
 			{
@@ -1194,7 +1240,7 @@ namespace bs { namespace ct
 		{
 			const VulkanFramebufferAttachment& fbAttachment = mFramebuffer->getDepthStencilAttachment();
 			ImageSubresourceInfo& subresourceInfo = findSubresourceInfo(fbAttachment.image, fbAttachment.surface.arraySlice,
-																		fbAttachment.surface.mipLevel);
+				fbAttachment.surface.mipLevel);
 
 			if (subresourceInfo.isShaderInput && !pipeline->isDepthReadOnly())
 			{
@@ -1466,10 +1512,11 @@ namespace bs { namespace ct
 		if (mComputePipeline == nullptr)
 			return;
 
-		bindGpuParams();
-
 		if (isInRenderPass())
 			endRenderPass();
+
+		bindGpuParams();
+		executeLayoutTransitions();
 
 		UINT32 deviceIdx = mDevice.getIndex();
 		if(mCmpPipelineRequiresBind)
@@ -1498,6 +1545,14 @@ namespace bs { namespace ct
 		}
 
 		vkCmdDispatch(mCmdBuffer, numGroupsX, numGroupsY, numGroupsZ);
+
+		// Update any layout transitions that were performed by subpass dependencies, reset flags that signal image usage
+		// and reset read-only state.
+		for (auto& entry : mSubresourceInfos)
+		{
+			entry.isShaderInput = false;
+			entry.isReadOnly = true;
+		}
 	}
 
 	void VulkanCmdBuffer::setEvent(VulkanEvent* event)
@@ -1612,8 +1667,8 @@ namespace bs { namespace ct
 		registerResource(res, range, VK_IMAGE_LAYOUT_UNDEFINED, layout, flags, false);
 	}
 
-	void VulkanCmdBuffer::registerResource(VulkanImage* res, const VkImageSubresourceRange& range, VkImageLayout newLayout, 
-										   VkImageLayout finalLayout, VulkanUseFlags flags, bool isFBAttachment)
+	void VulkanCmdBuffer::registerResource(VulkanImage* res, const VkImageSubresourceRange& range, VkImageLayout newLayout,
+		VkImageLayout finalLayout, VulkanUseFlags flags, bool isFBAttachment)
 	{
 		// Check if we're binding for shader use, or as a color attachment, or just for transfer purposes
 		bool isShaderBind = !isFBAttachment && newLayout != VK_IMAGE_LAYOUT_UNDEFINED;
@@ -1681,12 +1736,8 @@ namespace bs { namespace ct
 						subresources[i].range.baseMipLevel == range.baseMipLevel)
 					{
 						// Just update existing range
-						bool requiresReadOnlyFB = updateSubresourceInfo(res, imageInfoIdx, subresources[i], newLayout,
-																		finalLayout, flags, isFBAttachment);
-
-						// If we need to switch frame-buffers, end current render pass
-						if (requiresReadOnlyFB && isInRenderPass())
-							endRenderPass();
+						updateSubresourceInfo(res, imageInfoIdx, subresources[i], newLayout, finalLayout, flags, 
+							isFBAttachment);
 
 						foundRange = true;
 						break;
@@ -1852,14 +1903,14 @@ namespace bs { namespace ct
 		}
 	}
 
-	void VulkanCmdBuffer::registerResource(VulkanFramebuffer* res, RenderSurfaceMask loadMask, VulkanUseFlags flags)
+	void VulkanCmdBuffer::registerResource(VulkanFramebuffer* res, RenderSurfaceMask loadMask, UINT32 readMask)
 	{
 		auto insertResult = mResources.insert(std::make_pair(res, ResourceUseHandle()));
 		if (insertResult.second) // New element
 		{
 			ResourceUseHandle& useHandle = insertResult.first->second;
 			useHandle.used = false;
-			useHandle.flags = flags;
+			useHandle.flags = VulkanUseFlag::Write;
 
 			res->notifyBound();
 		}
@@ -1868,7 +1919,7 @@ namespace bs { namespace ct
 			ResourceUseHandle& useHandle = insertResult.first->second;
 
 			assert(!useHandle.used);
-			useHandle.flags |= flags;
+			useHandle.flags |= VulkanUseFlag::Write;
 		}
 
 		// Register any sub-resources
@@ -1880,7 +1931,11 @@ namespace bs { namespace ct
 			// If image is being loaded, we need to transfer it to correct layout, otherwise it doesn't matter
 			VkImageLayout layout;
 			if (loadMask.isSet((RenderSurfaceMaskBits)(1 << i)))
+			{
+				// Note that this might not be the actual layout used during the render pass, as the render pass can
+				// transition this to a different layout when it begins, but we handle that elsewhere
 				layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+			}
 			else
 				layout = VK_IMAGE_LAYOUT_UNDEFINED;
 
@@ -1891,16 +1946,21 @@ namespace bs { namespace ct
 		if(res->hasDepthAttachment())
 		{
 			const VulkanFramebufferAttachment& attachment = res->getDepthStencilAttachment();
+			VulkanUseFlag useFlag = VulkanUseFlag::Write;
 
 			// If image is being loaded, we need to transfer it to correct layout, otherwise it doesn't matter
 			VkImageLayout layout;
-			if (loadMask.isSet(RT_DEPTH))
+			if (loadMask.isSet(RT_DEPTH) || loadMask.isSet(RT_STENCIL)) // Can't load one without the other
+			{
+				// Note that this might not be the actual layout used during the render pass, as the render pass can
+				// transition this to a different layout when it begins, but we handle that elsewhere
 				layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+			}
 			else
 				layout = VK_IMAGE_LAYOUT_UNDEFINED;
 
 			VkImageSubresourceRange range = attachment.image->getRange(attachment.surface);
-			registerResource(attachment.image, range, layout, attachment.finalLayout, VulkanUseFlag::Write, true);
+			registerResource(attachment.image, range, layout, attachment.finalLayout, useFlag, true);
 		}
 	}
 
@@ -1961,14 +2021,14 @@ namespace bs { namespace ct
 		}
 
 		// If a FB attachment was just bound as a shader input, we might need to restart the render pass with a FB
-		// attachment that supports read-only attachments using the GENERAL layout
-		bool requiresReadOnlyFB = false;
+		// attachment that supports read-only attachments using the GENERAL or DEPTH_READ_ONLY layout
+		bool resetRenderPass = false;
 		if (isFBAttachment)
 		{
 			if (!subresourceInfo.isFBAttachment)
 			{
 				subresourceInfo.isFBAttachment = true;
-				requiresReadOnlyFB = subresourceInfo.isShaderInput;
+				resetRenderPass = subresourceInfo.isShaderInput;
 			}
 		}
 		else
@@ -1976,12 +2036,28 @@ namespace bs { namespace ct
 			if (!subresourceInfo.isShaderInput)
 			{
 				subresourceInfo.isShaderInput = true;
-				requiresReadOnlyFB = subresourceInfo.isFBAttachment;
+
+				if (subresourceInfo.isFBAttachment)
+				{
+					// Special case for depth: If user has set up proper read-only flags, then the render pass will have
+					// taken care of setting the valid state anyway, so no need to end the render pass
+					if (subresourceInfo.requiredLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
+					{
+						if ((mRenderTargetReadOnlyFlags & FBT_DEPTH) != 0 || (mRenderTargetReadOnlyFlags & FBT_STENCIL) != 0)
+							resetRenderPass = false;
+						else
+							resetRenderPass = true;
+					}
+					else
+						resetRenderPass = true;
+				}
+				else
+					resetRenderPass = false;
 			}
 		}
 
 		// If we need to switch frame-buffers, end current render pass
-		if (requiresReadOnlyFB && isInRenderPass())
+		if (resetRenderPass && isInRenderPass())
 			endRenderPass();
 		else 
 		{
@@ -2011,7 +2087,7 @@ namespace bs { namespace ct
 			}
 		}
 
-		return requiresReadOnlyFB;
+		return resetRenderPass;
 	}
 
 	VulkanCmdBuffer::ImageSubresourceInfo& VulkanCmdBuffer::findSubresourceInfo(VulkanImage* image, UINT32 face, UINT32 mip)

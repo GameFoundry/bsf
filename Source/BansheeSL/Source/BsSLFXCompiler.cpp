@@ -1675,9 +1675,10 @@ namespace bs
 				GPU_PROGRAM_DESC desc;
 				desc.language = metaData.language;
 
+				bool isHLSL = desc.language == "hlsl";
 				if (!passData.vertexCode.empty())
 				{
-					desc.entryPoint = "vsmain";
+					desc.entryPoint = isHLSL ? "vsmain" : "main";
 					desc.source = passData.vertexCode;
 					desc.type = GPT_VERTEX_PROGRAM;
 
@@ -1686,7 +1687,7 @@ namespace bs
 
 				if (!passData.fragmentCode.empty())
 				{
-					desc.entryPoint = "fsmain";
+					desc.entryPoint = isHLSL ? "fsmain" : "main";
 					desc.source = passData.fragmentCode;
 					desc.type = GPT_FRAGMENT_PROGRAM;
 
@@ -1695,7 +1696,7 @@ namespace bs
 
 				if (!passData.geometryCode.empty())
 				{
-					desc.entryPoint = "gsmain";
+					desc.entryPoint = isHLSL ? "gsmain" : "main";
 					desc.source = passData.geometryCode;
 					desc.type = GPT_GEOMETRY_PROGRAM;
 
@@ -1704,7 +1705,7 @@ namespace bs
 
 				if (!passData.hullCode.empty())
 				{
-					desc.entryPoint = "hsmain";
+					desc.entryPoint = isHLSL ? "hsmain" : "main";
 					desc.source = passData.hullCode;
 					desc.type = GPT_HULL_PROGRAM;
 
@@ -1713,7 +1714,7 @@ namespace bs
 
 				if (!passData.domainCode.empty())
 				{
-					desc.entryPoint = "dsmain";
+					desc.entryPoint = isHLSL ? "dsmain" : "main";
 					desc.source = passData.domainCode;
 					desc.type = GPT_DOMAIN_PROGRAM;
 
@@ -1722,7 +1723,7 @@ namespace bs
 
 				if (!passData.computeCode.empty())
 				{
-					desc.entryPoint = "csmain";
+					desc.entryPoint = isHLSL ? "csmain" : "main";
 					desc.source = passData.computeCode;
 					desc.type = GPT_COMPUTE_PROGRAM;
 

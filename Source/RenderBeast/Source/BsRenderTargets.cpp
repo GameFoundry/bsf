@@ -280,7 +280,7 @@ namespace bs { namespace ct
 			readOnlyFlags = FBT_DEPTH | FBT_STENCIL;
 
 		RenderAPI& rapi = RenderAPI::instance();
-		rapi.setRenderTarget(mSceneColorRT, readOnlyFlags, RT_COLOR0 | RT_DEPTH);
+		rapi.setRenderTarget(mSceneColorRT, readOnlyFlags, RT_COLOR0 | RT_DEPTH_STENCIL);
 
 		Rect2 area(0.0f, 0.0f, 1.0f, 1.0f);
 		rapi.setViewport(area);
@@ -289,13 +289,13 @@ namespace bs { namespace ct
 	void RenderTargets::bindLightAccumulation()
 	{
 		RenderAPI& rapi = RenderAPI::instance();
-		rapi.setRenderTarget(mLightAccumulationRT, FBT_DEPTH | FBT_STENCIL, RT_COLOR0 | RT_DEPTH);
+		rapi.setRenderTarget(mLightAccumulationRT, FBT_DEPTH | FBT_STENCIL, RT_COLOR0 | RT_DEPTH_STENCIL);
 	}
 
 	void RenderTargets::bindLightOcclusion()
 	{
 		RenderAPI& rapi = RenderAPI::instance();
-		rapi.setRenderTarget(mLightOcclusionRT, FBT_DEPTH, RT_DEPTH);
+		rapi.setRenderTarget(mLightOcclusionRT, FBT_DEPTH, RT_DEPTH_STENCIL);
 
 		Rect2 area(0.0f, 0.0f, 1.0f, 1.0f);
 		rapi.setViewport(area);

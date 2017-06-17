@@ -1240,12 +1240,13 @@ namespace bs { namespace ct
 
 		// Render cubemaps upside down if necessary
 		Matrix4 adjustedProj = proj;
-		if(rapiInfo.isFlagSet(RenderAPIFeatureFlag::UVYAxisUp) ^ rapiInfo.isFlagSet(RenderAPIFeatureFlag::NDCYAxisDown))
+		if(rapiInfo.isFlagSet(RenderAPIFeatureFlag::UVYAxisUp))
 		{
 			// All big APIs use the same cubemap sampling coordinates, as well as the same face order. But APIs that
 			// use bottom-up UV coordinates require the cubemap faces to be stored upside down in order to get the same
 			// behaviour. APIs that use an upside-down NDC Y axis have the same problem as the rendered image will be
-			// upside down. If both of those are enabled, then the effect cancels out.
+			// upside down, but this is handled by the projection matrix. If both of those are enabled, then the effect
+			// cancels out.
 
 			adjustedProj[1][1] = -proj[1][1];
 		}
