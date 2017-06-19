@@ -1496,7 +1496,7 @@ namespace bs { namespace ct
 		float farHalfWidth, farHalfHeight;
 		if(viewProps.projType == PT_PERSPECTIVE)
 		{
-			aspect = projMat[0][0] / projMat[1][1];
+			aspect = fabs(projMat[0][0] / projMat[1][1]);
 			float tanHalfFOV = 1.0f / projMat[0][0];
 
 			nearHalfWidth = splitNear * tanHalfFOV;
