@@ -105,7 +105,7 @@ namespace bs { namespace ct
 		GpuParamBlockDesc generateParamBlockDesc(const String& name, Vector<GpuParamDataDesc>& params) override;
 
 		/************************************************************************/
-		/* 				Internal use by DX11 RenderSystem only                  */
+		/* 				Internal use by DX11 backend only						*/
 		/************************************************************************/
 
 		/**
@@ -137,50 +137,6 @@ namespace bs { namespace ct
 
 		/** @copydoc RenderAPI::destroyCore */
 		void destroyCore() override;
-
-		/**
-		 * Sets a sampler state for the specified texture unit. 
-		 *
-		 * @param[in]	gptype			Determines to which GPU program slot to bind the sampler state.
-		 * @param[in]	texUnit			Texture unit index to bind the state to.
-		 * @param[in]	samplerState	Sampler state to bind, or null to unbind.
-		 *
-		 * @see		SamplerState
-		 */
-		void setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SPtr<SamplerState>& samplerState);
-
-		/**
-		 * Binds a texture to the pipeline for the specified GPU program type at the specified slot. If the slot matches 
-		 * the one configured in the GPU program the program will be able to access this texture on the GPU.
-		 *
-		 * @param[in]	gptype			Determines to which GPU program slot to bind the texture.
-		 * @param[in]	texUnit			Texture unit index to bind the texture to.
-		 * @param[in]	texture			Texture to bind.
-		 */
-		void setTexture(GpuProgramType gptype, UINT16 texUnit, const SPtr<Texture>& texture);
-
-		/**	
-		 * Binds a texture that can be used for random load/store operations from a GPU program. 
-		 *
-		 * @param[in]	gptype			Determines to which GPU program slot to bind the texture.
-		 * @param[in]	texUnit			Texture unit index to bind the texture to.
-		 * @param[in]	texture			Texture to bind.
-		 * @param[in]	surface			Determines which surface of the texture to bind.
-		 */
-		void setLoadStoreTexture(GpuProgramType gptype, UINT16 texUnit, const SPtr<Texture>& texture, 
-			const TextureSurface& surface);
-
-		/**
-		 * Binds a buffer that can be used for read or write operations on the GPU.
-		 *
-		 * @param[in]	gptype			Determines to which GPU program slot to bind the buffer.
-		 * @param[in]	unit			GPU program unit index to bind the buffer to.
-		 * @param[in]	buffer			Buffer to bind.
-		 * @param[in]	loadStore		If true the buffer will be bound with support for unordered reads and writes, 
-		 *								otherwise it will only be bound for reads.
-		 */
-		void setBuffer(GpuProgramType gptype, UINT16 unit, const SPtr<GpuBuffer>& buffer, 
-			bool loadStore = false);
 
 		/**
 		 * Creates or retrieves a proper input layout depending on the currently set vertex shader and vertex buffer.

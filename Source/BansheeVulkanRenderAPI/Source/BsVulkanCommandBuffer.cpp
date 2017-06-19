@@ -1474,6 +1474,9 @@ namespace bs { namespace ct
 			mDescriptorSetsBindState.unset(DescriptorSetBindFlag::Graphics);
 		}
 
+		if (instanceCount <= 0)
+			instanceCount = 1;
+
 		vkCmdDraw(mCmdBuffer, vertexCount, instanceCount, vertexOffset, 0);
 	}
 
@@ -1510,6 +1513,9 @@ namespace bs { namespace ct
 
 			mDescriptorSetsBindState.unset(DescriptorSetBindFlag::Graphics);
 		}
+
+		if (instanceCount <= 0)
+			instanceCount = 1;
 
 		vkCmdDrawIndexed(mCmdBuffer, indexCount, instanceCount, startIndex, vertexOffset, 0);
 	}

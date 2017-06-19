@@ -688,9 +688,13 @@ namespace bs { namespace ct
 		RenderAPI& rapi = RenderAPI::instance();
 		const RenderAPIInfo& rapiInfo = rapi.getAPIInfo();
 
+		float flipY = 1.0f;
+		if (rapiInfo.isFlagSet(RenderAPIFeatureFlag::NDCYAxisDown))
+			flipY = -1.0f;
+
 		AABox frustumCube(
-			Vector3(-1, -1, rapiInfo.getMinimumDepthInputValue()),
-			Vector3(1, 1, rapiInfo.getMaximumDepthInputValue())
+			Vector3(-1, -1 * flipY, rapiInfo.getMinimumDepthInputValue()),
+			Vector3(1, 1 * flipY, rapiInfo.getMaximumDepthInputValue())
 		);
 
 		for(size_t i = 0; i < output.size(); i++)
@@ -930,7 +934,7 @@ namespace bs { namespace ct
 					*renderTargets);
 				mProjectMaterials.bind(effectiveShadowQuality, isCSM, viewProps.numSamples > 1, shadowParams);
 
-				if(!isCSM)
+				if (!isCSM)
 					drawFrustum(frustumVertices);
 				else
 					gRendererUtility().drawScreenQuad();

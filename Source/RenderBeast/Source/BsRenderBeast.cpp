@@ -620,10 +620,7 @@ namespace bs { namespace ct
 		// If we're using flattened framebuffer for MSAA we need to copy its contents to the MSAA scene texture before
 		// continuing
 		if(isMSAA)
-		{
-			mFlatFramebufferToTextureMat->execute(renderTargets->getSceneColorBuffer(), 
-												  renderTargets->getSceneColor());
-		}
+			mFlatFramebufferToTextureMat->execute(renderTargets->getSceneColorBuffer(), renderTargets->getSceneColor());
 
 		// Render skybox (if any)
 		if (mSkyboxTexture != nullptr)
