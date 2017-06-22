@@ -1,0 +1,86 @@
+#include "$ENGINE$\PPBase.bslinc"
+#include "$ENGINE$\PerCameraData.bslinc"
+
+technique PPGaussianDOFSeparate
+{
+	mixin PPBase;
+	mixin PerCameraData;
+
+	code
+	{
+		[internal]
+		cbuffer Input
+		{
+			float gNearBlurPlane;
+			float gFarBlurPlane;
+			float gInvNearBlurRange;
+			float gInvFarBlurRange;
+			float2 gHalfPixelOffset;
+		}		
+
+		SamplerState gColorSamp;
+		Texture2D gColorTex;
+		
+		SamplerState gDepthSamp;
+		Texture2D gDepthTex;
+		
+		float calcNearMask(float depth)
+		{
+			return saturate((gNearBlurPlane - depth) * gInvNearBlurRange);
+		}
+		
+		float calcFarMask(float depth)
+		{
+			return saturate((gFarBlurPlane - depth) * gInvFarBlurRange);
+		}
+		
+		void addSample(float2 uv, float2 offset, float depth, inout float4 nearColor, inout float4 farColor)
+		{
+			float4 smp;
+			smp.rgb = gColorTex.SampleLevel(gColorSamp, uv + gHalfPixelOffset * offset, 0.0f).rgb;
+			smp.a = 1.0f;
+			
+			#if NEAR
+			nearColor += smp * calcNearMask(depth);
+			#endif
+			#if FAR
+			farColor += smp * calcFarMask(depth);
+			#endif		
+		}
+		
+		void fsmain(
+			VStoFS input,
+			out float4 output0 : SV_Target0
+			#if NEAR_AND_FAR
+			out float4 output1 : SV_Target1
+			#endif
+			)
+		{
+			float4 depth = convertFromDeviceZ(gDepthTex.Gather(gDepthSamp, input.uv0));
+			
+			float4 nearColor = 0;
+			float4 farColor = 0;
+			
+			// Samples start in bottom left and go in counter-clockwise order, in order to match
+			// depth Gather
+			addSample(input.uv0, float2(-1, 1), depth.x, nearColor, farColor);
+			addSample(input.uv0, float2(1, 1), depth.y, nearColor, farColor);
+			addSample(input.uv0, float2(1, -1), depth.x, nearColor, farColor);
+			addSample(input.uv0, float2(-1, -1), depth.x, nearColor, farColor);
+			
+			nearColor *= 0.25f;
+			farColor *= 0.25f;
+			
+			#if NEAR_AND_FAR
+				output0 = nearColor;
+				output1 = farColor;
+			#else
+			#if NEAR
+				output0 = nearColor;
+			#else
+				output0 = farColor;
+			#endif
+			#endif
+		}	
+	};
+};

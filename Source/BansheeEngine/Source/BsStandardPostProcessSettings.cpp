@@ -65,6 +65,21 @@ namespace bs
 		return ColorGradingSettings::getRTTIStatic();
 	}
 
+	DepthOfFieldSettings::DepthOfFieldSettings()
+		: enabled(false), focalDistance(2.0f), focalRange(1.0f), nearTransitionRange(0.25f), farTransitionRange(0.25f)
+		, nearBlurAmount(16.0f), farBlurAmount(16.0f)
+	{ }
+
+	RTTITypeBase* DepthOfFieldSettings::getRTTIStatic()
+	{
+		return DepthOfFieldSettingsRTTI::instance();
+	}
+
+	RTTITypeBase* DepthOfFieldSettings::getRTTI() const
+	{
+		return DepthOfFieldSettings::getRTTIStatic();
+	}
+
 	StandardPostProcessSettings::StandardPostProcessSettings()
 		: enableAutoExposure(true), enableTonemapping(true), exposureScale(0.0f), gamma(2.2f)
 	{ }

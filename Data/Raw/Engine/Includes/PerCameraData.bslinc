@@ -41,6 +41,12 @@ mixin PerCameraData
 			return (1.0f / (deviceZ + gDeviceZToWorldZ.y)) * gDeviceZToWorldZ.x;
 		}
 		
+		/** Converts Z value in range [0,1] into Z value in view space. */
+		float4 convertFromDeviceZ(float4 deviceZ)
+		{
+			return gDeviceZToWorldZ.x / (deviceZ + gDeviceZToWorldZ.y);
+		}		
+		
 		/** Converts Z value from view space to NDC space. */
 		float convertToNDCZ(float viewZ)
 		{

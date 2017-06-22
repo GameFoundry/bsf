@@ -146,6 +146,41 @@ namespace bs
 		}
 	};
 
+	class BS_EXPORT DepthOfFieldSettingsRTTI : public RTTIType <DepthOfFieldSettings, IReflectable, DepthOfFieldSettingsRTTI>
+	{
+	private:
+		BS_BEGIN_RTTI_MEMBERS
+			BS_RTTI_MEMBER_PLAIN(enabled, 0)
+			BS_RTTI_MEMBER_PLAIN(focalDistance, 1)
+			BS_RTTI_MEMBER_PLAIN(focalRange, 2)
+			BS_RTTI_MEMBER_PLAIN(nearTransitionRange, 3)
+			BS_RTTI_MEMBER_PLAIN(farTransitionRange, 4)
+			BS_RTTI_MEMBER_PLAIN(nearBlurAmount, 5)
+			BS_RTTI_MEMBER_PLAIN(farBlurAmount, 6)
+		BS_END_RTTI_MEMBERS
+
+	public:
+		DepthOfFieldSettingsRTTI()
+			:mInitMembers(this)
+		{ }
+
+		const String& getRTTIName() override
+		{
+			static String name = "DepthOfFieldSettings";
+			return name;
+		}
+
+		UINT32 getRTTIId() override
+		{
+			return TID_DepthOfFieldSettings;
+		}
+
+		SPtr<IReflectable> newRTTIObject() override
+		{
+			return bs_shared_ptr_new<DepthOfFieldSettings>();
+		}
+	};
+
 	class BS_EXPORT StandardPostProcessSettingsRTTI : public RTTIType <StandardPostProcessSettings, PostProcessSettings, StandardPostProcessSettingsRTTI>
 	{
 	private:
@@ -158,6 +193,7 @@ namespace bs
 			BS_RTTI_MEMBER_REFL(colorGrading, 5)
 			BS_RTTI_MEMBER_PLAIN(exposureScale, 6)
 			BS_RTTI_MEMBER_PLAIN(gamma, 7)
+			BS_RTTI_MEMBER_REFL(depthOfField, 8)
 		BS_END_RTTI_MEMBERS
 			
 	public:

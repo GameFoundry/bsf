@@ -199,6 +199,58 @@ namespace bs
 		RTTITypeBase* getRTTI() const override;
 	};
 
+	/** Settings that control the depth-of-field effect. */
+	struct BS_EXPORT DepthOfFieldSettings : public IReflectable
+	{
+		DepthOfFieldSettings();
+
+		/** Enables or disables the depth of field effect. */
+		bool enabled;
+
+		/** 
+		 * Distance from the camera at which the focal plane is located in. Objects at this distance will be fully in focus.
+		 */
+		float focalDistance;
+		
+		/** 
+		 * Range within which the objects remain fully in focus. This range is applied relative to the focal distance. 
+		 * Only relevant if Gaussian depth of field is used as other methods don't use a constant in-focus range.
+		 */
+		float focalRange;
+
+		/**
+		 * Determines the size of the range within which objects transition from focused to fully unfocused, at the near 
+		 * plane. Only relevant for Gaussian depth of field.
+		 */
+		float nearTransitionRange;
+
+		/**
+		 * Determines the size of the range within which objects transition from focused to fully unfocused, at the far 
+		 * plane. Only relevant for Gaussian depth of field.
+		 */
+		float farTransitionRange;
+
+		/** 
+		 * Determines the amount of blur to apply to fully unfocused objects that are closer to camera than the in-focus
+		 * zone. Set to zero to disable near-field blur. Only relevant for Gaussian depth of field.
+		 */
+		float nearBlurAmount;
+
+		/** 
+		 * Determines the amount of blur to apply to fully unfocused objects that are farther away from camera than the
+		 * in-focus zone. Set to zero to disable far-field blur. Only relevant for Gaussian depth of field.
+		 */
+		float farBlurAmount;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+	public:
+		friend class DepthOfFieldSettingsRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		RTTITypeBase* getRTTI() const override;
+	};
+
 	/** Settings that control the post-process operations. */
 	struct BS_EXPORT StandardPostProcessSettings : public PostProcessSettings
 	{
@@ -248,6 +300,9 @@ namespace bs
 
 		/** Parameters used for customizing color grading. */
 		ColorGradingSettings colorGrading;
+
+		/** Parameters used for customizing the depth of field effect. */
+		DepthOfFieldSettings depthOfField;
 
 		/**
 		 * Log2 value to scale the eye adaptation by (for example 2^0 = 1). Smaller values yield darker image, while larger

@@ -313,7 +313,7 @@ namespace bs { namespace ct
 
 	extern GaussianBlurParamDef gGaussianBlurParamDef;
 
-	/** Shader that perform Gaussian blur filtering on the provided texture. */
+	/** Shader that performs Gaussian blur filtering on the provided texture. */
 	class GaussianBlurMat : public RendererMaterial<GaussianBlurMat>
 	{
 		// Direction of the Gaussian filter pass
@@ -347,6 +347,65 @@ namespace bs { namespace ct
 
 		SPtr<GpuParamBlockBuffer> mParamBuffer;
 		GpuParamTexture mInputTexture;
+	};
+
+	BS_PARAM_BLOCK_BEGIN(GaussianDOFSeparateParamDef)
+		BS_PARAM_BLOCK_ENTRY(float, gNearBlurPlane)
+		BS_PARAM_BLOCK_ENTRY(float, gFarBlurPlane)
+		BS_PARAM_BLOCK_ENTRY(float, gInvNearBlurRange)
+		BS_PARAM_BLOCK_ENTRY(float, gInvFarBlurRange)
+		BS_PARAM_BLOCK_ENTRY(Vector2, gHalfPixelOffset)
+	BS_PARAM_BLOCK_END
+
+	extern GaussianDOFSeparateParamDef sGaussianDOFSeparateParamDef;
+
+	/** 
+	 * Shader that masks pixels from the input color texture into one or two output textures. The masking is done by
+	 * determining if the pixel falls into near or far unfocused plane, as determined by depth-of-field parameters. User
+	 * can pick whether to output pixels just on the near plane, just on the far plane, or both.
+	 *
+	 * @tparam	Near	If true, near plane pixels are output to the first render target.
+	 * @tparam	Far		If true, far plane pixels are output to the first render target. If @p Near is also enabled, the
+	 *					pixels are output to the second render target instead.
+	 */
+	template<bool Near, bool Far>
+	class GaussianDOFSeparateMat : public RendererMaterial<GaussianDOFSeparateMat<Near, Far>>
+	{
+		RMAT_DEF("PPGaussianDOFSeparate.bsl");
+
+	public:
+		GaussianDOFSeparateMat();
+
+		/** 
+		 * Renders the post-process effect with the provided parameters. 
+		 * 
+		 * @param[in]	color		Input color texture to process.
+		 * @param[in]	depth		Input depth buffer texture that will be used for determining pixel depth.
+		 * @param[in]	view		View through which the depth of field effect is viewed.
+		 * @param[in]	settings	Settings used to control depth of field rendering. 
+		 */
+		void execute(const SPtr<Texture>& color, const SPtr<Texture>& depth, const RendererView& view, 
+			const DepthOfFieldSettings& settings);
+
+		/**
+		 * Returns the texture generated after the shader was executed. Only valid to call this in-between calls to
+		 * execute() & release(), with @p idx value 0 or 1.
+		 */
+		SPtr<Texture> getOutput(UINT32 idx);
+
+		/**
+		 * Releases the interally allocated output render textures. Must be called after each call to execute(), when the 
+		 * caller is done using the textures.
+		 */
+		void release();
+
+	private:
+		SPtr<GpuParamBlockBuffer> mParamBuffer;
+		GpuParamTexture mColorTexture;
+		GpuParamTexture mDepthTexture;
+
+		SPtr<PooledRenderTexture> mOutput0;
+		SPtr<PooledRenderTexture> mOutput1;
 	};
 
 	/**

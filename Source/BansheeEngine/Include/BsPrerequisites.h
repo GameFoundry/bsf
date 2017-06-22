@@ -231,6 +231,7 @@ namespace bs
 		TID_AutoExposureSettings = 30016,
 		TID_TonemappingSettings = 30017,
 		TID_WhiteBalanceSettings = 30018,
-		TID_ColorGradingSettings = 30019
+		TID_ColorGradingSettings = 30019,
+		TID_DepthOfFieldSettings = 30020
 	};
 }

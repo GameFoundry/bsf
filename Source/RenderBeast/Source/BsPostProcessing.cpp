@@ -712,6 +712,108 @@ namespace bs { namespace ct
 		return std::min(length * scale / 2, (float)MAX_BLUR_SAMPLES - 1);
 	}
 
+	GaussianDOFSeparateParamDef gGaussianDOFSeparateParamDef;
+
+	template<bool Near, bool Far>
+	GaussianDOFSeparateMat<Near, Far>::GaussianDOFSeparateMat()
+	{
+		mParamBuffer = gDownsampleParamDef.createBuffer();
+
+		mParamsSet->setParamBlockBuffer("Input", mParamBuffer);
+		mParamsSet->getGpuParams()->getTextureParam(GPT_FRAGMENT_PROGRAM, "gColorTex", mColorTexture);
+		mParamsSet->getGpuParams()->getTextureParam(GPT_FRAGMENT_PROGRAM, "gDepthTex", mDepthTexture);
+
+		GpuParamSampState colorSampState;
+		mParamsSet->getGpuParams()->getSamplerStateParam(GPT_FRAGMENT_PROGRAM, "gColorSamp", colorSampState);
+
+		SAMPLER_STATE_DESC desc;
+		desc.minFilter = FO_POINT;
+		desc.magFilter = FO_POINT;
+		desc.mipFilter = FO_POINT;
+		desc.addressMode.u = TAM_CLAMP;
+		desc.addressMode.v = TAM_CLAMP;
+		desc.addressMode.w = TAM_CLAMP;
+
+		SPtr<SamplerState> samplerState = SamplerState::create(desc);
+		colorSampState.set(samplerState);
+	}
+
+	template<bool Near, bool Far>
+	void GaussianDOFSeparateMat<Near, Far>::_initDefines(ShaderDefines& defines)
+	{
+		defines.set("NEAR", Near ? 1 : 0);
+		defines.set("FAR", Far ? 1 : 0);
+		defines.set("NEAR_AND_FAR", (Near && Far) ? 1 : 0);
+	}
+
+	template<bool Near, bool Far>
+	void GaussianDOFSeparateMat<Near, Far>::execute(const SPtr<Texture>& color, const SPtr<Texture>& depth, 
+		const RendererView& view, const DepthOfFieldSettings& settings)
+	{
+		const RendererViewProperties& viewProps = view.getProperties();
+		const TextureProperties& srcProps = color->getProperties();
+
+		POOLED_RENDER_TEXTURE_DESC outputTexDesc = POOLED_RENDER_TEXTURE_DESC::create2D(srcProps.getFormat(), 
+			srcProps.getWidth(), srcProps.getHeight(), TU_RENDERTARGET);
+		mOutput0 = GpuResourcePool::instance().get(outputTexDesc);
+
+		SPtr<RenderTexture> rt;
+		if (Near && Far)
+		{
+			mOutput1 = GpuResourcePool::instance().get(outputTexDesc);
+
+			RENDER_TEXTURE_DESC rtDesc;
+			rtDesc.colorSurfaces[0].texture = mOutput0->texture;
+			rtDesc.colorSurfaces[1].texture = mOutput1->texture;
+
+			rt = RenderTexture::create(rtDesc);
+		}
+		else
+			rt = mOutput0->renderTexture;
+
+		Vector2 invTexSize(1.0f / srcProps.getWidth(), 1.0f / srcProps.getHeight());
+
+		gGaussianDOFSeparateParamDef.gHalfPixelOffset.set(mParamBuffer, invTexSize * 0.5f);
+		gGaussianDOFSeparateParamDef.gNearBlurPlane.set(mParamBuffer, settings.focalDistance - settings.focalRange * 0.5f);
+		gGaussianDOFSeparateParamDef.gFarBlurPlane.set(mParamBuffer, settings.focalDistance + settings.focalRange * 0.5f);
+		gGaussianDOFSeparateParamDef.gInvNearBlurRange.set(mParamBuffer, 1.0f / settings.nearTransitionRange);
+		gGaussianDOFSeparateParamDef.gInvFarBlurRange.set(mParamBuffer, 1.0f / settings.farTransitionRange);
+
+		mColorTexture.set(color);
+		mDepthTexture.set(depth);
+
+		SPtr<GpuParamBlockBuffer> perView = view.getPerViewBuffer();
+		mParamsSet->setParamBlockBuffer("PerCamera", perView);
+
+		RenderAPI& rapi = RenderAPI::instance();
+		rapi.setRenderTarget(rt);
+
+		gRendererUtility().setPass(mMaterial);
+		gRendererUtility().setPassParams(mParamsSet);
+		gRendererUtility().drawScreenQuad();
+	}
+
+	template <bool Near, bool Far>
+	SPtr<Texture> GaussianDOFSeparateMat<Near, Far>::getOutput(UINT32 idx)
+	{
+		if (idx == 0)
+			return mOutput0->texture;
+		else if (idx == 1)
+			return mOutput1->texture;
+
+		return nullptr;
+	}
+
+	template<bool Near, bool Far>
+	void GaussianDOFSeparateMat<Near, Far>::release()
+	{
+		if (mOutput0 != nullptr)
+			GpuResourcePool::instance().release(mOutput0);
+
+		if (mOutput1 != nullptr)
+			GpuResourcePool::instance().release(mOutput1);
+	}
+
 	void PostProcessing::postProcess(RendererView* viewInfo, const SPtr<RenderTargets>& renderTargets, float frameDelta)
 	{
 		auto& viewProps = viewInfo->getProperties();
