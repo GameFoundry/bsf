@@ -545,6 +545,173 @@ namespace bs { namespace ct
 		}
 	}
 
+	GaussianBlurParamDef gGaussianBlurParamDef;
+
+	GaussianBlurMat::GaussianBlurMat()
+	{
+		mParamBuffer = gDownsampleParamDef.createBuffer();
+
+		mParamsSet->setParamBlockBuffer("Input", mParamBuffer);
+		mParamsSet->getGpuParams()->getTextureParam(GPT_FRAGMENT_PROGRAM, "gInputTex", mInputTexture);
+	}
+
+	void GaussianBlurMat::_initDefines(ShaderDefines& defines)
+	{
+		defines.set("MAX_NUM_SAMPLES", MAX_BLUR_SAMPLES);
+	}
+
+	void GaussianBlurMat::execute(const SPtr<Texture>& source, float filterSize, const SPtr<RenderTexture>& destination)
+	{
+		const TextureProperties& srcProps = source->getProperties();
+		const RenderTextureProperties& dstProps = destination->getProperties();
+
+		Vector2 invTexSize(1.0f / srcProps.getWidth(), 1.0f / srcProps.getHeight());
+
+		std::array<float, MAX_BLUR_SAMPLES> sampleOffsets;
+		std::array<float, MAX_BLUR_SAMPLES> sampleWeights;
+
+		POOLED_RENDER_TEXTURE_DESC tempTextureDesc = POOLED_RENDER_TEXTURE_DESC::create2D(srcProps.getFormat(), 
+			dstProps.getWidth(), dstProps.getHeight(), TU_RENDERTARGET);
+		SPtr<PooledRenderTexture> tempTexture = GpuResourcePool::instance().get(tempTextureDesc);
+
+		// Horizontal pass
+		{
+			float kernelRadius = calcKernelRadius(source, filterSize, DirHorizontal);
+			UINT32 numSamples = calcStdDistribution(kernelRadius, sampleWeights, sampleOffsets);
+
+			for(UINT32 i = 0; i < numSamples; ++i)
+			{
+				gGaussianBlurParamDef.gSampleWeights.set(mParamBuffer, sampleWeights[i], i);
+
+				Vector2 offset;
+				offset.x = sampleOffsets[i] * invTexSize.x;
+				offset.y = 0.0f;
+
+				gGaussianBlurParamDef.gSampleOffsets.set(mParamBuffer, offset, i);
+			}
+
+			gGaussianBlurParamDef.gNumSamples.set(mParamBuffer, numSamples);
+
+			mInputTexture.set(source);
+
+			RenderAPI& rapi = RenderAPI::instance();
+			rapi.setRenderTarget(tempTexture->renderTexture);
+
+			gRendererUtility().setPass(mMaterial);
+			gRendererUtility().setPassParams(mParamsSet);
+			gRendererUtility().drawScreenQuad();
+		}
+
+		// Vertical pass
+		{
+			float kernelRadius = calcKernelRadius(source, filterSize, DirVertical);
+			UINT32 numSamples = calcStdDistribution(kernelRadius, sampleWeights, sampleOffsets);
+
+			for(UINT32 i = 0; i < numSamples; ++i)
+			{
+				gGaussianBlurParamDef.gSampleWeights.set(mParamBuffer, sampleWeights[i], i);
+
+				Vector2 offset;
+				offset.x = 0.0f;
+				offset.y = sampleOffsets[i] * invTexSize.y;
+
+				gGaussianBlurParamDef.gSampleOffsets.set(mParamBuffer, offset, i);
+			}
+
+			gGaussianBlurParamDef.gNumSamples.set(mParamBuffer, numSamples);
+
+			mInputTexture.set(tempTexture->texture);
+
+			RenderAPI& rapi = RenderAPI::instance();
+			rapi.setRenderTarget(destination);
+
+			gRendererUtility().setPass(mMaterial);
+			gRendererUtility().setPassParams(mParamsSet);
+			gRendererUtility().drawScreenQuad();
+		}
+
+		GpuResourcePool::instance().release(tempTexture);
+	}
+
+	UINT32 GaussianBlurMat::calcStdDistribution(float filterRadius, std::array<float, MAX_BLUR_SAMPLES>& weights, 
+		std::array<float, MAX_BLUR_SAMPLES>& offsets)
+	{
+		filterRadius = Math::clamp(filterRadius, 0.00001f, (float)(MAX_BLUR_SAMPLES - 1));
+		INT32 intFilterRadius = std::min(Math::ceilToInt(filterRadius), MAX_BLUR_SAMPLES - 1);
+
+		auto normalDistribution = [](int i, float scale)
+		{
+			float samplePos = fabs((float)i) * scale;
+			return exp(samplePos * samplePos);
+		};
+
+		// We make use of the hardware linear filtering, and therefore only generate half the number of samples.
+		// The weights and the sampling location needs to be adjusted in order to get the same results as if we
+		// perform two samples separately:
+		//
+		// Original formula is: t1*w1 + t2*w2
+		// With hardware filtering it's: (t1 + (t2 - t1) * o) * w3 
+		//	Or expanded: t1*w3 - t1*o*w3 + t2*o*w3 = t1 * (w3 - o*w3) + t2 * (o*w3)
+		//
+		// These two need to equal, which means this follows:
+		// w1 = w3 - o*w3
+		// w2 = o*w3
+		//
+		// From the second equation get the offset o:
+		// o = w2/w3
+		//
+		// From the first equation and o, get w3:
+		// w1 = w3 - w2
+		// w3 = w1 + w2
+
+		float scale = 1.0f / filterRadius;
+		UINT32 numSamples = 0;
+		float totalWeight = 0.0f;
+		for(int i = -intFilterRadius; i < intFilterRadius; i += 2)
+		{
+			float w1 = normalDistribution(i, scale);
+			float w2 = normalDistribution(i + 1, scale);
+
+			float w3 = w1 + w2;
+			float o = w2/w3; // Relative to first sample
+
+			weights[numSamples] = w3;
+			offsets[numSamples] = o;
+
+			numSamples++;
+			totalWeight += w3;
+		}
+
+		// Special case for last weight, as it doesn't have a matching pair
+		float w = normalDistribution(intFilterRadius, scale);
+		weights[numSamples] = w;
+		offsets[numSamples] = 0.0f;
+
+		numSamples++;
+		totalWeight += w;
+
+		// Normalize weights
+		float invTotalWeight = 1.0f / totalWeight;
+		for(UINT32 i = 0; i < numSamples; i++)
+			weights[i] *= invTotalWeight;
+
+		return numSamples;
+	}
+
+	float GaussianBlurMat::calcKernelRadius(const SPtr<Texture>& source, float scale, Direction filterDir)
+	{
+		scale = Math::clamp01(scale);
+
+		UINT32 length;
+		if (filterDir == DirHorizontal)
+			length = source->getProperties().getWidth();
+		else
+			length = source->getProperties().getHeight();
+
+		// Divide by two because we need the radius
+		return std::min(length * scale / 2, (float)MAX_BLUR_SAMPLES - 1);
+	}
+
 	void PostProcessing::postProcess(RendererView* viewInfo, const SPtr<RenderTargets>& renderTargets, float frameDelta)
 	{
 		auto& viewProps = viewInfo->getProperties();

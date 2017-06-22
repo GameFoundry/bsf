@@ -395,7 +395,7 @@ namespace bs { namespace ct
 			bool needsBarrier : 1;
 		};
 
-		/** Checks if all the prerequisites for rendering have been made (e.g. render target and pipeline state are set. */
+		/** Checks if all the prerequisites for rendering have been made (e.g. render target and pipeline state are set.) */
 		bool isReadyForRender();
 
 		/** Marks the command buffer as submitted on a queue. */

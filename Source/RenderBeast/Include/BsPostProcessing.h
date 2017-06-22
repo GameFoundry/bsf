@@ -303,6 +303,52 @@ namespace bs { namespace ct
 		TonemappingMat<true, true, true> mTTT;
 	};
 
+	const int MAX_BLUR_SAMPLES = 128;
+
+	BS_PARAM_BLOCK_BEGIN(GaussianBlurParamDef)
+		BS_PARAM_BLOCK_ENTRY_ARRAY(Vector2, gSampleOffsets, MAX_BLUR_SAMPLES)
+		BS_PARAM_BLOCK_ENTRY_ARRAY(float, gSampleWeights, MAX_BLUR_SAMPLES)
+		BS_PARAM_BLOCK_ENTRY(int, gNumSamples)
+	BS_PARAM_BLOCK_END
+
+	extern GaussianBlurParamDef gGaussianBlurParamDef;
+
+	/** Shader that perform Gaussian blur filtering on the provided texture. */
+	class GaussianBlurMat : public RendererMaterial<GaussianBlurMat>
+	{
+		// Direction of the Gaussian filter pass
+		enum Direction
+		{
+			DirVertical,
+			DirHorizontal
+		};
+
+		RMAT_DEF("PPGaussianBlur.bsl");
+
+	public:
+		GaussianBlurMat();
+
+		/** 
+		 * Renders the post-process effect with the provided parameters. 
+		 * 
+		 * @param[in]	source		Input texture to blur.
+		 * @param[in]	filterSize	Size of the blurring filter, in percent of the source texture. In range [0, 1].
+		 * @param[in]	destination	Output texture to which to write the blurred image to.
+		 */
+		void execute(const SPtr<Texture>& source, float filterSize, const SPtr<RenderTexture>& destination);
+
+	private:
+		/** Calculates weights and offsets for the standard distribution of the specified filter size. */
+		static UINT32 calcStdDistribution(float filterRadius, std::array<float, MAX_BLUR_SAMPLES>& weights,
+			std::array<float, MAX_BLUR_SAMPLES>& offsets);
+
+		/** Calculates the radius of the blur kernel depending on the source texture size and provided scale. */
+		static float calcKernelRadius(const SPtr<Texture>& source, float scale, Direction filterDir);
+
+		SPtr<GpuParamBlockBuffer> mParamBuffer;
+		GpuParamTexture mInputTexture;
+	};
+
 	/**
 	 * Renders post-processing effects for the provided render target.
 	 *

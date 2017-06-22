@@ -289,6 +289,10 @@
         {
             "Path": "ShadowProjectStencil.bsl",
             "UUID": "c8625547-f5e7-43df-85cf-4da6e1806cf9"
+        },
+        {
+            "Path": "PPGaussianBlur.bsl",
+            "UUID": "14b16378-6282-4d2d-bc4c-2d662cc98066"
         }
     ],
     "Skin": [
