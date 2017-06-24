@@ -412,15 +412,15 @@ namespace bs
 		Path shaderIncludeFolder = mBuiltinDataFolder + ShaderIncludeFolder;
 
 		BuiltinResourcesHelper::importAssets(cursorsJSON, rawCursorFolder, mEngineCursorFolder, mResourceManifest, 
-			BuiltinResourcesHelper::AssetType::Normal, forceImport);
+			BuiltinResourcesHelper::AssetType::Normal, true);
 		BuiltinResourcesHelper::importAssets(iconsJSON, rawIconFolder, iconFolder, mResourceManifest, 
-			BuiltinResourcesHelper::AssetType::Normal, forceImport);
+			BuiltinResourcesHelper::AssetType::Normal, true);
 		BuiltinResourcesHelper::importAssets(includesJSON, rawShaderIncludeFolder, shaderIncludeFolder, mResourceManifest,
 			BuiltinResourcesHelper::AssetType::Normal, true); // Hidden dependency: Includes must be imported before shaders
 		BuiltinResourcesHelper::importAssets(shadersJSON, rawShaderFolder, mEngineShaderFolder, mResourceManifest,
 			BuiltinResourcesHelper::AssetType::Normal, true);
 		BuiltinResourcesHelper::importAssets(skinJSON, rawSkinFolder, skinFolder, mResourceManifest, 
-			BuiltinResourcesHelper::AssetType::Sprite);
+			BuiltinResourcesHelper::AssetType::Sprite, true);
 
 		// Import font
 		BuiltinResourcesHelper::importFont(mBuiltinRawDataFolder + DefaultFontFilename, DefaultFontFilename, 
@@ -538,17 +538,16 @@ namespace bs
 		inputBoxStyle.hover.textColor = TextNormalColor;
 		inputBoxStyle.focused.textColor = TextNormalColor;
 		inputBoxStyle.active.textColor = TextNormalColor;
-		inputBoxStyle.border.left = 4;
-		inputBoxStyle.border.right = 4;
+		inputBoxStyle.border.left = 1;
+		inputBoxStyle.border.right = 3;
 		inputBoxStyle.border.top = 4;
-		inputBoxStyle.border.bottom = 6;
+		inputBoxStyle.border.bottom = 1;
 		inputBoxStyle.contentOffset.left = 4;
 		inputBoxStyle.contentOffset.right = 4;
 		inputBoxStyle.contentOffset.top = 4;
 		inputBoxStyle.contentOffset.bottom = 4;
-		inputBoxStyle.margins.bottom = 2;
 		inputBoxStyle.fixedHeight = true;
-		inputBoxStyle.height = 21;
+		inputBoxStyle.height = 19;
 		inputBoxStyle.minWidth = 10;
 		inputBoxStyle.font = font;
 		inputBoxStyle.fontSize = DefaultFontSize;
