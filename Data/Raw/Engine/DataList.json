@@ -305,6 +305,10 @@
         {
             "Path": "PPGaussianDOFCombine.bsl",
             "UUID": "2743e8f1-97cf-4441-b9e4-aad280343901"
+        },
+        {
+            "Path": "PPBuildHiZ.bsl",
+            "UUID": "1b314248-1965-49c5-968b-ae923c2af717"
         }
     ],
     "Skin": [

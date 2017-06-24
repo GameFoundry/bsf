@@ -9,6 +9,8 @@
 #include "BsGpuParamsSet.h"
 #include "BsRendererView.h"
 #include "BsRenderTargets.h"
+#include "BsPixelUtil.h"
+#include "BsBitwise.h"
 
 namespace bs { namespace ct
 {
@@ -549,7 +551,7 @@ namespace bs { namespace ct
 
 	GaussianBlurMat::GaussianBlurMat()
 	{
-		mParamBuffer = gDownsampleParamDef.createBuffer();
+		mParamBuffer = gGaussianBlurParamDef.createBuffer();
 
 		mParamsSet->setParamBlockBuffer("Input", mParamBuffer);
 		mParamsSet->getGpuParams()->getTextureParam(GPT_FRAGMENT_PROGRAM, "gInputTex", mInputTexture);
@@ -717,7 +719,7 @@ namespace bs { namespace ct
 	template<bool Near, bool Far>
 	GaussianDOFSeparateMat<Near, Far>::GaussianDOFSeparateMat()
 	{
-		mParamBuffer = gDownsampleParamDef.createBuffer();
+		mParamBuffer = gGaussianDOFParamDef.createBuffer();
 
 		mParamsSet->setParamBlockBuffer("Input", mParamBuffer);
 		mParamsSet->getGpuParams()->getTextureParam(GPT_FRAGMENT_PROGRAM, "gColorTex", mColorTexture);
@@ -752,8 +754,11 @@ namespace bs { namespace ct
 	{
 		const TextureProperties& srcProps = color->getProperties();
 
+		UINT32 outputWidth = std::max(1U, srcProps.getWidth() / 2);
+		UINT32 outputHeight = std::max(1U, srcProps.getHeight() / 2);
+
 		POOLED_RENDER_TEXTURE_DESC outputTexDesc = POOLED_RENDER_TEXTURE_DESC::create2D(srcProps.getFormat(), 
-			srcProps.getWidth(), srcProps.getHeight(), TU_RENDERTARGET);
+			outputWidth, outputHeight, TU_RENDERTARGET);
 		mOutput0 = GpuResourcePool::instance().get(outputTexDesc);
 
 		SPtr<RenderTexture> rt;
@@ -820,7 +825,7 @@ namespace bs { namespace ct
 	template<bool Near, bool Far>
 	GaussianDOFCombineMat<Near, Far>::GaussianDOFCombineMat()
 	{
-		mParamBuffer = gDownsampleParamDef.createBuffer();
+		mParamBuffer = gGaussianDOFParamDef.createBuffer();
 
 		mParamsSet->setParamBlockBuffer("Input", mParamBuffer);
 
@@ -910,6 +915,10 @@ namespace bs { namespace ct
 		}
 
 		separateMat->execute(sceneColor, sceneDepth, view, settings);
+		separateMat->release();
+
+		// DEBUG ONLY
+		return;
 
 		SPtr<PooledRenderTexture> nearTex, farTex;
 		if(near && far)
@@ -927,7 +936,7 @@ namespace bs { namespace ct
 
 		// Blur the out of focus pixels
 		// Note: Perhaps set up stencil so I can avoid performing blur on unused parts of the textures?
-		const TextureProperties& texProps = sceneColor->getProperties();
+		const TextureProperties& texProps = nearTex ? nearTex->texture->getProperties() : farTex->texture->getProperties();
 		POOLED_RENDER_TEXTURE_DESC tempTexDesc = POOLED_RENDER_TEXTURE_DESC::create2D(texProps.getFormat(), 
 			texProps.getWidth(), texProps.getHeight(), TU_RENDERTARGET);
 		SPtr<PooledRenderTexture> tempTexture = GpuResourcePool::instance().get(tempTexDesc);
@@ -969,6 +978,117 @@ namespace bs { namespace ct
 		return settings.enabled && (near || far);
 	}
 	
+	template<int MSAA_COUNT>
+	BuildHiZMat<MSAA_COUNT>::BuildHiZMat()
+	{
+		SPtr<GpuParams> gpuParams = mParamsSet->getGpuParams();
+		gpuParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gDepthTex", mInputTexture);
+	}
+
+	template<int MSAA_COUNT>
+	void BuildHiZMat<MSAA_COUNT>::_initDefines(ShaderDefines& defines)
+	{
+		defines.set("MSAA_COUNT", MSAA_COUNT);
+	}
+
+	template<int MSAA_COUNT>
+	void BuildHiZMat<MSAA_COUNT>::execute(const SPtr<Texture>& source, UINT32 srcMip, const Rect2& srcRect, 
+		const SPtr<RenderTexture>& output)
+	{
+		RenderAPI& rapi = RenderAPI::instance();
+		const TextureProperties& srcProps = source->getProperties();
+
+		mInputTexture.set(source, TextureSurface(srcMip));
+		rapi.setRenderTarget(output);
+
+		gRendererUtility().setPass(mMaterial);
+		gRendererUtility().setPassParams(mParamsSet);
+		gRendererUtility().drawScreenQuad(srcRect);
+	}
+
+	template class BuildHiZMat<1>;
+	template class BuildHiZMat<2>;
+	template class BuildHiZMat<4>;
+	template class BuildHiZMat<8>;
+
+	void BuildHiZ::execute(const RendererViewTargetData& viewInfo, const SPtr<Texture>& source, const SPtr<Texture>& output)
+	{
+		GpuResourcePool& pool = GpuResourcePool::instance();
+
+		// First resolve if MSAA if required
+		SPtr<PooledRenderTexture> resolvedDepth;
+		SPtr<Texture> depthInput;
+		Rect2 srcRect;
+		if (viewInfo.numSamples > 1)
+		{
+			resolvedDepth = pool.get(
+				POOLED_RENDER_TEXTURE_DESC::create2D(
+					PF_FLOAT16_R,
+					viewInfo.viewRect.width,
+					viewInfo.viewRect.height,
+					TU_RENDERTARGET)
+			);
+
+			srcRect.x = (float)viewInfo.viewRect.x;
+			srcRect.y = (float)viewInfo.viewRect.y;
+			srcRect.width = (float)viewInfo.viewRect.width;
+			srcRect.height = (float)viewInfo.viewRect.height;
+
+			switch(viewInfo.numSamples)
+			{
+			case 2:
+				mHiZMatMSAA2.execute(source, 0, srcRect, resolvedDepth->renderTexture);
+				break;
+			case 4:
+				mHiZMatMSAA4.execute(source, 0, srcRect, resolvedDepth->renderTexture);
+				break;
+			case 8:
+				mHiZMatMSAA8.execute(source, 0, srcRect, resolvedDepth->renderTexture);
+				break;
+			default:
+				LOGERR("Invalid MSAA count: " + toString(viewInfo.numSamples));
+				break;
+			}
+
+			depthInput = resolvedDepth->texture;
+			srcRect = Rect2(0, 0, 1, 1);
+		}
+		else
+		{
+			depthInput = source;
+			srcRect = viewInfo.nrmViewRect;
+		}
+
+		// Generate first mip
+		RENDER_TEXTURE_DESC rtDesc;
+		rtDesc.colorSurfaces[0].texture = output;
+		rtDesc.colorSurfaces[0].mipLevel = 0;
+
+		SPtr<RenderTexture> rt = RenderTexture::create(rtDesc);
+		mHiZMatNoMSAA.execute(depthInput, 0, srcRect, rt);
+
+		// Generate remaining mip levels
+		const TextureProperties& outProps = output->getProperties();
+		for(UINT32 i = 1; i < outProps.getNumMipmaps(); i++)
+		{
+			rtDesc.colorSurfaces[0].mipLevel = i;
+
+			rt = RenderTexture::create(rtDesc);
+			mHiZMatNoMSAA.execute(output, i - 1, Rect2(0, 0, 1, 1), rt);
+		}
+
+		if (resolvedDepth)
+			pool.release(resolvedDepth);
+	}
+
+	POOLED_RENDER_TEXTURE_DESC BuildHiZ::getHiZTextureDesc(UINT32 viewWidth, UINT32 viewHeight)
+	{
+		UINT32 size = Bitwise::nextPow2(std::max(viewWidth, viewHeight));
+		UINT32 numMips = PixelUtil::getMaxMipmaps(size, size, 1, PF_FLOAT16_R);
+
+		return POOLED_RENDER_TEXTURE_DESC::create2D(PF_FLOAT16_R, size, size, TU_RENDERTARGET, 1, false, 1, numMips);
+	}
+
 	void PostProcessing::postProcess(RendererView* viewInfo, const SPtr<RenderTargets>& renderTargets, float frameDelta)
 	{
 		auto& viewProps = viewInfo->getProperties();

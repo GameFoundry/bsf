@@ -10,6 +10,8 @@
 
 namespace bs { namespace ct
 {
+	struct RendererViewTargetData;
+
 	/** @addtogroup RenderBeast
 	 *  @{
 	 */
@@ -505,6 +507,53 @@ namespace bs { namespace ct
 		GaussianDOFCombineMat<true, false> mCombineN;
 
 		GaussianBlurMat mBlur;
+	};
+
+	/** Shader that calculates a single level of the hierarchical Z mipmap chain. */
+	template<int MSAA_COUNT>
+	class BuildHiZMat : public RendererMaterial<BuildHiZMat<MSAA_COUNT>>
+	{
+		RMAT_DEF("PPBuildHiZ.bsl");
+
+	public:
+		BuildHiZMat();
+
+		/** 
+		 * Renders the post-process effect with the provided parameters. 
+		 * 
+		 * @param[in]	source		Input depth texture to use as the source.
+		 * @param[in]	srcMip		Mip level to read from the @p source texture.
+		 * @param[in]	srcRect		Rectangle in normalized coordinates, describing from which portion of the source
+		 *							texture to read the input.
+		 * @param[in]	output		Output target to which to write to results.
+		 */
+		void execute(const SPtr<Texture>& source, UINT32 srcMip, const Rect2& srcRect, const SPtr<RenderTexture>& output);
+	private:
+		GpuParamTexture mInputTexture;
+	};
+
+	/** Builds a hierarchical Z mipmap chain from the source depth texture. */
+	class BuildHiZ
+	{
+	public:
+		/** 
+		 * Renders the post-process effect with the provided parameters. 
+		 * 
+		 * @param[in]	viewInfo	Information about the view we're rendering from.
+		 * @param[in]	source		Input depth texture to use as the source.
+		 * @param[in]	output		Output target to which to write to results. This texture should be created using the
+		 *							descriptor returned by getHiZTextureDesc().
+		 */
+		void execute(const RendererViewTargetData& viewInfo, const SPtr<Texture>& source, const SPtr<Texture>& output);
+
+		/** Generates a descriptor that can be used for creating a texture to contain the HiZ mipmap chain. */
+		static POOLED_RENDER_TEXTURE_DESC getHiZTextureDesc(UINT32 viewWidth, UINT32 viewHeight);
+
+	private:
+		BuildHiZMat<1> mHiZMatNoMSAA;
+		BuildHiZMat<2> mHiZMatMSAA2;
+		BuildHiZMat<4> mHiZMatMSAA4;
+		BuildHiZMat<8> mHiZMatMSAA8;
 	};
 
 	/**

@@ -68,6 +68,7 @@ namespace bs { namespace ct
 		texDesc.usage = desc.flag;
 		texDesc.hwGamma = desc.hwGamma;
 		texDesc.numSamples = desc.numSamples;
+		texDesc.numMips = desc.numMipLevels;
 
 		if (desc.type != TEX_TYPE_3D)
 			texDesc.numArraySlices = desc.arraySize;
@@ -164,6 +165,7 @@ namespace bs { namespace ct
 				|| (desc.type == TEX_TYPE_CUBE_MAP)
 				)
 			&& texProps.getNumArraySlices() == desc.arraySize
+			&& texProps.getNumMipmaps() == desc.numMipLevels
 			;
 
 		return match;
@@ -206,7 +208,7 @@ namespace bs { namespace ct
 	}
 
 	POOLED_RENDER_TEXTURE_DESC POOLED_RENDER_TEXTURE_DESC::create2D(PixelFormat format, UINT32 width, UINT32 height,
-		INT32 usage, UINT32 samples, bool hwGamma, UINT32 arraySize)
+		INT32 usage, UINT32 samples, bool hwGamma, UINT32 arraySize, UINT32 mipCount)
 	{
 		POOLED_RENDER_TEXTURE_DESC desc;
 		desc.width = width;
@@ -218,6 +220,7 @@ namespace bs { namespace ct
 		desc.hwGamma = hwGamma;
 		desc.type = TEX_TYPE_2D;
 		desc.arraySize = arraySize;
+		desc.numMipLevels = mipCount;
 
 		return desc;
 	}
@@ -235,6 +238,7 @@ namespace bs { namespace ct
 		desc.hwGamma = false;
 		desc.type = TEX_TYPE_3D;
 		desc.arraySize = 1;
+		desc.numMipLevels = 0;
 
 		return desc;
 	}
@@ -252,6 +256,7 @@ namespace bs { namespace ct
 		desc.hwGamma = false;
 		desc.type = TEX_TYPE_CUBE_MAP;
 		desc.arraySize = arraySize;
+		desc.numMipLevels = 0;
 
 		return desc;
 	}

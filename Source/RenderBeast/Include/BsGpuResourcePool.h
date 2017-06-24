@@ -145,10 +145,11 @@ namespace bs { namespace ct
 		 * @param[in]	samples		If higher than 1, texture containing multiple samples per pixel is created.
 		 * @param[in]	hwGamma		Should the written pixels be gamma corrected.
 		 * @param[in]	arraySize	Number of textures in a texture array. Specify 1 for no array.
+		 * @param[in]	mipCount	Number of mip levels, excluding the root mip level.
 		 * @return					Descriptor that is accepted by RenderTexturePool.
 		 */
 		static POOLED_RENDER_TEXTURE_DESC create2D(PixelFormat format, UINT32 width, UINT32 height, 
-			INT32 usage = TU_STATIC, UINT32 samples = 0, bool hwGamma = false, UINT32 arraySize = 1);
+			INT32 usage = TU_STATIC, UINT32 samples = 0, bool hwGamma = false, UINT32 arraySize = 1, UINT32 mipCount = 0);
 
 		/**
 		 * Creates a descriptor for a three dimensional render texture.
@@ -188,6 +189,7 @@ namespace bs { namespace ct
 		TextureType type;
 		bool hwGamma;
 		UINT32 arraySize;
+		UINT32 numMipLevels;
 	};
 
 	/** Structure used for describing a pooled storage buffer. */

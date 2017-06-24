@@ -76,9 +76,9 @@ namespace bs
 	};
 
 	/**	Utility methods for converting and managing pixel data and formats. */
-    class BS_CORE_EXPORT PixelUtil 
+	class BS_CORE_EXPORT PixelUtil 
 	{
-    public:
+	public:
 		/**	Filtering types to use when scaling images. */
 		enum Filter
 		{
@@ -87,10 +87,10 @@ namespace bs
 		};
 
 		/**	Returns the size of a single pixel of the provided pixel format, in bytes. */
-        static UINT32 getNumElemBytes(PixelFormat format);
+		static UINT32 getNumElemBytes(PixelFormat format);
 
 		/**	Returns the size of a single pixel of the provided pixel format, in bits. */
-        static UINT32 getNumElemBits( PixelFormat format );
+		static UINT32 getNumElemBits(PixelFormat format);
 
 		/**	Returns the size of the memory region required to hold pixels of the provided size ana format. */
 		static UINT32 getMemorySize(UINT32 width, UINT32 height, UINT32 depth, PixelFormat format);
@@ -112,22 +112,22 @@ namespace bs
 		 *
 		 * @see		PixelFormatFlags
 		 */
-        static UINT32 getFlags(PixelFormat format);
+		static UINT32 getFlags(PixelFormat format);
 
 		/**	Checks if the provided pixel format has an alpha channel. */
-        static bool hasAlpha(PixelFormat format);
+		static bool hasAlpha(PixelFormat format);
 
 		/**	Checks is the provided pixel format a floating point format. */
-        static bool isFloatingPoint(PixelFormat format);
+		static bool isFloatingPoint(PixelFormat format);
 
 		/**	Checks is the provided pixel format compressed. */
-        static bool isCompressed(PixelFormat format);
+		static bool isCompressed(PixelFormat format);
 
 		/**	Checks is the provided pixel format a depth/stencil buffer format. */
-        static bool isDepth(PixelFormat format);
+		static bool isDepth(PixelFormat format);
 
 		/**	Checks is the provided format in native endian format. */
-        static bool isNativeEndian(PixelFormat format);
+		static bool isNativeEndian(PixelFormat format);
 		
 		/** 
 		 * Checks is the provided format valid for the texture type and usage. 
@@ -158,7 +158,7 @@ namespace bs
 		 * Returns the number of bits per each element in the provided pixel format. This will return all zero for 
 		 * compressed and depth/stencil formats.
 		 */
-        static void getBitDepths(PixelFormat format, int (&rgba)[4]);
+		static void getBitDepths(PixelFormat format, int(&rgba)[4]);
 
 		/**
 		 * Returns bit masks that determine in what bit range is each channel stored.
@@ -167,7 +167,7 @@ namespace bs
 		 * For example if your color is stored in an UINT32 and you want to extract the red channel you should AND the color
 		 * UINT32 with the bit-mask for the red channel and then right shift it by the red channel bit shift amount.
 		 */
-        static void getBitMasks(PixelFormat format, UINT32 (&rgba)[4]);
+		static void getBitMasks(PixelFormat format, UINT32(&rgba)[4]);
 
 		/**
 		 * Returns number of bits you need to shift a pixel element in order to move it to the start of the data type.
@@ -179,17 +179,17 @@ namespace bs
 		static void getBitShifts(PixelFormat format, UINT8 (&rgba)[4]);
 
 		/**	Returns the name of the pixel format. */
-        static String getFormatName(PixelFormat srcformat);
+		static String getFormatName(PixelFormat srcformat);
 
 		/**
 		 * Returns true if the pixel data in the format can be directly accessed and read. This is generally not true 
 		 * for compressed formats.
 		 */
-        static bool isAccessible(PixelFormat srcformat);
-        
+		static bool isAccessible(PixelFormat srcformat);
+
 		/**	Returns the type of an individual pixel element in the provided format. */
-        static PixelComponentType getElementType(PixelFormat format);
-        
+		static PixelComponentType getElementType(PixelFormat format);
+
 		/**	Returns the number of pixel elements in the provided format. */
 		static UINT32 getNumElements(PixelFormat format);
 
@@ -200,7 +200,7 @@ namespace bs
 		static UINT32 getMaxMipmaps(UINT32 width, UINT32 height, UINT32 depth, PixelFormat format);
 
 		/**	Writes the color to the provided memory location. */
-        static void packColor(const Color& color, PixelFormat format, void* dest);
+		static void packColor(const Color& color, PixelFormat format, void* dest);
 
 		/**
 		 * Writes the color to the provided memory location. If the destination	format is floating point, the byte values
@@ -227,19 +227,19 @@ namespace bs
 		 * Reads the color from the provided memory location and stores it into the provided color elements. If the format 
 		 * is not natively floating point a conversion is done in such a way that returned values range [0.0, 1.0].
 		 */
-        static void unpackColor(float* r, float* g, float* b, float* a, PixelFormat format, const void* src); 
+		static void unpackColor(float* r, float* g, float* b, float* a, PixelFormat format, const void* src);
 
 		/** Writes a depth value to the provided memory location. Depth should be in range [0, 1]. */
 		static void packDepth(float depth, const PixelFormat format, void* dest);
 
 		/** Reads the depth from the provided memory location. Value ranges in [0, 1]. */
 		static float unpackDepth(PixelFormat format, void* src);
-        
+
 		/**
 		 * Converts pixels from one format to another. Provided pixel data objects must have previously allocated buffers
 		 * of adequate size and their sizes must match.
 		 */
-        static void bulkPixelConversion(const PixelData& src, PixelData& dst);
+		static void bulkPixelConversion(const PixelData& src, PixelData& dst);
 
 		/** Flips the order of components in each individual pixel. For example RGBA -> ABGR. */
 		static void flipComponentOrder(PixelData& data);
@@ -282,8 +282,8 @@ namespace bs
 		 * @param[in]	size	Size of the buffer in bytes.
 		 * @param[in]	bpp		Number of bits per pixel of the pixels in the buffer.
 		 */
-        static void applyGamma(UINT8* buffer, float gamma, UINT32 size, UINT8 bpp);
-    };
+		static void applyGamma(UINT8* buffer, float gamma, UINT32 size, UINT8 bpp);
+	};
 
 	/** @} */
 }

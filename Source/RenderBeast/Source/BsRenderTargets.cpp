@@ -218,66 +218,12 @@ namespace bs { namespace ct
 			{
 				mResolvedSceneColorTex1 = texPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(mSceneColorFormat, width, height,
 					TU_RENDERTARGET, 1, false));
-
-				bool rebuildRT = false;
-				if (mResolvedSceneColorRT1 != nullptr)
-				{
-					rebuildRT |= mResolvedSceneColorRT1->getColorTexture(0) != mResolvedSceneColorTex1->texture;
-					rebuildRT |= mResolvedSceneColorRT1->getDepthStencilTexture() != mDepthTex->texture;
-				}
-				else
-					rebuildRT = true;
-
-				if (rebuildRT)
-				{
-					RENDER_TEXTURE_DESC sceneColorDesc;
-					sceneColorDesc.colorSurfaces[0].texture = mResolvedSceneColorTex1->texture;
-					sceneColorDesc.colorSurfaces[0].face = 0;
-					sceneColorDesc.colorSurfaces[0].numFaces = 1;
-					sceneColorDesc.colorSurfaces[0].mipLevel = 0;
-
-					sceneColorDesc.depthStencilSurface.texture = mDepthTex->texture;
-					sceneColorDesc.depthStencilSurface.face = 0;
-					sceneColorDesc.depthStencilSurface.numFaces = 1;
-					sceneColorDesc.depthStencilSurface.mipLevel = 0;
-
-					mResolvedSceneColorRT1 = TextureManager::instance().createRenderTexture(sceneColorDesc);
-				}
 			}
 		}
 		else if(type == RTT_ResolvedSceneColorSecondary)
 		{
-			// If not using MSAA, this is equivalent to default scene color texture
-			if(mViewTarget.numSamples > 1)
-			{
-				mResolvedSceneColorTex2 = texPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(mSceneColorFormat, 
-					width, height, TU_RENDERTARGET, 1, false));
-
-				bool rebuildRT = false;
-				if (mResolvedSceneColorRT2 != nullptr)
-				{
-					rebuildRT |= mResolvedSceneColorRT2->getColorTexture(0) != mResolvedSceneColorTex2->texture;
-					rebuildRT |= mResolvedSceneColorRT2->getDepthStencilTexture() != mDepthTex->texture;
-				}
-				else
-					rebuildRT = true;
-
-				if (rebuildRT)
-				{
-					RENDER_TEXTURE_DESC sceneColorDesc;
-					sceneColorDesc.colorSurfaces[0].texture = mResolvedSceneColorTex2->texture;
-					sceneColorDesc.colorSurfaces[0].face = 0;
-					sceneColorDesc.colorSurfaces[0].numFaces = 1;
-					sceneColorDesc.colorSurfaces[0].mipLevel = 0;
-
-					sceneColorDesc.depthStencilSurface.texture = mDepthTex->texture;
-					sceneColorDesc.depthStencilSurface.face = 0;
-					sceneColorDesc.depthStencilSurface.numFaces = 1;
-					sceneColorDesc.depthStencilSurface.mipLevel = 0;
-
-					mResolvedSceneColorRT2 = TextureManager::instance().createRenderTexture(sceneColorDesc);
-				}
-			}
+			mResolvedSceneColorTex2 = texPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(mSceneColorFormat, 
+				width, height, TU_RENDERTARGET, 1, false));
 		}
 	}
 
@@ -374,21 +320,30 @@ namespace bs { namespace ct
 		RenderAPI::instance().clearViewport(FBT_COLOR, Color::ZERO);
 	}
 
-	void RenderTargets::bindResolvedSceneColor(bool secondary)
+	void RenderTargets::generateHiZ()
 	{
-		RenderAPI& rapi = RenderAPI::instance();
+		mHiZ = GpuResourcePool::instance().get(
+			BuildHiZ::getHiZTextureDesc(
+				mViewTarget.viewRect.width, 
+				mViewTarget.viewRect.height)
+		);
 
-		if(secondary)
-			rapi.setRenderTarget(mResolvedSceneColorRT2, FBT_DEPTH | FBT_STENCIL, RT_DEPTH_STENCIL);
-		else
-		{
-			if(mViewTarget.numSamples > 1)
-				rapi.setRenderTarget(mResolvedSceneColorRT1, FBT_DEPTH | FBT_STENCIL, RT_DEPTH_STENCIL);
-			else
-				rapi.setRenderTarget(mSceneColorRT, FBT_DEPTH | FBT_STENCIL, RT_DEPTH_STENCIL);
-		}
+		mBuildHiZ.execute(mViewTarget, mDepthTex->texture, mHiZ->texture);
 	}
 
+	void RenderTargets::releaseHiZ()
+	{
+		if (mHiZ)
+			GpuResourcePool::instance().release(mHiZ);
+	}
+
+	SPtr<Texture> RenderTargets::getHiZ() const
+	{
+		if (mHiZ)
+			return mHiZ->texture;
+
+		return nullptr;
+	}
 
 	SPtr<Texture> RenderTargets::getSceneColor() const
 	{
@@ -451,11 +406,11 @@ namespace bs { namespace ct
 	SPtr<RenderTarget> RenderTargets::getResolvedSceneColorRT(bool secondary) const
 	{
 		if (secondary)
-			return mResolvedSceneColorRT2;
+			return mResolvedSceneColorTex2->renderTexture;
 		else
 		{
 			if (mViewTarget.numSamples > 1)
-				return mResolvedSceneColorRT1;
+				return mResolvedSceneColorTex1->renderTexture;
 			else
 				return mSceneColorRT;
 		}
