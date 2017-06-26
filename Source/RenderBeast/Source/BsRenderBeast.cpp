@@ -536,6 +536,10 @@ namespace bs { namespace ct
 			renderElement(*renderElem, iter->passIdx, iter->applyPass, viewProj);
 		}
 
+		// Build HiZ buffer
+		// TODO - Avoid generating it unless it actually gets used in some system
+		renderTargets->generateHiZ();
+
 		// Trigger post-base-pass callbacks
 		if (viewProps.triggerCallbacks)
 		{
@@ -688,6 +692,7 @@ namespace bs { namespace ct
 			gRendererUtility().blit(sceneColor, Rect2I::EMPTY, viewProps.flipView);
 		}
 
+		renderTargets->releaseHiZ();
 		renderTargets->release(RTT_SceneColor);
 
 		// Trigger overlay callbacks

@@ -1069,7 +1069,7 @@ namespace bs { namespace ct
 
 		// Generate remaining mip levels
 		const TextureProperties& outProps = output->getProperties();
-		for(UINT32 i = 1; i < outProps.getNumMipmaps(); i++)
+		for(UINT32 i = 1; i <= outProps.getNumMipmaps(); i++)
 		{
 			rtDesc.colorSurfaces[0].mipLevel = i;
 
