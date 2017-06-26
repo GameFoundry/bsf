@@ -11,12 +11,8 @@ technique PPGaussianDOFSeparate
 		SamplerState gColorSamp;
 		Texture2D gColorTex;
 		
-		#if MSAA
-		Texture2DMS<float> gDepthTex;
-		#else
 		SamplerState gDepthSamp;
 		Texture2D gDepthTex;
-		#endif
 		
 		void addSample(float2 uv, float2 offset, float depth, inout float4 nearColor, inout float4 farColor)
 		{

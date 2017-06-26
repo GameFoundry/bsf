@@ -27,22 +27,22 @@ technique PPGaussianBlur
 			{
 				{
 					float2 uv = input.uv0 + gSampleOffsets[idx * 2 + 0].xy;
-					output += gInputTex.Sample(gInputSamp, uv) * gSampleWeights[idx].x;
+					output += gInputTex.SampleLevel(gInputSamp, uv, 0) * gSampleWeights[idx].x;
 				}
 				
 				{
 					float2 uv = input.uv0 + gSampleOffsets[idx * 2 + 0].zw;
-					output += gInputTex.Sample(gInputSamp, uv) * gSampleWeights[idx].y;
+					output += gInputTex.SampleLevel(gInputSamp, uv, 0) * gSampleWeights[idx].y;
 				}
 				
 				{
 					float2 uv = input.uv0 + gSampleOffsets[idx * 2 + 1].xy;
-					output += gInputTex.Sample(gInputSamp, uv) * gSampleWeights[idx].z;
+					output += gInputTex.SampleLevel(gInputSamp, uv, 0) * gSampleWeights[idx].z;
 				}
 				
 				{
 					float2 uv = input.uv0 + gSampleOffsets[idx * 2 + 1].zw;
-					output += gInputTex.Sample(gInputSamp, uv) * gSampleWeights[idx].w;
+					output += gInputTex.SampleLevel(gInputSamp, uv, 0) * gSampleWeights[idx].w;
 				}
 			}
 			
@@ -51,19 +51,19 @@ technique PPGaussianBlur
 			if(extraSamples >= 1)
 			{
 				float2 uv = input.uv0 + gSampleOffsets[idx * 2 + 0].xy;
-				output += gInputTex.Sample(gInputSamp, uv) * gSampleWeights[idx].x;
+				output += gInputTex.SampleLevel(gInputSamp, uv, 0) * gSampleWeights[idx].x;
 				
 				[branch]
 				if(extraSamples >= 2)
 				{
 					float2 uv = input.uv0 + gSampleOffsets[idx * 2 + 0].zw;
-					output += gInputTex.Sample(gInputSamp, uv) * gSampleWeights[idx].y;
+					output += gInputTex.SampleLevel(gInputSamp, uv, 0) * gSampleWeights[idx].y;
 					
 					[branch]
 					if(extraSamples >= 3)
 					{
 						float2 uv = input.uv0 + gSampleOffsets[idx * 2 + 1].xy;
-						output += gInputTex.Sample(gInputSamp, uv) * gSampleWeights[idx].z;
+						output += gInputTex.SampleLevel(gInputSamp, uv, 0) * gSampleWeights[idx].z;
 					}
 				}				
 			}

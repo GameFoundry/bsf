@@ -1164,8 +1164,12 @@ namespace bs { namespace ct
 		{
 			SPtr<RenderTarget> dofTarget = viewProps.target;
 
-			mGaussianDOF.execute(renderTargets->getResolvedSceneColor(true), renderTargets->getSceneDepth(), dofTarget,
-				*viewInfo, settings.depthOfField);
+			// Use the HiZ buffer instead of main scene depth since DOF shaders don't support MSAA, and HiZ is guaranteed to
+			// be resolved.
+			SPtr<Texture> sceneDepth = renderTargets->getHiZ();
+
+			mGaussianDOF.execute(renderTargets->getResolvedSceneColor(true), sceneDepth, dofTarget, *viewInfo, 
+				settings.depthOfField);
 		}
 
 		if(performDOF)
