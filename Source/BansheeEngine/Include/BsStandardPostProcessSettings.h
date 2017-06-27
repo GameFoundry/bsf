@@ -304,6 +304,9 @@ namespace bs
 		/** Parameters used for customizing the depth of field effect. */
 		DepthOfFieldSettings depthOfField;
 
+		/** Enables the fast approximate anti-aliasing effect. */
+		bool enableFXAA;
+
 		/**
 		 * Log2 value to scale the eye adaptation by (for example 2^0 = 1). Smaller values yield darker image, while larger
 		 * yield brighter image. Allows you to customize exposure manually, applied on top of eye adaptation exposure (if

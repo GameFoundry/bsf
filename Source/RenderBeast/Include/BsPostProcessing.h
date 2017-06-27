@@ -556,6 +556,33 @@ namespace bs { namespace ct
 		BuildHiZMat<8> mHiZMatMSAA8;
 	};
 
+	BS_PARAM_BLOCK_BEGIN(FXAAParamDef)
+		BS_PARAM_BLOCK_ENTRY(Vector2, gInvTexSize)
+	BS_PARAM_BLOCK_END
+
+	extern FXAAParamDef gFXAAParamDef;
+
+	/** Shader that performs Fast Approximate anti-aliasing. */
+	class FXAAMat : public RendererMaterial<FXAAMat>
+	{
+		RMAT_DEF("PPFXAA.bsl");
+
+	public:
+		FXAAMat();
+
+		/** 
+		 * Renders the post-process effect with the provided parameters. 
+		 * 
+		 * @param[in]	source		Input texture to apply FXAA to.
+		 * @param[in]	destination	Output target to which to write the antialiased image to.
+		 */
+		void execute(const SPtr<Texture>& source, const SPtr<RenderTarget>& destination);
+
+	private:
+		SPtr<GpuParamBlockBuffer> mParamBuffer;
+		GpuParamTexture mInputTexture;
+	};
+
 	/**
 	 * Renders post-processing effects for the provided render target.
 	 *
@@ -580,6 +607,7 @@ namespace bs { namespace ct
 		CreateTonemapLUTMat mCreateLUT;
 		TonemappingMaterials mTonemapping;
 		GaussianDOF mGaussianDOF;
+		FXAAMat mFXAA;
 	};
 
 	/** @} */

@@ -194,6 +194,7 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(exposureScale, 6)
 			BS_RTTI_MEMBER_PLAIN(gamma, 7)
 			BS_RTTI_MEMBER_REFL(depthOfField, 8)
+			BS_RTTI_MEMBER_PLAIN(enableFXAA, 9)
 		BS_END_RTTI_MEMBERS
 			
 	public:

@@ -81,7 +81,7 @@ namespace bs
 	}
 
 	StandardPostProcessSettings::StandardPostProcessSettings()
-		: enableAutoExposure(true), enableTonemapping(true), exposureScale(0.0f), gamma(2.2f)
+		: enableAutoExposure(true), enableTonemapping(true), enableFXAA(false), exposureScale(0.0f), gamma(2.2f)
 	{ }
 
 	RTTITypeBase* StandardPostProcessSettings::getRTTIStatic()
@@ -101,6 +101,7 @@ namespace bs
 		bufferSize += rttiGetElemSize(enableTonemapping);
 		bufferSize += rttiGetElemSize(exposureScale);
 		bufferSize += rttiGetElemSize(gamma);
+		bufferSize += rttiGetElemSize(enableFXAA);
 
 		bufferSize += rttiGetElemSize(autoExposure.histogramLog2Min);
 		bufferSize += rttiGetElemSize(autoExposure.histogramLog2Max);
@@ -127,13 +128,21 @@ namespace bs
 		bufferSize += rttiGetElemSize(colorGrading.gain);
 		bufferSize += rttiGetElemSize(colorGrading.offset);
 
+		bufferSize += rttiGetElemSize(depthOfField.enabled);
+		bufferSize += rttiGetElemSize(depthOfField.focalDistance);
+		bufferSize += rttiGetElemSize(depthOfField.focalRange);
+		bufferSize += rttiGetElemSize(depthOfField.nearTransitionRange);
+		bufferSize += rttiGetElemSize(depthOfField.farTransitionRange);
+		bufferSize += rttiGetElemSize(depthOfField.nearBlurAmount);
+		bufferSize += rttiGetElemSize(depthOfField.farBlurAmount);
+
 		if (buffer == nullptr)
 		{
 			size = bufferSize;
 			return;
 		}
-		
-		if(bufferSize != size)
+
+		if (bufferSize != size)
 		{
 			LOGERR("Invalid buffer size");
 			return;
@@ -144,6 +153,7 @@ namespace bs
 		writeDst = rttiWriteElem(enableTonemapping, writeDst);
 		writeDst = rttiWriteElem(exposureScale, writeDst);
 		writeDst = rttiWriteElem(gamma, writeDst);
+		writeDst = rttiWriteElem(enableFXAA, writeDst);
 
 		writeDst = rttiWriteElem(autoExposure.histogramLog2Min, writeDst);
 		writeDst = rttiWriteElem(autoExposure.histogramLog2Max, writeDst);
@@ -169,6 +179,14 @@ namespace bs
 		writeDst = rttiWriteElem(colorGrading.contrast, writeDst);
 		writeDst = rttiWriteElem(colorGrading.gain, writeDst);
 		writeDst = rttiWriteElem(colorGrading.offset, writeDst);
+
+		writeDst = rttiWriteElem(depthOfField.enabled, writeDst);
+		writeDst = rttiWriteElem(depthOfField.focalDistance, writeDst);
+		writeDst = rttiWriteElem(depthOfField.focalRange, writeDst);
+		writeDst = rttiWriteElem(depthOfField.nearTransitionRange, writeDst);
+		writeDst = rttiWriteElem(depthOfField.farTransitionRange, writeDst);
+		writeDst = rttiWriteElem(depthOfField.nearBlurAmount, writeDst);
+		writeDst = rttiWriteElem(depthOfField.farBlurAmount, writeDst);
 	}
 
 	void StandardPostProcessSettings::_setSyncData(UINT8* buffer, UINT32 size)
@@ -179,6 +197,7 @@ namespace bs
 		readSource = rttiReadElem(enableTonemapping, readSource);
 		readSource = rttiReadElem(exposureScale, readSource);
 		readSource = rttiReadElem(gamma, readSource);
+		readSource = rttiReadElem(enableFXAA, readSource);
 
 		readSource = rttiReadElem(autoExposure.histogramLog2Min, readSource);
 		readSource = rttiReadElem(autoExposure.histogramLog2Max, readSource);
@@ -204,5 +223,13 @@ namespace bs
 		readSource = rttiReadElem(colorGrading.contrast, readSource);
 		readSource = rttiReadElem(colorGrading.gain, readSource);
 		readSource = rttiReadElem(colorGrading.offset, readSource);
+
+		readSource = rttiReadElem(depthOfField.enabled, readSource);
+		readSource = rttiReadElem(depthOfField.focalDistance, readSource);
+		readSource = rttiReadElem(depthOfField.focalRange, readSource);
+		readSource = rttiReadElem(depthOfField.nearTransitionRange, readSource);
+		readSource = rttiReadElem(depthOfField.farTransitionRange, readSource);
+		readSource = rttiReadElem(depthOfField.nearBlurAmount, readSource);
+		readSource = rttiReadElem(depthOfField.farBlurAmount, readSource);
 	}
 }

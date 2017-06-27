@@ -309,6 +309,10 @@
         {
             "Path": "PPBuildHiZ.bsl",
             "UUID": "1b314248-1965-49c5-968b-ae923c2af717"
+        },
+        {
+            "Path": "PPFXAA.bsl",
+            "UUID": "f064b202-dbc0-440f-bd9f-37f094b2c521"
         }
     ],
     "Skin": [

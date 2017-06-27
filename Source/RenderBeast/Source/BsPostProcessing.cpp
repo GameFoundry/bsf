@@ -1099,6 +1099,38 @@ namespace bs { namespace ct
 		return POOLED_RENDER_TEXTURE_DESC::create2D(PF_FLOAT16_R, size, size, TU_RENDERTARGET, 1, false, 1, numMips);
 	}
 
+	FXAAParamDef gFXAAParamDef;
+
+	FXAAMat::FXAAMat()
+	{
+		mParamBuffer = gFXAAParamDef.createBuffer();
+
+		mParamsSet->setParamBlockBuffer("Input", mParamBuffer);
+		mParamsSet->getGpuParams()->getTextureParam(GPT_FRAGMENT_PROGRAM, "gInputTex", mInputTexture);
+	}
+
+	void FXAAMat::_initDefines(ShaderDefines& defines)
+	{
+		// Do nothing
+	}
+
+	void FXAAMat::execute(const SPtr<Texture>& source, const SPtr<RenderTarget>& destination)
+	{
+		const TextureProperties& srcProps = source->getProperties();
+
+		Vector2 invTexSize(1.0f / srcProps.getWidth(), 1.0f / srcProps.getHeight());
+		gFXAAParamDef.gInvTexSize.set(mParamBuffer, invTexSize);
+
+		mInputTexture.set(source);
+
+		RenderAPI& rapi = RenderAPI::instance();
+		rapi.setRenderTarget(destination);
+
+		gRendererUtility().setPass(mMaterial);
+		gRendererUtility().setPassParams(mParamsSet);
+		gRendererUtility().drawScreenQuad();
+}
+
 	void PostProcessing::postProcess(RendererView* viewInfo, const SPtr<RenderTargets>& renderTargets, float frameDelta)
 	{
 		auto& viewProps = viewInfo->getProperties();
@@ -1150,7 +1182,7 @@ namespace bs { namespace ct
 		bool performDOF = GaussianDOF::requiresDOF(settings.depthOfField);
 
 		SPtr<RenderTarget> tonemapTarget;
-		if (!performDOF)
+		if (!performDOF && !settings.enableFXAA)
 			tonemapTarget = viewProps.target;
 		else
 		{
@@ -1160,9 +1192,18 @@ namespace bs { namespace ct
 
 		mTonemapping.execute(gammaOnly, autoExposure, msaa, sceneColor, tonemapTarget, viewportRect, ppInfo);
 
-		if(GaussianDOF::requiresDOF(settings.depthOfField))
+		if(performDOF)
 		{
-			SPtr<RenderTarget> dofTarget = viewProps.target;
+			SPtr<RenderTarget> dofTarget;
+
+			// If DOF is the final effect, output to final target, otherwise use a temporary
+			if (settings.enableFXAA)
+			{
+				renderTargets->allocate(RTT_ResolvedSceneColor);
+				dofTarget = renderTargets->getResolvedSceneColorRT(false);
+			}
+			else
+				dofTarget = viewProps.target;
 
 			// Use the HiZ buffer instead of main scene depth since DOF shaders don't support MSAA, and HiZ is guaranteed to
 			// be resolved.
@@ -1170,10 +1211,26 @@ namespace bs { namespace ct
 
 			mGaussianDOF.execute(renderTargets->getResolvedSceneColor(true), sceneDepth, dofTarget, *viewInfo, 
 				settings.depthOfField);
+
+			renderTargets->release(RTT_ResolvedSceneColorSecondary);
 		}
 
-		if(performDOF)
-			renderTargets->release(RTT_ResolvedSceneColorSecondary);
+		if(settings.enableFXAA)
+		{
+			SPtr<Texture> fxaaSource;
+			if (performDOF)
+				fxaaSource = renderTargets->getResolvedSceneColor(false);
+			else
+				fxaaSource = renderTargets->getResolvedSceneColor(true);
+
+			// Note: I could skip executing FXAA over DOF and motion blurred pixels
+			mFXAA.execute(fxaaSource, viewProps.target);
+
+			if (performDOF)
+				renderTargets->release(RTT_ResolvedSceneColor);
+			else
+				renderTargets->release(RTT_ResolvedSceneColorSecondary);
+		}
 
 		if (ppInfo.settingDirty)
 			ppInfo.settingDirty = false;
