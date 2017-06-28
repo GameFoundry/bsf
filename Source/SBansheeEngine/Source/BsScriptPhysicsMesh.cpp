@@ -3,9 +3,10 @@
 #include "BsScriptPhysicsMesh.h"
 #include "BsScriptResourceManager.h"
 #include "BsScriptMeta.h"
-#include "BsScriptMeshData.h"
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
+
+#include "BsScriptRendererMeshData.generated.h"
 
 namespace bs
 {
@@ -26,7 +27,7 @@ namespace bs
 		HPhysicsMesh mesh = thisPtr->getHandle();
 
 		SPtr<MeshData> meshData = mesh->getMeshData();
-		return ScriptMeshData::create(meshData);
+		return ScriptRendererMeshData::create(RendererMeshData::create(meshData));
 	}
 
 	int ScriptPhysicsMesh::internal_GetMeshType(ScriptPhysicsMesh* thisPtr)

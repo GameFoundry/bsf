@@ -10,6 +10,8 @@
 
 namespace bs
 {
+	class ScriptRendererMeshData;
+
 	/** @addtogroup ScriptInteropEditor
 	 *  @{
 	 */
@@ -40,7 +42,7 @@ namespace bs
 		static void internal_DrawLineList(MonoArray* linePoints);
 		static void internal_DrawWireDisc(Vector3* position, Vector3* normal, float radius);
 		static void internal_DrawWireArc(Vector3* position, Vector3* normal, float radius, float startAngle, float amountAngle);
-		static void internal_DrawWireMesh(ScriptMeshData* meshData);
+		static void internal_DrawWireMesh(ScriptRendererMeshData* meshData);
 		static void internal_DrawFrustum(Vector3* position, float aspect, Degree* FOV, float near, float far);
 		static void internal_DrawIcon(Vector3* position, MonoObject* image, bool fixedScale);
 		static void internal_DrawText(Vector3* position, MonoString* text, ScriptFont* font, int size);

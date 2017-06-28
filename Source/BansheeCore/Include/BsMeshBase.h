@@ -17,12 +17,15 @@ namespace bs
 	 * Planned usage for the mesh. These options usually affect performance and you should specify static if you don't plan
 	 * on modifying the mesh often, otherwise specify dynamic.
 	 */
-	enum MeshUsage
+	enum BS_SCRIPT_EXPORT(m:Rendering) MeshUsage
 	{
-		MU_STATIC, /**< Specify for a mesh that is not often updated from the CPU. */
-		MU_DYNAMIC, /**< Specify for a mesh that is often updated from the CPU. */
-		/** All mesh data will also be cached in CPU memory, making it available for fast read access from the CPU. */
-		MU_CPUCACHED = 0x1000, 
+		MU_STATIC		BS_SCRIPT_EXPORT(n:Static), /**< Specify for a mesh that is not often updated from the CPU. */
+		MU_DYNAMIC		BS_SCRIPT_EXPORT(n:Dynamic), /**< Specify for a mesh that is often updated from the CPU. */
+		/** 
+		 * All mesh data will also be cached in CPU memory, making it available for fast read access from the CPU. Can be 
+		 * combined with other usage flags. 
+		 */
+		MU_CPUCACHED	BS_SCRIPT_EXPORT(n:CPUCached) = 0x1000, 
 	};
 
 	/** Properties of a Mesh. Shared between sim and core thread versions of a Mesh. */

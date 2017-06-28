@@ -115,21 +115,27 @@ namespace bs
 	};
 
 	/** Describes operation that will be used for rendering a certain set of vertices. */
-	enum DrawOperationType
+	enum BS_SCRIPT_EXPORT(n:MeshTopology,m:Rendering) DrawOperationType
 	{
-		DOT_POINT_LIST = 1, /**< Each vertex represents a point. */
-		DOT_LINE_LIST = 2, /**< Each sequential pair of vertices represent a line. */
-		DOT_LINE_STRIP = 3, /**< Each vertex (except the first) forms a line with the previous vertex. */
-		DOT_TRIANGLE_LIST = 4, /**< Each sequential 3-tuple of vertices represent a triangle. */
-		DOT_TRIANGLE_STRIP = 5, /**< Each vertex (except the first two) form a triangle with the previous two vertices. */
-		DOT_TRIANGLE_FAN = 6 /**< Each vertex (except the first two) form a triangle with the first vertex and previous vertex. */
+		/** Each vertex represents a point. */
+		DOT_POINT_LIST		BS_SCRIPT_EXPORT(n:PointList)		= 1,
+		/** Each sequential pair of vertices represent a line. */
+		DOT_LINE_LIST		BS_SCRIPT_EXPORT(n:LineList)		= 2,
+		/** Each vertex (except the first) forms a line with the previous vertex. */
+		DOT_LINE_STRIP		BS_SCRIPT_EXPORT(n:LineStrip)		= 3,
+		/** Each sequential 3-tuple of vertices represent a triangle. */
+		DOT_TRIANGLE_LIST	BS_SCRIPT_EXPORT(n:TriangleList)	= 4,
+		/** Each vertex (except the first two) form a triangle with the previous two vertices. */
+		DOT_TRIANGLE_STRIP	BS_SCRIPT_EXPORT(n:TriangleStrip)	= 5,
+		/** Each vertex (except the first two) form a triangle with the first vertex and previous vertex. */
+		DOT_TRIANGLE_FAN	BS_SCRIPT_EXPORT(n:TriangleFan)		= 6
 	};
 
-	/**	Type of the indices used, used for determining size. */
-	enum IndexType
+	/**	Type of mesh indices used, used for determining maximum number of vertices in a mesh. */
+	enum BS_SCRIPT_EXPORT() IndexType
 	{
-		IT_16BIT, /**< 16-bit indices. */
-		IT_32BIT /**< 32-bit indices. */
+		IT_16BIT	BS_SCRIPT_EXPORT(n:Index16),	/**< 16-bit indices. */
+		IT_32BIT	BS_SCRIPT_EXPORT(n:Index32)		/**< 32-bit indices. */
 	};
 
 	/** These values represent a hint to the driver when locking a hardware buffer. */

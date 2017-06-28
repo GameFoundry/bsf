@@ -11,10 +11,11 @@
 #include "BsScriptSceneObject.h"
 #include "BsSceneObject.h"
 #include "BsSceneManager.h"
-#include "BsScriptMesh.h"
 #include "BsScriptAnimation.h"
 #include "BsScriptMaterial.h"
 #include "BsScriptResourceManager.h"
+
+#include "BsScriptMesh.generated.h"
 
 namespace bs
 {

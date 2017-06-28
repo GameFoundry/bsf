@@ -49,8 +49,6 @@
     <Compile Include="Animation\AnimationCurves.cs" />
     <Compile Include="Animation\Bone.cs" />
     <Compile Include="Animation\Interop\NativeAnimation.cs" />
-    <Compile Include="Animation\MorphShapes.cs" />
-    <Compile Include="Animation\Skeleton.cs" />
     <Compile Include="Audio\Audio.cs" />
     <Compile Include="Audio\AudioClip.cs" />
     <Compile Include="Audio\AudioListener.cs" />
@@ -127,7 +125,6 @@
     <Compile Include="Math\Rect2I.cs" />
     <Compile Include="Math\Vector2I.cs" />
     <Compile Include="Rendering\Mesh.cs" />
-    <Compile Include="Utility\MeshData.cs" />
     <Compile Include="Scene\MissingComponent.cs" />
     <Compile Include="Utility\PathEx.cs" />
     <Compile Include="Physics\BoxCollider.cs" />

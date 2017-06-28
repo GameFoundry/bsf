@@ -39,7 +39,6 @@
 #include "BsScriptShader.h"
 #include "BsScriptShaderInclude.h"
 #include "BsScriptMaterial.h"
-#include "BsScriptMesh.h"
 #include "BsScriptFont.h"
 #include "BsScriptPrefab.h"
 #include "BsScriptStringTable.h"
@@ -50,6 +49,7 @@
 #include "BsScriptAnimationClip.h"
 #include "BsBuiltinResourceLookup.h"
 
+#include "BsScriptMesh.generated.h"
 
 namespace bs
 {

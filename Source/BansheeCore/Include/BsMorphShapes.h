@@ -29,15 +29,17 @@ namespace bs
 	 * A set of vertices representing a single shape in a morph target animation. Vertices are represented as a difference
 	 * between base and target shape.
 	 */
-	class BS_CORE_EXPORT MorphShape : public IReflectable
+	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Animation) MorphShape : public IReflectable
 	{
 	public:
 		MorphShape(const String& name, float weight, const Vector<MorphVertex>& vertices);
 
 		/** Returns the name of the shape. */
+		BS_SCRIPT_EXPORT(pr:getter,n:Name)
 		const String& getName() const { return mName; }
 
 		/** Returns the weight of the shape, determining how are different shapes within a channel blended. */
+		BS_SCRIPT_EXPORT(pr:getter,n:Weight)
 		float getWeight() const { return mWeight; }
 
 		/** Returns a reference to all of the shape's vertices. Contains only vertices that differ from the base. */
@@ -75,10 +77,11 @@ namespace bs
 	 * determines at what point is that shape blended. As the channel percent moves from 0 to 1, different shapes will be
 	 * blended with those before or after them, depending on their weight.
 	 */
-	class BS_CORE_EXPORT MorphChannel : public IReflectable
+	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Animation) MorphChannel : public IReflectable
 	{
 	public:
-		/** Returns the name of the channel. */
+		/** Returns the unique name of the channel. */
+		BS_SCRIPT_EXPORT(pr:getter,n:Name)
 		const String& getName() const { return mName; }
 
 		/** Returns the number of available morph shapes. */
@@ -86,6 +89,10 @@ namespace bs
 
 		/** Returns the morph shape at the specified index. */
 		SPtr<MorphShape> getShape(UINT32 idx) const { return mShapes[idx]; }
+
+		/** Returns all morph shapes within this channel, in order from lowest to highest. */
+		BS_SCRIPT_EXPORT(pr:getter,n:Shapes)
+		const Vector<SPtr<MorphShape>>& getShapes() const { return mShapes; }
 
 		/** Creates a new channel from a set of morph shapes. */
 		static SPtr<MorphChannel> create(const String& name, const Vector<SPtr<MorphShape>>& shapes);
@@ -118,7 +125,7 @@ namespace bs
 	 * which are blended together depending on frame animation. Each channel is then additively blended together depending
 	 * on some weight.
 	 */
-	class BS_CORE_EXPORT MorphShapes : public IReflectable // Note: Must be immutable in order to be usable on multiple threads
+	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Animation) MorphShapes : public IReflectable // Note: Must be immutable in order to be usable on multiple threads
 	{
 	public:
 		/** Returns the number of available morph channels. */
@@ -126,6 +133,10 @@ namespace bs
 
 		/** Returns the morph channel at the specified index. */
 		SPtr<MorphChannel> getChannel(UINT32 idx) const { return mChannels[idx]; }
+
+		/** Returns a list of all morph channels in the morph animation. */
+		BS_SCRIPT_EXPORT(pr:getter,n:Channels)
+		const Vector<SPtr<MorphChannel>>& getChannels() const { return mChannels; }
 
 		/** Returns the number of vertices per morph shape. */
 		UINT32 getNumVertices() const { return mNumVertices; }

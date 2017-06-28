@@ -77,7 +77,6 @@ set(BS_SBANSHEEENGINE_SRC_WRAPPERS_PHYSICS
 )
 
 set(BS_SBANSHEEENGINE_INC_WRAPPERS
-	"Include/BsScriptBoneWeight.h"
 	"Include/BsScriptBuiltin.h"
 	"Include/BsScriptCamera.h"
 	"Include/BsScriptColor.h"
@@ -96,8 +95,6 @@ set(BS_SBANSHEEENGINE_INC_WRAPPERS
 	"Include/BsScriptLogEntry.h"
 	"Include/BsScriptManagedResource.h"
 	"Include/BsScriptMaterial.h"
-	"Include/BsScriptMesh.h"
-	"Include/BsScriptMeshData.h"
 	"Include/BsScriptPhysicsMaterial.h"
 	"Include/BsScriptPhysicsMesh.h"
 	"Include/BsScriptPixelUtility.h"
@@ -139,8 +136,6 @@ set(BS_SBANSHEEENGINE_INC_WRAPPERS
 	"Include/BsScriptAnimation.h"
 	"Include/BsScriptAnimationCurve.h"
 	"Include/BsScriptAnimationCurves.h"
-	"Include/BsScriptSkeleton.h"
-	"Include/BsScriptMorphShapes.h"
 	"Include/BsScriptManagedComponent.h"
 )
 
@@ -188,11 +183,11 @@ set(BS_SBANSHEEENGINE_INC_WRAPPERS_PHYSICS
 	"Include/BsScriptCharacterController.h"
 	"Include/BsScriptJoint.h"
 	"Include/BsScriptDistanceJoint.h"
-	"Source/BsScriptHingeJoint.h"
-	"Source/BsScriptSliderJoint.h"
-	"Source/BsScriptSphericalJoint.h"
-	"Source/BsScriptFixedJoint.h"
-	"Source/BsScriptD6Joint.h"
+	"Include/BsScriptHingeJoint.h"
+	"Include/BsScriptSliderJoint.h"
+	"Include/BsScriptSphericalJoint.h"
+	"Include/BsScriptFixedJoint.h"
+	"Include/BsScriptD6Joint.h"
 	"Include/BsScriptPhysics.h"
 )
 
@@ -209,7 +204,6 @@ set(BS_SBANSHEEENGINE_SRC_SERIALIZATION
 )
 
 set(BS_SBANSHEEENGINE_SRC_WRAPPERS
-	"Source/BsScriptBoneWeight.cpp"
 	"Source/BsScriptBuiltin.cpp"
 	"Source/BsScriptCamera.cpp"
 	"Source/BsScriptColor.cpp"
@@ -228,8 +222,6 @@ set(BS_SBANSHEEENGINE_SRC_WRAPPERS
 	"Source/BsScriptLogEntry.cpp"
 	"Source/BsScriptManagedResource.cpp"
 	"Source/BsScriptMaterial.cpp"
-	"Source/BsScriptMesh.cpp"
-	"Source/BsScriptMeshData.cpp"
 	"Source/BsScriptPhysicsMaterial.cpp"
 	"Source/BsScriptPhysicsMesh.cpp"
 	"Source/BsScriptPixelUtility.cpp"
@@ -271,8 +263,6 @@ set(BS_SBANSHEEENGINE_SRC_WRAPPERS
 	"Source/BsScriptAnimation.cpp"
 	"Source/BsScriptAnimationCurve.cpp"
 	"Source/BsScriptAnimationCurves.cpp"
-	"Source/BsScriptSkeleton.cpp"
-	"Source/BsScriptMorphShapes.cpp"
 	"Source/BsScriptManagedComponent.cpp"
 )
 
@@ -316,12 +306,18 @@ set(BS_SBANSHEEENGINE_INC_EXTENSIONS
 	"Include/BsPixelDataEx.h"
 	"Include/BsAsyncOpEx.h"
 	"Include/BsTextureEx.h"
+	"Include/BsMeshDataEx.h"
+	"Include/BsMeshEx.h"
+	"Include/BsSkeletonEx.h"
 )
 
 set(BS_SBANSHEEENGINE_SRC_EXTENSIONS
 	"Source/BsPixelDataEx.cpp"
 	"Source/BsAsyncOpEx.cpp"
 	"Source/BsTextureEx.cpp"
+	"Source/BsMeshDataEx.cpp"
+	"Source/BsMeshEx.cpp"
+	"Source/BsSkeletonEx.cpp"
 )
 
 source_group("Header Files" FILES ${BS_SBANSHEEENGINE_INC_NOFILTER})

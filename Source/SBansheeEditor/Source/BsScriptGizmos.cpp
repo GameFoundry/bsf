@@ -7,7 +7,8 @@
 #include "BsGizmoManager.h"
 #include "BsMonoUtil.h"
 #include "BsScriptFont.h"
-#include "BsScriptMeshData.h"
+
+#include "BsScriptRendererMeshData.generated.h"
 
 namespace bs
 {
@@ -123,11 +124,11 @@ namespace bs
 		GizmoManager::instance().drawWireArc(*position, *normal, radius, Degree(startAngle), Degree(amountAngle));
 	}
 
-	void ScriptGizmos::internal_DrawWireMesh(ScriptMeshData* meshData)
+	void ScriptGizmos::internal_DrawWireMesh(ScriptRendererMeshData* meshData)
 	{
 		if (meshData != nullptr)
 		{
-			SPtr<MeshData> nativeMeshData = meshData->getInternalValue()->getData();
+			SPtr<MeshData> nativeMeshData = meshData->getInternal()->getData();
 			GizmoManager::instance().drawWireMesh(nativeMeshData);
 		}
 	}

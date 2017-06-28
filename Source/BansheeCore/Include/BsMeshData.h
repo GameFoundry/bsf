@@ -78,7 +78,7 @@ namespace bs
 	};
 
 	/** Contains per-vertex bone weights and indexes used for skinning, for up to four bones. */
-	struct BoneWeight
+	struct BS_SCRIPT_EXPORT(pl:true,m:Utility) BoneWeight
 	{
 		int index0;
 		int index1;

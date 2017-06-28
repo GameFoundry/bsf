@@ -3,7 +3,6 @@
 #include "BsScriptAudioClip.h"
 #include "BsScriptResourceManager.h"
 #include "BsScriptMeta.h"
-#include "BsScriptMeshData.h"
 #include "BsMonoClass.h"
 
 namespace bs

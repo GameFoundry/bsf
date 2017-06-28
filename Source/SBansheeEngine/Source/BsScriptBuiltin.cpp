@@ -8,7 +8,6 @@
 #include "BsBuiltinResources.h"
 #include "BsScriptSpriteTexture.h"
 #include "BsScriptShader.h"
-#include "BsScriptMesh.h"
 #include "BsScriptFont.h"
 #include "BsScriptResourceManager.h"
 

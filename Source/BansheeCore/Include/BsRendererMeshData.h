@@ -12,8 +12,11 @@ namespace bs
 	 *  @{
 	 */
 
-	/**	Available vertex layouts (Combinations other than those provided are allowed). */
-	enum class VertexLayout
+	/**
+	 * Available vertex layouts that specify what data is provided per-vertex in a mesh. Combinations other than those
+	 * provided are allowed.
+	 */
+	enum class BS_SCRIPT_EXPORT(m:Rendering) VertexLayout
 	{
 		Position = 0x01,
 		Color = 0x02,
@@ -35,14 +38,8 @@ namespace bs
 		PNTU = Position | Normal | Tangent | UV0,
 	};
 
-	/**
-	 * Wrapper around MeshData that constructs the default mesh data structure expected by the renderer and other engine 
-	 * systems. Data will be compressed and uncompressed when written to and read to as needed to comply with wanted format.
-	 *			
-	 * @note	This is the default implementation while the Renderer plugins can override it by overriding
-	 *			createMeshData() method in their Renderer implementation.
-	 */
-	class BS_CORE_EXPORT RendererMeshData
+	/** Contains mesh vertex and index data used for initializing, updating and reading mesh data from Mesh. */
+	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(n:MeshData) RendererMeshData
 	{
 	public:
 		/**

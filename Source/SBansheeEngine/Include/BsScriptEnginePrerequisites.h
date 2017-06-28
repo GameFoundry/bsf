@@ -86,7 +86,6 @@ namespace bs
 	class ScriptRenderTarget;
 	class ScriptRenderTexture2D;
 	class ScriptCamera;
-	class ScriptMeshData;
 	class ManagedComponent;
 	class ManagedSerializableFieldData;
 	class ManagedSerializableFieldKey;
