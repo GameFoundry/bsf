@@ -144,7 +144,7 @@ namespace bs
 		}
 
 		/** 
-		 * Convert N bit colour channel value to P bits. It fills P bits with the bit pattern repeated. 
+		 * Convert N bit color channel value to P bits. It fills P bits with the bit pattern repeated. 
 		 * (this is /((1<<n)-1) in fixed point).
 		 */
 		static unsigned int fixedToFixed(UINT32 value, unsigned int n, unsigned int p)
@@ -491,6 +491,18 @@ namespace bs
 			}
 
 			return *(float*)&output;
+		}
+
+		/** Converts a float in range [-1,1] into an unsigned 8-bit integer. */
+		static UINT8 quantize8BitSigned(float v)
+		{
+			return quantize8BitUnsigned(v * 0.5f + 0.5f);
+		}
+
+		/** Converts a float in range [0,1] into an unsigned 8-bit integer. */
+		static UINT8 quantize8BitUnsigned(float v)
+		{
+			return (UINT8)(v * 255.999f);
 		}
 	};
 

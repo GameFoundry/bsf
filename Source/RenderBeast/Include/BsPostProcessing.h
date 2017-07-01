@@ -584,10 +584,10 @@ namespace bs { namespace ct
 	};
 
 	BS_PARAM_BLOCK_BEGIN(SSAOParamDef)
-		BS_PARAM_BLOCK_ENTRY(Matrix4, gMixedToView)
 		BS_PARAM_BLOCK_ENTRY(float, gSampleRadius)
 		BS_PARAM_BLOCK_ENTRY(float, gWorldSpaceRadiusMask)
 		BS_PARAM_BLOCK_ENTRY(Vector2, gTanHalfFOV)
+		BS_PARAM_BLOCK_ENTRY(Vector2, gRandomTileScale)
 		BS_PARAM_BLOCK_ENTRY(float, gCotHalfFOV)
 	BS_PARAM_BLOCK_END
 
@@ -607,16 +607,23 @@ namespace bs { namespace ct
 		 * @param[in]	view			Information about the view we're rendering from.
 		 * @param[in]	sceneDepth		Input texture containing scene depth.
 		 * @param[in]	sceneNormals	Input texture containing scene world space normals.
+		 * @param[in]	randomRotations	Tileable texture containing random rotations that will be applied to AO samples.
 		 * @param[in]	destination		Output texture to which to write the ambient occlusion data to.
 		 */
 		void execute(const RendererView& view, const SPtr<Texture>& sceneDepth, const SPtr<Texture>& sceneNormals, 
-			const SPtr<RenderTexture>& destination);
+			const SPtr<Texture>& randomRotations, const SPtr<RenderTexture>& destination);
+
+		/**
+		 * Generates a texture that is used for randomizing sample locations during SSAO calculation. The texture contains
+		 * 16 different rotations in a 4x4 tile.
+		 */
+		SPtr<Texture> generate4x4RandomizationTexture() const;
 
 	private:
 		SPtr<GpuParamBlockBuffer> mParamBuffer;
 		GpuParamTexture mDepthTexture;
 		GpuParamTexture mNormalsTexture;
-		GpuParamSampState mInputSampState;
+		GpuParamTexture mRandomTexture;
 	};
 
 	/**
@@ -627,6 +634,8 @@ namespace bs { namespace ct
 	class PostProcessing : public Module<PostProcessing>
 	{
 	public:
+		PostProcessing();
+
 		/** 
 		 * Renders post-processing effects for the provided render target. Resolves provided scene color texture into the
 		 * view's final output render target. Once the method exits, final render target is guaranteed to be currently
@@ -645,6 +654,8 @@ namespace bs { namespace ct
 		GaussianDOF mGaussianDOF;
 		FXAAMat mFXAA;
 		SSAOMat mSSAO;
+
+		SPtr<Texture> mSSAORandomizationTex;
 	};
 
 	/** @} */

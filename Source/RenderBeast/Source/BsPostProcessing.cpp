@@ -1142,17 +1142,29 @@ namespace bs { namespace ct
 		SPtr<GpuParams> gpuParams = mParamsSet->getGpuParams();
 		gpuParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gDepthTex", mDepthTexture);
 		gpuParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gNormalsTex", mNormalsTexture);
+		gpuParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gRandomTex", mRandomTexture);
 
-		SAMPLER_STATE_DESC desc;
-		desc.minFilter = FO_POINT;
-		desc.magFilter = FO_POINT;
-		desc.mipFilter = FO_POINT;
-		desc.addressMode.u = TAM_CLAMP;
-		desc.addressMode.v = TAM_CLAMP;
-		desc.addressMode.w = TAM_CLAMP;
+		SAMPLER_STATE_DESC inputSampDesc;
+		inputSampDesc.minFilter = FO_POINT;
+		inputSampDesc.magFilter = FO_POINT;
+		inputSampDesc.mipFilter = FO_POINT;
+		inputSampDesc.addressMode.u = TAM_CLAMP;
+		inputSampDesc.addressMode.v = TAM_CLAMP;
+		inputSampDesc.addressMode.w = TAM_CLAMP;
 
-		SPtr<SamplerState> sampState = SamplerState::create(desc);
-		gpuParams->setSamplerState(GPT_FRAGMENT_PROGRAM, "gInputSamp", sampState);
+		SPtr<SamplerState> inputSampState = SamplerState::create(inputSampDesc);
+		gpuParams->setSamplerState(GPT_FRAGMENT_PROGRAM, "gInputSamp", inputSampState);
+
+		SAMPLER_STATE_DESC randomSampDesc;
+		randomSampDesc.minFilter = FO_POINT;
+		randomSampDesc.magFilter = FO_POINT;
+		randomSampDesc.mipFilter = FO_POINT;
+		randomSampDesc.addressMode.u = TAM_WRAP;
+		randomSampDesc.addressMode.v = TAM_WRAP;
+		randomSampDesc.addressMode.w = TAM_WRAP;
+
+		SPtr<SamplerState> randomSampState = SamplerState::create(inputSampDesc);
+		gpuParams->setSamplerState(GPT_FRAGMENT_PROGRAM, "gRandomSamp", randomSampState);
 	}
 
 	void SSAOMat::_initDefines(ShaderDefines& defines)
@@ -1161,7 +1173,7 @@ namespace bs { namespace ct
 	}
 
 	void SSAOMat::execute(const RendererView& view, const SPtr<Texture>& depth, const SPtr<Texture>& normals, 
-		const SPtr<RenderTexture>& destination)
+		const SPtr<Texture>& random, const SPtr<RenderTexture>& destination)
 	{
 		const RendererViewProperties& viewProps = view.getProperties();
 
@@ -1177,23 +1189,21 @@ namespace bs { namespace ct
 		gSSAOParamDef.gTanHalfFOV.set(mParamBuffer, tanHalfFOV);
 		gSSAOParamDef.gWorldSpaceRadiusMask.set(mParamBuffer, 1.0f);
 
-		// Construct a special inverse view-projection matrix that had projection entries that effect z and w eliminated.
-		// Used to transform a vector(clip_x, clip_y, view_z, view_w), where clip_x/clip_y are in clip space, and 
-		// view_z/view_w in view space, into world space.
+		// Generate a scale which we need to use in order to achieve tiling
+		const TextureProperties& rndProps = random->getProperties();
+		UINT32 rndWidth = rndProps.getWidth();
+		UINT32 rndHeight = rndProps.getHeight();
 
-		// Only projects z/w coordinates (cancels out with the inverse matrix below)
-		Matrix4 projZ = Matrix4::IDENTITY;
-		projZ[2][2] = viewProps.projTransform[2][2];
-		projZ[2][3] = viewProps.projTransform[2][3];
-		projZ[3][2] = viewProps.projTransform[3][2];
-		projZ[3][3] = 0.0f;
+		//// Multiple of random texture size, rounded up
+		UINT32 scaleWidth = (viewProps.viewRect.width + rndWidth - 1) / rndWidth;
+		UINT32 scaleHeight = (viewProps.viewRect.height + rndHeight - 1) / rndHeight;
 
-		Matrix4 xyProj = viewProps.projTransform.inverse() * projZ;
-		
-		gSSAOParamDef.gMixedToView.set(mParamBuffer, xyProj);
+		Vector2 randomTileScale((float)scaleWidth, (float)scaleHeight);
+		gSSAOParamDef.gRandomTileScale.set(mParamBuffer, randomTileScale);
 
 		mDepthTexture.set(depth);
 		mNormalsTexture.set(normals);
+		mRandomTexture.set(random);
 
 		SPtr<GpuParamBlockBuffer> perView = view.getPerViewBuffer();
 		mParamsSet->setParamBlockBuffer("PerCamera", perView);
@@ -1204,7 +1214,39 @@ namespace bs { namespace ct
 		gRendererUtility().setPass(mMaterial);
 		gRendererUtility().setPassParams(mParamsSet);
 		gRendererUtility().drawScreenQuad();
-}
+	}
+
+	SPtr<Texture> SSAOMat::generate4x4RandomizationTexture() const
+	{
+		UINT32 mapping[16] = { 13, 5, 1, 9, 14, 3, 7, 11, 15, 2, 6, 12, 4, 8, 0, 10 };
+		Vector2 bases[16];
+		for (UINT32 i = 0; i < 16; ++i)
+		{
+			float angle = (mapping[i] / 16.0f) * Math::PI;
+			bases[i].x = cos(angle);
+			bases[i].y = sin(angle);
+		}
+
+		SPtr<PixelData> pixelData = PixelData::create(4, 4, 1, PF_R8G8);
+		for(UINT32 y = 0; y < 4; ++y)
+			for(UINT32 x = 0; x < 4; ++x)
+			{
+				UINT32 base = (y * 4) + x;
+
+				Color color;
+				color.r = bases[base].x * 0.5f + 0.5f;
+				color.g = bases[base].y * 0.5f + 0.5f;
+
+				pixelData->setColorAt(color, x, y);
+			}
+
+		return Texture::create(pixelData);
+	}
+
+	PostProcessing::PostProcessing()
+	{
+		mSSAORandomizationTex = mSSAO.generate4x4RandomizationTexture();
+	}
 
 	void PostProcessing::postProcess(RendererView* viewInfo, const SPtr<RenderTargets>& renderTargets, float frameDelta)
 	{
@@ -1224,7 +1266,8 @@ namespace bs { namespace ct
 		//	POOLED_RENDER_TEXTURE_DESC::create2D(PF_R8, viewProps.viewRect.width, viewProps.viewRect.height, 
 		//	TU_RENDERTARGET));
 
-		//mSSAO.execute(*viewInfo, renderTargets->getSceneDepth(), renderTargets->getGBufferB(), temp->renderTexture);
+		//mSSAO.execute(*viewInfo, renderTargets->getSceneDepth(), renderTargets->getGBufferB(), mSSAORandomizationTex, 
+		//	temp->renderTexture);
 		// END DEBUG ONLY
 
 		if(hdr && settings.enableAutoExposure)

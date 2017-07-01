@@ -11,11 +11,10 @@ technique PPSSAO
 		[internal]
 		cbuffer Input
 		{
-			float4x4 gMixedToView;
-		
 			float gSampleRadius;
 			float gWorldSpaceRadiusMask;
 			float2 gTanHalfFOV; // x - horz FOV, y - vert FOV
+			float2 gRandomTileScale;
 			float gCotHalfFOV;
 		}		
 
@@ -23,9 +22,12 @@ technique PPSSAO
 		Texture2D gDepthTex;
 		Texture2D gNormalsTex;
 		
+		SamplerState gRandomSamp;
+		Texture2D gRandomTex;
+		
 		// TODO - Allow these to be controlled by a quality level
 		#define SAMPLE_COUNT 6
-		#define SAMPLE_STEPS 20
+		#define SAMPLE_STEPS 3
 		
 		static const float2 SAMPLES[6] =
 		{
@@ -77,8 +79,9 @@ technique PPSSAO
 			float sampleRadius = gSampleRadius * lerp(-sceneDepth, 1, gWorldSpaceRadiusMask) * gCotHalfFOV / -sceneDepth;
 			
 			// TODO - Apply bias to viewposition (and reconstruct screen pos from it)
-			// TODO - Get random rotation (depending on active quality)
-			float2 rotateDir = float2(0, 1);
+
+			// Get random rotation
+			float2 rotateDir = gRandomTex.Sample(gRandomSamp, input.uv0 * gRandomTileScale) * 2 - 1;
 			
 			// Scale by screen space sample radius
 			rotateDir *= sampleRadius;
