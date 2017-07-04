@@ -105,7 +105,7 @@ technique PPSSAO
 			return weightedSum / weightSum;
 		}
 		
-		float4 fsmain(VStoFS input) : SV_Target0
+		float4 fsmain(VStoFS input, float4 pixelPos : SV_Position) : SV_Target0
 		{
 			// TODO - Support MSAA (most likely don't require all samples)
 		
@@ -163,15 +163,20 @@ technique PPSSAO
 				{
 					float scale = j / (float)SAMPLE_STEPS;
 					
-					float2 screenPosL = input.screenPos + sampleOffset;
-					float2 screenPosR = input.screenPos - sampleOffset;
+					float2 screenPosL = input.screenPos + sampleOffset * scale;
+					float2 screenPosR = input.screenPos - sampleOffset * scale;
 					
 					// TODO - Sample HiZ here to minimize cache trashing (depending on quality)
+					#if FINAL_AO // Final uses gbuffer input
 					float depthL = gDepthTex.Sample(gInputSamp, ndcToDepthUV(screenPosL)).r;
 					float depthR = gDepthTex.Sample(gInputSamp, ndcToDepthUV(screenPosR)).r;
 					
 					depthL = convertFromDeviceZ(depthL);
 					depthR = convertFromDeviceZ(depthR);
+					#else
+					float depthL = gSetupAO.Sample(gInputSamp, ndcToDepthUV(screenPosL)).w;
+					float depthR = gSetupAO.Sample(gInputSamp, ndcToDepthUV(screenPosR)).w;
+					#endif
 					
 					float3 viewPosL = getViewSpacePos(screenPosL, depthL);
 					float3 viewPosR = getViewSpacePos(screenPosR, depthR);
@@ -182,6 +187,7 @@ technique PPSSAO
 					float angleL = saturate(dot(diffL, viewNormal) * rsqrt(dot(diffL, diffL)));
 					float angleR = saturate(dot(diffR, viewNormal) * rsqrt(dot(diffR, diffR)));
 					
+					// Avoid blending if depths are too different to avoid leaking
 					float weight = saturate(1.0f - length(diffL) * invRange);
 					weight *= saturate(1.0f - length(diffR) * invRange);
 					
@@ -219,8 +225,32 @@ technique PPSSAO
 			// TODO - Adjust power/intensity
 			#endif
 			
-			// TODO - Perform filtering over 2x2 pixels using derivatives (on quality levels with no upsampling)
-			return output;
+			// Perform a 2x2 ad-hoc blur to hide the dither pattern
+			// Note: Ideally the blur would be 4x4 since the pattern is 4x4
+			
+			// TODO - Don't blur on minimal quality level
+			float4 myVal = float4(output.r, viewNormal);
+			float4 dX = ddx_fine(myVal);
+			float4 dY = ddy_fine(myVal);
+			
+			int2 mod = (int2)(pixelPos.xy) % 2;
+			float4 horzVal = myVal - dX * (mod.x * 2 - 1);
+			float4 vertVal = myVal - dY * (mod.y * 2 - 1);
+			
+			// Do weighted average depending on how similar the normals are
+			float weightHorz = saturate(pow(saturate(dot(viewNormal, horzVal.yzw)), 4.0f));
+			float weightVert = saturate(pow(saturate(dot(viewNormal, vertVal.yzw)), 4.0f));
+			
+			float myWeight = 1.0f;
+			float invWeight = 1.0f / (myWeight + weightHorz + weightVert);
+			
+			myWeight *= invWeight;
+			weightHorz *= invWeight;
+			weightVert *= invWeight;
+			
+			output.r = output.r * myWeight + horzVal.r * weightHorz + vertVal.r * weightVert;
+			
+			return output; // TODO - No need to output 4 values
 		}	
 	};
 };

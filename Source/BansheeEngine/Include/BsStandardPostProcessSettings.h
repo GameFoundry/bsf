@@ -210,8 +210,8 @@ namespace bs
 		/** 
 		 * Radius (in world space, in meters) over which occluders are searched for. Smaller radius ensures better sampling
 		 * precision but can miss occluders. Larger radius ensures far away occluders are considered but can yield lower
-		 * quality or noise because of low sampling precision. Usually best to keep at around a few centimeters, valid range
-		 * is roughly [0.005, 0.5].
+		 * quality or noise because of low sampling precision. Usually best to keep at around a meter, valid range
+		 * is roughly [0.05, 5.0].
 		 */
 		float radius;
 

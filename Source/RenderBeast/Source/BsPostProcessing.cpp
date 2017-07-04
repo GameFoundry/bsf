@@ -1150,7 +1150,12 @@ namespace bs { namespace ct
 	void SSAOMat<UPSAMPLE, FINAL_PASS, QUALITY>::execute(const RendererView& view, const SSAOTextureInputs& textures, 
 		const SPtr<RenderTexture>& destination, const AmbientOcclusionSettings& settings)
 	{
+		// Scale that can be used to adjust how quickly does AO radius increase with downsampled AO. This yields a very
+		// small AO radius at highest level, and very large radius at lowest level
+		static const float DOWNSAMPLE_SCALE = 4.0f;
+
 		const RendererViewProperties& viewProps = view.getProperties();
+		const RenderTargetProperties& rtProps = destination->getProperties();
 
 		Vector2 tanHalfFOV;
 		tanHalfFOV.x = 1.0f / viewProps.projTransform[0][0];
@@ -1158,11 +1163,26 @@ namespace bs { namespace ct
 
 		float cotHalfFOV = viewProps.projTransform[0][0];
 
-		gSSAOParamDef.gSampleRadius.set(mParamBuffer, settings.radius);
+		// Downsampled AO uses a larger AO radius (in higher resolutions this would cause too much cache trashing). This
+		// means if only full res AO is used, then only AO from nearby geometry will be calculated.
+		float viewScale = viewProps.viewRect.width / (float)rtProps.getWidth();
+
+		// Ramp up the radius exponentially. c^log2(x) function chosen arbitrarily, as it ramps up the radius in a nice way
+		float scale = pow(DOWNSAMPLE_SCALE, Math::log2(viewScale)); 
+
+		// Determine maximum radius scale (division by 4 because we don't downsample more than quarter-size)
+		float maxScale = pow(DOWNSAMPLE_SCALE, Math::log2(4.0f));
+
+		// Normalize the scale in [0, 1] range
+		scale /= maxScale;
+
+		float radius = settings.radius * scale;
+
+		gSSAOParamDef.gSampleRadius.set(mParamBuffer, radius);
 		gSSAOParamDef.gCotHalfFOV.set(mParamBuffer, cotHalfFOV);
 		gSSAOParamDef.gTanHalfFOV.set(mParamBuffer, tanHalfFOV);
 		gSSAOParamDef.gWorldSpaceRadiusMask.set(mParamBuffer, 1.0f);
-		gSSAOParamDef.gBias.set(mParamBuffer, settings.bias / 1000.0f);
+		gSSAOParamDef.gBias.set(mParamBuffer, (settings.bias * viewScale) / 1000.0f);
 		
 		if(UPSAMPLE)
 		{
@@ -1181,8 +1201,8 @@ namespace bs { namespace ct
 		UINT32 rndHeight = rndProps.getHeight();
 
 		//// Multiple of random texture size, rounded up
-		UINT32 scaleWidth = (viewProps.viewRect.width + rndWidth - 1) / rndWidth;
-		UINT32 scaleHeight = (viewProps.viewRect.height + rndHeight - 1) / rndHeight;
+		UINT32 scaleWidth = (rtProps.getWidth() + rndWidth - 1) / rndWidth;
+		UINT32 scaleHeight = (rtProps.getHeight() + rndHeight - 1) / rndHeight;
 
 		Vector2 randomTileScale((float)scaleWidth, (float)scaleHeight);
 		gSSAOParamDef.gRandomTileScale.set(mParamBuffer, randomTileScale);
@@ -1286,6 +1306,7 @@ namespace bs { namespace ct
 		SPtr<Texture> sceneNormals = renderTargets->get(RTT_GBuffer, RT_COLOR1);
 
 		// TODO - Resolve normals if MSAA
+		// TODO - When downsampling, consider using previous pass as input instead of always sampling gbuffer data
 
 		UINT32 numDownsampleLevels = 1; // TODO - Make it a property, ranging [0, 2]
 		UINT32 quality = 1; // TODO - Make it a property
@@ -1349,7 +1370,9 @@ namespace bs { namespace ct
 		if(numDownsampleLevels > 0)
 		{
 			textures.aoSetup = setupTex0->texture;
-			textures.aoDownsampled = downAOTex1->texture;
+
+			if(downAOTex1)
+				textures.aoDownsampled = downAOTex1->texture;
 
 			Vector2I downsampledSize(
 				std::max(1, Math::divideAndRoundUp(viewProps.viewRect.width, 2)),
@@ -1371,8 +1394,11 @@ namespace bs { namespace ct
 		}
 
 		{
-			textures.aoSetup = setupTex0->texture;
-			textures.aoDownsampled = downAOTex0->texture;
+			if(setupTex0)
+				textures.aoSetup = setupTex0->texture;
+
+			if(downAOTex0)
+				textures.aoDownsampled = downAOTex0->texture;
 
 			bool upsample = numDownsampleLevels > 0;
 			executeSSAOMat(upsample, true, quality, view, textures, destination, settings);
