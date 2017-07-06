@@ -1178,11 +1178,19 @@ namespace bs { namespace ct
 
 		float radius = settings.radius * scale;
 
+		// Factors used for scaling the AO contribution with range
+		Vector2 fadeMultiplyAdd;
+		fadeMultiplyAdd.x = 1.0f / settings.fadeRange;
+		fadeMultiplyAdd.y = -settings.fadeDistance / settings.fadeRange;
+
 		gSSAOParamDef.gSampleRadius.set(mParamBuffer, radius);
 		gSSAOParamDef.gCotHalfFOV.set(mParamBuffer, cotHalfFOV);
 		gSSAOParamDef.gTanHalfFOV.set(mParamBuffer, tanHalfFOV);
 		gSSAOParamDef.gWorldSpaceRadiusMask.set(mParamBuffer, 1.0f);
 		gSSAOParamDef.gBias.set(mParamBuffer, (settings.bias * viewScale) / 1000.0f);
+		gSSAOParamDef.gFadeMultiplyAdd.set(mParamBuffer, fadeMultiplyAdd);
+		gSSAOParamDef.gPower.set(mParamBuffer, settings.power);
+		gSSAOParamDef.gIntensity.set(mParamBuffer, settings.intensity);
 		
 		if(UPSAMPLE)
 		{
@@ -1288,6 +1296,73 @@ namespace bs { namespace ct
 		gRendererUtility().drawScreenQuad();
 	}
 
+	SSAOBlurParamDef gSSAOBlurParamDef;
+
+	template<bool HORIZONTAL>
+	SSAOBlurMat<HORIZONTAL>::SSAOBlurMat()
+	{
+		mParamBuffer = gSSAOBlurParamDef.createBuffer();
+		mParamsSet->setParamBlockBuffer("Input", mParamBuffer);
+
+		SPtr<GpuParams> gpuParams = mParamsSet->getGpuParams();
+		gpuParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gInputTex", mAOTexture);
+		gpuParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gDepthTex", mDepthTexture);
+
+		SAMPLER_STATE_DESC inputSampDesc;
+		inputSampDesc.minFilter = FO_POINT;
+		inputSampDesc.magFilter = FO_POINT;
+		inputSampDesc.mipFilter = FO_POINT;
+		inputSampDesc.addressMode.u = TAM_CLAMP;
+		inputSampDesc.addressMode.v = TAM_CLAMP;
+		inputSampDesc.addressMode.w = TAM_CLAMP;
+
+		SPtr<SamplerState> inputSampState = SamplerState::create(inputSampDesc);
+		gpuParams->setSamplerState(GPT_FRAGMENT_PROGRAM, "gInputSamp", inputSampState);
+	}
+
+	template<bool HORIZONTAL>
+	void SSAOBlurMat<HORIZONTAL>::_initDefines(ShaderDefines& defines)
+	{
+		defines.set("DIR_HORZ", HORIZONTAL ? 1 : 0);
+	}
+
+	template<bool HORIZONTAL>
+	void SSAOBlurMat<HORIZONTAL>::execute(const RendererView& view, const SPtr<Texture>& ao, const SPtr<Texture>& depth, 
+		const SPtr<RenderTexture>& destination, float depthRange)
+	{
+		const RendererViewProperties& viewProps = view.getProperties();
+		const TextureProperties& texProps = ao->getProperties();
+
+		Vector2 pixelSize;
+		pixelSize.x = 1.0f / texProps.getWidth();
+		pixelSize.y = 1.0f / texProps.getHeight();
+
+		Vector2 pixelOffset(BsZero);
+		if (HORIZONTAL)
+			pixelOffset.x = pixelSize.x;
+		else
+			pixelOffset.y = pixelSize.y;
+
+		float scale = viewProps.viewRect.width / (float)texProps.getWidth();
+
+		gSSAOBlurParamDef.gPixelSize.set(mParamBuffer, pixelSize);
+		gSSAOBlurParamDef.gPixelOffset.set(mParamBuffer, pixelOffset);
+		gSSAOBlurParamDef.gInvDepthThreshold.set(mParamBuffer, (1.0f / depthRange) / scale);
+
+		mAOTexture.set(ao);
+		mDepthTexture.set(depth);
+
+		SPtr<GpuParamBlockBuffer> perView = view.getPerViewBuffer();
+		mParamsSet->setParamBlockBuffer("PerCamera", perView);
+
+		RenderAPI& rapi = RenderAPI::instance();
+		rapi.setRenderTarget(destination);
+
+		gRendererUtility().setPass(mMaterial);
+		gRendererUtility().setPassParams(mParamsSet);
+		gRendererUtility().drawScreenQuad();
+	}
+
 	SSAO::SSAO()
 	{
 		mSSAORandomizationTex = generate4x4RandomizationTexture();
@@ -1305,14 +1380,29 @@ namespace bs { namespace ct
 		SPtr<Texture> sceneDepth = renderTargets->get(RTT_ResolvedDepth);
 		SPtr<Texture> sceneNormals = renderTargets->get(RTT_GBuffer, RT_COLOR1);
 
-		// TODO - Resolve normals if MSAA
-		// TODO - When downsampling, consider using previous pass as input instead of always sampling gbuffer data
+		const TextureProperties& normalsProps = sceneNormals->getProperties();
+		SPtr<PooledRenderTexture> resolvedNormals;
+		if(sceneNormals->getProperties().getNumSamples() > 1)
+		{
+			POOLED_RENDER_TEXTURE_DESC desc = POOLED_RENDER_TEXTURE_DESC::create2D(normalsProps.getFormat(), 
+				normalsProps.getWidth(), normalsProps.getHeight(), TU_RENDERTARGET);
+			resolvedNormals = GpuResourcePool::instance().get(desc);
+
+			RenderAPI::instance().setRenderTarget(resolvedNormals->renderTexture);
+			gRendererUtility().blit(sceneNormals);
+
+			sceneNormals = resolvedNormals->texture;
+		}
 
 		// Multiple downsampled AO levels are used to minimize cache trashing. Downsampled AO targets use larger radius,
 		// whose contents are then blended with the higher level.
 
-		UINT32 numDownsampleLevels = 2; // TODO - Make it a property, ranging [0, 2]
-		UINT32 quality = 1; // TODO - Make it a property
+		UINT32 quality = settings.quality;
+		UINT32 numDownsampleLevels = 0;
+		if (quality > 1)
+			numDownsampleLevels = 1;
+		else if (quality > 2)
+			numDownsampleLevels = 2;
 
 		SPtr<PooledRenderTexture> setupTex0;
 		if(numDownsampleLevels > 0)
@@ -1407,10 +1497,32 @@ namespace bs { namespace ct
 			executeSSAOMat(upsample, true, quality, view, textures, destination, settings);
 		}
 
+		if(resolvedNormals)
+		{
+			GpuResourcePool::instance().release(resolvedNormals);
+			resolvedNormals = nullptr;
+		}
+
 		if(numDownsampleLevels > 0)
 		{
 			GpuResourcePool::instance().release(setupTex0);
 			GpuResourcePool::instance().release(downAOTex0);
+		}
+
+		// Blur the output
+		if(quality > 1) // On level 0 we don't blur at all, on level 1 we use the ad-hoc blur in shader
+		{
+			const RenderTargetProperties& rtProps = destination->getProperties();
+
+			POOLED_RENDER_TEXTURE_DESC desc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_R8, rtProps.getWidth(), 
+				rtProps.getHeight(), TU_RENDERTARGET);
+			SPtr<PooledRenderTexture> blurIntermediateTex = GpuResourcePool::instance().get(desc);
+
+			mBlurHorz.execute(view, destination->getColorTexture(0), sceneDepth, blurIntermediateTex->renderTexture, 
+				DEPTH_RANGE);
+			mBlurVert.execute(view, blurIntermediateTex->texture, sceneDepth, destination, DEPTH_RANGE);
+
+			GpuResourcePool::instance().release(blurIntermediateTex);
 		}
 	}
 

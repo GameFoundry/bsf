@@ -66,7 +66,8 @@ namespace bs
 	}
 
 	AmbientOcclusionSettings::AmbientOcclusionSettings()
-		: enabled(true), radius(1.5f), bias(1.0f)
+		: enabled(true), radius(1.5f), bias(1.0f), fadeDistance(500.0f), fadeRange(50.0f), intensity(1.0f), power(1.0f)
+		, quality(3)
 	{ }
 
 	RTTITypeBase* AmbientOcclusionSettings::getRTTIStatic()
@@ -153,6 +154,11 @@ namespace bs
 		bufferSize += rttiGetElemSize(ambientOcclusion.enabled);
 		bufferSize += rttiGetElemSize(ambientOcclusion.radius);
 		bufferSize += rttiGetElemSize(ambientOcclusion.bias);
+		bufferSize += rttiGetElemSize(ambientOcclusion.fadeRange);
+		bufferSize += rttiGetElemSize(ambientOcclusion.fadeDistance);
+		bufferSize += rttiGetElemSize(ambientOcclusion.intensity);
+		bufferSize += rttiGetElemSize(ambientOcclusion.power);
+		bufferSize += rttiGetElemSize(ambientOcclusion.quality);
 
 		if (buffer == nullptr)
 		{
@@ -209,6 +215,11 @@ namespace bs
 		writeDst = rttiWriteElem(ambientOcclusion.enabled, writeDst);
 		writeDst = rttiWriteElem(ambientOcclusion.radius, writeDst);
 		writeDst = rttiWriteElem(ambientOcclusion.bias, writeDst);
+		writeDst = rttiWriteElem(ambientOcclusion.fadeRange, writeDst);
+		writeDst = rttiWriteElem(ambientOcclusion.fadeDistance, writeDst);
+		writeDst = rttiWriteElem(ambientOcclusion.intensity, writeDst);
+		writeDst = rttiWriteElem(ambientOcclusion.power, writeDst);
+		writeDst = rttiWriteElem(ambientOcclusion.quality, writeDst);
 	}
 
 	void StandardPostProcessSettings::_setSyncData(UINT8* buffer, UINT32 size)
@@ -257,5 +268,10 @@ namespace bs
 		readSource = rttiReadElem(ambientOcclusion.enabled, readSource);
 		readSource = rttiReadElem(ambientOcclusion.radius, readSource);
 		readSource = rttiReadElem(ambientOcclusion.bias, readSource);
+		readSource = rttiReadElem(ambientOcclusion.fadeRange, readSource);
+		readSource = rttiReadElem(ambientOcclusion.fadeDistance, readSource);
+		readSource = rttiReadElem(ambientOcclusion.intensity, readSource);
+		readSource = rttiReadElem(ambientOcclusion.power, readSource);
+		readSource = rttiReadElem(ambientOcclusion.quality, readSource);
 	}
 }

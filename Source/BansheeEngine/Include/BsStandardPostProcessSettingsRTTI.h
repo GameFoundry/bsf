@@ -188,6 +188,11 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(enabled, 0)
 			BS_RTTI_MEMBER_PLAIN(radius, 1)
 			BS_RTTI_MEMBER_PLAIN(bias, 2)
+			BS_RTTI_MEMBER_PLAIN(fadeRange, 3)
+			BS_RTTI_MEMBER_PLAIN(fadeDistance, 4)
+			BS_RTTI_MEMBER_PLAIN(intensity, 5)
+			BS_RTTI_MEMBER_PLAIN(power, 6)
+			BS_RTTI_MEMBER_PLAIN(quality, 7)
 		BS_END_RTTI_MEMBERS
 
 	public:

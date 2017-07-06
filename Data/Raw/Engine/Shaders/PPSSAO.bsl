@@ -18,6 +18,9 @@ technique PPSSAO
 			float gCotHalfFOV;
 			float gBias;
 			float2 gDownsampledPixelSize;
+			float2 gFadeMultiplyAdd;
+			float gPower;
+			float gIntensity;
 		}		
 
 		SamplerState gInputSamp;
@@ -79,7 +82,7 @@ technique PPSSAO
 			uvs[7] = uv + float2( 0,  1) * gDownsampledPixelSize;
 			uvs[8] = uv + float2( 1,  1) * gDownsampledPixelSize;
 			
-			float weightedSum = 0.0f;
+			float weightedSum = 0.00001f;
 			float weightSum = 0.00001f;
 			
 			[unroll]
@@ -107,8 +110,6 @@ technique PPSSAO
 		
 		float fsmain(VStoFS input, float4 pixelPos : SV_Position) : SV_Target0
 		{
-			// TODO - Support MSAA (most likely don't require all samples)
-		
 			#if FINAL_AO // Final uses gbuffer input
 			float sceneDepth = convertFromDeviceZ(gDepthTex.Sample(gInputSamp, input.uv0).r);
 			float3 worldNormal = gNormalsTex.Sample(gInputSamp, input.uv0).xyz * 2.0f - 1.0f;
@@ -132,7 +133,11 @@ technique PPSSAO
 			float sampleRadius = gSampleRadius * lerp(-sceneDepth, 1, gWorldSpaceRadiusMask) * gCotHalfFOV / -sceneDepth;
 			
 			// Get random rotation
+			#if QUALITY == 0
+			float2 rotateDir = float2(0, 1); // No random rotation
+			#else
 			float2 rotateDir = gRandomTex.Sample(gRandomSamp, input.uv0 * gRandomTileScale) * 2 - 1;
+			#endif
 			
 			// Scale by screen space sample radius
 			rotateDir *= sampleRadius;
@@ -221,14 +226,19 @@ technique PPSSAO
 			#endif
 			
 			#if FINAL_AO
-			// TODO - Fade out far away AO
-			// TODO - Adjust power/intensity
+			// Fade out far away AO
+			// Reference: 1 - saturate((depth - fadeDistance) / fadeRange)
+			output = lerp(output, 1.0f, saturate(-sceneDepth * gFadeMultiplyAdd.x + gFadeMultiplyAdd.y));
+			
+			// Adjust power and intensity
+			output = 1.0f - saturate(pow(1.0f - output, gPower) * gIntensity);
 			#endif
 			
+			// On quality 0 we don't blur at all. At qualities higher than 1 we use a proper bilateral blur.
+			#if QUALITY == 1
 			// Perform a 2x2 ad-hoc blur to hide the dither pattern
 			// Note: Ideally the blur would be 4x4 since the pattern is 4x4
 			
-			// TODO - Don't blur on minimal quality level
 			float4 myVal = float4(output, viewNormal);
 			float4 dX = ddx_fine(myVal);
 			float4 dY = ddy_fine(myVal);
@@ -249,6 +259,7 @@ technique PPSSAO
 			weightVert *= invWeight;
 			
 			output = output * myWeight + horzVal.r * weightHorz + vertVal.r * weightVert;
+			#endif
 			
 			return output;
 		}	

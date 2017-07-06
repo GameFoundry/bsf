@@ -222,6 +222,37 @@ namespace bs
 		 */
 		float bias;
 
+		/**
+		 * Distance (in view space, in meters) after which AO starts fading out. The fade process will happen over the
+		 * range as specified by @p fadeRange.
+		 */
+		float fadeDistance;
+
+		/**
+		 * Range (in view space, in meters) in which AO fades out from 100% to 0%. AO starts fading out after the distance
+		 * specified in @p fadeDistance.
+		 */
+		float fadeRange;
+
+		/**
+		 * Linearly scales the intensity of the AO effect. Values less than 1 make the AO effect less pronounced, and vice
+		 * versa. Valid range is roughly [0.2, 2].
+		 */
+		float intensity;
+
+		/**
+		 * Controls how quickly does the AO darkening effect increase with higher occlusion percent. This is a non-linear
+		 * control and will cause the darkening to ramp up exponentially. Valid range is roughly [1, 4], where 1 means no
+		 * extra darkening will occur.
+		 */
+		float power;
+
+		/**
+		 * Quality level of generated ambient occlusion. In range [0, 4]. Higher levels yield higher quality AO at the cost
+		 * of performance.
+		 */
+		UINT32 quality;
+
 		/************************************************************************/
 		/* 								RTTI		                     		*/
 		/************************************************************************/

@@ -589,6 +589,9 @@ namespace bs { namespace ct
 		BS_PARAM_BLOCK_ENTRY(float, gCotHalfFOV)
 		BS_PARAM_BLOCK_ENTRY(float, gBias)
 		BS_PARAM_BLOCK_ENTRY(Vector2, gDownsampledPixelSize)
+		BS_PARAM_BLOCK_ENTRY(Vector2, gFadeMultiplyAdd)
+		BS_PARAM_BLOCK_ENTRY(float, gPower)
+		BS_PARAM_BLOCK_ENTRY(float, gIntensity)
 	BS_PARAM_BLOCK_END
 
 	extern SSAOParamDef gSSAOParamDef;
@@ -656,7 +659,7 @@ namespace bs { namespace ct
 		BS_PARAM_BLOCK_ENTRY(float, gInvDepthThreshold)
 	BS_PARAM_BLOCK_END
 
-	extern SSAOParamDef gSSAOParamDef;
+	extern SSAODownsampleParamDef gSSAODownsampleParamDef;
 
 	/** 
 	 * Shader that downsamples the depth & normal buffer and stores their results in a common texture, to be consumed
@@ -685,6 +688,43 @@ namespace bs { namespace ct
 		SPtr<GpuParamBlockBuffer> mParamBuffer;
 		GpuParamTexture mDepthTexture;
 		GpuParamTexture mNormalsTexture;
+	};
+
+	BS_PARAM_BLOCK_BEGIN(SSAOBlurParamDef)
+		BS_PARAM_BLOCK_ENTRY(Vector2, gPixelSize)
+		BS_PARAM_BLOCK_ENTRY(Vector2, gPixelOffset)
+		BS_PARAM_BLOCK_ENTRY(float, gInvDepthThreshold)
+	BS_PARAM_BLOCK_END
+
+	extern SSAOBlurParamDef gSSAOBlurParamDef;
+
+	/** 
+	 * Shaders that blurs the ambient occlusion output, in order to hide the noise caused by the randomization texture.
+	 */
+	template<bool HORIZONTAL>
+	class SSAOBlurMat : public RendererMaterial<SSAOBlurMat<HORIZONTAL>>
+	{
+		RMAT_DEF("PPSSAOBlur.bsl");
+
+	public:
+		SSAOBlurMat();
+
+		/** 
+		 * Renders the post-process effect with the provided parameters. 
+		 * 
+		 * @param[in]	view			Information about the view we're rendering from.
+		 * @param[in]	ao				Input texture containing ambient occlusion data to be blurred.
+		 * @param[in]	sceneDepth		Input texture containing scene depth.
+		 * @param[in]	destination		Output texture to which to write the blurred data to.
+		 * @param[in]	depthRange		Valid depth range (in view space) within which nearby samples will be averaged.
+		 */
+		void execute(const RendererView& view, const SPtr<Texture>& ao, const SPtr<Texture>& sceneDepth,
+			const SPtr<RenderTexture>& destination, float depthRange);
+
+	private:
+		SPtr<GpuParamBlockBuffer> mParamBuffer;
+		GpuParamTexture mAOTexture;
+		GpuParamTexture mDepthTexture;
 	};
 
 	/** Helper class that is used for calculating the SSAO information. */
@@ -716,6 +756,8 @@ namespace bs { namespace ct
 			const AmbientOcclusionSettings& settings);
 
 		SSAODownsampleMat mDownsample;
+		SSAOBlurMat<true> mBlurHorz;
+		SSAOBlurMat<false> mBlurVert;
 		SPtr<Texture> mSSAORandomizationTex;
 
 #define DEFINE_MATERIAL(QUALITY)							\
