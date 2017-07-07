@@ -6,7 +6,7 @@
 
 namespace bs
 {
-	/** @addtogroup Utility-Core
+	/** @addtogroup General
 	 *  @{
 	 */
 

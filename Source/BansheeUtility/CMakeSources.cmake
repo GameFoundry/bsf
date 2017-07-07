@@ -8,6 +8,8 @@ set(BS_BANSHEEUTILITY_INC_THREADING
 
 set(BS_BANSHEEUTILITY_SRC_THIRDPARTY
 	"Source/ThirdParty/md5.cpp"
+	"Source/ThirdParty/TetGen/tetgen.cxx"
+	"Source/ThirdParty/TetGen/predicates.cxx"
 )
 
 set(BS_BANSHEEUTILITY_INC_PREREQUISITES
@@ -56,6 +58,7 @@ set(BS_BANSHEEUTILITY_SRC_GENERAL
 	"Source/BsTime.cpp"
 	"Source/BsUtil.cpp"
 	"Source/BsCompression.cpp"
+	"Source/BsTriangulation.cpp"
 )
 
 set(BS_BANSHEEUTILITY_INC_DEBUG
@@ -98,6 +101,7 @@ set(BS_BANSHEEUTILITY_INC_GENERAL
 	"Include/BsUtil.h"
 	"Include/BsFlags.h"
 	"Include/BsCompression.h"
+	"Include/BsTriangulation.h"
 )
 
 set(BS_BANSHEEUTILITY_SRC_ALLOCATORS
@@ -137,6 +141,7 @@ set(BS_BANSHEEUTILITY_INC_ALLOCATORS
 set(BS_BANSHEEUTILITY_INC_THIRDPARTY
 	"Include/ThirdParty/md5.h"
 	"Include/ThirdParty/json.hpp"
+	"Include/ThirdParty/TetGen/tetgen.h"
 )
 
 set(BS_BANSHEEUTILITY_INC_ERROR
