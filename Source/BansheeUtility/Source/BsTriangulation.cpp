@@ -41,6 +41,7 @@ namespace bs
 			memcpy(volume.tetrahedra[i].neighbors, &output.neighborlist[i * 4], sizeof(INT32) * 4);
 		}
 
+		// Generate boundary faces
 		UINT32 numFaces = (UINT32)output.numberoftrifaces;
 		for (UINT32 i = 0; i < numFaces; ++i)
 		{
@@ -57,6 +58,33 @@ namespace bs
 
 			memcpy(face.vertices, &output.trifacelist[i * 3], sizeof(INT32) * 3);
 			face.tetrahedron = tetIdx;
+		}
+
+		// Ensure that vertex at the specified location points a neighbor opposite to it
+		for(UINT32 i = 0; i < numTetrahedra; ++i)
+		{
+			INT32 neighbors[4];
+			memcpy(neighbors, volume.tetrahedra[i].neighbors, sizeof(INT32) * 4);
+
+			for(UINT32 j = 0; j < 4; ++j)
+			{
+				INT32 vert = volume.tetrahedra[i].vertices[j];
+
+				for (UINT32 k = 0; k < 4; ++k)
+				{
+					INT32 neighborIdx = neighbors[k];
+					if (neighborIdx == -1)
+						continue;
+
+					Tetrahedron& neighbor = volume.tetrahedra[neighborIdx];
+					if (vert != neighbor.vertices[0] && vert != neighbor.vertices[1] &&
+						vert != neighbor.vertices[2] && vert != neighbor.vertices[3])
+					{
+						volume.tetrahedra[i].neighbors[j] = neighborIdx;
+						break;
+					}
+				}
+			}
 		}
 
 		return volume;
