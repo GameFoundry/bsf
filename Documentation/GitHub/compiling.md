@@ -1,62 +1,62 @@
 # Compiling
 
-Banshee is available on two branches:
+## Quick start
+Use the commands below to get Banshee up and running as quickly as possible. Scroll further below for advanced build options that allow for more customization.
+
+**Windows (Visual Studio 2015)**
+
+Make sure you have installed *git* and *CMake* (version 3.7.2 or newer). Make sure paths to their binaries are in your *PATH* enviroment variable.
+
+Run the following commands and the *.sln* will be placed in the */Build* folder:
+```
+git clone https://github.com/BearishSun/BansheeEngine.git
+cd BansheeEngine
+mkdir Build
+cd Build
+cmake -G "Visual Studio 14 2015 Win64" ../Source
+```
+
+>Note: If compilation fails with errors related to DirectX, you need to install relevant DirectX dependencies as described [here](#otherDeps).
+
+**Linux**
+
+*Coming soon*
+
+**OS X**
+
+*Coming soon*
+
+## Customizing the build
+
+By default the process above will fetch the *master* branch. If required switch to a different branch before building:
  - **preview** - This branch always contains latest "stable" pre-release version. This might be a few months behind master.
  - **master** - This branch contains the latest changes, might be quite unstable and might not even compile. Use this if you absolutely need the bleeding edge changes.
  
-Banshee can be compiled in two modes:
- - **Runtime** (default) - This will compile the entire engine, scripting system and the editor. This is intended for those that plan on using the editor as their main environment for development.
- - **Framework** - This will compile only the C++ engine framework without the editor or the scripting API. This is intended for those that prefer to develop more directly with less high level abstractions.
+Variety of *CMake* variables are provided that allow you to customize the build:
  
-Supported platforms:
- - Windows
- - (Mac & Linux coming soon)
-
-Supported compilers:
- - MSVC++ 14.0 (Visual Studio 2015)
- - (Clang/GCC coming soon)
+- By default the process above will build the complete Banshee 3D runtime. You can pick between two modes using the *BUILD_SCOPE* variable in *CMake*:
+  - **Runtime** (default) - This will compile the entire engine, scripting system and the editor. This is intended for those that plan on using the editor as their main environment for development.
+  - **Framework** - This will compile only the C++ engine framework without the editor or the scripting API. This is intended for those that prefer to develop more directly with less high level abstractions.
+- Additional variables allow you to pick between the render API (Vulkan, DirectX, OpenGL), audio module (FMOD, OpenAudio) among other options. Run *CMake* to see all options.
+- Note that non-default *CMake* options might require additional dependencies to be installed, see [here](#otherDeps).
  
-Below we provide two sets of compile intructions depending on what you need:
- - Simple: Straightforward setup for those that don't need to perform any special configuration on Banshee's build and just want to compile with default settings
- - Advanced: Slightly more complicated setup, but allows you to configure exactly how to build Banshee and with which tools 
+You can choose to use a different *CMake* generator than those specified above, as long as the platform/compiler is supported:  
+  - Supported platforms:
+    - Windows
+    - (Mac & Linux coming soon)
+  - Supported compilers:
+    - MSVC++ 14.0 (Visual Studio 2015)
+    - (Clang/GCC coming soon)
  
-## Compile steps (Simple)
-
-### Windows
-
-To create a Visual Studio 2015 solution with the complete runtime, follow these steps:
- 1. Download source code
- 2. Run setup.bat in the source code root folder
- 3. Access Visual Studio solution in /Build/VS2015/Banshee.sln
- 4. If compilation fails with errors related to DirectX, you need to install relevant DirectX dependencies as described [here](#otherDeps) 
-
-## Compile steps (Advanced)
-
-### Windows
-
-For those that wish to customize their build, or compile using something other than Visual Studio, follow the steps below:
- 1. Download source code
- 2. Set up [third party dependencies](#dependencies)
- 3. Generate build files using CMake:
-  1. Install CMake 3.6.1 or higher for Windows
-  2. Run CMake GUI
-  3. Point CMake to the /Source sub-folder in Banshee's source code (Browse Source... button in GUI)
-  4. Choose an output folder (Browse Build... button in GUI)
-  5. Hit Configure and choose the toolset to generate the files for (e.g. Visual Studio 2015 64-bit)
-  6. (Optionally) Customize your build by setting any of the properties that have appeared. You can choose whether to build the complete runtime or just the framework, as well as choose render API (Vulkan, DirectX, OpenGL), audio module (FMOD, OpenAudio) among other options.
-  7. Hit the Generate button
- 4. Once CMake is done generating you can use the toolset you chose (e.g. Visual Studio) to open the generated files (e.g. open the .sln file provided in the Build folder in the case of Visual Studio)
-
 ### <a name="dependencies"></a>Third party dependencies
-Banshee relies on a variety of third party dependencies. We provide a set of pre-compiled dependencies needed for the latest version of Banshee using Visual Studio 2015, to save you the hassle of compiling them yourself. If you are not using VS2015 or want to compile the dependencies yourself for some other reason, a guide is provided below.
-
- * [Download dependencies (VS2015)](http://bearishsun.thalassa.feralhosting.com/BansheeDependencies_VS2015_Master.zip)
+Banshee relies on a variety of third party dependencies. A set of pre-compiled dependencies are provided for every supported platform/compiler. These will be fetched automatically by the build process, but you may also download them manually or compile them from source:
+ * [Download dependencies (VS2015)](http://data.banshee3d.com/BansheeDependencies_VS2015_Master.zip)
  * [Compiling dependencies manually](dependencies.md)
  
 For older versions of pre-compiled dependencies check the git release tag descriptions for links.
 
 ## <a name="otherDeps"></a>Other dependencies
-The following dependencies will need to be installed manually regardless if you used pre-compiled dependency package or have compiled them yourself.
+The following dependencies will need to be installed manually. Which ones are required depend on the selected *CMake* options and your usage of Banshee (check text of each entry below).
 
 **DirectX SDK** (Optional if not using DirectX)
  - Only needed if on Windows 7 or earlier and using DirectX 11 render API

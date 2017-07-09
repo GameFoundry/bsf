@@ -59,3 +59,29 @@ MACRO(find_imported_library FOLDER_NAME LIB_NAME)
 
 	mark_as_advanced(${LIB_NAME}_LIBRARY_RELEASE ${LIB_NAME}_LIBRARY_DEBUG)
 ENDMACRO()
+
+function(update_binary_deps)
+	# Clean and create a temporary folder
+	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/../Temp)	
+	execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_SOURCE_DIR}/../Temp)	
+	
+	set(BINARY_DEPENDENCIES_URL https://www.dropbox.com/s/bmvqpimzeicb87i/BansheeDependencies_VS2015_Master.zip?dl=1)
+	file(DOWNLOAD ${BINARY_DEPENDENCIES_URL} ${PROJECT_SOURCE_DIR}/../Temp/Dependencies.zip SHOW_PROGRESS)
+	
+	message(STATUS "Exacting files. Please wait...")
+	execute_process(
+		COMMAND ${CMAKE_COMMAND} -E tar xzf ${PROJECT_SOURCE_DIR}/../Temp/Dependencies.zip
+		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/../Temp
+	)
+	
+	# Copy executables and dynamic libraries
+	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/../bin)	
+	execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/../Temp/Built/bin ${PROJECT_SOURCE_DIR}/../bin)	
+	
+	# Copy static libraries, headers and tools
+	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/../Dependencies)	
+	execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/../Temp/Built/Dependencies ${PROJECT_SOURCE_DIR}/../Dependencies)
+	
+	# Clean up
+	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/../Temp)	
+endfunction()
