@@ -137,6 +137,7 @@ namespace bs
 		bool operator!= (const AABox& rhs) const;
 
 		static const AABox BOX_EMPTY;
+		static const AABox UNIT_BOX;
 
 		/** 
 		 * Indices that can be used for rendering a box constructed from 8 corner vertices, using AABox::Corner for 

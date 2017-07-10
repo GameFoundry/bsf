@@ -111,6 +111,15 @@ namespace bs
 		/** @copydoc Renderer::notifyReflectionProbeRemoved */
 		void notifyReflectionProbeRemoved(ReflectionProbe* probe) override;
 
+		/** @copydoc Renderer::notifyLightProbeVolumeAdded */
+		void notifyLightProbeVolumeAdded(LightProbeVolume* volume) override;
+
+		/** @copydoc Renderer::notifyLightProbeVolumeUpdated */
+		void notifyLightProbeVolumeUpdated(LightProbeVolume* volume) override;
+
+		/** @copydoc Renderer::notifyLightProbeVolumeRemoved */
+		void notifyLightProbeVolumeRemoved(LightProbeVolume* volume) override;
+
 		/** @copydoc Renderer::notifySkyboxAdded */
 		void notifySkyboxAdded(Skybox* skybox) override;
 

@@ -101,6 +101,7 @@ set(BS_BANSHEECORE_INC_RENDERER
 	"Include/BsRendererExtension.h"
 	"Include/BsReflectionProbe.h"
 	"Include/BsSkybox.h"
+	"Include/BsLightProbeVolume.h"
 )
 
 set(BS_BANSHEECORE_SRC_LOCALIZATION
@@ -361,6 +362,7 @@ set(BS_BANSHEECORE_INC_RTTI
 	"Include/BsReflectionProbeRTTI.h"
 	"Include/BsCReflectionProbeRTTI.h"
 	"Include/BsSkyboxRTTI.h"
+	"Include/BsLightProbeVolumeRTTI.h"
 )
 
 set(BS_BANSHEECORE_SRC_RENDERER
@@ -375,6 +377,7 @@ set(BS_BANSHEECORE_SRC_RENDERER
 	"Source/BsRendererExtension.cpp"
 	"Source/BsReflectionProbe.cpp"
 	"Source/BsSkybox.cpp"
+	"Source/BsLightProbeVolume.cpp"
 )
 
 set(BS_BANSHEECORE_SRC_RESOURCES

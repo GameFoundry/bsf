@@ -569,8 +569,9 @@ namespace bs
 		TID_ReflectionProbe = 1131,
 		TID_CReflectionProbe = 1132,
 		TID_CachedTextureData = 1133,
-        TID_Skybox = 1134,
-        TID_CSkybox = 1135,
+		TID_Skybox = 1134,
+		TID_CSkybox = 1135,
+		TID_LightProbeVolume = 1136,
 
 		// Moved from Engine layer
 		TID_CCamera = 30000,

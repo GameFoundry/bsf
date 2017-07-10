@@ -9,6 +9,7 @@
 namespace bs
 {
 	const AABox AABox::BOX_EMPTY;
+	const AABox AABox::UNIT_BOX = AABox(Vector3(-0.5f, -0.5f, -0.5f), Vector3(0.5f, 0.5f, 0.5f));
 
 	const UINT32 AABox::CUBE_INDICES[36] =
 	{

@@ -9,6 +9,7 @@
 namespace bs 
 { 
 	class RendererExtension;
+	class LightProbeVolume;
 	struct PostProcessSettings;
 
 	namespace ct
@@ -140,6 +141,27 @@ namespace bs
 		 * @note	Core thread.
 		 */
 		virtual void notifyReflectionProbeRemoved(ReflectionProbe* probe) { }
+
+		/**
+		 * Called whenever a new light probe volume is created.
+		 *
+		 * @note	Core thread.
+		 */
+		virtual void notifyLightProbeVolumeAdded(LightProbeVolume* volume) { }
+
+		/**
+		 * Called whenever a light probe volume is updated.
+		 *
+		 * @note	Core thread.
+		 */
+		virtual void notifyLightProbeVolumeUpdated(LightProbeVolume* volume) { }
+
+		/**
+		 * Called whenever a light probe volume is destroyed.
+		 *
+		 * @note	Core thread.
+		 */
+		virtual void notifyLightProbeVolumeRemoved(LightProbeVolume* volume) { }
 
 		/**
 		 * Called whenever a skybox is created.

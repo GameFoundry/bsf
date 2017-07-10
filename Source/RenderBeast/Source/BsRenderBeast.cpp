@@ -231,6 +231,21 @@ namespace bs { namespace ct
 		mScene->unregisterReflectionProbe(probe);
 	}
 
+	void RenderBeast::notifyLightProbeVolumeAdded(LightProbeVolume* volume)
+	{
+		assert(false); // TODO
+	}
+
+	void RenderBeast::notifyLightProbeVolumeUpdated(LightProbeVolume* volume)
+	{
+		assert(false); // TODO
+	}
+
+	void RenderBeast::notifyLightProbeVolumeRemoved(LightProbeVolume* volume)
+	{
+		assert(false); // TODO
+	}
+
 	void RenderBeast::notifySkyboxAdded(Skybox* skybox)
 	{
 		mSkybox = skybox;
@@ -633,16 +648,8 @@ namespace bs { namespace ct
 		renderTargets->allocate(RTT_SceneColor);
 		imageBasedLightingMat->execute(renderTargets, perCameraBuffer, mPreintegratedEnvBRDF);
 
-
-
-
-		// DEBUG ONLY
-		//if (useSSAO)
-		//	renderTargets->release(RTT_AmbientOcclusion);
-
-
-
-
+		if (useSSAO)
+			renderTargets->release(RTT_AmbientOcclusion);
 
 		renderTargets->release(RTT_LightAccumulation);
 		renderTargets->release(RTT_GBuffer);
@@ -725,23 +732,6 @@ namespace bs { namespace ct
 
 		if (isMSAA)
 			renderTargets->release(RTT_ResolvedDepth);
-
-
-
-
-
-		// DEBUG ONLY
-		if(useSSAO)
-		{
-			rapi.setRenderTarget(viewInfo->getProperties().target);
-			gRendererUtility().blit(renderTargets->get(RTT_AmbientOcclusion));
-
-			renderTargets->release(RTT_AmbientOcclusion);
-		}
-
-
-
-
 
 		// Trigger overlay callbacks
 		if (viewProps.triggerCallbacks)
