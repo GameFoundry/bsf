@@ -163,15 +163,14 @@ namespace bs
 	/** Information about a single light probe in a light probe volume. */
 	struct LightProbeInfo
 	{
+		/** Unique handle representing the probe. Always remains the same. */
+		UINT32 handle;
+
+		/** Flags representing the current state of the probe. */
 		LightProbeFlags flags;
 
-		union
-		{
-			/** Index into the GPU buffer where probe coefficients are stored. -1 if not assigned. Transient. */
-			UINT32 bufferIdx; 
-			/** Index to next empty spot in the probe array. -1 if none. Only used if probe is empty or removed. */
-			UINT32 nextEmptyIdx; 
-		};
+		/** Index into the GPU buffer where probe coefficients are stored. -1 if not assigned. Transient. */
+		UINT32 bufferIdx; 
 	};
 
 	/** Core thread usable version of bs::LightProbeVolume. */
@@ -185,6 +184,21 @@ namespace bs
 
 		/**	Retrieves an ID that can be used for uniquely identifying this object by the renderer. */
 		UINT32 getRendererId() const { return mRendererId; }
+
+		/** 
+		 * Parses the list of probes and reorganizes it by removing gaps so that all probes are sequential. 
+		 * 
+		 * @param[out]	freedEntries	A list of entries mapping to the GPU buffer where probe SH coefficients are stored.
+		 *								These are the entries that have been freed since the last call to prune().
+		 * @param[in]	freeAll			If true, all probes held by this volume will be marked as freed.
+		 */
+		void prune(Vector<UINT32>& freedEntries, bool freeAll = false);
+
+		/** Returns information about all light probes. */
+		Vector<LightProbeInfo>& getLightProbeInfos() { return mProbeInfos; }
+
+		/** Returns a list of positions for all light probes. */
+		Vector<Vector3>& getLightProbePositions() { return mProbePositions; }
 	protected:
 		friend class bs::LightProbeVolume;
 
@@ -201,7 +215,6 @@ namespace bs
 
 		Vector<Vector3> mProbePositions;
 		Vector<LightProbeInfo> mProbeInfos;
-		UINT32 mNextFreeIdx = -1;
 	};
 	}
 

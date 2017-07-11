@@ -259,10 +259,16 @@ namespace bs { namespace ct
 		void calculateVisibility(const Vector<CullInfo>& cullInfos, Vector<bool>& visibility) const;
 
 		/**
-		* Culls the provided set of bounds against the current frustum and outputs a set of visibility flags determining
-		* which entry is or isn't visible by this view. Both inputs must be arrays of the same size.
-		*/
+		 * Culls the provided set of bounds against the current frustum and outputs a set of visibility flags determining
+		 * which entry is or isn't visible by this view. Both inputs must be arrays of the same size.
+		 */
 		void calculateVisibility(const Vector<Sphere>& bounds, Vector<bool>& visibility) const;
+
+		/**
+		 * Culls the provided set of bounds against the current frustum and outputs a set of visibility flags determining
+		 * which entry is or isn't visible by this view. Both inputs must be arrays of the same size.
+		 */
+		void calculateVisibility(const Vector<AABox>& bounds, Vector<bool>& visibility) const;
 
 		/** Returns the visibility mask calculated with the last call to determineVisible(). */
 		const VisibilityInfo& getVisibilityMasks() const { return mVisibility; }

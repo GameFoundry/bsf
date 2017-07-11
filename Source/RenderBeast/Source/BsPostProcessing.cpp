@@ -1408,8 +1408,8 @@ namespace bs { namespace ct
 		if(numDownsampleLevels > 0)
 		{
 			Vector2I downsampledSize(
-				std::max(1, Math::divideAndRoundUp(viewProps.viewRect.width, 2)),
-				std::max(1, Math::divideAndRoundUp(viewProps.viewRect.height, 2))
+				std::max(1, Math::divideAndRoundUp((INT32)viewProps.viewRect.width, 2)),
+				std::max(1, Math::divideAndRoundUp((INT32)viewProps.viewRect.height, 2))
 			);
 
 			POOLED_RENDER_TEXTURE_DESC desc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_FLOAT16_RGBA, downsampledSize.x, 
@@ -1423,8 +1423,8 @@ namespace bs { namespace ct
 		if(numDownsampleLevels > 1)
 		{
 			Vector2I downsampledSize(
-				std::max(1, Math::divideAndRoundUp(viewProps.viewRect.width, 4)),
-				std::max(1, Math::divideAndRoundUp(viewProps.viewRect.height, 4))
+				std::max(1, Math::divideAndRoundUp((INT32)viewProps.viewRect.width, 4)),
+				std::max(1, Math::divideAndRoundUp((INT32)viewProps.viewRect.height, 4))
 			);
 
 			POOLED_RENDER_TEXTURE_DESC desc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_FLOAT16_RGBA, downsampledSize.x, 
@@ -1445,8 +1445,8 @@ namespace bs { namespace ct
 			textures.aoSetup = setupTex1->texture;
 
 			Vector2I downsampledSize(
-				std::max(1, Math::divideAndRoundUp(viewProps.viewRect.width, 4)),
-				std::max(1, Math::divideAndRoundUp(viewProps.viewRect.height, 4))
+				std::max(1, Math::divideAndRoundUp((INT32)viewProps.viewRect.width, 4)),
+				std::max(1, Math::divideAndRoundUp((INT32)viewProps.viewRect.height, 4))
 			);
 
 			POOLED_RENDER_TEXTURE_DESC desc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_R8, downsampledSize.x, 
@@ -1468,8 +1468,8 @@ namespace bs { namespace ct
 				textures.aoDownsampled = downAOTex1->texture;
 
 			Vector2I downsampledSize(
-				std::max(1, Math::divideAndRoundUp(viewProps.viewRect.width, 2)),
-				std::max(1, Math::divideAndRoundUp(viewProps.viewRect.height, 2))
+				std::max(1, Math::divideAndRoundUp((INT32)viewProps.viewRect.width, 2)),
+				std::max(1, Math::divideAndRoundUp((INT32)viewProps.viewRect.height, 2))
 			);
 
 			POOLED_RENDER_TEXTURE_DESC desc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_R8, downsampledSize.x, 

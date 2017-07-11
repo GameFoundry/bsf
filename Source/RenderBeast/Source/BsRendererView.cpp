@@ -291,6 +291,17 @@ namespace bs { namespace ct
 		}
 	}
 
+	void RendererView::calculateVisibility(const Vector<AABox>& bounds, Vector<bool>& visibility) const
+	{
+		const ConvexVolume& worldFrustum = mProperties.cullFrustum;
+
+		for (UINT32 i = 0; i < (UINT32)bounds.size(); i++)
+		{
+			if (worldFrustum.intersects(bounds[i]))
+				visibility[i] = true;
+		}
+	}
+
 	Vector2 RendererView::getDeviceZToViewZ(const Matrix4& projMatrix)
 	{
 		// Returns a set of values that will transform depth buffer values (in range [0, 1]) to a distance

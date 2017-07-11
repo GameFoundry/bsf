@@ -5,6 +5,7 @@
 #include "BsFrameAlloc.h"
 #include "BsRenderer.h"
 #include "BsLight.h"
+#include <atlalloc.h>
 
 namespace bs
 {
@@ -32,7 +33,7 @@ namespace bs
 	void LightProbeVolume::removeProbe(UINT32 handle)
 	{
 		auto iterFind = mProbes.find(handle);
-		if (iterFind != mProbes.end())
+		if (iterFind != mProbes.end() && mProbes.size() > 4)
 		{
 			iterFind->second.flags = LightProbeFlags::Removed;
 			_markCoreDirty();
@@ -178,6 +179,7 @@ namespace bs
 			LightProbeInfo probeInfo;
 			probeInfo.flags = LightProbeFlags::Dirty;
 			probeInfo.bufferIdx = -1;
+			probeInfo.handle = probeIdx;
 
 			mProbeInfos[probeIdx] = probeInfo;
 			probeIdx++;
@@ -196,6 +198,70 @@ namespace bs
 		CoreObject::initialize();
 	}
 
+	void LightProbeVolume::prune(Vector<UINT32>& freedEntries, bool freeAll)
+	{
+		UINT32 numProbes = (UINT32)mProbeInfos.size();
+		INT32 lastSearchIdx = numProbes - 1;
+		
+		for (UINT32 i = 0; i < (UINT32)mProbeInfos.size(); ++i)
+		{
+			LightProbeInfo& info = mProbeInfos[i];
+
+			if (info.flags == LightProbeFlags::Removed)
+			{
+				if (info.bufferIdx != -1)
+					freedEntries.push_back(info.bufferIdx);
+
+				info.flags = LightProbeFlags::Empty;
+
+				// Replace the empty spot with an element from the back
+				while (lastSearchIdx >= (INT32)i)
+				{
+					bool foundNonEmpty = false;
+					LightProbeFlags flags = mProbeInfos[lastSearchIdx].flags;
+					if (flags != LightProbeFlags::Empty)
+					{
+						std::swap(mProbeInfos[i], mProbeInfos[lastSearchIdx]);
+						std::swap(mProbePositions[i], mProbePositions[lastSearchIdx]);
+
+						mProbeMap[mProbeInfos[lastSearchIdx].handle] = i;
+						foundNonEmpty = true;
+					}
+
+					// Remove last element
+					mProbeInfos.erase(mProbeInfos.begin() + lastSearchIdx);
+					mProbePositions.erase(mProbePositions.begin() + lastSearchIdx);
+					lastSearchIdx--;
+
+					// Search is done, we found an element to fill the empty spot
+					if (foundNonEmpty)
+						break;
+				}
+			}
+		}
+
+		if(freeAll)
+		{
+			// Add all remaining (non-removed) probes to the free list, and mark them as dirty so when/if those probes
+			// get used again, the systems knows they are out of date
+			for (UINT32 i = 0; i < (UINT32)mProbeInfos.size(); ++i)
+			{
+				LightProbeInfo& info = mProbeInfos[i];
+
+				if (info.flags != LightProbeFlags::Empty)
+				{
+					if (info.bufferIdx != -1)
+					{
+						freedEntries.push_back(info.bufferIdx);
+						info.bufferIdx = -1;
+					}
+
+					info.flags = LightProbeFlags::Dirty;
+				}
+			}
+		}
+	}
+
 	void LightProbeVolume::syncToCore(const CoreSyncData& data)
 	{
 		char* dataPtr = (char*)data.getBuffer();
@@ -212,8 +278,8 @@ namespace bs
 
 		for (UINT32 i = 0; i < numDirtyProbes; ++i)
 		{
-			UINT32 idx;
-			dataPtr = rttiReadElem(idx, dataPtr);
+			UINT32 handle;
+			dataPtr = rttiReadElem(handle, dataPtr);
 
 			Vector3 position;
 			dataPtr = rttiReadElem(position, dataPtr);
@@ -221,7 +287,7 @@ namespace bs
 			LightProbeFlags flags;
 			dataPtr = rttiReadElem(flags, dataPtr);
 
-			auto iterFind = mProbeMap.find(idx);
+			auto iterFind = mProbeMap.find(handle);
 			if(iterFind != mProbeMap.end())
 			{
 				UINT32 compactIdx = iterFind->second;
@@ -236,11 +302,12 @@ namespace bs
 				LightProbeInfo info;
 				info.flags = LightProbeFlags::Dirty;
 				info.bufferIdx = -1;
+				info.handle = handle;
 
 				mProbeInfos.push_back(info);
 				mProbePositions.push_back(position);
 
-				mProbeMap[idx] = compactIdx;
+				mProbeMap[handle] = compactIdx;
 			}
 		}
 
@@ -256,10 +323,8 @@ namespace bs
 				
 				LightProbeInfo& info = mProbeInfos[compactIdx];
 				info.flags = LightProbeFlags::Removed;
-				info.nextEmptyIdx = mNextFreeIdx;
 				
 				mProbeMap.erase(iterFind);
-				mNextFreeIdx = compactIdx;
 			}
 		}
 

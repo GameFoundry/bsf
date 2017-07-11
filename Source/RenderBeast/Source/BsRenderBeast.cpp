@@ -394,6 +394,10 @@ namespace bs { namespace ct
 		const SceneInfo& sceneInfo = mScene->getSceneInfo();
 		const VisibilityInfo& visibility = viewGroup.getVisibilityInfo();
 
+		// Note: I'm determining light and refl. probe visibility for the entire group. It might be more performance
+		// efficient to do it per view. Additionally I'm using a single GPU buffer to hold their information, which is
+		// then updated when each view group is rendered. It might be better to keep one buffer reserved per-view.
+
 		// Update GPU light data
 		mVisibleLightInfo->update(sceneInfo, viewGroup);
 
