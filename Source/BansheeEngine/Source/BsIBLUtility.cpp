@@ -13,9 +13,11 @@ namespace bs { namespace ct
 		ReflectionCubeDownsampleMat downsampleMat;
 		ReflectionCubeImportanceSampleMat importanceSampleMat;
 
-		IrradianceComputeSHMat shCompute;
-		IrradianceReduceSHMat shReduce;
-		IrradianceProjectSHMat shProject;
+		IrradianceComputeSHMat<3> shCompute3;
+		IrradianceComputeSHMat<5> shCompute5;
+		IrradianceReduceSHMat<3> shReduce3;
+		IrradianceReduceSHMat<5> shReduce5;
+		IrradianceProjectSHMat shProject5;
 	};
 
 	IBLUtility::Members* IBLUtility::m = nullptr;
@@ -105,7 +107,8 @@ namespace bs { namespace ct
 	const static UINT32 TILE_HEIGHT = 8;
 	const static UINT32 PIXELS_PER_THREAD = 4;
 
-	IrradianceComputeSHMat::IrradianceComputeSHMat()
+	template<int ORDER>
+	IrradianceComputeSHMat<ORDER>::IrradianceComputeSHMat()
 	{
 		mParamBuffer = gIrradianceComputeSHParamDef.createBuffer();
 
@@ -116,7 +119,8 @@ namespace bs { namespace ct
 		params->getBufferParam(GPT_COMPUTE_PROGRAM, "gOutput", mOutputBuffer);
 	}
 
-	void IrradianceComputeSHMat::_initDefines(ShaderDefines& defines)
+	template<int ORDER>
+	void IrradianceComputeSHMat<ORDER>::_initDefines(ShaderDefines& defines)
 	{
 		// TILE_WIDTH * TILE_HEIGHT must be pow2 because of parallel reduction algorithm
 		defines.set("TILE_WIDTH", TILE_WIDTH);
@@ -124,9 +128,12 @@ namespace bs { namespace ct
 
 		// For very small textures this should be reduced so number of launched threads can properly utilize GPU cores
 		defines.set("PIXELS_PER_THREAD", PIXELS_PER_THREAD);
+
+		defines.set("ORDER", ORDER);
 	}
 
-	void IrradianceComputeSHMat::execute(const SPtr<Texture>& source, UINT32 face, const SPtr<GpuBuffer>& output)
+	template<int ORDER>
+	void IrradianceComputeSHMat<ORDER>::execute(const SPtr<Texture>& source, UINT32 face, const SPtr<GpuBuffer>& output)
 	{
 		auto& props = source->getProperties();
 		UINT32 faceSize = props.getWidth();
@@ -150,7 +157,8 @@ namespace bs { namespace ct
 		rapi.dispatchCompute(dispatchSize.x, dispatchSize.y);
 	}
 
-	SPtr<GpuBuffer> IrradianceComputeSHMat::createOutputBuffer(const SPtr<Texture>& source, UINT32& numCoeffSets)
+	template<int ORDER>
+	SPtr<GpuBuffer> IrradianceComputeSHMat<ORDER>::createOutputBuffer(const SPtr<Texture>& source, UINT32& numCoeffSets)
 	{
 		auto& props = source->getProperties();
 		UINT32 faceSize = props.getWidth();
@@ -165,16 +173,24 @@ namespace bs { namespace ct
 		GPU_BUFFER_DESC bufferDesc;
 		bufferDesc.type = GBT_STRUCTURED;
 		bufferDesc.elementCount = numCoeffSets;
-		bufferDesc.elementSize = sizeof(SHCoeffsAndWeight);
 		bufferDesc.format = BF_UNKNOWN;
 		bufferDesc.randomGpuWrite = true;
+
+		if(ORDER == 3)
+			bufferDesc.elementSize = sizeof(SHCoeffsAndWeight3);
+		else
+			bufferDesc.elementSize = sizeof(SHCoeffsAndWeight5);
 
 		return GpuBuffer::create(bufferDesc);
 	}
 
+	template class IrradianceComputeSHMat<3>;
+	template class IrradianceComputeSHMat<5>;
+
 	IrradianceReduceSHParamDef gIrradianceReduceSHParamDef;
 
-	IrradianceReduceSHMat::IrradianceReduceSHMat()
+	template<int ORDER>
+	IrradianceReduceSHMat<ORDER>::IrradianceReduceSHMat()
 	{
 		mParamBuffer = gIrradianceReduceSHParamDef.createBuffer();
 
@@ -185,15 +201,18 @@ namespace bs { namespace ct
 		params->getBufferParam(GPT_COMPUTE_PROGRAM, "gOutput", mOutputBuffer);
 	}
 
-	void IrradianceReduceSHMat::_initDefines(ShaderDefines& defines)
+	template<int ORDER>
+	void IrradianceReduceSHMat<ORDER>::_initDefines(ShaderDefines& defines)
 	{
-		// Do nothing
+		defines.set("ORDER", ORDER);
 	}
 
-	void IrradianceReduceSHMat::execute(const SPtr<GpuBuffer>& source, UINT32 numCoeffSets, 
-		const SPtr<GpuBuffer>& output)
+	template<int ORDER>
+	void IrradianceReduceSHMat<ORDER>::execute(const SPtr<GpuBuffer>& source, UINT32 numCoeffSets, 
+		const SPtr<GpuBuffer>& output, UINT32 outputIdx)
 	{
 		gIrradianceReduceSHParamDef.gNumEntries.set(mParamBuffer, numCoeffSets);
+		gIrradianceReduceSHParamDef.gOutputIdx.set(mParamBuffer, outputIdx);
 
 		mInputBuffer.set(source);
 		mOutputBuffer.set(output);
@@ -205,17 +224,25 @@ namespace bs { namespace ct
 		rapi.dispatchCompute(1);
 	}
 
-	SPtr<GpuBuffer> IrradianceReduceSHMat::createOutputBuffer()
+	template<int ORDER>
+	SPtr<GpuBuffer> IrradianceReduceSHMat<ORDER>::createOutputBuffer(UINT32 numEntries)
 	{
 		GPU_BUFFER_DESC bufferDesc;
 		bufferDesc.type = GBT_STRUCTURED;
-		bufferDesc.elementCount = 1;
-		bufferDesc.elementSize = sizeof(SHVector5RGB);
+		bufferDesc.elementCount = numEntries;
 		bufferDesc.format = BF_UNKNOWN;
 		bufferDesc.randomGpuWrite = true;
 
+		if(ORDER == 3)
+			bufferDesc.elementSize = sizeof(SHVector3RGB);
+		else
+			bufferDesc.elementSize = sizeof(SHVector5RGB);
+
 		return GpuBuffer::create(bufferDesc);
 	}
+
+	template class IrradianceReduceSHMat<3>;
+	template class IrradianceReduceSHMat<5>;
 
 	IrradianceProjectSHParamDef gIrradianceProjectSHParamDef;
 
@@ -315,12 +342,12 @@ namespace bs { namespace ct
 	void IBLUtility::filterCubemapForIrradiance(const SPtr<Texture>& cubemap, const SPtr<Texture>& output)
 	{
 		UINT32 numCoeffSets;
-		SPtr<GpuBuffer> coeffSetBuffer = IrradianceComputeSHMat::createOutputBuffer(cubemap, numCoeffSets);
+		SPtr<GpuBuffer> coeffSetBuffer = IrradianceComputeSHMat<5>::createOutputBuffer(cubemap, numCoeffSets);
 		for (UINT32 face = 0; face < 6; face++)
-			m->shCompute.execute(cubemap, face, coeffSetBuffer);
+			m->shCompute5.execute(cubemap, face, coeffSetBuffer);
 
-		SPtr<GpuBuffer> coeffBuffer = IrradianceReduceSHMat::createOutputBuffer();
-		m->shReduce.execute(coeffSetBuffer, numCoeffSets, coeffBuffer);
+		SPtr<GpuBuffer> coeffBuffer = IrradianceReduceSHMat<5>::createOutputBuffer(1);
+		m->shReduce5.execute(coeffSetBuffer, numCoeffSets, coeffBuffer, 0);
 
 		for (UINT32 face = 0; face < 6; face++)
 		{
@@ -331,8 +358,19 @@ namespace bs { namespace ct
 			cubeFaceRTDesc.colorSurfaces[0].mipLevel = 0;
 
 			SPtr<RenderTarget> target = RenderTexture::create(cubeFaceRTDesc);
-			m->shProject.execute(coeffBuffer, face, target);
+			m->shProject5.execute(coeffBuffer, face, target);
 		}
+	}
+
+	void IBLUtility::filterCubemapForIrradiance(const SPtr<Texture>& cubemap, const SPtr<GpuBuffer>& output, 
+		UINT32 outputIdx)
+	{
+		UINT32 numCoeffSets;
+		SPtr<GpuBuffer> coeffSetBuffer = IrradianceComputeSHMat<3>::createOutputBuffer(cubemap, numCoeffSets);
+		for (UINT32 face = 0; face < 6; face++)
+			m->shCompute3.execute(cubemap, face, coeffSetBuffer);
+
+		m->shReduce3.execute(coeffSetBuffer, numCoeffSets, output, outputIdx);
 	}
 
 	void IBLUtility::scaleCubemap(const SPtr<Texture>& src, UINT32 srcMip, const SPtr<Texture>& dst, UINT32 dstMip)

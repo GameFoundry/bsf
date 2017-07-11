@@ -148,18 +148,6 @@ namespace bs
 
 	namespace ct
 	{
-	/** Vector representing spherical harmonic coefficients for 3 bands. */
-	struct SHVector3
-	{
-		float coeffs[9];
-	};
-
-	/** Vector representing spherical coefficients for 3 bands, separate for red, green and blue components. */
-	struct SHVector3RGB
-	{
-		SHVector3 R, G, B;
-	};
-
 	/** Information about a single light probe in a light probe volume. */
 	struct LightProbeInfo
 	{

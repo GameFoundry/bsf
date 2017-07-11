@@ -78,10 +78,29 @@ namespace bs { namespace ct
 		SHVector5 R, G, B;
 	};
 
+	/** Vector representing spherical harmonic coefficients for 3 bands. */
+	struct SHVector3
+	{
+		float coeffs[9];
+	};
+
+	/** Vector representing spherical coefficients for 3 bands, separate for red, green and blue components. */
+	struct SHVector3RGB
+	{
+		SHVector3 R, G, B;
+	};
+
 	/** Intermediate structure used for spherical coefficient calculation. Contains RGB coefficients and weight. */
-	struct SHCoeffsAndWeight
+	struct SHCoeffsAndWeight5
 	{
 		SHVector5RGB coeffs;
+		float weight;
+	};
+
+	/** Intermediate structure used for spherical coefficient calculation. Contains RGB coefficients and weight. */
+	struct SHCoeffsAndWeight3
+	{
+		SHVector3RGB coeffs;
 		float weight;
 	};
 
@@ -93,8 +112,14 @@ namespace bs { namespace ct
 
 	extern IrradianceComputeSHParamDef gIrradianceComputeSHParamDef;
 
-	/** Computes spherical harmonic coefficients from a radiance cubemap. */
-	class IrradianceComputeSHMat : public RendererMaterial<IrradianceComputeSHMat>
+	/** 
+	 * Computes spherical harmonic coefficients from a radiance cubemap. 
+	 * 
+	 * @tparam ORDER	SH order, which defines the number of coefficients and quality. Only values of 3 and 5 are 
+	 *					supported.
+	 */
+	template<int ORDER = 5>
+	class IrradianceComputeSHMat : public RendererMaterial<IrradianceComputeSHMat<ORDER>>
 	{
 		RMAT_DEF("IrradianceComputeSH.bsl")
 
@@ -112,8 +137,6 @@ namespace bs { namespace ct
 		static SPtr<GpuBuffer> createOutputBuffer(const SPtr<Texture>& source, UINT32& numCoeffSets);
 
 	private:
-		static const UINT32 NUM_SAMPLES;
-
 		SPtr<GpuParamBlockBuffer> mParamBuffer;
 		GpuParamTexture mInputTexture;
 		GpuParamBuffer mOutputBuffer;
@@ -121,6 +144,7 @@ namespace bs { namespace ct
 
 	BS_PARAM_BLOCK_BEGIN(IrradianceReduceSHParamDef)
 		BS_PARAM_BLOCK_ENTRY(int, gNumEntries)
+		BS_PARAM_BLOCK_ENTRY(int, gOutputIdx)
 	BS_PARAM_BLOCK_END
 
 	extern IrradianceReduceSHParamDef gIrradianceReduceSHParamDef;
@@ -128,8 +152,12 @@ namespace bs { namespace ct
 	/** 
 	 * Sums spherical harmonic coefficients calculated by each thread group of IrradianceComputeSHMat and outputs a single
 	 * set of normalized coefficients. 
+	 *
+	 * @tparam ORDER	SH order, which defines the number of coefficients and quality. Only values of 3 and 5 are 
+	 *					supported.
 	 */
-	class IrradianceReduceSHMat : public RendererMaterial<IrradianceReduceSHMat>
+	template<int ORDER = 5>
+	class IrradianceReduceSHMat : public RendererMaterial<IrradianceReduceSHMat<ORDER>>
 	{
 		RMAT_DEF("IrradianceReduceSH.bsl")
 
@@ -138,16 +166,15 @@ namespace bs { namespace ct
 
 		/** 
 		 * Sums spherical harmonic coefficients calculated by each thread group of IrradianceComputeSHMat and outputs a
-		 * single set of normalized coefficients. Output buffer should be created by calling createOutputBuffer().
+		 * single set of normalized coefficients. Output buffer should be created by calling createOutputBuffer(). The
+		 * value will be recorded at the @p outputIdx position in the buffer.
 		 */
-		void execute(const SPtr<GpuBuffer>& source, UINT32 numCoeffSets, const SPtr<GpuBuffer>& output);
+		void execute(const SPtr<GpuBuffer>& source, UINT32 numCoeffSets, const SPtr<GpuBuffer>& output, UINT32 outputIdx);
 
 		/** Creates a buffer of adequate size to be used as output for this material. */
-		static SPtr<GpuBuffer> createOutputBuffer();
+		static SPtr<GpuBuffer> createOutputBuffer(UINT32 numEntries);
 
 	private:
-		static const UINT32 NUM_SAMPLES;
-
 		SPtr<GpuParamBlockBuffer> mParamBuffer;
 		GpuParamBuffer mInputBuffer;
 		GpuParamBuffer mOutputBuffer;
@@ -177,8 +204,6 @@ namespace bs { namespace ct
 		void execute(const SPtr<GpuBuffer>& shCoeffs, UINT32 face, const SPtr<RenderTarget>& target);
 
 	private:
-		static const UINT32 NUM_SAMPLES;
-
 		SPtr<GpuParamBlockBuffer> mParamBuffer;
 		GpuParamBuffer mInputBuffer;
 	};
@@ -206,12 +231,26 @@ namespace bs { namespace ct
 
 		/**
 		 * Performs filtering on the cubemap, populating the output cubemap with values that can be used for evaluating
-		 * irradiance for use in diffuse lighting.
+		 * irradiance for use in diffuse lighting. Uses order-5 SH (25 coefficients) and outputs the values in the form of
+		 * a cubemap.
 		 * 
 		 * @param[in]		cubemap		Cubemap to filter. Its mip level 0 will be used as source.
 		 * @param[in]		output		Output cubemap to store the irradiance data in.
 		 */
 		static void filterCubemapForIrradiance(const SPtr<Texture>& cubemap, const SPtr<Texture>& output);
+
+		/**
+		 * Performs filtering on the cubemap, populating the output cubemap with values that can be used for evaluating
+		 * irradiance for use in diffuse lighting. Uses order-5 SH (9 coefficients) and outputs the values in the form of
+		 * a cubemap.
+		 * 
+		 * @param[in]		cubemap		Cubemap to filter. Its mip level 0 will be used as source.
+		 * @param[in]		output		Output buffer in which to place the results. Must be allocated using 
+		 *								IrradianceReduceMat<ORDER>::createOutputBuffer();
+		 * @param[in]		outputIdx	Index in the output buffer at which to write the output coefficients to.
+		 */
+		static void filterCubemapForIrradiance(const SPtr<Texture>& cubemap, const SPtr<GpuBuffer>& output, 
+			UINT32 outputIdx);
 
 		/**
 		 * Scales a cubemap and outputs it in the destination texture, using hardware acceleration. If both textures are the

@@ -74,6 +74,16 @@ namespace bs
 		/** @copydoc Renderer::createPostProcessSettings */
 		SPtr<PostProcessSettings> createPostProcessSettings() const override;
 
+		/** 
+		 * Captures the scene at the specified location into a cubemap. 
+		 * 
+		 * @param[in]	cubemap		Cubemap to store the results in.
+		 * @param[in]	position	Position to capture the scene at.
+		 * @param[in]	hdr			If true scene will be captured in a format that supports high dynamic range.
+		 * @param[in]	frameInfo	Global information about the the frame currently being rendered.
+		 */
+		void captureSceneCubeMap(const SPtr<Texture>& cubemap, const Vector3& position, bool hdr, const FrameInfo& frameInfo);
+
 	private:
 		/** @copydoc Renderer::notifyCameraAdded */
 		void notifyCameraAdded(Camera* camera) override;
@@ -177,16 +187,6 @@ namespace bs
 		 * @param[in]	viewProj	View projection matrix of the camera the element is being rendered with.
 		 */
 		void renderElement(const BeastRenderableElement& element, UINT32 passIdx, bool bindPass, const Matrix4& viewProj);
-
-		/** 
-		 * Captures the scene at the specified location into a cubemap. 
-		 * 
-		 * @param[in]	cubemap		Cubemap to store the results in.
-		 * @param[in]	position	Position to capture the scene at.
-		 * @param[in]	hdr			If true scene will be captured in a format that supports high dynamic range.
-		 * @param[in]	frameInfo	Global information about the the frame currently being rendered.
-		 */
-		void captureSceneCubeMap(const SPtr<Texture>& cubemap, const Vector3& position, bool hdr, const FrameInfo& frameInfo);
 
 		/**	Creates data used by the renderer on the core thread. */
 		void initializeCore();

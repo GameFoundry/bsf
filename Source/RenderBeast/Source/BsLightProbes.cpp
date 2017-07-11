@@ -4,6 +4,9 @@
 #include "BsLightProbeVolume.h"
 #include "BsGpuBuffer.h"
 #include "BsRendererView.h"
+#include "BsIBLUtility.h"
+#include "BsRendererManager.h"
+#include "BsRenderBeast.h"
 
 namespace bs { namespace ct 
 {
@@ -61,7 +64,7 @@ namespace bs { namespace ct
 		mTetrahedronVolumeDirty = true;
 	}
 
-	void LightProbes::updateProbes(UINT32 maxProbes)
+	void LightProbes::updateProbes(const FrameInfo& frameInfo, UINT32 maxProbes)
 	{
 		if(mTetrahedronVolumeDirty)
 		{
@@ -110,6 +113,7 @@ namespace bs { namespace ct
 				continue;
 
 			Vector<LightProbeInfo>& probes = entry.volume->getLightProbeInfos();
+			const Vector<Vector3>& probePositions = entry.volume->getLightProbePositions();
 			for (; entry.lastUpdatedProbe < (UINT32)probes.size(); ++entry.lastUpdatedProbe)
 			{
 				LightProbeInfo& probeInfo = probes[entry.lastUpdatedProbe];
@@ -133,7 +137,19 @@ namespace bs { namespace ct
 
 				if(probeInfo.flags == LightProbeFlags::Dirty)
 				{
-					// TODO - Render probe
+					TEXTURE_DESC cubemapDesc;
+					cubemapDesc.type = TEX_TYPE_CUBE_MAP;
+					cubemapDesc.format = PF_FLOAT16_RGB;
+					cubemapDesc.width = IBLUtility::IRRADIANCE_CUBEMAP_SIZE;
+					cubemapDesc.height = IBLUtility::REFLECTION_CUBEMAP_SIZE;
+					cubemapDesc.usage = TU_STATIC | TU_RENDERTARGET;
+
+					SPtr<Texture> cubemap = Texture::create(cubemapDesc);
+
+					RenderBeast& renderer = static_cast<RenderBeast&>(*RendererManager::instance().getActive());
+					renderer.captureSceneCubeMap(cubemap, probePositions[entry.lastUpdatedProbe], true, frameInfo);
+
+					IBLUtility::filterCubemapForIrradiance(cubemap, mProbeCoefficientsGPU, probeInfo.bufferIdx);
 
 					probeInfo.flags = LightProbeFlags::Clean;
 					numProbeUpdates++;
@@ -146,9 +162,6 @@ namespace bs { namespace ct
 			if (entry.lastUpdatedProbe == (UINT32)probes.size())
 				entry.isDirty = false;
 		}
-
-		// TODO - In another function, need to find visible tetrahedrons and update their buffers per-view
-		// - Allow culling with an optimal maximum range
 	}
 
 	void LightProbes::resizeTetrahedronBuffers(VisibleLightProbeData& data, UINT32 count)
@@ -205,11 +218,19 @@ namespace bs { namespace ct
 
 	void LightProbes::updateVisibleProbes(const RendererView& view, VisibleLightProbeData& output)
 	{
+		// Ignore all probes past this point
+		static const float MAX_PROBE_DISTANCE = 100.0f;
+
 		const RendererViewProperties& viewProps = view.getProperties();
 		const ConvexVolume& worldFrustum = viewProps.cullFrustum;
 
+		const float maxProbeDistance2 = MAX_PROBE_DISTANCE * MAX_PROBE_DISTANCE;
 		for (UINT32 i = 0; i < (UINT32)mTetrahedronBounds.size(); i++)
 		{
+			float distance2 = viewProps.viewOrigin.squaredDistance(mTetrahedronBounds[i].getCenter());
+			if (distance2 > maxProbeDistance2)
+				continue;
+
 			if (worldFrustum.intersects(mTetrahedronBounds[i]))
 				mTempTetrahedronVisibility.push_back(i);
 		}

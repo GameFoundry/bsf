@@ -9,6 +9,7 @@
 
 namespace bs { namespace ct
 {
+	struct FrameInfo;
 	class LightProbeVolume;
 	struct VisibleLightProbeData;
 
@@ -56,6 +57,7 @@ namespace bs { namespace ct
 		 * Updates any dirty light probes by rendering the scene from their perspective and generating their SH 
 		 * coefficients.
 		 *
+		 * @param[in]	frameInfo		Information about the current frame.
 		 * @param[in]	maxProbes		Places a limit of how many probes can be updated in a single call to this method.
 		 *								Any probes that weren't updated will be updated when the method is called next 
 		 *								(up to the @p maxProbes limit), as so on.
@@ -66,7 +68,7 @@ namespace bs { namespace ct
 		 *								
 		 *								Provide a limit of 0 to force all probes to be updated.
 		 */
-		void updateProbes(UINT32 maxProbes = 3);
+		void updateProbes(const FrameInfo& frameInfo, UINT32 maxProbes = 3);
 
 		/** Generates GPU buffers that contain a list of probe tetrahedrons visible from the provided view. */
 		void updateVisibleProbes(const RendererView& view, VisibleLightProbeData& output);

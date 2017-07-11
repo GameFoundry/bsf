@@ -13,12 +13,26 @@ mixin SHCommon
 			float v6;
 		};
 		
+		struct SHVector3
+		{
+			float4 v0;
+			float4 v1;
+			float v2;
+		};			
+		
 		struct SHVector5RGB
 		{
 			SHVector5 R;
 			SHVector5 G;
 			SHVector5 B;
 		};
+		
+		struct SHVector3RGB
+		{
+			SHVector3 R;
+			SHVector3 G;
+			SHVector3 B;
+		};		
 		
 		void SHZero(inout SHVector5 v)
 		{
@@ -30,6 +44,13 @@ mixin SHCommon
 			v.v5 = 0;
 			v.v6 = 0;
 		}
+		
+		void SHZero(inout SHVector3 v)
+		{
+			v.v0 = 0;
+			v.v1 = 0;
+			v.v2 = 0;
+		}	
 
 		void SHMultiplyAdd(inout SHVector5 lhs, SHVector5 rhs, float c)
 		{
@@ -42,6 +63,13 @@ mixin SHCommon
 			lhs.v6 += rhs.v6 * c;
 		}
 		
+		void SHMultiplyAdd(inout SHVector3 lhs, SHVector3 rhs, float c)
+		{
+			lhs.v0 += rhs.v0 * c;
+			lhs.v1 += rhs.v1 * c;
+			lhs.v2 += rhs.v2 * c;
+		}		
+		
 		void SHAdd(inout SHVector5 lhs, SHVector5 rhs)
 		{
 			lhs.v0 += rhs.v0;
@@ -52,6 +80,13 @@ mixin SHCommon
 			lhs.v5 += rhs.v5;
 			lhs.v6 += rhs.v6;
 		}
+		
+		void SHAdd(inout SHVector3 lhs, SHVector3 rhs)
+		{
+			lhs.v0 += rhs.v0;
+			lhs.v1 += rhs.v1;
+			lhs.v2 += rhs.v2;
+		}		
 		
 		void SHMultiply(inout SHVector5 lhs, SHVector5 rhs)
 		{
@@ -64,6 +99,13 @@ mixin SHCommon
 			lhs.v6 *= rhs.v6;
 		}	
 		
+		void SHMultiply(inout SHVector3 lhs, SHVector3 rhs)
+		{
+			lhs.v0 *= rhs.v0;
+			lhs.v1 *= rhs.v1;
+			lhs.v2 *= rhs.v2;
+		}		
+		
 		void SHMultiply(inout SHVector5 lhs, float rhs)
 		{
 			lhs.v0 *= rhs;
@@ -73,7 +115,14 @@ mixin SHCommon
 			lhs.v4 *= rhs;
 			lhs.v5 *= rhs;
 			lhs.v6 *= rhs;
-		}				
+		}
+
+		void SHMultiply(inout SHVector3 lhs, float rhs)
+		{
+			lhs.v0 *= rhs;
+			lhs.v1 *= rhs;
+			lhs.v2 *= rhs;
+		}		
 		
 		SHVector5 SHBasis5(float3 dir)
 		{
@@ -124,5 +173,31 @@ mixin SHCommon
 			
 			return o;
 		}
+		
+		SHVector3 SHBasis3(float3 dir)
+		{
+			float x = dir.x;
+			float y = dir.y;
+			float z = dir.z;
+
+			float x2 = x*x;
+			float y2 = y*y;
+			float z2 = z*z;
+
+			SHVector3 o;
+			o.v0[0] = 0.282095f;
+
+			o.v0[1] = -0.488603f * y;
+			o.v0[2] =  0.488603f * z;
+			o.v0[3] = -0.488603f * x;
+
+			o.v1[0] =  1.092548f * x * y;
+			o.v1[1] = -1.092548f * y * z;
+			o.v1[2] =  0.315392f * (3.0f * z2 - 1.0f);
+			o.v1[3] = -1.092548f * x * z;
+			o.v2 =  0.546274f * (x2 - y2);
+
+			return o;
+		}		
 	};
 };
