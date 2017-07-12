@@ -12,6 +12,7 @@ namespace bs
 	/** @addtogroup ScriptInteropEngine
 	 *  @{
 	 */
+	/** @cond SCRIPT_EXTENSIONS */
 
 	/** Extension class for Mesh, for adding additional functionality for the script version of the class. */
 	class BS_SCRIPT_EXPORT(e:Mesh) MeshEx
@@ -101,5 +102,6 @@ namespace bs
 		static void setMeshData(const HMesh& thisPtr, const SPtr<RendererMeshData>& value);
 	};
 
+	/** @endcond */
 	/** @} */
 }

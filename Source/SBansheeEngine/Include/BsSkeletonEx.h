@@ -11,6 +11,7 @@ namespace bs
 	/** @addtogroup ScriptInteropEngine
 	 *  @{
 	 */
+	/** @cond SCRIPT_EXTENSIONS */
 
 	/** Contains internal information about a single bone in a Skeleton. */
 	struct BS_SCRIPT_EXPORT(n:BoneInfo,pl:true) SkeletonBoneInfoEx
@@ -38,5 +39,6 @@ namespace bs
 		static SkeletonBoneInfoEx getBoneInfo(const SPtr<Skeleton>& thisPtr, int boneIdx);
 	};
 
+	/** @endcond */
 	/** @} */
 }

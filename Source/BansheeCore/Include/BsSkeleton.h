@@ -103,8 +103,13 @@ namespace bs
 	};
 
 	/** 
+	 * @native
 	 * Contains information about bones required for skeletal animation. Allows caller to evaluate a set of animation
 	 * clips at a specific time and output the relevant skeleton pose.
+	 * @endnative
+	 * @script
+	 * Contains information about bones required for skeletal animation.
+	 * @endscript
 	 */
 	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Animation) Skeleton : public IReflectable // Note: Must be immutable in order to be usable on multiple threads
 	{

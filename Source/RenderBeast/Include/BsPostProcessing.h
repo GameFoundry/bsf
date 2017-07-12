@@ -442,7 +442,7 @@ namespace bs { namespace ct
 		 * @param[in]	far			Input texture containing filtered (blurred) values for the unfocused background area.
 		 *							Can be null if no far plane needs to be blended.
 		 * @param[in]	depth		Input depth buffer texture that will be used for determining pixel depth.
-		 * @param[in}	output		Texture to output the results to.
+		 * @param[in]	output		Texture to output the results to.
 		 * @param[in]	view		View through which the depth of field effect is viewed.
 		 * @param[in]	settings	Settings used to control depth of field rendering. 
 		 */
@@ -488,7 +488,7 @@ namespace bs { namespace ct
 		 * 
 		 * @param[in]	sceneColor	Input texture containing scene color.
 		 * @param[in]	sceneDepth	Input depth buffer texture that will be used for determining pixel depth.
-		 * @param[in}	output		Texture to output the results to.
+		 * @param[in]	output		Texture to output the results to.
 		 * @param[in]	view		View through which the depth of field effect is viewed.
 		 * @param[in]	settings	Settings used to control depth of field rendering. 
 		 */

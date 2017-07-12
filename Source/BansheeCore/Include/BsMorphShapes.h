@@ -26,8 +26,14 @@ namespace bs
 	};
 
 	/** 
+	 * @native
 	 * A set of vertices representing a single shape in a morph target animation. Vertices are represented as a difference
-	 * between base and target shape.
+	 * between base and target shape. 
+	 * @endnative
+	 * @script
+	 * Name and weight of a single shape in a morph target animation. Each shape internally represents a set of vertices
+	 * that describe the morph shape.
+	 * @endscript
 	 */
 	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Animation) MorphShape : public IReflectable
 	{

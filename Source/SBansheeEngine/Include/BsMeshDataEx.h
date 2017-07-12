@@ -11,6 +11,7 @@ namespace bs
 	/** @addtogroup ScriptInteropEngine
 	 *  @{
 	 */
+	/** @cond SCRIPT_EXTENSIONS */
 
 	/** Extension class for RendererMeshData, for adding additional functionality for the script version of the class. */
 	class BS_SCRIPT_EXPORT(e:RendererMeshData) MeshDataEx
@@ -83,5 +84,6 @@ namespace bs
 		static int getIndexCount(const SPtr<RendererMeshData>& thisPtr);
 	};
 
+	/** @endcond */
 	/** @} */
 }
