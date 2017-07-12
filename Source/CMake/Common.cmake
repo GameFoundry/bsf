@@ -65,7 +65,7 @@ function(update_binary_deps)
 	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/../Temp)	
 	execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_SOURCE_DIR}/../Temp)	
 	
-	set(BINARY_DEPENDENCIES_URL https://www.dropbox.com/s/bmvqpimzeicb87i/BansheeDependencies_VS2015_Master.zip?dl=1)
+	set(BINARY_DEPENDENCIES_URL http://data.banshee3d.com/BansheeDependencies_VS2015_Master.zip)
 	file(DOWNLOAD ${BINARY_DEPENDENCIES_URL} ${PROJECT_SOURCE_DIR}/../Temp/Dependencies.zip SHOW_PROGRESS)
 	
 	message(STATUS "Exacting files. Please wait...")
