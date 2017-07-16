@@ -7,10 +7,15 @@ mixin GBufferInput
 
 	code 
 	{
+		// Note: Only one or two sampler states are likely required, I can avoid wasting register space
 		SamplerState gGBufferASamp;
 		SamplerState gGBufferBSamp;
 		SamplerState gGBufferCSamp;
 		SamplerState gDepthBufferSamp;
+		
+		#ifndef MSAA_COUNT
+			#define MSAA_COUNT 1
+		#endif
 
 		#if MSAA_COUNT > 1
 		Texture2DMS<float4> gGBufferATex;
@@ -57,6 +62,16 @@ mixin GBufferInput
 			float4 GBufferBData = gGBufferBTex.Load(int3(pixelPos, 0));
 			float2 GBufferCData = gGBufferCTex.Load(int3(pixelPos, 0)).rg;
 			float deviceZ = gDepthBufferTex.Load(int3(pixelPos, 0)).r;
+			
+			return decodeGBuffer(GBufferAData, GBufferBData, GBufferCData, deviceZ);
+		}
+
+		SurfaceData getGBufferData(float2 uvPos)
+		{
+			float4 GBufferAData = gGBufferATex.Sample(gGBufferASamp, uvPos);
+			float4 GBufferBData = gGBufferBTex.Sample(gGBufferBSamp, uvPos);
+			float2 GBufferCData = gGBufferCTex.Sample(gGBufferCSamp, uvPos).rg;
+			float deviceZ = gDepthBufferTex.Sample(gDepthBufferSamp, uvPos).r;
 			
 			return decodeGBuffer(GBufferAData, GBufferBData, GBufferCData, deviceZ);
 		}			

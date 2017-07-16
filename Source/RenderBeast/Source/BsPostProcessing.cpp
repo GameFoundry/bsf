@@ -1062,8 +1062,8 @@ namespace bs { namespace ct
 		size = 1 << numMips;
 
 		// Note: Use the 32-bit buffer here as 16-bit causes too much banding (most of the scene gets assigned 4-5 different
-		// depth values). Perhaps if the depth was linealized before generation, or the far plane distance reduced, 16-bit
-		// would work, but for now sticking with 32-bit.
+		// depth values). 
+		//  - When I add UNORM 16-bit format I should be able to switch to that
 		return POOLED_RENDER_TEXTURE_DESC::create2D(PF_FLOAT32_R, size, size, TU_RENDERTARGET, 1, false, 1, numMips);
 	}
 
@@ -1591,6 +1591,68 @@ namespace bs { namespace ct
 			}
 
 		return Texture::create(pixelData);
+	}
+
+	SSRTraceParamDef gSSRTraceParamDef;
+
+	SSRTraceMat::SSRTraceMat()
+		:mGBufferParams(mMaterial, mParamsSet)
+	{
+		mParamBuffer = gSSRTraceParamDef.createBuffer();
+		mParamsSet->setParamBlockBuffer("Input", mParamBuffer);
+
+		SPtr<GpuParams> gpuParams = mParamsSet->getGpuParams();
+		gpuParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gSceneColor", mSceneColorTexture);
+	}
+
+	void SSRTraceMat::_initDefines(ShaderDefines& defines)
+	{
+		// Do nothing
+	}
+
+	void SSRTraceMat::execute(const RendererView& view, const SPtr<RenderTexture>& destination)
+	{
+		const RendererViewProperties& viewProps = view.getProperties();
+		RenderTargets& renderTargets = *view.getRenderTargets();
+
+		mGBufferParams.bind(renderTargets);
+		mSceneColorTexture.set(renderTargets.get(RTT_ResolvedSceneColor));
+
+		SPtr<Texture> hiZ = renderTargets.get(RTT_HiZ);
+		const TextureProperties& hiZProps = hiZ->getProperties();
+		
+		Rect2I viewRect = viewProps.viewRect;
+
+		// Maps from NDC to UV [0, 1]
+		Vector4 ndcToUVMapping;
+		ndcToUVMapping.x = 0.5f;
+		ndcToUVMapping.y = -0.5f;
+		ndcToUVMapping.z = 0.5f;
+		ndcToUVMapping.w = 0.5f;
+
+		// Either of these flips the Y axis, but if they're both true they cancel out
+		RenderAPI& rapi = RenderAPI::instance();
+		const RenderAPIInfo& rapiInfo = rapi.getAPIInfo();
+		if (rapiInfo.isFlagSet(RenderAPIFeatureFlag::UVYAxisUp) ^ rapiInfo.isFlagSet(RenderAPIFeatureFlag::NDCYAxisDown))
+			ndcToUVMapping.y = -ndcToUVMapping.y;
+		
+		// Maps from [0, 1] to are of HiZ where depth is stored in
+		ndcToUVMapping.x *= (float)viewRect.width / hiZProps.getWidth();
+		ndcToUVMapping.y *= (float)viewRect.height / hiZProps.getHeight();
+		
+		Vector2I bufferSize(hiZProps.getWidth(), hiZProps.getHeight());
+		gSSRTraceParamDef.gHiZSize.set(mParamBuffer, bufferSize);
+		gSSRTraceParamDef.gHiZNumMips.set(mParamBuffer, hiZProps.getNumMipmaps());
+		gSSRTraceParamDef.gHiZUVMapping.set(mParamBuffer, ndcToUVMapping);
+
+		SPtr<GpuParamBlockBuffer> perView = view.getPerViewBuffer();
+		mParamsSet->setParamBlockBuffer("PerCamera", perView);
+
+		rapi.setRenderTarget(destination);
+
+		gRendererUtility().setPass(mMaterial);
+		gRendererUtility().setPassParams(mParamsSet);
+		gRendererUtility().drawScreenQuad();
 	}
 
 	void PostProcessing::postProcess(RendererView* viewInfo, const SPtr<RenderTargets>& renderTargets, float frameDelta)

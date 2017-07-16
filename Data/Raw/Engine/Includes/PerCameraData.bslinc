@@ -52,7 +52,7 @@ mixin PerCameraData
 		{
 			return -gNDCZToWorldZ.y + (gNDCZToWorldZ.x / viewZ);
 		}
-		
+				
 		/** Converts Z value from NDC space to device Z value in range [0, 1]. */
 		float NDCZToDeviceZ(float ndcZ)
 		{

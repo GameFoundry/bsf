@@ -7,6 +7,7 @@
 #include "BsParamBlocks.h"
 #include "BsGpuResourcePool.h"
 #include "BsStandardPostProcessSettings.h"
+#include "BsLightRendering.h"
 
 namespace bs { namespace ct
 {
@@ -773,6 +774,36 @@ namespace bs { namespace ct
 		DEFINE_MATERIAL(4)
 
 #undef DEFINE_MATERIAL
+	};
+
+	BS_PARAM_BLOCK_BEGIN(SSRTraceParamDef)
+		BS_PARAM_BLOCK_ENTRY(Vector4, gHiZUVMapping)
+		BS_PARAM_BLOCK_ENTRY(Vector2I, gHiZSize)
+		BS_PARAM_BLOCK_ENTRY(int, gHiZNumMips)
+	BS_PARAM_BLOCK_END
+
+	extern SSRTraceParamDef gSSRTraceParamDef;
+
+	/** Shader used for tracing rays for screen space reflections. */
+	class SSRTraceMat : public RendererMaterial<SSRTraceMat>
+	{
+		RMAT_DEF("PPSSRTrace.bsl");
+
+	public:
+		SSRTraceMat();
+
+		/** 
+		 * Renders the effect with the provided parameters. 
+		 * 
+		 * @param[in]	view			Information about the view we're rendering from.
+		 * @param[in]	destination		Output texture to which to write the results to.
+		 */
+		void execute(const RendererView& view, const SPtr<RenderTexture>& destination);
+
+	private:
+		SPtr<GpuParamBlockBuffer> mParamBuffer;
+		GBufferParams mGBufferParams;
+		GpuParamTexture mSceneColorTexture;
 	};
 
 	/**

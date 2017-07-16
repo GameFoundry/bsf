@@ -1,0 +1,202 @@
+#include "$ENGINE$/PerCameraData.bslinc"
+
+mixin RayMarch
+{
+	mixin PerCameraData;
+
+	code
+	{
+		#ifndef NUM_STEPS
+			#define NUM_STEPS 12
+		#endif
+		
+		#ifndef HI_Z
+			#define HI_Z 0
+		#endif
+		
+		#define MAX_HIZ_ITERATIONS 9
+		#define HIZ_START_LEVEL 1
+	
+		float3 viewToNDC(float3 view)
+		{
+			float4 projected = mul(gMatProj, float4(view, 1));
+			projected.xyz /= projected.w;
+			
+			return projected.xyz;
+		}
+		
+		bool linearSearch(Texture2D depth, SamplerState samp, float3 rayStart, float3 rayStep, int numSteps, float stepIncrement, float compareTolerance, inout float t)
+		{
+			float lastDiff = 0.0f;
+			
+			[unroll]
+			for(int i = 0; i < numSteps; ++i)
+			{
+				float3 rayPos = rayStart + rayStep * t;
+			
+				#if HI_Z
+				float sampleDepth = depth.Sample(samp, rayPos.xy).r;
+				#else
+				float sampleDepth = depth.SampleLevel(samp, rayPos.xy, 0).r;
+				#endif
+				
+				float depthDiff = rayPos.z - sampleDepth;
+				bool hit = depthDiff > -compareTolerance;
+				if(hit)
+				{
+					// Refine hit using line segment intersection
+					float tt = lastDiff / (depthDiff - lastDiff);
+					t += tt * stepIncrement + stepIncrement;
+					
+					return true;
+				}
+			
+				lastDiff = depthDiff;
+				t += stepIncrement;
+			}
+			
+			return false;
+		}
+		
+		bool hiZSearch(Texture2D depth, SamplerState samp, int2 bufferSize, int maxMipLevel, float3 rayStart, float3 rayDir, inout float t)
+		{
+			float iterationCount = 0.0f;
+			int mipLevel = HIZ_START_LEVEL;
+			
+			bufferSize >>= mipLevel;
+			
+			float3 rayPos = rayStart + rayDir * t;
+			while(mipLevel >= 0 && iterationCount < MAX_HIZ_ITERATIONS)
+			{
+				if(any(rayPos < 0.0f) || any(rayPos > 1.0f))
+					return false; // Reached the end of valid range
+			
+				// Get position of the ray, relative to the current cell (sub-pixel)
+				float2 subCellPos = frac(rayPos.xy * bufferSize);
+				
+				// Move subCellPos to [-1,1] range, as it makes the calculation below easier
+				subCellPos *= 2.0f - 1.0f;
+				
+				// Find how much we can move the ray (in "t") before we hit a cell wall
+				//// We want: subCellPos + |rayDir| * t = 1
+				//// Solve for t: t = (1 - subCellPos) / |rayDir|
+				float epsilon = 0.00001f; // Handle div by zero
+				float2 maxXY = (1.0f - subCellPos) / abs(rayDir.xy + epsilon);
+				float maxT = min(maxXY.x, maxXY.y);
+				
+				// Get depth of the current cell
+				float cellZ = depth.SampleLevel(samp, rayPos.xy, mipLevel).r;
+				
+				// Find intersection with the cell
+				//// We want: rayPos.z + rayDir.z * t = cellZ
+				//// Solve for t: t = (cellZ - rayPos.z) / rayDir.z
+				t = (cellZ - rayPos.z) / rayDir.z;
+				
+				// The hit was within the cell walls, meaning we hit the floor of the cell (ray depth is higher than cell depth)
+				float hitBias = 0.002;
+				if(t < (maxT + hitBias))
+				{
+					// We're at the highest detail level, hit found
+					if(mipLevel < 1)
+						return true;
+						
+					// Increase detail level and refine search
+					mipLevel -= 1;
+					bufferSize <<= 1;
+				}
+				else
+				{
+					// We hit the cell wall, meaning we should move to the next cell
+					rayPos = rayStart + rayDir * maxT * 1.04;
+					
+					// Decrease detail level
+					int oldMipLevel = mipLevel;
+					
+					mipLevel = min(maxMipLevel, mipLevel + 1);
+					bufferSize >>= (mipLevel - oldMipLevel);
+				}
+				
+				iterationCount += 1.0f;
+			}
+						
+			return false;
+		}
+		
+		struct RayMarchParams
+		{
+			int2 bufferSize;
+			int numMips;
+			float4 hiZUVMapping; // From NDC to HiZ UV. .xy - multiply, .zw - add
+			float3 rayOrigin; // World space
+			float3 rayDir; // World space
+			float rayLength;
+			float jitterOffset;
+		};
+	
+		float4 rayMarch(Texture2D depth, SamplerState samp, RayMarchParams params)
+		{
+			float3 viewOrigin = mul(float4(params.rayOrigin, 1), gMatView);
+			float3 viewDir = mul(float4(params.rayDir, 0), gMatView);
+		
+			// Clip ray length so it doesn't go past the near plane
+			float rayLength = (viewOrigin.z + viewDir.z * params.rayLength) > gNearFar.x 
+				? (gNearFar.x - viewOrigin.z) / viewDir.z 
+				: params.rayLength;
+			
+			float3 ndcStart = viewToNDC(viewOrigin);
+			float3 ndcEnd = viewToNDC(viewOrigin + viewDir * rayLength);
+			float3 ndcStep = ndcEnd - ndcStart;
+			
+			// Resize ray so it reaches screen edge
+			//// We want: start + |step| * t = 1
+			//// Solve for t: t = (1 - start) / |step|
+			//// This has two solutions, but we can handle them both in a single equation by flipping sign depending on "step", on only one of the components:
+			//// t = 1/|step| - start/step
+			float epsilon = 0.00001f; // Handle div by zero
+			float2 stepScale = 1.0f / abs(ndcStep.xy + epsilon) - ndcStart.xy/(ndcStep.xy + epsilon);
+			ndcStep *= min(stepScale.x, stepScale.y);
+		
+			#if HI_Z
+			float3 uvStart;
+			uvStart.xy = ndcStart.xy * params.hiZUVMapping.xy + params.hiZUVMapping.zw;
+			uvStart.z = NDCZToDeviceZ(ndcStart.z);
+			
+			float3 uvStep;
+			uvStep.xy = ndcStep.xy * params.hiZUVMapping.xy + params.hiZUVMapping.zw;
+			uvStep.z = NDCZToDeviceZ(ndcStep.z);
+		
+			#else
+			float3 uvStart = float3(NDCToUV(ndcStart.xy), NDCZToDeviceZ(ndcStart.z));
+			float3 uvStep = float3(NDCToUV(ndcStep.xy), NDCZToDeviceZ(ndcStep.z));
+			#endif
+		
+			float stepIncrement = 1.0f / NUM_STEPS;
+			// Offset starting position to avoid self-intersection. Use random values to avoid
+			// staircase artifacts.
+			float t = stepIncrement + stepIncrement * params.jitterOffset;
+			
+			// Note: Perhaps tweak this value
+			float compareTolerance = uvStep.z * stepIncrement;
+			
+			// Always do three steps of linear search
+			// (HiZ search is more expensive for short runs)
+			if(linearSearch(depth, samp, uvStart, uvStep, 3, stepIncrement, compareTolerance, t))
+				return float4(uvStart + uvStep * t, t);
+			
+			#if HI_Z
+			
+			// Hierarchical search
+			if(hiZSearch(depth, samp, params.bufferSize, params.numMips, uvStart, normalize(uvStep), t))
+				return float4(uvStart + uvStep * t, t);
+			#else
+			
+			// Plain linear search
+			if(linearSearch(depth, samp, uvStart, uvStep, NUM_STEPS - 3, stepIncrement, compareTolerance, t))
+				return float4(uvStart + uvStep * t, t);
+			#endif
+			
+			// Hit not found
+			return float4(0, 0, 0, 1);
+		}		
+	};
+};
