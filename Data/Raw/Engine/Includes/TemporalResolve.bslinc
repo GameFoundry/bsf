@@ -1,0 +1,440 @@
+#include "$ENGINE$/PerCameraData.bslinc"
+#include "$ENGINE$/ColorSpace.bslinc"
+
+mixin PPTemporalResolve
+{
+	mixin PerCameraData;
+	mixin ColorSpace;
+
+	code
+	{
+		////////////////// CUSTOMIZATION PARAMETERS /////////////////////////////
+	
+		// When enabled, the system will sample a specific sample from a MS texture. UV coordinates are assumed
+		// to be in pixel space in that case. When disabled sampleIdx parameter is ignored and UV coordinates
+		// are assumed be in standard [0, 1] range.
+		#ifndef MSAA
+			#define MSAA 0
+		#endif
+	
+		// 0 - System will use the velocity of the current pixel
+		// 1 - System will search 4 neighbor pixels in + pattern, and choose the velocity of the pixel nearest //     to the camera
+		// 2 - System will search 8 surrounding pixels and choose the velocity of the pixel nearest to the camera
+		//
+		// Searching the neighborhod instead of just using current velocity yields nicer edges for objects in 
+		// motion. See TEMPORAL_SEARCH_RADIUS in order to customize how far away to search.
+		//
+		// Only relevant if TEMPORAL_LOCAL_VELOCITY is enabled, since without it no per-object velocity
+		// information is present and everything is blended based on camera movement.
+		#ifndef TEMPORAL_SEARCH_NEAREST
+			#define TEMPORAL_SEARCH_NEAREST 1
+		#endif
+		
+		// Determine how far away to sample pixels when TEMPORAL_SEARCH_NEAREST is enabled. 
+		// 1 - Immediately adjacent pixels are searched
+		// 2 - Pixels two away are searched (looks better than 1)
+		// 3 - etc.
+		#ifndef TEMPORAL_SEARCH_RADIUS
+			#define TEMPORAL_SEARCH_RADIUS 2
+		#endif
+		
+		// 0 - The system will only account for velocity due to camera movement (not due to individual objects)
+		// 1 - The system will account both for velocity due to camera movement, as well as individual object 
+		//     movement. Requires the user to provide a per-pixel velocity buffer.
+		#ifndef TEMPORAL_LOCAL_VELOCITY
+			#define TEMPORAL_LOCAL_VELOCITY 1
+		#endif
+		
+		// When enabled, the resolve operation will be performed in YCoCg color space. This can yield better
+		// results, requires less color samples and no value clipping.
+		#ifndef TEMPORAL_YCOCG
+			#define TEMPORAL_YCOCG 0
+		#endif
+		
+		// When enabled, green color will be used instead of calculating luminosity. This will yield better
+		// performance but can result in lower quality. Ignored when TEMPORAL_YCOCG is enabled, since luminosity
+		// is already available as part of the YCoCg color space.
+		#ifndef TEMPORAL_GREEN_AS_LUMA
+			#define TEMPORAL_GREEN_AS_LUMA 0
+		#endif
+		
+		// When enabled the input samples will be tonemapped using the provided exposure value. Once the final
+		// value is resolved, it will be scaled back into original range. This ensures high frequency data from
+		// HDR content is removed, as it would cause aliasing otherwise. We scale the result back into high range
+		// so the high-quality tonemap shader can be ran on it.
+		#ifndef TEMPORAL_TONEMAP
+			#define TEMPORAL_TONEMAP 1
+		#endif
+	
+		// When enabled an extra low-pass filter is ran when sampling scene color, for better quality.
+		#ifndef TEMPORAL_LOWPASS
+			#define TEMPORAL_LOWPASS 1
+		#endif
+		
+		// When enabled, clamp/clip color neighborhood will be deduced using standard deviation of all the
+		// neighborhood samples. When disabled a min/max operation is performed instead.
+		#ifndef TEMPORAL_SMOOTH_NEIGHBORHOOD
+			#define TEMPORAL_SMOOTH_NEIGHBORHOOD 1
+		#endif
+	
+		////////////////////////// HELPER MACROS /////////////////////////
+		#if MSAA
+			#define _TEX2D(n) Texture2DMS n
+			#define _PTEX2D(n) n
+			#define _SAMPLE(n, uv) n.Load((int2)uv, sampleIdx)
+			#define _SAMPLEOFF(n, uv, offset) n.Load((int2)(uv) + offset)
+			#define _PIXSIZE(n) int2(1, 1)
+		#else
+			#define _TEX2D(n) Texture2D n, SamplerState n##SampState, float n##TexelSize
+			#define _PTEX2D(n) n, n##SampState, n##TexelSize
+			#define _SAMPLE(n, uv) n.Sample(n##SampState, uv)
+			#define _SAMPLEOFF(n, uv, offset) n.Sample(n##SampState, uv, offset)
+			#define _PIXSIZE(n) n##TexelSize
+		#endif
+		
+		///////////////////////// HELPER FUNCTIONS ////////////////////////
+		float3 findNearest3x3(_TEX2D(sceneDepth), float2 uv, int sampleIdx)
+		{
+			int r = TEMPORAL_SEARCH_RADIUS;
+			float3 dmin = float3(0, 0, 1);
+			
+			[unroll]
+			for(int y = -r; y <= r; y += r)
+			{
+				[unroll]
+				for(int x = -r; x <= r; x += r)
+				{
+					float depth = _SAMPLEOFF(sceneDepth, uv, int2(x, y)).x;
+					dmin = depth < dmin.z ? float3(x, y, depth) : dmin;	
+				}
+			}
+			
+			return float3(uv + dmin.xy * _PIXSIZE(sceneDepth), dmin.z);
+		}
+		
+		float3 findNearestCross(_TEX2D(sceneDepth), float2 uv, int sampleIdx)
+		{
+			int r = TEMPORAL_SEARCH_RADIUS;
+			float3 dmin = float3(0, 0, 1);
+			
+			{
+				float depth = _SAMPLE(sceneDepth, uv).x;
+				dmin = depth < dmin.z ? float3(0, 0, depth) : dmin;	
+			}
+			
+			{
+				float depth = _SAMPLEOFF(sceneDepth, uv, -r).x;
+				dmin = depth < dmin.z ? float3(-r, 0, depth) : dmin;	
+			}
+			
+			{
+				float depth = _SAMPLEOFF(sceneDepth, uv, -r).x;
+				dmin = depth < dmin.z ? float3(r, 0, depth) : dmin;	
+			}
+
+			{
+				float depth = _SAMPLEOFF(sceneDepth, uv, -r).x;
+				dmin = depth < dmin.z ? float3(0, -r, depth) : dmin;	
+			}
+
+			{
+				float depth = _SAMPLEOFF(sceneDepth, uv, -r).x;
+				dmin = depth < dmin.z ? float3(0, r, depth) : dmin;	
+			}			
+			
+			return float3(uv + dmin.xy * _PIXSIZE(sceneDepth), dmin.z);
+		}		
+		
+		// Encodes velocity into a format suitable for storing in a 16-bit SNORM texture. 
+		// Velocity range of [-2, 2] is supported (full NDC).
+		float2 encodeVelocity16SNORM(float2 velocity)
+		{
+			return velocity * 0.5f;
+		}
+		
+		// Decodes velocity from an encoded 16-bit SNORM format. See encodeVelocity16SNORM().
+		// Velocity range of [-2, 2] is supported (full NDC).
+		float2 decodeVelocity16SNORM(float2 val)
+		{
+			return val * 2.0f;
+		}
+		
+		////////////////////// HDR SCALING HELPER FUNCTIONS ///////////////////
+		// HDR scaling methods use luminance based scaling, instead of a tonemap operator, as
+		// described here:
+		// http://graphicrants.blogspot.hr/2013/12/tone-mapping.html
+		float HDRScaleWeight(float luma, float exposureScale)
+		{
+			return rcp(1 + luma * exposureScale);
+		}
+		
+		float HDRScaleWeightInv(float luma, float exposureScale)
+		{
+			return rcp(1 - luma * exposureScale);
+		}		
+		
+		float3 HDRScaleRGB(float3 v, float exposureScale)
+		{
+			float luma = LuminanceRGB(v);
+			
+			return v * HDRScaleWeight(luma, exposureScale);
+		}
+		
+		float3 HDRScaleY(float3 v, float exposureScale)
+		{
+			float luma = v.r;
+			
+			return v * HDRScaleWeight(luma, exposureScale);
+		}
+		
+		float3 HDRScaleG(float3 v, float exposureScale)
+		{
+			float luma = v.g;
+			
+			return v * HDRScaleWeight(luma, exposureScale);
+		}
+
+		float3 HDRScaleRGBInv(float3 v, float exposureScale)
+		{
+			float luma = LuminanceRGB(v);
+			
+			return v * HDRScaleWeightInv(luma, exposureScale);
+		}
+		
+		float3 HDRScaleYInv(float3 v, float exposureScale)
+		{
+			float luma = v.r;
+			
+			return v * HDRScaleWeightInv(luma, exposureScale);
+		}
+		
+		float3 HDRScaleGInv(float3 v, float exposureScale)
+		{
+			float luma = v.g;
+			
+			return v * HDRScaleWeightInv(luma, exposureScale);
+		}		
+		
+		////////////////////// HELPER TONEMAP/COLOR SPACE DEFINES /////////////////////
+		// Automatically scale HDR values based on luminance, if enabled
+		#if TEMPORAL_TONEMAP
+			#if TEMPORAL_YCOCG
+				#define _TONEMAP_COLOR(v) HDRScaleY(v, exposureScale)
+			#elif TEMPORAL_GREEN_AS_LUMA
+				#define _TONEMAP_COLOR(v) HDRScaleG(v, exposureScale)
+			#else
+				#define _TONEMAP_COLOR(v) HDRScaleRGB(v, exposureScale)
+			#endif
+		#else // TEMPORAL_TONEMAP
+			#define _TONEMAP_COLOR(v) v
+		#endif // TEMPORAL_TONEMAP
+		
+		#if TEMPORAL_TONEMAP
+			#if TEMPORAL_YCOCG
+				#define _TONEMAP_COLOR_INV(v) HDRScaleYInv(v, exposureScale)
+			#elif TEMPORAL_GREEN_AS_LUMA
+				#define _TONEMAP_COLOR_INV(v) HDRScaleGInv(v, exposureScale)
+			#else
+				#define _TONEMAP_COLOR_INV(v) HDRScaleRGBInv(v, exposureScale)
+			#endif
+		#else // TEMPORAL_TONEMAP
+			#define _TONEMAP_COLOR_INV(v) v
+		#endif // TEMPORAL_TONEMAP		
+		
+		// Automatically convert from/to YCoCg space, if enabled
+		#if TEMPORAL_YCOCG
+			#define _SAMPLE_COLOR(n, uv, offset) _TONEMAP_COLOR(RGBToYCoCg(_SAMPLEOFF(n, uv, offset)))
+		#else // TEMPORAL_YCOCG
+			#define _SAMPLE_COLOR(n, uv, offset) _TONEMAP_COLOR(_SAMPLEOFF(n, uv, offset))
+		#endif // TEMPORAL_YCOCG
+				
+		#if TEMPORAL_YCOCG
+			#define _RESOLVE_COLOR(v) _TONEMAP_COLOR_INV(YCoCgToRGB(v))
+		#else // TEMPORAL_YCOCG
+			#define _RESOLVE_COLOR(v) _TONEMAP_COLOR_INV(v)
+		#endif // TEMPORAL_YCOCG
+		
+		///////////////////////////// MAIN /////////////////////////////////
+		[internal]
+		cbuffer TemporalInput
+		{
+			float gSampleWeights[9];
+			float gSampleWeightsLowpass[9];
+		}
+		
+		// TODO - Scene depth sampler must be POINT. Also CLAMP so neighbor search is clamped.
+		// TODO - UV must be in pixels for MSAA
+		// TODO - Need to use CLAMP for scene color, so neighbor search is clamped.
+		// TODO - Need to use SNORM 16-bit format for velocity
+		// TODO - Add gNDCToPrevNDC matrix to PerCameraData
+		// TODO - Generate C++ samples (make sure to account for YCoCg path, and remove jitter)
+		float3 temporalResolve(
+			_TEX2D(sceneDepth), 
+			_TEX2D(sceneColor), 
+			_TEX2D(prevColor), 
+			#if TEMPORAL_LOCAL_VELOCITY
+			_TEX2D(velocityBuffer),
+			#endif // TEMPORAL_LOCAL_VELOCITY
+			#if TEMPORAL_TONEMAP
+			float exposureScale,
+			#endif // TEMPORAL_TONEMAP
+			float2 uv,
+			float2 ndcPos, // Can be derived from UV, but we usually have it for free, so pass it directly
+			int sampleIdx)
+		{
+			///////////// DETERMINE PER-PIXEL VELOCITY & CURRENT DEPTH ///////////////////
+			float curDepth;
+			float2 velocity;
+			#if TEMPORAL_LOCAL_VELOCITY
+				#if TEMPORAL_SEARCH_NEAREST == 1
+					float3 nearest = findNearestCross(_PTEX2D(sceneDepth), uv, sampleIdx);
+					velocity = _SAMPLE(velocityBuffer, nearest.xy);
+					curDepth = nearest.z;
+				#elif TEMPORAL_SEARCH_NEAREST == 2
+					float3 nearest = findNearest3x3(_PTEX2D(sceneDepth), uv, sampleIdx);
+					velocity = _SAMPLE(velocityBuffer, nearest.xy);
+					curDepth = nearest.z;
+				#else // TEMPORAL_SEARCH_NEAREST
+					velocity = _SAMPLE(velocityBuffer, uv);
+					curDepth = _SAMPLE(sceneDepth, uv).x;
+				#endif // TEMPORAL_SEARCH_NEAREST
+			#else // TEMPORAL_LOCAL_VELOCITY
+				velocity = 0;
+				curDepth = _SAMPLE(sceneDepth, uv).x;
+			#endif // TEMPORAL_LOCAL_VELOCITY
+			
+			///////////////////// DETERMINE PREV. FRAME UV //////////////////////////////
+			float2 prevNdcPos;
+			bool hasLocalVelocity = (abs(velocity.x) + abs(velocity.y)) > 0;
+			if(hasLocalVelocity)
+			{
+				velocity = decodeVelocity16SNORM(velocity);
+				prevNdcPos = float3(ndcPos - velocity);
+			}
+			else
+			{
+				// Assumes velocity due to camera movement
+				float4 currentNDC = float4(ndcPos, curDepth, 1);
+				float4 prevClip = mul(gNDCToPrevNDC, currentNDC);
+				prevNdcPos = prevClip.xy / prevClip.w;
+			}
+			
+			#if MSAA
+			float prevUV = NDCToScreen(prevNdcPos);
+			#else
+			float2 prevUV = NDCToUV(prevNdcPos);
+			#endif
+			
+			/////////////// GET FILTERED COLOR VALUE AND NEIGHBORHOOD MIN/MAX /////////////
+			#if TEMPORAL_YCOCG
+			float3 neighbor[5];
+			neighbor[0] = _SAMPLE_COLOR(sceneColor, uv, int2(-1,  0));
+			neighbor[1] = _SAMPLE_COLOR(sceneColor, uv, int2( 0, -1));
+			neighbor[2] = _SAMPLE_COLOR(sceneColor, uv, int2( 0,  0));
+			neighbor[3] = _SAMPLE_COLOR(sceneColor, uv, int2( 1,  0));
+			neighbor[4] = _SAMPLE_COLOR(sceneColor, uv, int2( 0,  1));
+			
+			float3 filtered = 0;
+			[unroll]
+			for(uint i = 0; i < 5; ++i)
+				filtered += neighbor[i] * gSampleWeights[i];
+			
+			float3 filteredLow = filtered;
+			
+			float3 neighborMin = min(min(min(neighbor[0], neighbor[1]), min(neighbor[2], neighbor[3])), 
+				neighbor[4]);
+				
+			float3 neighborMax = max(max(max(neighbor[0], neighbor[1]), max(neighbor[2], neighbor[3])), 
+				neighbor[4]);
+			
+			#else // TEMPORAL_YCOCG
+			float3 neighbor[9];
+			neighbor[0] = _SAMPLE_COLOR(sceneColor, uv, int2(-1, -1));
+			neighbor[1] = _SAMPLE_COLOR(sceneColor, uv, int2( 0, -1));
+			neighbor[2] = _SAMPLE_COLOR(sceneColor, uv, int2( 1, -1));
+			neighbor[3] = _SAMPLE_COLOR(sceneColor, uv, int2(-1,  0));
+			neighbor[4] = _SAMPLE_COLOR(sceneColor, uv, int2( 0,  0));
+			neighbor[5] = _SAMPLE_COLOR(sceneColor, uv, int2( 1,  0));
+			neighbor[6] = _SAMPLE_COLOR(sceneColor, uv, int2(-1,  1));
+			neighbor[7] = _SAMPLE_COLOR(sceneColor, uv, int2( 0,  1));
+			neighbor[8] = _SAMPLE_COLOR(sceneColor, uv, int2( 1,  1));
+			
+			float3 filtered = 0;
+			[unroll]
+			for(uint i = 0; i < 9; ++i)
+				filtered += neighbor[i] * gSampleWeights[i];
+			
+			#if TEMPORAL_LOWPASS
+				float3 filteredLow = 0;
+				[unroll]
+				for(uint i = 0; i < 9; ++i)
+					filteredLow += neighbor[i] * gSampleWeightsLowpass[i];
+			#else
+				float3 filteredLow = filtered;
+			#endif // TEMPORAL_LOWPASS
+			
+			#if TEMPORAL_SMOOTH_NEIGHBORHOOD
+			
+			float3 mean = 0;
+			[unroll]
+			for(uint i = 0; i < 9; ++i)
+					mean += neighbor[i];
+			
+			mean /= 9.0f;
+			
+			float3 meanSqrd = 0;
+			[unroll]
+			for(uint i = 0; i < 9; ++i)
+				meanSqrd += neighbor[i] * neighbor[i];
+			
+			meanSqrd /= 9.0f;
+			
+			float3 stdDev = sqrt(abs(meanSqrd - mean * mean));
+			float3 neighborMin = mean - stdDev;
+			float3 neighborMax = mean + stdDev;
+			
+			#else // TEMPORAL_SMOOTH_NEIGHBORHOOD
+			float3 neighborMin = min(min(
+				min(min(neighbor[0], neighbor[1]), min(neighbor[2], neighbor[3])), 
+				min(min(neighbor[4], neighbor[5]), min(neighbor[6], neighbor[7]))), 
+				neighbor[8]);
+				
+			float3 neighborMax = max(max(
+				max(max(neighbor[0], neighbor[1]), max(neighbor[2], neighbor[3])), 
+				max(max(neighbor[4], neighbor[5]), max(neighbor[6], neighbor[7]))), 
+				neighbor[8]);
+			
+			#endif // TEMPORAL_SMOOTH_NEIGHBORHOOD
+			#endif // TEMPORAL_YCOCG
+			
+			/////////////////// GET PREVIOUS FRAME COLOR ///////////////////////
+			float3 prevColorVal = _SAMPLE_COLOR(prevColor, prevUV, int2(0, 0));
+			
+			// TODO - Do clamp
+			//  - Either basic or AABB based
+			
+			// TODO - Sharpen
+			//  - Needs more research
+			
+			// TODO - Blend
+			//  - Determine blend value based on colors, or use a fixed amount
+			//  - Reverse YCOCG and tonemap as required
+			
+			// TODO - Limbo implementation does unjitter operation in specific places, do I need to as well?
+			//  - This seems to be applied during sample generation
+			
+			// TODO - Not doing (investigate if needed):
+			//  - Sharpen
+			//  - AA border clamp
+		}
+		
+		#undef _TEX2D
+		#undef _PTEX2D
+		#undef _SAMPLE
+		#undef _PIXSIZE
+		#undef _TONEMAP_COLOR
+		#undef _TONEMAP_COLOR_INV
+		#undef _SAMPLE_COLOR
+		#undef _RESOLVE_COLOR
+	};
+};

@@ -143,6 +143,14 @@
         {
             "Path": "RayMarch.bslinc",
             "UUID": "c64f9bee-c0c2-442e-9f59-35da0494e827"
+        },
+        {
+            "Path": "ColorSpace.bslinc",
+            "UUID": "9fc44e5a-b23f-4002-bd2e-793cf0d03c32"
+        },
+        {
+            "Path": "TemporalResolve.bslinc",
+            "UUID": "b0ce01c2-3326-445e-bf2b-35cf8d9d6e1b"
         }
     ],
     "Shaders": [

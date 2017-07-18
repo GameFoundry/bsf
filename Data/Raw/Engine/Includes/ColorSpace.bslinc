@@ -1,0 +1,37 @@
+mixin ColorSpace
+{
+	code
+	{
+		/**
+		 * Converts a color in RGB space into YCoCg color space. Note that Co and Cg
+		 * components are in [-0.5, 0.5] range and therefore cannot be stored as-is
+		 * in a normal color texture.
+		 */
+		float3 RGBToYCoCg(float3 input)
+		{
+			float Y = dot(input, float3(0.25f, 0.5f, 0.25f));
+			float Co = input.r * 0.5f + input.b * -0.5f;
+			float Cg = dot(input, float3(-0.25f, 0.5f, -0.25f));
+			
+			return float3(Y, Co, Cg);
+		}
+		
+		/**
+		 * Converts a color in YCoCg color space into RGB color space.
+		 */
+		float3 YCoCg(float3 input)
+		{
+			float R = input.r + input.g - input.b;
+			float G = input.r + input.b;
+			float B = input.r - input.g - input.b;
+			
+			return float3(R, G, B);
+		}
+		
+		/** Calculates luminance from a color in RGB color space. */
+		float LuminanceRGB(float3 input)
+		{
+			return 0.299f * input.r + 0.587f * input.g + 0.114f * input.b;
+		}
+	};
+};
