@@ -337,6 +337,10 @@
         {
             "Path": "PPSSRStencil.bsl",
             "UUID": "a9eb5ddf-1196-48d8-9403-a80a9595cde0"
+        },
+        {
+            "Path": "PPSSRResolve.bsl",
+            "UUID": "86b9699c-162d-4729-9985-c94e0f45bacb"
         }
     ],
     "Skin": [

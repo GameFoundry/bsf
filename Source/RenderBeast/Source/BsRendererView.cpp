@@ -82,6 +82,7 @@ namespace bs { namespace ct
 		: mProperties(desc), mTargetDesc(desc.target), mCamera(desc.sceneCamera), mUsingGBuffer(false)
 	{
 		mParamBuffer = gPerCameraParamDef.createBuffer();
+		mProperties.prevViewProjTransform = mProperties.viewProjTransform;
 
 		setStateReductionMode(desc.stateReduction);
 	}
@@ -135,7 +136,7 @@ namespace bs { namespace ct
 		setStateReductionMode(desc.stateReduction);
 	}
 
-	void RendererView::beginRendering(bool useGBuffer)
+	void RendererView::beginFrame(bool useGBuffer)
 	{
 		if (useGBuffer)
 		{
@@ -152,8 +153,11 @@ namespace bs { namespace ct
 		}
 	}
 
-	void RendererView::endRendering()
+	void RendererView::endFrame()
 	{
+		// Save view-projection matrix to use for temporal filtering
+		mProperties.prevViewProjTransform = mProperties.viewProjTransform;
+
 		mOpaqueQueue->clear();
 		mTransparentQueue->clear();
 
@@ -426,6 +430,7 @@ namespace bs { namespace ct
 		projZ[3][3] = 0.0f;
 		
 		gPerCameraParamDef.gMatScreenToWorld.set(mParamBuffer, invViewProj * projZ);
+		gPerCameraParamDef.gNDCToPrevNDC.set(mParamBuffer, mProperties.prevViewProjTransform * invViewProj);
 		gPerCameraParamDef.gViewDir.set(mParamBuffer, mProperties.viewDirection);
 		gPerCameraParamDef.gViewOrigin.set(mParamBuffer, mProperties.viewOrigin);
 		gPerCameraParamDef.gDeviceZToWorldZ.set(mParamBuffer, getDeviceZToViewZ(mProperties.projTransform));

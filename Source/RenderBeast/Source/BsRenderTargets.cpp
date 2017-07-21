@@ -472,7 +472,7 @@ namespace bs { namespace ct
 		case RTT_ResolvedSceneColor:
 			return mResolvedSceneColorTex1;
 		case RTT_ResolvedSceneColorSecondary:
-			return mResolvedSceneColorTex1;
+			return mResolvedSceneColorTex2;
 		case RTT_HiZ:
 			return mHiZ;
 		case RTT_ResolvedDepth:

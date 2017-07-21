@@ -823,10 +823,10 @@ namespace bs { namespace ct
 		 * 
 		 * @param[in]	view			Information about the view we're rendering from.
 		 * @param[in]	settings		Parameters used for controling the SSR effect.
-		 * @param[in]	destination		Output texture to which to write the results to.
+		 * @param[in]	destination		Render target to which to write the results to.
 		 */
 		void execute(const RendererView& view, const ScreenSpaceReflectionsSettings& settings, 
-			const SPtr<RenderTexture>& destination);
+			const SPtr<RenderTarget>& destination);
 
 		/**
 		 * Calculates a scale & bias that is used for transforming roughness into a fade out value. Anything that is below
@@ -838,6 +838,57 @@ namespace bs { namespace ct
 		SPtr<GpuParamBlockBuffer> mParamBuffer;
 		GBufferParams mGBufferParams;
 		GpuParamTexture mSceneColorTexture;
+	};
+
+	BS_PARAM_BLOCK_BEGIN(TemporalResolveParamDef)
+		BS_PARAM_BLOCK_ENTRY_ARRAY(float, gSampleWeights, 9)
+		BS_PARAM_BLOCK_ENTRY_ARRAY(float, gSampleWeightsLowpass, 9)
+	BS_PARAM_BLOCK_END
+
+	extern TemporalResolveParamDef gTemporalResolveParamDef;
+
+	BS_PARAM_BLOCK_BEGIN(SSRResolveParamDef)
+		BS_PARAM_BLOCK_ENTRY(Vector2, gSceneDepthTexelSize)
+		BS_PARAM_BLOCK_ENTRY(Vector2, gSceneColorTexelSize)
+		BS_PARAM_BLOCK_ENTRY(float, gManualExposure)
+	BS_PARAM_BLOCK_END
+
+	extern SSRResolveParamDef gSSRResolveParamDef;
+
+	/** 
+	 * Shader used for combining SSR information from the previous frame, in order to yield better quality. 
+	 * 
+	 * @tparam	EyeAdaptation	When true the shader will expect a texture containing an exposure value calculated by
+	 *							the eye adaptation shader. Otherwise the manually provided exposure value is used instead.
+	 */
+	template<bool EyeAdaptation>
+	class SSRResolveMat : public RendererMaterial<SSRResolveMat<EyeAdaptation>>
+	{
+		RMAT_DEF("PPSSRResolve.bsl");
+
+	public:
+		SSRResolveMat();
+
+		/** 
+		 * Renders the effect with the provided parameters. 
+		 * 
+		 * @param[in]	view			Information about the view we're rendering from.
+		 * @param[in]	prevFrame		SSR data calculated previous frame.
+		 * @param[in]	curFrame		SSR data calculated this frame.
+		 * @param[in]	sceneDepth		Buffer containing scene depth.
+		 * @param[in]	destination		Render target to which to write the results to.
+		 */
+		void execute(const RendererView& view, const SPtr<Texture>& prevFrame, const SPtr<Texture>& curFrame, 
+			const SPtr<Texture>& sceneDepth, const SPtr<RenderTarget>& destination);
+
+	private:
+		SPtr<GpuParamBlockBuffer> mSSRParamBuffer;
+		SPtr<GpuParamBlockBuffer> mTemporalParamBuffer;
+
+		GpuParamTexture mSceneColorTexture;
+		GpuParamTexture mPrevColorTexture;
+		GpuParamTexture mSceneDepthTexture;
+		GpuParamTexture mEyeAdaptationTexture;
 	};
 
 	/**

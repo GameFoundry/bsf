@@ -621,31 +621,7 @@ namespace bs { namespace ct
 		// Reserve space for shadow infos
 		mShadowInfos.resize(shadowInfoCount);
 
-		// Render shadow maps
-		for (UINT32 i = 0; i < (UINT32)sceneInfo.directionalLights.size(); ++i)
-		{
-			const RendererLight& light = sceneInfo.directionalLights[i];
-
-			if (!light.internal->getCastsShadow())
-				return;
-
-			for (UINT32 j = 0; j < (UINT32)sceneInfo.views.size(); ++j)
-				renderCascadedShadowMaps(j, i, scene, frameInfo);
-		}
-
-		for(auto& entry : mSpotLightShadowOptions)
-		{
-			UINT32 lightIdx = entry.lightIdx;
-			renderSpotShadowMap(sceneInfo.spotLights[lightIdx], entry, scene, frameInfo);
-		}
-
-		for (auto& entry : mRadialLightShadowOptions)
-		{
-			UINT32 lightIdx = entry.lightIdx;
-			renderRadialShadowMap(sceneInfo.radialLights[lightIdx], entry, scene, frameInfo);
-		}
-		
-		// Deallocate unused textures
+		// Deallocate unused textures (must be done before rendering shadows, in order to ensure indices don't change)
 		for(auto iter = mDynamicShadowMaps.begin(); iter != mDynamicShadowMaps.end(); ++iter)
 		{
 			if(iter->getLastUsedCounter() >= MAX_UNUSED_FRAMES)
@@ -670,6 +646,30 @@ namespace bs { namespace ct
 				iter = mShadowCubemaps.erase(iter);
 			else
 				++iter;
+		}
+
+		// Render shadow maps
+		for (UINT32 i = 0; i < (UINT32)sceneInfo.directionalLights.size(); ++i)
+		{
+			const RendererLight& light = sceneInfo.directionalLights[i];
+
+			if (!light.internal->getCastsShadow())
+				return;
+
+			for (UINT32 j = 0; j < (UINT32)sceneInfo.views.size(); ++j)
+				renderCascadedShadowMaps(j, i, scene, frameInfo);
+		}
+
+		for(auto& entry : mSpotLightShadowOptions)
+		{
+			UINT32 lightIdx = entry.lightIdx;
+			renderSpotShadowMap(sceneInfo.spotLights[lightIdx], entry, scene, frameInfo);
+		}
+
+		for (auto& entry : mRadialLightShadowOptions)
+		{
+			UINT32 lightIdx = entry.lightIdx;
+			renderRadialShadowMap(sceneInfo.radialLights[lightIdx], entry, scene, frameInfo);
 		}
 	}
 

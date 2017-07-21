@@ -17,6 +17,10 @@ mixin PerCameraData
 			// and view_z/view_w in view space, into world space				
 			float4x4 gMatScreenToWorld;
 			
+			// Transforms a location in NDC, to the location of the same pixel on the previous frame. Used for
+			// determining camera movement for temporal filtering
+			float4x4 gNDCToPrevNDC;			
+			
 			// Converts device Z to world Z using this formula: worldZ = (1 / (deviceZ + y)) * x
 			float2 	 gDeviceZToWorldZ;
 			float2	 gNDCZToWorldZ;

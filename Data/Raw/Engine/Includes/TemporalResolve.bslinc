@@ -1,7 +1,7 @@
 #include "$ENGINE$/PerCameraData.bslinc"
 #include "$ENGINE$/ColorSpace.bslinc"
 
-mixin PPTemporalResolve
+mixin TemporalResolve
 {
 	mixin PerCameraData;
 	mixin ColorSpace;
@@ -112,7 +112,7 @@ mixin PPTemporalResolve
 			#define _SAMPLEOFF(n, uv, offset) n.Load((int2)(uv) + offset)
 			#define _PIXSIZE(n) int2(1, 1)
 		#else
-			#define _TEX2D(n) Texture2D n, SamplerState n##SampState, float n##TexelSize
+			#define _TEX2D(n) Texture2D n, SamplerState n##SampState, float2 n##TexelSize
 			#define _PTEX2D(n) n, n##SampState, n##TexelSize
 			#define _SAMPLE(n, uv) n.Sample(n##SampState, uv)
 			#define _SAMPLEOFF(n, uv, offset) n.Sample(n##SampState, uv, offset)
@@ -278,9 +278,9 @@ mixin PPTemporalResolve
 		
 		// Automatically convert from/to YCoCg space, if enabled
 		#if TEMPORAL_YCOCG
-			#define _SAMPLE_COLOR(n, uv, offset) _TONEMAP_COLOR(RGBToYCoCg(_SAMPLEOFF(n, uv, offset)))
+			#define _SAMPLE_COLOR(n, uv, offset) _TONEMAP_COLOR(RGBToYCoCg(_SAMPLEOFF(n, uv, offset).rgb))
 		#else // TEMPORAL_YCOCG
-			#define _SAMPLE_COLOR(n, uv, offset) _TONEMAP_COLOR(_SAMPLEOFF(n, uv, offset))
+			#define _SAMPLE_COLOR(n, uv, offset) _TONEMAP_COLOR(_SAMPLEOFF(n, uv, offset).rgb)
 		#endif // TEMPORAL_YCOCG
 						
 		///////////////////////////// MAIN /////////////////////////////////
@@ -291,12 +291,10 @@ mixin PPTemporalResolve
 			float gSampleWeightsLowpass[9];
 		}
 		
-		// TODO - Scene depth sampler must be POINT. Also CLAMP so neighbor search is clamped.
-		// TODO - UV must be in pixels for MSAA
-		// TODO - Need to use CLAMP for scene color, so neighbor search is clamped.
 		// TODO - Need to use SNORM 16-bit format for velocity
 		// TODO - Add gNDCToPrevNDC matrix to PerCameraData
 		// TODO - Generate C++ samples (make sure to account for YCoCg path, and remove jitter)
+		// TODO - Add notes that velocity buffer isn't currenlty being used
 		float3 temporalResolve(
 			_TEX2D(sceneDepth), 
 			_TEX2D(sceneColor), 
@@ -338,7 +336,7 @@ mixin PPTemporalResolve
 			if(hasLocalVelocity)
 			{
 				velocity = decodeVelocity16SNORM(velocity);
-				prevNdcPos = float3(ndcPos - velocity);
+				prevNdcPos = float2(ndcPos - velocity);
 			}
 			else
 			{

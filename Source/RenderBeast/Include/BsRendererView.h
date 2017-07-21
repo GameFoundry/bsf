@@ -29,6 +29,7 @@ namespace bs { namespace ct
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatInvProj)
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatInvViewProj)
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatScreenToWorld)
+		BS_PARAM_BLOCK_ENTRY(Matrix4, gNDCToPrevNDC)
 		BS_PARAM_BLOCK_ENTRY(Vector2, gDeviceZToWorldZ)
 		BS_PARAM_BLOCK_ENTRY(Vector2, gNDCZToWorldZ)
 		BS_PARAM_BLOCK_ENTRY(Vector2, gNDCZToDeviceZ)
@@ -126,6 +127,7 @@ namespace bs { namespace ct
 		RendererViewProperties(const RENDERER_VIEW_DESC& src);
 
 		Matrix4 viewProjTransform;
+		Matrix4 prevViewProjTransform;
 
 		SPtr<RenderTarget> target;
 		Rect2I viewRect;
@@ -192,15 +194,15 @@ namespace bs { namespace ct
 		Camera* getSceneCamera() const { return mCamera; }
 
 		/** 
-		 * Prepares render targets for rendering. When done call endRendering().
+		 * Prepares render targets for rendering. When done call endFrame().
 		 *
 		 * @param[in]	useGBuffer			Set to true if you will be rendering to internal render targets containing the
 		 *									GBuffer (retrieved via getRenderTargets()).
 		 */
-		void beginRendering(bool useGBuffer);
+		void beginFrame(bool useGBuffer);
 
 		/** Ends rendering and frees any acquired resources. */
-		void endRendering();
+		void endFrame();
 
 		/** Returns the view's renderTargets. Only valid if called in-between beginRendering() and endRendering() calls. */
 		SPtr<RenderTargets> getRenderTargets() const { return mRenderTargets; }

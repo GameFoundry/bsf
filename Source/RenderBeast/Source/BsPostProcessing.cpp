@@ -1631,10 +1631,12 @@ namespace bs { namespace ct
 		:mGBufferParams(mMaterial, mParamsSet)
 	{
 		mParamBuffer = gSSRTraceParamDef.createBuffer();
-		mParamsSet->setParamBlockBuffer("Input", mParamBuffer);
 
 		SPtr<GpuParams> gpuParams = mParamsSet->getGpuParams();
 		gpuParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gSceneColor", mSceneColorTexture);
+
+		if(gpuParams->hasParamBlock(GPT_FRAGMENT_PROGRAM, "Input"))
+			gpuParams->setParamBlockBuffer(GPT_FRAGMENT_PROGRAM, "Input", mParamBuffer);
 	}
 
 	void SSRTraceMat::_initDefines(ShaderDefines& defines)
@@ -1643,7 +1645,7 @@ namespace bs { namespace ct
 	}
 
 	void SSRTraceMat::execute(const RendererView& view, const ScreenSpaceReflectionsSettings& settings, 
-		const SPtr<RenderTexture>& destination)
+		const SPtr<RenderTarget>& destination)
 	{
 		const RendererViewProperties& viewProps = view.getProperties();
 		RenderTargets& renderTargets = *view.getRenderTargets();
@@ -1699,6 +1701,172 @@ namespace bs { namespace ct
 		return scaleBias;
 	}
 
+	TemporalResolveParamDef gTemporalResolveParamDef;
+	SSRResolveParamDef gSSRResolveParamDef;
+
+	template<bool EyeAdaptation>
+	SSRResolveMat<EyeAdaptation>::SSRResolveMat()
+	{
+		mSSRParamBuffer = gSSRResolveParamDef.createBuffer();
+		mTemporalParamBuffer = gTemporalResolveParamDef.createBuffer();
+
+		SPtr<GpuParams> gpuParams = mParamsSet->getGpuParams();
+		gpuParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gSceneDepth", mSceneDepthTexture);
+		gpuParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gSceneColor", mSceneColorTexture);
+		gpuParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gPrevColor", mPrevColorTexture);
+
+		gpuParams->setParamBlockBuffer(GPT_FRAGMENT_PROGRAM, "Input", mSSRParamBuffer);
+		gpuParams->setParamBlockBuffer(GPT_FRAGMENT_PROGRAM, "TemporalInput", mTemporalParamBuffer);
+
+		SAMPLER_STATE_DESC pointSampDesc;
+		pointSampDesc.minFilter = FO_POINT;
+		pointSampDesc.magFilter = FO_POINT;
+		pointSampDesc.mipFilter = FO_POINT;
+		pointSampDesc.addressMode.u = TAM_CLAMP;
+		pointSampDesc.addressMode.v = TAM_CLAMP;
+		pointSampDesc.addressMode.w = TAM_CLAMP;
+
+		SPtr<SamplerState> pointSampState = SamplerState::create(pointSampDesc);
+		gpuParams->setSamplerState(GPT_FRAGMENT_PROGRAM, "gPointSampler", pointSampState);
+
+		SAMPLER_STATE_DESC linearSampDesc;
+		linearSampDesc.minFilter = FO_POINT;
+		linearSampDesc.magFilter = FO_POINT;
+		linearSampDesc.mipFilter = FO_POINT;
+		linearSampDesc.addressMode.u = TAM_CLAMP;
+		linearSampDesc.addressMode.v = TAM_CLAMP;
+		linearSampDesc.addressMode.w = TAM_CLAMP;
+
+		SPtr<SamplerState> linearSampState = SamplerState::create(linearSampDesc);
+		gpuParams->setSamplerState(GPT_FRAGMENT_PROGRAM, "gLinearSampler", linearSampState);
+	}
+
+	template<bool EyeAdaptation>
+	void SSRResolveMat<EyeAdaptation>::_initDefines(ShaderDefines& defines)
+	{
+		defines.set("EYE_ADAPTATION", EyeAdaptation ? 1 : 0);
+		defines.set("MSAA", 0);
+	}
+
+	template <bool EyeAdaptation>
+	void SSRResolveMat<EyeAdaptation>::execute(const RendererView& view, const SPtr<Texture>& prevFrame, 
+		const SPtr<Texture>& curFrame, const SPtr<Texture>& sceneDepth, const SPtr<RenderTarget>& destination)
+	{
+		// TODO - MSAA not supported (remember UV must be in pixels) 
+		
+		// Note: This shader should not be called when temporal AA is turned on
+		// Note: This shader doesn't have velocity texture enabled and will only account for camera movement (can be easily
+		//		 enabled when velocity texture is added)
+		//   - WHen added, velocity should use a 16-bit SNORM format
+
+		mPrevColorTexture.set(prevFrame);
+		mSceneColorTexture.set(curFrame);
+		mSceneDepthTexture.set(sceneDepth);
+
+		if(EyeAdaptation)
+		{
+			// TODO - Set eye adaptation texture
+		}
+
+		auto& colorProps = curFrame->getProperties(); // Assuming prev and current frame are the same size
+		auto& depthProps = sceneDepth->getProperties();
+
+		Vector2 colorPixelSize(1.0f / colorProps.getWidth(), 1.0f / colorProps.getHeight());
+		Vector2 depthPixelSize(1.0f / depthProps.getWidth(), 1.0f / depthProps.getHeight());
+
+		gSSRResolveParamDef.gSceneColorTexelSize.set(mSSRParamBuffer, colorPixelSize);
+		gSSRResolveParamDef.gSceneDepthTexelSize.set(mSSRParamBuffer, depthPixelSize);
+		// TODO - Set manual exposure value
+
+		// Generate samples
+		// Note: Move this code to a more general spot where it can be used by other temporal shaders.
+		
+		float sampleWeights[9];
+		float sampleWeightsLowPass[9];
+
+		float totalWeights = 0.0f;
+		float totalWeightsLowPass = 0.0f;
+
+		Vector2 jitter(BsZero); // Only relevant for general case, not using this type of jitter for SSR
+
+		// Weights are generated using an exponential fit to Blackman-Harris 3.3
+		bool useYCoCg = false; // Only relevant for general case, not using it for SSR
+		float sharpness = 1.0f; // Make this a customizable parameter eventually
+		if(useYCoCg)
+		{
+			static const Vector2 sampleOffsets[] = 
+			{
+				{  0.0f, -1.0f },
+				{ -1.0f,  0.0f },
+				{  0.0f,  0.0f },
+				{  1.0f,  0.0f },
+				{  0.0f,  1.0f },
+			};
+
+			for (UINT32 i = 0; i < 5; ++i)
+			{
+				// Get rid of jitter introduced by the projection matrix
+				Vector2 offset = sampleOffsets[i] - jitter;
+
+				offset *= 1.0f + sharpness * 0.5f;
+				sampleWeights[i] = exp(-2.29f * offset.dot(offset));
+				totalWeights += sampleWeights[i];
+			}
+
+			for (UINT32 i = 5; i < 9; ++i)
+				sampleWeights[i] = 0.0f;
+			
+			memset(sampleWeightsLowPass, 0, sizeof(sampleWeightsLowPass));
+			totalWeightsLowPass = 1.0f;
+		}
+		else
+		{
+			static const Vector2 sampleOffsets[] = 
+			{
+				{ -1.0f, -1.0f },
+				{  0.0f, -1.0f },
+				{  1.0f, -1.0f },
+				{ -1.0f,  0.0f },
+				{  0.0f,  0.0f },
+				{  1.0f,  0.0f },
+				{ -1.0f,  1.0f },
+				{  0.0f,  1.0f },
+				{  1.0f,  1.0f },
+			};
+
+			for (UINT32 i = 0; i < 9; ++i)
+			{
+				// Get rid of jitter introduced by the projection matrix
+				Vector2 offset = sampleOffsets[i] - jitter;
+
+				offset *= 1.0f + sharpness * 0.5f;
+				sampleWeights[i] = exp(-2.29f * offset.dot(offset));
+				totalWeights += sampleWeights[i];
+
+				// Low pass
+				offset *= 0.25f;
+				sampleWeightsLowPass[i] = exp(-2.29f * offset.dot(offset));
+				totalWeightsLowPass += sampleWeightsLowPass[i];
+			}
+		}
+
+		for (UINT32 i = 0; i < 9; ++i)
+		{
+			gTemporalResolveParamDef.gSampleWeights.set(mTemporalParamBuffer, sampleWeights[i] / totalWeights);
+			gTemporalResolveParamDef.gSampleWeightsLowpass.set(mTemporalParamBuffer, sampleWeightsLowPass[i] / totalWeightsLowPass);
+		}
+		
+		SPtr<GpuParamBlockBuffer> perView = view.getPerViewBuffer();
+		mParamsSet->setParamBlockBuffer("PerCamera", perView);
+
+		RenderAPI& rapi = RenderAPI::instance();
+		rapi.setRenderTarget(destination);
+
+		gRendererUtility().setPass(mMaterial);
+		gRendererUtility().setPassParams(mParamsSet);
+		gRendererUtility().drawScreenQuad();
+	}
+
 	void PostProcessing::postProcess(RendererView* viewInfo, const SPtr<RenderTargets>& renderTargets, float frameDelta)
 	{
 		auto& viewProps = viewInfo->getProperties();
@@ -1747,6 +1915,21 @@ namespace bs { namespace ct
 			autoExposure = false;
 		}
 
+
+
+
+
+		//// DEBUG ONLY
+		//SSRTraceMat ssrTrace;
+
+		//renderTargets->allocate(RTT_ResolvedSceneColorSecondary);
+		//SPtr<RenderTarget> target = renderTargets->getRT(RTT_ResolvedSceneColorSecondary);
+
+		//ssrTrace.execute(*viewInfo, ppInfo.settings->screenSpaceReflections, target);
+
+		//RenderAPI::instance().setRenderTarget(renderTargets->getRT(RTT_ResolvedSceneColor));
+		//gRendererUtility().blit(renderTargets->get(RTT_ResolvedSceneColorSecondary));
+
 		bool performDOF = GaussianDOF::requiresDOF(settings.depthOfField);
 
 		SPtr<RenderTarget> tonemapTarget;
@@ -1759,6 +1942,13 @@ namespace bs { namespace ct
 		}
 
 		mTonemapping.execute(gammaOnly, autoExposure, msaa, sceneColor, tonemapTarget, viewportRect, ppInfo);
+
+		//renderTargets->release(RTT_ResolvedSceneColorSecondary);
+
+
+		//// DEBUG ONLY
+		//return;
+
 
 		if(performDOF)
 		{

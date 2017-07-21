@@ -452,7 +452,7 @@ namespace bs { namespace ct
 			}
 		}
 
-		viewInfo->beginRendering(true);
+		viewInfo->beginFrame(true);
 
 		// Prepare light grid required for transparent object rendering
 		mLightGrid->updateGrid(*viewInfo, *mVisibleLightInfo, *mVisibleReflProbeInfo, viewProps.noLighting);
@@ -753,7 +753,7 @@ namespace bs { namespace ct
 			}
 		}
 
-		viewInfo->endRendering();
+		viewInfo->endFrame();
 
 		gProfilerCPU().endSample("Render");
 	}
@@ -763,7 +763,7 @@ namespace bs { namespace ct
 		gProfilerCPU().beginSample("RenderOverlay");
 
 		viewInfo->getPerViewBuffer()->flushToGPU();
-		viewInfo->beginRendering(false);
+		viewInfo->beginFrame(false);
 
 		auto& viewProps = viewInfo->getProperties();
 		const Camera* camera = viewInfo->getSceneCamera();
@@ -808,7 +808,7 @@ namespace bs { namespace ct
 			++iterRenderCallback;
 		}
 
-		viewInfo->endRendering();
+		viewInfo->endFrame();
 
 		gProfilerCPU().endSample("RenderOverlay");
 	}
