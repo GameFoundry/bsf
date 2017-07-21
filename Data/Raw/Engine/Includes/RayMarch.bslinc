@@ -7,7 +7,7 @@ mixin RayMarch
 	code
 	{
 		#ifndef NUM_STEPS
-			#define NUM_STEPS 12
+			#define NUM_STEPS 16
 		#endif
 		
 		#ifndef HI_Z
@@ -33,15 +33,18 @@ mixin RayMarch
 			for(int i = 0; i < numSteps; ++i)
 			{
 				float3 rayPos = rayStart + rayStep * t;
-			
+
 				#if HI_Z
 				float sampleDepth = depth.Sample(samp, rayPos.xy).r;
 				#else
 				float sampleDepth = depth.SampleLevel(samp, rayPos.xy, 0).r;
 				#endif
 				
+				// Check if ray is behind an object, but not too much behind otherwise we'll have false positives.
+				// Instead we treat "compareTolerance" as an approximate thickness of the object. Proper
+				// thickness you be calculated by rendering depth buffer for backfaces.
 				float depthDiff = rayPos.z - sampleDepth;
-				bool hit = depthDiff > -compareTolerance;
+				bool hit = abs(depthDiff - compareTolerance) < compareTolerance;
 				if(hit)
 				{
 					// Refine hit using line segment intersection
@@ -129,22 +132,18 @@ mixin RayMarch
 			float4 hiZUVMapping; // From NDC to HiZ UV. .xy - multiply, .zw - add
 			float3 rayOrigin; // World space
 			float3 rayDir; // World space
-			float rayLength;
 			float jitterOffset;
 		};
 	
-		float4 rayMarch(Texture2D depth, SamplerState samp, RayMarchParams params)
+		float4 rayMarch(Texture2D depth, SamplerState samp, RayMarchParams params, out float dbg)
 		{
-			float3 viewOrigin = mul(float4(params.rayOrigin, 1), gMatView);
-			float3 viewDir = mul(float4(params.rayDir, 0), gMatView);
+			dbg = 0.0f;
 		
-			// Clip ray length so it doesn't go past the near plane
-			float rayLength = (viewOrigin.z + viewDir.z * params.rayLength) > gNearFar.x 
-				? (gNearFar.x - viewOrigin.z) / viewDir.z 
-				: params.rayLength;
-			
+			float3 viewOrigin = mul(gMatView, float4(params.rayOrigin, 1));
+			float3 viewDir = mul(gMatView, float4(params.rayDir, 0));
+		
 			float3 ndcStart = viewToNDC(viewOrigin);
-			float3 ndcEnd = viewToNDC(viewOrigin + viewDir * rayLength);
+			float3 ndcEnd = viewToNDC(viewOrigin + viewDir);
 			float3 ndcStep = ndcEnd - ndcStart;
 			
 			// Resize ray so it reaches screen edge
@@ -162,12 +161,12 @@ mixin RayMarch
 			uvStart.z = NDCZToDeviceZ(ndcStart.z);
 			
 			float3 uvStep;
-			uvStep.xy = ndcStep.xy * params.hiZUVMapping.xy + params.hiZUVMapping.zw;
+			uvStep.xy = ndcStep.xy * params.hiZUVMapping.xy;
 			uvStep.z = NDCZToDeviceZ(ndcStep.z);
 		
 			#else
 			float3 uvStart = float3(NDCToUV(ndcStart.xy), NDCZToDeviceZ(ndcStart.z));
-			float3 uvStep = float3(NDCToUV(ndcStep.xy), NDCZToDeviceZ(ndcStep.z));
+			float3 uvStep = float3(ndcStep.xy * gClipToUVScaleOffset.xy, NDCZToDeviceZ(ndcStep.z));
 			#endif
 		
 			float stepIncrement = 1.0f / NUM_STEPS;
@@ -176,7 +175,7 @@ mixin RayMarch
 			float t = stepIncrement + stepIncrement * params.jitterOffset;
 			
 			// Note: Perhaps tweak this value
-			float compareTolerance = uvStep.z * stepIncrement;
+			float compareTolerance = uvStep.z * stepIncrement * 2.0f;
 			
 			// Always do three steps of linear search
 			// (HiZ search is more expensive for short runs)
@@ -191,7 +190,7 @@ mixin RayMarch
 			#else
 			
 			// Plain linear search
-			if(linearSearch(depth, samp, uvStart, uvStep, NUM_STEPS - 3, stepIncrement, compareTolerance, t))
+			if(linearSearch(depth, samp, uvStart, uvStep, NUM_STEPS - 4, stepIncrement, compareTolerance, t))
 				return float4(uvStart + uvStep * t, t);
 			#endif
 			
