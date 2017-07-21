@@ -101,6 +101,7 @@ namespace bs
 
 			// Use the provided UUID if just one resource, otherwise we ignore the UUID. The current assumption is that
 			// such resources don't require persistent UUIDs. If that changes then this method needs to be updated.
+			Vector<HResource> savedResources(resourcesToSave.size());
 			if (resourcesToSave.size() == 1)
 			{
 				Path outputPath = outputFolder + resourcesToSave[0].first;
@@ -112,10 +113,11 @@ namespace bs
 					manifest->registerResource(resource.getUUID(), outputPath);
 				}
 
-				return resource;
+				savedResources[0] = resource;
 			}
 			else
 			{
+				UINT32 idx = 0;
 				for (auto& entry : resourcesToSave)
 				{
 					Path outputPath = outputFolder + entry.first;;
@@ -126,10 +128,13 @@ namespace bs
 						Resources::instance().save(resource, outputPath, true);
 						manifest->registerResource(resource.getUUID(), outputPath);
 					}
+
+					savedResources[idx] = resource;
+					idx++;
 				}
 			}
 
-			return HResource();
+			return savedResources;
 		};
 
 		auto generateSprite = [&](const HTexture& texture, const String& fileName, const String& UUID)
@@ -181,80 +186,82 @@ namespace bs
 				isIcon = entry.find("TextureUUID16") != entry.end();
 			}
 
-			HResource outputRes = importResource(name.c_str(), uuid.c_str());
-			if (outputRes == nullptr)
+			Vector<HResource> outputResources = importResource(name.c_str(), uuid.c_str());
+			bool foundDependencies = false;
+			for (auto& outputRes : outputResources)
 			{
-				idx++;
-				continue;
-			}
+				if (outputRes == nullptr)
+					continue;
 
-			if (rtti_is_of_type<Shader>(outputRes.get()))
-			{
-				HShader shader = static_resource_cast<Shader>(outputRes);
-				if (!verifyAndReportShader(shader))
-					return;
-
-				if(dependencies != nullptr)
+				if (rtti_is_of_type<Shader>(outputRes.get()))
 				{
-					SPtr<ShaderMetaData> shaderMetaData = std::static_pointer_cast<ShaderMetaData>(shader->getMetaData());
+					HShader shader = static_resource_cast<Shader>(outputRes);
+					if (!verifyAndReportShader(shader))
+						return;
 
-					nlohmann::json dependencyEntries;
-					if(shaderMetaData != nullptr && shaderMetaData->includes.size() > 0)
+					if (!foundDependencies && dependencies != nullptr)
 					{
-						for(auto& include : shaderMetaData->includes)
+						SPtr<ShaderMetaData> shaderMetaData = std::static_pointer_cast<ShaderMetaData>(shader->getMetaData());
+
+						nlohmann::json dependencyEntries;
+						if (shaderMetaData != nullptr && shaderMetaData->includes.size() > 0)
 						{
-							Path includePath = include.c_str();
-							if (include.substr(0, 8) == "$ENGINE$" || include.substr(0, 8) == "$EDITOR$")
+							for (auto& include : shaderMetaData->includes)
 							{
-								if (include.size() > 8)
-									includePath = include.substr(9, include.size() - 9);
+								Path includePath = include.c_str();
+								if (include.substr(0, 8) == "$ENGINE$" || include.substr(0, 8) == "$EDITOR$")
+								{
+									if (include.size() > 8)
+										includePath = include.substr(9, include.size() - 9);
+								}
+
+								nlohmann::json newDependencyEntry =
+								{
+									{ "Path", includePath.toString().c_str() }
+								};
+
+								dependencyEntries.push_back(newDependencyEntry);
 							}
-
-							nlohmann::json newDependencyEntry =
-							{ 
-								{ "Path", includePath.toString().c_str() }
-							};
-
-							dependencyEntries.push_back(newDependencyEntry);
 						}
+
+						(*dependencies)[name] = dependencyEntries;
+						foundDependencies = true;
+					}
+				}
+
+				if (mode == AssetType::Sprite)
+				{
+					std::string spriteUUID = entry["SpriteUUID"];
+
+					HTexture tex = static_resource_cast<Texture>(outputRes);
+					generateSprite(tex, name.c_str(), spriteUUID.c_str());
+				}
+
+				if (isIcon)
+				{
+					IconData iconData;
+					iconData.source = static_resource_cast<Texture>(outputRes);
+					iconData.name = name.c_str();
+
+					if (mode == AssetType::Normal)
+					{
+						iconData.TextureUUIDs[0] = entry["UUID48"];
+						iconData.TextureUUIDs[1] = entry["UUID32"];
+						iconData.TextureUUIDs[2] = entry["UUID16"];
+					}
+					else if (mode == AssetType::Sprite)
+					{
+						iconData.TextureUUIDs[0] = entry["TextureUUID48"];
+						iconData.TextureUUIDs[1] = entry["TextureUUID32"];
+						iconData.TextureUUIDs[2] = entry["TextureUUID16"];
+
+						iconData.SpriteUUIDs[0] = entry["SpriteUUID48"];
+						iconData.SpriteUUIDs[1] = entry["SpriteUUID32"];
+						iconData.SpriteUUIDs[2] = entry["SpriteUUID16"];
 					}
 
-					(*dependencies)[name] = dependencyEntries;
+					iconsToGenerate.push_back(iconData);
 				}
-			}
-
-			if (mode == AssetType::Sprite)
-			{
-				std::string spriteUUID = entry["SpriteUUID"];
-
-				HTexture tex = static_resource_cast<Texture>(outputRes);
-				generateSprite(tex, name.c_str(), spriteUUID.c_str());
-			}
-
-			if(isIcon)
-			{
-				IconData iconData;
-				iconData.source = static_resource_cast<Texture>(outputRes);
-				iconData.name = name.c_str();
-
-				if (mode == AssetType::Normal)
-				{
-					iconData.TextureUUIDs[0] = entry["UUID48"];
-					iconData.TextureUUIDs[1] = entry["UUID32"];
-					iconData.TextureUUIDs[2] = entry["UUID16"];
-				}
-				else if (mode == AssetType::Sprite)
-				{
-					iconData.TextureUUIDs[0] = entry["TextureUUID48"];
-					iconData.TextureUUIDs[1] = entry["TextureUUID32"];
-					iconData.TextureUUIDs[2] = entry["TextureUUID16"];
-
-					iconData.SpriteUUIDs[0] = entry["SpriteUUID48"];
-					iconData.SpriteUUIDs[1] = entry["SpriteUUID32"];
-					iconData.SpriteUUIDs[2] = entry["SpriteUUID16"];
-				}
-
-				iconsToGenerate.push_back(iconData);
 			}
 
 			idx++;
