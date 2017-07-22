@@ -1018,29 +1018,50 @@ namespace bs { namespace ct
 
 	void BuildHiZ::execute(const RendererViewTargetData& viewInfo, const SPtr<Texture>& source, const SPtr<Texture>& output)
 	{
-		GpuResourcePool& pool = GpuResourcePool::instance();
-
-		// First resolve if MSAA if required
-		SPtr<PooledRenderTexture> resolvedDepth;
 		Rect2 srcRect = viewInfo.nrmViewRect;
+
+		// If viewport size is odd, adjust UV
+		srcRect.width += (viewInfo.viewRect.width % 2) * (1.0f / viewInfo.viewRect.width);
+		srcRect.height += (viewInfo.viewRect.height % 2) * (1.0f / viewInfo.viewRect.height);
 
 		// Generate first mip
 		RENDER_TEXTURE_DESC rtDesc;
 		rtDesc.colorSurfaces[0].texture = output;
 		rtDesc.colorSurfaces[0].mipLevel = 0;
 
-		// Make sure that 1 pixel in HiZ maps to a 2x2 block in source
-		const TextureProperties& outProps = output->getProperties();
-		Rect2 destRect(0, 0,
-			Math::ceilToInt(viewInfo.viewRect.width / 2.0f) / (float)outProps.getWidth(),
-			Math::ceilToInt(viewInfo.viewRect.height / 2.0f) / (float)outProps.getHeight());
-
-		// If viewport size is odd, adjust UV
-		srcRect.width += (viewInfo.viewRect.width % 2) * (1.0f / viewInfo.viewRect.width);
-		srcRect.height += (viewInfo.viewRect.height % 2) * (1.0f / viewInfo.viewRect.height);
-
 		SPtr<RenderTexture> rt = RenderTexture::create(rtDesc);
-		mHiZMat.execute(source, 0, srcRect, destRect, rt);
+		const TextureProperties& outProps = output->getProperties();
+
+		Rect2 destRect;
+		bool downsampledFirstMip = false; // Not used currently
+		if (downsampledFirstMip)
+		{
+			// Make sure that 1 pixel in HiZ maps to a 2x2 block in source
+			destRect = Rect2(0, 0,
+				Math::ceilToInt(viewInfo.viewRect.width / 2.0f) / (float)outProps.getWidth(),
+				Math::ceilToInt(viewInfo.viewRect.height / 2.0f) / (float)outProps.getHeight());
+
+			mHiZMat.execute(source, 0, srcRect, destRect, rt);
+		}
+		else // First level is just a copy of the depth buffer
+		{
+			destRect = Rect2(0, 0,
+				viewInfo.viewRect.width / (float)outProps.getWidth(),
+				viewInfo.viewRect.height / (float)outProps.getHeight());
+
+			RenderAPI& rapi = RenderAPI::instance();
+			rapi.setRenderTarget(rt);
+			rapi.setViewport(destRect);
+
+			Rect2I srcAreaInt;
+			srcAreaInt.x = (INT32)(srcRect.x * viewInfo.viewRect.width);
+			srcAreaInt.y = (INT32)(srcRect.y * viewInfo.viewRect.height);
+			srcAreaInt.width = (UINT32)(srcRect.width * viewInfo.viewRect.width);
+			srcAreaInt.height = (UINT32)(srcRect.height * viewInfo.viewRect.height);
+
+			gRendererUtility().blit(source, srcAreaInt);			
+			rapi.setViewport(Rect2(0, 0, 1, 1));
+		}
 
 		// Generate remaining mip levels
 		for(UINT32 i = 1; i <= outProps.getNumMipmaps(); i++)
@@ -1050,9 +1071,6 @@ namespace bs { namespace ct
 			rt = RenderTexture::create(rtDesc);
 			mHiZMat.execute(output, i - 1, destRect, destRect, rt);
 		}
-
-		if (resolvedDepth)
-			pool.release(resolvedDepth);
 	}
 
 	POOLED_RENDER_TEXTURE_DESC BuildHiZ::getHiZTextureDesc(UINT32 viewWidth, UINT32 viewHeight)
@@ -1634,6 +1652,7 @@ namespace bs { namespace ct
 
 		SPtr<GpuParams> gpuParams = mParamsSet->getGpuParams();
 		gpuParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gSceneColor", mSceneColorTexture);
+		gpuParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gHiZ", mHiZTexture);
 
 		if(gpuParams->hasParamBlock(GPT_FRAGMENT_PROGRAM, "Input"))
 			gpuParams->setParamBlockBuffer(GPT_FRAGMENT_PROGRAM, "Input", mParamBuffer);
@@ -1650,11 +1669,12 @@ namespace bs { namespace ct
 		const RendererViewProperties& viewProps = view.getProperties();
 		RenderTargets& renderTargets = *view.getRenderTargets();
 
-		mGBufferParams.bind(renderTargets);
-		mSceneColorTexture.set(renderTargets.get(RTT_ResolvedSceneColor));
-
 		SPtr<Texture> hiZ = renderTargets.get(RTT_HiZ);
 		const TextureProperties& hiZProps = hiZ->getProperties();
+
+		mGBufferParams.bind(renderTargets);
+		mSceneColorTexture.set(renderTargets.get(RTT_ResolvedSceneColor));
+		mHiZTexture.set(hiZ);
 		
 		Rect2I viewRect = viewProps.viewRect;
 
@@ -1674,8 +1694,10 @@ namespace bs { namespace ct
 		// Maps from [0, 1] to are of HiZ where depth is stored in
 		ndcToUVMapping.x *= (float)viewRect.width / hiZProps.getWidth();
 		ndcToUVMapping.y *= (float)viewRect.height / hiZProps.getHeight();
+		ndcToUVMapping.z *= (float)viewRect.width / hiZProps.getWidth();
+		ndcToUVMapping.w *= (float)viewRect.height / hiZProps.getHeight();
 		
-		Vector2I bufferSize(hiZProps.getWidth(), hiZProps.getHeight());
+		Vector2I bufferSize(viewRect.width, viewRect.height);
 		gSSRTraceParamDef.gHiZSize.set(mParamBuffer, bufferSize);
 		gSSRTraceParamDef.gHiZNumMips.set(mParamBuffer, hiZProps.getNumMipmaps());
 		gSSRTraceParamDef.gHiZUVMapping.set(mParamBuffer, ndcToUVMapping);
@@ -1919,7 +1941,7 @@ namespace bs { namespace ct
 
 
 
-		//// DEBUG ONLY
+		// DEBUG ONLY
 		//SSRTraceMat ssrTrace;
 
 		//renderTargets->allocate(RTT_ResolvedSceneColorSecondary);
@@ -1943,10 +1965,10 @@ namespace bs { namespace ct
 
 		mTonemapping.execute(gammaOnly, autoExposure, msaa, sceneColor, tonemapTarget, viewportRect, ppInfo);
 
+
+
+		// DEBUG ONLY
 		//renderTargets->release(RTT_ResolvedSceneColorSecondary);
-
-
-		//// DEBUG ONLY
 		//return;
 
 

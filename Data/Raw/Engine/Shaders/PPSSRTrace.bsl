@@ -1,6 +1,8 @@
 #include "$ENGINE$\PPBase.bslinc"
 #include "$ENGINE$\GBufferInput.bslinc"
 #include "$ENGINE$\PerCameraData.bslinc"
+
+#define HI_Z 1
 #include "$ENGINE$\RayMarch.bslinc"
 
 technique PPSSRTrace
@@ -29,6 +31,8 @@ technique PPSSRTrace
 		
 		Texture2D gSceneColor;
 		SamplerState gSceneColorSamp;
+		
+		Texture2D gHiZ;
 		
 		float random (float2 st) 
 		{
@@ -87,7 +91,7 @@ technique PPSSRTrace
 			// TODO - Fade based on roughness
 			
 			float dbg = 0.0f;
-			float4 rayHit = rayMarch(gDepthBufferTex, gDepthBufferSamp, rayMarchParams, dbg);
+			float4 rayHit = rayMarch(gHiZ, gDepthBufferSamp, rayMarchParams, dbg);
 			if(rayHit.w < 1.0f) // Hit
 			{
 				float4 output = gSceneColor.Sample(gSceneColorSamp, rayHit.xy);
@@ -97,10 +101,26 @@ technique PPSSRTrace
 				float2 vignette = saturate(abs(rayHitNDC) * 5.0f - 4.0f);
 	
 				return output * (1.0f - dot(vignette, vignette));
+				
+				// DEBUG ONLY
+				if(dbg < 4.0)
+					return float4(0.0f, 1.0f, 0.0f, 1.0f);
+				else if(dbg < 8.0)
+					return float4(0.0f, 0.66f, 0.0f, 1.0f);
+				else if(dbg < 12.0)
+					return float4(0.0f, 0.33f, 0.0f, 1.0f);
+				else if(dbg < 16.0)
+					return float4(0.33f, 0.33f, 0.0f, 1.0f);
+				else if(dbg < 24.0)
+					return float4(0.5f, 0.0f, 0.0f, 1.0f);
+				else if(dbg < 32.0)
+					return float4(1.0f, 0.0f, 0.0f, 1.0f);
+				else
+					return float4(0.0f, 0.0f, 1.0f, 1.0f);
 			}
 			
-			if(dbg > 0.5f)
-				return float4(1.0f, 0.0f, 0.0f, 1.0f);
+			//if(dbg > 0.5f)
+			//	return float4(1.0f, 0.0f, 0.0f, 1.0f);
 				
 			return 0.0f;
 		}	

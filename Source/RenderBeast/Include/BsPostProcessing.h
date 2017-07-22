@@ -838,6 +838,7 @@ namespace bs { namespace ct
 		SPtr<GpuParamBlockBuffer> mParamBuffer;
 		GBufferParams mGBufferParams;
 		GpuParamTexture mSceneColorTexture;
+		GpuParamTexture mHiZTexture;
 	};
 
 	BS_PARAM_BLOCK_BEGIN(TemporalResolveParamDef)
