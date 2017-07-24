@@ -2,7 +2,7 @@ BSL syntax			{#bsl}
 ===============
 [TOC]
 
-All shaders in Banshee are written in BSL (Banshee Shading Language). The core of the language is based on HLSL (High Level Shading Language), with various extensions to make development easier. In this manual we will not cover HLSL syntax, nor talk about shaders in general, and will instead focus on the functionality specific to BSL.
+All shaders in Banshee are written in BSL (Banshee Shading Language). The core of the language is based on HLSL (High Level Shading Language), with various extensions to make development easier. In this manual we will not cover HLSL syntax, nor talk about shaders in general, and will instead focus on the functionality specific to BSL. If you are not familiar with the concept of a shader, or HLSL syntax, it is suggested you learn about them before continuing.
 
 # Basics 
 

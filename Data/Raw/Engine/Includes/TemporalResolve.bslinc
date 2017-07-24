@@ -205,63 +205,7 @@ mixin TemporalResolve
 		{
 			return val * 2.0f;
 		}
-		
-		////////////////////// HDR SCALING HELPER FUNCTIONS ///////////////////
-		// HDR scaling methods use luminance based scaling, instead of a tonemap operator, as
-		// described here:
-		// http://graphicrants.blogspot.hr/2013/12/tone-mapping.html
-		float HDRScaleWeight(float luma, float exposureScale)
-		{
-			return rcp(1 + luma * exposureScale);
-		}
-		
-		float HDRScaleWeightInv(float luma, float exposureScale)
-		{
-			return rcp(1 - luma * exposureScale);
-		}		
-		
-		float3 HDRScaleRGB(float3 v, float exposureScale)
-		{
-			float luma = LuminanceRGB(v);
-			
-			return v * HDRScaleWeight(luma, exposureScale);
-		}
-		
-		float3 HDRScaleY(float3 v, float exposureScale)
-		{
-			float luma = v.r;
-			
-			return v * HDRScaleWeight(luma, exposureScale);
-		}
-		
-		float3 HDRScaleG(float3 v, float exposureScale)
-		{
-			float luma = v.g;
-			
-			return v * HDRScaleWeight(luma, exposureScale);
-		}
 
-		float3 HDRScaleRGBInv(float3 v, float exposureScale)
-		{
-			float luma = LuminanceRGB(v);
-			
-			return v * HDRScaleWeightInv(luma, exposureScale);
-		}
-		
-		float3 HDRScaleYInv(float3 v, float exposureScale)
-		{
-			float luma = v.r;
-			
-			return v * HDRScaleWeightInv(luma, exposureScale);
-		}
-		
-		float3 HDRScaleGInv(float3 v, float exposureScale)
-		{
-			float luma = v.g;
-			
-			return v * HDRScaleWeightInv(luma, exposureScale);
-		}		
-		
 		////////////////////// HELPER TONEMAP/COLOR SPACE DEFINES /////////////////////
 		// Automatically scale HDR values based on luminance, if enabled
 		#if TEMPORAL_TONEMAP

@@ -1702,11 +1702,16 @@ namespace bs { namespace ct
 		HiZUVToScreenUV.x = hiZProps.getWidth() / (float)viewRect.width;
 		HiZUVToScreenUV.y = hiZProps.getHeight() / (float)viewRect.height;
 
+		// Used for roughness fading
+		Vector2 roughnessScaleBias = calcRoughnessFadeScaleBias(settings.maxRoughness);
+
 		Vector2I bufferSize(viewRect.width, viewRect.height);
 		gSSRTraceParamDef.gHiZSize.set(mParamBuffer, bufferSize);
 		gSSRTraceParamDef.gHiZNumMips.set(mParamBuffer, hiZProps.getNumMipmaps());
 		gSSRTraceParamDef.gNDCToHiZUV.set(mParamBuffer, ndcToHiZUV);
 		gSSRTraceParamDef.gHiZUVToScreenUV.set(mParamBuffer, HiZUVToScreenUV);
+		gSSRTraceParamDef.gIntensity.set(mParamBuffer, settings.intensity);
+		gSSRTraceParamDef.gRoughnessScaleBias.set(mParamBuffer, roughnessScaleBias);
 
 		SPtr<GpuParamBlockBuffer> perView = view.getPerViewBuffer();
 		mParamsSet->setParamBlockBuffer("PerCamera", perView);

@@ -1,6 +1,8 @@
 #include "$ENGINE$\PPBase.bslinc"
 #include "$ENGINE$\GBufferInput.bslinc"
 #include "$ENGINE$\PerCameraData.bslinc"
+#include "$ENGINE$\ImportanceSampling.bslinc"
+#include "$ENGINE$\ColorSpace.bslinc"
 
 #define HI_Z 1
 #include "$ENGINE$\RayMarch.bslinc"
@@ -11,6 +13,8 @@ technique PPSSRTrace
 	mixin PerCameraData;
 	mixin GBufferInput;
 	mixin RayMarch;
+	mixin ImportanceSampling;
+	mixin ColorSpace;
 
 	stencil
 	{
@@ -28,6 +32,8 @@ technique PPSSRTrace
 			float2 gHiZUVToScreenUV;
 			int2 gHiZSize;
 			int gHiZNumMips;
+			float gIntensity;
+			float2 gRoughnessScaleBias;
 		}
 		
 		Texture2D gSceneColor;
@@ -54,31 +60,28 @@ technique PPSSRTrace
 		
 			SurfaceData surfData = getGBufferData(input.uv0);
 			float3 P = NDCToWorld(input.screenPos, surfData.depth);
-			float3 V = normalize(P - gViewOrigin);
+			float3 V = normalize(gViewOrigin - P);
 			float3 N = surfData.worldNormal.xyz;
+			
+			float roughness = surfData.roughness;
+			
+			
+			roughness = 0.3f;//DEBUG ONLY
+			
+			
+			
+			float roughness2 = roughness * roughness;
+			float roughness4 = roughness2 * roughness2;
 			
 			// TODO - DEBUG ONLY - Only handle reflections on up facing surfaces
 			if(dot(N, float3(0,1,0)) < 0.8)
 				return gSceneColor.Sample(gSceneColorSamp, input.uv0);	
 			else
 				N = float3(0,1,0);
-			
-			// TODO - Allow number of steps and rays be customized using a quality level
-			//  - And HiZ vs linear search
-			
-			// TODO - Use Hammersley + random to generate ray directions based on GGX BRDF
-			//  - Clip BRDF lobe? And renormalize PDF?
-			// TODO - Reject rays pointing under the surface
-			
-			// Eliminate rays pointing towards the viewer. They won't hit anything, plus they can screw up precision
-			// and cause ray step offset to be too small, causing self-intersections.
-			float3 R = normalize(reflect(V, N));
-			if(dot(R, gViewDir) < 0.0f)
-				return 0.0f;
-			
+
 			// Jitter ray offset in 4x4 tile, in order to avoid stairstep artifacts
 			uint pixelIdx = mortonCode4x4((uint)pixelPos.x, (uint)pixelPos.y);
-			float jitterOffset = (pixelIdx & 15) / 15.0f - 0.5f; // TODO - Also add per-frame jitter
+			float jitterOffset = (pixelIdx & 15) / 15.0f - 0.5f; // TODO - Also add per-frame jitter			
 			
 			RayMarchParams rayMarchParams;
 			rayMarchParams.bufferSize = gHiZSize;
@@ -86,24 +89,79 @@ technique PPSSRTrace
 			rayMarchParams.NDCToHiZUV = gNDCToHiZUV;
 			rayMarchParams.HiZUVToScreenUV = gHiZUVToScreenUV;
 			rayMarchParams.rayOrigin = P;
-			rayMarchParams.rayDir = R;
-			rayMarchParams.jitterOffset = jitterOffset;
+			rayMarchParams.jitterOffset = jitterOffset;			
 			
-			// TODO - Fade based on roughness
+			int NUM_RAYS = 64; // DEBUG ONLY
 			
-			float4 rayHit = rayMarch(gHiZ, gDepthBufferSamp, rayMarchParams);
-			if(rayHit.w < 1.0f) // Hit
+			float4 sum = 0;
+			[loop]
+			for(int i = 0; i < NUM_RAYS; ++i)
 			{
-				float4 output = gSceneColor.Sample(gSceneColorSamp, rayHit.xy);
+				// TODO - Add per-frame random? (for temporal filtering)
+				float2 random = hammersleySequence(i, NUM_RAYS);
+				float2 sphericalH = importanceSampleGGX(random, roughness4);
 				
-				// Fade out near screen edges
-				float2 rayHitNDC = UVToNDC(rayHit.xy);
-				float2 vignette = saturate(abs(rayHitNDC) * 5.0f - 4.0f);
-	
-				return output * (1.0f - dot(vignette, vignette));
+				float cosTheta = sphericalH.x;
+				float phi = sphericalH.y;
+				float sinTheta = sqrt(1.0f - cosTheta * cosTheta);
+				
+				float3 H = sphericalToCartesian(cosTheta, sinTheta, phi);
+
+				// Transform H to world space
+				float3 up = abs(H.z) < 0.999 ? float3(0, 0, 1) : float3(1, 0, 0);
+				float3 tangentX = normalize(cross(up, N));
+				float3 tangentY = cross(N, tangentX);
+				
+				H = tangentX * H.x + tangentY * H.y + N * H.z; 
+				float3 R = 2 * dot( V, H ) * H - V;
+
+				// Eliminate rays pointing towards the viewer. They won't hit anything, plus they can screw up precision
+				// and cause ray step offset to be too small, causing self-intersections.
+				R = normalize(R); // Note: Normalization required?
+				if(dot(R, gViewDir) < 0.0f)
+					continue;
+					
+				// Eliminate rays pointing below the surface
+				if(dot(R, N) < 0.0005f)
+					continue;
+					
+				rayMarchParams.rayDir = R;
+
+				float4 rayHit = rayMarch(gHiZ, gDepthBufferSamp, rayMarchParams);
+				if(rayHit.w < 1.0f) // Hit
+				{
+					float4 color = gSceneColor.Sample(gSceneColorSamp, rayHit.xy);
+					color.a = 1.0f; // Marks the pixel as SSR
+					
+					// Fade out near screen edges
+					float2 rayHitNDC = UVToNDC(rayHit.xy);
+					float2 vignette = saturate(abs(rayHitNDC) * 5.0f - 4.0f);
+		
+					color = color * saturate(1.0f - dot(vignette, vignette));
+					
+					// Note: Not accounting for PDF here since we don't evaluate BRDF until later. Looks good though.
+					
+					// Tonemap the color to get a nicer visual average
+					color.rgb /= (1 + LuminanceRGB(color.rgb));
+					
+					sum += color;
+				}
 			}
 			
-			return 0.0f;
+			// Divide by total number of rays, instead of actual number of rays that passed the test. This scales down the
+			// contribution for pixels for which many rays failed the test and might not be accurate.
+			float4 output = sum / NUM_RAYS; 
+			
+			// Move back to high range (reverse tonemap)
+			output.rgb /= (1 - LuminanceRGB(output.rgb));
+			
+			// Fade based on roughness
+			float fadeValue = 1.0f - saturate(surfData.roughness * gRoughnessScaleBias.x + gRoughnessScaleBias.y);
+			
+			output *= fadeValue;
+			output *= gIntensity;
+			
+			return output;
 		}	
 	};
 };

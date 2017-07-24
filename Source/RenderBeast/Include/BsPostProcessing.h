@@ -807,6 +807,8 @@ namespace bs { namespace ct
 		BS_PARAM_BLOCK_ENTRY(Vector2, gHiZUVToScreenUV)
 		BS_PARAM_BLOCK_ENTRY(Vector2I, gHiZSize)
 		BS_PARAM_BLOCK_ENTRY(int, gHiZNumMips)
+		BS_PARAM_BLOCK_ENTRY(float, gIntensity)
+		BS_PARAM_BLOCK_ENTRY(Vector2, gRoughnessScaleBias)
 	BS_PARAM_BLOCK_END
 
 	extern SSRTraceParamDef gSSRTraceParamDef;

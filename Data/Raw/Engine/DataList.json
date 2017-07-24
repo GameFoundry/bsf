@@ -151,6 +151,10 @@
         {
             "Path": "TemporalResolve.bslinc",
             "UUID": "b0ce01c2-3326-445e-bf2b-35cf8d9d6e1b"
+        },
+        {
+            "Path": "ImportanceSampling.bslinc",
+            "UUID": "52a46920-860e-4d05-a7c3-34e926b02664"
         }
     ],
     "Shaders": [
