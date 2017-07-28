@@ -56,12 +56,12 @@ namespace bs { namespace ct
 		variations.add(VAR_HighQuality_MSAA);
 	}
 
-	void DownsampleMat::execute(const SPtr<Texture>& target, PostProcessInfo& ppInfo)
+	void DownsampleMat::execute(const SPtr<Texture>& input, const SPtr<RenderTarget>& output)
 	{
 		// Set parameters
-		mInputTexture.set(target);
+		mInputTexture.set(input);
 
-		const TextureProperties& rtProps = target->getProperties();
+		const TextureProperties& rtProps = input->getProperties();
 
 		bool MSAA = mVariation.getInt("MSAA") > 0;
 		if(MSAA)
@@ -81,17 +81,8 @@ namespace bs { namespace ct
 			gDownsampleParamDef.gOffsets.set(mParamBuffer, invTextureSize * Vector2(1.0f, 1.0f));
 		}
 
-		// Set output
-		UINT32 width = std::max(1, Math::ceilToInt(rtProps.getWidth() * 0.5f));
-		UINT32 height = std::max(1, Math::ceilToInt(rtProps.getHeight() * 0.5f));
-
-		mOutputDesc = POOLED_RENDER_TEXTURE_DESC::create2D(rtProps.getFormat(), width, height, TU_RENDERTARGET);
-
-		// Render
-		ppInfo.downsampledSceneTex = GpuResourcePool::instance().get(mOutputDesc);
-
 		RenderAPI& rapi = RenderAPI::instance();
-		rapi.setRenderTarget(ppInfo.downsampledSceneTex->renderTexture, FBT_DEPTH | FBT_STENCIL);
+		rapi.setRenderTarget(output, FBT_DEPTH | FBT_STENCIL);
 
 		gRendererUtility().setPass(mMaterial);
 		gRendererUtility().setPassParams(mParamsSet);
@@ -102,14 +93,16 @@ namespace bs { namespace ct
 			gRendererUtility().drawScreenQuad();
 
 		rapi.setRenderTarget(nullptr);
-
-		mOutput = ppInfo.downsampledSceneTex->renderTexture;
 	}
 
-	void DownsampleMat::release(PostProcessInfo& ppInfo)
+	POOLED_RENDER_TEXTURE_DESC DownsampleMat::getOutputDesc(const SPtr<Texture>& target)
 	{
-		GpuResourcePool::instance().release(ppInfo.downsampledSceneTex);
-		mOutput = nullptr;
+		const TextureProperties& rtProps = target->getProperties();
+		
+		UINT32 width = std::max(1, Math::ceilToInt(rtProps.getWidth() * 0.5f));
+		UINT32 height = std::max(1, Math::ceilToInt(rtProps.getHeight() * 0.5f));
+
+		return POOLED_RENDER_TEXTURE_DESC::create2D(rtProps.getFormat(), width, height, TU_RENDERTARGET);
 	}
 
 	DownsampleMat* DownsampleMat::getVariation(UINT32 quality, bool msaa)
@@ -154,52 +147,45 @@ namespace bs { namespace ct
 		variations.add(variation);
 	}
 
-	void EyeAdaptHistogramMat::execute(PostProcessInfo& ppInfo)
+	void EyeAdaptHistogramMat::execute(const SPtr<Texture>& input, const SPtr<Texture>& output, 
+		const AutoExposureSettings& settings)
 	{
 		// Set parameters
-		SPtr<RenderTexture> target = ppInfo.downsampledSceneTex->renderTexture;
-		mSceneColor.set(ppInfo.downsampledSceneTex->texture);
+		mSceneColor.set(input);
 
-		const RenderTextureProperties& props = target->getProperties();
+		const TextureProperties& props = input->getProperties();
 		int offsetAndSize[4] = { 0, 0, (INT32)props.getWidth(), (INT32)props.getHeight() };
 
-		gEyeAdaptHistogramParamDef.gHistogramParams.set(mParamBuffer, getHistogramScaleOffset(ppInfo));
+		gEyeAdaptHistogramParamDef.gHistogramParams.set(mParamBuffer, getHistogramScaleOffset(settings));
 		gEyeAdaptHistogramParamDef.gPixelOffsetAndSize.set(mParamBuffer, Vector4I(offsetAndSize));
 
-		Vector2I threadGroupCount = getThreadGroupCount(target);
+		Vector2I threadGroupCount = getThreadGroupCount(input);
 		gEyeAdaptHistogramParamDef.gThreadGroupCount.set(mParamBuffer, threadGroupCount);
 
-		// Set output
-		UINT32 numHistograms = threadGroupCount.x * threadGroupCount.y;
-
-		mOutputDesc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_FLOAT16_RGBA, HISTOGRAM_NUM_TEXELS, numHistograms,
-			TU_LOADSTORE);
-
 		// Dispatch
-		ppInfo.histogramTex = GpuResourcePool::instance().get(mOutputDesc);
-
-		mOutputTex.set(ppInfo.histogramTex->texture);
+		mOutputTex.set(output);
 
 		RenderAPI& rapi = RenderAPI::instance();
 		gRendererUtility().setComputePass(mMaterial);
 		gRendererUtility().setPassParams(mParamsSet);
 		rapi.dispatchCompute(threadGroupCount.x, threadGroupCount.y);
-
-		mOutput = ppInfo.histogramTex->renderTexture;
 	}
 
-	void EyeAdaptHistogramMat::release(PostProcessInfo& ppInfo)
+	POOLED_RENDER_TEXTURE_DESC EyeAdaptHistogramMat::getOutputDesc(const SPtr<Texture>& target)
 	{
-		GpuResourcePool::instance().release(ppInfo.histogramTex);
-		mOutput = nullptr;
+		Vector2I threadGroupCount = getThreadGroupCount(target);
+		UINT32 numHistograms = threadGroupCount.x * threadGroupCount.y;
+
+		return POOLED_RENDER_TEXTURE_DESC::create2D(PF_FLOAT16_RGBA, HISTOGRAM_NUM_TEXELS, numHistograms,
+			TU_LOADSTORE);
 	}
 
-	Vector2I EyeAdaptHistogramMat::getThreadGroupCount(const SPtr<RenderTexture>& target)
+	Vector2I EyeAdaptHistogramMat::getThreadGroupCount(const SPtr<Texture>& target)
 	{
 		const UINT32 texelsPerThreadGroupX = THREAD_GROUP_SIZE_X * LOOP_COUNT_X;
 		const UINT32 texelsPerThreadGroupY = THREAD_GROUP_SIZE_Y * LOOP_COUNT_Y;
 
-		const RenderTextureProperties& props = target->getProperties();
+		const TextureProperties& props = target->getProperties();
 	
 		Vector2I threadGroupCount;
 		threadGroupCount.x = ((INT32)props.getWidth() + texelsPerThreadGroupX - 1) / texelsPerThreadGroupX;
@@ -208,13 +194,11 @@ namespace bs { namespace ct
 		return threadGroupCount;
 	}
 
-	Vector2 EyeAdaptHistogramMat::getHistogramScaleOffset(const PostProcessInfo& ppInfo)
+	Vector2 EyeAdaptHistogramMat::getHistogramScaleOffset(const AutoExposureSettings& settings)
 	{
-		const StandardPostProcessSettings& settings = *ppInfo.settings;
-
-		float diff = settings.autoExposure.histogramLog2Max - settings.autoExposure.histogramLog2Min;
+		float diff = settings.histogramLog2Max - settings.histogramLog2Min;
 		float scale = 1.0f / diff;
-		float offset = -settings.autoExposure.histogramLog2Min * scale;
+		float offset = -settings.histogramLog2Min * scale;
 
 		return Vector2(scale, offset);
 	}
@@ -236,35 +220,27 @@ namespace bs { namespace ct
 		// Do nothing
 	}
 
-	void EyeAdaptHistogramReduceMat::execute(PostProcessInfo& ppInfo)
+	void EyeAdaptHistogramReduceMat::execute(const SPtr<Texture>& sceneColor, const SPtr<Texture>& histogram,
+		const SPtr<Texture>& prevFrame, const SPtr<RenderTarget>& output)
 	{
 		// Set parameters
-		mHistogramTex.set(ppInfo.histogramTex->texture);
+		mHistogramTex.set(histogram);
 
-		SPtr<PooledRenderTexture> eyeAdaptationRT = ppInfo.eyeAdaptationTex[ppInfo.lastEyeAdaptationTex];
 		SPtr<Texture> eyeAdaptationTex;
-
-		if (eyeAdaptationRT != nullptr) // Could be that this is the first run
-			eyeAdaptationTex = eyeAdaptationRT->texture;
-		else
+		if (prevFrame == nullptr) // Could be that this is the first run
 			eyeAdaptationTex = Texture::WHITE;
+		else
+			eyeAdaptationTex = prevFrame;
 
 		mEyeAdaptationTex.set(eyeAdaptationTex);
 
-		Vector2I threadGroupCount = EyeAdaptHistogramMat::getThreadGroupCount(ppInfo.downsampledSceneTex->renderTexture);
+		Vector2I threadGroupCount = EyeAdaptHistogramMat::getThreadGroupCount(sceneColor);
 		UINT32 numHistograms = threadGroupCount.x * threadGroupCount.y;
 
 		gEyeAdaptHistogramReduceParamDef.gThreadGroupCount.set(mParamBuffer, numHistograms);
 
-		// Set output
-		mOutputDesc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_FLOAT16_RGBA, EyeAdaptHistogramMat::HISTOGRAM_NUM_TEXELS, 2,
-			TU_RENDERTARGET);
-
-		// Render
-		ppInfo.histogramReduceTex = GpuResourcePool::instance().get(mOutputDesc);
-
 		RenderAPI& rapi = RenderAPI::instance();
-		rapi.setRenderTarget(ppInfo.histogramReduceTex->renderTexture, FBT_DEPTH | FBT_STENCIL);
+		rapi.setRenderTarget(output, FBT_DEPTH | FBT_STENCIL);
 
 		gRendererUtility().setPass(mMaterial);
 		gRendererUtility().setPassParams(mParamsSet);
@@ -273,14 +249,12 @@ namespace bs { namespace ct
 		gRendererUtility().drawScreenQuad(drawUV);
 
 		rapi.setRenderTarget(nullptr);
-
-		mOutput = ppInfo.histogramReduceTex->renderTexture;
 	}
 
-	void EyeAdaptHistogramReduceMat::release(PostProcessInfo& ppInfo)
+	POOLED_RENDER_TEXTURE_DESC EyeAdaptHistogramReduceMat::getOutputDesc()
 	{
-		GpuResourcePool::instance().release(ppInfo.histogramReduceTex);
-		mOutput = nullptr;
+		return POOLED_RENDER_TEXTURE_DESC::create2D(PF_FLOAT16_RGBA, EyeAdaptHistogramMat::HISTOGRAM_NUM_TEXELS, 2,
+			TU_RENDERTARGET);
 	}
 
 	EyeAdaptationParamDef gEyeAdaptationParamDef;
@@ -302,41 +276,30 @@ namespace bs { namespace ct
 		variations.add(variation);
 	}
 
-	void EyeAdaptationMat::execute(PostProcessInfo& ppInfo, float frameDelta)
+	void EyeAdaptationMat::execute(const SPtr<Texture>& reducedHistogram, const SPtr<RenderTarget>& output, 
+		float frameDelta, const AutoExposureSettings& settings, float exposureScale)
 	{
-		bool texturesInitialized = ppInfo.eyeAdaptationTex[0] != nullptr && ppInfo.eyeAdaptationTex[1] != nullptr;
-		if(!texturesInitialized)
-		{
-			POOLED_RENDER_TEXTURE_DESC outputDesc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_FLOAT32_R, 1, 1, TU_RENDERTARGET);
-			ppInfo.eyeAdaptationTex[0] = GpuResourcePool::instance().get(outputDesc);
-			ppInfo.eyeAdaptationTex[1] = GpuResourcePool::instance().get(outputDesc);
-		}
-
-		ppInfo.lastEyeAdaptationTex = (ppInfo.lastEyeAdaptationTex + 1) % 2; // TODO - Do I really need two targets?
-
 		// Set parameters
-		mReducedHistogramTex.set(ppInfo.histogramReduceTex->texture);
+		mReducedHistogramTex.set(reducedHistogram);
 
-		Vector2 histogramScaleAndOffset = EyeAdaptHistogramMat::getHistogramScaleOffset(ppInfo);
-
-		const StandardPostProcessSettings& settings = *ppInfo.settings;
+		Vector2 histogramScaleAndOffset = EyeAdaptHistogramMat::getHistogramScaleOffset(settings);
 
 		Vector4 eyeAdaptationParams[3];
 		eyeAdaptationParams[0].x = histogramScaleAndOffset.x;
 		eyeAdaptationParams[0].y = histogramScaleAndOffset.y;
 
-		float histogramPctHigh = Math::clamp01(settings.autoExposure.histogramPctHigh);
+		float histogramPctHigh = Math::clamp01(settings.histogramPctHigh);
 
-		eyeAdaptationParams[0].z = std::min(Math::clamp01(settings.autoExposure.histogramPctLow), histogramPctHigh);
+		eyeAdaptationParams[0].z = std::min(Math::clamp01(settings.histogramPctLow), histogramPctHigh);
 		eyeAdaptationParams[0].w = histogramPctHigh;
 
-		eyeAdaptationParams[1].x = std::min(settings.autoExposure.minEyeAdaptation, settings.autoExposure.maxEyeAdaptation);
-		eyeAdaptationParams[1].y = settings.autoExposure.maxEyeAdaptation;
+		eyeAdaptationParams[1].x = std::min(settings.minEyeAdaptation, settings.maxEyeAdaptation);
+		eyeAdaptationParams[1].y = settings.maxEyeAdaptation;
 
-		eyeAdaptationParams[1].z = settings.autoExposure.eyeAdaptationSpeedUp;
-		eyeAdaptationParams[1].w = settings.autoExposure.eyeAdaptationSpeedDown;
+		eyeAdaptationParams[1].z = settings.eyeAdaptationSpeedUp;
+		eyeAdaptationParams[1].w = settings.eyeAdaptationSpeedDown;
 
-		eyeAdaptationParams[2].x = Math::pow(2.0f, settings.exposureScale);
+		eyeAdaptationParams[2].x = Math::pow(2.0f, exposureScale);
 		eyeAdaptationParams[2].y = frameDelta;
 
 		eyeAdaptationParams[2].z = 0.0f; // Unused
@@ -347,16 +310,19 @@ namespace bs { namespace ct
 		gEyeAdaptationParamDef.gEyeAdaptationParams.set(mParamBuffer, eyeAdaptationParams[2], 2);
 
 		// Render
-		SPtr<PooledRenderTexture> eyeAdaptationRT = ppInfo.eyeAdaptationTex[ppInfo.lastEyeAdaptationTex];
-
 		RenderAPI& rapi = RenderAPI::instance();
-		rapi.setRenderTarget(eyeAdaptationRT->renderTexture, FBT_DEPTH | FBT_STENCIL);
+		rapi.setRenderTarget(output, FBT_DEPTH | FBT_STENCIL);
 
 		gRendererUtility().setPass(mMaterial);
 		gRendererUtility().setPassParams(mParamsSet);
 		gRendererUtility().drawScreenQuad();
 
 		rapi.setRenderTarget(nullptr);
+	}
+
+	POOLED_RENDER_TEXTURE_DESC EyeAdaptationMat::getOutputDesc()
+	{
+		return POOLED_RENDER_TEXTURE_DESC::create2D(PF_FLOAT32_R, 1, 1, TU_RENDERTARGET);
 	}
 
 	CreateTonemapLUTParamDef gCreateTonemapLUTParamDef;
@@ -383,10 +349,8 @@ namespace bs { namespace ct
 		variations.add(variation);
 	}
 
-	void CreateTonemapLUTMat::execute(PostProcessInfo& ppInfo)
+	void CreateTonemapLUTMat::execute(const SPtr<Texture>& output, const StandardPostProcessSettings& settings)
 	{
-		const StandardPostProcessSettings& settings = *ppInfo.settings;
-
 		// Set parameters
 		gCreateTonemapLUTParamDef.gGammaAdjustment.set(mParamBuffer, 2.2f / settings.gamma);
 
@@ -418,14 +382,8 @@ namespace bs { namespace ct
 		gWhiteBalanceParamDef.gWhiteTemp.set(mWhiteBalanceParamBuffer, settings.whiteBalance.temperature);
 		gWhiteBalanceParamDef.gWhiteOffset.set(mWhiteBalanceParamBuffer, settings.whiteBalance.tint);
 
-		// Set output
-		POOLED_RENDER_TEXTURE_DESC outputDesc = POOLED_RENDER_TEXTURE_DESC::create3D(PF_R8G8B8A8, 
-			LUT_SIZE, LUT_SIZE, LUT_SIZE, TU_LOADSTORE);
-
 		// Dispatch
-		ppInfo.colorLUT = GpuResourcePool::instance().get(outputDesc);
-
-		mOutputTex.set(ppInfo.colorLUT->texture);
+		mOutputTex.set(output);
 
 		RenderAPI& rapi = RenderAPI::instance();
 		
@@ -434,9 +392,9 @@ namespace bs { namespace ct
 		rapi.dispatchCompute(LUT_SIZE / 8, LUT_SIZE / 8, LUT_SIZE);
 	}
 
-	void CreateTonemapLUTMat::release(PostProcessInfo& ppInfo)
+	POOLED_RENDER_TEXTURE_DESC CreateTonemapLUTMat::getOutputDesc()
 	{
-		GpuResourcePool::instance().release(ppInfo.colorLUT);
+		return POOLED_RENDER_TEXTURE_DESC::create3D(PF_R8G8B8A8, LUT_SIZE, LUT_SIZE, LUT_SIZE, TU_LOADSTORE);
 	}
 
 	TonemappingParamDef gTonemappingParamDef;
@@ -522,35 +480,24 @@ namespace bs { namespace ct
 		variations.add(VAR_NoGamma_NoAutoExposure_NoMSAA);
 	}
 
-	void TonemappingMat::execute(const SPtr<Texture>& sceneColor, 
-		const SPtr<RenderTarget>& outputRT, const Rect2& outputRect, PostProcessInfo& ppInfo)
+	void TonemappingMat::execute(const SPtr<Texture>& sceneColor, const SPtr<Texture>& eyeAdaptation, 
+		const SPtr<Texture>& colorLUT, const SPtr<RenderTarget>& output, const StandardPostProcessSettings& settings)
 	{
 		const TextureProperties& texProps = sceneColor->getProperties();
 
-		gTonemappingParamDef.gRawGamma.set(mParamBuffer, 1.0f / ppInfo.settings->gamma);
-		gTonemappingParamDef.gManualExposureScale.set(mParamBuffer, Math::pow(2.0f, ppInfo.settings->exposureScale));
+		gTonemappingParamDef.gRawGamma.set(mParamBuffer, 1.0f / settings.gamma);
+		gTonemappingParamDef.gManualExposureScale.set(mParamBuffer, Math::pow(2.0f, settings.exposureScale));
 		gTonemappingParamDef.gNumSamples.set(mParamBuffer, texProps.getNumSamples());
 
 		// Set parameters
 		mInputTex.set(sceneColor);
-
-		SPtr<Texture> colorLUT;
-		if(ppInfo.colorLUT != nullptr)
-			colorLUT = ppInfo.colorLUT->texture;
-
 		mColorLUT.set(colorLUT);
-
-		SPtr<Texture> eyeAdaptationTexture;
-		if(ppInfo.eyeAdaptationTex[ppInfo.lastEyeAdaptationTex] != nullptr)
-			eyeAdaptationTexture = ppInfo.eyeAdaptationTex[ppInfo.lastEyeAdaptationTex]->texture;
-
-		mEyeAdaptationTex.set(eyeAdaptationTexture);
+		mEyeAdaptationTex.set(eyeAdaptation);
 
 		// Render
 		RenderAPI& rapi = RenderAPI::instance();
 
-		rapi.setRenderTarget(outputRT);
-		rapi.setViewport(outputRect);
+		rapi.setRenderTarget(output);
 
 		gRendererUtility().setPass(mMaterial);
 		gRendererUtility().setPassParams(mParamsSet);
@@ -1002,79 +949,6 @@ namespace bs { namespace ct
 			return get(VAR_NoNear_Far);
 	}
 
-	void GaussianDOF::execute(const SPtr<Texture>& sceneColor, const SPtr<Texture>& sceneDepth, 
-		const SPtr<RenderTarget>& output, const RendererView& view, const DepthOfFieldSettings& settings)
-	{
-		bool near = settings.nearBlurAmount > 0.0f;
-		bool far = settings.farBlurAmount > 0.0f;
-
-		// This shouldn't have been called if both are false
-		assert(near || far);
-
-		GaussianDOFSeparateMat* separateMat = GaussianDOFSeparateMat::getVariation(near, far);
-		GaussianDOFCombineMat* combineMat = GaussianDOFCombineMat::getVariation(near, far);
-		GaussianBlurMat* blurMat = GaussianBlurMat::get();
-
-		separateMat->execute(sceneColor, sceneDepth, view, settings);
-
-		SPtr<PooledRenderTexture> nearTex, farTex;
-		if(near && far)
-		{
-			nearTex = separateMat->getOutput(0);
-			farTex = separateMat->getOutput(1);
-		}
-		else
-		{
-			if (near)
-				nearTex = separateMat->getOutput(0);
-			else
-				farTex = separateMat->getOutput(0);
-		}
-
-		// Blur the out of focus pixels
-		// Note: Perhaps set up stencil so I can avoid performing blur on unused parts of the textures?
-		const TextureProperties& texProps = nearTex ? nearTex->texture->getProperties() : farTex->texture->getProperties();
-		POOLED_RENDER_TEXTURE_DESC tempTexDesc = POOLED_RENDER_TEXTURE_DESC::create2D(texProps.getFormat(), 
-			texProps.getWidth(), texProps.getHeight(), TU_RENDERTARGET);
-		SPtr<PooledRenderTexture> tempTexture = GpuResourcePool::instance().get(tempTexDesc);
-
-		SPtr<Texture> blurredNearTex;
-		if(nearTex)
-		{
-			blurMat->execute(nearTex->texture, settings.nearBlurAmount, tempTexture->renderTexture);
-			blurredNearTex = tempTexture->texture;
-		}
-
-		SPtr<Texture> blurredFarTex;
-		if(farTex)
-		{
-			// If temporary texture is used up, re-use the original near texture for the blurred result
-			if(blurredNearTex)
-			{
-				blurMat->execute(farTex->texture, settings.farBlurAmount, nearTex->renderTexture);
-				blurredFarTex = nearTex->texture;
-			}
-			else // Otherwise just use the temporary
-			{
-				blurMat->execute(farTex->texture, settings.farBlurAmount, tempTexture->renderTexture);
-				blurredFarTex = tempTexture->texture;
-			}
-		}
-		
-		combineMat->execute(sceneColor, blurredNearTex, blurredFarTex, sceneDepth, output, view, settings);
-
-		separateMat->release();
-		GpuResourcePool::instance().release(tempTexture);
-	}
-
-	bool GaussianDOF::requiresDOF(const DepthOfFieldSettings& settings)
-	{
-		bool near = settings.nearBlurAmount > 0.0f;
-		bool far = settings.farBlurAmount > 0.0f;
-
-		return settings.enabled && (near || far);
-	}
-	
 	BuildHiZMat::BuildHiZMat()
 	{
 		SPtr<GpuParams> gpuParams = mParamsSet->getGpuParams();
@@ -2061,57 +1935,6 @@ namespace bs { namespace ct
 		PostProcessInfo& ppInfo = viewInfo->getPPInfo();
 		const StandardPostProcessSettings& settings = *ppInfo.settings;
 
-		SPtr<Texture> sceneColor = renderTargets->get(RTT_SceneColor);
-		Rect2 viewportRect = viewProps.nrmViewRect;
-
-		bool hdr = viewProps.isHDR;
-		bool msaa = viewProps.numSamples > 1;
-
-		if(hdr && settings.enableAutoExposure)
-		{
-			DownsampleMat* downsample = DownsampleMat::getVariation(1, msaa);
-			EyeAdaptHistogramMat* eyeAdaptHistogram = EyeAdaptHistogramMat::get();
-
-			downsample->execute(sceneColor, ppInfo);
-			eyeAdaptHistogram->execute(ppInfo);
-			downsample->release(ppInfo);
-
-			mEyeAdaptHistogramReduce.execute(ppInfo);
-			eyeAdaptHistogram->release(ppInfo);
-
-			mEyeAdaptation.execute(ppInfo, frameDelta);
-			mEyeAdaptHistogramReduce.release(ppInfo);
-		}
-
-		bool gammaOnly;
-		bool autoExposure;
-		if (hdr)
-		{
-			if (settings.enableTonemapping)
-			{
-				if (ppInfo.settingDirty) // Rebuild LUT if PP settings changed
-				{
-					CreateTonemapLUTMat* createLUT = CreateTonemapLUTMat::get();
-					createLUT->execute(ppInfo);
-				}
-
-				gammaOnly = false;
-			}
-			else
-				gammaOnly = true;
-
-			autoExposure = settings.enableAutoExposure;
-		}
-		else
-		{
-			gammaOnly = true;
-			autoExposure = false;
-		}
-
-
-
-
-
 		// DEBUG ONLY
 		//SSRTraceMat ssrTrace;
 
@@ -2122,69 +1945,6 @@ namespace bs { namespace ct
 
 		//RenderAPI::instance().setRenderTarget(renderTargets->getRT(RTT_ResolvedSceneColor));
 		//gRendererUtility().blit(renderTargets->get(RTT_ResolvedSceneColorSecondary));
-
-		bool performDOF = GaussianDOF::requiresDOF(settings.depthOfField);
-
-		SPtr<RenderTarget> tonemapTarget;
-		if (!performDOF && !settings.enableFXAA)
-			tonemapTarget = viewProps.target;
-		else
-		{
-			renderTargets->allocate(RTT_ResolvedSceneColorSecondary);
-			tonemapTarget = renderTargets->getRT(RTT_ResolvedSceneColorSecondary);
-		}
-
-		TonemappingMat* tonemapping = TonemappingMat::getVariation(gammaOnly, autoExposure, msaa);
-		tonemapping->execute(sceneColor, tonemapTarget, viewportRect, ppInfo);
-
-
-
-		// DEBUG ONLY
-		//renderTargets->release(RTT_ResolvedSceneColorSecondary);
-		//return;
-
-
-		if(performDOF)
-		{
-			SPtr<RenderTarget> dofTarget;
-
-			// If DOF is the final effect, output to final target, otherwise use a temporary
-			if (settings.enableFXAA)
-			{
-				renderTargets->allocate(RTT_ResolvedSceneColor);
-				dofTarget = renderTargets->getRT(RTT_ResolvedSceneColor);
-			}
-			else
-				dofTarget = viewProps.target;
-
-			SPtr<Texture> sceneDepth = renderTargets->get(RTT_ResolvedDepth);
-
-			mGaussianDOF.execute(renderTargets->get(RTT_ResolvedSceneColorSecondary), sceneDepth, dofTarget, *viewInfo, 
-				settings.depthOfField);
-
-			renderTargets->release(RTT_ResolvedSceneColorSecondary);
-		}
-
-		if(settings.enableFXAA)
-		{
-			SPtr<Texture> fxaaSource;
-			if (performDOF)
-				fxaaSource = renderTargets->get(RTT_ResolvedSceneColor);
-			else
-				fxaaSource = renderTargets->get(RTT_ResolvedSceneColorSecondary);
-
-			// Note: I could skip executing FXAA over DOF and motion blurred pixels
-			FXAAMat* fxaa = FXAAMat::get();
-			fxaa->execute(fxaaSource, viewProps.target);
-
-			if (performDOF)
-				renderTargets->release(RTT_ResolvedSceneColor);
-			else
-				renderTargets->release(RTT_ResolvedSceneColorSecondary);
-		}
-
-		if (ppInfo.settingDirty)
-			ppInfo.settingDirty = false;
 	}
 
 	void PostProcessing::buildSSAO(const RendererView& view)

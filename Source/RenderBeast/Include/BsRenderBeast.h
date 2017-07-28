@@ -166,7 +166,7 @@ namespace bs
 		 *			
 		 * @note	Core thread only.
 		 */
-		void renderView(const RendererViewGroup& viewGroup, RendererView* viewInfo, float frameDelta);
+		void renderView(const RendererViewGroup& viewGroup, RendererView* viewInfo, const FrameInfo& frameInfo);
 
 		/**
 		 * Renders all overlay callbacks of the provided view.

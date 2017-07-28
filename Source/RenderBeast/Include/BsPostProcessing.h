@@ -46,13 +46,10 @@ namespace bs { namespace ct
 		DownsampleMat();
 
 		/** Renders the post-process effect with the provided parameters. */
-		void execute(const SPtr<Texture>& target, PostProcessInfo& ppInfo);
+		void execute(const SPtr<Texture>& input, const SPtr<RenderTarget>& output);
 
-		/** Releases the output render target. */
-		void release(PostProcessInfo& ppInfo);
-
-		/** Returns the render texture where the output will be written. */
-		SPtr<RenderTexture> getOutput() const { return mOutput; }
+		/** Returns the texture descriptor that can be used for initializing the output render target. */
+		static POOLED_RENDER_TEXTURE_DESC getOutputDesc(const SPtr<Texture>& target);
 
 		/** Returns the downsample material variation matching the provided parameters. */
 		static DownsampleMat* getVariation(UINT32 quality, bool msaa);
@@ -60,9 +57,6 @@ namespace bs { namespace ct
 	private:
 		SPtr<GpuParamBlockBuffer> mParamBuffer;
 		GpuParamTexture mInputTexture;
-
-		POOLED_RENDER_TEXTURE_DESC mOutputDesc;
-		SPtr<RenderTexture> mOutput;
 
 		static ShaderVariation VAR_LowQuality_NoMSAA;
 		static ShaderVariation VAR_LowQuality_MSAA;
@@ -87,22 +81,19 @@ namespace bs { namespace ct
 		EyeAdaptHistogramMat();
 
 		/** Executes the post-process effect with the provided parameters. */
-		void execute(PostProcessInfo& ppInfo);
+		void execute(const SPtr<Texture>& input, const SPtr<Texture>& output, const AutoExposureSettings& settings);
 
-		/** Releases the output render target. */
-		void release(PostProcessInfo& ppInfo);
+		/** Returns the texture descriptor that can be used for initializing the output render target. */
+		static POOLED_RENDER_TEXTURE_DESC getOutputDesc(const SPtr<Texture>& target);
 
-		/** Returns the render texture where the output was written. */
-		SPtr<RenderTexture> getOutput() const { return mOutput; }
-
-		/** Calculates the number of thread groups that need to execute to cover the provided render target. */
-		static Vector2I getThreadGroupCount(const SPtr<RenderTexture>& target);
+		/** Calculates the number of thread groups that need to execute to cover the provided texture. */
+		static Vector2I getThreadGroupCount(const SPtr<Texture>& target);
 
 		/** 
 		 * Returns a vector containing scale and offset (in that order) that will be applied to luminance values
 		 * to determine their position in the histogram. 
 		 */
-		static Vector2 getHistogramScaleOffset(const PostProcessInfo& ppInfo);
+		static Vector2 getHistogramScaleOffset(const AutoExposureSettings& settings);
 
 		static const UINT32 THREAD_GROUP_SIZE_X = 8;
 		static const UINT32 THREAD_GROUP_SIZE_Y = 8;
@@ -112,9 +103,6 @@ namespace bs { namespace ct
 		SPtr<GpuParamBlockBuffer> mParamBuffer;
 		GpuParamTexture mSceneColor;
 		GpuParamLoadStoreTexture mOutputTex;
-
-		POOLED_RENDER_TEXTURE_DESC mOutputDesc;
-		SPtr<RenderTexture> mOutput;
 
 		static const UINT32 LOOP_COUNT_X = 8;
 		static const UINT32 LOOP_COUNT_Y = 8;
@@ -135,21 +123,16 @@ namespace bs { namespace ct
 		EyeAdaptHistogramReduceMat();
 
 		/** Executes the post-process effect with the provided parameters. */
-		void execute(PostProcessInfo& ppInfo);
+		void execute(const SPtr<Texture>& sceneColor, const SPtr<Texture>& histogram, const SPtr<Texture>& prevFrame,
+			const SPtr<RenderTarget>& output);
 
-		/** Releases the output render target. */
-		void release(PostProcessInfo& ppInfo);
-
-		/** Returns the render texture where the output was written. */
-		SPtr<RenderTexture> getOutput() const { return mOutput; }
+		/** Returns the texture descriptor that can be used for initializing the output render target. */
+		static POOLED_RENDER_TEXTURE_DESC getOutputDesc();
 	private:
 		SPtr<GpuParamBlockBuffer> mParamBuffer;
 
 		GpuParamTexture mHistogramTex;
 		GpuParamTexture mEyeAdaptationTex;
-
-		POOLED_RENDER_TEXTURE_DESC mOutputDesc;
-		SPtr<RenderTexture> mOutput;
 	};
 
 	BS_PARAM_BLOCK_BEGIN(EyeAdaptationParamDef)
@@ -167,7 +150,11 @@ namespace bs { namespace ct
 		EyeAdaptationMat();
 
 		/** Executes the post-process effect with the provided parameters. */
-		void execute(PostProcessInfo& ppInfo, float frameDelta);
+		void execute(const SPtr<Texture>& reducedHistogram, const SPtr<RenderTarget>& output, float frameDelta, 
+			const AutoExposureSettings& settings, float exposureScale);
+
+		/** Returns the texture descriptor that can be used for initializing the output render target. */
+		static POOLED_RENDER_TEXTURE_DESC getOutputDesc();
 	private:
 		SPtr<GpuParamBlockBuffer> mParamBuffer;
 		GpuParamTexture mReducedHistogramTex;
@@ -204,10 +191,10 @@ namespace bs { namespace ct
 		CreateTonemapLUTMat();
 
 		/** Executes the post-process effect with the provided parameters. */
-		void execute(PostProcessInfo& ppInfo);
+		void execute(const SPtr<Texture>& output, const StandardPostProcessSettings& settings);
 
-		/** Releases the output render target. */
-		void release(PostProcessInfo& ppInfo);
+		/** Returns the texture descriptor that can be used for initializing the output render target. */
+		static POOLED_RENDER_TEXTURE_DESC getOutputDesc();
 
 		/** Size of the 3D color lookup table. */
 		static const UINT32 LUT_SIZE = 32;
@@ -235,8 +222,8 @@ namespace bs { namespace ct
 		TonemappingMat();
 
 		/** Executes the post-process effect with the provided parameters. */
-		void execute(const SPtr<Texture>& sceneColor, const SPtr<RenderTarget>& outputRT, const Rect2& outputRect,
-			PostProcessInfo& ppInfo);
+		void execute(const SPtr<Texture>& sceneColor, const SPtr<Texture>& eyeAdaptation, const SPtr<Texture>& colorLUT,
+			const SPtr<RenderTarget>& output, const StandardPostProcessSettings& settings);
 
 		/** Returns the material variation matching the provided parameters. */
 		static TonemappingMat* getVariation(bool gammaOnly, bool autoExposure, bool MSAA);
@@ -420,26 +407,6 @@ namespace bs { namespace ct
 		static ShaderVariation VAR_Near_Far;
 		static ShaderVariation VAR_NoNear_Far;
 		static ShaderVariation VAR_Near_NoFar;
-	};
-
-	/** Performs Gaussian depth of field effect with the help of various related shaders. */
-	class GaussianDOF
-	{
-	public:
-		/** 
-		 * Executes the depth of field effect on the provided scene color texture.
-		 * 
-		 * @param[in]	sceneColor	Input texture containing scene color.
-		 * @param[in]	sceneDepth	Input depth buffer texture that will be used for determining pixel depth.
-		 * @param[in]	output		Texture to output the results to.
-		 * @param[in]	view		View through which the depth of field effect is viewed.
-		 * @param[in]	settings	Settings used to control depth of field rendering. 
-		 */
-		void execute(const SPtr<Texture>& sceneColor, const SPtr<Texture>& sceneDepth, const SPtr<RenderTarget>& output, 
-			const RendererView& view, const DepthOfFieldSettings& settings);
-
-		/** Checks does the depth of field effect need to execute. */
-		static bool requiresDOF(const DepthOfFieldSettings& settings);
 	};
 
 	/** Shader that calculates a single level of the hierarchical Z mipmap chain. */
@@ -850,10 +817,6 @@ namespace bs { namespace ct
 		 */
 		void buildSSAO(const RendererView& view);
 	private:
-		EyeAdaptHistogramReduceMat mEyeAdaptHistogramReduce;
-		EyeAdaptationMat mEyeAdaptation;
-
-		GaussianDOF mGaussianDOF;
 		SSAO mSSAO;
 	};
 

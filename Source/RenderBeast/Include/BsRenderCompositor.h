@@ -10,28 +10,37 @@ namespace bs { namespace ct
 	class RendererViewGroup;
 	class RenderCompositorNode;
 	struct PooledStorageBuffer;
+	struct FrameInfo;
 
 	/** @addtogroup RenderBeast
 	 *  @{
 	 */
 	
-	// TODO - Doc
+	/** Inputs provided to each node in the render compositor hierarchy */
 	struct RenderCompositorNodeInputs
 	{
 		RenderCompositorNodeInputs(const RendererViewGroup& viewGroup, const RendererView& view, const SceneInfo& scene, 
-			const RenderBeastOptions& options, const SmallVector<RenderCompositorNode*, 4>& inputNodes)
-			: viewGroup(viewGroup), view(view), scene(scene), options(options), inputNodes(inputNodes)
+			const RenderBeastOptions& options, const FrameInfo& frameInfo, 
+			const SmallVector<RenderCompositorNode*, 4>& inputNodes)
+			: viewGroup(viewGroup), view(view), scene(scene), options(options), frameInfo(frameInfo), inputNodes(inputNodes)
 		{ }
 
 		const RendererViewGroup& viewGroup;
 		const RendererView& view;
 		const SceneInfo& scene;
 		const RenderBeastOptions& options;
+		const FrameInfo& frameInfo;
 
 		SmallVector<RenderCompositorNode*, 4> inputNodes;
 	};
 
-	// TODO - Doc
+	/** 
+	 * Node in the render compositor hierarchy. Nodes can be implemented to perform specific rendering tasks. Each node
+	 * can depend on other nodes in the hierarchy.
+	 * 
+	 * @note	Implementations must provide a getNodeId() and getDependencies() static method, which are expected to
+	 *			return a unique name for the implemented node, as well as a set of nodes it depends on.
+	 */
 	class RenderCompositorNode
 	{
 	public:
@@ -40,18 +49,24 @@ namespace bs { namespace ct
 	protected:
 		friend class RenderCompositor;
 
-		// TODO - Doc
+		/** Executes the task implemented in the node. */
 		virtual void render(const RenderCompositorNodeInputs& inputs) = 0;
 
-		// TODO - Doc. Note this is meant to clean up data within a single render pass, if there is permanent data lasting
-		// multiple frames, only clear that when the node is destroyed.
+		/** 
+		 * Cleans up any temporary resources allocated in a render() call. Any resources lasting longer than one frame
+		 * should be kept alive and released in some other manner.
+		 */
 		virtual void clear() = 0;
 	};
 
-	// TODO - Doc
+	/**
+	 * Performs rendering by iterating over a hierarchy of render nodes. Each node in the hierarchy performs a specific
+	 * rendering tasks and passes its output to the dependant node. The system takes care of initializing, rendering and
+	 * cleaning up nodes automatically depending on their dependencies.
+	 */
 	class RenderCompositor
 	{
-		// TODO - Doc
+		/** Contains internal information about a single render node. */
 		struct NodeInfo
 		{
 			RenderCompositorNode* node;
@@ -59,28 +74,34 @@ namespace bs { namespace ct
 			SmallVector<RenderCompositorNode*, 4> inputs;
 		};
 	public:
-		~RenderCompositor()
-		{
-			clear();
-		}
+		~RenderCompositor();
 
-		// TODO - Doc
+		/**
+		 * Rebuilds the render node hierarchy. Call this whenever some setting that may influence the render node 
+		 * dependencies changes.
+		 * 
+		 * @param[in]	view		Parent view to which this compositor belongs to.
+		 * @param[in]	finalNode	Identifier of the final node in the node hierarchy. This node is expected to write
+		 *							to the views render target. All other nodes will be deduced from this node's
+		 *							dependencies.
+		 */
 		void build(const RendererView& view, const StringID& finalNode);
 
-		// TODO - Doc
-		void execute(const RendererViewGroup& viewGroup, const RendererView& view, const SceneInfo& scene,
-			const RenderBeastOptions& options) const;
+		/**
+		 * Performs rendering using the current render node hierarchy. This is expected to be called once per frame.
+		 * 
+		 * @param[in]	viewGroup		Information about the current view group.
+		 * @param[in]	view			Information about the view this compositor belongs to.
+		 * @param[in]	scene			Information about the entire scene.
+		 * @param[in]	frameInfo		Information about the current frame.
+		 * @param[in]	options			Global renderer options.
+		 */
+		void execute(const RendererViewGroup& viewGroup, const RendererView& view, const SceneInfo& scene, 
+			const FrameInfo& frameInfo, const RenderBeastOptions& options) const;
 
 	private:
-		// TODO - Doc
-		void clear()
-		{
-			for (auto& entry : mNodeInfos)
-				bs_delete(entry.node);
-
-			mNodeInfos.clear();
-			mIsValid = false;
-		}
+		/** Clears the render node hierarchy. */
+		void clear();
 
 		Vector<NodeInfo> mNodeInfos;
 		bool mIsValid = false;
@@ -89,35 +110,39 @@ namespace bs { namespace ct
 		/* 							NODE TYPES	                     			*/
 		/************************************************************************/
 	public:
-		// TODO - Doc
+		/** Contains information about a specific node type. */
 		struct NodeType
 		{
 			virtual ~NodeType() {};
 
-			// TODO - Doc
+			/** Creates a new node of this type. */
 			virtual RenderCompositorNode* create() const = 0;
 
-			// TODO - Doc
+			/** Returns identifier for all the dependencies of a node of this type. */
 			virtual SmallVector<StringID, 4> getDependencies(const RendererView& view) const = 0;
 
 			StringID id;
 		};
 
-		// TODO - Doc
+		
+		/** Templated implementation of NodeType. */
 		template<class T>
 		struct TNodeType : NodeType
 		{
-			// TODO - Doc
+			/** @copydoc NodeType::create() */
 			RenderCompositorNode* create() const override { return bs_new<T>(); }
 
-			// TODO - Doc
+			/** @copydoc NodeType::getDependencies() */
 			SmallVector<StringID, 4> getDependencies(const RendererView& view) const override
 			{
 				return T::getDependencies(view);
 			}
 		};
 
-		// TODO - Doc
+		/** 
+		 * Registers a new type of node with the system. Each node type must first be registered before it can be used
+		 * in the node hierarchy.
+		 */
 		template<class T>
 		static void registerNodeType()
 		{
@@ -128,7 +153,7 @@ namespace bs { namespace ct
 			mNodeTypes[T::getNodeId()] = bs_new<TNodeType<T>>();
 		}
 
-		// TODO - Doc
+		/** Releases any information about render node types. */
 		static void cleanUp()
 		{
 			for (auto& entry : mNodeTypes)
@@ -137,6 +162,7 @@ namespace bs { namespace ct
 			mNodeTypes.clear();
 		}
 
+	private:
 		static UnorderedMap<StringID, NodeType*> mNodeTypes;
 	};
 
@@ -144,7 +170,7 @@ namespace bs { namespace ct
 	/* 							BASE PASS NODES	                     		*/
 	/************************************************************************/
 
-	// TODO - Doc
+	/** Initializes the scene depth texture. Does not perform any rendering. */
 	class RCNodeSceneDepth : public RenderCompositorNode
 	{
 	public:
@@ -161,7 +187,10 @@ namespace bs { namespace ct
 		void clear() override;
 	};
 
-	// TODO - Doc
+	/** 
+	 * Initializes the GBuffer textures and renders the base pass into the GBuffer. The base pass includes all the opaque
+	 * objects visible to the view.
+	 */
 	class RCNodeGBuffer : public RenderCompositorNode
 	{
 	public:
@@ -182,7 +211,7 @@ namespace bs { namespace ct
 		void clear() override;
 	};
 
-	// TODO - Doc
+	/** Initializes the scene color texture and/or buffer. Does not perform any rendering. */
 	class RCNodeSceneColor : public RenderCompositorNode
 	{
 	public:
@@ -215,7 +244,7 @@ namespace bs { namespace ct
 	/* 							LIGHTING NODES                     			*/
 	/************************************************************************/
 
-	// TODO - Doc
+	/** Initializes the light accumulation texture and/or buffer. Does not perform any rendering. */
 	class RCNodeLightAccumulation : public RenderCompositorNode
 	{
 	public:
@@ -244,7 +273,10 @@ namespace bs { namespace ct
 		void clear() override;
 	};
 
-	// TODO - Doc
+	/** 
+	 * Performs tiled deferred lighting, outputing any lighting information in the light accumulation buffer. 
+	 * By default only non-shadowed lights are rendered, as shadowed ones are handled using standard deferred.
+	 */
 	class RCNodeTiledDeferredLighting : public RenderCompositorNode
 	{
 	public:
@@ -261,7 +293,10 @@ namespace bs { namespace ct
 		void clear() override;
 	};
 
-	// TODO - Doc
+	/**
+	 * Performs standard deferred lighting, outputting any lighting information in the light accumulation buffer.
+	 * Only renders shadowed lights.
+	 */
 	class RCNodeStandardDeferredLighting : public RenderCompositorNode
 	{
 	public:
@@ -281,7 +316,10 @@ namespace bs { namespace ct
 		SPtr<RenderTexture> mRenderTarget;
 	};
 
-	// TODO - Doc
+	/**
+	 * In case light accumulation was rendered into a buffer instead of a texture (if MSAA is used), this node will
+	 * unflatten the buffer and write its contents into the light accumulation texture.
+	 */
 	class RCNodeUnflattenLightAccum : public RenderCompositorNode
 	{
 	public:
@@ -298,7 +336,10 @@ namespace bs { namespace ct
 		void clear() override;
 	};
 
-	// TODO - Doc
+	/**
+	 * Perform tiled deferred image based lighting, combines it with direct lighting present in the light accumulation
+	 * buffer and outputs the results to the scene color texture or buffer.
+	 */
 	class RCNodeTiledDeferredIBL : public RenderCompositorNode
 	{
 	public:
@@ -315,7 +356,10 @@ namespace bs { namespace ct
 		void clear() override;
 	};
 
-	// TODO - Doc
+	/**
+	 * In case scene color was rendered into a buffer instead of a texture (if MSAA is used), this node will
+	 * unflatten the buffer and write its contents into the scene color texture.
+	 */
 	class RCNodeUnflattenSceneColor : public RenderCompositorNode
 	{
 	public:
@@ -332,7 +376,10 @@ namespace bs { namespace ct
 		void clear() override;
 	};
 
-	// TODO - Doc
+	/**
+	 * Renders the skybox into the scene color texture. If skybox texture is not available, a solid color will be rendered
+	 * instead.
+	 */
 	class RCNodeSkybox : public RenderCompositorNode
 	{
 	public:
@@ -346,11 +393,99 @@ namespace bs { namespace ct
 		void clear() override;
 	};
 
-	// TODO - Doc
+	/** Moves the contents of the scene color texture into the view's output target. */
 	class RCNodeFinalResolve : public RenderCompositorNode
 	{
 	public:
 		static StringID getNodeId() { return "FinalResolve"; }
+		static SmallVector<StringID, 4> getDependencies(const RendererView& view);
+	protected:
+		/** @copydoc RenderCompositorNode::render */
+		void render(const RenderCompositorNodeInputs& inputs) override;
+
+		/** @copydoc RenderCompositorNode::clear */
+		void clear() override;
+	};
+
+	/************************************************************************/
+	/* 							POST PROCESS NODES                			*/
+	/************************************************************************/
+
+	/** 
+	 * Helper node used for post-processing. Takes care of allocating and switching between textures used for post process
+	 * effects. 
+	 */
+	class RCNodePostProcess : public RenderCompositorNode
+	{
+	public:
+		RCNodePostProcess();
+
+		/** 
+		 * Returns a texture that can be used for rendering a post-process effect, and the result of the previous 
+		 * output. Switches these textures so the next call they are returned in the opposite parameters. 
+		 */
+		void getAndSwitch(const RendererView& view, SPtr<RenderTexture>& output, SPtr<Texture>& lastFrame) const;
+
+		/** Returns a texture that contains the last rendererd post process output. */
+		SPtr<Texture> getLastOutput() const;
+
+		static StringID getNodeId() { return "PostProcess"; }
+		static SmallVector<StringID, 4> getDependencies(const RendererView& view);
+	protected:
+		/** @copydoc RenderCompositorNode::render */
+		void render(const RenderCompositorNodeInputs& inputs) override;
+
+		/** @copydoc RenderCompositorNode::clear */
+		void clear() override;
+
+		mutable SPtr<PooledRenderTexture> mOutput[2];
+		mutable bool mAllocated[2];
+		mutable UINT32 mCurrentIdx = 0;
+	};
+
+	/**
+	 * Performs tone mapping on the contents of the scene color texture. At the same time resolves MSAA into a non-MSAA
+	 * scene color texture.
+	 */
+	class RCNodeTonemapping : public RenderCompositorNode
+	{
+	public:
+		SPtr<PooledRenderTexture> eyeAdaptation;
+		SPtr<PooledRenderTexture> prevEyeAdaptation;
+
+		~RCNodeTonemapping();
+
+		static StringID getNodeId() { return "Tonemapping"; }
+		static SmallVector<StringID, 4> getDependencies(const RendererView& view);
+	protected:
+		/** @copydoc RenderCompositorNode::render */
+		void render(const RenderCompositorNodeInputs& inputs) override;
+
+		/** @copydoc RenderCompositorNode::clear */
+		void clear() override;
+
+		SPtr<PooledRenderTexture> mTonemapLUT;
+	};
+
+	/** Renders the depth of field effect using Gaussian blurring. */
+	class RCNodeGaussianDOF : public RenderCompositorNode
+	{
+	public:
+		static StringID getNodeId() { return "GaussianDOF"; }
+		static SmallVector<StringID, 4> getDependencies(const RendererView& view);
+	protected:
+		/** @copydoc RenderCompositorNode::render */
+		void render(const RenderCompositorNodeInputs& inputs) override;
+
+		/** @copydoc RenderCompositorNode::clear */
+		void clear() override;
+	};
+
+	/** Renders FXAA. */
+	class RCNodeFXAA : public RenderCompositorNode
+	{
+	public:
+		static StringID getNodeId() { return "FXAA"; }
 		static SmallVector<StringID, 4> getDependencies(const RendererView& view);
 	protected:
 		/** @copydoc RenderCompositorNode::render */

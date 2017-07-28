@@ -11,10 +11,16 @@
 #include "BsCamera.h"
 #include "BsRendererScene.h"
 #include "BsIBLUtility.h"
+#include "BsRenderBeast.h"
 
 namespace bs { namespace ct
 {
 	UnorderedMap<StringID, RenderCompositor::NodeType*> RenderCompositor::mNodeTypes;
+
+	RenderCompositor::~RenderCompositor()
+	{
+		clear();
+	}
 
 	void RenderCompositor::build(const RendererView& view, const StringID& finalNode)
 	{
@@ -117,7 +123,7 @@ namespace bs { namespace ct
 	}
 
 	void RenderCompositor::execute(const RendererViewGroup& viewGroup, const RendererView& view, const SceneInfo& scene, 
-		const RenderBeastOptions& options) const
+		const FrameInfo& frameInfo, const RenderBeastOptions& options) const
 	{
 		if (!mIsValid)
 			return;
@@ -129,7 +135,7 @@ namespace bs { namespace ct
 			UINT32 idx = 0;
 			for (auto& entry : mNodeInfos)
 			{
-				RenderCompositorNodeInputs inputs(viewGroup, view, scene, options, entry.inputs);
+				RenderCompositorNodeInputs inputs(viewGroup, view, scene, options, frameInfo, entry.inputs);
 				entry.node->render(inputs);
 
 				activeNodes.push_back(&entry);
@@ -153,6 +159,15 @@ namespace bs { namespace ct
 
 		if (!mNodeInfos.empty())
 			mNodeInfos.back().node->clear();
+	}
+
+	void RenderCompositor::clear()
+	{
+		for (auto& entry : mNodeInfos)
+			bs_delete(entry.node);
+
+		mNodeInfos.clear();
+		mIsValid = false;
 	}
 
 	void RCNodeSceneDepth::render(const RenderCompositorNodeInputs& inputs)
@@ -708,7 +723,20 @@ namespace bs { namespace ct
 	void RCNodeFinalResolve::render(const RenderCompositorNodeInputs& inputs)
 	{
 		const RendererViewProperties& viewProps = inputs.view.getProperties();
-		RCNodeSceneColor* sceneColorNode = static_cast<RCNodeSceneColor*>(inputs.inputNodes[0]);
+
+		SPtr<Texture> input;
+		if(viewProps.runPostProcessing)
+		{
+			RCNodePostProcess* postProcessNode = static_cast<RCNodePostProcess*>(inputs.inputNodes[0]);
+
+			// Note: Ideally the last PP effect could write directly to the final target and we could avoid this copy
+			input = postProcessNode->getLastOutput();
+		}
+		else
+		{
+			RCNodeSceneColor* sceneColorNode = static_cast<RCNodeSceneColor*>(inputs.inputNodes[0]);
+			input = sceneColorNode->sceneColorTex->texture;
+		}
 
 		SPtr<RenderTarget> target = viewProps.target;
 
@@ -716,8 +744,7 @@ namespace bs { namespace ct
 		rapi.setRenderTarget(target);
 		rapi.setViewport(viewProps.nrmViewRect);
 
-		SPtr<Texture> sceneColor = sceneColorNode->sceneColorTex->texture;
-		gRendererUtility().blit(sceneColor, Rect2I::EMPTY, viewProps.flipView);
+		gRendererUtility().blit(input, Rect2I::EMPTY, viewProps.flipView);
 	}
 
 	void RCNodeFinalResolve::clear()
@@ -725,6 +752,340 @@ namespace bs { namespace ct
 
 	SmallVector<StringID, 4> RCNodeFinalResolve::getDependencies(const RendererView& view)
 	{
-		return{ RCNodeSceneColor::getNodeId(), RCNodeSkybox::getNodeId() };
+		const RendererViewProperties& viewProps = view.getProperties();
+
+		SmallVector<StringID, 4> deps;
+		if(viewProps.runPostProcessing)
+		{
+			deps.push_back(RCNodePostProcess::getNodeId());
+			deps.push_back(RCNodeFXAA::getNodeId());
+		}
+		else
+		{
+			deps.push_back(RCNodeSceneColor::getNodeId());
+			deps.push_back(RCNodeSkybox::getNodeId());
+			
+		}
+
+		return deps;
+	}
+
+	RCNodePostProcess::RCNodePostProcess()
+		:mOutput(), mAllocated()
+	{ }
+
+	void RCNodePostProcess::getAndSwitch(const RendererView& view, SPtr<RenderTexture>& output, SPtr<Texture>& lastFrame) const
+	{
+		GpuResourcePool& resPool = GpuResourcePool::instance();
+
+		const RendererViewProperties& viewProps = view.getProperties();
+		UINT32 width = viewProps.viewRect.width;
+		UINT32 height = viewProps.viewRect.height;
+
+		if(!mAllocated[mCurrentIdx])
+		{
+			mOutput[mCurrentIdx] = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_R8G8B8A8, width, height,
+					TU_RENDERTARGET, 1, false));
+
+			mAllocated[mCurrentIdx] = true;
+		}
+
+		output = mOutput[mCurrentIdx]->renderTexture;
+
+		UINT32 otherIdx = (mCurrentIdx + 1) % 2;
+		if (mAllocated[otherIdx])
+			lastFrame = mOutput[otherIdx]->texture;
+
+		mCurrentIdx = otherIdx;
+	}
+
+	SPtr<Texture> RCNodePostProcess::getLastOutput() const
+	{
+		UINT32 otherIdx = (mCurrentIdx + 1) % 2;
+		if (mAllocated[otherIdx])
+			return mOutput[otherIdx]->texture;
+		
+		return nullptr;
+	}
+
+	void RCNodePostProcess::render(const RenderCompositorNodeInputs& inputs)
+	{
+		// Do nothing, this is just a helper node
+	}
+
+	void RCNodePostProcess::clear()
+	{
+		GpuResourcePool& resPool = GpuResourcePool::instance();
+
+		if (mAllocated[0])
+			resPool.release(mOutput[0]);
+
+		if (mAllocated[1])
+			resPool.release(mOutput[1]);
+
+		mAllocated[0] = false;
+		mAllocated[1] = false;
+		mCurrentIdx = 0;
+	}
+
+	SmallVector<StringID, 4> RCNodePostProcess::getDependencies(const RendererView& view)
+	{
+		return {};
+	}
+
+	RCNodeTonemapping::~RCNodeTonemapping()
+	{
+		GpuResourcePool& resPool = GpuResourcePool::instance();
+
+		if (mTonemapLUT)
+			resPool.release(mTonemapLUT);
+
+		if (prevEyeAdaptation)
+			resPool.release(prevEyeAdaptation);
+	}
+
+	void RCNodeTonemapping::render(const RenderCompositorNodeInputs& inputs)
+	{
+		GpuResourcePool& resPool = GpuResourcePool::instance();
+
+		const RendererViewProperties& viewProps = inputs.view.getProperties();
+		const PostProcessInfo& ppInfo = inputs.view.getPPInfo();
+		const StandardPostProcessSettings& settings = *inputs.view.getPPInfo().settings;
+
+		RCNodeSceneColor* sceneColorNode = static_cast<RCNodeSceneColor*>(inputs.inputNodes[0]);
+		RCNodePostProcess* postProcessNode = static_cast<RCNodePostProcess*>(inputs.inputNodes[2]);
+		SPtr<Texture> sceneColor = sceneColorNode->sceneColorTex->texture;
+
+		bool hdr = viewProps.isHDR;
+		bool msaa = viewProps.numSamples > 1;
+
+		if(hdr && settings.enableAutoExposure)
+		{
+			// Downsample scene
+			DownsampleMat* downsampleMat = DownsampleMat::getVariation(1, msaa);
+			SPtr<PooledRenderTexture> downsampledScene = resPool.get(DownsampleMat::getOutputDesc(sceneColor));
+
+			downsampleMat->execute(sceneColor, downsampledScene->renderTexture);
+
+			// Generate histogram
+			SPtr<PooledRenderTexture> eyeAdaptHistogram = resPool.get(
+				EyeAdaptHistogramMat::getOutputDesc(downsampledScene->texture));
+			EyeAdaptHistogramMat* eyeAdaptHistogramMat = EyeAdaptHistogramMat::get();
+			eyeAdaptHistogramMat->execute(downsampledScene->texture, eyeAdaptHistogram->texture, settings.autoExposure);
+
+			// Reduce histogram
+			SPtr<PooledRenderTexture> reducedHistogram = resPool.get(EyeAdaptHistogramReduceMat::getOutputDesc());
+
+			SPtr<Texture> prevFrameEyeAdaptation;
+			if (prevEyeAdaptation != nullptr)
+				prevFrameEyeAdaptation = prevEyeAdaptation->texture;
+
+			EyeAdaptHistogramReduceMat* eyeAdaptHistogramReduce = EyeAdaptHistogramReduceMat::get();
+			eyeAdaptHistogramReduce->execute(downsampledScene->texture, eyeAdaptHistogram->texture, 
+				prevFrameEyeAdaptation, reducedHistogram->renderTexture);
+
+			resPool.release(downsampledScene);
+			downsampledScene = nullptr;
+
+			resPool.release(eyeAdaptHistogram);
+			eyeAdaptHistogram = nullptr;
+
+			// Generate eye adaptation value
+			eyeAdaptation = resPool.get(EyeAdaptationMat::getOutputDesc());
+			EyeAdaptationMat* eyeAdaptationMat = EyeAdaptationMat::get();
+			eyeAdaptationMat->execute(reducedHistogram->texture, eyeAdaptation->renderTexture, inputs.frameInfo.timeDelta,
+				settings.autoExposure, settings.exposureScale);
+
+			resPool.release(reducedHistogram);
+			reducedHistogram = nullptr;
+		}
+		else
+		{
+			if(prevEyeAdaptation)
+				resPool.release(prevEyeAdaptation);
+
+			prevEyeAdaptation = nullptr;
+			eyeAdaptation = nullptr;
+		}
+
+		bool gammaOnly;
+		bool autoExposure;
+		if (hdr)
+		{
+			if (settings.enableTonemapping)
+			{
+				if (ppInfo.settingDirty) // Rebuild LUT if PP settings changed
+				{
+					if(mTonemapLUT == nullptr)
+						mTonemapLUT = resPool.get(CreateTonemapLUTMat::getOutputDesc());
+
+					CreateTonemapLUTMat* createLUT = CreateTonemapLUTMat::get();
+					createLUT->execute(mTonemapLUT->texture, settings);
+				}
+
+				gammaOnly = false;
+			}
+			else
+				gammaOnly = true;
+
+			autoExposure = settings.enableAutoExposure;
+		}
+		else
+		{
+			gammaOnly = true;
+			autoExposure = false;
+		}
+
+		if(gammaOnly)
+		{
+			if(mTonemapLUT)
+			{
+				resPool.release(mTonemapLUT);
+				mTonemapLUT = nullptr;
+			}
+		}
+
+		TonemappingMat* tonemapping = TonemappingMat::getVariation(gammaOnly, autoExposure, msaa);
+
+		SPtr<RenderTexture> ppOutput;
+		SPtr<Texture> ppLastFrame;
+		postProcessNode->getAndSwitch(inputs.view, ppOutput, ppLastFrame);
+
+		SPtr<Texture> eyeAdaptationTex;
+		if (eyeAdaptation)
+			eyeAdaptationTex = eyeAdaptation->texture;
+
+		SPtr<Texture> tonemapLUTTex;
+		if (mTonemapLUT)
+			tonemapLUTTex = mTonemapLUT->texture;
+
+		tonemapping->execute(sceneColor, eyeAdaptationTex, tonemapLUTTex, ppOutput, settings);
+	}
+
+	void RCNodeTonemapping::clear()
+	{
+		GpuResourcePool& resPool = GpuResourcePool::instance();
+
+		// Save eye adaptation for next frame
+		if(prevEyeAdaptation)
+			resPool.release(prevEyeAdaptation);
+
+		std::swap(eyeAdaptation, prevEyeAdaptation);
+	}
+
+	SmallVector<StringID, 4> RCNodeTonemapping::getDependencies(const RendererView& view)
+	{
+		return{ RCNodeSceneColor::getNodeId(), RCNodeSkybox::getNodeId(), RCNodePostProcess::getNodeId() };
+	}
+
+	void RCNodeGaussianDOF::render(const RenderCompositorNodeInputs& inputs)
+	{
+		RCNodeSceneDepth* sceneDepthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[1]);
+		RCNodePostProcess* postProcessNode = static_cast<RCNodePostProcess*>(inputs.inputNodes[2]);
+
+		DepthOfFieldSettings& settings = inputs.view.getPPInfo().settings->depthOfField;
+		bool near = settings.nearBlurAmount > 0.0f;
+		bool far = settings.farBlurAmount > 0.0f;
+
+		bool enabled = settings.enabled && (near || far);
+		if(!enabled)
+			return;
+
+		GaussianDOFSeparateMat* separateMat = GaussianDOFSeparateMat::getVariation(near, far);
+		GaussianDOFCombineMat* combineMat = GaussianDOFCombineMat::getVariation(near, far);
+		GaussianBlurMat* blurMat = GaussianBlurMat::get();
+
+		SPtr<RenderTexture> ppOutput;
+		SPtr<Texture> ppLastFrame;
+		postProcessNode->getAndSwitch(inputs.view, ppOutput, ppLastFrame);
+
+		separateMat->execute(ppLastFrame, sceneDepthNode->depthTex->texture, inputs.view, settings);
+
+		SPtr<PooledRenderTexture> nearTex, farTex;
+		if(near && far)
+		{
+			nearTex = separateMat->getOutput(0);
+			farTex = separateMat->getOutput(1);
+		}
+		else
+		{
+			if (near)
+				nearTex = separateMat->getOutput(0);
+			else
+				farTex = separateMat->getOutput(0);
+		}
+
+		// Blur the out of focus pixels
+		// Note: Perhaps set up stencil so I can avoid performing blur on unused parts of the textures?
+		const TextureProperties& texProps = nearTex ? nearTex->texture->getProperties() : farTex->texture->getProperties();
+		POOLED_RENDER_TEXTURE_DESC tempTexDesc = POOLED_RENDER_TEXTURE_DESC::create2D(texProps.getFormat(), 
+			texProps.getWidth(), texProps.getHeight(), TU_RENDERTARGET);
+		SPtr<PooledRenderTexture> tempTexture = GpuResourcePool::instance().get(tempTexDesc);
+
+		SPtr<Texture> blurredNearTex;
+		if(nearTex)
+		{
+			blurMat->execute(nearTex->texture, settings.nearBlurAmount, tempTexture->renderTexture);
+			blurredNearTex = tempTexture->texture;
+		}
+
+		SPtr<Texture> blurredFarTex;
+		if(farTex)
+		{
+			// If temporary texture is used up, re-use the original near texture for the blurred result
+			if(blurredNearTex)
+			{
+				blurMat->execute(farTex->texture, settings.farBlurAmount, nearTex->renderTexture);
+				blurredFarTex = nearTex->texture;
+			}
+			else // Otherwise just use the temporary
+			{
+				blurMat->execute(farTex->texture, settings.farBlurAmount, tempTexture->renderTexture);
+				blurredFarTex = tempTexture->texture;
+			}
+		}
+
+		combineMat->execute(ppLastFrame, blurredNearTex, blurredFarTex, 
+			sceneDepthNode->depthTex->texture, ppOutput, inputs.view, settings);
+
+		separateMat->release();
+		GpuResourcePool::instance().release(tempTexture);
+	}
+
+	void RCNodeGaussianDOF::clear()
+	{
+		// Do nothing
+	}
+
+	SmallVector<StringID, 4> RCNodeGaussianDOF::getDependencies(const RendererView& view)
+	{
+		return { RCNodeTonemapping::getNodeId(), RCNodeSceneDepth::getNodeId(), RCNodePostProcess::getNodeId() };
+	}
+
+	void RCNodeFXAA::render(const RenderCompositorNodeInputs& inputs)
+	{
+		const StandardPostProcessSettings& settings = *inputs.view.getPPInfo().settings;
+		if (!settings.enableFXAA)
+			return;
+
+		RCNodePostProcess* postProcessNode = static_cast<RCNodePostProcess*>(inputs.inputNodes[1]);
+
+		SPtr<RenderTexture> ppOutput;
+		SPtr<Texture> ppLastFrame;
+		postProcessNode->getAndSwitch(inputs.view, ppOutput, ppLastFrame);
+
+		// Note: I could skip executing FXAA over DOF and motion blurred pixels
+		FXAAMat* fxaa = FXAAMat::get();
+		fxaa->execute(ppLastFrame, ppOutput);
+	}
+
+	void RCNodeFXAA::clear()
+	{
+		// Do nothing
+	}
+
+	SmallVector<StringID, 4> RCNodeFXAA::getDependencies(const RendererView& view)
+	{
+		return { RCNodeGaussianDOF::getNodeId(), RCNodePostProcess::getNodeId() };
 	}
 }}

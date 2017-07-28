@@ -91,6 +91,10 @@ namespace bs { namespace ct
 		RenderCompositor::registerNodeType<RCNodeFinalResolve>();
 		RenderCompositor::registerNodeType<RCNodeSkybox>();
 		RenderCompositor::registerNodeType<RCNodeUnflattenSceneColor>();
+		RenderCompositor::registerNodeType<RCNodePostProcess>();
+		RenderCompositor::registerNodeType<RCNodeTonemapping>();
+		RenderCompositor::registerNodeType<RCNodeGaussianDOF>();
+		RenderCompositor::registerNodeType<RCNodeFXAA>();
 	}
 
 	void RenderBeast::destroyCore()
@@ -345,11 +349,11 @@ namespace bs { namespace ct
 			if (view->getProperties().isOverlay)
 				renderOverlay(view);
 			else
-				renderView(viewGroup, view, frameInfo.timeDelta);
+				renderView(viewGroup, view, frameInfo);
 		}
 	}
 
-	void RenderBeast::renderView(const RendererViewGroup& viewGroup, RendererView* viewInfo, float frameDelta)
+	void RenderBeast::renderView(const RendererViewGroup& viewGroup, RendererView* viewInfo, const FrameInfo& frameInfo)
 	{
 		gProfilerCPU().beginSample("Render");
 
@@ -482,7 +486,8 @@ namespace bs { namespace ct
 		}
 
 		const RenderCompositor& compositor = viewInfo->getCompositor();
-		compositor.execute(viewGroup, *viewInfo, sceneInfo, *mCoreOptions);
+		compositor.execute(viewGroup, *viewInfo, sceneInfo, frameInfo, *mCoreOptions);
+		viewInfo->getPPInfo().settingDirty = false;
 
 		//renderTargets->allocate(RTT_HiZ);
 		//renderTargets->generate(RTT_HiZ);
@@ -528,33 +533,6 @@ namespace bs { namespace ct
 				++iterRenderCallback;
 			}
 		}
-
-		// Post-processing and final resolve
-		Rect2 viewportArea = viewProps.nrmViewRect;
-
-		//if (viewProps.runPostProcessing)
-		//{
-		//	// Post-processing code also takes care of writting to the final output target
-		//	PostProcessing::instance().postProcess(viewInfo, renderTargets, frameDelta);
-		//}
-		//else
-		{
-			//// Just copy from scene color to output if no post-processing
-			//SPtr<RenderTarget> target = viewProps.target;
-
-			//RenderAPI& rapi = RenderAPI::instance();
-			//rapi.setRenderTarget(target);
-			//rapi.setViewport(viewportArea);
-
-			//SPtr<Texture> sceneColor = renderTargets->get(RTT_SceneColor);
-			//gRendererUtility().blit(sceneColor, Rect2I::EMPTY, viewProps.flipView);
-		}
-
-		//renderTargets->release(RTT_HiZ);
-		//renderTargets->release(RTT_SceneColor);
-
-		//if (isMSAA)
-		//	renderTargets->release(RTT_ResolvedDepth);
 
 		// Trigger overlay callbacks
 		if (viewProps.triggerCallbacks)
