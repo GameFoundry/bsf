@@ -190,7 +190,7 @@ namespace bs { namespace ct
 		assert(false); // TODO
 	}
 
-	void RenderBeast::notifyLightProbeVolumeUpdated(LightProbeVolume* volume)
+	void RenderBeast::notifyLightProbeVolumeUpdated(LightProbeVolume* volume, bool coefficientsUpdated)
 	{
 		assert(false); // TODO
 	}

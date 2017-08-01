@@ -572,6 +572,7 @@ namespace bs
 		TID_Skybox = 1134,
 		TID_CSkybox = 1135,
 		TID_LightProbeVolume = 1136,
+		TID_SavedLightProbeInfo = 1137,
 
 		// Moved from Engine layer
 		TID_CCamera = 30000,

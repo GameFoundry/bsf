@@ -159,7 +159,7 @@ namespace bs
 		 *
 		 * @note	Core thread.
 		 */
-		virtual void notifyLightProbeVolumeUpdated(LightProbeVolume* volume) { }
+		virtual void notifyLightProbeVolumeUpdated(LightProbeVolume* volume, bool coefficientsUpdated) { }
 
 		/**
 		 * Called whenever a light probe volume is destroyed.

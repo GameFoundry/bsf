@@ -10,6 +10,11 @@
 
 namespace bs
 {
+	namespace ct
+	{
+		class RendererTask;
+	}
+
 	/** @addtogroup Implementation
 	 *  @{
 	 */
@@ -64,6 +69,21 @@ namespace bs
 
 	namespace ct { class LightProbeVolume; }
 
+	/** Vector representing spherical harmonic coefficients for a light probe. */
+	struct LightProbeSHCoefficients
+	{
+		float coeffsR[9];
+		float coeffsG[9];
+		float coeffsB[9];
+	};
+
+	/** SH coefficients for a specific light probe, and its handle. */
+	struct LightProbeCoefficientInfo
+	{
+		UINT32 handle;
+		LightProbeSHCoefficients coefficients;
+	};
+
 	/** 
 	 * Allows you to define a volume of light probes that will be used for indirect lighting. Lighting information in the
 	 * scene will be interpolated from nearby probes to calculate the amount of indirect lighting at that position. It is
@@ -83,8 +103,13 @@ namespace bs
 
 			LightProbeFlags flags;
 			Vector3 position;
+
+			/** Coefficients are only valid directly after deserialization, or after updateCoefficients() is called. */
+			LightProbeSHCoefficients coefficients;
 		};
 	public:
+		~LightProbeVolume();
+
 		/** Adds a new probe at the specified position and returns a handle to the probe. */
 		UINT32 addProbe(const Vector3& position);
 
@@ -99,6 +124,18 @@ namespace bs
 		 * volume it cannot be removed.
 		 */
 		void removeProbe(UINT32 handle);
+
+		/**
+		 * Causes the information for this specific light probe to be updated. You generally want to call this when the
+		 * probe is moved or the scene around the probe changes.
+		 */
+		void renderProbe(UINT32 handle);
+
+		/**
+		 * Causes the information for all lights probes to be updated. You generally want to call this if you move the
+		 * entire light volume or the scene around the volume changes.
+		 */
+		void renderProbes();
 
 		/**	Retrieves an implementation of the object usable only from the core thread. */
 		SPtr<ct::LightProbeVolume> getCore() const;
@@ -118,6 +155,15 @@ namespace bs
 
 		LightProbeVolume(const AABox& volume, const Vector3& density);
 
+		/** Renders the light probe data on the core thread. */
+		void runRenderProbeTask();
+
+		/** 
+		 * Fetches latest SH coefficient data from the core thread. Note this method will block the caller thread until
+		 * the data is fetched from the core thread. It will also force any in-progress light probe updated to finish.
+		 */
+		void updateCoefficients();
+
 		/** @copydoc CoreObject::createCore */
 		SPtr<ct::CoreObject> createCore() const override;
 
@@ -133,6 +179,7 @@ namespace bs
 	private:
 		UnorderedMap<UINT32, ProbeInfo> mProbes;
 		UINT32 mNextProbeId = 0;
+		SPtr<ct::RendererTask> mRendererTask;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -173,20 +220,11 @@ namespace bs
 		/**	Retrieves an ID that can be used for uniquely identifying this object by the renderer. */
 		UINT32 getRendererId() const { return mRendererId; }
 
-		/** 
-		 * Parses the list of probes and reorganizes it by removing gaps so that all probes are sequential. 
-		 * 
-		 * @param[out]	freedEntries	A list of entries mapping to the GPU buffer where probe SH coefficients are stored.
-		 *								These are the entries that have been freed since the last call to prune().
-		 * @param[in]	freeAll			If true, all probes held by this volume will be marked as freed.
-		 */
-		void prune(Vector<UINT32>& freedEntries, bool freeAll = false);
-
-		/** Returns information about all light probes. */
-		Vector<LightProbeInfo>& getLightProbeInfos() { return mProbeInfos; }
-
 		/** Returns a list of positions for all light probes. */
 		Vector<Vector3>& getLightProbePositions() { return mProbePositions; }
+
+		/** Populates the vector with SH coefficients for each light probe. Involves reading the GPU buffer. */
+		void getProbeCoefficients(Vector<LightProbeCoefficientInfo>& output) const;
 	protected:
 		friend class bs::LightProbeVolume;
 
@@ -198,11 +236,34 @@ namespace bs
 		/** @copydoc CoreObject::syncToCore */
 		void syncToCore(const CoreSyncData& data) override;
 
+		/** 
+		 * Renders dirty probes and updates their SH coefficients in the local GPU buffer. 
+		 *
+		 * @param[in]	maxProbes	Maximum number of probes to render. Set to zero to render all dirty probes. Limiting the
+		 *							number of probes allows the rendering to be distributed over multiple frames.
+		 * @return					True if there are no more dirty probes to process.
+		 */
+		bool renderProbes(UINT32 maxProbes);
+
+		/** 
+		 * Resizes the internal GPU buffer that stores light probe SH coefficients, to the specified size (in the number
+		 * of probes). 
+		 */
+		void resizeCoefficientBuffer(UINT32 count);
+
 		UINT32 mRendererId = 0;
 		UnorderedMap<UINT32, UINT32> mProbeMap; // Map from static indices to compact list of probes
+		UINT32 mFirstDirtyProbe = 0;
 
 		Vector<Vector3> mProbePositions;
 		Vector<LightProbeInfo> mProbeInfos;
+
+		// Contains SH coefficients for the probes
+		SPtr<GpuBuffer> mCoefficients;
+		UINT32 mCoeffBufferSize = 0;
+
+		// Temporary until initialization
+		Vector<LightProbeSHCoefficients> mInitCoefficients;
 	};
 	}
 

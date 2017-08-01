@@ -95,6 +95,8 @@ namespace bs
 	class BS_CORE_EXPORT Skybox : public IReflectable, public CoreObject, public TSkybox<false>
 	{
 	public:
+		~Skybox();
+		
 		/**	Retrieves an implementation of the skybox usable only from the core thread. */
 		SPtr<ct::Skybox> getCore() const;
 

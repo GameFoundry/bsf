@@ -34,6 +34,12 @@ namespace bs
 		}
 	}
 
+	Skybox::~Skybox()
+	{
+		if (mRendererTask != nullptr)
+			mRendererTask->cancel();
+	}
+
 	void Skybox::filterTexture()
 	{
 		// If previous rendering task exists, cancel it

@@ -153,6 +153,8 @@ namespace bs
 	class BS_CORE_EXPORT ReflectionProbe : public IReflectable, public CoreObject, public ReflectionProbeBase
 	{
 	public:
+		~ReflectionProbe();
+
 		/** 
 		 * Allows you assign a custom texture to use as a reflection map. This will disable automatic generation of
 		 * reflections. To re-enable auto-generation call this with a null parameter.

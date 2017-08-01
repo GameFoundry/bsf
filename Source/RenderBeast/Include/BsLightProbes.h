@@ -27,8 +27,6 @@ namespace bs { namespace ct
 			SPtr<LightProbeVolume> volume;
 			/** Remains true as long as there are dirty probes in the volume. */
 			bool isDirty;
-			/** Keeps track of which dirty probe was last updated, so we can perform the update over multiple frames. */
-			UINT32 lastUpdatedProbe; 
 		};
 
 		/** 
@@ -53,22 +51,8 @@ namespace bs { namespace ct
 		/** Notifies the manager that all the probes in the provided volume have been removed. */
 		void notifyRemoved(const SPtr<LightProbeVolume>& volume);
 
-		/**
-		 * Updates any dirty light probes by rendering the scene from their perspective and generating their SH 
-		 * coefficients.
-		 *
-		 * @param[in]	frameInfo		Information about the current frame.
-		 * @param[in]	maxProbes		Places a limit of how many probes can be updated in a single call to this method.
-		 *								Any probes that weren't updated will be updated when the method is called next 
-		 *								(up to the @p maxProbes limit), as so on.
-		 *								 
-		 *								This limit is provided to ensure there are no massive framerate spikes caused up
-		 *								updating many probes in a single frame - instead this method allows the updates to
-		 *								be distributed over multiple frames. 
-		 *								
-		 *								Provide a limit of 0 to force all probes to be updated.
-		 */
-		void updateProbes(const FrameInfo& frameInfo, UINT32 maxProbes = 3);
+		/** Updates light probe tetrahedron data after probes changed (added/removed/moved). */
+		void updateProbes();
 
 		/** Generates GPU buffers that contain a list of probe tetrahedrons visible from the provided view. */
 		void updateVisibleProbes(const RendererView& view, VisibleLightProbeData& output);
@@ -96,7 +80,6 @@ namespace bs { namespace ct
 
 		UINT32 mNumAllocatedEntries;
 		UINT32 mNumUsedEntries;
-		Vector<UINT32> mEmptyEntries;
 
 		Vector<AABox> mTetrahedronBounds;
 		Vector<TetrahedronData> mTetrahedronInfos;

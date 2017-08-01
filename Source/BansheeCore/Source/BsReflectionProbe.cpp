@@ -47,6 +47,12 @@ namespace bs
 		updateBounds();
 	}
 
+	ReflectionProbe::~ReflectionProbe()
+	{
+		if (mRendererTask)
+			mRendererTask->cancel();
+	}
+
 	void ReflectionProbe::capture()
 	{
 		if (mCustomTexture != nullptr)

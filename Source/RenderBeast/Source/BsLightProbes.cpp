@@ -5,7 +5,6 @@
 #include "BsGpuBuffer.h"
 #include "BsRendererView.h"
 #include "BsRenderBeastIBLUtility.h"
-#include "BsRendererManager.h"
 #include "BsRenderBeast.h"
 
 namespace bs { namespace ct 
@@ -23,7 +22,6 @@ namespace bs { namespace ct
 		VolumeInfo info;
 		info.volume = volume;
 		info.isDirty = true;
-		info.lastUpdatedProbe = 0;
 
 		mVolumes.push_back(info);
 		volume->setRendererId(handle);
@@ -33,19 +31,14 @@ namespace bs { namespace ct
 
 	void LightProbes::notifyDirty(const SPtr<LightProbeVolume>& volume)
 	{
-		volume->prune(mEmptyEntries);
-		
 		UINT32 handle = volume->getRendererId();
 		mVolumes[handle].isDirty = true;
-		mVolumes[handle].lastUpdatedProbe = 0;
 
 		mTetrahedronVolumeDirty = true;
 	}
 
 	void LightProbes::notifyRemoved(const SPtr<LightProbeVolume>& volume)
 	{
-		volume->prune(mEmptyEntries, true);
-
 		UINT32 handle = volume->getRendererId();
 
 		LightProbeVolume* lastVolume = mVolumes.back().volume.get();
@@ -64,7 +57,7 @@ namespace bs { namespace ct
 		mTetrahedronVolumeDirty = true;
 	}
 
-	void LightProbes::updateProbes(const FrameInfo& frameInfo, UINT32 maxProbes)
+	void LightProbes::updateProbes()
 	{
 		if(mTetrahedronVolumeDirty)
 		{
@@ -103,64 +96,6 @@ namespace bs { namespace ct
 
 			mTempTetrahedronPositions.clear();
 			mTetrahedronVolumeDirty = false;
-		}
-
-		// Render dirty probes
-		UINT32 numProbeUpdates = 0;
-		for(auto& entry : mVolumes)
-		{
-			if (!entry.isDirty)
-				continue;
-
-			Vector<LightProbeInfo>& probes = entry.volume->getLightProbeInfos();
-			const Vector<Vector3>& probePositions = entry.volume->getLightProbePositions();
-			for (; entry.lastUpdatedProbe < (UINT32)probes.size(); ++entry.lastUpdatedProbe)
-			{
-				LightProbeInfo& probeInfo = probes[entry.lastUpdatedProbe];
-
-				// Assign buffer idx, if not assigned
-				if(probeInfo.bufferIdx == -1)
-				{
-					if(!mEmptyEntries.empty())
-					{
-						probeInfo.bufferIdx = mEmptyEntries.back();
-						mEmptyEntries.erase(mEmptyEntries.end() - 1);
-					}
-					else
-					{
-						if(mNumUsedEntries >= mNumAllocatedEntries)
-							resizeCoefficientBuffer(mNumAllocatedEntries * 2);
-
-						probeInfo.bufferIdx = mNumUsedEntries++;
-					}
-				}
-
-				if(probeInfo.flags == LightProbeFlags::Dirty)
-				{
-					TEXTURE_DESC cubemapDesc;
-					cubemapDesc.type = TEX_TYPE_CUBE_MAP;
-					cubemapDesc.format = PF_FLOAT16_RGB;
-					cubemapDesc.width = IBLUtility::IRRADIANCE_CUBEMAP_SIZE;
-					cubemapDesc.height = IBLUtility::REFLECTION_CUBEMAP_SIZE;
-					cubemapDesc.usage = TU_STATIC | TU_RENDERTARGET;
-
-					SPtr<Texture> cubemap = Texture::create(cubemapDesc);
-
-					RenderBeast& renderer = static_cast<RenderBeast&>(*RendererManager::instance().getActive());
-					renderer.captureSceneCubeMap(cubemap, probePositions[entry.lastUpdatedProbe], true);
-
-					gIBLUtility().filterCubemapForIrradiance(cubemap, mProbeCoefficientsGPU, probeInfo.bufferIdx);
-
-					probeInfo.flags = LightProbeFlags::Clean;
-					numProbeUpdates++;
-				}
-
-				if (maxProbes != 0 && numProbeUpdates >= numProbeUpdates)
-					break;
-			}
-
-			if (entry.lastUpdatedProbe == (UINT32)probes.size())
-				entry.isDirty = false;
 		}
 	}
 
@@ -311,7 +246,7 @@ namespace bs { namespace ct
 
 			output.reserve(includeOuterFaces);
 
-			// Insert innert tetrahedrons, generate matrices
+			// Insert inner tetrahedrons, generate matrices
 			for(UINT32 i = 0; i < (UINT32)volume.tetrahedra.size(); ++i)
 			{
 				TetrahedronData entry;
