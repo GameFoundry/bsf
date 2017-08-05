@@ -220,11 +220,23 @@ namespace bs
 		/**	Retrieves an ID that can be used for uniquely identifying this object by the renderer. */
 		UINT32 getRendererId() const { return mRendererId; }
 
-		/** Returns a list of positions for all light probes. */
-		Vector<Vector3>& getLightProbePositions() { return mProbePositions; }
+		/** Returns the number of light probes that are active. */
+		UINT32 getNumActiveProbes() const { return (UINT32)mProbeMap.size(); }
+
+		/** Returns a list of positions for all light probes. Only the first getNumActiveProbes() entries are active. */
+		const Vector<Vector3>& getLightProbePositions() const { return mProbePositions; }
+
+		/** 
+		 * Returns non-positional information about all light probes. Only the first getNumActiveProbes() entries are 
+		 * active. 
+		 */
+		const Vector<LightProbeInfo>& getLightProbeInfos() const { return mProbeInfos; }
 
 		/** Populates the vector with SH coefficients for each light probe. Involves reading the GPU buffer. */
 		void getProbeCoefficients(Vector<LightProbeCoefficientInfo>& output) const;
+
+		/** Returns the GPU buffer containing SH coefficients. */
+		SPtr<GpuBuffer> getCoefficientsBuffer() const { return mCoefficients; }
 	protected:
 		friend class bs::LightProbeVolume;
 

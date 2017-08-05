@@ -80,13 +80,12 @@ namespace bs
 		/** Depth format, 16bits. */
 		PF_D16					BS_SCRIPT_EXPORT(n:D16) = 32,
 		/** 
-		 * 32-bit float format, 11 bits (float) for red, 11 bits (float) for green, 10 bits (float) for blue. Framebuffer 
-		 * only format, not for CPU use. 
+		 * 32-bit float format, 11 bits (float) for red, 11 bits (float) for green, 10 bits (float) for blue.
 		 */
 		PF_FLOAT_R11G11B10		BS_SCRIPT_EXPORT(ex:true) = 33,
 		/** 
 		 * 32-bit unsigned normalized format, 10 bits (float) for red, 10 bits (float) for green, 10 bits (float) for blue, 
-		 * and two bits for alpha. Framebuffer only format, not for CPU use.
+		 * and two bits for alpha.
 		 */
 		PF_UNORM_R10G10B10A2	BS_SCRIPT_EXPORT(ex:true) = 34,
 		/** Number of pixel formats currently defined. */

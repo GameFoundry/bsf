@@ -11,7 +11,6 @@ namespace bs { namespace ct
 {
 	struct FrameInfo;
 	class LightProbeVolume;
-	struct VisibleLightProbeData;
 
 	/** @addtogroup RenderBeast
 	 *  @{
@@ -54,21 +53,25 @@ namespace bs { namespace ct
 		/** Updates light probe tetrahedron data after probes changed (added/removed/moved). */
 		void updateProbes();
 
-		/** Generates GPU buffers that contain a list of probe tetrahedrons visible from the provided view. */
-		void updateVisibleProbes(const RendererView& view, VisibleLightProbeData& output);
-
 	private:
 		/**
 		 * Perform tetrahedrization of the provided point list, and outputs a list of tetrahedrons and outer faces of the
 		 * volume. Each entry contains connections to nearby tetrahedrons/faces, as well as a matrix that can be used for
 		 * calculating barycentric coordinates within the tetrahedron (or projected triangle barycentric coordinates for
 		 * faces). 
+		 * 
+		 * @param[in,out]	positions					A set of positions to generate the tetrahedra from. If 
+		 *												@p generateExtrapolationVolume is enabled then this array will be
+		 *												appended with new vertices forming that volume.
+		 * @param[out]		output						A list of generated tetrahedra and relevant data.
+		 * @param[in]		generateExtrapolationVolume	If true, the tetrahedron volume will be surrounded with points
+		 *												at "infinity" (technically just far away).
 		 */
-		void generateTetrahedronData(const Vector<Vector3>& positions, Vector<TetrahedronData>& output, 
-			bool includeOuterFaces = false);
+		void generateTetrahedronData(Vector<Vector3>& positions, Vector<TetrahedronData>& output, 
+			bool generateExtrapolationVolume = false);
 
-		/** Resizes the GPU buffers used for holding tetrahedron data, to the specified size (in number of tetraheda). */
-		void resizeTetrahedronBuffers(VisibleLightProbeData& data, UINT32 count);
+		/** Resizes the GPU buffer used for holding tetrahedron data, to the specified size (in number of tetraheda). */
+		void resizeTetrahedronBuffer(UINT32 count);
 
 		/** 
 		 * Resized the GPU buffer that stores light probe SH coefficients, to the specified size (in the number of probes). 
@@ -78,17 +81,18 @@ namespace bs { namespace ct
 		Vector<VolumeInfo> mVolumes;
 		bool mTetrahedronVolumeDirty;
 
-		UINT32 mNumAllocatedEntries;
-		UINT32 mNumUsedEntries;
+		UINT32 mMaxCoefficients;
+		UINT32 mMaxTetrahedra;
 
-		Vector<AABox> mTetrahedronBounds;
 		Vector<TetrahedronData> mTetrahedronInfos;
 
 		SPtr<GpuBuffer> mProbeCoefficientsGPU;
+		SPtr<GpuBuffer> mTetrahedronInfosGPU;
+		SPtr<Mesh> mVolumeMesh;
 
 		// Temporary buffers
 		Vector<Vector3> mTempTetrahedronPositions;
-		Vector<UINT32> mTempTetrahedronVisibility;
+		Vector<UINT32> mTempTetrahedronBufferIndices;
 	};
 
 	/** Storage of tetrahedron AA box, for use on the GPU. */
@@ -103,22 +107,6 @@ namespace bs { namespace ct
 	{
 		UINT32 indices[4];
 		Matrix3x4 transform;
-	};
-
-	/** Contains information about light probes visible from a particular RendererView. */
-	struct VisibleLightProbeData
-	{
-		/** Current number of visible tetrahedrons in the GPU buffers. */
-		UINT32 numEntries;
-
-		/** Maximum number of tetrahedrons that fit in the GPU buffers, before the buffers need to be resized. */
-		UINT32 maxNumEntries;
-		
-		/** GPU buffer containing tetrahedron bounds in form of TetrahedronBoundsGPU structure. */
-		SPtr<GpuBuffer> tetrahedronBounds;
-
-		/** GPU buffer containing tetrahedron information in form of TetrahedronDataGPU structure. */
-		SPtr<GpuBuffer> tetrahedronInfos;
 	};
 
 	/** @} */
