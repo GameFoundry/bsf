@@ -395,7 +395,6 @@ namespace bs { namespace ct
 	void RendererView::updatePerViewBuffer()
 	{
 		RenderAPI& rapi = RenderAPI::instance();
-		const RenderAPIInfo& rapiInfo = rapi.getAPIInfo();
 
 		Matrix4 viewProj = mProperties.projTransform * mProperties.viewTransform;
 		Matrix4 invViewProj = viewProj.inverse();
@@ -438,28 +437,38 @@ namespace bs { namespace ct
 
 		gPerCameraParamDef.gViewportRectangle.set(mParamBuffer, viewportRect);
 
+		Vector4 ndcToUV = getNDCToUV();
+		gPerCameraParamDef.gClipToUVScaleOffset.set(mParamBuffer, ndcToUV);
+
+		if (!mRenderSettings->enableLighting)
+			gPerCameraParamDef.gAmbientFactor.set(mParamBuffer, 100.0f);
+		else
+			gPerCameraParamDef.gAmbientFactor.set(mParamBuffer, 0.0f);
+	}
+
+	Vector4 RendererView::getNDCToUV() const
+	{
+		RenderAPI& rapi = RenderAPI::instance();
+		const RenderAPIInfo& rapiInfo = rapi.getAPIInfo();
+		const Rect2I& viewRect = mTargetDesc.viewRect;
+		
 		float halfWidth = viewRect.width * 0.5f;
 		float halfHeight = viewRect.height * 0.5f;
 
 		float rtWidth = mTargetDesc.targetWidth != 0 ? (float)mTargetDesc.targetWidth : 20.0f;
 		float rtHeight = mTargetDesc.targetHeight != 0 ? (float)mTargetDesc.targetHeight : 20.0f;
 
-		Vector4 clipToUVScaleOffset;
-		clipToUVScaleOffset.x = halfWidth / rtWidth;
-		clipToUVScaleOffset.y = -halfHeight / rtHeight;
-		clipToUVScaleOffset.z = viewRect.x / rtWidth + (halfWidth + rapiInfo.getHorizontalTexelOffset()) / rtWidth;
-		clipToUVScaleOffset.w = viewRect.y / rtHeight + (halfHeight + rapiInfo.getVerticalTexelOffset()) / rtHeight;
+		Vector4 ndcToUV;
+		ndcToUV.x = halfWidth / rtWidth;
+		ndcToUV.y = -halfHeight / rtHeight;
+		ndcToUV.z = viewRect.x / rtWidth + (halfWidth + rapiInfo.getHorizontalTexelOffset()) / rtWidth;
+		ndcToUV.w = viewRect.y / rtHeight + (halfHeight + rapiInfo.getVerticalTexelOffset()) / rtHeight;
 
 		// Either of these flips the Y axis, but if they're both true they cancel out
 		if (rapiInfo.isFlagSet(RenderAPIFeatureFlag::UVYAxisUp) ^ rapiInfo.isFlagSet(RenderAPIFeatureFlag::NDCYAxisDown))
-			clipToUVScaleOffset.y = -clipToUVScaleOffset.y;
+			ndcToUV.y = -ndcToUV.y;
 
-		gPerCameraParamDef.gClipToUVScaleOffset.set(mParamBuffer, clipToUVScaleOffset);
-
-		if (!mRenderSettings->enableLighting)
-			gPerCameraParamDef.gAmbientFactor.set(mParamBuffer, 100.0f);
-		else
-			gPerCameraParamDef.gAmbientFactor.set(mParamBuffer, 0.0f);
+		return ndcToUV;
 	}
 
 	void RendererView::updateLightGrid(const VisibleLightData& visibleLightData, 

@@ -6,6 +6,9 @@
 #include "BsTriangulation.h"
 #include "BsMatrix4.h"
 #include "BsMatrixNxM.h"
+#include "BsRendererMaterial.h"
+#include "BsGpuResourcePool.h"
+#include "BsParamBlocks.h"
 
 namespace bs { namespace ct
 {
@@ -15,6 +18,53 @@ namespace bs { namespace ct
 	/** @addtogroup RenderBeast
 	 *  @{
 	 */
+
+	BS_PARAM_BLOCK_BEGIN(TetrahedraRenderParamDef)
+		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatViewProj)
+		BS_PARAM_BLOCK_ENTRY(Vector4, gNDCToUV)
+		BS_PARAM_BLOCK_ENTRY(Vector2, gNDCToDeviceZ)
+	BS_PARAM_BLOCK_END
+
+	extern TetrahedraRenderParamDef gTetrahedraRenderParamDef;
+
+	/** 
+	 * Shader that renders the tetrahedra used for light probe evaluation. Tetrahedra depth is compare with current scene
+	 * depth, and for each scene pixel the matching tetrahedron index is written to the output target.
+	 */
+	class TetrahedraRenderMat : public RendererMaterial<TetrahedraRenderMat>
+	{
+		RMAT_DEF("TetrahedraRender.bsl");
+
+	public:
+		TetrahedraRenderMat();
+
+		/**
+		 * Executes the material using the provided parameters.
+		 * 
+		 * @param[in]	view		View that is currently being rendered.
+		 * @param[in]	sceneDepth	Depth of scene objects that should be lit.
+		 * @param[in]	mesh		Mesh to render.
+		 * @param[in]	output		Output texture created using the descriptor returned by getOutputDesc().
+		 */
+		void execute(const RendererView& view, const SPtr<Texture>& sceneDepth, const SPtr<Mesh>& mesh, 
+			const SPtr<RenderTexture>& output);
+
+		/**
+		 * Returns the descriptors that can be used for creating the output render texture for this material. The render
+		 * texture is expected to have a single color attachment, and a depth attachment. 
+		 */
+		static void getOutputDesc(const RendererView& view, POOLED_RENDER_TEXTURE_DESC& colorDesc, 
+			POOLED_RENDER_TEXTURE_DESC& depthDesc);
+
+		/** Returns the material variation matching the provided parameters. */
+		static TetrahedraRenderMat* getVariation(bool msaa);
+	private:
+		SPtr<GpuParamBlockBuffer> mParamBuffer;
+		GpuParamTexture mDepthBufferTex;
+
+		static ShaderVariation VAR_NoMSAA;
+		static ShaderVariation VAR_MSAA;
+	};
 
 	/** Handles any pre-processing for light (irradiance) probe lighting. */
 	class LightProbes

@@ -5,12 +5,102 @@
 #include "BsGpuBuffer.h"
 #include "BsRendererView.h"
 #include "BsRenderBeastIBLUtility.h"
-#include "BsRenderBeast.h"
 #include "BsMesh.h"
 #include "BsVertexDataDesc.h"
+#include "BsGpuParamsSet.h"
+#include "BsRendererUtility.h"
 
 namespace bs { namespace ct 
 {
+	TetrahedraRenderParamDef gTetrahedraRenderParamDef;
+
+	ShaderVariation TetrahedraRenderMat::VAR_NoMSAA = ShaderVariation({
+		ShaderVariation::Param("MSAA", false)
+	});
+
+	ShaderVariation TetrahedraRenderMat::VAR_MSAA = ShaderVariation({
+		ShaderVariation::Param("MSAA", true)
+	});
+
+	TetrahedraRenderMat::TetrahedraRenderMat()
+	{
+		SPtr<GpuParams> params = mParamsSet->getGpuParams();
+
+		params->getTextureParam(GPT_FRAGMENT_PROGRAM, "gDepthBufferTex", mDepthBufferTex);
+
+		if(params->hasSamplerState(GPT_FRAGMENT_PROGRAM, "gDepthBufferSamp"))
+		{
+			SAMPLER_STATE_DESC pointSampDesc;
+			pointSampDesc.minFilter = FO_POINT;
+			pointSampDesc.magFilter = FO_POINT;
+			pointSampDesc.mipFilter = FO_POINT;
+			pointSampDesc.addressMode.u = TAM_CLAMP;
+			pointSampDesc.addressMode.v = TAM_CLAMP;
+			pointSampDesc.addressMode.w = TAM_CLAMP;
+
+			SPtr<SamplerState> pointSampState = SamplerState::create(pointSampDesc);
+			params->setSamplerState(GPT_FRAGMENT_PROGRAM, "gDepthBufferSamp", pointSampState);
+		}
+
+		mParamBuffer = gTetrahedraRenderParamDef.createBuffer();
+		mParamsSet->setParamBlockBuffer("Params", mParamBuffer, true);
+	}
+
+	void TetrahedraRenderMat::_initVariations(ShaderVariations& variations)
+	{
+		variations.add(VAR_NoMSAA);
+		variations.add(VAR_MSAA);
+	}
+
+	void TetrahedraRenderMat::execute(const RendererView& view, const SPtr<Texture>& sceneDepth, const SPtr<Mesh>& mesh, 
+		const SPtr<RenderTexture>& output)
+	{
+		const RendererViewProperties& viewProps = view.getProperties();
+
+		Vector4 NDCtoUV = view.getNDCToUV();
+		if(mVariation.getBool("MSAA"))
+		{
+			NDCtoUV.x *= viewProps.viewRect.width;
+			NDCtoUV.y *= viewProps.viewRect.height;
+			NDCtoUV.z *= viewProps.viewRect.width;
+			NDCtoUV.w *= viewProps.viewRect.height;
+		}
+
+		gTetrahedraRenderParamDef.gMatViewProj.set(mParamBuffer, viewProps.viewProjTransform);
+		gTetrahedraRenderParamDef.gNDCToUV.set(mParamBuffer, NDCtoUV);
+		gTetrahedraRenderParamDef.gNDCToDeviceZ.set(mParamBuffer, RendererView::getNDCZToDeviceZ());
+		
+		mDepthBufferTex.set(sceneDepth);
+		mParamBuffer->flushToGPU();
+
+		RenderAPI& rapi = RenderAPI::instance();
+		rapi.setRenderTarget(output);
+
+		gRendererUtility().setPass(mMaterial);
+		gRendererUtility().setPassParams(mParamsSet);
+		gRendererUtility().draw(mesh);
+	}
+
+	void TetrahedraRenderMat::getOutputDesc(const RendererView& view, POOLED_RENDER_TEXTURE_DESC& colorDesc, 
+		POOLED_RENDER_TEXTURE_DESC& depthDesc)
+	{
+		const RendererViewProperties& viewProps = view.getProperties();
+		UINT32 width = viewProps.viewRect.width;
+		UINT32 height = viewProps.viewRect.height;
+		UINT32 numSamples = viewProps.numSamples;
+
+		colorDesc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_R16I, width, height, TU_RENDERTARGET, numSamples);
+		depthDesc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_D16, width, height, TU_DEPTHSTENCIL, numSamples);
+	}
+
+	TetrahedraRenderMat* TetrahedraRenderMat::getVariation(bool msaa)
+	{
+		if (msaa)
+			return get(VAR_MSAA);
+
+		return get(VAR_NoMSAA);
+	}
+
 	LightProbes::LightProbes()
 		:mTetrahedronVolumeDirty(false), mMaxCoefficients(0), mMaxTetrahedra(0)
 	{

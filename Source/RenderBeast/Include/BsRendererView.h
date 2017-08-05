@@ -304,6 +304,14 @@ namespace bs { namespace ct
 		void updateLightGrid(const VisibleLightData& visibleLightData, const VisibleReflProbeData& visibleReflProbeData);
 
 		/**
+		 * Returns a value that can be used for transforming x, y coordinates from NDC into UV coordinates that can be used
+		 * for sampling a texture projected on the view.
+		 *
+		 * @return	Returns two 2D values that can be used to transform the coordinate as such: UV = NDC * xy + zw.
+		 */
+		Vector4 getNDCToUV() const;
+
+		/**
 		 * Extracts the necessary values from the projection matrix that allow you to transform device Z value (range [0, 1]
 		 * into view Z value.
 		 * 
