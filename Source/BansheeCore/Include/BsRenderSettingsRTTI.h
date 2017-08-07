@@ -269,6 +269,7 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(enableLighting, 13)
 			BS_RTTI_MEMBER_PLAIN(enableShadows, 14)
 			BS_RTTI_MEMBER_PLAIN(overlayOnly, 15)
+			BS_RTTI_MEMBER_PLAIN(enableIndirectLighting, 16)
 		BS_END_RTTI_MEMBERS
 			
 	public:

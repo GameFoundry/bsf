@@ -113,7 +113,7 @@ namespace bs
 		void notifyLightProbeVolumeAdded(LightProbeVolume* volume) override;
 
 		/** @copydoc Renderer::notifyLightProbeVolumeUpdated */
-		void notifyLightProbeVolumeUpdated(LightProbeVolume* volume, bool coefficientsUpdated) override;
+		void notifyLightProbeVolumeUpdated(LightProbeVolume* volume) override;
 
 		/** @copydoc Renderer::notifyLightProbeVolumeRemoved */
 		void notifyLightProbeVolumeRemoved(LightProbeVolume* volume) override;

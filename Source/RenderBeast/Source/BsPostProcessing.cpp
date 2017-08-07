@@ -1372,7 +1372,7 @@ namespace bs { namespace ct
 		// Do nothing
 	}
 
-	void SSRStencilMat::execute(const RendererView& view, GBufferInput gbuffer, 
+	void SSRStencilMat::execute(const RendererView& view, GBufferTextures gbuffer, 
 		const ScreenSpaceReflectionsSettings& settings)
 	{
 		mGBufferParams.bind(gbuffer);
@@ -1408,7 +1408,7 @@ namespace bs { namespace ct
 		// Do nothing
 	}
 
-	void SSRTraceMat::execute(const RendererView& view, GBufferInput gbuffer, const SPtr<Texture>& sceneColor, 
+	void SSRTraceMat::execute(const RendererView& view, GBufferTextures gbuffer, const SPtr<Texture>& sceneColor, 
 			const SPtr<Texture>& hiZ, const ScreenSpaceReflectionsSettings& settings, 
 			const SPtr<RenderTarget>& destination)
 	{

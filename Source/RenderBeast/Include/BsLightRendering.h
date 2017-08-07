@@ -57,7 +57,7 @@ namespace bs { namespace ct
 	};
 
 	/** Container for all GBuffer textures. */
-	struct GBufferInput
+	struct GBufferTextures
 	{
 		SPtr<Texture> albedo;
 		SPtr<Texture> normals;
@@ -72,7 +72,7 @@ namespace bs { namespace ct
 		GBufferParams(const SPtr<Material>& material, const SPtr<GpuParamsSet>& paramsSet);
 
 		/** Binds the GBuffer textures to the pipeline. */
-		void bind(const GBufferInput& gbuffer);
+		void bind(const GBufferTextures& gbuffer);
 	private:
 		SPtr<Material> mMaterial;
 		SPtr<GpuParamsSet> mParamsSet;
@@ -151,7 +151,7 @@ namespace bs { namespace ct
 		TiledDeferredLightingMat();
 
 		/** Binds the material for rendering, sets up parameters and executes it. */
-		void execute(const RendererView& view, const VisibleLightData& lightData, const GBufferInput& gbuffer,
+		void execute(const RendererView& view, const VisibleLightData& lightData, const GBufferTextures& gbuffer,
 			const SPtr<Texture>& lightAccumTex, const SPtr<GpuBuffer>& lightAccumBuffer);
 
 		/** Returns the material variation matching the provided parameters. */

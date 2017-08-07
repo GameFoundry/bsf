@@ -470,6 +470,26 @@ namespace bs {	namespace ct
 			probe->arrayDirty = false;
 	}
 
+	void RendererScene::registerLightProbeVolume(LightProbeVolume* volume)
+	{
+		mInfo.lightProbes.notifyAdded(volume);
+	}
+
+	void RendererScene::updateLightProbeVolume(LightProbeVolume* volume)
+	{
+		mInfo.lightProbes.notifyDirty(volume);
+	}
+
+	void RendererScene::unregisterLightProbeVolume(LightProbeVolume* volume)
+	{
+		mInfo.lightProbes.notifyRemoved(volume);
+	}
+
+	void RendererScene::updateLightProbes()
+	{
+		mInfo.lightProbes.updateProbes();
+	}
+
 	void RendererScene::registerSkybox(Skybox* skybox)
 	{
 		mInfo.skybox = skybox;

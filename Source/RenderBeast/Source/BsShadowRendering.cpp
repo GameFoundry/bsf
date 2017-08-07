@@ -807,7 +807,7 @@ namespace bs { namespace ct
 	}
 
 	void ShadowRendering::renderShadowOcclusion(const SceneInfo& sceneInfo, UINT32 shadowQuality, 
-		const RendererLight& rendererLight, UINT32 viewIdx, GBufferInput gbuffer) const
+		const RendererLight& rendererLight, UINT32 viewIdx, GBufferTextures gbuffer) const
 	{
 		const Light* light = rendererLight.internal;
 		UINT32 lightIdx = light->getRendererId();

@@ -9,9 +9,11 @@
 #include "BsRendererMaterial.h"
 #include "BsGpuResourcePool.h"
 #include "BsParamBlocks.h"
+#include "BsLightRendering.h"
 
 namespace bs { namespace ct
 {
+	struct GBufferTextures;
 	struct FrameInfo;
 	class LightProbeVolume;
 
@@ -66,6 +68,61 @@ namespace bs { namespace ct
 		static ShaderVariation VAR_MSAA;
 	};
 
+	BS_PARAM_BLOCK_BEGIN(IrradianceEvaluateParamDef)
+		BS_PARAM_BLOCK_ENTRY(float, gSkyBrightness)
+	BS_PARAM_BLOCK_END
+
+	extern IrradianceEvaluateParamDef gIrradianceEvaluateParamDef;
+
+	/** Evaluates radiance from the light probe volume, or the sky if light probes are not available. */
+	class IrradianceEvaluateMat : public RendererMaterial<IrradianceEvaluateMat>
+	{
+		RMAT_DEF("IrradianceEvaluate.bsl");
+
+	public:
+		IrradianceEvaluateMat();
+
+		/**
+		 * Executes the material using the provided parameters.
+		 * 
+		 * @param[in]	view				View that is currently being rendered.
+		 * @param[in]	gbuffer				Previously rendered GBuffer textures.
+		 * @param[in]	lightProbeIndices	Indices calculated by TetrahedraRenderMat.
+		 * @param[in]	shCoeffs			Buffer containing spherical harmonic coefficients for every light probe.
+		 * @param[in]	volumes				Buffer containing information about tetrahedra inside the light volume, 
+		 *									including indices of the light probes they reference.
+		 * @param[in]	skybox				Skybox, if available. If sky is not available, but sky rendering is enabled, 
+		 *									the system will instead use a default irradiance texture.
+		 * @param[in]	output				Output texture to write the radiance to. The evaluated value will be added to 
+		 *									existing radiance in the texture, using blending.
+		 */
+		void execute(const RendererView& view, const GBufferTextures& gbuffer, const SPtr<Texture>& lightProbeIndices,
+			const SPtr<GpuBuffer>& shCoeffs, const SPtr<GpuBuffer>& volumes, const Skybox* skybox, 
+			const SPtr<RenderTexture>& output);
+
+		/** 
+		 * Returns the material variation matching the provided parameters. 
+		 *
+		 * @param[in]	msaaCount	Number of MSAA samples used by the view rendering the material.
+		 * @param[in]	skyOnly		When true, only the sky irradiance will be evaluated. Otherwise light probe irradiance
+		 *							will be evaluated.
+		 */
+		static IrradianceEvaluateMat* getVariation(UINT32 msaaCount, bool skyOnly);
+	private:
+		GBufferParams mGBufferParams;
+		SPtr<GpuParamBlockBuffer> mParamBuffer;
+		GpuParamTexture mParamInputTex;
+		GpuParamTexture mParamSkyIrradianceTex;
+		GpuParamBuffer mParamSHCoeffsBuffer;
+		GpuParamBuffer mParamVolumeBuffer;
+		bool mSkyOnly;
+
+		static ShaderVariation VAR_MSAA_Probes;
+		static ShaderVariation VAR_NoMSAA_Probes;
+		static ShaderVariation VAR_MSAA_Sky;
+		static ShaderVariation VAR_NoMSAA_Sky;
+	};
+
 	/** Handles any pre-processing for light (irradiance) probe lighting. */
 	class LightProbes
 	{
@@ -73,7 +130,7 @@ namespace bs { namespace ct
 		struct VolumeInfo
 		{
 			/** Volume containing the information about the probes. */
-			SPtr<LightProbeVolume> volume;
+			LightProbeVolume* volume;
 			/** Remains true as long as there are dirty probes in the volume. */
 			bool isDirty;
 		};
@@ -92,16 +149,39 @@ namespace bs { namespace ct
 		LightProbes();
 
 		/** Notifies sthe manager that the provided light probe volume has been added. */
-		void notifyAdded(const SPtr<LightProbeVolume>& volume);
+		void notifyAdded(LightProbeVolume* volume);
 
 		/** Notifies the manager that the provided light probe volume has some dirty light probes. */
-		void notifyDirty(const SPtr<LightProbeVolume>& volume);
+		void notifyDirty(LightProbeVolume* volume);
 
 		/** Notifies the manager that all the probes in the provided volume have been removed. */
-		void notifyRemoved(const SPtr<LightProbeVolume>& volume);
+		void notifyRemoved(LightProbeVolume* volume);
 
 		/** Updates light probe tetrahedron data after probes changed (added/removed/moved). */
 		void updateProbes();
+
+		/** Returns true if there are any registered light probes. */
+		bool hasAnyProbes() const;
+
+		/** 
+		 * Returns a GPU buffer containing SH coefficients for all active light probes. updateProbes() must be called
+		 * at least once before the buffer is populated. If the probes changed since the last call, call updateProbes()
+		 * to refresh the buffer.
+		 */
+		SPtr<GpuBuffer> getSHCoefficientsBuffer() const { return mProbeCoefficientsGPU; }
+
+		/** 
+		 * Returns a GPU buffer containing information about light probe volumes (tetrahedra). updateProbes() must be called
+		 * at least once before the buffer is populated. If the probes changed since the last call, call updateProbes()
+		 * to refresh the buffer.
+		 */
+		SPtr<GpuBuffer> getTetrahedonInfosBuffer() const { return mTetrahedronInfosGPU; }
+
+		/**
+		 * Returns a mesh that contains triangles of all the light volume tetrahedra, including their corresponding
+		 * tetrahedron index. By rendering this mesh you can find which tetrahedron influences which pixel.
+		 */
+		SPtr<Mesh> getTetrahedraVolumeMesh() const { return mVolumeMesh; }
 
 	private:
 		/**
@@ -143,13 +223,6 @@ namespace bs { namespace ct
 		// Temporary buffers
 		Vector<Vector3> mTempTetrahedronPositions;
 		Vector<UINT32> mTempTetrahedronBufferIndices;
-	};
-
-	/** Storage of tetrahedron AA box, for use on the GPU. */
-	struct TetrahedronBoundsGPU
-	{
-		Vector4 center;
-		Vector4 extents;
 	};
 
 	/** Information about a single tetrahedron, for use on the GPU. */

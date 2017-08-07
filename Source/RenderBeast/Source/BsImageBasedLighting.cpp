@@ -110,10 +110,7 @@ namespace bs { namespace ct
 
 		// Sky
 		if (!optional || params->hasTexture(programType, "gSkyReflectionTex"))
-		{
 			params->getTextureParam(programType, "gSkyReflectionTex", skyReflectionsTexParam);
-			params->getTextureParam(programType, "gSkyIrradianceTex", skyIrradianceTexParam);
-		}
 
 		// Reflections
 		if (!optional || params->hasTexture(programType, "gReflProbeCubemaps"))
@@ -158,7 +155,6 @@ namespace bs { namespace ct
 
 		gReflProbeParamsParamDef.gSkyCubemapNumMips.set(buffer, numSkyMips);
 		gReflProbeParamsParamDef.gSkyCubemapAvailable.set(buffer, skyReflectionsAvailable);
-		gReflProbeParamsParamDef.gSkyBrightness.set(buffer, brightness);
 		gReflProbeParamsParamDef.gNumProbes.set(buffer, probeData.getNumProbes());
 
 		UINT32 numReflProbeMips = 0;
@@ -262,7 +258,6 @@ namespace bs { namespace ct
 		mImageBasedParams.reflectionProbesParam.set(probeData.getProbeBuffer());
 		mImageBasedParams.reflectionProbeCubemapsTexParam.set(sceneInfo.reflProbeCubemapsTex);
 		mImageBasedParams.skyReflectionsTexParam.set(skyFilteredRadiance);
-		mImageBasedParams.skyIrradianceTexParam.set(skyIrradiance);
 
 		mParamsSet->setParamBlockBuffer("PerCamera", view.getPerViewBuffer(), true);
 

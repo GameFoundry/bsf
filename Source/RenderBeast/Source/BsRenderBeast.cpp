@@ -95,6 +95,7 @@ namespace bs { namespace ct
 		RenderCompositor::registerNodeType<RCNodeHiZ>();
 		RenderCompositor::registerNodeType<RCNodeSSAO>();
 		RenderCompositor::registerNodeType<RCNodeClusteredForward>();
+		RenderCompositor::registerNodeType<RCNodeIndirectLighting>();
 	}
 
 	void RenderBeast::destroyCore()
@@ -187,17 +188,17 @@ namespace bs { namespace ct
 
 	void RenderBeast::notifyLightProbeVolumeAdded(LightProbeVolume* volume)
 	{
-		assert(false); // TODO
+		mScene->registerLightProbeVolume(volume);
 	}
 
-	void RenderBeast::notifyLightProbeVolumeUpdated(LightProbeVolume* volume, bool coefficientsUpdated)
+	void RenderBeast::notifyLightProbeVolumeUpdated(LightProbeVolume* volume)
 	{
-		assert(false); // TODO
+		mScene->updateLightProbeVolume(volume);
 	}
 
 	void RenderBeast::notifyLightProbeVolumeRemoved(LightProbeVolume* volume)
 	{
-		assert(false); // TODO
+		mScene->unregisterLightProbeVolume(volume);
 	}
 
 	void RenderBeast::notifySkyboxAdded(Skybox* skybox)
@@ -358,6 +359,10 @@ namespace bs { namespace ct
 
 		SPtr<GpuParamBlockBuffer> perCameraBuffer = view.getPerViewBuffer();
 		perCameraBuffer->flushToGPU();
+
+		// Make sure light probe data is up to date
+		if(view.getRenderSettings().enableIndirectLighting)
+			mScene->updateLightProbes();
 
 		view.beginFrame();
 
@@ -568,6 +573,7 @@ namespace bs { namespace ct
 		SPtr<RenderSettings> settings = bs_shared_ptr_new<RenderSettings>();
 		settings->enableHDR = hdr;
 		settings->enableShadows = false; // Note: If I ever change this I need to make sure that shadow map rendering is aware of this view (currently it is only aware of main camera views)
+		settings->enableIndirectLighting = false;
 
 		Matrix4 viewOffsetMat = Matrix4::translation(-position);
 

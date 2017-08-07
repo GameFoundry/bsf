@@ -10,7 +10,6 @@
 #include "BsRenderBeastOptions.h"
 #include "BsCamera.h"
 #include "BsRendererScene.h"
-#include "BsIBLUtility.h"
 #include "BsRenderBeast.h"
 #include "BsBitwise.h"
 #include "BsRendererTextures.h"
@@ -18,6 +17,7 @@
 #include "BsGpuParamsSet.h"
 #include "BsRendererExtension.h"
 #include "BsSkybox.h"
+#include "BsLightProbes.h"
 
 namespace bs { namespace ct
 {
@@ -486,7 +486,7 @@ namespace bs { namespace ct
 		const RendererViewProperties& viewProps = inputs.view.getProperties();
 		TiledDeferredLightingMat* tiledDeferredMat = TiledDeferredLightingMat::getVariation(viewProps.numSamples);
 
-		GBufferInput gbuffer;
+		GBufferTextures gbuffer;
 		gbuffer.albedo = gbufferNode->albedoTex->texture;
 		gbuffer.normals = gbufferNode->normalTex->texture;
 		gbuffer.roughMetal = gbufferNode->roughMetalTex->texture;
@@ -558,7 +558,7 @@ namespace bs { namespace ct
 			mRenderTarget = RenderTexture::create(lightOcclusionRTDesc);
 		}
 
-		GBufferInput gbuffer;
+		GBufferTextures gbuffer;
 		gbuffer.albedo = gbufferNode->albedoTex->texture;
 		gbuffer.normals = gbufferNode->normalTex->texture;
 		gbuffer.roughMetal = gbufferNode->roughMetalTex->texture;
@@ -648,6 +648,91 @@ namespace bs { namespace ct
 		return { RCNodeLightAccumulation::getNodeId() };
 	}
 
+	void RCNodeIndirectLighting::render(const RenderCompositorNodeInputs& inputs)
+	{
+		if (!inputs.view.getRenderSettings().enableIndirectLighting)
+			return;
+
+		RCNodeGBuffer* gbufferNode = static_cast<RCNodeGBuffer*>(inputs.inputNodes[0]);
+		RCNodeSceneDepth* sceneDepthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[1]);
+		RCNodeLightAccumulation* lightAccumNode = static_cast <RCNodeLightAccumulation*>(inputs.inputNodes[2]);
+
+		GpuResourcePool& resPool = GpuResourcePool::instance();
+		const RendererViewProperties& viewProps = inputs.view.getProperties();
+
+		const LightProbes& lightProbes = inputs.scene.lightProbes;
+
+		SPtr<GpuBuffer> shCoeffs = lightProbes.getSHCoefficientsBuffer();
+		SPtr<GpuBuffer> volumeInfos = lightProbes.getTetrahedonInfosBuffer();
+		SPtr<Mesh> volumeMesh = lightProbes.getTetrahedraVolumeMesh();
+
+		IrradianceEvaluateMat* evaluateMat;
+		SPtr<PooledRenderTexture> volumeIndices;
+		if(lightProbes.hasAnyProbes())
+		{
+			POOLED_RENDER_TEXTURE_DESC volumeIndicesDesc;
+			POOLED_RENDER_TEXTURE_DESC depthDesc;
+			TetrahedraRenderMat::getOutputDesc(inputs.view, volumeIndicesDesc, depthDesc);
+
+			volumeIndices = resPool.get(volumeIndicesDesc);
+			SPtr<PooledRenderTexture> depthTex = resPool.get(depthDesc);
+
+			RENDER_TEXTURE_DESC rtDesc;
+			rtDesc.colorSurfaces[0].texture = volumeIndices->texture;
+			rtDesc.depthStencilSurface.texture = depthTex->texture;
+
+			SPtr<RenderTexture> rt = RenderTexture::create(rtDesc);
+
+			TetrahedraRenderMat* renderTetrahedra = TetrahedraRenderMat::getVariation(viewProps.numSamples > 1);
+			renderTetrahedra->execute(inputs.view, sceneDepthNode->depthTex->texture, volumeMesh, rt);
+
+			rt = nullptr;
+			resPool.release(depthTex);
+
+			evaluateMat = IrradianceEvaluateMat::getVariation(viewProps.numSamples, false);
+		}
+		else // Sky only
+		{
+			evaluateMat = IrradianceEvaluateMat::getVariation(viewProps.numSamples, true);
+		}
+
+		GBufferTextures gbuffer;
+		gbuffer.albedo = gbufferNode->albedoTex->texture;
+		gbuffer.normals = gbufferNode->normalTex->texture;
+		gbuffer.roughMetal = gbufferNode->roughMetalTex->texture;
+		gbuffer.depth = sceneDepthNode->depthTex->texture;
+
+		SPtr<Texture> volumeIndicesTex;
+		if (volumeIndices)
+			volumeIndicesTex = volumeIndices->texture;
+
+		evaluateMat->execute(inputs.view, gbuffer, volumeIndicesTex, shCoeffs, volumeInfos, inputs.scene.skybox, 
+			lightAccumNode->renderTarget);
+
+		if(volumeIndices)
+			resPool.release(volumeIndices);
+	}
+
+	void RCNodeIndirectLighting::clear()
+	{
+		// Do nothing
+	}
+
+	SmallVector<StringID, 4> RCNodeIndirectLighting::getDependencies(const RendererView& view)
+	{
+		SmallVector<StringID, 4> deps;
+
+		deps.push_back(RCNodeGBuffer::getNodeId());
+		deps.push_back(RCNodeSceneDepth::getNodeId());
+		deps.push_back(RCNodeLightAccumulation::getNodeId());
+		deps.push_back(RCNodeStandardDeferredLighting::getNodeId());
+
+		if (view.getProperties().numSamples > 1)
+			deps.push_back(RCNodeUnflattenLightAccum::getNodeId());
+
+		return deps;
+	}
+
 	void RCNodeTiledDeferredIBL::render(const RenderCompositorNodeInputs& inputs)
 	{
 		RCNodeSceneColor* sceneColorNode = static_cast<RCNodeSceneColor*>(inputs.inputNodes[0]);
@@ -686,7 +771,7 @@ namespace bs { namespace ct
 		deps.push_back(RCNodeGBuffer::getNodeId());
 		deps.push_back(RCNodeSceneDepth::getNodeId());
 		deps.push_back(RCNodeLightAccumulation::getNodeId());
-		deps.push_back(RCNodeStandardDeferredLighting::getNodeId());
+		deps.push_back(RCNodeIndirectLighting::getNodeId());
 
 		return deps;
 	}
@@ -734,12 +819,8 @@ namespace bs { namespace ct
 			viewProps.renderingReflections);
 
 		SPtr<Texture> skyFilteredRadiance;
-		SPtr<Texture> skyIrradiance;
 		if(sceneInfo.skybox)
-		{
 			skyFilteredRadiance = sceneInfo.skybox->getFilteredRadiance();
-			skyIrradiance = sceneInfo.skybox->getIrradiance();
-		}
 
 		// Prepare objects for rendering
 		const VisibilityInfo& visibility = inputs.view.getVisibilityMasks();
@@ -776,7 +857,6 @@ namespace bs { namespace ct
 				iblParams.reflectionProbesParam.set(visibleReflProbeData.getProbeBuffer());
 
 				iblParams.skyReflectionsTexParam.set(skyFilteredRadiance);
-				iblParams.skyIrradianceTexParam.set(skyIrradiance);
 
 				iblParams.reflectionProbeCubemapsTexParam.set(sceneInfo.reflProbeCubemapsTex);
 				iblParams.preintegratedEnvBRDFParam.set(RendererTextures::preintegratedEnvGF);

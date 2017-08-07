@@ -116,7 +116,7 @@ namespace bs { namespace ct
 		material->setSamplerState("gDepthBufferSamp", ss);
 	}
 
-	void GBufferParams::bind(const GBufferInput& gbuffer)
+	void GBufferParams::bind(const GBufferTextures& gbuffer)
 	{
 		mGBufferA.set(gbuffer.albedo);
 		mGBufferB.set(gbuffer.normals);
@@ -280,7 +280,7 @@ namespace bs { namespace ct
 	}
 
 	void TiledDeferredLightingMat::execute(const RendererView& view, const VisibleLightData& lightData, 
-		const GBufferInput& gbuffer, const SPtr<Texture>& lightAccumTex, const SPtr<GpuBuffer>& lightAccumBuffer)
+		const GBufferTextures& gbuffer, const SPtr<Texture>& lightAccumTex, const SPtr<GpuBuffer>& lightAccumBuffer)
 	{
 		const RendererViewProperties& viewProps = view.getProperties();
 		const RenderSettings& settings = view.getRenderSettings();

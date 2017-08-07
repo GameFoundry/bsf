@@ -30,7 +30,7 @@ namespace bs { namespace ct {
 		variations.add(VAR_NoMSAA);
 	}
 
-	void DirectionalLightMat::bind(const GBufferInput& gBufferInput, const SPtr<Texture>& lightOcclusion, 
+	void DirectionalLightMat::bind(const GBufferTextures& gBufferInput, const SPtr<Texture>& lightOcclusion, 
 		const SPtr<GpuParamBlockBuffer>& perCamera)
 	{
 		RendererUtility::instance().setPass(mMaterial, 0);
@@ -88,7 +88,7 @@ namespace bs { namespace ct {
 		variations.add(VAR_NoMSAA_Outside);
 	}
 
-	void PointLightMat::bind(const GBufferInput& gBufferInput, const SPtr<Texture>& lightOcclusion, 
+	void PointLightMat::bind(const GBufferTextures& gBufferInput, const SPtr<Texture>& lightOcclusion, 
 		const SPtr<GpuParamBlockBuffer>& perCamera)
 	{
 		RendererUtility::instance().setPass(mMaterial, 0);
@@ -129,7 +129,7 @@ namespace bs { namespace ct {
 	}
 
 	void StandardDeferred::renderLight(LightType lightType, const RendererLight& light, const RendererView& view, 
-		const GBufferInput& gBufferInput, const SPtr<Texture>& lightOcclusion)
+		const GBufferTextures& gBufferInput, const SPtr<Texture>& lightOcclusion)
 	{
 		const auto& viewProps = view.getProperties();
 

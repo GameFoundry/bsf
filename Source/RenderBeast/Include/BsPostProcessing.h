@@ -634,7 +634,7 @@ namespace bs { namespace ct
 		 * @param[in]	gbuffer			GBuffer textures.
 		 * @param[in]	settings		Parameters used for controling the SSR effect.
 		 */
-		void execute(const RendererView& view, GBufferInput gbuffer, const ScreenSpaceReflectionsSettings& settings);
+		void execute(const RendererView& view, GBufferTextures gbuffer, const ScreenSpaceReflectionsSettings& settings);
 	private:
 		SPtr<GpuParamBlockBuffer> mParamBuffer;
 		GBufferParams mGBufferParams;
@@ -669,7 +669,7 @@ namespace bs { namespace ct
 		 * @param[in]	settings		Parameters used for controling the SSR effect.
 		 * @param[in]	destination		Render target to which to write the results to.
 		 */
-		void execute(const RendererView& view, GBufferInput gbuffer, const SPtr<Texture>& sceneColor, 
+		void execute(const RendererView& view, GBufferTextures gbuffer, const SPtr<Texture>& sceneColor, 
 			const SPtr<Texture>& hiZ, const ScreenSpaceReflectionsSettings& settings, 
 			const SPtr<RenderTarget>& destination);
 

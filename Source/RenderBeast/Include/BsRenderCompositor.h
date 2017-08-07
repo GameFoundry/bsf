@@ -335,8 +335,24 @@ namespace ct
 		void clear() override;
 	};
 
+	/** Evaluates indirect lighting from the light probe volume, if available, or the sky irradiance otherwise. */
+	class RCNodeIndirectLighting : public RenderCompositorNode
+	{
+	public:
+		// Outputs to the unflattened RCNodeLightAccumulation
+
+		static StringID getNodeId() { return "IndirectLighting"; }
+		static SmallVector<StringID, 4> getDependencies(const RendererView& view);
+	protected:
+		/** @copydoc RenderCompositorNode::render */
+		void render(const RenderCompositorNodeInputs& inputs) override;
+
+		/** @copydoc RenderCompositorNode::clear */
+		void clear() override;
+	};
+
 	/**
-	 * Perform tiled deferred image based lighting, combines it with direct lighting present in the light accumulation
+	 * Performs tiled deferred image based lighting, combines it with direct lighting present in the light accumulation
 	 * buffer and outputs the results to the scene color texture or buffer.
 	 */
 	class RCNodeTiledDeferredIBL : public RenderCompositorNode

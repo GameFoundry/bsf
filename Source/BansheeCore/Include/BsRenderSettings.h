@@ -447,6 +447,9 @@ namespace bs
 		/** Determines if shadows cast by lights should be rendered. Only relevant if lighting is turned on. */
 		bool enableShadows;
 
+		/** Determines if indirect lighting (e.g. from light probes or the sky) is rendered. */
+		bool enableIndirectLighting;
+
 		/** 
 		 * Signals the renderer to only render overlays (like GUI), and not scene objects. Such rendering doesn't require
 		 * depth buffer or multi-sampled render targets and will not render any scene objects. This can improve performance

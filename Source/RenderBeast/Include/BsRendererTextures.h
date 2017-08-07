@@ -32,6 +32,9 @@ namespace bs { namespace ct
 
 		/** Tileable 4x4 texture to be used for randomization in SSAO rendering. */
 		static SPtr<Texture> ssaoRandomization4x4;
+
+		/** Cubemap containing indirect lighting, when no other is available. */
+		static SPtr<Texture> defaultIndirect;
 	};
 
 	/** @} */

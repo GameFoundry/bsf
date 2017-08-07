@@ -341,7 +341,7 @@ namespace bs
 				break;
 		}
 
-		gRenderer()->notifyLightProbeVolumeUpdated(this, true);
+		gRenderer()->notifyLightProbeVolumeUpdated(this);
 
 		return mFirstDirtyProbe == (UINT32)mProbeInfos.size();
 	}
@@ -468,11 +468,6 @@ namespace bs
 				gRenderer()->notifyLightProbeVolumeAdded(this);
 			else
 				gRenderer()->notifyLightProbeVolumeRemoved(this);
-		}
-		else
-		{
-			if(mIsActive)
-				gRenderer()->notifyLightProbeVolumeUpdated(this, false);
 		}
 	}
 

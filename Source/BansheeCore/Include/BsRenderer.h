@@ -15,6 +15,7 @@ namespace bs
 	namespace ct
 	{
 	class RendererTask;
+	class LightProbeVolume;
 
 	/** @addtogroup Renderer-Internal
 	 *  @{
@@ -159,7 +160,7 @@ namespace bs
 		 *
 		 * @note	Core thread.
 		 */
-		virtual void notifyLightProbeVolumeUpdated(LightProbeVolume* volume, bool coefficientsUpdated) { }
+		virtual void notifyLightProbeVolumeUpdated(LightProbeVolume* volume) { }
 
 		/**
 		 * Called whenever a light probe volume is destroyed.

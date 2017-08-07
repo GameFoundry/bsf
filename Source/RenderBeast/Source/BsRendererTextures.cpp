@@ -6,6 +6,7 @@
 #include "BsMath.h"
 #include "BsTexture.h"
 #include "BsPixelData.h"
+#include "BsIBLUtility.h"
 
 namespace bs { namespace ct
 {
@@ -172,19 +173,83 @@ namespace bs { namespace ct
 		return texture;
 	}
 
+	SPtr<Texture> generateDefaultIndirect()
+	{
+		TEXTURE_DESC dummySkyDesc;
+		dummySkyDesc.type = TEX_TYPE_CUBE_MAP;
+		dummySkyDesc.format = PF_RG11B10F;
+		dummySkyDesc.width = 2;
+		dummySkyDesc.height = 2;
+
+		// Note: Eventually replace this with a time of day model
+		float intensity = 10.0f;
+		Color skyColor = Color::White * intensity;
+		SPtr<Texture> skyTexture = Texture::create(dummySkyDesc);
+		
+		UINT32 sides[] = { CF_PositiveX, CF_NegativeX, CF_PositiveZ, CF_NegativeZ };
+		for(UINT32 i = 0; i < 4; ++i)
+		{
+			PixelData data = skyTexture->lock(GBL_WRITE_ONLY_DISCARD, 0, sides[i]);
+
+			data.setColorAt(skyColor, 0, 0);
+			data.setColorAt(skyColor, 1, 0);
+			data.setColorAt(Color::Black, 0, 1);
+			data.setColorAt(Color::Black, 1, 1);
+
+			skyTexture->unlock();
+		}
+
+		{
+			PixelData data = skyTexture->lock(GBL_WRITE_ONLY_DISCARD, 0, CF_PositiveY);
+			
+			data.setColorAt(skyColor, 0, 0);
+			data.setColorAt(skyColor, 1, 0);
+			data.setColorAt(skyColor, 0, 1);
+			data.setColorAt(skyColor, 1, 1);
+
+			skyTexture->unlock();
+		}
+
+		{
+			PixelData data = skyTexture->lock(GBL_WRITE_ONLY_DISCARD, 0, CF_NegativeY);
+			
+			data.setColorAt(Color::Black, 0, 0);
+			data.setColorAt(Color::Black, 1, 0);
+			data.setColorAt(Color::Black, 0, 1);
+			data.setColorAt(Color::Black, 1, 1);
+
+			skyTexture->unlock();
+		}
+
+		TEXTURE_DESC irradianceCubemapDesc;
+		irradianceCubemapDesc.type = TEX_TYPE_CUBE_MAP;
+		irradianceCubemapDesc.format = PF_RG11B10F;
+		irradianceCubemapDesc.width = IBLUtility::IRRADIANCE_CUBEMAP_SIZE;
+		irradianceCubemapDesc.height = IBLUtility::IRRADIANCE_CUBEMAP_SIZE;
+		irradianceCubemapDesc.numMips = 0;
+		irradianceCubemapDesc.usage = TU_STATIC | TU_RENDERTARGET;
+
+		SPtr<Texture> irradiance = Texture::create(irradianceCubemapDesc);
+		gIBLUtility().filterCubemapForIrradiance(skyTexture, irradiance);
+
+		return irradiance;
+	}
+
 	SPtr<Texture> RendererTextures::preintegratedEnvGF;
 	SPtr<Texture> RendererTextures::ssaoRandomization4x4;
+	SPtr<Texture> RendererTextures::defaultIndirect;
 
 	void RendererTextures::startUp()
 	{
 		preintegratedEnvGF = generatePreintegratedEnvBRDF();
 		ssaoRandomization4x4 = generate4x4RandomizationTexture();
+		defaultIndirect = generateDefaultIndirect();
 	}
 
 	void RendererTextures::shutDown()
 	{
 		preintegratedEnvGF = nullptr;
 		ssaoRandomization4x4 = nullptr;
-		
+		defaultIndirect = nullptr;		
 	}
 }}

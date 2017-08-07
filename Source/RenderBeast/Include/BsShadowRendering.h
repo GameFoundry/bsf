@@ -133,7 +133,7 @@ namespace bs { namespace ct
 	{
 		ShadowProjectParams(const Light& light, const SPtr<Texture>& shadowMap, UINT32 shadowMapFace,
 			const SPtr<GpuParamBlockBuffer>& shadowParams, const SPtr<GpuParamBlockBuffer>& perCameraParams,
-			GBufferInput gbuffer)
+			GBufferTextures gbuffer)
 			: light(light), shadowMap(shadowMap), shadowMapFace(shadowMapFace), shadowParams(shadowParams)
 			, perCamera(perCameraParams), gbuffer(gbuffer)
 		{ }
@@ -154,7 +154,7 @@ namespace bs { namespace ct
 		const SPtr<GpuParamBlockBuffer>& perCamera;
 
 		/** Contains the GBuffer textures. */
-		GBufferInput gbuffer;
+		GBufferTextures gbuffer;
 	};
 
 	BS_PARAM_BLOCK_BEGIN(ShadowProjectParamsDef)
@@ -434,7 +434,7 @@ namespace bs { namespace ct
 		 * The system uses shadow maps rendered by renderShadowMaps().
 		 */
 		void renderShadowOcclusion(const SceneInfo& sceneInfo, UINT32 shadowQuality, const RendererLight& light,
-			UINT32 viewIdx, GBufferInput gbuffer) const;
+			UINT32 viewIdx, GBufferTextures gbuffer) const;
 
 		/** Changes the default shadow map size. Will cause all shadow maps to be rebuilt. */
 		void setShadowMapSize(UINT32 size);

@@ -8,6 +8,7 @@
 #include "BsLightRendering.h"
 #include "BsRendererView.h"
 #include "BsLight.h"
+#include "BsLightProbes.h"
 
 namespace bs 
 { 
@@ -48,6 +49,9 @@ namespace bs
 		Vector<Sphere> reflProbeWorldBounds;
 		Vector<bool> reflProbeCubemapArrayUsedSlots;
 		SPtr<Texture> reflProbeCubemapsTex;
+
+		// Light probes (indirect lighting)
+		LightProbes lightProbes;
 
 		// Sky
 		Skybox* skybox = nullptr;
@@ -102,6 +106,21 @@ namespace bs
 
 		/** Updates the index at which the reflection probe's texture is stored at, in the global array. */
 		void setReflectionProbeArrayIndex(UINT32 probeIdx, UINT32 arrayIdx, bool markAsClean);
+
+		/** Registers a new light probe volume in the scene. */
+		void registerLightProbeVolume(LightProbeVolume* volume);
+
+		/** Updates information about a previously registered light probe volume. */
+		void updateLightProbeVolume(LightProbeVolume* volume);
+
+		/** Removes a light probe volume from the scene. */
+		void unregisterLightProbeVolume(LightProbeVolume* volume);
+
+		/** 
+		 * Rebuilds any light probe related information. Should be called once immediately before rendering. If no change
+		 * is detected since the last call, the call does nothing.
+		 */
+		void updateLightProbes();
 
 		/** Registers a new sky texture in the scene. */
 		void registerSkybox(Skybox* skybox);

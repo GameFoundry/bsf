@@ -62,7 +62,6 @@ namespace bs { namespace ct
 		BS_PARAM_BLOCK_ENTRY(INT32, gSkyCubemapAvailable)
 		BS_PARAM_BLOCK_ENTRY(INT32, gUseReflectionMaps)
 		BS_PARAM_BLOCK_ENTRY(INT32, gSkyCubemapNumMips)
-		BS_PARAM_BLOCK_ENTRY(float, gSkyBrightness)
 	BS_PARAM_BLOCK_END
 
 	extern ReflProbeParamsParamDef gReflProbeParamsParamDef;
@@ -102,8 +101,6 @@ namespace bs { namespace ct
 		void populate(const SPtr<GpuParamsSet>& paramsSet, GpuProgramType programType, bool optional, bool gridIndices);
 
 		GpuParamTexture skyReflectionsTexParam;
-		GpuParamTexture skyIrradianceTexParam;
-
 		GpuParamTexture reflectionProbeCubemapsTexParam;
 
 		GpuParamTexture preintegratedEnvBRDFParam;
@@ -134,7 +131,7 @@ namespace bs { namespace ct
 		/** Container for parameters to be passed to the execute() method. */
 		struct Inputs
 		{
-			GBufferInput gbuffer;
+			GBufferTextures gbuffer;
 			SPtr<Texture> lightAccumulation;
 			SPtr<Texture> sceneColorTex;
 			SPtr<GpuBuffer> sceneColorBuffer;

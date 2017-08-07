@@ -31,7 +31,7 @@ namespace bs { namespace ct {
 		DirectionalLightMat();
 
 		/** Binds the material for rendering and sets up any global parameters. */
-		void bind(const GBufferInput& gBufferInput, const SPtr<Texture>& lightOcclusion, 
+		void bind(const GBufferTextures& gBufferInput, const SPtr<Texture>& lightOcclusion, 
 			const SPtr<GpuParamBlockBuffer>& perCamera);
 
 		/** Updates the per-light buffers used by the material. */
@@ -56,7 +56,7 @@ namespace bs { namespace ct {
 		PointLightMat();
 
 		/** Binds the material for rendering and sets up any global parameters. */
-		void bind(const GBufferInput& gBufferInput, const SPtr<Texture>& lightOcclusion, 
+		void bind(const GBufferTextures& gBufferInput, const SPtr<Texture>& lightOcclusion, 
 			const SPtr<GpuParamBlockBuffer>& perCamera);
 
 		/** Updates the per-light buffers used by the material. */
@@ -82,7 +82,7 @@ namespace bs { namespace ct {
 
 		/** Calculates lighting for the specified light, using the standard deferred renderer. */
 		void renderLight(LightType type, const RendererLight& light, const RendererView& view, 
-			const GBufferInput& gBufferInput, const SPtr<Texture>& lightOcclusion);
+			const GBufferTextures& gBufferInput, const SPtr<Texture>& lightOcclusion);
 
 	private:
 		SPtr<GpuParamBlockBuffer> mPerLightBuffer;

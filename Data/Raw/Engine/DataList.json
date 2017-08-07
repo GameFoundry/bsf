@@ -349,6 +349,10 @@
         {
             "Path": "TetrahedraRender.bsl",
             "UUID": "5912b0ab-b2be-4c0e-a039-91fcc2d3e536"
+        },
+        {
+            "Path": "IrradianceEvaluate.bsl",
+            "UUID": "6f6ed59d-b94b-428e-91bc-82c94ed48892"
         }
     ],
     "Skin": [

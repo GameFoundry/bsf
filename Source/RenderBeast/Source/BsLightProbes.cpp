@@ -9,6 +9,8 @@
 #include "BsVertexDataDesc.h"
 #include "BsGpuParamsSet.h"
 #include "BsRendererUtility.h"
+#include "BsSkybox.h"
+#include "BsRendererTextures.h"
 
 namespace bs { namespace ct 
 {
@@ -101,13 +103,127 @@ namespace bs { namespace ct
 		return get(VAR_NoMSAA);
 	}
 
-	LightProbes::LightProbes()
-		:mTetrahedronVolumeDirty(false), mMaxCoefficients(0), mMaxTetrahedra(0)
+	IrradianceEvaluateParamDef gIrradianceEvaluateParamDef;
+
+	ShaderVariation IrradianceEvaluateMat::VAR_MSAA_Probes = ShaderVariation({
+		ShaderVariation::Param("MSAA_COUNT", 2),
+		ShaderVariation::Param("SKY_ONLY", false)
+	});
+
+	ShaderVariation IrradianceEvaluateMat::VAR_NoMSAA_Probes = ShaderVariation({
+		ShaderVariation::Param("MSAA_COUNT", 1),
+		ShaderVariation::Param("SKY_ONLY", false)
+	});
+
+	ShaderVariation IrradianceEvaluateMat::VAR_MSAA_Sky = ShaderVariation({
+		ShaderVariation::Param("MSAA_COUNT", 2),
+		ShaderVariation::Param("SKY_ONLY", true)
+	});
+
+	ShaderVariation IrradianceEvaluateMat::VAR_NoMSAA_Sky = ShaderVariation({
+		ShaderVariation::Param("MSAA_COUNT", 1),
+		ShaderVariation::Param("SKY_ONLY", true)
+	});
+
+	IrradianceEvaluateMat::IrradianceEvaluateMat()
+		:mGBufferParams(mMaterial, mParamsSet)
 	{
-		resizeCoefficientBuffer(512);
+		mSkyOnly = mVariation.getBool("SKY_ONLY");
+
+		SPtr<GpuParams> params = mParamsSet->getGpuParams();
+
+		if(mSkyOnly)
+			params->getTextureParam(GPT_FRAGMENT_PROGRAM, "gSkyIrradianceTex", mParamSkyIrradianceTex);
+		else
+		{
+			params->getTextureParam(GPT_FRAGMENT_PROGRAM, "gInputTex", mParamInputTex);
+			params->getBufferParam(GPT_FRAGMENT_PROGRAM, "gSHCoeffs", mParamSHCoeffsBuffer);
+			params->getBufferParam(GPT_FRAGMENT_PROGRAM, "gProbeVolumes", mParamVolumeBuffer);
+		}
+
+		mParamBuffer = gIrradianceEvaluateParamDef.createBuffer();
+		mParamsSet->setParamBlockBuffer("Params", mParamBuffer, true);
 	}
 
-	void LightProbes::notifyAdded(const SPtr<LightProbeVolume>& volume)
+	void IrradianceEvaluateMat::_initVariations(ShaderVariations& variations)
+	{
+		variations.add(VAR_MSAA_Probes);
+		variations.add(VAR_MSAA_Sky);
+		variations.add(VAR_NoMSAA_Probes);
+		variations.add(VAR_NoMSAA_Sky);
+	}
+
+	void IrradianceEvaluateMat::execute(const RendererView& view, const GBufferTextures& gbuffer, 
+		const SPtr<Texture>& lightProbeIndices, const SPtr<GpuBuffer>& shCoeffs, const SPtr<GpuBuffer>& volumes, 
+		const Skybox* skybox, const SPtr<RenderTexture>& output)
+	{
+		const RendererViewProperties& viewProps = view.getProperties();
+
+		mGBufferParams.bind(gbuffer);
+
+		float skyBrightness = 1.0f;
+		if (mSkyOnly)
+		{
+			SPtr<Texture> skyIrradiance;
+			if (skybox != nullptr)
+			{
+				skyIrradiance = skybox->getIrradiance();
+				skyBrightness = skybox->getBrightness();
+			}
+
+			if(skyIrradiance == nullptr)
+				skyIrradiance = RendererTextures::defaultIndirect;
+
+			mParamSkyIrradianceTex.set(skyIrradiance);
+		}
+		else
+		{
+			mParamInputTex.set(lightProbeIndices);
+			mParamSHCoeffsBuffer.set(shCoeffs);
+			mParamVolumeBuffer.set(volumes);
+		}
+
+		gIrradianceEvaluateParamDef.gSkyBrightness.set(mParamBuffer, skyBrightness);
+		mParamBuffer->flushToGPU();
+
+		mParamsSet->setParamBlockBuffer("PerCamera", view.getPerViewBuffer(), true);
+
+		// Render
+		RenderAPI& rapi = RenderAPI::instance();
+		rapi.setRenderTarget(output, 0, RT_COLOR0);
+
+		gRendererUtility().setPass(mMaterial);
+		gRendererUtility().setPassParams(mParamsSet);
+
+		gRendererUtility().drawScreenQuad(Rect2(0.0f, 0.0f, (float)viewProps.viewRect.width, 
+			(float)viewProps.viewRect.height));
+
+		rapi.setRenderTarget(nullptr);
+	}
+
+	IrradianceEvaluateMat* IrradianceEvaluateMat::getVariation(UINT32 msaaCount, bool skyOnly)
+	{
+		if(skyOnly)
+		{
+			if (msaaCount > 1)
+				return get(VAR_MSAA_Sky);
+
+			return get(VAR_NoMSAA_Sky);
+		}
+		else
+		{
+			if (msaaCount > 1)
+				return get(VAR_MSAA_Probes);
+
+			return get(VAR_NoMSAA_Probes);
+		}
+	}
+
+	LightProbes::LightProbes()
+		:mTetrahedronVolumeDirty(false), mMaxCoefficients(0), mMaxTetrahedra(0)
+	{ }
+
+	void LightProbes::notifyAdded(LightProbeVolume* volume)
 	{
 		UINT32 handle = (UINT32)mVolumes.size();
 
@@ -121,7 +237,7 @@ namespace bs { namespace ct
 		notifyDirty(volume);
 	}
 
-	void LightProbes::notifyDirty(const SPtr<LightProbeVolume>& volume)
+	void LightProbes::notifyDirty(LightProbeVolume* volume)
 	{
 		UINT32 handle = volume->getRendererId();
 		mVolumes[handle].isDirty = true;
@@ -129,11 +245,11 @@ namespace bs { namespace ct
 		mTetrahedronVolumeDirty = true;
 	}
 
-	void LightProbes::notifyRemoved(const SPtr<LightProbeVolume>& volume)
+	void LightProbes::notifyRemoved(LightProbeVolume* volume)
 	{
 		UINT32 handle = volume->getRendererId();
 
-		LightProbeVolume* lastVolume = mVolumes.back().volume.get();
+		LightProbeVolume* lastVolume = mVolumes.back().volume;
 		UINT32 lastHandle = lastVolume->getRendererId();
 		
 		if (handle != lastHandle)
@@ -151,163 +267,175 @@ namespace bs { namespace ct
 
 	void LightProbes::updateProbes()
 	{
-		if(mTetrahedronVolumeDirty)
+		if (!mTetrahedronVolumeDirty)
+			return;
+
+		// Move all coefficients into the global buffer
+		UINT32 numCoeffs = 0;
+		for(auto& entry : mVolumes)
 		{
-			// Move all coefficients into the global buffer
-			UINT32 numCoeffs = 0;
-			for(auto& entry : mVolumes)
-			{
-				UINT32 numProbes = (UINT32)entry.volume->getLightProbePositions().size();
-				numCoeffs += numProbes;
-			}
-
-			if(numCoeffs > mMaxCoefficients)
-			{
-				UINT32 newSize = Math::divideAndRoundUp(numCoeffs, 32U) * 32U;
-				resizeCoefficientBuffer(newSize);
-			}
-
-			UINT8* dest = (UINT8*)mProbeCoefficientsGPU->lock(0, mProbeCoefficientsGPU->getSize(), GBL_WRITE_ONLY_DISCARD);
-			for(auto& entry : mVolumes)
-			{
-				UINT32 numProbes = (UINT32)entry.volume->getLightProbePositions().size();
-				SPtr<GpuBuffer> localBuffer = entry.volume->getCoefficientsBuffer();
-				
-				// Note: Some of the coefficients might still be dirty (unrendered). Check for this and write them as black?
-				UINT32 size = numProbes * sizeof(LightProbeSHCoefficients);
-				UINT8* src = (UINT8*)localBuffer->lock(0, size, GBL_READ_ONLY);
-				memcpy(dest, src, size);
-
-				localBuffer->unlock();
-				dest += size;
-			}
-			mProbeCoefficientsGPU->unlock();
-
-			// Gather all positions
-			UINT32 bufferOffset = 0;
-			for(auto& entry : mVolumes)
-			{
-				const Vector<LightProbeInfo>& infos = entry.volume->getLightProbeInfos();
-				const Vector<Vector3>& positions = entry.volume->getLightProbePositions();
-				UINT32 numProbes = entry.volume->getNumActiveProbes();
-				
-				if (numProbes == 0)
-					continue;
-
-				Vector3 offset = entry.volume->getPosition();
-				Quaternion rotation = entry.volume->getRotation();
-				for(UINT32 i = 0; i < numProbes; i++)
-				{
-					Vector3 localPos = positions[i];
-					Vector3 transformedPos = rotation.rotate(localPos) + offset;
-					mTempTetrahedronPositions.push_back(transformedPos);
-					mTempTetrahedronBufferIndices.push_back(bufferOffset + infos[i].bufferIdx);
-				}
-
-				bufferOffset += (UINT32)positions.size();
-			}
-
-			mTetrahedronInfos.clear();
-
-			UINT32 innerVertexCount = (UINT32)mTempTetrahedronPositions.size();
-			generateTetrahedronData(mTempTetrahedronPositions, mTetrahedronInfos, false);
-
-			// Generate a mesh out of all the tetrahedron triangles
-			// Note: Currently the entire volume is rendered as a single large mesh, which will isn't optimal as we can't
-			// perform frustum culling. A better option would be to split the mesh into multiple smaller volumes, do
-			// frustum culling and possibly even sort by distance from camera.
-			UINT32 numTetrahedra = (UINT32)mTetrahedronInfos.size();
-
-			UINT32 numVertices = numTetrahedra * 4 * 3;
-			UINT32 numIndices = numTetrahedra * 4 * 3;
-
-			SPtr<VertexDataDesc> vertexDesc = bs_shared_ptr_new<VertexDataDesc>();
-			vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
-			vertexDesc->addVertElem(VET_UINT1, VES_TEXCOORD);
-
-			SPtr<MeshData> meshData = MeshData::create(numVertices, numIndices, vertexDesc);
-			auto posIter = meshData->getVec3DataIter(VES_POSITION);
-			auto idIter = meshData->getDWORDDataIter(VES_TEXCOORD);
-
-			UINT32 tetIdx = 0;
-			for(auto& entry : mTetrahedronInfos)
-			{
-				const Tetrahedron& volume = entry.volume;
-
-				Vector3 center(BsZero);
-				for(UINT32 i = 0; i < 4; i++)
-					center += mTempTetrahedronPositions[volume.vertices[i]];
-
-				center /= 4.0f;
-
-				static const UINT32 Permutations[4][3] = 
-				{
-					{ 0, 1, 2 },
-					{ 0, 1, 3 },
-					{ 0, 2, 3 },
-					{ 1, 2, 3 }
-				};
-
-				for(UINT32 i = 0; i < 4; i++)
-				{
-					Vector3 A = mTempTetrahedronPositions[volume.vertices[Permutations[i][0]]];
-					Vector3 B = mTempTetrahedronPositions[volume.vertices[Permutations[i][1]]];
-					Vector3 C = mTempTetrahedronPositions[volume.vertices[Permutations[i][2]]];
-
-					// Make sure the triangle is clockwise
-					Vector3 e0 = A - C;
-					Vector3 e1 = B - C;
-
-					Vector3 normal = e0.cross(e1);
-					if (normal.dot(A - center) < 0.0f)
-						std::swap(B, C);
-
-					posIter.addValue(A);
-					posIter.addValue(B);
-					posIter.addValue(C);
-
-					idIter.addValue(tetIdx);
-					idIter.addValue(tetIdx);
-					idIter.addValue(tetIdx);
-				}
-
-				tetIdx++;
-			}
-
-			mVolumeMesh = Mesh::create(meshData);
-
-			// Map vertices to actual SH coefficient indices, and write GPU buffer with tetrahedron information
-			if (numTetrahedra > mMaxTetrahedra)
-			{
-				UINT32 newSize = Math::divideAndRoundUp(numTetrahedra, 64U) * 64U;
-				resizeTetrahedronBuffer(newSize);
-			}
-
-			TetrahedronDataGPU* dst = (TetrahedronDataGPU*)mTetrahedronInfosGPU->lock(0, mTetrahedronInfosGPU->getSize(), 
-				GBL_WRITE_ONLY_DISCARD);
-			for (auto& entry : mTetrahedronInfos)
-			{
-				for(UINT32 i = 0; i < 4; ++i)
-				{
-					// Check for outer vertices, which have no SH data associated with them
-					if (entry.volume.vertices[i] >= (INT32)innerVertexCount)
-						entry.volume.vertices[i] = -1;
-					else
-						entry.volume.vertices[i] = mTempTetrahedronBufferIndices[i];
-				}
-
-				memcpy(dst->indices, entry.volume.vertices, sizeof(UINT32) * 4);
-				memcpy(&dst->transform, &entry.transform, sizeof(float) * 12);
-
-				dst++;
-			}
-
-			mTetrahedronInfosGPU->unlock();
-
-			mTempTetrahedronPositions.clear();
-			mTempTetrahedronBufferIndices.clear();
-			mTetrahedronVolumeDirty = false;
+			UINT32 numProbes = (UINT32)entry.volume->getLightProbePositions().size();
+			numCoeffs += numProbes;
 		}
+
+		if(numCoeffs > mMaxCoefficients)
+		{
+			UINT32 newSize = Math::divideAndRoundUp(numCoeffs, 32U) * 32U;
+			resizeCoefficientBuffer(newSize);
+		}
+
+		UINT8* dest = (UINT8*)mProbeCoefficientsGPU->lock(0, mProbeCoefficientsGPU->getSize(), GBL_WRITE_ONLY_DISCARD);
+		for(auto& entry : mVolumes)
+		{
+			UINT32 numProbes = (UINT32)entry.volume->getLightProbePositions().size();
+			SPtr<GpuBuffer> localBuffer = entry.volume->getCoefficientsBuffer();
+			
+			// Note: Some of the coefficients might still be dirty (unrendered). Check for this and write them as black?
+			UINT32 size = numProbes * sizeof(LightProbeSHCoefficients);
+			UINT8* src = (UINT8*)localBuffer->lock(0, size, GBL_READ_ONLY);
+			memcpy(dest, src, size);
+
+			localBuffer->unlock();
+			dest += size;
+		}
+		mProbeCoefficientsGPU->unlock();
+
+		// Gather all positions
+		UINT32 bufferOffset = 0;
+		for(auto& entry : mVolumes)
+		{
+			const Vector<LightProbeInfo>& infos = entry.volume->getLightProbeInfos();
+			const Vector<Vector3>& positions = entry.volume->getLightProbePositions();
+			UINT32 numProbes = entry.volume->getNumActiveProbes();
+			
+			if (numProbes == 0)
+				continue;
+
+			Vector3 offset = entry.volume->getPosition();
+			Quaternion rotation = entry.volume->getRotation();
+			for(UINT32 i = 0; i < numProbes; i++)
+			{
+				Vector3 localPos = positions[i];
+				Vector3 transformedPos = rotation.rotate(localPos) + offset;
+				mTempTetrahedronPositions.push_back(transformedPos);
+				mTempTetrahedronBufferIndices.push_back(bufferOffset + infos[i].bufferIdx);
+			}
+
+			bufferOffset += (UINT32)positions.size();
+		}
+
+		mTetrahedronInfos.clear();
+
+		UINT32 innerVertexCount = (UINT32)mTempTetrahedronPositions.size();
+		generateTetrahedronData(mTempTetrahedronPositions, mTetrahedronInfos, false);
+
+		// Generate a mesh out of all the tetrahedron triangles
+		// Note: Currently the entire volume is rendered as a single large mesh, which will isn't optimal as we can't
+		// perform frustum culling. A better option would be to split the mesh into multiple smaller volumes, do
+		// frustum culling and possibly even sort by distance from camera.
+		UINT32 numTetrahedra = (UINT32)mTetrahedronInfos.size();
+
+		UINT32 numVertices = numTetrahedra * 4 * 3;
+		UINT32 numIndices = numTetrahedra * 4 * 3;
+
+		SPtr<VertexDataDesc> vertexDesc = bs_shared_ptr_new<VertexDataDesc>();
+		vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
+		vertexDesc->addVertElem(VET_UINT1, VES_TEXCOORD);
+
+		SPtr<MeshData> meshData = MeshData::create(numVertices, numIndices, vertexDesc);
+		auto posIter = meshData->getVec3DataIter(VES_POSITION);
+		auto idIter = meshData->getDWORDDataIter(VES_TEXCOORD);
+
+		UINT32 tetIdx = 0;
+		for(auto& entry : mTetrahedronInfos)
+		{
+			const Tetrahedron& volume = entry.volume;
+
+			Vector3 center(BsZero);
+			for(UINT32 i = 0; i < 4; i++)
+				center += mTempTetrahedronPositions[volume.vertices[i]];
+
+			center /= 4.0f;
+
+			static const UINT32 Permutations[4][3] = 
+			{
+				{ 0, 1, 2 },
+				{ 0, 1, 3 },
+				{ 0, 2, 3 },
+				{ 1, 2, 3 }
+			};
+
+			for(UINT32 i = 0; i < 4; i++)
+			{
+				Vector3 A = mTempTetrahedronPositions[volume.vertices[Permutations[i][0]]];
+				Vector3 B = mTempTetrahedronPositions[volume.vertices[Permutations[i][1]]];
+				Vector3 C = mTempTetrahedronPositions[volume.vertices[Permutations[i][2]]];
+
+				// Make sure the triangle is clockwise
+				Vector3 e0 = A - C;
+				Vector3 e1 = B - C;
+
+				Vector3 normal = e0.cross(e1);
+				if (normal.dot(A - center) < 0.0f)
+					std::swap(B, C);
+
+				posIter.addValue(A);
+				posIter.addValue(B);
+				posIter.addValue(C);
+
+				idIter.addValue(tetIdx);
+				idIter.addValue(tetIdx);
+				idIter.addValue(tetIdx);
+			}
+
+			tetIdx++;
+		}
+
+		mVolumeMesh = Mesh::create(meshData);
+
+		// Map vertices to actual SH coefficient indices, and write GPU buffer with tetrahedron information
+		if (numTetrahedra > mMaxTetrahedra)
+		{
+			UINT32 newSize = Math::divideAndRoundUp(numTetrahedra, 64U) * 64U;
+			resizeTetrahedronBuffer(newSize);
+		}
+
+		TetrahedronDataGPU* dst = (TetrahedronDataGPU*)mTetrahedronInfosGPU->lock(0, mTetrahedronInfosGPU->getSize(), 
+			GBL_WRITE_ONLY_DISCARD);
+		for (auto& entry : mTetrahedronInfos)
+		{
+			for(UINT32 i = 0; i < 4; ++i)
+			{
+				// Check for outer vertices, which have no SH data associated with them
+				if (entry.volume.vertices[i] >= (INT32)innerVertexCount)
+					entry.volume.vertices[i] = -1;
+				else
+					entry.volume.vertices[i] = mTempTetrahedronBufferIndices[i];
+			}
+
+			memcpy(dst->indices, entry.volume.vertices, sizeof(UINT32) * 4);
+			memcpy(&dst->transform, &entry.transform, sizeof(float) * 12);
+
+			dst++;
+		}
+
+		mTetrahedronInfosGPU->unlock();
+
+		mTempTetrahedronPositions.clear();
+		mTempTetrahedronBufferIndices.clear();
+		mTetrahedronVolumeDirty = false;
+	}
+
+	bool LightProbes::hasAnyProbes() const
+	{
+		for(auto& entry : mVolumes)
+		{
+			UINT32 numProbes = entry.volume->getNumActiveProbes();
+			if (numProbes > 0)
+				return true;
+		}
+
+		return false;
 	}
 
 	void LightProbes::resizeTetrahedronBuffer(UINT32 count)
