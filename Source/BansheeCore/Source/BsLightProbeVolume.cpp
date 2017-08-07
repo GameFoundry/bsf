@@ -16,11 +16,13 @@ namespace bs
 	{ }
 
 	LightProbeVolume::LightProbeVolume()
+		: mVolume(AABox::UNIT_BOX), mCellCount { 1, 1, 1 }
 	{ }
 
-	LightProbeVolume::LightProbeVolume(const AABox& volume, const Vector3& density)
+	LightProbeVolume::LightProbeVolume(const AABox& volume, const Vector3I& cellCount)
+		:mVolume(volume), mCellCount(cellCount)
 	{
-		// TODO - Generates probes in the grid volume
+		reset();
 	}
 
 	LightProbeVolume::~LightProbeVolume()
@@ -65,6 +67,99 @@ namespace bs
 			return iterFind->second.position;
 		
 		return Vector3::ZERO;
+	}
+
+	void LightProbeVolume::resize(const AABox& volume, const Vector3I& cellCount)
+	{
+		UINT32 numProbesX = std::max(1, mCellCount.v[0]) + 1;
+		UINT32 numProbesY = std::max(1, mCellCount.v[1]) + 1;
+		UINT32 numProbesZ = std::max(1, mCellCount.v[2]) + 1;
+
+		Vector3 size = mVolume.getSize();
+		for(UINT32 z = 0; z < numProbesZ; ++z)
+		{
+			for(UINT32 y = 0; y < numProbesY; ++y)
+			{
+				for(UINT32 x = 0; x < numProbesX; ++x)
+				{
+					Vector3 position = mVolume.getMin();
+					position.x += size.x * (x / (float)numProbesX);
+					position.y += size.y * (y / (float)numProbesY);
+					position.z += size.z * (z / (float)numProbesZ);
+
+					if (mVolume.contains(position))
+						continue;
+
+					addProbe(position);
+				}
+			}
+		}
+
+		mVolume = volume;
+		mCellCount = cellCount;
+
+		_markCoreDirty();
+	}
+
+	void LightProbeVolume::reset()
+	{
+		UINT32 numProbesX = std::max(1, mCellCount.v[0]) + 1;
+		UINT32 numProbesY = std::max(1, mCellCount.v[1]) + 1;
+		UINT32 numProbesZ = std::max(1, mCellCount.v[2]) + 1;
+
+		UINT32 numProbes = numProbesX * numProbesY * numProbesZ;
+
+		// Make sure there are adequate number of probes to fill the volume
+		while((UINT32)mProbes.size() < numProbes)
+			addProbe(Vector3::ZERO);
+
+		UINT32 idx = 0;
+		UINT32 rowPitch = numProbesX;
+		UINT32 slicePitch = numProbesX * numProbesY;
+
+		Vector3 size = mVolume.getSize();
+
+		auto iter = mProbes.begin();
+		while (iter != mProbes.end())
+		{
+			UINT32 x = idx % numProbesX;
+			UINT32 y = (idx / rowPitch) % numProbesY;
+			UINT32 z = (idx / slicePitch);
+
+			Vector3 position = mVolume.getMin();
+			position.x += size.x * (x / (float)numProbesX);
+			position.y += size.y * (y / (float)numProbesY);
+			position.z += size.z * (z / (float)numProbesZ);
+
+			iter->second.position = position;
+			iter->second.flags = LightProbeFlags::Clean;
+
+			++idx;
+			++iter;
+
+			if (idx >= numProbes)
+				break;
+		}
+
+		// Set remaining probes to removed state
+		while(iter != mProbes.end())
+		{
+			iter->second.flags = LightProbeFlags::Removed;
+			++iter;
+		}
+
+		_markCoreDirty();
+	}
+
+	void LightProbeVolume::clip()
+	{
+		for (auto& entry : mProbes)
+		{
+			if (!mVolume.contains(entry.second.position))
+				entry.second.flags = LightProbeFlags::Removed;
+		}
+
+		_markCoreDirty();
 	}
 
 	void LightProbeVolume::renderProbe(UINT32 handle)
@@ -160,9 +255,9 @@ namespace bs
 		return std::static_pointer_cast<ct::LightProbeVolume>(mCoreSpecific);
 	}
 
-	SPtr<LightProbeVolume> LightProbeVolume::create(const AABox& volume, const Vector3& density)
+	SPtr<LightProbeVolume> LightProbeVolume::create(const AABox& volume, const Vector3I& cellCount)
 	{
-		LightProbeVolume* probeVolume = new (bs_alloc<LightProbeVolume>()) LightProbeVolume(volume, density);
+		LightProbeVolume* probeVolume = new (bs_alloc<LightProbeVolume>()) LightProbeVolume(volume, cellCount);
 		SPtr<LightProbeVolume> probeVolumePtr = bs_core_ptr<LightProbeVolume>(probeVolume);
 		probeVolumePtr->_setThisPtr(probeVolumePtr);
 		probeVolumePtr->initialize();

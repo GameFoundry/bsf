@@ -7,6 +7,7 @@
 #include "BsAABox.h"
 #include "BsVector3.h"
 #include "BsQuaternion.h"
+#include "BsVectorNI.h"
 
 namespace bs
 {
@@ -137,6 +138,32 @@ namespace bs
 		 */
 		void renderProbes();
 
+		/** 
+		 * Resizes the light probe grid and inserts new light probes, if the new size is larger than previous size.
+		 * New probes are inserted in a grid pattern matching the new size and density parameters. 
+		 * 
+		 * Note that shrinking the volume will not remove light probes. In order to remove probes outside of the new volume
+		 * call clip().
+		 * 
+		 * Resize will not change the positions of current light probes. If you wish to reset all probes to the currently
+		 * set grid position, call reset().
+
+		 * @param[in]	volume		Axis aligned volume to be covered by the light probes.
+		 * @param[in]	cellCount	Number of grid cells to split the volume into. Minimum number of 1, in which case each
+		 *							corner of the volume is represented by a single probe. Higher values subdivide the
+		 *							volume in an uniform way.
+		 */
+		void resize(const AABox& volume, const Vector3I& cellCount = {1, 1, 1});
+
+		/** Removes any probes outside of the current grid volume. */
+		void clip();
+
+		/** 
+		 * Resets all probes to match the original grid pattern. This will reset probe positions, as well as add/remove
+		 * probes as necessary, essentially losing any custom changes to the probes.
+		 */
+		void reset();		
+
 		/**	Retrieves an implementation of the object usable only from the core thread. */
 		SPtr<ct::LightProbeVolume> getCore() const;
 
@@ -144,16 +171,15 @@ namespace bs
 		 * Creates a new light volume with probes aligned in a grid pattern.
 		 * 
 		 * @param[in]	volume		Axis aligned volume to be covered by the light probes.
-		 * @param[in]	density		Density of light probes in each direction. Starting on one side of the volume, a new
-		 *							probe will be added every 1/density meters (per-axis). Note that one probe will be
-		 *							placed at the start and at the end of the volume, regardless of density. This means the
-		 *							smallest volume will have 8 probes.
+		 * @param[in]	cellCount	Number of grid cells to split the volume into. Minimum number of 1, in which case each
+		 *							corner of the volume is represented by a single probe. Higher values subdivide the
+		 *							volume in an uniform way.
 		 */
-		static SPtr<LightProbeVolume> create(const AABox& volume = AABox::UNIT_BOX, const Vector3& density = Vector3::ONE);
+		static SPtr<LightProbeVolume> create(const AABox& volume = AABox::UNIT_BOX, const Vector3I& cellCount = {1, 1, 1});
 	protected:
 		friend class ct::LightProbeVolume;
 
-		LightProbeVolume(const AABox& volume, const Vector3& density);
+		LightProbeVolume(const AABox& volume, const Vector3I& cellCount);
 
 		/** Renders the light probe data on the core thread. */
 		void runRenderProbeTask();
@@ -178,6 +204,9 @@ namespace bs
 
 	private:
 		UnorderedMap<UINT32, ProbeInfo> mProbes;
+		AABox mVolume = AABox::UNIT_BOX;
+		Vector3I mCellCount;
+
 		UINT32 mNextProbeId = 0;
 		SPtr<ct::RendererTask> mRendererTask;
 

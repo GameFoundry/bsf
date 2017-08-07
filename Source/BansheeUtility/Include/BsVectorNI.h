@@ -27,6 +27,12 @@ namespace bs
 			memcpy(v, val, sizeof(v));
 		}
 
+		VectorNI(std::initializer_list<INT32> list)
+		{
+			assert(list.size() < N);
+			std::copy(list.begin(), list.end(), v);
+		}
+
 		INT32 operator[] (size_t i) const
 		{
 			assert(i < N);
@@ -69,4 +75,7 @@ namespace bs
 
 	typedef VectorNI<3> Vector3I;
 	typedef VectorNI<4> Vector4I;
+
+	BS_ALLOW_MEMCPY_SERIALIZATION(Vector3I)
+	BS_ALLOW_MEMCPY_SERIALIZATION(Vector4I)
 }

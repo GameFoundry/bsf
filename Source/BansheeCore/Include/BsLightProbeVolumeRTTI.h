@@ -88,6 +88,8 @@ namespace bs
 		BS_BEGIN_RTTI_MEMBERS
 			BS_RTTI_MEMBER_PLAIN(mPosition, 0)
 			BS_RTTI_MEMBER_PLAIN(mRotation, 1)
+			BS_RTTI_MEMBER_PLAIN(mVolume, 3)
+			BS_RTTI_MEMBER_PLAIN(mCellCount, 4)
 		BS_END_RTTI_MEMBERS
 
 		SavedLightProbeInfo& getProbeInfo(LightProbeVolume* obj)
