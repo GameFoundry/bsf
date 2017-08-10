@@ -359,7 +359,7 @@ namespace bs
 
 			for (auto& node : mesh->referencedBy)
 			{
-				Matrix4 worldTransform = scene.globalScale * node->worldTransform;
+				Matrix4 worldTransform = scene.globalScale * node->worldTransform * node->geomTransform;
 				Matrix4 worldTransformIT = worldTransform.inverse();
 				worldTransformIT = worldTransformIT.transpose();
 
@@ -511,6 +511,7 @@ namespace bs
 
 	void FBXImporter::parseScene(FbxScene* scene, const FBXImportOptions& options, FBXImportScene& outputScene)
 	{
+		// Scale from file units to engine units, and apply optional user scale
 		float importScale = 1.0f;
 		if (options.importScale > 0.0001f)
 			importScale = options.importScale;
@@ -589,26 +590,48 @@ namespace bs
 	{
 		FBXImportNode* node = bs_new<FBXImportNode>();
 
-		Vector3 translation = FBXToNativeType(fbxNode->LclTranslation.Get());
-		Vector3 rotationEuler = FBXToNativeType(fbxNode->LclRotation.Get());
-		Vector3 scale = FBXToNativeType(fbxNode->LclScaling.Get());
+		Vector3 translation = FBXToNativeType(fbxNode->EvaluateLocalTranslation(FbxTime(0)));
+		Vector3 rotationEuler = FBXToNativeType(fbxNode->EvaluateLocalRotation(FbxTime(0)));
+		Vector3 scale = FBXToNativeType(fbxNode->EvaluateLocalScaling(FbxTime(0)));
 
 		Quaternion rotation((Degree)rotationEuler.x, (Degree)rotationEuler.y, (Degree)rotationEuler.z);
 
-		node->localTransform.setTRS(translation, rotation, scale);
+		Matrix4 localTransform = Matrix4::TRS(translation, rotation, scale);
 		node->name = fbxNode->GetNameWithoutNameSpacePrefix().Buffer();
 		node->fbxNode = fbxNode;
 
 		if (parent != nullptr)
 		{
-			node->worldTransform = node->localTransform * parent->worldTransform;
+			node->worldTransform = parent->worldTransform * localTransform;
 
 			parent->children.push_back(node);
 		}
 		else
-			node->worldTransform = node->localTransform;
+			node->worldTransform = localTransform;
+
+		// Geometry transform is applied to geometry (mesh data) only, it is not inherited by children, so we store it
+		// separately
+		Vector3 geomTrans = FBXToNativeType(fbxNode->GeometricTranslation.Get());
+		Vector3 geomRotEuler = FBXToNativeType(fbxNode->GeometricRotation.Get());
+		Vector3 geomScale = FBXToNativeType(fbxNode->GeometricScaling.Get());
+
+		Quaternion geomRotation((Degree)geomRotEuler.x, (Degree)geomRotEuler.y, (Degree)geomRotEuler.z);
+		node->geomTransform = Matrix4::TRS(geomTrans, geomRotation, geomScale);
 
 		scene.nodeMap.insert(std::make_pair(fbxNode, node));
+
+		// Determine if geometry winding needs to be flipped to match the engine convention. This is true by default, but
+		// each negative scaling factor changes the winding.
+		if (parent != nullptr)
+			node->flipWinding = parent->flipWinding;
+		else
+			node->flipWinding = true;
+
+		for (UINT32 i = 0; i < 3; i++)
+		{
+			if (scale[i] < 0.0f) node->flipWinding = !node->flipWinding;
+			if (geomScale[i] < 0.0f) node->flipWinding = !node->flipWinding;
+		}
 
 		return node;
 	}
@@ -625,7 +648,6 @@ namespace bs
 			splitMesh->bones = mesh->bones;
 
 			FBXUtility::splitVertices(*mesh, *splitMesh);
-			FBXUtility::flipWindingOrder(*splitMesh);
 			splitMeshes.push_back(splitMesh);
 
 			bs_delete(mesh);
@@ -891,14 +913,29 @@ namespace bs
 			UINT32 numIndices = (UINT32)mesh->indices.size();
 			for (auto& node : mesh->referencedBy)
 			{
-				Matrix4 worldTransform = scene.globalScale * node->worldTransform;
+				Matrix4 worldTransform = scene.globalScale * node->worldTransform * node->geomTransform;
 				Matrix4 worldTransformIT = worldTransform.inverse();
 				worldTransformIT = worldTransformIT.transpose();
 
 				SPtr<RendererMeshData> meshData = RendererMeshData::create((UINT32)numVertices, numIndices, (VertexLayout)vertexLayout);
 
 				// Copy indices
-				meshData->setIndices((UINT32*)mesh->indices.data(), numIndices * sizeof(UINT32));
+				if(!node->flipWinding)
+					meshData->setIndices(orderedIndices, numIndices * sizeof(UINT32));
+				else
+				{
+					UINT32* flippedIndices = bs_stack_alloc<UINT32>(numIndices);
+
+					for (UINT32 i = 0; i < numIndices; i += 3)
+					{
+						flippedIndices[i + 0] = orderedIndices[i + 0];
+						flippedIndices[i + 1] = orderedIndices[i + 2];
+						flippedIndices[i + 2] = orderedIndices[i + 1];
+					}
+
+					meshData->setIndices(flippedIndices, numIndices * sizeof(UINT32));
+					bs_stack_free(flippedIndices);
+				}
 
 				// Copy & transform positions
 				UINT32 positionsSize = sizeof(Vector3) * (UINT32)numVertices;
@@ -1013,6 +1050,8 @@ namespace bs
 				allMeshData.push_back(meshData->getData());
 				allSubMeshes.push_back(subMeshes);
 			}
+
+			bs_free(orderedIndices);
 
 			UINT32 numBones = (UINT32)mesh->bones.size();
 			boneIndexOffset += numBones;
@@ -1882,9 +1921,11 @@ namespace bs
 				node->SetScalingOffset(FbxNode::eDestinationPivot, zero);
 				node->SetRotationPivot(FbxNode::eDestinationPivot, zero);
 				node->SetScalingPivot(FbxNode::eDestinationPivot, zero);
-				node->SetGeometricTranslation(FbxNode::eDestinationPivot, zero);
-				node->SetGeometricRotation(FbxNode::eDestinationPivot, zero);
-				node->SetGeometricScaling(FbxNode::eDestinationPivot, one);
+
+				// We account for geometric properties separately during node traversal
+				node->SetGeometricTranslation(FbxNode::eDestinationPivot, node->GetGeometricTranslation(FbxNode::eSourcePivot));
+				node->SetGeometricRotation(FbxNode::eDestinationPivot, node->GetGeometricRotation(FbxNode::eSourcePivot));
+				node->SetGeometricScaling(FbxNode::eDestinationPivot, node->GetGeometricScaling(FbxNode::eSourcePivot));
 
 				// Banshee assumes euler angles are in YXZ order
 				node->SetRotationOrder(FbxNode::eDestinationPivot, FbxEuler::eOrderYXZ);

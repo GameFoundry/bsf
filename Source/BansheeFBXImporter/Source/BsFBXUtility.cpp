@@ -229,7 +229,7 @@ namespace bs
 				if (splits.empty())
 				{
 					dstVertIdx = srcVertIdx;
-					copyVertexAttributes(source, i, dest, srcVertIdx);
+					copyVertexAttributes(source, i, dest, dstVertIdx);
 				}
 				else // Split occurred, add a brand new vertex
 				{

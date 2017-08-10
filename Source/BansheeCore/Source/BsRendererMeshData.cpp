@@ -154,8 +154,7 @@ namespace bs
 		UINT32 numElements = mMeshData->getNumVertices();
 		assert(numElements * sizeof(UINT32) == size);
 
-		UINT8* colorDst = mMeshData->getElementData(VES_COLOR);
-		memcpy(colorDst, buffer, size);
+		mMeshData->setVertexData(VES_COLOR, (UINT8*)buffer, size);
 	}
 
 	void RendererMeshData::getUV0(Vector2* buffer, UINT32 size)
