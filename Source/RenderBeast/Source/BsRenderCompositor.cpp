@@ -661,10 +661,7 @@ namespace bs { namespace ct
 		const RendererViewProperties& viewProps = inputs.view.getProperties();
 
 		const LightProbes& lightProbes = inputs.scene.lightProbes;
-
-		SPtr<GpuBuffer> shCoeffs = lightProbes.getSHCoefficientsBuffer();
-		SPtr<GpuBuffer> volumeInfos = lightProbes.getTetrahedonInfosBuffer();
-		SPtr<Mesh> volumeMesh = lightProbes.getTetrahedraVolumeMesh();
+		LightProbesInfo lpInfo = lightProbes.getInfo();
 
 		IrradianceEvaluateMat* evaluateMat;
 		SPtr<PooledRenderTexture> volumeIndices;
@@ -685,10 +682,11 @@ namespace bs { namespace ct
 
 			RenderAPI& rapi = RenderAPI::instance();
 			rapi.setRenderTarget(rt);
-			rapi.clearRenderTarget(FBT_COLOR | FBT_DEPTH);			
+			rapi.clearRenderTarget(FBT_DEPTH);
+			gRendererUtility().clear(-1);
 
 			TetrahedraRenderMat* renderTetrahedra = TetrahedraRenderMat::getVariation(viewProps.numSamples > 1);
-			renderTetrahedra->execute(inputs.view, sceneDepthNode->depthTex->texture, volumeMesh, rt);
+			renderTetrahedra->execute(inputs.view, sceneDepthNode->depthTex->texture, lpInfo.tetrahedraVolume, rt);
 
 			rt = nullptr;
 			resPool.release(depthTex);
@@ -710,7 +708,7 @@ namespace bs { namespace ct
 		if (volumeIndices)
 			volumeIndicesTex = volumeIndices->texture;
 
-		evaluateMat->execute(inputs.view, gbuffer, volumeIndicesTex, shCoeffs, volumeInfos, inputs.scene.skybox, 
+		evaluateMat->execute(inputs.view, gbuffer, volumeIndicesTex, lpInfo, inputs.scene.skybox, 
 			lightAccumNode->renderTarget);
 
 		if(volumeIndices)

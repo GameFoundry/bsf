@@ -1,5 +1,9 @@
+#include "$ENGINE$\PerCameraData.bslinc"
+
 technique TetrahedraRender
 {
+	mixin PerCameraData;
+
 	raster
 	{
 		cull = cw;
@@ -21,14 +25,8 @@ technique TetrahedraRender
 		struct VStoFS
 		{
 			float4 position : SV_Position;
-			uint index : TEXCOORD0;
-		};
-		
-		cbuffer Params
-		{
-			float4x4 gMatViewProj;
-			float4 gNDCToUV;
-			float2 gNDCToDeviceZ;
+			float4 clipPos : TEXCOORD0;
+			uint index : TEXCOORD1;
 		};
 		
 		VStoFS vsmain(VertexInput input)
@@ -36,6 +34,7 @@ technique TetrahedraRender
 			VStoFS output;
 		
 			output.position = mul(gMatViewProj, float4(input.position, 1.0f));
+			output.clipPos = output.position;
 			output.index = input.index;
 			
 			return output;
@@ -58,16 +57,15 @@ technique TetrahedraRender
 		#endif
 		) : SV_Target0
 		{
-			float2 uv = input.position.xy * gNDCToUV.xy + gNDCToUV.zw;
-			
 			float sceneDepth;
 			#if MSAA
-				sceneDepth = gDepthBufferTex.Load(trunc(uv), sampleIdx);
+				sceneDepth = gDepthBufferTex.Load(trunc(input.position.xy), sampleIdx);
 			#else
-				sceneDepth = gDepthBufferTex.Sample(gDepthBufferSamp, uv);
+				float2 ndcPos = input.clipPos.xy / input.clipPos.w;
+				sceneDepth = gDepthBufferTex.Sample(gDepthBufferSamp, NDCToUV(ndcPos));
 			#endif
 			
-			float currentDepth = input.position.z * gNDCToDeviceZ.x + gNDCToDeviceZ.y;
+			float currentDepth = input.position.z;
 			if(currentDepth < sceneDepth)
 				discard;
 				

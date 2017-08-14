@@ -8,6 +8,7 @@
 #include "BsVector2I.h"
 #include "BsRect2I.h"
 #include "BsRendererMaterial.h"
+#include "BsParamBlocks.h"
 
 namespace bs { namespace ct
 {
@@ -49,6 +50,26 @@ namespace bs { namespace ct
 		static ShaderVariation VAR_2MSAA_Depth;
 		static ShaderVariation VAR_4MSAA_Depth;
 		static ShaderVariation VAR_8MSAA_Depth;
+	};
+
+	BS_PARAM_BLOCK_BEGIN(ClearParamDef)
+		BS_PARAM_BLOCK_ENTRY(INT32, gClearValue)
+	BS_PARAM_BLOCK_END
+
+	extern ClearParamDef gClearParamDef;
+
+	/** Shader that clears the currently bound render target to an integer value. */
+	class ClearMat : public RendererMaterial<ClearMat>
+	{
+		RMAT_DEF("Clear.bsl");
+
+	public:
+		ClearMat();
+
+		/** Executes the material on the currently bound render target, clearing to to @p value. */
+		void execute(UINT32 value);
+	private:
+		SPtr<GpuParamBlockBuffer> mParamBuffer;
 	};
 
 	/**
@@ -176,6 +197,12 @@ namespace bs { namespace ct
 
 			drawScreenQuad(uv, textureSize, numInstances);
 		}
+
+		/** 
+		 * Clears the currently bound render target to the provided integer value. This is similar to 
+		 * RenderAPI::clearRenderTarget(), except it supports integer clears.
+		 */
+		void clear(UINT32 value);
 
 		/** Returns a stencil mesh used for a radial light (a unit sphere). */
 		SPtr<Mesh> getRadialLightStencil() const { return mPointLightStencilMesh; }

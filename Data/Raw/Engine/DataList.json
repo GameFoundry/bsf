@@ -353,6 +353,10 @@
         {
             "Path": "IrradianceEvaluate.bsl",
             "UUID": "6f6ed59d-b94b-428e-91bc-82c94ed48892"
+        },
+        {
+            "Path": "Clear.bsl",
+            "UUID": "5a325167-5bab-4925-8b50-95434448930f"
         }
     ],
     "Skin": [

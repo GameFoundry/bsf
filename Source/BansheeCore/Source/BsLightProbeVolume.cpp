@@ -441,7 +441,10 @@ namespace bs
 
 				SPtr<Texture> cubemap = Texture::create(cubemapDesc);
 
-				gRenderer()->captureSceneCubeMap(cubemap, mProbePositions[mFirstDirtyProbe], true);
+				Vector3 localPos = mProbePositions[mFirstDirtyProbe];
+				Vector3 transformedPos = mRotation.rotate(localPos) + mPosition;
+
+				gRenderer()->captureSceneCubeMap(cubemap, transformedPos, true);
 				gIBLUtility().filterCubemapForIrradiance(cubemap, mCoefficients, probeInfo.bufferIdx);
 
 				probeInfo.flags = LightProbeFlags::Clean;

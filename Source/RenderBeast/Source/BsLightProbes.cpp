@@ -14,8 +14,6 @@
 
 namespace bs { namespace ct 
 {
-	TetrahedraRenderParamDef gTetrahedraRenderParamDef;
-
 	ShaderVariation TetrahedraRenderMat::VAR_NoMSAA = ShaderVariation({
 		ShaderVariation::Param("MSAA", false)
 	});
@@ -43,9 +41,6 @@ namespace bs { namespace ct
 			SPtr<SamplerState> pointSampState = SamplerState::create(pointSampDesc);
 			params->setSamplerState(GPT_FRAGMENT_PROGRAM, "gDepthBufferSamp", pointSampState);
 		}
-
-		mParamBuffer = gTetrahedraRenderParamDef.createBuffer();
-		mParamsSet->setParamBlockBuffer("Params", mParamBuffer, true);
 	}
 
 	void TetrahedraRenderMat::_initVariations(ShaderVariations& variations)
@@ -57,23 +52,8 @@ namespace bs { namespace ct
 	void TetrahedraRenderMat::execute(const RendererView& view, const SPtr<Texture>& sceneDepth, const SPtr<Mesh>& mesh, 
 		const SPtr<RenderTexture>& output)
 	{
-		const RendererViewProperties& viewProps = view.getProperties();
-
-		Vector4 NDCtoUV = view.getNDCToUV();
-		if(mVariation.getBool("MSAA"))
-		{
-			NDCtoUV.x *= viewProps.viewRect.width;
-			NDCtoUV.y *= viewProps.viewRect.height;
-			NDCtoUV.z *= viewProps.viewRect.width;
-			NDCtoUV.w *= viewProps.viewRect.height;
-		}
-
-		gTetrahedraRenderParamDef.gMatViewProj.set(mParamBuffer, viewProps.viewProjTransform);
-		gTetrahedraRenderParamDef.gNDCToUV.set(mParamBuffer, NDCtoUV);
-		gTetrahedraRenderParamDef.gNDCToDeviceZ.set(mParamBuffer, RendererView::getNDCZToDeviceZ());
-		
 		mDepthBufferTex.set(sceneDepth);
-		mParamBuffer->flushToGPU();
+		mParamsSet->setParamBlockBuffer("PerCamera", view.getPerViewBuffer(), true);
 
 		RenderAPI& rapi = RenderAPI::instance();
 		rapi.setRenderTarget(output);
@@ -92,7 +72,7 @@ namespace bs { namespace ct
 		UINT32 numSamples = viewProps.numSamples;
 
 		colorDesc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_R16U, width, height, TU_RENDERTARGET, numSamples);
-		depthDesc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_D16, width, height, TU_DEPTHSTENCIL, numSamples);
+		depthDesc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_D32, width, height, TU_DEPTHSTENCIL, numSamples);
 	}
 
 	TetrahedraRenderMat* TetrahedraRenderMat::getVariation(bool msaa)
@@ -131,14 +111,14 @@ namespace bs { namespace ct
 		mSkyOnly = mVariation.getBool("SKY_ONLY");
 
 		SPtr<GpuParams> params = mParamsSet->getGpuParams();
+		params->getTextureParam(GPT_FRAGMENT_PROGRAM, "gSkyIrradianceTex", mParamSkyIrradianceTex);
 
-		if(mSkyOnly)
-			params->getTextureParam(GPT_FRAGMENT_PROGRAM, "gSkyIrradianceTex", mParamSkyIrradianceTex);
-		else
+		if(!mSkyOnly)
 		{
 			params->getTextureParam(GPT_FRAGMENT_PROGRAM, "gInputTex", mParamInputTex);
 			params->getBufferParam(GPT_FRAGMENT_PROGRAM, "gSHCoeffs", mParamSHCoeffsBuffer);
-			params->getBufferParam(GPT_FRAGMENT_PROGRAM, "gProbeVolumes", mParamVolumeBuffer);
+			params->getBufferParam(GPT_FRAGMENT_PROGRAM, "gTetrahedra", mParamTetrahedraBuffer);
+			params->getBufferParam(GPT_FRAGMENT_PROGRAM, "gTetFaces", mParamTetFacesBuffer);
 		}
 
 		mParamBuffer = gIrradianceEvaluateParamDef.createBuffer();
@@ -154,36 +134,36 @@ namespace bs { namespace ct
 	}
 
 	void IrradianceEvaluateMat::execute(const RendererView& view, const GBufferTextures& gbuffer, 
-		const SPtr<Texture>& lightProbeIndices, const SPtr<GpuBuffer>& shCoeffs, const SPtr<GpuBuffer>& volumes, 
-		const Skybox* skybox, const SPtr<RenderTexture>& output)
+		const SPtr<Texture>& lightProbeIndices, const LightProbesInfo& lightProbesInfo, const Skybox* skybox, 
+		const SPtr<RenderTexture>& output)
 	{
 		const RendererViewProperties& viewProps = view.getProperties();
 
 		mGBufferParams.bind(gbuffer);
 
 		float skyBrightness = 1.0f;
-		if (mSkyOnly)
+		SPtr<Texture> skyIrradiance;
+		if (skybox != nullptr)
 		{
-			SPtr<Texture> skyIrradiance;
-			if (skybox != nullptr)
-			{
-				skyIrradiance = skybox->getIrradiance();
-				skyBrightness = skybox->getBrightness();
-			}
-
-			if(skyIrradiance == nullptr)
-				skyIrradiance = RendererTextures::defaultIndirect;
-
-			mParamSkyIrradianceTex.set(skyIrradiance);
+			skyIrradiance = skybox->getIrradiance();
+			skyBrightness = skybox->getBrightness();
 		}
-		else
+
+		if(skyIrradiance == nullptr)
+			skyIrradiance = RendererTextures::defaultIndirect;
+
+		mParamSkyIrradianceTex.set(skyIrradiance);
+
+		if(!mSkyOnly)
 		{
 			mParamInputTex.set(lightProbeIndices);
-			mParamSHCoeffsBuffer.set(shCoeffs);
-			mParamVolumeBuffer.set(volumes);
+			mParamSHCoeffsBuffer.set(lightProbesInfo.shCoefficients);
+			mParamTetrahedraBuffer.set(lightProbesInfo.tetrahedra);
+			mParamTetFacesBuffer.set(lightProbesInfo.faces);
 		}
 
 		gIrradianceEvaluateParamDef.gSkyBrightness.set(mParamBuffer, skyBrightness);
+		gIrradianceEvaluateParamDef.gNumTetrahedra.set(mParamBuffer, lightProbesInfo.numTetrahedra);
 		mParamBuffer->flushToGPU();
 
 		mParamsSet->setParamBlockBuffer("PerCamera", view.getPerViewBuffer(), true);
@@ -219,8 +199,23 @@ namespace bs { namespace ct
 		}
 	}
 
+	/** Information about a single tetrahedron, for use on the GPU. */
+	struct TetrahedronDataGPU
+	{
+		UINT32 indices[4];
+		Matrix3x4 transform;
+	};
+
+	/** Information about a single tetrahedron face, for use on the GPU. */
+	struct TetrahedronFaceDataGPU
+	{
+		Vector3 corners[3];
+		Vector3 normals[3];
+		UINT32 isQuadratic;
+	};
+
 	LightProbes::LightProbes()
-		:mTetrahedronVolumeDirty(false), mMaxCoefficients(0), mMaxTetrahedra(0)
+		:mTetrahedronVolumeDirty(false), mMaxCoefficients(0), mMaxTetrahedra(0), mMaxFaces(0), mNumValidTetrahedra(0)
 	{ }
 
 	void LightProbes::notifyAdded(LightProbeVolume* volume)
@@ -322,35 +317,71 @@ namespace bs { namespace ct
 
 		mTetrahedronInfos.clear();
 
-		UINT32 innerVertexCount = (UINT32)mTempTetrahedronPositions.size();
-		generateTetrahedronData(mTempTetrahedronPositions, mTetrahedronInfos, true);
+		Vector<TetrahedronFaceData> outerFaces;
+		generateTetrahedronData(mTempTetrahedronPositions, mTetrahedronInfos, outerFaces, true);
+
+		// Find valid tetrahedrons
+		UINT32 numTetrahedra = (UINT32)mTetrahedronInfos.size();
+
+		bool* validTets = (bool*)bs_stack_alloc(sizeof(bool) * numTetrahedra);
+		mNumValidTetrahedra = 0;
+		for (UINT32 i = 0; i < (UINT32)mTetrahedronInfos.size(); i++)
+		{
+			const TetrahedronData& entry = mTetrahedronInfos[i];
+
+			const Vector3& P1 = mTempTetrahedronPositions[entry.volume.vertices[0]];
+			const Vector3& P2 = mTempTetrahedronPositions[entry.volume.vertices[1]];
+			const Vector3& P3 = mTempTetrahedronPositions[entry.volume.vertices[2]];
+			const Vector3& P4 = mTempTetrahedronPositions[entry.volume.vertices[3]];
+
+			Vector3 E1 = P1 - P4;
+			Vector3 E2 = P2 - P4;
+			Vector3 E3 = P3 - P4;
+
+			// If tetrahedron is co-planar just ignore it, shader will use some other nearby one instead. We can't
+			// handle coplanar tetrahedrons because the matrix is not invertible, and for nearly co-planar ones the
+			// math breaks down because of precision issues.
+			validTets[i] = fabs(Vector3::dot(Vector3::normalize(Vector3::cross(E1, E2)), E3)) > 0.0001f;
+
+			if (validTets[i])
+				mNumValidTetrahedra++;
+		}
+
+		UINT32 numValidFaces = 0;
+		for(auto& entry : outerFaces)
+		{
+			if (validTets[entry.tetrahedron])
+				numValidFaces++;
+		}
 
 		// Generate a mesh out of all the tetrahedron triangles
 		// Note: Currently the entire volume is rendered as a single large mesh, which will isn't optimal as we can't
 		// perform frustum culling. A better option would be to split the mesh into multiple smaller volumes, do
 		// frustum culling and possibly even sort by distance from camera.
-		UINT32 numTetrahedra = (UINT32)mTetrahedronInfos.size();
-
-		UINT32 numVertices = numTetrahedra * 4 * 3;
-		UINT32 numIndices = numTetrahedra * 4 * 3;
+		UINT32 numVertices = mNumValidTetrahedra * 4 * 3 + numValidFaces * 9 * 3;
 
 		SPtr<VertexDataDesc> vertexDesc = bs_shared_ptr_new<VertexDataDesc>();
 		vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
 		vertexDesc->addVertElem(VET_UINT1, VES_TEXCOORD);
 
-		SPtr<MeshData> meshData = MeshData::create(numVertices, numIndices, vertexDesc);
+		SPtr<MeshData> meshData = MeshData::create(numVertices, numVertices, vertexDesc);
 		auto posIter = meshData->getVec3DataIter(VES_POSITION);
 		auto idIter = meshData->getDWORDDataIter(VES_TEXCOORD);
 		UINT32* indices = meshData->getIndices32();
 
+		// Insert inner tetrahedron triangles
 		UINT32 tetIdx = 0;
-		for(auto& entry : mTetrahedronInfos)
+		UINT32 triIdx = 0;
+		for (UINT32 i = 0; i < (UINT32)mTetrahedronInfos.size(); i++)
 		{
-			const Tetrahedron& volume = entry.volume;
+			if (!validTets[i])
+				continue;
+
+			const Tetrahedron& volume = mTetrahedronInfos[i].volume;
 
 			Vector3 center(BsZero);
-			for(UINT32 i = 0; i < 4; i++)
-				center += mTempTetrahedronPositions[volume.vertices[i]];
+			for(UINT32 j = 0; j < 4; j++)
+				center += mTempTetrahedronPositions[volume.vertices[j]];
 
 			center /= 4.0f;
 
@@ -362,18 +393,18 @@ namespace bs { namespace ct
 				{ 1, 2, 3 }
 			};
 
-			for(UINT32 i = 0; i < 4; i++)
+			for(UINT32 j = 0; j < 4; j++)
 			{
-				Vector3 A = mTempTetrahedronPositions[volume.vertices[Permutations[i][0]]];
-				Vector3 B = mTempTetrahedronPositions[volume.vertices[Permutations[i][1]]];
-				Vector3 C = mTempTetrahedronPositions[volume.vertices[Permutations[i][2]]];
+				Vector3 A = mTempTetrahedronPositions[volume.vertices[Permutations[j][0]]];
+				Vector3 B = mTempTetrahedronPositions[volume.vertices[Permutations[j][1]]];
+				Vector3 C = mTempTetrahedronPositions[volume.vertices[Permutations[j][2]]];
 
-				// Make sure the triangle is clockwise
+				// Make sure the triangle is clockwise, facing away from the center
 				Vector3 e0 = A - C;
 				Vector3 e1 = B - C;
 
 				Vector3 normal = e0.cross(e1);
-				if (normal.dot(A - center) < 0.0f)
+				if (normal.dot(A - center) > 0.0f)
 					std::swap(B, C);
 
 				posIter.addValue(A);
@@ -384,37 +415,151 @@ namespace bs { namespace ct
 				idIter.addValue(tetIdx);
 				idIter.addValue(tetIdx);
 
-				indices[0] = tetIdx * 4 * 3 + i * 3 + 0;
-				indices[1] = tetIdx * 4 * 3 + i * 3 + 1;
-				indices[2] = tetIdx * 4 * 3 + i * 3 + 2;
+				indices[0] = tetIdx * 4 * 3 + j * 3 + 0;
+				indices[1] = tetIdx * 4 * 3 + j * 3 + 1;
+				indices[2] = tetIdx * 4 * 3 + j * 3 + 2;
 
 				indices += 3;
+				triIdx++;
 			}
 
 			tetIdx++;
 		}
 
+		// Generate triangles for extruded outer faces
+		UINT32 faceIdx = 0;
+		for(UINT32 i = 0; i < (UINT32)outerFaces.size(); i++)
+		{
+			if (!validTets[outerFaces[i].tetrahedron])
+				continue;
+
+			const TetrahedronFaceData& entry = outerFaces[i];
+
+			static const UINT32 Permutations[8][3] = 
+			{
+				{0, 1, 2 }, { 3, 4, 5},
+				{0, 1, 3 }, { 1, 3, 4},
+				{1, 2, 4 }, { 2, 4, 5},
+				{2, 0, 5 }, { 0, 5, 3}
+			};
+
+			// Make sure the triangle is clockwise, facing away from the center
+			Vector3 center(BsZero);
+			for (UINT32 k = 0; k < 3; k++)
+			{
+				center += mTempTetrahedronPositions[entry.innerVertices[k]];
+				center += mTempTetrahedronPositions[entry.outerVertices[k]];
+			}
+
+			center /= 6.0f;
+
+			for(UINT32 j = 0; j < 8; ++j)
+			{
+				UINT32 idxA = Permutations[j][0];
+				UINT32 idxB = Permutations[j][1];
+				UINT32 idxC = Permutations[j][2];
+
+				idxA = idxA > 2 ? entry.outerVertices[idxA - 3] : entry.innerVertices[idxA];
+				idxB = idxB > 2 ? entry.outerVertices[idxB - 3] : entry.innerVertices[idxB];
+				idxC = idxC > 2 ? entry.outerVertices[idxC - 3] : entry.innerVertices[idxC];
+				
+				Vector3 A = mTempTetrahedronPositions[idxA];
+				Vector3 B = mTempTetrahedronPositions[idxB];
+				Vector3 C = mTempTetrahedronPositions[idxC];
+
+				Vector3 e0 = A - C;
+				Vector3 e1 = B - C;
+
+				Vector3 normal = e0.cross(e1);
+				if (normal.dot(A - center) > 0.0f)
+					std::swap(A, B);
+
+				posIter.addValue(A);
+				posIter.addValue(B);
+				posIter.addValue(C);
+
+				idIter.addValue(tetIdx + faceIdx);
+				idIter.addValue(tetIdx + faceIdx);
+				idIter.addValue(tetIdx + faceIdx);
+
+				indices[0] = tetIdx * 4 * 3 + faceIdx * 8 * 3 + j * 3 + 0;
+				indices[1] = tetIdx * 4 * 3 + faceIdx * 8 * 3 + j * 3 + 1;
+				indices[2] = tetIdx * 4 * 3 + faceIdx * 8 * 3 + j * 3 + 2;
+
+				indices += 3;
+				triIdx++;
+			}
+
+			faceIdx++;
+		}
+
+		// Generate "caps" on the end of the extruded volume
+		UINT32 capIdx = 0;
+		for(UINT32 i = 0; i < (UINT32)outerFaces.size(); i++)
+		{
+			if (!validTets[outerFaces[i].tetrahedron])
+				continue;
+
+			const TetrahedronFaceData& entry = outerFaces[i];
+
+			Vector3 A = mTempTetrahedronPositions[entry.outerVertices[0]];
+			Vector3 B = mTempTetrahedronPositions[entry.outerVertices[1]];
+			Vector3 C = mTempTetrahedronPositions[entry.outerVertices[2]];
+
+			// Make sure the triangle is clockwise, facing toward the center
+			const Tetrahedron& tet = mTetrahedronInfos[entry.tetrahedron].volume;
+
+			Vector3 center(BsZero);
+			for(UINT32 j = 0; j < 4; j++)
+				center += mTempTetrahedronPositions[tet.vertices[j]];
+
+			center /= 4.0f;
+
+			Vector3 e0 = A - C;
+			Vector3 e1 = B - C;
+
+			Vector3 normal = e0.cross(e1);
+			if (normal.dot(A - center) < 0.0f)
+				std::swap(B, C);
+
+			posIter.addValue(A);
+			posIter.addValue(B);
+			posIter.addValue(C);
+
+			idIter.addValue(-1);
+			idIter.addValue(-1);
+			idIter.addValue(-1);
+
+			indices[0] = tetIdx * 4 * 3 + faceIdx * 8 * 3 + capIdx * 3 + 0;
+			indices[1] = tetIdx * 4 * 3 + faceIdx * 8 * 3 + capIdx * 3 + 1;
+			indices[2] = tetIdx * 4 * 3 + faceIdx * 8 * 3 + capIdx * 3 + 2;
+
+			indices += 3;
+			capIdx++;
+		}
+
 		mVolumeMesh = Mesh::create(meshData);
 
 		// Map vertices to actual SH coefficient indices, and write GPU buffer with tetrahedron information
-		if (numTetrahedra > mMaxTetrahedra)
+		if ((mNumValidTetrahedra + numValidFaces) > mMaxTetrahedra)
 		{
-			UINT32 newSize = Math::divideAndRoundUp(numTetrahedra, 64U) * 64U;
+			UINT32 newSize = Math::divideAndRoundUp(mNumValidTetrahedra + numValidFaces, 64U) * 64U;
 			resizeTetrahedronBuffer(newSize);
 		}
 
 		TetrahedronDataGPU* dst = (TetrahedronDataGPU*)mTetrahedronInfosGPU->lock(0, mTetrahedronInfosGPU->getSize(), 
 			GBL_WRITE_ONLY_DISCARD);
-		for (auto& entry : mTetrahedronInfos)
+
+		// Write inner tetrahedron data
+		for (UINT32 i = 0; i < (UINT32)mTetrahedronInfos.size(); i++)
 		{
-			for(UINT32 i = 0; i < 4; ++i)
-			{
-				// Check for outer vertices, which have no SH data associated with them
-				if (entry.volume.vertices[i] >= (INT32)innerVertexCount)
-					entry.volume.vertices[i] = -1;
-				else
-					entry.volume.vertices[i] = mTempTetrahedronBufferIndices[entry.volume.vertices[i]];
-			}
+			if (!validTets[i])
+				continue;
+
+			TetrahedronData& entry = mTetrahedronInfos[i];
+
+			for(UINT32 j = 0; j < 4; ++j)
+				entry.volume.vertices[j] = mTempTetrahedronBufferIndices[entry.volume.vertices[j]];
 
 			memcpy(dst->indices, entry.volume.vertices, sizeof(UINT32) * 4);
 			memcpy(&dst->transform, &entry.transform, sizeof(float) * 12);
@@ -422,7 +567,58 @@ namespace bs { namespace ct
 			dst++;
 		}
 
+		// Write extruded face data
+		for (UINT32 i = 0; i < (UINT32)outerFaces.size(); i++)
+		{
+			if (!validTets[outerFaces[i].tetrahedron])
+				continue;
+
+			const TetrahedronFaceData& entry = outerFaces[i];
+
+			UINT32 indices[4];
+			indices[0] = mTempTetrahedronBufferIndices[entry.innerVertices[0]];
+			indices[1] = mTempTetrahedronBufferIndices[entry.innerVertices[1]];
+			indices[2] = mTempTetrahedronBufferIndices[entry.innerVertices[2]];
+			indices[3] = -1;
+
+			memcpy(dst->indices, indices, sizeof(UINT32) * 4);
+			memcpy(&dst->transform, &entry.transform, sizeof(float) * 12);
+
+			dst++;
+		}
+
 		mTetrahedronInfosGPU->unlock();
+
+		// Write data specific to faces
+		if (numValidFaces > mMaxFaces)
+		{
+			UINT32 newSize = Math::divideAndRoundUp(numValidFaces, 64U) * 64U;
+			resizeTetrahedronFaceBuffer(newSize);
+		}
+
+		TetrahedronFaceDataGPU* faceDst = (TetrahedronFaceDataGPU*)mTetrahedronFaceInfosGPU->lock(0, 
+			mTetrahedronFaceInfosGPU->getSize(), GBL_WRITE_ONLY_DISCARD);
+
+		for (UINT32 i = 0; i < (UINT32)outerFaces.size(); i++)
+		{
+			if (!validTets[outerFaces[i].tetrahedron])
+				continue;
+
+			const TetrahedronFaceData& entry = outerFaces[i];
+
+			for (UINT32 j = 0; j < 3; j++)
+			{
+				faceDst->corners[j] = mTempTetrahedronPositions[entry.innerVertices[j]];
+				faceDst->normals[j] = entry.normals[j];
+			}
+
+			faceDst->isQuadratic = entry.quadratic ? 1 : 0;
+			faceDst++;
+		}
+
+		mTetrahedronFaceInfosGPU->unlock();
+
+		bs_stack_free(validTets);
 
 		mTempTetrahedronPositions.clear();
 		mTempTetrahedronBufferIndices.clear();
@@ -441,6 +637,18 @@ namespace bs { namespace ct
 		return false;
 	}
 
+	LightProbesInfo LightProbes::getInfo() const
+	{
+		LightProbesInfo info;
+		info.shCoefficients = mProbeCoefficientsGPU;
+		info.tetrahedra = mTetrahedronInfosGPU;
+		info.faces = mTetrahedronFaceInfosGPU;
+		info.tetrahedraVolume = mVolumeMesh;
+		info.numTetrahedra = mNumValidTetrahedra;
+
+		return info;
+	}
+
 	void LightProbes::resizeTetrahedronBuffer(UINT32 count)
 	{
 		GPU_BUFFER_DESC desc;
@@ -452,6 +660,19 @@ namespace bs { namespace ct
 
 		mTetrahedronInfosGPU = GpuBuffer::create(desc);
 		mMaxTetrahedra = count;
+	}
+
+	void LightProbes::resizeTetrahedronFaceBuffer(UINT32 count)
+	{
+		GPU_BUFFER_DESC desc;
+		desc.type = GBT_STRUCTURED;
+		desc.elementSize = sizeof(TetrahedronFaceDataGPU);
+		desc.elementCount = count;
+		desc.usage = GBU_STATIC;
+		desc.format = BF_UNKNOWN;
+
+		mTetrahedronFaceInfosGPU = GpuBuffer::create(desc);
+		mMaxFaces = count;
 	}
 
 	void LightProbes::resizeCoefficientBuffer(UINT32 count)
@@ -480,8 +701,8 @@ namespace bs { namespace ct
 		}
 	};
 
-	void LightProbes::generateTetrahedronData(Vector<Vector3>& positions, Vector<TetrahedronData>& output, 
-		bool generateExtrapolationVolume)
+	void LightProbes::generateTetrahedronData(Vector<Vector3>& positions, Vector<TetrahedronData>& tetrahedra,
+		Vector<TetrahedronFaceData>& faces,	bool generateExtrapolationVolume)
 	{
 		bs_frame_mark();
 		{
@@ -489,11 +710,8 @@ namespace bs { namespace ct
 
 			if (generateExtrapolationVolume)
 			{
-				// We don't want ot handle the case where the user looks up a position and it falls outside of the 
-				// tetrahedron volume, as the math for projecting the point onto the volume might be too slow for the 
-				// shader (which we need in order not to have a sharp cutoff in lighting where the volume ends). Therefore
-				// we extend the tetrahedron volume to "infinity" (technically to some far away distance, but we treat it as
-				// infinity when calculating barycentric coordinates) by adding new points along the outer face normals.
+				// Add geometry so we can handle the case when the interpolation position falls outside of the tetrahedra
+				// volume. We use this geometry to project the position to the nearest face.
 				UINT32 numOuterFaces = (UINT32)volume.outerFaces.size();
 
 				// Calculate face normals for outer faces
@@ -534,6 +752,12 @@ namespace bs { namespace ct
 				}
 
 				//// Generate face normals
+				struct FaceVertex
+				{
+					Vector3 normal = Vector3::ZERO;
+					UINT32 outerIdx = -1;
+				};
+
 				FrameVector<Vector3> faceNormals(volume.outerFaces.size());
 				for (UINT32 i = 0; i < (UINT32)volume.outerFaces.size(); ++i)
 				{
@@ -544,16 +768,23 @@ namespace bs { namespace ct
 					Vector3 e0 = v1 - v0;
 					Vector3 e1 = v2 - v0;
 
-					faceNormals[i] = Vector3::normalize(e1.cross(e0));
+					// Make sure the normal is facing away from the center
+					const Tetrahedron& tet = volume.tetrahedra[volume.outerFaces[i].tetrahedron];
+
+					Vector3 center(BsZero);
+					for(UINT32 j = 0; j < 4; j++)
+						center += positions[tet.vertices[j]];
+
+					center /= 4.0f;
+
+					Vector3 normal = Vector3::normalize(e0.cross(e1));
+					if (normal.dot(v0 - center) < 0.0f)
+						normal = -normal;
+
+					faceNormals[i] = normal;
 				}
 
 				//// Generate vertex normals
-				struct FaceVertex
-				{
-					Vector3 normal = Vector3::ZERO;
-					UINT32 outerIdx = -1;
-				};
-
 				FrameUnorderedMap<INT32, FaceVertex> faceVertices;
 				for (auto& entry : edgeMap)
 				{
@@ -594,7 +825,7 @@ namespace bs { namespace ct
 					entry.second.normal.normalize();
 
 				// For each face vertex, generate an outer vertex along its normal
-				static const float ExtrapolationDistance = 1000.0f;
+				static const float ExtrapolationDistance = 5.0f;
 				for(auto& entry : faceVertices)
 				{
 					entry.second.outerIdx = (UINT32)positions.size();
@@ -603,110 +834,205 @@ namespace bs { namespace ct
 					positions.push_back(outerPos);
 				}
 
-				// For each face, generate outer tetrahedrons
-				Vector<Vector3> outerVolumeVerts;
+				// Generate face data
 				for (UINT32 i = 0; i < numOuterFaces; ++i)
 				{
 					const TetrahedronFace& face = volume.outerFaces[i];
-					UINT32 originalIndices[6];
+
+					TetrahedronFaceData faceData;
+					faceData.tetrahedron = face.tetrahedron;
+
 					for (UINT32 j = 0; j < 3; j++)
 					{
 						const FaceVertex& faceVertex = faceVertices[face.vertices[j]];
 
-						outerVolumeVerts.push_back(positions[face.vertices[j]]);
-						outerVolumeVerts.push_back(positions[faceVertex.outerIdx]);
-
-						originalIndices[j * 2 + 0] = face.vertices[j];
-						originalIndices[j * 2 + 1] = faceVertex.outerIdx;
+						faceData.innerVertices[j] = face.vertices[j];
+						faceData.outerVertices[j] = faceVertex.outerIdx;
+						faceData.normals[j] = faceVertex.normal;
 					}
 
-					TetrahedronVolume outerVolume = Triangulation::tetrahedralize(outerVolumeVerts);
-					UINT32 tetStartIdx = (UINT32)volume.tetrahedra.size();
-
-					for (auto& entry : outerVolume.tetrahedra)
+					// Add a link on the source tetrahedron to the face data
+					Tetrahedron& innerTet = volume.tetrahedra[face.tetrahedron];
+					for(UINT32 j = 0; j < 4; j++)
 					{
-						// Remap neighbors to global array
-						for (UINT32 j = 0; j < 4; j++)
+						if (innerTet.neighbors[j] == -1)
 						{
-							if (entry.neighbors[j] != -1)
-							{
-								// Valid neighbor, map to global array
-								entry.neighbors[j] += tetStartIdx;
-							}
+							// Note: Not searching for opposite neighbor here. If tet. has multiple free faces then we
+							// can't just pick the first one
+							innerTet.neighbors[j] = (UINT32)volume.tetrahedra.size() + (UINT32)faces.size();
+							break;
 						}
 					}
 
-					// Connect the new volume to the original face
-					for (auto& entry : outerVolume.outerFaces)
+					// We need a way to project a point outside the tetrahedron volume onto an outer face, then calculate
+					// triangle's barycentric coordinates. Use use the per-vertex normals to extrude the triangle face into
+					// infinity.
+
+					// Our point can be represented as:
+					// p == a (p0 + t*v0) + b (p1 + t*v1) + c (p2 + t*v2)
+					//
+					// where a, b and c are barycentric coordinates,
+					// p0, p1, p2 are the corners of the face
+					// v0, v1, v2 are the vertex normals, per corner
+					// t is the distance from the triangle to the point
+					//
+					// Essentially we're calculating the corners of a bigger triangle that's "t" units away from the
+					// face, and its corners lie along the per-vertex normals. Point "p" will lie on that triangle, for which
+					// we can then calculate barycentric coordinates normally.
+					//
+					// First we substitute: c = 1 - a - b
+					// p == a (p0 + t v0) + b (p1 + t v1) + (1 - a - b) (p2 + t v2)
+					// p == a (p0 + t v0) + b (p1 + t v1) + (p2 + t v2) - a (p2 + t v2) - b (p2 + t v2)
+					// p == a (p0 - p2 + t v0 - t v2) + b (p1 - p2 + t v1 - t v2) + (p2 + t v2)
+					//
+					// And move everything to one side:
+					// p - p2 - t v2 == a (p0 - p2 + t ( v0 - v2)) + b (p1 - p2 + t ( v1 - v2))
+					// a (p0 - p2 + t ( v0 - v2)) + b (p1 - p2 + t ( v1 - v2)) - (p - p2 - t v2) == 0
+					//
+					// We rewrite it using:
+					// Ap = p0 - p2
+					// Av = v0 - v2
+					// Bp = p1 - p2
+					// Bv = v1 - v2
+					// Cp = p - p2
+					// Cv = -v2
+					//
+					// Which yields:
+					// a (Ap + t Av) + b (Bp + t Bv) - (Cp + t Cv) == 0
+					//
+					// Which can be written in matrix form:
+					//
+					// M = {Ap + t Av, Bp + t Bv, Cp + t Cv}
+					//       a      0
+					// M * [ b ] = [0]
+					//      -1      0
+					//
+					// From that we can tell that matrix M cannot be inverted, because if we multiply the zero vector with the
+					// inverted matrix the result would be zero, and not [a, b, -1]. Since the matrix cannot be inverted
+					// det(M) == 0.
+					//
+					// We can use that fact to calculate "t". After we have "t" we can calculate barycentric coordinates
+					// normally.
+					//
+					// Solving equation det(M) == 0 yields a cubic in form:
+					// p t^3 + q t^2 + r t + s = 0
+					//
+					// We'll convert this to monic form, by dividing by p:
+					// t^3 + q/p t^2 + r/p t + s/p = 0
+					//
+					// Or if p ends up being zero, we end up with a quadratic instead:
+					// q t^2 + r t + s = 0
+					// 
+					// We want to create a matrix that when multiplied with the position, yields us the three coefficients,
+					// which we can then use to solve for "t". For this we create a 4x3 matrix, where each row represents
+					// a solution for one of the coefficients. We factor contributons to each coefficient whether they depend on
+					// position x, y, z, or don't depend on position (row columns, in that order respectively).
+
+					const Vector3& p0 = positions[faceData.innerVertices[0]];
+					const Vector3& p1 = positions[faceData.innerVertices[1]];
+					const Vector3& p2 = positions[faceData.innerVertices[2]];
+
+					const Vector3& v0 = faceVertices[faceData.innerVertices[0]].normal;
+					const Vector3& v1 = faceVertices[faceData.innerVertices[1]].normal;
+					const Vector3& v2 = faceVertices[faceData.innerVertices[2]].normal;
+
+					float p =
+							v2.x * v1.y * v0.z -
+							v1.x * v2.y * v0.z -
+							v2.x * v0.y * v1.z +
+							v0.x * v2.y * v1.z +
+							v1.x * v0.y * v2.z -
+							v0.x * v1.y * v2.z;
+						
+					float qx = -v1.y * v0.z + v2.y * v0.z + v0.y * v1.z - v2.y * v1.z - v0.y * v2.z + v1.y * v2.z;
+					float qy = v1.x * v0.z - v2.x * v0.z - v0.x * v1.z + v2.x * v1.z + v0.x * v2.z - v1.x * v2.z;
+					float qz = -v1.x * v0.y + v2.x * v0.y + v0.x * v1.y - v2.x * v1.y - v0.x * v2.y + v1.x * v2.y;
+					float qw = v2.y * v1.z * p0.x - v1.y * v2.z * p0.x - v2.y * v0.z * p1.x + v0.y * v2.z * p1.x + 
+						v1.y * v0.z * p2.x - v0.y * v1.z * p2.x - v2.x * v1.z * p0.y + v1.x * v2.z * p0.y + 
+						v2.x * v0.z * p1.y - v0.x * v2.z * p1.y - v1.x * v0.z * p2.y + v0.x * v1.z * p2.y + 
+						v2.x * v1.y * p0.z - v1.x * v2.y * p0.z - v2.x * v0.y * p1.z + v0.x * v2.y * p1.z + 
+						v1.x * v0.y * p2.z - v0.x * v1.y * p2.z;
+
+					float rx = v1.z * p0.y - v2.z * p0.y - v0.z * p1.y + v2.z * p1.y + v0.z * p2.y - v1.z * p2.y -
+						v1.y * p0.z + v2.y * p0.z + v0.y * p1.z - v2.y * p1.z - v0.y * p2.z + v1.y * p2.z;
+					float ry = -v1.z * p0.x + v2.z * p0.x + v0.z * p1.x - v2.z * p1.x - v0.z * p2.x + v1.z * p2.x +
+						v1.x * p0.z - v2.x * p0.z - v0.x * p1.z + v2.x * p1.z + v0.x * p2.z - v1.x * p2.z;
+					float rz = v1.y * p0.x - v2.y * p0.x - v0.y * p1.x + v2.y * p1.x + v0.y * p2.x - v1.y * p2.x -
+						v1.x * p0.y + v2.x * p0.y + v0.x * p1.y - v2.x * p1.y - v0.x * p2.y + v1.x * p2.y;
+					float rw = v2.z * p1.x * p0.y - v1.z * p2.x * p0.y - v2.z * p0.x * p1.y + v0.z * p2.x * p1.y +
+						v1.z * p0.x * p2.y - v0.z * p1.x * p2.y - v2.y * p1.x * p0.z + v1.y * p2.x * p0.z +
+						v2.x * p1.y * p0.z - v1.x * p2.y * p0.z + v2.y * p0.x * p1.z - v0.y * p2.x * p1.z -
+						v2.x * p0.y * p1.z + v0.x * p2.y * p1.z - v1.y * p0.x * p2.z + v0.y * p1.x * p2.z +
+						v1.x * p0.y * p2.z - v0.x * p1.y * p2.z;
+
+					float sx = -p1.y * p0.z + p2.y * p0.z + p0.y * p1.z - p2.y * p1.z - p0.y * p2.z + p1.y * p2.z;
+					float sy = p1.x * p0.z - p2.x * p0.z - p0.x * p1.z + p2.x * p1.z + p0.x * p2.z - p1.x * p2.z;
+					float sz = -p1.x * p0.y + p2.x * p0.y + p0.x * p1.y - p2.x * p1.y - p0.x * p2.y + p1.x * p2.y;
+					float sw = p2.x * p1.y * p0.z - p1.x * p2.y * p0.z - p2.x * p0.y * p1.z + 
+						p0.x * p2.y * p1.z + p1.x * p0.y * p2.z - p0.x * p1.y * p2.z;
+
+					faceData.transform[0][0] = qx;
+					faceData.transform[0][1] = qy;
+					faceData.transform[0][2] = qz;
+					faceData.transform[0][3] = qw;
+
+					faceData.transform[1][0] = rx;
+					faceData.transform[1][1] = ry;
+					faceData.transform[1][2] = rz;
+					faceData.transform[1][3] = rw;
+
+					faceData.transform[2][0] = sx;
+					faceData.transform[2][1] = sy;
+					faceData.transform[2][2] = sz;
+					faceData.transform[2][3] = sw;
+
+					// Unused
+					faceData.transform[3][0] = 0.0f;
+					faceData.transform[3][1] = 0.0f;
+					faceData.transform[3][2] = 0.0f;
+					faceData.transform[3][3] = 0.0f;
+
+					if (fabs(p) > 0.00001f)
 					{
-						// Look for the face sharing all vertices with the original face
-						bool isValid = true;
-						for (UINT32 j = 0; j < 3; j++)
-						{
-							if (entry.vertices[j] % 2 == 1)
-							{
-								isValid = false;
-								break;
-							}
-						}
-
-						if (!isValid)
-							continue;
-
-						Tetrahedron& outerTet = outerVolume.tetrahedra[entry.tetrahedron];
-
-						UINT32 oppositeVert = -1;
-						for (UINT32 j = 0; j < 4; j++)
-						{
-							if(outerTet.vertices[j] != entry.vertices[0] &&
-								outerTet.vertices[j] != entry.vertices[1] &&
-								outerTet.vertices[j] != entry.vertices[2])
-							{
-								oppositeVert = j;
-								break;
-							}
-						}
-
-						assert(outerTet.neighbors[oppositeVert] == -1);
-						outerTet.neighbors[oppositeVert] = face.tetrahedron;
-
-						Tetrahedron& innerTet = volume.tetrahedra[face.tetrahedron];
-						for(UINT32 j = 0; j < 4; j++)
-						{
-							if (innerTet.neighbors[j] == -1)
-							{
-								// Note: Not searching for opposite neighbor here. If tet. has multiple free faces then we
-								// can't just pick the first one
-								innerTet.neighbors[j] = tetStartIdx + entry.tetrahedron;
-								break;
-							}
-						}
+						faceData.transform = faceData.transform * (1.0f / p);
+						faceData.quadratic = false;
 					}
-
-					for (auto& entry : outerVolume.tetrahedra)
+					else // Quadratic
 					{
-						// Remap vertices back to global array
-						for (UINT32 j = 0; j < 4; j++)
-							entry.vertices[j] = originalIndices[entry.vertices[j]];
+						faceData.quadratic = true;
 					}
 
-					outerVolumeVerts.clear();
-
-					// Add to global tetrahedra array
-					for (auto& entry : outerVolume.tetrahedra)
-						volume.tetrahedra.push_back(entry);
+					faces.push_back(faceData);
 				}
+			}
+			else
+			{
+				for (UINT32 i = 0; i < (UINT32)volume.outerFaces.size(); ++i)
+				{
+					const TetrahedronFace& face = volume.outerFaces[i];
+					TetrahedronFaceData faceData;
 
-				// Note: Not forming neighbor connections between outer tetrahedrons. Since we generate them separately
-				// we can't guarantee they even exist.
+					for (UINT32 j = 0; j < 3; j++)
+					{
+						faceData.innerVertices[j] = face.vertices[j];
+						faceData.outerVertices[j] = -1;
+						faceData.normals[j] = Vector3::ZERO;
+					}
+
+					faceData.tetrahedron = face.tetrahedron;
+					faceData.transform = Matrix4::IDENTITY;
+					faceData.quadratic = false;
+
+					faces.push_back(faceData);
+				}
 			}
 
 			// Generate matrices
 			UINT32 numOutputTets = (UINT32)volume.tetrahedra.size();
-			output.reserve(numOutputTets);
+			tetrahedra.reserve(numOutputTets);
 
-			// Insert tetrahedrons, generate matrices
-			for(UINT32 i = 0; i < (UINT32)volume.tetrahedra.size(); ++i)
+			//// For inner tetrahedrons
+			for(UINT32 i = 0; i < (UINT32)numOutputTets; ++i)
 			{
 				TetrahedronData entry;
 				entry.volume = volume.tetrahedra[i];
@@ -745,21 +1071,15 @@ namespace bs { namespace ct
 				Vector3 E2 = P2 - P4;
 				Vector3 E3 = P3 - P4;
 
-				Matrix3 mat;
-				mat.setColumn(0, E1);
-				mat.setColumn(1, E2);
-				mat.setColumn(2, E3);
+				Matrix4 mat;
+				mat.setColumn(0, Vector4(E1, 0.0f));
+				mat.setColumn(1, Vector4(E2, 0.0f));
+				mat.setColumn(2, Vector4(E3, 0.0f));
+				mat.setColumn(3, Vector4(P4, 1.0f));
 
-				// If tetrahedron is co-planar just ignore it, shader will use some other nearby one instead. We can't
-				// handle coplanar tetrahedrons because the matrix is not invertible, and for nearly co-planar ones the
-				// math breaks down because of precision issues.
-				if (fabs(Vector3::dot(Vector3::normalize(Vector3::cross(E1, E2)), E3)) < 0.0001f)
-					continue;
+				entry.transform = mat.inverse();
 
-				entry.transform = Matrix4(mat.inverse());
-				entry.transform.setColumn(3, Vector4(P4, 1.0f));
-
-				output.push_back(entry);
+				tetrahedra.push_back(entry);
 			}
 		}
 		bs_frame_clear();

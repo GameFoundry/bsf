@@ -13,6 +13,7 @@
 
 namespace bs { namespace ct
 {
+	struct LightProbesInfo;
 	struct GBufferTextures;
 	struct FrameInfo;
 	class LightProbeVolume;
@@ -20,14 +21,6 @@ namespace bs { namespace ct
 	/** @addtogroup RenderBeast
 	 *  @{
 	 */
-
-	BS_PARAM_BLOCK_BEGIN(TetrahedraRenderParamDef)
-		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatViewProj)
-		BS_PARAM_BLOCK_ENTRY(Vector4, gNDCToUV)
-		BS_PARAM_BLOCK_ENTRY(Vector2, gNDCToDeviceZ)
-	BS_PARAM_BLOCK_END
-
-	extern TetrahedraRenderParamDef gTetrahedraRenderParamDef;
 
 	/** 
 	 * Shader that renders the tetrahedra used for light probe evaluation. Tetrahedra depth is compare with current scene
@@ -61,7 +54,6 @@ namespace bs { namespace ct
 		/** Returns the material variation matching the provided parameters. */
 		static TetrahedraRenderMat* getVariation(bool msaa);
 	private:
-		SPtr<GpuParamBlockBuffer> mParamBuffer;
 		GpuParamTexture mDepthBufferTex;
 
 		static ShaderVariation VAR_NoMSAA;
@@ -70,6 +62,7 @@ namespace bs { namespace ct
 
 	BS_PARAM_BLOCK_BEGIN(IrradianceEvaluateParamDef)
 		BS_PARAM_BLOCK_ENTRY(float, gSkyBrightness)
+		BS_PARAM_BLOCK_ENTRY(INT32, gNumTetrahedra)
 	BS_PARAM_BLOCK_END
 
 	extern IrradianceEvaluateParamDef gIrradianceEvaluateParamDef;
@@ -88,17 +81,14 @@ namespace bs { namespace ct
 		 * @param[in]	view				View that is currently being rendered.
 		 * @param[in]	gbuffer				Previously rendered GBuffer textures.
 		 * @param[in]	lightProbeIndices	Indices calculated by TetrahedraRenderMat.
-		 * @param[in]	shCoeffs			Buffer containing spherical harmonic coefficients for every light probe.
-		 * @param[in]	volumes				Buffer containing information about tetrahedra inside the light volume, 
-		 *									including indices of the light probes they reference.
+		 * @param[in]	lightProbesInfo		Information about light probes.
 		 * @param[in]	skybox				Skybox, if available. If sky is not available, but sky rendering is enabled, 
 		 *									the system will instead use a default irradiance texture.
 		 * @param[in]	output				Output texture to write the radiance to. The evaluated value will be added to 
 		 *									existing radiance in the texture, using blending.
 		 */
 		void execute(const RendererView& view, const GBufferTextures& gbuffer, const SPtr<Texture>& lightProbeIndices,
-			const SPtr<GpuBuffer>& shCoeffs, const SPtr<GpuBuffer>& volumes, const Skybox* skybox, 
-			const SPtr<RenderTexture>& output);
+			const LightProbesInfo& lightProbesInfo, const Skybox* skybox, const SPtr<RenderTexture>& output);
 
 		/** 
 		 * Returns the material variation matching the provided parameters. 
@@ -114,13 +104,40 @@ namespace bs { namespace ct
 		GpuParamTexture mParamInputTex;
 		GpuParamTexture mParamSkyIrradianceTex;
 		GpuParamBuffer mParamSHCoeffsBuffer;
-		GpuParamBuffer mParamVolumeBuffer;
+		GpuParamBuffer mParamTetrahedraBuffer;
+		GpuParamBuffer mParamTetFacesBuffer;
 		bool mSkyOnly;
 
 		static ShaderVariation VAR_MSAA_Probes;
 		static ShaderVariation VAR_NoMSAA_Probes;
 		static ShaderVariation VAR_MSAA_Sky;
 		static ShaderVariation VAR_NoMSAA_Sky;
+	};
+
+	/** Contains information required by light probe shaders. Output by LightProbes. */
+	struct LightProbesInfo
+	{
+		/** Contains a set of spherical harmonic coefficients for every light probe. */
+		SPtr<GpuBuffer> shCoefficients;
+
+		/** 
+		 * Contains information about tetrahedra formed by light probes. First half of the buffer is populated by actual
+		 * tetrahedrons, while the second half is populated by information about outer faces (triangles). @p numTetrahedra
+		 * marks the spot where split happens.
+		 */
+		SPtr<GpuBuffer> tetrahedra;
+
+		/** Contains additional information about outer tetrahedron faces, required for extrapolating tetrahedron data. */
+		SPtr<GpuBuffer> faces;
+
+		/** 
+		 * Mesh representing the entire light probe volume. Each vertex has an associated tetrahedron (or face) index which
+		 * can be used to map into the tetrahedra array to retrieve probe information.
+		 */
+		SPtr<Mesh> tetrahedraVolume;
+
+		/** Total number of valid tetrahedra in the @p tetrahedra buffer. */
+		UINT32 numTetrahedra;
 	};
 
 	/** Handles any pre-processing for light (irradiance) probe lighting. */
@@ -145,6 +162,20 @@ namespace bs { namespace ct
 			Tetrahedron volume;
 			Matrix4 transform;
 		};
+
+		/**
+		 * Information about a single tetrahedron face, with information about extrusion and how to project a point in
+		 * the extrusion volume, on to the face.
+		 */
+		struct TetrahedronFaceData
+		{
+			UINT32 innerVertices[3];
+			UINT32 outerVertices[3];
+			Vector3 normals[3];
+			Matrix4 transform;
+			UINT32 tetrahedron;
+			bool quadratic;
+		};
 	public:
 		LightProbes();
 
@@ -164,24 +195,11 @@ namespace bs { namespace ct
 		bool hasAnyProbes() const;
 
 		/** 
-		 * Returns a GPU buffer containing SH coefficients for all active light probes. updateProbes() must be called
+		 * Returns a set of buffers that can be used for rendering the light probes. updateProbes() must be called
 		 * at least once before the buffer is populated. If the probes changed since the last call, call updateProbes()
-		 * to refresh the buffer.
+		 * to refresh the buffer. 
 		 */
-		SPtr<GpuBuffer> getSHCoefficientsBuffer() const { return mProbeCoefficientsGPU; }
-
-		/** 
-		 * Returns a GPU buffer containing information about light probe volumes (tetrahedra). updateProbes() must be called
-		 * at least once before the buffer is populated. If the probes changed since the last call, call updateProbes()
-		 * to refresh the buffer.
-		 */
-		SPtr<GpuBuffer> getTetrahedonInfosBuffer() const { return mTetrahedronInfosGPU; }
-
-		/**
-		 * Returns a mesh that contains triangles of all the light volume tetrahedra, including their corresponding
-		 * tetrahedron index. By rendering this mesh you can find which tetrahedron influences which pixel.
-		 */
-		SPtr<Mesh> getTetrahedraVolumeMesh() const { return mVolumeMesh; }
+		LightProbesInfo getInfo() const;
 
 	private:
 		/**
@@ -193,15 +211,19 @@ namespace bs { namespace ct
 		 * @param[in,out]	positions					A set of positions to generate the tetrahedra from. If 
 		 *												@p generateExtrapolationVolume is enabled then this array will be
 		 *												appended with new vertices forming that volume.
-		 * @param[out]		output						A list of generated tetrahedra and relevant data.
+		 * @param[out]		tetrahedra					A list of generated tetrahedra and relevant data.
+		 * @param[out]		faces						A list of faces representing the surface of the tetrahedra volume.
 		 * @param[in]		generateExtrapolationVolume	If true, the tetrahedron volume will be surrounded with points
 		 *												at "infinity" (technically just far away).
 		 */
-		void generateTetrahedronData(Vector<Vector3>& positions, Vector<TetrahedronData>& output, 
-			bool generateExtrapolationVolume = false);
+		void generateTetrahedronData(Vector<Vector3>& positions, Vector<TetrahedronData>& tetrahedra, 
+			Vector<TetrahedronFaceData>& faces, bool generateExtrapolationVolume = false);
 
 		/** Resizes the GPU buffer used for holding tetrahedron data, to the specified size (in number of tetraheda). */
 		void resizeTetrahedronBuffer(UINT32 count);
+
+		/** Resizes the GPU buffer used for holding tetrahedron face data, to the specified size (in number of faces). */
+		void resizeTetrahedronFaceBuffer(UINT32 count);
 
 		/** 
 		 * Resized the GPU buffer that stores light probe SH coefficients, to the specified size (in the number of probes). 
@@ -213,23 +235,19 @@ namespace bs { namespace ct
 
 		UINT32 mMaxCoefficients;
 		UINT32 mMaxTetrahedra;
+		UINT32 mMaxFaces;
 
 		Vector<TetrahedronData> mTetrahedronInfos;
 
 		SPtr<GpuBuffer> mProbeCoefficientsGPU;
 		SPtr<GpuBuffer> mTetrahedronInfosGPU;
+		SPtr<GpuBuffer> mTetrahedronFaceInfosGPU;
 		SPtr<Mesh> mVolumeMesh;
+		UINT32 mNumValidTetrahedra;
 
 		// Temporary buffers
 		Vector<Vector3> mTempTetrahedronPositions;
 		Vector<UINT32> mTempTetrahedronBufferIndices;
-	};
-
-	/** Information about a single tetrahedron, for use on the GPU. */
-	struct TetrahedronDataGPU
-	{
-		UINT32 indices[4];
-		Matrix3x4 transform;
 	};
 
 	/** @} */

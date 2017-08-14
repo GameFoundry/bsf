@@ -335,6 +335,12 @@ namespace bs { namespace ct
 		draw(mFullScreenQuadMesh, mFullScreenQuadMesh->getProperties().getSubMesh(), numInstances);
 	}
 
+	void RendererUtility::clear(UINT32 value)
+	{
+		ClearMat* clearMat = ClearMat::get();
+		clearMat->execute(value);
+	}
+
 	RendererUtility& gRendererUtility()
 	{
 		return RendererUtility::instance();
@@ -378,7 +384,6 @@ namespace bs { namespace ct
 		ShaderVariation::Param("MSAA_COUNT", 8),
 		ShaderVariation::Param("COLOR", false)
 	});
-
 
 	BlitMat::BlitMat()
 	{
@@ -437,5 +442,27 @@ namespace bs { namespace ct
 		}
 		else
 			return get(VAR_1MSAA_Color);
+	}
+
+	ClearParamDef gClearParamDef;
+
+	ClearMat::ClearMat()
+	{
+		mParamBuffer = gClearParamDef.createBuffer();
+		mParamsSet->setParamBlockBuffer("Params", mParamBuffer);
+	}
+
+	void ClearMat::_initVariations(ShaderVariations& variations)
+	{
+		// Do nothing
+	}
+
+	void ClearMat::execute(UINT32 value)
+	{
+		gClearParamDef.gClearValue.set(mParamBuffer, value);
+
+		gRendererUtility().setPass(mMaterial);
+		gRendererUtility().setPassParams(mParamsSet);
+		gRendererUtility().drawScreenQuad();
 	}
 }}
