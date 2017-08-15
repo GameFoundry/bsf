@@ -6,16 +6,139 @@
 #include "BsTriangulation.h"
 #include "BsMatrix4.h"
 #include "BsMatrixNxM.h"
+#include "BsRendererMaterial.h"
+#include "BsGpuResourcePool.h"
+#include "BsParamBlocks.h"
+#include "BsLightRendering.h"
 
 namespace bs { namespace ct
 {
+	struct LightProbesInfo;
+	struct GBufferTextures;
 	struct FrameInfo;
 	class LightProbeVolume;
-	struct VisibleLightProbeData;
 
 	/** @addtogroup RenderBeast
 	 *  @{
 	 */
+
+	/** 
+	 * Shader that renders the tetrahedra used for light probe evaluation. Tetrahedra depth is compare with current scene
+	 * depth, and for each scene pixel the matching tetrahedron index is written to the output target.
+	 */
+	class TetrahedraRenderMat : public RendererMaterial<TetrahedraRenderMat>
+	{
+		RMAT_DEF("TetrahedraRender.bsl");
+
+	public:
+		TetrahedraRenderMat();
+
+		/**
+		 * Executes the material using the provided parameters.
+		 * 
+		 * @param[in]	view		View that is currently being rendered.
+		 * @param[in]	sceneDepth	Depth of scene objects that should be lit.
+		 * @param[in]	mesh		Mesh to render.
+		 * @param[in]	output		Output texture created using the descriptor returned by getOutputDesc().
+		 */
+		void execute(const RendererView& view, const SPtr<Texture>& sceneDepth, const SPtr<Mesh>& mesh, 
+			const SPtr<RenderTexture>& output);
+
+		/**
+		 * Returns the descriptors that can be used for creating the output render texture for this material. The render
+		 * texture is expected to have a single color attachment, and a depth attachment. 
+		 */
+		static void getOutputDesc(const RendererView& view, POOLED_RENDER_TEXTURE_DESC& colorDesc, 
+			POOLED_RENDER_TEXTURE_DESC& depthDesc);
+
+		/** Returns the material variation matching the provided parameters. */
+		static TetrahedraRenderMat* getVariation(bool msaa);
+	private:
+		GpuParamTexture mDepthBufferTex;
+
+		static ShaderVariation VAR_NoMSAA;
+		static ShaderVariation VAR_MSAA;
+	};
+
+	BS_PARAM_BLOCK_BEGIN(IrradianceEvaluateParamDef)
+		BS_PARAM_BLOCK_ENTRY(float, gSkyBrightness)
+		BS_PARAM_BLOCK_ENTRY(INT32, gNumTetrahedra)
+	BS_PARAM_BLOCK_END
+
+	extern IrradianceEvaluateParamDef gIrradianceEvaluateParamDef;
+
+	/** Evaluates radiance from the light probe volume, or the sky if light probes are not available. */
+	class IrradianceEvaluateMat : public RendererMaterial<IrradianceEvaluateMat>
+	{
+		RMAT_DEF("IrradianceEvaluate.bsl");
+
+	public:
+		IrradianceEvaluateMat();
+
+		/**
+		 * Executes the material using the provided parameters.
+		 * 
+		 * @param[in]	view				View that is currently being rendered.
+		 * @param[in]	gbuffer				Previously rendered GBuffer textures.
+		 * @param[in]	lightProbeIndices	Indices calculated by TetrahedraRenderMat.
+		 * @param[in]	lightProbesInfo		Information about light probes.
+		 * @param[in]	skybox				Skybox, if available. If sky is not available, but sky rendering is enabled, 
+		 *									the system will instead use a default irradiance texture.
+		 * @param[in]	output				Output texture to write the radiance to. The evaluated value will be added to 
+		 *									existing radiance in the texture, using blending.
+		 */
+		void execute(const RendererView& view, const GBufferTextures& gbuffer, const SPtr<Texture>& lightProbeIndices,
+			const LightProbesInfo& lightProbesInfo, const Skybox* skybox, const SPtr<RenderTexture>& output);
+
+		/** 
+		 * Returns the material variation matching the provided parameters. 
+		 *
+		 * @param[in]	msaaCount	Number of MSAA samples used by the view rendering the material.
+		 * @param[in]	skyOnly		When true, only the sky irradiance will be evaluated. Otherwise light probe irradiance
+		 *							will be evaluated.
+		 */
+		static IrradianceEvaluateMat* getVariation(UINT32 msaaCount, bool skyOnly);
+	private:
+		GBufferParams mGBufferParams;
+		SPtr<GpuParamBlockBuffer> mParamBuffer;
+		GpuParamTexture mParamInputTex;
+		GpuParamTexture mParamSkyIrradianceTex;
+		GpuParamBuffer mParamSHCoeffsBuffer;
+		GpuParamBuffer mParamTetrahedraBuffer;
+		GpuParamBuffer mParamTetFacesBuffer;
+		bool mSkyOnly;
+
+		static ShaderVariation VAR_MSAA_Probes;
+		static ShaderVariation VAR_NoMSAA_Probes;
+		static ShaderVariation VAR_MSAA_Sky;
+		static ShaderVariation VAR_NoMSAA_Sky;
+	};
+
+	/** Contains information required by light probe shaders. Output by LightProbes. */
+	struct LightProbesInfo
+	{
+		/** Contains a set of spherical harmonic coefficients for every light probe. */
+		SPtr<GpuBuffer> shCoefficients;
+
+		/** 
+		 * Contains information about tetrahedra formed by light probes. First half of the buffer is populated by actual
+		 * tetrahedrons, while the second half is populated by information about outer faces (triangles). @p numTetrahedra
+		 * marks the spot where split happens.
+		 */
+		SPtr<GpuBuffer> tetrahedra;
+
+		/** Contains additional information about outer tetrahedron faces, required for extrapolating tetrahedron data. */
+		SPtr<GpuBuffer> faces;
+
+		/** 
+		 * Mesh representing the entire light probe volume. Each vertex has an associated tetrahedron (or face) index which
+		 * can be used to map into the tetrahedra array to retrieve probe information.
+		 */
+		SPtr<Mesh> tetrahedraVolume;
+
+		/** Total number of valid tetrahedra in the @p tetrahedra buffer. */
+		UINT32 numTetrahedra;
+	};
 
 	/** Handles any pre-processing for light (irradiance) probe lighting. */
 	class LightProbes
@@ -24,11 +147,9 @@ namespace bs { namespace ct
 		struct VolumeInfo
 		{
 			/** Volume containing the information about the probes. */
-			SPtr<LightProbeVolume> volume;
+			LightProbeVolume* volume;
 			/** Remains true as long as there are dirty probes in the volume. */
 			bool isDirty;
-			/** Keeps track of which dirty probe was last updated, so we can perform the update over multiple frames. */
-			UINT32 lastUpdatedProbe; 
 		};
 
 		/** 
@@ -41,37 +162,44 @@ namespace bs { namespace ct
 			Tetrahedron volume;
 			Matrix4 transform;
 		};
+
+		/**
+		 * Information about a single tetrahedron face, with information about extrusion and how to project a point in
+		 * the extrusion volume, on to the face.
+		 */
+		struct TetrahedronFaceData
+		{
+			UINT32 innerVertices[3];
+			UINT32 outerVertices[3];
+			Vector3 normals[3];
+			Matrix4 transform;
+			UINT32 tetrahedron;
+			bool quadratic;
+		};
 	public:
 		LightProbes();
 
 		/** Notifies sthe manager that the provided light probe volume has been added. */
-		void notifyAdded(const SPtr<LightProbeVolume>& volume);
+		void notifyAdded(LightProbeVolume* volume);
 
 		/** Notifies the manager that the provided light probe volume has some dirty light probes. */
-		void notifyDirty(const SPtr<LightProbeVolume>& volume);
+		void notifyDirty(LightProbeVolume* volume);
 
 		/** Notifies the manager that all the probes in the provided volume have been removed. */
-		void notifyRemoved(const SPtr<LightProbeVolume>& volume);
+		void notifyRemoved(LightProbeVolume* volume);
 
-		/**
-		 * Updates any dirty light probes by rendering the scene from their perspective and generating their SH 
-		 * coefficients.
-		 *
-		 * @param[in]	frameInfo		Information about the current frame.
-		 * @param[in]	maxProbes		Places a limit of how many probes can be updated in a single call to this method.
-		 *								Any probes that weren't updated will be updated when the method is called next 
-		 *								(up to the @p maxProbes limit), as so on.
-		 *								 
-		 *								This limit is provided to ensure there are no massive framerate spikes caused up
-		 *								updating many probes in a single frame - instead this method allows the updates to
-		 *								be distributed over multiple frames. 
-		 *								
-		 *								Provide a limit of 0 to force all probes to be updated.
+		/** Updates light probe tetrahedron data after probes changed (added/removed/moved). */
+		void updateProbes();
+
+		/** Returns true if there are any registered light probes. */
+		bool hasAnyProbes() const;
+
+		/** 
+		 * Returns a set of buffers that can be used for rendering the light probes. updateProbes() must be called
+		 * at least once before the buffer is populated. If the probes changed since the last call, call updateProbes()
+		 * to refresh the buffer. 
 		 */
-		void updateProbes(const FrameInfo& frameInfo, UINT32 maxProbes = 3);
-
-		/** Generates GPU buffers that contain a list of probe tetrahedrons visible from the provided view. */
-		void updateVisibleProbes(const RendererView& view, VisibleLightProbeData& output);
+		LightProbesInfo getInfo() const;
 
 	private:
 		/**
@@ -79,12 +207,23 @@ namespace bs { namespace ct
 		 * volume. Each entry contains connections to nearby tetrahedrons/faces, as well as a matrix that can be used for
 		 * calculating barycentric coordinates within the tetrahedron (or projected triangle barycentric coordinates for
 		 * faces). 
+		 * 
+		 * @param[in,out]	positions					A set of positions to generate the tetrahedra from. If 
+		 *												@p generateExtrapolationVolume is enabled then this array will be
+		 *												appended with new vertices forming that volume.
+		 * @param[out]		tetrahedra					A list of generated tetrahedra and relevant data.
+		 * @param[out]		faces						A list of faces representing the surface of the tetrahedra volume.
+		 * @param[in]		generateExtrapolationVolume	If true, the tetrahedron volume will be surrounded with points
+		 *												at "infinity" (technically just far away).
 		 */
-		void generateTetrahedronData(const Vector<Vector3>& positions, Vector<TetrahedronData>& output, 
-			bool includeOuterFaces = false);
+		void generateTetrahedronData(Vector<Vector3>& positions, Vector<TetrahedronData>& tetrahedra, 
+			Vector<TetrahedronFaceData>& faces, bool generateExtrapolationVolume = false);
 
-		/** Resizes the GPU buffers used for holding tetrahedron data, to the specified size (in number of tetraheda). */
-		void resizeTetrahedronBuffers(VisibleLightProbeData& data, UINT32 count);
+		/** Resizes the GPU buffer used for holding tetrahedron data, to the specified size (in number of tetraheda). */
+		void resizeTetrahedronBuffer(UINT32 count);
+
+		/** Resizes the GPU buffer used for holding tetrahedron face data, to the specified size (in number of faces). */
+		void resizeTetrahedronFaceBuffer(UINT32 count);
 
 		/** 
 		 * Resized the GPU buffer that stores light probe SH coefficients, to the specified size (in the number of probes). 
@@ -94,48 +233,21 @@ namespace bs { namespace ct
 		Vector<VolumeInfo> mVolumes;
 		bool mTetrahedronVolumeDirty;
 
-		UINT32 mNumAllocatedEntries;
-		UINT32 mNumUsedEntries;
-		Vector<UINT32> mEmptyEntries;
+		UINT32 mMaxCoefficients;
+		UINT32 mMaxTetrahedra;
+		UINT32 mMaxFaces;
 
-		Vector<AABox> mTetrahedronBounds;
 		Vector<TetrahedronData> mTetrahedronInfos;
 
 		SPtr<GpuBuffer> mProbeCoefficientsGPU;
+		SPtr<GpuBuffer> mTetrahedronInfosGPU;
+		SPtr<GpuBuffer> mTetrahedronFaceInfosGPU;
+		SPtr<Mesh> mVolumeMesh;
+		UINT32 mNumValidTetrahedra;
 
 		// Temporary buffers
 		Vector<Vector3> mTempTetrahedronPositions;
-		Vector<UINT32> mTempTetrahedronVisibility;
-	};
-
-	/** Storage of tetrahedron AA box, for use on the GPU. */
-	struct TetrahedronBoundsGPU
-	{
-		Vector4 center;
-		Vector4 extents;
-	};
-
-	/** Information about a single tetrahedron, for use on the GPU. */
-	struct TetrahedronDataGPU
-	{
-		UINT32 indices[4];
-		Matrix3x4 transform;
-	};
-
-	/** Contains information about light probes visible from a particular RendererView. */
-	struct VisibleLightProbeData
-	{
-		/** Current number of visible tetrahedrons in the GPU buffers. */
-		UINT32 numEntries;
-
-		/** Maximum number of tetrahedrons that fit in the GPU buffers, before the buffers need to be resized. */
-		UINT32 maxNumEntries;
-		
-		/** GPU buffer containing tetrahedron bounds in form of TetrahedronBoundsGPU structure. */
-		SPtr<GpuBuffer> tetrahedronBounds;
-
-		/** GPU buffer containing tetrahedron information in form of TetrahedronDataGPU structure. */
-		SPtr<GpuBuffer> tetrahedronInfos;
+		Vector<UINT32> mTempTetrahedronBufferIndices;
 	};
 
 	/** @} */

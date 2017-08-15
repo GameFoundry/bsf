@@ -43,7 +43,7 @@ namespace bs
 	{
 		if (!FileSystem::isFile(filePath))
 		{
-			LOGWRN_VERBOSE("Cannot load resource. Specified file: " + filePath.toString() + " doesn't exist.");
+			LOGWRN("Cannot load resource. Specified file: " + filePath.toString() + " doesn't exist.");
 
 			return HResource();
 		}
@@ -70,7 +70,7 @@ namespace bs
 	{
 		if (!FileSystem::isFile(filePath))
 		{
-			LOGWRN_VERBOSE("Cannot load resource. Specified file: " + filePath.toString() + " doesn't exist.");
+			LOGWRN("Cannot load resource. Specified file: " + filePath.toString() + " doesn't exist.");
 
 			return HResource();
 		}

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "BsPrerequisites.h"
+#include "BsIBLUtility.h"
 #include "BsRendererMaterial.h"
 #include "BsParamBlocks.h"
 
@@ -112,14 +113,8 @@ namespace bs { namespace ct
 
 	extern IrradianceComputeSHParamDef gIrradianceComputeSHParamDef;
 
-	/** 
-	 * Computes spherical harmonic coefficients from a radiance cubemap. 
-	 * 
-	 * @tparam ORDER	SH order, which defines the number of coefficients and quality. Only values of 3 and 5 are 
-	 *					supported.
-	 */
-	template<int ORDER = 5>
-	class IrradianceComputeSHMat : public RendererMaterial<IrradianceComputeSHMat<ORDER>>
+	/** Computes spherical harmonic coefficients from a radiance cubemap. */
+	class IrradianceComputeSHMat : public RendererMaterial<IrradianceComputeSHMat>
 	{
 		RMAT_DEF("IrradianceComputeSH.bsl")
 
@@ -134,12 +129,23 @@ namespace bs { namespace ct
 		void execute(const SPtr<Texture>& source, UINT32 face, const SPtr<GpuBuffer>& output);
 
 		/** Creates a buffer of adequate size to be used as output for this material. */
-		static SPtr<GpuBuffer> createOutputBuffer(const SPtr<Texture>& source, UINT32& numCoeffSets);
+		SPtr<GpuBuffer> createOutputBuffer(const SPtr<Texture>& source, UINT32& numCoeffSets);
+
+		/** 
+		 * Returns the material variation matching the provided parameters.
+		 *
+		 * @param order		SH order, which defines the number of coefficients and quality. Only values of 3 and 5 are 
+		 *					supported.
+		 */
+		static IrradianceComputeSHMat* getVariation(int order = 5);
 
 	private:
 		SPtr<GpuParamBlockBuffer> mParamBuffer;
 		GpuParamTexture mInputTexture;
 		GpuParamBuffer mOutputBuffer;
+
+		static ShaderVariation VAR_Order3;
+		static ShaderVariation VAR_Order5;
 	};
 
 	BS_PARAM_BLOCK_BEGIN(IrradianceReduceSHParamDef)
@@ -152,12 +158,8 @@ namespace bs { namespace ct
 	/** 
 	 * Sums spherical harmonic coefficients calculated by each thread group of IrradianceComputeSHMat and outputs a single
 	 * set of normalized coefficients. 
-	 *
-	 * @tparam ORDER	SH order, which defines the number of coefficients and quality. Only values of 3 and 5 are 
-	 *					supported.
 	 */
-	template<int ORDER = 5>
-	class IrradianceReduceSHMat : public RendererMaterial<IrradianceReduceSHMat<ORDER>>
+	class IrradianceReduceSHMat : public RendererMaterial<IrradianceReduceSHMat>
 	{
 		RMAT_DEF("IrradianceReduceSH.bsl")
 
@@ -172,12 +174,23 @@ namespace bs { namespace ct
 		void execute(const SPtr<GpuBuffer>& source, UINT32 numCoeffSets, const SPtr<GpuBuffer>& output, UINT32 outputIdx);
 
 		/** Creates a buffer of adequate size to be used as output for this material. */
-		static SPtr<GpuBuffer> createOutputBuffer(UINT32 numEntries);
+		SPtr<GpuBuffer> createOutputBuffer(UINT32 numEntries);
+
+		/** 
+		 * Returns the material variation matching the provided parameters.
+		 *
+		 * @param order		SH order, which defines the number of coefficients and quality. Only values of 3 and 5 are 
+		 *					supported.
+		 */
+		static IrradianceReduceSHMat* getVariation(int order = 5);
 
 	private:
 		SPtr<GpuParamBlockBuffer> mParamBuffer;
 		GpuParamBuffer mInputBuffer;
 		GpuParamBuffer mOutputBuffer;
+
+		static ShaderVariation VAR_Order3;
+		static ShaderVariation VAR_Order5;
 	};
 
 	BS_PARAM_BLOCK_BEGIN(IrradianceProjectSHParamDef)
@@ -208,63 +221,23 @@ namespace bs { namespace ct
 		GpuParamBuffer mInputBuffer;
 	};
 
-	/** Helper class that handles generation and processing of textures used for image based lighting. */
-	class BS_EXPORT IBLUtility
+	/** Render beast implementation of IBLUtility. */
+	class RenderBeastIBLUtility : public IBLUtility
 	{
 	public:
-		/** Sets up any resources requires for operation. Must be called before any other methods in this class. */
-		static void startUp();
+		/** @copydoc IBLUtility::filterCubemapForSpecular */
+		void filterCubemapForSpecular(const SPtr<Texture>& cubemap, const SPtr<Texture>& scratch) const override;
 
-		/** Cleans up any resources allocated during startUp(). */
-		static void shutDown();
+		/** @copydoc IBLUtility::filterCubemapForIrradiance(const SPtr<Texture>&, const SPtr<Texture>&) */
+		void filterCubemapForIrradiance(const SPtr<Texture>& cubemap, const SPtr<Texture>& output) const override;
 
-		/**
-		 * Performs filtering on the cubemap, populating its mip-maps with filtered values that can be used for
-		 * evaluating specular reflections.
-		 * 
-		 * @param[in, out]	cubemap		Cubemap to filter. Its mip level 0 will be read, filtered and written into
-		 *								other mip levels.
-		 * @param[in]		scratch		Temporary cubemap texture to use for the filtering process. Must match the size of
-		 *								the source cubemap. Provide null to automatically create a scratch cubemap.
-		 */
-		static void filterCubemapForSpecular(const SPtr<Texture>& cubemap, const SPtr<Texture>& scratch);
+		/** @copydoc IBLUtility::filterCubemapForIrradiance(const SPtr<Texture>&, const SPtr<GpuBuffer>&, UINT32) */
+		void filterCubemapForIrradiance(const SPtr<Texture>& cubemap, const SPtr<GpuBuffer>& output, 
+			UINT32 outputIdx) const override;
 
-		/**
-		 * Performs filtering on the cubemap, populating the output cubemap with values that can be used for evaluating
-		 * irradiance for use in diffuse lighting. Uses order-5 SH (25 coefficients) and outputs the values in the form of
-		 * a cubemap.
-		 * 
-		 * @param[in]		cubemap		Cubemap to filter. Its mip level 0 will be used as source.
-		 * @param[in]		output		Output cubemap to store the irradiance data in.
-		 */
-		static void filterCubemapForIrradiance(const SPtr<Texture>& cubemap, const SPtr<Texture>& output);
+		/** @copydoc IBLUtility::scaleCubemap */
+		void scaleCubemap(const SPtr<Texture>& src, UINT32 srcMip, const SPtr<Texture>& dst, UINT32 dstMip) const override;
 
-		/**
-		 * Performs filtering on the cubemap, populating the output cubemap with values that can be used for evaluating
-		 * irradiance for use in diffuse lighting. Uses order-5 SH (9 coefficients) and outputs the values in the form of
-		 * a cubemap.
-		 * 
-		 * @param[in]		cubemap		Cubemap to filter. Its mip level 0 will be used as source.
-		 * @param[in]		output		Output buffer in which to place the results. Must be allocated using 
-		 *								IrradianceReduceMat<ORDER>::createOutputBuffer();
-		 * @param[in]		outputIdx	Index in the output buffer at which to write the output coefficients to.
-		 */
-		static void filterCubemapForIrradiance(const SPtr<Texture>& cubemap, const SPtr<GpuBuffer>& output, 
-			UINT32 outputIdx);
-
-		/**
-		 * Scales a cubemap and outputs it in the destination texture, using hardware acceleration. If both textures are the
-		 * same size, performs a copy instead.
-		 *
-		 * @param[in]   src				Source cubemap to scale.
-		 * @param[in]   srcMip			Determines which mip level of the source texture to scale.
-		 * @param[in]   dst				Desination texture to output the scaled data to. Must be usable as a render target.
-		 * @param[in]   dstMip			Determines which mip level of the destination texture to scale.
-		 */
-		static void scaleCubemap(const SPtr<Texture>& src, UINT32 srcMip, const SPtr<Texture>& dst, UINT32 dstMip);
-
-		static const UINT32 REFLECTION_CUBEMAP_SIZE;
-		static const UINT32 IRRADIANCE_CUBEMAP_SIZE;
 	private:
 		/** 
 		 * Downsamples a cubemap using hardware bilinear filtering. 
@@ -272,12 +245,9 @@ namespace bs { namespace ct
 		 * @param[in]	src		Cubemap to downsample.
 		 * @param[in]   srcMip	Determines which mip level of the source texture to downsample.
 		 * @param[in]   dst		Desination texture to output the scaled data to. Must be usable as a render target.
-		 * @param[in]   dstMip			Determines which mip level of the destination texture to scale.
+		 * @param[in]   dstMip	Determines which mip level of the destination texture to scale.
 		 */
 		static void downsampleCubemap(const SPtr<Texture>& src, UINT32 srcMip, const SPtr<Texture>& dst, UINT32 dstMip);
-
-		struct Members;
-		static Members* m;
 	};
 
 	/** @} */

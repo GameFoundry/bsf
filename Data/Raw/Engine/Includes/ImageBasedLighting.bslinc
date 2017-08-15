@@ -25,9 +25,6 @@ mixin ImageBasedLighting
 		TextureCube gSkyReflectionTex;
 		SamplerState gSkyReflectionSamp;
 		
-		TextureCube gSkyIrradianceTex;
-		SamplerState gSkyIrradianceSamp;
-		
 		TextureCubeArray gReflProbeCubemaps;
 		SamplerState gReflProbeSamp;
 		
@@ -52,12 +49,7 @@ mixin ImageBasedLighting
 			uint gSkyCubemapNumMips;
 			float gSkyBrightness;
 		}	
-		
-		float3 getSkyIndirectDiffuse(float3 dir)
-		{
-			return gSkyIrradianceTex.SampleLevel(gSkyIrradianceSamp, dir, 0).rgb * gSkyBrightness;
-		}
-		
+
 		float getSphereReflectionContribution(float normalizedDistance)
 		{			
 			// If closer than 60% to the probe radius, then full contribution is used.

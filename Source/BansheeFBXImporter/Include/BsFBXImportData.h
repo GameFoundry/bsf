@@ -38,10 +38,11 @@ namespace bs
 	{
 		~FBXImportNode();
 
-		Matrix4 localTransform;
+		Matrix4 geomTransform;
 		Matrix4 worldTransform;
 		String name;
 		FbxNode* fbxNode;
+		bool flipWinding;
 
 		Vector<FBXImportNode*> children;
 	};

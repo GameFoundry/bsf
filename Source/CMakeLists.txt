@@ -1,11 +1,11 @@
-cmake_minimum_required (VERSION 3.7.2)
+cmake_minimum_required (VERSION 3.9.0)
 project (Banshee)
 
 # Version
 set (BS_VERSION_MAJOR 0)
 set (BS_VERSION_MINOR 4)
 
-set (BS_PREBUILT_DEPENDENCIES_VERSION 4)
+set (BS_PREBUILT_DEPENDENCIES_VERSION 5)
 set (BS_SRC_DEPENDENCIES_VERSION 12)
 
 # Configuration types
@@ -299,6 +299,13 @@ if(MSVC)
 	if(BUILD_EDITOR)
 		include_external_msproject(MBansheeEngine ${PROJECT_SOURCE_DIR}/MBansheeEngine/MBansheeEngine.csproj)
 		include_external_msproject(MBansheeEditor ${PROJECT_SOURCE_DIR}/MBansheeEditor/MBansheeEditor.csproj)
+		
+		set_target_properties(MBansheeEngine PROPERTIES
+		  MAP_IMPORTED_CONFIG_RELEASE OptimizedDebug
+		)
+		set_target_properties(MBansheeEditor PROPERTIES
+		  MAP_IMPORTED_CONFIG_RELEASE OptimizedDebug
+		)
 		
 		set_property(TARGET MBansheeEngine PROPERTY FOLDER Script)
 		set_property(TARGET MBansheeEditor PROPERTY FOLDER Script)

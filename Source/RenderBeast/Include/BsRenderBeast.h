@@ -5,8 +5,6 @@
 #include "BsRenderBeastPrerequisites.h"
 #include "BsRenderer.h"
 #include "BsRendererMaterial.h"
-#include "BsLightRendering.h"
-#include "BsImageBasedLighting.h"
 #include "BsObjectRendering.h"
 #include "BsPostProcessing.h"
 #include "BsRendererView.h"
@@ -28,12 +26,12 @@ namespace bs
 	/** Contains information global to an entire frame. */
 	struct FrameInfo
 	{
-		FrameInfo(float timeDelta, const RendererAnimationData& animData)
+		FrameInfo(float timeDelta, const RendererAnimationData* animData = nullptr)
 			:timeDelta(timeDelta), animData(animData)
 		{ }
 
 		float timeDelta;
-		const RendererAnimationData& animData;
+		const RendererAnimationData* animData;
 	};
 
 	/**
@@ -71,18 +69,8 @@ namespace bs
 		/** @copydoc Renderer::destroy */
 		void destroy() override;
 
-		/** @copydoc Renderer::createPostProcessSettings */
-		SPtr<PostProcessSettings> createPostProcessSettings() const override;
-
-		/** 
-		 * Captures the scene at the specified location into a cubemap. 
-		 * 
-		 * @param[in]	cubemap		Cubemap to store the results in.
-		 * @param[in]	position	Position to capture the scene at.
-		 * @param[in]	hdr			If true scene will be captured in a format that supports high dynamic range.
-		 * @param[in]	frameInfo	Global information about the the frame currently being rendered.
-		 */
-		void captureSceneCubeMap(const SPtr<Texture>& cubemap, const Vector3& position, bool hdr, const FrameInfo& frameInfo);
+		/** @copydoc Renderer::captureSceneCubeMap */
+		void captureSceneCubeMap(const SPtr<Texture>& cubemap, const Vector3& position, bool hdr) override;
 
 	private:
 		/** @copydoc Renderer::notifyCameraAdded */
@@ -116,7 +104,7 @@ namespace bs
 		void notifyReflectionProbeAdded(ReflectionProbe* probe) override;
 
 		/** @copydoc Renderer::notifyReflectionProbeUpdated */
-		void notifyReflectionProbeUpdated(ReflectionProbe* probe) override;
+		void notifyReflectionProbeUpdated(ReflectionProbe* probe, bool texture) override;
 
 		/** @copydoc Renderer::notifyReflectionProbeRemoved */
 		void notifyReflectionProbeRemoved(ReflectionProbe* probe) override;
@@ -132,9 +120,6 @@ namespace bs
 
 		/** @copydoc Renderer::notifySkyboxAdded */
 		void notifySkyboxAdded(Skybox* skybox) override;
-
-		/** @copydoc Renderer::notifySkyboxTextureChanged */
-		void notifySkyboxTextureChanged(Skybox* skybox) override;
 
 		/** @copydoc Renderer::notifySkyboxRemoved */
 		void notifySkyboxRemoved(Skybox* skybox) override;
@@ -168,25 +153,14 @@ namespace bs
 		 *			
 		 * @note	Core thread only.
 		 */
-		void renderView(RendererView* viewInfo, float frameDelta);
+		void renderView(const RendererViewGroup& viewGroup, RendererView& view, const FrameInfo& frameInfo);
 
 		/**
 		 * Renders all overlay callbacks of the provided view.
 		 * 					
 		 * @note	Core thread only.
 		 */
-		void renderOverlay(RendererView* viewInfo);
-
-		/** 
-		 * Renders a single element of a renderable object. 
-		 *
-		 * @param[in]	element		Element to render.
-		 * @param[in]	passIdx		Index of the material pass to render the element with.
-		 * @param[in]	bindPass	If true the material pass will be bound for rendering, if false it is assumed it is
-		 *							already bound.
-		 * @param[in]	viewProj	View projection matrix of the camera the element is being rendered with.
-		 */
-		void renderElement(const BeastRenderableElement& element, UINT32 passIdx, bool bindPass, const Matrix4& viewProj);
+		void renderOverlay(RendererView& view);
 
 		/**	Creates data used by the renderer on the core thread. */
 		void initializeCore();
@@ -194,49 +168,21 @@ namespace bs
 		/**	Destroys data used by the renderer on the core thread. */
 		void destroyCore();
 
-		/** Updates light probes, rendering & filtering ones that are dirty and updating the global probe cubemap array. */
-		void updateLightProbes(const FrameInfo& frameInfo);
+		/** Updates the global reflection probe cubemap array with changed probe textures. */
+		void updateReflProbeArray();
 
 		// Core thread only fields
 
 		// Scene data
 		SPtr<RendererScene> mScene;
 
-		//// Reflection probes
-		Vector<bool> mCubemapArrayUsedSlots;
-		SPtr<Texture> mReflCubemapArrayTex;
-
-		//// Sky light
-		Skybox* mSkybox = nullptr;
-		SPtr<Texture> mSkyboxTexture;
-		SPtr<Texture> mSkyboxFilteredReflections;
-		SPtr<Texture> mSkyboxIrradiance;
-
-		// Materials & GPU data
 		//// Base pass
 		ObjectRenderer* mObjectRenderer = nullptr;
-
-		//// Lighting
-		TiledDeferredLightingMaterials* mTiledDeferredLightingMats = nullptr;
-		LightGrid* mLightGrid = nullptr;
-		VisibleLightData* mVisibleLightInfo = nullptr;
-
-		//// Image based lighting
-		TiledDeferredImageBasedLightingMaterials* mTileDeferredImageBasedLightingMats = nullptr;
-		VisibleReflProbeData* mVisibleReflProbeInfo = nullptr;
-		SPtr<Texture> mPreintegratedEnvBRDF;
-
-		//// Sky
-		SkyboxMat<false>* mSkyboxMat;
-		SkyboxMat<true>* mSkyboxSolidColorMat;
-
-		//// Other
-		FlatFramebufferToTextureMat* mFlatFramebufferToTextureMat = nullptr;
 
 		SPtr<RenderBeastOptions> mCoreOptions;
 
 		// Helpers to avoid memory allocations
-		RendererViewGroup mMainViewGroup;
+		RendererViewGroup* mMainViewGroup = nullptr;
 
 		// Sim thread only fields
 		SPtr<RenderBeastOptions> mOptions;

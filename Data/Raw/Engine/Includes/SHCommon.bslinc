@@ -45,12 +45,26 @@ mixin SHCommon
 			v.v6 = 0;
 		}
 		
+		void SHZero(inout SHVector5RGB v)
+		{
+			SHZero(v.R);
+			SHZero(v.G);
+			SHZero(v.B);
+		}				
+		
 		void SHZero(inout SHVector3 v)
 		{
 			v.v0 = 0;
 			v.v1 = 0;
 			v.v2 = 0;
-		}	
+		}
+		
+		void SHZero(inout SHVector3RGB v)
+		{
+			SHZero(v.R);
+			SHZero(v.G);
+			SHZero(v.B);
+		}		
 
 		void SHMultiplyAdd(inout SHVector5 lhs, SHVector5 rhs, float c)
 		{
@@ -70,6 +84,20 @@ mixin SHCommon
 			lhs.v2 += rhs.v2 * c;
 		}		
 		
+		void SHMultiplyAdd(inout SHVector5RGB lhs, SHVector5RGB rhs, float c)
+		{
+			SHMultiplyAdd(lhs.R, rhs.R, c);
+			SHMultiplyAdd(lhs.G, rhs.G, c);
+			SHMultiplyAdd(lhs.B, rhs.B, c);
+		}
+		
+		void SHMultiplyAdd(inout SHVector3RGB lhs, SHVector3RGB rhs, float c)
+		{
+			SHMultiplyAdd(lhs.R, rhs.R, c);
+			SHMultiplyAdd(lhs.G, rhs.G, c);
+			SHMultiplyAdd(lhs.B, rhs.B, c);
+		}			
+		
 		void SHAdd(inout SHVector5 lhs, SHVector5 rhs)
 		{
 			lhs.v0 += rhs.v0;
@@ -86,6 +114,20 @@ mixin SHCommon
 			lhs.v0 += rhs.v0;
 			lhs.v1 += rhs.v1;
 			lhs.v2 += rhs.v2;
+		}
+		
+		void SHAdd(inout SHVector5RGB lhs, SHVector5RGB rhs)
+		{
+			SHAdd(lhs.R, rhs.R);
+			SHAdd(lhs.G, rhs.G);
+			SHAdd(lhs.B, rhs.B);
+		}
+		
+		void SHAdd(inout SHVector3RGB lhs, SHVector3RGB rhs)
+		{
+			SHAdd(lhs.R, rhs.R);
+			SHAdd(lhs.G, rhs.G);
+			SHAdd(lhs.B, rhs.B);
 		}		
 		
 		void SHMultiply(inout SHVector5 lhs, SHVector5 rhs)
@@ -104,7 +146,21 @@ mixin SHCommon
 			lhs.v0 *= rhs.v0;
 			lhs.v1 *= rhs.v1;
 			lhs.v2 *= rhs.v2;
-		}		
+		}
+		
+		void SHMultiply(inout SHVector5RGB lhs, SHVector5RGB rhs)
+		{
+			SHMultiply(lhs.R, rhs.R);
+			SHMultiply(lhs.G, rhs.G);
+			SHMultiply(lhs.B, rhs.B);
+		}	
+		
+		void SHMultiply(inout SHVector3RGB lhs, SHVector3RGB rhs)
+		{
+			SHMultiply(lhs.R, rhs.R);
+			SHMultiply(lhs.G, rhs.G);
+			SHMultiply(lhs.B, rhs.B);
+		}	
 		
 		void SHMultiply(inout SHVector5 lhs, float rhs)
 		{
@@ -122,6 +178,20 @@ mixin SHCommon
 			lhs.v0 *= rhs;
 			lhs.v1 *= rhs;
 			lhs.v2 *= rhs;
+		}
+
+		void SHMultiply(inout SHVector5RGB lhs, float rhs)
+		{
+			SHMultiply(lhs.R, rhs);
+			SHMultiply(lhs.G, rhs);
+			SHMultiply(lhs.B, rhs);
+		}	
+		
+		void SHMultiply(inout SHVector3RGB lhs, float rhs)
+		{
+			SHMultiply(lhs.R, rhs);
+			SHMultiply(lhs.G, rhs);
+			SHMultiply(lhs.B, rhs);
 		}		
 		
 		SHVector5 SHBasis5(float3 dir)

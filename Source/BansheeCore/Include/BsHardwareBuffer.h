@@ -18,9 +18,9 @@ namespace bs
 	 * @note	Be aware that reading from non-system memory hardware buffers is usually slow and should be avoided.
 	 */
 	class BS_CORE_EXPORT HardwareBuffer
-    {
-    public:
-        virtual ~HardwareBuffer() {}
+	{
+	public:
+		virtual ~HardwareBuffer() {}
 
 		/**
 		 * Locks a portion of the buffer and returns pointer to the locked area. You must call unlock() when done.
@@ -35,15 +35,15 @@ namespace bs
 		 * @param[in]	queueIdx	Device queue to perform any read/write operations on. See @ref queuesDoc.
 		 */
 		virtual void* lock(UINT32 offset, UINT32 length, GpuLockOptions options, UINT32 deviceIdx = 0, UINT32 queueIdx = 0)
-        {
-            assert(!isLocked() && "Cannot lock this buffer, it is already locked!");
-            void* ret = map(offset, length, options, deviceIdx, queueIdx);
-            mIsLocked = true;
+		{
+			assert(!isLocked() && "Cannot lock this buffer, it is already locked!");
+			void* ret = map(offset, length, options, deviceIdx, queueIdx);
+			mIsLocked = true;
 
 			mLockStart = offset;
 			mLockSize = length;
-            return ret;
-        }
+			return ret;
+		}
 
 		/**
 		 * Locks the entire buffer and returns pointer to the locked area. You must call unlock() when done.
@@ -55,19 +55,19 @@ namespace bs
 		 *							the method returns null.
 		 * @param[in]	queueIdx	Device queue to perform any read/write operations on. See @ref queuesDoc.
 		 */
-        void* lock(GpuLockOptions options, UINT32 deviceIdx = 0, UINT32 queueIdx = 0)
-        {
-            return this->lock(0, mSize, options, deviceIdx, queueIdx);
-        }
+		void* lock(GpuLockOptions options, UINT32 deviceIdx = 0, UINT32 queueIdx = 0)
+		{
+			return this->lock(0, mSize, options, deviceIdx, queueIdx);
+		}
 
 		/**	Releases the lock on this buffer. */
 		virtual void unlock()
-        {
-            assert(isLocked() && "Cannot unlock this buffer, it is not locked!");
+		{
+			assert(isLocked() && "Cannot unlock this buffer, it is not locked!");
 
-            unmap();
-            mIsLocked = false;
-        }
+			unmap();
+			mIsLocked = false;
+		}
 
 		/**
 		 * Reads data from a portion of the buffer and copies it to the destination buffer. Caller must ensure destination 
@@ -81,7 +81,7 @@ namespace bs
 		 *							no data will be read.		
 		 * @param[in]	queueIdx	Device queue to perform the read operation on. See @ref queuesDoc.
 		 */
-        virtual void readData(UINT32 offset, UINT32 length, void* dest, UINT32 deviceIdx = 0, UINT32 queueIdx = 0) = 0;
+		virtual void readData(UINT32 offset, UINT32 length, void* dest, UINT32 deviceIdx = 0, UINT32 queueIdx = 0) = 0;
 
 		/**
 		 * Writes data into a portion of the buffer from the source memory. 
@@ -93,7 +93,7 @@ namespace bs
 		 * @param[in]	writeFlags	Optional write flags that may affect performance.
 		 * @param[in]	queueIdx	Device queue to perform the write operation on. See @ref queuesDoc.
 		 */
-        virtual void writeData(UINT32 offset, UINT32 length, const void* source,
+		virtual void writeData(UINT32 offset, UINT32 length, const void* source,
 				BufferWriteType writeFlags = BWT_NORMAL, UINT32 queueIdx = 0) = 0;
 
 		/**
@@ -125,10 +125,10 @@ namespace bs
 		}
 			
 		/** Returns the size of this buffer in bytes. */
-        UINT32 getSize() const { return mSize; }
+		UINT32 getSize() const { return mSize; }
 
 		/**	Returns whether or not this buffer is currently locked. */
-        bool isLocked() const { return mIsLocked; }	
+		bool isLocked() const { return mIsLocked; }
 
 	protected:
 		friend class HardwareBufferManager;

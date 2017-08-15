@@ -4,7 +4,8 @@
 
 #include "BsCorePrerequisites.h"
 #include "BsRTTIType.h"
-#include "BsPostProcessSettings.h"
+#include "BsCLightProbeVolume.h"
+#include "BsGameObjectRTTI.h"
 
 namespace bs
 {
@@ -13,28 +14,32 @@ namespace bs
 	 *  @{
 	 */
 
-	class BS_CORE_EXPORT PostProcessSettingsRTTI : public RTTIType<PostProcessSettings, IReflectable, PostProcessSettingsRTTI>
+	class BS_CORE_EXPORT CLightProbeVolumeRTTI : public RTTIType <CLightProbeVolume, Component, CLightProbeVolumeRTTI>
 	{
 	private:
+		BS_BEGIN_RTTI_MEMBERS
+			BS_RTTI_MEMBER_REFLPTR(mInternal, 0)
+		BS_END_RTTI_MEMBERS
 
 	public:
-		PostProcessSettingsRTTI() { }
+		CLightProbeVolumeRTTI()
+			:mInitMembers(this)
+		{ }
 
 		const String& getRTTIName() override
 		{
-			static String name = "PostProcessSettings";
+			static String name = "CLightProbeVolume";
 			return name;
 		}
 
 		UINT32 getRTTIId() override
 		{
-			return TID_PostProcessSettings;
+			return TID_CLightProbeVolume;
 		}
 
 		SPtr<IReflectable> newRTTIObject() override
 		{
-			assert(false); // Abstract class
-			return nullptr;
+			return GameObjectRTTI::createGameObject<CLightProbeVolume>();
 		}
 	};
 

@@ -8,6 +8,7 @@
 #include "BsLightRendering.h"
 #include "BsRendererView.h"
 #include "BsLight.h"
+#include "BsLightProbes.h"
 
 namespace bs 
 { 
@@ -20,6 +21,9 @@ namespace bs
 	/** @addtogroup RenderBeast
 	 *  @{
 	 */
+
+	// Limited by max number of array elements in texture for DX11 hardware
+	constexpr UINT32 MaxReflectionCubemaps = 2048 / 6;
 
 	/** Contains most scene objects relevant to the renderer. */
 	struct SceneInfo
@@ -43,6 +47,14 @@ namespace bs
 		// Reflection probes
 		Vector<RendererReflectionProbe> reflProbes;
 		Vector<Sphere> reflProbeWorldBounds;
+		Vector<bool> reflProbeCubemapArrayUsedSlots;
+		SPtr<Texture> reflProbeCubemapsTex;
+
+		// Light probes (indirect lighting)
+		LightProbes lightProbes;
+
+		// Sky
+		Skybox* skybox = nullptr;
 
 		// Buffers for various transient data that gets rebuilt every frame
 		//// Rebuilt every frame
@@ -87,16 +99,34 @@ namespace bs
 		void registerReflectionProbe(ReflectionProbe* probe);
 
 		/** Updates information about a previously registered reflection probe. */
-		void updateReflectionProbe(ReflectionProbe* probe);
+		void updateReflectionProbe(ReflectionProbe* probe, bool texture);
 
 		/** Removes a reflection probe from the scene. */
 		void unregisterReflectionProbe(ReflectionProbe* probe);
 
-		/** Updates or replaces the filtered reflection texture of the probe at the specified index. */
-		void setReflectionProbeTexture(UINT32 probeIdx, const SPtr<Texture>& texture);
-
 		/** Updates the index at which the reflection probe's texture is stored at, in the global array. */
 		void setReflectionProbeArrayIndex(UINT32 probeIdx, UINT32 arrayIdx, bool markAsClean);
+
+		/** Registers a new light probe volume in the scene. */
+		void registerLightProbeVolume(LightProbeVolume* volume);
+
+		/** Updates information about a previously registered light probe volume. */
+		void updateLightProbeVolume(LightProbeVolume* volume);
+
+		/** Removes a light probe volume from the scene. */
+		void unregisterLightProbeVolume(LightProbeVolume* volume);
+
+		/** 
+		 * Rebuilds any light probe related information. Should be called once immediately before rendering. If no change
+		 * is detected since the last call, the call does nothing.
+		 */
+		void updateLightProbes();
+
+		/** Registers a new sky texture in the scene. */
+		void registerSkybox(Skybox* skybox);
+
+		/** Removes a skybox from the scene. */
+		void unregisterSkybox(Skybox* skybox);
 
 		/** Returns a container with all relevant scene objects. */
 		const SceneInfo& getSceneInfo() const { return mInfo; }
@@ -121,6 +151,9 @@ namespace bs
 		 * @param[in]	frameInfo	Global information describing the current frame.
 		 */
 		void prepareRenderable(UINT32 idx, const FrameInfo& frameInfo);
+
+		/** Returns a modifiable version of SceneInfo. Only to be used by friends who know what they are doing. */
+		SceneInfo& _getSceneInfo() { return mInfo; }
 	private:
 		/** Creates a renderer view descriptor for the particular camera. */
 		RENDERER_VIEW_DESC createViewDesc(Camera* camera) const;
@@ -134,7 +167,6 @@ namespace bs
 		SceneInfo mInfo;
 		UnorderedMap<SamplerOverrideKey, MaterialSamplerOverrides*> mSamplerOverrides;
 
-		DefaultMaterial* mDefaultMaterial = nullptr;
 		SPtr<RenderBeastOptions> mOptions;
 	};
 

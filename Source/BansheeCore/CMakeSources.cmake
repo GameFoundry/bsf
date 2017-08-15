@@ -23,6 +23,7 @@ set(BS_BANSHEECORE_INC_COMPONENTS
 	"Include/BsCBone.h"	
 	"Include/BsCReflectionProbe.h"
 	"Include/BsCSkybox.h"
+	"Include/BsCLightProbeVolume.h"
 )
 
 set(BS_BANSHEECORE_INC_PHYSICS
@@ -97,11 +98,12 @@ set(BS_BANSHEECORE_INC_RENDERER
 	"Include/BsRendererMeshData.h"
 	"Include/BsParamBlocks.h"
 	"Include/BsCamera.h"
-	"Include/BsPostProcessSettings.h"
+	"Include/BsRenderSettings.h"
 	"Include/BsRendererExtension.h"
 	"Include/BsReflectionProbe.h"
 	"Include/BsSkybox.h"
 	"Include/BsLightProbeVolume.h"
+	"Include/BsIBLUtility.h"
 )
 
 set(BS_BANSHEECORE_SRC_LOCALIZATION
@@ -263,6 +265,7 @@ set(BS_BANSHEECORE_SRC_COMPONENTS
 	"Source/BsCBone.cpp"	
 	"Source/BsCReflectionProbe.cpp"
 	"Source/BsCSkybox.cpp"
+	"Source/BsCLightProbeVolume.cpp"
 )
 
 set(BS_BANSHEECORE_SRC_IMPORTER
@@ -350,7 +353,7 @@ set(BS_BANSHEECORE_INC_RTTI
 	"Include/BsSkeletonRTTI.h"
 	"Include/BsCCameraRTTI.h"
 	"Include/BsCameraRTTI.h"
-	"Include/BsPostProcessSettingsRTTI.h"
+	"Include/BsRenderSettingsRTTI.h"
 	"Include/BsMorphShapesRTTI.h"
 	"Include/BsAudioClipImportOptionsRTTI.h"
 	"Include/BsCRenderableRTTI.h"
@@ -363,6 +366,7 @@ set(BS_BANSHEECORE_INC_RTTI
 	"Include/BsCReflectionProbeRTTI.h"
 	"Include/BsSkyboxRTTI.h"
 	"Include/BsLightProbeVolumeRTTI.h"
+	"Include/BsCLightProbeVolumeRTTI.h"
 )
 
 set(BS_BANSHEECORE_SRC_RENDERER
@@ -373,11 +377,12 @@ set(BS_BANSHEECORE_SRC_RENDERER
 	"Source/BsRendererMeshData.cpp"
 	"Source/BsParamBlocks.cpp"
 	"Source/BsCamera.cpp"
-	"Source/BsPostProcessSettings.cpp"
+	"Source/BsRenderSettings.cpp"
 	"Source/BsRendererExtension.cpp"
 	"Source/BsReflectionProbe.cpp"
 	"Source/BsSkybox.cpp"
 	"Source/BsLightProbeVolume.cpp"
+	"Source/BsIBLUtility.cpp"
 )
 
 set(BS_BANSHEECORE_SRC_RESOURCES
