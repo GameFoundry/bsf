@@ -199,6 +199,19 @@ namespace bs { namespace ct
 		}
 	}
 
+	/** Hash value generator for std::pair<INT32, INT32>. */
+	struct pair_hash
+	{
+		size_t operator()(const std::pair<INT32, INT32>& key) const
+		{
+			size_t hash = 0;
+			bs::hash_combine(hash, key.first);
+			bs::hash_combine(hash, key.second);
+
+			return hash;
+		}
+	};
+
 	/** Information about a single tetrahedron, for use on the GPU. */
 	struct TetrahedronDataGPU
 	{
@@ -371,7 +384,6 @@ namespace bs { namespace ct
 
 		// Insert inner tetrahedron triangles
 		UINT32 tetIdx = 0;
-		UINT32 triIdx = 0;
 		for (UINT32 i = 0; i < (UINT32)mTetrahedronInfos.size(); i++)
 		{
 			if (!validTets[i])
@@ -420,13 +432,55 @@ namespace bs { namespace ct
 				indices[2] = tetIdx * 4 * 3 + j * 3 + 2;
 
 				indices += 3;
-				triIdx++;
 			}
 
 			tetIdx++;
 		}
 
-		// Generate triangles for extruded outer faces
+		// Generate an edge map for outer faces (required for step below)
+		struct Edge
+		{
+			UINT32 vertInner[2];
+			UINT32 vertOuter[2];
+			UINT32 face[2];
+		};
+
+		FrameUnorderedMap<std::pair<INT32, INT32>, Edge, pair_hash> edgeMap;
+		for(UINT32 i = 0; i < (UINT32)outerFaces.size(); i++)
+		{
+			if (!validTets[outerFaces[i].tetrahedron])
+				continue;
+
+			for (UINT32 j = 0; j < 3; ++j)
+			{
+				UINT32 v0 = outerFaces[i].innerVertices[j];
+				UINT32 v1 = outerFaces[i].innerVertices[(j + 1) % 3];
+
+				// Keep the same ordering so other faces can find the same edge
+				if (v0 > v1)
+					std::swap(v0, v1);
+
+				auto iterFind = edgeMap.find(std::make_pair((INT32)v0, (INT32)v1));
+				if (iterFind != edgeMap.end())
+				{
+					iterFind->second.face[1] = i;
+				}
+				else
+				{
+					Edge edge;
+					edge.vertInner[0] = outerFaces[i].innerVertices[j];
+					edge.vertInner[1] = outerFaces[i].innerVertices[(j + 1) % 3];
+					edge.vertOuter[0] = outerFaces[i].outerVertices[j];
+					edge.vertOuter[1] = outerFaces[i].outerVertices[(j + 1) % 3];
+					edge.face[0] = i;
+					edge.face[1] = -1;
+
+					edgeMap.insert(std::make_pair(std::make_pair((INT32)v0, (INT32)v1), edge));
+				}
+			}
+		}
+
+		// Generate front and back triangles for extruded outer faces
 		UINT32 faceIdx = 0;
 		for(UINT32 i = 0; i < (UINT32)outerFaces.size(); i++)
 		{
@@ -435,13 +489,7 @@ namespace bs { namespace ct
 
 			const TetrahedronFaceData& entry = outerFaces[i];
 
-			static const UINT32 Permutations[8][3] = 
-			{
-				{0, 1, 2 }, { 3, 4, 5},
-				{0, 1, 3 }, { 1, 3, 4},
-				{1, 2, 4 }, { 2, 4, 5},
-				{2, 0, 5 }, { 0, 5, 3}
-			};
+			static const UINT32 Permutations[2][3] = { {0, 1, 2 }, { 3, 4, 5} };
 
 			// Make sure the triangle is clockwise, facing away from the center
 			Vector3 center(BsZero);
@@ -453,7 +501,7 @@ namespace bs { namespace ct
 
 			center /= 6.0f;
 
-			for(UINT32 j = 0; j < 8; ++j)
+			for(UINT32 j = 0; j < 2; ++j)
 			{
 				UINT32 idxA = Permutations[j][0];
 				UINT32 idxB = Permutations[j][1];
@@ -482,15 +530,75 @@ namespace bs { namespace ct
 				idIter.addValue(tetIdx + faceIdx);
 				idIter.addValue(tetIdx + faceIdx);
 
-				indices[0] = tetIdx * 4 * 3 + faceIdx * 8 * 3 + j * 3 + 0;
-				indices[1] = tetIdx * 4 * 3 + faceIdx * 8 * 3 + j * 3 + 1;
-				indices[2] = tetIdx * 4 * 3 + faceIdx * 8 * 3 + j * 3 + 2;
+				indices[0] = tetIdx * 4 * 3 + faceIdx * 2 * 3 + j * 3 + 0;
+				indices[1] = tetIdx * 4 * 3 + faceIdx * 2 * 3 + j * 3 + 1;
+				indices[2] = tetIdx * 4 * 3 + faceIdx * 2 * 3 + j * 3 + 2;
 
 				indices += 3;
-				triIdx++;
 			}
 
 			faceIdx++;
+		}
+
+		// Generate sides for extruded outer faces
+		UINT32 sideIdx = 0;
+		for(auto& entry : edgeMap)
+		{
+			const Edge& edge = entry.second;
+
+			for (UINT32 i = 0; i < 2; i++)
+			{
+				const TetrahedronFaceData& face = outerFaces[edge.face[i]];
+
+				// Make sure the triangle is clockwise, facing away from the center
+				Vector3 center(BsZero);
+				for (UINT32 k = 0; k < 3; k++)
+				{
+					center += mTempTetrahedronPositions[face.innerVertices[k]];
+					center += mTempTetrahedronPositions[face.outerVertices[k]];
+				}
+
+				center /= 6.0f;
+
+				static const UINT32 Permutations[2][3] = { {0, 1, 2 }, { 1, 2, 3} };
+				for(UINT32 j = 0; j < 2; ++j)
+				{
+					UINT32 idxA = Permutations[j][0];
+					UINT32 idxB = Permutations[j][1];
+					UINT32 idxC = Permutations[j][2];
+
+					idxA = idxA > 1 ? edge.vertOuter[idxA - 2] : edge.vertInner[idxA];
+					idxB = idxB > 1 ? edge.vertOuter[idxB - 2] : edge.vertInner[idxB];
+					idxC = idxC > 1 ? edge.vertOuter[idxC - 2] : edge.vertInner[idxC];
+					
+					Vector3 A = mTempTetrahedronPositions[idxA];
+					Vector3 B = mTempTetrahedronPositions[idxB];
+					Vector3 C = mTempTetrahedronPositions[idxC];
+
+					Vector3 e0 = A - C;
+					Vector3 e1 = B - C;
+
+					Vector3 normal = e0.cross(e1);
+					if (normal.dot(A - center) > 0.0f)
+						std::swap(A, B);
+
+					posIter.addValue(A);
+					posIter.addValue(B);
+					posIter.addValue(C);
+
+					idIter.addValue(tetIdx + edge.face[i]);
+					idIter.addValue(tetIdx + edge.face[i]);
+					idIter.addValue(tetIdx + edge.face[i]);
+
+					indices[0] = tetIdx * 4 * 3 + faceIdx * 2 * 3 + sideIdx * 2 * 3 + j * 3 + 0;
+					indices[1] = tetIdx * 4 * 3 + faceIdx * 2 * 3 + sideIdx * 2 * 3 + j * 3 + 1;
+					indices[2] = tetIdx * 4 * 3 + faceIdx * 2 * 3 + sideIdx * 2 * 3 + j * 3 + 2;
+
+					indices += 3;
+				}
+
+				sideIdx++;
+			}
 		}
 
 		// Generate "caps" on the end of the extruded volume
@@ -687,19 +795,6 @@ namespace bs { namespace ct
 		mProbeCoefficientsGPU = GpuBuffer::create(desc);
 		mMaxCoefficients = count;
 	}
-
-	/** Hash value generator for std::pair<INT32, INT32>. */
-	struct pair_hash
-	{
-		size_t operator()(const std::pair<INT32, INT32>& key) const
-		{
-			size_t hash = 0;
-			bs::hash_combine(hash, key.first);
-			bs::hash_combine(hash, key.second);
-
-			return hash;
-		}
-	};
 
 	void LightProbes::generateTetrahedronData(Vector<Vector3>& positions, Vector<TetrahedronData>& tetrahedra,
 		Vector<TetrahedronFaceData>& faces,	bool generateExtrapolationVolume)

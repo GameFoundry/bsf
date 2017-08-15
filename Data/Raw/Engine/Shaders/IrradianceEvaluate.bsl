@@ -226,56 +226,24 @@ technique IrradianceEvaluate
 						float3 factors = mul(volume.transform, float4(P, 1.0f));			
 						coords = float4(factors, 1.0f - factors.x - factors.y - factors.z);
 					}
+
+					SHVector3RGB shCoeffs;
+					SHZero(shCoeffs);
 					
 					for(uint i = 0; i < 4; ++i)
 					{
-						if(coords[i] == 0.0f)
-							continue;
+						if(coords[i] > 0.0f)
+							SHMultiplyAdd(shCoeffs, gSHCoeffs[volume.indices[i]], coords[i]);
+					}
 					
-						if(volume.indices[i] == 0)
-							irradiance += float3(1.0f, 0, 0) * coords[i];
+					SHVector3 shBasis = SHBasis3(surfaceData.worldNormal);
+					SHMultiply(shCoeffs.R, shBasis);
+					SHMultiply(shCoeffs.G, shBasis);
+					SHMultiply(shCoeffs.B, shBasis);
 					
-						if(volume.indices[i] == 1)
-							irradiance += float3(0.0f, 1.0f, 0) * coords[i];
-							
-						if(volume.indices[i] == 2)
-							irradiance += float3(1.0f, 1.0f, 1.0f) * coords[i];
-							
-						if(volume.indices[i] == 3)
-							irradiance += float3(1.0f, 1.0f, 1.0f) * coords[i];
-					
-						if(volume.indices[i] == 4)
-							irradiance += float3(0.0f, 1.0f, 1.0f) * coords[i];
-							
-						if(volume.indices[i] == 5)
-							irradiance += float3(1.0f, 1.0f, 0.0f) * coords[i];
-							
-						if(volume.indices[i] == 6)
-							irradiance += float3(1.0f, 1.0f, 1.0f) * coords[i];
-							
-						if(volume.indices[i] == 7)
-							irradiance += float3(1.0f, 1.0f, 1.0f) * coords[i];
-					}					
-					
-					//SHVector3RGB shCoeffs;
-					//SHZero(shCoeffs);
-					
-					//for(uint i = 0; i < 4; ++i)
-					//{
-					//	if(coords[i] > 0.0f)
-					//		SHMultiplyAdd(shCoeffs, gSHCoeffs[volume.indices[i]], coords[i]);
-					//}
-					
-					//SHVector3 shBasis = SHBasis3(surfaceData.worldNormal);
-					//SHMultiply(shCoeffs.R, shBasis);
-					//SHMultiply(shCoeffs.G, shBasis);
-					//SHMultiply(shCoeffs.B, shBasis);
-					
-					//irradiance.r = evaluate(shCoeffs.R);
-					//irradiance.g = evaluate(shCoeffs.G);
-					//irradiance.b = evaluate(shCoeffs.B);
-					
-					//irradiance *= float3(10.0f, 0.0f, 0.0f);
+					irradiance.r = evaluateLambert(shCoeffs.R);
+					irradiance.g = evaluateLambert(shCoeffs.G);
+					irradiance.b = evaluateLambert(shCoeffs.B);
 				}
 			#endif // SKY_ONLY
 			
