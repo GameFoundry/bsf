@@ -70,6 +70,26 @@ namespace bs
 		return Vector3::ZERO;
 	}
 
+	Vector<LightProbeInfo> LightProbeVolume::getProbes() const
+	{
+		Vector<LightProbeInfo> output;
+
+		for(auto& entry : mProbes)
+		{
+			if (entry.second.flags == LightProbeFlags::Removed || entry.second.flags == LightProbeFlags::Empty)
+				continue;
+
+			LightProbeInfo info;
+			info.position = entry.second.position;
+			info.handle = entry.first;
+			info.shCoefficients = entry.second.coefficients;
+
+			output.push_back(info);
+		}
+
+		return output;		
+	}
+
 	void LightProbeVolume::resize(const AABox& volume, const Vector3I& cellCount)
 	{
 		UINT32 numProbesX = std::max(1, mCellCount.v[0]) + 1;

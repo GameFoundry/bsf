@@ -43,6 +43,14 @@ namespace bs
 		}
 	}
 
+	Vector<LightProbeInfo> CLightProbeVolume::getProbes() const
+	{
+		if (mInternal != nullptr)
+			return mInternal->getProbes();
+
+		return Vector<LightProbeInfo>();
+	}
+
 	void CLightProbeVolume::onInitialized()
 	{
 		// If mInternal already exists this means this object was deserialized,

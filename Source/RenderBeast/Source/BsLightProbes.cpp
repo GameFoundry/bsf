@@ -112,6 +112,7 @@ namespace bs { namespace ct
 
 		SPtr<GpuParams> params = mParamsSet->getGpuParams();
 		params->getTextureParam(GPT_FRAGMENT_PROGRAM, "gSkyIrradianceTex", mParamSkyIrradianceTex);
+		params->getTextureParam(GPT_FRAGMENT_PROGRAM, "gAmbientOcclusionTex", mParamAmbientOcclusionTex);
 
 		if(!mSkyOnly)
 		{
@@ -135,7 +136,7 @@ namespace bs { namespace ct
 
 	void IrradianceEvaluateMat::execute(const RendererView& view, const GBufferTextures& gbuffer, 
 		const SPtr<Texture>& lightProbeIndices, const LightProbesInfo& lightProbesInfo, const Skybox* skybox, 
-		const SPtr<RenderTexture>& output)
+		const SPtr<Texture>& ambientOcclusion, const SPtr<RenderTexture>& output)
 	{
 		const RendererViewProperties& viewProps = view.getProperties();
 
@@ -153,6 +154,7 @@ namespace bs { namespace ct
 			skyIrradiance = RendererTextures::defaultIndirect;
 
 		mParamSkyIrradianceTex.set(skyIrradiance);
+		mParamAmbientOcclusionTex.set(ambientOcclusion);
 
 		if(!mSkyOnly)
 		{

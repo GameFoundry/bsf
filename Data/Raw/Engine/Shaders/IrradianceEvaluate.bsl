@@ -45,7 +45,8 @@ technique IrradianceEvaluate
 		StructuredBuffer<TetrahedronFace> gTetFaces;
 		
 		TextureCube gSkyIrradianceTex;
-		SamplerState gSkyIrradianceSamp;
+		Texture2D gAmbientOcclusionTex;
+		SamplerState gLinearSamp;
 
 		cbuffer Params
 		{
@@ -55,7 +56,7 @@ technique IrradianceEvaluate
 		
 		float3 getSkyIndirectDiffuse(float3 dir)
 		{
-			return gSkyIrradianceTex.SampleLevel(gSkyIrradianceSamp, dir, 0).rgb * gSkyBrightness;
+			return gSkyIrradianceTex.SampleLevel(gLinearSamp, dir, 0).rgb * gSkyBrightness;
 		}
 		
 		float evaluateLambert(SHVector3 coeffs)
@@ -176,7 +177,7 @@ technique IrradianceEvaluate
 			
 			float3 irradiance = 0;
 			#if SKY_ONLY
-				irradiance = gSkyIrradianceTex.SampleLevel(gSkyIrradianceSamp, surfaceData.worldNormal, 0).rgb * gSkyBrightness;
+				irradiance = gSkyIrradianceTex.SampleLevel(gLinearSamp, surfaceData.worldNormal, 0).rgb * gSkyBrightness;
 			#else
 				uint volumeIdx;
 				#if MSAA_COUNT > 1
@@ -186,7 +187,7 @@ technique IrradianceEvaluate
 				#endif
 				
 				if(volumeIdx == 0xFFFF) // Using 16-bit texture, so need to compare like this
-					irradiance = gSkyIrradianceTex.SampleLevel(gSkyIrradianceSamp, surfaceData.worldNormal, 0).rgb * gSkyBrightness;
+					irradiance = gSkyIrradianceTex.SampleLevel(gLinearSamp, surfaceData.worldNormal, 0).rgb * gSkyBrightness;
 				else
 				{
 					Tetrahedron volume = gTetrahedra[volumeIdx];
@@ -247,7 +248,10 @@ technique IrradianceEvaluate
 				}
 			#endif // SKY_ONLY
 			
-			return irradiance * surfaceData.albedo.rgb;
+			float2 uv = NDCToUV(input.screenPos);
+			float ao = gAmbientOcclusionTex.Sample(gLinearSamp, uv);
+			
+			return irradiance * surfaceData.albedo.rgb * ao;
 		}	
 	};
 };

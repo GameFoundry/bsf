@@ -84,11 +84,13 @@ namespace bs { namespace ct
 		 * @param[in]	lightProbesInfo		Information about light probes.
 		 * @param[in]	skybox				Skybox, if available. If sky is not available, but sky rendering is enabled, 
 		 *									the system will instead use a default irradiance texture.
+		 * @param[in]	ambientOcclusion	Texture containing per-pixel ambient occlusion.
 		 * @param[in]	output				Output texture to write the radiance to. The evaluated value will be added to 
 		 *									existing radiance in the texture, using blending.
 		 */
 		void execute(const RendererView& view, const GBufferTextures& gbuffer, const SPtr<Texture>& lightProbeIndices,
-			const LightProbesInfo& lightProbesInfo, const Skybox* skybox, const SPtr<RenderTexture>& output);
+			const LightProbesInfo& lightProbesInfo, const Skybox* skybox, const SPtr<Texture>& ambientOcclusion,
+			const SPtr<RenderTexture>& output);
 
 		/** 
 		 * Returns the material variation matching the provided parameters. 
@@ -103,6 +105,7 @@ namespace bs { namespace ct
 		SPtr<GpuParamBlockBuffer> mParamBuffer;
 		GpuParamTexture mParamInputTex;
 		GpuParamTexture mParamSkyIrradianceTex;
+		GpuParamTexture mParamAmbientOcclusionTex;
 		GpuParamBuffer mParamSHCoeffsBuffer;
 		GpuParamBuffer mParamTetrahedraBuffer;
 		GpuParamBuffer mParamTetFacesBuffer;

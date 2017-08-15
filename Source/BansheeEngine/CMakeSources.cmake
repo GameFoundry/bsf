@@ -110,6 +110,7 @@ set(BS_BANSHEEENGINE_SRC_UTILITY
 	"Source/BsPaths.cpp"
 	"Source/BsShapeMeshes2D.cpp"
 	"Source/BsShapeMeshes3D.cpp"
+	"Source/BsDebugDraw.cpp"
 )
 
 set(BS_BANSHEEENGINE_INC_2D
@@ -165,6 +166,7 @@ set(BS_BANSHEEENGINE_INC_UTILITY
 	"Include/BsRectOffset.h"
 	"Include/BsShapeMeshes2D.h"
 	"Include/BsShapeMeshes3D.h"
+	"Include/BsDebugDraw.h"
 )
 
 set(BS_BANSHEEENGINE_SRC_RENDERER

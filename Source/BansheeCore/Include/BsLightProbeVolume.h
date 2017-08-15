@@ -89,6 +89,14 @@ namespace bs
 		LightProbeSHCoefficients coefficients;
 	};
 
+	/** Information about a single probe in the light probe volume. */
+	struct LightProbeInfo
+	{
+		UINT32 handle;
+		Vector3 position;
+		LightProbeSHCoefficients shCoefficients;
+	};
+
 	/** 
 	 * Allows you to define a volume of light probes that will be used for indirect lighting. Lighting information in the
 	 * scene will be interpolated from nearby probes to calculate the amount of indirect lighting at that position. It is
@@ -129,6 +137,9 @@ namespace bs
 		 * volume it cannot be removed.
 		 */
 		void removeProbe(UINT32 handle);
+
+		/** Returns a list of positions of all light probes in the volume. */
+		Vector<LightProbeInfo> getProbes() const;
 
 		/**
 		 * Causes the information for this specific light probe to be updated. You generally want to call this when the
@@ -199,7 +210,7 @@ namespace bs
 
 		/** 
 		 * Fetches latest SH coefficient data from the core thread. Note this method will block the caller thread until
-		 * the data is fetched from the core thread. It will also force any in-progress light probe updated to finish.
+		 * the data is fetched from the core thread. It will also force any in-progress light probe updates to finish.
 		 */
 		void updateCoefficients();
 

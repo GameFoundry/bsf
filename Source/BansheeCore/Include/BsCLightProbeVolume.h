@@ -36,6 +36,9 @@ namespace bs
 		/** @copydoc LightProbeVolume::removeProbe() */
 		void removeProbe(UINT32 handle) { mInternal->removeProbe(handle); }
 
+		/** @copydoc LightProbeVolume::getProbes() */
+		Vector<LightProbeInfo> getProbes() const;
+
 		/** @copydoc LightProbeVolume::renderProbe() */
 		void renderProbe(UINT32 handle);
 

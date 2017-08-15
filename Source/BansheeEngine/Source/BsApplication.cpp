@@ -18,6 +18,7 @@
 #include "BsCoreObjectManager.h"
 #include "BsRendererManager.h"
 #include "BsRendererMaterialManager.h"
+#include "BsDebugDraw.h"
 #include "BsPlatform.h"
 #include "BsEngineShaderIncludeHandler.h"
 #include "BsEngineConfig.h"
@@ -67,6 +68,7 @@ namespace bs
 		Platform::setIcon(BuiltinResources::instance().getBansheeIcon());
 
 		SceneManager::instance().setMainRenderTarget(getPrimaryWindow());
+		DebugDraw::startUp();
 
 		ScriptManager::startUp();
 
@@ -81,6 +83,7 @@ namespace bs
 		SceneManager::instance().clearScene(true);
 
 		ScriptManager::shutDown();
+		DebugDraw::shutDown();
 
 		if (mStartUpDesc.scripting)
 			unloadScriptSystem();
@@ -100,6 +103,7 @@ namespace bs
 		CoreApplication::postUpdate();
 
 		PROFILE_CALL(GUIManager::instance().update(), "GUI");
+		DebugDraw::instance()._update();
 	}
 
 	void Application::loadScriptSystem()

@@ -24,9 +24,11 @@ mixin ImageBasedLighting
 	
 		TextureCube gSkyReflectionTex;
 		SamplerState gSkyReflectionSamp;
-		
+				
 		TextureCubeArray gReflProbeCubemaps;
 		SamplerState gReflProbeSamp;
+		
+		Texture2D gAmbientOcclusionTex;
 		
 		Texture2D gPreintegratedEnvBRDF;
 		SamplerState gPreintegratedEnvBRDFSamp;
@@ -186,7 +188,13 @@ mixin ImageBasedLighting
 			return output;
 		}
 		
-		float3 getImageBasedSpecular(float3 worldPos, float3 V, float3 R, SurfaceData surfaceData, uint probeOffset, uint numProbes)
+		float getSpecularOcclusion(float NoV, float r, float ao)
+		{
+			float r2 = r * r;
+			return saturate(pow(NoV + ao, r2) - 1.0f + ao);
+		}		
+		
+		float3 getImageBasedSpecular(float3 worldPos, float3 V, float3 R, SurfaceData surfaceData, float ao, uint probeOffset, uint numProbes)
 		{
 			// See C++ code for generation of gPreintegratedEnvBRDF to see why this code works as is
 			float3 N = surfaceData.worldNormal.xyz;
@@ -198,8 +206,9 @@ mixin ImageBasedLighting
 			float3 radiance = gatherReflectionRadiance(worldPos, R, surfaceData.roughness, specularColor, probeOffset, numProbes);
 			
 			float2 envBRDF = gPreintegratedEnvBRDF.SampleLevel(gPreintegratedEnvBRDFSamp, float2(NoV, surfaceData.roughness), 0).rg;
+			float specOcclusion = getSpecularOcclusion(NoV, surfaceData.roughness * surfaceData.roughness, ao);
 			
-			return radiance * (specularColor * envBRDF.x + envBRDF.y);
+			return radiance * (specularColor * envBRDF.x + envBRDF.y) * specOcclusion;
 		}		
 	};
 };

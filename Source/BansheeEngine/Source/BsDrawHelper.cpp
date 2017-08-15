@@ -159,8 +159,8 @@ namespace bs
 		frustumData.position = position;
 		frustumData.aspect = aspect;
 		frustumData.FOV = FOV;
-		frustumData.near = near;
-		frustumData.far = far;
+		frustumData.nearDist = near;
+		frustumData.farDist = far;
 		frustumData.color = mColor;
 		frustumData.transform = mTransform;
 		frustumData.layer = mLayer;
@@ -1065,8 +1065,8 @@ namespace bs
 					{
 						FrustumData& frustumData = mFrustumData[shapeData.idx];
 
-						ShapeMeshes3D::wireFrustum(frustumData.position, frustumData.aspect, frustumData.FOV, frustumData.near,
-							frustumData.far, meshData, curVertexOffset, curIndexOffet);
+						ShapeMeshes3D::wireFrustum(frustumData.position, frustumData.aspect, frustumData.FOV, frustumData.nearDist,
+							frustumData.farDist, meshData, curVertexOffset, curIndexOffet);
 
 						transform = &frustumData.transform;
 						color = frustumData.color.getAsRGBA();

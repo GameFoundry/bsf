@@ -101,6 +101,7 @@ namespace bs { namespace ct
 		void populate(const SPtr<GpuParamsSet>& paramsSet, GpuProgramType programType, bool optional, bool gridIndices);
 
 		GpuParamTexture skyReflectionsTexParam;
+		GpuParamTexture ambientOcclusionTexParam;
 		GpuParamTexture reflectionProbeCubemapsTexParam;
 
 		GpuParamTexture preintegratedEnvBRDFParam;
@@ -136,6 +137,7 @@ namespace bs { namespace ct
 			SPtr<Texture> sceneColorTex;
 			SPtr<GpuBuffer> sceneColorBuffer;
 			SPtr<Texture> preIntegratedGF;
+			SPtr<Texture> ambientOcclusion;
 		};
 
 		TiledDeferredImageBasedLightingMat();

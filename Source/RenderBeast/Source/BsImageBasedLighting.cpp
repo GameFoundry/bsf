@@ -120,6 +120,9 @@ namespace bs { namespace ct
 			params->getTextureParam(programType, "gPreintegratedEnvBRDF", preintegratedEnvBRDFParam);
 		}
 
+		// AO
+		params->getTextureParam(programType, "gAmbientOcclusionTex", ambientOcclusionTexParam);
+
 		if(gridIndices)
 		{
 			if (!optional || params->hasBuffer(programType, "gReflectionProbeIndices"))
@@ -258,6 +261,7 @@ namespace bs { namespace ct
 		mImageBasedParams.reflectionProbesParam.set(probeData.getProbeBuffer());
 		mImageBasedParams.reflectionProbeCubemapsTexParam.set(sceneInfo.reflProbeCubemapsTex);
 		mImageBasedParams.skyReflectionsTexParam.set(skyFilteredRadiance);
+		mImageBasedParams.ambientOcclusionTexParam.set(inputs.ambientOcclusion);
 
 		mParamsSet->setParamBlockBuffer("PerCamera", view.getPerViewBuffer(), true);
 

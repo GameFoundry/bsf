@@ -657,6 +657,15 @@ namespace bs { namespace ct
 		RCNodeSceneDepth* sceneDepthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[1]);
 		RCNodeLightAccumulation* lightAccumNode = static_cast <RCNodeLightAccumulation*>(inputs.inputNodes[2]);
 
+		SPtr<Texture> ssao;
+		if (inputs.view.getRenderSettings().ambientOcclusion.enabled)
+		{
+			RCNodeSSAO* ssaoNode = static_cast<RCNodeSSAO*>(inputs.inputNodes[4]);
+			ssao = ssaoNode->output->texture;
+		}
+		else
+			ssao = Texture::WHITE;
+
 		GpuResourcePool& resPool = GpuResourcePool::instance();
 		const RendererViewProperties& viewProps = inputs.view.getProperties();
 
@@ -708,7 +717,7 @@ namespace bs { namespace ct
 		if (volumeIndices)
 			volumeIndicesTex = volumeIndices->texture;
 
-		evaluateMat->execute(inputs.view, gbuffer, volumeIndicesTex, lpInfo, inputs.scene.skybox, 
+		evaluateMat->execute(inputs.view, gbuffer, volumeIndicesTex, lpInfo, inputs.scene.skybox, ssao, 
 			lightAccumNode->renderTarget);
 
 		if(volumeIndices)
@@ -729,6 +738,9 @@ namespace bs { namespace ct
 		deps.push_back(RCNodeLightAccumulation::getNodeId());
 		deps.push_back(RCNodeStandardDeferredLighting::getNodeId());
 
+		if(view.getRenderSettings().ambientOcclusion.enabled)
+			deps.push_back(RCNodeSSAO::getNodeId());
+
 		if (view.getProperties().numSamples > 1)
 			deps.push_back(RCNodeUnflattenLightAccum::getNodeId());
 
@@ -742,6 +754,15 @@ namespace bs { namespace ct
 		RCNodeSceneDepth* sceneDepthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[2]);
 		RCNodeLightAccumulation* lightAccumNode = static_cast <RCNodeLightAccumulation*>(inputs.inputNodes[3]);
 
+		SPtr<Texture> ssao;
+		if (inputs.view.getRenderSettings().ambientOcclusion.enabled)
+		{
+			RCNodeSSAO* ssaoNode = static_cast<RCNodeSSAO*>(inputs.inputNodes[5]);
+			ssao = ssaoNode->output->texture;
+		}
+		else
+			ssao = Texture::WHITE;
+
 		const RendererViewProperties& viewProps = inputs.view.getProperties();
 		TiledDeferredImageBasedLightingMat* material = TiledDeferredImageBasedLightingMat::getVariation(viewProps.numSamples);
 
@@ -753,6 +774,7 @@ namespace bs { namespace ct
 		iblInputs.sceneColorTex = sceneColorNode->sceneColorTex->texture;
 		iblInputs.lightAccumulation = lightAccumNode->lightAccumulationTex->texture;
 		iblInputs.preIntegratedGF = RendererTextures::preintegratedEnvGF;
+		iblInputs.ambientOcclusion = ssao;
 
 		if(sceneColorNode->flattenedSceneColorBuffer)
 			iblInputs.sceneColorBuffer = sceneColorNode->flattenedSceneColorBuffer->buffer;
@@ -774,6 +796,9 @@ namespace bs { namespace ct
 		deps.push_back(RCNodeSceneDepth::getNodeId());
 		deps.push_back(RCNodeLightAccumulation::getNodeId());
 		deps.push_back(RCNodeIndirectLighting::getNodeId());
+
+		if(view.getRenderSettings().ambientOcclusion.enabled)
+			deps.push_back(RCNodeSSAO::getNodeId());
 
 		return deps;
 	}
@@ -859,6 +884,7 @@ namespace bs { namespace ct
 				iblParams.reflectionProbesParam.set(visibleReflProbeData.getProbeBuffer());
 
 				iblParams.skyReflectionsTexParam.set(skyFilteredRadiance);
+				iblParams.ambientOcclusionTexParam.set(Texture::WHITE); // Note: Add SSAO here?
 
 				iblParams.reflectionProbeCubemapsTexParam.set(sceneInfo.reflProbeCubemapsTex);
 				iblParams.preintegratedEnvBRDFParam.set(RendererTextures::preintegratedEnvGF);

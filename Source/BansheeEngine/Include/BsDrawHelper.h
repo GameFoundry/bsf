@@ -183,8 +183,8 @@ namespace bs
 			Vector3 position;
 			float aspect;
 			Degree FOV;
-			float near;
-			float far;
+			float nearDist;
+			float farDist;
 		};
 
 		struct ConeData : CommonData

@@ -357,6 +357,10 @@
         {
             "Path": "Clear.bsl",
             "UUID": "5a325167-5bab-4925-8b50-95434448930f"
+        },
+        {
+            "Path": "DebugDraw.bsl",
+            "UUID": "6d3eb44e-b7e9-4c5a-8f8c-e5695607ca13"
         }
     ],
     "Skin": [

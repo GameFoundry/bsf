@@ -252,7 +252,7 @@ technique PPSSAO
 			output = lerp(output, 1.0f, saturate(-sceneDepth * gFadeMultiplyAdd.x + gFadeMultiplyAdd.y));
 			
 			// Adjust power and intensity
-			output = 1.0f - saturate(pow(1.0f - output, gPower) * gIntensity);
+			output = 1.0f - saturate((1.0f - pow(output, gPower)) * gIntensity);
 			#endif
 			
 			// On quality 0 we don't blur at all. At qualities higher than 1 we use a proper bilateral blur.
