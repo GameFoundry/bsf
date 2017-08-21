@@ -1,11 +1,11 @@
 set(BS_BANSHEEOISINPUT_INC_NOFILTER
-	"Include/BsInputHandlerOIS.h"
-	"Include/BsOISPrerequisites.h"
+	"BsInputHandlerOIS.h"
+	"BsOISPrerequisites.h"
 )
 
 set(BS_BANSHEEOISINPUT_SRC_NOFILTER
-	"Source/BsInputHandlerOIS.cpp"
-	"Source/BsOISPlugin.cpp"
+	"BsInputHandlerOIS.cpp"
+	"BsOISPlugin.cpp"
 )
 
 source_group("Header Files" FILES ${BS_BANSHEEOISINPUT_INC_NOFILTER})

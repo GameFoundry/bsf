@@ -1,11 +1,11 @@
 set(BS_BANSHEEFREEIMGIMPORTER_INC_NOFILTER
-	"Include/BsFreeImgPrerequisites.h"
-	"Include/BsFreeImgImporter.h"
+	"BsFreeImgPrerequisites.h"
+	"BsFreeImgImporter.h"
 )
 
 set(BS_BANSHEEFREEIMGIMPORTER_SRC_NOFILTER
-	"Source/BsFreeImgPlugin.cpp"
-	"Source/BsFreeImgImporter.cpp"
+	"BsFreeImgPlugin.cpp"
+	"BsFreeImgImporter.cpp"
 )
 
 source_group("Header Files" FILES ${BS_BANSHEEFREEIMGIMPORTER_INC_NOFILTER})

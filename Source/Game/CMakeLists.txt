@@ -3,10 +3,10 @@ include(CMakeSources.cmake)
 
 # Includes
 set(Game_INC 
-	"Include"
-	"../BansheeUtility/Include" 
-	"../BansheeCore/Include"
-	"../BansheeEngine/Include")
+	"./"
+	"../BansheeUtility" 
+	"../BansheeCore"
+	"../BansheeEngine")
 
 include_directories(${Game_INC})	
 	

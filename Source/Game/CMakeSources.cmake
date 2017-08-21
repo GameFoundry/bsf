@@ -3,7 +3,7 @@ set(BS_GAME_INC_NOFILTER
 )
 
 set(BS_GAME_SRC_NOFILTER
-	"Source/Main.cpp"
+	"Main.cpp"
 )
 
 source_group("Header Files" FILES ${BS_GAME_INC_NOFILTER})

@@ -224,8 +224,8 @@ else()
 endif()
 
 ## Generate config files)
-configure_file("${PROJECT_SOURCE_DIR}/CMake/BsEngineConfig.h.in" "${PROJECT_SOURCE_DIR}/BansheeEngine/Include/BsEngineConfig.h")
-configure_file("${PROJECT_SOURCE_DIR}/CMake/BsFrameworkConfig.h.in" "${PROJECT_SOURCE_DIR}/BansheeUtility/Include/BsFrameworkConfig.h")
+configure_file("${PROJECT_SOURCE_DIR}/CMake/BsEngineConfig.h.in" "${PROJECT_SOURCE_DIR}/BansheeEngine/BsEngineConfig.h")
+configure_file("${PROJECT_SOURCE_DIR}/CMake/BsFrameworkConfig.h.in" "${PROJECT_SOURCE_DIR}/BansheeUtility/BsFrameworkConfig.h")
 
 # Code generation for script bindings
 include(CMake/GenerateScriptBindings.cmake)

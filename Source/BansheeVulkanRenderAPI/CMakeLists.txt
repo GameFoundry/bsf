@@ -9,9 +9,9 @@ endif()
 
 # Includes
 set(BansheeVulkanRenderAPI_INC 
-	"Include" 
-	"../BansheeUtility/Include" 
-	"../BansheeCore/Include"
+	"./" 
+	"../BansheeUtility" 
+	"../BansheeCore"
 	${Vulkan_INCLUDE_DIR}
 	${glslang_INCLUDE_DIR})
 

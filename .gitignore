@@ -17,7 +17,7 @@ Data/Editor/*
 !Data/Editor/EmptyShaderText.txt
 !Data/Editor/Layout.asset
 Documentation/html
-Build
+/Build
 *.aps
 *.opendb
 BsEngineConfig.h

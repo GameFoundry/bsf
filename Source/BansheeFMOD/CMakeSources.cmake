@@ -1,24 +1,24 @@
 set(BS_BANSHEEFMOD_INC_NOFILTER
-	"Include/BsFMODPrerequisites.h"
-	"Include/BsFMODAudio.h"
-	"Include/BsFMODImporter.h"
-	"Include/BsFMODAudioSource.h"
-	"Include/BsFMODAudioListener.h"
-	"Include/BsFMODAudioClip.h"
-	"../BansheeOpenAudio/Include/BsOggVorbisEncoder.h"
-	"../BansheeOpenAudio/Include/BsAudioDecoder.h"
-	"../BansheeOpenAudio/Include/BsOggVorbisDecoder.h"
+	"BsFMODPrerequisites.h"
+	"BsFMODAudio.h"
+	"BsFMODImporter.h"
+	"BsFMODAudioSource.h"
+	"BsFMODAudioListener.h"
+	"BsFMODAudioClip.h"
+	"../BansheeOpenAudio/BsOggVorbisEncoder.h"
+	"../BansheeOpenAudio/BsAudioDecoder.h"
+	"../BansheeOpenAudio/BsOggVorbisDecoder.h"
 )
 
 set(BS_BANSHEEFMOD_SRC_NOFILTER
-	"Source/BsFMODPlugin.cpp"
-	"Source/BsFMODAudio.cpp"
-	"Source/BsFMODImporter.cpp"
-	"Source/BsFMODAudioSource.cpp"
-	"Source/BsFMODAudioListener.cpp"
-	"Source/BsFMODAudioClip.cpp"
-	"../BansheeOpenAudio/Source/BsOggVorbisEncoder.cpp"
-	"../BansheeOpenAudio/Source/BsOggVorbisDecoder.cpp"
+	"BsFMODPlugin.cpp"
+	"BsFMODAudio.cpp"
+	"BsFMODImporter.cpp"
+	"BsFMODAudioSource.cpp"
+	"BsFMODAudioListener.cpp"
+	"BsFMODAudioClip.cpp"
+	"../BansheeOpenAudio/BsOggVorbisEncoder.cpp"
+	"../BansheeOpenAudio/BsOggVorbisDecoder.cpp"
 )
 
 source_group("Header Files" FILES ${BS_BANSHEEFMOD_INC_NOFILTER})

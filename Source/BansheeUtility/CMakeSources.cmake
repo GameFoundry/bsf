@@ -1,263 +1,264 @@
 set(BS_BANSHEEUTILITY_INC_THREADING
-	"Include/BsThreadDefines.h"
-	"Include/BsAsyncOp.h"
-	"Include/BsSpinLock.h"
-	"Include/BsThreadPool.h"
-	"Include/BsTaskScheduler.h"
+	"Threading/BsThreadDefines.h"
+	"Threading/BsAsyncOp.h"
+	"Threading/BsSpinLock.h"
+	"Threading/BsThreadPool.h"
+	"Threading/BsTaskScheduler.h"
 )
 
 set(BS_BANSHEEUTILITY_SRC_THIRDPARTY
-	"Source/ThirdParty/md5.cpp"
-	"Source/ThirdParty/TetGen/tetgen.cxx"
-	"Source/ThirdParty/TetGen/predicates.cxx"
+	"ThirdParty/md5.cpp"
+	"ThirdParty/TetGen/tetgen.cxx"
+	"ThirdParty/TetGen/predicates.cxx"
 )
 
 set(BS_BANSHEEUTILITY_INC_PREREQUISITES
-	"Include/BsTypes.h"
-	"Include/BsStdHeaders.h"
-	"Include/BsPrerequisitesUtil.h"
-	"Include/BsPlatformDefines.h"
-	"Include/BsFwdDeclUtil.h"
-	"Include/BsRTTIPrerequisites.h"
+	"Prerequisites/BsTypes.h"
+	"Prerequisites/BsStdHeaders.h"
+	"Prerequisites/BsPrerequisitesUtil.h"
+	"Prerequisites/BsPlatformDefines.h"
+	"Prerequisites/BsFwdDeclUtil.h"
+	"Prerequisites/BsRTTIPrerequisites.h"
 )
 
 set(BS_BANSHEEUTILITY_SRC_WIN32
-	"Source/Win32/BsWin32FileSystem.cpp"
-	"Source/Win32/BsWin32CrashHandler.cpp"
-	"Source/Win32/BsWin32PlatformUtility.cpp"
-	"Source/Win32/BsWin32Window.cpp"
+	"Win32/BsWin32FileSystem.cpp"
+	"Win32/BsWin32CrashHandler.cpp"
+	"Win32/BsWin32PlatformUtility.cpp"
+	"Win32/BsWin32Window.cpp"
 )
 
 set(BS_BANSHEEUTILITY_SRC_UNIX
-	"Source/Unix/BsUnixCrashHandler.cpp"
-	"Source/Unix/BsUnixFileSystem.cpp"
-	"Source/Unix/BsUnixPlatformUtility.cpp"
+	"Unix/BsUnixCrashHandler.cpp"
+	"Unix/BsUnixFileSystem.cpp"
+	"Unix/BsUnixPlatformUtility.cpp"
 )
 
 set(BS_BANSHEEUTILITY_INC_IMAGE
-	"Include/BsColor.h"
-	"Include/BsTextureAtlasLayout.h"
+	"Image/BsColor.h"
+	"Image/BsTextureAtlasLayout.h"
 )
 
 set(BS_BANSHEEUTILITY_INC_STRING
-	"Include/BsString.h"
-	"Include/BsStringFormat.h"
-	"Include/BsStringID.h"
+	"String/BsString.h"
+	"String/BsStringFormat.h"
+	"String/BsStringID.h"
 )
 
 set(BS_BANSHEEUTILITY_SRC_IMAGE
-	"Source/BsColor.cpp"
-	"Source/BsTextureAtlasLayout.cpp"
+	"Image/BsColor.cpp"
+	"Image/BsTextureAtlasLayout.cpp"
 )
 
-set(BS_BANSHEEUTILITY_SRC_GENERAL
-	"Source/BsDynLib.cpp"
-	"Source/BsDynLibManager.cpp"
-	"Source/BsMessageHandler.cpp"
-	"Source/BsTimer.cpp"
-	"Source/BsTime.cpp"
-	"Source/BsUtil.cpp"
-	"Source/BsCompression.cpp"
-	"Source/BsTriangulation.cpp"
+set(BS_BANSHEEUTILITY_SRC_UTILITY
+	"Utility/BsDynLib.cpp"
+	"Utility/BsDynLibManager.cpp"
+	"Utility/BsMessageHandler.cpp"
+	"Utility/BsTimer.cpp"
+	"Utility/BsTime.cpp"
+	"Utility/BsUtil.cpp"
+	"Utility/BsCompression.cpp"
+	"Utility/BsTriangulation.cpp"
 )
 
 set(BS_BANSHEEUTILITY_INC_DEBUG
-	"Include/BsBitmapWriter.h"
-	"Include/BsDebug.h"
-	"Include/BsLog.h"
+	"Debug/BsBitmapWriter.h"
+	"Debug/BsDebug.h"
+	"Debug/BsLog.h"
 )
 
 set(BS_BANSHEEUTILITY_INC_FILESYSTEM
-	"Include/BsFileSystem.h"
-	"Include/BsDataStream.h"
-	"Include/BsPath.h"
+	"FileSystem/BsFileSystem.h"
+	"FileSystem/BsDataStream.h"
+	"FileSystem/BsPath.h"
 )
 
 set(BS_BANSHEEUTILITY_SRC_FILESYSTEM
-	"Source/BsDataStream.cpp"
-	"Source/BsFileSystem.cpp"
-	"Source/BsPath.cpp"
+	"FileSystem/BsDataStream.cpp"
+	"FileSystem/BsFileSystem.cpp"
+	"FileSystem/BsPath.cpp"
 )
 
 set(BS_BANSHEEUTILITY_SRC_THREADING
-	"Source/BsAsyncOp.cpp"
-	"Source/BsTaskScheduler.cpp"
-	"Source/BsThreadPool.cpp"
+	"Threading/BsAsyncOp.cpp"
+	"Threading/BsTaskScheduler.cpp"
+	"Threading/BsThreadPool.cpp"
 )
 
-set(BS_BANSHEEUTILITY_INC_GENERAL
-	"Include/BsAny.h"
-	"Include/BsBitwise.h"
-	"Include/BsDynLib.h"
-	"Include/BsDynLibManager.h"
-	"Include/BsEvent.h"
-	"Include/BsMessageHandler.h"
-	"Include/BsMessageHandlerFwd.h"
-	"Include/BsModule.h"
-	"Include/BsPlatformUtility.h"
-	"Include/BsServiceLocator.h"
-	"Include/BsTime.h"
-	"Include/BsTimer.h"
-	"Include/BsUtil.h"
-	"Include/BsFlags.h"
-	"Include/BsCompression.h"
-	"Include/BsTriangulation.h"
+set(BS_BANSHEEUTILITY_INC_UTILITY
+	"Utility/BsAny.h"
+	"Utility/BsBitwise.h"
+	"Utility/BsDynLib.h"
+	"Utility/BsDynLibManager.h"
+	"Utility/BsEvent.h"
+	"Utility/BsMessageHandler.h"
+	"Utility/BsMessageHandlerFwd.h"
+	"Utility/BsModule.h"
+	"Utility/BsPlatformUtility.h"
+	"Utility/BsServiceLocator.h"
+	"Utility/BsTime.h"
+	"Utility/BsTimer.h"
+	"Utility/BsUtil.h"
+	"Utility/BsFlags.h"
+	"Utility/BsCompression.h"
+	"Utility/BsTriangulation.h"
+	"Utility/BsNonCopyable.h"
 )
 
 set(BS_BANSHEEUTILITY_SRC_ALLOCATORS
-	"Source/BsFrameAlloc.cpp"
-	"Source/BsGlobalFrameAlloc.cpp"
-	"Source/BsMemStack.cpp"
-	"Source/BsMemoryAllocator.cpp"
+	"Allocators/BsFrameAlloc.cpp"
+	"Allocators/BsGlobalFrameAlloc.cpp"
+	"Allocators/BsMemStack.cpp"
+	"Allocators/BsMemoryAllocator.cpp"
 )
 
-set(BS_BANSHEEUTILITY_SRC_RTTI
-	"Source/BsIReflectable.cpp"
-	"Source/BsRTTIField.cpp"
-	"Source/BsRTTIType.cpp"
+set(BS_BANSHEEUTILITY_SRC_REFLECTION
+	"Reflection/BsIReflectable.cpp"
+	"Reflection/BsRTTIField.cpp"
+	"Reflection/BsRTTIType.cpp"
 )
 
 set(BS_BANSHEEUTILITY_SRC_DEBUG
-	"Source/BsBitmapWriter.cpp"
-	"Source/BsLog.cpp"
-	"Source/BsDebug.cpp"
+	"Debug/BsBitmapWriter.cpp"
+	"Debug/BsLog.cpp"
+	"Debug/BsDebug.cpp"
 )
 
 set(BS_BANSHEEUTILITY_INC_RTTI
-	"Include/BsSerializedObjectRTTI.h"
-	"Include/BsIReflectableRTTI.h"
+	"RTTI/BsSerializedObjectRTTI.h"
+	"RTTI/BsIReflectableRTTI.h"
 )
 
 set(BS_BANSHEEUTILITY_INC_ALLOCATORS
-	"Include/BsFrameAlloc.h"
-	"Include/BsGlobalFrameAlloc.h"
-	"Include/BsMemAllocProfiler.h"
-	"Include/BsMemoryAllocator.h"
-	"Include/BsMemStack.h"
-	"Include/BsStaticAlloc.h"
-	"Include/BsGroupAlloc.h"
+	"Allocators/BsFrameAlloc.h"
+	"Allocators/BsGlobalFrameAlloc.h"
+	"Allocators/BsMemAllocProfiler.h"
+	"Allocators/BsMemoryAllocator.h"
+	"Allocators/BsMemStack.h"
+	"Allocators/BsStaticAlloc.h"
+	"Allocators/BsGroupAlloc.h"
 )
 
 set(BS_BANSHEEUTILITY_INC_THIRDPARTY
-	"Include/ThirdParty/md5.h"
-	"Include/ThirdParty/json.hpp"
-	"Include/ThirdParty/TetGen/tetgen.h"
+	"ThirdParty/md5.h"
+	"ThirdParty/json.hpp"
+	"ThirdParty/TetGen/tetgen.h"
 )
 
 set(BS_BANSHEEUTILITY_INC_ERROR
-	"Include/BsException.h"
-	"Include/BsCrashHandler.h"
+	"Error/BsException.h"
+	"Error/BsCrashHandler.h"
 )
 
 set(BS_BANSHEEUTILITY_SRC_MATH
-	"Source/BsAABox.cpp"
-	"Source/BsDegree.cpp"
-	"Source/BsMath.cpp"
-	"Source/BsMatrix3.cpp"
-	"Source/BsMatrix4.cpp"
-	"Source/BsPlane.cpp"
-	"Source/BsQuaternion.cpp"
-	"Source/BsRadian.cpp"
-	"Source/BsRay.cpp"
-	"Source/BsSphere.cpp"
-	"Source/BsVector2.cpp"
-	"Source/BsVector2I.cpp"
-	"Source/BsVector3.cpp"
-	"Source/BsVector4.cpp"
-	"Source/BsBounds.cpp"
-	"Source/BsConvexVolume.cpp"
-	"Source/BsTorus.cpp"
-	"Source/BsRect3.cpp"
-	"Source/BsRect2.cpp"
-	"Source/BsRect2I.cpp"
-	"Source/BsLineSegment3.cpp"
-	"Source/BsCapsule.cpp"
-	"Source/BsLine2.cpp"
+	"Math/BsAABox.cpp"
+	"Math/BsDegree.cpp"
+	"Math/BsMath.cpp"
+	"Math/BsMatrix3.cpp"
+	"Math/BsMatrix4.cpp"
+	"Math/BsPlane.cpp"
+	"Math/BsQuaternion.cpp"
+	"Math/BsRadian.cpp"
+	"Math/BsRay.cpp"
+	"Math/BsSphere.cpp"
+	"Math/BsVector2.cpp"
+	"Math/BsVector2I.cpp"
+	"Math/BsVector3.cpp"
+	"Math/BsVector4.cpp"
+	"Math/BsBounds.cpp"
+	"Math/BsConvexVolume.cpp"
+	"Math/BsTorus.cpp"
+	"Math/BsRect3.cpp"
+	"Math/BsRect2.cpp"
+	"Math/BsRect2I.cpp"
+	"Math/BsLineSegment3.cpp"
+	"Math/BsCapsule.cpp"
+	"Math/BsLine2.cpp"
 )
 
 set(BS_BANSHEEUTILITY_INC_TESTING
-	"Include/BsFileSystemTestSuite.h"
-	"Include/BsTestSuite.h"
-	"Include/BsTestOutput.h"
-	"Include/BsConsoleTestOutput.h"
+	"Testing/BsFileSystemTestSuite.h"
+	"Testing/BsTestSuite.h"
+	"Testing/BsTestOutput.h"
+	"Testing/BsConsoleTestOutput.h"
 )
 
 set(BS_BANSHEEUTILITY_SRC_TESTING
-	"Source/BsFileSystemTestSuite.cpp"
-	"Source/BsTestSuite.cpp"
-	"Source/BsTestOutput.cpp"
-	"Source/BsConsoleTestOutput.cpp"
+	"Testing/BsFileSystemTestSuite.cpp"
+	"Testing/BsTestSuite.cpp"
+	"Testing/BsTestOutput.cpp"
+	"Testing/BsConsoleTestOutput.cpp"
 )
 
 set(BS_BANSHEEUTILITY_SRC_SERIALIZATION
-	"Source/BsMemorySerializer.cpp"
-	"Source/BsFileSerializer.cpp"
-	"Source/BsBinarySerializer.cpp"
-	"Source/BsBinaryDiff.cpp"
-	"Source/BsSerializedObject.cpp"
-	"Source/BsBinaryCloner.cpp"
+	"Serialization/BsMemorySerializer.cpp"
+	"Serialization/BsFileSerializer.cpp"
+	"Serialization/BsBinarySerializer.cpp"
+	"Serialization/BsBinaryDiff.cpp"
+	"Serialization/BsSerializedObject.cpp"
+	"Serialization/BsBinaryCloner.cpp"
 )
 
 set(BS_BANSHEEUTILITY_INC_MATH
-	"Include/BsAABox.h"
-	"Include/BsDegree.h"
-	"Include/BsMath.h"
-	"Include/BsMatrix3.h"
-	"Include/BsMatrix4.h"
-	"Include/BsPlane.h"
-	"Include/BsQuaternion.h"
-	"Include/BsRadian.h"
-	"Include/BsRay.h"
-	"Include/BsSphere.h"
-	"Include/BsVector2.h"
-	"Include/BsVector2I.h"
-	"Include/BsVector3.h"
-	"Include/BsVector4.h"
-	"Include/BsBounds.h"
-	"Include/BsConvexVolume.h"
-	"Include/BsTorus.h"
-	"Include/BsLineSegment3.h"
-	"Include/BsRect3.h"
-	"Include/BsRect2.h"
-	"Include/BsRect2I.h"
-	"Include/BsCapsule.h"
-	"Include/BsMatrixNxM.h"
-	"Include/BsVectorNI.h"
-	"Include/BsLine2.h"
+	"Math/BsAABox.h"
+	"Math/BsDegree.h"
+	"Math/BsMath.h"
+	"Math/BsMatrix3.h"
+	"Math/BsMatrix4.h"
+	"Math/BsPlane.h"
+	"Math/BsQuaternion.h"
+	"Math/BsRadian.h"
+	"Math/BsRay.h"
+	"Math/BsSphere.h"
+	"Math/BsVector2.h"
+	"Math/BsVector2I.h"
+	"Math/BsVector3.h"
+	"Math/BsVector4.h"
+	"Math/BsBounds.h"
+	"Math/BsConvexVolume.h"
+	"Math/BsTorus.h"
+	"Math/BsLineSegment3.h"
+	"Math/BsRect3.h"
+	"Math/BsRect2.h"
+	"Math/BsRect2I.h"
+	"Math/BsCapsule.h"
+	"Math/BsMatrixNxM.h"
+	"Math/BsVectorNI.h"
+	"Math/BsLine2.h"
 )
 
 set(BS_BANSHEEUTILITY_SRC_ERROR
-	"Source/BsException.cpp"
-	"Source/BsCrashHandler.cpp"
+	"Error/BsException.cpp"
+	"Error/BsCrashHandler.cpp"
 )
 
 set(BS_BANSHEEUTILITY_INC_SERIALIZATION
-	"Include/BsBinarySerializer.h"
-	"Include/BsFileSerializer.h"
-	"Include/BsMemorySerializer.h"
-	"Include/BsBinaryDiff.h"
-	"Include/BsSerializedObject.h"
-	"Include/BsBinaryCloner.h"
+	"Serialization/BsBinarySerializer.h"
+	"Serialization/BsFileSerializer.h"
+	"Serialization/BsMemorySerializer.h"
+	"Serialization/BsBinaryDiff.h"
+	"Serialization/BsSerializedObject.h"
+	"Serialization/BsBinaryCloner.h"
 )
 
 set(BS_BANSHEEUTILITY_SRC_STRING
-	"Source/BsStringID.cpp"
-	"Source/BsString.cpp"
+	"String/BsStringID.cpp"
+	"String/BsString.cpp"
 )
 
 set(BS_BANSHEEUTILITY_INC_REFLECTION
-	"Include/BsIReflectable.h"
-	"Include/BsRTTIField.h"
-	"Include/BsRTTIManagedDataBlockField.h"
-	"Include/BsRTTIPlainField.h"
-	"Include/BsRTTIReflectableField.h"
-	"Include/BsRTTIReflectablePtrField.h"
-	"Include/BsRTTIType.h"
+	"Reflection/BsIReflectable.h"
+	"Reflection/BsRTTIField.h"
+	"Reflection/BsRTTIManagedDataBlockField.h"
+	"Reflection/BsRTTIPlainField.h"
+	"Reflection/BsRTTIReflectableField.h"
+	"Reflection/BsRTTIReflectablePtrField.h"
+	"Reflection/BsRTTIType.h"
 )
 
 set(BS_BANSHEEUTILITY_INC_WIN32
-	"Include/Win32/BsWin32PlatformUtility.h"
-	"Include/Win32/BsWin32Window.h"
+	"Win32/BsWin32PlatformUtility.h"
+	"Win32/BsWin32Window.h"
 )
 
 source_group("Header Files\\Threading" FILES ${BS_BANSHEEUTILITY_INC_THREADING})
@@ -267,14 +268,14 @@ source_group("Source Files\\Win32" FILES ${BS_BANSHEEUTILITY_SRC_WIN32})
 source_group("Header Files\\Image" FILES ${BS_BANSHEEUTILITY_INC_IMAGE})
 source_group("Header Files\\String" FILES ${BS_BANSHEEUTILITY_INC_STRING})
 source_group("Source Files\\Image" FILES ${BS_BANSHEEUTILITY_SRC_IMAGE})
-source_group("Source Files\\General" FILES ${BS_BANSHEEUTILITY_SRC_GENERAL})
+source_group("Source Files\\Utility" FILES ${BS_BANSHEEUTILITY_SRC_UTILITY})
 source_group("Header Files\\Debug" FILES ${BS_BANSHEEUTILITY_INC_DEBUG})
-source_group("Header Files\\Filesystem" FILES ${BS_BANSHEEUTILITY_INC_FILESYSTEM})
-source_group("Source Files\\Filesystem" FILES ${BS_BANSHEEUTILITY_SRC_FILESYSTEM})
+source_group("Header Files\\FileSystem" FILES ${BS_BANSHEEUTILITY_INC_FILESYSTEM})
+source_group("Source Files\\FileSystem" FILES ${BS_BANSHEEUTILITY_SRC_FILESYSTEM})
 source_group("Source Files\\Threading" FILES ${BS_BANSHEEUTILITY_SRC_THREADING})
-source_group("Header Files\\General" FILES ${BS_BANSHEEUTILITY_INC_GENERAL})
+source_group("Header Files\\Utility" FILES ${BS_BANSHEEUTILITY_INC_UTILITY})
 source_group("Source Files\\Allocators" FILES ${BS_BANSHEEUTILITY_SRC_ALLOCATORS})
-source_group("Source Files\\RTTI" FILES ${BS_BANSHEEUTILITY_SRC_RTTI})
+source_group("Source Files\\Reflection" FILES ${BS_BANSHEEUTILITY_SRC_REFLECTION})
 source_group("Source Files\\Debug" FILES ${BS_BANSHEEUTILITY_SRC_DEBUG})
 source_group("Header Files\\RTTI" FILES ${BS_BANSHEEUTILITY_INC_RTTI})
 source_group("Header Files\\Allocators" FILES ${BS_BANSHEEUTILITY_INC_ALLOCATORS})
@@ -298,14 +299,14 @@ set(BS_BANSHEEUTILITY_SRC
 	${BS_BANSHEEUTILITY_INC_IMAGE}
 	${BS_BANSHEEUTILITY_INC_STRING}
 	${BS_BANSHEEUTILITY_SRC_IMAGE}
-	${BS_BANSHEEUTILITY_SRC_GENERAL}
+	${BS_BANSHEEUTILITY_SRC_UTILITY}
 	${BS_BANSHEEUTILITY_INC_DEBUG}
 	${BS_BANSHEEUTILITY_INC_FILESYSTEM}
 	${BS_BANSHEEUTILITY_SRC_FILESYSTEM}
 	${BS_BANSHEEUTILITY_SRC_THREADING}
-	${BS_BANSHEEUTILITY_INC_GENERAL}
+	${BS_BANSHEEUTILITY_INC_UTILITY}
 	${BS_BANSHEEUTILITY_SRC_ALLOCATORS}
-	${BS_BANSHEEUTILITY_SRC_RTTI}
+	${BS_BANSHEEUTILITY_SRC_REFLECTION}
 	${BS_BANSHEEUTILITY_SRC_DEBUG}
 	${BS_BANSHEEUTILITY_INC_RTTI}
 	${BS_BANSHEEUTILITY_INC_ALLOCATORS}

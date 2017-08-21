@@ -3,10 +3,10 @@ include(CMakeSources.cmake)
 
 # Includes
 set(ExampleGettingStarted_INC 
-	"Include"
-	"../../BansheeUtility/Include" 
-	"../../BansheeCore/Include"
-	"../../BansheeEngine/Include")
+	"./"
+	"../../BansheeUtility" 
+	"../../BansheeCore"
+	"../../BansheeEngine")
 
 include_directories(${ExampleGettingStarted_INC})	
 	

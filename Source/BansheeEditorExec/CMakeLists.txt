@@ -3,11 +3,11 @@ include(CMakeSources.cmake)
 
 # Includes
 set(BansheeEditorExec_INC 
-	"Include"
-	"../BansheeUtility/Include" 
-	"../BansheeCore/Include"
-	"../BansheeEngine/Include"
-	"../BansheeEditor/Include")
+	"./"
+	"../BansheeUtility" 
+	"../BansheeCore"
+	"../BansheeEngine"
+	"../BansheeEditor")
 
 include_directories(${BansheeEditorExec_INC})	
 	

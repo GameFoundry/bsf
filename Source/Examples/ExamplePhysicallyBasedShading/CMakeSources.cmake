@@ -1,12 +1,12 @@
 set(BS_EXAMPLEPHYSICALLYBASEDSHADING_INC_NOFILTER
-	"Include/CameraFlyer.h"
-	"Include/ObjectRotator.h"
+	"CameraFlyer.h"
+	"ObjectRotator.h"
 )
 
 set(BS_EXAMPLEPHYSICALLYBASEDSHADING_SRC_NOFILTER
-	"Source/CameraFlyer.cpp"
-	"Source/ObjectRotator.cpp"
-	"Source/Main.cpp"
+	"CameraFlyer.cpp"
+	"ObjectRotator.cpp"
+	"Main.cpp"
 )
 
 source_group("Header Files" FILES ${BS_EXAMPLEPHYSICALLYBASEDSHADING_INC_NOFILTER})

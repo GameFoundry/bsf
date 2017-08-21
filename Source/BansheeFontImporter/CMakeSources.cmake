@@ -1,11 +1,11 @@
 set(BS_BANSHEEFONTIMPORTER_INC_NOFILTER
-	"Include/BsFontPrerequisites.h"
-	"Include/BsFontImporter.h"
+	"BsFontPrerequisites.h"
+	"BsFontImporter.h"
 )
 
 set(BS_BANSHEEFONTIMPORTER_SRC_NOFILTER
-	"Source/BsFontPlugin.cpp"
-	"Source/BsFontImporter.cpp"
+	"BsFontPlugin.cpp"
+	"BsFontImporter.cpp"
 )
 
 source_group("Header Files" FILES ${BS_BANSHEEFONTIMPORTER_INC_NOFILTER})

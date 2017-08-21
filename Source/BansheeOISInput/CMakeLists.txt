@@ -3,9 +3,9 @@ include(CMakeSources.cmake)
 
 # Includes
 set(BansheeOISInput_INC 
-	"Include"
-	"../BansheeUtility/Include" 
-	"../BansheeCore/Include"
+	"./"
+	"../BansheeUtility" 
+	"../BansheeCore"
 	"../../Dependencies/OIS/include")
 
 include_directories(${BansheeOISInput_INC})	

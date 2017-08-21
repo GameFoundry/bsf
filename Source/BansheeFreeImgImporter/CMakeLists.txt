@@ -3,10 +3,10 @@ include(CMakeSources.cmake)
 
 # Includes
 set(BansheeFreeImgImporter_INC 
-	"Include" 
-	"../BansheeUtility/Include" 
-	"../BansheeCore/Include"
-	"../BansheeEngine/Include"
+	"./" 
+	"../BansheeUtility" 
+	"../BansheeCore"
+	"../BansheeEngine"
 	"../../Dependencies/freeimg/include")
 
 include_directories(${BansheeFreeImgImporter_INC})	

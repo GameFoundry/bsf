@@ -1,242 +1,242 @@
 set(BS_BANSHEEEDITOR_INC_SETTINGS
-	"Include/BsEditorSettings.h"
-	"Include/BsSettings.h"
-	"Include/BsProjectSettings.h"
+	"Settings/BsEditorSettings.h"
+	"Settings/BsSettings.h"
+	"Settings/BsProjectSettings.h"
 )
 
 set(BS_BANSHEEEDITOR_SRC_LIBRARY
-	"Source/BsProjectLibrary.cpp"
-	"Source/BsProjectLibraryEntries.cpp"
-	"Source/BsProjectResourceMeta.cpp"
-	"Source/BsEditorShaderIncludeHandler.cpp"
+	"Library/BsProjectLibrary.cpp"
+	"Library/BsProjectLibraryEntries.cpp"
+	"Library/BsProjectResourceMeta.cpp"
+	"Library/BsEditorShaderIncludeHandler.cpp"
 )
 
 set(BS_BANSHEEEDITOR_INC_EDITORWINDOW
-	"Include/BsDockManager.h"
-	"Include/BsDockManagerLayout.h"
-	"Include/BsDropDownWindow.h"
-	"Include/BsDropDownWindowManager.h"
-	"Include/BsEditorWidget.h"
-	"Include/BsEditorWidgetContainer.h"
-	"Include/BsEditorWidgetLayout.h"
-	"Include/BsEditorWidgetManager.h"
-	"Include/BsEditorWindow.h"
-	"Include/BsEditorWindowBase.h"
-	"Include/BsEditorWindowManager.h"
-	"Include/BsMainEditorWindow.h"
-	"Include/BsModalWindow.h"
+	"EditorWindow/BsDockManager.h"
+	"EditorWindow/BsDockManagerLayout.h"
+	"EditorWindow/BsDropDownWindow.h"
+	"EditorWindow/BsDropDownWindowManager.h"
+	"EditorWindow/BsEditorWidget.h"
+	"EditorWindow/BsEditorWidgetContainer.h"
+	"EditorWindow/BsEditorWidgetLayout.h"
+	"EditorWindow/BsEditorWidgetManager.h"
+	"EditorWindow/BsEditorWindow.h"
+	"EditorWindow/BsEditorWindowBase.h"
+	"EditorWindow/BsEditorWindowManager.h"
+	"EditorWindow/BsMainEditorWindow.h"
+	"EditorWindow/BsModalWindow.h"
 )
 
 set(BS_BANSHEEEDITOR_INC_SCENE
-	"Include/BsGizmoManager.h"
-	"Include/BsSceneGrid.h"
-	"Include/BsScenePicking.h"
-	"Include/BsSelection.h"
-	"Include/BsSelectionRenderer.h"
+	"Scene/BsGizmoManager.h"
+	"Scene/BsSceneGrid.h"
+	"Scene/BsScenePicking.h"
+	"Scene/BsSelection.h"
+	"Scene/BsSelectionRenderer.h"
 )
 
 set(BS_BANSHEEEDITOR_SRC_GUI
-	"Source/BsGUIColor.cpp"
-	"Source/BsGUIColorField.cpp"
-	"Source/BsGUIDockSlider.cpp"
-	"Source/BsGUIDropButton.cpp"
-	"Source/BsGUIFieldBase.cpp"
-	"Source/BsGUIFloatField.cpp"
-	"Source/BsGUIHoverHitBox.cpp"
-	"Source/BsGUIIntField.cpp"
-	"Source/BsGUIListBoxField.cpp"
-	"Source/BsGUIMenuBar.cpp"
-	"Source/BsGUIResourceTreeView.cpp"
-	"Source/BsGUISceneTreeView.cpp"
-	"Source/BsGUISliderField.cpp"
-	"Source/BsGUIStatusBar.cpp"
-	"Source/BsGUITabbedTitleBar.cpp"
-	"Source/BsGUITabButton.cpp"
-	"Source/BsGUITextField.cpp"
-	"Source/BsGUIToggleField.cpp"
-	"Source/BsGUITreeView.cpp"
-	"Source/BsGUITreeViewEditBox.cpp"
-	"Source/BsGUIVector2Field.cpp"
-	"Source/BsGUIVector3Field.cpp"
-	"Source/BsGUIVector4Field.cpp"
-	"Source/BsGUIWindowFrame.cpp"
-	"Source/BsGUIWindowFrameWidget.cpp"
+	"GUI/BsGUIColor.cpp"
+	"GUI/BsGUIColorField.cpp"
+	"GUI/BsGUIDockSlider.cpp"
+	"GUI/BsGUIDropButton.cpp"
+	"GUI/BsGUIFieldBase.cpp"
+	"GUI/BsGUIFloatField.cpp"
+	"GUI/BsGUIHoverHitBox.cpp"
+	"GUI/BsGUIIntField.cpp"
+	"GUI/BsGUIListBoxField.cpp"
+	"GUI/BsGUIMenuBar.cpp"
+	"GUI/BsGUIResourceTreeView.cpp"
+	"GUI/BsGUISceneTreeView.cpp"
+	"GUI/BsGUISliderField.cpp"
+	"GUI/BsGUIStatusBar.cpp"
+	"GUI/BsGUITabbedTitleBar.cpp"
+	"GUI/BsGUITabButton.cpp"
+	"GUI/BsGUITextField.cpp"
+	"GUI/BsGUIToggleField.cpp"
+	"GUI/BsGUITreeView.cpp"
+	"GUI/BsGUITreeViewEditBox.cpp"
+	"GUI/BsGUIVector2Field.cpp"
+	"GUI/BsGUIVector3Field.cpp"
+	"GUI/BsGUIVector4Field.cpp"
+	"GUI/BsGUIWindowFrame.cpp"
+	"GUI/BsGUIWindowFrameWidget.cpp"
 )
 
 set(BS_BANSHEEEDITOR_INC_LIBRARY
-	"Include/BsProjectLibrary.h"
-	"Include/BsProjectLibraryEntries.h"
-	"Include/BsProjectResourceMeta.h"
-	"Include/BsEditorShaderIncludeHandler.h"
+	"Library/BsProjectLibrary.h"
+	"Library/BsProjectLibraryEntries.h"
+	"Library/BsProjectResourceMeta.h"
+	"Library/BsEditorShaderIncludeHandler.h"
 )
 
 set(BS_BANSHEEEDITOR_INC_GUI
-	"Include/BsGUIColor.h"
-	"Include/BsGUIColorField.h"
-	"Include/BsGUIDockSlider.h"
-	"Include/BsGUIDropButton.h"
-	"Include/BsGUIFieldBase.h"
-	"Include/BsGUIFloatField.h"
-	"Include/BsGUIHoverHitBox.h"
-	"Include/BsGUIIntField.h"
-	"Include/BsGUIListBoxField.h"
-	"Include/BsGUIMenuBar.h"
-	"Include/BsGUIResourceTreeView.h"
-	"Include/BsGUISceneTreeView.h"
-	"Include/BsGUISliderField.h"
-	"Include/BsGUIStatusBar.h"
-	"Include/BsGUITabbedTitleBar.h"
-	"Include/BsGUITabButton.h"
-	"Include/BsGUITextField.h"
-	"Include/BsGUIToggleField.h"
-	"Include/BsGUITreeView.h"
-	"Include/BsGUITreeViewEditBox.h"
-	"Include/BsGUIVector2Field.h"
-	"Include/BsGUIVector3Field.h"
-	"Include/BsGUIVector4Field.h"
-	"Include/BsGUIWindowFrame.h"
-	"Include/BsGUIWindowFrameWidget.h"
+	"GUI/BsGUIColor.h"
+	"GUI/BsGUIColorField.h"
+	"GUI/BsGUIDockSlider.h"
+	"GUI/BsGUIDropButton.h"
+	"GUI/BsGUIFieldBase.h"
+	"GUI/BsGUIFloatField.h"
+	"GUI/BsGUIHoverHitBox.h"
+	"GUI/BsGUIIntField.h"
+	"GUI/BsGUIListBoxField.h"
+	"GUI/BsGUIMenuBar.h"
+	"GUI/BsGUIResourceTreeView.h"
+	"GUI/BsGUISceneTreeView.h"
+	"GUI/BsGUISliderField.h"
+	"GUI/BsGUIStatusBar.h"
+	"GUI/BsGUITabbedTitleBar.h"
+	"GUI/BsGUITabButton.h"
+	"GUI/BsGUITextField.h"
+	"GUI/BsGUIToggleField.h"
+	"GUI/BsGUITreeView.h"
+	"GUI/BsGUITreeViewEditBox.h"
+	"GUI/BsGUIVector2Field.h"
+	"GUI/BsGUIVector3Field.h"
+	"GUI/BsGUIVector4Field.h"
+	"GUI/BsGUIWindowFrame.h"
+	"GUI/BsGUIWindowFrameWidget.h"
 )
 
 set(BS_BANSHEEEDITOR_INC_UNDOREDO
-	"Include/BsEditorCommand.h"
-	"Include/BsCmdReparentSO.h"
-	"Include/BsCmdInputFieldValueChange.h"
-	"Include/BsCmdRecordSO.h"
-	"Include/BsCmdDeleteSO.h"
-	"Include/BsCmdCreateSO.h"
-	"Include/BsCmdCloneSO.h"
-	"Include/BsCmdInstantiateSO.h"
-	"Include/BsCmdBreakPrefab.h"
-	"Include/BsUndoRedo.h"
+	"UndoRedo/BsEditorCommand.h"
+	"UndoRedo/BsCmdReparentSO.h"
+	"UndoRedo/BsCmdInputFieldValueChange.h"
+	"UndoRedo/BsCmdRecordSO.h"
+	"UndoRedo/BsCmdDeleteSO.h"
+	"UndoRedo/BsCmdCreateSO.h"
+	"UndoRedo/BsCmdCloneSO.h"
+	"UndoRedo/BsCmdInstantiateSO.h"
+	"UndoRedo/BsCmdBreakPrefab.h"
+	"UndoRedo/BsUndoRedo.h"
 )
 
 set(BS_BANSHEEEDITOR_INC_RTTI
-	"Include/BsPlatformInfoRTTI.h"
-	"Include/BsBuildDataRTTI.h"
-	"Include/BsDockManagerLayoutRTTI.h"
-	"Include/BsEditorWidgetLayoutRTTI.h"
-	"Include/BsProjectLibraryEntriesRTTI.h"
-	"Include/BsProjectResourceMetaRTTI.h"
-	"Include/BsEditorSettingsRTTI.h"
-	"Include/BsSettingsRTTI.h"
-	"Include/BsProjectSettingsRTTI.h"
-	"Include/BsGUIWindowFrameWidgetRTTI.h"
+	"RTTI/BsPlatformInfoRTTI.h"
+	"RTTI/BsBuildDataRTTI.h"
+	"RTTI/BsDockManagerLayoutRTTI.h"
+	"RTTI/BsEditorWidgetLayoutRTTI.h"
+	"RTTI/BsProjectLibraryEntriesRTTI.h"
+	"RTTI/BsProjectResourceMetaRTTI.h"
+	"RTTI/BsEditorSettingsRTTI.h"
+	"RTTI/BsSettingsRTTI.h"
+	"RTTI/BsProjectSettingsRTTI.h"
+	"RTTI/BsGUIWindowFrameWidgetRTTI.h"
 )
 
 set(BS_BANSHEEEDITOR_SRC_NOFILTER
-	"Source/BsEditorApplication.cpp"
+	"BsEditorApplication.cpp"
 )
 
 set(BS_BANSHEEEDITOR_SRC_SCENEVIEW
-	"Source/BsGizmoManager.cpp"
-	"Source/BsSelectionRenderer.cpp"
-	"Source/BsSelection.cpp"
-	"Source/BsScenePicking.cpp"
-	"Source/BsSceneGrid.cpp"
+	"SceneView/BsGizmoManager.cpp"
+	"SceneView/BsSelectionRenderer.cpp"
+	"SceneView/BsSelection.cpp"
+	"SceneView/BsScenePicking.cpp"
+	"SceneView/BsSceneGrid.cpp"
 )
 
 set(BS_BANSHEEEDITOR_INC_NOFILTER
-	"Include/BsEditorApplication.h"
-	"Include/BsEditorPrerequisites.h"
+	"BsEditorApplication.h"
+	"BsEditorPrerequisites.h"
 )
 
 set(BS_BANSHEEEDITOR_INC_HANDLES
-	"Include/BsHandleDrawManager.h"
-	"Include/BsHandleManager.h"
-	"Include/BsHandleSlider.h"
-	"Include/BsHandleSliderDisc.h"
-	"Include/BsHandleSliderLine.h"
-	"Include/BsHandleSliderManager.h"
-	"Include/BsHandleSliderPlane.h"
+	"Handles/BsHandleDrawManager.h"
+	"Handles/BsHandleManager.h"
+	"Handles/BsHandleSlider.h"
+	"Handles/BsHandleSliderDisc.h"
+	"Handles/BsHandleSliderLine.h"
+	"Handles/BsHandleSliderManager.h"
+	"Handles/BsHandleSliderPlane.h"
 )
 
 set(BS_BANSHEEEDITOR_SRC_UTILITY
-	"Source/BsEditorUtility.cpp"
+	"Utility/BsEditorUtility.cpp"
 )
 
 set(BS_BANSHEEEDITOR_SRC_EDITORWINDOW
-	"Source/BsDockManager.cpp"
-	"Source/BsDockManagerLayout.cpp"
-	"Source/BsDropDownWindow.cpp"
-	"Source/BsDropDownWindowManager.cpp"
-	"Source/BsModalWindow.cpp"
-	"Source/BsMainEditorWindow.cpp"
-	"Source/BsEditorWindowManager.cpp"
-	"Source/BsEditorWindowBase.cpp"
-	"Source/BsEditorWindow.cpp"
-	"Source/BsEditorWidgetManager.cpp"
-	"Source/BsEditorWidgetLayout.cpp"
-	"Source/BsEditorWidgetContainer.cpp"
-	"Source/BsEditorWidget.cpp"
+	"EditorWindow/BsDockManager.cpp"
+	"EditorWindow/BsDockManagerLayout.cpp"
+	"EditorWindow/BsDropDownWindow.cpp"
+	"EditorWindow/BsDropDownWindowManager.cpp"
+	"EditorWindow/BsModalWindow.cpp"
+	"EditorWindow/BsMainEditorWindow.cpp"
+	"EditorWindow/BsEditorWindowManager.cpp"
+	"EditorWindow/BsEditorWindowBase.cpp"
+	"EditorWindow/BsEditorWindow.cpp"
+	"EditorWindow/BsEditorWidgetManager.cpp"
+	"EditorWindow/BsEditorWidgetLayout.cpp"
+	"EditorWindow/BsEditorWidgetContainer.cpp"
+	"EditorWindow/BsEditorWidget.cpp"
 )
 
 set(BS_BANSHEEEDITOR_INC_UTILITY
-	"Include/BsEditorUtility.h"
-	"Include/BsBuiltinEditorResources.h"
+	"Utility/BsEditorUtility.h"
+	"Utility/BsBuiltinEditorResources.h"
 )
 
 set(BS_BANSHEEEDITOR_SRC_TESTING
-	"Source/BsEditorTestSuite.cpp"
+	"Testing/BsEditorTestSuite.cpp"
 )
 
 set(BS_BANSHEEEDITOR_SRC_SETTINGS
-	"Source/BsEditorSettings.cpp"
-	"Source/BsProjectSettings.cpp"
-	"Source/BsSettings.cpp"
+	"Settings/BsEditorSettings.cpp"
+	"Settings/BsProjectSettings.cpp"
+	"Settings/BsSettings.cpp"
 )
 
 set(BS_BANSHEEEDITOR_SRC_UNDOREDO
-	"Source/BsEditorCommand.cpp"
-	"Source/BsCmdReparentSO.cpp"
-	"Source/BsCmdRecordSO.cpp"
-	"Source/BsCmdDeleteSO.cpp"
-	"Source/BsCmdCreateSO.cpp"
-	"Source/BsCmdCloneSO.cpp"
-	"Source/BsCmdInstantiateSO.cpp"
-	"Source/BsCmdBreakPrefab.cpp"
-	"Source/BsUndoRedo.cpp"
+	"UndoRedo/BsEditorCommand.cpp"
+	"UndoRedo/BsCmdReparentSO.cpp"
+	"UndoRedo/BsCmdRecordSO.cpp"
+	"UndoRedo/BsCmdDeleteSO.cpp"
+	"UndoRedo/BsCmdCreateSO.cpp"
+	"UndoRedo/BsCmdCloneSO.cpp"
+	"UndoRedo/BsCmdInstantiateSO.cpp"
+	"UndoRedo/BsCmdBreakPrefab.cpp"
+	"UndoRedo/BsUndoRedo.cpp"
 )
 
 set(BS_BANSHEEEDITOR_INC_BUILD
-	"Include/BsBuildManager.h"
-	"Include/BsPlatformInfo.h"
+	"Build/BsBuildManager.h"
+	"Build/BsPlatformInfo.h"
 )
 
 set(BS_BANSHEEEDITOR_SRC_BUILD
-	"Source/BsBuildManager.cpp"
-	"Source/BsBuiltinEditorResources.cpp"
-	"Source/BsPlatformInfo.cpp"
+	"Build/BsBuildManager.cpp"
+	"Build/BsBuiltinEditorResources.cpp"
+	"Build/BsPlatformInfo.cpp"
 )
 
 set(BS_BANSHEEEDITOR_SRC_HANDLES
-	"Source/BsHandleDrawManager.cpp"
-	"Source/BsHandleManager.cpp"
-	"Source/BsHandleSlider.cpp"
-	"Source/BsHandleSliderDisc.cpp"
-	"Source/BsHandleSliderLine.cpp"
-	"Source/BsHandleSliderManager.cpp"
-	"Source/BsHandleSliderPlane.cpp"
+	"Handles/BsHandleDrawManager.cpp"
+	"Handles/BsHandleManager.cpp"
+	"Handles/BsHandleSlider.cpp"
+	"Handles/BsHandleSliderDisc.cpp"
+	"Handles/BsHandleSliderLine.cpp"
+	"Handles/BsHandleSliderManager.cpp"
+	"Handles/BsHandleSliderPlane.cpp"
 )
 
 set(BS_BANSHEEEDITOR_INC_TESTING
-	"Include/BsEditorTestSuite.h"
+	"Testing/BsEditorTestSuite.h"
 )
 
 set(BS_BANSHEEEDITOR_INC_CODEEDITOR
-	"Include/BsCodeEditor.h"
+	"CodeEditor/BsCodeEditor.h"
 )
 
 set(BS_BANSHEEEDITOR_SRC_CODEEDITOR
-	"Source/BsCodeEditor.cpp"
+	"CodeEditor/BsCodeEditor.cpp"
 )
 
 set(BS_BANSHEEEDITOR_INC_CODEEDITOR_WIN32
-	"Include/Win32/BsVSCodeEditor.h"
+	"Win32/BsVSCodeEditor.h"
 )
 
 set(BS_BANSHEEEDITOR_SRC_CODEEDITOR_WIN32
-	"Source/Win32/BsVSCodeEditor.cpp"
+	"Win32/BsVSCodeEditor.cpp"
 )
 
 if(WIN32)

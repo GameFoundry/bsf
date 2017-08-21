@@ -6,13 +6,13 @@ source_group("Source Files\\Generated" FILES ${BS_GENERATED_EDITOR_CPP_FILES})
 
 # Includes
 set(SBansheeEditor_INC 
-	"Include"
-	"../BansheeUtility/Include" 
-	"../BansheeCore/Include"
-	"../BansheeEngine/Include"
-	"../BansheeEditor/Include"
-	"../BansheeMono/Include"
-	"../SBansheeEngine/Include"
+	"./"
+	"../BansheeUtility" 
+	"../BansheeCore"
+	"../BansheeEngine"
+	"../BansheeEditor"
+	"../BansheeMono"
+	"../SBansheeEngine"
 	"${PROJECT_BINARY_DIR}/Generated/Engine/Include"
 	"${PROJECT_BINARY_DIR}/Generated/Editor/Include")
 

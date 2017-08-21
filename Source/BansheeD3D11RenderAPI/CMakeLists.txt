@@ -3,9 +3,9 @@ include(CMakeSources.cmake)
 
 # Includes
 set(BansheeD3D11RenderAPI_INC 
-	"Include" 
-	"../BansheeUtility/Include" 
-	"../BansheeCore/Include")
+	"./" 
+	"../BansheeUtility" 
+	"../BansheeCore")
 
 include_directories(${BansheeD3D11RenderAPI_INC})	
 	

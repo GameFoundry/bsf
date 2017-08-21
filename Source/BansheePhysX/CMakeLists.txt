@@ -3,10 +3,10 @@ include(CMakeSources.cmake)
 
 # Includes
 set(BansheePhysX_INC 
-	"Include"
+	"./"
 	"../../Dependencies/PhysX/include"
-	"../BansheeUtility/Include" 
-	"../BansheeCore/Include")
+	"../BansheeUtility" 
+	"../BansheeCore")
 
 include_directories(${BansheePhysX_INC})	
 	

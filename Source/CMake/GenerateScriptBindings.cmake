@@ -18,7 +18,7 @@ function(prepend var prefix)
 endfunction()
 
 function(addForGeneration name)
-	set(BS_SCRIPT_PARSER_INCLUDE_DIRS ${BS_SCRIPT_PARSER_INCLUDE_DIRS} "${name}/Include" PARENT_SCOPE)
+	set(BS_SCRIPT_PARSER_INCLUDE_DIRS ${BS_SCRIPT_PARSER_INCLUDE_DIRS} "${name}" PARENT_SCOPE)
 	
 	include(${name}/CMakeSources.cmake)
 	string(TOUPPER ${name} LIBNAME)
@@ -47,7 +47,7 @@ if(GENERATE_SCRIPT_BINDINGS)
 	addForGeneration(SBansheeEngine)
 	addForGeneration(SBansheeEditor)
 
-	set(BS_SCRIPT_PARSER_INCLUDE_DIRS ${BS_SCRIPT_PARSER_INCLUDE_DIRS} "BansheeMono/Include")
+	set(BS_SCRIPT_PARSER_INCLUDE_DIRS ${BS_SCRIPT_PARSER_INCLUDE_DIRS} "BansheeMono")
 
 	list(REMOVE_DUPLICATES BS_SCRIPT_PARSER_INCLUDE_DIRS)
 	list(REMOVE_DUPLICATES BS_SCRIPT_PARSER_H_FILES)

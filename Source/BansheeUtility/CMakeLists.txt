@@ -6,12 +6,12 @@ find_package(Snappy REQUIRED)
 
 # Includes
 set(BansheeUtility_INC 
-	"Include" 
-	"Include/ThirdParty"
+	"./" 
+	"ThirdParty"
 	${Snappy_INCLUDE_DIRS})
 
 if(WIN32)
-	set(BansheeUtility_INC ${BansheeUtility_INC} "Include/Win32")
+	set(BansheeUtility_INC ${BansheeUtility_INC} "Win32")
 else()
 	# TODO_OTHER_PLATFORMS_GO_HERE
 endif()
@@ -21,7 +21,7 @@ include_directories(${BansheeUtility_INC})
 # Target
 add_library(BansheeUtility SHARED ${BS_BANSHEEUTILITY_SRC})
 
-add_executable(BansheeUtilityTest Source/BsUtilityTest.cpp)
+add_executable(BansheeUtilityTest BsUtilityTest.cpp)
 target_link_libraries(BansheeUtilityTest BansheeUtility)
 
 # Defines

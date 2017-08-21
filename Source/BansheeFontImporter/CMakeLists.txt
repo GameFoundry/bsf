@@ -3,9 +3,9 @@ include(CMakeSources.cmake)
 
 # Includes
 set(BansheeFontImporter_INC 
-	"Include" 
-	"../BansheeUtility/Include" 
-	"../BansheeCore/Include"
+	"./" 
+	"../BansheeUtility" 
+	"../BansheeCore"
 	"../../Dependencies/freetype/include")
 
 include_directories(${BansheeFontImporter_INC})	

@@ -8,10 +8,10 @@ endif()
 
 # Includes
 set(BansheeFMOD_INC 
-	"Include" 
-	"../BansheeUtility/Include" 
-	"../BansheeCore/Include"
-	"../BansheeOpenAudio/Include"
+	"./" 
+	"../BansheeUtility" 
+	"../BansheeCore"
+	"../BansheeOpenAudio"
 	${FMOD_INCLUDE_DIRS}
 	"../../Dependencies/libogg/include"
 	"../../Dependencies/libvorbis/include")

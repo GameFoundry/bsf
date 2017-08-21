@@ -3,9 +3,9 @@ include(CMakeSources.cmake)
 
 # Includes
 set(BansheeOpenAudio_INC 
-	"Include" 
-	"../BansheeUtility/Include" 
-	"../BansheeCore/Include"
+	"./" 
+	"../BansheeUtility" 
+	"../BansheeCore"
 	"../../Dependencies/libogg/include"
 	"../../Dependencies/libvorbis/include"
 	"../../Dependencies/libFLAC/include"

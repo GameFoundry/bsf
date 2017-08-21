@@ -3,10 +3,10 @@ include(CMakeSources.cmake)
 
 # Includes
 set(RenderBeast_INC 
-	"Include"
-	"../BansheeUtility/Include" 
-	"../BansheeCore/Include"
-	"../BansheeEngine/Include")
+	"./"
+	"../BansheeUtility" 
+	"../BansheeCore"
+	"../BansheeEngine")
 
 include_directories(${RenderBeast_INC})	
 	

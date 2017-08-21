@@ -2,7 +2,7 @@ set(BS_EXAMPLELLR_INC_NOFILTER
 )
 
 set(BS_EXAMPLELLR_SRC_NOFILTER
-	"Source/Main.cpp"
+	"Main.cpp"
 )
 
 source_group("Header Files" FILES ${BS_EXAMPLELLR_INC_NOFILTER})

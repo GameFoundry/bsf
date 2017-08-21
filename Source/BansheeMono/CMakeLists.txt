@@ -3,10 +3,10 @@ include(CMakeSources.cmake)
 
 # Includes
 set(BansheeMono_INC 
-	"Include" 
-	"../BansheeUtility/Include" 
-	"../BansheeCore/Include"
-	"../BansheeEngine/Include"
+	"./" 
+	"../BansheeUtility" 
+	"../BansheeCore"
+	"../BansheeEngine"
 	"../../Dependencies/Mono/include")
 
 include_directories(${BansheeMono_INC})	

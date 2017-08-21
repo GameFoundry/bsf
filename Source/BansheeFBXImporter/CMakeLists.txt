@@ -3,9 +3,9 @@ include(CMakeSources.cmake)
 
 # Includes
 set(BansheeFBXImporter_INC 
-	"Include" 
-	"../BansheeUtility/Include" 
-	"../BansheeCore/Include"
+	"./" 
+	"../BansheeUtility" 
+	"../BansheeCore"
 	"../../Dependencies/FBXSDK/include")
 
 include_directories(${BansheeFBXImporter_INC})	

@@ -6,10 +6,10 @@ if(WIN32)
 		RESULT_VARIABLE rv
 	 )
 	 
-	file(RENAME "${PROJECT_SOURCE_DIR}/BansheeSL/BsLexerFX.h" "${PROJECT_SOURCE_DIR}/BansheeSL/Include/BsLexerFX.h")
-	file(RENAME "${PROJECT_SOURCE_DIR}/BansheeSL/BsLexerFX.c" "${PROJECT_SOURCE_DIR}/BansheeSL/Source/BsLexerFX.c")
-	file(RENAME "${PROJECT_SOURCE_DIR}/BansheeSL/BsParserFX.h" "${PROJECT_SOURCE_DIR}/BansheeSL/Include/BsParserFX.h")
-	file(RENAME "${PROJECT_SOURCE_DIR}/BansheeSL/BsParserFX.c" "${PROJECT_SOURCE_DIR}/BansheeSL/Source/BsParserFX.c")
+	file(RENAME "${PROJECT_SOURCE_DIR}/BansheeSL/BsLexerFX.h" "${PROJECT_SOURCE_DIR}/BansheeSL/BsLexerFX.h")
+	file(RENAME "${PROJECT_SOURCE_DIR}/BansheeSL/BsLexerFX.c" "${PROJECT_SOURCE_DIR}/BansheeSL/BsLexerFX.c")
+	file(RENAME "${PROJECT_SOURCE_DIR}/BansheeSL/BsParserFX.h" "${PROJECT_SOURCE_DIR}/BansheeSL/BsParserFX.h")
+	file(RENAME "${PROJECT_SOURCE_DIR}/BansheeSL/BsParserFX.c" "${PROJECT_SOURCE_DIR}/BansheeSL/BsParserFX.c")
 else()
 	find_package(BISON REQUIRED)
 	find_package(FLEX REQUIRED)
@@ -18,10 +18,10 @@ else()
 		COMMAND ${FLEX_EXECUTABLE} ${BS_FLEX_OPTIONS} ${PROJECT_SOURCE_DIR}/BansheeSL/BsLexerFX.l
 		COMMAND ${BISON_EXECUTABLE} ${PROJECT_SOURCE_DIR}/BansheeSL/BsParserFX.y)
 	execute_process(
-		COMMAND mv BsLexerFX.h ${PROJECT_SOURCE_DIR}/BansheeSL/Include
-		COMMAND mv BsLexerFX.c ${PROJECT_SOURCE_DIR}/BansheeSL/Source
-		COMMAND mv BsParserFX.h ${PROJECT_SOURCE_DIR}/BansheeSL/Include
-		COMMAND mv BsParserFX.c ${PROJECT_SOURCE_DIR}/BansheeSL/Source)
+		COMMAND mv BsLexerFX.h ${PROJECT_SOURCE_DIR}/BansheeSL
+		COMMAND mv BsLexerFX.c ${PROJECT_SOURCE_DIR}/BansheeSL
+		COMMAND mv BsParserFX.h ${PROJECT_SOURCE_DIR}/BansheeSL
+		COMMAND mv BsParserFX.c ${PROJECT_SOURCE_DIR}/BansheeSL)
 endif()
 
 set(DEPENDENCY_BUILD_DIR "${CMAKE_SOURCE_DIR}/../Dependencies/Build/${DEPENDENCY_NAME}")
@@ -34,10 +34,10 @@ include(CMakeSources.cmake)
 
 # Includes
 set(BansheeSL_INC
-	"Include"
-	"../BansheeUtility/Include"
-	"../BansheeCore/Include"
-	"../BansheeEngine/Include"
+	"./"
+	"../BansheeUtility"
+	"../BansheeCore"
+	"../BansheeEngine"
 	${XShaderCompiler_INCLUDE_DIR})
 
 include_directories(${BansheeSL_INC})
@@ -53,10 +53,10 @@ if(WIN32)
 	add_custom_command(TARGET BansheeSL PRE_BUILD
 		COMMAND ${PROJECT_SOURCE_DIR}/../Dependencies/tools/flex/flex.exe --wincompat ${PROJECT_SOURCE_DIR}/BansheeSL/BsLexerFX.l
 		COMMAND ${PROJECT_SOURCE_DIR}/../Dependencies/tools/bison/bison.exe ${PROJECT_SOURCE_DIR}/BansheeSL/BsParserFX.y
-		COMMAND xcopy /Y /I BsLexerFX.h \"${PROJECT_SOURCE_DIR}/BansheeSL/Include\"
-		COMMAND xcopy /Y /I BsLexerFX.c \"${PROJECT_SOURCE_DIR}/BansheeSL/Source\"
-		COMMAND xcopy /Y /I BsParserFX.h \"${PROJECT_SOURCE_DIR}/BansheeSL/Include\"
-		COMMAND xcopy /Y /I BsParserFX.c \"${PROJECT_SOURCE_DIR}/BansheeSL/Source\"
+		COMMAND xcopy /Y /I BsLexerFX.h \"${PROJECT_SOURCE_DIR}/BansheeSL\"
+		COMMAND xcopy /Y /I BsLexerFX.c \"${PROJECT_SOURCE_DIR}/BansheeSL\"
+		COMMAND xcopy /Y /I BsParserFX.h \"${PROJECT_SOURCE_DIR}/BansheeSL\"
+		COMMAND xcopy /Y /I BsParserFX.c \"${PROJECT_SOURCE_DIR}/BansheeSL\"
 		COMMAND del BsLexerFX.h BsLexerFX.c BsParserFX.h BsParserFX.c
 		COMMENT "Building lexer/parser...")
 endif()

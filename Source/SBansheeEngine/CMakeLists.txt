@@ -6,12 +6,12 @@ source_group("Source Files\\Generated" FILES ${BS_GENERATED_ENGINE_CPP_FILES})
 
 # Includes
 set(SBansheeEngine_INC 
-	"Include"
-	"../BansheeUtility/Include" 
-	"../BansheeCore/Include"
-	"../BansheeEngine/Include"
-	"../BansheeEditor/Include"
-	"../BansheeMono/Include"
+	"./"
+	"../BansheeUtility" 
+	"../BansheeCore"
+	"../BansheeEngine"
+	"../BansheeEditor"
+	"../BansheeMono"
 	"${PROJECT_BINARY_DIR}/Generated/Engine/Include")
 
 include_directories(${SBansheeEngine_INC})	

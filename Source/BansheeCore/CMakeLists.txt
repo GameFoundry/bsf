@@ -6,12 +6,12 @@ find_package(NVTT REQUIRED)
 
 # Includes
 set(BansheeCore_INC 
-	"Include" 
-	"../BansheeUtility/Include" 
+	"./" 
+	"../BansheeUtility" 
 	${NVTT_INCLUDE_DIRS})
 
 if(WIN32)
-	set(BansheeCore_INC ${BansheeCore_INC} "Include/Win32")
+	set(BansheeCore_INC ${BansheeCore_INC} "Win32")
 endif()
 
 include_directories(${BansheeCore_INC})	

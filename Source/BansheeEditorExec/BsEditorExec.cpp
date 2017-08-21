@@ -3,7 +3,7 @@
 #include <iostream>
 #include <stdio.h>
 #include "BsEditorApplication.h"
-#include "BsCrashHandler.h"
+#include "Error/BsCrashHandler.h"
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 #include <windows.h>

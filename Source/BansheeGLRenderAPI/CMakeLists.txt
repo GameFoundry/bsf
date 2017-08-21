@@ -3,10 +3,10 @@ include(CMakeSources.cmake)
 
 # Includes
 set(BansheeGLRenderAPI_INC 
-	"Include" 
-	"../BansheeUtility/Include" 
-	"../BansheeCore/Include"
-	"Source/GLSL/include")
+	"./" 
+	"../BansheeUtility" 
+	"../BansheeCore"
+	"GLSL/include")
 
 if(WIN32)
 	set(BansheeGLRenderAPI_INC ${BansheeGLRenderAPI_INC} "Source/Win32")
