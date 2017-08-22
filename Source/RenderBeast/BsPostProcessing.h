@@ -786,5 +786,40 @@ namespace bs { namespace ct
 		void execute();
 	};
 
+	BS_PARAM_BLOCK_BEGIN(EncodeDepthParamDef)
+		BS_PARAM_BLOCK_ENTRY(float, gNear)
+		BS_PARAM_BLOCK_ENTRY(float, gFar)
+	BS_PARAM_BLOCK_END
+
+	extern EncodeDepthParamDef gEncodeDepthParamDef;
+
+	/** 
+	 * Shader that encodes depth from a specified range into [0, 1] range, and writes the result in the alpha channel
+	 * of the output texture. 
+	 */
+	class EncodeDepthMat : public RendererMaterial<EncodeDepthMat>
+	{
+		RMAT_DEF("PPEncodeDepth.bsl");
+
+	public:
+		EncodeDepthMat();
+
+		/** 
+		 * Renders the post-process effect with the provided parameters. 
+		 * 
+		 * @param[in]	depth		Resolved (non-MSAA) depth texture to encode.
+		 * @param[in]	near		Near range (in view space) to start encoding the depth. Any depth lower than this will
+		 *							be encoded to 1.
+		 * @param[in]	far			Far range (in view space) to end encoding the depth. Any depth higher than this will
+		 *							be encoded to 0.
+		 * @param[in]	output		Output texture to write the results in. Results will be written in the alpha channel.
+		 */
+		void execute(const SPtr<Texture>& depth, float near, float far, const SPtr<RenderTarget>& output);
+
+	private:
+		SPtr<GpuParamBlockBuffer> mParamBuffer;
+		GpuParamTexture mInputTexture;
+	};
+
 	/** @} */
 }}

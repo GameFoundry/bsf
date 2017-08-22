@@ -32,6 +32,32 @@ namespace bs
 		virtual ~RendererOptions() { }
 	};
 
+	/** Settings that control renderer scene capture. */
+	struct CaptureSettings
+	{	
+		/** If true scene will be captured in a format that supports high dynamic range. */
+		bool hdr = true;
+
+		/** 
+		 * When enabled the alpha channel of the final render target will be populated with an encoded depth value. 
+		 * Parameters @p depthEncodeNear and @p depthEncodeFar control which range of the depth buffer to encode.
+		 */
+		bool encodeDepth = false;
+
+		/**
+		 * Controls at which position to start encoding depth, in view space. Only relevant with @p encodeDepth is enabled.
+		 * Depth will be linearly interpolated between this value and @p depthEncodeFar.
+		 */
+		float depthEncodeNear = 0.0f;
+
+		/**
+		 * Controls at which position to stop encoding depth, in view space. Only relevant with @p encodeDepth is enabled.
+		 * Depth will be linearly interpolated between @p depthEncodeNear and this value.
+		 */
+		float depthEncodeFar = 0.0f;
+	};
+
+
 	/**
 	 * Primarily rendering class that allows you to specify how to render objects that exist in the scene graph. You need
 	 * to provide your own implementation of your class.
@@ -188,11 +214,12 @@ namespace bs
 		 * 
 		 * @param[in]	cubemap		Cubemap to store the results in.
 		 * @param[in]	position	Position to capture the scene at.
-		 * @param[in]	hdr			If true scene will be captured in a format that supports high dynamic range.
+		 * @param[in]	settings	Settings that allow you to customize the capture.
 		 *
 		 * @note	Core thread.
 		 */
-		virtual void captureSceneCubeMap(const SPtr<Texture>& cubemap, const Vector3& position, bool hdr) = 0;
+		virtual void captureSceneCubeMap(const SPtr<Texture>& cubemap, const Vector3& position, 
+			const CaptureSettings& settings) = 0;
 
 		/**
 		 * Creates a new empty renderer mesh data.

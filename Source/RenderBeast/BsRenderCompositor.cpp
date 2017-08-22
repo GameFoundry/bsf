@@ -1016,6 +1016,15 @@ namespace bs { namespace ct
 
 		gRendererUtility().blit(input, Rect2I::EMPTY, viewProps.flipView);
 
+		if(viewProps.encodeDepth)
+		{
+			RCNodeResolvedSceneDepth* resolvedSceneDepthNode = static_cast<RCNodeResolvedSceneDepth*>(inputs.inputNodes[0]);
+
+			EncodeDepthMat* encodeDepthMat = EncodeDepthMat::get();
+			encodeDepthMat->execute(resolvedSceneDepthNode->output->texture, viewProps.depthEncodeNear, 
+				viewProps.depthEncodeFar, target);
+		}
+
 		// Trigger overlay callbacks
 		Camera* sceneCamera = inputs.view.getSceneCamera();
 		if (sceneCamera != nullptr)
@@ -1045,8 +1054,10 @@ namespace bs { namespace ct
 		{
 			deps.push_back(RCNodeSceneColor::getNodeId());
 			deps.push_back(RCNodeClusteredForward::getNodeId());
-			
 		}
+
+		if(viewProps.encodeDepth)
+			deps.push_back(RCNodeResolvedSceneDepth::getNodeId());
 
 		return deps;
 	}

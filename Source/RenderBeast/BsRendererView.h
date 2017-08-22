@@ -82,6 +82,8 @@ namespace bs { namespace ct
 	/** Data shared between RENDERER_VIEW_DESC and RendererViewProperties */
 	struct RendererViewData
 	{
+		RendererViewData();
+
 		Matrix4 viewTransform;
 		Matrix4 projTransform;
 		Vector3 viewDirection;
@@ -91,9 +93,38 @@ namespace bs { namespace ct
 		float farPlane;
 		ProjectionType projType;
 
+		/** 
+		 * When enabled, renderer extension callbacks will be triggered, allowing other systems to inject their own 
+		 * render operations into the view.
+		 */
 		bool triggerCallbacks : 1;
+
+		/** When enabled, post-processing effects (like tonemapping) will be executed. */
 		bool runPostProcessing : 1;
+
+		/** 
+		 * Determines if the view is currently rendering reflection probes. This ensures the systems can disable refl.
+		 * probe reads in order to prevent incorrect rendering (since probes won't yet have any data).
+		 */
 		bool renderingReflections : 1;
+
+		/** 
+		 * When enabled the alpha channel of the final render target will be populated with an encoded depth value. 
+		 * Parameters @p depthEncodeNear and @p depthEncodeFar control which range of the depth buffer to encode.
+		 */
+		bool encodeDepth : 1;
+
+		/**
+		 * Controls at which position to start encoding depth, in view space. Only relevant with @p encodeDepth is enabled.
+		 * Depth will be linearly interpolated between this value and @p depthEncodeFar.
+		 */
+		float depthEncodeNear;
+
+		/**
+		 * Controls at which position to stop encoding depth, in view space. Only relevant with @p encodeDepth is enabled.
+		 * Depth will be linearly interpolated between @p depthEncodeNear and this value.
+		 */
+		float depthEncodeFar;
 
 		UINT64 visibleLayers;
 		ConvexVolume cullFrustum;

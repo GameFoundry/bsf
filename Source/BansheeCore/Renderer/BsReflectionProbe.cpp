@@ -97,7 +97,15 @@ namespace bs
 		{
 			auto renderReflProbe = [coreTexture, coreProbe]()
 			{
-				ct::gRenderer()->captureSceneCubeMap(coreTexture, coreProbe->getPosition(), true);
+				float radius = coreProbe->mType == ReflectionProbeType::Sphere ? coreProbe->mRadius : 
+					coreProbe->mExtents.length();
+
+				ct::CaptureSettings settings;
+				settings.encodeDepth = true;
+				settings.depthEncodeNear = radius;
+				settings.depthEncodeFar = radius + 1; // + 1 arbitrary, make it a customizable value?
+
+				ct::gRenderer()->captureSceneCubeMap(coreTexture, coreProbe->getPosition(), settings);
 				ct::gIBLUtility().filterCubemapForSpecular(coreTexture, nullptr);
 
 				coreProbe->mFilteredTexture = coreTexture;
@@ -113,7 +121,6 @@ namespace bs
 			SPtr<ct::Texture> coreCustomTex = mCustomTexture->getCore();
 			auto filterReflProbe = [coreCustomTex, coreTexture, coreProbe]()
 			{
-				ct::gRenderer()->captureSceneCubeMap(coreTexture, coreProbe->getPosition(), true);
 				ct::gIBLUtility().scaleCubemap(coreCustomTex, 0, coreTexture, 0);
 				ct::gIBLUtility().filterCubemapForSpecular(coreTexture, nullptr);
 

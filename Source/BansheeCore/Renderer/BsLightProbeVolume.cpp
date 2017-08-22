@@ -464,7 +464,7 @@ namespace bs
 				Vector3 localPos = mProbePositions[mFirstDirtyProbe];
 				Vector3 transformedPos = mRotation.rotate(localPos) + mPosition;
 
-				gRenderer()->captureSceneCubeMap(cubemap, transformedPos, true);
+				gRenderer()->captureSceneCubeMap(cubemap, transformedPos, CaptureSettings());
 				gIBLUtility().filterCubemapForIrradiance(cubemap, mCoefficients, probeInfo.bufferIdx);
 
 				probeInfo.flags = LightProbeFlags::Clean;

@@ -365,6 +365,10 @@
         {
             "Path": "ClearStencilBits.bsl",
             "UUID": "e123138f-af24-422f-9301-f71113fcd282"
+        },
+        {
+            "Path": "PPEncodeDepth.bsl",
+            "UUID": "8bbf989a-9f8d-4864-8332-7f8c499685ba"
         }
     ],
     "Skin": [

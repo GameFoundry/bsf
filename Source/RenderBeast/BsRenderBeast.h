@@ -79,7 +79,8 @@ namespace bs
 		void destroy() override;
 
 		/** @copydoc Renderer::captureSceneCubeMap */
-		void captureSceneCubeMap(const SPtr<Texture>& cubemap, const Vector3& position, bool hdr) override;
+		void captureSceneCubeMap(const SPtr<Texture>& cubemap, const Vector3& position, 
+			const CaptureSettings& settings) override;
 
 	private:
 		/** @copydoc Renderer::notifyCameraAdded */

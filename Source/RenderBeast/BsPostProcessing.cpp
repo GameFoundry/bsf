@@ -1745,4 +1745,48 @@ namespace bs { namespace ct
 		gRendererUtility().setPassParams(mParamsSet);
 		gRendererUtility().drawScreenQuad();
 	}
+
+	EncodeDepthParamDef gEncodeDepthParamDef;
+
+	EncodeDepthMat::EncodeDepthMat()
+	{
+		mParamBuffer = gEncodeDepthParamDef.createBuffer();
+		mParamsSet->setParamBlockBuffer("Params", mParamBuffer);
+
+		mParamsSet->getGpuParams()->getTextureParam(GPT_FRAGMENT_PROGRAM, "gInputTex", mInputTexture);
+
+		GpuParamSampState inputSampState;
+		mParamsSet->getGpuParams()->getSamplerStateParam(GPT_FRAGMENT_PROGRAM, "gInputSamp", inputSampState);
+
+		SAMPLER_STATE_DESC sampDesc;
+		sampDesc.minFilter = FO_POINT;
+		sampDesc.magFilter = FO_POINT;
+		sampDesc.mipFilter = FO_POINT;
+		sampDesc.addressMode.u = TAM_CLAMP;
+		sampDesc.addressMode.v = TAM_CLAMP;
+		sampDesc.addressMode.w = TAM_CLAMP;
+
+		SPtr<SamplerState> samplerState = SamplerState::create(sampDesc);
+		inputSampState.set(samplerState);
+	}
+
+	void EncodeDepthMat::_initVariations(ShaderVariations& variations)
+	{
+		// Do nothing
+	}
+
+	void EncodeDepthMat::execute(const SPtr<Texture>& depth, float near, float far, const SPtr<RenderTarget>& output)
+	{
+		mInputTexture.set(depth);
+
+		gEncodeDepthParamDef.gNear.set(mParamBuffer, near);
+		gEncodeDepthParamDef.gFar.set(mParamBuffer, far);
+
+		RenderAPI& rapi = RenderAPI::instance();
+		rapi.setRenderTarget(output, 0, RT_COLOR0);
+
+		gRendererUtility().setPass(mMaterial);
+		gRendererUtility().setPassParams(mParamsSet);
+		gRendererUtility().drawScreenQuad();
+	}
 }}

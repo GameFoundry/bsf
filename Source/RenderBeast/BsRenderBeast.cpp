@@ -540,7 +540,8 @@ namespace bs { namespace ct
 		bs_frame_clear();
 	}
 
-	void RenderBeast::captureSceneCubeMap(const SPtr<Texture>& cubemap, const Vector3& position, bool hdr)
+	void RenderBeast::captureSceneCubeMap(const SPtr<Texture>& cubemap, const Vector3& position, 
+		const CaptureSettings& settings)
 	{
 		const SceneInfo& sceneInfo = mScene->getSceneInfo();
 		auto& texProps = cubemap->getProperties();
@@ -564,6 +565,9 @@ namespace bs { namespace ct
 		viewDesc.triggerCallbacks = false;
 		viewDesc.runPostProcessing = false;
 		viewDesc.renderingReflections = true;
+		viewDesc.encodeDepth = settings.encodeDepth;
+		viewDesc.depthEncodeNear = settings.depthEncodeNear;
+		viewDesc.depthEncodeFar = settings.depthEncodeFar;
 
 		viewDesc.visibleLayers = 0xFFFFFFFFFFFFFFFF;
 		viewDesc.nearPlane = 0.5f;
@@ -577,12 +581,12 @@ namespace bs { namespace ct
 		viewDesc.stateReduction = mCoreOptions->stateReductionMode;
 		viewDesc.sceneCamera = nullptr;
 
-		SPtr<RenderSettings> settings = bs_shared_ptr_new<RenderSettings>();
-		settings->enableHDR = hdr;
-		settings->enableShadows = true;
-		settings->enableIndirectLighting = false;
-		settings->screenSpaceReflections.enabled = false;
-		settings->ambientOcclusion.enabled = false;
+		SPtr<RenderSettings> renderSettings = bs_shared_ptr_new<RenderSettings>();
+		renderSettings->enableHDR = settings.hdr;
+		renderSettings->enableShadows = true;
+		renderSettings->enableIndirectLighting = false;
+		renderSettings->screenSpaceReflections.enabled = false;
+		renderSettings->ambientOcclusion.enabled = false;
 
 		Matrix4 viewOffsetMat = Matrix4::translation(-position);
 
@@ -648,7 +652,7 @@ namespace bs { namespace ct
 			viewDesc.target.target = RenderTexture::create(cubeFaceRTDesc);
 
 			views[i].setView(viewDesc);
-			views[i].setRenderSettings(settings);
+			views[i].setRenderSettings(renderSettings);
 			views[i].updatePerViewBuffer();
 		}
 

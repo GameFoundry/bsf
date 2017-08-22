@@ -67,6 +67,12 @@ namespace bs { namespace ct
 		return get(VAR_Texture);
 	}
 
+	RendererViewData::RendererViewData()
+		:encodeDepth(false), depthEncodeNear(0.0f), depthEncodeFar(0.0f)
+	{
+		
+	}
+
 	RendererViewProperties::RendererViewProperties(const RENDERER_VIEW_DESC& src)
 		:RendererViewData(src), frameIdx(0)
 	{
