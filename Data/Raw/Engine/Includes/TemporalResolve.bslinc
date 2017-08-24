@@ -112,16 +112,16 @@ mixin TemporalResolve
 	
 		////////////////////////// HELPER MACROS /////////////////////////
 		#if MSAA
-			#define _TEX2D(n) Texture2DMS n
+			#define _TEX2D(n) Texture2DMS<float> n
 			#if MSAA_COLOR
-				#define _TEXCOLOR(n) Texture2DMS n
+				#define _TEXCOLOR(n) Texture2DMS<float4> n
 			#else
 				#define _TEXCOLOR(n) Texture2D n, SamplerState n##SampState, float2 n##TexelSize
 			#endif
 			
 			#define _PTEX2D(n) n
 			#define _SAMPLE(n, uv) n.Load((int2)uv, sampleIdx)
-			#define _SAMPLEOFF(n, uv, offset) n.Load((int2)(uv) + offset)
+			#define _SAMPLEOFF(n, uv, offset) n.Load((int2)(uv) + offset, sampleIdx)
 			
 			#if MSAA_COLOR
 				#define _SAMPLECOL(n, uv, offset) _SAMPLEOFF(n, uv, offset)

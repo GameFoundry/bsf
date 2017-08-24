@@ -27,7 +27,7 @@ technique PPSSRResolve
 		}
 		
 		#if MSAA
-			Texture2DMS gSceneDepth;
+			Texture2DMS<float> gSceneDepth;
 		#else
 			Texture2D gSceneDepth;
 		#endif	
@@ -38,21 +38,25 @@ technique PPSSRResolve
 		SamplerState gPointSampler;
 		SamplerState gLinearSampler;		
 		
-		float3 fsmain(VStoFS input) : SV_Target0
+		float4 fsmain(VStoFS input) : SV_Target0
 		{
+			float4 col;
 			#if MSAA
-				return temporalResolve(
+				col.rgb = temporalResolve(
 					gSceneDepth, 
 					gSceneColor, gLinearSampler, gSceneColorTexelSize, 
 					gPrevColor, gLinearSampler, gSceneColorTexelSize,
 					gManualExposure, input.position.xy, input.screenPos, 0);
 			#else
-				return temporalResolve(
+				col.rgb = temporalResolve(
 					gSceneDepth, gPointSampler, gSceneDepthTexelSize,
 					gSceneColor, gLinearSampler, gSceneColorTexelSize, 
 					gPrevColor, gLinearSampler, gSceneColorTexelSize,
 					gManualExposure, input.uv0, input.screenPos, 0);
 			#endif
+			
+			col.a = gSceneColor.Sample(gLinearSampler, input.uv0).a;
+			return col;
 		}	
 	};
 };

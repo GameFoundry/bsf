@@ -13,12 +13,12 @@ namespace bs
 {
 	ReflectionProbeBase::ReflectionProbeBase()
 		: mPosition(BsZero), mRotation(BsIdentity), mScale(1.0f, 1.0f, 1.0f), mType(ReflectionProbeType::Box), mRadius(1.0f)
-		, mExtents(1.0f, 1.0f, 1.0f), mTransitionDistance(1.0f), mIsActive(true), mBounds(Vector3::ZERO, 1.0f)
+		, mExtents(1.0f, 1.0f, 1.0f), mTransitionDistance(0.5f), mIsActive(true), mBounds(Vector3::ZERO, 1.0f)
 	{ }
 
 	ReflectionProbeBase::ReflectionProbeBase(ReflectionProbeType type, float radius, const Vector3& extents)
 		: mPosition(BsZero), mRotation(BsIdentity), mScale(1.0f, 1.0f, 1.0f), mType(type), mRadius(radius)
-		, mExtents(extents), mTransitionDistance(1.0f), mIsActive(true), mBounds(Vector3::ZERO, 1.0f)
+		, mExtents(extents), mTransitionDistance(0.5f), mIsActive(true), mBounds(Vector3::ZERO, 1.0f)
 	{ }
 
 	void ReflectionProbeBase::updateBounds()

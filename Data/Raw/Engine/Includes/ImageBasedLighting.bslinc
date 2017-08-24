@@ -117,7 +117,7 @@ mixin ImageBasedLighting
 			// Calculate contribution
 			//// Shrink the box so fade out happens within box extents
 			float3 reducedExtents = extents - float3(transitionDistance, transitionDistance, transitionDistance);
-			float distToBox = getDistBoxToPoint(originLS * reducedExtents, reducedExtents);
+			float distToBox = getDistBoxToPoint(originLS * extents, reducedExtents);
 			
 			float normalizedDistance = distToBox / transitionDistance;
 			

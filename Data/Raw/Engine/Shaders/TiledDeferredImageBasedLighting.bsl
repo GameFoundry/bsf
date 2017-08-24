@@ -76,7 +76,10 @@ technique TiledDeferredImageBasedLighting
 			
 			// Determine minimum and maximum depth values for a tile			
 			InterlockedMin(sTileMinZ, sampleMinZ);
-			InterlockedMax(sTileMaxZ, sampleMaxZ);
+			
+			// Skip samples on the far plane (e.g. skybox) as they ruin the precision
+			if(sampleMaxZ < 1.0f)
+				InterlockedMax(sTileMaxZ, sampleMaxZ);
 			
 			GroupMemoryBarrierWithGroupSync();
 			
@@ -121,8 +124,10 @@ technique TiledDeferredImageBasedLighting
 			for(uint i = 0; i < 5; ++i)
 				corner[i].xy /= corner[i].w;
 		
-			float3 viewMin = float3(corner[0].xy, viewZMin);
-			float3 viewMax = float3(corner[0].xy, viewZMax);
+			// Flip min/max because min = closest to view plane and max = furthest from view plane
+			// but since Z is negative, closest is in fact the maximum and furtest is the minimum
+			float3 viewMin = float3(corner[0].xy, viewZMax);
+			float3 viewMax = float3(corner[0].xy, viewZMin);
 			
 			[unroll]
 			for(uint i = 1; i < 4; ++i)
@@ -164,7 +169,7 @@ technique TiledDeferredImageBasedLighting
 			#endif				
 			
 			float ao = gAmbientOcclusionTex.Load(int3(pixelPos.xy, 0));
-			float4 ssr = 0;//gSSRTex.Load(int3(pixelPos.xy, 0));
+			float4 ssr = gSSRTex.Load(int3(pixelPos.xy, 0));
 			float3 imageBasedSpecular = getImageBasedSpecular(worldPosition, V, specR, surfaceData, ao, ssr, probeOffset, numProbes);
 
 			float4 totalLighting = existingColor;
