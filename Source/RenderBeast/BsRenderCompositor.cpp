@@ -405,6 +405,42 @@ namespace bs { namespace ct
 		return { RCNodeSceneDepth::getNodeId() };
 	}
 
+	void RCNodeMSAACoverage::render(const RenderCompositorNodeInputs& inputs)
+	{
+		GpuResourcePool& resPool = GpuResourcePool::instance();
+		const RendererViewProperties& viewProps = inputs.view.getProperties();
+
+		UINT32 width = viewProps.viewRect.width;
+		UINT32 height = viewProps.viewRect.height;
+
+		output = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_R8, width, height, TU_RENDERTARGET));
+
+		RCNodeGBuffer* gbufferNode = static_cast<RCNodeGBuffer*>(inputs.inputNodes[0]);
+		RCNodeSceneDepth* sceneDepthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[1]);
+
+		GBufferTextures gbuffer;
+		gbuffer.albedo = gbufferNode->albedoTex->texture;
+		gbuffer.normals = gbufferNode->normalTex->texture;
+		gbuffer.roughMetal = gbufferNode->roughMetalTex->texture;
+		gbuffer.depth = sceneDepthNode->depthTex->texture;
+
+		MSAACoverageMat* mat = MSAACoverageMat::getVariation(viewProps.numSamples);
+
+		RenderAPI::instance().setRenderTarget(output->renderTexture);
+		mat->execute(inputs.view, gbuffer);
+	}
+
+	void RCNodeMSAACoverage::clear()
+	{
+		GpuResourcePool& resPool = GpuResourcePool::instance();
+		resPool.release(output);
+	}
+
+	SmallVector<StringID, 4> RCNodeMSAACoverage::getDependencies(const RendererView& view)
+	{
+		return { RCNodeGBuffer::getNodeId(), RCNodeSceneDepth::getNodeId() };
+	}
+
 	void RCNodeLightAccumulation::render(const RenderCompositorNodeInputs& inputs)
 	{
 		GpuResourcePool& resPool = GpuResourcePool::instance();

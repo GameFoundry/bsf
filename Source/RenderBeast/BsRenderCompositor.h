@@ -239,6 +239,27 @@ namespace ct
 		void clear() override;
 	};
 
+	/**
+	 * Determines which samples in the GBuffer require per-sample shading and outputs a texture with the coverage (for use
+	 * in compute shaders) and populates the primary stencil buffer as well (for use in non-compute shaders). Only relevant
+	 * when rendering with MSAA enabled.
+	 */
+	class RCNodeMSAACoverage : public RenderCompositorNode
+	{
+	public:
+		// Outputs
+		SPtr<PooledRenderTexture> output;
+
+		static StringID getNodeId() { return "MSAACoverage"; }
+		static SmallVector<StringID, 4> getDependencies(const RendererView& view);
+	protected:
+		/** @copydoc RenderCompositorNode::render */
+		void render(const RenderCompositorNodeInputs& inputs) override;
+
+		/** @copydoc RenderCompositorNode::clear */
+		void clear() override;
+	};
+
 	/************************************************************************/
 	/* 							LIGHTING NODES                     			*/
 	/************************************************************************/

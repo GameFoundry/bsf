@@ -97,6 +97,7 @@ namespace bs { namespace ct
 		RenderCompositor::registerNodeType<RCNodeClusteredForward>();
 		RenderCompositor::registerNodeType<RCNodeIndirectLighting>();
 		RenderCompositor::registerNodeType<RCNodeSSR>();
+		RenderCompositor::registerNodeType<RCNodeMSAACoverage>();
 	}
 
 	void RenderBeast::destroyCore()

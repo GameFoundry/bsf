@@ -821,5 +821,34 @@ namespace bs { namespace ct
 		GpuParamTexture mInputTexture;
 	};
 
+	/** 
+	 * Shader that outputs a texture that determines which pixels require per-sample evaluation. Only relevant when 
+	 * rendering with MSAA enabled.
+	 */
+	class MSAACoverageMat : public RendererMaterial<MSAACoverageMat>
+	{
+		RMAT_DEF("MSAACoverage.bsl");
+
+	public:
+		MSAACoverageMat();
+
+		/** 
+		 * Renders the effect with the provided parameters, using the currently bound render target. 
+		 * 
+		 * @param[in]	view			Information about the view we're rendering from.
+		 * @param[in]	gbuffer			GBuffer textures.
+		 */
+		void execute(const RendererView& view, GBufferTextures gbuffer);
+
+		/** Returns the material variation matching the provided parameters. */
+		static MSAACoverageMat* getVariation(UINT32 msaaCount);
+	private:
+		GBufferParams mGBufferParams;
+
+		static ShaderVariation VAR_2x;
+		static ShaderVariation VAR_4x;
+		static ShaderVariation VAR_8x;
+	};
+
 	/** @} */
 }}

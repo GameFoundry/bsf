@@ -1789,4 +1789,53 @@ namespace bs { namespace ct
 		gRendererUtility().setPassParams(mParamsSet);
 		gRendererUtility().drawScreenQuad();
 	}
+
+	ShaderVariation MSAACoverageMat::VAR_2x = ShaderVariation({
+		ShaderVariation::Param("MSAA_COUNT", 2)
+	});
+
+	ShaderVariation MSAACoverageMat::VAR_4x = ShaderVariation({
+		ShaderVariation::Param("MSAA_COUNT", 4)
+	});
+
+	ShaderVariation MSAACoverageMat::VAR_8x = ShaderVariation({
+		ShaderVariation::Param("MSAA_COUNT", 8)
+	});
+
+	MSAACoverageMat::MSAACoverageMat()
+		:mGBufferParams(mMaterial, mParamsSet)
+	{ }
+
+	void MSAACoverageMat::_initVariations(ShaderVariations& variations)
+	{
+		variations.add(VAR_2x);
+		variations.add(VAR_4x);
+		variations.add(VAR_8x);
+	}
+
+	void MSAACoverageMat::execute(const RendererView& view, GBufferTextures gbuffer) 
+	{
+		mGBufferParams.bind(gbuffer);
+
+		SPtr<GpuParamBlockBuffer> perView = view.getPerViewBuffer();
+		mParamsSet->setParamBlockBuffer("PerCamera", perView);
+
+		gRendererUtility().setPass(mMaterial);
+		gRendererUtility().setPassParams(mParamsSet);
+		gRendererUtility().drawScreenQuad();
+	}
+
+	MSAACoverageMat* MSAACoverageMat::getVariation(UINT32 msaaCount)
+	{
+		switch(msaaCount)
+		{
+		case 2:
+			return get(VAR_2x);
+		case 4:
+			return get(VAR_4x);
+		case 8:
+		default:
+			return get(VAR_8x);
+		}
+	}
 }}

@@ -369,6 +369,10 @@
         {
             "Path": "PPEncodeDepth.bsl",
             "UUID": "8bbf989a-9f8d-4864-8332-7f8c499685ba"
+        },
+        {
+            "Path": "MSAACoverage.bsl",
+            "UUID": "151465e1-e123-475d-97f5-77bc04bc15ce"
         }
     ],
     "Skin": [
