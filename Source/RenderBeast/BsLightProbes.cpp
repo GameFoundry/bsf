@@ -172,7 +172,7 @@ namespace bs { namespace ct
 
 		// Render
 		RenderAPI& rapi = RenderAPI::instance();
-		rapi.setRenderTarget(output, 0, RT_COLOR0);
+		rapi.setRenderTarget(output, FBT_DEPTH | FBT_STENCIL, RT_COLOR0);
 
 		gRendererUtility().setPass(mMaterial);
 		gRendererUtility().setPassParams(mParamsSet);

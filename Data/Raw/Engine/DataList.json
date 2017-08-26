@@ -373,6 +373,10 @@
         {
             "Path": "MSAACoverage.bsl",
             "UUID": "151465e1-e123-475d-97f5-77bc04bc15ce"
+        },
+        {
+            "Path": "MSAACoverageStencil.bsl",
+            "UUID": "f4344aa8-d286-4f10-b25d-a76302487fa8"
         }
     ],
     "Skin": [

@@ -37,13 +37,21 @@ namespace bs { namespace ct {
 		/** Updates the per-light buffers used by the material. */
 		void setPerLightParams(const SPtr<GpuParamBlockBuffer>& perLight);
 		
-		/** Returns the material variation matching the provided parameters. */
-		static DirectionalLightMat* getVariation(bool msaa);
+		/** 
+		 * Returns the material variation matching the provided parameters. 
+		 * 
+		 * @param[in]	msaa				True if the shader will operate on a multisampled surface.
+		 * @param[in]	singleSampleMSAA	Only relevant of @p msaa is true. When enabled only the first sample will be
+		 *									evaluated. Otherwise all samples will be evaluated.
+		 * @return							Requested variation of the material.
+		 */
+		static DirectionalLightMat* getVariation(bool msaa, bool singleSampleMSAA = false);
 	private:
 		GBufferParams mGBufferParams;
 		GpuParamTexture mLightOcclusionTexParam;
 
-		static ShaderVariation VAR_MSAA;
+		static ShaderVariation VAR_FullMSAA;
+		static ShaderVariation VAR_SingleMSAA;
 		static ShaderVariation VAR_NoMSAA;
 	};
 
@@ -62,14 +70,24 @@ namespace bs { namespace ct {
 		/** Updates the per-light buffers used by the material. */
 		void setPerLightParams(const SPtr<GpuParamBlockBuffer>& perLight);
 
-		/** Returns the material variation matching the provided parameters. */
-		static PointLightMat* getVariation(bool msaa, bool inside);
+		/** 
+		 * Returns the material variation matching the provided parameters. 
+		 * 
+		 * @param[in]	inside				Set to true if viewer is inside the light's stencil geometry.
+		 * @param[in]	msaa				True if the shader will operate on a multisampled surface.
+		 * @param[in]	singleSampleMSAA	Only relevant of @p msaa is true. When enabled only the first sample will be
+		 *									evaluated. Otherwise all samples will be evaluated.
+		 * @return							Requested variation of the material.
+		 */
+		static PointLightMat* getVariation(bool inside, bool msaa, bool singleSampleMSAA = false);
 	private:
 		GBufferParams mGBufferParams;
 		GpuParamTexture mLightOcclusionTexParam;
 
-		static ShaderVariation VAR_MSAA_Inside;
-		static ShaderVariation VAR_MSAA_Outside;
+		static ShaderVariation VAR_FullMSAA_Inside;
+		static ShaderVariation VAR_SingleMSAA_Inside;
+		static ShaderVariation VAR_FullMSAA_Outside;
+		static ShaderVariation VAR_SingleMSAA_Outside;
 		static ShaderVariation VAR_NoMSAA_Inside;
 		static ShaderVariation VAR_NoMSAA_Outside;
 	};

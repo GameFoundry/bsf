@@ -332,7 +332,7 @@ namespace ct
 		/** @copydoc RenderCompositorNode::clear */
 		void clear() override;
 
-		SPtr<RenderTexture> mRenderTarget;
+		SPtr<RenderTexture> mLightOcclusionRT;
 	};
 
 	/**

@@ -426,8 +426,13 @@ namespace bs { namespace ct
 
 		MSAACoverageMat* mat = MSAACoverageMat::getVariation(viewProps.numSamples);
 
-		RenderAPI::instance().setRenderTarget(output->renderTexture);
+		RenderAPI& rapi = RenderAPI::instance();
+		rapi.setRenderTarget(output->renderTexture);
 		mat->execute(inputs.view, gbuffer);
+
+		MSAACoverageStencilMat* stencilMat = MSAACoverageStencilMat::get();
+		rapi.setRenderTarget(sceneDepthNode->depthTex->renderTexture);
+		stencilMat->execute(output->texture);
 	}
 
 	void RCNodeMSAACoverage::clear()
@@ -445,6 +450,8 @@ namespace bs { namespace ct
 	{
 		GpuResourcePool& resPool = GpuResourcePool::instance();
 		const RendererViewProperties& viewProps = inputs.view.getProperties();
+
+		RCNodeSceneDepth* depthNode = static_cast<RCNodeSceneDepth*>(inputs.inputNodes[0]);
 
 		UINT32 width = viewProps.viewRect.width;
 		UINT32 height = viewProps.viewRect.height;
@@ -474,7 +481,10 @@ namespace bs { namespace ct
 
 		bool rebuildRT;
 		if (renderTarget != nullptr)
+		{
 			rebuildRT = renderTarget->getColorTexture(0) != lightAccumulationTex->texture;
+			rebuildRT |= renderTarget->getDepthStencilTexture() != depthNode->depthTex->texture;
+		}
 		else
 			rebuildRT = true;
 
@@ -485,6 +495,11 @@ namespace bs { namespace ct
 			lightAccumulationRTDesc.colorSurfaces[0].face = 0;
 			lightAccumulationRTDesc.colorSurfaces[0].numFaces = 1;
 			lightAccumulationRTDesc.colorSurfaces[0].mipLevel = 0;
+
+			lightAccumulationRTDesc.depthStencilSurface.texture = depthNode->depthTex->texture;
+			lightAccumulationRTDesc.depthStencilSurface.face = 0;
+			lightAccumulationRTDesc.depthStencilSurface.numFaces = 1;
+			lightAccumulationRTDesc.depthStencilSurface.mipLevel = 0;
 
 			renderTarget = RenderTexture::create(lightAccumulationRTDesc);
 		}
@@ -501,7 +516,7 @@ namespace bs { namespace ct
 
 	SmallVector<StringID, 4> RCNodeLightAccumulation::getDependencies(const RendererView& view)
 	{
-		return {};
+		return { RCNodeSceneDepth::getNodeId() };
 	}
 
 	void RCNodeTiledDeferredLighting::render(const RenderCompositorNodeInputs& inputs)
@@ -564,7 +579,10 @@ namespace bs { namespace ct
 
 		// If shadows are disabled we handle all lights through tiled deferred
 		if (!inputs.view.getRenderSettings().enableShadows)
+		{
+			mLightOcclusionRT = nullptr;
 			return;
+		}
 
 		GpuResourcePool& resPool = GpuResourcePool::instance();
 		const RendererViewProperties& viewProps = inputs.view.getProperties();
@@ -581,10 +599,10 @@ namespace bs { namespace ct
 			height, TU_RENDERTARGET, numSamples, false));
 
 		bool rebuildRT = false;
-		if (mRenderTarget != nullptr)
+		if (mLightOcclusionRT != nullptr)
 		{
-			rebuildRT |= mRenderTarget->getColorTexture(0) != lightOcclusionTex->texture;
-			rebuildRT |= mRenderTarget->getDepthStencilTexture() != sceneDepthNode->depthTex->texture;
+			rebuildRT |= mLightOcclusionRT->getColorTexture(0) != lightOcclusionTex->texture;
+			rebuildRT |= mLightOcclusionRT->getDepthStencilTexture() != sceneDepthNode->depthTex->texture;
 		}
 		else
 			rebuildRT = true;
@@ -602,7 +620,7 @@ namespace bs { namespace ct
 			lightOcclusionRTDesc.depthStencilSurface.numFaces = 1;
 			lightOcclusionRTDesc.depthStencilSurface.mipLevel = 0;
 
-			mRenderTarget = RenderTexture::create(lightOcclusionRTDesc);
+			mLightOcclusionRT = RenderTexture::create(lightOcclusionRTDesc);
 		}
 
 		GBufferTextures gbuffer;
@@ -625,7 +643,7 @@ namespace bs { namespace ct
 
 			for (UINT32 j = 0; j < count; j++)
 			{
-				rapi.setRenderTarget(mRenderTarget, FBT_DEPTH, RT_DEPTH_STENCIL);
+				rapi.setRenderTarget(mLightOcclusionRT, FBT_DEPTH, RT_DEPTH_STENCIL);
 
 				Rect2 area(0.0f, 0.0f, 1.0f, 1.0f);
 				rapi.setViewport(area);

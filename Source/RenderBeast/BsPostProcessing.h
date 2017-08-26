@@ -850,5 +850,27 @@ namespace bs { namespace ct
 		static ShaderVariation VAR_8x;
 	};
 
+	/** 
+	 * Converts the coverage texture output by MSAACoverageMat and writes its information in the highest bit of the
+	 * currently bound stencil buffer. This allows coverage information to be used by normal (non-compute) rendering 
+	 * shaders.
+	 */
+	class MSAACoverageStencilMat : public RendererMaterial<MSAACoverageStencilMat>
+	{
+		RMAT_DEF("MSAACoverageStencil.bsl");
+
+	public:
+		MSAACoverageStencilMat();
+
+		/** 
+		 * Renders the effect with the provided parameters, using the currently bound render target. 
+		 * 
+		 * @param[in]	coverage	Coverage texture as output by MSAACoverageMat.
+		 */
+		void execute(const SPtr<Texture>& coverage);
+	private:
+		GpuParamTexture mCoverageTexParam;
+	};
+
 	/** @} */
 }}

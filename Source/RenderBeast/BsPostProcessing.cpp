@@ -1838,4 +1838,24 @@ namespace bs { namespace ct
 			return get(VAR_8x);
 		}
 	}
+
+	MSAACoverageStencilMat::MSAACoverageStencilMat()
+	{
+		SPtr<GpuParams> params = mParamsSet->getGpuParams();
+		params->getTextureParam(GPT_FRAGMENT_PROGRAM, "gMSAACoverage", mCoverageTexParam);
+	}
+
+	void MSAACoverageStencilMat::_initVariations(ShaderVariations& variations)
+	{
+		// Do nothing
+	}
+
+	void MSAACoverageStencilMat::execute(const SPtr<Texture>& coverage)
+	{
+		mCoverageTexParam.set(coverage);
+
+		gRendererUtility().setPass(mMaterial);
+		gRendererUtility().setPassParams(mParamsSet);
+		gRendererUtility().drawScreenQuad();
+	}
 }}

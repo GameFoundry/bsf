@@ -9,8 +9,27 @@ technique DeferredDirectionalLight
 		read = false;
 	};
 	
+	#ifdef MSAA
+	stencil
+	{
+		enabled = true;
+		front = { keep, keep, keep, eq };
+		readmask = 0x80;
+		
+		#ifdef MSAA_RESOLVE_0TH
+		reference = 0;
+		#else
+		reference = 0x80;
+		#endif
+	};
+	#endif
+	
 	code 
 	{
+		#ifndef MSAA_RESOLVE_0TH
+			#define MSAA_RESOLVE_0TH 0
+		#endif	
+	
 		struct VStoFS
 		{
 			float4 position : SV_POSITION;
@@ -35,12 +54,20 @@ technique DeferredDirectionalLight
 			return output;
 		}
 
-		float4 fsmain(VStoFS input, uint sampleIdx : SV_SampleIndex) : SV_Target0
+		float4 fsmain(VStoFS input
+			#if MSAA_COUNT > 1 && !MSAA_RESOLVE_0TH
+			, uint sampleIdx : SV_SampleIndex
+			#endif
+			) : SV_Target0
 		{
 			uint2 pixelPos = (uint2)(input.uv0 * (float2)gViewportRectangle.zw - ((float2)gViewportRectangle.xy + 0.5f));
 			
 			#if MSAA_COUNT > 1
-			SurfaceData surfaceData = getGBufferData(pixelPos, sampleIdx);
+				#if MSAA_RESOLVE_0TH
+					SurfaceData surfaceData = getGBufferData(pixelPos, 0);
+				#else
+					SurfaceData surfaceData = getGBufferData(pixelPos, sampleIdx);
+				#endif
 			#else
 			SurfaceData surfaceData = getGBufferData(pixelPos);
 			#endif			
@@ -60,7 +87,11 @@ technique DeferredDirectionalLight
 				LightData lightData = getLightData();
 				
 				#if MSAA_COUNT > 1
-				float occlusion = gLightOcclusionTex.Load(pixelPos, sampleIdx).r;
+					#if MSAA_RESOLVE_0TH
+						float occlusion = gLightOcclusionTex.Load(pixelPos, 0).r;
+					#else
+						float occlusion = gLightOcclusionTex.Load(pixelPos, sampleIdx).r;
+					#endif
 				#else
 				float occlusion = gLightOcclusionTex.Load(int3(pixelPos, 0)).r;
 				#endif

@@ -9,8 +9,15 @@
 namespace bs { namespace ct {
 	PerLightParamDef gPerLightParamDef;
 
-	ShaderVariation DirectionalLightMat::VAR_MSAA = ShaderVariation({
-		ShaderVariation::Param("MSAA_COUNT", 2)
+	ShaderVariation DirectionalLightMat::VAR_FullMSAA = ShaderVariation({
+		ShaderVariation::Param("MSAA_COUNT", 2),
+		ShaderVariation::Param("MSAA", true)
+	});
+
+	ShaderVariation DirectionalLightMat::VAR_SingleMSAA = ShaderVariation({
+		ShaderVariation::Param("MSAA_COUNT", 2),
+		ShaderVariation::Param("MSAA", true),
+		ShaderVariation::Param("MSAA_RESOLVE_0TH", true)
 	});
 
 	ShaderVariation DirectionalLightMat::VAR_NoMSAA = ShaderVariation({
@@ -26,7 +33,8 @@ namespace bs { namespace ct {
 
 	void DirectionalLightMat::_initVariations(ShaderVariations& variations)
 	{
-		variations.add(VAR_MSAA);
+		variations.add(VAR_FullMSAA);
+		variations.add(VAR_SingleMSAA);
 		variations.add(VAR_NoMSAA);
 	}
 
@@ -47,21 +55,41 @@ namespace bs { namespace ct {
 		gRendererUtility().setPassParams(mParamsSet);
 	}
 
-	DirectionalLightMat* DirectionalLightMat::getVariation(bool msaa)
+	DirectionalLightMat* DirectionalLightMat::getVariation(bool msaa, bool singleSampleMSAA)
 	{
 		if (msaa)
-			return get(VAR_MSAA);
+		{
+			if (singleSampleMSAA)
+				return get(VAR_SingleMSAA);
+			else
+				return get(VAR_FullMSAA);
+		}
 
 		return get(VAR_NoMSAA);
 	}
 
-	ShaderVariation PointLightMat::VAR_MSAA_Inside = ShaderVariation({
+	ShaderVariation PointLightMat::VAR_FullMSAA_Inside = ShaderVariation({
 		ShaderVariation::Param("MSAA_COUNT", 2),
+		ShaderVariation::Param("MSAA", true),
 		ShaderVariation::Param("INSIDE_GEOMETRY", true)
 	});
 
-	ShaderVariation PointLightMat::VAR_MSAA_Outside = ShaderVariation({
-		ShaderVariation::Param("MSAA_COUNT", 2)
+	ShaderVariation PointLightMat::VAR_SingleMSAA_Inside = ShaderVariation({
+		ShaderVariation::Param("MSAA_COUNT", 2),
+		ShaderVariation::Param("MSAA", true),
+		ShaderVariation::Param("INSIDE_GEOMETRY", true),
+		ShaderVariation::Param("MSAA_RESOLVE_0TH", true)
+	});
+
+	ShaderVariation PointLightMat::VAR_FullMSAA_Outside = ShaderVariation({
+		ShaderVariation::Param("MSAA_COUNT", 2),
+		ShaderVariation::Param("MSAA", true)
+	});
+
+	ShaderVariation PointLightMat::VAR_SingleMSAA_Outside = ShaderVariation({
+		ShaderVariation::Param("MSAA_COUNT", 2),
+		ShaderVariation::Param("MSAA", true),
+		ShaderVariation::Param("MSAA_RESOLVE_0TH", true)
 	});
 
 	ShaderVariation PointLightMat::VAR_NoMSAA_Inside = ShaderVariation({
@@ -82,8 +110,10 @@ namespace bs { namespace ct {
 
 	void PointLightMat::_initVariations(ShaderVariations& variations)
 	{
-		variations.add(VAR_MSAA_Inside);
-		variations.add(VAR_MSAA_Outside);
+		variations.add(VAR_FullMSAA_Inside);
+		variations.add(VAR_SingleMSAA_Inside);
+		variations.add(VAR_FullMSAA_Outside);
+		variations.add(VAR_SingleMSAA_Outside);
 		variations.add(VAR_NoMSAA_Inside);
 		variations.add(VAR_NoMSAA_Outside);
 	}
@@ -105,14 +135,24 @@ namespace bs { namespace ct {
 		gRendererUtility().setPassParams(mParamsSet);
 	}
 
-	PointLightMat* PointLightMat::getVariation(bool msaa, bool inside)
+	PointLightMat* PointLightMat::getVariation(bool inside, bool msaa, bool singleSampleMSAA)
 	{
 		if(msaa)
 		{
 			if (inside)
-				return get(VAR_MSAA_Inside);
+			{
+				if (singleSampleMSAA)
+					return get(VAR_SingleMSAA_Inside);
+
+				return get(VAR_FullMSAA_Inside);
+			}
 			else
-				return get(VAR_MSAA_Outside);
+			{
+				if (singleSampleMSAA)
+					return get(VAR_SingleMSAA_Outside);
+
+				return get(VAR_FullMSAA_Outside);
+			}
 		}
 		else
 		{
@@ -140,11 +180,21 @@ namespace bs { namespace ct {
 
 		if (lightType == LightType::Directional)
 		{
-			DirectionalLightMat* material = DirectionalLightMat::getVariation(isMSAA);
+			DirectionalLightMat* material = DirectionalLightMat::getVariation(isMSAA, true);
 			material->bind(gBufferInput, lightOcclusion, perViewBuffer);
 			material->setPerLightParams(mPerLightBuffer);
 
 			gRendererUtility().drawScreenQuad();
+
+			// Draw pixels requiring per-sample evaluation
+			if(isMSAA)
+			{
+				DirectionalLightMat* msaaMaterial = DirectionalLightMat::getVariation(true, false);
+				msaaMaterial->bind(gBufferInput, lightOcclusion, perViewBuffer);
+				msaaMaterial->setPerLightParams(mPerLightBuffer);
+
+				gRendererUtility().drawScreenQuad();
+			}
 		}
 		else // Radial or spot
 		{
@@ -158,17 +208,28 @@ namespace bs { namespace ct {
 
 			bool isInside = distSqrd < (boundRadius * boundRadius);
 
-			PointLightMat* material = PointLightMat::getVariation(isMSAA, isInside);
-			material->bind(gBufferInput, lightOcclusion, perViewBuffer);
-			material->setPerLightParams(mPerLightBuffer);
-
 			SPtr<Mesh> stencilMesh;
 			if(lightType == LightType::Radial)
 				stencilMesh = RendererUtility::instance().getRadialLightStencil();
 			else // Spot
 				stencilMesh = RendererUtility::instance().getSpotLightStencil();
 
+			PointLightMat* material = PointLightMat::getVariation(isInside, isMSAA, true);
+			material->bind(gBufferInput, lightOcclusion, perViewBuffer);
+			material->setPerLightParams(mPerLightBuffer);
+
+			// Note: If MSAA is enabled this will be rendered multisampled (on polygon edges), see if this can be avoided
 			gRendererUtility().draw(stencilMesh);
+
+			// Draw pixels requiring per-sample evaluation
+			if(isMSAA)
+			{
+				PointLightMat* msaaMaterial = PointLightMat::getVariation(isInside, true, false);
+				msaaMaterial->bind(gBufferInput, lightOcclusion, perViewBuffer);
+				msaaMaterial->setPerLightParams(mPerLightBuffer);
+
+				gRendererUtility().draw(stencilMesh);
+			}
 		}
 	}
 }}
