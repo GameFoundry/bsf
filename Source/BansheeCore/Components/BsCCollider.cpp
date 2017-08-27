@@ -290,45 +290,45 @@ namespace bs
 			mInternal->setCollisionReportMode(mode);
 	}
 
-	void CCollider::triggerOnCollisionBegin(const CollisionData& data)
+	void CCollider::triggerOnCollisionBegin(const CollisionDataRaw& data)
 	{
-		// Const-cast and modify is okay because we're the only object receiving this event
-		CollisionData& hit = const_cast<CollisionData&>(data);
+		CollisionData hit;
+		hit.contactPoints = std::move(data.contactPoints);
 		hit.collider[0] = mThisHandle;
 
-		if(hit.collidersRaw[1] != nullptr)
+		if(data.colliders[1] != nullptr)
 		{
-			CCollider* other = (CCollider*)hit.collidersRaw[1]->_getOwner(PhysicsOwnerType::Component);
+			CCollider* other = (CCollider*)data.colliders[1]->_getOwner(PhysicsOwnerType::Component);
 			hit.collider[1] = other->getHandle();
 		}
 
 		onCollisionBegin(hit);
 	}
 
-	void CCollider::triggerOnCollisionStay(const CollisionData& data)
+	void CCollider::triggerOnCollisionStay(const CollisionDataRaw& data)
 	{
-		// Const-cast and modify is okay because we're the only object receiving this event
-		CollisionData& hit = const_cast<CollisionData&>(data);
+		CollisionData hit;
+		hit.contactPoints = std::move(data.contactPoints);
 		hit.collider[0] = mThisHandle;
 
-		if (hit.collidersRaw[1] != nullptr)
+		if (data.colliders[1] != nullptr)
 		{
-			CCollider* other = (CCollider*)hit.collidersRaw[1]->_getOwner(PhysicsOwnerType::Component);
+			CCollider* other = (CCollider*)data.colliders[1]->_getOwner(PhysicsOwnerType::Component);
 			hit.collider[1] = other->getHandle();
 		}
 
 		onCollisionStay(hit);
 	}
 
-	void CCollider::triggerOnCollisionEnd(const CollisionData& data)
+	void CCollider::triggerOnCollisionEnd(const CollisionDataRaw& data)
 	{
-		// Const-cast and modify is okay because we're the only object receiving this event
-		CollisionData& hit = const_cast<CollisionData&>(data);
+		CollisionData hit;
+		hit.contactPoints = std::move(data.contactPoints);
 		hit.collider[0] = mThisHandle;
 
-		if (hit.collidersRaw[1] != nullptr)
+		if (data.colliders[1] != nullptr)
 		{
-			CCollider* other = (CCollider*)hit.collidersRaw[1]->_getOwner(PhysicsOwnerType::Component);
+			CCollider* other = (CCollider*)data.colliders[1]->_getOwner(PhysicsOwnerType::Component);
 			hit.collider[1] = other->getHandle();
 		}
 

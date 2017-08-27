@@ -16,9 +16,9 @@ namespace bs
 
 	class BS_CORE_EXPORT CD6JointRTTI : public RTTIType<CD6Joint, CJoint, CD6JointRTTI>
 	{
-		D6Joint::Motion& getMotion(CD6Joint* obj, UINT32 idx) { return obj->mDesc.motion[idx]; }
-		void setMotion(CD6Joint* obj, UINT32 idx, D6Joint::Motion& value) { obj->mDesc.motion[idx] = value; }
-		UINT32 getMotionCount(CD6Joint* obj) { return (UINT32)D6Joint::Motion::Count; }
+		D6JointMotion& getMotion(CD6Joint* obj, UINT32 idx) { return obj->mDesc.motion[idx]; }
+		void setMotion(CD6Joint* obj, UINT32 idx, D6JointMotion& value) { obj->mDesc.motion[idx] = value; }
+		UINT32 getMotionCount(CD6Joint* obj) { return (UINT32)D6JointMotion::Count; }
 		void setMotionCount(CD6Joint* obj, UINT32 size) { /* Do nothing */ }
 
 		float& getDriveStiffness(CD6Joint* obj, UINT32 idx) { return obj->mDesc.drive[idx].stiffness; }
@@ -33,7 +33,7 @@ namespace bs
 		bool& getDriveAcceleration(CD6Joint* obj, UINT32 idx) { return obj->mDesc.drive[idx].acceleration; }
 		void setDriveAcceleration(CD6Joint* obj, UINT32 idx, bool& value) { obj->mDesc.drive[idx].acceleration = value; }
 
-		UINT32 getDriveCount(CD6Joint* obj) { return (UINT32)D6Joint::DriveType::Count; }
+		UINT32 getDriveCount(CD6Joint* obj) { return (UINT32)D6JointDriveType::Count; }
 		void setDriveCount(CD6Joint* obj, UINT32 size) { /* Do nothing */ }
 
 		BS_BEGIN_RTTI_MEMBERS

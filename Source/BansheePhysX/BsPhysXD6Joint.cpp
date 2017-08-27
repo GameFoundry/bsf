@@ -10,92 +10,92 @@ using namespace physx;
 
 namespace bs
 {
-	PxD6Axis::Enum toPxAxis(PhysXD6Joint::Axis axis)
+	PxD6Axis::Enum toPxAxis(D6JointAxis axis)
 	{
 		switch(axis)
 		{
 		default:
-		case PhysXD6Joint::Axis::X:
+		case D6JointAxis::X:
 			return PxD6Axis::eX;
-		case PhysXD6Joint::Axis::Y:
+		case D6JointAxis::Y:
 			return PxD6Axis::eY;
-		case PhysXD6Joint::Axis::Z:
+		case D6JointAxis::Z:
 			return PxD6Axis::eZ;
-		case PhysXD6Joint::Axis::Twist:
+		case D6JointAxis::Twist:
 			return PxD6Axis::eTWIST;
-		case PhysXD6Joint::Axis::SwingY:
+		case D6JointAxis::SwingY:
 			return PxD6Axis::eSWING1;
-		case PhysXD6Joint::Axis::SwingZ:
+		case D6JointAxis::SwingZ:
 			return PxD6Axis::eSWING2;
 		}
 	}
 
-	PxD6Motion::Enum toPxMotion(PhysXD6Joint::Motion motion)
+	PxD6Motion::Enum toPxMotion(D6JointMotion motion)
 	{
 		switch(motion)
 		{
 		default:
-		case PhysXD6Joint::Motion::Free:
+		case D6JointMotion::Free:
 			return PxD6Motion::eFREE;
-		case PhysXD6Joint::Motion::Limited:
+		case D6JointMotion::Limited:
 			return PxD6Motion::eLIMITED;
-		case PhysXD6Joint::Motion::Locked:
+		case D6JointMotion::Locked:
 			return PxD6Motion::eLOCKED;
 		}
 	}
 
-	PxD6Drive::Enum toPxDrive(PhysXD6Joint::DriveType drive)
+	PxD6Drive::Enum toPxDrive(D6JointDriveType drive)
 	{
 		switch(drive)
 		{
 		default:
-		case PhysXD6Joint::DriveType::X:
+		case D6JointDriveType::X:
 			return PxD6Drive::eX;
-		case PhysXD6Joint::DriveType::Y:
+		case D6JointDriveType::Y:
 			return PxD6Drive::eY;
-		case PhysXD6Joint::DriveType::Z:
+		case D6JointDriveType::Z:
 			return PxD6Drive::eZ;
-		case PhysXD6Joint::DriveType::Swing:
+		case D6JointDriveType::Swing:
 			return PxD6Drive::eSWING;
-		case PhysXD6Joint::DriveType::Twist:
+		case D6JointDriveType::Twist:
 			return PxD6Drive::eTWIST;
-		case PhysXD6Joint::DriveType::SLERP:
+		case D6JointDriveType::SLERP:
 			return PxD6Drive::eSLERP;
 		}
 	}
 
-	PhysXD6Joint::Motion fromPxMotion(PxD6Motion::Enum motion)
+	D6JointMotion fromPxMotion(PxD6Motion::Enum motion)
 	{
 		switch (motion)
 		{
 		default:
 		case PxD6Motion::eFREE:
-			return PhysXD6Joint::Motion::Free;
+			return D6JointMotion::Free;
 		case PxD6Motion::eLIMITED:
-			return PhysXD6Joint::Motion::Limited;
+			return D6JointMotion::Limited;
 		case PxD6Motion::eLOCKED:
-			return PhysXD6Joint::Motion::Locked;
+			return D6JointMotion::Locked;
 		}
 	}
 
 
-	PhysXD6Joint::DriveType fromPxDrive(PxD6Drive::Enum drive)
+	D6JointDriveType fromPxDrive(PxD6Drive::Enum drive)
 	{
 		switch (drive)
 		{
 		default:
 		case PxD6Drive::eX:
-			return PhysXD6Joint::DriveType::X;
+			return D6JointDriveType::X;
 		case PxD6Drive::eY:
-			return PhysXD6Joint::DriveType::Y;
+			return D6JointDriveType::Y;
 		case PxD6Drive::eZ:
-			return PhysXD6Joint::DriveType::Z;
+			return D6JointDriveType::Z;
 		case PxD6Drive::eSWING:
-			return PhysXD6Joint::DriveType::Swing;
+			return D6JointDriveType::Swing;
 		case PxD6Drive::eTWIST:
-			return PhysXD6Joint::DriveType::Twist;
+			return D6JointDriveType::Twist;
 		case PxD6Drive::eSLERP:
-			return PhysXD6Joint::DriveType::SLERP;
+			return D6JointDriveType::SLERP;
 		}
 	}
 
@@ -119,11 +119,11 @@ namespace bs
 		mInternal = bs_new<FPhysXJoint>(joint, desc);
 
 		// Calls to virtual methods are okay here
-		for (UINT32 i = 0; i < (UINT32)Axis::Count; i++)
-			setMotion((Axis)i, desc.motion[i]);
+		for (UINT32 i = 0; i < (UINT32)D6JointAxis::Count; i++)
+			setMotion((D6JointAxis)i, desc.motion[i]);
 
-		for (UINT32 i = 0; i < (UINT32)DriveType::Count; i++)
-			setDrive((DriveType)i, desc.drive[i]);
+		for (UINT32 i = 0; i < (UINT32)D6JointDriveType::Count; i++)
+			setDrive((D6JointDriveType)i, desc.drive[i]);
 
 		setLimitLinear(desc.limitLinear);
 		setLimitTwist(desc.limitTwist);
@@ -138,12 +138,12 @@ namespace bs
 		bs_delete(mInternal);
 	}
 
-	PhysXD6Joint::Motion PhysXD6Joint::getMotion(Axis axis) const
+	D6JointMotion PhysXD6Joint::getMotion(D6JointAxis axis) const
 	{
 		return fromPxMotion(getInternal()->getMotion(toPxAxis(axis)));
 	}
 
-	void PhysXD6Joint::setMotion(Axis axis, Motion motion)
+	void PhysXD6Joint::setMotion(D6JointAxis axis, D6JointMotion motion)
 	{
 		getInternal()->setMotion(toPxAxis(axis), toPxMotion(motion));
 	}
@@ -237,11 +237,11 @@ namespace bs
 		getInternal()->setSwingLimit(pxLimit);
 	}
 
-	PhysXD6Joint::Drive PhysXD6Joint::getDrive(DriveType type) const
+	D6JointDrive PhysXD6Joint::getDrive(D6JointDriveType type) const
 	{
 		PxD6JointDrive pxDrive = getInternal()->getDrive(toPxDrive(type));
 
-		Drive drive;
+		D6JointDrive drive;
 		drive.acceleration = pxDrive.flags & PxD6JointDriveFlag::eACCELERATION;
 		drive.stiffness = pxDrive.stiffness;
 		drive.damping = pxDrive.damping;
@@ -250,7 +250,7 @@ namespace bs
 		return drive;
 	}
 
-	void PhysXD6Joint::setDrive(DriveType type, const Drive& drive)
+	void PhysXD6Joint::setDrive(D6JointDriveType type, const D6JointDrive& drive)
 	{
 		PxD6JointDrive pxDrive;
 

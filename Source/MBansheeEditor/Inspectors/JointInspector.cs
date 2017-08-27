@@ -32,8 +32,8 @@ namespace BansheeEditor
         /// <param name="joint">Joint to update the GUI from.</param>
         protected virtual void Refresh(Joint joint)
         {
-            targetField.Value = joint.GetRigidbody(JointBody.Target);
-            anchorField.Value = joint.GetRigidbody(JointBody.Anchor);
+            targetField.Value = joint.GetBody(JointBody.Target);
+            anchorField.Value = joint.GetBody(JointBody.Anchor);
 
             if (showOffsets)
             {
@@ -66,16 +66,24 @@ namespace BansheeEditor
             breakTorqueField = new GUIFloatField(new LocEdString("Break torque"));
             collisionField = new GUIToggleField(new LocEdString("Enable collision"));
 
-            targetField.OnChanged += x => { joint.SetRigidbody(JointBody.Target, (Rigidbody)x); MarkAsModified(); ConfirmModify(); };
-            anchorField.OnChanged += x => { joint.SetRigidbody(JointBody.Anchor, (Rigidbody)x); MarkAsModified(); ConfirmModify(); };
+            targetField.OnChanged += x => { joint.SetBody(JointBody.Target, (Rigidbody)x); MarkAsModified(); ConfirmModify(); };
+            anchorField.OnChanged += x => { joint.SetBody(JointBody.Anchor, (Rigidbody)x); MarkAsModified(); ConfirmModify(); };
 
             if(showOffsets)
             { 
-                targetOffsetField.OnChanged += x => { joint.SetPosition(JointBody.Target, x); MarkAsModified(); };
+                targetOffsetField.OnChanged += x =>
+                {
+                    joint.SetTransform(JointBody.Target, x, joint.GetRotation(JointBody.Target));
+                    MarkAsModified();
+                };
                 targetOffsetField.OnFocusLost += ConfirmModify;
                 targetOffsetField.OnConfirmed += ConfirmModify;
 
-                anchorOffsetField.OnChanged += x => { joint.SetPosition(JointBody.Anchor, x); MarkAsModified(); };
+                anchorOffsetField.OnChanged += x =>
+                {
+                    joint.SetTransform(JointBody.Anchor, x, joint.GetRotation(JointBody.Anchor));
+                    MarkAsModified();
+                };
                 anchorOffsetField.OnFocusLost += ConfirmModify;
                 anchorOffsetField.OnConfirmed += ConfirmModify;
             }

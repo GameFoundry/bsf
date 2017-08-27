@@ -54,7 +54,7 @@ namespace bs
 	BS_FLAGS_OPERATORS(PhysicsFlag)
 
 	/** Provides global physics settings, factory methods for physics objects and scene queries. */
-	class BS_CORE_EXPORT Physics : public Module<Physics>
+	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Physics) Physics : public Module<Physics>
 	{
 	public:
 		Physics(const PHYSICS_INIT_DESC& init);
@@ -74,6 +74,7 @@ namespace bs
 		 *						detected.
 		 * @return				True if something was hit, false otherwise.
 		 */
+		BS_SCRIPT_EXPORT(n:RayCast)
 		virtual bool rayCast(const Ray& ray, PhysicsQueryHit& hit, UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) const;
 
 		/**
@@ -87,6 +88,7 @@ namespace bs
 		 *							detected.
 		 * @return					True if something was hit, false otherwise.
 		 */
+		BS_SCRIPT_EXPORT(n:RayCast)
 		virtual bool rayCast(const Vector3& origin, const Vector3& unitDir, PhysicsQueryHit& hit,
 			UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) const = 0;
 
@@ -102,6 +104,7 @@ namespace bs
 		 *							detected.
 		 * @return					True if something was hit, false otherwise.
 		 */
+		BS_SCRIPT_EXPORT(n:BoxCast)
 		virtual bool boxCast(const AABox& box, const Quaternion& rotation, const Vector3& unitDir, PhysicsQueryHit& hit,
 			UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) const = 0;
 
@@ -116,6 +119,7 @@ namespace bs
 		 *							detected.
 		 * @return					True if something was hit, false otherwise.
 		 */
+		BS_SCRIPT_EXPORT(n:SphereCast)
 		virtual bool sphereCast(const Sphere& sphere, const Vector3& unitDir, PhysicsQueryHit& hit,
 			UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) const = 0;
 
@@ -131,6 +135,7 @@ namespace bs
 		 *							detected.
 		 * @return					True if something was hit, false otherwise.
 		 */
+		BS_SCRIPT_EXPORT(n:CapsuleCast)
 		virtual bool capsuleCast(const Capsule& capsule, const Quaternion& rotation, const Vector3& unitDir,
 			PhysicsQueryHit& hit, UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) const = 0;
 
@@ -147,6 +152,7 @@ namespace bs
 		 *							detected.
 		 * @return					True if something was hit, false otherwise.
 		 */
+		BS_SCRIPT_EXPORT(n:ConvexCast)
 		virtual bool convexCast(const HPhysicsMesh& mesh, const Vector3& position, const Quaternion& rotation,
 			const Vector3& unitDir, PhysicsQueryHit& hit, UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) const = 0;
 
@@ -159,6 +165,7 @@ namespace bs
 		 *						detected.
 		 * @return				List of all detected hits.
 		 */
+		BS_SCRIPT_EXPORT(n:RayCastAll)
 		virtual Vector<PhysicsQueryHit> rayCastAll(const Ray& ray, UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) const;
 
 		/**
@@ -171,6 +178,7 @@ namespace bs
 		 *							detected.
 		 * @return					List of all detected hits.
 		 */
+		BS_SCRIPT_EXPORT(n:RayCastAll)
 		virtual Vector<PhysicsQueryHit> rayCastAll(const Vector3& origin, const Vector3& unitDir,
 			UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) const = 0;
 
@@ -185,6 +193,7 @@ namespace bs
 		 *							detected.
 		 * @return					List of all detected hits.
 		 */
+		BS_SCRIPT_EXPORT(n:BoxCastAll)
 		virtual Vector<PhysicsQueryHit> boxCastAll(const AABox& box, const Quaternion& rotation, 
 			const Vector3& unitDir, UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) const = 0;
 
@@ -198,6 +207,7 @@ namespace bs
 		 *							detected.
 		 * @return					List of all detected hits.
 		 */
+		BS_SCRIPT_EXPORT(n:SphereCastAll)
 		virtual Vector<PhysicsQueryHit> sphereCastAll(const Sphere& sphere, const Vector3& unitDir,
 			UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) const = 0;
 
@@ -212,6 +222,7 @@ namespace bs
 		 *							detected.
 		 * @return					List of all detected hits.
 		 */
+		BS_SCRIPT_EXPORT(n:CapsuleCastAll)
 		virtual Vector<PhysicsQueryHit> capsuleCastAll(const Capsule& capsule, const Quaternion& rotation, 
 			const Vector3& unitDir, UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) const = 0;
 
@@ -227,6 +238,7 @@ namespace bs
 		 *							detected.
 		 * @return					List of all detected hits.
 		 */
+		BS_SCRIPT_EXPORT(n:ConvexCastAll)
 		virtual Vector<PhysicsQueryHit> convexCastAll(const HPhysicsMesh& mesh, const Vector3& position, 
 			const Quaternion& rotation, const Vector3& unitDir, UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) const = 0;
 
@@ -240,6 +252,7 @@ namespace bs
 		 *						detected.
 		 * @return				True if something was hit, false otherwise.
 		 */
+		BS_SCRIPT_EXPORT(n:RayCastAny)
 		virtual bool rayCastAny(const Ray& ray, UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) const;
 
 		/**
@@ -253,6 +266,7 @@ namespace bs
 		 *							detected.
 		 * @return					True if something was hit, false otherwise.
 		 */
+		BS_SCRIPT_EXPORT(n:RayCastAny)
 		virtual bool rayCastAny(const Vector3& origin, const Vector3& unitDir,
 			UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) const = 0;
 
@@ -268,6 +282,7 @@ namespace bs
 		 *							detected.
 		 * @return					True if something was hit, false otherwise.
 		 */
+		BS_SCRIPT_EXPORT(n:BoxCastAny)
 		virtual bool boxCastAny(const AABox& box, const Quaternion& rotation, const Vector3& unitDir,
 			UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) const = 0;
 
@@ -282,6 +297,7 @@ namespace bs
 		 *							detected.
 		 * @return					True if something was hit, false otherwise.
 		 */
+		BS_SCRIPT_EXPORT(n:SphereCastAny)
 		virtual bool sphereCastAny(const Sphere& sphere, const Vector3& unitDir,
 			UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) const = 0;
 
@@ -297,6 +313,7 @@ namespace bs
 		 *							detected.
 		 * @return					True if something was hit, false otherwise.
 		 */
+		BS_SCRIPT_EXPORT(n:CapsuleCastAny)
 		virtual bool capsuleCastAny(const Capsule& capsule, const Quaternion& rotation, const Vector3& unitDir,
 			UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) const = 0;
 
@@ -313,6 +330,7 @@ namespace bs
 		 *							detected.
 		 * @return					True if something was hit, false otherwise.
 		 */
+		BS_SCRIPT_EXPORT(n:ConvexCastAny)
 		virtual bool convexCastAny(const HPhysicsMesh& mesh, const Vector3& position, const Quaternion& rotation,
 			const Vector3& unitDir, UINT64 layer = BS_ALL_LAYERS, float max = FLT_MAX) const = 0;
 
@@ -324,6 +342,7 @@ namespace bs
 		 * @param[in]	layer		Layers to consider for the query. This allows you to ignore certain groups of objects.
 		 * @return					List of all colliders that overlap the box.
 		 */
+		BS_SCRIPT_EXPORT(n:BoxOverlap)
 		virtual Vector<HCollider> boxOverlap(const AABox& box, const Quaternion& rotation, 
 			UINT64 layer = BS_ALL_LAYERS) const;
 
@@ -334,6 +353,7 @@ namespace bs
 		 * @param[in]	layer		Layers to consider for the query. This allows you to ignore certain groups of objects.
 		 * @return					List of all colliders that overlap the sphere.
 		 */
+		BS_SCRIPT_EXPORT(n:SphereOverlap)
 		virtual Vector<HCollider> sphereOverlap(const Sphere& sphere, UINT64 layer = BS_ALL_LAYERS) const;
 
 		/**
@@ -344,6 +364,7 @@ namespace bs
 		 * @param[in]	layer		Layers to consider for the query. This allows you to ignore certain groups of objects.
 		 * @return					List of all colliders that overlap the capsule.
 		 */
+		BS_SCRIPT_EXPORT(n:CapsuleOverlap)
 		virtual Vector<HCollider> capsuleOverlap(const Capsule& capsule, const Quaternion& rotation,
 			UINT64 layer = BS_ALL_LAYERS) const;
 
@@ -356,6 +377,7 @@ namespace bs
 		 * @param[in]	layer		Layers to consider for the query. This allows you to ignore certain groups of objects.
 		 * @return					List of all colliders that overlap the mesh.
 		 */
+		BS_SCRIPT_EXPORT(n:ConvexOverlap)
 		virtual Vector<HCollider> convexOverlap(const HPhysicsMesh& mesh, const Vector3& position, 
 			const Quaternion& rotation, UINT64 layer = BS_ALL_LAYERS) const;
 
@@ -367,6 +389,7 @@ namespace bs
 		 * @param[in]	layer		Layers to consider for the query. This allows you to ignore certain groups of objects.
 		 * @return					True if there is overlap with another object, false otherwise.
 		 */
+		BS_SCRIPT_EXPORT(n:BoxOverlapAny)
 		virtual bool boxOverlapAny(const AABox& box, const Quaternion& rotation, UINT64 layer = BS_ALL_LAYERS) const = 0;
 
 		/**
@@ -376,6 +399,7 @@ namespace bs
 		 * @param[in]	layer		Layers to consider for the query. This allows you to ignore certain groups of objects.
 		 * @return					True if there is overlap with another object, false otherwise.
 		 */
+		BS_SCRIPT_EXPORT(n:SphereOverlapAny)
 		virtual bool sphereOverlapAny(const Sphere& sphere, UINT64 layer = BS_ALL_LAYERS) const = 0;
 
 		/**
@@ -386,6 +410,7 @@ namespace bs
 		 * @param[in]	layer		Layers to consider for the query. This allows you to ignore certain groups of objects.
 		 * @return					True if there is overlap with another object, false otherwise.
 		 */
+		BS_SCRIPT_EXPORT(n:CapsuleOverlapAny)
 		virtual bool capsuleOverlapAny(const Capsule& capsule, const Quaternion& rotation, 
 			UINT64 layer = BS_ALL_LAYERS) const = 0;
 
@@ -398,6 +423,7 @@ namespace bs
 		 * @param[in]	layer		Layers to consider for the query. This allows you to ignore certain groups of objects.
 		 * @return					True if there is overlap with another object, false otherwise.
 		 */
+		BS_SCRIPT_EXPORT(n:ConvexOverlapAny)
 		virtual bool convexOverlapAny(const HPhysicsMesh& mesh, const Vector3& position, const Quaternion& rotation,
 			UINT64 layer = BS_ALL_LAYERS) const = 0;
 
@@ -414,10 +440,12 @@ namespace bs
 		/** Pauses or resumes the physics simulation. */
 		virtual void setPaused(bool paused) = 0;
 
-		/** Gets the global gravity value for all objects in the scene. */
+		/** @copydoc setGravity() */
+		BS_SCRIPT_EXPORT(n:Gravity,pr:getter)
 		virtual Vector3 getGravity() const = 0;
 
-		/** Sets the global gravity value for all objects in the scene. */
+		/** Determines the global gravity value for all objects in the scene. */
+		BS_SCRIPT_EXPORT(n:Gravity,pr:setter)
 		virtual void setGravity(const Vector3& gravity) = 0;
 
 		/** 
@@ -425,12 +453,15 @@ namespace bs
 		 * allowed to be in, and objects outside of these regions will not be handled by physics. You do not need to set
 		 * up these regions by default.
 		 */
+		BS_SCRIPT_EXPORT(n:AddPhysicsRegion)
 		virtual UINT32 addBroadPhaseRegion(const AABox& region) = 0;
 
 		/** Removes a physics region. */
+		BS_SCRIPT_EXPORT(n:RemovePhysicsRegion)
 		virtual void removeBroadPhaseRegion(UINT32 handle) = 0;
 
 		/** Removes all physics regions. */
+		BS_SCRIPT_EXPORT(n:ClearPhysicsRegions)
 		virtual void clearBroadPhaseRegions() = 0;
 
 		/** 
@@ -451,9 +482,11 @@ namespace bs
 		 * Enables or disables collision between two layers. Each physics object can be assigned a specific layer, and here
 		 * you can determine which layers can interact with each other.
 		 */
+		BS_SCRIPT_EXPORT(n:ToggleCollision)
 		void toggleCollision(UINT64 groupA, UINT64 groupB, bool enabled);
 
 		/** Checks if two collision layers are allowed to interact. */
+		BS_SCRIPT_EXPORT(n:IsCollisionEnabled)
 		bool isCollisionEnabled(UINT64 groupA, UINT64 groupB) const;
 
 		/** @name Internal
@@ -544,6 +577,7 @@ namespace bs
 			float maxDist = FLT_MAX) const = 0;
 
 		/** Checks is the physics simulation update currently in progress. */
+		BS_SCRIPT_EXPORT(n:IsUpdateInProgress,pr:getter)
 		bool _isUpdateInProgress() const { return mUpdateInProgress; }
 
 		/** @} */

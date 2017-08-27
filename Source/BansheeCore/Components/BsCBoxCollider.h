@@ -15,30 +15,34 @@ namespace bs
 	/**
 	 * @copydoc	BoxCollider
 	 *
-	 * Wraps BoxCollider as a Component.
+	 * @note Wraps BoxCollider as a Component.
 	 */
-	class BS_CORE_EXPORT CBoxCollider : public CCollider
+	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Physics,n:BoxCollider) CBoxCollider : public CCollider
 	{
 	public:
 		CBoxCollider(const HSceneObject& parent, const Vector3& extents = Vector3::ONE);
 
 		/** @copydoc BoxCollider::setExtents */
+		BS_SCRIPT_EXPORT(n:Extents,pr:setter)
 		void setExtents(const Vector3& extents);
 
 		/** @copydoc BoxCollider::getExtents */
+		BS_SCRIPT_EXPORT(n:Extents,pr:getter)
 		Vector3 getExtents() const { return mExtents; }
 
-		/** Sets the position of the box shape, relative to the component's scene object. */
+		/** Determines the position of the box shape, relative to the component's scene object. */
+		BS_SCRIPT_EXPORT(n:Center,pr:setter)
 		void setCenter(const Vector3& center);
 
-		/** Gets the position of the box shape, relative to the component's scene object. */
+		/** @copydoc setCenter() */
+		BS_SCRIPT_EXPORT(n:Center,pr:getter)
 		Vector3 getCenter() const { return mLocalPosition; }
 
 		/** @name Internal
 		 *  @{
 		 */
 
-	    /**	Returns the box collider that this component wraps. */
+		/**	Returns the box collider that this component wraps. */
 		BoxCollider* _getInternal() const { return static_cast<BoxCollider*>(mInternal.get()); }
 
 		/** @} */
@@ -52,7 +56,7 @@ namespace bs
 		/** @copydoc CCollider::createInternal */
 		SPtr<Collider> createInternal() override;
 
-    protected:
+	protected:
 		Vector3 mExtents = Vector3::ZERO;
 
 		/************************************************************************/
@@ -65,7 +69,7 @@ namespace bs
 
 	protected:
 		CBoxCollider() {} // Serialization only
-     };
+	};
 
 	 /** @} */
 }

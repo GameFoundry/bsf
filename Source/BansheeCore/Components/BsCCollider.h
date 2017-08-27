@@ -17,52 +17,66 @@ namespace bs
 	 *
 	 * Wraps Collider as a Component.
 	 */
-	class BS_CORE_EXPORT CCollider : public Component
+	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Physics,n:Collider) CCollider : public Component
 	{
 	public:
 		CCollider(const HSceneObject& parent);
 		virtual ~CCollider() {}
 
 		/** @copydoc Collider::setIsTrigger */
+		BS_SCRIPT_EXPORT(n:Trigger,pr:setter)
 		inline void setIsTrigger(bool value);
 
 		/** @copydoc Collider::getIsTrigger */
+		BS_SCRIPT_EXPORT(n:Trigger,pr:getter)
 		bool getIsTrigger() const { return mIsTrigger; }
 
 		/** @copydoc Collider::setMass */
+		BS_SCRIPT_EXPORT(n:Mass,pr:setter)
 		inline void setMass(float mass);
 
 		/** @copydoc Collider::getMass */
+		BS_SCRIPT_EXPORT(n:Mass,pr:getter)
 		float getMass() const { return mMass; }
 
 		/** @copydoc Collider::setMaterial */
+		BS_SCRIPT_EXPORT(n:Material,pr:setter)
 		inline void setMaterial(const HPhysicsMaterial& material);
 
 		/** @copydoc Collider::getMaterial */
+		BS_SCRIPT_EXPORT(n:Material,pr:getter)
 		HPhysicsMaterial getMaterial() const { return mMaterial; }
 
 		/** @copydoc Collider::setContactOffset */
+		BS_SCRIPT_EXPORT(n:ContactOffset,pr:setter)
 		inline void setContactOffset(float value);
 
 		/** @copydoc Collider::getContactOffset */
+		BS_SCRIPT_EXPORT(n:ContactOffset,pr:getter)
 		float getContactOffset() const { return mContactOffset; }
 
 		/** @copydoc Collider::setRestOffset */
+		BS_SCRIPT_EXPORT(n:RestOffset,pr:setter)
 		inline void setRestOffset(float value);
 
 		/** @copydoc Collider::getRestOffset */
+		BS_SCRIPT_EXPORT(n:RestOffset,pr:getter)
 		float getRestOffset() const { return mRestOffset; }
 
 		/** @copydoc Collider::setLayer */
+		BS_SCRIPT_EXPORT(n:Layer,pr:setter)
 		inline void setLayer(UINT64 layer);
 
 		/** @copydoc Collider::getLayer */
+		BS_SCRIPT_EXPORT(n:Layer,pr:getter)
 		UINT64 getLayer() const { return mLayer; }
 
 		/** @copydoc Collider::setCollisionReportMode */
+		BS_SCRIPT_EXPORT(n:CollisionReportMode,pr:setter)
 		inline void setCollisionReportMode(CollisionReportMode mode);
 
 		/** @copydoc Collider::getCollisionReportMode */
+		BS_SCRIPT_EXPORT(n:CollisionReportMode,pr:getter)
 		CollisionReportMode getCollisionReportMode() const { return mCollisionReportMode; }
 
 		/** @copydoc Collider::getRigidbody */
@@ -76,12 +90,15 @@ namespace bs
 			float maxDist = FLT_MAX) const;
 
 		/** @copydoc Collider::onCollisionBegin */
+		BS_SCRIPT_EXPORT(n:OnCollisionBegin)
 		Event<void(const CollisionData&)> onCollisionBegin;
 
 		/** @copydoc Collider::onCollisionStay */
+		BS_SCRIPT_EXPORT(n:OnCollisionStay)
 		Event<void(const CollisionData&)> onCollisionStay;
 
 		/** @copydoc Collider::onCollisionEnd */
+		BS_SCRIPT_EXPORT(n:OnCollisionEnd)
 		Event<void(const CollisionData&)> onCollisionEnd;
 
 		/** @name Internal
@@ -154,13 +171,13 @@ namespace bs
 		void updateParentRigidbody();
 
 		/** Triggered when the internal collider begins touching another object. */
-		void triggerOnCollisionBegin(const CollisionData& data);
+		void triggerOnCollisionBegin(const CollisionDataRaw& data);
 
 		/** Triggered when the internal collider continues touching another object. */
-		void triggerOnCollisionStay(const CollisionData& data);
+		void triggerOnCollisionStay(const CollisionDataRaw& data);
 
 		/** Triggered when the internal collider ends touching another object. */
-		void triggerOnCollisionEnd(const CollisionData& data);
+		void triggerOnCollisionEnd(const CollisionDataRaw& data);
 
 		SPtr<Collider> mInternal;
 

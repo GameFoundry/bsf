@@ -16,7 +16,7 @@ namespace bs
 	 */
 
 	/** Light type that determines how is light information parsed by the renderer and other systems. */
-	enum BS_SCRIPT_EXPORT() class ReflectionProbeType
+	enum BS_SCRIPT_EXPORT(m:Rendering) class ReflectionProbeType
 	{
 		/**
 		 * Reflection probe cubemap is generated, and box extents are used for calculating influence ranges and box 

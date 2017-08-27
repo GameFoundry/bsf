@@ -15,42 +15,50 @@ namespace bs
 	/**
 	 * @copydoc	HingeJoint
 	 *
-	 * Wraps HingeJoint as a Component.
+	 * @note	Wraps HingeJoint as a Component.
 	 */
-    class BS_CORE_EXPORT CHingeJoint : public CJoint
-    {
-    public:
+	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Physics,n:HingeJoint) CHingeJoint : public CJoint
+	{
+	public:
 		CHingeJoint(const HSceneObject& parent);
 
 		/** @copydoc HingeJoint::getAngle */
+		BS_SCRIPT_EXPORT(n:Angle,pr:getter)
 		inline Radian getAngle() const;
 
 		/** @copydoc HingeJoint::getSpeed */
+		BS_SCRIPT_EXPORT(n:Speed,pr:getter)
 		inline float getSpeed() const;
 
 		/** @copydoc HingeJoint::getLimit */
+		BS_SCRIPT_EXPORT(n:Limit,pr:getter)
 		inline LimitAngularRange getLimit() const;
 
 		/** @copydoc HingeJoint::setLimit */
+		BS_SCRIPT_EXPORT(n:Limit,pr:setter)
 		inline void setLimit(const LimitAngularRange& limit);
 
 		/** @copydoc HingeJoint::getDrive */
-		inline HingeJoint::Drive getDrive() const;
+		BS_SCRIPT_EXPORT(n:Drive,pr:getter)
+		inline HingeJointDrive getDrive() const;
 
 		/** @copydoc HingeJoint::setDrive */
-		inline void setDrive(const HingeJoint::Drive& drive);
+		BS_SCRIPT_EXPORT(n:Drive,pr:setter)
+		inline void setDrive(const HingeJointDrive& drive);
 
 		/** @copydoc HingeJoint::setFlag */
-		inline void setFlag(HingeJoint::Flag flag, bool enabled);
+		BS_SCRIPT_EXPORT(n:SetFlag)
+		inline void setFlag(HingeJointFlag flag, bool enabled);
 
 		/** @copydoc HingeJoint::hasFlag */
-		inline bool hasFlag(HingeJoint::Flag flag) const;
+		BS_SCRIPT_EXPORT(n:HasFlag)
+		inline bool hasFlag(HingeJointFlag flag) const;
 
 		/** @name Internal
 		 *  @{
 		 */
 
-	    /**	Returns the hinge joint that this component wraps. */
+		/**	Returns the hinge joint that this component wraps. */
 		HingeJoint* _getInternal() const { return static_cast<HingeJoint*>(mInternal.get()); }
 
 		/** @} */
@@ -76,7 +84,7 @@ namespace bs
 
 	protected:
 		CHingeJoint(); // Serialization only
-     };
+	};
 
 	 /** @} */
 }

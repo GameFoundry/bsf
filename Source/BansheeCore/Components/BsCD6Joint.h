@@ -15,75 +15,94 @@ namespace bs
 	/**
 	 * @copydoc	D6Joint
 	 *
-	 * Wraps D6Joint as a Component.
+	 * @note	Wraps D6Joint as a Component.
 	 */
-    class BS_CORE_EXPORT CD6Joint : public CJoint
-    {
-    public:
+	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Physics,n:D6Joint) CD6Joint : public CJoint
+	{
+	public:
 		CD6Joint(const HSceneObject& parent);
 
 		/** @copydoc D6Joint::getMotion */
-		inline D6Joint::Motion getMotion(D6Joint::Axis axis) const;
+		BS_SCRIPT_EXPORT(n:GetMotion)
+		inline D6JointMotion getMotion(D6JointAxis axis) const;
 
 		/** @copydoc D6Joint::setMotion */
-		inline void setMotion(D6Joint::Axis axis, D6Joint::Motion motion);
+		BS_SCRIPT_EXPORT(n:SetMotion)
+		inline void setMotion(D6JointAxis axis, D6JointMotion motion);
 
 		/** @copydoc D6Joint::getTwist */
+		BS_SCRIPT_EXPORT(n:Twist,pr:getter)
 		inline Radian getTwist() const;
 
 		/** @copydoc D6Joint::getSwingY */
+		BS_SCRIPT_EXPORT(n:SwingY,pr:getter)
 		inline Radian getSwingY() const;
 
 		/** @copydoc D6Joint::getSwingZ */
+		BS_SCRIPT_EXPORT(n:SwingZ,pr:getter)
 		inline Radian getSwingZ() const;
 
 		/** @copydoc D6Joint::getLimitLinear */
+		BS_SCRIPT_EXPORT(n:LimitLinear,pr:getter)
 		inline LimitLinear getLimitLinear() const;
 
 		/** @copydoc D6Joint::setLimitLinear */
+		BS_SCRIPT_EXPORT(n:LimitLinear,pr:setter)
 		inline void setLimitLinear(const LimitLinear& limit);
 
 		/** @copydoc D6Joint::getLimitTwist */
+		BS_SCRIPT_EXPORT(n:LimitTwist,pr:getter)
 		inline LimitAngularRange getLimitTwist() const;
 
 		/** @copydoc D6Joint::setLimitTwist */
+		BS_SCRIPT_EXPORT(n:LimitTwist,pr:setter)
 		inline void setLimitTwist(const LimitAngularRange& limit);
 
 		/** @copydoc D6Joint::getLimitSwing */
+		BS_SCRIPT_EXPORT(n:LimitSwing,pr:getter)
 		inline LimitConeRange getLimitSwing() const;
 
 		/** @copydoc D6Joint::setLimitSwing */
+		BS_SCRIPT_EXPORT(n:LimitSwing,pr:setter)
 		inline void setLimitSwing(const LimitConeRange& limit);
 
 		/** @copydoc D6Joint::getDrive */
-		inline D6Joint::Drive getDrive(D6Joint::DriveType type) const;
+		BS_SCRIPT_EXPORT(n:GetDrive)
+		inline D6JointDrive getDrive(D6JointDriveType type) const;
 
 		/** @copydoc D6Joint::setDrive */
-		inline void setDrive(D6Joint::DriveType type, const D6Joint::Drive& drive);
+		BS_SCRIPT_EXPORT(n:SetDrive)
+		inline void setDrive(D6JointDriveType type, const D6JointDrive& drive);
 
 		/** @copydoc D6Joint::getDrivePosition */
+		BS_SCRIPT_EXPORT(n:DrivePosition,pr:getter)
 		inline Vector3 getDrivePosition() const;
 
 		/** @copydoc D6Joint::getDriveRotation */
+		BS_SCRIPT_EXPORT(n:DriveRotation,pr:getter)
 		inline Quaternion getDriveRotation() const;
 
 		/** @copydoc D6Joint::setDriveTransform */
+		BS_SCRIPT_EXPORT(n:SetDriveTransform)
 		inline void setDriveTransform(const Vector3& position, const Quaternion& rotation);
 
 		/** @copydoc D6Joint::getDriveLinearVelocity */
+		BS_SCRIPT_EXPORT(n:DriveLinearVelocity,pr:getter)
 		inline Vector3 getDriveLinearVelocity() const;
 
 		/** @copydoc D6Joint::getDriveAngularVelocity */
+		BS_SCRIPT_EXPORT(n:DriveAngularVelocity,pr:getter)
 		inline Vector3 getDriveAngularVelocity() const;
 
 		/** @copydoc D6Joint::setDriveVelocity */
+		BS_SCRIPT_EXPORT(n:SetDriveVelocity)
 		inline void setDriveVelocity(const Vector3& linear, const Vector3& angular);
 
 		/** @name Internal
 		 *  @{
 		 */
 
-	    /**	Returns the D6 joint that this component wraps. */
+		/**	Returns the D6 joint that this component wraps. */
 		D6Joint* _getInternal() const { return static_cast<D6Joint*>(mInternal.get()); }
 
 		/** @} */
@@ -109,7 +128,7 @@ namespace bs
 
 	protected:
 		CD6Joint(); // Serialization only
-     };
+	 };
 
 	 /** @} */
 }

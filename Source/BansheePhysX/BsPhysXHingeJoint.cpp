@@ -9,14 +9,14 @@ using namespace physx;
 
 namespace bs
 {
-	PxRevoluteJointFlag::Enum toPxFlag(PhysXHingeJoint::Flag flag)
+	PxRevoluteJointFlag::Enum toPxFlag(HingeJointFlag flag)
 	{
 		switch (flag)
 		{
-		case PhysXHingeJoint::Flag::Limit:
+		case HingeJointFlag::Limit:
 			return PxRevoluteJointFlag::eLIMIT_ENABLED;
 		default:
-		case PhysXHingeJoint::Flag::Drive:
+		case HingeJointFlag::Drive:
 			return PxRevoluteJointFlag::eDRIVE_ENABLED;
 		}
 	}
@@ -42,10 +42,10 @@ namespace bs
 
 		PxRevoluteJointFlags flags;
 
-		if (((UINT32)desc.flag & (UINT32)Flag::Limit) != 0)
+		if (((UINT32)desc.flag & (UINT32)HingeJointFlag::Limit) != 0)
 			flags |= PxRevoluteJointFlag::eLIMIT_ENABLED;
 
-		if (((UINT32)desc.flag & (UINT32)Flag::Drive) != 0)
+		if (((UINT32)desc.flag & (UINT32)HingeJointFlag::Drive) != 0)
 			flags |= PxRevoluteJointFlag::eDRIVE_ENABLED;
 
 		joint->setRevoluteJointFlags(flags);
@@ -96,9 +96,9 @@ namespace bs
 		getInternal()->setLimit(pxLimit);
 	}
 
-	PhysXHingeJoint::Drive PhysXHingeJoint::getDrive() const
+	HingeJointDrive PhysXHingeJoint::getDrive() const
 	{
-		Drive drive;
+		HingeJointDrive drive;
 		drive.speed = getInternal()->getDriveVelocity();
 		drive.forceLimit = getInternal()->getDriveForceLimit();
 		drive.gearRatio = getInternal()->getDriveGearRatio();
@@ -107,7 +107,7 @@ namespace bs
 		return drive;
 	}
 
-	void PhysXHingeJoint::setDrive(const Drive& drive)
+	void PhysXHingeJoint::setDrive(const HingeJointDrive& drive)
 	{
 		getInternal()->setDriveVelocity(drive.speed);
 		getInternal()->setDriveForceLimit(drive.forceLimit);
@@ -115,12 +115,12 @@ namespace bs
 		getInternal()->setRevoluteJointFlag(PxRevoluteJointFlag::eDRIVE_FREESPIN, drive.freeSpin);
 	}
 
-	void PhysXHingeJoint::setFlag(Flag flag, bool enabled)
+	void PhysXHingeJoint::setFlag(HingeJointFlag flag, bool enabled)
 	{
 		getInternal()->setRevoluteJointFlag(toPxFlag(flag), enabled);
 	}
 
-	bool PhysXHingeJoint::hasFlag(Flag flag) const
+	bool PhysXHingeJoint::hasFlag(HingeJointFlag flag) const
 	{
 		return getInternal()->getRevoluteJointFlags() & toPxFlag(flag);
 	}

@@ -49,22 +49,22 @@ namespace bs
 			_getInternal()->setLimit(limit);
 	}
 
-	void CSliderJoint::setFlag(SliderJoint::Flag flag, bool enabled)
+	void CSliderJoint::setFlag(SliderJointFlag flag, bool enabled)
 	{
 		bool isEnabled = ((UINT32)mDesc.flag & (UINT32)flag) != 0;
 		if (isEnabled == enabled)
 			return;
 
 		if (enabled)
-			mDesc.flag = (SliderJoint::Flag)((UINT32)mDesc.flag | (UINT32)flag);
+			mDesc.flag = (SliderJointFlag)((UINT32)mDesc.flag | (UINT32)flag);
 		else
-			mDesc.flag = (SliderJoint::Flag)((UINT32)mDesc.flag & ~(UINT32)flag);
+			mDesc.flag = (SliderJointFlag)((UINT32)mDesc.flag & ~(UINT32)flag);
 
 		if (mInternal != nullptr)
 			_getInternal()->setFlag(flag, enabled);
 	}
 
-	bool CSliderJoint::hasFlag(SliderJoint::Flag flag) const
+	bool CSliderJoint::hasFlag(SliderJointFlag flag) const
 	{
 		return ((UINT32)mDesc.flag & (UINT32)flag) != 0;
 	}

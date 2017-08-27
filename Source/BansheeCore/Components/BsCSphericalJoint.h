@@ -15,30 +15,34 @@ namespace bs
 	/**
 	 * @copydoc	SphericalJoint
 	 *
-	 * Wraps SphericalJoint as a Component.
+	 * @note	Wraps SphericalJoint as a Component.
 	 */
-    class BS_CORE_EXPORT CSphericalJoint : public CJoint
-    {
-    public:
+	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Physics,n:SphericalJoint) CSphericalJoint : public CJoint
+	{
+	public:
 		CSphericalJoint(const HSceneObject& parent);
 
 		/** @copydoc SphericalJoint::getLimit */
+		BS_SCRIPT_EXPORT(n:Limit,pr:getter)
 		inline LimitConeRange getLimit() const;
 
 		/** @copydoc SphericalJoint::setLimit */
+		BS_SCRIPT_EXPORT(n:Limit,pr:setter)
 		inline void setLimit(const LimitConeRange& limit);
 
 		/** @copydoc SphericalJoint::setFlag */
-		inline void setFlag(SphericalJoint::Flag flag, bool enabled);
+		BS_SCRIPT_EXPORT(n:SetFlag)
+		inline void setFlag(SphericalJointFlag flag, bool enabled);
 
 		/** @copydoc SphericalJoint::hasFlag */
-		inline bool hasFlag(SphericalJoint::Flag flag) const;
+		BS_SCRIPT_EXPORT(n:HasFlag)
+		inline bool hasFlag(SphericalJointFlag flag) const;
 
 		/** @name Internal
 		 *  @{
 		 */
 
-	    /**	Returns the spherical joint that this component wraps. */
+		/**	Returns the spherical joint that this component wraps. */
 		SphericalJoint* _getInternal() const { return static_cast<SphericalJoint*>(mInternal.get()); }
 
 		/** @} */
@@ -64,7 +68,7 @@ namespace bs
 
 	protected:
 		CSphericalJoint(); // Serialization only
-     };
+	};
 
 	 /** @} */
 }

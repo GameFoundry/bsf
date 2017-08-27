@@ -127,7 +127,7 @@ namespace bs
 		UINT32 getVelocitySolverCount() const override;
 
 		/** @copydoc Rigidbody::setFlags */
-		void setFlags(Flag flags) override;
+		void setFlags(RigidbodyFlag flags) override;
 
 		/** @copydoc Rigidbody::addForce */
 		void addForce(const Vector3& force, ForceMode mode = ForceMode::Force) override;

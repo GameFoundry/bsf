@@ -16,18 +16,18 @@ namespace bs
 	/**
 	 * @copydoc	FixedJoint
 	 *
-	 * Wraps FixedJoint as a Component.
+	 * @note	Wraps FixedJoint as a Component.
 	 */
-    class BS_CORE_EXPORT CFixedJoint : public CJoint
-    {
-    public:
+	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Physics,n:FixedJoint) CFixedJoint : public CJoint
+	{
+	public:
 		CFixedJoint(const HSceneObject& parent);
 
 		/** @name Internal
 		 *  @{
 		 */
 
-	    /**	Returns the fixed joint that this component wraps. */
+		/**	Returns the fixed joint that this component wraps. */
 		FixedJoint* _getInternal() const { return static_cast<FixedJoint*>(mInternal.get()); }
 
 		/** @} */
@@ -56,7 +56,7 @@ namespace bs
 
 	protected:
 		CFixedJoint(); // Serialization only
-     };
+	};
 
 	 /** @} */
 }

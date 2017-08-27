@@ -58,7 +58,7 @@ namespace BansheeEditor
         {
             enableLimitField.OnChanged += x =>
             {
-                joint.EnableLimit = x;
+                joint.SetFlag(HingeJointFlag.Limit, x);
                 MarkAsModified();
                 ConfirmModify();
 
@@ -67,7 +67,7 @@ namespace BansheeEditor
             
             enableDriveField.OnChanged += x =>
             {
-                joint.EnableDrive = x;
+                joint.SetFlag(HingeJointFlag.Drive, x);
                 MarkAsModified();
                 ConfirmModify();
 
@@ -76,9 +76,9 @@ namespace BansheeEditor
 
             speedField.OnChanged += x =>
             {
-                HingeJointDriveData driveData = joint.Drive.Data;
+                HingeJointDrive driveData = joint.Drive;
                 driveData.speed = x;
-                joint.Drive = new HingeJointDrive(driveData);
+                joint.Drive = driveData;
 
                 MarkAsModified();
             };
@@ -87,9 +87,9 @@ namespace BansheeEditor
 
             forceLimitField.OnChanged += x =>
             {
-                HingeJointDriveData driveData = joint.Drive.Data;
+                HingeJointDrive driveData = joint.Drive;
                 driveData.forceLimit = x;
-                joint.Drive = new HingeJointDrive(driveData);
+                joint.Drive = driveData;
 
                 MarkAsModified();
             };
@@ -98,9 +98,9 @@ namespace BansheeEditor
 
             gearRatioField.OnChanged += x =>
             {
-                HingeJointDriveData driveData = joint.Drive.Data;
+                HingeJointDrive driveData = joint.Drive;
                 driveData.gearRatio = x;
-                joint.Drive = new HingeJointDrive(driveData);
+                joint.Drive = driveData;
 
                 MarkAsModified();
             };
@@ -109,9 +109,9 @@ namespace BansheeEditor
 
             freeSpinField.OnChanged += x =>
             {
-                HingeJointDriveData driveData = joint.Drive.Data;
+                HingeJointDrive driveData = joint.Drive;
                 driveData.freeSpin = x;
-                joint.Drive = new HingeJointDrive(driveData);
+                joint.Drive = driveData;
 
                 MarkAsModified();
                 ConfirmModify();
@@ -126,7 +126,8 @@ namespace BansheeEditor
                 limitGUI = new LimitAngularRangeGUI(joint.Limit, limitContentsLayout, Persistent);
                 limitGUI.OnChanged += (x, y) =>
                 {
-                    joint.Limit = new LimitAngularRange(x, y);
+                    joint.Limit = x;
+                    joint.Limit.SetBase(y);
 
                     MarkAsModified();
                 };
@@ -145,8 +146,8 @@ namespace BansheeEditor
                 driveContentsLayout.AddElement(freeSpinField);
             }
 
-            ToggleLimitFields(joint.EnableLimit);
-            ToggleDriveFields(joint.EnableDrive);
+            ToggleLimitFields(joint.HasFlag(HingeJointFlag.Limit));
+            ToggleDriveFields(joint.HasFlag(HingeJointFlag.Drive));
 
             base.BuildGUI(joint, true);
         }
@@ -157,24 +158,26 @@ namespace BansheeEditor
         /// <param name="joint">Joint to update the GUI from.</param>
         protected void Refresh(HingeJoint joint)
         {
-            if (enableLimitField.Value != joint.EnableLimit)
+            bool enableLimit = joint.HasFlag(HingeJointFlag.Limit);
+            if (enableLimitField.Value != enableLimit)
             {
-                enableLimitField.Value = joint.EnableLimit;
-                ToggleLimitFields(joint.EnableLimit);
+                enableLimitField.Value = enableLimit;
+                ToggleLimitFields(enableLimit);
             }
 
             limitGUI.Limit = joint.Limit;
 
-            if (enableDriveField.Value != joint.EnableDrive)
+            bool enableDrive = joint.HasFlag(HingeJointFlag.Drive);
+            if (enableDriveField.Value != enableDrive)
             {
-                enableDriveField.Value = joint.EnableDrive;
-                ToggleDriveFields(joint.EnableDrive);
+                enableDriveField.Value = enableDrive;
+                ToggleDriveFields(enableDrive);
             }
 
-            speedField.Value = joint.Drive.Speed;
-            forceLimitField.Value = joint.Drive.ForceLimit;
-            gearRatioField.Value = joint.Drive.GearRatio;
-            freeSpinField.Value = joint.Drive.FreeSpin;
+            speedField.Value = joint.Drive.speed;
+            forceLimitField.Value = joint.Drive.forceLimit;
+            gearRatioField.Value = joint.Drive.gearRatio;
+            freeSpinField.Value = joint.Drive.freeSpin;
 
             base.Refresh(joint);
         }

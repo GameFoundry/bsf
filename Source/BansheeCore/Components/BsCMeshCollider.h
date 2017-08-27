@@ -15,24 +15,26 @@ namespace bs
 	/**
 	 * @copydoc	MeshCollider
 	 *
-	 * Wraps MeshCollider as a Component.
+	 * @note Wraps MeshCollider as a Component.
 	 */
-    class BS_CORE_EXPORT CMeshCollider : public CCollider
-    {
-    public:
+	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Physics,n:MeshCollider) CMeshCollider : public CCollider
+	{
+	public:
 		CMeshCollider(const HSceneObject& parent);
 
 		/** @copydoc MeshCollider::setMesh */
+		BS_SCRIPT_EXPORT(n:Mesh,pr:setter)
 		void setMesh(const HPhysicsMesh& mesh);
 
 		/** @copydoc MeshCollider::getMesh */
+		BS_SCRIPT_EXPORT(n:Mesh,pr:getter)
 		HPhysicsMesh getMesh() const { return mMesh; }
 
 		/** @name Internal
 		 *  @{
 		 */
 
-	    /**	Returns the mesh collider that this component wraps. */
+		/**	Returns the mesh collider that this component wraps. */
 		MeshCollider* _getInternal() const { return static_cast<MeshCollider*>(mInternal.get()); }
 
 		/** @} */
@@ -49,7 +51,7 @@ namespace bs
 		/** @copydoc CCollider::isValidParent */
 		bool isValidParent(const HRigidbody& parent) const override;
 
-    protected:
+	protected:
 		HPhysicsMesh mMesh;
 
 		/************************************************************************/
@@ -62,7 +64,7 @@ namespace bs
 
 	protected:
 		CMeshCollider() {} // Serialization only
-     };
+	};
 
 	 /** @} */
 }

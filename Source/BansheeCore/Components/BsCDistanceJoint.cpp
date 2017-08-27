@@ -88,22 +88,22 @@ namespace bs
 			_getInternal()->setSpring(value);
 	}
 
-	void CDistanceJoint::setFlag(DistanceJoint::Flag flag, bool enabled)
+	void CDistanceJoint::setFlag(DistanceJointFlag flag, bool enabled)
 	{
 		bool isEnabled = ((UINT32)mDesc.flag & (UINT32)flag) != 0;
 		if (isEnabled == enabled)
 			return;
 
 		if (enabled)
-			mDesc.flag = (DistanceJoint::Flag)((UINT32)mDesc.flag | (UINT32)flag);
+			mDesc.flag = (DistanceJointFlag)((UINT32)mDesc.flag | (UINT32)flag);
 		else
-			mDesc.flag = (DistanceJoint::Flag)((UINT32)mDesc.flag & ~(UINT32)flag);
+			mDesc.flag = (DistanceJointFlag)((UINT32)mDesc.flag & ~(UINT32)flag);
 
 		if (mInternal != nullptr)
 			_getInternal()->setFlag(flag, enabled);
 	}
 
-	bool CDistanceJoint::hasFlag(DistanceJoint::Flag flag) const
+	bool CDistanceJoint::hasFlag(DistanceJointFlag flag) const
 	{
 		return ((UINT32)mDesc.flag & (UINT32)flag) != 0;
 	}

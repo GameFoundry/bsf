@@ -15,7 +15,7 @@ namespace bs
 	 */
 
 	/**	Flags that describe how is a texture used. */
-    enum BS_SCRIPT_EXPORT() TextureUsage
+    enum BS_SCRIPT_EXPORT(m:Rendering) TextureUsage
     {
 		/** A regular texture that is not often or ever updated from the CPU. */
 		TU_STATIC			BS_SCRIPT_EXPORT(n:Default)			= GBU_STATIC, 

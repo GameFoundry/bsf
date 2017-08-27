@@ -17,21 +17,21 @@ namespace bs
 	 * automatically climb when heights are greater than the assigned step offset. However due to the shape of the capsule
 	 * it might automatically climb over slightly larger heights than assigned step offsets.
 	 */
-	enum class CharacterClimbingMode
+	enum class BS_SCRIPT_EXPORT(m:Physics) CharacterClimbingMode
 	{
 		Normal, /**< Normal behaviour. Capsule character controller will be able to auto-step even above the step offset. */
 		Constrained /**< The system will attempt to limit auto-step to the provided step offset and no higher. */
 	};
 
 	/** Controls behaviour when a character controller reaches a slope thats larger than its slope offset. */
-	enum class CharacterNonWalkableMode
+	enum class BS_SCRIPT_EXPORT(m:Physics) CharacterNonWalkableMode
 	{
 		Prevent, /**< Character will be prevented from going further, but will be allowed to move laterally. */
 		PreventAndSlide /**< Character will be prevented from going further, but also slide down the slope. */
 	};
 
 	/** Reports in which directions is the character colliding with other objects. */
-	enum class CharacterCollisionFlag
+	enum class BS_SCRIPT_EXPORT(m:Physics) CharacterCollisionFlag
 	{
 		Sides = 0x1, /**< Character is colliding with its sides. */
 		Up = 0x2, /**< Character is colliding with the ceiling. */
@@ -74,121 +74,73 @@ namespace bs
 		 */
 		virtual void setPosition(const Vector3& position) = 0;
 
-		/** Returns position of the bottom of the controller. Position takes contact offset into account. */
+		/** @copydoc setFootPosition() */
 		virtual Vector3 getFootPosition() const = 0;
 
 		/** 
-		 * Sets position of the bottom of the controller. Position takes contact offset into account. This will teleport the
-		 * character to the location. Use move() for movement that includes physics.
+		 * Determines the  position of the bottom of the controller. Position takes contact offset into account. Changing
+		 * this will teleport the character to the location. Use move() for movement that includes physics.
 		 */
 		virtual void setFootPosition(const Vector3& position) = 0;
 
-		/** Returns the radius of the controller capsule. */
+		/** @copydoc setRadius() */
 		virtual float getRadius() const = 0;
 
-		/** Sets the radius of the controller capsule. */
+		/** Determines the radius of the controller capsule. */
 		virtual void setRadius(float radius) = 0;
 
-		/** Returns the height between the centers of the two spheres of the controller capsule. */
+		/** @copydoc setHeight() */
 		virtual float getHeight() const = 0;
 
-		/** Sets the height between the centers of the two spheres of the controller capsule. */
+		/** Determines the height between the centers of the two spheres of the controller capsule. */
 		virtual void setHeight(float height) = 0;
 
-		/** Returns the up direction of capsule. Determines capsule orientation. */
+		/** @copydoc setUp() */
 		virtual Vector3 getUp() const = 0;
 
-		/** Sets the up direction of capsule. Determines capsule orientation. */
+		/** Determines the up direction of capsule. Determines capsule orientation. */
 		virtual void setUp(const Vector3& up) = 0;
 
-		/** 
-		 * Returns climbing mode.
-		 *
-		 * @copydoc	CHAR_CONTROLLER_DESC::climbingMode
-		 */
+		/** @copydoc CHAR_CONTROLLER_DESC::climbingMode */
 		virtual CharacterClimbingMode getClimbingMode() const = 0;
 
-		/** 
-		 * Sets climbing mode.
-		 *
-		 * @copydoc	CHAR_CONTROLLER_DESC::climbingMode
-		 */
+		/** @copydoc CHAR_CONTROLLER_DESC::climbingMode */
 		virtual void setClimbingMode(CharacterClimbingMode mode) = 0;
 
-		/** 
-		 * Returns non-walkable mode.
-		 *
-		 * @copydoc CHAR_CONTROLLER_DESC::nonWalkableMode
-		 */
+		/** @copydoc CHAR_CONTROLLER_DESC::nonWalkableMode */
 		virtual CharacterNonWalkableMode getNonWalkableMode() const = 0;
 
-		/** 
-		 * Sets non-walkable mode.
-		 *
-		 * @copydoc CHAR_CONTROLLER_DESC::nonWalkableMode
-		 */
+		/** @copydoc CHAR_CONTROLLER_DESC::nonWalkableMode */
 		virtual void setNonWalkableMode(CharacterNonWalkableMode mode) = 0;
 
-		/** 
-		 * Returns minimum move distance.
-		 *
-		 * @copydoc	CHAR_CONTROLLER_DESC::minMoveDistance
-		 */
+		/** @copydoc CHAR_CONTROLLER_DESC::minMoveDistance */
 		virtual float getMinMoveDistance() const = 0;
 
-		/** 
-		 * Sets minimum move distance.
-		 *
-		 * @copydoc	CHAR_CONTROLLER_DESC::minMoveDistance
-		 */
+		/** @copydoc CHAR_CONTROLLER_DESC::minMoveDistance */
 		virtual void setMinMoveDistance(float value) = 0;
 
-		/** 
-		 * Returns the contact offset.
-		 *
-		 * @copydoc	CHAR_CONTROLLER_DESC::contactOffset
-		 */
+		/** @copydoc CHAR_CONTROLLER_DESC::contactOffset */
 		virtual float getContactOffset() const = 0;
 
-		/** 
-		 * Sets the contact offset.
-		 *
-		 * @copydoc	CHAR_CONTROLLER_DESC::contactOffset
-		 */
+		/** @copydoc CHAR_CONTROLLER_DESC::contactOffset */
 		virtual void setContactOffset(float value) = 0;
 
-		/** 
-		 * Returns the step offset.
-		 *
-		 * @copydoc	CHAR_CONTROLLER_DESC::stepOffset
-		 */
+		/** @copydoc CHAR_CONTROLLER_DESC::stepOffset */
 		virtual float getStepOffset() const = 0;
 
-		/** 
-		 * Sets the step offset.
-		 *
-		 * @copydoc	CHAR_CONTROLLER_DESC::stepOffset
-		 */
+		/** @copydoc CHAR_CONTROLLER_DESC::stepOffset */
 		virtual void setStepOffset(float value) = 0;
 
-		/**
-		 * Returns the slope angle.
-		 *
-		 * @copydoc	CHAR_CONTROLLER_DESC::slopeLimit
-		 */
+		/** @copydoc CHAR_CONTROLLER_DESC::slopeLimit */
 		virtual Radian getSlopeLimit() const = 0;
 
-		/**
-		 * Sets the slope angle.
-		 *
-		 * @copydoc	CHAR_CONTROLLER_DESC::slopeLimit
-		 */
+		/** @copydoc CHAR_CONTROLLER_DESC::slopeLimit */
 		virtual void setSlopeLimit(Radian value) = 0;
 
-		/** Sets the layer that controls what can the controller collide with. */
+		/** Determines the layer that controls what can the controller collide with. */
 		virtual void setLayer(UINT64 layer) { mLayer = layer; }
 
-		/** Gets the layer that controls what can the controller collide with. */
+		/** @copydoc setLayer() */
 		virtual UINT64 getLayer() const { return mLayer; }
 
 		/** Creates a new character controller. */
@@ -277,7 +229,7 @@ namespace bs
 	};
 
 	/** Contains data about a collision of a character controller and another object. */
-	struct ControllerCollision
+	struct BS_SCRIPT_EXPORT(m:Physics,pl:true) ControllerCollision
 	{
 		Vector3 position; /**< Contact position. */
 		Vector3 normal; /**< Contact normal. */
@@ -286,25 +238,29 @@ namespace bs
 	};
 
 	/** Contains data about a collision of a character controller and a collider. */
-	struct ControllerColliderCollision : ControllerCollision
+	struct BS_SCRIPT_EXPORT(m:Physics,pl:true) ControllerColliderCollision : ControllerCollision
 	{
 		/**
 		 * Component of the controller that was touched. Can be null if the controller has no component parent, in which 
 		 * case check #colliderRaw. 
 		 */
 		HCollider collider;
+
+		BS_SCRIPT_EXPORT(ex:true)
 		Collider* colliderRaw; /**< Collider that was touched. */
 		UINT32 triangleIndex; /**< Touched triangle index for mesh colliders. */
 	};
 
 	/** Contains data about a collision between two character controllers. */
-	struct ControllerControllerCollision : ControllerCollision
+	struct BS_SCRIPT_EXPORT(m:Physics,pl:true) ControllerControllerCollision : ControllerCollision
 	{
 		/**
 		 * Component of the controller that was touched. Can be null if the controller has no component parent, in which 
 		 * case check #controllerRaw. 
 		 */
 		HCharacterController controller; 
+
+		BS_SCRIPT_EXPORT(ex:true)
 		CharacterController* controllerRaw; /**< Controller that was touched. */
 	};
 

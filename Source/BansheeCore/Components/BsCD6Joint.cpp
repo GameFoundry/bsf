@@ -16,12 +16,12 @@ namespace bs
 		setName("D6Joint");
 	}
 
-	D6Joint::Motion CD6Joint::getMotion(D6Joint::Axis axis) const
+	D6JointMotion CD6Joint::getMotion(D6JointAxis axis) const
 	{
 		return mDesc.motion[(int)axis];
 	}
 
-	void CD6Joint::setMotion(D6Joint::Axis axis, D6Joint::Motion motion)
+	void CD6Joint::setMotion(D6JointAxis axis, D6JointMotion motion)
 	{
 		if (mDesc.motion[(int)axis] == motion)
 			return;
@@ -104,12 +104,12 @@ namespace bs
 			_getInternal()->setLimitSwing(limit);
 	}
 
-	D6Joint::Drive CD6Joint::getDrive(D6Joint::DriveType type) const
+	D6JointDrive CD6Joint::getDrive(D6JointDriveType type) const
 	{
 		return mDesc.drive[(int)type];
 	}
 
-	void CD6Joint::setDrive(D6Joint::DriveType type, const D6Joint::Drive& drive)
+	void CD6Joint::setDrive(D6JointDriveType type, const D6JointDrive& drive)
 	{
 		if (mDesc.drive[(int)type] == drive)
 			return;

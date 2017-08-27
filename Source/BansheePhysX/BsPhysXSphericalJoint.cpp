@@ -9,12 +9,12 @@ using namespace physx;
 
 namespace bs
 {
-	PxSphericalJointFlag::Enum toPxFlag(PhysXSphericalJoint::Flag flag)
+	PxSphericalJointFlag::Enum toPxFlag(SphericalJointFlag flag)
 	{
 		switch (flag)
 		{
 		default:
-		case PhysXSphericalJoint::Flag::Limit:
+		case SphericalJointFlag::Limit:
 			return PxSphericalJointFlag::eLIMIT_ENABLED;
 		}
 	}
@@ -40,7 +40,7 @@ namespace bs
 
 		PxSphericalJointFlags flags;
 
-		if (((UINT32)desc.flag & (UINT32)Flag::Limit) != 0)
+		if (((UINT32)desc.flag & (UINT32)SphericalJointFlag::Limit) != 0)
 			flags |= PxSphericalJointFlag::eLIMIT_ENABLED;
 
 		joint->setSphericalJointFlags(flags);
@@ -79,12 +79,12 @@ namespace bs
 		getInternal()->setLimitCone(pxLimit);
 	}
 
-	void PhysXSphericalJoint::setFlag(Flag flag, bool enabled)
+	void PhysXSphericalJoint::setFlag(SphericalJointFlag flag, bool enabled)
 	{
 		getInternal()->setSphericalJointFlag(toPxFlag(flag), enabled);
 	}
 
-	bool PhysXSphericalJoint::hasFlag(Flag flag) const
+	bool PhysXSphericalJoint::hasFlag(SphericalJointFlag flag) const
 	{
 		return getInternal()->getSphericalJointFlags() & toPxFlag(flag);
 	}

@@ -53,29 +53,6 @@ set(BS_SBANSHEEENGINE_INC_SERIALIZATION_RTTI
 	"RTTI/BsManagedSerializableDiffRTTI.h"
 )
 
-set(BS_SBANSHEEENGINE_SRC_WRAPPERS_PHYSICS
-	"Wrappers/Physics/BsScriptCollider.cpp"
-	"Wrappers/Physics/BsScriptCollisionData.cpp"
-	"Wrappers/Physics/BsScriptPhysicsQueryHit.cpp"
-	"Wrappers/Physics/BsScriptRigidbody.cpp"
-	"Wrappers/Physics/BsScriptBoxCollider.cpp"
-	"Wrappers/Physics/BsScriptSphereCollider.cpp"
-	"Wrappers/Physics/BsScriptCapsuleCollider.cpp"
-	"Wrappers/Physics/BsScriptPlaneCollider.cpp"
-	"Wrappers/Physics/BsScriptMeshCollider.cpp"
-	"Wrappers/Physics/BsScriptJointCommon.cpp"
-	"Wrappers/Physics/BsScriptControllerCollision.cpp"
-	"Wrappers/Physics/BsScriptCharacterController.cpp"
-	"Wrappers/Physics/BsScriptJoint.cpp"
-	"Wrappers/Physics/BsScriptDistanceJoint.cpp"
-	"Wrappers/Physics/BsScriptHingeJoint.cpp"
-	"Wrappers/Physics/BsScriptSliderJoint.cpp"
-	"Wrappers/Physics/BsScriptFixedJoint.cpp"
-	"Wrappers/Physics/BsScriptSphericalJoint.cpp"
-	"Wrappers/Physics/BsScriptD6Joint.cpp"
-	"Wrappers/Physics/BsScriptPhysics.cpp"
-)
-
 set(BS_SBANSHEEENGINE_INC_WRAPPERS
 	"Wrappers/BsScriptBuiltin.h"
 	"Wrappers/BsScriptCamera.h"
@@ -158,29 +135,6 @@ set(BS_SBANSHEEENGINE_INC_WRAPPERS_GUI
 	"Wrappers/GUI/BsScriptGUI.h"
 	"Wrappers/GUI/BsScriptGUICanvas.h"
 	"Wrappers/GUI/BsScriptGUIScrollBar.h"
-)
-
-set(BS_SBANSHEEENGINE_INC_WRAPPERS_PHYSICS
-	"Wrappers/Physics/BsScriptCollider.h"
-	"Wrappers/Physics/BsScriptCollisionData.h"
-	"Wrappers/Physics/BsScriptPhysicsQueryHit.h"
-	"Wrappers/Physics/BsScriptRigidbody.h"
-	"Wrappers/Physics/BsScriptBoxCollider.h"
-	"Wrappers/Physics/BsScriptSphereCollider.h"
-	"Wrappers/Physics/BsScriptCapsuleCollider.h"
-	"Wrappers/Physics/BsScriptPlaneCollider.h"
-	"Wrappers/Physics/BsScriptMeshCollider.h"
-	"Wrappers/Physics/BsScriptJointCommon.h"
-	"Wrappers/Physics/BsScriptControllerCollision.h"
-	"Wrappers/Physics/BsScriptCharacterController.h"
-	"Wrappers/Physics/BsScriptJoint.h"
-	"Wrappers/Physics/BsScriptDistanceJoint.h"
-	"Wrappers/Physics/BsScriptHingeJoint.h"
-	"Wrappers/Physics/BsScriptSliderJoint.h"
-	"Wrappers/Physics/BsScriptSphericalJoint.h"
-	"Wrappers/Physics/BsScriptFixedJoint.h"
-	"Wrappers/Physics/BsScriptD6Joint.h"
-	"Wrappers/Physics/BsScriptPhysics.h"
 )
 
 set(BS_SBANSHEEENGINE_SRC_SERIALIZATION
@@ -311,10 +265,8 @@ set(BS_SBANSHEEENGINE_SRC_EXTENSIONS
 source_group("Header Files" FILES ${BS_SBANSHEEENGINE_INC_NOFILTER})
 source_group("Source Files\\Wrappers\\GUI" FILES ${BS_SBANSHEEENGINE_SRC_WRAPPERS_GUI})
 source_group("Header Files\\Serialization\\RTTI" FILES ${BS_SBANSHEEENGINE_INC_SERIALIZATION_RTTI})
-source_group("Source Files\\Wrappers\\Physics" FILES ${BS_SBANSHEEENGINE_SRC_WRAPPERS_PHYSICS})
 source_group("Header Files\\Wrappers" FILES ${BS_SBANSHEEENGINE_INC_WRAPPERS})
 source_group("Header Files\\Wrappers\\GUI" FILES ${BS_SBANSHEEENGINE_INC_WRAPPERS_GUI})
-source_group("Header Files\\Wrappers\\Physics" FILES ${BS_SBANSHEEENGINE_INC_WRAPPERS_PHYSICS})
 source_group("Source Files\\Serialization" FILES ${BS_SBANSHEEENGINE_SRC_SERIALIZATION})
 source_group("Source Files\\Wrappers" FILES ${BS_SBANSHEEENGINE_SRC_WRAPPERS})
 source_group("Header Files\\Serialization" FILES ${BS_SBANSHEEENGINE_INC_SERIALIZATION})
@@ -327,10 +279,8 @@ set(BS_SBANSHEEENGINE_SRC
 	${BS_SBANSHEEENGINE_INC_NOFILTER}
 	${BS_SBANSHEEENGINE_SRC_WRAPPERS_GUI}
 	${BS_SBANSHEEENGINE_INC_SERIALIZATION_RTTI}
-	${BS_SBANSHEEENGINE_SRC_WRAPPERS_PHYSICS}
 	${BS_SBANSHEEENGINE_INC_WRAPPERS}
 	${BS_SBANSHEEENGINE_INC_WRAPPERS_GUI}
-	${BS_SBANSHEEENGINE_INC_WRAPPERS_PHYSICS}
 	${BS_SBANSHEEENGINE_SRC_SERIALIZATION}
 	${BS_SBANSHEEENGINE_SRC_WRAPPERS}
 	${BS_SBANSHEEENGINE_INC_SERIALIZATION}

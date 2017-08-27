@@ -618,12 +618,12 @@ namespace bs
 
 	void PhysX::triggerEvents()
 	{
-		CollisionData data;
+		CollisionDataRaw data;
 
 		for(auto& entry : mTriggerEvents)
 		{
-			data.collidersRaw[0] = entry.trigger;
-			data.collidersRaw[1] = entry.other;
+			data.colliders[0] = entry.trigger;
+			data.colliders[1] = entry.other;
 
 			switch (entry.type)
 			{
@@ -642,8 +642,8 @@ namespace bs
 		auto notifyContact = [&](Collider* obj, Collider* other, ContactEventType type, 
 			const Vector<ContactPoint>& points, bool flipNormals = false)
 		{
-			data.collidersRaw[0] = obj;
-			data.collidersRaw[1] = other;
+			data.colliders[0] = obj;
+			data.colliders[1] = other;
 			data.contactPoints = points;
 
 			if(flipNormals)

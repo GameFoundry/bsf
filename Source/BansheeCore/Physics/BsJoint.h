@@ -105,7 +105,7 @@ namespace bs
 	 * Controls spring parameters for a physics joint limits. If a limit is soft (body bounces back due to restition when 
 	 * the limit is reached) the spring will pull the body back towards the limit using the specified parameters.
 	 */
-	struct Spring
+	struct BS_SCRIPT_EXPORT(m:Physics,pl:true) Spring
 	{
 		/** Constructs a spring with no force. */
 		Spring() { }
@@ -133,7 +133,7 @@ namespace bs
 	};
 
 	/** Contains common values used by all Joint limit types. */
-	struct LimitCommon
+	struct BS_SCRIPT_EXPORT(m:Physics,pl:true) LimitCommon
 	{
 		LimitCommon(float contactDist = -1.0f)
 			:contactDist(contactDist)
@@ -160,7 +160,7 @@ namespace bs
 	};
 
 	/** Represents a joint limit between two distance values. Lower value must be less than the upper value. */
-	struct LimitLinearRange : LimitCommon
+	struct BS_SCRIPT_EXPORT(m:Physics,pl:true) LimitLinearRange : LimitCommon
 	{
 		/** Constructs an empty limit. */
 		LimitLinearRange()
@@ -207,7 +207,7 @@ namespace bs
 	};
 
 	/** Represents a joint limit between zero a single distance value. */
-	struct LimitLinear : LimitCommon
+	struct BS_SCRIPT_EXPORT(m:Physics,pl:true) LimitLinear : LimitCommon
 	{
 		/** Constructs an empty limit. */
 		LimitLinear()
@@ -249,7 +249,7 @@ namespace bs
 	};
 
 	/** Represents a joint limit between two angles. */
-	struct LimitAngularRange : LimitCommon
+	struct BS_SCRIPT_EXPORT(m:Physics,pl:true) LimitAngularRange : LimitCommon
 	{
 		/** Constructs an empty limit. */
 		LimitAngularRange()
@@ -296,7 +296,7 @@ namespace bs
 	};
 
 	/** Represents a joint limit that contraints movement to within an elliptical cone. */
-	struct LimitConeRange : LimitCommon
+	struct BS_SCRIPT_EXPORT(m:Physics,pl:true) LimitConeRange : LimitCommon
 	{
 		/** Constructs a limit with a 45 degree cone. */
 		LimitConeRange()
@@ -337,10 +337,10 @@ namespace bs
 		}
 
 		/** Y angle of the cone. Movement is constrainted between 0 and this angle on the Y axis. */
-		Radian yLimitAngle = Radian(Math::PI * 0.5f);
+		Radian yLimitAngle = Radian(Math::HALF_PI);
 
 		/** Z angle of the cone. Movement is constrainted between 0 and this angle on the Z axis. */
-		Radian zLimitAngle = Radian(Math::PI * 0.5f);
+		Radian zLimitAngle = Radian(Math::HALF_PI);
 	};
 
 	/** @} */

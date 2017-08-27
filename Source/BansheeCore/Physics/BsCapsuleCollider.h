@@ -13,7 +13,7 @@ namespace bs
 	 *  @{
 	 */
 
-	 /** Collider with a capsule geometry. */
+	/** Collider with a capsule geometry. */
 	class BS_CORE_EXPORT CapsuleCollider : public Collider
 	{
 	public:
@@ -31,7 +31,7 @@ namespace bs
 		/** Determines the radius of the capsule. */
 		virtual void setRadius(float radius) = 0;
 
-		/** @copydoc setRadius() .*/
+		/** @copydoc setRadius() */
 		virtual float getRadius() const = 0;
 
 		/** 

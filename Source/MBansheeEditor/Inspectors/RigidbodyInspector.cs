@@ -39,7 +39,7 @@ namespace BansheeEditor
             if (body == null)
                 return InspectableState.NotModified;
 
-            kinematicField.Value = body.Kinematic;
+            kinematicField.Value = body.IsKinematic;
             applyGravityField.Value = body.UseGravity;
             automaticMassField.Value = (body.Flags & RigidbodyFlag.AutoMass) != 0;
             massField.Value = body.Mass;
@@ -66,7 +66,7 @@ namespace BansheeEditor
             if (body == null)
                 return;
 
-            kinematicField.OnChanged += x => { body.Kinematic = x; MarkAsModified(); ConfirmModify(); };
+            kinematicField.OnChanged += x => { body.IsKinematic = x; MarkAsModified(); ConfirmModify(); };
             applyGravityField.OnChanged += x => { body.UseGravity = x; MarkAsModified(); ConfirmModify(); };
             automaticMassField.OnChanged += x =>
             {

@@ -15,30 +15,34 @@ namespace bs
 	/**
 	 * @copydoc	SphereCollider
 	 *
-	 * Wraps SphereCollider as a Component.
+	 * @note Wraps SphereCollider as a Component.
 	 */
-    class BS_CORE_EXPORT CSphereCollider : public CCollider
-    {
-    public:
+	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Physics,n:SphereCollider) CSphereCollider : public CCollider
+	{
+	public:
 		CSphereCollider(const HSceneObject& parent, float radius = 1.0f);
 
 		/** @copydoc SphereCollider::setRadius */
+		BS_SCRIPT_EXPORT(n:Radius,pr:setter)
 		void setRadius(float radius);
 
 		/** @copydoc SphereCollider::getRadius */
+		BS_SCRIPT_EXPORT(n:Radius,pr:getter)
 		float getRadius() const { return mRadius; }
 
-		/** Sets the position of the sphere shape, relative to the component's scene object. */
+		/** Determines position of the sphere shape, relative to the component's scene object. */
+		BS_SCRIPT_EXPORT(n:Center,pr:setter)
 		void setCenter(const Vector3& center);
 
-		/** Gets the position of the sphere shape, relative to the component's scene object. */
+		/** @copydoc setCenter() */
+		BS_SCRIPT_EXPORT(n:Center,pr:getter)
 		Vector3 getCenter() const { return mLocalPosition; }
 
 		/** @name Internal
 		 *  @{
 		 */
 
-	    /**	Returns the sphere collider that this component wraps. */
+		/**	Returns the sphere collider that this component wraps. */
 		SphereCollider* _getInternal() const { return static_cast<SphereCollider*>(mInternal.get()); }
 
 		/** @} */
@@ -52,7 +56,7 @@ namespace bs
 		/** @copydoc CCollider::createInternal */
 		SPtr<Collider> createInternal() override;
 
-    protected:
+	protected:
 		float mRadius;
 
 		/************************************************************************/
@@ -65,7 +69,7 @@ namespace bs
 
 	protected:
 		CSphereCollider() {} // Serialization only
-     };
+	};
 
 	 /** @} */
 }

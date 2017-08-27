@@ -48,12 +48,12 @@ namespace bs
 			_getInternal()->setLimit(limit);
 	}
 
-	HingeJoint::Drive CHingeJoint::getDrive() const
+	HingeJointDrive CHingeJoint::getDrive() const
 	{
 		return mDesc.drive;
 	}
 
-	void CHingeJoint::setDrive(const HingeJoint::Drive& drive)
+	void CHingeJoint::setDrive(const HingeJointDrive& drive)
 	{
 		if (drive == mDesc.drive)
 			return;
@@ -64,22 +64,22 @@ namespace bs
 			_getInternal()->setDrive(drive);
 	}
 
-	void CHingeJoint::setFlag(HingeJoint::Flag flag, bool enabled)
+	void CHingeJoint::setFlag(HingeJointFlag flag, bool enabled)
 	{
 		bool isEnabled = ((UINT32)mDesc.flag & (UINT32)flag) != 0;
 		if (isEnabled == enabled)
 			return;
 
 		if (enabled)
-			mDesc.flag = (HingeJoint::Flag)((UINT32)mDesc.flag | (UINT32)flag);
+			mDesc.flag = (HingeJointFlag)((UINT32)mDesc.flag | (UINT32)flag);
 		else
-			mDesc.flag = (HingeJoint::Flag)((UINT32)mDesc.flag & ~(UINT32)flag);
+			mDesc.flag = (HingeJointFlag)((UINT32)mDesc.flag & ~(UINT32)flag);
 
 		if (mInternal != nullptr)
 			_getInternal()->setFlag(flag, enabled);
 	}
 
-	bool CHingeJoint::hasFlag(HingeJoint::Flag flag) const
+	bool CHingeJoint::hasFlag(HingeJointFlag flag) const
 	{
 		return ((UINT32)mDesc.flag & (UINT32)flag) != 0;
 	}

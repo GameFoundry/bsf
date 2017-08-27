@@ -51,7 +51,7 @@ namespace BansheeEditor
         {
             enableLimitField.OnChanged += x =>
             {
-                joint.EnableLimit = x;
+                joint.SetFlag(SphericalJointFlag.Limit, x);
                 MarkAsModified();
                 ConfirmModify();
 
@@ -67,14 +67,15 @@ namespace BansheeEditor
                 limitGUI = new LimitConeRangeGUI(joint.Limit, limitContentsLayout, Persistent);
                 limitGUI.OnChanged += (x, y) =>
                 {
-                    joint.Limit = new LimitConeRange(x, y);
+                    joint.Limit = x;
+                    joint.Limit.SetBase(y);
 
                     MarkAsModified();
                 };
                 limitGUI.OnConfirmed += ConfirmModify;
             }
 
-            ToggleLimitFields(joint.EnableLimit);
+            ToggleLimitFields(joint.HasFlag(SphericalJointFlag.Limit));
 
             base.BuildGUI(joint, true);
         }
@@ -85,10 +86,11 @@ namespace BansheeEditor
         /// <param name="joint">Joint to update the GUI from.</param>
         protected void Refresh(SphericalJoint joint)
         {
-            if (enableLimitField.Value != joint.EnableLimit)
+            bool enableLimit = joint.HasFlag(SphericalJointFlag.Limit);
+            if (enableLimitField.Value != enableLimit)
             {
-                enableLimitField.Value = joint.EnableLimit;
-                ToggleLimitFields(joint.EnableLimit);
+                enableLimitField.Value = enableLimit;
+                ToggleLimitFields(enableLimit);
             }
 
             limitGUI.Limit = joint.Limit;

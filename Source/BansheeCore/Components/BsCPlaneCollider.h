@@ -15,30 +15,34 @@ namespace bs
 	/**
 	 * @copydoc	PlaneCollider
 	 *
-	 * Wraps PlaneCollider as a Component.
+	 * @note Wraps PlaneCollider as a Component.
 	 */
-    class BS_CORE_EXPORT CPlaneCollider : public CCollider
-    {
-    public:
+	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Physics,n:PlaneCollider) CPlaneCollider : public CCollider
+	{
+	public:
 		CPlaneCollider(const HSceneObject& parent);
 
-		/** Sets the normal vector of the plane. It determines how is the plane oriented. */
+		/** Normal vector that determines the local orientation of the plane. */
+		BS_SCRIPT_EXPORT(n:Normal,pr:setter)
 		void setNormal(const Vector3& normal);
 
-		/** Gets the normal vector of the plane. It determines how is the plane oriented. */
+		/** @copydoc setNormal() */
+		BS_SCRIPT_EXPORT(n:Normal,pr:getter)
 		Vector3 getNormal() const { return mNormal; }
 
-		/** Sets the distance of the plane from the local origin, along its normal vector. */
+		/** Determines the distance of the plane from the local origin, along its normal vector. */
+		BS_SCRIPT_EXPORT(n:Distance,pr:setter)
 		void setDistance(float distance);
 
-		/** Gets the distance of the plane from the local origin, along its normal vector. */
+		/** @copydoc setDistance() */
+		BS_SCRIPT_EXPORT(n:Distance,pr:getter)
 		float getDistance() const { return mDistance; }
 
 		/** @name Internal
 		 *  @{
 		 */
 
-	    /**	Returns the plane collider that this component wraps. */
+		/**	Returns the plane collider that this component wraps. */
 		PlaneCollider* _getInternal() const { return static_cast<PlaneCollider*>(mInternal.get()); }
 
 		/** @} */
@@ -55,7 +59,7 @@ namespace bs
 		/** @copydoc CCollider::isValidParent */
 		bool isValidParent(const HRigidbody& parent) const override;
 
-    protected:
+	protected:
 		Vector3 mNormal = Vector3::UNIT_X;
 		float mDistance = 0.0f;
 
@@ -69,7 +73,7 @@ namespace bs
 
 	protected:
 		CPlaneCollider() {} // Serialization only
-     };
+	};
 
 	 /** @} */
 }
