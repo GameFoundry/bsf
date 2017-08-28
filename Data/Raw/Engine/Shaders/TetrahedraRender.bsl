@@ -13,7 +13,7 @@ technique TetrahedraRender
 	{
 		compare = lte;
 	};
-
+	
 	code
 	{
 		struct VertexInput
@@ -43,6 +43,10 @@ technique TetrahedraRender
 		#ifndef MSAA
 			#define MSAA 0
 		#endif
+		
+		#ifndef MSAA_RESOLVE_0TH
+			#define MSAA_RESOLVE_0TH 0
+		#endif		
 
 		#if MSAA
 		Texture2DMS<float> gDepthBufferTex;
@@ -52,14 +56,18 @@ technique TetrahedraRender
 		#endif		
 		
 		uint fsmain(VStoFS input
-		#if MSAA
+		#if MSAA && !MSAA_RESOLVE_0TH
 			,uint sampleIdx : SV_SampleIndex
 		#endif
 		) : SV_Target0
 		{
 			float sceneDepth;
 			#if MSAA
-				sceneDepth = gDepthBufferTex.Load(trunc(input.position.xy), sampleIdx);
+				#if MSAA_RESOLVE_0TH
+					sceneDepth = gDepthBufferTex.Load(trunc(input.position.xy), 0);
+				#else
+					sceneDepth = gDepthBufferTex.Load(trunc(input.position.xy), sampleIdx);
+				#endif
 			#else
 				float2 ndcPos = input.clipPos.xy / input.clipPos.w;
 				sceneDepth = gDepthBufferTex.Sample(gDepthBufferSamp, NDCToUV(ndcPos));

@@ -751,17 +751,17 @@ namespace bs { namespace ct
 			rapi.clearRenderTarget(FBT_DEPTH);
 			gRendererUtility().clear(-1);
 
-			TetrahedraRenderMat* renderTetrahedra = TetrahedraRenderMat::getVariation(viewProps.numSamples > 1);
+			TetrahedraRenderMat* renderTetrahedra = TetrahedraRenderMat::getVariation(viewProps.numSamples > 1, true);
 			renderTetrahedra->execute(inputs.view, sceneDepthNode->depthTex->texture, lpInfo.tetrahedraVolume, rt);
 
 			rt = nullptr;
 			resPool.release(depthTex);
 
-			evaluateMat = IrradianceEvaluateMat::getVariation(viewProps.numSamples, false);
+			evaluateMat = IrradianceEvaluateMat::getVariation(viewProps.numSamples > 1, true, false);
 		}
 		else // Sky only
 		{
-			evaluateMat = IrradianceEvaluateMat::getVariation(viewProps.numSamples, true);
+			evaluateMat = IrradianceEvaluateMat::getVariation(viewProps.numSamples > 1, true, true);
 		}
 
 		GBufferTextures gbuffer;

@@ -14,12 +14,16 @@
 
 namespace bs { namespace ct 
 {
-	ShaderVariation TetrahedraRenderMat::VAR_NoMSAA = ShaderVariation({
-		ShaderVariation::Param("MSAA", false)
+	ShaderVariation TetrahedraRenderMat::VAR_FullMSAA = ShaderVariation({
+		ShaderVariation::Param("MSAA", true)
 	});
 
-	ShaderVariation TetrahedraRenderMat::VAR_MSAA = ShaderVariation({
-		ShaderVariation::Param("MSAA", true)
+	ShaderVariation TetrahedraRenderMat::VAR_SingleMSAA = ShaderVariation({
+		ShaderVariation::Param("MSAA", true),
+		ShaderVariation::Param("MSAA_RESOLVE_0TH", true)
+	});
+
+	ShaderVariation TetrahedraRenderMat::VAR_NoMSAA = ShaderVariation({
 	});
 
 	TetrahedraRenderMat::TetrahedraRenderMat()
@@ -45,8 +49,9 @@ namespace bs { namespace ct
 
 	void TetrahedraRenderMat::_initVariations(ShaderVariations& variations)
 	{
+		variations.add(VAR_FullMSAA);
+		variations.add(VAR_SingleMSAA);
 		variations.add(VAR_NoMSAA);
-		variations.add(VAR_MSAA);
 	}
 
 	void TetrahedraRenderMat::execute(const RendererView& view, const SPtr<Texture>& sceneDepth, const SPtr<Mesh>& mesh, 
@@ -75,18 +80,31 @@ namespace bs { namespace ct
 		depthDesc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_D32, width, height, TU_DEPTHSTENCIL, numSamples);
 	}
 
-	TetrahedraRenderMat* TetrahedraRenderMat::getVariation(bool msaa)
+	TetrahedraRenderMat* TetrahedraRenderMat::getVariation(bool msaa, bool singleSampleMSAA)
 	{
 		if (msaa)
-			return get(VAR_MSAA);
+		{
+			if (singleSampleMSAA)
+				return get(VAR_SingleMSAA);
+
+			return get(VAR_FullMSAA);
+		}
 
 		return get(VAR_NoMSAA);
 	}
 
 	IrradianceEvaluateParamDef gIrradianceEvaluateParamDef;
 
-	ShaderVariation IrradianceEvaluateMat::VAR_MSAA_Probes = ShaderVariation({
+	ShaderVariation IrradianceEvaluateMat::VAR_FullMSAA_Probes = ShaderVariation({
 		ShaderVariation::Param("MSAA_COUNT", 2),
+		ShaderVariation::Param("MSAA", true),
+		ShaderVariation::Param("SKY_ONLY", false)
+	});
+
+	ShaderVariation IrradianceEvaluateMat::VAR_SingleMSAA_Probes = ShaderVariation({
+		ShaderVariation::Param("MSAA_COUNT", 2),
+		ShaderVariation::Param("MSAA", true),
+		ShaderVariation::Param("MSAA_RESOLVE_0TH", true),
 		ShaderVariation::Param("SKY_ONLY", false)
 	});
 
@@ -95,8 +113,16 @@ namespace bs { namespace ct
 		ShaderVariation::Param("SKY_ONLY", false)
 	});
 
-	ShaderVariation IrradianceEvaluateMat::VAR_MSAA_Sky = ShaderVariation({
+	ShaderVariation IrradianceEvaluateMat::VAR_FullMSAA_Sky = ShaderVariation({
 		ShaderVariation::Param("MSAA_COUNT", 2),
+		ShaderVariation::Param("MSAA", true),
+		ShaderVariation::Param("SKY_ONLY", true)
+	});
+
+	ShaderVariation IrradianceEvaluateMat::VAR_SingleMSAA_Sky = ShaderVariation({
+		ShaderVariation::Param("MSAA_COUNT", 2),
+		ShaderVariation::Param("MSAA", true),
+		ShaderVariation::Param("MSAA_RESOLVE_0TH", true),
 		ShaderVariation::Param("SKY_ONLY", true)
 	});
 
@@ -128,8 +154,10 @@ namespace bs { namespace ct
 
 	void IrradianceEvaluateMat::_initVariations(ShaderVariations& variations)
 	{
-		variations.add(VAR_MSAA_Probes);
-		variations.add(VAR_MSAA_Sky);
+		variations.add(VAR_FullMSAA_Probes);
+		variations.add(VAR_FullMSAA_Sky);
+		variations.add(VAR_SingleMSAA_Probes);
+		variations.add(VAR_SingleMSAA_Sky);
 		variations.add(VAR_NoMSAA_Probes);
 		variations.add(VAR_NoMSAA_Sky);
 	}
@@ -183,19 +211,29 @@ namespace bs { namespace ct
 		rapi.setRenderTarget(nullptr);
 	}
 
-	IrradianceEvaluateMat* IrradianceEvaluateMat::getVariation(UINT32 msaaCount, bool skyOnly)
+	IrradianceEvaluateMat* IrradianceEvaluateMat::getVariation(bool msaa, bool singleSampleMSAA, bool skyOnly)
 	{
 		if(skyOnly)
 		{
-			if (msaaCount > 1)
-				return get(VAR_MSAA_Sky);
+			if (msaa)
+			{
+				if (singleSampleMSAA)
+					return get(VAR_SingleMSAA_Sky);
+
+				return get(VAR_FullMSAA_Sky);
+			}
 
 			return get(VAR_NoMSAA_Sky);
 		}
 		else
 		{
-			if (msaaCount > 1)
-				return get(VAR_MSAA_Probes);
+			if (msaa)
+			{
+				if (singleSampleMSAA)
+					return get(VAR_SingleMSAA_Probes);
+
+				return get(VAR_FullMSAA_Probes);
+			}
 
 			return get(VAR_NoMSAA_Probes);
 		}

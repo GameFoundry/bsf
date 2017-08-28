@@ -51,13 +51,21 @@ namespace bs { namespace ct
 		static void getOutputDesc(const RendererView& view, POOLED_RENDER_TEXTURE_DESC& colorDesc, 
 			POOLED_RENDER_TEXTURE_DESC& depthDesc);
 
-		/** Returns the material variation matching the provided parameters. */
-		static TetrahedraRenderMat* getVariation(bool msaa);
+		/** 
+		 * Returns the material variation matching the provided parameters. 
+		 * 
+		 * @param[in]	msaa				True if the shader will operate on a multisampled surface.
+		 * @param[in]	singleSampleMSAA	Only relevant of @p msaa is true. When enabled only the first sample will be
+		 *									evaluated. Otherwise all samples will be evaluated.
+		 * @return							Requested variation of the material.
+		 */
+		static TetrahedraRenderMat* getVariation(bool msaa, bool singleSampleMSAA);
 	private:
 		GpuParamTexture mDepthBufferTex;
 
+		static ShaderVariation VAR_FullMSAA;
+		static ShaderVariation VAR_SingleMSAA;
 		static ShaderVariation VAR_NoMSAA;
-		static ShaderVariation VAR_MSAA;
 	};
 
 	BS_PARAM_BLOCK_BEGIN(IrradianceEvaluateParamDef)
@@ -95,11 +103,14 @@ namespace bs { namespace ct
 		/** 
 		 * Returns the material variation matching the provided parameters. 
 		 *
-		 * @param[in]	msaaCount	Number of MSAA samples used by the view rendering the material.
-		 * @param[in]	skyOnly		When true, only the sky irradiance will be evaluated. Otherwise light probe irradiance
-		 *							will be evaluated.
+		 * @param[in]	msaa				True if the shader will operate on a multisampled surface.
+		 * @param[in]	singleSampleMSAA	Only relevant of @p msaa is true. When enabled only the first sample will be
+		 *									evaluated. Otherwise all samples will be evaluated.
+		 * @param[in]	skyOnly				When true, only the sky irradiance will be evaluated. Otherwise light probe 
+		 *									irradiance will be evaluated.
+		 * @return							Requested variation of the material.
 		 */
-		static IrradianceEvaluateMat* getVariation(UINT32 msaaCount, bool skyOnly);
+		static IrradianceEvaluateMat* getVariation(bool msaa, bool singleSampleMSAA, bool skyOnly);
 	private:
 		GBufferParams mGBufferParams;
 		SPtr<GpuParamBlockBuffer> mParamBuffer;
@@ -111,9 +122,11 @@ namespace bs { namespace ct
 		GpuParamBuffer mParamTetFacesBuffer;
 		bool mSkyOnly;
 
-		static ShaderVariation VAR_MSAA_Probes;
+		static ShaderVariation VAR_FullMSAA_Probes;
+		static ShaderVariation VAR_SingleMSAA_Probes;
 		static ShaderVariation VAR_NoMSAA_Probes;
-		static ShaderVariation VAR_MSAA_Sky;
+		static ShaderVariation VAR_FullMSAA_Sky;
+		static ShaderVariation VAR_SingleMSAA_Sky;
 		static ShaderVariation VAR_NoMSAA_Sky;
 	};
 

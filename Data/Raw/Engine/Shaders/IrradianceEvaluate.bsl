@@ -9,7 +9,7 @@ technique IrradianceEvaluate
 	mixin SHCommon;
 	mixin GBufferInput;
 	mixin PerCameraData;
-
+	
 	blend
 	{
 		target	
@@ -21,6 +21,10 @@ technique IrradianceEvaluate
 	
 	code
 	{
+		#ifndef MSAA_RESOLVE_0TH
+			#define MSAA_RESOLVE_0TH 0
+		#endif	
+	
 		#if MSAA_COUNT > 1
 			Texture2DMS<uint> gInputTex;
 		#else
@@ -161,7 +165,7 @@ technique IrradianceEvaluate
 		}
 		
 		float3 fsmain(VStoFS input
-			#if MSAA_COUNT > 1
+			#if MSAA_COUNT > 1 && !MSAA_RESOLVE_0TH
 			, uint sampleIdx : SV_SampleIndex
 			#endif
 			) : SV_Target0
@@ -170,7 +174,11 @@ technique IrradianceEvaluate
 		
 			SurfaceData surfaceData;
 			#if MSAA_COUNT > 1
-				surfaceData = getGBufferData(pixelPos, sampleIdx);
+				#if MSAA_RESOLVE_0TH
+					surfaceData = getGBufferData(pixelPos, 0);
+				#else
+					surfaceData = getGBufferData(pixelPos, sampleIdx);
+				#endif
 			#else
 				surfaceData = getGBufferData(pixelPos);
 			#endif		
@@ -181,7 +189,11 @@ technique IrradianceEvaluate
 			#else
 				uint volumeIdx;
 				#if MSAA_COUNT > 1
-					volumeIdx = gInputTex.Load(uint3(pixelPos, 0), sampleIdx).x;
+					#if MSAA_RESOLVE_0TH
+						volumeIdx = gInputTex.Load(uint3(pixelPos, 0), 0).x;
+					#else
+						volumeIdx = gInputTex.Load(uint3(pixelPos, 0), sampleIdx).x;
+					#endif
 				#else
 					volumeIdx = gInputTex.Load(uint3(pixelPos, 0)).x;
 				#endif
