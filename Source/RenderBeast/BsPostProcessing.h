@@ -636,14 +636,22 @@ namespace bs { namespace ct
 		 */
 		void execute(const RendererView& view, GBufferTextures gbuffer, const ScreenSpaceReflectionsSettings& settings);
 
-		/** Returns the material variation matching the provided parameters. */
-		static SSRStencilMat* getVariation(bool msaa);
+		/** 
+		 * Returns the material variation matching the provided parameters. 
+		 * 
+		 * @param[in]	msaa				True if the shader will operate on a multisampled surface.
+		 * @param[in]	singleSampleMSAA	Only relevant of @p msaa is true. When enabled only the first sample will be
+		 *									evaluated. Otherwise all samples will be evaluated.
+		 * @return							Requested variation of the material.
+		 */
+		static SSRStencilMat* getVariation(bool msaa, bool singleSampleMSAA);
 	private:
 		SPtr<GpuParamBlockBuffer> mParamBuffer;
 		GBufferParams mGBufferParams;
 
+		static ShaderVariation VAR_FullMSAA;
+		static ShaderVariation VAR_SingleMSAA;
 		static ShaderVariation VAR_NoMSAA;
-		static ShaderVariation VAR_MSAA;
 	};
 
 	BS_PARAM_BLOCK_BEGIN(SSRTraceParamDef)

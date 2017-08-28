@@ -1358,12 +1358,17 @@ namespace bs { namespace ct
 
 	SSRStencilParamDef gSSRStencilParamDef;
 
-	ShaderVariation SSRStencilMat::VAR_NoMSAA = ShaderVariation({
-		ShaderVariation::Param("MSAA_COUNT", 1)
+	ShaderVariation SSRStencilMat::VAR_FullMSAA = ShaderVariation({
+		ShaderVariation::Param("MSAA_COUNT", 2)
 	});
 
-	ShaderVariation SSRStencilMat::VAR_MSAA = ShaderVariation({
-		ShaderVariation::Param("MSAA_COUNT", 2)
+	ShaderVariation SSRStencilMat::VAR_SingleMSAA = ShaderVariation({
+		ShaderVariation::Param("MSAA_COUNT", 2),
+		ShaderVariation::Param("MSAA_RESOLVE_0TH", true)
+	});
+
+	ShaderVariation SSRStencilMat::VAR_NoMSAA = ShaderVariation({
+		ShaderVariation::Param("MSAA_COUNT", 1)
 	});
 
 	SSRStencilMat::SSRStencilMat()
@@ -1375,7 +1380,8 @@ namespace bs { namespace ct
 
 	void SSRStencilMat::_initVariations(ShaderVariations& variations)
 	{
-		variations.add(VAR_MSAA);
+		variations.add(VAR_FullMSAA);
+		variations.add(VAR_SingleMSAA);
 		variations.add(VAR_NoMSAA);
 	}
 
@@ -1395,10 +1401,15 @@ namespace bs { namespace ct
 		gRendererUtility().drawScreenQuad();
 	}
 
-	SSRStencilMat* SSRStencilMat::getVariation(bool msaa)
+	SSRStencilMat* SSRStencilMat::getVariation(bool msaa, bool singleSampleMSAA)
 	{
 		if (msaa)
-			return get(VAR_MSAA);
+		{
+			if (singleSampleMSAA)
+				return get(VAR_SingleMSAA);
+
+			return get(VAR_FullMSAA);
+		}
 		else
 			return get(VAR_NoMSAA);
 	}

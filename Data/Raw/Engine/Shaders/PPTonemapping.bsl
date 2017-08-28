@@ -83,6 +83,9 @@ technique PPTonemapping
 		{
 			float4 sceneColor = 0;
 			#if MSAA
+				// Note: Ideally I'd want to use the MSAA coverage texture here, so I can only average samples for pixels
+				// that really need it. But because forward rendering doesn't write to MSAA coverage I can't do it as I
+				// don't have up-to-date coverage information. It might be good to find a way around this.
 				for(uint i = 0; i < gNumSamples; ++i)
 					sceneColor.rgb += tonemapSample(gInputTex.Load(trunc(input.uv0), i).rgb, input.exposureScale);
 			

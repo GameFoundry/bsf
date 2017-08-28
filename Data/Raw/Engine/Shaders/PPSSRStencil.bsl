@@ -18,6 +18,10 @@ technique PPSSRStencil
 	
 	code
 	{
+		#ifndef MSAA_RESOLVE_0TH
+			#define MSAA_RESOLVE_0TH 0
+		#endif	
+	
 		[internal]
 		cbuffer Input
 		{
@@ -25,15 +29,19 @@ technique PPSSRStencil
 		}
 		
 		float fsmain(VStoFS input			
-		#if MSAA_COUNT > 1 
+		#if MSAA_COUNT > 1 && !MSAA_RESOLVE_0TH
 			, uint sampleIdx : SV_SampleIndex
 		#endif
 		) : SV_Target0
 		{
 			#if MSAA_COUNT > 1 
-			SurfaceData surfData = getGBufferData(trunc(input.position.xy), sampleIdx);
+				#if MSAA_RESOLVE_0TH
+					SurfaceData surfData = getGBufferData(trunc(input.position.xy), 0);
+				#else
+					SurfaceData surfData = getGBufferData(trunc(input.position.xy), sampleIdx);
+				#endif
 			#else
-			SurfaceData surfData = getGBufferData(input.uv0);
+				SurfaceData surfData = getGBufferData(input.uv0);
 			#endif
 			
 			// Surfaces that are too rough fall back to refl. probes

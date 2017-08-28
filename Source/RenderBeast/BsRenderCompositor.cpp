@@ -1837,7 +1837,7 @@ namespace bs { namespace ct
 			gbuffer.roughMetal = gbufferNode->roughMetalTex->texture;
 			gbuffer.depth = sceneDepthNode->depthTex->texture;
 
-			SSRStencilMat* stencilMat = SSRStencilMat::getVariation(viewProps.numSamples > 1);
+			SSRStencilMat* stencilMat = SSRStencilMat::getVariation(viewProps.numSamples > 1, true);
 
 			// Note: Making the assumption that the stencil buffer is clear at this point
 			rapi.setRenderTarget(resolvedSceneDepthNode->output->renderTexture);
@@ -1855,7 +1855,7 @@ namespace bs { namespace ct
 			rapi.setRenderTarget(traceRt);
 			rapi.clearRenderTarget(FBT_COLOR);
 
-			SSRTraceMat* traceMat = SSRTraceMat::getVariation(settings.quality, viewProps.numSamples > 1);
+			SSRTraceMat* traceMat = SSRTraceMat::getVariation(settings.quality, viewProps.numSamples > 1, true);
 			traceMat->execute(inputs.view, gbuffer, sceneColor, hiZ, settings, traceRt);
 
 			if (resolvedSceneColor)
