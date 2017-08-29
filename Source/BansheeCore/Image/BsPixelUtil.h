@@ -126,6 +126,9 @@ namespace bs
 		/**	Checks is the provided pixel format a depth/stencil buffer format. */
 		static bool isDepth(PixelFormat format);
 
+		/** Checks does the provided format store data in normalized range. */
+		static bool isNormalized(PixelFormat format);
+
 		/** 
 		 * Checks is the provided format valid for the texture type and usage. 
 		 * 

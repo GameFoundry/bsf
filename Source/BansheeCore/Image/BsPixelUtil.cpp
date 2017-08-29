@@ -1414,6 +1414,11 @@ namespace bs
 		return (PixelUtil::getFlags(format) & PFF_COMPRESSED) > 0;
 	}
 
+	bool PixelUtil::isNormalized(PixelFormat format)
+	{
+		return (PixelUtil::getFlags(format) & PFF_NORMALIZED) > 0;
+	}
+
 	bool PixelUtil::isDepth(PixelFormat format)
 	{
 		return (PixelUtil::getFlags(format) & PFF_DEPTH) > 0;

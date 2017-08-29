@@ -139,12 +139,12 @@ namespace bs
 
 	GLRTTManager::GLRTTManager()
 		:mBlitReadFBO(0), mBlitWriteFBO(0)
-    {
+	{
 		detectFBOFormats();
 		
 		glGenFramebuffers(1, &mBlitReadFBO);
 		glGenFramebuffers(1, &mBlitWriteFBO);
-    }
+	}
 
 	GLRTTManager::~GLRTTManager()
 	{
@@ -153,148 +153,152 @@ namespace bs
 	}
 
 	bool GLRTTManager::_tryFormat(GLenum depthFormat, GLenum stencilFormat)
-    {
-        GLuint status, depthRB = 0, stencilRB = 0;
-        bool failed = false;
+	{
+		GLuint status, depthRB = 0, stencilRB = 0;
+		bool failed = false;
 
-        if(depthFormat != GL_NONE)
-        {
-            // Generate depth renderbuffer
-            glGenRenderbuffers(1, &depthRB);
+		if (depthFormat != GL_NONE)
+		{
+			// Generate depth renderbuffer
+			glGenRenderbuffers(1, &depthRB);
 
-            // Bind it to FBO
-            glBindRenderbuffer(GL_RENDERBUFFER, depthRB);
-            
-            // Allocate storage for depth buffer
-            glRenderbufferStorage(GL_RENDERBUFFER, depthFormat,
-                                PROBE_SIZE, PROBE_SIZE);
-            
-            // Attach depth
-            glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-                                    GL_RENDERBUFFER, depthRB);
-        }
+			// Bind it to FBO
+			glBindRenderbuffer(GL_RENDERBUFFER, depthRB);
 
-        if(stencilFormat != GL_NONE)
-        {
-            // Generate stencil renderbuffer
-            glGenRenderbuffers(1, &stencilRB);
+			// Allocate storage for depth buffer
+			glRenderbufferStorage(GL_RENDERBUFFER, depthFormat,
+				PROBE_SIZE, PROBE_SIZE);
 
-            // Bind it to FBO
-            glBindRenderbuffer(GL_RENDERBUFFER, stencilRB);
-            glGetError(); 
+			// Attach depth
+			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+				GL_RENDERBUFFER, depthRB);
+		}
 
-            // Allocate storage for stencil buffer
-            glRenderbufferStorage(GL_RENDERBUFFER, stencilFormat,
-                                PROBE_SIZE, PROBE_SIZE); 
+		if (stencilFormat != GL_NONE)
+		{
+			// Generate stencil renderbuffer
+			glGenRenderbuffers(1, &stencilRB);
 
-            if(glGetError() != GL_NO_ERROR)
-                failed = true;
+			// Bind it to FBO
+			glBindRenderbuffer(GL_RENDERBUFFER, stencilRB);
+			glGetError();
 
-            // Attach stencil
-            glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT,
-                            GL_RENDERBUFFER, stencilRB);
+			// Allocate storage for stencil buffer
+			glRenderbufferStorage(GL_RENDERBUFFER, stencilFormat,
+				PROBE_SIZE, PROBE_SIZE);
 
-            if(glGetError() != GL_NO_ERROR)
-                failed = true;
-        }
-        
-        status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+			if (glGetError() != GL_NO_ERROR)
+				failed = true;
 
-        // Detach and destroy
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, 0);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, 0);
+			// Attach stencil
+			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT,
+				GL_RENDERBUFFER, stencilRB);
 
-        if (depthRB)
-            glDeleteRenderbuffers(1, &depthRB);
+			if (glGetError() != GL_NO_ERROR)
+				failed = true;
+		}
 
-        if (stencilRB)
-            glDeleteRenderbuffers(1, &stencilRB);
-        
-        return status == GL_FRAMEBUFFER_COMPLETE && !failed;
-    }
-    
-    bool GLRTTManager::_tryPackedFormat(GLenum packedFormat)
-    {
-        GLuint packedRB = 0;
-        bool failed = false; // flag on GL errors
+		status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
-        // Generate renderbuffer
-        glGenRenderbuffers(1, &packedRB);
+		// Detach and destroy
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, 0);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, 0);
 
-        // Bind it to FBO
-        glBindRenderbuffer(GL_RENDERBUFFER, packedRB);
+		if (depthRB)
+			glDeleteRenderbuffers(1, &depthRB);
 
-        // Allocate storage for buffer
-        glRenderbufferStorage(GL_RENDERBUFFER, packedFormat, PROBE_SIZE, PROBE_SIZE);
-        glGetError();
+		if (stencilRB)
+			glDeleteRenderbuffers(1, &stencilRB);
 
-        // Attach depth
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-            GL_RENDERBUFFER, packedRB);
+		return status == GL_FRAMEBUFFER_COMPLETE && !failed;
+	}
 
-        if(glGetError() != GL_NO_ERROR)
-            failed = true;
+	bool GLRTTManager::_tryPackedFormat(GLenum packedFormat)
+	{
+		GLuint packedRB = 0;
+		bool failed = false; // flag on GL errors
 
-        // Attach stencil
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT,
-            GL_RENDERBUFFER, packedRB);
+		// Generate renderbuffer
+		glGenRenderbuffers(1, &packedRB);
 
-        if(glGetError() != GL_NO_ERROR)
-            failed = true;
+		// Bind it to FBO
+		glBindRenderbuffer(GL_RENDERBUFFER, packedRB);
 
-        GLuint status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+		// Allocate storage for buffer
+		glRenderbufferStorage(GL_RENDERBUFFER, packedFormat, PROBE_SIZE, PROBE_SIZE);
+		glGetError();
 
-        // Detach and destroy
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, 0);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, 0);
-        glDeleteRenderbuffers(1, &packedRB);
+		// Attach depth
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+			GL_RENDERBUFFER, packedRB);
 
-        return status == GL_FRAMEBUFFER_COMPLETE && !failed;
-    }
+		if (glGetError() != GL_NO_ERROR)
+			failed = true;
 
-    void GLRTTManager::detectFBOFormats()
-    {
-        // Try all formats, and report which ones work as target
-        GLuint fb = 0, tid = 0;
-        GLint oldDrawbuffer = 0, oldReadbuffer = 0;
-        GLenum target = GL_TEXTURE_2D;
+		// Attach stencil
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT,
+			GL_RENDERBUFFER, packedRB);
 
-        glGetIntegerv (GL_DRAW_BUFFER, &oldDrawbuffer);
-        glGetIntegerv (GL_READ_BUFFER, &oldReadbuffer);
+		if (glGetError() != GL_NO_ERROR)
+			failed = true;
 
-        for(size_t x=0; x<PF_COUNT; ++x)
-        {
-            mProps[x].valid = false;
+		GLuint status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+
+		// Detach and destroy
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, 0);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, 0);
+		glDeleteRenderbuffers(1, &packedRB);
+
+		return status == GL_FRAMEBUFFER_COMPLETE && !failed;
+	}
+
+	void GLRTTManager::detectFBOFormats()
+	{
+		// Try all formats, and report which ones work as target
+		GLuint fb = 0, tid = 0;
+		GLint oldDrawbuffer = 0, oldReadbuffer = 0;
+		GLenum target = GL_TEXTURE_2D;
+
+		glGetIntegerv(GL_DRAW_BUFFER, &oldDrawbuffer);
+		glGetIntegerv(GL_READ_BUFFER, &oldReadbuffer);
+
+		for (size_t x = 0; x < PF_COUNT; ++x)
+		{
+			mProps[x].valid = false;
 
 			// Fetch GL format token
 			GLenum fmt = GLPixelUtil::getGLInternalFormat((PixelFormat)x);
-            if(fmt == GL_NONE && x!=0)
-                continue;
+			if (fmt == GL_NONE && x != 0)
+				continue;
 
 			// No test for compressed formats
 			if(PixelUtil::isCompressed((PixelFormat)x))
 				continue;
 
-            // Create and attach framebuffer
-            glGenFramebuffers(1, &fb);
-            glBindFramebuffer(GL_FRAMEBUFFER, fb);
-            if (fmt!=GL_NONE && !PixelUtil::isDepth((PixelFormat)x))
-            {
+			// No test for unnormalized integer targets
+			if (!PixelUtil::isNormalized((PixelFormat)x) && !PixelUtil::isFloatingPoint((PixelFormat)x))
+				continue;
+
+			// Create and attach framebuffer
+			glGenFramebuffers(1, &fb);
+			glBindFramebuffer(GL_FRAMEBUFFER, fb);
+			if (fmt != GL_NONE && !PixelUtil::isDepth((PixelFormat)x))
+			{
 				// Create and attach texture
 				glGenTextures(1, &tid);
 				glBindTexture(target, tid);
 				
-                // Set some default parameters so it won't fail on NVidia cards         
+				// Set some default parameters so it won't fail on NVidia cards         
 				if (GLEW_VERSION_1_2)
 					glTexParameteri(target, GL_TEXTURE_MAX_LEVEL, 0);
-                glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-                glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-                glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-                glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-                            
+				glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+				glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+				glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+				glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
 				glTexImage2D(target, 0, fmt, PROBE_SIZE, PROBE_SIZE, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, target, tid, 0);
-            }
+			}
 			else
 			{
 				// Draw to nowhere -- stencil/depth only
@@ -302,79 +306,79 @@ namespace bs
 				glReadBuffer(GL_NONE);
 			}
 
-            // Check status
-            GLuint status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+			// Check status
+			GLuint status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
 			// Ignore status in case of fmt==GL_NONE, because no implementation will accept
 			// a buffer without *any* attachment. Buffers with only stencil and depth attachment
 			// might still be supported, so we must continue probing.
-            if(fmt == GL_NONE || status == GL_FRAMEBUFFER_COMPLETE)
-            {
-                mProps[x].valid = true;
+			if (fmt == GL_NONE || status == GL_FRAMEBUFFER_COMPLETE)
+			{
+				mProps[x].valid = true;
 
-                // For each depth/stencil formats
-                for (UINT32 depth = 0; depth < DEPTHFORMAT_COUNT; ++depth)
-                {
-                    if (depthFormats[depth] != GL_DEPTH24_STENCIL8 && depthFormats[depth] != GL_DEPTH32F_STENCIL8)
-                    {
-                        if (_tryFormat(depthFormats[depth], GL_NONE))
-                        {
-                            /// Add mode to allowed modes
-                            FormatProperties::Mode mode;
-                            mode.depth = depth;
-                            mode.stencil = 0;
-                            mProps[x].modes.push_back(mode);
-                        }
-                    }
-                    else
-                    {
-                        // Packed depth/stencil format
-                        if (_tryPackedFormat(depthFormats[depth]))
-                        {
-                            /// Add mode to allowed modes
-                            FormatProperties::Mode mode;
-                            mode.depth = depth;
-                            mode.stencil = 0;   // unuse
-                            mProps[x].modes.push_back(mode);
-                        }
-                    }
-                }
-            }
+				// For each depth/stencil formats
+				for (UINT32 depth = 0; depth < DEPTHFORMAT_COUNT; ++depth)
+				{
+					if (depthFormats[depth] != GL_DEPTH24_STENCIL8 && depthFormats[depth] != GL_DEPTH32F_STENCIL8)
+					{
+						if (_tryFormat(depthFormats[depth], GL_NONE))
+						{
+							/// Add mode to allowed modes
+							FormatProperties::Mode mode;
+							mode.depth = depth;
+							mode.stencil = 0;
+							mProps[x].modes.push_back(mode);
+						}
+					}
+					else
+					{
+						// Packed depth/stencil format
+						if (_tryPackedFormat(depthFormats[depth]))
+						{
+							/// Add mode to allowed modes
+							FormatProperties::Mode mode;
+							mode.depth = depth;
+							mode.stencil = 0;   // unuse
+							mProps[x].modes.push_back(mode);
+						}
+					}
+				}
+			}
 
-            // Delete texture and framebuffer
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-            glDeleteFramebuffers(1, &fb);
+			// Delete texture and framebuffer
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			glDeleteFramebuffers(1, &fb);
 			
 			glFinish();
 			
-            if (fmt != GL_NONE)
-                glDeleteTextures(1, &tid);
-        }
+			if (fmt != GL_NONE)
+				glDeleteTextures(1, &tid);
+		}
 
-        glDrawBuffer(oldDrawbuffer);
-        glReadBuffer(oldReadbuffer);
-    }
-    
-    PixelFormat GLRTTManager::getSupportedAlternative(PixelFormat format)
-    {
-        if(checkFormat(format))
-            return format;
+		glDrawBuffer(oldDrawbuffer);
+		glReadBuffer(oldReadbuffer);
+	}
 
-        // Find first alternative
-        PixelComponentType pct = PixelUtil::getElementType(format);
-        switch(pct)
-        {
-        case PCT_BYTE: format = PF_RGBA8; break;
-        case PCT_FLOAT16: format = PF_RGBA16F; break;
-        case PCT_FLOAT32: format = PF_RGBA32F; break;
-        default: break;
-        }
+	PixelFormat GLRTTManager::getSupportedAlternative(PixelFormat format)
+	{
+		if (checkFormat(format))
+			return format;
 
-        if(checkFormat(format))
-            return format;
+		// Find first alternative
+		PixelComponentType pct = PixelUtil::getElementType(format);
+		switch (pct)
+		{
+		case PCT_BYTE: format = PF_RGBA8; break;
+		case PCT_FLOAT16: format = PF_RGBA16F; break;
+		case PCT_FLOAT32: format = PF_RGBA32F; break;
+		default: break;
+		}
 
-        // If none at all, return to default
-        return PF_RGBA8;
-    }
+		if (checkFormat(format))
+			return format;
+
+		// If none at all, return to default
+		return PF_RGBA8;
+	}
 	}
 }
