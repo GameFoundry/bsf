@@ -105,7 +105,7 @@ namespace bs
 			GLTexture* glDepthStencilTexture = static_cast<GLTexture*>(mDesc.depthStencilSurface.texture.get());
 			SPtr<GLPixelBuffer> depthStencilBuffer = nullptr;
 
-			bool allLayers = false;
+			bool allLayers = true;
 			if (mDepthStencilSurface->getNumArraySlices() == 1) // Binding a single texture layer
 				allLayers = glDepthStencilTexture->getProperties().getNumFaces() == 1;
 
