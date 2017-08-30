@@ -88,6 +88,11 @@ technique TiledDeferredImageBasedLighting
 		void calcTileAABB(uint2 tileId, float viewZMin, float viewZMax, out float3 center, out float3 extent)
 		{
 			uint2 pixelPos = tileId * TILE_SIZE;
+			
+			// OpenGL uses lower left for window space origin
+			#ifdef OPENGL
+				pixelPos.y = gFramebufferSize.y - pixelPos.y;
+			#endif					
 		
 			// Convert thread XY coordinates to NDC coordinates
 			float2 uvTopLeft = (pixelPos + 0.5f) / gFramebufferSize;
