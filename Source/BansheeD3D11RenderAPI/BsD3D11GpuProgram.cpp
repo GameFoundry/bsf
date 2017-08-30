@@ -119,7 +119,7 @@ namespace bs { namespace ct
 			compileFlags |= D3DCOMPILE_ENABLE_BACKWARDS_COMPATIBILITY;
 
 		ID3DBlob* microCode = nullptr;
-		ID3DBlob* errors = nullptr;
+		ID3DBlob* messages = nullptr;
 
 		const String& source = mProperties.getSource();
 		const String& entryPoint = mProperties.getEntryPoint();
@@ -141,35 +141,40 @@ namespace bs { namespace ct
 			compileFlags,		// [in] Effect compile flags - no D3DCOMPILE_ENABLE_BACKWARDS_COMPATIBILITY at the first try...
 			0,					// [in] Effect compile flags
 			&microCode,			// [out] A pointer to an ID3DBlob Interface which contains the compiled shader, as well as any embedded debug and symbol-table information. 
-			&errors				// [out] A pointer to an ID3DBlob Interface which contains a listing of errors and warnings that occurred during compilation. These errors and warnings are identical to the the debug output from a debugger.
+			&messages			// [out] A pointer to an ID3DBlob Interface which contains a listing of errors and warnings that occurred during compilation. These errors and warnings are identical to the the debug output from a debugger.
 			);
 
-		if (FAILED(hr))
+		if (messages != nullptr)
 		{
-			const char* errorMessage = static_cast<const char*>(errors->GetBufferPointer());
-			UINT32 errorLineIdx = parseErrorMessage(errorMessage);
+			const char* message = static_cast<const char*>(messages->GetBufferPointer());
+			UINT32 lineIdx = parseErrorMessage(message);
 
 			Vector<String> sourceLines = StringUtil::split(source, "\n");
 			String sourceLine;
-			if (errorLineIdx < sourceLines.size())
-				sourceLine = sourceLines[errorLineIdx];
+			if (lineIdx < sourceLines.size())
+				sourceLine = sourceLines[lineIdx];
 
-			mIsCompiled = false;
-			mCompileError = "Cannot compile D3D11 high-level shader. Errors:\n" +
-				String(errorMessage) + "\n" +
+			mCompileError =
+				String(message) + "\n" +
 				"\n" +
-				"Line " + toString(errorLineIdx) + ": " + sourceLine;
+				"Line " + toString(lineIdx) + ": " + sourceLine;
+
+			SAFE_RELEASE(messages);
+		}
+		else
+			mCompileError = "";
+
+		if (FAILED(hr))
+		{
+			mIsCompiled = false;
+			mCompileError = "Cannot compile D3D11 high-level shader. Errors:\n" + mCompileError;
 
 			SAFE_RELEASE(microCode);
-			SAFE_RELEASE(errors);
 			return nullptr;
 		}
 		else
 		{
 			mIsCompiled = true;
-			mCompileError = "";
-
-			SAFE_RELEASE(errors);
 			return microCode;
 		}
 	}

@@ -29,7 +29,10 @@ mixin ImageBasedLighting
 		SamplerState gReflProbeSamp;
 		
 		Texture2D gAmbientOcclusionTex;
+		SamplerState gAmbientOcclusionSamp;
+		
 		Texture2D gSSRTex;
+		SamplerState gSSRSamp;
 		
 		Texture2D gPreintegratedEnvBRDF;
 		SamplerState gPreintegratedEnvBRDFSamp;
@@ -143,6 +146,7 @@ mixin ImageBasedLighting
 			float mipLevel = mapRoughnessToMipLevel(roughness, gReflCubemapNumMips);
 			
 			float3 output = 0;
+			[loop]
 			for(uint i = 0; i < numProbes; i++)
 			{
 				if(alpha < 0.001f)

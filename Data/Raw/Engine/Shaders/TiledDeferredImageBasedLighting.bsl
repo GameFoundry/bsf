@@ -77,10 +77,7 @@ technique TiledDeferredImageBasedLighting
 			
 			// Determine minimum and maximum depth values for a tile			
 			InterlockedMin(sTileMinZ, sampleMinZ);
-			
-			// Skip samples on the far plane (e.g. skybox) as they ruin the precision
-			if(sampleMaxZ < 1.0f)
-				InterlockedMax(sTileMaxZ, sampleMaxZ);
+			InterlockedMax(sTileMaxZ, sampleMaxZ);
 			
 			GroupMemoryBarrierWithGroupSync();
 			
@@ -147,7 +144,7 @@ technique TiledDeferredImageBasedLighting
 			return dot(closestOnBox, closestOnBox) < sRadius * sRadius;
 		}
 		
-		float4 getLighting(uint2 pixelPos, uint sampleIdx, float2 clipSpacePos, SurfaceData surfaceData, uint probeOffset, uint numProbes)
+		float4 getLighting(uint2 pixelPos, float2 uv, uint sampleIdx, float2 clipSpacePos, SurfaceData surfaceData, uint probeOffset, uint numProbes)
 		{
 			// x, y are now in clip space, z, w are in view space
 			// We multiply them by a special inverse view-projection matrix, that had the projection entries that effect
@@ -169,8 +166,8 @@ technique TiledDeferredImageBasedLighting
 			existingColor = gInColor.Load(int3(pixelPos.xy, 0));
 			#endif				
 			
-			float ao = gAmbientOcclusionTex.Load(int3(pixelPos.xy, 0));
-			float4 ssr = gSSRTex.Load(int3(pixelPos.xy, 0));
+			float ao = gAmbientOcclusionTex.SampleLevel(gAmbientOcclusionSamp, uv, 0.0f).r;
+			float4 ssr = gSSRTex.SampleLevel(gSSRSamp, uv, 0.0f);
 			float3 imageBasedSpecular = getImageBasedSpecular(worldPosition, V, specR, surfaceData, ao, ssr, probeOffset, numProbes);
 
 			float4 totalLighting = existingColor;
@@ -261,7 +258,7 @@ technique TiledDeferredImageBasedLighting
 				#if MSAA_COUNT > 1
 				float coverage = gMSAACoverage.Load(int3(pixelPos, 0)).r;
 				
-				float4 lighting = getLighting(pixelPos, 0, clipSpacePos.xy, surfaceData[0], 0, sNumProbes);
+				float4 lighting = getLighting(pixelPos, screenUv, 0, clipSpacePos.xy, surfaceData[0], 0, sNumProbes);
 				writeBufferSample(pixelPos, 0, lighting);
 
 				bool doPerSampleShading = coverage > 0.5f;
@@ -270,7 +267,7 @@ technique TiledDeferredImageBasedLighting
 					[unroll]
 					for(uint i = 1; i < MSAA_COUNT; ++i)
 					{
-						lighting = getLighting(pixelPos, i, clipSpacePos.xy, surfaceData[i], 0, sNumProbes);
+						lighting = getLighting(pixelPos, screenUv, i, clipSpacePos.xy, surfaceData[i], 0, sNumProbes);
 						writeBufferSample(pixelPos, i, lighting);
 					}
 				}
@@ -285,7 +282,7 @@ technique TiledDeferredImageBasedLighting
 				}
 				
 				#else
-				float4 lighting = getLighting(pixelPos, 0, clipSpacePos.xy, surfaceData[0], 0, sNumProbes);
+				float4 lighting = getLighting(pixelPos, screenUv, 0, clipSpacePos.xy, surfaceData[0], 0, sNumProbes);
 				gOutput[pixelPos] = lighting;
 				#endif
 			}

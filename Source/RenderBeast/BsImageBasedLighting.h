@@ -109,6 +109,9 @@ namespace bs { namespace ct
 		GpuParamTexture preintegratedEnvBRDFParam;
 		GpuParamBuffer reflectionProbesParam;
 
+		GpuParamSampState ambientOcclusionSampParam;
+		GpuParamSampState ssrSampParam;
+
 		GpuParamBuffer reflectionProbeIndicesParam;
 		UINT32 reflProbeParamsBindingIdx;
 	};

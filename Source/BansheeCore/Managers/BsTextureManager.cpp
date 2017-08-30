@@ -109,10 +109,10 @@ namespace bs
 		SPtr<Texture> blackTexture = createTexture(desc);
 
 		SPtr<PixelData> blackPixelData = PixelData::create(2, 2, 1, PF_RGBA8);
-		blackPixelData->setColorAt(Color::Black, 0, 0);
-		blackPixelData->setColorAt(Color::Black, 0, 1);
-		blackPixelData->setColorAt(Color::Black, 1, 0);
-		blackPixelData->setColorAt(Color::Black, 1, 1);
+		blackPixelData->setColorAt(Color::ZERO, 0, 0);
+		blackPixelData->setColorAt(Color::ZERO, 0, 1);
+		blackPixelData->setColorAt(Color::ZERO, 1, 0);
+		blackPixelData->setColorAt(Color::ZERO, 1, 1);
 
 		blackTexture->writeData(*blackPixelData);
 		Texture::BLACK = blackTexture;

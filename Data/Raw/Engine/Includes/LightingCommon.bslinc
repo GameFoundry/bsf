@@ -364,6 +364,7 @@ mixin LightingCommon
 			if(surfaceData.worldNormal.w > 0.0f)
 			{
 				// Handle directional lights
+				[loop]
 				for(uint i = 0; i < lightOffsets.x; ++i)
 				{
 					LightData lightData = gLights[i];
@@ -371,18 +372,20 @@ mixin LightingCommon
 				}
 				
 				// Handle radial lights
-				for (uint i = lightOffsets.y; i < lightOffsets.z; ++i)
+				[loop]
+				for (uint j = lightOffsets.y; j < lightOffsets.z; ++j)
 				{
-					uint lightIdx = gLightIndices[i];
+					uint lightIdx = gLightIndices[j];
 					LightData lightData = gLights[lightIdx];
 					
 					outLuminance += getLuminanceRadial(lightData, worldPos, V, R, roughness2, surfaceData);
 				}
 
 				// Handle spot lights
-				for(uint i = lightOffsets.z; i < lightOffsets.w; ++i)
+				[loop]
+				for(uint k = lightOffsets.z; k < lightOffsets.w; ++k)
 				{
-					uint lightIdx = gLightIndices[i];
+					uint lightIdx = gLightIndices[k];
 					LightData lightData = gLights[lightIdx];
 					
 					outLuminance += getLuminanceSpot(lightData, worldPos, V, R, roughness2, surfaceData);

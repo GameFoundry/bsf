@@ -395,6 +395,8 @@ namespace ct
 	class RCNodeClusteredForward : public RenderCompositorNode
 	{
 	public:
+		RCNodeClusteredForward();
+
 		static StringID getNodeId() { return "ClusteredForward"; }
 		static SmallVector<StringID, 4> getDependencies(const RendererView& view);
 	protected:
@@ -403,6 +405,8 @@ namespace ct
 
 		/** @copydoc RenderCompositorNode::clear */
 		void clear() override;
+
+		SPtr<SamplerState> mSSRAOSamplerState;
 	};
 
 	/**
