@@ -10,9 +10,9 @@ namespace bs { namespace ct
 {
 	GLVertexBuffer::GLVertexBuffer(const VERTEX_BUFFER_DESC& desc, GpuDeviceFlags deviceMask)
 		:VertexBuffer(desc, deviceMask), mUsage(desc.usage)
-    {
+	{
 		assert((deviceMask == GDF_DEFAULT || deviceMask == GDF_PRIMARY) && "Multiple GPUs not supported natively on OpenGL.");
-    }
+	}
 
 	GLVertexBuffer::~GLVertexBuffer()
 	{
@@ -44,25 +44,25 @@ namespace bs { namespace ct
 	}
 
 	void* GLVertexBuffer::map(UINT32 offset, UINT32 length, GpuLockOptions options, UINT32 deviceIdx, UINT32 queueIdx)
-    {
+	{
 		return mBuffer.lock(offset, length, options);
-    }
+	}
 
 	void GLVertexBuffer::unmap()
-    {
+	{
 		mBuffer.unlock();
-    }
+	}
 
 	void GLVertexBuffer::readData(UINT32 offset, UINT32 length, void* dest, UINT32 deviceIdx, UINT32 queueIdx)
-    {
+	{
 		mBuffer.readData(offset, length, dest);
-    }
+	}
 
 	void GLVertexBuffer::writeData(UINT32 offset, UINT32 length,
 		const void* pSource, BufferWriteType writeFlags, UINT32 queueIdx)
-    {
+	{
 		mBuffer.writeData(offset, length, pSource, writeFlags);
-    }
+	}
 
 	void GLVertexBuffer::copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset,
 		UINT32 dstOffset, UINT32 length, bool discardWholeBuffer, const SPtr<ct::CommandBuffer>& commandBuffer)

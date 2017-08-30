@@ -102,9 +102,7 @@ namespace bs { namespace ct
 		auto executeRef = [this](HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length)
 		{
 			GLGpuBuffer& glSrcBuffer = static_cast<GLGpuBuffer&>(srcBuffer);
-
-			GLuint srcId = glSrcBuffer.getGLBufferId();
-			glCopyBufferSubData(srcId, getGLBufferId(), srcOffset, dstOffset, length);
+			glSrcBuffer.mBuffer.copyData(mBuffer, srcOffset, dstOffset, length);
 		};
 
 		if (commandBuffer == nullptr)

@@ -25,10 +25,10 @@ namespace bs { namespace ct
 		void unlock() override;
 
 		/** @copydoc GpuBuffer::readData */
-        void readData(UINT32 offset, UINT32 length, void* dest, UINT32 deviceIdx = 0, UINT32 queueIdx = 0) override;
+		void readData(UINT32 offset, UINT32 length, void* dest, UINT32 deviceIdx = 0, UINT32 queueIdx = 0) override;
 
 		/** @copydoc GpuBuffer::writeData */
-        void writeData(UINT32 offset, UINT32 length, const void* source,
+		void writeData(UINT32 offset, UINT32 length, const void* source,
 			BufferWriteType writeFlags = BWT_NORMAL, UINT32 queueIdx = 0) override;
 
 		/** @copydoc GpuBuffer::copyData */

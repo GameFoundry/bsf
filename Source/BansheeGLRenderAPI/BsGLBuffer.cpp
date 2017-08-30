@@ -116,7 +116,9 @@ namespace bs { namespace ct
 
 	void GLBuffer::copyData(GLBuffer& dstBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length)
 	{
-		GLuint srcId = dstBuffer.getGLBufferId();
-		glCopyBufferSubData(srcId, getGLBufferId(), srcOffset, dstOffset, length);
+		glBindBuffer(GL_COPY_READ_BUFFER, getGLBufferId());
+		glBindBuffer(GL_COPY_WRITE_BUFFER, dstBuffer.getGLBufferId());
+
+		glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, srcOffset, dstOffset, length);
 	}
 }}

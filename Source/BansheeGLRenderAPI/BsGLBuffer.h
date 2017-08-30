@@ -13,9 +13,9 @@ namespace bs { namespace ct
 	 */
 
 	/** Wrapper around a generic OpenGL buffer. */
-    class GLBuffer
-    {
-    public:
+	class GLBuffer
+	{
+	public:
 		/** Creates an uninitialized buffer object. You must call initialize() before using it. */
 		GLBuffer();
 
@@ -51,7 +51,7 @@ namespace bs { namespace ct
 		 * @param[in]	length	Length of the area you want to copy, in bytes.
 		 * @param[in]	dest	Destination buffer large enough to store the read data.
 		 */
-        void readData(UINT32 offset, UINT32 length, void* dest);
+		void readData(UINT32 offset, UINT32 length, void* dest);
 
 		/**
 		 * Writes data into a portion of the buffer from the source memory. 
@@ -61,7 +61,7 @@ namespace bs { namespace ct
 		 * @param[in]	source		Source buffer containing the data to write.
 		 * @param[in]	writeFlags	Optional write flags that may affect performance.
 		 */
-        void writeData(UINT32 offset, UINT32 length, const void* source, 
+		void writeData(UINT32 offset, UINT32 length, const void* source,
 			BufferWriteType writeFlags = BWT_NORMAL);
 
 		/**
@@ -75,14 +75,14 @@ namespace bs { namespace ct
 		void copyData(GLBuffer& dstBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length);
 
 		/**	Returns internal OpenGL buffer ID. */
-        GLuint getGLBufferId() const { return mBufferId; }
+		GLuint getGLBufferId() const { return mBufferId; }
 
 	private:
 		GLenum mTarget;
 		GLuint mBufferId;
 
 		bool mZeroLocked;
-    };
+	};
 
 	/** @} */
 }}
