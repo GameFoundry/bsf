@@ -262,9 +262,10 @@ namespace bs { namespace ct
 	/** Information about a single tetrahedron face, for use on the GPU. */
 	struct TetrahedronFaceDataGPU
 	{
-		Vector3 corners[3];
-		Vector3 normals[3];
+		Vector4 corners[3];
+		Vector4 normals[3];
 		UINT32 isQuadratic;
+		float padding[3];
 	};
 
 	LightProbes::LightProbes()

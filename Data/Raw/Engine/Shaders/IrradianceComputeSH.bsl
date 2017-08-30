@@ -10,11 +10,7 @@ technique IrradianceComputeSH
 	{
 		struct SHCoeffsAndWeight
 		{
-			#if ORDER == 3
-			SHVector3RGB coeffs;
-			#else // Assuming order 5
-			SHVector5RGB coeffs;
-			#endif
+			SHVectorRGB coeffs;
 			float weight;
 		};
 	
@@ -96,11 +92,7 @@ technique IrradianceComputeSH
 					// on a sphere. Without weighing that area would look too bright.
 					float weight = texelSolidAngle(u, v, invFaceSize);
 					
-					#if ORDER == 3
-					SHVector3 shBasis = SHBasis3(dir);
-					#else // Assuming order 5
-					SHVector5 shBasis = SHBasis5(dir);
-					#endif
+					SHVector shBasis = SHBasis(dir);
 					float3 radiance = gInputTex.SampleLevel(gInputSamp, dir, 0).rgb;
 					
 					SHMultiplyAdd(data.coeffs.R, shBasis, radiance.r * weight);

@@ -2,199 +2,92 @@ mixin SHCommon
 {
 	code
 	{
-		struct SHVector5
+		#define SH_NUM_COEFFS SH_ORDER * SH_ORDER
+	
+		struct SHVector
 		{
-			float4 v0;
-			float4 v1;
-			float4 v2;
-			float4 v3;
-			float4 v4;
-			float4 v5;
-			float v6;
+			float v[SH_NUM_COEFFS];
+		};
+
+		struct SHVectorRGB
+		{
+			SHVector R;
+			SHVector G;
+			SHVector B;
 		};
 		
-		struct SHVector3
+		void SHZero(inout SHVector v)
 		{
-			float4 v0;
-			float4 v1;
-			float v2;
-		};			
-		
-		struct SHVector5RGB
-		{
-			SHVector5 R;
-			SHVector5 G;
-			SHVector5 B;
-		};
-		
-		struct SHVector3RGB
-		{
-			SHVector3 R;
-			SHVector3 G;
-			SHVector3 B;
-		};		
-		
-		void SHZero(inout SHVector5 v)
-		{
-			v.v0 = 0;
-			v.v1 = 0;
-			v.v2 = 0;
-			v.v3 = 0;
-			v.v4 = 0;
-			v.v5 = 0;
-			v.v6 = 0;
+			[unroll]
+			for(int i = 0; i < SH_NUM_COEFFS; ++i)
+				v.v[i] = 0;
 		}
 		
-		void SHZero(inout SHVector5RGB v)
+		void SHZero(inout SHVectorRGB v)
 		{
 			SHZero(v.R);
 			SHZero(v.G);
 			SHZero(v.B);
 		}				
 		
-		void SHZero(inout SHVector3 v)
+		void SHMultiplyAdd(inout SHVector lhs, SHVector rhs, float c)
 		{
-			v.v0 = 0;
-			v.v1 = 0;
-			v.v2 = 0;
+			[unroll]
+			for(int i = 0; i < SH_NUM_COEFFS; ++i)		
+				lhs.v[i] += rhs.v[i] * c;
 		}
 		
-		void SHZero(inout SHVector3RGB v)
-		{
-			SHZero(v.R);
-			SHZero(v.G);
-			SHZero(v.B);
-		}		
-
-		void SHMultiplyAdd(inout SHVector5 lhs, SHVector5 rhs, float c)
-		{
-			lhs.v0 += rhs.v0 * c;
-			lhs.v1 += rhs.v1 * c;
-			lhs.v2 += rhs.v2 * c;
-			lhs.v3 += rhs.v3 * c;
-			lhs.v4 += rhs.v4 * c;
-			lhs.v5 += rhs.v5 * c;
-			lhs.v6 += rhs.v6 * c;
-		}
-		
-		void SHMultiplyAdd(inout SHVector3 lhs, SHVector3 rhs, float c)
-		{
-			lhs.v0 += rhs.v0 * c;
-			lhs.v1 += rhs.v1 * c;
-			lhs.v2 += rhs.v2 * c;
-		}		
-		
-		void SHMultiplyAdd(inout SHVector5RGB lhs, SHVector5RGB rhs, float c)
+		void SHMultiplyAdd(inout SHVectorRGB lhs, SHVectorRGB rhs, float c)
 		{
 			SHMultiplyAdd(lhs.R, rhs.R, c);
 			SHMultiplyAdd(lhs.G, rhs.G, c);
 			SHMultiplyAdd(lhs.B, rhs.B, c);
 		}
 		
-		void SHMultiplyAdd(inout SHVector3RGB lhs, SHVector3RGB rhs, float c)
+		void SHAdd(inout SHVector lhs, SHVector rhs)
 		{
-			SHMultiplyAdd(lhs.R, rhs.R, c);
-			SHMultiplyAdd(lhs.G, rhs.G, c);
-			SHMultiplyAdd(lhs.B, rhs.B, c);
-		}			
-		
-		void SHAdd(inout SHVector5 lhs, SHVector5 rhs)
-		{
-			lhs.v0 += rhs.v0;
-			lhs.v1 += rhs.v1;
-			lhs.v2 += rhs.v2;
-			lhs.v3 += rhs.v3;
-			lhs.v4 += rhs.v4;
-			lhs.v5 += rhs.v5;
-			lhs.v6 += rhs.v6;
+			[unroll]
+			for(int i = 0; i < SH_NUM_COEFFS; ++i)		
+				lhs.v[i] += rhs.v[i];
 		}
-		
-		void SHAdd(inout SHVector3 lhs, SHVector3 rhs)
-		{
-			lhs.v0 += rhs.v0;
-			lhs.v1 += rhs.v1;
-			lhs.v2 += rhs.v2;
-		}
-		
-		void SHAdd(inout SHVector5RGB lhs, SHVector5RGB rhs)
+				
+		void SHAdd(inout SHVectorRGB lhs, SHVectorRGB rhs)
 		{
 			SHAdd(lhs.R, rhs.R);
 			SHAdd(lhs.G, rhs.G);
 			SHAdd(lhs.B, rhs.B);
 		}
 		
-		void SHAdd(inout SHVector3RGB lhs, SHVector3RGB rhs)
+		void SHMultiply(inout SHVector lhs, SHVector rhs)
 		{
-			SHAdd(lhs.R, rhs.R);
-			SHAdd(lhs.G, rhs.G);
-			SHAdd(lhs.B, rhs.B);
-		}		
-		
-		void SHMultiply(inout SHVector5 lhs, SHVector5 rhs)
-		{
-			lhs.v0 *= rhs.v0;
-			lhs.v1 *= rhs.v1;
-			lhs.v2 *= rhs.v2;
-			lhs.v3 *= rhs.v3;
-			lhs.v4 *= rhs.v4;
-			lhs.v5 *= rhs.v5;
-			lhs.v6 *= rhs.v6;
+			[unroll]
+			for(int i = 0; i < SH_NUM_COEFFS; ++i)
+				lhs.v[i] *= rhs.v[i];
 		}	
 		
-		void SHMultiply(inout SHVector3 lhs, SHVector3 rhs)
-		{
-			lhs.v0 *= rhs.v0;
-			lhs.v1 *= rhs.v1;
-			lhs.v2 *= rhs.v2;
-		}
-		
-		void SHMultiply(inout SHVector5RGB lhs, SHVector5RGB rhs)
+		void SHMultiply(inout SHVectorRGB lhs, SHVectorRGB rhs)
 		{
 			SHMultiply(lhs.R, rhs.R);
 			SHMultiply(lhs.G, rhs.G);
 			SHMultiply(lhs.B, rhs.B);
 		}	
 		
-		void SHMultiply(inout SHVector3RGB lhs, SHVector3RGB rhs)
+		void SHMultiply(inout SHVector lhs, float rhs)
 		{
-			SHMultiply(lhs.R, rhs.R);
-			SHMultiply(lhs.G, rhs.G);
-			SHMultiply(lhs.B, rhs.B);
-		}	
-		
-		void SHMultiply(inout SHVector5 lhs, float rhs)
-		{
-			lhs.v0 *= rhs;
-			lhs.v1 *= rhs;
-			lhs.v2 *= rhs;
-			lhs.v3 *= rhs;
-			lhs.v4 *= rhs;
-			lhs.v5 *= rhs;
-			lhs.v6 *= rhs;
+			[unroll]
+			for(int i = 0; i < SH_NUM_COEFFS; ++i)		
+				lhs.v[i] *= rhs;
 		}
 
-		void SHMultiply(inout SHVector3 lhs, float rhs)
-		{
-			lhs.v0 *= rhs;
-			lhs.v1 *= rhs;
-			lhs.v2 *= rhs;
-		}
-
-		void SHMultiply(inout SHVector5RGB lhs, float rhs)
+		void SHMultiply(inout SHVectorRGB lhs, float rhs)
 		{
 			SHMultiply(lhs.R, rhs);
 			SHMultiply(lhs.G, rhs);
 			SHMultiply(lhs.B, rhs);
 		}	
-		
-		void SHMultiply(inout SHVector3RGB lhs, float rhs)
-		{
-			SHMultiply(lhs.R, rhs);
-			SHMultiply(lhs.G, rhs);
-			SHMultiply(lhs.B, rhs);
-		}		
-		
-		SHVector5 SHBasis5(float3 dir)
+				
+		#if SH_ORDER == 5
+		SHVector SHBasis(float3 dir)
 		{
 			float x = dir.x;
 			float y = dir.y;
@@ -210,41 +103,41 @@ mixin SHCommon
 			float y4 = y2 * y2;
 			float z4 = z2 * z2;
 
-			SHVector5 o;
-			o.v0[0] = 0.282095f;
+			SHVector o;
+			o.v[0] = 0.282095f;
 
-			o.v0[1] = -0.488603f * y;
-			o.v0[2] =  0.488603f * z;
-			o.v0[3] = -0.488603f * x;
+			o.v[1] = -0.488603f * y;
+			o.v[2] =  0.488603f * z;
+			o.v[3] = -0.488603f * x;
 
-			o.v1[0] =  1.092548f * x * y;
-			o.v1[1] = -1.092548f * y * z;
-			o.v1[2] =  0.315392f * (3.0f * z2 - 1.0f);
-			o.v1[3] = -1.092548f * x * z;
-			o.v2[0] =  0.546274f * (x2 - y2);
+			o.v[4] =  1.092548f * x * y;
+			o.v[5] = -1.092548f * y * z;
+			o.v[6] =  0.315392f * (3.0f * z2 - 1.0f);
+			o.v[7] = -1.092548f * x * z;
+			o.v[8] =  0.546274f * (x2 - y2);
 
-			o.v2[1]  = -0.590043f * y * (3.0f * x2 - y2);
-			o.v2[2] =  2.890611f * y * x * z;
-			o.v2[3] = -0.646360f * y * (-1.0f + 5.0f * z2);
-			o.v3[0] =  0.373176f *(5.0f * z3 - 3.0f * z);
-			o.v3[1] = -0.457045f * x * (-1.0f + 5.0f * z2);
-			o.v3[2] =  1.445306f *(x2 - y2) * z;
-			o.v3[3] = -0.590043f * x * (x2 - 3.0f * y2);
+			o.v[9]  = -0.590043f * y * (3.0f * x2 - y2);
+			o.v[10] =  2.890611f * y * x * z;
+			o.v[11] = -0.646360f * y * (-1.0f + 5.0f * z2);
+			o.v[12] =  0.373176f *(5.0f * z3 - 3.0f * z);
+			o.v[13] = -0.457045f * x * (-1.0f + 5.0f * z2);
+			o.v[14] =  1.445306f *(x2 - y2) * z;
+			o.v[15] = -0.590043f * x * (x2 - 3.0f * y2);
 
-			o.v4[0] =  2.503340f * x * y * (x2 - y2);
-			o.v4[1] = -1.770130f * y * z * (3.0f * x2 - y2);
-			o.v4[2] =  0.946175f * y * x * (-1.0f + 7.0f * z2);
-			o.v4[3] = -0.669046f * y * z * (-3.0f + 7.0f * z2);
-			o.v5[0] =  (105.0f * z4 - 90.0f * z2 + 9.0f) / 28.359261f;
-			o.v5[1] = -0.669046f * x * z * (-3.0f + 7.0f * z2);
-			o.v5[2] =  0.473087f * (x2 - y2) * (-1.0f + 7.0f * z2);
-			o.v5[3] = -1.770130f * x * z * (x2 - 3.0f * y2);
-			o.v6 =  0.625836f * (x4 - 6.0f * y2 * x2 + y4);
+			o.v[16] =  2.503340f * x * y * (x2 - y2);
+			o.v[17] = -1.770130f * y * z * (3.0f * x2 - y2);
+			o.v[18] =  0.946175f * y * x * (-1.0f + 7.0f * z2);
+			o.v[19] = -0.669046f * y * z * (-3.0f + 7.0f * z2);
+			o.v[20] =  (105.0f * z4 - 90.0f * z2 + 9.0f) / 28.359261f;
+			o.v[21] = -0.669046f * x * z * (-3.0f + 7.0f * z2);
+			o.v[22] =  0.473087f * (x2 - y2) * (-1.0f + 7.0f * z2);
+			o.v[23] = -1.770130f * x * z * (x2 - 3.0f * y2);
+			o.v[24] =  0.625836f * (x4 - 6.0f * y2 * x2 + y4);
 			
 			return o;
 		}
-		
-		SHVector3 SHBasis3(float3 dir)
+		#elif SH_ORDER == 3
+		SHVector SHBasis(float3 dir)
 		{
 			float x = dir.x;
 			float y = dir.y;
@@ -254,20 +147,21 @@ mixin SHCommon
 			float y2 = y*y;
 			float z2 = z*z;
 
-			SHVector3 o;
-			o.v0[0] = 0.282095f;
+			SHVector o;
+			o.v[0] = 0.282095f;
 
-			o.v0[1] = -0.488603f * y;
-			o.v0[2] =  0.488603f * z;
-			o.v0[3] = -0.488603f * x;
+			o.v[1] = -0.488603f * y;
+			o.v[2] =  0.488603f * z;
+			o.v[3] = -0.488603f * x;
 
-			o.v1[0] =  1.092548f * x * y;
-			o.v1[1] = -1.092548f * y * z;
-			o.v1[2] =  0.315392f * (3.0f * z2 - 1.0f);
-			o.v1[3] = -1.092548f * x * z;
-			o.v2 =  0.546274f * (x2 - y2);
+			o.v[4] =  1.092548f * x * y;
+			o.v[5] = -1.092548f * y * z;
+			o.v[6] =  0.315392f * (3.0f * z2 - 1.0f);
+			o.v[7] = -1.092548f * x * z;
+			o.v[8] =  0.546274f * (x2 - y2);
 
 			return o;
-		}		
+		}
+		#endif
 	};
 };

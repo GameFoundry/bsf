@@ -94,14 +94,14 @@ namespace bs { namespace ct
 		ShaderVariation::Param("TILE_WIDTH", TILE_WIDTH),
 		ShaderVariation::Param("TILE_HEIGHT", TILE_HEIGHT),
 		ShaderVariation::Param("PIXELS_PER_THREAD", PIXELS_PER_THREAD),
-		ShaderVariation::Param("ORDER", 3),
+		ShaderVariation::Param("SH_ORDER", 3),
 	});
 
 	ShaderVariation IrradianceComputeSHMat::VAR_Order5 = ShaderVariation({
 		ShaderVariation::Param("TILE_WIDTH", TILE_WIDTH),
 		ShaderVariation::Param("TILE_HEIGHT", TILE_HEIGHT),
 		ShaderVariation::Param("PIXELS_PER_THREAD", PIXELS_PER_THREAD),
-		ShaderVariation::Param("ORDER", 5),
+		ShaderVariation::Param("SH_ORDER", 5),
 	});
 
 	IrradianceComputeSHMat::IrradianceComputeSHMat()
@@ -163,7 +163,7 @@ namespace bs { namespace ct
 		bufferDesc.format = BF_UNKNOWN;
 		bufferDesc.randomGpuWrite = true;
 
-		if(mVariation.getInt("ORDER") == 3)
+		if(mVariation.getInt("SH_ORDER") == 3)
 			bufferDesc.elementSize = sizeof(SHCoeffsAndWeight3);
 		else
 			bufferDesc.elementSize = sizeof(SHCoeffsAndWeight5);
@@ -182,11 +182,11 @@ namespace bs { namespace ct
 	IrradianceReduceSHParamDef gIrradianceReduceSHParamDef;
 
 	ShaderVariation IrradianceReduceSHMat::VAR_Order3 = ShaderVariation({
-		ShaderVariation::Param("ORDER", 3),
+		ShaderVariation::Param("SH_ORDER", 3),
 	});
 
 	ShaderVariation IrradianceReduceSHMat::VAR_Order5 = ShaderVariation({
-		ShaderVariation::Param("ORDER", 5),
+		ShaderVariation::Param("SH_ORDER", 5),
 	});
 
 	IrradianceReduceSHMat::IrradianceReduceSHMat()
@@ -230,7 +230,7 @@ namespace bs { namespace ct
 		bufferDesc.format = BF_UNKNOWN;
 		bufferDesc.randomGpuWrite = true;
 
-		if(mVariation.getInt("ORDER") == 3)
+		if(mVariation.getInt("SH_ORDER") == 3)
 			bufferDesc.elementSize = sizeof(SHVector3RGB);
 		else
 			bufferDesc.elementSize = sizeof(SHVector5RGB);
