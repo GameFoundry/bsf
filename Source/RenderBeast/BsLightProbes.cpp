@@ -34,19 +34,20 @@ namespace bs { namespace ct
 
 		params->getTextureParam(GPT_FRAGMENT_PROGRAM, "gDepthBufferTex", mDepthBufferTex);
 
-		if(params->hasSamplerState(GPT_FRAGMENT_PROGRAM, "gDepthBufferSamp"))
-		{
-			SAMPLER_STATE_DESC pointSampDesc;
-			pointSampDesc.minFilter = FO_POINT;
-			pointSampDesc.magFilter = FO_POINT;
-			pointSampDesc.mipFilter = FO_POINT;
-			pointSampDesc.addressMode.u = TAM_CLAMP;
-			pointSampDesc.addressMode.v = TAM_CLAMP;
-			pointSampDesc.addressMode.w = TAM_CLAMP;
+		SAMPLER_STATE_DESC pointSampDesc;
+		pointSampDesc.minFilter = FO_POINT;
+		pointSampDesc.magFilter = FO_POINT;
+		pointSampDesc.mipFilter = FO_POINT;
+		pointSampDesc.addressMode.u = TAM_CLAMP;
+		pointSampDesc.addressMode.v = TAM_CLAMP;
+		pointSampDesc.addressMode.w = TAM_CLAMP;
 
-			SPtr<SamplerState> pointSampState = SamplerState::create(pointSampDesc);
+		SPtr<SamplerState> pointSampState = SamplerState::create(pointSampDesc);
+
+		if(params->hasSamplerState(GPT_FRAGMENT_PROGRAM, "gDepthBufferSamp"))
 			params->setSamplerState(GPT_FRAGMENT_PROGRAM, "gDepthBufferSamp", pointSampState);
-		}
+		else if(params->hasSamplerState(GPT_FRAGMENT_PROGRAM, "gDepthBufferTex"))
+			params->setSamplerState(GPT_FRAGMENT_PROGRAM, "gDepthBufferTex", pointSampState);
 
 		mParamBuffer = gTetrahedraRenderParamDef.createBuffer();
 		mParamsSet->setParamBlockBuffer("Params", mParamBuffer);

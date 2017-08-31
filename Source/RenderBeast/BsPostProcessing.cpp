@@ -13,6 +13,23 @@
 
 namespace bs { namespace ct
 {
+	void setSamplerState(const SPtr<GpuParams>& params, GpuProgramType gpType, const String& name, 
+		const String& secondaryName, const SPtr<SamplerState>& samplerState, bool optional = false)
+	{
+		if (params->hasSamplerState(gpType, name))
+			params->setSamplerState(gpType, name, samplerState);
+		else
+		{
+			if(optional)
+			{
+				if (params->hasSamplerState(gpType, secondaryName))
+					params->setSamplerState(gpType, secondaryName, samplerState);
+			}
+			else
+				params->setSamplerState(gpType, secondaryName, samplerState);
+		}
+	}
+
 	DownsampleParamDef gDownsampleParamDef;
 
 	ShaderVariation DownsampleMat::VAR_LowQuality_NoMSAA = ShaderVariation({
@@ -754,11 +771,10 @@ namespace bs { namespace ct
 		mParamBuffer = gGaussianDOFParamDef.createBuffer();
 
 		mParamsSet->setParamBlockBuffer("Input", mParamBuffer);
-		mParamsSet->getGpuParams()->getTextureParam(GPT_FRAGMENT_PROGRAM, "gColorTex", mColorTexture);
-		mParamsSet->getGpuParams()->getTextureParam(GPT_FRAGMENT_PROGRAM, "gDepthTex", mDepthTexture);
 
-		GpuParamSampState colorSampState;
-		mParamsSet->getGpuParams()->getSamplerStateParam(GPT_FRAGMENT_PROGRAM, "gColorSamp", colorSampState);
+		SPtr<GpuParams> gpuParams = mParamsSet->getGpuParams();
+		gpuParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gColorTex", mColorTexture);
+		gpuParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gDepthTex", mDepthTexture);
 
 		SAMPLER_STATE_DESC desc;
 		desc.minFilter = FO_POINT;
@@ -769,7 +785,7 @@ namespace bs { namespace ct
 		desc.addressMode.w = TAM_CLAMP;
 
 		SPtr<SamplerState> samplerState = SamplerState::create(desc);
-		colorSampState.set(samplerState);
+		setSamplerState(gpuParams, GPT_FRAGMENT_PROGRAM, "gColorSamp", "gColorTex", samplerState);
 	}
 
 	void GaussianDOFSeparateMat::_initVariations(ShaderVariations& variations)
@@ -1041,15 +1057,26 @@ namespace bs { namespace ct
 
 	SSAOMat::SSAOMat()
 	{
+		bool isFinal = mVariation.getBool("FINAL_AO");
+		bool mixWithUpsampled = mVariation.getBool("MIX_WITH_UPSAMPLED");
+
 		mParamBuffer = gSSAOParamDef.createBuffer();
 
 		mParamsSet->setParamBlockBuffer("Input", mParamBuffer);
 
 		SPtr<GpuParams> gpuParams = mParamsSet->getGpuParams();
-		gpuParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gDepthTex", mDepthTexture);
-		gpuParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gNormalsTex", mNormalsTexture);
-		gpuParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gDownsampledAO", mDownsampledAOTexture);
-		gpuParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gSetupAO", mSetupAOTexture);
+		if (isFinal)
+		{
+			gpuParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gDepthTex", mDepthTexture);
+			gpuParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gNormalsTex", mNormalsTexture);
+		}
+		
+		if(!isFinal || mixWithUpsampled)
+			gpuParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gSetupAO", mSetupAOTexture);
+
+		if(mixWithUpsampled)
+			gpuParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gDownsampledAO", mDownsampledAOTexture);
+
 		gpuParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gRandomTex", mRandomTexture);
 
 		SAMPLER_STATE_DESC inputSampDesc;
@@ -1061,7 +1088,22 @@ namespace bs { namespace ct
 		inputSampDesc.addressMode.w = TAM_CLAMP;
 
 		SPtr<SamplerState> inputSampState = SamplerState::create(inputSampDesc);
-		gpuParams->setSamplerState(GPT_FRAGMENT_PROGRAM, "gInputSamp", inputSampState);
+		if(gpuParams->hasSamplerState(GPT_FRAGMENT_PROGRAM, "gInputSamp"))
+			gpuParams->setSamplerState(GPT_FRAGMENT_PROGRAM, "gInputSamp", inputSampState);
+		else
+		{
+			if (isFinal)
+			{
+				gpuParams->setSamplerState(GPT_FRAGMENT_PROGRAM, "gDepthTex", inputSampState);
+				gpuParams->setSamplerState(GPT_FRAGMENT_PROGRAM, "gNormalsTex", inputSampState);
+			}
+			
+			if(!isFinal || mixWithUpsampled)
+				gpuParams->setSamplerState(GPT_FRAGMENT_PROGRAM, "gSetupAO", inputSampState);
+
+			if(mixWithUpsampled)
+				gpuParams->setSamplerState(GPT_FRAGMENT_PROGRAM, "gDownsampledAO", inputSampState);
+		}
 
 		SAMPLER_STATE_DESC randomSampDesc;
 		randomSampDesc.minFilter = FO_POINT;
@@ -1072,7 +1114,7 @@ namespace bs { namespace ct
 		randomSampDesc.addressMode.w = TAM_WRAP;
 
 		SPtr<SamplerState> randomSampState = SamplerState::create(randomSampDesc);
-		gpuParams->setSamplerState(GPT_FRAGMENT_PROGRAM, "gRandomSamp", randomSampState);
+		setSamplerState(gpuParams, GPT_FRAGMENT_PROGRAM, "gRandomSamp", "gRandomTex", randomSampState);
 	}
 
 	void SSAOMat::_initVariations(ShaderVariations& variations)
@@ -1238,7 +1280,14 @@ namespace bs { namespace ct
 		inputSampDesc.addressMode.w = TAM_CLAMP;
 
 		SPtr<SamplerState> inputSampState = SamplerState::create(inputSampDesc);
-		gpuParams->setSamplerState(GPT_FRAGMENT_PROGRAM, "gInputSamp", inputSampState);
+
+		if(gpuParams->hasSamplerState(GPT_FRAGMENT_PROGRAM, "gInputSamp"))
+			gpuParams->setSamplerState(GPT_FRAGMENT_PROGRAM, "gInputSamp", inputSampState);
+		else
+		{
+			gpuParams->setSamplerState(GPT_FRAGMENT_PROGRAM, "gDepthTex", inputSampState);
+			gpuParams->setSamplerState(GPT_FRAGMENT_PROGRAM, "gNormalsTex", inputSampState);
+		}
 	}
 
 	void SSAODownsampleMat::_initVariations(ShaderVariations& variations)
@@ -1303,7 +1352,13 @@ namespace bs { namespace ct
 		inputSampDesc.addressMode.w = TAM_CLAMP;
 
 		SPtr<SamplerState> inputSampState = SamplerState::create(inputSampDesc);
-		gpuParams->setSamplerState(GPT_FRAGMENT_PROGRAM, "gInputSamp", inputSampState);
+		if(gpuParams->hasSamplerState(GPT_FRAGMENT_PROGRAM, "gInputSamp"))
+			gpuParams->setSamplerState(GPT_FRAGMENT_PROGRAM, "gInputSamp", inputSampState);
+		else
+		{
+			gpuParams->setSamplerState(GPT_FRAGMENT_PROGRAM, "gInputTex", inputSampState);
+			gpuParams->setSamplerState(GPT_FRAGMENT_PROGRAM, "gDepthTex", inputSampState);
+		}
 	}
 
 	void SSAOBlurMat::_initVariations(ShaderVariations& variations)
@@ -1627,7 +1682,11 @@ namespace bs { namespace ct
 		pointSampDesc.addressMode.w = TAM_CLAMP;
 
 		SPtr<SamplerState> pointSampState = SamplerState::create(pointSampDesc);
-		gpuParams->setSamplerState(GPT_FRAGMENT_PROGRAM, "gPointSampler", pointSampState);
+
+		if(gpuParams->hasSamplerState(GPT_FRAGMENT_PROGRAM, "gPointSampler"))
+			gpuParams->setSamplerState(GPT_FRAGMENT_PROGRAM, "gPointSampler", pointSampState);
+		else
+			gpuParams->setSamplerState(GPT_FRAGMENT_PROGRAM, "gSceneDepth", pointSampState);
 
 		SAMPLER_STATE_DESC linearSampDesc;
 		linearSampDesc.minFilter = FO_POINT;
@@ -1638,7 +1697,13 @@ namespace bs { namespace ct
 		linearSampDesc.addressMode.w = TAM_CLAMP;
 
 		SPtr<SamplerState> linearSampState = SamplerState::create(linearSampDesc);
-		gpuParams->setSamplerState(GPT_FRAGMENT_PROGRAM, "gLinearSampler", linearSampState);
+		if(gpuParams->hasSamplerState(GPT_FRAGMENT_PROGRAM, "gLinearSampler"))
+			gpuParams->setSamplerState(GPT_FRAGMENT_PROGRAM, "gLinearSampler", linearSampState);
+		else
+		{
+			gpuParams->setSamplerState(GPT_FRAGMENT_PROGRAM, "gSceneColor", linearSampState);
+			gpuParams->setSamplerState(GPT_FRAGMENT_PROGRAM, "gPrevColor", linearSampState);
+		}
 	}
 
 	void SSRResolveMat::_initVariations(ShaderVariations& variations)
@@ -1779,10 +1844,8 @@ namespace bs { namespace ct
 		mParamBuffer = gEncodeDepthParamDef.createBuffer();
 		mParamsSet->setParamBlockBuffer("Params", mParamBuffer);
 
-		mParamsSet->getGpuParams()->getTextureParam(GPT_FRAGMENT_PROGRAM, "gInputTex", mInputTexture);
-
-		GpuParamSampState inputSampState;
-		mParamsSet->getGpuParams()->getSamplerStateParam(GPT_FRAGMENT_PROGRAM, "gInputSamp", inputSampState);
+		SPtr<GpuParams> gpuParams = mParamsSet->getGpuParams();
+		gpuParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gInputTex", mInputTexture);
 
 		SAMPLER_STATE_DESC sampDesc;
 		sampDesc.minFilter = FO_POINT;
@@ -1793,7 +1856,7 @@ namespace bs { namespace ct
 		sampDesc.addressMode.w = TAM_CLAMP;
 
 		SPtr<SamplerState> samplerState = SamplerState::create(sampDesc);
-		inputSampState.set(samplerState);
+		setSamplerState(gpuParams, GPT_FRAGMENT_PROGRAM, "gInputSamp", "gInputTex", samplerState);
 	}
 
 	void EncodeDepthMat::_initVariations(ShaderVariations& variations)

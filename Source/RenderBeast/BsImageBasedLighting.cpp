@@ -124,14 +124,22 @@ namespace bs { namespace ct
 		if (params->hasTexture(programType, "gAmbientOcclusionTex"))
 		{
 			params->getTextureParam(programType, "gAmbientOcclusionTex", ambientOcclusionTexParam);
-			params->getSamplerStateParam(programType, "gAmbientOcclusionSamp", ambientOcclusionSampParam);
+
+			if(params->hasParam(programType, "gAmbientOcclusionSamp"))
+				params->getSamplerStateParam(programType, "gAmbientOcclusionSamp", ambientOcclusionSampParam);
+			else
+				params->getSamplerStateParam(programType, "gAmbientOcclusionTex", ssrSampParam);
 		}
 
 		// SSR
 		if (params->hasTexture(programType, "gSSRTex"))
 		{
 			params->getTextureParam(programType, "gSSRTex", ssrTexParam);
-			params->getSamplerStateParam(programType, "gSSRSamp", ssrSampParam);
+
+			if(params->hasParam(programType, "gSSRSamp"))
+				params->getSamplerStateParam(programType, "gSSRSamp", ssrSampParam);
+			else
+				params->getSamplerStateParam(programType, "gSSRTex", ssrSampParam);
 		}
 
 		if(gridIndices)
