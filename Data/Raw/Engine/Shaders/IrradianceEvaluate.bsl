@@ -245,7 +245,10 @@ technique IrradianceEvaluate
 					for(uint i = 0; i < 4; ++i)
 					{
 						if(coords[i] > 0.0f)
-							SHMultiplyAdd(shCoeffs, gSHCoeffs[volume.indices[i]], coords[i]);
+						{
+							SHVectorRGB coeff = gSHCoeffs[volume.indices[i]];
+							SHMultiplyAdd(shCoeffs, coeff, coords[i]);
+						}
 					}
 					
 					SHVector shBasis = SHBasis(surfaceData.worldNormal);
