@@ -177,7 +177,7 @@ namespace bs { namespace ct
 				mImageViewCI.viewType = VK_IMAGE_VIEW_TYPE_2D;
 			else if(surface.numArraySlices % 6 == 0)
 			{
-				if(surface.numArraySlices > 6)
+				if(mNumFaces > 6)
 					mImageViewCI.viewType = VK_IMAGE_VIEW_TYPE_CUBE_ARRAY;
 			}
 			else

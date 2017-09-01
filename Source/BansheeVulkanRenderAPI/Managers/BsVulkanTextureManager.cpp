@@ -66,6 +66,7 @@ namespace bs
 			desc.width = entry.width;
 			desc.height = entry.height;
 			desc.depth = entry.depth;
+			desc.numArraySlices = entry.arraySize;
 			desc.format = PF_RGBA8;
 			desc.usage = TU_STATIC;
 
