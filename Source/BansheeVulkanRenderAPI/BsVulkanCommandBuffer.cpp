@@ -711,7 +711,6 @@ namespace bs { namespace ct
 		mDescriptorSetsBindState = DescriptorSetBindFlag::Graphics | DescriptorSetBindFlag::Compute;
 		mQueuedLayoutTransitions.clear();
 		mBoundParams = nullptr;
-		mBoundParams = false;
 		mSwapChains.clear();
 	}
 
@@ -886,7 +885,8 @@ namespace bs { namespace ct
 			mRenderTargetLoadMask = loadMask;
 		}
 
-		setGpuParams(nullptr);
+		// Re-set the params as they will need to be re-bound
+		setGpuParams(mBoundParams);
 
 		if (mFramebuffer != nullptr)
 			registerResource(mFramebuffer, loadMask, readOnlyFlags);
