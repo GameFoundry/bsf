@@ -917,11 +917,8 @@ namespace bs { namespace ct
 		if (srcImage == nullptr || dstImage == nullptr)
 			return;
 
-		VulkanImageSubresource* srcSubresource = srcImage->getSubresource(srcFace, srcMipLevel);
-		VulkanImageSubresource* dstSubresource = dstImage->getSubresource(destFace, destMipLevel);
-
-		VkImageLayout srcLayout = srcSubresource->getLayout();
-		VkImageLayout dstLayout = dstSubresource->getLayout();
+		VkImageLayout srcLayout = vkCB->getCurrentLayout(srcImage, srcRange, false);
+		VkImageLayout dstLayout = vkCB->getCurrentLayout(dstImage, dstRange, false);
 
 		VkCommandBuffer vkCmdBuf = vkCB->getHandle();
 
