@@ -336,39 +336,7 @@ namespace bs { namespace ct
 
 		executeLayoutTransitions();
 
-		// Check if any frame-buffer attachments are also used as shader inputs, in which case we make them read-only
-		RenderSurfaceMask readMask = RT_NONE;
-
-		UINT32 numColorAttachments = mFramebuffer->getNumColorAttachments();
-		for(UINT32 i = 0; i < numColorAttachments; i++)
-		{
-			const VulkanFramebufferAttachment& fbAttachment = mFramebuffer->getColorAttachment(i);
-			ImageSubresourceInfo& subresourceInfo = findSubresourceInfo(fbAttachment.image, fbAttachment.surface.arraySlice,
-				fbAttachment.surface.mipLevel);
-
-			bool readOnly = subresourceInfo.isShaderInput;
-
-			if(readOnly)
-				readMask.set((RenderSurfaceMaskBits)(1 << i));
-		}
-
-		if (mFramebuffer->hasDepthAttachment())
-		{
-			const VulkanFramebufferAttachment& fbAttachment = mFramebuffer->getDepthStencilAttachment();
-			ImageSubresourceInfo& subresourceInfo = findSubresourceInfo(fbAttachment.image, fbAttachment.surface.arraySlice,
-				fbAttachment.surface.mipLevel);
-
-			bool readOnly = subresourceInfo.isShaderInput;
-
-			if (readOnly)
-				readMask.set(RT_DEPTH);
-
-			if ((mRenderTargetReadOnlyFlags & FBT_DEPTH) != 0)
-				readMask.set(RT_DEPTH);
-
-			if ((mRenderTargetReadOnlyFlags & FBT_STENCIL) != 0)
-				readMask.set(RT_STENCIL);
-		}
+		RenderSurfaceMask readMask = getFBReadMask();
 
 		VkRenderPassBeginInfo renderPassBeginInfo;
 		renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -1725,6 +1693,73 @@ namespace bs { namespace ct
 							 1, &barrier);
 	}
 
+	VkImageLayout VulkanCmdBuffer::getCurrentLayout(VulkanImage* image, const VkImageSubresourceRange& range, 
+		bool inRenderPass)
+	{
+		UINT32 face = range.baseArrayLayer;
+		UINT32 mip = range.baseMipLevel;
+
+		// The assumption is that all the subresources in the range will have the same layout, as this should be handled
+		// by registerResource(), or by external code (in the case of transfers). So we only check the first subresource.
+		VulkanImageSubresource* subresource = image->getSubresource(face, mip);
+
+		auto iterFind = mImages.find(image);
+		if (iterFind == mImages.end())
+			return subresource->getLayout();
+
+		UINT32 imageInfoIdx = iterFind->second;
+		ImageInfo& imageInfo = mImageInfos[imageInfoIdx];
+
+		ImageSubresourceInfo* subresourceInfos = &mSubresourceInfoStorage[imageInfo.subresourceInfoIdx];
+		for(UINT32 i = 0; i < imageInfo.numSubresourceInfos; i++)
+		{
+			ImageSubresourceInfo& entry = subresourceInfos[i];
+			if(face >= entry.range.baseArrayLayer && face < (entry.range.baseArrayLayer + entry.range.layerCount) &&
+			   mip >= entry.range.baseMipLevel && mip < (entry.range.baseMipLevel + entry.range.levelCount))
+			{
+				// If it's a FB attachment, retrieve its layout after the render pass begins
+				if(entry.isFBAttachment && inRenderPass && mFramebuffer)
+				{
+					RenderSurfaceMask readMask = getFBReadMask();
+
+					// Is it a depth-stencil attachment?
+					if(mFramebuffer->hasDepthAttachment() && mFramebuffer->getDepthStencilAttachment().image == image)
+					{
+						if (readMask.isSet(RT_DEPTH))
+						{
+							if (readMask.isSet(RT_STENCIL))
+								return VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
+							else // Depth readable but stencil isn't
+								return VK_IMAGE_LAYOUT_GENERAL;
+						}
+
+						return VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+					}
+					else // It is a color attachment
+					{
+						UINT32 numColorAttachments = mFramebuffer->getNumColorAttachments();
+						for (UINT32 j = 0; j < numColorAttachments; j++)
+						{
+							const VulkanFramebufferAttachment& attachment = mFramebuffer->getColorAttachment(j);
+
+							if (attachment.image == image)
+							{
+								if (readMask.isSet((RenderSurfaceMaskBits)(1 << attachment.index)))
+									return VK_IMAGE_LAYOUT_GENERAL;
+								else
+									return VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+							}
+						}
+					}
+				}
+
+				return entry.requiredLayout;
+			}
+		}
+
+		return image->getOptimalLayout();
+	}
+
 	void VulkanCmdBuffer::registerResource(VulkanResource* res, VulkanUseFlags flags)
 	{
 		auto insertResult = mResources.insert(std::make_pair(res, ResourceUseHandle()));
@@ -1753,8 +1788,8 @@ namespace bs { namespace ct
 		registerResource(res, range, layout, layout, flags, usage);
 	}
 
-	void VulkanCmdBuffer::registerResource(VulkanImage* res, const VkImageSubresourceRange& range, VkImageLayout newLayout,
-		VkImageLayout finalLayout, VulkanUseFlags flags, ResourceUsage usage)
+	void VulkanCmdBuffer::registerResource(VulkanImage* res, const VkImageSubresourceRange& range, 
+		VkImageLayout newLayout, VkImageLayout finalLayout, VulkanUseFlags flags, ResourceUsage usage)
 	{
 		bool isFBAttachment = usage == ResourceUsage::Framebuffer;
 		bool isTransfer = usage == ResourceUsage::Transfer;
@@ -2270,6 +2305,46 @@ namespace bs { namespace ct
 
 		acquireNewBuffer();
 	}
+
+	RenderSurfaceMask VulkanCmdBuffer::getFBReadMask()
+	{
+		// Check if any frame-buffer attachments are also used as shader inputs, in which case we make them read-only
+		RenderSurfaceMask readMask = RT_NONE;
+
+		UINT32 numColorAttachments = mFramebuffer->getNumColorAttachments();
+		for(UINT32 i = 0; i < numColorAttachments; i++)
+		{
+			const VulkanFramebufferAttachment& fbAttachment = mFramebuffer->getColorAttachment(i);
+			ImageSubresourceInfo& subresourceInfo = findSubresourceInfo(fbAttachment.image, fbAttachment.surface.arraySlice,
+				fbAttachment.surface.mipLevel);
+
+			bool readOnly = subresourceInfo.isShaderInput;
+
+			if(readOnly)
+				readMask.set((RenderSurfaceMaskBits)(1 << i));
+		}
+
+		if (mFramebuffer->hasDepthAttachment())
+		{
+			const VulkanFramebufferAttachment& fbAttachment = mFramebuffer->getDepthStencilAttachment();
+			ImageSubresourceInfo& subresourceInfo = findSubresourceInfo(fbAttachment.image, fbAttachment.surface.arraySlice,
+				fbAttachment.surface.mipLevel);
+
+			bool readOnly = subresourceInfo.isShaderInput;
+
+			if (readOnly)
+				readMask.set(RT_DEPTH);
+
+			if ((mRenderTargetReadOnlyFlags & FBT_DEPTH) != 0)
+				readMask.set(RT_DEPTH);
+
+			if ((mRenderTargetReadOnlyFlags & FBT_STENCIL) != 0)
+				readMask.set(RT_STENCIL);
+		}
+
+		return readMask;
+	}
+
 
 	VulkanCommandBuffer::~VulkanCommandBuffer()
 	{

@@ -714,33 +714,42 @@ namespace bs { namespace ct
 			// Register with command buffer
 			const TextureProperties& props = element->getProperties();
 
-			VkImageLayout layout;
+			const TextureSurface& surface = mSampledTextureData[i].surface;
+			VkImageSubresourceRange range = resource->getRange(surface);
 
 			// Keep dynamic textures in general layout, so they can be easily mapped by CPU
+			VkImageLayout layout;
 			if (props.getUsage() & TU_DYNAMIC)
 				layout = VK_IMAGE_LAYOUT_GENERAL;
 			else
 				layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
-			const TextureSurface& surface = mSampledTextureData[i].surface;
-			VkImageSubresourceRange range = resource->getRange(surface);
-
 			buffer.registerResource(resource, range, layout, layout, VulkanUseFlag::Read, ResourceUsage::ShaderBind);
+
+			// Actual layout might be different than requested if the image is also used as a FB attachment
+			layout = buffer.getCurrentLayout(resource, range, true);
 
 			// Check if internal resource changed from what was previously bound in the descriptor set
 			assert(perDeviceData.sampledImages[i] != VK_NULL_HANDLE);
+
+			UINT32 set, slot;
+			mParamInfo->getSetSlot(GpuPipelineParamInfo::ParamType::Texture, i, set, slot);
+
+			UINT32 bindingIdx = vkParamInfo.getBindingIdx(set, slot);
+			VkDescriptorImageInfo& imgInfo = perDeviceData.perSetData[set].writeInfos[bindingIdx].image;
 
 			VkImage vkImage = resource->getHandle();
 			if (perDeviceData.sampledImages[i] != vkImage)
 			{
 				perDeviceData.sampledImages[i] = vkImage;
+				imgInfo.imageView = resource->getView(surface, false);
 
-				UINT32 set, slot;
-				mParamInfo->getSetSlot(GpuPipelineParamInfo::ParamType::Texture, i, set, slot);
+				mSetsDirty[set] = true;
+			}
 
-				UINT32 bindingIdx = vkParamInfo.getBindingIdx(set, slot);
-				perDeviceData.perSetData[set].writeInfos[bindingIdx].image.imageView = resource->getView(surface, false);
-
+			if(imgInfo.imageLayout != layout)
+			{
+				imgInfo.imageLayout = layout;
 				mSetsDirty[set] = true;
 			}
 		}

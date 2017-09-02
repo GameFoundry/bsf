@@ -343,6 +343,19 @@ namespace bs { namespace ct
 		void setLayout(VkImage image, VkAccessFlags srcAccessFlags, VkAccessFlags dstAccessFlags, 
 			VkImageLayout oldLayout, VkImageLayout newLayout, const VkImageSubresourceRange& range);
 
+		/**
+		 * Returns the current layout of the specified image, as seen by this command buffer. This is different from the
+		 * global layout stored in VulkanImage itself, as it includes any transitions performed by the command buffer
+		 * (at the current point in time), while the global layout is only updated after a command buffer as been submitted.
+		 *
+		 * @param[in]	image			Image to lookup the layout for.
+		 * @param[in]	range			Subresource range of the image to lookup the layout for.
+		 * @param[in]	inRenderPass	If true this will return the layout of the image after the render pass begins.
+		 *								If false it will return the current layout of the image. These may be different
+		 *								in the case the image is used in the framebuffer, in which case the render pass
+		 *								may perform an automated layout transition when it begins.
+		 */
+		VkImageLayout getCurrentLayout(VulkanImage* image, const VkImageSubresourceRange& range, bool inRenderPass);
 
 	private:
 		friend class VulkanCmdBufferPool;
@@ -449,6 +462,9 @@ namespace bs { namespace ct
 
 		/** Gets all queries registered on this command buffer that haven't been ended. */
 		void getInProgressQueries(Vector<VulkanTimerQuery*>& timer, Vector<VulkanOcclusionQuery*>& occlusion) const;
+
+		/** Returns the read mask for the current framebuffer. */
+		RenderSurfaceMask getFBReadMask();
 
 		UINT32 mId;
 		UINT32 mQueueFamily;
