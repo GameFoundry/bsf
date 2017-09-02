@@ -1,51 +1,51 @@
-# Find NVTT dependency
+# Find nvtt dependency
 #
 # This module defines
-#  NVTT_INCLUDE_DIRS
-#  NVTT_LIBRARIES
-#  NVTT_FOUND
+#  nvtt_INCLUDE_DIRS
+#  nvtt_LIBRARIES
+#  nvtt_FOUND
 
-set(NVTT_INSTALL_DIR ${PROJECT_SOURCE_DIR}/../Dependencies/NVTT CACHE PATH "")
-set(NVTT_INCLUDE_SEARCH_DIRS "${NVTT_INSTALL_DIR}/include")
+set(nvtt_INSTALL_DIR ${PROJECT_SOURCE_DIR}/../Dependencies/nvtt CACHE PATH "")
+set(nvtt_INCLUDE_SEARCH_DIRS "${nvtt_INSTALL_DIR}/include")
 
 if(BS_64BIT)
-	list(APPEND NVTT_LIBRARY_RELEASE_SEARCH_DIRS "${NVTT_INSTALL_DIR}/lib/x64/Release")
-	list(APPEND NVTT_LIBRARY_DEBUG_SEARCH_DIRS "${NVTT_INSTALL_DIR}/lib/x64/Debug")
+	list(APPEND nvtt_LIBRARY_RELEASE_SEARCH_DIRS "${nvtt_INSTALL_DIR}/lib/x64/Release")
+	list(APPEND nvtt_LIBRARY_DEBUG_SEARCH_DIRS "${nvtt_INSTALL_DIR}/lib/x64/Debug")
 else()
-	list(APPEND NVTT_LIBRARY_RELEASE_SEARCH_DIRS "${NVTT_INSTALL_DIR}/lib/x86/Release")
-	list(APPEND NVTT_LIBRARY_DEBUG_SEARCH_DIRS "${NVTT_INSTALL_DIR}/lib/x86/Debug")
+	list(APPEND nvtt_LIBRARY_RELEASE_SEARCH_DIRS "${nvtt_INSTALL_DIR}/lib/x86/Release")
+	list(APPEND nvtt_LIBRARY_DEBUG_SEARCH_DIRS "${nvtt_INSTALL_DIR}/lib/x86/Debug")
 endif()
 
 message(STATUS "Looking for NVTT installation...")
 	
-find_path(NVTT_INCLUDE_DIR nvtt.h PATHS ${NVTT_INCLUDE_SEARCH_DIRS})	
+find_path(nvtt_INCLUDE_DIR nvtt.h PATHS ${nvtt_INCLUDE_SEARCH_DIRS})	
 	
-if(NVTT_INCLUDE_DIR)
-	set(NVTT_FOUND TRUE)
+if(nvtt_INCLUDE_DIR)
+	set(nvtt_FOUND TRUE)
 else()
-	set(NVTT_FOUND FALSE)
+	set(nvtt_FOUND FALSE)
 endif()	
 	
-find_imported_library(NVTT nvtt)
-find_imported_library(NVTT bc6h)
-find_imported_library(NVTT bc7)
-find_imported_library(NVTT nvcore)
-find_imported_library(NVTT nvimage)
-find_imported_library(NVTT nvmath)
-find_imported_library(NVTT nvthread)
-find_imported_library(NVTT squish)
+find_imported_library(nvtt nvtt)
+find_imported_library(nvtt bc6h)
+find_imported_library(nvtt bc7)
+find_imported_library(nvtt nvcore)
+find_imported_library(nvtt nvimage)
+find_imported_library(nvtt nvmath)
+find_imported_library(nvtt nvthread)
+find_imported_library(nvtt squish)
 
-if(NOT NVTT_FOUND)
-	if(NVTT_FIND_REQUIRED)
-		message(FATAL_ERROR "Cannot find NVTT installation. Try modifying the NVTT_INSTALL_DIR path.")
-	elseif(NOT NVTT_FIND_QUIETLY)
-		message(WARNING "Cannot find NVTT installation. Try modifying the NVTT_INSTALL_DIR path.")
+if(NOT nvtt_FOUND)
+	if(nvtt_FIND_REQUIRED)
+		message(FATAL_ERROR "Cannot find nvtt installation. Try modifying the nvtt_INSTALL_DIR path.")
+	elseif(NOT nvtt_FIND_QUIETLY)
+		message(WARNING "Cannot find nvtt installation. Try modifying the nvtt_INSTALL_DIR path.")
 	endif()
 else()
-	message(STATUS "...NVTT OK.")
+	set_target_properties(nvtt::nvtt PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${nvtt_INCLUDE_DIR}")	
+	message(STATUS "...nvtt OK.")
 endif()
 
-mark_as_advanced(NVTT_INSTALL_DIR NVTT_INCLUDE_DIR)
+mark_as_advanced(nvtt_INSTALL_DIR nvtt_INCLUDE_DIR)
 
-set(NVTT_INCLUDE_DIRS ${NVTT_INCLUDE_DIR})
-set(NVTT_LIBRARIES nvtt bc6h bc7 nvcore nvimage nvmath nvthread squish)
+set(nvtt_INCLUDE_DIRS ${nvtt_INCLUDE_DIR})

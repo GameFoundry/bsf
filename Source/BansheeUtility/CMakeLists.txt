@@ -2,13 +2,12 @@
 include(CMakeSources.cmake)
 
 # Packages
-find_package(Snappy REQUIRED)
+find_package(snappy REQUIRED)
 
 # Includes
 set(BansheeUtility_INC 
 	"./" 
-	"ThirdParty"
-	${Snappy_INCLUDE_DIRS})
+	"ThirdParty")
 
 if(WIN32)
 	set(BansheeUtility_INC ${BansheeUtility_INC} "Win32")
@@ -29,7 +28,7 @@ target_compile_definitions(BansheeUtility PRIVATE -DBS_UTILITY_EXPORTS)
 
 # Libraries
 ## External lib: Snappy
-target_link_libraries(BansheeUtility ${Snappy_LIBRARIES})	
+target_link_libraries(BansheeUtility ${snappy_LIBRARIES})	
 
 ## OS libs
 if(WIN32)

@@ -5,24 +5,26 @@
 #  Vulkan_LIBRARIES
 #  Vulkan_FOUND
 
-# TODO: Set default install paths for mac/unix
-# TODO: Don't hardcode the version (instead use regex or GLOB to match latest)
-set(Vulkan_INSTALL_DIRS "C:/VulkanSDK/1.0.37.0" CACHE PATH "")
-set(Vulkan_INCLUDE_SEARCH_DIRS "${Vulkan_INSTALL_DIRS}/Include")
+set(Vulkan_INSTALL_DIRS "$ENV{VULKAN_SDK}" CACHE PATH "")
 
-if(BS_64BIT)
-	set(Vulkan_LIBRARY_SEARCH_DIRS "${Vulkan_INSTALL_DIRS}/Bin")
+if(WIN32)
+	set(Vulkan_INCLUDE_SEARCH_DIRS "${Vulkan_INSTALL_DIRS}/Include")
+	
+	if(BS_64BIT)
+		set(Vulkan_LIBRARY_SEARCH_DIRS "${Vulkan_INSTALL_DIRS}/Bin")
+	else()
+		set(Vulkan_LIBRARY_SEARCH_DIRS "${Vulkan_INSTALL_DIRS}/Bin32")
+	endif()
 else()
-	set(Vulkan_LIBRARY_SEARCH_DIRS "${Vulkan_INSTALL_DIRS}/Bin32")
+	set(Vulkan_INCLUDE_SEARCH_DIRS "${Vulkan_INSTALL_DIRS}/include")
+	set(Vulkan_LIBRARY_SEARCH_DIRS "${Vulkan_INSTALL_DIRS}/lib")
 endif()
 
 message(STATUS "Looking for Vulkan installation...")
 find_path(Vulkan_INCLUDE_DIR vulkan/vulkan.h PATHS ${Vulkan_INCLUDE_SEARCH_DIRS})
+find_library(Vulkan_LIBRARY NAMES vulkan-1 PATHS ${Vulkan_LIBRARY_SEARCH_DIRS})
 
-find_library(Vulkan_LIBRARY_OPTIMIZED NAMES vulkan-1 PATHS ${Vulkan_LIBRARY_SEARCH_DIRS})
-find_library(Vulkan_LIBRARY_DEBUG NAMES vulkan-1 PATHS ${Vulkan_LIBRARY_SEARCH_DIRS})
-
-if(Vulkan_INCLUDE_DIR AND Vulkan_LIBRARY_OPTIMIZED AND Vulkan_LIBRARY_DEBUG)
+if(Vulkan_INCLUDE_DIR AND Vulkan_LIBRARY)
 	set(Vulkan_FOUND TRUE)
 endif()
 
@@ -37,16 +39,13 @@ else()
 endif()
 
 if(Vulkan_FOUND)
-	add_library(Vulkan STATIC IMPORTED)
-	set_target_properties(Vulkan PROPERTIES IMPORTED_LOCATION_DEBUG "${Vulkan_LIBRARY_DEBUG}")
-	set_target_properties(Vulkan PROPERTIES IMPORTED_LOCATION_OPTIMIZEDDEBUG "${Vulkan_LIBRARY_DEBUG}")
-	set_target_properties(Vulkan PROPERTIES IMPORTED_LOCATION_RELEASE "${Vulkan_LIBRARY_OPTIMIZED}")
+	add_imported_library(Vulkan "${Vulkan_LIBRARY}" "${Vulkan_LIBRARY}")
+	set_target_properties(Vulkan PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${Vulkan_INCLUDE_DIR}")
 endif()
 
 mark_as_advanced(
 	Vulkan_INSTALL_DIRS 
 	Vulkan_INCLUDE_DIR 
-	Vulkan_LIBRARY_OPTIMIZED 
-	Vulkan_LIBRARY_DEBUG)
+	Vulkan_LIBRARY)
 set(Vulkan_INCLUDE_DIRS ${Vulkan_INCLUDE_DIR})
 set(Vulkan_LIBRARIES Vulkan)

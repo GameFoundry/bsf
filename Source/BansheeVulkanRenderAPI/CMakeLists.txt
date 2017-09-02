@@ -12,8 +12,7 @@ set(BansheeVulkanRenderAPI_INC
 	"./" 
 	"../BansheeUtility" 
 	"../BansheeCore"
-	${Vulkan_INCLUDE_DIR}
-	${glslang_INCLUDE_DIR})
+)
 
 if(WIN32)
 	set(BansheeVulkanRenderAPI_INC ${BansheeVulkanRenderAPI_INC} "Source/Win32")
