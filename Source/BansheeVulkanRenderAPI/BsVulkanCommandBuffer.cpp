@@ -2217,7 +2217,15 @@ namespace bs { namespace ct
 						resetRenderPass = true;
 				}
 				else
-					resetRenderPass = false;
+				{
+					// Subresource has been bound as shader input, and it wasn't bound as a FB attachment this render pass.
+					// However is could have been bound in a previous pass, so check the layouts and force a layout
+					// transition if required.
+					if (subresourceInfo.currentLayout != subresourceInfo.requiredLayout)
+						resetRenderPass = true;
+					else
+						resetRenderPass = false;
+				}
 			}
 		}
 
