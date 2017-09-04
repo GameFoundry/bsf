@@ -16,7 +16,6 @@ technique Clear
 		struct VertexInput
 		{
 			float2 screenPos : POSITION;
-			float2 uv0 : TEXCOORD0;
 		};
 		
 		cbuffer Params
