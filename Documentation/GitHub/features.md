@@ -23,10 +23,10 @@ All features listed here are the ones currently available (implemented). If you 
     * Indirect illumination via irradiance maps
     * Screen space reflections
     * HDR rendering
-	 * Automatic eye adaptation
-	 * Tonemapping with adjustable curve
-	 * White balance
-	 * Color grading
+	  * Automatic eye adaptation
+	  * Tonemapping with adjustable curve
+	  * White balance
+	  * Color grading
     * Gamma correct rendering	
     * MSAA (both forward and deferred)
     * Shadows
