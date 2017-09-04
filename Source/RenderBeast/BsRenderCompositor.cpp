@@ -1853,7 +1853,7 @@ namespace bs { namespace ct
 			SSRStencilMat* stencilMat = SSRStencilMat::getVariation(viewProps.numSamples > 1, true);
 
 			// Note: Making the assumption that the stencil buffer is clear at this point
-			rapi.setRenderTarget(resolvedSceneDepthNode->output->renderTexture);
+			rapi.setRenderTarget(resolvedSceneDepthNode->output->renderTexture, FBT_DEPTH, RT_DEPTH_STENCIL);
 			stencilMat->execute(inputs.view, gbuffer, settings);
 
 			SPtr<PooledRenderTexture> traceOutput = resPool.get(POOLED_RENDER_TEXTURE_DESC::create2D(PF_RGBA16F, width, 
