@@ -9,16 +9,16 @@ using namespace physx;
 
 namespace bs
 {
-	PxDistanceJointFlag::Enum toPxFlag(PhysXDistanceJoint::Flag flag)
+	PxDistanceJointFlag::Enum toPxFlag(DistanceJointFlag flag)
 	{
 		switch (flag)
 		{
-		case PhysXDistanceJoint::Flag::MaxDistance:
+		case DistanceJointFlag::MaxDistance:
 			return PxDistanceJointFlag::eMAX_DISTANCE_ENABLED;
-		case PhysXDistanceJoint::Flag::MinDistance:
+		case DistanceJointFlag::MinDistance:
 			return PxDistanceJointFlag::eMIN_DISTANCE_ENABLED;
 		default:
-		case PhysXDistanceJoint::Flag::Spring:
+		case DistanceJointFlag::Spring:
 			return PxDistanceJointFlag::eSPRING_ENABLED;
 		}
 	}
@@ -50,13 +50,13 @@ namespace bs
 		
 		PxDistanceJointFlags flags;
 		
-		if(((UINT32)desc.flag & (UINT32)Flag::MaxDistance) != 0)
+		if(((UINT32)desc.flag & (UINT32)DistanceJointFlag::MaxDistance) != 0)
 			flags |= PxDistanceJointFlag::eMAX_DISTANCE_ENABLED;
 
-		if (((UINT32)desc.flag & (UINT32)Flag::MinDistance) != 0)
+		if (((UINT32)desc.flag & (UINT32)DistanceJointFlag::MinDistance) != 0)
 			flags |= PxDistanceJointFlag::eMIN_DISTANCE_ENABLED;
 
-		if (((UINT32)desc.flag & (UINT32)Flag::Spring) != 0)
+		if (((UINT32)desc.flag & (UINT32)DistanceJointFlag::Spring) != 0)
 			flags |= PxDistanceJointFlag::eSPRING_ENABLED;
 
 		joint->setDistanceJointFlags(flags);
@@ -116,12 +116,12 @@ namespace bs
 		getInternal()->setStiffness(value.stiffness);
 	}
 
-	void PhysXDistanceJoint::setFlag(Flag flag, bool enabled)
+	void PhysXDistanceJoint::setFlag(DistanceJointFlag flag, bool enabled)
 	{
 		getInternal()->setDistanceJointFlag(toPxFlag(flag), enabled);
 	}
 
-	bool PhysXDistanceJoint::hasFlag(Flag flag) const
+	bool PhysXDistanceJoint::hasFlag(DistanceJointFlag flag) const
 	{
 		return getInternal()->getDistanceJointFlags() & toPxFlag(flag);
 	}

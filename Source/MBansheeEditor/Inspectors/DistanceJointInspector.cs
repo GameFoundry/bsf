@@ -56,7 +56,7 @@ namespace BansheeEditor
         {
             enableMinLimitField.OnChanged += x =>
             {
-                joint.EnableMinDistanceLimit = x;
+                joint.SetFlag(DistanceJointFlag.MinDistance, x);
                 MarkAsModified();
                 ConfirmModify();
 
@@ -69,7 +69,7 @@ namespace BansheeEditor
 
             enableMaxLimitField.OnChanged += x =>
             {
-                joint.EnableMaxDistanceLimit = x;
+                joint.SetFlag(DistanceJointFlag.MaxDistance, x);
                 MarkAsModified();
                 ConfirmModify();
 
@@ -86,7 +86,7 @@ namespace BansheeEditor
 
             enableSpringField.OnChanged += x =>
             {
-                joint.EnableSpring = x;
+                joint.SetFlag(DistanceJointFlag.Spring, x);
                 MarkAsModified();
                 ConfirmModify();
 
@@ -117,9 +117,9 @@ namespace BansheeEditor
                 springGUI.OnConfirmed += ConfirmModify;
             }
 
-            minLimitField.Active = joint.EnableMinDistanceLimit;
-            maxLimitField.Active = joint.EnableMaxDistanceLimit;
-            springLayout.Active = joint.EnableSpring;
+            minLimitField.Active = joint.HasFlag(DistanceJointFlag.MinDistance);
+            maxLimitField.Active = joint.HasFlag(DistanceJointFlag.MaxDistance);
+            springLayout.Active = joint.HasFlag(DistanceJointFlag.Spring);
 
             base.BuildGUI(joint, true);
         }
@@ -130,27 +130,30 @@ namespace BansheeEditor
         /// <param name="joint">Joint to update the GUI from.</param>
         protected void Refresh(DistanceJoint joint)
         {
-            if (enableMinLimitField.Value != joint.EnableMinDistanceLimit)
+            bool enableMinDistanceLimit = joint.HasFlag(DistanceJointFlag.MinDistance);
+            if (enableMinLimitField.Value != enableMinDistanceLimit)
             {
-                enableMinLimitField.Value = joint.EnableMinDistanceLimit;
-                minLimitField.Active = joint.EnableMinDistanceLimit;
+                enableMinLimitField.Value = enableMinDistanceLimit;
+                minLimitField.Active = enableMinDistanceLimit;
             }
 
             minLimitField.Value = joint.MinDistance;
 
-            if (enableMaxLimitField.Value != joint.EnableMaxDistanceLimit)
+            bool enableMaxDistanceLimit = joint.HasFlag(DistanceJointFlag.MaxDistance);
+            if (enableMaxLimitField.Value != enableMaxDistanceLimit)
             {
-                enableMaxLimitField.Value = joint.EnableMaxDistanceLimit;
-                maxLimitField.Active = joint.EnableMaxDistanceLimit;
+                enableMaxLimitField.Value = enableMaxDistanceLimit;
+                maxLimitField.Active = enableMaxDistanceLimit;
             }
 
             maxLimitField.Value = joint.MaxDistance;
             toleranceField.Value = joint.Tolerance;
 
-            if (enableSpringField.Value != joint.EnableSpring)
+            bool enableSpring = joint.HasFlag(DistanceJointFlag.Spring);
+            if (enableSpringField.Value != enableSpring)
             {
-                enableSpringField.Value = joint.EnableSpring;
-                springLayout.Active = joint.EnableSpring;
+                enableSpringField.Value = enableSpring;
+                springLayout.Active = enableSpring;
             }
 
             springGUI.Spring = joint.Spring;

@@ -21,10 +21,10 @@ namespace bs
 		~PhysXD6Joint();
 
 		/** @copydoc D6Joint::getMotion */
-		Motion getMotion(Axis axis) const override;
+		D6JointMotion getMotion(D6JointAxis axis) const override;
 
 		/** @copydoc D6Joint::setMotion */
-		void setMotion(Axis axis, Motion motion) override;
+		void setMotion(D6JointAxis axis, D6JointMotion motion) override;
 
 		/** @copydoc D6Joint::getTwist */
 		Radian getTwist() const override;
@@ -54,10 +54,10 @@ namespace bs
 		void setLimitSwing(const LimitConeRange& limit) override;
 
 		/** @copydoc D6Joint::getDrive */
-		Drive getDrive(DriveType type) const override;
+		D6JointDrive getDrive(D6JointDriveType type) const override;
 
 		/** @copydoc D6Joint::setDrive */
-		void setDrive(DriveType type, const Drive& drive) override;
+		void setDrive(D6JointDriveType type, const D6JointDrive& drive) override;
 
 		/** @copydoc D6Joint::getDrivePosition */
 		Vector3 getDrivePosition() const override;

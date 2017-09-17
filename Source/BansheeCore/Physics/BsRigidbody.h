@@ -12,7 +12,7 @@ namespace bs
 	 */
 
 	/** Type of force or torque that can be applied to a rigidbody. */
-	enum class ForceMode
+	enum class BS_SCRIPT_EXPORT(m:Physics) ForceMode
 	{
 		Force, /**< Value applied is a force. */
 		Impulse, /**< Value applied is an impulse (a direct change in its linear or angular momentum). */
@@ -21,10 +21,26 @@ namespace bs
 	};
 
 	/** Type of force that can be applied to a rigidbody at an arbitrary point. */
-	enum class PointForceMode
+	enum class BS_SCRIPT_EXPORT(m:Physics) PointForceMode
 	{
 		Force, /**< Value applied is a force. */
 		Impulse, /**< Value applied is an impulse (a direct change in its linear or angular momentum). */
+	};
+
+	/** Flags that control options of a Rigidbody object. */
+	enum class BS_SCRIPT_EXPORT(m:Physics) RigidbodyFlag
+	{
+		/** No options. */
+		None = 0x00,
+		/** Automatically calculate center of mass transform and inertia tensors from child shapes (colliders). */
+		AutoTensors = 0x01,
+		/** Calculate mass distribution from child shapes (colliders). Only relevant when auto-tensors is on. */
+		AutoMass = 0x02,
+		/** 
+		 * Enables continous collision detection. This can prevent fast moving bodies from tunneling through each other.
+		 * This must also be enabled globally in Physics otherwise the flag will be ignored.
+		 */
+		CCD = 0x04
 	};
 
 	/**
@@ -38,22 +54,6 @@ namespace bs
 	class BS_CORE_EXPORT Rigidbody
 	{
 	public:
-		/** Flags that control options of a Rigidbody object. */
-		enum class Flag
-		{
-			/** No options. */
-			None = 0x00,
-			/** Automatically calculate center of mass transform and inertia tensors from child shapes (colliders). */
-			AutoTensors = 0x01,
-			/** Calculate mass distribution from child shapes (colliders). Only relevant when auto-tensors is on. */
-			AutoMass = 0x02,
-			/** 
-			 * Enables continous collision detection. This can prevent fast moving bodies from tunneling through each other.
-			 * This must also be enabled globally in Physics otherwise the flag will be ignored.
-			 */
-			CCD = 0x04
-		};
-
 		/** 
 		 * Constructs a new rigidbody. 
 		 *
@@ -90,25 +90,22 @@ namespace bs
 		virtual void setTransform(const Vector3& pos, const Quaternion& rot) = 0;
 
 		/** 
-		 * Sets the mass of the object and all of its collider shapes. Only relevant if Flag::AutoMass or Flag::AutoTensors
-		 * is turned off. Value of zero means the object is immovable (but can be rotated).
+		 * Determines the mass of the object and all of its collider shapes. Only relevant if RigidbodyFlag::AutoMass or 
+		 * RigidbodyFlag::AutoTensors is turned off. Value of zero means the object is immovable (but can be rotated).
 		 */
 		virtual void setMass(float mass) = 0;
 
-		/** 
-		 * Returns the mass of the object. This may be mass manually set by setMass(), or the mass of all child colliders,
-		 * depending if the mass is calculated automatically or not.
-		 */
+		/** @copydoc setMass() */
 		virtual float getMass() const = 0;
 
 		/** 
-		 * Sets if the body is kinematic. Kinematic body will not move in response to external forces (for example gravity,
-		 * or another object pushing it), essentially behaving like collider. Unlike a collider though, you can still move
-		 * the object and have other dynamic objects respond correctly (meaning it will push other objects).
+		 * Determines if the body is kinematic. Kinematic body will not move in response to external forces (for example
+		 * gravity, or another object pushing it), essentially behaving like collider. Unlike a collider though, you can
+		 * still move the object and have other dynamic objects respond correctly (meaning it will push other objects).
 		 */
 		virtual void setIsKinematic(bool kinematic) = 0;
 
-		/** Checks if the body is kinematic. */
+		/** @copydoc setIsKinematic() */
 		virtual bool getIsKinematic() const = 0;
 
 		/** 
@@ -127,60 +124,60 @@ namespace bs
 		 */
 		virtual void wakeUp() = 0;
 
-		/** Sets a threshold of force and torque under which the object will be considered to be put to sleep. */
+		/** Determines a threshold of force and torque under which the object will be considered to be put to sleep. */
 		virtual void setSleepThreshold(float threshold) = 0;
 
-		/** Gets a threshold of force and torque under which the object will be considered to be put to sleep. */
+		/** @copydoc setSleepThreshold() */
 		virtual float getSleepThreshold() const = 0;
 
-		/** Sets whether or not the rigidbody will have the global gravity force applied to it. */
+		/** Determines whether or not the rigidbody will have the global gravity force applied to it. */
 		virtual void setUseGravity(bool gravity) = 0;
 
-		/** Gets whether or not the rigidbody will have the global gravity force applied to it. */
+		/** @copydoc setUseGravity() */
 		virtual bool getUseGravity() const = 0;
 
-		/** Sets the linear velocity of the body. */
+		/** Determines the linear velocity of the body. */
 		virtual void setVelocity(const Vector3& velocity) = 0;
 
-		/** Returns the current linear velocity of the body. */
+		/** @copydoc setVelocity() */
 		virtual Vector3 getVelocity() const = 0;
 
-		/** Sets the angular velocity of the body. */
+		/** Determines the angular velocity of the body. */
 		virtual void setAngularVelocity(const Vector3& velocity) = 0;
 
-		/** Returns the current angular velocity of the body. */
+		/** @copydoc setAngularVelocity() */
 		virtual Vector3 getAngularVelocity() const = 0;
 
-		/** Sets the linear drag of the body. Higher drag values means the object resists linear movement more. */
+		/** Determines the linear drag of the body. Higher drag values means the object resists linear movement more. */
 		virtual void setDrag(float drag) = 0;
 
-		/** Gets the linear drag of the body. Higher drag values means the object resists linear movement more. */
+		/** @copydoc setDrag() */
 		virtual float getDrag() const = 0;
 
-		/** Sets the angular drag of the body. Higher drag values means the object resists angular movement more. */
+		/** Determines the angular drag of the body. Higher drag values means the object resists angular movement more. */
 		virtual void setAngularDrag(float drag) = 0;
 
-		/** Gets the angular drag of the body. Higher drag values means the object resists angular movement more. */
+		/** @copydoc setAngularDrag() */
 		virtual float getAngularDrag() const = 0;
 
 		/** 
-		 * Sets the inertia tensor in local mass space. Inertia tensor determines how difficult is to rotate the object.
-		 * Values of zero in the inertia tensor mean the object will be unable to rotate around a specific axis. Only 
-		 * relevant if Flag::AutoTensors is turned off.
+		 * Determines the inertia tensor in local mass space. Inertia tensor determines how difficult is to rotate the
+		 * object. Values of zero in the inertia tensor mean the object will be unable to rotate around a specific axis. 
+		 * Only relevant if RigidbodyFlag::AutoTensors is turned off.
 		 */
 		virtual void setInertiaTensor(const Vector3& tensor) = 0;
 
-		/** Gets the inertia tensor in local mass space.  */
+		/** @copydoc setInertiaTensor() */
 		virtual Vector3 getInertiaTensor() const = 0;
 
-		/** Returns the maximum angular velocity of the rigidbody. Velocity will be clamped to this value. */
+		/** Determines the maximum angular velocity of the rigidbody. Velocity will be clamped to this value. */
 		virtual void setMaxAngularVelocity(float maxVelocity) = 0;
 
-		/** Gets the maximum angular velocity of the rigidbody. */
+		/** @copydoc setMaxAngularVelocity() */
 		virtual float getMaxAngularVelocity() const = 0;
 
 		/**
-		 * Sets the rigidbody's center of mass transform. Only relevant if Flag::AutoTensors is turned off.
+		 * Sets the rigidbody's center of mass transform. Only relevant if RigibodyFlag::AutoTensors is turned off.
 		 *
 		 * @param[in]	position	Position of the center of mass.
 		 * @param[in]	rotation	Rotation that determines orientation of the inertia tensor (rotation of the center of 
@@ -195,29 +192,28 @@ namespace bs
 		virtual Quaternion getCenterOfMassRotation() const = 0;
 
 		/** 
-		 * Sets the number of iterations to use when solving for position. Higher values can improve precision and 
+		 * Determines the number of iterations to use when solving for position. Higher values can improve precision and 
 		 * numerical stability of the simulation. 
 		 */
 		virtual void setPositionSolverCount(UINT32 count) = 0;
 
-		/** Gets the number of iterations to use when solving for position. */
+		/** @copydoc setPositionSolverCount() */
 		virtual UINT32 getPositionSolverCount() const = 0;
 
-
 		/** 
-		 * Sets the number of iterations to use when solving for velocity. Higher values can improve precision and 
+		 * Determines the number of iterations to use when solving for velocity. Higher values can improve precision and 
 		 * numerical stability of the simulation. 
 		 */
 		virtual void setVelocitySolverCount(UINT32 count) = 0;
 
-		/** Gets the number of iterations to use when solving for velocity. */
+		/** @copydoc setVelocitySolverCount() */
 		virtual UINT32 getVelocitySolverCount() const = 0;
 
-		/** Sets flags that control the behaviour of the rigidbody. */
-		virtual void setFlags(Flag flags) { mFlags = flags; }
+		/** Flags that control the behaviour of the rigidbody. */
+		virtual void setFlags(RigidbodyFlag flags) { mFlags = flags; }
 
-		/** Gets flags that control the behaviour of the rigidbody. */
-		virtual Flag getFlags() const { return mFlags; }
+		/** @copydoc setFlags() */
+		virtual RigidbodyFlag getFlags() const { return mFlags; }
 
 		/** 
 		 * Applies a force to the center of the mass of the rigidbody. This will produce linear momentum.
@@ -282,13 +278,13 @@ namespace bs
 		static SPtr<Rigidbody> create(const HSceneObject& linkedSO);
 
 		/** Triggered when one of the colliders owned by the rigidbody starts colliding with another object. */
-		Event<void(const CollisionData&)> onCollisionBegin;
+		Event<void(const CollisionDataRaw&)> onCollisionBegin;
 
 		/** Triggered when a previously colliding collider stays in collision. Triggered once per frame. */
-		Event<void(const CollisionData&)> onCollisionStay;
+		Event<void(const CollisionDataRaw&)> onCollisionStay;
 
 		/** Triggered when one of the colliders owned by the rigidbody stops colliding with another object. */
-		Event<void(const CollisionData&)> onCollisionEnd;
+		Event<void(const CollisionDataRaw&)> onCollisionEnd;
 
 		/** @name Internal
 		 *  @{
@@ -326,7 +322,7 @@ namespace bs
 	protected:
 		friend class FCollider;
 
-		Flag mFlags = Flag::None;
+		RigidbodyFlag mFlags = RigidbodyFlag::None;
 		PhysicsObjectOwner mOwner;
 		UINT32 mPhysicsId = 0;
 		HSceneObject mLinkedSO;

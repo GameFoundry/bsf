@@ -933,7 +933,7 @@ namespace BansheeEditor
                 this.guiTexture = guiTexture;
                 this.guiSlider = guiSlider;
 
-                texture = Texture.Create2D(width, height);
+                texture = Texture.Create2D((uint)width, (uint)height);
                 spriteTexture = new SpriteTexture(texture);
             }
 
@@ -997,7 +997,7 @@ namespace BansheeEditor
                 this.guiTexture = guiTexture;
                 this.guiSlider = guiSlider;
 
-                texture = Texture.Create2D(width, height);
+                texture = Texture.Create2D((uint)width, (uint)height);
                 spriteTexture = new SpriteTexture(texture);
             }
 
@@ -1065,7 +1065,7 @@ namespace BansheeEditor
                 this.guiTexture = guiTexture;
                 this.guiSliderHandle = guiSliderHandle;
 
-                texture = Texture.Create2D(width, height);
+                texture = Texture.Create2D((uint)width, (uint)height);
                 spriteTexture = new SpriteTexture(texture);
             }
 

@@ -132,7 +132,7 @@ namespace bs
 	};
 
 	/**	Type of mesh indices used, used for determining maximum number of vertices in a mesh. */
-	enum BS_SCRIPT_EXPORT() IndexType
+	enum BS_SCRIPT_EXPORT(m:Rendering) IndexType
 	{
 		IT_16BIT	BS_SCRIPT_EXPORT(n:Index16),	/**< 16-bit indices. */
 		IT_32BIT	BS_SCRIPT_EXPORT(n:Index32)		/**< 32-bit indices. */
@@ -337,7 +337,7 @@ namespace bs
 	};
 
 	/**	Available texture types. */
-	enum BS_SCRIPT_EXPORT() TextureType
+	enum BS_SCRIPT_EXPORT(m:Rendering) TextureType
 	{
 		/** One dimensional texture. Just a row of pixels. */
 		TEX_TYPE_1D			BS_SCRIPT_EXPORT(n:Texture1D)	= 1, 

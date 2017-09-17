@@ -112,7 +112,7 @@ namespace bs
 
 	void PhysXRigidbody::setMass(float mass)
 	{
-		if(((UINT32)mFlags & (UINT32)Flag::AutoMass) != 0)
+		if(((UINT32)mFlags & (UINT32)RigidbodyFlag::AutoMass) != 0)
 		{
 			LOGWRN("Attempting to set Rigidbody mass, but it has automatic mass calculation turned on.");
 			return;
@@ -213,7 +213,7 @@ namespace bs
 
 	void PhysXRigidbody::setInertiaTensor(const Vector3& tensor)
 	{
-		if (((UINT32)mFlags & (UINT32)Flag::AutoTensors) != 0)
+		if (((UINT32)mFlags & (UINT32)RigidbodyFlag::AutoTensors) != 0)
 		{
 			LOGWRN("Attempting to set Rigidbody inertia tensor, but it has automatic tensor calculation turned on.");
 			return;
@@ -239,7 +239,7 @@ namespace bs
 
 	void PhysXRigidbody::setCenterOfMass(const Vector3& position, const Quaternion& rotation)
 	{
-		if (((UINT32)mFlags & (UINT32)Flag::AutoTensors) != 0)
+		if (((UINT32)mFlags & (UINT32)RigidbodyFlag::AutoTensors) != 0)
 		{
 			LOGWRN("Attempting to set Rigidbody center of mass, but it has automatic tensor calculation turned on.");
 			return;
@@ -288,10 +288,10 @@ namespace bs
 		return velCount;
 	}
 
-	void PhysXRigidbody::setFlags(Flag flags)
+	void PhysXRigidbody::setFlags(RigidbodyFlag flags)
 	{
 		bool ccdEnabledOld = mInternal->getRigidBodyFlags() & PxRigidBodyFlag::eENABLE_CCD;
-		bool ccdEnabledNew = ((UINT32)flags & (UINT32)Flag::CCD) != 0;
+		bool ccdEnabledNew = ((UINT32)flags & (UINT32)RigidbodyFlag::CCD) != 0;
 		
 		if(ccdEnabledOld != ccdEnabledNew)
 		{
@@ -360,10 +360,10 @@ namespace bs
 
 	void PhysXRigidbody::updateMassDistribution() 
 	{
-		if (((UINT32)mFlags & (UINT32)Flag::AutoTensors) == 0)
+		if (((UINT32)mFlags & (UINT32)RigidbodyFlag::AutoTensors) == 0)
 			return;
 
-		if (((UINT32)mFlags & (UINT32)Flag::AutoMass) == 0)
+		if (((UINT32)mFlags & (UINT32)RigidbodyFlag::AutoMass) == 0)
 		{
 			PxRigidBodyExt::setMassAndUpdateInertia(*mInternal, mInternal->getMass());
 		}
@@ -396,7 +396,7 @@ namespace bs
 			return;
 
 		FPhysXCollider* physxCollider = static_cast<FPhysXCollider*>(collider);
-		physxCollider->_setCCD(((UINT32)mFlags & (UINT32)Flag::CCD) != 0);
+		physxCollider->_setCCD(((UINT32)mFlags & (UINT32)RigidbodyFlag::CCD) != 0);
 
 		mInternal->attachShape(*physxCollider->_getShape());
 	}

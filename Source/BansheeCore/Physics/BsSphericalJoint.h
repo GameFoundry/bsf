@@ -13,6 +13,12 @@ namespace bs
 
 	struct SPHERICAL_JOINT_DESC;
 
+	/** Flags that control options for the spherical joint */
+	enum class BS_SCRIPT_EXPORT(m:Physics) SphericalJointFlag
+	{
+		Limit = 0x1 /**< Enables the cone range limit. */
+	};
+
 	/** 
 	 * A spherical joint removes all translational degrees of freedom but allows all rotational degrees of freedom. 
 	 * Essentially this ensures that the anchor points of the two bodies are always coincident. Bodies are allowed to
@@ -21,33 +27,23 @@ namespace bs
 	class BS_CORE_EXPORT SphericalJoint : public Joint
 	{
 	public:
-		/** Flags that control options for the spherical joint */
-		enum class Flag
-		{
-			Limit = 0x1 /**< Enables the cone range limit. */
-		};
-
-	public:
 		SphericalJoint(const SPHERICAL_JOINT_DESC& desc) { }
 		virtual ~SphericalJoint() { }
 
-		/** 
-		 * Returns the limit of the joint. This clamps the rotation inside an eliptical angular cone. You must enable limit
-		 * flag on the joint in order for this to be recognized. 
-		 */
+		/** @copydoc setLimit() */
 		virtual LimitConeRange getLimit() const = 0;
 
 		/** 
-		 * Sets the limit of the joint. This clamps the rotation inside an eliptical angular cone. You must enable limit
-		 * flag on the joint in order for this to be recognized. 
+		 * Determines the limit of the joint. This clamps the rotation inside an eliptical angular cone. You must enable
+		 * limit flag on the joint in order for this to be recognized. 
 		 */
 		virtual void setLimit(const LimitConeRange& limit) = 0;
 
 		/** Enables or disables a flag that controls the joint's behaviour. */
-		virtual void setFlag(Flag flag, bool enabled) = 0;
+		virtual void setFlag(SphericalJointFlag flag, bool enabled) = 0;
 
 		/** Checks is the specified flag enabled. */
-		virtual bool hasFlag(Flag flag) const = 0;
+		virtual bool hasFlag(SphericalJointFlag flag) const = 0;
 
 		/** Creates a new spherical joint. */
 		static SPtr<SphericalJoint> create(const SPHERICAL_JOINT_DESC& desc);
@@ -57,7 +53,7 @@ namespace bs
 	struct SPHERICAL_JOINT_DESC : JOINT_DESC
 	{
 		LimitConeRange limit;
-		SphericalJoint::Flag flag = (SphericalJoint::Flag)0;
+		SphericalJointFlag flag = (SphericalJointFlag)0;
 	};
 
 	/** @} */

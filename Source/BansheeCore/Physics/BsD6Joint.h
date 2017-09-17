@@ -13,6 +13,80 @@ namespace bs
 
 	struct D6_JOINT_DESC;
 
+	/** Specifies axes that the D6 joint can constrain motion on. */
+	enum class BS_SCRIPT_EXPORT(m:Physics) D6JointAxis
+	{
+		X, /**< Movement on the X axis. */
+		Y, /**< Movement on the Y axis. */
+		Z, /**< Movement on the Z axis. */
+		Twist, /**< Rotation around the X axis. */
+		SwingY, /**< Rotation around the Y axis. */
+		SwingZ, /**< Rotation around the Z axis. */
+		Count
+	};
+
+	/** Specifies type of constraint placed on a specific axis. */
+	enum class BS_SCRIPT_EXPORT(m:Physics) D6JointMotion
+	{
+		Locked, /**< Axis is immovable. */
+		Limited, /**< Axis will be constrained by the specified limits. */
+		Free, /**< Axis will not be constrained. */
+		Count
+	};
+
+	/** Type of drives that can be used for moving or rotating bodies attached to the joint. */
+	enum class BS_SCRIPT_EXPORT(m:Physics) D6JointDriveType
+	{
+		X, /**< Linear movement on the X axis using the linear drive model. */
+		Y, /**< Linear movement on the Y axis using the linear drive model. */
+		Z, /**< Linear movement on the Z axis using the linear drive model. */
+		/**
+		 * Rotation around the Y axis using the twist/swing angular drive model. Should not be used together with 
+		 * SLERP mode. 
+		 */
+		Swing, 
+		/** 
+		 * Rotation around the Z axis using the twist/swing angular drive model. Should not be used together with 
+		 * SLERP mode. 
+		 */
+		Twist,
+		/** 
+		 * Rotation using spherical linear interpolation. Uses the SLERP angular drive mode which performs rotation
+		 * by interpolating the quaternion values directly over the shortest path (applies to all three axes, which
+		 * they all must be unlocked).
+		 */
+		SLERP, 
+		Count
+	};
+
+	/** 
+	 * Specifies parameters for a drive that will attempt to move the joint bodies to the specified drive position and
+	 * velocity.
+	 */
+	struct BS_SCRIPT_EXPORT(m:Physics,pl:true) D6JointDrive
+	{
+		bool operator==(const D6JointDrive& other) const
+		{
+			return stiffness == other.stiffness && damping == other.damping && forceLimit == other.forceLimit &&
+				acceleration == other.acceleration;
+		}
+
+		/** Spring strength. Force proportional to the position error. */
+		float stiffness = 0.0f;
+
+		/** Damping strength. Force propertional to the velocity error. */
+		float damping = 0.0f;
+
+		/** Maximum force the drive can apply. */
+		float forceLimit = FLT_MAX;
+
+		/** 
+		 * If true the drive will generate acceleration instead of forces. Acceleration drives are easier to tune as
+		 * they account for the masses of the actors to which the joint is attached.
+		 */
+		bool acceleration = false;
+	};
+
 	/** 
 	 * Represents the most customizable type of joint. This joint type can be used to create all other built-in joint 
 	 * types, and to design your own custom ones, but is less intuitive to use. Allows a specification of a linear 
@@ -22,81 +96,6 @@ namespace bs
 	class BS_CORE_EXPORT D6Joint : public Joint
 	{
 	public:
-		/** Specifies axes that the D6 joint can constrain motion on. */
-		enum class Axis
-		{
-			X, /**< Movement on the X axis. */
-			Y, /**< Movement on the Y axis. */
-			Z, /**< Movement on the Z axis. */
-			Twist, /**< Rotation around the X axis. */
-			SwingY, /**< Rotation around the Y axis. */
-			SwingZ, /**< Rotation around the Z axis. */
-			Count
-		};
-
-		/** Specifies type of constraint placed on a specific axis. */
-		enum class Motion
-		{
-			Locked, /**< Axis is immovable. */
-			Limited, /**< Axis will be constrained by the specified limits. */
-			Free, /**< Axis will not be constrained. */
-			Count
-		};
-
-		/** Type of drives that can be used for moving or rotating bodies attached to the joint. */
-		enum class DriveType
-		{
-			X, /**< Linear movement on the X axis using the linear drive model. */
-			Y, /**< Linear movement on the Y axis using the linear drive model. */
-			Z, /**< Linear movement on the Z axis using the linear drive model. */
-			/**
-			 * Rotation around the Y axis using the twist/swing angular drive model. Should not be used together with 
-			 * SLERP mode. 
-			 */
-			Swing, 
-			/** 
-			 * Rotation around the Z axis using the twist/swing angular drive model. Should not be used together with 
-			 * SLERP mode. 
-			 */
-			Twist,
-			/** 
-			 * Rotation using spherical linear interpolation. Uses the SLERP angular drive mode which performs rotation
-			 * by interpolating the quaternion values directly over the shortest path (applies to all three axes, which
-			 * they all must be unlocked).
-			 */
-			SLERP, 
-			Count
-		};
-
-		/** 
-		 * Specifies parameters for a drive that will attempt to move the joint bodies to the specified drive position and
-		 * velocity.
-		 */
-		struct Drive
-		{
-			bool operator==(const Drive& other) const
-			{
-				return stiffness == other.stiffness && damping == other.damping && forceLimit == other.forceLimit &&
-					acceleration == other.acceleration;
-			}
-
-			/** Spring strength. Force proportional to the position error. */
-			float stiffness = 0.0f;
-
-			/** Damping strength. Force propertional to the velocity error. */
-			float damping = 0.0f;
-
-			/** Maximum force the drive can apply. */
-			float forceLimit = FLT_MAX;
-
-			/** 
-			 * If true the drive will generate acceleration instead of forces. Acceleration drives are easier to tune as
-			 * they account for the masses of the actors to which the joint is attached.
-			 */
-			bool acceleration = false;
-		};
-
-	public:
 		D6Joint(const D6_JOINT_DESC& desc) { }
 		virtual ~D6Joint() { }
 
@@ -105,7 +104,7 @@ namespace bs
 		 *
 		 * @see	setMotion
 		 */
-		virtual Motion getMotion(Axis axis) const = 0;
+		virtual D6JointMotion getMotion(D6JointAxis axis) const = 0;
 
 		/** 
 		 * Allows you to constrain motion of the specified axis. Be aware that when setting drives for a specific axis
@@ -124,7 +123,7 @@ namespace bs
 		 *    attached at the elbow)
 		 *  - If all angular degrees of freedom are unlocked the result is the same as the spherical joint.
 		 */
-		virtual void setMotion(Axis axis, Motion motion) = 0;
+		virtual void setMotion(D6JointAxis axis, D6JointMotion motion) = 0;
 
 		/** Returns the current rotation of the joint around the X axis. */
 		virtual Radian getTwist() const = 0;
@@ -135,33 +134,32 @@ namespace bs
 		/** Returns the current rotation of the joint around the Z axis. */
 		virtual Radian getSwingZ() const = 0;
 
-		/** Returns the linear limit used for constraining translation degrees of freedom. */
+		/** @copydoc setLimitLinear() */
 		virtual LimitLinear getLimitLinear() const = 0;
 
-		/** Sets the linear limit used for constraining translation degrees of freedom. */
+		/** Determines the linear limit used for constraining translation degrees of freedom. */
 		virtual void setLimitLinear(const LimitLinear& limit) = 0;
 		
-		/** Returns the angular limit used for constraining the twist (rotation around X) degree of freedom. */
+		/** @copydoc setLimitTwist() */
 		virtual LimitAngularRange getLimitTwist() const = 0;
 
-		/** Sets the angular limit used for constraining the twist (rotation around X) degree of freedom. */
+		/** Determines the angular limit used for constraining the twist (rotation around X) degree of freedom. */
 		virtual void setLimitTwist(const LimitAngularRange& limit) = 0;
 
-		/** Returns the cone limit used for constraining the swing (rotation around Y and Z) degree of freedom. */
+		/** @copydoc setLimitSwing() */
 		virtual LimitConeRange getLimitSwing() const = 0;
 
-		/** Sets the cone limit used for constraining the swing (rotation around Y and Z) degree of freedom. */
+		/** Determines the cone limit used for constraining the swing (rotation around Y and Z) degree of freedom. */
 		virtual void setLimitSwing(const LimitConeRange& limit) = 0;
 	
-		/**
-		 * Returns a drive that will attempt to move the specified degree(s) of freedom to the wanted position and velocity. 
-		 */
-		virtual Drive getDrive(DriveType type) const = 0;
+		/** @copydoc setDrive() */
+		virtual D6JointDrive getDrive(D6JointDriveType type) const = 0;
 
 		/**
-		 * Sets a drive that will attempt to move the specified degree(s) of freedom to the wanted position and velocity. 
+		 * Determines a drive that will attempt to move the specified degree(s) of freedom to the wanted position and
+		 * velocity. 
 		 */
-		virtual void setDrive(DriveType type, const Drive& drive) = 0;
+		virtual void setDrive(D6JointDriveType type, const D6JointDrive& drive) = 0;
 
 		/** Returns the drive's target position relative to the joint's first body. */
 		virtual Vector3 getDrivePosition() const = 0;
@@ -190,8 +188,8 @@ namespace bs
 	{
 		D6_JOINT_DESC() { }
 
-		D6Joint::Motion motion[(UINT32)D6Joint::Axis::Count];
-		D6Joint::Drive drive[(UINT32)D6Joint::DriveType::Count];
+		D6JointMotion motion[(UINT32)D6JointAxis::Count];
+		D6JointDrive drive[(UINT32)D6JointDriveType::Count];
 		LimitLinear limitLinear;
 		LimitAngularRange limitTwist;
 		LimitConeRange limitSwing;

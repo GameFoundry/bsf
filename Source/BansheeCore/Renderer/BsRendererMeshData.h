@@ -39,7 +39,7 @@ namespace bs
 	};
 
 	/** Contains mesh vertex and index data used for initializing, updating and reading mesh data from Mesh. */
-	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(n:MeshData) RendererMeshData
+	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Rendering,n:MeshData) RendererMeshData
 	{
 	public:
 		/**

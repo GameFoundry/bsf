@@ -23,7 +23,7 @@ namespace BansheeEditor
         /// <returns>Anchor position in world space.</returns>
         private static Vector3 GetAnchor(Joint joint, JointBody body)
         {
-            Rigidbody rigidbody = joint.GetRigidbody(body);
+            Rigidbody rigidbody = joint.GetBody(body);
             Vector3 anchor = joint.GetPosition(body);
 
             if (rigidbody != null)
@@ -81,19 +81,19 @@ namespace BansheeEditor
             float min = 0.0f;
             float max = length;
 
-            if (joint.EnableMinDistanceLimit)
+            if (joint.HasFlag(DistanceJointFlag.MinDistance))
             {
                 min = MathEx.Max(0.0f, joint.MinDistance);
-                if (joint.EnableMaxDistanceLimit)
+                if (joint.HasFlag(DistanceJointFlag.MaxDistance))
                     min = MathEx.Min(min, MathEx.Min(10000.0f, joint.MaxDistance));
 
                 Gizmos.DrawLine(anchorA, anchorA + normal * min);
             }
 
-            if (joint.EnableMaxDistanceLimit)
+            if (joint.HasFlag(DistanceJointFlag.MaxDistance))
             {
                 max = MathEx.Min(10000.0f, joint.MaxDistance);
-                if (joint.EnableMinDistanceLimit)
+                if (joint.HasFlag(DistanceJointFlag.MinDistance))
                     max = MathEx.Max(max, min);
 
                 if (length > max)
@@ -115,12 +115,12 @@ namespace BansheeEditor
             Vector3 target = GetAnchor(joint, JointBody.Target);
             Vector3 normal = -joint.SceneObject.Right;
 
-            if (joint.EnableLimit)
+            if (joint.HasFlag(SliderJointFlag.Limit))
             {
                 LimitLinearRange limit = joint.Limit;
 
-                float max = MathEx.Min(10000.0f, limit.Upper);
-                float min = MathEx.Clamp(limit.Lower, 0.0f, max);
+                float max = MathEx.Min(10000.0f, limit.upper);
+                float min = MathEx.Clamp(limit.lower, 0.0f, max);
                 max = MathEx.Max(max, min);
 
                 Gizmos.Color = Color.Red;
@@ -152,7 +152,7 @@ namespace BansheeEditor
             Vector3 anchor = GetAnchor(joint, JointBody.Anchor);
             Vector3 center = target;
 
-            Rigidbody rigidbody = joint.GetRigidbody(JointBody.Target);
+            Rigidbody rigidbody = joint.GetBody(JointBody.Target);
             if (rigidbody != null)
                 center = rigidbody.SceneObject.Position;
 
@@ -167,12 +167,12 @@ namespace BansheeEditor
             Gizmos.DrawLine(target, center);
 
             Gizmos.Color = Color.Green;
-            if (joint.EnableLimit)
+            if (joint.HasFlag(SphericalJointFlag.Limit))
             {
                 LimitConeRange limit = joint.Limit;
 
-                Radian zAngle = MathEx.Min(new Degree(360), limit.ZLimitAngle * 2.0f);
-                Radian yAngle = MathEx.Min(new Degree(360), limit.YLimitAngle * 2.0f);
+                Radian zAngle = MathEx.Min(new Degree(360), limit.zLimitAngle * 2.0f);
+                Radian yAngle = MathEx.Min(new Degree(360), limit.yLimitAngle * 2.0f);
 
                 Gizmos.Transform = joint.SceneObject.WorldTransform;
                 Gizmos.DrawWireArc(Vector3.Zero, Vector3.ZAxis, 0.25f, zAngle * -0.5f + new Degree(90), zAngle);
@@ -206,7 +206,7 @@ namespace BansheeEditor
             Vector3 anchor = GetAnchor(joint, JointBody.Anchor);
             Vector3 center = target;
 
-            Rigidbody rigidbody = joint.GetRigidbody(JointBody.Target);
+            Rigidbody rigidbody = joint.GetBody(JointBody.Target);
             if (rigidbody != null)
                 center = rigidbody.SceneObject.Position;
 
@@ -223,7 +223,7 @@ namespace BansheeEditor
             const float radius = 0.25f;
             const float height = 0.5f;
 
-            if (joint.EnableLimit)
+            if (joint.HasFlag(HingeJointFlag.Limit))
             {
                 Gizmos.Transform = joint.SceneObject.WorldTransform;
 
@@ -231,8 +231,8 @@ namespace BansheeEditor
 
                 Action<float> drawLimitedArc = x =>
                 {
-                    Degree lower = MathEx.WrapAngle(limit.Lower);
-                    Degree upper = MathEx.WrapAngle(limit.Upper);
+                    Degree lower = MathEx.WrapAngle(limit.lower);
+                    Degree upper = MathEx.WrapAngle(limit.upper);
 
                     lower = MathEx.Min(lower, upper);
                     upper = MathEx.Max(upper, lower);

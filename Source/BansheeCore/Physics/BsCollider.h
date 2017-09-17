@@ -117,17 +117,17 @@ namespace bs
 		 * Triggered when some object starts interacting with the collider. Only triggered if proper collision report mode
 		 * is turned on. 
 		 */
-		Event<void(const CollisionData&)> onCollisionBegin;
+		Event<void(const CollisionDataRaw&)> onCollisionBegin;
 		/** 
 		 * Triggered for every frame that an object remains interacting with a collider. Only triggered if proper collision
 		 * report mode is turned on. 
 		 */
-		Event<void(const CollisionData&)> onCollisionStay;
+		Event<void(const CollisionDataRaw&)> onCollisionStay;
 		/**
 		 * Triggered when some object stops interacting with the collider. Only triggered if proper collision report mode
 		 * is turned on. 
 		 */
-		Event<void(const CollisionData&)> onCollisionEnd;
+		Event<void(const CollisionDataRaw&)> onCollisionEnd;
 
 		/** @name Internal
 		 *  @{

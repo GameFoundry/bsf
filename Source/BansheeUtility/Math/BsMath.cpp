@@ -8,13 +8,6 @@
 
 namespace bs
 {
-    const float Math::POS_INFINITY = std::numeric_limits<float>::infinity();
-    const float Math::NEG_INFINITY = -std::numeric_limits<float>::infinity();
-    const float Math::PI = (float)4.0f * std::atan(1.0f);
-    const float Math::TWO_PI = (float)(2.0f * PI);
-    const float Math::HALF_PI = (float)(0.5f * PI);
-	const float Math::DEG2RAD = PI / 180.0f;
-	const float Math::RAD2DEG = 180.0f / PI;
 	const float Math::LOG2 = std::log(2.0f);
 
     Radian Math::acos(float val)

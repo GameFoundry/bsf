@@ -13,7 +13,7 @@ namespace bs
 	 */
 
 	/** Specifies first or second body referenced by a Joint. */
-	enum class JointBody
+	enum class BS_SCRIPT_EXPORT(m:Physics) JointBody
 	{
 		Target, /**< Body the joint is influencing. */
 		Anchor /**< Body the joint is attached to (if any). */
@@ -31,10 +31,10 @@ namespace bs
 		FJoint(const JOINT_DESC& desc) { }
 		virtual ~FJoint() { }
 
-		/** Returns one of the bodies managed by the joint. */
+		/** @copydoc setBody() */
 		virtual Rigidbody* getBody(JointBody body) const = 0;
 
-		/** Sets a body managed by the joint. One of the bodies must be movable (non-kinematic). */
+		/** Determines a body managed by the joint. One of the bodies must be movable (non-kinematic). */
 		virtual void setBody(JointBody body, Rigidbody* value) = 0;
 
 		/** Returns the position relative to the body, at which the body is anchored to the joint. */
@@ -46,34 +46,28 @@ namespace bs
 		/** Sets the position and rotation relative to the body, at which the body is anchored to the joint.  */
 		virtual void setTransform(JointBody body, const Vector3& position, const Quaternion& rotation) = 0;
 
-		/** 
-		 * Returns the maximum force the joint can apply before breaking. Broken joints no longer participate in physics 
-		 * simulation. 
-		 */
+		/** @copydoc setBreakForce() */
 		virtual float getBreakForce() const = 0;
 
 		/** 
-		 * Sets the maximum force the joint can apply before breaking. Broken joints no longer participate in physics 
+		 * Determines the maximum force the joint can apply before breaking. Broken joints no longer participate in physics 
 		 * simulation. 
 		 */
 		virtual void setBreakForce(float force) = 0;
 
-		/** 
-		 * Returns the maximum torque the joint can apply before breaking. Broken joints no longer participate in physics 
-		 * simulation. 
-		 */
+		/** @copydoc setBreakTorque() */
 		virtual float getBreakTorque() const = 0;
 
 		/** 
-		 * Sets the maximum torque the joint can apply before breaking. Broken joints no longer participate in physics 
+		 * Determines the maximum torque the joint can apply before breaking. Broken joints no longer participate in physics 
 		 * simulation. 
 		 */
 		virtual void setBreakTorque(float torque) = 0;
 
-		/** Checks whether collisions between the two bodies managed by the joint are enabled. */
+		/** @copydoc setEnableCollision() */
 		virtual bool getEnableCollision() const = 0;
 
-		/** Sets whether collision between the two bodies managed by the joint are enabled. */
+		/** Determines whether collision between the two bodies managed by the joint are enabled. */
 		virtual void setEnableCollision(bool value) = 0;
 	};
 

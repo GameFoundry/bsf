@@ -33,10 +33,10 @@ namespace bs
 		void setLimit(const LimitLinearRange& limit) override;
 
 		/** @copydoc SliderJoint::setFlag */
-		void setFlag(Flag flag, bool enabled) override;
+		void setFlag(SliderJointFlag flag, bool enabled) override;
 
 		/** @copydoc SliderJoint::hasFlag */
-		bool hasFlag(Flag flag) const override;
+		bool hasFlag(SliderJointFlag flag) const override;
 
 	private:
 		/** Returns the internal PhysX representation of the slider (prismatic) joint. */

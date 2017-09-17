@@ -32,22 +32,22 @@ namespace bs
 			_getInternal()->setLimit(limit);
 	}
 	
-	void CSphericalJoint::setFlag(SphericalJoint::Flag flag, bool enabled)
+	void CSphericalJoint::setFlag(SphericalJointFlag flag, bool enabled)
 	{
 		bool isEnabled = ((UINT32)mDesc.flag & (UINT32)flag) != 0;
 		if (isEnabled == enabled)
 			return;
 
 		if (enabled)
-			mDesc.flag = (SphericalJoint::Flag)((UINT32)mDesc.flag | (UINT32)flag);
+			mDesc.flag = (SphericalJointFlag)((UINT32)mDesc.flag | (UINT32)flag);
 		else
-			mDesc.flag = (SphericalJoint::Flag)((UINT32)mDesc.flag & ~(UINT32)flag);
+			mDesc.flag = (SphericalJointFlag)((UINT32)mDesc.flag & ~(UINT32)flag);
 
 		if (mInternal != nullptr)
 			_getInternal()->setFlag(flag, enabled);
 	}
 
-	bool CSphericalJoint::hasFlag(SphericalJoint::Flag flag) const
+	bool CSphericalJoint::hasFlag(SphericalJointFlag flag) const
 	{
 		return ((UINT32)mDesc.flag & (UINT32)flag) != 0;
 	}

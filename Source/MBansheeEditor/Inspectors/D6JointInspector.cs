@@ -105,19 +105,19 @@ namespace BansheeEditor
                 Persistent.SetBool("drive_Expanded", x);
             };
 
-            drivePositionField.OnChanged += x => { joint.DrivePosition = x; MarkAsModified(); };
+            drivePositionField.OnChanged += x => { joint.SetDriveTransform(x, joint.DriveRotation); MarkAsModified(); };
             drivePositionField.OnFocusLost += ConfirmModify;
             drivePositionField.OnConfirmed += ConfirmModify;
 
-            driveRotationField.OnChanged += x => { joint.DriveRotation = Quaternion.FromEuler(x); MarkAsModified(); };
+            driveRotationField.OnChanged += x => { joint.SetDriveTransform(joint.DrivePosition, Quaternion.FromEuler(x)); MarkAsModified(); };
             driveRotationField.OnFocusLost += ConfirmModify;
             driveRotationField.OnConfirmed += ConfirmModify;
 
-            driveLinVelocityField.OnChanged += x => { joint.DriveLinearVelocity = x; MarkAsModified(); };
+            driveLinVelocityField.OnChanged += x => { joint.SetDriveVelocity(x, joint.DriveAngularVelocity); MarkAsModified(); };
             driveLinVelocityField.OnFocusLost += ConfirmModify;
             driveLinVelocityField.OnConfirmed += ConfirmModify;
 
-            driveAngVelocityField.OnChanged += x => { joint.DriveAngularVelocity = x; MarkAsModified(); };
+            driveAngVelocityField.OnChanged += x => { joint.SetDriveVelocity(joint.DriveLinearVelocity, x); MarkAsModified(); };
             driveAngVelocityField.OnFocusLost += ConfirmModify;
             driveAngVelocityField.OnConfirmed += ConfirmModify;
 
@@ -132,7 +132,8 @@ namespace BansheeEditor
                 limitLinearGUI = new LimitLinearGUI(joint.LimitLinear, linearLimitContentsLayout, Persistent);
                 limitLinearGUI.OnChanged += (x, y) =>
                 {
-                    joint.LimitLinear = new LimitLinear(x, y);
+                    joint.LimitLinear = x;
+                    joint.LimitLinear.SetBase(y);
 
                     MarkAsModified();
                 };
@@ -147,7 +148,8 @@ namespace BansheeEditor
                 limitTwistGUI = new LimitAngularRangeGUI(joint.LimitTwist, twistLimitContentsLayout, Persistent);
                 limitTwistGUI.OnChanged += (x, y) =>
                 {
-                    joint.LimitTwist = new LimitAngularRange(x, y);
+                    joint.LimitTwist = x;
+                    joint.LimitTwist.SetBase(y);
 
                     MarkAsModified();
                 };
@@ -162,7 +164,8 @@ namespace BansheeEditor
                 limitSwingGUI = new LimitConeRangeGUI(joint.LimitSwing, swingLimitContentsLayout, Persistent);
                 limitSwingGUI.OnChanged += (x, y) =>
                 {
-                    joint.LimitSwing = new LimitConeRange(x, y);
+                    joint.LimitSwing = x;
+                    joint.LimitSwing.SetBase(y);
 
                     MarkAsModified();
                 };
@@ -180,7 +183,7 @@ namespace BansheeEditor
                     D6JointDriveType type = (D6JointDriveType)i;
 
                     drivesGUI[i] = new D6JointDriveGUI(joint.GetDrive(type), driveContentsLayout);
-                    drivesGUI[i].OnChanged += x => { joint.SetDrive(type, new D6JointDrive(x)); MarkAsModified(); };
+                    drivesGUI[i].OnChanged += x => { joint.SetDrive(type, x); MarkAsModified(); };
                     drivesGUI[i].OnConfirmed += ConfirmModify;
                 }
 
@@ -228,14 +231,14 @@ namespace BansheeEditor
     /// </summary>
     internal class D6JointDriveGUI
     {
-        private D6JointDriveData driveData;
+        private D6JointDrive driveData;
 
         private GUIFloatField stiffnessField = new GUIFloatField(new LocEdString("Stiffness"));
         private GUIFloatField dampingField = new GUIFloatField(new LocEdString("Damping"));
         private GUIFloatField forceLimitField = new GUIFloatField(new LocEdString("Force limit"));
         private GUIToggleField accelerationField = new GUIToggleField(new LocEdString("Acceleration"));
 
-        public Action<D6JointDriveData> OnChanged;
+        public Action<D6JointDrive> OnChanged;
         public Action OnConfirmed;
 
         /// <summary>
@@ -245,7 +248,7 @@ namespace BansheeEditor
         {
             set
             {
-                driveData = value.Data;
+                driveData = value;
 
                 stiffnessField.Value = driveData.stiffness;
                 dampingField.Value = driveData.damping;
@@ -261,7 +264,7 @@ namespace BansheeEditor
         /// <param name="layout">Layout to append the GUI elements to.</param>
         public D6JointDriveGUI(D6JointDrive drive, GUILayout layout)
         {
-            driveData = drive.Data;
+            driveData = drive;
 
             stiffnessField.OnChanged += x => { driveData.stiffness = x; MarkAsModified(); };
             stiffnessField.OnFocusLost += ConfirmModify;

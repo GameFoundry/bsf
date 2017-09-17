@@ -42,7 +42,7 @@ namespace BansheeEngine
 
                 int subMeshCount = 0;
                 if (value != null)
-                    subMeshCount = value.SubMeshCount;
+                    subMeshCount = (int)value.SubMeshCount;
 
                 Material[] newMaterials = new Material[subMeshCount];
                 int numToCopy = MathEx.Min(newMaterials.Length, serializableData.materials.Length);

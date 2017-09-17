@@ -48,10 +48,10 @@ namespace bs
 		void setSpring(const Spring& value) override;
 
 		/** @copydoc DistanceJoint::setFlag */
-		void setFlag(Flag flag, bool enabled) override;
+		void setFlag(DistanceJointFlag flag, bool enabled) override;
 
 		/** @copydoc DistanceJoint::hasFlag */
-		bool hasFlag(Flag flag) const override;
+		bool hasFlag(DistanceJointFlag flag) const override;
 
 	private:
 		/** Returns the internal PhysX representation of the distance joint. */

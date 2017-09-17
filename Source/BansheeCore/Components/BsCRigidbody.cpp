@@ -166,13 +166,20 @@ namespace bs
 			mInternal->setMaxAngularVelocity(maxVelocity);
 	}
 
-	void CRigidbody::setCenterOfMass(const Vector3& position, const Quaternion& rotation)
+	void CRigidbody::setCenterOfMassPosition(const Vector3& position)
 	{
 		mCMassPosition = position;
+
+		if (mInternal != nullptr)
+			mInternal->setCenterOfMass(position, mCMassRotation);
+	}
+
+	void CRigidbody::setCenterOfMassRotation(const Quaternion& rotation)
+	{
 		mCMassRotation = rotation;
 
 		if (mInternal != nullptr)
-			mInternal->setCenterOfMass(position, rotation);
+			mInternal->setCenterOfMass(mCMassPosition, rotation);
 	}
 
 	Vector3 CRigidbody::getCenterOfMassPosition() const
@@ -218,7 +225,7 @@ namespace bs
 			entry->updateCollisionReportMode();
 	}
 
-	void CRigidbody::setFlags(Rigidbody::Flag flags)
+	void CRigidbody::setFlags(RigidbodyFlag flags)
 	{
 		mFlags = flags;
 
@@ -356,18 +363,20 @@ namespace bs
 		}
 	}
 
-	void CRigidbody::processCollisionData(CollisionData& data)
+	void CRigidbody::processCollisionData(const CollisionDataRaw& data, CollisionData& output)
 	{
-		if (data.collidersRaw[0] != nullptr)
+		output.contactPoints = std::move(data.contactPoints);
+
+		if (data.colliders[0] != nullptr)
 		{
-			CCollider* other = (CCollider*)data.collidersRaw[0]->_getOwner(PhysicsOwnerType::Component);
-			data.collider[0] = other->getHandle();
+			CCollider* other = (CCollider*)data.colliders[0]->_getOwner(PhysicsOwnerType::Component);
+			output.collider[0] = other->getHandle();
 		}
 
-		if (data.collidersRaw[1] != nullptr)
+		if (data.colliders[1] != nullptr)
 		{
-			CCollider* other = (CCollider*)data.collidersRaw[1]->_getOwner(PhysicsOwnerType::Component);
-			data.collider[1] = other->getHandle();
+			CCollider* other = (CCollider*)data.colliders[1]->_getOwner(PhysicsOwnerType::Component);
+			output.collider[1] = other->getHandle();
 		}
 	}
 
@@ -379,29 +388,26 @@ namespace bs
 		mInternal = nullptr;
 	}
 
-	void CRigidbody::triggerOnCollisionBegin(const CollisionData& data)
+	void CRigidbody::triggerOnCollisionBegin(const CollisionDataRaw& data)
 	{
-		// Const-cast and modify is okay because we're the only object receiving this event
-		CollisionData& hit = const_cast<CollisionData&>(data);
-		processCollisionData(hit);
+		CollisionData hit;
+		processCollisionData(data, hit);
 
 		onCollisionBegin(hit);
 	}
 
-	void CRigidbody::triggerOnCollisionStay(const CollisionData& data)
+	void CRigidbody::triggerOnCollisionStay(const CollisionDataRaw& data)
 	{
-		// Const-cast and modify is okay because we're the only object receiving this event
-		CollisionData& hit = const_cast<CollisionData&>(data);
-		processCollisionData(hit);
+		CollisionData hit;
+		processCollisionData(data, hit);
 
 		onCollisionStay(hit);
 	}
 
-	void CRigidbody::triggerOnCollisionEnd(const CollisionData& data)
+	void CRigidbody::triggerOnCollisionEnd(const CollisionDataRaw& data)
 	{
-		// Const-cast and modify is okay because we're the only object receiving this event
-		CollisionData& hit = const_cast<CollisionData&>(data);
-		processCollisionData(hit);
+		CollisionData hit;
+		processCollisionData(data, hit);
 
 		onCollisionEnd(hit);
 	}
@@ -449,7 +455,7 @@ namespace bs
 		mInternal->setIsKinematic(mIsKinematic);
 		mInternal->setFlags(mFlags);
 
-		if(((UINT32)mFlags & (UINT32)Rigidbody::Flag::AutoTensors) == 0)
+		if(((UINT32)mFlags & (UINT32)RigidbodyFlag::AutoTensors) == 0)
 		{
 			mInternal->setCenterOfMass(mCMassPosition, mCMassRotation);
 			mInternal->setInertiaTensor(mInertiaTensor);
@@ -457,7 +463,7 @@ namespace bs
 		}
 		else
 		{
-			if (((UINT32)mFlags & (UINT32)Rigidbody::Flag::AutoMass) == 0)
+			if (((UINT32)mFlags & (UINT32)RigidbodyFlag::AutoMass) == 0)
 				mInternal->setMass(mMass);
 
 			mInternal->updateMassDistribution();
@@ -474,7 +480,7 @@ namespace bs
 			clearColliders();
 			updateColliders();
 
-			if (((UINT32)mFlags & (UINT32)Rigidbody::Flag::AutoTensors) != 0)
+			if (((UINT32)mFlags & (UINT32)RigidbodyFlag::AutoTensors) != 0)
 				mInternal->updateMassDistribution();
 
 #if BS_DEBUG_MODE

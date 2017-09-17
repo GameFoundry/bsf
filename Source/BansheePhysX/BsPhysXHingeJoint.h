@@ -33,16 +33,16 @@ namespace bs
 		void setLimit(const LimitAngularRange& limit) override;
 
 		/** @copydoc HingeJoint::getDrive */
-		Drive getDrive() const override;
+		HingeJointDrive getDrive() const override;
 
 		/** @copydoc HingeJoint::setDrive */
-		void setDrive(const Drive& drive) override;
+		void setDrive(const HingeJointDrive& drive) override;
 
 		/** @copydoc HingeJoint::setFlag */
-		void setFlag(Flag flag, bool enabled) override;
+		void setFlag(HingeJointFlag flag, bool enabled) override;
 
 		/** @copydoc HingeJoint::hasFlag */
-		bool hasFlag(Flag flag) const override;
+		bool hasFlag(HingeJointFlag flag) const override;
 
 	private:
 		/** Returns the internal PhysX representation of the hinge (revolute) joint. */

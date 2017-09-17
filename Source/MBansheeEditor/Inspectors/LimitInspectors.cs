@@ -82,7 +82,7 @@ namespace BansheeEditor
     /// </summary>
     internal class LimitCommonGUI
     {
-        private LimitCommonData limitData;
+        private LimitCommon limitData;
         private SerializableProperties properties;
         private string prefix;
 
@@ -97,13 +97,13 @@ namespace BansheeEditor
         private GUILayoutX softLimitLayout;
         private GUILayoutX springLayout;
 
-        public Action<LimitCommonData> OnChanged;
+        public Action<LimitCommon> OnChanged;
         public Action OnConfirmed;
 
         /// <summary>
         /// Current limit properties.
         /// </summary>
-        public LimitCommonData LimitData
+        public LimitCommon LimitData
         {
             get { return limitData; }
             set
@@ -124,7 +124,7 @@ namespace BansheeEditor
         /// <param name="layout">Layout to append the GUI elements to.</param>
         /// <param name="properties">A set of properties that are persisted by the parent inspector. Used for saving state.
         ///                          </param>
-        public LimitCommonGUI(string prefix, LimitCommonData limitData, GUILayout layout, SerializableProperties properties)
+        public LimitCommonGUI(string prefix, LimitCommon limitData, GUILayout layout, SerializableProperties properties)
         {
             this.limitData = limitData;
             this.properties = properties;
@@ -217,12 +217,12 @@ namespace BansheeEditor
     /// </summary>
     internal class LimitLinearGUI
     {
-        private LimitLinearData limitData;
+        private LimitLinear limitData;
 
         private GUIFloatField limitExtentField = new GUIFloatField(new LocEdString("Extent"));
         private LimitCommonGUI limitCommonGUI;
 
-        public Action<LimitLinearData, LimitCommonData> OnChanged;
+        public Action<LimitLinear, LimitCommon> OnChanged;
         public Action OnConfirmed;
 
         /// <summary>
@@ -232,10 +232,10 @@ namespace BansheeEditor
         {
             set
             {
-                limitData = value.Data;
+                limitData = value;
 
                 limitExtentField.Value = limitData.extent;
-                limitCommonGUI.LimitData = value.CommonData;
+                limitCommonGUI.LimitData = value.GetBase();
             }
         }
 
@@ -248,13 +248,13 @@ namespace BansheeEditor
         ///                          </param>
         public LimitLinearGUI(LimitLinear limit, GUILayout layout, SerializableProperties properties)
         {
-            limitData = limit.Data;
+            limitData = limit;
 
             limitExtentField.OnChanged += x => { limitData.extent = x; MarkAsModified(); };
             limitExtentField.OnFocusLost += ConfirmModify;
 
             layout.AddElement(limitExtentField);
-            limitCommonGUI = new LimitCommonGUI("linear", limit.CommonData, layout, properties);
+            limitCommonGUI = new LimitCommonGUI("linear", limit.GetBase(), layout, properties);
             limitCommonGUI.OnChanged += x => MarkAsModified();
             limitCommonGUI.OnConfirmed += ConfirmModify;
         }
@@ -283,13 +283,13 @@ namespace BansheeEditor
     /// </summary>
     internal class LimitLinearRangeGUI
     {
-        private LimitLinearRangeData limitData;
+        private LimitLinearRange limitData;
 
         private GUIFloatField limitLowerField = new GUIFloatField(new LocEdString("Lower"));
         private GUIFloatField limitUpperField = new GUIFloatField(new LocEdString("Upper"));
         private LimitCommonGUI limitCommonGUI;
 
-        public Action<LimitLinearRangeData, LimitCommonData> OnChanged;
+        public Action<LimitLinearRange, LimitCommon> OnChanged;
         public Action OnConfirmed;
 
         /// <summary>
@@ -299,11 +299,11 @@ namespace BansheeEditor
         {
             set
             {
-                limitData = value.Data;
+                limitData = value;
 
                 limitLowerField.Value = limitData.lower;
                 limitUpperField.Value = limitData.upper;
-                limitCommonGUI.LimitData = value.CommonData;
+                limitCommonGUI.LimitData = value.GetBase();
             }
         }
 
@@ -316,7 +316,7 @@ namespace BansheeEditor
         ///                          </param>
         public LimitLinearRangeGUI(LimitLinearRange limit, GUILayout layout, SerializableProperties properties)
         {
-            this.limitData = limit.Data;
+            this.limitData = limit;
 
             limitLowerField.OnChanged += x => { limitData.lower = x; MarkAsModified(); };
             limitLowerField.OnFocusLost += ConfirmModify;
@@ -326,7 +326,7 @@ namespace BansheeEditor
 
             layout.AddElement(limitLowerField);
             layout.AddElement(limitUpperField);
-            limitCommonGUI = new LimitCommonGUI("linearRange", limit.CommonData, layout, properties);
+            limitCommonGUI = new LimitCommonGUI("linearRange", limit.GetBase(), layout, properties);
             limitCommonGUI.OnChanged += x => MarkAsModified();
             limitCommonGUI.OnConfirmed += ConfirmModify;
         }
@@ -355,13 +355,13 @@ namespace BansheeEditor
     /// </summary>
     internal class LimitAngularRangeGUI
     {
-        private LimitAngularRangeData limitData;
+        private LimitAngularRange limitData;
 
         private GUISliderField limitLowerField = new GUISliderField(0, 359, new LocEdString("Lower"));
         private GUISliderField limitUpperField = new GUISliderField(0, 359, new LocEdString("Upper"));
         private LimitCommonGUI limitCommonGUI;
 
-        public Action<LimitAngularRangeData, LimitCommonData> OnChanged;
+        public Action<LimitAngularRange, LimitCommon> OnChanged;
         public Action OnConfirmed;
 
         /// <summary>
@@ -371,11 +371,11 @@ namespace BansheeEditor
         {
             set
             {
-                limitData = value.Data;
+                limitData = value;
 
                 limitLowerField.Value = limitData.lower.Degrees;
                 limitUpperField.Value = limitData.upper.Degrees;
-                limitCommonGUI.LimitData = value.CommonData;
+                limitCommonGUI.LimitData = value.GetBase();
             }
         }
 
@@ -388,7 +388,7 @@ namespace BansheeEditor
         ///                          </param>
         public LimitAngularRangeGUI(LimitAngularRange limit, GUILayout layout, SerializableProperties properties)
         {
-            this.limitData = limit.Data;
+            this.limitData = limit;
 
             limitLowerField.OnChanged += x => { limitData.lower = new Degree(x); MarkAsModified(); };
             limitLowerField.OnFocusLost += ConfirmModify;
@@ -398,7 +398,7 @@ namespace BansheeEditor
 
             layout.AddElement(limitLowerField);
             layout.AddElement(limitUpperField);
-            limitCommonGUI = new LimitCommonGUI("angularRange", limit.CommonData, layout, properties);
+            limitCommonGUI = new LimitCommonGUI("angularRange", limit.GetBase(), layout, properties);
             limitCommonGUI.OnChanged += x => MarkAsModified();
             limitCommonGUI.OnConfirmed += ConfirmModify;
         }
@@ -427,13 +427,13 @@ namespace BansheeEditor
     /// </summary>
     internal class LimitConeRangeGUI
     {
-        private LimitConeRangeData limitData;
+        private LimitConeRange limitData;
 
         private GUISliderField yLimitAngleField = new GUISliderField(0, 180, new LocEdString("Y limit"));
         private GUISliderField zLimitAngleField = new GUISliderField(0, 180, new LocEdString("Z limit"));
         private LimitCommonGUI limitCommonGUI;
 
-        public Action<LimitConeRangeData, LimitCommonData> OnChanged;
+        public Action<LimitConeRange, LimitCommon> OnChanged;
         public Action OnConfirmed;
 
         /// <summary>
@@ -443,11 +443,11 @@ namespace BansheeEditor
         {
             set
             {
-                limitData = value.Data;
+                limitData = value;
 
                 yLimitAngleField.Value = limitData.yLimitAngle.Degrees;
                 zLimitAngleField.Value = limitData.zLimitAngle.Degrees;
-                limitCommonGUI.LimitData = value.CommonData;
+                limitCommonGUI.LimitData = value.GetBase();
             }
         }
 
@@ -460,7 +460,7 @@ namespace BansheeEditor
         ///                          </param>
         public LimitConeRangeGUI(LimitConeRange limit, GUILayout layout, SerializableProperties properties)
         {
-            this.limitData = limit.Data;
+            this.limitData = limit;
 
             yLimitAngleField.OnChanged += x => { limitData.yLimitAngle = new Degree(x); MarkAsModified(); };
             yLimitAngleField.OnFocusLost += ConfirmModify;
@@ -470,7 +470,7 @@ namespace BansheeEditor
 
             layout.AddElement(yLimitAngleField);
             layout.AddElement(zLimitAngleField);
-            limitCommonGUI = new LimitCommonGUI("coneRange", limit.CommonData, layout, properties);
+            limitCommonGUI = new LimitCommonGUI("coneRange", limit.GetBase(), layout, properties);
             limitCommonGUI.OnChanged += x => MarkAsModified();
             limitCommonGUI.OnConfirmed += ConfirmModify;
         }

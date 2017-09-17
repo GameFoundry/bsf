@@ -10,12 +10,12 @@ using namespace physx;
 
 namespace bs
 {
-	PxPrismaticJointFlag::Enum toPxFlag(PhysXSliderJoint::Flag flag)
+	PxPrismaticJointFlag::Enum toPxFlag(SliderJointFlag flag)
 	{
 		switch (flag)
 		{
 		default:
-		case PhysXSliderJoint::Flag::Limit:
+		case SliderJointFlag::Limit:
 			return PxPrismaticJointFlag::eLIMIT_ENABLED;
 		}
 	}
@@ -41,7 +41,7 @@ namespace bs
 
 		PxPrismaticJointFlags flags;
 
-		if (((UINT32)desc.flag & (UINT32)Flag::Limit) != 0)
+		if (((UINT32)desc.flag & (UINT32)SliderJointFlag::Limit) != 0)
 			flags |= PxPrismaticJointFlag::eLIMIT_ENABLED;
 
 		joint->setPrismaticJointFlags(flags);
@@ -90,12 +90,12 @@ namespace bs
 		getInternal()->setLimit(pxLimit);
 	}
 
-	void PhysXSliderJoint::setFlag(Flag flag, bool enabled)
+	void PhysXSliderJoint::setFlag(SliderJointFlag flag, bool enabled)
 	{
 		getInternal()->setPrismaticJointFlag(toPxFlag(flag), enabled);
 	}
 
-	bool PhysXSliderJoint::hasFlag(Flag flag) const
+	bool PhysXSliderJoint::hasFlag(SliderJointFlag flag) const
 	{
 		return getInternal()->getPrismaticJointFlags() & toPxFlag(flag);
 	}

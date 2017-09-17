@@ -239,7 +239,8 @@
  *		  parameter and return no values. Usable on methods only.
  *	- ed - Specify that a type should be exported for use in the editor only. Supported values are "true" or "false".
  *		   Usable on types only.
- *  - ex - Excludes an enum member from being generated in script code. Supported values are "true" or "false".
+ *  - ex - Excludes an enum or struct member from being generated in script code. Supported values are "true" or "false".
+ *		   By default all struct & enum members are exported.
  *  - in - When enabled ensures only the interop C# method is generated, but not a public one. It is instead expected
  *		   the user will manually implement the public method. Supported values are "true" or "false". Default is "false".
  *		   Only supported on methods.

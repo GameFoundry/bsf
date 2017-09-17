@@ -33,7 +33,7 @@ namespace BansheeEditor
         /// <param name="collider">Collider to update the GUI from.</param>
         protected virtual void Refresh(Collider collider)
         {
-            isTriggerField.Value = collider.IsTrigger;
+            isTriggerField.Value = collider.Trigger;
             massField.Value = collider.Mass;
             materialField.Value = collider.Material;
             contactOffsetField.Value = collider.ContactOffset;
@@ -56,7 +56,7 @@ namespace BansheeEditor
         /// </summary>
         protected virtual void BuildGUI(Collider collider)
         {
-            isTriggerField.OnChanged += x => { collider.IsTrigger = x; MarkAsModified(); ConfirmModify(); };
+            isTriggerField.OnChanged += x => { collider.Trigger = x; MarkAsModified(); ConfirmModify(); };
 
             massField.OnChanged += x => { collider.Mass = x; MarkAsModified(); };
             massField.OnConfirmed += ConfirmModify;

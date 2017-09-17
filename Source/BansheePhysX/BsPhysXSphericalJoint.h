@@ -27,10 +27,10 @@ namespace bs
 		void setLimit(const LimitConeRange& limit) override;
 
 		/** @copydoc SphericalJoint::setFlag */
-		void setFlag(Flag flag, bool enabled) override;
+		void setFlag(SphericalJointFlag flag, bool enabled) override;
 
 		/** @copydoc SphericalJoint::hasFlag */
-		bool hasFlag(Flag flag) const override;
+		bool hasFlag(SphericalJointFlag flag) const override;
 
 	private:
 		/** Returns the internal PhysX representation of the spherical joint. */

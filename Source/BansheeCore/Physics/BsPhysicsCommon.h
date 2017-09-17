@@ -13,7 +13,7 @@ namespace bs
 	 */
 
 	/** Information about a single contact point during physics collision. */
-	struct ContactPoint
+	struct BS_SCRIPT_EXPORT(m:Physics,pl:true) ContactPoint
 	{
 		Vector3 position; /**< Contact point in world space. */
 		Vector3 normal; /**< Normal pointing from the second shape to the first shape. */
@@ -23,15 +23,20 @@ namespace bs
 	};
 
 	/** Information about a collision between two physics objects. */
-	struct CollisionData
+	struct CollisionDataRaw
 	{
-		Collider* collidersRaw[2]; /**< Colliders involved in the collision. */
+		Collider* colliders[2]; /**< Colliders involved in the collision. */
 
-		/** 
-		 * Components of the colliders that were hit. Can be null if collider is not owned by a component, in which case
-		 * use #collidersRaw directly. 
-		 */
+		// Note: Not too happy this is heap allocated, use static allocator?
+		Vector<ContactPoint> contactPoints; /**< Information about all the contact points for the hit. */ 
+	};
+
+	/** Information about a collision between two physics objects. */
+	struct BS_SCRIPT_EXPORT(m:Physics,pl:true) CollisionData
+	{
+		/** Components of the colliders that have collided. */
 		HCollider collider[2]; 
+
 		// Note: Not too happy this is heap allocated, use static allocator?
 		Vector<ContactPoint> contactPoints; /**< Information about all the contact points for the hit. */ 
 	};
@@ -52,7 +57,7 @@ namespace bs
 	};
 
 	/** Determines which collision events will be reported by physics objects. */
-	enum class CollisionReportMode
+	enum class BS_SCRIPT_EXPORT(m:Physics) CollisionReportMode
 	{
 		None, /**< No collision events will be triggered. */
 		Report, /**< Collision events will be triggered when object enters and/or leaves collision. */
@@ -64,19 +69,22 @@ namespace bs
 	};
 
 	/** Hit information from a physics query. */
-	struct PhysicsQueryHit
+	struct BS_SCRIPT_EXPORT(m:Physics,pl:true) PhysicsQueryHit
 	{
 		Vector3 point; /**< Position of the hit in world space. */
 		Vector3 normal; /**< Normal to the surface that was hit. */
 		Vector2 uv; /**< Barycentric coordinates of the triangle that was hit (only applicable when triangle meshes are hit). */
 		float distance = 0.0f; /**< Distance from the query origin to the hit position. */
 		UINT32 triangleIdx = 0; /**< Index of the triangle that was hit (only applicable when triangle meshes are hit). */
-		Collider* colliderRaw = nullptr; /**< Collider that was hit. */
+
 		/** 
 		 * Component of the collider that was hit. This may be null if the hit collider has no owner component, in which
 		 * case refer to #colliderRaw.
 		 */
 		HCollider collider;
+
+		BS_SCRIPT_EXPORT(ex:true)
+		Collider* colliderRaw = nullptr; /**< Collider that was hit. */
 	};
 
 	/** @} */
