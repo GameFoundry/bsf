@@ -163,6 +163,8 @@ namespace bs
 			mBounds = Sphere(center, radius);
 		}
 			break;
+		default:
+			break;
 		}
 	}
 

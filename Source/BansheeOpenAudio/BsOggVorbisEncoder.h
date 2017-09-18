@@ -3,7 +3,7 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
-#include "vorbis\vorbisenc.h"
+#include "vorbis/vorbisenc.h"
 
 namespace bs
 {

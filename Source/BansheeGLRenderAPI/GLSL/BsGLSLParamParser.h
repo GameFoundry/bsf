@@ -3,10 +3,10 @@
 #pragma once
 
 #include "BsGLPrerequisites.h"
-#include "Renderapi/BsVertexDeclaration.h"
+#include "RenderAPI/BsVertexDeclaration.h"
 #include "Debug/BsDebug.h"
 #include "Error/BsException.h"
-#include "Renderapi/BsGpuParamDesc.h"
+#include "RenderAPI/BsGpuParamDesc.h"
 
 namespace bs { namespace ct
 {

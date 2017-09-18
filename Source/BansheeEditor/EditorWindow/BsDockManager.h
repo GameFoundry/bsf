@@ -265,7 +265,7 @@ namespace bs
 		DockOverlayRenderer();
 
 	private:
-		friend class DockManager;
+		friend class bs::DockManager;
 
 		/**	@copydoc RendererExtension::initialize */
 		void initialize(const Any& data) override;

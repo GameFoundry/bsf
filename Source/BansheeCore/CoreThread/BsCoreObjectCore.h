@@ -55,6 +55,7 @@ namespace bs
 
 	protected:
 		friend class CoreObjectManager;
+		friend class bs::CoreObjectManager;
 		friend class bs::CoreObject;
 
 		/**

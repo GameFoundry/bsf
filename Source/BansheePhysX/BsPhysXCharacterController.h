@@ -5,7 +5,7 @@
 #include "BsPhysXPrerequisites.h"
 #include "Physics/BsCharacterController.h"
 #include "PxPhysics.h"
-#include "characterkinematic\PxCapsuleController.h"
+#include "characterkinematic/PxCapsuleController.h"
 
 namespace bs
 {

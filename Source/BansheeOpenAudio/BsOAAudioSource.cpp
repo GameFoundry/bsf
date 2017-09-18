@@ -8,7 +8,7 @@
 namespace bs
 {
 	OAAudioSource::OAAudioSource()
-		: mSavedTime(0.0f), mState(AudioSourceState::Stopped), mSavedState(AudioSourceState::Stopped)
+		: mSavedTime(0.0f), mSavedState(AudioSourceState::Stopped), mState(AudioSourceState::Stopped)
 		, mGloballyPaused(false), mStreamBuffers(), mBusyBuffers(), mStreamProcessedPosition(0), mStreamQueuedPosition(0)
 		, mIsStreaming(false)
 	{

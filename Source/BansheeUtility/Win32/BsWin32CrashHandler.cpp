@@ -468,6 +468,8 @@ namespace bs
 		win32_writeMiniDump(getCrashFolder() + String(sMiniDumpName), nullptr);
 		win32_popupErrorMessageBox(toWString(sFatalErrorMsg), getCrashFolder());
 
+		DebugBreak();
+
 		// Note: Potentially also log Windows Error Report and/or send crash data to server
 	}
 
@@ -487,6 +489,8 @@ namespace bs
 
 		win32_writeMiniDump(getCrashFolder() + String(sMiniDumpName), exceptionData);
 		win32_popupErrorMessageBox(toWString(sFatalErrorMsg), getCrashFolder());
+
+		DebugBreak();
 
 		// Note: Potentially also log Windows Error Report and/or send crash data to server
 

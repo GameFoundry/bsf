@@ -4,7 +4,7 @@
 #define YY_USER_ACTION yylloc->first_column = yycolumn + 1; yylloc->first_line = yylineno + 1; yycolumn += (int)yyleng; yylloc->filename = getCurrentFilename(yyextra);
 #define YY_USER_INIT yylineno = 0; yycolumn = 0;
 %}
- 
+
 %option yylineno reentrant noyywrap nounistd never-interactive warn nodefault bison-bridge bison-locations
 %option outfile="BsLexerFX.c" header-file="BsLexerFX.h"
 %option extra-type="struct tagParseState *"

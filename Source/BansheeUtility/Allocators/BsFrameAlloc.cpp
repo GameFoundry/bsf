@@ -34,8 +34,7 @@ namespace bs
 	}
 #else
 	FrameAlloc::FrameAlloc(UINT32 blockSize)
-		:mTotalAllocBytes(0), mFreeBlock(nullptr), mBlockSize(blockSize),
-		mLastFrame(nullptr), mNextBlockIdx(0)
+		: mBlockSize(blockSize), mFreeBlock(nullptr), mNextBlockIdx(0), mTotalAllocBytes(0), mLastFrame(nullptr)
 	{
 		allocBlock(mBlockSize);
 	}
@@ -84,7 +83,7 @@ namespace bs
 		UINT32 freePtr = mFreeBlock->mFreePtr;
 #endif
 
-		UINT32 alignOffset = alignment - freePtr & (alignment - 1);
+		UINT32 alignOffset = alignment - (freePtr & (alignment - 1));
 
 		UINT32 freeMem = mFreeBlock->mSize - mFreeBlock->mFreePtr;
 		if ((amount + alignOffset) > freeMem)
@@ -266,7 +265,7 @@ namespace bs
 
 		if (newBlock == nullptr)
 		{
-			UINT32 alignOffset = 16 - sizeof(MemBlock) & (16 - 1);
+			UINT32 alignOffset = 16 - (sizeof(MemBlock) & (16 - 1));
 
 			UINT8* data = (UINT8*)reinterpret_cast<UINT8*>(bs_alloc_aligned16(blockSize + sizeof(MemBlock) + alignOffset));
 			newBlock = new (data) MemBlock(blockSize);

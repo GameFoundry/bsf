@@ -17,7 +17,7 @@
 	static void _initMetaData()												\
 	{																		\
 		_initVariations(mMetaData.variations);								\
-		RendererMaterialManager::_registerMaterial(&mMetaData, path);		\
+		bs::RendererMaterialManager::_registerMaterial(&mMetaData, path);	\
 	};																		\
 	static void _initVariations(ShaderVariations& variations);
 

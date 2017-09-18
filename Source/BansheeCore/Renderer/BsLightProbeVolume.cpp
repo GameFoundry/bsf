@@ -534,7 +534,7 @@ namespace bs
 				}
 
 				// Found an empty slot
-				if (compactIdx == -1)
+				if (compactIdx == (UINT32)-1)
 				{
 					compactIdx = (UINT32)mProbeInfos.size();
 
@@ -577,7 +577,7 @@ namespace bs
 				// Move the empty info to the back of the array so all non-empty probes are contiguous
 				// Search from back to current index, and find first non-empty probe to switch switch
 				UINT32 lastSearchIdx = (UINT32)mProbeInfos.size() - 1;
-				while (lastSearchIdx >= (INT32)compactIdx)
+				while (lastSearchIdx >= (UINT32)compactIdx)
 				{
 					LightProbeFlags flags = mProbeInfos[lastSearchIdx].flags;
 					if (flags != LightProbeFlags::Empty)

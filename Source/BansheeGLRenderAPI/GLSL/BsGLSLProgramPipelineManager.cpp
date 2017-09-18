@@ -1,7 +1,7 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
-#include "Glsl/BsGLSLProgramPipelineManager.h"
-#include "Glsl/BsGLSLGpuProgram.h"
+#include "GLSL/BsGLSLProgramPipelineManager.h"
+#include "GLSL/BsGLSLGpuProgram.h"
 #include "Profiling/BsRenderStats.h"
 
 namespace bs { namespace ct

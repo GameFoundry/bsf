@@ -7,7 +7,7 @@
 #include "Physics/BsPhysicsCommon.h"
 #include "PxPhysics.h"
 #include "foundation/Px.h"
-#include "characterkinematic\PxControllerManager.h"
+#include "characterkinematic/PxControllerManager.h"
 #include "cooking/PxCooking.h"
 
 namespace bs

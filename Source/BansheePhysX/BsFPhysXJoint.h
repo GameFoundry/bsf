@@ -4,7 +4,7 @@
 
 #include "BsPhysXPrerequisites.h"
 #include "Physics/BsFJoint.h"
-#include "extensions\PxJoint.h"
+#include "extensions/PxJoint.h"
 
 namespace bs
 {

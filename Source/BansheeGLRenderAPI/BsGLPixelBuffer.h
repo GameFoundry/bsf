@@ -3,7 +3,7 @@
 #pragma once
 
 #include "BsGLPrerequisites.h"
-#include "Renderapi/BsHardwareBuffer.h"
+#include "RenderAPI/BsHardwareBuffer.h"
 #include "Image/BsPixelUtil.h"
 
 namespace bs { namespace ct

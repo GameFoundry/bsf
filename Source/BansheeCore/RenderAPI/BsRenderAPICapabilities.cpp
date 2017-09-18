@@ -9,7 +9,7 @@ namespace bs
 
 	RenderAPICapabilities::RenderAPICapabilities()
 	{
-		for(int i = 0; i < CAPS_CATEGORY_COUNT; i++)
+		for(UINT32 i = 0; i < CAPS_CATEGORY_COUNT; i++)
 		{
 			mCapabilities[i] = 0;
 		}

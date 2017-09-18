@@ -1,12 +1,14 @@
 # Source files and their filters
 include(CMakeSources.cmake)
 
+# Packages
+find_package(FBXSDK REQUIRED)
+
 # Includes
 set(BansheeFBXImporter_INC 
 	"./" 
 	"../BansheeUtility" 
-	"../BansheeCore"
-	"../../Dependencies/FBXSDK/include")
+	"../BansheeCore")
 
 include_directories(${BansheeFBXImporter_INC})	
 	
@@ -18,10 +20,10 @@ target_compile_definitions(BansheeFBXImporter PRIVATE -DBS_FBX_EXPORTS)
 
 # Libraries
 ## External lib: FBX
-add_library_per_config(BansheeFBXImporter FBXSDK Release/libfbxsdk-md Debug/libfbxsdk-md)	
+target_link_libraries(BansheeFBXImporter ${FBXSDK_LIBRARIES})
 
 ## Local libs
-target_link_libraries(BansheeFBXImporter PUBLIC BansheeUtility BansheeCore)
+target_link_libraries(BansheeFBXImporter BansheeUtility BansheeCore)
 
 # IDE specific
 set_property(TARGET BansheeFBXImporter PROPERTY FOLDER Plugins)

@@ -191,7 +191,7 @@ namespace bs
 		else
 			newlinePos = -1;
 
-		if (newlinePos == -1)
+		if (newlinePos == (UINT32)-1)
 		{
 			GUIContent messageContent(HString(message), iconTexture);
 			mMessage->setContent(messageContent);

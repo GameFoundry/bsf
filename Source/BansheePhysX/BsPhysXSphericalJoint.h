@@ -5,7 +5,7 @@
 #include "BsPhysXPrerequisites.h"
 #include "Physics/BsSphericalJoint.h"
 #include "PxPhysics.h"
-#include "extensions\PxSphericalJoint.h"
+#include "extensions/PxSphericalJoint.h"
 
 namespace bs
 {

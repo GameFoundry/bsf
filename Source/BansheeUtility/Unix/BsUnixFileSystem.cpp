@@ -1,9 +1,9 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
-#include "Filesystem/BsFileSystem.h"
+#include "FileSystem/BsFileSystem.h"
 
 #include "Error/BsException.h"
-#include "Filesystem/BsDataStream.h"
+#include "FileSystem/BsDataStream.h"
 #include "Debug/BsDebug.h"
 
 #include <dirent.h>
@@ -52,18 +52,17 @@ namespace bs
 	{
 		struct stat st_buf;
 		if (unix_stat(path, &st_buf))
-		{
 			return S_ISREG(st_buf.st_mode);
-		}
+
+		return false;
 	}
 
 	bool unix_isDirectory(const String& path)
 	{
 		struct stat st_buf;
 		if (unix_stat(path, &st_buf))
-		{
 			return S_ISDIR(st_buf.st_mode);
-		}
+
 		return false;
 	}
 
@@ -202,13 +201,9 @@ namespace bs
 			if (filename != "." && filename != "..")
 			{
 				if (unix_isDirectory(pathStr + "/" + filename))
-				{
 					directories.push_back(dirPath + (filename + "/"));
-				}
 				else
-				{
 					files.push_back(dirPath + filename);
-				}
 			}
 		}
 		closedir(dp);
@@ -219,16 +214,18 @@ namespace bs
 		struct stat st_buf;
 		stat(path.toString().c_str(), &st_buf);
 		std::time_t time = st_buf.st_mtime;
+
 		return time;
 	}
 
 	Path FileSystem::getWorkingDirectoryPath()
 	{
 		char *buffer = bs_newN<char>(PATH_MAX);
-		String wd;
 
+		String wd;
 		if (getcwd(buffer, PATH_MAX) != NULL)
 			wd = buffer;
+
 		bs_free(buffer);
 
 		const int error = errno;

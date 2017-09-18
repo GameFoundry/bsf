@@ -4,7 +4,7 @@
 
 #include "BsOAPrerequisites.h"
 #include "BsAudioDecoder.h"
-#include "FLAC\stream_decoder.h"
+#include "FLAC/stream_decoder.h"
 
 namespace bs
 {

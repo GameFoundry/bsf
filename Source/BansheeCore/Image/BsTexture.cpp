@@ -52,19 +52,14 @@ namespace bs
 		UINT32 height = getHeight();
 		UINT32 depth = getDepth();
 
-		UINT32 totalSize = PixelUtil::getMemorySize(width, height, depth, getFormat());
-
 		for (UINT32 j = 0; j < mipLevel; j++)
 		{
-			totalSize = PixelUtil::getMemorySize(width, height, depth, getFormat());
-
 			if (width != 1) width /= 2;
 			if (height != 1) height /= 2;
 			if (depth != 1) depth /= 2;
 		}
 
 		SPtr<PixelData> dst = bs_shared_ptr_new<PixelData>(width, height, depth, getFormat());
-
 		dst->allocateInternalBuffer();
 
 		return dst;

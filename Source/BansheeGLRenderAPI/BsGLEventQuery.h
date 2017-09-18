@@ -3,7 +3,7 @@
 #pragma once
 
 #include "BsGLPrerequisites.h"
-#include "Renderapi/BsEventQuery.h"
+#include "RenderAPI/BsEventQuery.h"
 
 namespace bs { namespace ct
 {

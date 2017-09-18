@@ -9,6 +9,8 @@
 
 namespace bs
 {
+	class RenderWindowManager;
+
 	/** @addtogroup RenderAPI
 	 *  @{
 	 */
@@ -322,8 +324,8 @@ namespace bs
 
 	protected:
 		friend class bs::RenderWindow;
-		friend class bs::RenderWindowManager;
 		friend class RenderWindowManager;
+		friend class bs::RenderWindowManager;
 
 		/**
 		 * Returns window properties that are always kept in sync between core and sim threads.

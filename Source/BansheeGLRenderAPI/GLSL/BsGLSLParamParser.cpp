@@ -1,6 +1,6 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
-#include "Glsl/BsGLSLParamParser.h"
+#include "GLSL/BsGLSLParamParser.h"
 
 namespace bs { namespace ct
 {
@@ -566,14 +566,14 @@ namespace bs { namespace ct
 				GpuParamDataDesc& structDesc = foundStructs[structName];
 
 				assert(gpuParam.cpuMemOffset >= structDesc.cpuMemOffset);
-				if (arrayIdx == firstArrayIndex) // Determine element size only using the first array element
+				if (arrayIdx == (UINT32)firstArrayIndex) // Determine element size only using the first array element
 				{
 					structDesc.elementSize = std::max(structDesc.elementSize, (gpuParam.cpuMemOffset - structDesc.cpuMemOffset) + gpuParam.arrayElementStride * gpuParam.arraySize);
 					structDesc.arrayElementStride = structDesc.elementSize;
 				}
 
 				// New array element reached, determine arrayElementStride
-				if (arrayIdx != firstArrayIndex)
+				if (arrayIdx != (UINT32)firstArrayIndex)
 				{
 					UINT32 numElements = arrayIdx - firstArrayIndex;
 					structDesc.arrayElementStride = (gpuParam.cpuMemOffset - structDesc.cpuMemOffset) / numElements;

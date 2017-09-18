@@ -5,7 +5,7 @@ project (Banshee)
 set (BS_VERSION_MAJOR 0)
 set (BS_VERSION_MINOR 4)
 
-set (BS_PREBUILT_DEPENDENCIES_VERSION 8)
+set (BS_PREBUILT_DEPENDENCIES_VERSION 9)
 set (BS_SRC_DEPENDENCIES_VERSION 15)
 
 # Configuration types
@@ -65,32 +65,36 @@ include(CMake/Common.cmake)
 
 # Ensure dependencies are up to date
 ## Check prebuilt dependencies that are downloaded in a .zip
-set(BUILTIN_DEP_VERSION_FILE ${PROJECT_SOURCE_DIR}/../Dependencies/.version)
-if(NOT EXISTS ${BUILTIN_DEP_VERSION_FILE})
-	message(STATUS "Binary dependencies are missing. Downloading package...")
-	update_binary_deps()	
-else()
-	file (STRINGS ${BUILTIN_DEP_VERSION_FILE} CURRENT_BUILTIN_DEP_VERSION)
-	if(${BS_PREBUILT_DEPENDENCIES_VERSION} GREATER ${CURRENT_BUILTIN_DEP_VERSION})
-		message(STATUS "Your precomiled dependencies package is out of date. Downloading latest package...")
-		update_binary_deps()
+if(WIN32)
+	set(BUILTIN_DEP_VERSION_FILE ${PROJECT_SOURCE_DIR}/../Dependencies/.version)
+	if(NOT EXISTS ${BUILTIN_DEP_VERSION_FILE})
+		message(STATUS "Binary dependencies are missing. Downloading package...")
+		update_binary_deps(${BS_PREBUILT_DEPENDENCIES_VERSION})	
+	else()
+		file (STRINGS ${BUILTIN_DEP_VERSION_FILE} CURRENT_BUILTIN_DEP_VERSION)
+		if(${BS_PREBUILT_DEPENDENCIES_VERSION} GREATER ${CURRENT_BUILTIN_DEP_VERSION})
+			message(STATUS "Your precomiled dependencies package is out of date. Downloading latest package...")
+			update_binary_deps(${BS_PREBUILT_DEPENDENCIES_VERSION})
+		endif()
 	endif()
 endif()
 	
 ## Check dependencies built from source
-set(SOURCE_DEP_BUILD_DIR ${PROJECT_SOURCE_DIR}/../Dependencies/Build)
-set(SOURCE_DEP_BUILD_VERSION_FILE ${SOURCE_DEP_BUILD_DIR}/.version)
-if(EXISTS ${SOURCE_DEP_BUILD_VERSION_FILE})
-	file (STRINGS ${SOURCE_DEP_BUILD_VERSION_FILE} CURRENT_SOURCE_DEP_VERSION)
-	if(${BS_SRC_DEPENDENCIES_VERSION} GREATER ${CURRENT_SOURCE_DEP_VERSION})
+if(WIN32)
+	set(SOURCE_DEP_BUILD_DIR ${PROJECT_SOURCE_DIR}/../Dependencies/Build)
+	set(SOURCE_DEP_BUILD_VERSION_FILE ${SOURCE_DEP_BUILD_DIR}/.version)
+	if(EXISTS ${SOURCE_DEP_BUILD_VERSION_FILE})
+		file (STRINGS ${SOURCE_DEP_BUILD_VERSION_FILE} CURRENT_SOURCE_DEP_VERSION)
+		if(${BS_SRC_DEPENDENCIES_VERSION} GREATER ${CURRENT_SOURCE_DEP_VERSION})
+			message(STATUS "Built dependencies are out of date, forcing recompile.")
+			execute_process(COMMAND "${CMAKE_COMMAND}" 
+				-E remove_directory "${SOURCE_DEP_BUILD_DIR}")	
+		endif()
+	else()
 		message(STATUS "Built dependencies are out of date, forcing recompile.")
 		execute_process(COMMAND "${CMAKE_COMMAND}" 
 			-E remove_directory "${SOURCE_DEP_BUILD_DIR}")	
 	endif()
-else()
-	message(STATUS "Built dependencies are out of date, forcing recompile.")
-	execute_process(COMMAND "${CMAKE_COMMAND}" 
-		-E remove_directory "${SOURCE_DEP_BUILD_DIR}")	
 endif()
 
 # Includes required for various find_package calls
@@ -147,19 +151,27 @@ if(MSVC)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	# Note: Optionally add -ffunction-sections, -fdata-sections, but with linker option --gc-sections
 	# TODO: Use link-time optimization -flto. Might require non-default linker.
-	set(BS_COMPILER_FLAGS_COMMON "-fpic -fno-exceptions -fno-strict-aliasing -fno-rtti -fno-ms-compatibility -fms-extensions")
-	
-	set(CMAKE_CXX_FLAGS_DEBUG "${BS_COMPILER_FLAGS_COMMON} -g -O0")
-	set(CMAKE_CXX_FLAGS_OPTIMIZEDDEBUG "${BS_COMPILER_FLAGS_COMMON} -gline-tables-only -O2")
-	set(CMAKE_CXX_FLAGS_RELEASE "${BS_COMPILER_FLAGS_COMMON} -g0 -O2")
-elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-	# TODO: Use link-time optimization -flto. Might require non-default linker.
-	set(BS_COMPILER_FLAGS_COMMON "-fpic -fno-exceptions -fno-strict-aliasing -fno-rtti")
+	set(BS_COMPILER_FLAGS_COMMON "-Wall -fPIC -fno-exceptions -fno-strict-aliasing -fno-rtti -fno-ms-compatibility
+	-fms-extensions")
 	
 	set(CMAKE_CXX_FLAGS_DEBUG "${BS_COMPILER_FLAGS_COMMON} -g -O0")
 	set(CMAKE_CXX_FLAGS_OPTIMIZEDDEBUG "${BS_COMPILER_FLAGS_COMMON} -gline-tables-only -O2")
 	set(CMAKE_CXX_FLAGS_RELEASE "${BS_COMPILER_FLAGS_COMMON} -g0 -O2")
 
+	set(CMAKE_SHARED_LINKER_FLAGS_RELEASE -s)
+	set(CMAKE_MODULE_LINKER_FLAGS_RELEASE -s)
+	set(CMAKE_EXE_LINKER_FLAGS_RELEASE -s)
+elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+	# TODO: Use link-time optimization -flto. Might require non-default linker.
+	set(BS_COMPILER_FLAGS_COMMON "-Wall -fPIC -fno-exceptions -fno-strict-aliasing -fno-rtti")
+	
+	set(CMAKE_CXX_FLAGS_DEBUG "${BS_COMPILER_FLAGS_COMMON} -g -O0")
+	set(CMAKE_CXX_FLAGS_OPTIMIZEDDEBUG "${BS_COMPILER_FLAGS_COMMON} -gline-tables-only -O2")
+	set(CMAKE_CXX_FLAGS_RELEASE "${BS_COMPILER_FLAGS_COMMON} -g0 -O2")
+
+	set(CMAKE_SHARED_LINKER_FLAGS_RELEASE -s)
+	set(CMAKE_MODULE_LINKER_FLAGS_RELEASE -s)
+	set(CMAKE_EXE_LINKER_FLAGS_RELEASE -s)
 else()
 # TODO_OTHER_COMPILERS_GO_HERE
 endif()

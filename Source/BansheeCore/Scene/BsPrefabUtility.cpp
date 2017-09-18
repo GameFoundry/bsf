@@ -416,7 +416,7 @@ namespace bs
 			StackEntry current = todo.top();
 			todo.pop();
 
-			if (current.proxy->linkId == -1)
+			if (current.proxy->linkId == (UINT32)-1)
 				current.so->_setInstanceData(current.proxy->instanceData);
 
 			Vector<HComponent>& components = current.so->mComponents;
@@ -429,7 +429,7 @@ namespace bs
 					bool foundInstanceData = false;
 					for (; componentProxyIdx < numComponentProxies; componentProxyIdx++)
 					{
-						if (current.proxy->components[componentProxyIdx].linkId != -1)
+						if (current.proxy->components[componentProxyIdx].linkId != (UINT32)-1)
 							continue;
 
 						component->_setInstanceData(current.proxy->components[componentProxyIdx].instanceData);
@@ -455,10 +455,10 @@ namespace bs
 					bool foundInstanceData = false;
 					for (; childProxyIdx < numChildProxies; childProxyIdx++)
 					{
-						if (current.proxy->children[childProxyIdx].linkId != -1)
+						if (current.proxy->children[childProxyIdx].linkId != (UINT32)-1)
 							continue;
 
-						assert(current.proxy->children[childProxyIdx].linkId == -1);
+						assert(current.proxy->children[childProxyIdx].linkId == (UINT32)-1);
 						child->_setInstanceData(current.proxy->children[childProxyIdx].instanceData);
 
 						if (child->mPrefabLinkUUID.empty())

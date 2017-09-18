@@ -53,7 +53,7 @@ namespace bs
 	void Cursor::setCursor(CursorType type)
 	{
 		UINT32 id = (UINT32)type;
-		if(mActiveCursorId != id)
+		if((UINT32)mActiveCursorId != id)
 		{
 			mActiveCursorId = id;
 			updateCursorImage();
@@ -70,7 +70,7 @@ namespace bs
 		}
 
 		UINT32 id = iterFind->second;
-		if(mActiveCursorId != id)
+		if((UINT32)mActiveCursorId != id)
 		{
 			mActiveCursorId = id;
 			updateCursorImage();
@@ -85,7 +85,7 @@ namespace bs
 			UINT32 id = iterFind->second;
 			mCustomIcons[id] = CustomIcon(pixelData, hotSpot);
 
-			if(mActiveCursorId == id)
+			if((UINT32)mActiveCursorId == id)
 				updateCursorImage(); // Refresh active
 		}
 		else
@@ -103,7 +103,7 @@ namespace bs
 		mCustomIcons[id].pixelData = pixelData;
 		mCustomIcons[id].hotSpot = hotSpot;
 
-		if(mActiveCursorId == id)
+		if((UINT32)mActiveCursorId == id)
 			updateCursorImage(); // Refresh active
 	}
 
@@ -121,7 +121,7 @@ namespace bs
 	{
 		restoreCursorIcon(type);
 
-		if(mActiveCursorId == (UINT32)type)
+		if(mActiveCursorId == (INT32)type)
 			updateCursorImage(); // Refresh active
 	}
 

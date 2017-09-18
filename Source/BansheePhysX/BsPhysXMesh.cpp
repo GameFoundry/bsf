@@ -4,11 +4,11 @@
 #include "RenderAPI/BsVertexDataDesc.h"
 #include "BsPhysX.h"
 #include "Math/BsAABox.h"
-#include "foundation\PxAllocatorCallback.h"
-#include "geometry\PxTriangleMesh.h"
-#include "geometry\PxConvexMesh.h"
-#include "cooking\PxConvexMeshDesc.h"
-#include "extensions\PxDefaultStreams.h"
+#include "foundation/PxAllocatorCallback.h"
+#include "geometry/PxTriangleMesh.h"
+#include "geometry/PxConvexMesh.h"
+#include "cooking/PxConvexMeshDesc.h"
+#include "extensions/PxDefaultStreams.h"
 
 using namespace physx;
 

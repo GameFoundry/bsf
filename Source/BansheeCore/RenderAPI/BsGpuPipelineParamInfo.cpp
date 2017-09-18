@@ -166,7 +166,7 @@ namespace bs
 					UINT32 sequentialIdx = mNumElementsPerType[typeIdx];
 
 					SetInfo& setInfo = mSetInfos[samplerDesc.set];
-					if (setInfo.slotIndices[samplerDesc.slot] == -1) // Slot is sampler only
+					if (setInfo.slotIndices[samplerDesc.slot] == (UINT32)-1) // Slot is sampler only
 					{
 						setInfo.slotIndices[samplerDesc.slot] = sequentialIdx;
 						setInfo.slotTypes[samplerDesc.slot] = ParamType::SamplerState;

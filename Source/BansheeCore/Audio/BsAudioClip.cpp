@@ -8,8 +8,8 @@
 namespace bs
 {
 	AudioClip::AudioClip(const SPtr<DataStream>& samples, UINT32 streamSize, UINT32 numSamples, const AUDIO_CLIP_DESC& desc)
-		: Resource(false), mDesc(desc), mNumSamples(numSamples), mStreamData(samples), mStreamSize(streamSize)
-		, mStreamOffset(0), mLength(0.0f)
+		: Resource(false), mDesc(desc), mNumSamples(numSamples), mStreamSize(streamSize), mStreamOffset(0), mLength(0.0f)
+		, mStreamData(samples)
 	{
 		if (samples != nullptr)
 			mStreamOffset = (UINT32)samples->tell();

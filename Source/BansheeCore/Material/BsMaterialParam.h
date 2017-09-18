@@ -52,7 +52,7 @@ namespace bs
 		T get(UINT32 arrayIdx = 0) const;
 
 		/** Checks if param is initialized. */
-		bool operator==(const nullptr_t& nullval) const
+		bool operator==(const std::nullptr_t& nullval) const
 		{
 			return mMaterial == nullptr;
 		}
@@ -84,7 +84,7 @@ namespace bs
 		UINT32 getElementSize() const;
 
 		/** Checks if param is initialized. */
-		bool operator==(const nullptr_t& nullval) const
+		bool operator==(const std::nullptr_t& nullval) const
 		{
 			return mMaterial == nullptr;
 		}
@@ -114,7 +114,7 @@ namespace bs
 		TextureType get() const;
 
 		/** Checks if param is initialized. */
-		bool operator==(const nullptr_t& nullval) const
+		bool operator==(const std::nullptr_t& nullval) const
 		{
 			return mMaterial == nullptr;
 		}
@@ -143,7 +143,7 @@ namespace bs
 		TextureType get() const;
 
 		/** Checks if param is initialized. */
-		bool operator==(const nullptr_t& nullval) const
+		bool operator==(const std::nullptr_t& nullval) const
 		{
 			return mMaterial == nullptr;
 		}
@@ -172,7 +172,7 @@ namespace bs
 		BufferType get() const;
 
 		/** Checks if param is initialized. */
-		bool operator==(const nullptr_t& nullval) const
+		bool operator==(const std::nullptr_t& nullval) const
 		{
 			return mMaterial == nullptr;
 		}
@@ -201,7 +201,7 @@ namespace bs
 		SamplerStateType get() const;
 
 		/** Checks if param is initialized. */
-		bool operator==(const nullptr_t& nullval) const
+		bool operator==(const std::nullptr_t& nullval) const
 		{
 			return mMaterial == nullptr;
 		}

@@ -133,7 +133,6 @@ namespace bs
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		const RendererAnimationData& animData = AnimationManager::instance().getRendererData();
 		Matrix4 viewProjMat = mCamera->getProjectionMatrixRS() * mCamera->getViewMatrix();
 
 		SPtr<Renderer> renderer = gRenderer();

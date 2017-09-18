@@ -67,6 +67,8 @@ namespace bs
 			return sizeof(INT32) * 3;
 		case VET_UBYTE4:
 			return sizeof(UINT8) * 4;
+		default:
+			break;
 		}
 
 		return 0;
@@ -104,6 +106,8 @@ namespace bs
 		case VET_UBYTE4:
 		case VET_UBYTE4_NORM:
 			return 4;
+		default:
+			break;
 		}
 
 		BS_EXCEPT(InvalidParametersException, "Invalid type");

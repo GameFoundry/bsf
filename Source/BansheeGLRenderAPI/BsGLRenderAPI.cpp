@@ -1,29 +1,29 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsGLRenderAPI.h"
-#include "Renderapi/BsRenderAPI.h"
+#include "RenderAPI/BsRenderAPI.h"
 #include "BsGLTextureManager.h"
 #include "BsGLIndexBuffer.h"
 #include "BsGLUtil.h"
-#include "Glsl/BsGLSLGpuProgram.h"
+#include "GLSL/BsGLSLGpuProgram.h"
 #include "Error/BsException.h"
 #include "BsGLContext.h"
 #include "BsGLSupport.h"
-#include "Renderapi/BsBlendState.h"
-#include "Renderapi/BsRasterizerState.h"
-#include "Renderapi/BsDepthStencilState.h"
+#include "RenderAPI/BsBlendState.h"
+#include "RenderAPI/BsRasterizerState.h"
+#include "RenderAPI/BsDepthStencilState.h"
 #include "BsGLRenderTexture.h"
 #include "BsGLRenderWindowManager.h"
-#include "Glsl/BsGLSLProgramPipelineManager.h"
+#include "GLSL/BsGLSLProgramPipelineManager.h"
 #include "BsGLVertexArrayObjectManager.h"
 #include "Managers/BsRenderStateManager.h"
-#include "Renderapi/BsGpuParams.h"
+#include "RenderAPI/BsGpuParams.h"
 #include "BsGLGpuParamBlockBuffer.h"
-#include "Corethread/BsCoreThread.h"
+#include "CoreThread/BsCoreThread.h"
 #include "BsGLQueryManager.h"
 #include "Debug/BsDebug.h"
 #include "Profiling/BsRenderStats.h"
-#include "Renderapi/BsGpuParamDesc.h"
+#include "RenderAPI/BsGpuParamDesc.h"
 #include "BsGLGpuBuffer.h"
 #include "BsGLCommandBuffer.h"
 #include "BsGLCommandBufferManager.h"
@@ -33,7 +33,8 @@ namespace bs { namespace ct
 {
 	const char* MODULE_NAME = "BansheeGLRenderAPI.dll";
 
-	void __stdcall openGlErrorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, GLvoid *userParam);
+	void openGlErrorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar
+				*message, GLvoid *userParam);
 
 	/************************************************************************/
 	/* 								PUBLIC INTERFACE                   		*/
@@ -591,6 +592,8 @@ namespace bs { namespace ct
 								else
 									glBindBufferBase(GL_SHADER_STORAGE_BUFFER, unit, 0);
 							}
+							break;
+						default:
 							break;
 						}
 					}
@@ -1493,8 +1496,6 @@ namespace bs { namespace ct
 		if (mActiveRenderTarget == nullptr)
 			return;
 
-		const RenderTargetProperties& rtProps = mActiveRenderTarget->getProperties();
-
 		// Calculate the "lower-left" corner of the viewport
 		GLsizei x = 0, y = 0, w = 0, h = 0;
 
@@ -2373,7 +2374,8 @@ namespace bs { namespace ct
 		return block;
 	}
 
-	void __stdcall openGlErrorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, GLvoid *userParam)
+	void openGlErrorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
+		const GLchar *message, GLvoid *userParam)
 	{
 		if (type != GL_DEBUG_TYPE_PERFORMANCE && type != GL_DEBUG_TYPE_OTHER)
 		{

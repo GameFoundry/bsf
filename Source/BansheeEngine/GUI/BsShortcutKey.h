@@ -16,12 +16,12 @@ namespace bs
 	{
 		struct BS_EXPORT Hash
 		{
-			inline size_t operator()(const ShortcutKey& x) const;
+			size_t operator()(const ShortcutKey& x) const;
 		};
 
 		struct BS_EXPORT Equals
 		{
-			inline bool operator()(const ShortcutKey& a, const ShortcutKey& b) const;
+			bool operator()(const ShortcutKey& a, const ShortcutKey& b) const;
 		};
 
 		ShortcutKey();

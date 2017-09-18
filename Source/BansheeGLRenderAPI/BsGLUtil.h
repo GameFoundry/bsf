@@ -22,4 +22,24 @@ namespace bs { namespace ct
 	/** @} */
 }}
 
+#elif BS_PLATFORM == BS_PLATFORM_LINUX
+
+namespace bs { namespace ct
+	{
+		/** @addtogroup GL
+		 *  @{
+		 */
+
+		/**	Helper method that returns a platform specific GL support object. */
+		GLSupport* getGLSupport()
+		{
+			assert(false);
+
+			// TODOPORT - Not implemented
+			return nullptr;
+		}
+
+		/** @} */
+	}}
+
 #endif

@@ -4,7 +4,7 @@
 
 #include "BsGLPrerequisites.h"
 #include "BsGLRenderAPI.h"
-#include "Renderapi/BsRenderWindow.h"
+#include "RenderAPI/BsRenderWindow.h"
 
 namespace bs { namespace ct
 {

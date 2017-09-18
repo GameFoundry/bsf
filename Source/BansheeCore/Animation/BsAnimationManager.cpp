@@ -217,7 +217,7 @@ namespace bs
 				if (soInfo.boneIdx != -1)
 					continue;
 
-				if (soInfo.layerIdx == (UINT32)-1 || soInfo.stateIdx == (UINT32)-1)
+				if (soInfo.layerIdx == -1 || soInfo.stateIdx == -1)
 					continue;
 
 				const AnimationState& state = anim->layers[soInfo.layerIdx].states[soInfo.stateIdx];

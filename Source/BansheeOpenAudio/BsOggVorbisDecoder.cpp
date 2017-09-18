@@ -2,7 +2,7 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsOggVorbisDecoder.h"
 #include "FileSystem/BsDataStream.h"
-#include <vorbis\codec.h>
+#include <vorbis/codec.h>
 
 namespace bs
 {

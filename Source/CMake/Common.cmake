@@ -1,24 +1,3 @@
-# Adds a library as a dependency to a target. The dependency is assumed to have separate libraries for release and debug builds.
-function(add_library_per_config target_name lib_name release_name debug_name)
-	add_library(${lib_name} STATIC IMPORTED)
-	set_target_properties(${lib_name} PROPERTIES IMPORTED_LOCATION_DEBUG ${PROJECT_SOURCE_DIR}/../Dependencies/${lib_name}/lib/${BS_OUTPUT_DIR_PREFIX}/${debug_name}${BS_LIBRARY_EXTENSION})
-	set_target_properties(${lib_name} PROPERTIES IMPORTED_LOCATION_OPTIMIZEDDEBUG ${PROJECT_SOURCE_DIR}/../Dependencies/${lib_name}/lib/${BS_OUTPUT_DIR_PREFIX}/${release_name}${BS_LIBRARY_EXTENSION})
-	set_target_properties(${lib_name} PROPERTIES IMPORTED_LOCATION_RELEASE ${PROJECT_SOURCE_DIR}/../Dependencies/${lib_name}/lib/${BS_OUTPUT_DIR_PREFIX}/${release_name}${BS_LIBRARY_EXTENSION})	
-	
-	target_link_libraries(${target_name} PRIVATE ${lib_name})	
-endfunction()
-
-# Adds a library as a dependency to a target. The dependency is assumed to have separate libraries for release and debug builds. The libraries
-# are assumed to be named differently from its dependency folder (which happens if a single dependency consists of multiple libraries).
-function(add_library_per_config_multi target_name lib_name file_name release_name debug_name)
-	add_library(${lib_name} STATIC IMPORTED)
-	set_target_properties(${lib_name} PROPERTIES IMPORTED_LOCATION_DEBUG ${PROJECT_SOURCE_DIR}/../Dependencies/${file_name}/lib/${BS_OUTPUT_DIR_PREFIX}/${debug_name}${BS_LIBRARY_EXTENSION})
-	set_target_properties(${lib_name} PROPERTIES IMPORTED_LOCATION_OPTIMIZEDDEBUG ${PROJECT_SOURCE_DIR}/../Dependencies/${file_name}/lib/${BS_OUTPUT_DIR_PREFIX}/${release_name}${BS_LIBRARY_EXTENSION})
-	set_target_properties(${lib_name} PROPERTIES IMPORTED_LOCATION_RELEASE ${PROJECT_SOURCE_DIR}/../Dependencies/${file_name}/lib/${BS_OUTPUT_DIR_PREFIX}/${release_name}${BS_LIBRARY_EXTENSION})	
-	
-	target_link_libraries(${target_name} PRIVATE ${lib_name})	
-endfunction()
-
 function(add_engine_dependencies target_name)
 	if(RENDER_API_MODULE MATCHES "DirectX 11")
 		add_dependencies(${target_name} BansheeD3D11RenderAPI)
@@ -44,9 +23,50 @@ function(add_subdirectory_optional subdir_name)
 	endif()
 endfunction()
 
-MACRO(add_imported_library LIB_NAME RELEASE_NAME DEBUG_NAME)
-	add_library(${LIB_NAME} STATIC IMPORTED)
+# Generates a set of variables pointing to the default locations for library's includes and binaries.
+# Must be defined before calling:
+#  - ${LIB_NAME}_INSTALL_DIR
+#
+# Will define:
+#  - ${LIB_NAME}_INCLUDE_SEARCH_DIRS
+#  - ${LIB_NAME}_LIBRARY_RELEASE_SEARCH_DIRS
+#  - ${LIB_NAME}_LIBRARY_DEBUG_SEARCH_DIRS
+MACRO(gen_default_lib_search_dirs LIB_NAME)
+	set(${LIB_NAME}_INCLUDE_SEARCH_DIRS "${${LIB_NAME}_INSTALL_DIR}/include")
+
+	if(BS_64BIT)
+		list(APPEND ${LIB_NAME}_LIBRARY_RELEASE_SEARCH_DIRS "${${LIB_NAME}_INSTALL_DIR}/lib/x64/Release")
+		list(APPEND ${LIB_NAME}_LIBRARY_DEBUG_SEARCH_DIRS "${${LIB_NAME}_INSTALL_DIR}/lib/x64/Debug")
+	else()
+		list(APPEND ${LIB_NAME}_LIBRARY_RELEASE_SEARCH_DIRS "${${LIB_NAME}_INSTALL_DIR}/lib/x86/Release")
+		list(APPEND ${LIB_NAME}_LIBRARY_DEBUG_SEARCH_DIRS "${${LIB_NAME}_INSTALL_DIR}/lib/x86/Debug")
+	endif()
+
+	# Allow for paths without a configuration specified
+	if(BS_64BIT)
+		list(APPEND ${LIB_NAME}_LIBRARY_RELEASE_SEARCH_DIRS "${${LIB_NAME}_INSTALL_DIR}/lib/x64")
+		list(APPEND ${LIB_NAME}_LIBRARY_DEBUG_SEARCH_DIRS "${${LIB_NAME}_INSTALL_DIR}/lib/x64")
+	else()
+		list(APPEND ${LIB_NAME}_LIBRARY_RELEASE_SEARCH_DIRS "${${LIB_NAME}_INSTALL_DIR}/lib/x86")
+		list(APPEND ${LIB_NAME}_LIBRARY_DEBUG_SEARCH_DIRS "${${LIB_NAME}_INSTALL_DIR}/lib/x86")	
+	endif()
 	
+	# Allow for paths without a platform specified
+	list(APPEND ${LIB_NAME}_LIBRARY_RELEASE_SEARCH_DIRS "${${LIB_NAME}_INSTALL_DIR}/lib/Release")
+	list(APPEND ${LIB_NAME}_LIBRARY_DEBUG_SEARCH_DIRS "${${LIB_NAME}_INSTALL_DIR}/lib/Debug")
+
+	# Allow for paths without a platform or configuration specified
+	list(APPEND ${LIB_NAME}_LIBRARY_RELEASE_SEARCH_DIRS "${${LIB_NAME}_INSTALL_DIR}/lib")
+	list(APPEND ${LIB_NAME}_LIBRARY_DEBUG_SEARCH_DIRS "${${LIB_NAME}_INSTALL_DIR}/lib")
+ENDMACRO()
+
+MACRO(add_imported_library LIB_NAME RELEASE_NAME DEBUG_NAME IS_SHARED)
+	if(IS_SHARED)
+		add_library(${LIB_NAME} SHARED IMPORTED)
+	else()
+		add_library(${LIB_NAME} STATIC IMPORTED)
+	endif()
+
 	if(CMAKE_CONFIGURATION_TYPES) # Multiconfig generator?
 		set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_DEBUG "${DEBUG_NAME}")
 		set_target_properties(${LIB_NAME} PROPERTIES IMPORTED_LOCATION_OPTIMIZEDDEBUG "${RELEASE_NAME}")
@@ -56,37 +76,97 @@ MACRO(add_imported_library LIB_NAME RELEASE_NAME DEBUG_NAME)
 	endif()
 ENDMACRO()
 
-MACRO(find_imported_library2 FOLDER_NAME LIB_NAME DEBUG_LIB_NAME)
+MACRO(find_imported_library3 FOLDER_NAME LIB_NAME DEBUG_LIB_NAME IS_SHARED)
+	find_library(${LIB_NAME}_LIBRARY_RELEASE NAMES ${LIB_NAME} PATHS ${${FOLDER_NAME}_LIBRARY_RELEASE_SEARCH_DIRS} NO_DEFAULT_PATH)
 	find_library(${LIB_NAME}_LIBRARY_RELEASE NAMES ${LIB_NAME} PATHS ${${FOLDER_NAME}_LIBRARY_RELEASE_SEARCH_DIRS})
 	
 	if(${FOLDER_NAME}_LIBRARY_DEBUG_SEARCH_DIRS)
+		find_library(${LIB_NAME}_LIBRARY_DEBUG NAMES ${DEBUG_LIB_NAME} PATHS ${${FOLDER_NAME}_LIBRARY_DEBUG_SEARCH_DIRS} NO_DEFAULT_PATH)
 		find_library(${LIB_NAME}_LIBRARY_DEBUG NAMES ${DEBUG_LIB_NAME} PATHS ${${FOLDER_NAME}_LIBRARY_DEBUG_SEARCH_DIRS})
 	else()
+		find_library(${LIB_NAME}_LIBRARY_DEBUG NAMES ${DEBUG_LIB_NAME} PATHS ${${FOLDER_NAME}_LIBRARY_RELEASE_SEARCH_DIRS} NO_DEFAULT_PATH)
 		find_library(${LIB_NAME}_LIBRARY_DEBUG NAMES ${DEBUG_LIB_NAME} PATHS ${${FOLDER_NAME}_LIBRARY_RELEASE_SEARCH_DIRS})
 	endif()
-		
-	if(${LIB_NAME}_LIBRARY_RELEASE AND ${LIB_NAME}_LIBRARY_DEBUG)
-		add_imported_library(${FOLDER_NAME}::${LIB_NAME} "${${LIB_NAME}_LIBRARY_RELEASE}" "${${LIB_NAME}_LIBRARY_DEBUG}")
+
+	if(${LIB_NAME}_LIBRARY_RELEASE)
+		if(${LIB_NAME}_LIBRARY_DEBUG)
+			add_imported_library(${FOLDER_NAME}::${LIB_NAME} "${${LIB_NAME}_LIBRARY_RELEASE}"
+				"${${LIB_NAME}_LIBRARY_DEBUG}" IS_SHARED)
+		else()
+			add_imported_library(${FOLDER_NAME}::${LIB_NAME} "${${LIB_NAME}_LIBRARY_RELEASE}"
+				"${${LIB_NAME}_LIBRARY_RELEASE}" IS_SHARED)
+		endif()
 	else()
 		set(${FOLDER_NAME}_FOUND FALSE)
-		message("Cannot find imported library: ${LIB_NAME} ${${LIB_NAME}_LIBRARY_RELEASE}")
+		message(STATUS "...Cannot find imported library: ${LIB_NAME} ${${LIB_NAME}_LIBRARY_RELEASE}")
 	endif()
 
 	list(APPEND ${FOLDER_NAME}_LIBRARIES ${FOLDER_NAME}::${LIB_NAME})
 	mark_as_advanced(${LIB_NAME}_LIBRARY_RELEASE ${LIB_NAME}_LIBRARY_DEBUG)
 ENDMACRO()
 
+MACRO(find_imported_library_shared2 FOLDER_NAME LIB_NAME DEBUG_LIB_NAME)
+		find_imported_library3(${FOLDER_NAME} ${LIB_NAME} ${DEBUG_LIB_NAME} TRUE)
+ENDMACRO()
+
+MACRO(find_imported_library_shared FOLDER_NAME LIB_NAME)
+	find_imported_library_shared2(${FOLDER_NAME} ${LIB_NAME} ${LIB_NAME})
+ENDMACRO()
+
+MACRO(find_imported_library2 FOLDER_NAME LIB_NAME DEBUG_LIB_NAME)
+	find_imported_library3(${FOLDER_NAME} ${LIB_NAME} ${DEBUG_LIB_NAME} FALSE)
+ENDMACRO()
+
 MACRO(find_imported_library FOLDER_NAME LIB_NAME)
 	find_imported_library2(${FOLDER_NAME} ${LIB_NAME} ${LIB_NAME})
 ENDMACRO()
 
-function(update_binary_deps)
+MACRO(find_imported_includes FOLDER_NAME INCLUDE_FILES)
+	find_path(${FOLDER_NAME}_INCLUDE_DIR NAMES ${INCLUDE_FILES} PATHS ${${FOLDER_NAME}_INCLUDE_SEARCH_DIRS} NO_DEFAULT_PATH)
+	find_path(${FOLDER_NAME}_INCLUDE_DIR NAMES ${INCLUDE_FILES} PATHS ${${FOLDER_NAME}_INCLUDE_SEARCH_DIRS})
+	
+	if(${FOLDER_NAME}_INCLUDE_DIR)
+		set(${FOLDER_NAME}_FOUND TRUE)
+	else()
+		message(STATUS "...Cannot find include file \"${INCLUDE_FILES}\" at path ${${FOLDER_NAME}_INCLUDE_SEARCH_DIRS}")
+		set(${FOLDER_NAME}_FOUND FALSE)
+	endif()
+ENDMACRO()
+
+MACRO(start_find_package FOLDER_NAME)
+	message(STATUS "Looking for ${FOLDER_NAME} installation...")
+ENDMACRO()
+
+MACRO(end_find_package FOLDER_NAME MAIN_LIB_NAME)
+	if(NOT ${FOLDER_NAME}_FOUND)
+		if(${FOLDER_NAME}_FIND_REQUIRED)
+			message(FATAL_ERROR "Cannot find ${FOLDER_NAME} installation. Try modifying the ${FOLDER_NAME}_INSTALL_DIR path.")
+		elseif(NOT ${FOLDER_NAME}_FIND_QUIETLY)
+			message(WARNING "Cannot find ${FOLDER_NAME} installation. Try modifying the ${FOLDER_NAME}_INSTALL_DIR path.")
+		endif()
+	else()
+		set_target_properties(${FOLDER_NAME}::${MAIN_LIB_NAME} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${${FOLDER_NAME}_INCLUDE_DIR}")
+		message(STATUS "...${FOLDER_NAME} OK.")
+	endif()
+
+	mark_as_advanced(${FOLDER_NAME}_INSTALL_DIR ${FOLDER_NAME}_INCLUDE_DIR)
+	set(${FOLDER_NAME}_INCLUDE_DIRS ${${FOLDER_NAME}_INCLUDE_DIR})
+ENDMACRO()
+
+function(update_binary_deps DEP_VERSION)
 	# Clean and create a temporary folder
 	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/../Temp)	
 	execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_SOURCE_DIR}/../Temp)	
 	
-	set(BINARY_DEPENDENCIES_URL http://data.banshee3d.com/BansheeDependencies_VS2015_Master.zip)
-	file(DOWNLOAD ${BINARY_DEPENDENCIES_URL} ${PROJECT_SOURCE_DIR}/../Temp/Dependencies.zip SHOW_PROGRESS)
+	set(BINARY_DEPENDENCIES_URL http://data.banshee3d.com/BansheeDependencies_VS2015_Master_${DEP_VERSION}.zip)
+	file(DOWNLOAD ${BINARY_DEPENDENCIES_URL} ${PROJECT_SOURCE_DIR}/../Temp/Dependencies.zip 
+		SHOW_PROGRESS
+		STATUS DOWNLOAD_STATUS)
+		
+	list(GET DOWNLOAD_STATUS 0 STATUS_CODE)
+	if(NOT STATUS_CODE EQUAL 0)
+		message(FATAL_ERROR "Binary dependencies failed to download from URL: ${BINARY_DEPENDENCIES_URL}")
+	endif()
 	
 	message(STATUS "Exacting files. Please wait...")
 	execute_process(
@@ -96,11 +176,11 @@ function(update_binary_deps)
 	
 	# Copy executables and dynamic libraries
 	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/../bin)	
-	execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/../Temp/Built/bin ${PROJECT_SOURCE_DIR}/../bin)	
+	execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/../Temp/bin ${PROJECT_SOURCE_DIR}/../bin)	
 	
 	# Copy static libraries, headers and tools
 	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/../Dependencies)	
-	execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/../Temp/Built/Dependencies ${PROJECT_SOURCE_DIR}/../Dependencies)
+	execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/../Temp/Dependencies ${PROJECT_SOURCE_DIR}/../Dependencies)
 	
 	# Clean up
 	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/../Temp)	

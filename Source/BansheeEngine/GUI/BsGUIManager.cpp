@@ -1477,11 +1477,6 @@ namespace bs
 	// nothing stays in hover state
 	void GUIManager::onMouseLeftWindow(RenderWindow& win)
 	{
-		bool buttonStates[3];
-		buttonStates[0] = false;
-		buttonStates[1] = false;
-		buttonStates[2] = false;
-
 		mNewElementsUnderPointer.clear();
 
 		for(auto& elementInfo : mElementsUnderPointer)

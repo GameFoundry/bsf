@@ -1208,7 +1208,7 @@ namespace bs
 		virtual void beginImage(int size, int width, int height, int depth, int face, int miplevel)
 		{ 
 			assert(miplevel >= 0 && miplevel < (int)buffers.size());
-			assert(size == buffers[miplevel]->getConsecutiveSize());
+			assert((UINT32)size == buffers[miplevel]->getConsecutiveSize());
 
 			activeBuffer = buffers[miplevel];
 
@@ -1834,7 +1834,6 @@ namespace bs
 
 	float PixelUtil::unpackDepth(PixelFormat format, void* src)
 	{
-		const PixelFormatDescription &des = getDescriptionFor(format);
 		if (!isDepth(format))
 		{
 			LOGERR("Cannot unpack from " + getFormatName(format) + ": it is not a depth format");

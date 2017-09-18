@@ -3,7 +3,7 @@
 #include "BsGLRenderTexture.h"
 #include "BsGLPixelFormat.h"
 #include "BsGLPixelBuffer.h"
-#include "Renderapi/BsTextureView.h"
+#include "RenderAPI/BsTextureView.h"
 
 namespace bs
 {

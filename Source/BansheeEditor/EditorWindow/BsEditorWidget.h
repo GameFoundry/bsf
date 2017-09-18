@@ -163,6 +163,8 @@ namespace bs
 	 *  @{
 	 */
 
+	template <class Type> class EditorWidget;
+
 	/**
 	 * Helper class that registers a widget creation callback with the widget manager. The creation callback allows the
 	 * runtime to open widgets just by their name without knowing the actual type.

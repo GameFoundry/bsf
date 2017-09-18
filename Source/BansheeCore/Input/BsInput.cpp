@@ -16,7 +16,7 @@ namespace bs
 
 	Input::DeviceData::DeviceData()
 	{
-		for (int i = 0; i < BC_Count; i++)
+		for (UINT32 i = 0; i < BC_Count; i++)
 			keyStates[i] = ButtonState::Off;
 	}
 

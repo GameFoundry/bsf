@@ -291,7 +291,7 @@ namespace bs
 					void* iter = nullptr;
 					do
 					{
-						::MonoClass* rawNestedClass = rawNestedClass = mono_class_get_nested_types(curNestedClass->_getInternalClass(), &iter);
+						::MonoClass* rawNestedClass = mono_class_get_nested_types(curNestedClass->_getInternalClass(), &iter);
 						if (rawNestedClass == nullptr)
 							break;
 

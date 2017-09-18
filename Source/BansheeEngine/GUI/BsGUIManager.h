@@ -434,7 +434,7 @@ namespace bs
 	/**	Handles GUI rendering on the core thread. */
 	class BS_EXPORT GUIRenderer : public RendererExtension
 	{
-		friend class GUIManager;
+		friend class bs::GUIManager;
 
 	public:
 		GUIRenderer();

@@ -5,7 +5,7 @@
 #include "BsCorePrerequisites.h"
 #include "Reflection/BsRTTIType.h"
 #include "Components/BsCSkybox.h"
-#include "Rtti/BsGameObjectRTTI.h"
+#include "RTTI/BsGameObjectRTTI.h"
 
 namespace bs
 {

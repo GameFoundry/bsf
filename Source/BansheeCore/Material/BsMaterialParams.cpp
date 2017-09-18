@@ -215,7 +215,6 @@ namespace bs
 	{
 		auto& dataParams = shader->getDataParams();
 		auto& textureParams = shader->getTextureParams();
-		auto& bufferParams = shader->getBufferParams();
 		auto& samplerParams = shader->getSamplerParams();
 
 		mStructParams = mAlloc.construct<ParamStructDataType>(mNumStructParams);
@@ -752,6 +751,8 @@ namespace bs
 					coreObjects.push_back(samplerData.value.get());
 			}
 			break;
+			default:
+				break;
 			}
 		}
 	}
@@ -812,6 +813,8 @@ namespace bs
 
 				mSamplerStateParams[param.index].value = sampStateCore;
 			}
+				break;
+			default:
 				break;
 			}
 		}

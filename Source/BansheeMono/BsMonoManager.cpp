@@ -341,7 +341,7 @@ namespace bs
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 		compilerPath.append("mcs.exe");
 #else
-		static_assert(false, "Not implemented");
+		compilerPath.append("mcs");
 #endif
 
 		return compilerPath;

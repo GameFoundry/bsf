@@ -27,37 +27,37 @@ namespace bs
 		virtual ~Joint() { }
 
 		/** @copydoc FJoint::getBody */
-		inline Rigidbody* getBody(JointBody body) const;
+		Rigidbody* getBody(JointBody body) const;
 
 		/** @copydoc FJoint::setBody */
-		inline void setBody(JointBody body, Rigidbody* value);
+		void setBody(JointBody body, Rigidbody* value);
 
 		/** @copydoc FJoint::getPosition */
-		inline Vector3 getPosition(JointBody body) const;
+		Vector3 getPosition(JointBody body) const;
 
 		/** @copydoc FJoint::getRotation */
-		inline Quaternion getRotation(JointBody body) const;
+		Quaternion getRotation(JointBody body) const;
 
 		/** @copydoc FJoint::setTransform */
-		inline void setTransform(JointBody body, const Vector3& position, const Quaternion& rotation);
+		void setTransform(JointBody body, const Vector3& position, const Quaternion& rotation);
 
 		/** @copydoc FJoint::getBreakForce */
-		inline float getBreakForce() const;
+		float getBreakForce() const;
 
 		/** @copydoc FJoint::setBreakForce */
-		inline void setBreakForce(float force);
+		void setBreakForce(float force);
 
 		/** @copydoc FJoint::getBreakTorque */
-		inline float getBreakTorque() const;
+		float getBreakTorque() const;
 
 		/** @copydoc FJoint::setBreakTorque */
-		inline void setBreakTorque(float torque);
+		void setBreakTorque(float torque);
 
 		/** @copydoc FJoint::getEnableCollision */
-		inline bool getEnableCollision() const;
+		bool getEnableCollision() const;
 
 		/** @copydoc FJoint::setEnableCollision */
-		inline void setEnableCollision(bool value);
+		void setEnableCollision(bool value);
 
 		/** Triggered when the joint's break force or torque is exceeded. */
 		Event<void()> onJointBreak;

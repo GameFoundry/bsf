@@ -4,7 +4,7 @@
 #include "Utility/BsTime.h"
 #include "BsPhysX.h"
 #include "Components/BsCCollider.h"
-#include "characterkinematic\PxControllerManager.h"
+#include "characterkinematic/PxControllerManager.h"
 
 using namespace physx;
 

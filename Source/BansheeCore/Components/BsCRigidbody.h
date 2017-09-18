@@ -215,7 +215,7 @@ namespace bs
 		void _setJoint(const HJoint& joint) { mParentJoint = joint; }
 
 		/** @copydoc Rigidbody::updateMassDistribution */
-		inline void _updateMassDistribution();
+		void _updateMassDistribution();
 
 		/** @} */
 	protected:

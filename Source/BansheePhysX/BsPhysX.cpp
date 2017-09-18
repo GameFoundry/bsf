@@ -22,7 +22,7 @@
 #include "Math/BsVector3.h"
 #include "Math/BsAABox.h"
 #include "Math/BsCapsule.h"
-#include "foundation\PxTransform.h"
+#include "foundation/PxTransform.h"
 
 using namespace physx;
 
@@ -540,7 +540,7 @@ namespace bs
 		// If too many iterations are required, increase time step. This should only happen in extreme situations (or when
 		// debugging).
 		float step = mSimulationStep;
-		if (numIterations > MAX_ITERATIONS_PER_FRAME) 
+		if (numIterations > (INT32)MAX_ITERATIONS_PER_FRAME)
 			step = (simulationAmount / MAX_ITERATIONS_PER_FRAME) * 0.99f;
 
 		UINT32 iterationCount = 0;

@@ -7,7 +7,7 @@
 #include "Math/BsMath.h"
 #include "Threading/BsTaskScheduler.h"
 #include "Audio/BsAudioUtility.h"
-#include "AL\al.h"
+#include "AL/al.h"
 
 namespace bs
 {

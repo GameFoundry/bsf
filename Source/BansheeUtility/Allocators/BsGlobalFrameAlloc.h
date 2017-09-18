@@ -124,10 +124,10 @@ namespace bs
 	}
 
 	/** @copydoc FrameAlloc::markFrame */
-	inline BS_UTILITY_EXPORT void bs_frame_mark();
+	BS_UTILITY_EXPORT void bs_frame_mark();
 
 	/** @copydoc FrameAlloc::clear */
-	inline BS_UTILITY_EXPORT void bs_frame_clear();
+	BS_UTILITY_EXPORT void bs_frame_clear();
 
 	/** String allocated with a frame allocator. */
 	typedef std::basic_string<char, std::char_traits<char>, StdAlloc<char, FrameAlloc>> FrameString;

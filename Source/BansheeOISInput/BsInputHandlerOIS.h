@@ -9,7 +9,7 @@
 #include <OIS/OISInputManager.h>
 #include <OIS/OISKeyboard.h>
 #include <OIS/OISMouse.h>
-#include <OIS/OISJoystick.h>
+#include <OIS/OISJoyStick.h>
 
 namespace bs
 {

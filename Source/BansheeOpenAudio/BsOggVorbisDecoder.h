@@ -4,7 +4,7 @@
 
 #include "BsOAPrerequisites.h"
 #include "BsAudioDecoder.h"
-#include "vorbis\vorbisfile.h"
+#include "vorbis/vorbisfile.h"
 
 namespace bs
 {

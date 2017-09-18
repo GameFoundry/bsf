@@ -489,7 +489,7 @@ namespace bs
 		if (duplicateList.size() == 1)
 			message = L"Duplicated " + toWString(duplicateList[0]->getName());
 		else
-			message = L"Duplicated " + toWString(duplicateList.size()) + L" elements";
+			message = L"Duplicated " + toWString((UINT32)duplicateList.size()) + L" elements";
 
 		CmdCloneSO::execute(duplicateList, message);
 		onModified();
@@ -545,7 +545,7 @@ namespace bs
 			if (mCopyList.size() == 1)
 				message = L"Moved " + toWString(mCopyList[0]->getName());
 			else
-				message = L"Moved " + toWString(mCopyList.size()) + L" elements";
+				message = L"Moved " + toWString((UINT32)mCopyList.size()) + L" elements";
 
 			CmdReparentSO::execute(mCopyList, parent, message);
 			clearCopyList();
@@ -556,7 +556,7 @@ namespace bs
 			if (mCopyList.size() == 1)
 				message = L"Copied " + toWString(mCopyList[0]->getName());
 			else
-				message = L"Copied " + toWString(mCopyList.size()) + L" elements";
+				message = L"Copied " + toWString((UINT32)mCopyList.size()) + L" elements";
 
 			Vector<HSceneObject> clones = CmdCloneSO::execute(mCopyList, message);
 			for (auto& clone : clones)

@@ -5,10 +5,10 @@
 
 namespace bs
 {
-	inline Radian::Radian (const Degree& d) : mRad(d.valueRadians()) 
+	Radian::Radian (const Degree& d) : mRad(d.valueRadians())
 	{ }
 
-	inline Radian Radian::wrap()
+	Radian Radian::wrap()
 	{
 		mRad = fmod(mRad, Math::TWO_PI);
 
@@ -18,29 +18,29 @@ namespace bs
 		return *this;
 	}
 
-	inline Radian& Radian::operator= (const Degree& d) 
+	Radian& Radian::operator= (const Degree& d)
 	{
 		mRad = d.valueRadians(); 
 		return *this;
 	}
 
-	inline Radian Radian::operator+ (const Degree& d) const 
+	Radian Radian::operator+ (const Degree& d) const
 	{
 		return Radian (mRad + d.valueRadians());
 	}
 
-	inline Radian& Radian::operator+= (const Degree& d) 
+	Radian& Radian::operator+= (const Degree& d)
 	{
 		mRad += d.valueRadians();
 		return *this;
 	}
 
-	inline Radian Radian::operator- (const Degree& d) const 
+	Radian Radian::operator- (const Degree& d) const
 	{
 		return Radian (mRad - d.valueRadians());
 	}
 
-	inline Radian& Radian::operator-= (const Degree& d) 
+	Radian& Radian::operator-= (const Degree& d)
 	{
 		mRad -= d.valueRadians();
 		return *this;

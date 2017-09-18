@@ -1397,6 +1397,8 @@ namespace bs
 			return mShaderDiffuse;
 		case BuiltinShader::Transparent:
 			return mShaderTransparent;
+		default:
+			break;
 		}
 
 		return HShader();

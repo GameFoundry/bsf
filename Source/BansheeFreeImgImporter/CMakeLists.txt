@@ -1,13 +1,15 @@
 # Source files and their filters
 include(CMakeSources.cmake)
 
+# Packages
+find_package(freeimg REQUIRED)
+
 # Includes
 set(BansheeFreeImgImporter_INC 
 	"./" 
 	"../BansheeUtility" 
 	"../BansheeCore"
-	"../BansheeEngine"
-	"../../Dependencies/freeimg/include")
+	"../BansheeEngine")
 
 include_directories(${BansheeFreeImgImporter_INC})	
 	
@@ -19,10 +21,10 @@ target_compile_definitions(BansheeFreeImgImporter PRIVATE -DBS_FREEIMG_EXPORTS -
 
 # Libraries
 ## External lib: FreeImage
-add_library_per_config(BansheeFreeImgImporter freeimg Release/FreeImage Debug/FreeImage)
+target_link_libraries(BansheeFreeImgImporter ${freeimg_LIBRARIES})
 
 ## Local libs
-target_link_libraries(BansheeFreeImgImporter PUBLIC BansheeUtility BansheeCore BansheeEngine)
+target_link_libraries(BansheeFreeImgImporter BansheeUtility BansheeCore BansheeEngine)
 
 # IDE specific
 set_property(TARGET BansheeFreeImgImporter PROPERTY FOLDER Plugins)

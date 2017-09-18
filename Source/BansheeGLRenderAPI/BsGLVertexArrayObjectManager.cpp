@@ -2,8 +2,8 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsGLVertexArrayObjectManager.h"
 #include "BsGLVertexBuffer.h"
-#include "Renderapi/BsVertexDeclaration.h"
-#include "Glsl/BsGLSLGpuProgram.h"
+#include "RenderAPI/BsVertexDeclaration.h"
+#include "GLSL/BsGLSLGpuProgram.h"
 #include "BsGLHardwareBufferManager.h"
 #include "Profiling/BsRenderStats.h"
 

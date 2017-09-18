@@ -357,7 +357,7 @@ namespace bs
 			UINT32 visIdx = 0;
 			for (auto& visElem : mVisibleElements)
 			{
-				if (visElem.idx == prevIdx)
+				if (visElem.idx == (UINT32)prevIdx)
 				{
 					setSelected(visIdx);
 					break;

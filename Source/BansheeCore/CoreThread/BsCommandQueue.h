@@ -85,12 +85,13 @@ namespace bs
 #else
 		QueuedCommand(std::function<void(AsyncOp&)> _callback, const SPtr<AsyncOpSyncData>& asyncOpSyncData, 
 			bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
-			:callbackWithReturnValue(_callback), returnsValue(true), notifyWhenComplete(_notifyWhenComplete), 
-			callbackId(_callbackId), asyncOp(asyncOpSyncData)
+			: callbackWithReturnValue(_callback), asyncOp(asyncOpSyncData), returnsValue(true), callbackId(_callbackId)
+			, notifyWhenComplete(_notifyWhenComplete)
 		{ }
 
 		QueuedCommand(std::function<void()> _callback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
-			:callback(_callback), returnsValue(false), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId), asyncOp(AsyncOpEmpty())
+			: callback(_callback), asyncOp(AsyncOpEmpty()), returnsValue(false), callbackId(_callbackId)
+			, notifyWhenComplete(_notifyWhenComplete)
 		{ }
 #endif
 

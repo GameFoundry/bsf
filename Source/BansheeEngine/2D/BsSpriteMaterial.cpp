@@ -42,7 +42,7 @@ namespace bs
 
 		mParamBufferIdx = mParams->getParamBlockBufferIndex("GUIParams");
 
-		if(mParamBufferIdx == -1)
+		if(mParamBufferIdx == (UINT32)-1)
 			LOGERR("Sprite material shader missing \"GUIParams\" block.");
 	}
 
@@ -79,7 +79,7 @@ namespace bs
 		mTextureParam.set(spriteTexture);
 		mSamplerParam.set(sampler);
 
-		if(mParamBufferIdx != -1)
+		if(mParamBufferIdx != (UINT32)-1)
 			mParams->setParamBlockBuffer(mParamBufferIdx, paramBuffer, true);
 
 		mMaterial->updateParamsSet(mParams);

@@ -43,7 +43,7 @@ set(BS_BANSHEEPHYSX_SRC_NOFILTER
 )
 
 set(BS_BANSHEEPHYSX_INC_RTTI
-	"Rtti/BsPhysXMeshRTTI.h"
+	"RTTI/BsPhysXMeshRTTI.h"
 )
 
 source_group("Header Files" FILES ${BS_BANSHEEPHYSX_INC_NOFILTER})

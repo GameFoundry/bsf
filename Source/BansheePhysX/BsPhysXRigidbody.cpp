@@ -5,7 +5,7 @@
 #include "Physics/BsPhysics.h"
 #include "PxRigidDynamic.h"
 #include "PxScene.h"
-#include "extensions\PxRigidBodyExt.h"
+#include "extensions/PxRigidBodyExt.h"
 #include "BsPhysX.h"
 
 using namespace physx;

@@ -197,7 +197,6 @@ namespace bs
 			const GpuParamDesc& curDesc = **iter;
 			for (auto blockIter = curDesc.paramBlocks.begin(); blockIter != curDesc.paramBlocks.end(); ++blockIter)
 			{
-				bool isBlockValid = true;
 				const GpuParamBlockDesc& curBlock = blockIter->second;
 
 				if (!curBlock.isShareable) // Non-shareable buffers are handled differently, they're allowed same names
@@ -230,18 +229,12 @@ namespace bs
 
 					// Cannot find other param, blocks aren't equal
 					if (otherParamFind == otherDesc->params.end())
-					{
-						isBlockValid = false;
 						break;
-					}
 
 					const GpuParamDataDesc& otherParam = otherParamFind->second;
 
 					if (!areParamsEqual(myParam, otherParam, false) || curBlock.name != otherBlockName)
-					{
-						isBlockValid = false;
 						break;
-					}
 				}
 
 				// Note: Ignoring mismatched blocks for now, because glslang parser doesn't report dead uniform entries,
@@ -578,7 +571,7 @@ namespace bs
 						UINT32 paramIdx = params->getParamIndex(iterFind->second);
 
 						// Parameter shouldn't be in the valid parameter list if it cannot be found
-						assert(paramIdx != -1);
+						assert(paramIdx != (UINT32)-1);
 
 						mDataParamInfos.push_back(DataParamInfo());
 						DataParamInfo& paramInfo = mDataParamInfos.back();
@@ -845,7 +838,7 @@ namespace bs
 
 					const BlockBinding& binding = blockInfo.passData[j].bindings[progType];
 
-					if (binding.slot != -1)
+					if (binding.slot != (UINT32)-1)
 						paramPtr->setParamBlockBuffer(binding.set, binding.slot, paramBlock);
 				}
 			}
@@ -981,7 +974,6 @@ namespace bs
 
 			for(UINT32 j = 0; j < NUM_STAGES; j++)
 			{
-				GpuProgramType progType = (GpuProgramType)j;
 				const StageParamInfo& stageInfo = mPassParamInfos[i].stages[j];
 
 				for(UINT32 k = 0; k < stageInfo.numTextures; k++)

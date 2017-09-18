@@ -37,7 +37,7 @@ namespace bs
 	/** Core thread version of the selection renderer, that handles actual rendering. */
 	class SelectionRendererCore : public RendererExtension
 	{
-		friend class SelectionRenderer;
+		friend class bs::SelectionRenderer;
 
 	public:
 		SelectionRendererCore();

@@ -193,7 +193,7 @@ namespace bs
 				for(size_t i = 0; i < atlasElements.size(); i++)
 				{
 					// Copy character bitmap
-					if(atlasElements[i].output.page != pageIdx)
+					if(atlasElements[i].output.page != (INT32)pageIdx)
 						continue;
 
 					TextureAtlasUtility::Element curElement = atlasElements[i];

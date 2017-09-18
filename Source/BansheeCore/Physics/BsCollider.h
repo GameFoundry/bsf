@@ -29,67 +29,67 @@ namespace bs
 		virtual ~Collider() { }
 
 		/** @copydoc FCollider::getPosition */
-		inline Vector3 getPosition() const;
+		Vector3 getPosition() const;
 
 		/** @copydoc FCollider::getRotation */
-		inline Quaternion getRotation() const;
+		Quaternion getRotation() const;
 
 		/** @copydoc FCollider::setTransform */
-		inline void setTransform(const Vector3& pos, const Quaternion& rot);
+		void setTransform(const Vector3& pos, const Quaternion& rot);
 
 		/** Sets the scale of the collider geometry. */
 		virtual void setScale(const Vector3& scale);
 
 		/** Retrieves the scale of the collider geometry. */
-		inline Vector3 getScale() const;
+		Vector3 getScale() const;
 
 		/** @copydoc FCollider::setIsTrigger */
-		inline void setIsTrigger(bool value);
+		void setIsTrigger(bool value);
 
 		/** @copydoc FCollider::getIsTrigger */
-		inline bool getIsTrigger() const;
+		bool getIsTrigger() const;
 
 		/** Determines the Rigidbody that controls this collider (if any). */
-		inline void setRigidbody(Rigidbody* value);
+		void setRigidbody(Rigidbody* value);
 
 		/** @copydoc setRigidbody() */
 		Rigidbody* getRigidbody() const { return mRigidbody; }
 
 		/** @copydoc FCollider::setMass */
-		inline void setMass(float mass);
+		void setMass(float mass);
 
 		/** @copydoc FCollider::getMass */
-		inline float getMass() const;
+		float getMass() const;
 
 		/** @copydoc FCollider::setMaterial */
-		inline void setMaterial(const HPhysicsMaterial& material);
+		void setMaterial(const HPhysicsMaterial& material);
 
 		/** @copydoc FCollider::getMaterial */
-		inline HPhysicsMaterial getMaterial() const;
+		HPhysicsMaterial getMaterial() const;
 
 		/** @copydoc FCollider::setContactOffset */
-		inline void setContactOffset(float value);
+		void setContactOffset(float value);
 
 		/** @copydoc FCollider::getContactOffset */
-		inline float getContactOffset();
+		float getContactOffset();
 
 		/** @copydoc FCollider::setRestOffset */
-		inline void setRestOffset(float value);
+		void setRestOffset(float value);
 
 		/** @copydoc FCollider::getRestOffset */
-		inline float getRestOffset();
+		float getRestOffset();
 
 		/** @copydoc FCollider::setLayer */
-		inline void setLayer(UINT64 layer);
+		void setLayer(UINT64 layer);
 
 		/** @copydoc FCollider::getLayer */
-		inline UINT64 getLayer() const;
+		UINT64 getLayer() const;
 
 		/** @copydoc FCollider::setCollisionReportMode */
-		inline void setCollisionReportMode(CollisionReportMode mode);
+		void setCollisionReportMode(CollisionReportMode mode);
 
 		/** @copydoc FCollider::getCollisionReportMode */
-		inline CollisionReportMode getCollisionReportMode() const;
+		CollisionReportMode getCollisionReportMode() const;
 
 		/** 
 		 * Checks does the ray hit this collider. 
@@ -99,7 +99,7 @@ namespace bs
 		 * @param[in]	maxDist	Maximum distance from the ray origin to search for hits.
 		 * @return				True if the ray has hit the collider.
 		 */
-		inline bool rayCast(const Ray& ray, PhysicsQueryHit& hit, float maxDist = FLT_MAX) const;
+		bool rayCast(const Ray& ray, PhysicsQueryHit& hit, float maxDist = FLT_MAX) const;
 
 		/** 
 		 * Checks does the ray hit this collider. 
@@ -110,7 +110,7 @@ namespace bs
 		 * @param[in]	maxDist	Maximum distance from the ray origin to search for hits.
 		 * @return				True if the ray has hit the collider.
 		 */
-		inline bool rayCast(const Vector3& origin, const Vector3& unitDir, PhysicsQueryHit& hit,
+		bool rayCast(const Vector3& origin, const Vector3& unitDir, PhysicsQueryHit& hit,
 			float maxDist = FLT_MAX) const;
 
 		/** 

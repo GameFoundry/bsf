@@ -4,10 +4,10 @@
 #include "BsGLVertexBuffer.h"
 #include "BsGLIndexBuffer.h"
 #include "BsGLGpuBuffer.h"
-#include "Renderapi/BsHardwareBuffer.h"
+#include "RenderAPI/BsHardwareBuffer.h"
 #include "BsGLGpuParamBlockBuffer.h"
-#include "Renderapi/BsRenderAPI.h"
-#include "Renderapi/BsRenderAPICapabilities.h"
+#include "RenderAPI/BsRenderAPI.h"
+#include "RenderAPI/BsRenderAPICapabilities.h"
 
 namespace bs { namespace ct
 {

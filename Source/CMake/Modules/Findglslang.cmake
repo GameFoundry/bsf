@@ -5,48 +5,22 @@
 #  glslang_LIBRARIES
 #  glslang_FOUND
 
-set(glslang_INSTALL_DIRS ${PROJECT_SOURCE_DIR}/../Dependencies/glslang CACHE PATH "")
-set(glslang_INCLUDE_SEARCH_DIRS "${glslang_INSTALL_DIRS}/include")
+start_find_package(glslang)
 
-if(BS_64BIT)
-	set(glslang_LIBRARY_RELEASE_SEARCH_DIRS "${glslang_INSTALL_DIRS}/lib/x64")
+set(glslang_INSTALL_DIR ${PROJECT_SOURCE_DIR}/../Dependencies/glslang CACHE PATH "")
+gen_default_lib_search_dirs(glslang)
+
+if(WIN32)
+	set(glslang_DEBUG_SUFFIX "d")
 else()
-	set(glslang_LIBRARY_RELEASE_SEARCH_DIRS "${glslang_INSTALL_DIRS}/lib/x86")
+	set(glslang_DEBUG_SUFFIX "")
 endif()
 
-message(STATUS "Looking for glslang installation...")
+find_imported_includes(glslang glslang/Public/ShaderLang.h)
+find_imported_library2(glslang glslang glslang${glslang_DEBUG_SUFFIX})
+find_imported_library2(glslang HLSL HLSL${glslang_DEBUG_SUFFIX})
+find_imported_library2(glslang OSDependent OSDependent${glslang_DEBUG_SUFFIX})
+find_imported_library2(glslang OGLCompiler OGLCompiler${glslang_DEBUG_SUFFIX})
+find_imported_library2(glslang SPIRV SPIRV${glslang_DEBUG_SUFFIX})
 
-find_path(glslang_INCLUDE_DIR glslang/Public/ShaderLang.h PATHS ${glslang_INCLUDE_SEARCH_DIRS})
-
-if(glslang_INCLUDE_DIR)
-	set(glslang_FOUND TRUE)
-else()
-	set(glslang_FOUND FALSE)
-endif()
-
-find_imported_library2(glslang glslang glslangd)
-find_imported_library2(glslang HLSL HLSLd)
-find_imported_library2(glslang OSDependent OSDependentd)
-find_imported_library2(glslang OGLCompiler OGLCompilerd)
-find_imported_library2(glslang SPIRV SPIRVd)
-
-if(NOT glslang_FOUND)
-	if(glslang_FIND_REQUIRED)
-		message(FATAL_ERROR "Cannot find glslang installation. Try modifying the glslang_INSTALL_DIRS path.")
-	else()
-		message(WARNING "Cannot find glslang installation. Try modifying the glslang_INSTALL_DIRS path.")
-	endif()
-else()
-	message(STATUS "...glslang OK.")
-endif()
-
-if(glslang_FOUND)
-	set_target_properties(glslang::glslang PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${glslang_INCLUDE_DIR}")	
-endif()
-
-mark_as_advanced(
-	glslang_INSTALL_DIRS 
-	glslang_INCLUDE_DIR 
-)
-
-set(glslang_INCLUDE_DIRS ${glslang_INCLUDE_DIR})
+end_find_package(glslang glslang)

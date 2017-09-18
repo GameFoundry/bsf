@@ -3,9 +3,9 @@
 #pragma once
 
 #include "BsGLPrerequisites.h"
-#include "Renderapi/BsRenderAPI.h"
+#include "RenderAPI/BsRenderAPI.h"
 #include "BsGLHardwareBufferManager.h"
-#include "Glsl/BsGLSLProgramFactory.h"
+#include "GLSL/BsGLSLProgramFactory.h"
 #include "Math/BsMatrix4.h"
 
 namespace bs { namespace ct

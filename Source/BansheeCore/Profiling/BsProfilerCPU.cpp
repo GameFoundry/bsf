@@ -44,7 +44,7 @@ namespace bs
 
 	inline double ProfilerCPU::Timer::getCurrentTime() const
 	{
-		steady_clock::time_point timeNow = mHRClock.now();
+		high_resolution_clock::time_point timeNow = mHRClock.now();
 		nanoseconds timeNowNs = timeNow.time_since_epoch();
 
 		return timeNowNs.count() * 0.000001;
@@ -180,7 +180,8 @@ namespace bs
 
 		activeBlock = ActiveBlock(ActiveSamplingType::Basic, rootBlock);
 		if (activeBlocks == nullptr)
-			activeBlocks = frameAlloc.alloc<Stack<ActiveBlock, StdFrameAlloc<ActiveBlock>>>(&frameAlloc);
+			activeBlocks = frameAlloc.alloc<Stack<ActiveBlock, StdFrameAlloc<ActiveBlock>>>
+					(StdFrameAlloc<ActiveBlock>(&frameAlloc));
 
 		activeBlocks->push(activeBlock);
 		

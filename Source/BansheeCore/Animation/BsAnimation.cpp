@@ -10,17 +10,17 @@
 namespace bs
 {
 	AnimationClipInfo::AnimationClipInfo()
-		: fadeDirection(0.0f), fadeTime(0.0f), fadeLength(0.0f), curveVersion(0), layerIdx((UINT32)-1)
-		, stateIdx((UINT32)-1), playbackType(AnimPlaybackType::Normal)
+		: playbackType(AnimPlaybackType::Normal), fadeDirection(0.0f), fadeTime(0.0f), fadeLength(0.0f), curveVersion(0)
+		, layerIdx((UINT32)-1), stateIdx((UINT32)-1)
 	{ }
 
 	AnimationClipInfo::AnimationClipInfo(const HAnimationClip& clip)
-		: fadeDirection(0.0f), fadeTime(0.0f), fadeLength(0.0f), clip(clip), curveVersion(0), layerIdx((UINT32)-1)
-		, stateIdx((UINT32)-1), playbackType(AnimPlaybackType::Normal)
+		: clip(clip), playbackType(AnimPlaybackType::Normal), fadeDirection(0.0f), fadeTime(0.0f), fadeLength(0.0f)
+		, curveVersion(0), layerIdx((UINT32)-1), stateIdx((UINT32)-1)
 	{ }
 
 	Blend1DInfo::Blend1DInfo(UINT32 numClips)
-		: clips(nullptr), numClips(numClips)
+		: numClips(numClips), clips(nullptr)
 	{
 		if (numClips > 0)
 			clips = bs_newN<BlendClipInfo>(numClips);
@@ -34,8 +34,8 @@ namespace bs
 
 	AnimationProxy::AnimationProxy(UINT64 id)
 		: id(id), layers(nullptr), numLayers(0), numSceneObjects(0), sceneObjectInfos(nullptr)
-		, sceneObjectTransforms(nullptr), morphChannelInfos(nullptr), morphShapeInfos(nullptr), numMorphShapes(0)
-		, numMorphChannels(0), numMorphVertices(0), morphChannelWeightsDirty(false), mCullEnabled(true), numGenericCurves(0)
+		, sceneObjectTransforms(nullptr), morphChannelInfos(nullptr), morphShapeInfos(nullptr), numMorphChannels(0)
+		, numMorphShapes(0), numMorphVertices(0), morphChannelWeightsDirty(false), mCullEnabled(true), numGenericCurves(0)
 		, genericCurveOutputs(nullptr)
 	{ }
 
@@ -1282,13 +1282,10 @@ namespace bs
 			clipInfo.state.time += scaledTimeDelta;
 
 			HAnimationClip clip = clipInfo.clip;
-			float clipLength = 0.0f;
 			if (clip.isLoaded())
 			{
 				if (clipInfo.curveVersion != clip->getVersion())
 					mDirty |= AnimDirtyStateFlag::Layout;
-
-				clipLength = clip->getLength();
 			}
 
 			float fadeTime = clipInfo.fadeTime + scaledTimeDelta;
@@ -1414,7 +1411,7 @@ namespace bs
 				const SPtr<Skeleton>& skeleton = mAnimProxy->skeleton;
 
 				UINT32 parentBoneIdx = skeleton->getBoneInfo(soInfo.boneIdx).parent;
-				if (parentBoneIdx == -1)
+				if (parentBoneIdx == (UINT32)-1)
 				{
 					so->setPosition(position);
 					so->setRotation(rotation);
@@ -1422,7 +1419,7 @@ namespace bs
 				}
 				else
 				{
-					while(parentBoneIdx != -1)
+					while(parentBoneIdx != (UINT32)-1)
 					{
 						// Update rotation
 						const Quaternion& parentOrientation = mAnimProxy->skeletonPose.rotations[parentBoneIdx];

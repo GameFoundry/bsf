@@ -95,7 +95,7 @@ namespace bs
 	}
 
 	ScreenSpaceReflectionsSettings::ScreenSpaceReflectionsSettings()
-		: enabled(true), intensity(1.0f), maxRoughness(0.8f), quality(2)
+		: enabled(true), quality(2), intensity(1.0f), maxRoughness(0.8f)
 	{ }
 
 	RTTITypeBase* ScreenSpaceReflectionsSettings::getRTTIStatic()

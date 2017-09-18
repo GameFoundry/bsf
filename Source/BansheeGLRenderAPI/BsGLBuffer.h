@@ -3,7 +3,7 @@
 #pragma once
 
 #include "BsGLPrerequisites.h"
-#include "Renderapi/BsVertexBuffer.h"
+#include "RenderAPI/BsVertexBuffer.h"
 #include "BsGLVertexArrayObjectManager.h"
 
 namespace bs { namespace ct

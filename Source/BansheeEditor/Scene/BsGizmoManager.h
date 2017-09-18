@@ -427,7 +427,7 @@ namespace bs
 		void limitIconSize(UINT32& width, UINT32& height);
 
 		/** Converts mesh data from DrawHelper into mesh data usable by the gizmo renderer. */
-		Vector<MeshRenderData> GizmoManager::createMeshProxyData(const Vector<DrawHelper::ShapeMeshData>& meshData);
+		Vector<MeshRenderData> createMeshProxyData(const Vector<DrawHelper::ShapeMeshData>& meshData);
 
 		/**
 		 * Calculates colors for an icon based on its position in the camera. For example icons too close to too far might
@@ -527,7 +527,7 @@ namespace bs
 	/** Performs rendering of gizmos on the core thread, as managed by the GizmoManager. */
 	class GizmoRenderer : public RendererExtension
 	{
-		friend class GizmoManager;
+		friend class bs::GizmoManager;
 
 	public:
 		GizmoRenderer();

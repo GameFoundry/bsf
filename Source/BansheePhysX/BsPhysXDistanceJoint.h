@@ -5,7 +5,7 @@
 #include "BsPhysXPrerequisites.h"
 #include "Physics/BsDistanceJoint.h"
 #include "PxPhysics.h"
-#include "extensions\PxDistanceJoint.h"
+#include "extensions/PxDistanceJoint.h"
 
 namespace bs
 {

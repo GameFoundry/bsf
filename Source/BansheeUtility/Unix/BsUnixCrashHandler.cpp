@@ -3,7 +3,7 @@
 #include "Prerequisites/BsPrerequisitesUtil.h"
 
 #include "Debug/BsDebug.h"
-#include "Filesystem/BsFileSystem.h"
+#include "FileSystem/BsFileSystem.h"
 
 #include <cxxabi.h>
 #include <execinfo.h>

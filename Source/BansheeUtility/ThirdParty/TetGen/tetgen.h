@@ -2253,8 +2253,6 @@ inline void terminatetetgen(tetgenmesh *m, int x)
     m->freememory();
   }
 #ifdef TETLIBRARY
-  throw x;
-#else
   switch (x) {
   case 1: // Out of memory.
     printf("Error:  Out of memory.\n"); 

@@ -85,7 +85,7 @@ namespace bs
 		SceneGridRenderer();
 
 	private:
-		friend class SceneGrid;
+		friend class bs::SceneGrid;
 
 		/**	@copydoc RendererExtension::initialize */
 		void initialize(const Any& data) override;

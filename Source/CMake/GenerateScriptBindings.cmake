@@ -72,6 +72,7 @@ if(BansheeSBGen_FOUND)
 			-output-cs-engine ${BS_GENERATED_CS_ENGINE_OUTPUT_DIR}
 			-output-cs-editor ${BS_GENERATED_CS_EDITOR_OUTPUT_DIR}
 			-- ${BS_INCLUDE_DIRS}
+			-std=c++14
 			-DBS_STATIC_LIB
 			-DBS_SBGEN
 			-w)

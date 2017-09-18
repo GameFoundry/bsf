@@ -1,7 +1,7 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsPhysXD6Joint.h"
-#include "BsFPhysxJoint.h"
+#include "BsFPhysXJoint.h"
 #include "BsPhysX.h"
 #include "BsPhysXRigidbody.h"
 #include "PxRigidDynamic.h"

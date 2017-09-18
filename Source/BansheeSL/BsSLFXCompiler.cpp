@@ -177,7 +177,7 @@ namespace bs
 			{
 				if (!headline.empty())
 				{
-					String s = toString(reports.size()) + " " + headline;
+					String s = toString((UINT32)reports.size()) + " " + headline;
 					output << s << std::endl;
 					output << String(s.size(), '-') << std::endl;
 				}
@@ -546,6 +546,8 @@ namespace bs
 			inputDesc.shaderTarget = Xsc::ShaderTarget::ComputeShader;
 			inputDesc.entryPoint = "csmain";
 			break;
+		default:
+			break;
 		}
 
 		StringStream output;
@@ -839,6 +841,8 @@ namespace bs
 			return QueueSortType::FrontToBack;
 		case CASV_None:
 			return QueueSortType::None;
+		default:
+			break;
 		}
 
 		return QueueSortType::None;
@@ -956,6 +960,8 @@ namespace bs
 			return CULL_CLOCKWISE;
 		case CASV_CCW:
 			return CULL_COUNTERCLOCKWISE;
+		default:
+			break;
 		}
 
 		return CULL_COUNTERCLOCKWISE;
@@ -1538,7 +1544,7 @@ namespace bs
 					}
 				}
 
-				if (baseIdx != -1)
+				if (baseIdx != (UINT32)-1)
 				{
 					auto& entry = techniqueData[baseIdx];
 
@@ -1659,6 +1665,8 @@ namespace bs
 						hlslPassData.computeCode = hlslPassData.code;
 						glslPassData.computeCode = HLSLtoGLSL(glslPassData.code, GPT_COMPUTE_PROGRAM, false, glslBinding);
 						vkslPassData.computeCode = HLSLtoGLSL(glslPassData.code, GPT_COMPUTE_PROGRAM, true, vkslBinding);
+						break;
+					default:
 						break;
 					}
 				}

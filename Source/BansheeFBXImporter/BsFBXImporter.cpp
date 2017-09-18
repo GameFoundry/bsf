@@ -266,7 +266,6 @@ namespace bs
 		for (auto& mesh : scene.meshes)
 		{
 			// Create bones
-			UINT32 numBones = (UINT32)mesh->bones.size();
 			for (auto& fbxBone : mesh->bones)
 			{
 				UINT32 boneIdx = (UINT32)allBones.size();

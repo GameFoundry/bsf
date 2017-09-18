@@ -1,12 +1,12 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
-#include "Glsl/BsGLSLGpuProgram.h"
-#include "Renderapi/BsRenderAPI.h"
+#include "GLSL/BsGLSLGpuProgram.h"
+#include "RenderAPI/BsRenderAPI.h"
 #include "Error/BsException.h"
-#include "Glsl/BsGLSLParamParser.h"
+#include "GLSL/BsGLSLParamParser.h"
 #include "Managers/BsHardwareBufferManager.h"
 #include "Profiling/BsRenderStats.h"
-#include "Renderapi/BsGpuParams.h"
+#include "RenderAPI/BsGpuParams.h"
 
 namespace bs { namespace ct
 {
@@ -123,6 +123,8 @@ namespace bs { namespace ct
 		case GPT_COMPUTE_PROGRAM:
 			shaderType = GL_COMPUTE_SHADER;
 			mProgramID = ++mComputeShaderCount;
+			break;
+		default:
 			break;
 		}
 

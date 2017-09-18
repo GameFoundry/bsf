@@ -21,17 +21,6 @@ namespace bs
 		Any data;
 	};
 
-	/** Helper class to initialize all script interop objects as soon as the library is loaded. */
-	template <class Type, class Base>
-	struct InitScriptObjectOnStart
-	{
-	public:
-		InitScriptObjectOnStart()
-		{
-			ScriptObject<Type, Base>::_initMetaData();
-		}
-	};
-
 	/**
 	 * Base class for all script interop objects. Interop objects form a connection between C++ and CLR classes and methods.
 	 */
@@ -84,6 +73,20 @@ namespace bs
 
 		/** @copydoc ScriptObjectBase::isPersistent  */
 		virtual bool isPersistent() const override { return true; }
+	};
+
+	template <class Type, class Base>
+	class ScriptObject;
+
+	/** Helper class to initialize all script interop objects as soon as the library is loaded. */
+	template <class Type, class Base>
+	struct InitScriptObjectOnStart
+	{
+	public:
+		InitScriptObjectOnStart()
+		{
+			ScriptObject<Type, Base>::_initMetaData();
+		}
 	};
 
 	/**	Template version of ScriptObjectBase populates the object meta-data on library load. */

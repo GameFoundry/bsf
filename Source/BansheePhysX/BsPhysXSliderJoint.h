@@ -5,7 +5,7 @@
 #include "BsPhysXPrerequisites.h"
 #include "Physics/BsSliderJoint.h"
 #include "PxPhysics.h"
-#include "extensions\PxPrismaticJoint.h"
+#include "extensions/PxPrismaticJoint.h"
 
 namespace bs
 {

@@ -5,44 +5,39 @@
 #  FMOD_LIBRARIES
 #  FMOD_FOUND
 
-# TODO: Set default install paths for mac/unix
-set(FMOD_INSTALL_DIRS "C:/Program Files (x86)/FMOD SoundSystem/FMOD Studio API Windows" CACHE PATH "")
-set(FMOD_INCLUDE_SEARCH_DIRS "${FMOD_INSTALL_DIRS}/api/lowlevel/inc")
-set(FMOD_LIBRARY_SEARCH_DIRS "${FMOD_INSTALL_DIRS}/api/lowlevel/lib")
+start_find_package(FMOD)
 
-message(STATUS "Looking for FMOD installation...")
-find_path(FMOD_INCLUDE_DIR fmod.h PATHS ${FMOD_INCLUDE_SEARCH_DIRS})
-
-if(BS_64BIT)
-	find_library(FMOD_LIBRARY_OPTIMIZED NAMES fmod64_vc libfmod PATHS ${FMOD_LIBRARY_SEARCH_DIRS})
-	find_library(FMOD_LIBRARY_DEBUG NAMES fmodL64_vc libfmodL fmod64_vc libfmod PATHS ${FMOD_LIBRARY_SEARCH_DIRS})
+if(WIN32)
+	set(FMOD_INSTALL_DIR "C:/Program Files (x86)/FMOD SoundSystem/FMOD Studio API Windows" CACHE PATH "")
 else()
-	find_library(FMOD_LIBRARY_OPTIMIZED NAMES fmod_vc libfmod PATHS ${FMOD_LIBRARY_SEARCH_DIRS})
-	find_library(FMOD_LIBRARY_DEBUG NAMES fmodL_vc libfmodL fmod_vc libfmod PATHS ${FMOD_LIBRARY_SEARCH_DIRS})
+	set(FMOD_INSTALL_DIR ${PROJECT_SOURCE_DIR}/../Dependencies/FMOD CACHE PATH "")
 endif()
 
-if(FMOD_INCLUDE_DIR AND FMOD_LIBRARY_OPTIMIZED AND FMOD_LIBRARY_DEBUG)
-	set(FMOD_FOUND TRUE)
-endif()
+gen_default_lib_search_dirs(FMOD)
 
-if(NOT FMOD_FOUND)
-	if(FMOD_FIND_REQUIRED)
-		message(FATAL_ERROR "Cannot find FMOD installation. Try modifying the FMOD_INSTALL_DIRS path.")
-		return()
+list(APPEND FMOD_INCLUDE_SEARCH_DIRS ${FMOD_INSTALL_DIR}/api/lowlevel/inc)
+
+if(WIN32)
+	set(FMOD_LIBRARY_SEARCH_PATH ${FMOD_INSTALL_DIR}/api/lowlevel/lib)
+
+	if(BS_64BIT)
+		set(FMOD_LIBNAME fmod64_vc)
 	else()
-		message(WARNING "Cannot find FMOD installation. Try modifying the FMOD_INSTALL_DIRS path.")
+		set(FMOD_LIBNAME fmod_vc)
 	endif()
 else()
-	message(STATUS "...FMOD OK.")
+	set(FMOD_LIBNAME fmod)
+	if(BS_64BIT)
+		set(FMOD_LIBRARY_SEARCH_PATH ${FMOD_INSTALL_DIR}/api/lowlevel/lib/x86_64)
+	else()
+		set(FMOD_LIBRARY_SEARCH_PATH ${FMOD_INSTALL_DIR}/api/lowlevel/lib/x86)
+	endif()
 endif()
 
-if(FMOD_FOUND)
-	add_library(FMOD STATIC IMPORTED)
-	set_target_properties(FMOD PROPERTIES IMPORTED_LOCATION_DEBUG "${FMOD_LIBRARY_DEBUG}")
-	set_target_properties(FMOD PROPERTIES IMPORTED_LOCATION_OPTIMIZEDDEBUG "${FMOD_LIBRARY_DEBUG}")
-	set_target_properties(FMOD PROPERTIES IMPORTED_LOCATION_RELEASE "${FMOD_LIBRARY_OPTIMIZED}")
-endif()
+list(APPEND FMOD_LIBRARY_RELEASE_SEARCH_DIRS ${FMOD_LIBRARY_SEARCH_PATH})
+list(APPEND FMOD_LIBRARY_DEBUG_SEARCH_DIRS ${FMOD_LIBRARY_SEARCH_PATH})
 
-mark_as_advanced(FMOD_INSTALL_DIRS FMOD_INCLUDE_DIR FMOD_LIBRARY_OPTIMIZED FMOD_LIBRARY_DEBUG)
-set(FMOD_INCLUDE_DIRS ${FMOD_INCLUDE_DIR})
-set(FMOD_LIBRARIES FMOD)
+find_imported_includes(FMOD fmod.h)
+find_imported_library(FMOD ${FMOD_LIBNAME})
+
+end_find_package(FMOD ${FMOD_LIBNAME})

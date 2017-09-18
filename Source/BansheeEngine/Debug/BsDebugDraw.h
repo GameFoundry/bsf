@@ -206,7 +206,7 @@ namespace bs
 	/** Performs rendering of meshes provided by DebugDraw. */
 	class DebugDrawRenderer : public RendererExtension
 	{
-		friend class DebugDraw;
+		friend class bs::DebugDraw;
 
 	public:
 		DebugDrawRenderer();

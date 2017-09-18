@@ -5,7 +5,7 @@
 #include "BsPhysXPrerequisites.h"
 #include "Physics/BsHingeJoint.h"
 #include "PxPhysics.h"
-#include "extensions\PxRevoluteJoint.h"
+#include "extensions/PxRevoluteJoint.h"
 
 namespace bs
 {

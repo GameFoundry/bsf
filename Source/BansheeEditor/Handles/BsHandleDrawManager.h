@@ -239,7 +239,7 @@ namespace bs
 		HandleRenderer();
 
 	private:
-		friend class HandleDrawManager;
+		friend class bs::HandleDrawManager;
 
 		/** @copydoc RendererExtension::initialize */
 		void initialize(const Any& data) override;

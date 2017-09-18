@@ -1047,9 +1047,6 @@ namespace bs
 		if (renderTarget == nullptr)
 			return;
 
-		float width = (float)renderTarget->getProperties().getWidth();
-		float height = (float)renderTarget->getProperties().getHeight();
-
 		Rect2I screenArea = camera->getViewport()->getArea();
 		Matrix4 viewMatrix = camera->getViewMatrix();
 		Matrix4 projMatrix = camera->getProjectionMatrixRS();

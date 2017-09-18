@@ -16,11 +16,12 @@
 
 namespace bs
 {
+	class RenderAPIInfo;
+	class RenderAPIManager;
+
 	/** @addtogroup RenderAPI
 	 *  @{
 	 */
-
-	class RenderAPIInfo;
 
 	/**
 	 * Provides access to ct::RenderAPI from the simulation thread. All the commands get queued on the core thread queue 
@@ -612,7 +613,7 @@ namespace bs
 		/* 								INTERNAL DATA					       	*/
 		/************************************************************************/
 	protected:
-		friend class RenderAPIManager;
+		friend class bs::RenderAPIManager;
 
 		SPtr<RenderTarget> mActiveRenderTarget;
 

@@ -10,7 +10,7 @@
 namespace bs
 {
 	GUILabel::GUILabel(const String& styleName, const GUIContent& content, const GUIDimensions& dimensions)
-		:GUIElement(styleName, dimensions), mImageSprite(nullptr), mContent(content)
+		:GUIElement(styleName, dimensions), mContent(content), mImageSprite(nullptr)
 	{
 		mTextSprite = bs_new<TextSprite>();
 	}

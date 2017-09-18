@@ -122,7 +122,7 @@ namespace bs
 		const GpuParamDataDesc& getDesc() const { return *mParamDesc; }
 
 		/** Checks if param is initialized. */
-		bool operator==(const nullptr_t& nullval) const
+		bool operator==(const std::nullptr_t& nullval) const
 		{
 			return mParamDesc == nullptr;
 		}
@@ -156,7 +156,7 @@ namespace bs
 		const GpuParamDataDesc& getDesc() const { return *mParamDesc; }
 
 		/**	Checks if param is initialized. */
-		bool operator==(const nullptr_t& nullval) const
+		bool operator==(const std::nullptr_t& nullval) const
 		{
 			return mParamDesc == nullptr;
 		}
@@ -191,7 +191,7 @@ namespace bs
 		const GpuParamObjectDesc& getDesc() const { return *mParamDesc; }
 
 		/** Checks if param is initialized. */
-		bool operator==(const nullptr_t& nullval) const
+		bool operator==(const std::nullptr_t& nullval) const
 		{
 			return mParamDesc == nullptr;
 		}
@@ -226,7 +226,7 @@ namespace bs
 		const GpuParamObjectDesc& getDesc() const { return *mParamDesc; }
 
 		/**	Checks if param is initialized. */
-		bool operator==(const nullptr_t& nullval) const
+		bool operator==(const std::nullptr_t& nullval) const
 		{
 			return mParamDesc == nullptr;
 		}
@@ -261,7 +261,7 @@ namespace bs
 		const GpuParamObjectDesc& getDesc() const { return *mParamDesc; }
 
 		/** Checks if param is initialized. */
-		bool operator==(const nullptr_t& nullval) const
+		bool operator==(const std::nullptr_t& nullval) const
 		{
 			return mParamDesc == nullptr;
 		}
@@ -296,7 +296,7 @@ namespace bs
 		const GpuParamObjectDesc& getDesc() const { return *mParamDesc; }
 
 		/**	Checks if param is initialized. */
-		bool operator==(const nullptr_t& nullval) const
+		bool operator==(const std::nullptr_t& nullval) const
 		{
 			return mParamDesc == nullptr;
 		}

@@ -562,8 +562,5 @@ namespace bs
 		}
 
 		Platform::setCaptionNonClientAreas(*mParentWindow->getCore(), nonClientAreas);
-
-		Rect2I menuBarBounds = mMenuItemLayout->getBounds();
-		menuBarBounds.width = menuWidth;
 	}
 }

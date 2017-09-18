@@ -11,7 +11,7 @@ namespace bs
 	{ }
 
 	Component::Component(const HSceneObject& parent)
-		:mNotifyFlags(TCF_None), mParent(parent), mSceneManagerId(-1)
+		:mNotifyFlags(TCF_None), mSceneManagerId(-1), mParent(parent)
 	{
 		setName("Component");
 	}

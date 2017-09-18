@@ -70,7 +70,7 @@ namespace bs
 		TexAtlasNode* node = &mNodes[nodeIdx];
 		float aspect = node->width / (float)node->height;
 
-		if (node->children[0] != -1)
+		if (node->children[0] != (UINT32)-1)
 		{
 			if (addToNode(node->children[0], width, height, x, y, allowGrowth))
 				return true;
@@ -166,7 +166,7 @@ namespace bs
 					}
 				}
 
-				if (largestId == -1)
+				if (largestId == (UINT32)-1)
 					break; // Nothing fits, start a new page
 
 				Element& element = elements[largestId];

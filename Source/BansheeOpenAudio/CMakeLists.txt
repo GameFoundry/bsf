@@ -1,15 +1,17 @@
 # Source files and their filters
 include(CMakeSources.cmake)
 
+# Find packages
+find_package(OpenAL REQUIRED)
+find_package(ogg REQUIRED)
+find_package(vorbis REQUIRED)
+find_package(FLAC REQUIRED)
+
 # Includes
 set(BansheeOpenAudio_INC 
 	"./" 
 	"../BansheeUtility" 
-	"../BansheeCore"
-	"../../Dependencies/libogg/include"
-	"../../Dependencies/libvorbis/include"
-	"../../Dependencies/libFLAC/include"
-	"../../Dependencies/OpenAL/include")
+	"../BansheeCore")
 
 include_directories(${BansheeOpenAudio_INC})	
 	
@@ -21,14 +23,13 @@ target_compile_definitions(BansheeOpenAudio PRIVATE -DBS_OA_EXPORTS)
 
 # Libraries
 ## External libs: FLAC, Vorbis, Ogg, OpenAL
-add_library_per_config(BansheeOpenAudio libFLAC libFLAC libFLAC)
-add_library_per_config_multi(BansheeOpenAudio libvorbis libvorbis libvorbis libvorbis)
-add_library_per_config_multi(BansheeOpenAudio libvorbisfile libvorbis libvorbisfile libvorbisfile)
-add_library_per_config(BansheeOpenAudio libogg Release/libogg Debug/libogg)
-add_library_per_config(BansheeOpenAudio OpenAL OpenAL32 OpenAL32)
+target_link_libraries(BansheeOpenAudio PRIVATE ${FLAC_LIBRARIES})
+target_link_libraries(BansheeOpenAudio PRIVATE ${ogg_LIBRARIES})
+target_link_libraries(BansheeOpenAudio PRIVATE ${vorbis_LIBRARIES})
+target_link_libraries(BansheeOpenAudio PRIVATE ${OpenAL_LIBRARIES})
 
 ## Local libs
-target_link_libraries(BansheeOpenAudio PUBLIC BansheeUtility BansheeCore)
+target_link_libraries(BansheeOpenAudio PRIVATE BansheeUtility BansheeCore)
 
 # IDE specific
 set_property(TARGET BansheeOpenAudio PROPERTY FOLDER Plugins)

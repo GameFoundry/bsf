@@ -691,7 +691,7 @@ namespace bs
 			std::array<SPtr<PixelData>, 6> superSampledOutput;
 			readCubemapUVRemap(source, superSampledOutput, superSampledFaceSize, &mapCubemapDirToCylindrical);
 
-			if (faceSize.x != superSampledFaceSize)
+			if (faceSize.x != (INT32)superSampledFaceSize)
 				downsampleCubemap(superSampledOutput, output, faceSize.x);
 			else
 				output = superSampledOutput;
@@ -704,7 +704,7 @@ namespace bs
 			std::array<SPtr<PixelData>, 6> superSampledOutput;
 			readCubemapUVRemap(source, superSampledOutput, superSampledFaceSize, &mapCubemapDirToSpherical);
 
-			if (faceSize.x != superSampledFaceSize)
+			if (faceSize.x != (INT32)superSampledFaceSize)
 				downsampleCubemap(superSampledOutput, output, faceSize.x);
 			else
 				output = superSampledOutput;

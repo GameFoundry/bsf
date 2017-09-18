@@ -1,13 +1,15 @@
 # Source files and their filters
 include(CMakeSources.cmake)
 
+# Find packages
+find_package(mono)
+
 # Includes
 set(BansheeMono_INC 
 	"./" 
 	"../BansheeUtility" 
 	"../BansheeCore"
-	"../BansheeEngine"
-	"../../Dependencies/Mono/include")
+	"../BansheeEngine")
 
 include_directories(${BansheeMono_INC})	
 
@@ -19,7 +21,7 @@ target_compile_definitions(BansheeMono PRIVATE -DBS_MONO_EXPORTS)
 
 # Libraries
 ## External lib: Mono
-add_library_per_config(BansheeMono mono Release/mono-2.0 Debug/mono-2.0)
+target_link_libraries(BansheeMono PRIVATE ${mono_LIBRARIES})
 
 ## Local libs
 target_link_libraries(BansheeMono PUBLIC BansheeEngine BansheeUtility BansheeCore)

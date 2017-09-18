@@ -132,7 +132,7 @@ namespace bs
 		{
 			for (auto& component : components)
 			{
-				if (componentDiff->id == component->getLinkId())
+				if (componentDiff->id == (INT32)component->getLinkId())
 				{
 					IDiff& diffHandler = component->getRTTI()->getDiffHandler();
 					diffHandler.applyDiff(component.getInternalPtr(), componentDiff->data);
@@ -257,7 +257,7 @@ namespace bs
 				continue;
 
 			bool foundMatching = false;
-			if (instanceChild->getLinkId() != -1)
+			if (instanceChild->getLinkId() != (UINT32)-1)
 			{
 				for (UINT32 j = 0; j < prefabChildCount; j++)
 				{
@@ -346,7 +346,7 @@ namespace bs
 			HComponent instanceComponent = instanceComponents[i];
 
 			bool foundMatching = false;
-			if (instanceComponent->getLinkId() != -1)
+			if (instanceComponent->getLinkId() != (UINT32)-1)
 			{
 				for (UINT32 j = 0; j < prefabComponentCount; j++)
 				{
@@ -476,7 +476,7 @@ namespace bs
 
 				if (iterFind != linkToInstanceId.end())
 				{
-					if (child->getLinkId() != -1)
+					if (child->getLinkId() != (UINT32)-1)
 					{
 						UnorderedMap<UINT32, UINT64>& idMap = iterFind->second;
 

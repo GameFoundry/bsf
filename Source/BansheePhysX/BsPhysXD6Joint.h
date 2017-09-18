@@ -5,7 +5,7 @@
 #include "BsPhysXPrerequisites.h"
 #include "Physics/BsD6Joint.h"
 #include "PxPhysics.h"
-#include "extensions\PxD6Joint.h"
+#include "extensions/PxD6Joint.h"
 
 namespace bs
 {

@@ -1,12 +1,14 @@
 # Source files and their filters
 include(CMakeSources.cmake)
 
+# Find packages
+find_package(OIS)
+
 # Includes
 set(BansheeOISInput_INC 
 	"./"
 	"../BansheeUtility" 
-	"../BansheeCore"
-	"../../Dependencies/OIS/include")
+	"../BansheeCore")
 
 include_directories(${BansheeOISInput_INC})	
 	
@@ -18,10 +20,10 @@ target_compile_definitions(BansheeOISInput PRIVATE -DBS_OIS_EXPORTS -DOIS_DYNAMI
 
 # Libraries
 ## External lib: OIS
-add_library_per_config(BansheeOISInput OIS Release/BansheeOIS Debug/BansheeOIS)
+target_link_libraries(BansheeOISInput PRIVATE ${OIS_LIBRARIES})
 
 ## Local libs
-target_link_libraries(BansheeOISInput PUBLIC BansheeUtility BansheeCore)
+target_link_libraries(BansheeOISInput PRIVATE BansheeUtility BansheeCore)
 
 # IDE specific
 set_property(TARGET BansheeOISInput PROPERTY FOLDER Plugins)

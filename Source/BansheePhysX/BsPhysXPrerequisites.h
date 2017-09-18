@@ -3,10 +3,10 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
-#include "foundation\PxVec3.h"
-#include "foundation\PxVec4.h"
-#include "foundation\PxQuat.h"
-#include "foundation\PxTransform.h"
+#include "foundation/PxVec3.h"
+#include "foundation/PxVec4.h"
+#include "foundation/PxQuat.h"
+#include "foundation/PxTransform.h"
 
 namespace bs
 {

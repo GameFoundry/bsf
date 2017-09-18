@@ -203,7 +203,11 @@ namespace bs
 		}
 
 		/**	Helper method that converts a narrow character array to a narrow string. */
-		template<class T> static std::string toString(T* param) { static_assert("Invalid pointer type."); }
+		template<class T> static std::string toString(T* param)
+		{
+			static_assert(!std::is_same<T,T>::value, "Invalid pointer type.");
+			return "";
+		}
 
 		/**	Helper method that converts a narrow character array to a narrow string. */
 		static std::string toString(const char* param)
@@ -236,7 +240,11 @@ namespace bs
 		}
 
 		/**	Helper method that converts a wide character array to a wide string. */
-		template<class T> static std::wstring toWString(T* param) { static_assert("Invalid pointer type."); }
+		template<class T> static std::wstring toWString(T* param)
+		{
+			static_assert(!std::is_same<T,T>::value, "Invalid pointer type.");
+			return L"";
+		}
 
 		/**	Helper method that converts a wide character array to a wide string. */
 		static std::wstring toWString(const wchar_t* param)

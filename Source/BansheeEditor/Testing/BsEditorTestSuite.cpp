@@ -617,7 +617,7 @@ namespace bs
 		BS_TEST_ASSERT(_1->getLinkId() != _3->getLinkId() && _1->getLinkId() != _10->getLinkId());
 
 		// Ensure new instances of a prefab have -1 root link ID
-		BS_TEST_ASSERT(_3->getLinkId() == -1 && _10->getLinkId() == -1);
+		BS_TEST_ASSERT(_3->getLinkId() == (UINT32)-1 && _10->getLinkId() == (UINT32)-1);
 
 		scenePrefab->update(sceneRoot);
 

@@ -1,31 +1,27 @@
 # Compiling
 
 ## Quick start
-Use the commands below to get Banshee up and running as quickly as possible. Scroll further below for advanced build options that allow for more customization.
+Use the guide below to get Banshee up and running as quickly as possible. Scroll further below for advanced build options that allow for more customization.
 
-**Windows (Visual Studio 2015)**
-
-Make sure you have installed *git* and *CMake* (version 3.7.2 or newer). Make sure paths to their binaries are in your *PATH* enviroment variable.
-
-Run the following commands and the *.sln* will be placed in the */Build* folder:
-```
-git clone https://github.com/BearishSun/BansheeEngine.git
-cd BansheeEngine
-mkdir Build
-cd Build
-cmake -G "Visual Studio 14 2015 Win64" ../Source
-```
-
->Note: If compilation fails with errors related to DirectX, you need to install relevant DirectX dependencies as described [here](#otherDeps).
-
-**Linux**
-
-*Coming soon*
-
-**OS X**
-
-*Coming soon*
-
+- Install git (https://git-scm.com) and CMake 3.9.0 or higher (https://cmake.org)
+  - Ensure they are added to your *PATH* environment variable
+- Run the following commands in the terminal/command line:
+  - `git clone https://github.com/BearishSun/BansheeEngine.git`
+  - `cd BansheeEngine`
+  - `mkdir Build`
+  - `cmake -G "$generator$" ../Source`
+    - Where *$generator$* should be replaced with any of the supported generators. Some common ones:
+	  - `Visual Studio 14 2015 Win64` - Visual Studio 2015 (64-bit build)
+	  - `Visual Studio 15 2017 Win64` - Visual Studio 2017 (64-bit build)
+	  - `Unix Makefiles`
+	  - `Ninja`
+	  - `Xcode`
+	- See all valid generators: [cmake-generators](https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html)
+- Build the project using your chosen tool
+  - Build files are in `BansheeEngine\Build` folder
+- Install dependencies
+  - See [here](#otherDeps)
+	 
 ## Customizing the build
 
 By default the process above will fetch the *master* branch. If required switch to a different branch before building:
@@ -46,8 +42,9 @@ You can choose to use a different *CMake* generator than those specified above, 
     - (Mac & Linux coming soon)
   - Supported compilers:
     - MSVC++ 14.0 (Visual Studio 2015)
-    - (Clang/GCC coming soon)
- 
+    - GCC 7.0 (or newer)
+    - Clang 4 (or newer)
+
 ### <a name="dependencies"></a>Third party dependencies
 Banshee relies on a variety of third party dependencies. A set of pre-compiled dependencies are provided for every supported platform/compiler. These will be fetched automatically by the build process, but you may also download them manually or compile them from source:
  * [Download dependencies (VS2015)](http://data.banshee3d.com/BansheeDependencies_VS2015_Master.zip)
@@ -58,33 +55,40 @@ For older versions of pre-compiled dependencies check the git release tag descri
 ## <a name="otherDeps"></a>Other dependencies
 The following dependencies will need to be installed manually. Which ones are required depend on the selected *CMake* options and your usage of Banshee (check text of each entry below).
 
-**DirectX SDK** (Optional if not using DirectX)
- - Only needed if on Windows 7 or earlier and using DirectX 11 render API
- - Set up DXSDK_DIR environment variable pointing to the DirectX instalation
+**Windows**
+  - **DirectX SDK** (Required by default on Windows 7 or earlier)
+	- Optional if you have choosen a different RenderAPI in *CMake* options
+    - Set up DXSDK_DIR environment variable pointing to the DirectX instalation
+  - **Windows SDK** (Required by default on Windows 8 or later)
+	- Optional if you have choosen a different RenderAPI in *CMake* options
+  - **DirectX Debug Layer** (Required by default on Windows 10)
+    - Optional if you have choosen a different RenderAPI in *CMake* options
+    - Go to Settings panel (type "Settings" in Start)->System->Apps & features->Manage optional Features->Add a feature->Select "Graphics Tools"
  
-**Windows SDK** (Optional if not using DirectX)
- - Only needed if on Windows 8 or later and using DirectX 11 render API
- 
-**DirectX Debug Layer** (Optional if not using DirectX)
- - Only needed if on Windows 10 and using DirectX 11 render API
- - Go to Settings panel (type "Settings" in Start)->System->Apps & features->Manage optional Features->Add a feature->Select "Graphics Tools"
- 
-**Vulkan SDK** (Optional if not using Vulkan) 
- - Only needed if you selected the Vulkan render API during build configuration
- - https://lunarg.com/vulkan-sdk/
- - If CMake complains it cannot find Vulkan, manually set the Vulkan_INSTALL_DIRS to your installation directory
- 
-**Python 3.5** (Optional)
- - Only needed if you plan on running Python scripts in the /Scripts folder
- - https://www.python.org/downloads/
+**Linux**
+  - **OpenGL** (Required by default)
+    - Optional if you have choosen a different RenderAPI in *CMake* options
+    - Debian/Ubuntu: *apt-get install libgl1-mesa-dev libglu1-mesa-dev mesa-common-dev*
+  - **X11**
+    - Debian/Ubuntu: *apt-get install libx11-dev libxcursor-dev libxrandr-dev*
+  - **LibUUID**
+    - Debian/Ubuntu: *apt-get install uuid-dev*
+  - (Or equivalent packages for your distribution)
 
-**FMOD Low Level Programmer API** (Optional)
- - Only needed if you selected the FMOD audio module during build configuration
- - http://www.fmod.org/download/
- - If CMake complains it cannot find FMOD, manually set the FMOD_INSTALL_DIRS to your installation directory 
- - Copy the dynamic libraries from {INSTALLDIR}/api/lowlevel/lib into /bin folder in Banshee source code folder
-  - Use logging libraries for the Debug builds, and non-logging for OptimizedDebug and Release builds
-  
-**Mono 4.2** (Optional)
- - If you wish to compile managed assemblies using a Microsoft compiler (e.g. using Visual Studio) yet still be able to debug the generated assemblies, you must install Mono 4.2. and set up an environment variable MONO_INSTALL_DIR pointing to the Mono installation directory. When this is set up "pdb2mdb" script will trigger on next compile generating the needed debug symbols.
- - http://www.mono-project.com/download/
+**All OS**
+  - **Vulkan SDK** (Optional) 
+    - Only needed if you selected the Vulkan render API during build configuration
+    - https://lunarg.com/vulkan-sdk/
+    - Set up VULKAN_SDK environment variable pointing to your instalation
+  - **Python 3.5** (Optional)
+    - Only needed if you plan on running Python scripts in the /Scripts folder
+    - https://www.python.org/downloads/
+  - **FMOD Low Level Programmer API 1.08.02** (Optional)
+    - Only needed if you selected the FMOD audio module during build configuration
+    - http://www.fmod.org/download/
+    - If CMake complains it cannot find FMOD, manually set the FMOD_INSTALL_DIRS to your installation directory 
+    - Copy the dynamic libraries (.dll) from {INSTALLDIR}/api/lowlevel/lib into /bin folder in Banshee source code folder
+      - Use logging libraries for the Debug builds, and non-logging for OptimizedDebug and Release builds
+  - **Mono 4.2** (Optional)
+    - If you wish to compile managed assemblies using a Microsoft compiler (e.g. using Visual Studio) yet still be able to debug the generated assemblies, you must install Mono 4.2. and set up an environment variable MONO_INSTALL_DIR pointing to the Mono installation directory. When this is set up "pdb2mdb" script will trigger on next compile generating the needed debug symbols.
+    - http://www.mono-project.com/download/

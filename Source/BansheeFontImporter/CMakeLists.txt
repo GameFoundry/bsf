@@ -1,12 +1,14 @@
 # Source files and their filters
 include(CMakeSources.cmake)
 
+# Packages
+find_package(freetype REQUIRED)
+
 # Includes
 set(BansheeFontImporter_INC 
 	"./" 
 	"../BansheeUtility" 
-	"../BansheeCore"
-	"../../Dependencies/freetype/include")
+	"../BansheeCore")
 
 include_directories(${BansheeFontImporter_INC})	
 	
@@ -18,10 +20,10 @@ target_compile_definitions(BansheeFontImporter PRIVATE -DBS_FONT_EXPORTS -DUSE_F
 
 # Libraries
 ## External lib: FreeType
-add_library_per_config(BansheeFontImporter freetype Release/freetype Debug/freetype)
+target_link_libraries(BansheeFontImporter ${freetype_LIBRARIES})
 
 ## Local libs
-target_link_libraries(BansheeFontImporter PUBLIC BansheeUtility BansheeCore)
+target_link_libraries(BansheeFontImporter BansheeUtility BansheeCore)
 
 # IDE specific
 set_property(TARGET BansheeFontImporter PROPERTY FOLDER Plugins)

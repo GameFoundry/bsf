@@ -30,7 +30,7 @@ namespace bs
 	}
 
 	LocalSkeletonPose::LocalSkeletonPose(UINT32 numPos, UINT32 numRot, UINT32 numScale)
-		: numBones(0), hasOverride(nullptr)
+		: hasOverride(nullptr), numBones(0)
 	{
 		UINT32 bufferSize = sizeof(Vector3) * numPos + sizeof(Quaternion) * numRot + sizeof(Vector3) * numScale;
 		UINT8* buffer = (UINT8*)bs_alloc(bufferSize);
@@ -85,11 +85,11 @@ namespace bs
 	}
 
 	Skeleton::Skeleton()
-		:mInvBindPoses(nullptr), mBoneInfo(nullptr), mNumBones(0)
+		: mNumBones(0), mInvBindPoses(nullptr), mBoneInfo(nullptr)
 	{ }
 
 	Skeleton::Skeleton(BONE_DESC* bones, UINT32 numBones)
-		:mInvBindPoses(bs_newN<Matrix4>(numBones)), mBoneInfo(bs_newN<SkeletonBoneInfo>(numBones)), mNumBones(numBones)
+		: mNumBones(numBones), mInvBindPoses(bs_newN<Matrix4>(numBones)), mBoneInfo(bs_newN<SkeletonBoneInfo>(numBones))
 	{
 		for(UINT32 i = 0; i < numBones; i++)
 		{

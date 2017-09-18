@@ -195,7 +195,7 @@ namespace bs
 
 	void EditorWidgetContainer::setActiveWidget(UINT32 idx)
 	{
-		if(mActiveWidget == idx)
+		if((UINT32)mActiveWidget == idx)
 			return;
 
 		mActiveWidget = idx;
