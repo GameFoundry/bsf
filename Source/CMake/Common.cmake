@@ -168,7 +168,7 @@ function(update_binary_deps DEP_VERSION)
 		message(FATAL_ERROR "Binary dependencies failed to download from URL: ${BINARY_DEPENDENCIES_URL}")
 	endif()
 	
-	message(STATUS "Exacting files. Please wait...")
+	message(STATUS "Extracting files. Please wait...")
 	execute_process(
 		COMMAND ${CMAKE_COMMAND} -E tar xzf ${PROJECT_SOURCE_DIR}/../Temp/Dependencies.zip
 		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/../Temp
@@ -181,6 +181,42 @@ function(update_binary_deps DEP_VERSION)
 	# Copy static libraries, headers and tools
 	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/../Dependencies)	
 	execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/../Temp/Dependencies ${PROJECT_SOURCE_DIR}/../Dependencies)
+	
+	# Clean up
+	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/../Temp)	
+endfunction()
+
+function(update_builtin_assets DEP_VERSION)
+	# Clean and create a temporary folder
+	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/../Temp)	
+	execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_SOURCE_DIR}/../Temp)	
+	
+	set(ASSET_DEPENDENCIES_URL http://data.banshee3d.com/BansheeData_Master_${DEP_VERSION}.zip)
+	file(DOWNLOAD ${ASSET_DEPENDENCIES_URL} ${PROJECT_SOURCE_DIR}/../Temp/Dependencies.zip 
+		SHOW_PROGRESS
+		STATUS DOWNLOAD_STATUS)
+		
+	list(GET DOWNLOAD_STATUS 0 STATUS_CODE)
+	if(NOT STATUS_CODE EQUAL 0)
+		message(FATAL_ERROR "Builtin assets failed to download from URL: ${ASSET_DEPENDENCIES_URL}")
+	endif()
+	
+	message(STATUS "Extracting files. Please wait...")
+	execute_process(
+		COMMAND ${CMAKE_COMMAND} -E tar xzf ${PROJECT_SOURCE_DIR}/../Temp/Dependencies.zip
+		WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/../Temp
+	)
+	
+	# Copy files
+	execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/../Temp/Data ${PROJECT_SOURCE_DIR}/../Data)
+	
+	# Make sure timestamp modify date/times are newer (avoids triggering reimport)
+	execute_process(COMMAND ${CMAKE_COMMAND} -E touch ${PROJECT_SOURCE_DIR}/../Data/Engine/Timestamp.asset )
+	execute_process(COMMAND ${CMAKE_COMMAND} -E touch ${PROJECT_SOURCE_DIR}/../Data/Editor/Timestamp.asset )
+	
+	# Make sure resource manifests get rebuilt
+	execute_process(COMMAND ${CMAKE_COMMAND} -E remove ${PROJECT_SOURCE_DIR}/../Data/Engine/ResourceManifest.asset)	
+	execute_process(COMMAND ${CMAKE_COMMAND} -E remove ${PROJECT_SOURCE_DIR}/../Data/Editor/ResourceManifest.asset)	
 	
 	# Clean up
 	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/../Temp)	

@@ -7,6 +7,7 @@ set (BS_VERSION_MINOR 4)
 
 set (BS_PREBUILT_DEPENDENCIES_VERSION 9)
 set (BS_SRC_DEPENDENCIES_VERSION 15)
+set (BS_BUILTIN_ASSETS_VERSION 1)
 
 # Configuration types
 if(CMAKE_CONFIGURATION_TYPES) # Multiconfig generator?
@@ -94,6 +95,19 @@ if(WIN32)
 		message(STATUS "Built dependencies are out of date, forcing recompile.")
 		execute_process(COMMAND "${CMAKE_COMMAND}" 
 			-E remove_directory "${SOURCE_DEP_BUILD_DIR}")	
+	endif()
+endif()
+
+## Check data dependencies
+set(BUILTIN_ASSETS_VERSION_FILE ${PROJECT_SOURCE_DIR}/../Data/.version)
+if(NOT EXISTS ${BUILTIN_ASSETS_VERSION_FILE})
+	message(STATUS "Builtin assets are missing. Downloading package...")
+	update_builtin_assets(${BS_BUILTIN_ASSETS_VERSION})	
+else()
+	file (STRINGS ${BUILTIN_ASSETS_VERSION_FILE} CURRENT_BUILTIN_ASSET_VERSION)
+	if(${BS_BUILTIN_ASSETS_VERSION} GREATER ${CURRENT_BUILTIN_ASSET_VERSION})
+		message(STATUS "Your builtin asset package is out of date. Downloading latest package...")
+		update_builtin_assets(${BS_BUILTIN_ASSETS_VERSION})	
 	endif()
 endif()
 

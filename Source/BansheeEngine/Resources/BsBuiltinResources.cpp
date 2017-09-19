@@ -235,12 +235,15 @@ namespace bs
 		ResourceManifestPath = mBuiltinDataFolder + "ResourceManifest.asset";
 
 		// Update from raw assets if needed
-#if BS_DEBUG_MODE
 		if (FileSystem::exists(mBuiltinRawDataFolder))
 		{
 			time_t lastUpdateTime;
 			UINT32 modifications = BuiltinResourcesHelper::checkForModifications(mBuiltinRawDataFolder, 
 				mBuiltinDataFolder + L"Timestamp.asset", lastUpdateTime);
+
+			// Check if manifest needs to be rebuilt
+			if (modifications == 0 && !FileSystem::exists(ResourceManifestPath))
+				modifications = 1;
 
 			if (modifications > 0)
 			{
@@ -268,7 +271,6 @@ namespace bs
 				ResourceManifest::save(mResourceManifest, ResourceManifestPath, mBuiltinDataFolder);
 			}
 		}
-#endif
 
 		// Load manifest
 		if (mResourceManifest == nullptr)
@@ -440,6 +442,9 @@ namespace bs
 		}
 
 		{
+			BuiltinResourcesHelper::updateManifest(mEngineCursorFolder, cursorsJSON, mResourceManifest, 
+				BuiltinResourcesHelper::AssetType::Normal);
+
 			Vector<bool> importFlags = BuiltinResourcesHelper::generateImportFlags(cursorsJSON, rawCursorFolder,
 				lastUpdateTime, forceImport);
 
@@ -448,6 +453,9 @@ namespace bs
 		}
 
 		{
+			BuiltinResourcesHelper::updateManifest(iconFolder, iconsJSON, mResourceManifest, 
+				BuiltinResourcesHelper::AssetType::Normal);
+
 			Vector<bool> importFlags = BuiltinResourcesHelper::generateImportFlags(iconsJSON, rawIconFolder,
 				lastUpdateTime, forceImport);
 
@@ -472,10 +480,13 @@ namespace bs
 		}
 
 		{
-			Vector<bool> includeImportFlags = BuiltinResourcesHelper::generateImportFlags(skinJSON, 
+			BuiltinResourcesHelper::updateManifest(skinFolder, skinJSON, mResourceManifest, 
+				BuiltinResourcesHelper::AssetType::Sprite);
+
+			Vector<bool> skinImportFlags = BuiltinResourcesHelper::generateImportFlags(skinJSON, 
 				rawSkinFolder, lastUpdateTime, forceImport);
 
-			BuiltinResourcesHelper::importAssets(skinJSON, includeImportFlags, rawSkinFolder, skinFolder, mResourceManifest, 
+			BuiltinResourcesHelper::importAssets(skinJSON, skinImportFlags, rawSkinFolder, skinFolder, mResourceManifest, 
 				BuiltinResourcesHelper::AssetType::Sprite);
 		}
 

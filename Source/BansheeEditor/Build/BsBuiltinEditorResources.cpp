@@ -326,37 +326,42 @@ namespace bs
 		ResourceManifestPath = BuiltinDataFolder + "ResourceManifest.asset";
 
 		// Update from raw assets if needed
-#if BS_DEBUG_MODE
-		time_t lastUpdateTime;
-		UINT32 modifications = BuiltinResourcesHelper::checkForModifications(BuiltinRawDataFolder,
-			BuiltinDataFolder + L"Timestamp.asset", lastUpdateTime);
-
-		if (modifications > 0)
+		if (FileSystem::exists(BuiltinRawDataFolder))
 		{
-			bool forceReimport = modifications == 2;
+			time_t lastUpdateTime;
+			UINT32 modifications = BuiltinResourcesHelper::checkForModifications(BuiltinRawDataFolder,
+				BuiltinDataFolder + L"Timestamp.asset", lastUpdateTime);
 
-			SPtr<ResourceManifest> oldResourceManifest;
-			if (!forceReimport && FileSystem::exists(ResourceManifestPath))
+			// Check if manifest needs to be rebuilt
+			if (modifications == 0 && !FileSystem::exists(ResourceManifestPath))
+				modifications = 1;
+
+			if (modifications > 0)
 			{
-				oldResourceManifest = ResourceManifest::load(ResourceManifestPath, BuiltinDataFolder);
-				if(oldResourceManifest != nullptr)
-					gResources().registerResourceManifest(oldResourceManifest);
+				bool forceReimport = modifications == 2;
+
+				SPtr<ResourceManifest> oldResourceManifest;
+				if (!forceReimport && FileSystem::exists(ResourceManifestPath))
+				{
+					oldResourceManifest = ResourceManifest::load(ResourceManifestPath, BuiltinDataFolder);
+					if (oldResourceManifest != nullptr)
+						gResources().registerResourceManifest(oldResourceManifest);
+				}
+
+				if (oldResourceManifest)
+					mResourceManifest = oldResourceManifest;
+				else
+				{
+					mResourceManifest = ResourceManifest::create("BuiltinResources");
+					gResources().registerResourceManifest(mResourceManifest);
+				}
+
+				preprocess(modifications == 2, lastUpdateTime);
+				BuiltinResourcesHelper::writeTimestamp(BuiltinDataFolder + L"Timestamp.asset");
+
+				ResourceManifest::save(mResourceManifest, ResourceManifestPath, BuiltinDataFolder);
 			}
-
-			if (oldResourceManifest)
-				mResourceManifest = oldResourceManifest;
-			else
-			{
-				mResourceManifest = ResourceManifest::create("BuiltinResources");
-				gResources().registerResourceManifest(mResourceManifest);
-			}
-
-			preprocess(modifications == 2, lastUpdateTime);
-			BuiltinResourcesHelper::writeTimestamp(BuiltinDataFolder + L"Timestamp.asset");
-
-			ResourceManifest::save(mResourceManifest, ResourceManifestPath, BuiltinDataFolder);
 		}
-#endif
 
 		// Load manifest
 		if (mResourceManifest == nullptr)
@@ -459,6 +464,9 @@ namespace bs
 		}
 
 		{
+			BuiltinResourcesHelper::updateManifest(EditorIconFolder, iconsJSON, mResourceManifest, 
+				BuiltinResourcesHelper::AssetType::Sprite);
+
 			Vector<bool> importFlags = BuiltinResourcesHelper::generateImportFlags(iconsJSON, EditorRawIconsFolder,
 				lastUpdateTime, forceImport);
 
@@ -483,6 +491,9 @@ namespace bs
 		}
 
 		{
+			BuiltinResourcesHelper::updateManifest(EditorSkinFolder, skinJSON, mResourceManifest, 
+				BuiltinResourcesHelper::AssetType::Sprite);
+
 			Vector<bool> includeImportFlags = BuiltinResourcesHelper::generateImportFlags(skinJSON, EditorRawSkinFolder, 
 				lastUpdateTime, forceImport);
 

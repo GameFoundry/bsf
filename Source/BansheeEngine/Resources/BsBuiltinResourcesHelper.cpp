@@ -483,6 +483,92 @@ namespace bs
 		return foundChanges;
 	}
 
+	void BuiltinResourcesHelper::updateManifest(const Path& folder, const nlohmann::json& entries, 
+		const SPtr<ResourceManifest>& manifest, AssetType type)
+	{
+		for (auto& entry : entries)
+		{
+			std::string name = entry["Path"];
+			std::string uuid;
+
+			bool isIcon = false;
+			if (type == AssetType::Normal)
+			{
+				uuid = entry["UUID"];
+				isIcon = entry.find("UUID16") != entry.end();
+			}
+			else if (type == AssetType::Sprite)
+			{
+				uuid = entry["TextureUUID"];
+				isIcon = entry.find("TextureUUID16") != entry.end();
+			}
+
+			Path path = folder + name.c_str();
+			path.setFilename(path.getWFilename() + L".asset");
+
+			manifest->registerResource(uuid.c_str(), path);
+			
+			if (type == AssetType::Sprite)
+			{
+				std::string spriteUUID = entry["SpriteUUID"];
+
+				Path spritePath = folder + "/Sprites/";
+				spritePath.setFilename(String("sprite_") + name.c_str() + ".asset");
+
+				manifest->registerResource(spriteUUID.c_str(), spritePath);
+			}
+
+			if (isIcon)
+			{
+				std::string texUUIDs[3];
+
+				if (type == AssetType::Normal)
+				{
+					texUUIDs[0] = entry["UUID48"];
+					texUUIDs[1] = entry["UUID32"];
+					texUUIDs[2] = entry["UUID16"];
+				}
+				else if (type == AssetType::Sprite)
+				{
+					texUUIDs[0] = entry["TextureUUID48"];
+					texUUIDs[1] = entry["TextureUUID32"];
+					texUUIDs[2] = entry["TextureUUID16"];
+				}
+
+				Path texPath = folder + name.c_str();
+
+				texPath.setFilename(texPath.getWFilename() + L"48.asset");
+				manifest->registerResource(texUUIDs[0].c_str(), texPath);
+
+				texPath.setFilename(texPath.getWFilename() + L"32.asset");
+				manifest->registerResource(texUUIDs[1].c_str(), texPath);
+
+				texPath.setFilename(texPath.getWFilename() + L"16.asset");
+				manifest->registerResource(texUUIDs[2].c_str(), texPath);
+
+				if(type == AssetType::Sprite)
+				{
+					std::string spriteUUIDs[3];
+
+					spriteUUIDs[0] = entry["SpriteUUID48"];
+					spriteUUIDs[1] = entry["SpriteUUID32"];
+					spriteUUIDs[2] = entry["SpriteUUID16"];
+					
+					Path spritePath = folder + "/Sprites/";
+
+					spritePath.setFilename(String("sprite_") + name.c_str() + "48.asset");
+					manifest->registerResource(spriteUUIDs[0].c_str(), spritePath);
+
+					spritePath.setFilename(String("sprite_") + name.c_str() + "32.asset");
+					manifest->registerResource(spriteUUIDs[1].c_str(), spritePath);
+
+					spritePath.setFilename(String("sprite_") + name.c_str() + "16.asset");
+					manifest->registerResource(spriteUUIDs[2].c_str(), spritePath);
+				}
+			}
+		}
+	}
+
 	void BuiltinResourcesHelper::writeTimestamp(const Path& file)
 	{
 		SPtr<DataStream> fileStream = FileSystem::createAndOpenFile(file);
@@ -500,9 +586,7 @@ namespace bs
 		if (!FileSystem::exists(timeStampFile))
 			return 2;
 
-		SPtr<DataStream> fileStream = FileSystem::openFile(timeStampFile);
-		fileStream->read(&lastUpdateTime, sizeof(lastUpdateTime));
-		fileStream->close();
+		lastUpdateTime = FileSystem::getLastModifiedTime(timeStampFile);
 
 		bool upToDate = true;
 		auto checkUpToDate = [&](const Path& filePath)
@@ -518,7 +602,7 @@ namespace bs
 			return true;
 		};
 
-		FileSystem::iterate(folder, checkUpToDate, checkUpToDate);
+		FileSystem::iterate(folder, checkUpToDate, nullptr);
 		
 		if (!upToDate)
 			return 1;

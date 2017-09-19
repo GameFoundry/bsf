@@ -83,6 +83,17 @@ namespace bs
 		 */
 		static bool updateJSON(const Path& folder, AssetType type, nlohmann::json& entries);
 
+		/** 
+		 * Updates the resource manifest from the UUID's and paths provided in the JSON. 
+		 * 
+		 * @param[in]		folder		Folder containing the imported assets the manifest will point to.
+		 * @param[in]		entries		JSON entries detailing each asset.
+		 * @param[in]		manifest	Manifest in which to register the assets in.
+		 * @param[in]		type		Type of assets we're registering.
+		 */
+		static void updateManifest(const Path& folder, const nlohmann::json& entries, 
+			const SPtr<ResourceManifest>& manifest, AssetType type);
+
 		/** Writes a timestamp with the current date and time in the specified file. */
 		static void writeTimestamp(const Path& file);
 
