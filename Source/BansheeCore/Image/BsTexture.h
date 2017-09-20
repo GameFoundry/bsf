@@ -15,8 +15,8 @@ namespace bs
 	 */
 
 	/**	Flags that describe how is a texture used. */
-    enum BS_SCRIPT_EXPORT(m:Rendering) TextureUsage
-    {
+	enum BS_SCRIPT_EXPORT(m:Rendering) TextureUsage
+	{
 		/** A regular texture that is not often or ever updated from the CPU. */
 		TU_STATIC			BS_SCRIPT_EXPORT(n:Default)			= GBU_STATIC, 
 		/** A regular texture that is often updated by the CPU. */
@@ -33,7 +33,7 @@ namespace bs
 		TU_CPUREADABLE		BS_SCRIPT_EXPORT(n:CPUReadable)		= 0x2000,
 		/** Default (most common) texture usage. */
 		TU_DEFAULT			BS_SCRIPT_EXPORT(ex:true)			= TU_STATIC
-    };
+	};
 
 	/**	Texture mipmap options. */
 	enum TextureMipmap
@@ -86,13 +86,13 @@ namespace bs
 		TextureProperties(const TEXTURE_DESC& desc);
 
 		/**	Gets the type of texture. */
-        TextureType getTextureType() const { return mDesc.type; }
+		TextureType getTextureType() const { return mDesc.type; }
 
-        /**
+		/**
 		 * Gets the number of mipmaps to be used for this texture. This number excludes the top level map (which is always
 		 * assumed to be present).
-         */
-        UINT32 getNumMipmaps() const {return mDesc.numMips;}
+		 */
+		UINT32 getNumMipmaps() const { return mDesc.numMips; }
 
 		/** 
 		 * Determines does the texture contain gamma corrected data. If true then the GPU will automatically convert the 
@@ -104,29 +104,29 @@ namespace bs
 		/**	Gets the number of samples used for multisampling (0 or 1 if multisampling is not used). */
 		UINT32 getNumSamples() const { return mDesc.numSamples; }
 
-        /**	Returns the height of the texture.  */
-        UINT32 getHeight() const { return mDesc.height; }
+		/**	Returns the height of the texture.  */
+		UINT32 getHeight() const { return mDesc.height; }
 
-        /**	Returns the width of the texture. */
-        UINT32 getWidth() const { return mDesc.width; }
+		/**	Returns the width of the texture. */
+		UINT32 getWidth() const { return mDesc.width; }
 
-        /**	Returns the depth of the texture (only applicable for 3D textures). */
-        UINT32 getDepth() const { return mDesc.depth; }
+		/**	Returns the depth of the texture (only applicable for 3D textures). */
+		UINT32 getDepth() const { return mDesc.depth; }
 
-        /**	Returns a value that signals the engine in what way is the texture expected to be used. */
-        int getUsage() const { return mDesc.usage; }
+		/**	Returns a value that signals the engine in what way is the texture expected to be used. */
+		int getUsage() const { return mDesc.usage; }
 
 		/**	Returns the pixel format for the texture surface. */
 		PixelFormat getFormat() const { return mDesc.format; }
 
-        /**	Returns true if the texture has an alpha layer. */
-        bool hasAlpha() const;
+		/**	Returns true if the texture has an alpha layer. */
+		bool hasAlpha() const;
 
-        /**	
-         * Returns the number of faces this texture has. This includes array slices (if texture is an array texture),
-         * as well as cube-map faces.
-         */
-        UINT32 getNumFaces() const;
+		/**
+		 * Returns the number of faces this texture has. This includes array slices (if texture is an array texture),
+		 * as well as cube-map faces.
+		 */
+		UINT32 getNumFaces() const;
 
 		/** Returns the number of array slices of the texture (if the texture is an array texture). */
 		UINT32 getNumArraySlices() const { return mDesc.numArraySlices; }
@@ -164,7 +164,7 @@ namespace bs
 	 *
 	 * @note	Sim thread.
 	 */
-    class BS_CORE_EXPORT BS_SCRIPT_EXPORT() Texture : public Resource
+    class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Rendering) Texture : public Resource
     {
     public:
 		/**

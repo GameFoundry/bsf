@@ -631,6 +631,42 @@ namespace bs
 		}
 	}
 
+	HSceneObject SceneObject::findPath(const String& path) const
+	{
+		if (path.empty())
+			return HSceneObject();
+		
+		String trimmedPath = path;
+		StringUtil::trim(trimmedPath, "/");
+
+		Vector<String> entries = StringUtil::split(trimmedPath, "/");
+
+		// Find scene object referenced by the path
+		HSceneObject so = getHandle();
+		UINT32 pathIdx = 0;
+		for (; pathIdx < (UINT32)entries.size(); pathIdx++)
+		{
+			String entry = entries[pathIdx];
+
+			if (entry.empty())
+				continue;
+
+			// This character signifies not-a-scene-object. This is allowed to support
+			// paths used by the scripting system (which can point to properties of
+			// components on scene objects).
+			if (entry[0] != '!')
+				break;
+
+			String childName = entry.substr(1, entry.size() - 1);
+			so = so->findChild(childName);
+
+			if (so == nullptr)
+				break;
+		}
+
+		return so;
+	}
+
 	HSceneObject SceneObject::findChild(const String& name, bool recursive)
 	{
 		for (auto& child : mChildren)

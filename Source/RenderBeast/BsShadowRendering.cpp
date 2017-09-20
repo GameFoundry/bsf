@@ -230,7 +230,7 @@ namespace bs { namespace ct
 		gShadowProjectVertParamsDef.gPositionAndScale.set(mVertParams, lightPosAndScale);
 
 		TextureSurface surface;
-		surface.arraySlice = params.shadowMapFace;
+		surface.face = params.shadowMapFace;
 
 		mGBufferParams.bind(params.gbuffer);
 

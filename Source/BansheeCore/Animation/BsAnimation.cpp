@@ -19,19 +19,6 @@ namespace bs
 		, curveVersion(0), layerIdx((UINT32)-1), stateIdx((UINT32)-1)
 	{ }
 
-	Blend1DInfo::Blend1DInfo(UINT32 numClips)
-		: numClips(numClips), clips(nullptr)
-	{
-		if (numClips > 0)
-			clips = bs_newN<BlendClipInfo>(numClips);
-	}
-
-	Blend1DInfo::~Blend1DInfo()
-	{
-		if(clips != nullptr)
-			bs_deleteN(clips, numClips);
-	}
-
 	AnimationProxy::AnimationProxy(UINT64 id)
 		: id(id), layers(nullptr), numLayers(0), numSceneObjects(0), sceneObjectInfos(nullptr)
 		, sceneObjectTransforms(nullptr), morphChannelInfos(nullptr), morphShapeInfos(nullptr), numMorphChannels(0)
@@ -794,21 +781,21 @@ namespace bs
 
 	void Animation::blend1D(const Blend1DInfo& info, float t)
 	{
-		if (info.numClips == 0)
+		if (info.clips.size() == 0)
 			return;
 
 		// Find valid range
 		float startPos = 0.0f;
 		float endPos = 0.0f;
 
-		for (UINT32 i = 0; i < info.numClips; i++)
+		for (UINT32 i = 0; i < (UINT32)info.clips.size(); i++)
 		{
 			startPos = std::min(startPos, info.clips[i].position);
 			endPos = std::min(endPos, info.clips[i].position);
 		}
 
 		float length = endPos - startPos;
-		if(Math::approxEquals(length, 0.0f) || info.numClips < 2)
+		if(Math::approxEquals(length, 0.0f) || info.clips.size() < 2)
 		{
 			play(info.clips[0].clip);
 			return;
@@ -837,7 +824,7 @@ namespace bs
 		UINT32 rightKey = 0;
 
 		INT32 start = 0;
-		INT32 searchLength = (INT32)info.numClips;
+		INT32 searchLength = (INT32)info.clips.size();
 
 		while (searchLength > 0)
 		{
@@ -856,13 +843,13 @@ namespace bs
 		}
 
 		leftKey = std::max(0, start - 1);
-		rightKey = std::min(start, (INT32)info.numClips - 1);
+		rightKey = std::min(start, (INT32)info.clips.size() - 1);
 
 		float interpLength = info.clips[rightKey].position - info.clips[leftKey].position;
 		t = (t - info.clips[leftKey].position) / interpLength;
 
 		// Add clips and set weights
-		for(UINT32 i = 0; i < info.numClips; i++)
+		for(UINT32 i = 0; i < (UINT32)info.clips.size(); i++)
 		{
 			AnimationClipInfo* clipInfo = addClip(info.clips[i].clip, (UINT32)-1, i == 0);
 			if (clipInfo != nullptr)

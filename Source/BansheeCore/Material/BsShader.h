@@ -369,14 +369,21 @@ namespace bs
 	typedef TSHADER_DESC<false> SHADER_DESC;
 
 	/** 
+	 * @native
 	 * Shader represents a collection of techniques that control object rendering. They are used in Material%s, which can be
 	 * considered as instances of a Shader. Multiple materials may share the same shader but provide different parameters to
 	 * it.
 	 *
 	 * Shader will always choose the first supported technique based on the current render system, render manager and other
-	 * properties. So make sure to add most important techniques first so you make sure they are used if they are supported. 
+	 * properties. So make sure to add most important techniques first so you make sure they are used if they are supported.
+	 * @endnative
+	 * 
+	 * @script
+	 * Contains definitions of GPU programs used for rendering, as well as a set of global parameters to control those 
+	 * programs.
+	 * @endscript
 	 */
-	class BS_CORE_EXPORT Shader : public Resource, public TShader<false>
+	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Rendering) Shader : public Resource, public TShader<false>
 	{
 	public:
 		/** Retrieves an implementation of a shader usable only from the core thread. */

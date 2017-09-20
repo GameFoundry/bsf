@@ -117,6 +117,7 @@ namespace bs
 		virtual ~TMaterial() { }
 
 		/** Returns the currently active shader. */
+		BS_SCRIPT_EXPORT(n:Shader,pr:getter)
 		ShaderType getShader() const { return mShader; }
 
 		/** Returns the total number of techniques supported by this material. */
@@ -171,6 +172,7 @@ namespace bs
 		 *
 		 * Optionally if the parameter is an array you may provide an array index to assign the value to.
 		 */
+		BS_SCRIPT_EXPORT(n:SetFloat)
 		void setFloat(const String& name, float value, UINT32 arrayIdx = 0)	{ return getParamFloat(name).set(value, arrayIdx); }
 
 		/**   
@@ -178,6 +180,7 @@ namespace bs
 		 *
 		 * Optionally if the parameter is an array you may provide an array index to assign the value to.
 		 */
+		BS_SCRIPT_EXPORT(n:SetColor)
 		void setColor(const String& name, const Color& value, UINT32 arrayIdx = 0) { return getParamColor(name).set(value, arrayIdx); }
 
 		/**   
@@ -185,6 +188,7 @@ namespace bs
 		 *
 		 * Optionally if the parameter is an array you may provide an array index to assign the value to.
 		 */
+		BS_SCRIPT_EXPORT(n:SetVector2)
 		void setVec2(const String& name, const Vector2& value, UINT32 arrayIdx = 0)	{ return getParamVec2(name).set(value, arrayIdx); }
 
 		/**   
@@ -192,6 +196,7 @@ namespace bs
 		 *
 		 * Optionally if the parameter is an array you may provide an array index to assign the value to.
 		 */
+		BS_SCRIPT_EXPORT(n:SetVector3)
 		void setVec3(const String& name, const Vector3& value, UINT32 arrayIdx = 0)	{ return getParamVec3(name).set(value, arrayIdx); }
 
 		/**   
@@ -199,6 +204,7 @@ namespace bs
 		 *
 		 * Optionally if the parameter is an array you may provide an array index to assign the value to.
 		 */
+		BS_SCRIPT_EXPORT(n:SetVector4)
 		void setVec4(const String& name, const Vector4& value, UINT32 arrayIdx = 0)	{ return getParamVec4(name).set(value, arrayIdx); }
 
 		/**   
@@ -206,6 +212,7 @@ namespace bs
 		 *
 		 * Optionally if the parameter is an array you may provide an array index to assign the value to.
 		 */
+		BS_SCRIPT_EXPORT(n:SetMatrix3)
 		void setMat3(const String& name, const Matrix3& value, UINT32 arrayIdx = 0)	{ return getParamMat3(name).set(value, arrayIdx); }
 
 		/**   
@@ -213,6 +220,7 @@ namespace bs
 		 *
 		 * Optionally if the parameter is an array you may provide an array index to assign the value to.
 		 */
+		BS_SCRIPT_EXPORT(n:SetMatrix4)
 		void setMat4(const String& name, const Matrix4& value, UINT32 arrayIdx = 0)	{ return getParamMat4(name).set(value, arrayIdx); }
 
 		/**   
@@ -247,6 +255,7 @@ namespace bs
 		 *
 		 * Optionally if the parameter is an array you may provide an array index you which to retrieve.
 		 */
+		BS_SCRIPT_EXPORT(n:GetFloat)
 		float getFloat(const String& name, UINT32 arrayIdx = 0) const { return getParamFloat(name).get(arrayIdx); }
 
 		/**
@@ -254,6 +263,7 @@ namespace bs
 		 *
 		 * Optionally if the parameter is an array you may provide an array index you which to retrieve.
 		 */
+		BS_SCRIPT_EXPORT(n:GetColor)
 		Color getColor(const String& name, UINT32 arrayIdx = 0) const { return getParamColor(name).get(arrayIdx); }
 
 		/**
@@ -261,6 +271,7 @@ namespace bs
 		 *
 		 * Optionally if the parameter is an array you may provide an array index you which to retrieve.
 		 */
+		BS_SCRIPT_EXPORT(n:GetVector2)
 		Vector2 getVec2(const String& name, UINT32 arrayIdx = 0) const { return getParamVec2(name).get(arrayIdx); }
 
 		/**
@@ -268,6 +279,7 @@ namespace bs
 		 *
 		 * Optionally if the parameter is an array you may provide an array index you which to retrieve.
 		 */
+		BS_SCRIPT_EXPORT(n:GetVector3)
 		Vector3 getVec3(const String& name, UINT32 arrayIdx = 0) const { return getParamVec3(name).get(arrayIdx); }
 
 		/**
@@ -275,6 +287,7 @@ namespace bs
 		 *
 		 * Optionally if the parameter is an array you may provide an array index you which to retrieve.
 		 */
+		BS_SCRIPT_EXPORT(n:GetVector4)
 		Vector4 getVec4(const String& name, UINT32 arrayIdx = 0) const { return getParamVec4(name).get(arrayIdx); }
 
 		/**
@@ -282,6 +295,7 @@ namespace bs
 		 *
 		 * Optionally if the parameter is an array you may provide an array index you which to retrieve.
 		 */
+		BS_SCRIPT_EXPORT(n:GetMatrix3)
 		Matrix3 getMat3(const String& name, UINT32 arrayIdx = 0) const { return getParamMat3(name).get(arrayIdx); }
 
 		/**
@@ -289,6 +303,7 @@ namespace bs
 		 *
 		 * Optionally if the parameter is an array you may provide an array index you which to retrieve.
 		 */
+		BS_SCRIPT_EXPORT(n:GetMatrix4)
 		Matrix4 getMat4(const String& name, UINT32 arrayIdx = 0) const { return getParamMat4(name).get(arrayIdx); }
 
 		/** Returns a texture assigned with the parameter with the specified name. */
@@ -555,7 +570,7 @@ namespace bs
 	 */
 
 	/** @copydoc MaterialBase */
-	class BS_CORE_EXPORT Material : public Resource, public TMaterial<false>, public IResourceListener
+	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Rendering) Material: public Resource, public TMaterial<false>, public IResourceListener
 	{
 	public:
 		~Material() { }
@@ -571,6 +586,7 @@ namespace bs
 		 * (render system, renderer, etc), you will need to call this method again on all your Materials to make sure
 		 * technique used is updated.
 		 */
+		BS_SCRIPT_EXPORT(n:Shader,pr:setter)
 		void setShader(const HShader& shader);
 
 		/** Retrieves an implementation of a material usable only from the core thread. */
@@ -580,6 +596,7 @@ namespace bs
 		void initialize() override;
 
 		/** Creates a deep copy of the material and returns the new object. */
+		BS_SCRIPT_EXPORT(n:Clone)
 		HMaterial clone();
 
 		/**
@@ -587,9 +604,11 @@ namespace bs
 		 * 			
 		 * @note	Make sure you call Material::setShader before using it.
 		 */
+		BS_SCRIPT_EXPORT(ec:Material)
 		static HMaterial create();
 
 		/** Creates a new material with the specified shader. */
+		BS_SCRIPT_EXPORT(ec:Material)
 		static HMaterial create(const HShader& shader);
 
 		/** @name Internal

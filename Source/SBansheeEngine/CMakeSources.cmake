@@ -71,12 +71,10 @@ set(BS_SBANSHEEENGINE_INC_WRAPPERS
 	"Wrappers/BsScriptLight.h"
 	"Wrappers/BsScriptLogEntry.h"
 	"Wrappers/BsScriptManagedResource.h"
-	"Wrappers/BsScriptMaterial.h"
 	"Wrappers/BsScriptPixelUtility.h"
 	"Wrappers/BsScriptPlainText.h"
 	"Wrappers/BsScriptPrefab.h"
 	"Wrappers/BsScriptProfilerOverlayInternal.h"
-	"Wrappers/BsScriptRenderable.h"
 	"Wrappers/BsScriptRenderTarget.h"
 	"Wrappers/BsScriptRenderTexture.h"
 	"Wrappers/BsScriptRenderTexture2D.h"
@@ -89,7 +87,6 @@ set(BS_SBANSHEEENGINE_INC_WRAPPERS
 	"Wrappers/BsScriptStringTable.h"
 	"Wrappers/BsScriptSpriteTexture.h"
 	"Wrappers/BsScriptShaderInclude.h"
-	"Wrappers/BsScriptShader.h"
 	"Wrappers/BsScriptSerializableUtility.h"
 	"Wrappers/BsScriptSerializableProperty.h"
 	"Wrappers/BsScriptSerializableObject.h"
@@ -103,7 +100,6 @@ set(BS_SBANSHEEENGINE_INC_WRAPPERS
 	"Wrappers/BsScriptResources.h"
 	"Wrappers/BsScriptResourceRef.h"
 	"Wrappers/BsScriptRenderSettings.h"
-	"Wrappers/BsScriptAnimation.h"
 	"Wrappers/BsScriptManagedComponent.h"
 	"Wrappers/BsScriptQuaternion.h"
 )
@@ -167,7 +163,6 @@ set(BS_SBANSHEEENGINE_SRC_WRAPPERS
 	"Wrappers/BsScriptLight.cpp"
 	"Wrappers/BsScriptLogEntry.cpp"
 	"Wrappers/BsScriptManagedResource.cpp"
-	"Wrappers/BsScriptMaterial.cpp"
 	"Wrappers/BsScriptPixelUtility.cpp"
 	"Wrappers/BsScriptPlainText.cpp"
 	"Wrappers/BsScriptPrefab.cpp"
@@ -180,7 +175,6 @@ set(BS_SBANSHEEENGINE_SRC_WRAPPERS
 	"Wrappers/BsScriptStringTable.cpp"
 	"Wrappers/BsScriptSpriteTexture.cpp"
 	"Wrappers/BsScriptShaderInclude.cpp"
-	"Wrappers/BsScriptShader.cpp"
 	"Wrappers/BsScriptSerializableUtility.cpp"
 	"Wrappers/BsScriptSerializableProperty.cpp"
 	"Wrappers/BsScriptSerializableObject.cpp"
@@ -197,9 +191,7 @@ set(BS_SBANSHEEENGINE_SRC_WRAPPERS
 	"Wrappers/BsScriptRenderTexture2D.cpp"
 	"Wrappers/BsScriptRenderTexture.cpp"
 	"Wrappers/BsScriptRenderTarget.cpp"
-	"Wrappers/BsScriptRenderable.cpp"
 	"Wrappers/BsScriptRenderSettings.cpp"
-	"Wrappers/BsScriptAnimation.cpp"
 	"Wrappers/BsScriptManagedComponent.cpp"
 	"Wrappers/BsScriptQuaternion.cpp"
 )
@@ -249,6 +241,8 @@ set(BS_SBANSHEEENGINE_INC_EXTENSIONS
 	"Extensions/BsSkeletonEx.h"
 	"Extensions/BsPhysicsMeshEx.h"
 	"Extensions/BsAnimationEx.h"
+	"Extensions/BsShaderEx.h"
+	"Extensions/BsMaterialEx.h"
 )
 
 set(BS_SBANSHEEENGINE_SRC_EXTENSIONS
@@ -260,6 +254,8 @@ set(BS_SBANSHEEENGINE_SRC_EXTENSIONS
 	"Extensions/BsSkeletonEx.cpp"
 	"Extensions/BsPhysicsMeshEx.cpp"
 	"Extensions/BsAnimationEx.cpp"
+	"Extensions/BsShaderEx.cpp"
+	"Extensions/BsMaterialEx.cpp"
 )
 
 source_group("Header Files" FILES ${BS_SBANSHEEENGINE_INC_NOFILTER})

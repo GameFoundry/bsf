@@ -8,89 +8,89 @@
 
 namespace bs 
 {
-    const float Quaternion::EPSILON = 1e-03f;
-    const Quaternion Quaternion::ZERO(0.0f, 0.0f, 0.0f, 0.0f);
-    const Quaternion Quaternion::IDENTITY(1.0f, 0.0f, 0.0f, 0.0f);
+	const float Quaternion::EPSILON = 1e-03f;
+	const Quaternion Quaternion::ZERO(0.0f, 0.0f, 0.0f, 0.0f);
+	const Quaternion Quaternion::IDENTITY(1.0f, 0.0f, 0.0f, 0.0f);
 	const Quaternion::EulerAngleOrderData Quaternion::EA_LOOKUP[6] = 
 		{ { 0, 1, 2}, { 0, 2, 1}, { 1, 0, 2},
 		{ 1, 2, 0}, { 2, 0, 1}, { 2, 1, 0} };;
 
-    void Quaternion::fromRotationMatrix(const Matrix3& mat)
-    {
-        // Algorithm in Ken Shoemake's article in 1987 SIGGRAPH course notes
-        // article "Quaternion Calculus and Fast Animation".
+	void Quaternion::fromRotationMatrix(const Matrix3& mat)
+	{
+		// Algorithm in Ken Shoemake's article in 1987 SIGGRAPH course notes
+		// article "Quaternion Calculus and Fast Animation".
 
-        float trace = mat[0][0]+mat[1][1]+mat[2][2];
-        float root;
+		float trace = mat[0][0]+mat[1][1]+mat[2][2];
+		float root;
 
-        if (trace > 0.0f)
-        {
-            // |w| > 1/2, may as well choose w > 1/2
-            root = Math::sqrt(trace + 1.0f);  // 2w
-            w = 0.5f*root;
-            root = 0.5f/root;  // 1/(4w)
-            x = (mat[2][1]-mat[1][2])*root;
-            y = (mat[0][2]-mat[2][0])*root;
-            z = (mat[1][0]-mat[0][1])*root;
-        }
-        else
-        {
-            // |w| <= 1/2
-            static UINT32 nextLookup[3] = { 1, 2, 0 };
-            UINT32 i = 0;
+		if (trace > 0.0f)
+		{
+			// |w| > 1/2, may as well choose w > 1/2
+			root = Math::sqrt(trace + 1.0f);  // 2w
+			w = 0.5f*root;
+			root = 0.5f/root;  // 1/(4w)
+			x = (mat[2][1]-mat[1][2])*root;
+			y = (mat[0][2]-mat[2][0])*root;
+			z = (mat[1][0]-mat[0][1])*root;
+		}
+		else
+		{
+			// |w| <= 1/2
+			static UINT32 nextLookup[3] = { 1, 2, 0 };
+			UINT32 i = 0;
 
-            if (mat[1][1] > mat[0][0])
-                i = 1;
+			if (mat[1][1] > mat[0][0])
+				i = 1;
 
-            if (mat[2][2] > mat[i][i])
-                i = 2;
+			if (mat[2][2] > mat[i][i])
+				i = 2;
 
-            UINT32 j = nextLookup[i];
-            UINT32 k = nextLookup[j];
+			UINT32 j = nextLookup[i];
+			UINT32 k = nextLookup[j];
 
-            root = Math::sqrt(mat[i][i]-mat[j][j]-mat[k][k] + 1.0f);
+			root = Math::sqrt(mat[i][i]-mat[j][j]-mat[k][k] + 1.0f);
 
-            float* cmpntLookup[3] = { &x, &y, &z };
-            *cmpntLookup[i] = 0.5f*root;
-            root = 0.5f/root;
+			float* cmpntLookup[3] = { &x, &y, &z };
+			*cmpntLookup[i] = 0.5f*root;
+			root = 0.5f/root;
 
-            w = (mat[k][j]-mat[j][k])*root;
-            *cmpntLookup[j] = (mat[j][i]+mat[i][j])*root;
-            *cmpntLookup[k] = (mat[k][i]+mat[i][k])*root;
-        }
+			w = (mat[k][j]-mat[j][k])*root;
+			*cmpntLookup[j] = (mat[j][i]+mat[i][j])*root;
+			*cmpntLookup[k] = (mat[k][i]+mat[i][k])*root;
+		}
 
 		normalize();
-    }
+	}
 
-    void Quaternion::fromAxisAngle(const Vector3& axis, const Radian& angle)
-    {
-        Radian halfAngle (0.5f*angle);
-        float sin = Math::sin(halfAngle);
+	void Quaternion::fromAxisAngle(const Vector3& axis, const Radian& angle)
+	{
+		Radian halfAngle (0.5f*angle);
+		float sin = Math::sin(halfAngle);
 
-        w = Math::cos(halfAngle);
-        x = sin*axis.x;
-        y = sin*axis.y;
-        z = sin*axis.z;
-    }
+		w = Math::cos(halfAngle);
+		x = sin*axis.x;
+		y = sin*axis.y;
+		z = sin*axis.z;
+	}
 
-    void Quaternion::fromAxes(const Vector3& xaxis, const Vector3& yaxis, const Vector3& zaxis)
-    {
-        Matrix3 kRot;
+	void Quaternion::fromAxes(const Vector3& xaxis, const Vector3& yaxis, const Vector3& zaxis)
+	{
+		Matrix3 kRot;
 
-        kRot[0][0] = xaxis.x;
-        kRot[1][0] = xaxis.y;
-        kRot[2][0] = xaxis.z;
+		kRot[0][0] = xaxis.x;
+		kRot[1][0] = xaxis.y;
+		kRot[2][0] = xaxis.z;
 
-        kRot[0][1] = yaxis.x;
-        kRot[1][1] = yaxis.y;
-        kRot[2][1] = yaxis.z;
+		kRot[0][1] = yaxis.x;
+		kRot[1][1] = yaxis.y;
+		kRot[2][1] = yaxis.z;
 
-        kRot[0][2] = zaxis.x;
-        kRot[1][2] = zaxis.y;
-        kRot[2][2] = zaxis.z;
+		kRot[0][2] = zaxis.x;
+		kRot[1][2] = zaxis.y;
+		kRot[2][2] = zaxis.z;
 
-        fromRotationMatrix(kRot);
-    }
+		fromRotationMatrix(kRot);
+	}
 
 	void Quaternion::fromEulerAngles(const Radian& xAngle, const Radian& yAngle, const Radian& zAngle)
 	{
@@ -211,76 +211,76 @@ namespace bs
 		return matRot.toEulerAngles(xAngle, yAngle, zAngle);
 	}
 
-    Vector3 Quaternion::xAxis() const
-    {
-        float fTy  = 2.0f*y;
-        float fTz  = 2.0f*z;
-        float fTwy = fTy*w;
-        float fTwz = fTz*w;
-        float fTxy = fTy*x;
-        float fTxz = fTz*x;
-        float fTyy = fTy*y;
-        float fTzz = fTz*z;
+	Vector3 Quaternion::xAxis() const
+	{
+		float fTy  = 2.0f*y;
+		float fTz  = 2.0f*z;
+		float fTwy = fTy*w;
+		float fTwz = fTz*w;
+		float fTxy = fTy*x;
+		float fTxz = fTz*x;
+		float fTyy = fTy*y;
+		float fTzz = fTz*z;
 
-        return Vector3(1.0f-(fTyy+fTzz), fTxy+fTwz, fTxz-fTwy);
-    }
+		return Vector3(1.0f-(fTyy+fTzz), fTxy+fTwz, fTxz-fTwy);
+	}
 
-    Vector3 Quaternion::yAxis() const
-    {
-        float fTx  = 2.0f*x;
-        float fTy  = 2.0f*y;
-        float fTz  = 2.0f*z;
-        float fTwx = fTx*w;
-        float fTwz = fTz*w;
-        float fTxx = fTx*x;
-        float fTxy = fTy*x;
-        float fTyz = fTz*y;
-        float fTzz = fTz*z;
+	Vector3 Quaternion::yAxis() const
+	{
+		float fTx  = 2.0f*x;
+		float fTy  = 2.0f*y;
+		float fTz  = 2.0f*z;
+		float fTwx = fTx*w;
+		float fTwz = fTz*w;
+		float fTxx = fTx*x;
+		float fTxy = fTy*x;
+		float fTyz = fTz*y;
+		float fTzz = fTz*z;
 
-        return Vector3(fTxy-fTwz, 1.0f-(fTxx+fTzz), fTyz+fTwx);
-    }
+		return Vector3(fTxy-fTwz, 1.0f-(fTxx+fTzz), fTyz+fTwx);
+	}
 
-    Vector3 Quaternion::zAxis() const
-    {
-        float fTx  = 2.0f*x;
-        float fTy  = 2.0f*y;
-        float fTz  = 2.0f*z;
-        float fTwx = fTx*w;
-        float fTwy = fTy*w;
-        float fTxx = fTx*x;
-        float fTxz = fTz*x;
-        float fTyy = fTy*y;
-        float fTyz = fTz*y;
+	Vector3 Quaternion::zAxis() const
+	{
+		float fTx  = 2.0f*x;
+		float fTy  = 2.0f*y;
+		float fTz  = 2.0f*z;
+		float fTwx = fTx*w;
+		float fTwy = fTy*w;
+		float fTxx = fTx*x;
+		float fTxz = fTz*x;
+		float fTyy = fTy*y;
+		float fTyz = fTz*y;
 
-        return Vector3(fTxz+fTwy, fTyz-fTwx, 1.0f-(fTxx+fTyy));
-    }
+		return Vector3(fTxz+fTwy, fTyz-fTwx, 1.0f-(fTxx+fTyy));
+	}
 
-    Quaternion Quaternion::inverse() const
-    {
-        float fNorm = w*w+x*x+y*y+z*z;
-        if (fNorm > 0.0f)
-        {
-            float fInvNorm = 1.0f/fNorm;
-            return Quaternion(w*fInvNorm,-x*fInvNorm,-y*fInvNorm,-z*fInvNorm);
-        }
-        else
-        {
-            // Return an invalid result to flag the error
-            return ZERO;
-        }
-    }
+	Quaternion Quaternion::inverse() const
+	{
+		float fNorm = w*w+x*x+y*y+z*z;
+		if (fNorm > 0.0f)
+		{
+			float fInvNorm = 1.0f/fNorm;
+			return Quaternion(w*fInvNorm,-x*fInvNorm,-y*fInvNorm,-z*fInvNorm);
+		}
+		else
+		{
+			// Return an invalid result to flag the error
+			return ZERO;
+		}
+	}
 
-    Vector3 Quaternion::rotate(const Vector3& v) const
-    {
+	Vector3 Quaternion::rotate(const Vector3& v) const
+	{
 		// Note: Does compiler generate fast code here? Perhaps its better to pull all code locally without constructing
 		//       an intermediate matrix.
 		Matrix3 rot;
 		toRotationMatrix(rot);
 		return rot.transform(v);
-    }
+	}
 
 	void Quaternion::lookRotation(const Vector3& forwardDir)
-    {
+	{
 		if (forwardDir == Vector3::ZERO)
 			return;
 
@@ -299,7 +299,7 @@ namespace bs
 			Quaternion rotQuat = getRotationFromTo(currentForwardDir, nrmForwardDir);
 			*this = rotQuat * *this;
 		}
-    }
+	}
 
 	void Quaternion::lookRotation(const Vector3& forwardDir, const Vector3& upDir)
 	{
@@ -321,46 +321,46 @@ namespace bs
 		*this = Quaternion(x, y, -forward);
 	}
 
-    Quaternion Quaternion::slerp(float t, const Quaternion& p, const Quaternion& q, bool shortestPath)
-    {
-        float cos = p.dot(q);
-        Quaternion quat;
+	Quaternion Quaternion::slerp(float t, const Quaternion& p, const Quaternion& q, bool shortestPath)
+	{
+		float cos = p.dot(q);
+		Quaternion quat;
 
-        if (cos < 0.0f && shortestPath)
-        {
-            cos = -cos;
-            quat = -q;
-        }
-        else
-        {
-            quat = q;
-        }
+		if (cos < 0.0f && shortestPath)
+		{
+			cos = -cos;
+			quat = -q;
+		}
+		else
+		{
+			quat = q;
+		}
 
-        if (Math::abs(cos) < 1 - EPSILON)
-        {
-            // Standard case (slerp)
-            float sin = Math::sqrt(1 - Math::sqr(cos));
-            Radian angle = Math::atan2(sin, cos);
-            float invSin = 1.0f / sin;
-            float coeff0 = Math::sin((1.0f - t) * angle) * invSin;
-            float coeff1 = Math::sin(t * angle) * invSin;
-            return coeff0 * p + coeff1 * quat;
-        }
-        else
-        {
-            // There are two situations:
-            // 1. "p" and "q" are very close (fCos ~= +1), so we can do a linear
-            //    interpolation safely.
-            // 2. "p" and "q" are almost inverse of each other (fCos ~= -1), there
-            //    are an infinite number of possibilities interpolation. but we haven't
-            //    have method to fix this case, so just use linear interpolation here.
-            Quaternion ret = (1.0f - t) * p + t * quat;
+		if (Math::abs(cos) < 1 - EPSILON)
+		{
+			// Standard case (slerp)
+			float sin = Math::sqrt(1 - Math::sqr(cos));
+			Radian angle = Math::atan2(sin, cos);
+			float invSin = 1.0f / sin;
+			float coeff0 = Math::sin((1.0f - t) * angle) * invSin;
+			float coeff1 = Math::sin(t * angle) * invSin;
+			return coeff0 * p + coeff1 * quat;
+		}
+		else
+		{
+			// There are two situations:
+			// 1. "p" and "q" are very close (fCos ~= +1), so we can do a linear
+			//    interpolation safely.
+			// 2. "p" and "q" are almost inverse of each other (fCos ~= -1), there
+			//    are an infinite number of possibilities interpolation. but we haven't
+			//    have method to fix this case, so just use linear interpolation here.
+			Quaternion ret = (1.0f - t) * p + t * quat;
 
-            // Taking the complement requires renormalization
-            ret.normalize();
-            return ret;
-        }
-    }
+			// Taking the complement requires renormalization
+			ret.normalize();
+			return ret;
+		}
+	}
 
 	Quaternion Quaternion::getRotationFromTo(const Vector3& from, const Vector3& dest, const Vector3& fallbackAxis)
 	{

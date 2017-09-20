@@ -9,6 +9,13 @@ using namespace std::placeholders;
 
 namespace bs
 {
+	CBone::CBone()
+	{
+		setName("Bone");
+
+		mNotifyFlags = TCF_Parent;
+	}
+
 	CBone::CBone(const HSceneObject& parent)
 		: Component(parent)
 	{

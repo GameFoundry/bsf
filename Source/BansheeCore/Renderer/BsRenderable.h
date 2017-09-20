@@ -50,8 +50,8 @@ namespace bs
 		virtual ~TRenderable();
 
 		/**
-		 * Sets the mesh to render. All sub-meshes of the mesh will be rendered, and you may set individual materials for
-		 * each sub-mesh.
+		 * Determines the mesh to render. All sub-meshes of the mesh will be rendered, and you may set individual materials
+		 * for each sub-mesh.
 		 */
 		void setMesh(const MeshType& mesh);
 
@@ -69,22 +69,19 @@ namespace bs
 		 */
 		void setMaterial(const MaterialType& material);
 
-		/**
-		 * Returns all materials used for rendering this renderable. Each of the materials is used for rendering a single
-		 * sub-mesh.
-		 */
+		/** @copydoc setMaterials() */
 		const Vector<MaterialType>& getMaterials() { return mMaterials; }
 
 		/**
-		 * Sets all materials used for rendering this renderable. Each of the materials is used for rendering a single
+		 * Determines all materials used for rendering this renderable. Each of the materials is used for rendering a single
 		 * sub-mesh. If number of materials is larger than number of sub-meshes, they will be ignored. If lower, the
 		 * remaining materials will be removed.
 		 */
 		void setMaterials(const Vector<MaterialType>& materials);
 
 		/**
-		 * Sets the layer bitfield that controls whether a renderable is considered visible in a specific camera. Renderable
-		 * layer must match camera layer in order for the camera to render the component.
+		 * Determines the layer bitfield that controls whether a renderable is considered visible in a specific camera. 
+		 * Renderable layer must match camera layer in order for the camera to render the component.
 		 */
 		void setLayer(UINT64 layer);
 
@@ -121,13 +118,10 @@ namespace bs
 		 */
 		void setUseOverrideBounds(bool enable);
 
-		/**
-		 * Gets the layer bitfield that controls whether a renderable is considered visible in a specific camera. 
-		 * Renderable layer must match camera layer in order for the camera to render the component.
-		 */
+		/** @copydoc setLayer() */
 		UINT64 getLayer() const { return mLayer; }
 
-		/**	Returns the mesh used for rendering. */
+		/**	@copydoc setMesh() */
 		MeshType getMesh() const { return mMesh; }
 
 		/**	Returns the material used for rendering a sub-mesh with the specified index. */

@@ -11,7 +11,6 @@
 #include "Wrappers/BsScriptManagedResource.h"
 #include "Wrappers/BsScriptComponent.h"
 #include "Wrappers/BsScriptSpriteTexture.h"
-#include "Wrappers/BsScriptMaterial.h"
 
 #include "BsBuiltinComponentLookup.generated.h"
 
@@ -36,9 +35,7 @@
 #include "Wrappers/BsScriptSpriteTexture.h"
 #include "Wrappers/BsScriptPlainText.h"
 #include "Wrappers/BsScriptScriptCode.h"
-#include "Wrappers/BsScriptShader.h"
 #include "Wrappers/BsScriptShaderInclude.h"
-#include "Wrappers/BsScriptMaterial.h"
 #include "Wrappers/BsScriptFont.h"
 #include "Wrappers/BsScriptPrefab.h"
 #include "Wrappers/BsScriptStringTable.h"
@@ -50,6 +47,8 @@
 #include "BsScriptPhysicsMaterial.generated.h"
 #include "BsScriptAnimationClip.generated.h"
 #include "BsScriptAudioClip.generated.h"
+#include "BsScriptShader.generated.h"
+#include "BsScriptMaterial.generated.h"
 
 namespace bs
 {

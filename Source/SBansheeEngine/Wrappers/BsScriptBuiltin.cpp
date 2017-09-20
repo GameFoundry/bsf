@@ -7,7 +7,6 @@
 #include "BsMonoUtil.h"
 #include "Resources/BsBuiltinResources.h"
 #include "Wrappers/BsScriptSpriteTexture.h"
-#include "Wrappers/BsScriptShader.h"
 #include "Wrappers/BsScriptFont.h"
 #include "BsScriptResourceManager.h"
 

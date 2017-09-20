@@ -12,16 +12,16 @@ namespace bs
 	 *  @{
 	 */
 
-    /** Represents a quaternion used for 3D rotations. */
-    class BS_UTILITY_EXPORT Quaternion
-    {
+	/** Represents a quaternion used for 3D rotations. */
+	class BS_UTILITY_EXPORT Quaternion
+	{
 	private:
 		struct EulerAngleOrderData
 		{
 			int a, b, c;
 		};
 
-    public:
+	public:
 		Quaternion()
 		{ }
 
@@ -33,43 +33,43 @@ namespace bs
 			:x(0.0f), y(0.0f), z(0.0f), w(1.0f)
 		{ }
 
-        Quaternion(float w, float x, float y, float z)
+		Quaternion(float w, float x, float y, float z)
 			:x(x), y(y), z(z), w(w)
 		{ }
 
-        /** Construct a quaternion from a rotation matrix. */
-        explicit Quaternion(const Matrix3& rot)
-        {
-            fromRotationMatrix(rot);
-        }
+		/** Construct a quaternion from a rotation matrix. */
+		explicit Quaternion(const Matrix3& rot)
+		{
+			fromRotationMatrix(rot);
+		}
 
-        /** Construct a quaternion from an angle/axis. */
-        explicit Quaternion(const Vector3& axis, const Radian& angle)
-        {
-            fromAxisAngle(axis, angle);
-        }
+		/** Construct a quaternion from an angle/axis. */
+		explicit Quaternion(const Vector3& axis, const Radian& angle)
+		{
+			fromAxisAngle(axis, angle);
+		}
 
-        /** Construct a quaternion from 3 orthonormal local axes. */
-        explicit Quaternion(const Vector3& xaxis, const Vector3& yaxis, const Vector3& zaxis)
-        {
-            fromAxes(xaxis, yaxis, zaxis);
-        }
+		/** Construct a quaternion from 3 orthonormal local axes. */
+		explicit Quaternion(const Vector3& xaxis, const Vector3& yaxis, const Vector3& zaxis)
+		{
+			fromAxes(xaxis, yaxis, zaxis);
+		}
 
-        /**
-         * Construct a quaternion from euler angles, YXZ ordering.
-         * 			
+		/**
+		 * Construct a quaternion from euler angles, YXZ ordering.
+		 * 			
 		 * @see		Quaternion::fromEulerAngles
-         */
+		 */
 		explicit Quaternion(const Radian& xAngle, const Radian& yAngle, const Radian& zAngle)
 		{
 			fromEulerAngles(xAngle, yAngle, zAngle);
 		}
 
-        /**
-         * Construct a quaternion from euler angles, custom ordering.
-         * 			
+		/**
+		 * Construct a quaternion from euler angles, custom ordering.
+		 * 			
 		 * @see		Quaternion::fromEulerAngles
-         */
+		 */
 		explicit Quaternion(const Radian& xAngle, const Radian& yAngle, const Radian& zAngle, EulerAngleOrder order)
 		{
 			fromEulerAngles(xAngle, yAngle, zAngle, order);
@@ -109,39 +109,39 @@ namespace bs
 		 * Initializes the quaternion from an angle axis pair. Quaternion will represent a rotation of "angle" radians 
 		 * around "axis".
 		 */
-        void fromAxisAngle(const Vector3& axis, const Radian& angle);
+		void fromAxisAngle(const Vector3& axis, const Radian& angle);
 
-        /**
-         * Initializes the quaternion from orthonormal set of axes. Quaternion will represent a rotation from base axes 
+		/**
+		 * Initializes the quaternion from orthonormal set of axes. Quaternion will represent a rotation from base axes 
 		 * to the specified set of axes.
-         * 			
+		 * 			
 		 * @note	It's up to the caller to ensure the axes are orthonormal.
-         */
-        void fromAxes(const Vector3& xAxis, const Vector3& yAxis, const Vector3& zAxis);
-        
-        /**
-         * Creates a quaternion from the provided Pitch/Yaw/Roll angles.
-         *
+		 */
+		void fromAxes(const Vector3& xAxis, const Vector3& yAxis, const Vector3& zAxis);
+		
+		/**
+		 * Creates a quaternion from the provided Pitch/Yaw/Roll angles.
+		 *
 		 * @param[in]	xAngle	Rotation about x axis. (AKA Pitch)
 		 * @param[in]	yAngle	Rotation about y axis. (AKA Yaw)
 		 * @param[in]	zAngle	Rotation about z axis. (AKA Roll)
-         *
-         * @note	
+		 *
+		 * @note	
 		 * Since different values will be produced depending in which order are the rotations applied, this method assumes
 		 * they are applied in YXZ order. If you need a specific order, use the overloaded fromEulerAngles() method instead.
-         */
-        void fromEulerAngles(const Radian& xAngle, const Radian& yAngle, const Radian& zAngle);
+		 */
+		void fromEulerAngles(const Radian& xAngle, const Radian& yAngle, const Radian& zAngle);
 
-        /**
-         * Creates a quaternion from the provided Pitch/Yaw/Roll angles.
-         *
+		/**
+		 * Creates a quaternion from the provided Pitch/Yaw/Roll angles.
+		 *
 		 * @param[in]	xAngle	Rotation about x axis. (AKA Pitch)
 		 * @param[in]	yAngle	Rotation about y axis. (AKA Yaw)
 		 * @param[in]	zAngle	Rotation about z axis. (AKA Roll)
 		 * @param[in]	order 	The order in which rotations will be extracted. Different values can be retrieved depending 
 		 *						on the order.
-         */
-        void fromEulerAngles(const Radian& xAngle, const Radian& yAngle, const Radian& zAngle, EulerAngleOrder order);
+		 */
+		void fromEulerAngles(const Radian& xAngle, const Radian& yAngle, const Radian& zAngle, EulerAngleOrder order);
 
 		/**
 		 * Converts a quaternion to a rotation matrix.
@@ -166,26 +166,26 @@ namespace bs
 		void toAxes(Vector3& xAxis, Vector3& yAxis, Vector3& zAxis) const;
 
 		/**
-         * Extracts Pitch/Yaw/Roll rotations from this quaternion.
-         *
-         * @param[out]	xAngle	Rotation about x axis. (AKA Pitch)
-         * @param[out]	yAngle  Rotation about y axis. (AKA Yaw)
-         * @param[out]	zAngle 	Rotation about z axis. (AKA Roll)
-         *
-         * @return	True if unique solution was found, false otherwise.
-         */
-        bool toEulerAngles(Radian& xAngle, Radian& yAngle, Radian& zAngle) const;
+		 * Extracts Pitch/Yaw/Roll rotations from this quaternion.
+		 *
+		 * @param[out]	xAngle	Rotation about x axis. (AKA Pitch)
+		 * @param[out]	yAngle  Rotation about y axis. (AKA Yaw)
+		 * @param[out]	zAngle 	Rotation about z axis. (AKA Roll)
+		 *
+		 * @return	True if unique solution was found, false otherwise.
+		 */
+		bool toEulerAngles(Radian& xAngle, Radian& yAngle, Radian& zAngle) const;
 
-        /** Gets the positive x-axis of the coordinate system transformed by this quaternion. */
-        Vector3 xAxis() const;
+		/** Gets the positive x-axis of the coordinate system transformed by this quaternion. */
+		Vector3 xAxis() const;
 
-        /** Gets the positive y-axis of the coordinate system transformed by this quaternion. */
-        Vector3 yAxis() const;
+		/** Gets the positive y-axis of the coordinate system transformed by this quaternion. */
+		Vector3 yAxis() const;
 
 		/** Gets the positive z-axis of the coordinate system transformed by this quaternion. */
-        Vector3 zAxis() const;
+		Vector3 zAxis() const;
 
-        Quaternion& operator= (const Quaternion& rhs)
+		Quaternion& operator= (const Quaternion& rhs)
 		{
 			w = rhs.w;
 			x = rhs.x;
@@ -195,12 +195,12 @@ namespace bs
 			return *this;
 		}
 
-        Quaternion operator+ (const Quaternion& rhs) const 
+		Quaternion operator+ (const Quaternion& rhs) const 
 		{
 			return Quaternion(w + rhs.w, x + rhs.x, y + rhs.y, z + rhs.z);
 		}
 
-        Quaternion operator- (const Quaternion& rhs) const
+		Quaternion operator- (const Quaternion& rhs) const
 		{
 			return Quaternion(w - rhs.w, x - rhs.x, y - rhs.y, z - rhs.z);
 		}
@@ -221,17 +221,17 @@ namespace bs
 			return Quaternion(rhs * w, rhs * x, rhs * y, rhs * z);
 		}
 
-        Quaternion operator- () const
+		Quaternion operator- () const
 		{
 			return Quaternion(-w, -x, -y, -z);
 		}
 
-        bool operator== (const Quaternion& rhs) const
+		bool operator== (const Quaternion& rhs) const
 		{
 			return (rhs.x == x) && (rhs.y == y) && (rhs.z == z) && (rhs.w == w);
 		}
 
-        bool operator!= (const Quaternion& rhs) const
+		bool operator!= (const Quaternion& rhs) const
 		{
 			return !operator==(rhs);
 		}
@@ -276,45 +276,45 @@ namespace bs
 			return Quaternion(lhs * rhs.w, lhs * rhs.x, lhs * rhs.y, lhs * rhs.z);
 		}
 
-        /** Calculates the dot product of this quaternion and another. */
-        float dot(const Quaternion& other) const
-        {
+		/** Calculates the dot product of this quaternion and another. */
+		float dot(const Quaternion& other) const
+		{
 			return w * other.w + x * other.x + y * other.y + z * other.z;
-        }
+		}
 
-        /** Normalizes this quaternion, and returns the previous length. */
-        float normalize()
-        {
+		/** Normalizes this quaternion, and returns the previous length. */
+		float normalize()
+		{
 			float len = w*w + x*x + y*y + z*z;
 			float factor = 1.0f / Math::sqrt(len);
 			*this = *this * factor;
 			return len;
-        }
+		}
 
-        /**
-         * Gets the inverse.
-         *
-         * @note	Quaternion must be non-zero.
-         */
-        Quaternion inverse() const; 
+		/**
+		 * Gets the inverse.
+		 *
+		 * @note	Quaternion must be non-zero.
+		 */
+		Quaternion inverse() const; 
 
-        /** Rotates the provided vector. */
-        Vector3 rotate(const Vector3& vec) const;
+		/** Rotates the provided vector. */
+		Vector3 rotate(const Vector3& vec) const;
 
-        /**
-         * Orients the quaternion so its negative z axis points to the provided direction.
+		/**
+		 * Orients the quaternion so its negative z axis points to the provided direction.
 		 *
 		 * @param[in]	forwardDir	Direction to orient towards.
-         */
+		 */
 		void lookRotation(const Vector3& forwardDir);
 
-        /**
-         * Orients the quaternion so its negative z axis points to the provided direction.
+		/**
+		 * Orients the quaternion so its negative z axis points to the provided direction.
 		 *
 		 * @param[in]	forwardDir	Direction to orient towards.
 		 * @param[in]	upDir		Constrains y axis orientation to a plane this vector lies on. This rule might be broken
 		 *							if forward and up direction are nearly parallel.
-         */
+		 */
 		void lookRotation(const Vector3& forwardDir, const Vector3& upDir);
 
 		/** Query if any of the components of the quaternion are not a number. */
@@ -338,11 +338,11 @@ namespace bs
 			return q * factor;
 		}
 
-        /**
-         * Performs spherical interpolation between two quaternions. Spherical interpolation neatly interpolates between 
+		/**
+		 * Performs spherical interpolation between two quaternions. Spherical interpolation neatly interpolates between 
 		 * two rotations without modifying the size of the vector it is applied to (unlike linear interpolation).
-         */
-        static Quaternion slerp(float t, const Quaternion& p, const Quaternion& q, bool shortestPath = true);
+		 */
+		static Quaternion slerp(float t, const Quaternion& p, const Quaternion& q, bool shortestPath = true);
 
 		/** 
 		 * Linearly interpolates between the two quaternions using @p t. t should be in [0, 1] range, where t = 0 
@@ -357,19 +357,19 @@ namespace bs
 			return normalize(output);
 		}
 
-        /** Gets the shortest arc quaternion to rotate this vector to the destination vector. */
-        static Quaternion getRotationFromTo(const Vector3& from, const Vector3& dest, const Vector3& fallbackAxis = Vector3::ZERO);
+		/** Gets the shortest arc quaternion to rotate this vector to the destination vector. */
+		static Quaternion getRotationFromTo(const Vector3& from, const Vector3& dest, const Vector3& fallbackAxis = Vector3::ZERO);
 
-        static const float EPSILON;
+		static const float EPSILON;
 
-        static const Quaternion ZERO;
-        static const Quaternion IDENTITY;
+		static const Quaternion ZERO;
+		static const Quaternion IDENTITY;
 
 		float x, y, z, w; // Note: Order is relevant, don't break it
 
 		private:
 			static const EulerAngleOrderData EA_LOOKUP[6];
-    };
+	};
 
 	/** @} */
 

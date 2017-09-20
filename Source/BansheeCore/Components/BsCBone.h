@@ -15,16 +15,18 @@ namespace bs
 	 * Component that maps animation for specific bone also be applied to the SceneObject this component is attached to. 
 	 * The component will attach to the first found parent Animation component.
 	 */
-    class BS_CORE_EXPORT CBone : public Component
-    {
-    public:
+	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Animation,n:Bone) CBone : public Component
+	{
+	public:
 		CBone(const HSceneObject& parent);
 		virtual ~CBone() {}
 		
-		/** Changes the name of the bone the component is referencing. */
+		/** Determines the name of the bone the component is referencing. */
+		BS_SCRIPT_EXPORT(n:Name,pr:setter)
 		void setBoneName(const String& name);
 
-		/** Returns the name of the bone the component is referencing. */
+		/** @copydoc setBoneName */
+		BS_SCRIPT_EXPORT(n:Name,pr:getter)
 		const String& getBoneName() const { return mBoneName; }
 
 		/** @name Internal
@@ -62,7 +64,7 @@ namespace bs
 
 		/** @copydoc Component::onTransformChanged() */
 		void onTransformChanged(TransformChangedFlags flags) override;
-    protected:
+	protected:
 		using Component::destroyInternal;
 
 		String mBoneName;
@@ -77,8 +79,8 @@ namespace bs
 		RTTITypeBase* getRTTI() const override;
 
 	protected:
-		CBone() {} // Serialization only
-     };
+		CBone(); // Serialization only
+	 };
 
 	 /** @} */
 }

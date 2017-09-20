@@ -25,7 +25,7 @@ namespace bs
 		SOF_Persistent = 0x04,		/**< Object will remain in the scene even after scene clear, unless destroyed directly. 
 										 This only works with top-level objects. */
 		SOF_Internal = 0x08			/**< Provides a hint to external systems that his object is used by engine internals.
-									     For example, those systems might not want to display those objects together with the
+										 For example, those systems might not want to display those objects together with the
 										 user created ones. */
 	};
 
@@ -266,10 +266,10 @@ namespace bs
 		const Matrix4& getLocalTfrm() const;
 
 		/**	Moves the object's position by the vector offset provided along world axes. */
-        void move(const Vector3& vec);
+		void move(const Vector3& vec);
 
 		/**	Moves the object's position by the vector offset provided along it's own axes (relative to orientation). */
-        void moveRelative(const Vector3& vec);
+		void moveRelative(const Vector3& vec);
 
 		/**
 		 * Gets the Z (forward) axis of the object, in world space.
@@ -302,10 +302,10 @@ namespace bs
 		void setForward(const Vector3& forwardDir);
 
 		/**	Rotate the object around an arbitrary axis. */
-        void rotate(const Vector3& axis, const Radian& angle);
+		void rotate(const Vector3& axis, const Radian& angle);
 
 		/**	Rotate the object around an arbitrary axis using a Quaternion. */
-        void rotate(const Quaternion& q);
+		void rotate(const Quaternion& q);
 
 		/**
 		 * Rotates around local Z axis.
@@ -420,6 +420,14 @@ namespace bs
 
 		/**	Gets the number of all child GameObjects. */
 		UINT32 getNumChildren() const { return (UINT32)mChildren.size(); }
+
+		/** 
+		 * Searches the scene object hierarchy to find a child scene object using the provided path.
+		 *
+		 * @param[in]	path	Path to the property, where each element of the path is separated with "/" Path elements signify
+		 *						names of child scene objects (first one relative to this object). 
+		 */
+		HSceneObject findPath(const String& path) const;
 
 		/**
 		 * Searches the child objects for an object matching the specified name.

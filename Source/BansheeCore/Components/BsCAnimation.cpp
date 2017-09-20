@@ -4,20 +4,28 @@
 #include "Scene/BsSceneObject.h"
 #include "Components/BsCRenderable.h"
 #include "Components/BsCBone.h"
+#include "Mesh/BsMesh.h"
+#include "Animation/BsMorphShapes.h"
+#include "Animation/BsAnimationClip.h"
 #include "RTTI/BsCAnimationRTTI.h"
+#include "Scene/BsSceneManager.h"
 
 using namespace std::placeholders;
 
 namespace bs
 {
 	CAnimation::CAnimation()
-		:mWrapMode(AnimWrapMode::Loop), mSpeed(1.0f), mEnableCull(true), mUseBounds(false)
-	{ }
-
-	CAnimation::CAnimation(const HSceneObject& parent)
-		: Component(parent), mWrapMode(AnimWrapMode::Loop), mSpeed(1.0f), mEnableCull(true), mUseBounds(false)
+		:mWrapMode(AnimWrapMode::Loop), mSpeed(1.0f), mEnableCull(true), mUseBounds(false), mPreviewMode(false)
 	{
 		mNotifyFlags = TCF_Transform;
+		setFlag(ComponentFlag::AlwaysRun, true);
+	}
+
+	CAnimation::CAnimation(const HSceneObject& parent)
+		: Component(parent), mWrapMode(AnimWrapMode::Loop), mSpeed(1.0f), mEnableCull(true), mUseBounds(false), mPreviewMode(false)
+	{
+		mNotifyFlags = TCF_Transform;
+		setFlag(ComponentFlag::AlwaysRun, true);
 
 		setName("Animation");
 	}
@@ -26,17 +34,15 @@ namespace bs
 	{
 		mDefaultClip = clip;
 
-		if(clip.isLoaded() && mInternal != nullptr)
-		{
+		if(clip.isLoaded() && mInternal != nullptr && !mPreviewMode)
 			mInternal->play(clip);
-		}
 	}
 
 	void CAnimation::setWrapMode(AnimWrapMode wrapMode)
 	{
 		mWrapMode = wrapMode;
 
-		if (mInternal != nullptr)
+		if (mInternal != nullptr && !mPreviewMode)
 			mInternal->setWrapMode(wrapMode);
 	}
 
@@ -44,37 +50,37 @@ namespace bs
 	{
 		mSpeed = speed;
 
-		if (mInternal != nullptr)
+		if (mInternal != nullptr && !mPreviewMode)
 			mInternal->setSpeed(speed);
 	}
 
 	void CAnimation::play(const HAnimationClip& clip)
 	{
-		if (mInternal != nullptr)
+		if (mInternal != nullptr && !mPreviewMode)
 			mInternal->play(clip);
 	}
 
 	void CAnimation::blendAdditive(const HAnimationClip& clip, float weight, float fadeLength, UINT32 layer)
 	{
-		if (mInternal != nullptr)
+		if (mInternal != nullptr && !mPreviewMode)
 			mInternal->play(clip);
 	}
 
 	void CAnimation::blend1D(const Blend1DInfo& info, float t)
 	{
-		if (mInternal != nullptr)
+		if (mInternal != nullptr && !mPreviewMode)
 			mInternal->blend1D(info, t);
 	}
 
 	void CAnimation::blend2D(const Blend2DInfo& info, const Vector2& t)
 	{
-		if (mInternal != nullptr)
+		if (mInternal != nullptr && !mPreviewMode)
 			mInternal->blend2D(info, t);
 	}
 
 	void CAnimation::crossFade(const HAnimationClip& clip, float fadeLength)
 	{
-		if (mInternal != nullptr)
+		if (mInternal != nullptr && !mPreviewMode)
 			mInternal->crossFade(clip, fadeLength);
 	}
 
@@ -86,13 +92,13 @@ namespace bs
 
 	void CAnimation::stop(UINT32 layer)
 	{
-		if (mInternal != nullptr)
+		if (mInternal != nullptr && !mPreviewMode)
 			mInternal->stop(layer);
 	}
 
 	void CAnimation::stopAll()
 	{
-		if (mInternal != nullptr)
+		if (mInternal != nullptr && !mPreviewMode)
 			mInternal->stopAll();
 	}
 
@@ -118,10 +124,31 @@ namespace bs
 			return mInternal->setState(clip, state);
 	}
 
-	void CAnimation::setMorphChannelWeight(UINT32 idx, float weight)
+	void CAnimation::setMorphChannelWeight(const String& name, float weight)
 	{
-		if (mInternal != nullptr)
-			return mInternal->setMorphChannelWeight(idx, weight);
+		if (mInternal == nullptr)
+			return;
+
+		if (mAnimatedRenderable == nullptr)
+			return;
+
+		HMesh mesh = mAnimatedRenderable->getMesh();
+		if (!mesh.isLoaded())
+			return;
+
+		SPtr<MorphShapes> morphShapes = mesh->getMorphShapes();
+		if (morphShapes == nullptr)
+			return;
+
+		const Vector<SPtr<MorphChannel>>& channels = morphShapes->getChannels();
+		for (UINT32 i = 0; i < (UINT32)channels.size(); i++)
+		{
+			if (channels[i]->getName() == name)
+			{
+				mInternal->setMorphChannelWeight(i, weight);
+				break;
+			}
+		}
 	}
 
 	void CAnimation::setBounds(const AABox& bounds)
@@ -136,11 +163,17 @@ namespace bs
 				if (renderable != nullptr)
 					renderable->setOverrideBounds(bounds);
 
-				if(mInternal != nullptr)
+				if(mInternal != nullptr && !mPreviewMode)
 				{
 					AABox bounds = mBounds;
-					bounds.transformAffine(SO()->getWorldTfrm());
 
+					Matrix4 parentTfrm;
+					if (SO()->getParent() != nullptr)
+						parentTfrm = SO()->getParent()->getWorldTfrm();
+					else
+						parentTfrm = Matrix4::IDENTITY;
+
+					bounds.transformAffine(parentTfrm); 
 					mInternal->setBounds(bounds);
 				}
 			}
@@ -158,8 +191,24 @@ namespace bs
 	{
 		mEnableCull = enable;
 
-		if (mInternal != nullptr)
+		if (mInternal != nullptr && !mPreviewMode)
 			mInternal->setCulling(enable);
+	}
+
+	UINT32 CAnimation::getNumClips() const
+	{
+		if (mInternal != nullptr)
+			return mInternal->getNumClips();
+
+		return 0;
+	}
+
+	HAnimationClip CAnimation::getClip(UINT32 idx) const
+	{
+		if (mInternal != nullptr)
+			return mInternal->getClip(idx);
+
+		return HAnimationClip();
 	}
 
 	void CAnimation::onInitialized()
@@ -179,7 +228,27 @@ namespace bs
 
 	void CAnimation::onEnabled()
 	{
-		restoreInternal();
+		if(mPreviewMode)
+		{
+			destroyInternal();
+			mPreviewMode = false;
+		}
+
+		restoreInternal(false);
+	}
+
+	void CAnimation::update()
+	{
+		bool isRunning = SceneManager::instance().isRunning();
+		if (mInternal == nullptr || !isRunning)
+			return;
+
+		HAnimationClip newPrimaryClip = mInternal->getClip(0);
+		if (newPrimaryClip != mPrimaryPlayingClip)
+			_refreshClipMappings();
+
+		if (_scriptUpdateFloatProperties)
+			_scriptUpdateFloatProperties();
 	}
 
 	void CAnimation::onTransformChanged(TransformChangedFlags flags)
@@ -191,26 +260,43 @@ namespace bs
 			_updateBounds(false);
 	}
 
-	void CAnimation::restoreInternal()
+	void CAnimation::restoreInternal(bool previewMode)
 	{
-		if (mInternal == nullptr)
-		{
-			mInternal = Animation::create();
-			mInternal->onEventTriggered.connect(std::bind(&CAnimation::eventTriggered, this, _1, _2));
-		}
+		if (mInternal != nullptr)
+			destroyInternal();
+
+		mInternal = Animation::create();
 
 		mAnimatedRenderable = SO()->getComponent<CRenderable>();
 
-		mInternal->setWrapMode(mWrapMode);
-		mInternal->setSpeed(mSpeed);
-		mInternal->setCulling(mEnableCull);
+		if (!previewMode)
+		{
+			mInternal->onEventTriggered.connect(std::bind(&CAnimation::eventTriggered, this, _1, _2));
+
+			mInternal->setWrapMode(mWrapMode);
+			mInternal->setSpeed(mSpeed);
+			mInternal->setCulling(mEnableCull);
+		}
 
 		_updateBounds();
 
-		if (mDefaultClip.isLoaded())
-			mInternal->play(mDefaultClip);
+		if (!previewMode)
+		{
+			if (mDefaultClip.isLoaded())
+				mInternal->play(mDefaultClip);
+
+			mPrimaryPlayingClip = mInternal->getClip(0);
+			if (mPrimaryPlayingClip.isLoaded())
+			{
+				if (_scriptRebuildFloatProperties)
+					_scriptRebuildFloatProperties(mPrimaryPlayingClip);
+			}
+		}
 
 		setBoneMappings();
+
+		if(!previewMode)
+			updateSceneObjectMapping();
 
 		if (mAnimatedRenderable != nullptr)
 			mAnimatedRenderable->_registerAnimation(mThisHandle);
@@ -221,8 +307,60 @@ namespace bs
 		if (mAnimatedRenderable != nullptr)
 			mAnimatedRenderable->_unregisterAnimation();
 
+		mPrimaryPlayingClip = nullptr;
+		mMappingInfos.clear();
+
 		// This should release the last reference and destroy the internal listener
 		mInternal = nullptr;
+	}
+
+	bool CAnimation::_togglePreviewMode(bool enabled)
+	{
+		bool isRunning = SceneManager::instance().isRunning();
+
+		if(enabled)
+		{
+			// Cannot enable preview while running
+			if (isRunning)
+				return false;
+
+			restoreInternal(true);
+			mPreviewMode = true;
+
+			return true;
+		}
+		else
+		{
+			if (!isRunning)
+				destroyInternal();
+
+			mPreviewMode = false;
+			return false;
+		}
+	}
+
+	bool CAnimation::_getGenericCurveValue(UINT32 curveIdx, float& value)
+	{
+		if (mInternal == nullptr)
+			return false;
+
+		return mInternal->getGenericCurveValue(curveIdx, value);
+	}
+
+	void CAnimation::mapCurveToSceneObject(const String& curve, const HSceneObject& so)
+	{
+		if (mInternal == nullptr)
+			return;
+
+		mInternal->mapCurveToSceneObject(curve, so);
+	}
+
+	void CAnimation::unmapSceneObject(const HSceneObject& so)
+	{
+		if (mInternal == nullptr)
+			return;
+
+		mInternal->unmapSceneObject(so);
 	}
 
 	void CAnimation::_addBone(const HBone& bone)
@@ -340,6 +478,73 @@ namespace bs
 			_addBone(entry);
 	}
 
+	void CAnimation::updateSceneObjectMapping()
+	{
+		Vector<SceneObjectMappingInfo> newMappingInfos;
+		for(auto& entry : mMappingInfos)
+		{
+			if (entry.isMappedToBone)
+				newMappingInfos.push_back(entry);
+			else
+				unmapSceneObject(entry.sceneObject);
+		}
+
+		if (mPrimaryPlayingClip.isLoaded())
+		{
+			HSceneObject root = SO();
+
+			auto& findMappings = [&](const String& name, AnimationCurveFlags flags)
+			{
+				if (flags.isSet(AnimationCurveFlag::ImportedCurve))
+					return;
+
+				HSceneObject currentSO = root->findPath( name);
+
+				bool found = false;
+				for (UINT32 i = 0; i < (UINT32)newMappingInfos.size(); i++)
+				{
+					if (newMappingInfos[i].sceneObject == currentSO)
+					{
+						found = true;
+						break;
+					}
+				}
+
+				if (!found)
+				{
+					SceneObjectMappingInfo newMappingInfo;
+					newMappingInfo.isMappedToBone = false;
+					newMappingInfo.sceneObject = currentSO;
+
+					newMappingInfos.push_back(newMappingInfo);
+					mapCurveToSceneObject(name, currentSO);
+				}
+			};
+
+			SPtr<AnimationCurves> curves = mPrimaryPlayingClip->getCurves();
+			for(auto& curve : curves->position)
+				findMappings(curve.name, curve.flags);
+
+			for(auto& curve : curves->rotation)
+				findMappings(curve.name, curve.flags);
+
+			for(auto& curve : curves->scale)
+				findMappings(curve.name, curve.flags);
+		}
+
+		mMappingInfos = newMappingInfos;
+	}
+
+	void CAnimation::_refreshClipMappings()
+	{
+		mPrimaryPlayingClip = mInternal->getClip(0);
+
+		if (_scriptRebuildFloatProperties)
+			_scriptRebuildFloatProperties(mPrimaryPlayingClip);
+
+		updateSceneObjectMapping();		
+	}
+
 	Vector<HBone> CAnimation::findChildBones()
 	{
 		Stack<HSceneObject> todo;
@@ -375,6 +580,9 @@ namespace bs
 	void CAnimation::eventTriggered(const HAnimationClip& clip, const String& name)
 	{
 		onEventTriggered(clip, name);
+
+		if(_scriptOnEventTriggered)
+			_scriptOnEventTriggered(clip, name);
 	}
 
 	RTTITypeBase* CAnimation::getRTTIStatic()

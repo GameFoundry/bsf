@@ -18,7 +18,7 @@ namespace bs
 	 */
 
 	/** Determines how an animation clip behaves when it reaches the end. */
-	enum class AnimWrapMode
+	enum class BS_SCRIPT_EXPORT(m:Animation) AnimWrapMode
 	{
 		Loop, /**< Loop around to the beginning/end when the last/first frame is reached. */
 		Clamp /**< Clamp to end/beginning, keeping the last/first frame active. */
@@ -39,7 +39,7 @@ namespace bs
 	BS_FLAGS_OPERATORS(AnimDirtyStateFlag)
 
 	/** Contains information about a currently playing animation clip. */
-	struct AnimationClipState
+	struct BS_SCRIPT_EXPORT(pl:true,m:Animation) AnimationClipState
 	{
 		AnimationClipState() { }
 
@@ -92,7 +92,7 @@ namespace bs
 	};
 
 	/** Represents an animation clip used in 1D blending. Each clip has a position on the number line. */
-	struct BS_CORE_EXPORT BlendClipInfo
+	struct BS_CORE_EXPORT BS_SCRIPT_EXPORT(pl:true,m:Animation) BlendClipInfo
 	{
 		BlendClipInfo() { }
 
@@ -101,17 +101,13 @@ namespace bs
 	};
 
 	/** Defines a 1D blend where multiple animation clips are blended between each other using linear interpolation. */
-	struct BS_CORE_EXPORT Blend1DInfo
+	struct BS_CORE_EXPORT BS_SCRIPT_EXPORT(pl:true,m:Animation) Blend1DInfo
 	{
-		Blend1DInfo(UINT32 numClips);
-		~Blend1DInfo();
-
-		UINT32 numClips;
-		BlendClipInfo* clips;
+		Vector<BlendClipInfo> clips;
 	};
 
 	/** Defines a 2D blend where two animation clips are blended between each other using bilinear interpolation. */
-	struct Blend2DInfo
+	struct BS_SCRIPT_EXPORT(pl:true,m:Animation) Blend2DInfo
 	{
 		HAnimationClip topLeftClip;
 		HAnimationClip topRightClip;
@@ -299,14 +295,12 @@ namespace bs
 		void setMask(const SkeletonMask& mask);
 
 		/** 
-		 * Changes the wrap mode for all active animations. Wrap mode determines what happens when animation reaches the 
+		 * Determines the wrap mode for all active animations. Wrap mode determines what happens when animation reaches the 
 		 * first or last frame. 
-		 *
-		 * @see	AnimWrapMode
 		 */
 		void setWrapMode(AnimWrapMode wrapMode);
 
-		/** Changes the speed for all animations. The default value is 1.0f. Use negative values to play-back in reverse. */
+		/** Determines the speed for all animations. The default value is 1.0f. Use negative values to play-back in reverse. */
 		void setSpeed(float speed);
 
 		/** Sets bounds that will be used for animation culling, if enabled. Bounds must be in world space. */

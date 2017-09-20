@@ -138,10 +138,10 @@ namespace BansheeEditor
 
             foreach (var param in shaderParams)
             {
-                if (param.Internal)
+                if (param.isInternal)
                     continue;
 
-                switch (param.Type)
+                switch (param.type)
                 {
                     case ShaderParameterType.Float:
                         layout.AddSpace(5);
@@ -228,11 +228,11 @@ namespace BansheeEditor
         internal MaterialParamFloatGUI(ShaderParameter shaderParam, Material material, GUILayout layout)
             : base(shaderParam)
         {
-            LocString title = new LocEdString(shaderParam.Name);
+            LocString title = new LocEdString(shaderParam.name);
             guiElem = new GUIFloatField(title);
             guiElem.OnChanged += (x) =>
             {
-                material.SetFloat(shaderParam.Name, x);
+                material.SetFloat(shaderParam.name, x);
                 EditorApplication.SetDirty(material);
             };
 
@@ -242,7 +242,7 @@ namespace BansheeEditor
         /// <inheritdoc/>
         internal override void Refresh(Material material)
         {
-            guiElem.Value = material.GetFloat(shaderParam.Name);
+            guiElem.Value = material.GetFloat(shaderParam.name);
         }
 
         /// <inheritdoc/>
@@ -268,11 +268,11 @@ namespace BansheeEditor
         internal MaterialParamVec2GUI(ShaderParameter shaderParam, Material material, GUILayout layout)
             : base(shaderParam)
         {
-            LocString title = new LocEdString(shaderParam.Name);
+            LocString title = new LocEdString(shaderParam.name);
             guiElem = new GUIVector2Field(title);
             guiElem.OnChanged += (x) =>
             {
-                material.SetVector2(shaderParam.Name, x);
+                material.SetVector2(shaderParam.name, x);
                 EditorApplication.SetDirty(material);
             };
 
@@ -282,7 +282,7 @@ namespace BansheeEditor
         /// <inheritdoc/>
         internal override void Refresh(Material material)
         {
-            guiElem.Value = material.GetVector2(shaderParam.Name);
+            guiElem.Value = material.GetVector2(shaderParam.name);
         }
 
         /// <inheritdoc/>
@@ -308,11 +308,11 @@ namespace BansheeEditor
         internal MaterialParamVec3GUI(ShaderParameter shaderParam, Material material, GUILayout layout)
             : base(shaderParam)
         {
-            LocString title = new LocEdString(shaderParam.Name);
+            LocString title = new LocEdString(shaderParam.name);
             guiElem = new GUIVector3Field(title);
             guiElem.OnChanged += (x) =>
             {
-                material.SetVector3(shaderParam.Name, x);
+                material.SetVector3(shaderParam.name, x);
                 EditorApplication.SetDirty(material);
             };
 
@@ -322,7 +322,7 @@ namespace BansheeEditor
         /// <inheritdoc/>
         internal override void Refresh(Material material)
         {
-            guiElem.Value = material.GetVector3(shaderParam.Name);
+            guiElem.Value = material.GetVector3(shaderParam.name);
         }
 
         /// <inheritdoc/>
@@ -348,11 +348,11 @@ namespace BansheeEditor
         internal MaterialParamVec4GUI(ShaderParameter shaderParam, Material material, GUILayout layout)
             : base(shaderParam)
         {
-            LocString title = new LocEdString(shaderParam.Name);
+            LocString title = new LocEdString(shaderParam.name);
             guiElem = new GUIVector4Field(title);
             guiElem.OnChanged += (x) =>
             {
-                material.SetVector4(shaderParam.Name, x);
+                material.SetVector4(shaderParam.name, x);
                 EditorApplication.SetDirty(material);
             };
 
@@ -362,7 +362,7 @@ namespace BansheeEditor
         /// <inheritdoc/>
         internal override void Refresh(Material material)
         {
-            guiElem.Value = material.GetVector4(shaderParam.Name);
+            guiElem.Value = material.GetVector4(shaderParam.name);
         }
 
         /// <inheritdoc/>
@@ -391,7 +391,7 @@ namespace BansheeEditor
         internal MaterialParamMat3GUI(ShaderParameter shaderParam, Material material, GUILayout layout)
             : base(shaderParam)
         {
-            LocString title = new LocEdString(shaderParam.Name);
+            LocString title = new LocEdString(shaderParam.name);
             GUILabel guiTitle = new GUILabel(title, GUIOption.FixedWidth(100));
 
             mainLayout = layout.AddLayoutY();
@@ -420,9 +420,9 @@ namespace BansheeEditor
                     int hoistedCol = col;
                     field.OnChanged += (x) =>
                     {
-                        Matrix3 value = material.GetMatrix3(shaderParam.Name);
+                        Matrix3 value = material.GetMatrix3(shaderParam.name);
                         value[hoistedRow, hoistedCol] = x;
-                        material.SetMatrix3(shaderParam.Name, value);
+                        material.SetMatrix3(shaderParam.name, value);
                         EditorApplication.SetDirty(material);
                     };
                 }
@@ -432,7 +432,7 @@ namespace BansheeEditor
         /// <inheritdoc/>
         internal override void Refresh(Material material)
         {
-            Matrix3 value = material.GetMatrix3(shaderParam.Name);
+            Matrix3 value = material.GetMatrix3(shaderParam.name);
 
             for (int row = 0; row < MAT_SIZE; row++)
             {
@@ -470,7 +470,7 @@ namespace BansheeEditor
         internal MaterialParamMat4GUI(ShaderParameter shaderParam, Material material, GUILayout layout)
             : base(shaderParam)
         {
-            LocString title = new LocEdString(shaderParam.Name);
+            LocString title = new LocEdString(shaderParam.name);
             GUILabel guiTitle = new GUILabel(title, GUIOption.FixedWidth(100));
 
             mainLayout = layout.AddLayoutY();
@@ -499,9 +499,9 @@ namespace BansheeEditor
                     int hoistedCol = col;
                     field.OnChanged += (x) =>
                     {
-                        Matrix4 value = material.GetMatrix4(shaderParam.Name);
+                        Matrix4 value = material.GetMatrix4(shaderParam.name);
                         value[hoistedRow, hoistedCol] = x;
-                        material.SetMatrix4(shaderParam.Name, value);
+                        material.SetMatrix4(shaderParam.name, value);
                         EditorApplication.SetDirty(material);
                     };
                 }
@@ -511,7 +511,7 @@ namespace BansheeEditor
         /// <inheritdoc/>
         internal override void Refresh(Material material)
         {
-            Matrix4 value = material.GetMatrix4(shaderParam.Name);
+            Matrix4 value = material.GetMatrix4(shaderParam.name);
 
             for (int row = 0; row < MAT_SIZE; row++)
             {
@@ -546,11 +546,11 @@ namespace BansheeEditor
         internal MaterialParamColorGUI(ShaderParameter shaderParam, Material material, GUILayout layout)
             : base(shaderParam)
         {
-            LocString title = new LocEdString(shaderParam.Name);
+            LocString title = new LocEdString(shaderParam.name);
             guiElem = new GUIColorField(title);
             guiElem.OnChanged += (x) =>
             {
-                material.SetColor(shaderParam.Name, x);
+                material.SetColor(shaderParam.name, x);
                 EditorApplication.SetDirty(material);
             };
 
@@ -560,7 +560,7 @@ namespace BansheeEditor
         /// <inheritdoc/>
         internal override void Refresh(Material material)
         {
-            guiElem.Value = material.GetColor(shaderParam.Name);
+            guiElem.Value = material.GetColor(shaderParam.name);
         }
 
         /// <inheritdoc/>
@@ -586,10 +586,10 @@ namespace BansheeEditor
         internal MaterialParamTextureGUI(ShaderParameter shaderParam, Material material, GUILayout layout)
             : base(shaderParam)
         {
-            LocString title = new LocEdString(shaderParam.Name);
+            LocString title = new LocEdString(shaderParam.name);
             guiElem = new GUITextureField(title);
 
-            switch (shaderParam.Type)
+            switch (shaderParam.type)
             {
                 case ShaderParameterType.Texture2D:
                 case ShaderParameterType.Texture3D:
@@ -598,7 +598,7 @@ namespace BansheeEditor
                     {
                         Texture texture = Resources.Load<Texture>(x);
 
-                        material.SetTexture(shaderParam.Name, texture);
+                        material.SetTexture(shaderParam.name, texture);
                         EditorApplication.SetDirty(material);
                     };
                     break;
@@ -611,12 +611,12 @@ namespace BansheeEditor
         internal override void Refresh(Material material)
         {
             Texture value = null;
-            switch (shaderParam.Type)
+            switch (shaderParam.type)
             {
                 case ShaderParameterType.Texture2D:
                 case ShaderParameterType.Texture3D:
                 case ShaderParameterType.TextureCube:
-                    value = material.GetTexture(shaderParam.Name);
+                    value = material.GetTexture(shaderParam.name);
                     break;
             }
 

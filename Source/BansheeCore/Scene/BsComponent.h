@@ -15,7 +15,12 @@ namespace bs
 	/** Flags that control behavior of a Component. */
 	enum class ComponentFlag
 	{
-		AlwaysRun = 1 /**< Ensures that scene manager cannot pause or stop component callbacks from executing. Off by default. */
+		/** 
+		 * Ensures that scene manager cannot pause or stop component callbacks from executing. Off by default. 
+		 * Note that this flag must be specified on component creation, in its constructor and any later changes
+		 * to the flag will be ignored.
+		 */
+		AlwaysRun = 1 
 	};
 
 	typedef Flags<ComponentFlag> ComponentFlags;

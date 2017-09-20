@@ -584,20 +584,29 @@ namespace bs
 
 		TextureAddressingMode u, v, w;
 	};
-    
+
 	/**	References a subset of surfaces within a texture. */
-	struct TextureSurface
+	struct BS_SCRIPT_EXPORT(m:Rendering,pl:true) TextureSurface
 	{
-		TextureSurface(UINT32 mipLevel = 0, UINT32 numMipLevels = 1, 
-			UINT32 arraySlice = 0, UINT32 numArraySlices = 1)
-			:mipLevel(mipLevel), numMipLevels(numMipLevels), 
-			arraySlice(arraySlice), numArraySlices(numArraySlices)
+		TextureSurface(UINT32 mipLevel = 0, UINT32 numMipLevels = 1, UINT32 face = 0, UINT32 numFaces = 1)
+			:mipLevel(mipLevel), numMipLevels(numMipLevels), face(face), numFaces(numFaces)
 		{ }
 
+		/** First mip level to reference. */
 		UINT32 mipLevel;
+
+		/** Number of mip levels to reference. Must be greater than zero. */
 		UINT32 numMipLevels;
-		UINT32 arraySlice;
-		UINT32 numArraySlices;
+
+		/** 
+		 * First face to reference. Face can represent a single cubemap face, or a single array entry in a 
+		 * texture array. If cubemaps are laid out in a texture array then every six sequential faces represent a single
+		 * array entry.
+		 */
+		UINT32 face;
+
+		/** Number of faces to reference, if the texture has more than one. */
+		UINT32 numFaces;
 
 		/** Surface that covers all texture sub-resources. */
 		static BS_CORE_EXPORT const TextureSurface COMPLETE;
