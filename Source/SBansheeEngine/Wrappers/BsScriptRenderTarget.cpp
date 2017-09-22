@@ -18,12 +18,12 @@ namespace bs
 
 	void ScriptRenderTarget::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_GetWidth", &ScriptRenderTarget::internal_getWidth);
-		metaData.scriptClass->addInternalCall("Internal_GetHeight", &ScriptRenderTarget::internal_getHeight);
-		metaData.scriptClass->addInternalCall("Internal_GetGammaCorrection", &ScriptRenderTarget::internal_getGammaCorrection);
-		metaData.scriptClass->addInternalCall("Internal_GetSampleCount", &ScriptRenderTarget::internal_getSampleCount);
-		metaData.scriptClass->addInternalCall("Internal_GetPriority", &ScriptRenderTarget::internal_getPriority);
-		metaData.scriptClass->addInternalCall("Internal_SetPriority", &ScriptRenderTarget::internal_setPriority);
+		metaData.scriptClass->addInternalCall("Internal_GetWidth", (void*)&ScriptRenderTarget::internal_getWidth);
+		metaData.scriptClass->addInternalCall("Internal_GetHeight", (void*)&ScriptRenderTarget::internal_getHeight);
+		metaData.scriptClass->addInternalCall("Internal_GetGammaCorrection", (void*)&ScriptRenderTarget::internal_getGammaCorrection);
+		metaData.scriptClass->addInternalCall("Internal_GetSampleCount", (void*)&ScriptRenderTarget::internal_getSampleCount);
+		metaData.scriptClass->addInternalCall("Internal_GetPriority", (void*)&ScriptRenderTarget::internal_getPriority);
+		metaData.scriptClass->addInternalCall("Internal_SetPriority", (void*)&ScriptRenderTarget::internal_setPriority);
 	}
 
 	void ScriptRenderTarget::internal_getWidth(ScriptRenderTarget* thisPtr, int* value)

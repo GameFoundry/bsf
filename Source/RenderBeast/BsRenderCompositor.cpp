@@ -96,7 +96,7 @@ namespace bs { namespace ct
 					curIdx = iterFind2->second;
 
 					// Check if invalid
-					if (curIdx == -1)
+					if (curIdx == (UINT32)-1)
 					{
 						LOGERR("Render compositor nodes recursion detected. Node \"" + String(nodeId.cstr()) + "\" " +
 							"depends on node \"" + String(iterFind->first.cstr()) + "\" which is not available at " +
@@ -111,7 +111,7 @@ namespace bs { namespace ct
 					iterFind2 = processedNodes.find(dep);
 
 					NodeInfo& depNodeInfo = mNodeInfos[iterFind2->second];
-					if (depNodeInfo.lastUseIdx == -1)
+					if (depNodeInfo.lastUseIdx == (UINT32)-1)
 						depNodeInfo.lastUseIdx = curIdx;
 					else
 						depNodeInfo.lastUseIdx = std::max(depNodeInfo.lastUseIdx, curIdx);
@@ -269,7 +269,7 @@ namespace bs { namespace ct
 
 			for (auto& element : inputs.scene.renderables[i]->elements)
 			{
-				if (element.perCameraBindingIdx != -1)
+				if (element.perCameraBindingIdx != (UINT32)-1)
 					element.params->setParamBlockBuffer(element.perCameraBindingIdx, inputs.view.getPerViewBuffer(), true);
 			}
 		}
@@ -963,7 +963,7 @@ namespace bs { namespace ct
 				// Note: It would be nice to be able to set this once and keep it, only updating if the buffers actually
 				// change (e.g. when growing). Although technically the internal systems should be smart enough to
 				// avoid updates unless objects actually changed.
-				if (element.gridParamsBindingIdx != -1)
+				if (element.gridParamsBindingIdx != (UINT32)-1)
 					element.params->setParamBlockBuffer(element.gridParamsBindingIdx, gridParams, true);
 
 				element.gridLightOffsetsAndSizeParam.set(gridLightOffsetsAndSize);
@@ -972,7 +972,7 @@ namespace bs { namespace ct
 
 				// Image based lighting params
 				ImageBasedLightingParams& iblParams = element.imageBasedParams;
-				if (iblParams.reflProbeParamsBindingIdx != -1)
+				if (iblParams.reflProbeParamsBindingIdx != (UINT32)-1)
 					element.params->setParamBlockBuffer(iblParams.reflProbeParamsBindingIdx, reflProbeParamBuffer.buffer);
 
 				element.gridProbeOffsetsAndSizeParam.set(gridProbeOffsetsAndSize);

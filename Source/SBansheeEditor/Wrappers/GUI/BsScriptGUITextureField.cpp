@@ -29,12 +29,12 @@ namespace bs
 
 	void ScriptGUITextureField::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUITextureField::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_GetValue", &ScriptGUITextureField::internal_getValue);
-		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptGUITextureField::internal_setValue);
-		metaData.scriptClass->addInternalCall("Internal_GetValueRef", &ScriptGUITextureField::internal_getValueRef);
-		metaData.scriptClass->addInternalCall("Internal_SetValueRef", &ScriptGUITextureField::internal_setValueRef);
-		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUITextureField::internal_setTint);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptGUITextureField::internal_createInstance);
+		metaData.scriptClass->addInternalCall("Internal_GetValue", (void*)&ScriptGUITextureField::internal_getValue);
+		metaData.scriptClass->addInternalCall("Internal_SetValue", (void*)&ScriptGUITextureField::internal_setValue);
+		metaData.scriptClass->addInternalCall("Internal_GetValueRef", (void*)&ScriptGUITextureField::internal_getValueRef);
+		metaData.scriptClass->addInternalCall("Internal_SetValueRef", (void*)&ScriptGUITextureField::internal_setValueRef);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", (void*)&ScriptGUITextureField::internal_setTint);
 
 		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnChanged", 1)->getThunk();
 	}

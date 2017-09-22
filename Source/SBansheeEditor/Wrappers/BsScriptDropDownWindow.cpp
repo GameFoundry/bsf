@@ -39,14 +39,14 @@ namespace bs
 
 	void ScriptDropDownWindow::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptDropDownWindow::internal_CreateInstance);
-		metaData.scriptClass->addInternalCall("Internal_Close", &ScriptDropDownWindow::internal_Close);
-		metaData.scriptClass->addInternalCall("Internal_GetWidth", &ScriptDropDownWindow::internal_GetWidth);
-		metaData.scriptClass->addInternalCall("Internal_SetWidth", &ScriptDropDownWindow::internal_SetWidth);
-		metaData.scriptClass->addInternalCall("Internal_GetHeight", &ScriptDropDownWindow::internal_GetHeight);
-		metaData.scriptClass->addInternalCall("Internal_SetHeight", &ScriptDropDownWindow::internal_SetHeight);
-		metaData.scriptClass->addInternalCall("Internal_ScreenToWindowPos", &ScriptDropDownWindow::internal_ScreenToWindowPos);
-		metaData.scriptClass->addInternalCall("Internal_WindowToScreenPos", &ScriptDropDownWindow::internal_WindowToScreenPos);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptDropDownWindow::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_Close", (void*)&ScriptDropDownWindow::internal_Close);
+		metaData.scriptClass->addInternalCall("Internal_GetWidth", (void*)&ScriptDropDownWindow::internal_GetWidth);
+		metaData.scriptClass->addInternalCall("Internal_SetWidth", (void*)&ScriptDropDownWindow::internal_SetWidth);
+		metaData.scriptClass->addInternalCall("Internal_GetHeight", (void*)&ScriptDropDownWindow::internal_GetHeight);
+		metaData.scriptClass->addInternalCall("Internal_SetHeight", (void*)&ScriptDropDownWindow::internal_SetHeight);
+		metaData.scriptClass->addInternalCall("Internal_ScreenToWindowPos", (void*)&ScriptDropDownWindow::internal_ScreenToWindowPos);
+		metaData.scriptClass->addInternalCall("Internal_WindowToScreenPos", (void*)&ScriptDropDownWindow::internal_WindowToScreenPos);
 
 		guiPanelField = metaData.scriptClass->getField("GUI");
 	}

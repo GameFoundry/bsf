@@ -10,9 +10,9 @@ namespace bs
 {
 	void ScriptBrowseDialog::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_OpenFile", &ScriptBrowseDialog::internal_OpenFile);
-		metaData.scriptClass->addInternalCall("Internal_OpenFolder", &ScriptBrowseDialog::internal_OpenFolder);
-		metaData.scriptClass->addInternalCall("Internal_SaveFile", &ScriptBrowseDialog::internal_SaveFile);
+		metaData.scriptClass->addInternalCall("Internal_OpenFile", (void*)&ScriptBrowseDialog::internal_OpenFile);
+		metaData.scriptClass->addInternalCall("Internal_OpenFolder", (void*)&ScriptBrowseDialog::internal_OpenFolder);
+		metaData.scriptClass->addInternalCall("Internal_SaveFile", (void*)&ScriptBrowseDialog::internal_SaveFile);
 	}
 
 	bool ScriptBrowseDialog::internal_OpenFile(MonoString* defaultFolder, MonoString* filterList, bool allowMultiselect, MonoArray** outPaths)

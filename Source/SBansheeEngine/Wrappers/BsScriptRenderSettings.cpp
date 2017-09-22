@@ -213,7 +213,7 @@ namespace bs
 
 	void ScriptRenderSettings::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateDefault", &ScriptRenderSettings::internal_CreateDefault);
+		metaData.scriptClass->addInternalCall("Internal_CreateDefault", (void*)&ScriptRenderSettings::internal_CreateDefault);
 
 		sEnableAutoExposure = metaData.scriptClass->getField("EnableAutoExposure");
 		sAutoExposure = metaData.scriptClass->getField("AutoExposure");

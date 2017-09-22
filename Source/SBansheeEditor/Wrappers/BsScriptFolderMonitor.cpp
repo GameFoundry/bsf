@@ -38,8 +38,8 @@ namespace bs
 
 	void ScriptFolderMonitor::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptFolderMonitor::internal_CreateInstance);
-		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptFolderMonitor::internal_Destroy);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptFolderMonitor::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_Destroy", (void*)&ScriptFolderMonitor::internal_Destroy);
 
 		OnModifiedThunk = (OnModifiedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnModified", 1)->getThunk();
 		OnAddedThunk = (OnModifiedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnAdded", 1)->getThunk();

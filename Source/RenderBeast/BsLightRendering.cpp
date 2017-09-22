@@ -62,6 +62,8 @@ namespace bs { namespace ct
 		case LightType::Spot:
 			type = 0.8f;
 			break;
+		default:
+			break;
 		}
 
 		gPerLightParamDef.gLightPositionAndSrcRadius.set(buffer, Vector4(lightData.position, lightData.srcRadius));
@@ -167,7 +169,7 @@ namespace bs { namespace ct
 		auto partition = [](Vector<const RendererLight*>& entries)
 		{
 			int first = 0;
-			for (int i = 0; i < entries.size(); ++i)
+			for (UINT32 i = 0; i < (UINT32)entries.size(); ++i)
 			{
 				if(entries[i]->internal->getCastsShadow())
 				{
@@ -176,7 +178,7 @@ namespace bs { namespace ct
 				}
 			}
 
-			for(int i = first + 1; i < entries.size(); ++i)
+			for(UINT32 i = first + 1; i < (UINT32)entries.size(); ++i)
 			{
 				if(!entries[i]->internal->getCastsShadow())
 				{

@@ -11,8 +11,8 @@
 namespace bs
 {
 	HandleSliderPlane::HandleSliderPlane(const Vector3& dir1, const Vector3& dir2, float length, bool fixedScale, UINT64 layer)
-		: HandleSlider(fixedScale, layer), mDirection1(Vector3::normalize(dir1)), mLength(length)
-		, mDirection2(Vector3::normalize(dir2)), mDelta(BsZero), mStartPlanePosition(BsZero), mStartClickPosition(BsZero)
+		: HandleSlider(fixedScale, layer), mDirection1(Vector3::normalize(dir1)), mDirection2(Vector3::normalize(dir2))
+		, mLength(length), mDelta(BsZero), mStartPlanePosition(BsZero), mStartClickPosition(BsZero)
 	{
 		float halfLength = length * 0.5f;
 		std::array<Vector3, 2> axes = {{ mDirection1, mDirection2 }};

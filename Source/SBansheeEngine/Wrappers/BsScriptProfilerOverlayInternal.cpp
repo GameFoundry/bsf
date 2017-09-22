@@ -27,10 +27,10 @@ namespace bs
 
 	void ScriptProfilerOverlayInternal::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptProfilerOverlayInternal::internal_CreateInstance);
-		metaData.scriptClass->addInternalCall("Internal_SetType", &ScriptProfilerOverlayInternal::internal_SetType);
-		metaData.scriptClass->addInternalCall("Internal_Update", &ScriptProfilerOverlayInternal::internal_Update);
-		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptProfilerOverlayInternal::internal_DestroyInstance);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptProfilerOverlayInternal::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_SetType", (void*)&ScriptProfilerOverlayInternal::internal_SetType);
+		metaData.scriptClass->addInternalCall("Internal_Update", (void*)&ScriptProfilerOverlayInternal::internal_Update);
+		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", (void*)&ScriptProfilerOverlayInternal::internal_DestroyInstance);
 	}
 
 	void ScriptProfilerOverlayInternal::internal_CreateInstance(MonoObject* instance, ScriptCamera* camera)

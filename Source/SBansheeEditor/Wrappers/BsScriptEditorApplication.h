@@ -74,8 +74,8 @@ namespace bs
 		static void internal_SetMainRenderTarget(ScriptRenderTarget* renderTarget);
 		static bool internal_HasFocus();
 
-		typedef void(__stdcall *OnProjectLoadedThunkDef)(MonoException**);
-		typedef void(__stdcall *OnStatusBarClickedThunkDef) (MonoException**);
+		typedef void(BS_THUNKCALL *OnProjectLoadedThunkDef)(MonoException**);
+		typedef void(BS_THUNKCALL *OnStatusBarClickedThunkDef) (MonoException**);
 
 		static OnProjectLoadedThunkDef onProjectLoadedThunk;
 		static OnStatusBarClickedThunkDef onStatusBarClickedThunk;

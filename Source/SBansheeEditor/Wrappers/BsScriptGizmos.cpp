@@ -14,26 +14,26 @@ namespace bs
 {
 	void ScriptGizmos::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_SetColor", &ScriptGizmos::internal_SetColor);
-		metaData.scriptClass->addInternalCall("Internal_GetColor", &ScriptGizmos::internal_GetColor);
-		metaData.scriptClass->addInternalCall("Internal_SetTransform", &ScriptGizmos::internal_SetTransform);
-		metaData.scriptClass->addInternalCall("Internal_GetTransform", &ScriptGizmos::internal_GetTransform);
-		metaData.scriptClass->addInternalCall("Internal_DrawCube", &ScriptGizmos::internal_DrawCube);
-		metaData.scriptClass->addInternalCall("Internal_DrawSphere", &ScriptGizmos::internal_DrawSphere);
-		metaData.scriptClass->addInternalCall("Internal_DrawCone", &ScriptGizmos::internal_DrawCone);
-		metaData.scriptClass->addInternalCall("Internal_DrawDisc", &ScriptGizmos::internal_DrawDisc);
-		metaData.scriptClass->addInternalCall("Internal_DrawWireCube", &ScriptGizmos::internal_DrawWireCube);
-		metaData.scriptClass->addInternalCall("Internal_DrawWireSphere", &ScriptGizmos::internal_DrawWireSphere);
-		metaData.scriptClass->addInternalCall("Internal_DrawWireCapsule", &ScriptGizmos::internal_DrawWireCapsule);
-		metaData.scriptClass->addInternalCall("Internal_DrawWireCone", &ScriptGizmos::internal_DrawWireCone);
-		metaData.scriptClass->addInternalCall("Internal_DrawWireDisc", &ScriptGizmos::internal_DrawWireDisc);
-		metaData.scriptClass->addInternalCall("Internal_DrawWireArc", &ScriptGizmos::internal_DrawWireArc);
-		metaData.scriptClass->addInternalCall("Internal_DrawWireMesh", &ScriptGizmos::internal_DrawWireMesh);
-		metaData.scriptClass->addInternalCall("Internal_DrawLine", &ScriptGizmos::internal_DrawLine);
-		metaData.scriptClass->addInternalCall("Internal_DrawLineList", &ScriptGizmos::internal_DrawLineList);
-		metaData.scriptClass->addInternalCall("Internal_DrawFrustum", &ScriptGizmos::internal_DrawFrustum);
-		metaData.scriptClass->addInternalCall("Internal_DrawIcon", &ScriptGizmos::internal_DrawIcon);
-		metaData.scriptClass->addInternalCall("Internal_DrawText", &ScriptGizmos::internal_DrawText);
+		metaData.scriptClass->addInternalCall("Internal_SetColor", (void*)&ScriptGizmos::internal_SetColor);
+		metaData.scriptClass->addInternalCall("Internal_GetColor", (void*)&ScriptGizmos::internal_GetColor);
+		metaData.scriptClass->addInternalCall("Internal_SetTransform", (void*)&ScriptGizmos::internal_SetTransform);
+		metaData.scriptClass->addInternalCall("Internal_GetTransform", (void*)&ScriptGizmos::internal_GetTransform);
+		metaData.scriptClass->addInternalCall("Internal_DrawCube", (void*)&ScriptGizmos::internal_DrawCube);
+		metaData.scriptClass->addInternalCall("Internal_DrawSphere", (void*)&ScriptGizmos::internal_DrawSphere);
+		metaData.scriptClass->addInternalCall("Internal_DrawCone", (void*)&ScriptGizmos::internal_DrawCone);
+		metaData.scriptClass->addInternalCall("Internal_DrawDisc", (void*)&ScriptGizmos::internal_DrawDisc);
+		metaData.scriptClass->addInternalCall("Internal_DrawWireCube", (void*)&ScriptGizmos::internal_DrawWireCube);
+		metaData.scriptClass->addInternalCall("Internal_DrawWireSphere", (void*)&ScriptGizmos::internal_DrawWireSphere);
+		metaData.scriptClass->addInternalCall("Internal_DrawWireCapsule", (void*)&ScriptGizmos::internal_DrawWireCapsule);
+		metaData.scriptClass->addInternalCall("Internal_DrawWireCone", (void*)&ScriptGizmos::internal_DrawWireCone);
+		metaData.scriptClass->addInternalCall("Internal_DrawWireDisc", (void*)&ScriptGizmos::internal_DrawWireDisc);
+		metaData.scriptClass->addInternalCall("Internal_DrawWireArc", (void*)&ScriptGizmos::internal_DrawWireArc);
+		metaData.scriptClass->addInternalCall("Internal_DrawWireMesh", (void*)&ScriptGizmos::internal_DrawWireMesh);
+		metaData.scriptClass->addInternalCall("Internal_DrawLine", (void*)&ScriptGizmos::internal_DrawLine);
+		metaData.scriptClass->addInternalCall("Internal_DrawLineList", (void*)&ScriptGizmos::internal_DrawLineList);
+		metaData.scriptClass->addInternalCall("Internal_DrawFrustum", (void*)&ScriptGizmos::internal_DrawFrustum);
+		metaData.scriptClass->addInternalCall("Internal_DrawIcon", (void*)&ScriptGizmos::internal_DrawIcon);
+		metaData.scriptClass->addInternalCall("Internal_DrawText", (void*)&ScriptGizmos::internal_DrawText);
 	}
 
 	void ScriptGizmos::internal_SetColor(Color* color)

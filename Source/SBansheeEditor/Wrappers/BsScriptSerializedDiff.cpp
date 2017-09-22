@@ -17,8 +17,8 @@ namespace bs
 
 	void ScriptSerializedDiff::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateDiff", &ScriptSerializedDiff::internal_CreateDiff);
-		metaData.scriptClass->addInternalCall("Internal_ApplyDiff", &ScriptSerializedDiff::internal_ApplyDiff);
+		metaData.scriptClass->addInternalCall("Internal_CreateDiff", (void*)&ScriptSerializedDiff::internal_CreateDiff);
+		metaData.scriptClass->addInternalCall("Internal_ApplyDiff", (void*)&ScriptSerializedDiff::internal_ApplyDiff);
 	}
 
 	MonoObject* ScriptSerializedDiff::internal_CreateDiff(ScriptSerializedObject* oldObj, MonoObject* newObj)

@@ -104,7 +104,7 @@ namespace bs
 				continue;
 
 			bool found = false;
-			for (int i = 0; i < ignoreRenderables.size(); i++)
+			for (UINT32 i = 0; i < (UINT32)ignoreRenderables.size(); i++)
 			{
 				if (ignoreRenderables[i] == so)
 				{

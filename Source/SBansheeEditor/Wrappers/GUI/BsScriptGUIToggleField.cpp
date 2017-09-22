@@ -25,10 +25,10 @@ namespace bs
 
 	void ScriptGUIToggleField::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIToggleField::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_GetValue", &ScriptGUIToggleField::internal_getValue);
-		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptGUIToggleField::internal_setValue);
-		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIToggleField::internal_setTint);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptGUIToggleField::internal_createInstance);
+		metaData.scriptClass->addInternalCall("Internal_GetValue", (void*)&ScriptGUIToggleField::internal_getValue);
+		metaData.scriptClass->addInternalCall("Internal_SetValue", (void*)&ScriptGUIToggleField::internal_setValue);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", (void*)&ScriptGUIToggleField::internal_setTint);
 
 		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("DoOnChanged", 1)->getThunk();
 	}

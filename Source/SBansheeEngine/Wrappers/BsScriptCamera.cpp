@@ -34,91 +34,91 @@ namespace bs
 
 	void ScriptCamera::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_Create", &ScriptCamera::internal_Create);
+		metaData.scriptClass->addInternalCall("Internal_Create", (void*)&ScriptCamera::internal_Create);
 
-		metaData.scriptClass->addInternalCall("Internal_GetAspect", &ScriptCamera::internal_GetAspect);
-		metaData.scriptClass->addInternalCall("Internal_SetAspect", &ScriptCamera::internal_SetAspect);
-		metaData.scriptClass->addInternalCall("Internal_GetNearClip", &ScriptCamera::internal_GetNearClip);
-		metaData.scriptClass->addInternalCall("Internal_SetNearClip", &ScriptCamera::internal_SetNearClip);
+		metaData.scriptClass->addInternalCall("Internal_GetAspect", (void*)&ScriptCamera::internal_GetAspect);
+		metaData.scriptClass->addInternalCall("Internal_SetAspect", (void*)&ScriptCamera::internal_SetAspect);
+		metaData.scriptClass->addInternalCall("Internal_GetNearClip", (void*)&ScriptCamera::internal_GetNearClip);
+		metaData.scriptClass->addInternalCall("Internal_SetNearClip", (void*)&ScriptCamera::internal_SetNearClip);
 
-		metaData.scriptClass->addInternalCall("Internal_GetFarClip", &ScriptCamera::internal_GetFarClip);
-		metaData.scriptClass->addInternalCall("Internal_SetFarClip", &ScriptCamera::internal_SetFarClip);
+		metaData.scriptClass->addInternalCall("Internal_GetFarClip", (void*)&ScriptCamera::internal_GetFarClip);
+		metaData.scriptClass->addInternalCall("Internal_SetFarClip", (void*)&ScriptCamera::internal_SetFarClip);
 
-		metaData.scriptClass->addInternalCall("Internal_GetFieldOfView", &ScriptCamera::internal_GetFieldOfView);
-		metaData.scriptClass->addInternalCall("Internal_SetFieldOfView", &ScriptCamera::internal_SetFieldOfView);
+		metaData.scriptClass->addInternalCall("Internal_GetFieldOfView", (void*)&ScriptCamera::internal_GetFieldOfView);
+		metaData.scriptClass->addInternalCall("Internal_SetFieldOfView", (void*)&ScriptCamera::internal_SetFieldOfView);
 
-		metaData.scriptClass->addInternalCall("Internal_GetViewportRect", &ScriptCamera::internal_GetViewportRect);
-		metaData.scriptClass->addInternalCall("Internal_SetViewportRect", &ScriptCamera::internal_SetViewportRect);
+		metaData.scriptClass->addInternalCall("Internal_GetViewportRect", (void*)&ScriptCamera::internal_GetViewportRect);
+		metaData.scriptClass->addInternalCall("Internal_SetViewportRect", (void*)&ScriptCamera::internal_SetViewportRect);
 
-		metaData.scriptClass->addInternalCall("Internal_GetProjectionType", &ScriptCamera::internal_GetProjectionType);
-		metaData.scriptClass->addInternalCall("Internal_SetProjectionType", &ScriptCamera::internal_SetProjectionType);
+		metaData.scriptClass->addInternalCall("Internal_GetProjectionType", (void*)&ScriptCamera::internal_GetProjectionType);
+		metaData.scriptClass->addInternalCall("Internal_SetProjectionType", (void*)&ScriptCamera::internal_SetProjectionType);
 
-		metaData.scriptClass->addInternalCall("Internal_GetOrthographicHeight", &ScriptCamera::internal_GetOrthographicHeight);
-		metaData.scriptClass->addInternalCall("Internal_SetOrthographicHeight", &ScriptCamera::internal_SetOrthographicHeight);
+		metaData.scriptClass->addInternalCall("Internal_GetOrthographicHeight", (void*)&ScriptCamera::internal_GetOrthographicHeight);
+		metaData.scriptClass->addInternalCall("Internal_SetOrthographicHeight", (void*)&ScriptCamera::internal_SetOrthographicHeight);
 
-		metaData.scriptClass->addInternalCall("Internal_GetOrthographicWidth", &ScriptCamera::internal_GetOrthographicWidth);
+		metaData.scriptClass->addInternalCall("Internal_GetOrthographicWidth", (void*)&ScriptCamera::internal_GetOrthographicWidth);
 
-		metaData.scriptClass->addInternalCall("Internal_GetClearColor", &ScriptCamera::internal_GetClearColor);
-		metaData.scriptClass->addInternalCall("Internal_SetClearColor", &ScriptCamera::internal_SetClearColor);
+		metaData.scriptClass->addInternalCall("Internal_GetClearColor", (void*)&ScriptCamera::internal_GetClearColor);
+		metaData.scriptClass->addInternalCall("Internal_SetClearColor", (void*)&ScriptCamera::internal_SetClearColor);
 
-		metaData.scriptClass->addInternalCall("Internal_GetDepthClearValue", &ScriptCamera::internal_GetDepthClearValue);
-		metaData.scriptClass->addInternalCall("Internal_SetDepthClearValue", &ScriptCamera::internal_SetDepthClearValue);
+		metaData.scriptClass->addInternalCall("Internal_GetDepthClearValue", (void*)&ScriptCamera::internal_GetDepthClearValue);
+		metaData.scriptClass->addInternalCall("Internal_SetDepthClearValue", (void*)&ScriptCamera::internal_SetDepthClearValue);
 
-		metaData.scriptClass->addInternalCall("Internal_GetStencilClearValue", &ScriptCamera::internal_GetStencilClearValue);
-		metaData.scriptClass->addInternalCall("Internal_SetStencilClearValue", &ScriptCamera::internal_SetStencilClearValue);
+		metaData.scriptClass->addInternalCall("Internal_GetStencilClearValue", (void*)&ScriptCamera::internal_GetStencilClearValue);
+		metaData.scriptClass->addInternalCall("Internal_SetStencilClearValue", (void*)&ScriptCamera::internal_SetStencilClearValue);
 
-		metaData.scriptClass->addInternalCall("Internal_GetClearFlags", &ScriptCamera::internal_GetClearFlags);
-		metaData.scriptClass->addInternalCall("Internal_SetClearFlags", &ScriptCamera::internal_SetClearFlags);
+		metaData.scriptClass->addInternalCall("Internal_GetClearFlags", (void*)&ScriptCamera::internal_GetClearFlags);
+		metaData.scriptClass->addInternalCall("Internal_SetClearFlags", (void*)&ScriptCamera::internal_SetClearFlags);
 
-		metaData.scriptClass->addInternalCall("Internal_GetPriority", &ScriptCamera::internal_GetPriority);
-		metaData.scriptClass->addInternalCall("Internal_SetPriority", &ScriptCamera::internal_SetPriority);
+		metaData.scriptClass->addInternalCall("Internal_GetPriority", (void*)&ScriptCamera::internal_GetPriority);
+		metaData.scriptClass->addInternalCall("Internal_SetPriority", (void*)&ScriptCamera::internal_SetPriority);
 
-		metaData.scriptClass->addInternalCall("Internal_GetRenderSettings", &ScriptCamera::internal_GetRenderSettings);
-		metaData.scriptClass->addInternalCall("Internal_SetRenderSettings", &ScriptCamera::internal_SetRenderSettings);
+		metaData.scriptClass->addInternalCall("Internal_GetRenderSettings", (void*)&ScriptCamera::internal_GetRenderSettings);
+		metaData.scriptClass->addInternalCall("Internal_SetRenderSettings", (void*)&ScriptCamera::internal_SetRenderSettings);
 
-		metaData.scriptClass->addInternalCall("Internal_GetLayers", &ScriptCamera::internal_GetLayers);
-		metaData.scriptClass->addInternalCall("Internal_SetLayers", &ScriptCamera::internal_SetLayers);
+		metaData.scriptClass->addInternalCall("Internal_GetLayers", (void*)&ScriptCamera::internal_GetLayers);
+		metaData.scriptClass->addInternalCall("Internal_SetLayers", (void*)&ScriptCamera::internal_SetLayers);
 
-		metaData.scriptClass->addInternalCall("Internal_GetProjMatrix", &ScriptCamera::internal_GetProjMatrix);
-		metaData.scriptClass->addInternalCall("Internal_GetProjMatrixInv", &ScriptCamera::internal_GetProjMatrixInv);
+		metaData.scriptClass->addInternalCall("Internal_GetProjMatrix", (void*)&ScriptCamera::internal_GetProjMatrix);
+		metaData.scriptClass->addInternalCall("Internal_GetProjMatrixInv", (void*)&ScriptCamera::internal_GetProjMatrixInv);
 
-		metaData.scriptClass->addInternalCall("Internal_GetViewMatrix", &ScriptCamera::internal_GetViewMatrix);
-		metaData.scriptClass->addInternalCall("Internal_GetViewMatrixInv", &ScriptCamera::internal_GetViewMatrixInv);
+		metaData.scriptClass->addInternalCall("Internal_GetViewMatrix", (void*)&ScriptCamera::internal_GetViewMatrix);
+		metaData.scriptClass->addInternalCall("Internal_GetViewMatrixInv", (void*)&ScriptCamera::internal_GetViewMatrixInv);
 
-		metaData.scriptClass->addInternalCall("Internal_GetWidthPixels", &ScriptCamera::internal_GetWidthPixels);
-		metaData.scriptClass->addInternalCall("Internal_GetHeightPixels", &ScriptCamera::internal_GetHeightPixels);
+		metaData.scriptClass->addInternalCall("Internal_GetWidthPixels", (void*)&ScriptCamera::internal_GetWidthPixels);
+		metaData.scriptClass->addInternalCall("Internal_GetHeightPixels", (void*)&ScriptCamera::internal_GetHeightPixels);
 
-		metaData.scriptClass->addInternalCall("Internal_WorldToViewport", &ScriptCamera::internal_WorldToViewport);
-		metaData.scriptClass->addInternalCall("Internal_WorldToNDC", &ScriptCamera::internal_WorldToNDC);
-		metaData.scriptClass->addInternalCall("Internal_WorldToView", &ScriptCamera::internal_WorldToView);
+		metaData.scriptClass->addInternalCall("Internal_WorldToViewport", (void*)&ScriptCamera::internal_WorldToViewport);
+		metaData.scriptClass->addInternalCall("Internal_WorldToNDC", (void*)&ScriptCamera::internal_WorldToNDC);
+		metaData.scriptClass->addInternalCall("Internal_WorldToView", (void*)&ScriptCamera::internal_WorldToView);
 
-		metaData.scriptClass->addInternalCall("Internal_ScreenToViewport", &ScriptCamera::internal_ScreenToViewport);
+		metaData.scriptClass->addInternalCall("Internal_ScreenToViewport", (void*)&ScriptCamera::internal_ScreenToViewport);
 
-		metaData.scriptClass->addInternalCall("Internal_ViewportToWorld", &ScriptCamera::internal_ViewportToWorld);
-		metaData.scriptClass->addInternalCall("Internal_ViewportToView", &ScriptCamera::internal_ViewportToView);
-		metaData.scriptClass->addInternalCall("Internal_ViewportToNDC", &ScriptCamera::internal_ViewportToNDC);
+		metaData.scriptClass->addInternalCall("Internal_ViewportToWorld", (void*)&ScriptCamera::internal_ViewportToWorld);
+		metaData.scriptClass->addInternalCall("Internal_ViewportToView", (void*)&ScriptCamera::internal_ViewportToView);
+		metaData.scriptClass->addInternalCall("Internal_ViewportToNDC", (void*)&ScriptCamera::internal_ViewportToNDC);
 
-		metaData.scriptClass->addInternalCall("Internal_ViewToWorld", &ScriptCamera::internal_ViewToWorld);
-		metaData.scriptClass->addInternalCall("Internal_ViewToViewport", &ScriptCamera::internal_ViewToViewport);
-		metaData.scriptClass->addInternalCall("Internal_ViewToNDC", &ScriptCamera::internal_ViewToNDC);
+		metaData.scriptClass->addInternalCall("Internal_ViewToWorld", (void*)&ScriptCamera::internal_ViewToWorld);
+		metaData.scriptClass->addInternalCall("Internal_ViewToViewport", (void*)&ScriptCamera::internal_ViewToViewport);
+		metaData.scriptClass->addInternalCall("Internal_ViewToNDC", (void*)&ScriptCamera::internal_ViewToNDC);
 
-		metaData.scriptClass->addInternalCall("Internal_NDCToWorld", &ScriptCamera::internal_NDCToWorld);
-		metaData.scriptClass->addInternalCall("Internal_NDCToView", &ScriptCamera::internal_NDCToView);
-		metaData.scriptClass->addInternalCall("Internal_NDCToViewport", &ScriptCamera::internal_NDCToViewport);
+		metaData.scriptClass->addInternalCall("Internal_NDCToWorld", (void*)&ScriptCamera::internal_NDCToWorld);
+		metaData.scriptClass->addInternalCall("Internal_NDCToView", (void*)&ScriptCamera::internal_NDCToView);
+		metaData.scriptClass->addInternalCall("Internal_NDCToViewport", (void*)&ScriptCamera::internal_NDCToViewport);
 
-		metaData.scriptClass->addInternalCall("Internal_ViewportToWorldRay", &ScriptCamera::internal_ViewportToWorldRay);
-		metaData.scriptClass->addInternalCall("Internal_ScreenToWorldRay", &ScriptCamera::internal_ScreenToWorldRay);
+		metaData.scriptClass->addInternalCall("Internal_ViewportToWorldRay", (void*)&ScriptCamera::internal_ViewportToWorldRay);
+		metaData.scriptClass->addInternalCall("Internal_ScreenToWorldRay", (void*)&ScriptCamera::internal_ScreenToWorldRay);
 
-		metaData.scriptClass->addInternalCall("Internal_ProjectPoint", &ScriptCamera::internal_ProjectPoint);
-		metaData.scriptClass->addInternalCall("Internal_UnprojectPoint", &ScriptCamera::internal_UnprojectPoint);
+		metaData.scriptClass->addInternalCall("Internal_ProjectPoint", (void*)&ScriptCamera::internal_ProjectPoint);
+		metaData.scriptClass->addInternalCall("Internal_UnprojectPoint", (void*)&ScriptCamera::internal_UnprojectPoint);
 
-		metaData.scriptClass->addInternalCall("Internal_SetRenderTarget", &ScriptCamera::internal_SetRenderTarget);
+		metaData.scriptClass->addInternalCall("Internal_SetRenderTarget", (void*)&ScriptCamera::internal_SetRenderTarget);
 
-		metaData.scriptClass->addInternalCall("Internal_GetMain", &ScriptCamera::internal_GetMain);
-		metaData.scriptClass->addInternalCall("Internal_SetMain", &ScriptCamera::internal_SetMain);
+		metaData.scriptClass->addInternalCall("Internal_GetMain", (void*)&ScriptCamera::internal_GetMain);
+		metaData.scriptClass->addInternalCall("Internal_SetMain", (void*)&ScriptCamera::internal_SetMain);
 
-		metaData.scriptClass->addInternalCall("Internal_UpdateView", &ScriptCamera::internal_UpdateView);
-		metaData.scriptClass->addInternalCall("Internal_OnDestroy", &ScriptCamera::internal_OnDestroy);
+		metaData.scriptClass->addInternalCall("Internal_UpdateView", (void*)&ScriptCamera::internal_UpdateView);
+		metaData.scriptClass->addInternalCall("Internal_OnDestroy", (void*)&ScriptCamera::internal_OnDestroy);
 	}
 
 	void ScriptCamera::updateView(const HSceneObject& parent)

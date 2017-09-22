@@ -22,7 +22,7 @@ namespace bs
 
 	void ScriptSerializableObject::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptSerializableObject::internal_createInstance);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptSerializableObject::internal_createInstance);
 
 		FieldsField = metaData.scriptClass->getField("_fields");
 	}

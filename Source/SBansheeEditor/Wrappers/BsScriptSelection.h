@@ -49,9 +49,9 @@ namespace bs
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
-		typedef void(__stdcall *OnSelectionChangedThunkDef) (MonoArray*, MonoArray*, MonoException**);
-		typedef void(__stdcall *OnPingResourceThunkDef) (MonoString*, MonoException**);
-		typedef void(__stdcall *OnPingSceneObjectThunkDef) (MonoObject*, MonoException**);
+		typedef void(BS_THUNKCALL *OnSelectionChangedThunkDef) (MonoArray*, MonoArray*, MonoException**);
+		typedef void(BS_THUNKCALL *OnPingResourceThunkDef) (MonoString*, MonoException**);
+		typedef void(BS_THUNKCALL *OnPingSceneObjectThunkDef) (MonoObject*, MonoException**);
 
 		static OnSelectionChangedThunkDef OnSelectionChangedThunk;
 		static OnPingResourceThunkDef OnPingResourceThunk;

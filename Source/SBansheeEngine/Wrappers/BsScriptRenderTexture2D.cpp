@@ -21,10 +21,10 @@ namespace bs
 
 	void ScriptRenderTexture2D::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateDetailed", &ScriptRenderTexture2D::internal_createDetailed);
-		metaData.scriptClass->addInternalCall("Internal_Create", &ScriptRenderTexture2D::internal_create);
-		metaData.scriptClass->addInternalCall("Internal_GetColorSurfaces", &ScriptRenderTexture2D::internal_getColorSurfaces);
-		metaData.scriptClass->addInternalCall("Internal_GetDepthStencilSurface", &ScriptRenderTexture2D::internal_getDepthStencilSurface);
+		metaData.scriptClass->addInternalCall("Internal_CreateDetailed", (void*)&ScriptRenderTexture2D::internal_createDetailed);
+		metaData.scriptClass->addInternalCall("Internal_Create", (void*)&ScriptRenderTexture2D::internal_create);
+		metaData.scriptClass->addInternalCall("Internal_GetColorSurfaces", (void*)&ScriptRenderTexture2D::internal_getColorSurfaces);
+		metaData.scriptClass->addInternalCall("Internal_GetDepthStencilSurface", (void*)&ScriptRenderTexture2D::internal_getDepthStencilSurface);
 	}
 
 	SPtr<RenderTexture> ScriptRenderTexture2D::getRenderTexture() const

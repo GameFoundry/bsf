@@ -31,8 +31,8 @@ namespace bs
 
 	void ScriptHandleSliderLine::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptHandleSliderLine::internal_CreateInstance);
-		metaData.scriptClass->addInternalCall("Internal_GetDelta", &ScriptHandleSliderLine::internal_GetDelta);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptHandleSliderLine::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_GetDelta", (void*)&ScriptHandleSliderLine::internal_GetDelta);
 	}
 
 	void ScriptHandleSliderLine::internal_CreateInstance(MonoObject* instance, Vector3* direction, float length, 

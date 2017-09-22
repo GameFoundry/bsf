@@ -43,7 +43,7 @@ namespace bs
 		static void internal_setElementStates(ScriptGUIListBoxField* nativeInstance, MonoArray* states);
 		static void internal_setTint(ScriptGUIListBoxField* nativeInstance, Color* color);
 
-		typedef void(__stdcall *OnSelectionChangedThunkDef) (MonoObject*, UINT32, MonoException**);
+		typedef void(BS_THUNKCALL *OnSelectionChangedThunkDef) (MonoObject*, UINT32, MonoException**);
 
 		static OnSelectionChangedThunkDef onSelectionChangedThunk;
 	};

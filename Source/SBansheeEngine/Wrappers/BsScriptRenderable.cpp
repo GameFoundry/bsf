@@ -31,18 +31,18 @@ namespace bs
 
 	void ScriptRenderable::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_Create", &ScriptRenderable::internal_Create);
-		metaData.scriptClass->addInternalCall("Internal_SetAnimation", &ScriptRenderable::internal_SetAnimation);
-		metaData.scriptClass->addInternalCall("Internal_UpdateTransform", &ScriptRenderable::internal_UpdateTransform);
-		metaData.scriptClass->addInternalCall("Internal_SetMesh", &ScriptRenderable::internal_SetMesh);
-		metaData.scriptClass->addInternalCall("Internal_GetBounds", &ScriptRenderable::internal_GetBounds);
-		metaData.scriptClass->addInternalCall("Internal_GetLayers", &ScriptRenderable::internal_GetLayers);
-		metaData.scriptClass->addInternalCall("Internal_SetLayers", &ScriptRenderable::internal_SetLayers);
-		metaData.scriptClass->addInternalCall("Internal_SetMaterial", &ScriptRenderable::internal_SetMaterial);
-		metaData.scriptClass->addInternalCall("Internal_SetMaterials", &ScriptRenderable::internal_SetMaterials);
-		metaData.scriptClass->addInternalCall("Internal_SetOverrideBounds", &ScriptRenderable::internal_SetOverrideBounds);
-		metaData.scriptClass->addInternalCall("Internal_SetUseOverrideBounds", &ScriptRenderable::internal_SetUseOverrideBounds);
-		metaData.scriptClass->addInternalCall("Internal_OnDestroy", &ScriptRenderable::internal_OnDestroy);
+		metaData.scriptClass->addInternalCall("Internal_Create", (void*)&ScriptRenderable::internal_Create);
+		metaData.scriptClass->addInternalCall("Internal_SetAnimation", (void*)&ScriptRenderable::internal_SetAnimation);
+		metaData.scriptClass->addInternalCall("Internal_UpdateTransform", (void*)&ScriptRenderable::internal_UpdateTransform);
+		metaData.scriptClass->addInternalCall("Internal_SetMesh", (void*)&ScriptRenderable::internal_SetMesh);
+		metaData.scriptClass->addInternalCall("Internal_GetBounds", (void*)&ScriptRenderable::internal_GetBounds);
+		metaData.scriptClass->addInternalCall("Internal_GetLayers", (void*)&ScriptRenderable::internal_GetLayers);
+		metaData.scriptClass->addInternalCall("Internal_SetLayers", (void*)&ScriptRenderable::internal_SetLayers);
+		metaData.scriptClass->addInternalCall("Internal_SetMaterial", (void*)&ScriptRenderable::internal_SetMaterial);
+		metaData.scriptClass->addInternalCall("Internal_SetMaterials", (void*)&ScriptRenderable::internal_SetMaterials);
+		metaData.scriptClass->addInternalCall("Internal_SetOverrideBounds", (void*)&ScriptRenderable::internal_SetOverrideBounds);
+		metaData.scriptClass->addInternalCall("Internal_SetUseOverrideBounds", (void*)&ScriptRenderable::internal_SetUseOverrideBounds);
+		metaData.scriptClass->addInternalCall("Internal_OnDestroy", (void*)&ScriptRenderable::internal_OnDestroy);
 	}
 
 	void ScriptRenderable::updateTransform(const HSceneObject& parent, bool force)

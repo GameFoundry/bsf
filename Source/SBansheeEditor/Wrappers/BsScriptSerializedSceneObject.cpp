@@ -58,8 +58,8 @@ namespace bs
 
 	void ScriptSerializedSceneObject::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptSerializedSceneObject::internal_CreateInstance);
-		metaData.scriptClass->addInternalCall("Internal_Restore", &ScriptSerializedSceneObject::internal_Restore);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptSerializedSceneObject::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_Restore", (void*)&ScriptSerializedSceneObject::internal_Restore);
 	}
 
 	void ScriptSerializedSceneObject::internal_CreateInstance(MonoObject* instance, ScriptSceneObject* so, bool hierarchy)

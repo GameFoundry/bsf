@@ -22,29 +22,29 @@ namespace bs
 
 	void ScriptMaterial::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptMaterial::internal_CreateInstance);
-		metaData.scriptClass->addInternalCall("Internal_Clone", &ScriptMaterial::internal_Clone);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptMaterial::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_Clone", (void*)&ScriptMaterial::internal_Clone);
 
-		metaData.scriptClass->addInternalCall("Internal_GetShader", &ScriptMaterial::internal_GetShader);
-		metaData.scriptClass->addInternalCall("Internal_SetShader", &ScriptMaterial::internal_SetShader);
+		metaData.scriptClass->addInternalCall("Internal_GetShader", (void*)&ScriptMaterial::internal_GetShader);
+		metaData.scriptClass->addInternalCall("Internal_SetShader", (void*)&ScriptMaterial::internal_SetShader);
 
-		metaData.scriptClass->addInternalCall("Internal_SetFloat", &ScriptMaterial::internal_SetFloat);
-		metaData.scriptClass->addInternalCall("Internal_SetVector2", &ScriptMaterial::internal_SetVector2);
-		metaData.scriptClass->addInternalCall("Internal_SetVector3", &ScriptMaterial::internal_SetVector3);
-		metaData.scriptClass->addInternalCall("Internal_SetVector4", &ScriptMaterial::internal_SetVector4);
-		metaData.scriptClass->addInternalCall("Internal_SetMatrix3", &ScriptMaterial::internal_SetMatrix3);
-		metaData.scriptClass->addInternalCall("Internal_SetMatrix4", &ScriptMaterial::internal_SetMatrix4);
-		metaData.scriptClass->addInternalCall("Internal_SetColor", &ScriptMaterial::internal_SetColor);
-		metaData.scriptClass->addInternalCall("Internal_SetTexture", &ScriptMaterial::internal_SetTexture);
+		metaData.scriptClass->addInternalCall("Internal_SetFloat", (void*)&ScriptMaterial::internal_SetFloat);
+		metaData.scriptClass->addInternalCall("Internal_SetVector2", (void*)&ScriptMaterial::internal_SetVector2);
+		metaData.scriptClass->addInternalCall("Internal_SetVector3", (void*)&ScriptMaterial::internal_SetVector3);
+		metaData.scriptClass->addInternalCall("Internal_SetVector4", (void*)&ScriptMaterial::internal_SetVector4);
+		metaData.scriptClass->addInternalCall("Internal_SetMatrix3", (void*)&ScriptMaterial::internal_SetMatrix3);
+		metaData.scriptClass->addInternalCall("Internal_SetMatrix4", (void*)&ScriptMaterial::internal_SetMatrix4);
+		metaData.scriptClass->addInternalCall("Internal_SetColor", (void*)&ScriptMaterial::internal_SetColor);
+		metaData.scriptClass->addInternalCall("Internal_SetTexture", (void*)&ScriptMaterial::internal_SetTexture);
 
-		metaData.scriptClass->addInternalCall("Internal_GetFloat", &ScriptMaterial::internal_GetFloat);
-		metaData.scriptClass->addInternalCall("Internal_GetVector2", &ScriptMaterial::internal_GetVector2);
-		metaData.scriptClass->addInternalCall("Internal_GetVector3", &ScriptMaterial::internal_GetVector3);
-		metaData.scriptClass->addInternalCall("Internal_GetVector4", &ScriptMaterial::internal_GetVector4);
-		metaData.scriptClass->addInternalCall("Internal_GetMatrix3", &ScriptMaterial::internal_GetMatrix3);
-		metaData.scriptClass->addInternalCall("Internal_GetMatrix4", &ScriptMaterial::internal_GetMatrix4);
-		metaData.scriptClass->addInternalCall("Internal_GetColor", &ScriptMaterial::internal_GetColor);
-		metaData.scriptClass->addInternalCall("Internal_GetTexture", &ScriptMaterial::internal_GetTexture);
+		metaData.scriptClass->addInternalCall("Internal_GetFloat", (void*)&ScriptMaterial::internal_GetFloat);
+		metaData.scriptClass->addInternalCall("Internal_GetVector2", (void*)&ScriptMaterial::internal_GetVector2);
+		metaData.scriptClass->addInternalCall("Internal_GetVector3", (void*)&ScriptMaterial::internal_GetVector3);
+		metaData.scriptClass->addInternalCall("Internal_GetVector4", (void*)&ScriptMaterial::internal_GetVector4);
+		metaData.scriptClass->addInternalCall("Internal_GetMatrix3", (void*)&ScriptMaterial::internal_GetMatrix3);
+		metaData.scriptClass->addInternalCall("Internal_GetMatrix4", (void*)&ScriptMaterial::internal_GetMatrix4);
+		metaData.scriptClass->addInternalCall("Internal_GetColor", (void*)&ScriptMaterial::internal_GetColor);
+		metaData.scriptClass->addInternalCall("Internal_GetTexture", (void*)&ScriptMaterial::internal_GetTexture);
 	}
 
 	void ScriptMaterial::internal_CreateInstance(MonoObject* instance, ScriptShader* shader)
@@ -57,7 +57,7 @@ namespace bs
 			nativeShader = BuiltinResources::instance().getBuiltinShader(BuiltinShader::Standard);
 
 		HMaterial material = Material::create(nativeShader);
-		ScriptResourceBase* scriptInstance = ScriptResourceManager::instance().createBuiltinScriptResource(material, instance);
+		ScriptResourceManager::instance().createBuiltinScriptResource(material, instance);
 	}
 
 	MonoObject* ScriptMaterial::internal_Clone(ScriptMaterial* nativeInstance)

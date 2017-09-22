@@ -27,14 +27,14 @@ namespace bs
 
 	void ScriptGUIEnumField::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIEnumField::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_GetValue", &ScriptGUIEnumField::internal_getValue);
-		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptGUIEnumField::internal_setValue);
-		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIEnumField::internal_setTint);
-		metaData.scriptClass->addInternalCall("Internal_SelectElement", &ScriptGUIEnumField::internal_selectElement);
-		metaData.scriptClass->addInternalCall("Internal_DeselectElement", &ScriptGUIEnumField::internal_deselectElement);
-		metaData.scriptClass->addInternalCall("Internal_GetElementStates", &ScriptGUIEnumField::internal_getElementStates);
-		metaData.scriptClass->addInternalCall("Internal_SetElementStates", &ScriptGUIEnumField::internal_setElementStates);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptGUIEnumField::internal_createInstance);
+		metaData.scriptClass->addInternalCall("Internal_GetValue", (void*)&ScriptGUIEnumField::internal_getValue);
+		metaData.scriptClass->addInternalCall("Internal_SetValue", (void*)&ScriptGUIEnumField::internal_setValue);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", (void*)&ScriptGUIEnumField::internal_setTint);
+		metaData.scriptClass->addInternalCall("Internal_SelectElement", (void*)&ScriptGUIEnumField::internal_selectElement);
+		metaData.scriptClass->addInternalCall("Internal_DeselectElement", (void*)&ScriptGUIEnumField::internal_deselectElement);
+		metaData.scriptClass->addInternalCall("Internal_GetElementStates", (void*)&ScriptGUIEnumField::internal_getElementStates);
+		metaData.scriptClass->addInternalCall("Internal_SetElementStates", (void*)&ScriptGUIEnumField::internal_setElementStates);
 
 		onSelectionChangedThunk = (OnSelectionChangedThunkDef)metaData.scriptClass->getMethod("DoOnSelectionChanged", 1)->getThunk();
 	}

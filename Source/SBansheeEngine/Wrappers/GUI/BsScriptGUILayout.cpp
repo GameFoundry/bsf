@@ -21,15 +21,15 @@ namespace bs
 
 	void ScriptGUILayout::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstanceX", &ScriptGUILayout::internal_createInstanceX);
-		metaData.scriptClass->addInternalCall("Internal_CreateInstanceY", &ScriptGUILayout::internal_createInstanceY);
-		metaData.scriptClass->addInternalCall("Internal_CreateInstancePanel", &ScriptGUILayout::internal_createInstancePanel);
-		metaData.scriptClass->addInternalCall("Internal_CreateInstanceYFromScrollArea", &ScriptGUILayout::internal_createInstanceYFromScrollArea);
-		metaData.scriptClass->addInternalCall("Internal_AddElement", &ScriptGUILayout::internal_addElement);
-		metaData.scriptClass->addInternalCall("Internal_InsertElement", &ScriptGUILayout::internal_insertElement);
-		metaData.scriptClass->addInternalCall("Internal_GetChildCount", &ScriptGUILayout::internal_getChildCount);
-		metaData.scriptClass->addInternalCall("Internal_GetChild", &ScriptGUILayout::internal_getChild);
-		metaData.scriptClass->addInternalCall("Internal_Clear", &ScriptGUILayout::internal_clear);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstanceX", (void*)&ScriptGUILayout::internal_createInstanceX);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstanceY", (void*)&ScriptGUILayout::internal_createInstanceY);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstancePanel", (void*)&ScriptGUILayout::internal_createInstancePanel);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstanceYFromScrollArea", (void*)&ScriptGUILayout::internal_createInstanceYFromScrollArea);
+		metaData.scriptClass->addInternalCall("Internal_AddElement", (void*)&ScriptGUILayout::internal_addElement);
+		metaData.scriptClass->addInternalCall("Internal_InsertElement", (void*)&ScriptGUILayout::internal_insertElement);
+		metaData.scriptClass->addInternalCall("Internal_GetChildCount", (void*)&ScriptGUILayout::internal_getChildCount);
+		metaData.scriptClass->addInternalCall("Internal_GetChild", (void*)&ScriptGUILayout::internal_getChild);
+		metaData.scriptClass->addInternalCall("Internal_Clear", (void*)&ScriptGUILayout::internal_clear);
 	}
 
 	void ScriptGUILayout::destroy()

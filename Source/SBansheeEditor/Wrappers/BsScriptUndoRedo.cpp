@@ -31,24 +31,24 @@ namespace bs
 
 	void ScriptUndoRedo::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptUndoRedo::internal_CreateInstance);
-		metaData.scriptClass->addInternalCall("Internal_Undo", &ScriptUndoRedo::internal_Undo);
-		metaData.scriptClass->addInternalCall("Internal_Redo", &ScriptUndoRedo::internal_Redo);
-		metaData.scriptClass->addInternalCall("Internal_RegisterCommand", &ScriptUndoRedo::internal_RegisterCommand);
-		metaData.scriptClass->addInternalCall("Internal_PushGroup", &ScriptUndoRedo::internal_PushGroup);
-		metaData.scriptClass->addInternalCall("Internal_PopGroup", &ScriptUndoRedo::internal_PopGroup);
-		metaData.scriptClass->addInternalCall("Internal_Clear", &ScriptUndoRedo::internal_Clear);
-		metaData.scriptClass->addInternalCall("Internal_GetTopCommandId", &ScriptUndoRedo::internal_GetTopCommandId);
-		metaData.scriptClass->addInternalCall("Internal_PopCommand", &ScriptUndoRedo::internal_PopCommand);
-		metaData.scriptClass->addInternalCall("Internal_RecordSO", &ScriptUndoRedo::internal_RecordSO);
-		metaData.scriptClass->addInternalCall("Internal_CloneSO", &ScriptUndoRedo::internal_CloneSO);
-		metaData.scriptClass->addInternalCall("Internal_CloneSOMulti", &ScriptUndoRedo::internal_CloneSOMulti);
-		metaData.scriptClass->addInternalCall("Internal_Instantiate", &ScriptUndoRedo::internal_Instantiate);
-		metaData.scriptClass->addInternalCall("Internal_CreateSO", &ScriptUndoRedo::internal_CreateSO);
-		metaData.scriptClass->addInternalCall("Internal_DeleteSO", &ScriptUndoRedo::internal_DeleteSO);
-		metaData.scriptClass->addInternalCall("Internal_ReparentSO", &ScriptUndoRedo::internal_ReparentSO);
-		metaData.scriptClass->addInternalCall("Internal_ReparentSOMulti", &ScriptUndoRedo::internal_ReparentSOMulti);
-		metaData.scriptClass->addInternalCall("Internal_BreakPrefab", &ScriptUndoRedo::internal_BreakPrefab);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptUndoRedo::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_Undo", (void*)&ScriptUndoRedo::internal_Undo);
+		metaData.scriptClass->addInternalCall("Internal_Redo", (void*)&ScriptUndoRedo::internal_Redo);
+		metaData.scriptClass->addInternalCall("Internal_RegisterCommand", (void*)&ScriptUndoRedo::internal_RegisterCommand);
+		metaData.scriptClass->addInternalCall("Internal_PushGroup", (void*)&ScriptUndoRedo::internal_PushGroup);
+		metaData.scriptClass->addInternalCall("Internal_PopGroup", (void*)&ScriptUndoRedo::internal_PopGroup);
+		metaData.scriptClass->addInternalCall("Internal_Clear", (void*)&ScriptUndoRedo::internal_Clear);
+		metaData.scriptClass->addInternalCall("Internal_GetTopCommandId", (void*)&ScriptUndoRedo::internal_GetTopCommandId);
+		metaData.scriptClass->addInternalCall("Internal_PopCommand", (void*)&ScriptUndoRedo::internal_PopCommand);
+		metaData.scriptClass->addInternalCall("Internal_RecordSO", (void*)&ScriptUndoRedo::internal_RecordSO);
+		metaData.scriptClass->addInternalCall("Internal_CloneSO", (void*)&ScriptUndoRedo::internal_CloneSO);
+		metaData.scriptClass->addInternalCall("Internal_CloneSOMulti", (void*)&ScriptUndoRedo::internal_CloneSOMulti);
+		metaData.scriptClass->addInternalCall("Internal_Instantiate", (void*)&ScriptUndoRedo::internal_Instantiate);
+		metaData.scriptClass->addInternalCall("Internal_CreateSO", (void*)&ScriptUndoRedo::internal_CreateSO);
+		metaData.scriptClass->addInternalCall("Internal_DeleteSO", (void*)&ScriptUndoRedo::internal_DeleteSO);
+		metaData.scriptClass->addInternalCall("Internal_ReparentSO", (void*)&ScriptUndoRedo::internal_ReparentSO);
+		metaData.scriptClass->addInternalCall("Internal_ReparentSOMulti", (void*)&ScriptUndoRedo::internal_ReparentSOMulti);
+		metaData.scriptClass->addInternalCall("Internal_BreakPrefab", (void*)&ScriptUndoRedo::internal_BreakPrefab);
 	}
 
 	void ScriptUndoRedo::startUp()

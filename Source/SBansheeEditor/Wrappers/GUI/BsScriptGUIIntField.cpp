@@ -26,14 +26,14 @@ namespace bs
 
 	void ScriptGUIIntField::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIIntField::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_GetValue", &ScriptGUIIntField::internal_getValue);
-		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptGUIIntField::internal_setValue);
-		metaData.scriptClass->addInternalCall("Internal_HasInputFocus", &ScriptGUIIntField::internal_hasInputFocus);
-		metaData.scriptClass->addInternalCall("Internal_SetRange", &ScriptGUIIntField::internal_setRange);
-		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIIntField::internal_setTint);
-		metaData.scriptClass->addInternalCall("Internal_SetStep", &ScriptGUIIntField::internal_setStep);
-		metaData.scriptClass->addInternalCall("Internal_GetStep", &ScriptGUIIntField::internal_getStep);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptGUIIntField::internal_createInstance);
+		metaData.scriptClass->addInternalCall("Internal_GetValue", (void*)&ScriptGUIIntField::internal_getValue);
+		metaData.scriptClass->addInternalCall("Internal_SetValue", (void*)&ScriptGUIIntField::internal_setValue);
+		metaData.scriptClass->addInternalCall("Internal_HasInputFocus", (void*)&ScriptGUIIntField::internal_hasInputFocus);
+		metaData.scriptClass->addInternalCall("Internal_SetRange", (void*)&ScriptGUIIntField::internal_setRange);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", (void*)&ScriptGUIIntField::internal_setTint);
+		metaData.scriptClass->addInternalCall("Internal_SetStep", (void*)&ScriptGUIIntField::internal_setStep);
+		metaData.scriptClass->addInternalCall("Internal_GetStep", (void*)&ScriptGUIIntField::internal_getStep);
 
 		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnChanged", 1)->getThunk();
 		onConfirmedThunk = (OnConfirmedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnConfirmed", 0)->getThunk();

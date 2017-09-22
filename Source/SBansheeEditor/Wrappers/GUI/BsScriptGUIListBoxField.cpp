@@ -11,6 +11,7 @@
 #include "GUI/BsGUIContent.h"
 #include "Wrappers/BsScriptHString.h"
 #include "Wrappers/GUI/BsScriptGUIContent.h"
+#include <climits>
 
 using namespace std::placeholders;
 
@@ -26,15 +27,15 @@ namespace bs
 
 	void ScriptGUIListBoxField::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIListBoxField::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_SetElements", &ScriptGUIListBoxField::internal_setElements);
-		metaData.scriptClass->addInternalCall("Internal_GetValue", &ScriptGUIListBoxField::internal_getValue);
-		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptGUIListBoxField::internal_setValue);
-		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIListBoxField::internal_setTint);
-		metaData.scriptClass->addInternalCall("Internal_SelectElement", &ScriptGUIListBoxField::internal_selectElement);
-		metaData.scriptClass->addInternalCall("Internal_DeselectElement", &ScriptGUIListBoxField::internal_deselectElement);
-		metaData.scriptClass->addInternalCall("Internal_GetElementStates", &ScriptGUIListBoxField::internal_getElementStates);
-		metaData.scriptClass->addInternalCall("Internal_SetElementStates", &ScriptGUIListBoxField::internal_setElementStates);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptGUIListBoxField::internal_createInstance);
+		metaData.scriptClass->addInternalCall("Internal_SetElements", (void*)&ScriptGUIListBoxField::internal_setElements);
+		metaData.scriptClass->addInternalCall("Internal_GetValue", (void*)&ScriptGUIListBoxField::internal_getValue);
+		metaData.scriptClass->addInternalCall("Internal_SetValue", (void*)&ScriptGUIListBoxField::internal_setValue);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", (void*)&ScriptGUIListBoxField::internal_setTint);
+		metaData.scriptClass->addInternalCall("Internal_SelectElement", (void*)&ScriptGUIListBoxField::internal_selectElement);
+		metaData.scriptClass->addInternalCall("Internal_DeselectElement", (void*)&ScriptGUIListBoxField::internal_deselectElement);
+		metaData.scriptClass->addInternalCall("Internal_GetElementStates", (void*)&ScriptGUIListBoxField::internal_getElementStates);
+		metaData.scriptClass->addInternalCall("Internal_SetElementStates", (void*)&ScriptGUIListBoxField::internal_setElementStates);
 
 		onSelectionChangedThunk = (OnSelectionChangedThunkDef)metaData.scriptClass->getMethod("DoOnSelectionChanged", 1)->getThunk();
 	}

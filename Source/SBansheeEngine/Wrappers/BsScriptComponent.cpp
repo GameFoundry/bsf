@@ -53,15 +53,15 @@ namespace bs
 
 	void ScriptComponent::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_AddComponent", &ScriptComponent::internal_addComponent);
-		metaData.scriptClass->addInternalCall("Internal_GetComponent", &ScriptComponent::internal_getComponent);
-		metaData.scriptClass->addInternalCall("Internal_GetComponents", &ScriptComponent::internal_getComponents);
-		metaData.scriptClass->addInternalCall("Internal_GetComponentsPerType", &ScriptComponent::internal_getComponentsPerType);
-		metaData.scriptClass->addInternalCall("Internal_RemoveComponent", &ScriptComponent::internal_removeComponent);
-		metaData.scriptClass->addInternalCall("Internal_GetSceneObject", &ScriptComponent::internal_getSceneObject);
-		metaData.scriptClass->addInternalCall("Internal_GetNotifyFlags", &ScriptComponent::internal_getNotifyFlags);
-		metaData.scriptClass->addInternalCall("Internal_SetNotifyFlags", &ScriptComponent::internal_setNotifyFlags);
-		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptComponent::internal_destroy);
+		metaData.scriptClass->addInternalCall("Internal_AddComponent", (void*)&ScriptComponent::internal_addComponent);
+		metaData.scriptClass->addInternalCall("Internal_GetComponent", (void*)&ScriptComponent::internal_getComponent);
+		metaData.scriptClass->addInternalCall("Internal_GetComponents", (void*)&ScriptComponent::internal_getComponents);
+		metaData.scriptClass->addInternalCall("Internal_GetComponentsPerType", (void*)&ScriptComponent::internal_getComponentsPerType);
+		metaData.scriptClass->addInternalCall("Internal_RemoveComponent", (void*)&ScriptComponent::internal_removeComponent);
+		metaData.scriptClass->addInternalCall("Internal_GetSceneObject", (void*)&ScriptComponent::internal_getSceneObject);
+		metaData.scriptClass->addInternalCall("Internal_GetNotifyFlags", (void*)&ScriptComponent::internal_getNotifyFlags);
+		metaData.scriptClass->addInternalCall("Internal_SetNotifyFlags", (void*)&ScriptComponent::internal_setNotifyFlags);
+		metaData.scriptClass->addInternalCall("Internal_Destroy", (void*)&ScriptComponent::internal_destroy);
 	}
 
 	MonoObject* ScriptComponent::internal_addComponent(MonoObject* parentSceneObject, MonoReflectionType* type)

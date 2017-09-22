@@ -24,27 +24,27 @@ namespace bs
 
 		/** @copydoc SliderJoint::getPosition */
 		BS_SCRIPT_EXPORT(n:Position,pr:getter)
-		inline float getPosition() const;
+		float getPosition() const;
 
 		/** @copydoc SliderJoint::getSpeed */
 		BS_SCRIPT_EXPORT(n:Speed,pr:getter)
-		inline float getSpeed() const;
+		float getSpeed() const;
 
 		/** @copydoc SliderJoint::getLimit */
 		BS_SCRIPT_EXPORT(n:Limit,pr:getter)
-		inline LimitLinearRange getLimit() const;
+		LimitLinearRange getLimit() const;
 
 		/** @copydoc SliderJoint::setLimit */
 		BS_SCRIPT_EXPORT(n:Limit,pr:setter)
-		inline void setLimit(const LimitLinearRange& limit);
+		void setLimit(const LimitLinearRange& limit);
 
 		/** @copydoc SliderJoint::setFlag */
 		BS_SCRIPT_EXPORT(n:SetFlag)
-		inline void setFlag(SliderJointFlag flag, bool enabled);
+		void setFlag(SliderJointFlag flag, bool enabled);
 
 		/** @copydoc SliderJoint::hasFlag */
 		BS_SCRIPT_EXPORT(n:HasFlag)
-		inline bool hasFlag(SliderJointFlag flag) const;
+		bool hasFlag(SliderJointFlag flag) const;
 
 		/** @name Internal
 		 *  @{

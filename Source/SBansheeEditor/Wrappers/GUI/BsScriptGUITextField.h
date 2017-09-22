@@ -46,8 +46,8 @@ namespace bs
 		static void internal_hasInputFocus(ScriptGUITextField* nativeInstance, bool* output);
 		static void internal_setTint(ScriptGUITextField* nativeInstance, Color* color);
 
-		typedef void(__stdcall *OnChangedThunkDef) (MonoObject*, MonoString*, MonoException**);
-		typedef void(__stdcall *OnConfirmedThunkDef) (MonoObject*, MonoException**);
+		typedef void(BS_THUNKCALL *OnChangedThunkDef) (MonoObject*, MonoString*, MonoException**);
+		typedef void(BS_THUNKCALL *OnConfirmedThunkDef) (MonoObject*, MonoException**);
 
 		static OnChangedThunkDef onChangedThunk;
 		static OnConfirmedThunkDef onConfirmedThunk;

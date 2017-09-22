@@ -33,16 +33,16 @@ namespace bs
 
 	void ScriptInput::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_IsButtonHeld", &ScriptInput::internal_isButtonHeld);
-		metaData.scriptClass->addInternalCall("Internal_IsButtonDown", &ScriptInput::internal_isButtonDown);
-		metaData.scriptClass->addInternalCall("Internal_IsButtonUp", &ScriptInput::internal_isButtonUp);
-		metaData.scriptClass->addInternalCall("Internal_IsPointerButtonHeld", &ScriptInput::internal_isPointerButtonHeld);
-		metaData.scriptClass->addInternalCall("Internal_IsPointerButtonDown", &ScriptInput::internal_isPointerButtonDown);
-		metaData.scriptClass->addInternalCall("Internal_IsPointerButtonUp", &ScriptInput::internal_isPointerButtonUp);
-		metaData.scriptClass->addInternalCall("Internal_IsPointerDoubleClicked", &ScriptInput::internal_isPointerDoubleClicked);
-		metaData.scriptClass->addInternalCall("Internal_GetAxisValue", &ScriptInput::internal_getAxisValue);
-		metaData.scriptClass->addInternalCall("Internal_GetPointerPosition", &ScriptInput::internal_getPointerPosition);
-		metaData.scriptClass->addInternalCall("Internal_GetPointerDelta", &ScriptInput::internal_getPointerDelta);
+		metaData.scriptClass->addInternalCall("Internal_IsButtonHeld", (void*)&ScriptInput::internal_isButtonHeld);
+		metaData.scriptClass->addInternalCall("Internal_IsButtonDown", (void*)&ScriptInput::internal_isButtonDown);
+		metaData.scriptClass->addInternalCall("Internal_IsButtonUp", (void*)&ScriptInput::internal_isButtonUp);
+		metaData.scriptClass->addInternalCall("Internal_IsPointerButtonHeld", (void*)&ScriptInput::internal_isPointerButtonHeld);
+		metaData.scriptClass->addInternalCall("Internal_IsPointerButtonDown", (void*)&ScriptInput::internal_isPointerButtonDown);
+		metaData.scriptClass->addInternalCall("Internal_IsPointerButtonUp", (void*)&ScriptInput::internal_isPointerButtonUp);
+		metaData.scriptClass->addInternalCall("Internal_IsPointerDoubleClicked", (void*)&ScriptInput::internal_isPointerDoubleClicked);
+		metaData.scriptClass->addInternalCall("Internal_GetAxisValue", (void*)&ScriptInput::internal_getAxisValue);
+		metaData.scriptClass->addInternalCall("Internal_GetPointerPosition", (void*)&ScriptInput::internal_getPointerPosition);
+		metaData.scriptClass->addInternalCall("Internal_GetPointerDelta", (void*)&ScriptInput::internal_getPointerDelta);
 
 		OnButtonPressedThunk = (OnButtonEventThunkDef)metaData.scriptClass->getMethodExact("Internal_TriggerButtonDown", "ButtonCode,int,bool")->getThunk();
 		OnButtonReleasedThunk = (OnButtonEventThunkDef)metaData.scriptClass->getMethodExact("Internal_TriggerButtonUp", "ButtonCode,int,bool")->getThunk();

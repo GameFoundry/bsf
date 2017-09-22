@@ -26,10 +26,10 @@ namespace bs
 
 	void ScriptGUIGameObjectField::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIGameObjectField::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_GetValue", &ScriptGUIGameObjectField::internal_getValue);
-		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptGUIGameObjectField::internal_setValue);
-		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIGameObjectField::internal_setTint);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptGUIGameObjectField::internal_createInstance);
+		metaData.scriptClass->addInternalCall("Internal_GetValue", (void*)&ScriptGUIGameObjectField::internal_getValue);
+		metaData.scriptClass->addInternalCall("Internal_SetValue", (void*)&ScriptGUIGameObjectField::internal_setValue);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", (void*)&ScriptGUIGameObjectField::internal_setTint);
 
 		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("DoOnChanged", 1)->getThunk();
 	}

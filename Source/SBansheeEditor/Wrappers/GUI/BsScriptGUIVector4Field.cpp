@@ -27,11 +27,11 @@ namespace bs
 
 	void ScriptGUIVector4Field::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIVector4Field::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_GetValue", &ScriptGUIVector4Field::internal_getValue);
-		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptGUIVector4Field::internal_setValue);
-		metaData.scriptClass->addInternalCall("Internal_HasInputFocus", &ScriptGUIVector4Field::internal_hasInputFocus);
-		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIVector4Field::internal_setTint);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptGUIVector4Field::internal_createInstance);
+		metaData.scriptClass->addInternalCall("Internal_GetValue", (void*)&ScriptGUIVector4Field::internal_getValue);
+		metaData.scriptClass->addInternalCall("Internal_SetValue", (void*)&ScriptGUIVector4Field::internal_setValue);
+		metaData.scriptClass->addInternalCall("Internal_HasInputFocus", (void*)&ScriptGUIVector4Field::internal_hasInputFocus);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", (void*)&ScriptGUIVector4Field::internal_setTint);
 
 		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnChanged", 1)->getThunk();
 		onConfirmedThunk = (OnConfirmedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnConfirmed", 0)->getThunk();

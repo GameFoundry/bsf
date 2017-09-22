@@ -16,9 +16,9 @@ namespace bs
 
 	void ScriptUnitTests::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_UT1_GameObjectClone", &ScriptUnitTests::internal_UT1_GameObjectClone);
-		metaData.scriptClass->addInternalCall("Internal_UT3_GenerateDiff", &ScriptUnitTests::internal_UT3_GenerateDiff);
-		metaData.scriptClass->addInternalCall("Internal_UT3_ApplyDiff", &ScriptUnitTests::internal_UT3_ApplyDiff);
+		metaData.scriptClass->addInternalCall("Internal_UT1_GameObjectClone", (void*)&ScriptUnitTests::internal_UT1_GameObjectClone);
+		metaData.scriptClass->addInternalCall("Internal_UT3_GenerateDiff", (void*)&ScriptUnitTests::internal_UT3_GenerateDiff);
+		metaData.scriptClass->addInternalCall("Internal_UT3_ApplyDiff", (void*)&ScriptUnitTests::internal_UT3_ApplyDiff);
 
 		RunTestsMethod = metaData.scriptClass->getMethod("RunTests");
 	}

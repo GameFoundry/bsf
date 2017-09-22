@@ -20,13 +20,13 @@ namespace bs
 
 	void ScriptInputConfiguration::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptInputConfiguration::internal_CreateInstance);
-		metaData.scriptClass->addInternalCall("Internal_RegisterButton", &ScriptInputConfiguration::internal_RegisterButton);
-		metaData.scriptClass->addInternalCall("Internal_UnregisterButton", &ScriptInputConfiguration::internal_UnregisterButton);
-		metaData.scriptClass->addInternalCall("Internal_RegisterAxis", &ScriptInputConfiguration::internal_RegisterAxis);
-		metaData.scriptClass->addInternalCall("Internal_UnregisterAxis", &ScriptInputConfiguration::internal_UnregisterAxis);
-		metaData.scriptClass->addInternalCall("Internal_SetRepeatInterval", &ScriptInputConfiguration::internal_SetRepeatInterval);
-		metaData.scriptClass->addInternalCall("Internal_GetRepeatInterval", &ScriptInputConfiguration::internal_GetRepeatInterval);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptInputConfiguration::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_RegisterButton", (void*)&ScriptInputConfiguration::internal_RegisterButton);
+		metaData.scriptClass->addInternalCall("Internal_UnregisterButton", (void*)&ScriptInputConfiguration::internal_UnregisterButton);
+		metaData.scriptClass->addInternalCall("Internal_RegisterAxis", (void*)&ScriptInputConfiguration::internal_RegisterAxis);
+		metaData.scriptClass->addInternalCall("Internal_UnregisterAxis", (void*)&ScriptInputConfiguration::internal_UnregisterAxis);
+		metaData.scriptClass->addInternalCall("Internal_SetRepeatInterval", (void*)&ScriptInputConfiguration::internal_SetRepeatInterval);
+		metaData.scriptClass->addInternalCall("Internal_GetRepeatInterval", (void*)&ScriptInputConfiguration::internal_GetRepeatInterval);
 	}
 
 	ScriptInputConfiguration* ScriptInputConfiguration::getScriptInputConfig(const SPtr<InputConfiguration>& inputConfig)
@@ -115,7 +115,7 @@ namespace bs
 
 	void ScriptVirtualAxis::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_InitVirtualAxis", &ScriptVirtualAxis::internal_InitVirtualAxis);
+		metaData.scriptClass->addInternalCall("Internal_InitVirtualAxis", (void*)&ScriptVirtualAxis::internal_InitVirtualAxis);
 	}
 
 	UINT32 ScriptVirtualAxis::internal_InitVirtualAxis(MonoString* name)

@@ -38,7 +38,7 @@ namespace bs
 		static float internal_getStep(ScriptGUISliderH* nativeInstance);
 		static void internal_setTint(ScriptGUISliderH* nativeInstance, Color* color);
 
-		typedef void(__stdcall *OnChangedThunkDef) (MonoObject*, float, MonoException**);
+		typedef void(BS_THUNKCALL *OnChangedThunkDef) (MonoObject*, float, MonoException**);
 		static OnChangedThunkDef onChangedThunk;
 	};
 
@@ -69,7 +69,7 @@ namespace bs
 		static float internal_getStep(ScriptGUISliderV* nativeInstance);
 		static void internal_setTint(ScriptGUISliderV* nativeInstance, Color* color);
 
-		typedef void(__stdcall *OnChangedThunkDef) (MonoObject*, float, MonoException**);
+		typedef void(BS_THUNKCALL *OnChangedThunkDef) (MonoObject*, float, MonoException**);
 		static OnChangedThunkDef onChangedThunk;
 	};
 

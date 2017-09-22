@@ -18,21 +18,21 @@ namespace bs
 
 	void ScriptGUISkin::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUISkin::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptGUISkin::internal_CreateInstance);
 
-		metaData.scriptClass->addInternalCall("Internal_GetStyle", &ScriptGUISkin::internal_GetStyle);
-		metaData.scriptClass->addInternalCall("Internal_SetStyle", &ScriptGUISkin::internal_SetStyle);
+		metaData.scriptClass->addInternalCall("Internal_GetStyle", (void*)&ScriptGUISkin::internal_GetStyle);
+		metaData.scriptClass->addInternalCall("Internal_SetStyle", (void*)&ScriptGUISkin::internal_SetStyle);
 
-		metaData.scriptClass->addInternalCall("Internal_HasStyle", &ScriptGUISkin::internal_HasStyle);
-		metaData.scriptClass->addInternalCall("Internal_RemoveStyle", &ScriptGUISkin::internal_RemoveStyle);
-		metaData.scriptClass->addInternalCall("Internal_GetStyleNames", &ScriptGUISkin::internal_GetStyleNames);
+		metaData.scriptClass->addInternalCall("Internal_HasStyle", (void*)&ScriptGUISkin::internal_HasStyle);
+		metaData.scriptClass->addInternalCall("Internal_RemoveStyle", (void*)&ScriptGUISkin::internal_RemoveStyle);
+		metaData.scriptClass->addInternalCall("Internal_GetStyleNames", (void*)&ScriptGUISkin::internal_GetStyleNames);
 	}
 
 	void ScriptGUISkin::internal_CreateInstance(MonoObject* instance)
 	{
 		HGUISkin skin = GUISkin::create();
 
-		ScriptResourceBase* scriptInstance = ScriptResourceManager::instance().createBuiltinScriptResource(skin, instance);
+		ScriptResourceManager::instance().createBuiltinScriptResource(skin, instance);
 	}
 
 	bool ScriptGUISkin::internal_HasStyle(ScriptGUISkin* thisPtr, MonoString* name)

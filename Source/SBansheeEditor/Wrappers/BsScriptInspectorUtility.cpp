@@ -27,8 +27,8 @@ namespace bs
 
 	void ScriptInspectorUtility::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_GetCustomInspector", &ScriptInspectorUtility::internal_GetCustomInspector);
-		metaData.scriptClass->addInternalCall("Internal_GetCustomInspectable", &ScriptInspectorUtility::internal_GetCustomInspectable);
+		metaData.scriptClass->addInternalCall("Internal_GetCustomInspector", (void*)&ScriptInspectorUtility::internal_GetCustomInspector);
+		metaData.scriptClass->addInternalCall("Internal_GetCustomInspectable", (void*)&ScriptInspectorUtility::internal_GetCustomInspectable);
 	}
 
 	void ScriptInspectorUtility::startUp()

@@ -35,7 +35,7 @@ namespace bs
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
-		typedef void(__stdcall *OnEntryTriggeredThunkDef) (MonoObject*, UINT32 callbackIdx, MonoException**);
+		typedef void(BS_THUNKCALL *OnEntryTriggeredThunkDef) (MonoObject*, UINT32 callbackIdx, MonoException**);
 		static OnEntryTriggeredThunkDef onEntryTriggered;
 
 		static void internal_CreateInstance(MonoObject* instance);

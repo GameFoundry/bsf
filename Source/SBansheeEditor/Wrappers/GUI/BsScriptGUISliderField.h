@@ -42,7 +42,7 @@ namespace bs
 		static void internal_setRange(ScriptGUISliderField* nativeInstance, float min, float max);
 		static void internal_setStep(ScriptGUISliderField* nativeInstance, float step);
 
-		typedef void(__stdcall *OnChangedThunkDef) (MonoObject*, float, MonoException**);
+		typedef void(BS_THUNKCALL *OnChangedThunkDef) (MonoObject*, float, MonoException**);
 
 		static OnChangedThunkDef onChangedThunk;
 	};

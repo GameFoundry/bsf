@@ -26,6 +26,10 @@ if(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
 	set(BS_64BIT true)
 endif()
 
+if(UNIX AND NOT APPLE)
+	set(LINUX TRUE)
+endif()
+
 # Options
 set(AUDIO_MODULE "OpenAudio" CACHE STRING "Audio backend to use.")
 set_property(CACHE AUDIO_MODULE PROPERTY STRINGS OpenAudio FMOD)

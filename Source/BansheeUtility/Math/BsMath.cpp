@@ -261,23 +261,23 @@ namespace bs
 		return result;
 	}
 
-	inline bool Math::approxEquals(const Vector2& a, const Vector2& b, float tolerance)
+	bool Math::approxEquals(const Vector2& a, const Vector2& b, float tolerance)
 	{
 		return fabs(b.x - a.x) <= tolerance && fabs(b.y - a.y) <= tolerance;
 	}
 
-	inline bool Math::approxEquals(const Vector3& a, const Vector3& b, float tolerance)
+	bool Math::approxEquals(const Vector3& a, const Vector3& b, float tolerance)
 	{
 		return fabs(b.x - a.x) <= tolerance && fabs(b.y - a.y) <= tolerance && fabs(b.z - a.z) <= tolerance;
 	}
 
-	inline bool Math::approxEquals(const Vector4& a, const Vector4& b, float tolerance)
+	bool Math::approxEquals(const Vector4& a, const Vector4& b, float tolerance)
 	{
 		return fabs(b.x - a.x) <= tolerance && fabs(b.y - a.y) <= tolerance && fabs(b.z - a.z) <= tolerance && 
 			fabs(b.w - a.w) <= tolerance;
 	}
 
-	inline bool Math::approxEquals(const Quaternion& a, const Quaternion& b, float tolerance)
+	bool Math::approxEquals(const Quaternion& a, const Quaternion& b, float tolerance)
 	{
 		return fabs(b.x - a.x) <= tolerance && fabs(b.y - a.y) <= tolerance && fabs(b.z - a.z) <= tolerance && 
 			fabs(b.w - a.w) <= tolerance;

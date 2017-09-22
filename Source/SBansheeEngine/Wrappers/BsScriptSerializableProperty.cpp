@@ -29,15 +29,15 @@ namespace bs
 
 	void ScriptSerializableProperty::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptSerializableProperty::internal_CreateInstance);
-		metaData.scriptClass->addInternalCall("Internal_CreateObject", &ScriptSerializableProperty::internal_createObject);
-		metaData.scriptClass->addInternalCall("Internal_CreateArray", &ScriptSerializableProperty::internal_createArray);
-		metaData.scriptClass->addInternalCall("Internal_CreateList", &ScriptSerializableProperty::internal_createList);
-		metaData.scriptClass->addInternalCall("Internal_CreateDictionary", &ScriptSerializableProperty::internal_createDictionary);
-		metaData.scriptClass->addInternalCall("Internal_CreateManagedObjectInstance", &ScriptSerializableProperty::internal_createManagedObjectInstance);
-		metaData.scriptClass->addInternalCall("Internal_CreateManagedArrayInstance", &ScriptSerializableProperty::internal_createManagedArrayInstance);
-		metaData.scriptClass->addInternalCall("Internal_CreateManagedListInstance", &ScriptSerializableProperty::internal_createManagedListInstance);
-		metaData.scriptClass->addInternalCall("Internal_CreateManagedDictionaryInstance", &ScriptSerializableProperty::internal_createManagedDictionaryInstance);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptSerializableProperty::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_CreateObject", (void*)&ScriptSerializableProperty::internal_createObject);
+		metaData.scriptClass->addInternalCall("Internal_CreateArray", (void*)&ScriptSerializableProperty::internal_createArray);
+		metaData.scriptClass->addInternalCall("Internal_CreateList", (void*)&ScriptSerializableProperty::internal_createList);
+		metaData.scriptClass->addInternalCall("Internal_CreateDictionary", (void*)&ScriptSerializableProperty::internal_createDictionary);
+		metaData.scriptClass->addInternalCall("Internal_CreateManagedObjectInstance", (void*)&ScriptSerializableProperty::internal_createManagedObjectInstance);
+		metaData.scriptClass->addInternalCall("Internal_CreateManagedArrayInstance", (void*)&ScriptSerializableProperty::internal_createManagedArrayInstance);
+		metaData.scriptClass->addInternalCall("Internal_CreateManagedListInstance", (void*)&ScriptSerializableProperty::internal_createManagedListInstance);
+		metaData.scriptClass->addInternalCall("Internal_CreateManagedDictionaryInstance", (void*)&ScriptSerializableProperty::internal_createManagedDictionaryInstance);
 	}
 
 	ScriptSerializableProperty* ScriptSerializableProperty::create(const SPtr<ManagedSerializableTypeInfo>& typeInfo)

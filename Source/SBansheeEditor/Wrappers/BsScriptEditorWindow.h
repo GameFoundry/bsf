@@ -188,9 +188,9 @@ namespace bs
 		MonoObject* getManagedInstance() const { return mManagedInstance; }
 
 	private:
-		typedef void(__stdcall *OnInitializeThunkDef) (MonoObject*, MonoException**);
-		typedef void(__stdcall *OnDestroyThunkDef) (MonoObject*, MonoException**);
-		typedef void(__stdcall *UpdateThunkDef) (MonoObject*, MonoException**);
+		typedef void(BS_THUNKCALL *OnInitializeThunkDef) (MonoObject*, MonoException**);
+		typedef void(BS_THUNKCALL *OnDestroyThunkDef) (MonoObject*, MonoException**);
+		typedef void(BS_THUNKCALL *UpdateThunkDef) (MonoObject*, MonoException**);
 
 		String mNamespace;
 		String mTypename;

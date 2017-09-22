@@ -28,7 +28,7 @@ namespace bs
 
 	void ScriptManagedComponent::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_Invoke", &ScriptManagedComponent::internal_invoke);
+		metaData.scriptClass->addInternalCall("Internal_Invoke", (void*)&ScriptManagedComponent::internal_invoke);
 	}
 
 	void ScriptManagedComponent::internal_invoke(ScriptManagedComponent* nativeInstance, MonoString* name)

@@ -35,7 +35,7 @@ namespace bs
 		static MonoArray* internal_getElementStates(ScriptGUIListBox* nativeInstance);
 		static void internal_setElementStates(ScriptGUIListBox* nativeInstance, MonoArray* states);
 
-		typedef void (__stdcall *OnSelectionChangedThunkDef) (MonoObject*, UINT32, MonoException**);
+		typedef void (BS_THUNKCALL *OnSelectionChangedThunkDef) (MonoObject*, UINT32, MonoException**);
 		static OnSelectionChangedThunkDef onSelectionChangedThunk;
 	};
 

@@ -33,26 +33,26 @@ namespace bs
 
 	void ScriptProjectLibrary::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_Refresh", &ScriptProjectLibrary::internal_Refresh);
-		metaData.scriptClass->addInternalCall("Internal_Create", &ScriptProjectLibrary::internal_Create);
-		metaData.scriptClass->addInternalCall("Internal_Load", &ScriptProjectLibrary::internal_Load);
-		metaData.scriptClass->addInternalCall("Internal_Save", &ScriptProjectLibrary::internal_Save);
-		metaData.scriptClass->addInternalCall("Internal_GetRoot", &ScriptProjectLibrary::internal_GetRoot);
-		metaData.scriptClass->addInternalCall("Internal_Reimport", &ScriptProjectLibrary::internal_Reimport);
-		metaData.scriptClass->addInternalCall("Internal_GetEntry", &ScriptProjectLibrary::internal_GetEntry);
-		metaData.scriptClass->addInternalCall("Internal_IsSubresource", &ScriptProjectLibrary::internal_IsSubresource);
-		metaData.scriptClass->addInternalCall("Internal_GetMeta", &ScriptProjectLibrary::internal_GetMeta);
-		metaData.scriptClass->addInternalCall("Internal_GetPath", &ScriptProjectLibrary::internal_GetPath);
-		metaData.scriptClass->addInternalCall("Internal_GetPathFromUUID", &ScriptProjectLibrary::internal_GetPathFromUUID);
-		metaData.scriptClass->addInternalCall("Internal_Search", &ScriptProjectLibrary::internal_Search);
-		metaData.scriptClass->addInternalCall("Internal_Delete", &ScriptProjectLibrary::internal_Delete);
-		metaData.scriptClass->addInternalCall("Internal_CreateFolder", &ScriptProjectLibrary::internal_CreateFolder);
-		metaData.scriptClass->addInternalCall("Internal_Rename", &ScriptProjectLibrary::internal_Rename);
-		metaData.scriptClass->addInternalCall("Internal_Move", &ScriptProjectLibrary::internal_Move);
-		metaData.scriptClass->addInternalCall("Internal_Copy", &ScriptProjectLibrary::internal_Copy);
-		metaData.scriptClass->addInternalCall("Internal_GetResourceFolder", &ScriptProjectLibrary::internal_GetResourceFolder);
-		metaData.scriptClass->addInternalCall("Internal_SetIncludeInBuild", &ScriptProjectLibrary::internal_SetIncludeInBuild);
-		metaData.scriptClass->addInternalCall("Internal_SetEditorData", &ScriptProjectLibrary::internal_SetEditorData);
+		metaData.scriptClass->addInternalCall("Internal_Refresh", (void*)&ScriptProjectLibrary::internal_Refresh);
+		metaData.scriptClass->addInternalCall("Internal_Create", (void*)&ScriptProjectLibrary::internal_Create);
+		metaData.scriptClass->addInternalCall("Internal_Load", (void*)&ScriptProjectLibrary::internal_Load);
+		metaData.scriptClass->addInternalCall("Internal_Save", (void*)&ScriptProjectLibrary::internal_Save);
+		metaData.scriptClass->addInternalCall("Internal_GetRoot", (void*)&ScriptProjectLibrary::internal_GetRoot);
+		metaData.scriptClass->addInternalCall("Internal_Reimport", (void*)&ScriptProjectLibrary::internal_Reimport);
+		metaData.scriptClass->addInternalCall("Internal_GetEntry", (void*)&ScriptProjectLibrary::internal_GetEntry);
+		metaData.scriptClass->addInternalCall("Internal_IsSubresource", (void*)&ScriptProjectLibrary::internal_IsSubresource);
+		metaData.scriptClass->addInternalCall("Internal_GetMeta", (void*)&ScriptProjectLibrary::internal_GetMeta);
+		metaData.scriptClass->addInternalCall("Internal_GetPath", (void*)&ScriptProjectLibrary::internal_GetPath);
+		metaData.scriptClass->addInternalCall("Internal_GetPathFromUUID", (void*)&ScriptProjectLibrary::internal_GetPathFromUUID);
+		metaData.scriptClass->addInternalCall("Internal_Search", (void*)&ScriptProjectLibrary::internal_Search);
+		metaData.scriptClass->addInternalCall("Internal_Delete", (void*)&ScriptProjectLibrary::internal_Delete);
+		metaData.scriptClass->addInternalCall("Internal_CreateFolder", (void*)&ScriptProjectLibrary::internal_CreateFolder);
+		metaData.scriptClass->addInternalCall("Internal_Rename", (void*)&ScriptProjectLibrary::internal_Rename);
+		metaData.scriptClass->addInternalCall("Internal_Move", (void*)&ScriptProjectLibrary::internal_Move);
+		metaData.scriptClass->addInternalCall("Internal_Copy", (void*)&ScriptProjectLibrary::internal_Copy);
+		metaData.scriptClass->addInternalCall("Internal_GetResourceFolder", (void*)&ScriptProjectLibrary::internal_GetResourceFolder);
+		metaData.scriptClass->addInternalCall("Internal_SetIncludeInBuild", (void*)&ScriptProjectLibrary::internal_SetIncludeInBuild);
+		metaData.scriptClass->addInternalCall("Internal_SetEditorData", (void*)&ScriptProjectLibrary::internal_SetEditorData);
 
 		OnEntryAddedThunk = (OnEntryChangedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnEntryAdded", 1)->getThunk();
 		OnEntryRemovedThunk = (OnEntryChangedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnEntryRemoved", 1)->getThunk();
@@ -332,10 +332,10 @@ namespace bs
 
 	void ScriptLibraryEntry::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_GetPath", &ScriptLibraryEntry::internal_GetPath);
-		metaData.scriptClass->addInternalCall("Internal_GetName", &ScriptLibraryEntry::internal_GetName);
-		metaData.scriptClass->addInternalCall("Internal_GetType", &ScriptLibraryEntry::internal_GetType);
-		metaData.scriptClass->addInternalCall("Internal_GetParent", &ScriptLibraryEntry::internal_GetParent);
+		metaData.scriptClass->addInternalCall("Internal_GetPath", (void*)&ScriptLibraryEntry::internal_GetPath);
+		metaData.scriptClass->addInternalCall("Internal_GetName", (void*)&ScriptLibraryEntry::internal_GetName);
+		metaData.scriptClass->addInternalCall("Internal_GetType", (void*)&ScriptLibraryEntry::internal_GetType);
+		metaData.scriptClass->addInternalCall("Internal_GetParent", (void*)&ScriptLibraryEntry::internal_GetParent);
 	}
 
 	MonoString* ScriptLibraryEntry::internal_GetPath(ScriptLibraryEntryBase* thisPtr)
@@ -393,7 +393,7 @@ namespace bs
 
 	void ScriptDirectoryEntry::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_GetChildren", &ScriptDirectoryEntry::internal_GetChildren);
+		metaData.scriptClass->addInternalCall("Internal_GetChildren", (void*)&ScriptDirectoryEntry::internal_GetChildren);
 	}
 
 	MonoArray* ScriptDirectoryEntry::internal_GetChildren(ScriptDirectoryEntry* thisPtr)
@@ -436,9 +436,9 @@ namespace bs
 
 	void ScriptFileEntry::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_GetImportOptions", &ScriptFileEntry::internal_GetImportOptions);
-		metaData.scriptClass->addInternalCall("Internal_GetResourceMetas", &ScriptFileEntry::internal_GetResourceMetas);
-		metaData.scriptClass->addInternalCall("Internal_GetIncludeInBuild", &ScriptFileEntry::internal_GetIncludeInBuild);
+		metaData.scriptClass->addInternalCall("Internal_GetImportOptions", (void*)&ScriptFileEntry::internal_GetImportOptions);
+		metaData.scriptClass->addInternalCall("Internal_GetResourceMetas", (void*)&ScriptFileEntry::internal_GetResourceMetas);
+		metaData.scriptClass->addInternalCall("Internal_GetIncludeInBuild", (void*)&ScriptFileEntry::internal_GetIncludeInBuild);
 	}
 
 	MonoObject* ScriptFileEntry::internal_GetImportOptions(ScriptFileEntry* thisPtr)
@@ -506,11 +506,11 @@ namespace bs
 
 	void ScriptResourceMeta::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_GetUUID", &ScriptResourceMeta::internal_GetUUID);
-		metaData.scriptClass->addInternalCall("Internal_GetSubresourceName", &ScriptResourceMeta::internal_GetSubresourceName);
-		metaData.scriptClass->addInternalCall("Internal_GetIcon", &ScriptResourceMeta::internal_GetIcon);
-		metaData.scriptClass->addInternalCall("Internal_GetResourceType", &ScriptResourceMeta::internal_GetResourceType);
-		metaData.scriptClass->addInternalCall("Internal_GetEditorData", &ScriptResourceMeta::internal_GetEditorData);
+		metaData.scriptClass->addInternalCall("Internal_GetUUID", (void*)&ScriptResourceMeta::internal_GetUUID);
+		metaData.scriptClass->addInternalCall("Internal_GetSubresourceName", (void*)&ScriptResourceMeta::internal_GetSubresourceName);
+		metaData.scriptClass->addInternalCall("Internal_GetIcon", (void*)&ScriptResourceMeta::internal_GetIcon);
+		metaData.scriptClass->addInternalCall("Internal_GetResourceType", (void*)&ScriptResourceMeta::internal_GetResourceType);
+		metaData.scriptClass->addInternalCall("Internal_GetEditorData", (void*)&ScriptResourceMeta::internal_GetEditorData);
 	}
 
 	MonoString* ScriptResourceMeta::internal_GetUUID(ScriptResourceMeta* thisPtr)

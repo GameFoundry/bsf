@@ -26,13 +26,13 @@ namespace bs
 
 	void ScriptGUIScrollArea::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIScrollArea::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_GetContentBounds", &ScriptGUIScrollArea::internal_getContentBounds);
-		metaData.scriptClass->addInternalCall("Internal_GetHorzScroll", &ScriptGUIScrollArea::internal_getHorzScroll);
-		metaData.scriptClass->addInternalCall("Internal_SetHorzScroll", &ScriptGUIScrollArea::internal_setHorzScroll);
-		metaData.scriptClass->addInternalCall("Internal_GetVertScroll", &ScriptGUIScrollArea::internal_getVertScroll);
-		metaData.scriptClass->addInternalCall("Internal_SetVertScroll", &ScriptGUIScrollArea::internal_setVertScroll);
-		metaData.scriptClass->addInternalCall("Internal_GetScrollBarWidth", &ScriptGUIScrollArea::internal_getScrollBarWidth);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptGUIScrollArea::internal_createInstance);
+		metaData.scriptClass->addInternalCall("Internal_GetContentBounds", (void*)&ScriptGUIScrollArea::internal_getContentBounds);
+		metaData.scriptClass->addInternalCall("Internal_GetHorzScroll", (void*)&ScriptGUIScrollArea::internal_getHorzScroll);
+		metaData.scriptClass->addInternalCall("Internal_SetHorzScroll", (void*)&ScriptGUIScrollArea::internal_setHorzScroll);
+		metaData.scriptClass->addInternalCall("Internal_GetVertScroll", (void*)&ScriptGUIScrollArea::internal_getVertScroll);
+		metaData.scriptClass->addInternalCall("Internal_SetVertScroll", (void*)&ScriptGUIScrollArea::internal_setVertScroll);
+		metaData.scriptClass->addInternalCall("Internal_GetScrollBarWidth", (void*)&ScriptGUIScrollArea::internal_getScrollBarWidth);
 	}
 
 	void ScriptGUIScrollArea::initialize(ScriptGUIScrollAreaLayout* layout)

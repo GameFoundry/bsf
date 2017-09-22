@@ -40,10 +40,10 @@ namespace bs
 		static void internal_setContent(ScriptGUIButton* nativeInstance, MonoObject* content);
 		static void internal_setTint(ScriptGUIButton* nativeInstance, Color* color);
 
-		typedef void (__stdcall *OnClickThunkDef) (MonoObject*, MonoException**);
-		typedef void (__stdcall *OnDoubleClickThunkDef) (MonoObject*, MonoException**);
-		typedef void (__stdcall *OnHoverThunkDef) (MonoObject*, MonoException**);
-		typedef void (__stdcall *OnOutThunkDef) (MonoObject*, MonoException**);
+		typedef void (BS_THUNKCALL *OnClickThunkDef) (MonoObject*, MonoException**);
+		typedef void (BS_THUNKCALL *OnDoubleClickThunkDef) (MonoObject*, MonoException**);
+		typedef void (BS_THUNKCALL *OnHoverThunkDef) (MonoObject*, MonoException**);
+		typedef void (BS_THUNKCALL *OnOutThunkDef) (MonoObject*, MonoException**);
 
 		static OnClickThunkDef onClickThunk;
 		static OnDoubleClickThunkDef onDoubleClickThunk;

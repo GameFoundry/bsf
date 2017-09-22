@@ -21,10 +21,10 @@ namespace bs
 
 	void ScriptSerializedObject::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateComponent", &ScriptSerializedObject::internal_CreateComponent);
-		metaData.scriptClass->addInternalCall("Internal_CreateResource", &ScriptSerializedObject::internal_CreateResource);
-		metaData.scriptClass->addInternalCall("Internal_CreateGeneric", &ScriptSerializedObject::internal_CreateGeneric);
-		metaData.scriptClass->addInternalCall("Internal_Deserialize", &ScriptSerializedObject::internal_Deserialize);
+		metaData.scriptClass->addInternalCall("Internal_CreateComponent", (void*)&ScriptSerializedObject::internal_CreateComponent);
+		metaData.scriptClass->addInternalCall("Internal_CreateResource", (void*)&ScriptSerializedObject::internal_CreateResource);
+		metaData.scriptClass->addInternalCall("Internal_CreateGeneric", (void*)&ScriptSerializedObject::internal_CreateGeneric);
+		metaData.scriptClass->addInternalCall("Internal_Deserialize", (void*)&ScriptSerializedObject::internal_Deserialize);
 	}
 
 	MonoObject* ScriptSerializedObject::internal_CreateComponent(ScriptManagedComponent* componentPtr)

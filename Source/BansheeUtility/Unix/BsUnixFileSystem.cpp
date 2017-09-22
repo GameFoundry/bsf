@@ -238,7 +238,7 @@ namespace bs
 	bool FileSystem::iterate(const Path& dirPath, std::function<bool(const Path&)> fileCallback,
 		std::function<bool(const Path&)> dirCallback, bool recursive)
 	{
-		BS_ASSERT(!"TODO: implement FileSystem::iterate()");
+		BS_ASSERT(!"TODOPORT: implement FileSystem::iterate()");
 		return true;
 	}
 

@@ -19,9 +19,9 @@ namespace bs
 
 	void ScriptResourceRef::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_IsLoaded", &ScriptResourceRef::internal_IsLoaded);
-		metaData.scriptClass->addInternalCall("Internal_GetResource", &ScriptResourceRef::internal_GetResource);
-		metaData.scriptClass->addInternalCall("Internal_GetUUID", &ScriptResourceRef::internal_GetUUID);
+		metaData.scriptClass->addInternalCall("Internal_IsLoaded", (void*)&ScriptResourceRef::internal_IsLoaded);
+		metaData.scriptClass->addInternalCall("Internal_GetResource", (void*)&ScriptResourceRef::internal_GetResource);
+		metaData.scriptClass->addInternalCall("Internal_GetUUID", (void*)&ScriptResourceRef::internal_GetUUID);
 	}
 
 	MonoObject* ScriptResourceRef::createInternal(const WeakResourceHandle<Resource>& handle)

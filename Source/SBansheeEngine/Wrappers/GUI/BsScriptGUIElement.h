@@ -145,7 +145,7 @@ namespace bs
 		static MonoString* internal_GetStyle(ScriptGUIElementBaseTBase* nativeInstance);
 		static void internal_SetStyle(ScriptGUIElementBaseTBase* nativeInstance, MonoString* style);
 
-		typedef void(__stdcall *OnFocusChangedThunkDef) (MonoObject*, MonoException**);
+		typedef void(BS_THUNKCALL *OnFocusChangedThunkDef) (MonoObject*, MonoException**);
 
 	public:
 		static OnFocusChangedThunkDef onFocusGainedThunk;

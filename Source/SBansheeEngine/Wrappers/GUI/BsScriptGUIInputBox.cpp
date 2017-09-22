@@ -24,10 +24,10 @@ namespace bs
 
 	void ScriptGUIInputBox::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIInputBox::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_GetText", &ScriptGUIInputBox::internal_getText);
-		metaData.scriptClass->addInternalCall("Internal_SetText", &ScriptGUIInputBox::internal_setText);
-		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIInputBox::internal_setTint);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptGUIInputBox::internal_createInstance);
+		metaData.scriptClass->addInternalCall("Internal_GetText", (void*)&ScriptGUIInputBox::internal_getText);
+		metaData.scriptClass->addInternalCall("Internal_SetText", (void*)&ScriptGUIInputBox::internal_setText);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", (void*)&ScriptGUIInputBox::internal_setTint);
 
 		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnChanged", 1)->getThunk();
 		onConfirmedThunk = (OnConfirmedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnConfirmed", 0)->getThunk();

@@ -26,12 +26,12 @@ namespace bs
 
 	void ScriptVirtualInput::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_GetKeyConfig", &ScriptVirtualInput::internal_getKeyConfig);
-		metaData.scriptClass->addInternalCall("Internal_SetKeyConfig", &ScriptVirtualInput::internal_setKeyConfig);
-		metaData.scriptClass->addInternalCall("Internal_IsButtonHeld", &ScriptVirtualInput::internal_isButtonHeld);
-		metaData.scriptClass->addInternalCall("Internal_IsButtonDown", &ScriptVirtualInput::internal_isButtonDown);
-		metaData.scriptClass->addInternalCall("Internal_IsButtonUp", &ScriptVirtualInput::internal_isButtonUp);
-		metaData.scriptClass->addInternalCall("Internal_GetAxisValue", &ScriptVirtualInput::internal_getAxisValue);
+		metaData.scriptClass->addInternalCall("Internal_GetKeyConfig", (void*)&ScriptVirtualInput::internal_getKeyConfig);
+		metaData.scriptClass->addInternalCall("Internal_SetKeyConfig", (void*)&ScriptVirtualInput::internal_setKeyConfig);
+		metaData.scriptClass->addInternalCall("Internal_IsButtonHeld", (void*)&ScriptVirtualInput::internal_isButtonHeld);
+		metaData.scriptClass->addInternalCall("Internal_IsButtonDown", (void*)&ScriptVirtualInput::internal_isButtonDown);
+		metaData.scriptClass->addInternalCall("Internal_IsButtonUp", (void*)&ScriptVirtualInput::internal_isButtonUp);
+		metaData.scriptClass->addInternalCall("Internal_GetAxisValue", (void*)&ScriptVirtualInput::internal_getAxisValue);
 
 		OnButtonUpThunk = (OnButtonEventThunkDef)metaData.scriptClass->getMethodExact("Internal_TriggerButtonDown", "VirtualButton,int")->getThunk();
 		OnButtonDownThunk = (OnButtonEventThunkDef)metaData.scriptClass->getMethodExact("Internal_TriggerButtonUp", "VirtualButton,int")->getThunk();

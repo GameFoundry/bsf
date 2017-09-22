@@ -12,21 +12,21 @@ namespace bs
 {
 	void ScriptHandleDrawing::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_SetColor", &ScriptHandleDrawing::internal_SetColor);
-		metaData.scriptClass->addInternalCall("Internal_SetTransform", &ScriptHandleDrawing::internal_SetTransform);
-		metaData.scriptClass->addInternalCall("Internal_SetLayer", &ScriptHandleDrawing::internal_SetLayer);
-		metaData.scriptClass->addInternalCall("Internal_DrawCube", &ScriptHandleDrawing::internal_DrawCube);
-		metaData.scriptClass->addInternalCall("Internal_DrawSphere", &ScriptHandleDrawing::internal_DrawSphere);
-		metaData.scriptClass->addInternalCall("Internal_DrawWireCube", &ScriptHandleDrawing::internal_DrawWireCube);
-		metaData.scriptClass->addInternalCall("Internal_DrawWireSphere", &ScriptHandleDrawing::internal_DrawWireSphere);
-		metaData.scriptClass->addInternalCall("Internal_DrawLine", &ScriptHandleDrawing::internal_DrawLine);
-		metaData.scriptClass->addInternalCall("Internal_DrawCone", &ScriptHandleDrawing::internal_DrawCone);
-		metaData.scriptClass->addInternalCall("Internal_DrawDisc", &ScriptHandleDrawing::internal_DrawDisc);
-		metaData.scriptClass->addInternalCall("Internal_DrawWireDisc", &ScriptHandleDrawing::internal_DrawWireDisc);
-		metaData.scriptClass->addInternalCall("Internal_DrawArc", &ScriptHandleDrawing::internal_DrawArc);
-		metaData.scriptClass->addInternalCall("Internal_DrawWireArc", &ScriptHandleDrawing::internal_DrawWireArc);
-		metaData.scriptClass->addInternalCall("Internal_DrawRect", &ScriptHandleDrawing::internal_DrawRect);
-		metaData.scriptClass->addInternalCall("Internal_DrawText", &ScriptHandleDrawing::internal_DrawText);
+		metaData.scriptClass->addInternalCall("Internal_SetColor", (void*)&ScriptHandleDrawing::internal_SetColor);
+		metaData.scriptClass->addInternalCall("Internal_SetTransform", (void*)&ScriptHandleDrawing::internal_SetTransform);
+		metaData.scriptClass->addInternalCall("Internal_SetLayer", (void*)&ScriptHandleDrawing::internal_SetLayer);
+		metaData.scriptClass->addInternalCall("Internal_DrawCube", (void*)&ScriptHandleDrawing::internal_DrawCube);
+		metaData.scriptClass->addInternalCall("Internal_DrawSphere", (void*)&ScriptHandleDrawing::internal_DrawSphere);
+		metaData.scriptClass->addInternalCall("Internal_DrawWireCube", (void*)&ScriptHandleDrawing::internal_DrawWireCube);
+		metaData.scriptClass->addInternalCall("Internal_DrawWireSphere", (void*)&ScriptHandleDrawing::internal_DrawWireSphere);
+		metaData.scriptClass->addInternalCall("Internal_DrawLine", (void*)&ScriptHandleDrawing::internal_DrawLine);
+		metaData.scriptClass->addInternalCall("Internal_DrawCone", (void*)&ScriptHandleDrawing::internal_DrawCone);
+		metaData.scriptClass->addInternalCall("Internal_DrawDisc", (void*)&ScriptHandleDrawing::internal_DrawDisc);
+		metaData.scriptClass->addInternalCall("Internal_DrawWireDisc", (void*)&ScriptHandleDrawing::internal_DrawWireDisc);
+		metaData.scriptClass->addInternalCall("Internal_DrawArc", (void*)&ScriptHandleDrawing::internal_DrawArc);
+		metaData.scriptClass->addInternalCall("Internal_DrawWireArc", (void*)&ScriptHandleDrawing::internal_DrawWireArc);
+		metaData.scriptClass->addInternalCall("Internal_DrawRect", (void*)&ScriptHandleDrawing::internal_DrawRect);
+		metaData.scriptClass->addInternalCall("Internal_DrawText", (void*)&ScriptHandleDrawing::internal_DrawText);
 	}
 
 	void ScriptHandleDrawing::internal_SetColor(Color* color)

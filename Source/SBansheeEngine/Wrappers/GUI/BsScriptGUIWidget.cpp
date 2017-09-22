@@ -35,14 +35,14 @@ namespace bs
 	{
 		sGUIPanelField = metaData.scriptClass->getField("panel");
 
-		metaData.scriptClass->addInternalCall("Internal_Create", &ScriptGUIWidget::internal_Create);
-		metaData.scriptClass->addInternalCall("Internal_UpdateTransform", &ScriptGUIWidget::internal_UpdateTransform);
-		metaData.scriptClass->addInternalCall("Internal_UpdateMainCamera", &ScriptGUIWidget::internal_UpdateMainCamera);
-		metaData.scriptClass->addInternalCall("Internal_SetSkin", &ScriptGUIWidget::internal_SetSkin);
-		metaData.scriptClass->addInternalCall("Internal_SetCamera", &ScriptGUIWidget::internal_SetCamera);
-		metaData.scriptClass->addInternalCall("Internal_SetDepth", &ScriptGUIWidget::internal_SetDepth);
-		metaData.scriptClass->addInternalCall("Internal_GetDepth", &ScriptGUIWidget::internal_GetDepth);
-		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIWidget::internal_Destroy);
+		metaData.scriptClass->addInternalCall("Internal_Create", (void*)&ScriptGUIWidget::internal_Create);
+		metaData.scriptClass->addInternalCall("Internal_UpdateTransform", (void*)&ScriptGUIWidget::internal_UpdateTransform);
+		metaData.scriptClass->addInternalCall("Internal_UpdateMainCamera", (void*)&ScriptGUIWidget::internal_UpdateMainCamera);
+		metaData.scriptClass->addInternalCall("Internal_SetSkin", (void*)&ScriptGUIWidget::internal_SetSkin);
+		metaData.scriptClass->addInternalCall("Internal_SetCamera", (void*)&ScriptGUIWidget::internal_SetCamera);
+		metaData.scriptClass->addInternalCall("Internal_SetDepth", (void*)&ScriptGUIWidget::internal_SetDepth);
+		metaData.scriptClass->addInternalCall("Internal_GetDepth", (void*)&ScriptGUIWidget::internal_GetDepth);
+		metaData.scriptClass->addInternalCall("Internal_Destroy", (void*)&ScriptGUIWidget::internal_Destroy);
 	}
 
 	void ScriptGUIWidget::internal_Create(MonoObject* managedInstance)

@@ -56,7 +56,7 @@ namespace bs
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
-		typedef void(__stdcall *OnEntryChangedThunkDef) (MonoString*, MonoException**);
+		typedef void(BS_THUNKCALL *OnEntryChangedThunkDef) (MonoString*, MonoException**);
 
 		static OnEntryChangedThunkDef OnEntryAddedThunk;
 		static OnEntryChangedThunkDef OnEntryRemovedThunk;

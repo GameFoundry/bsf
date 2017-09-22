@@ -30,17 +30,17 @@ namespace bs
 
 	void ScriptGUISliderH::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUISliderH::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_SetPercent", &ScriptGUISliderH::internal_setPercent);
-		metaData.scriptClass->addInternalCall("Internal_GetPercent", &ScriptGUISliderH::internal_getPercent);
-		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUISliderH::internal_setTint);
-		metaData.scriptClass->addInternalCall("Internal_GetValue", &ScriptGUISliderH::internal_getValue);
-		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptGUISliderH::internal_setValue);
-		metaData.scriptClass->addInternalCall("Internal_SetRange", &ScriptGUISliderH::internal_setRange);
-		metaData.scriptClass->addInternalCall("Internal_GetRangeMaximum", &ScriptGUISliderH::internal_getRangeMaximum);
-		metaData.scriptClass->addInternalCall("Internal_GetRangeMinimum", &ScriptGUISliderH::internal_getRangeMinimum);
-		metaData.scriptClass->addInternalCall("Internal_SetStep", &ScriptGUISliderH::internal_setStep);
-		metaData.scriptClass->addInternalCall("Internal_GetStep", &ScriptGUISliderH::internal_getStep);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptGUISliderH::internal_createInstance);
+		metaData.scriptClass->addInternalCall("Internal_SetPercent", (void*)&ScriptGUISliderH::internal_setPercent);
+		metaData.scriptClass->addInternalCall("Internal_GetPercent", (void*)&ScriptGUISliderH::internal_getPercent);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", (void*)&ScriptGUISliderH::internal_setTint);
+		metaData.scriptClass->addInternalCall("Internal_GetValue", (void*)&ScriptGUISliderH::internal_getValue);
+		metaData.scriptClass->addInternalCall("Internal_SetValue", (void*)&ScriptGUISliderH::internal_setValue);
+		metaData.scriptClass->addInternalCall("Internal_SetRange", (void*)&ScriptGUISliderH::internal_setRange);
+		metaData.scriptClass->addInternalCall("Internal_GetRangeMaximum", (void*)&ScriptGUISliderH::internal_getRangeMaximum);
+		metaData.scriptClass->addInternalCall("Internal_GetRangeMinimum", (void*)&ScriptGUISliderH::internal_getRangeMinimum);
+		metaData.scriptClass->addInternalCall("Internal_SetStep", (void*)&ScriptGUISliderH::internal_setStep);
+		metaData.scriptClass->addInternalCall("Internal_GetStep", (void*)&ScriptGUISliderH::internal_getStep);
 
 		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("DoOnChanged", 1)->getThunk();
 	}
@@ -135,17 +135,17 @@ namespace bs
 
 	void ScriptGUISliderV::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUISliderV::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_SetPercent", &ScriptGUISliderV::internal_setPercent);
-		metaData.scriptClass->addInternalCall("Internal_GetPercent", &ScriptGUISliderV::internal_getPercent);
-		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUISliderV::internal_setTint);
-		metaData.scriptClass->addInternalCall("Internal_GetValue", &ScriptGUISliderV::internal_getValue);
-		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptGUISliderV::internal_setValue);
-		metaData.scriptClass->addInternalCall("Internal_SetRange", &ScriptGUISliderV::internal_setRange);
-		metaData.scriptClass->addInternalCall("Internal_GetRangeMaximum", &ScriptGUISliderV::internal_getRangeMaximum);
-		metaData.scriptClass->addInternalCall("Internal_GetRangeMinimum", &ScriptGUISliderV::internal_getRangeMinimum);
-		metaData.scriptClass->addInternalCall("Internal_SetStep", &ScriptGUISliderV::internal_setStep);
-		metaData.scriptClass->addInternalCall("Internal_GetStep", &ScriptGUISliderV::internal_getStep);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptGUISliderV::internal_createInstance);
+		metaData.scriptClass->addInternalCall("Internal_SetPercent", (void*)&ScriptGUISliderV::internal_setPercent);
+		metaData.scriptClass->addInternalCall("Internal_GetPercent", (void*)&ScriptGUISliderV::internal_getPercent);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", (void*)&ScriptGUISliderV::internal_setTint);
+		metaData.scriptClass->addInternalCall("Internal_GetValue", (void*)&ScriptGUISliderV::internal_getValue);
+		metaData.scriptClass->addInternalCall("Internal_SetValue", (void*)&ScriptGUISliderV::internal_setValue);
+		metaData.scriptClass->addInternalCall("Internal_SetRange", (void*)&ScriptGUISliderV::internal_setRange);
+		metaData.scriptClass->addInternalCall("Internal_GetRangeMaximum", (void*)&ScriptGUISliderV::internal_getRangeMaximum);
+		metaData.scriptClass->addInternalCall("Internal_GetRangeMinimum", (void*)ScriptGUISliderV::internal_getRangeMinimum);
+		metaData.scriptClass->addInternalCall("Internal_SetStep", (void*)&ScriptGUISliderV::internal_setStep);
+		metaData.scriptClass->addInternalCall("Internal_GetStep", (void*)&ScriptGUISliderV::internal_getStep);
 
 		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("DoOnChanged", 1)->getThunk();
 	}

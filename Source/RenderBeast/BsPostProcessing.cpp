@@ -978,7 +978,6 @@ namespace bs { namespace ct
 		const SPtr<RenderTexture>& output)
 	{
 		RenderAPI& rapi = RenderAPI::instance();
-		const TextureProperties& srcProps = source->getProperties();
 
 		mInputTexture.set(source, TextureSurface(srcMip));
 		rapi.setRenderTarget(output);

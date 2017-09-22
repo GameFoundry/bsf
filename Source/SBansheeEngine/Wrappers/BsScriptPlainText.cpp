@@ -21,9 +21,9 @@ namespace bs
 
 	void ScriptPlainText::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptPlainText::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_GetText", &ScriptPlainText::internal_getText);
-		metaData.scriptClass->addInternalCall("Internal_SetText", &ScriptPlainText::internal_setText);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptPlainText::internal_createInstance);
+		metaData.scriptClass->addInternalCall("Internal_GetText", (void*)&ScriptPlainText::internal_getText);
+		metaData.scriptClass->addInternalCall("Internal_SetText", (void*)&ScriptPlainText::internal_setText);
 	}
 
 	void ScriptPlainText::internal_createInstance(MonoObject* instance, MonoString* text)
@@ -31,7 +31,7 @@ namespace bs
 		WString strText = MonoUtil::monoToWString(text);
 		HPlainText plainText = PlainText::create(strText);
 
-		ScriptResourceBase* scriptInstance = ScriptResourceManager::instance().createBuiltinScriptResource(plainText, instance);
+		ScriptResourceManager::instance().createBuiltinScriptResource(plainText, instance);
 	}
 
 	MonoString* ScriptPlainText::internal_getText(ScriptPlainText* thisPtr)

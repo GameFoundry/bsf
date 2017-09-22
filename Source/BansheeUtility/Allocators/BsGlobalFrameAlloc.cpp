@@ -8,7 +8,7 @@ namespace bs
 {
 	BS_THREADLOCAL FrameAlloc* _GlobalFrameAlloc = nullptr;
 
-	inline BS_UTILITY_EXPORT FrameAlloc& gFrameAlloc()
+	BS_UTILITY_EXPORT FrameAlloc& gFrameAlloc()
 	{
 		if (_GlobalFrameAlloc == nullptr)
 		{
@@ -20,32 +20,32 @@ namespace bs
 		return *_GlobalFrameAlloc;
 	}
 
-	inline BS_UTILITY_EXPORT UINT8* bs_frame_alloc(UINT32 numBytes)
+	BS_UTILITY_EXPORT UINT8* bs_frame_alloc(UINT32 numBytes)
 	{
 		return gFrameAlloc().alloc(numBytes);
 	}
 
-	inline BS_UTILITY_EXPORT UINT8* bs_frame_alloc_aligned(UINT32 count, UINT32 align)
+	BS_UTILITY_EXPORT UINT8* bs_frame_alloc_aligned(UINT32 count, UINT32 align)
 	{
 		return gFrameAlloc().allocAligned(count, align);
 	}
 
-	inline BS_UTILITY_EXPORT void bs_frame_free(void* data)
+	BS_UTILITY_EXPORT void bs_frame_free(void* data)
 	{
 		gFrameAlloc().dealloc((UINT8*)data);
 	}
 
-	inline BS_UTILITY_EXPORT void bs_frame_free_aligned(void* data)
+	BS_UTILITY_EXPORT void bs_frame_free_aligned(void* data)
 	{
 		gFrameAlloc().dealloc((UINT8*)data);
 	}
 
-	inline BS_UTILITY_EXPORT void bs_frame_mark()
+	BS_UTILITY_EXPORT void bs_frame_mark()
 	{
 		gFrameAlloc().markFrame();
 	}
 
-	inline BS_UTILITY_EXPORT void bs_frame_clear()
+	BS_UTILITY_EXPORT void bs_frame_clear()
 	{
 		gFrameAlloc().clear();
 	}

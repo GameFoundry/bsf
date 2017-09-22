@@ -20,8 +20,8 @@ namespace bs
 
 	void ScriptSceneGizmos::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_Create", &ScriptSceneGizmos::internal_Create);
-		metaData.scriptClass->addInternalCall("Internal_Draw", &ScriptSceneGizmos::internal_Draw);
+		metaData.scriptClass->addInternalCall("Internal_Create", (void*)&ScriptSceneGizmos::internal_Create);
+		metaData.scriptClass->addInternalCall("Internal_Draw", (void*)&ScriptSceneGizmos::internal_Draw);
 	}
 
 	void ScriptSceneGizmos::internal_Create(MonoObject* managedInstance, ScriptCamera* camera)

@@ -27,6 +27,7 @@
 #	define BS_COMP_VER __clang_version__
 #   define BS_THREADLOCAL __thread
 #   define BS_STDCALL __attribute__((stdcall))
+#   define BS_CDECL __attribute__((cdecl))
 #elif defined(__GNUC__) // Check after Clang, as Clang defines this too
 #   define BS_COMPILER BS_COMPILER_GNUC
 #   define BS_COMP_VER (((__GNUC__)*100) + \
@@ -34,16 +35,19 @@
         __GNUC_PATCHLEVEL__)
 #   define BS_THREADLOCAL __thread
 #   define BS_STDCALL __attribute__((stdcall))
+#   define BS_CDECL __attribute__((cdecl))
 #elif defined (__INTEL_COMPILER)
 #   define BS_COMPILER BS_COMPILER_INTEL
 #	define BS_COMP_VER __INTEL_COMPILER
 #   define BS_STDCALL __stdcall
+#   define BS_CDECL __cdecl
 	// BS_THREADLOCAL define is down below because Intel compiler defines it differently based on platform
 #elif defined(_MSC_VER) // Check after Clang and Intel, since we could be building with either within VS
 #   define BS_COMPILER BS_COMPILER_MSVC
 #   define BS_COMP_VER _MSC_VER
 #	define BS_THREADLOCAL __declspec(thread)
 #   define BS_STDCALL __stdcall
+#   define BS_CDECL __cdecl
 #	undef __PRETTY_FUNCTION__
 #	define __PRETTY_FUNCTION__ __FUNCSIG__
 #else

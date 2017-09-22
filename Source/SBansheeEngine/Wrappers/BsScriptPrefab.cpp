@@ -17,15 +17,15 @@ namespace bs
 
 	void ScriptPrefab::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptPrefab::internal_CreateInstance);
-		metaData.scriptClass->addInternalCall("Internal_Instantiate", &ScriptPrefab::internal_Instantiate);
-		metaData.scriptClass->addInternalCall("Internal_IsScene", &ScriptPrefab::internal_IsScene);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptPrefab::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_Instantiate", (void*)&ScriptPrefab::internal_Instantiate);
+		metaData.scriptClass->addInternalCall("Internal_IsScene", (void*)&ScriptPrefab::internal_IsScene);
 	}
 
 	void ScriptPrefab::internal_CreateInstance(MonoObject* instance, ScriptSceneObject* so, bool isScene)
 	{
 		HPrefab prefab = Prefab::create(so->getNativeSceneObject(), isScene);
-		ScriptResourceBase* scriptInstance = ScriptResourceManager::instance().createBuiltinScriptResource(prefab, instance);
+		ScriptResourceManager::instance().createBuiltinScriptResource(prefab, instance);
 	}
 
 	MonoObject* ScriptPrefab::internal_Instantiate(ScriptPrefab* thisPtr)

@@ -75,14 +75,14 @@ namespace bs
 		 */
 		void initialize(MonoObject* object);
 
-		typedef void(__stdcall *OnCreatedThunkDef) (MonoObject*, MonoException**);
-		typedef void(__stdcall *OnInitializedThunkDef) (MonoObject*, MonoException**);
-		typedef void(__stdcall *OnUpdateThunkDef) (MonoObject*, MonoException**);
-		typedef void(__stdcall *OnDestroyedThunkDef) (MonoObject*, MonoException**);
-		typedef void(__stdcall *OnResetThunkDef) (MonoObject*, MonoException**);
-		typedef void(__stdcall *OnEnabledThunkDef) (MonoObject*, MonoException**);
-		typedef void(__stdcall *OnDisabledThunkDef) (MonoObject*, MonoException**);
-		typedef void(__stdcall *OnTransformChangedThunkDef) (MonoObject*, TransformChangedFlags, MonoException**);
+		typedef void(BS_THUNKCALL *OnCreatedThunkDef) (MonoObject*, MonoException**);
+		typedef void(BS_THUNKCALL *OnInitializedThunkDef) (MonoObject*, MonoException**);
+		typedef void(BS_THUNKCALL *OnUpdateThunkDef) (MonoObject*, MonoException**);
+		typedef void(BS_THUNKCALL *OnDestroyedThunkDef) (MonoObject*, MonoException**);
+		typedef void(BS_THUNKCALL *OnResetThunkDef) (MonoObject*, MonoException**);
+		typedef void(BS_THUNKCALL *OnEnabledThunkDef) (MonoObject*, MonoException**);
+		typedef void(BS_THUNKCALL *OnDisabledThunkDef) (MonoObject*, MonoException**);
+		typedef void(BS_THUNKCALL *OnTransformChangedThunkDef) (MonoObject*, TransformChangedFlags, MonoException**);
 
 		MonoObject* mManagedInstance;
 		MonoClass* mManagedClass;

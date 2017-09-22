@@ -88,7 +88,7 @@ namespace bs
 	{
 		sGUIPanelMethod = metaData.scriptClass->getMethod("SetPanel", 1);
 
-		metaData.scriptClass->addInternalCall("Internal_SetSkin", &ScriptGUI::internal_SetSkin);
+		metaData.scriptClass->addInternalCall("Internal_SetSkin", (void*)&ScriptGUI::internal_SetSkin);
 	}
 
 	void ScriptGUI::internal_SetSkin(ScriptGUISkin* skin)

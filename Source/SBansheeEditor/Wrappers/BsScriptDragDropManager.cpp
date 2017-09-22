@@ -21,12 +21,12 @@ namespace bs
 
 	void ScriptDragDrop::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_IsDragInProgress", &ScriptDragDrop::internal_IsDragInProgress);
-		metaData.scriptClass->addInternalCall("Internal_IsDropInProgress", &ScriptDragDrop::internal_IsDropInProgress);
-		metaData.scriptClass->addInternalCall("Internal_GetData", &ScriptDragDrop::internal_GetData);
-		metaData.scriptClass->addInternalCall("Internal_GetDragType", &ScriptDragDrop::internal_GetDragType);
-		metaData.scriptClass->addInternalCall("Internal_StartSceneObjectDrag", &ScriptDragDrop::internal_StartSceneObjectDrag);
-		metaData.scriptClass->addInternalCall("Internal_StartResourceDrag", &ScriptDragDrop::internal_StartResourceDrag);
+		metaData.scriptClass->addInternalCall("Internal_IsDragInProgress", (void*)&ScriptDragDrop::internal_IsDragInProgress);
+		metaData.scriptClass->addInternalCall("Internal_IsDropInProgress", (void*)&ScriptDragDrop::internal_IsDropInProgress);
+		metaData.scriptClass->addInternalCall("Internal_GetData", (void*)&ScriptDragDrop::internal_GetData);
+		metaData.scriptClass->addInternalCall("Internal_GetDragType", (void*)&ScriptDragDrop::internal_GetDragType);
+		metaData.scriptClass->addInternalCall("Internal_StartSceneObjectDrag", (void*)&ScriptDragDrop::internal_StartSceneObjectDrag);
+		metaData.scriptClass->addInternalCall("Internal_StartResourceDrag", (void*)&ScriptDragDrop::internal_StartResourceDrag);
 	}
 
 	bool ScriptDragDrop::internal_IsDragInProgress()
@@ -92,8 +92,8 @@ namespace bs
 
 	void ScriptSceneObjectDragDropData::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptSceneObjectDragDropData::internal_CreateInstance);
-		metaData.scriptClass->addInternalCall("Internal_GetObjects", &ScriptSceneObjectDragDropData::internal_GetObjects);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptSceneObjectDragDropData::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_GetObjects", (void*)&ScriptSceneObjectDragDropData::internal_GetObjects);
 	}
 
 	MonoObject* ScriptSceneObjectDragDropData::create(const Vector<HSceneObject>& sceneObjects)
@@ -150,8 +150,8 @@ namespace bs
 
 	void ScriptResourceDragDropData::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptResourceDragDropData::internal_CreateInstance);
-		metaData.scriptClass->addInternalCall("Internal_GetPaths", &ScriptResourceDragDropData::internal_GetPaths);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptResourceDragDropData::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_GetPaths", (void*)&ScriptResourceDragDropData::internal_GetPaths);
 	}
 
 	MonoObject* ScriptResourceDragDropData::create(const Vector<Path>& paths)

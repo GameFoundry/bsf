@@ -487,7 +487,7 @@ namespace bs { namespace ct
 		rtDesc.depthStencilSurface.texture = mShadowMap->texture;
 		rtDesc.depthStencilSurface.numFaces = 1;
 
-		for (int i = 0; i < NUM_CASCADE_SPLITS; ++i)
+		for (UINT32 i = 0; i < NUM_CASCADE_SPLITS; ++i)
 		{
 			rtDesc.depthStencilSurface.face = i;
 			mTargets[i] = RenderTexture::create(rtDesc);
@@ -1051,7 +1051,7 @@ namespace bs { namespace ct
 			}
 		}
 
-		if (shadowInfo.textureIdx == -1)
+		if (shadowInfo.textureIdx == (UINT32)-1)
 		{
 			shadowInfo.textureIdx = (UINT32)mCascadedShadowMaps.size();
 			mCascadedShadowMaps.push_back(ShadowCascadedMap(mapSize));
@@ -1066,7 +1066,7 @@ namespace bs { namespace ct
 		lightRotation.lookRotation(-light->getRotation().zAxis());
 
 		Matrix4 viewMat = Matrix4::view(light->getPosition(), lightRotation);
-		for (int i = 0; i < NUM_CASCADE_SPLITS; ++i)
+		for (UINT32 i = 0; i < NUM_CASCADE_SPLITS; ++i)
 		{
 			Sphere frustumBounds;
 			ConvexVolume cascadeCullVolume = getCSMSplitFrustum(view, -lightDir, i, NUM_CASCADE_SPLITS, frustumBounds);
@@ -1098,7 +1098,7 @@ namespace bs { namespace ct
 			shadowInfo.depthFade = splitFar;
 			shadowInfo.subjectBounds = frustumBounds;
 			
-			if ((i + 1) < NUM_CASCADE_SPLITS)
+			if ((UINT32)(i + 1) < NUM_CASCADE_SPLITS)
 				shadowInfo.fadeRange = CASCADE_FRACTION_FADE * (shadowInfo.depthFade - shadowInfo.depthNear);
 			else
 				shadowInfo.fadeRange = 0.0f;
@@ -1287,7 +1287,7 @@ namespace bs { namespace ct
 			}
 		}
 
-		if (mapInfo.textureIdx == -1)
+		if (mapInfo.textureIdx == (UINT32)-1)
 		{
 			mapInfo.textureIdx = (UINT32)mShadowCubemaps.size();
 			mShadowCubemaps.push_back(ShadowCubemap(options.mapSize));
@@ -1623,7 +1623,7 @@ namespace bs { namespace ct
 		for (auto& entry : frustumVerts)
 			radius = std::max(radius, center.squaredDistance(entry));
 
-		radius = std::max(sqrt(radius), 1.0f);
+		radius = std::max((float)sqrt(radius), 1.0f);
 		outBounds = Sphere(center, radius);
 
 		// Generate light frustum planes
@@ -1765,6 +1765,8 @@ namespace bs { namespace ct
 			break;
 		case LightType::Spot: 
 			defaultBias = SPOT_DEPTH_BIAS;
+			break;
+		default:
 			break;
 		}
 		

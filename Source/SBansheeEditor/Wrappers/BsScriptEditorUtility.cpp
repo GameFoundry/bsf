@@ -21,11 +21,11 @@ namespace bs
 
 	void ScriptEditorUtility::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CalculateBounds", &ScriptEditorUtility::internal_CalculateBounds);
-		metaData.scriptClass->addInternalCall("Internal_CalculateBoundsArray", &ScriptEditorUtility::internal_CalculateBoundsArray);
-		metaData.scriptClass->addInternalCall("Internal_CalculateArrayCenter", &ScriptEditorUtility::internal_CalculateArrayCenter);
-		metaData.scriptClass->addInternalCall("Internal_FindDependencies", &ScriptEditorUtility::internal_FindDependencies);
-		metaData.scriptClass->addInternalCall("Internal_IsInternal", &ScriptEditorUtility::internal_IsInternal);
+		metaData.scriptClass->addInternalCall("Internal_CalculateBounds", (void*)&ScriptEditorUtility::internal_CalculateBounds);
+		metaData.scriptClass->addInternalCall("Internal_CalculateBoundsArray", (void*)&ScriptEditorUtility::internal_CalculateBoundsArray);
+		metaData.scriptClass->addInternalCall("Internal_CalculateArrayCenter", (void*)&ScriptEditorUtility::internal_CalculateArrayCenter);
+		metaData.scriptClass->addInternalCall("Internal_FindDependencies", (void*)&ScriptEditorUtility::internal_FindDependencies);
+		metaData.scriptClass->addInternalCall("Internal_IsInternal", (void*)&ScriptEditorUtility::internal_IsInternal);
 	}
 
 	void ScriptEditorUtility::internal_CalculateBounds(MonoObject* so, AABox* bounds)

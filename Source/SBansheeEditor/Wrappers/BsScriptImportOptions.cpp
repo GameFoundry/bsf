@@ -71,21 +71,21 @@ namespace bs
 
 	void ScriptTextureImportOptions::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptTextureImportOptions::internal_CreateInstance);
-		metaData.scriptClass->addInternalCall("Internal_GetPixelFormat", &ScriptTextureImportOptions::internal_GetPixelFormat);
-		metaData.scriptClass->addInternalCall("Internal_SetPixelFormat", &ScriptTextureImportOptions::internal_SetPixelFormat);
-		metaData.scriptClass->addInternalCall("Internal_GetGenerateMipmaps", &ScriptTextureImportOptions::internal_GetGenerateMipmaps);
-		metaData.scriptClass->addInternalCall("Internal_SetGenerateMipmaps", &ScriptTextureImportOptions::internal_SetGenerateMipmaps);
-		metaData.scriptClass->addInternalCall("Internal_GetMaxMipmapLevel", &ScriptTextureImportOptions::internal_GetMaxMipmapLevel);
-		metaData.scriptClass->addInternalCall("Internal_SetMaxMipmapLevel", &ScriptTextureImportOptions::internal_SetMaxMipmapLevel);
-		metaData.scriptClass->addInternalCall("Internal_GetCPUCached", &ScriptTextureImportOptions::internal_GetCPUCached);
-		metaData.scriptClass->addInternalCall("Internal_SetCPUCached", &ScriptTextureImportOptions::internal_SetCPUCached);
-		metaData.scriptClass->addInternalCall("Internal_GetIsSRGB", &ScriptTextureImportOptions::internal_GetIsSRGB);
-		metaData.scriptClass->addInternalCall("Internal_SetIsSRGB", &ScriptTextureImportOptions::internal_SetIsSRGB);
-		metaData.scriptClass->addInternalCall("Internal_GetIsCubemap", &ScriptTextureImportOptions::internal_GetIsCubemap);
-		metaData.scriptClass->addInternalCall("Internal_SetIsCubemap", &ScriptTextureImportOptions::internal_SetIsCubemap);
-		metaData.scriptClass->addInternalCall("Internal_GetCubemapSourceType", &ScriptTextureImportOptions::internal_GetCubemapSourceType);
-		metaData.scriptClass->addInternalCall("Internal_SetCubemapSourceType", &ScriptTextureImportOptions::internal_SetCubemapSourceType);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptTextureImportOptions::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_GetPixelFormat", (void*)&ScriptTextureImportOptions::internal_GetPixelFormat);
+		metaData.scriptClass->addInternalCall("Internal_SetPixelFormat", (void*)&ScriptTextureImportOptions::internal_SetPixelFormat);
+		metaData.scriptClass->addInternalCall("Internal_GetGenerateMipmaps", (void*)&ScriptTextureImportOptions::internal_GetGenerateMipmaps);
+		metaData.scriptClass->addInternalCall("Internal_SetGenerateMipmaps", (void*)&ScriptTextureImportOptions::internal_SetGenerateMipmaps);
+		metaData.scriptClass->addInternalCall("Internal_GetMaxMipmapLevel", (void*)&ScriptTextureImportOptions::internal_GetMaxMipmapLevel);
+		metaData.scriptClass->addInternalCall("Internal_SetMaxMipmapLevel", (void*)&ScriptTextureImportOptions::internal_SetMaxMipmapLevel);
+		metaData.scriptClass->addInternalCall("Internal_GetCPUCached", (void*)&ScriptTextureImportOptions::internal_GetCPUCached);
+		metaData.scriptClass->addInternalCall("Internal_SetCPUCached", (void*)&ScriptTextureImportOptions::internal_SetCPUCached);
+		metaData.scriptClass->addInternalCall("Internal_GetIsSRGB", (void*)&ScriptTextureImportOptions::internal_GetIsSRGB);
+		metaData.scriptClass->addInternalCall("Internal_SetIsSRGB", (void*)&ScriptTextureImportOptions::internal_SetIsSRGB);
+		metaData.scriptClass->addInternalCall("Internal_GetIsCubemap", (void*)&ScriptTextureImportOptions::internal_GetIsCubemap);
+		metaData.scriptClass->addInternalCall("Internal_SetIsCubemap", (void*)&ScriptTextureImportOptions::internal_SetIsCubemap);
+		metaData.scriptClass->addInternalCall("Internal_GetCubemapSourceType", (void*)&ScriptTextureImportOptions::internal_GetCubemapSourceType);
+		metaData.scriptClass->addInternalCall("Internal_SetCubemapSourceType", (void*)&ScriptTextureImportOptions::internal_SetCubemapSourceType);
 	}
 
 	SPtr<TextureImportOptions> ScriptTextureImportOptions::getTexImportOptions()
@@ -191,31 +191,31 @@ namespace bs
 
 	void ScriptMeshImportOptions::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptMeshImportOptions::internal_CreateInstance);
-		metaData.scriptClass->addInternalCall("Internal_GetCPUCached", &ScriptMeshImportOptions::internal_GetCPUCached);
-		metaData.scriptClass->addInternalCall("Internal_SetCPUCached", &ScriptMeshImportOptions::internal_SetCPUCached);
-		metaData.scriptClass->addInternalCall("Internal_GetImportNormals", &ScriptMeshImportOptions::internal_GetImportNormals);
-		metaData.scriptClass->addInternalCall("Internal_SetImportNormals", &ScriptMeshImportOptions::internal_SetImportNormals);
-		metaData.scriptClass->addInternalCall("Internal_GetImportTangents", &ScriptMeshImportOptions::internal_GetImportTangents);
-		metaData.scriptClass->addInternalCall("Internal_SetImportTangents", &ScriptMeshImportOptions::internal_SetImportTangents);
-		metaData.scriptClass->addInternalCall("Internal_GetImportSkin", &ScriptMeshImportOptions::internal_GetImportSkin);
-		metaData.scriptClass->addInternalCall("Internal_SetImportSkin", &ScriptMeshImportOptions::internal_SetImportSkin);
-		metaData.scriptClass->addInternalCall("Internal_GetImportAnimation", &ScriptMeshImportOptions::internal_GetImportAnimation);
-		metaData.scriptClass->addInternalCall("Internal_SetImportAnimation", &ScriptMeshImportOptions::internal_SetImportAnimation);
-		metaData.scriptClass->addInternalCall("Internal_GetImportBlendShapes", &ScriptMeshImportOptions::internal_GetImportBlendShapes);
-		metaData.scriptClass->addInternalCall("Internal_SetImportBlendShapes", &ScriptMeshImportOptions::internal_SetImportBlendShapes);
-		metaData.scriptClass->addInternalCall("Internal_GetKeyFrameReduction", &ScriptMeshImportOptions::internal_GetKeyFrameReduction);
-		metaData.scriptClass->addInternalCall("Internal_SetKeyFrameReduction", &ScriptMeshImportOptions::internal_SetKeyFrameReduction);
-		metaData.scriptClass->addInternalCall("Internal_GetRootMotion", &ScriptMeshImportOptions::internal_GetRootMotion);
-		metaData.scriptClass->addInternalCall("Internal_SetRootMotion", &ScriptMeshImportOptions::internal_SetRootMotion);
-		metaData.scriptClass->addInternalCall("Internal_GetScale", &ScriptMeshImportOptions::internal_GetScale);
-		metaData.scriptClass->addInternalCall("Internal_SetScale", &ScriptMeshImportOptions::internal_SetScale);
-		metaData.scriptClass->addInternalCall("Internal_GetCollisionMeshType", &ScriptMeshImportOptions::internal_GetCollisionMeshType);
-		metaData.scriptClass->addInternalCall("Internal_SetCollisionMeshType", &ScriptMeshImportOptions::internal_SetCollisionMeshType);
-		metaData.scriptClass->addInternalCall("Internal_GetAnimationClipSplits", &ScriptMeshImportOptions::internal_GetAnimationClipSplits);
-		metaData.scriptClass->addInternalCall("Internal_SetAnimationClipSplits", &ScriptMeshImportOptions::internal_SetAnimationClipSplits);
-		metaData.scriptClass->addInternalCall("Internal_GetAnimationEvents", &ScriptMeshImportOptions::internal_GetAnimationEvents);
-		metaData.scriptClass->addInternalCall("Internal_SetAnimationEvents", &ScriptMeshImportOptions::internal_SetAnimationEvents);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptMeshImportOptions::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_GetCPUCached", (void*)&ScriptMeshImportOptions::internal_GetCPUCached);
+		metaData.scriptClass->addInternalCall("Internal_SetCPUCached", (void*)&ScriptMeshImportOptions::internal_SetCPUCached);
+		metaData.scriptClass->addInternalCall("Internal_GetImportNormals", (void*)&ScriptMeshImportOptions::internal_GetImportNormals);
+		metaData.scriptClass->addInternalCall("Internal_SetImportNormals", (void*)&ScriptMeshImportOptions::internal_SetImportNormals);
+		metaData.scriptClass->addInternalCall("Internal_GetImportTangents", (void*)&ScriptMeshImportOptions::internal_GetImportTangents);
+		metaData.scriptClass->addInternalCall("Internal_SetImportTangents", (void*)&ScriptMeshImportOptions::internal_SetImportTangents);
+		metaData.scriptClass->addInternalCall("Internal_GetImportSkin", (void*)&ScriptMeshImportOptions::internal_GetImportSkin);
+		metaData.scriptClass->addInternalCall("Internal_SetImportSkin", (void*)&ScriptMeshImportOptions::internal_SetImportSkin);
+		metaData.scriptClass->addInternalCall("Internal_GetImportAnimation", (void*)&ScriptMeshImportOptions::internal_GetImportAnimation);
+		metaData.scriptClass->addInternalCall("Internal_SetImportAnimation", (void*)&ScriptMeshImportOptions::internal_SetImportAnimation);
+		metaData.scriptClass->addInternalCall("Internal_GetImportBlendShapes", (void*)&ScriptMeshImportOptions::internal_GetImportBlendShapes);
+		metaData.scriptClass->addInternalCall("Internal_SetImportBlendShapes", (void*)&ScriptMeshImportOptions::internal_SetImportBlendShapes);
+		metaData.scriptClass->addInternalCall("Internal_GetKeyFrameReduction", (void*)&ScriptMeshImportOptions::internal_GetKeyFrameReduction);
+		metaData.scriptClass->addInternalCall("Internal_SetKeyFrameReduction", (void*)&ScriptMeshImportOptions::internal_SetKeyFrameReduction);
+		metaData.scriptClass->addInternalCall("Internal_GetRootMotion", (void*)&ScriptMeshImportOptions::internal_GetRootMotion);
+		metaData.scriptClass->addInternalCall("Internal_SetRootMotion", (void*)&ScriptMeshImportOptions::internal_SetRootMotion);
+		metaData.scriptClass->addInternalCall("Internal_GetScale", (void*)&ScriptMeshImportOptions::internal_GetScale);
+		metaData.scriptClass->addInternalCall("Internal_SetScale", (void*)&ScriptMeshImportOptions::internal_SetScale);
+		metaData.scriptClass->addInternalCall("Internal_GetCollisionMeshType", (void*)&ScriptMeshImportOptions::internal_GetCollisionMeshType);
+		metaData.scriptClass->addInternalCall("Internal_SetCollisionMeshType", (void*)&ScriptMeshImportOptions::internal_SetCollisionMeshType);
+		metaData.scriptClass->addInternalCall("Internal_GetAnimationClipSplits", (void*)&ScriptMeshImportOptions::internal_GetAnimationClipSplits);
+		metaData.scriptClass->addInternalCall("Internal_SetAnimationClipSplits", (void*)&ScriptMeshImportOptions::internal_SetAnimationClipSplits);
+		metaData.scriptClass->addInternalCall("Internal_GetAnimationEvents", (void*)&ScriptMeshImportOptions::internal_GetAnimationEvents);
+		metaData.scriptClass->addInternalCall("Internal_SetAnimationEvents", (void*)&ScriptMeshImportOptions::internal_SetAnimationEvents);
 	}
 
 	SPtr<MeshImportOptions> ScriptMeshImportOptions::getMeshImportOptions()
@@ -415,19 +415,19 @@ namespace bs
 
 	void ScriptFontImportOptions::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptFontImportOptions::internal_CreateInstance);
-		metaData.scriptClass->addInternalCall("Internal_GetFontSizes", &ScriptFontImportOptions::internal_GetFontSizes);
-		metaData.scriptClass->addInternalCall("Internal_SetFontSizes", &ScriptFontImportOptions::internal_SetFontSizes);
-		metaData.scriptClass->addInternalCall("Internal_GetDPI", &ScriptFontImportOptions::internal_GetDPI);
-		metaData.scriptClass->addInternalCall("Internal_SetDPI", &ScriptFontImportOptions::internal_SetDPI);
-		metaData.scriptClass->addInternalCall("Internal_GetRenderMode", &ScriptFontImportOptions::internal_GetRenderMode);
-		metaData.scriptClass->addInternalCall("Internal_SetRenderMode", &ScriptFontImportOptions::internal_SetRenderMode);
-		metaData.scriptClass->addInternalCall("Internal_GetBold", &ScriptFontImportOptions::internal_GetBold);
-		metaData.scriptClass->addInternalCall("Internal_SetBold", &ScriptFontImportOptions::internal_SetBold);
-		metaData.scriptClass->addInternalCall("Internal_GetItalic", &ScriptFontImportOptions::internal_GetItalic);
-		metaData.scriptClass->addInternalCall("Internal_SetItalic", &ScriptFontImportOptions::internal_SetItalic);
-		metaData.scriptClass->addInternalCall("Internal_GetCharRanges", &ScriptFontImportOptions::internal_GetCharRanges);
-		metaData.scriptClass->addInternalCall("Internal_SetCharRanges", &ScriptFontImportOptions::internal_SetCharRanges);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptFontImportOptions::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_GetFontSizes", (void*)&ScriptFontImportOptions::internal_GetFontSizes);
+		metaData.scriptClass->addInternalCall("Internal_SetFontSizes", (void*)&ScriptFontImportOptions::internal_SetFontSizes);
+		metaData.scriptClass->addInternalCall("Internal_GetDPI", (void*)&ScriptFontImportOptions::internal_GetDPI);
+		metaData.scriptClass->addInternalCall("Internal_SetDPI", (void*)&ScriptFontImportOptions::internal_SetDPI);
+		metaData.scriptClass->addInternalCall("Internal_GetRenderMode", (void*)&ScriptFontImportOptions::internal_GetRenderMode);
+		metaData.scriptClass->addInternalCall("Internal_SetRenderMode", (void*)&ScriptFontImportOptions::internal_SetRenderMode);
+		metaData.scriptClass->addInternalCall("Internal_GetBold", (void*)&ScriptFontImportOptions::internal_GetBold);
+		metaData.scriptClass->addInternalCall("Internal_SetBold", (void*)&ScriptFontImportOptions::internal_SetBold);
+		metaData.scriptClass->addInternalCall("Internal_GetItalic", (void*)&ScriptFontImportOptions::internal_GetItalic);
+		metaData.scriptClass->addInternalCall("Internal_SetItalic", (void*)&ScriptFontImportOptions::internal_SetItalic);
+		metaData.scriptClass->addInternalCall("Internal_GetCharRanges", (void*)&ScriptFontImportOptions::internal_GetCharRanges);
+		metaData.scriptClass->addInternalCall("Internal_SetCharRanges", (void*)&ScriptFontImportOptions::internal_SetCharRanges);
 	}
 
 	SPtr<FontImportOptions> ScriptFontImportOptions::getFontImportOptions()
@@ -552,9 +552,9 @@ namespace bs
 
 	void ScriptScriptCodeImportOptions::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptScriptCodeImportOptions::internal_CreateInstance);
-		metaData.scriptClass->addInternalCall("Internal_IsEditorScript", &ScriptScriptCodeImportOptions::internal_IsEditorScript);
-		metaData.scriptClass->addInternalCall("Internal_SetEditorScript", &ScriptScriptCodeImportOptions::internal_SetEditorScript);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptScriptCodeImportOptions::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_IsEditorScript", (void*)&ScriptScriptCodeImportOptions::internal_IsEditorScript);
+		metaData.scriptClass->addInternalCall("Internal_SetEditorScript", (void*)&ScriptScriptCodeImportOptions::internal_SetEditorScript);
 	}
 
 	SPtr<ScriptCodeImportOptions> ScriptScriptCodeImportOptions::getCodeImportOptions()
@@ -599,15 +599,15 @@ namespace bs
 
 	void ScriptAudioClipImportOptions::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptAudioClipImportOptions::internal_CreateInstance);
-		metaData.scriptClass->addInternalCall("Internal_GetFormat", &ScriptAudioClipImportOptions::internal_GetFormat);
-		metaData.scriptClass->addInternalCall("Internal_SetFormat", &ScriptAudioClipImportOptions::internal_SetFormat);
-		metaData.scriptClass->addInternalCall("Internal_GetReadMode", &ScriptAudioClipImportOptions::internal_GetReadMode);
-		metaData.scriptClass->addInternalCall("Internal_SetReadMode", &ScriptAudioClipImportOptions::internal_SetReadMode);
-		metaData.scriptClass->addInternalCall("Internal_GetIs3D", &ScriptAudioClipImportOptions::internal_GetIs3D);
-		metaData.scriptClass->addInternalCall("Internal_SetIs3D", &ScriptAudioClipImportOptions::internal_SetIs3D);
-		metaData.scriptClass->addInternalCall("Internal_GetBitDepth", &ScriptAudioClipImportOptions::internal_GetBitDepth);
-		metaData.scriptClass->addInternalCall("Internal_SetBitDepth", &ScriptAudioClipImportOptions::internal_SetBitDepth);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptAudioClipImportOptions::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_GetFormat", (void*)&ScriptAudioClipImportOptions::internal_GetFormat);
+		metaData.scriptClass->addInternalCall("Internal_SetFormat", (void*)&ScriptAudioClipImportOptions::internal_SetFormat);
+		metaData.scriptClass->addInternalCall("Internal_GetReadMode", (void*)&ScriptAudioClipImportOptions::internal_GetReadMode);
+		metaData.scriptClass->addInternalCall("Internal_SetReadMode", (void*)&ScriptAudioClipImportOptions::internal_SetReadMode);
+		metaData.scriptClass->addInternalCall("Internal_GetIs3D", (void*)&ScriptAudioClipImportOptions::internal_GetIs3D);
+		metaData.scriptClass->addInternalCall("Internal_SetIs3D", (void*)&ScriptAudioClipImportOptions::internal_SetIs3D);
+		metaData.scriptClass->addInternalCall("Internal_GetBitDepth", (void*)&ScriptAudioClipImportOptions::internal_GetBitDepth);
+		metaData.scriptClass->addInternalCall("Internal_SetBitDepth", (void*)&ScriptAudioClipImportOptions::internal_SetBitDepth);
 	}
 
 	SPtr<AudioClipImportOptions> ScriptAudioClipImportOptions::getClipImportOptions()

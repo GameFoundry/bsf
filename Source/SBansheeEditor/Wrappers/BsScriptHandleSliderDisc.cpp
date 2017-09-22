@@ -30,10 +30,10 @@ namespace bs
 
 	void ScriptHandleSliderDisc::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptHandleSliderDisc::internal_CreateInstance);
-		metaData.scriptClass->addInternalCall("Internal_GetDelta", &ScriptHandleSliderDisc::internal_GetDelta);
-		metaData.scriptClass->addInternalCall("Internal_GetStartAngle", &ScriptHandleSliderDisc::internal_GetStartAngle);
-		metaData.scriptClass->addInternalCall("Internal_SetCutoffPlane", &ScriptHandleSliderDisc::internal_SetCutoffPlane);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptHandleSliderDisc::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_GetDelta", (void*)&ScriptHandleSliderDisc::internal_GetDelta);
+		metaData.scriptClass->addInternalCall("Internal_GetStartAngle", (void*)&ScriptHandleSliderDisc::internal_GetStartAngle);
+		metaData.scriptClass->addInternalCall("Internal_SetCutoffPlane", (void*)&ScriptHandleSliderDisc::internal_SetCutoffPlane);
 	}
 
 	void ScriptHandleSliderDisc::internal_CreateInstance(MonoObject* instance, Vector3* normal, float radius, bool fixedScale, UINT64 layer)

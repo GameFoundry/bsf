@@ -43,7 +43,7 @@ namespace bs
 		static void internal_setValueRef(ScriptGUIResourceField* nativeInstance, MonoObject* value);
 		static void internal_setTint(ScriptGUIResourceField* nativeInstance, Color* color);
 
-		typedef void(__stdcall *OnChangedThunkDef) (MonoObject*, MonoObject*, MonoException**);
+		typedef void(BS_THUNKCALL *OnChangedThunkDef) (MonoObject*, MonoObject*, MonoException**);
 
 		static OnChangedThunkDef onChangedThunk;
 	};

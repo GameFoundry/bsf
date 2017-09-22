@@ -24,17 +24,17 @@ namespace bs
 
 	void ScriptPlatformInfo::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_GetType", &ScriptPlatformInfo::internal_GetType);
-		metaData.scriptClass->addInternalCall("Internal_GetDefines", &ScriptPlatformInfo::internal_GetDefines);
-		metaData.scriptClass->addInternalCall("Internal_SetDefines", &ScriptPlatformInfo::internal_SetDefines);
-		metaData.scriptClass->addInternalCall("Internal_GetMainScene", &ScriptPlatformInfo::internal_GetMainScene);
-		metaData.scriptClass->addInternalCall("Internal_SetMainScene", &ScriptPlatformInfo::internal_SetMainScene);
-		metaData.scriptClass->addInternalCall("Internal_GetFullscreen", &ScriptPlatformInfo::internal_GetFullscreen);
-		metaData.scriptClass->addInternalCall("Internal_SetFullscreen", &ScriptPlatformInfo::internal_SetFullscreen);
-		metaData.scriptClass->addInternalCall("Internal_GetResolution", &ScriptPlatformInfo::internal_GetResolution);
-		metaData.scriptClass->addInternalCall("Internal_SetResolution", &ScriptPlatformInfo::internal_SetResolution);
-		metaData.scriptClass->addInternalCall("Internal_GetDebug", &ScriptPlatformInfo::internal_GetDebug);
-		metaData.scriptClass->addInternalCall("Internal_SetDebug", &ScriptPlatformInfo::internal_SetDebug);
+		metaData.scriptClass->addInternalCall("Internal_GetType", (void*)&ScriptPlatformInfo::internal_GetType);
+		metaData.scriptClass->addInternalCall("Internal_GetDefines", (void*)&ScriptPlatformInfo::internal_GetDefines);
+		metaData.scriptClass->addInternalCall("Internal_SetDefines", (void*)&ScriptPlatformInfo::internal_SetDefines);
+		metaData.scriptClass->addInternalCall("Internal_GetMainScene", (void*)&ScriptPlatformInfo::internal_GetMainScene);
+		metaData.scriptClass->addInternalCall("Internal_SetMainScene", (void*)&ScriptPlatformInfo::internal_SetMainScene);
+		metaData.scriptClass->addInternalCall("Internal_GetFullscreen", (void*)&ScriptPlatformInfo::internal_GetFullscreen);
+		metaData.scriptClass->addInternalCall("Internal_SetFullscreen", (void*)&ScriptPlatformInfo::internal_SetFullscreen);
+		metaData.scriptClass->addInternalCall("Internal_GetResolution", (void*)&ScriptPlatformInfo::internal_GetResolution);
+		metaData.scriptClass->addInternalCall("Internal_SetResolution", (void*)&ScriptPlatformInfo::internal_SetResolution);
+		metaData.scriptClass->addInternalCall("Internal_GetDebug", (void*)&ScriptPlatformInfo::internal_GetDebug);
+		metaData.scriptClass->addInternalCall("Internal_SetDebug", (void*)&ScriptPlatformInfo::internal_SetDebug);
 	}
 
 	MonoObject* ScriptPlatformInfo::create(const SPtr<PlatformInfo>& platformInfo)
@@ -125,10 +125,10 @@ namespace bs
 
 	void ScriptWinPlatformInfo::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_GetIcon", &ScriptWinPlatformInfo::internal_GetIcon);
-		metaData.scriptClass->addInternalCall("Internal_SetIcon", &ScriptWinPlatformInfo::internal_SetIcon);
-		metaData.scriptClass->addInternalCall("Internal_GetTitleText", &ScriptWinPlatformInfo::internal_GetTitleText);
-		metaData.scriptClass->addInternalCall("Internal_SetTitleText", &ScriptWinPlatformInfo::internal_SetTitleText);
+		metaData.scriptClass->addInternalCall("Internal_GetIcon", (void*)&ScriptWinPlatformInfo::internal_GetIcon);
+		metaData.scriptClass->addInternalCall("Internal_SetIcon", (void*)&ScriptWinPlatformInfo::internal_SetIcon);
+		metaData.scriptClass->addInternalCall("Internal_GetTitleText", (void*)&ScriptWinPlatformInfo::internal_GetTitleText);
+		metaData.scriptClass->addInternalCall("Internal_SetTitleText", (void*)&ScriptWinPlatformInfo::internal_SetTitleText);
 	}
 
 	SPtr<WinPlatformInfo> ScriptWinPlatformInfo::getWinPlatformInfo() const

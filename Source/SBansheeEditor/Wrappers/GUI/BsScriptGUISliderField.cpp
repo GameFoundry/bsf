@@ -26,14 +26,14 @@ namespace bs
 
 	void ScriptGUISliderField::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUISliderField::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_GetValue", &ScriptGUISliderField::internal_getValue);
-		metaData.scriptClass->addInternalCall("Internal_GetStep", &ScriptGUISliderField::internal_getStep);
-		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptGUISliderField::internal_setValue);
-		metaData.scriptClass->addInternalCall("Internal_HasInputFocus", &ScriptGUISliderField::internal_hasInputFocus);
-		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUISliderField::internal_setTint);
-		metaData.scriptClass->addInternalCall("Internal_SetRange", &ScriptGUISliderField::internal_setRange);
-		metaData.scriptClass->addInternalCall("Internal_SetStep", &ScriptGUISliderField::internal_setStep);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptGUISliderField::internal_createInstance);
+		metaData.scriptClass->addInternalCall("Internal_GetValue", (void*)&ScriptGUISliderField::internal_getValue);
+		metaData.scriptClass->addInternalCall("Internal_GetStep", (void*)&ScriptGUISliderField::internal_getStep);
+		metaData.scriptClass->addInternalCall("Internal_SetValue", (void*)&ScriptGUISliderField::internal_setValue);
+		metaData.scriptClass->addInternalCall("Internal_HasInputFocus", (void*)&ScriptGUISliderField::internal_hasInputFocus);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", (void*)&ScriptGUISliderField::internal_setTint);
+		metaData.scriptClass->addInternalCall("Internal_SetRange", (void*)&ScriptGUISliderField::internal_setRange);
+		metaData.scriptClass->addInternalCall("Internal_SetStep", (void*)&ScriptGUISliderField::internal_setStep);
 
 		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("DoOnChanged", 1)->getThunk();
 	}

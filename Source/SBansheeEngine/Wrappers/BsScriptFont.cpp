@@ -18,8 +18,8 @@ namespace bs
 
 	void ScriptFont::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_GetBitmap", &ScriptFont::internal_GetBitmap);
-		metaData.scriptClass->addInternalCall("Internal_GetClosestSize", &ScriptFont::internal_GetClosestSize);
+		metaData.scriptClass->addInternalCall("Internal_GetBitmap", (void*)&ScriptFont::internal_GetBitmap);
+		metaData.scriptClass->addInternalCall("Internal_GetClosestSize", (void*)&ScriptFont::internal_GetClosestSize);
 	}
 
 	MonoObject* ScriptFont::internal_GetBitmap(ScriptFont* instance, int size)

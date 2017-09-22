@@ -27,7 +27,6 @@ if(WIN32)
 	set(BansheeGLRenderAPI_INC ${BansheeGLRenderAPI_INC} "Source/Win32")
 else()
 	set(BansheeGLRenderAPI_INC ${BansheeGLRenderAPI_INC} ${OPENGL_INCLUDE_DIR})
-# TODO_OTHER_PLATFORMS_GO_HERE
 endif()
 	
 include_directories(${BansheeGLRenderAPI_INC})	

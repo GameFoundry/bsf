@@ -49,8 +49,8 @@ namespace bs
 		static void internal_setStep(ScriptGUIFloatField* nativeInstance, float step);
 		static float internal_getStep(ScriptGUIFloatField* nativeInstance);
 
-		typedef void(__stdcall *OnChangedThunkDef) (MonoObject*, float, MonoException**);
-		typedef void(__stdcall *OnConfirmedThunkDef) (MonoObject*, MonoException**);
+		typedef void(BS_THUNKCALL *OnChangedThunkDef) (MonoObject*, float, MonoException**);
+		typedef void(BS_THUNKCALL *OnConfirmedThunkDef) (MonoObject*, MonoException**);
 
 		static OnChangedThunkDef onChangedThunk;
 		static OnConfirmedThunkDef onConfirmedThunk;

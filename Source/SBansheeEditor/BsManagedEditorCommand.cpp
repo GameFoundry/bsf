@@ -30,7 +30,7 @@ namespace bs
 
 	void ScriptCmdManaged::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptCmdManaged::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptCmdManaged::internal_CreateInstance);
 
 		sCommitMethod = metaData.scriptClass->getMethod("Commit");
 		sRevertMethod = metaData.scriptClass->getMethod("Revert");

@@ -15,17 +15,17 @@ namespace bs
 
 	void ScriptPixelUtility::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_GetMemorySize", &ScriptPixelUtility::internal_getMemorySize);
-		metaData.scriptClass->addInternalCall("Internal_HasAlpha", &ScriptPixelUtility::internal_hasAlpha);
-		metaData.scriptClass->addInternalCall("Internal_IsFloatingPoint", &ScriptPixelUtility::internal_isFloatingPoint);
-		metaData.scriptClass->addInternalCall("Internal_IsCompressed", &ScriptPixelUtility::internal_isCompressed);
-		metaData.scriptClass->addInternalCall("Internal_IsDepth", &ScriptPixelUtility::internal_isDepth);
-		metaData.scriptClass->addInternalCall("Internal_GetMaxMipmaps", &ScriptPixelUtility::internal_getMaxMipmaps);
-		metaData.scriptClass->addInternalCall("Internal_ConvertFormat", &ScriptPixelUtility::internal_convertFormat);
-		metaData.scriptClass->addInternalCall("Internal_Compress", &ScriptPixelUtility::internal_compress);
-		metaData.scriptClass->addInternalCall("Internal_GenerateMipmaps", &ScriptPixelUtility::internal_generateMipmaps);
-		metaData.scriptClass->addInternalCall("Internal_Scale", &ScriptPixelUtility::internal_scale);
-		metaData.scriptClass->addInternalCall("Internal_ApplyGamma", &ScriptPixelUtility::internal_applyGamma);
+		metaData.scriptClass->addInternalCall("Internal_GetMemorySize", (void*)&ScriptPixelUtility::internal_getMemorySize);
+		metaData.scriptClass->addInternalCall("Internal_HasAlpha", (void*)&ScriptPixelUtility::internal_hasAlpha);
+		metaData.scriptClass->addInternalCall("Internal_IsFloatingPoint", (void*)&ScriptPixelUtility::internal_isFloatingPoint);
+		metaData.scriptClass->addInternalCall("Internal_IsCompressed", (void*)&ScriptPixelUtility::internal_isCompressed);
+		metaData.scriptClass->addInternalCall("Internal_IsDepth", (void*)&ScriptPixelUtility::internal_isDepth);
+		metaData.scriptClass->addInternalCall("Internal_GetMaxMipmaps", (void*)&ScriptPixelUtility::internal_getMaxMipmaps);
+		metaData.scriptClass->addInternalCall("Internal_ConvertFormat", (void*)&ScriptPixelUtility::internal_convertFormat);
+		metaData.scriptClass->addInternalCall("Internal_Compress", (void*)&ScriptPixelUtility::internal_compress);
+		metaData.scriptClass->addInternalCall("Internal_GenerateMipmaps", (void*)&ScriptPixelUtility::internal_generateMipmaps);
+		metaData.scriptClass->addInternalCall("Internal_Scale", (void*)&ScriptPixelUtility::internal_scale);
+		metaData.scriptClass->addInternalCall("Internal_ApplyGamma", (void*)&ScriptPixelUtility::internal_applyGamma);
 	}
 
 	void ScriptPixelUtility::internal_getMemorySize(UINT32 width, UINT32 height, UINT32 depth, PixelFormat format, UINT32* value)

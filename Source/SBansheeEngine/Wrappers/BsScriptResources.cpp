@@ -20,11 +20,11 @@ namespace bs
 
 	void ScriptResources::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_Load", &ScriptResources::internal_Load);
-		metaData.scriptClass->addInternalCall("Internal_LoadRef", &ScriptResources::internal_LoadRef);
-		metaData.scriptClass->addInternalCall("Internal_UnloadUnused", &ScriptResources::internal_UnloadUnused);
-		metaData.scriptClass->addInternalCall("Internal_Release", &ScriptResources::internal_Release);
-		metaData.scriptClass->addInternalCall("Internal_ReleaseRef", &ScriptResources::internal_ReleaseRef);
+		metaData.scriptClass->addInternalCall("Internal_Load", (void*)&ScriptResources::internal_Load);
+		metaData.scriptClass->addInternalCall("Internal_LoadRef", (void*)&ScriptResources::internal_LoadRef);
+		metaData.scriptClass->addInternalCall("Internal_UnloadUnused", (void*)&ScriptResources::internal_UnloadUnused);
+		metaData.scriptClass->addInternalCall("Internal_Release", (void*)&ScriptResources::internal_Release);
+		metaData.scriptClass->addInternalCall("Internal_ReleaseRef", (void*)&ScriptResources::internal_ReleaseRef);
 	}
 
 	MonoObject* ScriptResources::internal_Load(MonoString* path, bool keepLoaded)

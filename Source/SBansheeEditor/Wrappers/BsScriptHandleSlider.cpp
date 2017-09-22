@@ -33,16 +33,16 @@ namespace bs
 
 	void ScriptHandleSlider::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptHandleSlider::internal_Destroy);
-		metaData.scriptClass->addInternalCall("Internal_GetPosition", &ScriptHandleSlider::internal_GetPosition);
-		metaData.scriptClass->addInternalCall("Internal_SetPosition", &ScriptHandleSlider::internal_SetPosition);
-		metaData.scriptClass->addInternalCall("Internal_GetRotation", &ScriptHandleSlider::internal_GetRotation);
-		metaData.scriptClass->addInternalCall("Internal_SetRotation", &ScriptHandleSlider::internal_SetRotation);
-		metaData.scriptClass->addInternalCall("Internal_SetScale", &ScriptHandleSlider::internal_SetScale);
-		metaData.scriptClass->addInternalCall("Internal_GetScale", &ScriptHandleSlider::internal_GetScale);
-		metaData.scriptClass->addInternalCall("Internal_GetEnabled", &ScriptHandleSlider::internal_GetEnabled);
-		metaData.scriptClass->addInternalCall("Internal_SetEnabled", &ScriptHandleSlider::internal_SetEnabled);
-		metaData.scriptClass->addInternalCall("Internal_GetState", &ScriptHandleSlider::internal_GetState);
+		metaData.scriptClass->addInternalCall("Internal_Destroy", (void*)&ScriptHandleSlider::internal_Destroy);
+		metaData.scriptClass->addInternalCall("Internal_GetPosition", (void*)&ScriptHandleSlider::internal_GetPosition);
+		metaData.scriptClass->addInternalCall("Internal_SetPosition", (void*)&ScriptHandleSlider::internal_SetPosition);
+		metaData.scriptClass->addInternalCall("Internal_GetRotation", (void*)&ScriptHandleSlider::internal_GetRotation);
+		metaData.scriptClass->addInternalCall("Internal_SetRotation", (void*)&ScriptHandleSlider::internal_SetRotation);
+		metaData.scriptClass->addInternalCall("Internal_SetScale", (void*)&ScriptHandleSlider::internal_SetScale);
+		metaData.scriptClass->addInternalCall("Internal_GetScale", (void*)&ScriptHandleSlider::internal_GetScale);
+		metaData.scriptClass->addInternalCall("Internal_GetEnabled", (void*)&ScriptHandleSlider::internal_GetEnabled);
+		metaData.scriptClass->addInternalCall("Internal_SetEnabled", (void*)&ScriptHandleSlider::internal_SetEnabled);
+		metaData.scriptClass->addInternalCall("Internal_GetState", (void*)&ScriptHandleSlider::internal_GetState);
 	}
 
 	void ScriptHandleSlider::internal_Destroy(ScriptHandleSliderBase* nativeInstance)

@@ -11,8 +11,6 @@ set(BansheeUtility_INC
 
 if(WIN32)
 	set(BansheeUtility_INC ${BansheeUtility_INC} "Win32")
-else()
-	# TODO_OTHER_PLATFORMS_GO_HERE
 endif()
 
 include_directories(${BansheeUtility_INC})	

@@ -35,8 +35,8 @@ namespace bs
 		static void internal_getText(ScriptGUIInputBox* nativeInstance, MonoString** text);
 		static void internal_setTint(ScriptGUIInputBox* nativeInstance, Color* color);
 
-		typedef void(__stdcall *OnChangedThunkDef) (MonoObject*, MonoString*, MonoException**);
-		typedef void(__stdcall *OnConfirmedThunkDef) (MonoObject*, MonoException**);
+		typedef void(BS_THUNKCALL *OnChangedThunkDef) (MonoObject*, MonoString*, MonoException**);
+		typedef void(BS_THUNKCALL *OnConfirmedThunkDef) (MonoObject*, MonoException**);
 
 		static OnChangedThunkDef onChangedThunk;
 		static OnConfirmedThunkDef onConfirmedThunk;

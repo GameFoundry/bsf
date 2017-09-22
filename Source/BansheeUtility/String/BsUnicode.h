@@ -6,6 +6,10 @@
 
 namespace bs
 {
+	/** @addtogroup String
+	 *  @{
+	 */
+
 	/** Provides methods to converting between UTF-8 character encoding and other popular encodings. */
 	class BS_UTILITY_EXPORT UTF8
 	{
@@ -81,4 +85,6 @@ namespace bs
 		 */
 		static U32String toUTF32(const String& input);
 	};
+
+	/** @} */
 }

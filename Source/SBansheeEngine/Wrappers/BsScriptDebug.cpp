@@ -26,13 +26,13 @@ namespace bs
 
 	void ScriptDebug::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_Log", &ScriptDebug::internal_log);
-		metaData.scriptClass->addInternalCall("Internal_LogWarning", &ScriptDebug::internal_logWarning);
-		metaData.scriptClass->addInternalCall("Internal_LogError", &ScriptDebug::internal_logError);
-		metaData.scriptClass->addInternalCall("Internal_LogMessage", &ScriptDebug::internal_logMessage);
-		metaData.scriptClass->addInternalCall("Internal_Clear", &ScriptDebug::internal_clear);
-		metaData.scriptClass->addInternalCall("Internal_ClearType", &ScriptDebug::internal_clearType);
-		metaData.scriptClass->addInternalCall("Internal_GetMessages", &ScriptDebug::internal_getMessages);
+		metaData.scriptClass->addInternalCall("Internal_Log", (void*)&ScriptDebug::internal_log);
+		metaData.scriptClass->addInternalCall("Internal_LogWarning", (void*)&ScriptDebug::internal_logWarning);
+		metaData.scriptClass->addInternalCall("Internal_LogError", (void*)&ScriptDebug::internal_logError);
+		metaData.scriptClass->addInternalCall("Internal_LogMessage", (void*)&ScriptDebug::internal_logMessage);
+		metaData.scriptClass->addInternalCall("Internal_Clear", (void*)&ScriptDebug::internal_clear);
+		metaData.scriptClass->addInternalCall("Internal_ClearType", (void*)&ScriptDebug::internal_clearType);
+		metaData.scriptClass->addInternalCall("Internal_GetMessages", (void*)&ScriptDebug::internal_getMessages);
 
 		onAddedThunk = (OnAddedThunkDef)metaData.scriptClass->getMethod("Internal_OnAdded", 2)->getThunk();
 	}

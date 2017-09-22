@@ -29,12 +29,12 @@ namespace bs
 
 	void ScriptGUIResourceField::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIResourceField::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_GetValue", &ScriptGUIResourceField::internal_getValue);
-		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptGUIResourceField::internal_setValue);
-		metaData.scriptClass->addInternalCall("Internal_GetValueRef", &ScriptGUIResourceField::internal_getValueRef);
-		metaData.scriptClass->addInternalCall("Internal_SetValueRef", &ScriptGUIResourceField::internal_setValueRef);
-		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIResourceField::internal_setTint);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptGUIResourceField::internal_createInstance);
+		metaData.scriptClass->addInternalCall("Internal_GetValue", (void*)&ScriptGUIResourceField::internal_getValue);
+		metaData.scriptClass->addInternalCall("Internal_SetValue", (void*)&ScriptGUIResourceField::internal_setValue);
+		metaData.scriptClass->addInternalCall("Internal_GetValueRef", (void*)&ScriptGUIResourceField::internal_getValueRef);
+		metaData.scriptClass->addInternalCall("Internal_SetValueRef", (void*)&ScriptGUIResourceField::internal_setValueRef);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", (void*)&ScriptGUIResourceField::internal_setTint);
 
 		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("DoOnChanged", 1)->getThunk();
 	}

@@ -16,21 +16,21 @@ namespace bs
 
 	void ScriptProjectSettings::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_GetLastOpenScene", &ScriptProjectSettings::internal_GetLastOpenScene);
-		metaData.scriptClass->addInternalCall("Internal_SetLastOpenScene", &ScriptProjectSettings::internal_SetLastOpenScene);
-		metaData.scriptClass->addInternalCall("Internal_SetFloat", &ScriptProjectSettings::internal_SetFloat);
-		metaData.scriptClass->addInternalCall("Internal_SetInt", &ScriptProjectSettings::internal_SetInt);
-		metaData.scriptClass->addInternalCall("Internal_SetBool", &ScriptProjectSettings::internal_SetBool);
-		metaData.scriptClass->addInternalCall("Internal_SetString", &ScriptProjectSettings::internal_SetString);
-		metaData.scriptClass->addInternalCall("Internal_GetFloat", &ScriptProjectSettings::internal_GetFloat);
-		metaData.scriptClass->addInternalCall("Internal_GetInt", &ScriptProjectSettings::internal_GetInt);
-		metaData.scriptClass->addInternalCall("Internal_GetBool", &ScriptProjectSettings::internal_GetBool);
-		metaData.scriptClass->addInternalCall("Internal_GetString", &ScriptProjectSettings::internal_GetString);
-		metaData.scriptClass->addInternalCall("Internal_HasKey", &ScriptProjectSettings::internal_HasKey);
-		metaData.scriptClass->addInternalCall("Internal_DeleteKey", &ScriptProjectSettings::internal_DeleteKey);
-		metaData.scriptClass->addInternalCall("Internal_DeleteAllKeys", &ScriptProjectSettings::internal_DeleteAllKeys);
-		metaData.scriptClass->addInternalCall("Internal_GetHash", &ScriptProjectSettings::internal_GetHash);
-		metaData.scriptClass->addInternalCall("Internal_Save", &ScriptProjectSettings::internal_Save);
+		metaData.scriptClass->addInternalCall("Internal_GetLastOpenScene", (void*)&ScriptProjectSettings::internal_GetLastOpenScene);
+		metaData.scriptClass->addInternalCall("Internal_SetLastOpenScene", (void*)&ScriptProjectSettings::internal_SetLastOpenScene);
+		metaData.scriptClass->addInternalCall("Internal_SetFloat", (void*)&ScriptProjectSettings::internal_SetFloat);
+		metaData.scriptClass->addInternalCall("Internal_SetInt", (void*)&ScriptProjectSettings::internal_SetInt);
+		metaData.scriptClass->addInternalCall("Internal_SetBool", (void*)&ScriptProjectSettings::internal_SetBool);
+		metaData.scriptClass->addInternalCall("Internal_SetString", (void*)&ScriptProjectSettings::internal_SetString);
+		metaData.scriptClass->addInternalCall("Internal_GetFloat", (void*)&ScriptProjectSettings::internal_GetFloat);
+		metaData.scriptClass->addInternalCall("Internal_GetInt", (void*)&ScriptProjectSettings::internal_GetInt);
+		metaData.scriptClass->addInternalCall("Internal_GetBool", (void*)&ScriptProjectSettings::internal_GetBool);
+		metaData.scriptClass->addInternalCall("Internal_GetString", (void*)&ScriptProjectSettings::internal_GetString);
+		metaData.scriptClass->addInternalCall("Internal_HasKey", (void*)&ScriptProjectSettings::internal_HasKey);
+		metaData.scriptClass->addInternalCall("Internal_DeleteKey", (void*)&ScriptProjectSettings::internal_DeleteKey);
+		metaData.scriptClass->addInternalCall("Internal_DeleteAllKeys", (void*)&ScriptProjectSettings::internal_DeleteAllKeys);
+		metaData.scriptClass->addInternalCall("Internal_GetHash", (void*)&ScriptProjectSettings::internal_GetHash);
+		metaData.scriptClass->addInternalCall("Internal_Save", (void*)&ScriptProjectSettings::internal_Save);
 	}
 
 	MonoString* ScriptProjectSettings::internal_GetLastOpenScene()

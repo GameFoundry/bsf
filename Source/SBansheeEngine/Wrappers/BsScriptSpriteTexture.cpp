@@ -20,15 +20,15 @@ namespace bs
 
 	void ScriptSpriteTexture::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptSpriteTexture::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_GetTexture", &ScriptSpriteTexture::internal_GetTexture);
-		metaData.scriptClass->addInternalCall("Internal_SetTexture", &ScriptSpriteTexture::internal_SetTexture);
-		metaData.scriptClass->addInternalCall("Internal_GetOffset", &ScriptSpriteTexture::internal_GetOffset);
-		metaData.scriptClass->addInternalCall("Internal_SetOffset", &ScriptSpriteTexture::internal_SetOffset);
-		metaData.scriptClass->addInternalCall("Internal_GetScale", &ScriptSpriteTexture::internal_GetScale);
-		metaData.scriptClass->addInternalCall("Internal_SetScale", &ScriptSpriteTexture::internal_SetScale);
-		metaData.scriptClass->addInternalCall("Internal_GetWidth", &ScriptSpriteTexture::internal_GetWidth);
-		metaData.scriptClass->addInternalCall("Internal_GetHeight", &ScriptSpriteTexture::internal_GetHeight);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptSpriteTexture::internal_createInstance);
+		metaData.scriptClass->addInternalCall("Internal_GetTexture", (void*)&ScriptSpriteTexture::internal_GetTexture);
+		metaData.scriptClass->addInternalCall("Internal_SetTexture", (void*)&ScriptSpriteTexture::internal_SetTexture);
+		metaData.scriptClass->addInternalCall("Internal_GetOffset", (void*)&ScriptSpriteTexture::internal_GetOffset);
+		metaData.scriptClass->addInternalCall("Internal_SetOffset", (void*)&ScriptSpriteTexture::internal_SetOffset);
+		metaData.scriptClass->addInternalCall("Internal_GetScale", (void*)&ScriptSpriteTexture::internal_GetScale);
+		metaData.scriptClass->addInternalCall("Internal_SetScale", (void*)&ScriptSpriteTexture::internal_SetScale);
+		metaData.scriptClass->addInternalCall("Internal_GetWidth", (void*)&ScriptSpriteTexture::internal_GetWidth);
+		metaData.scriptClass->addInternalCall("Internal_GetHeight", (void*)&ScriptSpriteTexture::internal_GetHeight);
 	}
 
 	MonoObject* ScriptSpriteTexture::toManaged(const HSpriteTexture& texture)
@@ -43,14 +43,13 @@ namespace bs
 	void ScriptSpriteTexture::internal_createInstance(MonoObject* instance, MonoObject* texture, Vector2* offset, Vector2* scale)
 	{
 		ScriptTexture* scriptTexture = ScriptTexture::toNative(texture);
-		ScriptResourceBase* scriptInstance;
 
 		if (scriptTexture == nullptr)
-			scriptInstance = ScriptResourceManager::instance().createBuiltinScriptResource(SpriteTexture::dummy(), instance);
+			ScriptResourceManager::instance().createBuiltinScriptResource(SpriteTexture::dummy(), instance);
 		else
 		{
 			HSpriteTexture spriteTexture = SpriteTexture::create(*offset, *scale, scriptTexture->getHandle());
-			scriptInstance = ScriptResourceManager::instance().createBuiltinScriptResource(spriteTexture, instance);
+			ScriptResourceManager::instance().createBuiltinScriptResource(spriteTexture, instance);
 		}
 	}
 

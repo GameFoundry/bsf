@@ -23,12 +23,12 @@ namespace bs
 
 	void ScriptScriptCode::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptScriptCode::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_GetText", &ScriptScriptCode::internal_getText);
-		metaData.scriptClass->addInternalCall("Internal_SetText", &ScriptScriptCode::internal_setText);
-		metaData.scriptClass->addInternalCall("Internal_IsEditorScript", &ScriptScriptCode::internal_isEditorScript);
-		metaData.scriptClass->addInternalCall("Internal_SetEditorScript", &ScriptScriptCode::internal_setEditorScript);
-		metaData.scriptClass->addInternalCall("Internal_GetTypes", &ScriptScriptCode::internal_getTypes);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptScriptCode::internal_createInstance);
+		metaData.scriptClass->addInternalCall("Internal_GetText", (void*)&ScriptScriptCode::internal_getText);
+		metaData.scriptClass->addInternalCall("Internal_SetText", (void*)&ScriptScriptCode::internal_setText);
+		metaData.scriptClass->addInternalCall("Internal_IsEditorScript", (void*)&ScriptScriptCode::internal_isEditorScript);
+		metaData.scriptClass->addInternalCall("Internal_SetEditorScript", (void*)&ScriptScriptCode::internal_setEditorScript);
+		metaData.scriptClass->addInternalCall("Internal_GetTypes", (void*)&ScriptScriptCode::internal_getTypes);
 	}
 
 	void ScriptScriptCode::internal_createInstance(MonoObject* instance, MonoString* text)
@@ -36,7 +36,7 @@ namespace bs
 		WString strText = MonoUtil::monoToWString(text);
 		HScriptCode scriptCode = ScriptCode::create(strText);
 
-		ScriptResourceBase* scriptInstance = ScriptResourceManager::instance().createBuiltinScriptResource(scriptCode, instance);
+		ScriptResourceManager::instance().createBuiltinScriptResource(scriptCode, instance);
 	}
 
 	MonoString* ScriptScriptCode::internal_getText(ScriptScriptCode* thisPtr)
@@ -134,7 +134,7 @@ namespace bs
 			
 			if (code.compare(idx, classToken.size(), classToken) == 0)
 			{
-				std::wsmatch results;
+				std::match_results<WString::const_iterator> results;
 				if (std::regex_search(iter + classToken.size(), code.end(), results, identifierRegex))
 				{
 					WString ns = L"";
@@ -152,7 +152,7 @@ namespace bs
 			}
 			else if (code.compare(idx, nsToken.size(), nsToken) == 0)
 			{
-				std::wsmatch results;
+				std::match_results<WString::const_iterator> results;
 				if (std::regex_search(iter + nsToken.size(), code.end(), results, identifierRegex))
 				{
 					std::wstring tempStr = results[0];

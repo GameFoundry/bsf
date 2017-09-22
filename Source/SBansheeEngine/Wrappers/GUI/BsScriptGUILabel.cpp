@@ -25,9 +25,9 @@ namespace bs
 
 	void ScriptGUILabel::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUILabel::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_SetContent", &ScriptGUILabel::internal_setContent);
-		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUILabel::internal_setTint);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptGUILabel::internal_createInstance);
+		metaData.scriptClass->addInternalCall("Internal_SetContent", (void*)&ScriptGUILabel::internal_setContent);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", (void*)&ScriptGUILabel::internal_setTint);
 	}
 
 	void ScriptGUILabel::internal_createInstance(MonoObject* instance, MonoObject* content, MonoString* style, MonoArray* guiOptions)

@@ -87,6 +87,20 @@ set(BS_BANSHEEGLRENDERAPI_INC_WIN32
 	"Win32/BsWin32VideoModeInfo.h"
 )
 
+set(BS_BANSHEEGLRENDERAPI_INC_LINUX
+	"Linux/BsLinuxContext.h"
+	"Linux/BsLinuxGLSupport.h"
+	"Linux/BsLinuxRenderWindow.h"
+	"Linux/BsLinuxVideoModeInfo.h"
+)
+
+set(BS_BANSHEEGLRENDERAPI_SRC_LINUX
+	"Linux/BsLinuxContext.cpp"
+	"Linux/BsLinuxGLSupport.cpp"
+	"Linux/BsLinuxRenderWindow.cpp"
+	"Linux/BsLinuxVideoModeInfo.cpp"
+)
+
 source_group("Source Files\\GLSL" FILES ${BS_BANSHEEGLRENDERAPI_SRC_GLSL})
 source_group("Header Files" FILES ${BS_BANSHEEGLRENDERAPI_INC_NOFILTER})
 source_group("Source Files\\Win32" FILES ${BS_BANSHEEGLRENDERAPI_SRC_WIN32})
@@ -105,5 +119,10 @@ if(WIN32)
 	list(APPEND BS_BANSHEEGLRENDERAPI_SRC
 		${BS_BANSHEEGLRENDERAPI_INC_WIN32}
 		${BS_BANSHEEGLRENDERAPI_SRC_WIN32}
+	)
+elseif(LINUX)
+	list(APPEND BS_BANSHEEGLRENDERAPI_SRC
+		${BS_BANSHEEGLRENDERAPI_INC_LINUX}
+		${BS_BANSHEEGLRENDERAPI_SRC_LINUX}
 	)
 endif()

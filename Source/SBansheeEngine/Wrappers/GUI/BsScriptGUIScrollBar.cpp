@@ -22,11 +22,11 @@ namespace bs
 
 	void ScriptGUIScrollBar::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIScrollBar::internal_SetTint);
-		metaData.scriptClass->addInternalCall("Internal_GetPosition", &ScriptGUIScrollBar::internal_GetPosition);
-		metaData.scriptClass->addInternalCall("Internal_SetPosition", &ScriptGUIScrollBar::internal_SetPosition);
-		metaData.scriptClass->addInternalCall("Internal_GetHandleSize", &ScriptGUIScrollBar::internal_GetHandleSize);
-		metaData.scriptClass->addInternalCall("Internal_SetHandleSize", &ScriptGUIScrollBar::internal_SetHandleSize);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", (void*)&ScriptGUIScrollBar::internal_SetTint);
+		metaData.scriptClass->addInternalCall("Internal_GetPosition", (void*)&ScriptGUIScrollBar::internal_GetPosition);
+		metaData.scriptClass->addInternalCall("Internal_SetPosition", (void*)&ScriptGUIScrollBar::internal_SetPosition);
+		metaData.scriptClass->addInternalCall("Internal_GetHandleSize", (void*)&ScriptGUIScrollBar::internal_GetHandleSize);
+		metaData.scriptClass->addInternalCall("Internal_SetHandleSize", (void*)&ScriptGUIScrollBar::internal_SetHandleSize);
 	}
 
 	float ScriptGUIScrollBar::internal_GetPosition(ScriptGUIElementBaseTBase* nativeInstance)
@@ -69,7 +69,7 @@ namespace bs
 
 	void ScriptGUIScrollBarH::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIScrollBarH::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptGUIScrollBarH::internal_CreateInstance);
 
 		onScrolledThunk = (OnScrolledThunkDef)metaData.scriptClass->getMethod("Internal_DoOnScroll", 1)->getThunk();
 	}
@@ -104,7 +104,7 @@ namespace bs
 
 	void ScriptGUIScrollBarV::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIScrollBarV::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptGUIScrollBarV::internal_CreateInstance);
 
 		onScrolledThunk = (OnScrolledThunkDef)metaData.scriptClass->getMethod("Internal_DoOnScroll", 1)->getThunk();
 	}
@@ -139,7 +139,7 @@ namespace bs
 
 	void ScriptGUIResizeableScrollBarH::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIResizeableScrollBarH::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptGUIResizeableScrollBarH::internal_CreateInstance);
 
 		onScrollOrResizeThunk = (OnScrollOrResizeThunkDef)metaData.scriptClass->getMethod("Internal_DoOnScrollOrResize", 2)->getThunk();
 	}
@@ -174,7 +174,7 @@ namespace bs
 
 	void ScriptGUIResizeableScrollBarV::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIResizeableScrollBarV::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptGUIResizeableScrollBarV::internal_CreateInstance);
 
 		onScrollOrResizeThunk = (OnScrollOrResizeThunkDef)metaData.scriptClass->getMethod("Internal_DoOnScrollOrResize", 2)->getThunk();
 	}

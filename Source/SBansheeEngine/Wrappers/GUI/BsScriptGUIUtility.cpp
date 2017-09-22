@@ -22,9 +22,9 @@ namespace bs
 
 	void ScriptGUILayoutUtility::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CalculateOptimalSize", &ScriptGUILayoutUtility::internal_CalculateOptimalSize);
-		metaData.scriptClass->addInternalCall("Internal_CalculateBounds", &ScriptGUILayoutUtility::internal_CalculateBounds);
-		metaData.scriptClass->addInternalCall("Internal_CalculateTextBounds", &ScriptGUILayoutUtility::internal_CalculateTextBounds);
+		metaData.scriptClass->addInternalCall("Internal_CalculateOptimalSize", (void*)&ScriptGUILayoutUtility::internal_CalculateOptimalSize);
+		metaData.scriptClass->addInternalCall("Internal_CalculateBounds", (void*)&ScriptGUILayoutUtility::internal_CalculateBounds);
+		metaData.scriptClass->addInternalCall("Internal_CalculateTextBounds", (void*)&ScriptGUILayoutUtility::internal_CalculateTextBounds);
 	}
 
 	void ScriptGUILayoutUtility::internal_CalculateOptimalSize(ScriptGUIElementBaseTBase* guiElement, Vector2I* output)

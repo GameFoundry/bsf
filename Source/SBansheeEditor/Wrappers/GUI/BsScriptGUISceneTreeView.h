@@ -42,8 +42,8 @@ namespace bs
 		static void internal_deleteSelection(ScriptGUISceneTreeView* thisPtr);
 		static void internal_renameSelection(ScriptGUISceneTreeView* thisPtr);
 
-		typedef void(__stdcall *OnModifiedThunkDef) (MonoObject*, MonoException**);
-		typedef void(__stdcall *OnResourceDroppedThunkDef) (MonoObject*, MonoObject*, MonoArray*, MonoException**);
+		typedef void(BS_THUNKCALL *OnModifiedThunkDef) (MonoObject*, MonoException**);
+		typedef void(BS_THUNKCALL *OnResourceDroppedThunkDef) (MonoObject*, MonoObject*, MonoArray*, MonoException**);
 
 		static OnModifiedThunkDef onModifiedThunk;
 		static OnResourceDroppedThunkDef onResourceDroppedThunk;

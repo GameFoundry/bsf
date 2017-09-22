@@ -32,15 +32,15 @@ namespace bs
 
 	void ScriptModalWindow::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptModalWindow::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_Close", &ScriptModalWindow::internal_close);
-		metaData.scriptClass->addInternalCall("Internal_GetWidth", &ScriptModalWindow::internal_getWidth);
-		metaData.scriptClass->addInternalCall("Internal_GetHeight", &ScriptModalWindow::internal_getHeight);
-		metaData.scriptClass->addInternalCall("Internal_SetWidth", &ScriptModalWindow::internal_setWidth);
-		metaData.scriptClass->addInternalCall("Internal_SetHeight", &ScriptModalWindow::internal_setHeight);
-		metaData.scriptClass->addInternalCall("Internal_SetTitle", &ScriptModalWindow::internal_setTitle);
-		metaData.scriptClass->addInternalCall("Internal_ScreenToWindowPos", &ScriptModalWindow::internal_screenToWindowPos);
-		metaData.scriptClass->addInternalCall("Internal_WindowToScreenPos", &ScriptModalWindow::internal_windowToScreenPos);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptModalWindow::internal_createInstance);
+		metaData.scriptClass->addInternalCall("Internal_Close", (void*)&ScriptModalWindow::internal_close);
+		metaData.scriptClass->addInternalCall("Internal_GetWidth", (void*)&ScriptModalWindow::internal_getWidth);
+		metaData.scriptClass->addInternalCall("Internal_GetHeight", (void*)&ScriptModalWindow::internal_getHeight);
+		metaData.scriptClass->addInternalCall("Internal_SetWidth", (void*)&ScriptModalWindow::internal_setWidth);
+		metaData.scriptClass->addInternalCall("Internal_SetHeight", (void*)&ScriptModalWindow::internal_setHeight);
+		metaData.scriptClass->addInternalCall("Internal_SetTitle", (void*)&ScriptModalWindow::internal_setTitle);
+		metaData.scriptClass->addInternalCall("Internal_ScreenToWindowPos", (void*)&ScriptModalWindow::internal_screenToWindowPos);
+		metaData.scriptClass->addInternalCall("Internal_WindowToScreenPos", (void*)&ScriptModalWindow::internal_windowToScreenPos);
 
 		guiPanelField = metaData.scriptClass->getField("GUI");
 	}

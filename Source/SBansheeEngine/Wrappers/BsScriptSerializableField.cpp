@@ -20,10 +20,10 @@ namespace bs
 
 	void ScriptSerializableField::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateProperty", &ScriptSerializableField::internal_createProperty);
-		metaData.scriptClass->addInternalCall("Internal_GetValue", &ScriptSerializableField::internal_getValue);
-		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptSerializableField::internal_setValue);
-		metaData.scriptClass->addInternalCall("Internal_GetStyle", &ScriptSerializableField::internal_getStyle);
+		metaData.scriptClass->addInternalCall("Internal_CreateProperty", (void*)&ScriptSerializableField::internal_createProperty);
+		metaData.scriptClass->addInternalCall("Internal_GetValue", (void*)&ScriptSerializableField::internal_getValue);
+		metaData.scriptClass->addInternalCall("Internal_SetValue", (void*)&ScriptSerializableField::internal_setValue);
+		metaData.scriptClass->addInternalCall("Internal_GetStyle", (void*)&ScriptSerializableField::internal_getStyle);
 	}
 
 	ScriptSerializableField* ScriptSerializableField::create(MonoObject* parentObject, const SPtr<ManagedSerializableMemberInfo>& fieldInfo)

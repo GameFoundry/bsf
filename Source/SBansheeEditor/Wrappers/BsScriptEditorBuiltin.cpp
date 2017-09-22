@@ -19,18 +19,18 @@ namespace bs
 
 	void ScriptEditorBuiltin::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_GetLibraryItemIcon", &ScriptEditorBuiltin::internal_getLibraryItemIcon);
-		metaData.scriptClass->addInternalCall("Internal_GetEmptyShaderCode", &ScriptEditorBuiltin::internal_GetEmptyShaderCode);
-		metaData.scriptClass->addInternalCall("Internal_GetEmptyCSScriptCode", &ScriptEditorBuiltin::internal_GetEmptyCSScriptCode);
-		metaData.scriptClass->addInternalCall("Internal_GetToolbarIcon", &ScriptEditorBuiltin::internal_GetToolbarIcon);
-		metaData.scriptClass->addInternalCall("Internal_GetLibraryWindowIcon", &ScriptEditorBuiltin::internal_GetLibraryWindowIcon);
-		metaData.scriptClass->addInternalCall("Internal_GetInspectorWindowIcon", &ScriptEditorBuiltin::internal_GetInspectorWindowIcon);
-		metaData.scriptClass->addInternalCall("Internal_GetSceneWindowIcon", &ScriptEditorBuiltin::internal_GetSceneWindowIcon);
-		metaData.scriptClass->addInternalCall("Internal_GetAnimationWindowIcon", &ScriptEditorBuiltin::internal_GetAnimationWindowIcon);
-		metaData.scriptClass->addInternalCall("Internal_GetLogIcon", &ScriptEditorBuiltin::internal_GetLogIcon);
-		metaData.scriptClass->addInternalCall("Internal_GetEditorIcon", &ScriptEditorBuiltin::internal_GetEditorIcon);
-		metaData.scriptClass->addInternalCall("Internal_GetDefaultFont", &ScriptEditorBuiltin::internal_GetDefaultFont);
-		metaData.scriptClass->addInternalCall("Internal_GetGUISkin", &ScriptEditorBuiltin::internal_GetGUISkin);
+		metaData.scriptClass->addInternalCall("Internal_GetLibraryItemIcon", (void*)&ScriptEditorBuiltin::internal_getLibraryItemIcon);
+		metaData.scriptClass->addInternalCall("Internal_GetEmptyShaderCode", (void*)&ScriptEditorBuiltin::internal_GetEmptyShaderCode);
+		metaData.scriptClass->addInternalCall("Internal_GetEmptyCSScriptCode", (void*)&ScriptEditorBuiltin::internal_GetEmptyCSScriptCode);
+		metaData.scriptClass->addInternalCall("Internal_GetToolbarIcon", (void*)&ScriptEditorBuiltin::internal_GetToolbarIcon);
+		metaData.scriptClass->addInternalCall("Internal_GetLibraryWindowIcon", (void*)&ScriptEditorBuiltin::internal_GetLibraryWindowIcon);
+		metaData.scriptClass->addInternalCall("Internal_GetInspectorWindowIcon", (void*)&ScriptEditorBuiltin::internal_GetInspectorWindowIcon);
+		metaData.scriptClass->addInternalCall("Internal_GetSceneWindowIcon", (void*)&ScriptEditorBuiltin::internal_GetSceneWindowIcon);
+		metaData.scriptClass->addInternalCall("Internal_GetAnimationWindowIcon", (void*)&ScriptEditorBuiltin::internal_GetAnimationWindowIcon);
+		metaData.scriptClass->addInternalCall("Internal_GetLogIcon", (void*)&ScriptEditorBuiltin::internal_GetLogIcon);
+		metaData.scriptClass->addInternalCall("Internal_GetEditorIcon", (void*)&ScriptEditorBuiltin::internal_GetEditorIcon);
+		metaData.scriptClass->addInternalCall("Internal_GetDefaultFont", (void*)&ScriptEditorBuiltin::internal_GetDefaultFont);
+		metaData.scriptClass->addInternalCall("Internal_GetGUISkin", (void*)&ScriptEditorBuiltin::internal_GetGUISkin);
 	}
 
 	MonoObject* ScriptEditorBuiltin::internal_getLibraryItemIcon(ProjectIcon icon, int size)

@@ -20,14 +20,14 @@ namespace bs
 
 	void ScriptFontBitmap::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_GetSize", &ScriptFontBitmap::internal_GetSize);
-		metaData.scriptClass->addInternalCall("Internal_GetBaselineOffset", &ScriptFontBitmap::internal_GetBaselineOffset);
-		metaData.scriptClass->addInternalCall("Internal_GetLineHeight", &ScriptFontBitmap::internal_GetLineHeight);
-		metaData.scriptClass->addInternalCall("Internal_GetSpaceWidth", &ScriptFontBitmap::internal_GetSpaceWidth);
-		metaData.scriptClass->addInternalCall("Internal_GetMissingChar", &ScriptFontBitmap::internal_GetMissingChar);
-		metaData.scriptClass->addInternalCall("Internal_GetPages", &ScriptFontBitmap::internal_GetPages);
-		metaData.scriptClass->addInternalCall("Internal_GetChar", &ScriptFontBitmap::internal_GetChar);
-		metaData.scriptClass->addInternalCall("Internal_GetKerning", &ScriptFontBitmap::internal_GetKerning);
+		metaData.scriptClass->addInternalCall("Internal_GetSize", (void*)&ScriptFontBitmap::internal_GetSize);
+		metaData.scriptClass->addInternalCall("Internal_GetBaselineOffset", (void*)&ScriptFontBitmap::internal_GetBaselineOffset);
+		metaData.scriptClass->addInternalCall("Internal_GetLineHeight", (void*)&ScriptFontBitmap::internal_GetLineHeight);
+		metaData.scriptClass->addInternalCall("Internal_GetSpaceWidth", (void*)&ScriptFontBitmap::internal_GetSpaceWidth);
+		metaData.scriptClass->addInternalCall("Internal_GetMissingChar", (void*)&ScriptFontBitmap::internal_GetMissingChar);
+		metaData.scriptClass->addInternalCall("Internal_GetPages", (void*)&ScriptFontBitmap::internal_GetPages);
+		metaData.scriptClass->addInternalCall("Internal_GetChar", (void*)&ScriptFontBitmap::internal_GetChar);
+		metaData.scriptClass->addInternalCall("Internal_GetKerning", (void*)&ScriptFontBitmap::internal_GetKerning);
 	}
 
 	ScriptCharDesc ScriptFontBitmap::convertCharDesc(const CHAR_DESC& desc)

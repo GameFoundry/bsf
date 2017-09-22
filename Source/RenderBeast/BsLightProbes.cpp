@@ -25,8 +25,7 @@ namespace bs { namespace ct
 		ShaderVariation::Param("MSAA_RESOLVE_0TH", true)
 	});
 
-	ShaderVariation TetrahedraRenderMat::VAR_NoMSAA = ShaderVariation({
-	});
+	ShaderVariation TetrahedraRenderMat::VAR_NoMSAA = ShaderVariation();
 
 	TetrahedraRenderMat::TetrahedraRenderMat()
 	{

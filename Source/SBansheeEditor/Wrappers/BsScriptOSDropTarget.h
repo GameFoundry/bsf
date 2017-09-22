@@ -118,10 +118,10 @@ namespace bs
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
-		typedef void(__stdcall *OnEnterThunkDef) (MonoObject*, INT32, INT32, MonoException**);
-		typedef void(__stdcall *OnMoveDef) (MonoObject*, INT32, INT32, MonoException**);
-		typedef void(__stdcall *OnLeaveDef) (MonoObject*, MonoException**);
-		typedef void(__stdcall *OnDropThunkDef) (MonoObject*, INT32, INT32, MonoException**);
+		typedef void(BS_THUNKCALL *OnEnterThunkDef) (MonoObject*, INT32, INT32, MonoException**);
+		typedef void(BS_THUNKCALL *OnMoveDef) (MonoObject*, INT32, INT32, MonoException**);
+		typedef void(BS_THUNKCALL *OnLeaveDef) (MonoObject*, MonoException**);
+		typedef void(BS_THUNKCALL *OnDropThunkDef) (MonoObject*, INT32, INT32, MonoException**);
 
 		static OnEnterThunkDef onEnterThunk;
 		static OnMoveDef onMoveThunk;

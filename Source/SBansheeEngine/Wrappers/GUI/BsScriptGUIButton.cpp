@@ -31,9 +31,9 @@ namespace bs
 
 	void ScriptGUIButton::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIButton::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_SetContent", &ScriptGUIButton::internal_setContent);
-		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIButton::internal_setTint);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptGUIButton::internal_createInstance);
+		metaData.scriptClass->addInternalCall("Internal_SetContent", (void*)&ScriptGUIButton::internal_setContent);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", (void*)&ScriptGUIButton::internal_setTint);
 
 		onClickThunk = (OnClickThunkDef)metaData.scriptClass->getMethod("DoOnClick")->getThunk();
 		onDoubleClickThunk = (OnDoubleClickThunkDef)metaData.scriptClass->getMethod("DoOnDoubleClick")->getThunk();

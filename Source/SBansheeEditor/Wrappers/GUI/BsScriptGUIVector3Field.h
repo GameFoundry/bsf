@@ -46,8 +46,8 @@ namespace bs
 		static void internal_hasInputFocus(ScriptGUIVector3Field* nativeInstance, bool* output);
 		static void internal_setTint(ScriptGUIVector3Field* nativeInstance, Color* color);
 
-		typedef void(__stdcall *OnChangedThunkDef) (MonoObject*, MonoObject*, MonoException**);
-		typedef void(__stdcall *OnConfirmedThunkDef) (MonoObject*, MonoException**);
+		typedef void(BS_THUNKCALL *OnChangedThunkDef) (MonoObject*, MonoObject*, MonoException**);
+		typedef void(BS_THUNKCALL *OnConfirmedThunkDef) (MonoObject*, MonoException**);
 
 		static OnChangedThunkDef onChangedThunk;
 		static OnConfirmedThunkDef onConfirmedThunk;

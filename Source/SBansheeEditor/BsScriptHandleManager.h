@@ -126,7 +126,7 @@ namespace bs
 		MonoClass* mHandleBaseClass = nullptr;
 		MonoClass* mDefaultHandleManagerClass = nullptr;
 
-		typedef void(__stdcall *DestroyThunkDef) (MonoObject*, MonoException**);
+		typedef void(BS_THUNKCALL *DestroyThunkDef) (MonoObject*, MonoException**);
 
 		MonoMethod* mPreInputMethod;
 		MonoMethod* mPostInputMethod;

@@ -26,11 +26,11 @@ namespace bs
 
 	void ScriptContextMenu::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptContextMenu::internal_CreateInstance);
-		metaData.scriptClass->addInternalCall("Internal_Open", &ScriptContextMenu::internal_Open);
-		metaData.scriptClass->addInternalCall("Internal_AddItem", &ScriptContextMenu::internal_AddItem);
-		metaData.scriptClass->addInternalCall("Internal_AddSeparator", &ScriptContextMenu::internal_AddSeparator);
-		metaData.scriptClass->addInternalCall("Internal_SetLocalizedName", &ScriptContextMenu::internal_SetLocalizedName);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptContextMenu::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_Open", (void*)&ScriptContextMenu::internal_Open);
+		metaData.scriptClass->addInternalCall("Internal_AddItem", (void*)&ScriptContextMenu::internal_AddItem);
+		metaData.scriptClass->addInternalCall("Internal_AddSeparator", (void*)&ScriptContextMenu::internal_AddSeparator);
+		metaData.scriptClass->addInternalCall("Internal_SetLocalizedName", (void*)&ScriptContextMenu::internal_SetLocalizedName);
 
 		onEntryTriggered = (OnEntryTriggeredThunkDef)metaData.scriptClass->getMethod("InternalDoOnEntryTriggered", 1)->getThunk();
 	}

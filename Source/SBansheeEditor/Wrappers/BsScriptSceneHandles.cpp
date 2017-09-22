@@ -25,14 +25,14 @@ namespace bs
 
 	void ScriptSceneHandles::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_Create", &ScriptSceneHandles::internal_Create);
-		metaData.scriptClass->addInternalCall("Internal_Draw", &ScriptSceneHandles::internal_Draw);
-		metaData.scriptClass->addInternalCall("Internal_BeginInput", &ScriptSceneHandles::internal_BeginInput);
-		metaData.scriptClass->addInternalCall("Internal_EndInput", &ScriptSceneHandles::internal_EndInput);
-		metaData.scriptClass->addInternalCall("Internal_UpdateInput", &ScriptSceneHandles::internal_UpdateInput);
-		metaData.scriptClass->addInternalCall("Internal_TrySelect", &ScriptSceneHandles::internal_TrySelect);
-		metaData.scriptClass->addInternalCall("Internal_IsActive", &ScriptSceneHandles::internal_IsActive);
-		metaData.scriptClass->addInternalCall("Internal_ClearSelection", &ScriptSceneHandles::internal_ClearSelection);
+		metaData.scriptClass->addInternalCall("Internal_Create", (void*)&ScriptSceneHandles::internal_Create);
+		metaData.scriptClass->addInternalCall("Internal_Draw", (void*)&ScriptSceneHandles::internal_Draw);
+		metaData.scriptClass->addInternalCall("Internal_BeginInput", (void*)&ScriptSceneHandles::internal_BeginInput);
+		metaData.scriptClass->addInternalCall("Internal_EndInput", (void*)&ScriptSceneHandles::internal_EndInput);
+		metaData.scriptClass->addInternalCall("Internal_UpdateInput", (void*)&ScriptSceneHandles::internal_UpdateInput);
+		metaData.scriptClass->addInternalCall("Internal_TrySelect", (void*)&ScriptSceneHandles::internal_TrySelect);
+		metaData.scriptClass->addInternalCall("Internal_IsActive", (void*)&ScriptSceneHandles::internal_IsActive);
+		metaData.scriptClass->addInternalCall("Internal_ClearSelection", (void*)&ScriptSceneHandles::internal_ClearSelection);
 	}
 
 	Vector2I ScriptSceneHandles::wrapCursorToWindow() const

@@ -17,12 +17,12 @@ namespace bs
 
 	void ScriptStringTableManager::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_GetActiveLanguage", &ScriptStringTableManager::internal_GetActiveLanguage);
-		metaData.scriptClass->addInternalCall("Internal_SetActiveLanguage", &ScriptStringTableManager::internal_SetActiveLanguage);
+		metaData.scriptClass->addInternalCall("Internal_GetActiveLanguage", (void*)&ScriptStringTableManager::internal_GetActiveLanguage);
+		metaData.scriptClass->addInternalCall("Internal_SetActiveLanguage", (void*)&ScriptStringTableManager::internal_SetActiveLanguage);
 
-		metaData.scriptClass->addInternalCall("Internal_GetTable", &ScriptStringTableManager::internal_GetTable);
-		metaData.scriptClass->addInternalCall("Internal_SetTable", &ScriptStringTableManager::internal_SetTable);
-		metaData.scriptClass->addInternalCall("Internal_RemoveTable", &ScriptStringTableManager::internal_RemoveTable);
+		metaData.scriptClass->addInternalCall("Internal_GetTable", (void*)&ScriptStringTableManager::internal_GetTable);
+		metaData.scriptClass->addInternalCall("Internal_SetTable", (void*)&ScriptStringTableManager::internal_SetTable);
+		metaData.scriptClass->addInternalCall("Internal_RemoveTable", (void*)&ScriptStringTableManager::internal_RemoveTable);
 	}
 
 	void ScriptStringTableManager::internal_GetActiveLanguage(Language* value)

@@ -24,19 +24,19 @@ namespace bs
 
 		/** @copydoc SphericalJoint::getLimit */
 		BS_SCRIPT_EXPORT(n:Limit,pr:getter)
-		inline LimitConeRange getLimit() const;
+		LimitConeRange getLimit() const;
 
 		/** @copydoc SphericalJoint::setLimit */
 		BS_SCRIPT_EXPORT(n:Limit,pr:setter)
-		inline void setLimit(const LimitConeRange& limit);
+		void setLimit(const LimitConeRange& limit);
 
 		/** @copydoc SphericalJoint::setFlag */
 		BS_SCRIPT_EXPORT(n:SetFlag)
-		inline void setFlag(SphericalJointFlag flag, bool enabled);
+		void setFlag(SphericalJointFlag flag, bool enabled);
 
 		/** @copydoc SphericalJoint::hasFlag */
 		BS_SCRIPT_EXPORT(n:HasFlag)
-		inline bool hasFlag(SphericalJointFlag flag) const;
+		bool hasFlag(SphericalJointFlag flag) const;
 
 		/** @name Internal
 		 *  @{

@@ -37,7 +37,7 @@ namespace bs
 		static void internal_setValue(ScriptGUIColorField* nativeInstance, Color* value);
 		static void internal_setTint(ScriptGUIColorField* nativeInstance, Color* color);
 
-		typedef void(__stdcall *OnClickedThunkDef) (MonoObject*, MonoException**);
+		typedef void(BS_THUNKCALL *OnClickedThunkDef) (MonoObject*, MonoException**);
 
 		static OnClickedThunkDef onClickedThunk;
 	};

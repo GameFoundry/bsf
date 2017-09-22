@@ -30,19 +30,19 @@ namespace bs
 
 	void ScriptBuildManager::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_GetAvailablePlatforms", &ScriptBuildManager::internal_GetAvailablePlatforms);
-		metaData.scriptClass->addInternalCall("Internal_GetActivePlatform", &ScriptBuildManager::internal_GetActivePlatform);
-		metaData.scriptClass->addInternalCall("Internal_SetActivePlatform", &ScriptBuildManager::internal_SetActivePlatform);
-		metaData.scriptClass->addInternalCall("Internal_GetActivePlatformInfo", &ScriptBuildManager::internal_GetActivePlatformInfo);
-		metaData.scriptClass->addInternalCall("Internal_GetPlatformInfo", &ScriptBuildManager::internal_GetPlatformInfo);
-		metaData.scriptClass->addInternalCall("Internal_GetFrameworkAssemblies", &ScriptBuildManager::internal_GetFrameworkAssemblies);
-		metaData.scriptClass->addInternalCall("Internal_GetMainExecutable", &ScriptBuildManager::internal_GetMainExecutable);
-		metaData.scriptClass->addInternalCall("Internal_GetDefines", &ScriptBuildManager::internal_GetDefines);
-		metaData.scriptClass->addInternalCall("Internal_GetNativeBinaries", &ScriptBuildManager::internal_GetNativeBinaries);
-		metaData.scriptClass->addInternalCall("Internal_GetBuildFolder", &ScriptBuildManager::internal_GetBuildFolder);
-		metaData.scriptClass->addInternalCall("Internal_InjectIcons", &ScriptBuildManager::internal_InjectIcons);
-		metaData.scriptClass->addInternalCall("Internal_PackageResources", &ScriptBuildManager::internal_PackageResources);
-		metaData.scriptClass->addInternalCall("Internal_CreateStartupSettings", &ScriptBuildManager::internal_CreateStartupSettings);
+		metaData.scriptClass->addInternalCall("Internal_GetAvailablePlatforms", (void*)&ScriptBuildManager::internal_GetAvailablePlatforms);
+		metaData.scriptClass->addInternalCall("Internal_GetActivePlatform", (void*)&ScriptBuildManager::internal_GetActivePlatform);
+		metaData.scriptClass->addInternalCall("Internal_SetActivePlatform", (void*)&ScriptBuildManager::internal_SetActivePlatform);
+		metaData.scriptClass->addInternalCall("Internal_GetActivePlatformInfo", (void*)&ScriptBuildManager::internal_GetActivePlatformInfo);
+		metaData.scriptClass->addInternalCall("Internal_GetPlatformInfo", (void*)&ScriptBuildManager::internal_GetPlatformInfo);
+		metaData.scriptClass->addInternalCall("Internal_GetFrameworkAssemblies", (void*)&ScriptBuildManager::internal_GetFrameworkAssemblies);
+		metaData.scriptClass->addInternalCall("Internal_GetMainExecutable", (void*)&ScriptBuildManager::internal_GetMainExecutable);
+		metaData.scriptClass->addInternalCall("Internal_GetDefines", (void*)&ScriptBuildManager::internal_GetDefines);
+		metaData.scriptClass->addInternalCall("Internal_GetNativeBinaries", (void*)&ScriptBuildManager::internal_GetNativeBinaries);
+		metaData.scriptClass->addInternalCall("Internal_GetBuildFolder", (void*)&ScriptBuildManager::internal_GetBuildFolder);
+		metaData.scriptClass->addInternalCall("Internal_InjectIcons", (void*)&ScriptBuildManager::internal_InjectIcons);
+		metaData.scriptClass->addInternalCall("Internal_PackageResources", (void*)&ScriptBuildManager::internal_PackageResources);
+		metaData.scriptClass->addInternalCall("Internal_CreateStartupSettings", (void*)&ScriptBuildManager::internal_CreateStartupSettings);
 	}
 
 	MonoArray* ScriptBuildManager::internal_GetAvailablePlatforms()
@@ -304,8 +304,7 @@ namespace bs
 		for (auto& entry : usedResources)
 		{
 			String uuid;
-			bool foundUUID = gResources().getUUIDFromFilePath(entry, uuid);
-			BS_ASSERT(foundUUID);
+			BS_ASSERT(gResources().getUUIDFromFilePath(entry, uuid));
 
 			Path sourcePath = gProjectLibrary().uuidToPath(uuid);
 			if (sourcePath.isEmpty()) // Resource not part of library, meaning its built-in and we don't need to copy those here

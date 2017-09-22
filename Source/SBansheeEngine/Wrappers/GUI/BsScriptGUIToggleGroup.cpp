@@ -19,7 +19,7 @@ namespace bs
 
 	void ScriptGUIToggleGroup::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIToggleGroup::internal_createInstance);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptGUIToggleGroup::internal_createInstance);
 	}
 
 	void ScriptGUIToggleGroup::internal_createInstance(MonoObject* instance, bool allowAllOff)

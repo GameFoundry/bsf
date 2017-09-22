@@ -376,9 +376,6 @@ namespace bs { namespace ct
 		// Are we reorganize it because it needs to fit the "(1.0f / (depth + y)) * x" format used in the shader:
 		// z = 1.0f / (depth - A/C) * B/C
 
-		RenderAPI& rapi = RenderAPI::instance();
-		const RenderAPIInfo& rapiInfo = rapi.getAPIInfo();
-
 		float a = projMatrix[2][2];
 		float b = projMatrix[2][3];
 		float c = projMatrix[3][2];

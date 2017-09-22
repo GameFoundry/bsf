@@ -25,11 +25,11 @@ namespace bs
 
 	void ScriptSceneSelection::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_Create", &ScriptSceneSelection::internal_Create);
-		metaData.scriptClass->addInternalCall("Internal_Draw", &ScriptSceneSelection::internal_Draw);
-		metaData.scriptClass->addInternalCall("Internal_PickObject", &ScriptSceneSelection::internal_PickObject);
-		metaData.scriptClass->addInternalCall("Internal_PickObjects", &ScriptSceneSelection::internal_PickObjects);
-		metaData.scriptClass->addInternalCall("Internal_Snap", &ScriptSceneSelection::internal_Snap);
+		metaData.scriptClass->addInternalCall("Internal_Create", (void*)&ScriptSceneSelection::internal_Create);
+		metaData.scriptClass->addInternalCall("Internal_Draw", (void*)&ScriptSceneSelection::internal_Draw);
+		metaData.scriptClass->addInternalCall("Internal_PickObject", (void*)&ScriptSceneSelection::internal_PickObject);
+		metaData.scriptClass->addInternalCall("Internal_PickObjects", (void*)&ScriptSceneSelection::internal_PickObjects);
+		metaData.scriptClass->addInternalCall("Internal_Snap", (void*)&ScriptSceneSelection::internal_Snap);
 	}
 
 	void ScriptSceneSelection::internal_Create(MonoObject* managedInstance, ScriptCamera* camera)

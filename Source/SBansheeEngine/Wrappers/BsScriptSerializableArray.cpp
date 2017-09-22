@@ -20,7 +20,7 @@ namespace bs
 
 	void ScriptSerializableArray::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateProperty", &ScriptSerializableArray::internal_createProperty);
+		metaData.scriptClass->addInternalCall("Internal_CreateProperty", (void*)&ScriptSerializableArray::internal_createProperty);
 	}
 
 	ScriptSerializableArray* ScriptSerializableArray::create(const ScriptSerializableProperty* parentProperty)

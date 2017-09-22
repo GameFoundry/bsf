@@ -9,7 +9,7 @@ namespace bs
 {
 	const ShortcutKey ShortcutKey::NONE = ShortcutKey();
 
-	inline size_t ShortcutKey::Hash::operator()(const ShortcutKey& x) const
+	size_t ShortcutKey::Hash::operator()(const ShortcutKey& x) const
 	{
 		size_t seed = 0;
 		hash_combine(seed, (UINT32)x.button);
@@ -18,7 +18,7 @@ namespace bs
 		return seed;
 	}
 
-	inline bool ShortcutKey::Equals::operator()(const ShortcutKey& a, const ShortcutKey& b) const
+	bool ShortcutKey::Equals::operator()(const ShortcutKey& a, const ShortcutKey& b) const
 	{
 		return a.button == b.button && a.modifier == b.modifier;
 	}

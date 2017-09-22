@@ -30,7 +30,7 @@ namespace bs
 
 	void ScriptGameObject::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_GetInstanceId", &ScriptGameObject::internal_getInstanceId);
+		metaData.scriptClass->addInternalCall("Internal_GetInstanceId", (void*)&ScriptGameObject::internal_getInstanceId);
 	}
 
 	UINT64 ScriptGameObject::internal_getInstanceId(ScriptGameObject* nativeInstance)

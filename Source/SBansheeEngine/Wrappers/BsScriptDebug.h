@@ -41,7 +41,7 @@ namespace bs
 		static void internal_clearType(UINT32 type);
 		static MonoArray* internal_getMessages();
 
-		typedef void(__stdcall *OnAddedThunkDef) (UINT32, MonoString*, MonoException**);
+		typedef void(BS_THUNKCALL *OnAddedThunkDef) (UINT32, MonoString*, MonoException**);
 
 		static OnAddedThunkDef onAddedThunk;
 	};

@@ -27,14 +27,14 @@ namespace bs
 
 	void ScriptSelection::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_GetSceneObjectSelection", &ScriptSelection::internal_GetSceneObjectSelection);
-		metaData.scriptClass->addInternalCall("Internal_SetSceneObjectSelection", &ScriptSelection::internal_SetSceneObjectSelection);
-		metaData.scriptClass->addInternalCall("Internal_GetResourceUUIDSelection", &ScriptSelection::internal_GetResourceUUIDSelection);
-		metaData.scriptClass->addInternalCall("Internal_SetResourceUUIDSelection", &ScriptSelection::internal_SetResourceUUIDSelection);
-		metaData.scriptClass->addInternalCall("Internal_GetResourcePathSelection", &ScriptSelection::internal_GetResourcePathSelection);
-		metaData.scriptClass->addInternalCall("Internal_SetResourcePathSelection", &ScriptSelection::internal_SetResourcePathSelection);
-		metaData.scriptClass->addInternalCall("Internal_PingResource", &ScriptSelection::internal_PingResource);
-		metaData.scriptClass->addInternalCall("Internal_PingSceneObject", &ScriptSelection::internal_PingSceneObject);
+		metaData.scriptClass->addInternalCall("Internal_GetSceneObjectSelection", (void*)&ScriptSelection::internal_GetSceneObjectSelection);
+		metaData.scriptClass->addInternalCall("Internal_SetSceneObjectSelection", (void*)&ScriptSelection::internal_SetSceneObjectSelection);
+		metaData.scriptClass->addInternalCall("Internal_GetResourceUUIDSelection", (void*)&ScriptSelection::internal_GetResourceUUIDSelection);
+		metaData.scriptClass->addInternalCall("Internal_SetResourceUUIDSelection", (void*)&ScriptSelection::internal_SetResourceUUIDSelection);
+		metaData.scriptClass->addInternalCall("Internal_GetResourcePathSelection", (void*)&ScriptSelection::internal_GetResourcePathSelection);
+		metaData.scriptClass->addInternalCall("Internal_SetResourcePathSelection", (void*)&ScriptSelection::internal_SetResourcePathSelection);
+		metaData.scriptClass->addInternalCall("Internal_PingResource", (void*)&ScriptSelection::internal_PingResource);
+		metaData.scriptClass->addInternalCall("Internal_PingSceneObject", (void*)&ScriptSelection::internal_PingSceneObject);
 
 		OnSelectionChangedThunk = (OnSelectionChangedThunkDef)metaData.scriptClass->getMethod("Internal_TriggerSelectionChanged", 2)->getThunk();
 		OnPingResourceThunk = (OnPingResourceThunkDef)metaData.scriptClass->getMethod("Internal_TriggerResourcePing", 1)->getThunk();

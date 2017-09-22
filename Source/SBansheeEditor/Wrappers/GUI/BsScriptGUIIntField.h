@@ -49,8 +49,8 @@ namespace bs
 		static void internal_setStep(ScriptGUIIntField* nativeInstance, INT32 step);
 		static INT32 internal_getStep(ScriptGUIIntField* nativeInstance);
 
-		typedef void (__stdcall *OnChangedThunkDef) (MonoObject*, INT32, MonoException**);
-		typedef void(__stdcall *OnConfirmedThunkDef) (MonoObject*, MonoException**);
+		typedef void (BS_THUNKCALL *OnChangedThunkDef) (MonoObject*, INT32, MonoException**);
+		typedef void(BS_THUNKCALL *OnConfirmedThunkDef) (MonoObject*, MonoException**);
 
 		static OnChangedThunkDef onChangedThunk;
 		static OnConfirmedThunkDef onConfirmedThunk;

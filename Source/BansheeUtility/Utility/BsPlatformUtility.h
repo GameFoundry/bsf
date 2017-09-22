@@ -56,39 +56,6 @@ namespace bs
 		 */
 		static void terminate(bool force = false);
 
-		/**
-		 * Adds a string to the clipboard.
-		 *
-		 * @note	Thread safe.
-		 */
-		static void copyToClipboard(const WString& string);
-
-		/**
-		 * Reads a string from the clipboard and returns it. If there is no string in the clipboard it returns an empty 
-		 * string.
-		 *
-		 * @note	
-		 * Both wide and normal strings will be read, but normal strings will be converted to a wide string before returning.
-		 * @note
-		 * Thread safe.
-		 */
-		static WString copyFromClipboard();
-
-		/**
-		 * Converts a keyboard key-code to a Unicode character.
-		 *
-		 * @note	
-		 * Normally this will output a single character, but it can happen it outputs multiple in case a accent/diacritic 
-		 * character could not be combined with the virtual key into a single character.
-		 */
-		static WString keyCodeToUnicode(UINT32 keyCode);
-
-		/**
-		 * Populates the provided buffer with a MAC address of the first available adapter, if one exists. If no adapters 
-		 * exist, returns false.
-		 */
-		static bool getMACAddress(MACAddress& address);
-
 		/** Returns information about the underlying hardware. */
 		static SystemInfo getSystemInfo();
 
@@ -116,12 +83,6 @@ namespace bs
 
 	private:
 		static GPUInfo sGPUInfo;
-	};
-
-	/** Represents a MAC (ethernet) address. */
-	struct MACAddress
-	{
-		UINT8 value[6];
 	};
 
 	/** @} */

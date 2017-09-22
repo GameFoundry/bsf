@@ -122,7 +122,7 @@ namespace bs
 		mManagedHandle = MonoUtil::newGCHandle(mManagedInstance);
 		mMyHandle = myHandle.getWeak();
 
-		ScriptManagedResource* scriptInstance = ScriptResourceManager::instance().createManagedScriptResource(myHandle, object);
+		ScriptResourceManager::instance().createManagedScriptResource(myHandle, object);
 		ManagedResourceManager::instance().registerManagedResource(mMyHandle);
 	}
 

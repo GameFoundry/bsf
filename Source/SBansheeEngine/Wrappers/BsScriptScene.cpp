@@ -32,10 +32,10 @@ namespace bs
 
 	void ScriptScene::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_LoadScene", &ScriptScene::internal_LoadScene);
-		metaData.scriptClass->addInternalCall("Internal_GetRoot", &ScriptScene::internal_GetRoot);
-		metaData.scriptClass->addInternalCall("Internal_ClearScene", &ScriptScene::internal_ClearScene);
-		metaData.scriptClass->addInternalCall("Internal_GetMainCameraSO", &ScriptScene::internal_GetMainCameraSO);
+		metaData.scriptClass->addInternalCall("Internal_LoadScene", (void*)&ScriptScene::internal_LoadScene);
+		metaData.scriptClass->addInternalCall("Internal_GetRoot", (void*)&ScriptScene::internal_GetRoot);
+		metaData.scriptClass->addInternalCall("Internal_ClearScene", (void*)&ScriptScene::internal_ClearScene);
+		metaData.scriptClass->addInternalCall("Internal_GetMainCameraSO", (void*)&ScriptScene::internal_GetMainCameraSO);
 	}
 
 	void ScriptScene::startUp()

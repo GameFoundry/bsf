@@ -21,9 +21,9 @@ namespace bs
 
 	void ScriptSceneGrid::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_Create", &ScriptSceneGrid::internal_Create);
-		metaData.scriptClass->addInternalCall("Internal_Draw", &ScriptSceneGrid::internal_Draw);
-		metaData.scriptClass->addInternalCall("Internal_SetMode", &ScriptSceneGrid::internal_SetMode);
+		metaData.scriptClass->addInternalCall("Internal_Create", (void*)&ScriptSceneGrid::internal_Create);
+		metaData.scriptClass->addInternalCall("Internal_Draw", (void*)&ScriptSceneGrid::internal_Draw);
+		metaData.scriptClass->addInternalCall("Internal_SetMode", (void*)&ScriptSceneGrid::internal_SetMode);
 	}
 
 	void ScriptSceneGrid::internal_Create(MonoObject* managedInstance, ScriptCamera* camera)

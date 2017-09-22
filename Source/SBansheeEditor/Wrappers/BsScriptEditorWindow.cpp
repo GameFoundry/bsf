@@ -51,20 +51,20 @@ namespace bs
 
 	void ScriptEditorWindow::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateOrGetInstance", &ScriptEditorWindow::internal_createOrGetInstance);
-		metaData.scriptClass->addInternalCall("Internal_GetInstance", &ScriptEditorWindow::internal_getInstance);
-		metaData.scriptClass->addInternalCall("Internal_GetAllWindows", &ScriptEditorWindow::internal_getAllWindows);
+		metaData.scriptClass->addInternalCall("Internal_CreateOrGetInstance", (void*)&ScriptEditorWindow::internal_createOrGetInstance);
+		metaData.scriptClass->addInternalCall("Internal_GetInstance", (void*)&ScriptEditorWindow::internal_getInstance);
+		metaData.scriptClass->addInternalCall("Internal_GetAllWindows", (void*)&ScriptEditorWindow::internal_getAllWindows);
 
-		metaData.scriptClass->addInternalCall("Internal_GetWidth", &ScriptEditorWindow::internal_getWidth);
-		metaData.scriptClass->addInternalCall("Internal_GetHeight", &ScriptEditorWindow::internal_getHeight);
-		metaData.scriptClass->addInternalCall("Internal_GetBounds", &ScriptEditorWindow::internal_getBounds);
-		metaData.scriptClass->addInternalCall("Internal_SetFocus", &ScriptEditorWindow::internal_setFocus);
-		metaData.scriptClass->addInternalCall("Internal_HasFocus", &ScriptEditorWindow::internal_hasFocus);
-		metaData.scriptClass->addInternalCall("Internal_SetActive", &ScriptEditorWindow::internal_setActive);
-		metaData.scriptClass->addInternalCall("Internal_IsActive", &ScriptEditorWindow::internal_isActive);
-		metaData.scriptClass->addInternalCall("Internal_IsPointerHovering", &ScriptEditorWindow::internal_isPointerHovering);
-		metaData.scriptClass->addInternalCall("Internal_ScreenToWindowPos", &ScriptEditorWindow::internal_screenToWindowPos);
-		metaData.scriptClass->addInternalCall("Internal_WindowToScreenPos", &ScriptEditorWindow::internal_windowToScreenPos);
+		metaData.scriptClass->addInternalCall("Internal_GetWidth", (void*)&ScriptEditorWindow::internal_getWidth);
+		metaData.scriptClass->addInternalCall("Internal_GetHeight", (void*)&ScriptEditorWindow::internal_getHeight);
+		metaData.scriptClass->addInternalCall("Internal_GetBounds", (void*)&ScriptEditorWindow::internal_getBounds);
+		metaData.scriptClass->addInternalCall("Internal_SetFocus", (void*)&ScriptEditorWindow::internal_setFocus);
+		metaData.scriptClass->addInternalCall("Internal_HasFocus", (void*)&ScriptEditorWindow::internal_hasFocus);
+		metaData.scriptClass->addInternalCall("Internal_SetActive", (void*)&ScriptEditorWindow::internal_setActive);
+		metaData.scriptClass->addInternalCall("Internal_IsActive", (void*)&ScriptEditorWindow::internal_isActive);
+		metaData.scriptClass->addInternalCall("Internal_IsPointerHovering", (void*)&ScriptEditorWindow::internal_isPointerHovering);
+		metaData.scriptClass->addInternalCall("Internal_ScreenToWindowPos", (void*)&ScriptEditorWindow::internal_screenToWindowPos);
+		metaData.scriptClass->addInternalCall("Internal_WindowToScreenPos", (void*)&ScriptEditorWindow::internal_windowToScreenPos);
 
 		onResizedMethod = metaData.scriptClass->getMethod("WindowResized", 2);
 		onFocusChangedMethod = metaData.scriptClass->getMethod("FocusChanged", 1);

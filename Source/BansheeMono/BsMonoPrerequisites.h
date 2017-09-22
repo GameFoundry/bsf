@@ -86,6 +86,12 @@ namespace bs
 	};
 }
 
+#if BS_PLATFORM == BS_PLATFORM_WIN32
+	#define BS_THUNKCALL BS_STDCALL
+#else
+	#define BS_THUNKCALL
+#endif
+
 typedef struct _MonoClass MonoClass;
 typedef struct _MonoDomain MonoDomain;
 typedef struct _MonoImage MonoImage;

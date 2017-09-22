@@ -26,14 +26,14 @@ namespace bs
 
 	void ScriptGUIFloatField::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIFloatField::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_GetValue", &ScriptGUIFloatField::internal_getValue);
-		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptGUIFloatField::internal_setValue);
-		metaData.scriptClass->addInternalCall("Internal_HasInputFocus", &ScriptGUIFloatField::internal_hasInputFocus);
-		metaData.scriptClass->addInternalCall("Internal_SetTint", &ScriptGUIFloatField::internal_setTint);
-		metaData.scriptClass->addInternalCall("Internal_SetRange", &ScriptGUIFloatField::internal_setRange);
-		metaData.scriptClass->addInternalCall("Internal_SetStep", &ScriptGUIFloatField::internal_setStep);
-		metaData.scriptClass->addInternalCall("Internal_GetStep", &ScriptGUIFloatField::internal_getStep);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptGUIFloatField::internal_createInstance);
+		metaData.scriptClass->addInternalCall("Internal_GetValue", (void*)&ScriptGUIFloatField::internal_getValue);
+		metaData.scriptClass->addInternalCall("Internal_SetValue", (void*)&ScriptGUIFloatField::internal_setValue);
+		metaData.scriptClass->addInternalCall("Internal_HasInputFocus", (void*)&ScriptGUIFloatField::internal_hasInputFocus);
+		metaData.scriptClass->addInternalCall("Internal_SetTint", (void*)&ScriptGUIFloatField::internal_setTint);
+		metaData.scriptClass->addInternalCall("Internal_SetRange", (void*)&ScriptGUIFloatField::internal_setRange);
+		metaData.scriptClass->addInternalCall("Internal_SetStep", (void*)&ScriptGUIFloatField::internal_setStep);
+		metaData.scriptClass->addInternalCall("Internal_GetStep", (void*)&ScriptGUIFloatField::internal_getStep);
 
 		onChangedThunk = (OnChangedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnChanged", 1)->getThunk();
 		onConfirmedThunk = (OnConfirmedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnConfirmed", 0)->getThunk();

@@ -26,7 +26,7 @@ namespace bs
 
 	void ScriptShader::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_GetShaderParameters", &ScriptShader::internal_GetShaderParameters);
+		metaData.scriptClass->addInternalCall("Internal_GetShaderParameters", (void*)&ScriptShader::internal_GetShaderParameters);
 	}
 
 	void ScriptShader::internal_GetShaderParameters(ScriptShader* nativeInstance, MonoArray** outNames, 

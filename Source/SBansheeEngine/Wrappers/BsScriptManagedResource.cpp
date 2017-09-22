@@ -24,7 +24,7 @@ namespace bs
 
 	void ScriptManagedResource::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptManagedResource::internal_createInstance);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptManagedResource::internal_createInstance);
 	}
 
 	void ScriptManagedResource::internal_createInstance(MonoObject* instance)

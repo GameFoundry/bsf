@@ -68,7 +68,7 @@ namespace bs
 
 		static bool internal_GetGenericCurveValue(ScriptAnimation* thisPtr, UINT32 curveIdx, float* value);
 
-		typedef void(__stdcall *OnEventTriggeredThunkDef) (MonoObject*, MonoObject*, MonoString*, MonoException**);
+		typedef void(BS_THUNKCALL *OnEventTriggeredThunkDef) (MonoObject*, MonoObject*, MonoString*, MonoException**);
 		static OnEventTriggeredThunkDef sOnEventTriggeredThunk;
 	};
 

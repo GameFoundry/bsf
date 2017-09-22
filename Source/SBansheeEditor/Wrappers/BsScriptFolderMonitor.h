@@ -51,8 +51,8 @@ namespace bs
 		static void internal_CreateInstance(MonoObject* instance, MonoString* folder);
 		static void internal_Destroy(ScriptFolderMonitor* thisPtr);
 
-		typedef void(__stdcall *OnModifiedThunkDef) (MonoObject*, MonoString*, MonoException**);
-		typedef void(__stdcall *OnRenamedThunkDef) (MonoObject*, MonoString*, MonoString*, MonoException**);
+		typedef void(BS_THUNKCALL *OnModifiedThunkDef) (MonoObject*, MonoString*, MonoException**);
+		typedef void(BS_THUNKCALL *OnRenamedThunkDef) (MonoObject*, MonoString*, MonoString*, MonoException**);
 
 		static OnModifiedThunkDef OnModifiedThunk;
 		static OnModifiedThunkDef OnAddedThunk;

@@ -17,23 +17,23 @@ namespace bs
 
 	void ScriptStringTable::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptStringTable::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptStringTable::internal_CreateInstance);
 
-		metaData.scriptClass->addInternalCall("Internal_GetNumStrings", &ScriptStringTable::internal_GetNumStrings);
-		metaData.scriptClass->addInternalCall("Internal_GetIdentifiers", &ScriptStringTable::internal_GetIdentifiers);
-		metaData.scriptClass->addInternalCall("Internal_Contains", &ScriptStringTable::internal_Contains);
+		metaData.scriptClass->addInternalCall("Internal_GetNumStrings", (void*)&ScriptStringTable::internal_GetNumStrings);
+		metaData.scriptClass->addInternalCall("Internal_GetIdentifiers", (void*)&ScriptStringTable::internal_GetIdentifiers);
+		metaData.scriptClass->addInternalCall("Internal_Contains", (void*)&ScriptStringTable::internal_Contains);
 
-		metaData.scriptClass->addInternalCall("Internal_SetString", &ScriptStringTable::internal_SetString);
-		metaData.scriptClass->addInternalCall("Internal_SetStringDefault", &ScriptStringTable::internal_SetStringDefault);
-		metaData.scriptClass->addInternalCall("Internal_RemoveString", &ScriptStringTable::internal_RemoveString);
-		metaData.scriptClass->addInternalCall("Internal_GetString", &ScriptStringTable::internal_GetString);
-		metaData.scriptClass->addInternalCall("Internal_GetStringDefault", &ScriptStringTable::internal_GetStringDefault);
+		metaData.scriptClass->addInternalCall("Internal_SetString", (void*)&ScriptStringTable::internal_SetString);
+		metaData.scriptClass->addInternalCall("Internal_SetStringDefault", (void*)&ScriptStringTable::internal_SetStringDefault);
+		metaData.scriptClass->addInternalCall("Internal_RemoveString", (void*)&ScriptStringTable::internal_RemoveString);
+		metaData.scriptClass->addInternalCall("Internal_GetString", (void*)&ScriptStringTable::internal_GetString);
+		metaData.scriptClass->addInternalCall("Internal_GetStringDefault", (void*)&ScriptStringTable::internal_GetStringDefault);
 	}
 
 	void ScriptStringTable::internal_CreateInstance(MonoObject* instance)
 	{
 		HStringTable stringTable = StringTable::create();
-		ScriptResourceBase* scriptInstance = ScriptResourceManager::instance().createBuiltinScriptResource(stringTable, instance);
+		ScriptResourceManager::instance().createBuiltinScriptResource(stringTable, instance);
 	}
 
 	bool ScriptStringTable::internal_Contains(ScriptStringTable* thisPtr, MonoString* identifier)

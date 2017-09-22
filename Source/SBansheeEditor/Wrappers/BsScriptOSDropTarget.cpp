@@ -52,10 +52,10 @@ namespace bs
 
 	void ScriptOSDropTarget::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptOSDropTarget::internal_CreateInstance);
-		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptOSDropTarget::internal_Destroy);
-		metaData.scriptClass->addInternalCall("Internal_SetBounds", &ScriptOSDropTarget::internal_SetBounds);
-		metaData.scriptClass->addInternalCall("Internal_GetFilePaths", &ScriptOSDropTarget::internal_GetFilePaths);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptOSDropTarget::internal_CreateInstance);
+		metaData.scriptClass->addInternalCall("Internal_Destroy", (void*)&ScriptOSDropTarget::internal_Destroy);
+		metaData.scriptClass->addInternalCall("Internal_SetBounds", (void*)&ScriptOSDropTarget::internal_SetBounds);
+		metaData.scriptClass->addInternalCall("Internal_GetFilePaths", (void*)&ScriptOSDropTarget::internal_GetFilePaths);
 
 		onEnterThunk = (OnEnterThunkDef)metaData.scriptClass->getMethod("InternalDoOnEnter", 2)->getThunk();
 		onMoveThunk = (OnMoveDef)metaData.scriptClass->getMethod("InternalDoOnDrag", 2)->getThunk();

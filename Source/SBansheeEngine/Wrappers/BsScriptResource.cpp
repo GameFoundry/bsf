@@ -35,9 +35,9 @@ namespace bs
 
 	void ScriptResource::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_GetName", &ScriptResource::internal_getName);
-		metaData.scriptClass->addInternalCall("Internal_GetUUID", &ScriptResource::internal_getUUID);
-		metaData.scriptClass->addInternalCall("Internal_Release", &ScriptResource::internal_release);
+		metaData.scriptClass->addInternalCall("Internal_GetName", (void*)&ScriptResource::internal_getName);
+		metaData.scriptClass->addInternalCall("Internal_GetUUID", (void*)&ScriptResource::internal_getUUID);
+		metaData.scriptClass->addInternalCall("Internal_Release", (void*)&ScriptResource::internal_release);
 	}
 
 	MonoString* ScriptResource::internal_getName(ScriptResourceBase* nativeInstance)

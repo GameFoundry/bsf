@@ -34,14 +34,14 @@ namespace bs
 
 	void ScriptGUISceneTreeView::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUISceneTreeView::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_Update", &ScriptGUISceneTreeView::internal_update);
-		metaData.scriptClass->addInternalCall("Internal_CutSelection", &ScriptGUISceneTreeView::internal_cutSelection);
-		metaData.scriptClass->addInternalCall("Internal_CopySelection", &ScriptGUISceneTreeView::internal_copySelection);
-		metaData.scriptClass->addInternalCall("Internal_PasteToSelection", &ScriptGUISceneTreeView::internal_pasteToSelection);
-		metaData.scriptClass->addInternalCall("Internal_DuplicateSelection", &ScriptGUISceneTreeView::internal_duplicateSelection);
-		metaData.scriptClass->addInternalCall("Internal_DeleteSelection", &ScriptGUISceneTreeView::internal_deleteSelection);
-		metaData.scriptClass->addInternalCall("Internal_RenameSelection", &ScriptGUISceneTreeView::internal_renameSelection);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptGUISceneTreeView::internal_createInstance);
+		metaData.scriptClass->addInternalCall("Internal_Update", (void*)&ScriptGUISceneTreeView::internal_update);
+		metaData.scriptClass->addInternalCall("Internal_CutSelection", (void*)&ScriptGUISceneTreeView::internal_cutSelection);
+		metaData.scriptClass->addInternalCall("Internal_CopySelection", (void*)&ScriptGUISceneTreeView::internal_copySelection);
+		metaData.scriptClass->addInternalCall("Internal_PasteToSelection", (void*)&ScriptGUISceneTreeView::internal_pasteToSelection);
+		metaData.scriptClass->addInternalCall("Internal_DuplicateSelection", (void*)&ScriptGUISceneTreeView::internal_duplicateSelection);
+		metaData.scriptClass->addInternalCall("Internal_DeleteSelection", (void*)&ScriptGUISceneTreeView::internal_deleteSelection);
+		metaData.scriptClass->addInternalCall("Internal_RenameSelection", (void*)&ScriptGUISceneTreeView::internal_renameSelection);
 
 		onModifiedThunk = (OnModifiedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnModified", 0)->getThunk();
 		onResourceDroppedThunk = (OnResourceDroppedThunkDef)metaData.scriptClass->getMethod("Internal_DoOnResourceDropped", 2)->getThunk();

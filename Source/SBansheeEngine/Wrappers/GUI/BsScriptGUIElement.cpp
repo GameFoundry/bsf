@@ -80,30 +80,30 @@ namespace bs
 
 	void ScriptGUIElement::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIElement::internal_destroy);
-		metaData.scriptClass->addInternalCall("Internal_SetVisible", &ScriptGUIElement::internal_setVisible);
-		metaData.scriptClass->addInternalCall("Internal_SetActive", &ScriptGUIElement::internal_setActive);
-		metaData.scriptClass->addInternalCall("Internal_SetDisabled", &ScriptGUIElement::internal_setDisabled);
-		metaData.scriptClass->addInternalCall("Internal_GetVisible", &ScriptGUIElement::internal_getVisible);
-		metaData.scriptClass->addInternalCall("Internal_GetActive", &ScriptGUIElement::internal_getActive);
-		metaData.scriptClass->addInternalCall("Internal_GetDisabled", &ScriptGUIElement::internal_getDisabled);
-		metaData.scriptClass->addInternalCall("Internal_SetFocus", &ScriptGUIElement::internal_setFocus);
-		metaData.scriptClass->addInternalCall("Internal_SetFocus", &ScriptGUIElement::internal_setFocus);
-		metaData.scriptClass->addInternalCall("Internal_GetBlocking", &ScriptGUIElement::internal_getBlocking);
-		metaData.scriptClass->addInternalCall("Internal_SetBlocking", &ScriptGUIElement::internal_setBlocking);
-		metaData.scriptClass->addInternalCall("Internal_GetBounds", &ScriptGUIElement::internal_getBounds);
-		metaData.scriptClass->addInternalCall("Internal_SetBounds", &ScriptGUIElement::internal_setBounds);
-		metaData.scriptClass->addInternalCall("Internal_GetVisibleBounds", &ScriptGUIElement::internal_getVisibleBounds);
-		metaData.scriptClass->addInternalCall("Internal_SetPosition", &ScriptGUIElement::internal_SetPosition);
-		metaData.scriptClass->addInternalCall("Internal_SetWidth", &ScriptGUIElement::internal_SetWidth);
-		metaData.scriptClass->addInternalCall("Internal_SetFlexibleWidth", &ScriptGUIElement::internal_SetFlexibleWidth);
-		metaData.scriptClass->addInternalCall("Internal_SetHeight", &ScriptGUIElement::internal_SetHeight);
-		metaData.scriptClass->addInternalCall("Internal_SetFlexibleHeight", &ScriptGUIElement::internal_SetFlexibleHeight);
-		metaData.scriptClass->addInternalCall("Internal_ResetDimensions", &ScriptGUIElement::internal_ResetDimensions);
-		metaData.scriptClass->addInternalCall("Internal_SetContextMenu", &ScriptGUIElement::internal_SetContextMenu);
-		metaData.scriptClass->addInternalCall("Internal_GetStyle", &ScriptGUIElement::internal_GetStyle);
-		metaData.scriptClass->addInternalCall("Internal_SetStyle", &ScriptGUIElement::internal_SetStyle);
-		metaData.scriptClass->addInternalCall("Internal_GetParent", &ScriptGUIElement::internal_getParent);
+		metaData.scriptClass->addInternalCall("Internal_Destroy", (void*)&ScriptGUIElement::internal_destroy);
+		metaData.scriptClass->addInternalCall("Internal_SetVisible", (void*)&ScriptGUIElement::internal_setVisible);
+		metaData.scriptClass->addInternalCall("Internal_SetActive", (void*)&ScriptGUIElement::internal_setActive);
+		metaData.scriptClass->addInternalCall("Internal_SetDisabled", (void*)&ScriptGUIElement::internal_setDisabled);
+		metaData.scriptClass->addInternalCall("Internal_GetVisible", (void*)&ScriptGUIElement::internal_getVisible);
+		metaData.scriptClass->addInternalCall("Internal_GetActive", (void*)&ScriptGUIElement::internal_getActive);
+		metaData.scriptClass->addInternalCall("Internal_GetDisabled", (void*)&ScriptGUIElement::internal_getDisabled);
+		metaData.scriptClass->addInternalCall("Internal_SetFocus", (void*)&ScriptGUIElement::internal_setFocus);
+		metaData.scriptClass->addInternalCall("Internal_SetFocus", (void*)&ScriptGUIElement::internal_setFocus);
+		metaData.scriptClass->addInternalCall("Internal_GetBlocking", (void*)&ScriptGUIElement::internal_getBlocking);
+		metaData.scriptClass->addInternalCall("Internal_SetBlocking", (void*)&ScriptGUIElement::internal_setBlocking);
+		metaData.scriptClass->addInternalCall("Internal_GetBounds", (void*)&ScriptGUIElement::internal_getBounds);
+		metaData.scriptClass->addInternalCall("Internal_SetBounds", (void*)&ScriptGUIElement::internal_setBounds);
+		metaData.scriptClass->addInternalCall("Internal_GetVisibleBounds", (void*)&ScriptGUIElement::internal_getVisibleBounds);
+		metaData.scriptClass->addInternalCall("Internal_SetPosition", (void*)&ScriptGUIElement::internal_SetPosition);
+		metaData.scriptClass->addInternalCall("Internal_SetWidth", (void*)&ScriptGUIElement::internal_SetWidth);
+		metaData.scriptClass->addInternalCall("Internal_SetFlexibleWidth", (void*)&ScriptGUIElement::internal_SetFlexibleWidth);
+		metaData.scriptClass->addInternalCall("Internal_SetHeight", (void*)&ScriptGUIElement::internal_SetHeight);
+		metaData.scriptClass->addInternalCall("Internal_SetFlexibleHeight", (void*)&ScriptGUIElement::internal_SetFlexibleHeight);
+		metaData.scriptClass->addInternalCall("Internal_ResetDimensions", (void*)&ScriptGUIElement::internal_ResetDimensions);
+		metaData.scriptClass->addInternalCall("Internal_SetContextMenu", (void*)&ScriptGUIElement::internal_SetContextMenu);
+		metaData.scriptClass->addInternalCall("Internal_GetStyle", (void*)&ScriptGUIElement::internal_GetStyle);
+		metaData.scriptClass->addInternalCall("Internal_SetStyle", (void*)&ScriptGUIElement::internal_SetStyle);
+		metaData.scriptClass->addInternalCall("Internal_GetParent", (void*)&ScriptGUIElement::internal_getParent);
 
 		onFocusGainedThunk = (OnFocusChangedThunkDef)metaData.scriptClass->getMethod("Internal_OnFocusGained", 0)->getThunk();
 		onFocusLostThunk = (OnFocusChangedThunkDef)metaData.scriptClass->getMethod("Internal_OnFocusLost", 0)->getThunk();

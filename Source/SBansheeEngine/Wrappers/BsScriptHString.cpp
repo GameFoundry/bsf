@@ -15,9 +15,9 @@ namespace bs
 
 	void ScriptHString::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptHString::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_SetParameter", &ScriptHString::internal_setParameter);
-		metaData.scriptClass->addInternalCall("Internal_GetValue", &ScriptHString::internal_getValue);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", (void*)&ScriptHString::internal_createInstance);
+		metaData.scriptClass->addInternalCall("Internal_SetParameter", (void*)&ScriptHString::internal_setParameter);
+		metaData.scriptClass->addInternalCall("Internal_GetValue", (void*)&ScriptHString::internal_getValue);
 	}
 
 	void ScriptHString::internal_createInstance(MonoObject* instance, MonoString* identifier, UINT32 tableId)

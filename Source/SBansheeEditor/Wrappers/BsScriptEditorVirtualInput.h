@@ -58,7 +58,7 @@ namespace bs
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/
 
-		typedef void(__stdcall *OnButtonEventThunkDef) (MonoObject*, UINT32, MonoException**);
+		typedef void(BS_THUNKCALL *OnButtonEventThunkDef) (MonoObject*, UINT32, MonoException**);
 
 		static OnButtonEventThunkDef OnButtonUpThunk;
 		static OnButtonEventThunkDef OnButtonDownThunk;

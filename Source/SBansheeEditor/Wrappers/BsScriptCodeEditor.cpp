@@ -19,11 +19,11 @@ namespace bs
 
 	void ScriptCodeEditor::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_SetActiveEditor", &ScriptCodeEditor::internal_SetActiveEditor);
-		metaData.scriptClass->addInternalCall("Internal_GetActiveEditor", &ScriptCodeEditor::internal_GetActiveEditor);
-		metaData.scriptClass->addInternalCall("Internal_GetAvailableEditors", &ScriptCodeEditor::internal_GetAvailableEditors);
-		metaData.scriptClass->addInternalCall("Internal_OpenFile", &ScriptCodeEditor::internal_OpenFile);
-		metaData.scriptClass->addInternalCall("Internal_SyncSolution", &ScriptCodeEditor::internal_SyncSolution);
+		metaData.scriptClass->addInternalCall("Internal_SetActiveEditor", (void*)&ScriptCodeEditor::internal_SetActiveEditor);
+		metaData.scriptClass->addInternalCall("Internal_GetActiveEditor", (void*)&ScriptCodeEditor::internal_GetActiveEditor);
+		metaData.scriptClass->addInternalCall("Internal_GetAvailableEditors", (void*)&ScriptCodeEditor::internal_GetAvailableEditors);
+		metaData.scriptClass->addInternalCall("Internal_OpenFile", (void*)&ScriptCodeEditor::internal_OpenFile);
+		metaData.scriptClass->addInternalCall("Internal_SyncSolution", (void*)&ScriptCodeEditor::internal_SyncSolution);
 	}
 
 	CodeEditorType ScriptCodeEditor::internal_GetActiveEditor()

@@ -38,7 +38,7 @@ namespace bs
 		static void internal_setValue(ScriptGUIToggleField* nativeInstance, bool value);
 		static void internal_setTint(ScriptGUIToggleField* nativeInstance, Color* color);
 
-		typedef void(__stdcall *OnChangedThunkDef) (MonoObject*, bool, MonoException**);
+		typedef void(BS_THUNKCALL *OnChangedThunkDef) (MonoObject*, bool, MonoException**);
 
 		static OnChangedThunkDef onChangedThunk;
 	};

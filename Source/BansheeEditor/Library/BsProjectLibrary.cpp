@@ -1045,7 +1045,6 @@ namespace bs
 		}
 
 		// Both source and destination are within Resources folder, need to preserve import options on the copies
-		LibraryEntry* newEntry = nullptr;
 		if (FileSystem::isFile(newFullPath))
 		{
 			assert(oldEntry->type == LibraryEntryType::File);
@@ -1055,7 +1054,7 @@ namespace bs
 			if (oldResEntry->meta != nullptr)
 				importOptions = oldResEntry->meta->getImportOptions();
 
-			newEntry = addResourceInternal(newEntryParent, newFullPath, importOptions, true);
+			addResourceInternal(newEntryParent, newFullPath, importOptions, true);
 		}
 		else
 		{
@@ -1063,7 +1062,6 @@ namespace bs
 			DirectoryEntry* oldDirEntry = static_cast<DirectoryEntry*>(oldEntry);
 
 			DirectoryEntry* newDirEntry = addDirectoryInternal(newEntryParent, newFullPath);
-			newEntry = newDirEntry;
 
 			Stack<std::tuple<DirectoryEntry*, DirectoryEntry*>> todo;
 			todo.push(std::make_tuple(oldDirEntry, newDirEntry));

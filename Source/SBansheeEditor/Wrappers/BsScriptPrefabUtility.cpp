@@ -20,14 +20,14 @@ namespace bs
 
 	void ScriptPrefabUtility::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_BreakPrefab", &ScriptPrefabUtility::internal_breakPrefab);
-		metaData.scriptClass->addInternalCall("Internal_ApplyPrefab", &ScriptPrefabUtility::internal_applyPrefab);
-		metaData.scriptClass->addInternalCall("Internal_RevertPrefab", &ScriptPrefabUtility::internal_revertPrefab);
-		metaData.scriptClass->addInternalCall("Internal_HasPrefabLink", &ScriptPrefabUtility::internal_hasPrefabLink);
-		metaData.scriptClass->addInternalCall("Internal_GetPrefabParent", &ScriptPrefabUtility::internal_getPrefabParent);
-		metaData.scriptClass->addInternalCall("Internal_GetPrefabUUID", &ScriptPrefabUtility::internal_GetPrefabUUID);
-		metaData.scriptClass->addInternalCall("Internal_UpdateFromPrefab", &ScriptPrefabUtility::internal_UpdateFromPrefab);
-		metaData.scriptClass->addInternalCall("Internal_RecordPrefabDiff", &ScriptPrefabUtility::internal_RecordPrefabDiff);
+		metaData.scriptClass->addInternalCall("Internal_BreakPrefab", (void*)&ScriptPrefabUtility::internal_breakPrefab);
+		metaData.scriptClass->addInternalCall("Internal_ApplyPrefab", (void*)&ScriptPrefabUtility::internal_applyPrefab);
+		metaData.scriptClass->addInternalCall("Internal_RevertPrefab", (void*)&ScriptPrefabUtility::internal_revertPrefab);
+		metaData.scriptClass->addInternalCall("Internal_HasPrefabLink", (void*)&ScriptPrefabUtility::internal_hasPrefabLink);
+		metaData.scriptClass->addInternalCall("Internal_GetPrefabParent", (void*)&ScriptPrefabUtility::internal_getPrefabParent);
+		metaData.scriptClass->addInternalCall("Internal_GetPrefabUUID", (void*)&ScriptPrefabUtility::internal_GetPrefabUUID);
+		metaData.scriptClass->addInternalCall("Internal_UpdateFromPrefab", (void*)&ScriptPrefabUtility::internal_UpdateFromPrefab);
+		metaData.scriptClass->addInternalCall("Internal_RecordPrefabDiff", (void*)&ScriptPrefabUtility::internal_RecordPrefabDiff);
 	}
 
 	void ScriptPrefabUtility::internal_breakPrefab(ScriptSceneObject* soPtr)
