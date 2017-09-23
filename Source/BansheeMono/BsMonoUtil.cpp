@@ -3,7 +3,6 @@
 #include "BsMonoUtil.h"
 #include "Debug/BsDebug.h"
 #include <mono/jit/jit.h>
-#include <codecvt>
 
 namespace bs
 {
@@ -42,17 +41,7 @@ namespace bs
 		if (sizeof(wchar_t) == 2) // Assuming UTF-16
 			return mono_string_from_utf16((mono_unichar2*)str.c_str());
 		else // Assuming UTF-32
-		{
-			const std::codecvt_mode convMode = (std::codecvt_mode)(std::little_endian);
-			typedef std::codecvt_utf16<UINT32, 1114111, convMode> utf16utf32;
-
-			std::wstring_convert<utf16utf32, UINT32> conversion("?");
-			UINT32* start = (UINT32*)str.data();
-			UINT32* end = (start + (str.size() - 1) / 4);
-
-			mono_unichar2* convertedStr = (mono_unichar2*)conversion.to_bytes(start, end).c_str();
-			return mono_string_from_utf16(convertedStr);
-		}
+			return mono_string_from_utf32((mono_unichar4*)str.c_str());
 	}
 
 	MonoString* MonoUtil::stringToMono(const String& str)

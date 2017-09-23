@@ -43,6 +43,7 @@ set(BS_BANSHEEUTILITY_INC_STRING
 	"String/BsString.h"
 	"String/BsStringFormat.h"
 	"String/BsStringID.h"
+	"String/BsUnicode.h"
 )
 
 set(BS_BANSHEEUTILITY_SRC_IMAGE
@@ -244,6 +245,7 @@ set(BS_BANSHEEUTILITY_INC_SERIALIZATION
 set(BS_BANSHEEUTILITY_SRC_STRING
 	"String/BsStringID.cpp"
 	"String/BsString.cpp"
+	"String/BsUnicode.cpp"
 )
 
 set(BS_BANSHEEUTILITY_INC_REFLECTION

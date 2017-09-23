@@ -32,12 +32,12 @@ namespace bs
 		};
 
 	public:
-        /** Creates an unnamed stream. */
-        DataStream(UINT16 accessMode = READ) 
+		/** Creates an unnamed stream. */
+		DataStream(UINT16 accessMode = READ) 
 			:mSize(0), mAccess(accessMode) 
 		{ }
 
-        /** Creates a named stream. */
+		/** Creates a named stream. */
 		DataStream(const String& name, UINT16 accessMode = READ) 
 			:mName(name), mSize(0), mAccess(accessMode) {}
 
@@ -50,11 +50,12 @@ namespace bs
 		virtual bool isWriteable() const { return (mAccess & WRITE) != 0; }
 		virtual bool isFile() const = 0;
 
-        /** Reads data from the buffer and copies it to the specified value. */
-        template<typename T> DataStream& operator>>(T& val);
+		/** Reads data from the buffer and copies it to the specified value. */
+		template<typename T> DataStream& operator>>(T& val);
 
 		/**
-		 * Read the requisite number of bytes from the stream, stopping at the end of the file.
+		 * Read the requisite number of bytes from the stream, stopping at the end of the file. Advances
+		 * the read pointer.
 		 *
 		 * @param[in]	buf		Pre-allocated buffer to read the data into.
 		 * @param[in]	count	Number of bytes to read.
@@ -65,7 +66,7 @@ namespace bs
 		virtual size_t read(void* buf, size_t count) = 0;
 
 		/**
-		 * Write the requisite number of bytes to the stream.
+		 * Write the requisite number of bytes to the stream and advance the write pointer.
 		 *
 		 * @param[in]	buf		Buffer containing bytes to write.
 		 * @param[in]	count	Number of bytes to write.
@@ -90,27 +91,27 @@ namespace bs
 		 * 							wide characters.
 		 * @param[in]	encoding	Encoding to convert the string to before writing.
 		 */
-		virtual void writeString(const WString& string, StringEncoding encoding = StringEncoding::UTF16);
+		virtual void writeString(const WString& string, StringEncoding encoding = StringEncoding::UTF8);
 
-	    /**
-	     * Returns a string containing the entire stream.
-	     *
+		/**
+		 * Returns a string containing the entire stream.
+		 *
 		 * @return	String data encoded as UTF-8. 
 		 *
 		 * @note	This is a convenience method for text streams only, allowing you to retrieve a String object containing 
 		 *			all the data in the stream.
-	     */
-	    virtual String getAsString();
+		 */
+		virtual String getAsString();
 
-	    /**
-	     * Returns a wide string containing the entire stream.
-	     *
+		/**
+		 * Returns a wide string containing the entire stream.
+		 *
 		 * @return	Wide string encoded as specified by current platform.
 		 *
 		 * @note	This is a convenience method for text streams only, allowing you to retrieve a WString object 
 		 *			containing all the data in the stream.
-	     */
-	    virtual WString getAsWString();
+		 */
+		virtual WString getAsWString();
 
 		/**
 		 * Skip a defined number of bytes. This can also be a negative value, in which case the file pointer rewinds a 
@@ -118,17 +119,17 @@ namespace bs
 		 */
 		virtual void skip(size_t count) = 0;
 	
-	    /** Repositions the read point to a specified byte. */
-	    virtual void seek(size_t pos) = 0;
+		/** Repositions the read point to a specified byte. */
+		virtual void seek(size_t pos) = 0;
 		
-	    /** Returns the current byte offset from beginning. */
-	    virtual size_t tell() const = 0;
+		/** Returns the current byte offset from beginning. */
+		virtual size_t tell() const = 0;
 
-	    /** Returns true if the stream has reached the end. */
-	    virtual bool eof() const = 0;
+		/** Returns true if the stream has reached the end. */
+		virtual bool eof() const = 0;
 
-        /** Returns the total size of the data to be read from the stream, or 0 if this is indeterminate for this stream. */
-        size_t size() const { return mSize; }
+		/** Returns the total size of the data to be read from the stream, or 0 if this is indeterminate for this stream. */
+		size_t size() const { return mSize; }
 
 		/** 
 		 * Creates a copy of this stream. 
@@ -139,14 +140,14 @@ namespace bs
 		 */
 		virtual SPtr<DataStream> clone(bool copyData = true) const = 0;
 
-        /** Close the stream. This makes further operations invalid. */
-        virtual void close() = 0;
+		/** Close the stream. This makes further operations invalid. */
+		virtual void close() = 0;
 		
 	protected:
 		static const UINT32 StreamTempSize;
 
 		String mName;		
-        size_t mSize;
+		size_t mSize;
 		UINT16 mAccess;
 	};
 
@@ -196,28 +197,28 @@ namespace bs
 		/** Get a pointer to the current position in the memory block this stream holds. */
 		UINT8* getCurrentPtr() const { return mPos; }
 		
-        /** @copydoc DataStream::read */
+		/** @copydoc DataStream::read */
 		size_t read(void* buf, size_t count) override;
 
-        /** @copydoc DataStream::write */
+		/** @copydoc DataStream::write */
 		size_t write(const void* buf, size_t count) override;
 
-        /** @copydoc DataStream::skip */
+		/** @copydoc DataStream::skip */
 		void skip(size_t count) override;
 	
-        /** @copydoc DataStream::seek */
+		/** @copydoc DataStream::seek */
 		void seek(size_t pos) override;
 		
-        /** @copydoc DataStream::tell */
+		/** @copydoc DataStream::tell */
 		size_t tell() const override;
 
-        /** @copydoc DataStream::eof */
+		/** @copydoc DataStream::eof */
 		bool eof() const override;
 
 		/** @copydoc DataStream::clone */
 		SPtr<DataStream> clone(bool copyData = true) const override;
 
-        /** @copydoc DataStream::close */
+		/** @copydoc DataStream::close */
 		void close() override;
 
 	protected:
@@ -246,28 +247,28 @@ namespace bs
 
 		bool isFile() const override { return true; }
 
-        /** @copydoc DataStream::read */
+		/** @copydoc DataStream::read */
 		size_t read(void* buf, size_t count) override;
 
-        /** @copydoc DataStream::write */
+		/** @copydoc DataStream::write */
 		size_t write(const void* buf, size_t count) override;
 
-        /** @copydoc DataStream::skip */
+		/** @copydoc DataStream::skip */
 		void skip(size_t count) override;
 	
-        /** @copydoc DataStream::seek */
+		/** @copydoc DataStream::seek */
 		void seek(size_t pos) override;
 
-        /** @copydoc DataStream::tell */
+		/** @copydoc DataStream::tell */
 		size_t tell() const override;
 
-        /** @copydoc DataStream::eof */
+		/** @copydoc DataStream::eof */
 		bool eof() const override;
 
 		/** @copydoc DataStream::clone */
 		SPtr<DataStream> clone(bool copyData = true) const override;
 
-        /** @copydoc DataStream::close */
+		/** @copydoc DataStream::close */
 		void close() override;
 
 		/** Returns the path of the file opened by the stream. */

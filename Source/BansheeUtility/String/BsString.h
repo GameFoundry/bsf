@@ -21,17 +21,29 @@ namespace bs
 	template <typename T>
 	using BasicStringStream = std::basic_stringstream < T, std::char_traits<T>, StdAlloc<T> > ;
 
-	/** Wide string used primarily for handling Unicode text. */
+	/** Wide string used primarily for handling Unicode text (UTF-32 on Linux, UTF-16 on Windows, generally). */
 	typedef BasicString<wchar_t> WString;
 
-	/** Narrow string used primarily for handling ASCII text. */
+	/** Narrow string used for handling narrow encoded text (either locale specific ANSI or UTF-8). */
 	typedef BasicString<char> String;
 
-	/** Wide string stream used for primarily for constructing strings consisting of Unicode text. */
+	/** Wide string used UTF-16 encoded strings. */
+	typedef BasicString<char16_t> U16String;
+
+	/** Wide string used UTF-32 encoded strings. */
+	typedef BasicString<char32_t> U32String;
+
+	/** Wide string stream used for primarily for constructing wide strings. */
 	typedef BasicStringStream<wchar_t> WStringStream;
 
-	/** Wide string stream used for primarily for constructing strings consisting of ASCII text. */
+	/** Wide string stream used for primarily for constructing narrow strings. */
 	typedef BasicStringStream<char> StringStream;
+
+	/** Wide string stream used for primarily for constructing UTF-16 strings. */
+	typedef BasicStringStream<char16_t> U16StringStream;
+
+	/** Wide string stream used for primarily for constructing UTF-32 strings. */
+	typedef BasicStringStream<char32_t> U32StringStream;
 
 	/** Equivalent to String, except it avoids any dynamic allocations until the number of elements exceeds @p Count. */
 	template <int Count> 
@@ -48,21 +60,21 @@ namespace bs
 	 *  @{
 	 */
 
-    /** Utility class for manipulating Strings. */
-    class BS_UTILITY_EXPORT StringUtil
-    {
+	/** Utility class for manipulating Strings. */
+	class BS_UTILITY_EXPORT StringUtil
+	{
 	public:
-        /** Removes any whitespace characters from beginning or end of the string. */
-        static void trim(String& str, bool left = true, bool right = true);
+		/** Removes any whitespace characters from beginning or end of the string. */
+		static void trim(String& str, bool left = true, bool right = true);
 
-        /** @copydoc StringUtil::trim(String&, bool, bool) */
-        static void trim(WString& str, bool left = true, bool right = true);
+		/** @copydoc StringUtil::trim(String&, bool, bool) */
+		static void trim(WString& str, bool left = true, bool right = true);
 
-        /**	Removes specified characters from beginning or end of the string. */
-        static void trim(String& str, const String& delims, bool left = true, bool right = true);
+		/**	Removes specified characters from beginning or end of the string. */
+		static void trim(String& str, const String& delims, bool left = true, bool right = true);
 
 		/** @copydoc StringUtil::trim(String&, const String&, bool, bool) */
-        static void trim(WString& str, const WString& delims, bool left = true, bool right = true);
+		static void trim(WString& str, const WString& delims, bool left = true, bool right = true);
 
 		/**
 		 * Returns a vector of strings containing all the substrings delimited by the provided delimiter characters.
@@ -96,56 +108,56 @@ namespace bs
 		/** @copydoc StringUtil::tokenise(const String&, const String&, const String&, unsigned int) */
 		static Vector<WString> tokenise(const WString& str, const WString& delims = L"\t\n ", const WString& doubleDelims = L"\"", unsigned int maxSplits = 0);
 
-        /** Converts all the characters in the string to lower case. */
-        static void toLowerCase(String& str);
+		/** Converts all the characters in the string to lower case. */
+		static void toLowerCase(String& str);
 
-        /** Converts all the characters in the string to lower case. */
-        static void toLowerCase(WString& str);
+		/** Converts all the characters in the string to lower case. */
+		static void toLowerCase(WString& str);
 
-        /** Converts all the characters in the string to upper case. */
-        static void toUpperCase(String& str);
+		/** Converts all the characters in the string to upper case. */
+		static void toUpperCase(String& str);
 
-        /**	Converts all the characters in the string to upper case. */
-        static void toUpperCase(WString& str);
+		/**	Converts all the characters in the string to upper case. */
+		static void toUpperCase(WString& str);
 
-        /**
-         * Returns whether the string begins with the pattern passed in.
-         *
-         * @param[in]	str		 	String to compare.
-         * @param[in]	pattern		Pattern to compare with.
+		/**
+		 * Returns whether the string begins with the pattern passed in.
+		 *
+		 * @param[in]	str		 	String to compare.
+		 * @param[in]	pattern		Pattern to compare with.
 		 * @param[in]	lowerCase	(optional) If true, the start of the string will be lower cased before comparison, and 
 		 *							the pattern should also be in lower case.
-         */
-        static bool startsWith(const String& str, const String& pattern, bool lowerCase = true);
+		 */
+		static bool startsWith(const String& str, const String& pattern, bool lowerCase = true);
 
-        /** @copydoc startsWith(const String&, const String&, bool) */
-        static bool startsWith(const WString& str, const WString& pattern, bool lowerCase = true);
+		/** @copydoc startsWith(const String&, const String&, bool) */
+		static bool startsWith(const WString& str, const WString& pattern, bool lowerCase = true);
 
-        /**
-         * Returns whether the string end with the pattern passed in.
-         *
-         * @param[in]	str		 	String to compare.
-         * @param[in]	pattern		Pattern to compare with.
+		/**
+		 * Returns whether the string end with the pattern passed in.
+		 *
+		 * @param[in]	str		 	String to compare.
+		 * @param[in]	pattern		Pattern to compare with.
 		 * @param[in]	lowerCase	(optional) If true, the start of the string will be lower cased before comparison, and 
 		 *							the pattern should also be in lower case.
-         */
-        static bool endsWith(const String& str, const String& pattern, bool lowerCase = true);
+		 */
+		static bool endsWith(const String& str, const String& pattern, bool lowerCase = true);
 
-        /** @copydoc endsWith(const String&, const String&, bool) */
-        static bool endsWith(const WString& str, const WString& pattern, bool lowerCase = true);
+		/** @copydoc endsWith(const String&, const String&, bool) */
+		static bool endsWith(const WString& str, const WString& pattern, bool lowerCase = true);
 
-        /**
-         * Returns true if the string matches the provided pattern. Pattern may use a "*" wildcard for matching any 
+		/**
+		 * Returns true if the string matches the provided pattern. Pattern may use a "*" wildcard for matching any 
 		 * characters.
-         *
-         * @param[in]	str			 	The string to test.
-         * @param[in]	pattern		 	Patterns to look for.
-         * @param[in]	caseSensitive	(optional) Should the match be case sensitive or not.
-         */
-        static bool match(const String& str, const String& pattern, bool caseSensitive = true);
+		 *
+		 * @param[in]	str			 	The string to test.
+		 * @param[in]	pattern		 	Patterns to look for.
+		 * @param[in]	caseSensitive	(optional) Should the match be case sensitive or not.
+		 */
+		static bool match(const String& str, const String& pattern, bool caseSensitive = true);
 
 		/** @copydoc match(const String&, const String&, bool) */
-        static bool match(const WString& str, const WString& pattern, bool caseSensitive = true);
+		static bool match(const WString& str, const WString& pattern, bool caseSensitive = true);
 
 		/**
 		 * Replace all instances of a substring with a another substring.
@@ -200,7 +212,7 @@ namespace bs
 		}
 
 		/** Constant blank string, useful for returning by ref where local does not exist. */
-        static const String BLANK;
+		static const String BLANK;
 
 		/**	Constant blank wide string, useful for returning by ref where local does not exist. */
 		static const WString WBLANK;
@@ -428,7 +440,7 @@ namespace bs
 			}
 			return result;
 		}
-    };
+	};
 
 	/** Converts a narrow string to a wide string. */
 	BS_UTILITY_EXPORT WString toWString(const String& source);
@@ -437,9 +449,9 @@ namespace bs
 	BS_UTILITY_EXPORT WString toWString(const char* source);
 
 	/** Converts a float to a string. */
-    BS_UTILITY_EXPORT WString toWString(float val, unsigned short precision = 6, 
-        unsigned short width = 0, char fill = ' ', 
-        std::ios::fmtflags flags = std::ios::fmtflags(0) );
+	BS_UTILITY_EXPORT WString toWString(float val, unsigned short precision = 6, 
+		unsigned short width = 0, char fill = ' ', 
+		std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
 	/** Converts a double to a string. */
 	BS_UTILITY_EXPORT WString toWString(double val, unsigned short precision = 6, 
@@ -447,24 +459,24 @@ namespace bs
 		std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
 	/** Converts a Radian to a string. */
-    BS_UTILITY_EXPORT WString toWString(Radian val, unsigned short precision = 6, 
-        unsigned short width = 0, char fill = ' ', 
-        std::ios::fmtflags flags = std::ios::fmtflags(0) );
+	BS_UTILITY_EXPORT WString toWString(Radian val, unsigned short precision = 6, 
+		unsigned short width = 0, char fill = ' ', 
+		std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
 	/** Converts a Degree to a string. */
-    BS_UTILITY_EXPORT WString toWString(Degree val, unsigned short precision = 6, 
-        unsigned short width = 0, char fill = ' ', 
-        std::ios::fmtflags flags = std::ios::fmtflags(0) );
+	BS_UTILITY_EXPORT WString toWString(Degree val, unsigned short precision = 6, 
+		unsigned short width = 0, char fill = ' ', 
+		std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
 	/**	Converts an int to a string. */
-    BS_UTILITY_EXPORT WString toWString(int val, unsigned short width = 0, 
-        char fill = ' ', 
-        std::ios::fmtflags flags = std::ios::fmtflags(0) );
+	BS_UTILITY_EXPORT WString toWString(int val, unsigned short width = 0, 
+		char fill = ' ', 
+		std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
 	/**	Converts an unsigned int to a string. */
-    BS_UTILITY_EXPORT WString toWString(unsigned int val, 
-        unsigned short width = 0, char fill = ' ', 
-        std::ios::fmtflags flags = std::ios::fmtflags(0) );
+	BS_UTILITY_EXPORT WString toWString(unsigned int val, 
+		unsigned short width = 0, char fill = ' ', 
+		std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
 	/**	Converts an 64bit integer to a string. */
 	BS_UTILITY_EXPORT WString toWString(INT64 val, 
@@ -486,72 +498,72 @@ namespace bs
 		unsigned short width = 0, char fill = ' ',
 		std::ios::fmtflags flags = std::ios::fmtflags(0));
 
-    /**
-     * Converts a boolean to a string.
-     *
-     * @param[in]	val  	Value to convert.
-     * @param[in]	yesNo	(optional) If set to true, result is "yes" or "no" instead of "true" or "false".
-     */
-    BS_UTILITY_EXPORT WString toWString(bool val, bool yesNo = false);
+	/**
+	 * Converts a boolean to a string.
+	 *
+	 * @param[in]	val  	Value to convert.
+	 * @param[in]	yesNo	(optional) If set to true, result is "yes" or "no" instead of "true" or "false".
+	 */
+	BS_UTILITY_EXPORT WString toWString(bool val, bool yesNo = false);
 
-    /**
-     * Converts a 2 dimensional vector to a string.
-     * 			
+	/**
+	 * Converts a 2 dimensional vector to a string.
+	 * 			
 	 * @note	Format is "x y".
-     */
-    BS_UTILITY_EXPORT WString toWString(const Vector2& val);
+	 */
+	BS_UTILITY_EXPORT WString toWString(const Vector2& val);
 
-    /**
-     * Converts a 2 dimensional integer vector to a string.
-     * 			
+	/**
+	 * Converts a 2 dimensional integer vector to a string.
+	 * 			
 	 * @note	Format is "x y".
-     */
-    BS_UTILITY_EXPORT WString toWString(const Vector2I& val);
+	 */
+	BS_UTILITY_EXPORT WString toWString(const Vector2I& val);
 
-    /**
-     * Converts a 3 dimensional vector to a string.
-     * 			
+	/**
+	 * Converts a 3 dimensional vector to a string.
+	 * 			
 	 * @note	Format is "x y z".
-     */
-    BS_UTILITY_EXPORT WString toWString(const Vector3& val);
+	 */
+	BS_UTILITY_EXPORT WString toWString(const Vector3& val);
 
-    /**
-     * Converts a 4 dimensional vector to a string.
-     * 			
+	/**
+	 * Converts a 4 dimensional vector to a string.
+	 * 			
 	 * @note	Format is "x y z w".
-     */
-    BS_UTILITY_EXPORT WString toWString(const Vector4& val);
+	 */
+	BS_UTILITY_EXPORT WString toWString(const Vector4& val);
 
-    /**
-     * Converts a 3x3 matrix to a string.
-     * 			
+	/**
+	 * Converts a 3x3 matrix to a string.
+	 * 			
 	 * @note	Format is "00 01 02 10 11 12 20 21 22".
-     */
-    BS_UTILITY_EXPORT WString toWString(const Matrix3& val);
+	 */
+	BS_UTILITY_EXPORT WString toWString(const Matrix3& val);
 
-    /**
-     * Converts a 4x4 matrix to a string.
-     * 			
+	/**
+	 * Converts a 4x4 matrix to a string.
+	 * 			
 	 * @note	Format is "00 01 02 03 10 11 12 13 20 21 22 23 30 31 32 33".
-     */
-    BS_UTILITY_EXPORT WString toWString(const Matrix4& val);
+	 */
+	BS_UTILITY_EXPORT WString toWString(const Matrix4& val);
 
-    /**
-     * Converts a Quaternion to a string.
-     * 			
+	/**
+	 * Converts a Quaternion to a string.
+	 * 			
 	 * @note	Format is "w x y z".
-     */
-    BS_UTILITY_EXPORT WString toWString(const Quaternion& val);
+	 */
+	BS_UTILITY_EXPORT WString toWString(const Quaternion& val);
 
-    /**
-     * Converts a color to a string.
-     * 			
+	/**
+	 * Converts a color to a string.
+	 * 			
 	 * @note	Format is "r g b a".
-     */
-    BS_UTILITY_EXPORT WString toWString(const Color& val);
+	 */
+	BS_UTILITY_EXPORT WString toWString(const Color& val);
 
-    /** Converts a vector of strings into a single string where the substrings are delimited by spaces. */
-    BS_UTILITY_EXPORT WString toWString(const Vector<bs::WString>& val);
+	/** Converts a vector of strings into a single string where the substrings are delimited by spaces. */
+	BS_UTILITY_EXPORT WString toWString(const Vector<bs::WString>& val);
 
 	/** Converts a wide string to a narrow string. */
 	BS_UTILITY_EXPORT String toString(const WString& source);
@@ -560,9 +572,9 @@ namespace bs
 	BS_UTILITY_EXPORT String toString(const wchar_t* source);
 
 	/**	Converts a float to a string. */
-    BS_UTILITY_EXPORT String toString(float val, unsigned short precision = 6, 
-        unsigned short width = 0, char fill = ' ', 
-        std::ios::fmtflags flags = std::ios::fmtflags(0) );
+	BS_UTILITY_EXPORT String toString(float val, unsigned short precision = 6, 
+		unsigned short width = 0, char fill = ' ', 
+		std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
 	/**	Converts a double to a string. */
 	BS_UTILITY_EXPORT String toString(double val, unsigned short precision = 6, 
@@ -570,24 +582,24 @@ namespace bs
 		std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
 	/**	Converts a Radian to a string. */
-    BS_UTILITY_EXPORT String toString(Radian val, unsigned short precision = 6, 
-        unsigned short width = 0, char fill = ' ', 
-        std::ios::fmtflags flags = std::ios::fmtflags(0) );
+	BS_UTILITY_EXPORT String toString(Radian val, unsigned short precision = 6, 
+		unsigned short width = 0, char fill = ' ', 
+		std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
 	/**	Converts a Degree to a string. */
-    BS_UTILITY_EXPORT String toString(Degree val, unsigned short precision = 6, 
-        unsigned short width = 0, char fill = ' ', 
-        std::ios::fmtflags flags = std::ios::fmtflags(0) );
+	BS_UTILITY_EXPORT String toString(Degree val, unsigned short precision = 6, 
+		unsigned short width = 0, char fill = ' ', 
+		std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
 	/**	Converts an int to a string. */
-    BS_UTILITY_EXPORT String toString(int val, unsigned short width = 0, 
-        char fill = ' ', 
-        std::ios::fmtflags flags = std::ios::fmtflags(0) );
+	BS_UTILITY_EXPORT String toString(int val, unsigned short width = 0, 
+		char fill = ' ', 
+		std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
 	/**	Converts an unsigned int to a string. */
-    BS_UTILITY_EXPORT String toString(unsigned int val, 
-        unsigned short width = 0, char fill = ' ', 
-        std::ios::fmtflags flags = std::ios::fmtflags(0) );
+	BS_UTILITY_EXPORT String toString(unsigned int val, 
+		unsigned short width = 0, char fill = ' ', 
+		std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
 	/**	Converts a 64bit int to a string. */
 	BS_UTILITY_EXPORT String toString(INT64 val, 
@@ -599,168 +611,168 @@ namespace bs
 		unsigned short width = 0, char fill = ' ', 
 		std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
-    /**
-     * Converts a boolean to a string.
-     *
-     * @param[in]	val  	true to value.
-     * @param[in]	yesNo	(optional) If set to true, result is "yes" or "no" instead of "true" or "false".
-     */
-    BS_UTILITY_EXPORT String toString(bool val, bool yesNo = false);
+	/**
+	 * Converts a boolean to a string.
+	 *
+	 * @param[in]	val  	true to value.
+	 * @param[in]	yesNo	(optional) If set to true, result is "yes" or "no" instead of "true" or "false".
+	 */
+	BS_UTILITY_EXPORT String toString(bool val, bool yesNo = false);
 
-    /**
-     * Converts a 2 dimensional vector to a string.
-     * 			
+	/**
+	 * Converts a 2 dimensional vector to a string.
+	 * 			
 	 * @note	Format is "x y".
-     */
-    BS_UTILITY_EXPORT String toString(const Vector2& val);
+	 */
+	BS_UTILITY_EXPORT String toString(const Vector2& val);
 
-    /**
-     * Converts a 2 dimensional integer vector to a string.
-     * 			
+	/**
+	 * Converts a 2 dimensional integer vector to a string.
+	 * 			
 	 * @note	Format is "x y".
-     */
-    BS_UTILITY_EXPORT String toString(const Vector2I& val);
+	 */
+	BS_UTILITY_EXPORT String toString(const Vector2I& val);
 
-    /**
-     * Converts a 3 dimensional vector to a string.
-     * 			
+	/**
+	 * Converts a 3 dimensional vector to a string.
+	 * 			
 	 * @note	Format is "x y z".
-     */
-    BS_UTILITY_EXPORT String toString(const Vector3& val);
+	 */
+	BS_UTILITY_EXPORT String toString(const Vector3& val);
 
-    /**
-     * Converts a 4 dimensional vector to a string.
-     * 			
+	/**
+	 * Converts a 4 dimensional vector to a string.
+	 * 			
 	 * @note	Format is "x y z w".
-     */
-    BS_UTILITY_EXPORT String toString(const Vector4& val);
+	 */
+	BS_UTILITY_EXPORT String toString(const Vector4& val);
 
-    /**
-     * Converts a 3x3 matrix to a string.
-     * 			
+	/**
+	 * Converts a 3x3 matrix to a string.
+	 * 			
 	 * @note	Format is "00 01 02 10 11 12 20 21 22".
-     */
-    BS_UTILITY_EXPORT String toString(const Matrix3& val);
+	 */
+	BS_UTILITY_EXPORT String toString(const Matrix3& val);
 
-    /**
-     * Converts a 4x4 matrix to a string.
-     * 			
+	/**
+	 * Converts a 4x4 matrix to a string.
+	 * 			
 	 * @note	Format is "00 01 02 03 10 11 12 13 20 21 22 23 30 31 32 33".
-     */
-    BS_UTILITY_EXPORT String toString(const Matrix4& val);
+	 */
+	BS_UTILITY_EXPORT String toString(const Matrix4& val);
 
-    /**
-     * Converts a Quaternion to a string.
-     * 			
+	/**
+	 * Converts a Quaternion to a string.
+	 * 			
 	 * @note	Format is "w x y z".
-     */
-    BS_UTILITY_EXPORT String toString(const Quaternion& val);
+	 */
+	BS_UTILITY_EXPORT String toString(const Quaternion& val);
 
-    /**
-     * Converts a color to a string.
-     * 			
+	/**
+	 * Converts a color to a string.
+	 * 			
 	 * @note	Format is "r g b a".
-     */
-    BS_UTILITY_EXPORT String toString(const Color& val);
+	 */
+	BS_UTILITY_EXPORT String toString(const Color& val);
 
-    /**
-     * Converts a vector of strings into a single string where the substrings are delimited by spaces.
-     */
-    BS_UTILITY_EXPORT String toString(const Vector<bs::String>& val);
+	/**
+	 * Converts a vector of strings into a single string where the substrings are delimited by spaces.
+	 */
+	BS_UTILITY_EXPORT String toString(const Vector<bs::String>& val);
 
-    /**
-     * Converts a String to a float.
-     *
-     * @note	0.0f if the value could not be parsed, otherwise the numeric version of the string.
-     */
-    BS_UTILITY_EXPORT float parseFloat(const String& val, float defaultValue = 0);
+	/**
+	 * Converts a String to a float.
+	 *
+	 * @note	0.0f if the value could not be parsed, otherwise the numeric version of the string.
+	 */
+	BS_UTILITY_EXPORT float parseFloat(const String& val, float defaultValue = 0);
 
-    /**
-     * Converts a String to a whole number.
-     *
-     * @note	0 if the value could not be parsed, otherwise the numeric version of the string.
-     */
-    BS_UTILITY_EXPORT INT32 parseINT32(const String& val, INT32 defaultValue = 0);
+	/**
+	 * Converts a String to a whole number.
+	 *
+	 * @note	0 if the value could not be parsed, otherwise the numeric version of the string.
+	 */
+	BS_UTILITY_EXPORT INT32 parseINT32(const String& val, INT32 defaultValue = 0);
 
-    /**
-     * Converts a String to a whole number.
-     *
-     * @note	0 if the value could not be parsed, otherwise the numeric version of the string.
-     */
-    BS_UTILITY_EXPORT UINT32 parseUINT32(const String& val, UINT32 defaultValue = 0);
+	/**
+	 * Converts a String to a whole number.
+	 *
+	 * @note	0 if the value could not be parsed, otherwise the numeric version of the string.
+	 */
+	BS_UTILITY_EXPORT UINT32 parseUINT32(const String& val, UINT32 defaultValue = 0);
 
-    /**
-     * Converts a String to a whole number.
-     *
-     * @note	0 if the value could not be parsed, otherwise the numeric version of the string.
-     */
-    BS_UTILITY_EXPORT INT64 parseINT64(const String& val, INT64 defaultValue = 0);
+	/**
+	 * Converts a String to a whole number.
+	 *
+	 * @note	0 if the value could not be parsed, otherwise the numeric version of the string.
+	 */
+	BS_UTILITY_EXPORT INT64 parseINT64(const String& val, INT64 defaultValue = 0);
 
-    /**
-     * Converts a String to a whole number.
-     *
-     * @note	0 if the value could not be parsed, otherwise the numeric version of the string.
-     */
-    BS_UTILITY_EXPORT UINT64 parseUINT64(const String& val, UINT64 defaultValue = 0);
+	/**
+	 * Converts a String to a whole number.
+	 *
+	 * @note	0 if the value could not be parsed, otherwise the numeric version of the string.
+	 */
+	BS_UTILITY_EXPORT UINT64 parseUINT64(const String& val, UINT64 defaultValue = 0);
 
-    /**
-     * Converts a String to a boolean.
-     *
+	/**
+	 * Converts a String to a boolean.
+	 *
 	 * @note	Returns true if case-insensitive match of the start of the string matches "true", "yes" or "1", 
 	 *			false otherwise.
-     */
-    BS_UTILITY_EXPORT bool parseBool(const String& val, bool defaultValue = 0);
+	 */
+	BS_UTILITY_EXPORT bool parseBool(const String& val, bool defaultValue = 0);
 
-    /** Checks the String is a valid number value. */
-    BS_UTILITY_EXPORT bool isNumber(const String& val);
+	/** Checks the String is a valid number value. */
+	BS_UTILITY_EXPORT bool isNumber(const String& val);
 
-    /**
-     * Converts a WString to a float.
-     *
-     * @note	0.0f if the value could not be parsed, otherwise the numeric version of the string.
-     */
-    BS_UTILITY_EXPORT float parseFloat(const WString& val, float defaultValue = 0);
+	/**
+	 * Converts a WString to a float.
+	 *
+	 * @note	0.0f if the value could not be parsed, otherwise the numeric version of the string.
+	 */
+	BS_UTILITY_EXPORT float parseFloat(const WString& val, float defaultValue = 0);
 
-    /**
-     * Converts a WString to a whole number.
-     *
-     * @note	0 if the value could not be parsed, otherwise the numeric version of the string.
-     */
-    BS_UTILITY_EXPORT INT32 parseINT32(const WString& val, INT32 defaultValue = 0);
+	/**
+	 * Converts a WString to a whole number.
+	 *
+	 * @note	0 if the value could not be parsed, otherwise the numeric version of the string.
+	 */
+	BS_UTILITY_EXPORT INT32 parseINT32(const WString& val, INT32 defaultValue = 0);
 
-    /**
-     * Converts a WString to a whole number.
-     *
-     * @note	0 if the value could not be parsed, otherwise the numeric version of the string.
-     */
-    BS_UTILITY_EXPORT UINT32 parseUINT32(const WString& val, UINT32 defaultValue = 0);
+	/**
+	 * Converts a WString to a whole number.
+	 *
+	 * @note	0 if the value could not be parsed, otherwise the numeric version of the string.
+	 */
+	BS_UTILITY_EXPORT UINT32 parseUINT32(const WString& val, UINT32 defaultValue = 0);
 
-    /**
-     * Converts a WString to a whole number.
-     *
-     * @note	0 if the value could not be parsed, otherwise the numeric version of the string.
-     */
-    BS_UTILITY_EXPORT INT64 parseINT64(const WString& val, INT64 defaultValue = 0);
+	/**
+	 * Converts a WString to a whole number.
+	 *
+	 * @note	0 if the value could not be parsed, otherwise the numeric version of the string.
+	 */
+	BS_UTILITY_EXPORT INT64 parseINT64(const WString& val, INT64 defaultValue = 0);
 
-    /**
-     * Converts a WString to a whole number.
-     *
-     * @note	0 if the value could not be parsed, otherwise the numeric version of the string.
-     */
-    BS_UTILITY_EXPORT UINT64 parseUINT64(const WString& val, UINT64 defaultValue = 0);
+	/**
+	 * Converts a WString to a whole number.
+	 *
+	 * @note	0 if the value could not be parsed, otherwise the numeric version of the string.
+	 */
+	BS_UTILITY_EXPORT UINT64 parseUINT64(const WString& val, UINT64 defaultValue = 0);
 
-    /**
-     * Converts a WString to a boolean.
-     *
+	/**
+	 * Converts a WString to a boolean.
+	 *
 	 * @note	Returns true if case-insensitive match of the start of the string
 	 *			matches "true", "yes" or "1", false otherwise.
-     */
-    BS_UTILITY_EXPORT bool parseBool(const WString& val, bool defaultValue = 0);
+	 */
+	BS_UTILITY_EXPORT bool parseBool(const WString& val, bool defaultValue = 0);
 
-    /**
-     * Checks the WString is a valid number value.
-     */
-    BS_UTILITY_EXPORT bool isNumber(const WString& val);
+	/**
+	 * Checks the WString is a valid number value.
+	 */
+	BS_UTILITY_EXPORT bool isNumber(const WString& val);
 
 	/** @name Internal 
 	 *  @{

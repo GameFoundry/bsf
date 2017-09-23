@@ -2,7 +2,7 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "FileSystem/BsDataStream.h"
 #include "Debug/BsDebug.h"
-#include <codecvt>
+#include "String/BsUnicode.h"
 
 namespace bs 
 {
@@ -49,15 +49,19 @@ namespace bs
 	{
 		if (encoding == StringEncoding::UTF16)
 		{
-			const std::codecvt_mode convMode = (std::codecvt_mode)(std::generate_header);
-			typedef std::codecvt_utf8_utf16<char, 1114111, convMode> UTF8ToUTF16Conv;
-			std::wstring_convert<UTF8ToUTF16Conv, char> conversion("?");
+			// Write BOM
+			UINT8 bom[2] = { 0xFF, 0xFE };
+			write(bom, sizeof(bom));
 
-			std::string encodedString = conversion.from_bytes(string.c_str());
-			write(encodedString.data(), encodedString.length());
+			U16String u16string = UTF8::toUTF16(string);
+			write(u16string.data(), u16string.length());
 		}
 		else
 		{
+			// Write BOM
+			UINT8 bom[3] = { 0xEF, 0xBB, 0xBF };
+			write(bom, sizeof(bom));
+
 			write(string.data(), string.length());
 		}
 	}
@@ -66,21 +70,22 @@ namespace bs
 	{
 		if (encoding == StringEncoding::UTF16)
 		{
-			const std::codecvt_mode convMode = (std::codecvt_mode)(std::generate_header | std::little_endian);
-			typedef std::codecvt_utf16<wchar_t, 1114111, convMode> WCharToUTF16Conv;
-			std::wstring_convert<WCharToUTF16Conv, wchar_t> conversion("?");
+			// Write BOM
+			UINT8 bom[2] = { 0xFF, 0xFE };
+			write(bom, sizeof(bom));
 
-			std::string encodedString = conversion.to_bytes(string.c_str());
-			write(encodedString.data(), encodedString.length());
+			String u8string = UTF8::fromWide(string);
+			U16String u16string = UTF8::toUTF16(u8string);
+			write(u16string.data(), u16string.length());
 		}
 		else
 		{
-			const std::codecvt_mode convMode = (std::codecvt_mode)(std::generate_header);
-			typedef std::codecvt_utf8<wchar_t, 1114111, convMode> WCharToUTF8Conv;
-			std::wstring_convert<WCharToUTF8Conv, wchar_t> conversion("?");
+			// Write BOM
+			UINT8 bom[3] = { 0xEF, 0xBB, 0xBF };
+			write(bom, sizeof(bom));
 
-			std::string encodedString = conversion.to_bytes(string.c_str());
-			write(encodedString.data(), encodedString.length());
+			String u8string = UTF8::fromWide(string);
+			write(u8string.data(), u8string.length());
 		}
 	}
 
@@ -94,6 +99,39 @@ namespace bs
 		// Ensure read from begin of stream
 		seek(0);
 
+		// Try reading header
+		UINT8 headerBytes[4];
+		size_t numHeaderBytes = read(headerBytes, 4);
+
+		size_t dataOffset = 0;
+		if(numHeaderBytes == 4)
+		{
+			if (isUTF32LE(headerBytes))
+				dataOffset = 4;
+			else if (isUTF32BE(headerBytes))
+			{
+				LOGWRN("UTF-32 big endian decoding not supported");
+				return u8"";
+			}			
+		}
+		else if(numHeaderBytes == 3)
+		{
+			if (isUTF8(headerBytes))
+				dataOffset = 3;
+		}
+		else if(numHeaderBytes == 2)
+		{
+			if (isUTF16LE(headerBytes))
+				dataOffset = 2;
+			else if (isUTF16BE(headerBytes))
+			{
+				LOGWRN("UTF-16 big endian decoding not supported");
+				return u8"";
+			}
+		}
+
+		seek(dataOffset);
+
 		std::stringstream result;
 		while (!eof())
 		{
@@ -104,146 +142,36 @@ namespace bs
 		free(tempBuffer);
 		std::string string = result.str();
 
-		UINT32 readBytes = (UINT32)string.size();
-		if (readBytes >= 4)
+		switch(dataOffset)
 		{
-			if (isUTF32LE((UINT8*)string.data()))
+		default:
+		case 0: // No BOM = assumed UTF-8
+		case 3: // UTF-8
+			return String(string.data(), string.length());
+		case 2: // UTF-16
 			{
-				const std::codecvt_mode convMode = (std::codecvt_mode)(std::consume_header | std::little_endian);
-				typedef std::codecvt_utf8<UINT32, 1114111, convMode> utf8utf32;
+			UINT32 numElems = (UINT32)string.length() / 2;
 
-				std::wstring_convert<utf8utf32, UINT32> conversion("?");
-				UINT32* start = (UINT32*)string.data();
-				UINT32* end = (start + (string.size() - 1) / 4);
-
-				return conversion.to_bytes(start, end).c_str();
+			return UTF8::fromUTF16(U16String((char16_t*)string.data(), numElems));
 			}
-			else if (isUTF32BE((UINT8*)string.data()))
+		case 4: // UTF-32
 			{
-				const std::codecvt_mode convMode = (std::codecvt_mode)(std::consume_header);
-				typedef std::codecvt_utf8<UINT32, 1114111, convMode> utf8utf32;
+			UINT32 numElems = (UINT32)string.length() / 4;
 
-				std::wstring_convert<utf8utf32, UINT32> conversion("?");
-				UINT32* start = (UINT32*)string.data();
-				UINT32* end = (start + (string.size() - 1) / 4);
-
-				return conversion.to_bytes(start, end).c_str();
-			}			
-		}
-		
-		if (readBytes >= 3)
-		{
-			if (isUTF8((UINT8*)string.data()))
-			{
-				return string.c_str() + 3;
+			return UTF8::fromUTF32(U32String((char32_t*)string.data(), numElems));
 			}
 		}
 
-		if (readBytes >= 2)
-		{
-			if (isUTF16LE((UINT8*)string.data()))
-			{
-				const std::codecvt_mode convMode = (std::codecvt_mode)(std::little_endian);
-				typedef std::codecvt_utf8_utf16<UINT16, 1114111, convMode> utf8utf16;
-
-				std::wstring_convert<utf8utf16, UINT16> conversion("?");
-				UINT16* start = (UINT16*)(string.c_str() + 2); // Bug?: std::consume_header seems to be ignored so I manually remove the header
-
-				return conversion.to_bytes(start).c_str();
-			}
-			else if (isUTF16BE((UINT8*)string.data()))
-			{
-				const std::codecvt_mode convMode = (std::codecvt_mode)(0);
-				typedef std::codecvt_utf8_utf16<UINT16, 1114111, convMode> utf8utf16;
-
-				// Bug?: Regardless of not providing the std::little_endian flag it seems that is how the data is read
-				// so I manually flip it
-				UINT32 numChars = (UINT32)(string.size() - 2) / 2;
-				for (UINT32 i = 0; i < numChars; i++)
-					std::swap(string[i * 2 + 0], string[i * 2 + 1]);
-
-				std::wstring_convert<utf8utf16, UINT16> conversion("?");
-				UINT16* start = (UINT16*)(string.c_str() + 2); // Bug?: std::consume_header seems to be ignored so I manually remove the header
-
-				return conversion.to_bytes(start).c_str();
-			}
-		}
-
-		return string.c_str();
+		// Note: Never assuming ANSI as there is no ideal way to check for it. If required I need to
+		// try reading the data and if all UTF encodings fail, assume it's ANSI. For now it should be
+		// fine as most files are UTF-8 encoded.
 	}
 
 	WString DataStream::getAsWString()
 	{
-		// Read the entire buffer - ideally in one read, but if the size of
-		// the buffer is unknown, do multiple fixed size reads.
-		size_t bufSize = (mSize > 0 ? mSize : 4096);
-		std::stringstream::char_type* tempBuffer = (std::stringstream::char_type*)bs_alloc((UINT32)bufSize);
+		String u8string = getAsString();
 
-		// Ensure read from begin of stream
-		seek(0);
-
-		std::stringstream result;
-		while (!eof())
-		{
-			size_t numReadBytes = read(tempBuffer, bufSize);
-			result.write(tempBuffer, numReadBytes);
-		}
-
-		free(tempBuffer);
-		std::string string = result.str();
-
-		UINT32 readBytes = (UINT32)string.size();
-		if (readBytes >= 4)
-		{
-			if (isUTF32LE((UINT8*)string.data()))
-			{
-				// Not supported
-			}
-			else if (isUTF32BE((UINT8*)string.data()))
-			{
-				// Not supported
-			}
-		}
-
-		if (readBytes >= 3)
-		{
-			if (isUTF8((UINT8*)string.data()))
-			{
-				const std::codecvt_mode convMode = (std::codecvt_mode)(std::consume_header);
-				typedef std::codecvt_utf8<wchar_t, 1114111, convMode> wcharutf8;
-
-				std::wstring_convert<wcharutf8> conversion("?");
-				return conversion.from_bytes(string).c_str();
-			}
-		}
-
-		if (readBytes >= 2)
-		{
-			if (isUTF16LE((UINT8*)string.data()))
-			{
-				const std::codecvt_mode convMode = (std::codecvt_mode)(std::consume_header | std::little_endian);
-				typedef std::codecvt_utf16<wchar_t, 1114111, convMode> wcharutf16;
-
-				std::wstring_convert<wcharutf16> conversion("?");
-				return conversion.from_bytes(string).c_str();
-			}
-			else if (isUTF16BE((UINT8*)string.data()))
-			{
-				const std::codecvt_mode convMode = (std::codecvt_mode)(std::consume_header);
-				typedef std::codecvt_utf16<wchar_t, 1114111, convMode> wcharutf16;
-
-				std::wstring_convert<wcharutf16> conversion("?");
-				return conversion.from_bytes(string).c_str();
-			}
-		}
-
-		{
-			const std::codecvt_mode convMode = (std::codecvt_mode)(std::consume_header);
-			typedef std::codecvt_utf8<wchar_t, 1114111, convMode> wcharutf8;
-
-			std::wstring_convert<wcharutf8> conversion("?");
-			return conversion.from_bytes(string).c_str();
-		}
+		return UTF8::toWide(u8string);
 	}
 
 	MemoryDataStream::MemoryDataStream(size_t size)
