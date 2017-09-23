@@ -122,7 +122,7 @@ namespace bs
 
 		for (UINT32 i = 0; i < (UINT32)paths.size(); i++)
 		{
-			MonoString* monoString = MonoUtil::stringToMono(paths[i].toString());
+			MonoString* monoString = MonoUtil::wstringToMono(paths[i].toWString());
 			pathArray.set(i, monoString);
 		}
 

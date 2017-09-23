@@ -2,6 +2,7 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "Prerequisites/BsPrerequisitesUtil.h"
 #include "Error/BsException.h"
+#include "String/BsUnicode.h"
 
 namespace bs
 {
@@ -173,14 +174,14 @@ namespace bs
 		switch (type)
 		{
 		case PathType::Windows:
-			return bs::toString(buildWindows());
+			return UTF8::fromWide(buildWindows());
 		case PathType::Unix:
-			return bs::toString(buildUnix());
+			return UTF8::fromWide(buildUnix());
 		default:
 #if BS_PLATFORM == BS_PLATFORM_WIN32
-			return bs::toString(buildWindows());
+			return UTF8::fromWide(buildWindows());
 #elif BS_PLATFORM == BS_PLATFORM_OSX || BS_PLATFORM == BS_PLATFORM_LINUX
-			return bs::toString(buildUnix());
+			return UTF8::fromWide(buildUnix());
 #else
 			static_assert(false, "Unsupported platform for path.");
 #endif

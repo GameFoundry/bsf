@@ -165,6 +165,7 @@ namespace bs
 		 *
 		 * @param[in] type	If set to default path will be parsed according to the rules of the platform the application is 
 		 *					being compiled to. Otherwise it will be parsed according to provided type.
+		 * @return			String representing the path using the wide string encoding.
 		 */
 		WString toWString(PathType type = PathType::Default) const;
 
@@ -173,13 +174,14 @@ namespace bs
 		 *
 		 * @param[in] type	If set to default path will be parsed according to the rules of the platform the application is 
 		 *					being compiled to. Otherwise it will be parsed according to provided type.
+		 * @return			String representing the path using the UTF8 string encoding.
 		 */
 		String toString(PathType type = PathType::Default) const;
 
 		/**
 		 * Converts the path to either a string or a wstring, doing The Right Thing for the current platform.
-         *
-         * This method is equivalent to toWString() on Windows, and to toString() elsewhere.
+		 *
+		 * This method is equivalent to toWString() on Windows, and to toString() elsewhere.
 		 */
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 		WString toPlatformString() const { return toWString(); }
