@@ -54,7 +54,7 @@ namespace bs
 			write(bom, sizeof(bom));
 
 			U16String u16string = UTF8::toUTF16(string);
-			write(u16string.data(), u16string.length());
+			write(u16string.data(), u16string.length() * sizeof(char16_t));
 		}
 		else
 		{
@@ -76,7 +76,7 @@ namespace bs
 
 			String u8string = UTF8::fromWide(string);
 			U16String u16string = UTF8::toUTF16(u8string);
-			write(u16string.data(), u16string.length());
+			write(u16string.data(), u16string.length() * sizeof(char16_t));
 		}
 		else
 		{
@@ -104,7 +104,7 @@ namespace bs
 		size_t numHeaderBytes = read(headerBytes, 4);
 
 		size_t dataOffset = 0;
-		if(numHeaderBytes == 4)
+		if(numHeaderBytes >= 4)
 		{
 			if (isUTF32LE(headerBytes))
 				dataOffset = 4;
@@ -114,12 +114,14 @@ namespace bs
 				return u8"";
 			}			
 		}
-		else if(numHeaderBytes == 3)
+		
+		if(dataOffset == 0 && numHeaderBytes >= 3)
 		{
 			if (isUTF8(headerBytes))
 				dataOffset = 3;
 		}
-		else if(numHeaderBytes == 2)
+		
+		if(dataOffset == 0 && numHeaderBytes >= 2)
 		{
 			if (isUTF16LE(headerBytes))
 				dataOffset = 2;
