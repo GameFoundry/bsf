@@ -115,26 +115,26 @@ namespace bs
 
 	INT32 EditorWindowBase::getLeft() const
 	{
-		return mRenderWindow->getProperties().getLeft();
+		return mRenderWindow->getProperties().left;
 	}
 
 	INT32 EditorWindowBase::getTop() const
 	{
-		return mRenderWindow->getProperties().getTop();
+		return mRenderWindow->getProperties().top;
 	}
 
 	UINT32 EditorWindowBase::getWidth() const
 	{
-		return (UINT32)mRenderWindow->getProperties().getWidth();
+		return (UINT32)mRenderWindow->getProperties().width;
 	}
 
 	UINT32 EditorWindowBase::getHeight() const
 	{
-		return (UINT32)mRenderWindow->getProperties().getHeight();
+		return (UINT32)mRenderWindow->getProperties().height;
 	}
 
 	bool EditorWindowBase::hasFocus() const
 	{
-		return mRenderWindow->getProperties().hasFocus();
+		return mRenderWindow->getProperties().hasFocus;
 	}
 }

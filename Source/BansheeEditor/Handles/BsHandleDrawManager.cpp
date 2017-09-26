@@ -318,8 +318,8 @@ namespace bs
 
 			SPtr<RenderTarget> renderTarget = camera.getViewport()->getTarget();
 
-			float width = (float)renderTarget->getProperties().getWidth();
-			float height = (float)renderTarget->getProperties().getHeight();
+			float width = (float)renderTarget->getProperties().width;
+			float height = (float)renderTarget->getProperties().height;
 
 			Rect2 normArea = camera.getViewport()->getNormArea();
 

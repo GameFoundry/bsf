@@ -373,7 +373,7 @@ namespace bs
 		if (target == nullptr)
 			return;
 
-		if (target->getProperties().isWindow())
+		if (target->getProperties().isWindow)
 		{
 			SPtr<RenderWindow> window = std::static_pointer_cast<RenderWindow>(target);
 			*output = window->screenToWindowPos(*value);

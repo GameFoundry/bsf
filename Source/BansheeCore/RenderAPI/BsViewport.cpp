@@ -111,8 +111,8 @@ namespace bs
 
 	UINT32 Viewport::getTargetWidth() const
 	{
-		if(mTarget != nullptr)
-			return mTarget->getProperties().getWidth();
+		if (mTarget != nullptr)
+			return mTarget->getProperties().width;
 
 		return 0;
 	}
@@ -120,7 +120,7 @@ namespace bs
 	UINT32 Viewport::getTargetHeight() const
 	{
 		if(mTarget != nullptr)
-			return mTarget->getProperties().getHeight();
+			return mTarget->getProperties().height;
 
 		return 0;
 	}
@@ -229,7 +229,7 @@ namespace bs
 	UINT32 Viewport::getTargetWidth() const
 	{
 		if (mTarget != nullptr)
-			return mTarget->getProperties().getWidth();
+			return mTarget->getProperties().width;
 
 		return 0;
 	}
@@ -237,7 +237,7 @@ namespace bs
 	UINT32 Viewport::getTargetHeight() const
 	{
 		if (mTarget != nullptr)
-			return mTarget->getProperties().getHeight();
+			return mTarget->getProperties().height;
 
 		return 0;
 	}

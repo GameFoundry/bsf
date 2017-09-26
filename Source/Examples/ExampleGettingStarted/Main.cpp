@@ -508,11 +508,11 @@ namespace bs
 
 		if (!fullscreen)
 		{
-			windowResWidth = rwProps.getWidth();
-			windowResHeight = rwProps.getHeight();
+			windowResWidth = rwProps.width;
+			windowResHeight = rwProps.height;
 		}
 
-		sceneCamera->setAspectRatio(rwProps.getWidth() / (float)rwProps.getHeight());
+		sceneCamera->setAspectRatio(rwProps.width / (float)rwProps.height);
 	}
 
 	/** Callback triggered when the user selects a new video mode from the GUI drop down element. */

@@ -45,7 +45,7 @@ namespace bs
 		SPtr<RenderWindow> parentRenderWindow = parentWindow->getRenderWindow();
 		const RenderWindowProperties& props = parentRenderWindow->getProperties();
 
-		if (!props.hasFocus())
+		if (!props.hasFocus)
 			return;
 
 		if (parentContainer->getActiveWidget() != this)

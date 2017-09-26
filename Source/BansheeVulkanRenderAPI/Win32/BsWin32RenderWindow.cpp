@@ -18,15 +18,9 @@
 
 namespace bs
 {
-	Win32RenderWindowProperties::Win32RenderWindowProperties(const RENDER_WINDOW_DESC& desc)
-		:RenderWindowProperties(desc)
-	{ }
-
 	Win32RenderWindow::Win32RenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId)
 		: RenderWindow(desc, windowId), mProperties(desc)
-	{
-
-	}
+	{ }
 
 	void Win32RenderWindow::getCustomAttribute(const String& name, void* pData) const
 	{
@@ -87,9 +81,6 @@ namespace bs
 		SPtr<VulkanDevice> presentDevice = mRenderAPI._getPresentDevice();
 		presentDevice->waitIdle();
 
-		Win32RenderWindowProperties& props = mProperties;
-		props.mActive = false;
-
 		if (mWindow != nullptr)
 		{
 			bs_delete(mWindow);
@@ -102,7 +93,7 @@ namespace bs
 
 	void Win32RenderWindow::initialize()
 	{
-		Win32RenderWindowProperties& props = mProperties;
+		RenderWindowProperties& props = mProperties;
 
 		// Create a window
 		WINDOW_DESC windowDesc;
@@ -149,7 +140,7 @@ namespace bs
 		if (!windowDesc.external)
 		{
 			mShowOnSwap = mDesc.hideUntilSwap;
-			props.mHidden = mDesc.hideUntilSwap || mDesc.hidden;
+			props.isHidden = mDesc.hideUntilSwap || mDesc.hidden;
 		}
 
 		mWindow = bs_new<Win32Window>(windowDesc);
@@ -158,15 +149,13 @@ namespace bs
 		mDisplayFrequency = Math::roundToInt(mDesc.videoMode.getRefreshRate());
 
 		// Update local properties
-		props.mIsFullScreen = mDesc.fullscreen && !mIsChild;
-		props.mColorDepth = 32;
-		props.mActive = true;
-		props.mWidth = mWindow->getWidth();
-		props.mHeight = mWindow->getHeight();
-		props.mTop = mWindow->getTop();
-		props.mLeft = mWindow->getLeft();
-		props.mHwGamma = mDesc.gamma;
-		props.mMultisampleCount = 1;
+		props.isFullScreen = mDesc.fullscreen && !mIsChild;
+		props.width = mWindow->getWidth();
+		props.height = mWindow->getHeight();
+		props.top = mWindow->getTop();
+		props.left = mWindow->getLeft();
+		props.hwGamma = mDesc.gamma;
+		props.multisampleCount = 1;
 
 		// Create Vulkan surface
 		VkWin32SurfaceCreateInfoKHR surfaceCreateInfo;
@@ -287,21 +276,21 @@ namespace bs
 
 		// Create swap chain
 		mSwapChain = bs_shared_ptr_new<VulkanSwapChain>();
-		mSwapChain->rebuild(presentDevice, mSurface, props.mWidth, props.mHeight, props.mVSync, mColorFormat, mColorSpace, 
+		mSwapChain->rebuild(presentDevice, mSurface, props.width, props.height, props.vsync, mColorFormat, mColorSpace, 
 			mDesc.depthBuffer, mDepthFormat);
 
 		// Make the window full screen if required
 		if (!windowDesc.external)
 		{
-			if (props.mIsFullScreen)
+			if (props.isFullScreen)
 			{
 				DEVMODE displayDeviceMode;
 
 				memset(&displayDeviceMode, 0, sizeof(displayDeviceMode));
 				displayDeviceMode.dmSize = sizeof(DEVMODE);
-				displayDeviceMode.dmBitsPerPel = props.mColorDepth;
-				displayDeviceMode.dmPelsWidth = props.mWidth;
-				displayDeviceMode.dmPelsHeight = props.mHeight;
+				displayDeviceMode.dmBitsPerPel = 32;
+				displayDeviceMode.dmPelsWidth = props.width;
+				displayDeviceMode.dmPelsHeight = props.height;
 				displayDeviceMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
 				if (mDisplayFrequency)
@@ -385,19 +374,19 @@ namespace bs
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		Win32RenderWindowProperties& props = mProperties;
+		RenderWindowProperties& props = mProperties;
 
-		if (!props.mIsFullScreen)
+		if (!props.isFullScreen)
 		{
 			mWindow->move(left, top);
 
-			props.mTop = mWindow->getTop();
-			props.mLeft = mWindow->getLeft();
+			props.top = mWindow->getTop();
+			props.left = mWindow->getLeft();
 
 			{
 				ScopedSpinLock lock(mLock);
-				mSyncedProperties.mTop = props.mTop;
-				mSyncedProperties.mLeft = props.mLeft;
+				mSyncedProperties.top = props.top;
+				mSyncedProperties.left = props.left;
 			}
 
 			bs::RenderWindowManager::instance().notifySyncDataDirty(this);
@@ -408,19 +397,19 @@ namespace bs
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		Win32RenderWindowProperties& props = mProperties;
+		RenderWindowProperties& props = mProperties;
 
-		if (!props.mIsFullScreen)
+		if (!props.isFullScreen)
 		{
 			mWindow->resize(width, height);
 
-			props.mWidth = mWindow->getWidth();
-			props.mHeight = mWindow->getHeight();
+			props.width = mWindow->getWidth();
+			props.height = mWindow->getHeight();
 
 			{
 				ScopedSpinLock lock(mLock);
-				mSyncedProperties.mWidth = props.mWidth;
-				mSyncedProperties.mHeight = props.mHeight;
+				mSyncedProperties.width = props.width;
+				mSyncedProperties.height = props.height;
 			}
 
 			bs::RenderWindowManager::instance().notifySyncDataDirty(this);
@@ -479,19 +468,19 @@ namespace bs
 		if (numOutputs == 0)
 			return;
 
-		Win32RenderWindowProperties& props = mProperties;
+		RenderWindowProperties& props = mProperties;
 
 		UINT32 actualMonitorIdx = std::min(monitorIdx, numOutputs - 1);
 		const Win32VideoOutputInfo& outputInfo = static_cast<const Win32VideoOutputInfo&>(videoModeInfo.getOutputInfo(actualMonitorIdx));
 
 		mDisplayFrequency = Math::roundToInt(refreshRate);
-		props.mIsFullScreen = true;
+		props.isFullScreen = true;
 
 		DEVMODE displayDeviceMode;
 
 		memset(&displayDeviceMode, 0, sizeof(displayDeviceMode));
 		displayDeviceMode.dmSize = sizeof(DEVMODE);
-		displayDeviceMode.dmBitsPerPel = props.mColorDepth;
+		displayDeviceMode.dmBitsPerPel = 32;
 		displayDeviceMode.dmPelsWidth = width;
 		displayDeviceMode.dmPelsHeight = height;
 		displayDeviceMode.dmDisplayFrequency = mDisplayFrequency;
@@ -509,15 +498,15 @@ namespace bs
 			BS_EXCEPT(RenderingAPIException, "ChangeDisplaySettings failed");
 		}
 
-		props.mTop = monitorInfo.rcMonitor.top;
-		props.mLeft = monitorInfo.rcMonitor.left;
-		props.mWidth = width;
-		props.mHeight = height;
+		props.top = monitorInfo.rcMonitor.top;
+		props.left = monitorInfo.rcMonitor.left;
+		props.width = width;
+		props.height = height;
 
 		SetWindowLong(mWindow->getHWnd(), GWL_STYLE, WS_POPUP | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
 		SetWindowLong(mWindow->getHWnd(), GWL_EXSTYLE, 0);
 
-		SetWindowPos(mWindow->getHWnd(), HWND_TOP, props.mLeft, props.mTop, width, height, SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+		SetWindowPos(mWindow->getHWnd(), HWND_TOP, props.left, props.top, width, height, SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
 	}
 
 	void Win32RenderWindow::setFullscreen(const VideoMode& mode)
@@ -531,14 +520,14 @@ namespace bs
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		Win32RenderWindowProperties& props = mProperties;
+		RenderWindowProperties& props = mProperties;
 
-		if (!props.mIsFullScreen)
+		if (!props.isFullScreen)
 			return;
 
-		props.mIsFullScreen = false;
-		props.mWidth = width;
-		props.mHeight = height;
+		props.isFullScreen = false;
+		props.width = width;
+		props.height = height;
 
 		// Drop out of fullscreen
 		ChangeDisplaySettingsEx(NULL, NULL, NULL, 0, NULL);
@@ -574,8 +563,8 @@ namespace bs
 
 		{
 			ScopedSpinLock lock(mLock);
-			mSyncedProperties.mWidth = props.mWidth;
-			mSyncedProperties.mHeight = props.mHeight;
+			mSyncedProperties.width = props.width;
+			mSyncedProperties.height = props.height;
 		}
 
 		bs::RenderWindowManager::instance().notifySyncDataDirty(this);
@@ -621,13 +610,13 @@ namespace bs
 
 		mWindow->_windowMovedOrResized();
 
-		Win32RenderWindowProperties& props = mProperties;
-		if (!props.mIsFullScreen) // Fullscreen is handled directly by this object
+		RenderWindowProperties& props = mProperties;
+		if (!props.isFullScreen) // Fullscreen is handled directly by this object
 		{
-			props.mTop = mWindow->getTop();
-			props.mLeft = mWindow->getLeft();
-			props.mWidth = mWindow->getWidth();
-			props.mHeight = mWindow->getHeight();
+			props.top = mWindow->getTop();
+			props.left = mWindow->getLeft();
+			props.width = mWindow->getWidth();
+			props.height = mWindow->getHeight();
 		}
 
 		// Resize swap chain
@@ -638,7 +627,7 @@ namespace bs
 		SPtr<VulkanDevice> presentDevice = mRenderAPI._getPresentDevice();
 		presentDevice->waitIdle();
 
-		mSwapChain->rebuild(presentDevice, mSurface, props.mWidth, props.mHeight, props.mVSync, mColorFormat, mColorSpace, 
+		mSwapChain->rebuild(presentDevice, mSurface, props.width, props.height, props.vsync, mColorFormat, mColorSpace, 
 			mDesc.depthBuffer, mDepthFormat);
 
 		RenderWindow::_windowMovedOrResized();

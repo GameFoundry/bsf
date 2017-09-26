@@ -319,7 +319,7 @@ namespace bs { namespace ct
 		// Present render targets with back buffers
 		for (auto& rtInfo : sceneInfo.renderTargets)
 		{
-			if(rtInfo.target->getProperties().isWindow())
+			if(rtInfo.target->getProperties().isWindow)
 				RenderAPI::instance().swapBuffers(rtInfo.target);
 		}
 

@@ -455,7 +455,7 @@ namespace bs
 	{
 		GUITreeView::_changeParentWidget(widget);
 
-		if (widget != nullptr && widget->getTarget()->getTarget()->getProperties().isWindow())
+		if (widget != nullptr && widget->getTarget()->getTarget()->getProperties().isWindow)
 		{
 			RenderWindow* parentWindow = static_cast<RenderWindow*>(widget->getTarget()->getTarget().get());
 			setDropTarget(parentWindow, mLayoutData.area.x, mLayoutData.area.y, mLayoutData.area.width, mLayoutData.area.height);

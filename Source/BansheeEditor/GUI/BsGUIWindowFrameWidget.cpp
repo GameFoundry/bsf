@@ -38,7 +38,7 @@ namespace bs
 
 	void WindowFrameWidget::ownerWindowFocusChanged()
 	{
-		mWindowFrame->setFocused(mParentWindow->getProperties().hasFocus());
+		mWindowFrame->setFocused(mParentWindow->getProperties().hasFocus);
 
 		CGUIWidget::ownerWindowFocusChanged();
 	}

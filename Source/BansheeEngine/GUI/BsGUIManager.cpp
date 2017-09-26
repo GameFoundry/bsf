@@ -1616,8 +1616,8 @@ namespace bs
 			float x = vecLocalPos.x - (float)bridgeBounds.x;
 			float y = vecLocalPos.y - (float)bridgeBounds.y;
 
-			float scaleX = rtProps.getWidth() / (float)bridgeBounds.width;
-			float scaleY = rtProps.getHeight() / (float)bridgeBounds.height;
+			float scaleX = rtProps.width / (float)bridgeBounds.width;
+			float scaleY = rtProps.height / (float)bridgeBounds.height;
 
 			return Vector2I(Math::roundToInt(x * scaleX), Math::roundToInt(y * scaleY));
 		}
@@ -1683,7 +1683,7 @@ namespace bs
 			if (curTarget == target)
 				return nullptr;
 
-			if (curTarget->getProperties().isWindow())
+			if (curTarget->getProperties().isWindow)
 				return std::static_pointer_cast<RenderWindow>(curTarget);
 		}
 

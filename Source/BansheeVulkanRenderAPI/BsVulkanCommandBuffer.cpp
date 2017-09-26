@@ -812,7 +812,7 @@ namespace bs { namespace ct
 		VulkanFramebuffer* newFB;
 		if(rt != nullptr)
 		{
-			if (rt->getProperties().isWindow())
+			if (rt->getProperties().isWindow)
 			{
 				Win32RenderWindow* window = static_cast<Win32RenderWindow*>(rt.get());
 				window->acquireBackBuffer();
@@ -903,8 +903,8 @@ namespace bs { namespace ct
 		else
 		{
 			mFramebuffer = newFB;
-			mRenderTargetWidth = rt->getProperties().getWidth();
-			mRenderTargetHeight = rt->getProperties().getHeight();
+			mRenderTargetWidth = rt->getProperties().width;
+			mRenderTargetHeight = rt->getProperties().height;
 			mRenderTargetReadOnlyFlags = readOnlyFlags;
 			mRenderTargetLoadMask = loadMask;
 		}

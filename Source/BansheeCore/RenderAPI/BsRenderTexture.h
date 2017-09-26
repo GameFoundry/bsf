@@ -43,8 +43,8 @@ namespace bs
 	 *
 	 * @note	Sim thread only. Retrieve core implementation from getCore() for core thread only functionality.
 	 */
-    class BS_CORE_EXPORT RenderTexture : public RenderTarget
-    {
+	class BS_CORE_EXPORT RenderTexture : public RenderTarget
+	{
 	public:
 		virtual ~RenderTexture() { }
 

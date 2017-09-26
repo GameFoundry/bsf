@@ -11,18 +11,6 @@ namespace bs
 	 *  @{
 	 */
 
-	/**	Contains various properties that describe a render window. */
-	class Win32RenderWindowProperties : public RenderWindowProperties
-	{
-	public:
-		Win32RenderWindowProperties(const RENDER_WINDOW_DESC& desc);
-		virtual ~Win32RenderWindowProperties() { }
-
-	private:
-		friend class ct::Win32RenderWindow;
-		friend class Win32RenderWindow;
-	};
-
 	/**
 	 * Render window implementation for Windows.
 	 *
@@ -63,7 +51,7 @@ namespace bs
 
 	private:
 		ct::Win32GLSupport& mGLSupport;
-		Win32RenderWindowProperties mProperties;
+		RenderWindowProperties mProperties;
 	};
 
 	namespace ct
@@ -73,9 +61,9 @@ namespace bs
 	 *
 	 * @note	Core thread only.
 	 */
-    class Win32RenderWindow : public RenderWindow
-    {
-    public:
+	class Win32RenderWindow : public RenderWindow
+	{
+	public:
 		Win32RenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId, Win32GLSupport &glsupport);
 		~Win32RenderWindow();
 
@@ -158,9 +146,9 @@ namespace bs
 		int mDisplayFrequency;
 		bool mShowOnSwap;
 		SPtr<Win32Context> mContext;
-		Win32RenderWindowProperties mProperties;
-		Win32RenderWindowProperties mSyncedProperties;
-    };		
+		RenderWindowProperties mProperties;
+		RenderWindowProperties mSyncedProperties;
+	};
 	}
 
 	/** @} */

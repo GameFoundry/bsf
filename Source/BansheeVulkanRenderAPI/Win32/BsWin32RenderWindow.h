@@ -11,18 +11,6 @@ namespace bs
 	 *  @{
 	 */
 
-	/**	Contains various properties that describe a render window. */
-	class Win32RenderWindowProperties : public RenderWindowProperties
-	{
-	public:
-		Win32RenderWindowProperties(const RENDER_WINDOW_DESC& desc);
-		virtual ~Win32RenderWindowProperties() { }
-
-	private:
-		friend class ct::Win32RenderWindow;
-		friend class Win32RenderWindow;
-	};
-
 	/**
 	 * Render window implementation for Windows and Vulkan.
 	 *
@@ -61,7 +49,7 @@ namespace bs
 		void syncProperties() override;
 
 	private:
-		Win32RenderWindowProperties mProperties;
+		RenderWindowProperties mProperties;
 	};
 
 	namespace ct
@@ -160,8 +148,8 @@ namespace bs
 		VulkanSemaphore* mSemaphoresTemp[BS_MAX_UNIQUE_QUEUES + 1]; // +1 for present semaphore
 		bool mRequiresNewBackBuffer;
 
-		Win32RenderWindowProperties mProperties;
-		Win32RenderWindowProperties mSyncedProperties;
+		RenderWindowProperties mProperties;
+		RenderWindowProperties mSyncedProperties;
 	};	
 	}
 	

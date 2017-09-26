@@ -54,47 +54,35 @@ namespace bs
 		RenderWindowProperties(const RENDER_WINDOW_DESC& desc);
 		virtual ~RenderWindowProperties() { }
 
-		/**	Gets the horizontal origin of the window in pixels. */
-		INT32 getLeft() const { return mLeft; }
+		/**	True if window is running in fullscreen mode. */
+		bool isFullScreen = false;
 
-		/**	Gets the vertical origin of the window in pixels. */
-		INT32 getTop() const { return mTop; }
+		/**	Horizontal origin of the window in pixels. */
+		INT32 left = 0;
+
+		/**	Vertical origin of the window in pixels. */
+		INT32 top = 0;
 
 		/**	Indicates whether the window currently has keyboard focus. */
-		bool hasFocus() const { return mHasFocus; }
+		bool hasFocus = false;
 
-		/**	Returns true if window is running in fullscreen mode. */
-		bool isFullScreen() const { return mIsFullScreen; }
+		/**	True if the window is hidden. */
+		bool isHidden = false;
 
-		/**	Returns true if the window is modal (blocks interaction with any non-modal window until closed). */
-		bool isModal() const { return mIsModal; }
+		/**	True if the window is modal (blocks interaction with any non-modal window until closed). */
+		bool isModal = false;
 
-		/**	Returns true if the window is hidden. */
-		bool isHidden() const { return mHidden; }
-
-		/**	Returns true if the window is maximized. */
-		bool isMaximized() const { return mIsMaximized; }
-
-	protected:
-		friend class ct::RenderWindow;
-		friend class RenderWindow;
-
-		bool mIsFullScreen = false;
-		INT32 mLeft = 0;
-		INT32 mTop = 0;
-		bool mHasFocus = false;
-		bool mHidden = false;
-		bool mIsModal = false;
-		bool mIsMaximized = false;
+		/**	True if the window is maximized. */
+		bool isMaximized = false;
 	};
 
 	/**
 	 * Operating system window with a specific position, size and style. Each window serves as a surface that can be
 	 * rendered into by RenderAPI operations.
 	 */
-    class BS_CORE_EXPORT RenderWindow : public RenderTarget
-    {
-    public:
+	class BS_CORE_EXPORT RenderWindow : public RenderTarget
+	{
+	public:
 		virtual ~RenderWindow() { }
 
 		/**	Converts screen position into window local position. */
@@ -192,7 +180,7 @@ namespace bs
 		 */
 		static SPtr<RenderWindow> create(RENDER_WINDOW_DESC& desc, SPtr<RenderWindow> parentWindow = nullptr);
 
-    protected:
+	protected:
 		friend class RenderWindowManager;
 
 		RenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId);
@@ -209,7 +197,7 @@ namespace bs
 	protected:
 		RENDER_WINDOW_DESC mDesc;
 		UINT32 mWindowId;
-    };
+	};
 
 	/** @} */
 
@@ -253,8 +241,8 @@ namespace bs
 		 */
 		virtual void setWindowed(UINT32 width, UINT32 height) { }
 
-        /**	Hide or show the window. */
-        virtual void setHidden(bool hidden);
+		/**	Hide or show the window. */
+		virtual void setHidden(bool hidden);
 
 		/**
 		 * Makes the render target active or inactive. (for example in the case of a window, it will hide or restore the
@@ -271,11 +259,11 @@ namespace bs
 		/**	Restores the window to original position and size if it is minimized or maximized. */
 		virtual void restore() { }
 
-        /**	Change the size of the window. */
-        virtual void resize(UINT32 width, UINT32 height) = 0;
+		/**	Change the size of the window. */
+		virtual void resize(UINT32 width, UINT32 height) = 0;
 
-        /**	Reposition the window. */
-        virtual void move(INT32 left, INT32 top) = 0;
+		/**	Reposition the window. */
+		virtual void move(INT32 left, INT32 top) = 0;
 
 		/**	Returns properties that describe the render window. */
 		const RenderWindowProperties& getProperties() const;

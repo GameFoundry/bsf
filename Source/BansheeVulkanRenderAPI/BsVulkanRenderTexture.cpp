@@ -33,10 +33,10 @@ namespace bs
 		RenderTexture::initialize();
 
 		VULKAN_FRAMEBUFFER_DESC fbDesc;
-		fbDesc.width = mProperties.getWidth();
-		fbDesc.height = mProperties.getHeight();
-		fbDesc.layers = mProperties.getNumSlices();
-		fbDesc.numSamples = mProperties.getMultisampleCount() > 1 ? mProperties.getMultisampleCount() : 1;
+		fbDesc.width = mProperties.width;
+		fbDesc.height = mProperties.height;
+		fbDesc.layers = mProperties.numSlices;
+		fbDesc.numSamples = mProperties.multisampleCount > 1 ? mProperties.multisampleCount : 1;
 		fbDesc.offscreen = true;
 
 		for (UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; ++i)
@@ -64,7 +64,7 @@ namespace bs
 					LOGERR("Cannot specify array slices when rendering to a 3D texture.");
 
 				surface.arraySlice = 0;
-				surface.numArraySlices = mProperties.getNumSlices();
+				surface.numArraySlices = mProperties.numSlices;
 
 				fbDesc.color[i].baseLayer = 0;
 			}

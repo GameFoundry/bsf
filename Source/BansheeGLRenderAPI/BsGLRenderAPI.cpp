@@ -832,7 +832,7 @@ namespace bs { namespace ct
 				fbo->bind();
 
 				// Enable / disable sRGB states
-				if (target->getProperties().isHwGammaEnabled())
+				if (target->getProperties().hwGamma)
 					glEnable(GL_FRAMEBUFFER_SRGB);
 				else
 					glDisable(GL_FRAMEBUFFER_SRGB);
@@ -1122,7 +1122,7 @@ namespace bs { namespace ct
 				return;
 
 			const RenderTargetProperties& rtProps = mActiveRenderTarget->getProperties();
-			Rect2I clearRect(0, 0, rtProps.getWidth(), rtProps.getHeight());
+			Rect2I clearRect(0, 0, rtProps.width, rtProps.height);
 
 			clearArea(buffers, color, depth, stencil, clearRect, targetMask);
 		};
@@ -1211,7 +1211,7 @@ namespace bs { namespace ct
 		const RenderTargetProperties& rtProps = mActiveRenderTarget->getProperties();
 
 		bool clearEntireTarget = clearRect.width == 0 || clearRect.height == 0;
-		clearEntireTarget |= (clearRect.x == 0 && clearRect.y == 0 && clearRect.width == rtProps.getWidth() && clearRect.height == rtProps.getHeight());
+		clearEntireTarget |= (clearRect.x == 0 && clearRect.y == 0 && clearRect.width == rtProps.width && clearRect.height == rtProps.height);
 
 		if (!clearEntireTarget)
 		{
@@ -2272,10 +2272,10 @@ namespace bs { namespace ct
 		const RenderTargetProperties& rtProps = mActiveRenderTarget->getProperties();
 
 		// Calculate the "lower-left" corner of the viewport
-		mViewportLeft = (UINT32)(rtProps.getWidth() * mViewportNorm.x);
-		mViewportTop = (UINT32)(rtProps.getHeight() * mViewportNorm.y);
-		mViewportWidth = (UINT32)(rtProps.getWidth() * mViewportNorm.width);
-		mViewportHeight = (UINT32)(rtProps.getHeight() * mViewportNorm.height);
+		mViewportLeft = (UINT32)(rtProps.width * mViewportNorm.x);
+		mViewportTop = (UINT32)(rtProps.height * mViewportNorm.y);
+		mViewportWidth = (UINT32)(rtProps.width * mViewportNorm.width);
+		mViewportHeight = (UINT32)(rtProps.height * mViewportNorm.height);
 
 		glViewport(mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight);
 

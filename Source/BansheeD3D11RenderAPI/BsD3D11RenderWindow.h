@@ -10,18 +10,6 @@ namespace bs {
 	 *  @{
 	 */
 
-	/**	Contains various properties that describe a render window. */
-	class D3D11RenderWindowProperties : public RenderWindowProperties
-	{
-	public:
-		D3D11RenderWindowProperties(const RENDER_WINDOW_DESC& desc);
-		virtual ~D3D11RenderWindowProperties() { }
-
-	private:
-		friend class D3D11RenderWindow;
-		friend class ct::D3D11RenderWindow;
-	};
-
 	/**
 	 * Render window implementation for Windows and DirectX 11.
 	 *
@@ -63,7 +51,7 @@ namespace bs {
 	private:
 		ct::D3D11Device& mDevice;
 		IDXGIFactory* mDXGIFactory;
-		D3D11RenderWindowProperties mProperties;
+		RenderWindowProperties mProperties;
 	};
 
 	namespace ct
@@ -184,8 +172,8 @@ namespace bs {
 		DXGI_SWAP_CHAIN_DESC mSwapChainDesc;
 		Win32Window* mWindow;
 
-		D3D11RenderWindowProperties mProperties;
-		D3D11RenderWindowProperties mSyncedProperties;
+		RenderWindowProperties mProperties;
+		RenderWindowProperties mSyncedProperties;
 	};
 	
 	/** @} */

@@ -54,7 +54,7 @@ namespace bs
 		{
 			RenderTargetProperties& props = const_cast<RenderTargetProperties&>(getProperties());
 
-			props.mPriority = priority;
+			props.priority = priority;
 		}
 
 		const RenderTargetProperties& RenderTarget::getProperties() const

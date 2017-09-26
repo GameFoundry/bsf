@@ -68,78 +68,51 @@ namespace bs
 		RenderTargetProperties() { }
 		virtual ~RenderTargetProperties() { }
 
-		/** Returns width of the render target, in pixels. */
-        UINT32 getWidth() const { return mWidth; }
+		/** Width of the render target, in pixels. */
+		UINT32 width = 0;
 
-		/** Returns height of the render target, in pixels. */
-        UINT32 getHeight() const { return mHeight; }
+		/** Height of the render target, in pixels. */
+		UINT32 height = 0;
 
 		/** 
-		 * Returns the number of three dimensional slices of the render target. This will be number of layers for array
+		 * Number of three dimensional slices of the render target. This will be number of layers for array
 		 * textures or number of faces cube textures.
 		 */
-        UINT32 getNumSlices() const { return mNumSlices; }
-
-		/** Gets the number of samples used for multisampling. (0 or 1 if multisampling is not used). */
-		UINT32 getMultisampleCount() const { return mMultisampleCount; }
-
-		/**
-		 * Returns true if the render target will wait for vertical sync before swapping buffers. This will eliminate 
-		 * tearing but may increase input latency.
-		 */
-		bool getVSync() const { return mVSync; }
-
-		/**
-		 * Returns how often should the frame be presented in respect to display device refresh rate. Normal value is 1 
-		 * where it will match the refresh rate. Higher values will decrease the frame rate (for example present interval of
-		 * 2 on 60Hz refresh rate will display at most 30 frames per second).
-		 */
-		UINT32 getVSyncInterval() const { return mVSyncInterval; }
-
-		/** Returns true if pixels written to the render target will be gamma corrected. */
-		bool isHwGammaEnabled() const { return mHwGamma; }
-
-		/**
-		 * Returns true if the render target can be used for rendering.
-		 *
-		 * @note	Core thread only.
-		 */
-		bool isActive() const { return mActive; }
+		UINT32 numSlices = 0;
 
 		/**
 		 * Controls in what order is the render target rendered to compared to other render targets. Targets with higher 
 		 * priority will be rendered before ones with lower priority.
 		 */
-		INT32 getPriority() const { return mPriority; }
+		INT32 priority = 0;
 
-		/** Returns true if the render target is a render window. */
-		bool isWindow() const { return mIsWindow; }
+		/**
+		 * True if the render target will wait for vertical sync before swapping buffers. This will eliminate 
+		 * tearing but may increase input latency.
+		 */
+		bool vsync = false;
+
+		/**
+		 * Controls how often should the frame be presented in respect to display device refresh rate. Normal value is 1 
+		 * where it will match the refresh rate. Higher values will decrease the frame rate (for example present interval of
+		 * 2 on 60Hz refresh rate will display at most 30 frames per second).
+		 */
+		UINT32 vsyncInterval = 1;
+
+		/** True if pixels written to the render target will be gamma corrected. */
+		bool hwGamma = false;
 
 		/**
 		 * Does the texture need to be vertically flipped because of different screen space coordinate systems.	(Determines
 		 * is origin top left or bottom left. Engine default is top left.)
 		 */
-		bool requiresTextureFlipping() const { return mRequiresTextureFlipping; }
+		bool requiresTextureFlipping = false;
 
-	protected:
-		friend class ct::RenderTarget;
-		friend class RenderTarget;
+		/** True if the target is a window, false if an offscreen target. */
+		bool isWindow = false;
 
-		UINT32 mWidth = 0;
-		UINT32 mHeight = 0;
-		UINT32 mNumSlices = 0;
-		UINT32 mColorDepth = 32;
-
-		INT32 mPriority = 0;
-		UINT32 mVSyncInterval = 1;
-
-		bool mActive = true;
-		bool mHwGamma = false;
-		bool mVSync = false;
-		bool mRequiresTextureFlipping = false;
-		bool mIsWindow = false;
-
-		UINT32 mMultisampleCount = 0;
+		/** Controls how many samples are used for multisampling. (0 or 1 if multisampling is not used). */
+		UINT32 multisampleCount = 0;
 	};
 
 	/**
@@ -148,9 +121,9 @@ namespace bs
 	 * @note	
 	 * Sim thread unless noted otherwise. Retrieve core implementation from getCore() for core thread only functionality.
 	 */
-    class BS_CORE_EXPORT RenderTarget : public CoreObject
-    {
-    public:
+	class BS_CORE_EXPORT RenderTarget : public CoreObject
+	{
+	public:
 		RenderTarget();
 		virtual ~RenderTarget() { }
 
@@ -181,12 +154,12 @@ namespace bs
 		 */
 		mutable Event<void()> onResized;
 
-    protected:
+	protected:
 		friend class ct::RenderTarget;
 
 		/**	Returns properties that describe the render target. */
 		virtual const RenderTargetProperties& getPropertiesInternal() const = 0;
-    };
+	};
 
 	/** @} */
 

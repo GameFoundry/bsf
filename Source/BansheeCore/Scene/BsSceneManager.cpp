@@ -285,7 +285,7 @@ namespace bs
 		if (rt != nullptr)
 		{
 			auto& rtProps = rt->getProperties();
-			aspect = rtProps.getWidth() / (float)rtProps.getHeight();
+			aspect = rtProps.width / (float)rtProps.height;
 		}
 
 		for (auto& entry : mMainCameras)
@@ -594,7 +594,7 @@ namespace bs
 	void SceneManager::onMainRenderTargetResized()
 	{
 		auto& rtProps = mMainRT->getProperties();
-		float aspect = rtProps.getWidth() / (float)rtProps.getHeight();
+		float aspect = rtProps.width / (float)rtProps.height;
 
 		for (auto& entry : mMainCameras)
 			entry.camera->setAspectRatio(aspect);

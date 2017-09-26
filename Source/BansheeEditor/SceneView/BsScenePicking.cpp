@@ -376,7 +376,7 @@ namespace bs
 		rs.setRenderTarget(nullptr);
 		rs.submitCommandBuffer(nullptr);
 
-		if (rtProps.isWindow())
+		if (rtProps.isWindow)
 		{
 			BS_EXCEPT(NotImplementedException, "Picking is not supported on render windows as framebuffer readback methods aren't implemented");
 		}
@@ -409,7 +409,7 @@ namespace bs
 		UINT32 maxWidth = std::min((UINT32)(position.x + area.x), outputPixelData->getWidth());
 		UINT32 maxHeight = std::min((UINT32)(position.y + area.y), outputPixelData->getHeight());
 
-		if (rtProps.requiresTextureFlipping())
+		if (rtProps.requiresTextureFlipping)
 		{
 			UINT32 vertOffset = outputPixelData->getHeight();
 
@@ -479,7 +479,7 @@ namespace bs
 			normalsTexture->readData(*normalsPixelData);
 
 			Vector2I samplePixel = position;
-			if (rtProps.requiresTextureFlipping())
+			if (rtProps.requiresTextureFlipping)
 				samplePixel.y = depthPixelData->getHeight() - samplePixel.y;
 
 			float depth = depthPixelData->getDepthAt(samplePixel.x, samplePixel.y);

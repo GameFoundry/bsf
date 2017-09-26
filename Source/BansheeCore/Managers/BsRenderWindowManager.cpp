@@ -97,10 +97,10 @@ namespace bs
 			moveResizeData = &mMovedOrResizedWindows.back();
 		}
 		
-		moveResizeData->x = props.getLeft();
-		moveResizeData->y = props.getTop();
-		moveResizeData->width = props.getWidth();
-		moveResizeData->height = props.getHeight();
+		moveResizeData->x = props.left;
+		moveResizeData->y = props.top;
+		moveResizeData->width = props.width;
+		moveResizeData->height = props.height;
 	}
 
 	void RenderWindowManager::notifySyncDataDirty(ct::RenderWindow* coreWindow)
@@ -142,8 +142,8 @@ namespace bs
 				// Need to eliminate non-dirty ones because it's possible we already triggered the resize event
 				// if the resize call originated from the sim thread, so we don't trigger it twice.
 
-				bool isDirty = moveResizeData.x != props.getLeft() || moveResizeData.y != props.getTop()
-					|| moveResizeData.width != props.getWidth() || moveResizeData.height != props.getHeight();
+				bool isDirty = moveResizeData.x != props.left || moveResizeData.y != props.top
+					|| moveResizeData.width != props.width || moveResizeData.height != props.height;
 
 				if (isDirty)
 					movedOrResizedWindows.push_back(moveResizeData);

@@ -20,10 +20,6 @@
 
 namespace bs
 {
-	D3D11RenderWindowProperties::D3D11RenderWindowProperties(const RENDER_WINDOW_DESC& desc)
-		:RenderWindowProperties(desc)
-	{ }
-
 	D3D11RenderWindow::D3D11RenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId, ct::D3D11Device& device, 
 		IDXGIFactory* DXGIFactory)
 		:RenderWindow(desc, windowId), mProperties(desc), mDevice(device), mDXGIFactory(DXGIFactory)
@@ -88,11 +84,9 @@ namespace bs
 
 	D3D11RenderWindow::~D3D11RenderWindow()
 	{ 
-		D3D11RenderWindowProperties& props = mProperties;
+		RenderWindowProperties& props = mProperties;
 
-		props.mActive = false;
-
-		if (props.isFullScreen())
+		if (props.isFullScreen)
 			mSwapChain->SetFullscreenState(false, nullptr);
 
 		SAFE_RELEASE(mSwapChain);
@@ -111,7 +105,7 @@ namespace bs
 	{
 		ZeroMemory(&mSwapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
 
-		D3D11RenderWindowProperties& props = mProperties;
+		RenderWindowProperties& props = mProperties;
 
 		mMultisampleType.Count = 1;
 		mMultisampleType.Quality = 0;
@@ -148,9 +142,7 @@ namespace bs
 			windowDesc.external = (HWND)parseUINT64(opt->second);
 
 		mIsChild = windowDesc.parent != nullptr;
-		props.mIsFullScreen = mDesc.fullscreen && !mIsChild;
-		props.mColorDepth = 32;
-		props.mActive = true;
+		props.isFullScreen = mDesc.fullscreen && !mIsChild;
 
 		if (mDesc.videoMode.isCustom())
 		{
@@ -182,19 +174,19 @@ namespace bs
 		if (!windowDesc.external)
 		{
 			mShowOnSwap = mDesc.hideUntilSwap;
-			props.mHidden = mDesc.hideUntilSwap || mDesc.hidden;
+			props.isHidden = mDesc.hideUntilSwap || mDesc.hidden;
 		}
 
 		mWindow = bs_new<Win32Window>(windowDesc);
 
-		props.mWidth = mWindow->getWidth();
-		props.mHeight = mWindow->getHeight();
-		props.mTop = mWindow->getTop();
-		props.mLeft = mWindow->getLeft();
+		props.width = mWindow->getWidth();
+		props.height = mWindow->getHeight();
+		props.top = mWindow->getTop();
+		props.left = mWindow->getLeft();
 
 		createSwapChain();
 
-		if (props.isFullScreen())
+		if (props.isFullScreen)
 		{
 			if (outputInfo != nullptr)
 				mSwapChain->SetFullscreenState(true, outputInfo->getDXGIOutput());
@@ -223,7 +215,7 @@ namespace bs
 
 		if(mDevice.getD3D11Device() != nullptr)
 		{
-			HRESULT hr = mSwapChain->Present(getProperties().getVSync() ? getProperties().getVSyncInterval() : 0, 0);
+			HRESULT hr = mSwapChain->Present(getProperties().vsync ? getProperties().vsyncInterval : 0, 0);
 
 			if( FAILED(hr) )
 				BS_EXCEPT(RenderingAPIException, "Error Presenting surfaces");
@@ -234,19 +226,19 @@ namespace bs
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		D3D11RenderWindowProperties& props = mProperties;
+		RenderWindowProperties& props = mProperties;
 
-		if (!props.mIsFullScreen)
+		if (!props.isFullScreen)
 		{
 			mWindow->move(left, top);
 
-			props.mTop = mWindow->getTop();
-			props.mLeft = mWindow->getLeft();
+			props.top = mWindow->getTop();
+			props.left = mWindow->getLeft();
 
 			{
 				ScopedSpinLock lock(mLock);
-				mSyncedProperties.mTop = props.mTop;
-				mSyncedProperties.mLeft = props.mLeft;
+				mSyncedProperties.top = props.top;
+				mSyncedProperties.left = props.left;
 			}
 
 			bs::RenderWindowManager::instance().notifySyncDataDirty(this);
@@ -257,19 +249,19 @@ namespace bs
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		D3D11RenderWindowProperties& props = mProperties;
+		RenderWindowProperties& props = mProperties;
 
-		if (!props.mIsFullScreen)
+		if (!props.isFullScreen)
 		{
 			mWindow->resize(width, height);
 
-			props.mWidth = mWindow->getWidth();
-			props.mHeight = mWindow->getHeight();
+			props.width = mWindow->getWidth();
+			props.height = mWindow->getHeight();
 
 			{
 				ScopedSpinLock lock(mLock);
-				mSyncedProperties.mWidth = props.mWidth;
-				mSyncedProperties.mHeight = props.mHeight;
+				mSyncedProperties.width = props.width;
+				mSyncedProperties.height = props.height;
 			}
 
 			bs::RenderWindowManager::instance().notifySyncDataDirty(this);
@@ -280,13 +272,13 @@ namespace bs
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		D3D11RenderWindowProperties& props = mProperties;
+		RenderWindowProperties& props = mProperties;
 		mWindow->setActive(state);
 
 		if (mSwapChain)
 		{
 			if (state)
-				mSwapChain->SetFullscreenState(props.mIsFullScreen, nullptr);
+				mSwapChain->SetFullscreenState(props.isFullScreen, nullptr);
 			else
 				mSwapChain->SetFullscreenState(FALSE, nullptr);
 		}
@@ -356,19 +348,19 @@ namespace bs
 
 		outputInfo.getDXGIOutput()->FindClosestMatchingMode(&modeDesc, &nearestMode, nullptr);
 
-		mProperties.mIsFullScreen = true;
-		mProperties.mWidth = width;
-		mProperties.mHeight = height;
+		mProperties.isFullScreen = true;
+		mProperties.width = width;
+		mProperties.height = height;
 
 		mSwapChain->ResizeTarget(&nearestMode);
 		mSwapChain->SetFullscreenState(true, outputInfo.getDXGIOutput()); 
 
 		{
 			ScopedSpinLock lock(mLock);
-			mSyncedProperties.mTop = mProperties.mTop;
-			mSyncedProperties.mLeft = mProperties.mLeft;
-			mSyncedProperties.mWidth = mProperties.mWidth;
-			mSyncedProperties.mHeight = mProperties.mHeight;
+			mSyncedProperties.top = mProperties.top;
+			mSyncedProperties.left = mProperties.left;
+			mSyncedProperties.width = mProperties.width;
+			mSyncedProperties.height = mProperties.height;
 		}
 
 		bs::RenderWindowManager::instance().notifySyncDataDirty(this);
@@ -398,19 +390,19 @@ namespace bs
 
 		const D3D11VideoMode& videoMode = static_cast<const D3D11VideoMode&>(mode);
 
-		mProperties.mIsFullScreen = true;
-		mProperties.mWidth = mode.getWidth();
-		mProperties.mHeight = mode.getHeight();
+		mProperties.isFullScreen = true;
+		mProperties.width = mode.getWidth();
+		mProperties.height = mode.getHeight();
 
 		mSwapChain->ResizeTarget(&videoMode.getDXGIModeDesc());
 		mSwapChain->SetFullscreenState(true, outputInfo.getDXGIOutput());
 
 		{
 			ScopedSpinLock lock(mLock);
-			mSyncedProperties.mTop = mProperties.mTop;
-			mSyncedProperties.mLeft = mProperties.mLeft;
-			mSyncedProperties.mWidth = mProperties.mWidth;
-			mSyncedProperties.mHeight = mProperties.mHeight;
+			mSyncedProperties.top = mProperties.top;
+			mSyncedProperties.left = mProperties.left;
+			mSyncedProperties.width = mProperties.width;
+			mSyncedProperties.height = mProperties.height;
 		}
 
 		bs::RenderWindowManager::instance().notifySyncDataDirty(this);
@@ -421,9 +413,9 @@ namespace bs
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		mProperties.mWidth = width;
-		mProperties.mHeight = height;
-		mProperties.mIsFullScreen = false;
+		mProperties.width = width;
+		mProperties.height = height;
+		mProperties.isFullScreen = false;
 
 		mSwapChainDesc.Windowed = true;
 		mSwapChainDesc.BufferDesc.RefreshRate.Numerator = 0;
@@ -445,10 +437,10 @@ namespace bs
 
 		{
 			ScopedSpinLock lock(mLock);
-			mSyncedProperties.mTop = mProperties.mTop;
-			mSyncedProperties.mLeft = mProperties.mLeft;
-			mSyncedProperties.mWidth = mProperties.mWidth;
-			mSyncedProperties.mHeight = mProperties.mHeight;
+			mSyncedProperties.top = mProperties.top;
+			mSyncedProperties.left = mProperties.left;
+			mSyncedProperties.width = mProperties.width;
+			mSyncedProperties.height = mProperties.height;
 		}
 
 		bs::RenderWindowManager::instance().notifySyncDataDirty(this);
@@ -592,7 +584,7 @@ namespace bs
 		mDevice.getImmediateContext()->Map(tempTexture, 0,D3D11_MAP_READ, 0, &mappedTex2D);
 
 		// Copy the the texture to the dest
-		PixelData src(getProperties().getWidth(), getProperties().getHeight(), 1, PF_RGBA8);
+		PixelData src(getProperties().width, getProperties().height, 1, PF_RGBA8);
 		src.setExternalBuffer((UINT8*)mappedTex2D.pData);
 		PixelUtil::bulkPixelConversion(src, dst);
 
@@ -613,19 +605,19 @@ namespace bs
 
 		mWindow->_windowMovedOrResized();
 
-		D3D11RenderWindowProperties& props = mProperties;
+		RenderWindowProperties& props = mProperties;
 
-		if (props.isFullScreen()) // Fullscreen is handled directly by this object
+		if (props.isFullScreen) // Fullscreen is handled directly by this object
 		{
-			resizeSwapChainBuffers(props.getWidth(), props.getHeight());
+			resizeSwapChainBuffers(props.width, props.height);
 		}
 		else
 		{
 			resizeSwapChainBuffers(mWindow->getWidth(), mWindow->getHeight());
-			props.mWidth = mWindow->getWidth();
-			props.mHeight = mWindow->getHeight();
-			props.mTop = mWindow->getTop();
-			props.mLeft = mWindow->getLeft();
+			props.width = mWindow->getWidth();
+			props.height = mWindow->getHeight();
+			props.top = mWindow->getTop();
+			props.left = mWindow->getLeft();
 		}
 
 		RenderWindow::_windowMovedOrResized();
@@ -635,17 +627,17 @@ namespace bs
 	{
 		ZeroMemory(&mSwapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
 
-		D3D11RenderWindowProperties& props = mProperties;
+		RenderWindowProperties& props = mProperties;
 		IDXGIDevice* pDXGIDevice = queryDxgiDevice();
 
 		ZeroMemory(&mSwapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
 		DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		mSwapChainDesc.OutputWindow = mWindow->getHWnd();
-		mSwapChainDesc.BufferDesc.Width = props.mWidth;
-		mSwapChainDesc.BufferDesc.Height = props.mHeight;
+		mSwapChainDesc.BufferDesc.Width = props.width;
+		mSwapChainDesc.BufferDesc.Height = props.height;
 		mSwapChainDesc.BufferDesc.Format = format;
 
-		if (props.mIsFullScreen)
+		if (props.isFullScreen)
 		{
 			mSwapChainDesc.BufferDesc.RefreshRate.Numerator = mRefreshRateNumerator;
 			mSwapChainDesc.BufferDesc.RefreshRate.Denominator = mRefreshRateDenominator;
@@ -667,7 +659,7 @@ namespace bs
 		mSwapChainDesc.Windowed	= true;
 
 		D3D11RenderAPI* rs = static_cast<D3D11RenderAPI*>(RenderAPI::instancePtr());
-		rs->determineMultisampleSettings(props.mMultisampleCount, format, &mMultisampleType);
+		rs->determineMultisampleSettings(props.multisampleCount, format, &mMultisampleType);
 		mSwapChainDesc.SampleDesc.Count = mMultisampleType.Count;
 		mSwapChainDesc.SampleDesc.Quality = mMultisampleType.Quality;
 		
@@ -708,7 +700,7 @@ namespace bs
 		ZeroMemory( &RTVDesc, sizeof(RTVDesc) );
 
 		RTVDesc.Format = BBDesc.Format;
-		RTVDesc.ViewDimension = getProperties().getMultisampleCount() > 1 ? D3D11_RTV_DIMENSION_TEXTURE2DMS : D3D11_RTV_DIMENSION_TEXTURE2D;
+		RTVDesc.ViewDimension = getProperties().multisampleCount > 1 ? D3D11_RTV_DIMENSION_TEXTURE2DMS : D3D11_RTV_DIMENSION_TEXTURE2D;
 		RTVDesc.Texture2D.MipSlice = 0;
 		hr = mDevice.getD3D11Device()->CreateRenderTargetView(mBackBuffer, &RTVDesc, &mRenderTargetView);
 
@@ -728,7 +720,7 @@ namespace bs
 			texDesc.height = BBDesc.Height;
 			texDesc.format = PF_D32_S8X24;
 			texDesc.usage = TU_DEPTHSTENCIL;
-			texDesc.numSamples = getProperties().getMultisampleCount();
+			texDesc.numSamples = getProperties().multisampleCount;
 
 			mDepthStencilBuffer = Texture::create(texDesc);
 			mDepthStencilView = mDepthStencilBuffer->requestView(0, 1, 0, 1, GVU_DEPTHSTENCIL);
@@ -749,16 +741,16 @@ namespace bs
 	{
 		destroySizeDependedD3DResources();
 
-		UINT Flags = mProperties.isFullScreen() ? DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH : 0;
+		UINT Flags = mProperties.isFullScreen ? DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH : 0;
 		HRESULT hr = mSwapChain->ResizeBuffers(mSwapChainDesc.BufferCount, width, height, mSwapChainDesc.BufferDesc.Format, Flags);
 
 		if(hr != S_OK)
 			BS_EXCEPT(InternalErrorException, "Call to ResizeBuffers failed.");
 
 		mSwapChain->GetDesc(&mSwapChainDesc);
-		mProperties.mWidth = mSwapChainDesc.BufferDesc.Width;
-		mProperties.mHeight = mSwapChainDesc.BufferDesc.Height;
-		mProperties.mIsFullScreen = (0 == mSwapChainDesc.Windowed); // Alt-Enter together with SetWindowAssociation() can change this state
+		mProperties.width = mSwapChainDesc.BufferDesc.Width;
+		mProperties.height = mSwapChainDesc.BufferDesc.Height;
+		mProperties.isFullScreen = (0 == mSwapChainDesc.Windowed); // Alt-Enter together with SetWindowAssociation() can change this state
 
 		createSizeDependedD3DResources();
 

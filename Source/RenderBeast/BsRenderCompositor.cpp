@@ -1777,8 +1777,8 @@ namespace bs { namespace ct
 		{
 			const RenderTargetProperties& rtProps = output->renderTexture->getProperties();
 
-			POOLED_RENDER_TEXTURE_DESC desc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_R8, rtProps.getWidth(), 
-				rtProps.getHeight(), TU_RENDERTARGET);
+			POOLED_RENDER_TEXTURE_DESC desc = POOLED_RENDER_TEXTURE_DESC::create2D(PF_R8, rtProps.width, 
+				rtProps.height, TU_RENDERTARGET);
 			SPtr<PooledRenderTexture> blurIntermediateTex = GpuResourcePool::instance().get(desc);
 
 			SSAOBlurMat* blurHorz = SSAOBlurMat::getVariation(true);

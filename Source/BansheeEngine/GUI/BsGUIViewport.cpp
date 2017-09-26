@@ -89,10 +89,10 @@ namespace bs
 		SPtr<RenderTarget> renderTarget = viewport->getTarget();
 		const RenderTargetProperties& rtProps = renderTarget->getProperties();
 
-		float x = mLayoutData.area.x / (float)rtProps.getWidth();
-		float y = mLayoutData.area.y / (float)rtProps.getHeight();
-		float width = mLayoutData.area.width / (float)rtProps.getWidth();
-		float height = mLayoutData.area.height / (float)rtProps.getHeight();
+		float x = mLayoutData.area.x / (float)rtProps.width;
+		float y = mLayoutData.area.y / (float)rtProps.height;
+		float width = mLayoutData.area.width / (float)rtProps.width;
+		float height = mLayoutData.area.height / (float)rtProps.height;
 
 		viewport->setArea(x, y, width, height);
 	}

@@ -530,7 +530,7 @@ namespace bs
 
 	void GUIMenuBar::onMaximizeClicked()
 	{
-		if(mParentWindow->getProperties().isMaximized())
+		if(mParentWindow->getProperties().isMaximized)
 			mParentWindow->restore();
 		else
 			mParentWindow->maximize();

@@ -56,7 +56,7 @@ namespace bs
 
 		if (mSourceTexture != nullptr)
 		{
-			if (mSourceTexture->getProperties().requiresTextureFlipping())
+			if (mSourceTexture->getProperties().requiresTextureFlipping)
 			{
 				mDesc.uvOffset = Vector2(0.0f, 1.0f);
 				mDesc.uvScale = Vector2(1.0f, -1.0f);

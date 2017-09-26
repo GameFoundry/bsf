@@ -538,8 +538,8 @@ namespace bs {	namespace ct
 
 		if (viewDesc.target.target != nullptr)
 		{
-			viewDesc.target.targetWidth = viewDesc.target.target->getProperties().getWidth();
-			viewDesc.target.targetHeight = viewDesc.target.target->getProperties().getHeight();
+			viewDesc.target.targetWidth = viewDesc.target.target->getProperties().width;
+			viewDesc.target.targetHeight = viewDesc.target.target->getProperties().height;
 		}
 		else
 		{
@@ -635,7 +635,7 @@ namespace bs {	namespace ct
 			// Sort render targets based on priority
 			auto cameraComparer = [&](const Camera* a, const Camera* b) { return a->getPriority() > b->getPriority(); };
 			auto renderTargetInfoComparer = [&](const RendererRenderTarget& a, const RendererRenderTarget& b)
-			{ return a.target->getProperties().getPriority() > b.target->getProperties().getPriority(); };
+			{ return a.target->getProperties().priority > b.target->getProperties().priority; };
 			std::sort(begin(mInfo.renderTargets), end(mInfo.renderTargets), renderTargetInfoComparer);
 
 			for (auto& camerasPerTarget : mInfo.renderTargets)

@@ -146,7 +146,7 @@ namespace bs { namespace ct
 		RenderAPI::initializeWithWindow(primaryWindow);
 	}
 
-    void D3D11RenderAPI::destroyCore()
+	void D3D11RenderAPI::destroyCore()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -943,8 +943,8 @@ namespace bs { namespace ct
 			Rect2I clearArea((int)mViewport.TopLeftX, (int)mViewport.TopLeftY, (int)mViewport.Width, (int)mViewport.Height);
 
 			bool clearEntireTarget = clearArea.width == 0 || clearArea.height == 0;
-			clearEntireTarget |= (clearArea.x == 0 && clearArea.y == 0 && clearArea.width == rtProps.getWidth() && 
-				clearArea.height == rtProps.getHeight());
+			clearEntireTarget |= (clearArea.x == 0 && clearArea.y == 0 && clearArea.width == rtProps.width && 
+				clearArea.height == rtProps.height);
 
 			if (!clearEntireTarget)
 			{
@@ -1131,15 +1131,15 @@ namespace bs { namespace ct
 		const RenderTargetProperties& rtProps = mActiveRenderTarget->getProperties();
 
 		// Set viewport dimensions
-		mViewport.TopLeftX = (FLOAT)(rtProps.getWidth() * mViewportNorm.x);
-		mViewport.TopLeftY = (FLOAT)(rtProps.getHeight() * mViewportNorm.y);
-		mViewport.Width = (FLOAT)(rtProps.getWidth() * mViewportNorm.width);
-		mViewport.Height = (FLOAT)(rtProps.getHeight() * mViewportNorm.height);
+		mViewport.TopLeftX = (FLOAT)(rtProps.width * mViewportNorm.x);
+		mViewport.TopLeftY = (FLOAT)(rtProps.height * mViewportNorm.y);
+		mViewport.Width = (FLOAT)(rtProps.width * mViewportNorm.width);
+		mViewport.Height = (FLOAT)(rtProps.height * mViewportNorm.height);
 
-		if (rtProps.requiresTextureFlipping())
+		if (rtProps.requiresTextureFlipping)
 		{
 			// Convert "top-left" to "bottom-left"
-			mViewport.TopLeftY = rtProps.getHeight() - mViewport.Height - mViewport.TopLeftY;
+			mViewport.TopLeftY = rtProps.height - mViewport.Height - mViewport.TopLeftY;
 		}
 
 		mViewport.MinDepth = 0.0f;

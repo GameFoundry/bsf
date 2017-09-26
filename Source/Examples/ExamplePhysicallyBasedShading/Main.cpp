@@ -375,10 +375,10 @@ namespace bs
 		SPtr<RenderWindow> window = gApplication().getPrimaryWindow();
 		const RenderWindowProperties& rwProps = window->getProperties();
 
-		windowResWidth = rwProps.getWidth();
-		windowResHeight = rwProps.getHeight();
+		windowResWidth = rwProps.width;
+		windowResHeight = rwProps.height;
 
-		sceneCamera->setAspectRatio(rwProps.getWidth() / (float)rwProps.getHeight());
+		sceneCamera->setAspectRatio(rwProps.width / (float)rwProps.height);
 	}
 }
 

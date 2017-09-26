@@ -591,7 +591,7 @@ namespace bs { namespace ct
 		std::array<float, MAX_BLUR_SAMPLES> sampleWeights;
 
 		POOLED_RENDER_TEXTURE_DESC tempTextureDesc = POOLED_RENDER_TEXTURE_DESC::create2D(srcProps.getFormat(), 
-			dstProps.getWidth(), dstProps.getHeight(), TU_RENDERTARGET);
+			dstProps.width, dstProps.height, TU_RENDERTARGET);
 		SPtr<PooledRenderTexture> tempTexture = GpuResourcePool::instance().get(tempTextureDesc);
 
 		auto updateParamBuffer = [&](Direction direction)
@@ -1152,7 +1152,7 @@ namespace bs { namespace ct
 
 		// Downsampled AO uses a larger AO radius (in higher resolutions this would cause too much cache trashing). This
 		// means if only full res AO is used, then only AO from nearby geometry will be calculated.
-		float viewScale = viewProps.viewRect.width / (float)rtProps.getWidth();
+		float viewScale = viewProps.viewRect.width / (float)rtProps.width;
 
 		// Ramp up the radius exponentially. c^log2(x) function chosen arbitrarily, as it ramps up the radius in a nice way
 		float scale = pow(DOWNSAMPLE_SCALE, Math::log2(viewScale)); 
@@ -1197,8 +1197,8 @@ namespace bs { namespace ct
 		UINT32 rndHeight = rndProps.getHeight();
 
 		//// Multiple of random texture size, rounded up
-		UINT32 scaleWidth = (rtProps.getWidth() + rndWidth - 1) / rndWidth;
-		UINT32 scaleHeight = (rtProps.getHeight() + rndHeight - 1) / rndHeight;
+		UINT32 scaleWidth = (rtProps.width + rndWidth - 1) / rndWidth;
+		UINT32 scaleHeight = (rtProps.height + rndHeight - 1) / rndHeight;
 
 		Vector2 randomTileScale((float)scaleWidth, (float)scaleHeight);
 		gSSAOParamDef.gRandomTileScale.set(mParamBuffer, randomTileScale);
@@ -1302,10 +1302,10 @@ namespace bs { namespace ct
 		const RenderTargetProperties& rtProps = destination->getProperties();
 
 		Vector2 pixelSize;
-		pixelSize.x = 1.0f / rtProps.getWidth();
-		pixelSize.y = 1.0f / rtProps.getHeight();
+		pixelSize.x = 1.0f / rtProps.width;
+		pixelSize.y = 1.0f / rtProps.height;
 
-		float scale = viewProps.viewRect.width / (float)rtProps.getWidth();
+		float scale = viewProps.viewRect.width / (float)rtProps.width;
 
 		gSSAODownsampleParamDef.gPixelSize.set(mParamBuffer, pixelSize);
 		gSSAODownsampleParamDef.gInvDepthThreshold.set(mParamBuffer, (1.0f / depthRange) / scale);

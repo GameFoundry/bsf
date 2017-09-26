@@ -500,7 +500,7 @@ namespace bs
 			if (newWindow != nullptr)
 			{
 				const RenderWindowProperties& props = newWindow->getProperties();
-				if (!props.isHidden())
+				if (!props.isHidden)
 					ShowWindow(hWnd, SW_SHOWNOACTIVATE);
 			}
 			else
@@ -517,14 +517,14 @@ namespace bs
 		{
 		case WM_SETFOCUS:
 			{
-				if (!win->getProperties().hasFocus())
+				if (!win->getProperties().hasFocus)
 					win->_windowFocusReceived();
 
 				return 0;
 			}
 		case WM_KILLFOCUS:
 			{
-				if (win->getProperties().hasFocus())
+				if (win->getProperties().hasFocus)
 					win->_windowFocusLost();
 
 				return 0;

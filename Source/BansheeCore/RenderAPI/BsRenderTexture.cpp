@@ -90,17 +90,15 @@ namespace bs
 		if (textureProps != nullptr)
 		{
 			PixelUtil::getSizeForMipLevel(textureProps->getWidth(), textureProps->getHeight(), textureProps->getDepth(), 
-										  mipLevel, mWidth, mHeight, mNumSlices);
+										  mipLevel, width, height, numSlices);
 
-			mNumSlices *= numSlices;
-			mColorDepth = bs::PixelUtil::getNumElemBits(textureProps->getFormat());
-			mMultisampleCount = textureProps->getNumSamples();
+			numSlices *= numSlices;
+			multisampleCount = textureProps->getNumSamples();
 		}
 
-		mActive = true;
-		mIsWindow = false;
-		mRequiresTextureFlipping = requiresFlipping;
-		mHwGamma = hwGamma;
+		isWindow = false;
+		requiresTextureFlipping = requiresFlipping;
+		this->hwGamma = hwGamma;
 	}
 
 	SPtr<RenderTexture> RenderTexture::create(const TEXTURE_DESC& desc, 

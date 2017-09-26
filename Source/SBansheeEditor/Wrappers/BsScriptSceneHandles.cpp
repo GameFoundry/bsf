@@ -45,8 +45,8 @@ namespace bs
 		Vector2I windowPos = parentWindow->screenToWindowPos(Cursor::instance().getScreenPosition());
 		const RenderWindowProperties& rwProps = parentWindow->getProperties();
 
-		INT32 maxWidth = std::max(0, (INT32)rwProps.getWidth() - 1);
-		INT32 maxHeight = std::max(0, (INT32)rwProps.getHeight() - 1);
+		INT32 maxWidth = std::max(0, (INT32)rwProps.width - 1);
+		INT32 maxHeight = std::max(0, (INT32)rwProps.height - 1);
 
 		Vector2I offset;
 		if (windowPos.x <= 0)

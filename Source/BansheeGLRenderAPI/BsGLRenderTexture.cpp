@@ -55,7 +55,7 @@ namespace bs
 			{
 				GLTexture* glColorSurface = static_cast<GLTexture*>(mDesc.colorSurfaces[i].texture.get());
 				GLSurfaceDesc surfaceDesc;
-				surfaceDesc.numSamples = getProperties().getMultisampleCount();
+				surfaceDesc.numSamples = getProperties().multisampleCount;
 
 				if (mColorSurfaces[i]->getNumArraySlices() == 1) // Binding a single texture layer
 				{

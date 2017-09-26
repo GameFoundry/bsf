@@ -64,7 +64,7 @@ namespace bs
 				SPtr<RenderWindow> parentRenderWindow = parentWindow->getRenderWindow();
 				const RenderWindowProperties& props = parentRenderWindow->getProperties();
 
-				if (!props.hasFocus())
+				if (!props.hasFocus)
 				{
 					widget->_setHasFocus(false);
 					continue;
@@ -240,7 +240,7 @@ namespace bs
 			}
 		}
 
-		layout->setIsMainWindowMaximized(mainWindow->getRenderWindow()->getProperties().isMaximized());
+		layout->setIsMainWindowMaximized(mainWindow->getRenderWindow()->getProperties().isMaximized);
 
 		return layout;
 	}

@@ -76,7 +76,7 @@ namespace bs
 
 	void EditorWindow::maximizeClicked()
 	{
-		if (mRenderWindow->getProperties().isMaximized())
+		if (mRenderWindow->getProperties().isMaximized)
 			mRenderWindow->restore();
 		else
 			mRenderWindow->maximize();
