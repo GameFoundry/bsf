@@ -580,7 +580,6 @@ set(BS_BANSHEECORE_INC_PLATFORM
 )
 
 set(BS_BANSHEECORE_INC_PLATFORM_WIN32
-	"Win32/BsWin32FolderMonitor.h"
 	"Win32/BsWin32DropTarget.h"
 	"Win32/BsWin32Defs.h"
 	"Win32/BSWin32PlatformData.h"
