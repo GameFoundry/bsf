@@ -1,6 +1,5 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
-#include <X11/Xutil.h>
 #include "Platform/BsSplashScreen.h"
 #include "Resources/BsBuiltinResources.h"
 #include "Utility/BsTimer.h"
@@ -78,6 +77,7 @@ namespace bs
 #elif BS_PLATFORM == BS_PLATFORM_LINUX
 #include "Linux/BsLinuxPlatform.h"
 #include "Linux/BsLinuxWindow.h"
+#include "X11/Xutil.h"
 
 namespace bs
 {

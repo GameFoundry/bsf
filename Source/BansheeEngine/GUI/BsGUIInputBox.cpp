@@ -15,6 +15,7 @@
 #include "GUI/BsGUIContextMenu.h"
 #include "GUI/BsGUIHelper.h"
 #include "Utility/BsTime.h"
+#include "Platform/BsPlatform.h"
 
 namespace bs
 {
@@ -1232,7 +1233,7 @@ namespace bs
 
 	void GUIInputBox::copyText()
 	{
-		PlatformUtility::copyToClipboard(getSelectedText());
+		Platform::copyToClipboard(getSelectedText());
 	}
 
 	void GUIInputBox::pasteText()
@@ -1240,7 +1241,7 @@ namespace bs
 		if (mSelectionShown)
 			deleteSelectedText(true);
 
-		WString textInClipboard = PlatformUtility::copyFromClipboard();
+		WString textInClipboard = Platform::copyFromClipboard();
 		UINT32 charIdx = gGUIManager().getInputCaretTool()->getCharIdxAtCaretPos();
 
 		bool filterOkay = true;
