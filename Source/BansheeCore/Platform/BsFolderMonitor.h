@@ -11,17 +11,15 @@ namespace bs
 	 */
 
 	/** Types of notifications we would like to receive when we start a FolderMonitor on a certain folder. */
-	enum class FolderChange
+	enum class FolderChangeBit
 	{
-		FileName = 0x0001, /**< Called when filename changes. */
-		DirName = 0x0002, /**< Called when directory name changes. */
-		Attributes = 0x0004, /**< Called when attributes changes. */
-		Size = 0x0008, /**< Called when file size changes. */
-		LastWrite = 0x0010, /**< Called when file is written to. */
-		LastAccess = 0x0020, /**< Called when file is accessed. */
-		Creation = 0x0040, /**< Called when file is created. */
-		Security = 0x0080 /**< Called when file security descriptor changes. */
+		FileName 	= 1 << 0, /**< Called when file is created, moved or removed. */
+		DirName 	= 1 << 1, /**< Called when directory is created, moved or removed. */
+		FileWrite 	= 1 << 2, /**< Called when file is written to. */
 	};
+
+	typedef Flags<FolderChangeBit> FolderChangeBits;
+	BS_FLAGS_OPERATORS(FolderChangeBit)
 
 	/**
 	 * Allows monitoring a file system folder for changes. Depending on the flags set this monitor can notify you when file
@@ -45,7 +43,7 @@ namespace bs
 		 * @param[in]	changeFilter	A set of flags you may OR together. Different notification events will trigger 
 		 *								depending on which flags you set.
 		 */
-		void startMonitor(const Path& folderPath, bool subdirectories, FolderChange changeFilter);
+		void startMonitor(const Path& folderPath, bool subdirectories, FolderChangeBits changeFilter);
 
 		/** Stops monitoring the folder at the specified path. */
 		void stopMonitor(const Path& folderPath);
@@ -75,7 +73,7 @@ namespace bs
 		/**	Called by the worker thread whenever a modification notification is received. */
 		void handleNotifications(FileNotifyInfo& notifyInfo, FolderWatchInfo& watchInfo);
 
-		Pimpl* mPimpl;
+		Pimpl* m;
 	};
 
 	/** @} */

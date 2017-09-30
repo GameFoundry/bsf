@@ -606,6 +606,7 @@ set(BS_BANSHEECORE_SRC_PLATFORM_UNIX
 	"Linux/BsLinuxPlatform.cpp"
 	"Linux/BsLinuxWindow.cpp"
 	"Linux/BsLinuxDragAndDrop.cpp"
+	"Linux/BsLinuxFolderMonitor.cpp"
 )
 
 if(WIN32)

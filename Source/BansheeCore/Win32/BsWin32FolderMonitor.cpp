@@ -328,7 +328,7 @@ namespace bs
 		bs_delete(mPimpl);
 	}
 
-	void FolderMonitor::startMonitor(const Path& folderPath, bool subdirectories, FolderChange changeFilter)
+	void FolderMonitor::startMonitor(const Path& folderPath, bool subdirectories, FolderChangeBits changeFilter)
 	{
 		if(!FileSystem::isDirectory(folderPath))
 		{
@@ -348,29 +348,14 @@ namespace bs
 
 		DWORD filterFlags = 0;
 
-		if((((UINT32)changeFilter) & (UINT32)bs::FolderChange::FileName) != 0)
+		if(changeFilter.isSet(FolderChangeBit::FileName))
 			filterFlags |= FILE_NOTIFY_CHANGE_FILE_NAME;
 
-		if((((UINT32)changeFilter) & (UINT32)bs::FolderChange::DirName) != 0)
+		if(changeFilter.isSet(FolderChangeBit::DirName))
 			filterFlags |= FILE_NOTIFY_CHANGE_DIR_NAME;
 
-		if((((UINT32)changeFilter) & (UINT32)bs::FolderChange::Attributes) != 0)
-			filterFlags |= FILE_NOTIFY_CHANGE_ATTRIBUTES;
-
-		if((((UINT32)changeFilter) & (UINT32)bs::FolderChange::Size) != 0)
-			filterFlags |= FILE_NOTIFY_CHANGE_SIZE;
-
-		if((((UINT32)changeFilter) & (UINT32)bs::FolderChange::LastWrite) != 0)
+		if(changeFilter.isSet(FolderChangeBit::LastWrite))
 			filterFlags |= FILE_NOTIFY_CHANGE_LAST_WRITE;
-
-		if((((UINT32)changeFilter) & (UINT32)bs::FolderChange::LastAccess) != 0)
-			filterFlags |= FILE_NOTIFY_CHANGE_LAST_ACCESS;
-
-		if((((UINT32)changeFilter) & (UINT32)bs::FolderChange::Creation) != 0)
-			filterFlags |= FILE_NOTIFY_CHANGE_CREATION;
-
-		if((((UINT32)changeFilter) & (UINT32)bs::FolderChange::Security) != 0)
-			filterFlags |= FILE_NOTIFY_CHANGE_SECURITY;
 
 		mPimpl->mFoldersToWatch.push_back(bs_new<FolderWatchInfo>(folderPath, dirHandle, subdirectories, filterFlags));
 		FolderWatchInfo* watchInfo = mPimpl->mFoldersToWatch.back();
@@ -381,7 +366,7 @@ namespace bs
 		{
 			mPimpl->mFoldersToWatch.erase(mPimpl->mFoldersToWatch.end() - 1);
 			bs_delete(watchInfo);
-			BS_EXCEPT(InternalErrorException, "Failed to open completition port for folder monitoring. Error code: " + toString((UINT64)GetLastError()));
+			BS_EXCEPT(InternalErrorException, "Failed to open completion port for folder monitoring. Error code: " + toString((UINT64)GetLastError()));
 		}
 
 		if(mPimpl->mWorkerThread == nullptr)

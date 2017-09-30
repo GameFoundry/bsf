@@ -54,8 +54,10 @@ namespace bs
 		{
 			Path folderPath = MonoUtil::monoToWString(folder);
 
-			FolderChange folderChanges = (FolderChange)((UINT32)FolderChange::FileName | (UINT32)FolderChange::DirName |
-				(UINT32)FolderChange::Creation | (UINT32)FolderChange::LastWrite);
+			FolderChangeBits folderChanges;
+			folderChanges |= FolderChangeBit::FileName;
+			folderChanges |= FolderChangeBit::DirName;
+			folderChanges |= FolderChangeBit::FileWrite;
 
 			monitor = bs_new<FolderMonitor>();
 			monitor->startMonitor(folderPath, true, folderChanges);
