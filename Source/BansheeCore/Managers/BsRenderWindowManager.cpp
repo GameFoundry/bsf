@@ -9,9 +9,7 @@ namespace bs
 {
 	RenderWindowManager::RenderWindowManager()
 		:mWindowInFocus(nullptr), mNewWindowInFocus(nullptr)
-	{
-		Platform::onMouseLeftWindow.connect(std::bind(&RenderWindowManager::windowMouseLeft, this, _1));
-	}
+	{ }
 
 	RenderWindowManager::~RenderWindowManager()
 	{
@@ -78,7 +76,7 @@ namespace bs
 		if (window == nullptr)
 			return;
 
-		auto iterFind = std::find_if(begin(mMovedOrResizedWindows), end(mMovedOrResizedWindows), 
+		auto iterFind = std::find_if(begin(mMovedOrResizedWindows), end(mMovedOrResizedWindows),
 			[&](const MoveOrResizeData& x) { return x.window == window; });
 
 		const RenderWindowProperties& props = coreWindow->getProperties();
@@ -96,11 +94,22 @@ namespace bs
 			mMovedOrResizedWindows.push_back(newEntry);
 			moveResizeData = &mMovedOrResizedWindows.back();
 		}
-		
+
 		moveResizeData->x = props.left;
 		moveResizeData->y = props.top;
 		moveResizeData->width = props.width;
 		moveResizeData->height = props.height;
+	}
+
+	void RenderWindowManager::notifyMouseLeft(ct::RenderWindow* coreWindow)
+	{
+		Lock lock(mWindowMutex);
+
+		RenderWindow* window = getNonCore(coreWindow);
+		auto iterFind = std::find(begin(mMouseLeftWindows), end(mMouseLeftWindows), window);
+
+		if (iterFind == end(mMouseLeftWindows))
+			mMouseLeftWindows.push_back(window);
 	}
 
 	void RenderWindowManager::notifySyncDataDirty(ct::RenderWindow* coreWindow)
@@ -111,17 +120,6 @@ namespace bs
 
 		if (window != nullptr)
 			mDirtyProperties.insert(window);
-	}
-
-	void RenderWindowManager::windowMouseLeft(ct::RenderWindow* coreWindow)
-	{
-		Lock lock(mWindowMutex);
-
-		RenderWindow* window = getNonCore(coreWindow);
-		auto iterFind = std::find(begin(mMouseLeftWindows), end(mMouseLeftWindows), window);
-
-		if (iterFind == end(mMouseLeftWindows))
-			mMouseLeftWindows.push_back(window);
 	}
 
 	void RenderWindowManager::_update()

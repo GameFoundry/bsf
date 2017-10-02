@@ -45,7 +45,7 @@ namespace bs
 
 		if(monitorSubdirectories)
 		{
-			FileSystem::iterate(folderToMonitor, nullptr, [&pathToHandle](const Path& path)
+			FileSystem::iterate(folderToMonitor, nullptr, [this](const Path& path)
 			{
 				addPath(path);
 				return true;
@@ -274,7 +274,7 @@ namespace bs
 			m->started = true;
 		}
 
-		FolderWatchInfo* watchInfo = bs_new<FolderWatchInfo>(folderPath, subdirectories, changeFilter);
+		FolderWatchInfo* watchInfo = bs_new<FolderWatchInfo>(folderPath, m->inHandle, subdirectories, changeFilter);
 
 		// Register and start the monitor
 		{
@@ -366,7 +366,7 @@ namespace bs
 			if (length < 0)
 				return;
 
-			UINT32 readPos = 0;
+			INT32 readPos = 0;
 			while(readPos < length)
 			{
 				inotify_event* event = (inotify_event*)&buffer[readPos];
@@ -408,7 +408,7 @@ namespace bs
 						// Actually trigger the events
 
 						// File/folder was added
-						if(((event->mask & IN_CREATE | IN_MOVED_TO) != 0))
+						if(((event->mask & (IN_CREATE | IN_MOVED_TO)) != 0))
 						{
 							if (isDirectory)
 							{

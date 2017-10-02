@@ -460,7 +460,7 @@ namespace bs { namespace ct
 						if (glTex != nullptr)
 						{
 							SPtr<TextureView> texView = glTex->requestView(surface.mipLevel, surface.numMipLevels, 
-								surface.arraySlice, surface.numArraySlices, GVU_DEFAULT);
+								surface.face, surface.numFaces, GVU_DEFAULT);
 
 							GLTextureView* glTexView = static_cast<GLTextureView*>(texView.get());
 							GLenum newTextureType = glTexView->getGLTextureTarget();
@@ -609,8 +609,8 @@ namespace bs { namespace ct
 						if (texture != nullptr)
 						{
 							GLTexture* tex = static_cast<GLTexture*>(texture.get());
-							glBindImageTexture(unit, tex->getGLID(), surface.mipLevel, surface.numArraySlices > 1,
-								surface.arraySlice, GL_READ_WRITE, tex->getGLFormat());
+							glBindImageTexture(unit, tex->getGLID(), surface.mipLevel, surface.numFaces > 1,
+								surface.face, GL_READ_WRITE, tex->getGLFormat());
 
 							SPtr<GLSLGpuProgram> activeProgram = getActiveProgram(type);
 							if (activeProgram != nullptr)

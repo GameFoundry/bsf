@@ -126,6 +126,12 @@ namespace bs
 		/** Toggles between fullscreen and windowed mode. */
 		void _setFullscreen(bool fullscreen);
 
+		/** Attaches non-specific user data that can later be retrieved through _getUserData(). */
+		void _setUserData(void* data);
+
+		/** Returns user data attached to the object when _setUserData was called. */
+		void* _getUserData() const;
+
 		/** @} */
 
 	private:
@@ -166,4 +172,3 @@ namespace bs
 	/** @} */
 	/** @} */
 }
-

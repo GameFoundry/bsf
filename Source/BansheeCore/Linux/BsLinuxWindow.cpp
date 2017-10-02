@@ -4,10 +4,7 @@
 #include "BsLinuxPlatform.h"
 #include "BsLinuxDragAndDrop.h"
 
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
 #include <X11/Xatom.h>
-#include <X11/extensions/Xrandr.h>
 
 #define _NET_WM_STATE_REMOVE 0
 #define _NET_WM_STATE_ADD 1
@@ -38,6 +35,8 @@ namespace bs
 
 		Rect2I dragZone;
 		INT32 dragStartX, dragStartY;
+
+		void* userData = nullptr;
 	};
 
 	LinuxWindow::LinuxWindow(const WINDOW_DESC &desc)
@@ -108,7 +107,7 @@ namespace bs
 				ButtonPressMask | ButtonReleaseMask |
 				EnterWindowMask | LeaveWindowMask |
 				PointerMotionMask | ButtonMotionMask |
-				StructureNotifyMask
+				StructureNotifyMask | PropertyChangeMask
 		);
 		XMapWindow(display, m->xWindow);
 
@@ -295,7 +294,7 @@ namespace bs
 		m->dragZone = rect;
 	}
 
-	bool LinuxWindow::_dragStart(int32_t x, int32_t y)
+	bool LinuxWindow::_dragStart(INT32 x, INT32 y)
 	{
 		if(m->hasTitleBar)
 			return false;
@@ -303,8 +302,8 @@ namespace bs
 		if(m->dragZone.width == 0 || m->dragZone.height == 0)
 			return false;
 
-		if(x >= m->dragZone.x && x < (m->dragZone.x + m->dragZone.width) &&
-		   y >= m->dragZone.y && y < (m->dragZone.y + m->dragZone.height))
+		if(x >= m->dragZone.x && x < (INT32)(m->dragZone.x + m->dragZone.width) &&
+		   y >= m->dragZone.y && y < (INT32)(m->dragZone.y + m->dragZone.height))
 		{
 			m->dragStartX = x;
 			m->dragStartY = y;
@@ -316,13 +315,13 @@ namespace bs
 		return false;
 	}
 
-	void LinuxWindow::_dragUpdate(int32_t x, int32_t y)
+	void LinuxWindow::_dragUpdate(INT32 x, INT32 y)
 	{
 		if(!m->dragInProgress)
 			return;
 
-		int32_t offsetX = x - m->dragStartX;
-		int32_t offsetY = y - m->dragStartY;
+		INT32 offsetX = x - m->dragStartX;
+		INT32 offsetY = y - m->dragStartY;
 
 		move(getLeft() + offsetX, getTop() + offsetY);
 	}
@@ -337,16 +336,26 @@ namespace bs
 		return m->xWindow;
 	}
 
+	void LinuxWindow::_setUserData(void* data)
+	{
+		m->userData = data;
+	}
+
+	void* LinuxWindow::_getUserData() const
+	{
+		return m->userData;
+	}
+
 	bool LinuxWindow::isMaximized() const
 	{
 		Atom wmState = XInternAtom(LinuxPlatform::getXDisplay(), "_NET_WM_STATE", False);
 		Atom type;
-		int32_t format;
+		INT32 format;
 		uint64_t length;
 		uint64_t remaining;
 		uint8_t* data = nullptr;
 
-		int32_t result = XGetWindowProperty(LinuxPlatform::getXDisplay(), m->xWindow, wmState,
+		INT32 result = XGetWindowProperty(LinuxPlatform::getXDisplay(), m->xWindow, wmState,
 				0, 1024, False, XA_ATOM, &type, &format,
 				&length, &remaining, &data);
 
@@ -358,7 +367,7 @@ namespace bs
 
 			bool foundHorz = false;
 			bool foundVert = false;
-			for (uint64_t i = 0; i < length; i++)
+			for (UINT32 i = 0; i < length; i++)
 			{
 				if (atoms[i] == wmMaxHorz)
 					foundHorz = true;
@@ -379,12 +388,12 @@ namespace bs
 	{
 		Atom wmState = XInternAtom(LinuxPlatform::getXDisplay(), "WM_STATE", True);
 		Atom type;
-		int32_t format;
+		INT32 format;
 		uint64_t length;
 		uint64_t remaining;
 		uint8_t* data = nullptr;
 
-		int32_t result = XGetWindowProperty(LinuxPlatform::getXDisplay(), m->xWindow, wmState,
+		INT32 result = XGetWindowProperty(LinuxPlatform::getXDisplay(), m->xWindow, wmState,
 				0, 1024, False, AnyPropertyType, &type, &format,
 				&length, &remaining, &data);
 
@@ -442,7 +451,7 @@ namespace bs
 			Atom wmBypassCompositor = XInternAtom(LinuxPlatform::getXDisplay(), "_NET_WM_BYPASS_COMPOSITOR", False);
 			if (wmBypassCompositor)
 			{
-				static constexpr uint32_t enabled = 1;
+				static constexpr UINT32 enabled = 1;
 
 				XChangeProperty(LinuxPlatform::getXDisplay(), m->xWindow, wmBypassCompositor,
 						XA_CARDINAL, 32, PropModeReplace, (unsigned char*) &enabled, 1);
@@ -469,29 +478,15 @@ namespace bs
 
 	void LinuxWindow::setShowDecorations(bool show)
 	{
-		static constexpr uint32_t MWM_HINTS_FUNCTIONS		= (1 << 0);
-		static constexpr uint32_t MWM_HINTS_DECORATIONS		= (1 << 1);
-
-		static constexpr uint32_t MWM_DECOR_BORDER			= (1 << 1);
-		static constexpr uint32_t MWM_DECOR_RESIZEH			= (1 << 2);
-		static constexpr uint32_t MWM_DECOR_TITLE			= (1 << 3);
-		static constexpr uint32_t MWM_DECOR_MENU			= (1 << 4);
-		static constexpr uint32_t MWM_DECOR_MINIMIZE		= (1 << 5);
-		static constexpr uint32_t MWM_DECOR_MAXIMIZE		= (1 << 6);
-
-		static constexpr uint32_t MWM_FUNC_RESIZE			= (1 << 1);
-		static constexpr uint32_t MWM_FUNC_MOVE				= (1 << 2);
-		static constexpr uint32_t MWM_FUNC_MINIMIZE			= (1 << 3);
-		static constexpr uint32_t MWM_FUNC_MAXIMIZE			= (1 << 4);
-		static constexpr uint32_t MWM_FUNC_CLOSE			= (1 << 5);
+		static constexpr UINT32 MWM_HINTS_DECORATIONS		= (1 << 1);
 
 		struct MotifHints
 		{
-			uint32_t       flags;
-			uint32_t       functions;
-			uint32_t       decorations;
-			int32_t        inputMode;
-			uint32_t       status;
+			UINT32       flags;
+			UINT32       functions;
+			UINT32       decorations;
+			INT32        inputMode;
+			UINT32       status;
 		};
 
 		if(show)

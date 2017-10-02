@@ -22,7 +22,6 @@ namespace bs
 	Event<void(float)> Platform::onMouseWheelScrolled;
 	Event<void(UINT32)> Platform::onCharInput;
 
-	Event<void(ct::RenderWindow*)> Platform::onMouseLeftWindow;
 	Event<void()> Platform::onMouseCaptureChanged;
 
 	Platform::Pimpl* Platform::mData = bs_new<Platform::Pimpl>();
@@ -517,8 +516,6 @@ namespace bs
 	 *
 	 * @param[in]	virtualKeyCode	Virtual key code to try to translate to a command.
 	 * @param[out]	command			Input command. Only valid if function returns true.
-	 * @param[in]	ignoreMovement	If true, then movement keys (up/down/left/right) will be ignored and not considered
-	 *								as input commands (useful if you need to parse num keys as numbers and not movement).
 	 */
 	bool getCommand(unsigned int virtualKeyCode, InputCommandType& command)
 	{
@@ -552,8 +549,6 @@ namespace bs
 
 		return false;
 	}
-
-	
 
 	LRESULT CALLBACK Win32Platform::_win32WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
@@ -732,9 +727,7 @@ namespace bs
 				mData->mIsTrackingMouse = false; // TrackMouseEvent ends when this message is received and needs to be re-applied
 
 				Lock lock(mData->mSync);
-
-				if (!onMouseLeftWindow.empty())
-					onMouseLeftWindow(win);
+				win->_notifyMouseLeft();
 			}
 			return 0;
 		case WM_LBUTTONUP:

@@ -70,7 +70,7 @@ namespace bs { namespace ct
 		INT32 numOutputProps;
 		Atom* outputProps = XRRListOutputProperties(x11Display, screenRes->outputs[resIdx], &numOutputProps);
 
-		for(UINT32 k = 0; k < numOutputProps; k++)
+		for(INT32 k = 0; k < numOutputProps; k++)
 		{
 			if(outputProps[k] != EDID)
 				continue;

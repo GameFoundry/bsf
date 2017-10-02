@@ -122,7 +122,7 @@ namespace bs
 
 		DataStream::AccessMode accessMode = DataStream::READ;
 		if (!readOnly)
-			accessMode = (accessMode | (UINT32)DataStream::WRITE);
+			accessMode = (DataStream::AccessMode)((UINT32)accessMode | (UINT32)DataStream::WRITE);
 
 		return bs_shared_ptr_new<FileDataStream>(path, accessMode, true);
 	}

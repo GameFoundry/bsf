@@ -5,8 +5,11 @@
 #include "BsCorePrerequisites.h"
 #include "Image/BsPixelData.h"
 
-namespace bs 
+namespace bs
 {
+	// Undefine conflicting defines from other libs
+#undef None
+
 	/** @addtogroup Utility-Core
 	 *  @{
 	 */

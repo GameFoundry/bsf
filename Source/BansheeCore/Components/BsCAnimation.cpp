@@ -493,7 +493,7 @@ namespace bs
 		{
 			HSceneObject root = SO();
 
-			auto& findMappings = [&](const String& name, AnimationCurveFlags flags)
+			const auto& findMappings = [&](const String& name, AnimationCurveFlags flags)
 			{
 				if (flags.isSet(AnimationCurveFlag::ImportedCurve))
 					return;

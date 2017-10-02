@@ -2,9 +2,9 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
+#include "Platform/BsPlatform.h"
 #include <X11/X.h>
 #include <X11/Xlib.h>
-#include "Platform/BsPlatform.h"
 
 namespace bs
 {
@@ -44,9 +44,3 @@ namespace bs
 
 	/** @} */
 }
-
-// Undefine conflicting defines from X.h
-#undef None
-#undef Success
-#undef Convex
-#undef Bool

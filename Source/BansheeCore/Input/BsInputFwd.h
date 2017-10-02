@@ -7,6 +7,9 @@
 
 namespace bs
 {
+	// Undefine conflicting defines from other libs
+#undef None
+
 	/** @addtogroup Input
 	 *  @{
 	 */

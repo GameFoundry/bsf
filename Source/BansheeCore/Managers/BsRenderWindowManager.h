@@ -49,6 +49,9 @@ namespace bs
 		/**	Called by the core thread when window is moved or resized. */
 		void notifyMovedOrResized(ct::RenderWindow* window);
 
+		/**	Called by the core thread when mouse leaves a window. */
+		void notifyMouseLeft(ct::RenderWindow* window);
+
 		/**	Called by the sim thread when window properties change. */
 		void notifySyncDataDirty(ct::RenderWindow* coreWindow);
 
@@ -65,9 +68,6 @@ namespace bs
 		Event<void(RenderWindow&)> onMouseLeftWindow;
 	protected:
 		friend class RenderWindow;
-
-		/**	Called by the core thread when mouse leaves a window. */
-		void windowMouseLeft(ct::RenderWindow* window);
 
 		/**	Finds a sim thread equivalent of the provided core thread window implementation. */
 		RenderWindow* getNonCore(const ct::RenderWindow* window) const;

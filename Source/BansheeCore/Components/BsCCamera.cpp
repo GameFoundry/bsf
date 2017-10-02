@@ -4,6 +4,7 @@
 #include "RTTI/BsCCameraRTTI.h"
 #include "Scene/BsSceneObject.h"
 #include "Scene/BsSceneManager.h"
+#include "BsCoreApplication.h"
 
 namespace bs 
 {
@@ -15,8 +16,11 @@ namespace bs
 
 	CCamera::CCamera(const HSceneObject& parent, SPtr<RenderTarget> target, float left, float top, float width, float height)
 		: Component(parent), mTarget(target), mLeft(left), mTop(top), mWidth(width), mHeight(height)
-	{
-		setFlag(ComponentFlag::AlwaysRun, true);
+    {
+		if(mTarget == nullptr)
+			mTarget = CoreApplication::instance().getPrimaryWindow();
+
+		Component::setFlag(ComponentFlag::AlwaysRun, true);
 		setName("Camera");
 	}
 

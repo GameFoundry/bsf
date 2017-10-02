@@ -402,13 +402,6 @@ namespace bs
 		static void _shutDown();
 
 		/**
-		 * Triggered when a pointer leaves the provided window.
-		 *
-		 * @note	Sim thread only.
-		 */
-		static Event<void(ct::RenderWindow*)> onMouseLeftWindow;
-
-		/**
 		 * Triggered whenever the pointer moves.
 		 *
 		 * @note	Core thread only.

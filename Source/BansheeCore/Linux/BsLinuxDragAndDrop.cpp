@@ -1,13 +1,13 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
-#include <X11/Xatom.h>
-#include <X11/Xlib.h>
-#include <String/BsUnicode.h>
+#include "String/BsUnicode.h"
 #include "Platform/BsPlatform.h"
 #include "RenderAPI/BsRenderWindow.h"
 #include "BsLinuxDragAndDrop.h"
 #include "BsLinuxWindow.h"
 #include "BsLinuxPlatform.h"
+#include <X11/Xatom.h>
+#include <X11/Xlib.h>
 
 namespace bs
 {
@@ -18,7 +18,7 @@ namespace bs
 	INT32 LinuxDragAndDrop::sDNDVersion = 0;
 	::Window LinuxDragAndDrop::sDNDSource = None;
 	Vector2I LinuxDragAndDrop::sDragPosition;
-	Vector<DragAndDropOp> LinuxDragAndDrop::sQueuedOperations;
+	Vector<LinuxDragAndDrop::DragAndDropOp> LinuxDragAndDrop::sQueuedOperations;
 	Vector<OSDropTarget*> LinuxDragAndDrop::sTargetsToRegister;
 	Vector<OSDropTarget*> LinuxDragAndDrop::sTargetsToUnregister;
 
@@ -209,7 +209,7 @@ namespace bs
 	void LinuxDragAndDrop::makeDNDAware(::Window xWindow)
 	{
 		UINT32 dndVersion = 5;
-		XChangeProperty(sXDisplay, xWindow, sXdndAware, XA_ATOM, 32, PropModeReplace, (unsigned char*)dndVersion, 1);
+		XChangeProperty(sXDisplay, xWindow, sXdndAware, XA_ATOM, 32, PropModeReplace, (unsigned char*)&dndVersion, 1);
 	}
 
 	OSDropTarget& LinuxDragAndDrop::createDropTarget(const RenderWindow* window, INT32 x, INT32 y, UINT32 width,

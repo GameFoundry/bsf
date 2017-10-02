@@ -10,10 +10,11 @@ namespace bs { namespace ct
 		int contextErrorHandler(::Display* display, XErrorEvent* error)
 		{
 			// Do nothing
+			return 0;
 		}
 
 		LinuxContext::LinuxContext(::Display* display, XVisualInfo& visualInfo)
-		: mDisplay(display), mContext(None)
+		: mDisplay(display), mContext(0)
 	{
 		LinuxPlatform::lockX();
 
@@ -106,7 +107,7 @@ namespace bs { namespace ct
 	void LinuxContext::endCurrent()
 	{
 		LinuxPlatform::lockX();
-		glXMakeCurrent(mDisplay, None, None);
+		glXMakeCurrent(mDisplay, 0, 0);
 		LinuxPlatform::unlockX();
 	}
 
@@ -117,7 +118,7 @@ namespace bs { namespace ct
 			LinuxPlatform::lockX();
 
 			glXDestroyContext(mDisplay, mContext);
-			mContext = None;
+			mContext = 0;
 
 			LinuxPlatform::unlockX();
 		}

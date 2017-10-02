@@ -4,9 +4,8 @@
 #include "Linux/BsLinuxGLSupport.h"
 #include "Linux/BsLinuxContext.h"
 #include "Linux/BsLinuxRenderWindow.h"
-#include "GL/wglew.h"
 #include "BsLinuxVideoModeInfo.h"
-#include "BsGLRenderAPI.h
+#include "BsGLRenderAPI.h"
 
 namespace bs { namespace ct
 {
@@ -121,8 +120,8 @@ namespace bs { namespace ct
 			const char* end = iter;
 			const char* name = std::string(start, end).c_str();
 
-			uint32_t numExtensions = sizeof(gExtensionMap) / sizeof(gExtensionMap[0]);
-			for (int i = 0; i < numExtensions; ++i)
+			UINT32 numExtensions = sizeof(gExtensionMap) / sizeof(gExtensionMap[0]);
+			for (UINT32 i = 0; i < numExtensions; ++i)
 			{
 				if(strcmp(name, gExtensionMap[i].name) == 0)
 				{
@@ -153,10 +152,10 @@ namespace bs { namespace ct
 			return bs_shared_ptr_new<LinuxContext>(x11display, visualInfo);
 		else
 		{
-			SPtr<LinuxContext> context = rapi->getMainContext();
+			SPtr<GLContext> context = rapi->getMainContext();
 			context->setCurrent();
 
-			return context;
+			return std::static_pointer_cast<LinuxContext>(context);
 		}
 	}
 
@@ -188,7 +187,7 @@ namespace bs { namespace ct
 		INT32 bestConfig = -1;
 		for (int i = 0; i < numConfigs; ++i)
 		{
-			UINT32 configScore = 0;
+			INT32 configScore = 0;
 
 			// Depth buffer contributes the most to score
 			if(depthStencil)
@@ -197,7 +196,7 @@ namespace bs { namespace ct
 				glXGetFBConfigAttrib(display, configs[i], GLX_DEPTH_SIZE, &depth);
 				glXGetFBConfigAttrib(display, configs[i], GLX_STENCIL_SIZE, &stencil);
 
-				UINT32 score = 0;
+				INT32 score = 0;
 				if(depth == 24 && stencil == 8)
 					score = 10000;
 				else if(depth == 32 && stencil == 8)
@@ -217,7 +216,7 @@ namespace bs { namespace ct
 			// sRGB contributes second most
 			if(srgb)
 			{
-				int32_t hasSRGB = 0;
+				INT32 hasSRGB = 0;
 
 				if(extGLX_EXT_framebuffer_sRGB)
 					glXGetFBConfigAttrib(display, configs[i], GLX_FRAMEBUFFER_SRGB_CAPABLE_EXT, &hasSRGB);
@@ -234,14 +233,14 @@ namespace bs { namespace ct
 
 			if((multisample >= 1) && extGLX_ARB_multisample)
 			{
-				int32_t hasMultisample, numSamples;
+				INT32 hasMultisample, numSamples;
 				glXGetFBConfigAttrib(display, configs[i], GLX_SAMPLE_BUFFERS, &hasMultisample);
 				glXGetFBConfigAttrib(display, configs[i], GLX_SAMPLES, &numSamples);
 
-				if(hasMultisample && (numSamples <= multisample))
+				if(hasMultisample && (numSamples <= (INT32)multisample))
 				{
 					configScore += (32 - (multisample - numSamples)) * 10;
-					caps[i].numSamples = numSamples;
+					caps[i].numSamples = (UINT32)numSamples;
 				}
 			}
 
@@ -258,7 +257,7 @@ namespace bs { namespace ct
 		{
 			// Something went wrong
 			XFree(configs);
-			bs_stack_delete(caps, numConfigs);
+			bs_stack_delete(caps, (UINT32)numConfigs);
 
 			return output;
 		}

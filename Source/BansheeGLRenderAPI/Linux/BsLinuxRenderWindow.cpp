@@ -6,6 +6,7 @@
 #include "Linux/BsLinuxWindow.h"
 #include "Linux/BsLinuxVideoModeInfo.h"
 #include "Linux/BsLinuxGLSupport.h"
+#include "Linux/BsLinuxContext.h"
 #include "BsGLPixelFormat.h"
 #include "BsGLRenderWindowManager.h"
 
@@ -67,8 +68,6 @@ namespace bs
 
 	LinuxRenderWindow::~LinuxRenderWindow()
 	{
-		RenderWindowProperties& props = mProperties;
-
 		if (mWindow != nullptr)
 		{
 			LinuxPlatform::lockX();
@@ -116,13 +115,14 @@ namespace bs
 		if (opt != mDesc.platformSpecific.end())
 			windowDesc.parent = (::Window)parseUINT64(opt->second);
 
-		mIsChild = windowDesc.parent != nullptr;
+		mIsChild = windowDesc.parent != 0;
 		props.isFullScreen = mDesc.fullscreen && !mIsChild;
 
 		mShowOnSwap = mDesc.hideUntilSwap;
 		props.isHidden = mDesc.hideUntilSwap || mDesc.hidden;
 
 		mWindow = bs_new<LinuxWindow>(windowDesc);
+		mWindow->_setUserData(this);
 
 		props.width = mWindow->getWidth();
 		props.height = mWindow->getHeight();
@@ -130,7 +130,7 @@ namespace bs
 		props.left = mWindow->getLeft();
 
 		props.hwGamma = visualConfig.caps.srgb;
-		props.multisampleCount = visualConfig.caps.numSamples > 1;
+		props.multisampleCount = visualConfig.caps.numSamples;
 
 		XWindowAttributes windowAttributes;
 		XGetWindowAttributes(LinuxPlatform::getXDisplay(), mWindow->_getXWindow(), &windowAttributes);
@@ -172,9 +172,6 @@ namespace bs
 
 		RenderWindowProperties& props = mProperties;
 
-		UINT32 actualMonitorIdx = std::min(monitorIdx, numOutputs - 1);
-		const LinuxVideoOutputInfo& outputInfo = static_cast<const LinuxVideoOutputInfo&>(videoModeInfo.getOutputInfo (actualMonitorIdx));
-
 		LinuxPlatform::lockX();
 		::Display* display = LinuxPlatform::getXDisplay();
 
@@ -189,7 +186,7 @@ namespace bs
 		int numSizes;
 		XRRScreenSize* screenSizes = XRRConfigSizes(screenConfig, &numSizes);
 
-		if(width != screenSizes[currentSizeID].width || height != screenSizes[currentSizeID].height ||
+		if((INT32)width != screenSizes[currentSizeID].width || (INT32)height != screenSizes[currentSizeID].height ||
 			currentRate != (short)refreshRate)
 			changeVideoMode = true;
 
@@ -215,18 +212,18 @@ namespace bs
 				UINT32 curWidth, curHeight;
 				if(currentRotation == RR_Rotate_90 || currentRotation == RR_Rotate_270)
 				{
-					curWidth = screenSizes[i].height;
-					curHeight = screenSizes[i].width;
+					curWidth = (UINT32)screenSizes[i].height;
+					curHeight = (UINT32)screenSizes[i].width;
 				}
 				else
 				{
-					curWidth = screenSizes[i].width;
-					curHeight = screenSizes[i].height;
+					curWidth = (UINT32)screenSizes[i].width;
+					curHeight = (UINT32)screenSizes[i].height;
 				}
 
 				if(curWidth == width && curHeight == height)
 				{
-					foundSizeID = i;
+					foundSizeID = (SizeID)i;
 					foundSize = true;
 					break;
 				}
@@ -251,8 +248,8 @@ namespace bs
 					}
 					else
 					{
-						short diffNew = abs((short)refreshRate - rates[i]);
-						short diffOld = abs((short)refreshRate - bestRate);
+						short diffNew = (short)abs((short)refreshRate - rates[i]);
+						short diffOld = (short)abs((short)refreshRate - bestRate);
 
 						if(diffNew < diffOld)
 							bestRate = rates[i];

@@ -310,6 +310,13 @@ namespace bs
 		 */
 		virtual void _notifyRestored();
 
+		/**
+		 * Called when the mouse leaves the window.
+		 *
+		 * @note	Core thread.
+		 */
+		virtual void _notifyMouseLeft();
+
 	protected:
 		friend class bs::RenderWindow;
 		friend class RenderWindowManager;

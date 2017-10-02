@@ -4,6 +4,10 @@
 
 namespace bs 
 {
+	// Undefine defines from other libs, that conflict with enums below
+#undef None
+#undef Convex
+
 	/** @addtogroup Utility-Core
 	 *  @{
 	 */

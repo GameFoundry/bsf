@@ -36,12 +36,12 @@ namespace bs
 			{ }
 
 			DragAndDropOp(DragAndDropOpType type, OSDropTarget* target, const Vector2I& pos)
-				:type(type), position(pos), target(target)
+				:type(type), target(target), position(pos)
 			{ }
 
 			DragAndDropOp(DragAndDropOpType type, OSDropTarget* target, const Vector2I& pos,
 				const Vector<WString>& fileList)
-				:type(type), position(pos), target(target), fileList(fileList)
+				:type(type), target(target), position(pos), fileList(fileList)
 			{ }
 
 			DragAndDropOpType type;

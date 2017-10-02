@@ -7,8 +7,12 @@
 #include "Linux/BsLinuxWindow.h"
 #include "RenderAPI/BsRenderWindow.h"
 #include "BsLinuxDragAndDrop.h"
+#include "BsCoreApplication.h"
+#include <X11/X.h>
 #include <X11/Xatom.h>
 #include <X11/Xcursor/Xcursor.h>
+#include <X11/Xlib.h>
+#include <X11/XKBlib.h>
 
 namespace bs
 {
@@ -20,7 +24,6 @@ namespace bs
 	Event<void(float)> Platform::onMouseWheelScrolled;
 	Event<void(UINT32)> Platform::onCharInput;
 
-	Event<void(ct::RenderWindow*)> Platform::onMouseLeftWindow;
 	Event<void()> Platform::onMouseCaptureChanged;
 
 	enum class X11CursorType
@@ -56,6 +59,10 @@ namespace bs
 		Time lastButtonPressTime;
 
 		Atom atomDeleteWindow;
+		Atom atomWmState;
+		Atom atomWmStateHidden;
+		Atom atomWmStateMaxVert;
+		Atom atomWmStateMaxHorz;
 
 		// Clipboard
 		WString clipboardData;
@@ -141,19 +148,19 @@ namespace bs
 		if(!data->cursorClipEnabled)
 			return false;
 
-		int32_t clippedX = pos.x - data->cursorClipRect.x;
-		int32_t clippedY = pos.y - data->cursorClipRect.y;
+		INT32 clippedX = pos.x - data->cursorClipRect.x;
+		INT32 clippedY = pos.y - data->cursorClipRect.y;
 
 		if(clippedX < 0)
 			clippedX = data->cursorClipRect.x + data->cursorClipRect.width + clippedX;
-		else if(clippedX >= data->cursorClipRect.width)
+		else if(clippedX >= (INT32)data->cursorClipRect.width)
 			clippedX = data->cursorClipRect.x + (clippedX - data->cursorClipRect.width);
 		else
 			clippedX = data->cursorClipRect.x + clippedX;
 
 		if(clippedY < 0)
 			clippedY = data->cursorClipRect.y + data->cursorClipRect.height + clippedY;
-		else if(clippedY >= data->cursorClipRect.height)
+		else if(clippedY >= (INT32)data->cursorClipRect.height)
 			clippedY = data->cursorClipRect.y + (clippedY - data->cursorClipRect.height);
 		else
 			clippedY = data->cursorClipRect.y + clippedY;
@@ -204,7 +211,7 @@ namespace bs
 		LinuxWindow* linuxWindow;
 		window.getCustomAttribute("WINDOW", &linuxWindow);
 
-		uint32_t mask = ButtonPressMask | ButtonReleaseMask | PointerMotionMask | FocusChangeMask;
+		UINT32 mask = ButtonPressMask | ButtonReleaseMask | PointerMotionMask | FocusChangeMask;
 		XGrabPointer(mData->xDisplay, linuxWindow->_getXWindow(), False, mask, GrabModeAsync,
 				GrabModeAsync, None, None, CurrentTime);
 		XSync(mData->xDisplay, False);
@@ -316,8 +323,8 @@ namespace bs
 		Lock lock(mData->lock);
 
 		XcursorImage* image = XcursorImageCreate((int)bgraData->getWidth(), (int)bgraData->getHeight());
-		image->xhot = hotSpot.x;
-		image->yhot = hotSpot.y;
+		image->xhot = (XcursorDim)hotSpot.x;
+		image->yhot = (XcursorDim)hotSpot.y;
 		image->delay = 0;
 
 		memcpy(image->pixels, bgraData->getData(), bgraData->getSize());
@@ -448,8 +455,91 @@ namespace bs
 	WString Platform::keyCodeToUnicode(UINT32 keyCode)
 	{
 		Lock lock(mData->lock);
-		// TODOPORT
+
+		// Note: Assuming the keyCode is equal to X11 KeySym. Which it is because that's how our input manager reports them.
+		KeySym keySym = (KeySym)keyCode;
+
+		XKeyPressedEvent event;
+		bs_zero_out(event);
+		event.keycode = XKeysymToKeycode(mData->xDisplay, keySym);
+		event.display = mData->xDisplay;
+
+		Status status;
+		char buffer[16];
+
+		INT32 length = Xutf8LookupString(mData->IC, &event, buffer, sizeof(buffer), nullptr, &status);
+		if(length > 0)
+		{
+			buffer[length] = '\0';
+
+			return UTF8::toWide(String(buffer));
+		}
+
 		return L"";
+	}
+
+	/**
+	 * Converts an X11 KeySym code into an input command, if possible. Returns true if conversion was done.
+	 *
+	 * @param[in]	keySym			KeySym to try to translate to a command.
+	 * @param[in]	shift			True if the shift key was held down when the key was pressed.
+	 * @param[out]	command			Input command. Only valid if function returns true.
+	 * @return						True if the KeySym is an input command.
+	 */
+	bool parseInputCommand(KeySym keySym, bool shift, InputCommandType& command)
+	{
+		switch (keySym)
+		{
+		case XK_Left:
+			command = shift ? InputCommandType::SelectLeft : InputCommandType::CursorMoveLeft;
+			return true;
+		case XK_Right:
+			command = shift ? InputCommandType::SelectRight : InputCommandType::CursorMoveRight;
+			return true;
+		case XK_Up:
+			command = shift ? InputCommandType::SelectUp : InputCommandType::CursorMoveUp;
+			return true;
+		case XK_Down:
+			command = shift ? InputCommandType::SelectDown : InputCommandType::CursorMoveDown;
+			return true;
+		case XK_Escape:
+			command = InputCommandType::Escape;
+			return true;
+		case XK_ISO_Enter:
+			command = shift ? InputCommandType::Return : InputCommandType::Confirm;
+			return true;
+		case XK_BackSpace:
+			command = InputCommandType::Backspace;
+			return true;
+		case XK_Delete:
+			command = InputCommandType::Delete;
+			return true;
+		}
+
+		return false;
+	}
+
+	/** Returns a LinuxWindow from a native X11 window handle. */
+	LinuxWindow* getLinuxWindow(LinuxPlatform::Pimpl* data, ::Window xWindow)
+	{
+		auto iterFind = data->windowMap.find(xWindow);
+		if (iterFind != data->windowMap.end())
+		{
+			LinuxWindow* window = iterFind->second;
+			return window;
+		}
+
+		return nullptr;
+	}
+
+	/** Returns a RenderWindow from a native X11 window handle. Returns null if the window isn't a RenderWindow */
+	ct::RenderWindow* getRenderWindow(LinuxPlatform::Pimpl* data, ::Window xWindow)
+	{
+		LinuxWindow* linuxWindow = getLinuxWindow(data, xWindow);
+		if(linuxWindow != nullptr)
+			return (ct::RenderWindow*)linuxWindow->_getUserData();
+
+		return nullptr;
 	}
 
 	void Platform::_messagePump()
@@ -470,21 +560,21 @@ namespace bs
 				if(LinuxDragAndDrop::handleClientMessage(event.xclient))
 					break;
 
-				if(event.xclient.data.l[0] == mData->atomDeleteWindow)
+				if((Atom)event.xclient.data.l[0] == mData->atomDeleteWindow)
 					XDestroyWindow(mData->xDisplay, event.xclient.window);
 			}
 				break;
 			case DestroyNotify:
 			{
-				auto iterFind = mData->windowMap.find(event.xdestroywindow.window);
-				if (iterFind == mData->windowMap.end())
-					break;
+				LinuxWindow* window = getLinuxWindow(mData, event.xdestroywindow.window);
+				if(window != nullptr)
+				{
+					CoreApplication::instance().quitRequested();
+					window->_cleanUp();
 
-				LinuxWindow* window = iterFind->second;
-				window->_cleanUp();
-
-				if(mData->mainXWindow == 0)
-					return;
+					if (mData->mainXWindow == 0)
+						return;
+				}
 			}
 				break;
 			case KeyPress:
@@ -509,33 +599,21 @@ namespace bs
 					}
 				}
 
-				// Process normal key press
+				// Handle input commands
+				InputCommandType command = InputCommandType::Backspace;
+
+				KeySym keySym = XkbKeycodeToKeysym(mData->xDisplay, (KeyCode)event.xkey.keycode, 0, 0);
+				bool shift = (event.xkey.state & ShiftMask) != 0;
+
+				if(parseInputCommand(keySym, shift, command))
 				{
-					static XComposeStatus keyboard;
-					uint8_t buffer[16];
-					KeySym symbol;
-					XLookupString(&event.xkey, (char*)buffer, sizeof(buffer), &symbol, &keyboard);
-
-					bool alt = event.xkey.state & Mod1Mask;
-					bool control = event.xkey.state & ControlMask;
-					bool shift = event.xkey.state & ShiftMask;
-
-					// TODOPORT - Report key press
+					if(!onInputCommand.empty())
+						onInputCommand(command);
 				}
 			}
 				break;
 			case KeyRelease:
-			{
-				uint8_t buffer[16];
-				KeySym symbol;
-				XLookupString(&event.xkey, (char *) buffer, sizeof(buffer), &symbol, nullptr);
-
-				bool alt = (event.xkey.state & Mod1Mask) != 0;
-				bool control = (event.xkey.state & ControlMask) != 0;
-				bool shift = (event.xkey.state & ShiftMask) != 0;
-
-				// TODOPORT - Report key release
-			}
+				// Do nothing
 				break;
 			case ButtonPress:
 			{
@@ -594,12 +672,9 @@ namespace bs
 				// Handle window dragging for windows without a title bar
 				if(button == Button1)
 				{
-					auto iterFind = mData->windowMap.find(event.xbutton.window);
-					if (iterFind != mData->windowMap.end())
-					{
-						LinuxWindow* window = iterFind->second;
+					LinuxWindow* window = getLinuxWindow(mData, event.xbutton.window);
+					if(window != nullptr)
 						window->_dragStart(event.xbutton.x, event.xbutton.y);
-					}
 				}
 
 				break;
@@ -644,12 +719,9 @@ namespace bs
 				// Handle window dragging for windows without a title bar
 				if(button == Button1)
 				{
-					auto iterFind = mData->windowMap.find(event.xbutton.window);
-					if (iterFind != mData->windowMap.end())
-					{
-						LinuxWindow* window = iterFind->second;
+					LinuxWindow* window = getLinuxWindow(mData, event.xbutton.window);
+					if(window != nullptr)
 						window->_dragEnd();
-					}
 				}
 
 				break;
@@ -675,54 +747,75 @@ namespace bs
 				onCursorMoved(pos, btnStates);
 
 				// Handle window dragging for windows without a title bar
-				auto iterFind = mData->windowMap.find(event.xmotion.window);
-				if (iterFind != mData->windowMap.end())
-				{
-					LinuxWindow* window = iterFind->second;
+				LinuxWindow* window = getLinuxWindow(mData, event.xmotion.window);
+				if(window != nullptr)
 					window->_dragUpdate(event.xmotion.x, event.xmotion.y);
-				}
 			}
 				break;
 			case EnterNotify:
-				if(event.xcrossing.mode == NotifyNormal)
-				{
-					// TODOPORT - Send mouse enter event
-				}
+				// Do nothing
 				break;
 			case LeaveNotify:
-				if(event.xcrossing.mode == NotifyNormal)
+			{
+				if (event.xcrossing.mode == NotifyNormal)
 				{
 					Vector2I pos;
 					pos.x = event.xcrossing.x_root;
 					pos.y = event.xcrossing.y_root;
 
-					if(clipCursor(mData, pos))
+					if (clipCursor(mData, pos))
 						_setCursorPosition(mData, pos);
-
-					// TODOPORT - Send mouse leave event
 				}
+
+				ct::RenderWindow* renderWindow = getRenderWindow(mData, event.xcrossing.window);
+				if(renderWindow != nullptr)
+					renderWindow->_notifyMouseLeft();
+			}
 				break;
 			case ConfigureNotify:
 			{
-				const XConfigureEvent &xce = event.xconfigure;
+				LinuxWindow* window = getLinuxWindow(mData, event.xconfigure.window);
+				if(window != nullptr)
+				{
+					updateClipBounds(mData, window);
 
-				auto iterFind = mData->windowMap.find(event.xdestroywindow.window);
-				if (iterFind == mData->windowMap.end())
-					break;
-
-				LinuxWindow* window = iterFind->second;
-				updateClipBounds(mData, window);
-
-				// TODOPORT - Send move/resize event
+					ct::RenderWindow* renderWindow = (ct::RenderWindow*)window->_getUserData();
+					if(renderWindow != nullptr)
+						renderWindow->_windowMovedOrResized();
+				}
 			}
 				break;
 			case FocusIn:
+			{
 				// Update input context focus
 				XSetICFocus(mData->IC);
+
+				// Send event to render window
+				ct::RenderWindow* renderWindow = getRenderWindow(mData, event.xfocus.window);
+
+				// Not a render window, so it doesn't care about these events
+				if (renderWindow != nullptr)
+				{
+					if (!renderWindow->getProperties().hasFocus)
+						renderWindow->_windowFocusReceived();
+				}
+			}
 				break;
 			case FocusOut:
+			{
 				// Update input context focus
 				XUnsetICFocus(mData->IC);
+
+				// Send event to render window
+				ct::RenderWindow* renderWindow = getRenderWindow(mData, event.xfocus.window);
+
+				// Not a render window, so it doesn't care about these events
+				if (renderWindow != nullptr)
+				{
+					if (renderWindow->getProperties().hasFocus)
+						renderWindow->_windowFocusLost();
+				}
+			}
 				break;
 			case SelectionNotify:
 				LinuxDragAndDrop::handleSelectionNotify(event.xselection);
@@ -774,6 +867,57 @@ namespace bs
 				XFlush (mData->xDisplay);
 			}
 				break;
+			case PropertyNotify:
+				// Report minimize, maximize and restore events
+				if(event.xproperty.atom == mData->atomWmState)
+				{
+					Atom type;
+					INT32 format;
+					unsigned long count, bytesRemaining;
+					UINT8* data = nullptr;
+
+					INT32 result = XGetWindowProperty(mData->xDisplay, event.xproperty.window, mData->atomWmState,
+							0, 1024, False, AnyPropertyType, &type, &format,
+							&count, &bytesRemaining, &data);
+
+					if (result == Success)
+					{
+						ct::RenderWindow* renderWindow = getRenderWindow(mData, event.xproperty.window);
+
+						// Not a render window, so it doesn't care about these events
+						if(renderWindow == nullptr)
+							continue;
+
+						Atom* atoms = (Atom*)data;
+
+						bool foundHorz = false;
+						bool foundVert = false;
+						for (unsigned long i = 0; i < count; i++)
+						{
+							if (atoms[i] == mData->atomWmStateMaxHorz) foundHorz = true;
+							if (atoms[i] == mData->atomWmStateMaxVert) foundVert = true;
+
+							if (foundVert && foundHorz)
+							{
+								if(event.xproperty.state == PropertyNewValue)
+									renderWindow->_notifyMaximized();
+								else
+									renderWindow->_notifyRestored();
+							}
+
+							if(atoms[i] == mData->atomWmStateHidden)
+							{
+								if(event.xproperty.state == PropertyNewValue)
+									renderWindow->_notifyMinimized();
+								else
+									renderWindow->_notifyRestored();
+							}
+						}
+
+						XFree(atoms);
+					}
+				}
+				break;
 			default:
 				break;
 			}
@@ -796,6 +940,10 @@ namespace bs
 		}
 
 		mData->atomDeleteWindow = XInternAtom(mData->xDisplay, "WM_DELETE_WINDOW", False);
+		mData->atomWmState = XInternAtom(mData->xDisplay, "_NET_WM_STATE", False);
+		mData->atomWmStateHidden = XInternAtom(mData->xDisplay, "_NET_WM_STATE_HIDDEN", False);
+		mData->atomWmStateMaxHorz = XInternAtom(mData->xDisplay, "_NET_WM_STATE_MAXIMIZED_HORZ", False);
+		mData->atomWmStateMaxVert = XInternAtom(mData->xDisplay, "_NET_WM_STATE_MAXIMIZED_VERT", False);
 
 		// Drag and drop
 		LinuxDragAndDrop::startUp(mData->xDisplay);
