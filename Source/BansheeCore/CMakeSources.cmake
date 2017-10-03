@@ -593,7 +593,6 @@ set(BS_BANSHEECORE_SRC_PLATFORM
 set(BS_BANSHEECORE_SRC_PLATFORM_WIN32
 	"Win32/BsWin32FolderMonitor.cpp"
 	"Win32/BsWin32Platform.cpp"
-	"Win32/BsWin32BrowseDialogs.cpp"
 )
 
 set(BS_BANSHEECORE_INC_PLATFORM_UNIX

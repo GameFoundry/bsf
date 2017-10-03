@@ -75,6 +75,9 @@ The following dependencies will need to be installed manually. Which ones are re
     - Debian/Ubuntu: *apt-get install libx11-dev libxcursor-dev libxrandr-dev*
   - **LibUUID**
     - Debian/Ubuntu: *apt-get install uuid-dev*
+  - **GTK+ 3.0** (Editor only)
+    - Optional if not building the editor
+    - Debian/Ubuntu: *apt-get install libgtk-3-dev*
   - (Or equivalent packages for your distribution)
 
 **All OS**

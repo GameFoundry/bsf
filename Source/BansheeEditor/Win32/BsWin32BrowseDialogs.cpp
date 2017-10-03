@@ -1,9 +1,9 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
-#include "BsCorePrerequisites.h"
-#include "Platform/BsPlatform.h"
+#include "Utility/BsEditorUtility.h"
 #include "Threading/BsAsyncOp.h"
 #include "CoreThread/BsCoreThread.h"
+#include "String/BsUnicode.h"
 #include "Win32/BsWin32Window.h"
 #include <ShObjIdl.h>
 
@@ -11,14 +11,16 @@ using namespace std::placeholders;
 
 namespace bs
 {
-	void addFiltersToDialog(IFileDialog* fileDialog, const WString& filterList)
+	void addFiltersToDialog(IFileDialog* fileDialog, const String& filterList)
 	{
 		const wchar_t EMPTY_WSTR[] = L"";
 
 		if (filterList.empty())
 			return;
 
-		Vector<WString> filters = StringUtil::split(filterList, L";");
+		WString wideFilterList = UTF8::toWide(filterList);
+
+		Vector<WString> filters = StringUtil::split(wideFilterList, L";");
 		UINT32 numFilters = (UINT32)filters.size();
 		if (numFilters == 0)
 			return;
@@ -77,7 +79,7 @@ namespace bs
 		}
 	}
 
-	void openBrowseDialogCore(FileDialogType type, const Path& defaultPath, const WString& filterList,
+	void openBrowseDialogCore(FileDialogType type, const Path& defaultPath, const String& filterList,
 		Vector<Path>& paths, AsyncOp& returnValue)
 	{
 		// Init COM library.
@@ -166,7 +168,7 @@ namespace bs
 		returnValue._completeOperation(finalResult);
 	}
 
-	bool Platform::openBrowseDialog(FileDialogType type, const Path& defaultPath, const WString& filterList,
+	bool EditorUtility::openBrowseDialog(FileDialogType type, const Path& defaultPath, const String& filterList,
 		Vector<Path>& paths)
 	{
 		AsyncOp returnValue = gCoreThread().queueReturnCommand(std::bind(&openBrowseDialogCore, type, 

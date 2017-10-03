@@ -478,6 +478,19 @@ namespace bs
 		return L"";
 	}
 
+	void Platform::openFolder(const Path& path)
+	{
+		String pathString = path.toString();
+
+		const char* commandPattern = "xdg-open '%s'";
+
+		char* commandStr = (char*)bs_stack_alloc((UINT32)pathString.size() + (UINT32)strlen(commandPattern) + 1);
+		sprintf(commandStr, commandPattern, pathString.c_str());
+
+		system(commandStr);
+		bs_stack_free(commandStr);
+	}
+
 	/**
 	 * Converts an X11 KeySym code into an input command, if possible. Returns true if conversion was done.
 	 *

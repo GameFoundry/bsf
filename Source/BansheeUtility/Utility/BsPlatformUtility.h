@@ -14,16 +14,6 @@ namespace bs
 
 	struct MACAddress;
 
-	/** Possible type of platform file dialogs. */
-	enum class FileDialogType
-	{
-		OpenFile = 0x0, 
-		OpenFolder = 0x1, 
-		Save = 0x2,
-		Multiselect = 0x10000,
-		TypeMask = 0xFFFF
-	};
-
 	/** Contains information about available GPUs on the system. */
 	struct GPUInfo
 	{
@@ -61,14 +51,6 @@ namespace bs
 
 		/** Creates a new universally unique identifier and returns it as a string. */
 		static String generateUUID();
-
-		/**
-		 * Opens the provided file or folder using the default application for that file type, as specified by the operating 
-		 * system.
-		 *
-		 * @param[in]	path	Absolute path to the file or folder to open.
-		 */
-		static void open(const Path& path);
 
 		/** @name Internal
 		 *  @{

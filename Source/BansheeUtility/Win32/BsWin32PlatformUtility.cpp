@@ -138,11 +138,6 @@ namespace bs
 		return output;
 	}
 
-	void PlatformUtility::open(const Path& path)
-	{
-		ShellExecuteW(nullptr, L"open", path.toWString().c_str(), nullptr, nullptr, SW_SHOWNORMAL);
-	}
-
 	HBITMAP Win32PlatformUtility::createBitmap(const Color* pixels, UINT32 width, UINT32 height, bool premultiplyAlpha)
 	{
 		BITMAPINFO bi;

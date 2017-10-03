@@ -110,7 +110,7 @@ namespace BansheeEditor
                 BuildManager.Build();
                 ProgressBar.Hide();
 
-                EditorApplication.OpenExternally(BuildManager.OutputFolder);
+                EditorApplication.OpenFolder(BuildManager.OutputFolder);
                 DialogBox.Open(new LocEdString("Build complete"), new LocEdString("Build complete"), DialogBox.Type.OK);
             }
         }

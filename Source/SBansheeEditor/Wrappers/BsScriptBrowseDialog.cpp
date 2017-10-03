@@ -1,6 +1,7 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "Wrappers/BsScriptBrowseDialog.h"
+#include "Utility/BsEditorUtility.h"
 #include "BsScriptMeta.h"
 #include "BsMonoClass.h"
 #include "Platform/BsPlatform.h"
@@ -15,15 +16,16 @@ namespace bs
 		metaData.scriptClass->addInternalCall("Internal_SaveFile", (void*)&ScriptBrowseDialog::internal_SaveFile);
 	}
 
-	bool ScriptBrowseDialog::internal_OpenFile(MonoString* defaultFolder, MonoString* filterList, bool allowMultiselect, MonoArray** outPaths)
+	bool ScriptBrowseDialog::internal_OpenFile(MonoString* defaultFolder, MonoString* filterList, bool allowMultiselect,
+											   MonoArray** outPaths)
 	{
 		Path defaultFolderNative = MonoUtil::monoToWString(defaultFolder);
-		WString filterListNative = MonoUtil::monoToWString(filterList);
+		String filterListNative = MonoUtil::monoToString(filterList);
 		
 		FileDialogType type = (FileDialogType)((UINT32)FileDialogType::OpenFile | (UINT32)FileDialogType::Multiselect);
 
 		Vector<Path> paths;
-		if (Platform::openBrowseDialog(type, defaultFolderNative, filterListNative, paths))
+		if (EditorUtility::openBrowseDialog(type, defaultFolderNative, filterListNative, paths))
 		{
 			ScriptArray pathArray(MonoUtil::getStringClass(), (UINT32)paths.size());
 
@@ -50,7 +52,7 @@ namespace bs
 		FileDialogType type = FileDialogType::OpenFolder;
 
 		Vector<Path> paths;
-		if (Platform::openBrowseDialog(type, defaultFolderNative, L"", paths))
+		if (EditorUtility::openBrowseDialog(type, defaultFolderNative, "", paths))
 		{
 			if (paths.size() > 0)
 				*outPath = MonoUtil::wstringToMono(paths[0].toWString());
@@ -69,12 +71,12 @@ namespace bs
 	bool ScriptBrowseDialog::internal_SaveFile(MonoString* defaultFolder, MonoString* filterList, MonoString** outPath)
 	{
 		Path defaultFolderNative = MonoUtil::monoToWString(defaultFolder);
-		WString filterListNative = MonoUtil::monoToWString(filterList);
+		String filterListNative = MonoUtil::monoToString(filterList);
 
 		FileDialogType type = FileDialogType::Save;
 
 		Vector<Path> paths;
-		if (Platform::openBrowseDialog(type, defaultFolderNative, filterListNative, paths))
+		if (EditorUtility::openBrowseDialog(type, defaultFolderNative, filterListNative, paths))
 		{
 			if (paths.size() > 0)
 				*outPath = MonoUtil::wstringToMono(paths[0].toWString());

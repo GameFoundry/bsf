@@ -367,6 +367,11 @@ namespace bs
 		return StringUtil::WBLANK;
 	}
 
+	void Platform::openFolder(const Path& path)
+	{
+		ShellExecuteW(nullptr, L"open", path.toWString().c_str(), nullptr, nullptr, SW_SHOWNORMAL);
+	}
+
 	void Platform::_messagePump()
 	{
 		MSG  msg;

@@ -62,7 +62,7 @@ namespace bs
 		static void internal_UnloadProject();
 		static void internal_CreateProject(MonoString* path);
 		static void internal_ReloadAssemblies();
-		static void internal_OpenExternally(MonoString* path);
+		static void internal_OpenFolder(MonoString* path);
 		static void internal_RunUnitTests();
 		static void internal_Quit();
 		static void internal_ToggleToolbarItem(MonoString* name, bool on);

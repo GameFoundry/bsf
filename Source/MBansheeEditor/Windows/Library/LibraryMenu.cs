@@ -182,7 +182,7 @@ namespace BansheeEditor
             if (win == null)
                 return;
 
-            EditorApplication.OpenExternally(Path.Combine(ProjectLibrary.ResourceFolder, win.SelectedEntry));
+            EditorApplication.OpenFolder(Path.Combine(ProjectLibrary.ResourceFolder, win.SelectedEntry));
         }
 
         /// <summary>
@@ -195,7 +195,7 @@ namespace BansheeEditor
             if (win == null)
                 return;
 
-            EditorApplication.OpenExternally(Path.Combine(ProjectLibrary.ResourceFolder, win.CurrentFolder));
+            EditorApplication.OpenFolder(Path.Combine(ProjectLibrary.ResourceFolder, win.CurrentFolder));
         }
     }
 

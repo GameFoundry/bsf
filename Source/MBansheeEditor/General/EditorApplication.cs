@@ -703,12 +703,12 @@ namespace BansheeEditor
         }
 
         /// <summary>
-        /// Opens a file or a folder in the default external application.
+        /// Opens a folder in the default external application.
         /// </summary>
-        /// <param name="path">Absolute path to the file or folder to open.</param>
-        public static void OpenExternally(string path)
+        /// <param name="path">Absolute path to the folder to open.</param>
+        public static void OpenFolder(string path)
         {
-            Internal_OpenExternally(path);
+            Internal_OpenFolder(path);
         }
 
         /// <summary>
@@ -1036,7 +1036,7 @@ namespace BansheeEditor
         private static extern void Internal_ReloadAssemblies();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_OpenExternally(string path);
+        private static extern void Internal_OpenFolder(string path);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_RunUnitTests();

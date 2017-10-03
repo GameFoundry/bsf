@@ -11,6 +11,16 @@ namespace bs
 	 *  @{
 	 */
 
+	/** Possible type of platform file dialogs. */
+	enum class FileDialogType
+	{
+		OpenFile = 0x0,
+		OpenFolder = 0x1,
+		Save = 0x2,
+		Multiselect = 0x10000,
+		TypeMask = 0xFFFF
+	};
+
 	/**	Contains miscellaneous helper methods. */
 	class BS_ED_EXPORT EditorUtility
 	{
@@ -61,6 +71,19 @@ namespace bs
 		 * @param[in]	proxy		Proxy data containing the original object instance data we want to restore.
 		 */
 		static void restoreIds(const HSceneObject& restored, SceneObjProxy& proxy);
+
+		/**
+		 * Displays a platform specific file/folder open/save dialog.
+		 *
+		 * @param[in]	type		Type of dialog to open.
+		 * @param[in]	defaultPath	Initial path the dialog will be set to once opened.
+		 * @param[in]	filterList	Semi-colon separated list of file names or types to display in the dialog,
+		 *							for example "exe;txt;png". Ignored if dialog is to display folders instead of files.
+		 * @param[out]	paths		Output list of selected file or folder paths (if any).
+		 * @return					True if file was selected and false if selection was canceled.
+		 */
+		static bool openBrowseDialog(FileDialogType type, const Path& defaultPath, const String& filterList,
+									 Vector<Path>& paths);
 
 	private:
 		/**

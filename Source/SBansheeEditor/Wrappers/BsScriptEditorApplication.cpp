@@ -61,7 +61,7 @@ namespace bs
 		metaData.scriptClass->addInternalCall("Internal_UnloadProject", (void*)&ScriptEditorApplication::internal_UnloadProject);
 		metaData.scriptClass->addInternalCall("Internal_CreateProject", (void*)&ScriptEditorApplication::internal_CreateProject);
 		metaData.scriptClass->addInternalCall("Internal_ReloadAssemblies", (void*)&ScriptEditorApplication::internal_ReloadAssemblies);
-		metaData.scriptClass->addInternalCall("Internal_OpenExternally", (void*)&ScriptEditorApplication::internal_OpenExternally);
+		metaData.scriptClass->addInternalCall("Internal_OpenFolder", (void*) &ScriptEditorApplication::internal_OpenFolder);
 		metaData.scriptClass->addInternalCall("Internal_RunUnitTests", (void*)&ScriptEditorApplication::internal_RunUnitTests);
 		metaData.scriptClass->addInternalCall("Internal_Quit", (void*)&ScriptEditorApplication::internal_Quit);
 		metaData.scriptClass->addInternalCall("Internal_ToggleToolbarItem", (void*)&ScriptEditorApplication::internal_ToggleToolbarItem);
@@ -272,11 +272,11 @@ namespace bs
 		mRequestAssemblyReload = true;
 	}
 
-	void ScriptEditorApplication::internal_OpenExternally(MonoString* path)
+	void ScriptEditorApplication::internal_OpenFolder(MonoString* path)
 	{
 		Path nativePath = MonoUtil::monoToWString(path);
 
-		PlatformUtility::open(nativePath);
+		Platform::openFolder(nativePath);
 	}
 
 	void ScriptEditorApplication::internal_RunUnitTests()

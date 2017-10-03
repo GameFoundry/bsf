@@ -331,17 +331,11 @@ namespace bs
 		static void destroyDropTarget(OSDropTarget& target);
 
 		/**
-		 * Displays a platform specific file/folder open/save dialog.
+		 * Opens the provided folder using the default application, as specified by the operating system.
 		 *
-		 * @param[in]	type		Type of dialog to open.
-		 * @param[in]	defaultPath	Initial path the dialog will be set to once opened.
-		 * @param[in]	filterList	Semi-colon separated list of file names or types to display in the dialog, 
-		 *							for example "exe;txt;png". Ignored if dialog is to display folders instead of files.
-		 * @param[out]	paths		Output list of selected file or folder paths (if any).
-		 * @return					True if file was selected and false if selection was canceled.
+		 * @param[in]	path	Absolute path to the folder to open.
 		 */
-		static bool openBrowseDialog(FileDialogType type, const Path& defaultPath, const WString& filterList,
-			Vector<Path>& paths);
+		static void openFolder(const Path& path);
 
 		/**
 		 * Adds a string to the clipboard.
