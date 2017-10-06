@@ -20,10 +20,13 @@ namespace bs
 
 #if BS_PLATFORM == BS_PLATFORM_LINUX
 	const char* DynLib::EXTENSION = "so";
+	const char* DynLib::PREFIX = "lib";
 #elif BS_PLATFORM == BS_PLATFORM_OSX
 	const char* DynLib::EXTENSION = "dylib";
+	const char* DynLib::PREFIX = "lib";
 #elif BS_PLATFORM == BS_PLATFORM_WIN32
 	const char* DynLib::EXTENSION = "dll";
+	const char* DynLib::PREFIX = nullptr;
 #else
 	#error Unhandled platform
 #endif
@@ -31,7 +34,7 @@ namespace bs
 	DynLib::DynLib(const String& name)
 	{
 		mName = name;
-		m_hInst = nullptr;
+		mHandle = nullptr;
 
 		load();
 	}
@@ -42,12 +45,12 @@ namespace bs
 
 	void DynLib::load()
 	{
-		if (m_hInst)
+		if (mHandle)
 			return;
 
-		m_hInst = (DYNLIB_HANDLE)DYNLIB_LOAD(mName.c_str());
+		mHandle = (DYNLIB_HANDLE)DYNLIB_LOAD(mName.c_str());
 
-		if (!m_hInst)
+		if (!mHandle)
 		{
 			BS_EXCEPT(InternalErrorException,
 				"Could not load dynamic library " + mName +
@@ -57,10 +60,10 @@ namespace bs
 
 	void DynLib::unload()
 	{
-		if (!m_hInst)
+		if (!mHandle)
 			return;
 
-		if (DYNLIB_UNLOAD(m_hInst))
+		if (DYNLIB_UNLOAD(mHandle))
 		{
 			BS_EXCEPT(InternalErrorException,
 				"Could not unload dynamic library " + mName +
@@ -70,10 +73,10 @@ namespace bs
 
 	void* DynLib::getSymbol(const String& strName) const
 	{
-		if (!m_hInst)
+		if (!mHandle)
 			return nullptr;
 
-		return (void*)DYNLIB_GETSYM(m_hInst, strName.c_str());
+		return (void*)DYNLIB_GETSYM(mHandle, strName.c_str());
 	}
 
 	String DynLib::dynlibError()

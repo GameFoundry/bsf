@@ -19,6 +19,9 @@ namespace bs
 		if (length <= extLength || filename.substr(length - extLength) != extension)
 			filename += extension;
 
+		if(DynLib::PREFIX != nullptr)
+			filename = DynLib::PREFIX + filename;
+
 		auto iterFind = mLoadedLibraries.find(filename);
 		if (iterFind != mLoadedLibraries.end())
 		{

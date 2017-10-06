@@ -3,7 +3,6 @@
 #pragma once
 
 #include <X11/Xutil.h>
-#include <GL/glxew.h>
 #include "BsGLSupport.h"
 #include "BsGLRenderAPI.h"
 
@@ -14,6 +13,11 @@ namespace bs { namespace ct
 	/** @addtogroup GL
 	 *  @{
 	 */
+
+	typedef XID GLXDrawable;
+	typedef struct __GLXcontextRec *GLXContext;
+	typedef XID GLXWindow;
+	typedef struct __GLXFBConfigRec *GLXFBConfig;
 
 	// Extensions
 	extern bool extGLX_ARB_multisample;
@@ -35,6 +39,14 @@ namespace bs { namespace ct
 	extern glXSwapIntervalEXTProc glXSwapIntervalEXT;
 	extern glXSwapIntervalMESAProc glXSwapIntervalMESA;
 	extern glXSwapIntervalSGIProc glXSwapIntervalSGI;
+
+	typedef GLXFBConfig* (*glXChooseFBConfigProc) (Display *dpy, int screen, const int *attrib_list, int *nelements);
+	typedef int (*glXGetFBConfigAttribProc) (Display *dpy, GLXFBConfig config, int attribute, int *value);
+	typedef XVisualInfo* (*glXGetVisualFromFBConfigProc) (Display *dpy, GLXFBConfig config);
+
+	extern glXChooseFBConfigProc glXChooseFBConfig;
+	extern glXGetFBConfigAttribProc glXGetFBConfigAttrib;
+	extern glXGetVisualFromFBConfigProc glXGetVisualFromFBConfig;
 
 	/** Determines which features are supported by a particular framebuffer configuration. */
 	struct GLVisualCapabilities

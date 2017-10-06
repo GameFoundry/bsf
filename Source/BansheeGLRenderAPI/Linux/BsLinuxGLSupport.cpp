@@ -29,13 +29,13 @@ namespace bs { namespace ct
 		return glXCreateContextAttribsARB != nullptr;
 	}
 
-	typedef void (*glXSwapIntervalEXTProc)(::Display*, GLXDrawable, int);
-	typedef int (*glXSwapIntervalMESAProc)(int);
-	typedef int (*glXSwapIntervalSGIProc)(int);
-
 	glXSwapIntervalEXTProc glXSwapIntervalEXT = nullptr;
 	glXSwapIntervalMESAProc glXSwapIntervalMESA = nullptr;
 	glXSwapIntervalSGIProc glXSwapIntervalSGI = nullptr;
+
+	glXChooseFBConfigProc glXChooseFBConfig = nullptr;
+	glXGetFBConfigAttribProc glXGetFBConfigAttrib = nullptr;
+	glXGetVisualFromFBConfigProc glXGetVisualFromFBConfig = nullptr;
 
 	bool Load_EXT_swap_control()
 	{
@@ -118,22 +118,34 @@ namespace bs { namespace ct
 				iter++;
 
 			const char* end = iter;
-			const char* name = std::string(start, end).c_str();
+			std::string name(start, end);
 
 			UINT32 numExtensions = sizeof(gExtensionMap) / sizeof(gExtensionMap[0]);
 			for (UINT32 i = 0; i < numExtensions; ++i)
 			{
-				if(strcmp(name, gExtensionMap[i].name) == 0)
+				if(strcmp(name.c_str(), gExtensionMap[i].name) == 0)
 				{
-					if(gExtensionMap[i].func != nullptr)
-						*gExtensionMap[i].status = gExtensionMap[i].func();
+					if(gExtensionMap[i].status != nullptr)
+					{
+						if (gExtensionMap[i].func != nullptr)
+							*gExtensionMap[i].status = gExtensionMap[i].func();
+						else
+							*gExtensionMap[i].status = true;
+					}
 					else
-						*gExtensionMap[i].status = true;
+					{
+						if (gExtensionMap[i].func != nullptr)
+							gExtensionMap[i].func();
+					}
 				}
 
 			}
 
 		} while(*iter++);
+
+		glXChooseFBConfig = (glXChooseFBConfigProc)glXGetProcAddressARB((const GLubyte*)"glXChooseFBConfig");
+		glXGetFBConfigAttrib = (glXGetFBConfigAttribProc)glXGetProcAddressARB((const GLubyte*)"glXGetFBConfigAttrib");
+		glXGetVisualFromFBConfig = (glXGetVisualFromFBConfigProc)glXGetProcAddressARB((const GLubyte*)"glXGetVisualFromFBConfig");
 
 		LinuxPlatform::unlockX();
 	}
@@ -166,7 +178,7 @@ namespace bs { namespace ct
 
 	GLVisualConfig LinuxGLSupport::findBestVisual(::Display* display, bool depthStencil, UINT32 multisample, bool srgb) const
 	{
-		static constexpr INT32 VISUAL_ATTRIBS[] =
+		INT32 VISUAL_ATTRIBS[] =
 		{
 			GLX_X_RENDERABLE, 		True,
 			GLX_DRAWABLE_TYPE, 		GLX_WINDOW_BIT,
@@ -175,7 +187,12 @@ namespace bs { namespace ct
 			GLX_RED_SIZE,			8,
 			GLX_GREEN_SIZE,			8,
 			GLX_BLUE_SIZE,			8,
-			GLX_ALPHA_SIZE,			8
+			GLX_ALPHA_SIZE,			8,
+			GLX_DOUBLEBUFFER,		True,
+			GLX_DEPTH_SIZE,			depthStencil ? 24 : 0,
+			GLX_STENCIL_SIZE,		depthStencil ? 8 : 0,
+			GLX_SAMPLE_BUFFERS,		multisample > 1 ? 1 : 0,
+			0
 		};
 
 		INT32 numConfigs;
@@ -190,27 +207,35 @@ namespace bs { namespace ct
 			INT32 configScore = 0;
 
 			// Depth buffer contributes the most to score
+			INT32 depth, stencil;
+			glXGetFBConfigAttrib(display, configs[i], GLX_DEPTH_SIZE, &depth);
+			glXGetFBConfigAttrib(display, configs[i], GLX_STENCIL_SIZE, &stencil);
+
+			// Depth buffer was requested
 			if(depthStencil)
 			{
-				INT32 depth, stencil;
-				glXGetFBConfigAttrib(display, configs[i], GLX_DEPTH_SIZE, &depth);
-				glXGetFBConfigAttrib(display, configs[i], GLX_STENCIL_SIZE, &stencil);
-
 				INT32 score = 0;
-				if(depth == 24 && stencil == 8)
+				if (depth == 24 && stencil == 8)
 					score = 10000;
-				else if(depth == 32 && stencil == 8)
+				else if (depth == 32 && stencil == 8)
 					score = 9000;
-				else if(depth == 32)
+				else if (depth == 32)
 					score = 8000;
-				else if(depth == 16)
+				else if (depth == 24)
 					score = 7000;
+				else if (depth == 16)
+					score = 6000;
 
-				if(score > 0)
+				if (score > 0)
 				{
 					configScore += score;
 					caps[i].depthStencil = true;
 				}
+			}
+			else // Depth buffer not requested, prefer configs without it
+			{
+				if(depth == 0 && stencil == 0)
+					configScore += 10000;
 			}
 
 			// sRGB contributes second most
@@ -255,11 +280,16 @@ namespace bs { namespace ct
 
 		if(bestConfig == -1)
 		{
-			// Something went wrong
-			XFree(configs);
-			bs_stack_delete(caps, (UINT32)numConfigs);
+			if(numConfigs > 0)
+				bestConfig = 0;
+			else
+			{
+				// Something went wrong
+				XFree(configs);
+				bs_stack_delete(caps, (UINT32) numConfigs);
 
-			return output;
+				return output;
+			}
 		}
 
 		XVisualInfo* visualInfo = glXGetVisualFromFBConfig(display, configs[bestConfig]);

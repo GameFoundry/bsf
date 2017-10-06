@@ -177,6 +177,10 @@ namespace bs
 			parentPath.append(path[i]);
 			unix_createDirectory(parentPath.toString());
 		}
+
+		// Last "file" entry is also considered a directory
+		if(!parentPath.equals(path))
+			unix_createDirectory(path.toString());
 	}
 
 	void FileSystem::getChildren(const Path& dirPath, Vector<Path>& files, Vector<Path>& directories)
@@ -222,15 +226,12 @@ namespace bs
 		char *buffer = bs_newN<char>(PATH_MAX);
 
 		String wd;
-		if (getcwd(buffer, PATH_MAX) != NULL)
+		if (getcwd(buffer, PATH_MAX) != nullptr)
 			wd = buffer;
+		else
+			LOGERR(String("Error when calling getcwd(): ") + strerror(errno));
 
 		bs_free(buffer);
-
-		const int error = errno;
-		if (error)
-			LOGERR(String("Error when calling getcwd(): ") + strerror(error));
-
 		return Path(wd);
 	}
 

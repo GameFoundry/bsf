@@ -10,6 +10,7 @@
 
 #include <ctime>
 #include <sstream>
+#include <csignal>
 
 namespace bs
 {
@@ -103,5 +104,8 @@ namespace bs
 	{
 		logErrorAndStackTrace(type, description, function, file, line);
 		saveCrashLog();
+
+		// Allow the debugger a chance to attach
+		std::raise(SIGINT);
 	}
 }

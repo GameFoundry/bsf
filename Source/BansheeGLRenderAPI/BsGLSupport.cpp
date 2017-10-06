@@ -4,7 +4,7 @@
 #include "BsGLTexture.h"
 #include "GL/glew.h"
 
-GLenum GLEWAPIENTRY glewContextInit(bs::ct::GLSupport* glSupport);
+GLenum glewContextInit(bs::ct::GLSupport* glSupport);
 
 namespace bs { namespace ct
 {

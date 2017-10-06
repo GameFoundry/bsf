@@ -33,8 +33,11 @@ namespace bs
 	class BS_UTILITY_EXPORT DynLib
     {
     public:
-		/** System-specific file extension for a dynamic library (e.g. "dll"). */
+		/** Platform-specific file extension for a dynamic library (e.g. "dll"). */
 		static const char* EXTENSION;
+
+		/** Platform-specific name suffix for a dynamic library (e.g. "lib" on Unix) */
+		static const char* PREFIX;
 
 		/** Constructs the dynamic library object and loads the library with the specified name. */
 		DynLib(const String& name);
@@ -65,7 +68,7 @@ namespace bs
 
     protected:
 		String mName;
-        DYNLIB_HANDLE m_hInst; // Handle to the loaded library.
+        DYNLIB_HANDLE mHandle;
     };
 
 	/** @} */

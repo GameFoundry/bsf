@@ -21,56 +21,57 @@ namespace bs
 
 		// Get CPU vendor, model and number of cores
 		{
-			std::ifstream file("/proc/meminfo");
-			std::string token;
-			while(file >> token)
+			std::ifstream file("/proc/cpuinfo");
+			std::string line;
+			while(std::getline(file, line))
 			{
+				std::stringstream lineStream(line);
+				std::string token;
+				lineStream >> token;
+
 				if(token == "vendor_id")
 				{
-					if(file >> token && token == ":")
+					if(lineStream >> token && token == ":")
 					{
 						std::string vendorId;
-						if(file >> vendorId)
+						if(lineStream >> vendorId)
 							output.cpuManufacturer = vendorId.c_str();
 					}
 				}
 				else if(token == "model")
 				{
-					if(file >> token && token == "name")
+					if(lineStream >> token && token == "name")
 					{
-						if (file >> token && token == ":")
+						if (lineStream >> token && token == ":")
 						{
 							std::stringstream modelName;
-							if (file >> token)
+							if (lineStream >> token)
 							{
 								modelName << token;
 
-								while (file >> token)
+								while (lineStream >> token)
 									modelName << " " << token;
 							}
 
-							output.cpuManufacturer = modelName.str().c_str();
+							output.cpuModel = modelName.str().c_str();
 						}
 					}
 				}
 				else if(token == "cpu")
 				{
-					if(file >> token)
+					if(lineStream >> token)
 					{
 						if (token == "cores")
 						{
-							if (file >> token && token == ":")
+							if (lineStream >> token && token == ":")
 							{
 								UINT32 numCores;
-								if (file >> numCores)
+								if (lineStream >> numCores)
 									output.cpuNumCores = numCores;
 							}
 						}
 					}
 				}
-
-				// Ignore the rest of the line
-				file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 			}
 		}
 
@@ -79,7 +80,7 @@ namespace bs
 			std::ifstream file("/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq");
 			UINT32 frequency;
 			if(file >> frequency)
-				output.cpuClockSpeedMhz = frequency / (1000 * 1000);
+				output.cpuClockSpeedMhz = frequency / 1000;
 		}
 
 		// Get amount of system memory
@@ -92,7 +93,7 @@ namespace bs
 				{
 					UINT32 memTotal;
 					if(file >> memTotal)
-						output.memoryAmountMb = memTotal / (1024 * 1024);
+						output.memoryAmountMb = memTotal / 1024;
 					else
 						output.memoryAmountMb = 0;
 
