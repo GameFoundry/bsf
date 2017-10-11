@@ -7,7 +7,6 @@
 #include "BsMonoManager.h"
 #include "BsScriptResourceManager.h"
 #include "BsScriptGameObjectManager.h"
-#include "Wrappers/BsScriptSpriteTexture.h"
 #include "Wrappers/BsScriptManagedResource.h"
 #include "Wrappers/BsScriptSceneObject.h"
 #include "Wrappers/BsScriptComponent.h"

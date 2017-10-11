@@ -265,7 +265,7 @@ namespace bs
 						BS_EXCEPT(InternalErrorException, "Unsupported pixel mode for a FreeType bitmap.");
 
 					// Store character information
-					CHAR_DESC charDesc;
+					CharDesc charDesc;
 
 					float invTexWidth = 1.0f / pageIter->width;
 					float invTexHeight = 1.0f / pageIter->height;

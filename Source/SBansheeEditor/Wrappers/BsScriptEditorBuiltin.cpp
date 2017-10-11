@@ -5,11 +5,11 @@
 #include "BsMonoClass.h"
 #include "BsMonoMethod.h"
 #include "BsMonoUtil.h"
-#include "Wrappers/BsScriptSpriteTexture.h"
 #include "Wrappers/BsScriptGUIContentImages.h"
 #include "BsScriptResourceManager.h"
-#include "Wrappers/BsScriptFont.h"
 #include "Wrappers/GUI/BsScriptGUISkin.h"
+
+#include "BsScriptSpriteTexture.generated.h"
 
 namespace bs
 {
@@ -36,8 +36,7 @@ namespace bs
 	MonoObject* ScriptEditorBuiltin::internal_getLibraryItemIcon(ProjectIcon icon, int size)
 	{
 		HSpriteTexture tex = BuiltinEditorResources::instance().getLibraryIcon(icon, size);
-
-		return ScriptSpriteTexture::toManaged(tex);
+		return ScriptResourceManager::instance().getScriptResource(tex, true)->getManagedInstance();
 	}
 
 	MonoString* ScriptEditorBuiltin::internal_GetEmptyShaderCode()
@@ -57,22 +56,19 @@ namespace bs
 	MonoObject* ScriptEditorBuiltin::internal_GetToolbarIcon(ToolbarIcon icon)
 	{
 		HSpriteTexture tex = BuiltinEditorResources::instance().getToolbarIcon(icon);
-
-		return ScriptSpriteTexture::toManaged(tex);
+		return ScriptResourceManager::instance().getScriptResource(tex, true)->getManagedInstance();
 	}
 
 	MonoObject* ScriptEditorBuiltin::internal_GetLibraryWindowIcon(LibraryWindowIcon icon)
 	{
 		HSpriteTexture tex = BuiltinEditorResources::instance().getLibraryWindowIcon(icon);
-
-		return ScriptSpriteTexture::toManaged(tex);
+		return ScriptResourceManager::instance().getScriptResource(tex, true)->getManagedInstance();
 	}
 
 	MonoObject* ScriptEditorBuiltin::internal_GetInspectorWindowIcon(InspectorWindowIcon icon)
 	{
 		HSpriteTexture tex = BuiltinEditorResources::instance().getInspectorWindowIcon(icon);
-
-		return ScriptSpriteTexture::toManaged(tex);
+		return ScriptResourceManager::instance().getScriptResource(tex, true)->getManagedInstance();
 	}
 
 	MonoObject* ScriptEditorBuiltin::internal_GetSceneWindowIcon(SceneWindowIcon icon)
@@ -92,15 +88,13 @@ namespace bs
 	MonoObject* ScriptEditorBuiltin::internal_GetLogIcon(LogMessageIcon icon, int size, bool dark)
 	{
 		HSpriteTexture tex = BuiltinEditorResources::instance().getLogMessageIcon(icon, size, dark);
-
-		return ScriptSpriteTexture::toManaged(tex);
+		return ScriptResourceManager::instance().getScriptResource(tex, true)->getManagedInstance();
 	}
 
 	MonoObject* ScriptEditorBuiltin::internal_GetEditorIcon(EditorIcon icon)
 	{
 		HSpriteTexture tex = BuiltinEditorResources::instance().getIcon(icon);
-
-		return ScriptSpriteTexture::toManaged(tex);
+		return ScriptResourceManager::instance().getScriptResource(tex, true)->getManagedInstance();
 	}
 	
 	MonoObject* ScriptEditorBuiltin::internal_GetDefaultFont()

@@ -7,7 +7,6 @@
 #include "BsMonoManager.h"
 #include "BsMonoUtil.h"
 #include "Wrappers/BsScriptHString.h"
-#include "Wrappers/BsScriptSpriteTexture.h"
 #include "2D/BsSpriteTexture.h"
 #include "Wrappers/BsScriptGUIContentImages.h"
 

@@ -5,8 +5,9 @@
 #include "BsMonoClass.h"
 #include "Handles/BsHandleManager.h"
 #include "Handles/BsHandleDrawManager.h"
-#include "Wrappers/BsScriptFont.h"
 #include "BsMonoUtil.h"
+
+#include "BsScriptFont.generated.h"
 
 namespace bs
 {

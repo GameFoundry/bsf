@@ -11,8 +11,11 @@ namespace bs
 	 *  @{
 	 */
 
-	/** Loosely based on ISO 639-1 two letter language codes */
-	enum class Language
+	/**
+	 * A set of all languages that localized strings can be translated to. Loosely based on ISO 639-1 two letter language
+	 * codes.
+	 */
+	enum class BS_SCRIPT_EXPORT(m:Localization) Language
 	{
 		Afar, 
 		Abkhazian, 
@@ -250,7 +253,7 @@ namespace bs
 	 */
 
 	/** Used for string localization. Stores strings and their translations in various languages. */
-	class BS_CORE_EXPORT StringTable : public Resource
+	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Localization) StringTable : public Resource
 	{
 		// TODO - When editing string table I will need to ensure that all languages of the same string have the same number of parameters
 
@@ -258,16 +261,33 @@ namespace bs
 		StringTable();
 		~StringTable();
 
-		/** Returns all identifiers in the table. */
-		const UnorderedSet<WString>& getIdentifiers() const { return mIdentifiers; }
+		/**
+		 * Checks does the string table contain the provided identifier.
+		 *
+		 * @param[in]	identifier		Identifier to look for.
+		 * @return						True if the identifier exists in the table, false otherwise.
+		 */
+		BS_SCRIPT_EXPORT()
+		bool contains(const WString& identifier);
+
+		/** Returns a total number of strings in the table. */
+		BS_SCRIPT_EXPORT(n:NumStrings,pr:getter)
+		UINT32 getNumStrings() const { return (UINT32)mIdentifiers.size(); }
+
+		/** Returns all identifiers that the string table contains localized strings for. */
+		BS_SCRIPT_EXPORT(n:Identifiers,pr:getter)
+		Vector<WString> getIdentifiers() const;
 
 		/**	Adds or modifies string translation for the specified language. */
-		void setString(const WString& identifier, Language language, const WString& string);
+		BS_SCRIPT_EXPORT()
+		void setString(const WString& identifier, Language language, const WString& value);
 
 		/**	Returns a string translation for the specified language. Returns the identifier itself if one doesn't exist. */
+		BS_SCRIPT_EXPORT()
 		WString getString(const WString& identifier, Language language);
 
 		/** Removes the string described by identifier, from all languages. */
+		BS_SCRIPT_EXPORT()
 		void removeString(const WString& identifier);
 
 		/**
@@ -294,6 +314,7 @@ namespace bs
 		SPtr<LocalizedStringData> getStringData(const WString& identifier, Language language, bool insertIfNonExisting = true);
 
 		/** Creates a new empty string table resource. */
+		BS_SCRIPT_EXPORT(ec:StringTable)
 		static HStringTable create();
 
 		static const Language DEFAULT_LANGUAGE;
@@ -334,7 +355,7 @@ namespace bs
 	public:
 		friend class StringTableRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const override;
+		RTTITypeBase* getRTTI() const override;
 	};
 
 	/** @} */

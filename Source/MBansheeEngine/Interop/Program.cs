@@ -19,7 +19,7 @@ namespace BansheeEngine
      *  Audio clips, 3D sound and music reproduction.
      */
 
-    /** @defgroup GUI-Engine GUI 
+    /** @defgroup GUI_Engine GUI 
      *  Graphical user interface, including elements, styles and localization.
      */
 

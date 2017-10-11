@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace BansheeEngine
 {
-    /** @addtogroup GUI-Engine
+    /** @addtogroup GUI_Engine
      *  @{
      */
 

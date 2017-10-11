@@ -12,10 +12,10 @@
 #include "Resources/BsScriptCodeImportOptions.h"
 #include "Importer/BsMeshImportOptions.h"
 #include "Renderer/BsRenderer.h"
-#include "Wrappers/BsScriptFont.h"
 #include "Reflection/BsRTTIType.h"
 
 #include "BsScriptAnimationEvent.generated.h"
+#include "BsScriptFont.generated.h"
 
 using namespace std::placeholders;
 
@@ -25,6 +25,13 @@ namespace bs
 	{
 		UINT32 start, end;
 	};
+
+	ScriptCharRange::ScriptCharRange(MonoObject* instance)
+		:ScriptObject(instance)
+	{ }
+
+	void ScriptCharRange::initRuntimeData()
+	{ }
 
 	ScriptImportOptionsBase::ScriptImportOptionsBase(MonoObject* instance)
 		:ScriptObjectBase(instance)

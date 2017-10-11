@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
-    /** @addtogroup GUI-Engine
+    /** @addtogroup GUI_Engine
      *  @{
      */
 
@@ -13,24 +13,24 @@ namespace BansheeEngine
     /// Type of scaling modes for GUI images.
     /// </summary>
     public enum GUITextureScaleMode // Note: Must match C++ enum TextureScaleMode
-	{
+    {
         /// <summary>
         /// Image will stretch non-uniformly in all dimensions in order to cover the assigned area fully.
         /// </summary>
-		StretchToFit,
+        StretchToFit,
         /// <summary>
         /// Image will scale uniformly until one dimension is aligned with the assigned area. Remaining dimension might have empty space.
         /// </summary>
-		ScaleToFit,
+        ScaleToFit,
         /// <summary>
         /// Image will scale uniformly until both dimensions are larger or aligned with the assigned area. Remaining dimension might be cropped.
         /// </summary>
-		CropToFit,
+        CropToFit,
         /// <summary>
         /// Image will keep its original size, but will repeat in order to fill the assigned area.
         /// </summary>
-		RepeatToFit
-	};
+        RepeatToFit
+    };
 
     /// <summary>
     /// A GUI element that displays a texture.

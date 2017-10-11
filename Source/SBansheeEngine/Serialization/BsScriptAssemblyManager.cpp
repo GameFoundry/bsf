@@ -10,8 +10,6 @@
 #include "BsMonoProperty.h"
 #include "Wrappers/BsScriptManagedResource.h"
 #include "Wrappers/BsScriptComponent.h"
-#include "Wrappers/BsScriptSpriteTexture.h"
-
 #include "BsBuiltinComponentLookup.generated.h"
 
 // Note: This resource registration code is only here because resource lookup auto-generation isn't yet hooked up
@@ -32,13 +30,10 @@
 #include "Animation/BsAnimationClip.h"
 
 #include "BsScriptTexture.generated.h"
-#include "Wrappers/BsScriptSpriteTexture.h"
 #include "Wrappers/BsScriptPlainText.h"
 #include "Wrappers/BsScriptScriptCode.h"
 #include "Wrappers/BsScriptShaderInclude.h"
-#include "Wrappers/BsScriptFont.h"
 #include "Wrappers/BsScriptPrefab.h"
-#include "Wrappers/BsScriptStringTable.h"
 #include "Wrappers/GUI/BsScriptGUISkin.h"
 #include "Serialization/BsBuiltinResourceLookup.h"
 
@@ -49,6 +44,9 @@
 #include "BsScriptAudioClip.generated.h"
 #include "BsScriptShader.generated.h"
 #include "BsScriptMaterial.generated.h"
+#include "BsScriptFont.generated.h"
+#include "BsScriptSpriteTexture.generated.h"
+#include "BsScriptStringTable.generated.h"
 
 namespace bs
 {

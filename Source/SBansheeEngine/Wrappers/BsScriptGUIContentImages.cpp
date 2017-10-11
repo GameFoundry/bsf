@@ -1,8 +1,9 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "Wrappers/BsScriptGUIContentImages.h"
-#include "Wrappers/BsScriptSpriteTexture.h"
 #include "BsScriptResourceManager.h"
+
+#include "BsScriptSpriteTexture.generated.h"
 
 namespace bs
 {

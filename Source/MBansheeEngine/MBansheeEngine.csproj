@@ -62,7 +62,6 @@
     <Compile Include="Utility\DirectoryEx.cs" />
     <Compile Include="Serialization\DontSerializeField.cs" />
     <Compile Include="Utility\FileEx.cs" />
-    <Compile Include="GUI\Font.cs" />
     <Compile Include="Scene\GameObject.cs" />
     <Compile Include="GUI\GUIUtility.cs" />
     <Compile Include="GUI\GUIButton.cs" />
@@ -136,9 +135,6 @@
     <Compile Include="Rendering\ShaderInclude.cs" />
     <Compile Include="GUI\ShortcutKey.cs" />
     <Compile Include="Math\Sphere.cs" />
-    <Compile Include="GUI\SpriteTexture.cs" />
-    <Compile Include="GUI\StringTable.cs" />
-    <Compile Include="GUI\StringTables.cs" />
     <Compile Include="Rendering\Texture.cs" />
     <Compile Include="Math\Vector2.cs" />
     <Compile Include="Math\Vector3.cs" />

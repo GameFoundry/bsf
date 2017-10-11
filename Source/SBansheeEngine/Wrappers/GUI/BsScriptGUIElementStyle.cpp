@@ -5,12 +5,13 @@
 #include "BsMonoField.h"
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
-#include "Wrappers/BsScriptFont.h"
 #include "Error/BsException.h"
 #include "GUI/BsGUIElementStyle.h"
 #include "Wrappers/GUI/BsScriptGUIElementStateStyle.h"
 #include "BsMonoUtil.h"
 #include "BsScriptResourceManager.h"
+
+#include "BsScriptFont.generated.h"
 
 namespace bs
 {

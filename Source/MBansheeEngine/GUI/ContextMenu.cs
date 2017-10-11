@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
-    /** @addtogroup GUI-Engine
+    /** @addtogroup GUI_Engine
      *  @{
      */
 

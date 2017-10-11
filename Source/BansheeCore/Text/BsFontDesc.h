@@ -11,14 +11,14 @@ namespace bs
 	 */
 
 	/**	Kerning pair representing larger or smaller offset between a specific pair of characters. */
-	struct KerningPair
+	struct BS_SCRIPT_EXPORT(pl:true,m:GUI_Engine) KerningPair
 	{
 		UINT32 otherCharId;
 		INT32 amount;
 	};
 
 	/**	Describes a single character in a font of a specific size. */
-	struct CHAR_DESC
+	struct BS_SCRIPT_EXPORT(pl:true,m:GUI_Engine) CharDesc
 	{
 		UINT32 charId; /**< Character ID, corresponding to a Unicode key. */
 		UINT32 page; /**< Index of the texture the character is located on. */
@@ -35,24 +35,14 @@ namespace bs
 		Vector<KerningPair> kerningPairs;
 	};
 
-	/**	Describes a font. */
-	struct FONT_DESC
-	{
-		Map<UINT32, CHAR_DESC> characters; /**< All characters in the font referenced by character ID. */
-		INT32 baselineOffset; /**< Y offset to the baseline on which the characters are placed, in pixels. */
-		UINT32 lineHeight; /**< Height of a single line of the font, in pixels. */
-		CHAR_DESC missingGlyph; /**< Character to use when data for a character is missing. */
-		UINT32 spaceWidth; /**< Width of a space in pixels. */
-	};
-
 	/** @cond SPECIALIZATIONS */
 
 	// Make CHAR_DESC serializable
-	template<> struct RTTIPlainType<CHAR_DESC>
+	template<> struct RTTIPlainType<CharDesc>
 	{	
 		enum { id = TID_CHAR_DESC }; enum { hasDynamicSize = 1 };
 
-		static void toMemory(const CHAR_DESC& data, char* memory)
+		static void toMemory(const CharDesc& data, char* memory)
 		{ 
 			UINT32 size = getDynamicSize(data);
 
@@ -74,7 +64,7 @@ namespace bs
 			memory = rttiWriteElem(data.kerningPairs, memory);
 		}
 
-		static UINT32 fromMemory(CHAR_DESC& data, char* memory)
+		static UINT32 fromMemory(CharDesc& data, char* memory)
 		{ 
 			UINT32 size;
 			memcpy(&size, memory, sizeof(UINT32)); 
@@ -97,7 +87,7 @@ namespace bs
 			return size;
 		}
 
-		static UINT32 getDynamicSize(const CHAR_DESC& data)	
+		static UINT32 getDynamicSize(const CharDesc& data)	
 		{ 
 			UINT64 dataSize = sizeof(data.charId)
 				+ sizeof(data.page)
@@ -114,54 +104,6 @@ namespace bs
 				+ RTTIPlainType<Vector<KerningPair>>::getDynamicSize(data.kerningPairs);
 
 			dataSize += sizeof(UINT32);
-
-			return (UINT32)dataSize;
-		}	
-	}; 
-
-	// Make FONT_DESC serializable
-	template<> struct RTTIPlainType<FONT_DESC>
-	{	
-		enum { id = TID_FONT_DESC }; enum { hasDynamicSize = 1 };
-
-		static void toMemory(const FONT_DESC& data, char* memory)
-		{ 
-			UINT32 size = sizeof(UINT32);
-			char* memoryStart = memory;
-			memory += sizeof(UINT32);
-			
-			memory = rttiWriteElem(data.characters, memory, size);
-			memory = rttiWriteElem(data.baselineOffset, memory, size);
-			memory = rttiWriteElem(data.lineHeight, memory, size);
-			memory = rttiWriteElem(data.missingGlyph, memory, size);
-			memory = rttiWriteElem(data.spaceWidth, memory, size);
-
-			memcpy(memoryStart, &size, sizeof(UINT32));
-		}
-
-		static UINT32 fromMemory(FONT_DESC& data, char* memory)
-		{ 
-			UINT32 size;
-			memcpy(&size, memory, sizeof(UINT32)); 
-			memory += sizeof(UINT32);
-
-			memory = rttiReadElem(data.characters, memory);
-			memory = rttiReadElem(data.baselineOffset, memory);
-			memory = rttiReadElem(data.lineHeight, memory);
-			memory = rttiReadElem(data.missingGlyph, memory);
-			memory = rttiReadElem(data.spaceWidth, memory);
-
-			return size;
-		}
-
-		static UINT32 getDynamicSize(const FONT_DESC& data)	
-		{ 
-			UINT64 dataSize = sizeof(UINT32);
-			dataSize += rttiGetElemSize(data.characters);
-			dataSize += rttiGetElemSize(data.baselineOffset);
-			dataSize += rttiGetElemSize(data.lineHeight);
-			dataSize += rttiGetElemSize(data.missingGlyph);
-			dataSize += rttiGetElemSize(data.spaceWidth);
 
 			return (UINT32)dataSize;
 		}	

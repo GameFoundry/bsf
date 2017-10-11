@@ -5,10 +5,11 @@
 #include "BsMonoField.h"
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
-#include "Wrappers/BsScriptSpriteTexture.h"
 #include "BsScriptResourceManager.h"
 #include "GUI/BsGUIElementStyle.h"
 #include "Wrappers/BsScriptColor.h"
+
+#include "BsScriptSpriteTexture.generated.h"
 
 namespace bs
 {

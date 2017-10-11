@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
-    /** @addtogroup GUI-Engine
+    /** @addtogroup GUI_Engine
      *  @{
      */
 
@@ -13,11 +13,11 @@ namespace BansheeEngine
     /// Scroll bar options for a GUI scroll area.
     /// </summary>
     public enum ScrollBarType // Note: Must match the C++ enum ScrollBarType
-	{
-		ShowIfDoesntFit,
-		AlwaysShow,
-		NeverShow
-	};
+    {
+        ShowIfDoesntFit,
+        AlwaysShow,
+        NeverShow
+    };
 
     /// <summary>
     /// A GUI element container with support for vertical & horizontal scrolling.

@@ -39,7 +39,7 @@ namespace bs
 			 * @param[in]	desc		Character description from the font.
 			 * @return					How many pixels did the added character expand the word by.
 			 */
-			UINT32 addChar(UINT32 charIdx, const CHAR_DESC& desc);
+			UINT32 addChar(UINT32 charIdx, const CharDesc& desc);
 
 			/** Adds a space to the word. Word must have previously have been declared as a "spacer". */
 			void addSpace(UINT32 spaceWidth);
@@ -56,7 +56,7 @@ namespace bs
 			 * @param[in]	desc	Character description from the font.
 			 * @return				Width of the word in pixels with the character appended to it.
 			 */
-			UINT32 calcWidthWithChar(const CHAR_DESC& desc);
+			UINT32 calcWidthWithChar(const CharDesc& desc);
 
 			/**
 			 * Returns true if word is a spacer. Spacers contain just a space of a certain length with no actual characters.
@@ -79,14 +79,14 @@ namespace bs
 			 * @param[in]	desc		Character description from the font.
 			 * @return 					How many pixels would the added character expand the word by.
 			 */
-			static UINT32 calcCharWidth(const CHAR_DESC* prevDesc, const CHAR_DESC& desc);
+			static UINT32 calcCharWidth(const CharDesc* prevDesc, const CharDesc& desc);
 
 		private:
 			UINT32 mCharsStart, mCharsEnd;
 			UINT32 mWidth;
 			UINT32 mHeight;
 
-			const CHAR_DESC* mLastChar;
+			const CharDesc* mLastChar;
 
 			bool mSpacer;
 			UINT32 mSpaceWidth;
@@ -127,7 +127,7 @@ namespace bs
 			 * @param[in]	desc	Character description from the font.
 			 * @return				Width of the line in pixels with the character appended to it.
 			 */
-			UINT32 calcWidthWithChar(const CHAR_DESC& desc);
+			UINT32 calcWidthWithChar(const CharDesc& desc);
 
 			/**
 			 * Fills the vertex/uv/index buffers for the specified page, with all the character data needed for rendering.
@@ -163,7 +163,7 @@ namespace bs
 			 * @param[in]	charIdx		Sequential index of the character in the original string.
 			 * @param[in]	desc		Character description from the font.
 			 */
-			void add(UINT32 charIdx, const CHAR_DESC& charDesc);
+			void add(UINT32 charIdx, const CharDesc& charDesc);
 
 			/**	Appends a space to the line. */
 			void addSpace(UINT32 spaceWidth);
@@ -269,13 +269,13 @@ namespace bs
 		UINT32 getSpaceWidth() const;
 
 		/** Gets a description of a single character referenced by its sequential index based on the original string. */
-		const CHAR_DESC& getChar(UINT32 idx) const { return *mChars[idx]; }
+		const CharDesc& getChar(UINT32 idx) const { return *mChars[idx]; }
 
 		/** Gets a description of a single word referenced by its sequential index based on the original string. */
 		const TextWord& getWord(UINT32 idx) const { return mWords[idx]; }
 
 	protected:
-		const CHAR_DESC** mChars;
+		const CharDesc** mChars;
 		UINT32 mNumChars;
 
 		TextWord* mWords;

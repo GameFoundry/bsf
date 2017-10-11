@@ -18,25 +18,20 @@ namespace bs
 	class BS_CORE_EXPORT FontBitmapRTTI : public RTTIType<FontBitmap, IReflectable, FontBitmapRTTI>
 	{
 	private:
-		UINT32& getSize(FontBitmap* obj) { return obj->size; }
-		void setSize(FontBitmap* obj, UINT32& size) { obj->size = size; }
-
-		FONT_DESC& getFontDesc(FontBitmap* obj) { return obj->fontDesc; }
-		void setFontDesc(FontBitmap* obj, FONT_DESC& val) { obj->fontDesc = val; }
-
-		HTexture& getTexture(FontBitmap* obj, UINT32 idx) { return obj->texturePages.at(idx); }
-		void setTexture(FontBitmap* obj, UINT32 idx, HTexture& value) { obj->texturePages[idx] = value; }
-
-		UINT32 getTextureArraySize(FontBitmap* obj) { return (UINT32)obj->texturePages.size(); }
-		void setTextureArraySize(FontBitmap* obj, UINT32 size) { obj->texturePages.resize(size); }
+		BS_BEGIN_RTTI_MEMBERS
+			BS_RTTI_MEMBER_PLAIN(size, 0)
+			BS_RTTI_MEMBER_PLAIN(baselineOffset, 1)
+			BS_RTTI_MEMBER_PLAIN(lineHeight, 2)
+			BS_RTTI_MEMBER_PLAIN(missingGlyph, 3)
+			BS_RTTI_MEMBER_PLAIN(spaceWidth, 4)
+			BS_RTTI_MEMBER_REFL_ARRAY(texturePages, 5)
+			BS_RTTI_MEMBER_PLAIN(characters, 6)
+		BS_END_RTTI_MEMBERS
 
 	public:
 		FontBitmapRTTI()
-		{
-			addPlainField("size", 0, &FontBitmapRTTI::getSize, &FontBitmapRTTI::setSize);
-			addPlainField("fontDesc", 1, &FontBitmapRTTI::getFontDesc, &FontBitmapRTTI::setFontDesc);
-			addReflectableArrayField("texturePages", 2, &FontBitmapRTTI::getTexture, &FontBitmapRTTI::getTextureArraySize, &FontBitmapRTTI::setTexture, &FontBitmapRTTI::setTextureArraySize);
-		}
+			:mInitMembers(this)
+		{ }
 
 		const String& getRTTIName() override
 		{

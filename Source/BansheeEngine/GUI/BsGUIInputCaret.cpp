@@ -286,7 +286,7 @@ namespace bs
 				SPtr<const FontBitmap> fontData = mTextDesc.font->getBitmap(nearestSize);
 
 				if(fontData != nullptr)
-					return fontData->fontDesc.lineHeight;
+					return fontData->lineHeight;
 			}
 		}
 

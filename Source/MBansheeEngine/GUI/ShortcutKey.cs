@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace BansheeEngine
 {
-    /** @addtogroup GUI-Engine
+    /** @addtogroup GUI_Engine
      *  @{
      */
 

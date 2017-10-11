@@ -187,7 +187,21 @@ namespace bs
 		mActiveLanguage = language;
 	}
 
-	void StringTable::setString(const WString& identifier, Language language, const WString& string)
+	bool StringTable::contains(const WString& identifier)
+	{
+		return mIdentifiers.find(identifier) == mIdentifiers.end();
+	}
+
+	Vector<WString> StringTable::getIdentifiers() const
+	{
+		Vector<WString> output;
+		for (auto& entry : mIdentifiers)
+			output.push_back(entry);
+
+		return output;
+	}
+
+	void StringTable::setString(const WString& identifier, Language language, const WString& value)
 	{
 		LanguageData* curLanguage = &(mAllLanguages[(UINT32)language]);
 
@@ -205,7 +219,7 @@ namespace bs
 		}
 
 		mIdentifiers.insert(identifier);
-		stringData->updateString(string);
+		stringData->updateString(value);
 	}
 
 	WString StringTable::getString(const WString& identifier, Language language)

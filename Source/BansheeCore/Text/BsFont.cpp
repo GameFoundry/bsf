@@ -7,15 +7,15 @@
 
 namespace bs
 {
-	const CHAR_DESC& FontBitmap::getCharDesc(UINT32 charId) const
+	const CharDesc& FontBitmap::getCharDesc(UINT32 charId) const
 	{
-		auto iterFind = fontDesc.characters.find(charId);
-		if(iterFind != fontDesc.characters.end())
+		auto iterFind = characters.find(charId);
+		if(iterFind != characters.end())
 		{
-			return fontDesc.characters.at(charId);
+			return characters.at(charId);
 		}
 
-		return fontDesc.missingGlyph;
+		return missingGlyph;
 	}
 
 	RTTITypeBase* FontBitmap::getRTTIStatic()
@@ -43,7 +43,7 @@ namespace bs
 		Resource::initialize();
 	}
 
-	SPtr<const FontBitmap> Font::getBitmap(UINT32 size) const
+	SPtr<FontBitmap> Font::getBitmap(UINT32 size) const
 	{
 		auto iterFind = mFontDataPerSize.find(size);
 

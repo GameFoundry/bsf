@@ -3,12 +3,12 @@
 #include "Wrappers/BsScriptGizmos.h"
 #include "BsScriptMeta.h"
 #include "BsMonoClass.h"
-#include "Wrappers/BsScriptSpriteTexture.h"
 #include "Scene/BsGizmoManager.h"
 #include "BsMonoUtil.h"
-#include "Wrappers/BsScriptFont.h"
 
 #include "BsScriptRendererMeshData.generated.h"
+#include "BsScriptSpriteTexture.generated.h"
+#include "BsScriptFont.generated.h"
 
 namespace bs
 {

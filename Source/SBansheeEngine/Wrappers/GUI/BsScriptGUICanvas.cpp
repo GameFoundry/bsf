@@ -2,12 +2,13 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "Wrappers/GUI/BsScriptGUICanvas.h"
 #include "BsScriptMeta.h"
-#include "Wrappers/BsScriptSpriteTexture.h"
 #include "BsMonoUtil.h"
 #include "GUI/BsGUILayout.h"
 #include "GUI/BsGUICanvas.h"
 #include "GUI/BsGUIOptions.h"
-#include "Wrappers/BsScriptFont.h"
+
+#include "BsScriptFont.generated.h"
+#include "BsScriptSpriteTexture.generated.h"
 
 namespace bs
 {

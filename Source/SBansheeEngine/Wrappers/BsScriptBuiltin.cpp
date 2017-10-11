@@ -6,9 +6,10 @@
 #include "BsMonoMethod.h"
 #include "BsMonoUtil.h"
 #include "Resources/BsBuiltinResources.h"
-#include "Wrappers/BsScriptSpriteTexture.h"
-#include "Wrappers/BsScriptFont.h"
 #include "BsScriptResourceManager.h"
+
+#include "BsScriptFont.generated.h"
+#include "BsScriptSpriteTexture.generated.h"
 
 namespace bs
 {

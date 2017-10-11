@@ -10,11 +10,12 @@
 #include "GUI/BsGUILayout.h"
 #include "GUI/BsGUITexture.h"
 #include "GUI/BsGUIOptions.h"
-#include "Wrappers/BsScriptSpriteTexture.h"
 #include "Wrappers/GUI/BsScriptGUIElementStyle.h"
 #include "Wrappers/GUI/BsScriptGUILayout.h"
 #include "Wrappers/BsScriptHString.h"
 #include "Wrappers/GUI/BsScriptGUIContent.h"
+
+#include "BsScriptSpriteTexture.generated.h"
 
 namespace bs
 {

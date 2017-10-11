@@ -4,32 +4,32 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
-    /** @addtogroup GUI-Engine
+    /** @addtogroup GUI_Engine
      *  @{
      */
 
     /// <summary>
     /// Type of GUI element states.
     /// </summary>
-	public enum GUIElementState
-	{
+    public enum GUIElementState
+    {
         /// <summary>Normal state when button is not being iteracted with.</summary>
-		Normal = 0x01,
+        Normal = 0x01,
         /// <summary>State when pointer is hovering over the button.</summary>
-		Hover = 0x02,
+        Hover = 0x02,
         /// <summary>State when button is being clicked.</summary>
-		Active = 0x04,
+        Active = 0x04,
         /// <summary>State when button has been selected.</summary>
-		Focused = 0x08,
+        Focused = 0x08,
         /// <summary>Normal state when button is not being iteracted with and is in "on" state.</summary>
-		NormalOn = 0x11,
+        NormalOn = 0x11,
         /// <summary>State when pointer is hovering over the button and is in "on" state.</summary>
-		HoverOn = 0x12,
+        HoverOn = 0x12,
         /// <summary>State when button is being clicked and is in "on" state.</summary>
-		ActiveOn = 0x14,
+        ActiveOn = 0x14,
         /// <summary>State when button has been selected and is in "on" state.</summary>
-		FocusedOn = 0x18
-	};
+        FocusedOn = 0x18
+    };
 
     /// <summary>
     /// Holds data used for displaying content in a GUIElement. Content can consist of a string, image, a tooltip or none 
@@ -55,26 +55,26 @@ namespace BansheeEngine
         public SpriteTexture GetImage(GUIElementState state = GUIElementState.Normal)
         {
             switch (state)
-		    {
-		    case GUIElementState.Normal:
-			    return images.normal;
-		    case GUIElementState.Hover:
-                return images.hover;
-		    case GUIElementState.Active:
-                return images.active;
-		    case GUIElementState.Focused:
-                return images.focused;
-		    case GUIElementState.NormalOn:
-                return images.normalOn;
-		    case GUIElementState.HoverOn:
-                return images.hoverOn;
-		    case GUIElementState.ActiveOn:
-                return images.activeOn;
-		    case GUIElementState.FocusedOn:
-                return images.focusedOn;
-		    default:
+            {
+            case GUIElementState.Normal:
                 return images.normal;
-		    }
+            case GUIElementState.Hover:
+                return images.hover;
+            case GUIElementState.Active:
+                return images.active;
+            case GUIElementState.Focused:
+                return images.focused;
+            case GUIElementState.NormalOn:
+                return images.normalOn;
+            case GUIElementState.HoverOn:
+                return images.hoverOn;
+            case GUIElementState.ActiveOn:
+                return images.activeOn;
+            case GUIElementState.FocusedOn:
+                return images.focusedOn;
+            default:
+                return images.normal;
+            }
         }
 
         /// <summary>
@@ -89,10 +89,10 @@ namespace BansheeEngine
         /// Constructs content with just a string.
         /// </summary>
         /// <param name="text">Textual portion of the content to be displayed as label in GUI elements.</param>
-		public GUIContent(LocString text)
-		{
-		    this.text = text;
-		}
+        public GUIContent(LocString text)
+        {
+            this.text = text;
+        }
 
         /// <summary>
         /// Constructs content with a string and a tooltip.

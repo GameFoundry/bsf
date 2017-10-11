@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 
 namespace BansheeEngine
 {
-    /** @addtogroup GUI-Engine
+    /** @addtogroup GUI_Engine
      *  @{
      */
 
@@ -15,33 +15,33 @@ namespace BansheeEngine
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct RectOffset // Note: Must match the C++ struct RectOffset
-	{
-		public int left, right, top, bottom;
-	};
+    {
+        public int left, right, top, bottom;
+    };
 
     /// <summary>
     /// Possible positions used for positioning content image within a GUI element.
     /// </summary>
     public enum GUIImagePosition // Note: Must match the C++ enum GUIImagePosition.
-	{
-		Left, Right
-	};
+    {
+        Left, Right
+    };
 
     /// <summary>
     /// Specifies how is text horizontally aligned within its bounds.
     /// </summary>
     public enum TextHorzAlign // Note: Must match the C++ enum TextHorzAlign.
-	{
-		Left, Center, Right
-	};
+    {
+        Left, Center, Right
+    };
 
     /// <summary>
     /// Specifies how is text vertically aligned within its bounds.
     /// </summary>
     public enum TextVertAlign // Note: Must match the C++ enum TextVertAlign
-	{
-		Top, Center, Bottom
-	};
+    {
+        Top, Center, Bottom
+    };
 
     /// <summary>
     /// GUI element style that determines the look of a GUI element, as well as the element's default layout options. 
@@ -57,9 +57,9 @@ namespace BansheeEngine
         /// <summary>
         /// Constructs a new GUI element style with default values.
         /// </summary>
-		public GUIElementStyle()
+        public GUIElementStyle()
         {
-		    Internal_CreateInstance(this);
+            Internal_CreateInstance(this);
         }
 
         /// <summary>

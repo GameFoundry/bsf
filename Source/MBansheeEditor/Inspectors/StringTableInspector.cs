@@ -56,7 +56,7 @@ namespace BansheeEditor
 
             string[] identifiers = stringTable.Identifiers;
             foreach (var identifier in identifiers)
-                strings[identifier] = stringTable.GetString(identifier);
+                strings[identifier] = stringTable.GetString(identifier, StringTables.ActiveLanguage);
 
             languageField = new GUIEnumField(typeof (Language));
             languageField.OnSelectionChanged += x =>
@@ -81,12 +81,12 @@ namespace BansheeEditor
                     {
                         if (stringTable.Contains(KVP.Key))
                         {
-                            string oldValue = stringTable.GetString(KVP.Key);
+                            string oldValue = stringTable.GetString(KVP.Key, StringTables.ActiveLanguage);
                             if (oldValue != KVP.Value)
-                                stringTable.SetString(KVP.Key, KVP.Value);
+                                stringTable.SetString(KVP.Key, StringTables.ActiveLanguage, KVP.Value);
                         }
                         else
-                            stringTable.SetString(KVP.Key, KVP.Value);
+                            stringTable.SetString(KVP.Key, StringTables.ActiveLanguage, KVP.Value);
                     }
 
                     string[] oldIdentifiers = stringTable.Identifiers;
@@ -111,7 +111,7 @@ namespace BansheeEditor
 
             valuesField.OnValueChanged += x =>
             {
-                stringTable.SetString(x, strings[x]);
+                stringTable.SetString(x, StringTables.ActiveLanguage, strings[x]);
                 EditorApplication.SetDirty(stringTable);
             };
 

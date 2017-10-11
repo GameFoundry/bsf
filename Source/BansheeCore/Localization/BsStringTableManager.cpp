@@ -38,7 +38,7 @@ namespace bs
 		mTables.erase(id);
 	}
 
-	void StringTableManager::setTable(UINT32 id, HStringTable table)
+	void StringTableManager::setTable(UINT32 id, const HStringTable& table)
 	{
 		mTables[id] = table;
 

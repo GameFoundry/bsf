@@ -12,7 +12,8 @@
 #include "Wrappers/GUI/BsScriptGUILayout.h"
 #include "GUI/BsGUILayoutUtility.h"
 #include "GUI/BsGUIHelper.h"
-#include "Wrappers/BsScriptFont.h"
+
+#include "BsScriptFont.generated.h"
 
 namespace bs
 {

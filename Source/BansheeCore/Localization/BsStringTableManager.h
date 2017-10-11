@@ -16,25 +16,44 @@ namespace bs
 	 * Manages string tables used for localizing text. Allows you to add and remove different tables and change the active 
 	 * language.
 	 */
-	class BS_CORE_EXPORT StringTableManager : public Module<StringTableManager>
+	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(n:StringTables,m:Localization) StringTableManager : public Module<StringTableManager>
 	{
 	public:
 		StringTableManager();
 
-		/** Gets the currently active language. */
-		Language getActiveLanguage() const { return mActiveLanguage; }
-
-		/** Changes the currently active language. Any newly created strings will use this value. */
+		/** Determines the currently active language. Any newly created strings will use this value. */
+		BS_SCRIPT_EXPORT(n:ActiveLanguage,pr:setter)
 		void setActiveLanguage(Language language);
 
-		/** Returns the string table with the specified id. If the table doesn't exist new one is created. */
+		/** @copydoc setActiveLanguage() */
+		BS_SCRIPT_EXPORT(n:ActiveLanguage,pr:getter)
+		Language getActiveLanguage() const { return mActiveLanguage; }
+
+		/** 
+		 * Returns the string table with the specified id. If the table doesn't exist new one is created.
+		 *
+		 * @param[in]	id		Identifier of the string table.
+		 * @return				String table with the specified identifier.
+		 */
+		BS_SCRIPT_EXPORT()
 		HStringTable getTable(UINT32 id);
 
-		/** Removes the string table with the specified id. */
+		/** 
+		 * Removes the string table with the specified id.
+		 *
+		 * @param[in]	id		Identifier of the string table.
+		 */
+		BS_SCRIPT_EXPORT()
 		void removeTable(UINT32 id);
 
-		/** Registers a new string table or replaces an old one at the specified id. */
-		void setTable(UINT32 id, HStringTable table);
+		/** 
+		 * Registers a new string table or replaces an old one at the specified id.
+		 *
+		 * @param[in]	id		Identifier of the string table.
+		 * @param[in]	table	New string table to assign to the specified identifier.
+		 */
+		BS_SCRIPT_EXPORT()
+		void setTable(UINT32 id, const HStringTable& table);
 
 	private:
 		Language mActiveLanguage;

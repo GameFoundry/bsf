@@ -2,6 +2,7 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 using System;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using BansheeEngine;
 
 namespace BansheeEditor
@@ -28,11 +29,11 @@ namespace BansheeEditor
         /// </summary>
         Single,
 
-		/// <summary>
+        /// <summary>
         /// Source is a list of 6 images, either sequentially next to each other or in a cross format. The system will 
         /// automatically guess the layout and orientation based on the aspect ratio.
         /// </summary>
-		Faces,
+        Faces,
 
         /// <summary>
         /// Source is a single spherical panoramic image.
@@ -423,6 +424,16 @@ namespace BansheeEditor
     }
 
     /// <summary>
+    /// Marks a range of characters in a font.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential), SerializeObject]
+    public struct CharRange
+    {
+        public int start;
+        public int end;
+    }
+
+    /// <summary>
     /// Import options that provide various options for controlling how is a font resource imported.
     /// </summary>
     public class FontImportOptions : ImportOptions
@@ -565,16 +576,16 @@ namespace BansheeEditor
     /// <summary>
     /// Determines how is a font rendered into the bitmap texture.
     /// </summary>
-	public enum FontRenderMode // Note: Must match C++ enum FontRenderMode
+    public enum FontRenderMode // Note: Must match C++ enum FontRenderMode
     {
         /// <summary>Render antialiased fonts without hinting (slightly more blurry).</summary>
-		Smooth,
+        Smooth,
         /// <summary>Render non-antialiased fonts without hinting (slightly more blurry).</summary>
-		Raster,
+        Raster,
         /// <summary>Render antialiased fonts with hinting.</summary>
-		HintedSmooth,
+        HintedSmooth,
         /// <summary>Render non-antialiased fonts with hinting.</summary>
-		HintedRaster
+        HintedRaster
     }
 
     /// <summary>

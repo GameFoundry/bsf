@@ -13,14 +13,38 @@ namespace bs
 	 */
 
 	/**	Contains textures and data about every character for a bitmap font of a specific size. */
-	struct BS_CORE_EXPORT FontBitmap : public IReflectable
+	struct BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:GUI_Engine) FontBitmap : public IReflectable
 	{
 		/**	Returns a character description for the character with the specified Unicode key. */
-		const CHAR_DESC& getCharDesc(UINT32 charId) const;
+		BS_SCRIPT_EXPORT()
+		const CharDesc& getCharDesc(UINT32 charId) const;
 
-		UINT32 size; /**< Font size for which the data is contained. */
-		FONT_DESC fontDesc; /**< Font description containing per-character and general font data. */
-		Vector<HTexture> texturePages; /**< Textures in which the character's pixels are stored. */
+		/** Font size for which the data is contained. */
+		BS_SCRIPT_EXPORT()
+		UINT32 size;
+		
+		/** Y offset to the baseline on which the characters are placed, in pixels. */
+		BS_SCRIPT_EXPORT()
+		INT32 baselineOffset;
+
+		/** Height of a single line of the font, in pixels. */
+		BS_SCRIPT_EXPORT()
+		UINT32 lineHeight;
+
+		/** Character to use when data for a character is missing. */
+		BS_SCRIPT_EXPORT()
+		CharDesc missingGlyph;
+
+		/** Width of a space in pixels. */
+		BS_SCRIPT_EXPORT()
+		UINT32 spaceWidth;
+
+		/** Textures in which the character's pixels are stored. */
+		BS_SCRIPT_EXPORT()
+		Vector<HTexture> texturePages;
+
+		/** All characters in the font referenced by character ID. */
+		Map<UINT32, CharDesc> characters;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/
@@ -31,26 +55,31 @@ namespace bs
 		RTTITypeBase* getRTTI() const override;
 	};
 
-	// TODO - When saved on disk font currently stores a copy of the texture pages. This should be acceptable
-	// if you import a new TrueType or OpenType font since the texture will be generated on the spot
-	// but if you use a bitmap texture to initialize the font manually, then you will potentially have duplicate textures.
-	// Also, changing the source texture will not automatically update the font because there is no direct link between them.
-	// -- This is probably not a large problem, but it is something to keep an eye out.
-
-	/**	Font resource containing data about textual characters and how to render text. */
-	class BS_CORE_EXPORT Font : public Resource
+	/**
+	 * Font resource containing data about textual characters and how to render text. Contains one or multiple font 
+	 * bitmaps, each for a specific size.
+	 */
+	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:GUI_Engine) Font : public Resource
 	{
 	public:
 		virtual ~Font();
 
 		/**
-		 * Returns font bitmap for a specific size if it exists, null otherwise.
+		 * Returns font bitmap for a specific font size.
 		 *
 		 * @param[in]	size	Size of the bitmap in points.
+		 * @return				Bitmap object if it exists, false otherwise.
 		 */
-		SPtr<const FontBitmap> getBitmap(UINT32 size) const;
+		BS_SCRIPT_EXPORT()
+		SPtr<FontBitmap> getBitmap(UINT32 size) const;
 
-		/**	Finds the available font bitmap size closest to the provided size. */
+		/**	
+		 * Finds the available font bitmap size closest to the provided size. 
+		 * 
+		 * @param[in]	size	Size of the bitmap in points.
+		 * @return				Nearest available bitmap size.
+		 */
+		BS_SCRIPT_EXPORT()
 		INT32 getClosestSize(UINT32 size) const;
 
 		/**	Creates a new font from the provided per-size font data. */

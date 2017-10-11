@@ -17,6 +17,16 @@ namespace bs
 
 	enum class FontRenderMode;
 
+	/**	Interop class between C++ & CLR for CharRange. */
+	class BS_SCR_BED_EXPORT ScriptCharRange : public ScriptObject <ScriptCharRange>
+	{
+	public:
+		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "CharRange")
+
+	private:
+		ScriptCharRange(MonoObject* instance);
+	};
+
 	/** Base class for all C++/CLR interop objects wrapping various implementations of ImportOptions. */
 	class BS_SCR_BED_EXPORT ScriptImportOptionsBase : public ScriptObjectBase
 	{

@@ -21,7 +21,7 @@ namespace bs
 	}
 
 	// Assumes charIdx is an index right after last char in the list (if any). All chars need to be sequential.
-	UINT32 TextDataBase::TextWord::addChar(UINT32 charIdx, const CHAR_DESC& desc)
+	UINT32 TextDataBase::TextWord::addChar(UINT32 charIdx, const CharDesc& desc)
 	{
 		UINT32 charWidth = calcCharWidth(mLastChar, desc);
 
@@ -38,12 +38,12 @@ namespace bs
 		return charWidth;
 	}
 
-	UINT32 TextDataBase::TextWord::calcWidthWithChar(const CHAR_DESC& desc)
+	UINT32 TextDataBase::TextWord::calcWidthWithChar(const CharDesc& desc)
 	{
 		return mWidth + calcCharWidth(mLastChar, desc);
 	}
 
-	UINT32 TextDataBase::TextWord::calcCharWidth(const CHAR_DESC* prevDesc, const CHAR_DESC& desc)
+	UINT32 TextDataBase::TextWord::calcCharWidth(const CharDesc* prevDesc, const CharDesc& desc)
 	{
 		UINT32 charWidth = desc.xAdvance;
 		if (prevDesc != nullptr)
@@ -85,7 +85,7 @@ namespace bs
 		mHasNewline = hasNewlineChar;
 	}
 
-	void TextDataBase::TextLine::add(UINT32 charIdx, const CHAR_DESC& charDesc)
+	void TextDataBase::TextLine::add(UINT32 charIdx, const CharDesc& charDesc)
 	{
 		UINT32 charWidth = 0;
 		if(mIsEmpty)
@@ -157,7 +157,7 @@ namespace bs
 		return lastWord;
 	}
 
-	UINT32 TextDataBase::TextLine::calcWidthWithChar(const CHAR_DESC& desc)
+	UINT32 TextDataBase::TextLine::calcWidthWithChar(const CharDesc& desc)
 	{
 		UINT32 charWidth = 0;
 
@@ -246,7 +246,7 @@ namespace bs
 				UINT32 kerning = 0;
 				for(UINT32 j = word.getCharsStart(); j <= word.getCharsEnd(); j++)
 				{
-					const CHAR_DESC& curChar = mTextData->getChar(j);
+					const CharDesc& curChar = mTextData->getChar(j);
 
 					INT32 curX = penX + curChar.xOffset;
 					INT32 curY = ((INT32) mTextData->getBaselineOffset() - curChar.yOffset);
@@ -262,7 +262,7 @@ namespace bs
 					kerning = 0;
 					if((j + 1) <= word.getCharsEnd())
 					{
-						const CHAR_DESC& nextChar = mTextData->getChar(j + 1);
+						const CharDesc& nextChar = mTextData->getChar(j + 1);
 						for(size_t j = 0; j < curChar.kerningPairs.size(); j++)
 						{
 							if(curChar.kerningPairs[j].otherCharId == nextChar.charId)
@@ -375,7 +375,7 @@ namespace bs
 		mFont = font;
 
 		UINT32 curLineIdx = MemBuffer->allocLine(this);
-		UINT32 curHeight = mFontData->fontDesc.lineHeight;
+		UINT32 curHeight = mFontData->lineHeight;
 		UINT32 charIdx = 0;
 
 		while(true)
@@ -384,7 +384,7 @@ namespace bs
 				break;
 
 			UINT32 charId = text[charIdx];
-			const CHAR_DESC& charDesc = mFontData->getCharDesc(charId);
+			const CharDesc& charDesc = mFontData->getCharDesc(charId);
 
 			TextLine* curLine = &MemBuffer->LineBuffer[curLineIdx];
 
@@ -395,7 +395,7 @@ namespace bs
 				curLineIdx = MemBuffer->allocLine(this);
 				curLine = &MemBuffer->LineBuffer[curLineIdx];
 
-				curHeight += mFontData->fontDesc.lineHeight;
+				curHeight += mFontData->lineHeight;
 
 				charIdx++;
 
@@ -436,7 +436,7 @@ namespace bs
 							curLineIdx = MemBuffer->allocLine(this);
 							curLine = &MemBuffer->LineBuffer[curLineIdx];
 
-							curHeight += mFontData->fontDesc.lineHeight;
+							curHeight += mFontData->lineHeight;
 
 							curLine->addWord(lastWordIdx, lastWord);
 						}
@@ -450,7 +450,7 @@ namespace bs
 								curLineIdx = MemBuffer->allocLine(this);
 								curLine = &MemBuffer->LineBuffer[curLineIdx];
 
-								curHeight += mFontData->fontDesc.lineHeight;
+								curHeight += mFontData->lineHeight;
 							}
 							else
 							{
@@ -461,7 +461,7 @@ namespace bs
 									curLineIdx = MemBuffer->allocLine(this);
 									curLine = &MemBuffer->LineBuffer[curLineIdx];
 
-									curHeight += mFontData->fontDesc.lineHeight;
+									curHeight += mFontData->lineHeight;
 								}
 
 								curLine->addWord(lastWordIdx, lastWord);
@@ -475,7 +475,7 @@ namespace bs
 						curLineIdx = MemBuffer->allocLine(this);
 						curLine = &MemBuffer->LineBuffer[curLineIdx];
 
-						curHeight += mFontData->fontDesc.lineHeight;
+						curHeight += mFontData->lineHeight;
 					}
 				}
 			}
@@ -510,7 +510,7 @@ namespace bs
 
 	void TextDataBase::generatePersistentData(const WString& text, UINT8* buffer, UINT32& size, bool freeTemporary)
 	{
-		UINT32 charArraySize = mNumChars * sizeof(const CHAR_DESC*);
+		UINT32 charArraySize = mNumChars * sizeof(const CharDesc*);
 		UINT32 wordArraySize = mNumWords * sizeof(TextWord);
 		UINT32 lineArraySize = mNumLines * sizeof(TextLine);
 		UINT32 pageInfoArraySize = mNumPageInfos * sizeof(PageInfo);
@@ -522,12 +522,12 @@ namespace bs
 		}
 
 		UINT8* dataPtr = (UINT8*)buffer;
-		mChars = (const CHAR_DESC**)dataPtr;
+		mChars = (const CharDesc**)dataPtr;
 
 		for (UINT32 i = 0; i < mNumChars; i++)
 		{
 			UINT32 charId = text[i];
-			const CHAR_DESC& charDesc = mFontData->getCharDesc(charId);
+			const CharDesc& charDesc = mFontData->getCharDesc(charId);
 
 			mChars[i] = &charDesc;
 		}
@@ -555,17 +555,17 @@ namespace bs
 
 	INT32 TextDataBase::getBaselineOffset() const 
 	{ 
-		return mFontData->fontDesc.baselineOffset; 
+		return mFontData->baselineOffset; 
 	}
 
 	UINT32 TextDataBase::getLineHeight() const 
 	{ 
-		return mFontData->fontDesc.lineHeight; 
+		return mFontData->lineHeight; 
 	}
 
 	UINT32 TextDataBase::getSpaceWidth() const 
 	{ 
-		return mFontData->fontDesc.spaceWidth; 
+		return mFontData->spaceWidth; 
 	}
 
 	void TextDataBase::initAlloc()
