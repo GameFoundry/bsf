@@ -153,18 +153,17 @@ namespace bs
 		INT32 clippedY = pos.y - data->cursorClipRect.y;
 
 		if(clippedX < 0)
-			clippedX = data->cursorClipRect.x + data->cursorClipRect.width + clippedX;
+			clippedX = 0;
 		else if(clippedX >= (INT32)data->cursorClipRect.width)
-			clippedX = data->cursorClipRect.x + (clippedX - data->cursorClipRect.width);
-		else
-			clippedX = data->cursorClipRect.x + clippedX;
+			clippedX = data->cursorClipRect.width > 0 ? data->cursorClipRect.width - 1 : 0;
 
 		if(clippedY < 0)
-			clippedY = data->cursorClipRect.y + data->cursorClipRect.height + clippedY;
+			clippedY = 0;
 		else if(clippedY >= (INT32)data->cursorClipRect.height)
-			clippedY = data->cursorClipRect.y + (clippedY - data->cursorClipRect.height);
-		else
-			clippedY = data->cursorClipRect.y + clippedY;
+			clippedY = data->cursorClipRect.height > 0 ? data->cursorClipRect.height - 1 : 0;
+
+		clippedX += data->cursorClipRect.x;
+		clippedY += data->cursorClipRect.y;
 
 		if(clippedX != pos.x || clippedY != pos.y)
 		{

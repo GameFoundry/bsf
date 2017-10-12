@@ -126,10 +126,10 @@ namespace bs
 			{
 				Vector<HSceneObject> selectedSOs = Selection::instance().getSceneObjects();
 
-				for (int i = 0; i < pickedObjects.size(); i++) 
+				for (int i = 0; i < (int)pickedObjects.size(); i++)
 				{
 					bool found = false;
-					for (int j = 0; j < selectedSOs.size(); j++)
+					for (int j = 0; j < (int)selectedSOs.size(); j++)
 					{
 						if (selectedSOs[j] == pickedObjects[i])
 						{

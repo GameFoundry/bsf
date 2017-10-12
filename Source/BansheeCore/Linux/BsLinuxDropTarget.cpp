@@ -50,6 +50,7 @@ namespace bs
 	X11Property readX11Property(::Display *display, ::Window window, Atom type)
 	{
 		X11Property output;
+		output.data = nullptr;
 
 		unsigned long bytesLeft;
 		int bytesToFetch = 0;
@@ -522,7 +523,7 @@ namespace bs
 			return true;
 
 		// Read data
-		X11Property property = readX11Property(sXDisplay, LinuxPlatform::getMainXWindow(), sXdndTypeList);
+		X11Property property = readX11Property(sXDisplay, LinuxPlatform::getMainXWindow(), sPRIMARY);
 		if(property.format == 8)
 		{
 			// Assuming this is a file list, since we rejected any other drop type
