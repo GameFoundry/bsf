@@ -128,6 +128,9 @@ namespace bs
 			XFreePixmap(display, pixmap);
 		}
 
+		if(!desc.showOnTaskBar)
+			showOnTaskbar(false);
+
 		m->hasTitleBar = desc.showDecorations;
 		m->resizeDisabled = !desc.allowResize;
 
@@ -183,8 +186,6 @@ namespace bs
 
 	void LinuxWindow::hide()
 	{
-		// TODOPORT - Need to track all states so I can restore them on show()
-
 		XUnmapWindow(LinuxPlatform::getXDisplay(), m->xWindow);
 	}
 
@@ -192,8 +193,6 @@ namespace bs
 	{
 		XMapWindow(LinuxPlatform::getXDisplay(), m->xWindow);
 		XMoveResizeWindow(LinuxPlatform::getXDisplay(), m->xWindow, m->x, m->y, m->width, m->height);
-
-		// TODOPORT - Restore all states (pos, size and style)
 	}
 
 	void LinuxWindow::maximize()
@@ -442,6 +441,24 @@ namespace bs
 		xev.xclient.message_type = wmChange;
 		xev.xclient.format = 32;
 		xev.xclient.data.l[0] = enable ? WM_IconicState : WM_NormalState;
+
+		XSendEvent(LinuxPlatform::getXDisplay(), DefaultRootWindow(LinuxPlatform::getXDisplay()), False,
+				SubstructureRedirectMask | SubstructureNotifyMask, &xev);
+	}
+
+	void LinuxWindow::showOnTaskbar(bool enable)
+	{
+		Atom wmState = XInternAtom(LinuxPlatform::getXDisplay(), "_NET_WM_STATE", False);
+		Atom wmSkipTaskbar = XInternAtom(LinuxPlatform::getXDisplay(), "_NET_WM_STATE_SKIP_TASKBAR", False);
+
+		XEvent xev;
+		memset(&xev, 0, sizeof(xev));
+		xev.type = ClientMessage;
+		xev.xclient.window = m->xWindow;
+		xev.xclient.message_type = wmState;
+		xev.xclient.format = 32;
+		xev.xclient.data.l[0] = enable ? _NET_WM_STATE_ADD : _NET_WM_STATE_REMOVE;
+		xev.xclient.data.l[1] = wmSkipTaskbar;
 
 		XSendEvent(LinuxPlatform::getXDisplay(), DefaultRootWindow(LinuxPlatform::getXDisplay()), False,
 				SubstructureRedirectMask | SubstructureNotifyMask, &xev);

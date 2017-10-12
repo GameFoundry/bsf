@@ -49,7 +49,8 @@ namespace bs
 		startUpDesc.primaryWindowDesc.videoMode = VideoMode(1920, 1080);
 		startUpDesc.primaryWindowDesc.title = "BansheeEditor";
 		startUpDesc.primaryWindowDesc.fullscreen = false;
-		startUpDesc.primaryWindowDesc.border = WindowBorder::None;
+		startUpDesc.primaryWindowDesc.showTitleBar = false;
+		startUpDesc.primaryWindowDesc.showBorder = false;
 		startUpDesc.primaryWindowDesc.hideUntilSwap = true;
 		startUpDesc.primaryWindowDesc.depthBuffer = false;
 

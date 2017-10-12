@@ -14,6 +14,7 @@ namespace bs
 	struct Mouse::Pimpl
 	{
 		INT32 fileHandles[MAX_DEVICES];
+		bool hasInputFocus;
 	};
 
 	Mouse::Mouse(const String& name, Input* owner)
@@ -22,6 +23,7 @@ namespace bs
 		InputPrivateData* pvtData = owner->_getPrivateData();
 
 		m = bs_new<Pimpl>();
+		m->hasInputFocus = true;
 
 		for(UINT32 i = 0; i < MAX_DEVICES; i++)
 			m->fileHandles[i] = -1;
@@ -70,6 +72,9 @@ namespace bs
 				ssize_t numReadBytes = read(m->fileHandles[i], &events, sizeof(events));
 				if(numReadBytes < 0)
 					break;
+
+				if(!m->hasInputFocus)
+					continue;
 
 				UINT32 numEvents = numReadBytes / sizeof(input_event);
 				for(UINT32 j = 0; j < numEvents; ++j)
@@ -156,7 +161,7 @@ namespace bs
 
 	void Mouse::changeCaptureContext(UINT64 windowHandle)
 	{
-		// Do nothing
+		m->hasInputFocus = windowHandle != (UINT64)-1;
 	}
 }
 

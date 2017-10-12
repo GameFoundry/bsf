@@ -100,12 +100,20 @@ namespace bs
 
 				if (!desc.parent || desc.toolWindow)
 				{
-					if (desc.border == WindowBorder::None)
-						m->style |= WS_POPUP;
-					else if (desc.border == WindowBorder::Fixed)
-						m->style |= WS_OVERLAPPED | WS_BORDER | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
+					if(desc.showTitleBar)
+					{
+						if(desc.showBorder || desc.allowResize)
+							m->style |= WS_OVERLAPPEDWINDOW;
+						else
+							m->style |= WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
+					}
 					else
-						m->style |= WS_OVERLAPPEDWINDOW;
+					{
+						if(desc.showBorder || desc.allowResize)
+							m->style |= WS_POPUP | WS_BORDER;
+						else
+							m->style |= WS_POPUP;
+					}
 				}
 
 				if (!desc.outerDimensions)

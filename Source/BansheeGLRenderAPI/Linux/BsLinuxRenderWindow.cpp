@@ -107,8 +107,9 @@ namespace bs
 		windowDesc.width = mDesc.videoMode.getWidth();
 		windowDesc.height = mDesc.videoMode.getHeight();
 		windowDesc.title = mDesc.title;
-		windowDesc.showDecorations = !mDesc.toolWindow;
-		windowDesc.allowResize = true;
+		windowDesc.showDecorations = mDesc.showTitleBar;
+		windowDesc.allowResize = mDesc.allowResize;
+		windowDesc.showOnTaskBar = !mDesc.toolWindow;
 		windowDesc.modal = mDesc.modal;
 		windowDesc.visualInfo = visualConfig.visualInfo;
 		windowDesc.screen = mDesc.videoMode.getOutputIdx();

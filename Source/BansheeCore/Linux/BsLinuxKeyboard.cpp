@@ -14,6 +14,7 @@ namespace bs
 	struct Keyboard::Pimpl
 	{
 		INT32 fileHandles[MAX_DEVICES];
+		bool hasInputFocus;
 	};
 
 	Keyboard::Keyboard(const String& name, Input* owner)
@@ -22,6 +23,7 @@ namespace bs
 		InputPrivateData* pvtData = owner->_getPrivateData();
 
 		m = bs_new<Pimpl>();
+		m->hasInputFocus = true;
 
 		for(UINT32 i = 0; i < MAX_DEVICES; i++)
 			m->fileHandles[i] = -1;
@@ -61,6 +63,9 @@ namespace bs
 			if(m->fileHandles[i] == -1)
 				continue;
 
+			if(!m->hasInputFocus)
+				continue;
+
 			while(true)
 			{
 				ssize_t numReadBytes = read(m->fileHandles[i], &events, sizeof(events));
@@ -93,7 +98,7 @@ namespace bs
 
 	void Keyboard::changeCaptureContext(UINT64 windowHandle)
 	{
-		// Do nothing
+		m->hasInputFocus = windowHandle != (UINT64)-1;
 	}
 }
 

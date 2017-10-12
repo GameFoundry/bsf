@@ -43,6 +43,7 @@ namespace bs
 		mMouseWheelScrolledConn  = Platform::onMouseWheelScrolled.connect(std::bind(&Input::mouseWheelScrolled, this, _1));
 
 		RenderWindowManager::instance().onFocusGained.connect(std::bind(&Input::inputWindowChanged, this, _1));
+		RenderWindowManager::instance().onFocusLost.connect(std::bind(&Input::inputFocusLost, this));
 
 		for (int i = 0; i < 3; i++)
 			mPointerButtonStates[i] = ButtonState::Off;
@@ -275,6 +276,15 @@ namespace bs
 
 		for (auto& gamepad : mGamepads)
 			gamepad->changeCaptureContext(hWnd);
+	}
+
+	void Input::inputFocusLost()
+	{
+		mKeyboard->changeCaptureContext((UINT64)-1);
+		mMouse->changeCaptureContext((UINT64)-1);
+
+		for (auto& gamepad : mGamepads)
+			gamepad->changeCaptureContext((UINT64)-1);
 	}
 
 	void Input::_notifyMouseMoved(INT32 relX, INT32 relY, INT32 relZ)

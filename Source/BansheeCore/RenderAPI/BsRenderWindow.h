@@ -20,12 +20,12 @@ namespace bs
 	{
 		RENDER_WINDOW_DESC()
 		: fullscreen(false), vsync(false), vsyncInterval(1), hidden(false), depthBuffer(true)
-			, multisampleCount(0), multisampleHint(""), gamma(false), left(-1), top(-1)
-			, title(""), border(WindowBorder::Normal), outerDimensions(false), enableDoubleClick(true)
-			, toolWindow(false), modal(false), hideUntilSwap(false)
+		, multisampleCount(0), multisampleHint(""), gamma(false), left(-1), top(-1), title("")
+		, showTitleBar(true), showBorder(true), allowResize(true), toolWindow (false), modal(false)
+		, hideUntilSwap(false)
 		{ }
 
-		VideoMode videoMode; /**< A set of frame buffer options. */
+		VideoMode videoMode; /**< Output monitor, frame buffer resize and refresh rate. */
 		bool fullscreen; /**< Should the window be opened in fullscreen mode. */
 		bool vsync; /**< Should the window wait for vertical sync before swapping buffers. */
 		UINT32 vsyncInterval; /**< Determines how many vsync intervals occur per frame. FPS = refreshRate/interval. Usually 1 when vsync active. */
@@ -37,10 +37,10 @@ namespace bs
 		INT32 left; /**< Window origin on X axis in pixels. -1 == screen center. Relative to monitor provided in videoMode. */
 		INT32 top; /**< Window origin on Y axis in pixels. -1 == screen center. Relative to monitor provided in videoMode. */
 		String title; /**< Title of the window. */
-		WindowBorder border; /**< Type of border to create the window with. */
-		bool outerDimensions; /**< Do our dimensions include space for things like title-bar and border. */
-		bool enableDoubleClick; /**< Does window accept double-clicks. */
-		bool toolWindow; /**< Tool windows have a different style than normal windows and can be created with no border or title bar. */
+		bool showTitleBar; /**< Determines if the title-bar should be shown or not. */
+		bool showBorder; /**< Determines if the window border should be shown or not. */
+		bool allowResize; /**< Determines if the user can resize the window by dragging on the window edges. */
+		bool toolWindow; /**< Tool windows have a different look than normal windows and have no task bar entry. */
 		bool modal; /**< When a modal window is open all other windows will be locked until modal window is closed. */
 		bool hideUntilSwap; /**< Window will be created as hidden and only be shown when the first framebuffer swap happens. */
 

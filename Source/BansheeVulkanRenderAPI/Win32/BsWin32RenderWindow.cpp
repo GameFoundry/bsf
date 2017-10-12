@@ -97,15 +97,17 @@ namespace bs
 
 		// Create a window
 		WINDOW_DESC windowDesc;
-		windowDesc.border = mDesc.border;
-		windowDesc.enableDoubleClick = mDesc.enableDoubleClick;
+		windowDesc.showTitleBar = mDesc.showTitleBar;
+		windowDesc.showBorder = mDesc.showBorder;
+		windowDesc.allowResize = mDesc.allowResize;
+		windowDesc.enableDoubleClick = true;
 		windowDesc.fullscreen = mDesc.fullscreen;
 		windowDesc.width = mDesc.videoMode.getWidth();
 		windowDesc.height = mDesc.videoMode.getHeight();
 		windowDesc.hidden = mDesc.hidden || mDesc.hideUntilSwap;
 		windowDesc.left = mDesc.left;
 		windowDesc.top = mDesc.top;
-		windowDesc.outerDimensions = mDesc.outerDimensions;
+		windowDesc.outerDimensions = false;
 		windowDesc.title = mDesc.title;
 		windowDesc.toolWindow = mDesc.toolWindow;
 		windowDesc.creationParams = this;

@@ -21,9 +21,10 @@ namespace bs
 	{
 		WINDOW_DESC()
 			: module(nullptr), monitor(nullptr), parent(nullptr), external(nullptr), creationParams(nullptr), width(0)
-			, height(0), fullscreen(false), hidden(false), left(-1), top(-1), title(""), border(WindowBorder::Normal)
-			, outerDimensions(false), enableDoubleClick(true), toolWindow(false), backgroundPixels(nullptr)
-			, backgroundWidth(0), backgroundHeight(0), alphaBlending(false), modal(false), wndProc(nullptr)
+			, height(0), fullscreen(false), hidden(false), left(-1), top(-1), title(""), showTitleBar(true)
+			, showBorder(true), allowResize(true), outerDimensions(false), enableDoubleClick(true)
+			, toolWindow(false), backgroundPixels(nullptr), backgroundWidth(0), backgroundHeight(0)
+			, alphaBlending(false), modal(false), wndProc(nullptr)
 		{ }
 
 		HINSTANCE module; /**< Instance to the local module. */
@@ -38,11 +39,12 @@ namespace bs
 		INT32 left; /**< Window origin on X axis in pixels. -1 == screen center. Relative to provided monitor. */
 		INT32 top; /**< Window origin on Y axis in pixels. -1 == screen center. Relative to provided monitor. */
 		String title; /**< Title of the window. */
-		WindowBorder border; /**< Type of border to create the window with. */
+		bool showTitleBar; /**< Determines if the title-bar should be shown or not. */
+		bool showBorder; /**< Determines if the window border should be shown or not. */
+		bool allowResize; /**< Determines if the user can resize the window by dragging on the window edges. */
 		bool outerDimensions; /**< Do our dimensions include space for things like title-bar and border. */
 		bool enableDoubleClick; /**< Does window accept double-clicks. */
-		/** Tool windows have a different style than normal windows and can be created with no border or title bar. */
-		bool toolWindow; 
+		bool toolWindow; /**< Tool windows have a different look than normal windows and have no task bar entry. */
 		/**
 		 * Optional background image to apply to the window. This must be a buffer of size 
 		 * backgroundWidth * backgroundHeight. 

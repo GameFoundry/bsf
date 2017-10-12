@@ -30,12 +30,13 @@ namespace bs
 			top = mainWindow->getTop() + mainWindow->getHeight() / 2 - height / 2;
 		}
 
-
 		RENDER_WINDOW_DESC renderWindowDesc;
 		renderWindowDesc.videoMode = VideoMode(width, height);
 		renderWindowDesc.title = "EditorWindow";
 		renderWindowDesc.fullscreen = false;
-		renderWindowDesc.border = WindowBorder::None;
+		renderWindowDesc.showTitleBar = false;
+		renderWindowDesc.showBorder = false;
+		renderWindowDesc.allowResize = !isModal;
 		renderWindowDesc.toolWindow = true;
 		renderWindowDesc.modal = isModal;
 		renderWindowDesc.hideUntilSwap = true;

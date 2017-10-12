@@ -273,6 +273,12 @@ namespace bs
 		/** Called when window in focus changes, as reported by the OS. */
 		void inputWindowChanged(RenderWindow& win);
 
+		/**
+		 * Called when the current window loses input focus. This might be followed by inputWindowChanged() if the focus
+		 * just switched to another of this application's windows.
+		 */
+		void inputFocusLost();
+
 	private:
 		Mutex mMutex;
 

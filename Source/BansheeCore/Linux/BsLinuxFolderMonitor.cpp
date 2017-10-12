@@ -30,7 +30,7 @@ namespace bs
 
 	FolderMonitor::FolderWatchInfo::FolderWatchInfo(const Path& folderToMonitor, int inHandle, bool monitorSubdirectories,
 													FolderChangeBits filter)
-		: folderToMonitor(folderToMonitor), dirHandle(0), monitorSubdirectories(monitorSubdirectories)
+		: folderToMonitor(folderToMonitor), dirHandle(inHandle), monitorSubdirectories(monitorSubdirectories)
 		, filter(filter)
 	{ }
 
@@ -66,6 +66,12 @@ namespace bs
 		String pathString = path.toString();
 
 		INT32 watchHandle = inotify_add_watch(dirHandle, pathString.c_str(), IN_ALL_EVENTS);
+		if(watchHandle == -1)
+		{
+			String error = strerror(errno);
+			LOGERR("Unable to start folder monitor for path: \"" + pathString +"\". Error: " + error);
+		}
+
 		pathToHandle[path] = watchHandle;
 		handleToPath[watchHandle] = path;
 	}
@@ -472,29 +478,6 @@ namespace bs
 
 		for(auto& action : m->activeFileActions)
 		{
-			// Reported file actions might still be in progress (i.e. something might still be writing to those files).
-			// Sadly there doesn't seem to be a way to properly determine when those files are done being written, so instead
-			// we check for at least a couple of frames if the file's size hasn't changed before reporting a file action.
-			// This takes care of most of the issues and avoids reporting partially written files in almost all cases.
-			if (FileSystem::exists(action->newName))
-			{
-				UINT64 size = FileSystem::getFileSize(action->newName);
-				if (!action->checkForWriteStarted)
-				{
-					action->checkForWriteStarted = true;
-					action->lastSize = size;
-					continue;
-				}
-				else
-				{
-					if (action->lastSize != size)
-					{
-						action->lastSize = size;
-						continue;
-					}
-				}
-			}
-
 			switch (action->type)
 			{
 			case FileActionType::Added:

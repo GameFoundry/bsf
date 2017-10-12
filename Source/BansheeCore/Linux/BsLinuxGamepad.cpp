@@ -14,6 +14,7 @@ namespace bs
 		GamepadInfo info;
 		INT32 fileHandle;
 		ButtonCode povState;
+		bool hasInputFocus;
 	};
 
 	Gamepad::Gamepad(const String& name, const GamepadInfo& gamepadInfo, Input* owner)
@@ -22,6 +23,7 @@ namespace bs
 		m = bs_new<Pimpl>();
 		m->info = gamepadInfo;
 		m->povState = BC_UNASSIGNED;
+		m->hasInputFocus = true;
 
 		String eventPath = "/dev/input/event" + toString(gamepadInfo.eventHandlerIdx);
 		m->fileHandle = open(eventPath.c_str(), O_RDWR | O_NONBLOCK);
@@ -58,6 +60,9 @@ namespace bs
 			ssize_t numReadBytes = read(m->fileHandle, &events, sizeof(events));
 			if(numReadBytes < 0)
 				break;
+
+			if(!m->hasInputFocus)
+				continue;
 
 			UINT32 numEvents = numReadBytes / sizeof(input_event);
 			for(UINT32 i = 0; i < numEvents; ++i)
@@ -150,7 +155,7 @@ namespace bs
 
 	void Gamepad::changeCaptureContext(UINT64 windowHandle)
 	{
-		// Do nothing
+		m->hasInputFocus = windowHandle != (UINT64)-1;
 	}
 }
 

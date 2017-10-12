@@ -27,6 +27,7 @@ namespace bs
 		bool showDecorations;
 		bool allowResize;
 		bool modal;
+		bool showOnTaskBar;
 		::Window parent;
 		XVisualInfo visualInfo;
 		SPtr<PixelData> background;
@@ -152,6 +153,9 @@ namespace bs
 		 * occurred.
 		 */
 		void minimize(bool enable);
+
+		/** Shows or hides the window icon from the taskbar. */
+		void showOnTaskbar(bool enable);
 
 		/**
 		 * Shows or hides window decorations. Decorations include window title bar, border and similar. Essentially anything
