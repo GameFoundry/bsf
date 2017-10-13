@@ -509,6 +509,7 @@ namespace BansheeEditor
             ///                 start and target states.</param>
             public void Update(float t)
             {
+                interpolated = new CameraState();
                 interpolated.Position = start.Position * (1.0f - t) + target.Position * t;
                 interpolated.Rotation = Quaternion.Slerp(start.Rotation, target.Rotation, t);
                 interpolated.OrtographicPct = start.OrtographicPct * (1.0f - t) + target.OrtographicPct * t;

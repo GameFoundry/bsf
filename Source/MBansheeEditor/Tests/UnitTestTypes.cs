@@ -5,6 +5,7 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
+    #pragma warning disable 0649
     /** @addtogroup Tests
      *  @{
      */
@@ -138,4 +139,5 @@ namespace BansheeEditor
     }
 
     /** @} */
+    #pragma warning restore 0649
 }

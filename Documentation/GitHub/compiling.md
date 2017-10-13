@@ -21,7 +21,7 @@ Use the guide below to get Banshee up and running as quickly as possible. Scroll
 	  - `Xcode`
 	- See all valid generators: [cmake-generators](https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html)
 - Build the project using your chosen tool
-  - Build files are in `BansheeEngine\Build` folder
+  - Build files will be placed in `BansheeEngine\Build` folder
 	 
 ## Customizing the build
 
@@ -49,7 +49,7 @@ You can choose to use a different *CMake* generator than those specified above, 
 
 ### <a name="dependencies"></a>Third party dependencies
 Banshee relies on a variety of third party dependencies. A set of pre-compiled dependencies are provided for every supported platform/compiler. These will be fetched automatically by the build process, but you may also download them manually or compile them from source:
- * [Download dependencies (VS2015)](http://data.banshee3d.com/BansheeDependencies_VS2015_Master.zip)
+ * [Download dependencies (VS2015/VS2017)](http://data.banshee3d.com/BansheeDependencies_VS2015_Master.zip)
  * [Compiling dependencies manually](dependencies.md)
  
 For older versions of pre-compiled dependencies check the git release tag descriptions for links.
@@ -66,10 +66,13 @@ The following dependencies will need to be installed manually. Which ones are re
   - **DirectX Debug Layer** (Required by default on Windows 10)
     - Optional if you have choosen a different RenderAPI in *CMake* options
     - Go to Settings panel (type "Settings" in Start)->System->Apps & features->Manage optional Features->Add a feature->Select "Graphics Tools"
+  - **Mono 4.2** (Optional)
+    - If you wish to compile managed assemblies using a Microsoft compiler (e.g. using Visual Studio) yet still be able to debug the generated assemblies, you must install Mono 4.2. and set up an environment variable MONO_INSTALL_DIR pointing to the Mono installation directory. When this is set up "pdb2mdb" script will trigger on next compile generating the needed debug symbols.
+    - http://www.mono-project.com/download/
  
 **Linux**
-  - **OpenGL** (Required by default)
-    - Optional if you have choosen a different RenderAPI in *CMake* options
+  - **OpenGL**
+    - Required by default, but optional if you have choosen a different RenderAPI in *CMake* options
     - Debian/Ubuntu: *apt-get install libgl1-mesa-dev libglu1-mesa-dev mesa-common-dev*
   - **X11**
     - Debian/Ubuntu: *apt-get install libx11-dev libxcursor-dev libxrandr-dev*
@@ -78,6 +81,9 @@ The following dependencies will need to be installed manually. Which ones are re
   - **GTK+ 3.0** (Editor only)
     - Optional if not building the editor
     - Debian/Ubuntu: *apt-get install libgtk-3-dev*
+  - **Mono** (Editor only)
+    - Required for compilation of C# code. Optional if not building the editor.
+    - Debian/Ubuntu: *apt-get install mono-complete*
   - (Or equivalent packages for your distribution)
 
 **All OS**
@@ -94,6 +100,3 @@ The following dependencies will need to be installed manually. Which ones are re
     - If CMake complains it cannot find FMOD, manually set the FMOD_INSTALL_DIRS to your installation directory 
     - Copy the dynamic libraries (.dll) from {INSTALLDIR}/api/lowlevel/lib into /bin folder in Banshee source code folder
       - Use logging libraries for the Debug builds, and non-logging for OptimizedDebug and Release builds
-  - **Mono 4.2** (Optional)
-    - If you wish to compile managed assemblies using a Microsoft compiler (e.g. using Visual Studio) yet still be able to debug the generated assemblies, you must install Mono 4.2. and set up an environment variable MONO_INSTALL_DIR pointing to the Mono installation directory. When this is set up "pdb2mdb" script will trigger on next compile generating the needed debug symbols.
-    - http://www.mono-project.com/download/

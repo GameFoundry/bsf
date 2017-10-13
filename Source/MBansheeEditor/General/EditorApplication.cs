@@ -242,12 +242,15 @@ namespace BansheeEditor
         internal static VirtualButton DuplicateKey = new VirtualButton(DuplicateBinding);
         internal static VirtualButton DeleteKey = new VirtualButton(DeleteBinding);
 
-        private static EditorApplication instance;
         private static FolderMonitor monitor;
         private static ScriptCodeManager codeManager;
         private static bool sceneDirty;
         private static bool unitTestsExecuted;
         private static EditorPersistentData persistentData;
+
+        #pragma warning disable 0414
+        private static EditorApplication instance;
+        #pragma warning restore 0414
 
         /// <summary>
         /// Constructs a new editor application. Called at editor start-up by the runtime, and any time assembly refresh

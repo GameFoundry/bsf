@@ -20,7 +20,9 @@ namespace BansheeEditor
     [AttributeUsage(AttributeTargets.Class)]
     public sealed class CustomHandle : Attribute
     {
+        #pragma warning disable 0414
         private Type type;
+        #pragma warning restore 0414
 
         /// <summary>
         /// Creates a new custom handle attribute.

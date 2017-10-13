@@ -34,7 +34,9 @@ namespace BansheeEditor
     [AttributeUsage(AttributeTargets.Method)]
     public sealed class DrawGizmo : Attribute
     {
+        #pragma warning disable 0414
         private DrawGizmoFlags flags;
+        #pragma warning restore 0414
 
         /// <summary>
         /// Creates a new draw gizmos attribute.

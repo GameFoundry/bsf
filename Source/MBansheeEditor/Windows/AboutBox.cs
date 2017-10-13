@@ -155,7 +155,6 @@ namespace BansheeEditor
         {
             GUILabel label = new GUILabel(new LocEdString(name), GUIOption.FixedWidth(150));
             GUIButton linkBtn = new GUIButton(new LocEdString("Website"), GUIOption.FixedWidth(50));
-            GUIButton licenseBtn = new GUIButton(new LocEdString("License"), GUIOption.FixedWidth(50));
 
             GUILayoutX horzLayout = layout.AddLayoutX();
             horzLayout.AddSpace(10);

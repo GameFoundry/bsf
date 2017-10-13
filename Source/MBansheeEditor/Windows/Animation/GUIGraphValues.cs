@@ -133,8 +133,6 @@ namespace BansheeEditor
                
                 if (ticks.Length > 0)
                 {
-                    float valuePerTick = (rangeEnd - rangeStart)/ticks.Length;
-
                     for (int j = 0; j < ticks.Length; j++)
                     {
                         int yPos = (int) ((ticks[j] - yOffset) * pixelsPerHeight);

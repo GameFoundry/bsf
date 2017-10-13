@@ -64,11 +64,13 @@ namespace BansheeEditor
             this.contextCallback = contextCallback;
         }
 
+        #pragma warning disable 0414
         private string path;
         private ShortcutKey shortcut;
         private int priority;
         private bool separator;
         private string contextCallback;
+        #pragma warning restore 0414
     }
 
     /** @} */

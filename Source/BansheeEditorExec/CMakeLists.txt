@@ -30,4 +30,6 @@ add_engine_dependencies(BansheeEditorExec)
 add_dependencies(BansheeEditorExec BansheeFBXImporter BansheeFontImporter BansheeFreeImgImporter SBansheeEditor)
 
 # Compiler flags
-target_compile_options(BansheeEditorExec PUBLIC /wd4509)
+if(MSVC)
+	target_compile_options(BansheeEditorExec PUBLIC /wd4509)
+endif()

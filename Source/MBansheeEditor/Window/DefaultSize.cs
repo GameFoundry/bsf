@@ -14,8 +14,10 @@ namespace BansheeEditor
     [AttributeUsage(AttributeTargets.Class)]
     public sealed class DefaultSize : Attribute
     {
+        #pragma warning disable 0414
         private int width = 400;
         private int height = 400;
+        #pragma warning restore 0414
 
         public DefaultSize(int width, int height)
         {

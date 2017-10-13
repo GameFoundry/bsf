@@ -320,10 +320,13 @@ add_subdirectory_optional(Experimental/PBS)
 add_subdirectory_optional(Experimental/Shadows)
 
 ## Managed projects
-if(MSVC)
-	if(BUILD_EDITOR)
-		include_external_msproject(MBansheeEngine ${PROJECT_SOURCE_DIR}/MBansheeEngine/MBansheeEngine.csproj)
-		include_external_msproject(MBansheeEditor ${PROJECT_SOURCE_DIR}/MBansheeEditor/MBansheeEditor.csproj)
+if(BUILD_EDITOR)
+	set(CS_ENGINE_PROJ ${PROJECT_SOURCE_DIR}/MBansheeEngine/MBansheeEngine.csproj)
+	set(CS_EDITOR_PROJ ${PROJECT_SOURCE_DIR}/MBansheeEditor/MBansheeEditor.csproj)
+
+	if(MSVC)
+		include_external_msproject(MBansheeEngine ${CS_ENGINE_PROJ})
+		include_external_msproject(MBansheeEditor ${CS_EDITOR_PROJ})
 		
 		set_target_properties(MBansheeEngine PROPERTIES
 		  MAP_IMPORTED_CONFIG_RELEASE OptimizedDebug
@@ -334,12 +337,25 @@ if(MSVC)
 		
 		set_property(TARGET MBansheeEngine PROPERTY FOLDER Script)
 		set_property(TARGET MBansheeEditor PROPERTY FOLDER Script)
-		
+
 		add_dependencies(BansheeEditorExec MBansheeEngine MBansheeEditor)
 		add_dependencies(Game MBansheeEngine)
-		
+
 		set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT BansheeEditorExec)
+	else()
+		find_package(mcs)
+
+		if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+			set(CS_PROJ_CONFIG Debug)
+		else()
+			set(CS_PROJ_CONFIG Release)
+		endif()
+
+		add_custom_target(BuildManaged
+				COMMAND xbuild /p:Configuration=${CS_PROJ_CONFIG} ${CS_EDITOR_PROJ}
+				COMMENT "Building managed assemblies")
+
+		add_dependencies(BansheeEditorExec BuildManaged)
+		add_dependencies(Game BuildManaged)
 	endif()
-else()
-# TODO - Use Mono compiler to build the managed code as a pre-build step
 endif()

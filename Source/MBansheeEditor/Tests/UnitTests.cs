@@ -244,6 +244,8 @@ namespace BansheeEditor
                 return;
             }
 
+            // Disabled because it's a slow test, enable only when relevant (or when a build machine is set up)
+            /*
             Action PrintSceneState = () =>
             {
                 SceneObject root = Scene.Root;
@@ -269,8 +271,6 @@ namespace BansheeEditor
                 Debug.Log(output);
             };
 
-            // Disabled because it's a slow test, enable only when relevant (or when a build machine is set up)
-            /*
             string oldScene = Scene.ActiveSceneUUID;
             Scene.Clear();
 

@@ -27,9 +27,11 @@ namespace BansheeEngine
             this.slider = slider;
         }
 
+        #pragma warning disable 0414
         private float min;
         private float max;
         private bool slider;
+        #pragma warning restore 0414
     }
 
     /** @} */

@@ -57,12 +57,14 @@ namespace BansheeEditor
             this.builtinIcon = (int)icon;
         }
 
+        #pragma warning disable 0414
         private string name;
         private string icon;
         private int builtinIcon;
         private string tooltip;
         private int priority;
         private bool separator;
+        #pragma warning restore 0414
     }
 
     /** @} */

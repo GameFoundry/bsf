@@ -25,9 +25,30 @@ if(WIN32)
 		set(BS_COPY_FOLDER Win32)
 	endif()
 
-	add_custom_command(TARGET Game POST_BUILD 
-		COMMAND xcopy /Y /I \"$(TargetDir)$(TargetName).exe\" \"$(SolutionDir)..\\..\\Data\\Binaries\\${BS_COPY_FOLDER}\\\"
-)
+	if(MSVC)
+		add_custom_command(
+			TARGET Game POST_BUILD
+			COMMAND xcopy /Y /I \"$(TargetDir)$(TargetName).exe\" \"$(SolutionDir)..\\..\\Data\\Binaries\\${BS_COPY_FOLDER}\\\")
+	else()
+		set(SRC_FILE ${BS_BINARY_OUTPUT_DIR}/Game)
+		set(DST_FOLDER ../${PROJECT_SOURCE_DIR}/Data/Binaries/${BS_COPY_FOLDER})
+		add_custom_command(TARGET Game POST_BUILD COMMAND xcopy /Y /I ${SRC_FILE} ${DST_FOLDER})
+	endif()
+
+elseif(LINUX)
+	if(BS_64BIT)
+		set(BS_COPY_FOLDER Linux64)
+	else()
+		set(BS_COPY_FOLDER Linux32)
+	endif()
+
+	set(SRC_FILE ${BS_BINARY_OUTPUT_DIR}/Game)
+	set(DST_FOLDER ../${PROJECT_SOURCE_DIR}/Data/Binaries/${BS_COPY_FOLDER})
+	add_custom_command(
+		TARGET Game POST_BUILD
+		COMMAND rm -rf ${DST_FOLDER}
+		COMMAND mkdir ${DST_FOLDER}
+		COMMAND cp ${SRC_FILE} ${DST_FOLDER})
 else()
 # TODO_OTHER_PLATFORMS_GO_HERE
 endif()
@@ -43,4 +64,6 @@ set_property(TARGET Game PROPERTY FOLDER Executable)
 add_engine_dependencies(Game)
 
 # Compiler flags
-target_compile_options(Game PUBLIC /wd4509)
+if(MSVC)
+	target_compile_options(Game PUBLIC /wd4509)
+endif()

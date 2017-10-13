@@ -23,6 +23,8 @@ namespace BansheeEngine
             this.step = step;
         }
 
+        #pragma warning disable 0414
         private float step;
+        #pragma warning restore 0414
     }
 }

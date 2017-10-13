@@ -19,7 +19,9 @@ namespace BansheeEditor
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
     public sealed class CustomInspector : Attribute
     {
+        #pragma warning disable 0414
         private Type type;
+        #pragma warning restore 0414
 
         /// <summary>
         /// Creates a new custom inspector attribute.

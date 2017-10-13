@@ -49,7 +49,7 @@ namespace BansheeEditor
         private UnderlayState underlayState;
         private GUITextBox renameTextBox;
 
-        private int width, height;
+        private int width;
         private LibraryGUIEntryType type;
         private bool delayedSelect;
         private float delayedSelectTime;
@@ -146,7 +146,6 @@ namespace BansheeEditor
             this.underlay = null;
             this.type = type;
             this.width = width;
-            this.height = height;
         }
 
         /// <summary>
