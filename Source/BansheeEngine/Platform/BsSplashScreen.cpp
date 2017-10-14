@@ -4,6 +4,7 @@
 #include "Resources/BsBuiltinResources.h"
 #include "Utility/BsTimer.h"
 #include "CoreThread/BsCoreThread.h"
+#include <X11/Xutil.h>
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 #include "Win32/BsWin32Platform.h"
@@ -124,9 +125,14 @@ namespace bs
 		windowDesc.background = splashPixelData;
 
 		LinuxPlatform::lockX();
-		windowDesc.screen = XDefaultScreen(LinuxPlatform::getXDisplay());
+		::Display* display = LinuxPlatform::getXDisplay();
+
+		windowDesc.screen = (UINT32)XDefaultScreen(display);
 		windowDesc.visualInfo.depth = XDefaultDepth(LinuxPlatform::getXDisplay(), windowDesc.screen);
 		windowDesc.visualInfo.visual = XDefaultVisual(LinuxPlatform::getXDisplay(), windowDesc.screen);
+
+		// Get a RGBA visual
+		XMatchVisualInfo(display, DefaultScreen(display), 32, TrueColor, &windowDesc.visualInfo);
 
 		m->window = bs_new<LinuxWindow>(windowDesc);
 		LinuxPlatform::unlockX();

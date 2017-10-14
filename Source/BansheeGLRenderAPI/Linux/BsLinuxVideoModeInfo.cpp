@@ -38,7 +38,11 @@ namespace bs { namespace ct
 
 				XRRCrtcInfo* crtcInfo = XRRGetCrtcInfo(display, screenRes, outputInfo->crtc);
 				if(crtcInfo == nullptr)
+				{
+					XRRFreeCrtcInfo(crtcInfo);
+					XRRFreeOutputInfo(outputInfo);
 					continue;
+				}
 
 				VideoOutputInfo* output = bs_new<LinuxVideoOutputInfo>(display, i, outputInfo, crtcInfo, screenRes,
 						screenRes->outputs[j], (UINT32)mOutputs.size());

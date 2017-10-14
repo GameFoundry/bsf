@@ -39,7 +39,7 @@ namespace bs
 		static void _unregisterWindow(::Window xWindow);
 
 		/** Generates a X11 Pixmap from the provided pixel data. */
-		static Pixmap createPixmap(const PixelData& data);
+		static Pixmap createPixmap(const PixelData& data, UINT32 depth);
 	};
 
 	/** @} */

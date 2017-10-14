@@ -1261,13 +1261,22 @@ namespace bs
 			mData->mainXWindow = 0;
 	}
 
-	Pixmap LinuxPlatform::createPixmap(const PixelData& data)
+	Pixmap LinuxPlatform::createPixmap(const PixelData& data, UINT32 depth)
 	{
-		SPtr<PixelData> bgraData = PixelData::create(data.getWidth(), data.getHeight(), 1, PF_BGRA8);
-		PixelUtil::bulkPixelConversion(data, *bgraData);
+		// Premultiply alpha
+		Vector<Color> colors = data.getColors();
+		for(auto& color : colors)
+		{
+			color.r *= color.a;
+			color.g *= color.a;
+			color.b *= color.a;
+		}
 
-		UINT32 depth = (UINT32)XDefaultDepth(mData->xDisplay, 0);
-		XImage* image = XCreateImage(mData->xDisplay, XDefaultVisual(mData->xDisplay, 0), depth, ZPixmap, 0,
+		// Convert to BGRA
+		SPtr<PixelData> bgraData = PixelData::create(data.getWidth(), data.getHeight(), 1, PF_BGRA8);
+		bgraData->setColors(colors);
+
+		XImage* image = XCreateImage(mData->xDisplay, CopyFromParent, depth, ZPixmap, 0,
 				(char*)bgraData->getData(), data.getWidth(), data.getHeight(), 32, 0);
 
 		Pixmap pixmap = XCreatePixmap(mData->xDisplay, XDefaultRootWindow(mData->xDisplay),

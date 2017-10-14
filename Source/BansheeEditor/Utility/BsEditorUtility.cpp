@@ -168,23 +168,23 @@ namespace bs
 
 		struct TempData
 		{
-			TempData(SceneObjProxy& proxy, const HSceneObject& restoredObj)
+			TempData(SceneObjProxy* proxy, const HSceneObject& restoredObj)
 				:proxy(proxy), restoredObj(restoredObj)
 			{ }
 
-			SceneObjProxy& proxy;
+			SceneObjProxy* proxy;
 			HSceneObject restoredObj;
 		};
 
 		Stack<TempData> todo;
-		todo.push(TempData(proxy, restored));
+		todo.push(TempData(&proxy, restored));
 
 		while (!todo.empty())
 		{
 			TempData data = todo.top();
 			todo.pop();
 
-			data.restoredObj->_setInstanceData(data.proxy.instanceData);
+			data.restoredObj->_setInstanceData(data.proxy->instanceData);
 
 			// Find components that are still active and swap the old ones with restored ones,
 			// keep any other as is.
@@ -193,7 +193,7 @@ namespace bs
 			UINT32 idx = 0;
 			for (auto& restoredComponent : restoredComponents)
 			{
-				restoredComponent->_setInstanceData(data.proxy.componentInstanceData[idx]);
+				restoredComponent->_setInstanceData(data.proxy->componentInstanceData[idx]);
 
 				SPtr<GameObject> restoredPtr = std::static_pointer_cast<GameObject>(restoredComponent.getInternalPtr());
 				HComponent restoredComponentCopy = restoredComponent; // To remove const
@@ -207,7 +207,7 @@ namespace bs
 			UINT32 restoredNumChildren = data.restoredObj->getNumChildren();
 			for (UINT32 i = 0; i < restoredNumChildren; i++)
 			{
-				todo.push(TempData(data.proxy.children[i], data.restoredObj->getChild(i)));
+				todo.push(TempData(&data.proxy->children[i], data.restoredObj->getChild(i)));
 			}
 		}
 	}

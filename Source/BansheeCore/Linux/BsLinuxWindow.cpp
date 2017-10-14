@@ -5,6 +5,7 @@
 #include "BsLinuxDropTarget.h"
 
 #include <X11/Xatom.h>
+#include <X11/extensions/Xrandr.h>
 
 #define _NET_WM_STATE_REMOVE 0
 #define _NET_WM_STATE_ADD 1
@@ -45,43 +46,112 @@ namespace bs
 
 		::Display* display = LinuxPlatform::getXDisplay();
 
-		INT32 screen;
-		if(desc.screen == (UINT32)-1)
-			screen = XDefaultScreen(display);
-		else
-			screen = std::min((INT32)desc.screen, XScreenCount(display));
+		// Find the screen of the chosen monitor, as well as its current dimensions
+		INT32 screen = XDefaultScreen(display);
+		UINT32 outputIdx = 0;
+
+		RROutput primaryOutput = XRRGetOutputPrimary(display, RootWindow(display, screen));
+		INT32 monitorX = 0;
+		INT32 monitorY = 0;
+		UINT32 monitorWidth = 0;
+		UINT32 monitorHeight = 0;
+
+		INT32 screenCount = XScreenCount(display);
+		for(INT32 i = 0; i < screenCount; i++)
+		{
+			XRRScreenResources* screenRes = XRRGetScreenResources(display, RootWindow(display, i));
+
+			bool foundMonitor = false;
+			for (INT32 j = 0; j < screenRes->noutput; j++)
+			{
+				XRROutputInfo* outputInfo = XRRGetOutputInfo(display, screenRes, screenRes->outputs[j]);
+				if (outputInfo == nullptr || outputInfo->crtc == 0 || outputInfo->connection == RR_Disconnected)
+				{
+					XRRFreeOutputInfo(outputInfo);
+
+					continue;
+				}
+
+				XRRCrtcInfo* crtcInfo = XRRGetCrtcInfo(display, screenRes, outputInfo->crtc);
+				if (crtcInfo == nullptr)
+				{
+					XRRFreeCrtcInfo(crtcInfo);
+					XRRFreeOutputInfo(outputInfo);
+
+					continue;
+				}
+
+				if(desc.screen == (UINT32)-1)
+				{
+					if(screenRes->outputs[j] == primaryOutput)
+						foundMonitor = true;
+				}
+				else
+					foundMonitor = outputIdx == desc.screen;
+
+				if(foundMonitor)
+				{
+					screen = i;
+
+					monitorX = crtcInfo->x;
+					monitorY = crtcInfo->y;
+					monitorWidth = crtcInfo->width;
+					monitorHeight = crtcInfo->height;
+
+					foundMonitor = true;
+					break;
+				}
+			}
+
+			if(foundMonitor)
+				break;
+		}
 
 		XSetWindowAttributes attributes;
 		attributes.background_pixel = XWhitePixel(display, screen);
 		attributes.border_pixel = XBlackPixel(display, screen);
+		attributes.background_pixmap = 0;
 
 		attributes.colormap = XCreateColormap(display,
 				XRootWindow(display, screen),
 				desc.visualInfo.visual,
 				AllocNone);
 
-		UINT32 borderWidth = 0;
+		// If no position specified, center on the requested monitor
+		if (desc.x == -1)
+			m->x = monitorX + (monitorWidth - desc.width) / 2;
+		else if (desc.screen != (UINT32)-1)
+			m->x = monitorX + desc.x;
+		else
+			m->x = desc.x;
 
-		m->x = desc.x;
-		m->y = desc.y;
+		if (desc.y == -1)
+			m->y = monitorY + (monitorHeight - desc.height) / 2;
+		else if (desc.screen != (UINT32)-1)
+			m->y = monitorY + desc.y;
+		else
+			m->y = desc.y;
+
 		m->width = desc.width;
 		m->height = desc.height;
+
 		m->xWindow = XCreateWindow(display,
 				XRootWindow(display, screen),
-				desc.x, desc.y,
-				desc.width, desc.height,
-				borderWidth, desc.visualInfo.depth,
+				m->x, m->y,
+				m->width, m->height,
+				0, desc.visualInfo.depth,
 				InputOutput, desc.visualInfo.visual,
-				CWBackPixel | CWBorderPixel | CWColormap, &attributes);
+				CWBackPixel | CWBorderPixel | CWColormap | CWBackPixmap, &attributes);
 
 		XStoreName(display, m->xWindow, desc.title.c_str());
 
+		// Position/size might have (and usually will) get overridden by the WM, so re-apply them
 		XSizeHints hints;
 		hints.flags = PPosition | PSize;
-		hints.x = desc.x;
-		hints.y = desc.y;
-		hints.width = desc.width;
-		hints.height = desc.height;
+		hints.x = m->x;
+		hints.y = m->y;
+		hints.width = m->width;
+		hints.height = m->height;
 
 		if(!desc.allowResize)
 		{
@@ -123,9 +193,11 @@ namespace bs
 		// Set background image if assigned
 		if(desc.background)
 		{
-			Pixmap pixmap = LinuxPlatform::createPixmap(*desc.background);
+			Pixmap pixmap = LinuxPlatform::createPixmap(*desc.background, (UINT32)desc.visualInfo.depth);
+
 			XSetWindowBackgroundPixmap(display, m->xWindow, pixmap);
 			XFreePixmap(display, pixmap);
+			XSync(display, 0);
 		}
 
 		if(!desc.showOnTaskBar)
@@ -273,17 +345,18 @@ namespace bs
 
 	void LinuxWindow::setIcon(const PixelData& data)
 	{
-		Pixmap iconPixmap = LinuxPlatform::createPixmap(data);
+		::Display* display = LinuxPlatform::getXDisplay();
+		Pixmap iconPixmap = LinuxPlatform::createPixmap(data, (UINT32)XDefaultDepth(display, XDefaultScreen(display)));
 
 		XWMHints* hints = XAllocWMHints();
 		hints->flags = IconPixmapHint;
 		hints->icon_pixmap = iconPixmap;
 
-		XSetWMHints(LinuxPlatform::getXDisplay(), m->xWindow, hints);
-		XFlush(LinuxPlatform::getXDisplay());
+		XSetWMHints(display, m->xWindow, hints);
+		XFlush(display);
 
 		XFree(hints);
-		XFreePixmap(LinuxPlatform::getXDisplay(), iconPixmap);
+		XFreePixmap(display, iconPixmap);
 	}
 
 	void LinuxWindow::_cleanUp()
