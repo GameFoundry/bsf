@@ -92,7 +92,7 @@ namespace bs
 			// the requested alignment
 
 #if BS_DEBUG_MODE
-			alignOffset = alignment - sizeof(UINT32) & (alignment - 1);
+			alignOffset = alignment - (sizeof(UINT32) & (alignment - 1));
 #else
 			if (alignment > 16)
 				alignOffset = alignment - 16;

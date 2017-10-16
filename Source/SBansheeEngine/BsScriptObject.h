@@ -162,10 +162,12 @@ namespace bs
 		 */
 		static void _initMetaData()
 		{
-			assert(metaData.name.empty());
-			metaData = ScriptMeta(Type::getAssemblyName(), Type::getNamespace(), Type::getTypeName(), &Type::initRuntimeData);
+			// Need to delay init of actual metaData since it's also a static, and we can't guarantee the order
+			// (if it gets initialized after this, it will just overwrite the data)
+			ScriptMeta localMetaData = ScriptMeta(Type::getAssemblyName(), Type::getNamespace(), Type::getTypeName(),
+					&Type::initRuntimeData);
 
-			MonoManager::registerScriptType(&metaData);
+			MonoManager::registerScriptType(&metaData, localMetaData);
 		}
 
 	protected:

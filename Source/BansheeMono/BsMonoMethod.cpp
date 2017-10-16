@@ -111,10 +111,11 @@ namespace bs
 		if (attrInfo == nullptr)
 			return nullptr;
 
-		MonoObject* foundAttr = mono_custom_attrs_get_attr(attrInfo, monoClass->_getInternalClass());
+		MonoObject* foundAttr = nullptr;
+		if(mono_custom_attrs_has_attr(attrInfo, monoClass->_getInternalClass()))
+			foundAttr = mono_custom_attrs_get_attr(attrInfo, monoClass->_getInternalClass());
 
 		mono_custom_attrs_free(attrInfo);
-
 		return foundAttr;
 	}
 

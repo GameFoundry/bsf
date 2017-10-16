@@ -211,7 +211,7 @@ namespace bs
 			// Allow sampler states & textures/buffers to share the same slot, as some APIs combine them
 			if(type == ParamType::SamplerState)
 			{
-				if (mSetInfos[set].slotSamplers[slot] != -1)
+				if (mSetInfos[set].slotSamplers[slot] != (UINT32)-1)
 					return mSetInfos[set].slotSamplers[slot];
 			}
 

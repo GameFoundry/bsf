@@ -609,7 +609,7 @@ namespace bs { namespace ct
 			assert(blockSize % 4 == 0);
 			blockSize = blockSize / 4;
 
-			if (iter->second.blockSize != blockSize)
+			if ((INT32)iter->second.blockSize != blockSize)
 				BS_EXCEPT(InternalErrorException, "OpenGL specified and manual uniform block buffer sizes don't match!");
 
 			blockIdx++;
