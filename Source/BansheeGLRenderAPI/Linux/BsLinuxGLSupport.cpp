@@ -164,9 +164,7 @@ namespace bs { namespace ct
 			return bs_shared_ptr_new<LinuxContext>(x11display, visualInfo);
 		else
 		{
-			SPtr<GLContext> context = rapi->getMainContext();
-			context->setCurrent();
-
+			SPtr<GLContext> context = rapi->_getMainContext();
 			return std::static_pointer_cast<LinuxContext>(context);
 		}
 	}

@@ -12,31 +12,31 @@ namespace bs { namespace ct
 	 */
 
 	/**	Windows specific implementation of an OpenGL context. */
-    class Win32Context : public GLContext
-    {
-    public:
+	class Win32Context : public GLContext
+	{
+	public:
 		/**
 		 * Constructs a new context from a Windows device context and OpenGL rendering context. Optionally you may specify
 		 * that the context isn't owned by us (might be created by some external library), in which case it will not be
 		 * automatically released.
 		 */
-        Win32Context(HDC hdc, HGLRC glrc, bool ownsContext);
-        virtual ~Win32Context();
+		Win32Context(HDC hdc, HGLRC glrc, bool ownsContext);
+		virtual ~Win32Context();
 
-        /** @copydoc GLContext::setCurrent */
-        void setCurrent() override;
+		/** @copydoc GLContext::setCurrent */
+		void setCurrent(const RenderWindow& window) override;
 
-        /** @copydoc GLContext::endCurrent */
+		/** @copydoc GLContext::endCurrent */
 		void endCurrent() override;
 
-        /** @copydoc GLContext::releaseContext  */
+		/** @copydoc GLContext::releaseContext  */
 		void releaseContext() override;
 
 	protected:
-        HDC     mHDC;
-        HGLRC   mGlrc;
+		HDC     mHDC;
+		HGLRC   mGlrc;
 		bool	mOwnsContext;
-    };
+	};
 
 	/** @} */
 }}

@@ -20,7 +20,7 @@ namespace bs { namespace ct
         virtual ~GLContext();
 
 		/**	Activates the rendering context (all subsequent rendering commands will be executed on it). */
-        virtual void setCurrent() = 0;
+        virtual void setCurrent(const RenderWindow& window) = 0;
 
 		/**	Deactivates the rendering context. Normally called just before setCurrent is called on another context. */
         virtual void endCurrent() = 0;

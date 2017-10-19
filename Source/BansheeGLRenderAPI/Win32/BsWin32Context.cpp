@@ -20,7 +20,7 @@ namespace bs { namespace ct
 			releaseContext();
 	}
 
-	void Win32Context::setCurrent()
+	void Win32Context::setCurrent(const RenderWindow& window)
 	{
 		wglMakeCurrent(mHDC, mGlrc);
 	}

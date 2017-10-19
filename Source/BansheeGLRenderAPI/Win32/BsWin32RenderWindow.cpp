@@ -84,13 +84,13 @@ namespace bs
 
 	namespace ct
 	{
-		Win32RenderWindow::Win32RenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId, Win32GLSupport& glsupport)
+	Win32RenderWindow::Win32RenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId, Win32GLSupport& glsupport)
 		: RenderWindow(desc, windowId), mWindow(nullptr), mGLSupport(glsupport), mHDC(nullptr), mIsChild(false)
 		, mDeviceName(nullptr), mDisplayFrequency(0), mShowOnSwap(false), mContext(nullptr), mProperties(desc)
 		, mSyncedProperties(desc)
 	{ }
 
-		Win32RenderWindow::~Win32RenderWindow()
+	Win32RenderWindow::~Win32RenderWindow()
 	{ 
 		RenderWindowProperties& props = mProperties;
 

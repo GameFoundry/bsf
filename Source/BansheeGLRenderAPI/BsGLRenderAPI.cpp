@@ -123,7 +123,7 @@ namespace bs { namespace ct
 
 		// Set primary context as active
 		if (mCurrentContext)
-			mCurrentContext->setCurrent();
+			mCurrentContext->setCurrent(*primaryWindow);
 
 		checkForErrors();
 
@@ -809,14 +809,16 @@ namespace bs { namespace ct
 			THROW_IF_NOT_CORE_THREAD;
 
 			// Switch context if different from current one
-			if (target != nullptr)
+			if (target != nullptr && target->getProperties().isWindow)
 			{
+				RenderWindow* window = static_cast<RenderWindow*>(target.get());
+
 				SPtr<GLContext> newContext;
 				target->getCustomAttribute("GLCONTEXT", &newContext);
 				if (newContext && mCurrentContext != newContext)
-				{
-					switchContext(newContext);
-				}
+					switchContext(newContext, *window);
+				else
+					mCurrentContext->setCurrent(*window);
 			}
 
 			// This must happen after context switch to ensure previous context is still alive
@@ -1162,6 +1164,20 @@ namespace bs { namespace ct
 	void GLRenderAPI::swapBuffers(const SPtr<RenderTarget>& target, UINT32 syncMask)
 	{
 		THROW_IF_NOT_CORE_THREAD;
+
+		// Switch context if different from current one
+		if(!target->getProperties().isWindow)
+			return;
+
+		RenderWindow* window = static_cast<RenderWindow*>(target.get());
+
+		SPtr<GLContext> newContext;
+		target->getCustomAttribute("GLCONTEXT", &newContext);
+		if (newContext && mCurrentContext != newContext)
+			switchContext(newContext, *window);
+		else
+			mCurrentContext->setCurrent(*window);
+
 		target->swapBuffers();
 	
 		BS_INC_RENDER_STAT(NumPresents);
@@ -2086,7 +2102,7 @@ namespace bs { namespace ct
 		TextureManager::startUp<GLTextureManager>(std::ref(*mGLSupport));
 	}
 
-	void GLRenderAPI::switchContext(const SPtr<GLContext>& context)
+	void GLRenderAPI::switchContext(const SPtr<GLContext>& context, const RenderWindow& window)
 	{
 		// Unbind GPU programs and rebind to new context later, because
 		// scene manager treat render system as ONE 'context' ONLY, and it
@@ -2098,11 +2114,11 @@ namespace bs { namespace ct
 			mCurrentContext->endCurrent();
 
 		mCurrentContext = context;
-		mCurrentContext->setCurrent();
+		mCurrentContext->setCurrent(window);
 
 		// Must reset depth/colour write mask to according with user desired, otherwise,
-		// clearFrameBuffer would be wrong because the value we are recorded may be
-		// difference with the really state stored in GL context.
+		// clearFrameBuffer would be wrong because the value we recorded may be
+		// different from the real state stored in GL context.
 		glDepthMask(mDepthWrite);
 		glColorMask(mColorWrite[0], mColorWrite[1], mColorWrite[2], mColorWrite[3]);
 		glStencilMask(mStencilWriteMask);

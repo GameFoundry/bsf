@@ -25,7 +25,7 @@ namespace bs { namespace ct
 		virtual ~LinuxContext();
 
 		/** @copydoc GLContext::setCurrent */
-		void setCurrent() override;
+		void setCurrent(const RenderWindow& window) override;
 
 		/** @copydoc GLContext::endCurrent */
 		void endCurrent() override;
@@ -35,6 +35,7 @@ namespace bs { namespace ct
 
 	protected:
 		::Display* mDisplay;
+		::Window mCurrentWindow;
 		GLXContext mContext;
 	};
 

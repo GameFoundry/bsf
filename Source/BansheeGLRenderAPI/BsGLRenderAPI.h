@@ -114,7 +114,7 @@ namespace bs { namespace ct
 		bool _isContextInitialized() const { return mGLInitialised; }
 
 		/**	Returns main context. Caller must ensure the context has been initialized. */
-		SPtr<GLContext> getMainContext() const { return mMainContext; } 
+		SPtr<GLContext> _getMainContext() const { return mMainContext; }
 
 		/**	Returns a support object you may use for creating */
 		GLSupport* getGLSupport() const { return mGLSupport; }
@@ -169,7 +169,7 @@ namespace bs { namespace ct
 		 * Switch the currently used OpenGL context. You will need to re-bind any previously bound values manually
 		 * (for example textures, gpu programs and such).
 		 */
-		void switchContext(const SPtr<GLContext>& context);
+		void switchContext(const SPtr<GLContext>& context, const RenderWindow& window);
 
 		/************************************************************************/
 		/* 								Sampler states                     		*/
