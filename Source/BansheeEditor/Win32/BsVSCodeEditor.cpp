@@ -15,6 +15,17 @@
 
 #include "Win32/dte80a.tlh"
 
+#include "Win32/Setup.Configuration.h"
+_COM_SMARTPTR_TYPEDEF(ISetupInstance, __uuidof(ISetupInstance));
+_COM_SMARTPTR_TYPEDEF(ISetupInstance2, __uuidof(ISetupInstance2));
+_COM_SMARTPTR_TYPEDEF(IEnumSetupInstances, __uuidof(IEnumSetupInstances));
+_COM_SMARTPTR_TYPEDEF(ISetupConfiguration, __uuidof(ISetupConfiguration));
+_COM_SMARTPTR_TYPEDEF(ISetupConfiguration2, __uuidof(ISetupConfiguration2));
+_COM_SMARTPTR_TYPEDEF(ISetupHelper, __uuidof(ISetupHelper));
+_COM_SMARTPTR_TYPEDEF(ISetupPackageReference, __uuidof(ISetupPackageReference));
+_COM_SMARTPTR_TYPEDEF(ISetupPropertyStore, __uuidof(ISetupPropertyStore));
+_COM_SMARTPTR_TYPEDEF(ISetupInstanceCatalog, __uuidof(ISetupInstanceCatalog));
+
 namespace bs
 {
 	/**
@@ -115,8 +126,11 @@ namespace bs
 		LONG mRefCount;
 	};
 
-	/** Contains various helper classes for interacting with a Visual Studio instance running on this machine. */
-	class VisualStudio
+	/** 
+	 * Contains helper functionality for the generation of .csproj files, as well as the .sln file. Those are used by C# IDE's like Visual Studio
+	 * and MonoDevelop, and build systems like msbuild or xbuild.
+	 */
+	class CSProject
 	{
 	private:
 		static const String SLN_TEMPLATE; /**< Template text used for a solution file. */
@@ -130,6 +144,140 @@ namespace bs
 		static const String CODE_ENTRY_TEMPLATE; /**< Template XML used for a single code file entry in a project. */
 		static const String NON_CODE_ENTRY_TEMPLATE; /**< Template XML used for a single non-code file entry in a project. */
 
+	public:
+		/**	Generates a C# project GUID from the project name. */
+		static String getProjectGUID(const WString& projectName)
+		{
+			static const String guidTemplate = "{0}-{1}-{2}-{3}-{4}";
+			String hash = md5(projectName);
+
+			String output = StringUtil::format(guidTemplate, hash.substr(0, 8),
+				hash.substr(8, 4), hash.substr(12, 4), hash.substr(16, 4), hash.substr(20, 12));
+			StringUtil::toUpperCase(output);
+
+			return output;
+		}
+
+		/**
+		 * Builds the .sln text for the provided version, using the provided solution data.
+		 *
+		 * @param[in]	version	Visual Studio version for which we're generating the solution file.
+		 * @param[in]	data	Data containing a list of projects and other information required to build the solution text.
+		 * @return				Generated text of the solution file.
+		 */
+		static String writeSolution(VisualStudioVersion version, const CodeSolutionData& data)
+		{
+			struct VersionData
+			{
+				String formatVersion;
+			};
+
+			Map<VisualStudioVersion, VersionData> versionData =
+			{
+				{ VisualStudioVersion::VS2008, { "10.00" } },
+				{ VisualStudioVersion::VS2010, { "11.00" } },
+				{ VisualStudioVersion::VS2012, { "12.00" } },
+				{ VisualStudioVersion::VS2013, { "12.00" } },
+				{ VisualStudioVersion::VS2015, { "12.00" } },
+				{ VisualStudioVersion::VS2017, { "12.00" } }
+			};
+
+			StringStream projectEntriesStream;
+			StringStream projectPlatformsStream;
+			for (auto& project : data.projects)
+			{
+				String guid = getProjectGUID(project.name);
+				String projectName = toString(project.name);
+
+				projectEntriesStream << StringUtil::format(PROJ_ENTRY_TEMPLATE, projectName, projectName + ".csproj", guid);
+				projectPlatformsStream << StringUtil::format(PROJ_PLATFORM_TEMPLATE, guid);
+			}
+
+			String projectEntries = projectEntriesStream.str();
+			String projectPlatforms = projectPlatformsStream.str();
+
+			return StringUtil::format(SLN_TEMPLATE, versionData[version].formatVersion, projectEntries, projectPlatforms);
+		}
+
+		/**
+		 * Builds the .csproj text for the provided version, using the provided project data.
+		 *
+		 * @param[in]	version		Visual Studio version for which we're generating the project file.
+		 * @param[in]	projectData	Data containing a list of files, references and other information required to 
+		 *							build the project text.
+		 * @return					Generated text of the project file.
+		 */
+		static String writeProject(VisualStudioVersion version, const CodeProjectData& projectData)
+		{
+			struct VersionData
+			{
+				String toolsVersion;
+			};
+
+			Map<VisualStudioVersion, VersionData> versionData =
+			{
+				{ VisualStudioVersion::VS2008, { "3.5" } },
+				{ VisualStudioVersion::VS2010, { "4.0" } },
+				{ VisualStudioVersion::VS2012, { "4.0" } },
+				{ VisualStudioVersion::VS2013, { "12.0" } },
+				{ VisualStudioVersion::VS2015, { "13.0" } },
+				{ VisualStudioVersion::VS2017, { "15.0" } }
+			};
+
+			StringStream tempStream;
+			for (auto& codeEntry : projectData.codeFiles)
+				tempStream << StringUtil::format(CODE_ENTRY_TEMPLATE, codeEntry.toString());
+
+			String codeEntries = tempStream.str();
+			tempStream.str("");
+			tempStream.clear();
+
+			for (auto& nonCodeEntry : projectData.nonCodeFiles)
+				tempStream << StringUtil::format(NON_CODE_ENTRY_TEMPLATE, nonCodeEntry.toString());
+
+			String nonCodeEntries = tempStream.str();
+			tempStream.str("");
+			tempStream.clear();
+
+			for (auto& referenceEntry : projectData.assemblyReferences)
+			{
+				String referenceName = toString(referenceEntry.name);
+
+				if (referenceEntry.path.isEmpty())
+					tempStream << StringUtil::format(REFERENCE_ENTRY_TEMPLATE, referenceName);
+				else
+					tempStream << StringUtil::format(REFERENCE_PATH_ENTRY_TEMPLATE, referenceName, referenceEntry.path.toString());
+			}
+
+			String referenceEntries = tempStream.str();
+			tempStream.str("");
+			tempStream.clear();
+
+			for (auto& referenceEntry : projectData.projectReferences)
+			{
+				String referenceName = toString(referenceEntry.name);
+				String projectGUID = getProjectGUID(referenceEntry.name);
+
+				tempStream << StringUtil::format(REFERENCE_PROJECT_ENTRY_TEMPLATE, referenceName, projectGUID);
+			}
+
+			String projectReferenceEntries = tempStream.str();
+			tempStream.str("");
+			tempStream.clear();
+
+			tempStream << toString(projectData.defines);
+
+			String defines = tempStream.str();
+			String projectGUID = getProjectGUID(projectData.name);
+
+			return StringUtil::format(PROJ_TEMPLATE, versionData[version].toolsVersion, projectGUID, 
+				toString(projectData.name), defines, referenceEntries, projectReferenceEntries, codeEntries, nonCodeEntries);
+		}
+	};
+
+	/** Contains various helper functionality for interacting with a Visual Studio instance running on this machine. */
+	class VisualStudio
+	{
 	public:
 		/**
 		 * Scans the running processes to find a running Visual Studio instance with the specified version and open solution.
@@ -281,135 +429,9 @@ namespace bs
 			return true;
 		}
 
-		/**	Generates a Visual Studio project GUID from the project name. */
-		static String getProjectGUID(const WString& projectName)
-		{
-			static const String guidTemplate = "{0}-{1}-{2}-{3}-{4}";
-			String hash = md5(projectName);
-
-			String output = StringUtil::format(guidTemplate, hash.substr(0, 8),
-				hash.substr(8, 4), hash.substr(12, 4), hash.substr(16, 4), hash.substr(20, 12));
-			StringUtil::toUpperCase(output);
-
-			return output;
-		}
-
-		/**
-		 * Builds the Visual Studio solution text (.sln) for the provided version, using the provided solution data.
-		 *
-		 * @param[in]	version	Visual Studio version for which we're generating the solution file.
-		 * @param[in]	data	Data containing a list of projects and other information required to build the solution text.
-		 * @return				Generated text of the solution file.
-		 */
-		static String writeSolution(VisualStudioVersion version, const CodeSolutionData& data)
-		{
-			struct VersionData
-			{
-				String formatVersion;
-			};
-
-			Map<VisualStudioVersion, VersionData> versionData =
-			{
-				{ VisualStudioVersion::VS2008, { "10.00" } },
-				{ VisualStudioVersion::VS2010, { "11.00" } },
-				{ VisualStudioVersion::VS2012, { "12.00" } },
-				{ VisualStudioVersion::VS2013, { "12.00" } },
-				{ VisualStudioVersion::VS2015, { "12.00" } }
-			};
-
-			StringStream projectEntriesStream;
-			StringStream projectPlatformsStream;
-			for (auto& project : data.projects)
-			{
-				String guid = getProjectGUID(project.name);
-				String projectName = toString(project.name);
-
-				projectEntriesStream << StringUtil::format(PROJ_ENTRY_TEMPLATE, projectName, projectName + ".csproj", guid);
-				projectPlatformsStream << StringUtil::format(PROJ_PLATFORM_TEMPLATE, guid);
-			}
-
-			String projectEntries = projectEntriesStream.str();
-			String projectPlatforms = projectPlatformsStream.str();
-
-			return StringUtil::format(SLN_TEMPLATE, versionData[version].formatVersion, projectEntries, projectPlatforms);
-		}
-
-		/**
-		 * Builds the Visual Studio project text (.csproj) for the provided version, using the provided project data.
-		 *
-		 * @param[in]	version		Visual Studio version for which we're generating the project file.
-		 * @param[in]	projectData	Data containing a list of files, references and other information required to 
-		 *							build the project text.
-		 * @return					Generated text of the project file.
-		 */
-		static String writeProject(VisualStudioVersion version, const CodeProjectData& projectData)
-		{
-			struct VersionData
-			{
-				String toolsVersion;
-			};
-
-			Map<VisualStudioVersion, VersionData> versionData =
-			{
-				{ VisualStudioVersion::VS2008, { "3.5" } },
-				{ VisualStudioVersion::VS2010, { "4.0" } },
-				{ VisualStudioVersion::VS2012, { "4.0" } },
-				{ VisualStudioVersion::VS2013, { "12.0" } },
-				{ VisualStudioVersion::VS2015, { "13.0" } }
-			};
-
-			StringStream tempStream;
-			for (auto& codeEntry : projectData.codeFiles)
-				tempStream << StringUtil::format(CODE_ENTRY_TEMPLATE, codeEntry.toString());
-
-			String codeEntries = tempStream.str();
-			tempStream.str("");
-			tempStream.clear();
-
-			for (auto& nonCodeEntry : projectData.nonCodeFiles)
-				tempStream << StringUtil::format(NON_CODE_ENTRY_TEMPLATE, nonCodeEntry.toString());
-
-			String nonCodeEntries = tempStream.str();
-			tempStream.str("");
-			tempStream.clear();
-
-			for (auto& referenceEntry : projectData.assemblyReferences)
-			{
-				String referenceName = toString(referenceEntry.name);
-
-				if (referenceEntry.path.isEmpty())
-					tempStream << StringUtil::format(REFERENCE_ENTRY_TEMPLATE, referenceName);
-				else
-					tempStream << StringUtil::format(REFERENCE_PATH_ENTRY_TEMPLATE, referenceName, referenceEntry.path.toString());
-			}
-
-			String referenceEntries = tempStream.str();
-			tempStream.str("");
-			tempStream.clear();
-
-			for (auto& referenceEntry : projectData.projectReferences)
-			{
-				String referenceName = toString(referenceEntry.name);
-				String projectGUID = getProjectGUID(referenceEntry.name);
-
-				tempStream << StringUtil::format(REFERENCE_PROJECT_ENTRY_TEMPLATE, referenceName, projectGUID);
-			}
-
-			String projectReferenceEntries = tempStream.str();
-			tempStream.str("");
-			tempStream.clear();
-
-			tempStream << toString(projectData.defines);
-
-			String defines = tempStream.str();
-			String projectGUID = getProjectGUID(projectData.name);
-
-			return StringUtil::format(PROJ_TEMPLATE, versionData[version].toolsVersion, projectGUID, 
-				toString(projectData.name), defines, referenceEntries, projectReferenceEntries, codeEntries, nonCodeEntries);
-		}
 	};
 
-	const String VisualStudio::SLN_TEMPLATE =
+	const String CSProject::SLN_TEMPLATE =
 		R"(Microsoft Visual Studio Solution File, Format Version {0}
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30723.0
@@ -427,19 +449,19 @@ Global
 EndGlobal
 )";
 
-	const String VisualStudio::PROJ_ENTRY_TEMPLATE =
+	const String CSProject::PROJ_ENTRY_TEMPLATE =
 		R"(
 Project("\{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC\}") = "{0}", "{1}", "\{{2}\}"
 EndProject)";
 
-	const String VisualStudio::PROJ_PLATFORM_TEMPLATE =
+	const String CSProject::PROJ_PLATFORM_TEMPLATE =
 		R"(
 		\{{0}\}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		\{{0}\}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		\{{0}\}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		\{{0}\}.Release|Any CPU.Build.0 = Release|Any CPU)";
 
-	const String VisualStudio::PROJ_TEMPLATE =
+	const String CSProject::PROJ_TEMPLATE =
 		R"literal(<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="{0}" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\\$(MSBuildToolsVersion)\\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\\$(MSBuildToolsVersion)\\Microsoft.Common.props')" />
@@ -451,7 +473,7 @@ EndProject)";
 	<AppDesignerFolder>Properties</AppDesignerFolder>
 	<RootNamespace></RootNamespace>
 	<AssemblyName>{2}</AssemblyName>
-	<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+	<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
 	<FileAlignment>512</FileAlignment>
 	<BaseDirectory>Resources</BaseDirectory>
 	<SchemaVersion>2.0</SchemaVersion>
@@ -486,28 +508,28 @@ EndProject)";
   <Import Project = "$(MSBuildToolsPath)\\Microsoft.CSharp.targets"/>
 </Project>)literal";
 
-	const String VisualStudio::REFERENCE_ENTRY_TEMPLATE =
+	const String CSProject::REFERENCE_ENTRY_TEMPLATE =
 		R"(
 	<Reference Include="{0}"/>)";
 
-	const String VisualStudio::REFERENCE_PATH_ENTRY_TEMPLATE =
+	const String CSProject::REFERENCE_PATH_ENTRY_TEMPLATE =
 		R"(
 	<Reference Include="{0}">
 	  <HintPath>{1}</HintPath>
 	</Reference>)";
 
-	const String VisualStudio::REFERENCE_PROJECT_ENTRY_TEMPLATE =
+	const String CSProject::REFERENCE_PROJECT_ENTRY_TEMPLATE =
 		R"(
 	<ProjectReference Include="{0}.csproj">
 	  <Project>\{{1}\}</Project>
 	  <Name>{0}</Name>
 	</ProjectReference>)";
 
-	const String VisualStudio::CODE_ENTRY_TEMPLATE =
+	const String CSProject::CODE_ENTRY_TEMPLATE =
 		R"(
 	<Compile Include="{0}"/>)";
 
-	const String VisualStudio::NON_CODE_ENTRY_TEMPLATE =
+	const String CSProject::NON_CODE_ENTRY_TEMPLATE =
 		R"(
 	<None Include="{0}"/>)";
 
@@ -554,14 +576,14 @@ EndProject)";
 
 	void VSCodeEditor::syncSolution(const CodeSolutionData& data, const Path& outputPath) const
 	{
-		String solutionString = VisualStudio::writeSolution(mVersion, data);
+		String solutionString = CSProject::writeSolution(mVersion, data);
 		solutionString = StringUtil::replaceAll(solutionString, "\n", "\r\n");
 		Path solutionPath = outputPath;
 		solutionPath.append(data.name + L".sln");
 
 		for (auto& project : data.projects)
 		{
-			String projectString = VisualStudio::writeProject(mVersion, project);
+			String projectString = CSProject::writeProject(mVersion, project);
 			projectString = StringUtil::replaceAll(projectString, "\n", "\r\n");
 
 			Path projectPath = outputPath;
@@ -609,6 +631,7 @@ EndProject)";
 			WString executable;
 		};
 
+		// Pre-2017 versions all have registry entries we can search
 		Map<VisualStudioVersion, VersionData> versionToVersionNumber =
 		{ 
 			{ VisualStudioVersion::VS2008, { CodeEditorType::VS2008, L"VisualStudio\\9.0", L"Visual Studio 2008", L"devenv.exe" } },
@@ -645,6 +668,84 @@ EndProject)";
 			versionInfo[version.second.type] = info;
 		}
 
+		// 2017 and later need to be queried through Setup Config
+		CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+
+		ISetupConfigurationPtr query;
+		auto hr = query.CreateInstance(__uuidof(SetupConfiguration));
+		if (hr == REGDB_E_CLASSNOTREG || FAILED(hr))
+		{
+			CoUninitialize();
+			return versionInfo;
+		}
+
+		ISetupConfiguration2Ptr query2(query);
+		IEnumSetupInstancesPtr e;
+
+		hr = query2->EnumAllInstances(&e);
+		if (FAILED(hr))
+		{
+			CoUninitialize();
+			return versionInfo;
+		}
+
+		ISetupHelperPtr helper(query);
+
+		ISetupInstance* pInstances[1] = {};
+		hr = e->Next(1, pInstances, nullptr);
+		while (hr == S_OK)
+		{
+			ISetupInstancePtr instance(pInstances[0], false);
+
+			bstr_t bstrName;
+			hr = instance->GetDisplayName(0, bstrName.GetAddress());
+
+			if (FAILED(hr))
+			{
+				hr = e->Next(1, pInstances, nullptr);
+				continue;
+			}
+
+			bstr_t bstrVersion;
+			hr = instance->GetInstallationVersion(bstrVersion.GetAddress());
+
+			if (FAILED(hr))
+			{
+				hr = e->Next(1, pInstances, nullptr);
+				continue;
+			}
+
+			bstr_t bstrInstallationPath;
+			hr = instance->GetInstallationPath(bstrInstallationPath.GetAddress());
+			if (FAILED(hr))
+			{
+				hr = e->Next(1, pInstances, nullptr);
+				continue;
+			}
+
+			Vector<WString> versionBits = StringUtil::split(WString(bstrVersion), L".");
+			if (versionBits.size() < 1)
+			{
+				hr = e->Next(1, pInstances, nullptr);
+				continue;
+			}
+
+			// VS2017
+			if (versionBits[0] == L"15")
+			{
+				VSVersionInfo info;
+				info.name = WString(bstrName);
+				info.execPath = Path(WString(bstrInstallationPath)) + Path(L"Common7/IDE/devenv.exe");
+				info.version = VisualStudioVersion::VS2017;
+				info.CLSID = L"{3829D1F4-A427-4C75-B63C-7ABB7521B225}";
+
+				versionInfo[CodeEditorType::VS2017] = info; 
+			}
+			
+			hr = e->Next(1, pInstances, nullptr);
+		}
+
+		CoUninitialize();
 		return versionInfo;
 	}
 
@@ -653,8 +754,6 @@ EndProject)";
 		auto findIter = mAvailableVersions.find(type);
 		if (findIter == mAvailableVersions.end())
 			return nullptr;
-
-		// TODO - Also create VSExpress and VSCommunity editors
 
 		return bs_new<VSCodeEditor>(findIter->second.version, findIter->second.execPath, findIter->second.CLSID);
 	}

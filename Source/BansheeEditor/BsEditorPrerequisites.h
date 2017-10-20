@@ -213,6 +213,7 @@ namespace bs
 		VS2012,
 		VS2013,
 		VS2015,
+		VS2017,
 		None
 	};
 

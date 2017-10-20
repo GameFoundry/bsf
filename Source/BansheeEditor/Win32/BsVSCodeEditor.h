@@ -18,7 +18,8 @@ namespace bs
 		VS2010,
 		VS2012,
 		VS2013,
-		VS2015
+		VS2015,
+		VS2017
 	};
 
 	/**	Code editor implementation that handles interacting with Microsoft Visual Studio. */
