@@ -26,6 +26,9 @@ namespace bs
 		/** Returns the main X11 window. Caller must ensure the main window has been created. */
 		static ::Window getMainXWindow();
 
+		/** Retruns the absolute path to the user's home directory. */
+		static Path getHomeDir();
+
 		/** Locks access to the X11 system, not allowing any other thread to access it. Must be used for every X11 access. */
 		static void lockX();
 

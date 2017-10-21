@@ -8,6 +8,7 @@
 #include "RenderAPI/BsViewport.h"
 #include "RenderAPI/BsRenderWindow.h"
 #include "Platform/BsDropTarget.h"
+#include "String/BsUnicode.h"
 
 using namespace std::placeholders;
 
@@ -215,9 +216,9 @@ namespace bs
 			if (idx == numElems)
 				return current;
 
-			WString curElem;
+			String curElem;
 			if (relPath.isFile() && idx == (numElems - 1))
-				curElem = relPath.getWFilename();
+				curElem = relPath.getFilename();
 			else
 				curElem = relPath[idx];
 
@@ -225,7 +226,7 @@ namespace bs
 			for (auto& child : current->mChildren)
 			{
 				ResourceTreeElement* resourceChild = static_cast<ResourceTreeElement*>(child);
-				if (Path::comparePathElem(curElem, resourceChild->mElementName))
+				if (Path::comparePathElem(curElem, UTF8::fromWide(resourceChild->mElementName)))
 				{
 					idx++;
 					current = resourceChild;

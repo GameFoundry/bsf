@@ -4,7 +4,7 @@
 
 #include "Prerequisites/BsPlatformDefines.h"
 #include "String/BsString.h"
-#include "Utility/BsUtil.h"                // For hash_combine()
+#include "Utility/BsUtil.h"
 
 namespace bs
 {
@@ -112,7 +112,7 @@ namespace bs
 		bool operator!= (const Path& path) const { return !equals(path); }
 
 		/** Gets a directory name with the specified index from the path. */
-		const WString& operator[] (UINT32 idx) const { return getWDirectory(idx); }
+		const String& operator[] (UINT32 idx) const { return getDirectory(idx); }
 
 		/** Swap internal data with another Path object. */
 		void swap(Path& path);
@@ -260,10 +260,10 @@ namespace bs
 		bool equals(const Path& other) const;
 
 		/** Change or set the filename in the path. */
-		void setFilename(const WString& filename) { mFilename = filename; }
+		void setFilename(const WString& filename);
 
 		/** Change or set the filename in the path. */
-		void setFilename(const String& filename) { mFilename = bs::toWString(filename); }
+		void setFilename(const String& filename) { mFilename = filename; }
 
 		/**
 		 * Change or set the base name in the path. Base name changes the filename by changing its base to the provided 
@@ -315,40 +315,34 @@ namespace bs
 		UINT32 getNumDirectories() const { return (UINT32)mDirectories.size(); }
 
 		/** Gets a directory name with the specified index from the path. */
-		const WString& getWDirectory(UINT32 idx) const;
+		WString getWDirectory(UINT32 idx) const;
 
 		/** Gets a directory name with the specified index from the path. */
-		String getDirectory(UINT32 idx) const;
+		const String& getDirectory(UINT32 idx) const;
 
 		/** Returns path device (for example drive, volume, etc.) if one exists in the path. */
-		const WString& getWDevice() const { return mDevice; }
+		WString getWDevice() const;
 
 		/** Returns path device (for example drive, volume, etc.) if one exists in the path. */
-		String getDevice() const { return bs::toString(mDevice); }
+		const String& getDevice() const { return mDevice; }
 
 		/** Returns path node (for example network name) if one exists in the path. */
-		const WString& getWNode() const { return mNode; }
+		WString getWNode() const;
 
 		/** Returns path node (for example network name) if one exists in the path. */
-		String getNode() const { return bs::toString(mNode); }
+		const String& getNode() const { return mNode; }
 
 		/**
 		 * Gets last element in the path, filename if it exists, otherwise the last directory. If no directories exist 
 		 * returns device or node.
-		 *
-		 * @param[in]	type	Determines format of node or device, in case they are returned. When default, format for 
-		 *						the active platform will be used, otherwise the format defined by the parameter will be used.
 		 */
-		WString getWTail(PathType type = PathType::Default) const;
+		WString getWTail() const;
 
 		/**
 		 * Gets last element in the path, filename if it exists, otherwise the last directory. If no directories exist 
 		 * returns device or node.
-		 *
-		 * @param[in]	type	Determines format of node or device, in case they are returned. When default, format for the
-		 *						active platform will be used, otherwise the format defined by the parameter will be used.
 		 */
-		String getTail(PathType type = PathType::Default) const;
+		const String& getTail() const;
 
 		/** Clears the path to nothing. */
 		void clear();
@@ -363,7 +357,7 @@ namespace bs
 		Path& operator+= (const Path& rhs);
 
 		/** Compares two path elements (filenames, directory names, etc.). */
-		static bool comparePathElem(const WString& left, const WString& right);
+		static bool comparePathElem(const String& left, const String& right);
 
 		/** Combines two paths and returns the result. Right path should be relative. */
 		static Path combine(const Path& left, const Path& right);
@@ -539,17 +533,17 @@ namespace bs
 			}
 		}
 
-		void setNode(const WString& node) { mNode = node; }
-		void setNode(const String& node) { mNode = bs::toWString(node); }
+		void setNode(const WString& node);
+		void setNode(const String& node) { mNode = node; }
 
-		void setDevice(const WString& device) { mDevice = device; }
-		void setDevice(const String& device) { mDevice = bs::toWString(device); }
+		void setDevice(const WString& device);
+		void setDevice(const String& device) { mDevice = device; }
 
 		/** Build a Windows path string from internal path data. */
-		WString buildWindows() const;
+		String buildWindows() const;
 
 		/** Build a Unix path string from internal path data. */
-		WString buildUnix() const;
+		String buildUnix() const;
 
 		/** Add new directory to the end of the path. */
 		void pushDirectory(const WString& dir);
@@ -566,10 +560,10 @@ namespace bs
 		friend struct RTTIPlainType<Path>; // For serialization
 		friend struct ::std::hash<bs::Path>;
 
-		Vector<WString> mDirectories;
-		WString mDevice;
-		WString mFilename;
-		WString mNode;
+		Vector<String> mDirectories;
+		String mDevice;
+		String mFilename;
+		String mNode;
 		bool mIsAbsolute;
 	};
 

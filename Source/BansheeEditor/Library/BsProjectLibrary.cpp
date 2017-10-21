@@ -16,6 +16,7 @@
 #include "Resources/BsResource.h"
 #include "BsEditorApplication.h"
 #include "Material/BsShader.h"
+#include "String/BsUnicode.h"
 #include <regex>
 
 using namespace std::placeholders;
@@ -679,9 +680,9 @@ namespace bs
 			if (idx == numElems)
 				return current;
 
-			WString curElem;
+			String curElem;
 			if (relPath.isFile() && idx == (numElems - 1))
-				curElem = relPath.getWFilename();
+				curElem = relPath.getFilename();
 			else
 				curElem = relPath[idx];
 
@@ -691,7 +692,7 @@ namespace bs
 				current = nullptr;
 				for (auto& child : dirEntry->mChildren)
 				{
-					if (Path::comparePathElem(curElem, child->elementName))
+					if (Path::comparePathElem(curElem, UTF8::fromWide(child->elementName)))
 					{
 						idx++;
 						current = child;
@@ -765,7 +766,7 @@ namespace bs
 				DirectoryEntry* dirEntry = static_cast<DirectoryEntry*>(entry);
 				for (auto& child : dirEntry->mChildren)
 				{
-					if (Path::comparePathElem(path.getWTail(), child->elementName))
+					if (Path::comparePathElem(path.getTail(), UTF8::fromWide(child->elementName)))
 					{
 						if (child->type == LibraryEntryType::File)
 						{

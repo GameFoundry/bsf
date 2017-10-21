@@ -1,5 +1,6 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
+#include <Debug/BsDebug.h>
 #include "Prerequisites/BsPrerequisitesUtil.h"
 #include "Error/BsException.h"
 #include "String/BsUnicode.h"
@@ -154,14 +155,14 @@ namespace bs
 		switch (type)
 		{
 		case PathType::Windows:
-			return buildWindows();
+			return UTF8::toWide(buildWindows());
 		case PathType::Unix:
-			return buildUnix();
+			return UTF8::toWide(buildUnix());
 		default:
 #if BS_PLATFORM == BS_PLATFORM_WIN32
-			return buildWindows();
+			return UTF8::toWide(buildWindows());
 #elif BS_PLATFORM == BS_PLATFORM_OSX || BS_PLATFORM == BS_PLATFORM_LINUX
-			return buildUnix();
+			return UTF8::toWide(buildUnix());
 #else
 			static_assert(false, "Unsupported platform for path.");
 #endif
@@ -174,14 +175,14 @@ namespace bs
 		switch (type)
 		{
 		case PathType::Windows:
-			return UTF8::fromWide(buildWindows());
+			return buildWindows();
 		case PathType::Unix:
-			return UTF8::fromWide(buildUnix());
+			return buildUnix();
 		default:
 #if BS_PLATFORM == BS_PLATFORM_WIN32
-			return UTF8::fromWide(buildWindows());
+			return buildWindows();
 #elif BS_PLATFORM == BS_PLATFORM_OSX || BS_PLATFORM == BS_PLATFORM_LINUX
-			return UTF8::fromWide(buildUnix());
+			return buildUnix();
 #else
 			static_assert(false, "Unsupported platform for path.");
 #endif
@@ -228,12 +229,12 @@ namespace bs
 			if (mDirectories.empty())
 			{
 				if (!mIsAbsolute)
-					mDirectories.push_back(L"..");
+					mDirectories.push_back("..");
 			}
 			else
 			{
-				if (mDirectories.back() == L"..")
-					mDirectories.push_back(L"..");
+				if (mDirectories.back() == "..")
+					mDirectories.push_back("..");
 				else
 					mDirectories.pop_back();
 			}
@@ -278,11 +279,11 @@ namespace bs
 			if (mDirectories.size() > 0)
 				mDirectories.erase(mDirectories.begin());
 			else
-				mFilename = L"";
+				mFilename = "";
 		}
 
-		mDevice = L"";
-		mNode = L"";
+		mDevice = "";
+		mNode = "";
 		mIsAbsolute = false;
 
 		return *this;
@@ -409,31 +410,41 @@ namespace bs
 		return *this;
 	}
 
+	void Path::setFilename(const WString& filename)
+	{
+		mFilename = UTF8::fromWide(filename);
+	}
+
 	void Path::setBasename(const WString& basename)
 	{
-		mFilename = basename + getWExtension();
+		mFilename = UTF8::fromWide(basename) + getExtension();
 	}
 
 	void Path::setBasename(const String& basename)
 	{
-		mFilename = bs::toWString(basename) + getWExtension();
+		mFilename = basename + getExtension();
 	}
 
 	void Path::setExtension(const WString& extension)
 	{
-		WStringStream stream;
-		stream << getWFilename(false);
+		setExtension(UTF8::fromWide(extension));
+	}
+
+	void Path::setExtension(const String& extension)
+	{
+		StringStream stream;
+		stream << getFilename(false);
 		stream << extension;
 
 		mFilename = stream.str();
 	}
 
-	void Path::setExtension(const String& extension)
+	WString Path::getWFilename(bool extension) const
 	{
-		setExtension(bs::toWString(extension));
+		return UTF8::toWide(getFilename(extension));
 	}
 
-	WString Path::getWFilename(bool extension) const
+	String Path::getFilename(bool extension) const
 	{
 		if (extension)
 			return mFilename;
@@ -447,54 +458,59 @@ namespace bs
 		}
 	}
 
-	String Path::getFilename(bool extension) const
+	WString Path::getWExtension() const
 	{
-		return bs::toString(getWFilename(extension));
+		return UTF8::toWide(getExtension());
 	}
 
-	WString Path::getWExtension() const
+	String Path::getExtension() const
 	{
 		WString::size_type pos = mFilename.rfind(L'.');
 		if (pos != WString::npos)
 			return mFilename.substr(pos);
 		else
-			return WString();
+			return String();
 	}
 
-	String Path::getExtension() const
+	WString Path::getWDirectory(UINT32 idx) const
 	{
-		return bs::toString(getWExtension());
+		return UTF8::toWide(getDirectory(idx));
 	}
 
-	const WString& Path::getWDirectory(UINT32 idx) const
+	const String& Path::getDirectory(UINT32 idx) const
 	{
 		if (idx >= (UINT32)mDirectories.size())
 		{
-			BS_EXCEPT(InvalidParametersException, "Index out of range: " + bs::toString(idx) + 
-				". Valid range: [0, " + bs::toString((UINT32)mDirectories.size() - 1) + "]");
+			BS_EXCEPT(InvalidParametersException, "Index out of range: " + bs::toString(idx) + ". Valid range: [0, " +
+					bs::toString((UINT32)mDirectories.size() - 1) + "]");
 		}
 
 		return mDirectories[idx];
 	}
 
-	String Path::getDirectory(UINT32 idx) const
+	WString Path::getWDevice() const
 	{
-		return bs::toString(getWDirectory(idx));
+		return UTF8::toWide(mDevice);
 	}
 
-	WString Path::getWTail(PathType type) const
+	WString Path::getWNode() const
+	{
+		return UTF8::toWide(mNode);
+	}
+
+	const String& Path::getTail() const
 	{
 		if (isFile())
 			return mFilename;
 		else if (mDirectories.size() > 0)
 			return mDirectories.back();
 		else
-			return StringUtil::WBLANK;
+			return StringUtil::BLANK;
 	}
 
-	String Path::getTail(PathType type) const
+	WString Path::getWTail() const
 	{
-		return bs::toString(getWTail(type));
+		return UTF8::toWide(getTail());
 	}
 
 	void Path::clear()
@@ -516,61 +532,71 @@ namespace bs
 		BS_EXCEPT(InvalidParametersException, "Incorrectly formatted path provided: " + path);
 	}
 
-	WString Path::buildWindows() const
+	void Path::setNode(const WString& node)
 	{
-		WStringStream result;
+		mNode = UTF8::fromWide(node);
+	}
+
+	void Path::setDevice(const WString& device)
+	{
+		mNode = UTF8::fromWide(device);
+	}
+
+	String Path::buildWindows() const
+	{
+		StringStream result;
 		if (!mNode.empty())
 		{
-			result << L"\\\\";
+			result << "\\\\";
 			result << mNode;
-			result << L"\\";
+			result << "\\";
 		}
 		else if (!mDevice.empty())
 		{
 			result << mDevice;
-			result << L":\\";
+			result << ":\\";
 		}
 		else if (mIsAbsolute)
 		{
-			result << L"\\";
+			result << "\\";
 		}
 
 		for (auto& dir : mDirectories)
 		{
 			result << dir;
-			result << L"\\";
+			result << "\\";
 		}
 
 		result << mFilename;
 		return result.str();
 	}
 
-	WString Path::buildUnix() const
+	String Path::buildUnix() const
 	{
-		WStringStream result;
+		StringStream result;
 		auto dirIter = mDirectories.begin();
 
 		if (!mDevice.empty())
 		{
-			result << L"/";
+			result << "/";
 			result << mDevice;
-			result << L":/";
+			result << ":/";
 		}
 		else if (mIsAbsolute)
 		{
-			if (dirIter != mDirectories.end() && *dirIter == L"~")
+			if (dirIter != mDirectories.end() && *dirIter == "~")
 			{
-				result << L"~";
+				result << "~";
 				dirIter++;
 			}
 
-			result << L"/";
+			result << "/";
 		}
 
 		for (; dirIter != mDirectories.end(); ++dirIter)
 		{
 			result << *dirIter;
-			result << L"/";
+			result << "/";
 		}
 
 		result << mFilename;
@@ -587,7 +613,7 @@ namespace bs
 		return append(rhs);
 	}
 
-	bool Path::comparePathElem(const WString& left, const WString& right)
+	bool Path::comparePathElem(const String& left, const String& right)
 	{
 		if (left.size() != right.size())
 			return false;
@@ -610,11 +636,16 @@ namespace bs
 
 	void Path::pushDirectory(const WString& dir)
 	{
-		if (!dir.empty() && dir != L".")
+		pushDirectory(UTF8::fromWide(dir));
+	}
+
+	void Path::pushDirectory(const String& dir)
+	{
+		if (!dir.empty() && dir != ".")
 		{
-			if (dir == L"..")
+			if (dir == "..")
 			{
-				if (!mDirectories.empty() && mDirectories.back() != L"..")
+				if (!mDirectories.empty() && mDirectories.back() != "..")
 					mDirectories.pop_back();
 				else
 					mDirectories.push_back(dir);
@@ -622,10 +653,5 @@ namespace bs
 			else
 				mDirectories.push_back(dir);
 		}
-	}
-
-	void Path::pushDirectory(const String& dir)
-	{
-		pushDirectory(bs::toWString(dir));
 	}
 }

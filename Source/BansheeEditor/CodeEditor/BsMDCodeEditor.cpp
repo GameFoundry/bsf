@@ -4,6 +4,7 @@
 #include "FileSystem/BsFileSystem.h"
 #include "FileSystem/BsDataStream.h"
 #include "String/BsUnicode.h"
+#include "Linux/BsLinuxPlatform.h"
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 #include <Windows.h>
@@ -118,7 +119,11 @@ namespace bs
 
 		mInstallPath = Path(installPath) + Path("XamarinStudio.exe");
 #elif BS_PLATFORM == BS_PLATFORM_LINUX
-		static_assert(false);
+		Path monoDevelopDir = LinuxPlatform::getHomeDir();
+		monoDevelopDir.append(".local/share/flatpak/app/com.xamarin.MonoDevelop");
+
+		if(FileSystem::exists(monoDevelopDir))
+			mInstallPath = monoDevelopDir;
 #endif
 
 		if (!mInstallPath.isEmpty())

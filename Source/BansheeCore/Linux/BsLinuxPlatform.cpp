@@ -13,6 +13,7 @@
 #include <X11/Xcursor/Xcursor.h>
 #include <X11/Xlib.h>
 #include <X11/XKBlib.h>
+#include <pwd.h>
 
 namespace bs
 {
@@ -1220,6 +1221,15 @@ namespace bs
 	::Window LinuxPlatform::getMainXWindow()
 	{
 		return mData->mainXWindow;
+	}
+
+	Path LinuxPlatform::getHomeDir()
+	{
+		const char* homeDir = getenv("HOME");
+		if(!homeDir)
+			homeDir = getpwuid(getuid())->pw_dir;
+
+		return Path(homeDir);
 	}
 
 	void LinuxPlatform::lockX()
