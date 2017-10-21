@@ -4,10 +4,11 @@
 #include "FileSystem/BsFileSystem.h"
 #include "FileSystem/BsDataStream.h"
 #include "String/BsUnicode.h"
-#include "Linux/BsLinuxPlatform.h"
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 #include <Windows.h>
+#elif BS_PLATFORM == BS_PLATFORM_LINUX
+#include "Linux/BsLinuxPlatform.h"
 #endif
 
 namespace bs

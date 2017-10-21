@@ -13,18 +13,18 @@
 #include "Renderer/BsRendererManager.h"
 #include "Renderer/BsRenderer.h"
 #include "Allocators/BsFrameAlloc.h"
+#include "Scene/BsSceneManager.h"
 
 namespace bs
 {
 	const float CameraBase::INFINITE_FAR_PLANE_ADJUST = 0.00001f;
 
 	CameraBase::CameraBase()
-		: mLayers(0xFFFFFFFFFFFFFFFF), mPosition(BsZero), mRotation(BsIdentity)
-		, mIsActive(true), mProjType(PT_PERSPECTIVE), mHorzFOV(Degree(90.0f)), mFarDist(1000.0f), mNearDist(0.05f)
-		, mAspect(1.33333333333333f), mOrthoHeight(5), mPriority(0), mCustomViewMatrix(false), mCustomProjMatrix(false)
-		, mMSAA(1), mFrustumExtentsManuallySet(false), mProjMatrixRS(BsZero), mProjMatrix(BsZero), mViewMatrix(BsZero)
-		, mProjMatrixRSInv(BsZero), mProjMatrixInv(BsZero), mViewMatrixInv(BsZero), mRecalcFrustum(true)
-		, mRecalcFrustumPlanes(true), mRecalcView(true)
+		: mLayers(0xFFFFFFFFFFFFFFFF), mProjType(PT_PERSPECTIVE), mHorzFOV(Degree(90.0f)), mFarDist(1000.0f)
+		, mNearDist(0.05f), mAspect(1.33333333333333f), mOrthoHeight(5), mPriority(0), mCustomViewMatrix(false)
+		, mCustomProjMatrix(false), mMSAA(1), mFrustumExtentsManuallySet(false), mProjMatrixRS(BsZero), mProjMatrix(BsZero)
+		, mViewMatrix(BsZero), mProjMatrixRSInv(BsZero), mProjMatrixInv(BsZero), mViewMatrixInv(BsZero)
+		, mRecalcFrustum(true), mRecalcFrustumPlanes(true), mRecalcView(true)
 	{
 		mRenderSettings = bs_shared_ptr_new<RenderSettings>();
 
@@ -60,7 +60,7 @@ namespace bs
 		if (nearPlane <= 0)
 		{
 			LOGERR("Near clip distance must be greater than zero.");
-            return;
+			return;
 		}
 
 		mNearDist = nearPlane;
@@ -126,8 +126,11 @@ namespace bs
 	ConvexVolume CameraBase::getWorldFrustum() const
 	{
 		const Vector<Plane>& frustumPlanes = getFrustum().getPlanes();
+
+		const Transform& tfrm = getTransform();
+
 		Matrix4 worldMatrix;
-		worldMatrix.setTRS(mPosition, mRotation, Vector3::ONE);
+		worldMatrix.setTRS(tfrm.getPosition(), tfrm.getRotation(), Vector3::ONE);
 
 		Vector<Plane> worldPlanes(frustumPlanes.size());
 		UINT32 i = 0;
@@ -324,7 +327,7 @@ namespace bs
 	{
 		if (!mCustomViewMatrix && mRecalcView)
 		{
-			mViewMatrix.makeView(mPosition, mRotation);
+			mViewMatrix.makeView(mTransform.getPosition(), mTransform.getRotation());
 			mViewMatrixInv = mViewMatrix.inverseAffine();
 			mRecalcView = false;
 		}
@@ -461,20 +464,11 @@ namespace bs
 		outbottom = mBottom;
 	}
 
-	void CameraBase::setPosition(const Vector3& position)
+	void CameraBase::setTransform(const Transform& transform)
 	{
-		mPosition = position;
-
+		SceneActor::setTransform(transform);
+		
 		mRecalcView = true;
-		_markCoreDirty(CameraDirtyFlag::Transform);
-	}
-
-	void CameraBase::setRotation(const Quaternion& rotation)
-	{
-		mRotation = rotation;
-
-		mRecalcView = true;
-		_markCoreDirty(CameraDirtyFlag::Transform);
 	}
 
 	void CameraBase::invalidateFrustum() const
@@ -679,7 +673,7 @@ namespace bs
 	}
 
 	Camera::Camera(SPtr<RenderTarget> target, float left, float top, float width, float height)
-		:mMain(false), mLastUpdateHash(0)
+		:mMain(false)
 	{
 		if (target != nullptr)
 			target->blockUntilCoreInitialized();
@@ -720,6 +714,20 @@ namespace bs
 		return handlerPtr;
 	}
 
+	void Camera::initialize()
+	{
+		CoreObject::initialize();
+
+		gSceneManager()._registerCamera(std::static_pointer_cast<Camera>(getThisPtr()));
+	}
+
+	void Camera::destroy()
+	{
+		gSceneManager()._unregisterCamera(std::static_pointer_cast<Camera>(getThisPtr()));
+
+		CoreObject::destroy();
+	}
+
 	Rect2I Camera::getViewportRect() const
 	{
 		return mViewport->getPixelArea();
@@ -729,13 +737,11 @@ namespace bs
 	{
 		UINT32 dirtyFlag = getCoreDirtyFlags();
 
-		UINT32 size = 0;
+		UINT32 size = getActorSyncDataSize();
 		size += rttiGetElemSize(dirtyFlag);
-		size += rttiGetElemSize(mPosition);
-		size += rttiGetElemSize(mRotation);
 
 		UINT32 ppSize = 0;
-		if (dirtyFlag != (UINT32)CameraDirtyFlag::Transform)
+		if (dirtyFlag != (UINT32)ActorDirtyFlag::Transform)
 		{
 			size += rttiGetElemSize(mLayers);
 			size += rttiGetElemSize(mProjType);
@@ -748,7 +754,6 @@ namespace bs
 			size += rttiGetElemSize(mCustomViewMatrix);
 			size += rttiGetElemSize(mCustomProjMatrix);
 			size += rttiGetElemSize(mFrustumExtentsManuallySet);
-			size += rttiGetElemSize(mIsActive);
 			size += rttiGetElemSize(mMSAA);
 			size += sizeof(UINT32);
 
@@ -762,11 +767,10 @@ namespace bs
 		UINT8* buffer = allocator->alloc(size);
 
 		char* dataPtr = (char*)buffer;
+		dataPtr = syncActorTo(dataPtr);
 		dataPtr = rttiWriteElem(dirtyFlag, dataPtr);
-		dataPtr = rttiWriteElem(mPosition, dataPtr);
-		dataPtr = rttiWriteElem(mRotation, dataPtr);
 
-		if (dirtyFlag != (UINT32)CameraDirtyFlag::Transform)
+		if (dirtyFlag != (UINT32)ActorDirtyFlag::Transform)
 		{
 			dataPtr = rttiWriteElem(mLayers, dataPtr);
 			dataPtr = rttiWriteElem(mProjType, dataPtr);
@@ -779,7 +783,6 @@ namespace bs
 			dataPtr = rttiWriteElem(mCustomViewMatrix, dataPtr);
 			dataPtr = rttiWriteElem(mCustomProjMatrix, dataPtr);
 			dataPtr = rttiWriteElem(mFrustumExtentsManuallySet, dataPtr);
-			dataPtr = rttiWriteElem(mIsActive, dataPtr);
 			dataPtr = rttiWriteElem(mMSAA, dataPtr);
 
 			dataPtr = rttiWriteElem(ppSize, dataPtr);
@@ -798,7 +801,7 @@ namespace bs
 		dependencies.push_back(mViewport.get());
 	}
 
-	void Camera::_markCoreDirty(CameraDirtyFlag flag)
+	void Camera::_markCoreDirty(ActorDirtyFlag flag)
 	{
 		markCoreDirty((UINT32)flag);
 	}
@@ -848,16 +851,15 @@ namespace bs
 	{
 		char* dataPtr = (char*)data.getBuffer();
 
-		CameraDirtyFlag dirtyFlag;
+		UINT32 dirtyFlag;
+		dataPtr = syncActorFrom(dataPtr);
 		dataPtr = rttiReadElem(dirtyFlag, dataPtr);
-		dataPtr = rttiReadElem(mPosition, dataPtr);
-		dataPtr = rttiReadElem(mRotation, dataPtr);
 
 		mRecalcFrustum = true;
 		mRecalcFrustumPlanes = true;
 		mRecalcView = true;
 
-		if (dirtyFlag != CameraDirtyFlag::Transform)
+		if (dirtyFlag != (UINT32)ActorDirtyFlag::Transform)
 		{
 			dataPtr = rttiReadElem(mLayers, dataPtr);
 			dataPtr = rttiReadElem(mProjType, dataPtr);
@@ -870,7 +872,6 @@ namespace bs
 			dataPtr = rttiReadElem(mCustomViewMatrix, dataPtr);
 			dataPtr = rttiReadElem(mCustomProjMatrix, dataPtr);
 			dataPtr = rttiReadElem(mFrustumExtentsManuallySet, dataPtr);
-			dataPtr = rttiReadElem(mIsActive, dataPtr);
 			dataPtr = rttiReadElem(mMSAA, dataPtr);
 
 			UINT32 ppSize = 0;

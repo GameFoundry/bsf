@@ -6,11 +6,11 @@
 #include "Renderer/BsRenderable.h"
 #include "Renderer/BsCamera.h"
 #include "Renderer/BsLight.h"
-#include "Renderer/BsReflectionProbe.h"
 #include "RenderAPI/BsViewport.h"
 #include "Scene/BsGameObjectManager.h"
 #include "RenderAPI/BsRenderTarget.h"
 #include "Renderer/BsLightProbeVolume.h"
+#include "Scene/BsSceneActor.h"
 
 namespace bs
 {
@@ -85,29 +85,28 @@ namespace bs
 		oldRoot->destroy();
 	}
 
-	void SceneManager::_registerRenderable(const SPtr<Renderable>& renderable, const HSceneObject& so)
+	void SceneManager::_bindActor(const SPtr<SceneActor>& actor, const HSceneObject& so)
 	{
-		mRenderables[renderable.get()] = SceneRenderableData(renderable, so);
+		mBoundActors[actor.get()] = BoundActorData(actor, so);
 	}
 
-	void SceneManager::_unregisterRenderable(const SPtr<Renderable>& renderable)
+	void SceneManager::_unbindActor(const SPtr<SceneActor>& actor)
 	{
-		mRenderables.erase(renderable.get());
+		mBoundActors.erase(actor.get());
 	}
 
-	void SceneManager::_registerLight(const SPtr<Light>& light, const HSceneObject& so)
+	HSceneObject SceneManager::_getActorSO(const SPtr<SceneActor>& actor) const
 	{
-		mLights[light.get()] = SceneLightData(light, so);
+		auto iterFind = mBoundActors.find(actor.get());
+		if (iterFind != mBoundActors.end())
+			return iterFind->second.so;
+
+		return HSceneObject();		
 	}
 
-	void SceneManager::_unregisterLight(const SPtr<Light>& light)
+	void SceneManager::_registerCamera(const SPtr<Camera>& camera)
 	{
-		mLights.erase(light.get());
-	}
-
-	void SceneManager::_registerCamera(const SPtr<Camera>& camera, const HSceneObject& so)
-	{
-		mCameras[camera.get()] = SceneCameraData(camera, so);
+		mCameras[camera.get()] = camera;
 	}
 
 	void SceneManager::_unregisterCamera(const SPtr<Camera>& camera)
@@ -115,41 +114,21 @@ namespace bs
 		mCameras.erase(camera.get());
 
 		auto iterFind = std::find_if(mMainCameras.begin(), mMainCameras.end(),
-			[&](const SceneCameraData& x)
+			[&](const SPtr<Camera>& x)
 		{
-			return x.camera == camera;
+			return x == camera;
 		});
 
 		if (iterFind != mMainCameras.end())
 			mMainCameras.erase(iterFind);
 	}
 
-	void SceneManager::_registerReflectionProbe(const SPtr<ReflectionProbe>& probe, const HSceneObject& so)
-	{
-		mReflectionProbes[probe.get()] = SceneReflectionProbeData(probe, so);
-	}
-
-	void SceneManager::_unregisterReflectionProbe(const SPtr<ReflectionProbe>& probe)
-	{
-		mReflectionProbes.erase(probe.get());
-	}
-
-	void SceneManager::_registerLightProbeVolume(const SPtr<LightProbeVolume>& volume, const HSceneObject& so)
-	{
-		mLightProbeVolumes[volume.get()] = SceneLightProbeVolumeData(volume, so);
-	}
-
-	void SceneManager::_unregisterLightProbeVolume(const SPtr<LightProbeVolume>& volume)
-	{
-		mLightProbeVolumes.erase(volume.get());
-	}
-
 	void SceneManager::_notifyMainCameraStateChanged(const SPtr<Camera>& camera)
 	{
 		auto iterFind = std::find_if(mMainCameras.begin(), mMainCameras.end(),
-			[&](const SceneCameraData& entry)
+			[&](const SPtr<Camera>& entry)
 		{
-			return entry.camera == camera;
+			return entry == camera;
 		});
 
 		SPtr<Viewport> viewport = camera->getViewport();
@@ -172,101 +151,16 @@ namespace bs
 
 	void SceneManager::_updateCoreObjectTransforms()
 	{
-		for (auto& renderablePair : mRenderables)
-		{
-			SPtr<Renderable> renderable = renderablePair.second.renderable;
-			HSceneObject so = renderablePair.second.sceneObject;
-
-			if (so->getMobility() != renderable->getMobility())
-				renderable->setMobility(so->getMobility());
-
-			renderable->_updateTransform(so);
-
-			if (so->getActive() != renderable->getIsActive())
-				renderable->setIsActive(so->getActive());
-		}
-
-		for (auto& cameraPair : mCameras)
-		{
-			SPtr<Camera> handler = cameraPair.second.camera;
-			HSceneObject so = cameraPair.second.sceneObject;
-
-			UINT32 curHash = so->getTransformHash();
-			if (curHash != handler->_getLastModifiedHash())
-			{
-				handler->setPosition(so->getWorldPosition());
-				handler->setRotation(so->getWorldRotation());
-
-				handler->_setLastModifiedHash(curHash);
-			}
-
-			if (so->getActive() != handler->getIsActive())
-			{
-				handler->setIsActive(so->getActive());
-			}
-		}
-
-		for (auto& lightPair : mLights)
-		{
-			SPtr<Light> handler = lightPair.second.light;
-			HSceneObject so = lightPair.second.sceneObject;
-
-			if (so->getMobility() != handler->getMobility())
-				handler->setMobility(so->getMobility());
-
-			UINT32 curHash = so->getTransformHash();
-			if (curHash != handler->_getLastModifiedHash())
-			{
-				handler->setPosition(so->getWorldPosition());
-				handler->setRotation(so->getWorldRotation());
-
-				handler->_setLastModifiedHash(curHash);
-			}
-
-			if (so->getActive() != handler->getIsActive())
-			{
-				handler->setIsActive(so->getActive());
-			}
-		}
-
-		for (auto& probePair : mReflectionProbes)
-		{
-			SPtr<ReflectionProbe> probe = probePair.second.probe;
-			HSceneObject so = probePair.second.sceneObject;
-
-			UINT32 curHash = so->getTransformHash();
-			if (curHash != probe->_getLastModifiedHash())
-			{
-				probe->setPosition(so->getWorldPosition());
-				probe->setRotation(so->getWorldRotation());
-
-				probe->_setLastModifiedHash(curHash);
-			}
-
-			if (so->getActive() != probe->getIsActive())
-			{
-				probe->setIsActive(so->getActive());
-			}
-		}
-
-		for (auto& volumePair : mLightProbeVolumes)
-		{
-			SPtr<LightProbeVolume> volume = volumePair.second.volume;
-			HSceneObject so = volumePair.second.sceneObject;
-
-			volume->_updateTransform(so);
-
-			if (so->getActive() != volume->getIsActive())
-				volume->setIsActive(so->getActive());
-		}
+		for (auto& entry : mBoundActors)
+			entry.second.actor->_updateState(*entry.second.so);
 	}
 
-	SceneCameraData SceneManager::getMainCamera() const
+	SPtr<Camera> SceneManager::getMainCamera() const
 	{
 		if (mMainCameras.size() > 0)
 			return mMainCameras[0];
 
-		return SceneCameraData();
+		return nullptr;
 	}
 
 	void SceneManager::setMainRenderTarget(const SPtr<RenderTarget>& rt)
@@ -290,8 +184,8 @@ namespace bs
 
 		for (auto& entry : mMainCameras)
 		{
-			entry.camera->getViewport()->setTarget(rt);
-			entry.camera->setAspectRatio(aspect);
+			entry->getViewport()->setTarget(rt);
+			entry->setAspectRatio(aspect);
 		}
 	}
 
@@ -314,7 +208,7 @@ namespace bs
 				}
 
 				// Initialize and enable uninitialized components
-				for(auto& entry : mUnintializedComponents)
+				for(auto& entry : mUninitializedComponents)
 				{
 					entry->onInitialized();
 
@@ -336,7 +230,7 @@ namespace bs
 					}
 				}
 
-				mUnintializedComponents.clear();
+				mUninitializedComponents.clear();
 			}
 		}
 
@@ -427,8 +321,8 @@ namespace bs
 		}
 		else // Stopped
 		{
-			UINT32 idx = (UINT32)mUnintializedComponents.size();
-			mUnintializedComponents.push_back(component);
+			UINT32 idx = (UINT32)mUninitializedComponents.size();
+			mUninitializedComponents.push_back(component);
 
 			component->setSceneManagerId(encodeComponentId(idx, UninitializedList));
 		}
@@ -548,17 +442,17 @@ namespace bs
 		decodeComponentId(component->getSceneManagerId(), idx, listType);
 
 		UINT32 lastIdx;
-		decodeComponentId(mUnintializedComponents.back()->getSceneManagerId(), lastIdx, listType);
+		decodeComponentId(mUninitializedComponents.back()->getSceneManagerId(), lastIdx, listType);
 
-		assert(mUnintializedComponents[idx] == component);
+		assert(mUninitializedComponents[idx] == component);
 
 		if (idx != lastIdx)
 		{
-			std::swap(mUnintializedComponents[idx], mUnintializedComponents[lastIdx]);
-			mUnintializedComponents[idx]->setSceneManagerId(encodeComponentId(idx, UninitializedList));
+			std::swap(mUninitializedComponents[idx], mUninitializedComponents[lastIdx]);
+			mUninitializedComponents[idx]->setSceneManagerId(encodeComponentId(idx, UninitializedList));
 		}
 
-		mUnintializedComponents.erase(mUnintializedComponents.end() - 1);
+		mUninitializedComponents.erase(mUninitializedComponents.end() - 1);
 	}
 
 	UINT32 SceneManager::encodeComponentId(UINT32 idx, UINT32 type)
@@ -572,6 +466,11 @@ namespace bs
 	{
 		idx = id & 0x3FFFFFFF;
 		type = id >> 30;
+	}
+
+	bool SceneManager::isComponentOfType(const HComponent& component, UINT32 rttiId)
+	{
+		return component->getRTTI()->getRTTIId() == rttiId;
 	}
 
 	void SceneManager::_update()
@@ -597,7 +496,7 @@ namespace bs
 		float aspect = rtProps.width / (float)rtProps.height;
 
 		for (auto& entry : mMainCameras)
-			entry.camera->setAspectRatio(aspect);
+			entry->setAspectRatio(aspect);
 	}
 
 	SceneManager& gSceneManager()

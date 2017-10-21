@@ -88,13 +88,13 @@ namespace bs
 		auto& allCameras = gSceneManager().getAllCameras();
 		for(auto& entry : allCameras)
 		{
-			bool isOverlayCamera = entry.second.camera->getRenderSettings()->overlayOnly;
+			bool isOverlayCamera = entry.second->getRenderSettings()->overlayOnly;
 			if (isOverlayCamera)
 				continue;
 
 			// TODO: Not checking if camera and animation renderable's layers match. If we checked more animations could
 			// be culled.
-			mCullFrustums.push_back(entry.second.camera->getWorldFrustum());
+			mCullFrustums.push_back(entry.second->getWorldFrustum());
 		}
 
 		// Make sure thread finishes writing all changes to the anim proxies as they will be read by the animation thread

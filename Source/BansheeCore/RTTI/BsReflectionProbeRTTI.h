@@ -18,9 +18,9 @@ namespace bs
 	{
 	private:
 		BS_BEGIN_RTTI_MEMBERS
-			BS_RTTI_MEMBER_PLAIN(mPosition, 0)
-			BS_RTTI_MEMBER_PLAIN(mRotation, 1)
-			BS_RTTI_MEMBER_PLAIN(mScale, 2)
+			BS_RTTI_MEMBER_REFL(mTransform, 0)
+			BS_RTTI_MEMBER_PLAIN(mActive, 1)
+			BS_RTTI_MEMBER_PLAIN(mMobility, 2)
 			BS_RTTI_MEMBER_PLAIN(mType, 3)
 			BS_RTTI_MEMBER_PLAIN(mRadius, 4)
 			BS_RTTI_MEMBER_PLAIN(mExtents, 5)

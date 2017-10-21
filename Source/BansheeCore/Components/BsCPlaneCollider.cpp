@@ -42,7 +42,8 @@ namespace bs
 
 	SPtr<Collider> CPlaneCollider::createInternal()
 	{
-		SPtr<Collider> collider = PlaneCollider::create(SO()->getWorldPosition(), SO()->getWorldRotation());
+		const Transform& tfrm = SO()->getTransform();
+		SPtr<Collider> collider = PlaneCollider::create(tfrm.getPosition(), tfrm.getRotation());
 
 		collider->_setOwner(PhysicsOwnerType::Component, this);
 		return collider;

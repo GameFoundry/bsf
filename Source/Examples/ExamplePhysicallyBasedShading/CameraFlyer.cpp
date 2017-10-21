@@ -89,12 +89,14 @@ namespace bs
 			SO()->setRotation(camRot);
 		}
 
+		const Transform& tfrm = SO()->getTransform();
+
 		// If the movement button is pressed, determine direction to move in
 		Vector3 direction = Vector3::ZERO;
-		if (goingForward) direction += SO()->getForward();
-		if (goingBack) direction -= SO()->getForward();
-		if (goingRight) direction += SO()->getRight();
-		if (goingLeft) direction -= SO()->getRight();
+		if (goingForward) direction += tfrm.getForward();
+		if (goingBack) direction -= tfrm.getForward();
+		if (goingRight) direction += tfrm.getRight();
+		if (goingLeft) direction -= tfrm.getRight();
 
 		// If a direction is chosen, normalize it to determine final direction.
 		if (direction.squaredLength() != 0)

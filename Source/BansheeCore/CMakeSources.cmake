@@ -80,6 +80,8 @@ set(BS_BANSHEECORE_INC_SCENE
 	"Scene/BsPrefab.h"
 	"Scene/BsPrefabDiff.h"
 	"Scene/BsPrefabUtility.h"
+	"Scene/BsTransform.h"
+	"Scene/BsSceneActor.h"
 )
 
 set(BS_BANSHEECORE_INC_INPUT
@@ -372,6 +374,7 @@ set(BS_BANSHEECORE_INC_RTTI
 	"RTTI/BsSkyboxRTTI.h"
 	"RTTI/BsLightProbeVolumeRTTI.h"
 	"RTTI/BsCLightProbeVolumeRTTI.h"
+	"RTTI/BsTransformRTTI.h"
 )
 
 set(BS_BANSHEECORE_SRC_RENDERER
@@ -529,6 +532,8 @@ set(BS_BANSHEECORE_SRC_SCENE
 	"Scene/BsPrefab.cpp"
 	"Scene/BsPrefabDiff.cpp"
 	"Scene/BsPrefabUtility.cpp"
+	"Scene/BsTransform.cpp"
+	"Scene/BsSceneActor.cpp"
 )
 
 set(BS_BANSHEECORE_INC_AUDIO

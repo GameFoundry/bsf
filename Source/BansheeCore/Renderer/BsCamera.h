@@ -14,6 +14,7 @@
 #include "CoreThread/BsCoreObject.h"
 #include "Math/BsConvexVolume.h"
 #include "Renderer/BsRenderSettings.h"
+#include "Scene/BsSceneActor.h"
 
 namespace bs 
 {
@@ -24,9 +25,8 @@ namespace bs
 	/**	Signals which portion of a Camera is dirty. */
 	enum class CameraDirtyFlag
 	{
-		Transform = 1<<0,
-		Everything = 1<<1,
-		RenderSettings = 1<<2
+		// First few bits reserved by ActorDiryFlag
+		RenderSettings = 1 << 4
 	};
 
 	/** @} */
@@ -40,10 +40,13 @@ namespace bs
 	 *
 	 * @note	This class contains funcionality common to both core and non-core versions of the camera.
 	 */
-	class BS_CORE_EXPORT CameraBase
+	class BS_CORE_EXPORT CameraBase : public SceneActor
 	{
 	public:
 		virtual ~CameraBase() { }
+
+		/** @copydoc SceneActor::setTransform */
+		void setTransform(const Transform& transform) override;
 
 		/**
 		 * Determines the camera horizontal field of view. This determines how wide the camera viewing angle is along the
@@ -77,31 +80,6 @@ namespace bs
 
 		/** @copydoc setAspectRatio() */
 		virtual float getAspectRatio() const;
-
-		/**	Sets camera world space position. */
-		virtual void setPosition(const Vector3& position);
-
-		/**	Retrieves camera world space position. */
-		virtual Vector3 getPosition() const { return mPosition; }
-
-		/**	Sets should the camera be rendered to or not. */
-		void setIsActive(bool active) { mIsActive = active; _markCoreDirty(); }
-		
-		/**	Gets whether the camera be rendered to or not. */
-		bool getIsActive() const { return mIsActive; }
-
-		/**
-		 * Gets the Z (forward) axis of the object, in world space.
-		 *
-		 * @return	Forward axis of the object.
-		 */
-		Vector3 getForward() const { return getRotation().rotate(-Vector3::UNIT_Z); }
-
-		/**	Sets camera world space rotation. */
-		virtual void setRotation(const Quaternion& rotation);
-
-		/**	Retrieves camera world space rotation. */
-		virtual Quaternion getRotation() const { return mRotation; }
 
 		/** Manually set the extents of the frustum that will be used when calculating the projection matrix. This will
 		 * prevents extents for being automatically calculated from aspect and near plane so it is up to the caller to keep
@@ -247,7 +225,8 @@ namespace bs
 		 * Settings that control rendering for this view. They determine how will the renderer process this view, which
 		 * effects will be enabled, and what properties will those effects use.
 		 */
-		void setRenderSettings(const SPtr<RenderSettings>& settings) { mRenderSettings = settings; _markCoreDirty(CameraDirtyFlag::RenderSettings); }
+		void setRenderSettings(const SPtr<RenderSettings>& settings) 
+			{ mRenderSettings = settings; _markCoreDirty((ActorDirtyFlag)CameraDirtyFlag::RenderSettings); }
 
 		/** @copydoc setRenderSettings() */
 		const SPtr<RenderSettings>& getRenderSettings() const { return mRenderSettings; }
@@ -427,18 +406,8 @@ namespace bs
 		/**	Returns a rectangle that defines the viewport position and size, in pixels. */
 		virtual Rect2I getViewportRect() const = 0;
 
-		/** 
-		 * Marks the simulation thread object as dirty and notifies the system its data should be synced with its core 
-		 * thread counterpart. 
-		 */
-		virtual void _markCoreDirty(CameraDirtyFlag flag = CameraDirtyFlag::Everything) { }
-
 	protected:
 		UINT64 mLayers; /**< Bitfield that can be used for filtering what objects the camera sees. */
-
-		Vector3 mPosition; /**< World space position. */
-		Quaternion mRotation; /**< World space rotation. */
-		bool mIsActive; /**< Is camera being rendered to. */
 
 		ProjectionType mProjType; /**< Type of camera projection. */
 		Radian mHorzFOV; /**< Horizontal field of view represents how wide is the camera angle. */
@@ -500,18 +469,18 @@ namespace bs
 		static SPtr<Camera> create(SPtr<RenderTarget> target = nullptr,
 			float left = 0.0f, float top = 0.0f, float width = 1.0f, float height = 1.0f);
 
-		/** @name Internal
-		 *  @{
+		/** 
+		 * @name Internal
+		 * @{
 		 */
 
-		/**	Returns the hash value that can be used to identify if the internal data needs an update. */
-		UINT32 _getLastModifiedHash() const { return mLastUpdateHash; }
+		/** @copydoc CoreObject::initialize */
+		void initialize() override;
 
-		/**	Sets the hash value that can be used to identify if the internal data needs an update. */
-		void _setLastModifiedHash(UINT32 hash) { mLastUpdateHash = hash; }
+		/** @copydoc CoreObject::destroy */
+		void destroy() override;
 
 		/** @} */
-
 	protected:
 		Camera(SPtr<RenderTarget> target = nullptr,
 			float left = 0.0f, float top = 0.0f, float width = 1.0f, float height = 1.0f);
@@ -523,7 +492,7 @@ namespace bs
 		SPtr<ct::CoreObject> createCore() const override;
 
 		/** @copydoc CameraBase::_markCoreDirty */
-		void _markCoreDirty(CameraDirtyFlag flag = CameraDirtyFlag::Everything) override;
+		void _markCoreDirty(ActorDirtyFlag flag = ActorDirtyFlag::Everything) override;
 
 		/** @copydoc CoreObject::syncToCore */
 		CoreSyncData syncToCore(FrameAlloc* allocator) override;
@@ -536,7 +505,6 @@ namespace bs
 
 		SPtr<Viewport> mViewport; /**< Viewport that describes 2D rendering surface. */
 		bool mMain;
-		UINT32 mLastUpdateHash;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

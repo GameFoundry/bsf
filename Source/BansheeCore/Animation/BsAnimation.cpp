@@ -503,7 +503,7 @@ namespace bs
 				{
 					HSceneObject so = sceneObjects[i].so;
 					if (!so.isDestroyed(true))
-						invRootTransform = so->getWorldTfrm().inverseAffine();
+						invRootTransform = so->getWorldMatrix().inverseAffine();
 
 					break;
 				}				
@@ -554,7 +554,7 @@ namespace bs
 				else
 				{
 					// No need to check if SO is valid, if it has a bone connection it must be
-					sceneObjectTransforms[boneIdx] = so->getWorldTfrm() * invRootTransform;
+					sceneObjectTransforms[boneIdx] = so->getWorldMatrix() * invRootTransform;
 					boneIdx++;
 				}
 			}
@@ -602,7 +602,7 @@ namespace bs
 			{
 				HSceneObject so = sceneObjects[i].so;
 				if (!so.isDestroyed(true))
-					invRootTransform = so->getWorldTfrm().inverseAffine();
+					invRootTransform = so->getWorldMatrix().inverseAffine();
 
 				break;
 			}
@@ -623,7 +623,7 @@ namespace bs
 			if (sceneObjectInfos[i].boneIdx == -1)
 				continue;
 
-			sceneObjectTransforms[boneIdx] = sceneObjects[i].so->getWorldTfrm() * invRootTransform;
+			sceneObjectTransforms[boneIdx] = sceneObjects[i].so->getWorldMatrix() * invRootTransform;
 			boneIdx++;
 		}
 	}
@@ -1442,9 +1442,10 @@ namespace bs
 						HSceneObject rootParent = rootSO->getParent();
 						if(!rootParent.isDestroyed(true))
 						{
-							rootParentPos = rootParent->getWorldPosition();
-							rootParentRot = rootParent->getWorldRotation();
-							rootParentScale = rootParent->getWorldScale();
+							const Transform& tfrm = rootParent->getTransform();
+							rootParentPos = tfrm.getPosition();
+							rootParentRot = tfrm.getRotation();
+							rootParentScale = tfrm.getScale();
 						}
 					}
 

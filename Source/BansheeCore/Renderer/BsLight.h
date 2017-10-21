@@ -9,6 +9,7 @@
 #include "Image/BsColor.h"
 #include "Math/BsSphere.h"
 #include "CoreThread/BsCoreObject.h"
+#include "Scene/BsSceneActor.h"
 
 namespace bs
 {
@@ -26,14 +27,6 @@ namespace bs
 		Count			BS_SCRIPT_EXPORT(ex:true) // Keep at end
 	};
 
-	/**	Signals which portion of a light is dirty. */
-	enum class LightDirtyFlag
-	{
-		Transform = 0x01,
-		Everything = 0x02,
-		Mobility = 0x04
-	};
-
 	/** @} */
 
 	/** @addtogroup Implementation
@@ -41,7 +34,7 @@ namespace bs
 	 */
 
 	/** Base class for both sim and core thread Light implementations. */
-	class BS_CORE_EXPORT LightBase
+	class BS_CORE_EXPORT LightBase : public SceneActor
 	{
 	public:
 		LightBase();
@@ -49,20 +42,6 @@ namespace bs
 			bool castsShadows, Degree spotAngle, Degree spotFalloffAngle);
 
 		virtual ~LightBase() { }
-
-		/**	Returns the position of the light, in world space. */
-		Vector3 getPosition() const { return mPosition; }
-
-		/**	Sets the position of the light, in world space. */
-		void setPosition(const Vector3& position) 
-			{ mPosition = position; _markCoreDirty(LightDirtyFlag::Transform); updateBounds(); }
-
-		/**	Returns the rotation of the light, in world space. */
-		Quaternion getRotation() const { return mRotation; }
-
-		/**	Sets the rotation of the light, in world space. */
-		void setRotation(const Quaternion& rotation) 
-			{ mRotation = rotation; _markCoreDirty(LightDirtyFlag::Transform); updateBounds(); }
 
 		/**	Determines the type of the light. */
 		LightType getType() const { return mType; }
@@ -167,40 +146,12 @@ namespace bs
 		 */
 		float getLuminance() const;
 
-		/**	Checks whether the light should be rendered or not. */
-		bool getIsActive() const { return mIsActive; }
-
-		/**	Sets whether the light should be rendered or not. */
-		void setIsActive(bool active) { mIsActive = active; _markCoreDirty(); }
-
-		/**
-		 * Sets the mobility of a scene object. This is used primarily as a performance hint to engine systems. Objects
-		 * with more restricted mobility will result in higher performance. Some mobility constraints will be enforced by
-		 * the engine itself, while for others the caller must be sure not to break the promise he made when mobility was
-		 * set. By default scene object's mobility is unrestricted.
-		 */
-		void setMobility(ObjectMobility mobility);
-
-		/** 
-		 * Gets the mobility setting for this scene object. See setMobility(); 
-		 */
-		ObjectMobility getMobility() const { return mMobility; }
-
-		/** 
-		 * Marks the simulation thread object as dirty and notifies the system its data should be synced with its core 
-		 * thread counterpart. 
-		 */
-		virtual void _markCoreDirty(LightDirtyFlag flag = LightDirtyFlag::Everything) { }
-
 	protected:
 		/** Updates the internal bounds for the light. Call this whenever a property affecting the bounds changes. */
 		void updateBounds();
 
 		/** Calculates maximum light range based on light intensity. */
 		void updateAttenuationRange();
-
-		Vector3 mPosition; /**< World space position. */
-		Quaternion mRotation; /**< World space rotation. */
 
 		LightType mType; /**< Type of light that determines how are the rest of the parameters interpreted. */
 		bool mCastsShadows; /**< Determines whether the light casts shadows. */
@@ -210,10 +161,8 @@ namespace bs
 		float mIntensity; /**< Power of the light source. @see setIntensity. */
 		Degree mSpotAngle; /**< Total angle covered by a spot light. */
 		Degree mSpotFalloffAngle; /**< Spot light angle at which falloff starts. Must be smaller than total angle. */
-		bool mIsActive; /**< Whether the light should be rendered or not. */
 		Sphere mBounds; /**< Sphere that bounds the light area of influence. */
 		bool mAutoAttenuation; /**< Determines is attenuation radius is automatically determined. */
-		ObjectMobility mMobility; /**< Determines if there are any restrictions placed on light movement. */
 		float mShadowBias; /**< See setShadowBias() */
 	};
 
@@ -230,20 +179,6 @@ namespace bs
 	public:
 		/**	Retrieves an implementation of the light usable only from the core thread. */
 		SPtr<ct::Light> getCore() const;
-
-		/** Returns the hash value that can be used to identify if the internal data needs an update. */
-		UINT32 _getLastModifiedHash() const { return mLastUpdateHash; }
-
-		/**	Sets the hash value that can be used to identify if the internal data needs an update. */
-		void _setLastModifiedHash(UINT32 hash) { mLastUpdateHash = hash; }
-
-		/**
-		 * Updates internal transform values from the specified scene object, in case that scene object's transform changed
-		 * since the last call.
-		 *
-		 * @note	Assumes the same scene object will be provided every time.
-		 */
-		void _updateTransform(const HSceneObject& parent);
 
 		/**
 		 * Creates a new light with provided settings.
@@ -270,15 +205,13 @@ namespace bs
 		SPtr<ct::CoreObject> createCore() const override;
 
 		/** @copydoc LightBase::_markCoreDirty */
-		void _markCoreDirty(LightDirtyFlag flag = LightDirtyFlag::Everything) override;
+		void _markCoreDirty(ActorDirtyFlag flag = ActorDirtyFlag::Everything) override;
 
 		/** @copydoc CoreObject::syncToCore */
 		CoreSyncData syncToCore(FrameAlloc* allocator) override;
 
 		/**	Creates a light with without initializing it. Used for serialization. */
 		static SPtr<Light> createEmpty();
-
-		UINT32 mLastUpdateHash;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

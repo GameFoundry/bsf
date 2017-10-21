@@ -366,8 +366,9 @@ namespace bs { namespace ct
 			if (numProbes == 0)
 				continue;
 
-			Vector3 offset = entry.volume->getPosition();
-			Quaternion rotation = entry.volume->getRotation();
+			const Transform& tfrm = entry.volume->getTransform();
+			Vector3 offset = tfrm.getPosition();
+			Quaternion rotation = tfrm.getRotation();
 			for(UINT32 i = 0; i < numProbes; i++)
 			{
 				Vector3 localPos = positions[i];

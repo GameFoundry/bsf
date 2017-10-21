@@ -442,7 +442,8 @@ namespace bs
 		mInternal->onCollisionStay.connect(std::bind(&CRigidbody::triggerOnCollisionStay, this, _1));
 		mInternal->onCollisionEnd.connect(std::bind(&CRigidbody::triggerOnCollisionEnd, this, _1));
 
-		mInternal->setTransform(SO()->getWorldPosition(), SO()->getWorldRotation());
+		const Transform& tfrm = SO()->getTransform();
+		mInternal->setTransform(tfrm.getPosition(), tfrm.getRotation());
 
 		// Note: Merge into one call to avoid many virtual function calls
 		mInternal->setPositionSolverCount(mPositionSolverCount);
@@ -487,8 +488,9 @@ namespace bs
 			checkForNestedRigibody();
 #endif
 		}
-
-		mInternal->setTransform(SO()->getWorldPosition(), SO()->getWorldRotation());
+		
+		const Transform& tfrm = SO()->getTransform();
+		mInternal->setTransform(tfrm.getPosition(), tfrm.getRotation());
 
 		if (mParentJoint != nullptr)
 			mParentJoint->notifyRigidbodyMoved(mThisHandle);

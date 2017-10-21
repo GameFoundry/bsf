@@ -74,8 +74,9 @@ namespace bs
 
 	SPtr<Collider> CCapsuleCollider::createInternal()
 	{
-		SPtr<Collider> collider = CapsuleCollider::create(mRadius, mHalfHeight, SO()->getWorldPosition(), 
-			SO()->getWorldRotation());
+		const Transform& tfrm = SO()->getTransform();
+		SPtr<Collider> collider = CapsuleCollider::create(mRadius, mHalfHeight, tfrm.getPosition(), 
+			tfrm.getRotation());
 
 		collider->_setOwner(PhysicsOwnerType::Component, this);
 		return collider;

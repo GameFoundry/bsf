@@ -346,6 +346,8 @@ namespace bs
 	class CReflectionProbe;
 	class CSkybox;
 	class CLightProbeVolume;
+	class Transform;
+	class SceneActor;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -574,6 +576,8 @@ namespace bs
 		TID_LightProbeVolume = 1136,
 		TID_SavedLightProbeInfo = 1137,
 		TID_CLightProbeVolume = 1138,
+		TID_Transform = 1139,
+		TID_SceneActor = 1140,
 
 		// Moved from Engine layer
 		TID_CCamera = 30000,

@@ -139,6 +139,10 @@ namespace bs
 			mono_jit_cleanup(mRootDomain);
 			mRootDomain = nullptr;
 		}
+
+		// Make sure to explicitly clear this meta-data, as it contains structures allocated from other dynamic libraries,
+		// which will likely get unloaded right after shutdown
+		getScriptMetaData().clear();
 	}
 
 	MonoAssembly& MonoManager::loadAssembly(const WString& path, const String& name)

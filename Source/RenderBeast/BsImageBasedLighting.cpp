@@ -90,7 +90,8 @@ namespace bs { namespace ct
 		output.type = probe->getType() == ReflectionProbeType::Sphere ? 0 
 			: probe->getType() == ReflectionProbeType::Box ? 1 : 2;
 		
-		output.position = probe->getPosition();
+		const Transform& tfrm = probe->getTransform();
+		output.position = tfrm.getPosition();
 		output.boxExtents = probe->getExtents();
 
 		if (probe->getType() == ReflectionProbeType::Sphere)
@@ -100,7 +101,7 @@ namespace bs { namespace ct
 
 		output.transitionDistance = probe->getTransitionDistance();
 		output.cubemapIdx = arrayIdx;
-		output.invBoxTransform.setInverseTRS(output.position, probe->getRotation(), output.boxExtents);
+		output.invBoxTransform.setInverseTRS(output.position, tfrm.getRotation(), output.boxExtents);
 	}
 
 	void ImageBasedLightingParams::populate(const SPtr<GpuParamsSet>& paramsSet, GpuProgramType programType, bool optional, 

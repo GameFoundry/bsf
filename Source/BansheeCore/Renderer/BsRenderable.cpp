@@ -12,6 +12,7 @@
 #include "Animation/BsMorphShapes.h"
 #include "RenderAPI/BsGpuBuffer.h"
 #include "Animation/BsAnimationManager.h"
+#include "Scene/BsSceneManager.h"
 
 namespace bs
 {
@@ -26,8 +27,8 @@ namespace bs
 
 	template<bool Core>
 	TRenderable<Core>::TRenderable()
-		: mLayer(1), mUseOverrideBounds(false), mPosition(BsZero), mTransform(BsIdentity), mTransformNoScale(BsIdentity)
-		, mIsActive(true), mAnimType(RenderableAnimType::None), mMobility(ObjectMobility::Movable)
+		: mLayer(1), mUseOverrideBounds(false), mTfrmMatrix(BsIdentity), mTfrmMatrixNoScale(BsIdentity)
+		, mAnimType(RenderableAnimType::None)
 	{
 		mMaterials.resize(1);
 	}
@@ -36,6 +37,19 @@ namespace bs
 	TRenderable<Core>::~TRenderable()
 	{
 
+	}
+
+	template <bool Core>
+	void TRenderable<Core>::setTransform(const Transform& transform)
+	{
+		if (mMobility != ObjectMobility::Movable)
+			return;
+
+		mTransform = transform;
+		mTfrmMatrix = transform.getMatrix();
+		mTfrmMatrixNoScale = Matrix4::TRS(transform.getPosition(), transform.getRotation(), Vector3::ONE);
+
+		_markCoreDirty(ActorDirtyFlag::Transform);
 	}
 
 	template<bool Core>
@@ -105,33 +119,8 @@ namespace bs
 
 		mLayer = layer;
 		_markCoreDirty();
-	}
-
-	template<bool Core>
-	void TRenderable<Core>::setTransform(const Matrix4& transform, const Matrix4& transformNoScale)
-	{
-		mTransform = transform;
-		mTransformNoScale = transformNoScale;
-		mPosition = mTransform.getTranslation();
-
-		_markCoreDirty(RenderableDirtyFlag::Transform);
-	}
-
-	template<bool Core>
-	void TRenderable<Core>::setIsActive(bool active)
-	{
-		mIsActive = active;
-		_markCoreDirty();
-	}
-
-	template <bool Core>
-	void TRenderable<Core>::setMobility(ObjectMobility mobility)
-	{
-		mMobility = mobility;
-
-		_markCoreDirty(RenderableDirtyFlag::Mobility);
-	}
-
+	}	
+	
 	template<bool Core>
 	void TRenderable<Core>::setOverrideBounds(const AABox& bounds)
 	{
@@ -154,12 +143,6 @@ namespace bs
 	template class TRenderable < false >;
 	template class TRenderable < true >;
 
-	Renderable::Renderable()
-		:mLastUpdateHash(0)
-	{
-		
-	}
-
 	void Renderable::setAnimation(const SPtr<Animation>& animation)
 	{
 		mAnimation = animation;
@@ -175,7 +158,7 @@ namespace bs
 			Sphere sphere(mOverrideBounds.getCenter(), mOverrideBounds.getRadius());
 
 			Bounds bounds(mOverrideBounds, sphere);
-			bounds.transformAffine(mTransform);
+			bounds.transformAffine(mTfrmMatrix);
 
 			return bounds;
 		}
@@ -184,15 +167,17 @@ namespace bs
 
 		if (!mesh.isLoaded())
 		{
-			AABox box(mPosition, mPosition);
-			Sphere sphere(mPosition, 0.0f);
+			const Transform& tfrm = getTransform();
+
+			AABox box(tfrm.getPosition(), tfrm.getPosition());
+			Sphere sphere(tfrm.getPosition(), 0.0f);
 
 			return Bounds(box, sphere);
 		}
 		else
 		{
 			Bounds bounds = mesh->getProperties().getBounds();
-			bounds.transformAffine(mTransform);
+			bounds.transformAffine(mTfrmMatrix);
 
 			return bounds;
 		}
@@ -251,10 +236,10 @@ namespace bs
 		}
 	}
 
-	void Renderable::_updateTransform(const HSceneObject& so, bool force)
+	void Renderable::_updateState(const SceneObject& so, bool force)
 	{
-		UINT32 curHash = so->getTransformHash();
-		if (curHash != _getLastModifiedHash() || force)
+		UINT32 curHash = so.getTransformHash();
+		if (curHash != mHash || force)
 		{
 			// If skinned animation, don't include own transform since that will be handled by root bone animation
 			bool ignoreOwnTransform;
@@ -267,27 +252,23 @@ namespace bs
 			{
 				// Note: Technically we're checking child's hash but using parent's transform. Ideally we check the parent's
 				// hash to reduce the number of required updates.
-				HSceneObject parentSO = so->getParent();
+				HSceneObject parentSO = so.getParent();
 				if (parentSO != nullptr)
-				{
-					Matrix4 transformNoScale = Matrix4::TRS(parentSO->getWorldPosition(), parentSO->getWorldRotation(),
-						Vector3::ONE);
-					setTransform(parentSO->getWorldTfrm(), transformNoScale);
-				}
+					setTransform(parentSO->getTransform());
 				else
-					setTransform(Matrix4::IDENTITY, Matrix4::IDENTITY);
+					setTransform(Transform());
 			}
 			else
-			{
-				Matrix4 transformNoScale = Matrix4::TRS(so->getWorldPosition(), so->getWorldRotation(), Vector3::ONE);
-				setTransform(so->getWorldTfrm(), transformNoScale);
-			}
+				setTransform(so.getTransform());
 
-			_setLastModifiedHash(curHash);
+			mHash = curHash;
 		}
+
+		// Hash now matches so transform won't be applied twice, so we can just call base class version 
+		SceneActor::_updateState(so, force);
 	}
 
-	void Renderable::_markCoreDirty(RenderableDirtyFlag flag)
+	void Renderable::_markCoreDirty(ActorDirtyFlag flag)
 	{
 		markCoreDirty((UINT32)flag);
 	}
@@ -312,34 +293,31 @@ namespace bs
 		else
 			animationId = (UINT64)-1;
 
-		UINT32 size = rttiGetElemSize(mLayer) + 
+		UINT32 size =
+			getActorSyncDataSize() +
+			rttiGetElemSize(mLayer) + 
 			rttiGetElemSize(mOverrideBounds) + 
 			rttiGetElemSize(mUseOverrideBounds) +
 			rttiGetElemSize(numMaterials) + 
-			rttiGetElemSize(mTransform) +
-			rttiGetElemSize(mTransformNoScale) +
-			rttiGetElemSize(mPosition) +
-			rttiGetElemSize(mIsActive) +
+			rttiGetElemSize(mTfrmMatrix) +
+			rttiGetElemSize(mTfrmMatrixNoScale) +
 			rttiGetElemSize(animationId) +
 			rttiGetElemSize(mAnimType) + 
-			rttiGetElemSize(mMobility) +
 			rttiGetElemSize(getCoreDirtyFlags()) +
 			sizeof(SPtr<ct::Mesh>) +
 			numMaterials * sizeof(SPtr<ct::Material>);
 
 		UINT8* data = allocator->alloc(size);
 		char* dataPtr = (char*)data;
+		dataPtr = syncActorTo(dataPtr);
 		dataPtr = rttiWriteElem(mLayer, dataPtr);
 		dataPtr = rttiWriteElem(mOverrideBounds, dataPtr);
 		dataPtr = rttiWriteElem(mUseOverrideBounds, dataPtr);
 		dataPtr = rttiWriteElem(numMaterials, dataPtr);
-		dataPtr = rttiWriteElem(mTransform, dataPtr);
-		dataPtr = rttiWriteElem(mTransformNoScale, dataPtr);
-		dataPtr = rttiWriteElem(mPosition, dataPtr);
-		dataPtr = rttiWriteElem(mIsActive, dataPtr);
+		dataPtr = rttiWriteElem(mTfrmMatrix, dataPtr);
+		dataPtr = rttiWriteElem(mTfrmMatrixNoScale, dataPtr);
 		dataPtr = rttiWriteElem(animationId, dataPtr);
 		dataPtr = rttiWriteElem(mAnimType, dataPtr);
-		dataPtr = rttiWriteElem(mMobility, dataPtr);
 		dataPtr = rttiWriteElem(getCoreDirtyFlags(), dataPtr);
 
 		SPtr<ct::Mesh>* mesh = new (dataPtr) SPtr<ct::Mesh>();
@@ -438,7 +416,7 @@ namespace bs
 
 	Renderable::~Renderable()
 	{
-		if (mIsActive)
+		if (mActive)
 			gRenderer()->notifyRenderableRemoved(this);
 	}
 
@@ -456,7 +434,7 @@ namespace bs
 			Sphere sphere(mOverrideBounds.getCenter(), mOverrideBounds.getRadius());
 
 			Bounds bounds(mOverrideBounds, sphere);
-			bounds.transformAffine(mTransform);
+			bounds.transformAffine(mTfrmMatrix);
 
 			return bounds;
 		}
@@ -465,15 +443,17 @@ namespace bs
 
 		if (mesh == nullptr)
 		{
-			AABox box(mPosition, mPosition);
-			Sphere sphere(mPosition, 0.0f);
+			const Transform& tfrm = getTransform();
+
+			AABox box(tfrm.getPosition(), tfrm.getPosition());
+			Sphere sphere(tfrm.getPosition(), 0.0f);
 
 			return Bounds(box, sphere);
 		}
 		else
 		{
 			Bounds bounds = mesh->getProperties().getBounds();
-			bounds.transformAffine(mTransform);
+			bounds.transformAffine(mTfrmMatrix);
 
 			return bounds;
 		}
@@ -598,19 +578,17 @@ namespace bs
 
 		UINT32 numMaterials = 0;
 		UINT32 dirtyFlags = 0;
-		bool oldIsActive = mIsActive;
+		bool oldIsActive = mActive;
 
+		dataPtr = syncActorFrom(dataPtr);
 		dataPtr = rttiReadElem(mLayer, dataPtr);
 		dataPtr = rttiReadElem(mOverrideBounds, dataPtr);
 		dataPtr = rttiReadElem(mUseOverrideBounds, dataPtr);
 		dataPtr = rttiReadElem(numMaterials, dataPtr);
-		dataPtr = rttiReadElem(mTransform, dataPtr);
-		dataPtr = rttiReadElem(mTransformNoScale, dataPtr);
-		dataPtr = rttiReadElem(mPosition, dataPtr);
-		dataPtr = rttiReadElem(mIsActive, dataPtr);
+		dataPtr = rttiReadElem(mTfrmMatrix, dataPtr);
+		dataPtr = rttiReadElem(mTfrmMatrixNoScale, dataPtr);
 		dataPtr = rttiReadElem(mAnimationId, dataPtr);
 		dataPtr = rttiReadElem(mAnimType, dataPtr);
-		dataPtr = rttiReadElem(mMobility, dataPtr);
 		dataPtr = rttiReadElem(dirtyFlags, dataPtr);
 
 		SPtr<Mesh>* mesh = (SPtr<Mesh>*)dataPtr;
@@ -626,7 +604,7 @@ namespace bs
 			dataPtr += sizeof(SPtr<Material>);
 		}
 
-		if((dirtyFlags & (UINT32)RenderableDirtyFlag::Everything) != 0)
+		if((dirtyFlags & ((UINT32)ActorDirtyFlag::Everything | (UINT32)ActorDirtyFlag::Active)) != 0)
 		{
 			createAnimationBuffers();
 
@@ -644,9 +622,9 @@ namespace bs
 			else
 				mMorphVertexDeclaration = nullptr;
 
-			if (oldIsActive != mIsActive)
+			if (oldIsActive != mActive)
 			{
-				if (mIsActive)
+				if (mActive)
 					gRenderer()->notifyRenderableAdded(this);
 				else
 					gRenderer()->notifyRenderableRemoved(this);
@@ -657,14 +635,14 @@ namespace bs
 				gRenderer()->notifyRenderableAdded(this);
 			}
 		}
-		else if((dirtyFlags & (UINT32)RenderableDirtyFlag::Mobility) != 0)
+		else if((dirtyFlags & (UINT32)ActorDirtyFlag::Mobility) != 0)
 		{
 				gRenderer()->notifyRenderableRemoved(this);
 				gRenderer()->notifyRenderableAdded(this);
 		}
-		else if ((dirtyFlags & (UINT32)RenderableDirtyFlag::Transform) != 0)
+		else if ((dirtyFlags & (UINT32)ActorDirtyFlag::Transform) != 0)
 		{
-			if (mIsActive)
+			if (mActive)
 				gRenderer()->notifyRenderableUpdated(this);
 		}
 	}

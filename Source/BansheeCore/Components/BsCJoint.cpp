@@ -266,10 +266,11 @@ namespace bs
 		HRigidbody rigidbody = mBodies[(int)body];
 		if (rigidbody == nullptr) // Get world space transform if no relative to any body
 		{
-			Quaternion worldRot = SO()->getWorldRotation();
+			const Transform& tfrm = SO()->getTransform();
+			Quaternion worldRot = tfrm.getRotation();
 
 			rotation = worldRot*rotation;
-			position = worldRot.rotate(position) + SO()->getWorldPosition();
+			position = worldRot.rotate(position) + tfrm.getPosition();
 		}
 		else
 		{

@@ -28,7 +28,7 @@ namespace bs
 
 	bool Component::calculateBounds(Bounds& bounds)
 	{
-		Vector3 position = SO()->getWorldPosition();
+		Vector3 position = SO()->getTransform().getPosition();
 
 		bounds = Bounds(AABox(position, position), Sphere(position, 0.0f));
 		return false;

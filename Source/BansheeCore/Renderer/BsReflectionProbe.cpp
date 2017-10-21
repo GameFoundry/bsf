@@ -12,36 +12,43 @@
 namespace bs
 {
 	ReflectionProbeBase::ReflectionProbeBase()
-		: mPosition(BsZero), mRotation(BsIdentity), mScale(1.0f, 1.0f, 1.0f), mType(ReflectionProbeType::Box), mRadius(1.0f)
-		, mExtents(1.0f, 1.0f, 1.0f), mTransitionDistance(0.1f), mIsActive(true), mBounds(Vector3::ZERO, 1.0f)
+		: mType(ReflectionProbeType::Box), mRadius(1.0f), mExtents(1.0f, 1.0f, 1.0f), mTransitionDistance(0.1f)
+		, mBounds(Vector3::ZERO, 1.0f)
 	{ }
 
 	ReflectionProbeBase::ReflectionProbeBase(ReflectionProbeType type, float radius, const Vector3& extents)
-		: mPosition(BsZero), mRotation(BsIdentity), mScale(1.0f, 1.0f, 1.0f), mType(type), mRadius(radius)
-		, mExtents(extents), mTransitionDistance(0.1f), mIsActive(true), mBounds(Vector3::ZERO, 1.0f)
+		: mType(type), mRadius(radius), mExtents(extents), mTransitionDistance(0.1f), mBounds(Vector3::ZERO, 1.0f)
 	{ }
+
+	float ReflectionProbeBase::getRadius() const
+	{
+		Vector3 scale = mTransform.getScale();
+		return mRadius * std::max(std::max(scale.x, scale.y), scale.z);
+	}
 
 	void ReflectionProbeBase::updateBounds()
 	{
+		Vector3 position = mTransform.getPosition();
+		Vector3 scale = mTransform.getScale();
+
 		switch (mType)
 		{
 		case ReflectionProbeType::Sphere:
-			mBounds = Sphere(mPosition, mRadius * std::max(std::max(mScale.x, mScale.y), mScale.z));
+			mBounds = Sphere(position, mRadius * std::max(std::max(scale.x, scale.y), scale.z));
 			break;
 		case ReflectionProbeType::Box:
-			mBounds = Sphere(mPosition, (mExtents * mScale).length());
+			mBounds = Sphere(position, (mExtents * scale).length());
 			break;
 		}
 	}
 
 	ReflectionProbe::ReflectionProbe()
-		:mLastUpdateHash(0)
 	{
 
 	}
 
 	ReflectionProbe::ReflectionProbe(ReflectionProbeType type, float radius, const Vector3& extents)
-		: ReflectionProbeBase(type, radius, extents), mLastUpdateHash(0)
+		: ReflectionProbeBase(type, radius, extents)
 	{
 		// Calling virtual method is okay here because this is the most derived type
 		updateBounds();
@@ -105,7 +112,7 @@ namespace bs
 				settings.depthEncodeNear = radius;
 				settings.depthEncodeFar = radius + 1; // + 1 arbitrary, make it a customizable value?
 
-				ct::gRenderer()->captureSceneCubeMap(coreTexture, coreProbe->getPosition(), settings);
+				ct::gRenderer()->captureSceneCubeMap(coreTexture, coreProbe->getTransform().getPosition(), settings);
 				ct::gIBLUtility().filterCubemapForSpecular(coreTexture, nullptr);
 
 				coreProbe->mFilteredTexture = coreTexture;
@@ -190,15 +197,11 @@ namespace bs
 
 	CoreSyncData ReflectionProbe::syncToCore(FrameAlloc* allocator)
 	{
-		UINT32 size = 0;
-		size += rttiGetElemSize(mPosition);
-		size += rttiGetElemSize(mRotation);
-		size += rttiGetElemSize(mScale);
+		UINT32 size = getActorSyncDataSize();
 		size += rttiGetElemSize(mType);
 		size += rttiGetElemSize(mRadius);
 		size += rttiGetElemSize(mExtents);
 		size += rttiGetElemSize(mTransitionDistance);
-		size += rttiGetElemSize(mIsActive);
 		size += rttiGetElemSize(getCoreDirtyFlags());
 		size += rttiGetElemSize(mBounds);
 		size += sizeof(SPtr<ct::Texture>);
@@ -207,14 +210,11 @@ namespace bs
 		UINT8* buffer = allocator->alloc(size);
 
 		char* dataPtr = (char*)buffer;
-		dataPtr = rttiWriteElem(mPosition, dataPtr);
-		dataPtr = rttiWriteElem(mRotation, dataPtr);
-		dataPtr = rttiWriteElem(mScale, dataPtr);
+		dataPtr = syncActorTo(dataPtr);
 		dataPtr = rttiWriteElem(mType, dataPtr);
 		dataPtr = rttiWriteElem(mRadius, dataPtr);
 		dataPtr = rttiWriteElem(mExtents, dataPtr);
 		dataPtr = rttiWriteElem(mTransitionDistance, dataPtr);
-		dataPtr = rttiWriteElem(mIsActive, dataPtr);
 		dataPtr = rttiWriteElem(getCoreDirtyFlags(), dataPtr);
 		dataPtr = rttiWriteElem(mBounds, dataPtr);
 		dataPtr = rttiWriteElem(mUUID, dataPtr);
@@ -222,20 +222,7 @@ namespace bs
 		return CoreSyncData(buffer, size);
 	}
 
-	void ReflectionProbe::_updateTransform(const HSceneObject& parent)
-	{
-		UINT32 curHash = parent->getTransformHash();
-		if (curHash != _getLastModifiedHash())
-		{
-			setPosition(parent->getWorldPosition());
-			setRotation(parent->getWorldRotation());
-			setScale(parent->getWorldScale());
-
-			_setLastModifiedHash(curHash);
-		}
-	}
-
-	void ReflectionProbe::_markCoreDirty(ReflectionProbeDirtyFlag flags)
+	void ReflectionProbe::_markCoreDirty(ActorDirtyFlag flags)
 	{
 		markCoreDirty((UINT32)flags);
 	}
@@ -277,33 +264,30 @@ namespace bs
 		char* dataPtr = (char*)data.getBuffer();
 
 		UINT32 dirtyFlags = 0;
-		bool oldIsActive = mIsActive;
+		bool oldIsActive = mActive;
 		ReflectionProbeType oldType = mType;
 
-		dataPtr = rttiReadElem(mPosition, dataPtr);
-		dataPtr = rttiReadElem(mRotation, dataPtr);
-		dataPtr = rttiReadElem(mScale, dataPtr);
+		dataPtr = syncActorFrom(dataPtr);
 		dataPtr = rttiReadElem(mType, dataPtr);
 		dataPtr = rttiReadElem(mRadius, dataPtr);
 		dataPtr = rttiReadElem(mExtents, dataPtr);
 		dataPtr = rttiReadElem(mTransitionDistance, dataPtr);
-		dataPtr = rttiReadElem(mIsActive, dataPtr);
 		dataPtr = rttiReadElem(dirtyFlags, dataPtr);
 		dataPtr = rttiReadElem(mBounds, dataPtr);
 		dataPtr = rttiReadElem(mUUID, dataPtr);
 
 		updateBounds();
 
-		if (dirtyFlags == (UINT32)ReflectionProbeDirtyFlag::Transform)
+		if (dirtyFlags == (UINT32)ActorDirtyFlag::Transform)
 		{
-			if (mIsActive)
+			if (mActive)
 				gRenderer()->notifyReflectionProbeUpdated(this, false);
 		}
 		else
 		{
-			if (oldIsActive != mIsActive)
+			if (oldIsActive != mActive)
 			{
-				if (mIsActive)
+				if (mActive)
 					gRenderer()->notifyReflectionProbeAdded(this);
 				else
 				{

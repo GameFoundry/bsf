@@ -17,18 +17,19 @@ namespace bs
 	{
 	private:
 		BS_BEGIN_RTTI_MEMBERS
-			BS_RTTI_MEMBER_PLAIN(mPosition, 0)
-			BS_RTTI_MEMBER_PLAIN(mRotation, 1)
-			BS_RTTI_MEMBER_PLAIN(mType, 2)
-			BS_RTTI_MEMBER_PLAIN(mCastsShadows, 3)
-			BS_RTTI_MEMBER_PLAIN(mColor, 4)
-			BS_RTTI_MEMBER_PLAIN(mAttRadius, 5)
-			BS_RTTI_MEMBER_PLAIN(mIntensity, 6)
-			BS_RTTI_MEMBER_PLAIN(mSpotAngle, 7)
-			BS_RTTI_MEMBER_PLAIN(mSpotFalloffAngle, 8)
-			BS_RTTI_MEMBER_PLAIN(mAutoAttenuation, 9)
-			BS_RTTI_MEMBER_PLAIN(mSourceRadius, 10)
-			BS_RTTI_MEMBER_PLAIN(mShadowBias, 11)
+			BS_RTTI_MEMBER_REFL(mTransform, 0)
+			BS_RTTI_MEMBER_PLAIN(mActive, 1)
+			BS_RTTI_MEMBER_PLAIN(mMobility, 2)
+			BS_RTTI_MEMBER_PLAIN(mType, 3)
+			BS_RTTI_MEMBER_PLAIN(mCastsShadows, 4)
+			BS_RTTI_MEMBER_PLAIN(mColor, 5)
+			BS_RTTI_MEMBER_PLAIN(mAttRadius, 6)
+			BS_RTTI_MEMBER_PLAIN(mIntensity, 7)
+			BS_RTTI_MEMBER_PLAIN(mSpotAngle, 8)
+			BS_RTTI_MEMBER_PLAIN(mSpotFalloffAngle, 9)
+			BS_RTTI_MEMBER_PLAIN(mAutoAttenuation, 10)
+			BS_RTTI_MEMBER_PLAIN(mSourceRadius, 11)
+			BS_RTTI_MEMBER_PLAIN(mShadowBias, 12)
 		BS_END_RTTI_MEMBERS
 	public:
 		LightRTTI()

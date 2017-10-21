@@ -83,20 +83,23 @@ namespace bs
 		rotation = mRotations[(int)body];
 
 		HRigidbody rigidbody = mBodies[(int)body];
+		const Transform& tfrm = SO()->getTransform();
 		if (rigidbody == nullptr) // Get world space transform if no relative to any body
 		{
-			Quaternion worldRot = SO()->getWorldRotation();
+			Quaternion worldRot = tfrm.getRotation();
 
 			rotation = worldRot*rotation;
-			position = worldRot.rotate(position) + SO()->getWorldPosition();
+			position = worldRot.rotate(position) + tfrm.getPosition();
 		}
 		else
 		{
+			const Transform& rigidbodyTfrm = rigidbody->SO()->getTransform();
+
 			// Use only the offset for positioning, but for rotation use both the offset and target SO rotation.
 			// (Needed because we need to rotate the joint SO in order to orient the slider direction, so we need an
 			// additional transform that allows us to orient the object)
 			position = rotation.rotate(position);
-			rotation = (rigidbody->SO()->getWorldRotation()*rotation).inverse()*SO()->getWorldRotation();
+			rotation = (rigidbodyTfrm.getRotation()*rotation).inverse()*tfrm.getRotation();
 		}
 	}
 

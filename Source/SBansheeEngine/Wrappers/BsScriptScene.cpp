@@ -10,6 +10,7 @@
 #include "Scene/BsPrefab.h"
 #include "BsApplication.h"
 #include "Scene/BsSceneObject.h"
+#include "Renderer/BsCamera.h"
 #include "BsScriptGameObjectManager.h"
 #include "Resources/BsGameResourceManager.h"
 #include "BsScriptResourceManager.h"
@@ -137,11 +138,12 @@ namespace bs
 
 	MonoObject* ScriptScene::internal_GetMainCameraSO()
 	{
-		SceneCameraData cameraData = gSceneManager().getMainCamera();
-		if (cameraData.sceneObject == nullptr)
+		SPtr<Camera> camera = gSceneManager().getMainCamera();
+		HSceneObject so = gSceneManager()._getActorSO(camera);
+		if (so == nullptr)
 			return nullptr;
 
-		ScriptSceneObject* cameraSo = ScriptGameObjectManager::instance().getOrCreateScriptSceneObject(cameraData.sceneObject);
+		ScriptSceneObject* cameraSo = ScriptGameObjectManager::instance().getOrCreateScriptSceneObject(so);
 		return cameraSo->getManagedInstance();
 	}
 }

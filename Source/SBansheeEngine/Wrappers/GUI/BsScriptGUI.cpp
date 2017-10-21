@@ -26,7 +26,7 @@ namespace bs
 
 	void ScriptGUI::startUp()
 	{
-		SPtr<Camera> mainCamera = gSceneManager().getMainCamera().camera;
+		SPtr<Camera> mainCamera = gSceneManager().getMainCamera();
 		sGUIWidget = GUIWidget::create(mainCamera);
 		sGUIWidget->setSkin(BuiltinResources::instance().getGUISkin());
 
@@ -59,7 +59,7 @@ namespace bs
 		if (sGUIWidget == nullptr)
 			return;
 
-		SPtr<Camera> mainCamera = gSceneManager().getMainCamera().camera;
+		SPtr<Camera> mainCamera = gSceneManager().getMainCamera();
 		if (mainCamera != sGUIWidget->getCamera())
 			sGUIWidget->setCamera(mainCamera);
 

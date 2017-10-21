@@ -44,7 +44,8 @@ namespace bs
 
 	SPtr<Collider> CBoxCollider::createInternal()
 	{
-		SPtr<Collider> collider = BoxCollider::create(mExtents, SO()->getWorldPosition(), SO()->getWorldRotation());
+		const Transform& tfrm = SO()->getTransform();
+		SPtr<Collider> collider = BoxCollider::create(mExtents, tfrm.getPosition(), tfrm.getRotation());
 		collider->_setOwner(PhysicsOwnerType::Component, this);
 
 		return collider;

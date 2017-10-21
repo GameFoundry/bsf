@@ -15,8 +15,8 @@ namespace bs { namespace ct
 
 	void RendererObject::updatePerObjectBuffer()
 	{
-		Matrix4 worldTransform = renderable->getTransform();
-		Matrix4 worldNoScaleTransform = renderable->getTransformNoScale();
+		Matrix4 worldTransform = renderable->getMatrix();
+		Matrix4 worldNoScaleTransform = renderable->getMatrixNoScale();
 
 		gPerObjectParamDef.gMatWorld.set(perObjectParamBuffer, worldTransform);
 		gPerObjectParamDef.gMatInvWorld.set(perObjectParamBuffer, worldTransform.inverseAffine());
@@ -27,7 +27,7 @@ namespace bs { namespace ct
 
 	void RendererObject::updatePerCallBuffer(const Matrix4& viewProj, bool flush)
 	{
-		Matrix4 worldViewProjMatrix = viewProj * renderable->getTransform();
+		Matrix4 worldViewProjMatrix = viewProj * renderable->getMatrix();
 
 		gPerCallParamDef.gMatWorldViewProj.set(perCallParamBuffer, worldViewProjMatrix);
 

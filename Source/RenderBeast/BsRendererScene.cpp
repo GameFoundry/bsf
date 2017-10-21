@@ -52,7 +52,7 @@ namespace bs {	namespace ct
 		UINT32 cameraId = camera->getRendererId();
 		RendererView* view = mInfo.views[cameraId];
 
-		if((updateFlag & (UINT32)CameraDirtyFlag::Everything) != 0)
+		if((updateFlag & ((UINT32)ActorDirtyFlag::Everything | (UINT32)ActorDirtyFlag::Active)) != 0)
 		{
 			RENDERER_VIEW_DESC viewDesc = createViewDesc(camera);
 
@@ -69,9 +69,10 @@ namespace bs {	namespace ct
 		{
 			view = mInfo.views[cameraId];
 
+			const Transform& tfrm = camera->getTransform();
 			view->setTransform(
-				camera->getPosition(),
-				camera->getForward(),
+				tfrm.getPosition(),
+				tfrm.getForward(),
 				camera->getViewMatrix(),
 				camera->getProjectionMatrixRS(),
 				camera->getWorldFrustum());
@@ -556,8 +557,9 @@ namespace bs {	namespace ct
 		viewDesc.farPlane = camera->getFarClipDistance();
 		viewDesc.flipView = false;
 
-		viewDesc.viewOrigin = camera->getPosition();
-		viewDesc.viewDirection = camera->getForward();
+		const Transform& tfrm = camera->getTransform();
+		viewDesc.viewOrigin = tfrm.getPosition();
+		viewDesc.viewDirection = tfrm.getForward();
 		viewDesc.projTransform = camera->getProjectionMatrixRS();
 		viewDesc.viewTransform = camera->getViewMatrix();
 		viewDesc.projType = camera->getProjectionType();

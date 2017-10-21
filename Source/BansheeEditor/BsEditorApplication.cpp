@@ -147,6 +147,21 @@ namespace bs
 		loadPlugin("SBansheeEditor", &mSBansheeEditorPlugin);
 	}
 
+	void EditorApplication::unloadScriptSystem()
+	{
+		// These plugins must be unloaded before any other script plugins, because
+		// they will cause finalizers to trigger and various modules those finalizers
+		// might reference must still be active
+		if(mSBansheeEditorPlugin != nullptr)
+			unloadPlugin(mSBansheeEditorPlugin);
+
+		if(mSBansheeEnginePlugin != nullptr)
+			unloadPlugin(mSBansheeEnginePlugin);
+
+		if(mMonoPlugin != nullptr)
+			unloadPlugin(mMonoPlugin);
+	}
+
 	void EditorApplication::startUp()
 	{
 		CoreApplication::startUp<EditorApplication>();

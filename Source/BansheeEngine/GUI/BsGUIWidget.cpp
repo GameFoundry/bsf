@@ -104,9 +104,10 @@ namespace bs
 		// as the GUIManager batching relies on object positions, so it needs to be updated.
 		const float diffEpsilon = 0.0001f;
 
-		Vector3 position = parent->getWorldPosition();
-		Quaternion rotation = parent->getWorldRotation();
-		Vector3 scale = parent->getWorldScale();
+		const Transform& tfrm = parent->getTransform();
+		Vector3 position = tfrm.getPosition();
+		Quaternion rotation = tfrm.getRotation();
+		Vector3 scale = tfrm.getScale();
 
 		if(!mWidgetIsDirty)
 		{
@@ -127,7 +128,7 @@ namespace bs
 		mPosition = position;
 		mRotation = rotation;
 		mScale = scale;
-		mTransform = parent->getWorldTfrm();
+		mTransform = parent->getWorldMatrix();
 	}
 
 	void GUIWidget::_updateRT()

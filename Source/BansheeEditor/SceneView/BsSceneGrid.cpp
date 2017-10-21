@@ -219,7 +219,7 @@ namespace bs
 		Matrix4 viewProjMatrix = projMatrix * viewMatrix;
 		mViewProjParam.set(viewProjMatrix);
 
-		mWorldCameraPosParam.set(Vector4(mCamera->getPosition(), 1.0f));
+		mWorldCameraPosParam.set(Vector4(mCamera->getTransform().getPosition(), 1.0f));
 		mGridColorParam.set(GRID_LINE_COLOR);
 		mGridSpacingParam.set(mSpacing);
 		mGridBorderWidthParam.set(LINE_BORDER_WIDTH);

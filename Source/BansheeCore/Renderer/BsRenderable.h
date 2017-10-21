@@ -8,6 +8,7 @@
 #include "Resources/BsIResourceListener.h"
 #include "Math/BsBounds.h"
 #include "Math/BsAABox.h"
+#include "Scene/BsSceneActor.h"
 
 namespace bs
 {
@@ -16,14 +17,6 @@ namespace bs
 	/** @addtogroup Implementation
 	 *  @{
 	 */
-
-	/**	Signals which portion of a Renderable is dirty. */
-	enum class RenderableDirtyFlag
-	{
-		Transform = 0x01,
-		Everything = 0x02,
-		Mobility = 0x04
-	};
 
 	/** Type of animation that can be applied to a renderable object. */
 	enum class RenderableAnimType
@@ -40,7 +33,7 @@ namespace bs
 	 * render any Renderable objects visible by a camera.
 	 */
 	template<bool Core>
-	class BS_CORE_EXPORT TRenderable
+	class BS_CORE_EXPORT TRenderable : public SceneActor
 	{
 		typedef typename TMeshType<Core>::Type MeshType;
 		typedef typename TMaterialPtrType<Core>::Type MaterialType;
@@ -48,6 +41,9 @@ namespace bs
 	public:
 		TRenderable();
 		virtual ~TRenderable();
+
+		/** @copydoc SceneActor::setTransform */
+		void setTransform(const Transform& transform) override;
 
 		/**
 		 * Determines the mesh to render. All sub-meshes of the mesh will be rendered, and you may set individual materials
@@ -85,25 +81,6 @@ namespace bs
 		 */
 		void setLayer(UINT64 layer);
 
-		/** Sets the transform matrix that is applied to the object when its being rendered. */
-		void setTransform(const Matrix4& transform, const Matrix4& transformNoScale);
-
-		/**	Sets whether the object should be rendered or not. */
-		void setIsActive(bool active);
-
-		/**
-		 * Sets the mobility of a scene object. This is used primarily as a performance hint to engine systems. Objects
-		 * with more restricted mobility will result in higher performance. Some mobility constraints will be enforced by
-		 * the engine itself, while for others the caller must be sure not to break the promise he made when mobility was
-		 * set. By default scene object's mobility is unrestricted.
-		 */
-		void setMobility(ObjectMobility mobility);
-
-		/** 
-		 * Gets the mobility setting for this scene object. See setMobility(); 
-		 */
-		ObjectMobility getMobility() const { return mMobility; }
-	
 		/** 
 		 * Sets bounds that will be used when determining if object is visible. Only relevant if setUseOverrideBounds() is
 		 * set to true.
@@ -128,27 +105,15 @@ namespace bs
 		MaterialType getMaterial(UINT32 idx) const { return mMaterials[idx]; }
 
 		/**	Returns the transform matrix that is applied to the object when its being rendered. */
-		Matrix4 getTransform() const { return mTransform; }
+		Matrix4 getMatrix() const { return mTfrmMatrix; }
 
 		/**
 		 * Returns the transform matrix that is applied to the object when its being rendered. This transform matrix does 
 		 * not include scale values.
 		 */
-		Matrix4 getTransformNoScale() const { return mTransformNoScale; }
-
-		/**	Gets whether the object should be rendered or not. */
-		bool getIsActive() const { return mIsActive; }
-
-		/**	Retrieves the world position of the renderable. */
-		Vector3 getPosition() const { return mPosition; }
+		Matrix4 getMatrixNoScale() const { return mTfrmMatrixNoScale; }
 
 	protected:
-		/** 
-		 * Marks the simulation thread object as dirty and notifies the system its data should be synced with its core 
-		 * thread counterpart. 
-		 */
-		virtual void _markCoreDirty(RenderableDirtyFlag flag = RenderableDirtyFlag::Everything) { }
-
 		/**
 		 * Notifies the core object manager that this object is dependant on some other CoreObject(s), and the dependencies
 		 * changed since the last call to this method. This will trigger a call to getCoreDependencies() to collect the 
@@ -167,12 +132,9 @@ namespace bs
 		UINT64 mLayer;
 		AABox mOverrideBounds;
 		bool mUseOverrideBounds;
-		Vector3 mPosition;
-		Matrix4 mTransform;
-		Matrix4 mTransformNoScale;
-		bool mIsActive;
+		Matrix4 mTfrmMatrix;
+		Matrix4 mTfrmMatrixNoScale;
 		RenderableAnimType mAnimType;
-		ObjectMobility mMobility;
 	};
 
 	/** @} */
@@ -197,21 +159,19 @@ namespace bs
 		/**	Retrieves an implementation of a renderable handler usable only from the core thread. */
 		SPtr<ct::Renderable> getCore() const;
 
-		/**	Returns the hash value that can be used to identify if the internal data needs an update. */
-		UINT32 _getLastModifiedHash() const { return mLastUpdateHash; }
-
-		/**	Sets the hash value that can be used to identify if the internal data needs an update. */
-		void _setLastModifiedHash(UINT32 hash) { mLastUpdateHash = hash; }
-
-		/** Updates the transfrom from the provided scene object, if the scene object's data is detected to be dirty. */
-		void _updateTransform(const HSceneObject& so, bool force = false);
-
 		/**	Creates a new renderable handler instance. */
 		static SPtr<Renderable> create();
 
-	protected:
-		Renderable();
+		/**
+		 * @name Internal
+		 * @{
+		 */
 
+		/** @copydoc SceneActor::_updateState */
+		void _updateState(const SceneObject& so, bool force = false) override;
+
+		/** @} */
+	protected:
 		/** @copydoc CoreObject::createCore */
 		SPtr<ct::CoreObject> createCore() const override;
 
@@ -222,7 +182,7 @@ namespace bs
 		void refreshAnimation();
 
 		/** @copydoc TRenderable::_markCoreDirty */
-		void _markCoreDirty(RenderableDirtyFlag flag = RenderableDirtyFlag::Everything) override;
+		void _markCoreDirty(ActorDirtyFlag flag = ActorDirtyFlag::Everything) override;
 
 		/** @copydoc TRenderable::_markResourcesDirty */
 		void _markResourcesDirty() override;
@@ -248,7 +208,6 @@ namespace bs
 		/**	Creates a new renderable handler instance without initializing it. */
 		static SPtr<Renderable> createEmpty();
 
-		UINT32 mLastUpdateHash;
 		SPtr<Animation> mAnimation;
 
 		/************************************************************************/

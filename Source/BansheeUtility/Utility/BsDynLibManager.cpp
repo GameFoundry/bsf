@@ -9,8 +9,8 @@ namespace bs
 	{
 	}
 
-    DynLib* DynLibManager::load(const String& name)
-    {
+	DynLib* DynLibManager::load(const String& name)
+	{
 		// Add the extension (.dll, .so, ...) if necessary.
 		String filename = name;
 		const UINT32 length = (UINT32)filename.length();
@@ -29,12 +29,12 @@ namespace bs
 		}
 		else
 		{
-	        DynLib* newLib = new (bs_alloc<DynLib>()) DynLib(filename);
-        	mLoadedLibraries[filename] = newLib;
+			DynLib* newLib = new (bs_alloc<DynLib>()) DynLib(filename);
+			mLoadedLibraries[filename] = newLib;
 
-	        return newLib;
+			return newLib;
 		}
-    }
+	}
 
 	void DynLibManager::unload(DynLib* lib)
 	{
@@ -49,17 +49,17 @@ namespace bs
 	}
 
 	DynLibManager::~DynLibManager()
-    {
-        // Unload & delete resources in turn
-        for(auto& entry : mLoadedLibraries)
-        {
-            entry.second->unload();
+	{
+		// Unload & delete resources in turn
+		for(auto& entry : mLoadedLibraries)
+		{
+			entry.second->unload();
 			bs_delete(entry.second);
-        }
+		}
 
-        // Empty the list
-        mLoadedLibraries.clear();
-    }
+		// Empty the list
+		mLoadedLibraries.clear();
+	}
 
 	DynLibManager& gDynLibManager()
 	{

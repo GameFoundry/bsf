@@ -216,7 +216,7 @@ namespace bs
 	void ScriptSceneObject::internal_getPosition(ScriptSceneObject* nativeInstance, Vector3* value)
 	{
 		if (!checkIfDestroyed(nativeInstance))
-			*value = nativeInstance->mSceneObject->getWorldPosition();
+			*value = nativeInstance->mSceneObject->getTransform().getPosition();
 		else
 			*value = Vector3(BsZero);
 	}
@@ -224,7 +224,7 @@ namespace bs
 	void ScriptSceneObject::internal_getLocalPosition(ScriptSceneObject* nativeInstance, Vector3* value)
 	{
 		if (!checkIfDestroyed(nativeInstance))
-			*value = nativeInstance->mSceneObject->getPosition();
+			*value = nativeInstance->mSceneObject->getLocalTransform().getPosition();
 		else
 			*value = Vector3(BsZero);
 	}
@@ -232,7 +232,7 @@ namespace bs
 	void ScriptSceneObject::internal_getRotation(ScriptSceneObject* nativeInstance, Quaternion* value)
 	{
 		if (!checkIfDestroyed(nativeInstance))
-			*value = nativeInstance->mSceneObject->getWorldRotation();
+			*value = nativeInstance->mSceneObject->getTransform().getRotation();
 		else
 			*value = Quaternion(BsIdentity);
 	}
@@ -240,7 +240,7 @@ namespace bs
 	void ScriptSceneObject::internal_getLocalRotation(ScriptSceneObject* nativeInstance, Quaternion* value)
 	{
 		if (!checkIfDestroyed(nativeInstance))
-			*value = nativeInstance->mSceneObject->getRotation();
+			*value = nativeInstance->mSceneObject->getLocalTransform().getRotation();
 		else
 			*value = Quaternion(BsIdentity);
 	}
@@ -248,7 +248,7 @@ namespace bs
 	void ScriptSceneObject::internal_getScale(ScriptSceneObject* nativeInstance, Vector3* value)
 	{
 		if (!checkIfDestroyed(nativeInstance))
-			*value = nativeInstance->mSceneObject->getWorldScale();
+			*value = nativeInstance->mSceneObject->getTransform().getScale();
 		else
 			*value = Vector3(Vector3::ONE);
 	}
@@ -256,7 +256,7 @@ namespace bs
 	void ScriptSceneObject::internal_getLocalScale(ScriptSceneObject* nativeInstance, Vector3* value)
 	{
 		if (!checkIfDestroyed(nativeInstance))
-			*value = nativeInstance->mSceneObject->getScale();
+			*value = nativeInstance->mSceneObject->getLocalTransform().getScale();
 		else
 			*value = Vector3(Vector3::ONE);
 	}
@@ -294,7 +294,7 @@ namespace bs
 	void ScriptSceneObject::internal_getLocalTransform(ScriptSceneObject* nativeInstance, Matrix4* value)
 	{
 		if (!checkIfDestroyed(nativeInstance))
-			*value = nativeInstance->mSceneObject->getLocalTfrm();
+			*value = nativeInstance->mSceneObject->getLocalMatrix();
 		else
 			*value = Matrix4();
 	}
@@ -302,7 +302,7 @@ namespace bs
 	void ScriptSceneObject::internal_getWorldTransform(ScriptSceneObject* nativeInstance, Matrix4* value)
 	{
 		if (!checkIfDestroyed(nativeInstance))
-			*value = nativeInstance->mSceneObject->getWorldTfrm();
+			*value = nativeInstance->mSceneObject->getWorldMatrix();
 		else
 			*value = Matrix4();
 	}
@@ -358,7 +358,7 @@ namespace bs
 	void ScriptSceneObject::internal_getForward(ScriptSceneObject* nativeInstance, Vector3* value)
 	{
 		if (!checkIfDestroyed(nativeInstance))
-			*value = nativeInstance->mSceneObject->getForward();
+			*value = nativeInstance->mSceneObject->getTransform().getForward();
 		else
 			*value = Vector3(-Vector3::UNIT_Z);
 	}
@@ -366,7 +366,7 @@ namespace bs
 	void ScriptSceneObject::internal_getUp(ScriptSceneObject* nativeInstance, Vector3* value)
 	{
 		if (!checkIfDestroyed(nativeInstance))
-			*value = nativeInstance->mSceneObject->getUp();
+			*value = nativeInstance->mSceneObject->getTransform().getUp();
 		else
 			*value = Vector3(Vector3::UNIT_Y);
 	}
@@ -374,7 +374,7 @@ namespace bs
 	void ScriptSceneObject::internal_getRight(ScriptSceneObject* nativeInstance, Vector3* value)
 	{
 		if (!checkIfDestroyed(nativeInstance))
-			*value = nativeInstance->mSceneObject->getRight();
+			*value = nativeInstance->mSceneObject->getTransform().getRight();
 		else
 			*value = Vector3(Vector3::UNIT_X);
 	}

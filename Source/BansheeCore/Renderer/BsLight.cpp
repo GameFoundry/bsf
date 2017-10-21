@@ -10,18 +10,16 @@
 namespace bs
 {
 	LightBase::LightBase()
-		: mPosition(BsZero), mRotation(BsIdentity), mType(LightType::Radial), mCastsShadows(false), mColor(Color::White)
-		, mAttRadius(10.0f), mSourceRadius(0.0f), mIntensity(5.0f), mSpotAngle(45), mSpotFalloffAngle(35.0f)
-		, mIsActive(true), mAutoAttenuation(true), mMobility(ObjectMobility::Movable), mShadowBias(0.5f)
+		: mType(LightType::Radial), mCastsShadows(false), mColor(Color::White), mAttRadius(10.0f), mSourceRadius(0.0f)
+		, mIntensity(5.0f), mSpotAngle(45), mSpotFalloffAngle(35.0f), mAutoAttenuation(true), mShadowBias(0.5f)
 	{
 		updateAttenuationRange();
 	}
 
 	LightBase::LightBase(LightType type, Color color, float intensity, float attRadius, float srcRadius, bool castsShadows, 
 		Degree spotAngle, Degree spotFalloffAngle)
-		: mPosition(BsZero), mRotation(BsIdentity), mType(type), mCastsShadows(castsShadows), mColor(color)
-		, mAttRadius(attRadius), mSourceRadius(srcRadius), mIntensity(intensity), mSpotAngle(spotAngle)
-		, mSpotFalloffAngle(spotFalloffAngle), mIsActive(true), mAutoAttenuation(true), mMobility(ObjectMobility::Movable)
+		: mType(type), mCastsShadows(castsShadows), mColor(color), mAttRadius(attRadius), mSourceRadius(srcRadius)
+		, mIntensity(intensity), mSpotAngle(spotAngle), mSpotFalloffAngle(spotFalloffAngle), mAutoAttenuation(true)
 		, mShadowBias(0.5f)
 	{
 		updateAttenuationRange();
@@ -136,13 +134,15 @@ namespace bs
 
 	void LightBase::updateBounds()
 	{
+		const Transform& tfrm = getTransform();
+
 		switch (mType)
 		{
 		case LightType::Directional:
-			mBounds = Sphere(mPosition, std::numeric_limits<float>::infinity());
+			mBounds = Sphere(tfrm.getPosition(), std::numeric_limits<float>::infinity());
 			break;
 		case LightType::Radial:
-			mBounds = Sphere(mPosition, mAttRadius);
+			mBounds = Sphere(tfrm.getPosition(), mAttRadius);
 			break;
 		case LightType::Spot:
 		{
@@ -159,7 +159,7 @@ namespace bs
 			// the middle of the range)
 			float radius = (offset - coneDir).length();
 
-			Vector3 center = mPosition + mRotation.rotate(offset);
+			Vector3 center = tfrm.getPosition() + tfrm.getRotation().rotate(offset);
 			mBounds = Sphere(center, radius);
 		}
 			break;
@@ -168,23 +168,14 @@ namespace bs
 		}
 	}
 
-	void LightBase::setMobility(ObjectMobility mobility)
-	{
-		mMobility = mobility;
-
-		_markCoreDirty(LightDirtyFlag::Mobility);
-	}
-
 	Light::Light()
-		:mLastUpdateHash(0)
 	{
 		
 	}
 
 	Light::Light(LightType type, Color color, float intensity, float attRadius, float srcRadius, bool castsShadows, 
 		Degree spotAngle, Degree spotFalloffAngle)
-		: LightBase(type, color, intensity, attRadius, srcRadius, castsShadows, spotAngle, spotFalloffAngle),
-		mLastUpdateHash(0)
+		: LightBase(type, color, intensity, attRadius, srcRadius, castsShadows, spotAngle, spotFalloffAngle)
 	{
 		// Calling virtual method is okay here because this is the most derived type
 		updateBounds();
@@ -228,9 +219,7 @@ namespace bs
 
 	CoreSyncData Light::syncToCore(FrameAlloc* allocator)
 	{
-		UINT32 size = 0;
-		size += rttiGetElemSize(mPosition);
-		size += rttiGetElemSize(mRotation);
+		UINT32 size = getActorSyncDataSize();
 		size += rttiGetElemSize(mType);
 		size += rttiGetElemSize(mCastsShadows);
 		size += rttiGetElemSize(mColor);
@@ -240,17 +229,14 @@ namespace bs
 		size += rttiGetElemSize(mSpotAngle);
 		size += rttiGetElemSize(mSpotFalloffAngle);
 		size += rttiGetElemSize(mAutoAttenuation);
-		size += rttiGetElemSize(mIsActive);
 		size += rttiGetElemSize(getCoreDirtyFlags());
 		size += rttiGetElemSize(mBounds);
-		size += rttiGetElemSize(mMobility);
 		size += rttiGetElemSize(mShadowBias);
 
 		UINT8* buffer = allocator->alloc(size);
 
 		char* dataPtr = (char*)buffer;
-		dataPtr = rttiWriteElem(mPosition, dataPtr);
-		dataPtr = rttiWriteElem(mRotation, dataPtr);
+		dataPtr = syncActorTo(dataPtr);
 		dataPtr = rttiWriteElem(mType, dataPtr);
 		dataPtr = rttiWriteElem(mCastsShadows, dataPtr);
 		dataPtr = rttiWriteElem(mColor, dataPtr);
@@ -260,27 +246,14 @@ namespace bs
 		dataPtr = rttiWriteElem(mSpotAngle, dataPtr);
 		dataPtr = rttiWriteElem(mSpotFalloffAngle, dataPtr);
 		dataPtr = rttiWriteElem(mAutoAttenuation, dataPtr);
-		dataPtr = rttiWriteElem(mIsActive, dataPtr);
 		dataPtr = rttiWriteElem(getCoreDirtyFlags(), dataPtr);
 		dataPtr = rttiWriteElem(mBounds, dataPtr);
-		dataPtr = rttiWriteElem(mMobility, dataPtr);
 		dataPtr = rttiWriteElem(mShadowBias, dataPtr);
 
 		return CoreSyncData(buffer, size);
 	}
 
-	void Light::_updateTransform(const HSceneObject& parent)
-	{
-		UINT32 curHash = parent->getTransformHash();
-		if (curHash != _getLastModifiedHash())
-		{
-			setPosition(parent->getWorldPosition());
-			setRotation(parent->getWorldRotation());
-			_setLastModifiedHash(curHash);
-		}
-	}
-
-	void Light::_markCoreDirty(LightDirtyFlag flag)
+	void Light::_markCoreDirty(ActorDirtyFlag flag)
 	{
 		markCoreDirty((UINT32)flag);
 	}
@@ -325,11 +298,10 @@ namespace bs
 		char* dataPtr = (char*)data.getBuffer();
 
 		UINT32 dirtyFlags = 0;
-		bool oldIsActive = mIsActive;
+		bool oldIsActive = mActive;
 		LightType oldType = mType;
 
-		dataPtr = rttiReadElem(mPosition, dataPtr);
-		dataPtr = rttiReadElem(mRotation, dataPtr);
+		dataPtr = syncActorFrom(dataPtr);
 		dataPtr = rttiReadElem(mType, dataPtr);
 		dataPtr = rttiReadElem(mCastsShadows, dataPtr);
 		dataPtr = rttiReadElem(mColor, dataPtr);
@@ -339,19 +311,17 @@ namespace bs
 		dataPtr = rttiReadElem(mSpotAngle, dataPtr);
 		dataPtr = rttiReadElem(mSpotFalloffAngle, dataPtr);
 		dataPtr = rttiReadElem(mAutoAttenuation, dataPtr);
-		dataPtr = rttiReadElem(mIsActive, dataPtr);
 		dataPtr = rttiReadElem(dirtyFlags, dataPtr);
 		dataPtr = rttiReadElem(mBounds, dataPtr);
-		dataPtr = rttiReadElem(mMobility, dataPtr);
 		dataPtr = rttiReadElem(mShadowBias, dataPtr);
 
 		updateBounds();
 
-		if((dirtyFlags & (UINT32)LightDirtyFlag::Everything) != 0)
+		if((dirtyFlags & ((UINT32)ActorDirtyFlag::Everything | (UINT32)ActorDirtyFlag::Active)) != 0)
 		{
-			if (oldIsActive != mIsActive)
+			if (oldIsActive != mActive)
 			{
-				if (mIsActive)
+				if (mActive)
 					gRenderer()->notifyLightAdded(this);
 				else
 				{
@@ -371,14 +341,14 @@ namespace bs
 				gRenderer()->notifyLightAdded(this);
 			}
 		}
-		else if((dirtyFlags & (UINT32)LightDirtyFlag::Mobility) != 0)
+		else if((dirtyFlags & (UINT32)ActorDirtyFlag::Mobility) != 0)
 		{
 			gRenderer()->notifyLightRemoved(this);
 			gRenderer()->notifyLightAdded(this);
 		}
-		else if ((dirtyFlags & (UINT32)LightDirtyFlag::Transform) != 0)
+		else if ((dirtyFlags & (UINT32)ActorDirtyFlag::Transform) != 0)
 		{
-			if (mIsActive)
+			if (mActive)
 				gRenderer()->notifyLightUpdated(this);
 		}
 	}

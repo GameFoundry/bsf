@@ -29,7 +29,7 @@ namespace bs
 
 	Sphere CLight::getBounds() const
 	{
-		mInternal->_updateTransform(SO());
+		mInternal->_updateState(*SO());
 
 		return mInternal->getBounds();
 	}
@@ -46,12 +46,12 @@ namespace bs
 				mRange, mCastsShadows, mSpotAngle, mSpotFalloffAngle);
 		}
 
-		gSceneManager()._registerLight(mInternal, sceneObject());
+		gSceneManager()._bindActor(mInternal, sceneObject());
 	}
 
 	void CLight::onDestroyed()
 	{
-		gSceneManager()._unregisterLight(mInternal);
+		gSceneManager()._unbindActor(mInternal);
 	}
 	
 	RTTITypeBase* CLight::getRTTIStatic()

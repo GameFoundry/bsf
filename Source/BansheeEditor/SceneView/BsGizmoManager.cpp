@@ -460,7 +460,7 @@ namespace bs
 
 		IconRenderDataVecPtr iconRenderData;
 
-		mDrawHelper->buildMeshes(DrawHelper::SortType::BackToFront, camera->getPosition());
+		mDrawHelper->buildMeshes(DrawHelper::SortType::BackToFront, camera->getTransform().getPosition());
 		mActiveMeshes = mDrawHelper->getMeshes();
 
 		Vector<MeshRenderData> proxyData = createMeshProxyData(mActiveMeshes);
@@ -652,7 +652,7 @@ namespace bs
 			iconData.back().color = idxToColorCallback(iconDataEntry.idx);
 		}
 
-		mPickingDrawHelper->buildMeshes(DrawHelper::SortType::BackToFront, camera->getPosition());
+		mPickingDrawHelper->buildMeshes(DrawHelper::SortType::BackToFront, camera->getTransform().getPosition());
 		const Vector<DrawHelper::ShapeMeshData>& meshes = mPickingDrawHelper->getMeshes();
 
 		SPtr<TransientMesh> iconMesh = buildIconMesh(camera, iconData, true, iconRenderData);
@@ -1055,7 +1055,7 @@ namespace bs
 		if (!usePickingMaterial)
 		{
 			gGizmoParamBlockDef.gMatViewProj.set(mMeshGizmoBuffer, viewProjMat);
-			gGizmoParamBlockDef.gViewDir.set(mMeshGizmoBuffer, (Vector4)camera->getForward());
+			gGizmoParamBlockDef.gViewDir.set(mMeshGizmoBuffer, (Vector4)camera->getTransform().getForward());
 
 			for (auto& entry : meshes)
 			{

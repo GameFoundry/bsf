@@ -43,20 +43,18 @@ namespace bs
 		Vector<SPtr<ct::Renderable>> objects;
 
 		const Vector<HSceneObject>& sceneObjects = Selection::instance().getSceneObjects();
-		const Map<Renderable*, SceneRenderableData>& renderables = SceneManager::instance().getAllRenderables();
+		Vector<HRenderable> renderables = gSceneManager().findComponents<CRenderable>(true);
 
 		for (auto& renderable : renderables)
 		{
+			HSceneObject renderableSO = renderable->SO();
 			for (auto& so : sceneObjects)
 			{
-				if (!so->getActive())
+				if (renderableSO != so)
 					continue;
 
-				if (renderable.second.sceneObject != so)
-					continue;
-
-				if (renderable.first->getMesh().isLoaded())
-					objects.push_back(renderable.first->getCore());
+				if (renderable->getMesh().isLoaded())
+					objects.push_back(renderable->_getRenderable()->getCore());
 			}
 		}
 
@@ -147,7 +145,7 @@ namespace bs
 			SPtr<VertexBuffer> morphShapeBuffer = renderable->getMorphShapeBuffer();
 			SPtr<VertexDeclaration> morphVertexDeclaration = renderable->getMorphVertexDeclaration();
 
-			Matrix4 worldViewProjMat = viewProjMat * renderable->getTransform();
+			Matrix4 worldViewProjMat = viewProjMat * renderable->getMatrix();
 			UINT32 techniqueIdx = mTechniqueIndices[(int)renderable->getAnimType()];
 
 			mMatWorldViewProj[techniqueIdx].set(worldViewProjMat);

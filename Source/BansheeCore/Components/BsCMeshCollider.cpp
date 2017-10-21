@@ -45,7 +45,8 @@ namespace bs
 
 	SPtr<Collider> CMeshCollider::createInternal()
 	{
-		SPtr<MeshCollider> collider = MeshCollider::create(SO()->getWorldPosition(), SO()->getWorldRotation());
+		const Transform& tfrm = SO()->getTransform();
+		SPtr<MeshCollider> collider = MeshCollider::create(tfrm.getPosition(), tfrm.getRotation());
 		collider->setMesh(mMesh);
 		collider->_setOwner(PhysicsOwnerType::Component, this);
 

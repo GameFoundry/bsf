@@ -14,67 +14,17 @@ namespace bs
 	 *  @{
 	 */
 
-	/**	Contains information about a camera managed by the scene manager. */
-	struct SceneCameraData
+	/** Information about a scene actor and the scene object it has been bound to. */
+	struct BoundActorData
 	{
-		SceneCameraData() { }
+		BoundActorData() { }
 
-		SceneCameraData(const SPtr<Camera>& camera, const HSceneObject& sceneObject)
-			:camera(camera), sceneObject(sceneObject)
+		BoundActorData(const SPtr<SceneActor>& actor, const HSceneObject& so)
+			:actor(actor), so(so)
 		{ }
 
-		SPtr<Camera> camera;
-		HSceneObject sceneObject;
-	};
-
-	/**	Contains information about a renderable managed by the scene manager. */
-	struct SceneRenderableData
-	{
-		SceneRenderableData() { }
-
-		SceneRenderableData(const SPtr<Renderable>& renderable, const HSceneObject& sceneObject)
-			:renderable(renderable), sceneObject(sceneObject)
-		{ }
-
-		SPtr<Renderable> renderable;
-		HSceneObject sceneObject;
-	};
-
-	/**	Contains information about a light managed by the scene manager. */
-	struct SceneLightData
-	{
-		SceneLightData() { }
-
-		SceneLightData(const SPtr<Light>& light, const HSceneObject& sceneObject)
-			:light(light), sceneObject(sceneObject)
-		{ }
-
-		SPtr<Light> light;
-		HSceneObject sceneObject;
-	};
-
-	/**	Contains information about a reflection probe managed by the scene manager. */
-	struct SceneReflectionProbeData
-	{
-		SceneReflectionProbeData() { }
-		SceneReflectionProbeData(const SPtr<ReflectionProbe>& probe, const HSceneObject& sceneObject)
-			:probe(probe), sceneObject(sceneObject)
-		{ }
-
-		SPtr<ReflectionProbe> probe;
-		HSceneObject sceneObject;
-	};
-
-	/**	Contains information about a light probe volume managed by the scene manager. */
-	struct SceneLightProbeVolumeData
-	{
-		SceneLightProbeVolumeData() { }
-		SceneLightProbeVolumeData(const SPtr<LightProbeVolume>& volume, const HSceneObject& sceneObject)
-			:volume(volume), sceneObject(sceneObject)
-		{ }
-
-		SPtr<LightProbeVolume> volume;
-		HSceneObject sceneObject;
+		SPtr<SceneActor> actor;
+		HSceneObject so;
 	};
 
 	/** Possible states components can be in. Controls which component callbacks are triggered. */
@@ -85,7 +35,10 @@ namespace bs
 		Stopped /**< No component callbacks are being triggered. */
 	};
 
-	/** Manages active SceneObjects and provides ways for querying and updating them or their components. */
+	/** 
+	 * Keeps track of all active SceneObject%s and their components. Keeps track of component state and triggers their
+	 * events. Updates the transforms of objects as SceneObject%s move.
+	 */
 	class BS_CORE_EXPORT SceneManager : public Module<SceneManager>
 	{
 	public:
@@ -111,14 +64,25 @@ namespace bs
 		/** Checks are the components currently in the Running state. */
 		bool isRunning() const { return mComponentState == ComponentState::Running; }
 
+		/** 
+		 * Returns a list of all components of the specified type currently in the scene. 
+		 *
+		 * @tparam		T			Type of the component to search for.
+		 * 
+		 * @param[in]	activeOnly	If true only active components are returned, otherwise all components are returned.
+		 * @return					A list of all matching components in the scene.
+		 */
+		template<class T>
+		Vector<GameObjectHandle<T>> findComponents(bool activeOnly = true);
+
 		/** Returns all cameras in the scene. */
-		const Map<Camera*, SceneCameraData>& getAllCameras() const { return mCameras; }
+		const UnorderedMap<Camera*, SPtr<Camera>>& getAllCameras() const { return mCameras; }
 
 		/**
 		 * Returns the camera in the scene marked as main. Main camera controls the final render surface that is displayed
 		 * to the user. If there are multiple main cameras, the first one found returned.
 		 */
-		SceneCameraData getMainCamera() const;
+		SPtr<Camera> getMainCamera() const;
 
 		/**
 		 * Sets the render target that the main camera in the scene (if any) will render its view to. This generally means
@@ -126,38 +90,23 @@ namespace bs
 		 */
 		void setMainRenderTarget(const SPtr<RenderTarget>& rt);
 
-		/**	Returns all renderables in the scene. */
-		const Map<Renderable*, SceneRenderableData>& getAllRenderables() const { return mRenderables; }
+		/** 
+		 * Binds a scene actor with a scene object. Every frame the scene object's transform will be monitored for
+		 * changes and those changes will be automatically transfered to the actor. 
+		 */
+		void _bindActor(const SPtr<SceneActor>& actor, const HSceneObject& so);
 
-		/** Notifies the scene manager that a new renderable was created. */
-		void _registerRenderable(const SPtr<Renderable>& renderable, const HSceneObject& so);
+		/** Unbinds an actor that was previously bound using bindActor(). */
+		void _unbindActor(const SPtr<SceneActor>& actor);
 
-		/**	Notifies the scene manager that a renderable was removed. */
-		void _unregisterRenderable(const SPtr<Renderable>& renderable);
-
-		/**	Notifies the scene manager that a new light was created. */
-		void _registerLight(const SPtr<Light>& light, const HSceneObject& so);
-
-		/**	Notifies the scene manager that a light was removed. */
-		void _unregisterLight(const SPtr<Light>& light);
+		/** Returns a scene object bound to the provided actor, if any. */
+		HSceneObject _getActorSO(const SPtr<SceneActor>& actor) const;
 
 		/**	Notifies the scene manager that a new camera was created. */
-		void _registerCamera(const SPtr<Camera>& camera, const HSceneObject& so);
+		void _registerCamera(const SPtr<Camera>& camera);
 
 		/**	Notifies the scene manager that a camera was removed. */
 		void _unregisterCamera(const SPtr<Camera>& camera);
-
-		/**	Notifies the scene manager that a new reflection probe was created. */
-		void _registerReflectionProbe(const SPtr<ReflectionProbe>& probe, const HSceneObject& so);
-
-		/**	Notifies the scene manager that a reflection probe was removed. */
-		void _unregisterReflectionProbe(const SPtr<ReflectionProbe>& probe);
-
-		/**	Notifies the scene manager that a new light probe volume was created. */
-		void _registerLightProbeVolume(const SPtr<LightProbeVolume>& volume, const HSceneObject& so);
-
-		/**	Notifies the scene manager that a light proble volume was removed. */
-		void _unregisterLightProbeVolume(const SPtr<LightProbeVolume>& volume);
 
 		/**	Notifies the scene manager that a camera either became the main camera, or has stopped being main camera. */
 		void _notifyMainCameraStateChanged(const SPtr<Camera>& camera);
@@ -226,20 +175,19 @@ namespace bs
 		/** Decodes an id encoded with encodeComponentId(). */
 		void decodeComponentId(UINT32 id, UINT32& idx, UINT32& type);
 
+		/** Checks does the specified component type match the provided RTTI id. */
+		static bool isComponentOfType(const HComponent& component, UINT32 rttiId);
+
 	protected:
 		HSceneObject mRootNode;
 
-		Map<Camera*, SceneCameraData> mCameras;
-		Vector<SceneCameraData> mMainCameras;
-
-		Map<Renderable*, SceneRenderableData> mRenderables;
-		Map<Light*, SceneLightData> mLights;
-		Map<ReflectionProbe*, SceneReflectionProbeData> mReflectionProbes;
-		Map<LightProbeVolume*, SceneLightProbeVolumeData> mLightProbeVolumes;
+		UnorderedMap<SceneActor*, BoundActorData> mBoundActors;
+		UnorderedMap<Camera*, SPtr<Camera>> mCameras;
+		Vector<SPtr<Camera>> mMainCameras;
 
 		Vector<HComponent> mActiveComponents;
 		Vector<HComponent> mInactiveComponents;
-		Vector<HComponent> mUnintializedComponents;
+		Vector<HComponent> mUninitializedComponents;
 
 		SPtr<RenderTarget> mMainRT;
 		HEvent mMainRTResizedConn;
@@ -249,6 +197,36 @@ namespace bs
 
 	/**	Provides easy access to the SceneManager. */
 	BS_CORE_EXPORT SceneManager& gSceneManager();
+
+	template<class T>
+	Vector<GameObjectHandle<T>> SceneManager::findComponents(bool activeOnly)
+	{
+		UINT32 rttiId = T::getRTTIStatic()->getRTTIId();
+
+		Vector<GameObjectHandle<T>> output;
+		for(auto& entry : mActiveComponents)
+		{
+			if (isComponentOfType(entry, rttiId))
+				output.push_back(static_object_cast<T>(entry));
+		}
+
+		if(!activeOnly)
+		{
+			for(auto& entry : mInactiveComponents)
+			{
+				if (isComponentOfType(entry, rttiId))
+					output.push_back(static_object_cast<T>(entry));
+			}
+				
+			for(auto& entry : mUninitializedComponents)
+			{
+				if (isComponentOfType(entry, rttiId))
+					output.push_back(static_object_cast<T>(entry));
+			}
+		}
+
+		return output;
+	}
 
 	/** @} */
 }

@@ -144,7 +144,7 @@ namespace bs
 
 	void CCharacterController::onEnabled()
 	{
-		mDesc.position = SO()->getWorldPosition();
+		mDesc.position = SO()->getTransform().getPosition();
 		mInternal = CharacterController::create(mDesc);
 		mInternal->_setOwner(PhysicsOwnerType::Component, this);
 
@@ -160,7 +160,7 @@ namespace bs
 		if (!SO()->getActive() || mInternal == nullptr)
 			return;
 
-		mInternal->setPosition(SO()->getWorldPosition());
+		mInternal->setPosition(SO()->getTransform().getPosition());
 	}
 
 	void CCharacterController::updatePositionFromController()
@@ -172,7 +172,7 @@ namespace bs
 
 	void CCharacterController::updateDimensions()
 	{
-		Vector3 scale = SO()->getWorldScale();
+		Vector3 scale = SO()->getTransform().getScale();
 		float height = mDesc.height * Math::abs(scale.y);
 		float radius = mDesc.radius * Math::abs(std::max(scale.x, scale.z));
 

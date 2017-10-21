@@ -15,11 +15,9 @@
 namespace bs
 {
 	SceneObject::SceneObject(const String& name, UINT32 flags)
-		: GameObject(), mPrefabHash(0), mFlags(flags), mPosition(Vector3::ZERO), mRotation(Quaternion::IDENTITY)
-		, mScale(Vector3::ONE), mWorldPosition(Vector3::ZERO), mWorldRotation(Quaternion::IDENTITY)
-		, mWorldScale(Vector3::ONE), mCachedLocalTfrm(Matrix4::IDENTITY), mCachedWorldTfrm(Matrix4::IDENTITY)
-		, mDirtyFlags(0xFFFFFFFF), mDirtyHash(0), mActiveSelf(true), mActiveHierarchy(true)
-		, mMobility(ObjectMobility::Movable)
+		: GameObject(), mPrefabHash(0), mFlags(flags), mCachedLocalTfrm(Matrix4::IDENTITY)
+		, mCachedWorldTfrm(Matrix4::IDENTITY), mDirtyFlags(0xFFFFFFFF), mDirtyHash(0), mActiveSelf(true)
+		, mActiveHierarchy(true), mMobility(ObjectMobility::Movable)
 	{
 		setName(name);
 	}
@@ -238,7 +236,7 @@ namespace bs
 	{
 		if (mMobility == ObjectMobility::Movable)
 		{
-			mPosition = position;
+			mLocalTfrm.setPosition(position);
 			notifyTransformChanged(TCF_Transform);
 		}
 	}
@@ -247,7 +245,7 @@ namespace bs
 	{
 		if (mMobility == ObjectMobility::Movable)
 		{
-			mRotation = rotation;
+			mLocalTfrm.setRotation(rotation);
 			notifyTransformChanged(TCF_Transform);
 		}
 	}
@@ -256,7 +254,7 @@ namespace bs
 	{
 		if (mMobility == ObjectMobility::Movable)
 		{
-			mScale = scale;
+			mLocalTfrm.setScale(scale);
 			notifyTransformChanged(TCF_Transform);
 		}
 	}
@@ -267,18 +265,9 @@ namespace bs
 			return;
 
 		if (mParent != nullptr)
-		{
-			Vector3 invScale = mParent->getWorldScale();
-			if (invScale.x != 0) invScale.x = 1.0f / invScale.x;
-			if (invScale.y != 0) invScale.y = 1.0f / invScale.y;
-			if (invScale.z != 0) invScale.z = 1.0f / invScale.z;
-
-			Quaternion invRotation = mParent->getWorldRotation().inverse();
-
-			mPosition = invRotation.rotate(position - mParent->getWorldPosition()) *  invScale;
-		}
+			mLocalTfrm.setWorldPosition(position, mParent->getTransform());
 		else
-			mPosition = position;
+			mLocalTfrm.setPosition(position);
 
 		notifyTransformChanged(TCF_Transform);
 	}
@@ -289,13 +278,9 @@ namespace bs
 			return;
 
 		if (mParent != nullptr)
-		{
-			Quaternion invRotation = mParent->getWorldRotation().inverse();
-
-			mRotation = invRotation * rotation;
-		}
+			mLocalTfrm.setWorldRotation(rotation, mParent->getTransform());
 		else
-			mRotation = rotation;
+			mLocalTfrm.setRotation(rotation);
 
 		notifyTransformChanged(TCF_Transform);
 	}
@@ -306,60 +291,33 @@ namespace bs
 			return;
 
 		if (mParent != nullptr)
-		{
-			Matrix3 rotScale;
-			mParent->getWorldTfrm().extract3x3Matrix(rotScale);
-			rotScale.inverse();
-
-			Matrix3 scaleMat = Matrix3(Quaternion::IDENTITY, scale);
-			scaleMat = rotScale * scaleMat;
-
-			Quaternion rotation;
-			Vector3 localScale;
-			scaleMat.decomposition(rotation, localScale);
-
-			mScale = localScale;
-		}
+			mLocalTfrm.setWorldScale(scale, mParent->getTransform());
 		else
-			mScale = scale;
+			mLocalTfrm.setScale(scale);
 
 		notifyTransformChanged(TCF_Transform);
 	}
 
-	const Vector3& SceneObject::getWorldPosition() const
+	const Transform& SceneObject::getTransform() const
 	{ 
 		if (!isCachedWorldTfrmUpToDate())
 			updateWorldTfrm();
 
-		return mWorldPosition; 
-	}
-
-	const Quaternion& SceneObject::getWorldRotation() const 
-	{ 
-		if (!isCachedWorldTfrmUpToDate())
-			updateWorldTfrm();
-
-		return mWorldRotation; 
-	}
-
-	const Vector3& SceneObject::getWorldScale() const 
-	{ 
-		if (!isCachedWorldTfrmUpToDate())
-			updateWorldTfrm();
-
-		return mWorldScale; 
+		return mWorldTfrm; 
 	}
 
 	void SceneObject::lookAt(const Vector3& location, const Vector3& up)
 	{
-		Vector3 forward = location - getWorldPosition();
+		const Transform& worldTfrm = getTransform();
+
+		Vector3 forward = location - worldTfrm.getPosition();
 		
-		Quaternion rotation = getWorldRotation();
+		Quaternion rotation = worldTfrm.getRotation();
 		rotation.lookRotation(forward, up);
 		setWorldRotation(rotation);
 	}
 
-	const Matrix4& SceneObject::getWorldTfrm() const
+	const Matrix4& SceneObject::getWorldMatrix() const
 	{
 		if (!isCachedWorldTfrmUpToDate())
 			updateWorldTfrm();
@@ -367,16 +325,16 @@ namespace bs
 		return mCachedWorldTfrm;
 	}
 
-	Matrix4 SceneObject::getInvWorldTfrm() const
+	Matrix4 SceneObject::getInvWorldMatrix() const
 	{
 		if (!isCachedWorldTfrmUpToDate())
 			updateWorldTfrm();
 
-		Matrix4 worldToLocal = Matrix4::inverseTRS(mWorldPosition, mWorldRotation, mWorldScale);
+		Matrix4 worldToLocal = mWorldTfrm.getInvMatrix();
 		return worldToLocal;
 	}
 
-	const Matrix4& SceneObject::getLocalTfrm() const
+	const Matrix4& SceneObject::getLocalMatrix() const
 	{
 		if (!isCachedLocalTfrmUpToDate())
 			updateLocalTfrm();
@@ -386,57 +344,72 @@ namespace bs
 
 	void SceneObject::move(const Vector3& vec)
 	{
-		setPosition(mPosition + vec);
+		if (mMobility == ObjectMobility::Movable)
+		{
+			mLocalTfrm.move(vec);
+			notifyTransformChanged(TCF_Transform);
+		}
 	}
 
 	void SceneObject::moveRelative(const Vector3& vec)
 	{
-		// Transform the axes of the relative vector by camera's local axes
-		Vector3 trans = mRotation.rotate(vec);
-
-		setPosition(mPosition + trans);
+		if (mMobility == ObjectMobility::Movable)
+		{
+			mLocalTfrm.moveRelative(vec);
+			notifyTransformChanged(TCF_Transform);
+		}
 	}
 
 	void SceneObject::rotate(const Vector3& axis, const Radian& angle)
 	{
-		Quaternion q;
-		q.fromAxisAngle(axis, angle);
-		rotate(q);
+		if (mMobility == ObjectMobility::Movable)
+		{
+			mLocalTfrm.rotate(axis, angle);
+			notifyTransformChanged(TCF_Transform);
+		}
 	}
 
 	void SceneObject::rotate(const Quaternion& q)
 	{
-		// Note the order of the mult, i.e. q comes after
-
-		// Normalize the quat to avoid cumulative problems with precision
-		Quaternion qnorm = q;
-		qnorm.normalize();
-		setRotation(qnorm * mRotation);
+		if (mMobility == ObjectMobility::Movable)
+		{
+			mLocalTfrm.rotate(q);
+			notifyTransformChanged(TCF_Transform);
+		}
 	}
 
 	void SceneObject::roll(const Radian& angle)
 	{
-		// Rotate around local Z axis
-		Vector3 zAxis = mRotation.rotate(Vector3::UNIT_Z);
-		rotate(zAxis, angle);
+		if (mMobility == ObjectMobility::Movable)
+		{
+			mLocalTfrm.roll(angle);
+			notifyTransformChanged(TCF_Transform);
+		}
 	}
 
 	void SceneObject::yaw(const Radian& angle)
 	{
-		Vector3 yAxis = mRotation.rotate(Vector3::UNIT_Y);
-		rotate(yAxis, angle);
+		if (mMobility == ObjectMobility::Movable)
+		{
+			mLocalTfrm.yaw(angle);
+			notifyTransformChanged(TCF_Transform);
+		}
 	}
 
 	void SceneObject::pitch(const Radian& angle)
 	{
-		// Rotate around local X axis
-		Vector3 xAxis = mRotation.rotate(Vector3::UNIT_X);
-		rotate(xAxis, angle);
+		if (mMobility == ObjectMobility::Movable)
+		{
+			mLocalTfrm.pitch(angle);
+			notifyTransformChanged(TCF_Transform);
+		}
 	}
 
 	void SceneObject::setForward(const Vector3& forwardDir)
 	{
-		Quaternion currentRotation = getWorldRotation();
+		const Transform& worldTfrm = getTransform();
+
+		Quaternion currentRotation = worldTfrm.getRotation();
 		currentRotation.lookRotation(forwardDir);
 		setWorldRotation(currentRotation);
 	}
@@ -487,34 +460,18 @@ namespace bs
 
 	void SceneObject::updateWorldTfrm() const
 	{
+		mWorldTfrm = mLocalTfrm;
+
 		// Don't allow movement from parent when not movable
 		if (mParent != nullptr && mMobility == ObjectMobility::Movable)
 		{
-			// Update orientation
-			const Quaternion& parentOrientation = mParent->getWorldRotation();
-			mWorldRotation = parentOrientation * mRotation;
+			mWorldTfrm.makeWorld(mParent->getTransform());
 
-			// Update scale
-			const Vector3& parentScale = mParent->getWorldScale();
-			// Scale own position by parent scale, just combine
-			// as equivalent axes, no shearing
-			mWorldScale = parentScale * mScale;
-
-			// Change position vector based on parent's orientation & scale
-			mWorldPosition = parentOrientation.rotate(parentScale * mPosition);
-
-			// Add altered position vector to parents
-			mWorldPosition += mParent->getWorldPosition();
-
-			mCachedWorldTfrm.setTRS(mWorldPosition, mWorldRotation, mWorldScale);
+			mCachedWorldTfrm = mWorldTfrm.getMatrix();
 		}
 		else
 		{
-			mWorldRotation = mRotation;
-			mWorldPosition = mPosition;
-			mWorldScale = mScale;
-
-			mCachedWorldTfrm = getLocalTfrm();
+			mCachedWorldTfrm = getLocalMatrix();
 		}
 
 		mDirtyFlags &= ~DirtyFlags::WorldTfrmDirty;
@@ -522,8 +479,7 @@ namespace bs
 
 	void SceneObject::updateLocalTfrm() const
 	{
-		mCachedLocalTfrm.setTRS(mPosition, mRotation, mScale);
-
+		mCachedLocalTfrm = mLocalTfrm.getMatrix();
 		mDirtyFlags &= ~DirtyFlags::LocalTfrmDirty;
 	}
 
@@ -539,6 +495,9 @@ namespace bs
 #if BS_EDITOR_BUILD
 		String originalPrefab = getPrefabLink();
 #endif
+
+		if (mMobility != ObjectMobility::Movable)
+			keepWorldTransform = true;
 
 		_setParent(parent, keepWorldTransform);
 
@@ -559,17 +518,11 @@ namespace bs
 
 		if (mParent == nullptr || mParent != parent)
 		{
-			Vector3 worldPos;
-			Quaternion worldRot;
-			Vector3 worldScale;
+			Transform worldTfrm;
 
+			// Make sure the object keeps its world coordinates
 			if (keepWorldTransform)
-			{
-				// Make sure the object keeps its world coordinates
-				worldPos = getWorldPosition();
-				worldRot = getWorldRotation();
-				worldScale = getWorldScale();
-			}
+				worldTfrm = getTransform();
 
 			if (mParent != nullptr)
 				mParent->removeChild(mThisHandle);
@@ -581,9 +534,10 @@ namespace bs
 
 			if (keepWorldTransform)
 			{
-				setWorldPosition(worldPos);
-				setWorldRotation(worldRot);
-				setWorldScale(worldScale);
+				mLocalTfrm = worldTfrm;
+
+				if (mParent != nullptr)
+					mLocalTfrm.makeLocal(mParent->getTransform());
 			}
 
 			notifyTransformChanged((TransformChangedFlags)(TCF_Parent | TCF_Transform));
@@ -747,7 +701,7 @@ namespace bs
 		}
 	}
 
-	bool SceneObject::getActive(bool self)
+	bool SceneObject::getActive(bool self) const
 	{
 		if (self)
 			return mActiveSelf;

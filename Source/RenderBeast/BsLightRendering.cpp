@@ -27,10 +27,11 @@ namespace bs { namespace ct
 		Radian spotFalloffAngle = Math::clamp(internal->getSpotFalloffAngle() * 0.5f, Degree(0), (Degree)spotAngle);
 		Color color = internal->getColor();
 
-		output.position = internal->getPosition();
+		const Transform& tfrm = internal->getTransform();
+		output.position = tfrm.getPosition();
 		output.attRadius = internal->getBounds().getRadius();
 		output.srcRadius = internal->getSourceRadius();
-		output.direction = -internal->getRotation().zAxis();
+		output.direction = -tfrm.getRotation().zAxis();
 		output.luminance = internal->getLuminance();
 		output.spotAngles.x = spotAngle.valueRadians();
 		output.spotAngles.y = Math::cos(output.spotAngles.x);
@@ -83,8 +84,10 @@ namespace bs { namespace ct
 
 		gPerLightParamDef.gLightGeometry.set(buffer, lightGeometry);
 
+		const Transform& tfrm = internal->getTransform();
+
 		Quaternion lightRotation(BsIdentity);
-		lightRotation.lookRotation(-internal->getRotation().zAxis());
+		lightRotation.lookRotation(-tfrm.getRotation().zAxis());
 
 		Matrix4 transform = Matrix4::TRS(lightData.shiftedLightPosition, lightRotation, Vector3::ONE);
 		gPerLightParamDef.gMatConeTransform.set(buffer, transform);
@@ -92,13 +95,14 @@ namespace bs { namespace ct
 
 	Vector3 RendererLight::getShiftedLightPosition() const
 	{
-		Vector3 direction = -internal->getRotation().zAxis();
+		const Transform& tfrm = internal->getTransform();
+		Vector3 direction = -tfrm.getRotation().zAxis();
 
 		// Create position for fake attenuation for area spot lights (with disc center)
 		if (internal->getType() == LightType::Spot)
-			return internal->getPosition() - direction * (internal->getSourceRadius() / Math::tan(internal->getSpotAngle() * 0.5f));
+			return tfrm.getPosition() - direction * (internal->getSourceRadius() / Math::tan(internal->getSpotAngle() * 0.5f));
 		else
-			return internal->getPosition();
+			return tfrm.getPosition();
 	}
 
 	GBufferParams::GBufferParams(const SPtr<Material>& material, const SPtr<GpuParamsSet>& paramsSet)

@@ -28,14 +28,11 @@ namespace bs
 	class BS_CORE_EXPORT SceneObjectRTTI : public RTTIType<SceneObject, GameObject, SceneObjectRTTI>
 	{
 	private:
-		Vector3& getPosition(SceneObject* obj) { return obj->mPosition; }
-		void setPosition(SceneObject* obj, Vector3& value) { obj->mPosition = value; }
+		Transform& getTransform(SceneObject* obj) { return obj->mWorldTfrm; }
+		void setTransform(SceneObject* obj, Transform& value) { obj->mWorldTfrm = value; }
 
-		Quaternion& getRotation(SceneObject* obj) { return obj->mRotation; }
-		void setRotation(SceneObject* obj, Quaternion& value) { obj->mRotation = value; }
-
-		Vector3& getScale(SceneObject* obj) { return obj->mScale; }
-		void setScale(SceneObject* obj, Vector3& value) { obj->mScale = value; }
+		Transform& getLocalTransform(SceneObject* obj) { return obj->mLocalTfrm; }
+		void setLocalTransform(SceneObject* obj, Transform& value) { obj->mLocalTfrm = value; }
 
 		bool& getActive(SceneObject* obj) { return obj->mActiveSelf; }
 		void setActive(SceneObject* obj, bool& value) { obj->mActiveSelf = value; }
@@ -101,11 +98,11 @@ namespace bs
 			addPlainField("mFlags", 3, &SceneObjectRTTI::getFlags, &SceneObjectRTTI::setFlags);
 			addReflectablePtrField("mPrefabDiff", 4, &SceneObjectRTTI::getPrefabDiff, &SceneObjectRTTI::setPrefabDiff);
 			addPlainField("mPrefabHash", 5, &SceneObjectRTTI::getPrefabHash, &SceneObjectRTTI::setPrefabHash);
-			addPlainField("mPosition", 6, &SceneObjectRTTI::getPosition, &SceneObjectRTTI::setPosition);
-			addPlainField("mRotation", 7, &SceneObjectRTTI::getRotation, &SceneObjectRTTI::setRotation);
-			addPlainField("mScale", 8, &SceneObjectRTTI::getScale, &SceneObjectRTTI::setScale);
 			addPlainField("mActiveSelf", 9, &SceneObjectRTTI::getActive, &SceneObjectRTTI::setActive);
 			addPlainField("mMobility", 10, &SceneObjectRTTI::getMobility, &SceneObjectRTTI::setMobility);
+
+			addReflectableField("mWorldTfrm", 11, &SceneObjectRTTI::getTransform, &SceneObjectRTTI::setTransform);
+			addReflectableField("mLocalTfrm", 12, &SceneObjectRTTI::getLocalTransform, &SceneObjectRTTI::setLocalTransform);
 		}
 
 		void onDeserializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override

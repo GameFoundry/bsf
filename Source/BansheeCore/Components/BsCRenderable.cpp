@@ -41,7 +41,7 @@ namespace bs
 		else
 			mInternal = Renderable::create();
 
-		gSceneManager()._registerRenderable(mInternal, sceneObject());
+		gSceneManager()._bindActor(mInternal, sceneObject());
 
 		mAnimation = SO()->getComponent<CAnimation>();
 		if (mAnimation != nullptr)
@@ -53,7 +53,7 @@ namespace bs
 
 	Bounds CRenderable::getBounds() const
 	{
-		mInternal->_updateTransform(mThisHandle);
+		mInternal->_updateState(*SO());
 		return mInternal->getBounds();
 	}
 
@@ -74,7 +74,7 @@ namespace bs
 
 			// Need to update transform because animated renderables handle local transforms through bones, so it
 			// shouldn't be included in the renderable's transform.
-			mInternal->_updateTransform(SO(), true);
+			mInternal->_updateState(*SO(), true);
 		}
 	}
 
@@ -88,7 +88,7 @@ namespace bs
 
 			// Need to update transform because animated renderables handle local transforms through bones, so it
 			// shouldn't be included in the renderable's transform.
-			mInternal->_updateTransform(SO(), true);
+			mInternal->_updateState(*SO(), true);
 		}
 	}
 
@@ -102,7 +102,7 @@ namespace bs
 		if (mAnimation != nullptr)
 			mAnimation->_unregisterRenderable();
 
-		gSceneManager()._unregisterRenderable(mInternal);
+		gSceneManager()._unbindActor(mInternal);
 	}
 
 	RTTITypeBase* CRenderable::getRTTIStatic()

@@ -48,7 +48,7 @@ namespace bs
 
 	void CAudioListener::update()
 	{
-		Vector3 worldPos = SO()->getWorldPosition();
+		Vector3 worldPos = SO()->getTransform().getPosition();
 		mVelocity = (worldPos - mLastPosition) / gTime().getFrameDelta();
 		mLastPosition = worldPos;
 	}
@@ -69,9 +69,11 @@ namespace bs
 	
 	void CAudioListener::updateTransform()
 	{
-		mInternal->setPosition(SO()->getWorldPosition());
-		mInternal->setDirection(SO()->getForward());
-		mInternal->setUp(SO()->getUp());
+		const Transform& tfrm = SO()->getTransform();
+
+		mInternal->setPosition(tfrm.getPosition());
+		mInternal->setDirection(tfrm.getForward());
+		mInternal->setUp(tfrm.getUp());
 		mInternal->setVelocity(mVelocity);
 	}
 	

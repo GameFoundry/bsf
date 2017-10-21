@@ -61,7 +61,7 @@ namespace bs
 		if (data != nullptr)
 		{
 			Matrix3 rotation;
-			selectedObjects[0]->getWorldRotation().toRotationMatrix(rotation);
+			selectedObjects[0]->getTransform().getRotation().toRotationMatrix(rotation);
 			data->normal = rotation.inverse().transpose().transform(data->normal);
 		}
 		
@@ -87,17 +87,13 @@ namespace bs
 
 		Matrix4 viewProjMatrix = cam->getProjectionMatrixRS() * cam->getViewMatrix();
 
-		const Map<Renderable*, SceneRenderableData>& renderables = SceneManager::instance().getAllRenderables();
+		Vector<HRenderable> renderables = gSceneManager().findComponents<CRenderable>(true);
 		RenderableSet pickData(comparePickElement);
 		Map<UINT32, HSceneObject> idxToRenderable;
 
-		for (auto& renderableData : renderables)
+		for (auto& renderable : renderables)
 		{
-			SPtr<Renderable> renderable = renderableData.second.renderable;
-			HSceneObject so = renderableData.second.sceneObject;
-
-			if (!so->getActive())
-				continue;
+			HSceneObject so = renderable->SO();
 
 			HMesh mesh = renderable->getMesh();
 			if (!mesh.isLoaded())
@@ -117,7 +113,7 @@ namespace bs
 				continue;
 
 			Bounds worldBounds = mesh->getProperties().getBounds();
-			Matrix4 worldTransform = so->getWorldTfrm();
+			Matrix4 worldTransform = so->getWorldMatrix();
 			worldBounds.transformAffine(worldTransform);
 
 			const ConvexVolume& frustum = cam->getWorldFrustum();

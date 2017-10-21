@@ -240,17 +240,19 @@ namespace bs
 
 	void CCollider::updateTransform()
 	{
-		Vector3 myScale = SO()->getWorldScale();
+		const Transform& tfrm = SO()->getTransform();
+		Vector3 myScale = tfrm.getScale();
 
 		if (mParent != nullptr)
 		{
-			Vector3 parentPos = mParent->SO()->getWorldPosition();
-			Quaternion parentRot = mParent->SO()->getWorldRotation();
+			const Transform& parentTfrm = mParent->SO()->getTransform();
+			Vector3 parentPos = parentTfrm.getPosition();
+			Quaternion parentRot = parentTfrm.getRotation();
 
-			Vector3 myPos = SO()->getWorldPosition();
-			Quaternion myRot = SO()->getWorldRotation();
+			Vector3 myPos = tfrm.getPosition();
+			Quaternion myRot = tfrm.getRotation();
 
-			Vector3 scale = mParent->SO()->getWorldScale();
+			Vector3 scale = parentTfrm.getScale();
 			Vector3 invScale = scale;
 			if (invScale.x != 0) invScale.x = 1.0f / invScale.x;
 			if (invScale.y != 0) invScale.y = 1.0f / invScale.y;
@@ -269,8 +271,8 @@ namespace bs
 		}
 		else
 		{
-			Quaternion myRot = SO()->getWorldRotation();
-			Vector3 myPos = SO()->getWorldPosition() + myRot.rotate(mLocalPosition * myScale);
+			Quaternion myRot = tfrm.getRotation();
+			Vector3 myPos = tfrm.getPosition() + myRot.rotate(mLocalPosition * myScale);
 			myRot = myRot * mLocalRotation;
 
 			mInternal->setTransform(myPos, myRot);

@@ -26,7 +26,7 @@ namespace bs
 
 	Sphere CReflectionProbe::getBounds() const
 	{
-		mInternal->_updateTransform(SO());
+		mInternal->_updateState(*SO());
 
 		return mInternal->getBounds();
 	}
@@ -40,7 +40,7 @@ namespace bs
 		else
 			mInternal = ReflectionProbe::createBox(Vector3::ONE);
 
-		gSceneManager()._registerReflectionProbe(mInternal, sceneObject());
+		gSceneManager()._bindActor(mInternal, sceneObject());
 
 		// If filtered texture doesn't exist, ensure it is generated
 		SPtr<Texture> filteredTexture = mInternal->getFilteredTexture();
@@ -55,7 +55,7 @@ namespace bs
 
 	void CReflectionProbe::onDestroyed()
 	{
-		gSceneManager()._unregisterReflectionProbe(mInternal);
+		gSceneManager()._unbindActor(mInternal);
 	}
 
 	RTTITypeBase* CReflectionProbe::getRTTIStatic()

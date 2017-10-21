@@ -169,7 +169,7 @@ namespace bs
 
 					Matrix4 parentTfrm;
 					if (SO()->getParent() != nullptr)
-						parentTfrm = SO()->getParent()->getWorldTfrm();
+						parentTfrm = SO()->getParent()->getWorldMatrix();
 					else
 						parentTfrm = Matrix4::IDENTITY;
 
@@ -441,7 +441,7 @@ namespace bs
 			if (mInternal != nullptr)
 			{
 				AABox bounds = mBounds;
-				bounds.transformAffine(SO()->getWorldTfrm());
+				bounds.transformAffine(SO()->getWorldMatrix());
 
 				mInternal->setBounds(bounds);
 			}

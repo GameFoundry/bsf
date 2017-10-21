@@ -8,6 +8,7 @@
 #include "Math/BsVector3.h"
 #include "Math/BsQuaternion.h"
 #include "Math/BsSphere.h"
+#include "Scene/BsSceneActor.h"
 
 namespace bs
 {
@@ -30,13 +31,6 @@ namespace bs
 		Sphere
 	};
 
-	/**	Signals which portion of a reflection probe is dirty. */
-	enum class ReflectionProbeDirtyFlag
-	{
-		Transform = 0x01,
-		Everything = 0x02
-	};
-
 	/** @} */
 
 	/** @addtogroup Implementation
@@ -44,33 +38,12 @@ namespace bs
 	 */
 
 	/** Base class for both core and sim thread implementations of a reflection probe. */
-	class BS_CORE_EXPORT ReflectionProbeBase
+	class BS_CORE_EXPORT ReflectionProbeBase : public SceneActor
 	{
 	public:
 		ReflectionProbeBase();
 		ReflectionProbeBase(ReflectionProbeType type, float radius, const Vector3& extents);
 		virtual ~ReflectionProbeBase() { }
-
-		/**	Returns the position of the probe, in world space. */
-		Vector3 getPosition() const { return mPosition; }
-
-		/**	Sets the position of the probe, in world space. */
-		void setPosition(const Vector3& position) 
-			{ mPosition = position; _markCoreDirty(ReflectionProbeDirtyFlag::Transform); updateBounds(); }
-
-		/**	Returns the rotation of the probe, in world space. */
-		Quaternion getRotation() const { return mRotation; }
-
-		/**	Sets the rotation of the probe, in world space. */
-		void setRotation(const Quaternion& rotation) 
-			{ mRotation = rotation; _markCoreDirty(ReflectionProbeDirtyFlag::Transform); updateBounds(); }
-
-		/**	Returns the scale of the probe. */
-		Vector3 getScale() const { return mScale; }
-
-		/**	Sets the scale of the probe. */
-		void setScale(const Vector3& scale)
-			{ mScale = scale; _markCoreDirty(ReflectionProbeDirtyFlag::Transform); updateBounds(); }
 
 		/**	Returns the type of the probe. */
 		ReflectionProbeType getType() const { return mType; }
@@ -79,13 +52,13 @@ namespace bs
 		void setType(ReflectionProbeType type) { mType = type; _markCoreDirty(); updateBounds(); }
 
 		/** Returns the radius of a sphere reflection probe. Determines range of influence. */
-		float getRadius() const { return mRadius * std::max(std::max(mScale.x, mScale.y), mScale.z); }
+		float getRadius() const;
 
 		/** Sets the radius of a sphere reflection probe. */
 		void setRadius(float radius) { mRadius = radius; _markCoreDirty(); updateBounds(); }
 
 		/** Returns the extents of a box reflection probe. */
-		Vector3 getExtents() const { return mExtents * mScale; }
+		Vector3 getExtents() const { return mExtents * mTransform.getScale(); }
 
 		/** Sets the extents of a box reflection probe. Determines range of influence. */
 		void setExtents(const Vector3& extents) { mExtents = extents; _markCoreDirty(); updateBounds(); }
@@ -102,28 +75,12 @@ namespace bs
 		/** Retrieves transition distance set by setTransitionDistance(). */
 		float getTransitionDistance() const { return mTransitionDistance; }
 
-		/**	Checks whether the probe should be used or not. */
-		bool getIsActive() const { return mIsActive; }
-
-		/**	Sets whether the probe should be used or not. */
-		void setIsActive(bool active) { mIsActive = active; _markCoreDirty(); }
-
 		/** Returns an identifier that uniquely identifies the probe. */
 		const String& getUUID() const { return mUUID; }
-
-		/** 
-		 * Marks the simulation thread object as dirty and notifies the system its data should be synced with its core 
-		 * thread counterpart. 
-		 */
-		virtual void _markCoreDirty(ReflectionProbeDirtyFlag flags = ReflectionProbeDirtyFlag::Everything) { }
 
 	protected:
 		/** Updates the internal bounds for the probe. Call this whenever a property affecting the bounds changes. */
 		void updateBounds();
-
-		Vector3 mPosition; /**< World space position. */
-		Quaternion mRotation; /**< World space rotation. */
-		Vector3 mScale; /** Scale applied to radius/extents. */
 
 		ReflectionProbeType mType; /**< Type of probe that determines how are the rest of the parameters interpreted. */
 		float mRadius; /**< Radius used for sphere reflection probes. */
@@ -131,7 +88,6 @@ namespace bs
 		float mTransitionDistance; /**< Extra distance to used for fading out box probes. */
 		String mUUID; /**< Identifier that uniquely identifies the probe. */
 
-		bool mIsActive; /**< Whether the light should be rendered or not. */
 		Sphere mBounds; /**< Sphere that bounds the light area of influence. */
 	};
 
@@ -184,20 +140,6 @@ namespace bs
 		/**	Retrieves an implementation of the reflection probe usable only from the core thread. */
 		SPtr<ct::ReflectionProbe> getCore() const;
 
-		/** Returns the hash value that can be used to identify if the internal data needs an update. */
-		UINT32 _getLastModifiedHash() const { return mLastUpdateHash; }
-
-		/**	Sets the hash value that can be used to identify if the internal data needs an update. */
-		void _setLastModifiedHash(UINT32 hash) { mLastUpdateHash = hash; }
-
-		/**
-		 * Updates internal transform values from the specified scene object, in case that scene object's transform changed
-		 * since the last call.
-		 *
-		 * @note	Assumes the same scene object will be provided every time.
-		 */
-		void _updateTransform(const HSceneObject& parent);
-
 		/**
 		 * Creates a new sphere reflection probe.
 		 *
@@ -221,7 +163,7 @@ namespace bs
 		SPtr<ct::CoreObject> createCore() const override;
 
 		/** @copydoc ReflectionProbeBase::_markCoreDirty */
-		void _markCoreDirty(ReflectionProbeDirtyFlag flags = ReflectionProbeDirtyFlag::Everything) override;
+		void _markCoreDirty(ActorDirtyFlag flags = ActorDirtyFlag::Everything) override;
 
 		/** @copydoc CoreObject::syncToCore */
 		CoreSyncData syncToCore(FrameAlloc* allocator) override;
@@ -235,7 +177,6 @@ namespace bs
 		/**	Creates a light with without initializing it. Used for serialization. */
 		static SPtr<ReflectionProbe> createEmpty();
 
-		UINT32 mLastUpdateHash;
 		HTexture mCustomTexture;
 
 		SPtr<ct::RendererTask> mRendererTask;

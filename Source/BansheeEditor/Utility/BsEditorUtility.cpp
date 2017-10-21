@@ -38,7 +38,7 @@ namespace bs
 				if (object.isDestroyed())
 					continue;
 
-				bounds.merge(object->getWorldPosition());
+				bounds.merge(object->getTransform().getPosition());
 				gotOneMesh = true;
 			}
 		}
@@ -63,7 +63,7 @@ namespace bs
 			if (calculateMeshBounds(object, meshBounds))
 			{
 				if (meshBounds.getSize() == Vector3::INF)
-					center += object->getWorldPosition();
+					center += object->getTransform().getPosition();
 				else
 					center += meshBounds.getCenter();
 
@@ -78,7 +78,7 @@ namespace bs
 				if (object.isDestroyed())
 					continue;
 
-				center += object->getWorldPosition();
+				center += object->getTransform().getPosition();
 				count++;
 			}
 		}

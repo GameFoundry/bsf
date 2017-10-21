@@ -169,30 +169,32 @@ namespace bs
 			output->soFlags |= (UINT32)SceneObjectDiffFlags::Name;
 		}
 
-		if (prefab->getPosition() != instance->getPosition())
+		const Transform& prefabTfrm = prefab->getLocalTransform();
+		const Transform& instanceTfrm = instance->getLocalTransform();
+		if (prefabTfrm.getPosition() != instanceTfrm.getPosition())
 		{
 			if (output == nullptr)
 				output = bs_shared_ptr_new<PrefabObjectDiff>();
 
-			output->position = instance->getPosition();
+			output->position = instanceTfrm.getPosition();
 			output->soFlags |= (UINT32)SceneObjectDiffFlags::Position;
 		}
 
-		if (prefab->getRotation() != instance->getRotation())
+		if (prefabTfrm.getRotation() != instanceTfrm.getRotation())
 		{
 			if (output == nullptr)
 				output = bs_shared_ptr_new<PrefabObjectDiff>();
 
-			output->rotation = instance->getRotation();
+			output->rotation = instanceTfrm.getRotation();
 			output->soFlags |= (UINT32)SceneObjectDiffFlags::Rotation;
 		}
 
-		if (prefab->getScale() != instance->getScale())
+		if (prefabTfrm.getScale() != instanceTfrm.getScale())
 		{
 			if (output == nullptr)
 				output = bs_shared_ptr_new<PrefabObjectDiff>();
 
-			output->scale = instance->getScale();
+			output->scale = instanceTfrm.getScale();
 			output->soFlags |= (UINT32)SceneObjectDiffFlags::Scale;
 		}
 

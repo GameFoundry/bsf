@@ -31,26 +31,29 @@ namespace bs
 		rotation = mRotations[(int)body];
 
 		HRigidbody rigidbody = mBodies[(int)body];
+		const Transform& tfrm = SO()->getTransform();
 		if (rigidbody == nullptr) // Get world space transform if no relative to any body
 		{
-			Quaternion worldRot = SO()->getWorldRotation();
+			Quaternion worldRot = tfrm.getRotation();
 
 			rotation = worldRot*rotation;
-			position = worldRot.rotate(position) + SO()->getWorldPosition();
+			position = worldRot.rotate(position) + tfrm.getPosition();
 		}
 		else
 		{
+			const Transform& rigidbodyTfrm = rigidbody->SO()->getTransform();
+
 			// Find world space transform
-			Quaternion worldRot = rigidbody->SO()->getWorldRotation();
+			Quaternion worldRot = rigidbodyTfrm.getRotation();
 
 			rotation = worldRot * rotation;
-			position = worldRot.rotate(position) + rigidbody->SO()->getWorldPosition();
+			position = worldRot.rotate(position) + rigidbodyTfrm.getPosition();
 
 			// Get transform of the joint local to the object
 			Quaternion invRotation = rotation.inverse();
 
-			position = invRotation.rotate(SO()->getWorldPosition() - position);
-			rotation = invRotation * SO()->getWorldRotation();
+			position = invRotation.rotate(tfrm.getPosition() - position);
+			rotation = invRotation * tfrm.getRotation();
 		}
 	}
 

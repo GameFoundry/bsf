@@ -12,16 +12,12 @@
 
 namespace bs
 {
-	LightProbeVolumeBase::LightProbeVolumeBase()
-		: mPosition(BsZero), mRotation(BsIdentity), mIsActive(true)
-	{ }
-
 	LightProbeVolume::LightProbeVolume()
-		: mVolume(AABox::UNIT_BOX), mCellCount { 1, 1, 1 }, mLastUpdateHash(0)
+		: mVolume(AABox::UNIT_BOX), mCellCount { 1, 1, 1 }
 	{ }
 
 	LightProbeVolume::LightProbeVolume(const AABox& volume, const Vector3I& cellCount)
-		:mVolume(volume), mCellCount(cellCount), mLastUpdateHash(0)
+		:mVolume(volume), mCellCount(cellCount)
 	{
 		reset();
 	}
@@ -217,19 +213,6 @@ namespace bs
 		}
 	}
 
-	void LightProbeVolume::_updateTransform(const HSceneObject& so, bool force)
-	{
-		UINT32 curHash = so->getTransformHash();
-		if (curHash != _getLastModifiedHash() || force)
-		{
-			mPosition = so->getWorldPosition();
-			mRotation = so->getWorldRotation();
-
-			_markCoreDirty();
-			_setLastModifiedHash(curHash);
-		}
-	}
-
 	void LightProbeVolume::runRenderProbeTask()
 	{
 		// If a task is already running cancel it
@@ -346,9 +329,7 @@ namespace bs
 			UINT32 numDirtyProbes = (UINT32)dirtyProbes.size();
 			UINT32 numRemovedProbes = (UINT32)removedProbes.size();
 
-			size += rttiGetElemSize(mPosition);
-			size += rttiGetElemSize(mRotation);
-			size += rttiGetElemSize(mIsActive);
+			size += getActorSyncDataSize();
 			size += rttiGetElemSize(numDirtyProbes);
 			size += rttiGetElemSize(numRemovedProbes);
 			size += (sizeof(UINT32) + sizeof(Vector3) + sizeof(LightProbeFlags)) * numDirtyProbes;
@@ -357,9 +338,7 @@ namespace bs
 			buffer = allocator->alloc(size);
 
 			char* dataPtr = (char*)buffer;
-			dataPtr = rttiWriteElem(mPosition, dataPtr);
-			dataPtr = rttiWriteElem(mRotation, dataPtr);
-			dataPtr = rttiWriteElem(mIsActive, dataPtr);
+			dataPtr = syncActorTo(dataPtr);
 			dataPtr = rttiWriteElem(numDirtyProbes, dataPtr);
 			dataPtr = rttiWriteElem(numRemovedProbes, dataPtr);
 
@@ -378,9 +357,9 @@ namespace bs
 		return CoreSyncData(buffer, size);
 	}
 
-	void LightProbeVolume::_markCoreDirty()
+	void LightProbeVolume::_markCoreDirty(ActorDirtyFlag dirtyFlag)
 	{
-		markCoreDirty();
+		markCoreDirty((UINT32)dirtyFlag);
 	}
 
 	RTTITypeBase* LightProbeVolume::getRTTIStatic()
@@ -462,7 +441,11 @@ namespace bs
 				SPtr<Texture> cubemap = Texture::create(cubemapDesc);
 
 				Vector3 localPos = mProbePositions[mFirstDirtyProbe];
-				Vector3 transformedPos = mRotation.rotate(localPos) + mPosition;
+
+				const Transform& tfrm = getTransform();
+				const Vector3& position = tfrm.getPosition();
+				const Quaternion& rotation = tfrm.getRotation();
+				Vector3 transformedPos = rotation.rotate(localPos) + position;
 
 				gRenderer()->captureSceneCubeMap(cubemap, transformedPos, CaptureSettings());
 				gIBLUtility().filterCubemapForIrradiance(cubemap, mCoefficients, probeInfo.bufferIdx);
@@ -484,11 +467,9 @@ namespace bs
 	{
 		char* dataPtr = (char*)data.getBuffer();
 
-		bool oldIsActive = mIsActive;
+		bool oldIsActive = mActive;
 
-		dataPtr = rttiReadElem(mPosition, dataPtr);
-		dataPtr = rttiReadElem(mRotation, dataPtr);
-		dataPtr = rttiReadElem(mIsActive, dataPtr);
+		dataPtr = syncActorFrom(dataPtr);
 
 		UINT32 numDirtyProbes, numRemovedProbes;
 		dataPtr = rttiReadElem(numDirtyProbes, dataPtr);
@@ -596,9 +577,9 @@ namespace bs
 			}
 		}
 
-		if (oldIsActive != mIsActive)
+		if (oldIsActive != mActive)
 		{
-			if (mIsActive)
+			if (mActive)
 				gRenderer()->notifyLightProbeVolumeAdded(this);
 			else
 				gRenderer()->notifyLightProbeVolumeRemoved(this);

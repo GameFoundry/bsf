@@ -96,10 +96,11 @@ namespace bs
 	{
 		if (camera->getProjectionType() == PT_PERSPECTIVE)
 		{
-			Vector3 cameraPos = camera->getPosition();
+			const Transform& tfrm = camera->getTransform();
+			Vector3 cameraPos = tfrm.getPosition();
 
 			Vector3 diff = handlePos - cameraPos;
-			float distAlongViewDir = Math::abs(diff.dot(camera->getRotation().zAxis()));
+			float distAlongViewDir = Math::abs(diff.dot(tfrm.getRotation().zAxis()));
 
 			return distAlongViewDir * mDefaultHandleSize;
 		}

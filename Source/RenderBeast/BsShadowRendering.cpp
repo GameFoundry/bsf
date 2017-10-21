@@ -351,7 +351,7 @@ namespace bs { namespace ct
 
 	void ShadowProjectOmniMat::bind(const ShadowProjectParams& params)
 	{
-		Vector4 lightPosAndScale(params.light.getPosition(), params.light.getAttenuationRadius());
+		Vector4 lightPosAndScale(params.light.getTransform().getPosition(), params.light.getAttenuationRadius());
 		gShadowProjectVertParamsDef.gPositionAndScale.set(mVertParams, lightPosAndScale);
 
 		mGBufferParams.bind(params.gbuffer);
@@ -850,7 +850,8 @@ namespace bs { namespace ct
 				gShadowProjectOmniParamsDef.gFadePercent.set(shadowOmniParamBuffer, shadowInfo.fadePerView[viewIdx]);
 				gShadowProjectOmniParamsDef.gInvResolution.set(shadowOmniParamBuffer, 1.0f / shadowInfo.area.width);
 
-				Vector4 lightPosAndRadius(light->getPosition(), light->getAttenuationRadius());
+				const Transform& tfrm = light->getTransform();
+				Vector4 lightPosAndRadius(tfrm.getPosition(), light->getAttenuationRadius());
 				gShadowProjectOmniParamsDef.gLightPosAndRadius.set(shadowOmniParamBuffer, lightPosAndRadius);
 
 				// Reduce shadow quality based on shadow map resolution for spot lights
@@ -859,7 +860,7 @@ namespace bs { namespace ct
 				// Check if viewer is inside the light bounds
 				//// Expand the light bounds slightly to handle the case when the near plane is intersecting the light volume
 				float lightRadius = light->getAttenuationRadius() + viewProps.nearPlane * 3.0f;
-				bool viewerInsideVolume = (light->getPosition() - viewProps.viewOrigin).length() < lightRadius;
+				bool viewerInsideVolume = (tfrm.getPosition() - viewProps.viewOrigin).length() < lightRadius;
 
 				SPtr<Texture> shadowMap = mShadowCubemaps[shadowInfo.textureIdx].getTexture();
 				ShadowProjectParams shadowParams(*light, shadowMap, 0, shadowOmniParamBuffer, perViewBuffer, gbuffer);
@@ -1027,7 +1028,8 @@ namespace bs { namespace ct
 
 		RenderAPI& rapi = RenderAPI::instance();
 
-		Vector3 lightDir = -light->getRotation().zAxis();
+		const Transform& tfrm = light->getTransform();
+		Vector3 lightDir = -tfrm.getRotation().zAxis();
 		SPtr<GpuParamBlockBuffer> shadowParamsBuffer = gShadowParamsDef.createBuffer();
 
 		ShadowInfo shadowInfo;
@@ -1063,9 +1065,9 @@ namespace bs { namespace ct
 		ShadowCascadedMap& shadowMap = mCascadedShadowMaps[shadowInfo.textureIdx];
 
 		Quaternion lightRotation(BsIdentity);
-		lightRotation.lookRotation(-light->getRotation().zAxis());
+		lightRotation.lookRotation(-tfrm.getRotation().zAxis());
 
-		Matrix4 viewMat = Matrix4::view(light->getPosition(), lightRotation);
+		Matrix4 viewMat = Matrix4::view(tfrm.getPosition(), lightRotation);
 		for (UINT32 i = 0; i < NUM_CASCADE_SPLITS; ++i)
 		{
 			Sphere frustumBounds;
@@ -1078,7 +1080,7 @@ namespace bs { namespace ct
 
 			shadowInfo.depthRange = maxSubjectDepth - minSubjectDepth;
 
-			Vector3 offsetLightPos = light->getPosition() + lightDir * minSubjectDepth;
+			Vector3 offsetLightPos = tfrm.getPosition() + lightDir * minSubjectDepth;
 			Matrix4 offsetViewMat = Matrix4::view(offsetLightPos, lightRotation);
 
 			float orthoSize = frustumBounds.getRadius() * 0.5f;
@@ -1197,7 +1199,7 @@ namespace bs { namespace ct
 		mapInfo.subjectBounds = light->getBounds();
 
 		Quaternion lightRotation(BsIdentity);
-		lightRotation.lookRotation(-light->getRotation().zAxis());
+		lightRotation.lookRotation(-light->getTransform().getRotation().zAxis());
 
 		Matrix4 view = Matrix4::view(rendererLight.getShiftedLightPosition(), lightRotation);
 		Matrix4 proj = Matrix4::projectionPerspective(light->getSpotAngle(), 1.0f, 0.05f, light->getAttenuationRadius());
@@ -1332,7 +1334,7 @@ namespace bs { namespace ct
 		gShadowParamsDef.gMatViewProj.set(shadowParamsBuffer, Matrix4::IDENTITY);
 		gShadowParamsDef.gNDCZToDeviceZ.set(shadowParamsBuffer, RendererView::getNDCZToDeviceZ());
 
-		Matrix4 viewOffsetMat = Matrix4::translation(-light->getPosition());
+		Matrix4 viewOffsetMat = Matrix4::translation(-light->getTransform().getPosition());
 
 		ConvexVolume frustums[6];
 		Vector<Plane> boundingPlanes;
@@ -1455,7 +1457,7 @@ namespace bs { namespace ct
 				// largest one
 				//// First get sphere depth
 				const Matrix4& viewVP = viewProps.viewProjTransform;
-				float depth = viewVP.multiply(Vector4(light.internal->getPosition(), 1.0f)).w;
+				float depth = viewVP.multiply(Vector4(light.internal->getTransform().getPosition(), 1.0f)).w;
 
 				// This is just 1/tan(fov), for both horz. and vert. FOV
 				float viewScaleX = viewProps.projTransform[0][0];

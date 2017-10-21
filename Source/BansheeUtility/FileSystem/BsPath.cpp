@@ -539,7 +539,7 @@ namespace bs
 
 	void Path::setDevice(const WString& device)
 	{
-		mNode = UTF8::fromWide(device);
+		mDevice = UTF8::fromWide(device);
 	}
 
 	String Path::buildWindows() const

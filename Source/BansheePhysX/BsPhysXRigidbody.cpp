@@ -45,9 +45,11 @@ namespace bs
 	PhysXRigidbody::PhysXRigidbody(PxPhysics* physx, PxScene* scene, const HSceneObject& linkedSO)
 		:Rigidbody(linkedSO)
 	{
-		PxTransform tfrm = toPxTransform(linkedSO->getWorldPosition(), linkedSO->getWorldRotation());
 
-		mInternal = physx->createRigidDynamic(tfrm);
+		const Transform& tfrm = linkedSO->getTransform();
+		PxTransform pxTfrm = toPxTransform(tfrm.getPosition(), tfrm.getRotation());
+
+		mInternal = physx->createRigidDynamic(pxTfrm);
 		mInternal->userData = this;
 
 		scene->addActor(*mInternal);

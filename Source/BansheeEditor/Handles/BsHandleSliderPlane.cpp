@@ -76,7 +76,7 @@ namespace bs
 		Vector3 worldDir2 = getRotation().rotate(mDirection2);
 
 		Vector3 normal = worldDir1.cross(worldDir2);
-		float dot = normal.dot(camera->getForward());
+		float dot = normal.dot(camera->getTransform().getForward());
 		if (dot > 0)
 			normal = -normal;
 

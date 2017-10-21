@@ -104,9 +104,11 @@ namespace bs
 		// position + direction can sometimes project behind the camera (if the camera is looking at position
 		// from very close and at an angle), which will cause the delta to be reversed, so we compensate.
 
+		const Transform& tfrm = camera->getTransform();
+
 		float negate = 1.0f;
-		Vector3 cameraDir = -camera->getRotation().zAxis();
-		if (cameraDir.dot((position + direction) - camera->getPosition()) <= 0.0f)
+		Vector3 cameraDir = -tfrm.getRotation().zAxis();
+		if (cameraDir.dot((position + direction) - tfrm.getPosition()) <= 0.0f)
 			negate = -1.0f; // Point behind the camera
 
 		Vector2I handleStart2D = camera->worldToScreenPoint(position);

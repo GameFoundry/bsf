@@ -19,7 +19,7 @@ namespace bs
 	ScriptGUIWidget::ScriptGUIWidget(MonoObject* managedInstance)
 		:ScriptObject(managedInstance), mGUIWidget(nullptr), mLastUpdateHash((UINT32)-1)
 	{
-		SPtr<Camera> mainCamera = gSceneManager().getMainCamera().camera;
+		SPtr<Camera> mainCamera = gSceneManager().getMainCamera();
 
 		mGUIWidget = GUIWidget::create(mainCamera);
 		mGUIWidget->setSkin(BuiltinResources::instance().getGUISkin());
@@ -102,7 +102,7 @@ namespace bs
 			nativeCamera = camera->getHandle()->_getCamera();
 
 		if(nativeCamera == nullptr)
-			nativeCamera = gSceneManager().getMainCamera().camera;
+			nativeCamera = gSceneManager().getMainCamera();
 
 		SPtr<GUIWidget> widget = instance->getInternal();
 		if(widget != nullptr)

@@ -8,6 +8,7 @@
 #include "Math/BsVector3.h"
 #include "Math/BsQuaternion.h"
 #include "Math/BsVectorNI.h"
+#include "Scene/BsSceneActor.h"
 
 namespace bs
 {
@@ -26,44 +27,8 @@ namespace bs
 		 Empty, Clean, Dirty, Removed 
 	};
 
-	/** Base class for both sim and core thread LightProbeVolume implementations. */
-	class BS_CORE_EXPORT LightProbeVolumeBase
-	{
-	public:
-		LightProbeVolumeBase();
-		virtual ~LightProbeVolumeBase() { }
-
-		/**	Returns the position of the volume, in world space. */
-		Vector3 getPosition() const { return mPosition; }
-
-		/**	Sets the position of the volume, in world space. */
-		void setPosition(const Vector3& position) { mPosition = position; _markCoreDirty(); }
-
-		/**	Returns the rotation of the volume, in world space. */
-		Quaternion getRotation() const { return mRotation; }
-
-		/**	Sets the rotation of the light, in world space. */
-		void setRotation(const Quaternion& rotation) { mRotation = rotation; _markCoreDirty(); }
-
-		/**	Checks whether the light volume should be used during rendering or not. */
-		bool getIsActive() const { return mIsActive; }
-
-		/**	Sets whether the light volume should be used during rendering or not. */
-		void setIsActive(bool active) { mIsActive = active; _markCoreDirty(); }
-
-		/** 
-		 * Marks the simulation thread object as dirty and notifies the system its data should be synced with its core 
-		 * thread counterpart. 
-		 */
-		virtual void _markCoreDirty() { }
-
-	protected:
-		Vector3 mPosition; /**< World space position. */
-		Quaternion mRotation; /**< World space rotation. */
-		bool mIsActive; /**< Whether the light volume should be used during rendering or not. */
-	};
-
 	/** @} */
+
 	/** @addtogroup Renderer-Internal
 	 *  @{
 	 */
@@ -104,7 +69,7 @@ namespace bs
 	 *
 	 * The volume can never have less than 4 probes.
 	 */
-	class BS_CORE_EXPORT LightProbeVolume : public IReflectable, public CoreObject, public LightProbeVolumeBase
+	class BS_CORE_EXPORT LightProbeVolume : public IReflectable, public CoreObject, public SceneActor
 	{
 		/** Internal information about a single light probe. */
 		struct ProbeInfo
@@ -191,15 +156,6 @@ namespace bs
 		 *							volume in an uniform way.
 		 */
 		static SPtr<LightProbeVolume> create(const AABox& volume = AABox::UNIT_BOX, const Vector3I& cellCount = {1, 1, 1});
-
-		/**	Returns the hash value that can be used to identify if the internal data needs an update. */
-		UINT32 _getLastModifiedHash() const { return mLastUpdateHash; }
-
-		/**	Sets the hash value that can be used to identify if the internal data needs an update. */
-		void _setLastModifiedHash(UINT32 hash) { mLastUpdateHash = hash; }
-
-		/** Updates the transfrom from the provided scene object, if the scene object's data is detected to be dirty. */
-		void _updateTransform(const HSceneObject& so, bool force = false);
 	protected:
 		friend class ct::LightProbeVolume;
 
@@ -217,8 +173,8 @@ namespace bs
 		/** @copydoc CoreObject::createCore */
 		SPtr<ct::CoreObject> createCore() const override;
 
-		/** @copydoc LightProbeVolumeBase::_markCoreDirty */
-		void _markCoreDirty() override;
+		/** @copydoc SceneActor::_markCoreDirty */
+		void _markCoreDirty(ActorDirtyFlag dirtFlags = ActorDirtyFlag::Everything) override;
 
 		/** @copydoc CoreObject::syncToCore */
 		CoreSyncData syncToCore(FrameAlloc* allocator) override;
@@ -230,7 +186,6 @@ namespace bs
 		UnorderedMap<UINT32, ProbeInfo> mProbes;
 		AABox mVolume = AABox::UNIT_BOX;
 		Vector3I mCellCount;
-		UINT32 mLastUpdateHash;
 
 		UINT32 mNextProbeId = 0;
 		SPtr<ct::RendererTask> mRendererTask;
@@ -263,7 +218,7 @@ namespace bs
 	};
 
 	/** Core thread usable version of bs::LightProbeVolume. */
-	class BS_CORE_EXPORT LightProbeVolume : public CoreObject, public LightProbeVolumeBase
+	class BS_CORE_EXPORT LightProbeVolume : public CoreObject, public SceneActor
 	{
 	public:
 		~LightProbeVolume();

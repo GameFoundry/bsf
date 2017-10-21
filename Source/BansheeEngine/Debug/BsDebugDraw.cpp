@@ -231,7 +231,7 @@ namespace bs
 		Matrix4 viewProjMat = projMatrix * viewMatrix;
 
 		gDebugDrawParamsDef.gMatViewProj.set(mParamBuffer, viewProjMat);
-		gDebugDrawParamsDef.gViewDir.set(mParamBuffer, (Vector4)camera.getForward());
+		gDebugDrawParamsDef.gViewDir.set(mParamBuffer, (Vector4)camera.getTransform().getForward());
 
 		for (auto& entry : mMeshes)
 		{

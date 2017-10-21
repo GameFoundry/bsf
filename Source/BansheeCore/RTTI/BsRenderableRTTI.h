@@ -16,25 +16,19 @@ namespace bs
 	class BS_CORE_EXPORT RenderableRTTI : public RTTIType<Renderable, IReflectable, RenderableRTTI>
 	{
 	private:
-		HMesh& getMesh(Renderable* obj) { return obj->mMesh; }
-		void setMesh(Renderable* obj, HMesh& val) { obj->mMesh = val; }
-
-		UINT64& getLayer(Renderable* obj) { return obj->mLayer; }
-		void setLayer(Renderable* obj, UINT64& val) { obj->mLayer = val; }
-
-		HMaterial& getMaterial(Renderable* obj, UINT32 idx) { return obj->mMaterials[idx]; }
-		void setMaterial(Renderable* obj, UINT32 idx, HMaterial& val) { obj->setMaterial(idx, val); }
-		UINT32 getNumMaterials(Renderable* obj) { return (UINT32)obj->mMaterials.size(); }
-		void setNumMaterials(Renderable* obj, UINT32 num) { obj->mMaterials.resize(num); }
+		BS_BEGIN_RTTI_MEMBERS
+			BS_RTTI_MEMBER_REFL(mTransform, 0)
+			BS_RTTI_MEMBER_PLAIN(mActive, 1)
+			BS_RTTI_MEMBER_PLAIN(mMobility, 2)
+			BS_RTTI_MEMBER_REFL(mMesh, 3)
+			BS_RTTI_MEMBER_PLAIN(mLayer, 4)
+			BS_RTTI_MEMBER_REFL_ARRAY(mMaterials, 5)
+		BS_END_RTTI_MEMBERS
 
 	public:
 		RenderableRTTI()
-		{
-			addReflectableField("mMesh", 0, &RenderableRTTI::getMesh, &RenderableRTTI::setMesh);
-			addPlainField("mLayer", 1, &RenderableRTTI::getLayer, &RenderableRTTI::setLayer);
-			addReflectableArrayField("mMaterials", 2, &RenderableRTTI::getMaterial, 
-				&RenderableRTTI::getNumMaterials, &RenderableRTTI::setMaterial, &RenderableRTTI::setNumMaterials);
-		}
+			:mInitMembers(this)
+		{ }
 
 		void onDeserializationEnded(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
 		{
