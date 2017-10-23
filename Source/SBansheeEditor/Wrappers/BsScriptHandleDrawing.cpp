@@ -11,6 +11,10 @@
 
 namespace bs
 {
+	ScriptHandleDrawing::ScriptHandleDrawing(MonoObject* instance)
+		:ScriptObject(instance)
+	{ }
+
 	void ScriptHandleDrawing::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_SetColor", (void*)&ScriptHandleDrawing::internal_SetColor);

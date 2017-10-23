@@ -11,6 +11,13 @@ namespace bs
 	bool EditorUtility::openBrowseDialog(FileDialogType type, const Path& defaultPath, const String& filterList,
 									Vector<Path>& paths)
 	{
+		static bool gtkInitialized = false;
+		if(!gtkInitialized)
+		{
+			gtk_init(nullptr, nullptr);
+			gtkInitialized = true;
+		}
+
 		GtkWidget* fakeParent = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
 		const char* titleString;

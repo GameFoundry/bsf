@@ -2,6 +2,7 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "Managers/BsRenderWindowManager.h"
 #include "Platform/BsPlatform.h"
+#include "BsCoreApplication.h"
 
 using namespace std::placeholders;
 
@@ -112,6 +113,17 @@ namespace bs
 			mMouseLeftWindows.push_back(window);
 	}
 
+	void RenderWindowManager::notifyCloseRequested(ct::RenderWindow* coreWindow)
+	{
+		Lock lock(mWindowMutex);
+
+		RenderWindow* window = getNonCore(coreWindow);
+		auto iterFind = std::find(begin(mCloseRequestedWindows), end(mCloseRequestedWindows), window);
+
+		if (iterFind == end(mCloseRequestedWindows))
+			mCloseRequestedWindows.push_back(window);
+	}
+
 	void RenderWindowManager::notifySyncDataDirty(ct::RenderWindow* coreWindow)
 	{
 		Lock lock(mWindowMutex);
@@ -127,6 +139,7 @@ namespace bs
 		RenderWindow* newWinInFocus = nullptr;
 		Vector<MoveOrResizeData> movedOrResizedWindows;
 		Vector<RenderWindow*> mouseLeftWindows;
+		Vector<RenderWindow*> closeRequestedWindows;
 
 		{
 			Lock lock(mWindowMutex);
@@ -156,6 +169,8 @@ namespace bs
 				dirtyPropertyWindow->syncProperties();
 
 			mDirtyProperties.clear();
+
+			std::swap(mCloseRequestedWindows, closeRequestedWindows);
 		}
 
 		if(mWindowInFocus != newWinInFocus)
@@ -170,15 +185,26 @@ namespace bs
 		}
 
 		for (auto& moveResizeData : movedOrResizedWindows)
-		{
 			moveResizeData.window->onResized();
-		}
 
 		if (!onMouseLeftWindow.empty())
 		{
 			for (auto& window : mouseLeftWindows)
 				onMouseLeftWindow(*window);
-		}			
+		}
+
+		SPtr<RenderWindow> primaryWindow = gCoreApplication().getPrimaryWindow();
+		for(auto& entry : closeRequestedWindows)
+		{
+			// Default behaviour for primary window is to quit the app on close
+			if(entry == primaryWindow.get() && entry->onCloseRequested.empty())
+			{
+				gCoreApplication().quitRequested();
+				continue;
+			}
+
+			entry->onCloseRequested();
+		}
 	}
 
 	Vector<RenderWindow*> RenderWindowManager::getRenderWindows() const

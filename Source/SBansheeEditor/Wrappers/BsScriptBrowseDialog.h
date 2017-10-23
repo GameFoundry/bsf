@@ -18,6 +18,7 @@ namespace bs
 		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "BrowseDialog")
 
 	private:
+		ScriptBrowseDialog(MonoObject* instance);
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/

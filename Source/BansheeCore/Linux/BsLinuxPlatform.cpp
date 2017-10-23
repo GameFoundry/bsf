@@ -53,7 +53,6 @@ namespace bs
 		::Window mainXWindow = 0;
 		::Window fullscreenXWindow = 0;
 		UnorderedMap<::Window, LinuxWindow*> windowMap;
-		Vector<::Window> toDestroy;
 		Mutex lock;
 
 		XIM IM;
@@ -736,17 +735,9 @@ namespace bs
 		while(true)
 		{
 			Lock lock(mData->lock);
+
 			if(XPending(mData->xDisplay) <= 0)
-			{
-				// No more events, destroy any queued windows
-				for(auto& entry : mData->toDestroy)
-					XDestroyWindow(mData->xDisplay, entry);
-
-				mData->toDestroy.clear();
-				XSync(mData->xDisplay, false);
-
 				break;
-			}
 
 			XEvent event;
 			XNextEvent(mData->xDisplay, &event);
@@ -758,28 +749,18 @@ namespace bs
 				if(LinuxDragAndDrop::handleClientMessage(event.xclient))
 					break;
 
+				// User requested the window to close
 				if((Atom)event.xclient.data.l[0] == mData->atomDeleteWindow)
 				{
-					// We queue the window for destruction as soon as we process all current events (since some of those
-					// events could still refer to this window)
-					mData->toDestroy.push_back(event.xclient.window);
-
-					XUnmapWindow(mData->xDisplay, event.xclient.window);
-					XSync(mData->xDisplay, false);
-				}
-			}
-				break;
-			case DestroyNotify:
-			{
-				LinuxWindow* window = getLinuxWindow(mData, event.xdestroywindow.window);
-				if(window != nullptr)
-				{
-					window->_cleanUp();
-
-					if (mData->mainXWindow == 0)
+					LinuxWindow* window = getLinuxWindow(mData, event.xclient.window);
+					if(window != nullptr)
 					{
-						CoreApplication::instance().quitRequested();
-						return;
+						// If it's a render window we allow the client code to handle the message
+						ct::RenderWindow* renderWindow = (ct::RenderWindow*)window->_getUserData();
+						if(renderWindow != nullptr)
+							renderWindow->_notifyCloseRequested();
+						else // If not, we just destroy the window
+							window->_destroy();
 					}
 				}
 			}

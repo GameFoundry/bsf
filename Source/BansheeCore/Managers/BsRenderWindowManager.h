@@ -52,6 +52,9 @@ namespace bs
 		/**	Called by the core thread when mouse leaves a window. */
 		void notifyMouseLeft(ct::RenderWindow* window);
 
+		/** Called by the core thread when the user requests for the window to close. */
+		void notifyCloseRequested(ct::RenderWindow* coreWindow);
+
 		/**	Called by the sim thread when window properties change. */
 		void notifySyncDataDirty(ct::RenderWindow* coreWindow);
 
@@ -83,6 +86,7 @@ namespace bs
 		RenderWindow* mNewWindowInFocus;
 		Vector<MoveOrResizeData> mMovedOrResizedWindows;
 		Vector<RenderWindow*> mMouseLeftWindows;
+		Vector<RenderWindow*> mCloseRequestedWindows;
 		UnorderedSet<RenderWindow*> mDirtyProperties;
 	};
 

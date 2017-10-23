@@ -419,7 +419,6 @@ namespace bs
 				"in performance for waiting threads.");
 		}
 
-
 		mData->mRequiresStartUp = true;
 	}
 
@@ -700,7 +699,7 @@ namespace bs
 			break;
 		case WM_CLOSE:
 			{
-				gCoreApplication().quitRequested();
+				win->_notifyCloseRequested();
 
 				return 0;
 			}

@@ -53,7 +53,6 @@ namespace bs
 
 		// If we're rotating, apply new pitch/yaw rotation values depending on the amount of rotation from the
 		// vertical/horizontal axes.
-		float frameDelta = gTime().getFrameDelta();
 		if (isRotating)
 		{
 			mYaw -= Degree(gVirtualInput().getAxisValue(mHorizontalAxis) * ROTATION_SPEED);

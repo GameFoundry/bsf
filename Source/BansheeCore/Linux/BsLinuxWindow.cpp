@@ -227,15 +227,7 @@ namespace bs
 	LinuxWindow::~LinuxWindow()
 	{
 		if(m->xWindow != 0)
-		{
-			XUnmapWindow(LinuxPlatform::getXDisplay(), m->xWindow);
-			XSync(LinuxPlatform::getXDisplay(), 0);
-
-			XDestroyWindow(LinuxPlatform::getXDisplay(), m->xWindow);
-			XSync(LinuxPlatform::getXDisplay(), 0);
-
-			_cleanUp();
-		}
+			_destroy();
 
 		bs_delete(m);
 	}
@@ -374,8 +366,14 @@ namespace bs
 		XFreePixmap(display, iconPixmap);
 	}
 
-	void LinuxWindow::_cleanUp()
+	void LinuxWindow::_destroy()
 	{
+		XUnmapWindow(LinuxPlatform::getXDisplay(), m->xWindow);
+		XSync(LinuxPlatform::getXDisplay(), 0);
+
+		XDestroyWindow(LinuxPlatform::getXDisplay(), m->xWindow);
+		XSync(LinuxPlatform::getXDisplay(), 0);
+
 		LinuxPlatform::_unregisterWindow(m->xWindow);
 		m->xWindow = 0;
 	}

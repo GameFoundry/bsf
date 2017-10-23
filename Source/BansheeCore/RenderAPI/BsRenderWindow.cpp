@@ -364,6 +364,13 @@ namespace bs
 		bs::RenderWindowManager::instance().notifyMouseLeft(this);
 	}
 
+	void RenderWindow::_notifyCloseRequested()
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		bs::RenderWindowManager::instance().notifyCloseRequested(this);
+	}
+
 	const RenderWindowProperties& RenderWindow::getProperties() const
 	{
 		return static_cast<const RenderWindowProperties&>(getPropertiesInternal());

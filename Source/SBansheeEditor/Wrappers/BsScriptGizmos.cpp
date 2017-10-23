@@ -12,6 +12,10 @@
 
 namespace bs
 {
+	ScriptGizmos::ScriptGizmos(MonoObject* instance)
+		:ScriptObject(instance)
+	{ }
+
 	void ScriptGizmos::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_SetColor", (void*)&ScriptGizmos::internal_SetColor);

@@ -23,6 +23,8 @@ namespace bs
 		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "Gizmos")
 
 	private:
+		ScriptGizmos(MonoObject* instance);
+
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/

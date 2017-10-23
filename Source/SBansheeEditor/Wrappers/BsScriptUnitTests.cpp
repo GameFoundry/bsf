@@ -14,6 +14,10 @@ namespace bs
 	MonoMethod* ScriptUnitTests::RunTestsMethod;
 	SPtr<ManagedSerializableDiff> ScriptUnitTests::tempDiff;
 
+	ScriptUnitTests::ScriptUnitTests(MonoObject* instance)
+		:ScriptObject(instance)
+	{ }
+
 	void ScriptUnitTests::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_UT1_GameObjectClone", (void*)&ScriptUnitTests::internal_UT1_GameObjectClone);

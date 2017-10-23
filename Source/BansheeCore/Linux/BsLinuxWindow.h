@@ -91,8 +91,11 @@ namespace bs
 		 * @{
 		 */
 
-		/** Unregisters the window from the manager. Should be called before the window is destroyed. */
-		void _cleanUp();
+		/**
+		 * Destroys the window, cleaning up any resources and removing it from the display. No further methods should be
+		 * called on this object after it has been destroyed.
+		 */
+		void _destroy();
 
 		/**
 		 * Sets a portion of the window in which the user can click and drag in order to move the window. This is needed

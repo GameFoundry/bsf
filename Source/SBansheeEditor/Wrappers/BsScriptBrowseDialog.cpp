@@ -9,6 +9,10 @@
 
 namespace bs
 {
+	ScriptBrowseDialog::ScriptBrowseDialog(MonoObject* instance)
+			:ScriptObject(instance)
+	{ }
+
 	void ScriptBrowseDialog::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_OpenFile", (void*)&ScriptBrowseDialog::internal_OpenFile);

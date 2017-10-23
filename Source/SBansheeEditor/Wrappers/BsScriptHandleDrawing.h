@@ -22,6 +22,8 @@ namespace bs
 		SCRIPT_OBJ(EDITOR_ASSEMBLY, "BansheeEditor", "HandleDrawing")
 
 	private:
+		ScriptHandleDrawing(MonoObject* instance);
+
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/
 		/************************************************************************/

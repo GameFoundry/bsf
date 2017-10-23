@@ -180,6 +180,9 @@ namespace bs
 		 */
 		static SPtr<RenderWindow> create(RENDER_WINDOW_DESC& desc, SPtr<RenderWindow> parentWindow = nullptr);
 
+		/** Triggers when the OS requests that the window is closed (e.g. user clicks on the X button in the title bar). */
+		Event<void()> onCloseRequested;
+
 	protected:
 		friend class RenderWindowManager;
 
@@ -328,6 +331,12 @@ namespace bs
 		 */
 		virtual void _notifyMouseLeft();
 
+		/**
+		 * Called when the users requests for the window to be closed.
+		 *
+		 * @note	Core thread.
+		 */
+		virtual void _notifyCloseRequested();
 	protected:
 		friend class bs::RenderWindow;
 		friend class RenderWindowManager;

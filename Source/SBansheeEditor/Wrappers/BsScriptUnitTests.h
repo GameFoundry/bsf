@@ -21,8 +21,9 @@ namespace bs
 		static void runTests();
 
 	private:
-		static MonoMethod* RunTestsMethod;
+		ScriptUnitTests(MonoObject* instance);
 
+		static MonoMethod* RunTestsMethod;
 		static SPtr<ManagedSerializableDiff> tempDiff;
 
 		/************************************************************************/
