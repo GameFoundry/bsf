@@ -61,6 +61,9 @@ namespace bs
 		/**	Returns a list of all open render windows. */
 		Vector<RenderWindow*> getRenderWindows() const;
 
+		/** Returns the window that is currently the top-most modal window. Returns null if no modal windows are active. */
+		RenderWindow* getTopMostModal() const;
+
 		/** Event that is triggered when a window gains focus. */
 		Event<void(RenderWindow&)> onFocusGained;
 
@@ -81,6 +84,7 @@ namespace bs
 	protected:
 		mutable Mutex mWindowMutex;
 		Map<UINT32, RenderWindow*> mWindows;
+		Vector<RenderWindow*> mModalWindowStack;
 
 		RenderWindow* mWindowInFocus;
 		RenderWindow* mNewWindowInFocus;

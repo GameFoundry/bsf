@@ -30,6 +30,9 @@ namespace bs
 			mWindows[renderWindow->mWindowId] = renderWindow.get();
 		}
 
+		if (renderWindow->getProperties().isModal)
+			mModalWindowStack.push_back(renderWindow.get());
+
 		renderWindow->initialize();
 		
 		return renderWindow;
@@ -51,6 +54,12 @@ namespace bs
 
 			mWindows.erase(window->mWindowId);
 			mDirtyProperties.erase(window);
+		}
+
+		{
+			auto iterFind = std::find(begin(mModalWindowStack), end(mModalWindowStack), window);
+			if(iterFind != mModalWindowStack.end())
+				mModalWindowStack.erase(iterFind);
 		}
 	}
 
@@ -216,6 +225,14 @@ namespace bs
 			windows.push_back(windowPair.second);
 
 		return windows;
+	}
+
+	RenderWindow* RenderWindowManager::getTopMostModal() const
+	{
+		if (mModalWindowStack.empty())
+			return nullptr;
+		
+		return mModalWindowStack.back();
 	}
 
 	RenderWindow* RenderWindowManager::getNonCore(const ct::RenderWindow* window) const
