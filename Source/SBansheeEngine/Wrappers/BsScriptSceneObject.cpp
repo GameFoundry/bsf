@@ -16,6 +16,7 @@ namespace bs
 		:ScriptObject(instance), mSceneObject(sceneObject)
 	{
 		mManagedHandle = MonoUtil::newGCHandle(instance);
+		mManagedInstance = MonoUtil::getObjectFromGCHandle(mManagedHandle);
 	}
 
 	void ScriptSceneObject::initRuntimeData()
@@ -413,8 +414,7 @@ namespace bs
 	{
 		MonoObject* managedInstance = metaData.scriptClass->createInstance(construct);
 		mManagedHandle = MonoUtil::newGCHandle(managedInstance);
-
-		return managedInstance;
+		return MonoUtil::getObjectFromGCHandle(mManagedHandle);
 	}
 
 	void ScriptSceneObject::_notifyDestroyed()

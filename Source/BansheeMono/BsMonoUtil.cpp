@@ -125,12 +125,17 @@ namespace bs
 
 	UINT32 MonoUtil::newGCHandle(MonoObject* object)
 	{
-		return mono_gchandle_new(object, false);
+		return mono_gchandle_new(object, true);
 	}
 
 	void MonoUtil::freeGCHandle(UINT32 handle)
 	{
 		mono_gchandle_free(handle);
+	}
+
+	MonoObject* MonoUtil::getObjectFromGCHandle(UINT32 handle)
+	{
+		return mono_gchandle_get_target(handle);
 	}
 
 	MonoObject* MonoUtil::box(::MonoClass* klass, void* value)

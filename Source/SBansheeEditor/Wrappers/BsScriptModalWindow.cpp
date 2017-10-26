@@ -131,6 +131,7 @@ namespace bs
 		, mGCHandle(0), mScriptParent(nullptr), mContentsPanel(nullptr)
 	{
 		mGCHandle = MonoUtil::newGCHandle(mManagedInstance);
+		mManagedInstance = MonoUtil::getObjectFromGCHandle(mGCHandle);
 
 		MonoObject* guiPanel = ScriptGUIPanel::createFromExisting(mContents);
 		mContentsPanel = ScriptGUILayout::toNative(guiPanel);
@@ -163,6 +164,7 @@ namespace bs
 			{
 				mManagedInstance = editorWindowClass->createInstance(false);
 				mGCHandle = MonoUtil::newGCHandle(mManagedInstance);
+				mManagedInstance = MonoUtil::getObjectFromGCHandle(mGCHandle);
 
 				MonoObject* guiPanel = ScriptGUIPanel::createFromExisting(mContents);
 				mContentsPanel = ScriptGUILayout::toNative(guiPanel);

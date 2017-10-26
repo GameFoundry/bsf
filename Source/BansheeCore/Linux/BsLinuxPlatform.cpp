@@ -812,20 +812,28 @@ namespace bs
 			{
 				UINT32 button = event.xbutton.button;
 
+				OSPointerButtonStates btnStates;
+				btnStates.mouseButtons[0] = (event.xbutton.state & Button1Mask) != 0;
+				btnStates.mouseButtons[1] = (event.xbutton.state & Button2Mask) != 0;
+				btnStates.mouseButtons[2] = (event.xbutton.state & Button3Mask) != 0;
+
 				OSMouseButton mouseButton;
 				bool validPress = false;
 				switch(button)
 				{
 				case Button1:
 					mouseButton = OSMouseButton::Left;
+					btnStates.mouseButtons[0] = true;
 					validPress = true;
 					break;
 				case Button2:
 					mouseButton = OSMouseButton::Middle;
+					btnStates.mouseButtons[1] = true;
 					validPress = true;
 					break;
 				case Button3:
 					mouseButton = OSMouseButton::Right;
+					btnStates.mouseButtons[2] = true;
 					validPress = true;
 					break;
 
@@ -840,12 +848,8 @@ namespace bs
 					pos.x = event.xbutton.x_root;
 					pos.y = event.xbutton.y_root;
 
-					OSPointerButtonStates btnStates;
 					btnStates.ctrl = (event.xbutton.state & ControlMask) != 0;
 					btnStates.shift = (event.xbutton.state & ShiftMask) != 0;
-					btnStates.mouseButtons[0] = (event.xbutton.state & Button1Mask) != 0;
-					btnStates.mouseButtons[1] = (event.xbutton.state & Button2Mask) != 0;
-					btnStates.mouseButtons[2] = (event.xbutton.state & Button3Mask) != 0;
 
 					onCursorButtonPressed(pos, mouseButton, btnStates);
 
@@ -890,12 +894,15 @@ namespace bs
 				switch(button)
 				{
 				case Button1:
+					btnStates.mouseButtons[0] = false;
 					onCursorButtonReleased(pos, OSMouseButton::Left, btnStates);
 					break;
 				case Button2:
+					btnStates.mouseButtons[1] = false;
 					onCursorButtonReleased(pos, OSMouseButton::Middle, btnStates);
 					break;
 				case Button3:
+					btnStates.mouseButtons[2] = false;
 					onCursorButtonReleased(pos, OSMouseButton::Right, btnStates);
 					break;
 				case Button4: // Vertical mouse wheel

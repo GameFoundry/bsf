@@ -66,6 +66,7 @@ namespace bs
 			:ScriptObject<ScriptClass, BaseType>(instance), mResource(resource)
 		{
 			mManagedHandle = MonoUtil::newGCHandle(instance);
+			this->mManagedInstance = MonoUtil::getObjectFromGCHandle(mManagedHandle);
 
 			BS_DEBUG_ONLY(mHandleValid = true);
 		}
@@ -80,6 +81,7 @@ namespace bs
 		{
 			BS_ASSERT(!mHandleValid);
 			mManagedHandle = MonoUtil::newGCHandle(this->mManagedInstance);
+			this->mManagedInstance = MonoUtil::getObjectFromGCHandle(mManagedHandle);
 
 			ScriptObject<ScriptClass, BaseType>::endRefresh(backupData);
 		}

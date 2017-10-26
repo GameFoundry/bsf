@@ -75,6 +75,7 @@ namespace bs
 		if (mManagedInstance != nullptr)
 		{
 			mManagedHandle = MonoUtil::newGCHandle(mManagedInstance);
+			mManagedInstance = MonoUtil::getObjectFromGCHandle(mManagedHandle);
 
 			if (data.data != nullptr)
 			{
@@ -118,8 +119,8 @@ namespace bs
 
 	void ManagedResource::setHandle(MonoObject* object, const HManagedResource& myHandle)
 	{
-		mManagedInstance = object;
-		mManagedHandle = MonoUtil::newGCHandle(mManagedInstance);
+		mManagedHandle = MonoUtil::newGCHandle(object);
+		mManagedInstance = MonoUtil::getObjectFromGCHandle(mManagedHandle);
 		mMyHandle = myHandle.getWeak();
 
 		ScriptResourceManager::instance().createManagedScriptResource(myHandle, object);

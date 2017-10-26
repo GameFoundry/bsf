@@ -36,10 +36,20 @@ namespace bs
 		/** Triggers the Revert() method on the managed object instance. */
 		void triggerRevert();
 
+		/**
+		 * Allocates a GC handle that ensures the object doesn't get GC collected. Must eventually be followed by
+		 * freeGCHandle().
+		 */
+		void allocGCHandle();
+
+		/** Frees a GC handle previously allocated from allocGCHandle(). */
+		void freeGCHandle();
+
 		/** Notifies the script instance that the underlying managed command was destroyed. */
 		void notifyCommandDestroyed();
 
 		SPtr<CmdManaged> mManagedCommand;
+		UINT32 mGCHandle = 0;
 
 		/************************************************************************/
 		/* 								CLR HOOKS						   		*/

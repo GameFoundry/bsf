@@ -140,8 +140,9 @@ namespace bs
 		if (mManagedInstance != nullptr)
 		{
 			mManagedHandle = MonoUtil::newGCHandle(mManagedInstance);
+			mManagedInstance = MonoUtil::getObjectFromGCHandle(mManagedHandle);
 
-			::MonoClass* monoClass = MonoUtil::getClass(object);
+			::MonoClass* monoClass = MonoUtil::getClass(mManagedInstance);
 			mRuntimeType = MonoUtil::getType(monoClass);
 
 			mManagedClass = MonoManager::instance().findClass(monoClass);

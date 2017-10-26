@@ -137,10 +137,10 @@ namespace bs
 		auto iterFind = OpenScriptEditorWindows.find(mName);
 		if (iterFind != OpenScriptEditorWindows.end())
 		{
-			EditorWindowHandle handle = iterFind->second;
+			EditorWindowHandle& handle = iterFind->second;
 
 			MonoUtil::freeGCHandle(handle.gcHandle);
-			iterFind->second.gcHandle = 0;
+			handle.gcHandle = 0;
 		}
 
 		return PersistentScriptObjectBase::beginRefresh();
@@ -159,7 +159,12 @@ namespace bs
 		{
 			auto iterFind = OpenScriptEditorWindows.find(mName);
 			if (iterFind != OpenScriptEditorWindows.end())
-				iterFind->second.gcHandle = MonoUtil::newGCHandle(mManagedInstance);
+			{
+				EditorWindowHandle& handle = iterFind->second;
+
+				handle.gcHandle = MonoUtil::newGCHandle(mManagedInstance);
+				mManagedInstance = MonoUtil::getObjectFromGCHandle(handle.gcHandle);
+			}
 		}
 		else
 		{
@@ -394,6 +399,8 @@ namespace bs
 			EditorWindowHandle newHandle;
 			newHandle.nativeObj = editorWindow;
 			newHandle.gcHandle = MonoUtil::newGCHandle(editorWindow->mManagedInstance);
+
+			editorWindow->mManagedInstance = MonoUtil::getObjectFromGCHandle(newHandle.gcHandle);
 
 			OpenScriptEditorWindows[editorWindow->mName] = newHandle;
 		}

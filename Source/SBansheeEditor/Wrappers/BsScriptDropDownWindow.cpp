@@ -178,6 +178,7 @@ namespace bs
 		, mScriptParent(nullptr), mContentsPanel(nullptr)
 	{
 		mGCHandle = MonoUtil::newGCHandle(mManagedInstance);
+		mManagedInstance = MonoUtil::getObjectFromGCHandle(mGCHandle);
 
 		MonoObject* guiPanel = ScriptGUIPanel::createFromExisting(mContents);
 		mContentsPanel = ScriptGUILayout::toNative(guiPanel);

@@ -62,6 +62,21 @@ namespace bs
 		mManagedCommand = nullptr;
 	}
 
+	void ScriptCmdManaged::allocGCHandle()
+	{
+		if (mGCHandle == 0)
+		{
+			mGCHandle = MonoUtil::newGCHandle(mManagedInstance);
+			mManagedInstance = MonoUtil::getObjectFromGCHandle(mGCHandle);
+		}
+	}
+
+	void ScriptCmdManaged::freeGCHandle()
+	{
+		if(mGCHandle != 0)
+			MonoUtil::freeGCHandle(mGCHandle);
+	}
+
 	CmdManaged::CmdManaged(ScriptCmdManaged* scriptObj)
 		: EditorCommand(L""), mScriptObj(scriptObj), mGCHandle(0), mRefCount(0)
 	{
@@ -106,8 +121,8 @@ namespace bs
 
 	void CmdManaged::onCommandAdded()
 	{
-		if (mGCHandle == 0 && mScriptObj != nullptr)
-			mGCHandle = MonoUtil::newGCHandle(mScriptObj->getManagedInstance());
+		if(mScriptObj)
+			mScriptObj->allocGCHandle();
 
 		mRefCount++;
 	}
@@ -118,8 +133,8 @@ namespace bs
 
 		mRefCount--;
 
-		if (mRefCount == 0 && mGCHandle != 0)
-			MonoUtil::freeGCHandle(mGCHandle);
+		if (mRefCount == 0)
+			mScriptObj->freeGCHandle();
 	}
 
 	void CmdManaged::notifyScriptInstanceDestroyed()

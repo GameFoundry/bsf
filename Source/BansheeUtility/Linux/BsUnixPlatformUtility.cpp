@@ -123,14 +123,15 @@ namespace bs
 		return output;
 	}
 
-	String PlatformUtility::generateUUID()
+	UUID PlatformUtility::generateUUID()
 	{
 		uuid_t nativeUUID;
 		uuid_generate(nativeUUID);
 
-		char uuidChars[37];
-		uuid_unparse(nativeUUID, uuidChars);
-
-		return String(uuidChars);
+		return UUID(
+				*(UINT32*)&nativeUUID[0],
+				*(UINT32*)&nativeUUID[4],
+				*(UINT32*)&nativeUUID[8],
+				*(UINT32*)&nativeUUID[12]);
 	}
 }

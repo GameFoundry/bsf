@@ -40,11 +40,11 @@ namespace bs
 		{
 			MonoObject* newHandleInstance = handle->createInstance();
 
-			mActiveGlobalHandles.push_back(ActiveCustomHandleData());
-			ActiveCustomHandleData& newHandleData = mActiveGlobalHandles.back();
+			ActiveCustomHandleData data;
+			data.gcHandle = MonoUtil::newGCHandle(newHandleInstance);
+			data.object = MonoUtil::getObjectFromGCHandle(data.gcHandle);
 
-			newHandleData.object = newHandleInstance;
-			newHandleData.gcHandle = MonoUtil::newGCHandle(newHandleInstance);
+			mActiveGlobalHandles.push_back(data);
 		}
 
 		mGlobalHandlesToCreate.clear();
@@ -92,19 +92,21 @@ namespace bs
 					void* params[1] = { mc->getManagedInstance() };
 					handleData.ctor->invoke(newHandleInstance, params);
 
-					mActiveHandleData.handles.push_back(ActiveCustomHandleData());
-					ActiveCustomHandleData& newHandleData = mActiveHandleData.handles.back();
+					ActiveCustomHandleData data;
+					data.gcHandle = MonoUtil::newGCHandle(newHandleInstance);
+					data.object = MonoUtil::getObjectFromGCHandle(data.gcHandle);
 
-					newHandleData.object = newHandleInstance;
-					newHandleData.gcHandle = MonoUtil::newGCHandle(newHandleInstance);
+					mActiveHandleData.handles.push_back(data);
 				}
 			}
 		}
 
 		if (mDefaultHandleManager == nullptr)
 		{
-			mDefaultHandleManager = mDefaultHandleManagerClass->createInstance(true);
-			mDefaultHandleManagerGCHandle = MonoUtil::newGCHandle(mDefaultHandleManager);
+			MonoObject* defaultHandleManager = mDefaultHandleManagerClass->createInstance(true);
+
+			mDefaultHandleManagerGCHandle = MonoUtil::newGCHandle(defaultHandleManager);
+			mDefaultHandleManager = MonoUtil::getObjectFromGCHandle(mDefaultHandleManagerGCHandle);
 		}
 
 		callPreInput(mDefaultHandleManager);
@@ -129,8 +131,7 @@ namespace bs
 
 	void ScriptHandleManager::queueDrawCommands()
 	{
-		if (mDefaultHandleManager != nullptr)
-			callDraw(mDefaultHandleManager);
+		callDraw(mDefaultHandleManager);
 
 		for (auto& handle : mActiveGlobalHandles)
 			callDraw(handle.object);
@@ -246,7 +247,7 @@ namespace bs
 			::MonoClass* attribMonoClass = MonoUtil::getClass(attribReflType);
 
 			MonoClass* attribClass = MonoManager::instance().findClass(attribMonoClass);
-			if (attribClass != nullptr)
+			if (attribClass == nullptr)
 				return false;
 
 			MonoClass* componentClass = mScriptObjectManager.getComponentClass();

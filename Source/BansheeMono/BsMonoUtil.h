@@ -47,11 +47,18 @@ namespace bs
 		/** Returns the type of the provided class. */
 		static MonoReflectionType* getType(::MonoClass* klass);
 
-		/** Creates a new GC handle for the provided managed object, ensuring it doesn't go out of scope. */
+		/**
+		 * Creates a new GC handle for the provided managed object, ensuring it doesn't go out of scope.
+		 * Note that after creating a handle you MUST call getObjectFromGCHandle() to get the latest MonoObject*, as
+		 * GC could have potentially moved the object to a new address.
+		 *  */
 		static UINT32 newGCHandle(MonoObject* object);
 
 		/** Frees a GC handle previously allocated with newGCHandle. */
 		static void freeGCHandle(UINT32 handle);
+
+		/** Returns a MonoObject from an allocated GC handle. */
+		static MonoObject* getObjectFromGCHandle(UINT32 handle);
 
 		/** Converts a managed value type into a reference type by boxing it. */
 		static MonoObject* box(::MonoClass* klass, void* value);
