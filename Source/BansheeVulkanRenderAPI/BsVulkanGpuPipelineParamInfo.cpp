@@ -4,7 +4,7 @@
 #include "BsVulkanUtility.h"
 #include "BsVulkanRenderAPI.h"
 #include "BsVulkanDevice.h"
-#include "Renderapi/BsGpuParamDesc.h"
+#include "RenderAPI/BsGpuParamDesc.h"
 
 namespace bs { namespace ct
 {
@@ -78,9 +78,9 @@ namespace bs { namespace ct
 
 			for (UINT32 j = 0; j < mSetInfos[i].numSlots; j++)
 			{
-				if (mSetInfos[i].slotIndices[j] == -1)
+				if (mSetInfos[i].slotIndices[j] == (UINT32)-1)
 				{
-					mSetExtraInfos[i].slotIndices[j] = -1;
+					mSetExtraInfos[i].slotIndices[j] = (UINT32)-1;
 					continue;
 				}
 
@@ -121,7 +121,7 @@ namespace bs { namespace ct
 				for (auto& entry : params)
 				{
 					UINT32 bindingIdx = getBindingIdx(entry.second.set, entry.second.slot);
-					assert(bindingIdx != -1);
+					assert(bindingIdx != (UINT32)-1);
 
 					LayoutInfo& layoutInfo = mLayoutInfos[entry.second.set];
 					VkDescriptorSetLayoutBinding& binding = layoutInfo.bindings[bindingIdx];
@@ -136,7 +136,7 @@ namespace bs { namespace ct
 				for (auto& entry : params)
 				{
 					UINT32 bindingIdx = getBindingIdx(entry.second.set, entry.second.slot);
-					assert(bindingIdx != -1);
+					assert(bindingIdx != (UINT32)-1);
 
 					LayoutInfo& layoutInfo = mLayoutInfos[entry.second.set];
 					VkDescriptorSetLayoutBinding& binding = layoutInfo.bindings[bindingIdx];
@@ -158,7 +158,7 @@ namespace bs { namespace ct
 			for (auto& entry : paramDesc->buffers)
 			{
 				UINT32 bindingIdx = getBindingIdx(entry.second.set, entry.second.slot);
-				assert(bindingIdx != -1);
+				assert(bindingIdx != (UINT32)-1);
 
 				LayoutInfo& layoutInfo = mLayoutInfos[entry.second.set];
 				VkDescriptorSetLayoutBinding& binding = layoutInfo.bindings[bindingIdx];

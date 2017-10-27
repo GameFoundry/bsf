@@ -10,7 +10,7 @@
 namespace bs { namespace ct
 {
 	VulkanLayoutKey::VulkanLayoutKey(VkDescriptorSetLayoutBinding* bindings, UINT32 numBindings)
-		:bindings(bindings), numBindings(numBindings), layout(nullptr)
+		:numBindings(numBindings), bindings(bindings), layout(nullptr)
 	{ }
 
 	bool VulkanLayoutKey::operator==(const VulkanLayoutKey& rhs) const
@@ -41,7 +41,7 @@ namespace bs { namespace ct
 	}
 
 	VulkanPipelineLayoutKey::VulkanPipelineLayoutKey(VulkanDescriptorLayout** layouts, UINT32 numLayouts)
-		:layouts(layouts), numLayouts(numLayouts)
+		:numLayouts(numLayouts), layouts(layouts)
 	{
 		
 	}

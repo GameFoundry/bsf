@@ -125,6 +125,8 @@ namespace bs
 		case GPOT_RWTEXTURE1DARRAY:
 			texture = mDummyStorageTextures[1];
 			break;
+		default:
+			break;
 		}
 
 		return texture->getResource(deviceIdx)->getView(false);

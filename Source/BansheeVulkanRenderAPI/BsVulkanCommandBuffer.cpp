@@ -20,6 +20,8 @@
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 #include "Win32/BsWin32RenderWindow.h"
+#elif BS_PLATFORM == BS_PLATFORM_LINUX
+#include "Linux/BsLinuxRenderWindow.h"
 #else
 static_assert(false, "Other platforms go here");
 #endif
@@ -452,7 +454,7 @@ namespace bs { namespace ct
 				continue;
 
 			UINT32 currentQueueFamily = resource->getQueueFamily();
-			if (currentQueueFamily != -1 && currentQueueFamily != mQueueFamily)
+			if (currentQueueFamily != (UINT32)-1 && currentQueueFamily != mQueueFamily)
 			{
 				Vector<VkBufferMemoryBarrier>& barriers = mTransitionInfoTemp[currentQueueFamily].bufferBarriers;
 
@@ -478,7 +480,8 @@ namespace bs { namespace ct
 			ImageInfo& imageInfo = mImageInfos[entry.second];
 
 			UINT32 currentQueueFamily = resource->getQueueFamily();
-			bool queueMismatch = resource->isExclusive() && currentQueueFamily != -1 && currentQueueFamily != mQueueFamily;
+			bool queueMismatch = resource->isExclusive() && currentQueueFamily != (UINT32)-1
+				&& currentQueueFamily != mQueueFamily;
 
 			ImageSubresourceInfo* subresourceInfos = &mSubresourceInfoStorage[imageInfo.subresourceInfoIdx];
 			if (queueMismatch)
@@ -567,7 +570,7 @@ namespace bs { namespace ct
 			UINT32 entryQueueFamily = entry.first;
 
 			// No queue transition needed for entries on this queue (this entry is most likely an image layout transition)
-			if (entryQueueFamily == -1 || entryQueueFamily == mQueueFamily)
+			if (entryQueueFamily == (UINT32)-1 || entryQueueFamily == mQueueFamily)
 				continue;
 
 			VulkanCmdBuffer* cmdBuffer = device.getCmdBufferPool().getBuffer(entryQueueFamily, false);
@@ -814,7 +817,11 @@ namespace bs { namespace ct
 		{
 			if (rt->getProperties().isWindow)
 			{
+#if BS_PLATFORM == BS_PLATFORM_WIN32
 				Win32RenderWindow* window = static_cast<Win32RenderWindow*>(rt.get());
+#elif BS_PLATFORM == BS_PLATFORM_LINUX
+				LinuxRenderWindow* window = static_cast<LinuxRenderWindow*>(rt.get());
+#endif
 				window->acquireBackBuffer();
 
 				VulkanSwapChain* swapChain;

@@ -11,12 +11,17 @@
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 	#define VK_USE_PLATFORM_WIN32_KHR
+#elif BS_PLATFORM == BS_PLATFORM_LINUX
+	#define VK_USE_PLATFORM_XLIB_KHR
+#elif BS_PLATFORM == BS_PLATFORM_ANDROID
+	#define VK_USE_PLATFORM_ANDROID_KHR
 #endif
 
 /** Maximum number of GPU queues that may exist at once. */
 #define BS_MAX_UNIQUE_QUEUES BS_MAX_QUEUES_PER_TYPE * bs::GQT_COUNT // Must fit within 4 bytes
 
 #include "vulkan/vulkan.h"
+#undef None // Conflicting define from Xlib
 
 /** @addtogroup Plugins
  *  @{

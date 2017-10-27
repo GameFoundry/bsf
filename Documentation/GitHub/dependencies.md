@@ -111,7 +111,7 @@ Additionally, if the dependency structure still isn't clear, download one of the
   - Requires libogg, as described in its readme file.
    
 **glslang**
-- glslang commit: 19bdf90eba71390f04bb85226337517df65d73e2
+- glslang commit: 258b700f5957fc13b0512b3734a1b0e81a1c271d
 - https://github.com/KhronosGroup/glslang
 - Required by BansheeVulkanRenderAPI
 - Compile as a static library

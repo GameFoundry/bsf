@@ -6,7 +6,7 @@
 #include "BsVulkanUtility.h"
 #include "Managers/BsVulkanCommandBufferManager.h"
 #include "BsVulkanHardwareBuffer.h"
-#include "Corethread/BsCoreThread.h"
+#include "CoreThread/BsCoreThread.h"
 #include "Profiling/BsRenderStats.h"
 #include "Math/BsMath.h"
 
@@ -34,7 +34,7 @@ namespace bs { namespace ct
 
 	VulkanImage::VulkanImage(VulkanResourceManager* owner, const VULKAN_IMAGE_DESC& desc, bool ownsImage)
 		: VulkanResource(owner, false), mImage(desc.image), mMemory(desc.memory), mFramebufferMainView(VK_NULL_HANDLE)
-		, mOwnsImage(ownsImage), mNumFaces(desc.numFaces), mNumMipLevels(desc.numMipLevels), mUsage(desc.usage)
+		, mUsage(desc.usage), mOwnsImage(ownsImage), mNumFaces(desc.numFaces), mNumMipLevels(desc.numMipLevels)
 	{
 		mImageViewCI.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 		mImageViewCI.pNext = nullptr;
@@ -563,10 +563,10 @@ namespace bs { namespace ct
 
 	VulkanTexture::VulkanTexture(const TEXTURE_DESC& desc, const SPtr<PixelData>& initialData,
 										 GpuDeviceFlags deviceMask)
-		: Texture(desc, initialData, deviceMask), mImages(), mDeviceMask(deviceMask), mStagingBuffer(nullptr)
-		, mMappedDeviceIdx(-1), mMappedGlobalQueueIdx(-1), mMappedMip(0), mMappedFace(0), mMappedRowPitch(false)
-		, mMappedSlicePitch(false), mMappedLockOptions(GBL_WRITE_ONLY), mInternalFormats()
-		, mDirectlyMappable(false), mSupportsGPUWrites(false), mIsMapped(false)
+		: Texture(desc, initialData, deviceMask), mImages(), mInternalFormats(), mDeviceMask(deviceMask)
+		, mStagingBuffer(nullptr), mMappedDeviceIdx((UINT32)-1), mMappedGlobalQueueIdx((UINT32)-1)
+		, mMappedMip(0), mMappedFace(0), mMappedRowPitch(0), mMappedSlicePitch(0)
+		, mMappedLockOptions(GBL_WRITE_ONLY), mDirectlyMappable(false), mSupportsGPUWrites(false), mIsMapped(false)
 	{
 		
 	}

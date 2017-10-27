@@ -166,6 +166,102 @@ namespace bs { namespace ct
 		return idMask;
 	}
 
+	SurfaceFormat VulkanDevice::getSurfaceFormat(const VkSurfaceKHR& surface, bool gamma) const
+	{
+		uint32_t numFormats;
+		VkResult result = vkGetPhysicalDeviceSurfaceFormatsKHR(mPhysicalDevice, surface, &numFormats, nullptr);
+		assert(result == VK_SUCCESS);
+		assert(numFormats > 0);
+
+		VkSurfaceFormatKHR* surfaceFormats = bs_stack_alloc<VkSurfaceFormatKHR>(numFormats);
+		result = vkGetPhysicalDeviceSurfaceFormatsKHR(mPhysicalDevice, surface, &numFormats, surfaceFormats);
+		assert(result == VK_SUCCESS);
+
+		SurfaceFormat output;
+		output.colorFormat = VK_FORMAT_R8G8B8A8_UNORM;
+		output.colorSpace = VK_COLOR_SPACE_SRGB_NONLINEAR_KHR;
+		output.depthFormat = VK_FORMAT_D24_UNORM_S8_UINT;
+
+		// If there is no preferred format, use standard RGBA
+		if ((numFormats == 1) && (surfaceFormats[0].format == VK_FORMAT_UNDEFINED))
+		{
+			if (gamma)
+				output.colorFormat = VK_FORMAT_R8G8B8A8_SRGB;
+			else
+				output.colorFormat = VK_FORMAT_B8G8R8A8_UNORM;
+
+			output.colorSpace = surfaceFormats[0].colorSpace;
+		}
+		else
+		{
+			bool foundFormat = false;
+
+			VkFormat wantedFormatsUNORM[] =
+			{
+				VK_FORMAT_R8G8B8A8_UNORM,
+				VK_FORMAT_B8G8R8A8_UNORM,
+				VK_FORMAT_A8B8G8R8_UNORM_PACK32,
+				VK_FORMAT_A8B8G8R8_UNORM_PACK32,
+				VK_FORMAT_R8G8B8_UNORM,
+				VK_FORMAT_B8G8R8_UNORM
+			};
+
+			VkFormat wantedFormatsSRGB[] =
+			{
+				VK_FORMAT_R8G8B8A8_SRGB,
+				VK_FORMAT_B8G8R8A8_SRGB,
+				VK_FORMAT_A8B8G8R8_SRGB_PACK32,
+				VK_FORMAT_A8B8G8R8_SRGB_PACK32,
+				VK_FORMAT_R8G8B8_SRGB,
+				VK_FORMAT_B8G8R8_SRGB
+			};
+
+			UINT32 numWantedFormats;
+			VkFormat* wantedFormats;
+			if (gamma)
+			{
+				numWantedFormats = sizeof(wantedFormatsSRGB) / sizeof(wantedFormatsSRGB[0]);
+				wantedFormats = wantedFormatsSRGB;
+			}
+			else
+			{
+				numWantedFormats = sizeof(wantedFormatsUNORM) / sizeof(wantedFormatsUNORM[0]);
+				wantedFormats = wantedFormatsUNORM;
+			}
+
+			for(UINT32 i = 0; i < numWantedFormats; i++)
+			{
+				for(UINT32 j = 0; j < numFormats; j++)
+				{
+					if(surfaceFormats[j].format == wantedFormats[i])
+					{
+						output.colorFormat = surfaceFormats[j].format;
+						output.colorSpace = surfaceFormats[j].colorSpace;
+
+						foundFormat = true;
+						break;
+					}
+				}
+
+				if (foundFormat)
+					break;
+			}
+
+			// If we haven't found anything, fall back to first available
+			if(!foundFormat)
+			{
+				output.colorFormat = surfaceFormats[0].format;
+				output.colorSpace = surfaceFormats[0].colorSpace;
+
+				if (gamma)
+					LOGERR("Cannot find a valid sRGB format for a render window surface, falling back to a default format.");
+			}
+		}
+
+		bs_stack_free(surfaceFormats);
+		return output;
+	}
+
 	VkDeviceMemory VulkanDevice::allocateMemory(VkImage image, VkMemoryPropertyFlags flags)
 	{
 		VkMemoryRequirements memReq;
@@ -200,7 +296,7 @@ namespace bs { namespace ct
 		allocateInfo.memoryTypeIndex = findMemoryType(reqs.memoryTypeBits, flags);
 		allocateInfo.allocationSize = reqs.size;
 
-		if (allocateInfo.memoryTypeIndex == -1)
+		if (allocateInfo.memoryTypeIndex == (UINT32)-1)
 			return VK_NULL_HANDLE;
 
 		VkDeviceMemory memory;

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "BsVulkanPrerequisites.h"
-#include "Renderapi/BsGpuParams.h"
+#include "RenderAPI/BsGpuParams.h"
 #include "Allocators/BsGroupAlloc.h"
 
 namespace bs { namespace ct

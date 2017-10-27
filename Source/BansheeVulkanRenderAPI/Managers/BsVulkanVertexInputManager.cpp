@@ -2,7 +2,7 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "Managers/BsVulkanVertexInputManager.h"
 #include "BsVulkanUtility.h"
-#include "Renderapi/BsVertexDeclaration.h"
+#include "RenderAPI/BsVertexDeclaration.h"
 #include "Profiling/BsRenderStats.h"
 
 namespace bs { namespace ct

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "BsVulkanPrerequisites.h"
-#include "Renderapi/BsOcclusionQuery.h"
+#include "RenderAPI/BsOcclusionQuery.h"
 
 namespace bs { namespace ct
 {

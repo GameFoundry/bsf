@@ -4,7 +4,7 @@
 
 #include "BsVulkanPrerequisites.h"
 #include "Image/BsTexture.h"
-#include "Renderapi/BsRenderTexture.h"
+#include "RenderAPI/BsRenderTexture.h"
 
 namespace bs
 {

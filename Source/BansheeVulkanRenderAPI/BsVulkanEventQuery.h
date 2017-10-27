@@ -4,7 +4,7 @@
 
 #include "BsVulkanPrerequisites.h"
 #include "BsVulkanResource.h"
-#include "Renderapi/BsEventQuery.h"
+#include "RenderAPI/BsEventQuery.h"
 
 namespace bs { namespace ct
 {

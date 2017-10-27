@@ -1,9 +1,9 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsVulkanRenderAPI.h"
-#include "Corethread/BsCoreThread.h"
+#include "CoreThread/BsCoreThread.h"
 #include "Profiling/BsRenderStats.h"
-#include "Renderapi/BsGpuParamDesc.h"
+#include "RenderAPI/BsGpuParamDesc.h"
 #include "BsVulkanDevice.h"
 #include "Managers/BsVulkanTextureManager.h"
 #include "Managers/BsVulkanRenderWindowManager.h"
@@ -18,8 +18,12 @@
 #include "Managers/BsVulkanVertexInputManager.h"
 #include "BsVulkanGpuParamBlockBuffer.h"
 
+#include <vulkan/vulkan.h>
+
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 	#include "Win32/BsWin32VideoModeInfo.h"
+#elif BS_PLATFORM == BS_PLATFORM_LINUX
+	#include "Linux/BsLinuxVideoModeInfo.h"
 #else
 	static_assert(false, "Other platform includes go here.");
 #endif
@@ -148,7 +152,7 @@ namespace bs { namespace ct
 #elif BS_PLATFORM == BS_PLATFORM_ANDROID
 		extensions[1] = VK_KHR_ANDROID_SURFACE_EXTENSION_NAME;
 #else
-		extensions[1] = VK_KHR_XCB_SURFACE_EXTENSION_NAME;
+		extensions[1] = VK_KHR_XLIB_SURFACE_EXTENSION_NAME;
 #endif
 
 		uint32_t numExtensions = sizeof(extensions) / sizeof(extensions[0]);
@@ -216,8 +220,10 @@ namespace bs { namespace ct
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32
 		mVideoModeInfo = bs_shared_ptr_new<Win32VideoModeInfo>();
+#elif BS_PLATFORM == BS_PLATFORM_LINUX
+		mVideoModeInfo = bs_shared_ptr_new<LinuxVideoModeInfo>();
 #else
-		static_assert(false, "mVideoModeInfo needs to be created.")
+		static_assert(false, "mVideoModeInfo needs to be created.");
 #endif
 
 		GPUInfo gpuInfo;

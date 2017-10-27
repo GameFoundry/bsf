@@ -3,7 +3,7 @@
 #pragma once
 
 #include "BsVulkanPrerequisites.h"
-#include "Renderapi/BsRenderAPI.h"
+#include "RenderAPI/BsRenderAPI.h"
 #include "Managers/BsVulkanDescriptorManager.h"
 
 namespace bs { namespace ct
@@ -11,6 +11,14 @@ namespace bs { namespace ct
 	/** @addtogroup Vulkan
 	 *  @{
 	 */
+
+	/** Contains format describing a Vulkan surface. */
+	struct SurfaceFormat
+	{
+		VkFormat colorFormat;
+		VkFormat depthFormat;
+		VkColorSpaceKHR colorSpace;
+	};
 
 	/** Represents a single GPU device usable by Vulkan. */
 	class VulkanDevice
@@ -60,6 +68,9 @@ namespace bs { namespace ct
 		 * index. This is useful as different queue indices will sometimes map to the same physical queue.
 		 */
 		UINT32 getQueueMask(GpuQueueType type, UINT32 queueIdx) const;
+
+		/** Returns the best matching surface format according to the provided parameters. */
+		SurfaceFormat getSurfaceFormat(const VkSurfaceKHR& surface, bool gamma) const;
 
 		/** Returns a pool that can be used for allocating command buffers for all queues on this device. */
 		VulkanCmdBufferPool& getCmdBufferPool() const { return *mCommandBufferPool; }

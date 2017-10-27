@@ -9,9 +9,9 @@
 #include "BsVulkanGpuPipelineParamInfo.h"
 #include "Managers/BsVulkanVertexInputManager.h"
 #include "BsVulkanCommandBuffer.h"
-#include "Renderapi/BsRasterizerState.h"
-#include "Renderapi/BsDepthStencilState.h"
-#include "Renderapi/BsBlendState.h"
+#include "RenderAPI/BsRasterizerState.h"
+#include "RenderAPI/BsDepthStencilState.h"
+#include "RenderAPI/BsBlendState.h"
 #include "Profiling/BsRenderStats.h"
 
 namespace bs { namespace ct
@@ -442,10 +442,7 @@ namespace bs { namespace ct
 			mPipelineInfo.pColorBlendState = nullptr;
 
 			for (UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
-			{
-				VkPipelineColorBlendAttachmentState& blendState = mAttachmentBlendStates[i];
 				colorReadOnly[i] = true;
-			}
 		}
 
 		std::pair<VkShaderStageFlagBits, GpuProgram*> stages[] =

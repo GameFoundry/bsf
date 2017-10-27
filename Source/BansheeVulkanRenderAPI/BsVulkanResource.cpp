@@ -2,7 +2,7 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "BsVulkanResource.h"
 #include "BsVulkanCommandBuffer.h"
-#include "Corethread/BsCoreThread.h"
+#include "CoreThread/BsCoreThread.h"
 
 namespace bs { namespace ct
 {

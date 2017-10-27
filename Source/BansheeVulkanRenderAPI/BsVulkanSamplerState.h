@@ -4,7 +4,7 @@
 
 #include "BsVulkanPrerequisites.h"
 #include "BsVulkanResource.h"
-#include "Renderapi/BsSamplerState.h"
+#include "RenderAPI/BsSamplerState.h"
 
 namespace bs { namespace ct
 {

@@ -4,10 +4,10 @@
 #include "BsVulkanRenderAPI.h"
 #include "BsVulkanDevice.h"
 #include "BsVulkanUtility.h"
-#include "Renderapi/BsGpuParams.h"
-#include "Renderapi/BsGpuParamDesc.h"
+#include "RenderAPI/BsGpuParams.h"
+#include "RenderAPI/BsGpuParamDesc.h"
 #include "Managers/BsGpuProgramManager.h"
-#include "Renderapi/BsVertexDeclaration.h"
+#include "RenderAPI/BsVertexDeclaration.h"
 #include "Managers/BsHardwareBufferManager.h"
 #include "Profiling/BsRenderStats.h"
 #include "FileSystem/BsFileSystem.h"
@@ -336,7 +336,7 @@ namespace bs { namespace ct
 			const glslang::TType* ttype = program->getAttributeTType(i);
 			UINT32 location = ttype->getQualifier().layoutLocation;
 
-			if (location == -1)
+			if (location == (UINT32)-1)
 			{
 				log = "Vertex attribute parsing error: Found a vertex attribute without a location "
 					"qualifier. Each attribute must have an explicitly defined location number.";
@@ -462,6 +462,8 @@ namespace bs { namespace ct
 						break;
 					case glslang::Esd3D:		param.type = GPOT_RWTEXTURE3D; break;
 					case glslang::EsdBuffer:	param.type = GPOT_RWBYTE_BUFFER; break;
+					default:
+						break;
 					}
 
 					if(sampler.dim != glslang::EsdBuffer)
@@ -477,6 +479,8 @@ namespace bs { namespace ct
 					case glslang::Esd2D:		param.type = sampler.isMultiSample() ? GPOT_SAMPLER2DMS : GPOT_SAMPLER2D; break;
 					case glslang::Esd3D:		param.type = GPOT_SAMPLER3D; break;
 					case glslang::EsdCube:		param.type = GPOT_SAMPLERCUBE; break;
+					default:
+						break;
 					}
 
 					desc.samplers[name] = param;
@@ -495,6 +499,8 @@ namespace bs { namespace ct
 						case glslang::Esd3D:		param.type = GPOT_TEXTURE3D; break;
 						case glslang::EsdCube:		param.type = sampler.isArrayed() ? GPOT_TEXTURECUBEARRAY : GPOT_TEXTURECUBE; break;
 						case glslang::EsdBuffer:	param.type = GPOT_BYTE_BUFFER; break;
+						default:
+							break;
 						}
 
 						if (sampler.dim != glslang::EsdBuffer)
@@ -616,7 +622,12 @@ namespace bs { namespace ct
 		case GPT_COMPUTE_PROGRAM:
 			glslType = EShLangCompute;
 			break;
+		default:
+			break;
 		}
+
+		VulkanRenderAPI& rapi = static_cast<VulkanRenderAPI&>(RenderAPI::instance());
+		VulkanDevice* devices[BS_MAX_DEVICES];
 
 		std::vector<UINT32> spirv;
 		spv::SpvBuildLogger logger;
@@ -683,9 +694,6 @@ namespace bs { namespace ct
 		moduleCI.codeSize = spirv.size() * sizeof(UINT32);
 		moduleCI.pCode = spirv.data();
 
-		VulkanRenderAPI& rapi = static_cast<VulkanRenderAPI&>(RenderAPI::instance());
-
-		VulkanDevice* devices[BS_MAX_DEVICES];
 		VulkanUtility::getDevices(rapi, mDeviceMask, devices);
 
 		for (UINT32 i = 0; i < BS_MAX_DEVICES; i++)

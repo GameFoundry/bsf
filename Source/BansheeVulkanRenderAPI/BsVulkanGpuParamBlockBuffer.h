@@ -3,7 +3,7 @@
 #pragma once
 
 #include "BsVulkanPrerequisites.h"
-#include "Renderapi/BsGpuParamBlockBuffer.h"
+#include "RenderAPI/BsGpuParamBlockBuffer.h"
 
 namespace bs { namespace ct
 {

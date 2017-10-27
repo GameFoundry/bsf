@@ -4,7 +4,7 @@
 
 #include "BsVulkanPrerequisites.h"
 #include "BsVulkanResource.h"
-#include "Renderapi/BsHardwareBuffer.h"
+#include "RenderAPI/BsHardwareBuffer.h"
 
 namespace bs { namespace ct
 {

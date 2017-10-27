@@ -7,7 +7,7 @@
 #include "BsVulkanGpuParamBlockBuffer.h"
 #include "BsVulkanGpuParams.h"
 #include "BsVulkanHardwareBuffer.h"
-#include "Renderapi/BsGpuParamDesc.h"
+#include "RenderAPI/BsGpuParamDesc.h"
 
 namespace bs { namespace ct
 {

@@ -351,6 +351,8 @@ namespace bs { namespace ct
 			return VK_SHADER_STAGE_VERTEX_BIT;
 		case GPT_COMPUTE_PROGRAM:
 			return VK_SHADER_STAGE_COMPUTE_BIT;
+		default:
+			break;
 		}
 
 		// Unsupported type

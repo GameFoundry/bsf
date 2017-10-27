@@ -188,95 +188,11 @@ namespace bs
 			// which support present)
 			BS_EXCEPT(RenderingAPIException, "Cannot find a graphics queue that also supports present operations.");
 		}
-		
-		uint32_t numFormats;
-		result = vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, mSurface, &numFormats, nullptr);
-		assert(result == VK_SUCCESS);
-		assert(numFormats > 0);
 
-		VkSurfaceFormatKHR* surfaceFormats = bs_stack_alloc<VkSurfaceFormatKHR>(numFormats);
-		result = vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, mSurface, &numFormats, surfaceFormats);
-		assert(result == VK_SUCCESS);
-
-		// If there is no preferred format, use standard RGBA
-		if ((numFormats == 1) && (surfaceFormats[0].format == VK_FORMAT_UNDEFINED))
-		{
-			if (mDesc.gamma)
-				mColorFormat = VK_FORMAT_R8G8B8A8_SRGB;
-			else
-				mColorFormat = VK_FORMAT_B8G8R8A8_UNORM;
-
-			mColorSpace = surfaceFormats[0].colorSpace;
-		}
-		else
-		{
-			bool foundFormat = false;
-
-			VkFormat wantedFormatsUNORM[] =
-			{
-				VK_FORMAT_R8G8B8A8_UNORM,
-				VK_FORMAT_B8G8R8A8_UNORM,
-				VK_FORMAT_A8B8G8R8_UNORM_PACK32,
-				VK_FORMAT_A8B8G8R8_UNORM_PACK32,
-				VK_FORMAT_R8G8B8_UNORM,
-				VK_FORMAT_B8G8R8_UNORM
-			};
-
-			VkFormat wantedFormatsSRGB[] = 
-			{
-				VK_FORMAT_R8G8B8A8_SRGB,
-				VK_FORMAT_B8G8R8A8_SRGB,
-				VK_FORMAT_A8B8G8R8_SRGB_PACK32,
-				VK_FORMAT_A8B8G8R8_SRGB_PACK32,
-				VK_FORMAT_R8G8B8_SRGB,
-				VK_FORMAT_B8G8R8_SRGB
-			};
-
-			UINT32 numWantedFormats;
-			VkFormat* wantedFormats;
-			if (mDesc.gamma)
-			{
-				numWantedFormats = sizeof(wantedFormatsSRGB) / sizeof(wantedFormatsSRGB[0]);
-				wantedFormats = wantedFormatsSRGB;
-			}
-			else
-			{
-				numWantedFormats = sizeof(wantedFormatsUNORM) / sizeof(wantedFormatsUNORM[0]);
-				wantedFormats = wantedFormatsUNORM;
-			}
-
-			for(UINT32 i = 0; i < numWantedFormats; i++)
-			{
-				for(UINT32 j = 0; j < numFormats; j++)
-				{
-					if(surfaceFormats[j].format == wantedFormats[i])
-					{
-						mColorFormat = surfaceFormats[j].format;
-						mColorSpace = surfaceFormats[j].colorSpace;
-
-						foundFormat = true;
-						break;
-					}
-				}
-
-				if (foundFormat)
-					break;
-			}
-
-			// If we haven't found anything, fall back to first available
-			if(!foundFormat)
-			{
-				mColorFormat = surfaceFormats[0].format;
-				mColorSpace = surfaceFormats[0].colorSpace;
-
-				if (mDesc.gamma)
-					LOGERR("Cannot find a valid sRGB format for a render window surface, falling back to a default format.");
-			}
-		}
-
-		mDepthFormat = VK_FORMAT_D24_UNORM_S8_UINT;
-		
-		bs_stack_free(surfaceFormats);
+		SurfaceFormat format = presentDevice->getSurfaceFormat(mSurface, mDesc.gamma);
+		mColorFormat = format.colorFormat;
+		mColorSpace = format.colorSpace;
+		mDepthFormat = format.depthFormat;
 
 		// Create swap chain
 		mSwapChain = bs_shared_ptr_new<VulkanSwapChain>();

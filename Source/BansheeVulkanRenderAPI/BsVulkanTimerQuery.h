@@ -3,7 +3,7 @@
 #pragma once
 
 #include "BsVulkanPrerequisites.h"
-#include "Renderapi/BsTimerQuery.h"
+#include "RenderAPI/BsTimerQuery.h"
 
 namespace bs { namespace ct
 {
