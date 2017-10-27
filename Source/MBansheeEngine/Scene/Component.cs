@@ -16,7 +16,7 @@ namespace BansheeEngine
     public class Component : GameObject
     {
         // Internal use only
-        internal Component()
+        protected internal Component()
         { }
 
         /// <summary>

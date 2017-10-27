@@ -48,6 +48,7 @@ namespace bs
 		metaData.scriptClass->addInternalCall("Internal_GetProjectName", (void*)&ScriptEditorApplication::internal_GetProjectName);
 		metaData.scriptClass->addInternalCall("Internal_GetProjectLoaded", (void*)&ScriptEditorApplication::internal_GetProjectLoaded);
 		metaData.scriptClass->addInternalCall("Internal_GetCompilerPath", (void*)&ScriptEditorApplication::internal_GetCompilerPath);
+		metaData.scriptClass->addInternalCall("Internal_GetMonoExecPath", (void*) &ScriptEditorApplication::internal_GetMonoExecPath);
 		metaData.scriptClass->addInternalCall("Internal_GetBuiltinReleaseAssemblyPath", (void*)&ScriptEditorApplication::internal_GetBuiltinReleaseAssemblyPath);
 		metaData.scriptClass->addInternalCall("Internal_GetBuiltinDebugAssemblyPath", (void*)&ScriptEditorApplication::internal_GetBuiltinDebugAssemblyPath);
 		metaData.scriptClass->addInternalCall("Internal_GetScriptAssemblyPath", (void*)&ScriptEditorApplication::internal_GetScriptAssemblyPath);
@@ -163,6 +164,13 @@ namespace bs
 		Path compilerPath = MonoManager::instance().getCompilerPath();
 
 		return MonoUtil::wstringToMono(compilerPath.toWString());
+	}
+
+	MonoString* ScriptEditorApplication::internal_GetMonoExecPath()
+	{
+		Path path = MonoManager::instance().getMonoExecPath();
+
+		return MonoUtil::wstringToMono(path.toWString());
 	}
 
 	MonoString* ScriptEditorApplication::internal_GetBuiltinReleaseAssemblyPath()

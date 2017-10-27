@@ -195,6 +195,11 @@ namespace BansheeEditor
         /// </summary>
         internal static string CompilerPath { get { return Internal_GetCompilerPath(); } }
 
+		/// <summary>
+		/// Returns the absolute path to the executable capable of executing managed assemblies.
+        /// </summary>
+        internal static string MonoExecPath { get { return Internal_GetMonoExecPath(); } }
+
         /// <summary>
         /// Returns the path to the folder where the custom script assemblies are located at.
         /// </summary>
@@ -999,6 +1004,9 @@ namespace BansheeEditor
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern string Internal_GetCompilerPath();
+
+		[MethodImpl(MethodImplOptions.InternalCall)]
+		private static extern string Internal_GetMonoExecPath();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern string Internal_GetBuiltinReleaseAssemblyPath();

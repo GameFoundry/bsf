@@ -596,7 +596,7 @@ namespace bs
 		WString replace(L"\\\\&");
 		WString escapedPattern = std::regex_replace(pattern, escape, replace, std::regex_constants::match_default | std::regex_constants::format_sed);
 
-		std::wregex wildcard(L"\\\\\\*");
+		std::wregex wildcard(L"\\\\\\\\\\*");
 		WString wildcardReplace(L".*");
 		WString searchPattern = std::regex_replace(escapedPattern, wildcard, L".*");
 

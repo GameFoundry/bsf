@@ -23,7 +23,7 @@ namespace bs
 	HEvent ScriptScene::OnRefreshDomainLoadedConn;
 	HEvent ScriptScene::OnRefreshStartedConn;
 
-	String ScriptScene::ActiveSceneUUID;
+	UUID ScriptScene::ActiveSceneUUID;
 	WString ScriptScene::ActiveSceneName;
 	bool ScriptScene::IsGenericPrefab;
 
@@ -84,7 +84,7 @@ namespace bs
 	{
 		MonoMethod* uuidMethod = metaData.scriptClass->getMethod("GetSceneUUID");
 		if (uuidMethod != nullptr)
-			ActiveSceneUUID = MonoUtil::monoToString((MonoString*)uuidMethod->invoke(nullptr, nullptr));
+			ActiveSceneUUID = ScriptUUID::unbox(uuidMethod->invoke(nullptr, nullptr));
 
 		MonoMethod* nameMethod = metaData.scriptClass->getMethod("GetSceneName");
 		if (nameMethod != nullptr)
@@ -101,7 +101,7 @@ namespace bs
 		if (uuidMethod != nullptr)
 		{
 			void* params[1];
-			params[0] = MonoUtil::stringToMono(ActiveSceneUUID);
+			params[0] = ScriptUUID::box(ActiveSceneUUID);
 
 			uuidMethod->invoke(nullptr, params);
 		}

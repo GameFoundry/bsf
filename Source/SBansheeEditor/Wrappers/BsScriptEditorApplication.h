@@ -47,6 +47,7 @@ namespace bs
 		static MonoString* internal_GetProjectName();
 		static bool internal_GetProjectLoaded();
 		static MonoString* internal_GetCompilerPath();
+		static MonoString* internal_GetMonoExecPath();
 		static MonoString* internal_GetBuiltinReleaseAssemblyPath();
 		static MonoString* internal_GetBuiltinDebugAssemblyPath();
 		static MonoString* internal_GetScriptAssemblyPath();

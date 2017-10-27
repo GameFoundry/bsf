@@ -65,8 +65,11 @@ namespace bs
 		/** Returns the absolute path to the Mono /etc folder that is required for initializing Mono. */
 		Path getMonoEtcFolder() const;
 
-		/**	Returns the absolute path to the Mono compiler. */
+		/**	Returns the absolute path to the Mono compiler managed executable. */
 		Path getCompilerPath() const;
+
+		/** Returns the absolute path to the executable capable of executing managed assemblies. */
+		Path getMonoExecPath() const;
 
 		/**
 		 * Registers a new script type. This should be done before any assembly loading is done. Upon assembly load these

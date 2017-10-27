@@ -347,13 +347,20 @@ namespace bs
 	Path MonoManager::getCompilerPath() const
 	{
 		Path compilerPath = Paths::findPath(MONO_COMPILER_DIR);
+		compilerPath.append("mcs.exe");
+		return compilerPath;
+	}
+
+	Path MonoManager::getMonoExecPath() const
+	{
+		Path path = Paths::getBinariesPath();
 
 #if BS_PLATFORM == BS_PLATFORM_WIN32
-		compilerPath.append("mcs.exe");
+		path.append("MonoExec.exe");
 #else
-		compilerPath.append("mcs");
+		path.append("MonoExec");
 #endif
 
-		return compilerPath;
+		return path;
 	}
 }

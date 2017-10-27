@@ -16,7 +16,7 @@ namespace bs
 	constexpr const char* GAME_RESOURCE_MAPPING_NAME = "ResourceMapping.asset";
 
 
-	/** Contains common engine paths. */
+	/** Contains common engine paths and utility method for searching for paths. */
 	class BS_EXPORT Paths
 	{
 	public:
@@ -45,7 +45,7 @@ namespace bs
 		 * Searches common locations for a specified path by querying if the file/directory exists and returns the found 
 		 * path.
 		 * 			
-		 * @param[in]	path	Relative path to search for (for example "Data\").				
+		 * @param[in]	path	Relative path to search for (for example "Data\").
 		 * @return				Path at which the relative path was found at. This path will be relative to the working 
 		 *						directory.
 		 */

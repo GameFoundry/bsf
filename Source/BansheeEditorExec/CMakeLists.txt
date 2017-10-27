@@ -27,7 +27,7 @@ set_property(TARGET BansheeEditorExec PROPERTY FOLDER Executable)
 
 # Plugin dependencies
 add_engine_dependencies(BansheeEditorExec)
-add_dependencies(BansheeEditorExec BansheeFBXImporter BansheeFontImporter BansheeFreeImgImporter SBansheeEditor)
+add_dependencies(BansheeEditorExec BansheeFBXImporter BansheeFontImporter BansheeFreeImgImporter SBansheeEditor MonoExec)
 
 # Compiler flags
 if(MSVC)

@@ -141,6 +141,14 @@ namespace BansheeEditor
             ProcessStartInfo procStartInfo = new ProcessStartInfo();
             StringBuilder argumentsBuilder = new StringBuilder();
 
+            argumentsBuilder.Append("\"" + EditorApplication.CompilerPath + "\"");
+
+            string monoDir = Path.GetDirectoryName(EditorApplication.CompilerPath);
+            monoDir = Path.Combine(monoDir, "../");
+
+            argumentsBuilder.Append(" \"" + monoDir + "\"");
+            argumentsBuilder.Append(" -noconfig");
+
             if (!string.IsNullOrEmpty(defines))
                 argumentsBuilder.Append(" -d:" + defines);
 
@@ -183,7 +191,7 @@ namespace BansheeEditor
 
             procStartInfo.Arguments = argumentsBuilder.ToString();
             procStartInfo.CreateNoWindow = true;
-            procStartInfo.FileName = EditorApplication.CompilerPath;
+            procStartInfo.FileName = EditorApplication.MonoExecPath;
             procStartInfo.RedirectStandardError = true;
             procStartInfo.RedirectStandardOutput = false;
             procStartInfo.UseShellExecute = false;

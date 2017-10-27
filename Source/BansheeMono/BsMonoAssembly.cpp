@@ -152,8 +152,9 @@ namespace bs
 
 		if(mMonoImage != nullptr && !mIsDependency)
 		{
-			// Note: I used to call mono_image_close and mono_assembly_close here but those 
-			// didn't seem to be necessary and were just crashing the program.
+			// Make sure to close the image, otherwise when we try to re-load this assembly the Mono will return the cached
+			// image
+			mono_image_close(mMonoImage);
 			mMonoImage = nullptr;
 		}
 
