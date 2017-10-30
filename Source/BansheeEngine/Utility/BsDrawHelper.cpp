@@ -901,7 +901,7 @@ namespace bs
 						break;
 					case ShapeType::Rectangle:
 					{
-						Rect3Data rectData = mRect3Data[shapeData.idx];
+						Rect3Data& rectData = mRect3Data[shapeData.idx];
 						ShapeMeshes3D::solidQuad(rectData.area, meshData, curVertexOffset, curIndexOffet);
 
 						transform = &rectData.transform;

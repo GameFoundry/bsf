@@ -175,7 +175,9 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 
 	set(CMAKE_SHARED_LINKER_FLAGS_RELEASE -s)
 	set(CMAKE_MODULE_LINKER_FLAGS_RELEASE -s)
-	set(CMAKE_EXE_LINKER_FLAGS_RELEASE -s)
+	set(CMAKE_EXE_LINKER_FLAGS_DEBUG "-s -no-pie")
+	set(CMAKE_EXE_LINKER_FLAGS_OPTIMIZEDDEBUG "-s -no-pie")
+	set(CMAKE_EXE_LINKER_FLAGS_RELEASE "-s -no-pie")
 elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 	# TODO: Use link-time optimization -flto. Might require non-default linker.
 	set(BS_COMPILER_FLAGS_COMMON "-Wall -fPIC -fno-exceptions -fno-strict-aliasing -fno-rtti -Wl,-rpath=$ORIGIN")
@@ -186,7 +188,9 @@ elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 
 	set(CMAKE_SHARED_LINKER_FLAGS_RELEASE -s)
 	set(CMAKE_MODULE_LINKER_FLAGS_RELEASE -s)
-	set(CMAKE_EXE_LINKER_FLAGS_RELEASE -s)
+	set(CMAKE_EXE_LINKER_FLAGS_DEBUG "-s -no-pie")
+	set(CMAKE_EXE_LINKER_FLAGS_OPTIMIZEDDEBUG "-s -no-pie")
+	set(CMAKE_EXE_LINKER_FLAGS_RELEASE "-s -no-pie")
 else()
 # TODO_OTHER_COMPILERS_GO_HERE
 endif()
