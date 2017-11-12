@@ -97,7 +97,7 @@ namespace bs
 		UINT32 idx = 0;
 		for (auto& path : fileList)
 		{
-			output.set(idx, path);
+			output.set(idx, path.toWString());
 			idx++;
 		}
 

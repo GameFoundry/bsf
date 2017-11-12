@@ -88,9 +88,9 @@ namespace bs
 
 	void LightProbeVolume::resize(const AABox& volume, const Vector3I& cellCount)
 	{
-		UINT32 numProbesX = std::max(1, mCellCount.v[0]) + 1;
-		UINT32 numProbesY = std::max(1, mCellCount.v[1]) + 1;
-		UINT32 numProbesZ = std::max(1, mCellCount.v[2]) + 1;
+		UINT32 numProbesX = std::max(1, mCellCount.x) + 1;
+		UINT32 numProbesY = std::max(1, mCellCount.y) + 1;
+		UINT32 numProbesZ = std::max(1, mCellCount.z) + 1;
 
 		Vector3 size = mVolume.getSize();
 		for(UINT32 z = 0; z < numProbesZ; ++z)
@@ -120,9 +120,9 @@ namespace bs
 
 	void LightProbeVolume::reset()
 	{
-		UINT32 numProbesX = std::max(1, mCellCount.v[0]) + 1;
-		UINT32 numProbesY = std::max(1, mCellCount.v[1]) + 1;
-		UINT32 numProbesZ = std::max(1, mCellCount.v[2]) + 1;
+		UINT32 numProbesX = std::max(1, mCellCount.x) + 1;
+		UINT32 numProbesY = std::max(1, mCellCount.y) + 1;
+		UINT32 numProbesZ = std::max(1, mCellCount.z) + 1;
 
 		UINT32 numProbes = numProbesX * numProbesY * numProbesZ;
 

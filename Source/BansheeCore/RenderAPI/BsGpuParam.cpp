@@ -7,7 +7,6 @@
 #include "RenderAPI/BsRenderAPI.h"
 #include "Debug/BsDebug.h"
 #include "Error/BsException.h"
-#include "Math/BsVectorNI.h"
 #include "Math/BsVector2I.h"
 
 namespace bs

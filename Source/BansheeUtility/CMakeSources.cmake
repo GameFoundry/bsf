@@ -216,7 +216,9 @@ set(BS_BANSHEEUTILITY_INC_MATH
 	"Math/BsVector2.h"
 	"Math/BsVector2I.h"
 	"Math/BsVector3.h"
+	"Math/BsVector3I.h"
 	"Math/BsVector4.h"
+	"Math/BsVector4I.h"
 	"Math/BsBounds.h"
 	"Math/BsConvexVolume.h"
 	"Math/BsTorus.h"
@@ -226,7 +228,6 @@ set(BS_BANSHEEUTILITY_INC_MATH
 	"Math/BsRect2I.h"
 	"Math/BsCapsule.h"
 	"Math/BsMatrixNxM.h"
-	"Math/BsVectorNI.h"
 	"Math/BsLine2.h"
 )
 

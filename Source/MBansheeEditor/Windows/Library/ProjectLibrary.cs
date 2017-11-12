@@ -344,8 +344,6 @@ namespace BansheeEditor
                     enumerator.MoveNext();
 
                     string displayName = enumerator.Current;
-                    displayName = displayName.Replace("\\", "\\\\");
-
                     if (displayName.Length > 60)
                     {
                         displayName = displayName.Remove(0, displayName.Length - 60);

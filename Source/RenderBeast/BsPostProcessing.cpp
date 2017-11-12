@@ -169,10 +169,10 @@ namespace bs { namespace ct
 		mSceneColor.set(input);
 
 		const TextureProperties& props = input->getProperties();
-		int offsetAndSize[4] = { 0, 0, (INT32)props.getWidth(), (INT32)props.getHeight() };
+		Vector4I offsetAndSize(0, 0, (INT32)props.getWidth(), (INT32)props.getHeight());
 
 		gEyeAdaptHistogramParamDef.gHistogramParams.set(mParamBuffer, getHistogramScaleOffset(settings));
-		gEyeAdaptHistogramParamDef.gPixelOffsetAndSize.set(mParamBuffer, Vector4I(offsetAndSize));
+		gEyeAdaptHistogramParamDef.gPixelOffsetAndSize.set(mParamBuffer, offsetAndSize);
 
 		Vector2I threadGroupCount = getThreadGroupCount(input);
 		gEyeAdaptHistogramParamDef.gThreadGroupCount.set(mParamBuffer, threadGroupCount);

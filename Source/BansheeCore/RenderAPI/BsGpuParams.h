@@ -6,7 +6,6 @@
 #include "RenderAPI/BsGpuParam.h"
 #include "CoreThread/BsCoreObject.h"
 #include "Resources/BsIResourceListener.h"
-#include "Math/BsVectorNI.h"
 #include "Math/BsMatrixNxM.h"
 
 namespace bs
@@ -175,25 +174,27 @@ namespace bs
 		const TextureSurface& getLoadStoreSurface(UINT32 set, UINT32 slot) const;
 
 		/**
-		 * Sets the parameter buffer with the specified name. Any following parameter reads or writes that are 
-		 * referencing that buffer will use the new buffer.
+		 * Assigns the provided parameter block buffer to a buffer with the specified name, for the specified GPU program
+		 * stage. Any following parameter reads or writes that are referencing that buffer will use the new buffer.
 		 *
-		 * @note	
-		 * This is useful if you want to share a parameter buffer among multiple GPU programs. You would only set the 
-		 * values once and then share the buffer among all other GpuParams.
-		 * @note
 		 * It is up to the caller to guarantee the provided buffer matches parameter block descriptor for this slot.
 		 */
 		void setParamBlockBuffer(GpuProgramType type, const String& name, const ParamsBufferType& paramBlockBuffer);
 
 		/**
-		 * Binds a new parameter buffer to the specified slot. Any following parameter reads or writes that are referencing
-		 * that buffer slot will use the new buffer.
+		 * Assigns the provided parameter block buffer to a buffer with the specified name, for any stages that reference
+		 * the buffer. Any following parameter reads or writes that are referencing that buffer will use the new buffer.
 		 *
-		 * @note	
-		 * This is useful if you want to share a parameter buffer among multiple GPU programs. You would only set the 
-		 * values once and then share the buffer among all other GpuParams.
-		 * @note
+		 * It is up to the caller to guarantee the provided buffer matches parameter block descriptor for this slot.
+		 * It is up to the caller that all stages using this buffer name refer to the same buffer type.
+		 */
+		void setParamBlockBuffer(const String& name, const ParamsBufferType& paramBlockBuffer);
+
+		/**
+		 * Sets the parameter buffer with the specified set/slot combination.Any following parameter reads or writes that are 
+		 * referencing that buffer will use the new buffer. Set/slot information for a specific buffer can be extracted
+		 * from GPUProgram's GpuParamDesc structure.
+		 *
 		 * It is up to the caller to guarantee the provided buffer matches parameter block descriptor for this slot.
 		 */
 		virtual void setParamBlockBuffer(UINT32 set, UINT32 slot, const ParamsBufferType& paramBlockBuffer);

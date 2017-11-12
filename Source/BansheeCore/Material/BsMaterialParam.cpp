@@ -2,7 +2,6 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "Material/BsMaterialParam.h"
 #include "Math/BsVector2I.h"
-#include "Math/BsVectorNI.h"
 #include "Material/BsMaterialParams.h"
 #include "Material/BsMaterial.h"
 

@@ -149,6 +149,7 @@ set(BS_BANSHEEEDITOR_INC_HANDLES
 	"Handles/BsHandleSliderLine.h"
 	"Handles/BsHandleSliderManager.h"
 	"Handles/BsHandleSliderPlane.h"
+	"Handles/BsHandleSliderSphere.h"
 )
 
 set(BS_BANSHEEEDITOR_SRC_UTILITY
@@ -217,6 +218,7 @@ set(BS_BANSHEEEDITOR_SRC_HANDLES
 	"Handles/BsHandleSliderLine.cpp"
 	"Handles/BsHandleSliderManager.cpp"
 	"Handles/BsHandleSliderPlane.cpp"
+	"Handles/BsHandleSliderSphere.cpp"
 )
 
 set(BS_BANSHEEEDITOR_INC_TESTING

@@ -129,7 +129,7 @@ namespace bs
 	Path exampleNormalsTexPath = dataPath + "Examples/Pistol/Pistol_NM.png";
 	Path exampleRoughnessTexPath = dataPath + "Examples/Pistol/Pistol_RGH.png";
 	Path exampleMetalnessTexPath = dataPath + "Examples/Pistol/Pistol_MTL.png";
-    Path exampleSkyCubemapPath = dataPath + "Examples/Environments/PaperMill_E_3k.hdr";
+	Path exampleSkyCubemapPath = dataPath + "Examples/Environments/PaperMill_E_3k.hdr";
 
 	HCamera sceneCamera;
 
@@ -165,7 +165,7 @@ namespace bs
 		// Load an FBX mesh.
 		assets.exampleModel = loadMesh(exampleModelPath, 10.0f);
 
-        // Load textures
+		// Load textures
 		assets.exampleAlbedoTex = loadTexture(exampleAlbedoTexPath);
 		assets.exampleNormalsTex = loadTexture(exampleNormalsTexPath, false);
 		assets.exampleRoughnessTex = loadTexture(exampleRoughnessTexPath, false);
@@ -231,15 +231,15 @@ namespace bs
 				// Ensures we can save the texture contents
 				importOptions->setCPUCached(true);
 
-                // Import as cubemap if needed
-                importOptions->setIsCubemap(isCubemap);
+				// Import as cubemap if needed
+				importOptions->setIsCubemap(isCubemap);
 
-                // If importing as cubemap, assume source is a panorama
-                importOptions->setCubemapSourceType(CubemapSourceType::Cylindrical);
+				// If importing as cubemap, assume source is a panorama
+				importOptions->setCubemapSourceType(CubemapSourceType::Cylindrical);
 
-                // Importing using a HDR format if requested
-                if (isHDR)
-                    importOptions->setFormat(PF_RG11B10F);
+				// Importing using a HDR format if requested
+				if (isHDR)
+					importOptions->setFormat(PF_RG11B10F);
 			}
 
 			// Import texture with specified import options
@@ -258,11 +258,11 @@ namespace bs
 		// Create a material with the active shader.
 		HMaterial exampleMaterial = Material::create(assets.exampleShader);
 
-        // Assign the four textures requires by the PBS shader
-        exampleMaterial->setTexture("gAlbedoTex", assets.exampleAlbedoTex);
-        exampleMaterial->setTexture("gNormalTex", assets.exampleNormalsTex);
-        exampleMaterial->setTexture("gRoughnessTex", assets.exampleRoughnessTex);
-        exampleMaterial->setTexture("gMetalnessTex", assets.exampleMetalnessTex);
+		// Assign the four textures requires by the PBS shader
+		exampleMaterial->setTexture("gAlbedoTex", assets.exampleAlbedoTex);
+		exampleMaterial->setTexture("gNormalTex", assets.exampleNormalsTex);
+		exampleMaterial->setTexture("gRoughnessTex", assets.exampleRoughnessTex);
+		exampleMaterial->setTexture("gMetalnessTex", assets.exampleMetalnessTex);
 
 		assets.exampleMaterial = exampleMaterial;
 	}
@@ -291,15 +291,15 @@ namespace bs
 		// Add a rotator component so we can rotate the object during runtime
 		pistolSO->addComponent<ObjectRotator>();
 
-        /************************************************************************/
-        /* 									SKYBOX                       		*/
-        /************************************************************************/
+		/************************************************************************/
+		/* 									SKYBOX                       		*/
+		/************************************************************************/
 
-        // Add a skybox texture for sky reflections
-        HSceneObject skyboxSO = SceneObject::create("Skybox");
+		// Add a skybox texture for sky reflections
+		HSceneObject skyboxSO = SceneObject::create("Skybox");
 
-        HSkybox skybox = skyboxSO->addComponent<CSkybox>();
-        skybox->setTexture(assets.exampleSkyCubemap);
+		HSkybox skybox = skyboxSO->addComponent<CSkybox>();
+		skybox->setTexture(assets.exampleSkyCubemap);
 
 		/************************************************************************/
 		/* 									CAMERA	                     		*/
@@ -330,8 +330,8 @@ namespace bs
 		// Set aspect ratio depending on the current resolution
 		sceneCamera->setAspectRatio(windowResWidth / (float)windowResHeight);
 
-        // Enable multi-sample anti-aliasing for better quality
-        sceneCamera->setMSAACount(4);
+		// Enable multi-sample anti-aliasing for better quality
+		sceneCamera->setMSAACount(4);
 
 		// Add a CameraFlyer component that allows us to move the camera. See CameraFlyer for more information.
 		sceneCameraSO->addComponent<CameraFlyer>();

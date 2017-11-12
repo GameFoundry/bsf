@@ -9,7 +9,8 @@
 #include "Math/BsMatrix3.h"
 #include "Math/BsMatrix4.h"
 #include "Math/BsMatrixNxM.h"
-#include "Math/BsVectorNI.h"
+#include "Math/BsVector3I.h"
+#include "Math/BsVector4I.h"
 #include "Image/BsColor.h"
 
 namespace bs

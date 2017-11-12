@@ -5,7 +5,6 @@
 #include "BsRenderBeastPrerequisites.h"
 #include "Renderer/BsRendererMaterial.h"
 #include "Renderer/BsParamBlocks.h"
-#include "Math/BsVectorNI.h"
 
 namespace bs { namespace ct
 {

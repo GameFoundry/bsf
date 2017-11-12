@@ -472,6 +472,22 @@ namespace BansheeEditor
         }
 
         /// <summary>
+        /// Adds a LightProbeVolume component to the currently selected scene object.
+        /// </summary>
+        [MenuItem("Components/Light probe volume", 7025)]
+        private static void AddLightProbeVolume()
+        {
+            SceneObject so = Selection.SceneObject;
+            if (so == null)
+                return;
+
+            UndoRedo.RecordSO(so, false, "Added a Light Probe Volume component");
+            so.AddComponent<LightProbeVolume>();
+            EditorApplication.SetSceneDirty();
+        }
+
+
+        /// <summary>
         /// Creates a new empty scene object.
         /// </summary>
         [MenuItem("Scene Objects/Scene Object", 8051)]
@@ -595,11 +611,25 @@ namespace BansheeEditor
         /// <summary>
         /// Creates a new scene object with a ReflectionProbe component.
         /// </summary>
-        [MenuItem("Scene Objects/Reflection probe", 8044)]
+        [MenuItem("Scene Objects/Reflection probe", 8043)]
         private static void AddReflectionProbeSO()
         {
             SceneObject so = UndoRedo.CreateSO("ReflectionProbe", "Created a ReflectionProbe");
             so.AddComponent<ReflectionProbe>();
+
+            Selection.SceneObject = so;
+            FocusOnHierarchyOrScene();
+            EditorApplication.SetSceneDirty();
+        }
+
+        /// <summary>
+        /// Creates a new scene object with a LightProbeVolume component.
+        /// </summary>
+        [MenuItem("Scene Objects/Light probe volume", 8042)]
+        private static void AddLightProbeVolumeSO()
+        {
+            SceneObject so = UndoRedo.CreateSO("LightProbeVolume", "Created a LightProbeVolume");
+            so.AddComponent<LightProbeVolume>();
 
             Selection.SceneObject = so;
             FocusOnHierarchyOrScene();

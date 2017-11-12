@@ -2,6 +2,7 @@ mixin PerObjectData
 {
 	code
 	{
+		[internal]
 		cbuffer PerObject
 		{
 			float4x4 gMatWorld;
@@ -11,6 +12,7 @@ mixin PerObjectData
 			float gWorldDeterminantSign;
 		}	
 
+		[internal]
 		cbuffer PerCall
 		{
 			float4x4 gMatWorldViewProj;

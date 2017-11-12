@@ -255,7 +255,9 @@ namespace bs
 
 	MonoString* ScriptProjectLibrary::internal_GetResourceFolder()
 	{
-		return MonoUtil::wstringToMono(gProjectLibrary().getResourcesFolder().toWString());
+		WString resFolder = gProjectLibrary().getResourcesFolder().toWString();
+
+		return MonoUtil::wstringToMono(resFolder);
 	}
 
 	void ScriptProjectLibrary::internal_SetIncludeInBuild(MonoString* path, bool include)

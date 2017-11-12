@@ -16,7 +16,7 @@ namespace bs
 		:Component(parent), mVolume(volume), mCellCount(cellCount)
 	{
 		setFlag(ComponentFlag::AlwaysRun, true);
-		setName("Light");
+		setName("LightProbeVolume");
 	}
 
 	CLightProbeVolume::~CLightProbeVolume()

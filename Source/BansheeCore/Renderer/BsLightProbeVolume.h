@@ -7,7 +7,7 @@
 #include "Math/BsAABox.h"
 #include "Math/BsVector3.h"
 #include "Math/BsQuaternion.h"
-#include "Math/BsVectorNI.h"
+#include "Math/BsVector3I.h"
 #include "Scene/BsSceneActor.h"
 
 namespace bs
@@ -55,10 +55,12 @@ namespace bs
 	};
 
 	/** Information about a single probe in the light probe volume. */
-	struct LightProbeInfo
+	struct BS_SCRIPT_EXPORT(m:Rendering,pl:true) LightProbeInfo
 	{
 		UINT32 handle;
 		Vector3 position;
+
+		BS_SCRIPT_EXPORT(ex:true)
 		LightProbeSHCoefficients shCoefficients;
 	};
 
@@ -133,7 +135,7 @@ namespace bs
 		 *							corner of the volume is represented by a single probe. Higher values subdivide the
 		 *							volume in an uniform way.
 		 */
-		void resize(const AABox& volume, const Vector3I& cellCount = {1, 1, 1});
+		void resize(const AABox& volume, const Vector3I& cellCount = Vector3I(1, 1, 1));
 
 		/** Removes any probes outside of the current grid volume. */
 		void clip();
@@ -143,6 +145,12 @@ namespace bs
 		 * probes as necessary, essentially losing any custom changes to the probes.
 		 */
 		void reset();
+
+		/** Returns the volume that's used for adding probes in a uniform grid pattern. */
+		const AABox& getGridVolume() const { return mVolume; }
+
+		/** Returns the cell count that's used for determining the density of probes within a grid volume. */
+		const Vector3I& getCellCount() const { return mCellCount; }
 
 		/**	Retrieves an implementation of the object usable only from the core thread. */
 		SPtr<ct::LightProbeVolume> getCore() const;
@@ -155,7 +163,8 @@ namespace bs
 		 *							corner of the volume is represented by a single probe. Higher values subdivide the
 		 *							volume in an uniform way.
 		 */
-		static SPtr<LightProbeVolume> create(const AABox& volume = AABox::UNIT_BOX, const Vector3I& cellCount = {1, 1, 1});
+		static SPtr<LightProbeVolume> create(const AABox& volume = AABox::UNIT_BOX, 
+			const Vector3I& cellCount = Vector3I(1, 1, 1));
 	protected:
 		friend class ct::LightProbeVolume;
 

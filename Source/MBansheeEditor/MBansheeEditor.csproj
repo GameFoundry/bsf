@@ -42,6 +42,7 @@
     <Compile Include="Inspectors\AudioListenerInspector.cs" />
     <Compile Include="Inspectors\AudioSourceInspector.cs" />
     <Compile Include="Inspectors\BoneInspector.cs" />
+    <Compile Include="Inspectors\LightProbeVolumeInspector.cs" />
     <Compile Include="Inspectors\RenderSettingsInspector.cs" />
     <Compile Include="Utility\EdAnimationCurve.cs" />
     <Compile Include="Utility\SerializedSceneObject.cs" />
@@ -96,7 +97,9 @@
     <Compile Include="Windows\Inspector\InspectableRangedInt.cs" />
     <Compile Include="Windows\Inspector\Style\InspectableFieldStyleInfo.cs" />
     <Compile Include="Windows\LogWindow.cs" />
+    <Compile Include="Windows\Scene\Gizmos\LightProbeVolumeGizmo.cs" />
     <Compile Include="Windows\Scene\Gizmos\ReflectionProbeGizmo.cs" />
+    <Compile Include="Windows\Scene\Handles\HandleSliderSphere.cs" />
     <Compile Include="Window\DefaultSize.cs" />
     <Compile Include="Windows\DialogBox.cs" />
     <Compile Include="Utility\DragDrop.cs" />
