@@ -351,6 +351,251 @@ namespace BansheeEditor
     }
 
     /// <summary>
+    /// Draws GUI elements for inspecting an <see cref="DepthOfFieldSettings"/> object.
+    /// </summary>
+    internal class DepthOfFieldSettingsGUI
+    {
+        private DepthOfFieldSettings settings;
+
+        private GUIToggleField enabledField = new GUIToggleField(new LocEdString("Enabled"));
+        private GUIFloatField focalDistanceField = new GUIFloatField(new LocEdString("Focal distance"));
+        private GUIFloatField focalRangeField = new GUIFloatField(new LocEdString("Focal range"));
+        private GUIFloatField nearTransitionRangeField = new GUIFloatField(new LocEdString("Near transition range"));
+        private GUIFloatField farTransitionRangeField = new GUIFloatField(new LocEdString("Far transition range"));
+        private GUIFloatField nearBlurAmount = new GUIFloatField(new LocEdString("Near blur amount"));
+        private GUIFloatField farBlurAmount = new GUIFloatField(new LocEdString("Far blur amount"));
+
+        public Action<DepthOfFieldSettings> OnChanged;
+        public Action OnConfirmed;
+
+        /// <summary>
+        /// Current value of the settings object.
+        /// </summary>
+        public DepthOfFieldSettings Settings
+        {
+            get { return settings; }
+            set
+            {
+                settings = value;
+
+                enabledField.Value = value.Enabled;
+                focalDistanceField.Value = value.FocalDistance;
+                focalRangeField.Value = value.FocalRange;
+                nearTransitionRangeField.Value = value.NearTransitionRange;
+                farTransitionRangeField.Value = value.FarTransitionRange;
+                nearBlurAmount.Value = value.NearBlurAmount;
+                farBlurAmount.Value = value.FarBlurAmount;
+            }
+        }
+
+        /// <summary>
+        /// Constructs a new set of GUI elements for inspecting the depth of field settings object.
+        /// </summary>
+        /// <param name="settings">Initial values to assign to the GUI elements.</param>
+        /// <param name="layout">Layout to append the GUI elements to.</param>
+        public DepthOfFieldSettingsGUI(DepthOfFieldSettings settings, GUILayout layout)
+        {
+            this.settings = settings;
+
+            enabledField.OnChanged += x => { this.settings.Enabled = x; MarkAsModified(); ConfirmModify(); };
+            focalDistanceField.OnChanged += x => { this.settings.FocalDistance = x; MarkAsModified(); ConfirmModify(); };
+            focalRangeField.OnChanged += x => { this.settings.FocalRange = x; MarkAsModified(); ConfirmModify(); };
+            nearTransitionRangeField.OnChanged += x => { this.settings.NearTransitionRange = x; MarkAsModified(); ConfirmModify(); };
+            farTransitionRangeField.OnChanged += x => { this.settings.FarTransitionRange = x; MarkAsModified(); ConfirmModify(); };
+            nearBlurAmount.OnChanged += x => { this.settings.NearBlurAmount = x; MarkAsModified(); ConfirmModify(); };
+            farBlurAmount.OnChanged += x => { this.settings.FarBlurAmount = x; MarkAsModified(); ConfirmModify(); };
+
+            layout.AddElement(enabledField);
+            layout.AddElement(focalDistanceField);
+            layout.AddElement(focalRangeField);
+            layout.AddElement(nearTransitionRangeField);
+            layout.AddElement(farTransitionRangeField);
+            layout.AddElement(nearBlurAmount);
+            layout.AddElement(farBlurAmount);
+        }
+
+        /// <summary>
+        /// Marks the contents of the inspector as modified.
+        /// </summary>
+        private void MarkAsModified()
+        {
+            if (OnChanged != null)
+                OnChanged(settings);
+        }
+
+        /// <summary>
+        /// Confirms any queued modifications.
+        /// </summary>
+        private void ConfirmModify()
+        {
+            if (OnConfirmed != null)
+                OnConfirmed();
+        }
+    }
+
+    /// <summary>
+    /// Draws GUI elements for inspecting an <see cref="AmbientOcclusionSettings"/> object.
+    /// </summary>
+    internal class AmbientOcclusionSettingsGUI
+    {
+        private AmbientOcclusionSettings settings;
+
+        private GUIToggleField enabledField = new GUIToggleField(new LocEdString("Enabled"));
+        private GUISliderField radiusField = new GUISliderField(0.01f, 10.0f, new LocEdString("Radius"));
+        private GUISliderField biasField = new GUISliderField(0, 500, new LocEdString("Bias"));
+        private GUIFloatField fadeDistanceField = new GUIFloatField(new LocEdString("Fade distance"));
+        private GUIFloatField fadeRangeField = new GUIFloatField(new LocEdString("Fade range"));
+        private GUISliderField intensityField = new GUISliderField(0.1f, 3.0f, new LocEdString("Intensity"));
+        private GUISliderField powerField = new GUISliderField(1, 5, new LocEdString("Power"));
+        private GUISliderField qualityField = new GUISliderField(0, 4, new LocEdString("Quality"));
+
+        public Action<AmbientOcclusionSettings> OnChanged;
+        public Action OnConfirmed;
+
+        /// <summary>
+        /// Current value of the settings object.
+        /// </summary>
+        public AmbientOcclusionSettings Settings
+        {
+            get { return settings; }
+            set
+            {
+                settings = value;
+
+                enabledField.Value = value.Enabled;
+                radiusField.Value = value.Radius;
+                biasField.Value = value.Bias;
+                fadeDistanceField.Value = value.FadeDistance;
+                fadeRangeField.Value = value.FadeRange;
+                intensityField.Value = value.Intensity;
+                powerField.Value = value.Power;
+                qualityField.Value = value.Quality;
+            }
+        }
+
+        /// <summary>
+        /// Constructs a new set of GUI elements for inspecting the ambient occlusion settings object.
+        /// </summary>
+        /// <param name="settings">Initial values to assign to the GUI elements.</param>
+        /// <param name="layout">Layout to append the GUI elements to.</param>
+        public AmbientOcclusionSettingsGUI(AmbientOcclusionSettings settings, GUILayout layout)
+        {
+            this.settings = settings;
+
+            enabledField.OnChanged += x => { this.settings.Enabled = x; MarkAsModified(); ConfirmModify(); };
+            radiusField.OnChanged += x => { this.settings.Radius = x; MarkAsModified(); ConfirmModify(); };
+            biasField.OnChanged += x => { this.settings.Bias = x; MarkAsModified(); ConfirmModify(); };
+            fadeDistanceField.OnChanged += x => { this.settings.FadeDistance = x; MarkAsModified(); ConfirmModify(); };
+            fadeRangeField.OnChanged += x => { this.settings.FadeRange = x; MarkAsModified(); ConfirmModify(); };
+            intensityField.OnChanged += x => { this.settings.Intensity = x; MarkAsModified(); ConfirmModify(); };
+            powerField.OnChanged += x => { this.settings.Power = x; MarkAsModified(); ConfirmModify(); };
+            qualityField.OnChanged += x => { this.settings.Quality = (uint)x; MarkAsModified(); ConfirmModify(); };
+
+            qualityField.Step = 1.0f;
+
+            layout.AddElement(enabledField);
+            layout.AddElement(radiusField);
+            layout.AddElement(biasField);
+            layout.AddElement(fadeDistanceField);
+            layout.AddElement(fadeRangeField);
+            layout.AddElement(intensityField);
+            layout.AddElement(powerField);
+            layout.AddElement(qualityField);
+        }
+
+        /// <summary>
+        /// Marks the contents of the inspector as modified.
+        /// </summary>
+        private void MarkAsModified()
+        {
+            if (OnChanged != null)
+                OnChanged(settings);
+        }
+
+        /// <summary>
+        /// Confirms any queued modifications.
+        /// </summary>
+        private void ConfirmModify()
+        {
+            if (OnConfirmed != null)
+                OnConfirmed();
+        }
+    }
+
+    /// <summary>
+    /// Draws GUI elements for inspecting an <see cref="ScreenSpaceReflectionsSettings"/> object.
+    /// </summary>
+    internal class ScreenSpaceReflectionsSettingsGUI
+    {
+        private ScreenSpaceReflectionsSettings settings;
+
+        private GUIToggleField enabledField = new GUIToggleField(new LocEdString("Enabled"));
+        private GUISliderField qualityField = new GUISliderField(0, 4, new LocEdString("Quality"));
+        private GUISliderField intensityField = new GUISliderField(0.0f, 1.0f, new LocEdString("Intensity"));
+        private GUISliderField maxRoughnessField = new GUISliderField(0.0f, 1.0f, new LocEdString("Max. roughness"));
+
+        public Action<ScreenSpaceReflectionsSettings> OnChanged;
+        public Action OnConfirmed;
+
+        /// <summary>
+        /// Current value of the settings object.
+        /// </summary>
+        public ScreenSpaceReflectionsSettings Settings
+        {
+            get { return settings; }
+            set
+            {
+                settings = value;
+
+                enabledField.Value = value.Enabled;
+                qualityField.Value = value.Quality;
+                intensityField.Value = value.Intensity;
+                maxRoughnessField.Value = value.MaxRoughness;
+            }
+        }
+
+        /// <summary>
+        /// Constructs a new set of GUI elements for inspecting the screen space reflections settings object.
+        /// </summary>
+        /// <param name="settings">Initial values to assign to the GUI elements.</param>
+        /// <param name="layout">Layout to append the GUI elements to.</param>
+        public ScreenSpaceReflectionsSettingsGUI(ScreenSpaceReflectionsSettings settings, GUILayout layout)
+        {
+            this.settings = settings;
+
+            enabledField.OnChanged += x => { this.settings.Enabled = x; MarkAsModified(); ConfirmModify(); };
+            qualityField.OnChanged += x => { this.settings.Quality = (uint)x; MarkAsModified(); ConfirmModify(); };
+            intensityField.OnChanged += x => { this.settings.Intensity = x; MarkAsModified(); ConfirmModify(); };
+            maxRoughnessField.OnChanged += x => { this.settings.MaxRoughness = x; MarkAsModified(); ConfirmModify(); };
+
+            qualityField.Step = 1.0f;
+
+            layout.AddElement(enabledField);
+            layout.AddElement(qualityField);
+            layout.AddElement(intensityField);
+            layout.AddElement(maxRoughnessField);
+        }
+
+        /// <summary>
+        /// Marks the contents of the inspector as modified.
+        /// </summary>
+        private void MarkAsModified()
+        {
+            if (OnChanged != null)
+                OnChanged(settings);
+        }
+
+        /// <summary>
+        /// Confirms any queued modifications.
+        /// </summary>
+        private void ConfirmModify()
+        {
+            if (OnConfirmed != null)
+                OnConfirmed();
+        }
+    }
+
+    /// <summary>
     /// Draws GUI elements for inspecting an <see cref="RenderSettings"/> object.
     /// </summary>
     internal class RenderSettingsGUI
@@ -361,7 +606,9 @@ namespace BansheeEditor
         private GUIToggleField enableHDRField = new GUIToggleField(new LocEdString("Enable HDR"));
         private GUIToggleField enableLightingField = new GUIToggleField(new LocEdString("Enable lighting"));
         private GUIToggleField enableShadowsField = new GUIToggleField(new LocEdString("Enable shadows"));
+        private GUIToggleField enableIndirectLightingField = new GUIToggleField(new LocEdString("Enable indirect lighting"));
         private GUIToggleField overlayOnlyField = new GUIToggleField(new LocEdString("Overlay only"));
+        private GUIToggleField enableFXAAField = new GUIToggleField(new LocEdString("Enable FXAA"));
 
         private GUIToggleField enableAutoExposureField = new GUIToggleField(new LocEdString("Enable auto exposure"));
         private GUIToggle autoExposureFoldout = new GUIToggle(new LocEdString("Auto exposure"), EditorStyles.Foldout);
@@ -375,6 +622,13 @@ namespace BansheeEditor
         private GUIToggle colorGradingFoldout = new GUIToggle(new LocEdString("Color grading"), EditorStyles.Foldout);
         private ColorGradingSettingsGUI colorGradingGUI;
 
+        private GUIToggle depthOfFieldFoldout = new GUIToggle("Depth of field", EditorStyles.Foldout);
+        private DepthOfFieldSettingsGUI depthOfFieldGUI;
+        private GUIToggle ambientOcclusionFoldout = new GUIToggle("Ambient occlusion", EditorStyles.Foldout);
+        private AmbientOcclusionSettingsGUI ambientOcclusionGUI;
+        private GUIToggle screenSpaceReflectionsFoldout = new GUIToggle("Screen space reflections", EditorStyles.Foldout);
+        private ScreenSpaceReflectionsSettingsGUI screenSpaceReflectionsGUI;
+
         private GUISliderField gammaField = new GUISliderField(1.0f, 3.0f, new LocEdString("Gamma"));
         private GUISliderField exposureScaleField = new GUISliderField(-8.0f, 8.0f, new LocEdString("Exposure scale"));
 
@@ -382,6 +636,9 @@ namespace BansheeEditor
         private GUILayout toneMappingLayout;
         private GUILayout whiteBalanceLayout;
         private GUILayout colorGradingLayout;
+        private GUILayout depthOfFieldLayout;
+        private GUILayout ambientOcclusionLayout;
+        private GUILayout screenSpaceReflectionsLayout;
 
         public Action<RenderSettings> OnChanged;
         public Action OnConfirmed;
@@ -402,12 +659,17 @@ namespace BansheeEditor
                 toneMappingGUI.Settings = value.Tonemapping;
                 whiteBalanceGUI.Settings = value.WhiteBalance;
                 colorGradingGUI.Settings = value.ColorGrading;
+                depthOfFieldGUI.Settings = value.DepthOfField;
+                ambientOcclusionGUI.Settings = value.AmbientOcclusion;
+                screenSpaceReflectionsGUI.Settings = value.ScreenSpaceReflections;
                 gammaField.Value = value.Gamma;
                 exposureScaleField.Value = value.ExposureScale;
                 enableHDRField.Value = value.EnableHDR;
                 enableLightingField.Value = value.EnableLighting;
+                enableIndirectLightingField.Value = value.EnableIndirectLighting;
                 enableShadowsField.Value = value.EnableShadows;
                 overlayOnlyField.Value = value.OverlayOnly;
+                enableFXAAField.Value = value.EnableFXAA;
             }
         }
 
@@ -434,6 +696,10 @@ namespace BansheeEditor
             // Enable shadows
             enableShadowsField.OnChanged += x => { this.settings.EnableShadows = x; MarkAsModified(); ConfirmModify(); };
             layout.AddElement(enableShadowsField);
+
+            // Enable indirect lighting
+            enableIndirectLightingField.OnChanged += x => { this.settings.EnableIndirectLighting = x; MarkAsModified(); ConfirmModify(); };
+            layout.AddElement(enableIndirectLightingField);
 
             // Overlay only
             overlayOnlyField.OnChanged += x => { this.settings.OverlayOnly = x; MarkAsModified(); ConfirmModify(); };
@@ -526,6 +792,64 @@ namespace BansheeEditor
             exposureScaleField.OnChanged += x => { this.settings.ExposureScale = x; MarkAsModified(); ConfirmModify(); };
             layout.AddElement(exposureScaleField);
 
+            //// Depth of field settings
+            depthOfFieldFoldout.OnToggled += x =>
+            {
+                properties.SetBool("depthOfField_Expanded", x);
+                ToggleFoldoutFields();
+            };
+            layout.AddElement(depthOfFieldFoldout);
+
+            depthOfFieldLayout = layout.AddLayoutX();
+            {
+                depthOfFieldLayout.AddSpace(10);
+
+                GUILayoutY contentsLayout = depthOfFieldLayout.AddLayoutY();
+                depthOfFieldGUI = new DepthOfFieldSettingsGUI(settings.DepthOfField, contentsLayout);
+                depthOfFieldGUI.OnChanged += x => { this.settings.DepthOfField = x; MarkAsModified(); };
+                depthOfFieldGUI.OnConfirmed += ConfirmModify;
+            }
+
+            //// Ambient occlusion settings
+            ambientOcclusionFoldout.OnToggled += x =>
+            {
+                properties.SetBool("ambientOcclusion_Expanded", x);
+                ToggleFoldoutFields();
+            };
+            layout.AddElement(ambientOcclusionFoldout);
+
+            ambientOcclusionLayout = layout.AddLayoutX();
+            {
+                ambientOcclusionLayout.AddSpace(10);
+
+                GUILayoutY contentsLayout = ambientOcclusionLayout.AddLayoutY();
+                ambientOcclusionGUI = new AmbientOcclusionSettingsGUI(settings.AmbientOcclusion, contentsLayout);
+                ambientOcclusionGUI.OnChanged += x => { this.settings.AmbientOcclusion = x; MarkAsModified(); };
+                ambientOcclusionGUI.OnConfirmed += ConfirmModify;
+            }
+
+            //// Screen space reflections settings
+            screenSpaceReflectionsFoldout.OnToggled += x =>
+            {
+                properties.SetBool("screenSpaceReflections_Expanded", x);
+                ToggleFoldoutFields();
+            };
+            layout.AddElement(screenSpaceReflectionsFoldout);
+
+            screenSpaceReflectionsLayout = layout.AddLayoutX();
+            {
+                screenSpaceReflectionsLayout.AddSpace(10);
+
+                GUILayoutY contentsLayout = screenSpaceReflectionsLayout.AddLayoutY();
+                screenSpaceReflectionsGUI = new ScreenSpaceReflectionsSettingsGUI(settings.ScreenSpaceReflections, contentsLayout);
+                screenSpaceReflectionsGUI.OnChanged += x => { this.settings.ScreenSpaceReflections = x; MarkAsModified(); };
+                screenSpaceReflectionsGUI.OnConfirmed += ConfirmModify;
+            }
+
+            // FXAA
+            enableFXAAField.OnChanged += x => { this.settings.EnableFXAA = x; MarkAsModified(); ConfirmModify(); };
+            layout.AddElement(enableFXAAField);
+
             ToggleFoldoutFields();
         }
 
@@ -556,6 +880,9 @@ namespace BansheeEditor
             toneMappingLayout.Active = properties.GetBool("toneMapping_Expanded");
             whiteBalanceLayout.Active = properties.GetBool("whiteBalance_Expanded");
             colorGradingLayout.Active = properties.GetBool("colorGrading_Expanded");
+            depthOfFieldLayout.Active = properties.GetBool("depthOfField_Expanded");
+            ambientOcclusionLayout.Active = properties.GetBool("ambientOcclusion_Expanded");
+            screenSpaceReflectionsLayout.Active = properties.GetBool("screenSpaceReflections_Expanded");
         }
     }
 
