@@ -58,7 +58,7 @@ namespace bs
 
 		SPtr<IReflectable> newRTTIObject() override
 		{
-			return Skybox::create();
+			return Skybox::createEmpty();
 		}
 	};
 

@@ -208,7 +208,7 @@ namespace bs
 		/** @copydoc IResourceListener::notifyResourceChanged */
 		void notifyResourceChanged(const HResource& resource) override;
 
-		/**	Creates a new renderable handler instance without initializing it. */
+		/**	Creates a new renderable instance without initializing it. */
 		static SPtr<Renderable> createEmpty();
 
 		SPtr<Animation> mAnimation;

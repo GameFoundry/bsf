@@ -33,6 +33,13 @@ namespace bs
 			mInternal->initialize();
 		else
 			mInternal = Skybox::create();
+
+		gSceneManager()._bindActor(mInternal, sceneObject());
+	}
+
+	void CSkybox::onDestroyed()
+	{
+		gSceneManager()._unbindActor(mInternal);
 	}
 
 	RTTITypeBase* CSkybox::getRTTIStatic()

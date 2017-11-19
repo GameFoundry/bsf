@@ -60,6 +60,9 @@ namespace bs
 		/** @copydoc Component::onInitialized */
 		void onInitialized() override;
 
+		/** @copydoc Component::onDestroyed */
+		void onDestroyed() override;
+
 		/** @copydoc Component::update */
 		void update() override { }
 

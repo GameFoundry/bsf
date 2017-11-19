@@ -25,7 +25,7 @@ namespace bs
 	ScriptOSDropTarget::OnDropThunkDef ScriptOSDropTarget::onDropThunk;
 
 	ScriptOSDropTarget::ScriptOSDropTarget(MonoObject* instance, ScriptEditorWindow* parent)
-		:ScriptObject(instance)
+		:ScriptObject(instance), mParent(parent)
 	{
 		mGCHandle = MonoUtil::newWeakGCHandle(instance);
 

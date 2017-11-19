@@ -12,16 +12,8 @@
 namespace bs
 {
 	SkyboxBase::SkyboxBase()
-		: mIsActive(true), mBrightness(1.0f)
+		: mBrightness(1.0f)
 	{ }
-
-	template <bool Core>
-	TSkybox<Core>::TSkybox()
-		: SkyboxBase()
-	{ }
-
-	template class TSkybox<true>;
-	template class TSkybox<false>;
 
 	Skybox::Skybox()
 	{
@@ -100,16 +92,36 @@ namespace bs
 		ct::gRenderer()->addTask(mRendererTask);
 	}
 
+	void Skybox::setTexture(const HTexture& texture)
+	{
+		mTexture = texture; 
+
+		mFilteredRadiance = nullptr;
+		mIrradiance = nullptr;
+
+		if(mTexture.isLoaded())
+			filterTexture();
+
+		_markCoreDirty((ActorDirtyFlag)SkyboxDirtyFlag::Texture);
+	}
+
 	SPtr<ct::Skybox> Skybox::getCore() const
 	{
 		return std::static_pointer_cast<ct::Skybox>(mCoreSpecific);
 	}
 
-	SPtr<Skybox> Skybox::create()
+	SPtr<Skybox> Skybox::createEmpty()
 	{
 		Skybox* skybox = new (bs_alloc<Skybox>()) Skybox();
 		SPtr<Skybox> skyboxPtr = bs_core_ptr<Skybox>(skybox);
 		skyboxPtr->_setThisPtr(skyboxPtr);
+
+		return skyboxPtr;
+	}
+
+	SPtr<Skybox> Skybox::create()
+	{
+		SPtr<Skybox> skyboxPtr = createEmpty();
 		skyboxPtr->initialize();
 
 		return skyboxPtr;
@@ -117,6 +129,10 @@ namespace bs
 
 	SPtr<ct::CoreObject> Skybox::createCore() const
 	{
+		SPtr<ct::Texture> radiance;
+		if (mTexture)
+			radiance = mTexture->getCore();
+
 		SPtr<ct::Texture> filteredRadiance;
 		if (mFilteredRadiance)
 			filteredRadiance = mFilteredRadiance->getCore();
@@ -125,7 +141,7 @@ namespace bs
 		if (mIrradiance)
 			irradiance = mIrradiance->getCore();
 
-		ct::Skybox* skybox = new (bs_alloc<ct::Skybox>()) ct::Skybox(filteredRadiance, irradiance);
+		ct::Skybox* skybox = new (bs_alloc<ct::Skybox>()) ct::Skybox(radiance, filteredRadiance, irradiance);
 		SPtr<ct::Skybox> skyboxPtr = bs_shared_ptr<ct::Skybox>(skybox);
 		skyboxPtr->_setThisPtr(skyboxPtr);
 
@@ -135,7 +151,7 @@ namespace bs
 	CoreSyncData Skybox::syncToCore(FrameAlloc* allocator)
 	{
 		UINT32 size = 0;
-		size += rttiGetElemSize(mIsActive);
+		size += getActorSyncDataSize();
 		size += rttiGetElemSize(mBrightness);
 		size += sizeof(SPtr<ct::Texture>);
 		size += rttiGetElemSize(getCoreDirtyFlags());
@@ -143,7 +159,7 @@ namespace bs
 		UINT8* buffer = allocator->alloc(size);
 
 		char* dataPtr = (char*)buffer;
-		dataPtr = rttiWriteElem(mIsActive, dataPtr);
+		dataPtr = syncActorTo(dataPtr);
 		dataPtr = rttiWriteElem(mBrightness, dataPtr);
 		dataPtr = rttiWriteElem(getCoreDirtyFlags(), dataPtr);
 
@@ -158,11 +174,8 @@ namespace bs
 		return CoreSyncData(buffer, size);
 	}
 
-	void Skybox::_markCoreDirty(SkyboxDirtyFlag flags)
+	void Skybox::_markCoreDirty(ActorDirtyFlag flags)
 	{
-		if(flags == SkyboxDirtyFlag::Texture)
-			filterTexture();
-
 		markCoreDirty((UINT32)flags);
 	}
 
@@ -178,9 +191,11 @@ namespace bs
 
 	namespace ct
 	{
-		Skybox::Skybox(const SPtr<Texture>& filteredRadiance, const SPtr<Texture>& irradiance)
+		Skybox::Skybox(const SPtr<Texture>& radiance, const SPtr<Texture>& filteredRadiance, const SPtr<Texture>& irradiance)
 			:mFilteredRadiance(filteredRadiance), mIrradiance(irradiance)
-		{ }
+		{
+			mTexture = radiance;
+		}
 
 		Skybox::~Skybox()
 		{
@@ -199,9 +214,9 @@ namespace bs
 			char* dataPtr = (char*)data.getBuffer();
 
 			SkyboxDirtyFlag dirtyFlags;
-			bool oldIsActive = mIsActive;
+			bool oldIsActive = mActive;
 
-			dataPtr = rttiReadElem(mIsActive, dataPtr);
+			dataPtr = syncActorFrom(dataPtr);
 			dataPtr = rttiReadElem(mBrightness, dataPtr);
 			dataPtr = rttiReadElem(dirtyFlags, dataPtr);
 
@@ -211,9 +226,9 @@ namespace bs
 			texture->~SPtr<Texture>();
 			dataPtr += sizeof(SPtr<Texture>);
 
-			if (oldIsActive != mIsActive)
+			if (oldIsActive != mActive)
 			{
-				if (mIsActive)
+				if (mActive)
 					gRenderer()->notifySkyboxAdded(this);
 				else
 					gRenderer()->notifySkyboxRemoved(this);

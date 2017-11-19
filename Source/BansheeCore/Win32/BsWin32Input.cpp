@@ -41,26 +41,30 @@ namespace bs
 		HRESULT hr = CoInitialize(nullptr);
 		bool cleanupCOM = SUCCEEDED(hr);
 
+		BSTR classNameSpace = SysAllocString(L"\\\\.\\root\\cimv2");
+		BSTR className = SysAllocString(L"Win32_PNPEntity");
+		BSTR deviceID = SysAllocString(L"DeviceID");
+
+		IWbemServices* IWbemServices = nullptr;
+		IEnumWbemClassObject* enumDevices = nullptr;
+		IWbemClassObject* devices[20] = { 0 };
+
 		// Create WMI
 		IWbemLocator* IWbemLocator = nullptr;
 		hr = CoCreateInstance(__uuidof(WbemLocator), nullptr, CLSCTX_INPROC_SERVER, __uuidof(IWbemLocator), (LPVOID*)&IWbemLocator);
 		if (FAILED(hr) || IWbemLocator == nullptr)
 			goto cleanup;
 
-		BSTR classNameSpace = SysAllocString(L"\\\\.\\root\\cimv2");
 		if (classNameSpace == nullptr)
 			goto cleanup;
 
-		BSTR className = SysAllocString(L"Win32_PNPEntity");
 		if (className == nullptr)
 			goto cleanup;
 
-		BSTR deviceID = SysAllocString(L"DeviceID");
 		if (deviceID == nullptr)
 			goto cleanup;
 
 		// Connect to WMI
-		IWbemServices* IWbemServices = nullptr;
 		hr = IWbemLocator->ConnectServer(classNameSpace, nullptr, nullptr, 0L, 0L, nullptr, nullptr, &IWbemServices);
 		if (FAILED(hr) || IWbemServices == nullptr)
 			goto cleanup;
@@ -68,13 +72,11 @@ namespace bs
 		// Switch security level to IMPERSONATE
 		CoSetProxyBlanket(IWbemServices, RPC_C_AUTHN_WINNT, RPC_C_AUTHZ_NONE, nullptr, RPC_C_AUTHN_LEVEL_CALL, RPC_C_IMP_LEVEL_IMPERSONATE, nullptr, EOAC_NONE);
 
-		IEnumWbemClassObject* enumDevices = nullptr;
 		hr = IWbemServices->CreateInstanceEnum(className, 0, nullptr, &enumDevices);
 		if (FAILED(hr) || enumDevices == nullptr)
 			goto cleanup;
 
 		// Loop over all devices
-		IWbemClassObject* devices[20] = { 0 };
 		for (;; )
 		{
 			DWORD numDevices = 0;
