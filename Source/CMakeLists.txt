@@ -5,7 +5,7 @@ project (Banshee)
 set (BS_VERSION_MAJOR 0)
 set (BS_VERSION_MINOR 4)
 
-set (BS_PREBUILT_DEPENDENCIES_VERSION 14)
+set (BS_PREBUILT_DEPENDENCIES_VERSION 15)
 set (BS_SRC_DEPENDENCIES_VERSION 15)
 set (BS_BUILTIN_ASSETS_VERSION 3)
 
@@ -164,8 +164,7 @@ if(MSVC)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	# Note: Optionally add -ffunction-sections, -fdata-sections, but with linker option --gc-sections
 	# TODO: Use link-time optimization -flto. Might require non-default linker.
-	set(BS_COMPILER_FLAGS_COMMON "-Wall -fPIC -fno-exceptions -fno-strict-aliasing -fno-rtti -fno-ms-compatibility
-	-fms-extensions -Wl,-rpath=$ORIGIN")
+	set(BS_COMPILER_FLAGS_COMMON "-Wall -fPIC -fno-exceptions -fno-strict-aliasing -fno-rtti -fno-ms-compatibility -fms-extensions -Wl,-rpath=$ORIGIN")
 	
 	set(CMAKE_CXX_FLAGS_DEBUG "${BS_COMPILER_FLAGS_COMMON} -g -O0 -DDEBUG")
 	set(CMAKE_CXX_FLAGS_OPTIMIZEDDEBUG "${BS_COMPILER_FLAGS_COMMON} -gline-tables-only -O2")
