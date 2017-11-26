@@ -43,8 +43,8 @@ namespace bs
 	/** Flags that signal in what way did the Material change. */
 	enum class MaterialDirtyFlags
 	{
-		Normal,
-		ResourceChanged
+		Normal				= 1 << 0,
+		ResourceChanged		= 2 << 1
 	};
 
 	/**
