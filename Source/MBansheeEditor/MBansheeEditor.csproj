@@ -43,6 +43,7 @@
     <Compile Include="Inspectors\AudioSourceInspector.cs" />
     <Compile Include="Inspectors\BoneInspector.cs" />
     <Compile Include="Inspectors\LightProbeVolumeInspector.cs" />
+    <Compile Include="Inspectors\ReflectionProbeInspector.cs" />
     <Compile Include="Inspectors\RenderSettingsInspector.cs" />
     <Compile Include="Utility\EdAnimationCurve.cs" />
     <Compile Include="Utility\SerializedSceneObject.cs" />
