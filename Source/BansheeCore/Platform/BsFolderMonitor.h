@@ -27,10 +27,11 @@ namespace bs
 	 */
 	class BS_CORE_EXPORT FolderMonitor
 	{
-		struct Pimpl;
 		class FileNotifyInfo;
-		struct FolderWatchInfo;
 	public:
+		struct Pimpl;
+		struct FolderWatchInfo;
+
 		FolderMonitor();
 		~FolderMonitor();
 
@@ -51,7 +52,7 @@ namespace bs
 		/**	Stops monitoring all folders that are currently being monitored. */
 		void stopMonitorAll();
 
-		/** Callbacks will only get fired after update is called. */
+		/** Triggers callbacks depending on events that ocurred. Expected to be called once per frame. */
 		void _update();
 
 		/** Triggers when a file in the monitored folder is modified. Provides absolute path to the file. */
@@ -66,6 +67,15 @@ namespace bs
 		/**	Triggers when a file/folder is renamed in the monitored folder. Provides absolute path with old and new names. */
 		Event<void(const Path&, const Path&)> onRenamed;
 
+		/**
+		 * @name Internal
+		 * @{
+		 */
+
+		/** Returns private data, for use by internal helper classes and methods. */
+		Pimpl* _getPrivateData() const { return m; }
+
+		/** @} */
 	private:
 		/**	Worker method that monitors the IO ports for any modification notifications. */
 		void workerThreadMain();

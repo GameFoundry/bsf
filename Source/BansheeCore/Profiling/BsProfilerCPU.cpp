@@ -14,7 +14,11 @@
 #endif
 
 #if BS_COMPILER == BS_COMPILER_CLANG
-	#include "intrin.h"
+	#if BS_PLATFORM == BS_PLATFORM_WIN32
+		#include "intrin.h"
+	#else
+		#include <x86intrin.h>
+	#endif
 #endif
 
 using namespace std::chrono;
@@ -72,7 +76,7 @@ namespace bs
 
 	inline UINT64 ProfilerCPU::TimerPrecise::getNumCycles() 
 	{
-#if BS_COMPILER == BS_COMPILER_GNUC
+#if BS_COMPILER == BS_COMPILER_GNUC || BS_COMPILER == BS_COMPILER_CLANG
 		unsigned int a = 0;
 		unsigned int b[4];
 		__get_cpuid(a, &b[0], &b[1], &b[2], &b[3]);
@@ -86,11 +90,6 @@ namespace bs
 		__asm__ volatile (".byte 0x0f, 0x31" : "=A" (x));
 		return x;
 #endif
-#elif BS_COMPILER == BS_COMPILER_CLANG
-		UINT32 a = 0;
-		UINT32 b[4];
-		__get_cpuid(a, &b[0], &b[1], &b[2], &b[3]);
-		return __rdtsc();
 #elif BS_COMPILER == BS_COMPILER_MSVC
 		int a[4];
 		int b = 0;

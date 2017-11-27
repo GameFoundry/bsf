@@ -137,9 +137,6 @@ namespace bs
 		static bool compare(String const& a, char* b) { return a.compare(b) == 0; }
 	};
 
-	template class StringID::StringIDUtil <const char*>;
-	template class StringID::StringIDUtil <String>;
-
 	template BS_UTILITY_EXPORT void StringID::construct(const char* const&);
 	template BS_UTILITY_EXPORT void StringID::construct(String const&);
 	

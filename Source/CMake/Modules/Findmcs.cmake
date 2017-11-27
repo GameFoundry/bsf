@@ -6,8 +6,13 @@
 #  mcs_FOUND
 
 message(STATUS "Looking for Mono compiler (mcs) and xbuild installation...")
-find_program(mcs_EXECUTABLE NAMES mcs)
-find_program(xbuild_EXECUTABLE NAMES xbuild)
+
+if(APPLE)
+	set(MONO_SEARCH_PATH /Library/Frameworks/Mono.framework/Versions/Current/Commands/)
+endif()
+
+find_program(mcs_EXECUTABLE NAMES mcs HINTS ${MONO_SEARCH_PATH})
+find_program(xbuild_EXECUTABLE NAMES xbuild HINTS ${MONO_SEARCH_PATH})
 
 if(mcs_EXECUTABLE AND xbuild_EXECUTABLE)
 	set(mcs_FOUND TRUE)

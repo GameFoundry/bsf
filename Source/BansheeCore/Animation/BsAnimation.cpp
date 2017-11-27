@@ -1003,7 +1003,8 @@ namespace bs
 			}
 
 			mClipInfos.resize(newClips.size());
-			memcpy(mClipInfos.data(), newClips.data(), sizeof(AnimationClipInfo) * newClips.size());
+			for(UINT32 i = 0; i < (UINT32)newClips.size(); i++)
+				mClipInfos[i] = newClips[i];
 		}
 		bs_frame_clear();
 	}
@@ -1047,7 +1048,8 @@ namespace bs
 					newClips.push_back(AnimationClipInfo());
 
 				mClipInfos.resize(newClips.size());
-				memcpy(mClipInfos.data(), newClips.data(), sizeof(AnimationClipInfo) * newClips.size());
+				for(UINT32 i = 0; i < (UINT32)newClips.size(); i++)
+					mClipInfos[i] = newClips[i];
 
 				mDirty |= AnimDirtyStateFlag::Layout;
 			}

@@ -445,7 +445,7 @@ namespace bs
 						}
 						else
 						{
-							*destNrm = { 127, 127, 127, 0 };
+							*destNrm = {{ 127, 127, 127, 0 }};
 						}
 					}
 

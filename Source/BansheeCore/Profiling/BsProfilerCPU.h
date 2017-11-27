@@ -151,7 +151,7 @@ namespace bs
 			 */
 			void resumeLastSample();
 
-			Vector<PreciseProfileSample, StdFrameAlloc<ProfileSample>> samples;
+			Vector<PreciseProfileSample, StdFrameAlloc<PreciseProfileSample>> samples;
 			TimerPrecise timer;
 
 			UINT64 memAllocs;

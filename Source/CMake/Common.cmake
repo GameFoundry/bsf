@@ -153,6 +153,16 @@ MACRO(end_find_package FOLDER_NAME MAIN_LIB_NAME)
 	set(${FOLDER_NAME}_INCLUDE_DIRS ${${FOLDER_NAME}_INCLUDE_DIR})
 ENDMACRO()
 
+function(target_link_framework TARGET FRAMEWORK)
+	find_library(FM_${FRAMEWORK} ${FRAMEWORK})
+
+	if(NOT FM_${FRAMEWORK})
+		message(FATAL_ERROR "Cannot find ${FRAMEWORK} framework.")
+	endif()
+
+	target_link_libraries(${TARGET} PRIVATE ${FM_${FRAMEWORK}})
+endfunction()
+
 function(update_binary_deps DEP_VERSION)
 	# Clean and create a temporary folder
 	execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_SOURCE_DIR}/../Temp)	

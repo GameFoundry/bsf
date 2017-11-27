@@ -21,19 +21,6 @@ set(BS_BANSHEEUTILITY_INC_PREREQUISITES
 	"Prerequisites/BsRTTIPrerequisites.h"
 )
 
-set(BS_BANSHEEUTILITY_SRC_WIN32
-	"Win32/BsWin32FileSystem.cpp"
-	"Win32/BsWin32CrashHandler.cpp"
-	"Win32/BsWin32PlatformUtility.cpp"
-	"Win32/BsWin32Window.cpp"
-)
-
-set(BS_BANSHEEUTILITY_SRC_UNIX
-	"Linux/BsUnixCrashHandler.cpp"
-	"Linux/BsUnixFileSystem.cpp"
-	"Linux/BsUnixPlatformUtility.cpp"
-)
-
 set(BS_BANSHEEUTILITY_INC_IMAGE
 	"Image/BsColor.h"
 	"Image/BsTextureAtlasLayout.h"
@@ -266,6 +253,27 @@ set(BS_BANSHEEUTILITY_INC_WIN32
 	"Win32/BsWin32Window.h"
 )
 
+set(BS_BANSHEEUTILITY_SRC_WIN32
+	"Win32/BsWin32FileSystem.cpp"
+	"Win32/BsWin32CrashHandler.cpp"
+	"Win32/BsWin32PlatformUtility.cpp"
+	"Win32/BsWin32Window.cpp"
+)
+
+set(BS_BANSHEEUTILITY_SRC_UNIX
+	"Unix/BsUnixFileSystem.cpp"
+)
+
+set(BS_BANSHEEUTILITY_SRC_LINUX
+	"Linux/BsUnixCrashHandler.cpp"
+	"Linux/BsUnixPlatformUtility.cpp"
+)
+
+set(BS_BANSHEEUTILITY_SRC_MACOS
+	"MacOS/BsMacOSCrashHandler.cpp"
+	"MacOS/BsMacOSPlatformUtility.cpp"
+)
+
 source_group("Header Files\\Threading" FILES ${BS_BANSHEEUTILITY_INC_THREADING})
 source_group("Source Files\\ThirdParty" FILES ${BS_BANSHEEUTILITY_SRC_THIRDPARTY})
 source_group("Header Files\\Prerequisites" FILES ${BS_BANSHEEUTILITY_INC_PREREQUISITES})
@@ -331,6 +339,14 @@ set(BS_BANSHEEUTILITY_SRC
 if(WIN32)
 	list(APPEND BS_BANSHEEUTILITY_SRC ${BS_BANSHEEUTILITY_SRC_WIN32})
 	list(APPEND BS_BANSHEEUTILITY_SRC ${BS_BANSHEEUTILITY_INC_WIN32})
-elseif(LINUX)
+endif()
+
+if(UNIX)
 	list(APPEND BS_BANSHEEUTILITY_SRC ${BS_BANSHEEUTILITY_SRC_UNIX})
+
+	if(LINUX)
+		list(APPEND BS_BANSHEEUTILITY_SRC ${BS_BANSHEEUTILITY_SRC_LINUX})
+	elseif(APPLE)
+		list(APPEND BS_BANSHEEUTILITY_SRC ${BS_BANSHEEUTILITY_SRC_MACOS})
+	endif()
 endif()

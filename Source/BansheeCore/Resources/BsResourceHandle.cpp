@@ -116,9 +116,6 @@ namespace bs
 #endif
 	}
 
-	template class TResourceHandleBase<true>;
-	template class TResourceHandleBase<false>;
-
 	RTTITypeBase* TResourceHandleBase<true>::getRTTIStatic()
 	{
 		return WeakResourceHandleRTTI::instance();

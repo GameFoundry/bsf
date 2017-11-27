@@ -30,7 +30,7 @@ namespace bs
 			addReflectablePtrField("mMetaData", 1, &ResourceRTTI::getMetaData, &ResourceRTTI::setMetaData);
 		}
 
-		void onDeserializationStarted(IReflectable* obj, const UnorderedMap<bool, UINT64>& params)
+		void onDeserializationStarted(IReflectable* obj, const UnorderedMap<String, UINT64>& params) override
 		{
 			Resource* resource = static_cast<Resource*>(obj);
 
