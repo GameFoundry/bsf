@@ -15,7 +15,7 @@ set(BansheeGLRenderAPI_INC
 
 if(WIN32)
 	set(BansheeGLRenderAPI_INC ${BansheeGLRenderAPI_INC} "Source/Win32")
-else()
+elseif(LINUX)
 	set(BansheeGLRenderAPI_INC ${BansheeGLRenderAPI_INC} ${OPENGL_INCLUDE_DIR})
 endif()
 	
@@ -31,9 +31,12 @@ target_compile_definitions(BansheeGLRenderAPI PRIVATE -DBS_RSGL_EXPORTS -DGLEW_S
 if(WIN32)
 	## External lib: OpenGL
 	target_link_libraries(BansheeGLRenderAPI PRIVATE glu32 opengl32)
-else()
+elseif(LINUX)
 	## External lib: OpenGL
 	target_link_libraries(BansheeGLRenderAPI PRIVATE ${OPENGL_LIBRARIES})
+elseif(APPLE) # MacOS
+	target_link_framework(BansheeGLRenderAPI Foundation)
+	target_link_framework(BansheeGLRenderAPI CoreGraphics)
 endif()
 
 ## Local libs

@@ -78,12 +78,13 @@ if(BansheeSBGen_FOUND)
 			-std=c++14
 			-DBS_STATIC_LIB
 			-DBS_SBGEN
-			-w
-			)
+			-w)
 
 		if(APPLE)
-			list(APPEND BS_GSB_COMMAND 
+			list(APPEND BS_GSB_COMMAND
 				-isystem /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1)
+			list(APPEND BS_GSB_COMMAND
+				-isystem /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include)
 			list(APPEND BS_GSB_COMMAND -stdlib=libc++)
 		endif()
 

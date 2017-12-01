@@ -10,7 +10,7 @@
 #include "Private/MacOS/BsMacOSDropTarget.h"
 #include "String/BsUnicode.h"
 #include "BsCoreApplication.h"
-#include <atomic>
+#import <Cocoa/Cocoa.h>
 #import <Carbon/Carbon.h>
 
 /** Application implementation that overrides the terminate logic with custom shutdown, and tracks Esc key presses. */

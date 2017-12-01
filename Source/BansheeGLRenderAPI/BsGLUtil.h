@@ -41,4 +41,22 @@ namespace bs { namespace ct
 		/** @} */
 	}}
 
+#elif BS_PLATFORM == BS_PLATFORM_OSX
+
+#include "MacOS/BsMacOSGLSupport.h"
+
+namespace bs::ct
+{
+	/** @addtogroup GL
+	 *  @{
+	 */
+
+	/**	Helper method that returns a platform specific GL support object. */
+	GLSupport* getGLSupport()
+	{
+		return bs_new<MacOSGLSupport>();
+	}
+
+	/** @} */
+}
 #endif

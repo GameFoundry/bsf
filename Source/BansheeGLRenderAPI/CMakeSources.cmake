@@ -43,7 +43,6 @@ set(BS_BANSHEEGLRENDERAPI_SRC_WIN32
 )
 
 set(BS_BANSHEEGLRENDERAPI_SRC_NOFILTER
-	"glew.cpp"
 	"BsGLVertexArrayObjectManager.cpp"
 	"BsGLVertexBuffer.cpp"
 	"BsGLTimerQuery.cpp"
@@ -71,6 +70,10 @@ set(BS_BANSHEEGLRENDERAPI_SRC_NOFILTER
 	"BsGLCommandBufferManager.cpp"
 	"BsGLTextureView.cpp"
 )
+
+if(NOT APPLE)
+	list(APPEND BS_BANSHEEGLRENDERAPI_SRC_NOFILTER "glew.cpp")
+endif()
 
 set(BS_BANSHEEGLRENDERAPI_INC_GLSL
 	"GLSL/BsGLSLProgramPipelineManager.h"
@@ -101,6 +104,20 @@ set(BS_BANSHEEGLRENDERAPI_SRC_LINUX
 	"Linux/BsLinuxVideoModeInfo.cpp"
 )
 
+set(BS_BANSHEEGLRENDERAPI_INC_MACOS
+	"MacOS/BsMacOSContext.h"
+	"MacOS/BsMacOSGLSupport.h"
+	"MacOS/BsMacOSRenderWindow.h"
+	"MacOS/BsMacOSVideoModeInfo.h"
+)
+
+set(BS_BANSHEEGLRENDERAPI_SRC_MACOS
+	"MacOS/BsMacOSContext.mm"
+	"MacOS/BsMacOSGLSupport.cpp"
+	"MacOS/BsMacOSRenderWindow.mm"
+	"MacOS/BsMacOSVideoModeInfo.cpp"
+)
+
 source_group("Source Files\\GLSL" FILES ${BS_BANSHEEGLRENDERAPI_SRC_GLSL})
 source_group("Header Files" FILES ${BS_BANSHEEGLRENDERAPI_INC_NOFILTER})
 source_group("Source Files\\Win32" FILES ${BS_BANSHEEGLRENDERAPI_SRC_WIN32})
@@ -124,5 +141,10 @@ elseif(LINUX)
 	list(APPEND BS_BANSHEEGLRENDERAPI_SRC
 		${BS_BANSHEEGLRENDERAPI_INC_LINUX}
 		${BS_BANSHEEGLRENDERAPI_SRC_LINUX}
+	)
+elseif(APPLE)
+	list(APPEND BS_BANSHEEGLRENDERAPI_SRC
+		${BS_BANSHEEGLRENDERAPI_INC_MACOS}
+		${BS_BANSHEEGLRENDERAPI_SRC_MACOS}
 	)
 endif()

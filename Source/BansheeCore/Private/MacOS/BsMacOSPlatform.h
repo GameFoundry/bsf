@@ -3,10 +3,24 @@
 #pragma once
 
 #include "Platform/BsPlatform.h"
-#import <Cocoa/Cocoa.h>
+
+// Don't include macOS frameworks when generating script bindings, as it can't find them
+#ifndef BS_SBGEN
+#include <Cocoa/Cocoa.h>
+#endif
 
 namespace bs
 {
+	// Forward declare Cocoa types for SBGen purposes, since we didn't include Cocoa.h above
+#if BS_SBGEN
+	class NSImage;
+	class NSCursor;
+	class NSScreen;
+	class NSWindow;
+	struct NSRect;
+	struct NSPoint;
+#endif
+
 	class CocoaWindow;
 
 	/** @addtogroup Platform-Internal

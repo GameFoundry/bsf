@@ -68,8 +68,13 @@ namespace bs
 		CocoaWindow(const WINDOW_DESC& desc);
 		~CocoaWindow();
 
-		/**	Returns the current area of the window, relative to the screen. */
-		Rect2I getArea() const;
+		/**
+		 * Returns the current area of the window, relative to the screen.
+		 *
+		 * @param[in] topLeftOrigin		If true the coordinates will use a top-left origin coordinate system (engine native).
+		 * 								If false the coordinates will use a bottom-left origin (Cocoa native).
+		 */
+		Rect2I getArea(bool topLeftOrigin = true) const;
 
 		/** Hides the window. */
 		void hide();
@@ -142,6 +147,9 @@ namespace bs
 		 * _registerForDragAndDrop was called multiple times.
 		 */
 		void _unregisterForDragAndDrop();
+
+		/** Returns the area of the screen that the window currently occupies, in Cocoa screen coordinates. */
+		Rect2I _getScreenArea() const;
 
 		/** Returns internal private data for use by friends. */
 		Pimpl* _getPrivateData() const { return m; }

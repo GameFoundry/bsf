@@ -675,12 +675,13 @@ namespace bs
 		m->window = nil;
 	}
 
-	Rect2I CocoaWindow::getArea() const
+	Rect2I CocoaWindow::getArea(bool topLeftOrigin) const
 	{ @autoreleasepool {
 		NSRect frameRect = [m->window frame];
 		NSRect contentRect = [m->window contentRectForFrameRect:frameRect];
 
-		flipY([m->window screen], contentRect);
+		if(topLeftOrigin)
+			flipY([m->window screen], contentRect);
 
 		return Rect2I(
 			(INT32)contentRect.origin.x,
@@ -808,5 +809,18 @@ namespace bs
 
 		if(m->numDropTargets == 0)
 			[m->window unregisterDraggedTypes];
+	}
+
+	Rect2I CocoaWindow::_getScreenArea() const
+	{
+		NSRect screenRect = [[m->window screen] frame];
+
+		Rect2I area;
+		area.x = (INT32)screenRect.origin.x;
+		area.y = (INT32)screenRect.origin.y;
+		area.width = (UINT32)screenRect.size.width;
+		area.height = (UINT32)screenRect.size.height;
+
+		return area;
 	}
 }
