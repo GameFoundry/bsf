@@ -36,9 +36,7 @@ namespace bs { namespace ct
 	void GLPixelBuffer::freeBuffer()
 	{
 		if(mUsage & GBU_STATIC)
-		{
 			mBuffer.freeInternalBuffer();
-		}
 	}
 
 	void* GLPixelBuffer::lock(UINT32 offset, UINT32 length, GpuLockOptions options)
@@ -121,6 +119,7 @@ namespace bs { namespace ct
 		GLint value = 0;
 	
 		glBindTexture(mTarget, mTextureID);
+		BS_CHECK_GL_ERROR();
 	
 		// Get face identifier
 		mFaceTarget = mTarget;
@@ -129,20 +128,30 @@ namespace bs { namespace ct
 	
 		// Get width
 		glGetTexLevelParameteriv(mFaceTarget, level, GL_TEXTURE_WIDTH, &value);
+		BS_CHECK_GL_ERROR();
+
 		mWidth = value;
 	
 		// Get height
 		if(target == GL_TEXTURE_1D)
 			value = 1;	// Height always 1 for 1D textures
 		else
+		{
 			glGetTexLevelParameteriv(mFaceTarget, level, GL_TEXTURE_HEIGHT, &value);
+			BS_CHECK_GL_ERROR();
+		}
+
 		mHeight = value;
 	
 		// Get depth
 		if(target != GL_TEXTURE_3D)
 			value = 1; // Depth always 1 for non-3D textures
 		else
+		{
 			glGetTexLevelParameteriv(mFaceTarget, level, GL_TEXTURE_DEPTH, &value);
+			BS_CHECK_GL_ERROR();
+		}
+
 		mDepth = value;
 
 		// Default
@@ -169,7 +178,9 @@ namespace bs { namespace ct
 			return;
 		}
 
-		glBindTexture( mTarget, mTextureID );
+		glBindTexture(mTarget, mTextureID);
+		BS_CHECK_GL_ERROR();
+
 		if(PixelUtil::isCompressed(data.getFormat()))
 		{
 			if (data.getFormat() != mFormat || !data.isConsecutive())
@@ -189,6 +200,7 @@ namespace bs { namespace ct
 							0,
 							data.getConsecutiveSize(),
 							data.getData());
+						BS_CHECK_GL_ERROR();
 					}
 					else
 					{
@@ -197,6 +209,7 @@ namespace bs { namespace ct
 							dest.getWidth(),
 							format, data.getConsecutiveSize(),
 							data.getData());
+						BS_CHECK_GL_ERROR();
 					}
 					break;
 				case GL_TEXTURE_2D:
@@ -210,6 +223,7 @@ namespace bs { namespace ct
 							0,
 							data.getConsecutiveSize(),
 							data.getData());
+						BS_CHECK_GL_ERROR();
 					}
 					else
 					{
@@ -218,6 +232,7 @@ namespace bs { namespace ct
 							dest.getWidth(), dest.getHeight(),
 							format, data.getConsecutiveSize(),
 							data.getData());
+						BS_CHECK_GL_ERROR();
 					}
 					break;
 				case GL_TEXTURE_3D:
@@ -231,6 +246,7 @@ namespace bs { namespace ct
 							0,
 							data.getConsecutiveSize(),
 							data.getData());
+						BS_CHECK_GL_ERROR();
 					}
 					else
 					{			
@@ -239,6 +255,7 @@ namespace bs { namespace ct
 							dest.getWidth(), dest.getHeight(), dest.getDepth(),
 							format, data.getConsecutiveSize(),
 							data.getData());
+						BS_CHECK_GL_ERROR();
 					}
 					break;
 			}
@@ -246,17 +263,31 @@ namespace bs { namespace ct
 		} 
 		else
 		{
-			if(data.getWidth() != data.getRowPitch())
+			if (data.getWidth() != data.getRowPitch())
+			{
 				glPixelStorei(GL_UNPACK_ROW_LENGTH, data.getRowPitch());
+				BS_CHECK_GL_ERROR();
+			}
 
-			if(data.getHeight()*data.getWidth() != data.getSlicePitch())
-				glPixelStorei(GL_UNPACK_IMAGE_HEIGHT, (data.getSlicePitch()/data.getWidth()));
+			if (data.getHeight()*data.getWidth() != data.getSlicePitch())
+			{
+				glPixelStorei(GL_UNPACK_IMAGE_HEIGHT, (data.getSlicePitch() / data.getWidth()));
+				BS_CHECK_GL_ERROR();
+			}
 
-			if(data.getLeft() > 0 || data.getTop() > 0 || data.getFront() > 0)
-				glPixelStorei(GL_UNPACK_SKIP_PIXELS, data.getLeft() + data.getRowPitch() * data.getTop() + data.getSlicePitch() * data.getFront());
+			if (data.getLeft() > 0 || data.getTop() > 0 || data.getFront() > 0)
+			{
+				glPixelStorei(
+					GL_UNPACK_SKIP_PIXELS, 
+					data.getLeft() + data.getRowPitch() * data.getTop() + data.getSlicePitch() * data.getFront());
+				BS_CHECK_GL_ERROR();
+			}
 
-			if((data.getWidth()*PixelUtil::getNumElemBytes(data.getFormat())) & 3)
+			if ((data.getWidth()*PixelUtil::getNumElemBytes(data.getFormat())) & 3)
+			{
 				glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+				BS_CHECK_GL_ERROR();
+			}
 
 			switch(mTarget) {
 				case GL_TEXTURE_1D:
@@ -265,6 +296,7 @@ namespace bs { namespace ct
 						dest.getWidth(),
 						GLPixelUtil::getGLOriginFormat(data.getFormat()), GLPixelUtil::getGLOriginDataType(data.getFormat()),
 						data.getData());
+					BS_CHECK_GL_ERROR();
 					break;
 				case GL_TEXTURE_2D:
 				case GL_TEXTURE_CUBE_MAP:
@@ -273,6 +305,7 @@ namespace bs { namespace ct
 						dest.getWidth(), dest.getHeight(),
 						GLPixelUtil::getGLOriginFormat(data.getFormat()), GLPixelUtil::getGLOriginDataType(data.getFormat()),
 						data.getData());
+					BS_CHECK_GL_ERROR();
 					break;
 				case GL_TEXTURE_3D:
 					glTexSubImage3D(
@@ -281,15 +314,23 @@ namespace bs { namespace ct
 						dest.getWidth(), dest.getHeight(), dest.getDepth(),
 						GLPixelUtil::getGLOriginFormat(data.getFormat()), GLPixelUtil::getGLOriginDataType(data.getFormat()),
 						data.getData());
+					BS_CHECK_GL_ERROR();
 					break;
 			}	
 		}
 
 		// Restore defaults
 		glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+		BS_CHECK_GL_ERROR();
+
 		glPixelStorei(GL_UNPACK_IMAGE_HEIGHT, 0);
+		BS_CHECK_GL_ERROR();
+
 		glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+		BS_CHECK_GL_ERROR();
+
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+		BS_CHECK_GL_ERROR();
 
 		BS_INC_RENDER_STAT_CAT(ResWrite, RenderStatObject_Texture);
 	}
@@ -303,6 +344,8 @@ namespace bs { namespace ct
 		}
 
 		glBindTexture(mTarget, mTextureID);
+		BS_CHECK_GL_ERROR();
+
 		if(PixelUtil::isCompressed(data.getFormat()))
 		{
 			if (data.getFormat() != mFormat || !data.isConsecutive())
@@ -314,30 +357,53 @@ namespace bs { namespace ct
 			// Data must be consecutive and at beginning of buffer as PixelStorei not allowed
 			// for compressed formate
 			glGetCompressedTexImage(mFaceTarget, mLevel, data.getData());
+			BS_CHECK_GL_ERROR();
 		} 
 		else
 		{
-			if(data.getWidth() != data.getRowPitch())
+			if (data.getWidth() != data.getRowPitch())
+			{
 				glPixelStorei(GL_PACK_ROW_LENGTH, data.getRowPitch());
+				BS_CHECK_GL_ERROR();
+			}
 
-			if(data.getHeight()*data.getWidth() != data.getSlicePitch())
-				glPixelStorei(GL_PACK_IMAGE_HEIGHT, (data.getSlicePitch()/data.getWidth()));
+			if (data.getHeight()*data.getWidth() != data.getSlicePitch())
+			{
+				glPixelStorei(GL_PACK_IMAGE_HEIGHT, (data.getSlicePitch() / data.getWidth()));
+				BS_CHECK_GL_ERROR();
+			}
 
-			if(data.getLeft() > 0 || data.getTop() > 0 || data.getFront() > 0)
-				glPixelStorei(GL_PACK_SKIP_PIXELS, data.getLeft() + data.getRowPitch() * data.getTop() + data.getSlicePitch() * data.getFront());
+			if (data.getLeft() > 0 || data.getTop() > 0 || data.getFront() > 0)
+			{
+				glPixelStorei(
+					GL_PACK_SKIP_PIXELS, 
+					data.getLeft() + data.getRowPitch() * data.getTop() + data.getSlicePitch() * data.getFront());
+				BS_CHECK_GL_ERROR();
+			}
 
-			if((data.getWidth()*PixelUtil::getNumElemBytes(data.getFormat())) & 3)
+			if ((data.getWidth()*PixelUtil::getNumElemBytes(data.getFormat())) & 3)
+			{
 				glPixelStorei(GL_PACK_ALIGNMENT, 1);
+				BS_CHECK_GL_ERROR();
+			}
 
 			// We can only get the entire texture
 			glGetTexImage(mFaceTarget, mLevel, GLPixelUtil::getGLOriginFormat(data.getFormat()), 
 				GLPixelUtil::getGLOriginDataType(data.getFormat()), data.getData());
+			BS_CHECK_GL_ERROR();
 
 			// Restore defaults
 			glPixelStorei(GL_PACK_ROW_LENGTH, 0);
+			BS_CHECK_GL_ERROR();
+
 			glPixelStorei(GL_PACK_IMAGE_HEIGHT, 0);
+			BS_CHECK_GL_ERROR();
+
 			glPixelStorei(GL_PACK_SKIP_PIXELS, 0);
+			BS_CHECK_GL_ERROR();
+
 			glPixelStorei(GL_PACK_ALIGNMENT, 4);
+			BS_CHECK_GL_ERROR();
 		}
 
 		BS_INC_RENDER_STAT_CAT(ResRead, RenderStatObject_Texture);
@@ -350,21 +416,22 @@ namespace bs { namespace ct
 			switch (mTarget)
 			{
 			case GL_TEXTURE_1D:
-				glFramebufferTexture1D(GL_FRAMEBUFFER, attachment,
-					mFaceTarget, mTextureID, mLevel);
+				glFramebufferTexture1D(GL_FRAMEBUFFER, attachment, mFaceTarget, mTextureID, mLevel);
+				BS_CHECK_GL_ERROR();
 				break;
 			case GL_TEXTURE_2D:
-				glFramebufferTexture2D(GL_FRAMEBUFFER, attachment,
-					mFaceTarget, mTextureID, mLevel);
+				glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, mFaceTarget, mTextureID, mLevel);
+				BS_CHECK_GL_ERROR();
 				break;
 			case GL_TEXTURE_2D_MULTISAMPLE:
-				glFramebufferTexture2D(GL_FRAMEBUFFER, attachment,
-					mFaceTarget, mTextureID, 0);
+				glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, mFaceTarget, mTextureID, 0);
+				BS_CHECK_GL_ERROR();
 				break;
 			case GL_TEXTURE_CUBE_MAP:
 			case GL_TEXTURE_3D:
 			default: // Texture arrays (binding all layers)
 				glFramebufferTexture(GL_FRAMEBUFFER, attachment, mTextureID, mLevel);
+				BS_CHECK_GL_ERROR();
 				break;
 			}
 		}
@@ -374,9 +441,11 @@ namespace bs { namespace ct
 			{
 			case GL_TEXTURE_3D:
 				glFramebufferTexture3D(GL_FRAMEBUFFER, attachment, mFaceTarget, mTextureID, mLevel, zoffset);
+				BS_CHECK_GL_ERROR();
 				break;
 			default: // Texture arrays and cube maps
 				glFramebufferTextureLayer(GL_FRAMEBUFFER, attachment, mTextureID, mLevel, mFace);
+				BS_CHECK_GL_ERROR();
 				break;
 			}
 		}
@@ -385,17 +454,22 @@ namespace bs { namespace ct
 	void GLTextureBuffer::copyFromFramebuffer(UINT32 zoffset)
 	{
 		glBindTexture(mTarget, mTextureID);
+		BS_CHECK_GL_ERROR();
+
 		switch(mTarget)
 		{
 		case GL_TEXTURE_1D:
 			glCopyTexSubImage1D(mFaceTarget, mLevel, 0, 0, 0, mWidth);
+			BS_CHECK_GL_ERROR();
 			break;
 		case GL_TEXTURE_2D:
 		case GL_TEXTURE_CUBE_MAP:
 			glCopyTexSubImage2D(mFaceTarget, mLevel, 0, 0, 0, 0, mWidth, mHeight);
+			BS_CHECK_GL_ERROR();
 			break;
 		case GL_TEXTURE_3D:
 			glCopyTexSubImage3D(mFaceTarget, mLevel, 0, 0, zoffset, 0, 0, mWidth, mHeight);
+			BS_CHECK_GL_ERROR();
 			break;
 		}
 	}
@@ -409,30 +483,43 @@ namespace bs { namespace ct
 
 			GLint currentFBO = 0;
 			glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFBO);
+			BS_CHECK_GL_ERROR();
 
 			GLuint readFBO = GLRTTManager::instance().getBlitReadFBO();
 			GLuint drawFBO = GLRTTManager::instance().getBlitDrawFBO();
 
 			// Attach source texture
 			glBindFramebuffer(GL_FRAMEBUFFER, readFBO);
+			BS_CHECK_GL_ERROR();
+
 			src->bindToFramebuffer(0, 0, true);
 
 			// Attach destination texture
 			glBindFramebuffer(GL_FRAMEBUFFER, drawFBO);
+			BS_CHECK_GL_ERROR();
+
 			bindToFramebuffer(0, 0, true);
 
 			// Perform blit
 			glBindFramebuffer(GL_READ_FRAMEBUFFER, readFBO);
+			BS_CHECK_GL_ERROR();
+
 			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, drawFBO);
+			BS_CHECK_GL_ERROR();
 
 			glReadBuffer(GL_COLOR_ATTACHMENT0);
+			BS_CHECK_GL_ERROR();
+
 			glDrawBuffer(GL_COLOR_ATTACHMENT0);
+			BS_CHECK_GL_ERROR();
 
 			glBlitFramebuffer(srcBox.left, srcBox.top, srcBox.right, srcBox.bottom, 
 				dstBox.left, dstBox.top, dstBox.right, dstBox.bottom, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+			BS_CHECK_GL_ERROR();
 
 			// Restore the previously bound FBO
 			glBindFramebuffer(GL_FRAMEBUFFER, currentFBO);
+			BS_CHECK_GL_ERROR();
 		}
 		else // Just plain copy
 		{
@@ -443,11 +530,13 @@ namespace bs { namespace ct
 			{
 				glCopyImageSubData(src->mTextureID, src->mTarget, src->mLevel, srcBox.left, srcBox.top, srcBox.front,
 					mTextureID, mTarget, mLevel, dstBox.left, dstBox.top, dstBox.front, srcBox.getWidth(), srcBox.getHeight(), srcBox.getDepth());
+				BS_CHECK_GL_ERROR();
 			}
 			else
 			{
 				glCopyImageSubData(src->mTextureID, src->mTarget, src->mLevel, srcBox.left, srcBox.top, src->mFace,
 					mTextureID, mTarget, mLevel, dstBox.left, dstBox.top, mFace, srcBox.getWidth(), srcBox.getHeight(), 1);
+				BS_CHECK_GL_ERROR();
 			}
 		}		
 	}

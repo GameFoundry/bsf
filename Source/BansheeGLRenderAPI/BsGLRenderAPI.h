@@ -360,9 +360,6 @@ namespace bs { namespace ct
 		 */
 		GLint convertStencilOp(StencilOperation op, bool invert = false) const;
 
-		/**	Checks if there are any OpenGL errors and prints them to the log. */
-		bool checkForErrors() const;
-
 	private:
 		/** Information about a currently bound texture. */
 		struct TextureInfo
@@ -419,7 +416,7 @@ namespace bs { namespace ct
 		bool mDrawCallInProgress;
 
 		UINT16 mActiveTextureUnit;
-    };
+	};
 
 	/** @} */
 }}

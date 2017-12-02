@@ -27,6 +27,7 @@ namespace bs { namespace ct
 	{
 		mSurfaceList.clear();
 		glDeleteTextures(1, &mTextureID);
+		BS_CHECK_GL_ERROR();
 
 		clearBufferViews();
 
@@ -74,12 +75,15 @@ namespace bs { namespace ct
 
 		// Generate texture handle
 		glGenTextures(1, &mTextureID);
+		BS_CHECK_GL_ERROR();
 
 		// Set texture type
 		glBindTexture(getGLTextureTarget(), mTextureID);
+		BS_CHECK_GL_ERROR();
 
 		// This needs to be set otherwise the texture doesn't get rendered
 		glTexParameteri(getGLTextureTarget(), GL_TEXTURE_MAX_LEVEL, numMips - 1);
+		BS_CHECK_GL_ERROR();
 
 		// Allocate internal buffer so that glTexSubImageXD can be used
 		mGLFormat = GLPixelUtil::getGLInternalFormat(mInternalFormat, mProperties.isHardwareGammaEnabled());
@@ -88,9 +92,15 @@ namespace bs { namespace ct
 		if((usage & (TU_RENDERTARGET | TU_DEPTHSTENCIL)) != 0 && mProperties.getTextureType() == TEX_TYPE_2D && sampleCount > 1)
 		{
 			if (numFaces <= 1)
+			{
 				glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, sampleCount, mGLFormat, width, height, GL_FALSE);
+				BS_CHECK_GL_ERROR();
+			}
 			else
+			{
 				glTexStorage3DMultisample(GL_TEXTURE_2D_MULTISAMPLE_ARRAY, sampleCount, mGLFormat, width, height, numFaces, GL_FALSE);
+				BS_CHECK_GL_ERROR();
+			}
 		}
 		else
 		{
@@ -99,28 +109,47 @@ namespace bs { namespace ct
 			case TEX_TYPE_1D:
 			{
 				if (numFaces <= 1)
+				{
 					glTexStorage1D(GL_TEXTURE_1D, numMips, mGLFormat, width);
+					BS_CHECK_GL_ERROR();
+				}
 				else
+				{
 					glTexStorage2D(GL_TEXTURE_1D_ARRAY, numMips, mGLFormat, width, numFaces);
+					BS_CHECK_GL_ERROR();
+				}
 			}
 				break;
 			case TEX_TYPE_2D:
 			{
 				if (numFaces <= 1)
+				{
 					glTexStorage2D(GL_TEXTURE_2D, numMips, mGLFormat, width, height);
+					BS_CHECK_GL_ERROR();
+				}
 				else
+				{
 					glTexStorage3D(GL_TEXTURE_2D_ARRAY, numMips, mGLFormat, width, height, numFaces);
+					BS_CHECK_GL_ERROR();
+				}
 			}
 				break;
 			case TEX_TYPE_3D:
 				glTexStorage3D(GL_TEXTURE_3D, numMips, mGLFormat, width, height, depth);
+				BS_CHECK_GL_ERROR();
 				break;
 			case TEX_TYPE_CUBE_MAP:
 			{
 				if (numFaces <= 6)
+				{
 					glTexStorage2D(GL_TEXTURE_CUBE_MAP, numMips, mGLFormat, width, height);
+					BS_CHECK_GL_ERROR();
+				}
 				else
+				{
 					glTexStorage3D(GL_TEXTURE_CUBE_MAP_ARRAY, numMips, mGLFormat, width, height, numFaces);
+					BS_CHECK_GL_ERROR();
+				}
 			}
 				break;
 			}

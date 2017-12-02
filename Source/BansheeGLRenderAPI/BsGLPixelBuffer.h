@@ -34,16 +34,16 @@ namespace bs { namespace ct
 		virtual ~GLPixelBuffer();
 
 		/**	Returns width of the surface in pixels. */
-        UINT32 getWidth() const { return mWidth; }
+		UINT32 getWidth() const { return mWidth; }
 
 		/**	Returns height of the surface in pixels. */
-        UINT32 getHeight() const { return mHeight; }
+		UINT32 getHeight() const { return mHeight; }
 
 		/**	Returns depth of the surface in pixels. */
-        UINT32 getDepth() const { return mDepth; }
+		UINT32 getDepth() const { return mDepth; }
 
 		/**	Returns format of the pixels in the surface. */
-        PixelFormat getFormat() const { return mFormat; }
+		PixelFormat getFormat() const { return mFormat; }
 
 		/**
 		 * Locks a certain region of the pixel buffer for reading and returns a pointer to the locked region.
@@ -64,7 +64,7 @@ namespace bs { namespace ct
 		 *						anything he hasn't requested (for example don't try to read from the buffer unless you
 		 *						requested it here).
 		 */
-        void* lock(UINT32 offset, UINT32 length, GpuLockOptions options);
+		void* lock(UINT32 offset, UINT32 length, GpuLockOptions options);
 
 		/**
 		 * Locks the entire buffer and returns pointer to the locked area. You must call unlock() when done.
@@ -73,10 +73,10 @@ namespace bs { namespace ct
 		 *						anything he hasn't requested (for example don't try to read from the buffer unless you
 		 *						requested it here).
 		 */
-        void* lock(GpuLockOptions options)
-        {
-            return lock(0, mSizeInBytes, options);
-        }
+		void* lock(GpuLockOptions options)
+		{
+			return lock(0, mSizeInBytes, options);
+		}
 
 		/**	Releases the lock on this buffer. */
 		void unlock();
@@ -139,9 +139,9 @@ namespace bs { namespace ct
 	};
 
 	/**	Pixel buffer specialization that represents a single surface in a texture. */
-    class GLTextureBuffer : public GLPixelBuffer
+	class GLTextureBuffer : public GLPixelBuffer
 	{
-    public:
+	public:
 		/**
 		 * Constructs a new texture buffer from a specific surface in the provided texture.
 		 *
@@ -155,10 +155,10 @@ namespace bs { namespace ct
 		 */
 		GLTextureBuffer(GLenum target, GLuint id, GLint face, 
 			GLint level, GpuBufferUsage usage, PixelFormat format, UINT32 multisampleCount);
-        ~GLTextureBuffer();
-        
+		~GLTextureBuffer();
+		
 		/** @copydoc GLPixelBuffer::bindToFramebuffer */
-        void bindToFramebuffer(GLenum attachment, UINT32 zoffset, bool allLayers) override;
+		void bindToFramebuffer(GLenum attachment, UINT32 zoffset, bool allLayers) override;
 
 		/** @copydoc GLPixelBuffer::upload */
 		void upload(const PixelData &data, const PixelVolume &dest) override;
@@ -169,21 +169,21 @@ namespace bs { namespace ct
 		/** @copydoc GLPixelBuffer::blitFromTexture */
 		void blitFromTexture(GLTextureBuffer *src, const PixelVolume &srcBox, const PixelVolume &dstBox) override;
 
-        /**
-         * Populate texture buffer with the data in the currently attached frame buffer.
+		/**
+		 * Populate texture buffer with the data in the currently attached frame buffer.
 		 *
 		 * @param[in]	zoffset		3D slice of the texture to copy to. 0 if texture is not 3D.
-         */
-        void copyFromFramebuffer(UINT32 zoffset);
+		 */
+		void copyFromFramebuffer(UINT32 zoffset);
 
-    protected:
+	protected:
 		GLenum mTarget;
 		GLenum mFaceTarget;
 		GLuint mTextureID;
 		GLint mFace;
 		GLint mLevel;
 		UINT32 mMultisampleCount;
-    };
+	};
 
 	/** @} */
 }}

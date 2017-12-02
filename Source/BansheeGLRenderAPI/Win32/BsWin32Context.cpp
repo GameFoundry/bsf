@@ -22,19 +22,23 @@ namespace bs { namespace ct
 
 	void Win32Context::setCurrent(const RenderWindow& window)
 	{
-		wglMakeCurrent(mHDC, mGlrc);
+		if(wglMakeCurrent(mHDC, mGlrc) != TRUE)
+			BS_EXCEPT(RenderingAPIException, "wglMakeCurrent failed: " + translateWGLError());
 	}
 
 	void Win32Context::endCurrent()
 	{
-		wglMakeCurrent(0, 0);
+		if(wglMakeCurrent(0, 0) != TRUE)
+			BS_EXCEPT(RenderingAPIException, "wglMakeCurrent failed: " + translateWGLError());
 	}
 
 	void Win32Context::releaseContext()
 	{
 		if (mGlrc != 0)
 		{
-			wglDeleteContext(mGlrc);
+			if(wglDeleteContext(mGlrc) != TRUE)
+				BS_EXCEPT(RenderingAPIException, "wglDeleteContext failed: " + translateWGLError());
+
 			mGlrc = 0;
 			mHDC = 0;
 		}

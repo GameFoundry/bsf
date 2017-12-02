@@ -68,13 +68,13 @@ namespace bs { namespace ct
 		/**	Dummy window procedure used when creating the initial dummy OpenGL context. */
 		static LRESULT CALLBACK dummyWndProc(HWND hwnd, UINT umsg, WPARAM wp, LPARAM lp);
 
-		Vector<DEVMODE> mDevModes;
-		Win32RenderWindow *mInitialWindow;
-		Vector<int> mMultisampleLevels;
-		bool mHasPixelFormatARB;
-		bool mHasMultisample;
-		bool mHasHardwareGamma;
-		bool mHasAdvancedContext;
+		Vector<DEVMODE>    mDevModes;
+		Win32RenderWindow* mInitialWindow;
+		Vector<int>        mMultisampleLevels;
+		bool               mHasPixelFormatARB;
+		bool               mHasMultisample;
+		bool               mHasHardwareGamma;
+		bool               mHasAdvancedContext;
 	};
 
 	/** @} */

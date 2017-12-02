@@ -12,9 +12,9 @@ namespace bs { namespace ct
 	 */
 
 	/**	Factory class that deals with creating GLSL GPU programs. */
-    class GLSLProgramFactory : public GpuProgramFactory
-    {
-    public:
+	class GLSLProgramFactory : public GpuProgramFactory
+	{
+	public:
 		/** @copydoc GpuProgramFactory::getLanguage */
 		const String& getLanguage() const override;
 
@@ -26,7 +26,7 @@ namespace bs { namespace ct
 
 	protected:
 		static const String LANGUAGE_NAME;
-    };
+	};
 
 	/** @} */
 }}

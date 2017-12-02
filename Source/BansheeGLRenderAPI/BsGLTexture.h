@@ -77,15 +77,15 @@ namespace bs { namespace ct
 		/**	Creates an empty and uninitialized texture view object. */
 		SPtr<TextureView> createView(const TEXTURE_VIEW_DESC& desc) override;
 
-    private:
-        GLuint mTextureID;
+	private:
+		GLuint mTextureID;
 		GLenum mGLFormat;
 		PixelFormat mInternalFormat;
-        GLSupport& mGLSupport;
+		GLSupport& mGLSupport;
 		SPtr<GLPixelBuffer> mLockedBuffer;
 		
 		Vector<SPtr<GLPixelBuffer>>mSurfaceList;
-    };
+	};
 
 	/** @} */
 }}

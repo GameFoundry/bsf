@@ -12,12 +12,16 @@ namespace bs { namespace ct
 		assert(deviceIdx == 0 && "Multiple GPUs not supported natively on OpenGL.");
 
 		glGenQueries(1, &mQueryObj);
+		BS_CHECK_GL_ERROR();
+
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_Query);
 	}
 
 	GLEventQuery::~GLEventQuery()
 	{
 		glDeleteQueries(1, &mQueryObj);
+		BS_CHECK_GL_ERROR();
+
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Query);
 	}
 
@@ -26,6 +30,8 @@ namespace bs { namespace ct
 		auto execute = [&]()
 		{
 			glQueryCounter(mQueryObj, GL_TIMESTAMP);
+			BS_CHECK_GL_ERROR();
+
 			setActive(true);
 		};
 
@@ -42,6 +48,7 @@ namespace bs { namespace ct
 	{
 		GLint done = 0;
 		glGetQueryObjectiv(mQueryObj, GL_QUERY_RESULT_AVAILABLE, &done);
+		BS_CHECK_GL_ERROR();
 
 		return done == GL_TRUE;
 	}

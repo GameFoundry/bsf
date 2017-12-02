@@ -447,6 +447,7 @@ namespace bs
 	void Win32RenderWindow::setVSync(bool enabled, UINT32 interval)
 	{
 		wglSwapIntervalEXT(interval);
+		BS_CHECK_GL_ERROR();
 
 		mProperties.vsync = enabled;
 		mProperties.vsyncInterval = interval;
@@ -496,14 +497,19 @@ namespace bs
 
 		// Must change the packing to ensure no overruns!
 		glPixelStorei(GL_PACK_ALIGNMENT, 1);
+		BS_CHECK_GL_ERROR();
 
 		glReadBuffer((buffer == FB_FRONT)? GL_FRONT : GL_BACK);
+		BS_CHECK_GL_ERROR();
+
 		glReadPixels((GLint)dst.getLeft(), (GLint)dst.getTop(),
 					 (GLsizei)dst.getWidth(), (GLsizei)dst.getHeight(),
 					 format, type, dst.getData());
+		BS_CHECK_GL_ERROR();
 
 		// restore default alignment
 		glPixelStorei(GL_PACK_ALIGNMENT, 4);
+		BS_CHECK_GL_ERROR();
 
 		//vertical flip
 		{

@@ -23,7 +23,7 @@ namespace bs { namespace ct
 	
 		/**	Returns OpenGL data type used in the provided format. */
 		static GLenum getGLOriginDataType(PixelFormat mFormat);
-        
+		
 		/**
 		 * Returns matching OpenGL internal pixel format type if one is found, zero otherwise. Optionally returns an SRGB
 		 * format if @p hwGamma is specified and such format exists.

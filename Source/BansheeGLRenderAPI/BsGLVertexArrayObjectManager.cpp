@@ -128,7 +128,10 @@ namespace bs { namespace ct
 		const List<VertexElement>& inputAttributes = vertexProgram->getInputDeclaration()->getProperties().getElements();
 
 		glGenVertexArrays(1, &wantedVAO.mHandle);
+		BS_CHECK_GL_ERROR();
+
 		glBindVertexArray(wantedVAO.mHandle);
+		BS_CHECK_GL_ERROR();
 
 		for (auto& elem : decl)
 		{
@@ -159,6 +162,8 @@ namespace bs { namespace ct
 			const VertexBufferProperties& vbProps = vertexBuffer->getProperties();
 
 			glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer->getGLBufferId());
+			BS_CHECK_GL_ERROR();
+
 			void* bufferData = VBO_BUFFER_OFFSET(elem.getOffset());
 
 			UINT16 typeCount = VertexElement::getTypeCount(elem.getType());
@@ -184,15 +189,19 @@ namespace bs { namespace ct
 			if(isInteger)
 			{
 				glVertexAttribIPointer(attribLocation, typeCount, glType, vertexSize, bufferData);
+				BS_CHECK_GL_ERROR();
 			}
 			else
 			{
-				glVertexAttribPointer(attribLocation, typeCount, glType, normalized,
-					vertexSize, bufferData);
+				glVertexAttribPointer(attribLocation, typeCount, glType, normalized, vertexSize, bufferData);
+				BS_CHECK_GL_ERROR();
 			}
 
 			glVertexAttribDivisor(attribLocation, elem.getInstanceStepRate());
+			BS_CHECK_GL_ERROR();
+
 			glEnableVertexAttribArray(attribLocation);
+			BS_CHECK_GL_ERROR();
 		}
 
 		wantedVAO.mAttachedBuffers = (GLVertexBuffer**)bs_alloc(numUsedBuffers * sizeof(GLVertexBuffer*));
@@ -222,6 +231,8 @@ namespace bs { namespace ct
 		}
 
 		glDeleteVertexArrays(1, &vao.mHandle);
+		BS_CHECK_GL_ERROR();
+
 		bs_free(vao.mAttachedBuffers);
 
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_VertexArrayObject);

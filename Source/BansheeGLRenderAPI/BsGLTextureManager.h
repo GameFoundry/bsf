@@ -14,11 +14,11 @@ namespace bs
 	 */
 
 	/**	Handles creation of OpenGL textures. */
-    class GLTextureManager : public TextureManager
-    {
-    public:
-        GLTextureManager(ct::GLSupport& support);
-        virtual ~GLTextureManager();
+	class GLTextureManager : public TextureManager
+	{
+	public:
+		GLTextureManager(ct::GLSupport& support);
+		virtual ~GLTextureManager();
 
 		/**
 		 * Converts the provided format for the specified texture type and usage into a format that is supported by OpenGL.
@@ -30,7 +30,7 @@ namespace bs
 		SPtr<RenderTexture> createRenderTextureImpl(const RENDER_TEXTURE_DESC& desc) override;
 
 		ct::GLSupport& mGLSupport;
-    };
+	};
 
 	namespace ct
 	{

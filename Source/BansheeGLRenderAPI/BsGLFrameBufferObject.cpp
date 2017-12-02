@@ -12,6 +12,7 @@ namespace bs { namespace ct
 		: mDepthStencilAllLayers(false)
 	{
 		glGenFramebuffers(1, &mFB);
+		BS_CHECK_GL_ERROR();
 
 		for (UINT32 x = 0; x < BS_MAX_MULTIPLE_RENDER_TARGETS; ++x)
 			mColor[x].buffer = nullptr;
@@ -22,6 +23,8 @@ namespace bs { namespace ct
 	GLFrameBufferObject::~GLFrameBufferObject()
 	{
 		glDeleteFramebuffers(1, &mFB);
+		BS_CHECK_GL_ERROR();
+
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_FrameBufferObject);
 	}
 
@@ -55,6 +58,7 @@ namespace bs { namespace ct
 
 		// Bind simple buffer to add color attachments
 		glBindFramebuffer(GL_FRAMEBUFFER, mFB);
+		BS_CHECK_GL_ERROR();
 
 		// Bind all attachment points to frame buffer
 		for (UINT16 x = 0; x < maxSupportedMRTs; ++x)
@@ -70,6 +74,7 @@ namespace bs { namespace ct
 			{
 				// Detach
 				glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + x, 0, 0);
+				BS_CHECK_GL_ERROR();
 			}
 		}
 
@@ -105,16 +110,20 @@ namespace bs { namespace ct
 		}
 
 		glDrawBuffers(n, bufs);
+		BS_CHECK_GL_ERROR();
 
 		// No read buffer, by default, if we want to read anyway we must not forget to set this.
 		glReadBuffer(GL_NONE);
+		BS_CHECK_GL_ERROR();
 
 		// Check status
 		GLuint status;
 		status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+		BS_CHECK_GL_ERROR();
 
 		// Bind main buffer
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		BS_CHECK_GL_ERROR();
 
 		switch (status)
 		{
@@ -131,5 +140,6 @@ namespace bs { namespace ct
 	void GLFrameBufferObject::bind()
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, mFB);
+		BS_CHECK_GL_ERROR();
 	}
 }}

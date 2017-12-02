@@ -20,8 +20,11 @@ namespace bs { namespace ct
 
 	GLBuffer::~GLBuffer()
 	{
-		if(mBufferId != 0)
+		if (mBufferId != 0)
+		{
 			glDeleteBuffers(1, &mBufferId);
+			BS_CHECK_GL_ERROR();
+		}
 	}
 
 	void GLBuffer::initialize(GLenum target, UINT32 size, GpuBufferUsage usage)
@@ -31,14 +34,16 @@ namespace bs { namespace ct
 		mTarget = target;
 
 		glGenBuffers(1, &mBufferId);
+		BS_CHECK_GL_ERROR();
 
 		if (!mBufferId)
-		{
 			BS_EXCEPT(InternalErrorException, "Cannot create GL vertex buffer");
-		}
 
 		glBindBuffer(target, mBufferId);
+		BS_CHECK_GL_ERROR();
+
 		glBufferData(target, size, nullptr, GLHardwareBufferManager::getGLUsage(usage));
+		BS_CHECK_GL_ERROR();
 	}
 
 	void* GLBuffer::lock(UINT32 offset, UINT32 length, GpuLockOptions options)
@@ -46,6 +51,7 @@ namespace bs { namespace ct
 		GLenum access = 0;
 
 		glBindBuffer(mTarget, mBufferId);
+		BS_CHECK_GL_ERROR();
 
 		if ((options == GBL_WRITE_ONLY) || (options == GBL_WRITE_ONLY_NO_OVERWRITE) || (options == GBL_WRITE_ONLY_DISCARD))
 		{
@@ -66,11 +72,10 @@ namespace bs { namespace ct
 		if (length > 0)
 		{
 			buffer = glMapBufferRange(mTarget, offset, length, access);
+			BS_CHECK_GL_ERROR();
 
 			if (buffer == nullptr)
-			{
 				BS_EXCEPT(InternalErrorException, "Cannot map OpenGL buffer.");
-			}
 
 			mZeroLocked = false;
 		}
@@ -83,11 +88,13 @@ namespace bs { namespace ct
 	void GLBuffer::unlock()
 	{
 		glBindBuffer(mTarget, mBufferId);
+		BS_CHECK_GL_ERROR();
 
 		if (!mZeroLocked)
 		{
 			if (!glUnmapBuffer(mTarget))
 			{
+				BS_CHECK_GL_ERROR();
 				BS_EXCEPT(InternalErrorException, "Buffer data corrupted, please reload.");
 			}
 		}
@@ -117,8 +124,12 @@ namespace bs { namespace ct
 	void GLBuffer::copyData(GLBuffer& dstBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length)
 	{
 		glBindBuffer(GL_COPY_READ_BUFFER, getGLBufferId());
+		BS_CHECK_GL_ERROR();
+
 		glBindBuffer(GL_COPY_WRITE_BUFFER, dstBuffer.getGLBufferId());
+		BS_CHECK_GL_ERROR();
 
 		glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, srcOffset, dstOffset, length);
+		BS_CHECK_GL_ERROR();
 	}
 }}

@@ -11,7 +11,7 @@ namespace bs { namespace ct
 	void GLSupport::initializeExtensions()
 	{
 		glewContextInit(this);
-		glGetError();
+		BS_CHECK_GL_ERROR();
 
 		// Set version string
 		const GLubyte* pcVer = glGetString(GL_VERSION);
@@ -28,6 +28,7 @@ namespace bs { namespace ct
 		// Set extension list
 		INT32 numExtensions = 0;
 		glGetIntegerv(GL_NUM_EXTENSIONS, &numExtensions);
+		BS_CHECK_GL_ERROR();
 
 		for (INT32 i = 0; i < numExtensions; i++)
 			extensionList.insert(String((char*)glGetStringi(GL_EXTENSIONS, i)));

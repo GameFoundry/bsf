@@ -33,9 +33,9 @@ namespace bs { namespace ct
 		void releaseContext() override;
 
 	protected:
-		HDC     mHDC;
-		HGLRC   mGlrc;
-		bool	mOwnsContext;
+		HDC mHDC;
+		HGLRC mGlrc;
+		bool mOwnsContext;
 	};
 
 	/** @} */

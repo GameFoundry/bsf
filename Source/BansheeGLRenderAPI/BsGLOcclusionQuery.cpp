@@ -13,12 +13,16 @@ namespace bs { namespace ct
 		assert(deviceIdx == 0 && "Multiple GPUs not supported natively on OpenGL.");
 
 		glGenQueries(1, &mQueryObj);
+		BS_CHECK_GL_ERROR();
+
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_Query);
 	}
 
 	GLOcclusionQuery::~GLOcclusionQuery()
 	{
 		glDeleteQueries(1, &mQueryObj);
+		BS_CHECK_GL_ERROR();
+
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Query);
 	}
 
@@ -27,6 +31,7 @@ namespace bs { namespace ct
 		auto execute = [&]()
 		{
 			glBeginQuery(mBinary ? GL_ANY_SAMPLES_PASSED : GL_SAMPLES_PASSED, mQueryObj);
+			BS_CHECK_GL_ERROR();
 
 			mNumSamples = 0;
 			mEndIssued = false;
@@ -47,6 +52,7 @@ namespace bs { namespace ct
 		auto execute = [&]()
 		{
 			glEndQuery(mBinary ? GL_ANY_SAMPLES_PASSED : GL_SAMPLES_PASSED);
+			BS_CHECK_GL_ERROR();
 
 			mEndIssued = true;
 			mFinalized = false;
@@ -68,6 +74,7 @@ namespace bs { namespace ct
 
 		GLint done = 0;
 		glGetQueryObjectiv(mQueryObj, GL_QUERY_RESULT_AVAILABLE, &done);
+		BS_CHECK_GL_ERROR();
 
 		return done == GL_TRUE;
 	}
@@ -90,6 +97,7 @@ namespace bs { namespace ct
 		{
 			GLboolean anyPassed = GL_FALSE;
 			glGetQueryObjectuiv(mQueryObj, GL_QUERY_RESULT_ARB, (GLuint*)&anyPassed);
+			BS_CHECK_GL_ERROR();
 
 			mNumSamples = anyPassed == GL_TRUE ? 1 : 0;
 		}
@@ -97,6 +105,7 @@ namespace bs { namespace ct
 		{
 			GLuint numSamples = 0;
 			glGetQueryObjectuiv(mQueryObj, GL_QUERY_RESULT_ARB, (GLuint*)&numSamples);
+			BS_CHECK_GL_ERROR();
 
 			mNumSamples = (UINT32)numSamples;
 		}

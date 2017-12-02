@@ -14,6 +14,7 @@ namespace bs { namespace ct
 
 		GLuint queries[2];
 		glGenQueries(2, queries);
+		BS_CHECK_GL_ERROR();
 
 		mQueryStartObj = queries[0];
 		mQueryEndObj = queries[1];
@@ -28,6 +29,7 @@ namespace bs { namespace ct
 		queries[1] = mQueryEndObj;
 
 		glDeleteQueries(2, queries);
+		BS_CHECK_GL_ERROR();
 
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Query);
 	}
@@ -37,6 +39,7 @@ namespace bs { namespace ct
 		auto execute = [&]()
 		{
 			glQueryCounter(mQueryStartObj, GL_TIMESTAMP);
+			BS_CHECK_GL_ERROR();
 
 			setActive(true);
 			mEndIssued = false;
@@ -56,6 +59,7 @@ namespace bs { namespace ct
 		auto execute = [&]()
 		{
 			glQueryCounter(mQueryEndObj, GL_TIMESTAMP);
+			BS_CHECK_GL_ERROR();
 
 			mEndIssued = true;
 			mFinalized = false;
@@ -77,6 +81,7 @@ namespace bs { namespace ct
 
 		GLint done = 0;
 		glGetQueryObjectiv(mQueryEndObj, GL_QUERY_RESULT_AVAILABLE, &done);
+		BS_CHECK_GL_ERROR();
 
 		return done == GL_TRUE;
 	}
@@ -99,7 +104,10 @@ namespace bs { namespace ct
 		GLuint64 timeEnd;
 
 		glGetQueryObjectui64v(mQueryStartObj, GL_QUERY_RESULT, &timeStart);
+		BS_CHECK_GL_ERROR();
+
 		glGetQueryObjectui64v(mQueryEndObj, GL_QUERY_RESULT, &timeEnd);
+		BS_CHECK_GL_ERROR();
 
 		mTimeDelta = (timeEnd - timeStart) / 1000000.0f;
 	}

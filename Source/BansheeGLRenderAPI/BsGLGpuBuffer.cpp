@@ -29,6 +29,7 @@ namespace bs { namespace ct
 	GLGpuBuffer::~GLGpuBuffer()
 	{
 		glDeleteTextures(1, &mTextureID);
+		BS_CHECK_GL_ERROR();
 
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_GpuBuffer);
 	}
@@ -50,8 +51,13 @@ namespace bs { namespace ct
 
 			// Create texture
 			glGenTextures(1, &mTextureID);
+			BS_CHECK_GL_ERROR();
+
 			glBindTexture(GL_TEXTURE_BUFFER, mTextureID);
+			BS_CHECK_GL_ERROR();
+
 			glTexBuffer(GL_TEXTURE_BUFFER, mFormat, mBuffer.getGLBufferId());
+			BS_CHECK_GL_ERROR();
 		}
 
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_GpuBuffer);

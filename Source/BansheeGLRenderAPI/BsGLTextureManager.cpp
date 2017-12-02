@@ -7,16 +7,16 @@
 
 namespace bs
 {
-    GLTextureManager::GLTextureManager(ct::GLSupport& support)
-        :TextureManager(), mGLSupport(support)
-    {
+	GLTextureManager::GLTextureManager(ct::GLSupport& support)
+		:TextureManager(), mGLSupport(support)
+	{
 
-    }
+	}
 
-    GLTextureManager::~GLTextureManager()
-    {
+	GLTextureManager::~GLTextureManager()
+	{
 
-    }
+	}
 
 	SPtr<RenderTexture> GLTextureManager::createRenderTextureImpl(const RENDER_TEXTURE_DESC& desc)
 	{
@@ -27,9 +27,9 @@ namespace bs
 
 	PixelFormat GLTextureManager::getNativeFormat(TextureType ttype, PixelFormat format, int usage, bool hwGamma)
 	{
-        // Check if this is a valid rendertarget format
+		// Check if this is a valid rendertarget format
 		if(usage & TU_RENDERTARGET)
-            return ct::GLRTTManager::instance().getSupportedAlternative(format);
+			return ct::GLRTTManager::instance().getSupportedAlternative(format);
 
 		return ct::GLPixelUtil::getClosestSupportedPF(format, ttype, usage);
 	}

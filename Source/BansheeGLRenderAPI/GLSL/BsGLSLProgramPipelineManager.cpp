@@ -31,6 +31,8 @@ namespace bs { namespace ct
 		for (auto& pipeline : mPipelines)
 		{
 			glDeleteProgramPipelines(1, &pipeline.second.glHandle);
+			BS_CHECK_GL_ERROR();
+
 			BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_PipelineObject);
 		}
 	}
@@ -52,30 +54,36 @@ namespace bs { namespace ct
 			GLSLProgramPipeline newPipeline;
 
 			glGenProgramPipelines(1, &newPipeline.glHandle);
+			BS_CHECK_GL_ERROR();
 
 			if(vertexProgram != nullptr)
 			{
 				glUseProgramStages(newPipeline.glHandle, GL_VERTEX_SHADER_BIT, vertexProgram->getGLHandle());
+				BS_CHECK_GL_ERROR();
 			}
 
 			if(fragmentProgram != nullptr)
 			{
 				glUseProgramStages(newPipeline.glHandle, GL_FRAGMENT_SHADER_BIT, fragmentProgram->getGLHandle());
+				BS_CHECK_GL_ERROR();
 			}
 
 			if(geometryProgram != nullptr)
 			{
 				glUseProgramStages(newPipeline.glHandle, GL_GEOMETRY_SHADER_BIT, geometryProgram->getGLHandle());
+				BS_CHECK_GL_ERROR();
 			}
 
 			if(hullProgram != nullptr)
 			{
 				glUseProgramStages(newPipeline.glHandle, GL_TESS_CONTROL_SHADER_BIT, hullProgram->getGLHandle());
+				BS_CHECK_GL_ERROR();
 			}
 
 			if(domainProgram != nullptr)
 			{
 				glUseProgramStages(newPipeline.glHandle, GL_TESS_EVALUATION_SHADER_BIT, domainProgram->getGLHandle());
+				BS_CHECK_GL_ERROR();
 			}
 
 			mPipelines[key] = newPipeline;

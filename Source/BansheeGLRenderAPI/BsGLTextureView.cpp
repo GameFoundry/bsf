@@ -65,8 +65,18 @@ namespace bs { namespace ct {
 		}
 
 		glGenTextures(1, &mViewID);
-		glTextureView(mViewID, target, originalTexture, texture->getGLFormat(), desc.mostDetailMip, desc.numMips,
-			desc.firstArraySlice, desc.numArraySlices);
+		BS_CHECK_GL_ERROR();
+
+		glTextureView(
+			mViewID, 
+			target, 
+			originalTexture, 
+			texture->getGLFormat(), 
+			desc.mostDetailMip, 
+			desc.numMips,
+			desc.firstArraySlice, 
+			desc.numArraySlices);
+		BS_CHECK_GL_ERROR();
 
 		mTarget = GLTexture::getGLTextureTarget(props.getTextureType(), props.getNumSamples(), desc.numArraySlices);
 	}
@@ -74,5 +84,6 @@ namespace bs { namespace ct {
 	GLTextureView::~GLTextureView()
 	{
 		glDeleteTextures(1, &mViewID);
+		BS_CHECK_GL_ERROR();
 	}
 }}

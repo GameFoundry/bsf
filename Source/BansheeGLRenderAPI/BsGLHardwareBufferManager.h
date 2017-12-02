@@ -12,19 +12,19 @@ namespace bs { namespace ct
 	 */
 
 	/**	Handles creation of OpenGL specific hardware buffers. */
-    class GLHardwareBufferManager : public HardwareBufferManager
-    {
-    public:
+	class GLHardwareBufferManager : public HardwareBufferManager
+	{
+	public:
 		/**	Converts engine buffer usage flags into OpenGL specific flags. */
 		static GLenum getGLUsage(GpuBufferUsage usage);
 
 		/**	Converts vertex element type into OpenGL specific type. */
-        static GLenum getGLType(VertexElementType type);
+		static GLenum getGLType(VertexElementType type);
 
 	protected:
 		/** @copydoc HardwareBufferManager::createVertexBufferInternal */
-        SPtr<VertexBuffer> createVertexBufferInternal(const VERTEX_BUFFER_DESC& desc, 
-        	GpuDeviceFlags deviceMask = GDF_DEFAULT) override;
+		SPtr<VertexBuffer> createVertexBufferInternal(const VERTEX_BUFFER_DESC& desc, 
+			GpuDeviceFlags deviceMask = GDF_DEFAULT) override;
 
 		/** @copydoc HardwareBufferManager::createIndexBufferInternal */
 		SPtr<IndexBuffer> createIndexBufferInternal(const INDEX_BUFFER_DESC& desc, 
@@ -37,7 +37,7 @@ namespace bs { namespace ct
 		/** @copydoc HardwareBufferManager::createGpuBufferInternal */
 		SPtr<GpuBuffer> createGpuBufferInternal(const GPU_BUFFER_DESC& desc, 
 			GpuDeviceFlags deviceMask = GDF_DEFAULT) override;
-    };
+	};
 
 	/** @} */
 }}

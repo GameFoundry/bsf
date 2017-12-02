@@ -72,9 +72,9 @@ namespace bs
 
 	Texture::Texture(const TEXTURE_DESC& desc)
 		:mProperties(desc)
-    {
-        
-    }
+	{
+		
+	}
 
 	Texture::Texture(const TEXTURE_DESC& desc, const SPtr<PixelData>& pixelData)
 		: mProperties(desc), mInitData(pixelData)
@@ -497,7 +497,6 @@ namespace bs
 		auto iterFind = mTextureViews.find(key);
 		if (iterFind == mTextureViews.end())
 		{
-			SPtr<TextureView> newView = 
 			mTextureViews[key] = createView(key);
 
 			iterFind = mTextureViews.find(key);

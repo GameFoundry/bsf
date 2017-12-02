@@ -12,8 +12,8 @@ namespace bs { namespace ct
 	 */
 
 	/**	GPU program compiled from GLSL and usable by OpenGL. */
-    class GLSLGpuProgram : public GpuProgram
-    {
+	class GLSLGpuProgram : public GpuProgram
+	{
 	public:
 		~GLSLGpuProgram();
 
@@ -44,7 +44,7 @@ namespace bs { namespace ct
 		static UINT32 mHullShaderCount;
 		static UINT32 mDomainShaderCount;
 		static UINT32 mComputeShaderCount;
-    };
+	};
 
 	/** @} */
 }}

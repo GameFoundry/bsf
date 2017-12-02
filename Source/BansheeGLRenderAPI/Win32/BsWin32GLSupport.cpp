@@ -22,8 +22,8 @@ namespace bs { namespace ct
 	}
 
 	Win32GLSupport::Win32GLSupport()
-		: mInitialWindow(nullptr), mHasPixelFormatARB(false), mHasMultisample(false), 
-		mHasHardwareGamma(false), mHasAdvancedContext(false)
+		: mInitialWindow(nullptr), mHasPixelFormatARB(false), mHasMultisample(false), mHasHardwareGamma(false)
+		, mHasAdvancedContext(false)
 	{
 		initialiseWGL();
 	} 
@@ -69,17 +69,17 @@ namespace bs { namespace ct
 		wglewContextInit(this);
 
 		// Check for W32 specific extensions probe function
-		PFNWGLGETEXTENSIONSSTRINGARBPROC _wglGetExtensionsString = (PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsString");
+		auto _wglGetExtensionsString = (PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsString");
 		if(_wglGetExtensionsString == nullptr)
 			return;
 
-		const char *wgl_extensions = _wglGetExtensionsString(mInitialWindow->_getHDC());
+		const char* wglExtensions = _wglGetExtensionsString(mInitialWindow->_getHDC());
 
 		// Parse them, and add them to the main list
 		StringStream ext;
-		String instr;
-		ext << wgl_extensions;
+		ext << wglExtensions;
 
+		String instr;
 		while (ext >> instr)
 			extensionList.insert(instr);
 	}
@@ -107,7 +107,7 @@ namespace bs { namespace ct
 					attribs[i++] = WGL_CONTEXT_PROFILE_MASK_ARB;
 					attribs[i++] = WGL_CONTEXT_CORE_PROFILE_BIT_ARB;
 
-#if BS_DEBUG_MODE
+#if (BS_DEBUG_MODE && (BS_OPENGL_4_3 || BS_OPENGLES_3_2))
 					attribs[i++] = WGL_CONTEXT_FLAGS_ARB;
 					attribs[i++] = WGL_CONTEXT_DEBUG_BIT_ARB;				
 #endif
@@ -139,9 +139,8 @@ namespace bs { namespace ct
 
 	void Win32GLSupport::initialiseWGL()
 	{
-		// We need to create a dummy context in order to get functions
-		// that allow us to create a more advanced context. It seems
-		// hacky but that's the only way to do it.
+		// We need to create a dummy context in order to get functions that allow us to create a more advanced context. 
+		// It seems hacky but that's the only way to do it.
 		
 		LPCSTR dummyText = "Dummy";
 #ifdef BS_STATIC_LIB
@@ -158,8 +157,18 @@ namespace bs { namespace ct
 		dummyClass.lpszClassName = dummyText;
 		RegisterClass(&dummyClass);
 
-		HWND hwnd = CreateWindow(dummyText, dummyText, WS_POPUP | WS_CLIPCHILDREN,
-			0, 0, 32, 32, 0, 0, hinst, 0);
+		HWND hwnd = CreateWindow(
+			dummyText, 
+			dummyText, 
+			WS_POPUP | WS_CLIPCHILDREN,
+			0, 
+			0, 
+			32, 
+			32, 
+			0, 
+			0, 
+			hinst, 
+			0);
 
 		if (hwnd == nullptr)
 			BS_EXCEPT(RenderingAPIException, "CreateWindow() failed");
@@ -184,14 +193,12 @@ namespace bs { namespace ct
 		{
 			HGLRC oldrc = wglGetCurrentContext();
 			HDC oldhdc = wglGetCurrentDC();
-			// if wglMakeCurrent fails, wglGetProcAddress will return null
+
+			// If wglMakeCurrent fails, wglGetProcAddress will return null
 			wglMakeCurrent(hdc, hrc);
 			
-			PFNWGLGETEXTENSIONSSTRINGARBPROC _wglGetExtensionsStringARB =
-				(PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsStringARB");
-			
-			PFNWGLCREATECONTEXTATTRIBSARBPROC _wglCreateContextAttribsARB = 
-				(PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
+			auto _wglGetExtensionsStringARB = (PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsStringARB");
+			auto _wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
 
 			if (_wglCreateContextAttribsARB != nullptr)
 			{
@@ -235,7 +242,7 @@ namespace bs { namespace ct
 					(PFNWGLGETPIXELFORMATATTRIBIVARBPROC)wglGetProcAddress("wglGetPixelFormatAttribivARB");
 				if (WGLEW_GET_FUN(__wglewChoosePixelFormatARB)(hdc, iattr, 0, 256, formats, &count))
 				{
-					// determine what multisampling levels are offered
+					// Determine what multisampling levels are offered
 					int query = WGL_SAMPLES_ARB, samples;
 					for (unsigned int i = 0; i < count; ++i)
 					{
@@ -303,16 +310,14 @@ namespace bs { namespace ct
 			attribList.push_back(WGL_DEPTH_BITS_ARB); attribList.push_back(pfd.cDepthBits);
 			attribList.push_back(WGL_STENCIL_BITS_ARB); attribList.push_back(pfd.cStencilBits);
 			attribList.push_back(WGL_SAMPLES_ARB); attribList.push_back(multisample);
+
 			if (useHwGamma && checkExtension("WGL_EXT_framebuffer_sRGB"))
-			{
 				attribList.push_back(WGL_FRAMEBUFFER_SRGB_CAPABLE_EXT); attribList.push_back(GL_TRUE);
-			}
 
-			// terminator
-			attribList.push_back(0);
+			attribList.push_back(0); // Terminator
 
-			UINT nformats;
-			if (!WGLEW_GET_FUN(__wglewChoosePixelFormatARB)(hdc, &(attribList[0]), NULL, 1, &format, &nformats) || nformats <= 0)
+			UINT numFormats;
+			if (!WGLEW_GET_FUN(__wglewChoosePixelFormatARB)(hdc, &(attribList[0]), NULL, 1, &format, &numFormats) || numFormats <= 0)
 				return false;
 		}
 		else
@@ -320,7 +325,7 @@ namespace bs { namespace ct
 			format = ChoosePixelFormat(hdc, &pfd);
 		}
 
-		return (format && SetPixelFormat(hdc, format, &pfd));
+		return format && SetPixelFormat(hdc, format, &pfd);
 	}
 
 	SPtr<VideoModeInfo> Win32GLSupport::getVideoModeInfo() const
@@ -332,12 +337,15 @@ namespace bs { namespace ct
 	{
 		int winError = GetLastError();
 		char errDesc[255];
-		int i;
 
-		// Try windows errors first
-		i = FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-			NULL, winError, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-			(LPTSTR) errDesc, 255, NULL);
+		FormatMessage(
+			FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+			NULL, 
+			winError, 
+			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+			(LPTSTR) errDesc, 
+			255, 
+			NULL);
 
 		return String(errDesc);
 	}
