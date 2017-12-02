@@ -206,9 +206,6 @@ namespace bs
 	protected:
 		GpuProgram(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask);
 
-		/** Returns whether required capabilities for this program is supported. */
-		bool isRequiredCapabilitiesSupported() const;
-
 		bool mNeedsAdjacencyInfo;
 
 		bool mIsCompiled;

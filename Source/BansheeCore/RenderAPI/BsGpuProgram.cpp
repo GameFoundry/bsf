@@ -17,9 +17,9 @@ namespace bs
 	GpuProgram::GpuProgram(const GPU_PROGRAM_DESC& desc)
 		: mNeedsAdjacencyInfo(desc.requiresAdjacency), mLanguage(desc.language)
 		, mProperties(desc.source, desc.entryPoint, desc.type)
-    {
+	{
 
-    }
+	}
 
 	bool GpuProgram::isCompiled() const
 	{
@@ -81,14 +81,6 @@ namespace bs
 	}
 
 	bool GpuProgram::isSupported() const
-    {
-		if (!isRequiredCapabilitiesSupported())
-			return false;
-
-		return true;
-    }
-
-	bool GpuProgram::isRequiredCapabilitiesSupported() const
 	{
 		return true;
 	}

@@ -23,31 +23,13 @@ namespace bs { namespace ct
 
 		GLint linkCompileSuccess = 0;
 		glGetProgramiv(programObj, GL_LINK_STATUS, &linkCompileSuccess);
+		BS_CHECK_GL_ERROR();
 
-		GLenum glErr;
-		bool errorsFound = false;
-
-		glErr = glGetError();
-		while (glErr != GL_NO_ERROR)
-		{
-			const char* glerrStr = (const char*)gluErrorString(glErr);
-
-			if (glerrStr)
-			{
-				if (errorsFound)
-					stream << "\nPrevious errors: \n";
-
-				stream << String(glerrStr) << std::endl;;
-			}
-
-			glErr = glGetError();
-			errorsFound = true;
-		}
-
-		if ((errorsFound || !linkCompileSuccess) && programObj > 0)
+		if (!linkCompileSuccess && programObj > 0)
 		{
 			GLint infologLength = 0;
 			glGetProgramiv(programObj, GL_INFO_LOG_LENGTH, &infologLength);
+			BS_CHECK_GL_ERROR();
 
 			if (infologLength > 0)
 			{
@@ -56,6 +38,7 @@ namespace bs { namespace ct
 				GLchar* infoLog = (GLchar*)bs_alloc(sizeof(GLchar)* infologLength);
 
 				glGetProgramInfoLog(programObj, infologLength, &charsWritten, infoLog);
+				BS_CHECK_GL_ERROR();
 
 				stream << "Compile and linker info log: \n";
 				stream << String(infoLog);
@@ -65,19 +48,20 @@ namespace bs { namespace ct
 		}
 
 		outErrorMsg = stream.str();
-
-		return errorsFound || !linkCompileSuccess;
+		return !linkCompileSuccess;
 	}
 	
 	GLSLGpuProgram::GLSLGpuProgram(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
 		:GpuProgram(desc, deviceMask), mProgramID(0), mGLHandle(0)
-    { }
+	{ }
 
 	GLSLGpuProgram::~GLSLGpuProgram()
-    { 
+	{ 
 		if (mIsCompiled && mGLHandle != 0)
 		{
 			glDeleteProgram(mGLHandle);
+			BS_CHECK_GL_ERROR();
+
 			mGLHandle = 0;
 		}
 
@@ -86,12 +70,22 @@ namespace bs { namespace ct
 
 	void GLSLGpuProgram::initialize()
 	{
+#if BS_OPENGL_4_5
 		static const char* VERSION_LINE = "#version 450\n";
+#elif BS_OPENGL_4_4
+		static const char* VERSION_LINE = "#version 440\n";
+#elif BS_OPENGL_4_3
+		static const char* VERSION_LINE = "#version 430\n";
+#elif BS_OPENGL_4_2
+		static const char* VERSION_LINE = "#version 420\n";
+#else
+		static const char* VERSION_LINE = "#version 410\n";
+#endif
 		
 		if (!isSupported())
 		{
 			mIsCompiled = false;
-			mCompileError = "Specified program is not supported by the current render system.";
+			mCompileError = "Specified GPU program type is not supported by the current render system.";
 
 			GpuProgram::initialize();
 			return;
@@ -108,6 +102,7 @@ namespace bs { namespace ct
 			shaderType = GL_FRAGMENT_SHADER;
 			mProgramID = ++mFragmentShaderCount;
 			break;
+#if BS_OPENGL_4_1 || BS_OPENGLES_3_2
 		case GPT_GEOMETRY_PROGRAM:
 			shaderType = GL_GEOMETRY_SHADER;
 			mProgramID = ++mGeometryShaderCount;
@@ -120,10 +115,13 @@ namespace bs { namespace ct
 			shaderType = GL_TESS_EVALUATION_SHADER;
 			mProgramID = ++mHullShaderCount;
 			break;
+#endif
+#if BS_OPENGL_4_3 || BS_OPENGLES_3_1
 		case GPT_COMPUTE_PROGRAM:
 			shaderType = GL_COMPUTE_SHADER;
 			mProgramID = ++mComputeShaderCount;
 			break;
+#endif
 		default:
 			break;
 		}
@@ -231,6 +229,7 @@ namespace bs { namespace ct
 			String code = codeStream.str();
 			const char* codeRaw = code.c_str();
 			mGLHandle = glCreateShaderProgramv(shaderType, 1, (const GLchar**)&codeRaw);
+			BS_CHECK_GL_ERROR();
 
 			mCompileError = "";
 			mIsCompiled = !checkForGLSLError(mGLHandle, mCompileError);
@@ -254,10 +253,35 @@ namespace bs { namespace ct
 
 	bool GLSLGpuProgram::isSupported() const
 	{
-		if (!isRequiredCapabilitiesSupported())
+		RenderAPI* rapi = RenderAPI::instancePtr();
+		const RenderAPICapabilities& caps = rapi->getCapabilities(0);
+
+		if(!caps.isShaderProfileSupported("glsl"))
 			return false;
 
-		RenderAPI* rapi = RenderAPI::instancePtr();
-		return rapi->getCapabilities(0).isShaderProfileSupported("glsl");
+		switch (mProperties.getType())
+		{
+		case GPT_GEOMETRY_PROGRAM:
+#if BS_OPENGL_4_1 || BS_OPENGLES_3_2
+			return caps.hasCapability(RSC_GEOMETRY_PROGRAM);
+#else
+			return false;
+#endif
+		case GPT_HULL_PROGRAM:
+		case GPT_DOMAIN_PROGRAM:
+#if BS_OPENGL_4_1 || BS_OPENGLES_3_2
+			return caps.hasCapability(RSC_TESSELLATION_PROGRAM);
+#else
+			return false;
+#endif
+		case GPT_COMPUTE_PROGRAM:
+#if BS_OPENGL_4_3 || BS_OPENGLES_3_1
+			return caps.hasCapability(RSC_COMPUTE_PROGRAM);
+#else
+			return false;
+#endif
+		default:
+			return true;
+		}
 	}
 }}

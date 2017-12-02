@@ -33,8 +33,45 @@ namespace bs { namespace ct
 {
 	const char* MODULE_NAME = "BansheeGLRenderAPI.dll";
 
+	const char* bs_get_gl_error_string(GLenum errorCode)
+	{
+		switch (errorCode) 
+		{
+			case GL_INVALID_OPERATION: return "INVALID_OPERATION";
+			case GL_INVALID_ENUM: return "INVALID_ENUM";
+			case GL_INVALID_VALUE: return "INVALID_VALUE";
+			case GL_OUT_OF_MEMORY: return "OUT_OF_MEMORY";
+			case GL_INVALID_FRAMEBUFFER_OPERATION: return "INVALID_FRAMEBUFFER_OPERATION";
+		}
+
+		return nullptr;
+	}
+
+	void bs_check_gl_error(const char* function, const char* file, INT32 line)
+	{
+		GLenum errorCode = glGetError();
+		if (errorCode != GL_NO_ERROR)
+		{
+			StringStream errorOutput;
+			errorOutput << "OpenGL error in " << function << " [" << file << ":" << toString(line) << "]:\n";
+
+			while (errorCode != GL_NO_ERROR)
+			{
+				const char* errorString = bs_get_gl_error_string(errorCode);
+				if (errorString)
+					errorOutput << "\t - " << errorString;
+
+				errorCode = glGetError();
+			}
+
+			gDebug().logWarning(errorOutput.str());
+		}
+	}
+
+#if BS_OPENGL_4_3 || BS_OPENGLES_3_2
 	void openGlErrorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar
 				*message, GLvoid *userParam);
+#endif
 
 	/************************************************************************/
 	/* 								PUBLIC INTERFACE                   		*/
@@ -125,11 +162,8 @@ namespace bs { namespace ct
 		if (mCurrentContext)
 			mCurrentContext->setCurrent(*primaryWindow);
 
-		checkForErrors();
-
 		// Setup GLSupport
 		mGLSupport->initializeExtensions();
-		checkForErrors();
 
 		mNumDevices = 1;
 		mCurrentCapabilities = bs_newN<RenderAPICapabilities>(mNumDevices);
@@ -137,16 +171,23 @@ namespace bs { namespace ct
 
 		initFromCaps(mCurrentCapabilities);
 		GLVertexArrayObjectManager::startUp();
+
 		glFrontFace(GL_CW);
+		BS_CHECK_GL_ERROR();
 
 		// Ensure cubemaps are filtered across seams
 		glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+		BS_CHECK_GL_ERROR();
 
 		GPUInfo gpuInfo;
 		gpuInfo.numGPUs = 1;
 
 		const char* vendor = (const char*)glGetString(GL_VENDOR);
+		BS_CHECK_GL_ERROR();
+
 		const char* renderer = (const char*)glGetString(GL_RENDERER);
+		BS_CHECK_GL_ERROR();
+
 		gpuInfo.names[0] = String(vendor) + " " + String(renderer);
 
 		PlatformUtility::_setGPUInfo(gpuInfo);
@@ -362,8 +403,11 @@ namespace bs { namespace ct
 		{
 			THROW_IF_NOT_CORE_THREAD;
 
-			for(UINT32 i = 0; i < 8; i++)
+			for (UINT32 i = 0; i < 8; i++)
+			{
 				glBindImageTexture(i, 0, 0, false, 0, GL_READ_WRITE, GL_R32F);
+				BS_CHECK_GL_ERROR();
+			}
 
 			bs_frame_mark();
 			{
@@ -456,19 +500,28 @@ namespace bs { namespace ct
 							continue;
 
 						GLTexture* glTex = static_cast<GLTexture*>(texture.get());
-
 						if (glTex != nullptr)
 						{
-							SPtr<TextureView> texView = glTex->requestView(surface.mipLevel, surface.numMipLevels, 
-								surface.face, surface.numFaces, GVU_DEFAULT);
+							SPtr<TextureView> texView = glTex->requestView(
+								surface.mipLevel,
+								surface.numMipLevels,
+								surface.face,
+								surface.numFaces,
+								GVU_DEFAULT);
 
 							GLTextureView* glTexView = static_cast<GLTextureView*>(texView.get());
+
 							GLenum newTextureType = glTexView->getGLTextureTarget();
 
 							if (mTextureInfos[unit].type != newTextureType)
+							{
 								glBindTexture(mTextureInfos[unit].type, 0);
+								BS_CHECK_GL_ERROR();
+							}
 
 							glBindTexture(newTextureType, glTexView->getGLID());
+							BS_CHECK_GL_ERROR();
+
 							mTextureInfos[unit].type = newTextureType;
 
 							SPtr<GLSLGpuProgram> activeProgram = getActiveProgram(type);
@@ -477,10 +530,14 @@ namespace bs { namespace ct
 								GLuint glProgram = activeProgram->getGLHandle();
 
 								glProgramUniform1i(glProgram, binding, unit);
+								BS_CHECK_GL_ERROR();
 							}
 						}
 						else
+						{
 							glBindTexture(mTextureInfos[unit].type, 0);
+							BS_CHECK_GL_ERROR();
+						}
 					}
 
 					for(auto& entry : paramDesc->samplers)
@@ -536,11 +593,15 @@ namespace bs { namespace ct
 								if (glBuffer != nullptr)
 								{
 									if (mTextureInfos[unit].type != GL_TEXTURE_BUFFER)
+									{
 										glBindTexture(mTextureInfos[unit].type, 0);
+										BS_CHECK_GL_ERROR();
+									}
 
 									mTextureInfos[unit].type = GL_TEXTURE_BUFFER;
 
 									glBindTexture(GL_TEXTURE_BUFFER, glBuffer->getGLTextureId());
+									BS_CHECK_GL_ERROR();
 
 									SPtr<GLSLGpuProgram> activeProgram = getActiveProgram(type);
 									if (activeProgram != nullptr)
@@ -548,10 +609,14 @@ namespace bs { namespace ct
 										GLuint glProgram = activeProgram->getGLHandle();
 
 										glProgramUniform1i(glProgram, binding, unit);
+										BS_CHECK_GL_ERROR();
 									}
 								}
 								else
+								{
 									glBindTexture(mTextureInfos[unit].type, 0);
+									BS_CHECK_GL_ERROR();
+								}
 							}
 							break;
 						case GPOT_RWBYTE_BUFFER: // Storage buffer (read/write, unstructured)
@@ -559,8 +624,15 @@ namespace bs { namespace ct
 								UINT32 unit = getImageUnit(binding);
 								if (glBuffer != nullptr)
 								{
-									glBindImageTexture(unit, glBuffer->getGLTextureId(), 0, false,
-													   0, GL_READ_WRITE, glBuffer->getGLFormat());
+									glBindImageTexture(
+										unit,
+										glBuffer->getGLTextureId(),
+										0,
+										false,
+										0,
+										GL_READ_WRITE,
+										glBuffer->getGLFormat());
+									BS_CHECK_GL_ERROR();
 
 									SPtr<GLSLGpuProgram> activeProgram = getActiveProgram(type);
 									if (activeProgram != nullptr)
@@ -568,10 +640,14 @@ namespace bs { namespace ct
 										GLuint glProgram = activeProgram->getGLHandle();
 
 										glProgramUniform1i(glProgram, binding, unit);
+										BS_CHECK_GL_ERROR();
 									}
 								}
 								else
+								{
 									glBindImageTexture(unit, 0, 0, false, 0, GL_READ_WRITE, GL_R32F);
+									BS_CHECK_GL_ERROR();
+								}
 							}
 							break;
 						case GPOT_RWSTRUCTURED_BUFFER: // Shared storage block (read/write, structured)
@@ -580,6 +656,7 @@ namespace bs { namespace ct
 								if (glBuffer != nullptr)
 								{
 									glBindBufferBase(GL_SHADER_STORAGE_BUFFER, unit, glBuffer->getGLBufferId());
+									BS_CHECK_GL_ERROR();
 									
 									SPtr<GLSLGpuProgram> activeProgram = getActiveProgram(type);
 									if (activeProgram != nullptr)
@@ -587,10 +664,14 @@ namespace bs { namespace ct
 										GLuint glProgram = activeProgram->getGLHandle();
 
 										glShaderStorageBlockBinding(glProgram, binding, unit);
+										BS_CHECK_GL_ERROR();
 									}
 								}
 								else
+								{
 									glBindBufferBase(GL_SHADER_STORAGE_BUFFER, unit, 0);
+									BS_CHECK_GL_ERROR();
+								}
 							}
 							break;
 						default:
@@ -609,8 +690,15 @@ namespace bs { namespace ct
 						if (texture != nullptr)
 						{
 							GLTexture* tex = static_cast<GLTexture*>(texture.get());
-							glBindImageTexture(unit, tex->getGLID(), surface.mipLevel, surface.numFaces > 1,
-								surface.face, GL_READ_WRITE, tex->getGLFormat());
+							glBindImageTexture(
+								unit,
+								tex->getGLID(),
+								surface.mipLevel,
+								surface.numFaces > 1,
+								surface.face,
+								GL_READ_WRITE,
+								tex->getGLFormat());
+							BS_CHECK_GL_ERROR();
 
 							SPtr<GLSLGpuProgram> activeProgram = getActiveProgram(type);
 							if (activeProgram != nullptr)
@@ -618,10 +706,14 @@ namespace bs { namespace ct
 								GLuint glProgram = activeProgram->getGLHandle();
 
 								glProgramUniform1i(glProgram, binding, unit);
+								BS_CHECK_GL_ERROR();
 							}
 						}
 						else
+						{
 							glBindImageTexture(unit, 0, 0, false, 0, GL_READ_WRITE, GL_R32F);
+							BS_CHECK_GL_ERROR();
+						}
 					}
 
 					for (auto& entry : paramDesc->paramBlocks)
@@ -658,66 +750,120 @@ namespace bs { namespace ct
 								{
 								case GPDT_FLOAT1:
 									glProgramUniform1fv(glProgram, param.gpuMemOffset, param.arraySize, (GLfloat*)ptrData);
+									BS_CHECK_GL_ERROR();
 									break;
 								case GPDT_FLOAT2:
 									glProgramUniform2fv(glProgram, param.gpuMemOffset, param.arraySize, (GLfloat*)ptrData);
+									BS_CHECK_GL_ERROR();
 									break;
 								case GPDT_FLOAT3:
 									glProgramUniform3fv(glProgram, param.gpuMemOffset, param.arraySize, (GLfloat*)ptrData);
+									BS_CHECK_GL_ERROR();
 									break;
 								case GPDT_FLOAT4:
 									glProgramUniform4fv(glProgram, param.gpuMemOffset, param.arraySize, (GLfloat*)ptrData);
+									BS_CHECK_GL_ERROR();
 									break;
 								case GPDT_MATRIX_2X2:
-									glProgramUniformMatrix2fv(glProgram, param.gpuMemOffset, param.arraySize,
-										GL_FALSE, (GLfloat*)ptrData);
+									glProgramUniformMatrix2fv(
+										glProgram,
+										param.gpuMemOffset,
+										param.arraySize,
+										GL_FALSE,
+										(GLfloat*)ptrData);
+									BS_CHECK_GL_ERROR();
 									break;
 								case GPDT_MATRIX_2X3:
-									glProgramUniformMatrix3x2fv(glProgram, param.gpuMemOffset, param.arraySize,
-										GL_FALSE, (GLfloat*)ptrData);
+									glProgramUniformMatrix3x2fv(
+										glProgram,
+										param.gpuMemOffset,
+										param.arraySize,
+										GL_FALSE,
+										(GLfloat*)ptrData);
+									BS_CHECK_GL_ERROR();
 									break;
 								case GPDT_MATRIX_2X4:
-									glProgramUniformMatrix4x2fv(glProgram, param.gpuMemOffset, param.arraySize,
-										GL_FALSE, (GLfloat*)ptrData);
+									glProgramUniformMatrix4x2fv(
+										glProgram,
+										param.gpuMemOffset,
+										param.arraySize,
+										GL_FALSE,
+										(GLfloat*)ptrData);
+									BS_CHECK_GL_ERROR();
 									break;
 								case GPDT_MATRIX_3X2:
-									glProgramUniformMatrix2x3fv(glProgram, param.gpuMemOffset, param.arraySize,
-										GL_FALSE, (GLfloat*)ptrData);
+									glProgramUniformMatrix2x3fv(
+										glProgram,
+										param.gpuMemOffset,
+										param.arraySize,
+										GL_FALSE,
+										(GLfloat*)ptrData);
+									BS_CHECK_GL_ERROR();
 									break;
 								case GPDT_MATRIX_3X3:
-									glProgramUniformMatrix3fv(glProgram, param.gpuMemOffset, param.arraySize,
-										GL_FALSE, (GLfloat*)ptrData);
+									glProgramUniformMatrix3fv(
+										glProgram,
+										param.gpuMemOffset,
+										param.arraySize,
+										GL_FALSE,
+										(GLfloat*)ptrData);
+									BS_CHECK_GL_ERROR();
 									break;
 								case GPDT_MATRIX_3X4:
-									glProgramUniformMatrix4x3fv(glProgram, param.gpuMemOffset, param.arraySize,
-										GL_FALSE, (GLfloat*)ptrData);
+									glProgramUniformMatrix4x3fv(
+										glProgram,
+										param.gpuMemOffset,
+										param.arraySize,
+										GL_FALSE,
+										(GLfloat*)ptrData);
+									BS_CHECK_GL_ERROR();
 									break;
 								case GPDT_MATRIX_4X2:
-									glProgramUniformMatrix2x4fv(glProgram, param.gpuMemOffset, param.arraySize,
-										GL_FALSE, (GLfloat*)ptrData);
+									glProgramUniformMatrix2x4fv(
+										glProgram,
+										param.gpuMemOffset,
+										param.arraySize,
+										GL_FALSE,
+										(GLfloat*)ptrData);
+									BS_CHECK_GL_ERROR();
 									break;
 								case GPDT_MATRIX_4X3:
-									glProgramUniformMatrix3x4fv(glProgram, param.gpuMemOffset, param.arraySize,
-										GL_FALSE, (GLfloat*)ptrData);
+									glProgramUniformMatrix3x4fv(
+										glProgram,
+										param.gpuMemOffset,
+										param.arraySize,
+										GL_FALSE,
+										(GLfloat*)ptrData);
+									BS_CHECK_GL_ERROR();
 									break;
 								case GPDT_MATRIX_4X4:
-									glProgramUniformMatrix4fv(glProgram, param.gpuMemOffset, param.arraySize,
-										GL_FALSE, (GLfloat*)ptrData);
+									glProgramUniformMatrix4fv(
+										glProgram,
+										param.gpuMemOffset,
+										param.arraySize,
+										GL_FALSE,
+										(GLfloat*)ptrData);
+									BS_CHECK_GL_ERROR();
 									break;
 								case GPDT_INT1:
 									glProgramUniform1iv(glProgram, param.gpuMemOffset, param.arraySize, (GLint*)ptrData);
+									BS_CHECK_GL_ERROR();
 									break;
 								case GPDT_INT2:
 									glProgramUniform2iv(glProgram, param.gpuMemOffset, param.arraySize, (GLint*)ptrData);
+									BS_CHECK_GL_ERROR();
 									break;
 								case GPDT_INT3:
 									glProgramUniform3iv(glProgram, param.gpuMemOffset, param.arraySize, (GLint*)ptrData);
+									BS_CHECK_GL_ERROR();
 									break;
 								case GPDT_INT4:
 									glProgramUniform4iv(glProgram, param.gpuMemOffset, param.arraySize, (GLint*)ptrData);
+									BS_CHECK_GL_ERROR();
 									break;
 								case GPDT_BOOL:
 									glProgramUniform1uiv(glProgram, param.gpuMemOffset, param.arraySize, (GLuint*)ptrData);
+									BS_CHECK_GL_ERROR();
 									break;
 								default:
 								case GPDT_UNKNOWN:
@@ -726,9 +872,7 @@ namespace bs { namespace ct
 							}
 
 							if (uniformBufferData != nullptr)
-							{
 								bs_stack_free(uniformBufferData);
-							}
 						}
 						else
 						{
@@ -736,7 +880,10 @@ namespace bs { namespace ct
 
 							UINT32 unit = getUniformUnit(binding - 1);
 							glUniformBlockBinding(glProgram, binding - 1, unit);
+							BS_CHECK_GL_ERROR();
+
 							glBindBufferBase(GL_UNIFORM_BUFFER, unit, glParamBlockBuffer->getGLHandle());
+							BS_CHECK_GL_ERROR();
 						}
 					}
 				}
@@ -835,12 +982,21 @@ namespace bs { namespace ct
 
 				// Enable / disable sRGB states
 				if (target->getProperties().hwGamma)
+				{
 					glEnable(GL_FRAMEBUFFER_SRGB);
+					BS_CHECK_GL_ERROR();
+				}
 				else
+				{
 					glDisable(GL_FRAMEBUFFER_SRGB);
+					BS_CHECK_GL_ERROR();
+				}
 			}
 			else
+			{
 				glBindFramebuffer(GL_FRAMEBUFFER, 0);
+				BS_CHECK_GL_ERROR();
+			}
 
 			applyViewport();
 		};
@@ -969,9 +1125,15 @@ namespace bs { namespace ct
 			beginDraw();
 
 			if (instanceCount <= 1)
+			{
 				glDrawArrays(primType, vertexOffset, vertexCount);
+				BS_CHECK_GL_ERROR();
+			}
 			else
+			{
 				glDrawArraysInstanced(primType, vertexOffset, vertexCount, instanceCount);
+				BS_CHECK_GL_ERROR();
+			}
 
 			endDraw();
 		};
@@ -1020,18 +1182,30 @@ namespace bs { namespace ct
 			SPtr<GLIndexBuffer> indexBuffer = std::static_pointer_cast<GLIndexBuffer>(mBoundIndexBuffer);
 			const IndexBufferProperties& ibProps = indexBuffer->getProperties();
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer->getGLBufferId());
+			BS_CHECK_GL_ERROR();
 
 			GLenum indexType = (ibProps.getType() == IT_16BIT) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
 
 			if (instanceCount <= 1)
 			{
-				glDrawElementsBaseVertex(primType, indexCount, indexType,
-					(GLvoid*)(UINT64)(ibProps.getIndexSize() * startIndex), vertexOffset);
+				glDrawElementsBaseVertex(
+					primType,
+					indexCount,
+					indexType,
+					(GLvoid*)(UINT64)(ibProps.getIndexSize() * startIndex),
+					vertexOffset);
+				BS_CHECK_GL_ERROR();
 			}
 			else
 			{
-				glDrawElementsInstancedBaseVertex(primType, indexCount, indexType,
-					(GLvoid*)(UINT64)(ibProps.getIndexSize() * startIndex), instanceCount, vertexOffset);
+				glDrawElementsInstancedBaseVertex(
+					primType,
+					indexCount,
+					indexType,
+					(GLvoid*)(UINT64)(ibProps.getIndexSize() * startIndex),
+					instanceCount,
+					vertexOffset);
+				BS_CHECK_GL_ERROR();
 			}
 
 			endDraw();
@@ -1074,8 +1248,15 @@ namespace bs { namespace ct
 				return;
 			}
 
+#if BS_OPENGL_4_3 || BS_OPENGLES_3_1
 			glUseProgram(mCurrentComputeProgram->getGLHandle());
+			BS_CHECK_GL_ERROR();
+
 			glDispatchCompute(numGroupsX, numGroupsY, numGroupsZ);
+			BS_CHECK_GL_ERROR();
+#else
+			LOGWRN("Compute shaders not supported on current OpenGL version.");
+#endif
 		};
 
 		if (commandBuffer == nullptr)
@@ -1209,8 +1390,7 @@ namespace bs { namespace ct
 		if(mActiveRenderTarget == nullptr)
 			return;
 
-		bool colorMask = !mColorWrite[0] || !mColorWrite[1] 
-		|| !mColorWrite[2] || !mColorWrite[3]; 
+		bool colorMask = !mColorWrite[0] || !mColorWrite[1] || !mColorWrite[2] || !mColorWrite[3]; 
 
 		// Disable scissor test as we want to clear the entire render surface
 		GLboolean scissorTestEnabled = glIsEnabled(GL_SCISSOR_TEST);
@@ -1222,6 +1402,7 @@ namespace bs { namespace ct
 		if (scissorTestEnabled)
 		{
 			glDisable(GL_SCISSOR_TEST);
+			BS_CHECK_GL_ERROR();
 		}
 
 		const RenderTargetProperties& rtProps = mActiveRenderTarget->getProperties();
@@ -1239,18 +1420,25 @@ namespace bs { namespace ct
 		{
 			// Enable buffer for writing if it isn't
 			if (colorMask)
+			{
 				glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+				BS_CHECK_GL_ERROR();
+			}
 		}
 		if (buffers & FBT_DEPTH)
 		{
 			// Enable buffer for writing if it isn't
 			if (!mDepthWrite)
+			{
 				glDepthMask(GL_TRUE);
+				BS_CHECK_GL_ERROR();
+			}
 		}
 		if (buffers & FBT_STENCIL)
 		{
 			// Enable buffer for writing if it isn't
 			glStencilMask(0xFFFFFFFF);
+			BS_CHECK_GL_ERROR();
 		}
 
 		if (targetMask == 0xFF)
@@ -1261,6 +1449,7 @@ namespace bs { namespace ct
 				flags |= GL_COLOR_BUFFER_BIT;
 
 				glClearColor(color.r, color.g, color.b, color.a);
+				BS_CHECK_GL_ERROR();
 			}
 
 			if (buffers & FBT_DEPTH)
@@ -1268,6 +1457,7 @@ namespace bs { namespace ct
 				flags |= GL_DEPTH_BUFFER_BIT;
 
 				glClearDepth(depth);
+				BS_CHECK_GL_ERROR();
 			}
 
 			if (buffers & FBT_STENCIL)
@@ -1275,10 +1465,12 @@ namespace bs { namespace ct
 				flags |= GL_STENCIL_BUFFER_BIT;
 
 				glClearStencil(stencil);
+				BS_CHECK_GL_ERROR();
 			}
 
 			// Clear buffers
 			glClear(flags);
+			BS_CHECK_GL_ERROR();
 		}
 		else
 		{
@@ -1290,7 +1482,10 @@ namespace bs { namespace ct
 				for (UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
 				{
 					if (fbo->hasColorBuffer(i) && ((1 << i) & targetMask) != 0)
+					{
 						glClearBufferfv(GL_COLOR, i, (GLfloat*)&color);
+						BS_CHECK_GL_ERROR();
+					}
 				}
 			}
 
@@ -1299,16 +1494,19 @@ namespace bs { namespace ct
 				if (buffers & FBT_STENCIL)
 				{
 					glClearBufferfi(GL_DEPTH_STENCIL, 0, depth, stencil);
+					BS_CHECK_GL_ERROR();
 				}
 				else
 				{
 					glClearBufferfv(GL_DEPTH, 0, &depth);
+					BS_CHECK_GL_ERROR();
 				}
 			}
 			else if (buffers & FBT_STENCIL)
 			{
 				INT32 stencilClear = (INT32)stencil;
 				glClearBufferiv(GL_STENCIL, 0, &stencilClear);
+				BS_CHECK_GL_ERROR();
 			}
 		}
 
@@ -1321,6 +1519,7 @@ namespace bs { namespace ct
 		if (scissorTestEnabled)
 		{
 			glEnable(GL_SCISSOR_TEST);
+			BS_CHECK_GL_ERROR();
 
 			mScissorTop = oldScissorTop;
 			mScissorBottom = oldScissorBottom;
@@ -1332,14 +1531,19 @@ namespace bs { namespace ct
 		if (!mDepthWrite && (buffers & FBT_DEPTH))
 		{
 			glDepthMask(GL_FALSE);
+			BS_CHECK_GL_ERROR();
 		}
+
 		if (colorMask && (buffers & FBT_COLOR))
 		{
 			glColorMask(mColorWrite[0], mColorWrite[1], mColorWrite[2], mColorWrite[3]);
+			BS_CHECK_GL_ERROR();
 		}
+
 		if (buffers & FBT_STENCIL)
 		{
 			glStencilMask(mStencilWriteMask);
+			BS_CHECK_GL_ERROR();
 		}
 
 		BS_INC_RENDER_STAT(NumClears);
@@ -1352,19 +1556,26 @@ namespace bs { namespace ct
 	void GLRenderAPI::setTextureAddressingMode(UINT16 unit, const UVWAddressingMode& uvw)
 	{
 		glTexParameteri(mTextureInfos[unit].type, GL_TEXTURE_WRAP_S, getTextureAddressingMode(uvw.u));
+		BS_CHECK_GL_ERROR();
+
 		glTexParameteri(mTextureInfos[unit].type, GL_TEXTURE_WRAP_T, getTextureAddressingMode(uvw.v));
+		BS_CHECK_GL_ERROR();
+
 		glTexParameteri(mTextureInfos[unit].type, GL_TEXTURE_WRAP_R, getTextureAddressingMode(uvw.w));
+		BS_CHECK_GL_ERROR();
 	}
 
 	void GLRenderAPI::setTextureBorderColor(UINT16 unit, const Color& color)
 	{
 		GLfloat border[4] = { color.r, color.g, color.b, color.a };
 		glTexParameterfv(mTextureInfos[unit].type, GL_TEXTURE_BORDER_COLOR, border);
+		BS_CHECK_GL_ERROR();
 	}
 
 	void GLRenderAPI::setTextureMipmapBias(UINT16 unit, float bias)
 	{
 		glTexParameterf(mTextureInfos[unit].type, GL_TEXTURE_LOD_BIAS, bias);
+		BS_CHECK_GL_ERROR();
 	}
 
 	void GLRenderAPI::setSceneBlending(BlendFactor sourceFactor, BlendFactor destFactor, BlendOperation op)
@@ -1374,11 +1585,15 @@ namespace bs { namespace ct
 		if(sourceFactor == BF_ONE && destFactor == BF_ZERO)
 		{
 			glDisable(GL_BLEND);
+			BS_CHECK_GL_ERROR();
 		}
 		else
 		{
 			glEnable(GL_BLEND);
+			BS_CHECK_GL_ERROR();
+
 			glBlendFunc(sourceBlend, destBlend);
+			BS_CHECK_GL_ERROR();
 		}
 
 		GLint func = GL_FUNC_ADD;
@@ -1404,13 +1619,14 @@ namespace bs { namespace ct
 		if(GLEW_VERSION_1_4 || GLEW_ARB_imaging)
 		{
 			glBlendEquation(func);
+			BS_CHECK_GL_ERROR();
 		}
 		else if(GLEW_EXT_blend_minmax && (func == GL_MIN || func == GL_MAX))
 		{
 			glBlendEquationEXT(func);
+			BS_CHECK_GL_ERROR();
 		}
 	}
-
 
 	void GLRenderAPI::setSceneBlending(BlendFactor sourceFactor, BlendFactor destFactor, 
 		BlendFactor sourceFactorAlpha, BlendFactor destFactorAlpha, BlendOperation op, BlendOperation alphaOp)
@@ -1420,15 +1636,18 @@ namespace bs { namespace ct
 		GLint sourceBlendAlpha = getBlendMode(sourceFactorAlpha);
 		GLint destBlendAlpha = getBlendMode(destFactorAlpha);
 
-		if(sourceFactor == BF_ONE && destFactor == BF_ZERO && 
-			sourceFactorAlpha == BF_ONE && destFactorAlpha == BF_ZERO)
+		if(sourceFactor == BF_ONE && destFactor == BF_ZERO && sourceFactorAlpha == BF_ONE && destFactorAlpha == BF_ZERO)
 		{
 			glDisable(GL_BLEND);
+			BS_CHECK_GL_ERROR();
 		}
 		else
 		{
 			glEnable(GL_BLEND);
+			BS_CHECK_GL_ERROR();
+
 			glBlendFuncSeparate(sourceBlend, destBlend, sourceBlendAlpha, destBlendAlpha);
+			BS_CHECK_GL_ERROR();
 		}
 
 		GLint func = GL_FUNC_ADD, alphaFunc = GL_FUNC_ADD;
@@ -1471,12 +1690,8 @@ namespace bs { namespace ct
 			break;
 		}
 
-		if(GLEW_VERSION_2_0) {
-			glBlendEquationSeparate(func, alphaFunc);
-		}
-		else if(GLEW_EXT_blend_equation_separate) {
-			glBlendEquationSeparateEXT(func, alphaFunc);
-		}
+		glBlendEquationSeparate(func, alphaFunc);
+		BS_CHECK_GL_ERROR();
 	}
 
 	void GLRenderAPI::setAlphaTest(CompareFunction func, unsigned char value)
@@ -1484,11 +1699,15 @@ namespace bs { namespace ct
 		if(func == CMPF_ALWAYS_PASS)
 		{
 			glDisable(GL_ALPHA_TEST);
+			BS_CHECK_GL_ERROR();
 		}
 		else
 		{
 			glEnable(GL_ALPHA_TEST);
+			BS_CHECK_GL_ERROR();
+
 			glAlphaFunc(convertCompareFunction(func), value / 255.0f);
+			BS_CHECK_GL_ERROR();
 		}
 	}
 
@@ -1499,9 +1718,15 @@ namespace bs { namespace ct
 		if (enable != lasta2c)
 		{
 			if (enable)
+			{
 				glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+				BS_CHECK_GL_ERROR();
+			}
 			else
+			{
 				glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+				BS_CHECK_GL_ERROR();
+			}
 
 			lasta2c = enable;
 		}
@@ -1518,6 +1743,7 @@ namespace bs { namespace ct
 		if (enable)
 		{
 			glEnable(GL_SCISSOR_TEST);
+			BS_CHECK_GL_ERROR();
 
 			x = mScissorLeft;
 			y = mScissorTop;
@@ -1525,10 +1751,12 @@ namespace bs { namespace ct
 			h = mScissorBottom - mScissorTop;
 
 			glScissor(x, y, w, h);
+			BS_CHECK_GL_ERROR();
 		}
 		else
 		{
 			glDisable(GL_SCISSOR_TEST);
+			BS_CHECK_GL_ERROR();
 
 			// GL requires you to reset the scissor when disabling
 			w = mViewportWidth;
@@ -1537,6 +1765,7 @@ namespace bs { namespace ct
 			y = mViewportTop; 
 
 			glScissor(x, y, w, h);
+			BS_CHECK_GL_ERROR();
 		}
 
 		mScissorEnabled = enable;
@@ -1545,25 +1774,43 @@ namespace bs { namespace ct
 	void GLRenderAPI::setMultisamplingEnable(bool enable)
 	{
 		if (enable)
+		{
 			glEnable(GL_MULTISAMPLE);
+			BS_CHECK_GL_ERROR();
+		}
 		else
+		{
 			glDisable(GL_MULTISAMPLE);
+			BS_CHECK_GL_ERROR();
+		}
 	}
 
 	void GLRenderAPI::setDepthClipEnable(bool enable)
 	{
 		if (enable)
+		{
 			glEnable(GL_DEPTH_CLAMP);
+			BS_CHECK_GL_ERROR();
+		}
 		else
+		{
 			glDisable(GL_DEPTH_CLAMP);
+			BS_CHECK_GL_ERROR();
+		}
 	}
 
 	void GLRenderAPI::setAntialiasedLineEnable(bool enable)
 	{
 		if (enable)
+		{
 			glEnable(GL_LINE_SMOOTH);
+			BS_CHECK_GL_ERROR();
+		}
 		else
+		{
 			glDisable(GL_LINE_SMOOTH);
+			BS_CHECK_GL_ERROR();
+		}
 	}
 
 
@@ -1575,6 +1822,7 @@ namespace bs { namespace ct
 		{
 		case CULL_NONE:
 			glDisable(GL_CULL_FACE);
+			BS_CHECK_GL_ERROR();
 			return;
 		default:
 		case CULL_CLOCKWISE:
@@ -1586,7 +1834,10 @@ namespace bs { namespace ct
 		}
 
 		glEnable(GL_CULL_FACE);
+		BS_CHECK_GL_ERROR();
+
 		glCullFace(cullMode);
+		BS_CHECK_GL_ERROR();
 	}
 
 	void GLRenderAPI::setDepthBufferCheckEnabled(bool enabled)
@@ -1594,11 +1845,15 @@ namespace bs { namespace ct
 		if (enabled)
 		{
 			glClearDepth(1.0f);
+			BS_CHECK_GL_ERROR();
+
 			glEnable(GL_DEPTH_TEST);
+			BS_CHECK_GL_ERROR();
 		}
 		else
 		{
 			glDisable(GL_DEPTH_TEST);
+			BS_CHECK_GL_ERROR();
 		}
 	}
 
@@ -1606,6 +1861,7 @@ namespace bs { namespace ct
 	{
 		GLboolean flag = enabled ? GL_TRUE : GL_FALSE;
 		glDepthMask(flag);  
+		BS_CHECK_GL_ERROR();
 
 		mDepthWrite = enabled;
 	}
@@ -1613,6 +1869,7 @@ namespace bs { namespace ct
 	void GLRenderAPI::setDepthBufferFunction(CompareFunction func)
 	{
 		glDepthFunc(convertCompareFunction(func));
+		BS_CHECK_GL_ERROR();
 	}
 
 	void GLRenderAPI::setDepthBias(float constantBias, float slopeScaleBias)
@@ -1620,24 +1877,36 @@ namespace bs { namespace ct
 		if (constantBias != 0 || slopeScaleBias != 0)
 		{
 			glEnable(GL_POLYGON_OFFSET_FILL);
+			BS_CHECK_GL_ERROR();
+
 			glEnable(GL_POLYGON_OFFSET_POINT);
+			BS_CHECK_GL_ERROR();
+
 			glEnable(GL_POLYGON_OFFSET_LINE);
+			BS_CHECK_GL_ERROR();
 
 			float scaledConstantBias = -constantBias * float((1 << 24) - 1); // Note: Assumes 24-bit depth buffer
 			glPolygonOffset(slopeScaleBias, scaledConstantBias);
+			BS_CHECK_GL_ERROR();
 		}
 		else
 		{
 			glDisable(GL_POLYGON_OFFSET_FILL);
+			BS_CHECK_GL_ERROR();
+
 			glDisable(GL_POLYGON_OFFSET_POINT);
+			BS_CHECK_GL_ERROR();
+
 			glDisable(GL_POLYGON_OFFSET_LINE);
+			BS_CHECK_GL_ERROR();
 		}
 	}
 
 	void GLRenderAPI::setColorBufferWriteEnabled(bool red, bool green, bool blue, bool alpha)
 	{
 		glColorMask(red, green, blue, alpha);
-		// record this
+		BS_CHECK_GL_ERROR();
+
 		mColorWrite[0] = red;
 		mColorWrite[1] = blue;
 		mColorWrite[2] = green;
@@ -1657,15 +1926,23 @@ namespace bs { namespace ct
 			glmode = GL_FILL;
 			break;
 		}
+
 		glPolygonMode(GL_FRONT_AND_BACK, glmode);
+		BS_CHECK_GL_ERROR();
 	}
 
 	void GLRenderAPI::setStencilCheckEnabled(bool enabled)
 	{
 		if (enabled)
+		{
 			glEnable(GL_STENCIL_TEST);
+			BS_CHECK_GL_ERROR();
+		}
 		else
+		{
 			glDisable(GL_STENCIL_TEST);
+			BS_CHECK_GL_ERROR();
+		}
 	}
 
 	void GLRenderAPI::setStencilBufferOperations(StencilOperation stencilFailOp,
@@ -1673,17 +1950,21 @@ namespace bs { namespace ct
 	{
 		if (front)
 		{
-			glStencilOpSeparate(GL_FRONT, 
+			glStencilOpSeparate(
+				GL_FRONT,
 				convertStencilOp(stencilFailOp),
-				convertStencilOp(depthFailOp), 
+				convertStencilOp(depthFailOp),
 				convertStencilOp(passOp));
+			BS_CHECK_GL_ERROR();
 		}
 		else
 		{
-			glStencilOpSeparate(GL_BACK, 
-				convertStencilOp(stencilFailOp, true), 
-				convertStencilOp(depthFailOp, true), 
+			glStencilOpSeparate(
+				GL_BACK,
+				convertStencilOp(stencilFailOp, true),
+				convertStencilOp(depthFailOp, true),
 				convertStencilOp(passOp, true));
+			BS_CHECK_GL_ERROR();
 		}
 	}
 
@@ -1695,18 +1976,22 @@ namespace bs { namespace ct
 		{
 			mStencilCompareFront = func;
 			glStencilFuncSeparate(GL_FRONT, convertCompareFunction(mStencilCompareFront), mStencilRefValue, mStencilReadMask);
+			BS_CHECK_GL_ERROR();
 		}
 		else
 		{
 			mStencilCompareBack = func;
 			glStencilFuncSeparate(GL_BACK, convertCompareFunction(mStencilCompareBack), mStencilRefValue, mStencilReadMask);
+			BS_CHECK_GL_ERROR();
 		}
 	}
 
 	void GLRenderAPI::setStencilBufferWriteMask(UINT32 mask)
 	{
 		mStencilWriteMask = mask;
+
 		glStencilMask(mask);
+		BS_CHECK_GL_ERROR();
 	}
 
 	void GLRenderAPI::setStencilRefValue(UINT32 refValue)
@@ -1716,7 +2001,10 @@ namespace bs { namespace ct
 		mStencilRefValue = refValue;
 
 		glStencilFuncSeparate(GL_FRONT, convertCompareFunction(mStencilCompareFront), mStencilRefValue, mStencilReadMask);
+		BS_CHECK_GL_ERROR();
+
 		glStencilFuncSeparate(GL_BACK, convertCompareFunction(mStencilCompareBack), mStencilRefValue, mStencilReadMask);
+		BS_CHECK_GL_ERROR();
 	}
 
 	void GLRenderAPI::setTextureFiltering(UINT16 unit, FilterType ftype, FilterOptions fo)
@@ -1727,6 +2015,7 @@ namespace bs { namespace ct
 			mMinFilter = fo;
 			// Combine with existing mip filter
 			glTexParameteri(mTextureInfos[unit].type, GL_TEXTURE_MIN_FILTER, getCombinedMinMipFilter());
+			BS_CHECK_GL_ERROR();
 			break;
 		case FT_MAG:
 			switch (fo)
@@ -1734,10 +2023,12 @@ namespace bs { namespace ct
 			case FO_ANISOTROPIC: // GL treats linear and aniso the same
 			case FO_LINEAR:
 				glTexParameteri(mTextureInfos[unit].type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				BS_CHECK_GL_ERROR();
 				break;
 			case FO_POINT:
 			case FO_NONE:
 				glTexParameteri(mTextureInfos[unit].type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+				BS_CHECK_GL_ERROR();
 				break;
 			default:
 				break;
@@ -1747,6 +2038,7 @@ namespace bs { namespace ct
 			mMipFilter = fo;
 			// Combine with existing min filter
 			glTexParameteri(mTextureInfos[unit].type, GL_TEXTURE_MIN_FILTER, getCombinedMinMipFilter());
+			BS_CHECK_GL_ERROR();
 			break;
 		}
 	}
@@ -1755,25 +2047,35 @@ namespace bs { namespace ct
 	{
 		GLfloat maxSupportAnisotropy = 0;
 		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxSupportAnisotropy);
+		BS_CHECK_GL_ERROR();
+
 		if (maxAnisotropy > maxSupportAnisotropy)
-			maxAnisotropy = maxSupportAnisotropy ? 
-			static_cast<UINT32>(maxSupportAnisotropy) : 1;
+			maxAnisotropy = maxSupportAnisotropy ? static_cast<UINT32>(maxSupportAnisotropy) : 1;
 
 		if(maxAnisotropy < 1)
 			maxAnisotropy = 1;
 
 		if (getCurrentAnisotropy(unit) != maxAnisotropy)
+		{
 			glTexParameterf(mTextureInfos[unit].type, GL_TEXTURE_MAX_ANISOTROPY_EXT, (float)maxAnisotropy);
+			BS_CHECK_GL_ERROR();
+		}
 	}
 
 	void GLRenderAPI::setTextureCompareMode(UINT16 unit, CompareFunction compare)
 	{
 		if (compare == CMPF_ALWAYS_PASS)
+		{
 			glTexParameteri(mTextureInfos[unit].type, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+			BS_CHECK_GL_ERROR();
+		}
 		else
 		{
 			glTexParameteri(mTextureInfos[unit].type, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+			BS_CHECK_GL_ERROR();
+
 			glTexParameteri(mTextureInfos[unit].type, GL_TEXTURE_COMPARE_FUNC, convertCompareFunction(compare));
+			BS_CHECK_GL_ERROR();
 		}
 	}
 
@@ -1784,12 +2086,14 @@ namespace bs { namespace ct
 			if (unit < getCapabilities(0).getNumCombinedTextureUnits())
 			{
 				glActiveTexture(GL_TEXTURE0 + unit);
+				BS_CHECK_GL_ERROR();
+
 				mActiveTextureUnit = unit;
 				return true;
 			}
 			else if (!unit)
 			{
-				// always ok to use the first unit
+				// Always ok to use the first unit
 				return true;
 			}
 			else
@@ -1828,15 +2132,23 @@ namespace bs { namespace ct
 			mCurrentFragmentProgram.get(), mCurrentGeometryProgram.get(), mCurrentHullProgram.get(), mCurrentDomainProgram.get());
 
 		glUseProgram(0);
+		BS_CHECK_GL_ERROR();
+
 		if(mActivePipeline != pipeline)
 		{
 			glBindProgramPipeline(pipeline->glHandle);
+			BS_CHECK_GL_ERROR();
+
 			mActivePipeline = pipeline;
 		}
 
-		const GLVertexArrayObject& vao = GLVertexArrayObjectManager::instance().getVAO(mCurrentVertexProgram, 
-			mBoundVertexDeclaration, mBoundVertexBuffers);
+		const GLVertexArrayObject& vao = GLVertexArrayObjectManager::instance().getVAO(
+			mCurrentVertexProgram,
+			mBoundVertexDeclaration,
+			mBoundVertexBuffers);
+
 		glBindVertexArray(vao.getGLHandle()); 
+		BS_CHECK_GL_ERROR();
 
 		BS_INC_RENDER_STAT(NumVertexBufferBinds);
 	}
@@ -1853,6 +2165,7 @@ namespace bs { namespace ct
 	{
 		GLfloat curAniso = 0;
 		glGetTexParameterfv(mTextureInfos[unit].type, GL_TEXTURE_MAX_ANISOTROPY_EXT, &curAniso);
+		BS_CHECK_GL_ERROR();
 
 		return curAniso ? curAniso : 1;
 	}
@@ -2049,7 +2362,7 @@ namespace bs { namespace ct
 		case GPT_COMPUTE_PROGRAM:
 			return mCurrentComputeProgram;
 		default:
-			BS_EXCEPT(InvalidParametersException, "Insupported gpu program type: " + toString(gptype));
+			BS_EXCEPT(InvalidParametersException, "Unsupported gpu program type: " + toString(gptype));
 		}
 
 		return nullptr;
@@ -2063,7 +2376,7 @@ namespace bs { namespace ct
 				"Trying to initialize GLRenderAPI from RenderSystemCapabilities that do not support OpenGL");
 		}
 
-#if BS_DEBUG_MODE
+#if BS_DEBUG_MODE && (BS_OPENGL_4_3 || BS_OPENGLES_3_2)
 		if (mGLSupport->checkExtension("GL_ARB_debug_output"))
 		{
 			glDebugMessageCallback(&openGlErrorCallback, 0);
@@ -2120,8 +2433,13 @@ namespace bs { namespace ct
 		// clearFrameBuffer would be wrong because the value we recorded may be
 		// different from the real state stored in GL context.
 		glDepthMask(mDepthWrite);
+		BS_CHECK_GL_ERROR();
+
 		glColorMask(mColorWrite[0], mColorWrite[1], mColorWrite[2], mColorWrite[3]);
+		BS_CHECK_GL_ERROR();
+
 		glStencilMask(mStencilWriteMask);
+		BS_CHECK_GL_ERROR();
 	}
 
 	void GLRenderAPI::initCapabilities(RenderAPICapabilities& caps) const
@@ -2161,110 +2479,161 @@ namespace bs { namespace ct
 		caps.setCapability(RSC_TEXTURE_COMPRESSION_BC);
 
 		// Check if geometry shaders are supported
-		if (GLEW_VERSION_2_0 &&
-			getGLSupport()->checkExtension("GL_EXT_geometry_shader4"))
+		if (getGLSupport()->checkExtension("GL_EXT_geometry_shader4"))
 		{
+#if BS_OPENGL_4_1 || BS_OPENGLES_3_2
 			caps.setCapability(RSC_GEOMETRY_PROGRAM);
+#endif
 
 			GLint maxOutputVertices;
+
+#if BS_OPENGL_4_1 || BS_OPENGLES_3_2
 			glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT,&maxOutputVertices);
+			BS_CHECK_GL_ERROR();
+#else
+			maxOutputVertices = 0;
+#endif
+
 			caps.setGeometryProgramNumOutputVertices(maxOutputVertices);
 		}
 
 		// Max number of fragment shader textures
 		GLint units;
 		glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &units);
+		BS_CHECK_GL_ERROR();
+
 		caps.setNumTextureUnits(GPT_FRAGMENT_PROGRAM, static_cast<UINT16>(units));
 
 		// Max number of vertex shader textures
 		GLint vUnits;
 		glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &vUnits);
+		BS_CHECK_GL_ERROR();
+
 		caps.setNumTextureUnits(GPT_VERTEX_PROGRAM, static_cast<UINT16>(vUnits));
 
 		GLint numUniformBlocks;
 		glGetIntegerv(GL_MAX_VERTEX_UNIFORM_BLOCKS, &numUniformBlocks);
+		BS_CHECK_GL_ERROR();
+
 		caps.setNumGpuParamBlockBuffers(GPT_VERTEX_PROGRAM, numUniformBlocks);
 
 		glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_BLOCKS, &numUniformBlocks);
+		BS_CHECK_GL_ERROR();
+
 		caps.setNumGpuParamBlockBuffers(GPT_FRAGMENT_PROGRAM, numUniformBlocks);
 
 		if (mGLSupport->checkExtension("GL_ARB_geometry_shader4"))
 		{
 			GLint geomUnits;
+
+#if BS_OPENGL_4_1 || BS_OPENGLES_3_2
 			glGetIntegerv(GL_MAX_GEOMETRY_TEXTURE_IMAGE_UNITS, &geomUnits);
+			BS_CHECK_GL_ERROR();
+#else
+			geomUnits = 0;
+#endif
+
 			caps.setNumTextureUnits(GPT_GEOMETRY_PROGRAM, static_cast<UINT16>(geomUnits));
 
+#if BS_OPENGL_4_1 || BS_OPENGLES_3_2
 			glGetIntegerv(GL_MAX_GEOMETRY_UNIFORM_BLOCKS, &numUniformBlocks);
+			BS_CHECK_GL_ERROR();
+#else
+			numUniformBlocks = 0;
+#endif
+
 			caps.setNumGpuParamBlockBuffers(GPT_GEOMETRY_PROGRAM, numUniformBlocks);
 		}
 
 		if (mGLSupport->checkExtension("GL_ARB_tessellation_shader"))
 		{
+#if BS_OPENGL_4_1 || BS_OPENGLES_3_2
 			caps.setCapability(RSC_TESSELLATION_PROGRAM);
+#endif
 
+#if BS_OPENGL_4_1 || BS_OPENGLES_3_2
 			glGetIntegerv(GL_MAX_TESS_CONTROL_UNIFORM_BLOCKS, &numUniformBlocks);
+			BS_CHECK_GL_ERROR();
+#else
+			numUniformBlocks = 0;
+#endif
+
 			caps.setNumGpuParamBlockBuffers(GPT_HULL_PROGRAM, numUniformBlocks);
 
+#if BS_OPENGL_4_1 || BS_OPENGLES_3_2
 			glGetIntegerv(GL_MAX_TESS_EVALUATION_UNIFORM_BLOCKS, &numUniformBlocks);
+			BS_CHECK_GL_ERROR();
+#else
+			numUniformBlocks = 0;
+#endif
+
 			caps.setNumGpuParamBlockBuffers(GPT_DOMAIN_PROGRAM, numUniformBlocks);
 		}
 
 		if (mGLSupport->checkExtension("GL_ARB_compute_shader")) 
 		{
+#if BS_OPENGL_4_3 || BS_OPENGLES_3_1
 			caps.setCapability(RSC_COMPUTE_PROGRAM);
+#endif
 
 			GLint computeUnits;
+
+#if BS_OPENGL_4_3 || BS_OPENGLES_3_1
 			glGetIntegerv(GL_MAX_COMPUTE_TEXTURE_IMAGE_UNITS, &computeUnits);
+			BS_CHECK_GL_ERROR();
+#else
+			computeUnits = 0;
+#endif
+
 			caps.setNumTextureUnits(GPT_COMPUTE_PROGRAM, static_cast<UINT16>(computeUnits));
 
+#if BS_OPENGL_4_3 || BS_OPENGLES_3_1
 			glGetIntegerv(GL_MAX_COMPUTE_UNIFORM_BLOCKS, &numUniformBlocks);
+			BS_CHECK_GL_ERROR();
+#else
+			numUniformBlocks = 0;
+#endif
+
 			caps.setNumGpuParamBlockBuffers(GPT_COMPUTE_PROGRAM, numUniformBlocks);
 
 			// Max number of load-store textures
 			GLint lsfUnits;
 			glGetIntegerv(GL_MAX_FRAGMENT_IMAGE_UNIFORMS, &lsfUnits);
+			BS_CHECK_GL_ERROR();
+
 			caps.setNumLoadStoreTextureUnits(GPT_FRAGMENT_PROGRAM, static_cast<UINT16>(lsfUnits));
 
 			GLint lscUnits;
+
+#if BS_OPENGL_4_3 || BS_OPENGLES_3_1
 			glGetIntegerv(GL_MAX_COMPUTE_IMAGE_UNIFORMS, &lscUnits);
+			BS_CHECK_GL_ERROR();
+#else
+			lscUnits = 0;
+#endif
+
 			caps.setNumLoadStoreTextureUnits(GPT_COMPUTE_PROGRAM, static_cast<UINT16>(lscUnits));
 
 			GLint combinedLoadStoreTextureUnits;
 			glGetIntegerv(GL_MAX_IMAGE_UNITS, &combinedLoadStoreTextureUnits);
+			BS_CHECK_GL_ERROR();
+
 			caps.setNumCombinedLoadStoreTextureUnits(static_cast<UINT16>(combinedLoadStoreTextureUnits));
 		}
 
 		GLint combinedTexUnits;
 		glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &combinedTexUnits);
+		BS_CHECK_GL_ERROR();
+
 		caps.setNumCombinedTextureUnits(static_cast<UINT16>(combinedTexUnits));
 
 		GLint combinedUniformBlockUnits;
 		glGetIntegerv(GL_MAX_COMBINED_UNIFORM_BLOCKS, &combinedUniformBlockUnits);
+		BS_CHECK_GL_ERROR();
+
 		caps.setNumCombinedGpuParamBlockBuffers(static_cast<UINT16>(combinedUniformBlockUnits));
 
 		caps.setNumMultiRenderTargets(8);
-	}
-
-	bool GLRenderAPI::checkForErrors() const
-	{
-		GLenum glErr = glGetError();
-		bool errorsFound = false;
-		String msg;
-		while (glErr != GL_NO_ERROR)
-		{
-			const char* glerrStr = (const char*)gluErrorString(glErr);
-			if (glerrStr)
-			{
-				msg += String(glerrStr);
-			}
-			glErr = glGetError();
-			errorsFound = true;
-		}
-
-		if (errorsFound)
-			LOGWRN("OpenGL error: " + msg);
-
-		return errorsFound;
 	}
 
 	void GLRenderAPI::makeGLMatrix(GLfloat gl_matrix[16], const Matrix4& m)
@@ -2294,12 +2663,16 @@ namespace bs { namespace ct
 		mViewportHeight = (UINT32)(rtProps.height * mViewportNorm.height);
 
 		glViewport(mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight);
+		BS_CHECK_GL_ERROR();
 
 		// Configure the viewport clipping
 		if (!mScissorEnabled)
 		{
 			glEnable(GL_SCISSOR_TEST);
+			BS_CHECK_GL_ERROR();
+
 			glScissor(mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight);
+			BS_CHECK_GL_ERROR();
 		}
 	}
 
@@ -2390,6 +2763,7 @@ namespace bs { namespace ct
 		return block;
 	}
 
+#if BS_OPENGL_4_3 || BS_OPENGLES_3_2
 	void openGlErrorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
 		const GLchar *message, GLvoid *userParam)
 	{
@@ -2398,4 +2772,5 @@ namespace bs { namespace ct
 			BS_EXCEPT(RenderingAPIException, "OpenGL error: " + String(message));
 		}
 	}
+#endif
 }}
