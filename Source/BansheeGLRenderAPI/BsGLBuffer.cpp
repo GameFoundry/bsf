@@ -37,7 +37,7 @@ namespace bs { namespace ct
 		BS_CHECK_GL_ERROR();
 
 		if (!mBufferId)
-			BS_EXCEPT(InternalErrorException, "Cannot create GL vertex buffer");
+			BS_EXCEPT(InternalErrorException, "Cannot create GL buffer");
 
 		glBindBuffer(target, mBufferId);
 		BS_CHECK_GL_ERROR();

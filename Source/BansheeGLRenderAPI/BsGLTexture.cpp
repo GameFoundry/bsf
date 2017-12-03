@@ -93,17 +93,31 @@ namespace bs { namespace ct
 		{
 			if (numFaces <= 1)
 			{
-				glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, sampleCount, mGLFormat, width, height, GL_FALSE);
+				// Create immutable storage if available, fallback to mutable
+#if BS_OPENGL_4_3 || BS_OPENGLES_3_1
+				glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, sampleCount, mGLFormat, width, height, GL_TRUE);
 				BS_CHECK_GL_ERROR();
+#else
+				glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, sampleCount, mGLFormat, width, height, GL_TRUE);
+				BS_CHECK_GL_ERROR();
+#endif
 			}
 			else
 			{
-				glTexStorage3DMultisample(GL_TEXTURE_2D_MULTISAMPLE_ARRAY, sampleCount, mGLFormat, width, height, numFaces, GL_FALSE);
+				// Create immutable storage if available, fallback to mutable
+#if BS_OPENGL_4_3 || BS_OPENGLES_3_2
+				glTexStorage3DMultisample(GL_TEXTURE_2D_MULTISAMPLE_ARRAY, sampleCount, mGLFormat, width, height, numFaces, GL_TRUE);
 				BS_CHECK_GL_ERROR();
+#else
+				glTexImage3DMultisample(GL_TEXTURE_2D_MULTISAMPLE_ARRAY, sampleCount, mGLFormat, width, height, numFaces, GL_TRUE);
+				BS_CHECK_GL_ERROR();
+#endif
 			}
 		}
 		else
 		{
+			// Create immutable storage if available, fallback to mutable
+#if BS_OPENGL_4_2 || BS_OPENGLES_3_1
 			switch (texType)
 			{
 			case TEX_TYPE_1D:
@@ -153,6 +167,82 @@ namespace bs { namespace ct
 			}
 				break;
 			}
+#else
+			if((usage & TU_DEPTHSTENCIL) != 0 && mProperties.getTextureType() == TEX_TYPE_2D)
+			{
+				GLenum depthStencilType = GLPixelUtil::getDepthStencilTypeFromPF(mInternalFormat);
+				GLenum depthStencilFormat = GLPixelUtil::getDepthStencilFormatFromPF(mInternalFormat);
+
+				if (numFaces <= 1)
+				{
+					glTexImage2D(GL_TEXTURE_2D, 0, mGLFormat, width, height, 0,
+						depthStencilFormat, depthStencilType, nullptr);
+				}
+				else
+				{
+					glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, mGLFormat, width, height, numFaces, 0,
+						depthStencilFormat, depthStencilType, nullptr);
+				}
+			}
+			else
+			{
+				GLenum baseFormat = GLPixelUtil::getGLOriginFormat(mInternalFormat);
+				GLenum baseDataType = GLPixelUtil::getGLOriginDataType(mInternalFormat);
+
+				for (UINT32 mip = 0; mip <= numMips; mip++)
+				{
+					switch (texType)
+					{
+					case TEX_TYPE_1D:
+					{
+						if (numFaces <= 1)
+							glTexImage1D(GL_TEXTURE_1D, mip, mGLFormat, width, 0, baseFormat, baseDataType, nullptr);
+						else
+							glTexImage2D(GL_TEXTURE_1D_ARRAY, mip, mGLFormat, width, numFaces, 0, baseFormat, baseDataType, nullptr);
+					}
+					break;
+					case TEX_TYPE_2D:
+					{
+						if (numFaces <= 1)
+							glTexImage2D(GL_TEXTURE_2D, mip, mGLFormat, width, height, 0, baseFormat, baseDataType, nullptr);
+						else
+							glTexImage3D(GL_TEXTURE_2D_ARRAY, mip, mGLFormat, width, height, numFaces, 0, baseFormat, baseDataType, nullptr);
+					}
+					break;
+					case TEX_TYPE_3D:
+						glTexImage3D(GL_TEXTURE_3D, mip, mGLFormat, width, height,
+							depth, 0, baseFormat, baseDataType, nullptr);
+						break;
+					case TEX_TYPE_CUBE_MAP:
+					{
+						if (numFaces <= 6)
+						{
+							for (UINT32 face = 0; face < 6; face++)
+							{
+								glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, mip, mGLFormat,
+									width, height, 0, baseFormat, baseDataType, nullptr);
+							}
+						}
+						else
+						{
+							glTexImage3D(GL_TEXTURE_CUBE_MAP_ARRAY, mip, mGLFormat,
+								width, height, numFaces, 0, baseFormat, baseDataType, nullptr);
+						}
+					}
+					break;
+					}
+
+					if(width > 1)
+						width = width/2;
+
+					if(height > 1)
+						height = height/2;
+
+					if(depth > 1)	
+						depth = depth/2;
+				}
+			}
+#endif
 		}
 
 		createSurfaceList();
