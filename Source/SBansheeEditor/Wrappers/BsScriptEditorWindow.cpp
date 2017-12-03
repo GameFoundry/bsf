@@ -128,7 +128,10 @@ namespace bs
 		if (!mRefreshInProgress)
 			ScriptObject::_onManagedInstanceDeleted();
 		else
-			mEditorWidget->clearManagedInstance(false);
+		{
+			if(mEditorWidget)
+				mEditorWidget->clearManagedInstance(false);
+		}
 	}
 
 	ScriptObjectBackup ScriptEditorWindow::beginRefresh()
