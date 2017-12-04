@@ -172,6 +172,7 @@ namespace bs { namespace ct
 		// Partition all visible lights so that unshadowed ones come first
 		auto partition = [](Vector<const RendererLight*>& entries)
 		{
+			UINT32 numUnshadowed = 0;
 			int first = 0;
 			for (UINT32 i = 0; i < (UINT32)entries.size(); ++i)
 			{
@@ -180,6 +181,8 @@ namespace bs { namespace ct
 					first = i;
 					break;
 				}
+				else
+					++numUnshadowed;
 			}
 
 			for(UINT32 i = first + 1; i < (UINT32)entries.size(); ++i)
@@ -188,10 +191,11 @@ namespace bs { namespace ct
 				{
 					std::swap(entries[i], entries[first]);
 					++first;
+					++numUnshadowed;
 				}
 			}
 
-			return first;
+			return numUnshadowed;
 		};
 
 		for (UINT32 i = 0; i < (UINT32)LightType::Count; i++)
