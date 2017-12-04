@@ -16,8 +16,7 @@
 #define BS_OPENGL_4_5 1
 #define BS_OPENGL_4_6 0
 
-// 3.0 is the minimum supported version for OpenGL ES
-#define BS_OPENGLES_3_0 0
+// 3.1 is the minimum supported version for OpenGL ES
 #define BS_OPENGLES_3_1 0
 #define BS_OPENGLES_3_2 0
 

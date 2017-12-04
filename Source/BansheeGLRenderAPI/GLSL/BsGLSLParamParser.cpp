@@ -146,8 +146,11 @@ namespace bs { namespace ct
 		BS_CHECK_GL_ERROR();
 
 		GLint maxStorageBlockNameBufferSize = 0;
+
+#if BS_OPENGL_4_3 || BS_OPENGLES_3_1
 		glGetProgramInterfaceiv(glProgram, GL_SHADER_STORAGE_BLOCK, GL_MAX_NAME_LENGTH, &maxStorageBlockNameBufferSize);
 		BS_CHECK_GL_ERROR();
+#endif
 
 		maxBufferSize = std::max(maxBufferSize, maxBlockNameBufferSize);
 		maxBufferSize = std::max(maxBufferSize, maxStorageBlockNameBufferSize);
@@ -164,17 +167,32 @@ namespace bs { namespace ct
 		returnParamDesc.paramBlocks[newGlobalBlockDesc.name] = newGlobalBlockDesc;
 		GpuParamBlockDesc& globalBlockDesc = returnParamDesc.paramBlocks[newGlobalBlockDesc.name];
 
+		// Enumerate uniform blocks
 		GLint uniformBlockCount = 0;
+
+#if BS_OPENGL_4_3 || BS_OPENGLES_3_1
+		// Use program interface extension if available
 		glGetProgramInterfaceiv(glProgram, GL_UNIFORM_BLOCK, GL_ACTIVE_RESOURCES, &uniformBlockCount);
 		BS_CHECK_GL_ERROR();
+#else
+		// Fall back to old API if not available
+		glGetProgramiv(glProgram, GL_ACTIVE_UNIFORM_BLOCKS, &uniformBlockCount);
+		BS_CHECK_GL_ERROR();
+#endif
 
 		Map<UINT32, String> blockSlotToName;
 		Set<String> blockNames;
 		for (GLuint index = 0; index < (GLuint)uniformBlockCount; index++)
 		{
 			GLsizei unusedSize = 0;
+
+#if BS_OPENGL_4_3 || BS_OPENGLES_3_1
 			glGetProgramResourceName(glProgram, GL_UNIFORM_BLOCK, index, maxBufferSize, &unusedSize, uniformName);
 			BS_CHECK_GL_ERROR();
+#else
+			glGetActiveUniformBlockName(glProgram, index, maxBlockNameBufferSize, &unusedSize, uniformName);
+			BS_CHECK_GL_ERROR();
+#endif
 
 			GpuParamBlockDesc newBlockDesc;
 			newBlockDesc.slot = index + 1;
@@ -188,6 +206,7 @@ namespace bs { namespace ct
 			blockNames.insert(newBlockDesc.name);
 		}
 
+#if BS_OPENGL_4_3 || BS_OPENGLES_3_1
 		// Scan through the shared storage blocks
 		GLint storageBlockCount = 0;
 		glGetProgramInterfaceiv(glProgram, GL_SHADER_STORAGE_BLOCK, GL_ACTIVE_RESOURCES, &storageBlockCount);
@@ -207,6 +226,7 @@ namespace bs { namespace ct
 
 			returnParamDesc.buffers.insert(std::make_pair(uniformName, bufferParam));
 		}
+#endif
 
 		Map<String, UINT32> foundFirstArrayIndex;
 		Map<String, GpuParamDataDesc> foundStructs;
