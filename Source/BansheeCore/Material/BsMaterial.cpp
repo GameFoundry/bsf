@@ -519,7 +519,8 @@ namespace bs
 				if (mTechniques.size() == 0) // Wasn't initialized
 					return;
 
-				setParams(oldParams);
+				if(oldParams)
+					setParams(oldParams);
 			}
 		}
 		else
@@ -789,8 +790,10 @@ namespace bs
 
 		UINT32 paramsSize = 0;
 		dataPtr = rttiReadElem(paramsSize, dataPtr);
-		if (mParams != nullptr)
-			mParams->setSyncData((UINT8*)dataPtr, paramsSize);
+		if (mParams == nullptr)
+			mParams = bs_shared_ptr_new<MaterialParams>(mShader);
+
+		mParams->setSyncData((UINT8*)dataPtr, paramsSize);
 
 		dataPtr += paramsSize;
 	}

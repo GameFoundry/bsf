@@ -19,7 +19,9 @@ namespace bs
 		if (material->getNumTechniques() > 0)
 		{
 			SPtr<MaterialParams> matParams = any_cast<SPtr<MaterialParams>>(material->mRTTIData);
-			material->setParams(matParams);
+
+			if(matParams)
+				material->setParams(matParams);
 		}
 
 		material->mRTTIData = nullptr; // Delete temporary data
