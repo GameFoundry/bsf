@@ -585,7 +585,9 @@ namespace bs { namespace ct
 
 							setTextureAnisotropy(unit, stateProps.getTextureAnisotropy());
 							setTextureCompareMode(unit, stateProps.getComparisonFunction());
+
 							setTextureMipmapBias(unit, stateProps.getTextureMipmapBias());
+							setTextureMipmapRange(unit, stateProps.getMinimumMip(), stateProps.getMaximumMip());
 
 							const UVWAddressingMode& uvw = stateProps.getTextureAddressingMode();
 							setTextureAddressingMode(unit, uvw);
@@ -1600,6 +1602,15 @@ namespace bs { namespace ct
 	void GLRenderAPI::setTextureMipmapBias(UINT16 unit, float bias)
 	{
 		glTexParameterf(mTextureInfos[unit].type, GL_TEXTURE_LOD_BIAS, bias);
+		BS_CHECK_GL_ERROR();
+	}
+
+	void GLRenderAPI::setTextureMipmapRange(UINT16 unit, float min, float max)
+	{
+		glTexParameterf(mTextureInfos[unit].type, GL_TEXTURE_MIN_LOD, min);
+		BS_CHECK_GL_ERROR();
+
+		glTexParameterf(mTextureInfos[unit].type, GL_TEXTURE_MAX_LOD, max);
 		BS_CHECK_GL_ERROR();
 	}
 

@@ -195,6 +195,13 @@ namespace bs { namespace ct
 		void setTextureMipmapBias(UINT16 unit, float bias);
 
 		/**
+		 * Sets a valid range for mipmaps (LOD) for a given texture unit. @p min limits the selection of the highest
+		 * resolution mipmap (lowest level), and @p max limits the selection of the lowest resolution mipmap (highest
+		 * level).
+		 */
+		void setTextureMipmapRange(UINT16 unit, float min, float max);
+
+		/**
 		 * Allows you to specify how is the texture bound to the specified texture unit filtered. Different filter types are
 		 * used for different situations like magnifying or minifying a texture.
 		 */

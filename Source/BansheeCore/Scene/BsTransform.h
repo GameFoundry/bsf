@@ -50,19 +50,19 @@ namespace bs
 		const Vector3& scl() const { return mScale; }
 
 		/** 
-		 * Converts the provided world position to a space relative to the provided parent, as sets it as the current
+		 * Converts the provided world position to a space relative to the provided parent, and sets it as the current
 		 * transform's position. 
 		 */
 		void setWorldPosition(const Vector3& position, const Transform& parent);
 
 		/** 
-		 * Converts the provided world rotation to a space relative to the provided parent, as sets it as the current
+		 * Converts the provided world rotation to a space relative to the provided parent, and sets it as the current
 		 * transform's rotation. 
 		 */
 		void setWorldRotation(const Quaternion& rotation, const Transform& parent);
 
 		/** 
-		 * Converts the provided world scale to a space relative to the provided parent, as sets it as the current
+		 * Converts the provided world scale to a space relative to the provided parent, and sets it as the current
 		 * transform's scale. 
 		 */
 		void setWorldScale(const Vector3& scale, const Transform& parent);

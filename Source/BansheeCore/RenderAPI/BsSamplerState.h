@@ -78,7 +78,7 @@ namespace bs
 		const UVWAddressingMode& getTextureAddressingMode() const { return mData.addressMode; }
 
 		/** Gets the filtering used when sampling from a texture. */
-        FilterOptions getTextureFiltering(FilterType ftpye) const;
+		FilterOptions getTextureFiltering(FilterType ftpye) const;
 
 		/**
 		 * Gets the anisotropy level. Higher anisotropy means better filtering for textures displayed on an angled slope 
@@ -133,8 +133,8 @@ namespace bs
 	 * Sim thread.
 	 */
 	class BS_CORE_EXPORT SamplerState : public IReflectable, public CoreObject
-    {
-    public:
+	{
+	public:
 		virtual ~SamplerState();
 
 		/**	Returns information about the sampler state. */
@@ -170,7 +170,7 @@ namespace bs
 		friend class SamplerStateRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
-    };
+	};
 
 	/** @} */
 
