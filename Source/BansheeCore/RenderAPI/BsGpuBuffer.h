@@ -100,8 +100,8 @@ namespace bs
 	 * @note	Sim thread only.
 	 */
 	class BS_CORE_EXPORT GpuBuffer : public CoreObject
-    {
-    public:
+	{
+	public:
 		virtual ~GpuBuffer() { }
 
 		/** Returns properties describing the buffer. */
@@ -125,7 +125,7 @@ namespace bs
 		SPtr<ct::CoreObject> createCore() const override;
 
 		GpuBufferProperties mProperties;
-    };
+	};
 
 	/** @} */
 

@@ -70,16 +70,17 @@ namespace bs { namespace ct
 
 	void GLSLGpuProgram::initialize()
 	{
+
 #if BS_OPENGL_4_5
-		static const char* VERSION_LINE = "#version 450\n";
+		static const char* VERSION_CHARS = "450";
 #elif BS_OPENGL_4_4
-		static const char* VERSION_LINE = "#version 440\n";
+		static const char* VERSION_CHARS = "440";
 #elif BS_OPENGL_4_3
-		static const char* VERSION_LINE = "#version 430\n";
+		static const char* VERSION_CHARS = "430";
 #elif BS_OPENGL_4_2
-		static const char* VERSION_LINE = "#version 420\n";
+		static const char* VERSION_CHARS = "420";
 #else
-		static const char* VERSION_LINE = "#version 410\n";
+		static const char* VERSION_CHARS = "410";
 #endif
 		
 		if (!isSupported())
@@ -136,7 +137,7 @@ namespace bs { namespace ct
 			UINT32 versionStrLen = (UINT32)strlen(versionStr);
 
 			UINT32 lineLength = 0;
-			INT32 versionLine = -1;
+			INT32 versionLineNum = -1;
 			for (UINT32 i = 0; i < source.size(); i++)
 			{
 				if (source[i] == '\n' || source[i] == '\r')
@@ -149,7 +150,7 @@ namespace bs { namespace ct
 					lineData[lineLength] = '\n';
 					lineData[lineLength + 1] = '\0';
 
-					if(versionLine == -1 && lineLength >= versionStrLen)
+					if(versionLineNum == -1 && lineLength >= versionStrLen)
 					{
 						bool isEqual = true;
 						for (UINT32 j = 0; j < versionStrLen; ++j)
@@ -162,7 +163,7 @@ namespace bs { namespace ct
 						}
 
 						if (isEqual)
-							versionLine = (INT32)lines.size();
+							versionLineNum = (INT32)lines.size();
 					}
 
 					lines.push_back(lineData);
@@ -188,20 +189,35 @@ namespace bs { namespace ct
 			}
 
 			int numInsertedLines = 0;
-			if(versionLine == -1)
+			if(versionLineNum == -1)
 			{
-				UINT32 length = (UINT32)strlen(VERSION_LINE) + 1;
+				char versionLine[50];
+				strcpy(versionLine, "#version ");
+				strcat(versionLine, VERSION_CHARS);
+				strcat(versionLine, "\n");
+
+				UINT32 length = (UINT32)strlen(versionLine) + 1;
 
 				GLchar* extraLineData = (GLchar*)bs_stack_alloc(length);
-				memcpy(extraLineData, VERSION_LINE, length);
+				memcpy(extraLineData, versionLine, length);
 
 				lines.insert(lines.begin(), extraLineData);
 				numInsertedLines++;
 			}
 
-			static const char* EXTRA_LINES[] = { "#define OPENGL\n" };
+			char versionDefine[50];
+			strcpy(versionDefine, "#define OPENGL");
+			strcat(versionDefine, VERSION_CHARS);
+			strcat(versionDefine, "\n");
+
+			static const char* EXTRA_LINES[] = 
+				{ 
+					"#define OPENGL\n",
+					versionDefine
+				};
+
 			UINT32 numExtraLines = sizeof(EXTRA_LINES) / sizeof(EXTRA_LINES[0]);
-			UINT32 extraLineOffset = versionLine != -1 ? versionLine + 1 : 0;
+			UINT32 extraLineOffset = versionLineNum != -1 ? versionLineNum + 1 : 0;
 			for (UINT32 i = 0; i < numExtraLines; i++)
 			{
 				UINT32 length = (UINT32)strlen(EXTRA_LINES[i]) + 1;

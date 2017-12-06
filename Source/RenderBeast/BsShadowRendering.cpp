@@ -156,13 +156,13 @@ namespace bs { namespace ct
 #define VARIATION(QUALITY)																	\
 		ShaderVariation ShadowProjectMat::VAR_Q##QUALITY##_Dir_MSAA = ShaderVariation({		\
 			ShaderVariation::Param("SHADOW_QUALITY", QUALITY),								\
-			ShaderVariation::Param("FADE_PLANE", true),										\
+			ShaderVariation::Param("CASCADINGE", true),										\
 			ShaderVariation::Param("NEEDS_TRANSFORM", false),								\
 			ShaderVariation::Param("MSAA_COUNT", 2)											\
 		});																					\
 		ShaderVariation ShadowProjectMat::VAR_Q##QUALITY##_Dir_NoMSAA = ShaderVariation({	\
 			ShaderVariation::Param("SHADOW_QUALITY", QUALITY),								\
-			ShaderVariation::Param("FADE_PLANE", true),										\
+			ShaderVariation::Param("CASCADING", true),										\
 			ShaderVariation::Param("NEEDS_TRANSFORM", false),								\
 			ShaderVariation::Param("MSAA_COUNT", 1)											\
 		});																					\
@@ -231,12 +231,9 @@ namespace bs { namespace ct
 		Vector4 lightPosAndScale(Vector3(0.0f, 0.0f, 0.0f), 1.0f);
 		gShadowProjectVertParamsDef.gPositionAndScale.set(mVertParams, lightPosAndScale);
 
-		TextureSurface surface;
-		surface.face = params.shadowMapFace;
-
 		mGBufferParams.bind(params.gbuffer);
 
-		mShadowMapParam.set(params.shadowMap, surface);
+		mShadowMapParam.set(params.shadowMap);
 		mShadowSamplerParam.set(mSamplerState);
 
 		SPtr<GpuParams> gpuParams = mParamsSet->getGpuParams();
@@ -867,7 +864,7 @@ namespace bs { namespace ct
 				bool viewerInsideVolume = (tfrm.getPosition() - viewProps.viewOrigin).length() < lightRadius;
 
 				SPtr<Texture> shadowMap = mShadowCubemaps[shadowInfo.textureIdx].getTexture();
-				ShadowProjectParams shadowParams(*light, shadowMap, 0, shadowOmniParamBuffer, perViewBuffer, gbuffer);
+				ShadowProjectParams shadowParams(*light, shadowMap, shadowOmniParamBuffer, perViewBuffer, gbuffer);
 
 				ShadowProjectOmniMat* mat = ShadowProjectOmniMat::getVariation(effectiveShadowQuality, viewerInsideVolume, 
 					viewProps.numSamples > 1);
@@ -994,8 +991,8 @@ namespace bs { namespace ct
 					shadowMapFace = shadowInfo->cascadeIdx;
 				}
 
-				ShadowProjectParams shadowParams(*light, shadowMap, shadowMapFace, shadowParamBuffer, perViewBuffer, 
-					gbuffer);
+				gShadowProjectParamsDef.gFace.set(shadowParamBuffer, (float)shadowMapFace);
+				ShadowProjectParams shadowParams(*light, shadowMap, shadowParamBuffer, perViewBuffer, gbuffer);
 
 				ShadowProjectMat* mat = ShadowProjectMat::getVariation(effectiveShadowQuality, isCSM, viewProps.numSamples > 1);
 				mat->bind(shadowParams);

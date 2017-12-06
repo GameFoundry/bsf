@@ -24,7 +24,7 @@ technique ShadowProject
 		writemask = 0x7F;
 	};
 	
-	#ifdef FADE_PLANE
+	#ifdef CASCADING
 	blend
 	{
 		target
@@ -48,7 +48,12 @@ technique ShadowProject
 	
 	code
 	{
+		#if CASCADING
+		Texture2DArray gShadowTex;
+		#else
 		Texture2D gShadowTex;
+		#endif
+		
 		SamplerState gShadowSampler;
 	
 		[internal]
@@ -64,6 +69,8 @@ technique ShadowProject
 			
 			float gFadePlaneDepth;
 			float gInvFadePlaneRange;
+			
+			float gFace;
 		};
 		
 		// Converts a set of shadow depths into occlusion values, where 1 means scene object is occluded and 0
@@ -95,15 +102,25 @@ technique ShadowProject
 		
 		float PCF1x1(float2 uv, float sceneDepth)
 		{
-			float depthSample = gShadowTex.Sample(gShadowSampler, uv).r;
+			#if CASCADING
+			float3 sampleCenter = float3(uv, gFace);
+			#else
+			float2 sampleCenter = uv;
+			#endif
+			
+			float depthSample = gShadowTex.Sample(gShadowSampler, sampleCenter).r;
 			return getOcclusion(depthSample.rrrr, sceneDepth).r;
 		}
 	
 		float PCF2x2(float2 uv, float sceneDepth)
 		{
 			float2 fraction;
+			#if CASCADING
+			float3 sampleCenter = float3(getFilteringInfo(uv, fraction), gFace);
+			#else
 			float2 sampleCenter = getFilteringInfo(uv, fraction);
-						
+			#endif			
+				
 			// Gather four samples. Samples are returned in counter-clockwise order, starting with lower left
 			float4 depthSamples = gShadowTex.GatherRed(gShadowSampler, sampleCenter);
 			
@@ -118,7 +135,11 @@ technique ShadowProject
 		float PCF4x4(float2 uv, float sceneDepth)
 		{
 			float2 fraction;
+			#if CASCADING
+			float3 sampleCenter = float3(getFilteringInfo(uv, fraction), gFace);
+			#else
 			float2 sampleCenter = getFilteringInfo(uv, fraction);
+			#endif	
 							
 			// Gather 16 samples in four 2x2 gathers. Samples are returned in counter-clockwise order, starting with lower left.
 			// Gathers are performed in clockwise order, starting with top left block.
@@ -187,7 +208,11 @@ technique ShadowProject
 		float PCF6x6(float2 uv, float sceneDepth)
 		{
 			float2 fraction;
+			#if CASCADING
+			float3 sampleCenter = float3(getFilteringInfo(uv, fraction), gFace);
+			#else
 			float2 sampleCenter = getFilteringInfo(uv, fraction);
+			#endif	
 							
 			// Gather 36 samples in nine 2x2 gathers. Gathers are performed in clockwise order, starting with top left block.
 			// Every three gathers (one row), the values are accumulated to their corresponding row.
@@ -249,7 +274,7 @@ technique ShadowProject
 			#endif
 			
 			float alpha = 1.0f;
-			#ifdef FADE_PLANE
+			#ifdef CASCADING
 				alpha = 1.0f - saturate((-depth - gFadePlaneDepth) * gInvFadePlaneRange);
 			#endif
 

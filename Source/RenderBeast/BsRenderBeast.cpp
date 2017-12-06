@@ -30,6 +30,7 @@
 #include "BsRenderCompositor.h"
 #include "BsRendererTextures.h"
 #include "BsRenderBeastIBLUtility.h"
+#include "Renderer/BsRendererManager.h"
 
 using namespace std::placeholders;
 
@@ -63,6 +64,17 @@ namespace bs { namespace ct
 
 	void RenderBeast::initializeCore()
 	{
+		const RenderAPI& rapi = RenderAPI::instance();
+		const RenderAPIInfo& rapiInfo = rapi.getAPIInfo();
+
+		if(
+			!rapiInfo.isFlagSet(RenderAPIFeatureFlag::Compute) ||
+			!rapiInfo.isFlagSet(RenderAPIFeatureFlag::LoadStore) ||
+			!rapiInfo.isFlagSet(RenderAPIFeatureFlag::TextureViews))
+		{
+			mFeatureSet = RenderBeastFeatureSet::DesktopMacOS;
+		}
+
 		RendererUtility::startUp();
 		GpuResourcePool::startUp();
 		IBLUtility::startUp<RenderBeastIBLUtility>();
@@ -673,5 +685,10 @@ namespace bs { namespace ct
 
 		// Make sure the render texture is available for reads
 		RenderAPI::instance().setRenderTarget(nullptr);
+	}
+
+	SPtr<RenderBeast> gRenderBeast()
+	{
+		return std::static_pointer_cast<RenderBeast>(RendererManager::instance().getActive());
 	}
 }}

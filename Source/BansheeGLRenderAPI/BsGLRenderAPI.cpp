@@ -2733,10 +2733,21 @@ namespace bs { namespace ct
 
 	const RenderAPIInfo& GLRenderAPI::getAPIInfo() const
 	{
-		static RenderAPIInfo info(0.0f, 0.0f, -1.0f, 1.0f, VET_COLOR_ABGR,
-								  RenderAPIFeatureFlag::UVYAxisUp |
-								  RenderAPIFeatureFlag::ColumnMajorMatrices |
-								  RenderAPIFeatureFlag::MSAAImageStores);
+		RenderAPIFeatures featureFlags =
+			RenderAPIFeatureFlag::UVYAxisUp |
+			RenderAPIFeatureFlag::ColumnMajorMatrices |
+			RenderAPIFeatureFlag::MSAAImageStores;
+
+#if BS_OPENGL_4_3 || BS_OPENGLES_3_1
+		featureFlags |= RenderAPIFeatureFlag::TextureViews;
+		featureFlags |= RenderAPIFeatureFlag::Compute;
+#endif
+
+#if BS_OPENGL_4_2 || BS_OPENGLES_3_1
+		featureFlags |= RenderAPIFeatureFlag::LoadStore;
+#endif
+
+		static RenderAPIInfo info(0.0f, 0.0f, -1.0f, 1.0f, VET_COLOR_ABGR, featureFlags);
 								  
 		return info;
 	}

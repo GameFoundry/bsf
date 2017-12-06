@@ -1362,7 +1362,12 @@ namespace bs { namespace ct
 
 	const RenderAPIInfo& D3D11RenderAPI::getAPIInfo() const
 	{
-		static RenderAPIInfo info(0.0f, 0.0f, 0.0f, 1.0f, VET_COLOR_ABGR, RenderAPIFeatures());
+		RenderAPIFeatures featureFlags =
+			RenderAPIFeatureFlag::TextureViews |
+			RenderAPIFeatureFlag::Compute | 
+			RenderAPIFeatureFlag::LoadStore;
+
+		static RenderAPIInfo info(0.0f, 0.0f, 0.0f, 1.0f, VET_COLOR_ABGR, featureFlags);
 
 		return info;
 	}

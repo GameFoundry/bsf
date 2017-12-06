@@ -12,6 +12,7 @@ technique ReflectionCubeDownsample
 		cbuffer Input
 		{
 			int gCubeFace;
+			int gMipLevel;
 		}	
 	
 		SamplerState gInputSamp;
@@ -22,7 +23,7 @@ technique ReflectionCubeDownsample
 			float2 scaledUV = input.uv0 * 2.0f - 1.0f;
 			float3 dir = getDirFromCubeFace(gCubeFace, scaledUV);
 			
-			return gInputTex.Sample(gInputSamp, dir);
+			return gInputTex.SampleLevel(gInputSamp, dir, gMipLevel);
 		}	
 	};
 };

@@ -9,7 +9,7 @@
 #include "BsRendererView.h"
 #include "Image/BsPixelUtil.h"
 #include "Utility/BsBitwise.h"
-#include "Resources/BsBuiltinResourcesHelper.h"
+#include "BsRenderBeast.h"
 
 namespace bs { namespace ct
 {
@@ -964,10 +964,28 @@ namespace bs { namespace ct
 			return get(VAR_NoNear_Far);
 	}
 
+	BuildHiZFParamDef gBuildHiZParamDef;
+
 	BuildHiZMat::BuildHiZMat()
 	{
 		SPtr<GpuParams> gpuParams = mParamsSet->getGpuParams();
 		gpuParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gDepthTex", mInputTexture);
+
+		// If no texture view support, we must manually pick a valid mip level in the shader
+		const RenderAPIInfo& rapiInfo = RenderAPI::instance().getAPIInfo();
+		if(!rapiInfo.isFlagSet(RenderAPIFeatureFlag::TextureViews))
+		{
+			mParamBuffer = gBuildHiZParamDef.createBuffer();
+
+			SAMPLER_STATE_DESC inputSampDesc;
+			inputSampDesc.minFilter = FO_POINT;
+			inputSampDesc.magFilter = FO_POINT;
+			inputSampDesc.mipFilter = FO_POINT;
+
+			SPtr<SamplerState> inputSampState = SamplerState::create(inputSampDesc);
+			if(gpuParams->hasSamplerState(GPT_FRAGMENT_PROGRAM, "gDepthSamp"))
+				gpuParams->setSamplerState(GPT_FRAGMENT_PROGRAM, "gDepthSamp", inputSampState);
+		}
 	}
 
 	void BuildHiZMat::_initVariations(ShaderVariations& variations)
@@ -980,7 +998,24 @@ namespace bs { namespace ct
 	{
 		RenderAPI& rapi = RenderAPI::instance();
 
-		mInputTexture.set(source, TextureSurface(srcMip));
+		// If no texture view support, we must manually pick a valid mip level in the shader
+		const RenderAPIInfo& rapiInfo = RenderAPI::instance().getAPIInfo();
+		if(rapiInfo.isFlagSet(RenderAPIFeatureFlag::TextureViews))
+			mInputTexture.set(source, TextureSurface(srcMip));
+		else
+		{
+			mInputTexture.set(source);
+
+			auto& props = source->getProperties();
+			float pixelWidth = (float)props.getWidth();
+			float pixelHeight = (float)props.getHeight();
+
+			Vector2 halfPixelOffset(0.5f / pixelWidth, 0.5f / pixelHeight);
+
+			gBuildHiZParamDef.gHalfPixelOffset.set(mParamBuffer, halfPixelOffset);
+			gBuildHiZParamDef.gMipLevel.set(mParamBuffer, srcMip);
+		}
+
 		rapi.setRenderTarget(output);
 		rapi.setViewport(dstRect);
 

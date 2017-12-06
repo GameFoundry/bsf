@@ -15,6 +15,7 @@ namespace bs { namespace ct
 
 	BS_PARAM_BLOCK_BEGIN(ReflectionCubeDownsampleParamDef)
 		BS_PARAM_BLOCK_ENTRY(int, gCubeFace)
+		BS_PARAM_BLOCK_ENTRY(int, gMipLevel)
 	BS_PARAM_BLOCK_END
 
 	extern ReflectionCubeDownsampleParamDef gReflectionCubeDownsampleParamDef;
@@ -28,8 +29,7 @@ namespace bs { namespace ct
 		ReflectionCubeDownsampleMat();
 
 		/** Downsamples the provided texture face and outputs it to the provided target. */
-		void execute(const SPtr<Texture>& source, UINT32 face, const TextureSurface& surface, 
-					 const SPtr<RenderTarget>& target);
+		void execute(const SPtr<Texture>& source, UINT32 face, UINT32 mip, const SPtr<RenderTarget>& target);
 
 	private:
 		SPtr<GpuParamBlockBuffer> mParamBuffer;

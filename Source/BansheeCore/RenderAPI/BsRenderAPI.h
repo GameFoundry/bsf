@@ -192,7 +192,17 @@ namespace bs
 		 */
 		MultiThreadedCB			= 1 << 4,
 		/** If set, the render API supports unordered stores to a texture with more than one sample. */
-		MSAAImageStores			= 1 << 5
+		MSAAImageStores			= 1 << 5,
+		/** 
+		 * If set, the render API supports binds of parts of a texture (e.g. a single mip level, or a single element of a
+		 * texture array). This only applies to texture reads and individual mip levels or layers can still be bound as
+		 * render texture targets regardless of this flag.
+		 */
+		TextureViews			= 1 << 6,
+		/** If set, the render API supports compute shaders. */
+		Compute					= 1 << 7,
+		/** If set, the render API supports load-store textures or buffers (AKA unordered access (UAV). */
+		LoadStore				= 1 << 8
 	};
 
 	typedef Flags<RenderAPIFeatureFlag> RenderAPIFeatures;

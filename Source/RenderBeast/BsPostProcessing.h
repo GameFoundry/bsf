@@ -395,6 +395,13 @@ namespace bs { namespace ct
 		static ShaderVariation VAR_Near_NoFar;
 	};
 
+	BS_PARAM_BLOCK_BEGIN(BuildHiZFParamDef)
+		BS_PARAM_BLOCK_ENTRY(Vector2, gHalfPixelOffset)
+		BS_PARAM_BLOCK_ENTRY(int, gMipLevel)
+	BS_PARAM_BLOCK_END
+
+	extern BuildHiZFParamDef sBuildHiZFParamDef;
+
 	/** Shader that calculates a single level of the hierarchical Z mipmap chain. */
 	class BuildHiZMat : public RendererMaterial<BuildHiZMat>
 	{
@@ -417,6 +424,7 @@ namespace bs { namespace ct
 			const SPtr<RenderTexture>& output);
 	private:
 		GpuParamTexture mInputTexture;
+		SPtr<GpuParamBlockBuffer> mParamBuffer;
 	};
 
 	BS_PARAM_BLOCK_BEGIN(FXAAParamDef)

@@ -24,11 +24,15 @@ namespace bs { namespace ct
 		// Do nothing
 	}
 
-	void ReflectionCubeDownsampleMat::execute(const SPtr<Texture>& source, UINT32 face, const TextureSurface& surface, 
-											 const SPtr<RenderTarget>& target)
+	void ReflectionCubeDownsampleMat::execute(
+		const SPtr<Texture>& source,
+		UINT32 face,
+		UINT32 mip,
+		const SPtr<RenderTarget>& target)
 	{
-		mInputTexture.set(source, surface);
+		mInputTexture.set(source);
 		gReflectionCubeDownsampleParamDef.gCubeFace.set(mParamBuffer, face);
+		gReflectionCubeDownsampleParamDef.gMipLevel.set(mParamBuffer, mip);
 
 		RenderAPI& rapi = RenderAPI::instance();
 		rapi.setRenderTarget(target);
@@ -438,9 +442,8 @@ namespace bs { namespace ct
 
 			SPtr<RenderTarget> target = RenderTexture::create(cubeFaceRTDesc);
 
-			TextureSurface sourceSurface(srcMip, 1, 0, 6);
 			ReflectionCubeDownsampleMat* material = ReflectionCubeDownsampleMat::get();
-			material->execute(src, face, sourceSurface, target);
+			material->execute(src, face, srcMip, target);
 		}
 	}
 }}

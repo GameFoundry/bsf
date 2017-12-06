@@ -72,6 +72,9 @@ namespace bs
 		/**	Returns current set of options used for controlling the rendering. */
 		SPtr<RendererOptions> getOptions() const override;
 
+		/** Returns the feature set the renderer is operating on. Core thread only. */
+		RenderBeastFeatureSet getFeatureSet() const { return mFeatureSet; }
+
 		/** @copydoc Renderer::initialize */
 		void initialize() override;
 
@@ -181,6 +184,7 @@ namespace bs
 		void updateReflProbeArray();
 
 		// Core thread only fields
+		RenderBeastFeatureSet mFeatureSet = RenderBeastFeatureSet::Desktop;
 
 		// Scene data
 		SPtr<RendererScene> mScene;
@@ -197,6 +201,9 @@ namespace bs
 		SPtr<RenderBeastOptions> mOptions;
 		bool mOptionsDirty = true;
 	};
+
+	/**	Provides easy access to the RenderBeast renderer. */
+	SPtr<RenderBeast> gRenderBeast();
 
 	/** @} */
 }}

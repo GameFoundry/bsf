@@ -283,7 +283,7 @@ namespace bs { namespace ct
 		RenderAPI::initialize();
 	}
 
-    void VulkanRenderAPI::destroyCore()
+	void VulkanRenderAPI::destroyCore()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -566,12 +566,16 @@ namespace bs { namespace ct
 
 	const RenderAPIInfo& VulkanRenderAPI::getAPIInfo() const
 	{
-		static RenderAPIInfo info(0.0f, 0.0f, 0.0f, 1.0f, VET_COLOR_ABGR, 
-								  RenderAPIFeatureFlag::NDCYAxisDown |
-								  RenderAPIFeatureFlag::ColumnMajorMatrices |
-								  RenderAPIFeatureFlag::MultiThreadedCB |
-								  RenderAPIFeatureFlag::MSAAImageStores);
+		RenderAPIFeatures featureFlags =
+			RenderAPIFeatureFlag::NDCYAxisDown |
+			RenderAPIFeatureFlag::ColumnMajorMatrices |
+			RenderAPIFeatureFlag::MultiThreadedCB |
+			RenderAPIFeatureFlag::MSAAImageStores |
+			RenderAPIFeatureFlag::TextureViews |
+			RenderAPIFeatureFlag::Compute |
+			RenderAPIFeatureFlag::LoadStore;
 
+		static RenderAPIInfo info(0.0f, 0.0f, 0.0f, 1.0f, VET_COLOR_ABGR, featureFlags);
 		return info;
 	}
 
