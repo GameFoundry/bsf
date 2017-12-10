@@ -168,11 +168,9 @@ technique PPSSRTrace
 					sum += color * dirFade;
 				}
 			}
-			
-			// Divide by total number of rays, instead of actual number of rays that passed the test. This scales down the
-			// contribution for pixels for which many rays failed the test and might not be accurate.
-			float4 output = sum / NUM_RAYS; 
-			
+
+			float4 output = sum / NUM_RAYS;
+						
 			// Move back to high range (reverse tonemap)
 			output.rgb /= (1 - LuminanceRGB(output.rgb));
 			

@@ -519,7 +519,7 @@ namespace bs
 	{
 		Vector3 nrmDir = Vector3::normalize(dir);
 
-		float u = (atan2(nrmDir.z, nrmDir.x) + Math::PI) / Math::TWO_PI;
+		float u = (atan2(nrmDir.x, nrmDir.z) + Math::PI) / Math::TWO_PI;
 		float v = acos(nrmDir.y) / Math::PI;
 
 		return Vector2(u, v);
@@ -556,12 +556,12 @@ namespace bs
 		// coordinates are mapped.
 		static const RemapInfo remapLookup[] = 
 		{
-			{ 2, 1, 0, {  1.0f, -1.0f,  1.0f }}, // X+
-			{ 2, 1, 0, { -1.0f, -1.0f, -1.0f }}, // X-
-			{ 0, 2, 1, {  1.0f, -1.0f,  1.0f }}, // Y+
-			{ 0, 2, 1, {  1.0f,  1.0f, -1.0f }}, // Y-
-			{ 0, 1, 2, {  1.0f, -1.0f, -1.0f }}, // Z+
-			{ 0, 1, 2, { -1.0f, -1.0f,  1.0f }}  // Z-
+			{ 2, 1, 0, { -1.0f, -1.0f,  1.0f }}, // X+
+			{ 2, 1, 0, {  1.0f, -1.0f, -1.0f }}, // X-
+			{ 0, 2, 1, {  1.0f,  1.0f,  1.0f }}, // Y+
+			{ 0, 2, 1, {  1.0f, -1.0f, -1.0f }}, // Y-
+			{ 0, 1, 2, {  1.0f, -1.0f,  1.0f }}, // Z+
+			{ 0, 1, 2, { -1.0f, -1.0f, -1.0f }}  // Z-
 		};
 
 		float invSize = 1.0f / faceSize;

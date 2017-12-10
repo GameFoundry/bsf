@@ -80,7 +80,7 @@ mixin RayMarch
 			D.x = abs(D.x) < 0.00001f ? 0.00001f : D.x;
 			D.y = abs(D.y) < 0.00001f ? 0.00001f : D.y;
 
-			while(rayPos.z <= 1.0f && iterationCount < MAX_HIZ_ITERATIONS)
+			while(rayPos.z < 0.9999f && iterationCount < MAX_HIZ_ITERATIONS)
 			{
 				// Get depth of the current cell
 				float cellZ = depth.SampleLevel(samp, rayPos.xy, mipLevel).r;

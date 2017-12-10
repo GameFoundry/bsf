@@ -40,26 +40,19 @@ technique PPSSRResolve
 		
 		float4 fsmain(VStoFS input) : SV_Target0
 		{
-			float4 col;
 			#if MSAA
-				col.rgb = temporalResolve(
+				return temporalResolve(
 					gSceneDepth, 
 					gSceneColor, gLinearSampler, gSceneColorTexelSize, 
 					gPrevColor, gLinearSampler, gSceneColorTexelSize,
 					gManualExposure, input.uv0, input.screenPos, 0);
-					
-				col.a = gSceneColor.Sample(gLinearSampler, input.uv0 * gSceneColorTexelSize).a;
 			#else
-				col.rgb = temporalResolve(
+				return temporalResolve(
 					gSceneDepth, gPointSampler, gSceneDepthTexelSize,
 					gSceneColor, gLinearSampler, gSceneColorTexelSize, 
 					gPrevColor, gLinearSampler, gSceneColorTexelSize,
 					gManualExposure, input.uv0, input.screenPos, 0);
-					
-				col.a = gSceneColor.Sample(gLinearSampler, input.uv0).a;
 			#endif
-			
-			return col;
 		}	
 	};
 };

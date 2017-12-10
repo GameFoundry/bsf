@@ -173,7 +173,7 @@ namespace bs { namespace ct
 		auto partition = [](Vector<const RendererLight*>& entries)
 		{
 			UINT32 numUnshadowed = 0;
-			int first = 0;
+			int first = -1;
 			for (UINT32 i = 0; i < (UINT32)entries.size(); ++i)
 			{
 				if(entries[i]->internal->getCastsShadow())
@@ -185,13 +185,15 @@ namespace bs { namespace ct
 					++numUnshadowed;
 			}
 
-			for(UINT32 i = first + 1; i < (UINT32)entries.size(); ++i)
+			if(first != -1)
 			{
-				if(!entries[i]->internal->getCastsShadow())
+				for(UINT32 i = first + 1; i < (UINT32)entries.size(); ++i)
 				{
-					std::swap(entries[i], entries[first]);
-					++first;
-					++numUnshadowed;
+					if(!entries[i]->internal->getCastsShadow())
+					{
+						std::swap(entries[i], entries[first]);
+						++numUnshadowed;
+					}
 				}
 			}
 

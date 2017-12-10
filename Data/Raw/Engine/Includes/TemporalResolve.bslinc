@@ -64,7 +64,7 @@ mixin TemporalResolve
 		#ifndef TEMPORAL_GREEN_AS_LUMA
 			#define TEMPORAL_GREEN_AS_LUMA 0
 		#endif
-		
+				
 		// When enabled the input samples will be tonemapped using the provided exposure value. Once the final
 		// value is resolved, it will be scaled back into original range. This ensures high frequency data from
 		// HDR content is removed, as it would cause aliasing otherwise. We scale the result back into high range
@@ -115,8 +115,10 @@ mixin TemporalResolve
 			#define _TEX2D(n) Texture2DMS<float> n
 			#if MSAA_COLOR
 				#define _TEXCOLOR(n) Texture2DMS<float4> n
+				#define _PTEXCOLOR(n) n
 			#else
 				#define _TEXCOLOR(n) Texture2D n, SamplerState n##SampState, float2 n##TexelSize
+				#define _PTEXCOLOR(n) n, n##SampState, n##TexelSize
 			#endif
 			
 			#define _PTEX2D(n) n
@@ -134,6 +136,7 @@ mixin TemporalResolve
 			#define _TEX2D(n) Texture2D n, SamplerState n##SampState, float2 n##TexelSize
 			#define _TEXCOLOR(n) _TEX2D(n)
 			#define _PTEX2D(n) n, n##SampState, n##TexelSize
+			#define _PTEXCOLOR(n) n, n##SampState, n##TexelSize
 			#define _SAMPLE(n, uv) n.Sample(n##SampState, uv)
 			#define _SAMPLEOFF(n, uv, offset) n.Sample(n##SampState, uv, offset)
 			#define _SAMPLECOL(n, uv, offset) _SAMPLEOFF(n, uv, offset)
@@ -193,7 +196,7 @@ mixin TemporalResolve
 			return float3(uv + dmin.xy * _PIXSIZE(sceneDepth), dmin.z);
 		}
 		
-		float3 clipAABB(float3 boxMin, float3 boxMax, float3 history, float3 current)
+		float clipAABB(float3 boxMin, float3 boxMax, float3 history, float3 current)
 		{
 			// Note: Is this necessary? Will "current" always be in the box?
 			boxMin = min(current, boxMin);
@@ -209,8 +212,7 @@ mixin TemporalResolve
 			float3 tNeg = (extents - origin) * rDir;
 			float3 tPos = (-extents - origin) * rDir;
 			
-			float t = saturate(max(max(min(tNeg.x, tPos.x), min(tNeg.y, tPos.y)), min(tNeg.z, tPos.z)));
-			return history + t * dir;
+			return saturate(max(max(min(tNeg.x, tPos.x), min(tNeg.y, tPos.y)), min(tNeg.z, tPos.z)));
 		}
 		
 		// Encodes velocity into a format suitable for storing in a 16-bit SNORM texture. 
@@ -241,13 +243,34 @@ mixin TemporalResolve
 			#define _TONEMAP_COLOR(v) v
 		#endif // TEMPORAL_TONEMAP
 		
-		// Automatically convert from/to YCoCg space, if enabled
-		#if TEMPORAL_YCOCG
-			#define _SAMPLE_COLOR(n, uv, offset) _TONEMAP_COLOR(RGBToYCoCg(_SAMPLECOL(n, uv, offset).rgb))
-		#else // TEMPORAL_YCOCG
-			#define _SAMPLE_COLOR(n, uv, offset) _TONEMAP_COLOR(_SAMPLECOL(n, uv, offset).rgb)
-		#endif // TEMPORAL_YCOCG
-						
+		// Samples the scene color texture, automatically converting to YCoCg space (if enabled),
+		// and tonemapping the value
+		float4 sampleColor(
+			_TEXCOLOR(tex), 
+			float2 uv, 
+			int2 offset
+			#if TEMPORAL_TONEMAP
+			, float exposureScale
+			#endif // TEMPORAL_TONEMAP
+		)
+		{
+			float4 color = _SAMPLECOL(tex, uv, offset);
+			
+			#if TEMPORAL_YCOCG
+				color.rgb = _TONEMAP_COLOR(RGBToYCoCg(color.rgb));
+			#else
+				color.rgb = _TONEMAP_COLOR(color.rgb);
+			#endif
+			
+			return color;
+		}
+		
+		#if TEMPORAL_TONEMAP
+			#define _SAMPLE_COLOR(n, uv, offset) sampleColor(_PTEXCOLOR(n), uv, offset, exposureScale)
+		#else
+			#define _SAMPLE_COLOR(n, uv, offset) sampleColor(_PTEXCOLOR(n), uv, offset)
+		#endif
+		
 		///////////////////////////// MAIN /////////////////////////////////
 		[internal]
 		cbuffer TemporalInput
@@ -256,7 +279,7 @@ mixin TemporalResolve
 			float gSampleWeightsLowpass[9];
 		}
 		
-		float3 temporalResolve(
+		float4 temporalResolve(
 			_TEX2D(sceneDepth), 
 			_TEXCOLOR(sceneColor), 
 			_TEXCOLOR(prevColor), 
@@ -322,28 +345,28 @@ mixin TemporalResolve
 			
 			#if TEMPORAL_YCOCG
 			// YCOCG only requires a + pattern for good quality
-			float3 neighbor[5];
+			float4 neighbor[5];
 			neighbor[0] = _SAMPLE_COLOR(sceneColor, uvColor, int2(-1,  0));
 			neighbor[1] = _SAMPLE_COLOR(sceneColor, uvColor, int2( 0, -1));
 			neighbor[2] = _SAMPLE_COLOR(sceneColor, uvColor, int2( 0,  0));
 			neighbor[3] = _SAMPLE_COLOR(sceneColor, uvColor, int2( 1,  0));
 			neighbor[4] = _SAMPLE_COLOR(sceneColor, uvColor, int2( 0,  1));
 			
-			float3 filtered = 0;
+			float4 filtered = 0;
 			[unroll]
 			for(uint i = 0; i < 5; ++i)
 				filtered += neighbor[i] * gSampleWeights[i];
 			
-			float3 filteredLow = filtered;
+			float4 filteredLow = filtered;
 			
-			float3 neighborMin = min(min(min(neighbor[0], neighbor[1]), min(neighbor[2], neighbor[3])), 
+			float4 neighborMin = min(min(min(neighbor[0], neighbor[1]), min(neighbor[2], neighbor[3])), 
 				neighbor[4]);
 				
-			float3 neighborMax = max(max(max(neighbor[0], neighbor[1]), max(neighbor[2], neighbor[3])), 
+			float4 neighborMax = max(max(max(neighbor[0], neighbor[1]), max(neighbor[2], neighbor[3])), 
 				neighbor[4]);
 			
 			#else // TEMPORAL_YCOCG
-			float3 neighbor[9];
+			float4 neighbor[9];
 			neighbor[0] = _SAMPLE_COLOR(sceneColor, uvColor, int2(-1, -1));
 			neighbor[1] = _SAMPLE_COLOR(sceneColor, uvColor, int2( 0, -1));
 			neighbor[2] = _SAMPLE_COLOR(sceneColor, uvColor, int2( 1, -1));
@@ -354,47 +377,47 @@ mixin TemporalResolve
 			neighbor[7] = _SAMPLE_COLOR(sceneColor, uvColor, int2( 0,  1));
 			neighbor[8] = _SAMPLE_COLOR(sceneColor, uvColor, int2( 1,  1));
 			
-			float3 filtered = 0;
+			float4 filtered = 0;
 			[unroll]
 			for(uint i = 0; i < 9; ++i)
 				filtered += neighbor[i] * gSampleWeights[i];
 
 			#if TEMPORAL_LOWPASS
-				float3 filteredLow = 0;
+				float4 filteredLow = 0;
 				[unroll]
 				for(uint i = 0; i < 9; ++i)
 					filteredLow += neighbor[i] * gSampleWeightsLowpass[i];
 			#else
-				float3 filteredLow = filtered;
+				float4 filteredLow = filtered;
 			#endif // TEMPORAL_LOWPASS
 			
 			#if TEMPORAL_SMOOTH_NEIGHBORHOOD
 			// Calculate standard deviation and determine neighborhood min/max based on it
-			float3 mean = 0;
+			float4 mean = 0;
 			[unroll]
 			for(uint i = 0; i < 9; ++i)
 				mean += neighbor[i];
 			
 			mean /= 9.0f;
 			
-			float3 meanSqrd = 0;
+			float4 meanSqrd = 0;
 			[unroll]
 			for(uint i = 0; i < 9; ++i)
 				meanSqrd += neighbor[i] * neighbor[i];
 			
 			meanSqrd /= 9.0f;
 			
-			float3 stdDev = sqrt(abs(meanSqrd - mean * mean));
-			float3 neighborMin = mean - stdDev;
-			float3 neighborMax = mean + stdDev;
+			float4 stdDev = sqrt(abs(meanSqrd - mean * mean));
+			float4 neighborMin = mean - stdDev;
+			float4 neighborMax = mean + stdDev;
 			
 			#else // TEMPORAL_SMOOTH_NEIGHBORHOOD
-			float3 neighborMin = min(min(
+			float4 neighborMin = min(min(
 				min(min(neighbor[0], neighbor[1]), min(neighbor[2], neighbor[3])), 
 				min(min(neighbor[4], neighbor[5]), min(neighbor[6], neighbor[7]))), 
 				neighbor[8]);
 				
-			float3 neighborMax = max(max(
+			float4 neighborMax = max(max(
 				max(max(neighbor[0], neighbor[1]), max(neighbor[2], neighbor[3])), 
 				max(max(neighbor[4], neighbor[5]), max(neighbor[6], neighbor[7]))), 
 				neighbor[8]);
@@ -403,7 +426,7 @@ mixin TemporalResolve
 			#endif // TEMPORAL_YCOCG
 			
 			/////////////////// GET PREVIOUS FRAME COLOR ///////////////////////
-			float3 prevColorVal = _SAMPLE_COLOR(prevColor, prevUV, int2(0, 0));
+			float4 prevColorVal = _SAMPLE_COLOR(prevColor, prevUV, int2(0, 0));
 			
 			///////////////////// CLAMP TO NEIGHBORHOOD ////////////////////////
 			// Clamping to neighborhood ensures we don't blend with values that are too
@@ -413,7 +436,8 @@ mixin TemporalResolve
 			#else // TEMPORAL_YCOCG
 				// Uses low-pass to reduce flickering
 				#if TEMPORAL_CLIP_AABB
-					prevColorVal = clipAABB(neighborMin, neighborMax, prevColorVal, filteredLow);
+					float clipT = clipAABB(neighborMin.rgb, neighborMax.rgb, prevColorVal.rgb, filteredLow.rgb);
+					prevColorVal = prevColorVal + clipT * (filteredLow - prevColorVal);
 				#else // TEMPORAL_CLIP_AABB
 					prevColorVal = clamp(prevColorVal, neighborMin, neighborMax);
 				#endif // TEMPORAL_CLIP_AABB
@@ -423,7 +447,7 @@ mixin TemporalResolve
 			// Find out how much impact should the previous frame's color have
 			#if TEMPORAL_BLEND_FACTOR // Fixed blend factor
 				float blendAmount = 1.0f / TEMPORAL_BLEND_FACTOR;
-				float3 output = lerp(prevColorVal, filtered, blendAmount);
+				float4 output = lerp(prevColorVal, filtered, blendAmount);
 			#else // TEMPORAL_BLEND_FACTOR
 				#if TEMPORAL_YCOCG
 					float lumaCurrent = filtered.r;
@@ -445,22 +469,22 @@ mixin TemporalResolve
 				float weightGood = 1.0f - 1.0f / TEMPORAL_GOOD_RETENTION;
 				
 				float blendAmount = lerp(weightBad, weightGood, blendWeight * blendWeight);
-				float3 output = lerp(filtered, prevColorVal, blendAmount);
+				float4 output = lerp(filtered, prevColorVal, blendAmount);
 			#endif // TEMPORAL_BLEND_FACTOR
 			
 			//////// UNDO TONEMAP & MOVE BACK TO RGB SPACE //////////////////////
 			#if TEMPORAL_TONEMAP
 				#if TEMPORAL_YCOCG
-					output = HDRScaleYInv(output, exposureScale);
+					output.rgb = HDRScaleYInv(output.rgb, exposureScale);
 				#elif TEMPORAL_GREEN_AS_LUMA
-					output = HDRScaleGInv(output, exposureScale);
+					output.rgb = HDRScaleGInv(output.rgb, exposureScale);
 				#else
-					output = HDRScaleRGBInv(output, exposureScale);
+					output.rgb = HDRScaleRGBInv(output.rgb, exposureScale);
 				#endif
 			#endif // TEMPORAL_TONEMAP
 			
 			#if TEMPORAL_YCOCG
-				output = YCoCgToRGB(output);
+				output.rgb = YCoCgToRGB(output.rgb);
 			#endif // TEMPORAL_YCOCG			
 			
 			// Note: Potential improvements:
@@ -478,7 +502,6 @@ mixin TemporalResolve
 		#undef _PIXSIZE
 		#undef _TONEMAP_COLOR
 		#undef _TONEMAP_COLOR_INV
-		#undef _SAMPLE_COLOR
 		#undef _RESOLVE_COLOR
 	};
 };

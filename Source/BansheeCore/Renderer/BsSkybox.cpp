@@ -80,7 +80,7 @@ namespace bs
 			coreSkybox->mFilteredRadiance = coreFilteredRadiance;
 
 			// Generate irradiance
-			ct::gIBLUtility().filterCubemapForIrradiance(coreFilteredRadiance, coreIrradiance);
+			ct::gIBLUtility().filterCubemapForIrradiance(coreSkybox->getTexture(), coreIrradiance);
 			coreSkybox->mIrradiance = coreIrradiance;
 
 			return true;

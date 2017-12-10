@@ -1875,7 +1875,7 @@ namespace bs { namespace ct
 			SPtr<RenderTexture> traceRt = RenderTexture::create(traceRtDesc);
 
 			rapi.setRenderTarget(traceRt, FBT_DEPTH | FBT_STENCIL, RT_DEPTH_STENCIL);
-			rapi.clearRenderTarget(FBT_COLOR);
+			rapi.clearRenderTarget(FBT_COLOR, Color::ZERO);
 
 			SSRTraceMat* traceMat = SSRTraceMat::getVariation(settings.quality, viewProps.numSamples > 1, true);
 			traceMat->execute(inputs.view, gbuffer, sceneColor, hiZ, settings, traceRt);
