@@ -1739,10 +1739,16 @@ namespace bs { namespace ct
 							if (readMask.isSet(RT_STENCIL))
 								return VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
 							else // Depth readable but stencil isn't
-								return VK_IMAGE_LAYOUT_GENERAL;
+								return VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL_KHR;
 						}
-
-						return VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+						else
+						{
+							if (readMask.isSet(RT_STENCIL)) // Stencil readable but depth isn't
+								return VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL_KHR;
+							else 
+								return VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+							
+						}
 					}
 					else // It is a color attachment
 					{

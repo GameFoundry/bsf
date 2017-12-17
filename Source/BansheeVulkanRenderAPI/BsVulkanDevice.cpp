@@ -80,7 +80,8 @@ namespace bs { namespace ct
 		// Create logical device
 		const char* extensions[] = { 
 			VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-			VK_KHR_MAINTENANCE1_EXTENSION_NAME
+			VK_KHR_MAINTENANCE1_EXTENSION_NAME,
+			VK_KHR_MAINTENANCE2_EXTENSION_NAME
 		};
 		uint32_t numExtensions = sizeof(extensions) / sizeof(extensions[0]);
 
