@@ -693,7 +693,7 @@ namespace bs { namespace ct
 		FlatFramebufferToTextureMat* material = FlatFramebufferToTextureMat::get();
 
 		RenderAPI& rapi = RenderAPI::instance();
-		rapi.setRenderTarget(lightAccumNode->renderTarget, FBT_DEPTH | FBT_STENCIL, RT_COLOR0 | RT_DEPTH_STENCIL);
+		rapi.setRenderTarget(lightAccumNode->renderTarget, FBT_DEPTH | FBT_STENCIL, RT_DEPTH_STENCIL);
 		material->execute(lightAccumNode->flattenedLightAccumBuffer->buffer, lightAccumNode->lightAccumulationTex->texture);
 	}
 
@@ -895,7 +895,7 @@ namespace bs { namespace ct
 		int readOnlyFlags = FBT_DEPTH | FBT_STENCIL;
 
 		RenderAPI& rapi = RenderAPI::instance();
-		rapi.setRenderTarget(sceneColorNode->renderTarget, readOnlyFlags, RT_COLOR0 | RT_DEPTH_STENCIL);
+		rapi.setRenderTarget(sceneColorNode->renderTarget, readOnlyFlags, RT_DEPTH_STENCIL);
 
 		Rect2 area(0.0f, 0.0f, 1.0f, 1.0f);
 		rapi.setViewport(area);
