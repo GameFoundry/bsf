@@ -235,6 +235,38 @@ namespace bs
 		setColorsInternal(colors, numElements);
 	}
 
+	void PixelData::setColors(const Color& color)
+	{
+		UINT32 depth = mExtents.getDepth();
+		UINT32 height = mExtents.getHeight();
+		UINT32 width = mExtents.getWidth();
+
+		UINT32 pixelSize = PixelUtil::getNumElemBytes(mFormat);
+		UINT32 packedColor[4];
+		assert(pixelSize <= sizeof(packedColor));
+
+		PixelUtil::packColor(color, mFormat, packedColor);
+
+		UINT8* data = getData();
+		for (UINT32 z = 0; z < depth; z++)
+		{
+			UINT32 zDataIdx = z * mSlicePitch * pixelSize;
+
+			for (UINT32 y = 0; y < height; y++)
+			{
+				UINT32 yDataIdx = y * mRowPitch * pixelSize;
+
+				for (UINT32 x = 0; x < width; x++)
+				{
+					UINT32 dataIdx = x * pixelSize + yDataIdx + zDataIdx;
+
+					UINT8* dest = data + dataIdx;
+					memcpy(dest, packedColor, pixelSize);
+				}
+			}
+		}
+	}
+
 	float PixelData::getDepthAt(UINT32 x, UINT32 y, UINT32 z) const
 	{
 		UINT32 pixelSize = PixelUtil::getNumElemBytes(mFormat);

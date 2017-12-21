@@ -434,7 +434,7 @@ namespace bs
 
 		if (desc.srcFace >= target->mProperties.getNumFaces())
 		{
-			LOGERR("Invalid destination face index.");
+			LOGERR("Invalid source face index.");
 			return;
 		}
 
@@ -513,6 +513,33 @@ namespace bs
 		}
 
 		copyImpl(target, desc, commandBuffer);
+	}
+
+	void Texture::clear(const Color& value, UINT32 mipLevel, UINT32 face, UINT32 queueIdx)
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		if (face >= mProperties.getNumFaces())
+		{
+			LOGERR("Invalid face index.");
+			return;
+		}
+
+		if (mipLevel > mProperties.getNumMipmaps())
+		{
+			LOGERR("Mip level out of range. Valid range is [0, " + toString(mProperties.getNumMipmaps()) + "].");
+			return;
+		}
+
+		clearImpl(value, mipLevel, face, queueIdx);
+	}
+
+	void Texture::clearImpl(const Color& value, UINT32 mipLevel, UINT32 face, UINT32 queueIdx)
+	{
+		SPtr<PixelData> data = mProperties.allocBuffer(face, mipLevel);
+		data->setColors(value);
+		
+		writeData(*data, mipLevel, face, true, queueIdx);
 	}
 
 	/************************************************************************/

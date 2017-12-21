@@ -1438,7 +1438,7 @@ namespace bs { namespace ct
 	}
 
 	void ShadowRendering::calcShadowMapProperties(const RendererLight& light, const RendererViewGroup& viewGroup, 
-		UINT32 border, UINT32& size, SmallVector<float, 4>& fadePercents, float& maxFadePercent) const
+		UINT32 border, UINT32& size, SmallVector<float, 6>& fadePercents, float& maxFadePercent) const
 	{
 		const static float SHADOW_TEXELS_PER_PIXEL = 1.0f;
 

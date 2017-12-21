@@ -373,6 +373,9 @@ namespace bs
 		 */
 		void setColors(Color* colors, UINT32 numElements);
 
+		/** Initializes all the pixels with a single color. */
+		void setColors(const Color& color);
+
 		/** 
 		 * Interprets pixel data as depth information as retrieved from the GPU's depth buffer. Converts the device specific
 		 * depth value to range [0, 1] and returns it.

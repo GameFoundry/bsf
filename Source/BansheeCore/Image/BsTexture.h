@@ -400,6 +400,16 @@ namespace bs
 		void copy(const SPtr<Texture>& target, const TEXTURE_COPY_DESC& desc = TEXTURE_COPY_DESC::DEFAULT,
 			const SPtr<CommandBuffer>& commandBuffer = nullptr);
 
+		/** 
+		 * Sets all the pixels of the specified face and mip level to the provided value. 
+		 * 
+		 * @param[in]	value			Color to clear the pixels to.
+		 * @param[in]	mipLevel		Mip level to clear.
+		 * @param[in]	face			Face (array index or cubemap face) to clear.
+		 * @param[in]	queueIdx		Device queue to perform the write operation on. See @ref queuesDoc.
+		 */
+		void clear(const Color& value, UINT32 mipLevel = 0, UINT32 face = 0, UINT32 queueIdx = 0);
+
 		/**
 		 * Reads data from the texture buffer into the provided buffer.
 		 * 		  
@@ -486,6 +496,9 @@ namespace bs
 		/** @copydoc writeData */
 		virtual void writeDataImpl(const PixelData& src, UINT32 mipLevel = 0, UINT32 face = 0, 
 			bool discardWholeBuffer = false, UINT32 queueIdx = 0) = 0;
+
+		/** @copydoc clear */
+		virtual void clearImpl(const Color& value, UINT32 mipLevel = 0, UINT32 face = 0, UINT32 queueIdx = 0);
 
 		/************************************************************************/
 		/* 								TEXTURE VIEW                      		*/
