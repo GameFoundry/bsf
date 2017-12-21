@@ -8,7 +8,6 @@
 #include "RTTI/BsMaterialRTTI.h"
 #include "Material/BsMaterialManager.h"
 #include "Resources/BsResources.h"
-#include "Allocators/BsFrameAlloc.h"
 #include "Math/BsMatrixNxM.h"
 #include "Math/BsVector3I.h"
 #include "Math/BsVector4I.h"

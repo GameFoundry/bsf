@@ -179,7 +179,7 @@ namespace bs
 
 		activeBlock = ActiveBlock(ActiveSamplingType::Basic, rootBlock);
 		if (activeBlocks == nullptr)
-			activeBlocks = frameAlloc.alloc<Stack<ActiveBlock, StdFrameAlloc<ActiveBlock>>>
+			activeBlocks = frameAlloc.construct<Stack<ActiveBlock, StdFrameAlloc<ActiveBlock>>>
 					(StdFrameAlloc<ActiveBlock>(&frameAlloc));
 
 		activeBlocks->push(activeBlock);
@@ -219,7 +219,7 @@ namespace bs
 		isActive = false;
 		activeBlock = ActiveBlock();
 
-		frameAlloc.dealloc(activeBlocks);
+		frameAlloc.free(activeBlocks);
 		activeBlocks = nullptr;
 	}
 
@@ -237,7 +237,7 @@ namespace bs
 
 	ProfilerCPU::ProfiledBlock* ProfilerCPU::ThreadInfo::getBlock(const char* name)
 	{
-		ProfiledBlock* block = frameAlloc.alloc<ProfiledBlock>(&frameAlloc);
+		ProfiledBlock* block = frameAlloc.construct<ProfiledBlock>(&frameAlloc);
 		block->name = (char*)frameAlloc.alloc(((UINT32)strlen(name) + 1) * sizeof(char));
 		strcpy(block->name, name);
 
@@ -246,8 +246,8 @@ namespace bs
 
 	void ProfilerCPU::ThreadInfo::releaseBlock(ProfiledBlock* block)
 	{
-		frameAlloc.dealloc((UINT8*)block->name);
-		frameAlloc.dealloc(block);
+		frameAlloc.free((UINT8*)block->name);
+		frameAlloc.free(block);
 	}
 
 	ProfilerCPU::ProfiledBlock::ProfiledBlock(FrameAlloc* alloc)

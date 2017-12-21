@@ -1,5 +1,6 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
+#include "Prerequisites/BsPrerequisitesUtil.h"
 #include "Allocators/BsFrameAlloc.h"
 #include "Error/BsException.h"
 
@@ -30,13 +31,11 @@ namespace bs
 		:mBlockSize(blockSize), mFreeBlock(nullptr), mNextBlockIdx(0), mTotalAllocBytes(0),
 		mLastFrame(nullptr), mOwnerThread(BS_THREAD_CURRENT_ID)
 	{
-		allocBlock(mBlockSize);
 	}
 #else
 	FrameAlloc::FrameAlloc(UINT32 blockSize)
 		: mBlockSize(blockSize), mFreeBlock(nullptr), mNextBlockIdx(0), mTotalAllocBytes(0), mLastFrame(nullptr)
 	{
-		allocBlock(mBlockSize);
 	}
 #endif
 
@@ -53,8 +52,10 @@ namespace bs
 
 		amount += sizeof(UINT32);
 #endif
+		UINT32 freeMem = 0;
+		if(mFreeBlock != nullptr)
+			freeMem = mFreeBlock->mSize - mFreeBlock->mFreePtr;
 
-		UINT32 freeMem = mFreeBlock->mSize - mFreeBlock->mFreePtr;
 		if(amount > freeMem)
 			allocBlock(amount);
 
@@ -78,21 +79,29 @@ namespace bs
 		assert(mOwnerThread == BS_THREAD_CURRENT_ID && "Frame allocator called from invalid thread.");
 
 		amount += sizeof(UINT32);
-		UINT32 freePtr = mFreeBlock->mFreePtr + sizeof(UINT32);
-#else
-		UINT32 freePtr = mFreeBlock->mFreePtr;
 #endif
 
-		UINT32 alignOffset = alignment - (freePtr & (alignment - 1));
+		UINT32 freeMem = 0;
+		UINT32 freePtr = 0;
+		if(mFreeBlock != nullptr)
+		{
+			freeMem = mFreeBlock->mSize - mFreeBlock->mFreePtr;
 
-		UINT32 freeMem = mFreeBlock->mSize - mFreeBlock->mFreePtr;
+#if BS_DEBUG_MODE
+			freePtr = mFreeBlock->mFreePtr + sizeof(UINT32);
+#else
+			freePtr = mFreeBlock->mFreePtr;
+#endif
+		}
+
+		UINT32 alignOffset = (alignment - (freePtr & (alignment - 1))) & (alignment - 1);
 		if ((amount + alignOffset) > freeMem)
 		{
-			// New blocks are allocated on a 16 byte boundary, ensure we enough space is allocated taking into account
+			// New blocks are allocated on a 16 byte boundary, ensure enough space is allocated taking into account
 			// the requested alignment
 
 #if BS_DEBUG_MODE
-			alignOffset = alignment - (sizeof(UINT32) & (alignment - 1));
+			alignOffset = (alignment - (sizeof(UINT32) & (alignment - 1))) & (alignment - 1);
 #else
 			if (alignment > 16)
 				alignOffset = alignment - 16;
@@ -118,7 +127,7 @@ namespace bs
 #endif
 	}
 
-	void FrameAlloc::dealloc(UINT8* data)
+	void FrameAlloc::free(UINT8* data)
 	{
 		// Dealloc is only used for debug and can be removed if needed. All the actual deallocation
 		// happens in clear()
@@ -147,7 +156,7 @@ namespace bs
 		{
 			assert(mBlocks.size() > 0 && mNextBlockIdx > 0);
 
-			dealloc((UINT8*)mLastFrame);
+			free((UINT8*)mLastFrame);
 
 			UINT8* framePtr = (UINT8*)mLastFrame;
 			mLastFrame = *(void**)mLastFrame;
@@ -234,7 +243,7 @@ namespace bs
 
 				allocBlock(totalBytes);
 			}
-			else
+			else if(mBlocks.size() > 0)
 				mBlocks[0]->mFreePtr = 0;
 		}
 	}
@@ -292,5 +301,49 @@ namespace bs
 #if BS_DEBUG_MODE
 		mOwnerThread = thread;
 #endif
+	}
+
+	BS_THREADLOCAL FrameAlloc* _GlobalFrameAlloc = nullptr;
+
+	BS_UTILITY_EXPORT FrameAlloc& gFrameAlloc()
+	{
+		if (_GlobalFrameAlloc == nullptr)
+		{
+			// Note: This will leak memory but since it should exist throughout the entirety 
+			// of runtime it should only leak on shutdown when the OS will free it anyway.
+			_GlobalFrameAlloc = new FrameAlloc();
+		}
+
+		return *_GlobalFrameAlloc;
+	}
+
+	BS_UTILITY_EXPORT UINT8* bs_frame_alloc(UINT32 numBytes)
+	{
+		return gFrameAlloc().alloc(numBytes);
+	}
+
+	BS_UTILITY_EXPORT UINT8* bs_frame_alloc_aligned(UINT32 count, UINT32 align)
+	{
+		return gFrameAlloc().allocAligned(count, align);
+	}
+
+	BS_UTILITY_EXPORT void bs_frame_free(void* data)
+	{
+		gFrameAlloc().free((UINT8*)data);
+	}
+
+	BS_UTILITY_EXPORT void bs_frame_free_aligned(void* data)
+	{
+		gFrameAlloc().free((UINT8*)data);
+	}
+
+	BS_UTILITY_EXPORT void bs_frame_mark()
+	{
+		gFrameAlloc().markFrame();
+	}
+
+	BS_UTILITY_EXPORT void bs_frame_clear()
+	{
+		gFrameAlloc().clear();
 	}
 }

@@ -4,7 +4,6 @@
 
 #include "BsCorePrerequisites.h"
 #include "Utility/BsModule.h"
-#include "Allocators/BsFrameAlloc.h"
 
 namespace bs
 {

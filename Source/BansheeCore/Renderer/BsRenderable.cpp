@@ -8,7 +8,6 @@
 #include "Math/BsBounds.h"
 #include "Renderer/BsRenderer.h"
 #include "Animation/BsAnimation.h"
-#include "Allocators/BsFrameAlloc.h"
 #include "Animation/BsMorphShapes.h"
 #include "RenderAPI/BsGpuBuffer.h"
 #include "Animation/BsAnimationManager.h"

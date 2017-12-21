@@ -6,7 +6,6 @@
 #include "Managers/BsTextureManager.h"
 #include "Resources/BsResources.h"
 #include "CoreThread/BsCoreThread.h"
-#include "Allocators/BsFrameAlloc.h"
 
 namespace bs
 {

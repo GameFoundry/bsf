@@ -2,7 +2,6 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "RenderAPI/BsGpuParamBlockBuffer.h"
 #include "Managers/BsHardwareBufferManager.h"
-#include "Allocators/BsFrameAlloc.h"
 
 namespace bs
 {

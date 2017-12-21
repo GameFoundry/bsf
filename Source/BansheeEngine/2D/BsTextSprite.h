@@ -133,7 +133,7 @@ namespace bs
 		/**	Clears internal geometry buffers. */
 		void clearMesh();
 
-		mutable StaticAlloc<STATIC_BUFFER_SIZE, STATIC_BUFFER_SIZE> mAlloc;
+		mutable StaticAlloc<STATIC_BUFFER_SIZE> mAlloc;
 	};
 
 	/** @} */

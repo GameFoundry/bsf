@@ -9,7 +9,6 @@
 #include "Image/BsTexture.h"
 #include "RenderAPI/BsGpuBuffer.h"
 #include "RenderAPI/BsSamplerState.h"
-#include "Allocators/BsFrameAlloc.h"
 #include "Debug/BsDebug.h"
 #include "Error/BsException.h"
 #include "Math/BsVector3I.h"

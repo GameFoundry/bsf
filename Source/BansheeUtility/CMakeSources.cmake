@@ -97,8 +97,7 @@ set(BS_BANSHEEUTILITY_INC_UTILITY
 
 set(BS_BANSHEEUTILITY_SRC_ALLOCATORS
 	"Allocators/BsFrameAlloc.cpp"
-	"Allocators/BsGlobalFrameAlloc.cpp"
-	"Allocators/BsMemStack.cpp"
+	"Allocators/BsStackAlloc.cpp"
 	"Allocators/BsMemoryAllocator.cpp"
 )
 
@@ -121,12 +120,12 @@ set(BS_BANSHEEUTILITY_INC_RTTI
 
 set(BS_BANSHEEUTILITY_INC_ALLOCATORS
 	"Allocators/BsFrameAlloc.h"
-	"Allocators/BsGlobalFrameAlloc.h"
 	"Allocators/BsMemAllocProfiler.h"
 	"Allocators/BsMemoryAllocator.h"
-	"Allocators/BsMemStack.h"
+	"Allocators/BsStackAlloc.h"
 	"Allocators/BsStaticAlloc.h"
 	"Allocators/BsGroupAlloc.h"
+	"Allocators/BsFreeAlloc.h"
 )
 
 set(BS_BANSHEEUTILITY_INC_THIRDPARTY

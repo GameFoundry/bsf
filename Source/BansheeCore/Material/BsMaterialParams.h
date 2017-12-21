@@ -233,7 +233,7 @@ namespace bs
 		UINT32 mNumSamplerParams = 0;
 
 		mutable UINT64 mParamVersion = 1;
-		mutable StaticAlloc<STATIC_BUFFER_SIZE, STATIC_BUFFER_SIZE> mAlloc;
+		mutable StaticAlloc<STATIC_BUFFER_SIZE> mAlloc;
 	};
 
 	/** Raw data for a single structure parameter. */

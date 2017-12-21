@@ -5,7 +5,6 @@
 #include "CoreThread/BsCoreObjectCore.h"
 #include "Error/BsException.h"
 #include "Math/BsMath.h"
-#include "Allocators/BsFrameAlloc.h"
 #include "CoreThread/BsCoreThread.h"
 
 namespace bs
@@ -282,7 +281,7 @@ namespace bs
 				UINT8* dataPtr = entry.syncData.getBuffer();
 
 				if (dataPtr != nullptr)
-					entry.allocator->dealloc(dataPtr);
+					entry.allocator->free(dataPtr);
 			}
 		};
 
@@ -400,7 +399,7 @@ namespace bs
 			UINT8* data = objSyncData.syncData.getBuffer();
 
 			if (data != nullptr)
-				syncData.alloc->dealloc(data);
+				syncData.alloc->free(data);
 		}
 
 		syncData.entries.clear();

@@ -13,10 +13,10 @@ namespace bs
 	 *  @{
 	 */
 
-    /** Utility class providing common scalar math operations. */
-    class BS_UTILITY_EXPORT Math 
-    {
-    public:
+	/** Utility class providing common scalar math operations. */
+	class BS_UTILITY_EXPORT Math 
+	{
+	public:
 		/** Inverse cosine. */
 		static Radian acos(float val);
 
@@ -30,16 +30,16 @@ namespace bs
 		static Radian atan2(float y, float x) { return Radian(std::atan2(y,x)); }
 
 		/** Cosine. */
-        static float cos(const Radian& val) { return (float)std::cos(val.valueRadians()); }
+		static float cos(const Radian& val) { return (float)std::cos(val.valueRadians()); }
 
 		/** Cosine. */
-        static float cos(float val) { return (float)std::cos(val); }
+		static float cos(float val) { return (float)std::cos(val); }
 
 		/** Sine. */
-        static float sin(const Radian& val) { return (float)std::sin(val.valueRadians()); }
+		static float sin(const Radian& val) { return (float)std::sin(val.valueRadians()); }
 
 		/** Sine. */
-        static float sin(float val) { return (float)std::sin(val); }
+		static float sin(float val) { return (float)std::sin(val); }
 
 		/** Tangent. */
 		static float tan(const Radian& val) { return (float)std::tan(val.valueRadians()); }
@@ -51,10 +51,10 @@ namespace bs
 		static float sqrt(float val) { return (float)std::sqrt(val); }
 
 		/** Square root. */
-        static Radian sqrt(const Radian& val) { return Radian(std::sqrt(val.valueRadians())); }
+		static Radian sqrt(const Radian& val) { return Radian(std::sqrt(val.valueRadians())); }
 
 		/** Square root. */
-        static Degree sqrt(const Degree& val) { return Degree(std::sqrt(val.valueDegrees())); }
+		static Degree sqrt(const Degree& val) { return Degree(std::sqrt(val.valueDegrees())); }
 
 		/** Square root followed by an inverse. */
 		static float invSqrt(float val);
@@ -141,14 +141,14 @@ namespace bs
 			return f != f;
 		}
 
-        /** Compare two floats, using tolerance for inaccuracies. */
-        static bool approxEquals(float a, float b, 
+		/** Compare two floats, using tolerance for inaccuracies. */
+		static bool approxEquals(float a, float b, 
 			float tolerance = std::numeric_limits<float>::epsilon())
 		{
 			return fabs(b - a) <= tolerance;
 		}
 
-        /** Compare two doubles, using tolerance for inaccuracies. */
+		/** Compare two doubles, using tolerance for inaccuracies. */
 		static bool approxEquals(double a, double b, 
 			double tolerance = std::numeric_limits<double>::epsilon())
 		{
@@ -171,8 +171,8 @@ namespace bs
 		static bool approxEquals(const Quaternion& a, const Quaternion& b, 
 			float tolerance = std::numeric_limits<float>::epsilon());
 
-        /** Calculates the tangent space vector for a given set of positions / texture coords. */
-        static Vector3 calculateTriTangent(const Vector3& position1, const Vector3& position2, 
+		/** Calculates the tangent space vector for a given set of positions / texture coords. */
+		static Vector3 calculateTriTangent(const Vector3& position1, const Vector3& position2, 
 			const Vector3& position3, float u1, float v1, float u2, float v2, float u3, float v3);
 
 		/************************************************************************/

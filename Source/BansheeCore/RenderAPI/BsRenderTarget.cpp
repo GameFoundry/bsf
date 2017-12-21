@@ -5,7 +5,6 @@
 #include "Error/BsException.h"
 #include "RenderAPI/BsRenderAPI.h"
 #include "CoreThread/BsCoreThread.h"
-#include "Allocators/BsFrameAlloc.h"
 
 namespace bs
 {

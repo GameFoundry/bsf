@@ -2,8 +2,7 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
-#include "Prerequisites/BsPlatformDefines.h"
-#include "Prerequisites/BsRTTIPrerequisites.h"
+#include "Prerequisites/BsPrerequisitesUtil.h"
 
 namespace bs
 {
@@ -37,7 +36,7 @@ namespace bs
 		/** Wraps the angle in [0, 2 *  PI) range. */
 		Radian wrap();
 
-        const Radian& operator+ () const { return *this; }
+		const Radian& operator+ () const { return *this; }
 		Radian operator+ (const Radian& r) const { return Radian (mRad + r.mRad); }
 		Radian operator+ (const Degree& d) const;
 		Radian& operator+= (const Radian& r) { mRad += r.mRad; return *this; }
@@ -48,7 +47,7 @@ namespace bs
 		Radian& operator-= (const Radian& r) { mRad -= r.mRad; return *this; }
 		Radian& operator-= (const Degree& d);
 		Radian operator* (float f) const { return Radian (mRad * f); }
-        Radian operator* (const Radian& f) const { return Radian (mRad * f.mRad); }
+		Radian operator* (const Radian& f) const { return Radian (mRad * f.mRad); }
 		Radian& operator*= (float f) { mRad *= f; return *this; }
 		Radian operator/ (float f) const { return Radian (mRad / f); }
 		Radian& operator/= (float f) { mRad /= f; return *this; }

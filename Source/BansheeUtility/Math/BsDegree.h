@@ -2,8 +2,7 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
-#include "Prerequisites/BsPlatformDefines.h"
-#include "Prerequisites/BsRTTIPrerequisites.h"
+#include "Prerequisites/BsPrerequisitesUtil.h"
 
 namespace bs
 {
@@ -47,7 +46,7 @@ namespace bs
 		Degree& operator-= (const Degree& d) { mDeg -= d.mDeg; return *this; }
 		Degree& operator-= (const Radian& r);
 		Degree operator* (float f) const { return Degree (mDeg * f); }
-        Degree operator* (const Degree& f) const { return Degree (mDeg * f.mDeg); }
+		Degree operator* (const Degree& f) const { return Degree (mDeg * f.mDeg); }
 		Degree& operator*= (float f) { mDeg *= f; return *this; }
 		Degree operator/ (float f) const { return Degree (mDeg / f); }
 		Degree& operator/= (float f) { mDeg /= f; return *this; }

@@ -4,7 +4,6 @@
 #include "RenderAPI/BsVertexData.h"
 #include "Math/BsBounds.h"
 #include "Mesh/BsMeshHeap.h"
-#include "Allocators/BsFrameAlloc.h"
 
 namespace bs
 {

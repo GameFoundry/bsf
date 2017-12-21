@@ -3,7 +3,6 @@
 #include "Renderer/BsReflectionProbe.h"
 #include "RTTI/BsReflectionProbeRTTI.h"
 #include "Scene/BsSceneObject.h"
-#include "Allocators/BsFrameAlloc.h"
 #include "Image/BsTexture.h"
 #include "Renderer/BsRenderer.h"
 #include "Utility/BsUUID.h"

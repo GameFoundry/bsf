@@ -3,7 +3,6 @@
 #include "Mesh/BsMeshBase.h"
 #include "RTTI/BsMeshBaseRTTI.h"
 #include "CoreThread/BsCoreThread.h"
-#include "Allocators/BsFrameAlloc.h"
 
 namespace bs
 {

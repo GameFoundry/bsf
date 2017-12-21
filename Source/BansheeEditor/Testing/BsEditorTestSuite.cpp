@@ -13,7 +13,6 @@
 #include "Scene/BsPrefab.h"
 #include "Resources/BsResources.h"
 #include "Scene/BsPrefabDiff.h"
-#include "Allocators/BsFrameAlloc.h"
 #include "FileSystem/BsFileSystem.h"
 #include "Scene/BsSceneManager.h"
 
@@ -772,10 +771,10 @@ namespace bs
 		UINT8* a3 = alloc.alloc(130);
 		UINT8* a4 = alloc.alloc(5);
 
-		alloc.dealloc(a1);
-		alloc.dealloc(a2);
-		alloc.dealloc(a3);
-		alloc.dealloc(a4);
+		alloc.free(a1);
+		alloc.free(a2);
+		alloc.free(a3);
+		alloc.free(a4);
 
 		alloc.clear();
 
@@ -785,10 +784,10 @@ namespace bs
 		UINT8* a7 = alloc.alloc(130);
 		UINT8* a8 = alloc.alloc(5);
 
-		alloc.dealloc(a5);
-		alloc.dealloc(a6);
-		alloc.dealloc(a7);
-		alloc.dealloc(a8);
+		alloc.free(a5);
+		alloc.free(a6);
+		alloc.free(a7);
+		alloc.free(a8);
 
 		alloc.markFrame();
 		UINT8* a9 = alloc.alloc(5);
@@ -796,16 +795,16 @@ namespace bs
 		UINT8* a11 = alloc.alloc(130);
 		UINT8* a12 = alloc.alloc(5);
 
-		alloc.dealloc(a9);
-		alloc.dealloc(a10);
-		alloc.dealloc(a11);
-		alloc.dealloc(a12);
+		alloc.free(a9);
+		alloc.free(a10);
+		alloc.free(a11);
+		alloc.free(a12);
 
 		alloc.clear();
 		alloc.clear();
 
 		UINT8* a13 = alloc.alloc(5);
-		alloc.dealloc(a13);
+		alloc.free(a13);
 		alloc.clear();
 	}
 }

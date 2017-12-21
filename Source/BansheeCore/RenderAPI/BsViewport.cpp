@@ -6,7 +6,6 @@
 #include "RenderAPI/BsRenderTarget.h"
 #include "Math/BsMath.h"
 #include "RenderAPI/BsRenderAPI.h"
-#include "Allocators/BsFrameAlloc.h"
 
 namespace bs 
 {

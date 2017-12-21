@@ -12,13 +12,13 @@ namespace BansheeEngine
     /// Axis aligned box represented by minimum and maximum point.
     /// </summary>
     [StructLayout(LayoutKind.Sequential), SerializeObject]
-	public struct AABox // Note: Must match C++ class AABox
-	{
+    public struct AABox // Note: Must match C++ class AABox
+    {
         [SerializeField]
         private Vector3 minimum;
 
         [SerializeField]
-		private Vector3 maximum;
+        private Vector3 maximum;
 
         /// <summary>
         /// Corner of the box with minimum values (opposite to maximum corner).
@@ -46,21 +46,21 @@ namespace BansheeEngine
             get 
             { 		
                 return new Vector3((maximum.x + minimum.x) * 0.5f,
-			            (maximum.y + minimum.y) * 0.5f,
-			            (maximum.z + minimum.z) * 0.5f);
+                        (maximum.y + minimum.y) * 0.5f,
+                        (maximum.z + minimum.z) * 0.5f);
             }
         }
 
         /// <summary>
         /// Returns the width, height and depth of the box.
         /// </summary>
-	    public Vector3 Size
-	    {
-	        get
-	        {
-	            return maximum - minimum;
-	        }
-	    }
+        public Vector3 Size
+        {
+            get
+            {
+                return maximum - minimum;
+            }
+        }
 
         /// <summary>
         /// Creates a new axis aligned box.
@@ -100,7 +100,7 @@ namespace BansheeEngine
         {
             return "Min: " + minimum + ". Max: " + maximum;
         }
-	};
+    };
 
     /** @} */
 }

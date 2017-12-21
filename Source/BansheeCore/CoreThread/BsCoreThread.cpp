@@ -3,7 +3,6 @@
 #include "CoreThread/BsCoreThread.h"
 #include "Threading/BsThreadPool.h"
 #include "Threading/BsTaskScheduler.h"
-#include "Allocators/BsFrameAlloc.h"
 #include "BsCoreApplication.h"
 
 using namespace std::placeholders;

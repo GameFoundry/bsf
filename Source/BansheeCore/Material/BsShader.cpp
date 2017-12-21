@@ -7,7 +7,6 @@
 #include "RTTI/BsShaderRTTI.h"
 #include "Resources/BsResources.h"
 #include "RenderAPI/BsGpuParams.h"
-#include "Allocators/BsFrameAlloc.h"
 #include "Material/BsPass.h"
 #include "RenderAPI/BsSamplerState.h"
 #include "Image/BsTexture.h"

@@ -4,11 +4,11 @@
 #undef min
 #undef max
 
-#include "Prerequisites/BsTypes.h"	        // for UINT64
+#include "Prerequisites/BsTypes.h"
 
 #include <atomic>
 #include <limits>
-#include <new>                  /* For 'placement new' */
+#include <new>
 #include <utility>
 
 #if BS_PLATFORM == BS_PLATFORM_LINUX
@@ -437,6 +437,8 @@ namespace bs
 	/** @} */
 }
 
-#include "Allocators/BsMemStack.h"
-#include "Allocators/BsGlobalFrameAlloc.h"
+#include "Allocators/BsStackAlloc.h"
+#include "Allocators/BsFreeAlloc.h"
+#include "Allocators/BsFrameAlloc.h"
+#include "Allocators/BsStaticAlloc.h"
 #include "Allocators/BsMemAllocProfiler.h"

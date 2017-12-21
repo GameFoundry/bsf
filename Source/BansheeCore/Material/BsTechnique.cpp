@@ -6,7 +6,6 @@
 #include "Renderer/BsRendererManager.h"
 #include "Material/BsPass.h"
 #include "Renderer/BsRenderer.h"
-#include "Allocators/BsFrameAlloc.h"
 #include "RTTI/BsTechniqueRTTI.h"
 
 namespace bs

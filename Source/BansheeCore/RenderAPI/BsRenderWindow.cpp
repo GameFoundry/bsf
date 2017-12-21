@@ -5,7 +5,6 @@
 #include "Managers/BsRenderWindowManager.h"
 #include "RenderAPI/BsViewport.h"
 #include "Platform/BsPlatform.h"
-#include "Allocators/BsFrameAlloc.h"
 
 namespace bs 
 {

@@ -12,7 +12,6 @@
 #include "Scene/BsSceneObject.h"
 #include "Renderer/BsRendererManager.h"
 #include "Renderer/BsRenderer.h"
-#include "Allocators/BsFrameAlloc.h"
 #include "Scene/BsSceneManager.h"
 
 namespace bs

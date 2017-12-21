@@ -3,7 +3,6 @@
 #include "Renderer/BsLight.h"
 #include "RTTI/BsLightRTTI.h"
 #include "Renderer/BsRenderer.h"
-#include "Allocators/BsFrameAlloc.h"
 #include "Scene/BsSceneObject.h"
 #include "Mesh/BsMesh.h"
 
