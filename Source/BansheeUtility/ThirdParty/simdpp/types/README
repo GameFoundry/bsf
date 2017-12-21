@@ -1,0 +1,8 @@
+
+Why there's so much duplication in type definitions?
+====================================================
+
+It's not possible to implement the specializations of core templates (int8,
+uint16, mask_int32) as templates themselves in C++98. It's only possible in C++11.
+Thus we're simply duplicating stuff until the library can drop the C++98
+support.

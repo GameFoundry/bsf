@@ -216,6 +216,7 @@ set(BS_BANSHEEUTILITY_INC_MATH
 	"Math/BsCapsule.h"
 	"Math/BsMatrixNxM.h"
 	"Math/BsLine2.h"
+	"Math/BsSIMD.h"
 )
 
 set(BS_BANSHEEUTILITY_SRC_ERROR

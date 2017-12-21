@@ -17,10 +17,13 @@ if(LINUX)
 	endif()
 endif()
 
+# Third party (non-package) libraries
+add_library(ThirdParty INTERFACE)
+target_include_directories(ThirdParty INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty")
+
 # Includes
 set(BansheeUtility_INC 
-	"./" 
-	"ThirdParty")
+	"./")
 
 if(WIN32)
 	set(BansheeUtility_INC ${BansheeUtility_INC} "Win32")
@@ -40,6 +43,9 @@ target_compile_definitions(BansheeUtility PRIVATE -DBS_UTILITY_EXPORTS)
 # Libraries
 ## External lib: Snappy
 target_link_libraries(BansheeUtility PRIVATE ${snappy_LIBRARIES})	
+
+## External libs: Header only libraries
+target_link_libraries(BansheeUtility PUBLIC ThirdParty)
 
 if(WIN32)
 	## OS libs
