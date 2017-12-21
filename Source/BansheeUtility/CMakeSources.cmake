@@ -126,6 +126,7 @@ set(BS_BANSHEEUTILITY_INC_ALLOCATORS
 	"Allocators/BsStaticAlloc.h"
 	"Allocators/BsGroupAlloc.h"
 	"Allocators/BsFreeAlloc.h"
+	"Allocators/BsPoolAlloc.h"
 )
 
 set(BS_BANSHEEUTILITY_INC_THIRDPARTY
