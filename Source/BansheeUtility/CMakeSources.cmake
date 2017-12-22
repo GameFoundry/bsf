@@ -168,14 +168,12 @@ set(BS_BANSHEEUTILITY_SRC_MATH
 )
 
 set(BS_BANSHEEUTILITY_INC_TESTING
-	"Testing/BsFileSystemTestSuite.h"
 	"Testing/BsTestSuite.h"
 	"Testing/BsTestOutput.h"
 	"Testing/BsConsoleTestOutput.h"
 )
 
 set(BS_BANSHEEUTILITY_SRC_TESTING
-	"Testing/BsFileSystemTestSuite.cpp"
 	"Testing/BsTestSuite.cpp"
 	"Testing/BsTestOutput.cpp"
 	"Testing/BsConsoleTestOutput.cpp"

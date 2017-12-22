@@ -55,6 +55,8 @@ set(INCLUDE_ALL_IN_WORKFLOW OFF CACHE BOOL "If true, all libraries (even those n
 
 set(GENERATE_SCRIPT_BINDINGS ON CACHE BOOL "If true, script binding files will be generated. Script bindings are required for the project to build properly, however they take a while to generate. If you are sure the script bindings are up to date, you can turn off their generation (temporarily) to speed up the build.")
 
+set(BUILD_TESTS OFF CACHE BOOL "If true, build targets for running unit tests will be included in the output.")
+
 if(BUILD_SCOPE MATCHES "Runtime")
 	set(BUILD_EDITOR ON)
 else()
@@ -373,4 +375,21 @@ if(BUILD_EDITOR)
 		add_dependencies(BansheeEditorExec BuildManaged)
 		add_dependencies(Game BuildManaged)
 	endif()
+endif()
+
+## Tests
+if(BUILD_TESTS)
+	enable_testing()
+
+	add_executable(UtilityTest 
+		BansheeUtility/UnitTests/BsUtilityTest.cpp 
+		BansheeUtility/UnitTests/BsUtilityTestSuite.cpp
+		BansheeUtility/UnitTests/BsFileSystemTestSuite.cpp)
+		
+	target_link_libraries(UtilityTest BansheeUtility)
+	target_include_directories(UtilityTest PRIVATE "BansheeUtility")
+	
+	set_property(TARGET UtilityTest PROPERTY FOLDER Tests)
+
+	add_test(NAME FrameworkTests COMMAND $<TARGET_FILE:UtilityTest>)
 endif()

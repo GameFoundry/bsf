@@ -34,9 +34,6 @@ include_directories(${BansheeUtility_INC})
 # Target
 add_library(BansheeUtility SHARED ${BS_BANSHEEUTILITY_SRC})
 
-add_executable(BansheeUtilityTest BsUtilityTest.cpp)
-target_link_libraries(BansheeUtilityTest BansheeUtility)
-
 # Defines
 target_compile_definitions(BansheeUtility PRIVATE -DBS_UTILITY_EXPORTS)
 
