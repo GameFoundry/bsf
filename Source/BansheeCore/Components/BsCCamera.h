@@ -258,10 +258,10 @@ namespace bs
 
 		// Only valid during construction
 		SPtr<RenderTarget> mTarget;
-		float mLeft;
-		float mTop;
-		float mWidth;
-		float mHeight;
+		float mLeft = 0.0f;
+		float mTop = 0.0f;
+		float mWidth = 1.0f;
+		float mHeight = 1.0f;
 
 		/************************************************************************/
 		/* 						COMPONENT OVERRIDES                      		*/
