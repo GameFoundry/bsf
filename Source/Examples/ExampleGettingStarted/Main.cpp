@@ -390,7 +390,7 @@ namespace bs
 
 		// First we want another camera that is responsible for rendering GUI
 		HCamera guiCamera = guiSO->addComponent<CCamera>();
-		sceneCamera->getViewport()->setTarget(window);
+		guiCamera->getViewport()->setTarget(window);
 
 		// Notify the renderer that the camera will only be used for overlays (e.g. GUI) so it can optimize its usage
 		SPtr<RenderSettings> settings = guiCamera->getRenderSettings();
