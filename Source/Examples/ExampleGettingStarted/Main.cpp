@@ -313,7 +313,8 @@ namespace bs
 
 		// Add a Camera component that will output whatever it sees into that window 
 		// (You could also use a render texture or another window you created).
-		sceneCamera = sceneCameraSO->addComponent<CCamera>(window);
+		sceneCamera = sceneCameraSO->addComponent<CCamera>();
+		sceneCamera->getViewport()->setTarget(window);
 
 		// Set up camera component properties
 
@@ -388,7 +389,8 @@ namespace bs
 		SPtr<RenderWindow> window = gApplication().getPrimaryWindow();
 
 		// First we want another camera that is responsible for rendering GUI
-		HCamera guiCamera = guiSO->addComponent<CCamera>(window);
+		HCamera guiCamera = guiSO->addComponent<CCamera>();
+		sceneCamera->getViewport()->setTarget(window);
 
 		// Notify the renderer that the camera will only be used for overlays (e.g. GUI) so it can optimize its usage
 		SPtr<RenderSettings> settings = guiCamera->getRenderSettings();

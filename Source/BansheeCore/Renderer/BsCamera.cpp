@@ -671,23 +671,18 @@ namespace bs
 		return Vector3(0.0f, 0.0f, 0.0f);
 	}
 
-	Camera::Camera(SPtr<RenderTarget> target, float left, float top, float width, float height)
+	Camera::Camera()
 		:mMain(false)
-	{
-		if (target != nullptr)
-			target->blockUntilCoreInitialized();
-
-		mViewport = Viewport::create(target, left, top, width, height);
-	}
+	{ }
 
 	SPtr<ct::Camera> Camera::getCore() const
 	{
 		return std::static_pointer_cast<ct::Camera>(mCoreSpecific);
 	}
 
-	SPtr<Camera> Camera::create(SPtr<RenderTarget> target, float left, float top, float width, float height)
+	SPtr<Camera> Camera::create()
 	{
-		Camera* handler = new (bs_alloc<Camera>()) Camera(target, left, top, width, height);
+		Camera* handler = new (bs_alloc<Camera>()) Camera();
 		SPtr<Camera> handlerPtr = bs_core_ptr<Camera>(handler);
 		handlerPtr->_setThisPtr(handlerPtr);
 		handlerPtr->initialize();
@@ -715,6 +710,8 @@ namespace bs
 
 	void Camera::initialize()
 	{
+		mViewport = Viewport::create(nullptr);
+
 		CoreObject::initialize();
 
 		gSceneManager()._registerCamera(std::static_pointer_cast<Camera>(getThisPtr()));
@@ -722,7 +719,8 @@ namespace bs
 
 	void Camera::destroy()
 	{
-		gSceneManager()._unregisterCamera(std::static_pointer_cast<Camera>(getThisPtr()));
+		if(isInitialized())
+			gSceneManager()._unregisterCamera(std::static_pointer_cast<Camera>(getThisPtr()));
 
 		CoreObject::destroy();
 	}

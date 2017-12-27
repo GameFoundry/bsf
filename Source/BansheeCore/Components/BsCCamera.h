@@ -20,9 +20,7 @@ namespace bs
 	class BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Rendering,n:Camera) CCamera : public Component
 	{
 	public:
-		CCamera(const HSceneObject& parent, SPtr<RenderTarget> target = nullptr,
-			float left = 0.0f, float top = 0.0f, float width = 1.0f, float height = 1.0f);
-
+		CCamera(const HSceneObject& parent);
 		virtual ~CCamera();
 
 		/** @copydoc Camera::getViewport */
@@ -256,28 +254,20 @@ namespace bs
 
 		mutable SPtr<Camera> mInternal;
 
-		// Only valid during construction
-		SPtr<RenderTarget> mTarget;
-		float mLeft = 0.0f;
-		float mTop = 0.0f;
-		float mWidth = 1.0f;
-		float mHeight = 1.0f;
-
 		/************************************************************************/
 		/* 						COMPONENT OVERRIDES                      		*/
 		/************************************************************************/
 	protected:
 		friend class SceneObject;
 
+		/** @copydoc Component::_instantiate */
+		void _instantiate() override;
+
 		/** @copydoc Component::onInitialized */
 		void onInitialized() override;
 
 		/** @copydoc Component::onDestroyed */
 		void onDestroyed() override;
-
-	public:
-		/** @copydoc Component::update */
-		void update() override;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

@@ -466,8 +466,7 @@ namespace bs
 		SPtr<ct::Camera> getCore() const;
 
 		/**	Creates a new camera that renders to the specified portion of the provided render target. */
-		static SPtr<Camera> create(SPtr<RenderTarget> target = nullptr,
-			float left = 0.0f, float top = 0.0f, float width = 1.0f, float height = 1.0f);
+		static SPtr<Camera> create();
 
 		/** 
 		 * @name Internal
@@ -482,8 +481,7 @@ namespace bs
 
 		/** @} */
 	protected:
-		Camera(SPtr<RenderTarget> target = nullptr,
-			float left = 0.0f, float top = 0.0f, float width = 1.0f, float height = 1.0f);
+		Camera();
 
 		/** @copydoc CameraBase */
 		Rect2I getViewportRect() const override;

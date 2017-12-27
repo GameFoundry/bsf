@@ -32,16 +32,20 @@ namespace bs
 #endif
 	}
 
-	UINT64 CoreObjectManager::registerObject(CoreObject* object)
+	UINT64 CoreObjectManager::generateId()
 	{
-		assert(object != nullptr);
-
 		Lock lock(mObjectsMutex);
 
-		mObjects[mNextAvailableID] = object;
-		mDirtyObjects[mNextAvailableID] = { object, -1 };
-
 		return mNextAvailableID++;
+	}
+
+	void CoreObjectManager::registerObject(CoreObject* object)
+	{
+		Lock lock(mObjectsMutex);
+
+		UINT64 objId = object->getInternalID();
+		mObjects[objId] = object;
+		mDirtyObjects[objId] = { object, -1 };
 	}
 
 	void CoreObjectManager::unregisterObject(CoreObject* object)

@@ -10,10 +10,10 @@ using namespace std::placeholders;
 namespace bs
 {
 	CoreObject::CoreObject(bool initializeOnCoreThread)
-		:mFlags(0), mCoreDirtyFlags(0), mInternalID(0)
+		: mFlags(initializeOnCoreThread ? CGO_INIT_ON_CORE_THREAD : 0)
+		, mCoreDirtyFlags(0)
+		, mInternalID(CoreObjectManager::instance().generateId())
 	{
-		mInternalID = CoreObjectManager::instance().registerObject(this);
-		mFlags = initializeOnCoreThread ? mFlags | CGO_INIT_ON_CORE_THREAD : mFlags;
 	}
 
 	CoreObject::~CoreObject() 
@@ -52,6 +52,7 @@ namespace bs
 
 	void CoreObject::initialize()
 	{
+		CoreObjectManager::instance().registerObject(this);
 		mCoreSpecific = createCore();
 
 		if (mCoreSpecific != nullptr)
@@ -76,6 +77,7 @@ namespace bs
 			}
 		}
 
+		mFlags |= CGO_INITIALIZED;
 		markDependenciesDirty();
 	}
 

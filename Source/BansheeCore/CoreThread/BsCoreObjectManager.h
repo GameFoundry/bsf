@@ -63,8 +63,11 @@ namespace bs
 		CoreObjectManager();
 		~CoreObjectManager();
 
+		/** Generates a new unique ID for a core object. */
+		UINT64 generateId();
+
 		/** Registers a new CoreObject notifying the manager the object	is created. */
-		UINT64 registerObject(CoreObject* object);
+		void registerObject(CoreObject* object);
 
 		/** Unregisters a CoreObject notifying the manager the object is destroyed. */
 		void unregisterObject(CoreObject* object);

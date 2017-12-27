@@ -30,7 +30,8 @@ namespace bs
 		enum Flags
 		{
 			CGO_DESTROYED = 0x01, /**< Object has been destroyed and shouldn't be used. */
-			CGO_INIT_ON_CORE_THREAD = 0x02 /**< Object requires initialization on core thread. */
+			CGO_INIT_ON_CORE_THREAD = 0x02, /**< Object requires initialization on core thread. */
+			CGO_INITIALIZED = 0x04 /**< Object's initialize() method has been called. */
 		};
 
 	public:
@@ -52,6 +53,9 @@ namespace bs
 		 * scheduled on the core thread. Otherwise the object is initialized immediately.
 		 */
 		virtual void initialize();
+
+		/** Returns true if the object has been initialized. Non-initialized object should not be used. */
+		bool isInitialized() const { return (mFlags & CGO_INITIALIZED) != 0; }
 
 		/** Returns true if the object has been destroyed. Destroyed object should not be used. */
 		bool isDestroyed() const { return (mFlags & CGO_DESTROYED) != 0; }

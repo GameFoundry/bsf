@@ -85,7 +85,8 @@ namespace bs
 		mRenderWindow = renderWindow;
 		mSceneObject = SceneObject::create("EditorWindow", SOF_Internal | SOF_Persistent | SOF_DontSave);
 
-		mCamera = mSceneObject->addComponent<CCamera>(renderWindow, 0.0f, 0.0f, 1.0f, 1.0f);
+		mCamera = mSceneObject->addComponent<CCamera>();
+		mCamera->getViewport()->setTarget(renderWindow);
 		mCamera->setNearClipDistance(5);
 		mCamera->setAspectRatio(1.0f);
 		mCamera->setLayers(0);

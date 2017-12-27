@@ -14,19 +14,15 @@ namespace bs
 		setName("Camera");
 	}
 
-	CCamera::CCamera(const HSceneObject& parent, SPtr<RenderTarget> target, float left, float top, float width, float height)
-		: Component(parent), mTarget(target), mLeft(left), mTop(top), mWidth(width), mHeight(height)
+	CCamera::CCamera(const HSceneObject& parent)
+		: Component(parent)
 	{
-		if(mTarget == nullptr)
-			mTarget = CoreApplication::instance().getPrimaryWindow();
-
 		setFlag(ComponentFlag::AlwaysRun, true);
 		setName("Camera");
 	}
 
 	CCamera::~CCamera()
 	{
-		mInternal->destroy();
 	}
 
 	ConvexVolume CCamera::getWorldFrustum() const
@@ -57,29 +53,29 @@ namespace bs
 		gSceneManager()._notifyMainCameraStateChanged(mInternal);
 	}
 
-	void CCamera::update() 
-	{
-
-	}
-
-	void CCamera::onInitialized()
+	void CCamera::_instantiate()
 	{
 		// If mInternal already exists this means this object was deserialized,
 		// so all we need to do is initialize it.
 		if (mInternal != nullptr)
 			mInternal->initialize();
 		else
-		{
-			mInternal = Camera::create(mTarget, mLeft, mTop, mWidth, mHeight);
-			mTarget = nullptr;
-		}
+			mInternal = Camera::create();
 
+		SPtr<RenderTarget> mainRT = CoreApplication::instance().getPrimaryWindow();
+		mInternal->getViewport()->setTarget(mainRT);
+	}
+
+	void CCamera::onInitialized()
+	{
 		gSceneManager()._bindActor(mInternal, SO());
 	}
 
 	void CCamera::onDestroyed()
 	{
 		gSceneManager()._unbindActor(mInternal);
+
+		mInternal->destroy();
 	}
 
 	RTTITypeBase* CCamera::getRTTIStatic()

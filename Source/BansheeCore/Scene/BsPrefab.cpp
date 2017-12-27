@@ -72,6 +72,9 @@ namespace bs
 		}
 
 		// Clone the hierarchy for internal storage
+		if (mRoot != nullptr)
+			mRoot->destroy(true);
+
 		mRoot = sceneObject->clone(false);
 		mRoot->mParent = nullptr;
 		mRoot->mLinkId = -1;

@@ -22,10 +22,7 @@ namespace bs
 	}
 
 	CLight::~CLight()
-	{
-		if(mInternal != nullptr)
-			mInternal->destroy();
-	}
+	{ }
 
 	Sphere CLight::getBounds() const
 	{
@@ -42,8 +39,14 @@ namespace bs
 			mInternal->initialize();
 		else
 		{
-			mInternal = Light::create(mType, mColor, mIntensity,
-				mRange, mCastsShadows, mSpotAngle, mSpotFalloffAngle);
+			mInternal = Light::create(
+				mType,
+				mColor,
+				mIntensity,
+				mRange,
+				mCastsShadows,
+				mSpotAngle,
+				mSpotFalloffAngle);
 		}
 
 		gSceneManager()._bindActor(mInternal, sceneObject());
@@ -52,6 +55,7 @@ namespace bs
 	void CLight::onDestroyed()
 	{
 		gSceneManager()._unbindActor(mInternal);
+		mInternal->destroy();
 	}
 	
 	RTTITypeBase* CLight::getRTTIStatic()

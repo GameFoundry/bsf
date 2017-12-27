@@ -103,6 +103,7 @@ namespace bs
 			mAnimation->_unregisterRenderable();
 
 		gSceneManager()._unbindActor(mInternal);
+		mInternal->destroy();
 	}
 
 	RTTITypeBase* CRenderable::getRTTIStatic()

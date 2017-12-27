@@ -317,7 +317,8 @@ namespace bs
 
 		// Add a Camera component that will output whatever it sees into that window 
 		// (You could also use a render texture or another window you created).
-		sceneCamera = sceneCameraSO->addComponent<CCamera>(window);
+		sceneCamera = sceneCameraSO->addComponent<CCamera>();
+		sceneCamera->getViewport()->setTarget(window);
 
 		// Set up camera component properties
 
