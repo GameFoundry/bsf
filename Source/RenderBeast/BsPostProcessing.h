@@ -315,8 +315,8 @@ namespace bs { namespace ct
 		static ShaderVariation VAR_##x##_NoAutoExposure_NoMSAA;
 
 #define VARIATION_VOLUME_LUT(x)			\
-		VARIATION_GAMMA(##x##_Gamma)	\
-		VARIATION_GAMMA(##x##_NoGamma)
+		VARIATION_GAMMA(x##_Gamma)	\
+		VARIATION_GAMMA(x##_NoGamma)
 
 		VARIATION_VOLUME_LUT(VolumeLUT)
 		VARIATION_VOLUME_LUT(NoVolumeLUT)

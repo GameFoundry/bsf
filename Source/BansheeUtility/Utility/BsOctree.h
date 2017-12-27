@@ -709,7 +709,7 @@ namespace bs
 				{
 					// Create the child node if needed, and add the element to it
 					if (!node->mChildren[child.index])
-						node->mChildren[child.index] = mNodeAlloc.construct<Node>(node);
+						node->mChildren[child.index] = mNodeAlloc.template construct<Node>(node);
 
 					addElementToNode(elem, node->mChildren[child.index], nodeBounds.getChild(child));
 				}
@@ -739,8 +739,8 @@ namespace bs
 			UINT32 freeIdx = elements.count % Options::MaxElementsPerNode;
 			if(freeIdx == 0) // New group needed
 			{
-				ElementGroup* elementGroup = (ElementGroup*)mElemAlloc.construct<ElementGroup>();
-				ElementBoundGroup* boundGroup = (ElementBoundGroup*)mElemBoundsAlloc.construct<ElementBoundGroup>();
+				ElementGroup* elementGroup = (ElementGroup*)mElemAlloc.template construct<ElementGroup>();
+				ElementBoundGroup* boundGroup = (ElementBoundGroup*)mElemBoundsAlloc.template construct<ElementBoundGroup>();
 
 				elementGroup->next = elements.values;
 				boundGroup->next = elements.bounds;
