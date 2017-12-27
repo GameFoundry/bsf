@@ -41,6 +41,7 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(mBottom, 21)
 			BS_RTTI_MEMBER_PLAIN(mMSAA, 22)
 			BS_RTTI_MEMBER_REFLPTR(mRenderSettings, 23)
+			BS_RTTI_MEMBER_PLAIN(mMain, 24)
 		BS_END_RTTI_MEMBERS
 			
 	public:

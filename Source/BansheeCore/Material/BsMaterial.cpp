@@ -438,7 +438,7 @@ namespace bs
 
 	CoreSyncData Material::syncToCore(FrameAlloc* allocator)
 	{
-		bool syncAllParams = getCoreDirtyFlags() == (UINT32)MaterialDirtyFlags::ResourceChanged;
+		bool syncAllParams = (getCoreDirtyFlags() & (UINT32)MaterialDirtyFlags::ResourceChanged) != 0;
 
 		UINT32 paramsSize = 0;
 		if (mParams != nullptr)

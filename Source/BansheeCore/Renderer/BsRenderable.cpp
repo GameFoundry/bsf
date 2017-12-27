@@ -613,7 +613,11 @@ namespace bs
 			dataPtr += sizeof(SPtr<Material>);
 		}
 
-		if((dirtyFlags & ((UINT32)ActorDirtyFlag::Everything | (UINT32)ActorDirtyFlag::Active)) != 0)
+		UINT32 updateEverythingFlag = (UINT32)ActorDirtyFlag::Everything 
+			| (UINT32)ActorDirtyFlag::Active 
+			| (UINT32)ActorDirtyFlag::Dependency;
+
+		if((dirtyFlags & updateEverythingFlag) != 0)
 		{
 			createAnimationBuffers();
 

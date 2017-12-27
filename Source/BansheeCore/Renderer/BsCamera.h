@@ -25,8 +25,9 @@ namespace bs
 	/**	Signals which portion of a Camera is dirty. */
 	enum class CameraDirtyFlag
 	{
-		// First few bits reserved by ActorDiryFlag
-		RenderSettings = 1 << 4
+		// First few bits reserved by ActorDirtyFlag
+		RenderSettings = 1 << 4,
+		Viewport = 1 << 31
 	};
 
 	/** @} */

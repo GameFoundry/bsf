@@ -17,7 +17,8 @@ namespace bs
 		Transform	= 1 << 0,
 		Mobility	= 1 << 1,
 		Active		= 1 << 2,
-		Everything	= 1 << 3
+		Everything	= 1 << 3,
+		Dependency	= 1 << 31
 	};
 
 	/**

@@ -61,14 +61,14 @@ namespace bs
 			mInternal->initialize();
 		else
 			mInternal = Camera::create();
-
-		SPtr<RenderTarget> mainRT = CoreApplication::instance().getPrimaryWindow();
-		mInternal->getViewport()->setTarget(mainRT);
 	}
 
 	void CCamera::onInitialized()
 	{
 		gSceneManager()._bindActor(mInternal, SO());
+
+		// Make sure primary RT gets applied if camera gets deserialized with main camera state
+		gSceneManager()._notifyMainCameraStateChanged(mInternal);
 	}
 
 	void CCamera::onDestroyed()

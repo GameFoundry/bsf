@@ -315,10 +315,11 @@ namespace bs
 					for (auto& dependant : dependants)
 					{
 						if (!dependant->isCoreDirty())
-						{
-							dependant->mCoreDirtyFlags |= 0xFFFFFFFF; // To ensure the loop below doesn't skip it
 							dirtyDependants.insert(dependant);
-						}
+
+						// Note: This tells the object it was marked dirty due to a dependency, but it doesn't tell it
+						// due to which one. Eventually it might be nice to have that information as well.
+						dependant->mCoreDirtyFlags |= 0x80000000;
 					}
 				}
 			}

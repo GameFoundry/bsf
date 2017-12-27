@@ -52,7 +52,11 @@ namespace bs {	namespace ct
 		UINT32 cameraId = camera->getRendererId();
 		RendererView* view = mInfo.views[cameraId];
 
-		if((updateFlag & ((UINT32)ActorDirtyFlag::Everything | (UINT32)ActorDirtyFlag::Active)) != 0)
+		UINT32 updateEverythingFlag = (UINT32)ActorDirtyFlag::Everything 
+			| (UINT32)ActorDirtyFlag::Active 
+			| (UINT32)CameraDirtyFlag::Viewport;
+
+		if((updateFlag & updateEverythingFlag) != 0)
 		{
 			RENDERER_VIEW_DESC viewDesc = createViewDesc(camera);
 
