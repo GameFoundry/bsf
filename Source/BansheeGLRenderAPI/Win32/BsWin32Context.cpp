@@ -28,7 +28,7 @@ namespace bs { namespace ct
 
 	void Win32Context::endCurrent()
 	{
-		if(wglMakeCurrent(0, 0) != TRUE)
+		if(wglMakeCurrent(mHDC, 0) != TRUE)
 			BS_EXCEPT(RenderingAPIException, "wglMakeCurrent failed: " + translateWGLError());
 	}
 

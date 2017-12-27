@@ -244,6 +244,12 @@ namespace bs { namespace ct
 		if(mProgramPipelineManager != nullptr)
 			bs_delete(mProgramPipelineManager);
 
+		if(mCurrentContext)
+			mCurrentContext->endCurrent();
+
+		mCurrentContext = nullptr;
+		mMainContext = nullptr;
+
 		if(mGLSupport)
 			bs_delete(mGLSupport);
 
