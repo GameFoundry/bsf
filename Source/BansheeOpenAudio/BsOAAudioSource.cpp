@@ -26,7 +26,7 @@ namespace bs
 	{
 		stop();
 
-		Lock(mMutex);
+		Lock lock(mMutex);
 		AudioSource::setClip(clip);
 
 		applyClip();
@@ -166,7 +166,7 @@ namespace bs
 
 		if(requiresStreaming())
 		{
-			Lock(mMutex);
+			Lock lock(mMutex);
 			
 			if (!mIsStreaming)
 			{
@@ -224,7 +224,7 @@ namespace bs
 		}
 
 		{
-			Lock(mMutex);
+			Lock lock(mMutex);
 
 			mStreamProcessedPosition = 0;
 			mStreamQueuedPosition = 0;
@@ -273,7 +273,7 @@ namespace bs
 		bool needsStreaming = requiresStreaming();
 		float clipTime;
 		{
-			Lock(mMutex);
+			Lock lock(mMutex);
 
 			if (!needsStreaming)
 				clipTime = time;
@@ -308,7 +308,7 @@ namespace bs
 
 	float OAAudioSource::getTime() const
 	{
-		Lock(mMutex);
+		Lock lock(mMutex);
 
 		auto& contexts = gOAAudio()._getContexts();
 
@@ -343,7 +343,7 @@ namespace bs
 		auto& contexts = gOAAudio()._getContexts();
 		UINT32 numContexts = (UINT32)contexts.size();
 		
-		Lock(mMutex);
+		Lock lock(mMutex);
 		for (UINT32 i = 0; i < numContexts; i++)
 		{
 			if (contexts.size() > 1)
@@ -362,7 +362,7 @@ namespace bs
 		UINT32 numContexts = (UINT32)contexts.size();
 
 		{
-			Lock(mMutex);
+			Lock lock(mMutex);
 
 			for (UINT32 i = 0; i < numContexts; i++)
 			{
@@ -406,7 +406,7 @@ namespace bs
 			}
 
 			{
-				Lock(mMutex);
+				Lock lock(mMutex);
 
 				if (!mIsStreaming)
 				{
@@ -469,7 +469,7 @@ namespace bs
 
 	void OAAudioSource::stream()
 	{
-		Lock(mMutex);
+		Lock lock(mMutex);
 
 		AudioDataInfo info;
 		info.bitDepth = mAudioClip->getBitDepth();
@@ -632,7 +632,7 @@ namespace bs
 		stop();
 
 		{
-			Lock(mMutex);
+			Lock lock(mMutex);
 			applyClip();
 		}
 

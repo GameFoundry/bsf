@@ -85,7 +85,7 @@ namespace bs { namespace ct
 		 *			done on the device but this method may still report true. If you need to know the latest state
 		 *			call VulkanCommandBufferManager::refreshStates() before checking for usage.
 		 */
-		bool isUsed() const { Lock(mMutex); return mNumUsedHandles > 0; }
+		bool isUsed() const { Lock lock(mMutex); return mNumUsedHandles > 0; }
 
 		/** 
 		 * Checks is the resource currently bound to any command buffer.
@@ -94,7 +94,7 @@ namespace bs { namespace ct
 		 *			done on the device but this method may still report true. If you need to know the latest state
 		 *			call VulkanCommandBufferManager::refreshStates() before checking for usage.
 		 */
-		bool isBound() const { Lock(mMutex); return mNumBoundHandles > 0; }
+		bool isBound() const { Lock lock(mMutex); return mNumBoundHandles > 0; }
 
 		/** 
 		 * Returns the queue family the resource is currently owned by. Returns -1 if owned by no queue.
@@ -102,7 +102,7 @@ namespace bs { namespace ct
 		 * @note	If resource concurrency is enabled, then this value has no meaning as the resource can be used on
 		 *			multiple queue families at once.
 		 */
-		UINT32 getQueueFamily() const { Lock(mMutex); return mQueueFamily; }
+		UINT32 getQueueFamily() const { Lock lock(mMutex); return mQueueFamily; }
 
 		/** 
 		 * Returns a mask that has bits set for every queue that the resource is currently used (read or written) by.
@@ -120,7 +120,7 @@ namespace bs { namespace ct
 		UINT32 getBoundCount() const { return mNumBoundHandles; }
 
 		/** Returns true if the resource is only allowed to be used by a single queue family at once. */
-		bool isExclusive() const { Lock(mMutex); return mState != State::Shared; }
+		bool isExclusive() const { Lock lock(mMutex); return mState != State::Shared; }
 
 		/** 
 		 * Destroys the resource and frees its memory. If the resource is currently being used on a device, the
@@ -149,7 +149,7 @@ namespace bs { namespace ct
 		UINT32 mNumUsedHandles;
 		UINT32 mNumBoundHandles;
 
-		Mutex mMutex;
+		mutable Mutex mMutex;
 	};
 
 	/** 

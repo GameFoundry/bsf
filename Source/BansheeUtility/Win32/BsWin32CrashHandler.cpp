@@ -460,7 +460,7 @@ namespace bs
 		const String& file, UINT32 line) const
 	{
 		// Win32 debug methods are not thread safe
-		Lock(m->mutex);
+		Lock lock(m->mutex);
 
 		logErrorAndStackTrace(type, description, function, file, line);
 		saveCrashLog();
@@ -478,7 +478,7 @@ namespace bs
 		EXCEPTION_POINTERS* exceptionData = (EXCEPTION_POINTERS*)exceptionDataPtr;
 
 		// Win32 debug methods are not thread safe
-		Lock(m->mutex);
+		Lock lock(m->mutex);
 
 		win32_initPSAPI();
 		win32_loadSymbols();

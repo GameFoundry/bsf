@@ -173,7 +173,7 @@ namespace bs
 
 	void OAAudio::startStreaming(OAAudioSource* source)
 	{
-		Lock(mMutex);
+		Lock lock(mMutex);
 
 		mStreamingCommandQueue.push_back({ StreamingCommandType::Start, source });
 		mDestroyedSources.erase(source);
@@ -181,7 +181,7 @@ namespace bs
 
 	void OAAudio::stopStreaming(OAAudioSource* source)
 	{
-		Lock(mMutex);
+		Lock lock(mMutex);
 
 		mStreamingCommandQueue.push_back({ StreamingCommandType::Stop, source });
 		mDestroyedSources.insert(source);
@@ -266,7 +266,7 @@ namespace bs
 	void OAAudio::updateStreaming()
 	{
 		{
-			Lock(mMutex);
+			Lock lock(mMutex);
 
 			for(auto& command : mStreamingCommandQueue)
 			{
@@ -291,7 +291,7 @@ namespace bs
 		{
 			// Check if the source got destroyed while streaming
 			{
-				Lock(mMutex);
+				Lock lock(mMutex);
 
 				auto iterFind = mDestroyedSources.find(source);
 				if (iterFind != mDestroyedSources.end())

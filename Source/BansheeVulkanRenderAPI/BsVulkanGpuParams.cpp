@@ -27,7 +27,7 @@ namespace bs { namespace ct
 
 	VulkanGpuParams::~VulkanGpuParams()
 	{
-		Lock lock(mMutex);
+		Lock Lock lock(mMutex);
 
 		UINT32 numSets = mParamInfo->getNumSets();
 		for (UINT32 i = 0; i < BS_MAX_DEVICES; i++)
@@ -85,7 +85,7 @@ namespace bs { namespace ct
 			.reserve<VkSampler>(numSamplers * numDevices)
 			.init();
 
-		Lock lock(mMutex); // Set write operations need to be thread safe
+		Lock Lock lock(mMutex); // Set write operations need to be thread safe
 
 		mSetsDirty = mAlloc.alloc<bool>(numSets);
 		bs_zero_out(mSetsDirty, numSets);
@@ -235,7 +235,7 @@ namespace bs { namespace ct
 
 		UINT32 sequentialIdx = vkParamInfo.getSequentialSlot(GpuPipelineParamInfo::ParamType::ParamBlock, set, slot);
 
-		Lock(mMutex);
+		Lock lock(mMutex);
 
 		VulkanGpuParamBlockBuffer* vulkanParamBlockBuffer =
 			static_cast<VulkanGpuParamBlockBuffer*>(paramBlockBuffer.get());
@@ -286,7 +286,7 @@ namespace bs { namespace ct
 
 		UINT32 sequentialIdx = vkParamInfo.getSequentialSlot(GpuPipelineParamInfo::ParamType::Texture, set, slot);
 
-		Lock(mMutex);
+		Lock lock(mMutex);
 
 		VulkanTexture* vulkanTexture = static_cast<VulkanTexture*>(texture.get());
 		for (UINT32 i = 0; i < BS_MAX_DEVICES; i++)
@@ -347,7 +347,7 @@ namespace bs { namespace ct
 
 		UINT32 sequentialIdx = vkParamInfo.getSequentialSlot(GpuPipelineParamInfo::ParamType::LoadStoreTexture, set, slot);
 
-		Lock(mMutex);
+		Lock lock(mMutex);
 
 		VulkanTexture* vulkanTexture = static_cast<VulkanTexture*>(texture.get());
 		for (UINT32 i = 0; i < BS_MAX_DEVICES; i++)
@@ -398,7 +398,7 @@ namespace bs { namespace ct
 
 		UINT32 sequentialIdx = vkParamInfo.getSequentialSlot(GpuPipelineParamInfo::ParamType::Buffer, set, slot);
 
-		Lock(mMutex);
+		Lock lock(mMutex);
 
 		VulkanGpuBuffer* vulkanBuffer = static_cast<VulkanGpuBuffer*>(buffer.get());
 		for (UINT32 i = 0; i < BS_MAX_DEVICES; i++)
@@ -482,7 +482,7 @@ namespace bs { namespace ct
 
 		UINT32 sequentialIdx = vkParamInfo.getSequentialSlot(GpuPipelineParamInfo::ParamType::SamplerState, set, slot);
 
-		Lock(mMutex);
+		Lock lock(mMutex);
 
 		VulkanSamplerState* vulkanSampler = static_cast<VulkanSamplerState*>(sampler.get());
 		for(UINT32 i = 0; i < BS_MAX_DEVICES; i++)
@@ -542,7 +542,7 @@ namespace bs { namespace ct
 		UINT32 numSamplers = vkParamInfo.getNumElements(GpuPipelineParamInfo::ParamType::SamplerState);
 		UINT32 numSets = vkParamInfo.getNumSets();
 
-		Lock(mMutex);
+		Lock lock(mMutex);
 
 		// Registers resources with the command buffer, and check if internal resource handled changed (in which case set
 		// needs updating - this can happen due to resource writes, as internally system might find it more performant
