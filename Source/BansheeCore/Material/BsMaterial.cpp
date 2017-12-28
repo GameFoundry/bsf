@@ -384,6 +384,11 @@ namespace bs
 		mShader = shader;
 		mTechniques.clear();
 		mLoadFlags = Load_None;
+
+		// Make sure to clear params, because the default behaviour is to re-apply them (which won't work due to changed
+		// shader)
+		mParams = nullptr;
+
 		_markResourcesDirty();
 
 		initializeIfLoaded();
@@ -445,11 +450,13 @@ namespace bs
 			mParams->getSyncData(nullptr, paramsSize, syncAllParams);
 
 		UINT32 numTechniques = (UINT32)mTechniques.size();
-		UINT32 size = sizeof(UINT32) * 2 + sizeof(SPtr<ct::Shader>) + 
+		UINT32 size = sizeof(bool) + sizeof(UINT32) * 2 + sizeof(SPtr<ct::Shader>) + 
 			sizeof(SPtr<ct::Technique>) * numTechniques + paramsSize;
 
 		UINT8* buffer = allocator->alloc(size);
 		char* dataPtr = (char*)buffer;
+
+		dataPtr = rttiWriteElem(syncAllParams, dataPtr);
 		
 		SPtr<ct::Shader>* shader = new (dataPtr)SPtr<ct::Shader>();
 		if (mShader.isLoaded(false))
@@ -768,6 +775,12 @@ namespace bs
 	void Material::syncToCore(const CoreSyncData& data)
 	{
 		char* dataPtr = (char*)data.getBuffer();
+
+		bool syncAllParams;
+		dataPtr = rttiReadElem(syncAllParams, dataPtr);
+
+		if(syncAllParams)
+			mParams = nullptr;
 
 		SPtr<Shader>* shader = (SPtr<Shader>*)dataPtr;
 
