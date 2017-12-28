@@ -171,7 +171,7 @@ namespace bs
 			mMouseScroll = 0.0f;
 		}
 
-		if(pointerPos != mLastPointerPosition)
+		if(pointerPos != mLastPointerPosition || mouseScroll != 0.0f)
 		{
 			PointerEvent event;
 			event.alt = false;
