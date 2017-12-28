@@ -1779,16 +1779,15 @@ namespace bs { namespace ct
 		if (mActiveRenderTarget == nullptr)
 			return;
 
-		// Calculate the "lower-left" corner of the viewport
-		GLsizei x = 0, y = 0, w = 0, h = 0;
-
+		const RenderTargetProperties& rtProps = mActiveRenderTarget->getProperties();
+		GLsizei x, y, w, h;
 		if (enable)
 		{
 			glEnable(GL_SCISSOR_TEST);
 			BS_CHECK_GL_ERROR();
 
 			x = mScissorLeft;
-			y = mScissorTop;
+			y = rtProps.height - mScissorBottom;
 			w = mScissorRight - mScissorLeft;
 			h = mScissorBottom - mScissorTop;
 
@@ -1801,10 +1800,10 @@ namespace bs { namespace ct
 			BS_CHECK_GL_ERROR();
 
 			// GL requires you to reset the scissor when disabling
+			x = mViewportLeft;
+			y = rtProps.height - (mViewportTop + mViewportHeight); 
 			w = mViewportWidth;
 			h = mViewportHeight;
-			x = mViewportLeft;
-			y = mViewportTop; 
 
 			glScissor(x, y, w, h);
 			BS_CHECK_GL_ERROR();
