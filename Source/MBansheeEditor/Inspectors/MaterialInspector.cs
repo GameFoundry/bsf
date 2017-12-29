@@ -142,8 +142,6 @@ namespace BansheeEditor
                 if (param.isInternal)
                     continue;
 
-                Debug.Log(param.name + "_" + param.type);
-
                 switch (param.type)
                 {
                     case ShaderParameterType.Float:
