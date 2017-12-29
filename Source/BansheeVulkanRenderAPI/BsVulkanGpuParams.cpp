@@ -27,7 +27,7 @@ namespace bs { namespace ct
 
 	VulkanGpuParams::~VulkanGpuParams()
 	{
-		Lock Lock lock(mMutex);
+		Lock lock(mMutex);
 
 		UINT32 numSets = mParamInfo->getNumSets();
 		for (UINT32 i = 0; i < BS_MAX_DEVICES; i++)
@@ -85,7 +85,7 @@ namespace bs { namespace ct
 			.reserve<VkSampler>(numSamplers * numDevices)
 			.init();
 
-		Lock Lock lock(mMutex); // Set write operations need to be thread safe
+		Lock lock(mMutex); // Set write operations need to be thread safe
 
 		mSetsDirty = mAlloc.alloc<bool>(numSets);
 		bs_zero_out(mSetsDirty, numSets);
