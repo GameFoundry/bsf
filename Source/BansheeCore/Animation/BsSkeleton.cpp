@@ -166,6 +166,9 @@ namespace bs
 			localPose.scales[i] = Vector3::ONE;
 		}
 
+		bool* hasAnimCurve = bs_stack_alloc<bool>(mNumBones);
+		bs_zero_out(hasAnimCurve, mNumBones);
+
 		// Note: For a possible performance improvement consider keeping an array of only active (non-disabled) bones and
 		// just iterate over them without mask checks. Possibly also a list of active curve mappings to avoid those checks
 		// as well.
@@ -210,34 +213,22 @@ namespace bs
 						localPose.positions[k] += curve.evaluate(state.time, state.positionCaches[curveIdx], state.loop) * normWeight;
 
 						localPose.hasOverride[k] = false;
+						hasAnimCurve[k] = true;
 					}
-				}
 
-				for (UINT32 k = 0; k < mNumBones; k++)
-				{
-					if (!mask.isEnabled(k))
-						continue;
-
-					const AnimationCurveMapping& mapping = state.boneToCurveMapping[k];
-					UINT32 curveIdx = mapping.scale;
+					curveIdx = mapping.scale;
 					if (curveIdx != (UINT32)-1)
 					{
 						const TAnimationCurve<Vector3>& curve = state.curves->scale[curveIdx].curve;
 						localPose.scales[k] *= curve.evaluate(state.time, state.scaleCaches[curveIdx], state.loop) * normWeight;
 
 						localPose.hasOverride[k] = false;
+						hasAnimCurve[k] = true;
 					}
-				}
 
-				if(layer.additive)
-				{
-					for (UINT32 k = 0; k < mNumBones; k++)
+					if (layer.additive)
 					{
-						if (!mask.isEnabled(k))
-							continue;
-
-						const AnimationCurveMapping& mapping = state.boneToCurveMapping[k];
-						UINT32 curveIdx = mapping.rotation;
+						curveIdx = mapping.rotation;
 						if (curveIdx != (UINT32)-1)
 						{
 							bool isAssigned = localPose.rotations[k].w != 0.0f;
@@ -251,18 +242,12 @@ namespace bs
 
 							localPose.rotations[k] *= value;
 							localPose.hasOverride[k] = false;
+							hasAnimCurve[k] = true;
 						}
 					}
-				}
-				else
-				{
-					for (UINT32 k = 0; k < mNumBones; k++)
+					else
 					{
-						if (!mask.isEnabled(k))
-							continue;
-
-						const AnimationCurveMapping& mapping = state.boneToCurveMapping[k];
-						UINT32 curveIdx = mapping.rotation;
+						curveIdx = mapping.rotation;
 						if (curveIdx != (UINT32)-1)
 						{
 							const TAnimationCurve<Quaternion>& curve = state.curves->rotation[curveIdx].curve;
@@ -270,9 +255,10 @@ namespace bs
 
 							if (value.dot(localPose.rotations[k]) < 0.0f)
 								value = -value;
-							
+
 							localPose.rotations[k] += value;
 							localPose.hasOverride[k] = false;
+							hasAnimCurve[k] = true;
 						}
 					}
 				}
@@ -299,6 +285,15 @@ namespace bs
 			}
 
 			pose[i] = Matrix4::TRS(localPose.positions[i], localPose.rotations[i], localPose.scales[i]);
+		}
+
+		// Apply bind pose transforms to non-animated bones (so that any potential child bones are transformed properly)
+		for(UINT32 i = 0; i < mNumBones; i++)
+		{
+			if(hasAnimCurve[i])
+				continue;
+
+			pose[i] = pose[i] * mInvBindPoses[i].inverseAffine();
 		}
 
 		// Calculate global poses
@@ -330,6 +325,7 @@ namespace bs
 			pose[i] = pose[i] * mInvBindPoses[i];
 
 		bs_stack_free(isGlobal);
+		bs_stack_free(hasAnimCurve);
 	}
 
 	UINT32 Skeleton::getRootBoneIndex() const

@@ -498,7 +498,7 @@ namespace bs
 				if (flags.isSet(AnimationCurveFlag::ImportedCurve))
 					return;
 
-				HSceneObject currentSO = root->findPath( name);
+				HSceneObject currentSO = root->findPath(name);
 
 				bool found = false;
 				for (UINT32 i = 0; i < (UINT32)newMappingInfos.size(); i++)
