@@ -2004,7 +2004,7 @@ namespace bs
 
 	template<class T, int C>
 	TAnimationCurve<T> FBXImporter::importCurve(FbxAnimCurve*(&fbxCurve)[C], float (&defaultValues)[C],
-		FBXImportOptions& importOptions, float start, float end)
+		FBXImportOptions& importOptions, float clipStart, float clipEnd)
 	{
 		int keyCounts[C];
 		for (int i = 0; i < C; i++)
@@ -2027,60 +2027,7 @@ namespace bs
 			}
 		}
 
-		// Read keys directly
-		if(!importOptions.animResample && !forceResample)
-		{
-			bool foundMismatch = false;
-			int keyCount = keyCounts[0];
-			Vector<TKeyframe<T>> keyframes;
-			for (int i = 0; i < keyCount; i++)
-			{
-				FbxTime fbxTime = fbxCurve[0]->KeyGetTime(i);
-				float time = (float)fbxTime.GetSecondDouble();
-
-				// Ensure times from other curves match
-				for (int j = 1; j < C; j++)
-				{
-					fbxTime = fbxCurve[j]->KeyGetTime(i);
-					float otherTime = (float)fbxTime.GetSecondDouble();
-
-					if (!Math::approxEquals(time, otherTime))
-					{
-						foundMismatch = true;
-						break;
-					}
-				}
-
-				if(foundMismatch)
-					break;
-
-				if (time < start || time > end)
-					continue;
-
-				keyframes.push_back(TKeyframe<T>());
-				TKeyframe<T>& keyFrame = keyframes.back();
-
-				keyFrame.time = time;
-
-				for (int j = 0; j < C; j++)
-				{
-					setKeyframeValues(keyFrame, j,
-						fbxCurve[j]->KeyGetValue(i),
-						fbxCurve[j]->KeyGetLeftDerivative(i),
-						fbxCurve[j]->KeyGetRightDerivative(i));
-				}
-			}
-
-			if (!foundMismatch)
-				return TAnimationCurve<T>(keyframes);
-			else
-				forceResample = true;
-		}
-
-		if (!importOptions.animResample && forceResample)
-			LOGWRN("Animation has different keyframes for different curve components, forcing resampling.");
-
-		// Resample keys
+		// Determine curve length
 		float curveStart = std::numeric_limits<float>::infinity();
 		float curveEnd = -std::numeric_limits<float>::infinity();
 
@@ -2105,16 +2052,112 @@ namespace bs
 			}
 		}
 
-		curveStart = Math::clamp(curveStart, start, end);
-		curveEnd = Math::clamp(curveEnd, start, end);
+		// Read keys directly
+		if(!importOptions.animResample && !forceResample)
+		{
+			bool foundMismatch = false;
+			int keyCount = keyCounts[0];
+			Vector<TKeyframe<T>> keyframes;
+
+			// All curves must match the length of the clip, so add a keyframe if first keyframe doesn't match the start time
+			if(curveStart > clipStart)
+			{
+				keyframes.push_back(TKeyframe<T>());
+				TKeyframe<T>& keyFrame = keyframes.back();
+
+				keyFrame.time = clipStart;
+
+				FbxTime fbxSampleTime;
+				fbxSampleTime.SetSecondDouble(clipStart);
+
+				for (int j = 0; j < C; j++)
+				{
+					setKeyframeValues(keyFrame, j,
+						fbxCurve[j]->Evaluate(fbxSampleTime),
+						fbxCurve[j]->EvaluateLeftDerivative(fbxSampleTime),
+						fbxCurve[j]->EvaluateRightDerivative(fbxSampleTime));
+				}
+			}
+
+			for (int i = 0; i < keyCount; i++)
+			{
+				FbxTime fbxTime = fbxCurve[0]->KeyGetTime(i);
+				float time = (float)fbxTime.GetSecondDouble();
+
+				// Ensure times from other curves match
+				for (int j = 1; j < C; j++)
+				{
+					fbxTime = fbxCurve[j]->KeyGetTime(i);
+					float otherTime = (float)fbxTime.GetSecondDouble();
+
+					if (!Math::approxEquals(time, otherTime))
+					{
+						foundMismatch = true;
+						break;
+					}
+				}
+
+				if(foundMismatch)
+					break;
+
+				if (time < clipStart || time > clipEnd)
+					continue;
+
+				keyframes.push_back(TKeyframe<T>());
+				TKeyframe<T>& keyFrame = keyframes.back();
+
+				keyFrame.time = time;
+
+				for (int j = 0; j < C; j++)
+				{
+					setKeyframeValues(keyFrame, j,
+						fbxCurve[j]->KeyGetValue(i),
+						fbxCurve[j]->KeyGetLeftDerivative(i),
+						fbxCurve[j]->KeyGetRightDerivative(i));
+				}
+			}
+
+			// All curves must match the length of the clip, so add a keyframe if last keyframe doesn't match the end time
+			if(curveEnd < clipEnd)
+			{
+				keyframes.push_back(TKeyframe<T>());
+				TKeyframe<T>& keyFrame = keyframes.back();
+
+				keyFrame.time = clipEnd;
+
+				FbxTime fbxSampleTime;
+				fbxSampleTime.SetSecondDouble(clipEnd);
+
+				for (int j = 0; j < C; j++)
+				{
+					setKeyframeValues(keyFrame, j,
+						fbxCurve[j]->Evaluate(fbxSampleTime),
+						fbxCurve[j]->EvaluateLeftDerivative(fbxSampleTime),
+						fbxCurve[j]->EvaluateRightDerivative(fbxSampleTime));
+				}
+			}
+
+			if (!foundMismatch)
+				return TAnimationCurve<T>(keyframes);
+			else
+				forceResample = true;
+		}
+
+		// Resample keys
+		if (!importOptions.animResample && forceResample)
+			LOGWRN("Animation has different keyframes for different curve components, forcing resampling.");
+
+		// Make sure to resample along the length of the entire clip
+		curveStart = std::min(curveStart, clipStart);
+		curveEnd = std::max(curveEnd, clipEnd);
 
 		float curveLength = curveEnd - curveStart;
-		INT32 numSamples = Math::ceilToInt(curveLength / importOptions.animSampleRate);
+		INT32 numSamples = Math::ceilToInt(curveLength / importOptions.animSampleRate) + 1;
 
 		// We don't use the exact provided sample rate but instead modify it slightly so it
 		// completely covers the curve range including start/end points while maintaining
 		// constant time step between keyframes.
-		float dt = curveLength / (float)numSamples; 
+		float dt = curveLength / (float)(numSamples - 1); 
 
 		INT32 lastKeyframe[] = { 0, 0, 0 };
 		INT32 lastLeftTangent[] = { 0, 0, 0 };

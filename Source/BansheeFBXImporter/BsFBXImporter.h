@@ -105,7 +105,7 @@ namespace bs
 		/**	Converts a single FBX animation curve into an engine curve format, resampling it if necessary. */
 		template<class T, int C>
 		TAnimationCurve<T> importCurve(FbxAnimCurve*(&fbxCurve)[C], float(&defaultValues)[C], 
-			FBXImportOptions& importOptions, float start, float end);
+			FBXImportOptions& importOptions, float clipStart, float clipEnd);
 
 		/** Converts FBX animation clips into engine-ready animation curve format. */
 		void convertAnimations(const Vector<FBXAnimationClip>& clips, const Vector<AnimationSplitInfo>& splits, 
