@@ -222,6 +222,7 @@ namespace bs
 		fbxImportOptions.importBlendShapes = meshImportOptions->getImportBlendShapes();
 		fbxImportOptions.importSkin = meshImportOptions->getImportSkin();
 		fbxImportOptions.importScale = meshImportOptions->getImportScale();
+		fbxImportOptions.reduceKeyframes = meshImportOptions->getKeyFrameReduction();
 
 		FBXImportScene importedScene;
 		bakeTransforms(fbxScene);
