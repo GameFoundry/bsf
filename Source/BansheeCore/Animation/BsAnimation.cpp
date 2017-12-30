@@ -1358,13 +1358,6 @@ namespace bs
 			}
 		}
 
-		// Disable sampled animations
-		for (auto& clipInfo : mClipInfos)
-		{
-			if (clipInfo.playbackType == AnimPlaybackType::Sampled)
-				clipInfo.playbackType = AnimPlaybackType::None;
-		}
-
 		mDirty = AnimDirtyState();
 	}
 
