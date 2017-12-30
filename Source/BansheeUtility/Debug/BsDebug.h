@@ -100,10 +100,10 @@ namespace bs
 #define LOGERR(x) bs::gDebug().logError((x) + String("\n\t\t in ") + __PRETTY_FUNCTION__ + " [" + __FILE__ + ":" + toString(__LINE__) + "]\n");
 
 /** Shortcut for logging a verbose message in the debug channel. Verbose messages can be ignored unlike other log messages. */
-#define LOGDBG_VERBOSE(x)
+#define LOGDBG_VERBOSE(x) ((void)0)
 
 /** Shortcut for logging a verbose message in the warning channel. Verbose messages can be ignored unlike other log messages. */
-#define LOGWRN_VERBOSE(x)
+#define LOGWRN_VERBOSE(x) ((void)0)
 
 	/** @} */
 }

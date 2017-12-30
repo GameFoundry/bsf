@@ -2145,7 +2145,7 @@ namespace bs
 
 		// Resample keys
 		if (!importOptions.animResample && forceResample)
-			LOGWRN("Animation has different keyframes for different curve components, forcing resampling.");
+			LOGWRN_VERBOSE("Animation has different keyframes for different curve components, forcing resampling.");
 
 		// Make sure to resample along the length of the entire clip
 		curveStart = std::min(curveStart, clipStart);
