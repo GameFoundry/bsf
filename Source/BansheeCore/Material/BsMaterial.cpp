@@ -469,8 +469,8 @@ namespace bs
 
 		for(UINT32 i = 0; i < numTechniques; i++)
 		{
-			SPtr<ct::Technique>* technique = new (dataPtr)SPtr<ct::Technique>();
-				*technique = mTechniques[i]->getCore();
+			SPtr<ct::Technique>* technique = new (dataPtr) SPtr<ct::Technique>();
+			*technique = mTechniques[i]->getCore();
 
 			dataPtr += sizeof(SPtr<ct::Technique>);
 		}
@@ -802,10 +802,11 @@ namespace bs
 
 		UINT32 paramsSize = 0;
 		dataPtr = rttiReadElem(paramsSize, dataPtr);
-		if (mParams == nullptr)
+		if (mParams == nullptr && mShader != nullptr)
 			mParams = bs_shared_ptr_new<MaterialParams>(mShader);
 
-		mParams->setSyncData((UINT8*)dataPtr, paramsSize);
+		if(mParams != nullptr)
+			mParams->setSyncData((UINT8*)dataPtr, paramsSize);
 
 		dataPtr += paramsSize;
 	}
