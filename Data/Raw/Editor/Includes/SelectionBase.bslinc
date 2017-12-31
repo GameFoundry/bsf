@@ -51,7 +51,7 @@ mixin
 		};
 		
 #ifdef USE_SKELETON
-		StructuredBuffer<float4> boneMatrices;
+		Buffer<float4> boneMatrices;
 		
 		float3x4 getBoneMatrix(uint idx)
 		{
