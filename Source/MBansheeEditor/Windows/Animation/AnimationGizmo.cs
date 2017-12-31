@@ -25,14 +25,24 @@ namespace BansheeEditor
             Gizmos.Color = Color.Green;
             Gizmos.Transform = Matrix4.Identity;
 
-            Matrix4 parentTfrm;
-            if (so.Parent != null)
-                parentTfrm = so.Parent.WorldTransform;
-            else
-                parentTfrm = Matrix4.Identity;
+            AABox bounds = new AABox();
 
-            AABox bounds = animation.Bounds;
-            bounds.TransformAffine(parentTfrm);
+            bool useAnimBounds = animation.UseBounds;
+            if (!useAnimBounds)
+            {
+                Renderable renderable = so.GetComponent<Renderable>();
+
+                if (renderable != null)
+                    bounds = renderable.Bounds.Box;
+                else
+                    useAnimBounds = true;
+            }
+
+            if (useAnimBounds)
+            {
+                bounds = animation.Bounds;
+                bounds.TransformAffine(so.WorldTransform);
+            }
 
             Gizmos.DrawWireCube(bounds.Center, bounds.Size * 0.5f);
         }
