@@ -1828,7 +1828,7 @@ namespace bs { namespace ct
 
 	void GLRenderAPI::setDepthClipEnable(bool enable)
 	{
-		if (enable)
+		if (!enable) // If clipping disabled, clamp is enabled
 		{
 			glEnable(GL_DEPTH_CLAMP);
 			BS_CHECK_GL_ERROR();
