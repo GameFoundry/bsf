@@ -495,10 +495,33 @@ namespace bs
 
 		if (!Math::approxEquals(startKey.time, start))
 		{
-			keyFrames.push_back(evaluateKey(startKey, mKeyframes[startKeyIdx + 1], start));
+			if(start > startKey.time)
+			{
+				if (mKeyframes.size() > (startKeyIdx + 1))
+					keyFrames.push_back(evaluateKey(startKey, mKeyframes[startKeyIdx + 1], start));
+				else
+				{
+					TKeyframe<T> keyCopy = startKey;
+					keyCopy.time = start;
 
-			if (start > startKey.time)
+					keyFrames.push_back(keyCopy);
+				}
+
 				startKeyIdx++;
+			}
+			else
+			{
+				
+				if (startKeyIdx > 0)
+					keyFrames.push_back(evaluateKey(mKeyframes[startKeyIdx - 1], startKey , start));
+				else
+				{
+					TKeyframe<T> keyCopy = startKey;
+					keyCopy.time = start;
+
+					keyFrames.push_back(keyCopy);
+				}
+			}
 		}
 		else
 		{
@@ -508,13 +531,37 @@ namespace bs
 
 		if(!Math::approxEquals(endKey.time, end))
 		{
-			keyFrames.push_back(evaluateKey(endKey, mKeyframes[endKeyIdx + 1], end));
+			if(end > endKey.time)
+			{
+				if (mKeyframes.size() > (endKeyIdx + 1))
+					keyFrames.push_back(evaluateKey(endKey, mKeyframes[endKeyIdx + 1], end));
+				else
+				{
+					TKeyframe<T> keyCopy = endKey;
+					keyCopy.time = end;
 
-			if (end < endKey.time)
-				endKeyIdx--;
+					keyFrames.push_back(keyCopy);
+				}
+			}
+			else
+			{
+				if(endKeyIdx > 0)
+				{
+					keyFrames.push_back(evaluateKey(mKeyframes[endKeyIdx - 1], endKey, end));
+					endKeyIdx--;
+				}
+				else
+				{
+					TKeyframe<T> keyCopy = endKey;
+					keyCopy.time = end;
+
+					keyFrames.push_back(keyCopy);
+				}
+			}
 		}
 
-		keyFrames.insert(keyFrames.begin() + 1, mKeyframes.begin() + startKeyIdx, mKeyframes.begin() + endKeyIdx + 1);
+		if(startKeyIdx < (UINT32)mKeyframes.size() && endKeyIdx > startKeyIdx)
+			keyFrames.insert(keyFrames.begin() + 1, mKeyframes.begin() + startKeyIdx, mKeyframes.begin() + endKeyIdx + 1);
 
 		for (auto& entry : keyFrames)
 			entry.time -= start;

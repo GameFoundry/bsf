@@ -24,6 +24,9 @@ namespace bs
 	struct BS_CORE_EXPORT AnimationSplitInfo : IReflectable
 	{
 		AnimationSplitInfo() { }
+		AnimationSplitInfo(const String& name, UINT32 startFrame, UINT32 endFrame, bool isAdditive = false)
+			: name(name), startFrame(startFrame), endFrame(endFrame), isAdditive(isAdditive)
+		{ }
 
 		String name;
 		UINT32 startFrame = 0;
