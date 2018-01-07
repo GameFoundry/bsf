@@ -5,66 +5,66 @@
 
 namespace bs 
 {
-    const Color Color::ZERO = Color(0.0,0.0,0.0,0.0);
-    const Color Color::Black = Color(0.0,0.0,0.0);
-    const Color Color::White = Color(1.0,1.0,1.0);
-    const Color Color::Red = Color(1.0,0.0,0.0);
-    const Color Color::Green = Color(0.0,1.0,0.0);
-    const Color Color::Blue = Color(0.0,0.0,1.0);
+	const Color Color::ZERO = Color(0.0,0.0,0.0,0.0);
+	const Color Color::Black = Color(0.0,0.0,0.0);
+	const Color Color::White = Color(1.0,1.0,1.0);
+	const Color Color::Red = Color(1.0,0.0,0.0);
+	const Color Color::Green = Color(0.0,1.0,0.0);
+	const Color Color::Blue = Color(0.0,0.0,1.0);
 
-    ABGR Color::getAsABGR() const
-    {
-        UINT8 val8;
-        UINT32 val32 = 0;
+	ABGR Color::getAsABGR() const
+	{
+		UINT8 val8;
+		UINT32 val32 = 0;
 
-        // Convert to 32bit pattern
-        // (RGBA = 8888)
+		// Convert to 32bit pattern
+		// (RGBA = 8888)
 
-        // Red
-        val8 = static_cast<UINT8>(r * 255);
-        val32 = val8 << 24;
+		// Red
+		val8 = static_cast<UINT8>(r * 255);
+		val32 = val8 << 24;
 
-        // Green
-        val8 = static_cast<UINT8>(g * 255);
-        val32 += val8 << 16;
+		// Green
+		val8 = static_cast<UINT8>(g * 255);
+		val32 += val8 << 16;
 
-        // Blue
-        val8 = static_cast<UINT8>(b * 255);
-        val32 += val8 << 8;
+		// Blue
+		val8 = static_cast<UINT8>(b * 255);
+		val32 += val8 << 8;
 
-        // Alpha
-        val8 = static_cast<UINT8>(a * 255);
-        val32 += val8;
+		// Alpha
+		val8 = static_cast<UINT8>(a * 255);
+		val32 += val8;
 
-        return val32;
-    }
+		return val32;
+	}
 
-    BGRA Color::getAsBGRA() const
-    {
-        UINT8 val8;
-        UINT32 val32 = 0;
+	BGRA Color::getAsBGRA() const
+	{
+		UINT8 val8;
+		UINT32 val32 = 0;
 
-        // Convert to 32bit pattern
-        // (ARGB = 8888)
+		// Convert to 32bit pattern
+		// (ARGB = 8888)
 
-        // Alpha
-        val8 = static_cast<UINT8>(a * 255);
-        val32 = val8 << 24;
+		// Alpha
+		val8 = static_cast<UINT8>(a * 255);
+		val32 = val8 << 24;
 
-        // Red
-        val8 = static_cast<UINT8>(r * 255);
-        val32 += val8 << 16;
+		// Red
+		val8 = static_cast<UINT8>(r * 255);
+		val32 += val8 << 16;
 
-        // Green
-        val8 = static_cast<UINT8>(g * 255);
-        val32 += val8 << 8;
+		// Green
+		val8 = static_cast<UINT8>(g * 255);
+		val32 += val8 << 8;
 
-        // Blue
-        val8 = static_cast<UINT8>(b * 255);
-        val32 += val8;
+		// Blue
+		val8 = static_cast<UINT8>(b * 255);
+		val32 += val8;
 
-        return val32;
-    }
+		return val32;
+	}
 
 	ARGB Color::getAsARGB() const
 	{
@@ -94,73 +94,73 @@ namespace bs
 		return val32;
 	}
 
-    RGBA Color::getAsRGBA() const
-    {
-        UINT8 val8;
-        UINT32 val32 = 0;
+	RGBA Color::getAsRGBA() const
+	{
+		UINT8 val8;
+		UINT32 val32 = 0;
 
-        // Convert to 32bit pattern
-        // (ABRG = 8888)
+		// Convert to 32bit pattern
+		// (ABRG = 8888)
 
-        // Alpha
-        val8 = static_cast<UINT8>(a * 255);
-        val32 = val8 << 24;
+		// Alpha
+		val8 = static_cast<UINT8>(a * 255);
+		val32 = val8 << 24;
 
-        // Blue
-        val8 = static_cast<UINT8>(b * 255);
-        val32 += val8 << 16;
+		// Blue
+		val8 = static_cast<UINT8>(b * 255);
+		val32 += val8 << 16;
 
-        // Green
-        val8 = static_cast<UINT8>(g * 255);
-        val32 += val8 << 8;
+		// Green
+		val8 = static_cast<UINT8>(g * 255);
+		val32 += val8 << 8;
 
-        // Red
-        val8 = static_cast<UINT8>(r * 255);
-        val32 += val8;
+		// Red
+		val8 = static_cast<UINT8>(r * 255);
+		val32 += val8;
 
 
-        return val32;
-    }
+		return val32;
+	}
 
-    void Color::setAsABGR(const ABGR val)
-    {
-        UINT32 val32 = val;
+	void Color::setAsABGR(const ABGR val)
+	{
+		UINT32 val32 = val;
 
-        // Convert from 32bit pattern
-        // (RGBA = 8888)
+		// Convert from 32bit pattern
+		// (RGBA = 8888)
 
-        // Red
-        r = ((val32 >> 24) & 0xFF) / 255.0f;
+		// Red
+		r = ((val32 >> 24) & 0xFF) / 255.0f;
 
-        // Green
-        g = ((val32 >> 16) & 0xFF) / 255.0f;
+		// Green
+		g = ((val32 >> 16) & 0xFF) / 255.0f;
 
-        // Blue
-        b = ((val32 >> 8) & 0xFF) / 255.0f;
+		// Blue
+		b = ((val32 >> 8) & 0xFF) / 255.0f;
 
-        // Alpha
-        a = (val32 & 0xFF) / 255.0f;
-    }
+		// Alpha
+		a = (val32 & 0xFF) / 255.0f;
+	}
 
-    void Color::setAsBGRA(const BGRA val)
-    {
-        UINT32 val32 = val;
+	void Color::setAsBGRA(const BGRA val)
+	{
+		UINT32 val32 = val;
 
-        // Convert from 32bit pattern
-        // (ARGB = 8888)
+		// Convert from 32bit pattern
+		// (ARGB = 8888)
 
-        // Alpha
-        a = ((val32 >> 24) & 0xFF) / 255.0f;
+		// Alpha
+		a = ((val32 >> 24) & 0xFF) / 255.0f;
 
-        // Red
-        r = ((val32 >> 16) & 0xFF) / 255.0f;
+		// Red
+		r = ((val32 >> 16) & 0xFF) / 255.0f;
 
-        // Green
-        g = ((val32 >> 8) & 0xFF) / 255.0f;
+		// Green
+		g = ((val32 >> 8) & 0xFF) / 255.0f;
 
-        // Blue
-        b = (val32 & 0xFF) / 255.0f;
-    }
+		// Blue
+		b = (val32 & 0xFF) / 255.0f;
+	}
 
 	void Color::setAsARGB(const ARGB val)
 	{
@@ -182,38 +182,38 @@ namespace bs
 		a = (val32 & 0xFF) / 255.0f;
 	}
 
-    void Color::setAsRGBA(const RGBA val)
-    {
-        UINT32 val32 = val;
+	void Color::setAsRGBA(const RGBA val)
+	{
+		UINT32 val32 = val;
 
-        // Convert from 32bit pattern
-        // (ABGR = 8888)
+		// Convert from 32bit pattern
+		// (ABGR = 8888)
 
-        // Alpha
-        a = ((val32 >> 24) & 0xFF) / 255.0f;
+		// Alpha
+		a = ((val32 >> 24) & 0xFF) / 255.0f;
 
-        // Blue
-        b = ((val32 >> 16) & 0xFF) / 255.0f;
+		// Blue
+		b = ((val32 >> 16) & 0xFF) / 255.0f;
 
-        // Green
-        g = ((val32 >> 8) & 0xFF) / 255.0f;
+		// Green
+		g = ((val32 >> 8) & 0xFF) / 255.0f;
 
-        // Red
-        r = (val32 & 0xFF) / 255.0f;
-    }
+		// Red
+		r = (val32 & 0xFF) / 255.0f;
+	}
 
-    bool Color::operator==(const Color& rhs) const
-    {
-        return (r == rhs.r &&
-            g == rhs.g &&
-            b == rhs.b &&
-            a == rhs.a);
-    }
+	bool Color::operator==(const Color& rhs) const
+	{
+		return (r == rhs.r &&
+			g == rhs.g &&
+			b == rhs.b &&
+			a == rhs.a);
+	}
 
-    bool Color::operator!=(const Color& rhs) const
-    {
-        return !(*this == rhs);
-    }
+	bool Color::operator!=(const Color& rhs) const
+	{
+		return !(*this == rhs);
+	}
 
 	void Color::setHSB(float hue, float saturation, float brightness)
 	{
