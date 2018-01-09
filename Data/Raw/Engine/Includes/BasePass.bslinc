@@ -1,16 +1,15 @@
 #include "$ENGINE$\GBufferOutput.bslinc"
 #include "$ENGINE$\PerCameraData.bslinc"
 #include "$ENGINE$\PerObjectData.bslinc"
+#include "$ENGINE$\VertexInput.bslinc"
 
-#include "$ENGINE$\SkinnedVertexInput.bslinc"
-#include "$ENGINE$\NormalVertexInput.bslinc"
-#define USE_BLEND_SHAPES
-#include "$ENGINE$\SkinnedVertexInput.bslinc"
-#include "$ENGINE$\NormalVertexInput.bslinc"
-#undef USE_BLEND_SHAPES
-
-mixin BasePassCommon
+mixin BasePass
 {
+	mixin GBufferOutput;
+	mixin PerCameraData;
+	mixin PerObjectData;
+	mixin VertexInput;
+
 	code
 	{			
 		VStoFS vsmain(VertexInput input)
@@ -39,40 +38,4 @@ mixin BasePassCommon
 			return normalize(mul(surfaceNormal, tangentToWorld));			
 		}
 	};
-};
-
-mixin BasePass
-{ 
-	mixin GBufferOutput;
-	mixin PerCameraData;
-	mixin PerObjectData;
-	mixin NormalVertexInput;
-	mixin BasePassCommon;
-};
-
-mixin BasePassSkinned
-{
-	mixin GBufferOutput;
-	mixin PerCameraData;
-	mixin PerObjectData;
-	mixin SkinnedVertexInput;
-	mixin BasePassCommon;
-};
-
-mixin BasePassMorph
-{
-	mixin GBufferOutput;
-	mixin PerCameraData;
-	mixin PerObjectData;
-	mixin MorphVertexInput;
-	mixin BasePassCommon;
-};
-
-mixin BasePassSkinnedMorph
-{
-	mixin GBufferOutput;
-	mixin PerCameraData;
-	mixin PerObjectData;
-	mixin SkinnedMorphVertexInput;
-	mixin BasePassCommon;
 };

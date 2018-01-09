@@ -4,15 +4,15 @@
 #define USE_LIGHT_GRID_INDICES 1
 #include "$ENGINE$\LightingCommon.bslinc"
 #include "$ENGINE$\ImageBasedLighting.bslinc"
-#include "$ENGINE$\Surface.bslinc"
 
 options
 {
 	transparent = true;
 };
 
-mixin Surface
+technique Surface
 {
+	mixin BasePass;
 	mixin LightingCommon;
 	mixin LightGridCommon;
 	mixin ReflectionCubemapCommon;

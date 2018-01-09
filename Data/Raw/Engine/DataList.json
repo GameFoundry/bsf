@@ -49,10 +49,6 @@
     ],
     "Includes": [
         {
-            "Path": "NormalVertexInput.bslinc",
-            "UUID": "967325e7-262b-49bf-8c90-032a8bbc8ce2"
-        },
-        {
             "Path": "PerCameraData.bslinc",
             "UUID": "c1e4d309-8c20-4fd4-bf14-eb129af39d4e"
         },
@@ -77,16 +73,8 @@
             "UUID": "eef92578-b8ed-45d6-8eed-d85697ade3c5"
         },
         {
-            "Path": "SkinnedVertexInput.bslinc",
-            "UUID": "d6a2ea27-5f4c-41ad-88bc-cad7dd7adc8d"
-        },
-        {
             "Path": "SpriteImage.bslinc",
             "UUID": "0114b1da-9899-45ca-8486-a9791482d3c5"
-        },
-        {
-            "Path": "Surface.bslinc",
-            "UUID": "468be285-026c-49d8-99ea-5f1709ea605a"
         },
         {
             "Path": "VolumeRenderBase.bslinc",

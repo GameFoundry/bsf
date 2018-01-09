@@ -1,8 +1,9 @@
 #include "$ENGINE$\BasePass.bslinc"
-#include "$ENGINE$\Surface.bslinc"
 
-mixin Surface
+technique Surface
 {
+	mixin BasePass;
+
 	code
 	{
 		void fsmain(
