@@ -554,7 +554,7 @@ namespace bs {	namespace ct
 
 		viewDesc.triggerCallbacks = true;
 		viewDesc.runPostProcessing = true;
-		viewDesc.renderingReflections = false;
+		viewDesc.capturingReflections = false;
 
 		viewDesc.cullFrustum = camera->getWorldFrustum();
 		viewDesc.visibleLayers = camera->getLayers();

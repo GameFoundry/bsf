@@ -67,10 +67,10 @@ namespace bs { namespace ct
 		const RenderAPI& rapi = RenderAPI::instance();
 		const RenderAPIInfo& rapiInfo = rapi.getAPIInfo();
 
-		if(
-			!rapiInfo.isFlagSet(RenderAPIFeatureFlag::Compute) ||
-			!rapiInfo.isFlagSet(RenderAPIFeatureFlag::LoadStore) ||
-			!rapiInfo.isFlagSet(RenderAPIFeatureFlag::TextureViews))
+		//if(
+		//	!rapiInfo.isFlagSet(RenderAPIFeatureFlag::Compute) ||
+		//	!rapiInfo.isFlagSet(RenderAPIFeatureFlag::LoadStore) ||
+		//	!rapiInfo.isFlagSet(RenderAPIFeatureFlag::TextureViews))
 		{
 			mFeatureSet = RenderBeastFeatureSet::DesktopMacOS;
 		}
@@ -589,7 +589,7 @@ namespace bs { namespace ct
 
 		viewDesc.triggerCallbacks = false;
 		viewDesc.runPostProcessing = false;
-		viewDesc.renderingReflections = true;
+		viewDesc.capturingReflections = true;
 		viewDesc.encodeDepth = settings.encodeDepth;
 		viewDesc.depthEncodeNear = settings.depthEncodeNear;
 		viewDesc.depthEncodeFar = settings.depthEncodeFar;

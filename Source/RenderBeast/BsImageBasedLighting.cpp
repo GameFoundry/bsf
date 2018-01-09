@@ -257,7 +257,7 @@ namespace bs { namespace ct
 		gTiledImageBasedLightingParamDef.gFramebufferSize.set(mParamBuffer, framebufferSize);
 
 		mReflProbeParamBuffer.populate(sceneInfo.skybox, probeData.getNumProbes(), sceneInfo.reflProbeCubemapsTex, 
-			viewProps.renderingReflections);
+			viewProps.capturingReflections);
 
 		mParamBuffer->flushToGPU();
 		mReflProbeParamBuffer.buffer->flushToGPU();

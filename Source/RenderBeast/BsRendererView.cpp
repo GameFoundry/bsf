@@ -581,7 +581,7 @@ namespace bs { namespace ct
 			const auto& viewProps = mViews[i]->getProperties();
 
 			// Don't recursively render reflection probes when generating reflection probe maps
-			if (viewProps.renderingReflections)
+			if (viewProps.capturingReflections)
 				continue;
 
 			mViews[i]->calculateVisibility(sceneInfo.reflProbeWorldBounds, mVisibility.reflProbes);

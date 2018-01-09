@@ -110,7 +110,7 @@ namespace bs { namespace ct
 		 * Determines if the view is currently rendering reflection probes. This ensures the systems can disable refl.
 		 * probe reads in order to prevent incorrect rendering (since probes won't yet have any data).
 		 */
-		bool renderingReflections : 1;
+		bool capturingReflections : 1;
 
 		/** 
 		 * When enabled the alpha channel of the final render target will be populated with an encoded depth value. 

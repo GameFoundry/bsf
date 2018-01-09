@@ -94,7 +94,7 @@ technique DeferredIBLFinalize
 								
 				float2 envBRDF = gPreintegratedEnvBRDF.SampleLevel(gPreintegratedEnvBRDFSamp, float2(NoV, surfaceData.roughness), 0).rg;
 				
-				return float4(radiance * specularColor * envBRDF.x + envBRDF.y, 0.0f);
+				return float4(radiance * (specularColor * envBRDF.x + envBRDF.y), 0.0f);
 			}
 			else
 				return float4(0.0f, 0.0f, 0.0f, 0.0f);

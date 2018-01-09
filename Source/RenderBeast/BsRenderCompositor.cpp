@@ -618,7 +618,7 @@ namespace bs { namespace ct
 	{
 		SPtr<RenderTexture> outputRT;
 
-		bool tiledDeferredSupported = inputs.featureSet == RenderBeastFeatureSet::Desktop;
+		bool tiledDeferredSupported = inputs.featureSet != RenderBeastFeatureSet::DesktopMacOS;
 		if(tiledDeferredSupported)
 		{
 			RCNodeTiledDeferredLighting* tileDeferredNode = static_cast<RCNodeTiledDeferredLighting*>(inputs.inputNodes[2]);
@@ -662,7 +662,8 @@ namespace bs { namespace ct
 		// Render unshadowed lights
 		if(!tiledDeferredSupported)
 		{
-			rapi.setRenderTarget(outputRT, FBT_DEPTH | FBT_STENCIL, RT_COLOR0 | RT_DEPTH_STENCIL);
+			rapi.setRenderTarget(outputRT, FBT_DEPTH | FBT_STENCIL, RT_DEPTH_STENCIL);
+			rapi.clearRenderTarget(FBT_COLOR, Color::ZERO);
 
 			for (UINT32 i = 0; i < (UINT32)LightType::Count; i++)
 			{
@@ -757,7 +758,8 @@ namespace bs { namespace ct
 		deps.push_back(RCNodeGBuffer::getNodeId());
 		deps.push_back(RCNodeSceneDepth::getNodeId());
 
-		if(gRenderBeast()->getFeatureSet() == RenderBeastFeatureSet::DesktopMacOS)
+		bool tiledDeferredSupported = gRenderBeast()->getFeatureSet() != RenderBeastFeatureSet::DesktopMacOS;
+		if(!tiledDeferredSupported)
 		{
 			deps.push_back(RCNodeLightAccumulation::getNodeId());
 		}
@@ -814,7 +816,7 @@ namespace bs { namespace ct
 
 		ReflProbeParamBuffer reflProbeParams;
 		reflProbeParams.populate(inputs.scene.skybox, probeData.getNumProbes(), inputs.scene.reflProbeCubemapsTex,
-			viewProps.renderingReflections);
+			viewProps.capturingReflections);
 
 		// Prepare the texture for refl. probe and skybox rendering
 		{
@@ -852,7 +854,7 @@ namespace bs { namespace ct
 			}
 		}
 
-		if (viewProps.renderingReflections)
+		if (!viewProps.capturingReflections)
 		{
 			// Render refl. probes
 			UINT32 numProbes = probeData.getNumProbes();
@@ -1199,7 +1201,7 @@ namespace bs { namespace ct
 		// Prepare refl. probe param buffer
 		ReflProbeParamBuffer reflProbeParamBuffer;
 		reflProbeParamBuffer.populate(sceneInfo.skybox, visibleReflProbeData.getNumProbes(), sceneInfo.reflProbeCubemapsTex, 
-			viewProps.renderingReflections);
+			viewProps.capturingReflections);
 
 		SPtr<Texture> skyFilteredRadiance;
 		if(sceneInfo.skybox)
