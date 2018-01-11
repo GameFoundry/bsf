@@ -420,21 +420,21 @@ namespace bs
 			return;
 		}
 
-		if (target->mProperties.getNumSamples() > 0 && mProperties.getNumSamples() != target->mProperties.getNumSamples())
+		if (target->mProperties.getNumSamples() > 1 && mProperties.getNumSamples() != target->mProperties.getNumSamples())
 		{
 			LOGERR("When copying to a multisampled texture, source texture must have the same number of samples.");
 			return;
 		}
 
-		if (desc.dstFace >= mProperties.getNumFaces())
+		if (desc.srcFace >= mProperties.getNumFaces())
 		{
-			LOGERR("Invalid destination face index.");
+			LOGERR("Invalid source face index.");
 			return;
 		}
 
-		if (desc.srcFace >= target->mProperties.getNumFaces())
+		if (desc.dstFace >= target->mProperties.getNumFaces())
 		{
-			LOGERR("Invalid source face index.");
+			LOGERR("Invalid destination face index.");
 			return;
 		}
 

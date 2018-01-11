@@ -459,7 +459,7 @@ namespace bs {	namespace ct
 			std::swap(mInfo.reflProbes[probeId], mInfo.reflProbes[lastProbeId]);
 			std::swap(mInfo.reflProbeWorldBounds[probeId], mInfo.reflProbeWorldBounds[lastProbeId]);
 
-			probe->setRendererId(probeId);
+			lastProbe->setRendererId(probeId);
 		}
 
 		// Last element is the one we want to erase
