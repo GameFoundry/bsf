@@ -318,11 +318,6 @@ namespace bs { namespace ct
 			POOLED_RENDER_TEXTURE_DESC::create2D(SHADOW_MAP_FORMAT, size, size, TU_DEPTHSTENCIL));
 	}
 
-	ShadowMapAtlas::~ShadowMapAtlas()
-	{
-		GpuResourcePool::instance().release(mAtlas);
-	}
-
 	bool ShadowMapAtlas::addMap(UINT32 size, Rect2I& area, UINT32 border)
 	{
 		UINT32 sizeWithBorder = size + border * 2;
@@ -376,11 +371,6 @@ namespace bs { namespace ct
 			POOLED_RENDER_TEXTURE_DESC::createCube(SHADOW_MAP_FORMAT, size, size, TU_DEPTHSTENCIL));
 	}
 
-	ShadowCubemap::~ShadowCubemap()
-	{
-		GpuResourcePool::instance().release(mShadowMap);
-	}
-
 	SPtr<RenderTexture> ShadowCubemap::getTarget() const
 	{
 		return mShadowMap->renderTexture;
@@ -403,19 +393,15 @@ namespace bs { namespace ct
 		}
 	}
 
-	ShadowCascadedMap::~ShadowCascadedMap()
-	{
-		GpuResourcePool::instance().release(mShadowMap);
-	}
-
 	SPtr<RenderTexture> ShadowCascadedMap::getTarget(UINT32 cascadeIdx) const
 	{
 		return mTargets[cascadeIdx];
 	}
 
 	/** 
-	 * Provides a common for all types of shadow depth rendering to render the relevant objects into the depth map. Iterates
-	 * over all relevant objects in the scene, binds the relevant materials and renders the objects into the depth map.
+	 * Provides a common way for all types of shadow depth rendering to render the relevant objects into the depth map. 
+	 * Iterates over all relevant objects in the scene, binds the relevant materials and renders the objects into the depth
+	 * map.
 	 */
 	class ShadowRenderQueue
 	{

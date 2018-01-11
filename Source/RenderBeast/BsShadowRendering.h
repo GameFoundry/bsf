@@ -369,7 +369,6 @@ namespace bs { namespace ct
 	{
 	public:
 		ShadowMapAtlas(UINT32 size);
-		~ShadowMapAtlas();
 
 		/** 
 		 * Registers a new map in the shadow map atlas. Returns true if the map fits in the atlas, or false otherwise.
@@ -443,7 +442,6 @@ namespace bs { namespace ct
 	{
 	public:
 		ShadowCubemap(UINT32 size);
-		~ShadowCubemap();
 
 		/** Returns a render target encompassing all six faces of the shadow cubemap. */
 		SPtr<RenderTexture> getTarget() const;
@@ -454,7 +452,6 @@ namespace bs { namespace ct
 	{
 	public:
 		ShadowCascadedMap(UINT32 size);
-		~ShadowCascadedMap();
 
 		/** Returns a render target that allows rendering into a specific cascade of the cascaded shadow map. */
 		SPtr<RenderTexture> getTarget(UINT32 cascadeIdx) const;
