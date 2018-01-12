@@ -1044,10 +1044,22 @@ namespace bs { namespace ct
 					depthOffset = 0.0f;
 				}
 
+				SPtr<Texture> shadowMap;
+				UINT32 shadowMapFace = 0;
+				if(!isCSM)
+					shadowMap = mDynamicShadowMaps[shadowInfo->textureIdx].getTexture();
+				else
+				{
+					shadowMap = mCascadedShadowMaps[shadowInfo->textureIdx].getTexture();
+					shadowMapFace = shadowInfo->cascadeIdx;
+				}
+
 				Matrix4 mixedToShadowUV = createMixedToShadowUVMatrix(viewP, viewInvVP, shadowInfo->normArea, 
 					depthScale, depthOffset, shadowInfo->shadowVPTransform);
 
-				Vector2 shadowMapSize((float)shadowInfo->area.width, (float)shadowInfo->area.height);
+				auto shadowMapProps = shadowMap->getProperties();
+
+				Vector2 shadowMapSize((float)shadowMapProps.getWidth(), (float)shadowMapProps.getHeight());
 				float transitionScale = getFadeTransition(*light, shadowInfo->subjectBounds.getRadius(), 
 					shadowInfo->depthRange, shadowInfo->area.width);
 
@@ -1099,16 +1111,6 @@ namespace bs { namespace ct
 					mat->bind(perViewBuffer);
 
 					drawNearFarPlanes(near.z, far.z, shadowInfo->cascadeIdx != 0);
-				}
-
-				SPtr<Texture> shadowMap;
-				UINT32 shadowMapFace = 0;
-				if(!isCSM)
-					shadowMap = mDynamicShadowMaps[shadowInfo->textureIdx].getTexture();
-				else
-				{
-					shadowMap = mCascadedShadowMaps[shadowInfo->textureIdx].getTexture();
-					shadowMapFace = shadowInfo->cascadeIdx;
 				}
 
 				gShadowProjectParamsDef.gFace.set(shadowParamBuffer, (float)shadowMapFace);
