@@ -24,6 +24,7 @@ namespace BansheeEditor
         private GUISliderField spotFalloffAngleField = new GUISliderField(1, 180, new LocEdString("Spot falloff angle"));
         private GUIToggleField autoAttenuationField = new GUIToggleField(new LocEdString("Use auto. attenuation"));
         private GUIToggleField castShadowField = new GUIToggleField(new LocEdString("Cast shadow"));
+        private GUISliderField shadowBiasField = new GUISliderField(-1.0f, 1.0f, new LocEdString("Shadow bias"));
 
         private InspectableState modifyState;
 
@@ -38,7 +39,7 @@ namespace BansheeEditor
                 {
                     light.Type = (LightType)x;
 
-                    ToggleTypeSpecificFields((LightType) x, light.UseAutoAttenuation);
+                    ToggleTypeSpecificFields((LightType) x, light.UseAutoAttenuation, light.CastsShadow);
                 };
 
                 colorField.OnChanged += x =>
@@ -69,6 +70,7 @@ namespace BansheeEditor
                 castShadowField.OnChanged += x =>
                 {
                     light.CastsShadow = x;
+                    ToggleTypeSpecificFields(light.Type, light.UseAutoAttenuation, x);
                     MarkAsModified();
                     ConfirmModify();
                 };
@@ -76,10 +78,13 @@ namespace BansheeEditor
                 autoAttenuationField.OnChanged += x =>
                 {
                     light.UseAutoAttenuation = x;
-                    ToggleTypeSpecificFields(light.Type, x);
+                    ToggleTypeSpecificFields(light.Type, x, light.CastsShadow);
                     MarkAsModified();
                     ConfirmModify();
                 };
+
+                shadowBiasField.OnChanged += x => { light.ShadowBias = x; MarkAsModified(); };
+                shadowBiasField.OnFocusLost += ConfirmModify;
 
                 Layout.AddElement(lightTypeField);
                 Layout.AddElement(colorField);
@@ -91,7 +96,7 @@ namespace BansheeEditor
                 Layout.AddElement(autoAttenuationField);
                 Layout.AddElement(castShadowField);
 
-                ToggleTypeSpecificFields(light.Type, light.UseAutoAttenuation);
+                ToggleTypeSpecificFields(light.Type, light.UseAutoAttenuation, light.CastsShadow);
             }
         }
 
@@ -104,7 +109,7 @@ namespace BansheeEditor
 
             LightType lightType = light.Type;
             if (lightTypeField.Value != (ulong)lightType || autoAttenuationField.Value != light.UseAutoAttenuation)
-                ToggleTypeSpecificFields(lightType, light.UseAutoAttenuation);
+                ToggleTypeSpecificFields(lightType, light.UseAutoAttenuation, light.CastsShadow);
 
             lightTypeField.Value = (ulong)lightType;
             colorField.Value = light.Color;
@@ -115,6 +120,7 @@ namespace BansheeEditor
             spotFalloffAngleField.Value = light.SpotAngleFalloff.Degrees;
             autoAttenuationField.Value = light.UseAutoAttenuation;
             castShadowField.Value = light.CastsShadow;
+            shadowBiasField.Value = light.ShadowBias;
 
             InspectableState oldState = modifyState;
             if (modifyState.HasFlag(InspectableState.Modified))
@@ -128,7 +134,8 @@ namespace BansheeEditor
         /// </summary>
         /// <param name="type">Light type to show GUI elements for.</param>
         /// <param name="physBasedAttenuation">Determines is physically based attenuation enabled.</param>
-        private void ToggleTypeSpecificFields(LightType type, bool physBasedAttenuation)
+        /// <param name="castsShadows">Determines if shadow specific options should be shown.</param>
+        private void ToggleTypeSpecificFields(LightType type, bool physBasedAttenuation, bool castsShadows)
         {
             if (type == LightType.Directional)
             {
@@ -151,6 +158,8 @@ namespace BansheeEditor
                 spotFalloffAngleField.Active = true;
                 autoAttenuationField.Active = true;
             }
+
+            shadowBiasField.Active = castsShadows;
         }
 
         /// <summary>

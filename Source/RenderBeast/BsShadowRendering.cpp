@@ -1401,7 +1401,8 @@ namespace bs { namespace ct
 		mapInfo.depthBias = getDepthBias(*light, light->getBounds().getRadius(), mapInfo.depthRange, options.mapSize);
 		mapInfo.subjectBounds = light->getBounds();
 
-		Matrix4 proj = Matrix4::projectionPerspective(Degree(90.0f), 1.0f, 0.05f, light->getAttenuationRadius());
+		// Note: Projecting on positive Z axis, because cubemaps use a left-handed coordinate system
+		Matrix4 proj = Matrix4::projectionPerspective(Degree(90.0f), 1.0f, 0.05f, light->getAttenuationRadius(), true);
 		ConvexVolume localFrustum(proj);
 
 		RenderAPI& rapi = RenderAPI::instance();
@@ -1426,8 +1427,6 @@ namespace bs { namespace ct
 		gShadowParamsDef.gInvDepthRange.set(shadowParamsBuffer, 1.0f / mapInfo.depthRange);
 		gShadowParamsDef.gMatViewProj.set(shadowParamsBuffer, Matrix4::IDENTITY);
 		gShadowParamsDef.gNDCZToDeviceZ.set(shadowParamsBuffer, RendererView::getNDCZToDeviceZ());
-
-		Matrix4 viewOffsetMat = Matrix4::translation(-light->getTransform().getPosition());
 
 		ConvexVolume frustums[6];
 		Vector<Plane> boundingPlanes;
@@ -1462,9 +1461,12 @@ namespace bs { namespace ct
 			}
 
 			Vector3 right = Vector3::cross(up, forward);
-			Matrix3 viewRotationMat = Matrix3(right, up, -forward);
+			Matrix3 viewRotationMat = Matrix3(right, up, forward);
 
-			Matrix4 view = Matrix4(viewRotationMat) * viewOffsetMat;
+			Vector3 lightPos = light->getTransform().getPosition();
+			Matrix4 viewOffsetMat = Matrix4::translation(-lightPos);
+
+			Matrix4 view = Matrix4(viewRotationMat.transpose()) * viewOffsetMat;
 			mapInfo.shadowVPTransforms[i] = proj * view;
 
 			Matrix4 shadowViewProj = adjustedProj * view;
@@ -1472,7 +1474,8 @@ namespace bs { namespace ct
 
 			// Calculate world frustum for culling
 			const Vector<Plane>& frustumPlanes = localFrustum.getPlanes();
-			Matrix4 worldMatrix = view.transpose();
+
+			Matrix4 worldMatrix = Matrix4::translation(lightPos) * Matrix4(viewRotationMat);
 
 			Vector<Plane> worldPlanes(frustumPlanes.size());
 			UINT32 j = 0;
@@ -1808,7 +1811,7 @@ namespace bs { namespace ct
 
 	float ShadowRendering::getDepthBias(const Light& light, float radius, float depthRange, UINT32 mapSize)
 	{
-		const static float RADIAL_LIGHT_BIAS = 0.00005f;
+		const static float RADIAL_LIGHT_BIAS = 0.0005f;
 		const static float SPOT_DEPTH_BIAS = 0.01f;
 		const static float DIR_DEPTH_BIAS = 0.5f;
 		const static float DEFAULT_RESOLUTION = 512.0f;

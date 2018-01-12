@@ -56,13 +56,16 @@ namespace bs
 		bool getCastsShadow() const { return mCastsShadows; }
 
 		/** 
-		 * Shadow bias determines shadow accuracy. Low bias values mean that shadows start closer near their caster surface
-		 * but will result in more shadowing artifacts (shadow acne). Larger values reduce shadow acne but caster may appear
-		 * as floating on air as nearby part of the shadow is cut off (peter paning).
+		 * Shadow bias determines offset at which the shadows are rendered from the shadow caster. Bias value of 0 means
+		 * the shadow will be renderered exactly at the casters position. If your geometry has thin areas this will
+		 * produce an artifact called shadow acne, in which case you can increase the shadow bias value to eliminate it. 
+		 * Note that increasing the shadow bias will on the other hand make the shadow be offset from the caster and may
+		 * make the caster appear as if floating (Peter Panning artifact). Neither is perfect, so it is preferable to ensure
+		 * all your geometry has thickness and keep the bias at zero, or even at negative values.
 		 * 
-		 * Default value is 0.5. Must be in range [0, 1].
+		 * Default value is 0.5. Should be in rough range [-1, 1].
 		 */
-		void setShadowBias(float bias) { mShadowBias = std::max(std::min(bias, 1.0f), 0.0f); _markCoreDirty(); }
+		void setShadowBias(float bias) { mShadowBias = bias; _markCoreDirty(); }
 
 		/** @copydoc setShadowBias() */
 		float getShadowBias() const { return mShadowBias; }

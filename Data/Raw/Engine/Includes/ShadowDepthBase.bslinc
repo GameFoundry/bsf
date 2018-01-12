@@ -6,6 +6,12 @@ mixin ShadowDepthBase
 	mixin PerObjectData;
 	mixin VertexInput;
 
+	// Render back-faces to reduce shadow acne (assuming thick geometry everywhere)
+	raster
+	{
+		cull = cw;
+	};	
+	
 	code
 	{
 		struct ShadowVStoFS
