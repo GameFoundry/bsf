@@ -173,7 +173,7 @@ mixin ImageBasedLighting
 				return float4(probeSample.rgb, (1.0f - contribution));
 			}
 			
-			return float4(0, 0, 0, 0);
+			return float4(0, 0, 0, 1.0f);
 		}
 		
 		float getSpecularOcclusion(float NoV, float r, float ao)
