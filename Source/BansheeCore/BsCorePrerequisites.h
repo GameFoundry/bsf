@@ -209,6 +209,7 @@
 #endif
 
 #include "Localization/BsHString.h"
+#include "String/BsStringID.h"
 
 namespace bs 
 {

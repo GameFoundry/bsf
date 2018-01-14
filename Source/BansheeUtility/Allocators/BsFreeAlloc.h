@@ -2,8 +2,6 @@
 //**************** Copyright (c) 2017 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
-#include "Prerequisites/BsPrerequisitesUtil.h"
-
 namespace bs
 {
 	/** @addtogroup Internal-Utility

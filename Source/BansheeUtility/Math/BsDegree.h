@@ -2,7 +2,8 @@
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #pragma once
 
-#include "Prerequisites/BsPrerequisitesUtil.h"
+#include "Prerequisites/BsPlatformDefines.h"
+#include "Prerequisites/BsRTTIPrerequisites.h"
 
 namespace bs
 {

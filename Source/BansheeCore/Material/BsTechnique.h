@@ -6,6 +6,7 @@
 #include "Reflection/BsIReflectable.h"
 #include "CoreThread/BsCoreObject.h"
 #include "Material/BsShaderVariation.h"
+#include "String/BsStringID.h"
 
 namespace bs
 {

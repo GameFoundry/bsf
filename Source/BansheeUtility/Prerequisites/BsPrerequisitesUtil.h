@@ -273,7 +273,6 @@
 #include "Prerequisites/BsRTTIPrerequisites.h"
 
 #include "String/BsString.h"
-#include "String/BsStringID.h"
 #include "Utility/BsMessageHandlerFwd.h"
 #include "Utility/BsFlags.h"
 #include "Utility/BsUtil.h"
