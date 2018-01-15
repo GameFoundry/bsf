@@ -217,8 +217,11 @@ namespace bs
 	void CJoint::destroyInternal()
 	{
 		// This should release the last reference and destroy the internal joint
-		mInternal->_setOwner(PhysicsOwnerType::None, nullptr);
-		mInternal = nullptr;
+		if(mInternal)
+		{
+			mInternal->_setOwner(PhysicsOwnerType::None, nullptr);
+			mInternal = nullptr;
+		}
 	}
 
 	void CJoint::notifyRigidbodyMoved(const HRigidbody& body)

@@ -72,7 +72,7 @@ namespace bs
 		RTTITypeBase* getRTTI() const override;
 
 	protected:
-		CPlaneCollider() {} // Serialization only
+		CPlaneCollider(); // Serialization only
 	};
 
 	 /** @} */

@@ -8,7 +8,9 @@ namespace bs
 {
 	CHingeJoint::CHingeJoint()
 		: CJoint(mDesc)
-	{ }
+	{
+		setName("HingeJoint");
+	}
 
 	CHingeJoint::CHingeJoint(const HSceneObject& parent)
 		: CJoint(parent, mDesc)

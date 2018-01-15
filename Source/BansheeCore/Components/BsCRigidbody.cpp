@@ -10,6 +10,13 @@ using namespace std::placeholders;
 
 namespace bs
 {
+	CRigidbody::CRigidbody()
+	{
+		setName("Rigidbody");
+
+		mNotifyFlags = (TransformChangedFlags)(TCF_Parent | TCF_Transform);
+	}
+
 	CRigidbody::CRigidbody(const HSceneObject& parent)
 		: Component(parent)
 	{
@@ -384,8 +391,11 @@ namespace bs
 	{
 		clearColliders();
 
-		mInternal->_setOwner(PhysicsOwnerType::None, nullptr);
-		mInternal = nullptr;
+		if(mInternal)
+		{
+			mInternal->_setOwner(PhysicsOwnerType::None, nullptr);
+			mInternal = nullptr;
+		}
 	}
 
 	void CRigidbody::triggerOnCollisionBegin(const CollisionDataRaw& data)

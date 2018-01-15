@@ -57,7 +57,7 @@ namespace bs
 		SPtr<Collider> createInternal() override;
 
 	protected:
-		Vector3 mExtents = Vector3::ZERO;
+		Vector3 mExtents = Vector3::ONE;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -68,7 +68,7 @@ namespace bs
 		RTTITypeBase* getRTTI() const override;
 
 	protected:
-		CBoxCollider() {} // Serialization only
+		CBoxCollider(); // Serialization only
 	};
 
 	 /** @} */

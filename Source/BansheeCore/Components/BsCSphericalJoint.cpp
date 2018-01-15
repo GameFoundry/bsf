@@ -8,7 +8,9 @@ namespace bs
 {
 	CSphericalJoint::CSphericalJoint()
 		: CJoint(mDesc)
-	{ }
+	{
+		setName("SphericalJoint");
+	}
 
 	CSphericalJoint::CSphericalJoint(const HSceneObject& parent)
 		: CJoint(parent, mDesc)

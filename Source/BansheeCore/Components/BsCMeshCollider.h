@@ -63,7 +63,7 @@ namespace bs
 		RTTITypeBase* getRTTI() const override;
 
 	protected:
-		CMeshCollider() {} // Serialization only
+		CMeshCollider(); // Serialization only
 	};
 
 	 /** @} */

@@ -132,7 +132,7 @@ namespace bs
 		/** @copydoc Component::onTransformChanged() */
 		void onTransformChanged(TransformChangedFlags flags) override;
 
-    protected:
+	protected:
 		using Component::destroyInternal;
 
 		/** Creates the internal representation of the Collider for use by the component. */
@@ -202,8 +202,8 @@ namespace bs
 		RTTITypeBase* getRTTI() const override;
 
 	protected:
-		CCollider() {} // Serialization only
-     };
+		CCollider(); // Serialization only
+	 };
 
 	 /** @} */
 }

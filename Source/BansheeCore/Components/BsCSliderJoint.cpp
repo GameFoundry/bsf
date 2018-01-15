@@ -9,7 +9,9 @@ namespace bs
 {
 	CSliderJoint::CSliderJoint()
 		: CJoint(mDesc)
-	{ }
+	{
+		setName("SliderJoint");
+	}
 
 	CSliderJoint::CSliderJoint(const HSceneObject& parent)
 		: CJoint(parent, mDesc)

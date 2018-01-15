@@ -10,6 +10,13 @@ using namespace std::placeholders;
 
 namespace bs
 {
+	CCollider::CCollider()
+	{
+		setName("Collider");
+
+		mNotifyFlags = (TransformChangedFlags)(TCF_Parent | TCF_Transform);
+	}
+
 	CCollider::CCollider(const HSceneObject& parent)
 		: Component(parent)
 	{
@@ -205,8 +212,11 @@ namespace bs
 		mParent = nullptr;
 
 		// This should release the last reference and destroy the internal collider
-		mInternal->_setOwner(PhysicsOwnerType::None, nullptr);
-		mInternal = nullptr;
+		if(mInternal)
+		{
+			mInternal->_setOwner(PhysicsOwnerType::None, nullptr);
+			mInternal = nullptr;
+		}
 	}
 
 	void CCollider::updateParentRigidbody()

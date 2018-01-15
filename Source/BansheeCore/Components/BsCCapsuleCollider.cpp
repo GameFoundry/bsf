@@ -7,6 +7,11 @@
 
 namespace bs
 {
+	CCapsuleCollider::CCapsuleCollider()
+	{
+		setName("CapsuleCollider");
+	}
+
 	CCapsuleCollider::CCapsuleCollider(const HSceneObject& parent, float radius, float halfHeight)
 		: CCollider(parent), mRadius(radius), mHalfHeight(halfHeight)
 	{

@@ -181,7 +181,7 @@ namespace bs
 		RTTITypeBase* getRTTI() const override;
 
 	protected:
-		CCharacterController() {} // Serialization only
+		CCharacterController(); // Serialization only
 	 };
 
 	 /** @} */

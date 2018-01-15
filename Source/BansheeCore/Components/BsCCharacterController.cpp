@@ -9,6 +9,13 @@ using namespace std::placeholders;
 
 namespace bs
 {
+	CCharacterController::CCharacterController()
+	{
+		setName("CharacterController");
+
+		mNotifyFlags = TCF_Transform;
+	}
+
 	CCharacterController::CCharacterController(const HSceneObject& parent)
 		: Component(parent)
 	{
@@ -183,8 +190,11 @@ namespace bs
 	void CCharacterController::destroyInternal()
 	{
 		// This should release the last reference and destroy the internal controller
-		mInternal->_setOwner(PhysicsOwnerType::None, nullptr);
-		mInternal = nullptr;
+		if(mInternal)
+		{
+			mInternal->_setOwner(PhysicsOwnerType::None, nullptr);
+			mInternal = nullptr;
+		}
 	}
 
 	void CCharacterController::triggerOnColliderHit(const ControllerColliderCollision& value)

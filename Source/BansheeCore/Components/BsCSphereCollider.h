@@ -57,7 +57,7 @@ namespace bs
 		SPtr<Collider> createInternal() override;
 
 	protected:
-		float mRadius;
+		float mRadius = 1.0f;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -68,7 +68,7 @@ namespace bs
 		RTTITypeBase* getRTTI() const override;
 
 	protected:
-		CSphereCollider() {} // Serialization only
+		CSphereCollider(); // Serialization only
 	};
 
 	 /** @} */

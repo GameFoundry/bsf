@@ -95,7 +95,7 @@ namespace bs
 		RTTITypeBase* getRTTI() const override;
 
 	protected:
-		CDistanceJoint();// Serialization only
+		CDistanceJoint(); // Serialization only
 	};
 
 	 /** @} */

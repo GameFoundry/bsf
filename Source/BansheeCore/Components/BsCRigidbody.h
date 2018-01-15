@@ -234,7 +234,7 @@ namespace bs
 
 		/** 
 		 * Registers a new collider with the Rigidbody. This collider will then be used to calculate Rigidbody's geometry
-         * used for collisions, and optionally (depending on set flags) total mass, inertia tensors and center of mass.
+		 * used for collisions, and optionally (depending on set flags) total mass, inertia tensors and center of mass.
 		 */
 		void addCollider(const HCollider& collider);
 
@@ -308,7 +308,7 @@ namespace bs
 		RTTITypeBase* getRTTI() const override;
 
 	protected:
-		CRigidbody() {} // Serialization only
+		CRigidbody(); // Serialization only
 	};
 
 	/** @} */

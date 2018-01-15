@@ -86,7 +86,7 @@ namespace bs
 		RTTITypeBase* getRTTI() const override;
 
 	protected:
-		CCapsuleCollider() {} // Serialization only
+		CCapsuleCollider(); // Serialization only
 	};
 
 	 /** @} */

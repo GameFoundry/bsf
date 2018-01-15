@@ -9,7 +9,9 @@ namespace bs
 {
 	CFixedJoint::CFixedJoint() 
 		:CJoint(mDesc)
-	{ }
+	{
+		setName("FixedJoint");
+	}
 
 	CFixedJoint::CFixedJoint(const HSceneObject& parent)
 		: CJoint(parent, mDesc)

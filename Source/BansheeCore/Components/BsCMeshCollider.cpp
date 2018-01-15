@@ -8,6 +8,11 @@
 
 namespace bs
 {
+	CMeshCollider::CMeshCollider()
+	{
+		setName("MeshCollider");
+	}
+
 	CMeshCollider::CMeshCollider(const HSceneObject& parent)
 		: CCollider(parent)
 	{

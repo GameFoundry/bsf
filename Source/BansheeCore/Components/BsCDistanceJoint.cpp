@@ -8,7 +8,9 @@ namespace bs
 {
 	CDistanceJoint::CDistanceJoint()
 		: CJoint(mDesc)
-	{ }
+	{
+		setName("DistanceJoint");
+	}
 
 	CDistanceJoint::CDistanceJoint(const HSceneObject& parent)
 		: CJoint(parent, mDesc)

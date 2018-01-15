@@ -8,7 +8,9 @@ namespace bs
 {
 	CD6Joint::CD6Joint()
 		: CJoint(mDesc)
-	{ }
+	{
+		setName("D6Joint");
+	}
 
 	CD6Joint::CD6Joint(const HSceneObject& parent)
 		: CJoint(parent, mDesc)

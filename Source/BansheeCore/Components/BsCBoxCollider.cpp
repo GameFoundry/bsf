@@ -7,6 +7,11 @@
 
 namespace bs
 {
+	CBoxCollider::CBoxCollider()
+	{
+		setName("BoxCollider");
+	}
+
 	CBoxCollider::CBoxCollider(const HSceneObject& parent, const Vector3& extents)
 		: CCollider(parent), mExtents(extents)
 	{

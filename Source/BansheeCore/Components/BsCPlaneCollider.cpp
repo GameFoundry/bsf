@@ -7,6 +7,11 @@
 
 namespace bs
 {
+	CPlaneCollider::CPlaneCollider()
+	{
+		setName("PlaneCollider");
+	}
+
 	CPlaneCollider::CPlaneCollider(const HSceneObject& parent)
 		: CCollider(parent)
 	{

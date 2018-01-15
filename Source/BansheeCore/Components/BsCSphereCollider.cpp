@@ -7,6 +7,11 @@
 
 namespace bs
 {
+	CSphereCollider::CSphereCollider()
+	{
+		setName("SphereCollider");
+	}
+
 	CSphereCollider::CSphereCollider(const HSceneObject& parent, float radius)
 		: CCollider(parent), mRadius(radius)
 	{
