@@ -13,42 +13,42 @@ namespace BansheeEditor
     /// Types of icons that may be displayed on the tool bar.
     /// </summary>
     public enum ToolbarIcon // Note: Must match C++ enum ToolbarIcon
-	{
+    {
         NewCamera, NewRenderable, NewPointLight, NewDirLight, NewSpotLight, NewSceneObject, NewCube, NewSphere, NewCone, 
         NewQuad, NewMat, NewCSScript, NewShader, NewSpriteTex, Pause, Play, Step, Undo, Redo, OpenProject, SaveProject, 
         SaveScene
-	}
+    }
 
     /// <summary>
     /// Types of icons that may be displayed in the scene window.
     /// </summary>
     public enum SceneWindowIcon // Note: Must match C++ enum SceneWindowIcon
-	{
-		View, Move, Rotate, Scale, Pivot, Center, Local, World, MoveSnap, RotateSnap
-	}
+    {
+        View, Move, Rotate, Scale, Pivot, Center, Local, World, MoveSnap, RotateSnap
+    }
 
     /// <summary>
     /// Types of icons that may be displayed in the library window.
     /// </summary>
     public enum LibraryWindowIcon // Note: Must match C++ enum LibraryWindowIcon
-	{
-		Home, Up, Clear, Options
-	}
+    {
+        Home, Up, Clear, Options
+    }
 
     /// <summary>
     /// Types of icons that may be displayed in the inspector window.
     /// </summary>
-	public enum InspectorWindowIcon  // Note: Must match C++ enum InspectorWindowIcon
-	{
-		Create, Clone, Clear, Resize, Delete, MoveUp, MoveDown, Edit, Apply, Add, Cancel
-	}
+    public enum InspectorWindowIcon  // Note: Must match C++ enum InspectorWindowIcon
+    {
+        Create, Clone, Clear, Resize, Delete, MoveUp, MoveDown, Edit, Apply, Add, Cancel
+    }
 
     /// <summary>
     /// Types of icons that may be displayed for resources in the library window.
     /// </summary>
     public enum LibraryItemIcon // Note: Must match C++ enum ProjectIcon
-	{
-		Folder, Mesh, Font, Texture, PlainText, ScriptCode, SpriteTexture, Shader, ShaderInclude, Material, Prefab, GUISkin,
+    {
+        Folder, Mesh, Font, Texture, PlainText, ScriptCode, SpriteTexture, Shader, ShaderInclude, Material, Prefab, GUISkin,
         PhysicsMaterial, PhysicsMesh, AudioClip, AnimationClip
     }
 

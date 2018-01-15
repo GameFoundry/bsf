@@ -39,6 +39,7 @@ namespace BansheeEditor
             public GUIPanel panel;
             public Inspector inspector;
             public UInt64 instanceId;
+            public bool folded;
         }
 
         /// <summary>
@@ -191,6 +192,7 @@ namespace BansheeEditor
 
                 InspectorComponent data = new InspectorComponent();
                 data.instanceId = allComponents[i].InstanceId;
+                data.folded = false;
 
                 data.foldout = new GUIToggle(allComponents[i].GetType().Name, EditorStyles.Foldout);
 
@@ -675,6 +677,9 @@ namespace BansheeEditor
         {
             inspectorData.inspector.Persistent.SetBool(inspectorData.instanceId + "_Expanded", expanded);
             inspectorData.inspector.SetVisible(expanded);
+            inspectorData.folded = !expanded;
+
+            UpdateDropAreas();
         }
 
         /// <summary>
@@ -890,7 +895,10 @@ namespace BansheeEditor
             for (int i = 0; i < inspectorComponents.Count; i++)
             {
                 dropAreas[i] = new Rect2I(0, yOffset, contentBounds.width, COMPONENT_SPACING);
-                yOffset += inspectorComponents[i].title.Bounds.height + inspectorComponents[i].panel.Bounds.height + COMPONENT_SPACING;
+                yOffset += inspectorComponents[i].title.Bounds.height + COMPONENT_SPACING;
+
+                if (!inspectorComponents[i].folded)
+                    yOffset += inspectorComponents[i].panel.Bounds.height;
             }
 
             dropAreas[dropAreas.Length - 1] = new Rect2I(0, yOffset, contentBounds.width, contentBounds.height - yOffset);
