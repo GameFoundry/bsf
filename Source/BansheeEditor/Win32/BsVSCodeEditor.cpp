@@ -259,7 +259,7 @@ namespace bs
 				if (SUCCEEDED(activeDocument->get_Selection(&selection)))
 				{
 					CComPtr<EnvDTE::TextSelection> textSelection;
-					if (SUCCEEDED(selection->QueryInterface(&textSelection)))
+					if (selection != nullptr && SUCCEEDED(selection->QueryInterface(&textSelection)))
 					{
 						textSelection->GotoLine(line, TRUE);
 					}
