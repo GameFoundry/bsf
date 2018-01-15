@@ -9,6 +9,13 @@ using namespace std::placeholders;
 
 namespace bs
 {
+	CAudioListener::CAudioListener()
+	{
+		setName("AudioListener");
+
+		mNotifyFlags = TCF_Transform;
+	}
+
 	CAudioListener::CAudioListener(const HSceneObject& parent)
 		: Component(parent)
 	{

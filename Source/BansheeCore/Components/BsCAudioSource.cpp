@@ -9,9 +9,15 @@ using namespace std::placeholders;
 
 namespace bs
 {
+	CAudioSource::CAudioSource()
+	{
+		setName("AudioSource");
+
+		mNotifyFlags = TCF_Transform;
+	}
+
 	CAudioSource::CAudioSource(const HSceneObject& parent)
-		: Component(parent), mVolume(1.0f), mPitch(1.0f), mLoop(false), mPriority(0), mMinDistance(1.0f), mAttenuation(1.0f)
-		, mPlayOnStart(true)
+		: Component(parent)
 	{
 		setName("AudioSource");
 

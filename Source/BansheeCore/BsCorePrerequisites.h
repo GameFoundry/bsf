@@ -329,6 +329,8 @@ namespace bs
 	class CLight;
 	class CAnimation;
 	class CBone;
+	class CAudioSource;
+	class CAudioListener;
 	class GpuPipelineParamInfo;
 	class MaterialParams;
 	template <class T> class TAnimationCurve;
@@ -664,6 +666,8 @@ namespace bs
 	typedef GameObjectHandle<CReflectionProbe> HReflectionProbe;
 	typedef GameObjectHandle<CSkybox> HSkybox;
 	typedef GameObjectHandle<CLightProbeVolume> HLightProbeVolume;
+	typedef GameObjectHandle<CAudioSource> HAudioSource;
+	typedef GameObjectHandle<CAudioListener> HAudioListener;
 
 	/** @} */
 }

@@ -83,7 +83,7 @@ namespace bs
 		RTTITypeBase* getRTTI() const override;
 
 	protected:
-		CAudioListener() {} // Serialization only
+		CAudioListener(); // Serialization only
 	};
 
 	 /** @} */

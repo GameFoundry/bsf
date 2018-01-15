@@ -163,13 +163,13 @@ namespace bs
 		Vector3 mVelocity = Vector3::ZERO;
 
 		HAudioClip mAudioClip;
-		float mVolume;
-		float mPitch;
-		bool mLoop;
-		UINT32 mPriority;
-		float mMinDistance;
-		float mAttenuation;
-		bool mPlayOnStart;
+		float mVolume = 1.0f;
+		float mPitch = 1.0f;
+		bool mLoop = false;
+		UINT32 mPriority = 0;
+		float mMinDistance = 1.0f;
+		float mAttenuation = 1.0f;
+		bool mPlayOnStart = true;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -180,7 +180,7 @@ namespace bs
 		RTTITypeBase* getRTTI() const override;
 
 	protected:
-		CAudioSource() {} // Serialization only
+		CAudioSource(); // Serialization only
 	 };
 
 	 /** @} */
