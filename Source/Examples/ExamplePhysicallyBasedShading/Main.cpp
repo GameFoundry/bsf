@@ -358,7 +358,7 @@ namespace bs
 		inputConfig->registerButton("Left", BC_A);
 		inputConfig->registerButton("Right", BC_D);
 		inputConfig->registerButton("Forward", BC_UP);
-		inputConfig->registerButton("Back", BC_BACK);
+		inputConfig->registerButton("Back", BC_DOWN);
 		inputConfig->registerButton("Left", BC_LEFT);
 		inputConfig->registerButton("Right", BC_RIGHT);
 		inputConfig->registerButton("FastMove", BC_LSHIFT);
