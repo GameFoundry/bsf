@@ -111,8 +111,27 @@ namespace bs
 		String newPathStr = newPath.toString();
 		if (std::rename(oldPathStr.c_str(), newPathStr.c_str()) == -1)
 		{
-			LOGERR(String(__FUNCTION__) + ": renaming " + oldPathStr + " to " + newPathStr +
-			       ": " + strerror(errno));
+			// Cross-filesystem copy is likely needed (for example, /tmp to Banshee install dir while copying assets)
+		    std::ifstream src(oldPathStr.c_str(), std::ios::binary);
+			std::ofstream dst(newPathStr.c_str(), std::ios::binary);
+			dst << src.rdbuf(); // First, copy
+			
+			// Error handling
+			src.close();
+			if (!src)
+			
+			{
+				LOGERR(String(__FUNCTION__) + ": renaming " + oldPathStr + " to " + newPathStr +
+						": " + strerror(errno));
+				return; // Do not remove source if we failed!
+			}
+
+			// Then, remove source file (hopefully succeeds)
+			if (std::remove(oldPathStr.c_str()) == -1)
+			{
+				LOGERR(String(__FUNCTION__) + ": renaming " + oldPathStr + " to " + newPathStr +
+						": " + strerror(errno));
+			}
 		}
 	}
 
