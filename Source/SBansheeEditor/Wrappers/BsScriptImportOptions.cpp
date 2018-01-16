@@ -42,6 +42,9 @@ namespace bs
 
 	MonoObject* ScriptImportOptions::create(const SPtr<ImportOptions>& importOptions)
 	{
+		if(!importOptions)
+			return nullptr;
+
 		UINT32 typeId = importOptions->getRTTI()->getRTTIId();
 		switch (typeId)
 		{

@@ -552,15 +552,10 @@ namespace bs
 		}
 
 		bool fileExists = FileSystem::isFile(filePath);
-		if(fileExists)
+		if(fileExists && !overwrite)
 		{
-			if(overwrite)
-				FileSystem::remove(filePath);
-			else
-			{
-				LOGERR("Another file exists at the specified location. Not saving.");
-				return;
-			}
+			LOGERR("Another file exists at the specified location. Not saving.");
+			return;
 		}
 
 		if (!resource->mKeepSourceData)
@@ -583,9 +578,35 @@ namespace bs
 		Path parentDir = filePath.getDirectory();
 		if (!FileSystem::exists(parentDir))
 			FileSystem::createDir(parentDir);
+
+		Path savePath;
+		if(fileExists)
+		{
+			// If a file exists, save to a temporary location, then copy over only after a save was successful. This guards
+			// against data loss in case the save process fails.
+
+			savePath = FileSystem::getTempDirectoryPath();
+			savePath.setFilename(UUIDGenerator::generateRandom().toString());
+
+			UINT32 safetyCounter = 0;
+			while(FileSystem::exists(savePath))
+			{
+				if(safetyCounter > 10)
+				{
+					LOGERR("Internal error. Unable to save resource due to not being able to find a unique filename.");
+					return;
+				}
+
+				savePath.setFilename(UUIDGenerator::generateRandom().toString());
+				safetyCounter++;
+			}
+
+		}
+		else
+			savePath = filePath;
 		
 		std::ofstream stream;
-		stream.open(filePath.toPlatformString().c_str(), std::ios::out | std::ios::binary);
+		stream.open(savePath.toPlatformString().c_str(), std::ios::out | std::ios::binary);
 		if (stream.fail())
 			LOGWRN("Failed to save file: \"" + filePath.toString() + "\". Error: " + strerror(errno) + ".");
 	
@@ -620,6 +641,12 @@ namespace bs
 
 		stream.close();
 		stream.clear();
+
+		if (fileExists)
+		{
+			FileSystem::remove(filePath);
+			FileSystem::move(savePath, filePath);
+		}
 	}
 
 	void Resources::save(const HResource& resource, bool compress)
