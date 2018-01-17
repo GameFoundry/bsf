@@ -7,6 +7,8 @@
 set(bison_INSTALL_DIRS ${PROJECT_SOURCE_DIR}/../Dependencies/tools/bison CACHE PATH "")
 
 message(STATUS "Looking for bison installation...")
+
+find_program(bison_EXECUTABLE NAMES bison bin/bison PATHS ${bison_INSTALL_DIRS} NO_DEFAULT_PATH)
 find_program(bison_EXECUTABLE NAMES bison bin/bison PATHS ${bison_INSTALL_DIRS})
 
 if(bison_EXECUTABLE)

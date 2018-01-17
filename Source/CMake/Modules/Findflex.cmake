@@ -7,6 +7,8 @@
 set(flex_INSTALL_DIRS ${PROJECT_SOURCE_DIR}/../Dependencies/tools/flex CACHE PATH "")
 
 message(STATUS "Looking for flex installation...")
+
+find_program(flex_EXECUTABLE NAMES flex bin/flex PATHS ${flex_INSTALL_DIRS} NO_DEFAULT_PATH)
 find_program(flex_EXECUTABLE NAMES flex bin/flex PATHS ${flex_INSTALL_DIRS})
 
 if(flex_EXECUTABLE)
