@@ -178,8 +178,21 @@ namespace bs { namespace ct
 		{
 			UINT8* data = (UINT8*)mapstagingbuffer(flags, face, mipLevel, rowPitch, slicePitch);
 			lockedArea.setExternalBuffer(data);
-			lockedArea.setRowPitch(rowPitch);
-			lockedArea.setSlicePitch(slicePitch);
+
+			if (PixelUtil::isCompressed(mProperties.getFormat()))
+			{
+				// Doesn't make sense to provide pitch values in pixels in this case
+				lockedArea.setRowPitch(0);
+				lockedArea.setSlicePitch(0);
+			}
+			else
+			{
+				UINT32 bytesPerPixel = PixelUtil::getNumElemBytes(mProperties.getFormat());
+
+				lockedArea.setRowPitch(rowPitch / bytesPerPixel);
+				lockedArea.setSlicePitch(slicePitch / bytesPerPixel);
+			}
+
 			mLockedForReading = true;
 		}
 		else
@@ -188,8 +201,20 @@ namespace bs { namespace ct
 			{
 				UINT8* data = (UINT8*)map(mTex, flags, face, mipLevel, rowPitch, slicePitch);
 				lockedArea.setExternalBuffer(data);
-				lockedArea.setRowPitch(rowPitch);
-				lockedArea.setSlicePitch(slicePitch);
+
+				if (PixelUtil::isCompressed(mProperties.getFormat()))
+				{
+					// Doesn't make sense to provide pitch values in pixels in this case
+					lockedArea.setRowPitch(0);
+					lockedArea.setSlicePitch(0);
+				}
+				else
+				{
+					UINT32 bytesPerPixel = PixelUtil::getNumElemBytes(mProperties.getFormat());
+
+					lockedArea.setRowPitch(rowPitch / bytesPerPixel);
+					lockedArea.setSlicePitch(slicePitch / bytesPerPixel);
+				}
 			}
 			else
 				lockedArea.setExternalBuffer((UINT8*)mapstaticbuffer(lockedArea, mipLevel, face));
@@ -676,9 +701,8 @@ namespace bs { namespace ct
 			BS_EXCEPT(RenderingAPIException, "D3D11 device cannot map texture\nError Description:" + errorDescription);
 		}
 
-		UINT32 bytesPerPixel = PixelUtil::getNumElemBytes(mProperties.getFormat());
-		rowPitch = pMappedResource.RowPitch / bytesPerPixel;
-		slicePitch = pMappedResource.DepthPitch / bytesPerPixel;
+		rowPitch = pMappedResource.RowPitch;
+		slicePitch = pMappedResource.DepthPitch;
 
 		return pMappedResource.pData;
 	}

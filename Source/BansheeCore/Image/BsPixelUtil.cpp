@@ -2402,9 +2402,6 @@ namespace bs
 		interimData.allocateInternalBuffer();
 		bulkPixelConversion(src, interimData);
 
-		if(interimFormat != PF_RGBA32F)
-			flipComponentOrder(interimData);
-
 		nvtt::InputOptions io;
 		io.setTextureLayout(nvtt::TextureType_2D, src.getWidth(), src.getHeight());
 		io.setMipmapGeneration(false);

@@ -3,6 +3,7 @@
 #include "BsD3D11Mappings.h"
 #include "Debug/BsDebug.h"
 #include "Error/BsException.h"
+#include "Math/BsMath.h"
 
 namespace bs { namespace ct
 {
@@ -907,21 +908,21 @@ namespace bs { namespace ct
 
 	UINT32 D3D11Mappings::getSizeInBytes(PixelFormat pf, UINT32 width, UINT32 height)
 	{
-		if(width == 0 || height == 0)
-			return 0;
-
 		if(PixelUtil::isCompressed(pf))
 		{
+			UINT32 blockWidth = Math::divideAndRoundUp(width, 4U);
+			UINT32 blockHeight = Math::divideAndRoundUp(height, 4U);
+
 			// D3D wants the width of one row of cells in bytes
 			if (pf == PF_BC1 || pf == PF_BC4)
 			{
 				// 64 bits (8 bytes) per 4x4 block
-				return std::max<UINT32>(1, width / 4) * std::max<UINT32>(1, height / 4) * 8;
+				return blockWidth * blockHeight * 8;
 			}
 			else
 			{
 				// 128 bits (16 bytes) per 4x4 block
-				return std::max<UINT32>(1, width / 4) * std::max<UINT32>(1, height / 4) * 16;
+				return blockWidth * blockHeight * 16;
 			}
 		}
 		else
