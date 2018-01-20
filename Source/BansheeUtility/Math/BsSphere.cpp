@@ -27,12 +27,10 @@ namespace bs
 
 	void Sphere::transform(const Matrix4& matrix)
 	{
-		Matrix3 rotMatrix;
-
 		float lengthSqrd[3];
 		for(UINT32 i = 0; i < 3; i++)
 		{
-			Vector3 column = rotMatrix.getColumn(i);
+			Vector3 column = matrix.getColumn(i);
 			lengthSqrd[i] = column.dot(column);
 		}
 
