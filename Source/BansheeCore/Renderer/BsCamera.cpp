@@ -19,7 +19,7 @@ namespace bs
 	const float CameraBase::INFINITE_FAR_PLANE_ADJUST = 0.00001f;
 
 	CameraBase::CameraBase()
-		: mLayers(0xFFFFFFFFFFFFFFFF), mProjType(PT_PERSPECTIVE), mHorzFOV(Degree(90.0f)), mFarDist(1000.0f)
+		: mLayers(0xFFFFFFFFFFFFFFFF), mProjType(PT_PERSPECTIVE), mHorzFOV(Degree(90.0f)), mFarDist(500.0f)
 		, mNearDist(0.05f), mAspect(1.33333333333333f), mOrthoHeight(5), mPriority(0), mCustomViewMatrix(false)
 		, mCustomProjMatrix(false), mMSAA(1), mFrustumExtentsManuallySet(false), mProjMatrixRS(BsZero), mProjMatrix(BsZero)
 		, mViewMatrix(BsZero), mProjMatrixRSInv(BsZero), mProjMatrixInv(BsZero), mViewMatrixInv(BsZero)

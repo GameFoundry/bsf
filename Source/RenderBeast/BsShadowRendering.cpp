@@ -376,17 +376,17 @@ namespace bs { namespace ct
 		return mShadowMap->renderTexture;
 	}
 
-	ShadowCascadedMap::ShadowCascadedMap(UINT32 size)
-		:ShadowMapBase(size)
+	ShadowCascadedMap::ShadowCascadedMap(UINT32 size, UINT32 numCascades)
+		:ShadowMapBase(size), mNumCascades(numCascades), mTargets(numCascades), mShadowInfos(numCascades)
 	{
 		mShadowMap = GpuResourcePool::instance().get(POOLED_RENDER_TEXTURE_DESC::create2D(SHADOW_MAP_FORMAT, size, size, 
-			TU_DEPTHSTENCIL, 0, false, NUM_CASCADE_SPLITS));
+			TU_DEPTHSTENCIL, 0, false, numCascades));
 
 		RENDER_TEXTURE_DESC rtDesc;
 		rtDesc.depthStencilSurface.texture = mShadowMap->texture;
 		rtDesc.depthStencilSurface.numFaces = 1;
 
-		for (UINT32 i = 0; i < NUM_CASCADE_SPLITS; ++i)
+		for (UINT32 i = 0; i < mNumCascades; ++i)
 		{
 			rtDesc.depthStencilSurface.face = i;
 			mTargets[i] = RenderTexture::create(rtDesc);
@@ -929,9 +929,11 @@ namespace bs { namespace ct
 		return shadowMapTfrm * mixedToShadow;
 	}
 
-	void ShadowRendering::renderShadowOcclusion(const RendererView& view, UINT32 shadowQuality, 
-		const RendererLight& rendererLight, GBufferTextures gbuffer) const
+	void ShadowRendering::renderShadowOcclusion(const RendererView& view, const RendererLight& rendererLight, 
+		GBufferTextures gbuffer) const
 	{
+		UINT32 shadowQuality = view.getRenderSettings().shadowSettings.shadowFilteringQuality;
+
 		const Light* light = rendererLight.internal;
 		UINT32 lightIdx = light->getRendererId();
 
@@ -1022,7 +1024,7 @@ namespace bs { namespace ct
 
 					// Render cascades in far to near order.
 					// Note: If rendering other non-cascade maps they should be rendered after cascades.
-					for (INT32 i = NUM_CASCADE_SPLITS - 1; i >= 0; i--)
+					for (INT32 i = cascadedMap.getNumCascades() - 1; i >= 0; i--)
 						shadowInfos.push_back(&cascadedMap.getShadowInfo(i));
 				}
 			}
@@ -1034,7 +1036,7 @@ namespace bs { namespace ct
 				// Depth range scale is already baked into the ortho projection matrix, so avoid doing it here
 				if (isCSM)
 				{
-					// Need to map from NDC depth to [0, 1]
+					// Need to map from API-specific clip space depth to [0, 1] range
 					depthScale = 1.0f / (rapiInfo.getMaximumDepthInputValue() - rapiInfo.getMinimumDepthInputValue());
 					depthOffset = -rapiInfo.getMinimumDepthInputValue() * depthScale;
 				}
@@ -1144,6 +1146,7 @@ namespace bs { namespace ct
 		// of the shadow map. A different approach would be to generate a bounding box and then both adjust the aspect
 		// ratio (and therefore dimensions) of the shadow map, as well as rotate the camera so the visible area best fits
 		// in the map. It remains to be seen if this is viable.
+		//  - Note2: Actually both of these will likely have serious negative impact on shadow stability.
 		const SceneInfo& sceneInfo = scene.getSceneInfo();
 
 		const RendererLight& rendererLight = sceneInfo.directionalLights[lightIdx];
@@ -1163,11 +1166,12 @@ namespace bs { namespace ct
 		shadowInfo.area = Rect2I(0, 0, mapSize, mapSize);
 		shadowInfo.updateNormArea(mapSize);
 
+		UINT32 numCascades = view.getRenderSettings().shadowSettings.numCascades;
 		for (UINT32 i = 0; i < (UINT32)mCascadedShadowMaps.size(); i++)
 		{
 			ShadowCascadedMap& shadowMap = mCascadedShadowMaps[i];
 
-			if (!shadowMap.isUsed() && shadowMap.getSize() == mapSize)
+			if (!shadowMap.isUsed() && shadowMap.getSize() == mapSize && shadowMap.getNumCascades() == numCascades)
 			{
 				shadowInfo.textureIdx = i;
 				shadowMap.markAsUsed();
@@ -1179,7 +1183,7 @@ namespace bs { namespace ct
 		if (shadowInfo.textureIdx == (UINT32)-1)
 		{
 			shadowInfo.textureIdx = (UINT32)mCascadedShadowMaps.size();
-			mCascadedShadowMaps.push_back(ShadowCascadedMap(mapSize));
+			mCascadedShadowMaps.push_back(ShadowCascadedMap(mapSize, numCascades));
 
 			ShadowCascadedMap& shadowMap = mCascadedShadowMaps.back();
 			shadowMap.markAsUsed();
@@ -1188,25 +1192,37 @@ namespace bs { namespace ct
 		ShadowCascadedMap& shadowMap = mCascadedShadowMaps[shadowInfo.textureIdx];
 
 		Quaternion lightRotation(BsIdentity);
-		lightRotation.lookRotation(-tfrm.getRotation().zAxis());
+		lightRotation.lookRotation(lightDir, Vector3::UNIT_Y);
 
-		Matrix4 viewMat = Matrix4::view(tfrm.getPosition(), lightRotation);
-		for (UINT32 i = 0; i < NUM_CASCADE_SPLITS; ++i)
+		for (UINT32 i = 0; i < numCascades; ++i)
 		{
 			Sphere frustumBounds;
-			ConvexVolume cascadeCullVolume = getCSMSplitFrustum(view, -lightDir, i, NUM_CASCADE_SPLITS, frustumBounds);
+			ConvexVolume cascadeCullVolume = getCSMSplitFrustum(view, lightDir, i, numCascades, frustumBounds);
 
-			// Move the light at the boundary of the subject frustum, so we don't waste depth range
-			Vector3 frustumCenterViewSpace = viewMat.multiply(frustumBounds.getCenter());
-			float minSubjectDepth = -frustumCenterViewSpace.z - frustumBounds.getRadius();
-			float maxSubjectDepth = minSubjectDepth + frustumBounds.getRadius() * 2.0f;
+			// Make sure the size of the projected area is in multiples of shadow map pixel size (for stability)
+			float worldUnitsPerTexel = frustumBounds.getRadius() * 2.0f / shadowMap.getSize();
 
-			shadowInfo.depthRange = maxSubjectDepth - minSubjectDepth;
+			float orthoSize = floor(frustumBounds.getRadius() * 2.0f / worldUnitsPerTexel) * worldUnitsPerTexel * 0.5f;
+			worldUnitsPerTexel = orthoSize * 2.0f / shadowMap.getSize();
+			
+			// Snap caster origin to the shadow map pixel grid, to ensure shadow map stability
+			Vector3 casterOrigin = frustumBounds.getCenter();
+			Matrix4 shadowView = Matrix4::view(Vector3::ZERO, lightRotation);
+			Vector3 shadowSpaceOrigin = shadowView.multiplyAffine(casterOrigin);
 
-			Vector3 offsetLightPos = tfrm.getPosition() + lightDir * minSubjectDepth;
+			Vector2 snapOffset(fmod(shadowSpaceOrigin.x, worldUnitsPerTexel), fmod(shadowSpaceOrigin.y, worldUnitsPerTexel));
+			shadowSpaceOrigin.x -= snapOffset.x;
+			shadowSpaceOrigin.y -= snapOffset.y;
+
+			Matrix4 shadowViewInv = shadowView.inverseAffine();
+			casterOrigin = shadowViewInv.multiplyAffine(shadowSpaceOrigin);
+
+			// Move the light so it is centered at the subject frustum, with depth range covering the frustum bounds
+			shadowInfo.depthRange = frustumBounds.getRadius() * 2.0f;
+
+			Vector3 offsetLightPos = casterOrigin - lightDir * frustumBounds.getRadius();
 			Matrix4 offsetViewMat = Matrix4::view(offsetLightPos, lightRotation);
 
-			float orthoSize = frustumBounds.getRadius() * 0.5f;
 			Matrix4 proj = Matrix4::projectionOrthographic(-orthoSize, orthoSize, orthoSize, -orthoSize, 0.0f, 
 				shadowInfo.depthRange);
 
@@ -1216,14 +1232,14 @@ namespace bs { namespace ct
 			shadowInfo.shadowVPTransform = proj * offsetViewMat;
 
 			// Determine split range
-			float splitNear = getCSMSplitDistance(view, i, NUM_CASCADE_SPLITS);
-			float splitFar = getCSMSplitDistance(view, i + 1, NUM_CASCADE_SPLITS);
+			float splitNear = getCSMSplitDistance(view, i, numCascades);
+			float splitFar = getCSMSplitDistance(view, i + 1, numCascades);
 
 			shadowInfo.depthNear = splitNear;
 			shadowInfo.depthFade = splitFar;
 			shadowInfo.subjectBounds = frustumBounds;
 			
-			if ((UINT32)(i + 1) < NUM_CASCADE_SPLITS)
+			if ((UINT32)(i + 1) < numCascades)
 				shadowInfo.fadeRange = CASCADE_FRACTION_FADE * (shadowInfo.depthFade - shadowInfo.depthNear);
 			else
 				shadowInfo.fadeRange = 0.0f;
@@ -1243,11 +1259,11 @@ namespace bs { namespace ct
 			depthDirMat->bind(shadowParamsBuffer);
 
 			// Render all renderables into the shadow map
-			ShadowRenderQueueDirOptions spotOptions(
+			ShadowRenderQueueDirOptions dirOptions(
 				cascadeCullVolume,
 				shadowParamsBuffer);
 			
-			ShadowRenderQueue::execute(scene, frameInfo, spotOptions);
+			ShadowRenderQueue::execute(scene, frameInfo, dirOptions);
 
 			shadowMap.setShadowInfo(i, shadowInfo);
 		}
@@ -1714,9 +1730,8 @@ namespace bs { namespace ct
 		viewPlanes[FRUSTUM_PLANE_TOP] = Plane(frustumVerts[4], frustumVerts[5], frustumVerts[1]);
 		viewPlanes[FRUSTUM_PLANE_BOTTOM] = Plane(frustumVerts[3], frustumVerts[2], frustumVerts[6]);
 
-		Vector<Plane> lightVolume;
-
 		//// Add camera's planes facing towards the lights (forming the back of the volume)
+		Vector<Plane> lightVolume;
 		for(auto& entry : viewPlanes)
 		{
 			if (entry.normal.dot(lightDir) < 0.0f)
@@ -1777,11 +1792,8 @@ namespace bs { namespace ct
 
 	float ShadowRendering::getCSMSplitDistance(const RendererView& view, UINT32 index, UINT32 numCascades)
 	{
-		// Determines the size of each subsequent cascade split. Value of 1 means the cascades will be linearly split.
-		// Value of 2 means each subsequent split will be twice the size of the previous one. Valid range is roughly
-		// [1, 4].
-		// Note: Make this an adjustable property?
-		const static float DISTRIBUTON_EXPONENT = 3.0f;
+		auto& shadowSettings = view.getRenderSettings().shadowSettings;
+		float distributionExponent = shadowSettings.cascadeDistributionExponent;
 
 		// First determine the scale of the split, relative to the entire range
 		float scaleModifier = 1.0f;
@@ -1797,7 +1809,7 @@ namespace bs { namespace ct
 					scale += scaleModifier;
 
 				totalScale += scaleModifier;
-				scaleModifier *= DISTRIBUTON_EXPONENT;
+				scaleModifier *= distributionExponent;
 			}
 
 			scale = scale / totalScale;
@@ -1806,7 +1818,7 @@ namespace bs { namespace ct
 		// Calculate split distance in Z
 		auto& viewProps = view.getProperties();
 		float near = viewProps.nearPlane;
-		float far = viewProps.farPlane;
+		float far = Math::clamp(shadowSettings.directionalShadowDistance, viewProps.nearPlane, viewProps.farPlane);
 
 		return near + (far - near) * scale;
 	}
@@ -1815,29 +1827,28 @@ namespace bs { namespace ct
 	{
 		const static float RADIAL_LIGHT_BIAS = 0.0005f;
 		const static float SPOT_DEPTH_BIAS = 0.01f;
-		const static float DIR_DEPTH_BIAS = 0.5f;
+		const static float DIR_DEPTH_BIAS = 0.001f; // In clip space units
 		const static float DEFAULT_RESOLUTION = 512.0f;
 		
 		// Increase bias if map size smaller than some resolution
-		float resolutionScale;
+		float resolutionScale = 1.0f;
 		
-		if (light.getType() == LightType::Directional)
-			resolutionScale = radius / (float)mapSize;
-		else
+		if (light.getType() != LightType::Directional)
 			resolutionScale = DEFAULT_RESOLUTION / (float)mapSize;
 
 		// Adjust range because in shader we compare vs. clip space depth
-		float rangeScale;
-		if (light.getType() == LightType::Radial)
-			rangeScale = 1.0f;
-		else
+		float rangeScale = 1.0f;
+		if (light.getType() == LightType::Spot)
 			rangeScale = 1.0f / depthRange;
 		
+		auto& apiInfo = RenderAPI::instance().getAPIInfo();
+		float deviceDepthRange = apiInfo.getMaximumDepthInputValue() - apiInfo.getMinimumDepthInputValue();
+
 		float defaultBias = 1.0f;
 		switch(light.getType())
 		{
 		case LightType::Directional: 
-			defaultBias = DIR_DEPTH_BIAS;
+			defaultBias = DIR_DEPTH_BIAS * deviceDepthRange;
 			break;
 		case LightType::Radial: 
 			defaultBias = RADIAL_LIGHT_BIAS;
@@ -1855,7 +1866,7 @@ namespace bs { namespace ct
 	float ShadowRendering::getFadeTransition(const Light& light, float radius, float depthRange, UINT32 mapSize)
 	{
 		const static float SPOT_LIGHT_SCALE = 1000.0f;
-		const static float DIR_LIGHT_SCALE = 5000000.0f;
+		const static float DIR_LIGHT_SCALE = 50000000.0f;
 
 		// Note: Currently fade transitions are only used in spot & directional (non omni-directional) lights, so no need
 		// to account for radial light type.
@@ -1870,9 +1881,9 @@ namespace bs { namespace ct
 			// Increase the size of the transition region for larger lights
 			float radiusScale = radius;
 
-			return light.getShadowBias() * DIR_LIGHT_SCALE * rangeScale * resolutionScale * radiusScale;
+			return DIR_LIGHT_SCALE * rangeScale * resolutionScale * radiusScale;
 		}
 		else
-			return light.getShadowBias() * SPOT_LIGHT_SCALE;
+			return fabs(light.getShadowBias()) * SPOT_LIGHT_SCALE;
 	}
 }}

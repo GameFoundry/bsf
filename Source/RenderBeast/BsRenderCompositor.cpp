@@ -732,7 +732,7 @@ namespace bs { namespace ct
 
 				UINT32 lightIdx = offset + j;
 				const RendererLight& light = *lights[lightIdx];
-				shadowRenderer.renderShadowOcclusion(inputs.view, inputs.options.shadowFilteringQuality, light, gbuffer);
+				shadowRenderer.renderShadowOcclusion(inputs.view, light, gbuffer);
 
 				rapi.setRenderTarget(outputRT, FBT_DEPTH | FBT_STENCIL, RT_COLOR0 | RT_DEPTH_STENCIL);
 				StandardDeferred::instance().renderLight(lightType, light, inputs.view, gbuffer,

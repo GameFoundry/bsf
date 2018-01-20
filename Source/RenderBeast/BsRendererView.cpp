@@ -504,7 +504,7 @@ namespace bs { namespace ct
 	}
 
 	RendererViewGroup::RendererViewGroup()
-		:mShadowRenderer(1024)
+		:mShadowRenderer(2048)
 	{ }
 
 	RendererViewGroup::RendererViewGroup(RendererView** views, UINT32 numViews, UINT32 shadowMapSize)

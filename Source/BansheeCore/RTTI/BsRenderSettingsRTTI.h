@@ -249,6 +249,38 @@ namespace bs
 		}
 	};
 
+	class BS_CORE_EXPORT ShadowSettingsRTTI : public RTTIType <ShadowSettings, IReflectable, ShadowSettingsRTTI>
+	{
+	private:
+		BS_BEGIN_RTTI_MEMBERS
+			BS_RTTI_MEMBER_PLAIN(directionalShadowDistance, 0)
+			BS_RTTI_MEMBER_PLAIN(numCascades, 1)
+			BS_RTTI_MEMBER_PLAIN(cascadeDistributionExponent, 2)
+			BS_RTTI_MEMBER_PLAIN(shadowFilteringQuality, 3)
+		BS_END_RTTI_MEMBERS
+
+	public:
+		ShadowSettingsRTTI()
+			:mInitMembers(this)
+		{ }
+
+		const String& getRTTIName() override
+		{
+			static String name = "ShadowSettings";
+			return name;
+		}
+
+		UINT32 getRTTIId() override
+		{
+			return TID_ShadowSettings;
+		}
+
+		SPtr<IReflectable> newRTTIObject() override
+		{
+			return bs_shared_ptr_new<ShadowSettings>();
+		}
+	};
+
 	class BS_CORE_EXPORT RenderSettingsRTTI : public RTTIType <RenderSettings, IReflectable, RenderSettingsRTTI>
 	{
 	private:
@@ -270,6 +302,7 @@ namespace bs
 			BS_RTTI_MEMBER_PLAIN(enableShadows, 14)
 			BS_RTTI_MEMBER_PLAIN(overlayOnly, 15)
 			BS_RTTI_MEMBER_PLAIN(enableIndirectLighting, 16)
+			BS_RTTI_MEMBER_REFL(shadowSettings, 17)
 		BS_END_RTTI_MEMBERS
 			
 	public:

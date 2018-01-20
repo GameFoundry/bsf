@@ -596,6 +596,101 @@ namespace BansheeEditor
     }
 
     /// <summary>
+    /// Draws GUI elements for inspecting an <see cref="ShadowSettings"/> object.
+    /// </summary>
+    internal class ShadowSettingsGUI
+    {
+        private ShadowSettings settings;
+
+        private GUIFloatField directionalShadowDistanceField = new GUIFloatField(new LocEdString("Directional shadow distance"));
+        private GUIIntField numCascadesField = new GUIIntField(new LocEdString("Cascade count"));
+        private GUIFloatField cascadeDistributionExponentField = new GUIFloatField(new LocEdString("Cascade distribution exponent"));
+        private GUISliderField filteringQualityField = new GUISliderField(0, 4, new LocEdString("Filtering quality"));
+
+        public Action<ShadowSettings> OnChanged;
+        public Action OnConfirmed;
+
+        /// <summary>
+        /// Current value of the settings object.
+        /// </summary>
+        public ShadowSettings Settings
+        {
+            get { return settings; }
+            set
+            {
+                settings = value;
+
+                directionalShadowDistanceField.Value = value.DirectionalShadowDistance;
+                numCascadesField.Value = (int)value.NumCascades;
+                cascadeDistributionExponentField.Value = value.CascadeDistributionExponent;
+                filteringQualityField.Value = value.ShadowFilteringQuality;
+            }
+        }
+
+        /// <summary>
+        /// Constructs a new set of GUI elements for inspecting the shadow settings object.
+        /// </summary>
+        /// <param name="settings">Initial values to assign to the GUI elements.</param>
+        /// <param name="layout">Layout to append the GUI elements to.</param>
+        public ShadowSettingsGUI(ShadowSettings settings, GUILayout layout)
+        {
+            this.settings = settings;
+
+            directionalShadowDistanceField.OnChanged += x =>
+            {
+                this.settings.DirectionalShadowDistance = x;
+                MarkAsModified();
+                ConfirmModify();
+            };
+
+            numCascadesField.OnChanged += x =>
+            {
+                this.settings.NumCascades = (uint) x;
+                MarkAsModified();
+                ConfirmModify();
+            };
+
+            cascadeDistributionExponentField.OnChanged += x =>
+            {
+                this.settings.CascadeDistributionExponent = x;
+                MarkAsModified();
+                ConfirmModify();
+            };
+
+            filteringQualityField.OnChanged += x =>
+            {
+                this.settings.ShadowFilteringQuality = (uint)x;
+                MarkAsModified();
+                ConfirmModify();
+            };
+
+            filteringQualityField.Step = 1.0f;
+
+            layout.AddElement(directionalShadowDistanceField);
+            layout.AddElement(numCascadesField);
+            layout.AddElement(cascadeDistributionExponentField);
+            layout.AddElement(filteringQualityField);
+        }
+
+        /// <summary>
+        /// Marks the contents of the inspector as modified.
+        /// </summary>
+        private void MarkAsModified()
+        {
+            if (OnChanged != null)
+                OnChanged(settings);
+        }
+
+        /// <summary>
+        /// Confirms any queued modifications.
+        /// </summary>
+        private void ConfirmModify()
+        {
+            if (OnConfirmed != null)
+                OnConfirmed();
+        }
+    }
+    /// <summary>
     /// Draws GUI elements for inspecting an <see cref="RenderSettings"/> object.
     /// </summary>
     internal class RenderSettingsGUI
@@ -628,6 +723,8 @@ namespace BansheeEditor
         private AmbientOcclusionSettingsGUI ambientOcclusionGUI;
         private GUIToggle screenSpaceReflectionsFoldout = new GUIToggle("Screen space reflections", EditorStyles.Foldout);
         private ScreenSpaceReflectionsSettingsGUI screenSpaceReflectionsGUI;
+        private GUIToggle shadowsFoldout = new GUIToggle("Shadows", EditorStyles.Foldout);
+        private ShadowSettingsGUI shadowsGUI;
 
         private GUISliderField gammaField = new GUISliderField(1.0f, 3.0f, new LocEdString("Gamma"));
         private GUISliderField exposureScaleField = new GUISliderField(-8.0f, 8.0f, new LocEdString("Exposure scale"));
@@ -639,6 +736,7 @@ namespace BansheeEditor
         private GUILayout depthOfFieldLayout;
         private GUILayout ambientOcclusionLayout;
         private GUILayout screenSpaceReflectionsLayout;
+        private GUILayout shadowsLayout;
 
         public Action<RenderSettings> OnChanged;
         public Action OnConfirmed;
@@ -662,6 +760,7 @@ namespace BansheeEditor
                 depthOfFieldGUI.Settings = value.DepthOfField;
                 ambientOcclusionGUI.Settings = value.AmbientOcclusion;
                 screenSpaceReflectionsGUI.Settings = value.ScreenSpaceReflections;
+                shadowsGUI.Settings = value.ShadowSettings;
                 gammaField.Value = value.Gamma;
                 exposureScaleField.Value = value.ExposureScale;
                 enableHDRField.Value = value.EnableHDR;
@@ -693,10 +792,6 @@ namespace BansheeEditor
             enableLightingField.OnChanged += x => { this.settings.EnableLighting = x; MarkAsModified(); ConfirmModify(); };
             layout.AddElement(enableLightingField);
 
-            // Enable shadows
-            enableShadowsField.OnChanged += x => { this.settings.EnableShadows = x; MarkAsModified(); ConfirmModify(); };
-            layout.AddElement(enableShadowsField);
-
             // Enable indirect lighting
             enableIndirectLightingField.OnChanged += x => { this.settings.EnableIndirectLighting = x; MarkAsModified(); ConfirmModify(); };
             layout.AddElement(enableIndirectLightingField);
@@ -704,6 +799,27 @@ namespace BansheeEditor
             // Overlay only
             overlayOnlyField.OnChanged += x => { this.settings.OverlayOnly = x; MarkAsModified(); ConfirmModify(); };
             layout.AddElement(overlayOnlyField);
+
+            // Shadows
+            enableShadowsField.OnChanged += x => { this.settings.EnableShadows = x; MarkAsModified(); ConfirmModify(); };
+            layout.AddElement(enableShadowsField);
+
+            shadowsFoldout.OnToggled += x =>
+            {
+                properties.SetBool("shadows_Expanded", x);
+                ToggleFoldoutFields();
+            };
+            layout.AddElement(shadowsFoldout);
+
+            shadowsLayout = layout.AddLayoutX();
+            {
+                shadowsLayout.AddSpace(10);
+
+                GUILayoutY contentsLayout = shadowsLayout.AddLayoutY();
+                shadowsGUI = new ShadowSettingsGUI(settings.ShadowSettings, contentsLayout);
+                shadowsGUI.OnChanged += x => { this.settings.ShadowSettings = x; MarkAsModified(); };
+                shadowsGUI.OnConfirmed += ConfirmModify;
+            }
 
             // Auto exposure
             enableAutoExposureField.OnChanged += x => { this.settings.EnableAutoExposure = x; MarkAsModified(); ConfirmModify(); };
@@ -883,6 +999,7 @@ namespace BansheeEditor
             depthOfFieldLayout.Active = properties.GetBool("depthOfField_Expanded");
             ambientOcclusionLayout.Active = properties.GetBool("ambientOcclusion_Expanded");
             screenSpaceReflectionsLayout.Active = properties.GetBool("screenSpaceReflections_Expanded");
+            shadowsLayout.Active = properties.GetBool("shadows_Expanded");
         }
     }
 

@@ -23,9 +23,6 @@ namespace bs { namespace ct
 	 *  @{
 	 */
 
-	/** Number of frustum splits when rendering cascaded shadow maps. */
-	const UINT32 NUM_CASCADE_SPLITS = 4;
-
 	BS_PARAM_BLOCK_BEGIN(ShadowParamsDef)
 		BS_PARAM_BLOCK_ENTRY(Matrix4, gMatViewProj)
 		BS_PARAM_BLOCK_ENTRY(Vector2, gNDCZToDeviceZ)
@@ -451,7 +448,10 @@ namespace bs { namespace ct
 	class ShadowCascadedMap : public ShadowMapBase
 	{
 	public:
-		ShadowCascadedMap(UINT32 size);
+		ShadowCascadedMap(UINT32 size, UINT32 numCascades);
+
+		/** Returns the total number of cascades in the cascade shadow map. */
+		UINT32 getNumCascades() const { return mNumCascades; }
 
 		/** Returns a render target that allows rendering into a specific cascade of the cascaded shadow map. */
 		SPtr<RenderTexture> getTarget(UINT32 cascadeIdx) const;
@@ -462,8 +462,9 @@ namespace bs { namespace ct
 		/** @copydoc setShadowInfo */
 		const ShadowInfo& getShadowInfo(UINT32 cascadeIdx) const { return mShadowInfos[cascadeIdx]; }
 	private:
-		SPtr<RenderTexture> mTargets[NUM_CASCADE_SPLITS];
-		ShadowInfo mShadowInfos[NUM_CASCADE_SPLITS];
+		UINT32 mNumCascades;
+		Vector<SPtr<RenderTexture>> mTargets;
+		Vector<ShadowInfo> mShadowInfos;
 	};
 
 	/** Provides functionality for rendering shadow maps. */
@@ -499,8 +500,7 @@ namespace bs { namespace ct
 		 * Renders shadow occlusion values for the specified light, through the provided view, into the currently bound
 		 * render target. The system uses shadow maps rendered by renderShadowMaps().
 		 */
-		void renderShadowOcclusion(const RendererView& view, UINT32 shadowQuality, const RendererLight& light, 
-			GBufferTextures gbuffer) const;
+		void renderShadowOcclusion(const RendererView& view, const RendererLight& light, GBufferTextures gbuffer) const;
 
 		/** Changes the default shadow map size. Will cause all shadow maps to be rebuilt. */
 		void setShadowMapSize(UINT32 size);
@@ -572,11 +572,11 @@ namespace bs { namespace ct
 		 * Finds the distance (along the view direction) of the frustum split for the specified index. Used for cascaded
 		 * shadow maps.
 		 * 
-		 * @param[in]	view			View whose frustum to split.
-		 * @param[in]	index			Index of the split. 0 = near plane.
-		 * @param[in]	numCascades		Maximum number of cascades in the cascaded shadow map. Must be greater than zero
-		 *								and greater or equal to @p index.
-		 * @return						Distance to the split position along the view direction.
+		 * @param[in]	view					View whose frustum to split.
+		 * @param[in]	index					Index of the split. 0 = near plane.
+		 * @param[in]	numCascades				Maximum number of cascades in the cascaded shadow map. Must be greater than
+		 *										zero and greater or equal to @p index.
+		 * @return								Distance to the split position along the view direction.
 		 */
 		static float getCSMSplitDistance(const RendererView& view, UINT32 index, UINT32 numCascades);
 

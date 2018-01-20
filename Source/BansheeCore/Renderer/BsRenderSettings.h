@@ -399,6 +399,51 @@ namespace bs
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
 	};
+
+	/** Various options that control shadow rendering for a specific view. */
+	struct BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Rendering) ShadowSettings : public IReflectable
+	{
+		/** 
+		 * Maximum distance that directional light shadows are allowed to render at. Decreasing the distance can yield
+		 * higher quality shadows nearer to the viewer, as the shadow map resolution isn't being used up on far away
+		 * portions of the scene. In world units (meters).
+		 */
+		BS_SCRIPT_EXPORT()
+		float directionalShadowDistance = 250.0f;
+		
+		/** 
+		 * Number of cascades to use for directional shadows. Higher number of cascades increases shadow quality as each
+		 * individual cascade has less area to cover, but can significantly increase performance cost, as well as a minor
+		 * increase in memory cost. Valid range is roughly [1, 6].
+		 */
+		BS_SCRIPT_EXPORT()
+		UINT32 numCascades = 4;
+
+		/**
+		 * Allows you to control how are directional shadow cascades distributed. Value of 1 means the cascades will be
+		 * linearly split, each cascade taking up the same amount of space. Value of 2 means each subsequent split will be
+		 * twice the size of the previous one (meaning cascades closer to the viewer cover a smaller area, and therefore
+		 * yield higher resolution shadows). Higher values increase the size disparity between near and far cascades at
+		 * an exponential rate. Valid range is roughly [1, 4].
+		 */
+		BS_SCRIPT_EXPORT()
+		float cascadeDistributionExponent = 3.0f;
+
+		/**
+		 * Determines the number of samples used for percentage closer shadow map filtering. Higher values yield higher
+		 * quality shadows, at the cost of performance. Valid range is [1, 4].
+		 */
+		BS_SCRIPT_EXPORT()
+		UINT32 shadowFilteringQuality = 4;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+	public:
+		friend class ShadowSettingsRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		RTTITypeBase* getRTTI() const override;
+	};
 	
 	/** Settings that control rendering for a specific camera (view). */
 	struct BS_CORE_EXPORT BS_SCRIPT_EXPORT(m:Rendering) RenderSettings : public IReflectable
@@ -508,6 +553,10 @@ namespace bs
 		/** Determines if shadows cast by lights should be rendered. Only relevant if lighting is turned on. */
 		BS_SCRIPT_EXPORT()
 		bool enableShadows;
+
+		/** Parameters used for customizing shadow rendering. */
+		BS_SCRIPT_EXPORT()
+		ShadowSettings shadowSettings;
 
 		/** Determines if indirect lighting (e.g. from light probes or the sky) is rendered. */
 		BS_SCRIPT_EXPORT()

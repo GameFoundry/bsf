@@ -47,27 +47,6 @@ mixin ShadowDepthBase
 			return (ndcZ + gNDCZToDeviceZ.y) * gNDCZToDeviceZ.x;
 		}		
 
-		void linearizeDepth(inout float4 clipPos)
-		{	
-			#ifdef CLAMP_TO_NEAR_PLANE
-			float ndcZ = clipPos.z / clipPos.w;
-			float deviceZ = NDCZToDeviceZ(ndcZ);
-			
-			// Clamp to near plane if behind it
-			if (deviceZ < 0)
-			{
-				clipPos.z = DeviceZToNDCZ(0);
-				clipPos.w = 1.0f;
-			}
-			#endif
-
-			// Output linear depth
-			#ifdef LINEAR_DEPTH_RANGE
-				float linearDepth = clipPos.z * gInvDepthRange + gDepthBias;
-				clipPos.z = linearDepth * clipPos.w;
-			#endif
-		}		
-	
 		ShadowVStoFS vsmain(VertexInput_PO input)
 		{
 			ShadowVStoFS output;
@@ -89,7 +68,11 @@ mixin ShadowDepthBase
 				float ndcZ = clipPos.z / clipPos.w;
 				float deviceZ = NDCZToDeviceZ(ndcZ);
 			
+				#ifdef USES_PS
 				if (deviceZ < 0)
+				#else
+				if (deviceZ < -gDepthBias)
+				#endif
 				{
 					clipPos.z = DeviceZToNDCZ(0);
 					clipPos.w = 1.0f;
@@ -102,7 +85,7 @@ mixin ShadowDepthBase
 			#ifdef USES_PS
 				output.shadowPos = clipPos.z;
 			#else // Otherwise apply bias immediately
-				clipPos.z += gDepthBias;
+				clipPos.z = max(0, clipPos.z + gDepthBias);
 			#endif // USES_PS
 			
 			output.position = clipPos;

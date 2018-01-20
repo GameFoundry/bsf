@@ -108,6 +108,16 @@ namespace bs
 		return ScreenSpaceReflectionsSettings::getRTTIStatic();
 	}
 
+	RTTITypeBase* ShadowSettings::getRTTIStatic()
+	{
+		return ShadowSettingsRTTI::instance();
+	}
+
+	RTTITypeBase* ShadowSettings::getRTTI() const
+	{
+		return ShadowSettings::getRTTIStatic();
+	}
+
 	RenderSettings::RenderSettings()
 		: enableAutoExposure(true), enableTonemapping(true), enableFXAA(true), exposureScale(0.0f), gamma(2.2f)
 		, enableHDR(true), enableLighting(true), enableShadows(true), enableIndirectLighting(true), overlayOnly(false)
@@ -184,6 +194,11 @@ namespace bs
 		bufferSize += rttiGetElemSize(screenSpaceReflections.maxRoughness);
 		bufferSize += rttiGetElemSize(screenSpaceReflections.quality);
 
+		bufferSize += rttiGetElemSize(shadowSettings.directionalShadowDistance);
+		bufferSize += rttiGetElemSize(shadowSettings.numCascades);
+		bufferSize += rttiGetElemSize(shadowSettings.cascadeDistributionExponent);
+		bufferSize += rttiGetElemSize(shadowSettings.shadowFilteringQuality);
+
 		if (buffer == nullptr)
 		{
 			size = bufferSize;
@@ -254,6 +269,11 @@ namespace bs
 		writeDst = rttiWriteElem(screenSpaceReflections.intensity, writeDst);
 		writeDst = rttiWriteElem(screenSpaceReflections.maxRoughness, writeDst);
 		writeDst = rttiWriteElem(screenSpaceReflections.quality, writeDst);
+
+		writeDst = rttiWriteElem(shadowSettings.directionalShadowDistance, writeDst);
+		writeDst = rttiWriteElem(shadowSettings.numCascades, writeDst);
+		writeDst = rttiWriteElem(shadowSettings.cascadeDistributionExponent, writeDst);
+		writeDst = rttiWriteElem(shadowSettings.shadowFilteringQuality, writeDst);
 	}
 
 	void RenderSettings::_setSyncData(UINT8* buffer, UINT32 size)
@@ -317,5 +337,10 @@ namespace bs
 		readSource = rttiReadElem(screenSpaceReflections.intensity, readSource);
 		readSource = rttiReadElem(screenSpaceReflections.maxRoughness, readSource);
 		readSource = rttiReadElem(screenSpaceReflections.quality, readSource);
+
+		readSource = rttiReadElem(shadowSettings.directionalShadowDistance, readSource);
+		readSource = rttiReadElem(shadowSettings.numCascades, readSource);
+		readSource = rttiReadElem(shadowSettings.cascadeDistributionExponent, readSource);
+		readSource = rttiReadElem(shadowSettings.shadowFilteringQuality, readSource);
 	}
 }
