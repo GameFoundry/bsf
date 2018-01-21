@@ -290,6 +290,7 @@ namespace bs { namespace ct
 	void RendererUtility::drawScreenQuad(const Rect2& uv, const Vector2I& textureSize, UINT32 numInstances, bool flipUV)
 	{
 		// Note: Consider drawing the quad using a single large triangle for possibly better performance
+		// Note2: Consider setting quad size in shader instead of rebuilding the mesh every time
 
 		const RenderAPIInfo& rapiInfo = RenderAPI::instance().getAPIInfo();
 		Vector3 vertices[4];

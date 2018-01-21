@@ -42,7 +42,7 @@ technique DeferredDirectionalLight
 		{
 			float4 position : SV_POSITION;
 			float2 uv0 : TEXCOORD0;
-			float3 screenDir : TEXCOORD1;
+			float4 screenPos : TEXCOORD1;
 		};
 
 		struct VertexInput
@@ -56,8 +56,8 @@ technique DeferredDirectionalLight
 			VStoFS output;
 		
 			output.position = float4(input.screenPos, 0, 1);
+			output.screenPos = float4(input.screenPos, 0, 1);
 			output.uv0 = input.uv0;
-			output.screenDir = mul(gMatInvProj, float4(input.screenPos, 1, 0)).xyz - gViewOrigin.xyz;
 		
 			return output;
 		}
@@ -82,16 +82,14 @@ technique DeferredDirectionalLight
 		
 			if(surfaceData.worldNormal.w > 0.0f)
 			{
-				float3 cameraDir = normalize(input.screenDir);
-				float3 worldPosition = input.screenDir * surfaceData.depth + gViewOrigin;
-				
+				float2 ndcPos = input.screenPos.xy / input.screenPos.w;
+				float3 worldPosition = NDCToWorld(ndcPos, surfaceData.depth);
+
 				float3 V = normalize(gViewOrigin - worldPosition);
 				float3 N = surfaceData.worldNormal.xyz;
 				float3 R = 2 * dot(V, N) * N - V;
-
-				float roughness2 = max(surfaceData.roughness, 0.08f);
-				roughness2 *= roughness2;
-				
+				float3 specR = getSpecularDominantDir(N, R, surfaceData.roughness);
+								
 				LightData lightData = getLightData();
 				
 				#if MSAA_COUNT > 1
@@ -109,7 +107,7 @@ technique DeferredDirectionalLight
 				
 				occlusion = 1.0f - occlusion;
 				
-				return float4(getLuminanceDirectional(lightData, worldPosition, V, R, surfaceData) * occlusion, 1.0f);
+				return float4(getLuminanceDirectional(lightData, worldPosition, V, specR, surfaceData) * occlusion, 1.0f);
 			}
 			else
 				return float4(0.0f, 0.0f, 0.0f, 0.0f);
