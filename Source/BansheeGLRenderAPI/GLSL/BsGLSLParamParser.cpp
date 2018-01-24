@@ -1,6 +1,7 @@
 //********************************** Banshee Engine (www.banshee3d.com) **************************************************//
 //**************** Copyright (c) 2016 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
 #include "GLSL/BsGLSLParamParser.h"
+#include "RenderAPI/BsGpuParams.h"
 
 namespace bs { namespace ct
 {
@@ -59,6 +60,43 @@ namespace bs { namespace ct
 		bs_free(attributeName);
 
 		return elementList;
+	}
+
+	UINT32 GLSLParamParser::calcInterfaceBlockElementSizeAndOffset(GpuParamDataType type, UINT32 arraySize, UINT32& offset)
+	{
+		const GpuParamDataTypeInfo& typeInfo = bs::GpuParams::PARAM_SIZES.lookup[type];
+		UINT32 size = (typeInfo.baseTypeSize * typeInfo.numColumns * typeInfo.numRows) / 4;
+		UINT32 alignment = typeInfo.alignment / 4;
+
+		// Fix alignment if needed
+		UINT32 alignOffset = offset % alignment;
+		if (alignOffset != 0)
+		{
+			UINT32 padding = (alignment - alignOffset);
+			offset += padding;
+		}
+
+		if (arraySize > 1)
+		{
+			// Array elements are always padded and aligned to vec4
+			alignOffset = size % 4;
+			if (alignOffset != 0)
+			{
+				UINT32 padding = (4 - alignOffset);
+				size += padding;
+			}
+
+			alignOffset = offset % 4;
+			if (alignOffset != 0)
+			{
+				UINT32 padding = (4 - alignOffset);
+				offset += padding;
+			}
+
+			return size;
+		}
+		else
+			return size;
 	}
 
 	VertexElementType GLSLParamParser::glTypeToAttributeType(GLenum glType)
@@ -266,12 +304,14 @@ namespace bs { namespace ct
 					{
 						inStruct = true;
 						structName = nameElements[1];
+						paramName = nameElements.back();
 					}
 				}
 				else
 				{
 					inStruct = true;
 					structName = nameElements[0];
+					paramName = nameElements.back();
 				}
 			}
 
@@ -294,7 +334,7 @@ namespace bs { namespace ct
 					structName = structName.substr(0, arrayStart);
 				}
 			}
-			else
+
 			{
 				// If the uniform name has a "[" in it then its an array element uniform.
 				String::size_type arrayStart = cleanParamName.find("[");
@@ -302,25 +342,16 @@ namespace bs { namespace ct
 				if (arrayStart != String::npos)
 				{
 					String strArrIdx = cleanParamName.substr(arrayStart + 1, arrayEnd - (arrayStart + 1));
-					arrayIdx = parseUINT32(strArrIdx, 0);
-					isInArray = true;
+
+					// If in struct, we don't care about individual element array indices
+					if(!inStruct)
+					{
+						arrayIdx = parseUINT32(strArrIdx, 0);
+						isInArray = true;
+					}
 
 					cleanParamName = cleanParamName.substr(0, arrayStart);
 				}
-			}
-
-			if (inStruct)
-			{
-				// OpenGL makes struct management really difficult, which is why I have given up on implementing this so far
-				// Some of the issues I encountered:
-				//  - Elements will be optimized out if they are not used. This makes it hard to determine proper structure size.
-				//     - If struct is within a Uniform buffer block, then it is possible because the element won't be optimized out of the buffer
-				//     - If the struct is within a global buffer, it is impossible to determine actual size, since the element will be optimized out of the buffer too
-				//     - Same issue happens with arrays, as OpenGL will optimize out array elements. With global buffers this makes it impossible to determine
-				//       actual array size (for example suppose OpenGL optimized out few last elements)
-				//        - Normal arrays work fine as OpenGL has utilities for reporting their actual size, but those do not work with structs
-
-				BS_EXCEPT(NotImplementedException, "Structs are not supported.")
 			}
 
 			// GLSL will optimize out unused array indexes, so there's no guarantee that 0 is the first,
@@ -328,7 +359,7 @@ namespace bs { namespace ct
 			int firstArrayIndex = 0;
 			if (isInArray)
 			{
-				String& nameToSearch = cleanParamName;
+				String nameToSearch = cleanParamName;
 				if (inStruct)
 					nameToSearch = structName;
 
@@ -586,8 +617,9 @@ namespace bs { namespace ct
 					BS_CHECK_GL_ERROR();
 				}
 
-				// If parameter is not a part of a struct we're done
-				if (!inStruct)
+				// If parameter is not a part of a struct we're done. Also done if parameter is part of a struct, but
+				// not part of a uniform block (in which case we treat struct members as separate parameters)
+				if (!inStruct || blockIndex == -1)
 				{
 					returnParamDesc.params.insert(std::make_pair(gpuParam.name, gpuParam));
 					continue;
@@ -615,26 +647,26 @@ namespace bs { namespace ct
 				// Update struct with size of the new parameter
 				GpuParamDataDesc& structDesc = foundStructs[structName];
 
-				assert(gpuParam.cpuMemOffset >= structDesc.cpuMemOffset);
 				if (arrayIdx == (UINT32)firstArrayIndex) // Determine element size only using the first array element
 				{
-					structDesc.elementSize = std::max(structDesc.elementSize, (gpuParam.cpuMemOffset - structDesc.cpuMemOffset) + gpuParam.arrayElementStride * gpuParam.arraySize);
-					structDesc.arrayElementStride = structDesc.elementSize;
-				}
+					structDesc.elementSize = std::max(structDesc.elementSize, gpuParam.cpuMemOffset + 
+						gpuParam.arrayElementStride * gpuParam.arraySize);
 
-				// New array element reached, determine arrayElementStride
-				if (arrayIdx != (UINT32)firstArrayIndex)
-				{
-					UINT32 numElements = arrayIdx - firstArrayIndex;
-					structDesc.arrayElementStride = (gpuParam.cpuMemOffset - structDesc.cpuMemOffset) / numElements;
+					structDesc.gpuMemOffset = std::min(structDesc.gpuMemOffset, gpuParam.gpuMemOffset);
+					structDesc.cpuMemOffset = std::min(structDesc.cpuMemOffset, gpuParam.cpuMemOffset);
 				}
 
 				structDesc.arraySize = std::max(structDesc.arraySize, arrayIdx + 1);
 			}
 		}
 
-		for (auto iter = foundStructs.begin(); iter != foundStructs.end(); ++iter)
-			returnParamDesc.params.insert(std::make_pair(iter->first, iter->second));
+		for(auto& entry : foundStructs)
+		{
+			entry.second.elementSize = entry.second.elementSize - entry.second.cpuMemOffset;
+			entry.second.arrayElementStride = Math::divideAndRoundUp(entry.second.elementSize, 4U) * 4;
+
+			returnParamDesc.params.insert(std::make_pair(entry.first, entry.second));
+		}
 
 		// Param blocks always need to be a multiple of 4, so make it so
 		for (auto iter = returnParamDesc.paramBlocks.begin(); iter != returnParamDesc.paramBlocks.end(); ++iter)

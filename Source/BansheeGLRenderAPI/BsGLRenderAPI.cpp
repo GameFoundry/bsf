@@ -28,6 +28,7 @@
 #include "BsGLCommandBuffer.h"
 #include "BsGLCommandBufferManager.h"
 #include "BsGLTextureView.h"
+#include "GLSL/BsGLSLParamParser.h"
 
 namespace bs { namespace ct
 {
@@ -2782,35 +2783,10 @@ namespace bs { namespace ct
 
 		for (auto& param : params)
 		{
-			const GpuParamDataTypeInfo& typeInfo = bs::GpuParams::PARAM_SIZES.lookup[param.type];
-			UINT32 size = typeInfo.size / 4;
-			UINT32 alignment = typeInfo.alignment / 4;
-
-			// Fix alignment if needed
-			UINT32 alignOffset = block.blockSize % alignment;
-			if (alignOffset != 0)
-			{
-				UINT32 padding = (alignment - alignOffset);
-				block.blockSize += padding;
-			}
+			UINT32 size = GLSLParamParser::calcInterfaceBlockElementSizeAndOffset(param.type, param.arraySize, block.blockSize);
 
 			if (param.arraySize > 1)
 			{
-				// Array elements are always padded and aligned to vec4
-				alignOffset = size % typeInfo.baseTypeSize;
-				if (alignOffset != 0)
-				{
-					UINT32 padding = (typeInfo.baseTypeSize - alignOffset);
-					size += padding;
-				}
-
-				alignOffset = block.blockSize % typeInfo.baseTypeSize;
-				if (alignOffset != 0)
-				{
-					UINT32 padding = (typeInfo.baseTypeSize - alignOffset);
-					block.blockSize += padding;
-				}
-
 				param.elementSize = size;
 				param.arrayElementStride = size;
 				param.cpuMemOffset = block.blockSize;

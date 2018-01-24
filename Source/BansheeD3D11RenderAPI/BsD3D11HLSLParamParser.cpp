@@ -5,6 +5,7 @@
 #include "RenderAPI/BsGpuParamDesc.h"
 #include "Error/BsException.h"
 #include "Debug/BsDebug.h"
+#include "Math/BsMath.h"
 
 namespace bs { namespace ct
 {
@@ -308,7 +309,7 @@ namespace bs { namespace ct
 			// Find array element size (reported size is total size of array, minus unused register slots)
 			int totalArraySize = (varDesc.Size / 4);
 
-			int totalSlotsUsedByArray = (totalArraySize / 4 + 1) * 4;
+			int totalSlotsUsedByArray = Math::divideAndRoundUp(totalArraySize, 4) * 4;
 			int unusedSlotsInArray = totalSlotsUsedByArray - totalArraySize;
 
 			memberDesc.arrayElementStride = totalSlotsUsedByArray / memberDesc.arraySize;

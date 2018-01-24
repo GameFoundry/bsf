@@ -14,6 +14,7 @@
 #include "FileSystem/BsDataStream.h"
 
 #define AMD_EXTENSIONS
+#define NV_EXTENSIONS
 #include "glslang/Public/ShaderLang.h"
 #include "glslang/Include/Types.h"
 #include "SPIRV/GlslangToSpv.h"
@@ -367,58 +368,47 @@ namespace bs { namespace ct
 		return true;
 	}
 
-	bool parseUniforms(const glslang::TProgram* program, GpuParamDesc& desc, String& log)
+	void parseStruct(const glslang::TTypeList* typeList, UINT32& size)
 	{
-		// Parse uniform blocks
-		UnorderedMap<UINT32, String> uniformBlockMap;
-		int numBlocks = program->getNumLiveUniformBlocks();
-		for (int i = 0; i < numBlocks; i++)
+		for (auto iter = typeList->begin(); iter != typeList->end(); ++iter)
 		{
-			const glslang::TType* ttype = program->getUniformBlockTType(i);
-			const glslang::TQualifier& qualifier = ttype->getQualifier();
-			const char* name = program->getUniformBlockName(i);
+			const glslang::TType* ttype = iter->type;
 
-			if (!qualifier.hasBinding())
+			if (ttype->getBasicType() == glslang::EbtStruct)
 			{
-				log = "Uniform parsing error: Found a uniform block without a binding qualifier. Each uniform block must "
-					" have an explicitly defined binding number.";
-
-				return false;
+				const glslang::TTypeList* childTypeList = ttype->getStruct();
+				parseStruct(childTypeList, size);
 			}
-
-			if(qualifier.storage == glslang::EvqBuffer) // Shared storage buffer
+			else
 			{
-				GpuParamObjectDesc param;
-				param.name = name;
-				param.slot = qualifier.layoutBinding;
-				param.set = qualifier.layoutSet;
+				UINT32 arraySize = 1;
+				if (ttype->isArray())
+					arraySize = (UINT32)ttype->getCumulativeArraySize();
 
-				if (param.set == glslang::TQualifier::layoutSetEnd)
-					param.set = 0;
+				GpuParamDataType paramType = mapGLSLangToGpuParamDataType(*ttype);
+				if (paramType == GPDT_UNKNOWN)
+				{
+					LOGWRN("Cannot determine type for uniform inside a struct.");
+					continue;
+				}
 
-				param.type = GPOT_RWSTRUCTURED_BUFFER;
-				desc.buffers[name] = param;
-			}
-			else // Uniform buffer
-			{
-				int size = program->getUniformBlockSize(i);
-
-				GpuParamBlockDesc param;
-				param.name = name;
-				param.blockSize = size / 4;
-				param.isShareable = true;
-				param.slot = qualifier.layoutBinding;
-				param.set = qualifier.layoutSet;
-
-				if (param.set == glslang::TQualifier::layoutSetEnd)
-					param.set = 0;
-
-				desc.paramBlocks[name] = param;
-				uniformBlockMap[i] = name;
+				UINT32 elemSize = VulkanUtility::calcInterfaceBlockElementSizeAndOffset(paramType, arraySize, size);
+				size += elemSize;
 			}
 		}
+	}
 
+	bool parseUniforms(const glslang::TProgram* program, GpuParamDesc& desc, String& log)
+	{
 		// Parse individual uniforms
+		struct UniformInfo
+		{
+			UINT32 bufferOffset;
+			UINT32 arraySize;
+		};
+
+		UnorderedMap<String, UniformInfo> uniforms;
+
 		int numUniforms = program->getNumLiveUniformVariables();
 		for (int i = 0; i < numUniforms; i++)
 		{
@@ -445,6 +435,7 @@ namespace bs { namespace ct
 				param.name = name;
 				param.slot = qualifier.layoutBinding;
 				param.set = qualifier.layoutSet;
+				param.type = GPOT_UNKNOWN;
 
 				if (param.set == glslang::TQualifier::layoutSetEnd)
 					param.set = 0;
@@ -515,17 +506,95 @@ namespace bs { namespace ct
 			}
 			else
 			{
-				// We don't parse individual members of shared storage buffers
-				if (qualifier.storage != glslang::EvqUniform)
+				if(qualifier.storage == glslang::EvqUniform || qualifier.storage == glslang::EvqGlobal)
+				{
+					UniformInfo info;
+					info.arraySize = program->getUniformArraySize(i);
+					info.bufferOffset = program->getUniformBufferOffset(i);
+
+					uniforms[String(name)] = info;
+				}
+			}
+		}
+
+		// Parse uniform blocks
+		int numBlocks = program->getNumLiveUniformBlocks();
+		for (int i = 0; i < numBlocks; i++)
+		{
+			const glslang::TType* ttype = program->getUniformBlockTType(i);
+			const glslang::TQualifier& qualifier = ttype->getQualifier();
+			const char* name = program->getUniformBlockName(i);
+
+			if (!qualifier.hasBinding())
+			{
+				log = "Uniform parsing error: Found a uniform block without a binding qualifier. Each uniform block must "
+					" have an explicitly defined binding number.";
+
+				return false;
+			}
+
+			if(qualifier.storage == glslang::EvqBuffer) // Shared storage buffer
+			{
+				GpuParamObjectDesc param;
+				param.name = name;
+				param.slot = qualifier.layoutBinding;
+				param.set = qualifier.layoutSet;
+
+				if (param.set == glslang::TQualifier::layoutSetEnd)
+					param.set = 0;
+
+				param.type = GPOT_RWSTRUCTURED_BUFFER;
+				desc.buffers[name] = param;
+			}
+			else // Uniform buffer
+			{
+				int size = program->getUniformBlockSize(i);
+
+				GpuParamBlockDesc blockDesc;
+				blockDesc.name = name;
+				blockDesc.blockSize = size / 4;
+				blockDesc.isShareable = true;
+				blockDesc.slot = qualifier.layoutBinding;
+				blockDesc.set = qualifier.layoutSet;
+
+				if (blockDesc.set == glslang::TQualifier::layoutSetEnd)
+					blockDesc.set = 0;
+
+				desc.paramBlocks[name] = blockDesc;
+
+				// Parse members of the uniform buffer
+				const glslang::TTypeList* typeList = ttype->getStruct();
+				if(typeList == nullptr)
 					continue;
 
-				if(ttype->getBasicType() == glslang::EbtStruct)
+				for (auto iter = typeList->begin(); iter != typeList->end(); ++iter)
 				{
-					// Not handling structs at the moment
-				}
-				else
-				{
-					GpuParamDataType paramType = mapGLSLangToGpuParamDataType(*ttype);
+					const glslang::TType* paramTType = iter->type;
+					String paramName = paramTType->getFieldName().c_str();
+
+					auto findIter = uniforms.find(paramName);
+					if(findIter == uniforms.end()) // Likely unused and was optimized out
+						continue;
+
+					const UniformInfo& uniformInfo = findIter->second;
+
+					GpuParamDataType paramType;
+					UINT32 elementSize = 0;
+					UINT32 arrayStride = 0;
+					if (paramTType->getBasicType() == glslang::EbtStruct)
+					{
+						paramType = GPDT_STRUCT;
+
+						const glslang::TTypeList* paramTypeList = paramTType->getStruct();
+						parseStruct(paramTypeList, elementSize);
+
+						// Struct alignment always a multiple of vec4
+						arrayStride = Math::divideAndRoundUp(elementSize, 4U) * 4;
+					}
+					else
+					{
+						paramType = mapGLSLangToGpuParamDataType(*paramTType);
+					}
 
 					if (paramType == GPDT_UNKNOWN)
 					{
@@ -533,27 +602,27 @@ namespace bs { namespace ct
 						continue;
 					}
 
-					int blockIdx = program->getUniformBlockIndex(i);
-					auto iterFind = uniformBlockMap.find(blockIdx);
-					if (iterFind == uniformBlockMap.end())
-						LOGERR("Uniform is referencing a uniform block that doesn't exist: " + String(name));
+					if (paramType != GPDT_STRUCT)
+					{
+						const GpuParamDataTypeInfo& typeInfo = bs::GpuParams::PARAM_SIZES.lookup[paramType];
+						elementSize = typeInfo.size / 4;
+						arrayStride = elementSize;
+					}
 
-					const GpuParamBlockDesc& paramBlockDesc = desc.paramBlocks[iterFind->second];
-					const GpuParamDataTypeInfo& typeInfo = bs::GpuParams::PARAM_SIZES.lookup[paramType];
-					int bufferOffset = program->getUniformBufferOffset(i) / 4;
+					int bufferOffset = uniformInfo.bufferOffset / 4;
 
-					GpuParamDataDesc param;
-					param.name = name;
-					param.type = paramType;
-					param.paramBlockSet = paramBlockDesc.set;
-					param.paramBlockSlot = paramBlockDesc.slot;
-					param.elementSize = typeInfo.size / 4;
-					param.arrayElementStride = param.elementSize;
-					param.arraySize = program->getUniformArraySize(i);
-					param.cpuMemOffset = bufferOffset;
-					param.gpuMemOffset = bufferOffset;
+					GpuParamDataDesc paramDesc;
+					paramDesc.name = paramName;
+					paramDesc.type = paramType;
+					paramDesc.paramBlockSet = blockDesc.set;
+					paramDesc.paramBlockSlot = blockDesc.slot;
+					paramDesc.elementSize = elementSize;
+					paramDesc.arrayElementStride = arrayStride;
+					paramDesc.arraySize = paramTType->isArray() ? paramTType->getCumulativeArraySize() : 1;
+					paramDesc.cpuMemOffset = bufferOffset;
+					paramDesc.gpuMemOffset = bufferOffset;
 
-					desc.params[name] = param;
+					desc.params[name] = paramDesc;
 				}
 			}
 		}
