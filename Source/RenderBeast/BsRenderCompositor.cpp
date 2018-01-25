@@ -1180,13 +1180,31 @@ namespace bs { namespace ct
 		const VisibleLightData& visibleLightData = inputs.viewGroup.getVisibleLightData();
 		const VisibleReflProbeData& visibleReflProbeData = inputs.viewGroup.getVisibleReflProbeData();
 
-		const LightGrid& lightGrid = inputs.view.getLightGrid();
-
+		// Buffers used when clustered forward is available
 		SPtr<GpuParamBlockBuffer> gridParams;
 		SPtr<GpuBuffer> gridLightOffsetsAndSize, gridLightIndices;
 		SPtr<GpuBuffer> gridProbeOffsetsAndSize, gridProbeIndices;
-		lightGrid.getOutputs(gridLightOffsetsAndSize, gridLightIndices, gridProbeOffsetsAndSize, gridProbeIndices, 
-			gridParams);
+
+		// Buffers used when clustered forward is unavailable
+		SPtr<GpuParamBlockBuffer> lightsParamBlock;
+		SPtr<GpuParamBlockBuffer> reflProbesParamBlock;
+		SPtr<GpuParamBlockBuffer> lightAndReflProbeParamsParamBlock;
+
+		bool supportsClusteredForward = gRenderBeast()->getFeatureSet() == RenderBeastFeatureSet::Desktop;
+		if(supportsClusteredForward)
+		{
+			const LightGrid& lightGrid = inputs.view.getLightGrid();
+
+			lightGrid.getOutputs(gridLightOffsetsAndSize, gridLightIndices, gridProbeOffsetsAndSize, gridProbeIndices,
+				gridParams);
+		}
+		else
+		{
+			// Note: Store these instead of creating them every time?
+			lightsParamBlock = gLightsParamDef.createBuffer();
+			reflProbesParamBlock = gReflProbesParamDef.createBuffer();
+			lightAndReflProbeParamsParamBlock = gLightAndReflProbeParamsParamDef.createBuffer();
+		}
 
 		// Prepare refl. probe param buffer
 		ReflProbeParamBuffer reflProbeParamBuffer;
@@ -1214,19 +1232,77 @@ namespace bs { namespace ct
 				// Note: It would be nice to be able to set this once and keep it, only updating if the buffers actually
 				// change (e.g. when growing). 
 				SPtr<GpuParams> gpuParams = element.params->getGpuParams();
-				for(UINT32 j = 0; j < GPT_COUNT; j++)
+				ImageBasedLightingParams& iblParams = element.imageBasedParams;
+				if(supportsClusteredForward)
+				{ 
+					for (UINT32 j = 0; j < GPT_COUNT; j++)
+					{
+						const GpuParamBinding& binding = element.gridParamsBindings[j];
+						if (binding.slot != (UINT32)-1)
+							gpuParams->setParamBlockBuffer(binding.set, binding.slot, gridParams);
+					}
+
+					element.gridLightOffsetsAndSizeParam.set(gridLightOffsetsAndSize);
+					element.gridProbeOffsetsAndSizeParam.set(gridProbeOffsetsAndSize);
+
+					element.gridLightIndicesParam.set(gridLightIndices);
+					iblParams.reflectionProbeIndicesParam.set(gridProbeIndices);
+
+					element.lightsBufferParam.set(visibleLightData.getLightBuffer());
+					iblParams.reflectionProbesParam.set(visibleReflProbeData.getProbeBuffer());
+				}
+				else
 				{
-					const GpuParamBinding& binding = element.gridParamsBindings[j];
-					if (binding.slot != (UINT32)-1)
-						gpuParams->setParamBlockBuffer(binding.set, binding.slot, gridParams);
+					// Populate light & probe buffers
+					const Bounds& bounds = sceneInfo.renderableCullInfos[i].bounds;
+
+					Vector3I lightCounts;
+					const LightData* lights[STANDARD_FORWARD_MAX_NUM_LIGHTS];
+					visibleLightData.gatherInfluencingLights(bounds, lights, lightCounts);
+
+					Vector4I lightOffsets;
+					lightOffsets.x = lightCounts.x;
+					lightOffsets.y = lightCounts.x;
+					lightOffsets.z = lightOffsets.y + lightCounts.y;
+					lightOffsets.w = lightOffsets.z + lightCounts.z;
+
+					for(INT32 j = 0; j < lightOffsets.w; j++)
+						gLightsParamDef.gLights.set(lightsParamBlock, *lights[j], j);
+
+					INT32 numReflProbes = std::min(visibleReflProbeData.getNumProbes(), STANDARD_FORWARD_MAX_NUM_PROBES);
+					for(INT32 j = 0; j < numReflProbes; j++)
+						gReflProbesParamDef.gReflectionProbes.set(reflProbesParamBlock, visibleReflProbeData.getProbeData(j), j);
+
+					gLightAndReflProbeParamsParamDef.gLightOffsets.set(lightAndReflProbeParamsParamBlock, lightOffsets);
+					gLightAndReflProbeParamsParamDef.gReflProbeCount.set(lightAndReflProbeParamsParamBlock, numReflProbes);
+
+					if(iblParams.reflProbesBinding.set != (UINT32)-1)
+					{
+						gpuParams->setParamBlockBuffer(
+							iblParams.reflProbesBinding.set,
+							iblParams.reflProbesBinding.slot,
+							reflProbesParamBlock);
+					}
+
+					if(element.lightsParamBlockBinding.set != (UINT32)-1)
+					{
+						gpuParams->setParamBlockBuffer(
+							element.lightsParamBlockBinding.set,
+							element.lightsParamBlockBinding.slot,
+							lightsParamBlock);
+					}
+
+					if(element.lightAndReflProbeParamsParamBlockBinding.set != (UINT32)-1)
+					{
+						gpuParams->setParamBlockBuffer(
+							element.lightAndReflProbeParamsParamBlockBinding.set,
+							element.lightAndReflProbeParamsParamBlockBinding.slot,
+							lightAndReflProbeParamsParamBlock);
+					}
 				}
 
-				element.gridLightOffsetsAndSizeParam.set(gridLightOffsetsAndSize);
-				element.gridLightIndicesParam.set(gridLightIndices);
-				element.lightsBufferParam.set(visibleLightData.getLightBuffer());
-
 				// Image based lighting params
-				ImageBasedLightingParams& iblParams = element.imageBasedParams;
+				// Note: Ideally these should be bound once (they are the same for all renderables)
 				if (iblParams.reflProbeParamBindings.set != (UINT32)-1)
 				{
 					gpuParams->setParamBlockBuffer(
@@ -1234,11 +1310,6 @@ namespace bs { namespace ct
 						iblParams.reflProbeParamBindings.slot,
 						reflProbeParamBuffer.buffer);
 				}
-
-				element.gridProbeOffsetsAndSizeParam.set(gridProbeOffsetsAndSize);
-
-				iblParams.reflectionProbeIndicesParam.set(gridProbeIndices);
-				iblParams.reflectionProbesParam.set(visibleReflProbeData.getProbeBuffer());
 
 				iblParams.skyReflectionsTexParam.set(skyFilteredRadiance);
 				iblParams.ambientOcclusionTexParam.set(Texture::WHITE); // Note: Add SSAO here?

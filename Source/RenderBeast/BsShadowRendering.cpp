@@ -472,10 +472,11 @@ namespace bs { namespace ct
 					}
 				}
 
-				static const ShaderVariation* VAR_LOOKUP[4] = 
-				{ 
-					&SVar_Static, &SVar_Skinned, &SVar_Morph, &SVar_SkinnedMorph 
-				};
+				static const ShaderVariation* VAR_LOOKUP[4];
+				VAR_LOOKUP[0] = &getVertexInputVariation<false, false>();
+				VAR_LOOKUP[1] = &getVertexInputVariation<true, false>();
+				VAR_LOOKUP[2] = &getVertexInputVariation<false, true>();
+				VAR_LOOKUP[3] = &getVertexInputVariation<true, true>();
 
 				for (UINT32 i = 0; i < (UINT32)RenderableAnimType::Count; i++)
 				{

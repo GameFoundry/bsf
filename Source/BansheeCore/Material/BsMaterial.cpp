@@ -58,30 +58,55 @@ namespace bs
 	{
 		paramsSet->update(mParams, updateAll);
 	}
-
+	
 	template<bool Core>
-	UINT32 TMaterial<Core>::findTechnique(const StringID& tag) const
+	UINT32 TMaterial<Core>::findTechnique(const FIND_TECHNIQUE_DESC& desc) const
 	{
 		for(UINT32 i = 0; i < (UINT32)mTechniques.size(); i++)
 		{
-			if (mTechniques[i]->hasTag(tag))
+			bool foundMatch = true;
+			for(UINT32 j = 0; j < desc.numTags; j++)
+			{
+				if (!mTechniques[i]->hasTag(desc.tags[j]))
+				{
+					foundMatch = false;
+					break;
+				}
+			}
+
+			if(!foundMatch)
+				continue;
+
+			if(desc.variation)
+			{
+				const ShaderVariation& curVariation = mTechniques[i]->getVariation();
+				const auto& curVarParams = curVariation.getParams();
+
+				foundMatch = true;
+				const auto& searchVarParams = desc.variation->getParams();
+				for (auto& param : searchVarParams)
+				{
+					auto iterFind = curVarParams.find(param.first);
+					if (iterFind == curVarParams.end())
+					{
+						foundMatch = false;
+						break;
+					}
+
+					if (param.second.i != iterFind->second.i)
+					{
+						foundMatch = false;
+						break;
+					}
+				}
+			}
+
+			if(foundMatch)
 				return i;
 		}
 
 		return (UINT32)-1;
-	}
-
-	template<bool Core>
-	UINT32 TMaterial<Core>::findTechnique(const ShaderVariation& variation) const
-	{
-		for(UINT32 i = 0; i < (UINT32)mTechniques.size(); i++)
-		{
-			const ShaderVariation& curVariation = mTechniques[i]->getVariation();
-			if(curVariation == variation)
-				return i;
-		}
-
-		return (UINT32)-1;
+		
 	}
 
 	template<bool Core>

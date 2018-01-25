@@ -622,7 +622,7 @@ namespace bs { namespace ct
 					paramDesc.cpuMemOffset = bufferOffset;
 					paramDesc.gpuMemOffset = bufferOffset;
 
-					desc.params[name] = paramDesc;
+					desc.params[paramName] = paramDesc;
 				}
 			}
 		}

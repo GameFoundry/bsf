@@ -44,28 +44,57 @@ namespace bs { namespace ct
 			element.perCameraBindings
 		);
 
-		gpuParams->getParamInfo()->getBindings(
-			GpuPipelineParamInfoBase::ParamType::ParamBlock,
-			"GridParams",
-			element.gridParamsBindings
-		);
-
-		if (gpuParams->hasBuffer(GPT_FRAGMENT_PROGRAM, "gLights"))
-			gpuParams->getBufferParam(GPT_FRAGMENT_PROGRAM, "gLights", element.lightsBufferParam);
-
-		if (gpuParams->hasBuffer(GPT_FRAGMENT_PROGRAM, "gGridLightOffsetsAndSize"))
-			gpuParams->getBufferParam(GPT_FRAGMENT_PROGRAM, "gGridLightOffsetsAndSize", element.gridLightOffsetsAndSizeParam);
-
-		if (gpuParams->hasBuffer(GPT_FRAGMENT_PROGRAM, "gLightIndices"))
-			gpuParams->getBufferParam(GPT_FRAGMENT_PROGRAM, "gLightIndices", element.gridLightIndicesParam);
-
-		if (gpuParams->hasBuffer(GPT_FRAGMENT_PROGRAM, "gGridProbeOffsetsAndSize"))
-			gpuParams->getBufferParam(GPT_FRAGMENT_PROGRAM, "gGridProbeOffsetsAndSize", element.gridProbeOffsetsAndSizeParam);
-
-		element.imageBasedParams.populate(gpuParams, GPT_FRAGMENT_PROGRAM, true, true, true);
-
 		if (gpuParams->hasBuffer(GPT_VERTEX_PROGRAM, "boneMatrices"))
 			gpuParams->setBuffer(GPT_VERTEX_PROGRAM, "boneMatrices", element.boneMatrixBuffer);
+
+		const bool isTransparent = (shader->getFlags() & (UINT32)ShaderFlags::Transparent) != 0;
+		const bool usesForwardRendering = isTransparent;
+
+		if(usesForwardRendering)
+		{
+			const bool supportsClusteredForward = gRenderBeast()->getFeatureSet() == RenderBeastFeatureSet::Desktop;
+			if(supportsClusteredForward)
+			{
+				gpuParams->getParamInfo()->getBindings(
+					GpuPipelineParamInfoBase::ParamType::ParamBlock,
+					"GridParams",
+					element.gridParamsBindings
+				);
+
+				if (gpuParams->hasBuffer(GPT_FRAGMENT_PROGRAM, "gLights"))
+					gpuParams->getBufferParam(GPT_FRAGMENT_PROGRAM, "gLights", element.lightsBufferParam);
+
+				if (gpuParams->hasBuffer(GPT_FRAGMENT_PROGRAM, "gGridLightOffsetsAndSize"))
+					gpuParams->getBufferParam(GPT_FRAGMENT_PROGRAM, "gGridLightOffsetsAndSize", 
+						element.gridLightOffsetsAndSizeParam);
+
+				if (gpuParams->hasBuffer(GPT_FRAGMENT_PROGRAM, "gLightIndices"))
+					gpuParams->getBufferParam(GPT_FRAGMENT_PROGRAM, "gLightIndices", element.gridLightIndicesParam);
+
+				if (gpuParams->hasBuffer(GPT_FRAGMENT_PROGRAM, "gGridProbeOffsetsAndSize"))
+					gpuParams->getBufferParam(GPT_FRAGMENT_PROGRAM, "gGridProbeOffsetsAndSize", 
+						element.gridProbeOffsetsAndSizeParam);
+			}
+			else
+			{
+				gpuParams->getParamInfo()->getBinding(
+					GPT_FRAGMENT_PROGRAM,
+					GpuPipelineParamInfoBase::ParamType::ParamBlock,
+					"Lights",
+					element.lightsParamBlockBinding
+				);
+
+				gpuParams->getParamInfo()->getBinding(
+					GPT_FRAGMENT_PROGRAM,
+					GpuPipelineParamInfoBase::ParamType::ParamBlock,
+					"LightAndReflProbeParams",
+					element.lightAndReflProbeParamsParamBlockBinding
+				);
+			}
+
+			element.imageBasedParams.populate(gpuParams, GPT_FRAGMENT_PROGRAM, true, supportsClusteredForward, 
+				supportsClusteredForward);
+		}
 	}
 
 	void ObjectRenderer::setParamFrameParams(float time)

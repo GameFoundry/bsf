@@ -7,7 +7,6 @@
 #include "$ENGINE$\GBufferInput.bslinc"
 #include "$ENGINE$\PPBase.bslinc"
 #include "$ENGINE$\PerCameraData.bslinc"
-#define STANDARD_DEFERRED
 #include "$ENGINE$\ImageBasedLighting.bslinc"
 
 technique DeferredIBLFinalize

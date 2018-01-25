@@ -398,6 +398,7 @@ namespace bs
 			lookup[(UINT32)GPDT_INT3] = { 4, 12, 16, 1, 3 };
 			lookup[(UINT32)GPDT_INT4] = { 4, 16, 16, 1, 4 };
 			lookup[(UINT32)GPDT_BOOL] = { 4, 4, 4, 1, 1 };
+			lookup[(UINT32)GPDT_STRUCT] = { 4, 0, 16, 1, 1 };
 		}
 
 		GpuParamDataTypeInfo lookup[GPDT_COUNT];

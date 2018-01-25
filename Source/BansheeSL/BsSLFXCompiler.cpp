@@ -513,7 +513,8 @@ namespace bs
 				}
 			}
 				break;
-			case Xsc::Reflection::UniformType::Struct: break;
+			case Xsc::Reflection::UniformType::Struct:
+				break;
 			default: ;
 			}
 		}

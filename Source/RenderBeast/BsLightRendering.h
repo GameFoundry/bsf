@@ -7,7 +7,11 @@
 #include "Renderer/BsParamBlocks.h"
 #include "Renderer/BsLight.h"
 
-namespace bs { namespace ct
+namespace bs 
+{
+	class Bounds;
+
+namespace ct
 {
 	struct SceneInfo;
 	class RendererViewGroup;
@@ -15,6 +19,9 @@ namespace bs { namespace ct
 	/** @addtogroup RenderBeast
 	 *  @{
 	 */
+
+	/** Maximum number of lights that can influence an object when basic forward rendering is used. */
+	static constexpr UINT32 STANDARD_FORWARD_MAX_NUM_LIGHTS = 8;
 
 	/** Information about a single light, as seen by the lighting shader. */
 	struct LightData
@@ -100,6 +107,20 @@ namespace bs { namespace ct
 		/** Returns a GPU bindable buffer containing information about every light. */
 		SPtr<GpuBuffer> getLightBuffer() const { return mLightBuffer; }
 
+		/** 
+		 * Scans the list of lights visible in the view frustum to find the ones influencing the object described by
+		 * the provided bounds. A maximum number of STANDARD_FORWARD_MAX_NUM_LIGHTS will be output. If there are more
+		 * influencing lights, only the most important ones will be returned. 
+		 * 
+		 * The lights will be output in the following order: directional, radial, spot. @p counts will contain the number
+		 * of directional lights (component 'x'), number of radial lights (component 'y') and number of spot lights
+		 * (component 'z');
+		 * 
+		 * update() must have been called with most recent scene/view information before calling this method.
+		 */
+		void gatherInfluencingLights(const Bounds& bounds, const LightData* (&output)[STANDARD_FORWARD_MAX_NUM_LIGHTS], 
+			Vector3I& counts) const;
+
 		/** Returns the number of directional lights in the lights buffer. */
 		UINT32 getNumDirLights() const { return mNumLights[0]; }
 
@@ -126,11 +147,9 @@ namespace bs { namespace ct
 		UINT32 mNumLights[(UINT32)LightType::Count];
 		UINT32 mNumShadowedLights[(UINT32)LightType::Count];
 
-		// These are rebuilt every call to setLights()
+		// These are rebuilt every call to update()
 		Vector<const RendererLight*> mVisibleLights[(UINT32)LightType::Count];
-
-		// Helpers to avoid memory allocations
-		Vector<LightData> mLightDataTemp;
+		Vector<LightData> mVisibleLightData;
 	};
 
 	BS_PARAM_BLOCK_BEGIN(TiledLightingParamDef)
@@ -199,6 +218,19 @@ namespace bs { namespace ct
 		GpuParamBuffer mInputParam;
 		SPtr<GpuParamBlockBuffer> mParamBuffer;
 	};
+
+	BS_PARAM_BLOCK_BEGIN(LightsParamDef)
+		BS_PARAM_BLOCK_ENTRY_ARRAY(LightData, gLights, STANDARD_FORWARD_MAX_NUM_LIGHTS)
+	BS_PARAM_BLOCK_END
+
+	extern LightsParamDef gLightsParamDef;
+
+	BS_PARAM_BLOCK_BEGIN(LightAndReflProbeParamsParamDef)
+		BS_PARAM_BLOCK_ENTRY(Vector4I, gLightOffsets)
+		BS_PARAM_BLOCK_ENTRY(int, gReflProbeCount)
+	BS_PARAM_BLOCK_END
+
+	extern LightAndReflProbeParamsParamDef gLightAndReflProbeParamsParamDef;
 
 	/** @} */
 }}

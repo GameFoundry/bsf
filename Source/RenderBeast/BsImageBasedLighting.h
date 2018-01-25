@@ -18,6 +18,9 @@ namespace bs { namespace ct
 	 *  @{
 	 */
 
+	/** Maximum number of refl. probes that can influence an object when basic forward rendering is used. */
+	static constexpr UINT32 STANDARD_FORWARD_MAX_NUM_PROBES = 8;
+
 	/** Information about a single reflection probe, as seen by the lighting shader. */
 	struct ReflProbeData
 	{
@@ -115,6 +118,9 @@ namespace bs { namespace ct
 
 		GpuParamBuffer reflectionProbeIndicesParam;
 		GpuParamBinding reflProbeParamBindings;
+
+		// Only utilized when standard forward rendering is used
+		GpuParamBinding reflProbesBinding;
 	};
 
 	/** Parameter buffer containing information about reflection probes. */
@@ -188,6 +194,12 @@ namespace bs { namespace ct
 
 		static const UINT32 TILE_SIZE;
 	};
+
+	BS_PARAM_BLOCK_BEGIN(ReflProbesParamDef)
+		BS_PARAM_BLOCK_ENTRY_ARRAY(ReflProbeData, gReflectionProbes, STANDARD_FORWARD_MAX_NUM_PROBES)
+	BS_PARAM_BLOCK_END
+
+	extern ReflProbesParamDef gReflProbesParamDef;
 
 	/** @} */
 }}

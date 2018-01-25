@@ -23,25 +23,31 @@ namespace bs
 	 */
 
 	/** Common shader variations. */
-	static ShaderVariation SVar_Static = ShaderVariation({
-		ShaderVariation::Param("SKINNED", false),
-		ShaderVariation::Param("MORPH", false),
-	});
 
-	static ShaderVariation SVar_Skinned = ShaderVariation({
-		ShaderVariation::Param("SKINNED", true),
-		ShaderVariation::Param("MORPH", false),
-	});
+	/** Returns a specific vertex input shader variation. */
+	template<bool skinned, bool morph>
+	static const ShaderVariation& getVertexInputVariation()
+	{
+		static ShaderVariation variation = ShaderVariation({
+			ShaderVariation::Param("SKINNED", skinned),
+			ShaderVariation::Param("MORPH", morph),
+		});
 
-	static ShaderVariation SVar_Morph = ShaderVariation({
-		ShaderVariation::Param("SKINNED", false),
-		ShaderVariation::Param("MORPH", true),
-	});
+		return variation;
+	}
 
-	static ShaderVariation SVar_SkinnedMorph = ShaderVariation({
-		ShaderVariation::Param("SKINNED", true),
-		ShaderVariation::Param("MORPH", true),
-	});
+	/** Returns a specific forward rendering shader variation. */
+	template<bool skinned, bool morph, bool clustered>
+	static const ShaderVariation& getForwardRenderingVariation()
+	{
+		static ShaderVariation variation = ShaderVariation({
+			ShaderVariation::Param("SKINNED", skinned),
+			ShaderVariation::Param("MORPH", morph),
+			ShaderVariation::Param("CLUSTERED", clustered),
+		});
+
+		return variation;
+	}
 
 	/** Technique tags. */
 	static StringID RTag_Skinned = "Skinned";

@@ -254,19 +254,52 @@ namespace bs {	namespace ct
 				if (renElement.material != nullptr && renElement.material->getShader() == nullptr)
 					renElement.material = nullptr;
 
-				// If no mInfo.aterial use the default mInfo.aterial
+				// If no material use the default material
 				if (renElement.material == nullptr)
 					renElement.material = Material::create(DefaultMaterial::get()->getShader());
 
 				// Determine which technique to use
-				static const ShaderVariation* variationLookup[4] = { &SVar_Static, &SVar_Skinned, &SVar_Morph, &SVar_SkinnedMorph };
 				static_assert((UINT32)RenderableAnimType::Count == 4, "RenderableAnimType is expected to have four sequential entries.");
 
-				UINT32 techniqueIdx = -1;
+				bool isTransparent = (renElement.material->getShader()->getFlags() & (UINT32)ShaderFlags::Transparent) != 0;
+				bool usesForwardRendering = isTransparent;
+				
 				RenderableAnimType animType = renderable->getAnimType();
-				renElement.vertexInputVariation = variationLookup[(int)animType];
 
-				techniqueIdx = renElement.material->findTechnique(*renElement.vertexInputVariation);
+				static const ShaderVariation* VAR_LOOKUP[4];
+				if(usesForwardRendering)
+				{
+					bool supportsClusteredForward = gRenderBeast()->getFeatureSet() == RenderBeastFeatureSet::Desktop;
+
+					if(supportsClusteredForward)
+					{
+						VAR_LOOKUP[0] = &getForwardRenderingVariation<false, false, true>();
+						VAR_LOOKUP[1] = &getForwardRenderingVariation<true, false, true>();
+						VAR_LOOKUP[2] = &getForwardRenderingVariation<false, true, true>();
+						VAR_LOOKUP[3] = &getForwardRenderingVariation<true, true, true>();
+					}
+					else
+					{
+						VAR_LOOKUP[0] = &getForwardRenderingVariation<false, false, false>();
+						VAR_LOOKUP[1] = &getForwardRenderingVariation<true, false, false>();
+						VAR_LOOKUP[2] = &getForwardRenderingVariation<false, true, false>();
+						VAR_LOOKUP[3] = &getForwardRenderingVariation<true, true, false>();
+					}
+				}
+				else
+				{
+					VAR_LOOKUP[0] = &getVertexInputVariation<false, false>();
+					VAR_LOOKUP[1] = &getVertexInputVariation<true, false>();
+					VAR_LOOKUP[2] = &getVertexInputVariation<false, true>();
+					VAR_LOOKUP[3] = &getVertexInputVariation<true, true>();
+				}
+
+				const ShaderVariation* variation = VAR_LOOKUP[(int)animType];
+
+				FIND_TECHNIQUE_DESC findDesc;
+				findDesc.variation = variation;
+
+				UINT32 techniqueIdx = renElement.material->findTechnique(findDesc);
 
 				if (techniqueIdx == (UINT32)-1)
 					techniqueIdx = renElement.material->getDefaultTechnique();
@@ -286,7 +319,7 @@ namespace bs {	namespace ct
 						{
 							Vector<VertexElement> missingElements = vertexDecl->getMissingElements(shaderDecl);
 
-							// If using mInfo.orph shapes ignore POSITION1 and NORMAL1 mInfo.issing since we assign them from within the renderer
+							// If using morph shapes ignore POSITION1 and NORMAL1 missing since we assign them from within the renderer
 							if (animType == RenderableAnimType::Morph || animType == RenderableAnimType::SkinnedMorph)
 							{
 								auto removeIter = std::remove_if(missingElements.begin(), missingElements.end(), [](const VertexElement& x)
@@ -301,7 +334,8 @@ namespace bs {	namespace ct
 							if (!missingElements.empty())
 							{
 								StringStream wrnStream;
-								wrnStream << "Provided mesh is mInfo.issing required vertex attributes to render with the provided shader. Missing elements: " << std::endl;
+								wrnStream << "Provided mesh is missing required vertex attributes to render with the \
+									provided shader. Missing elements: " << std::endl;
 
 								for (auto& entry : missingElements)
 									wrnStream << "\t" << toString(entry.getSemantic()) << entry.getSemanticIdx() << std::endl;
@@ -313,7 +347,7 @@ namespace bs {	namespace ct
 					}
 				}
 
-				// Generate or assigned renderer specific data for the mInfo.aterial
+				// Generate or assigned renderer specific data for the material
 				renElement.params = renElement.material->createParamsSet(techniqueIdx);
 				renElement.material->updateParamsSet(renElement.params, true);
 
@@ -431,7 +465,7 @@ namespace bs {	namespace ct
 
 	void RendererScene::updateReflectionProbe(ReflectionProbe* probe, bool texture)
 	{
-		// Should only get called if transform changes, any other mInfo.ajor changes and ReflProbeInfo entry gets rebuild
+		// Should only get called if transform changes, any other major changes and ReflProbeInfo entry gets rebuild
 		UINT32 probeId = probe->getRendererId();
 		mInfo.reflProbeWorldBounds[probeId] = probe->getBounds();
 

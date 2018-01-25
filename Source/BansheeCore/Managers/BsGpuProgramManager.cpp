@@ -97,13 +97,13 @@ namespace bs
 	}
 
 	void GpuProgramManager::removeFactory(GpuProgramFactory* factory)
-    {
-        FactoryMap::iterator it = mFactories.find(factory->getLanguage());
-        if (it != mFactories.end() && it->second == factory)
-        {
-            mFactories.erase(it);
-        }
-    }
+	{
+		FactoryMap::iterator it = mFactories.find(factory->getLanguage());
+		if (it != mFactories.end() && it->second == factory)
+		{
+			mFactories.erase(it);
+		}
+	}
 
 	GpuProgramFactory* GpuProgramManager::getFactory(const String& language)
 	{
@@ -123,12 +123,12 @@ namespace bs
 	}
 
 	SPtr<GpuProgram> GpuProgramManager::create(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
-    {
+	{
 		SPtr<GpuProgram> ret = createInternal(desc, deviceMask);
 		ret->initialize();
 
-        return ret;
-    }
+		return ret;
+	}
 
 	SPtr<GpuProgram> GpuProgramManager::createInternal(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
 	{

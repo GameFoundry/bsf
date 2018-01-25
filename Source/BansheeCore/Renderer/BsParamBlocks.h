@@ -16,23 +16,75 @@ namespace bs { namespace ct
 
 	/** Wrapper for a single parameter in a parameter block buffer. */
 	template<class T>
-	class BS_CORE_EXPORT ParamBlockParam
+	class ParamBlockParam
 	{
 	public:
 		ParamBlockParam() { }
-		ParamBlockParam(const GpuParamDataDesc& paramDesc);
+		ParamBlockParam(const GpuParamDataDesc& paramDesc)
+			:mParamDesc(paramDesc)
+		{ }
 
 		/** 
 		 * Sets the parameter in the provided parameter block buffer. Caller is responsible for ensuring the param block
 		 * buffer contains this parameter. 
 		 */
-		void set(const SPtr<GpuParamBlockBuffer>& paramBlock, const T& value, UINT32 arrayIdx = 0) const;
+		void set(const SPtr<GpuParamBlockBuffer>& paramBlock, const T& value, UINT32 arrayIdx = 0) const
+		{
+#if BS_DEBUG_MODE
+			if (arrayIdx >= mParamDesc.arraySize)
+			{
+				BS_EXCEPT(InvalidParametersException, "Array index out of range. Array size: " +
+					toString(mParamDesc.arraySize) + ". Requested size: " + toString(arrayIdx));
+			}
+#endif
+
+			UINT32 elementSizeBytes = mParamDesc.elementSize * sizeof(UINT32);
+			UINT32 sizeBytes = std::min(elementSizeBytes, (UINT32)sizeof(T)); // Truncate if it doesn't fit within parameter size
+
+			bool transposeMatrices = RenderAPI::instance().getAPIInfo().isFlagSet(RenderAPIFeatureFlag::ColumnMajorMatrices);
+			if (TransposePolicy<T>::transposeEnabled(transposeMatrices))
+			{
+				auto transposed = TransposePolicy<T>::transpose(value);
+				paramBlock->write((mParamDesc.cpuMemOffset + arrayIdx * mParamDesc.arrayElementStride) * sizeof(UINT32),
+					&transposed, sizeBytes);
+			}
+			else
+				paramBlock->write((mParamDesc.cpuMemOffset + arrayIdx * mParamDesc.arrayElementStride) * sizeof(UINT32),
+					&value, sizeBytes);
+
+			// Set unused bytes to 0
+			if (sizeBytes < elementSizeBytes)
+			{
+				UINT32 diffSize = elementSizeBytes - sizeBytes;
+				paramBlock->zeroOut((mParamDesc.cpuMemOffset + arrayIdx * mParamDesc.arrayElementStride) * sizeof(UINT32) +
+					sizeBytes, diffSize);
+			}
+		}
 
 		/** 
 		 * Gets the parameter in the provided parameter block buffer. Caller is responsible for ensuring the param block
 		 * buffer contains this parameter. 
 		 */
-		T get(const SPtr<GpuParamBlockBuffer>& paramBlock, UINT32 arrayIdx = 0) const;
+		T get(const SPtr<GpuParamBlockBuffer>& paramBlock, UINT32 arrayIdx = 0) const
+		{
+#if BS_DEBUG_MODE
+			if (arrayIdx >= mParamDesc.arraySize)
+			{
+				LOGERR("Array index out of range. Array size: " + toString(mParamDesc.arraySize) + ". Requested size: " +
+					toString(arrayIdx));
+				return T();
+			}
+#endif
+
+			UINT32 elementSizeBytes = mParamDesc.elementSize * sizeof(UINT32);
+			UINT32 sizeBytes = std::min(elementSizeBytes, (UINT32)sizeof(T));
+
+			T value;
+			paramBlock->read((mParamDesc.cpuMemOffset + arrayIdx * mParamDesc.arrayElementStride) * sizeof(UINT32), &value,
+				sizeBytes);
+
+			return value;
+		}
 
 	protected:
 		GpuParamDataDesc mParamDesc;
@@ -115,6 +167,7 @@ namespace bs { namespace ct
 			newEntry.name = #Name;																							\
 			newEntry.type = (GpuParamDataType)TGpuDataParamInfo<Type>::TypeId;												\
 			newEntry.arraySize = NumElements;																				\
+			newEntry.elementSize = sizeof(Type);																			\
 		}																													\
 																															\
 		void META_InitPrevEntry(const Vector<GpuParamDataDesc>& params, UINT32 idx, META_NextEntry_##Name id)				\

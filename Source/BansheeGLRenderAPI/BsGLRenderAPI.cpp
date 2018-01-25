@@ -2783,7 +2783,16 @@ namespace bs { namespace ct
 
 		for (auto& param : params)
 		{
-			UINT32 size = GLSLParamParser::calcInterfaceBlockElementSizeAndOffset(param.type, param.arraySize, block.blockSize);
+			UINT32 size;
+			
+			if(param.type == GPDT_STRUCT)
+			{
+				// Structs are always aligned and rounded up to vec4
+				size = Math::divideAndRoundUp(param.elementSize, 16U) * 4;
+				block.blockSize = Math::divideAndRoundUp(block.blockSize, 4U);
+			}
+			else
+				size = GLSLParamParser::calcInterfaceBlockElementSizeAndOffset(param.type, param.arraySize, block.blockSize);
 
 			if (param.arraySize > 1)
 			{

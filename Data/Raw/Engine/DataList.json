@@ -151,6 +151,18 @@
         {
             "Path": "VertexInput.bslinc",
             "UUID": "2d0dc7e6-46bf-03bb-f48d-46bf25dda973"
+        },
+        {
+            "Path": "DirectLightAccumulator.bslinc",
+            "UUID": "71fa057c-4f77-8bb0-acb3-4f77cb467414"
+        },
+        {
+            "Path": "ReflProbeAccumulator.bslinc",
+            "UUID": "72a07be3-4949-b48c-449b-49491e752f8a"
+        },
+        {
+            "Path": "ForwardLighting.bslinc",
+            "UUID": "bf35f9b3-4c48-30bc-d480-4c48cb444517"
         }
     ],
     "Shaders": [

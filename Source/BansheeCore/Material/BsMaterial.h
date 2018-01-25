@@ -47,6 +47,30 @@ namespace bs
 		ResourceChanged		= 2 << 1
 	};
 
+	/** Structure used when searching for a specific technique in a Material. */
+	struct FIND_TECHNIQUE_DESC
+	{
+		static constexpr UINT32 MAX_NUM_TAGS = 10;
+
+		/** A set of tags that the technique must have. */
+		StringID tags[MAX_NUM_TAGS];
+
+		/** Number of valid tags in the @p tags array. */
+		UINT32 numTags = 0;
+
+		/** Specified variation of the technique. Parameters not specified in the variation are assumed to be irrelevant. */
+		const ShaderVariation* variation = nullptr;
+
+		/** Registers a new tag to look for when searching for the technique. */
+		void addTag(const StringID& tag)
+		{
+			BS_ASSERT(numTags < MAX_NUM_TAGS);
+
+			tags[numTags] = tag;
+			numTags++;
+		}
+	};
+
 	/**
 	 * Material that controls how objects are rendered. It is represented by a shader and parameters used to set up that
 	 * shader. It provides a simple interface for manipulating the parameters.
@@ -123,11 +147,8 @@ namespace bs
 		/** Returns the total number of techniques supported by this material. */
 		UINT32 getNumTechniques() const { return (UINT32)mTechniques.size(); }
 
-		/** Attempts to find a technique with the supported tag. Returns an index of the technique, or -1 if not found. */
-		UINT32 findTechnique(const StringID& tag) const;
-
-		/** Attempts to find a technique matching the provided variation. Returns an index of the technique, or -1 if not found. */
-		UINT32 findTechnique(const ShaderVariation& variation) const;
+		/** Attempts to find a technique matching the specified variation and tags. Returns -1 if none can be found. */
+		UINT32 findTechnique(const FIND_TECHNIQUE_DESC& desc) const;
 
 		/** Finds the index of the default (primary) technique to use. */
 		UINT32 getDefaultTechnique() const;

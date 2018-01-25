@@ -13,6 +13,9 @@ technique LightGridLLCreation
 
 	code
 	{
+		StructuredBuffer<LightData> gLights;
+		StructuredBuffer<ReflProbeData> gReflectionProbes;
+	
 		[layout(r32ui)]
 		RWBuffer<uint> gLightsCounter;
 		[layout(r32ui)]

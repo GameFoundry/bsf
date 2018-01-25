@@ -6,9 +6,6 @@ mixin LightingCommon
 
 	code
 	{
-		// Arbitrary limit, increase if needed
-		#define MAX_LIGHTS 512
-	
 		#define PI 3.1415926
 		#define HALF_PI 1.5707963
 		
@@ -339,65 +336,12 @@ mixin LightingCommon
 				
 			return lightData.color * illuminance * attenuation * surfaceShading;
 		}
-		
-		#ifdef USE_COMPUTE_INDICES
-			groupshared uint gLightIndices[MAX_LIGHTS];
-			StructuredBuffer<LightData> gLights;
-			#define REQUIRES_LIGHT_ITERATION 1
-		#endif
-		
-		#ifdef USE_LIGHT_GRID_INDICES
-			Buffer<uint> gLightIndices;
-			StructuredBuffer<LightData> gLights;
-			#define REQUIRES_LIGHT_ITERATION 1
-		#endif
-		
-		#ifdef REQUIRES_LIGHT_ITERATION
-		float4 getDirectLighting(float3 worldPos, float3 V, float3 R, SurfaceData surfaceData, uint4 lightOffsets)
-		{
-			float3 N = surfaceData.worldNormal.xyz;
-			float roughness2 = max(surfaceData.roughness, 0.08f);
-			roughness2 *= roughness2;
-			
-			float3 outLuminance = 0;
-			float alpha = 0.0f;
-			if(surfaceData.worldNormal.w > 0.0f)
-			{
-				// Handle directional lights
-				[loop]
-				for(uint i = 0; i < lightOffsets.x; ++i)
-				{
-					LightData lightData = gLights[i];
-					outLuminance += getLuminanceDirectional(lightData, worldPos, V, R, surfaceData);
-				}
-				
-				// Handle radial lights
-				[loop]
-				for (uint j = lightOffsets.y; j < lightOffsets.z; ++j)
-				{
-					uint lightIdx = gLightIndices[j];
-					LightData lightData = gLights[lightIdx];
-					
-					outLuminance += getLuminanceRadial(lightData, worldPos, V, R, roughness2, surfaceData);
-				}
-
-				// Handle spot lights
-				[loop]
-				for(uint k = lightOffsets.z; k < lightOffsets.w; ++k)
-				{
-					uint lightIdx = gLightIndices[k];
-					LightData lightData = gLights[lightIdx];
-					
-					outLuminance += getLuminanceSpot(lightData, worldPos, V, R, roughness2, surfaceData);
-				}
-				
-				// Ambient term for in-editor visualization, not used in actual lighting
-				outLuminance += surfaceData.albedo.rgb * gAmbientFactor / PI;
-				alpha = 1.0f;
-			}
-			
-			return float4(outLuminance, alpha);
-		}
-		#endif
 	};
 };
+
+// Hackish way of "instantiating" two versions of a mixin (to be removed when template/specialization support is added)
+#include "$ENGINE$\DirectLightAccumulator.bslinc"
+
+#define USE_UNIFORM_BUFFER
+#include "$ENGINE$\DirectLightAccumulator.bslinc"
+#undef USE_UNIFORM_BUFFER

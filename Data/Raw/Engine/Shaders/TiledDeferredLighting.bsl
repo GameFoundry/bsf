@@ -10,6 +10,7 @@ technique TiledDeferredLighting
 	mixin GBufferInput;
 	mixin PerCameraData;
 	mixin LightingCommon;
+	mixin LightAccumulatorIndexed;
 	mixin ReflectionCubemapCommon;
 	mixin ImageBasedLighting;
 

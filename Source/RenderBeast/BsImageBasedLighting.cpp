@@ -143,6 +143,13 @@ namespace bs { namespace ct
 			"ReflProbeParams",
 			reflProbeParamBindings
 		);
+
+		params->getParamInfo()->getBinding(
+			programType,
+			GpuPipelineParamInfoBase::ParamType::ParamBlock,
+			"ReflectionProbes",
+			reflProbesBinding
+		);
 	}
 
 	ReflProbeParamBuffer::ReflProbeParamBuffer()
@@ -285,4 +292,6 @@ namespace bs { namespace ct
 			return get(getVariation<8>());
 		}
 	}
+
+	ReflProbesParamDef gReflProbesParamDef;
 }}

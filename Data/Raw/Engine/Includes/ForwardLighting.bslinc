@@ -1,0 +1,83 @@
+#include "$ENGINE$\LightGridCommon.bslinc"
+#include "$ENGINE$\ReflectionCubemapCommon.bslinc"
+#define USE_LIGHT_GRID_INDICES 1
+#include "$ENGINE$\LightingCommon.bslinc"
+#include "$ENGINE$\ImageBasedLighting.bslinc"
+
+mixin ForwardLighting
+{
+	mixin LightingCommon;
+	mixin ReflectionCubemapCommon;
+	mixin ImageBasedLighting;
+	
+	#if CLUSTERED
+	mixin LightGridCommon;
+	mixin LightAccumulatorIndexed;
+	mixin ReflProbeAccumulatorIndexed;
+	#else
+	mixin LightAccumulatorDirect;
+	mixin ReflProbeAccumulatorDirect;
+	#endif
+	
+	variations
+	{
+		CLUSTERED = { true, false };
+	};		
+
+	code
+	{
+		#if CLUSTERED
+		Buffer<uint4> gGridLightOffsetsAndSize;
+		Buffer<uint2> gGridProbeOffsetsAndSize;
+		#else
+		[internal]
+		cbuffer LightAndReflProbeParams
+		{
+			// Number of lights per type in the lights buffer
+			// x - number of directional lights
+			// y - offset to radial lights
+			// z - offset to spot lights
+			// w - total number of lights
+			uint4 gLightOffsets;
+			
+			uint gReflProbeCount;
+		}
+		#endif
+
+		float3 calcLighting(float3 worldPosition, float3 screenPosition, float2 uv, SurfaceData surfaceData)
+		{
+			#if CLUSTERED
+			uint2 pixelPos = (uint2)screenPosition.xy;
+			uint cellIdx = calcCellIdx(pixelPos, screenPosition.z);
+			uint3 lightOffsetAndSize = gGridLightOffsetsAndSize[cellIdx].rgb;
+			
+			uint4 lightOffsets;
+			lightOffsets.x = gLightCounts.x;
+			lightOffsets.y = lightOffsetAndSize.x;
+			lightOffsets.z = lightOffsets.y + lightOffsetAndSize.y;
+			lightOffsets.w = lightOffsets.z + lightOffsetAndSize.z;
+			
+			uint2 reflProbeOffsetAndSize = gGridProbeOffsetsAndSize[cellIdx];
+			#else
+			uint4 lightOffsets = gLightOffsets;
+			uint2 reflProbeOffsetAndSize = uint2(0, gReflProbeCount);			
+			#endif
+			
+			float3 V = normalize(gViewOrigin - worldPosition);
+			float3 N = surfaceData.worldNormal.xyz;
+			float3 R = 2 * dot(V, N) * N - V;
+			float3 specR = getSpecularDominantDir(N, R, surfaceData.roughness);
+			
+			float4 directLighting = getDirectLighting(worldPosition, V, specR, surfaceData, lightOffsets);
+			float ao = gAmbientOcclusionTex.Sample(gAmbientOcclusionSamp, uv);
+			float4 ssr = gSSRTex.Sample(gSSRSamp, uv);
+			float3 imageBasedSpecular = getImageBasedSpecular(worldPosition, V, specR, surfaceData, ao, ssr,
+				reflProbeOffsetAndSize.x, reflProbeOffsetAndSize.y);
+
+			float3 totalLighting = directLighting.rgb;
+			totalLighting.rgb += imageBasedSpecular;
+
+			return totalLighting;
+		}	
+	};
+};

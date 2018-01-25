@@ -40,6 +40,9 @@ namespace bs
 
 		for (auto& entry : dataParams)
 		{
+			if(entry.second.type == GPDT_UNKNOWN)
+				continue;
+
 			UINT32 paramIdx = (UINT32)mParams.size();
 			mParams.push_back(ParamData());
 			mParamLookup[entry.first] = paramIdx;

@@ -6,7 +6,6 @@
 
 #include "$ENGINE$\GBufferInput.bslinc"
 #include "$ENGINE$\PerCameraData.bslinc"
-#define STANDARD_DEFERRED
 #include "$ENGINE$\ImageBasedLighting.bslinc"
 
 technique DeferredIBLProbe

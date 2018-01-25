@@ -1,0 +1,101 @@
+// 
+// Contains helper mixin used for initializing different forms of refl. probe accumulation. Can be removed 
+// when template/specialization support for mixins is added to BSL.
+//
+
+#ifdef USE_UNIFORM_BUFFER
+mixin ReflProbeAccumulatorDirect
+#else
+mixin ReflProbeAccumulatorIndexed
+#endif
+{
+	code
+	{
+		#ifdef USE_UNIFORM_BUFFER
+			#define MAX_PROBES 8
+			
+			[internal]
+			cbuffer ReflProbes
+			{
+				ReflProbeData gReflectionProbes[MAX_PROBES];
+			}
+		#else
+			#define MAX_PROBES 512 // Arbitrary limit, increase if needed
+		
+			#ifdef USE_COMPUTE_INDICES
+				groupshared uint gReflectionProbeIndices[MAX_PROBES];
+				StructuredBuffer<ReflProbeData> gReflectionProbes;
+			#endif
+			
+			#ifdef USE_LIGHT_GRID_INDICES
+				Buffer<uint> gReflectionProbeIndices;
+				StructuredBuffer<ReflProbeData> gReflectionProbes;
+			#endif
+		#endif
+		
+		float3 gatherReflectionRadiance(float3 worldPos, float3 dir, float roughness, float alpha, float3 specularColor, uint probeOffset, uint numProbes)
+		{
+			if(gUseReflectionMaps == 0)
+				return specularColor;
+									
+			float mipLevel = mapRoughnessToMipLevel(roughness, gReflCubemapNumMips);
+			
+			float3 output = 0;
+			[loop]
+			for(uint i = 0; i < numProbes; i++)
+			{
+				if(alpha < 0.001f)
+					break;
+						
+				#ifdef USE_UNIFORM_BUFFER
+				uint probeIdx = probeOffset + i;
+				#else
+				uint probeIdx = gReflectionProbeIndices[probeOffset + i];
+				#endif
+				
+				ReflProbeData probeData = gReflectionProbes[probeIdx];
+				float4 probeValue = evaluateProbe(worldPos, dir, mipLevel, probeData);
+				
+				output += probeValue.rgb * alpha; 
+				alpha *= probeValue.w;
+			}
+				
+			if(gSkyCubemapAvailable > 0)
+			{
+				float skyMipLevel = mapRoughnessToMipLevel(roughness, gSkyCubemapNumMips);
+				float4 skySample = gSkyReflectionTex.SampleLevel(gSkyReflectionSamp, dir, skyMipLevel) * gSkyBrightness;
+				
+				output += skySample.rgb * alpha; 
+			}
+					
+			return output;
+		}
+		
+		float3 getImageBasedSpecular(float3 worldPos, float3 V, float3 R, SurfaceData surfaceData, float ao, float4 ssr, 
+			uint probeOffset, uint numProbes)
+		{
+			// See C++ code for generation of gPreintegratedEnvBRDF to see why this code works as is
+			float3 N = surfaceData.worldNormal.xyz;
+			float NoV = saturate(dot(N, V));
+			
+			// Note: Using a fixed F0 value of 0.04 (plastic) for dielectrics, and using albedo as specular for conductors.
+			// For more customizability allow the user to provide separate albedo/specular colors for both types.
+			float3 specularColor = lerp(float3(0.04f, 0.04f, 0.04f), surfaceData.albedo.rgb, surfaceData.metalness);
+			
+			// Get SSR
+			float3 radiance = ssr.rgb;
+			float alpha = 1.0f - ssr.a; // Determines how much to blend in reflection probes & skybox
+			
+			// Generate an approximate spec. occlusion value from AO. This doesn't need to be applied to SSR since it accounts
+			// for occlusion by tracing rays.
+			float specOcclusion = getSpecularOcclusion(NoV, surfaceData.roughness * surfaceData.roughness, ao);
+			alpha *= specOcclusion;
+			
+			// Get radiance from probes and skybox
+			radiance += gatherReflectionRadiance(worldPos, R, surfaceData.roughness, alpha, specularColor, probeOffset, numProbes);
+			
+			float2 envBRDF = gPreintegratedEnvBRDF.SampleLevel(gPreintegratedEnvBRDFSamp, float2(NoV, surfaceData.roughness), 0).rg;
+			return radiance * (specularColor * envBRDF.x + envBRDF.y);
+		}
+	};
+};

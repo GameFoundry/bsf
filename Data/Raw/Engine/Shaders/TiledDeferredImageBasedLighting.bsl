@@ -12,6 +12,7 @@ technique TiledDeferredImageBasedLighting
 	mixin LightingCommon;
 	mixin ReflectionCubemapCommon;
 	mixin ImageBasedLighting;
+	mixin ReflProbeAccumulatorIndexed;
 
 	variations
 	{
@@ -225,7 +226,7 @@ technique TiledDeferredImageBasedLighting
 			calcTileAABB(groupId.xy, minTileZ, maxTileZ, center, extent);
 							
 			// Find probes overlapping the tile
-			for (uint i = threadIndex; i < gNumProbes && i < MAX_LIGHTS; i += TILE_SIZE)
+			for (uint i = threadIndex; i < gNumProbes && i < MAX_PROBES; i += TILE_SIZE)
 			{
 				float4 probePosition = mul(gMatView, float4(gReflectionProbes[i].position, 1.0f));
 				float probeRadius = gReflectionProbes[i].radius;

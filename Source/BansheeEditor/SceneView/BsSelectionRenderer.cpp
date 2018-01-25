@@ -78,6 +78,15 @@ namespace bs
 		constexpr int numTechniques = sizeof(mTechniqueIndices) / sizeof(mTechniqueIndices[0]);
 		static_assert(numTechniques == (int)RenderableAnimType::Count, "Number of techniques doesn't match the number of possible animation types.");
 
+		FIND_TECHNIQUE_DESC findSkinned;
+		findSkinned.addTag(RTag_Skinned);
+
+		FIND_TECHNIQUE_DESC findMorph;
+		findMorph.addTag(RTag_Morph);
+
+		FIND_TECHNIQUE_DESC findSkinnedMorph;
+		findSkinnedMorph.addTag(RTag_SkinnedMorph);
+
 		SPtr<Material> mat = any_cast<SPtr<Material>>(data);
 		for(UINT32 i = 0; i < numTechniques; i++)
 		{
@@ -85,13 +94,13 @@ namespace bs
 			switch (animType)
 			{
 				case RenderableAnimType::Skinned:
-					mTechniqueIndices[i] = mat->findTechnique(RTag_Skinned);
+					mTechniqueIndices[i] = mat->findTechnique(findSkinned);
 					break;
 				case RenderableAnimType::Morph:
-					mTechniqueIndices[i] = mat->findTechnique(RTag_Morph);
+					mTechniqueIndices[i] = mat->findTechnique(findMorph);
 					break;
 				case RenderableAnimType::SkinnedMorph:
-					mTechniqueIndices[i] = mat->findTechnique(RTag_SkinnedMorph);
+					mTechniqueIndices[i] = mat->findTechnique(findSkinnedMorph);
 					break;
 				default:
 					mTechniqueIndices[i] = mat->getDefaultTechnique();

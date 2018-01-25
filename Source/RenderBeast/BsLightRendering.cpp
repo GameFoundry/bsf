@@ -215,16 +215,17 @@ namespace bs { namespace ct
 			mNumShadowedLights[i] = mNumLights[i] - partition(mVisibleLights[i]);
 
 		// Generate light data to initialize the GPU buffer with
+		mVisibleLightData.clear();
 		for(auto& lightsPerType : mVisibleLights)
 		{
 			for(auto& entry : lightsPerType)
 			{
-				mLightDataTemp.push_back(LightData());
-				entry->getParameters(mLightDataTemp.back());
+				mVisibleLightData.push_back(LightData());
+				entry->getParameters(mVisibleLightData.back());
 			}
 		}
 
-		UINT32 size = (UINT32)mLightDataTemp.size() * sizeof(LightData);
+		UINT32 size = (UINT32)mVisibleLightData.size() * sizeof(LightData);
 		UINT32 curBufferSize;
 
 		if (mLightBuffer != nullptr)
@@ -247,9 +248,106 @@ namespace bs { namespace ct
 		}
 
 		if (size > 0)
-			mLightBuffer->writeData(0, size, mLightDataTemp.data(), BWT_DISCARD);
+			mLightBuffer->writeData(0, size, mVisibleLightData.data(), BWT_DISCARD);
+	}
 
-		mLightDataTemp.clear();
+	void VisibleLightData::gatherInfluencingLights(const Bounds& bounds, 
+		const LightData* (&output)[STANDARD_FORWARD_MAX_NUM_LIGHTS], Vector3I& counts) const
+	{
+		UINT32 outputIndices[STANDARD_FORWARD_MAX_NUM_LIGHTS];
+		UINT32 numInfluencingLights = 0;
+
+		UINT32 numDirLights = getNumDirLights();
+		for(UINT32 i = 0; i < numDirLights; i++)
+		{
+			if (numInfluencingLights >= STANDARD_FORWARD_MAX_NUM_LIGHTS)
+				return;
+
+			outputIndices[numInfluencingLights] = i;
+			numInfluencingLights++;
+		}
+
+		UINT32 pointLightOffset = numInfluencingLights;
+		
+		float distances[STANDARD_FORWARD_MAX_NUM_LIGHTS];
+		for(UINT32 i = 0; i < STANDARD_FORWARD_MAX_NUM_LIGHTS; i++)
+			distances[i] = std::numeric_limits<float>::max();
+
+		// Note: This is an ad-hoc way of evaluating light influence, a better way might be wanted
+		UINT32 numLights = (UINT32)mVisibleLightData.size();
+		UINT32 furthestLightIdx = (UINT32)-1;
+		float furthestDistance = 0.0f;
+		for (UINT32 j = numDirLights; j < numLights; j++)
+		{
+			const LightData* lightData = &mVisibleLightData[j];
+
+			Sphere lightSphere(lightData->position, lightData->attRadius);
+			if (bounds.getSphere().intersects(lightSphere))
+			{
+				float distance = bounds.getSphere().getCenter().squaredDistance(lightData->position);
+
+				// See where in the array can we fit the light
+				if (numInfluencingLights < STANDARD_FORWARD_MAX_NUM_LIGHTS)
+				{
+					outputIndices[numInfluencingLights] = j;
+					distances[numInfluencingLights] = distance;
+
+					if (distance > furthestDistance)
+					{
+						furthestLightIdx = numInfluencingLights;
+						furthestDistance = distance;
+					}
+
+					numInfluencingLights++;
+				}
+				else if (distance < furthestDistance)
+				{
+					outputIndices[furthestLightIdx] = j;
+					distances[furthestLightIdx] = distance;
+
+					furthestDistance = distance;
+					for (UINT32 k = 0; k < STANDARD_FORWARD_MAX_NUM_LIGHTS; k++)
+					{
+						if (distances[k] > furthestDistance)
+						{
+							furthestDistance = distances[k];
+							furthestLightIdx = k;
+						}
+					}
+				}
+			}
+		}
+
+		// Output actual light data, sorted by type
+		counts = Vector3I(0, 0, 0);
+
+		for(UINT32 i = 0; i < pointLightOffset; i++)
+		{
+			output[i] = &mVisibleLightData[outputIndices[i]];
+			counts.x += 1;
+		}
+
+		UINT32 outputIdx = pointLightOffset;
+		UINT32 spotLightIdx = getNumDirLights() + getNumRadialLights();
+		for(UINT32 i = pointLightOffset; i < numInfluencingLights; i++)
+		{
+			bool isSpot = outputIndices[i] >= spotLightIdx;
+			if(isSpot)
+				continue;
+
+			output[outputIdx++] = &mVisibleLightData[outputIndices[i]];
+			counts.y += 1;
+		}
+
+		for(UINT32 i = pointLightOffset; i < numInfluencingLights; i++)
+		{
+			bool isSpot = outputIndices[i] >= spotLightIdx;
+			if(!isSpot)
+				continue;
+
+			output[outputIdx++] = &mVisibleLightData[outputIndices[i]];
+			counts.z += 1;
+		}
 	}
 
 	const UINT32 TiledDeferredLightingMat::TILE_SIZE = 16;
@@ -403,4 +501,7 @@ namespace bs { namespace ct
 		Rect2 area(0.0f, 0.0f, (float)props.getWidth(), (float)props.getHeight());
 		gRendererUtility().drawScreenQuad(area);
 	}
+
+	LightsParamDef gLightsParamDef;
+	LightAndReflProbeParamsParamDef gLightAndReflProbeParamsParamDef;
 }}

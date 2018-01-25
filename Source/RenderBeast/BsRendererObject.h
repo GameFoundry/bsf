@@ -63,9 +63,6 @@ namespace bs { namespace ct
 		/** Index of the technique in the material to render the element with. */
 		UINT32 techniqueIdx;
 
-		/** Shader variation that controls the type of vertex input that is provided. */
-		const ShaderVariation* vertexInputVariation = nullptr;
-
 		/** Binding indices representing where should the per-camera param block buffer be bound to. */
 		GpuParamBinding perCameraBindings[GPT_COUNT];
 
@@ -92,6 +89,18 @@ namespace bs { namespace ct
 
 		/** Collection of parameters used for image based lighting. */
 		ImageBasedLightingParams imageBasedParams;
+		
+		/** 
+		 * Binding for a parameter block containing a list of lights influencing this object. Only used when standard
+		 * (non-clustered) forward rendering is used. 
+		 */
+		GpuParamBinding lightsParamBlockBinding;
+
+		/** 
+		 * Binding for a parameter block that contains the number of lights and reflection probes in the light/refl. probe 
+		 * parameter blocks. Only used when standard (non-clustered) forward rendering is used.
+		 */
+		GpuParamBinding lightAndReflProbeParamsParamBlockBinding;
 
 		/** GPU buffer containing element's bone matrices, if it requires any. */
 		SPtr<GpuBuffer> boneMatrixBuffer;

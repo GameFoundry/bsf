@@ -1,9 +1,5 @@
 #include "$ENGINE$\BasePass.bslinc"
-#include "$ENGINE$\LightGridCommon.bslinc"
-#include "$ENGINE$\ReflectionCubemapCommon.bslinc"
-#define USE_LIGHT_GRID_INDICES 1
-#include "$ENGINE$\LightingCommon.bslinc"
-#include "$ENGINE$\ImageBasedLighting.bslinc"
+#include "$ENGINE$\ForwardLighting.bslinc"
 
 options
 {
@@ -13,10 +9,7 @@ options
 technique Surface
 {
 	mixin BasePass;
-	mixin LightingCommon;
-	mixin LightGridCommon;
-	mixin ReflectionCubemapCommon;
-	mixin ImageBasedLighting;
+	mixin ForwardLighting;
 
 	blend
 	{
@@ -34,22 +27,19 @@ technique Surface
 
 	code
 	{
-		SamplerState gAlbedoSamp : register(s0);
-		SamplerState gNormalSamp : register(s1);
-		SamplerState gRoughnessSamp : register(s2);
-		SamplerState gMetalnessSamp : register(s3);
+		SamplerState gAlbedoSamp;
+		SamplerState gNormalSamp;
+		SamplerState gRoughnessSamp;
+		SamplerState gMetalnessSamp;
 		
-		Texture2D gAlbedoTex : register(t0);
-		Texture2D gNormalTex : register(t1);
-		Texture2D gRoughnessTex : register(t2);
-		Texture2D gMetalnessTex : register(t3);
+		Texture2D gAlbedoTex;
+		Texture2D gNormalTex;
+		Texture2D gRoughnessTex;
+		Texture2D gMetalnessTex;
 		
-		Buffer<uint4> gGridLightOffsetsAndSize;
-		Buffer<uint2> gGridProbeOffsetsAndSize;
-
-		cbuffer MaterialParams : register(b5)
+		cbuffer MaterialParams
 		{
-			float gOpacity;
+			float gOpacity = 1.0f;
 		}
 		
 		float4 fsmain(in VStoFS input) : SV_Target0
@@ -64,33 +54,8 @@ technique Surface
 			surfaceData.roughness = gRoughnessTex.Sample(gRoughnessSamp, input.uv0).x;
 			surfaceData.metalness = gMetalnessTex.Sample(gMetalnessSamp, input.uv0).x;
 			
-			uint2 pixelPos = (uint2)input.position.xy;
-			uint cellIdx = calcCellIdx(pixelPos, input.position.z);
-			uint3 lightOffsetAndSize = gGridLightOffsetsAndSize[cellIdx].rgb;
-			
-			uint4 lightOffsets;
-			lightOffsets.x = gLightCounts.x;
-			lightOffsets.y = lightOffsetAndSize.x;
-			lightOffsets.z = lightOffsets.y + lightOffsetAndSize.y;
-			lightOffsets.w = lightOffsets.z + lightOffsetAndSize.z;
-			
-			uint2 reflProbeOffsetAndSize = gGridProbeOffsetsAndSize[cellIdx];
-			
-			float3 V = normalize(gViewOrigin - input.worldPosition);
-			float3 N = surfaceData.worldNormal.xyz;
-			float3 R = 2 * dot(V, N) * N - V;
-			float3 specR = getSpecularDominantDir(N, R, surfaceData.roughness);
-			
-			float4 directLighting = getDirectLighting(input.worldPosition, V, specR, surfaceData, lightOffsets);
-			float ao = gAmbientOcclusionTex.Sample(gAmbientOcclusionSamp, input.uv0);
-			float4 ssr = gSSRTex.Sample(gSSRSamp, input.uv0);
-			float3 imageBasedSpecular = getImageBasedSpecular(input.worldPosition, V, specR, surfaceData, ao, ssr,
-				reflProbeOffsetAndSize.x, reflProbeOffsetAndSize.y);
-
-			float3 totalLighting = directLighting.rgb;
-			totalLighting.rgb += imageBasedSpecular;
-
-			return float4(totalLighting, surfaceData.albedo.a * gOpacity);
+			float3 lighting = calcLighting(input.worldPosition.xyz, input.position, input.uv0, surfaceData);
+			return float4(lighting, surfaceData.albedo.a * gOpacity);
 		}	
 	};
 };
