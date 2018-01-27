@@ -13,6 +13,12 @@ namespace bs
 	/** A set of available locations at which the renderer can call RendererExtension's render() method. */
 	enum class RenderLocation
 	{
+		/**
+		 * Rendering happens before any scene objects are rendered and before the render target for scene objects is
+		 * bound (e.g. GBuffer).
+		 */
+		Prepare,
+
 		/** 
 		 * Rendering happens before any scene objects are rendered. The renderer guarantees the render targets used for 
 		 * rendering scene objects will be bound (e.g. GBuffer).

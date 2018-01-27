@@ -281,10 +281,10 @@ namespace bs { namespace ct
 
 		Camera* sceneCamera = inputs.view.getSceneCamera();
 
-		// Trigger pre-base-pass callbacks
+		// Trigger prepare callbacks
 		if (sceneCamera != nullptr)
 		{
-			for(auto& extension : inputs.extPreBasePass)
+			for(auto& extension : inputs.extPrepare)
 			{
 				if (extension->check(*sceneCamera))
 					extension->render(*sceneCamera);
@@ -300,6 +300,16 @@ namespace bs { namespace ct
 
 		// Clear all targets
 		rapi.clearViewport(FBT_COLOR | FBT_DEPTH | FBT_STENCIL, Color::ZERO, 1.0f, 0);
+
+		// Trigger pre-base-pass callbacks
+		if (sceneCamera != nullptr)
+		{
+			for(auto& extension : inputs.extPreBasePass)
+			{
+				if (extension->check(*sceneCamera))
+					extension->render(*sceneCamera);
+			}
+		}
 
 		// Render all visible opaque elements
 		const Vector<RenderQueueElement>& opaqueElements = inputs.view.getOpaqueQueue()->getSortedElements();

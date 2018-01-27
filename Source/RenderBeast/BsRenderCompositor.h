@@ -36,6 +36,7 @@ namespace ct
 		const RenderBeastFeatureSet featureSet;
 
 		// Callbacks to external systems can hook into the compositor
+		SmallVector<RendererExtension*, 4> extPrepare;
 		SmallVector<RendererExtension*, 4> extPreBasePass;
 		SmallVector<RendererExtension*, 4> extPostBasePass;
 		SmallVector<RendererExtension*, 4> extPostLighting;

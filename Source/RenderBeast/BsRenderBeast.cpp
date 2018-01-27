@@ -397,6 +397,9 @@ namespace bs { namespace ct
 				RenderLocation location = extension->getLocation();
 				switch(location)
 				{
+				case RenderLocation::Prepare:
+					inputs.extPrepare.push_back(extension);
+					break;
 				case RenderLocation::PreBasePass: 
 					inputs.extPreBasePass.push_back(extension);
 					break;
