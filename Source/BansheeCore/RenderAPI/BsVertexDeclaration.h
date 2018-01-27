@@ -17,30 +17,30 @@ namespace bs
 	{
 		VES_POSITION = 1, /**< Position */
 		VES_BLEND_WEIGHTS = 2, /**< Blend weights */
-        VES_BLEND_INDICES = 3, /**< Blend indices */
+		VES_BLEND_INDICES = 3, /**< Blend indices */
 		VES_NORMAL = 4, /**< Normal */
 		VES_COLOR = 5, /**< Color */
 		VES_TEXCOORD = 6, /**< UV coordinate */
-        VES_BITANGENT = 7, /**< Bitangent */
-        VES_TANGENT = 8, /**< Tangent */
+		VES_BITANGENT = 7, /**< Bitangent */
+		VES_TANGENT = 8, /**< Tangent */
 		VES_POSITIONT = 9, /**< Transformed position */
 		VES_PSIZE = 10 /**< Point size */
 	};
 
 	/**	Types used to identify base types of vertex element contents. */
-    enum VertexElementType
-    {
-        VET_FLOAT1 = 0, /**< 1D floating point value */
-        VET_FLOAT2 = 1, /**< 2D floating point value */
-        VET_FLOAT3 = 2, /**< 3D floating point value */
-        VET_FLOAT4 = 3, /**< 4D floating point value */
+	enum VertexElementType
+	{
+		VET_FLOAT1 = 0, /**< 1D floating point value */
+		VET_FLOAT2 = 1, /**< 2D floating point value */
+		VET_FLOAT3 = 2, /**< 3D floating point value */
+		VET_FLOAT4 = 3, /**< 4D floating point value */
 		VET_COLOR = 4, /**< Color encoded in 32-bits (8-bits per channel). */
 		VET_SHORT1 = 5, /**< 1D 16-bit signed integer value */
 		VET_SHORT2 = 6, /**< 2D 16-bit signed integer value */
 		VET_SHORT4 = 8, /**< 4D 16-bit signed integer value */
-        VET_UBYTE4 = 9, /**< 4D 8-bit unsigned integer value */
-        VET_COLOR_ARGB = 10, /**< Color encoded in 32-bits (8-bits per channel) in ARGB order) */
-        VET_COLOR_ABGR = 11, /**< Color encoded in 32-bits (8-bits per channel) in ABGR order) */
+		VET_UBYTE4 = 9, /**< 4D 8-bit unsigned integer value */
+		VET_COLOR_ARGB = 10, /**< Color encoded in 32-bits (8-bits per channel) in ARGB order) */
+		VET_COLOR_ABGR = 11, /**< Color encoded in 32-bits (8-bits per channel) in ABGR order) */
 		VET_UINT4 = 12, /**< 4D 32-bit unsigned integer value */
 		VET_INT4 = 13,  /**< 4D 32-bit signed integer value */
 		VET_USHORT1 = 14, /**< 1D 16-bit unsigned integer value */
@@ -55,14 +55,14 @@ namespace bs
 		VET_UBYTE4_NORM = 24, /**< 4D 8-bit unsigned integer interpreted as a normalized value in [0, 1] range. */
 		VET_COUNT, // Keep at end before VET_UNKNOWN
 		VET_UNKNOWN = 0xffff
-    };
+	};
 
 	/**	Describes a single vertex element in a vertex declaration. */
 	class BS_CORE_EXPORT VertexElement
-    {
-    public:
+	{
+	public:
 		VertexElement() {}
-        VertexElement(UINT16 source, UINT32 offset, VertexElementType theType,
+		VertexElement(UINT16 source, UINT32 offset, VertexElementType theType,
 			VertexElementSemantic semantic, UINT16 index = 0, UINT32 instanceStepRate = 0);
 
 		bool operator== (const VertexElement& rhs) const;
@@ -75,13 +75,13 @@ namespace bs
 		 * Returns an offset into the buffer where this vertex is stored. This value might be in bytes but doesn't have to
 		 * be, it's likely to be render API specific.
 		 */
-        UINT32 getOffset() const { return mOffset; }
+		UINT32 getOffset() const { return mOffset; }
 
 		/** Gets the base data type of this element. */
-        VertexElementType getType() const { return mType; }
+		VertexElementType getType() const { return mType; }
 
 		/**	Gets a semantic that describes what this element contains. */
-        VertexElementSemantic getSemantic() const { return mSemantic; }
+		VertexElementSemantic getSemantic() const { return mSemantic; }
 
 		/**
 		 * Gets an index of this element. Only relevant when you have multiple elements with the same semantic, 
@@ -119,7 +119,7 @@ namespace bs
 		VertexElementSemantic mSemantic;
 		UINT16 mIndex;
 		UINT32 mInstanceStepRate;
-    };
+	};
 
 	/** @cond SPECIALIZATIONS */
 	BS_ALLOW_MEMCPY_SERIALIZATION(VertexElement);
@@ -135,8 +135,8 @@ namespace bs
 		bool operator!= (const VertexDeclarationProperties& rhs) const;
 
 		/**	Get the number of elements in the declaration. */
-        UINT32 getElementCount() const { return (UINT32)mElementList.size(); }
-        
+		UINT32 getElementCount() const { return (UINT32)mElementList.size(); }
+		
 		/**	Returns a list of vertex elements in the declaration. */
 		const List<VertexElement>& getElements() const { return mElementList; }
 
@@ -167,7 +167,7 @@ namespace bs
 	 * @note	Sim thread.
 	 */
 	class BS_CORE_EXPORT VertexDeclaration : public IReflectable, public CoreObject
-    {
+	{
 	public:
 		virtual ~VertexDeclaration() { }
 
@@ -180,7 +180,7 @@ namespace bs
 		/** @copydoc HardwareBufferManager::createVertexDeclaration */
 		static SPtr<VertexDeclaration> create(const SPtr<VertexDataDesc>& desc);
 
-    protected:
+	protected:
 		friend class HardwareBufferManager;
 
 		VertexDeclaration(const List<VertexElement>& elements);
@@ -198,7 +198,7 @@ namespace bs
 		friend class VertexDeclarationRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		RTTITypeBase* getRTTI() const override;
-    };
+	};
 
 	/**	Converts a vertex semantic enum to a readable name. */
 	BS_CORE_EXPORT String toString(const VertexElementSemantic& val);
@@ -220,7 +220,7 @@ namespace bs
 	 * @note	Core thread.
 	 */
 	class BS_CORE_EXPORT VertexDeclaration : public CoreObject
-    {
+	{
 	public:
 		virtual ~VertexDeclaration() { }
 
@@ -248,7 +248,7 @@ namespace bs
 		/** @copydoc HardwareBufferManager::createVertexDeclaration */
 		static SPtr<VertexDeclaration> create(const SPtr<VertexDataDesc>& desc, GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
-    protected:
+	protected:
 		friend class HardwareBufferManager;
 
 		VertexDeclaration(const List<VertexElement>& elements, GpuDeviceFlags deviceMask);
@@ -257,7 +257,7 @@ namespace bs
 		UINT32 mId;
 
 		static UINT32 NextFreeId;
-    };
+	};
 
 	/** @} */
 	}
