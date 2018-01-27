@@ -312,9 +312,10 @@ namespace bs { namespace ct
 						data.getData());
 					BS_CHECK_GL_ERROR();
 					break;
+				case GL_TEXTURE_2D_ARRAY:
 				case GL_TEXTURE_3D:
 					glTexSubImage3D(
-						GL_TEXTURE_3D, mLevel, 
+						mTarget, mLevel,
 						dest.left, dest.top, dest.front,
 						dest.getWidth(), dest.getHeight(), dest.getDepth(),
 						GLPixelUtil::getGLOriginFormat(data.getFormat()), GLPixelUtil::getGLOriginDataType(data.getFormat()),
