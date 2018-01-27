@@ -101,12 +101,6 @@ namespace bs { namespace ct
 		return strName;
 	}
 
-	const String& VulkanRenderAPI::getShadingLanguageName() const
-	{
-		static String strName("vksl");
-		return strName;
-	}
-
 	void VulkanRenderAPI::initialize()
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -277,7 +271,7 @@ namespace bs { namespace ct
 
 		// Create render state manager
 		RenderStateManager::startUp<VulkanRenderStateManager>();
-		GpuProgramManager::instance().addFactory(mGLSLFactory);
+		GpuProgramManager::instance().addFactory("vksl", mGLSLFactory);
 
 		initCapabilites();
 		

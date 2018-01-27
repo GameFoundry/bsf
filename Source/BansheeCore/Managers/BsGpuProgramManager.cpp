@@ -58,11 +58,6 @@ namespace bs
 		NullProgramFactory() {}
 		~NullProgramFactory() {}
 
-		const String& getLanguage() const override
-		{ 
-			return sNullLang;
-		}
-
 		SPtr<GpuProgram> create(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask) override
 		{
 			SPtr<NullProgram> ret = bs_shared_ptr_new<NullProgram>();
@@ -83,7 +78,7 @@ namespace bs
 	GpuProgramManager::GpuProgramManager()
 	{
 		mNullFactory = bs_new<NullProgramFactory>();
-		addFactory(mNullFactory);
+		addFactory(sNullLang, mNullFactory);
 	}
 
 	GpuProgramManager::~GpuProgramManager()
@@ -91,35 +86,37 @@ namespace bs
 		bs_delete((NullProgramFactory*)mNullFactory);
 	}
 
-	void GpuProgramManager::addFactory(GpuProgramFactory* factory)
+	void GpuProgramManager::addFactory(const String& language, GpuProgramFactory* factory)
 	{
-		mFactories[factory->getLanguage()] = factory;
+		Lock(mMutex);
+
+		mFactories[language] = factory;
 	}
 
-	void GpuProgramManager::removeFactory(GpuProgramFactory* factory)
+	void GpuProgramManager::removeFactory(const String& language)
 	{
-		FactoryMap::iterator it = mFactories.find(factory->getLanguage());
-		if (it != mFactories.end() && it->second == factory)
-		{
-			mFactories.erase(it);
-		}
+		Lock(mMutex);
+
+		auto iter = mFactories.find(language);
+		if (iter != mFactories.end())
+			mFactories.erase(iter);
 	}
 
 	GpuProgramFactory* GpuProgramManager::getFactory(const String& language)
 	{
-		FactoryMap::iterator i = mFactories.find(language);
+		auto iter = mFactories.find(language);
+		if (iter == mFactories.end())
+			iter = mFactories.find(sNullLang);
 
-		if (i == mFactories.end())
-			i = mFactories.find(sNullLang);
-
-		return i->second;
+		return iter->second;
 	}
 
 	bool GpuProgramManager::isLanguageSupported(const String& lang)
 	{
-		FactoryMap::iterator i = mFactories.find(lang);
+		Lock(mMutex);
 
-		return i != mFactories.end();
+		auto iter = mFactories.find(lang);
+		return iter != mFactories.end();
 	}
 
 	SPtr<GpuProgram> GpuProgramManager::create(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)

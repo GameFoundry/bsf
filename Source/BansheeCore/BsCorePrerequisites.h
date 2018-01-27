@@ -213,9 +213,6 @@
 
 namespace bs 
 {
-	static const StringID RenderAPIAny = "AnyRenderAPI";
-	static const StringID RendererAny = "AnyRenderer";
-
 	class Color;
 	class GpuProgram;
 	class GpuProgramManager;

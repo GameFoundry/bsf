@@ -8,8 +8,6 @@
 
 namespace bs { namespace ct
 {
-    const String VulkanGLSLProgramFactory::LANGUAGE_NAME = "vksl";
-
 	VulkanGLSLProgramFactory::VulkanGLSLProgramFactory()
 	{
 		glslang::InitializeProcess();
@@ -20,19 +18,14 @@ namespace bs { namespace ct
 		glslang::FinalizeProcess();
 	}
 
-    const String& VulkanGLSLProgramFactory::getLanguage() const
-    {
-        return LANGUAGE_NAME;
-    }
-
 	SPtr<GpuProgram> VulkanGLSLProgramFactory::create(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
-    {
+	{
 		SPtr<GpuProgram> gpuProg = bs_shared_ptr<VulkanGpuProgram>(new (bs_alloc<VulkanGpuProgram>())
 			VulkanGpuProgram(desc, deviceMask));
 		gpuProg->_setThisPtr(gpuProg);
 
 		return gpuProg;
-    }
+	}
 
 	SPtr<GpuProgram> VulkanGLSLProgramFactory::create(GpuProgramType type, GpuDeviceFlags deviceMask)
 	{

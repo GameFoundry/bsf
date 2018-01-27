@@ -112,7 +112,7 @@ namespace bs
 		 * positive. 
 		 */
 		template<class T>
-		static T divideAndRoundUp(T n, T d) { return (n + d - 1) / d; }
+		static constexpr T divideAndRoundUp(T n, T d) { return (n + d - 1) / d; }
 
 		/** Returns the nearest integer equal or lower of the provided value. */
 		static float floor(float val) { return (float)std::floor(val); }

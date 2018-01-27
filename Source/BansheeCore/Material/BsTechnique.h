@@ -18,8 +18,7 @@ namespace bs
 	class BS_CORE_EXPORT TechniqueBase
 	{
 	public:
-		TechniqueBase(const String& language, const StringID& renderer, const Vector<StringID>& tags, 
-			const ShaderVariation& variation);
+		TechniqueBase(const String& language, const Vector<StringID>& tags, const ShaderVariation& variation);
 		virtual ~TechniqueBase() { }
 
 		/**	Checks if this technique is supported based on current render and other systems. */
@@ -36,7 +35,6 @@ namespace bs
 
 	protected:
 		String mLanguage;
-		StringID mRenderer;
 		Vector<StringID> mTags;
 		ShaderVariation mVariation;
 	};
@@ -57,8 +55,8 @@ namespace bs
 		typedef typename TPassType<Core>::Type PassType;
 		
 		TTechnique();
-		TTechnique(const String& language, const StringID& renderer, const Vector<StringID>& tags, 
-			const ShaderVariation& variation, const Vector<SPtr<PassType>>& passes);
+		TTechnique(const String& language, const Vector<StringID>& tags, const ShaderVariation& variation, 
+			const Vector<SPtr<PassType>>& passes);
 		virtual ~TTechnique() { }
 
 		/**	Returns a pass with the specified index. */
@@ -90,8 +88,8 @@ namespace bs
 	class BS_CORE_EXPORT Technique : public IReflectable, public CoreObject, public TTechnique<false>
 	{
 	public:
-		Technique(const String& language, const StringID& renderer, const Vector<StringID>& tags,
-			const ShaderVariation& variation, const Vector<SPtr<Pass>>& passes);
+		Technique(const String& language, const Vector<StringID>& tags, const ShaderVariation& variation, 
+			const Vector<SPtr<Pass>>& passes);
 
 		/** Retrieves an implementation of a technique usable only from the core thread. */
 		SPtr<ct::Technique> getCore() const;
@@ -101,20 +99,16 @@ namespace bs
 		 *
 		 * @param[in]	language	Shading language used by the technique. The engine will not use this technique unless
 		 *							this language is supported by the render API.
-		 * @param[in]	renderer	Renderer the technique supports. Under normal circumstances the engine will not use
-		 *							this technique unless this renderer is enabled.
 		 * @param[in]	passes		A set of passes that define the technique.
 		 * @return					Newly creted technique.
 		 */
-		static SPtr<Technique> create(const String& language, const StringID& renderer, const Vector<SPtr<Pass>>& passes);
+		static SPtr<Technique> create(const String& language, const Vector<SPtr<Pass>>& passes);
 
 		/** 
 		 * Creates a new technique. 
 		 *
 		 * @param[in]	language	Shading language used by the technique. The engine will not use this technique unless
 		 *							this language is supported by the render API.
-		 * @param[in]	renderer	Renderer the technique supports. Under normal circumstances the engine will not use
-		 *							this technique unless this renderer is enabled.
 		 * @param[in]	tags		An optional set of tags that can be used for further identifying under which 
 		 *							circumstances should a technique be used.
 		 * @param[in]	variation	A set of preprocessor directives that were used for compiling this particular technique.
@@ -122,7 +116,7 @@ namespace bs
 		 * @param[in]	passes		A set of passes that define the technique.
 		 * @return					Newly creted technique.
 		 */
-		static SPtr<Technique> create(const String& language, const StringID& renderer, const Vector<StringID>& tags,
+		static SPtr<Technique> create(const String& language, const Vector<StringID>& tags,
 			const ShaderVariation& variation, const Vector<SPtr<Pass>>& passes);
 
 	protected:
@@ -161,18 +155,17 @@ namespace bs
 	class BS_CORE_EXPORT Technique : public CoreObject, public TTechnique<true>
 	{
 	public:
-		Technique(const String& language, const StringID& renderer, const Vector<StringID>& tags,
+		Technique(const String& language, const Vector<StringID>& tags,
 			const ShaderVariation& variation, const Vector<SPtr<Pass>>& passes);
 
-		/** @copydoc bs::Technique::create(const String&, const StringID&, const Vector<SPtr<Pass>>&) */
-		static SPtr<Technique> create(const String& language, const StringID& renderer,
-			const Vector<SPtr<Pass>>& passes);
+		/** @copydoc bs::Technique::create(const String&, const Vector<SPtr<Pass>>&) */
+		static SPtr<Technique> create(const String& language, const Vector<SPtr<Pass>>& passes);
 
 		/** 
-		 * @copydoc bs::Technique::create(const String&, const StringID&, const Vector<StringID>&, 
+		 * @copydoc bs::Technique::create(const String&, const Vector<StringID>&, 
 		 *				const ShaderVariation&, const Vector<SPtr<Pass>>&) 
 		 */
-		static SPtr<Technique> create(const String& language, const StringID& renderer, const Vector<StringID>& tags,
+		static SPtr<Technique> create(const String& language, const Vector<StringID>& tags,
 			const ShaderVariation& variation, const Vector<SPtr<Pass>>& passes);
 	};
 

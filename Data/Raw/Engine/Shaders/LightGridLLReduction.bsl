@@ -6,6 +6,8 @@ technique LightGridLLReduction
 	mixin PerCameraData;
 	mixin LightGridCommon; 
 
+	featureset = HighEnd;
+	
 	code
 	{
 		Buffer<uint> gLightsLLHeads;

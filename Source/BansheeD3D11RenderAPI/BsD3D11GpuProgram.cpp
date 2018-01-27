@@ -134,14 +134,19 @@ namespace bs { namespace ct
 			source.c_str(),		// [in] Pointer to the shader in memory. 
 			source.size(),		// [in] Size of the shader in memory.  
 			nullptr,			// [in] The name of the file that contains the shader code. 
-			defines,			// [in] Optional. Pointer to a NULL-terminated array of macro definitions. See D3D_SHADER_MACRO. If not used, set this to NULL. 
-			nullptr,			// [in] Optional. Pointer to an ID3DInclude Interface interface for handling include files. Setting this to NULL will cause a compile error if a shader contains a #include. 
+			defines,			// [in] Optional. Pointer to a NULL-terminated array of macro definitions. 
+								//		See D3D_SHADER_MACRO. If not used, set this to NULL. 
+			nullptr,			// [in] Optional. Pointer to an ID3DInclude Interface interface for handling include files. 
+								//		Setting this to NULL will cause a compile error if a shader contains a #include. 
 			entryPoint.c_str(),	// [in] Name of the shader-entrypoint function where shader execution begins. 
-			profile.c_str(),// [in] A string that specifies the shader model; can be any profile in shader model 4 or higher. 
+			profile.c_str(),	// [in] A string that specifies the shader model; can be any profile in shader model 4 or higher. 
 			compileFlags,		// [in] Effect compile flags - no D3DCOMPILE_ENABLE_BACKWARDS_COMPATIBILITY at the first try...
 			0,					// [in] Effect compile flags
-			&microCode,			// [out] A pointer to an ID3DBlob Interface which contains the compiled shader, as well as any embedded debug and symbol-table information. 
-			&messages			// [out] A pointer to an ID3DBlob Interface which contains a listing of errors and warnings that occurred during compilation. These errors and warnings are identical to the the debug output from a debugger.
+			&microCode,			// [out] A pointer to an ID3DBlob Interface which contains the compiled shader, as well as
+								//		 any embedded debug and symbol-table information. 
+			&messages			// [out] A pointer to an ID3DBlob Interface which contains a listing of errors and warnings
+								//		 that occurred during compilation. These errors and warnings are identical to the 
+								//		 debug output from a debugger.
 			);
 
 		if (messages != nullptr)

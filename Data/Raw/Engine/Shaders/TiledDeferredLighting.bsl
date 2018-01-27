@@ -14,6 +14,8 @@ technique TiledDeferredLighting
 	mixin ReflectionCubemapCommon;
 	mixin ImageBasedLighting;
 
+	featureset = HighEnd;
+	
 	variations
 	{
 		MSAA_COUNT = { 1, 2, 4, 8 };

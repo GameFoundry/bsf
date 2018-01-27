@@ -21,9 +21,6 @@ namespace bs { namespace ct
 		/** @copydoc RenderAPI::getName */
 		const StringID& getName() const override;
 		
-		/** @copydoc RenderAPI::getShadingLanguageName */
-		const String& getShadingLanguageName() const override;
-
 		/** @copydoc RenderAPI::setGraphicsPipeline */
 		void setGraphicsPipeline(const SPtr<GraphicsPipelineState>& pipelineState, 
 			const SPtr<CommandBuffer>& commandBuffer = nullptr) override;

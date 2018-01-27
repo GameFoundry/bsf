@@ -18,7 +18,7 @@ OptionInfo OPTION_LOOKUP[] =
 	{ OT_Depth, ODT_Complex },
 	{ OT_Stencil, ODT_Complex },
 	{ OT_Blend, ODT_Complex },
-	{ OT_Renderer, ODT_String }, 
+	{ OT_FeatureSet, ODT_String }, 
 	{ OT_Pass, ODT_Complex }, 
 	{ OT_FillMode, ODT_Int }, 
 	{ OT_CullMode, ODT_Int },

@@ -14,6 +14,8 @@ mixin ForwardLighting
 	mixin LightGridCommon;
 	mixin LightAccumulatorIndexed;
 	mixin ReflProbeAccumulatorIndexed;
+	
+	featureset = HighEnd;
 	#else
 	mixin LightAccumulatorDirect;
 	mixin ReflProbeAccumulatorDirect;

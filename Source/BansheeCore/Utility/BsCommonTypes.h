@@ -213,15 +213,11 @@ namespace bs
 		 * GPU program.
 		 */
 		GBT_STRUCTURED,
-		/** Buffer containing raw bytes. It is up to the user to interpret the data. */
-		GBT_RAW,
 		/**
 		 * Special type of buffer allowing you to specify arguments for draw operations inside the buffer instead of 
 		 * providing them directly. Useful when you want to control drawing directly from GPU.
 		 */
 		GBT_INDIRECTARGUMENT,
-		/** A stack-like buffer that allows you to add or remove elements to/from the buffer from within the GPU program. */
-		GBT_APPENDCONSUME
 	};
 
 	/** Types of valid formats used for standard GPU buffers. */

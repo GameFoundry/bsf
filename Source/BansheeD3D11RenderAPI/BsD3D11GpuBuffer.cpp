@@ -44,14 +44,8 @@ namespace bs { namespace ct
 		case GBT_STRUCTURED:
 			bufferType = D3D11HardwareBuffer::BT_STRUCTURED;
 			break;
-		case GBT_RAW:
-			bufferType = D3D11HardwareBuffer::BT_RAW;
-			break;
 		case GBT_INDIRECTARGUMENT:
 			bufferType = D3D11HardwareBuffer::BT_INDIRECTARGUMENT;
-			break;
-		case GBT_APPENDCONSUME:
-			bufferType = D3D11HardwareBuffer::BT_APPENDCONSUME;
 			break;
 		default:
 			BS_EXCEPT(InvalidParametersException, "Unsupported buffer type " + toString(props.getType()));

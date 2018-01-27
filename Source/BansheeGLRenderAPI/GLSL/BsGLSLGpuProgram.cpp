@@ -272,9 +272,6 @@ namespace bs { namespace ct
 		RenderAPI* rapi = RenderAPI::instancePtr();
 		const RenderAPICapabilities& caps = rapi->getCapabilities(0);
 
-		if(!caps.isShaderProfileSupported("glsl"))
-			return false;
-
 		switch (mProperties.getType())
 		{
 		case GPT_GEOMETRY_PROGRAM:

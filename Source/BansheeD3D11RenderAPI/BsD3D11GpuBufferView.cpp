@@ -69,9 +69,6 @@ namespace bs { namespace ct
 	{
 		const GpuBufferProperties& props = buffer->getProperties();
 
-		if (props.getType() == GBT_APPENDCONSUME)
-			BS_EXCEPT(InvalidParametersException, "Cannot create ShaderResourceView for an append/consume buffer.");
-
 		D3D11_SHADER_RESOURCE_VIEW_DESC desc;
 		ZeroMemory(&desc, sizeof(desc));
 
@@ -88,14 +85,6 @@ namespace bs { namespace ct
 			desc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
 			desc.Buffer.FirstElement = firstElement;
 			desc.Buffer.NumElements = numElements;
-		}
-		else if (props.getType() == GBT_RAW)
-		{
-			desc.Format = DXGI_FORMAT_R32_TYPELESS;
-			desc.ViewDimension = D3D11_SRV_DIMENSION_BUFFEREX;
-			desc.BufferEx.Flags = D3D11_BUFFEREX_SRV_FLAG_RAW;
-			desc.BufferEx.FirstElement = firstElement;
-			desc.BufferEx.NumElements = numElements;
 		}
 		else if (props.getType() == GBT_INDIRECTARGUMENT)
 		{
@@ -151,24 +140,10 @@ namespace bs { namespace ct
 			else
 				desc.Buffer.Flags = 0;
 		}
-		else if (props.getType() == GBT_RAW)
-		{
-			desc.Format = DXGI_FORMAT_R32_TYPELESS;
-			desc.Buffer.Flags = D3D11_BUFFER_UAV_FLAG_RAW;
-			desc.Buffer.FirstElement = firstElement;
-			desc.Buffer.NumElements = numElements;
-		}
 		else if (props.getType() == GBT_INDIRECTARGUMENT)
 		{
 			desc.Format = DXGI_FORMAT_R32_UINT;
 			desc.Buffer.Flags = 0;
-			desc.Buffer.FirstElement = firstElement;
-			desc.Buffer.NumElements = numElements;
-		}
-		else if (props.getType() == GBT_APPENDCONSUME)
-		{
-			desc.Format = DXGI_FORMAT_UNKNOWN;
-			desc.Buffer.Flags = D3D11_BUFFER_UAV_FLAG_APPEND;
 			desc.Buffer.FirstElement = firstElement;
 			desc.Buffer.NumElements = numElements;
 		}

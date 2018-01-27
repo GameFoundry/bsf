@@ -38,11 +38,8 @@ namespace bs
 	class BS_CORE_EXPORT GpuProgramFactory
 	{
 	public:
-        GpuProgramFactory() {}
+		GpuProgramFactory() {}
 		virtual ~GpuProgramFactory() { }
-
-		/**	Returns GPU program language this factory is capable creating GPU programs from. */
-		virtual const String& getLanguage() const = 0;
 
 		/** @copydoc GpuProgram::create */
 		virtual SPtr<GpuProgram> create(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask = GDF_DEFAULT) = 0;
@@ -55,7 +52,7 @@ namespace bs
 	 * Manager responsible for creating GPU programs. It will automatically	try to find the appropriate handler for a 
 	 * specific GPU program language and create the program if possible.
 	 *
-	 * @note	Core thread only.
+	 * @note	Core thread only unless otherwise specified.
 	 */
 	class BS_CORE_EXPORT GpuProgramManager : public Module<GpuProgramManager>
 	{
@@ -67,16 +64,16 @@ namespace bs
 		 * Registers a new factory that is able to create GPU programs for a certain language. If any other factory for the
 		 * same language exists, it will overwrite it.
 		 */
-		void addFactory(GpuProgramFactory* factory);
+		void addFactory(const String& language, GpuProgramFactory* factory);
 
 		/**
 		 * Unregisters a GPU program factory, essentially making it not possible to create GPU programs using the language 
 		 * the factory supported.
 		 */
-		void removeFactory(GpuProgramFactory* factory);
+		void removeFactory(const String& language);
 
-		/** Query if a GPU program language is supported (for example "hlsl", "glsl"). */
-		bool isLanguageSupported(const String& lang);
+		/** Query if a GPU program language is supported (for example "hlsl", "glsl"). Thread safe. */
+		bool isLanguageSupported(const String& language);
 
 		/** @copydoc GpuProgram::create */
 		SPtr<GpuProgram> create(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask = GDF_DEFAULT);
@@ -95,9 +92,9 @@ namespace bs
 		GpuProgramFactory* getFactory(const String& language);
 
 	protected:
-		typedef Map<String, GpuProgramFactory*> FactoryMap;
+		Mutex mMutex;
 
-		FactoryMap mFactories;
+		UnorderedMap<String, GpuProgramFactory*> mFactories;
 		GpuProgramFactory* mNullFactory; /**< Factory for dealing with GPU programs that can't be created. */
 	};
 	}

@@ -14,6 +14,8 @@ technique TiledDeferredImageBasedLighting
 	mixin ImageBasedLighting;
 	mixin ReflProbeAccumulatorIndexed;
 
+	featureset = HighEnd;
+	
 	variations
 	{
 		MSAA_COUNT = { 1, 2, 4, 8 };

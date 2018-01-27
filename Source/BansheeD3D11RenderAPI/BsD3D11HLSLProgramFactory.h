@@ -18,9 +18,6 @@ namespace bs { namespace ct
 		D3D11HLSLProgramFactory();
 		~D3D11HLSLProgramFactory();
 
-		/** @copydoc GpuProgramFactory::getLanguage */
-		const String& getLanguage() const override;
-
 		/** @copydoc GpuProgramFactory::create(const GPU_PROGRAM_DESC&, GpuDeviceFlags) */
 		SPtr<GpuProgram> create(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask = GDF_DEFAULT) override;
 

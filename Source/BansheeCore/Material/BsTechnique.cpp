@@ -6,25 +6,21 @@
 #include "Renderer/BsRendererManager.h"
 #include "Material/BsPass.h"
 #include "Renderer/BsRenderer.h"
+#include "Managers/BsGpuProgramManager.h"
 #include "RTTI/BsTechniqueRTTI.h"
 
 namespace bs
 {
-	TechniqueBase::TechniqueBase(const String& language, const StringID& renderer, const Vector<StringID>& tags, 
-		const ShaderVariation& variation)
-		:mLanguage(language), mRenderer(renderer), mTags(tags), mVariation(variation)
+	TechniqueBase::TechniqueBase(const String& language, const Vector<StringID>& tags, const ShaderVariation& variation)
+		:mLanguage(language), mTags(tags), mVariation(variation)
 	{
 
 	}
 
 	bool TechniqueBase::isSupported() const
 	{
-		if ((ct::RenderAPI::instancePtr()->getShadingLanguageName() == mLanguage || mLanguage == "Any") &&
-			(RendererManager::instance().getActive()->getName() == mRenderer ||
-			RendererAny == mRenderer))
-		{
+		if (ct::GpuProgramManager::instance().isLanguageSupported(mLanguage) || mLanguage == "Any")
 			return true;
-		}
 
 		return false;
 	}
@@ -41,14 +37,14 @@ namespace bs
 	}
 
 	template<bool Core>
-	TTechnique<Core>::TTechnique(const String& language, const StringID& renderer, const Vector<StringID>& tags,
+	TTechnique<Core>::TTechnique(const String& language, const Vector<StringID>& tags,
 		const ShaderVariation& variation, const Vector<SPtr<PassType>>& passes)
-		: TechniqueBase(language, renderer, tags, variation), mPasses(passes)
+		: TechniqueBase(language, tags, variation), mPasses(passes)
 	{ }
 
 	template<bool Core>
 	TTechnique<Core>::TTechnique()
-		: TechniqueBase("", "", {}, ShaderVariation())
+		: TechniqueBase("", {}, ShaderVariation())
 	{ }
 
 	template<bool Core>
@@ -63,9 +59,9 @@ namespace bs
 	template class TTechnique < false > ;
 	template class TTechnique < true >;
 
-	Technique::Technique(const String& language, const StringID& renderer, const Vector<StringID>& tags,
+	Technique::Technique(const String& language, const Vector<StringID>& tags,
 		const ShaderVariation& variation, const Vector<SPtr<Pass>>& passes)
-		:TTechnique(language, renderer, tags, variation, passes)
+		:TTechnique(language, tags, variation, passes)
 	{ }
 
 	Technique::Technique()
@@ -85,7 +81,6 @@ namespace bs
 
 		ct::Technique* technique = new(bs_alloc<ct::Technique>()) ct::Technique(
 			mLanguage,
-			mRenderer,
 			mTags,
 			mVariation,
 			passes);
@@ -102,9 +97,9 @@ namespace bs
 			dependencies.push_back(pass.get());
 	}
 
-	SPtr<Technique> Technique::create(const String& language, const StringID& renderer, const Vector<SPtr<Pass>>& passes)
+	SPtr<Technique> Technique::create(const String& language, const Vector<SPtr<Pass>>& passes)
 	{
-		Technique* technique = new (bs_alloc<Technique>()) Technique(language, renderer, {}, ShaderVariation(), passes);
+		Technique* technique = new (bs_alloc<Technique>()) Technique(language, {}, ShaderVariation(), passes);
 		SPtr<Technique> techniquePtr = bs_core_ptr<Technique>(technique);
 		techniquePtr->_setThisPtr(techniquePtr);
 		techniquePtr->initialize();
@@ -112,10 +107,10 @@ namespace bs
 		return techniquePtr;
 	}
 
-	SPtr<Technique> Technique::create(const String& language, const StringID& renderer, const Vector<StringID>& tags,
+	SPtr<Technique> Technique::create(const String& language, const Vector<StringID>& tags,
 		const ShaderVariation& variation, const Vector<SPtr<Pass>>& passes)
 	{
-		Technique* technique = new (bs_alloc<Technique>()) Technique(language, renderer, tags, variation, passes);
+		Technique* technique = new (bs_alloc<Technique>()) Technique(language, tags, variation, passes);
 		SPtr<Technique> techniquePtr = bs_core_ptr<Technique>(technique);
 		techniquePtr->_setThisPtr(techniquePtr);
 		techniquePtr->initialize();
@@ -144,15 +139,14 @@ namespace bs
 
 	namespace ct
 	{
-	Technique::Technique(const String& language, const StringID& renderer, const Vector<StringID>& tags,
-		const ShaderVariation& variation, const Vector<SPtr<Pass>>& passes)
-		:TTechnique(language, renderer, tags, variation, passes)
+	Technique::Technique(const String& language, const Vector<StringID>& tags, const ShaderVariation& variation, 
+		const Vector<SPtr<Pass>>& passes)
+		:TTechnique(language, tags, variation, passes)
 	{ }
 
-	SPtr<Technique> Technique::create(const String& language, const StringID& renderer,
-		const Vector<SPtr<Pass>>& passes)
+	SPtr<Technique> Technique::create(const String& language, const Vector<SPtr<Pass>>& passes)
 	{
-		Technique* technique = new (bs_alloc<Technique>()) Technique(language, renderer, {}, ShaderVariation(), passes);
+		Technique* technique = new (bs_alloc<Technique>()) Technique(language, {}, ShaderVariation(), passes);
 		SPtr<Technique> techniquePtr = bs_shared_ptr<Technique>(technique);
 		techniquePtr->_setThisPtr(techniquePtr);
 		techniquePtr->initialize();
@@ -160,10 +154,10 @@ namespace bs
 		return techniquePtr;
 	}
 
-	SPtr<Technique> Technique::create(const String& language, const StringID& renderer,
-		const Vector<StringID>& tags, const ShaderVariation& variation, const Vector<SPtr<Pass>>& passes)
+	SPtr<Technique> Technique::create(const String& language, const Vector<StringID>& tags, 
+		const ShaderVariation& variation, const Vector<SPtr<Pass>>& passes)
 	{
-		Technique* technique = new (bs_alloc<Technique>()) Technique(language, renderer, tags, variation, passes);
+		Technique* technique = new (bs_alloc<Technique>()) Technique(language, tags, variation, passes);
 		SPtr<Technique> techniquePtr = bs_shared_ptr<Technique>(technique);
 		techniquePtr->_setThisPtr(techniquePtr);
 		techniquePtr->initialize();

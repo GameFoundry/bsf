@@ -280,13 +280,6 @@ namespace bs
 		virtual const StringID& getName() const = 0;
 
 		/**
-		 * Gets the name of the primary shading language used by the rendering system.
-		 *
-		 * @note	Thread safe.
-		 */
-		virtual const String& getShadingLanguageName() const = 0;
-
-		/**
 		 * Applies a set of parameters that control execution of all currently bound GPU programs. These are the uniforms
 		 * like textures, samplers, or uniform buffers. Caller is expected to ensure the provided parameters actually
 		 * match the currently bound programs.

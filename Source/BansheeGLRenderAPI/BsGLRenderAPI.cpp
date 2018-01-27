@@ -125,12 +125,6 @@ namespace bs { namespace ct
 		return strName;
 	}
 
-	const String& GLRenderAPI::getShadingLanguageName() const
-	{
-		static String strName("glsl");
-		return strName;
-	}
-
 	void GLRenderAPI::initialize()
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -206,7 +200,9 @@ namespace bs { namespace ct
 		if (mGLSLProgramFactory)
 		{
 			// Remove from manager safely
-			GpuProgramManager::instance().removeFactory(mGLSLProgramFactory);
+			GpuProgramManager::instance().removeFactory("glsl");
+			GpuProgramManager::instance().removeFactory("glsl4_1");
+
 			bs_delete(mGLSLProgramFactory);
 			mGLSLProgramFactory = nullptr;
 		}
@@ -2449,11 +2445,12 @@ namespace bs { namespace ct
 		HardwareBufferManager::startUp<GLHardwareBufferManager>();
 
 		// GPU Program Manager setup
-		if(caps->isShaderProfileSupported("glsl"))
-		{
-			mGLSLProgramFactory = bs_new<GLSLProgramFactory>();
-			GpuProgramManager::instance().addFactory(mGLSLProgramFactory);
-		}
+		mGLSLProgramFactory = bs_new<GLSLProgramFactory>();
+		if(caps->isShaderProfileSupported("glsl")) // Check for most recent GLSL support
+			GpuProgramManager::instance().addFactory("glsl", mGLSLProgramFactory);
+
+		if(caps->isShaderProfileSupported("glsl4_1")) // Check for OpenGL 4.1 compatible version
+			GpuProgramManager::instance().addFactory("glsl4_1", mGLSLProgramFactory);
 
 		GLRTTManager::startUp<GLRTTManager>();
 
@@ -2536,7 +2533,14 @@ namespace bs { namespace ct
 		else
 			caps.setVendor(GPU_UNKNOWN);
 
+#if BS_OPENGL_4_1
+		caps.addShaderProfile("glsl4_1");
+#endif
+
+#if BS_OPENGL_4_5
 		caps.addShaderProfile("glsl");
+#endif
+
 		caps.setCapability(RSC_TEXTURE_COMPRESSION_BC);
 
 #if BS_OPENGL_4_1 || BS_OPENGLES_3_2

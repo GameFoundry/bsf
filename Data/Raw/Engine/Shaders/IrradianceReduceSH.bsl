@@ -6,6 +6,8 @@ technique IrradianceReduceSH
 	mixin ReflectionCubemapCommon;
 	mixin SHCommon;
 
+	featureset = HighEnd;
+	
 	variations
 	{
 		SH_ORDER = { 3, 5 };

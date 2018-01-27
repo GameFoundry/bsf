@@ -2,6 +2,8 @@
 
 technique PPEyeAdaptHistogram
 {
+	featureset = HighEnd;
+
 	code
 	{	
 		[internal]

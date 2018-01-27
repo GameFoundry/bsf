@@ -8,10 +8,11 @@ technique PPCreateTonemapLUT
 	mixin PPWhiteBalance;
 	
 	#if VOLUME_LUT
+	featureset = HighEnd;
 	#else
 	mixin PPBase;
 	#endif
-	
+		
 	variations
 	{
 		VOLUME_LUT = { true, false };

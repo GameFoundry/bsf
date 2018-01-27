@@ -5,13 +5,6 @@
 
 namespace bs { namespace ct
 {
-	const String GLSLProgramFactory::LANGUAGE_NAME = "glsl";
-
-	const String& GLSLProgramFactory::getLanguage() const
-	{
-		return LANGUAGE_NAME;
-	}
-
 	SPtr<GpuProgram> GLSLProgramFactory::create(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
 	{
 		GLSLGpuProgram* prog = new (bs_alloc<GLSLGpuProgram>()) GLSLGpuProgram(desc, deviceMask);

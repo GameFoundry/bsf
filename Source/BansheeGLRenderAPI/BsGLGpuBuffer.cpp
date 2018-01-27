@@ -12,7 +12,7 @@ namespace bs { namespace ct
 	GLGpuBuffer::GLGpuBuffer(const GPU_BUFFER_DESC& desc, GpuDeviceFlags deviceMask)
 		: GpuBuffer(desc, deviceMask), mTextureID(0), mFormat(0)
 	{
-		if(desc.type == GBT_APPENDCONSUME || desc.type == GBT_INDIRECTARGUMENT || desc.type == GBT_RAW)
+		if(desc.type == GBT_INDIRECTARGUMENT)
 			LOGERR("Only standard and structured buffers are supported on OpenGL.");
 
 		if (desc.useCounter)

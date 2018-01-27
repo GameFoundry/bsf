@@ -759,12 +759,14 @@ namespace bs { namespace ct
 
 	void LightProbes::resizeTetrahedronBuffer(UINT32 count)
 	{
+		static constexpr UINT32 ELEMENT_SIZE = Math::divideAndRoundUp(sizeof(TetrahedronDataGPU), 4ULL);
+
 		GPU_BUFFER_DESC desc;
-		desc.type = GBT_STRUCTURED;
-		desc.elementSize = sizeof(TetrahedronDataGPU);
-		desc.elementCount = count;
+		desc.type = GBT_STANDARD;
+		desc.elementSize = 0;
+		desc.elementCount = count * ELEMENT_SIZE;
 		desc.usage = GBU_STATIC;
-		desc.format = BF_UNKNOWN;
+		desc.format = BF_32X4U;
 
 		mTetrahedronInfosGPU = GpuBuffer::create(desc);
 		mMaxTetrahedra = count;
@@ -772,12 +774,14 @@ namespace bs { namespace ct
 
 	void LightProbes::resizeTetrahedronFaceBuffer(UINT32 count)
 	{
+		static constexpr UINT32 ELEMENT_SIZE = Math::divideAndRoundUp(sizeof(TetrahedronFaceDataGPU), 4ULL);
+
 		GPU_BUFFER_DESC desc;
-		desc.type = GBT_STRUCTURED;
-		desc.elementSize = sizeof(TetrahedronFaceDataGPU);
-		desc.elementCount = count;
+		desc.type = GBT_STANDARD;
+		desc.elementSize = 0;
+		desc.elementCount = count * ELEMENT_SIZE;
 		desc.usage = GBU_STATIC;
-		desc.format = BF_UNKNOWN;
+		desc.format = BF_32X4F;
 
 		mTetrahedronFaceInfosGPU = GpuBuffer::create(desc);
 		mMaxFaces = count;

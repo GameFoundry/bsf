@@ -52,12 +52,6 @@ namespace bs { namespace ct
 		return strName;
 	}
 
-	const String& D3D11RenderAPI::getShadingLanguageName() const
-	{
-		static String strName("hlsl");
-		return strName;
-	}
-
 	void D3D11RenderAPI::initialize()
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -130,7 +124,7 @@ namespace bs { namespace ct
 		mCurrentCapabilities = bs_newN<RenderAPICapabilities>(mNumDevices);
 		initCapabilites(selectedAdapter, mCurrentCapabilities[0]);
 				
-		GpuProgramManager::instance().addFactory(mHLSLFactory);
+		GpuProgramManager::instance().addFactory("hlsl", mHLSLFactory);
 
 		mIAManager = bs_new<D3D11InputLayoutManager>();
 

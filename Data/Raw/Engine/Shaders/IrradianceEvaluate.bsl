@@ -57,8 +57,8 @@ technique IrradianceEvaluate
 		};		
 		
 		Texture2D gSHCoeffs;
-		StructuredBuffer<Tetrahedron> gTetrahedra;
-		StructuredBuffer<TetrahedronFace> gTetFaces;
+		Buffer<uint4> gTetrahedra;
+		Buffer<float4> gTetFaces;
 		
 		TextureCube gSkyIrradianceTex;
 		Texture2D gAmbientOcclusionTex;
@@ -68,7 +68,50 @@ technique IrradianceEvaluate
 		{
 			float gSkyBrightness;
 			uint gNumTetrahedra;
-		}				
+		}
+		
+		Tetrahedron getTetrahedron(uint idx)
+		{
+			Tetrahedron output;
+			
+			uint4 data[6];
+			
+			[unroll]
+			for(int i = 0; i < 6; i++)
+				data[i] = gTetrahedra.Load(idx * 6 + i);
+			
+			output.indices = data[0];
+			output.offsets[0] = data[1].xy;
+			output.offsets[1] = data[1].zw;
+			output.offsets[2] = data[2].xy;
+			output.offsets[3] = data[2].zw;
+			output.transform = float3x4(asfloat(data[3]), asfloat(data[4]), asfloat(data[5]));
+			
+			return output;
+		}
+		
+		TetrahedronFace getTetrahedronFace(uint idx)
+		{
+			TetrahedronFace output;
+			
+			float4 data[7];
+			
+			[unroll]
+			for(int i = 0; i < 7; i++)
+				data[i] = gTetFaces.Load(idx * 7 + i);
+			
+			[unroll]
+			for(int i = 0; i < 3; i++)
+			{
+				output.corners[i] = data[i];
+				output.normals[i] = data[3 + i];
+				output.padding[i] = 0;
+			}
+			
+			output.isQuadratic = asuint(data[6].x);
+			
+			return output;		
+		}
 		
 		float3 getSkyIndirectDiffuse(float3 dir)
 		{
@@ -211,7 +254,7 @@ technique IrradianceEvaluate
 					irradiance = gSkyIrradianceTex.SampleLevel(gLinearSamp, surfaceData.worldNormal, 0).rgb * gSkyBrightness;
 				else
 				{
-					Tetrahedron volume = gTetrahedra[volumeIdx];
+					Tetrahedron volume = getTetrahedron(volumeIdx);
 					
 					float3 P = NDCToWorld(input.screenPos, surfaceData.depth);
 					
@@ -220,7 +263,7 @@ technique IrradianceEvaluate
 					if(volumeIdx >= gNumTetrahedra)
 					{
 						uint faceIdx = volumeIdx - gNumTetrahedra;
-						TetrahedronFace face = gTetFaces[faceIdx];
+						TetrahedronFace face = getTetrahedronFace(faceIdx);
 					
 						float3 factors = mul(volume.transform, float4(P, 1.0f));
 						float A = factors.x;

@@ -40,7 +40,7 @@ enum tagOptionType
 	OT_Depth,
 	OT_Stencil,
 	OT_Blend,
-	OT_Renderer,
+	OT_FeatureSet,
 	OT_Pass,
 	OT_FillMode,
 	OT_CullMode,

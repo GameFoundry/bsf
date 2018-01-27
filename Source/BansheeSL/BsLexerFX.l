@@ -57,7 +57,7 @@ priority		{ return TOKEN_PRIORITY; }
 transparent		{ return TOKEN_TRANSPARENT; }
 
 	/* Technique keywords */
-renderer		{ return TOKEN_RENDERER; }
+featureset		{ return TOKEN_FEATURESET; }
 tags			{ return TOKEN_TAGS; }
 pass			{ return TOKEN_PASS; }
 variations		{ return TOKEN_VARIATIONS; }

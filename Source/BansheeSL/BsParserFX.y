@@ -87,7 +87,7 @@ typedef struct YYLTYPE {
 %token TOKEN_SEPARABLE TOKEN_SORT TOKEN_PRIORITY TOKEN_TRANSPARENT
 	
 	/* Technique keywords */
-%token TOKEN_RENDERER TOKEN_PASS TOKEN_TAGS TOKEN_VARIATIONS
+%token TOKEN_FEATURESET TOKEN_PASS TOKEN_TAGS TOKEN_VARIATIONS
 
 	/* Pass keywords */
 %token TOKEN_CODE TOKEN_BLEND TOKEN_RASTER TOKEN_DEPTH TOKEN_STENCIL
@@ -243,10 +243,10 @@ technique_statement
 	;
 
 technique_option
-	: TOKEN_RENDERER '=' TOKEN_STRING ';'	{ $$.type = OT_Renderer; $$.value.strValue = $3; }
-	| TOKEN_MIXIN TOKEN_IDENTIFIER ';'		{ $$.type = OT_Mixin; $$.value.strValue = $2; }
-	| tags									{ $$.type = OT_Tags; $$.value.nodePtr = $1; }
-	| variations							{ $$.type = OT_Variations; $$.value.nodePtr = $1; }
+	: TOKEN_FEATURESET '=' TOKEN_IDENTIFIER ';'	{ $$.type = OT_FeatureSet; $$.value.strValue = $3; }
+	| TOKEN_MIXIN TOKEN_IDENTIFIER ';'			{ $$.type = OT_Mixin; $$.value.strValue = $2; }
+	| tags										{ $$.type = OT_Tags; $$.value.nodePtr = $1; }
+	| variations								{ $$.type = OT_Variations; $$.value.nodePtr = $1; }
 	;
 	
 	/* Technique tags */

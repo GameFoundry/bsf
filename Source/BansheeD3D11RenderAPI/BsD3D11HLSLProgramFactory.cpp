@@ -5,23 +5,14 @@
 
 namespace bs { namespace ct
 {
-    const String D3D11HLSLProgramFactory::LANGUAGE_NAME = "hlsl";
+	D3D11HLSLProgramFactory::D3D11HLSLProgramFactory()
+	{ }
 
-    D3D11HLSLProgramFactory::D3D11HLSLProgramFactory()
-    {
-    }
-
-    D3D11HLSLProgramFactory::~D3D11HLSLProgramFactory()
-    {
-    }
-
-    const String& D3D11HLSLProgramFactory::getLanguage(void) const
-    {
-        return LANGUAGE_NAME;
-    }
+	D3D11HLSLProgramFactory::~D3D11HLSLProgramFactory()
+	{ }
 
 	SPtr<GpuProgram> D3D11HLSLProgramFactory::create(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
-    {
+	{
 		SPtr<GpuProgram> gpuProg;
 
 		switch (desc.type)
@@ -56,7 +47,7 @@ namespace bs { namespace ct
 			gpuProg->_setThisPtr(gpuProg);
 
 		return gpuProg;
-    }
+	}
 
 	SPtr<GpuProgram> D3D11HLSLProgramFactory::create(GpuProgramType type, GpuDeviceFlags deviceMask)
 	{

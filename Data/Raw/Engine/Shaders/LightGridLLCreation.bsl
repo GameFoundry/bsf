@@ -11,6 +11,8 @@ technique LightGridLLCreation
 	mixin LightGridCommon;
 	mixin ImageBasedLighting;
 
+	featureset = HighEnd;
+	
 	code
 	{
 		StructuredBuffer<LightData> gLights;

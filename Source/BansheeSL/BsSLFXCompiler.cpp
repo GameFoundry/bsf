@@ -744,11 +744,7 @@ namespace bs
 
 						if (entry.second.name == includes)
 						{
-							bool matches =
-								(entry.second.language == metaData.language ||
-								entry.second.language == "Any") &&
-								(entry.second.renderer == metaData.renderer ||
-								entry.second.renderer == RendererAny);
+							bool matches = entry.second.language == metaData.language || entry.second.language == "Any";
 
 							// We want the last matching technique, in order to allow techniques to override each other
 							if (matches)
@@ -1042,7 +1038,6 @@ namespace bs
 	{
 		TechniqueMetaData metaData;
 
-		metaData.renderer = RendererAny;
 		metaData.language = "hlsl";
 		metaData.isMixin = technique->type == NT_Mixin;
 
@@ -1052,9 +1047,6 @@ namespace bs
 
 			switch (option->type)
 			{
-			case OT_Renderer:
-				metaData.renderer = parseRenderer(removeQuotes(option->value.strValue));
-				break;
 			case OT_Tags:
 			{
 				ASTFXNode* tagsNode = option->value.nodePtr;
@@ -1078,6 +1070,9 @@ namespace bs
 						parseVariations(metaData, variationOption->value.nodePtr);
 				}
 			}
+				break;
+			case OT_FeatureSet:
+				metaData.featureSet = option->value.strValue;
 				break;
 			case OT_Identifier:
 				metaData.name = option->value.strValue;
@@ -1117,16 +1112,6 @@ namespace bs
 
 		if (!variationData.identifier.empty())
 			metaData.variations.push_back(variationData);
-	}
-
-	StringID BSLFXCompiler::parseRenderer(const String& name)
-	{
-		if (name == "Any")
-			return RendererAny;
-		else if (name == "Default")
-			return RendererDefault;
-
-		return RendererAny;
 	}
 
 	QueueSortType BSLFXCompiler::parseSortType(CullAndSortModeValue sortType)
@@ -1837,9 +1822,7 @@ namespace bs
 					{
 						bool matches = 
 							(entry.second.metaData.language == metaData.language || 
-							entry.second.metaData.language == "Any") &&
-							(entry.second.metaData.renderer == metaData.renderer || 
-							entry.second.metaData.renderer == RendererAny);
+							entry.second.metaData.language == "Any");
 
 						// We want the last matching technique, in order to allow techniques to override each other
 						if (matches)
@@ -1918,7 +1901,12 @@ namespace bs
 			TechniqueData& hlslTechnique = techniqueData[i].second;
 
 			TechniqueData glslTechnique = techniqueData[i].second;
-			glslTechnique.metaData.language = "glsl";
+
+			// When working with OpenGL, lower-end feature sets are supported. For other backends, high-end is always assumed.
+			if(glslTechnique.metaData.featureSet == "HighEnd")
+				glslTechnique.metaData.language = "glsl";
+			else
+				glslTechnique.metaData.language = "glsl4_1";
 
 			TechniqueData vkslTechnique = techniqueData[i].second;
 			vkslTechnique.metaData.language = "vksl";
@@ -2078,8 +2066,7 @@ namespace bs
 
 			if (orderedPasses.size() > 0)
 			{
-				SPtr<Technique> technique = Technique::create(metaData.language, metaData.renderer, metaData.tags,
-					variation, orderedPasses);
+				SPtr<Technique> technique = Technique::create(metaData.language, metaData.tags, variation, orderedPasses);
 				techniques.push_back(technique);
 			}
 		}

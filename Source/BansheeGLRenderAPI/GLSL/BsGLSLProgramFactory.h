@@ -15,9 +15,6 @@ namespace bs { namespace ct
 	class GLSLProgramFactory : public GpuProgramFactory
 	{
 	public:
-		/** @copydoc GpuProgramFactory::getLanguage */
-		const String& getLanguage() const override;
-
 		/** @copydoc GpuProgramFactory::create(const GPU_PROGRAM_DESC&, GpuDeviceFlags) */
 		SPtr<GpuProgram> create(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask = GDF_DEFAULT) override;
 

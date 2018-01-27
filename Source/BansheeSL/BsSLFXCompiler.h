@@ -76,7 +76,7 @@ namespace bs
 			bool isMixin;
 
 			String language;
-			StringID renderer = RendererAny;
+			String featureSet;
 
 			Vector<StringID> tags;
 			Vector<VariationData> variations;
@@ -105,28 +105,25 @@ namespace bs
 		/** Parses technique variations and writes them to the provided meta-data object. */
 		static void parseVariations(TechniqueMetaData& metaData, ASTFXNode* variations);
 
-		/**	Converts FX renderer name into an in-engine renderer identifier. */
-		static StringID parseRenderer(const String& name);
-
-		/**	Maps FX queue sort type enum into in-engine queue sort type mode. */
+		/**	Maps BSL queue sort type enum into in-engine queue sort type mode. */
 		static QueueSortType parseSortType(CullAndSortModeValue sortType);
 
-		/**	Maps FX comparison function enum into in-engine compare function. */
+		/**	Maps BSL comparison function enum into in-engine compare function. */
 		static CompareFunction parseCompFunc(CompFuncValue compFunc);
 
-		/**	Maps FX operation to in-engine blend factor. */
+		/**	Maps BSL operation to in-engine blend factor. */
 		static BlendFactor parseBlendFactor(OpValue factor);
 
-		/**	Maps FX blend operation to in-engine blend operation. */
+		/**	Maps BSL blend operation to in-engine blend operation. */
 		static BlendOperation parseBlendOp(BlendOpValue op);
 
-		/**	Maps FX operation to in-engine stencil operation. */
+		/**	Maps BSL operation to in-engine stencil operation. */
 		static StencilOperation parseStencilOp(OpValue op);
 		
-		/**	Maps FX cull mode enum to in-engine cull mode. */
+		/**	Maps BSL cull mode enum to in-engine cull mode. */
 		static CullingMode parseCullMode(CullAndSortModeValue cm);
 
-		/**	Maps FX fill mode enum to in-engine fill mode. */
+		/**	Maps BSL fill mode enum to in-engine fill mode. */
 		static PolygonMode parseFillMode(FillModeValue fm);
 
 		/**
