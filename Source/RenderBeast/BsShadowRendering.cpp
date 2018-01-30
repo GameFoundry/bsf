@@ -1879,10 +1879,7 @@ namespace bs { namespace ct
 			// Reduce the size of the transition region when the depth range is larger
 			float rangeScale = 1.0f / depthRange;
 
-			// Increase the size of the transition region for larger lights
-			float radiusScale = radius;
-
-			return DIR_LIGHT_SCALE * rangeScale * resolutionScale * radiusScale;
+			return DIR_LIGHT_SCALE * resolutionScale * rangeScale;
 		}
 		else
 			return fabs(light.getShadowBias()) * SPOT_LIGHT_SCALE;
