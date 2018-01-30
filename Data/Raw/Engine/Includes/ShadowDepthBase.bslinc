@@ -85,7 +85,7 @@ mixin ShadowDepthBase
 			#ifdef USES_PS
 				output.shadowPos = clipPos.z;
 			#else // Otherwise apply bias immediately
-				clipPos.z = max(0, clipPos.z + gDepthBias);
+				clipPos.z = max(DeviceZToNDCZ(0), clipPos.z + gDepthBias);
 			#endif // USES_PS
 			
 			output.position = clipPos;
