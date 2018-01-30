@@ -1386,7 +1386,7 @@ namespace bs { namespace ct
 				if(param.type == GPDT_STRUCT)
 					size = Math::divideAndRoundUp(param.elementSize, 16U) * 4;
 				else
-					size = Math::divideAndRoundUp(typeInfo.size, 4U);
+					size = Math::divideAndRoundUp(typeInfo.size, 16U) * 4;
 
 				block.blockSize = Math::divideAndRoundUp(block.blockSize, 4U);
 
