@@ -1388,7 +1388,7 @@ namespace bs { namespace ct
 				else
 					size = Math::divideAndRoundUp(typeInfo.size, 16U) * 4;
 
-				block.blockSize = Math::divideAndRoundUp(block.blockSize, 4U);
+				block.blockSize = Math::divideAndRoundUp(block.blockSize, 4U) * 4;
 
 				param.elementSize = size;
 				param.arrayElementStride = size;
@@ -1411,7 +1411,7 @@ namespace bs { namespace ct
 				{
 					// Structs are always aligned and arounded up to 4 component vectors
 					size = Math::divideAndRoundUp(param.elementSize, 16U) * 4;
-					block.blockSize = Math::divideAndRoundUp(block.blockSize, 4U);
+					block.blockSize = Math::divideAndRoundUp(block.blockSize, 4U) * 4;
 				}
 				else
 				{

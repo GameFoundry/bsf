@@ -590,7 +590,7 @@ namespace bs { namespace ct
 			{
 				// Structs are always aligned and rounded up to vec4
 				size = Math::divideAndRoundUp(param.elementSize, 16U) * 4;
-				block.blockSize = Math::divideAndRoundUp(block.blockSize, 4U);
+				block.blockSize = Math::divideAndRoundUp(block.blockSize, 4U) * 4;
 			}
 			else
 				size = VulkanUtility::calcInterfaceBlockElementSizeAndOffset(param.type, param.arraySize, block.blockSize);
