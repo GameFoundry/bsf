@@ -20,7 +20,7 @@ namespace bs
 		BS_ASSERT(instance != nullptr);
 
 		MonoUtil::getClassName(instance, mNamespace, mType);
-		mGCHandle = MonoUtil::newWeakGCHandle(instance);
+		mGCHandle = MonoUtil::newGCHandle(instance, false);
 	}
 
 	void ScriptManagedResource::initRuntimeData()
@@ -42,20 +42,20 @@ namespace bs
 			return nullptr;
 
 		MonoObject* instance = currentObjInfo->mMonoClass->createInstance(construct);
-		mGCHandle = MonoUtil::newWeakGCHandle(instance);
+		mGCHandle = MonoUtil::newGCHandle(instance, false);
 
 		return instance;
 	}
 
 	void ScriptManagedResource::_clearManagedInstance()
 	{
-		mGCHandle = 0;
+		freeManagedInstance();
 	}
 
 	ScriptObjectBackup ScriptManagedResource::beginRefresh()
 	{
 		ScriptObjectBackup backupData;
-		backupData.data = mResource->backup(true);
+		backupData.data = mResource->backup();
 
 		return backupData;
 	}
@@ -65,7 +65,7 @@ namespace bs
 		MonoObject* instance = MonoUtil::getObjectFromGCHandle(mGCHandle);
 
 		ResourceBackupData resourceBackup = any_cast<ResourceBackupData>(backupData.data);
-		mResource->restore(instance, resourceBackup);
+		mResource->restore(resourceBackup);
 
 		// If we could not find resource type after refresh, treat it as if it was destroyed
 		if (instance == nullptr)
@@ -87,6 +87,11 @@ namespace bs
 
 			ScriptResourceManager::instance().destroyScriptResource(this);
 		}
+	}
+
+	void ScriptManagedResource::_notifyDestroyed()
+	{
+		freeManagedInstance();
 	}
 
 	void ScriptManagedResource::setResource(const HResource& resource)

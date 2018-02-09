@@ -18,13 +18,15 @@
 
 namespace bs
 {
-	ScriptManagedComponent::ScriptManagedComponent(MonoObject* instance)
-		:ScriptObject(instance), mTypeMissing(false)
+	ScriptManagedComponent::ScriptManagedComponent(MonoObject* instance, const HManagedComponent& component)
+		:ScriptObject(instance), mComponent(component), mTypeMissing(false)
 	{
 		assert(instance != nullptr);
 
 		MonoUtil::getClassName(instance, mNamespace, mType);
-		mGCHandle = MonoUtil::newWeakGCHandle(instance);
+		mGCHandle = MonoUtil::newGCHandle(instance, false);
+
+		component->initialize(this);
 	}
 
 	void ScriptManagedComponent::initRuntimeData()
@@ -85,13 +87,13 @@ namespace bs
 			instance = currentObjInfo->mMonoClass->createInstance(construct);
 		}
 
-		mGCHandle = MonoUtil::newWeakGCHandle(instance);
+		mGCHandle = MonoUtil::newGCHandle(instance, false);
 		return instance;
 	}
 
 	void ScriptManagedComponent::_clearManagedInstance()
 	{
-		mGCHandle = 0;
+		freeManagedInstance();
 	}
 
 	ScriptObjectBackup ScriptManagedComponent::beginRefresh()
@@ -111,10 +113,8 @@ namespace bs
 	{
 		HManagedComponent managedComponent = static_object_cast<ManagedComponent>(mComponent);
 
-		ComponentBackupData componentBackup = any_cast<ComponentBackupData>(backupData.data);
-
-		MonoObject* instance = MonoUtil::getObjectFromGCHandle(mGCHandle);
-		managedComponent->restore(instance, componentBackup, mTypeMissing);
+		RawBackupData componentBackup = any_cast<RawBackupData>(backupData.data);
+		managedComponent->restore(componentBackup, mTypeMissing);
 	}
 
 	void ScriptManagedComponent::_onManagedInstanceDeleted(bool assemblyRefresh)
@@ -126,5 +126,10 @@ namespace bs
 		// so we delete them.
 		if (!assemblyRefresh || mComponent.isDestroyed(true))
 			ScriptGameObjectManager::instance().destroyScriptComponent(this);
+	}
+
+	void ScriptManagedComponent::_notifyDestroyed()
+	{
+		freeManagedInstance();
 	}
 }

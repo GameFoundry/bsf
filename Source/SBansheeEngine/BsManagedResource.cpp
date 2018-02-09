@@ -18,11 +18,11 @@
 namespace bs
 {
 	ManagedResource::ManagedResource()
-		:Resource(false), mGCHandle(0)
+		:Resource(false)
 	{ }
 
 	ManagedResource::ManagedResource(MonoObject* managedInstance)
-		:Resource(false), mGCHandle(0)
+		:Resource(false)
 	{
 		SPtr<ManagedResourceMetaData> metaData = bs_shared_ptr_new<ManagedResourceMetaData>();
 		mMetaData = metaData;
@@ -39,15 +39,15 @@ namespace bs
 
 	MonoObject* ManagedResource::getManagedInstance() const
 	{
-		if(mGCHandle != 0)
-			return MonoUtil::getObjectFromGCHandle(mGCHandle);
+		if(mOwner)
+			return mOwner->getManagedInstance();
 		
 		return nullptr;
 	}
 
-	ResourceBackupData ManagedResource::backup(bool clearExisting)
+	ResourceBackupData ManagedResource::backup()
 	{
-		MonoObject* instance = MonoUtil::getObjectFromGCHandle(mGCHandle);
+		MonoObject* instance = mOwner->getManagedInstance();
 		SPtr<ManagedSerializableObject> serializableObject = ManagedSerializableObject::createFromExisting(instance);
 
 		ResourceBackupData backupData;
@@ -64,24 +64,14 @@ namespace bs
 			backupData.data = nullptr;
 		}
 
-		if (clearExisting)
-		{
-			if (mGCHandle != 0)
-			{
-				MonoUtil::freeGCHandle(mGCHandle);
-				mGCHandle = 0;
-			}
-		}
-
 		return backupData;
 	}
 
-	void ManagedResource::restore(MonoObject* instance, const ResourceBackupData& data)
+	void ManagedResource::restore(const ResourceBackupData& data)
 	{
+		MonoObject* instance = mOwner->getManagedInstance();
 		if (instance != nullptr)
 		{
-			mGCHandle = MonoUtil::newGCHandle(instance, false);
-
 			if (data.data != nullptr)
 			{
 				MemorySerializer ms;
@@ -124,10 +114,9 @@ namespace bs
 
 	void ManagedResource::setHandle(MonoObject* object, const HManagedResource& myHandle)
 	{
-		mGCHandle = MonoUtil::newGCHandle(object, false);
 		mMyHandle = myHandle.getWeak();
 
-		ScriptResourceManager::instance().createManagedScriptResource(myHandle, object);
+		mOwner = ScriptResourceManager::instance().createManagedScriptResource(myHandle, object);
 		ManagedResourceManager::instance().registerManagedResource(mMyHandle);
 	}
 
@@ -135,12 +124,7 @@ namespace bs
 	{
 		Resource::destroy();
 
-		if (mGCHandle != 0)
-		{
-			MonoUtil::freeGCHandle(mGCHandle);
-			mGCHandle = 0;
-		}
-
+		mOwner->_notifyDestroyed();
 		ManagedResourceManager::instance().unregisterManagedResource(mMyHandle);
 	}
 

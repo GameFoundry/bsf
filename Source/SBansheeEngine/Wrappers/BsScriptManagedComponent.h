@@ -29,8 +29,9 @@ namespace bs
 
 	private:
 		friend class ScriptGameObjectManager;
+		friend class ManagedComponent;
 
-		ScriptManagedComponent(MonoObject* instance);
+		ScriptManagedComponent(MonoObject* instance, const HManagedComponent& component);
 		
 		/** @copydoc ScriptObjectBase::beginRefresh */
 		ScriptObjectBackup beginRefresh() override;
@@ -46,6 +47,9 @@ namespace bs
 
 		/** @copydoc ScriptObjectBase::_onManagedInstanceDeleted */
 		void _onManagedInstanceDeleted(bool assemblyRefresh) override;
+
+		/** @copydoc ScriptComponentBase::_notifyDestroyed */
+		void _notifyDestroyed() override;
 
 		HManagedComponent mComponent;
 		String mNamespace;

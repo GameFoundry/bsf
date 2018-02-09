@@ -30,6 +30,7 @@ namespace bs
 		const HManagedResource& getHandle() const { return mResource; }
 	private:
 		friend class ScriptResourceManager;
+		friend class ManagedResource;
 
 		/** @copydoc ScriptObjectBase::beginRefresh */
 		ScriptObjectBackup beginRefresh() override;
@@ -45,6 +46,9 @@ namespace bs
 
 		/** @copydoc ScriptObjectBase::_onManagedInstanceDeleted */
 		void _onManagedInstanceDeleted(bool assemblyRefresh) override;
+
+		/** Called by the owned managed resource when it is destroyed. */
+		void _notifyDestroyed();
 
 		HManagedResource mResource;
 		String mNamespace;

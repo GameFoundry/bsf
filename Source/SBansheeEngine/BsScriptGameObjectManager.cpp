@@ -76,8 +76,8 @@ namespace bs
 	ScriptManagedComponent* ScriptGameObjectManager::createManagedScriptComponent(MonoObject* existingInstance,
 																				  const HManagedComponent& component)
 	{
-		ScriptManagedComponent* nativeInstance = new (bs_alloc<ScriptManagedComponent>()) ScriptManagedComponent(existingInstance);
-		nativeInstance->setNativeHandle(component);
+		ScriptManagedComponent* nativeInstance = new (bs_alloc<ScriptManagedComponent>()) 
+			ScriptManagedComponent(existingInstance, component);
 
 		UINT64 instanceId = component->getInstanceId();
 		mScriptComponents[instanceId] = nativeInstance;

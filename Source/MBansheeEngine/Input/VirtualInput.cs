@@ -36,15 +36,8 @@ namespace BansheeEngine
         /// </summary>
         public static InputConfiguration KeyConfig
         {
-            get
-            {
-                return Internal_GetKeyConfig();
-            }
-
-            set
-            {
-                Internal_SetKeyConfig(value);
-            }
+            get { return Internal_GetKeyConfig(); }
+            set { Internal_SetKeyConfig(value); }
         }
 
         /// <summary>
@@ -53,10 +46,10 @@ namespace BansheeEngine
         /// </summary>
         /// <param name="button">Virtual button to check.</param>
         /// <param name="deviceIdx">Optional device index in case multiple input devices are available.</param>
-		public static bool IsButtonDown(VirtualButton button, int deviceIdx = 0)
-	    {
+        public static bool IsButtonDown(VirtualButton button, int deviceIdx = 0)
+        {
             return Internal_IsButtonDown(ref button, deviceIdx);
-	    }
+        }
 
         /// <summary>
         /// Checks if the physical button combination corresponding to the specified virtual button is being released this
@@ -141,7 +134,7 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern float Internal_GetAxisValue(ref VirtualAxis button, int deviceIdx);
-	};
+    };
 
     /** @} */
 }

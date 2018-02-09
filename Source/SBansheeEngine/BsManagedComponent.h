@@ -4,14 +4,13 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "Scene/BsComponent.h"
+#include "BsScriptObject.h"
 
 namespace bs
 {
 	/** @addtogroup SBansheeEngine
 	 *  @{
 	 */
-
-	struct ComponentBackupData;
 
 	/**
 	 * Component that internally wraps a Mono component object that can be of user-defined type. Acts as interop
@@ -49,31 +48,32 @@ namespace bs
 		 * @return						An object containing the serialized component. You can provide this to restore()
 		 *								method to re-create the original component.
 		 */
-		ComponentBackupData backup(bool clearExisting = true);
+		RawBackupData backup(bool clearExisting = true);
 
 		/**
 		 * Restores a component from previously serialized data.
 		 *
-		 * @param[in]	instance	New instance of the managed component. Must be of the valid component type or of 
-		 *							BansheeEngine.MissingComponent type if the original type is missing.
 		 * @param[in]	data		Serialized managed component data that will be used for initializing the new managed
 		 *							instance.
 		 * @param[in]	missingType	Is the component's type missing (can happen after assembly reload). If true then the
 		 *							serialized data will be stored internally until later date when user perhaps restores
 		 *							the type with another refresh. @p instance must be null if this is true.
 		 */
-		void restore(MonoObject* instance, const ComponentBackupData& data, bool missingType);
+		void restore(const RawBackupData& data, bool missingType);
 
 		/**	Triggers the managed OnReset callback. */
 		void triggerOnReset();
 
 	private:
+		friend class ScriptManagedComponent;
+
 		/**
 		 * Finalizes construction of the object. Must be called before use or when the managed component instance changes.
 		 *
-		 * @param[in]	object	Managed component instance.
+		 * @param[in]	owner		Script class that handles interop between the native and managed code for this
+		 *							component.
 		 */
-		void initialize(MonoObject* object);
+		void initialize(ScriptManagedComponent* owner);
 
 		typedef void(BS_THUNKCALL *OnCreatedThunkDef) (MonoObject*, MonoException**);
 		typedef void(BS_THUNKCALL *OnInitializedThunkDef) (MonoObject*, MonoException**);
@@ -86,7 +86,7 @@ namespace bs
 
 		MonoClass* mManagedClass = nullptr;
 		MonoReflectionType* mRuntimeType = nullptr;
-		uint32_t mGCHandle = 0;
+		ScriptManagedComponent* mOwner = nullptr;
 
 		String mNamespace;
 		String mTypeName;
@@ -158,13 +158,6 @@ namespace bs
 
 	protected:
 		ManagedComponent(); // Serialization only
-	};
-
-	/**	Contains serialized component data buffer. */
-	struct ComponentBackupData
-	{
-		UINT8* data;
-		UINT32 size;
 	};
 
 	/** @} */

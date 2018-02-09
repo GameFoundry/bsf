@@ -23,23 +23,18 @@ namespace bs
 		/**
 		 * Serializes the internal managed resource.
 		 *
-		 * @param[in]	clearExisting	Should the managed resource handle be released. (Will trigger a finalizer if this is
-		 *								the last reference to it)
 		 * @return						An object containing the serialized resource. You can provide this to restore()
 		 *								method to re-create the original resource.
 		 */
-		ResourceBackupData backup(bool clearExisting = true);
+		ResourceBackupData backup();
 
 		/**
 		 * Restores a resource from previously serialized data.
 		 *
-		 * @param[in]	instance	New instance of the managed resource. Must be of the valid resource type this object was
-		 *							originally created from. Can be null if the type cannot be found (can happen after an
-		 *							assembly refresh).
 		 * @param[in]	data		Serialized managed resource data that will be used for initializing the new managed
 		 *							instance.
 		 */
-		void restore(MonoObject* instance, const ResourceBackupData& data);
+		void restore(const ResourceBackupData& data);
 
 		/**
 		 * Creates a new managed resource wrapper from an actual managed resource object. Caller must ensure the provided
@@ -69,8 +64,8 @@ namespace bs
 		/** @copydoc Resource::destroy */
 		void destroy() override;
 
-		UINT32 mGCHandle;
 		WeakResourceHandle<ManagedResource> mMyHandle;
+		ScriptManagedResource* mOwner = nullptr;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -78,7 +73,7 @@ namespace bs
 	public:
 		friend class ManagedResourceRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const override;
+		RTTITypeBase* getRTTI() const override;
 
 	protected:
 		ManagedResource(); // Serialization only
