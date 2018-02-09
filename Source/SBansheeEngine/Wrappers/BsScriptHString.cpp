@@ -34,6 +34,6 @@ namespace bs
 
 	void ScriptHString::internal_getValue(ScriptHString* nativeInstance, MonoString** value)
 	{
-		*value = MonoUtil::wstringToMono(nativeInstance->mString.getValue());
+		MonoUtil::referenceCopy(value, (MonoObject*)MonoUtil::wstringToMono(nativeInstance->mString.getValue()));
 	}
 }

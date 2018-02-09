@@ -126,7 +126,7 @@ namespace bs
 		if (style.font != nullptr)
 		{
 			ScriptResourceBase* scriptFont = ScriptResourceManager::instance().getScriptResource(style.font, true);
-			*value = scriptFont->getManagedInstance();
+			MonoUtil::referenceCopy(value, scriptFont->getManagedInstance());
 		}
 		else
 			*value = nullptr;
@@ -195,7 +195,8 @@ namespace bs
 
 	void ScriptGUIElementStyle::internal_GetNormal(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value)
 	{
-		*value = ScriptGUIElementStateStyle::toManaged(nativeInstance->mElementStyle.normal);
+		auto temp = ScriptGUIElementStateStyle::toManaged(nativeInstance->mElementStyle.normal);
+		MonoUtil::valueCopy(value, &temp, ScriptGUIElementStateStyle::getMetaData()->scriptClass->_getInternalClass());
 	}
 
 	void ScriptGUIElementStyle::internal_SetNormal(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value)
@@ -205,7 +206,8 @@ namespace bs
 
 	void ScriptGUIElementStyle::internal_GetHover(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value)
 	{
-		*value = ScriptGUIElementStateStyle::toManaged(nativeInstance->mElementStyle.hover);
+		auto temp = ScriptGUIElementStateStyle::toManaged(nativeInstance->mElementStyle.hover);
+		MonoUtil::valueCopy(value, &temp, ScriptGUIElementStateStyle::getMetaData()->scriptClass->_getInternalClass());
 	}
 
 	void ScriptGUIElementStyle::internal_SetHover(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value)
@@ -215,7 +217,8 @@ namespace bs
 
 	void ScriptGUIElementStyle::internal_GetActive(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value)
 	{
-		*value = ScriptGUIElementStateStyle::toManaged(nativeInstance->mElementStyle.active);
+		auto temp = ScriptGUIElementStateStyle::toManaged(nativeInstance->mElementStyle.active);
+		MonoUtil::valueCopy(value, &temp, ScriptGUIElementStateStyle::getMetaData()->scriptClass->_getInternalClass());
 	}
 
 	void ScriptGUIElementStyle::internal_SetActive(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value)
@@ -225,7 +228,8 @@ namespace bs
 
 	void ScriptGUIElementStyle::internal_GetFocused(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value)
 	{
-		*value = ScriptGUIElementStateStyle::toManaged(nativeInstance->mElementStyle.focused);
+		auto temp = ScriptGUIElementStateStyle::toManaged(nativeInstance->mElementStyle.focused);
+		MonoUtil::valueCopy(value, &temp, ScriptGUIElementStateStyle::getMetaData()->scriptClass->_getInternalClass());
 	}
 
 	void ScriptGUIElementStyle::internal_SetFocused(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value)
@@ -235,7 +239,8 @@ namespace bs
 
 	void ScriptGUIElementStyle::internal_GetNormalOn(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value)
 	{
-		*value = ScriptGUIElementStateStyle::toManaged(nativeInstance->mElementStyle.normalOn);
+		auto temp = ScriptGUIElementStateStyle::toManaged(nativeInstance->mElementStyle.normalOn);
+		MonoUtil::valueCopy(value, &temp, ScriptGUIElementStateStyle::getMetaData()->scriptClass->_getInternalClass());
 	}
 
 	void ScriptGUIElementStyle::internal_SetNormalOn(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value)
@@ -245,7 +250,8 @@ namespace bs
 
 	void ScriptGUIElementStyle::internal_GetHoverOn(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value)
 	{
-		*value = ScriptGUIElementStateStyle::toManaged(nativeInstance->mElementStyle.hoverOn);
+		auto temp = ScriptGUIElementStateStyle::toManaged(nativeInstance->mElementStyle.hoverOn);
+		MonoUtil::valueCopy(value, &temp, ScriptGUIElementStateStyle::getMetaData()->scriptClass->_getInternalClass());
 	}
 
 	void ScriptGUIElementStyle::internal_SetHoverOn(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value)
@@ -255,7 +261,8 @@ namespace bs
 
 	void ScriptGUIElementStyle::internal_GetActiveOn(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value)
 	{
-		*value = ScriptGUIElementStateStyle::toManaged(nativeInstance->mElementStyle.activeOn);
+		auto temp = ScriptGUIElementStateStyle::toManaged(nativeInstance->mElementStyle.activeOn);
+		MonoUtil::valueCopy(value, &temp, ScriptGUIElementStateStyle::getMetaData()->scriptClass->_getInternalClass());
 	}
 
 	void ScriptGUIElementStyle::internal_SetActiveOn(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value)
@@ -265,7 +272,8 @@ namespace bs
 
 	void ScriptGUIElementStyle::internal_GetFocusedOn(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value)
 	{
-		*value = ScriptGUIElementStateStyle::toManaged(nativeInstance->mElementStyle.focusedOn);
+		auto temp = ScriptGUIElementStateStyle::toManaged(nativeInstance->mElementStyle.focusedOn);
+		MonoUtil::valueCopy(value, &temp, ScriptGUIElementStateStyle::getMetaData()->scriptClass->_getInternalClass());
 	}
 
 	void ScriptGUIElementStyle::internal_SetFocusedOn(ScriptGUIElementStyle* nativeInstance, ScriptGUIElementStateStyleStruct* value)

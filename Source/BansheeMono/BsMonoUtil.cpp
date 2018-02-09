@@ -160,6 +160,11 @@ namespace bs
 		mono_value_copy(dest, src, klass);
 	}
 
+	void MonoUtil::referenceCopy(void* dest, MonoObject* object)
+	{
+		mono_gc_wbarrier_generic_store(dest, object);
+	}
+
 	bool MonoUtil::isSubClassOf(::MonoClass* subClass, ::MonoClass* parentClass)
 	{
 		return mono_class_is_subclass_of(subClass, parentClass, true) != 0;

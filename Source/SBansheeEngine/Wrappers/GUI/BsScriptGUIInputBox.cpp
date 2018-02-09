@@ -52,7 +52,7 @@ namespace bs
 	void ScriptGUIInputBox::internal_getText(ScriptGUIInputBox* nativeInstance, MonoString** text)
 	{
 		GUIInputBox* inputBox = (GUIInputBox*)nativeInstance->getGUIElement();
-		*text = MonoUtil::wstringToMono(inputBox->getText());
+		MonoUtil::referenceCopy(text, (MonoObject*)MonoUtil::wstringToMono(inputBox->getText()));
 	}
 
 	void ScriptGUIInputBox::internal_setText(ScriptGUIInputBox* nativeInstance, MonoString* text)

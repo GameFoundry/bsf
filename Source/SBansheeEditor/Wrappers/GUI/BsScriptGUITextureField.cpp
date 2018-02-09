@@ -71,7 +71,7 @@ namespace bs
 		GUITextureField* textureField = static_cast<GUITextureField*>(nativeInstance->getGUIElement());
 
 		HTexture resource = textureField->getValue();
-		*output = nativeToManagedResource(resource);
+		MonoUtil::referenceCopy(output, nativeToManagedResource(resource));
 	}
 
 	void ScriptGUITextureField::internal_setValue(ScriptGUITextureField* nativeInstance, MonoObject* value)

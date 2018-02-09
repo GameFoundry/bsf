@@ -77,7 +77,7 @@ namespace bs
 		GUIResourceField* resourceField = static_cast<GUIResourceField*>(nativeInstance->getGUIElement());
 
 		HResource resource = resourceField->getValue();
-		*output = nativeToManagedResource(resource);
+		MonoUtil::referenceCopy(output, nativeToManagedResource(resource));
 	}
 
 	void ScriptGUIResourceField::internal_setValue(ScriptGUIResourceField* nativeInstance, MonoObject* value)
@@ -98,7 +98,7 @@ namespace bs
 		GUIResourceField* resourceField = static_cast<GUIResourceField*>(nativeInstance->getGUIElement());
 
 		WeakResourceHandle<Resource> resource = resourceField->getValueWeak();
-		*output = ScriptResourceRef::create(resource);
+		MonoUtil::referenceCopy(output, ScriptResourceRef::create(resource));
 	}
 
 	void ScriptGUIResourceField::internal_setValueRef(ScriptGUIResourceField* nativeInstance, MonoObject* value)

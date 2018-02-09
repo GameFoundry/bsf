@@ -39,7 +39,7 @@ namespace bs
 				pathArray.set(i, monoString);
 			}
 
-			*outPaths = pathArray.getInternal();
+			MonoUtil::referenceCopy(outPaths, (MonoObject*)pathArray.getInternal());
 			return true;
 		}
 		else
@@ -59,7 +59,10 @@ namespace bs
 		if (EditorUtility::openBrowseDialog(type, defaultFolderNative, "", paths))
 		{
 			if (paths.size() > 0)
-				*outPath = MonoUtil::wstringToMono(paths[0].toWString());
+			{
+				MonoString* path = MonoUtil::wstringToMono(paths[0].toWString());
+				MonoUtil::referenceCopy(outPath, (MonoObject*)path);
+			}
 			else
 				*outPath = nullptr;
 
@@ -83,7 +86,10 @@ namespace bs
 		if (EditorUtility::openBrowseDialog(type, defaultFolderNative, filterListNative, paths))
 		{
 			if (paths.size() > 0)
-				*outPath = MonoUtil::wstringToMono(paths[0].toWString());
+			{
+				MonoString* path = MonoUtil::wstringToMono(paths[0].toWString());
+				MonoUtil::referenceCopy(outPath, (MonoObject*)path);
+			}
 			else
 				*outPath = nullptr;
 

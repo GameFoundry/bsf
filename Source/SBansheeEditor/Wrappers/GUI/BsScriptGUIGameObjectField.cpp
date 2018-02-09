@@ -72,7 +72,7 @@ namespace bs
 		GUIGameObjectField* gameObjectField = static_cast<GUIGameObjectField*>(nativeInstance->getGUIElement());
 
 		HGameObject gameObject = gameObjectField->getValue();
-		*output = nativeToManagedGO(gameObject);
+		MonoUtil::referenceCopy(output, nativeToManagedGO(gameObject));
 	}
 
 	void ScriptGUIGameObjectField::internal_setValue(ScriptGUIGameObjectField* nativeInstance, MonoObject* value)

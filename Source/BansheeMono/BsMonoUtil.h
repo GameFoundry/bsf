@@ -88,6 +88,13 @@ namespace bs
 		 */
 		static void valueCopy(void* dest, void* src, ::MonoClass* klass);
 
+		/**
+		 * Copies the pointer to a reference type @p object to @p dest, ensuring @p dest also points to the object. This
+		 * needs to be used if @p dest is being passed to managed code (e.g. an output parameter in a method). Otherwise
+		 * normal copies can be used. @p dest must be large enough to hold sizeof(MonoObject*).
+		 */
+		static void referenceCopy(void* dest, MonoObject* object);
+
 		/**	Checks if this class is a sub class of the specified class. */
 		static bool isSubClassOf(::MonoClass* subClass, ::MonoClass* parentClass);
 

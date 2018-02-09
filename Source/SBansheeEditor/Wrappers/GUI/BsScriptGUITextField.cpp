@@ -71,7 +71,7 @@ namespace bs
 			*output = MonoUtil::wstringToMono(StringUtil::WBLANK);
 
 		GUITextField* field = static_cast<GUITextField*>(nativeInstance->getGUIElement());
-		*output = MonoUtil::wstringToMono(field->getValue());
+		MonoUtil::referenceCopy(output, (MonoObject*)MonoUtil::wstringToMono(field->getValue()));
 	}
 
 	void ScriptGUITextField::internal_setValue(ScriptGUITextField* nativeInstance, MonoString* value)
