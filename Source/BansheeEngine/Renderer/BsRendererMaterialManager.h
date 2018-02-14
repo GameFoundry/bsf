@@ -34,7 +34,7 @@ namespace bs
 		/**	Registers a new material that should be initialized on module start-up. */
 		static void _registerMaterial(ct::RendererMaterialMetaData* metaData, const Path& shaderPath);
 
-		/** Returns a set of defines to be used when importing the shader.. */
+		/** Returns a set of defines to be used when importing the shader. */
 		static ShaderDefines _getDefines(const Path& shaderPath);
 	private:
 		template<class T>

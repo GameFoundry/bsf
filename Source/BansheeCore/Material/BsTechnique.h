@@ -162,8 +162,7 @@ namespace bs
 		static SPtr<Technique> create(const String& language, const Vector<SPtr<Pass>>& passes);
 
 		/** 
-		 * @copydoc bs::Technique::create(const String&, const Vector<StringID>&, 
-		 *				const ShaderVariation&, const Vector<SPtr<Pass>>&) 
+		 * @copydoc bs::Technique::create(const String&, const Vector<StringID>&, const ShaderVariation&, const Vector<SPtr<Pass>>&) 
 		 */
 		static SPtr<Technique> create(const String& language, const Vector<StringID>& tags,
 			const ShaderVariation& variation, const Vector<SPtr<Pass>>& passes);

@@ -25,7 +25,7 @@ namespace bs
 		 */
 		virtual void setHalfHeight(float halfHeight) = 0;
 
-		/** @copdyoc setHalfHeight() */
+		/** @copydoc setHalfHeight() */
 		virtual float getHalfHeight() const = 0;
 
 		/** Determines the radius of the capsule. */

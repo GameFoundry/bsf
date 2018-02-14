@@ -48,11 +48,11 @@ boxCollider->setMass(8.0); // Box shape is much heavier than the sphere shape
 sphereCollider->setMass(2.0f);
 ~~~~~~~~~~~~~
 
-To make sure the rigidbody uses the mass from its child colliders, you must call @ref bs::CRigidbody::setFlags "CRigidbody::setFlags()" with both **Rigidbody::Flag::AutoTensors** and @ref bs::Rigidbody::Flag::AutoMass "Rigidbody::Flag::AutoMass" flags set. **Rigidbody::Flag::AutoMass** enables mass calculation based on child shapes, and we'll talk about **Rigidbody::Flag::AutoTensors** later - for now it's enough to know that automatic mass calculation doesn't work without it.
+To make sure the rigidbody uses the mass from its child colliders, you must call @ref bs::CRigidbody::setFlags "CRigidbody::setFlags()" with both **Rigidbody::Flag::AutoTensors** and @ref bs::RigidbodyFlag::AutoMass "RigidbodyFlag::AutoMass" flags set. **RigidbodyFlag::AutoMass** enables mass calculation based on child shapes, and we'll talk about **RigidbodyFlag::AutoTensors** later - for now it's enough to know that automatic mass calculation doesn't work without it.
 
 ~~~~~~~~~~~~~{.cpp}
-rigidbody->setFlags(Rigidbody::Flag::AutoTensors);
-rigidbody->setFlags(Rigidbody::Flag::AutoMass);
+rigidbody->setFlags(RigidbodyFlag::AutoTensors);
+rigidbody->setFlags(RigidbodyFlag::AutoMass);
 ~~~~~~~~~~~~~
 
 By properly distributing mass and density over child shapes you can achieve much more realistic simulation for complex objects (e.g. a car). For simple objects (e.g. a barrel, tree trunk) it's best to keep uniform mass density.
@@ -159,13 +159,13 @@ Note that you should not move/rotate such rigidbody by using its scene object (e
 ## Continous collision detection
 When moving a rigid object you should be careful not to move it too much in a single frame. If you move too much the object might move beyond an obstacle it shouldn't have been able to move through. Generally you want to call **CRigibody::move()** and **CRigidbody::rotate()** every frame, in small increments.
 
-In case you are making a fast-paced game, where movement in a single-frame is very high (e.g. a racing game), and want to prevent rigidbodies "tunneling" through obstacles, you can enable continous collision detection by calling @ref bs::CRigidbody::setFlags "CRigidbody::setFlags()" with @ref bs::Rigidbody::Flag::CCD "Rigidbody::Flag::CCD" flag.
+In case you are making a fast-paced game, where movement in a single-frame is very high (e.g. a racing game), and want to prevent rigidbodies "tunneling" through obstacles, you can enable continous collision detection by calling @ref bs::CRigidbody::setFlags "CRigidbody::setFlags()" with @ref bs::RigidbodyFlag::CCD "RigidbodyFlag::CCD" flag.
 
 You must also enable CCD globally through @ref bs::Physics::setFlag "Physics::setFlag()", by enabling the @ref bs::PhysicsFlag::CCD_Enable "PhysicsFlag::CCD_Enable" flag.
 
 ~~~~~~~~~~~~~{.cpp}
 gPhysics().setFlag(PhysicsFlag::CCD_Enable, true);
-rigidbody->setFlags(Rigidbody::Flag::CCD);
+rigidbody->setFlags(RigidbodyFlag::CCD);
 ~~~~~~~~~~~~~
 
 This form of collision detection will prevent such tunneling, at the cost of lower performance.
@@ -175,10 +175,10 @@ Tensors allow you to fine tune how does force and torque affect your rigidbody. 
  - Center of mass - Determines the point the object rotates around. Also determines how much rotation vs. movement is applied to an object resulting from a force applied to a specific point.
  - Inertia tensor - Determines how the object rotates. Objects with different shapes and densities will rotate more easily in certain directions than others.
  
-In most cases you want both of these properties to be calculated automatically. In which case you should provide the @ref bs::Rigidbody::Flag::AutoTensors "Rigidbody::Flag::AutoTensors" flag to **CRigidbody::setFlags**. This will ensure these values are calculated from child collider shapes and mass.
+In most cases you want both of these properties to be calculated automatically. In which case you should provide the @ref bs::RigidbodyFlag::AutoTensors "RigidbodyFlag::AutoTensors" flag to **CRigidbody::setFlags**. This will ensure these values are calculated from child collider shapes and mass.
 
 ~~~~~~~~~~~~~{.cpp}
-rigidbody->setFlags(Rigidbody::Flag::AutoTensors);
+rigidbody->setFlags(RigidbodyFlag::AutoTensors);
 ~~~~~~~~~~~~~
 
 If you wish to set them manually, you can instead call @ref bs::CRigidbody::setCenterOfMass "CRigidbody::setCenterOfMass()" and @ref bs::CRigidbody::setInertiaTensor "CRigidbody::setInertiaTensor()".

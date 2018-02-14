@@ -150,9 +150,9 @@ class MyCoreObject : public CoreObject
 };
 ~~~~~~~~~~~~~
 
-When creating your core object it's important to note they require specific initialization steps. As seen in the example, **ct::CoreThread** implementation needs to be created as a normal shared pointer, and the pointer instance must be assigned after creation by calling @ref bs::ct::CoreObject::_setThisPtr "ct::CoreObject::_setThisPtr()".
+When creating your core object it's important to note they require specific initialization steps. As seen in the example, **ct::CoreObject** implementation needs to be created as a normal shared pointer, and the pointer instance must be assigned after creation by calling @ref bs::ct::CoreObject::_setThisPtr "ct::CoreObject::_setThisPtr()".
 
-For **CoreThread** implementation additional rules apply. Its shared pointer must be created using @ref bs::bs_core_ptr<T> "bs_core_ptr<T>" method, followed by a call to @ref bs::CoreObject::_setThisPtr "CoreObject::_setThisPtr()" and finally a call to @ref bs::CoreObject::initialize "CoreObject::initialize()". Due to the complex initialization procedure it is always suggested that you create a static `create` method that does these steps automatically. In fact **CoreObject** constructor is by default protected so you cannot accidently create it incorrectly.
+For **CoreObject** implementation additional rules apply. Its shared pointer must be created using @ref bs::bs_core_ptr<T> "bs_core_ptr<T>" method, followed by a call to @ref bs::CoreObject::_setThisPtr "CoreObject::_setThisPtr()" and finally a call to @ref bs::CoreObject::initialize "CoreObject::initialize()". Due to the complex initialization procedure it is always suggested that you create a static `create` method that does these steps automatically. In fact **CoreObject** constructor is by default protected so you cannot accidently create it incorrectly.
 
 ~~~~~~~~~~~~~{.cpp}
 SPtr<MyCoreObject> MyCoreObject::create()
@@ -200,8 +200,8 @@ CoreSyncData MyCoreObject::syncToCore(FrameAlloc* allocator)
 	return CoreSyncData(buffer, size);
 }
 
-// CoreObjectCore (receives the synchronization data)
-void MyCoreObjectCore::syncToCore(const CoreSyncData& data) 
+// ct::CoreObject (receives the synchronization data)
+void MyCoreObject::syncToCore(const CoreSyncData& data) 
 {
 	char* dataPtr = (char*)data.getBuffer();
 

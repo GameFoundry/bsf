@@ -22,7 +22,7 @@ namespace bs
 		/** Determines the extents (half size) of the geometry of the box. */
 		virtual void setExtents(const Vector3& extents) = 0;
 
-		/** @copdoc setExtents() */
+		/** @copydoc setExtents() */
 		virtual Vector3 getExtents() const = 0;
 
 		/** 

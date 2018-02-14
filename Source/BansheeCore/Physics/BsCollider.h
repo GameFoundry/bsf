@@ -52,7 +52,7 @@ namespace bs
 		/** Determines the Rigidbody that controls this collider (if any). */
 		void setRigidbody(Rigidbody* value);
 
-		/** @copydoc setRigidbody() */
+		/** @copydoc Collider::setRigidbody() */
 		Rigidbody* getRigidbody() const { return mRigidbody; }
 
 		/** @copydoc FCollider::setMass */

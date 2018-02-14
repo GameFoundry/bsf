@@ -1,7 +1,7 @@
 Startup and main loop					{#startup}
 ===============
 
-Banshee is started through the @ref bs::Application "Application" interface. 
+Before any work can be done with Banshee, it must first be started through the @ref bs::Application "Application" interface. 
 
 ~~~~~~~~~~~~~{.cpp}
 // Start an application in windowed mode using 1280x720 resolution
@@ -16,10 +16,11 @@ Application::instance().runMainLoop();
 Application::shutDown();
 ~~~~~~~~~~~~~
 
-# Start up
 @ref bs::Application::startUp "Application::startUp" expects you to provide the resolution for the primary application window, its title and a couple of optional parameters.
 
 > Advanced: You can perform a more customized startup by filling out the @ref bs::START_UP_DESC "START_UP_DESC" structure and passing it to **Application::startUp**.
+
+Following a call to **bs::Application::startUp** you are expected to set up your scene, which we will cover in later manuals.
 
 # Main loop
 Following start-up we run the main game loop by calling @ref bs::Application::runMainLoop "Application::runMainLoop". This is where your game runs, where every frame is updated and rendered.
