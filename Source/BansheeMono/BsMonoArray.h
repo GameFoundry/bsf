@@ -151,6 +151,9 @@ namespace bs
 		template<>
 		BS_MONO_EXPORT void ScriptArray_set<WString>(MonoArray* array, UINT32 idx, const WString& value);
 
+		template<>
+		BS_MONO_EXPORT void ScriptArray_set<nullptr_t>(MonoArray* array, UINT32 idx, const nullptr_t& value);
+
 		template<class T>
 		inline ScriptArray ScriptArray_create(UINT32 size)
 		{

@@ -36,6 +36,13 @@ namespace bs
 			mono_array_setref(array, idx, monoString);
 		}
 
+		template<>
+		void ScriptArray_set<nullptr_t>(MonoArray* array, UINT32 idx, const nullptr_t& value)
+		{
+			void** item = (void**)ScriptArray::_getArrayAddr(array, sizeof(void*), idx);
+			*item = nullptr;
+		}
+
 		template String ScriptArray_get(MonoArray* array, UINT32 idx);
 		template WString ScriptArray_get(MonoArray* array, UINT32 idx);
 
