@@ -403,7 +403,7 @@ namespace bs
 			if (mMappingInfos[i].bone == bone)
 			{
 				mInternal->unmapSceneObject(mMappingInfos[i].sceneObject);
-				mInternal->mapCurveToSceneObject(bone->getName(), mMappingInfos[i].sceneObject);
+				mInternal->mapCurveToSceneObject(bone->getBoneName(), mMappingInfos[i].sceneObject);
 				break;
 			}
 		}
