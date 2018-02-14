@@ -338,8 +338,8 @@ namespace bs
 		sceneCameraSO->addComponent<CameraFlyer>();
 
 		// Position and orient the camera scene object
-		sceneCameraSO->setPosition(Vector3(0.2f, 0.1f, 0.2f));
-		sceneCameraSO->lookAt(Vector3(-0.1f, 0, 0));
+		sceneCameraSO->setPosition(Vector3(2.0f, 1.0f, 2.0f));
+		sceneCameraSO->lookAt(Vector3(-0.4f, 0, 0));
 	}
 
 	/** Register mouse and keyboard inputs that will be used for controlling the camera. */

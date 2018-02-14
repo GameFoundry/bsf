@@ -150,6 +150,7 @@ namespace bs { namespace ct
 	SPtr<RenderTexture> gRenderTarget;
 	SPtr<RenderWindow> gRenderWindow;
 	bool gUseHLSL = true;
+	bool gUseVKSL = false;
 
 	const UINT32 NUM_VERTICES = 24;
 	const UINT32 NUM_INDICES = 36;
@@ -166,6 +167,7 @@ namespace bs { namespace ct
 	{
 		// Determine which shading language to use (depending on the RenderAPI chosen during build)
 		gUseHLSL = strcmp(BS_RENDER_API_MODULE, "BansheeD3D11RenderAPI") == 0;
+		gUseVKSL = strcmp(BS_RENDER_API_MODULE, "BansheeVulkanRenderAPI") == 0;
 
 		// This will be the primary output for our rendering (created by the main thread on start-up)
 		gRenderWindow = renderWindow;
@@ -176,7 +178,7 @@ namespace bs { namespace ct
 		GPU_PROGRAM_DESC vertProgDesc;
 		vertProgDesc.type = GPT_VERTEX_PROGRAM;
 		vertProgDesc.entryPoint = "main";
-		vertProgDesc.language = gUseHLSL ? "hlsl" : "glsl";
+		vertProgDesc.language = gUseHLSL ? "hlsl" : gUseVKSL ? "vksl" : "glsl";
 		vertProgDesc.source = vertProgSrc;
 
 		SPtr<GpuProgram> vertProg = GpuProgram::create(vertProgDesc);
@@ -187,7 +189,7 @@ namespace bs { namespace ct
 		GPU_PROGRAM_DESC fragProgDesc;
 		fragProgDesc.type = GPT_FRAGMENT_PROGRAM;
 		fragProgDesc.entryPoint = "main";
-		fragProgDesc.language = gUseHLSL ? "hlsl" : "glsl";
+		fragProgDesc.language = gUseHLSL ? "hlsl" : gUseVKSL ? "vksl" : "glsl";
 		fragProgDesc.source = fragProgSrc;
 
 		SPtr<GpuProgram> fragProg = GpuProgram::create(fragProgDesc);
