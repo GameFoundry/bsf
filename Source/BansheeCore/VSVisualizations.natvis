@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+
+	<Type Name="bs::GameObjectHandle&lt;*&gt;">
+		<DisplayString Condition="mData._Ptr->mPtr._Ptr == 0 || mData._Ptr->mPtr._Ptr->object._Ptr == 0">Empty</DisplayString>
+		<DisplayString>Name = {mData._Ptr->mPtr._Ptr->object._Ptr->mName}, InstanceId = {mData._Ptr->mPtr._Ptr->mInstanceId}</DisplayString>
+		<Expand>
+			<ExpandedItem Condition="mData._Ptr->mPtr._Ptr != 0 &amp;&amp; mData._Ptr->mPtr._Ptr->object._Ptr != 0">($T1*)mData._Ptr->mPtr._Ptr->object._Ptr</ExpandedItem>
+		</Expand>
+	</Type>
+
+	<Type Name="bs::TResourceHandle&lt;*&gt;">
+		<DisplayString Condition="mData._Ptr == 0 || mData._Ptr->mPtr._Ptr == 0">Empty</DisplayString>
+		<DisplayString>Name = {mData._Ptr->mPtr._Ptr->mMetaData._Ptr->displayName}, UUID = {mData._Ptr->mUUID}</DisplayString>
+		<Expand>
+			<ExpandedItem Condition="mData._Ptr != 0 &amp;&amp; mData._Ptr->mPtr._Ptr != 0">($T1*)mData._Ptr->mPtr._Ptr</ExpandedItem>
+		</Expand>
+	</Type>
+	
+	<Type Name="std::shared_ptr&lt;*&gt;">
+		<DisplayString Condition="_Ptr == 0">Empty</DisplayString>
+		<DisplayString>{_Ptr}</DisplayString>
+		<Expand>
+			<ExpandedItem Condition="_Ptr != 0">_Ptr</ExpandedItem>
+			<Item Name="Strong refs">_Rep->_Uses</Item>
+			<Item Name="Weak refs">_Rep->_Weaks</Item>
+		</Expand>
+	</Type>
+
+	<Type Name="bs::HString">
+		<DisplayString Condition="mStringData._Ptr == 0">Empty</DisplayString>
+		<DisplayString>Value = {mStringData._Ptr->string}</DisplayString>
+	</Type>
+
+	<Type Name="bs::Matrix4">
+		<DisplayString>Matrix [4x4]</DisplayString>
+		<Expand>
+			<Synthetic Name="Row[0]">
+				<DisplayString>{m[0][0],g}, {m[0][1],g}, {m[0][2],g}, {m[0][3],g}</DisplayString>
+			</Synthetic>
+			<Synthetic Name="Row[1]">
+				<DisplayString>{m[1][0],g}, {m[1][1],g}, {m[1][2],g}, {m[1][3],g}</DisplayString>
+			</Synthetic>
+			<Synthetic Name="Row[2]">
+				<DisplayString>{m[2][0],g}, {m[2][1],g}, {m[2][2],g}, {m[2][3],g}</DisplayString>
+			</Synthetic>
+			<Synthetic Name="Row[3]">
+				<DisplayString>{m[3][0],g}, {m[3][1],g}, {m[3][2],g}, {m[3][3],g}</DisplayString>
+			</Synthetic>
+		</Expand>
+	</Type>
+
+	<Type Name="bs::Matrix3">
+		<DisplayString>Matrix [3x3]</DisplayString>
+		<Expand>
+			<Synthetic Name="Row[0]">
+				<DisplayString>{m[0][0],g}, {m[0][1],g}, {m[0][2],g}</DisplayString>
+			</Synthetic>
+			<Synthetic Name="Row[1]">
+				<DisplayString>{m[1][0],g}, {m[1][1],g}, {m[1][2],g}</DisplayString>
+			</Synthetic>
+			<Synthetic Name="Row[2]">
+				<DisplayString>{m[2][0],g}, {m[2][1],g}, {m[2][2],g}</DisplayString>
+			</Synthetic>
+		</Expand>
+	</Type>
+
+	<Type Name="bs::Vector3">
+		<DisplayString>Vector3 {{{x}, {y}, {z}}}</DisplayString>
+		<Expand>
+			<Item Name="X">x</Item>
+			<Item Name="Y">y</Item>
+			<Item Name="Z">z</Item>
+		</Expand>
+	</Type>
+
+	<Type Name="bs::Vector4">
+		<DisplayString>Vector4 {{{x}, {y}, {z}, {w}}}</DisplayString>
+		<Expand>
+			<Item Name="X">x</Item>
+			<Item Name="Y">y</Item>
+			<Item Name="Z">z</Item>
+			<Item Name="W">w</Item>
+		</Expand>
+	</Type>
+
+	<Type Name="bs::Quaternion">
+		<DisplayString>Quaternion {{{x}, {y}, {z}, {w}}}</DisplayString>
+		<Expand>
+			<Item Name="X">x</Item>
+			<Item Name="Y">y</Item>
+			<Item Name="Z">z</Item>
+			<Item Name="W">w</Item>
+		</Expand>
+	</Type>
+</AutoVisualizer>
