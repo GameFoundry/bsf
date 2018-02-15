@@ -532,12 +532,12 @@ namespace bs
 		mMorphShapeVersion = 0;
 	}
 
-	void Renderable::updateAnimationBuffers(const RendererAnimationData& animData)
+	void Renderable::updateAnimationBuffers(const EvaluatedAnimationData& animData)
 	{
 		if (mAnimationId == (UINT64)-1)
 			return;
 
-		const RendererAnimationData::AnimInfo* animInfo = nullptr;
+		const EvaluatedAnimationData::AnimInfo* animInfo = nullptr;
 
 		auto iterFind = animData.infos.find(mAnimationId);
 		if (iterFind != animData.infos.end())
@@ -548,7 +548,7 @@ namespace bs
 
 		if (mAnimType == RenderableAnimType::Skinned || mAnimType == RenderableAnimType::SkinnedMorph)
 		{
-			const RendererAnimationData::PoseInfo& poseInfo = animInfo->poseInfo;
+			const EvaluatedAnimationData::PoseInfo& poseInfo = animInfo->poseInfo;
 
 			// Note: If multiple elements are using the same animation (not possible atm), this buffer should be shared by
 			// all such elements

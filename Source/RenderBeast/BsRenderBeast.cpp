@@ -254,7 +254,7 @@ namespace bs { namespace ct
 		shadowRenderer.setShadowMapSize(mCoreOptions->shadowMapSize);
 	}
 
-	void RenderBeast::renderAll() 
+	void RenderBeast::renderAll(const EvaluatedAnimationData* animData) 
 	{
 		// Sync all dirty sim thread CoreObject data to core thread
 		CoreObjectManager::instance().syncToCore();
@@ -270,10 +270,10 @@ namespace bs { namespace ct
 		timings.timeDelta = gTime().getFrameDelta();
 		timings.frameIdx = gTime().getFrameIdx();
 		
-		gCoreThread().queueCommand(std::bind(&RenderBeast::renderAllCore, this, timings));
+		gCoreThread().queueCommand(std::bind(&RenderBeast::renderAllCore, this, timings, animData));
 	}
 
-	void RenderBeast::renderAllCore(FrameTimings timings)
+	void RenderBeast::renderAllCore(FrameTimings timings, const EvaluatedAnimationData* animData)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -291,13 +291,10 @@ namespace bs { namespace ct
 		mObjectRenderer->setParamFrameParams(timings.time);
 
 		// Retrieve animation data
-		AnimationManager::instance().waitUntilComplete();
-		const RendererAnimationData& animData = AnimationManager::instance().getRendererData();
-		
 		sceneInfo.renderableReady.resize(sceneInfo.renderables.size(), false);
 		sceneInfo.renderableReady.assign(sceneInfo.renderables.size(), false);
 		
-		FrameInfo frameInfo(timings, &animData);
+		FrameInfo frameInfo(timings, animData);
 
 		// Make sure any renderer tasks finish first, as rendering might depend on them
 		processTasks(false);

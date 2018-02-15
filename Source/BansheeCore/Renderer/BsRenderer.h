@@ -12,6 +12,7 @@ namespace bs
 	class RendererExtension;
 	class LightProbeVolume;
 	struct RenderSettings;
+	struct EvaluatedAnimationData;
 
 	namespace ct
 	{
@@ -113,7 +114,7 @@ namespace bs
 		virtual const StringID& getName() const = 0;
 
 		/** Called in order to render all currently active cameras. */
-		virtual void renderAll() = 0;
+		virtual void renderAll(const EvaluatedAnimationData* animData) = 0;
 
 		/**
 		 * Called whenever a new camera is created.

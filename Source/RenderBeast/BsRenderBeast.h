@@ -13,7 +13,7 @@
 
 namespace bs 
 { 
-	struct RendererAnimationData;
+	struct EvaluatedAnimationData;
 
 	namespace ct
 	{
@@ -34,13 +34,13 @@ namespace bs
 	/** Contains information global to an entire frame. */
 	struct FrameInfo
 	{
-		FrameInfo(const FrameTimings& timings, const RendererAnimationData* animData = nullptr)
+		FrameInfo(const FrameTimings& timings, const EvaluatedAnimationData* animData = nullptr)
 			:timeDelta(timings.timeDelta), frameIdx(timings.frameIdx), animData(animData)
 		{ }
 
 		float timeDelta;
 		UINT64 frameIdx;
-		const RendererAnimationData* animData;
+		const EvaluatedAnimationData* animData;
 	};
 
 	/**
@@ -64,7 +64,7 @@ namespace bs
 		const StringID& getName() const override;
 
 		/** @copydoc Renderer::renderAll */
-		void renderAll() override;
+		void renderAll(const EvaluatedAnimationData* animData) override;
 
 		/**	Sets options used for controlling the rendering. */
 		void setOptions(const SPtr<RendererOptions>& options) override;
@@ -148,10 +148,11 @@ namespace bs
 		 * Performs rendering over all camera proxies.
 		 *
 		 * @param[in]	timings		Information about frame time and frame index.
+		 * @param[in]	animData	Data used for rendering animated renderables.
 		 *
 		 * @note	Core thread only.
 		 */
-		void renderAllCore(FrameTimings timings);
+		void renderAllCore(FrameTimings timings, const EvaluatedAnimationData* animData);
 
 		/**
 		 * Renders all views in the provided view group.

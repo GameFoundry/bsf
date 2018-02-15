@@ -17,7 +17,7 @@ namespace bs
 	 */
 	
 	/** Contains skeleton poses for all animations evaluated on a single frame. */
-	struct RendererAnimationData
+	struct EvaluatedAnimationData
 	{
 		/** Contains meta-data about a calculated skeleton pose. Actual data maps to the @p transforms buffer. */
 		struct PoseInfo
@@ -70,34 +70,21 @@ namespace bs
 		 */
 		void setUpdateRate(UINT32 fps);
 
-		/** 
-		 * Synchronizes animation data from the animation thread with the scene objects. Should be called before component
-		 * updates are sent. 
-		 */
-		void preUpdate();
-
 		/**
-		 * Synchronizes animation data to the animation thread, advances animation time and queues new animation evaluation
-		 * task.
+		 * Evaluates animations for all animated objects, and returns the evaluated skeleton bone poses and morph shape
+		 * meshes that can be passed along to the renderer.
+		 * 
+		 * @param[in]		async		If true the method returns immediately while the animation gets evaluated in the
+		 *								background. The returned evaluated data will be the data from the previous frame.
+		 *								Therefore note that this introduces a one frame latency on the animation. If the
+		 *								latency is not acceptable set this to false, at a potential performance impact.
+		 * @return						Evaluated animation data for this frame (if @p async is false), or the previous
+		 *								frame (if @p async is true). Note that the system re-uses the returned buffers,
+		 *								and the returned buffer should stop being used after every second call to update().
+		 *								This is enough to have one buffer be processed by the core thread, one queued
+		 *								for future rendering and one that's being written to.
 		 */
-		void postUpdate();
-
-		/** 
-		 * Blocks the animation thread until it has finished evaluating animation, and it advances the read buffer index, 
-		 * meaning this shouldn't be called more than once per frame. It must be called before calling getRendererData().
-		 *
-		 * @note	Core thread only.
-		 */
-		void waitUntilComplete();
-
-		/** 
-		 * Gets skeleton poses required by the renderer to display all the animations. The returned data can be referenced, 
-		 * and is guaranteed to be valid for a single core-thread frame. Before invoking, caller must ensure data is
-		 * available by first calling waitUntilComplete().
-		 *
-		 * @note	Core thread only.
-		 */
-		const RendererAnimationData& getRendererData();
+		const EvaluatedAnimationData* update(bool async = true);
 
 	private:
 		friend class Animation;
@@ -121,6 +108,15 @@ namespace bs
 		/** Worker method ran on the animation thread that evaluates all animation at the provided time. */
 		void evaluateAnimation();
 
+		/** 
+		 * Evaluates animation for a single object and writes the result in the currently active write buffer. 
+		 *
+		 * @param[in]	anim		Proxy representing the animation to evaluate.
+		 * @param[in]	boneIdx		Index in the output buffer in which to write evaluated bone information. This will be
+		 *							automatically advanced by the number of written bone transforms.
+		 */
+		void evaluateAnimation(AnimationProxy* anim, UINT32& boneIdx);
+
 		UINT64 mNextId;
 		UnorderedMap<UINT64, Animation*> mAnimations;
 		
@@ -130,20 +126,21 @@ namespace bs
 		float mNextAnimationUpdateTime;
 		bool mPaused;
 
-		bool mWorkerStarted;
-		SPtr<Task> mAnimationWorker;
 		SPtr<VertexDataDesc> mBlendShapeVertexDesc;
 
 		// Animation thread
 		Vector<SPtr<AnimationProxy>> mProxies;
 		Vector<ConvexVolume> mCullFrustums;
-		RendererAnimationData mAnimData[CoreThread::NUM_SYNC_BUFFERS];
+		EvaluatedAnimationData mAnimData[CoreThread::NUM_SYNC_BUFFERS + 1];
 
 		UINT32 mPoseReadBufferIdx;
 		UINT32 mPoseWriteBufferIdx;
-		std::atomic<INT32> mDataReadyCount; // Anim <-> Core thread sync
-		std::atomic<WorkerState> mWorkerState; // Anim <-> Sim thread sync
-		bool mDataReady;
+		
+		Signal mWorkerDoneSignal;
+		Mutex mMutex;
+
+		UINT32 mNumActiveWorkers = 0;
+		bool mSwapBuffers = false;
 	};
 
 	/** Provides easier access to AnimationManager. */

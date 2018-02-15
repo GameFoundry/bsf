@@ -12,7 +12,7 @@
 
 namespace bs
 {
-	struct RendererAnimationData;
+	struct EvaluatedAnimationData;
 
 	/** @addtogroup Implementation
 	 *  @{
@@ -249,7 +249,7 @@ namespace bs
 		 * Updates internal animation buffers from the contents of the provided animation data object. Does nothing if
 		 * renderable is not affected by animation.
 		 */
-		void updateAnimationBuffers(const RendererAnimationData& animData);
+		void updateAnimationBuffers(const EvaluatedAnimationData& animData);
 
 		/** Returns the GPU buffer containing element's bone matrices, if it has any. */
 		const SPtr<GpuBuffer>& getBoneMatrixBuffer() const { return mBoneMatrixBuffer; }

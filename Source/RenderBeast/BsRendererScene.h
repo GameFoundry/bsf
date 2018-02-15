@@ -12,7 +12,7 @@
 
 namespace bs 
 { 
-	struct RendererAnimationData;
+	struct EvaluatedAnimationData;
 
 	namespace ct
 	{

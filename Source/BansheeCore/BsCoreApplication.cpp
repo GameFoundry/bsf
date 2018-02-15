@@ -223,20 +223,22 @@ namespace bs
 			RenderWindowManager::instance()._update(); 
 			gInput()._triggerCallbacks();
 			gDebug()._triggerCallbacks();
-			AnimationManager::instance().preUpdate();
 
 			preUpdate();
 
 			PROFILE_CALL(gSceneManager()._update(), "SceneManager");
 			gAudio()._update();
 			gPhysics().update();
-			AnimationManager::instance().postUpdate();
 
 			// Update plugins
 			for (auto& pluginUpdateFunc : mPluginUpdateFunctions)
 				pluginUpdateFunc.second();
 
 			postUpdate();
+
+			// Evaluate animation after scene and plugin updates because the renderer will just now be displaying the
+			// animation we sent on the previous frame, and we want the scene information to match to what is displayed.
+			const EvaluatedAnimationData* animData = AnimationManager::instance().update();
 
 			// Send out resource events in case any were loaded/destroyed/modified
 			ResourceListenerManager::instance().update();
@@ -246,7 +248,7 @@ namespace bs
 			RendererManager::instance().getActive()->update();
 
 			gSceneManager()._updateCoreObjectTransforms();
-			PROFILE_CALL(RendererManager::instance().getActive()->renderAll(), "Render");
+			PROFILE_CALL(RendererManager::instance().getActive()->renderAll(animData), "Render");
 
 			// Core and sim thread run in lockstep. This will result in a larger input latency than if I was 
 			// running just a single thread. Latency becomes worse if the core thread takes longer than sim 
