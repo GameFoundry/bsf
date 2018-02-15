@@ -21,6 +21,7 @@ namespace bs
 	{
 	public:
 		Transform();
+		Transform(const Vector3& position, const Quaternion& rotation, const Vector3& scale);
 
 		/**	Sets the local position of the object. */
 		void setPosition(const Vector3& position) { mPosition = position; }
@@ -67,10 +68,10 @@ namespace bs
 		 */
 		void setWorldScale(const Vector3& scale, const Transform& parent);
 
-		/** Builds the transform matrix from current properties. */
+		/** Builds the transform matrix from current translation, rotation and scale properties. */
 		Matrix4 getMatrix() const;
 
-		/** Builds the inverse transform matrix from current properties. */
+		/** Builds the inverse transform matrix from current translation, rotation and scale properties. */
 		Matrix4 getInvMatrix() const;
 
 		/** 

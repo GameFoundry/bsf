@@ -10,6 +10,7 @@
 #include "Math/BsQuaternion.h"
 #include "Animation/BsAnimationCurve.h"
 #include "RenderAPI/BsSubMesh.h"
+#include "Scene/BsTransform.h"
 
 namespace bs
 {
@@ -39,7 +40,7 @@ namespace bs
 		~FBXImportNode();
 
 		Matrix4 geomTransform;
-		Matrix4 localTransform;
+		Transform localTransform;
 		Matrix4 worldTransform;
 		String name;
 		FbxNode* fbxNode;
@@ -71,7 +72,7 @@ namespace bs
 	struct FBXBone
 	{
 		FBXImportNode* node;
-		Matrix4 localTfrm;
+		Transform localTfrm;
 		Matrix4 bindPose;
 	};
 

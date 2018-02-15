@@ -305,9 +305,10 @@ namespace bs
 		 * Decompose a Matrix4 to translation, rotation and scale.
 		 *
 		 * @note
-		 * Matrix must consist only of translation, rotation and uniform scale transformations,
-		 * otherwise accurate results are not guaranteed. Applying non-uniform scale guarantees
-		 * results will not be accurate.
+		 * This method is unable to decompose all types of matrices, in particular these are the limitations:
+		 *  - Only translation, rotation and scale transforms are supported
+		 *  - Plain TRS matrices (that aren't composed with other matrices) can always be decomposed
+		 *  - Composed TRS matrices can be decomposed ONLY if the scaling factor is uniform
 		 */
 		void decomposition(Vector3& position, Quaternion& rotation, Vector3& scale) const;
 

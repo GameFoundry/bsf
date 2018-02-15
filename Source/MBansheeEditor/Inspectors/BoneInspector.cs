@@ -44,6 +44,7 @@ namespace BansheeEditor
                     {
                         if (bone.Name == boneNames[i])
                         {
+                            selectedBoneName = bone.Name;
                             boneField.Index = i;
                             break;
                         }

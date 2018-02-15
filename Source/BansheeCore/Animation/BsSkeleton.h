@@ -8,6 +8,7 @@
 #include "Math/BsVector3.h"
 #include "Math/BsQuaternion.h"
 #include "Animation/BsCurveCache.h"
+#include "Scene/BsTransform.h"
 
 namespace bs
 {
@@ -34,7 +35,7 @@ namespace bs
 		String name; /**< Unique name of the bone. */
 		UINT32 parent; /**< Index of the parent bone, if any. -1 if root bone. */
 
-		Matrix4 localTfrm; /**< Local transform of the bone, relative to other bones in the hierarchy. */
+		Transform localTfrm; /**< Local transform of the bone, relative to other bones in the hierarchy. */
 		Matrix4 invBindPose; /**< Inverse bind pose which transforms vertices from their bind pose into local space. */
 	};
 
@@ -177,7 +178,7 @@ namespace bs
 		Skeleton(BONE_DESC* bones, UINT32 numBones);
 
 		UINT32 mNumBones = 0;
-		Matrix4* mBoneTransforms = nullptr;
+		Transform* mBoneTransforms = nullptr;
 		Matrix4* mInvBindPoses = nullptr;
 		SkeletonBoneInfo* mBoneInfo = nullptr;
 

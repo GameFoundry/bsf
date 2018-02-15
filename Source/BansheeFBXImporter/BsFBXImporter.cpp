@@ -302,7 +302,7 @@ namespace bs
 				BONE_DESC& bone = allBones.back();
 
 				bone.name = "MultiMeshRoot";
-				bone.localTfrm = Matrix4::IDENTITY;
+				bone.localTfrm = Transform();
 				bone.invBindPose = Matrix4::IDENTITY;
 				bone.parent = (UINT32)-1;
 
@@ -622,16 +622,16 @@ namespace bs
 
 		node->name = fbxNode->GetNameWithoutNameSpacePrefix().Buffer();
 		node->fbxNode = fbxNode;
-		node->localTransform = Matrix4::TRS(translation, rotation, scale);
+		node->localTransform = Transform(translation, rotation, scale);
 
 		if (parent != nullptr)
 		{
-			node->worldTransform = parent->worldTransform * node->localTransform;
+			node->worldTransform = parent->worldTransform * node->localTransform.getMatrix();
 
 			parent->children.push_back(node);
 		}
 		else
-			node->worldTransform = node->localTransform;
+			node->worldTransform = node->localTransform.getMatrix();
 
 		// Geometry transform is applied to geometry (mesh data) only, it is not inherited by children, so we store it
 		// separately
@@ -1586,9 +1586,11 @@ namespace bs
 
 			FbxAMatrix invLinkTransform = linkTransform.Inverse();
 			bone.localTfrm = bone.node->localTransform;
-			bone.localTfrm[0][3] *= scene.scaleFactor;
-			bone.localTfrm[1][3] *= scene.scaleFactor;
-			bone.localTfrm[2][3] *= scene.scaleFactor;
+
+			Vector3 localTfrmPos = bone.localTfrm.getPosition();
+			localTfrmPos *= scene.scaleFactor;
+
+			bone.localTfrm.setPosition(localTfrmPos);
 
 			bone.bindPose = FBXToNativeType(invLinkTransform);
 

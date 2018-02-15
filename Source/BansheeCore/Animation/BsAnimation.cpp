@@ -1428,29 +1428,28 @@ namespace bs
 						}
 					}
 
-					Vector3 rootParentPos = Vector3::ZERO;
-					Quaternion rootParentRot = Quaternion::IDENTITY;
-					Vector3 rootParentScale = Vector3::ONE;
+					while(rootSO && rootSO.isDestroyed(true))
+						rootSO = rootSO->getParent();
 
-					if(rootSO.isDestroyed(true))
+					Vector3 parentPos = Vector3::ZERO;
+					Quaternion parentRot = Quaternion::IDENTITY;
+					Vector3 parentScale = Vector3::ONE;
+
+					if(!rootSO.isDestroyed(true))
 					{
-						HSceneObject rootParent = rootSO->getParent();
-						if(!rootParent.isDestroyed(true))
-						{
-							const Transform& tfrm = rootParent->getTransform();
-							rootParentPos = tfrm.getPosition();
-							rootParentRot = tfrm.getRotation();
-							rootParentScale = tfrm.getScale();
-						}
+						const Transform& tfrm = rootSO->getTransform();
+						parentPos = tfrm.getPosition();
+						parentRot = tfrm.getRotation();
+						parentScale = tfrm.getScale();
 					}
 
 					// Transform from space relative to root's parent to world space
-					rotation = rootParentRot * rotation;
+					rotation = parentRot * rotation;
 
-					scale = rootParentScale * scale;
+					scale = parentScale * scale;
 
-					position = rootParentRot.rotate(rootParentScale * position);
-					position += rootParentPos;
+					position = parentRot.rotate(parentScale * position);
+					position += parentPos;
 
 					so->setWorldPosition(position);
 					so->setWorldRotation(rotation);

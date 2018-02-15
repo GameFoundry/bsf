@@ -9,6 +9,10 @@ namespace bs
 		: mPosition(Vector3::ZERO), mRotation(Quaternion::IDENTITY), mScale(Vector3::ONE)
 	{ }
 
+	Transform::Transform(const Vector3& position, const Quaternion& rotation, const Vector3& scale)
+		: mPosition(position), mRotation(rotation), mScale(scale)
+	{ }
+
 	Matrix4 Transform::getMatrix() const
 	{
 		return Matrix4::TRS(mPosition, mRotation, mScale);
