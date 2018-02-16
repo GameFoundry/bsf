@@ -170,6 +170,9 @@ namespace bs
 			localPose.scales[i] = Vector3::ONE;
 		}
 
+		bool* hasAnimCurve = bs_stack_alloc<bool>(mNumBones);
+		bs_zero_out(hasAnimCurve, mNumBones);
+
 		// Note: For a possible performance improvement consider keeping an array of only active (non-disabled) bones and
 		// just iterate over them without mask checks. Possibly also a list of active curve mappings to avoid those checks
 		// as well.
@@ -206,8 +209,6 @@ namespace bs
 					if (!mask.isEnabled(k))
 						continue;
 
-					bool hasAnimCurve = false;
-
 					const AnimationCurveMapping& mapping = state.boneToCurveMapping[k];
 					UINT32 curveIdx = mapping.position;
 					if (curveIdx != (UINT32)-1)
@@ -216,7 +217,7 @@ namespace bs
 						localPose.positions[k] += curve.evaluate(state.time, state.positionCaches[curveIdx], state.loop) * normWeight;
 
 						localPose.hasOverride[k] = false;
-						hasAnimCurve = true;
+						hasAnimCurve[k] = true;
 					}
 
 					curveIdx = mapping.scale;
@@ -226,7 +227,7 @@ namespace bs
 						localPose.scales[k] *= curve.evaluate(state.time, state.scaleCaches[curveIdx], state.loop) * normWeight;
 
 						localPose.hasOverride[k] = false;
-						hasAnimCurve = true;
+						hasAnimCurve[k] = true;
 					}
 
 					if (layer.additive)
@@ -245,7 +246,7 @@ namespace bs
 
 							localPose.rotations[k] *= value;
 							localPose.hasOverride[k] = false;
-							hasAnimCurve = true;
+							hasAnimCurve[k] = true;
 						}
 					}
 					else
@@ -261,20 +262,22 @@ namespace bs
 
 							localPose.rotations[k] += value;
 							localPose.hasOverride[k] = false;
-							hasAnimCurve = true;
+							hasAnimCurve[k] = true;
 						}
-					}
-
-					// If no animation for this bone, apply its default transform
-					// (Even if this bone isn't used for the skin, the child bones need to inherit this transform)
-					if(!hasAnimCurve)
-					{
-						localPose.positions[k] = mBoneTransforms[k].getPosition();
-						localPose.rotations[k] = mBoneTransforms[k].getRotation();
-						localPose.scales[k] = mBoneTransforms[k].getScale();
 					}
 				}
 			}
+		}
+
+		// Apply default local tranform to non-animated bones (so that any potential child bones are transformed properly)
+		for(UINT32 i = 0; i < mNumBones; i++)
+		{
+			if(hasAnimCurve[i])
+				continue;
+
+			localPose.positions[i] = mBoneTransforms[i].getPosition();
+			localPose.rotations[i] = mBoneTransforms[i].getRotation();
+			localPose.scales[i] = mBoneTransforms[i].getScale();
 		}
 
 		// Calculate local pose matrices
@@ -328,6 +331,7 @@ namespace bs
 			pose[i] = pose[i] * mInvBindPoses[i];
 
 		bs_stack_free(isGlobal);
+		bs_stack_free(hasAnimCurve);
 	}
 
 	UINT32 Skeleton::getRootBoneIndex() const
