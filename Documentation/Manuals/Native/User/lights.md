@@ -1,7 +1,7 @@
 Lights						{#lights}
 ===============
 
-Lights control the rendering of the nearby **Renderable** objects, by attempting to simulate how a real light would affect them. They are represented by the @ref bs::CLight "Light" component.
+Lights control the rendering of the nearby **Renderable** objects, by attempting to simulate how a real light would affect them. They are represented by the @ref bs::CLight "Light" component. They are essential for creating a realistic 3D scene.
 
 # Creating a light
 **Light** is created as any component, and requires no additional parameters.
@@ -48,7 +48,7 @@ As the name implies, this controls what color light is being emitted from the so
 ## Attenuation radius
 Attenuation radius determines how far away does the light's influence reach. For radial lights this is the radius of the sphere of influence, and for spot lights this is the distance from the origin in the direction of the light. This property is not relevant for directional lights as their range is infinite. Use @ref bs::CLight::setAttenuationRadius "CLight::setAttenuationRadius()" to set the range.
 
-Note that the manually set range will only be used if automatic attenuation is disabled. You can toggle this by calling @ref bs::CLight::setUseAutoAttenuation "CLight::setUseAutoAttenuation()". When automatic attenuation is enabled the maximum range is calculated automatically based on the light intensity (described below). This automatic attenuation will smoothly cut off the light influence when it reaches roughly 10% of its intensity. Sometimes this is not wanted in which case you can turn this off and increase the range manually. Reducing the range manually will result in a non-physically realistic light attenuation.
+Note that the manually set range will only be used if automatic attenuation is disabled. You can toggle this by calling @ref bs::CLight::setUseAutoAttenuation "CLight::setUseAutoAttenuation()". When automatic attenuation is enabled the maximum range is calculated automatically based on the light intensity (described below). This automatic attenuation will smoothly cut off the light influence when it reaches roughly 10% of its intensity, but can result in very large attenuation radius, which can affect performance.
 
 ## Intensity
 This controls how strong is the light. Although you could technically control light intensity using the color property (by using a lighter or darker color), using the intensity allows the engine to simulate high-dynamic range. 
@@ -59,7 +59,7 @@ Banshee uses a HDR algorithm to try to approximate this adjustment, which result
 
 Use @ref bs::CLight::setIntensity "CLight::setIntensity()" to change the light intensity. 
 
-The specific units used for intensity (in case you want to look them up for actual light sources) are *luminous flux* for radial/spot lights, and *luminance* for directional lights.
+The specific units used for intensity (in case you want to look them up for actual light sources) are *luminous flux* for radial/spot lights, and *luminance* for directional lights. Generally this means directional light intensity should be much lower than for radial/spot lights.
 
 ## Source radius
 By default all lights are considered point (punctual) lights, meaning they have no surface area. In case you want to make an area light set the source radius of the light by calling @ref bs::CLight::setSourceRadius "CLight::setSourceRadius()". The value of this property is interpreted differently depending on light type:
@@ -71,6 +71,16 @@ Area light types are particulary important for physically based rendering, as th
  
 ## Shadows
 Lights may or may not cast shadows. For realism all lights should cast shadows, but that is not feasible due to the high performance costs of using shadows. Therefore you should enable shadows only for one, or a few important lights. Use @ref bs::CLight::setCastsShadow "CLight::setCastsShadow()" to enable or disable shadow casting.
+
+Casting shadows can cause artifacts called "shadow acne" in the scene. These artifacts occur due to an object casting a shadow on itself, caused limited precision of the calculations used. To combat this effect you can tweak the shadow bias property. Shadow bias moves the distance from which the shadow is cast, ensuring incorrect self-shadowing is avoided. Shadow bias can be tweaked by calling @ref bs::CLight::setShadowBias "CLight::setShadowBias()".
+
+@ref TODO_IMAGE
+
+Valid shadow bias values are from -1 to 1. When value is 0 no shadow bias will be applied, while positive shadow bias values will offset the shadow distance as described above. However offseting the shadow distance may cause the objects to appear like they are floating even if they are in contact with a surface.
+
+@ref TODO_IMAGE
+
+By setting the shadow bias to a negative value you move the shadow backwards, resolving both the shadow acne and the floating object issue. However this only works if your geometry has thickness, otherwise elements behind the object will be incorrectly shadowed. This is generally the best option as long as you can set up your geometry correctly.
 
 ## Spot angles
 Spot light have a property that defines at how wide an angle do they cast light in. Narrower angle means a more focused light beam, while wider angle means a weaker light covering a larger area. 

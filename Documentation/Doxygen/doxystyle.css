@@ -1,6 +1,6 @@
 /* Global */
 body, table, div, p, dl {
-	font: 14px/22px Segoe UI,Roboto,sans-serif;
+	font: 16px/26px Segoe UI,Roboto,sans-serif;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -44,48 +44,58 @@ a:visited {
 
 div.contents {
 	margin: auto;
-	width: 700px;
+	width: 800px;
 	padding-bottom: 170px;
 }
 
+div.line {
+	font-size: 15px;
+	line-height: 1.6;
+}
+
+div.fragment {
+	padding: 6px;
+}
+
 /* Nav bar */
-.tabs, .tabs2, .tabs3 {
+#main-menu {
 	background-color: rgba(0, 0, 0, 0.8);
 	background-image: none;
     font-family: Lato,'Lucida Grande',Geneva,Helvetica,Arial,sans-serif;
 	border-bottom: none;
-	width: 700px;
+	width: 800px;
 	margin: auto;
 }
 
-.tablist li {
+.sm-dox li {
     background-image: none;
 }
 
-.tablist a {
+.sm-dox a {
 	background-image: none;
 	color: rgba(255, 255, 255, 1.0);
 	background: transparent;
 	text-shadow: none;
-	font-weight: bold;
+	font-weight: normal;
+	font-family: Lato,sans-serif;
 }
 
-.tablist a:hover {
+.sm-dox a:hover {
     background-image: none;
 	color: rgba(255, 255, 255, 1.0);
 	text-shadow: none;
 }
 
-.tablist li.current a {
+.sm-dox li.current a {
     background-image: none;
 	text-shadow: none;
 }
 
-.tablist li:hover {
+.sm-dox li:hover {
 	background-color: rgba(255, 255, 255, 0.15);
 }
 
-.tablist li:last-child:hover {
+.sm-dox li:last-child:hover {
 	background-color: rgba(0, 0, 0, 0);
 }
 
@@ -94,7 +104,7 @@ div.contents {
 	background-color: rgba(222, 222, 222, 0.46);
 	background-image: none;
 	border: none;
-	width: 700px;
+	width: 800px;
 	margin: auto;
 }
 
@@ -127,7 +137,7 @@ div.contents {
 
 /* Page header */
 div.header {
-	width: 700px;
+	width: 800px;
 	margin: auto auto 15px auto;
 	background-image: none;
 	border-bottom: 1px solid rgba(89, 160, 195, 0.86);
@@ -140,7 +150,7 @@ div.headertitle {
 /* Members */
 .memproto, dl.reflist dt {
 	background-image: none;
-	background-color: #F9FAFB;
+	background-color: #b1cbe6;
 	color: #000000;
 	text-shadow: none;
 	padding: 2px 0px 4px 0px;
@@ -160,6 +170,10 @@ div.headertitle {
 	-webkit-box-shadow: 0 1px 2px 0 rgba(34, 36, 38, .15);
 	border-top-width: 0;
 	background-image: none;
+}
+
+.memtitle {
+	display: none;
 }
 
 /* TOC */
@@ -190,7 +204,6 @@ div.toc {
 	margin-top: none;
 	position: relative;
 	left: 470px;
-	top: 7px;
 }
 
 #MSearchBox .left {
@@ -210,15 +223,11 @@ div.toc {
 	border-right: 1px solid black;
 	position: relative;
 	left: 142px;
+	top: 0px;
 }
 
 #MSearchSelect {
 	left: 2px;
-}
-
-#MSearchResultsWindow {
-	margin-left: 85%;
-	margin-top: 100px;
 }
 
 /* Other */
@@ -245,7 +254,7 @@ table.directory {
     font: 400 14px Segoe UI,Roboto,sans-serif;
 }
 
-table.doxtable {
+table.markdownTable {
 	border-radius: .28571429rem;
 	border-collapse: separate;
 	border: 1px solid rgba(34, 36, 38, .15);
@@ -253,34 +262,34 @@ table.doxtable {
 	background-color: #F9FAFB;
 }
 
-table.doxtable th {
+table.markdownTable th {
 	background-color: #F9FAFB;
 	color: rgba(0,0,0,.87);
 	border: none;
 }
 
-table.doxtable td {
+table.markdownTable td {
 	border: none;
 	border-left: 1px solid rgba(34, 36, 38, .1);
 }
 
-table.doxtable td:first-child {
+table.markdownTable td:first-child {
 	border-left: none;
 }
 
-table.doxtable tr {
+table.markdownTable tr {
 	border-left: 1px solid rgba(34, 36, 38, .1);
 }
 
-table.doxtable tr td {
+table.markdownTable tr td {
 	border-top: 1px solid rgba(34, 36, 38, .1);
 }
 
-table.doxtable tr:first-child td {
+table.markdownTable tr:first-child td {
 	border-top: 1px solid rgba(34, 36, 38, .1);
 }
 
-table.doxtable tbody tr:nth-child(2n) {
+table.markdownTable tbody tr:nth-child(2n) {
 	background-color: #FFFFFF;
 }
 

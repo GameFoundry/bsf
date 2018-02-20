@@ -2,7 +2,7 @@ Modules									{#modules}
 ===============
 [TOC]
 
-A @ref bs::Module<T> "Module<T>" is a specialized form of singleton used for many of Banshee's systems. Unlike standard singletons it requires manual startup and shutdown. To use it for your own objects, simply inherit from it and provide your own class as its template parameter.
+A @ref bs::Module<T> "Module<T>" is a specialized form of singleton used for many of bs::f systems. Unlike standard singletons it requires manual startup and shutdown. To use it for your own objects, simply inherit from it and provide your own class as its template parameter.
 
 ~~~~~~~~~~~~~{.cpp}
 class MyModule : public Module<MyModule>

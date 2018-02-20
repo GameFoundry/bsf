@@ -1,9 +1,7 @@
-Importing textures 						{#importingTextures}
+Textures 						{#importingTextures}
 ===============
 
-Textures are images that are applied to meshes in order to achieve greater surface detail. In Banshee they are represented with the @ref bs::Texture "Texture" class. A texture is a resource, meaning it can be imported, saved and loaded as we described in the Resource manuals.
-
-![Mesh without (left) and with (right) a texture](TexturedMesh.png)  
+Textures are images that are applied to meshes in order to achieve greater surface detail. In bs::f they are represented with the @ref bs::Texture "Texture" class. A texture is a resource, meaning it can be imported, saved and loaded as any other resource.
 
 # Importing a texture
 Textures can be imported from various third party formats, using the importer.
@@ -27,6 +25,9 @@ Supported formats are:
  - TARGA
  - TIFF
  
+# Creating a texture
+Textures can also be created manually, which we cover later in the [creating textures](@ref advancedTextures) manual.
+   
 # Texture properties
 Once a texture has been imported, you can retrieve its properties like width, height and format by calling @ref bs::Texture::getProperties "Texture::getProperties()", which returns a @ref bs::TextureProperties "TextureProperties" object.
 
@@ -40,9 +41,6 @@ gDebug().logDebug("Format: " + toString(props.getFormat()));
 gDebug().logDebug("Num. mip maps: " + toString(props.getNumMipmaps()));
 ~~~~~~~~~~~~~
 
-# Rendering using textures
-Once imported a texture can be assigned to a **Material** in order to be used for rendering. We will cover materials in a later chapter. 
- 
 # Customizing import
 Texture import can be customized by providing a @ref bs::TextureImportOptions "TextureImportOptions" object to the importer.
 
@@ -56,7 +54,7 @@ HTexture texture = gImporter().import<Texture>("myTexture.jpg", importOptions);
 A variety of properties can be customized on import, the most important of which being image format, mip-map generation, sRGB state and caching.
 
 ## Image format
-@ref bs::TextureImportOptions::setFormat "TextureImportOptions::setFormat" allows you to specify which format should the texture pixels be in after import. Any of the formats provided in @ref bs::PixelFormat "PixelFormat" are supported.
+@ref bs::TextureImportOptions::setFormat "TextureImportOptions::setFormat()" allows you to specify which format should the texture pixels be in after import. Any of the formats provided in @ref bs::PixelFormat "PixelFormat" are supported.
 
 ~~~~~~~~~~~~~{.cpp}
 // Set format as uncompressed RGB with an alpha channel
@@ -74,10 +72,8 @@ Some of most common formats are:
  - PF_BC3 - Compressed RGB data, with an alpha channel. 
  - PF_BC5 - Compressed 2-channel format. 
  
-> If importing normal maps, use the BF_BC5 format as other compression formats produce visible artifacts in the normal map. Optionally if memory is not a concern, use an uncompressed format.
- 
 ## Mip-maps
-@ref bs::TextureImportOptions::setGenerateMipmaps "TextureImportOptions::setGenerateMipmaps" allows you to specify should mip-maps for the texture be generated. Mipmaps ensure that textures applied to 3D surfaces look good when they're viewed from far away (i.e. when the pixel size they take up on screen is considerably less than the actual texture resolution).
+@ref bs::TextureImportOptions::setGenerateMipmaps "TextureImportOptions::setGenerateMipmaps()" allows you to specify should mip-maps for the texture be generated. Mipmaps ensure that textures applied to 3D surfaces look good when they're viewed from far away (i.e. when the pixel size they take up on screen is considerably less than the actual texture resolution).
 
 Enabling mip-maps will increase the memory use of the texture by 33%, but it is pretty much essential for any texture applied on a 3D object. It should not be enabled for textures used on 2D elements like GUI or sprites, as it will have no benefit.
 
@@ -91,7 +87,7 @@ Most images output by modern cameras and image editing software will be stored i
 
 However game engines don't like their data in gamma space, because it's not linear which means that all lighting and similar operations don't operate exactly as they should. Essentially the image ends up looking more "washed-out" than it should.
 
-For this reason Banshee provides @ref bs::TextureImportOptions::setSRGB "TextureImportOptions::setSRGB" toggle, which you can set for images in gamma (sRGB) space. The engine will then know to convert to linear space before performing any relevant operations, ensuring the final rendering looks good.
+For this reason bs::f provides @ref bs::TextureImportOptions::setSRGB "TextureImportOptions::setSRGB()" toggle, which you can set for images in gamma (sRGB) space. The engine will then know to convert to linear space before performing any relevant operations, ensuring the final rendering looks good.
 
 ~~~~~~~~~~~~~{.cpp}
 // Tell the engine this image is in gamma space
@@ -101,7 +97,7 @@ importOptions->setSRGB(true);
 > How do you know when an image is in gamma space and when in linear space? As a general rule an albedo (diffuse) images are in gamma space, and normal maps are in linear space. For other types of images you need to consult the tool you use to create/save them, but in most cases they will be in gamma space.
 
 ## Caching
-Sometimes you need to import a texture you don't want to only use for rendering, but rather for manually reading its contents. When that's the case you can enable the @ref bs::TextureImportOptions::setCPUCached "TextureImportOptions::setCPUCached" option.
+Sometimes you need to import a texture you don't want to only use for rendering, but rather for manually reading its contents. When that's the case you can enable the @ref bs::TextureImportOptions::setCPUCached "TextureImportOptions::setCPUCached()" option.
 
 This will allow you to call @ref bs::Texture::readCachedData "Texture::readCachedData()" and to manually read individual pixels of the texture.
 
@@ -125,4 +121,4 @@ Color color = pixelData->getColorAt(50, 50);
 ...
 ~~~~~~~~~~~~~
 
-> We will explain **PixelData** and texture manipulation in general, in a later chapter.
+> **PixelData** is explained later in the [creating textures](@ref advancedTextures) manual.

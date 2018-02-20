@@ -1,7 +1,7 @@
 Containers 						{#containers}
 ===============
 
-Containers are data types that contain a set of elements. Banshee uses wrappers for C++ standard library containers like vector, set or map. Aside from different names Banshee containers act exactly like standard library containers.
+Containers are data types that contain a set of elements. bs::f uses wrappers for C++ standard library containers like vector, set or map. Aside from different names these containers act exactly like standard library containers.
 
 All available containers:
  - @ref bs::Vector "Vector" - A sequential list of elements. Fast iteration, slow lookup, slow insertion/deletion (except for the last element).

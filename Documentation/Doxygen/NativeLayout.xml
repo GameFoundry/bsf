@@ -3,7 +3,8 @@
   <!-- Navigation index tabs for HTML output -->
   <navindex>
     <tab type="mainpage" visible="yes" title=""/>
-	<tab type="user" url="manuals.html" title="Manuals"/>
+	<tab type="user" url="manuals.html" title="User manuals"/>
+	<tab type="user" url="devManuals.html" title="Dev. manuals"/>
     <tab type="user" url="group___layers.html" title="Core API"/>
 	<tab type="user" url="group___internals.html" title="Internals"/>
 	<tab type="user" url="group___plugins.html" title="Plugins"/>

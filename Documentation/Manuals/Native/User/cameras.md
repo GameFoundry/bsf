@@ -5,11 +5,11 @@ Cameras represent the user's view into the scene, and any graphical application 
 
 They have parameters like position and orientation which define what part of the scene will the user see. Additionally, their parameters like field of view, projection mode and aspect ratio define how is the application scene transformed into the 2D output visible to the user. 
 
-Finally, everything that the camera sees is output to what we call a render target. Render targets can be windows, which we explained in the previous chapter, or off-screen surfaces, as we'll explain later.
+Finally, everything that the camera sees is output to what we call a render target. Render targets can be windows, like the one that was created when the application was started, or an off-screen surface, as we'll explain later.
 
 Cameras are represented by the @ref bs::CCamera "Camera" component, and they can be created as any other component. At minimum their constructor requires a render target onto which they will output their contents.
 
-Lets create a camera that renders to the primary render window:
+Lets create a camera that renders to the primary render window. The primary application window can be retrieved through @ref bs::Application::getPrimaryWindow "Application::getPrimaryWindow()".
 
 ~~~~~~~~~~~~~{.cpp}
 SPtr<RenderWindow> primaryWindow = gApplication().getPrimaryWindow();
@@ -18,10 +18,12 @@ HSceneObject cameraSO = SceneObject::create("Camera");
 HCamera camera = cameraSO->addComponent<CCamera>(primaryWindow);
 ~~~~~~~~~~~~~
 
+> **Application** is a singleton and its instance can be accessed through @ref bs::Application::instance() "Application::instance()", or the helper method @ref bs::gApplication() "gApplication()". All other singletons in the framework follow the same design.
+
 Once the camera has been created we can move and orient it using the **SceneObject** transform, as explained earlier. For example:
 ~~~~~~~~~~~~~{.cpp}
-// Move camera to 100 units high, and 500 units away from the center
-cameraSO->setPosition(Vector3(0f, 100f, 500f));
+// Move camera to 10 meters height, and 50 meters away from the center
+cameraSO->setPosition(Vector3(0f, 10f, 50f));
 
 // Orient the camera so it is looking at the center
 cameraSO->lookAt(Vector3(0f, 0f, 0f));
@@ -29,7 +31,7 @@ cameraSO->lookAt(Vector3(0f, 0f, 0f));
 
 Once set up, any rendered objects in the camera's view will be displayed on the selected render target, which is in this case the primary application window.
 
-However you might want to customize camera's parameters to get the exact feel you need. Lets cover some of the available parameters.
+You can also customize a variety of parameters that control how will the camera render the objects.
 
 # Projection type
 All cameras can be in two projection modes: *Perspective* and *Ortographic*. They can be changed by calling @ref bs::CCamera::setProjectionType "CCamera::setProjectionType()".

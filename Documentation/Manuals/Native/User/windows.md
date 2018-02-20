@@ -5,15 +5,6 @@ A window represents the final destination where the application's rendered outpu
 
 ![Render window](RenderWindow.png)  
 
-# Primary window
-When we initialized the application by calling **Application::startUp** in a previous chapter a primary window was created for us by default. You can access this window through @ref bs::Application::getPrimaryWindow "Application::getPrimaryWindow()".
-
-~~~~~~~~~~~~~{.cpp}
-SPtr<RenderWindow> primaryWindow = gApplication().getPrimaryWindow();
-~~~~~~~~~~~~~
-
-> **gApplication()** is just a shortcut for **Application::instance()** we used earlier.
-
 # Creating windows
 You can also create your own windows by filling out the @ref bs::RENDER_WINDOW_DESC "RENDER_WINDOW_DESC" structure and calling @ref bs::RenderWindow::create "RenderWindow::create()".
 

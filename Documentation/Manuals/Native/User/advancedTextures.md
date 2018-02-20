@@ -1,4 +1,4 @@
-Manipulating textures				{#advancedTextures}
+Creating textures				{#advancedTextures}
 ===============
 
 In this manual we'll learn how to create textures manually, modify their contents and even read-back texture data.

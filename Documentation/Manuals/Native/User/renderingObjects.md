@@ -1,7 +1,7 @@
-Rendering objects						{#renderingObjects}
+Renderable object						{#renderingObjects}
 ===============
 
-We are now finally ready to start displaying things on the screen. To render something you must create the @ref bs::CRenderable "Renderable" component.
+As the name implies, the renderable object allows you to display an object in the scene. It is represeted by the @ref bs::CRenderable "Renderable" component. The component requires you to assign a **Mesh** to render, as well as a **Material** to render the mesh with. Both of these are resources, and we'll explain them in the following chapters.
 
 # Creating a renderable
 **Renderable** is created as any component, and requires no additional parameters.
@@ -11,13 +11,11 @@ HSceneObject renderableSO = SceneObject::create("3D object");
 HRenderable renderable = renderableSO->addComponent<CRenderable>();
 ~~~~~~~~~~~~~
 
-# Rendering a mesh
-Once created you must assign it a **Mesh** to render, and a **Material** to render it with, both of which we have discussed in the previous chapters. Use @ref bs::CRenderable::setMesh "CRenderable::setMesh()" and @ref bs::CRenderable::setMaterial "CRenderable::setMaterial()".
+# Setting it up
+Once created you must assign it a **Mesh** to render, and a **Material** to render it with. Use @ref bs::CRenderable::setMesh "CRenderable::setMesh()" and @ref bs::CRenderable::setMaterial "CRenderable::setMaterial()".
 
 ~~~~~~~~~~~~~{.cpp}
-... set up a camera ...
-
-// Create a standard material as in the previous chapter
+// Create a standard PBR material
 HShader shader = gBuiltinResources().getBuiltinShader(BuiltinShader::Standard);
 HMaterial material = Material::create(shader);
 
@@ -40,11 +38,11 @@ renderable->setMaterial(material);
 renderableSO->setPosition(Vector3(0.0f, 15.0f, 30.0f));
 ~~~~~~~~~~~~~
 
-> Note that even though we always import resources in these examples, in production code you should load previously saved resources instead of importing them every time, as earlier described in the resource related chapters.
+> Note that even though we always import resources in these examples, in production code you should load previously saved resources instead of importing them every time.
 
-After the renderable has been set up, it will now be displayed in your camera view, if the camera is facing the direction of the renderable object. You are of course allowed to change the renderable mesh and material, as well as reposition, scale or orient the renderable during runtime.
+After the renderable has been set up, it will now be displayed in your camera view (if the camera is facing the direction of the renderable object).
 
-## Multiple materials
+# Multiple materials
 In the example above we use a single material for a single mesh, but it can sometimes be useful to use different materials for different parts of the mesh.
 
 It is up to the artist (creator of the mesh) to specify the regions of the mesh that will use separate materials. Upon mesh import those regions will be recognized as sub-meshes.
