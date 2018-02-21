@@ -520,12 +520,21 @@ namespace bs
 		}
 	}
 
-	String crossCompile(const String& hlsl, GpuProgramType type, bool vulkan, bool optionalEntry, UINT32& startBindingSlot,
-		SHADER_DESC* shaderDesc = nullptr, Vector<GpuProgramType>* detectedTypes = nullptr)
+	/** Types of supported code output when cross compiling HLSL to GLSL. */
+	enum class CrossCompileOutput
+	{
+		GLSL45,
+		GLSL41,
+		VKSL45
+	};
+
+	String crossCompile(const String& hlsl, GpuProgramType type, CrossCompileOutput outputType, bool optionalEntry, 
+		UINT32& startBindingSlot, SHADER_DESC* shaderDesc = nullptr, Vector<GpuProgramType>* detectedTypes = nullptr)
 	{
 		SPtr<StringStream> input = bs_shared_ptr_new<StringStream>();
 
-		if (vulkan)
+		bool isVulkan = outputType == CrossCompileOutput::VKSL45;
+		if (isVulkan)
 			*input << "#define VULKAN 1" << std::endl;
 		else
 			*input << "#define OPENGL 1" << std::endl;
@@ -571,7 +580,7 @@ namespace bs
 
 		Xsc::ShaderOutput outputDesc;
 		outputDesc.sourceCode = &output;
-		outputDesc.options.autoBinding = vulkan;
+		outputDesc.options.autoBinding = isVulkan;
 		outputDesc.options.autoBindingStartSlot = startBindingSlot;
 		outputDesc.options.separateShaders = true;
 		outputDesc.options.separateSamplers = false;
@@ -580,10 +589,19 @@ namespace bs
 		outputDesc.nameMangling.useAlwaysSemantics = true;
 		outputDesc.nameMangling.renameBufferFields = true;
 
-		if (vulkan)
-			outputDesc.shaderVersion = Xsc::OutputShaderVersion::VKSL450;
-		else
+		switch(outputType)
+		{
+		case CrossCompileOutput::GLSL45: 
 			outputDesc.shaderVersion = Xsc::OutputShaderVersion::GLSL450;
+			break;
+		case CrossCompileOutput::GLSL41: 
+			outputDesc.shaderVersion = Xsc::OutputShaderVersion::GLSL410;
+			break;
+		case CrossCompileOutput::VKSL45: 
+			outputDesc.shaderVersion = Xsc::OutputShaderVersion::VKSL450;
+			break;
+		default: ;
+		}
 
 		XscLog log;
 		Xsc::Reflection::ReflectionData reflectionData;
@@ -663,15 +681,15 @@ namespace bs
 	}
 
 	// Convert HLSL code to GLSL
-	String HLSLtoGLSL(const String& hlsl, GpuProgramType type, bool vulkan, UINT32& startBindingSlot)
+	String HLSLtoGLSL(const String& hlsl, GpuProgramType type, CrossCompileOutput outputType, UINT32& startBindingSlot)
 	{
-		return crossCompile(hlsl, type, vulkan, false, startBindingSlot);
+		return crossCompile(hlsl, type, outputType, false, startBindingSlot);
 	}
 
 	void reflectHLSL(const String& hlsl, SHADER_DESC& shaderDesc, Vector<GpuProgramType>& entryPoints)
 	{
 		UINT32 dummy = 0;
-		crossCompile(hlsl, GPT_VERTEX_PROGRAM, false, true, dummy, &shaderDesc, &entryPoints);
+		crossCompile(hlsl, GPT_VERTEX_PROGRAM, CrossCompileOutput::GLSL45, true, dummy, &shaderDesc, &entryPoints);
 	}
 
 	BSLFXCompileResult BSLFXCompiler::compile(const String& name, const String& source, 
@@ -1070,9 +1088,6 @@ namespace bs
 						parseVariations(metaData, variationOption->value.nodePtr);
 				}
 			}
-				break;
-			case OT_FeatureSet:
-				metaData.featureSet = option->value.strValue;
 				break;
 			case OT_Identifier:
 				metaData.name = option->value.strValue;
@@ -1697,6 +1712,9 @@ namespace bs
 				combinedCommonPassData.code += commonPassData.code;
 			}
 				break;
+			case OT_FeatureSet:
+				techniqueData.metaData.featureSet = option->value.strValue;
+				break;
 			default:
 				break;
 			}
@@ -1903,8 +1921,12 @@ namespace bs
 			TechniqueData glslTechnique = techniqueData[i].second;
 
 			// When working with OpenGL, lower-end feature sets are supported. For other backends, high-end is always assumed.
+			CrossCompileOutput glslVersion = CrossCompileOutput::GLSL41;
 			if(glslTechnique.metaData.featureSet == "HighEnd")
+			{
 				glslTechnique.metaData.language = "glsl";
+				glslVersion = CrossCompileOutput::GLSL45;
+			}
 			else
 				glslTechnique.metaData.language = "glsl4_1";
 
@@ -1943,33 +1965,45 @@ namespace bs
 					{
 					case GPT_VERTEX_PROGRAM:
 						hlslPassData.vertexCode = hlslPassData.code;
-						glslPassData.vertexCode = HLSLtoGLSL(glslPassData.code, GPT_VERTEX_PROGRAM, false, glslBinding);
-						vkslPassData.vertexCode = HLSLtoGLSL(glslPassData.code, GPT_VERTEX_PROGRAM, true, vkslBinding);
+						glslPassData.vertexCode = HLSLtoGLSL(glslPassData.code, GPT_VERTEX_PROGRAM, 
+							glslVersion, glslBinding);
+						vkslPassData.vertexCode = HLSLtoGLSL(glslPassData.code, GPT_VERTEX_PROGRAM, 
+							CrossCompileOutput::VKSL45, vkslBinding);
 						break;
 					case GPT_FRAGMENT_PROGRAM:
 						hlslPassData.fragmentCode = hlslPassData.code;
-						glslPassData.fragmentCode = HLSLtoGLSL(glslPassData.code, GPT_FRAGMENT_PROGRAM, false, glslBinding);
-						vkslPassData.fragmentCode = HLSLtoGLSL(glslPassData.code, GPT_FRAGMENT_PROGRAM, true, vkslBinding);
+						glslPassData.fragmentCode = HLSLtoGLSL(glslPassData.code, GPT_FRAGMENT_PROGRAM, 
+							glslVersion, glslBinding);
+						vkslPassData.fragmentCode = HLSLtoGLSL(glslPassData.code, GPT_FRAGMENT_PROGRAM, 
+							CrossCompileOutput::VKSL45, vkslBinding);
 						break;
 					case GPT_GEOMETRY_PROGRAM:
 						hlslPassData.geometryCode = hlslPassData.code;
-						glslPassData.geometryCode = HLSLtoGLSL(glslPassData.code, GPT_GEOMETRY_PROGRAM, false, glslBinding);
-						vkslPassData.geometryCode = HLSLtoGLSL(glslPassData.code, GPT_GEOMETRY_PROGRAM, true, vkslBinding);
+						glslPassData.geometryCode = HLSLtoGLSL(glslPassData.code, GPT_GEOMETRY_PROGRAM, 
+							glslVersion, glslBinding);
+						vkslPassData.geometryCode = HLSLtoGLSL(glslPassData.code, GPT_GEOMETRY_PROGRAM, 
+							CrossCompileOutput::VKSL45, vkslBinding);
 						break;
 					case GPT_HULL_PROGRAM:
 						hlslPassData.hullCode = hlslPassData.code;
-						glslPassData.hullCode = HLSLtoGLSL(glslPassData.code, GPT_HULL_PROGRAM, false, glslBinding);
-						vkslPassData.hullCode = HLSLtoGLSL(glslPassData.code, GPT_HULL_PROGRAM, true, vkslBinding);
+						glslPassData.hullCode = HLSLtoGLSL(glslPassData.code, GPT_HULL_PROGRAM, 
+							glslVersion, glslBinding);
+						vkslPassData.hullCode = HLSLtoGLSL(glslPassData.code, GPT_HULL_PROGRAM, 
+							CrossCompileOutput::VKSL45, vkslBinding);
 						break;
 					case GPT_DOMAIN_PROGRAM:
 						hlslPassData.domainCode = hlslPassData.code;
-						glslPassData.domainCode = HLSLtoGLSL(glslPassData.code, GPT_DOMAIN_PROGRAM, false, glslBinding);
-						vkslPassData.domainCode = HLSLtoGLSL(glslPassData.code, GPT_DOMAIN_PROGRAM, true, vkslBinding);
+						glslPassData.domainCode = HLSLtoGLSL(glslPassData.code, GPT_DOMAIN_PROGRAM, 
+							glslVersion, glslBinding);
+						vkslPassData.domainCode = HLSLtoGLSL(glslPassData.code, GPT_DOMAIN_PROGRAM, 
+							CrossCompileOutput::VKSL45, vkslBinding);
 						break;
 					case GPT_COMPUTE_PROGRAM:
 						hlslPassData.computeCode = hlslPassData.code;
-						glslPassData.computeCode = HLSLtoGLSL(glslPassData.code, GPT_COMPUTE_PROGRAM, false, glslBinding);
-						vkslPassData.computeCode = HLSLtoGLSL(glslPassData.code, GPT_COMPUTE_PROGRAM, true, vkslBinding);
+						glslPassData.computeCode = HLSLtoGLSL(glslPassData.code, GPT_COMPUTE_PROGRAM, 
+							glslVersion, glslBinding);
+						vkslPassData.computeCode = HLSLtoGLSL(glslPassData.code, GPT_COMPUTE_PROGRAM, 
+							CrossCompileOutput::VKSL45, vkslBinding);
 						break;
 					default:
 						break;

@@ -268,8 +268,8 @@ technique PPSSAO
 			// Note: Ideally the blur would be 4x4 since the pattern is 4x4
 			
 			float4 myVal = float4(output, viewNormal);
-			float4 dX = ddx_fine(myVal);
-			float4 dY = ddy_fine(myVal);
+			float4 dX = ddx(myVal);
+			float4 dY = ddy(myVal);
 			
 			int2 mod = (int2)(pixelPos.xy) % 2;
 			float4 horzVal = myVal - dX * (mod.x * 2 - 1);
