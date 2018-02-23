@@ -1,7 +1,7 @@
 Physics meshes						{#physicsMesh}
 ===============
 
-Physics meshes are represented using the @ref bs::PhysicsMesh "PhysicsMesh" class. They are resources, meaning they can be imported, saved and loaded as we described in the Resource manuals.
+Physics meshes are represented using the @ref bs::PhysicsMesh "PhysicsMesh" class. They are resources, meaning they can be imported, saved and loaded as any other resource.
 
 ![Physics mesh](MeshCollider.png)  
 
@@ -13,7 +13,7 @@ auto importOptions = MeshImportOptions::create();
 importOptions->setCollisionMeshType(CollisionMeshType::Normal);
 ~~~~~~~~~~~~~
 
-Then in order to perform actual import we call @ref bs::Importer::importAll "Importer::importAll()", instead of **Importer::import<T>()** we have been calling so far. **Importer::importAll()** should be used when import operation can return more than one resource since **Importer::import<T>()** will only return the default resource (i.e. a **Mesh**).
+Then in order to perform actual import we call @ref bs::Importer::importAll "Importer::importAll()", instead of **Importer::import<T>()** we have been calling so far. **Importer::importAll()** should be used when import operation can return more than one resource (since **Importer::import<T>()** will only return the default resource, i.e. a **Mesh**).
 
 **Importer::importAll()** will return an array of resources as @ref bs::SubResource "SubResource" objects. In our case there are two sub resources, first one is the normal **Mesh**, and the second one will be the physics mesh we requested.
 

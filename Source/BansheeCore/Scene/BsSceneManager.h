@@ -55,6 +55,9 @@ namespace bs
 		 */
 		void clearScene(bool forceAll = false);
 
+		/** Changes the root scene object. Any persistent objects will remain in the scene, now parented to the new root. */
+		void setRootNode(const HSceneObject& root);
+
 		/** 
 		 * Changes the component state that globally determines which component callbacks are activated. Only affects
 		 * components that don't have the ComponentFlag::AlwaysRun flag set. 
@@ -110,9 +113,6 @@ namespace bs
 
 		/**	Notifies the scene manager that a camera either became the main camera, or has stopped being main camera. */
 		void _notifyMainCameraStateChanged(const SPtr<Camera>& camera);
-
-		/** Changes the root scene object. Any persistent objects will remain in the scene, now parented to the new root. */
-		void _setRootNode(const HSceneObject& root);
 
 		/** Called every frame. Calls update methods on all scene objects and their components. */
 		void _update();

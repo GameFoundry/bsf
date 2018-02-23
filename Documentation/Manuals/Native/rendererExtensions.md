@@ -2,7 +2,7 @@ Renderer extensions								{#rendererExtensions}
 ===============
 [TOC]
 
-Renderer is a system that processes all renderable objects in the scene, renders them, applies lighting and shadows, renders overlay elements such as GUI and applies post processing effects. It is the system that determines how your game looks (together with custom materials you might specify). In Banshee the renderer is implemented as a plugin, so you may create your own and fully customize the look of your game. Banshee also comes with a default renderer called "RenderBeast".
+Renderer is a system that processes all renderable objects in the scene, renders them, applies lighting and shadows, renders overlay elements such as GUI and applies post processing effects. It is the system that determines how your game looks (together with custom materials you might specify). In bs::f the renderer is implemented as a plugin, so you may create your own and fully customize the look of your game. bs::f also comes with a default renderer called "RenderBeast".
 
 In this chapter we'll show how to create extensions to the renderer, which are primarily useful when adding systems that need to perform rendering, but you do not wish to completely replace existing renderer functionality, but rather add to it. Such systems might perform particle effect rendering, GUI overlays, custom 2D rendering and similar.
 

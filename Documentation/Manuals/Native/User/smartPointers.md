@@ -6,7 +6,7 @@ Smart pointers allow the user to allocate objects dynamically (i.e. like using *
 # Unique pointers
 Unique pointers hold ownership of a dynamically allocated object, and automatically free it when they go out of scope. As their name implies they cannot be copied - in other words, only one pointer to that object can exist. They are mostly useful for temporary allocations, or for places where object ownership is clearly defined to a single owner.
 
-In Banshee type're represented with @ref bs::UPtr "UPtr", which is just a wrapper for the standard library's *std::unique_ptr*. Use @ref bs::bs_unique_ptr_new "bs_unique_ptr_new<T>" to create a unique pointer pointing to a new instance of T, or @ref bs::bs_unique_ptr "bs_unique_ptr" to create one from an existing instance. 
+In bs::f type're represented with @ref bs::UPtr "UPtr", which is just a wrapper for the standard library's *std::unique_ptr*. Use @ref bs::bs_unique_ptr_new "bs_unique_ptr_new<T>" to create a unique pointer pointing to a new instance of T, or @ref bs::bs_unique_ptr "bs_unique_ptr" to create one from an existing instance. 
 
 ~~~~~~~~~~~~~{.cpp}
 // Helper structure
@@ -41,9 +41,9 @@ UPtr<MyStruct> ptrOther = std::move(ptr);
 # Shared pointers
 Shared pointers are similar to unique pointers, as they also don't require the object to be explicitly freed after creation. However, unlike unique pointers they can be copied (therefore their name "shared"). This means multiple entities can hold a shared pointer to a single object. Only once ALL such entities lose their shared pointers will the pointed-to object be destroyed.
 
-In Banshee type're represented with @ref bs::SPtr "SPtr", which is just a wrapper for the standard library's *std::shared_ptr*. Use @ref bs::bs_shared_ptr_new "bs_shared_ptr_new<T>" to create a shared pointer pointing to a new instance of T, or @ref bs::bs_shared_ptr "bs_shared_ptr" to create one from an existing instance. 
+In bs::f they are represented with @ref bs::SPtr "SPtr", which is just a wrapper for the standard library's *std::shared_ptr*. Use @ref bs::bs_shared_ptr_new "bs_shared_ptr_new<T>" to create a shared pointer pointing to a new instance of T, or @ref bs::bs_shared_ptr "bs_shared_ptr" to create one from an existing instance. 
 
-You will find Banshee uses shared pointers commonly all around its codebase.
+You will find bs::f uses shared pointers commonly all around its codebase.
 
 ~~~~~~~~~~~~~{.cpp}
 SPtr<MyStruct> ptr = bs_shared_ptr_new<MyStruct>(123, false);

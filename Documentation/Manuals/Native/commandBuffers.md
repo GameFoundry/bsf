@@ -1,7 +1,7 @@
 Command buffers		{#commandBuffers}
 ===============
 
-Rendering can be a very CPU heavy operation even though GPU does all the rendering - but CPU is still the one submitting all those commands. For this purpose Banshee provides a @ref bs::ct::CommandBuffer "ct::CommandBuffer" object. This object allows you to queue low-level rendering commands on different threads, allowing you to better distribute the CPU usage. Normally rendering commands are only allowed to be submitted from the core thread, but when using command buffers you are allowed to use a different thread for each command buffer.
+Rendering can be a very CPU heavy operation even though GPU does all the rendering - but CPU is still the one submitting all those commands. For this purpose bs::f provides a @ref bs::ct::CommandBuffer "ct::CommandBuffer" object. This object allows you to queue low-level rendering commands on different threads, allowing you to better distribute the CPU usage. Normally rendering commands are only allowed to be submitted from the core thread, but when using command buffers you are allowed to use a different thread for each command buffer.
 
 Almost every method on **RenderAPI** accepts a **CommandBuffer** as its last parameter. If you don't provide one the system will instead use its primary internal command buffer. When you do you can use **RenderAPI** from different threads safely.
 

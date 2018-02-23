@@ -1,10 +1,10 @@
-Creating meshes				{#creatingMeshes}
+Advanced meshes				{#creatingMeshes}
 ===============
 
-In a previous chapter we have shown how to import meshes from external files, and in this chapter we'll learn how to create meshes manually. 
+In this chapter we'll learn how to create meshes manually and populate them with data. 
 
 # Creating a mesh
-To create a mesh call @ref bs::Mesh::create "Mesh::create" or one if its overloads. You'll need to populate the @ref bs::MESH_DESC "MESH_DESC" structure and pass it as a parameter. At minimum the structure requires you to provide:
+To create a mesh call @ref bs::Mesh::create "Mesh::create()" or one if its overloads. You'll need to populate the @ref bs::MESH_DESC "MESH_DESC" structure and pass it as a parameter. At minimum the structure requires you to provide:
  - @ref bs::MESH_DESC::numVertices "MESH_DESC::numVertices" - Number of vertices in the mesh
  - @ref bs::MESH_DESC::numIndices "MESH_DESC::numIndices" - Number of indices in the mesh
  - @ref bs::MESH_DESC::vertexDesc "MESH_DESC::vertexDesc" - Structure of type @ref bs::VertexDataDesc "VertexDataDesc" that describes what kind of data does each individual vertex contains, which we'll discuss in detail later.
@@ -51,7 +51,7 @@ You may also specify these optional properties, primarily useful for low-level r
 Once the **VertexDataDesc** structure has been filled, you can use it for initializing a **Mesh** as shown above.
 
 # Writing mesh data
-After mesh has been created you need to write some vertex and index data to it by calling @ref bs::Mesh::writeData "Mesh::writeData". This method accepts a @ref bs::MeshData "MeshData" object.
+After mesh has been created you need to write some vertex and index data to it by calling @ref bs::Mesh::writeData "Mesh::writeData()". This method accepts a @ref bs::MeshData "MeshData" object.
 
 ~~~~~~~~~~~~~{.cpp}
 SPtr<MeshData> meshData = ...; // Explained below
@@ -61,7 +61,7 @@ mesh->writeData(meshData);
 ~~~~~~~~~~~~~ 
 
 ## Creating mesh data
-You can create @ref bs::MeshData "MeshData" by calling @ref bs::MeshData::create(UINT32, UINT32, const SPtr<VertexDataDesc>&, IndexType) "MeshData::create" and providing it with vertex description, index type and number of vertices and indices. You must ensure that the formats and sizes match the mesh this will be used on.
+You can create @ref bs::MeshData "MeshData" by calling @ref bs::MeshData::create(UINT32, UINT32, const SPtr<VertexDataDesc>&, IndexType) "MeshData::create()" and providing it with vertex description, index type and number of vertices and indices. You must ensure that the formats and sizes match the mesh this will be used on.
 
 ~~~~~~~~~~~~~{.cpp}
 // Create mesh data able to contain 8 vertices of the format specified by vertexDesc, and 36 indices
@@ -77,7 +77,7 @@ SPtr<MeshData> vertexDesc = mesh->allocBuffer();
 ## Populating mesh data
 Once **MeshData** has been created you need to populate it with vertices and indices. This can be done in a few ways.
 
-The most basic way is setting the data by using @ref bs::MeshData::setVertexData "MeshData::setVertexData" which set vertex data for a single vertex element all at once.
+The most basic way is setting the data by using @ref bs::MeshData::setVertexData "MeshData::setVertexData()" which set vertex data for a single vertex element all at once.
 
 ~~~~~~~~~~~~~{.cpp}
 // Fill out the data for the 0th VES_POSITION element
@@ -89,7 +89,7 @@ for(UINT32 i = 0; i < 8; i++)
 meshData->setVertexData(VES_POSITION, myVertexPositions, sizeof(myVertexPositions));
 ~~~~~~~~~~~~~
 
-You can also use @ref bs::MeshData::getElementData "MeshData::getElementData" which will return a pointer to the starting point of the vertex data for a specific element. You can then iterate over the pointer to read/write values. Make sure to use @ref bs::VertexDataDesc::getVertexStride "VertexDataDesc::getVertexStride" to know how many bytes to advance between elements. This ensures you don't need to create an intermediate buffer like we did above.
+You can also use @ref bs::MeshData::getElementData "MeshData::getElementData()" which will return a pointer to the starting point of the vertex data for a specific element. You can then iterate over the pointer to read/write values. Make sure to use @ref bs::VertexDataDesc::getVertexStride "VertexDataDesc::getVertexStride()" to know how many bytes to advance between elements. This ensures you don't need to create an intermediate buffer like we did above.
 
 ~~~~~~~~~~~~~{.cpp}
 // Fill out the data for the 0th VES_POSITION element
@@ -105,10 +105,10 @@ for(UINT32 i = 0; i < 8; i++)
 }
 ~~~~~~~~~~~~~
 
-And finally you can use iterators: @ref bs::MeshData::getVec2DataIter "MeshData::getVec2DataIter", @ref bs::MeshData::getVec3DataIter "MeshData::getVec3DataIter", @ref bs::MeshData::getVec4DataIter "MeshData::getVec4DataIter", @ref bs::MeshData::getDWORDDataIter "MeshData::getDWORDDataIter". They are similar to the previous example but you don't need to manually worry about the vertex stride, or going outside of valid bounds.
+And finally you can use iterators: @ref bs::MeshData::getVec2DataIter "MeshData::getVec2DataIter()", @ref bs::MeshData::getVec3DataIter "MeshData::getVec3DataIter()", @ref bs::MeshData::getVec4DataIter "MeshData::getVec4DataIter()", @ref bs::MeshData::getDWORDDataIter "MeshData::getDWORDDataIter()". They are similar to the previous example but you don't need to manually worry about the vertex stride, or going outside of valid bounds.
 
 ~~~~~~~~~~~~~{.cpp}
-// Fill out the data for the 0th VES_POSITION element
+// Fill out the data for the VES_POSITION element
 auto iter = meshData->getVec3DataIter(VES_POSITION);
 
 Vector3 myPosition(0, 0, 0)
@@ -118,7 +118,7 @@ do {
 } while(vecIter.addValue(myPosition)); // // Automatically advances the iterator, and returns false when there's no more room
 ~~~~~~~~~~~~~
 
-Writing indices is simpler and is done through @ref bs::MeshData::getIndices32 "MeshData::getIndices32" or @ref bs::MeshData::getIndices16 "MeshData::getIndices16" depending if the indices are 32 or 16 bit. The returned value is a pointer to the index buffer you can use to read/write the indices directly.
+Writing indices is simpler and is done through @ref bs::MeshData::getIndices32 "MeshData::getIndices32()" or @ref bs::MeshData::getIndices16 "MeshData::getIndices16()" depending if the indices are 32 or 16 bit. The returned value is a pointer to the index buffer you can use to read/write the indices directly.
 
 ~~~~~~~~~~~~~{.cpp}
 // Write 6 32-bit indices
@@ -148,7 +148,7 @@ mesh->readCachedData(*meshData);
 After reading the data you can access it through @ref bs::MeshData::getVertexData "PixelData::getVertexData()", @ref bs::MeshData::getElementData "PixelData::getElementData()" or through iterators.
 
 ~~~~~~~~~~~~~{.cpp}
-// Read the data for the 0th VES_POSITION element, using iterators
+// Read the data for the VES_POSITION element, using iterators
 auto iter = meshData->getVec3DataIter(VES_POSITION);
 
 UINT32 numVertices = meshData->getNumVertices();

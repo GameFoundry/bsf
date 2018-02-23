@@ -1,29 +1,17 @@
-Serializing objects				{#serializingObjects}
+Persisting data				{#serializingObjects}
 ===============
 
-Serializing an objects involves encoding the contents of an object, and (usually) saving it to a storage device so it can be decoded later. This process is used by the resources system to save/load all types of resources, and it is also used by the scene system for saving/loading the contents of all components in the scene.
+Often components will have data you will want to persist across application sessions (for example **Renderable** component needs to remember which **Mesh** and **Material** it references). This persistent data will be automatically saved when a scene is saved, and loaded along with the scene. This process is called data serialization.
 
-In order to make an object serializable you need to set up a special interface that allows the system to query information about the object, retrieve and set its data. This interface is known as Run Time Type Information (RTTI).
+In order to make an object serializable you need to set up a special interface that allows the system to query information about the object, retrieve and set its data. This interface is known as Run Time Type Information (RTTI). In this example we talk primarily about components, but the same interface can be used for resources and normal objects.
 
-In Banshee any object that is serializable, and therefore has RTTI, must implement the @ref bs::IReflectable "IReflectable" interface. If you are creating custom components or resources, **Component** and **Resource** base classes already derive from this interface so you don't need to specify it manually. The interface is simple, requiring you to implement two methods:
+Any object that is serializable (and therefore provides RTTI information) must implement the @ref bs::IReflectable "IReflectable" interface. If you are creating custom components or resources, **Component** and **Resource** base classes already derive from this interface so you don't need to specify it manually. The interface is simple, requiring you to implement two methods:
  - RTTITypeBase* getRTTI() const;
  - static RTTITypeBase* getRTTIStatic();
  
 Implementations of these methods will return an object containing all RTTI for a specific class. In the rest of this manual we'll focus on explaning how to create a RTTI class implementation returned by these methods.
 
 ~~~~~~~~~~~~~{.cpp}
-// IReflectable implementation for a normal class
-class MyClass : public IReflectable
-{
-	// ...class members...
-
-	static RTTITypeBase* getRTTIStatic()
-	{ return MyClassRTTI::instance(); }
-
-	RTTITypeBase* getRTTI() const override
-	{ return MyClass::getRTTIStatic(); }
-};
-
 // IReflectable implementation for a component
 class MyComponent : public Component
 {
@@ -39,6 +27,18 @@ public:
 
 	RTTITypeBase* getRTTI() const override
 	{ return MyComponent::getRTTIStatic(); }
+};
+
+// IReflectable implementation for a normal class
+class MyClass : public IReflectable
+{
+	// ...class members...
+
+	static RTTITypeBase* getRTTIStatic()
+	{ return MyClassRTTI::instance(); }
+
+	RTTITypeBase* getRTTI() const override
+	{ return MyClass::getRTTIStatic(); }
 };
 ~~~~~~~~~~~~~
 
@@ -114,7 +114,7 @@ public:
 };
 ~~~~~~~~~~~~~
 
-> Note that when creating new instances of components within RTTI class, you must use **GameObjectRTTI::createGameObject<T>()** method, instead of just creating the object normally.
+> Note that when creating new instances of components within RTTI class, you must use **GameObjectRTTI::createGameObject<T>()** method, instead of just creating a normal shared pointer.
 
 This is the minimal amount of work you need to do in order to implement RTTI. The RTTI types above now describe the class type, but not any of its members. In order to actually have class data serialized, you also need to define member fields.
 
@@ -242,7 +242,7 @@ public:
 ~~~~~~~~~~~~~
 
 # Using RTTI
-Once the RTTI has been created, in most cases it will be used automatically. In particular it will be automatically used if implemented for components or resources. If you implement it for normal classes, you might want to know how to use it manually.
+Once the RTTI has been created, in most cases it will be used automatically. In the case of components it will be used when saving/loading a scene, and in the case of resources it will be used when saving/loading a resource. But for any other class you will want to know how to utilize it manually.
 
 To manually serialize an object you can use the @ref bs::FileEncoder "FileEncoder" class. Create the file encoder with a path to the output file, followed by a call to @ref bs::FileEncoder::encode "FileEncoder::encode()" with the object to encode as the parameter. The system will encode the provided object, as well as any other referenced **IReflectable** objects. 
 

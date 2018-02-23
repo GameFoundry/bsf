@@ -1,7 +1,7 @@
 GUI elements									{#guiElements}
 ===============
 
-A GUI element is a basic primitive GUI is constructed out of. They can be text, buttons, input boxes, images, scroll areas and more. We'll explain what the individual GUI element types are later, but initially we'll focus on functionality common to all GUI elements.
+A GUI element is a basic primitive that GUI is constructed out of. They can be text, buttons, input boxes, images, scroll areas and more. We'll explain what the individual GUI element types are later, but initially we'll focus on functionality common to all GUI elements.
 
 # Displaying a GUI element
 In order to display a GUI element we must first create it. All GUI elements are created using a static *create* method.
@@ -86,7 +86,7 @@ label->setVisible(true);
 ~~~~~~~~~~~~~
 
 # GUI element types
-Banshee provides a large library of existing GUI element types. We'll focus on explaining the most important ones, but you can find an exhaustive list in @ref GUI.
+bs::f provides a large library of existing GUI element types. We'll focus on explaining the most important ones, but you can find an exhaustive list in @ref GUI.
 
 ## Label
 A label is the most basic of GUI elements, that allows no user interaction and just displays a textual string. It is created with @ref bs::GUILabel::create "GUILabel::create()", which accepts a string as input.
@@ -132,7 +132,7 @@ mainPanel->addElement(guiTexture);
 ![Texture](guiTexture.png) 
  
 ## Button
-A button GUI element displays a textural string or an image and reports events about user interaction with the button.
+A button GUI element displays a textual string or an image and reports events about user interaction with the button.
 
 GUI elements that can have either text or image contents (or both) accept a @ref bs::GUIContent "GUIContent" structure in their *create* and *setContent* functions. It is just a container and constructed simply:
 
@@ -346,7 +346,7 @@ Once created you can retrieve the current position of the slider by calling @ref
 float curSliderPosition = sliderHorz->getPercent();
 ~~~~~~~~~~~~~
 
-You can also get notified immediately when whe slider handle moves by subscribing to the @ref bs::GUISlider::onChanged "GUISlider::onChanged" event.
+You can also get notified immediately when the slider handle moves by subscribing to the @ref bs::GUISlider::onChanged "GUISlider::onChanged" event.
 
 ~~~~~~~~~~~~~{.cpp}
 auto sliderPositionChanged = [](float percent)

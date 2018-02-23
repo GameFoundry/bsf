@@ -2,7 +2,7 @@ File system									{#fileSystem}
 ===============
 
 # Paths
-Instead of using strings for representing paths, Banshee uses the @ref bs::Path "Path" class. Aside from containing the path it provides a variety of other useful information and allows for path manipulation. It is recommended to always store paths using **Path** instead of strings.
+Instead of using strings for representing paths, bs::f uses the @ref bs::Path "Path" class. Aside from containing the path it provides a variety of other useful information and allows for path manipulation. It is recommended to always store paths using **Path** instead of strings.
 
 ~~~~~~~~~~~~~{.cpp}
 Path myPath = "C:/Path/To/File.txt";

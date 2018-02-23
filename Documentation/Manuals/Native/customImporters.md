@@ -2,7 +2,7 @@ Creating custom importers						{#customImporters}
 ===============
 [TOC]
 
-Importers process raw resources in a third-party format (like FBX mesh or a PNG image) into an engine-ready format (e.g. a **Mesh** or a **Texture**). Banshee has an extensible importer system so you may easily add your own importers, either for existing resource types or for new ones. This way you can add support for new third party file formats.
+Importers process raw resources in a third-party format (like FBX mesh or a PNG image) into an engine-ready format (e.g. a **Mesh** or a **Texture**). bs::f has an extensible importer system so you may easily add your own importers, either for existing resource types or for new ones. This way you can add support for new third party file formats.
 
 To implement your own importer you need to implement the @ref bs::SpecificImporter "SpecificImporter" interface.
 

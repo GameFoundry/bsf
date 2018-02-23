@@ -119,7 +119,7 @@ Dimensions are controlled by the following properties:
  - @ref bs::GUIElementStyle::maxHeight "GUIElementStyle::maxHeight"
  - @ref bs::GUIElementStyle::fixedHeight "GUIElementStyle::fixedHeight"
    
-When **GUIElementStyle::fixedWidth** or **GUIElementStyle::fixedHeight** is set to true, the system will use size values provided by **GUIElementStyle::width** and **GUIElementStyle::height** respectively. This is the same as calling **GUIElement::setSize**.
+When **GUIElementStyle::fixedWidth** or **GUIElementStyle::fixedHeight** is set to true, the system will use size values provided by **GUIElementStyle::width** and **GUIElementStyle::height** respectively. This is the same as calling **GUIElement::setSize()**.
 
 ~~~~~~~~~~~~~{.cpp}
 // Style that uses a fixed 50x20 size (e.g. a fixed size button)
@@ -131,7 +131,7 @@ style.height = 50;
 style.width = 20;
 ~~~~~~~~~~~~~
 		
-When **GUIElementStyle::fixedWidth** or **GUIElementStyle::fixedHeight** are false, the system will instead use the min/max values provided by **GUIElementStyle::minWidth** / **GUIElementStyle::maxWidth** and **GUIElementStyle::minHeight** / **GUIElementStyle::maxHeight**, respectively. This is the same as calling **GUIElement::setFlexibleWidth** or **GUIElement::setFlexibleHeight**.
+When **GUIElementStyle::fixedWidth** or **GUIElementStyle::fixedHeight** are false, the system will instead use the min/max values provided by **GUIElementStyle::minWidth** / **GUIElementStyle::maxWidth** and **GUIElementStyle::minHeight** / **GUIElementStyle::maxHeight**, respectively. This is the same as calling **GUIElement::setFlexibleWidth()** or **GUIElement::setFlexibleHeight()**.
 
 ~~~~~~~~~~~~~{.cpp}
 // Style that uses a fixed 20px height and flexible width with minimum 30 pixels, and no limit on maximum size (e.g. a button that expands horizontally to fit its contents)
@@ -191,7 +191,7 @@ style.margins.bottom = 0;
 ### Borders
 Normally when you set a texture for a GUI element state, the texture will stretch to fill out the area of the GUI element. Unless the texture is a uniform color or a repeatable pattern, that stretching will often look bad.
 
-For this reason Banshee allows you to specify borders though @ref bs::GUIElementStyle::border "GUIElementStyle::border". By setting borders you split the image into 9 sections.
+For this reason bs::f allows you to specify borders though @ref bs::GUIElementStyle::border "GUIElementStyle::border". By setting borders you split the image into 9 sections.
 
 Center section will be resized uniformly as normal. Four corner sections will never be resized. Top and bottom sections will be resized only horizontally (fixed height), and left and right sections will be resized only vertically (fixed width). This allows you to use more complex images that still look good when resized.
 

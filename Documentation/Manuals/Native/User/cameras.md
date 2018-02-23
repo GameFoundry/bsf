@@ -95,3 +95,15 @@ auto& windowProps = newWindow->getProperties();
 
 camera->setOrthoWindow(windowProps.getWidth(), windowProps.getHeight());
 ~~~~~~~~~~~~~
+
+# Multi-sample anti-aliasing
+To achieve higher rendering quality you may enable MSAA per camera. This will ensure that each rendered pixel receives multiple samples which are then averaged to produce the final pixel color. This process reduced aliasing on pixels that have discontinuities, like pixels that are on a boundary between two surfaces. This reduces what are often called "jaggies". 
+
+MSAA can be enabled by providing a values of 1, 2, 4 or 8 to @ref bs::CCamera::setMSAACount() "CCamera::setMSAACount()". The value determines number of samples per pixel, where 1 means no MSAA. MSAA can be quite performance heavy, and larger MSAA values require proportionally more performance. 
+
+~~~~~~~~~~~~~{.cpp}
+// Enable 4X MSAA
+camera->setMSAACount(4);
+~~~~~~~~~~~~~
+
+@ref TODO_IMAGE

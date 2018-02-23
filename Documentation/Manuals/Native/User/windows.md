@@ -1,7 +1,7 @@
 Windows					{#windows}
 ===============
 
-A window represents the final destination where the application's rendered output gets displayed to the user. It has a title, size and a position. Window can cover the entirety of the user's screen (fullscreen mode) or just part of it (windowed mode). In Banshee a window is represented using the @ref bs::RenderWindow "RenderWindow" class.
+A window represents the final destination where the application's rendered output gets displayed to the user. It has a title, size and a position. Window can cover the entirety of the user's screen (fullscreen mode) or just part of it (windowed mode). In bs::f a window is represented using the @ref bs::RenderWindow "RenderWindow" class. We have already shown how the application creates a primary window when it is first started up, and in this chapter we'll show how to create more windows manually as well as manipulate them.
 
 ![Render window](RenderWindow.png)  
 
@@ -53,7 +53,7 @@ newWindow->setWindowed(1280, 720);
 ~~~~~~~~~~~~~
 
 # Window properties
-You can access current properties of the window, like its size and position, by calling @ref bs::RenderWindow::getProperties "RenderWindow::getProperties", which returns a @ref bs::RenderWindowProperties "RenderWindowProperties" object. For example let's print out current window's size:
+You can access current properties of the window, like its size and position, by calling @ref bs::RenderWindow::getProperties "RenderWindow::getProperties()", which returns a @ref bs::RenderWindowProperties "RenderWindowProperties" object. For example let's print out current window's size:
 
 ~~~~~~~~~~~~~{.cpp}
 auto& props = newWindow->getProperties();
@@ -73,10 +73,8 @@ void notifyResized()
 newWindow->onResized.connect(&notifyResized);
 ~~~~~~~~~~~~~
 
-> **RenderWindow::onResized** is an example of an event. They are explained later in the [event manual](@ref events).
-
 # Video modes
-During window creation and calls to **RenderWindow::setFullscreen** we have seen the use of the @ref bs::VideoMode "VideoMode" class. This class allows you to specify the resolution of the window, along with an optional refresh rate and output monitor (in case of multi-monitor setups, to choose on which monitor to show the window). 
+During window creation and calls to **RenderWindow::setFullscreen()** we have seen the use of the @ref bs::VideoMode "VideoMode" class. This class allows you to specify the resolution of the window, along with an optional refresh rate and output monitor (in case of multi-monitor setups, to choose on which monitor to show the window). 
 
 You can create your own **VideoMode** with custom parameters (as we did so far), or you can query for all video modes supported by the user's GPU by calling @ref bs::RenderAPI::getVideoModeInfo() "RenderAPI::getVideoModeInfo()". This will return a @ref bs::VideoModeInfo "VideoModeInfo" object that contains information about all available monitors, their supported resolutions and refresh rates.
 

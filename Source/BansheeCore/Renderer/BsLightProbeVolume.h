@@ -90,7 +90,10 @@ namespace bs
 	public:
 		~LightProbeVolume();
 
-		/** Adds a new probe at the specified position and returns a handle to the probe. */
+		/** 
+		 * Adds a new probe at the specified position and returns a handle to the probe. The position is relative to
+		 * the volume origin.
+		 */
 		UINT32 addProbe(const Vector3& position);
 
 		/** Updates the position of the probe with the specified handle. */

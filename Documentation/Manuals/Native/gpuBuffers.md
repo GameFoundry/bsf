@@ -2,7 +2,7 @@ GPU Buffers			{#gpuBuffers}
 ===============
 [TOC]
 
-GPU buffers (also known as generic buffers) allow you to provide data to a **GpuProgram** similar as a texture. In particular they are very similar to a one-dimensional texture. They aren't constrained by size limitations like a texture, and allow each entry in the buffer to be more complex than just a primitive data type. This allows you to provide your GPU programs with complex data easily. In Banshee they are represented using the @ref bs::ct::GpuBuffer "ct::GpuBuffer" type. 
+GPU buffers (also known as generic buffers) allow you to provide data to a **GpuProgram** similar as a texture. In particular they are very similar to a one-dimensional texture. They aren't constrained by size limitations like a texture, and allow each entry in the buffer to be more complex than just a primitive data type. This allows you to provide your GPU programs with complex data easily. In bs::f they are represented using the @ref bs::ct::GpuBuffer "ct::GpuBuffer" type. 
 
 # Creation {#gpuBuffers_a}
 To create a **ct::GpuBuffer** you must fill out a @ref bs::GPU_BUFFER_DESC "GPU_BUFFER_DESC" structure and call the @ref bs::ct::GpuBuffer::create "ct::GpuBuffer::create()" method. At minimum you need to provide:

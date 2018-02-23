@@ -2,7 +2,7 @@ Quick reference									{#quickref}
 ===============
 [TOC]
 
-Here are some common conventions used throughout Banshee:
+Here are some common conventions used throughout bs::f:
  - It uses right handed coordinate system
  - Camera is looking towards the negative z axis
  - Screen/window space origin is located in the top left corner

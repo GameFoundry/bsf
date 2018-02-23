@@ -1,7 +1,7 @@
 Logging	messages								{#logging}
 ===============
 
-Logging can be a useful way to debug issues during development, or notify the user that an error occurred. In Banshee it is handled though the @ref bs::Debug "Debug" class. Use @ref bs::gDebug "gDebug()" for an easy way to access the **Debug** instance.
+Logging can be a useful way to debug issues during development, or notify the user that an error occurred. In bs::f it is handled though the @ref bs::Debug "Debug" class. Use @ref bs::gDebug "gDebug()" for an easy way to access the **Debug** instance.
 
 Use any of these methods to log a new message:
  - @ref bs::Debug::logDebug "Debug::logDebug" - Logs an informative message.

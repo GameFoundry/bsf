@@ -55,7 +55,7 @@ rigidbody->setFlags(RigidbodyFlag::AutoTensors);
 rigidbody->setFlags(RigidbodyFlag::AutoMass);
 ~~~~~~~~~~~~~
 
-By properly distributing mass and density over child shapes you can achieve much more realistic simulation for complex objects (e.g. a car). For simple objects (e.g. a barrel, tree trunk) it's best to keep uniform mass density.
+By properly distributing mass and density over child shapes you can achieve much more realistic simulation for complex objects (e.g. a car). For simple objects (e.g. a barrel, a rock) it's best to keep uniform mass density.
 
 # Forces
 A rigidbody will not move until we apply some forces to it. Forces can be applied directly (as shown here), and indirectly by being hit by another rigidbody.
@@ -74,7 +74,7 @@ You can also change the strength of gravity by changing its acceleration factor.
 
 ~~~~~~~~~~~~~{.cpp}
 // Set gravity to the value on the Moon
-gPhysics().setGravity(1.622f); // in m/s^2
+gPhysics().setGravity(Vector3(0, -1.622f, 0)); // in m/s^2
 ~~~~~~~~~~~~~
 
 ## Manual forces
@@ -181,7 +181,7 @@ In most cases you want both of these properties to be calculated automatically. 
 rigidbody->setFlags(RigidbodyFlag::AutoTensors);
 ~~~~~~~~~~~~~
 
-If you wish to set them manually, you can instead call @ref bs::CRigidbody::setCenterOfMass "CRigidbody::setCenterOfMass()" and @ref bs::CRigidbody::setInertiaTensor "CRigidbody::setInertiaTensor()".
+If you wish to set them manually, you can instead call @ref bs::CRigidbody::setCenterOfMassPosition "CRigidbody::setCenterOfMassPosition()" and @ref bs::CRigidbody::setInertiaTensor "CRigidbody::setInertiaTensor()".
 
 # Sleep
 For performance reasons, objects that are not moving or are barely moving will be put to sleep. This allows the physics system to avoid those objects in its calculations. Such objects will be automatically woken up when other objects interact with them, or you move them from code.

@@ -2,9 +2,9 @@ Plugins						{#plugins}
 ===============
 [TOC]
 
-Many systems in Banshee are implemented through plugins, libraries that are separate from the core of the engine and can be dynamically loaded or unloaded. If possible, it is the prefered way of extending the engine.
+Many systems in bs::f are implemented through plugins, libraries that are separate from the core of the engine and can be dynamically loaded or unloaded. If possible, it is the prefered way of extending the engine.
 
-Banshee supports plugins for the following systems:
+bs::f supports plugins for the following systems:
  - Audio - Systems for providing audio playback.
  - Importers - Importers that handle conversion of some third party resource format into an engine-ready format.
  - Input - Reports input events (mouse, keyboard, gamepad, etc.)

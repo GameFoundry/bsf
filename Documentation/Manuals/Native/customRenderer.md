@@ -2,7 +2,7 @@ Creating a renderer plugin							{#customRenderer}
 ===============
 [TOC]
 
-If your project requires a very specific form of rendering you might decide you want to write your own renderer from scratch. In Banshee renderers are built as plugins, and this manual will show you how to create one. This manual can also be useful if trying to understand how the renderer works, even if you are not implementing your own.
+If your project requires a very specific form of rendering you might decide you want to write your own renderer from scratch. In bs::f renderers are built as plugins, and this manual will show you how to create one. This manual can also be useful if trying to understand how the renderer works, even if you are not implementing your own.
 
 # Components and the renderer {#renderer_a}
 We've already shown how to render scene objects. You create a **SceneObject** on which you then attach components such as **CCamera**, **CRenderable** or **CLight**. These components will then register themselves with the renderer, when takes care of everything else rendering-wise.

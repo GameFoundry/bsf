@@ -1,7 +1,7 @@
 Advanced animation				{#advancedAnimation}
 ===============
 
-So far we have shown how you can use the **CAnimation** component to play a single animation clip at once. When it comes to skeletal animation the system is capable of a few more advanced features that allow you to play and blend multiple animation clips at once, as well as other advanced functionality.
+So far we have shown how you can use the **Animation** component to play a single animation clip at once. When it comes to skeletal animation the system is capable of a few more advanced features that allow you to play and blend multiple animation clips at once, as well as other advanced functionality.
 
 # Cross fade
 Often your animation system might need to transition from playing one animation clip to another (e.g. moving from a walk to a run animation). In that case you can use @ref bs::CAnimation::crossFade "CAnimation::crossFade()" instead of **CAnimation::play()**. Cross fade will slowly fade in the new animation clip while fading out the previously playing one, over the specified time period.
@@ -57,7 +57,7 @@ animation->blend1D(blendInfo, 0.75f);
 ## 2D blending
 2D blending works similarly as 1D blending, except it uses a two-dimensional value for the weight. It also interpolates between four animation clips at once instead of two. It is limited to four clips, and a [0, 1] range. Therefore the clips can be imagined as being on corners of a square.
 
-For example you can use this blend type to interpolate between character aiming animations in a third party game. You would adjust the 2D weight based on the vertical and horizontal directions the character is aiming and the system would interpolate between look up/down/left/right animations to animate the character in the direction the user is aiming.
+For example you can use this blend type to interpolate between character aiming animations in a third person game. You would adjust the 2D weight based on the vertical and horizontal directions the character is aiming and the system would interpolate between look up/down/left/right animations to animate the character in the direction the user is aiming.
 
 To start a 2D blend operation call @ref bs::CAnimation::blend2D "CAnimation::blend2D()". This method expects a @ref bs::Blend2DInfo "Blend2DInfo" structure, containing four animation clips to blend between, as well as a 2D weight determining how the animations are blended together.
 

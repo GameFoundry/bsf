@@ -2,9 +2,9 @@ Architecture									{#architecture}
 ===============
 [TOC]
 
-This manual will explain the architecture of Banshee, to give you a better idea of how everything is structured and where to locate particular systems.
+This manual will explain the architecture of bs::f, to give you a better idea of how everything is structured and where to locate particular systems.
 
-Banshee is implemented throughout many separate libraries. Spreading the engine implementation over different libraries ensures multiple things:
+bs::f is implemented throughout many separate libraries. Spreading the engine implementation over different libraries ensures multiple things:
  - Portions of the engine can be easily modified or replaced
  - User can choose which portions of the engine he requires
  - Internals are easier to understand as libraries form a clear architecture between themselves, while ensuring source code isn't all bulked into one big package
@@ -17,9 +17,9 @@ All the libraries can be separated into four main categories:
  - Executable - These are small pieces of code meant to initialize and start up the engine/editor.
  
 To give you a better idea here is a diagram showing how all the libraries connect. You can use this for reference when we talk about the individual library purposes later on.
-![Banshee's libraries](ArchitectureSimple.png)  
+![bs::f libraries](ArchitectureSimple.png)  
 
-> Note that BansheeEditor layer and scripting libraries are only available when compiling the full Banshee runtime, and are not present in bsFramework.
+> Note that BansheeEditor layer and scripting libraries are only available when compiling the full bs::f runtime, and are not present in bsFramework.
  
 # Layers #										{#arch_layers}
 The layers contain the core of the engine. All the essentials and all the abstract interfaces for plugins belong here. The engine core was split into multiple layers for two reasons:
@@ -42,7 +42,7 @@ This layer builds upon the abstraction provided by the core layer and provides a
 And finally the top layer is the editor. It builts upon everything else so far and provides various editor specific features like the project library, build system, editor window management, scene view tools and similar. Large portions of the editor are implemented in the scripting code, and this layer provides more of a set of helper tools used by the scripting system. If you are going to work with this layer you will also be working closely with the scripting interop code and the scripting code (see below).
 
 # Plugins #										{#arch_plugins}
-Banshee provides a wide variety of plugins out of the box. The plugins are loaded dynamically and allow you to change engine functionality completely transparently to other systems (e.g. you can choose to load an OpenGL renderer instead of a DirectX one). Some plugins are completely optional and you can choose to ignore them (e.g. importer plugins can usually be ignored for game builds). Most importantly the plugins segregate the code, ensuring the design of the engine is decoupled and clean. Each plugin is based on an abstract interface implemented in one of the layers (for the most part, BansheeCore and %BansheeEngine layers).
+bs::f provides a wide variety of plugins out of the box. The plugins are loaded dynamically and allow you to change engine functionality completely transparently to other systems (e.g. you can choose to load an OpenGL renderer instead of a DirectX one). Some plugins are completely optional and you can choose to ignore them (e.g. importer plugins can usually be ignored for game builds). Most importantly the plugins segregate the code, ensuring the design of the engine is decoupled and clean. Each plugin is based on an abstract interface implemented in one of the layers (for the most part, BansheeCore and %BansheeEngine layers).
 
 ## Render API ##								{#arch_rapi}		
 Render API plugins allow you to use a different backend for performing hardware accelerated rendering. @ref bs::RenderAPI "RenderAPI" handles low level rendering, including features like vertex/index buffers, creating rasterizer/depth/blend states, shader programs, render targets, textures, draw calls and similar. 
@@ -59,12 +59,12 @@ All importers implement a relatively simple interface represented by the @ref bs
  - **BansheeFreeImgImporter** - Handles import of most popular image formats, like .png, .psd, .jpg, .bmp and similar. It uses the FreeImage library for reading the image files and converting them into engine's @ref bs::Texture "Texture" format.
  - **BansheeFBXImporter** - Handles import of FBX mesh files. Uses Autodesk FBX SDK for reading the files and converting them into engine's @ref bs::Mesh "Mesh" format.
  - **BansheeFontImporter** - Handles import of TTF and OTF font files. Uses FreeType for reading the font files and converting them into engine's @ref bs::Font "Font" format.
- - **BansheeSL** - Provides an implementation of the Banshee's shader language that allows you to easily define an entire pipeline state in a single file. Imports .bsl files into engine's @ref bs::Shader "Shader" format.
+ - **BansheeSL** - Provides an implementation of the bs::f shader language that allows you to easily define an entire pipeline state in a single file. Imports .bsl files into engine's @ref bs::Shader "Shader" format.
 
 ## Others ##									{#arch_others}
 
 ### BansheeOISInput ###							{#arch_ois}
-Handles raw mouse/keyboard/gamepad input for multiple platforms. All input plugins implement the @ref bs::RawInputHandler "RawInputHandler" interface. Uses the OIS library specifically modified for Banshee (source code available with Banshee's dependencies). 
+Handles raw mouse/keyboard/gamepad input for multiple platforms. All input plugins implement the @ref bs::RawInputHandler "RawInputHandler" interface. Uses the OIS library specifically modified for bs::f (source code available with bs::f dependencies). 
 
 ### BansheePhysX ###				{#arch_physx}
 Handles physics: rigidbodies, colliders, triggers, joints, character controller and similar. Implements the @ref bs::Physics "Physics" interface and any related classes (e.g. @ref bs::Rigidbody "Rigidbody", @ref bs::Collider "Collider"). Uses NVIDIA PhysX as the backend.

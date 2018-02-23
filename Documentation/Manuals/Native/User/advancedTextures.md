@@ -1,10 +1,10 @@
-Creating textures				{#advancedTextures}
+Advanced textures				{#advancedTextures}
 ===============
 
-In this manual we'll learn how to create textures manually, modify their contents and even read-back texture data.
+In this manual we'll learn how to create textures manually, modify their contents and even read-back texture data that was written on the GPU.
 
 # Creating textures
-To create a texture call @ref bs::Texture::create "Texture::create". You'll need to populate the @ref bs::TEXTURE_DESC "TEXTURE_DESC" structure and pass it as a parameter. The structure requires you to populate these properties at minimum:
+To create a texture call @ref bs::Texture::create "Texture::create()". You'll need to populate the @ref bs::TEXTURE_DESC "TEXTURE_DESC" structure and pass it as a parameter. The structure requires you to populate these properties at minimum:
  - @ref bs::TEXTURE_DESC::type "TEXTURE_DESC::type" - Allows you to choose between 1D/2D/3D or cube-map textures using the @ref bs::TextureType "TextureType" enum
  - @ref bs::TEXTURE_DESC::format "TEXTURE_DESC::format" - Allows you to choose a format for each individual pixel in the texture, using the @ref bs::PixelFormat "PixelFormat" enum
  - @ref bs::TEXTURE_DESC::width "TEXTURE_DESC::width" - Width of the texture, in pixels
@@ -20,7 +20,7 @@ When it comes to texture types there four kinds of textures:
 You may also set these optional properties:
  - @ref bs::TEXTURE_DESC::numMips "TEXTURE_DESC::numMips" - A texture with mip-maps will contain a set of scaled down versions of itself that are used by the GPU for anti-aliasing. Specify zero to use no mip maps. You can use the helper function @ref bs::PixelUtil::getMaxMipmaps "PixelUtil::getMaxMipmaps()" to return the maximum possible mip-map count for a specific set of dimensions. 
  - @ref bs::TEXTURE_DESC::numArraySlices "TEXTURE_DESC::numArraySlices" - Specify number higher than 1 in order to create an array of textures. This is primarily used for low-level rendering purposes. Texture arrays are not supported for 3D textures.
- - @ref bs::TEXTURE_DESC::hwGamma "TEXTURE_DESC::hwGamma" - When true, it specifies if the data in the texture is gamma corrected. When performing reads on such texture (e.g. in the shader) the GPU will transform the texture data back to linear space before returning the value. When a texture is used as a render target, the GPU will automatically convert from linear space into gamma space when rendering to the texture. Only relevant for 2D textures.
+ - @ref bs::TEXTURE_DESC::hwGamma "TEXTURE_DESC::hwGamma" - When true, it specifies if the data in the texture is gamma corrected. When performing reads on such texture in a shader the GPU will transform the texture data back to linear space before returning the value. When a texture is used as a render target, the GPU will automatically convert from linear space into gamma space when rendering to the texture. Only relevant for 2D textures.
  - @ref bs::TEXTURE_DESC::numSamples "TEXTURE_DESC::numSamples" - Specifies the number of samples per pixel. This is used primarily for multi-sample antialiasing. This is only relevant for 2D textures, and only for textures used as render targets. You cannot read or write from/to multi-sample textures manually.
  - @ref bs::TEXTURE_DESC::usage "TEXTURE_DESC::usage" - Flags that control how is the texture allowed to be used, represented by the @ref bs::TextureUsage "TextureUsage" enum
  
@@ -46,6 +46,8 @@ desc.format = PF_R8G8B8A8;
 HTexture texture = Texture::create(desc);
 ~~~~~~~~~~~~~
 
+> Low level rendering API is explained as a part of the developer manuals.
+
 # Writing data
 Once a texture has been created you might want to write some data to it. This is accomplished by calling @ref bs::Texture::writeData "Texture::writeData()". The method accepts a @ref bs::PixelData "PixelData" object, as well as a mip-map level and a face to write to.
 
@@ -63,7 +65,7 @@ Once created you can set the color of each pixel by calling @ref bs::PixelData::
 Vector<Color> colors;
 for(UINT32 y = 0; y < 128; y++)
 	for(UINT32 x = 0; x < 128; x++)
-		colors.push_back(Color(x * 2.0f, y * 2.0f, 0.0f, 1.0f));
+		colors.push_back(Color(x / 128.0f, y / 128.0f, 0.0f, 1.0f));
 
 pixelData->setColors(colors);		
 ~~~~~~~~~~~~~
@@ -131,7 +133,7 @@ SPtr<PixelData> pixelData = texProps.allocBuffer(0, 2);
 When you are sure you will overwrite all the contents of a texture, make sure to set the last parameter of **Texture::writeData()** to true. This ensures the system can more optimally execute the transfer, without requiring the GPU to finish its current action (which can be considerably slow if it is currently using that particular texture).
 
 ## Generating mip-maps
-Mip-maps are generally created automatically from a source texture, rather than by manually setting their pixels. Therefore Banshee provides @ref bs::PixelUtil::genMipmaps "PixelUtil::genMipmaps()" method that accepts a **PixelData** object containing pixels to generate mip levels from. A maximum number of mip-maps levels is then generated and output. You can optionally customize mip-map generating by providing a @ref bs::MipMapGenOptions "MipMapGenOptions" object.
+Mip-maps are generally created automatically from a source texture, rather than by manually setting their pixels. Therefore bs::f provides @ref bs::PixelUtil::genMipmaps "PixelUtil::genMipmaps()" method that accepts a **PixelData** object containing pixels to generate mip levels from. A maximum number of mip-maps levels is then generated and output. You can optionally customize mip-map generation by providing a @ref bs::MipMapGenOptions "MipMapGenOptions" object.
 
 ~~~~~~~~~~~~~{.cpp}
 SPtr<PixelData> pixelData = "...";

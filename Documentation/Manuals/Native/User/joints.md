@@ -3,7 +3,7 @@ Joints 						{#joints}
 
 Joints allow you to constrain movement of two rigidbodies in some way. A typical example would be a door hinge. 
 
-Banshee supports six different joint types:
+bs::f supports six different joint types:
  - Fixed - Locks origins and orientations together
  - Distance - Keeps origins within a certain distance range
  - Spherical - Keeps origins together but allows rotation with no restrictions (also known as ball-and-socket joint)

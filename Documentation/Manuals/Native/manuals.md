@@ -14,15 +14,16 @@ User manuals									{#manuals}
  - [Meshes](@ref importingMeshes)
  - [Materials](@ref simpleMaterial)
  - [Textures](@ref importingTextures)
- - [Lighting](@ref lights) 
+ - [Lighting](@ref lights)
+ - [Saving a scene](@ref savingScene)
 - **Input**
  - [Input polling](@ref inputPolling) 
  - [Input events](@ref inputEvents) 
  - [Virtual input](@ref virtualInput)
 - **Gameplay logic**
- - [Creating custom components](@ref customComponents)
- - [Serializing objects](@ref serializingObjects)
- - Non-component approach
+ - [Creating components](@ref customComponents)
+ - [Persisting data](@ref serializingObjects)
+ - [Non-component approach](@ref nonComponentApproach)
 - **GUI**
  - [Sprite textures](@ref spriteTextures)
  - [Basic setup](@ref guiSetup)
@@ -49,9 +50,12 @@ User manuals									{#manuals}
  - [Bones](@ref bones)
  - [Advanced animation](@ref advancedAnimation)
 - **Advanced rendering**
- - [Image based lighting](@ref imageBasedLighting)
- - Indirect lighting
  - [Renderer settings](@ref renderSettings)
+ - [Skybox](@ref skybox)
+ - [Reflection environment](@ref reflectionProbes)
+ - [Indirect lighting](@ref indirectLighting)
+ - [Advanced textures](@ref advancedTextures)
+ - [Advanced meshes](@ref creatingMeshes)
  - [Offscreen rendering](@ref offscreenRendering)
  - [Windows](@ref windows)
  - **Custom materials**
@@ -70,9 +74,6 @@ User manuals									{#manuals}
  - [Measuring time](@ref time)
  - [Cursors](@ref cursors)
  - [Profiling](@ref cpuProfiling)
-- **Advanced**
- - [Manipulating textures](@ref advancedTextures)
- - [Creating meshes](@ref creatingMeshes)
- - [Advanced startup](@ref advancedStartup)
+- **Other**
  - [Advanced RTTI](@ref advancedRtti)
  - [Prefabs](@ref prefabs)

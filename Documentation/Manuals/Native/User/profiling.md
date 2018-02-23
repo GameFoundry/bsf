@@ -1,7 +1,7 @@
 Profiling				{#cpuProfiling}
 ===============
 
-Code profiling is an important process to determine performance bottlenecks. Profiling measures code execution times and memory allocations. Banshee provides a built-in profiler through the @ref bs::ProfilerCPU "ProfilerCPU" module. This module can be globally accessed through @ref bs::gProfilerCPU() "gProfilerCPU()".
+Code profiling is an important process to determine performance bottlenecks. Profiling measures code execution times and memory allocations. bs::f provides a built-in profiler through the @ref bs::ProfilerCPU "ProfilerCPU" module. This module can be globally accessed through @ref bs::gProfilerCPU() "gProfilerCPU()".
 
 The profiler allows you to profile blocks of code and output information about how long the block took to execute, as well as information about number and amount of memory allocations.
 

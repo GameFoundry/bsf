@@ -146,18 +146,18 @@ namespace bs
 
 	namespace ct
 	{
-    RenderAPI::RenderAPI()
-        : mCurrentCapabilities(nullptr), mNumDevices(0)
-    {
-    }
+	RenderAPI::RenderAPI()
+		: mCurrentCapabilities(nullptr), mNumDevices(0)
+	{
+	}
 
-    RenderAPI::~RenderAPI()
-    {
+	RenderAPI::~RenderAPI()
+	{
 		// Base classes need to call virtual destroy_internal method instead of a destructor
 
 		bs_deleteN(mCurrentCapabilities, mNumDevices);
 		mCurrentCapabilities = nullptr;
-    }
+	}
 
 	SPtr<bs::RenderWindow> RenderAPI::initialize(const RENDER_WINDOW_DESC& primaryWindowDesc)
 	{

@@ -2,7 +2,7 @@ Extending the GUI system						{#customGUI}
 ===============
 [TOC]
 
-Even though Banshee provides fully skinnable and very customizable GUI elements, sometimes the built-in ones are just not enough if you need some very specialized functionality or look. Banshee allows you to create brand new elements and fully customize the way how they are rendered and how the user interacts with such elements.
+Even though bs::f provides fully skinnable and very customizable GUI elements, sometimes the built-in ones are just not enough if you need some very specialized functionality or look. bs::f allows you to create brand new elements and fully customize the way how they are rendered and how the user interacts with such elements.
 
 You are expected to have read the user-facing GUI manuals before proceeding, and as such familiarized yourself with the basics.
 
@@ -149,7 +149,7 @@ class GUITexture : public GUIElement
 };
 ~~~~~~~~~~~~~
 
-Banshee also provides a set of helper classes for generating required geometry in the form of @ref bs::ImageSprite "ImageSprite" and @ref bs::TextSprite "TextSprite" classes. **ImageSprite** can easily generate image geometry of specified size, whether a simple quad or a scale-9-grid image (scalable image with fixed borders). And **TextSprite** will take a text string, font and additional options as input, and output a set of quads required for text rendering.
+bs::f also provides a set of helper classes for generating required geometry in the form of @ref bs::ImageSprite "ImageSprite" and @ref bs::TextSprite "TextSprite" classes. **ImageSprite** can easily generate image geometry of specified size, whether a simple quad or a scale-9-grid image (scalable image with fixed borders). And **TextSprite** will take a text string, font and additional options as input, and output a set of quads required for text rendering.
 
 @ref bs::GUIElement::_getMaterial() "GUIElement::_getMaterial()"
 

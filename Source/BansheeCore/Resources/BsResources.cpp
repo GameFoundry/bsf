@@ -697,9 +697,6 @@ namespace bs
 
 	void Resources::registerResourceManifest(const SPtr<ResourceManifest>& manifest)
 	{
-		if(manifest->getName() == "Default")
-			return;
-
 		auto findIter = std::find(mResourceManifests.begin(), mResourceManifests.end(), manifest);
 		if(findIter == mResourceManifests.end())
 			mResourceManifests.push_back(manifest);

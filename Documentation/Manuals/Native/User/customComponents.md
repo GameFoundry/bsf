@@ -1,4 +1,4 @@
-Creating custom components						{#customComponents}
+Creating components						{#customComponents}
 ===============
 
 So far we have talked about using built-in components like @ref bs::CCamera "Camera" and @ref bs::CRenderable "Renderable", but another major way you'll be using components is to create your own. Components serve as the main place to put your gameplay logic in, and this is where you'll be adding a majority of your custom code when creating a game.
@@ -84,6 +84,8 @@ private:
 
 > Use @ref bs::Component::SO() "Component::SO()" to access the scene object the component is attached to.
 		
+> **gTime()** method provides access to a variety of timing related functionality, and is explained later in the [timing manual](@ref time).
+		
 # Component handle
 You will also likely want to declare a handle you can use to easily access the component, same as **HCamera** or **HRenderable**. This is done by simply creating a *typedef* on the @ref bs::GameObjectHandle<T> "GameObjectHandle<T>" object.
 
@@ -105,10 +107,10 @@ HCamera camera = cameraSO->addComponent<CCamera>(primaryWindow);
 HCameraFlyer = cameraSO->addComponent<CCameraFlyer>();
 ~~~~~~~~~~~~~
 
-# Advanced
-Now that we have the basics covered, there are a few more things to know that can be useful when building more advanced components.
+# Data
+Often a component will contain some data which you want to persist after the scene is saved, which requires you to implement a special interface on your custom component class. We'll talk more about this in the next chapter.
 
-## Activating/deactivating a scene object
+# Activating/deactivating a scene object
 Any scene object can be temporarily de-activated and reactivated by calling @ref bs::SceneObject::setActive "SceneObject::setActive()". When a scene object is deactivated its components will not have **Component::update()** called.
 
 Your component can also be notified at the exact moment when activation/deactivation happens. This way you can perform additional functionality if needed. Override @ref bs::Component::onEnabled "Component::onEnabled" and @ref bs::Component::onDisabled "Component::onDisabled" to get notified every time a component is activated and deactivated, respectively.
@@ -133,7 +135,7 @@ class CCameraFlyer : public Component
 };
 ~~~~~~~~~~~~~
 		
-## Getting notified on scene object change
+# Getting notified on scene object change
 Sometimes you want to get notified when the scene object the component is attached to moves or changes parents. You can do this by overriding the @ref bs::Component::onTransformChanged "Component::onTransformChanged()" method.
 
 ~~~~~~~~~~~~~{.cpp}
@@ -157,7 +159,7 @@ class CCameraFlyer : public Component
 
 @ref bs::TransformChangedFlags "TransformChangedFlags" parameter will notify you whether the scene object moved, has changed parents, or both.
 
-Note that **Component::onTransformChanged** will never trigger by default. You must first enable it by calling @ref bs::Component::setNotifyFlags "Component::setNotifyFlags". It accepts the same **TransformChangedFlags** parameter which tells the system in which cases should it trigger **Component::onTransformChanged**.
+Note that **Component::onTransformChanged** will never trigger by default. You must first enable it by calling @ref bs::Component::setNotifyFlags "Component::setNotifyFlags()". It accepts the same **TransformChangedFlags** parameter which tells the system in which cases should it trigger **Component::onTransformChanged**.
 
 ~~~~~~~~~~~~~{.cpp}
 // We're just extending the component we defined above

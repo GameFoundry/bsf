@@ -185,7 +185,7 @@ template<> struct RTTIPlainType<std::string>
 }; 
 ~~~~~~~~~~~~~
 
-> Note: Banshee already provides many of such specializations, including ones for strings, vectors and maps.
+> Note: bs::f already provides many of such specializations, including ones for strings, vectors and maps.
 
 Each specialization must implement all three **toMemory()**, **fromMemory()** and **getDynamicSize()** methods. It must also provide a flag **hasDynamicSize** which determines whether or not it has dynamic size. Any structure whose size varies with each instance (like a string) must set this flag to true. You must also set it to true if the size is static but larger than 255 bytes.
 
@@ -211,7 +211,7 @@ BS_ALLOW_MEMCPY_SERIALIZATION(SimpleData)
  - @ref bs::rttiGetElemSize "rttiGetElemSize()" - Returns a size an object
  
 ~~~~~~~~~~~~~{.cpp}
-// Assuming Vector has a RTTIPlainType<T> specialization (which it has, Banshee provides it by default)
+// Assuming Vector has a RTTIPlainType<T> specialization (which it has, bs::f provides it by default)
 
 Vector<SimpleData> myData;
 // fill out myData

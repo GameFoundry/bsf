@@ -5,7 +5,7 @@ In previous chapter we talked about how **GUIPanel** is a special type of a GUI 
 
 There are three types of layouts:
  - @ref bs::GUIPanel "GUIPanel" - Does no automatic positioning and sizing of child GUI elements, instead user can set positions and sizes manually, as we have already seen. Each panel can be placed at a different depth, allowing GUI elements to overlay each other.
- - @ref bs::GUILayoutX "GUILayoutX" - Automatically positions and sizes child GUI elements horizontally one next to each other, left to right. User is able to request minimum/maximum allowed size, but is unable to manually position the element.
+ - @ref bs::GUILayoutX "GUILayoutX" - Automatically positions and sizes child GUI elements horizontally one next to each other, left to right. User is able to request minimum/maximum allowed size, but is unable to manually position elements in the layout.
  - @ref bs::GUILayoutY "GUILayoutY" - Same as **GUILayoutX** only elements are positioned vertically, top to bottom.
 
 You will find that vertical and horizontal layouts come in handy when you need to design GUI that needs to scale across various screen sizes/resolutions. By adding your GUI elements to such layouts instead of manually positioning them, ensures the GUI system can always keep them at optimal position and size, regardless of the available screen area.
@@ -92,10 +92,10 @@ for(int i = 0; i < 5; i++)
 ![Vertical layout](layoutVertical.png) 
 
 # Customizing automatic layouts
-Even though vertical & horizontal layouts are automatic, Banshee provides a variety of mechanisms that allow you to customize the position and size of GUI elements in such layouts.
+Even though vertical & horizontal layouts are automatic, bs::f provides a variety of mechanisms that allow you to customize the position and size of GUI elements in such layouts.
 
 ## Flexible size
-Each GUI element can have a flexible size that determines its minimum & maximum allowed width/height. This is in contrast to the fixed size we were setting in the example above.
+Each GUI element can have a flexible size that determines its minimum & maximum allowed width/height. This is in contrast to the fixed size we were setting in the previous examples.
 
 When a flexible size is set a GUI layout is allowed to resize the element to best fit the layout area, within the provided size range. Flexible size can be set by calling @ref bs::GUIElement::setFlexibleWidth "GUIElement::setFlexibleWidth()" and @ref bs::GUIElement::setFlexibleHeight "GUIElement::setFlexibleHeight()".
 

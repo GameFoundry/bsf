@@ -1,7 +1,7 @@
 Importing fonts 						{#importingFonts}
 ===============
 
-Fonts control how text characters look and are used primarily throughout the GUI system. They are represented with the @ref bs::Font "Font" class. A font is a resource, meaning it can be imported, saved and loaded as we described in the Resource manuals.
+Fonts control how text characters look and are used primarily throughout the GUI system. They are represented with the @ref bs::Font "Font" class. A font is a resource, meaning it can be imported, saved and loaded as we described in the resource manual.
 
 Fonts can be imported from .TTF or .OTF formats using the importer.
 

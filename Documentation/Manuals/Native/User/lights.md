@@ -55,7 +55,7 @@ This controls how strong is the light. Although you could technically control li
 
 In nature the range of light intensities varies highly - standing outside at a sunlit day may be hundreds or thousands of times brighter than standing indoors illuminated by a lightbulb. We won't perceive such a large difference because our eyes are able to adjust to different intensities.
 
-Banshee uses a HDR algorithm to try to approximate this adjustment, which results in more realistic and higher quality lighting. Therefore it can be important for realism to set up the light intensities similar to what they would be in nature. 
+bs::f uses a HDR algorithm to try to approximate this adjustment, which results in more realistic and higher quality lighting. Therefore it can be important for realism to set up the light intensities similar to what they would be in nature. 
 
 Use @ref bs::CLight::setIntensity "CLight::setIntensity()" to change the light intensity. 
 

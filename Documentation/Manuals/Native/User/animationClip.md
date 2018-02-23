@@ -1,7 +1,7 @@
 Loading animation clips						{#animationClip}
 ===============
 
-When it comes to animating 3D objects (meshes), Banshee supports two types of animation:
+When it comes to animating 3D objects (meshes), bs::f supports two types of animation:
  - Skeletal - Each vertex on the mesh is assigned to a bone using and index and a weight - this is called a skin. Each bone is part of a hierarchy which is called a skeleton. The bones are then animated using animation clips, and as the bones move, so do the vertices (skin) attached to them. 
  - Morph - Many different versions of the same mesh exist, representing different shapes of the mesh. By interpolating between the shapes animation is produced. This interpolation is also controlled by animation clips.
  
@@ -13,7 +13,7 @@ In general it is preferred to use skeletal animation wherever possible, as it ha
 
 Both animation types are controlled via @ref bs::AnimationClip "AnimationClip"%s. 
 
-Animation clip consists of a set of animation curves, each animating either a bone or a set of morph shapes. Each animation curve has a set of keyframes (time and position pairs). As animation is playing, time moves forward and the system interpolates between those keyframes and applies the latest available value, which produces the animation. Knowledge of this internal structure is not necessary to play animation, but it will be useful to know when we explain some more advanced features below.
+Animation clip consists of a set of animation curves, each animating either a bone or a set of morph shapes. Each animation curve has a set of keyframes (time and value pairs). As animation is playing, time moves forward and the system interpolates between those keyframes and applies the latest available value, which produces the animation. Knowledge of this internal structure is not necessary to play animation, but it will be useful to know when we explain some more advanced features below.
 
 # Import
 Animation clips are imported from the same source file that contains the mesh object. The import process is similar to how we imported physics meshes, using **Importer::importAll()** to retrieve the clips.
@@ -46,7 +46,7 @@ These aren't properties you need to access manually for normal animation playbac
 
 # Advanced
 ## Splitting
-Often the creator of the animation will place several animations into the same set of animation curves, one playing after another. When imported in Banshee this will result in a single continous animation clip. This is not useful and in such cases you can break up the animation into multiple clips by populating a set of @ref bs::AnimationSplitInfo "AnimationSplitInfo" structures, and providing them to @ref bs::MeshImportOptions::setAnimationClipSplits "MeshImportOptions::setAnimationClipSplits()".
+Often the creator of the animation will place several animations into the same set of animation curves, one playing after another. When imported in bs::f this will result in a single continous animation clip. This is not useful and in such cases you can break up the animation into multiple clips by populating a set of @ref bs::AnimationSplitInfo "AnimationSplitInfo" structures, and providing them to @ref bs::MeshImportOptions::setAnimationClipSplits "MeshImportOptions::setAnimationClipSplits()".
 
 Each of **AnimationSplitInfo** entries requires the starting and ending frame of the animation, as well as a name to make it easier to identify. Starting/ending frames are something you must receive from the animation creator, or guess from animation playback.
 
@@ -80,9 +80,9 @@ for(auto& entry : resource)
 ~~~~~~~~~~~~~
 
 ## Keyframe reduction
-Tools that create animation will often output a large set of animation keyframes, usually at a fixed rate (e.g. 60 per second). In most cases this amount of keyframes is not necessary as many of them are static and change very slowly. Additionally Banshee uses keyframe tangents to better approximate the animation curve, ensuring less keyframes need to be used. 
+Tools that create animation will often output a large set of animation keyframes, usually at a fixed rate (e.g. 60 per second). In most cases this amount of keyframes is not necessary as many of them are static and change very slowly. Additionally bs::f uses keyframe tangents to better approximate the animation curve, ensuring less keyframes need to be used. 
 
-By enabling @ref bs::MeshImportOptions::setKeyFrameReduction "MeshImportOptions::setKeyFrameReduction()" you can ensure that Banshee eliminates any keyframes it deems unnecessary. This can greately reduce the memory usage of animation clips, but might yield animation clips that don't look exactly as imagined by the creator. In most cases you should enable this unless you notice problems.
+By enabling @ref bs::MeshImportOptions::setKeyFrameReduction "MeshImportOptions::setKeyFrameReduction()" you can ensure that bs::f eliminates any keyframes it deems unnecessary. This can greately reduce the memory usage of animation clips, but might yield animation clips that don't look exactly as imagined by the creator. In most cases you should enable this unless you notice problems.
 
 ~~~~~~~~~~~~~{.cpp}
 importOptions->setKeyFrameReduction(true);

@@ -120,7 +120,7 @@ namespace bs
 
 	RenderSettings::RenderSettings()
 		: enableAutoExposure(true), enableTonemapping(true), enableFXAA(true), exposureScale(0.0f), gamma(2.2f)
-		, enableHDR(true), enableLighting(true), enableShadows(true), enableIndirectLighting(true), overlayOnly(false)
+		, enableHDR(true), enableLighting(true), enableShadows(true), enableIndirectLighting(false), overlayOnly(false)
 	{ }
 
 	RTTITypeBase* RenderSettings::getRTTIStatic()

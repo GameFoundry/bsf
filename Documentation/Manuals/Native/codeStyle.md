@@ -2,7 +2,7 @@ Coding style							{#codeStyle}
 ===============
 [TOC]
 
-When making changes or additions that you plan on contributing to Banshee, you must follow the same coding style as the rest of the codebase. This document tries to list the most important aspects of the style.
+When making changes or additions that you plan on contributing to bs::f, you must follow the same coding style as the rest of the codebase. This document tries to list the most important aspects of the style.
 
 **Spacing**
  - Use tabs instead of spaces for indentation
@@ -62,7 +62,7 @@ When making changes or additions that you plan on contributing to Banshee, you m
  - Avoid the use of `auto` for variable types, with the exception of very long type names (like iterators)
   - If `auto` is used try to name the variable so its type can be easily deduced
  - Use built-in typedefs for standard library containers (e.g. `Vector`) and shared pointers (`SPtr`).
- - Don't allocate memory using `new/delete` or `malloc/free`, instead use Banshee's allocators
+ - Don't allocate memory using `new/delete` or `malloc/free`, instead use bs::f allocators
  - No code warnings under default compiler warning settings are allowed. Fix all your warnings or if absolutely not possible isolate that bit of code and disable that specific warning (but only in that bit of code).
  - Never use `using namespace` in a header
  

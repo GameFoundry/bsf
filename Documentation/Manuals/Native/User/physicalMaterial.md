@@ -3,7 +3,7 @@ Physics material						{#physicsMaterial}
 
 Physics material is a type of object that can be applied to a **Collider** to control the physical properties of its surface. In particular it can be used to control friction coefficients that determine how much damping is there when two objects are touching and moving laterally. As well as a restitution coefficient that determines how ellastic are collisions between two objects.
 
-It is represented by @ref bs::PhysicsMaterial "PhysicsMaterial" and created by calling @ref bs::PhysicsMaterial::create "PhysicsMaterial::create()". It is a resource, and as such can be saved and loaded as described in the Resource manual.
+It is represented by @ref bs::PhysicsMaterial "PhysicsMaterial" and created by calling @ref bs::PhysicsMaterial::create "PhysicsMaterial::create()". It is a resource, and as such can be saved and loaded as described as any other resource.
 
 ~~~~~~~~~~~~~{.cpp}
 // Create physics material with default properties

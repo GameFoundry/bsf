@@ -2,10 +2,10 @@ Getting started								{#gettingStarted}
 ===============
 [TOC]
 
-This manual offers a quick overview of commonly used Banshee functionality, in order to give you a better idea of how Banshee works. For a fully working example check out the `ExampleGettingStarted` project available with the source code.
+This manual offers a quick overview of commonly used bs::f functionality, in order to give you a better idea of how bs::f works. For a fully working example check out the `ExampleGettingStarted` project available with the source code.
 
 # Starting an application
-Banshee is started through the @ref bs::Application "Application" interface. To start the engine you need to provide it with a description of the primary render window.
+bs::f is started through the @ref bs::Application "Application" interface. To start the engine you need to provide it with a description of the primary render window.
 
 The application is started by calling @ref bs::Application::startUp "Application::startUp()", after which you can set up your custom code in the form of components (see later). Finally you can run the main loop with @ref bs::Application::runMainLoop "Application::runMainLoop()" which will execute your code and actually get everything in motion.
 
@@ -36,7 +36,7 @@ HTexture dragonTexture = gImporter().import<Texture>("Dragon.psd");
 # Setting up a material
 Once we have a mesh and a texture we need some way to apply that texture to the mesh. For that reason we first import a @ref bs::Shader "Shader" that describes how is an object rendered, which we then use to create a @ref bs::Material "Material" which allows us to apply our previously loaded **Texture**.
 
-Banshee uses .bsl files to describe shaders and you can learn more about BSL syntax in the @ref shaders manual. To learn more about materials and how to use them read the @ref simpleMaterial manual.
+bs::f uses .bsl files to describe shaders and you can learn more about BSL syntax in the @ref shaders manual. To learn more about materials and how to use them read the @ref simpleMaterial manual.
 
 ~~~~~~~~~~~~~{.cpp}
 HShader diffuse = gImporter().import<Shader>("Diffuse.bsl");
@@ -96,4 +96,4 @@ guiLayout->addNewElement<GUIButton>(HString(L"Click me too!"));
 # Final result
 @ref TODO_IMAGE
 
-There is a lot more to Banshee, but hopefully this gave you a quick taste of how it works. Continue reading other manuals and the API reference for more information.
+There is a lot more to bs::f, but hopefully this gave you a quick taste of how it works. Continue reading other manuals and the API reference for more information.

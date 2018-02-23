@@ -1,7 +1,7 @@
 Importing audio 						{#importingAudio}
 ===============
 
-Audio in Banshee is represented in the form of an @ref bs::AudioClip "AudioClip" object. An audio clip is a resource, meaning it can be imported, saved and loaded as we described in the Resource manuals.
+Audio in bs::f is represented in the form of an @ref bs::AudioClip "AudioClip" object. An audio clip is a resource, meaning it can be imported, saved and loaded as we described in the resource manuals.
 
 Different audio file formats are supported depending on which audio backend is used:
  - OpenAudio (default)

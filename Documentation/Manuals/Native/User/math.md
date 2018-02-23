@@ -1,7 +1,7 @@
 Math					{#mathUtilities}
 ===============
 
-General purpose math functionality in Banshee is provided through the @ref bs::Math "Math" class. It provides a variety of familiar methods, such as @ref bs::Math::floor "Math::floor()", @ref bs::Math::clamp "Math::clamp()", @ref bs::Math::cos "Math::cos()" and many others. Check the API reference for a full list.
+General purpose math functionality in bs::f is provided through the @ref bs::Math "Math" class. It provides a variety of familiar methods, such as @ref bs::Math::floor "Math::floor()", @ref bs::Math::clamp "Math::clamp()", @ref bs::Math::cos "Math::cos()" and many others. Check the API reference for a full list.
 
 All other math functionality is provided through specific types, as listed below.
 
@@ -57,7 +57,7 @@ printAngle(myAngle2);
 ~~~~~~~~~~~~~
 
 # Quaternions
-@ref bs::Quaternion "Quaternion"%s are the primary way of representing rotations in Banshee. They can be created using Euler angles, axis/angle combination, or from a rotation matrix (talked about later). 
+@ref bs::Quaternion "Quaternion"%s are the primary way of representing rotations in bs::f. They can be created using Euler angles, axis/angle combination, or from a rotation matrix (talked about later). 
 
 ~~~~~~~~~~~~~{.cpp}
 // Quaternion that rotates 30 degrees around X axis, followed by 50 degrees around Z axis (Euler angle representation)
@@ -335,7 +335,7 @@ They also provide a series of *intersects* methods that allow them to test for i
 
 # Shapes
 
-Banshee supports a variety of other 3D shapes:
+bs::f supports a variety of other 3D shapes:
  - @ref bs::AABox "AABox"
  - @ref bs::Sphere "Sphere"
  - @ref bs::Plane "Plane"

@@ -1,7 +1,7 @@
 Measuring time								{#time}
 ===============
 
-Being able to tell the current time, as well as being able to tell elapsed time since the last frame is important for any real-time application. Use the @ref bs::Time "Time" class, accessible through @ref bs::gTime "gTime()" to retrieve global information about the time in Banshee.
+Being able to tell the current time, as well as being able to tell elapsed time since the last frame is important for any real-time application. Use the @ref bs::Time "Time" class, accessible through @ref bs::gTime "gTime()" to retrieve global information about the time in bs::f.
 
 # Current time
 

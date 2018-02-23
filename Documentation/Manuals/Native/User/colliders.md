@@ -14,7 +14,7 @@ There are five collider types, that differ in the way how is their surface descr
  - Box - The surface is a box with custom width/height/depth
  - Sphere - The surface is a sphere with a radius
  - Capsule - The surface is a capsule with a radius and a height
- - Mesh - The surface is represented by custom geometry using with a triangle mesh
+ - Mesh - The surface is represented by custom geometry using a triangle mesh
   
 # Plane collider
 Represented by @ref bs::CPlaneCollider "PlaneCollider" component. Use @ref bs::CPlaneCollider::setNormal "CPlaneCollider::setNormal()" to provide the direction in which the plane is oriented in, and @ref bs::CPlaneCollider::setDistance "CPlaneCollider::setDistance()" to provide an offset along that direction. Using these two properties you can position and orient a plane anywhere in the scene.

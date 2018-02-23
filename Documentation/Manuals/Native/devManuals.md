@@ -38,6 +38,5 @@ Developer manuals									{#devManuals}
   - [Interacting with the script runtime](@ref mono)
   - [Script objects](@ref scriptObjects)
 - [Extending the GUI system](@ref customGUI)
-- [Porting to other platforms](@ref porting)
 - [Code style](@ref codeStyle)
 - [Quick reference](@ref quickref)

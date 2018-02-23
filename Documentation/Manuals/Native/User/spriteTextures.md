@@ -7,7 +7,7 @@ They are used primarily by 2D elements, like GUI or sprites. Their primary purpo
 
 They are represented with the @ref bs::SpriteTexture "SpriteTexture" class and are a **Resource**, same as normal textures. 
 
-They're created by calling @ref bs::SpriteTexture::create "SpriteTexture::create". As a parameter it expects the source **Texture**, and an optional set of UV coordinates that map to a specific area on the texture. If no coordinates are provided the sprite texture maps to the entirety of the texture, acting the same as a normal texture.
+They're created by calling @ref bs::SpriteTexture::create "SpriteTexture::create()". As a parameter it expects the source **Texture**, and an optional set of UV coordinates that map to a specific area on the texture. If no coordinates are provided the sprite texture maps to the entirety of the texture, acting the same as a normal texture.
 
 UV coordinates begin in the top left corner, and are in range [0, 1], where top left is (0, 0), and bottom right (1, 1).
 
@@ -23,7 +23,7 @@ Vector2 size(0.5f, 0.5f);
 HSpriteTexture spriteTexPartial = SpriteTexture::create(offset, size, texture)
 ~~~~~~~~~~~~~
 
-Once created, you can get the actual width/height of the mapped area by calling @ref bs::SpriteTexture::getWidth "SpriteTexture::getWidth" and @ref bs::SpriteTexture::getHeight "SpriteTexture::getHeight".
+Once created, you can get the actual width/height of the mapped area by calling @ref bs::SpriteTexture::getWidth "SpriteTexture::getWidth()" and @ref bs::SpriteTexture::getHeight "SpriteTexture::getHeight()".
 
 ~~~~~~~~~~~~~{.cpp}
 // If our original texture was 1024x1024, this will be 512x512, since it's just a
@@ -32,7 +32,7 @@ UINT32 width = spriteTexPartial->getWidth();
 UINT32 height = spriteTexPartial->getHeight();
 ~~~~~~~~~~~~~
 
-You can also always retrieve the underlying texture by calling @ref bs::SpriteTexture::getTexture "SpriteTexture::getTexture".
+You can also always retrieve the underlying texture by calling @ref bs::SpriteTexture::getTexture "SpriteTexture::getTexture()".
 
 ~~~~~~~~~~~~~{.cpp}
 HTexture texture = spriteTexPartial->getTexture();

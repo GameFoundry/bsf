@@ -2,11 +2,11 @@ GPU programs									{#gpuPrograms}
 ===============
 [TOC]
 
-GPU programs are programmable parts of the GPU pipeline, in other literature often called shaders (Banshee uses the word shader for a higher level concept, so we won't call them that). They are core objects, meaning they can be used on both sim and core threads. We'll focus on the core thread version and note the differences between the two where relevant.
+GPU programs are programmable parts of the GPU pipeline, in other literature often called shaders (bs::f uses the word shader for a higher level concept, so we won't call them that). They are core objects, meaning they can be used on both sim and core threads. We'll focus on the core thread version and note the differences between the two where relevant.
 
-In Banshee they are represented with the @ref bs::ct::GpuProgram "ct::GpuProgram" class. There are six types of GPU programs: vertex, hull (tesselation control), domain (tesselation evaluation), geometry, fragment (pixel) and compute programs. Each is used for a different purpose but has the same interface. We assume the user is familiar with the GPU pipeline and what the different program types do. 
+In bs::f they are represented with the @ref bs::ct::GpuProgram "ct::GpuProgram" class. There are six types of GPU programs: vertex, hull (tesselation control), domain (tesselation evaluation), geometry, fragment (pixel) and compute programs. Each is used for a different purpose but has the same interface. We assume the user is familiar with the GPU pipeline and what the different program types do. 
 
-> Note that if you are using Banshee Shading Language you do not need to create GPU programs manually - any shaders you import and materials created from those shaders will have GPU programs created internally, but they will be hidden from the normal user.
+> Note that if you are using bs::f Shading Language you do not need to create GPU programs manually - any shaders you import and materials created from those shaders will have GPU programs created internally, but they will be hidden from the normal user.
 
 # Creating GPU programs {#gpuPrograms_a}
 To create a GPU program call @ref bs::ct::GpuProgram::create() "ct::GpuProgram::create()" with a @ref bs::GPU_PROGRAM_DESC "GPU_PROGRAM_DESC" structure. The structure needs to have the following fields populated:
