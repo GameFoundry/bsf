@@ -26,22 +26,5 @@ namespace bs
 		ct::D3D11RenderAPI* mRenderSystem;
 	};
 
-	namespace ct
-	{
-	/** @copydoc RenderWindowManager */
-	class D3D11RenderWindowManager : public RenderWindowManager
-	{
-	public:
-		D3D11RenderWindowManager(D3D11RenderAPI* renderSystem);
-
-	protected:
-		/** @copydoc RenderWindowManager::createInternal */
-		SPtr<RenderWindow> createInternal(RENDER_WINDOW_DESC& desc, UINT32 windowId) override;
-
-	private:
-		D3D11RenderAPI* mRenderSystem;
-	};
-	}
-
 	/** @} */
 }

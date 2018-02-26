@@ -74,6 +74,20 @@ namespace bs
 		mProperties = getCore()->mSyncedProperties;
 	}
 
+	SPtr<ct::CoreObject> D3D11RenderWindow::createCore() const
+	{
+		ct::RenderAPI* rs = ct::RenderAPI::instancePtr();
+		auto d3d11rs = static_cast<ct::D3D11RenderAPI*>(rs);
+
+		// Create the window
+		RENDER_WINDOW_DESC desc = mDesc;
+		SPtr<ct::CoreObject> coreObj = bs_shared_ptr_new<ct::D3D11RenderWindow>(desc, mWindowId, 
+			d3d11rs->getPrimaryDevice(), d3d11rs->getDXGIFactory());
+		coreObj->_setThisPtr(coreObj);
+
+		return coreObj;
+	}
+
 	namespace ct
 	{
 	D3D11RenderWindow::D3D11RenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId, D3D11Device& device, IDXGIFactory* DXGIFactory)

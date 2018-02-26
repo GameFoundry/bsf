@@ -45,6 +45,9 @@ namespace bs {
 		/** @copydoc RenderWindow::syncProperties */
 		void syncProperties() override;
 
+		/** @copydoc RenderWindow::createCore */
+		SPtr<ct::CoreObject> createCore() const override;
+
 		/**	Retrieves internal window handle. */
 		HWND getHWnd() const;
 

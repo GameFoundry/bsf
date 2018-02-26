@@ -69,6 +69,16 @@ namespace bs
 		return std::static_pointer_cast<ct::Win32RenderWindow>(mCoreSpecific);
 	}
 
+	SPtr<ct::CoreObject> Win32RenderWindow::createCore() const
+	{
+		RENDER_WINDOW_DESC desc = mDesc;
+		SPtr<ct::Win32RenderWindow> coreObj = bs_shared_ptr_new<ct::Win32RenderWindow>(desc, mWindowId, mGLSupport);
+		coreObj->_setThisPtr(coreObj);
+
+		mGLSupport._notifyWindowCreated(coreObj.get());
+		return coreObj;
+	}
+
 	void Win32RenderWindow::syncProperties()
 	{
 		ScopedSpinLock lock(getCore()->mLock);

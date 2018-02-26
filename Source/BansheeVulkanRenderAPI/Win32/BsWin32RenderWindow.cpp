@@ -69,6 +69,17 @@ namespace bs
 		mProperties = getCore()->mSyncedProperties;
 	}
 
+	SPtr<ct::CoreObject> Win32RenderWindow::createCore() const
+	{
+		ct::VulkanRenderAPI& rapi = static_cast<ct::VulkanRenderAPI&>(ct::RenderAPI::instance());
+
+		RENDER_WINDOW_DESC desc = mDesc;
+		SPtr<ct::CoreObject> coreObj = bs_shared_ptr_new<ct::Win32RenderWindow>(desc, mWindowId, rapi);
+		coreObj->_setThisPtr(coreObj);
+
+		return coreObj;
+	}
+
 	namespace ct
 	{
 		Win32RenderWindow::Win32RenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 windowId, VulkanRenderAPI& renderAPI)

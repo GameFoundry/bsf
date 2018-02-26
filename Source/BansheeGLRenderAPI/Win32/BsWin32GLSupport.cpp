@@ -41,14 +41,10 @@ namespace bs { namespace ct
 		return SPtr<bs::RenderWindow>(window, &bs::CoreObject::_delete<bs::Win32RenderWindow, GenAlloc>);
 	}
 
-	SPtr<RenderWindow> Win32GLSupport::newWindowCore(RENDER_WINDOW_DESC& desc, UINT32 windowId)
+	void Win32GLSupport::_notifyWindowCreated(Win32RenderWindow* window)
 	{
-		Win32RenderWindow* window = new (bs_alloc<Win32RenderWindow>()) Win32RenderWindow(desc, windowId, *this);
-
 		if (!mInitialWindow)
 			mInitialWindow = window;
-
-		return bs_shared_ptr<Win32RenderWindow>(window);
 	}
 
 	void Win32GLSupport::start()

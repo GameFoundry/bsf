@@ -112,7 +112,7 @@ namespace bs { namespace ct
 
 		// Create render window manager
 		bs::RenderWindowManager::startUp<bs::D3D11RenderWindowManager>(this);
-		RenderWindowManager::startUp<D3D11RenderWindowManager>(this);
+		RenderWindowManager::startUp();
 
 		// Create & register HLSL factory		
 		mHLSLFactory = bs_new<D3D11HLSLProgramFactory>();
