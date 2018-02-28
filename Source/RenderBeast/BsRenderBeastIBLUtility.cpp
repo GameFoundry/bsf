@@ -186,7 +186,8 @@ namespace bs { namespace ct
 
 		gIrradianceComputeSHFragParamDef.gCubeFace.set(mParamBuffer, face);
 		gIrradianceComputeSHFragParamDef.gFaceSize.set(mParamBuffer, source->getProperties().getWidth());
-		gIrradianceComputeSHFragParamDef.gCoeffIdx.set(mParamBuffer, coefficientIdx);
+		gIrradianceComputeSHFragParamDef.gCoeffEntryIdx.set(mParamBuffer, coefficientIdx / 4);
+		gIrradianceComputeSHFragParamDef.gCoeffComponentIdx.set(mParamBuffer, coefficientIdx % 4);
 
 		// Render
 		RenderAPI& rapi = RenderAPI::instance();

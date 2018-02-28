@@ -211,7 +211,8 @@ namespace bs { namespace ct
 	BS_PARAM_BLOCK_BEGIN(IrradianceComputeSHFragParamDef)
 		BS_PARAM_BLOCK_ENTRY(int, gCubeFace)
 		BS_PARAM_BLOCK_ENTRY(int, gFaceSize)
-		BS_PARAM_BLOCK_ENTRY(int, gCoeffIdx)
+		BS_PARAM_BLOCK_ENTRY(int, gCoeffEntryIdx)
+		BS_PARAM_BLOCK_ENTRY(int, gCoeffComponentIdx)
 	BS_PARAM_BLOCK_END
 
 	extern IrradianceComputeSHFragParamDef gIrradianceComputeSHFragParamDef;

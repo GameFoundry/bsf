@@ -781,6 +781,9 @@ namespace bs { namespace ct
 				deps.push_back(RCNodeUnflattenLightAccum::getNodeId());
 		}
 
+		if(view.getProperties().numSamples > 1)
+			deps.push_back(RCNodeMSAACoverage::getNodeId());
+
 		return deps;
 	}
 
@@ -942,6 +945,9 @@ namespace bs { namespace ct
 			deps.push_back(RCNodeSSAO::getNodeId());
 
 		deps.push_back(RCNodeStandardDeferredLighting::getNodeId());
+
+		if(view.getProperties().numSamples > 1)
+			deps.push_back(RCNodeMSAACoverage::getNodeId());
 
 		return deps;
 	}

@@ -19,9 +19,10 @@ technique IrradianceComputeSHFrag
 		{
 			uint gCubeFace;
 			uint gFaceSize;
-			uint gCoeffIdx;
-		}			
-				
+			uint gCoeffEntryIdx;
+			uint gCoeffComponentIdx;
+		}
+	
 		float4 fsmain(VStoFS input) : SV_Target0
 		{
 			// Move to [-1,1] range
@@ -36,15 +37,24 @@ technique IrradianceComputeSHFrag
 			float invFaceSize = 1.0f / gFaceSize;
 			float weight = texelSolidAngle(uv.x, uv.y, invFaceSize);
 			
-			SHVector shBasis = SHBasis(dir);
+			SHVector b = SHBasis(dir);
+
+			// Copy to array of float4’s because of a driver bug on macOS that causes
+			// non-const indexing of an array of floats to return incorrect values
+			float4 v[3];
+			v[0] = float4(b.v[0], b.v[1], b.v[2], b.v[3]);
+			v[1] = float4(b.v[4], b.v[5], b.v[6], b.v[7]);
+			v[2] = float4(b.v[8], 0.0f, 0.0f, 0.0f);
+
 			float3 radiance = gInputTex.SampleLevel(gInputSamp, dir, 0).rgb;
-												
+			float shCoeff = v[gCoeffEntryIdx][gCoeffComponentIdx];			
+		
 			float4 output;
-			output.r = shBasis.v[gCoeffIdx] * radiance.r * weight;
-			output.g = shBasis.v[gCoeffIdx] * radiance.g * weight;
-			output.b = shBasis.v[gCoeffIdx] * radiance.b * weight;
+			output.r = shCoeff * radiance.r * weight;
+			output.g = shCoeff * radiance.g * weight;
+			output.b = shCoeff * radiance.b * weight;
 			output.a = weight;
-			
+
 			return output;
 		}
 	};
