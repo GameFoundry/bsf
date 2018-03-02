@@ -87,6 +87,14 @@ static bool keyCodeToInputCommand(uint32_t keyCode, bool shift, bs::InputCommand
 	[self addTrackingArea:mTrackingArea];
 }
 
+-(void)mouseUp:(NSEvent*)event
+{
+	// After a fullscreen switch the view starts eating the mouseUp event, so we instead forward the event to window's
+	// responder for normal handling
+	if([event.window nextResponder])
+		[[event.window nextResponder] mouseUp:event];
+}
+
 -(void)rightMouseDown:(NSEvent*)event
 {
 	// By default the view eats the right mouse event, but we instead forward the event to window's responder for normal

@@ -314,43 +314,12 @@ namespace bs
 
 		auto& destOutput = static_cast<const ct::MacOSVideoOutputInfo&>(output);
 		auto& newMode = static_cast<const ct::MacOSVideoMode&>(mode);
-		auto& desktopMode = static_cast<const ct::MacOSVideoMode&>(output.getDesktopVideoMode());
 
+		// Note: An alternative to changing display resolution would be to only change the back-buffer size. But that doesn't
+		// account for refresh rate, so it's questionable how useful it would be.
 		CGDirectDisplayID displayID = destOutput._getDisplayID();
+		CGDisplaySetDisplayMode(displayID, newMode._getModeRef(), nullptr);
 
-		if (desktopMode._getModeRef() == newMode._getModeRef())
-		{
-			CGDisplaySetDisplayMode(displayID, newMode._getModeRef(), nullptr);
-
-			if (CGDisplayIsMain(displayID))
-				CGReleaseAllDisplays();
-			else
-				CGDisplayRelease(displayID);
-		}
-		else
-		{
-			CGError status;
-			if (CGDisplayIsMain(displayID))
-				status = CGCaptureAllDisplays();
-			else
-				status = CGDisplayCapture(displayID);
-
-			if (status != kCGErrorSuccess)
-				goto UNFADE;
-
-			status = CGDisplaySetDisplayMode(displayID, newMode._getModeRef(), nullptr);
-			if(status != kCGErrorSuccess)
-			{
-				if (CGDisplayIsMain(displayID))
-					CGReleaseAllDisplays();
-				else
-					CGDisplayRelease(displayID);
-
-				goto UNFADE;
-			}
-		}
-
-		UNFADE:
 		if (fadeToken != kCGDisplayFadeReservationInvalidToken)
 		{
 			CGDisplayFade(fadeToken, 0.3f, kCGDisplayBlendSolidColor, kCGDisplayBlendNormal, 0, 0, 0, FALSE);

@@ -23,7 +23,6 @@ namespace bs::ct
 
 		attributes[attrIdx++] = NSOpenGLPFAOpenGLProfile;
 		attributes[attrIdx++] = NSOpenGLProfileVersion4_1Core;
-
 		attributes[attrIdx++] = NSOpenGLPFADoubleBuffer;
 		attributes[attrIdx++] = NSOpenGLPFAAccelerated;
 
@@ -71,7 +70,10 @@ namespace bs::ct
 
 		CocoaWindow* window = MacOSPlatform::getWindow(windowId);
 		if(!window)
+		{
+			MacOSPlatform::unlockWindows();
 			return;
+		}
 
 		NSWindow* nsWindow = window->_getPrivateData()->window;
 
