@@ -299,10 +299,13 @@ namespace bs { namespace ct
 		// Make sure any renderer tasks finish first, as rendering might depend on them
 		processTasks(false);
 
+		// Update reflection probe array if required
+		updateReflProbeArray();
+
 		// Gather all views
-		Vector<RendererView*> views;
 		for (auto& rtInfo : sceneInfo.renderTargets)
 		{
+			Vector<RendererView*> views;
 			SPtr<RenderTarget> target = rtInfo.target;
 			const Vector<Camera*>& cameras = rtInfo.cameras;
 
@@ -313,26 +316,18 @@ namespace bs { namespace ct
 				RendererView* viewInfo = sceneInfo.views[viewIdx];
 				views.push_back(viewInfo);
 			}
-		}
 
-		mMainViewGroup->setViews(views.data(), (UINT32)views.size());
-		mMainViewGroup->determineVisibility(sceneInfo);
+			mMainViewGroup->setViews(views.data(), (UINT32)views.size());
+			mMainViewGroup->determineVisibility(sceneInfo);
 
-		// Update reflection probe array if required
-		updateReflProbeArray();
+			// Render everything
+			renderViews(*mMainViewGroup, frameInfo);
 
-		// Render everything
-		renderViews(*mMainViewGroup, frameInfo);
-
-		gProfilerGPU().endFrame();
-
-		// Present render targets with back buffers
-		for (auto& rtInfo : sceneInfo.renderTargets)
-		{
 			if(rtInfo.target->getProperties().isWindow)
 				RenderAPI::instance().swapBuffers(rtInfo.target);
 		}
 
+		gProfilerGPU().endFrame();
 		gProfilerCPU().endSample("renderAllCore");
 	}
 

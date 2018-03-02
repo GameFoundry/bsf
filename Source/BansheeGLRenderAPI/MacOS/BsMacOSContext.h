@@ -46,6 +46,15 @@ namespace bs::ct
 		/** Swaps the framebuffer currently attached to this context. */
 		void swapBuffers();
 
+		/**
+		 * Locks the context so it can safely be used across threads. Should be called before performing any OpenGL
+		 * action or direct operation on the context. When done unlock it via unlock().
+		 */
+		void lock();
+
+		/** Unlocks the context locked via lock(). */
+		void unlock();
+
 	private:
 		Pimpl* m;
 	};

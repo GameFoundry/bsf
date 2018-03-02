@@ -43,7 +43,7 @@ namespace bs
 			bool save = ((UINT32) type & (UINT32) FileDialogType::Save) != 0;
 			String path = defaultPath.toString();
 
-			if (save)
+			if (!save)
 			{
 				bool file = ((UINT32) type & (UINT32) FileDialogType::OpenFile) != 0;
 				bool folder = ((UINT32) type & (UINT32) FileDialogType::OpenFolder) != 0;
@@ -65,7 +65,8 @@ namespace bs
 					[fileTypes addObject:extensionString];
 				}
 
-				[openDlg setAllowedFileTypes:fileTypes];
+				if(fileTypes.count > 0)
+					[openDlg setAllowedFileTypes:fileTypes];
 
 				if ([openDlg runModal] == NSModalResponseOK)
 				{
@@ -82,12 +83,12 @@ namespace bs
 			}
 			else
 			{
-				NSSavePanel* openDlg = [NSSavePanel savePanel];
+				NSSavePanel* saveDlg = [NSSavePanel savePanel];
 
-				[openDlg setCanCreateDirectories:YES];
+				[saveDlg setCanCreateDirectories:YES];
 
 				NSString* pathString = [[NSString stringWithUTF8String:path.c_str()] stringByResolvingSymlinksInPath];
-				[openDlg setDirectoryURL:[NSURL fileURLWithPath:pathString]];
+				[saveDlg setDirectoryURL:[NSURL fileURLWithPath:pathString]];
 
 				NSMutableArray* fileTypes = [[NSMutableArray alloc] init];
 				for(UINT32 i = 0; i < (UINT32)extensions.size(); i++)
@@ -96,11 +97,12 @@ namespace bs
 					[fileTypes addObject:extensionString];
 				}
 
-				[openDlg setAllowedFileTypes:fileTypes];
+				if(fileTypes.count > 0)
+					[saveDlg setAllowedFileTypes:fileTypes];
 
-				if([openDlg runModal] == NSModalResponseOK)
+				if([saveDlg runModal] == NSModalResponseOK)
 				{
-					NSURL* file = [openDlg URL];
+					NSURL* file = [saveDlg URL];
 
 					String fileStr = String([[file path] cStringUsingEncoding:kCFStringEncodingUTF8]);
 					paths.push_back(fileStr);

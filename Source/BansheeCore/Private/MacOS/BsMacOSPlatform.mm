@@ -302,7 +302,7 @@ namespace bs
 	bs::Vector<bs::Rect2I> areas;
 	for(NSUInteger i = 0; i < numEntries; i++)
 	{
-		NSValue* value = params[i];
+		NSValue* value = params[i + 1];
 
 		bs::Rect2I area;
 		[value getValue:&area];
@@ -500,9 +500,10 @@ namespace bs
 			CFNumberGetValue(layerRef, kCFNumberIntType, &layer);
 
 			// Layer 0 appear to be normal windows
+			// Layer 8 appear to be modal windows
 			// Layer 25 appear to be fullscreen windows
 			// Note: This is based on experimentation, as no documentation about it exists
-			if(layer != 0 && layer != 25)
+			if(layer != 0 && layer != 8 && layer != 25)
 				continue;
 
 			CFDictionaryRef boundsRef = (CFDictionaryRef)CFDictionaryGetValue(dict, kCGWindowBounds);
@@ -759,8 +760,8 @@ namespace bs
 			if(!mData->modalWindows.empty())
 			{
 				NSModalSession session = mData->modalWindows.back().session;
-				if([NSApp runModalSession:session] != NSModalResponseContinue)
-					break;
+				[NSApp runModalSession:session];
+				break;
 			}
 			else
 			{

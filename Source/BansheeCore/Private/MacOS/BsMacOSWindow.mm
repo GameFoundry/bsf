@@ -232,19 +232,12 @@ enum class MouseEventType
 	{
 		NSPoint point = [event locationInWindow];
 		NSWindow* window = [event window];
-		NSScreen* screen = nil;
+
 		if(window)
 		{
 			NSRect windowFrame = [window frame];
-			point.x += windowFrame.origin.x;
-			point.y += windowFrame.origin.y;
-
-			screen = [window screen];
+			point.y = windowFrame.size.height - point.y;
 		}
-		else
-			screen = NSScreen.mainScreen;
-
-		bs::flipY(screen, point);
 
 		for (NSUInteger i = 0; i < [dragAreas count]; i++)
 		{

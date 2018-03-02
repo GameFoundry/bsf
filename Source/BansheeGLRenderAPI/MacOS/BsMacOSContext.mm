@@ -81,7 +81,7 @@ namespace bs::ct
 		[m->context makeCurrentContext];
 		[m->context update];
 
-		m->dirty = false;
+		updateIfDirty();
 
 		MacOSPlatform::unlockWindows();
 	}
@@ -126,6 +126,16 @@ namespace bs::ct
 		[m->context flushBuffer];
 
 		updateIfDirty();
+	}
+
+	void MacOSContext::lock()
+	{
+		CGLLockContext(m->context.CGLContextObj);
+	}
+
+	void MacOSContext::unlock()
+	{
+		CGLUnlockContext(m->context.CGLContextObj);
 	}
 }
 
