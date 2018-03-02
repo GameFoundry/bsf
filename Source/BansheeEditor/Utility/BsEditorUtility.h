@@ -78,7 +78,8 @@ namespace bs
 		 * @param[in]	type		Type of dialog to open.
 		 * @param[in]	defaultPath	Initial path the dialog will be set to once opened.
 		 * @param[in]	filterList	Semi-colon separated list of file names or types to display in the dialog,
-		 *							for example "exe;txt;png". Ignored if dialog is to display folders instead of files.
+		 *							for example "*.exe;*.txt;*.png". Ignored if dialog is to display folders instead of
+		 *							files.
 		 * @param[out]	paths		Output list of selected file or folder paths (if any).
 		 * @return					True if file was selected and false if selection was canceled.
 		 */

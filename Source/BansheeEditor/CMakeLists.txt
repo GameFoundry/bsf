@@ -29,10 +29,12 @@ target_link_libraries(BansheeEditor PUBLIC BansheeUtility BansheeCore BansheeEng
 if(WIN32)
 	## OS libs
 	target_link_libraries(BansheeEditor PRIVATE Advapi32)
-else()
+elseif(LINUX)
 	## External lib: GTK+ 3.0
 	include_directories(${GTK3_INCLUDE_DIRS})
 	target_link_libraries(BansheeEditor PRIVATE ${GTK3_LIBRARIES})
+elseif(APPLE) # MacOS
+	target_link_framework(BansheeEditor AppKit)
 endif()
 
 # IDE specific
