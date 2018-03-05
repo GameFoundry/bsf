@@ -93,19 +93,21 @@ namespace bs
 
 					INT32 jumpAmount = 0;
 					Rect2I viewArea = _getParentWidget()->getTarget()->getPixelArea();
-					if (event.getPosition().x < 0)
+					if (event.getPosition().x <= 0)
 					{
 						Vector2I cursorScreenPos = Cursor::instance().getScreenPosition();
-						cursorScreenPos.x += viewArea.width;
-						jumpAmount = viewArea.width;
+
+						jumpAmount = viewArea.width - event.getPosition().x - 1;
+						cursorScreenPos.x += jumpAmount;
 
 						Cursor::instance().setScreenPosition(cursorScreenPos);
 					}
 					else if (event.getPosition().x >= (INT32)viewArea.width)
 					{
 						Vector2I cursorScreenPos = Cursor::instance().getScreenPosition();
-						cursorScreenPos.x -= viewArea.width;
-						jumpAmount = -(INT32)viewArea.width;
+
+						jumpAmount = -(INT32)viewArea.width - (event.getPosition().x - (INT32)viewArea.width) + 1;
+						cursorScreenPos.x += jumpAmount;
 
 						Cursor::instance().setScreenPosition(cursorScreenPos);
 					}

@@ -361,6 +361,150 @@ namespace bs
 
 namespace bs
 {
+	// Maps macOS keycodes to bs button codes
+	static constexpr ButtonCode KeyCodeMapping[] =
+	{
+		/*   0 */   BC_A,
+		/*   1 */   BC_S,
+		/*   2 */   BC_D,
+		/*   3 */   BC_F,
+		/*   4 */   BC_H,
+		/*   5 */   BC_G,
+		/*   6 */   BC_Z,
+		/*   7 */   BC_X,
+		/*   8 */   BC_C,
+		/*   9 */   BC_V,
+		/*  10 */   BC_GRAVE,
+		/*  11 */   BC_B,
+		/*  12 */   BC_Q,
+		/*  13 */   BC_W,
+		/*  14 */   BC_E,
+		/*  15 */   BC_R,
+		/*  16 */   BC_Y,
+		/*  17 */   BC_T,
+		/*  18 */   BC_1,
+		/*  19 */   BC_2,
+		/*  20 */   BC_3,
+		/*  21 */   BC_4,
+		/*  22 */   BC_6,
+		/*  23 */   BC_5,
+		/*  24 */   BC_EQUALS,
+		/*  25 */   BC_9,
+		/*  26 */   BC_7,
+		/*  27 */   BC_MINUS,
+		/*  28 */   BC_8,
+		/*  29 */   BC_0,
+		/*  30 */   BC_RBRACKET,
+		/*  31 */   BC_O,
+		/*  32 */   BC_U,
+		/*  33 */   BC_LBRACKET,
+		/*  34 */   BC_I,
+		/*  35 */   BC_P,
+		/*  36 */   BC_RETURN,
+		/*  37 */   BC_L,
+		/*  38 */   BC_J,
+		/*  39 */   BC_APOSTROPHE,
+		/*  40 */   BC_K,
+		/*  41 */   BC_SEMICOLON,
+		/*  42 */   BC_BACKSLASH,
+		/*  43 */   BC_COMMA,
+		/*  44 */   BC_SLASH,
+		/*  45 */   BC_N,
+		/*  46 */   BC_M,
+		/*  47 */   BC_PERIOD,
+		/*  48 */   BC_TAB,
+		/*  49 */   BC_SPACE,
+		/*  50 */   BC_GRAVE,
+		/*  51 */   BC_BACK,
+		/*  52 */   BC_NUMPADENTER,
+		/*  53 */   BC_ESCAPE,
+		/*  54 */   BC_RWIN,
+		/*  55 */   BC_LWIN,
+		/*  56 */   BC_LSHIFT,
+		/*  57 */   BC_CAPITAL,
+		/*  58 */   BC_LMENU,
+		/*  59 */   BC_LCONTROL,
+		/*  60 */   BC_RSHIFT,
+		/*  61 */   BC_RMENU,
+		/*  62 */   BC_RCONTROL,
+		/*  63 */   BC_RWIN,
+		/*  64 */   BC_UNASSIGNED,
+		/*  65 */   BC_DECIMAL,
+		/*  66 */   BC_UNASSIGNED,
+		/*  67 */   BC_MULTIPLY,
+		/*  68 */   BC_UNASSIGNED,
+		/*  69 */   BC_ADD,
+		/*  70 */   BC_UNASSIGNED,
+		/*  71 */   BC_NUMLOCK,
+		/*  72 */   BC_VOLUMEUP,
+		/*  73 */   BC_VOLUMEDOWN,
+		/*  74 */   BC_MUTE,
+		/*  75 */   BC_DIVIDE,
+		/*  76 */   BC_NUMPADENTER,
+		/*  77 */   BC_UNASSIGNED,
+		/*  78 */   BC_SUBTRACT,
+		/*  79 */   BC_UNASSIGNED,
+		/*  80 */   BC_UNASSIGNED,
+		/*  81 */   BC_NUMPADEQUALS,
+		/*  82 */   BC_NUMPAD0,
+		/*  83 */   BC_NUMPAD1,
+		/*  84 */   BC_NUMPAD2,
+		/*  85 */   BC_NUMPAD3,
+		/*  86 */   BC_NUMPAD4,
+		/*  87 */   BC_NUMPAD5,
+		/*  88 */   BC_NUMPAD6,
+		/*  89 */   BC_NUMPAD7,
+		/*  90 */   BC_UNASSIGNED,
+		/*  91 */   BC_NUMPAD8,
+		/*  92 */   BC_NUMPAD9,
+		/*  93 */   BC_CONVERT,
+		/*  94 */   BC_NOCONVERT,
+		/*  95 */   BC_NUMPADCOMMA,
+		/*  96 */   BC_F5,
+		/*  97 */   BC_F6,
+		/*  98 */   BC_F7,
+		/*  99 */   BC_F3,
+		/* 100 */   BC_F8,
+		/* 101 */   BC_F9,
+		/* 102 */   BC_UNASSIGNED,
+		/* 103 */   BC_F11,
+		/* 104 */   BC_UNASSIGNED,
+		/* 105 */   BC_UNASSIGNED,
+		/* 106 */   BC_UNASSIGNED,
+		/* 107 */   BC_SCROLL,
+		/* 108 */   BC_UNASSIGNED,
+		/* 109 */   BC_F10,
+		/* 110 */   BC_UNASSIGNED,
+		/* 111 */   BC_F12,
+		/* 112 */   BC_UNASSIGNED,
+		/* 113 */   BC_PAUSE,
+		/* 114 */   BC_INSERT,
+		/* 115 */   BC_HOME,
+		/* 116 */   BC_PGUP,
+		/* 117 */   BC_DELETE,
+		/* 118 */   BC_F4,
+		/* 119 */   BC_END,
+		/* 120 */   BC_F2,
+		/* 121 */   BC_PGDOWN,
+		/* 122 */   BC_F1,
+		/* 123 */   BC_LEFT,
+		/* 124 */   BC_RIGHT,
+		/* 125 */   BC_DOWN,
+		/* 126 */   BC_UP,
+		/* 127 */   BC_POWER
+	};
+
+	static UINT32 ButtonCodeToKeyCode[255];
+	static void initKeyCodeMapping()
+	{
+		memset(ButtonCodeToKeyCode, 0, sizeof(ButtonCodeToKeyCode));
+
+		UINT32 numKeyCodes = sizeof(KeyCodeMapping) / sizeof(KeyCodeMapping[0]);
+
+		for(UINT32 i = 0; i < numKeyCodes; i++)
+			ButtonCodeToKeyCode[KeyCodeMapping[i]] = i;
+	}
+
 	void flipY(NSScreen* screen, NSRect& rect)
 	{
 		NSRect screenFrame = [screen frame];
@@ -658,11 +802,29 @@ namespace bs
 		return mData->cachedClipboardData;
 	}
 
-	WString Platform::keyCodeToUnicode(UINT32 keyCode)
+	WString Platform::keyCodeToUnicode(UINT32 buttonCode)
 	{
+		UINT32 keyCode = ButtonCodeToKeyCode[buttonCode];
+
 		TISInputSourceRef currentKeyboard = TISCopyCurrentKeyboardInputSource();
-		CFDataRef layoutData = (CFDataRef)TISGetInputSourceProperty(currentKeyboard, kTISPropertyUnicodeKeyLayoutData);
-		const UCKeyboardLayout* keyLayout = (const UCKeyboardLayout*)CFDataGetBytePtr(layoutData);
+		if(!currentKeyboard)
+			return L"";
+
+		auto layoutData = (CFDataRef)TISGetInputSourceProperty(currentKeyboard, kTISPropertyUnicodeKeyLayoutData);
+
+		CFRelease(currentKeyboard);
+
+		if(!layoutData)
+		{
+			currentKeyboard = TISCopyCurrentASCIICapableKeyboardInputSource();
+			layoutData = (CFDataRef)TISGetInputSourceProperty(currentKeyboard, kTISPropertyUnicodeKeyLayoutData);
+			CFRelease(currentKeyboard);
+		}
+
+		if(!layoutData)
+			return L"";
+
+		auto keyLayout = (const UCKeyboardLayout*)CFDataGetBytePtr(layoutData);
 
 		UINT32 keysDown = 0;
 		UniChar chars[4];
@@ -679,8 +841,6 @@ namespace bs
 			sizeof(chars) / sizeof(chars[0]),
 			&length,
 			chars);
-
-		CFRelease(keyLayout);
 
 		U16String u16String((char16_t*)chars, (size_t)length);
 		String utf8String = UTF8::fromUTF16(u16String);
@@ -701,6 +861,8 @@ namespace bs
 
 	void Platform::_startUp()
 	{
+		initKeyCodeMapping();
+
 		mData->appDelegate = [[BSAppDelegate alloc] init];
 		mData->cursorManager = [[BSCursor alloc] initWithPlatformData:mData];
 		mData->platformManager = [[BSPlatform alloc] initWithPlatformData:mData];

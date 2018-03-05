@@ -40,6 +40,7 @@ namespace bs
 		bool showDecorations = true;
 		bool allowResize = true;
 		bool modal = false;
+		bool floating = false;
 		SPtr<PixelData> background;
 	};
 

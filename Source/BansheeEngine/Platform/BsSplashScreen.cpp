@@ -196,6 +196,7 @@ namespace bs
 		windowDesc.title = "Banshee Splash";
 		windowDesc.showDecorations = false;
 		windowDesc.allowResize = false;
+		windowDesc.floating = true;
 
 		SPtr<PixelData> splashPixelData = BuiltinResources::getSplashScreen();
 		if (splashPixelData == nullptr)
@@ -214,7 +215,7 @@ namespace bs
 
 		UINT64 currentTime = m->timer.getMilliseconds();
 		if (currentTime < SPLASH_SCREEN_DURATION_MS)
-			BS_THREAD_SLEEP(SPLASH_SCREEN_DURATION_MS - currentTime);
+			return;
 
 		bs_delete(m->window);
 		m->window = nullptr;

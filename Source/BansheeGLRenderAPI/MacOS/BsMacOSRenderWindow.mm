@@ -33,6 +33,7 @@ namespace bs
 		windowDesc.showDecorations = mDesc.showTitleBar;
 		windowDesc.allowResize = mDesc.allowResize;
 		windowDesc.modal = mDesc.modal;
+		windowDesc.floating = mDesc.toolWindow;
 
 		auto iter = mDesc.platformSpecific.find("parentWindowHandle");
 		mIsChild = iter != mDesc.platformSpecific.end();

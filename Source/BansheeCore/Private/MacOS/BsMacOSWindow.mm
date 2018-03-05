@@ -103,6 +103,12 @@ static bool keyCodeToInputCommand(uint32_t keyCode, bool shift, bs::InputCommand
 		[[event.window nextResponder] rightMouseDown:event];
 }
 
+-(BOOL)acceptsFirstMouse:(NSEvent*)theEvent
+{
+	// Ensures that first mouse event when user hasn't yet focused the window, is received
+	return YES;
+}
+
 -(void)setBackgroundImage:(NSImage*)image
 { @autoreleasepool {
 	if(image)
@@ -351,19 +357,24 @@ enum class MouseEventType
 
 	NSUInteger modifierFlags = NSEvent.modifierFlags;
 	bool shift = (modifierFlags & NSEventModifierFlagShift) != 0;
+	bool control = (modifierFlags & NSEventModifierFlagControl) != 0;
+	bool command = (modifierFlags & NSEventModifierFlagCommand) != 0;
 
-	bs::InputCommandType ict;
-	if(keyCodeToInputCommand(keyCode, shift, ict))
-		bs::MacOSPlatform::sendInputCommandEvent(ict);
-	else
+	if(!control && !command)
 	{
-		const char* chars = [string UTF8String];
+		bs::InputCommandType ict;
+		if (keyCodeToInputCommand(keyCode, shift, ict))
+			bs::MacOSPlatform::sendInputCommandEvent(ict);
+		else
+		{
+			const char* chars = [string UTF8String];
 
-		bs::String utf8String(chars);
-		bs::U32String utf32String = bs::UTF8::toUTF32(utf8String);
+			bs::String utf8String(chars);
+			bs::U32String utf32String = bs::UTF8::toUTF32(utf8String);
 
-		for(size_t i = 0; i < utf32String.length(); i++)
-			bs::MacOSPlatform::sendCharInputEvent(utf32String[i]);
+			for (size_t i = 0; i < utf32String.length(); i++)
+				bs::MacOSPlatform::sendCharInputEvent(utf32String[i]);
+		}
 	}
 }
 
@@ -607,7 +618,7 @@ namespace bs
 		NSString* titleString = [NSString stringWithUTF8String:desc.title.c_str()];
 
 		[m->window setAcceptsMouseMovedEvents:YES];
-		[m->window setReleasedWhenClosed:NO];
+		[m->window setReleasedWhenClosed:YES];
 		[m->window setTitle:titleString];
 		[m->window makeKeyAndOrderFront:nil];
 
@@ -631,6 +642,14 @@ namespace bs
 		}
 
 		m->isFullscreen = false;
+
+		// Makes sure that floating windows hide together with main app
+		// Also, for some reason it makes makeKeyAndOrderFront work properly when multiple windows are opened at the same
+		// frame. (Without it, only the last opened window moves to front)
+		[m->window setHidesOnDeactivate:YES];
+
+		if(desc.floating)
+			[m->window setLevel:NSFloatingWindowLevel];
 
 		if(desc.modal)
 			m->modalSession = [NSApp beginModalSessionForWindow:m->window];
@@ -802,9 +821,9 @@ namespace bs
 		if(m->isModal)
 			[NSApp endModalSession:m->modalSession];
 
-		// TODO - Need to unregister modal window as well
 		MacOSPlatform::unregisterWindow(this);
 
+		[m->window close];
 		m->window = nil;
 	}
 

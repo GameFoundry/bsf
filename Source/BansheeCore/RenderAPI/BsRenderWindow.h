@@ -69,7 +69,7 @@ namespace bs
 		bool showTitleBar; /**< Determines if the title-bar should be shown or not. */
 		bool showBorder; /**< Determines if the window border should be shown or not. */
 		bool allowResize; /**< Determines if the user can resize the window by dragging on the window edges. */
-		bool toolWindow; /**< Tool windows have a different look than normal windows and have no task bar entry. */
+		bool toolWindow; /**< Tool windows have no task bar entry and always remain on top of their parent window. */
 		bool modal; /**< When a modal window is open all other windows will be locked until modal window is closed. */
 		bool hideUntilSwap; /**< Window will be created as hidden and only be shown when the first framebuffer swap happens. */
 

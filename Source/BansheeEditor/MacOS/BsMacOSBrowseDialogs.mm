@@ -54,6 +54,7 @@ namespace bs
 				[openDlg setCanChooseFiles:file];
 				[openDlg setCanChooseDirectories:folder];
 				[openDlg setAllowsMultipleSelection:multiselect];
+				[openDlg setCanCreateDirectories:YES];
 
 				NSString* pathString = [[NSString stringWithUTF8String:path.c_str()] stringByResolvingSymlinksInPath];
 				[openDlg setDirectoryURL:[NSURL fileURLWithPath:pathString]];
