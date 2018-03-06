@@ -151,7 +151,7 @@ namespace bs
 		mIsChild = windowDesc.parent != 0;
 		props.isFullScreen = mDesc.fullscreen && !mIsChild;
 
-		mShowOnSwap = mDesc.hideUntilSwap;
+		mShowOnSwap = mDesc.hideUntilSwap && !mDesc.hidden;
 		props.isHidden = mDesc.hideUntilSwap || mDesc.hidden;
 
 		mWindow = bs_new<LinuxWindow>(windowDesc);

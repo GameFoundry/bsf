@@ -29,8 +29,6 @@ namespace bs
 
 		struct Pimpl;
 		static Pimpl* m;
-
-		static const UINT32 SPLASH_SCREEN_DURATION_MS;
 	};
 
 	/** @} */

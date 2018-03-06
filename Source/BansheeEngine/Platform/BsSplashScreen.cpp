@@ -86,7 +86,6 @@ namespace bs
 
 	// Note: Never freed, but that's fine
 	SplashScreen::Pimpl* SplashScreen::m = bs_new<Pimpl>();
-	const UINT32 SplashScreen::SPLASH_SCREEN_DURATION_MS = 1000;
 
 	void SplashScreen::show()
 	{
@@ -139,10 +138,6 @@ namespace bs
 	{
 		if (m->window == nullptr)
 			return;
-
-		UINT64 currentTime = m->timer.getMilliseconds();
-		if (currentTime < SPLASH_SCREEN_DURATION_MS)
-			BS_THREAD_SLEEP(SPLASH_SCREEN_DURATION_MS - currentTime);
 
 		LinuxPlatform::lockX();
 		bs_delete(m->window);
