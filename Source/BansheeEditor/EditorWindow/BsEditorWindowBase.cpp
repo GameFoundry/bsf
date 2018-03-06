@@ -44,6 +44,9 @@ namespace bs
 		renderWindowDesc.top = top;
 		renderWindowDesc.depthBuffer = false;
 
+		if(EditorWindowManager::instance().areNewWindowsHidden())
+			renderWindowDesc.hidden = true;
+
 		mRenderWindow = RenderWindow::create(renderWindowDesc, gCoreApplication().getPrimaryWindow());
 
 		construct(mRenderWindow);

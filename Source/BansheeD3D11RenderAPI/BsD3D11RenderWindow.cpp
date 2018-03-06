@@ -190,7 +190,7 @@ namespace bs
 
 		if (!windowDesc.external)
 		{
-			mShowOnSwap = mDesc.hideUntilSwap;
+			mShowOnSwap = mDesc.hideUntilSwap && !mDesc.hidden;
 			props.isHidden = mDesc.hideUntilSwap || mDesc.hidden;
 		}
 

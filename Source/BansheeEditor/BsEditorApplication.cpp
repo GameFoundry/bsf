@@ -33,6 +33,8 @@
 
 namespace bs
 {
+	constexpr UINT32 SPLASH_SCREEN_DURATION_MS = 1000;
+
 	const Path EditorApplication::WIDGET_LAYOUT_PATH = PROJECT_INTERNAL_DIR + L"Layout.asset";
 	const Path EditorApplication::BUILD_DATA_PATH = PROJECT_INTERNAL_DIR + L"BuildData.asset";
 	const Path EditorApplication::PROJECT_SETTINGS_PATH = PROJECT_INTERNAL_DIR + L"Settings.asset";
@@ -53,6 +55,7 @@ namespace bs
 		startUpDesc.primaryWindowDesc.showBorder = false;
 		startUpDesc.primaryWindowDesc.hideUntilSwap = true;
 		startUpDesc.primaryWindowDesc.depthBuffer = false;
+		startUpDesc.primaryWindowDesc.hidden = true;
 
 		startUpDesc.importers.push_back("BansheeFreeImgImporter");
 		startUpDesc.importers.push_back("BansheeFBXImporter");
@@ -82,7 +85,6 @@ namespace bs
 	void EditorApplication::onStartUp()
 	{
 		Application::onStartUp();
-		SplashScreen::show();
 
 		// In editor we render game on a separate surface, handled in Game window
 		SceneManager::instance().setMainRenderTarget(nullptr);
@@ -167,6 +169,12 @@ namespace bs
 		CoreApplication::startUp<EditorApplication>();
 	}
 
+	void EditorApplication::startUpRenderer()
+	{
+		mSplashScreenTimer.reset();
+		SplashScreen::show();
+	}
+
 	void EditorApplication::preUpdate()
 	{
 		Application::preUpdate();
@@ -183,7 +191,17 @@ namespace bs
 
 		Application::postUpdate();
 
-		SplashScreen::hide();
+		if(mSplashScreenShown)
+		{
+			UINT64 currentTime = mSplashScreenTimer.getMilliseconds();
+			if (currentTime >= SPLASH_SCREEN_DURATION_MS)
+			{
+				SplashScreen::hide();
+				EditorWindowManager::instance().showWindows();
+				mSplashScreenShown = false;
+			}
+		}
+
 		setFPSLimit(mEditorSettings->getFPSLimit());
 	}
 

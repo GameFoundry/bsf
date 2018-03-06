@@ -154,7 +154,7 @@ namespace bs
 		// Must be set before creating a window, since wndProc will call ShowWindow if needed after creation
 		if (!windowDesc.external)
 		{
-			mShowOnSwap = mDesc.hideUntilSwap;
+			mShowOnSwap = mDesc.hideUntilSwap && !mDesc.hidden;
 			props.isHidden = mDesc.hideUntilSwap || mDesc.hidden;
 		}
 

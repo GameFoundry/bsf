@@ -42,7 +42,17 @@ namespace bs
 
 		/**	Checks if any editor window has keyboard focus. */
 		bool hasFocus() const;
+
+		/** 
+		 * By default all windows are created as hidden. After this method is called all windows will be shown, and
+		 * any new windows will be shown by default.
+		 */
+		void showWindows();
+
+		/** Checks if new editor windows should be created hidden. */
+		bool areNewWindowsHidden() const { return mNewWindowsHidden; }
 	protected:
+		bool mNewWindowsHidden = true;
 		MainEditorWindow* mMainWindow;
 
 		Vector<EditorWindowBase*> mEditorWindows;

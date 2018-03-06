@@ -582,10 +582,7 @@ namespace bs
 		outputDesc.sourceCode = &output;
 		outputDesc.options.autoBinding = isVulkan;
 		outputDesc.options.autoBindingStartSlot = startBindingSlot;
-		
-		
-		// DEBUG ONLY
-		//outputDesc.options.fragmentLocations = true;
+		outputDesc.options.fragmentLocations = true;
 		outputDesc.options.separateShaders = true;
 		outputDesc.options.separateSamplers = false;
 		outputDesc.nameMangling.inputPrefix = "bs_";

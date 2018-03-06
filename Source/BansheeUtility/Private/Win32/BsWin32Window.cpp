@@ -18,6 +18,7 @@ namespace bs
 		UINT32 height = 0;
 		bool isExternal = false;
 		bool isModal = false;
+		bool isHidden = false;
 		DWORD style = 0;
 		DWORD styleEx = 0;
 	};
@@ -26,6 +27,7 @@ namespace bs
 	{
 		m = bs_new<Pimpl>();
 		m->isModal = desc.modal;
+		m->isHidden = desc.hidden;
 
 		HMONITOR hMonitor = desc.monitor;
 		if (!desc.external)
@@ -263,6 +265,9 @@ namespace bs
 				BringWindowToTop(entry);
 		}
 
+		if(desc.hidden)
+			setHidden(true);
+
 		bs_frame_clear();
 	}
 
@@ -373,24 +378,35 @@ namespace bs
 			ShowWindow(m->hWnd, SW_HIDE);
 		else
 			ShowWindow(m->hWnd, SW_SHOW);
+
+		m->isHidden = hidden;
 	}
 
 	void Win32Window::minimize()
 	{
 		if (m->hWnd)
 			ShowWindow(m->hWnd, SW_MINIMIZE);
+
+		if(m->isHidden)
+			ShowWindow(m->hWnd, SW_HIDE);
 	}
 
 	void Win32Window::maximize()
 	{
 		if (m->hWnd)
 			ShowWindow(m->hWnd, SW_MAXIMIZE);
+
+		if(m->isHidden)
+			ShowWindow(m->hWnd, SW_HIDE);
 	}
 
 	void Win32Window::restore()
 	{
 		if (m->hWnd)
 			ShowWindow(m->hWnd, SW_RESTORE);
+
+		if(m->isHidden)
+			ShowWindow(m->hWnd, SW_HIDE);
 	}
 
 	void Win32Window::_windowMovedOrResized()

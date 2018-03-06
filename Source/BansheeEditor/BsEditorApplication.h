@@ -4,6 +4,7 @@
 
 #include "BsEditorPrerequisites.h"
 #include "BsApplication.h"
+#include "Utility/BsTimer.h"
 
 namespace bs
 {
@@ -103,6 +104,9 @@ namespace bs
 		/** @copydoc Application::unloadScriptSystem */
 		void unloadScriptSystem() override;
 
+		/** @copydoc Application::startUpRenderer */
+		void startUpRenderer() override;
+
 		/**
 		 * Loads the previously saved editor widget layout from the default location. Can return null if no layout was 
 		 * previously saved.
@@ -138,6 +142,9 @@ namespace bs
 		bool mIsProjectLoaded;
 		Path mProjectPath;
 		WString mProjectName;
+
+		Timer mSplashScreenTimer;
+		bool mSplashScreenShown = true;
 
 		DynLib* mSBansheeEditorPlugin;
 	};

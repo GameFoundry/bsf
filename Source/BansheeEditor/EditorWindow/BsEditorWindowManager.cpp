@@ -3,6 +3,7 @@
 #include "EditorWindow/BsEditorWindowManager.h"
 #include "EditorWindow/BsEditorWindow.h"
 #include "EditorWindow/BsMainEditorWindow.h"
+#include "RenderAPI/BsRenderWindow.h"
 
 namespace bs
 {
@@ -61,6 +62,24 @@ namespace bs
 			mScheduledForDestruction.push_back(window);
 
 		mEditorWindows.erase(iterFind);
+	}
+
+	void EditorWindowManager::showWindows()
+	{
+		for(auto& entry : mEditorWindows)
+		{
+			SPtr<RenderWindow> window = entry->getRenderWindow();
+			if(window)
+				window->show();
+		}
+
+		if(mMainWindow)
+		{
+			SPtr<RenderWindow> mainRenderWindow = mMainWindow->getRenderWindow();
+			mainRenderWindow->show();
+		}
+
+		mNewWindowsHidden = false;
 	}
 
 	void EditorWindowManager::update()
