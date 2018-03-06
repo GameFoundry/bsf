@@ -42,7 +42,7 @@ public:
 ~~~~~~~~~~~~~ 
  
 # Registering SpecificImporter {#customImporters_b}
-To register your **SpecificImporter** implementation with the importer system you must call @ref bs::Importer::_registerAssetImporter "_registerAssetImporter()". You can do this after application start-up, or during by implementing your own **Application** class as described in the @ref advancedStartup manual.
+To register your **SpecificImporter** implementation with the importer system you must call @ref bs::Importer::_registerAssetImporter "_registerAssetImporter()". You can do this after application start-up, or during by implementing your own **Application** class as described in the @ref nonComponentApproach manual.
 
 ~~~~~~~~~~~~~{.cpp}
 Application::startUp(...);

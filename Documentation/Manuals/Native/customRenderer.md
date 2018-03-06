@@ -21,6 +21,7 @@ Majority of the renderer interface consists of methods that notify the renderer 
  - @ref bs::Light "Light"
  - @ref bs::ReflectionProbe "ReflectionProbe"
  - @ref bs::Skybox "Skybox"
+ - @ref bs::LightProbeVolume "LightProbeVolume"
  
 Whenever such objects are created, destroyed or some property on them is updated, one of the following methods is called:
  - @ref bs::ct::Renderer::notifyCameraAdded "ct::Renderer::notifyCameraAdded()" - Called when a new **Camera** is created (e.g. when a **CCamera** component is added to the scene).
@@ -38,6 +39,9 @@ Whenever such objects are created, destroyed or some property on them is updated
  - @ref bs::ct::Renderer::notifySkyboxAdded "ct::Renderer::notifySkyboxAdded()" - Called when a new **Skybox** is created (e.g. when a **CSkybox** component is added to the scene).
  - @ref bs::ct::Renderer::notifySkyboxTextureChanged "ct::Renderer::notifySkyboxTextureChanged()" - Called when the texture applied to **Skybox** changes.
  - @ref bs::ct::Renderer::notifySkyboxRemoved "ct::Renderer::notifySkyboxRemoved()" - Called when a **Skybox** is destroyed. 
+ - @ref bs::ct::Renderer::notifyLightProbeVolumeAdded "ct::Renderer::notifyLightProbeVolumeAdded()" - Called when a new **LightProbeVolume** is created (e.g. when a **CLightProbeVolume** component is added to the scene).
+ - @ref bs::ct::Renderer::notifyLightProbeVolumeUpdated "ct::Renderer::notifyLightProbeVolumeUpdated()" - Called when probes are added or modified in a **LightProbeVolume**. 
+ - @ref bs::ct::Renderer::notifyLightProbeVolumeRemoved "ct::Renderer::notifyLightProbeVolumeRemoved()" - Called when a **LightProbeVolume** is destroyed.
  
 Your renderer implementation can choose to implement some or all of those methods. By implementing these methods your renderer implementation is expected to keep track of the scene state, and then use that scene state for rendering. For example most renderers will at least need to keep track of all active cameras and renderable objects.
  
@@ -182,16 +186,15 @@ class DownsampleMat : public RendererMaterial<DownsampleMat>
 };
 ~~~~~~~~~~~~~
 
-Once defined the renderer material can be accessed through the static @ref bs::ct::RendererMaterial::get<T>() "ct::RendererMaterial::get<T>()" method. Underlying material can be accessed by calling @ref bs::ct::RendererMaterial::getMaterial() "ct::RendererMaterial::getMaterial()", and the material parameters by calling @ref bs::ct::RendererMaterial::getParamsSet() "ct::RendererMaterial::getParamsSet()". Then you can bind the material for rendering as normal (using **RendererUtility** or directly through **RenderAPI**).
+Once defined the renderer material can be accessed through the static @ref bs::ct::RendererMaterial::get<T>() "ct::RendererMaterial::get<T>()" method.
 
 ~~~~~~~~~~~~~{.cpp}
 DownsampleMat* renderMat = DownsampleMat::get():
-SPtr<Material> material = renderMat->getMaterial();
-
-// Render using the material as normal
 ~~~~~~~~~~~~~
 
-You will normally also want to add a constructor in which you look up any necessary parameters the material might require, so they can be set more easily when rendering.
+Once retrieved the object will contain the instance of the shader in the path you provided. Internally the material will provide you with a reference to either a graphics or compute pipeline state as *mGfxPipeline* and *mComputePipeline*, depending on the type of shader that was loaded. It will also provide you with **GpuParams** in the *mParams* field.
+
+When the material is first created you will likely want to add a constructor in which you look up any necessary parameters the material might require, so they can be set more easily when rendering.
 ~~~~~~~~~~~~~{.cpp}
 class DownsampleMat : public RendererMaterial<DownsampleMat>
 {
@@ -201,12 +204,10 @@ public:
 	DownsampleMat()
 	{
 		// Retrieve material parameters, and optionally perform other set-up
-		mInputTexture = mMaterial->getParamTexture("gInputTex");
-		mInvTexSize = mMaterial->getParamVec2("gInvTexSize");
+		mParams->getTextureParam(GPT_FRAGMENT_PROGRAM, "gInputTex", mInputTexture);
 	}
 
-	MaterialParamVec2 mInvTexSize;
-	MaterialParamTexture mInputTexture;
+	GpuParamTexture mInputTexture;
 };
 ~~~~~~~~~~~~~
 
@@ -223,16 +224,7 @@ class DownsampleMat : public RendererMaterial<DownsampleMat>
 		// Assign parameters before rendering
 		mInputTexture.set(input);
 		
-		const TextureProperties& props = input->getProperties();
-		Vector2 invTextureSize(1.0f / props.getWidth(), 1.0f / props.getHeight());
-
-		mInvTexSize.set(invTextureSize);
-		
-		mMaterial->updateParamsSet(mParamsSet);
-		
-		// Bind material, parameters and draw
-		gRendererUtility().setPass(mMaterial);
-		gRendererUtility().setPassParams(mParamsSet);
+		bind();
 		gRendererUtility().drawScreenQuad();
 	}
 
@@ -240,49 +232,100 @@ class DownsampleMat : public RendererMaterial<DownsampleMat>
 };
 ~~~~~~~~~~~~~
 
-Renderer materials also support variations for cases where you might require slightly different versions of a shader for different use cases. The variations are handled by setting up preprocessor \#defines, which the shader code can then use to conditionally add or remove parts of code (via \#if or similar). To determine which defines are set implement the _initVariations() method in your **RendererMaterial** implementation, and append your defines to the @ref bs::ct::ShaderVariations "ShaderVariations" object. Note that this method must be present, even if not using any variations (simply leave it empty).
+Note that a helper method @ref bs::ct::RendererMaterial::bind() "ct::RendererMaterial::bind()" is provided, which will bind both the GPU pipeline and parameters.
 
 ~~~~~~~~~~~~~{.cpp}
-// Make our downsample shader come in two variations
+// External code wanting to run the material
+SPtr<Texture> inputTex = ...;
+
+DownsampleMat* renderMat = DownsampleMat::get():
+renderMat->execute(inputTex);
+~~~~~~~~~~~~~
+
+### Variations {#renderer_c_c_a}
+
+If your BSL file contains shader variations, then you can call @ref bs::ct::RendererMaterial::get<T>(const ShaderVariation&) "ct::RendererMaterial::get<T>(const ShaderVariation&)" to retrieve a specific variation. Variations were explained in more detail in the BSL manual.
+
+~~~~~~~~~~~~~{.cpp}
+// External code wanting to run a specific variation of the material
+SPtr<Texture> inputTex = ...;
+
+// Get the variation that has HIGH_QUALITY define enabled
+ShaderVariation variation = ShaderVariation({
+	ShaderVariation::Param("HIGH_QUALITY", true)
+});
+
+DownsampleMat* renderMat = DownsampleMat::get(variation):
+renderMat->execute(inputTex);
+~~~~~~~~~~~~~
+
+Normally you will want to handle creation of various @ref bs::ct::ShaderVariations "ShaderVariations" structures through a templated method, like so:
+
+~~~~~~~~~~~~~{.cpp}
 class DownsampleMat : public RendererMaterial<DownsampleMat>
 {
-	RMAT_DEF("Downsample.bsl");
-	
+	template<bool highQuality>
+	static const ShaderVariation& getVariation()
+	{
+		static ShaderVariation variation = ShaderVariation({
+			ShaderVariation::Param("HIGH_QUALITY", highQuality)
+		});
+
+		return variation;
+	}
+
+	// ... other DownsampleMat code ...
+};
+~~~~~~~~~~~~~
+
+Then you can also add a static **getVariation** method to hide these internals from the caller.
+
+~~~~~~~~~~~~~{.cpp}
+class DownsampleMat : public RendererMaterial<DownsampleMat>
+{
 	// ... other DownsampleMat code ...
 	
-private:
-	static ShaderVariation VAR_PointFiltering;
-	static ShaderVariation VAR_BilinearFiltering;
+public:
+	static DownsampleMat* getVariation(bool highQuality)
+	{
+		if(highQuality)
+			return get(getVariation<true>());
+			
+		return get(getVariation<false>());
+	}
 };
+~~~~~~~~~~~~~
 
-// Set up optional defines to control shader compilation
-ShaderVariation DownsampleMat::VAR_PointFiltering = ShaderVariation({
-	ShaderVariation::Param("BILINEAR_FILTERING", false)
-});
+Now the calling code can simply retrieve the variation it requires.
 
-ShaderVariation DownsampleMat::VAR_BilinearFiltering = ShaderVariation({
-	ShaderVariation::Param("BILINEAR_FILTERING", true)
-});
+~~~~~~~~~~~~~{.cpp}
+// External code wanting to run the high quality version of the material
+SPtr<Texture> inputTex = ...;
 
-// Method defined in RMAT_DEF macro
-void DownsampleMat::_initVariations(ShaderVariations& variations)
+DownsampleMat* renderMat = DownsampleMat::getVariation(true):
+renderMat->execute(inputTex);
+~~~~~~~~~~~~~
+
+### Defines {#renderer_c_c_b}
+
+Sometimes you wish to be able to dynamically control defines that are used to compile the shader code. This is particularily useful if you want to make sure your C++ code and shader code use the same value. To do this you need to create your material using the @ref RMAT_DEF_CUSTOMIZED macro, instead of **RMAT_DEF**. It has the exact same signature as **RMAT_DEF** but it provides an *_initDefines* method you must implement.
+
+The method receives a @ref bs::ShaderDefines "ShaderDefines" object which you can then populate with relevant values. Those values will then be used when compiling the shader.
+
+~~~~~~~~~~~~~{.cpp}
+constxpr static UINT32 TILE_WIDTH = 8;
+constxpr static UINT32 TILE_HEIGHT = 8;
+constxpr static UINT32 PIXELS_PER_THREAD = 4;
+
+void IrradianceComputeSHMat::_initDefines(ShaderDefines& defines)
 {
-	variations.add(VAR_PointFiltering);
-	variations.add(VAR_BilinearFiltering);
+	defines.set("TILE_WIDTH", TILE_WIDTH);
+	defines.set("TILE_HEIGHT", TILE_HEIGHT);
+	defines.set("PIXELS_PER_THREAD", PIXELS_PER_THREAD);
 }
 ~~~~~~~~~~~~~
 
-Specific variation of the material can the be retrieved by calling the static @ref bs::ct::RendererMaterial::get<T>(const ShaderVariation&) "ct::RendererMaterial::get<T>(const ShaderVariation&)" method.
-
-~~~~~~~~~~~~~{.cpp}
-// Get the variation that performs bilinear filtering
-DownsampleMat* renderMat = DownsampleMat::get(VAR_BilinearFiltering):
-SPtr<Material> material = renderMat->getMaterial();
-
-// Render using the material as normal
-~~~~~~~~~~~~~
-
-> All builtin shaders are cached. The system will automatically pick up any changes to shaders in *Data/Raw/Engine* folder and rebuild the cache when needed. However if you are changing defines as above you must manually force the system to rebuild by deleting the *Timestamp.asset* file in *Data/Engine* folder.
+> All builtin shaders are cached. The system will automatically pick up any changes to shaders in *Data/Raw/Engine* folder and rebuild the cache when needed. However if you are changing defines as above you must manually force the system to rebuild by modifying the BSL file in *Data/Raw/Engine* folder.
 
 ## Parameter blocks {#renderer_c_d}
 In the @ref gpuPrograms manual we talked about parameter block buffers, represented by **GpuParamBlockBuffer** class. These blocks are used for group data parameters (such as float, int or bool) into blocks that can then be efficiently bound to the pipeline. They are better known as uniform buffers in OpenGL/Vulkan, or constant buffers in DX11. 
@@ -326,7 +369,7 @@ PerCameraParamBlockDef def; // Normally you want to make this global so it's ins
 SPtr<GpuParamBlockBuffer> paramBlock = def.createBuffer(); 
 
 // Assign a value to the gViewDir parameter of the parameter block
-def.gViewDir.set(paramBlock, Vector3(0.707.0, 0.707f, 0.0f));
+def.gViewDir.set(paramBlock, Vector3(0.707f, 0.707f, 0.0f));
 ... set other parameters in block ...
 
 // Assign the parameter block to the material (optionally, assign to GpuParams if using them directly)
@@ -341,9 +384,11 @@ Blocks are often used with renderer materials we described in the previous secti
 Note that by using this approach you lose all the error checking normally performed by **Material** or **GpuParams** when you are assigning parameters individually. You must make sure that the layout in C++ matches the layout in the GPU program. In case of GLSL you must also specify `layout(std140)` keyword to ensure its layout is compatible with C++ struct layout. You must also make sure that variable names match the names in the GPU program code.
 
 ## Renderer semantics {#renderer_c_e}
-Renderer semantics allow user created shaders to request that certain parameters in a GPU program are populated by the renderer. They are specified in the shader code as we described in the BSL manual.
+Renderer semantics allow user created shaders to request that certain parameters in a GPU program are populated by the renderer. They can be specified when defining shader parameters.
 
-For example the user might request a "VP" semantic, which could be recognized by the renderer that the shader requests a view-projection matrix. Such a matrix is not something that the user should have to assign to the material himself. The renderer can choose to parse material parameters looking for supported semantics, and assign their values. Ultimately whether the renderer chooses to parse the semantics or not is up to the renderer. 
+For example the user might request a "VP" semantic, which could be recognized by the renderer that the shader requests a view-projection matrix. Such a matrix is not something that the user should have to assign to the material himself. The renderer can choose to parse material parameters looking for supported semantics, and assign their values. 
+
+Ultimately whether the renderer chooses to parse the semantics or not is up to the renderer. Currently the default *RenderBeast* renderer does not make use of any semantics and instead maps parameters directly by using their name.
 
 The semantics for each parameter can be accessed through the **Shader** object, which renderer needs to iterate through manually.
 

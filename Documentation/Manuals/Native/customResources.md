@@ -2,7 +2,7 @@ Creating new resource types					{#customResources}
 ===============
 [TOC]
 
-Throughout the previous manuals we have shown how to import, load and save a variety of resource types. You can also add brand new resource types of your own.
+Throughout the previous manuals we have shown how to import, load and save a variety of resource types. But you can also add brand new resource types of your own.
 
 # Custom resource type {#customResources_a}
 To create a custom resource type you need to implement the @ref bs::Resource "Resource" interface. **Resource** derives from both @ref bs::CoreObject "CoreObject" and @ref bs::IReflectable "IReflectable". These two classes make up majority of its interface, and we have already shown how to implement them in the @ref coreThread and @ref serializingObjects manuals.

@@ -21,7 +21,7 @@ HPrefab scenePrefab = Prefab::create(sceneRoot, true);
 
 # Saving & loading prefabs
 
-Once a prefab can be created it can be saved and loaded any other **Resource**.
+Once a prefab has been created it can be saved and loaded as any other **Resource**.
 
 ~~~~~~~~~~~~~{.cpp}
 // Save the prefabs we created previously

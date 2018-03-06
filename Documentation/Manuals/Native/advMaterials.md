@@ -2,12 +2,12 @@ Advanced materials									{#advMaterials}
 ===============
 [TOC]
 
-We have already talked about how to create materials, assign them parameters and bind them to a **Renderable** component. In this section we'll show an advanced way to assign material parameters, how to use materials for rendering directly (without using **Renderable** component) and how to create your own shaders without the use of BSL.
+We have already talked about how to create materials, assign them parameters and bind them to a **Renderable** component. In this section we'll show an advanced way to assign material parameters, how to use materials for rendering directly (without using **Renderable** component) and how to create your own shaders without the use of BSL. 
 
 # Material parameters {#advMaterials_a}
 Previously we have shown to how to set **Material** parameters by calling methods like @ref bs::Material::setTexture "Material::setTexture()", @ref bs::Material::setFloat "Material::setFloat()", @ref bs::Material::setColor "Material::setColor()", @ref bs::Material::setVec4 "Material::setVec4()" and similar.
 
-As an alternative you can also set materials through material handles. Once a material handle is retrieved it allows you to set material parameters much more efficiently than by calling the methods above directly. 
+As an alternative you can also set materials through material parameter handles. Once a material handle is retrieved it allows you to set material parameters much more efficiently than by calling the methods above directly. 
 
 To retrieve the handles call any of the following methods, depending on material parameter type:
  - @ref bs::ct::Material::getParamTexture "ct::Material::getParamTexture()" - Outputs a @ref bs::TMaterialParamTexture<Core> "MaterialParamTexture" handle that can be used for reading & writing the parameter value.
@@ -45,11 +45,11 @@ Material handles are very similar as **GpuParams** handles we talked about earli
  - **GpuProgram** parameters are retrieved directly from program source code, while **Material** parameters need to be explicitly defined in the **Shader** (shown below). **Material** parameters always map to one or multiple **GpuProgram** parameters. 
 
 # Creating a shader manaully {#advMaterials_b}
-So far when we wanted to create a shader we would create a BSL file which would then be imported, creating a @ref bs::Shader "Shader". But you can also create shaders manually by explicitly providing HLSL/GLSL code for **GpuProgram**%s and non-programmable states. 
+So far when we wanted to create a shader we would create a BSL file which would then be imported, creating a @ref bs::Shader "Shader". But you can also create shaders manually by explicitly providing HLSL/GLSL code for **GpuProgram**%s and non-programmable states. Most of the things outlined in this section are performed by BSL compiler internally when a **Shader** is imported.
 
 Each shader definition contains two things:
  - A list of parameters, with a mapping of each parameter to one or multiple variables in a GPU program
- - One or multiple @ref bs::Technique "Technique"%s. Each technique is essentially a fully fledged shader of its own. Techniques are chosen by the renderer depending on the context. For example some techniques only support the DirectX backend, while others only the Vulkan backend.
+ - One or multiple @ref bs::Technique "Technique"%s. Each technique is essentially a fully fledged shader of its own. Techniques are chosen by the renderer depending on the context. For example some techniques only support the DirectX backend, while others only the Vulkan backend. Different techniques will also exist for different shader variations (e.g. a high- and low-end version of the same shader).
   - Each technique contains one or multiple @ref bs::Pass "Pass"%es. A pass is a set of GPU programs and non-programmable states. When rendering using a certain technique each pass will be executed one after another. This allows you to render objects that require more complex rendering that requires multiple separate steps - althrough in practice most techniques have only a single pass.
 
 To summarize, the relationship between materials, shaders, techniques and passes is:
@@ -79,16 +79,15 @@ GPU programs and non-programmable states are created as described in the low-lev
 Now that we know how to create a pass, we can use one or multiple passes to initialize a **Technique**. A technique is just a container for one or multiple passes.
 
 To create a technique call @ref bs::Technique::create "Technique::create()" and provide it with:
- - Shading language name - This should be "HLSL" or "GLSL". The engine will not use this technique unless this language is supported by the current render API.
- - Renderer name - In case you are using a non-default renderer, and the technique only works on it. Otherwise use the built-in variable `RendererAny`
+ - Shading language name - This should be "HLSL" or "GLSL". The engine will not use this technique unless this language is supported by the current render API. 
  - Array containing one or multiple passes
  
 For example:
 ~~~~~~~~~~~~~{.cpp}
 SPtr<Pass> pass = ...;
 
-// Create a technique that uses HLSL and supports any renderer, with a single pass
-SPtr<Technique> technique = Technique::create("HLSL", RendererAny, { pass });
+// Create a technique that uses HLSL and has a single pass
+SPtr<Technique> technique = Technique::create("HLSL", { pass });
 ~~~~~~~~~~~~~
   
 ## Creating a shader {#materials_b_c}

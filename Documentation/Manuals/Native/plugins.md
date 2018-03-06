@@ -7,7 +7,6 @@ Many systems in bs::f are implemented through plugins, libraries that are separa
 bs::f supports plugins for the following systems:
  - Audio - Systems for providing audio playback.
  - Importers - Importers that handle conversion of some third party resource format into an engine-ready format.
- - Input - Reports input events (mouse, keyboard, gamepad, etc.)
  - Physics - Runs the physics simulation.
  - Renderer - Determines how is the scene displayed (lighting, shadows, post-processing, etc.). 
  - Rendering API - Wrappers for render APIs like DirectX, OpenGL or Vulkan.
