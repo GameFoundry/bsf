@@ -3,11 +3,13 @@
 #include "Platform/BsFolderMonitor.h"
 #include "FileSystem/BsFileSystem.h"
 #include "Error/BsException.h"
+#include "Utility/BsTimer.h"
 
 #include <CoreServices/CoreServices.h>
 
 namespace bs
 {
+	static constexpr UINT32 WRITE_STEADY_WAIT = 2000;
 	CFStringRef FolderMonitorMode = CFSTR("BSFolderMonitor");
 
 	enum class FileActionType
@@ -16,6 +18,13 @@ namespace bs
 		Removed,
 		Modified,
 		Renamed
+	};
+
+	struct CreatedFileInfo
+	{
+		Path path;
+		UINT64 lastSize;
+		Timer timer;
 	};
 
 	struct FileAction
@@ -138,7 +147,7 @@ namespace bs
 		FolderChangeBits filter;
 		FSEventStreamRef streamRef;
 		bool hasStarted;
-		UnorderedSet<FSEventStreamEventId> renameEvents;
+		Vector<CreatedFileInfo> createdFiles;
 	};
 
 	FolderMonitor::FolderWatchInfo::FolderWatchInfo(
@@ -182,7 +191,7 @@ namespace bs
 
 		if (streamRef)
 		{
-			FSEventStreamScheduleWithRunLoop(streamRef, CFRunLoopGetMain(), FolderMonitorMode);
+			FSEventStreamScheduleWithRunLoop(streamRef, CFRunLoopGetCurrent(), FolderMonitorMode);
 			if(FSEventStreamStart(streamRef))
 				hasStarted = true;
 		}
@@ -219,6 +228,11 @@ namespace bs
 			auto pathEntry = (CFStringRef)CFArrayGetValueAtIndex(paths, i);
 			Path path = CFStringGetCStringPtr(pathEntry, kCFStringEncodingUTF8);
 
+			// Ignore folder meta-data (.DS_Store)
+			String filename = path.getFilename(false);
+			if(filename == ".DS_Store")
+				continue;
+
 			CFIndex pathLength = CFStringGetLength(pathEntry);
 			if(pathLength == 0)
 				continue;
@@ -238,23 +252,21 @@ namespace bs
 			bool wasCreated = (flags & kFSEventStreamEventFlagItemCreated) != 0;
 			bool wasModified = (flags & kFSEventStreamEventFlagItemModified) != 0;
 			bool wasRemoved = (flags & kFSEventStreamEventFlagItemRemoved) != 0;
+			bool ownerChange = (flags & kFSEventStreamEventFlagItemChangeOwner) != 0;
+
+			// Ignore owner change as they just result in duplicate events
+			if(ownerChange)
+				continue;
 
 			// Rename events get translated to create/remove events
 			bool wasRenamed = (flags & kFSEventStreamEventFlagItemRenamed) != 0;
 
 			if(wasRenamed)
 			{
-				auto iterFind = watcher->renameEvents.find(eventIds[i]);
-				if (iterFind == watcher->renameEvents.end())
-				{
-					wasRemoved = true;
-					watcher->renameEvents.insert(eventIds[i]);
-				}
+				if(FileSystem::exists(path))
+					folderData->fileActions.push_back(FileAction::createAdded(path.toWString()));
 				else
-				{
-					wasCreated = true;
-					watcher->renameEvents.erase(eventIds[i]);
-				}
+					folderData->fileActions.push_back(FileAction::createRemoved(path.toWString()));
 			}
 
 			// File/folder was added
@@ -268,7 +280,14 @@ namespace bs
 				else
 				{
 					if (watcher->filter.isSet(FolderChangeBit::FileName))
-						folderData->fileActions.push_back(FileAction::createAdded(path.toWString()));
+					{
+						// We delay all file creation events until the file is done writing
+						watcher->createdFiles.push_back(CreatedFileInfo());
+						CreatedFileInfo& createdFileInfo = watcher->createdFiles.back();
+						createdFileInfo.path = path;
+						createdFileInfo.lastSize = FileSystem::getFileSize(path);
+						createdFileInfo.timer.reset();
+					}
 				}
 			}
 
@@ -290,11 +309,19 @@ namespace bs
 			// File was modified
 			if(wasModified && watcher->filter.isSet(FolderChangeBit::FileWrite))
 			{
-				folderData->fileActions.push_back(FileAction::createModified(path.toWString()));
+				// Don't send out modified event if file was created
+				auto iterFind = std::find_if(watcher->createdFiles.begin(), watcher->createdFiles.end(),
+					 [&path](const CreatedFileInfo& info)
+					 {
+						return info.path == path;
+					 }
+				);
+
+				if(iterFind == watcher->createdFiles.end())
+					folderData->fileActions.push_back(FileAction::createModified(path.toWString()));
 			}
 		}
 	}
-
 
 	class FolderMonitor::FileNotifyInfo
 	{
@@ -385,8 +412,6 @@ namespace bs
 				Lock lock(m->mainMutex);
 				FolderWatchInfo* watchInfo = *findIter;
 
-				watchInfo->stopMonitor();
-
 				m->monitorsToStop.push_back(watchInfo);
 				m->monitors.erase(findIter);
 			}
@@ -400,11 +425,7 @@ namespace bs
 
 			// Remove all watches (this will also wake up the thread)
 			for (auto& watchInfo : m->monitors)
-			{
-				watchInfo->stopMonitor();
-
 				m->monitorsToStop.push_back(watchInfo);
-			}
 
 			m->monitors.clear();
 		}
@@ -448,6 +469,36 @@ namespace bs
 			// All input sources removed, or explicitly stopped, bail
 			if((result == kCFRunLoopRunStopped) || (result == kCFRunLoopRunFinished))
 				break;
+
+			// Check if any created files have completed writing, and handle rename events
+			{
+				Lock lock(m->mainMutex);
+
+				for(auto& monitor : m->monitors)
+				{
+					FolderMonitor::Pimpl* folderData = monitor->owner->_getPrivateData();
+
+					for(auto iter = monitor->createdFiles.begin(); iter != monitor->createdFiles.end();)
+					{
+						CreatedFileInfo& entry = *iter;
+
+						UINT64 fileSize = FileSystem::getFileSize(entry.path);
+						if(fileSize != entry.lastSize)
+						{
+							entry.lastSize = fileSize;
+							entry.timer.reset();
+						}
+
+						if(entry.timer.getMilliseconds() > WRITE_STEADY_WAIT)
+						{
+							folderData->fileActions.push_back(FileAction::createAdded(entry.path.toWString()));
+							iter = monitor->createdFiles.erase(iter);
+						}
+						else
+							++iter;
+					}
+				}
+			}
 
 			// It's possible some system registered an input source with our loop, in which case the above check will not
 			// work. Instead check if there are any monitors left.

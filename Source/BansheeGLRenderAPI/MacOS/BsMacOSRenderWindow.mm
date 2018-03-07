@@ -39,8 +39,7 @@ namespace bs
 		mIsChild = iter != mDesc.platformSpecific.end();
 
 		props.isFullScreen = mDesc.fullscreen && !mIsChild;
-
-		props.isHidden = mDesc.hideUntilSwap || mDesc.hidden;
+		props.isHidden = mDesc.hidden;
 
 		mWindow = bs_new<CocoaWindow>(windowDesc);
 		mWindow->_setUserData(this);
@@ -60,6 +59,9 @@ namespace bs
 			setFullscreen(mDesc.videoMode);
 
 		RenderWindow::initialize();
+
+		if(props.isHidden)
+			mWindow->hide();
 
 		{
 			ScopedSpinLock lock(getCore()->mLock);
@@ -336,6 +338,11 @@ namespace bs
 			*window = mWindow;
 			return;
 		}
+		else if(name == "WINDOW_ID")
+		{
+			UINT32* windowId = (UINT32*)data;
+			*windowId = mWindow->_getWindowId();
+		}
 	}
 
 	Vector2I MacOSRenderWindow::screenToWindowPos(const Vector2I& screenPos) const
@@ -390,8 +397,8 @@ namespace bs
 	{
 		MacOSRenderWindow::MacOSRenderWindow(const RENDER_WINDOW_DESC& desc, UINT32 renderWindowId, UINT32 cocoaWindowId,
 			const SPtr<MacOSContext>& context)
-			: RenderWindow(desc, renderWindowId), mShowOnSwap(desc.hideUntilSwap), mCocoaWindowId(cocoaWindowId)
-			, mProperties(desc), mSyncedProperties(desc)
+			: RenderWindow(desc, renderWindowId), mShowOnSwap(false)
+			, mCocoaWindowId(cocoaWindowId), mProperties(desc), mSyncedProperties(desc)
 		{
 			mContext = context;
 		}

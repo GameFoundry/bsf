@@ -646,7 +646,8 @@ namespace bs
 		// Makes sure that floating windows hide together with main app
 		// Also, for some reason it makes makeKeyAndOrderFront work properly when multiple windows are opened at the same
 		// frame. (Without it, only the last opened window moves to front)
-		[m->window setHidesOnDeactivate:YES];
+		if(desc.floating || desc.modal)
+			[m->window setHidesOnDeactivate:YES];
 
 		if(desc.floating)
 			[m->window setLevel:NSFloatingWindowLevel];
