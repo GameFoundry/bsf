@@ -644,10 +644,11 @@ namespace bs
 			CFNumberGetValue(layerRef, kCFNumberIntType, &layer);
 
 			// Layer 0 appear to be normal windows
+			// Layer 3 appear to be floating windows
 			// Layer 8 appear to be modal windows
 			// Layer 25 appear to be fullscreen windows
 			// Note: This is based on experimentation, as no documentation about it exists
-			if(layer != 0 && layer != 8 && layer != 25)
+			if(layer != 0 && layer != 3 && layer != 8 && layer != 25)
 				continue;
 
 			CFDictionaryRef boundsRef = (CFDictionaryRef)CFDictionaryGetValue(dict, kCGWindowBounds);

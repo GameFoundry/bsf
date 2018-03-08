@@ -49,6 +49,7 @@ namespace bs
 		props.height = area.height;
 		props.top = area.y;
 		props.left = area.x;
+		props.hasFocus = true;
 
 		props.hwGamma = mDesc.gamma;
 		props.multisampleCount = mDesc.multisampleCount;
@@ -69,6 +70,9 @@ namespace bs
 		}
 
 		ct::RenderWindowManager::instance().notifySyncDataDirty(getCore().get());
+
+		// New windows always receive focus, but we don't receive an initial event from the OS, so trigger one manually
+		RenderWindowManager::instance().notifyFocusReceived(getCore().get());
 	}
 
 	void MacOSRenderWindow::destroy()

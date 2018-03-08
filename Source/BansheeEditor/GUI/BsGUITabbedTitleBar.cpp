@@ -358,7 +358,8 @@ namespace bs
 			GUITabButton* btn = mTabButtons[i];
 			Vector2I optimalSize = btn->_getOptimalSize();
 
-			draggableAreas.push_back(Rect2I(curX, curY, TAB_SPACING, height));
+			if(TAB_SPACING > 0)
+				draggableAreas.push_back(Rect2I(curX, curY, TAB_SPACING, height));
 
 			curX += TAB_SPACING + optimalSize.x;
 		}

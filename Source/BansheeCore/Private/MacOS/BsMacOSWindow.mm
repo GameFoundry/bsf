@@ -573,18 +573,23 @@ namespace bs
 		{
 			NSRect screenRect = [entry frame];
 
-			if(((desc.x >= screenRect.origin.x && desc.y < (screenRect.origin.x + screenRect.size.width)) || desc.x == -1) &&
-			   ((desc.y >= screenRect.origin.y && desc.y < (screenRect.origin.y + screenRect.size.height)) || desc.y == -1))
+			INT32 left = (INT32)screenRect.origin.x;
+			INT32 right = left + (INT32)screenRect.size.width;
+			INT32 bottom = (INT32)screenRect.origin.y;
+			INT32 top = bottom + (INT32)screenRect.size.height;
+
+			if(((desc.x >= left && desc.x < right) || desc.x == -1) &&
+			   ((desc.y >= bottom && desc.y < top) || desc.y == -1))
 			{
 				if(desc.x == -1)
-					x = (INT32)screenRect.origin.x + std::max(0, (INT32)screenRect.size.width - (INT32)desc.width) / 2;
+					x = left + std::max(0, (INT32)screenRect.size.width - (INT32)desc.width) / 2;
 				else
-					x = desc.x - (INT32)screenRect.origin.x;
+					x = desc.x - left;
 
 				if(desc.y == -1)
-					y = (INT32)screenRect.origin.y + std::max(0, (INT32)screenRect.size.height - (INT32)desc.height) / 2;
+					y = bottom + std::max(0, (INT32)screenRect.size.height - (INT32)desc.height) / 2;
 				else
-					y = desc.y - (INT32)screenRect.origin.y;
+					y = ((INT32)screenRect.size.height - (desc.y + desc.height)) - bottom;
 
 				screen = entry;
 				break;
@@ -674,6 +679,7 @@ namespace bs
 			point.x = x;
 			point.y = y;
 
+			flipY(m->window.screen, point);
 			[m->window setFrameTopLeftPoint:point];
 		}
 	}
