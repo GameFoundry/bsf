@@ -1,34 +1,14 @@
-[![Latest version](https://img.shields.io/badge/latest-v0.4--dev-red.svg)](https://img.shields.io/badge/latest-v0.4--dev-red.svg) [![Join the chat at https://gitter.im/Banshee3D/Lobby](https://badges.gitter.im/Banshee3D/Lobby.svg)](https://gitter.im/Banshee3D/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+# What is bs::framework?
+A modern library that aims to provide a unified foundation for the development of real-time graphical applications, whether games, engines or tools. 
 
-# What is Banshee? 
-A high quality modern game development toolkit. It provides a **high performance multi-threaded game engine** written in C++14 that runs 2D and 3D games. The engine offers a wide variety of high level systems needed for game development, ranging from math and utility libraries, to Vulkan, DirectX 11 and OpenGL support all the way to input, GUI, physics, audio, animation, scripting and support for many popular resource formats (e.g. FBX, PNG, PSD, TTF, OGG, WAV).
+Its main goal is to offer a cross-platform, highly optimized, multi-threaded core that is robust and capable of running even the most demanding projects. Its secondary goal is to offer a clean, highly modular architecture that can be easily understood, modified and built upon.
 
-On top of the engine Banshee also provides a highly intuitive and customizable **editor** that is easy to use by artists, designers and programmers alike. The editor allows you to manage all your project's assets, build levels, compile scripts, test and publish your game. Editor is also fully extensible via scripting to ensure developers can easily customize it for the exact needs of their projects.
+It is written in modern C++14 with a clean user-facing API and lightweight implementations without the crud often found in older, larger solutions. It comes with a wide range of high level systems, ranging from math and utility libraries, to a physically based renderer backed by Vulkan, DirectX or OpenGL, all the way to input, GUI, physics, audio, animation and scripting systems, with asset support for most popular resource formats (FBX, PNG, PSD, TTF, OGG, WAV and dozens more). It is fully documented with an extensive API reference, as well as a set of manuals introducing you to most major systems.
 
-The scripting system supports C# and comes with an extensive API ensuring you can complete your game without ever touching the C++ engine core. **C# scripting** makes your development easier by giving you access to the entire .NET library and a wide variety of pre-existing managed libraries. Integration of the scripting system with the editor and external tools like Visual Studio, as well as fast compilation times ensures that iteration times between coding and testing are minimized.
+The project is still growing and plenty of features are yet to be added. Take a look at the [roadmap](https://github.com/GameFoundry/bsf/blob/master/Documentation/GitHub/roadmap.md) and consider contributing.
 
-Aside from being a fully featured game engine and toolkit, Banshee can also be used as a **low level framework**, providing a powerful foundation to build new technologies with or to easily customize the engine for game specific needs. Layered and plugin based design allows developers to use only the functionality they need, and to fully remove or replace major engine systems. Banshee's code is modern, with clean interfaces that make it easy to learn and maintain. Platform specific functionality is kept at a minimum making porting as easy as possible. It is fully documented with an extensive API reference, as well as a set of manuals introducing you to most major systems.
-
-**WARNING: Banshee is still in development and should not be used in production.**
-
-# Features
-* [Features](https://github.com/BearishSun/BansheeEngine/blob/master/Documentation/GitHub/features.md) - A list of all currently available features.
-* [Roadmap](https://github.com/BearishSun/BansheeEngine/blob/master/Documentation/GitHub/roadmap.md) - A list of features to be implemented in both near and far future. 
-
-# Download
-* [Binaries](https://github.com/BearishSun/BansheeEngine/blob/master/Documentation/GitHub/install.md) - Download pre-built binaries for the most recent version.
-* [Compiling](https://github.com/BearishSun/BansheeEngine/blob/master/Documentation/GitHub/compiling.md) - Learn how to compile the engine yourself.
-
-# Documentation
-* [Managed](http://docs.banshee3d.com/Managed/index.html) - Documentation for the scripting (C#) API. This is what most users will be interested in.
-* [Native](http://docs.banshee3d.com/Native/index.html) - Documentation for the native (C++) API. This is meant for advanced users meaning to extend/modify the engine.
-
-# About
-* [License](https://github.com/BearishSun/BansheeEngine/blob/master/Documentation/GitHub/license.md) - Information about Banshee's license.
-* [Contribute](http://www.banshee3d.com/contribute) - Help out with the development
-
-# Media
-**Banshee Editor**
-![Banshee Editor](http://bearishsun.thalassa.feralhosting.com/BansheeEditor.png "Banshee Editor")
-
-[**Video overview**](https://youtu.be/WJsYOyCXGEU)
+# More information
+* [Features](https://github.com/GameFoundry/bsf/blob/master/Documentation/GitHub/features.md) - A list of all currently available features.
+* [Roadmap](https://github.com/GameFoundry/bsf/blob/master/Documentation/GitHub/roadmap.md) - A list of features to be implemented in both near and far future. 
+* [Compiling](https://github.com/GameFoundry/bsf/blob/master/Documentation/GitHub/compiling.md) - A guide on how to compile the framework.
+* [Documentation](TODO) - API reference and manuals (TODO)

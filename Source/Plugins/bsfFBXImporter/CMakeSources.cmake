@@ -1,0 +1,20 @@
+set(BS_FBXIMPORTER_INC_NOFILTER
+	"BsFBXPrerequisites.h"
+	"BsFBXImporter.h"
+	"BsFBXImportData.h"
+	"BsFBXUtility.h"
+)
+
+set(BS_FBXIMPORTER_SRC_NOFILTER
+	"BsFBXPlugin.cpp"
+	"BsFBXImporter.cpp"
+	"BsFBXUtility.cpp"
+	"BsFBXImportData.cpp"
+)
+
+source_group("" FILES ${BS_FBXIMPORTER_INC_NOFILTER} ${BS_FBXIMPORTER_SRC_NOFILTER})
+
+set(BS_FBXIMPORTER_SRC
+	${BS_FBXIMPORTER_INC_NOFILTER}
+	${BS_FBXIMPORTER_SRC_NOFILTER}
+)

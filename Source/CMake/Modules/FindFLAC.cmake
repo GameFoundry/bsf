@@ -7,7 +7,7 @@
 
 start_find_package(FLAC)
 
-set(FLAC_INSTALL_DIR ${PROJECT_SOURCE_DIR}/../Dependencies/libFLAC CACHE PATH "")
+set(FLAC_INSTALL_DIR ${BSF_SOURCE_DIR}/../Dependencies/libFLAC CACHE PATH "")
 gen_default_lib_search_dirs(FLAC)
 
 if(WIN32)

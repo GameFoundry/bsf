@@ -7,7 +7,7 @@
 
 start_find_package(mono)
 
-set(mono_INSTALL_DIR ${PROJECT_SOURCE_DIR}/../Dependencies/mono CACHE PATH "")
+set(mono_INSTALL_DIR ${PROJECT_SOURCE_DIR}/Dependencies/mono CACHE PATH "")
 gen_default_lib_search_dirs(mono)
 list(APPEND mono_INCLUDE_SEARCH_DIRS ${mono_INSTALL_DIR}/include/mono-2.0)
 

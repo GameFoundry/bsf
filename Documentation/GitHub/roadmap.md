@@ -1,14 +1,14 @@
 # Roadmap
 
 Remaining v1.0 features (in order):
- - macOS port (Planned for Q4 2017)
+ - macOS port (Early 2018)
  - v1.0 BETA release (Early 2018)
  
 ---------------------------------------------------
 
 Post v1.0 features (in rough order): 
  - Sprites & 2D rendering
- - Effects/Particle editor
+ - Effects/Particle system
  - Terrain system
  - High level networking (replication, RPCs, RakNet integration)
  - AI (pathfinding, navmesh, Recast/Detour integration)
@@ -17,15 +17,11 @@ Post v1.0 features (in rough order):
  - Mobile render API (likely Vulkan, possibly Metal for iOS)
  - Android/iOS/WP ports
  - Occlussion culling
- - Visual GUI editor 
+ - Script bindings for Lua, Python, C#
  
 And more to come after that:
  - Dynamic global illumination (+ other high fidelity graphical improvements)
  - VR support
- - Cinematics editor
- - Visual shader editor
- - More specialized editor tools for 2D games
- - Script debugging
  - Level of detail
  - XBONE/PS4 ports
  - BSP brushes for level prototyping

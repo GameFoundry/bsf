@@ -7,7 +7,7 @@
 
 start_find_package(PhysX)
 
-set(PhysX_INSTALL_DIR ${PROJECT_SOURCE_DIR}/../Dependencies/PhysX CACHE PATH "")
+set(PhysX_INSTALL_DIR ${BSF_SOURCE_DIR}/../Dependencies/PhysX CACHE PATH "")
 gen_default_lib_search_dirs(PhysX)
 
 if(NOT APPLE)

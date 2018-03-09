@@ -17,40 +17,40 @@ function(prepend var prefix)
    SET(${var} "${listVar}" PARENT_SCOPE)
 endfunction()
 
-function(addForGeneration name)
-	set(BS_SCRIPT_PARSER_INCLUDE_DIRS ${BS_SCRIPT_PARSER_INCLUDE_DIRS} "${name}" PARENT_SCOPE)
+function(addForGeneration path prefix name)
+	set(BS_SCRIPT_PARSER_INCLUDE_DIRS ${BS_SCRIPT_PARSER_INCLUDE_DIRS} "${path}" PARENT_SCOPE)
 	
-	include(${name}/CMakeSources.cmake)
+	include(${path}/CMakeSources.cmake)
 	string(TOUPPER ${name} LIBNAME)
 
 	set(H_FILES "")
 	FOREACH(f ${BS_${LIBNAME}_SRC})
-		IF("${f}" MATCHES ".*\\.h" AND NOT "${f}" MATCHES "Win32|Linux")
+		IF("${f}" MATCHES ".*\\.h" AND NOT "${f}" MATCHES "Win32|Linux|MacOS")
 			LIST(APPEND H_FILES ${f})
 		ENDIF()
 	ENDFOREACH(f)
 	
 	set(ABS_H_FILES "")
-	prepend(ABS_H_FILES ${CMAKE_CURRENT_SOURCE_DIR}/${name} ${H_FILES})
+	prepend(ABS_H_FILES ${CMAKE_CURRENT_SOURCE_DIR}/${prefix} ${H_FILES})
 	set(BS_SCRIPT_PARSER_H_FILES ${BS_SCRIPT_PARSER_H_FILES} ${ABS_H_FILES} PARENT_SCOPE)	
 endfunction()
 
 set(BS_GENERATED_CPP_OUTPUT_DIR ${PROJECT_BINARY_DIR}/Generated)
-set(BS_GENERATED_CS_ENGINE_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/MBansheeEngine/Generated)
-set(BS_GENERATED_CS_EDITOR_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/MBansheeEditor/Generated)
+set(BS_GENERATED_CS_ENGINE_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/Source/Scripting/MBansheeEngine/Generated)
+set(BS_GENERATED_CS_EDITOR_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/Source/Scripting/MBansheeEditor/Generated)
 
 if(GENERATE_SCRIPT_BINDINGS)
-	addForGeneration(BansheeUtility)
-	addForGeneration(BansheeCore)
-	addForGeneration(BansheeEngine)
-	addForGeneration(BansheeEditor)
-	addForGeneration(SBansheeEngine)
-	addForGeneration(SBansheeEditor)
+	addForGeneration(Source/bsf/Source/Foundation/bsfUtility Source/bsf/Source/Foundation/ UTILITY)
+	addForGeneration(Source/bsf/Source/Foundation/bsfCore Source/bsf/Source/Foundation/ CORE)
+	addForGeneration(Source/bsf/Source/Foundation/bsfEngine Source/bsf/Source/Foundation/ ENGINE)
+	addForGeneration(Source/EditorCore Source/EditorCore BANSHEEEDITOR)
+	addForGeneration(Source/Scripting/SBansheeEngine Source/Scripting/SBansheeEngine SBANSHEEENGINE)
+	addForGeneration(Source/Scripting/SBansheeEditor Source/Scripting/SBansheeEditor SBANSHEEEDITOR)
 
 	set(BS_SCRIPT_PARSER_INCLUDE_DIRS 
 		${BS_SCRIPT_PARSER_INCLUDE_DIRS} 
-		"BansheeMono"
-		"BansheeUtility/ThirdParty")
+		"Source/bsf/Source/Plugins/bsfMono"
+		"Source/bsf/Source/Foundation/bsfUtility/ThirdParty")
 
 	list(REMOVE_DUPLICATES BS_SCRIPT_PARSER_INCLUDE_DIRS)
 	list(REMOVE_DUPLICATES BS_SCRIPT_PARSER_H_FILES)
@@ -91,7 +91,7 @@ if(BansheeSBGen_FOUND)
 		message(STATUS "Generating script bindings, please wait...")
 		execute_process(
 			COMMAND ${BS_GSB_COMMAND}
-			WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+			WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/Source
 			RESULT_VARIABLE SBGEN_RETURN_VALUE
 		)
 
