@@ -2,7 +2,7 @@ Loading animation clips						{#animationClip}
 ===============
 
 When it comes to animating 3D objects (meshes), bs::f supports two types of animation:
- - Skeletal - Each vertex on the mesh is assigned to a bone using and index and a weight - this is called a skin. Each bone is part of a hierarchy which is called a skeleton. The bones are then animated using animation clips, and as the bones move, so do the vertices (skin) attached to them. 
+ - Skeletal - Each vertex on the mesh is assigned to a bone using an index and a weight - this is called a skin. Each bone is part of a hierarchy which is called a skeleton. The bones are then animated using animation clips, and as the bones move, so do the vertices (skin) attached to them. 
  - Morph - Many different versions of the same mesh exist, representing different shapes of the mesh. By interpolating between the shapes animation is produced. This interpolation is also controlled by animation clips.
  
 In general it is preferred to use skeletal animation wherever possible, as it has lower memory requirements, allows interesting ways to combine animations and allows other objects to be attached to bones (as we'll show later). Morph animation is preferable for complex animations where bones just don't cut it (e.g. facial animation can sometimes benefit, as well as objects that have very soft structure without a clear way to set up the skeleton).
