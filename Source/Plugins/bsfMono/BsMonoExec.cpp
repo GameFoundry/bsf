@@ -1,5 +1,5 @@
-//********************************** Banshee Engine (www.banshee3d.com) **************************************************//
-//**************** Copyright (c) 2017 Marko Pintera (marko.pintera@gmail.com). All rights reserved. **********************//
+//************************************ bs::framework - Copyright 2018 Marko Pintera **************************************//
+//*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #ifdef _WIN32
 	#define _CRT_SECURE_NO_WARNINGS 1
 	#include <direct.h>
