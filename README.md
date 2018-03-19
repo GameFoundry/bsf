@@ -12,3 +12,4 @@ The project is still growing and plenty of features are yet to be added. Take a 
 * [Roadmap](https://github.com/GameFoundry/bsf/blob/master/Documentation/GitHub/roadmap.md) - A list of features to be implemented in both near and far future. 
 * [Compiling](https://github.com/GameFoundry/bsf/blob/master/Documentation/GitHub/compiling.md) - A guide on how to compile the framework.
 * [Documentation](TODO) - API reference and manuals (TODO)
+* [Examples](https://github.com/gamefoundry/bsfExamples) - A set of working examples demonstrating bsf capabilities
