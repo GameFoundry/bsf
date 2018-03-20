@@ -10,16 +10,16 @@
 
 namespace bs 
 {
-    HardwareBufferManager::HardwareBufferManager()
-    {
-    }
+	HardwareBufferManager::HardwareBufferManager()
+	{
+	}
 
-    HardwareBufferManager::~HardwareBufferManager()
-    {
-    }
+	HardwareBufferManager::~HardwareBufferManager()
+	{
+	}
 
 	SPtr<VertexDeclaration> HardwareBufferManager::createVertexDeclaration(const SPtr<VertexDataDesc>& desc)
-    {
+	{
 		VertexDeclaration* decl = new (bs_alloc<VertexDeclaration>()) VertexDeclaration(desc->createElements());
 
 		SPtr<VertexDeclaration> declPtr = bs_core_ptr<VertexDeclaration>(decl);
@@ -27,7 +27,7 @@ namespace bs
 		declPtr->initialize();
 
 		return declPtr;
-    }
+	}
 
 	SPtr<VertexBuffer> HardwareBufferManager::createVertexBuffer(const VERTEX_BUFFER_DESC& desc)
 	{
@@ -64,19 +64,19 @@ namespace bs
 	}
 
 	SPtr<GpuParams> HardwareBufferManager::createGpuParams(const SPtr<GpuPipelineParamInfo>& paramInfo)
-    {
+	{
 		GpuParams* params = new (bs_alloc<GpuParams>()) GpuParams(paramInfo);
 		SPtr<GpuParams> paramsPtr = bs_core_ptr<GpuParams>(params);
 		paramsPtr->_setThisPtr(paramsPtr);
 		paramsPtr->initialize();
 
 		return paramsPtr;
-    }
+	}
 
 	namespace ct
 	{
 
-	HardwareBufferManager::VertexDeclarationKey::VertexDeclarationKey(const List<VertexElement>& elements)
+	HardwareBufferManager::VertexDeclarationKey::VertexDeclarationKey(const Vector<VertexElement>& elements)
 		:elements(elements)
 	{ }
 
@@ -131,21 +131,21 @@ namespace bs
 	SPtr<VertexDeclaration> HardwareBufferManager::createVertexDeclaration(const SPtr<VertexDataDesc>& desc, 
 		GpuDeviceFlags deviceMask)
 	{
-		List<VertexElement> elements = desc->createElements();
+		Vector<VertexElement> elements = desc->createElements();
 
 		return createVertexDeclaration(elements, deviceMask);
 	}
 
 	SPtr<GpuParams> HardwareBufferManager::createGpuParams(const SPtr<GpuPipelineParamInfo>& paramInfo,
 																   GpuDeviceFlags deviceMask)
-    {
+	{
 		SPtr<GpuParams> params = createGpuParamsInternal(paramInfo, deviceMask);
 		params->initialize();
 
 		return params;
-    }
+	}
 
-	SPtr<VertexDeclaration> HardwareBufferManager::createVertexDeclaration(const List<VertexElement>& elements,
+	SPtr<VertexDeclaration> HardwareBufferManager::createVertexDeclaration(const Vector<VertexElement>& elements,
 		GpuDeviceFlags deviceMask)
 	{
 		VertexDeclarationKey key(elements);
@@ -180,7 +180,7 @@ namespace bs
 	}
 
 	SPtr<VertexDeclaration> HardwareBufferManager::createVertexDeclarationInternal(
-		const List<VertexElement>& elements, GpuDeviceFlags deviceMask)
+		const Vector<VertexElement>& elements, GpuDeviceFlags deviceMask)
 	{
 		VertexDeclaration* decl = new (bs_alloc<VertexDeclaration>()) VertexDeclaration(elements, deviceMask);
 
@@ -192,12 +192,12 @@ namespace bs
 
 	SPtr<GpuParams> HardwareBufferManager::createGpuParamsInternal(
 		const SPtr<GpuPipelineParamInfo>& paramInfo, GpuDeviceFlags deviceMask)
-    {
+	{
 		GpuParams* params = new (bs_alloc<GpuParams>()) GpuParams(paramInfo, deviceMask);
 		SPtr<GpuParams> paramsPtr = bs_shared_ptr<GpuParams>(params);
 		paramsPtr->_setThisPtr(paramsPtr);
 
 		return paramsPtr;
-    }
+	}
 	}
 }

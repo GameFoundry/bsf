@@ -19,7 +19,7 @@ namespace bs { namespace ct
 		return -1;
 	}
 
-	List<VertexElement> GLSLParamParser::buildVertexDeclaration(GLuint glProgram)
+	Vector<VertexElement> GLSLParamParser::buildVertexDeclaration(GLuint glProgram)
 	{
 		GLint numAttributes = 0;
 		glGetProgramiv(glProgram, GL_ACTIVE_ATTRIBUTES, &numAttributes);
@@ -31,7 +31,7 @@ namespace bs { namespace ct
 
 		GLchar* attributeName = (GLchar*)bs_alloc(sizeof(GLchar)* maxNameSize);
 
-		List<VertexElement> elementList;
+		Vector<VertexElement> elementList;
 		for (GLint i = 0; i < numAttributes; i++)
 		{
 			GLint attribSize = 0;

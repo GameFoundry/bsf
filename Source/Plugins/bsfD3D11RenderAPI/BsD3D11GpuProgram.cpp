@@ -17,15 +17,16 @@ namespace bs { namespace ct
 	UINT32 D3D11GpuProgram::GlobalProgramId = 0;
 
 	D3D11GpuProgram::D3D11GpuProgram(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
-		: GpuProgram(desc, deviceMask),
-		mEnableBackwardsCompatibility(false), mProgramId(0)
+		: GpuProgram(desc, deviceMask), mProgramId(0)
 	{
 		assert((deviceMask == GDF_DEFAULT || deviceMask == GDF_PRIMARY) && "Multiple GPUs not supported natively on DirectX 11.");
 	}
 
 	D3D11GpuProgram::~D3D11GpuProgram()
 	{
-		mMicrocode.clear();
+		if(mMicrocode.data)
+			bs_free(mMicrocode.data);
+
 		mInputDeclaration = nullptr;
 
 		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_GpuProgram);
@@ -42,41 +43,31 @@ namespace bs { namespace ct
 			return;
 		}
 
-		String hlslProfile;
-		switch(mProperties.getType())
-		{
-		case GPT_FRAGMENT_PROGRAM:
-			hlslProfile = "ps_5_0";
-			break;
-		case GPT_VERTEX_PROGRAM:
-			hlslProfile = "vs_5_0";
-			break;
-		case GPT_GEOMETRY_PROGRAM:
-			hlslProfile = "gs_5_0";
-			break;
-		case GPT_COMPUTE_PROGRAM:
-			hlslProfile = "cs_5_0";
-			break;
-		case GPT_HULL_PROGRAM:
-			hlslProfile = "hs_5_0";
-			break;
-		case GPT_DOMAIN_PROGRAM:
-			hlslProfile = "ds_5_0";
-			break;
-		}
+		GPU_PROGRAM_DESC desc;
+		desc.type = mProperties.getType();
+		desc.entryPoint = mProperties.getEntryPoint();
+		desc.source = mProperties.getSource();
+		desc.language = "hlsl";
 
 		D3D11RenderAPI* rapi = static_cast<D3D11RenderAPI*>(RenderAPI::instancePtr());
+		GpuProgramCompileStatus compileStatus = GpuProgramManager::instance().compile(desc);
 
-		ID3DBlob* microcode = compileMicrocode(hlslProfile);
-		if (microcode != nullptr)
+		if(compileStatus.success)
 		{
-			mMicrocode.resize(microcode->GetBufferSize());
-			memcpy(&mMicrocode[0], microcode->GetBufferPointer(), microcode->GetBufferSize());
+			mMicrocode = compileStatus.program.instructions;
+			mParametersDesc = compileStatus.program.paramDesc;
 
-			populateParametersAndConstants(microcode);
-			loadFromMicrocode(rapi->getPrimaryDevice(), microcode);
+			loadFromMicrocode(rapi->getPrimaryDevice(), mMicrocode);
 
-			SAFE_RELEASE(microcode);
+			if(desc.type == GPT_VERTEX_PROGRAM)
+				mInputDeclaration = HardwareBufferManager::instance().createVertexDeclaration(compileStatus.program.vertexInput);
+
+			mIsCompiled = true;
+		}
+		else
+		{
+			mIsCompiled = false;
+			mCompileError = compileStatus.messages;
 		}
 
 		mProgramId = GlobalProgramId++;
@@ -84,122 +75,6 @@ namespace bs { namespace ct
 		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_GpuProgram);
 
 		GpuProgram::initialize();
-	}
-
-	UINT32 D3D11GpuProgram::parseErrorMessage(const char* message)
-	{
-		if (message == nullptr)
-			return 0;
-
-		String pattern = R"(\(([0-9]*),.*\))";
-		std::regex regex(pattern);
-
-		std::cmatch results;
-		if (std::regex_search(message, results, regex))
-		{
-			std::string result = results[1].str();
-
-			return strtol(result.c_str(), nullptr, 10) - 1;
-		}
-
-		return 0;
-	}
-
-	ID3DBlob* D3D11GpuProgram::compileMicrocode(const String& profile)
-	{
-		UINT compileFlags = 0;
-#if defined(BS_DEBUG_MODE)
-		compileFlags |= D3DCOMPILE_DEBUG;
-		compileFlags |= D3DCOMPILE_SKIP_OPTIMIZATION;
-#endif
-
-		compileFlags |= D3DCOMPILE_PACK_MATRIX_ROW_MAJOR;
-
-		if (mEnableBackwardsCompatibility)
-			compileFlags |= D3DCOMPILE_ENABLE_BACKWARDS_COMPATIBILITY;
-
-		ID3DBlob* microCode = nullptr;
-		ID3DBlob* messages = nullptr;
-
-		const String& source = mProperties.getSource();
-		const String& entryPoint = mProperties.getEntryPoint();
-
-		const D3D_SHADER_MACRO defines[] = 
-		{ 
-			{ "HLSL", "1" },
-			{ nullptr, nullptr }
-		};
-
-		HRESULT hr = D3DCompile(
-			source.c_str(),		// [in] Pointer to the shader in memory. 
-			source.size(),		// [in] Size of the shader in memory.  
-			nullptr,			// [in] The name of the file that contains the shader code. 
-			defines,			// [in] Optional. Pointer to a NULL-terminated array of macro definitions. 
-								//		See D3D_SHADER_MACRO. If not used, set this to NULL. 
-			nullptr,			// [in] Optional. Pointer to an ID3DInclude Interface interface for handling include files. 
-								//		Setting this to NULL will cause a compile error if a shader contains a #include. 
-			entryPoint.c_str(),	// [in] Name of the shader-entrypoint function where shader execution begins. 
-			profile.c_str(),	// [in] A string that specifies the shader model; can be any profile in shader model 4 or higher. 
-			compileFlags,		// [in] Effect compile flags - no D3DCOMPILE_ENABLE_BACKWARDS_COMPATIBILITY at the first try...
-			0,					// [in] Effect compile flags
-			&microCode,			// [out] A pointer to an ID3DBlob Interface which contains the compiled shader, as well as
-								//		 any embedded debug and symbol-table information. 
-			&messages			// [out] A pointer to an ID3DBlob Interface which contains a listing of errors and warnings
-								//		 that occurred during compilation. These errors and warnings are identical to the 
-								//		 debug output from a debugger.
-			);
-
-		if (messages != nullptr)
-		{
-			const char* message = static_cast<const char*>(messages->GetBufferPointer());
-			UINT32 lineIdx = parseErrorMessage(message);
-
-			Vector<String> sourceLines = StringUtil::split(source, "\n");
-			String sourceLine;
-			if (lineIdx < sourceLines.size())
-				sourceLine = sourceLines[lineIdx];
-
-			mCompileError =
-				String(message) + "\n" +
-				"\n" +
-				"Line " + toString(lineIdx) + ": " + sourceLine;
-
-			SAFE_RELEASE(messages);
-		}
-		else
-			mCompileError = "";
-
-		if (FAILED(hr))
-		{
-			mIsCompiled = false;
-			mCompileError = "Cannot compile D3D11 high-level shader. Errors:\n" + mCompileError;
-
-			SAFE_RELEASE(microCode);
-			return nullptr;
-		}
-		else
-		{
-			mIsCompiled = true;
-			return microCode;
-		}
-	}
-
-	void D3D11GpuProgram::populateParametersAndConstants(ID3DBlob* microcode)
-	{
-		assert(microcode != nullptr);
-
-		D3D11HLSLParamParser parser;
-		if (mProperties.getType() == GPT_VERTEX_PROGRAM)
-		{
-			List<VertexElement> inputParams;
-			parser.parse(microcode, mProperties.getType(), *mParametersDesc, &inputParams);
-
-			mInputDeclaration = HardwareBufferManager::instance().createVertexDeclaration(inputParams);
-		}
-		else
-		{
-			parser.parse(microcode, mProperties.getType(), *mParametersDesc, nullptr);
-		}
 	}
 
 	D3D11GpuVertexProgram::D3D11GpuVertexProgram(const GPU_PROGRAM_DESC& desc, GpuDeviceFlags deviceMask)
@@ -211,11 +86,10 @@ namespace bs { namespace ct
 		SAFE_RELEASE(mVertexShader);
 	}
 
-	void D3D11GpuVertexProgram::loadFromMicrocode(D3D11Device& device, ID3D10Blob*  microcode)
+	void D3D11GpuVertexProgram::loadFromMicrocode(D3D11Device& device, const DataBlob& microcode)
 	{
 		HRESULT hr = device.getD3D11Device()->CreateVertexShader( 
-			static_cast<DWORD*>(microcode->GetBufferPointer()), microcode->GetBufferSize(),
-			device.getClassLinkage(), &mVertexShader);
+			microcode.data, microcode.size, device.getClassLinkage(), &mVertexShader);
 
 		if (FAILED(hr) || device.hasError())
 		{
@@ -240,11 +114,10 @@ namespace bs { namespace ct
 		SAFE_RELEASE(mPixelShader);
 	}
 
-	void D3D11GpuFragmentProgram::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
+	void D3D11GpuFragmentProgram::loadFromMicrocode(D3D11Device& device, const DataBlob& microcode)
 	{
 		HRESULT hr = device.getD3D11Device()->CreatePixelShader(
-			static_cast<DWORD*>(microcode->GetBufferPointer()), microcode->GetBufferSize(),
-			device.getClassLinkage(), &mPixelShader);
+			microcode.data, microcode.size, device.getClassLinkage(), &mPixelShader);
 
 		if (FAILED(hr) || device.hasError())
 		{
@@ -269,11 +142,10 @@ namespace bs { namespace ct
 		SAFE_RELEASE(mGeometryShader);
 	}
 
-	void D3D11GpuGeometryProgram::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
+	void D3D11GpuGeometryProgram::loadFromMicrocode(D3D11Device& device, const DataBlob& microcode)
 	{
 		HRESULT hr = device.getD3D11Device()->CreateGeometryShader(
-			static_cast<DWORD*>(microcode->GetBufferPointer()), microcode->GetBufferSize(),
-			device.getClassLinkage(), &mGeometryShader);
+			microcode.data, microcode.size, device.getClassLinkage(), &mGeometryShader);
 
 		if (FAILED(hr) || device.hasError())
 		{
@@ -297,11 +169,10 @@ namespace bs { namespace ct
 		SAFE_RELEASE(mDomainShader);
 	}
 
-	void D3D11GpuDomainProgram::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
+	void D3D11GpuDomainProgram::loadFromMicrocode(D3D11Device& device, const DataBlob& microcode)
 	{
 		HRESULT hr = device.getD3D11Device()->CreateDomainShader(
-			static_cast<DWORD*>(microcode->GetBufferPointer()), microcode->GetBufferSize(),
-			device.getClassLinkage(), &mDomainShader);
+			microcode.data, microcode.size, device.getClassLinkage(), &mDomainShader);
 
 		if (FAILED(hr) || device.hasError())
 		{
@@ -325,12 +196,11 @@ namespace bs { namespace ct
 		SAFE_RELEASE(mHullShader);
 	}
 
-	void D3D11GpuHullProgram::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
+	void D3D11GpuHullProgram::loadFromMicrocode(D3D11Device& device, const DataBlob& microcode)
 	{
 		// Create the shader
 		HRESULT hr = device.getD3D11Device()->CreateHullShader(
-			static_cast<DWORD*>(microcode->GetBufferPointer()), microcode->GetBufferSize(),
-			device.getClassLinkage(), &mHullShader);
+			microcode.data, microcode.size, device.getClassLinkage(), &mHullShader);
 
 		if (FAILED(hr) || device.hasError())
 		{
@@ -355,11 +225,10 @@ namespace bs { namespace ct
 		SAFE_RELEASE(mComputeShader);
 	}
 
-	void D3D11GpuComputeProgram::loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode)
+	void D3D11GpuComputeProgram::loadFromMicrocode(D3D11Device& device, const DataBlob& microcode)
 	{
 		HRESULT hr = device.getD3D11Device()->CreateComputeShader(
-			static_cast<DWORD*>(microcode->GetBufferPointer()), microcode->GetBufferSize(),
-			device.getClassLinkage(), &mComputeShader);
+			microcode.data, microcode.size, device.getClassLinkage(), &mComputeShader);
 
 		if (FAILED(hr) || device.hasError())
 		{

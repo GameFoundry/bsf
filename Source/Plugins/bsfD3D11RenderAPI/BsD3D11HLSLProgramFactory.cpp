@@ -2,6 +2,10 @@
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #include "BsD3D11HLSLProgramFactory.h"
 #include "BsD3D11GpuProgram.h"
+#include "RenderAPI/BsVertexDeclaration.h"
+#include "BsD3D11HLSLParamParser.h"
+#include "RenderAPI/BsGpuParamDesc.h"
+#include <regex>
 
 namespace bs { namespace ct
 {
@@ -88,5 +92,152 @@ namespace bs { namespace ct
 			gpuProg->_setThisPtr(gpuProg);
 
 		return gpuProg;
+	}
+
+	UINT32 parseErrorMessage(const char* message)
+	{
+		if (message == nullptr)
+			return 0;
+
+		String pattern = R"(\(([0-9]*),.*\))";
+		std::regex regex(pattern);
+
+		std::cmatch results;
+		if (std::regex_search(message, results, regex))
+		{
+			std::string result = results[1].str();
+
+			return strtol(result.c_str(), nullptr, 10) - 1;
+		}
+
+		return 0;
+	}
+
+	GpuProgramCompileStatus D3D11HLSLProgramFactory::compile(const GPU_PROGRAM_DESC& desc)
+	{
+		String hlslProfile;
+		switch(desc.type)
+		{
+		case GPT_FRAGMENT_PROGRAM:
+			hlslProfile = "ps_5_0";
+			break;
+		case GPT_VERTEX_PROGRAM:
+			hlslProfile = "vs_5_0";
+			break;
+		case GPT_GEOMETRY_PROGRAM:
+			hlslProfile = "gs_5_0";
+			break;
+		case GPT_COMPUTE_PROGRAM:
+			hlslProfile = "cs_5_0";
+			break;
+		case GPT_HULL_PROGRAM:
+			hlslProfile = "hs_5_0";
+			break;
+		case GPT_DOMAIN_PROGRAM:
+			hlslProfile = "ds_5_0";
+			break;
+		default:
+			break;
+		}
+
+		UINT compileFlags = 0;
+#if defined(BS_DEBUG_MODE)
+		compileFlags |= D3DCOMPILE_DEBUG;
+		compileFlags |= D3DCOMPILE_SKIP_OPTIMIZATION;
+#endif
+
+		compileFlags |= D3DCOMPILE_PACK_MATRIX_ROW_MAJOR;
+
+		ID3DBlob* microcode = nullptr;
+		ID3DBlob* messages = nullptr;
+
+		const String& source = desc.source;
+		const String& entryPoint = desc.entryPoint;
+
+		const D3D_SHADER_MACRO defines[] = 
+		{ 
+			{ "HLSL", "1" },
+			{ nullptr, nullptr }
+		};
+
+		HRESULT hr = D3DCompile(
+			source.c_str(),		// [in] Pointer to the shader in memory. 
+			source.size(),		// [in] Size of the shader in memory.  
+			nullptr,			// [in] The name of the file that contains the shader code. 
+			defines,			// [in] Optional. Pointer to a NULL-terminated array of macro definitions. 
+								//		See D3D_SHADER_MACRO. If not used, set this to NULL. 
+			nullptr,			// [in] Optional. Pointer to an ID3DInclude Interface interface for handling include files. 
+								//		Setting this to NULL will cause a compile error if a shader contains a #include. 
+			entryPoint.c_str(),	// [in] Name of the shader-entrypoint function where shader execution begins. 
+			hlslProfile.c_str(),// [in] A string that specifies the shader model; can be any profile in shader model 4 or higher. 
+			compileFlags,		// [in] Effect compile flags - no D3DCOMPILE_ENABLE_BACKWARDS_COMPATIBILITY at the first try...
+			0,					// [in] Effect compile flags
+			&microcode,			// [out] A pointer to an ID3DBlob Interface which contains the compiled shader, as well as
+								//		 any embedded debug and symbol-table information. 
+			&messages			// [out] A pointer to an ID3DBlob Interface which contains a listing of errors and warnings
+								//		 that occurred during compilation. These errors and warnings are identical to the 
+								//		 debug output from a debugger.
+			);
+
+		String compileMessage;
+		if (messages != nullptr)
+		{
+			const char* message = static_cast<const char*>(messages->GetBufferPointer());
+			UINT32 lineIdx = parseErrorMessage(message);
+
+			Vector<String> sourceLines = StringUtil::split(source, "\n");
+			String sourceLine;
+			if (lineIdx < sourceLines.size())
+				sourceLine = sourceLines[lineIdx];
+
+			compileMessage =
+				String(message) + "\n" +
+				"\n" +
+				"Line " + toString(lineIdx) + ": " + sourceLine;
+
+			SAFE_RELEASE(messages);
+		}
+
+		GpuProgramCompileStatus status;
+		if (FAILED(hr))
+		{
+			status.success = false;
+			status.messages = "Cannot compile D3D11 high-level shader. Errors:\n" + compileMessage;
+
+			status.program.instructions.data = nullptr;
+			status.program.instructions.size = 0;
+			status.program.machineSpecific = false;
+
+			SAFE_RELEASE(microcode);
+			return status;
+		}
+
+		status.success = true;
+		status.messages = compileMessage;
+
+		status.program.instructions.data = nullptr;
+		status.program.instructions.size = 0;
+		status.program.machineSpecific = false;
+
+		if (microcode != nullptr)
+		{
+			GpuProgramCompiled& prog = status.program;
+
+			prog.instructions.size = (UINT32)microcode->GetBufferSize();
+			prog.instructions.data = (UINT8*)bs_alloc(prog.instructions.size);
+
+			memcpy(prog.instructions.data, microcode->GetBufferPointer(), prog.instructions.size);
+
+			D3D11HLSLParamParser parser;
+			prog.paramDesc = bs_shared_ptr_new<GpuParamDesc>();
+
+			if (desc.type == GPT_VERTEX_PROGRAM)
+				parser.parse(microcode, desc.type, *prog.paramDesc, &prog.vertexInput);
+			else
+				parser.parse(microcode, desc.type, *prog.paramDesc, nullptr);
+		}
+		
+		SAFE_RELEASE(microcode);
+		return status;
 	}
 }}

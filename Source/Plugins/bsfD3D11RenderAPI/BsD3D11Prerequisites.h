@@ -36,7 +36,6 @@ namespace bs { namespace ct
 	class D3D11DriverList;
 	class D3D11VideoMode;
 	class D3D11VideoModeList;
-	class D3D11GpuProgramManager;
 	class D3D11HLSLProgramFactory;
 	class D3D11Device;
 	class D3D11HardwareBuffer;

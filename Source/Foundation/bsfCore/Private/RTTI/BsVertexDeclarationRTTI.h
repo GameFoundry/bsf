@@ -20,7 +20,7 @@ namespace bs
 	private:
 		VertexElement& getElement(VertexDeclaration* obj, UINT32 idx)
 		{
-			List<VertexElement>& elemList = obj->mProperties.mElementList;
+			Vector<VertexElement>& elemList = obj->mProperties.mElementList;
 
 			auto iter = elemList.begin();
 			for(UINT32 i = 0; i < idx; i++)
@@ -31,7 +31,7 @@ namespace bs
 
 		void setElement(VertexDeclaration* obj, UINT32 idx, VertexElement& data)
 		{
-			List<VertexElement>& elemList = obj->mProperties.mElementList;
+			Vector<VertexElement>& elemList = obj->mProperties.mElementList;
 
 			auto iter = elemList.begin();
 			for(UINT32 i = 0; i < idx; i++)
@@ -42,14 +42,14 @@ namespace bs
 
 		UINT32 getElementArraySize(VertexDeclaration* obj)
 		{
-			List<VertexElement>& elemList = obj->mProperties.mElementList;
+			Vector<VertexElement>& elemList = obj->mProperties.mElementList;
 
 			return (UINT32)elemList.size();
 		}
 
 		void setElementArraySize(VertexDeclaration* obj, UINT32 size)
 		{
-			List<VertexElement>& elemList = obj->mProperties.mElementList;
+			Vector<VertexElement>& elemList = obj->mProperties.mElementList;
 
 			for (size_t i = elemList.size(); i < size; i++)
 				elemList.push_back(VertexElement());

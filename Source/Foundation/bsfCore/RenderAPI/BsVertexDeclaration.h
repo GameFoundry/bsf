@@ -129,7 +129,7 @@ namespace bs
 	class BS_CORE_EXPORT VertexDeclarationProperties
 	{
 	public:
-		VertexDeclarationProperties(const List<VertexElement>& elements);
+		VertexDeclarationProperties(const Vector<VertexElement>& elements);
 
 		bool operator== (const VertexDeclarationProperties& rhs) const;
 		bool operator!= (const VertexDeclarationProperties& rhs) const;
@@ -138,7 +138,7 @@ namespace bs
 		UINT32 getElementCount() const { return (UINT32)mElementList.size(); }
 		
 		/**	Returns a list of vertex elements in the declaration. */
-		const List<VertexElement>& getElements() const { return mElementList; }
+		const Vector<VertexElement>& getElements() const { return mElementList; }
 
 		/**	Returns a single vertex element at the specified index. */
 		const VertexElement* getElement(UINT16 index) const;
@@ -149,7 +149,7 @@ namespace bs
 		const VertexElement* findElementBySemantic(VertexElementSemantic sem, UINT16 index = 0) const;
 
 		/**	Returns a list of all elements that use the provided source index. */
-		List<VertexElement> findElementsBySource(UINT16 source) const;
+		Vector<VertexElement> findElementsBySource(UINT16 source) const;
 
 		/**	Returns the total size of all vertex elements using the provided source index. */
 		UINT32 getVertexSize(UINT16 source) const;
@@ -158,7 +158,7 @@ namespace bs
 		friend class VertexDeclaration;
 		friend class VertexDeclarationRTTI;
 
-		List<VertexElement> mElementList;
+		Vector<VertexElement> mElementList;
 	};
 
 	/**
@@ -183,7 +183,7 @@ namespace bs
 	protected:
 		friend class HardwareBufferManager;
 
-		VertexDeclaration(const List<VertexElement>& elements);
+		VertexDeclaration(const Vector<VertexElement>& elements);
 
 		/** @copydoc CoreObject::createCore */
 		SPtr<ct::CoreObject> createCore() const override;
@@ -251,7 +251,7 @@ namespace bs
 	protected:
 		friend class HardwareBufferManager;
 
-		VertexDeclaration(const List<VertexElement>& elements, GpuDeviceFlags deviceMask);
+		VertexDeclaration(const Vector<VertexElement>& elements, GpuDeviceFlags deviceMask);
 
 		VertexDeclarationProperties mProperties;
 		UINT32 mId;

@@ -57,7 +57,7 @@ namespace bs { namespace ct
 		 *
 		 * @param[in]	glProgram	OpenGL handle to the GPU program.
 		 */
-		List<VertexElement> buildVertexDeclaration(GLuint glProgram);
+		Vector<VertexElement> buildVertexDeclaration(GLuint glProgram);
 
 		/**
 		 * Calculates the size and alignment of a single element within a shader interface block using the std140 layout.

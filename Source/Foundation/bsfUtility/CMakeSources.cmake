@@ -94,6 +94,7 @@ set(BS_UTILITY_INC_UTILITY
 	"bsfUtility/Utility/BsNonCopyable.h"
 	"bsfUtility/Utility/BsUUID.h"
 	"bsfUtility/Utility/BsOctree.h"
+	"bsfUtility/Utility/BsDataBlob.h"
 )
 
 set(BS_UTILITY_SRC_ALLOCATORS

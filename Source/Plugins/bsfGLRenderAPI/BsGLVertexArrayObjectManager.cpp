@@ -79,7 +79,7 @@ namespace bs { namespace ct
 		const SPtr<VertexDeclaration>& vertexDecl, const std::array<SPtr<VertexBuffer>, 32>& boundBuffers)
 	{
 		UINT16 maxStreamIdx = 0;
-		const List<VertexElement>& decl = vertexDecl->getProperties().getElements();
+		const Vector<VertexElement>& decl = vertexDecl->getProperties().getElements();
 		for (auto& elem : decl)
 			maxStreamIdx = std::max(maxStreamIdx, elem.getStreamIdx());
 
@@ -125,7 +125,7 @@ namespace bs { namespace ct
 		}
 
 		// Need to create new VAO
-		const List<VertexElement>& inputAttributes = vertexProgram->getInputDeclaration()->getProperties().getElements();
+		const Vector<VertexElement>& inputAttributes = vertexProgram->getInputDeclaration()->getProperties().getElements();
 
 		glGenVertexArrays(1, &wantedVAO.mHandle);
 		BS_CHECK_GL_ERROR();

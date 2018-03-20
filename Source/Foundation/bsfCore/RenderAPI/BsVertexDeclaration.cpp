@@ -162,7 +162,7 @@ namespace bs
 		return hash;
 	}
 
-	VertexDeclarationProperties::VertexDeclarationProperties(const List<VertexElement>& elements)
+	VertexDeclarationProperties::VertexDeclarationProperties(const Vector<VertexElement>& elements)
 	{
 		for (auto& elem : elements)
 		{
@@ -223,16 +223,13 @@ namespace bs
 		return nullptr;
 	}
 
-	List<VertexElement> VertexDeclarationProperties::findElementsBySource(UINT16 source) const
+	Vector<VertexElement> VertexDeclarationProperties::findElementsBySource(UINT16 source) const
 	{
-		List<VertexElement> retList;
-
+		Vector<VertexElement> retList;
 		for (auto& elem : mElementList)
 		{
 			if (elem.getStreamIdx() == source)
-			{
 				retList.push_back(elem);
-			}
 		}
 
 		return retList;
@@ -253,7 +250,7 @@ namespace bs
 		return size;
 	}
 
-	VertexDeclaration::VertexDeclaration(const List<VertexElement>& elements)
+	VertexDeclaration::VertexDeclaration(const Vector<VertexElement>& elements)
 		:mProperties(elements)
 	{
 
@@ -325,7 +322,7 @@ namespace bs
 	{
 	UINT32 VertexDeclaration::NextFreeId = 0;
 
-	VertexDeclaration::VertexDeclaration(const List<VertexElement>& elements, GpuDeviceFlags deviceMask)
+	VertexDeclaration::VertexDeclaration(const Vector<VertexElement>& elements, GpuDeviceFlags deviceMask)
 		:mProperties(elements)
 	{
 		
@@ -344,8 +341,8 @@ namespace bs
 
 	bool VertexDeclaration::isCompatible(const SPtr<VertexDeclaration>& shaderDecl)
 	{
-		const List<VertexElement>& shaderElems = shaderDecl->getProperties().getElements();
-		const List<VertexElement>& bufferElems = getProperties().getElements();
+		const Vector<VertexElement>& shaderElems = shaderDecl->getProperties().getElements();
+		const Vector<VertexElement>& bufferElems = getProperties().getElements();
 
 		for (auto shaderIter = shaderElems.begin(); shaderIter != shaderElems.end(); ++shaderIter)
 		{
@@ -370,8 +367,8 @@ namespace bs
 	{
 		Vector<VertexElement> missingElements;
 
-		const List<VertexElement>& shaderElems = shaderDecl->getProperties().getElements();
-		const List<VertexElement>& bufferElems = getProperties().getElements();
+		const Vector<VertexElement>& shaderElems = shaderDecl->getProperties().getElements();
+		const Vector<VertexElement>& bufferElems = getProperties().getElements();
 
 		for (auto shaderIter = shaderElems.begin(); shaderIter != shaderElems.end(); ++shaderIter)
 		{

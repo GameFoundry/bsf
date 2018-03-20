@@ -5,6 +5,8 @@
 #include "BsCorePrerequisites.h"
 #include "CoreThread/BsCoreObject.h"
 #include "Reflection/BsIReflectable.h"
+#include "Utility/BsDataBlob.h"
+#include "BsVertexDeclaration.h"
 
 namespace bs 
 {
@@ -45,6 +47,24 @@ namespace bs
 		GpuProgramType mType;
 		String mEntryPoint;
 		String mSource;
+	};
+
+	/** Instructions and meta-data about a compiled GPU program. */
+	struct GpuProgramCompiled
+	{
+		/** Instructions (compiled code) for the GPU program. */
+		DataBlob instructions;
+
+		/** Reflected information about GPU program parameters. */
+		SPtr<GpuParamDesc> paramDesc;
+
+		/** Input parameters for a vertex GPU program. */
+		Vector<VertexElement> vertexInput;
+
+		/** 
+		 * True if the compiled instructions are only valid for the current machine, or false if they are redistibutable. 
+		 */
+		bool machineSpecific = false;
 	};
 
 	/**

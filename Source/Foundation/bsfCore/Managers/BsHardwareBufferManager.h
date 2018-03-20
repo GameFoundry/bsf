@@ -24,9 +24,9 @@ namespace bs
 	 */
 	class BS_CORE_EXPORT HardwareBufferManager : public Module<HardwareBufferManager>
 	{
-    public:
-        HardwareBufferManager();
-        virtual ~HardwareBufferManager();
+	public:
+		HardwareBufferManager();
+		virtual ~HardwareBufferManager();
 
 		/**
 		 * Creates a new vertex buffer used for holding number of vertices and other per-vertex data. Buffer can be bound 
@@ -83,7 +83,7 @@ namespace bs
 	 */
 	class BS_CORE_EXPORT HardwareBufferManager : public Module<HardwareBufferManager>
 	{
-    public:
+	public:
 		virtual ~HardwareBufferManager() { }
 
 		/** 
@@ -111,7 +111,7 @@ namespace bs
 		 * @param[in]	elements		List of elements to initialize the declaration with.
 		 * @param[in]	deviceMask		Mask that determines on which GPU devices should the object be created on.
 		 */
-		SPtr<VertexDeclaration> createVertexDeclaration(const List<VertexElement>& elements, 
+		SPtr<VertexDeclaration> createVertexDeclaration(const Vector<VertexElement>& elements, 
 			GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
 		/** 
@@ -143,7 +143,7 @@ namespace bs
 		/** Key for use in the vertex declaration map. */
 		struct VertexDeclarationKey
 		{
-			VertexDeclarationKey(const List<VertexElement>& elements);
+			VertexDeclarationKey(const Vector<VertexElement>& elements);
 
 			class HashFunction
 			{
@@ -157,7 +157,7 @@ namespace bs
 				bool operator()(const VertexDeclarationKey& lhs, const VertexDeclarationKey& rhs) const;
 			};
 
-			List<VertexElement> elements;
+			Vector<VertexElement> elements;
 		};
 
 		/** @copydoc createVertexBuffer */
@@ -177,7 +177,7 @@ namespace bs
 			GpuDeviceFlags deviceMask = GDF_DEFAULT) = 0;
 
 		/** @copydoc createVertexDeclaration(const List<VertexElement>&, GpuDeviceFlags) */
-		virtual SPtr<VertexDeclaration> createVertexDeclarationInternal(const List<VertexElement>& elements,
+		virtual SPtr<VertexDeclaration> createVertexDeclarationInternal(const Vector<VertexElement>& elements,
 			GpuDeviceFlags deviceMask = GDF_DEFAULT);
 
 		/** @copydoc createGpuParams */

@@ -30,7 +30,7 @@ namespace bs
 		mVertexElements.insert(mVertexElements.begin() + insertToIndex, newElement);
 	}
 
-	List<VertexElement> VertexDataDesc::createElements() const
+	Vector<VertexElement> VertexDataDesc::createElements() const
 	{
 		UINT32 maxStreamIdx = getMaxStreamIdx();
 
@@ -39,7 +39,7 @@ namespace bs
 		for (UINT32 i = 0; i < numStreams; i++)
 			streamOffsets[i] = 0;
 
-		List<VertexElement> declarationElements;
+		Vector<VertexElement> declarationElements;
 		for (auto& vertElem : mVertexElements)
 		{
 			UINT32 streamIdx = vertElem.getStreamIdx();

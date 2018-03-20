@@ -25,7 +25,7 @@ namespace bs { namespace ct
 		 * @param[out]	inputParams	Output object that will contain a set of program input parameters. Can be null if not 
 		 *							required. Only relevant for vertex programs.
 		 */
-		void parse(ID3DBlob* microcode, GpuProgramType type, GpuParamDesc& desc, List<VertexElement>* inputParams);
+		void parse(ID3DBlob* microcode, GpuProgramType type, GpuParamDesc& desc, Vector<VertexElement>* inputParams);
 
 	private:
 		/** Types of HLSL parameters. */

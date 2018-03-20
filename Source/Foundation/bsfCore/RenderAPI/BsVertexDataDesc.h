@@ -68,7 +68,7 @@ namespace bs
 		const VertexElement* getElement(VertexElementSemantic semantic, UINT32 semanticIdx = 0, UINT32 streamIdx = 0) const;
 
 		/**	Creates a list of vertex elements from internal data. */
-		List<VertexElement> createElements() const;
+		Vector<VertexElement> createElements() const;
 
 		/**	Creates a new empty vertex data descriptor. */
 		static SPtr<VertexDataDesc> create();
@@ -97,7 +97,7 @@ namespace bs
 	public:
 		friend class VertexDataDescRTTI;
 		static RTTITypeBase* getRTTIStatic();
-		virtual RTTITypeBase* getRTTI() const override;
+		RTTITypeBase* getRTTI() const override;
 	};
 
 	/** @} */

@@ -10,7 +10,7 @@
 namespace bs { namespace ct
 {
 	void D3D11HLSLParamParser::parse(ID3DBlob* microcode, GpuProgramType type, GpuParamDesc& desc, 
-		List<VertexElement>* inputParams)
+		Vector<VertexElement>* inputParams)
 	{
 		const char* commentString = nullptr;
 		ID3DBlob* pIDisassembly = nullptr;

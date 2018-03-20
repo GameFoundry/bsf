@@ -78,8 +78,8 @@ namespace bs { namespace ct
 	void VulkanVertexInputManager::addNew(const SPtr<VertexDeclaration>& vbDecl, 
 		const SPtr<VertexDeclaration>& shaderInputDecl)
 	{
-		const List<VertexElement>& vbElements = vbDecl->getProperties().getElements();
-		const List<VertexElement>& inputElements = shaderInputDecl->getProperties().getElements();
+		const Vector<VertexElement>& vbElements = vbDecl->getProperties().getElements();
+		const Vector<VertexElement>& inputElements = shaderInputDecl->getProperties().getElements();
 
 		UINT32 numAttributes = 0;
 		UINT32 numBindings = 0;

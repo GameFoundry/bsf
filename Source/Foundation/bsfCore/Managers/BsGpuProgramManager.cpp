@@ -73,6 +73,17 @@ namespace bs
 
 			return ret;
 		}
+
+		GpuProgramCompileStatus compile(const GPU_PROGRAM_DESC& desc) override
+		{
+			GpuProgramCompileStatus ret;
+			ret.success = false;
+			ret.program.instructions.data = nullptr;
+			ret.program.instructions.size = 0;
+			ret.program.machineSpecific = false;
+			
+			return ret;
+		}
 	};
 
 	GpuProgramManager::GpuProgramManager()
@@ -133,6 +144,12 @@ namespace bs
 		SPtr<GpuProgram> ret = factory->create(desc, deviceMask);
 
 		return ret;
+	}
+
+	GpuProgramCompileStatus GpuProgramManager::compile(const GPU_PROGRAM_DESC& desc)
+	{
+		GpuProgramFactory* factory = getFactory(desc.language);
+		return factory->compile(desc);
 	}
 	}
 }

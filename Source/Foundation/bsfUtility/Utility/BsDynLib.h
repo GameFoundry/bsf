@@ -29,10 +29,10 @@ namespace bs
 
 #endif
 
-    /** Class that holds data about a dynamic library. */
+	/** Class that holds data about a dynamic library. */
 	class BS_UTILITY_EXPORT DynLib
-    {
-    public:
+	{
+	public:
 		/** Platform-specific file extension for a dynamic library (e.g. "dll"). */
 		static const char* EXTENSION;
 
@@ -41,35 +41,35 @@ namespace bs
 
 		/** Constructs the dynamic library object and loads the library with the specified name. */
 		DynLib(const String& name);
-        ~DynLib();
+		~DynLib();
 
 		/** Loads the library. Does nothing if library is already loaded. */
-        void load();
+		void load();
 
 		/** Unloads the library. Does nothing if library is not loaded. */
-        void unload();
+		void unload();
 
 		/** Get the name of the library. */
 		const String& getName() const { return mName; }
 
-        /**
+		/**
 		 * Returns the address of the given symbol from the loaded library.
 		 *
 		 * @param[in] strName	The name of the symbol to search for.
-         * @return				If the function succeeds, the returned value is a handle to the symbol. Otherwise null.
-         */
-        void* getSymbol(const String& strName) const;
+		 * @return				If the function succeeds, the returned value is a handle to the symbol. Otherwise null.
+		 */
+		void* getSymbol(const String& strName) const;
 
 	protected:
 		friend class DynLibManager;
 
 		/** Gets the last loading error. */
-        String dynlibError();
+		String dynlibError();
 
-    protected:
+	protected:
 		String mName;
-        DYNLIB_HANDLE mHandle;
-    };
+		DYNLIB_HANDLE mHandle;
+	};
 
 	/** @} */
 }
