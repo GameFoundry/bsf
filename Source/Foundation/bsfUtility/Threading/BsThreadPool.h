@@ -17,15 +17,15 @@ namespace bs
 	class BS_UTILITY_EXPORT HThread
 	{
 	public:
-		HThread();
+		HThread() = default;;
 		HThread(ThreadPool* pool, UINT32 threadId);
 
 		/**	Block the calling thread until the thread this handle points to completes. */
 		void blockUntilComplete();
 
 	private:
-		UINT32 mThreadId;
-		ThreadPool* mPool;
+		UINT32 mThreadId = 0;
+		ThreadPool* mPool = nullptr;
 	};
 
 	/** @} */
@@ -41,8 +41,11 @@ namespace bs
 	class BS_UTILITY_EXPORT PooledThread
 	{
 	public:
-		PooledThread(const String& name);
-		virtual ~PooledThread();
+		PooledThread(const String& name)
+			:mName(name)
+		{ }
+
+		virtual ~PooledThread() = default;
 
 		/**	Initializes the pooled thread. Must be called right after the object is constructed. */
 		void initialize();
@@ -91,14 +94,13 @@ namespace bs
 
 	protected:
 		std::function<void()> mWorkerMethod;
-
 		String mName;
-		UINT32 mId;
-		bool mIdle;
-		bool mThreadStarted;
-		bool mThreadReady;
+		UINT32 mId = 0;
+		bool mIdle = true;
+		bool mThreadStarted = false;
+		bool mThreadReady = false;
 
-		time_t mIdleTime;
+		time_t mIdleTime = 0;
 
 		Thread* mThread;
 		mutable Mutex mMutex;
@@ -117,9 +119,7 @@ namespace bs
 	class TPooledThread : public PooledThread
 	{
 	public:
-		TPooledThread(const String& name)
-			:PooledThread(name)
-		{ }
+		using PooledThread::PooledThread;
 
 		/** @copydoc PooledThread::onThreadStarted */
 		void onThreadStarted(const String& name) override
@@ -209,7 +209,7 @@ namespace bs
 		UINT32 mDefaultCapacity;
 		UINT32 mMaxCapacity;
 		UINT32 mIdleTimeout;
-		UINT32 mAge;
+		UINT32 mAge = 0;
 		
 		std::atomic_uint mUniqueId;
 		mutable Mutex mMutex;

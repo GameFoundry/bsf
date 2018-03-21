@@ -16,10 +16,6 @@
 
 namespace bs
 {
-	HThread::HThread()
-		:mThreadId(0), mPool(nullptr)
-	{ }
-
 	HThread::HThread(ThreadPool* pool, UINT32 threadId)
 		:mThreadId(threadId), mPool(pool)
 	{ }
@@ -52,14 +48,6 @@ namespace bs
 			}
 		}
 	}
-
-	PooledThread::PooledThread(const String& name)
-		:mName(name), mId(0), mIdle(true), mThreadStarted(false),
-		mThreadReady(false), mIdleTime(0)
-	{ }
-
-	PooledThread::~PooledThread()
-	{ }
 
 	void PooledThread::initialize()
 	{
@@ -194,7 +182,7 @@ namespace bs
 	}
 
 	ThreadPool::ThreadPool(UINT32 threadCapacity, UINT32 maxCapacity, UINT32 idleTimeout)
-		:mDefaultCapacity(threadCapacity), mMaxCapacity(maxCapacity), mIdleTimeout(idleTimeout), mAge(0)
+		:mDefaultCapacity(threadCapacity), mMaxCapacity(maxCapacity), mIdleTimeout(idleTimeout)
 	{
 
 	}

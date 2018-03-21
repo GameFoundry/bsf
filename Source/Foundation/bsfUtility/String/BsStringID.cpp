@@ -4,7 +4,7 @@
 
 namespace bs
 {
-	const StringID StringID::NONE = StringID();
+	const StringID StringID::NONE;
 
 	volatile StringID::InitStatics StringID::mInitStatics = StringID::InitStatics();
 
@@ -27,10 +27,6 @@ namespace bs
 
 		mNumChunks++;
 	}
-
-	StringID::StringID()
-		:mData(nullptr)
-	{ }
 
 	template<class T>
 	void StringID::construct(T const& name)

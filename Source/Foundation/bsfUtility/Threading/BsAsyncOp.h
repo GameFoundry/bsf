@@ -53,12 +53,10 @@ namespace bs
 	private:
 		struct AsyncOpData
 		{
-			AsyncOpData()
-				:mIsCompleted(false)
-			{ }
+			AsyncOpData() = default;
 
 			Any mReturnValue;
-			volatile std::atomic<bool> mIsCompleted;
+			volatile std::atomic<bool> mIsCompleted{false};
 		};
 
 	public:
