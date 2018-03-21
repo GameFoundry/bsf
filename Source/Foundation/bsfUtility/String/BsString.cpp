@@ -199,29 +199,6 @@ namespace bs
 		return stream.str();
 	}
 
-	WString toWString(long val, 
-		unsigned short width, char fill, std::ios::fmtflags flags)
-	{
-		WStringStream stream;
-		stream.width(width);
-		stream.fill(fill);
-		if (flags)
-			stream.setf(flags);
-		stream << val;
-		return stream.str();
-	}
-
-	WString toWString(unsigned long val, unsigned short width, char fill, std::ios::fmtflags flags)
-	{
-		WStringStream stream;
-		stream.width(width);
-		stream.fill(fill);
-		if (flags)
-			stream.setf(flags);
-		stream << val;
-		return stream.str();
-	}
-
 	WString toWString(INT64 val, unsigned short width, char fill, std::ios::fmtflags flags)
 	{
 		WStringStream stream;
@@ -446,29 +423,6 @@ namespace bs
 	}
 
 	String toString(unsigned int val, unsigned short width, char fill, std::ios::fmtflags flags)
-	{
-		StringStream stream;
-		stream.width(width);
-		stream.fill(fill);
-		if (flags)
-			stream.setf(flags);
-		stream << val;
-		return stream.str();
-	}
-
-	String toString(long val, 
-		unsigned short width, char fill, std::ios::fmtflags flags)
-	{
-		StringStream stream;
-		stream.width(width);
-		stream.fill(fill);
-		if (flags)
-			stream.setf(flags);
-		stream << val;
-		return stream.str();
-	}
-
-	String toString(unsigned long val, unsigned short width, char fill, std::ios::fmtflags flags)
 	{
 		StringStream stream;
 		stream.width(width);
