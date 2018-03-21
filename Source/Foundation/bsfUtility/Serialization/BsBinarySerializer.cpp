@@ -40,11 +40,6 @@ buffer += size;															\
 
 namespace bs
 {
-	BinarySerializer::BinarySerializer()
-		:mLastUsedObjectId(1)
-	{
-	}
-
 	void BinarySerializer::encode(IReflectable* object, UINT8* buffer, UINT32 bufferLength, UINT32* bytesWritten, 
 		std::function<UINT8*(UINT8*, UINT32, UINT32&)> flushBufferCallback, bool shallow, 
 		const UnorderedMap<String, UINT64>& params)
