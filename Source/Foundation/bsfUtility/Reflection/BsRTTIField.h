@@ -95,7 +95,7 @@ namespace bs
 		SerializableFieldType mType;
 		UINT64 mFlags;
 
-		virtual ~RTTIField() { }
+		virtual ~RTTIField() = default;
 
 		/** Checks is the field plain type and castable to RTTIPlainFieldBase. */
 		bool isPlainType() const { return mType == SerializableFT_Plain; }

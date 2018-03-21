@@ -20,8 +20,8 @@ namespace bs
 		};
 
 	public:
-		MemorySerializer();
-		~MemorySerializer();
+		MemorySerializer() = default;
+		~MemorySerializer() = default;
 
 		/**
 		 * Parses the provided object, serializes all of its data as specified by its RTTIType and returns the data in the 
@@ -63,7 +63,7 @@ namespace bs
 		/* 								CONSTANTS	                     		*/
 		/************************************************************************/
 	private:
-		static const UINT32 WRITE_BUFFER_SIZE = 16384;
+		static constexpr const UINT32 WRITE_BUFFER_SIZE = 16384;
 	};
 
 	/** @} */

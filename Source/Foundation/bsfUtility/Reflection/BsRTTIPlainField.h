@@ -25,7 +25,7 @@ namespace bs
 	 */
 	struct RTTIPlainFieldBase : public RTTIField
 	{
-		virtual ~RTTIPlainFieldBase() { }
+		virtual ~RTTIPlainFieldBase() = default;
 
 		/** Throws an exception if the current field type and provided template types don't match. */
 		template<class DataType>

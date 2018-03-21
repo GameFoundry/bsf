@@ -11,12 +11,6 @@ using namespace std::placeholders;
 
 namespace bs
 {
-	MemorySerializer::MemorySerializer()
-	{ }
-
-	MemorySerializer::~MemorySerializer()
-	{ }
-
 	UINT8* MemorySerializer::encode(IReflectable* object, UINT32& bytesWritten, 
 		std::function<void*(UINT32)> allocator, bool shallow, const UnorderedMap<String, UINT64>& params)
 	{
