@@ -38,7 +38,7 @@ namespace bs
 		};
 
 	public:
-		virtual ~TestSuite() {}
+		virtual ~TestSuite() = default;
 
 		/** Runs all the tests in the suite (and sub-suites). Tests results are reported to the provided output class. */
 		void run(TestOutput& output);
@@ -56,7 +56,7 @@ namespace bs
 		}
 
 	protected:
-		TestSuite();
+		TestSuite() = default;
 
 		/** Called right before any tests are ran. */
 		virtual void startUp() {}
@@ -86,7 +86,7 @@ namespace bs
 		Vector<SPtr<TestSuite>> mSuites;
 
 		// Transient
-		TestOutput* mOutput;
+		TestOutput* mOutput = nullptr;
 		String mActiveTestName;
 	};
 

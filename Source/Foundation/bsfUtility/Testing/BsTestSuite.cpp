@@ -9,10 +9,6 @@ namespace bs
 		:test(test), name(name)
 	{ }
 
-	TestSuite::TestSuite()
-		: mOutput(nullptr)
-	{ }
-
 	void TestSuite::run(TestOutput& output)
 	{
 		mOutput = &output;

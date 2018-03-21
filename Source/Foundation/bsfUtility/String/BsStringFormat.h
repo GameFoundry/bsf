@@ -22,22 +22,22 @@ namespace bs
 		 */
 		struct FormatParamRange
 		{
-			FormatParamRange() { }
+			FormatParamRange() = default;
 			FormatParamRange(UINT32 start, UINT32 identifierSize, UINT32 paramIdx)
 				:start(start), identifierSize(identifierSize), paramIdx(paramIdx)
 			{ }
 
-			UINT32 start;
-			UINT32 identifierSize;
-			UINT32 paramIdx;
+			UINT32 start = 0;
+			UINT32 identifierSize = 0;
+			UINT32 paramIdx = 0;
 		};
 
 		/** Structure that holds value of a parameter during string formatting. */
 		template<class T>
 		struct ParamData
 		{
-			T* buffer;
-			UINT32 size;
+			T* buffer = nullptr;
+			UINT32 size = 0;
 		};
 
 	public:
@@ -312,9 +312,9 @@ namespace bs
 			// Do nothing
 		}
 
-		static const UINT32 MAX_PARAMS = 20;
-		static const UINT32 MAX_IDENTIFIER_SIZE = 2;
-		static const UINT32 MAX_PARAM_REFERENCES = 200;
+		static constexpr const UINT32 MAX_PARAMS = 20;
+		static constexpr const UINT32 MAX_IDENTIFIER_SIZE = 2;
+		static constexpr const UINT32 MAX_PARAM_REFERENCES = 200;
 	};
 
 	/** @} */
