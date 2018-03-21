@@ -820,7 +820,7 @@ namespace bs
 				if (currentType->getRTTIId() == getRTTIId())
 					return true;
 
-				for (const auto & item : currentType->getDerivedClasses())
+				for (const auto& item : currentType->getDerivedClasses())
 					todo.push(item);
 			}
 

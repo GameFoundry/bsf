@@ -36,7 +36,7 @@ namespace bs
 	{
 		Stack<RTTITypeBase*> todo;
 
-		for(const auto & item : getDerivedClasses())
+		for(const auto& item : getDerivedClasses())
 			todo.push(item);
 
 		while(!todo.empty())
@@ -47,7 +47,7 @@ namespace bs
 			if(curType->getRTTIId() == rttiTypeId)
 				return curType;
 
-			for(const auto & item : curType->getDerivedClasses())
+			for(const auto& item : curType->getDerivedClasses())
 				todo.push(item);
 		}
 

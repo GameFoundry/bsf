@@ -41,7 +41,7 @@ namespace bs
 		SerializedEntry() = default;
 
 		UINT32 fieldId = 0;
-		SPtr<SerializedInstance> serialized{nullptr};
+		SPtr<SerializedInstance> serialized;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -58,7 +58,7 @@ namespace bs
 		SerializedArrayEntry() = default;
 
 		UINT32 index = 0;
-		SPtr<SerializedInstance> serialized{nullptr};
+		SPtr<SerializedInstance> serialized;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

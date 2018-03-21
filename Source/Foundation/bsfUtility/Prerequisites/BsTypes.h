@@ -2,23 +2,26 @@
 //*********** Licensed under the MIT license. See LICENSE.md for full terms. This notice is not to be removed. ***********//
 #pragma once
 
-#include "Prerequisites/BsPlatformDefines.h"
+#include <cstdint>
 
 /**	Commonly used types. */
 namespace bs
 {
-	typedef char INT8;
-	typedef unsigned char UINT8;
-	typedef short INT16;
-	typedef unsigned short UINT16;
-	typedef int INT32;
-	typedef unsigned int UINT32;
+	using std::int8_t;
+	using std::uint8_t;
+	using std::int16_t;
+	using std::uint16_t;
+	using std::int32_t;
+	using std::uint32_t;
+	using std::int64_t;
+	using std::uint64_t;
 
-#if BS_COMPILER == BS_COMPILER_MSVC
-	typedef unsigned __int64 UINT64;
-	typedef __int64 INT64;
-#else
-	typedef unsigned long long UINT64;
-	typedef long long INT64;
-#endif
+	using INT8   = int8_t;
+	using UINT8  = uint8_t;
+	using INT16  = int16_t;
+	using UINT16 = uint16_t;
+	using INT32  = int32_t;
+	using UINT32 = uint32_t;
+	using INT64  = int64_t;
+	using UINT64 = uint64_t;
 }

@@ -7,7 +7,7 @@ namespace bs
 {
 	RTTITypeBase::~RTTITypeBase() 
 	{
-		for(const auto & item : mFields)
+		for(const auto& item : mFields)
 			bs_delete(item);
 	}
 
