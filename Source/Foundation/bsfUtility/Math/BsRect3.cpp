@@ -7,18 +7,6 @@
 
 namespace bs
 {
-	Rect3::Rect3()
-		:mCenter(BsZero), mAxisHorz(BsZero), mAxisVert(BsZero), mExtentHorz(0.0f), mExtentVert(0.0f)
-	{ }
-
-	Rect3::Rect3(const Vector3& center, const std::array<Vector3, 2>& axes,
-		const std::array<float, 2>& extents)
-		:mCenter(center), mAxisHorz(axes[0]), mAxisVert(axes[1]),
-		mExtentHorz(extents[0]), mExtentVert(extents[1])
-	{
-
-	}
-
 	std::pair<std::array<Vector3, 2>, float> Rect3::getNearestPoint(const Ray& ray) const
 	{
 		const Vector3& org = ray.getOrigin();

@@ -18,15 +18,18 @@ namespace bs
 	class BS_UTILITY_EXPORT Torus
 	{
 	public:
-		Torus();
-		Torus(const Vector3& normal, float outerRadius, float innerRadius);
+		Torus() = default;
+
+		Torus(const Vector3& normal, float outerRadius, float innerRadius)
+			:normal(normal), outerRadius(outerRadius), innerRadius(innerRadius)
+		{ }
 
 		/** Ray/torus intersection, returns boolean result and distance to nearest intersection point. */
 		std::pair<bool, float> intersects(const Ray& ray) const;
 
-		Vector3 normal;
-		float outerRadius;
-		float innerRadius;
+		Vector3 normal{BsZero};
+		float outerRadius = 0.0f;
+		float innerRadius = 0.0f;
 	};
 
 	/** @} */

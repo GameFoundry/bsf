@@ -22,16 +22,13 @@ namespace bs
 		};
 
 	public:
-		Quaternion()
-		{ }
+		Quaternion() = default;
+		Quaternion(const Quaternion&) = default;
+		Quaternion& operator=(const Quaternion&) = default;
 
-		Quaternion(BS_ZERO zero)
-			:x(0.0f), y(0.0f), z(0.0f), w(0.0f)
-		{ }
+		Quaternion(BS_ZERO zero) { }
 
-		Quaternion(BS_IDENTITY identity)
-			:x(0.0f), y(0.0f), z(0.0f), w(1.0f)
-		{ }
+		Quaternion(BS_IDENTITY) :w(1.0f) { }
 
 		Quaternion(float w, float x, float y, float z)
 			:x(x), y(y), z(z), w(w)
@@ -185,15 +182,6 @@ namespace bs
 		/** Gets the positive z-axis of the coordinate system transformed by this quaternion. */
 		Vector3 zAxis() const;
 
-		Quaternion& operator= (const Quaternion& rhs)
-		{
-			w = rhs.w;
-			x = rhs.x;
-			y = rhs.y;
-			z = rhs.z;
-
-			return *this;
-		}
 
 		Quaternion operator+ (const Quaternion& rhs) const 
 		{
@@ -360,15 +348,19 @@ namespace bs
 		/** Gets the shortest arc quaternion to rotate this vector to the destination vector. */
 		static Quaternion getRotationFromTo(const Vector3& from, const Vector3& dest, const Vector3& fallbackAxis = Vector3::ZERO);
 
-		static const float EPSILON;
+		static constexpr const float EPSILON = 1e-03f;
 
 		static const Quaternion ZERO;
 		static const Quaternion IDENTITY;
 
-		float x, y, z, w; // Note: Order is relevant, don't break it
+		float x = 0.0f;
+		float y = 0.0f;
+		float z = 0.0f;
+		float w = 0.0f; // Note: Order is relevant, don't break it
 
-		private:
-			static const EulerAngleOrderData EA_LOOKUP[6];
+	private:
+		static constexpr const EulerAngleOrderData EA_LOOKUP[6] = { { 0, 1, 2}, { 0, 2, 1}, { 1, 0, 2},
+																	{ 1, 2, 0}, { 2, 0, 1}, { 2, 1, 0} };
 	};
 
 	/** @} */

@@ -25,35 +25,23 @@ namespace bs
 		};
 
 	public:
-		Matrix3() {}
+		constexpr Matrix3() = default;
+		constexpr Matrix3(const Matrix3&) = default;
+		constexpr Matrix3& operator=(const Matrix3&) = default;
 
-		Matrix3(BS_ZERO zero)
-			:Matrix3(Matrix3::ZERO)
+		constexpr Matrix3(BS_ZERO) { }
+
+		constexpr Matrix3(BS_IDENTITY)
+			:m{ {1.0f, 0.0f, 0.0f},
+				{0.0f, 1.0f, 0.0f},
+				{0.0f, 0.0f, 1.0f} }
 		{ }
 
-		Matrix3(BS_IDENTITY identity)
-			:Matrix3(Matrix3::IDENTITY)
-		{ }
-
-		Matrix3(const Matrix3& mat)
-		{
-			memcpy(m, mat.m, 9*sizeof(float));
-		}
-
-		Matrix3(float m00, float m01, float m02,
+		constexpr Matrix3(float m00, float m01, float m02,
 				float m10, float m11, float m12,
 				float m20, float m21, float m22)
-		{
-			m[0][0] = m00;
-			m[0][1] = m01;
-			m[0][2] = m02;
-			m[1][0] = m10;
-			m[1][1] = m11;
-			m[1][2] = m12;
-			m[2][0] = m20;
-			m[2][1] = m21;
-			m[2][2] = m22;
-		}
+			:m{{m00, m01, m02}, {m10, m11, m12}, {m20, m21, m22}}
+		{ }
 
 		/** Construct a matrix from a quaternion. */
 		explicit Matrix3(const Quaternion& rotation)
@@ -130,11 +118,6 @@ namespace bs
 		Vector3 getColumn(UINT32 col) const;
 		void setColumn(UINT32 col, const Vector3& vec);
 
-		Matrix3& operator= (const Matrix3& rhs)
-		{
-			memcpy(m, rhs.m, 9*sizeof(float));
-			return *this;
-		}
 		bool operator== (const Matrix3& rhs) const;
 		bool operator!= (const Matrix3& rhs) const;
 
@@ -279,7 +262,7 @@ namespace bs
 		 */
 		void eigenSolveSymmetric(float eigenValues[3], Vector3 eigenVectors[3]) const;
 
-		static const float EPSILON;
+		static constexpr const float EPSILON = 1e-06f;
 		static const Matrix3 ZERO;
 		static const Matrix3 IDENTITY;
 
@@ -291,15 +274,19 @@ namespace bs
 		bool QLAlgorithm (float diag[3], float subDiag[3]);
 
 		// Support for singular value decomposition
-		static const float SVD_EPSILON;
-		static const unsigned int SVD_MAX_ITERS;
+		static constexpr const float SVD_EPSILON = 1e-04f;;
+		static constexpr const unsigned int SVD_MAX_ITERS = 32;
 		static void bidiagonalize (Matrix3& matA, Matrix3& matL, Matrix3& matR);
 		static void golubKahanStep (Matrix3& matA, Matrix3& matL, Matrix3& matR);
 
 		// Euler angle conversions
-		static const EulerAngleOrderData EA_LOOKUP[6];
+		static constexpr const EulerAngleOrderData EA_LOOKUP[6] = 
+		{ { 0, 1, 2, 1.0f}, { 0, 2, 1, -1.0f}, { 1, 0, 2, -1.0f},
+		  { 1, 2, 0, 1.0f}, { 2, 0, 1,  1.0f}, { 2, 1, 0, -1.0f} };
 
-		float m[3][3];
+		float m[3][3] = { {0.0f, 0.0f, 0.0f},
+						  {0.0f, 0.0f, 0.0f},
+						  {0.0f, 0.0f, 0.0f} };
 	};
 
 	/** @} */

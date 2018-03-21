@@ -21,14 +21,18 @@ namespace bs
 	class BS_UTILITY_EXPORT Degree
 	{
 	public:
-		explicit Degree(float d = 0.0f) : mDeg(d) {}
+		constexpr Degree() = default;
+		constexpr Degree(const Degree& d) = default;
+		constexpr Degree&operator= (const Degree& d) = default;
+
+		constexpr explicit Degree(float d) : mDeg(d) {}
+		constexpr Degree& operator= (const float& f) { mDeg = f; return *this; }
+
 		Degree(const Radian& r);
-		Degree& operator= (const float& f) { mDeg = f; return *this; }
-		Degree& operator= (const Degree& d) { mDeg = d.mDeg; return *this; }
 		Degree& operator= (const Radian& r);
 
 		/** Returns the value of the angle in degrees. */
-		float valueDegrees() const { return mDeg; }
+		constexpr float valueDegrees() const { return mDeg; }
 
 		/** Returns the value of the angle in radians. */
 		float valueRadians() const;
@@ -67,7 +71,7 @@ namespace bs
 		bool operator>  (const Degree& d) const { return mDeg >  d.mDeg; }
 
 	private:
-		float mDeg;
+		float mDeg = 0.0f;
 	};
 
 	/** @} */

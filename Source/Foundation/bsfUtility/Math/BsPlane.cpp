@@ -9,10 +9,6 @@
 
 namespace bs 
 {
-	Plane::Plane()
-		:normal(BsZero), d(0.0f)
-	{ }
-
 	Plane::Plane(const Plane& copy)
 		:normal(copy.normal), d(copy.d)
 	{ }

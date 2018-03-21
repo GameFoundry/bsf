@@ -7,9 +7,6 @@
 
 namespace bs
 {
-	Bounds::Bounds()
-	{ }
-
 	Bounds::Bounds(const AABox& box, const Sphere& sphere)
 		:mBox(box), mSphere(sphere)
 	{ }

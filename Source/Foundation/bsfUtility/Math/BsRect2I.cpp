@@ -7,15 +7,7 @@
 
 namespace bs
 {
-	const Rect2I Rect2I::EMPTY = Rect2I();
-
-	Rect2I::Rect2I()
-		:x(0), y(0), width(0), height(0)
-	{ }
-
-	Rect2I::Rect2I(INT32 x, INT32 y, UINT32 width, UINT32 height)
-		:x(x), y(y), width(width), height(height)
-	{ }
+	const Rect2I Rect2I::EMPTY;
 
 	bool Rect2I::contains(const Vector2I& point) const
 	{

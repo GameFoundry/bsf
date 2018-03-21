@@ -7,14 +7,6 @@
 
 namespace bs
 {
-	Torus::Torus()
-		:normal(BsZero), outerRadius(0.0f), innerRadius(0.0f)
-	{ }
-
-	Torus::Torus(const Vector3& normal, float outerRadius, float innerRadius)
-		:normal(normal), outerRadius(outerRadius), innerRadius(innerRadius)
-	{ }
-
 	std::pair<bool, float> Torus::intersects(const Ray& ray) const
 	{
 		const Vector3& org = ray.getOrigin();

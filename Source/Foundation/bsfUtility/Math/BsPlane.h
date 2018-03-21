@@ -28,7 +28,7 @@ namespace bs
         };
 
     public:
-        Plane();
+        Plane() = default;
         Plane(const Plane& copy);
         Plane(const Vector3& normal, float d);
 		Plane(float a, float b, float c, float d);
@@ -85,8 +85,8 @@ namespace bs
         }
 
 	public:
-		Vector3 normal;
-		float d;
+		Vector3 normal{BsZero};
+		float d = 0.0f;
     };
 
     typedef Vector<Plane> PlaneList;

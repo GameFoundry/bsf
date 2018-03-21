@@ -15,21 +15,21 @@ namespace bs
 	class BS_UTILITY_EXPORT Vector4
 	{
 	public:
-		float x, y, z, w;
+		float x = 0.0f;
+		float y = 0.0f;
+		float z = 0.0f;
+		float w = 0.0f;
 
 	public:
-		Vector4()
-		{ }
+		constexpr Vector4() = default;
 
-		Vector4(BS_ZERO zero)
-			:x(0.0f), y(0.0f), z(0.0f), w(0.0f)
-		{ }
+		constexpr Vector4(BS_ZERO) { }
 
-		Vector4(float x, float y, float z, float w)
+		constexpr Vector4(float x, float y, float z, float w)
 			:x(x), y(y), z(z), w(w)
 		{ }
 
-		explicit Vector4(const Vector3& vec, float w = 0.0f)
+		constexpr explicit Vector4(const Vector3& vec, float w = 0.0f)
 			:x(vec.x), y(vec.y), z(vec.z), w(w)
 		{ }
 

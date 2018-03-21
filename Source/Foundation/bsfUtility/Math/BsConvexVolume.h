@@ -26,7 +26,7 @@ namespace bs
 	class BS_UTILITY_EXPORT ConvexVolume
 	{
 	public:
-		ConvexVolume() {}
+		ConvexVolume() = default;
 		ConvexVolume(const Vector<Plane>& planes);
 
 		/** Creates frustum planes from the provided projection matrix. */

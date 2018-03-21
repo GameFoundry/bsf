@@ -15,19 +15,17 @@ namespace bs
     class BS_UTILITY_EXPORT Vector2
     {
     public:
-        float x, y;
+        float x = 0.0f;
+		float y = 0.0f;
 
     public:
-		Vector2()
+		constexpr Vector2() = default;
+
+		constexpr Vector2(BS_ZERO) { }
+
+		constexpr Vector2(float x, float y)
+			:x(x), y(y)
 		{ }
-
-        Vector2(BS_ZERO zero)
-			:x(0.0f), y(0.0f)
-        { }
-
-        Vector2(float x, float y)
-            :x(x), y(y)
-        { }
 
 		/** Exchange the contents of this vector with another. */
 		void swap(Vector2& other)

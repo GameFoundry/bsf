@@ -6,15 +6,8 @@
 
 namespace bs
 {
-	const float Matrix3::EPSILON = 1e-06f;
-	const Matrix3 Matrix3::ZERO(0,0,0,0,0,0,0,0,0);
-	const Matrix3 Matrix3::IDENTITY(1,0,0,0,1,0,0,0,1);
-	const float Matrix3::SVD_EPSILON = 1e-04f;
-	const unsigned int Matrix3::SVD_MAX_ITERS = 32;
-	const Matrix3::EulerAngleOrderData Matrix3::EA_LOOKUP[6] = 
-		{ { 0, 1, 2, 1.0f}, { 0, 2, 1, -1.0f}, { 1, 0, 2, -1.0f},
-		  { 1, 2, 0, 1.0f}, { 2, 0, 1,  1.0f}, { 2, 1, 0, -1.0f} };;
-
+	const Matrix3 Matrix3::ZERO;
+	const Matrix3 Matrix3::IDENTITY{BS_IDENTITY()};
 
 	Vector3 Matrix3::getColumn(UINT32 col) const
 	{

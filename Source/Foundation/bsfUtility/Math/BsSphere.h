@@ -16,8 +16,7 @@ namespace bs
     {
     public:
         /** Default constructor. Creates a unit sphere around the origin. */
-        Sphere() : mRadius(1.0), mCenter(Vector3::ZERO) 
-		{ }
+        Sphere() = default;
 
         Sphere(const Vector3& center, float radius)
             :mRadius(radius), mCenter(center) 
@@ -66,8 +65,8 @@ namespace bs
 		std::pair<bool, float> intersects(const Ray& ray, bool discardInside = true) const;
 
 	private:
-		float mRadius;
-		Vector3 mCenter;
+		float mRadius = 1.0f;
+		Vector3 mCenter{Vector3::ZERO};
     };
 
 	/** @} */

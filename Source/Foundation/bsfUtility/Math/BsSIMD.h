@@ -41,8 +41,7 @@ namespace bs
 			/** Extents (half-size) of the bounds, W component unused. */
 			SIMDPP_ALIGN(16) Vector4 extents;
 
-			AABox()
-			{ }
+			AABox() = default;
 
 			/** Initializes bounds from an AABox. */
 			AABox(const bs::AABox& box)

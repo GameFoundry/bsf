@@ -15,9 +15,7 @@ namespace bs
 	class BS_UTILITY_EXPORT Line2
 	{
 	public:
-		Line2()
-			:mOrigin(Vector2::ZERO), mDirection(Vector2::UNIT_X) 
-		{ }
+		Line2() = default;
 
 		Line2(const Vector2& origin, const Vector2& direction)
 			:mOrigin(origin), mDirection(direction) 
@@ -45,8 +43,8 @@ namespace bs
 		std::pair<bool, float> intersects(const Line2& line) const;
 
 	protected:
-		Vector2 mOrigin;
-		Vector2 mDirection;
+		Vector2 mOrigin = Vector2::ZERO;
+		Vector2 mDirection = Vector2::UNIT_X;
 	};
 
 	/** @} */

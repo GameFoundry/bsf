@@ -8,12 +8,8 @@
 
 namespace bs 
 {
-	const float Quaternion::EPSILON = 1e-03f;
-	const Quaternion Quaternion::ZERO(0.0f, 0.0f, 0.0f, 0.0f);
-	const Quaternion Quaternion::IDENTITY(1.0f, 0.0f, 0.0f, 0.0f);
-	const Quaternion::EulerAngleOrderData Quaternion::EA_LOOKUP[6] = 
-		{ { 0, 1, 2}, { 0, 2, 1}, { 1, 0, 2},
-		{ 1, 2, 0}, { 2, 0, 1}, { 2, 1, 0} };;
+	const Quaternion Quaternion::ZERO;
+	const Quaternion Quaternion::IDENTITY{BS_IDENTITY()};
 
 	void Quaternion::fromRotationMatrix(const Matrix3& mat)
 	{

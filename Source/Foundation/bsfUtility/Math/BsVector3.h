@@ -17,17 +17,16 @@ namespace bs
 	class BS_UTILITY_EXPORT Vector3
 	{
 	public:
-		float x, y, z;
+		float x = 0.0f;
+		float y = 0.0f;
+		float z = 0.0f;
 
 	public:
-		Vector3()
-		{ }
+		constexpr Vector3() = default;
 
-		Vector3(BS_ZERO zero)
-			:x(0.0f), y(0.0f), z(0.0f)
-		{ }
+		constexpr Vector3(BS_ZERO) { }
 
-		Vector3(float x, float y, float z)
+		constexpr Vector3(float x, float y, float z)
 			:x(x), y(y), z(z)
 		{ }
 

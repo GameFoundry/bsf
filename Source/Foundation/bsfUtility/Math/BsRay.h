@@ -15,9 +15,7 @@ namespace bs
 	class BS_UTILITY_EXPORT Ray
 	{
 	public:
-		Ray()
-			:mOrigin(Vector3::ZERO), mDirection(Vector3::UNIT_Z) 
-		{ }
+		Ray() = default;
 
 		Ray(const Vector3& origin, const Vector3& direction)
 			:mOrigin(origin), mDirection(direction) 
@@ -75,8 +73,8 @@ namespace bs
 			const Vector3& normal, bool positiveSide = true, bool negativeSide = true) const;
 
 	protected:
-		Vector3 mOrigin;
-		Vector3 mDirection;
+		Vector3 mOrigin{Vector3::ZERO};
+		Vector3 mDirection{Vector3::UNIT_Z};
 	};
 
 	/** @} */

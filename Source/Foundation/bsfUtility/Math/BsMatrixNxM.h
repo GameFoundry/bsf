@@ -22,9 +22,11 @@ namespace bs
 	class MatrixNxM
 	{
 	public:
-		MatrixNxM() {}
+		MatrixNxM() = default;
+		MatrixNxM(const MatrixNxM&) = default;
+		MatrixNxM& operator=(const MatrixNxM&) = default;
 
-		MatrixNxM(float data[N*M])
+		explicit MatrixNxM(float data[N*M])
 		{
 			memcpy(m, data, N*M * sizeof(float));
 		}
@@ -50,13 +52,7 @@ namespace bs
 			return (float*)m[row];
 		}
 
-		MatrixNxM<N, M>& operator= (const MatrixNxM<N, M>& rhs)
-		{
-			memcpy(m, rhs.m, (N*M)*sizeof(float));
-			return *this;
-		}
-
-		bool operator== (const MatrixNxM<N, M>& rhs) const
+		bool operator== (const MatrixNxM& rhs) const
 		{
 			for (UINT32 row = 0; row < N; row++)
 			{
@@ -70,7 +66,7 @@ namespace bs
 			return true;
 		}
 
-		bool operator!= (const MatrixNxM<N, M>& rhs) const
+		bool operator!= (const MatrixNxM& rhs) const
 		{
 			return !operator==(rhs);
 		}
