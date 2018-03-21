@@ -20,7 +20,7 @@ namespace bs
 	class BS_UTILITY_EXPORT IDiff
 	{
 	public:
-		virtual ~IDiff() { }
+		virtual ~IDiff() = default;
 
 		/**
 		 * Generates per-field differences between the provided original and new object. Any field or array entry that is 

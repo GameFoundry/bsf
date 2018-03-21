@@ -36,7 +36,7 @@ namespace bs
 		UINT8* flushBuffer(UINT8* bufferStart, UINT32 bytesWritten, UINT32& newBufferSize);
 
 		std::ofstream mOutputStream;
-		UINT8* mWriteBuffer;
+		UINT8* mWriteBuffer = nullptr;
 
 		static const UINT32 WRITE_BUFFER_SIZE = 2048;
 	};

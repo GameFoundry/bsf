@@ -14,7 +14,7 @@ namespace bs
 	/** Base class for intermediate representations of objects that are being decoded with BinarySerializer. */
 	struct BS_UTILITY_EXPORT SerializedInstance : IReflectable
 	{
-		virtual ~SerializedInstance() { }
+		virtual ~SerializedInstance() = default;
 
 		/**
 		 * Performs a deep clone of this object any any potential child objects.
@@ -38,12 +38,10 @@ namespace bs
 	/** An intermediate serialized data for a single field in an object. */
 	struct BS_UTILITY_EXPORT SerializedEntry : IReflectable
 	{
-		SerializedEntry()
-			:fieldId(0), serialized(nullptr)
-		{ }
+		SerializedEntry() = default;
 
-		UINT32 fieldId;
-		SPtr<SerializedInstance> serialized;
+		UINT32 fieldId = 0;
+		SPtr<SerializedInstance> serialized{nullptr};
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -57,12 +55,10 @@ namespace bs
 	/** A serialized value representing a single entry in an array. */
 	struct BS_UTILITY_EXPORT SerializedArrayEntry : IReflectable
 	{
-		SerializedArrayEntry()
-			:index(0), serialized(nullptr)
-		{ }
+		SerializedArrayEntry() = default;
 
-		UINT32 index;
-		SPtr<SerializedInstance> serialized;
+		UINT32 index = 0;
+		SPtr<SerializedInstance> serialized{nullptr};
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -79,11 +75,9 @@ namespace bs
 	 */
 	struct BS_UTILITY_EXPORT SerializedSubObject : IReflectable
 	{
-		SerializedSubObject()
-			:typeId(0)
-		{ }
+		SerializedSubObject() = default;
 
-		UINT32 typeId;
+		UINT32 typeId = 0;
 		UnorderedMap<UINT32, SerializedEntry> entries;
 
 		/************************************************************************/
@@ -118,11 +112,7 @@ namespace bs
 	/** Contains data for a serialized value of a specific field or array entry. */
 	struct BS_UTILITY_EXPORT SerializedField : SerializedInstance
 	{
-		SerializedField()
-			:value(nullptr), size(0), ownsMemory(false)
-		{
-
-		}
+		SerializedField() = default;
 
 		~SerializedField()
 		{
@@ -133,9 +123,9 @@ namespace bs
 		/** @copydoc SerializedInstance::clone */
 		SPtr<SerializedInstance> clone(bool cloneData = true) override;
 
-		UINT8* value;
-		UINT32 size;
-		bool ownsMemory;
+		UINT8* value = nullptr;
+		UINT32 size = 0;
+		bool ownsMemory = false;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -149,18 +139,14 @@ namespace bs
 	/** Contains data for a serialized value of a data block field. */
 	struct BS_UTILITY_EXPORT SerializedDataBlock : SerializedInstance
 	{
-		SerializedDataBlock()
-			:offset(0), size(0)
-		{
-
-		}
+		SerializedDataBlock() = default;
 
 		/** @copydoc SerializedInstance::clone */
 		SPtr<SerializedInstance> clone(bool cloneData = true) override;
 
 		SPtr<DataStream> stream;
-		UINT32 offset;
-		UINT32 size;
+		UINT32 offset = 0;
+		UINT32 size = 0;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -174,15 +160,13 @@ namespace bs
 	/** A serialized array containing a list of all its entries. */
 	struct BS_UTILITY_EXPORT SerializedArray : SerializedInstance
 	{
-		SerializedArray()
-			:numElements(0)
-		{ }
+		SerializedArray() = default;
 
 		/** @copydoc SerializedInstance::clone */
 		SPtr<SerializedInstance> clone(bool cloneData = true) override;
 
 		UnorderedMap<UINT32, SerializedArrayEntry> entries;
-		UINT32 numElements;
+		UINT32 numElements = 0;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

@@ -15,7 +15,6 @@ using namespace std::placeholders;
 namespace bs
 {
 	FileEncoder::FileEncoder(const Path& fileLocation)
-		:mWriteBuffer(nullptr)
 	{
 		mWriteBuffer = (UINT8*)bs_alloc(WRITE_BUFFER_SIZE);
 
